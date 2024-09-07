@@ -16,6 +16,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.common.MediaIntegrityErrorCode;
+import org.chromium.android_webview.common.MediaIntegrityErrorWrapper;
 import org.chromium.android_webview.common.MediaIntegrityProvider;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.ValueOrErrorCallback;
@@ -183,10 +184,10 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                 "Android.WebView.MediaIntegrity.TokenProviderCacheMissesCumulativeV2",
                 ++sCacheMissCounter);
         PlatformServiceBridge.getInstance()
-                .getMediaIntegrityProvider(
+                .getMediaIntegrityProvider2(
                         cloudProjectNumber,
                         /* requestMode= */ apiStatus,
-                        new ValueOrErrorCallback<MediaIntegrityProvider, Integer>() {
+                        new ValueOrErrorCallback<>() {
                             @Override
                             public void onResult(MediaIntegrityProvider provider) {
                                 ThreadUtils.assertOnUiThread();
@@ -205,10 +206,10 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                             }
 
                             @Override
-                            public void onError(Integer error) {
+                            public void onError(MediaIntegrityErrorWrapper error) {
                                 ThreadUtils.assertOnUiThread();
                                 Objects.requireNonNull(error);
-                                callback.call(errorCodeToMojomErrorCode(error));
+                                callback.call(errorCodeToMojomErrorCode(error.value));
                             }
                         });
     }
@@ -243,7 +244,7 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                 @NonNull AwBrowserContext awBrowserContext) {
             mProvider = provider;
             mCacheKey = cacheKey;
-            mAwBrowserContext = new WeakReference<AwBrowserContext>(awBrowserContext);
+            mAwBrowserContext = new WeakReference<>(awBrowserContext);
         }
 
         @Override
@@ -261,9 +262,9 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
             RecordHistogram.recordCount1000Histogram(
                     "Android.WebView.MediaIntegrity.GetTokenCumulativeV2", ++mRequestCounter);
             // The provider is responsible for any contentBinding validation.
-            mProvider.requestToken(
+            mProvider.requestToken2(
                     contentBinding,
-                    new ValueOrErrorCallback<String, Integer>() {
+                    new ValueOrErrorCallback<>() {
                         @Override
                         public void onResult(String token) {
                             ThreadUtils.assertOnUiThread();
@@ -275,10 +276,10 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                         }
 
                         @Override
-                        public void onError(Integer error) {
+                        public void onError(MediaIntegrityErrorWrapper error) {
                             ThreadUtils.assertOnUiThread();
                             Objects.requireNonNull(error);
-                            if (error == MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID) {
+                            if (error.value == MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID) {
                                 // This callback could take an arbitrary amount of time. We use a
                                 // weak reference to avoid making assumptions about AwBrowserContext
                                 // lifetimes.
@@ -290,7 +291,7 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                             }
                             final WebViewMediaIntegrityTokenResponse response =
                                     new WebViewMediaIntegrityTokenResponse();
-                            response.setErrorCode(errorCodeToMojomErrorCode(error));
+                            response.setErrorCode(errorCodeToMojomErrorCode(error.value));
                             callback.call(response);
                         }
                     });

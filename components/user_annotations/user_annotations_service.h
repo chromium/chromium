@@ -5,8 +5,15 @@
 #ifndef COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 #define COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 
-#include "base/functional/callback.h"
+#include "base/callback_list.h"
+#include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/user_annotations/user_annotations_types.h"
 
 namespace autofill {
 class FormData;
@@ -17,37 +24,82 @@ class AXTreeUpdate;
 class UserAnnotationsEntry;
 }  // namespace optimization_guide::proto
 
+namespace os_crypt_async {
+class Encryptor;
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 namespace user_annotations {
 
+class UserAnnotationsDatabase;
 struct Entry;
 
 class UserAnnotationsService : public KeyedService {
  public:
-  UserAnnotationsService();
+  UserAnnotationsService(
+      optimization_guide::OptimizationGuideModelExecutor* model_executor,
+      const base::FilePath& storage_dir,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
+
   UserAnnotationsService(const UserAnnotationsService&) = delete;
   UserAnnotationsService& operator=(const UserAnnotationsService&) = delete;
   ~UserAnnotationsService() override;
 
   // Adds a form submission to the user annotations.
-  void AddFormSubmission(
-      const optimization_guide::proto::AXTreeUpdate& ax_tree_update,
-      const autofill::FormData& form_data);
+  void AddFormSubmission(optimization_guide::proto::AXTreeUpdate ax_tree_update,
+                         const autofill::FormData& form_data);
 
   // Retrieves all entries from the database. Invokes `callback` when complete.
   // Virtual for testing.
   virtual void RetrieveAllEntries(
-      base::OnceCallback<
-          void(std::vector<optimization_guide::proto::UserAnnotationsEntry>)>
-          callback);
+      base::OnceCallback<void(UserAnnotationsEntries)> callback);
+
+  // Remove the user annotation entry with `entry_id` and calls `callback` upon
+  // completion.
+  void RemoveEntry(EntryID entry_id, base::OnceClosure callback);
+
+  // Removes all the user annotation entries` and calls `callback` upon
+  // completion.
+  void RemoveAllEntries(base::OnceClosure callback);
 
   // KeyedService:
   void Shutdown() override;
 
  private:
+  friend class TestUserAnnotationsService;
+
+  // Used in testing, to construct the service without encryptor and database.
+  UserAnnotationsService();
+
+  // Processes model execution response. Invoked when model execution has been
+  // received.
+  void OnModelExecuted(
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  // Called when the encryptor is ready.
+  void OnOsCryptAsyncReady(const base::FilePath& storage_dir,
+                           os_crypt_async::Encryptor encryptor,
+                           bool success);
+
   // An in-memory representation of the "database" of user annotation entries.
+  // Used only when `ShouldPersistUserAnnotations()` is false.
   std::vector<Entry> entries_;
 
   int64_t entry_id_counter_ = 0;
+
+  // Database used to persist the user annotation entries.
+  // Used only when `ShouldPersistUserAnnotations()` is true.
+  base::SequenceBound<UserAnnotationsDatabase> user_annotations_database_;
+
+  // Maintains the subscription for `OSCryptAsync` and cancels upon destruction.
+  base::CallbackListSubscription encryptor_ready_subscription_;
+
+  // The model executor to use to normalize entries. Guaranteed to outlive
+  // `this`.
+  raw_ptr<optimization_guide::OptimizationGuideModelExecutor> model_executor_;
+
+  base::WeakPtrFactory<UserAnnotationsService> weak_ptr_factory_{this};
 };
 
 }  // namespace user_annotations

@@ -36,6 +36,65 @@
 
 namespace web_app {
 
+namespace {
+
+// TODO(crbug.com/40274186): Once we support updating IWAs not installed via
+// policy, we need to update this annotation.
+constexpr auto kUpdateManifestFetchTrafficAnnotation =
+    net::DefinePartialNetworkTrafficAnnotation(
+        "iwa_update_discovery_update_manifest",
+        "iwa_update_manifest_fetcher",
+        R"(
+  semantics {
+    sender: "Isolated Web App Update Manager"
+    description:
+      "Downloads the Update Manifest of an Isolated Web App that is "
+      "policy-installed. The Update Manifest contains at least the list of "
+      "the available versions of the IWA and the URL to the Signed Web "
+      "Bundles that correspond to each version."
+    trigger:
+      "The browser automatically checks for updates of all policy-installed "
+      "Isolated Web Apps after startup and in regular time intervals."
+  }
+  policy {
+    setting: "This feature cannot be disabled in settings."
+    chrome_policy {
+      IsolatedWebAppInstallForceList {
+        IsolatedWebAppInstallForceList: ""
+      }
+    }
+  })");
+
+// TODO(crbug.com/40274186): Once we support updating IWAs not installed via
+// policy, we need to update this annotation.
+constexpr auto kWebBundleDownloadTrafficAnnotation =
+    net::DefinePartialNetworkTrafficAnnotation(
+        "iwa_update_discovery_web_bundle",
+        "iwa_bundle_downloader",
+        R"(
+  semantics {
+    sender: "Isolated Web App Update Manager"
+    description:
+      "Downloads an updated Signed Web Bundle of an Isolated Web App that is "
+      "policy-installed, after an update has been discovered for it. The "
+      "Signed Web Bundle contains code and other resources of the IWA."
+    trigger:
+      "The browser automatically checks for updates of all policy-installed "
+      "Isolated Web Apps after startup and in regular time intervals. If an "
+      "update is found, then the corresponding Signed Web Bundle is "
+      "downloaded."
+  }
+  policy {
+    setting: "This feature cannot be disabled in settings."
+    chrome_policy {
+      IsolatedWebAppInstallForceList {
+        IsolatedWebAppInstallForceList: ""
+      }
+    }
+  })");
+
+}  // namespace
+
 // static
 std::string IsolatedWebAppUpdateDiscoveryTask::SuccessToString(
     Success success) {
@@ -103,34 +162,8 @@ void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
 
   debug_log_.Set("start_time", base::TimeToValue(base::Time::Now()));
 
-  // TODO(crbug.com/40274186): Once we support updating IWAs not installed via
-  // policy, we need to update this annotation.
-  net::PartialNetworkTrafficAnnotationTag update_manifest_traffic_annotation =
-      net::DefinePartialNetworkTrafficAnnotation(
-          "iwa_update_discovery_update_manifest", "iwa_update_manifest_fetcher",
-          R"(
-    semantics {
-      sender: "Isolated Web App Update Manager"
-      description:
-        "Downloads the Update Manifest of an Isolated Web App that is "
-        "policy-installed. The Update Manifest contains at least the list of "
-        "the available versions of the IWA and the URL to the Signed Web "
-        "Bundles that correspond to each version."
-      trigger:
-        "The browser automatically checks for updates of all policy-installed "
-        "Isolated Web Apps after startup and in regular time intervals."
-    }
-    policy {
-      setting: "This feature cannot be disabled in settings."
-      chrome_policy {
-        IsolatedWebAppInstallForceList {
-          IsolatedWebAppInstallForceList: ""
-        }
-      }
-    })");
-
   update_manifest_fetcher_ = std::make_unique<UpdateManifestFetcher>(
-      update_manifest_url_, update_manifest_traffic_annotation,
+      update_manifest_url_, kUpdateManifestFetchTrafficAnnotation,
       url_loader_factory_);
   update_manifest_fetcher_->FetchUpdateManifest(base::BindOnce(
       &IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched,
@@ -232,68 +265,34 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
     return;
   }
 
-  GetDownloadPath(std::move(*latest_version_entry));
+  CreateTempFile(std::move(*latest_version_entry));
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::GetDownloadPath(
+void IsolatedWebAppUpdateDiscoveryTask::CreateTempFile(
     UpdateManifest::VersionEntry version_entry) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce([]() -> std::optional<base::FilePath> {
-        base::FilePath download_path;
-        bool success = base::CreateTemporaryFile(&download_path);
-        return success ? std::make_optional(download_path) : std::nullopt;
-      }),
-      base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnGetDownloadPath,
+  ScopedTempWebBundleFile::Create(
+      base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnTempFileCreated,
                      weak_factory_.GetWeakPtr(), std::move(version_entry)));
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::OnGetDownloadPath(
+void IsolatedWebAppUpdateDiscoveryTask::OnTempFileCreated(
     UpdateManifest::VersionEntry version_entry,
-    std::optional<base::FilePath> download_path) {
-  if (!download_path.has_value()) {
+    ScopedTempWebBundleFile bundle) {
+  if (!bundle) {
     FailWith(Error::kDownloadPathCreationFailed);
     return;
   }
+  bundle_ = std::move(bundle);
 
-  // TODO(crbug.com/40274186): Once we support updating IWAs not installed via
-  // policy, we need to update this annotation.
-  net::PartialNetworkTrafficAnnotationTag web_bundle_traffic_annotation =
-      net::DefinePartialNetworkTrafficAnnotation(
-          "iwa_update_discovery_web_bundle", "iwa_bundle_downloader",
-          R"(
-    semantics {
-      sender: "Isolated Web App Update Manager"
-      description:
-        "Downloads an updated Signed Web Bundle of an Isolated Web App that is "
-        "policy-installed, after an update has been discovered for it. The "
-        "Signed Web Bundle contains code and other resources of the IWA."
-      trigger:
-        "The browser automatically checks for updates of all policy-installed "
-        "Isolated Web Apps after startup and in regular time intervals. If an "
-        "update is found, then the corresponding Signed Web Bundle is "
-        "downloaded."
-    }
-    policy {
-      setting: "This feature cannot be disabled in settings."
-      chrome_policy {
-        IsolatedWebAppInstallForceList {
-          IsolatedWebAppInstallForceList: ""
-        }
-      }
-    })");
-
-  debug_log_.Set("bundle_download_path", download_path->LossyDisplayName());
+  debug_log_.Set("bundle_download_path", bundle_.path().LossyDisplayName());
   bundle_downloader_ = IsolatedWebAppDownloader::CreateAndStartDownloading(
-      version_entry.src(), *download_path, web_bundle_traffic_annotation,
+      version_entry.src(), bundle_.path(), kWebBundleDownloadTrafficAnnotation,
       url_loader_factory_,
       base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded,
-                     weak_factory_.GetWeakPtr(), *download_path,
-                     version_entry.version()));
+                     weak_factory_.GetWeakPtr(), version_entry.version()));
 }
 
 void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
-    const base::FilePath& download_path,
     const base::Version& expected_version,
     int32_t net_error) {
   if (net_error != net::OK) {
@@ -304,7 +303,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
 
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
       IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-          IwaSourceBundleProdModeWithFileOp(download_path,
+          IwaSourceBundleProdModeWithFileOp(bundle_.path(),
                                             IwaSourceBundleProdFileOp::kMove),
           expected_version),
       url_info_,

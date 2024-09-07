@@ -1166,6 +1166,11 @@ void InspectorPageAgent::FrameDetachedFromParent(LocalFrame* frame,
                                FrameDetachTypeToProtocol(type));
 }
 
+void InspectorPageAgent::FrameSubtreeWillBeDetached(Frame* frame) {
+  GetFrontend()->frameSubtreeWillBeDetached(IdentifiersFactory::FrameId(frame));
+  GetFrontend()->flush();
+}
+
 bool InspectorPageAgent::ScreencastEnabled() {
   return enabled_.Get() && screencast_enabled_.Get();
 }

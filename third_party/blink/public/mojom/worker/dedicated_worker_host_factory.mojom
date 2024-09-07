@@ -19,6 +19,7 @@ import "third_party/blink/public/mojom/service_worker/service_worker_container.m
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom";
 import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 
 // The name of the InterfaceProviderSpec in service manifests used by the
 // frame tree to expose dedicated-worker-specific interfaces between renderer
@@ -30,12 +31,17 @@ const string kNavigation_DedicatedWorkerSpec = "navigation:dedicated_worker";
 // was invoked) to observe events on the DedicatedWorkerHostFactory.
 interface DedicatedWorkerHostFactoryClient {
   // Called when the worker host is created.
+  // `origin` is the origin that will be used by the worker on the renderer
+  // side. It might differ from the origin that is used on the browser side
+  // when `script_url` is a data: URL, due to the linked bug.
+  // TODO(crbug.com/40051700): Remove the mismatch cases.
   OnWorkerHostCreated(
       // Used for accessing services from the worker.
       pending_remote<blink.mojom.BrowserInterfaceBroker>
           browser_interface_broker,
       // Used for updating its state from the worker.
-      pending_remote<DedicatedWorkerHost> host);
+      pending_remote<DedicatedWorkerHost> host,
+      url.mojom.Origin origin);
 
   // Called when the worker host started loading the main worker script. This
   // is called after OnWorkerHostCreated(). This is never called when
@@ -86,9 +92,16 @@ interface DedicatedWorkerHostFactory {
   // Creates a new DedicatedWorkerHost, and requests `browser_interface_broker`
   // to provide the worker access to mojo interfaces.
   // `script_url` is used only for UMA purposes.
+  // `origin` is the origin that will be used by the worker on the renderer
+  // side. It might differ from the origin that is used on the browser side
+  // when `script_url` is a data: URL, due to the linked bug. We are passing the
+  // origin to the browser side so that it can use it in cases like blob URL
+  // origin resolving, which is based on the renderer side's origin.
+  // TODO(crbug.com/40051700): Remove the mismatch cases.
   CreateWorkerHost(
       blink.mojom.DedicatedWorkerToken token,
       url.mojom.Url script_url,
+      url.mojom.Origin origin,
       pending_receiver<blink.mojom.BrowserInterfaceBroker>
           browser_interface_broker,
       pending_receiver<DedicatedWorkerHost> host) =>

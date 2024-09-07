@@ -372,7 +372,7 @@ fyi_reclient_staging_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos", "reclient_staging", "checkout_lacros_sdk"],
+            apply_configs = ["chromeos", "reclient_staging"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -395,7 +395,7 @@ fyi_reclient_test_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos", "reclient_test", "checkout_lacros_sdk"],
+            apply_configs = ["chromeos", "reclient_test"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -416,7 +416,6 @@ fyi_reclient_test_builder(
             "amd64-generic-vm",
             "ozone_headless",
             "use_fake_dbus_clients",
-            "also_build_lacros_chrome_for_architecture_amd64",
             "x64",
         ],
     ),

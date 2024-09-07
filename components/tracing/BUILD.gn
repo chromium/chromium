@@ -78,6 +78,7 @@ component("background_tracing_utils") {
   deps = [
     "//base",
     "//content/public/browser",
+    "//third_party/snappy:snappy",
   ]
 }
 
@@ -99,12 +100,19 @@ source_set("unit_tests") {
     deps += [ ":graphics_provider" ]
   }
 
+  data_deps = [
+    "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
+  ]
+
+  data = [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor" ]
+
   if (is_win) {
     sources += [ "common/etw_system_data_source_win_unittest.cc" ]
   }
   deps += [
     ":background_tracing_utils",
     ":startup_tracing",
+    "//base/test:proto_test_support",
     "//components/metrics:metrics",
     "//components/prefs:test_support",
     "//content/public/browser",

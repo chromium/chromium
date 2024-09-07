@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -52,6 +52,14 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using lens::CameraOpenEntryPoint;
+
+namespace {
+
+// Lens results web page loading progress threshold to transition from LVF to
+// results page.
+static const double kLensWebPageTransitionLoadingProgressThreshold = 0.5;
+
+}  // namespace
 
 @interface LensCoordinator () <ChromeLensControllerDelegate,
                                LensCommands,
@@ -376,8 +384,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 
 - (void)webState:(web::WebState*)webState
     didChangeLoadingProgress:(double)progress {
-  if (base::FeatureList::IsEnabled(kLensWebPageEarlyTransitionEnabled) &&
-      progress >= LensWebPageEarlyTransitionLoadingProgressThreshold()) {
+  if (progress >= kLensWebPageTransitionLoadingProgressThreshold) {
     [self transitionToLensWebPageWithWebState:webState];
   }
 }

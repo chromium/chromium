@@ -1326,7 +1326,8 @@ IN_PROC_BROWSER_TEST_F(
   SimulateNetworkServiceCrash();
   active_web_contents()
       ->GetPrimaryMainFrame()
-      ->FlushNetworkAndNavigationInterfacesForTesting();
+      ->FlushNetworkAndNavigationInterfacesForTesting(
+          /*do_nothing_if_no_network_service_connection=*/false);
   {
     content::DOMMessageQueue message_queue(active_web_contents());
 

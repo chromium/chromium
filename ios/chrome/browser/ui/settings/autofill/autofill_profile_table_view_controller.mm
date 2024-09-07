@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -44,7 +44,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_source.h"
+#import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_record_type.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -250,14 +250,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.GUID = guid;
   item.showMigrateToAccountButton = NO;
   item.localProfileIconShown = NO;
-  if (autofillProfile.source() == autofill::AutofillProfile::Source::kAccount) {
-    item.autofillProfileSource =
-        AutofillAddressProfileSource::AutofillAccountProfile;
+  if (autofillProfile.IsAccountProfile()) {
+    item.autofillProfileRecordType =
+        AutofillAddressProfileRecordType::AutofillAccountProfile;
   } else if (self.syncEnabled) {
-    item.autofillProfileSource =
-        AutofillAddressProfileSource::AutofillSyncableProfile;
+    item.autofillProfileRecordType =
+        AutofillAddressProfileRecordType::AutofillSyncableProfile;
   } else {
-    item.autofillProfileSource = AutofillLocalProfile;
+    item.autofillProfileRecordType = AutofillLocalProfile;
     if ([self shouldShowCloudOffIconForProfile:autofillProfile]) {
       item.showMigrateToAccountButton = YES;
       item.image = CustomSymbolTemplateWithPointSize(
@@ -662,7 +662,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     AutofillProfileItem* item =
         base::apple::ObjCCastStrict<AutofillProfileItem>(
             [self.tableViewModel itemAtIndexPath:indexPath]);
-    switch (item.autofillProfileSource) {
+    switch (item.autofillProfileRecordType) {
       case AutofillAccountProfile:
         accountProfiles = YES;
         break;

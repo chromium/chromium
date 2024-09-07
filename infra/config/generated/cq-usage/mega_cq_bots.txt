@@ -1,5 +1,6 @@
 chromium/try/android-10-arm64-rel
 chromium/try/android-12-x64-rel
+chromium/try/android-12l-landscape-x64-dbg
 chromium/try/android-12l-x64-dbg
 chromium/try/android-13-x64-rel
 chromium/try/android-14-arm64-rel
@@ -41,6 +42,7 @@ chromium/try/chromeos-libfuzzer-asan-rel
 chromium/try/chromeos-octopus-rel
 chromium/try/dawn-android-arm-deps-rel
 chromium/try/dawn-android-arm64-deps-rel
+chromium/try/dawn-chromium-presubmit
 chromium/try/dawn-linux-x64-deps-rel
 chromium/try/dawn-mac-arm64-deps-rel
 chromium/try/dawn-mac-x64-deps-rel
@@ -77,6 +79,7 @@ chromium/try/ios-simulator
 chromium/try/ios-simulator-exp
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
+chromium/try/lacros-amd64-generic-rel
 chromium/try/lacros-arm-generic-rel
 chromium/try/layout_test_leak_detection
 chromium/try/linux-asan-dbg

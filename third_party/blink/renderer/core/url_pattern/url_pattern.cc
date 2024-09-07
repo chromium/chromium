@@ -84,8 +84,7 @@ bool IsProtocolDefaultPort(const String& protocol, const String& port) {
     return false;
 
   StringUTF8Adaptor protocol_utf8(protocol);
-  int default_port =
-      url::DefaultPortForScheme(protocol_utf8.data(), protocol_utf8.size());
+  int default_port = url::DefaultPortForScheme(protocol_utf8.AsStringView());
   return default_port != url::PORT_UNSPECIFIED && default_port == port_number;
 }
 
@@ -119,9 +118,6 @@ void ApplyInit(const URLPatternInit* init,
                String& search,
                String& hash,
                ExceptionState& exception_state) {
-  const bool more_wildcards =
-      RuntimeEnabledFeatures::URLPatternWildcardMoreOftenEnabled();
-
   // If there is a baseURL we need to apply its component values first.  The
   // rest of the URLPatternInit structure will then later override these
   // values.  Note, the baseURL will always set either an empty string or
@@ -137,13 +133,12 @@ void ApplyInit(const URLPatternInit* init,
       return;
     }
 
-    // With URLPatternWildcardMoreOften enabled, components are only inherited
-    // from the base URL if no "earlier" component is specified in |init|.
-    // Furthermore, when the base URL is being used as the basis of a pattern
-    // (not a URL being matched against), usernames and passwords are always
-    // wildcarded unless explicitly specified otherwise, because they usually do
-    // not affect which resource is requested (though they do often affect
-    // whether access is authorized).
+    // Components are only inherited from the base URL if no "earlier" component
+    // is specified in |init|.  Furthermore, when the base URL is being used as
+    // the basis of a pattern (not a URL being matched against), usernames and
+    // passwords are always wildcarded unless explicitly specified otherwise,
+    // because they usually do not affect which resource is requested (though
+    // they do often affect whether access is authorized).
     //
     // Even though they appear earlier than the hostname in a URL, the username
     // and password are treated as appearing after it because they typically
@@ -155,47 +150,42 @@ void ApplyInit(const URLPatternInit* init,
     //                                 +-> pathname --> search --> hash
     // protocol --> hostname --> port -|
     //                                 +-> username --> password
-    protocol = more_wildcards && init->hasProtocol() ? String()
+    protocol = init->hasProtocol() ? String()
                : base_url.Protocol()
                    ? EscapeBaseURLString(base_url.Protocol(), type)
                    : g_empty_string;
-    username = more_wildcards && (type == ValueType::kPattern ||
-                                  (init->hasProtocol() || init->hasHostname() ||
-                                   init->hasPort() || init->hasUsername()))
+    username = (type == ValueType::kPattern ||
+                (init->hasProtocol() || init->hasHostname() ||
+                 init->hasPort() || init->hasUsername()))
                    ? String()
                : base_url.User() ? EscapeBaseURLString(base_url.User(), type)
                                  : g_empty_string;
-    password = more_wildcards && (type == ValueType::kPattern ||
-                                  (init->hasProtocol() || init->hasHostname() ||
-                                   init->hasPort() || init->hasUsername() ||
-                                   init->hasPassword()))
+    password = (type == ValueType::kPattern ||
+                (init->hasProtocol() || init->hasHostname() ||
+                 init->hasPort() || init->hasUsername() || init->hasPassword()))
                    ? String()
                : base_url.Pass() ? EscapeBaseURLString(base_url.Pass(), type)
                                  : g_empty_string;
-    hostname = more_wildcards && (init->hasProtocol() || init->hasHostname())
-                   ? String()
+    hostname = (init->hasProtocol() || init->hasHostname()) ? String()
                : base_url.Host() ? EscapeBaseURLString(base_url.Host(), type)
                                  : g_empty_string;
-    port = more_wildcards && (init->hasProtocol() || init->hasHostname() ||
-                              init->hasPort())
+    port = (init->hasProtocol() || init->hasHostname() || init->hasPort())
                ? String()
            : base_url.Port() > 0 ? String::Number(base_url.Port())
                                  : g_empty_string;
-    pathname = more_wildcards && (init->hasProtocol() || init->hasHostname() ||
-                                  init->hasPort() || init->hasPathname())
+    pathname = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
+                init->hasPathname())
                    ? String()
                : base_url.GetPath()
                    ? EscapeBaseURLString(base_url.GetPath(), type)
                    : g_empty_string;
-    search = more_wildcards && (init->hasProtocol() || init->hasHostname() ||
-                                init->hasPort() || init->hasPathname() ||
-                                init->hasSearch())
+    search = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
+              init->hasPathname() || init->hasSearch())
                  ? String()
              : base_url.Query() ? EscapeBaseURLString(base_url.Query(), type)
                                 : g_empty_string;
-    hash = more_wildcards && (init->hasProtocol() || init->hasHostname() ||
-                              init->hasPort() || init->hasPathname() ||
-                              init->hasSearch() || init->hasHash())
+    hash = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
+            init->hasPathname() || init->hasSearch() || init->hasHash())
                ? String()
            : base_url.HasFragmentIdentifier()
                ? EscapeBaseURLString(base_url.FragmentIdentifier(), type)
@@ -428,10 +418,7 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   const auto& input_string = input->GetAsUSVString();
   const StringUTF8Adaptor utf8_string(input_string);
   liburlpattern::ConstructorStringParser constructor_string_parser(
-      utf8_string.AsStringView(),
-      liburlpattern::ConstructorStringParser::StringParserOptions{
-          .more_wildcards =
-              RuntimeEnabledFeatures::URLPatternWildcardMoreOftenEnabled()});
+      utf8_string.AsStringView());
 
   Component* protocol_component = nullptr;
   absl::Status status = constructor_string_parser.Parse(
@@ -977,47 +964,16 @@ bool URLPattern::Match(ScriptState* script_state,
   CHECK(search_);
   CHECK(hash_);
 
-  // This simply wraps the Match() function so that we can compare its result to
-  // what the result would have been with a couple proposed behavior changes.
-  bool affected_by_string_format_change = false;
-  bool affected_by_base_url_change = false;
-  auto match = [&](url_pattern::Component* component, WTF::StringView input,
-                   Vector<std::pair<String, String>>* group_list_ref) {
-    const bool matches = component->Match(input, group_list_ref);
-    if (!matches &&
-        wildcard_with_string_format_change_.Has(component->type())) {
-      affected_by_string_format_change = true;
-    }
-    if (!matches && wildcard_with_base_url_change_.Has(component->type())) {
-      affected_by_base_url_change = true;
-    }
-    return matches;
-  };
-
   // Each component of the pattern must match the corresponding component of
   // the input.
-  bool matched = match(protocol_, protocol, protocol_group_list_ref) &&
-                 match(username_, username, username_group_list_ref) &&
-                 match(password_, password, password_group_list_ref) &&
-                 match(hostname_, hostname, hostname_group_list_ref) &&
-                 match(port_, port, port_group_list_ref) &&
-                 match(pathname_, pathname, pathname_group_list_ref) &&
-                 match(search_, search, search_group_list_ref) &&
-                 match(hash_, hash, hash_group_list_ref);
-
-  if (!RuntimeEnabledFeatures::URLPatternWildcardMoreOftenEnabled() &&
-      script_state) {
-    if (affected_by_string_format_change) {
-      UseCounter::Count(
-          ExecutionContext::From(script_state),
-          WebFeature::kURLPatternReliantOnImplicitURLComponentsInString);
-    }
-    if (affected_by_base_url_change) {
-      UseCounter::Count(
-          ExecutionContext::From(script_state),
-          WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL);
-    }
-  }
+  bool matched = protocol_->Match(protocol, protocol_group_list_ref) &&
+                 username_->Match(username, username_group_list_ref) &&
+                 password_->Match(password, password_group_list_ref) &&
+                 hostname_->Match(hostname, hostname_group_list_ref) &&
+                 port_->Match(port, port_group_list_ref) &&
+                 pathname_->Match(pathname, pathname_group_list_ref) &&
+                 search_->Match(search, search_group_list_ref) &&
+                 hash_->Match(hash, hash_group_list_ref);
 
   if (!matched || !result)
     return matched;

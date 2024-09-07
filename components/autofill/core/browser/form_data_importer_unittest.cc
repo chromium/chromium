@@ -11,8 +11,8 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <string>
-#include <strstream>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -29,6 +29,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
@@ -47,13 +48,13 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -66,12 +67,12 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 
 namespace autofill {
-
 namespace {
 
 using base::UTF8ToUTF16;
@@ -467,8 +468,6 @@ auto UnorderedElementsCompareEqual(Matchers... matchers) {
       ::testing::Pointee(ComparesEqual(std::move(matchers)))...);
 }
 
-}  // anonymous namespace
-
 class MockVirtualCardEnrollmentManager
     : public TestVirtualCardEnrollmentManager {
  public:
@@ -522,25 +521,16 @@ class FormDataImporterTest : public testing::Test {
  public:
   FormDataImporterTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseAUAddressModel,
-         features::kAutofillUseBRAddressModel,
+        {features::kAutofillUseAUAddressModel,
          features::kAutofillUseCAAddressModel,
          features::kAutofillUseDEAddressModel,
          features::kAutofillUseFRAddressModel,
          features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableDependentLocalityParsing,
-         features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2,
-         features::kAutofillEnableSupportForAddressOverflow,
-         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-         features::kAutofillEnableParsingOfStreetLocation},
+         features::kAutofillUseITAddressModel},
         {});
+
+    // Advance the clock to year 20XX.
+    task_environment_.FastForwardBy(base::Days(365) * 31);
   }
 
   void SetUp() override {
@@ -549,8 +539,6 @@ class FormDataImporterTest : public testing::Test {
     autofill_client_ = std::make_unique<TestAutofillClient>();
     autofill_client_->set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
-
-    test::DisableSystemServices(prefs_.get());
 
     personal_data_manager_ = autofill_client_->GetPersonalDataManager();
     test_api(personal_data_manager_->address_data_manager())
@@ -762,7 +750,8 @@ class FormDataImporterTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<PrefService> prefs_;
   syncer::TestSyncService sync_service_;
@@ -1710,11 +1699,8 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
 // Tests that an address can be imported from an Indian address form without
 // synthesized field types.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillUseINAddressModel,
-       features::kAutofillEnableDependentLocalityParsing},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillUseINAddressModel};
   // The address does not contain synthesized types.
   TypeValuePairs type_value_pairs = {
       {NAME_FULL, "INFirst INSecond"},
@@ -1763,10 +1749,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
 // likely look incomplete when shown to the user.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_ContainsSynthesizedTypes) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillUseINAddressModel,
-       features::kAutofillEnableDependentLocalityParsing},
-      {});
+  feature_list.InitWithFeatures({features::kAutofillUseINAddressModel}, {});
   // The address contains synthesized types which are not supported during
   // form import.
   ASSERT_TRUE(i18n_model_definition::IsSynthesizedType(
@@ -2786,7 +2769,8 @@ TEST_F(FormDataImporterTest,
   // from the form.
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       ShouldOfferOptin)
       .Times(0);
 
@@ -3206,10 +3190,10 @@ TEST_F(FormDataImporterTest, DuplicateMaskedServerCard) {
   server_card1.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card1);
-  CreditCard server_card2(CreditCard::RecordType::kFullServerCard, "c789");
+  CreditCard server_card2(CreditCard::RecordType::kMaskedServerCard, "c789");
   test::SetCreditCardInfo(&server_card2, "Clyde Barrow",
-                          "378282246310005" /* American Express */, "04",
-                          "2999", "");
+                          "0005" /* American Express */, "04", "2999", "");
+  server_card2.SetNetworkForMaskedCard(kAmericanExpressCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card2);
   EXPECT_EQ(
@@ -3281,9 +3265,10 @@ TEST_F(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
 // server card and user submitted an invalid expiration date month.
 TEST_F(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationMonth) {
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Clyde Barrow",
-                          "4444333322221111" /* Visa */, "04", "2111", "1");
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "c789");
+  test::SetCreditCardInfo(&server_card, "Clyde Barrow", "1111" /* Visa */, "04",
+                          "2111", "1");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card);
   EXPECT_EQ(
@@ -3317,9 +3302,10 @@ TEST_F(FormDataImporterTest,
 // server card and user submitted an invalid expiration date year.
 TEST_F(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationYear) {
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Clyde Barrow",
-                          "4444333322221111" /* Visa */, "04", "2111", "1");
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "c789");
+  test::SetCreditCardInfo(&server_card, "Clyde Barrow", "1111" /* Visa */, "04",
+                          "2111", "1");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card);
   EXPECT_EQ(
@@ -3354,9 +3340,10 @@ TEST_F(FormDataImporterTest,
 TEST_F(
     FormDataImporterTest,
     Metrics_SubmittedDifferentServerCardExpirationStatus_EmptyExpirationYear) {
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Clyde Barrow",
-                          "4111111111111111" /* Visa */, "04", "2111", "1");
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "c789");
+  test::SetCreditCardInfo(&server_card, "Clyde Barrow", "1881" /* Visa */, "04",
+                          "2111", "1");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       server_card);
   EXPECT_EQ(
@@ -3737,13 +3724,11 @@ TEST_F(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
 
 // Tests that multi-step candidates profiles are invalidated after some TTL.
 TEST_F(FormDataImporterTest, MultiStepImport_TTL) {
-  TestAutofillClock test_clock;
-
   std::unique_ptr<FormStructure> form_structure =
       ConstructSplitDefaultProfileFormStructure(/*part=*/1);
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
 
-  test_clock.Advance(kMultiStepImportTTL + base::Minutes(1));
+  task_environment_.FastForwardBy(kMultiStepImportTTL + base::Minutes(1));
 
   form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
@@ -3770,10 +3755,6 @@ TEST_F(FormDataImporterTest, MultiStepImport_DeleteOnBrowsingHistoryCleared) {
 // that multiple address form in the same form are associated with each other.
 // The functionality itself is tested in form_data_importer_utils_unittest.cc.
 TEST_F(FormDataImporterTest, FormAssociator) {
-  base::test::ScopedFeatureList form_association_feature;
-  form_association_feature.InitAndEnableFeature(
-      features::kAutofillAssociateForms);
-
   std::unique_ptr<FormStructure> form_structure =
       ConstructShippingAndBillingFormStructure();
   FormSignature form_signature = form_structure->form_signature();
@@ -3984,13 +3965,15 @@ TEST_F(FormDataImporterTest,
 
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       ShouldOfferOptin)
       .Times(1)
       .WillOnce(testing::Return(false));
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       StartOptInFlow)
       .Times(0);
 
@@ -4015,12 +3998,14 @@ TEST_F(FormDataImporterTest,
 
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       ShouldOfferOptin)
       .Times(0);
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       StartOptInFlow)
       .Times(0);
 
@@ -4046,13 +4031,15 @@ TEST_F(FormDataImporterTest,
 
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       ShouldOfferOptin)
       .Times(1)
       .WillOnce(testing::Return(true));
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       StartOptInFlow)
       .Times(1);
 
@@ -4078,10 +4065,12 @@ TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthOffered) {
       .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
           NonInteractivePaymentMethodType::kLocalIban);
 
-  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+  EXPECT_CALL(*autofill_client_->GetPaymentsAutofillClient()
+                   ->GetOrCreatePaymentsMandatoryReauthManager(),
               ShouldOfferOptin)
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+  EXPECT_CALL(*autofill_client_->GetPaymentsAutofillClient()
+                   ->GetOrCreatePaymentsMandatoryReauthManager(),
               StartOptInFlow);
 
   EXPECT_TRUE(ExtractFormDataAndProcessIbanCandidates(
@@ -4102,10 +4091,12 @@ TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthNotOffered) {
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
 
-  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+  EXPECT_CALL(*autofill_client_->GetPaymentsAutofillClient()
+                   ->GetOrCreatePaymentsMandatoryReauthManager(),
               ShouldOfferOptin)
       .WillOnce(testing::Return(false));
-  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+  EXPECT_CALL(*autofill_client_->GetPaymentsAutofillClient()
+                   ->GetOrCreatePaymentsMandatoryReauthManager(),
               StartOptInFlow)
       .Times(0);
 
@@ -4177,6 +4168,32 @@ TEST_F(FormDataImporterTest,
                              .GetObservedFieldValues(
                                  std::to_array<const AutofillField*>({&field}));
   EXPECT_TRUE(observed_field_types.empty());
+}
+
+// Test the behavior of Autofill importing from fields with
+// autocomplete=unrecognized.
+TEST_F(FormDataImporterTest,
+       GetObservedFieldValues_ImportFromAutocompleteUnrecognized) {
+  AutofillField field;
+  field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
+  field.SetTypeTo(AutofillType(NAME_FIRST));
+  field.set_value(u"First");
+  {
+    base::flat_map<FieldType, std::u16string> observed_field_types =
+        test_api(form_data_importer())
+            .GetObservedFieldValues(
+                std::to_array<const AutofillField*>({&field}));
+    EXPECT_TRUE(observed_field_types.empty());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list{
+        features::kAutofillImportFromAutocompleteUnrecognized};
+    base::flat_map<FieldType, std::u16string> observed_field_types =
+        test_api(form_data_importer())
+            .GetObservedFieldValues(
+                std::to_array<const AutofillField*>({&field}));
+    EXPECT_EQ(observed_field_types.size(), 1u);
+  }
 }
 
 // Test case for credit card extraction.
@@ -4290,4 +4307,5 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, PartialFirstLastNames) {
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
 }
 
+}  // namespace
 }  // namespace autofill

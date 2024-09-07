@@ -44,10 +44,7 @@ cast_source_set("processing") {
   # Use fastest possible float math.
   configs -= [ "//build/config/compiler:default_optimization" ]
   configs += [ "//build/config/compiler:optimize_speed" ]
-  cflags = [
-    "-ffast-math",
-    "-Wno-nan-infinity-disabled",
-  ]
+  cflags = [ "-Wno-nan-infinity-disabled" ]
 }
 
 cast_source_set("playback_rate_shifter") {

@@ -13,6 +13,12 @@ namespace visited_url_ranking::features {
 // Core feature flag for Visited URL Ranking service.
 BASE_DECLARE_FEATURE(kVisitedURLRankingService);
 
+// Parameter determining if the History data fetcher should discard zero ms
+// duration visits when computing computing history based URL visit
+// aggregate data.
+extern const base::FeatureParam<bool>
+    kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits;
+
 // Parameter determining the fetch option's default query duration in hours.
 extern const char kVisitedURLRankingFetchDurationInHoursParam[];
 
@@ -65,6 +71,23 @@ extern const base::FeatureParam<bool>
 // "www.google.com" would become "google.com" if "www." is excluded.
 extern const base::FeatureParam<std::string>
     kVisitedURLRankingDeduplicationExcludedPrefixes;
+
+// Feature flag for enabling URL visit resumption decorators.
+BASE_DECLARE_FEATURE(kVisitedURLRankingDecorations);
+
+// Parameter determining what the minimum visits for a time of day should be
+// used when computing decorators.
+extern const base::FeatureParam<int> kVisitedURLRankingDecorationTimeOfDay;
+
+// Parameter determining what the minimum visits overall should be
+// used when computing decorators.
+extern const base::FeatureParam<int>
+    kVisitedURLRankingFrequentlyVisitedThreshold;
+
+// Parameter determining what the maximum relative time (in minutes)
+// to display the decoration string "You just visited".
+extern const base::FeatureParam<int>
+    kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold;
 
 }  // namespace visited_url_ranking::features
 

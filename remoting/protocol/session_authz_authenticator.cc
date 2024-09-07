@@ -122,6 +122,12 @@ const std::string& SessionAuthzAuthenticator::GetAuthKey() const {
   return underlying_->GetAuthKey();
 }
 
+const SessionPolicies* SessionAuthzAuthenticator::GetSessionPolicies() const {
+  DCHECK_EQ(state(), ACCEPTED);
+
+  return session_policies_.has_value() ? &session_policies_.value() : nullptr;
+}
+
 std::unique_ptr<ChannelAuthenticator>
 SessionAuthzAuthenticator::CreateChannelAuthenticator() const {
   DCHECK_EQ(state(), ACCEPTED);
@@ -213,6 +219,7 @@ void SessionAuthzAuthenticator::OnVerifiedSessionToken(
   // The other side already started the SPAKE authentication.
   underlying_ = create_base_authenticator_callback_.Run(response->shared_secret,
                                                         WAITING_MESSAGE);
+  session_policies_ = std::move(response->session_policies);
   verify_token_response_ = std::move(response);
   underlying_->ProcessMessage(&message, std::move(resume_callback));
   StartReauthorizerIfNecessary();

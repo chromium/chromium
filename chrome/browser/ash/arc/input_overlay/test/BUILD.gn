@@ -24,7 +24,10 @@ static_library("test_support") {
     "view_test_base.h",
   ]
 
-  public_deps = [ "//chrome/browser/ash/app_list/arc:test_support" ]
+  public_deps = [
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/arc/input_overlay/db/proto",
+  ]
 
   deps = [
     "//ash",
@@ -36,6 +39,7 @@ static_library("test_support") {
     "//chrome/browser/ash/arc/input_overlay/actions",
     "//chrome/browser/ash/arc/input_overlay/ui",
     "//chrome/test:test_support",
+    "//chromeos/strings:strings_grit",
     "//components/exo:test_support",
     "//content/test:test_support",
     "//ui/aura",

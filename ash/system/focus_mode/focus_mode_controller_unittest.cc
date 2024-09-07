@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -277,12 +278,75 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
   AddFakeTaskList(tasks_client2, "task_list_id_2");
   AddFakeTask(tasks_client2, "task_list_id_2", "task_id_2", "User2 Task");
   SwitchActiveUser(GetUser2AccountId());
+  // Wait for the `UpdateFromUserPrefs()` PostTask to finish.
+  task_environment()->RunUntilIdle();
   EXPECT_EQ(kUser2SessionDuration, controller->GetSessionDuration());
   EXPECT_EQ(kUser2DNDState, controller->turn_on_do_not_disturb());
   EXPECT_EQ(task_list_id_2,
             controller->tasks_model().selected_task()->task_id.list_id);
   EXPECT_EQ(task_id_2, controller->tasks_model().selected_task()->task_id.id);
   EXPECT_EQ(kUser2SoundType, sounds_controller->sound_type());
+}
+
+// Tests that switching users will first clear all cached tasks data, then load
+// new user prefs and update the tasks caches.
+TEST_F(FocusModeControllerMultiUserTest, SwitchingUsersClearsTasksCache) {
+  // Setup for user1.
+  auto& tasks_client1 = CreateFakeTasksClient(GetUser1AccountId());
+  base::Value::Dict user1_task_dict;
+  const std::string task_list_id_1 = "task_list_id_1";
+  const std::string task_id_1 = "task_id_1";
+  user1_task_dict.Set(focus_mode_util::kTaskListIdKey, task_list_id_1);
+  user1_task_dict.Set(focus_mode_util::kTaskIdKey, task_id_1);
+  // Set the primary user1's Focus Mode selected task pref.
+  user_1_prefs()->SetDict(prefs::kFocusModeSelectedTask,
+                          user1_task_dict.Clone());
+  AddFakeTaskList(tasks_client1, task_list_id_1);
+  AddFakeTask(tasks_client1, task_list_id_1, task_id_1, "User1 Task");
+
+  // Login as the primary user1.
+  SimulateUserLogin(GetUser1AccountId());
+
+  // Wait for `UpdateFromUserPrefs()` to finish before requesting to update the
+  // provider cache.
+  task_environment()->RunUntilIdle();
+  auto* controller = FocusModeController::Get();
+  EXPECT_TRUE(controller->HasSelectedTask());
+  EXPECT_EQ(task_list_id_1,
+            controller->tasks_model().selected_task()->task_id.list_id);
+  EXPECT_EQ(task_id_1, controller->tasks_model().selected_task()->task_id.id);
+  EXPECT_FALSE(controller->tasks_model().tasks().empty());
+  controller->RequestTasksUpdateForTesting();
+  EXPECT_TRUE(controller->TasksProviderHasCachedTasksForTesting());
+
+  // Setup for user2.
+  auto& tasks_client2 = CreateFakeTasksClient(GetUser2AccountId());
+  base::Value::Dict user2_task_dict;
+  const std::string task_list_id_2 = "task_list_id_2";
+  const std::string task_id_2 = "task_id_2";
+  user2_task_dict.Set(focus_mode_util::kTaskListIdKey, task_list_id_2);
+  user2_task_dict.Set(focus_mode_util::kTaskIdKey, task_id_2);
+  // Set the secondary user2's Focus Mode selected task pref.
+  user_2_prefs()->SetDict(prefs::kFocusModeSelectedTask,
+                          user2_task_dict.Clone());
+  AddFakeTaskList(tasks_client2, task_list_id_2);
+  AddFakeTask(tasks_client2, task_list_id_2, task_id_2, "User2 Task");
+
+  // Switch users and verify that all the tasks caches are cleared.
+  SwitchActiveUser(GetUser2AccountId());
+  EXPECT_TRUE(controller->tasks_model().tasks().empty());
+  EXPECT_FALSE(controller->tasks_model().selected_task());
+  EXPECT_FALSE(controller->TasksProviderHasCachedTasksForTesting());
+
+  // Wait for `UpdateFromUserPrefs()` to finish before requesting to update the
+  // provider cache.
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(task_list_id_2,
+            controller->tasks_model().selected_task()->task_id.list_id);
+  EXPECT_EQ(task_id_2, controller->tasks_model().selected_task()->task_id.id);
+  EXPECT_FALSE(controller->tasks_model().tasks().empty());
+  controller->RequestTasksUpdateForTesting();
+  EXPECT_TRUE(controller->TasksProviderHasCachedTasksForTesting());
 }
 
 // Tests that when the user selects a different type of playlist, the user pref
@@ -369,6 +433,7 @@ TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
   const std::string title = "Focus Task";
 
   auto& tasks_client = CreateFakeTasksClient(GetUser1AccountId());
+  tasks_client.set_http_error(google_apis::ApiErrorCode::HTTP_SUCCESS);
   AddFakeTaskList(tasks_client, task_list_id);
   AddFakeTask(tasks_client, task_list_id, task_id, title);
 
@@ -830,6 +895,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksCompletedHistogram) {
   // 1. Select a new task before a session starts, which will not be recorded
   // into the histogram.
   auto& tasks_client = CreateFakeTasksClient(GetUser1AccountId());
+  tasks_client.set_http_error(google_apis::ApiErrorCode::HTTP_SUCCESS);
 
   FocusModeTask task;
   task.task_id = {.list_id = "list0", .id = "task0"};

@@ -31,6 +31,28 @@ static_library("audio") {
   ]
 }
 
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "volume_controller_browsertest.cc" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/audio",
+    "//content/test:test_support",
+    "//services/audio/public/cpp",
+    "//ui/base",
+    "//ui/events:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

@@ -47,6 +47,20 @@ void ParseSupportedFormatsAndModifiers(
     supported_format_modifiers->push_back(modifiers[k]);
 }
 
+std::vector<gfx::Size> ParseSupportedCursorSizes(drmModePropertyBlobPtr blob) {
+  auto* data = static_cast<const uint8_t*>(blob->data);
+  auto* size_hints_ptr = reinterpret_cast<const drm_plane_size_hint*>(data);
+
+  int num_of_size_hints = blob->length / sizeof(drm_plane_size_hint);
+
+  std::vector<gfx::Size> supported_cursor_sizes;
+  for (int i = 0; i < num_of_size_hints; i++) {
+    supported_cursor_sizes.push_back(
+        gfx::Size(size_hints_ptr[i].width, size_hints_ptr[i].height));
+  }
+  return supported_cursor_sizes;
+}
+
 std::string IdSetToString(const base::flat_set<uint32_t>& ids) {
   std::vector<std::string> string_ids;
   for (auto id : ids)
@@ -126,11 +140,21 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
         *drm, properties_.plane_color_range.id, "YCbCr limited range");
   }
 
+  // The SIZE_HINTS is only meaningful for cursor planes.
+  if (type_ == DRM_PLANE_TYPE_CURSOR && properties_.size_hints.id) {
+    ScopedDrmPropertyBlobPtr size_hints_blob(
+        drm->GetPropertyBlob(properties_.size_hints.value));
+    if (size_hints_blob) {
+      supported_cursor_sizes_ =
+          ParseSupportedCursorSizes(size_hints_blob.get());
+    }
+  }
+
   VLOG(3) << "Initialized plane=" << id_
           << " possible_crtc_ids=" << IdSetToString(possible_crtc_ids_)
           << " supported_formats_count=" << supported_formats_.size()
-          << " supported_modifiers_count="
-          << supported_format_modifiers_.size();
+          << " supported_modifiers_count=" << supported_format_modifiers_.size()
+          << " supported_cursor_sizes_count=" << supported_cursor_sizes_.size();
   return true;
 }
 
@@ -154,6 +178,11 @@ bool HardwareDisplayPlane::IsSupportedFormat(uint32_t format) {
 
 const std::vector<uint32_t>& HardwareDisplayPlane::supported_formats() const {
   return supported_formats_;
+}
+
+const std::vector<gfx::Size>& HardwareDisplayPlane::supported_cursor_sizes()
+    const {
+  return supported_cursor_sizes_;
 }
 
 std::vector<uint64_t> HardwareDisplayPlane::ModifiersForFormat(
@@ -208,6 +237,8 @@ void HardwareDisplayPlane::InitializeProperties(DrmDevice* drm) {
     GetDrmPropertyForName(drm, props.get(), "FB_DAMAGE_CLIPS",
                           &properties_.plane_fb_damage_clips);
   }
+  GetDrmPropertyForName(drm, props.get(), "SIZE_HINTS",
+                        &properties_.size_hints);
 }
 
 }  // namespace ui

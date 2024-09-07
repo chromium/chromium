@@ -11,6 +11,7 @@ enum LayerType {
   kTexture,
   kSurface,
   kPicture,
+  kTileDisplay,
   kMirror,
   kHeadsUpDisplay,
   kUIResource,

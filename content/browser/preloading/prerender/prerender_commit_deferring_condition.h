@@ -31,13 +31,14 @@ class PrerenderCommitDeferringCondition : public CommitDeferringCondition,
   static std::unique_ptr<CommitDeferringCondition> MaybeCreate(
       NavigationRequest& navigation_request,
       NavigationType navigation_type,
-      std::optional<int> candidate_prerender_frame_tree_node_id);
+      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
 
   Result WillCommitNavigation(base::OnceClosure resume) override;
 
  private:
-  PrerenderCommitDeferringCondition(NavigationRequest& navigation_request,
-                                    int candidate_prerender_frame_tree_node_id);
+  PrerenderCommitDeferringCondition(
+      NavigationRequest& navigation_request,
+      FrameTreeNodeId candidate_prerender_frame_tree_node_id);
 
   // WebContentsObserver
   // Tracks the ongoing navigation commit in prerender frame tree to resume the
@@ -48,7 +49,7 @@ class PrerenderCommitDeferringCondition : public CommitDeferringCondition,
   // will attempt to activate. See comments on
   // `CommitDeferringConditionRunner::candidate_prerender_frame_tree_node_id_`
   // for details.
-  const int candidate_prerender_frame_tree_node_id_;
+  const FrameTreeNodeId candidate_prerender_frame_tree_node_id_;
 
   // The time PrerenderCommitDeferringCondition started deferring the
   // navigation.

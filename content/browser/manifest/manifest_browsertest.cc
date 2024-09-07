@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
   GURL prerender_url =
       embedded_test_server()->GetURL("/manifest/sample-manifest.html");
   // Loads a page in the prerender.
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
   {

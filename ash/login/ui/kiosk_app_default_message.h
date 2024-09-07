@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/shelf/shelf_background_animator.h"
-#include "ash/shelf/shelf_background_animator_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -23,9 +22,7 @@ namespace ash {
 // The implementation of kiosk app default message for the shelf.
 // KioskAppDefaultMessage is owned by itself and would be destroyed when its
 // widget got destroyed, which happened when the widget's window got destroyed.
-class ASH_EXPORT KioskAppDefaultMessage
-    : public LoginBaseBubbleView,
-      public ShelfBackgroundAnimatorObserver {
+class ASH_EXPORT KioskAppDefaultMessage : public LoginBaseBubbleView {
   METADATA_HEADER(KioskAppDefaultMessage, LoginBaseBubbleView)
 
  public:
@@ -45,11 +42,6 @@ class ASH_EXPORT KioskAppDefaultMessage
  private:
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
-
-  ShelfBackgroundAnimator background_animator_;
-  base::ScopedObservation<ShelfBackgroundAnimator,
-                          ShelfBackgroundAnimatorObserver>
-      background_animator_observation_{this};
 };
 
 }  // namespace ash

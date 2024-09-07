@@ -242,12 +242,10 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   manager_->client().HideAutofillSuggestions(
       SuggestionHidingReason::kOverlappingWithTouchToFillSurface);
   if (absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest)) {
-    manager_->DidShowSuggestions(
-        std::vector<SuggestionType>({SuggestionType::kCreditCardEntry}), form,
-        field);
+    manager_->DidShowSuggestions({SuggestionType::kCreditCardEntry}, form,
+                                 field);
   } else {
-    manager_->DidShowSuggestions(
-        std::vector<SuggestionType>({SuggestionType::kIbanEntry}), form, field);
+    manager_->DidShowSuggestions({SuggestionType::kIbanEntry}, form, field);
   }
   return true;
 }
@@ -385,26 +383,26 @@ void TouchToFillDelegateAndroidImpl::LogMetricsAfterSubmission(
 
 bool TouchToFillDelegateAndroidImpl::HasAnyAutofilledFields(
     const FormStructure& submitted_form) const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       submitted_form, [](const auto& field) { return field->is_autofilled(); });
 }
 
 bool TouchToFillDelegateAndroidImpl::IsFillingPerfect(
     const FormStructure& submitted_form) const {
-  return base::ranges::all_of(submitted_form, [](const auto& field) {
+  return std::ranges::all_of(submitted_form, [](const auto& field) {
     return field->value().empty() || field->is_autofilled();
   });
 }
 
 bool TouchToFillDelegateAndroidImpl::IsFillingCorrect(
     const FormStructure& submitted_form) const {
-  return !base::ranges::any_of(submitted_form, [](const auto& field) {
+  return !std::ranges::any_of(submitted_form, [](const auto& field) {
     return field->previously_autofilled();
   });
 }
 
 bool TouchToFillDelegateAndroidImpl::IsFormPrefilled(const FormData& form) {
-  return base::ranges::any_of(form.fields(), [&](const FormFieldData& field) {
+  return std::ranges::any_of(form.fields(), [&](const FormFieldData& field) {
     AutofillField* autofill_field = manager_->GetAutofillField(form, field);
     if (autofill_field && autofill_field->Type().GetStorableType() !=
                               FieldType::CREDIT_CARD_NUMBER) {

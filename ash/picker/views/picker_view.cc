@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/ash_features.h"
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
@@ -69,8 +70,8 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -284,12 +285,10 @@ PickerView::PickerView(PickerViewDelegate* delegate,
         layout_type));
   }
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCollapseMargins(true)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::VH(kVerticalPaddingBetweenPickerContainers, 0));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::LayoutOrientation::kVertical,
+      /*inside_border_insets=*/gfx::Insets(),
+      /*between_child_spacing=*/kVerticalPaddingBetweenPickerContainers));
 
   AddMainContainerView(layout_type);
   if (base::Contains(delegate_->GetAvailableCategories(),
@@ -406,15 +405,14 @@ void PickerView::SetCapsLockDisplayed(bool displayed) {
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
-  if (const PickerSearchResult::CategoryData* category_data =
-          std::get_if<PickerSearchResult::CategoryData>(&result.data())) {
+  if (const PickerCategoryResult* category_data =
+          std::get_if<PickerCategoryResult>(&result)) {
     SelectCategory(category_data->category);
-  } else if (const PickerSearchResult::SearchRequestData* search_request_data =
-                 std::get_if<PickerSearchResult::SearchRequestData>(
-                     &result.data())) {
+  } else if (const PickerSearchRequestResult* search_request_data =
+                 std::get_if<PickerSearchRequestResult>(&result)) {
     UpdateSearchQueryAndActivePage(search_request_data->primary_text);
-  } else if (const PickerSearchResult::EditorData* editor_data =
-                 std::get_if<PickerSearchResult::EditorData>(&result.data())) {
+  } else if (const PickerEditorResult* editor_data =
+                 std::get_if<PickerEditorResult>(&result)) {
     delegate_->ShowEditor(
         editor_data->preset_query_id,
         base::UTF16ToUTF8(search_field_view_->GetQueryText()));
@@ -638,7 +636,7 @@ void PickerView::UpdateActivePage() {
   ResetEmojiBarToZeroState();
 }
 
-void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
+void PickerView::PublishEmojiResults(std::vector<PickerEmojiResult> results) {
   if (emoji_bar_view_ == nullptr) {
     return;
   }
@@ -792,6 +790,10 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
           this, kPickerViewWidth, delegate_->GetAssetFetcher(),
           &submenu_controller_, &preview_controller_));
+  if (base::FeatureList::IsEnabled(ash::features::kPickerGrid)) {
+    category_results_view_->SetLocalFileResultStyle(
+        PickerSearchResultsView::LocalFileResultStyle::kGrid);
+  }
   search_results_view_ =
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
           this, kPickerViewWidth, delegate_->GetAssetFetcher(),

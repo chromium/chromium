@@ -132,6 +132,10 @@ class PermissionsManager : public KeyedService {
     virtual void OnSiteAccessRequestAdded(const ExtensionId& extension_id,
                                           int tab_id) {}
 
+    // Called when `extension_id` updated a site access request for `tab_id`.
+    virtual void OnSiteAccessRequestUpdated(const ExtensionId& extension_id,
+                                            int tab_id) {}
+
     // Called when `extension_id` removed a site access request for `tab_id`.
     virtual void OnSiteAccessRequestRemoved(const ExtensionId& extension_id,
                                             int tab_id) {}
@@ -247,16 +251,18 @@ class PermissionsManager : public KeyedService {
   bool HasActiveTabAndCanAccess(const Extension& extension,
                                 const GURL& url) const;
 
-  // Returns the effective list of runtime-granted permissions for a given
-  // `extension` from its prefs. ExtensionPrefs doesn't store the valid schemes
-  // for URLPatterns, which results in the chrome:-scheme being included for
-  // <all_urls> when retrieving it directly from the prefs; this then causes
-  // CHECKs to fail when validating that permissions being revoked are present
-  // (see https://crbug.com/930062).
-  // Returns null if there are no stored runtime-granted permissions.
+  // Returns the effective list of runtime-granted/desired-active permissions
+  // for a given `extension` from its prefs. ExtensionPrefs doesn't store the
+  // valid schemes for URLPatterns, which results in the chrome:-scheme being
+  // included for <all_urls> when retrieving it directly from the prefs; this
+  // then causes CHECKs to fail when validating that permissions being revoked
+  // are present (see https://crbug.com/930062). Returns null if there are no
+  // stored runtime-granted/desired-active permissions.
   // TODO(crbug.com/41441259): ExtensionPrefs should return
   // properly-bounded permissions.
   std::unique_ptr<PermissionSet> GetRuntimePermissionsFromPrefs(
+      const Extension& extension) const;
+  std::unique_ptr<PermissionSet> GetDesiredActivePermissionsFromPrefs(
       const Extension& extension) const;
 
   // Returns the set of permissions that the `extension` wants to have active at
@@ -283,15 +289,21 @@ class PermissionsManager : public KeyedService {
   std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
       const Extension& extension) const;
 
-  // Adds site access request for `extension` in `web_contents` with
-  // `tab_id`. Extension must have site access withheld for request to be added.
-  void AddSiteAccessRequest(content::WebContents* web_contents,
-                            int tab_id,
-                            const Extension& extension);
+  // Adds site access request with an optional `filter` for `extension` in
+  // `web_contents` with `tab_id`. Extension must have site access withheld for
+  // request to be added.
+  void AddSiteAccessRequest(
+      content::WebContents* web_contents,
+      int tab_id,
+      const Extension& extension,
+      const std::optional<URLPattern>& filter = std::nullopt);
 
-  // Removes site access request for `extension` in `tab_id`, if existent.
-  // Returns whether the request was removed.
-  bool RemoveSiteAccessRequest(int tab_id, const ExtensionId& extension);
+  // Removes site access request for `extension` in `tab_id` with an optional
+  // `filter`, if existent. Returns whether the request was removed.
+  bool RemoveSiteAccessRequest(
+      int tab_id,
+      const ExtensionId& extension_id,
+      const std::optional<URLPattern>& filter = std::nullopt);
 
   // Dismisses site access request for `extension` in `tab_id`. Request must be
   // existent for user to be able to dismiss it.

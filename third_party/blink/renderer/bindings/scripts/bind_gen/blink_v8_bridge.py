@@ -223,7 +223,7 @@ def blink_type_info(idl_type):
                         clear_member_var_fmt="{} = false")
 
     if real_type.is_numeric:
-        return TypeInfo(numeric_type(real_type),
+        return TypeInfo(numeric_type(real_type.keyword_typename),
                         const_ref_fmt="{}",
                         clear_member_var_fmt="{} = 0")
 
@@ -441,11 +441,13 @@ def _pass_as_span_conversion_arguments(idl_type):
     ) < 2, "Unions of typed arrays of different types are not supported with [PassAsSpan]"
     native_type = None
     if typed_arrays:
-        native_type = typed_array_element_type(list(typed_arrays)[0])
+        typed_array_type = typed_array_element_type(list(typed_arrays)[0])
+        native_type = numeric_type(typed_array_type)
         if sequence_types:
-            types_are_compatible = numeric_type(
-                list(sequence_types)[0]) == native_type
-            assert types_are_compatible, "Sequence and typed array types are incompatible"
+            seq_element_type = list(sequence_types)[0].keyword_typename
+            types_are_compatible = seq_element_type == typed_array_type
+            assert types_are_compatible, "Sequence and typed array types are incompatible (%s vs %s)" % (
+                seq_element_type, typed_array_type)
     else:
         assert (not sequence_types
                 ), "Plain sequence<> types are not supported with [PassAsSpan]"
@@ -480,7 +482,8 @@ def _native_value_tag_impl(idl_type):
         return "PassAsSpan<{}>".format(", ".join(conversion_arguments))
 
     if (real_type.is_boolean or real_type.is_numeric or real_type.is_string
-            or real_type.is_any or real_type.is_object or real_type.is_bigint):
+            or real_type.is_any or real_type.is_object or real_type.is_bigint
+            or real_type.is_undefined):
         return "IDL{}".format(
             idl_type.type_name_with_extended_attribute_key_values)
 
@@ -498,9 +501,6 @@ def _native_value_tag_impl(idl_type):
 
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
-
-    if real_type.is_undefined:
-        assert False, "Blink does not support/accept IDL undefined type."
 
     if real_type.type_definition_object:
         return blink_class_name(real_type.type_definition_object)
@@ -553,6 +553,14 @@ def make_blink_to_v8_value(
 
     T = TextNode
     F = FormatNode
+
+    if "NodeWrapInOwnContext" in idl_type.effective_annotations:
+        assert native_value_tag(idl_type, argument=argument) == "Node"
+        execution_context = blink_value_expr + "->GetExecutionContext()"
+        creation_context_script_state = _format(
+            "{_1} ? ToScriptState({_1}, {_2}->World()) : {_2}",
+            _1=execution_context,
+            _2=creation_context_script_state)
 
     def create_definition(symbol_node):
         binds = {
@@ -940,24 +948,23 @@ def typed_array_element_type(idl_type):
     assert isinstance(idl_type, web_idl.IdlType), type(idl_type)
     assert idl_type.is_typed_array_type
     element_type_map = {
-        'Int8Array': 'int8_t',
-        'Int16Array': 'int16_t',
-        'Int32Array': 'int32_t',
-        'BigInt64Array': 'int64_t',
-        'Uint8Array': 'uint8_t',
-        'Uint16Array': 'uint16_t',
-        'Uint32Array': 'uint32_t',
-        'BigUint64Array': 'uint64_t',
-        'Uint8ClampedArray': 'uint8_t',
-        'Float32Array': 'float',
-        'Float64Array': 'double',
+        'Int8Array': 'byte',
+        'Int16Array': 'short',
+        'Int32Array': 'long',
+        'BigInt64Array': 'long long',
+        'Uint8Array': 'octet',
+        'Uint16Array': 'unsigned short',
+        'Uint32Array': 'unsigned long',
+        'BigUint64Array': 'unsigned long long',
+        'Uint8ClampedArray': 'octet',
+        'Float32Array': 'unrestricted float',
+        'Float64Array': 'unrestricted double',
     }
     return element_type_map.get(idl_type.keyword_typename)
 
 
-def numeric_type(idl_type):
-    assert isinstance(idl_type, web_idl.IdlType)
-    assert idl_type.is_numeric
+def numeric_type(type_keyword):
+    assert isinstance(type_keyword, str)
     type_map = {
         "byte": "int8_t",
         "octet": "uint8_t",
@@ -972,4 +979,4 @@ def numeric_type(idl_type):
         "double": "double",
         "unrestricted double": "double",
     }
-    return type_map.get(idl_type.keyword_typename)
+    return type_map[type_keyword]

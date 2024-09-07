@@ -245,7 +245,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": ["dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices"],
+        "enum": ["dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices", "faceGazeGravityWells"],
         "description": "Subset of accessibility features."
       },
       {
@@ -424,6 +424,50 @@
           "wasm": {
             "type": "binary",
             "description": "The contents of the vision_wasm_internal.wasm file as a Uint8Array."
+          }
+        }
+      },
+      {
+        "id": "ScrollDirection",
+        "type": "string",
+        "enum": [ "up", "down", "left", "right" ],
+        "description": "The four directions for scrolling."
+      },
+      {
+        "id": "FacialGesture",
+        "type": "string",
+        "description": "The facial gestures supported by FaceGaze. Keep this in sync with facial_gestures.ts, FacialGesturesToMediapipeGestures in facegaze/gesture_detector.ts, and ConvertFacialGestureType in accessibility_extension_api_ash.cc.",
+        "enum": ["browInnerUp",
+            "browsDown",
+            "eyeSquintLeft",
+            "eyeSquintRight",
+            "eyesBlink",
+            "eyesLookDown",
+            "eyesLookLeft",
+            "eyesLookRight",
+            "eyesLookUp",
+            "jawLeft",
+            "jawOpen",
+            "jawRight",
+            "mouthFunnel",
+            "mouthLeft",
+            "mouthPucker",
+            "mouthRight",
+            "mouthSmile",
+            "mouthUpperUp"]
+      },
+      {
+        "id": "GestureInfo",
+        "type": "object",
+        "description": "Information about a detected facial gesture.",
+        "properties": {
+          "gesture": {
+            "$ref": "FacialGesture",
+            "description": "The detected facial gesture."
+          },
+          "confidence": {
+            "type": "number",
+            "description": "The confidence value."
           }
         }
       }
@@ -1050,6 +1094,34 @@
           "$ref": "ToastType",
           "description": "The type of toast to show."
         }]
+      },
+      {
+        "name": "scrollAtPoint",
+        "type": "function",
+        "description": "Scrolls at the target location in the specified direction.",
+        "parameters": [
+          {
+            "name": "target",
+            "$ref": "ScreenPoint"
+          },
+          {
+            "name": "direction",
+            "$ref": "ScrollDirection"
+          }
+        ]
+      },
+      {
+        "name": "sendGestureInfoToSettings",
+        "type": "function",
+        "description": "Fired when FaceGaze processes a video frame, detects facial gestures from the frame, then sends information about the recognized facial gesture to the settings.",
+        "parameters": [
+          {
+            "name": "gestureInfo",
+            "type": "array",
+            "items": { "$ref": "GestureInfo" },
+            "description": "The recognized facial gestures and their associated confidence values."
+          }
+        ]
       }
     ],
     "events": [

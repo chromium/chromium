@@ -182,7 +182,7 @@ NSString* GetPromoLabelString(
                                   syncService:(syncer::SyncService*)syncService
                                   accessPoint:
                                       (signin_metrics::AccessPoint)accessPoint {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     DCHECK(accountManagerService);
     CHECK(syncService);
 

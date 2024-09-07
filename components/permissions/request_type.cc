@@ -44,6 +44,8 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_FOLDER;
     case RequestType::kGeolocation:
       return IDR_ANDROID_INFOBAR_GEOLOCATION;
+    case RequestType::kHandTracking:
+      return IDR_ANDROID_INFOBAR_HAND_TRACKING;
     case RequestType::kIdentityProvider:
       return IDR_ANDROID_INFOBAR_IDENTITY_PROVIDER;
     case RequestType::kIdleDetection:
@@ -91,6 +93,8 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kFolderChromeRefreshIcon;
     case RequestType::kGeolocation:
       return vector_icons::kLocationOnChromeRefreshIcon;
+    case RequestType::kHandTracking:
+      return vector_icons::kHandGestureIcon;
     case RequestType::kIdleDetection:
       return vector_icons::kDevicesIcon;
     case RequestType::kKeyboardLock:
@@ -117,9 +121,11 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kProtocolHandlerIcon;
 #if BUILDFLAG(IS_CHROMEOS)
     case RequestType::kSmartCard:
-      // TODO(crbug.com/40944087): Use a proper smart card icon.
-      return vector_icons::kDevicesIcon;
+      return vector_icons::kSmartCardReaderIcon;
 #endif
+    case RequestType::kWebAppInstallation:
+      // TODO(crbug.com/333795265): provide a dedicated icon.
+      return vector_icons::kTouchpadMouseIcon;
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     case RequestType::kWebPrinting:
       return vector_icons::kPrinterIcon;
@@ -154,6 +160,8 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kTouchpadMouseOffIcon;
     case RequestType::kClipboard:
       return vector_icons::kContentPasteOffIcon;
+    case RequestType::kHandTracking:
+      return vector_icons::kHandGestureOffIcon;
     case RequestType::kIdleDetection:
       return vector_icons::kDevicesOffIcon;
     case RequestType::kMicStream:
@@ -169,6 +177,9 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kKeyboardLockOffIcon;
     case RequestType::kPointerLock:
       return vector_icons::kPointerLockOffIcon;
+    case RequestType::kWebAppInstallation:
+      // TODO(crbug.com/333795265): provide a dedicated icon.
+      return gfx::kNoneIcon;
     default:
       NOTREACHED_IN_MIGRATION();
   }
@@ -206,6 +217,8 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
 #endif
     case ContentSettingsType::GEOLOCATION:
       return RequestType::kGeolocation;
+    case ContentSettingsType::HAND_TRACKING:
+      return RequestType::kHandTracking;
     case ContentSettingsType::IDLE_DETECTION:
       return RequestType::kIdleDetection;
 #if !BUILDFLAG(IS_ANDROID)
@@ -292,6 +305,8 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #endif
     case RequestType::kGeolocation:
       return ContentSettingsType::GEOLOCATION;
+    case RequestType::kHandTracking:
+      return ContentSettingsType::HAND_TRACKING;
     case RequestType::kIdleDetection:
       return ContentSettingsType::IDLE_DETECTION;
 #if !BUILDFLAG(IS_ANDROID)
@@ -399,6 +414,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif
     case permissions::RequestType::kGeolocation:
       return "geolocation";
+    case permissions::RequestType::kHandTracking:
+      return "hand_tracking";
     case permissions::RequestType::kIdleDetection:
       return "idle_detection";
 #if !BUILDFLAG(IS_ANDROID)
@@ -446,6 +463,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
       return "web_printing";
 #endif
 #if !BUILDFLAG(IS_ANDROID)
+    case permissions::RequestType::kWebAppInstallation:
+      return "web_app_installation";
     case permissions::RequestType::kWindowManagement:
       return "window_management";
 #endif

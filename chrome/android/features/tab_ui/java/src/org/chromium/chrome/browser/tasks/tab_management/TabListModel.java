@@ -8,8 +8,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.NEW_TAB_TILE_DEPRECATED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
@@ -39,13 +37,11 @@ class TabListModel extends ModelList {
     /** Required properties for each {@link PropertyModel} managed by this {@link ModelList}. */
     static class CardProperties {
         /** Supported Model type within this ModelList. */
-        @IntDef({TAB, MESSAGE, NEW_TAB_TILE_DEPRECATED, OTHERS})
+        @IntDef({TAB, MESSAGE})
         @Retention(RetentionPolicy.SOURCE)
         public @interface ModelType {
             int TAB = 0;
             int MESSAGE = 1;
-            int NEW_TAB_TILE_DEPRECATED = 2;
-            int OTHERS = 3;
         }
 
         /** This corresponds to {@link CardProperties.ModelType}*/

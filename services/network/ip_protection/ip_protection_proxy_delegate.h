@@ -9,12 +9,13 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "components/ip_protection/common/ip_protection_config_cache.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
-#include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace net {
@@ -32,19 +33,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
     : public net::ProxyDelegate,
       public mojom::IpProtectionProxyDelegate {
  public:
-  enum class ProtectionEligibility {
-    kUnknown = 0,
-    kIneligible = 1,
-    kEligible = 2,
-    kMaxValue = kEligible,
-  };
-
   // Both masked_domain_list_manager and ipp_config_cache must be
   // non-null. The masked_domain_list_manager (MaskedDomainList) feature
   // must be enabled.
   IpProtectionProxyDelegate(
       MaskedDomainListManager* masked_domain_list_manager,
-      std::unique_ptr<IpProtectionConfigCache> ipp_config_cache,
+      std::unique_ptr<ip_protection::IpProtectionConfigCache> ipp_config_cache,
       bool is_ip_protection_enabled);
 
   IpProtectionProxyDelegate(const IpProtectionProxyDelegate&) = delete;
@@ -93,7 +87,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
   friend class IpProtectionProxyDelegateTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionProxyDelegateTest, MergeProxyRules);
 
-  ProtectionEligibility CheckEligibility(
+  bool CheckEligibility(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key) const;
   bool CheckAvailability(
@@ -108,7 +102,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
 
   const raw_ptr<MaskedDomainListManager> masked_domain_list_manager_;
 
-  const std::unique_ptr<IpProtectionConfigCache> ipp_config_cache_;
+  const std::unique_ptr<ip_protection::IpProtectionConfigCache>
+      ipp_config_cache_;
 
   bool is_ip_protection_enabled_;
 

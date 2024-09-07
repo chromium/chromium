@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] dir=auto slot is updated if input stops being auto-directionality form-associated
-  assert_equals: expected "ltr" but got "rtl"
-Harness: the test ran to completion.
-

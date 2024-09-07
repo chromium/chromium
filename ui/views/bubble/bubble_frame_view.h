@@ -19,7 +19,6 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -57,8 +56,7 @@ class ImageView;
 // and the minimize buttons will be positioned at the end of the
 // title row. Otherwise, they will be positioned closer to the frame
 // edge.
-class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
-                                     public LayoutDelegate {
+class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   METADATA_HEADER(BubbleFrameView, NonClientFrameView)
 
  public:
@@ -123,6 +121,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
       const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void PaintChildren(const PaintInfo& paint_info) override;
   void OnThemeChanged() override;
@@ -143,10 +142,6 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
 
   void SetContentMargins(const gfx::Insets& content_margins);
   gfx::Insets GetContentMargins() const;
-
-  // Overridden from LayoutDelegate:
-  ProposedLayout CalculateProposedLayout(
-      const SizeBounds& size_bounds) const override;
 
   // Sets a custom header view for the dialog. If there is an existing header
   // view it will be deleted. The header view will be inserted above the title,

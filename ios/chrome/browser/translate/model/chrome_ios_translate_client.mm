@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/language/model/accept_languages_service_factory.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/language/model/url_language_histogram_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
 #import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"

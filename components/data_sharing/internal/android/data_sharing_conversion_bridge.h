@@ -34,6 +34,11 @@ class DataSharingConversionBridge {
       JNIEnv* env,
       const GroupData& result);
 
+  // Creates an object of org.chromium.components.data_sharing.SharedEntity.
+  static ScopedJavaLocalRef<jobject> CreateJavaSharedEntity(
+      JNIEnv* env,
+      const SharedEntity& entity);
+
   // Creates an object of
   // org.chromium.components.data_sharing.DataSharingService.
   //   GroupDataOrFailureOutcome.
@@ -59,6 +64,13 @@ class DataSharingConversionBridge {
   static ScopedJavaLocalRef<jobject> CreateParseURLResult(
       JNIEnv* env,
       const DataSharingService::ParseURLResult& data);
+
+  // Creates an object of
+  // org.chromium.components.data_sharing.DataSharingService.
+  //   SharedDataPreviewOrFailureOutcome.
+  static ScopedJavaLocalRef<jobject> CreateSharedDataPreviewOrFailureOutcome(
+      JNIEnv* env,
+      const DataSharingService::SharedDataPreviewOrFailureOutcome& data);
 };
 
 }  // namespace data_sharing

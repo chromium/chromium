@@ -13,6 +13,7 @@ class IdentityManager;
 }  // namespace signin
 
 class AuthenticationService;
+class PrefService;
 class PromosManager;
 
 // App agent that displays the Post Restore UI when needed.
@@ -24,7 +25,8 @@ class PromosManager;
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                 authenticationService:
                     (AuthenticationService*)authenticationService
-                      identityManager:(signin::IdentityManager*)identityManager;
+                      identityManager:(signin::IdentityManager*)identityManager
+                          prefService:(PrefService*)prefService;
 
 @end
 

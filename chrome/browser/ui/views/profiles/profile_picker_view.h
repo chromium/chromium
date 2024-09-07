@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -49,6 +50,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
                           public content::WebContentsDelegate,
                           public web_modal::WebContentsModalDialogHost,
                           public ui::AcceleratorProvider {
+  METADATA_HEADER(ProfilePickerView, views::WidgetDelegateView)
+
  public:
   ProfilePickerView(const ProfilePickerView&) = delete;
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;

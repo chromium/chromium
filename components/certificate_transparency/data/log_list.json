@@ -1,6 +1,6 @@
 {
-  "version": "41.6",
-  "log_list_timestamp": "2024-08-15T12:55:12Z",
+  "version": "45.7",
+  "log_list_timestamp": "2024-09-05T12:55:42Z",
   "operators": [
     {
       "name": "Google",
@@ -210,6 +210,22 @@
             "start_inclusive": "2025-01-01T00:00:00Z",
             "end_exclusive": "2026-01-01T00:00:00Z"
           }
+        },
+        {
+          "description": "Cloudflare 'Nimbus2026'",
+          "log_id": "yzj3FYl8hKFEX1vB3fvJbvKaWc1HCmkFhbDLFMMUWOc=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2FxhT6xq0iCATopC9gStS9SxHHmOKTLeaVNZ661488Aq8tARXQV+6+jB0983v5FkRm4OJxPqu29GJ1iG70Ahow==",
+          "url": "https://ct.cloudflare.com/logs/nimbus2026/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-28T03:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-01-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
+          }
         }
       ]
     },
@@ -290,8 +306,8 @@
           "url": "https://wyvern.ct.digicert.com/2024h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
@@ -306,8 +322,8 @@
           "url": "https://wyvern.ct.digicert.com/2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
@@ -322,13 +338,45 @@
           "url": "https://wyvern.ct.digicert.com/2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
             "start_inclusive": "2025-07-01T00:00:00Z",
             "end_exclusive": "2026-01-07T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert 'Wyvern2026h1'",
+          "log_id": "ZBHEbKQS7KeJHKICLgC8q08oB9QeNSer6v7VA8l9zfA=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7Lw0OeKajbeZepHxBXJS2pOJXToHi5ntgKUW2nMhIOuGlofFxtkXum65TBNY1dGD+HrfHge8Fc3ASs0qMXEHVQ==",
+          "url": "https://wyvern.ct.digicert.com/2026h1/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-26T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-01-01T00:00:00Z",
+            "end_exclusive": "2026-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert 'Wyvern2026h2'",
+          "log_id": "wjF+V0UZo0XufzjespBB68fCIVoiv3/Vta12mtkOUs0=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEenPbSvLeT+zhFBu+pqk8IbhFEs16iCaRIFb1STLDdWzL6XwTdTWcbOzxMTzB3puME5K3rT0PoZyPSM50JxgjmQ==",
+          "url": "https://wyvern.ct.digicert.com/2026h2/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-26T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-07-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
           }
         },
         {
@@ -338,8 +386,8 @@
           "url": "https://sphinx.ct.digicert.com/2024h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
@@ -354,8 +402,8 @@
           "url": "https://sphinx.ct.digicert.com/2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
@@ -370,13 +418,45 @@
           "url": "https://sphinx.ct.digicert.com/2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
+            "usable": {
+              "timestamp": "2024-08-29T03:09:43Z"
             }
           },
           "temporal_interval": {
             "start_inclusive": "2025-07-01T00:00:00Z",
             "end_exclusive": "2026-01-07T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert 'Sphinx2026h1'",
+          "log_id": "SZybad4dfOz8Nt7Nh2SmuFuvCoeAGdFVUvvp6ynd+MM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEq4S++DyHokIlmmacritS51r5IRsZA6UH4kYLH4pefGyu/xl3huh7/O5rNk/yvMOeBQKaCAG1SSM1xNNQK1Hp9A==",
+          "url": "https://sphinx.ct.digicert.com/2026h1/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-26T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-01-01T00:00:00Z",
+            "end_exclusive": "2026-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert 'Sphinx2026h2'",
+          "log_id": "lE5Dh/rswe+B8xkkJqgYZQHH0184AgE/cmd9VTcuGdg=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEquD0JkRQT/2inuaA4HC1sc6UpfiXgURVQmQcInmnZFnTiZMhZvsJgWAfYlU0OIykOC6slQzr7U9kvEVC9wZ6zQ==",
+          "url": "https://sphinx.ct.digicert.com/2026h2/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-26T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-07-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
       ]
@@ -617,6 +697,38 @@
           "temporal_interval": {
             "start_inclusive": "2025-06-20T00:00:00Z",
             "end_exclusive": "2026-01-20T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt 'Oak2026h1'",
+          "log_id": "GYbUxyiqb/66A294Kk0BkarOLXIxD67OXXBBLSVMx9Q=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmdRhcCL6d5MNs8eAliJRvyV5sQFC6UF7iwzHsmVaifT64gJG1IrHzBAHESdFSJAjQN56TYky+9cK616MovH2SQ==",
+          "url": "https://oak.ct.letsencrypt.org/2026h1/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-21T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2025-12-20T00:00:00Z",
+            "end_exclusive": "2026-07-20T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt 'Oak2026h2'",
+          "log_id": "rKswcGzr7IQx9BPS9JFfER5CJEOx8qaMTzwrO6ceAsM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEanCds5bj7IU2lcNPnIvZfMnVkSmu69aH3AS8O/Y0D/bbCPdSqYjvuz9Z1tT29PxcqYxf+w1g5CwPFuwqsm3rFQ==",
+          "url": "https://oak.ct.letsencrypt.org/2026h2/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-08-21T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-06-20T00:00:00Z",
+            "end_exclusive": "2027-01-20T00:00:00Z"
           }
         }
       ]

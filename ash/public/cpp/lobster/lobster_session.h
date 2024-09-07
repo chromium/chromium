@@ -8,7 +8,9 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/lobster/lobster_feedback_preview.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "url/gurl.h"
 
@@ -20,12 +22,21 @@ class ASH_PUBLIC_EXPORT LobsterSession {
 
   virtual ~LobsterSession() = default;
 
-  virtual void DownloadCandidate(int candidate_id, StatusCallback) = 0;
+  virtual void DownloadCandidate(int candidate_id,
+                                 const base::FilePath& file_path,
+                                 StatusCallback) = 0;
   virtual void CommitAsInsert(int candidate_id, StatusCallback callback) = 0;
-  virtual void CommitAsDownload(int candidate_id, StatusCallback callback) = 0;
+  virtual void CommitAsDownload(int candidate_id,
+                                const base::FilePath& file_path,
+                                StatusCallback callback) = 0;
   virtual void RequestCandidates(const std::string& query,
                                  int num_candidates,
                                  RequestCandidatesCallback) = 0;
+
+  virtual void PreviewFeedback(int candidate_id,
+                               LobsterPreviewFeedbackCallback) = 0;
+  virtual bool SubmitFeedback(int candidate_id,
+                              const std::string& description) = 0;
 };
 
 }  // namespace ash

@@ -16,8 +16,8 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -112,14 +112,12 @@ class OptimizationGuideTabHelperTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     browser_state_ = std::move(builder).Build();
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
     optimization_guide_service_->DoFinalInit();
 
     web_state_.SetBrowserState(browser_state_.get());
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
 
     OptimizationGuideTabHelper::CreateForWebState(&web_state_);
 

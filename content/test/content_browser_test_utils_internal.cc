@@ -173,28 +173,46 @@ RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
                                 std::string frame_id,
                                 const GURL& url,
                                 bool wait_for_navigation) {
+  return CreateSubframe(
+      web_contents->GetPrimaryFrameTree().root()->current_frame_host(),
+      frame_id, url, wait_for_navigation, {});
+}
+
+RenderFrameHost* CreateSubframe(RenderFrameHost* parent,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation) {
+  return CreateSubframe(parent, frame_id, url, wait_for_navigation, {});
+}
+
+RenderFrameHost* CreateSubframe(RenderFrameHost* parent,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation,
+                                ExtraParams extra_params) {
+  WebContents* web_contents = WebContents::FromRenderFrameHost(parent);
   RenderFrameHostCreatedObserver subframe_created_observer(web_contents);
   TestNavigationObserver subframe_nav_observer(web_contents);
-  if (url.is_empty()) {
-    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
-          var iframe = document.createElement('iframe');
-          iframe.id = $1;
-          document.body.appendChild(iframe);
-      )",
-                                               frame_id)));
-  } else {
-    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
-          var iframe = document.createElement('iframe');
-          iframe.id = $1;
-          iframe.src = $2;
-          document.body.appendChild(iframe);
-      )",
-                                               frame_id, url)));
-  }
+
+  EXPECT_TRUE(
+      ExecJs(parent, JsReplace(R"(
+    var iframe = document.createElement('iframe');
+    iframe.id = $1; //frame_id
+    if ($2) {
+      iframe.src = $2; // url
+    }
+    if ($3) {
+      iframe.sandbox = $3; // extra_params.sandbox_flags
+    }
+    document.body.appendChild(iframe);
+  )",
+                               frame_id, url, extra_params.sandbox_flags)));
+
   subframe_created_observer.Wait();
   if (wait_for_navigation)
     subframe_nav_observer.Wait();
-  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  FrameTreeNode* root =
+      static_cast<RenderFrameHostImpl*>(parent)->frame_tree_node();
   return root->child_at(root->child_count() - 1)->current_frame_host();
 }
 
@@ -569,7 +587,7 @@ void FileChooserDelegate::RunFileChooser(
 }
 
 FrameTestNavigationManager::FrameTestNavigationManager(
-    int filtering_frame_tree_node_id,
+    FrameTreeNodeId filtering_frame_tree_node_id,
     WebContents* web_contents,
     const GURL& url)
     : TestNavigationManager(web_contents, url),

@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">Št. združenih zavihkov: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Premakni zavihek navzdol</translation>
 <translation id="1713541401465507417">Zapri vse zavihke in skupine</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Več o tem<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> zavihek je združen</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> izbran zavihek med zaznamke}one{Dodaj <ph name="TABS_COUNT_MANY" /> izbran zavihek med zaznamke}two{Dodaj <ph name="TABS_COUNT_MANY" /> izbrana zavihka med zaznamke}few{Dodaj <ph name="TABS_COUNT_MANY" /> izbrane zavihke med zaznamke}other{Dodaj <ph name="TABS_COUNT_MANY" /> izbranih zavihkov med zaznamke}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Ustvarjeno pravkar</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zapri po 1 dnevu}one{Zapri po <ph name="DAY_COUNT_MANY" /> dnevu}two{Zapri po <ph name="DAY_COUNT_MANY" /> dneh}few{Zapri po <ph name="DAY_COUNT_MANY" /> dneh}other{Zapri po <ph name="DAY_COUNT_MANY" /> dneh}}</translation>
 <translation id="4777866634702576038">Želite izbrisati skupino zavihkov?</translation>
+<translation id="4783638485675352219">Deljenje naslovov in URL-jev odprtih zavihkov iz te naprave z operacijskim sistemom</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> mnenje)}one{(<ph name="REVIEWS_COUNT_MANY" /> mnenje)}two{(<ph name="REVIEWS_COUNT_MANY" /> mnenji)}few{(<ph name="REVIEWS_COUNT_MANY" /> mnenja)}other{(<ph name="REVIEWS_COUNT_MANY" /> mnenj)}}</translation>
 <translation id="4850886885716139402">Prikaži</translation>
 <translation id="4870911314065352661">Želite zapreti vse zavihke?</translation>

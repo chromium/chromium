@@ -31,6 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_H_
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
@@ -83,9 +86,9 @@ class BLINK_PLATFORM_EXPORT WebCryptoResult {
   //   "iv must be 16 bytes long".
   void CompleteWithError(WebCryptoErrorType, const WebString&);
 
-  // Makes a copy of the input data given as a pointer and byte length.
-  void CompleteWithBuffer(const void*, unsigned);
-  void CompleteWithJson(const char* utf8_data, unsigned length);
+  // Makes a copy of the input data given as a span of bytes.
+  void CompleteWithBuffer(base::span<const uint8_t>);
+  void CompleteWithJson(std::string_view);
   void CompleteWithBoolean(bool);
   void CompleteWithKey(const WebCryptoKey&);
   void CompleteWithKeyPair(const WebCryptoKey& public_key,
@@ -269,7 +272,7 @@ class WebCrypto {
   virtual void DeriveBits(
       const WebCryptoAlgorithm&,
       const WebCryptoKey&,
-      unsigned length,
+      std::optional<unsigned> length,
       WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");

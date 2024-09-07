@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
-
 namespace {
 
 FillFieldLogEvent GetFillFieldLogEventWithFillingMethod(
@@ -84,8 +83,6 @@ void ExpectFieldFillingStatsUniqueSample(
       base::StrCat({"Autofill.FieldFillingStats.", histogram_name_suffix}),
       sample, /*expected_bucket_count=*/1);
 }
-
-}  // namespace
 
 class AutofillFieldFillingStatsAndScoreMetricsTest
     : public AutofillMetricsBaseTest,
@@ -377,4 +374,5 @@ TEST_F(AutocompleteUnrecognizedFieldFillingStatsTest, FieldFillingStats) {
           base::Bucket(FieldFillingStatus::kLeftEmpty, 1)));
 }
 
+}  // namespace
 }  // namespace autofill::autofill_metrics

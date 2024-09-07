@@ -40,26 +40,20 @@ dictionary AudioSinkOptions {
     ActiveScriptWrappable
 ] interface AudioContext : BaseAudioContext {
     [HighEntropy, CallWith=ExecutionContext, RaisesException, Measure] constructor(optional AudioContextOptions contextOptions = {});
-    [MeasureAs=AudioContextSuspend, RaisesException, CallWith=ScriptState, ImplementedAs=suspendContext] Promise<undefined> suspend();
-    [MeasureAs=AudioContextClose, RaisesException, CallWith=ScriptState, ImplementedAs=closeContext] Promise<undefined> close();
-    [MeasureAs=AudioContextResume, RaisesException, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<undefined> resume();
-
-    // Output timestamp
-    [MeasureAs=AudioContextGetOutputTimestamp, CallWith=ScriptState] AudioTimestamp getOutputTimestamp();
-
-    // Number of seconds of processing latency incurred by the AudioContext
-    // passing the audio from the AudioDestinationNode to the audio subsystem
     [HighEntropy=Direct, MeasureAs=AudioContextBaseLatency] readonly attribute double baseLatency;
     [HighEntropy=Direct, MeasureAs=AudioContextOutputLatency] readonly attribute double outputLatency;
-
-    [RuntimeEnabled=AudioContextPlayoutStats, SameObject] readonly attribute AudioPlayoutStats playoutStats;
-
+    [MeasureAs=AudioContextSinkId, SecureContext] readonly attribute (DOMString or AudioSinkInfo) sinkId;
+    [SecureContext] attribute EventHandler onsinkchange;
+    [RuntimeEnabled=AudioContextOnError, MeasureAs=AudioContextOnError] attribute EventHandler onerror;
+    [MeasureAs=AudioContextGetOutputTimestamp, CallWith=ScriptState] AudioTimestamp getOutputTimestamp();
+    [MeasureAs=AudioContextResume, RaisesException, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<undefined> resume();
+    [MeasureAs=AudioContextSuspend, RaisesException, CallWith=ScriptState, ImplementedAs=suspendContext] Promise<undefined> suspend();
+    [MeasureAs=AudioContextClose, RaisesException, CallWith=ScriptState, ImplementedAs=closeContext] Promise<undefined> close();
+    [MeasureAs=AudioContextSetSinkId, RaisesException, CallWith=ScriptState, SecureContext] Promise<undefined> setSinkId((DOMString or AudioSinkOptions) sinkId);
     [RaisesException, MeasureAs=AudioContextCreateMediaElementSource] MediaElementAudioSourceNode createMediaElementSource(HTMLMediaElement mediaElement);
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamSource] MediaStreamAudioSourceNode createMediaStreamSource(MediaStream mediaStream);
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamDestination] MediaStreamAudioDestinationNode createMediaStreamDestination();
 
-    [MeasureAs=AudioContextSinkId, SecureContext] readonly attribute (DOMString or AudioSinkInfo) sinkId;
-    [MeasureAs=AudioContextSetSinkId, RaisesException, CallWith=ScriptState, SecureContext] Promise<undefined> setSinkId((DOMString or AudioSinkOptions) sinkId);
-    [RuntimeEnabled=AudioContextOnError, MeasureAs=AudioContextOnError] attribute EventHandler onerror;
-    [SecureContext] attribute EventHandler onsinkchange;
+    // https://wicg.github.io/web_audio_playout
+    [RuntimeEnabled=AudioContextPlayoutStats, SameObject] readonly attribute AudioPlayoutStats playoutStats;
 };

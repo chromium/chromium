@@ -5,16 +5,27 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/drive/model/drive_list.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/drive_file_picker/ui/root_drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 @interface RootDriveFilePickerCoordinator () <
     UIAdaptivePresentationControllerDelegate,
@@ -28,6 +39,11 @@
   RootDriveFilePickerTableViewController* _viewController;
   // WebState for which the Drive file picker is presented.
   base::WeakPtr<web::WebState> _webState;
+  AuthenticationService* _authenticationService;
+  id<SystemIdentity> _currentIdentity;
+  // A child `BrowseDriveFilePickerCoordinator` created and started to browse an
+  // drive folder.
+  BrowseDriveFilePickerCoordinator* _childBrowseCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -42,11 +58,34 @@
 }
 
 - (void)start {
+  ChromeBrowserState* browserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  _authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  _currentIdentity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  drive::DriveService* driveService =
+      drive::DriveServiceFactory::GetForBrowserState(browserState);
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
+      std::make_unique<image_fetcher::ImageDataFetcher>(
+          browserState->GetSharedURLLoaderFactory());
   _viewController = [[RootDriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];
-  _mediator =
-      [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()];
+  _mediator = [[DriveFilePickerMediator alloc]
+           initWithWebState:_webState.get()
+                   identity:_currentIdentity
+                      title:nil
+                      query:{}
+                     filter:DriveFilePickerFilter::kShowAllFiles
+        ignoreAcceptedTypes:NO
+            sortingCriteria:DriveItemsSortingType::kName
+           sortingDirection:DriveItemsSortingOrder::kAscending
+               driveService:driveService
+      accountManagerService:accountManagerService
+               imageFetcher:std::move(imageFetcher)];
 
   _navigationController.modalInPresentation = YES;
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -65,8 +104,9 @@
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   _viewController.driveFilePickerHandler = driveFilePickerHandler;
   _viewController.mutator = _mediator;
+  _mediator.consumer = _viewController;
   _mediator.delegate = self;
-  _navigationController.driveFilePickerHandler = driveFilePickerHandler;
+  _mediator.driveFilePickerHandler = driveFilePickerHandler;
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
@@ -76,15 +116,27 @@
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
+  [_childBrowseCoordinator stop];
+  _childBrowseCoordinator = nil;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
   _navigationController = nil;
   _viewController = nil;
+  _authenticationService = nil;
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
     [coordinator stop];
   }
   [self.childCoordinators removeAllObjects];
+}
+
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+  CHECK(_mediator);
+  _currentIdentity = selectedIdentity;
+  [_navigationController popToRootViewControllerAnimated:YES];
+  [_childBrowseCoordinator stop];
+  _childBrowseCoordinator = nil;
+  [_mediator updateSelectedIdentity:selectedIdentity];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -101,22 +153,32 @@
 
 #pragma mark - DriveFilePickerMediatorDelegate
 
-- (void)browseDriveFolderWithMediator:
+- (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                          driveFolder:(NSString*)driveFolder {
-  BrowseDriveFilePickerCoordinator* browseCoordinator =
-      [[BrowseDriveFilePickerCoordinator alloc]
-          initWithBaseNavigationViewController:_navigationController
-                                       browser:self.browser
-                                      webState:_webState
-                                        folder:driveFolder];
-  [browseCoordinator start];
-  [self.childCoordinators addObject:browseCoordinator];
+                                    title:(NSString*)title
+                                    query:(DriveListQuery)query
+                                   filter:(DriveFilePickerFilter)filter
+                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                         sortingDirection:
+                             (DriveItemsSortingOrder)sortingDirection {
+  _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
+      initWithBaseNavigationViewController:_navigationController
+                                   browser:self.browser
+                                  webState:_webState
+                                     title:title
+                                     query:query
+                                    filter:filter
+                       ignoreAcceptedTypes:ignoreAcceptedTypes
+                           sortingCriteria:sortingCriteria
+                          sortingDirection:sortingDirection
+                                  identity:_currentIdentity];
+  [_childBrowseCoordinator start];
 }
 
 - (void)searchDriveFolderWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                          driveFolder:(NSString*)driveFolder {
+                        driveFolderID:(DriveItemIdentifier*)driveFolderID {
   // TODO(crbug.com/344812548): Start the `SearchDriveFilePickerCoordinator` and
   // add it as child coordinator.
 }

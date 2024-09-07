@@ -91,7 +91,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       network::mojom::RequestDestination request_destination,
       bool skip_service_worker,
       bool are_ancestors_secure,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       int process_id,
       const DedicatedOrSharedWorkerToken* worker_token,
       const net::IsolationInfo& isolation_info);
@@ -158,7 +158,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // If the intercepted resource load is on behalf
   // of a window, the |frame_tree_node_id_| will be set, |worker_token_| will be
   // std::nullopt, and |process_id_| will be invalid.
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
 
   // For web worker clients:
   // If the intercepted resource load is on behalf of a worker the

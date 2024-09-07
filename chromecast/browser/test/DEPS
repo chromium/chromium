@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromecast/cast_core",
   "+content/public/test",
   "+media/cdm/clear_key_cdm_common.h",
 ]

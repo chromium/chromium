@@ -222,12 +222,14 @@ public class Clipboard {
     }
 
     /**
-     * Gets a CRLF separated list of content URIs on the primary clip on the Android Clipboard.
+     * Gets a list of content URIs on the primary clip on the Android Clipboard and their display
+     * names.
      *
-     * @return a Java string with URI list if available, otherwise null.
+     * @return list of content URIs and display names. item[i][0] is the URI, and item[i][1] is the
+     *     optional display name which will be an empty string when unknown.
      */
     @CalledByNative
-    protected String getFilenames() {
+    protected String[][] getFilenames() {
         return null;
     }
 
@@ -333,10 +335,10 @@ public class Clipboard {
     /**
      * Writes content URI filenames to the clipboard.
      *
-     * @param uriList the CRLF-separated list of content URIs.
+     * @param uriList list of content URIs.
      */
     @CalledByNative
-    public void setFilenames(final String uriList) {
+    public void setFilenames(final String[] uriList) {
         Log.w(TAG, "setFilenames is a no-op because Clipboard service isn't available");
     }
 

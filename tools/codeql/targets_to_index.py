@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 full_targets = [
-    "//third_party/libavif:libavif",
-    "//chrome:chrome",
+    "libavif",
+    "d8",
+    "chrome",
 ]

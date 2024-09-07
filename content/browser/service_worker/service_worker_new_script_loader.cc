@@ -176,7 +176,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     throttles = CreateContentBrowserURLLoaderThrottles(
         resource_request, version_->context()->wrapper()->browser_context(),
         std::move(web_contents_getter),
-        /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId,
+        /*navigation_ui_data=*/nullptr, FrameTreeNodeId(),
         /*navigation_id=*/std::nullopt);
   }
 

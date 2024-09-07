@@ -58,6 +58,11 @@ constexpr PushNotificationReportInfo kPushNotificationReportInfos[] = {
         .client_id = PushNotificationClientId::kSafetyCheck,
         .requires_signed_in_identity = false,
     },
+    {
+        .histogram_name = kSendTabNotifClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kSendTab,
+        .requires_signed_in_identity = true,
+    },
 };
 
 // Records for histogram for `info` for an user signed-in with `gaia_id`.
@@ -77,7 +82,7 @@ void RecordHistogramForPushNotificationReportInfo(
 // Returns the signed-in `gaia_id` or an empty string if not signed-in.
 std::string GetSignedInGaiaId(ChromeBrowserState* browser_state) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
 
   for (signin::ConsentLevel consent_level : kConsentLevels) {
     if (!identity_manager->HasPrimaryAccount(consent_level)) {
@@ -109,7 +114,7 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
 
   // Report the enabled client IDs for each loaded BrowserState.
   for (ChromeBrowserState* browser_state :
-       GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates()) {
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     const std::string gaia_id = GetSignedInGaiaId(browser_state);
     for (const auto& info : kPushNotificationReportInfos) {
       RecordHistogramForPushNotificationReportInfo(info, gaia_id);

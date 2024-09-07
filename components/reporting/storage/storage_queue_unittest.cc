@@ -7,29 +7,23 @@
 #include <atomic>
 #include <cstdint>
 #include <initializer_list>
-#include <memory>
 #include <optional>
-#include <queue>
-#include <string_view>
-#include <unordered_map>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "base/files/file_enumerator.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
-#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -39,7 +33,6 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_configuration.h"
-#include "components/reporting/storage/storage_util.h"
 #include "components/reporting/util/file.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
@@ -56,9 +49,9 @@ using ::testing::AtMost;
 using ::testing::Between;
 using ::testing::DoAll;
 using ::testing::Eq;
-using ::testing::Gt;
 using ::testing::Invoke;
 using ::testing::Ne;
+using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::Sequence;
@@ -75,6 +68,9 @@ std::atomic<int64_t> next_uploader_id{0};
 constexpr size_t kCompressionThreshold = 2;
 const CompressionInformation::CompressionAlgorithm kCompressionType =
     CompressionInformation::COMPRESSION_SNAPPY;
+
+// Metadata file name prefix.
+const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
 
 // Forbidden file/folder names
 const base::FilePath::StringType kInvalidFilePrefix = FILE_PATH_LITERAL("..");
@@ -100,9 +96,8 @@ void EnsureDeletingFiles(FileEnumeratorParams... file_enum_params) {
 }
 
 class StorageQueueTest
-    : public ::testing::TestWithParam<testing::tuple<size_t /*file_size*/,
-                                                     std::string /*dm_token*/,
-                                                     bool /*is_debugging*/>> {
+    : public ::testing::TestWithParam<
+          testing::tuple<size_t /*file_size*/, std::string /*dm_token*/>> {
  protected:
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
@@ -114,6 +109,7 @@ class StorageQueueTest
         .WillRepeatedly(Invoke([this](UploaderInterface::UploadReason reason) {
           return TestUploader::SetUpDummy(this);
         }));
+    ResetExpectedUploadsCount();
   }
 
   void TearDown() override {
@@ -193,14 +189,14 @@ class StorageQueueTest
           .append("/")
           .append(base::NumberToString(generation_id))
           .append(" '")
-          .append(record.data().data(), record.data().size())
+          .append(record.data())
           .append("'\n");
       bool success =
           mock_upload_->UploadRecord(uploader_id, sequencing_id, record.data());
       if (success && possible_record_copy.has_value()) {
         const auto& record_copy = possible_record_copy.value();
         upload_progress_.append("Has unencrypted copy: ")
-            .append(record_copy.data().data(), record_copy.data().size())
+            .append(record_copy.data())
             .append("'\n");
         mock_upload_->HasUnencryptedCopy(uploader_id, record_copy.destination(),
                                          record_copy.data());
@@ -275,23 +271,9 @@ class StorageQueueTest
     // should have that digest already recorded. Only the first record in a
     // generation is uploaded without last record digest. "Optional" is set to
     // no-value if there was a gap record instead of a real one.
-    struct LastRecordDigest {
-      struct Hash {
-        size_t operator()(
-            const std::pair<int64_t /*generation id */,
-                            int64_t /*sequencing id*/>& v) const noexcept {
-          const auto& [generation_id, sequencing_id] = v;
-          static constexpr std::hash<int64_t> generation_hasher;
-          static constexpr std::hash<int64_t> sequencing_hasher;
-          return generation_hasher(generation_id) ^
-                 sequencing_hasher(sequencing_id);
-        }
-      };
-      using Map = std::unordered_map<
-          std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
-          std::optional<std::string /*digest*/>,
-          Hash>;
-    };
+    using LastRecordDigestMap = base::flat_map<
+        std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
+        std::optional<std::string /*digest*/>>;
 
     // Helper class for setting up mock uploader expectations of a successful
     // completion.
@@ -438,15 +420,21 @@ class StorageQueueTest
       auto sequence_information = encrypted_record.sequence_information();
       // Decompress encrypted_wrapped_record if is was compressed.
       WrappedRecord wrapped_record;
-      ASSERT_TRUE(encrypted_record.has_compression_information());
-      std::string decompressed_record =
-          test::DecompressRecord(encrypted_record.encrypted_wrapped_record(),
-                                 encrypted_record.compression_information());
-      encrypted_record.set_encrypted_wrapped_record(decompressed_record);
+      if (encrypted_record.has_compression_information()) {
+        std::string decompressed_record = Decompression::DecompressRecord(
+            encrypted_record.encrypted_wrapped_record(),
+            encrypted_record.compression_information());
+        encrypted_record.set_encrypted_wrapped_record(decompressed_record);
+      }
       ASSERT_TRUE(wrapped_record.ParseFromString(
           encrypted_record.encrypted_wrapped_record()));
 
-      // Verify compression information is present.
+      // Verify compression information is enabled or disabled.
+      if (CompressionModule::is_enabled()) {
+        EXPECT_TRUE(encrypted_record.has_compression_information());
+      } else {
+        EXPECT_FALSE(encrypted_record.has_compression_information());
+      }
 
       std::optional<Record> possible_record_copy;
       if (encrypted_record.has_record_copy()) {
@@ -556,8 +544,8 @@ class StorageQueueTest
       }
 
       // Verify local elements are not included in Record.
-      CHECK_EQ(wrapped_record.record().has_reserved_space(), 0);
-      CHECK(!wrapped_record.record().needs_local_unencrypted_copy());
+      EXPECT_FALSE(wrapped_record.record().has_reserved_space());
+      EXPECT_FALSE(wrapped_record.record().needs_local_unencrypted_copy());
 
       // Verify digest and its match.
       {
@@ -624,7 +612,7 @@ class StorageQueueTest
     // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425477/test-results?q=ExactID%3Aninja%3A%2F%2Fcomponents%3Acomponents_unittests%2FStorageQueueTest.WriteAndRepeatedlyImmediateUpload%2FVaryingFileSize.4+VHash%3A54d84870d628118f
     const raw_ptr<std::optional<int64_t>, FlakyDanglingUntriaged>
         last_upload_generation_id_;
-    const raw_ptr<TestUploader::LastRecordDigest::Map, FlakyDanglingUntriaged>
+    const raw_ptr<LastRecordDigestMap, FlakyDanglingUntriaged>
         last_record_digest_map_;
 
     const raw_ptr<const MockUpload, FlakyDanglingUntriaged> mock_upload_;
@@ -637,7 +625,7 @@ class StorageQueueTest
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {
     ASSERT_FALSE(storage_queue_) << "TestStorageQueue already assigned";
     auto storage_queue_result = CreateTestStorageQueue(options);
-    ASSERT_OK(storage_queue_result)
+    ASSERT_TRUE(storage_queue_result.has_value())
         << "Failed to create TestStorageQueue, error="
         << storage_queue_result.error();
     storage_queue_ = std::move(storage_queue_result.value());
@@ -653,40 +641,22 @@ class StorageQueueTest
     ASSERT_OK(status) << status;
   }
 
-  // Tries to create a new storage queue by building the test encryption
-  // module and returns the corresponding result of the operation.
+  // Tries to create a new storage queue by building the test encryption module
+  // and returns the corresponding result of the operation.
   StatusOr<scoped_refptr<StorageQueue>> CreateTestStorageQueue(
-      const QueueOptions& options,
-      StorageQueue::InitRetryCb init_retry_cb = base::BindRepeating(
-          [](Status init_status,
-             size_t retry_count) -> StatusOr<base::TimeDelta> {
-            // Do not allow initialization retries.
-            return base::unexpected(std::move(init_status));
-          })) {
+      const QueueOptions& options) {
     CreateTestEncryptionModuleOrDie();
-    test::TestEvent<Status> initialized_event;
-    const auto storage_queue = StorageQueue::Create(
-        "GENERATION_GUID", options,
+    test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>>
+        storage_queue_create_event;
+    StorageQueue::Create(
+        options,
         base::BindRepeating(&StorageQueueTest::AsyncStartMockUploader,
                             base::Unretained(this)),
-        base::BindRepeating(
-            [](scoped_refptr<StorageQueue> queue,
-               base::OnceCallback<void(std::queue<scoped_refptr<StorageQueue>>)>
-                   result_cb) {
-              // Returns empty candidates queue - no degradation allowed.
-              std::move(result_cb).Run({});
-            }),
-        base::DoNothing(),
-        base::BindRepeating(
-            [](GenerationGuid generation_guid, base::OnceClosure done_cb) {
-              // Finished disconnect.
-              std::move(done_cb).Run();
-            }),
         test_encryption_module_,
-        CompressionModule::Create(kCompressionThreshold, kCompressionType));
-    storage_queue->Init(init_retry_cb, initialized_event.cb());
-    RETURN_IF_ERROR_STATUS(base::unexpected(initialized_event.result()));
-    return storage_queue;
+        CompressionModule::Create(kCompressionThreshold, kCompressionType),
+        storage_queue_create_event.cb());
+
+    return storage_queue_create_event.result();
   }
 
   void ResetTestStorageQueue() {
@@ -701,6 +671,8 @@ class StorageQueueTest
     // TODO(b/254418902): The next line is not logically necessary, but for
     // unknown reason the tests becomes flaky without it, keeping it for now.
     task_environment_.RunUntilIdle();
+    // All expected uploads should have happened.
+    EXPECT_THAT(expected_uploads_count_, Eq(0u));
     // Make sure all memory is deallocated.
     EXPECT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
@@ -716,16 +688,10 @@ class StorageQueueTest
     // By default return OK status - no error injected.
     EXPECT_CALL(*inject, Call(_, _))
         .WillRepeatedly(WithoutArgs(Return(Status::StatusOK())));
-    {
-      test::TestCallbackAutoWaiter waiter;
-      storage_queue_->TestInjectErrorsForOperation(
-          base::BindOnce(&test::TestCallbackAutoWaiter::Signal,
-                         base::Unretained(&waiter)),
-          base::BindRepeating(
-              &::testing::MockFunction<Status(test::StorageQueueOperationKind,
-                                              int64_t)>::Call,
-              base::Unretained(inject.get())));
-    }
+    storage_queue_->TestInjectErrorsForOperation(base::BindRepeating(
+        &::testing::MockFunction<Status(test::StorageQueueOperationKind,
+                                        int64_t)>::Call,
+        base::Unretained(inject.get())));
     return inject;
   }
 
@@ -755,8 +721,22 @@ class StorageQueueTest
             [](UploaderInterface::UploadReason reason,
                UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
                StorageQueueTest* self) {
+              if (self->expected_uploads_count_ == 0u) {
+                LOG(ERROR) << "Upload not expected, reason="
+                           << UploaderInterface::ReasonToString(reason);
+                std::move(start_uploader_cb)
+                    .Run(base::unexpected(Status(
+                        error::CANCELLED,
+                        base::StrCat(
+                            {"Unexpected upload ignored, reason=",
+                             UploaderInterface::ReasonToString(reason)}))));
+                return;
+              }
+              --(self->expected_uploads_count_);
               LOG(ERROR) << "Attempt upload, reason="
                          << UploaderInterface::ReasonToString(reason);
+              LOG_IF(FATAL, ++(self->upload_count_) >= 8uL)
+                  << "Too many uploads";
               auto result = self->set_mock_uploader_expectations_.Call(reason);
               if (!result.has_value()) {
                 LOG(ERROR) << "Upload not allowed, reason="
@@ -816,6 +796,13 @@ class StorageQueueTest
     ASSERT_OK(c_result) << c_result;
   }
 
+  void ResetExpectedUploadsCount() { expected_uploads_count_ = 0u; }
+
+  void SetExpectedUploadsCount(size_t count = 1u) {
+    EXPECT_THAT(expected_uploads_count_, Eq(0u));
+    expected_uploads_count_ = count;
+  }
+
   void DeleteGenerationIdFromRecordFilePaths(const QueueOptions options) {
     // Remove the generation id from the path of all data files in the storage
     // queue directory
@@ -826,11 +813,10 @@ class StorageQueueTest
         /*recursive=*/false, base::FileEnumerator::FILES, file_prefix_regex);
     for (auto file_path = dir_enum.Next(); !file_path.empty();
          file_path = dir_enum.Next()) {
-      auto file_path_without_generation_id =
-          file_path.RemoveFinalExtension().RemoveFinalExtension().value();
-      file_path_without_generation_id.append(file_path.FinalExtension());
-      ASSERT_TRUE(
-          Move(file_path, base::FilePath(file_path_without_generation_id)));
+      base::FilePath file_path_without_generation_id = base::FilePath(
+          file_path.RemoveFinalExtension().RemoveFinalExtension().AddExtension(
+              file_path.FinalExtension()));
+      ASSERT_TRUE(Move(file_path, file_path_without_generation_id));
     }
   }
 
@@ -849,7 +835,19 @@ class StorageQueueTest
 
   // Test-wide global mapping of <generation id, sequencing id> to record
   // digest. Serves all TestUploaders created by test fixture.
-  TestUploader::LastRecordDigest::Map last_record_digest_map_;
+  TestUploader::LastRecordDigestMap last_record_digest_map_;
+
+  size_t upload_count_ = 0uL;
+
+  // Counter indicating how many upload calls are expected.
+  // Can be set only if before that it is zero.
+  // Needs to be set to a positive number (usually 1) before executing an action
+  // that would trigger upload (e.g., advancing time or FLUSH or calling write
+  // to IMMEDIATE/SECURITY queue). As long as the counter is positive, uploads
+  // will be permitted, and the counter will decrement by 1. Once the counter
+  // becomes zero, upload calls will be ignored (they may be caused by mocked
+  // time being advanced more than requested).
+  size_t expected_uploads_count_ = 0u;
 
   // Mock to be called for setting up the uploader.
   // Allowed only if expected_uploads_count_ is positive.
@@ -862,7 +860,7 @@ constexpr std::array<const char*, 3> kData = {"Rec1111", "Rec222", "Rec33"};
 constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
                                                   "More33"};
 
-TEST_P(StorageQueueTest, WriteIntoStorageQueueAndReopen) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndReopen) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -884,10 +882,11 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueAndReopen) {
       .RetiresOnSaturation();
 
   // Reopening will cause INIT_RESUME
+  SetExpectedUploadsCount();
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 }
 
-TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenAndWriteMore) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenAndWriteMore) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -911,6 +910,7 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenAndWriteMore) {
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
     CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   }
 
@@ -919,7 +919,7 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenAndWriteMore) {
   WriteStringOrDie(kMoreData[2]);
 }
 
-TEST_P(StorageQueueTest, WriteIntoStorageQueueAndUpload) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -939,10 +939,11 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueAndUpload) {
       .RetiresOnSaturation();
 
   // Trigger upload.
+  SetExpectedUploadsCount();
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-TEST_P(StorageQueueTest, WriteIntoStorageQueueAndUploadWithFailures) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -972,10 +973,11 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueAndUploadWithFailures) {
       .RetiresOnSaturation();
 
   // Trigger upload.
+  SetExpectedUploadsCount();
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenWriteMoreAndUpload) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -999,6 +1001,7 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenWriteMoreAndUpload) {
         .RetiresOnSaturation();
 
     // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
     CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   }
 
@@ -1023,11 +1026,12 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenWriteMoreAndUpload) {
       .RetiresOnSaturation();
 
   // Trigger upload.
+  SetExpectedUploadsCount();
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest,
-       WriteIntoStorageQueueReopenWithMissingMetadataWriteMoreAndUpload) {
+       WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -1041,8 +1045,7 @@ TEST_P(StorageQueueTest,
   // Delete all metadata files.
   EnsureDeletingFiles(options.directory(),
                       /*recursive=*/false, base::FileEnumerator::FILES,
-                      base::StrCat({StorageDirectory::kMetadataFileNamePrefix,
-                                    FILE_PATH_LITERAL(".*")}));
+                      base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
 
   // Avoid init resume upload upon non-empty queue restart.
   {
@@ -1056,6 +1059,8 @@ TEST_P(StorageQueueTest,
         }))
         .RetiresOnSaturation();
 
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
     // Reopen, starting a new generation.
     CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   }
@@ -1081,11 +1086,13 @@ TEST_P(StorageQueueTest,
       .RetiresOnSaturation();
 
   // Trigger upload.
+  SetExpectedUploadsCount();
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-TEST_P(StorageQueueTest,
-       WriteIntoStorageQueueReopenWithMissingLastMetadataWriteMoreAndUpload) {
+TEST_P(
+    StorageQueueTest,
+    WriteIntoNewStorageQueueReopenWithMissingLastMetadataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -1098,8 +1105,8 @@ TEST_P(StorageQueueTest,
 
   // Delete the last metadata file.
   {  // scoping this block so that dir_enum is not used later.
-    const auto last_metadata_file_pattern = base::StrCat(
-        {StorageDirectory::kMetadataFileNamePrefix, FILE_PATH_LITERAL(".2")});
+    const auto last_metadata_file_pattern =
+        base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".2")});
     base::FileEnumerator dir_enum(options.directory(),
                                   /*recursive=*/false,
                                   base::FileEnumerator::FILES,
@@ -1126,6 +1133,8 @@ TEST_P(StorageQueueTest,
         }))
         .RetiresOnSaturation();
 
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
     // Reopen, starting a new generation.
     CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   }
@@ -1151,11 +1160,12 @@ TEST_P(StorageQueueTest,
       .RetiresOnSaturation();
 
   // Trigger upload.
+  SetExpectedUploadsCount();
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_P(StorageQueueTest,
-       WriteIntoStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
+       WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -1178,6 +1188,8 @@ TEST_P(StorageQueueTest,
         }))
         .RetiresOnSaturation();
 
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
     // Reopen with the same generation and sequencing information.
     CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   }
@@ -1251,10 +1263,11 @@ TEST_P(StorageQueueTest,
   }
 
   // Trigger upload.
+  SetExpectedUploadsCount();
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-TEST_P(StorageQueueTest, WriteIntoStorageQueueAndFlush) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -1274,10 +1287,11 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueAndFlush) {
       .RetiresOnSaturation();
 
   // Flush manually.
+  SetExpectedUploadsCount();
   FlushOrDie();
 }
 
-TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenWriteMoreAndFlush) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -1297,6 +1311,8 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenWriteMoreAndFlush) {
         }))
         .RetiresOnSaturation();
 
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
     CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
   }
 
@@ -1321,6 +1337,7 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenWriteMoreAndFlush) {
       .RetiresOnSaturation();
 
   // Flush manually.
+  SetExpectedUploadsCount();
   FlushOrDie();
 }
 
@@ -1349,6 +1366,7 @@ TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
       .RetiresOnSaturation();
 
   // Flush manually.
+  SetExpectedUploadsCount();
   FlushOrDie();
 }
 
@@ -1375,6 +1393,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
   // Confirm #0 and forward time again, removing record #0
@@ -1394,6 +1413,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1413,6 +1433,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1436,6 +1457,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1456,6 +1478,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
@@ -1483,6 +1506,7 @@ TEST_P(StorageQueueTest, WriteAndUploadWithBadConfirmation) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1520,6 +1544,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1540,6 +1565,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1559,6 +1585,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1576,6 +1603,8 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
         }))
         .RetiresOnSaturation();
 
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
     CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   }
 
@@ -1601,6 +1630,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1621,6 +1651,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
@@ -1649,6 +1680,7 @@ TEST_P(StorageQueueTest,
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1669,6 +1701,7 @@ TEST_P(StorageQueueTest,
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1688,6 +1721,7 @@ TEST_P(StorageQueueTest,
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1705,6 +1739,8 @@ TEST_P(StorageQueueTest,
         }))
         .RetiresOnSaturation();
 
+    // Reopening will cause INIT_RESUME
+    SetExpectedUploadsCount();
     CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   }
 
@@ -1742,6 +1778,7 @@ TEST_P(StorageQueueTest,
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1749,11 +1786,7 @@ TEST_P(StorageQueueTest,
   ConfirmOrDie(/*sequencing_id=*/2);
 
   // Reset error injection.
-  {
-    test::TestCallbackAutoWaiter waiter;
-    storage_queue_->TestInjectErrorsForOperation(base::BindOnce(
-        &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
-  }
+  storage_queue_->TestInjectErrorsForOperation();
 
   {
     // Set uploader expectations.
@@ -1769,6 +1802,7 @@ TEST_P(StorageQueueTest,
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
@@ -1792,6 +1826,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kData[0]);
   }
 
@@ -1808,6 +1843,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kData[1]);
   }
 
@@ -1824,6 +1860,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kData[2]);
   }
 }
@@ -1846,6 +1883,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kData[0]);
   }
 
@@ -1861,6 +1899,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kData[1]);
   }
 
@@ -1877,6 +1916,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kData[2]);
   }
 
@@ -1899,6 +1939,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kMoreData[0]);
   }
 
@@ -1915,6 +1956,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kMoreData[1]);
   }
 
@@ -1932,6 +1974,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kMoreData[2]);
   }
 }
@@ -1961,6 +2004,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithFailure) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount(2u);
     WriteStringOrDie(kData[0]);  // Immediately uploads and fails.
     // Let it retry upload and verify.
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1985,6 +2029,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     WriteStringOrDie(kData[0]);  // Immediately uploads and does not confirm.
   }
 
@@ -2000,6 +2045,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
                   .Complete();
             }))
         .RetiresOnSaturation();
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(5));
   }
 
@@ -2014,7 +2060,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
 
 TEST_P(StorageQueueTest, WriteEncryptFailure) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  CHECK(test_encryption_module_);
+  ASSERT_THAT(test_encryption_module_, NotNull());
   EXPECT_CALL(*test_encryption_module_, EncryptRecordImpl(_, _))
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
@@ -2049,6 +2095,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -2069,6 +2116,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -2099,6 +2147,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -2126,6 +2175,7 @@ TEST_P(StorageQueueTest, ForceConfirm) {
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
@@ -2194,125 +2244,6 @@ TEST_P(StorageQueueTest, CreateStorageQueueInvalidOptionsPath) {
       CreateTestStorageQueue(BuildStorageQueueOptionsPeriodic());
   EXPECT_FALSE(queue_result.has_value());
   EXPECT_EQ(queue_result.error().error_code(), error::UNAVAILABLE);
-}
-
-TEST_P(StorageQueueTest, CreateStorageQueueAllRetriesFail) {
-  options_.set_directory(base::FilePath(kInvalidDirectoryPath));
-  auto init_retry_cb = base::BindRepeating(
-      [](base::RepeatingCallback<void(base::TimeDelta)> forward_cb,
-         Status init_status, size_t retry_count) -> StatusOr<base::TimeDelta> {
-        forward_cb.Run(base::Seconds(1));
-        return base::Seconds(1);  // Retry allowed
-      },
-      base::BindPostTaskToCurrentDefault(
-          base::BindRepeating(&base::test::TaskEnvironment::FastForwardBy,
-                              base::Unretained(&task_environment_))));
-  StatusOr<scoped_refptr<StorageQueue>> queue_result =
-      CreateTestStorageQueue(BuildStorageQueueOptionsPeriodic(), init_retry_cb);
-  EXPECT_FALSE(queue_result.has_value());
-  EXPECT_EQ(queue_result.error().error_code(), error::UNAVAILABLE);
-}
-
-TEST_P(StorageQueueTest, CreateStorageQueueMultipleTimesRace) {
-  static constexpr size_t kThreads = 128;
-  // Populate multiple instances of `StorageQueue` (synchronously) without
-  // initialization.
-  std::array<scoped_refptr<StorageQueue>, kThreads> queues;
-  CreateTestEncryptionModuleOrDie();
-  const GenerationGuid generation_guid = "GENERATION_GUID";
-  const auto options = BuildStorageQueueOptionsOnlyManual();
-  const auto async_start_upload_cb = base::BindRepeating(
-      &StorageQueueTest_CreateStorageQueueMultipleTimesRace_Test::
-          AsyncStartMockUploader,
-      base::Unretained(this));
-  const auto degradation_candidates_cb = base::BindRepeating(
-      [](scoped_refptr<StorageQueue> queue,
-         base::OnceCallback<void(std::queue<scoped_refptr<StorageQueue>>)>
-             result_cb) {
-        // Returns empty candidates queue - no degradation allowed.
-        std::move(result_cb).Run({});
-      });
-  const StorageQueue::DisableQueueCb disable_queue_cb = base::DoNothing();
-  const auto disconnect_queue_cb = base::BindRepeating(
-      [](GenerationGuid generation_guid, base::OnceClosure done_cb) {
-        // Finished disconnect.
-        std::move(done_cb).Run();
-      });
-  const auto encryption_module = test_encryption_module_;
-  const auto compression_module =
-      CompressionModule::Create(kCompressionThreshold, kCompressionType);
-  for (size_t i = 0; i < kThreads; ++i) {
-    queues[i] = StorageQueue::Create(
-        generation_guid, options, async_start_upload_cb,
-        degradation_candidates_cb, disable_queue_cb, disconnect_queue_cb,
-        encryption_module, compression_module);
-  }
-  // Initialize all instances in parallel with the same settings (options).
-  std::array<test::TestEvent<Status>, kThreads> init_events;
-  const StorageQueue::InitRetryCb init_retry_cb = base::BindRepeating(
-      [](Status init_status, size_t retry_count) -> StatusOr<base::TimeDelta> {
-        // Do not allow initialization retries.
-        return base::unexpected(std::move(init_status));
-      });
-  for (size_t i = 0; i < kThreads; ++i) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, base::BindOnce(&StorageQueue::Init, queues[i], init_retry_cb,
-                                  init_events[i].cb()));
-  }
-  // Check that all queues have been initialized with success (to increase
-  // chances of a race, in reverse order to the initialization calls).
-  for (size_t i = kThreads; i > 0; --i) {
-    const auto status = init_events[i - 1].result();
-    ASSERT_OK(status) << "Failed to create TestStorageQueue[" << i - 1
-                      << "], error=" << status;
-  }
-}
-
-TEST_P(StorageQueueTest, CreateStorageQueueRetry) {
-  // Create a file instead of directory, to make StorageQueue initialization
-  // fail.
-  base::FilePath bad_file;
-  ASSERT_TRUE(base::CreateTemporaryFileInDir(options_.directory(), &bad_file));
-  const QueueOptions queue_options =
-      BuildStorageQueueOptionsPeriodic().set_subdirectory(
-          bad_file.BaseName().value());
-  // Allow the retries with backoff several times, and the last time delete
-  // the file.
-  auto init_retry_cb = base::BindRepeating(
-      [](base::RepeatingCallback<void(base::TimeDelta)> forward_cb,
-         const base::FilePath& bad_file, Status init_status,
-         size_t retry_count) -> StatusOr<base::TimeDelta> {
-        if (retry_count == 1) {  // Last attempt.
-          EXPECT_TRUE(base::DeleteFile(bad_file));
-        }
-        forward_cb.Run(base::Seconds(1));
-        return base::Seconds(1);
-      },
-      base::BindPostTaskToCurrentDefault(
-          base::BindRepeating(&base::test::TaskEnvironment::FastForwardBy,
-                              base::Unretained(&task_environment_))),
-      bad_file);
-  StatusOr<scoped_refptr<StorageQueue>> queue_result =
-      CreateTestStorageQueue(queue_options, init_retry_cb);
-  EXPECT_OK(queue_result) << queue_result.error();
-}
-
-TEST_P(StorageQueueTest, WriteRecordDataWithInsufficientDiskSpaceFailure) {
-  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
-
-  // Inject simulated failures.
-  auto inject = InjectFailures();
-  EXPECT_CALL(
-      *inject,
-      Call(Eq(test::StorageQueueOperationKind::kWriteLowDiskSpace), Eq(0)))
-      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
-        return Status(error::INTERNAL,
-                      base::StrCat({"Simulated data write low disk space, seq=",
-                                    base::NumberToString(seq_id)}));
-      })));
-  Status write_result = WriteString(kData[0]);
-  EXPECT_FALSE(write_result.ok());
-  EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
 }
 
 TEST_P(StorageQueueTest, WriteRecordMetadataWithInsufficientDiskSpaceFailure) {
@@ -2501,6 +2432,7 @@ TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
             }))
         .RetiresOnSaturation();
     // Trigger upload which will experience insufficient memory.
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(5));
   }
 
@@ -2520,11 +2452,12 @@ TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
         .RetiresOnSaturation();
 
     // Trigger another (failure retry) upload resetting the memory resource.
+    SetExpectedUploadsCount();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 
-TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenWithCorruptData) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWithCorruptData) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -2537,30 +2470,9 @@ TEST_P(StorageQueueTest, WriteIntoStorageQueueReopenWithCorruptData) {
 
   DeleteGenerationIdFromRecordFilePaths(options);
 
-  // All data files should be irreparably corrupt, but we still consider it a
-  // success: the queue regenerates.
-  CreateTestStorageQueueOrDie(options);
-
-  // Make sure the queue is OK, but old writes are lost.
-  WriteStringOrDie(kMoreData[0]);
-  WriteStringOrDie(kMoreData[1]);
-  WriteStringOrDie(kMoreData[2]);
-
-  // Set uploader expectations.
-  test::TestCallbackAutoWaiter waiter;
-  EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-        return TestUploader::SetUp(&waiter, this)
-            .Required(0, kMoreData[0])
-            .Required(1, kMoreData[1])
-            .Required(2, kMoreData[2])
-            .Complete();
-      }))
-      .RetiresOnSaturation();
-
-  // Trigger upload.
-  task_environment_.FastForwardBy(base::Seconds(1));
+  // All data files should be irreparably corrupt
+  auto storage_queue_result = CreateTestStorageQueue(options);
+  EXPECT_THAT(storage_queue_result.error(), Ne(Status::StatusOK()));
 }
 
 TEST_P(StorageQueueTest, WriteWithUnencryptedCopy) {
@@ -2590,6 +2502,7 @@ TEST_P(StorageQueueTest, WriteWithUnencryptedCopy) {
       .RetiresOnSaturation();
 
   // Flush manually.
+  SetExpectedUploadsCount();
   FlushOrDie();
 }
 
@@ -2628,8 +2541,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(128 * 1024LL * 1024LL,
                                      256 /* two records in file */,
                                      1 /* single record in file */),
-                     testing::Values("DM TOKEN", ""),
-                     testing::Bool()));
+                     testing::Values("DM TOKEN", "")));
 
 }  // namespace
 }  // namespace reporting

@@ -67,6 +67,9 @@ class TestOmniboxController : public OmniboxController {
 namespace {
 
 class ZeroSuggestPrefetchHelperTest : public PlatformTest {
+ public:
+  ~ZeroSuggestPrefetchHelperTest() override { [helper_ disconnect]; }
+
  protected:
   void SetUp() override {
     PlatformTest::SetUp();

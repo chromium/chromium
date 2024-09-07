@@ -15,6 +15,7 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/login_database_async_helper.h"
@@ -209,12 +210,17 @@ void PasswordStoreBuiltInBackend::InitBackend(
     std::move(init_database_callback).Run(nullptr);
     return;
   }
+  os_crypt_async::Encryptor::Option option =
+      base::FeatureList::IsEnabled(features::kUseNewEncryptionMethod)
+          ? os_crypt_async::Encryptor::Option::kNone
+          : os_crypt_async::Encryptor::Option::kEncryptSyncCompat;
+
   subscription_ = os_crypt_async_->GetInstance(
       metrics_util::TimeCallback(
           base::BindOnce(&ConvertToUniquePtr)
               .Then(std::move(init_database_callback)),
           "PasswordManager.OsCryptAsync.GetInstanceTime"),
-      os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
+      option);
 }
 
 void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
@@ -520,7 +526,7 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
               weak_ptr_factory_.GetWeakPtr()))
           .Then(std::move(remote_form_changes_received));
 
-  base::RepeatingClosure on_undecryptable_passwords_removed =
+  auto on_undecryptable_passwords_removed =
 #if BUILDFLAG(IS_ANDROID)
       base::DoNothing();
 #else
@@ -544,9 +550,16 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
 
 #if !BUILDFLAG(IS_ANDROID)
 void PasswordStoreBuiltInBackend::
-    SetClearingUndecryptablePasswordsIsEnabledPref() {
+    SetClearingUndecryptablePasswordsIsEnabledPref(
+        IsAccountStore is_account_store) {
   CHECK(pref_service_);
   pref_service_->SetBoolean(prefs::kClearingUndecryptablePasswords, true);
+  if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
+    AddPasswordRemovalReason(
+        pref_service_, is_account_store,
+        metrics_util::PasswordManagerCredentialRemovalReason::
+            kDeletingUndecryptablePasswords);
+  }
 }
 #endif
 

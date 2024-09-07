@@ -159,6 +159,7 @@ component("evdev") {
     visibility += [
       "//chrome/browser/ui",
       "//chrome/browser/ui/ash",
+      "//chrome/browser/ui/ash/main_extra_parts",
       "//chromeos/ash/components/heatmap/*",
     ]
   }

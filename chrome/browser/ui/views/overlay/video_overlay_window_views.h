@@ -27,6 +27,7 @@ class FrameSinkId;
 class BackToTabLabelButton;
 class CloseImageButton;
 class HangUpButton;
+class OverlayWindowBackToTabButton;
 class OverlayWindowMinimizeButton;
 class PlaybackImageButton;
 class ResizeHandleButton;
@@ -168,6 +169,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
       const;
   CloseImageButton* close_button_for_testing() const;
   OverlayWindowMinimizeButton* minimize_button_for_testing() const;
+  OverlayWindowBackToTabButton* back_to_tab_button_for_testing() const;
   gfx::Point close_image_position_for_testing() const;
   gfx::Point resize_handle_position_for_testing() const;
   PlaybackState playback_state_for_testing() const;
@@ -329,6 +331,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<views::View> controls_container_view_ = nullptr;
   raw_ptr<CloseImageButton> close_controls_view_ = nullptr;
   raw_ptr<OverlayWindowMinimizeButton> minimize_button_ = nullptr;
+  raw_ptr<OverlayWindowBackToTabButton> back_to_tab_button_ = nullptr;
   raw_ptr<BackToTabLabelButton> back_to_tab_label_button_ = nullptr;
   raw_ptr<SimpleOverlayWindowImageButton> previous_track_controls_view_ =
       nullptr;

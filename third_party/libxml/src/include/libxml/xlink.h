@@ -160,16 +160,20 @@ struct _xlinkHandler {
  * detection callbacks.
  */
 
+XML_DEPRECATED
 XMLPUBFUN xlinkNodeDetectFunc
 		xlinkGetDefaultDetect	(void);
+XML_DEPRECATED
 XMLPUBFUN void
 		xlinkSetDefaultDetect	(xlinkNodeDetectFunc func);
 
 /*
  * Routines to set/get the default handlers.
  */
+XML_DEPRECATED
 XMLPUBFUN xlinkHandlerPtr
 		xlinkGetDefaultHandler	(void);
+XML_DEPRECATED
 XMLPUBFUN void
 		xlinkSetDefaultHandler	(xlinkHandlerPtr handler);
 

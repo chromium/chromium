@@ -260,7 +260,7 @@
     "includes": [3100],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commerce/product_specifications/resources.grd": {
-    "META": {"sizes": {"includes": [40]}},
+    "META": {"sizes": {"includes": [50]}},
     "includes": [3120],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/compose/resources.grd": {
@@ -335,7 +335,7 @@
     "META": {"sizes": {"includes": [40]}},
     "includes": [3480],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/nearby_share/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/nearby_share/resources.grd": {
     "META": {"sizes": {"includes": [100]}},
     "includes": [3500],
   },
@@ -458,7 +458,7 @@
     "includes": [4120],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_search/resources.grd": {
-    "META": {"sizes": {"includes": [70]}},
+    "META": {"sizes": {"includes": [90]}},
     "includes": [4140],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_strip/resources.grd": {
@@ -710,6 +710,10 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [5360],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/shared/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [5370],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/enterprise_reporting/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [5380],
@@ -771,7 +775,7 @@
     "includes": [5720],
   },
   "chromeos/ash/components/emoji/emoji.grd" : {
-    "META": {"sizes": {"includes": [35],}},
+    "META": {"sizes": {"includes": [45],}},
     "includes" : [5740],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chromeos/ash/components/kiosk/vision/webui/resources.grd" : {
@@ -845,6 +849,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/focus_mode/untrusted_resources/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [6080],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/graduation/resources/resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
+    "includes": [6090],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/recorder_app_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [200],}},

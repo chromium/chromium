@@ -52,6 +52,10 @@ TEST(ModelExecutionFeature, GetOptimizationTargetForModelAdaptation) {
                   ModelBasedCapabilityKey::kPromptApi),
               proto::OptimizationTarget::
                   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API);
+  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
+                  ModelBasedCapabilityKey::kSummarize),
+              proto::OptimizationTarget::
+                  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SUMMARIZE);
 
   // Special cases go here.
   EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(

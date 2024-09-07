@@ -271,9 +271,9 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   FakeClickHandler fake_click_handler_;
   std::unique_ptr<eche_app::EcheConnectionStatusHandler>
       eche_connection_status_handler_;
-  std::unique_ptr<RecentAppsInteractionHandlerImpl> interaction_handler_;
   TestingPrefServiceSimple pref_service_;
   FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;
+  std::unique_ptr<RecentAppsInteractionHandlerImpl> interaction_handler_;
 };
 
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {

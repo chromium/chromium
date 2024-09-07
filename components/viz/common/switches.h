@@ -16,10 +16,10 @@ namespace switches {
 
 // Keep list in alphabetical order.
 VIZ_COMMON_EXPORT extern const char kDeadlineToSynchronizeSurfaces[];
+VIZ_COMMON_EXPORT extern const char kDelegatedInkRenderer[];
 VIZ_COMMON_EXPORT extern const char kDisableAdpf[];
 VIZ_COMMON_EXPORT extern const char kDisableFrameRateLimit[];
 VIZ_COMMON_EXPORT extern const char kDoubleBufferCompositing[];
-VIZ_COMMON_EXPORT extern const char kDrawQuadSplitLimit[];
 VIZ_COMMON_EXPORT extern const char kEnableHardwareOverlays[];
 VIZ_COMMON_EXPORT extern const char kRunAllCompositorStagesBeforeDraw[];
 VIZ_COMMON_EXPORT extern const char kShowAggregatedDamage[];
@@ -33,6 +33,10 @@ VIZ_COMMON_EXPORT extern const char kTintCompositedContentModulate[];
 VIZ_COMMON_EXPORT extern const char kShowDCLayerDebugBorders[];
 
 VIZ_COMMON_EXPORT std::optional<uint32_t> GetDeadlineToSynchronizeSurfaces();
+
+enum class DelegatedInkRendererMode { kNone, kSystem, kSkia };
+VIZ_COMMON_EXPORT std::optional<DelegatedInkRendererMode>
+GetDelegatedInkRendererMode();
 
 }  // namespace switches
 

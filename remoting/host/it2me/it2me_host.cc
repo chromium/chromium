@@ -6,11 +6,14 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -19,9 +22,11 @@
 #include "components/webrtc/thread_wrapper.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
@@ -34,12 +39,12 @@
 #include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/it2me_desktop_environment.h"
 #include "remoting/host/passthrough_register_support_host_request.h"
+#include "remoting/host/session_policies_from_dict.h"
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
 #include "remoting/protocol/jingle_session_manager.h"
-#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/validating_authenticator.h"
 #include "remoting/signaling/log_to_server.h"
@@ -291,38 +296,11 @@ void It2MeHost::ConnectOnNetworkThread(
       base::BindOnce(&It2MeHost::OnReceivedSupportID,
                      weak_factory_.GetWeakPtr()));
 
-  HOST_LOG << "NAT traversal enabled: " << nat_traversal_enabled_;
-  HOST_LOG << "Relay connections allowed: " << relay_connections_allowed_;
-
-  uint32_t network_flags = protocol::NetworkSettings::NAT_TRAVERSAL_DISABLED;
-  if (nat_traversal_enabled_) {
-    network_flags = protocol::NetworkSettings::NAT_TRAVERSAL_STUN |
-                    protocol::NetworkSettings::NAT_TRAVERSAL_OUTGOING;
-    if (relay_connections_allowed_) {
-      network_flags |= protocol::NetworkSettings::NAT_TRAVERSAL_RELAY;
-    }
-  }
-
-  protocol::NetworkSettings network_settings(network_flags);
-
-  if (!udp_port_range_.is_null()) {
-    network_settings.port_range = udp_port_range_;
-  } else if (!nat_traversal_enabled_) {
-    // For legacy reasons we have to restrict the port range to a set of default
-    // values when nat traversal is disabled, even if the port range was not
-    // set in policy.
-    network_settings.port_range.min_port =
-        protocol::NetworkSettings::kDefaultMinPort;
-    network_settings.port_range.max_port =
-        protocol::NetworkSettings::kDefaultMaxPort;
-  }
-
-  scoped_refptr<protocol::TransportContext> transport_context =
-      new protocol::TransportContext(
-          std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-          webrtc::ThreadWrapper::current()->SocketServer(),
-          host_context_->url_loader_factory(), oauth_token_getter_.get(),
-          network_settings, protocol::TransportRole::SERVER);
+  auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
+      std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
+      webrtc::ThreadWrapper::current()->SocketServer(),
+      host_context_->url_loader_factory(), oauth_token_getter_.get(),
+      protocol::TransportRole::SERVER);
   if (!ice_config.is_null()) {
     transport_context->set_turn_ice_config(ice_config);
   }
@@ -356,21 +334,15 @@ void It2MeHost::ConnectOnNetworkThread(
         chrome_os_enterprise_params_->terminate_upon_input);
     options.set_enable_curtaining(
         chrome_os_enterprise_params_->curtain_local_user_session);
-    options.set_enable_file_transfer(
-        chrome_os_enterprise_params_->allow_file_transfer &&
-        enterprise_file_transfer_allowed_);
   }
 #endif
-
-  if (max_clipboard_size_.has_value()) {
-    options.set_clipboard_size(max_clipboard_size_.value());
-  }
 
   // Create the host.
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, host_context_->audio_task_runner(),
-      host_context_->video_encode_task_runner(), options);
+      host_context_->video_encode_task_runner(), options,
+      &local_session_policies_provider_);
   host_->status_monitor()->AddStatusObserver(this);
   host_status_logger_ = std::make_unique<HostStatusLogger>(
       host_->status_monitor(), log_to_server_.get());
@@ -470,16 +442,6 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   remote_support_connections_allowed_ =
       policies.FindBool(GetRemoteSupportPolicyKey()).value_or(true);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  enterprise_file_transfer_allowed_ =
-      policies
-          .FindBool(policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer)
-          .value_or(false);
-
-  HOST_LOG << "RemoteAccessHostEnterpriseFileTransfer capability is enabled: "
-           << enterprise_file_transfer_allowed_;
-#endif
-
   std::optional<bool> nat_policy_value =
       policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
   if (!nat_policy_value.has_value()) {
@@ -514,24 +476,18 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
     UpdateClientDomainListPolicy(std::move(client_domain_list_vector));
   }
 
-  const std::string* port_range_string =
-      policies.FindString(policy::key::kRemoteAccessHostUdpPortRange);
-  if (port_range_string) {
-    UpdateHostUdpPortRangePolicy(*port_range_string);
-  }
-
-  std::optional<int> max_clipboard_size =
-      policies.FindInt(policy::key::kRemoteAccessHostClipboardSizeBytes);
-  if (max_clipboard_size.has_value()) {
-    if (max_clipboard_size.value() >= 0) {
-      max_clipboard_size_ = max_clipboard_size.value();
-    }
-  }
+  UpdateSessionPolicies(policies);
 }
 
 void It2MeHost::UpdateNatPolicies(bool nat_policy_value,
                                   bool relay_policy_value) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
+
+  // This method is needed simply because we need to notify the website of the
+  // setting change. This only works if the NAT policies are configured locally.
+  // This will not work if we add SessionAuthz policies to IT2ME in the future.
+  // TODO: yuweih - Fix this, or remove this altogether if we don't think it's
+  // useful.
 
   VLOG(2) << "UpdateNatPolicies: nat_policy_value: " << nat_policy_value;
   bool nat_traversal_value_changed = nat_traversal_enabled_ != nat_policy_value;
@@ -585,20 +541,42 @@ void It2MeHost::UpdateClientDomainListPolicy(
   required_client_domain_list_ = std::move(client_domain_list);
 }
 
-void It2MeHost::UpdateHostUdpPortRangePolicy(
-    const std::string& port_range_string) {
-  DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
-
-  VLOG(2) << "UpdateHostUdpPortRangePolicy: " << port_range_string;
-
-  if (IsRunning()) {
-    DisconnectOnNetworkThread();
+void It2MeHost::UpdateSessionPolicies(
+    const base::Value::Dict& platform_policies) {
+  std::optional<SessionPolicies> local_session_policies =
+      SessionPoliciesFromDict(platform_policies);
+  if (!local_session_policies.has_value()) {
+    LOG(FATAL) << "Failed to parse local session policies.";
   }
 
-  if (!PortRange::Parse(port_range_string, &udp_port_range_)) {
-    // PolicyWatcher verifies that the value is formatted correctly.
-    LOG(FATAL) << "Invalid port range: " << port_range_string;
+  // These are currently disallowed for IT2ME connections by default.
+  // TODO: yuweih - Figure out what should be done when we add SessionAuthz
+  // policies support for IT2ME. Given the current logic, these features can be
+  // enabled by SessionAuthz policies, which is not possible by local Chrome
+  // policies.
+  local_session_policies->allow_file_transfer = false;
+  local_session_policies->allow_uri_forwarding = false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  if (chrome_os_enterprise_params_.has_value()) {
+    local_session_policies->curtain_required =
+        chrome_os_enterprise_params_->curtain_local_user_session;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    bool enterprise_file_transfer_allowed =
+        platform_policies
+            .FindBool(policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer)
+            .value_or(false);
+#else
+    bool enterprise_file_transfer_allowed = false;
+#endif
+    local_session_policies->allow_file_transfer =
+        chrome_os_enterprise_params_->allow_file_transfer &&
+        enterprise_file_transfer_allowed;
   }
+#endif
+
+  local_session_policies_provider_.set_local_policies(*local_session_policies);
 }
 
 void It2MeHost::SetState(It2MeHostState state, ErrorCode error_code) {

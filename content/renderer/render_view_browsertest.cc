@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <tuple>
@@ -156,21 +152,22 @@ static const int kProxyRoutingId = 13;
 #if BUILDFLAG(IS_OZONE)
 // Converts MockKeyboard::Modifiers to ui::EventFlags.
 int ConvertMockKeyboardModifier(MockKeyboard::Modifiers modifiers) {
-  static struct ModifierMap {
+  struct ModifierMap {
     MockKeyboard::Modifiers src;
     int dst;
-  } kModifierMap[] = {
+  };
+  static const auto kMapping = std::to_array<ModifierMap>({
       {MockKeyboard::LEFT_SHIFT, ui::EF_SHIFT_DOWN},
       {MockKeyboard::RIGHT_SHIFT, ui::EF_SHIFT_DOWN},
       {MockKeyboard::LEFT_CONTROL, ui::EF_CONTROL_DOWN},
       {MockKeyboard::RIGHT_CONTROL, ui::EF_CONTROL_DOWN},
       {MockKeyboard::LEFT_ALT, ui::EF_ALT_DOWN},
       {MockKeyboard::RIGHT_ALT, ui::EF_ALT_DOWN},
-  };
+  });
   int flags = 0;
-  for (size_t i = 0; i < std::size(kModifierMap); ++i) {
-    if (kModifierMap[i].src & modifiers) {
-      flags |= kModifierMap[i].dst;
+  for (const auto& mapping : kMapping) {
+    if (mapping.src & modifiers) {
+      flags |= mapping.dst;
     }
   }
   return flags;
@@ -868,7 +865,7 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
       blink::kWebNavigationTypeOther,
   };
 
-  for (size_t i = 0; i < std::size(kNavTypes); ++i) {
+  for (const auto& nav_type : kNavTypes) {
     auto navigation_info = std::make_unique<blink::WebNavigationInfo>();
     navigation_info->url_request = blink::WebURLRequest(GURL("http://foo.com"));
     navigation_info->url_request.SetRequestorOrigin(
@@ -876,7 +873,7 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
     navigation_info->frame_type =
         blink::mojom::RequestContextFrameType::kTopLevel;
     navigation_info->navigation_policy = blink::kWebNavigationPolicyCurrentTab;
-    navigation_info->navigation_type = kNavTypes[i];
+    navigation_info->navigation_type = nav_type;
 
     frame()->BeginNavigation(std::move(navigation_info));
     EXPECT_TRUE(frame()->IsURLOpened());
@@ -885,7 +882,8 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
 
 TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   // Enable bindings to simulate a WebUI view.
-  frame()->AllowBindings(BINDINGS_POLICY_WEB_UI);
+  frame()->AllowBindings(
+      BindingsPolicySet({BindingsPolicyValue::kWebUi}).ToEnumBitmask());
 
   blink::WebSecurityOrigin requestor_origin =
       blink::WebSecurityOrigin::Create(GURL("http://foo.com"));
@@ -1355,10 +1353,9 @@ TEST_F(RenderViewImplTextInputStateChanged, OnImeTypeChanged) {
     input_mode = updated_states()[0]->mode;
     EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, type);
 
-    for (size_t test = 0; test < std::size(kInputModeTestCases); test++) {
-      const InputModeTestCase* test_case = &kInputModeTestCases[test];
+    for (const auto test_case : kInputModeTestCases) {
       std::u16string javascript = base::ASCIIToUTF16(base::StringPrintf(
-          "document.getElementById('%s').focus();", test_case->input_id));
+          "document.getElementById('%s').focus();", test_case.input_id));
       // Move the input focus to the target <input> element, where we should
       // activate IMEs.
       ExecuteJavaScriptAndReturnIntValue(javascript, nullptr);
@@ -1372,7 +1369,7 @@ TEST_F(RenderViewImplTextInputStateChanged, OnImeTypeChanged) {
       EXPECT_EQ(1u, updated_states().size());
       type = updated_states()[0]->type;
       input_mode = updated_states()[0]->mode;
-      EXPECT_EQ(test_case->expected_mode, input_mode);
+      EXPECT_EQ(test_case.expected_mode, input_mode);
     }
   }
 }
@@ -1929,9 +1926,8 @@ TEST_F(RenderViewImplTest, ImeComposition) {
       {IME_FINISHCOMPOSINGTEXT, false, -1, -1, L"", L"\xC548\xB155"},
   };
 
-  for (size_t i = 0; i < std::size(kImeMessages); i++) {
-    const ImeMessage* ime_message = &kImeMessages[i];
-    switch (ime_message->command) {
+  for (const auto& ime_message : kImeMessages) {
+    switch (ime_message.command) {
       case IME_INITIALIZE:
         // Load an HTML page consisting of a content-editable <div> element,
         // and move the input focus to the <div> element, where we can use
@@ -1953,22 +1949,22 @@ TEST_F(RenderViewImplTest, ImeComposition) {
       case IME_SETFOCUS:
         // Update the window focus.
         GetWidgetInputHandler()->SetFocus(
-            ime_message->enable
+            ime_message.enable
                 ? blink::mojom::FocusState::kFocused
                 : blink::mojom::FocusState::kNotFocusedAndActive);
         break;
 
       case IME_SETCOMPOSITION:
         GetWidgetInputHandler()->ImeSetComposition(
-            base::WideToUTF16(ime_message->ime_string),
+            base::WideToUTF16(ime_message.ime_string),
             std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(),
-            ime_message->selection_start, ime_message->selection_end,
+            ime_message.selection_start, ime_message.selection_end,
             base::DoNothing());
         break;
 
       case IME_COMMITTEXT:
         GetWidgetInputHandler()->ImeCommitText(
-            base::WideToUTF16(ime_message->ime_string),
+            base::WideToUTF16(ime_message.ime_string),
             std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0,
             base::DoNothing());
         break;
@@ -1989,14 +1985,14 @@ TEST_F(RenderViewImplTest, ImeComposition) {
     main_frame_widget()->UpdateTextInputState();
     base::RunLoop().RunUntilIdle();
 
-    if (ime_message->result) {
+    if (ime_message.result) {
       // Retrieve the content of this page and compare it with the expected
       // result.
       const int kMaxOutputCharacters = 128;
       std::u16string output = TestWebFrameContentDumper::DumpWebViewAsText(
                                   web_view_, kMaxOutputCharacters)
                                   .Utf16();
-      EXPECT_EQ(base::WideToUTF16(ime_message->result), output);
+      EXPECT_EQ(base::WideToUTF16(ime_message.result), output);
     }
   }
 }
@@ -2282,8 +2278,9 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
       surrogate_pair_char + u"あ" + surrogate_pair_char + u"b" +
       surrogate_pair_char;
   const size_t utf16_length = 8UL;
-  const bool is_surrogate_pair_empty_rect[8] = {false, true,  false, false,
-                                                true,  false, false, true};
+  const std::array<bool, 8> is_surrogate_pair_empty_rect = {
+      false, true, false, false, true, false, false, true,
+  };
   widget_input_handler->ImeSetComposition(
       surrogate_pair_mixed_composition, empty_ime_text_span,
       gfx::Range::InvalidRange(), 0, 0, base::DoNothing());

@@ -28,6 +28,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_network_session.h"
 #include "net/test/test_with_task_environment.h"
@@ -2684,9 +2685,9 @@ TEST_F(HttpServerPropertiesTest, ClearServerNetworkStats) {
 }
 
 TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
-  quic::QuicServerId google_quic_server_id("www.google.com", 443, true);
+  quic::QuicServerId google_quic_server_id("www.google.com", 443);
   HttpServerProperties::QuicServerInfoMapKey google_key(
-      google_quic_server_id, NetworkAnonymizationKey(),
+      google_quic_server_id, PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
       false /* use_network_anonymization_key */);
 
   const int kMaxQuicServerEntries = 10;
@@ -2713,22 +2714,22 @@ TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
 
   // Verify data for www.google.com:443.
   EXPECT_EQ(1u, impl_.quic_server_info_map().size());
-  EXPECT_EQ(google_server_info,
-            *impl_.GetQuicServerInfo(google_quic_server_id,
-                                     NetworkAnonymizationKey()));
+  EXPECT_EQ(google_server_info, *impl_.GetQuicServerInfo(
+                                    google_quic_server_id, PRIVACY_MODE_ENABLED,
+                                    NetworkAnonymizationKey()));
 
   // Test recency order and overwriting of data.
   //
   // |docs_server| has a QuicServerInfo, which will be overwritten by
   // SetQuicServerInfoMap(), because |quic_server_info_map| has an
   // entry for |docs_server|.
-  quic::QuicServerId docs_quic_server_id("docs.google.com", 443, true);
+  quic::QuicServerId docs_quic_server_id("docs.google.com", 443);
   HttpServerProperties::QuicServerInfoMapKey docs_key(
-      docs_quic_server_id, NetworkAnonymizationKey(),
+      docs_quic_server_id, PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
       false /* use_network_anonymization_key */);
   std::string docs_server_info("docs_quic_server_info");
-  impl_.SetQuicServerInfo(docs_quic_server_id, NetworkAnonymizationKey(),
-                          docs_server_info);
+  impl_.SetQuicServerInfo(docs_quic_server_id, PRIVACY_MODE_ENABLED,
+                          NetworkAnonymizationKey(), docs_server_info);
 
   // Recency order will be |docs_server| and |google_server|.
   const HttpServerProperties::QuicServerInfoMap& map =
@@ -2751,9 +2752,9 @@ TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
   std::string new_docs_server_info("new_docs_quic_server_info");
   quic_server_info_map->Put(docs_key, new_docs_server_info);
   // Add data for mail.google.com:443.
-  quic::QuicServerId mail_quic_server_id("mail.google.com", 443, true);
+  quic::QuicServerId mail_quic_server_id("mail.google.com", 443);
   HttpServerProperties::QuicServerInfoMapKey mail_key(
-      mail_quic_server_id, NetworkAnonymizationKey(),
+      mail_quic_server_id, PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
       false /* use_network_anonymization_key */);
   std::string mail_server_info("mail_quic_server_info");
   quic_server_info_map->Put(mail_key, mail_server_info);
@@ -2788,13 +2789,14 @@ TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
   EXPECT_EQ(memory_map1_it->first, google_key);
   EXPECT_EQ(google_server_info, memory_map1_it->second);
   // |QuicServerInfo| for |mail_quic_server_id| shouldn't be there.
-  EXPECT_EQ(nullptr, impl_.GetQuicServerInfo(mail_quic_server_id,
-                                             NetworkAnonymizationKey()));
+  EXPECT_EQ(nullptr,
+            impl_.GetQuicServerInfo(mail_quic_server_id, PRIVACY_MODE_ENABLED,
+                                    NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpServerPropertiesTest, SetQuicServerInfo) {
-  quic::QuicServerId server1("foo", 80, false /* privacy_mode_enabled */);
-  quic::QuicServerId server2("foo", 80, true /* privacy_mode_enabled */);
+  quic::QuicServerId server1("foo", 80);
+  quic::QuicServerId server2("foo", 80);
 
   std::string quic_server_info1("quic_server_info1");
   std::string quic_server_info2("quic_server_info2");
@@ -2802,42 +2804,58 @@ TEST_F(HttpServerPropertiesTest, SetQuicServerInfo) {
 
   // Without network isolation keys enabled for HttpServerProperties, passing in
   // a NetworkAnonymizationKey should have no effect on behavior.
-  impl_.SetQuicServerInfo(server1, NetworkAnonymizationKey(),
-                          quic_server_info1);
+  impl_.SetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey(), quic_server_info1);
   EXPECT_EQ(quic_server_info1,
-            *(impl_.GetQuicServerInfo(server1, NetworkAnonymizationKey())));
-  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
+            *(impl_.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                      NetworkAnonymizationKey())));
+  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                       NetworkAnonymizationKey()));
   EXPECT_EQ(quic_server_info1,
-            *(impl_.GetQuicServerInfo(server1, network_anonymization_key1_)));
-  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, network_anonymization_key1_));
+            *(impl_.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                      network_anonymization_key1_)));
+  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                       network_anonymization_key1_));
 
-  impl_.SetQuicServerInfo(server2, network_anonymization_key1_,
-                          quic_server_info2);
+  impl_.SetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                          network_anonymization_key1_, quic_server_info2);
   EXPECT_EQ(quic_server_info1,
-            *(impl_.GetQuicServerInfo(server1, NetworkAnonymizationKey())));
+            *(impl_.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                      NetworkAnonymizationKey())));
   EXPECT_EQ(quic_server_info2,
-            *(impl_.GetQuicServerInfo(server2, NetworkAnonymizationKey())));
+            *(impl_.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                      NetworkAnonymizationKey())));
   EXPECT_EQ(quic_server_info1,
-            *(impl_.GetQuicServerInfo(server1, network_anonymization_key1_)));
+            *(impl_.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                      network_anonymization_key1_)));
   EXPECT_EQ(quic_server_info2,
-            *(impl_.GetQuicServerInfo(server2, network_anonymization_key1_)));
+            *(impl_.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                      network_anonymization_key1_)));
 
-  impl_.SetQuicServerInfo(server1, network_anonymization_key1_,
-                          quic_server_info3);
+  impl_.SetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                          network_anonymization_key1_, quic_server_info3);
   EXPECT_EQ(quic_server_info3,
-            *(impl_.GetQuicServerInfo(server1, NetworkAnonymizationKey())));
+            *(impl_.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                      NetworkAnonymizationKey())));
   EXPECT_EQ(quic_server_info2,
-            *(impl_.GetQuicServerInfo(server2, NetworkAnonymizationKey())));
+            *(impl_.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                      NetworkAnonymizationKey())));
   EXPECT_EQ(quic_server_info3,
-            *(impl_.GetQuicServerInfo(server1, network_anonymization_key1_)));
+            *(impl_.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                      network_anonymization_key1_)));
   EXPECT_EQ(quic_server_info2,
-            *(impl_.GetQuicServerInfo(server2, network_anonymization_key1_)));
+            *(impl_.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                      network_anonymization_key1_)));
 
   impl_.Clear(base::OnceClosure());
-  EXPECT_FALSE(impl_.GetQuicServerInfo(server1, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetQuicServerInfo(server1, network_anonymization_key1_));
-  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, network_anonymization_key1_));
+  EXPECT_FALSE(impl_.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                       NetworkAnonymizationKey()));
+  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                       NetworkAnonymizationKey()));
+  EXPECT_FALSE(impl_.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                       network_anonymization_key1_));
+  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                       network_anonymization_key1_));
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -2848,48 +2866,54 @@ TEST_F(HttpServerPropertiesTest, SetQuicServerInfo) {
                                   nullptr /* net_log */, test_tick_clock_,
                                   &test_clock_);
 
-  properties.SetQuicServerInfo(server1, NetworkAnonymizationKey(),
-                               quic_server_info1);
-  EXPECT_EQ(quic_server_info1, *(properties.GetQuicServerInfo(
-                                   server1, NetworkAnonymizationKey())));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server1, network_anonymization_key1_));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, network_anonymization_key1_));
+  properties.SetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                               NetworkAnonymizationKey(), quic_server_info1);
+  EXPECT_EQ(quic_server_info1,
+            *(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                           NetworkAnonymizationKey())));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                            NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                            network_anonymization_key1_));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                            network_anonymization_key1_));
 
-  properties.SetQuicServerInfo(server1, network_anonymization_key1_,
-                               quic_server_info2);
-  EXPECT_EQ(quic_server_info1, *(properties.GetQuicServerInfo(
-                                   server1, NetworkAnonymizationKey())));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_EQ(quic_server_info2, *(properties.GetQuicServerInfo(
-                                   server1, network_anonymization_key1_)));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, network_anonymization_key1_));
+  properties.SetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                               network_anonymization_key1_, quic_server_info2);
+  EXPECT_EQ(quic_server_info1,
+            *(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                           NetworkAnonymizationKey())));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                            NetworkAnonymizationKey()));
+  EXPECT_EQ(quic_server_info2,
+            *(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                           network_anonymization_key1_)));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                            network_anonymization_key1_));
 
-  properties.SetQuicServerInfo(server2, network_anonymization_key1_,
-                               quic_server_info3);
-  EXPECT_EQ(quic_server_info1, *(properties.GetQuicServerInfo(
-                                   server1, NetworkAnonymizationKey())));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_EQ(quic_server_info2, *(properties.GetQuicServerInfo(
-                                   server1, network_anonymization_key1_)));
-  EXPECT_EQ(quic_server_info3, *(properties.GetQuicServerInfo(
-                                   server2, network_anonymization_key1_)));
+  properties.SetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                               network_anonymization_key1_, quic_server_info3);
+  EXPECT_EQ(quic_server_info1,
+            *(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                           NetworkAnonymizationKey())));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                            NetworkAnonymizationKey()));
+  EXPECT_EQ(quic_server_info2,
+            *(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                           network_anonymization_key1_)));
+  EXPECT_EQ(quic_server_info3,
+            *(properties.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                           network_anonymization_key1_)));
 
   properties.Clear(base::OnceClosure());
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server1, NetworkAnonymizationKey()));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server1, network_anonymization_key1_));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, network_anonymization_key1_));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                            NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                            NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                            network_anonymization_key1_));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
+                                            network_anonymization_key1_));
 }
 
 // Tests that GetQuicServerInfo() returns server info of a host
@@ -2897,23 +2921,23 @@ TEST_F(HttpServerPropertiesTest, SetQuicServerInfo) {
 TEST_F(HttpServerPropertiesTest, QuicServerInfoCanonicalSuffixMatch) {
   // Set up HttpServerProperties.
   // Add a host with a canonical suffix.
-  quic::QuicServerId foo_server_id("foo.googlevideo.com", 443, false);
+  quic::QuicServerId foo_server_id("foo.googlevideo.com", 443);
   std::string foo_server_info("foo_server_info");
-  impl_.SetQuicServerInfo(foo_server_id, NetworkAnonymizationKey(),
-                          foo_server_info);
+  impl_.SetQuicServerInfo(foo_server_id, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey(), foo_server_info);
 
   // Add a host that has a different canonical suffix.
-  quic::QuicServerId baz_server_id("baz.video.com", 443, false);
+  quic::QuicServerId baz_server_id("baz.video.com", 443);
   std::string baz_server_info("baz_server_info");
-  impl_.SetQuicServerInfo(baz_server_id, NetworkAnonymizationKey(),
-                          baz_server_info);
+  impl_.SetQuicServerInfo(baz_server_id, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey(), baz_server_info);
 
   // Create SchemeHostPort with a host that has the initial canonical suffix.
-  quic::QuicServerId bar_server_id("bar.googlevideo.com", 443, false);
+  quic::QuicServerId bar_server_id("bar.googlevideo.com", 443);
 
   // Check the the server info associated with "foo" is returned for "bar".
-  const std::string* bar_server_info =
-      impl_.GetQuicServerInfo(bar_server_id, NetworkAnonymizationKey());
+  const std::string* bar_server_info = impl_.GetQuicServerInfo(
+      bar_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
   ASSERT_TRUE(bar_server_info != nullptr);
   EXPECT_EQ(foo_server_info, *bar_server_info);
 }
@@ -2923,10 +2947,8 @@ TEST_F(HttpServerPropertiesTest, QuicServerInfoCanonicalSuffixMatch) {
 TEST_F(HttpServerPropertiesTest,
        QuicServerInfoCanonicalSuffixMatchWithNetworkIsolationKey) {
   // Two servers with same canonical suffix.
-  quic::QuicServerId server1("foo.googlevideo.com", 80,
-                             false /* privacy_mode_enabled */);
-  quic::QuicServerId server2("bar.googlevideo.com", 80,
-                             false /* privacy_mode_enabled */);
+  quic::QuicServerId server1("foo.googlevideo.com", 80);
+  quic::QuicServerId server2("bar.googlevideo.com", 80);
 
   std::string server_info1("server_info1");
   std::string server_info2("server_info2");
@@ -2943,65 +2965,65 @@ TEST_F(HttpServerPropertiesTest,
   // Set QuicServerInfo for one canononical suffix and
   // |network_anonymization_key1_|. It should be accessible via another
   // SchemeHostPort, but only when the NetworkIsolationKeys match.
-  properties.SetQuicServerInfo(server1, network_anonymization_key1_,
-                               server_info1);
-  const std::string* fetched_server_info =
-      properties.GetQuicServerInfo(server1, network_anonymization_key1_);
+  properties.SetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                               network_anonymization_key1_, server_info1);
+  const std::string* fetched_server_info = properties.GetQuicServerInfo(
+      server1, PRIVACY_MODE_DISABLED, network_anonymization_key1_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info1, *fetched_server_info);
-  fetched_server_info =
-      properties.GetQuicServerInfo(server2, network_anonymization_key1_);
+  fetched_server_info = properties.GetQuicServerInfo(
+      server2, PRIVACY_MODE_DISABLED, network_anonymization_key1_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info1, *fetched_server_info);
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server1, network_anonymization_key2_));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, network_anonymization_key2_));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server1, NetworkAnonymizationKey()));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                            network_anonymization_key2_));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_DISABLED,
+                                            network_anonymization_key2_));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                            NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_DISABLED,
+                                            NetworkAnonymizationKey()));
 
   // Set different QuicServerInfo for the same canononical suffix and
   // |network_anonymization_key2_|. Both infos should be retriveable by using
   // the different NetworkIsolationKeys.
-  properties.SetQuicServerInfo(server1, network_anonymization_key2_,
-                               server_info2);
-  fetched_server_info =
-      properties.GetQuicServerInfo(server1, network_anonymization_key1_);
+  properties.SetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                               network_anonymization_key2_, server_info2);
+  fetched_server_info = properties.GetQuicServerInfo(
+      server1, PRIVACY_MODE_DISABLED, network_anonymization_key1_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info1, *fetched_server_info);
-  fetched_server_info =
-      properties.GetQuicServerInfo(server2, network_anonymization_key1_);
+  fetched_server_info = properties.GetQuicServerInfo(
+      server2, PRIVACY_MODE_DISABLED, network_anonymization_key1_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info1, *fetched_server_info);
-  fetched_server_info =
-      properties.GetQuicServerInfo(server1, network_anonymization_key2_);
+  fetched_server_info = properties.GetQuicServerInfo(
+      server1, PRIVACY_MODE_DISABLED, network_anonymization_key2_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info2, *fetched_server_info);
-  fetched_server_info =
-      properties.GetQuicServerInfo(server2, network_anonymization_key2_);
+  fetched_server_info = properties.GetQuicServerInfo(
+      server2, PRIVACY_MODE_DISABLED, network_anonymization_key2_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info2, *fetched_server_info);
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server1, NetworkAnonymizationKey()));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                            NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_DISABLED,
+                                            NetworkAnonymizationKey()));
 
   // Clearing should destroy all information.
   properties.Clear(base::OnceClosure());
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server1, network_anonymization_key1_));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, network_anonymization_key1_));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server1, network_anonymization_key2_));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, network_anonymization_key2_));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server1, NetworkAnonymizationKey()));
-  EXPECT_FALSE(
-      properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                            network_anonymization_key1_));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_DISABLED,
+                                            network_anonymization_key1_));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                            network_anonymization_key2_));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_DISABLED,
+                                            network_anonymization_key2_));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
+                                            NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties.GetQuicServerInfo(server2, PRIVACY_MODE_DISABLED,
+                                            NetworkAnonymizationKey()));
 }
 
 // Verifies that GetQuicServerInfo() returns the MRU entry if multiple records
@@ -3010,31 +3032,32 @@ TEST_F(HttpServerPropertiesTest,
        QuicServerInfoCanonicalSuffixMatchReturnsMruEntry) {
   // Set up HttpServerProperties by adding two hosts with the same canonical
   // suffixes.
-  quic::QuicServerId h1_server_id("h1.googlevideo.com", 443, false);
+  quic::QuicServerId h1_server_id("h1.googlevideo.com", 443);
   std::string h1_server_info("h1_server_info");
-  impl_.SetQuicServerInfo(h1_server_id, NetworkAnonymizationKey(),
-                          h1_server_info);
+  impl_.SetQuicServerInfo(h1_server_id, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey(), h1_server_info);
 
-  quic::QuicServerId h2_server_id("h2.googlevideo.com", 443, false);
+  quic::QuicServerId h2_server_id("h2.googlevideo.com", 443);
   std::string h2_server_info("h2_server_info");
-  impl_.SetQuicServerInfo(h2_server_id, NetworkAnonymizationKey(),
-                          h2_server_info);
+  impl_.SetQuicServerInfo(h2_server_id, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey(), h2_server_info);
 
   // Create quic::QuicServerId to use for the search.
-  quic::QuicServerId foo_server_id("foo.googlevideo.com", 443, false);
+  quic::QuicServerId foo_server_id("foo.googlevideo.com", 443);
 
   // Check that 'h2' info is returned since it is MRU.
-  const std::string* server_info =
-      impl_.GetQuicServerInfo(foo_server_id, NetworkAnonymizationKey());
+  const std::string* server_info = impl_.GetQuicServerInfo(
+      foo_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
   ASSERT_TRUE(server_info != nullptr);
   EXPECT_EQ(h2_server_info, *server_info);
 
   // Access 'h1' info, so it becomes MRU.
-  impl_.GetQuicServerInfo(h1_server_id, NetworkAnonymizationKey());
+  impl_.GetQuicServerInfo(h1_server_id, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey());
 
   // Check that 'h1' info is returned since it is MRU now.
-  server_info =
-      impl_.GetQuicServerInfo(foo_server_id, NetworkAnonymizationKey());
+  server_info = impl_.GetQuicServerInfo(foo_server_id, PRIVACY_MODE_DISABLED,
+                                        NetworkAnonymizationKey());
   ASSERT_TRUE(server_info != nullptr);
   EXPECT_EQ(h1_server_info, *server_info);
 }
@@ -3044,31 +3067,31 @@ TEST_F(HttpServerPropertiesTest,
 TEST_F(HttpServerPropertiesTest,
        QuicServerInfoCanonicalSuffixMatchDoesntChangeOrder) {
   // Add a host with a matching canonical name.
-  quic::QuicServerId h1_server_id("h1.googlevideo.com", 443, false);
+  quic::QuicServerId h1_server_id("h1.googlevideo.com", 443);
   HttpServerProperties::QuicServerInfoMapKey h1_key(
-      h1_server_id, NetworkAnonymizationKey(),
+      h1_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
       false /* use_network_anonymization_key */);
   std::string h1_server_info("h1_server_info");
-  impl_.SetQuicServerInfo(h1_server_id, NetworkAnonymizationKey(),
-                          h1_server_info);
+  impl_.SetQuicServerInfo(h1_server_id, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey(), h1_server_info);
 
   // Add a host hosts with a non-matching canonical name.
-  quic::QuicServerId h2_server_id("h2.video.com", 443, false);
+  quic::QuicServerId h2_server_id("h2.video.com", 443);
   HttpServerProperties::QuicServerInfoMapKey h2_key(
-      h2_server_id, NetworkAnonymizationKey(),
+      h2_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
       false /* use_network_anonymization_key */);
   std::string h2_server_info("h2_server_info");
-  impl_.SetQuicServerInfo(h2_server_id, NetworkAnonymizationKey(),
-                          h2_server_info);
+  impl_.SetQuicServerInfo(h2_server_id, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey(), h2_server_info);
 
   // Check that "h2.video.com" is the MRU entry in the map.
   EXPECT_EQ(h2_key, impl_.quic_server_info_map().begin()->first);
 
   // Search for the entry that matches the canonical name
   // ("h1.googlevideo.com").
-  quic::QuicServerId foo_server_id("foo.googlevideo.com", 443, false);
-  const std::string* server_info =
-      impl_.GetQuicServerInfo(foo_server_id, NetworkAnonymizationKey());
+  quic::QuicServerId foo_server_id("foo.googlevideo.com", 443);
+  const std::string* server_info = impl_.GetQuicServerInfo(
+      foo_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
   ASSERT_TRUE(server_info != nullptr);
 
   // Check that the search (although successful) hasn't changed the MRU order of
@@ -3076,7 +3099,8 @@ TEST_F(HttpServerPropertiesTest,
   EXPECT_EQ(h2_key, impl_.quic_server_info_map().begin()->first);
 
   // Search for "h1.googlevideo.com" directly, so it becomes MRU
-  impl_.GetQuicServerInfo(h1_server_id, NetworkAnonymizationKey());
+  impl_.GetQuicServerInfo(h1_server_id, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey());
 
   // Check that "h1.googlevideo.com" is the MRU entry now.
   EXPECT_EQ(h1_key, impl_.quic_server_info_map().begin()->first);
@@ -3090,22 +3114,22 @@ TEST_F(HttpServerPropertiesTest,
 TEST_F(HttpServerPropertiesTest, QuicServerInfoCanonicalSuffixMatchSetInfoMap) {
   // Add a host info using SetQuicServerInfo(). That will simulate an info
   // entry stored in memory cache.
-  quic::QuicServerId h1_server_id("h1.googlevideo.com", 443, false);
+  quic::QuicServerId h1_server_id("h1.googlevideo.com", 443);
   std::string h1_server_info("h1_server_info_memory_cache");
-  impl_.SetQuicServerInfo(h1_server_id, NetworkAnonymizationKey(),
-                          h1_server_info);
+  impl_.SetQuicServerInfo(h1_server_id, PRIVACY_MODE_DISABLED,
+                          NetworkAnonymizationKey(), h1_server_info);
 
   // Prepare a map with host info and add it using SetQuicServerInfoMap(). That
   // will simulate info records read from the persistence storage.
-  quic::QuicServerId h2_server_id("h2.googlevideo.com", 443, false);
+  quic::QuicServerId h2_server_id("h2.googlevideo.com", 443);
   HttpServerProperties::QuicServerInfoMapKey h2_key(
-      h2_server_id, NetworkAnonymizationKey(),
+      h2_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
       false /* use_network_anonymization_key */);
   std::string h2_server_info("h2_server_info_from_disk");
 
-  quic::QuicServerId h3_server_id("h3.ggpht.com", 443, false);
+  quic::QuicServerId h3_server_id("h3.ggpht.com", 443);
   HttpServerProperties::QuicServerInfoMapKey h3_key(
-      h3_server_id, NetworkAnonymizationKey(),
+      h3_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
       false /* use_network_anonymization_key */);
   std::string h3_server_info("h3_server_info_from_disk");
 
@@ -3123,17 +3147,17 @@ TEST_F(HttpServerPropertiesTest, QuicServerInfoCanonicalSuffixMatchSetInfoMap) {
   // Check that the server info from the memory cache is returned since unique
   // entries from the memory cache are added after entries from the
   // persistence storage and, therefore, are most recently used.
-  quic::QuicServerId foo_server_id("foo.googlevideo.com", 443, false);
-  const std::string* server_info =
-      impl_.GetQuicServerInfo(foo_server_id, NetworkAnonymizationKey());
+  quic::QuicServerId foo_server_id("foo.googlevideo.com", 443);
+  const std::string* server_info = impl_.GetQuicServerInfo(
+      foo_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
   ASSERT_TRUE(server_info != nullptr);
   EXPECT_EQ(h1_server_info, *server_info);
 
   // Check that server info that was added using SetQuicServerInfoMap() can be
   // found.
-  foo_server_id = quic::QuicServerId("foo.ggpht.com", 443, false);
-  server_info =
-      impl_.GetQuicServerInfo(foo_server_id, NetworkAnonymizationKey());
+  foo_server_id = quic::QuicServerId("foo.ggpht.com", 443);
+  server_info = impl_.GetQuicServerInfo(foo_server_id, PRIVACY_MODE_DISABLED,
+                                        NetworkAnonymizationKey());
   ASSERT_TRUE(server_info != nullptr);
   EXPECT_EQ(h3_server_info, *server_info);
 }

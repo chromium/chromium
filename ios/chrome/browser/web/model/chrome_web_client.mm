@@ -38,6 +38,9 @@
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/model/browser_policy_new_tab_page_rewriter.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/permissions/model/features.h"
+#import "ios/chrome/browser/permissions/model/geolocation_api_usage_java_script_feature.h"
+#import "ios/chrome/browser/permissions/model/media_api_usage_java_script_feature.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
@@ -47,8 +50,8 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_java_script_feature.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_tab_helper_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -198,7 +201,7 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   std::string error_page_content =
       supervised_user::SupervisedUserInterstitial::GetHTMLContents(
-          SupervisedUserServiceFactory::GetForBrowserState(browser_state),
+          SupervisedUserServiceFactory::GetForProfile(browser_state),
           browser_state->GetPrefs(), error_info->filtering_behavior_reason(),
           container->IsRemoteApprovalPendingForUrl(url),
           error_info->is_main_frame(),
@@ -360,6 +363,17 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   features.push_back(
       SupervisedUserInterstitialJavaScriptFeature::GetInstance());
+
+  if (base::FeatureList::IsEnabled(
+          kJavaScriptPermissionBasedAPIMetricsEnabled)) {
+    if (GeolocationAPIUsageJavaScriptFeature::ShouldOverrideAPI()) {
+      features.push_back(GeolocationAPIUsageJavaScriptFeature::GetInstance());
+    }
+    if (MediaAPIUsageJavaScriptFeature::ShouldOverrideAPI()) {
+      features.push_back(MediaAPIUsageJavaScriptFeature::GetInstance());
+    }
+  }
+
   return features;
 }
 

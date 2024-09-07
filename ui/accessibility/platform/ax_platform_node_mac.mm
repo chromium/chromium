@@ -126,11 +126,11 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   }
   if (event_type == ax::mojom::Event::kSelection) {
     ax::mojom::Role role = GetRole();
-    if (ui::IsMenuItem(role)) {
+    if (IsMenuItem(role)) {
       // On Mac, map menu item selection to a focus event.
       NotifyMacEvent(objc_storage_->native_node, ax::mojom::Event::kFocus);
       return;
-    } else if (ui::IsListItem(role)) {
+    } else if (IsListItem(role)) {
       if (const AXPlatformNodeBase* container = GetSelectionContainer()) {
         if (container->GetRole() == ax::mojom::Role::kListBox &&
             !container->HasState(ax::mojom::State::kMultiselectable) &&

@@ -11,6 +11,7 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/notreached.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
 namespace partition_alloc::internal {
@@ -314,6 +315,7 @@ PartitionFreelistDispatcher::Create(PartitionFreelistEncoding encoding) {
       return &kPoolOffsetImplDispatcher;
     }
   }
+  PA_NOTREACHED();
 }
 
 #endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)

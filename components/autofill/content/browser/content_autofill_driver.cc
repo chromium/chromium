@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver_router.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -295,7 +297,7 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
                  form_extraction_finished_callback,
              const std::vector<bool>& successes) {
             std::move(form_extraction_finished_callback)
-                .Run(base::ranges::all_of(successes, std::identity()));
+                .Run(std::ranges::all_of(successes, std::identity()));
           },
           std::move(form_extraction_finished_callback)));
   for (ContentAutofillDriver* driver : drivers) {
@@ -304,7 +306,7 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
   }
 }
 
-void ContentAutofillDriver::GetFourDigitCombinationsFromDOM(
+void ContentAutofillDriver::GetFourDigitCombinationsFromDom(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {
   if (!IsActive()) {
@@ -312,8 +314,12 @@ void ContentAutofillDriver::GetFourDigitCombinationsFromDOM(
     std::move(potential_matches).Run({});
     return;
   }
-  GetAutofillAgent()->GetPotentialLastFourCombinationsForStandaloneCvc(
-      std::move(potential_matches));
+  content::RenderFrameHost* main_rfh = render_frame_host_->GetMainFrame();
+  if (auto* main_driver = GetForRenderFrameHost(main_rfh)) {
+    main_driver->GetAutofillAgent()
+        ->GetPotentialLastFourCombinationsForStandaloneCvc(
+            std::move(potential_matches));
+  }
 }
 
 // static
@@ -537,6 +543,10 @@ void ContentAutofillDriver::AskForValuesToFill(
     FieldRendererId field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
+  // `kPlusAddressUpdatedInBrowserProcess` should never be used by the renderer.
+  if (!bad_message::CheckValidTriggerSource(trigger_source)) {
+    return;
+  }
   RouteToManager(*this, router(), &AutofillDriverRouter::AskForValuesToFill,
                  &AutofillManager::OnAskForValuesToFill, form, field_id,
                  caret_bounds, trigger_source);

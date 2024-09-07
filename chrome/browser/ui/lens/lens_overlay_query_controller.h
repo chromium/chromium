@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -79,10 +80,15 @@ class LensOverlayQueryController {
       std::optional<GURL> page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+      base::span<const uint8_t> pdf_bytes,
       float ui_scale_factor);
 
   // Clears the state and resets stored values.
   void EndQuery();
+
+  // Sends a full image request to translate the page.
+  virtual void SendFullPageTranslateQuery(const std::string& source_language,
+                                          const std::string& target_language);
 
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping
@@ -197,6 +203,7 @@ class LensOverlayQueryController {
   // Handles the endpoint fetch response for the initial request.
   void FullImageFetchResponseHandler(
       int64_t query_start_time_ms,
+      int request_sequence_id,
       std::unique_ptr<EndpointResponse> response);
 
   // Handles the response from a latency gen204 request.
@@ -279,11 +286,25 @@ class LensOverlayQueryController {
   // The original screenshot image.
   SkBitmap original_screenshot_;
 
+  // The dimensions of the resized bitmap. Needed in case geometry needs to be
+  // recaclulated. For example, in the case of translated words.
+  gfx::Size resized_bitmap_size_;
+
   // The page url, if it is allowed to be shared.
   std::optional<GURL> page_url_;
 
   // The page title, if it is allowed to be shared.
   std::optional<std::string> page_title_;
+
+  // Options needed to send a translate request with the proper parameters.
+  struct TranslateOptions {
+    std::string source_language;
+    std::string target_language;
+
+    TranslateOptions(const std::string& source, const std::string& target)
+        : source_language(source), target_language(target) {}
+  };
+  std::optional<TranslateOptions> translate_options_;
 
   // Bounding boxes for significant regions identified in the original
   // screenshot image.
@@ -337,13 +358,17 @@ class LensOverlayQueryController {
   std::unique_ptr<base::CancelableTaskTracker> encoding_task_tracker_;
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
-  raw_ptr<variations::VariationsClient> variations_client_;
+  const raw_ptr<variations::VariationsClient> variations_client_;
 
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
+
+  // PDF bytes the user is viewing. Owned by LensOverlayController. Will be
+  // empty if no PDF bytes to the underlying page exists.
+  base::span<const uint8_t> pdf_bytes_;
 
   // The request counter, used to make sure requests are not sent out of
   // order.
@@ -363,6 +388,10 @@ class LensOverlayQueryController {
 
   // The current gen204 id for logging, set on each overlay invocation.
   uint64_t gen204_id_;
+
+  // The latest full image request sequence id. Used for cancelling any full
+  // image requests that have been superseded by another.
+  int latest_full_image_sequence_id_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

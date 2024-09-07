@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/expected.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
@@ -51,6 +52,15 @@ class HttpResponseDelegate;
 struct HttpRequest;
 
 class EmbeddedTestServer;
+
+// Enum representing the possible outcomes of handling an upgrade request.
+// - kUpgraded: The request was successfully upgraded to a WebSocket connection.
+// - kNotHandled: The request was not handled as an upgrade and should be
+// processed as a normal HTTP request.
+enum class UpgradeResult {
+  kUpgraded,
+  kNotHandled,
+};
 
 // Returned by the Start[AcceptingConnections]WithHandle() APIs, to simplify
 // correct shutdown ordering of the EmbeddedTestServer. Shutdown() is invoked
@@ -334,6 +344,12 @@ class EmbeddedTestServer {
     std::vector<CertBuilder::SctConfig> embedded_scts;
   };
 
+  using UpgradeResultOrHttpResponse =
+      base::expected<UpgradeResult, std::unique_ptr<HttpResponse>>;
+  using HandleUpgradeRequestCallback =
+      base::RepeatingCallback<UpgradeResultOrHttpResponse(
+          const HttpRequest& request,
+          HttpConnection* connection)>;
   typedef base::RepeatingCallback<std::unique_ptr<HttpResponse>(
       const HttpRequest& request)>
       HandleRequestCallback;
@@ -359,8 +375,9 @@ class EmbeddedTestServer {
 
   //  Send a request to the server to be handled. If a response is created,
   //  SendResponseBytes() should be called on the provided HttpConnection.
-  void HandleRequest(base::WeakPtr<HttpResponseDelegate> connection,
-                     std::unique_ptr<HttpRequest> request);
+  void HandleRequest(base::WeakPtr<HttpResponseDelegate> delegate,
+                     std::unique_ptr<HttpRequest> request,
+                     const StreamSocket* socket);
 
   // Notify the server that a connection is no longer usable and is safe to
   // destroy. For H/1 connections, this means a single request/response
@@ -511,6 +528,18 @@ class EmbeddedTestServer {
   // directory.
   void AddDefaultHandlers();
 
+  // Adds a handler callback to process WebSocket upgrade requests.
+  // |callback| will be invoked on the server's IO thread when a request
+  // attempts to upgrade to a WebSocket connection. Note that:
+  // 1. All upgrade request handlers must be registered before the server is
+  //    Start()ed.
+  // 2. This method is not supported for HTTP/2 connections.
+  // 3. The server should be Shutdown() before any variables referred to by
+  //    |callback| (e.g., via base::Unretained(&local)) are deleted. Using the
+  //    Start*WithHandle() API variants is recommended for this reason.
+  void RegisterUpgradeRequestHandler(
+      const HandleUpgradeRequestCallback& callback);
+
   // Adds a request handler that can perform any general-purpose processing.
   // |callback| will be invoked on the server's IO thread. Note that:
   // 1. All handlers must be registered before the server is Start()ed.
@@ -561,6 +590,8 @@ class EmbeddedTestServer {
   // Resets the SSLServerConfig on the IO thread.
   bool ResetSSLConfigOnIOThread(ServerCertificate cert,
                                 const SSLServerConfig& ssl_config);
+
+  HttpConnection* GetConnectionForSocket(const StreamSocket* socket);
 
   // Upgrade the TCP connection to one over SSL.
   std::unique_ptr<SSLServerSocket> DoSSLUpgrade(
@@ -627,6 +658,7 @@ class EmbeddedTestServer {
   std::map<const StreamSocket*, std::unique_ptr<HttpConnection>> connections_;
 
   // Vector of registered and default request handlers and monitors.
+  std::vector<HandleUpgradeRequestCallback> upgrade_request_handlers_;
   std::vector<HandleRequestCallback> request_handlers_;
   std::vector<MonitorRequestCallback> request_monitors_;
   std::vector<HandleRequestCallback> default_request_handlers_;

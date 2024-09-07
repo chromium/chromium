@@ -12,6 +12,8 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
@@ -122,6 +124,34 @@ std::optional<std::vector<uint8_t>> ConvertDERSignatureToRaw(
 }
 
 }  // namespace
+
+std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
+SignatureAlgorithmFromString(std::string_view algorithm) {
+  if (base::EqualsCaseInsensitiveASCII(algorithm, "ES256")) {
+    return crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+  }
+
+  if (base::EqualsCaseInsensitiveASCII(algorithm, "RS256")) {
+    return crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
+  }
+
+  return std::nullopt;
+}
+
+std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
+ParseSignatureAlgorithmList(std::string_view algorithm_list) {
+  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> result;
+  for (const auto& algorithm_str : base::SplitStringPiece(
+           algorithm_list, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
+           base::SplitResult::SPLIT_WANT_NONEMPTY)) {
+    std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
+        signin::SignatureAlgorithmFromString(algorithm_str);
+    if (algorithm) {
+      result.push_back(*algorithm);
+    }
+  }
+  return result;
+}
 
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
     std::string_view client_id,

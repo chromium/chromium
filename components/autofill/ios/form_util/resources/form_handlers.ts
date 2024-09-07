@@ -83,15 +83,6 @@ function getFullyQualifiedUrl(originalURL: string): string {
 }
 
 /**
- * @param A form element to check.
- * @return Whether the element is an input of type password.
- */
-function isPasswordField(element: Element): boolean {
-  return element.tagName === 'INPUT' &&
-      (element as HTMLInputElement).type === 'password';
-}
-
-/**
  * Focus, input, change, keyup, blur and reset events for form elements (form
  * and input elements) are messaged to the main application for broadcast to
  * WebStateObservers.
@@ -149,9 +140,7 @@ function formActivity(evt: Event): void {
       target.tagName === 'FORM' ? target : (target as HTMLFormElement)['form'];
   const field = target.tagName === 'FORM' ? null : target;
 
-  gCrWeb.fill.setUniqueIDIfNeeded(form);
   const formRendererID = gCrWeb.fill.getUniqueID(form);
-  gCrWeb.fill.setUniqueIDIfNeeded(field);
   const fieldRendererID = gCrWeb.fill.getUniqueID(field);
 
   const fieldType = 'type' in target ? target.type : '';
@@ -323,42 +312,17 @@ function findAllFormElementsInNodes(nodeList: NodeList): Element[] {
 }
 
 /**
- * Finds a password form element, which is defined as a form with
- * at least one password element as the immediate child (depth = 1).
- *
- * For example: <from><input type="password"></form> is considered as a password
- * form.
- *
- * @param elements Array of elements within which to search.
- * @return Extracted password form or undefined if there is no
- *   match.
- */
-function findPasswordForm(elements: Element[]): HTMLFormElement|undefined {
-  return elements.filter(e => e.tagName === 'FORM')
-             .find(
-                 e => [...(e as HTMLFormElement).elements].some(
-                     isPasswordField)) as HTMLFormElement;
-}
-
-/**
  * Finds the renderer IDs of the formless input elements in an array of
  * elements.
  *
  * @param elements Array of elements within which to search.
- * @return Renderer ids of the formless fields. When XHR submission detection is
- *     disabled, only returns password fields.
+ * @return Renderer ids of the formless fields.
  */
 function findFormlessFieldsIds(elements: Element[]): string[] {
-  const returnAllInputElements =
-      gCrWeb.autofill_form_features.isAutofillXHRSubmissionDetectionEnabled();
-
-
-
   return elements
       .filter(
           e => gCrWeb.fill.isAutofillableElement(e) &&
-              !(e as HTMLInputElement).form &&
-              (returnAllInputElements || isPasswordField(e)))
+              !(e as HTMLInputElement).form)
       .map(gCrWeb.fill.getUniqueID);
 }
 
@@ -366,129 +330,11 @@ function findFormlessFieldsIds(elements: Element[]): string[] {
  * Installs a MutationObserver to track form related changes. Waits |delay|
  * milliseconds before sending a message to browser. A delay is used because
  * form mutations are likely to come in batches. An undefined or zero value for
- * |delay| would stop the MutationObserver, if any.
+ * |delay| would stop the MutationObserver, if any. Batches
+ * messages for removed and added forms together. This relaxes the messages
+ * throttling and allows correctly handling form replacements.
  */
-function trackFormMutationsOld(delay: number): void {
-  if (formMutationObserver) {
-    formMutationObserver.disconnect();
-    formMutationObserver = null;
-  }
-
-  if (!delay) {
-    return;
-  }
-
-  formMutationObserver = new MutationObserver(function(mutations) {
-    for (const mutation of mutations) {
-      // Only process mutations to the tree of nodes.
-      if (mutation.type !== 'childList') {
-        continue;
-      }
-
-      // Handle added nodes.
-      if (findAllFormElementsInNodes(mutation.addedNodes).length > 0) {
-        const msg = {
-          'command': 'form.activity',
-          'frameID': gCrWeb.message.getFrameId(),
-          'formName': '',
-          'formRendererID': '',
-          'fieldIdentifier': '',
-          'fieldRendererID': '',
-          'fieldType': '',
-          'type': 'form_changed',
-          'value': '',
-          'hasUserGesture': false,
-        };
-        sendFormMutationMessagesAfterDelay([msg], delay);
-        return;
-      }
-
-      // Handle removed nodes by starting from the specific removal cases down
-      // to the generic form modification case.
-
-      const removedFormElements =
-          findAllFormElementsInNodes(mutation.removedNodes);
-
-      // When detecting XHR submissions for Autofill is enabled, all forms are
-      // sent to the browser to determine if one of them was submitted. Fallback
-      // to the old behavior that only sends the first removed password form.
-      let forms: Element[];
-      const xhrEnabled = gCrWeb.autofill_form_features
-                             .isAutofillXHRSubmissionDetectionEnabled();
-
-      if (xhrEnabled) {
-        forms = removedFormElements.filter(e => e.tagName === 'FORM');
-      } else {
-        const removedPasswordForm = findPasswordForm(removedFormElements);
-        forms = removedPasswordForm ? [removedPasswordForm] : [];
-      }
-
-      const removedFormlessFieldsIds =
-          findFormlessFieldsIds(removedFormElements);
-      const formlessFieldsWereRemoved = removedFormlessFieldsIds.length > 0;
-
-      // Send removed forms and unowned field id's in the same message when XHR
-      // submissions are enabled.
-      if (forms.length > 0 || (xhrEnabled && formlessFieldsWereRemoved)) {
-        // Handle the removed password form case.
-        // Send the removed forms identifiers to the browser.
-        const filteredFormIDs =
-            forms.map(form => gCrWeb.fill.getUniqueID(form));
-        const msg = {
-          'command': 'form.removal',
-          'frameID': gCrWeb.message.getFrameId(),
-          'removedFormIDs': gCrWeb.stringify(filteredFormIDs),
-          'removedFieldIDs':
-              xhrEnabled ? gCrWeb.stringify(removedFormlessFieldsIds) : null,
-        };
-        sendFormMutationMessagesAfterDelay([msg], delay);
-        return;
-      }
-
-      // When XHR submissions are enabled, formless fields were already
-      // processed above.
-      if (!xhrEnabled && formlessFieldsWereRemoved) {
-        // Handle the removed formless field case.
-        const msg = {
-          'command': 'form.removal',
-          'frameID': gCrWeb.message.getFrameId(),
-          'removedFieldIDs': gCrWeb.stringify(removedFormlessFieldsIds),
-        };
-        sendFormMutationMessagesAfterDelay([msg], delay);
-        return;
-      }
-
-      if (removedFormElements.length > 0) {
-        // Handle the removed form control element case as a form changed
-        // mutation that is treated the same way as adding a new form.
-        const msg = {
-          'command': 'form.activity',
-          'frameID': gCrWeb.message.getFrameId(),
-          'formName': '',
-          'formRendererID': '',
-          'fieldIdentifier': '',
-          'fieldRendererID': '',
-          'fieldType': '',
-          'type': 'form_changed',
-          'value': '',
-          'hasUserGesture': false,
-        };
-        sendFormMutationMessagesAfterDelay([msg], delay);
-        return;
-      }
-    }
-  });
-  formMutationObserver.observe(document, {childList: true, subtree: true});
-}
-
-/**
- * Installs a MutationObserver to track form related changes. Waits |delay|
- * milliseconds before sending a message to browser. A delay is used because
- * form mutations are likely to come in batches. An undefined or zero value for
- * |delay| would stop the MutationObserver, if any, allows batching an added
- * form message with a removed form message.
- */
-function trackFormMutationsNew(delay: number): void {
+function trackFormMutations(delay: number): void {
   if (formMutationObserver) {
     formMutationObserver.disconnect();
     formMutationObserver = null;
@@ -538,27 +384,14 @@ function trackFormMutationsNew(delay: number): void {
         continue;
       }
 
-      // When detecting XHR submissions for Autofill is enabled, all forms are
-      // sent to the browser to determine if one of them was submitted. Fallback
-      // to the old behavior that only sends the first removed password form.
-      let forms: Element[];
-      const xhrEnabled = gCrWeb.autofill_form_features
-                             .isAutofillXHRSubmissionDetectionEnabled();
-
-      if (xhrEnabled) {
-        forms = removedFormElements.filter(e => e.tagName === 'FORM');
-      } else {
-        const removedPasswordForm = findPasswordForm(removedFormElements);
-        forms = removedPasswordForm ? [removedPasswordForm] : [];
-      }
+      const forms = removedFormElements.filter(e => e.tagName === 'FORM');
 
       const removedFormlessFieldsIds =
           findFormlessFieldsIds(removedFormElements);
       const formlessFieldsWereRemoved = removedFormlessFieldsIds.length > 0;
 
-      // Send removed forms and unowned field id's in the same message when XHR
-      // submissions are enabled.
-      if (forms.length > 0 || (xhrEnabled && formlessFieldsWereRemoved)) {
+      // Send removed forms and unowned field id's in the same message.
+      if (forms.length > 0 || formlessFieldsWereRemoved) {
         // Drop removed form message if there is one scheduled.
         if (removedFormMessage) {
           ++formMsgBatchMetadata.dropCount;
@@ -571,8 +404,7 @@ function trackFormMutationsNew(delay: number): void {
             'command': 'form.removal',
             'frameID': gCrWeb.message.getFrameId(),
             'removedFormIDs': gCrWeb.stringify(filteredFormIDs),
-            'removedFieldIDs':
-                xhrEnabled ? gCrWeb.stringify(removedFormlessFieldsIds) : null,
+            'removedFieldIDs': gCrWeb.stringify(removedFormlessFieldsIds),
           };
           continue;
         }
@@ -619,23 +451,6 @@ function trackFormMutationsNew(delay: number): void {
     }
   });
   formMutationObserver.observe(document, {childList: true, subtree: true});
-}
-
-/**
- * Installs a MutationObserver to track form related changes. Waits |delay|
- * milliseconds before sending a message to browser. A delay is used because
- * form mutations are likely to come in batches. An undefined or zero value for
- * |delay| would stop the MutationObserver, if any. Will allow batching
- * messages for removed and added forms together if `batchMessages` is true,
- * which relaxes the messages throttling and allows correctly handling form
- * replacements.
- */
-function trackFormMutations(delay: number, batchMessages: boolean): void {
-  if (batchMessages) {
-    trackFormMutationsNew(delay);
-  } else {
-    trackFormMutationsOld(delay);
-  }
 }
 
 

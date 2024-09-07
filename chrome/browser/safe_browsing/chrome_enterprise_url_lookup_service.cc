@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
@@ -91,7 +93,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanPerformFullURLLookup() const {
   return RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
       profile_->GetPrefs(),
       connectors_service_->GetDMTokenForRealTimeUrlCheck().has_value(),
-      profile_->IsOffTheRecord());
+      profile_->IsOffTheRecord(), profile_->IsGuestSession());
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::
@@ -237,7 +239,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {
 }
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetUserEmail() const {
-  return GetProfileEmail(profile_);
+  return enterprise_connectors::GetProfileEmail(profile_);
 }
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetBrowserDMTokenString()
@@ -253,6 +255,11 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetProfileDMTokenString()
   }
 #endif
   return "";
+}
+
+std::unique_ptr<enterprise_connectors::ClientMetadata>
+ChromeEnterpriseRealTimeUrlLookupService::GetClientMetadata() const {
+  return connectors_service_->BuildClientMetadata(true);
 }
 
 }  // namespace safe_browsing

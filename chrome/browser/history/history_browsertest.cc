@@ -1052,8 +1052,9 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start a prerender, but we don't activate it.
-  const int kHostId = prerender_helper().AddPrerender(kPrerenderingUrl);
-  ASSERT_NE(kHostId, content::RenderFrameHost::kNoFrameTreeNodeId);
+  const content::FrameTreeNodeId kHostId =
+      prerender_helper().AddPrerender(kPrerenderingUrl);
+  ASSERT_TRUE(kHostId);
 
   // The prerendered page should not be recorded.
   EXPECT_THAT(GetHistoryContents(), testing::ElementsAre(kInitialUrl));
@@ -1070,8 +1071,9 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start a prerender.
-  const int kHostId = prerender_helper().AddPrerender(kPrerenderingUrl);
-  ASSERT_NE(kHostId, content::RenderFrameHost::kNoFrameTreeNodeId);
+  const content::FrameTreeNodeId kHostId =
+      prerender_helper().AddPrerender(kPrerenderingUrl);
+  ASSERT_TRUE(kHostId);
 
   // Activate.
   prerender_helper().NavigatePrimaryPage(kPrerenderingUrl);
@@ -1095,8 +1097,9 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start a prerender.
-  const int kHostId = prerender_helper().AddPrerender(kPrerenderingUrl);
-  ASSERT_NE(kHostId, content::RenderFrameHost::kNoFrameTreeNodeId);
+  const content::FrameTreeNodeId kHostId =
+      prerender_helper().AddPrerender(kPrerenderingUrl);
+  ASSERT_TRUE(kHostId);
 
   // Do a fragment navigation in the prerendered page.
   prerender_helper().NavigatePrerenderedPage(kHostId, kPrerenderingFragmentUrl);

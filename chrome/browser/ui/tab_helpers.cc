@@ -72,6 +72,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
+#include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
@@ -224,7 +225,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder_tab_helper.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session_tab_helper.h"
-#include "chrome/browser/ui/ash/google_one_offer_iph_tab_helper.h"
+#include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -512,6 +513,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
           GetForBrowserContext(profile),
       profile->GetPrefs(), g_browser_process->safe_browsing_service());
+  site_protection::SiteProtectionMetricsObserver::CreateForWebContents(
+      web_contents);
+
   if (base::FeatureList::IsEnabled(
           safe_browsing::kTailoredSecurityIntegration)) {
     safe_browsing::TailoredSecurityUrlObserver::CreateForWebContents(
@@ -609,8 +613,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   PolicyAuditorBridge::CreateForWebContents(web_contents);
   PluginObserverAndroid::CreateForWebContents(web_contents);
 
-  if (base::FeatureList::IsEnabled(
-          payments::facilitated::kEnablePixDetection)) {
+  if (base::FeatureList::IsEnabled(payments::facilitated::kEnablePixPayments)) {
     if (auto* optimization_guide_decider =
             OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
       ChromeFacilitatedPaymentsClient::CreateForWebContents(
@@ -662,9 +665,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   if (commerce::isContextualConsentEnabled()) {
     commerce_hint::CommerceHintTabHelper::CreateForWebContents(web_contents);
-  }
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
-    side_panel::HistoryClustersTabHelper::CreateForWebContents(web_contents);
   }
   if (companion::IsCompanionFeatureEnabled()) {
     companion::CompanionTabHelper::CreateForWebContents(web_contents);

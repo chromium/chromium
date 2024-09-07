@@ -175,7 +175,7 @@ void DispatchResourceReplyOrDefaultParams(
       ppapi::proxy::DispatchResourceReply(                          \
           this, &_IpcMessageHandlerClass::member_func, params, p);  \
     } else {                                                        \
-      NOTREACHED_IN_MIGRATION();                                    \
+      NOTREACHED();                                                 \
     }                                                               \
     break;                                                          \
   }

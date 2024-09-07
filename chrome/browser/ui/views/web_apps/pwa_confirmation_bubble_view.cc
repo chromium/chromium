@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -121,7 +122,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
   WidgetDelegate::SetTitle(
       l10n_util::GetStringUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE));
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_INSTALL_PWA_BUTTON_LABEL));
   base::TrimWhitespace(web_app_info_->title, base::TRIM_ALL,
                        &web_app_info_->title);
@@ -171,7 +172,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
         web_app::mojom::UserDisplayMode::kTabbed);
   }
 
-  SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kCancel));
 
   SetHighlightedButton(pwa_install_icon_view_);
 

@@ -94,6 +94,12 @@
   <message name="IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API_MID_SENTENCE" desc="The label used for the third-party sign-in site settings controls when used mid-sentence.">
     third-party sign-in
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_HAND_TRACKING" desc="The label used for the hand tracking site settings controls.">
+    Hand tracking
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_HAND_TRACKING_MID_SENTENCE" desc="The label used for the hand tracking site settings controls when used mid-sentence.">
+    hand tracking
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION" desc="The label used for the idle detection site settings controls.">
     Your device use
   </message>

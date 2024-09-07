@@ -440,7 +440,7 @@ public class SearchActivity extends AsyncInitializationActivity
     /** Translate current intent origin and extras to a PageClassification. */
     @VisibleForTesting
     /* package */ void refinePageClassWithProfile(@NonNull Profile profile) {
-        int pageClass = mSearchBoxDataProvider.getPageClassification(true, false);
+        int pageClass = mSearchBoxDataProvider.getPageClassification(false);
 
         // Verify if the PageClassification can be refined.
         var url = SearchActivityUtils.getIntentUrl(getIntent());

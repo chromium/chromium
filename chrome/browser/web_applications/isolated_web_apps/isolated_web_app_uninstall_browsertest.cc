@@ -131,7 +131,7 @@ class IsolatedWebAppUninstallBrowserTest
 
   base::ScopedTempDir scoped_temp_dir_;
 
-  web_package::WebBundleSigner::Ed25519KeyPair key_pair_ =
+  web_package::test::Ed25519KeyPair key_pair_ =
       test::GetDefaultEd25519KeyPair();
 
   IsolatedWebAppUrlInfo url_info_ =

@@ -115,6 +115,10 @@ void ShowCreateChromeAppShortcutsDialog(
     const std::string& web_app_id,
     base::OnceCallback<void(bool /* created */)> close_callback);
 
+// Shows a tab modal dialog based on `dialog_model`.
+void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                  content::WebContents* web_contents);
+
 #if BUILDFLAG(IS_MAC)
 
 // Bridging methods that show/hide the toolkit-views based Task Manager on Mac.

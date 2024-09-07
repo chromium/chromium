@@ -286,8 +286,8 @@ TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, BasicSynced) {
+  ASSERT_FALSE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string sync_password = u"password";
   const std::u16string input = u"123password";
@@ -313,7 +313,6 @@ TEST_F(PasswordReuseManagerImplTest, BasicSynced) {
 
 TEST_F(PasswordReuseManagerImplTest, BasicUnsynced) {
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
   const std::u16string input = u"123password";
@@ -337,7 +336,6 @@ TEST_F(PasswordReuseManagerImplTest, BasicUnsynced) {
 
 TEST_F(PasswordReuseManagerImplTest, ClearGaiaPasswordHash) {
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
   const std::u16string input = u"123password";
@@ -361,8 +359,8 @@ TEST_F(PasswordReuseManagerImplTest, ClearGaiaPasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearAllGaiaPasswordHash) {
+  ASSERT_FALSE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
   const std::u16string input = u"123password";
@@ -388,7 +386,6 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllGaiaPasswordHash) {
 
 TEST_F(PasswordReuseManagerImplTest, SaveEnterprisePasswordHash) {
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string input = u"123password";
   const std::u16string enterprise_password = u"23password";
@@ -409,8 +406,8 @@ TEST_F(PasswordReuseManagerImplTest, SaveEnterprisePasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearAllEnterprisePasswordHash) {
+  ASSERT_FALSE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string input = u"123password";
   const std::u16string enterprise_password = u"23password";
@@ -432,6 +429,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllEnterprisePasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearAllNonGmailPasswordHash) {
+  ASSERT_FALSE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
   Initialize();
   const std::u16string non_sync_gaia_password = u"3password";
   const std::u16string gmail_password = u"gmailpass";

@@ -19,8 +19,11 @@ include_rules = [
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/file_system_provider",
+  "+chrome/browser/ash/fusebox",
+  "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/policy/dlp",
   "+chrome/browser/chromeos/policy/dlp",
+  "+chrome/browser/ash/login/users",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/chrome_select_file_policy.h",
@@ -29,5 +32,5 @@ include_rules = [
 
   # Dependencies outside of //chrome:
   # For ArcSelectFilesHandler.
-  "+chrome/browser/ui/views/select_file_dialog_extension.h",
+  "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
 ]

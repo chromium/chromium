@@ -7,12 +7,15 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class GURL;
 class PolicyBlocklistService;
 class PrefService;
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 // PolicyBlocklistNavigationThrottle provides a simple way to block a navigation
 // based on the URLBlocklistManager and Safe Search API. If the URL is on the
@@ -67,12 +70,14 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   // To ensure both allow and block policies override Safe Sites,
   // SafeSitesNavigationThrottle must be consulted as part of this throttle
   // rather than added separately to the list of throttles.
-  ThrottleCheckResult CheckSafeSitesFilter(const GURL& url);
-  void OnDeferredSafeSitesResult(bool is_safe,
-                                 ThrottleCheckResult cancel_result);
+  ThrottleCheckResult CheckSafeSitesFilter(const GURL& url, bool is_redirect);
+  void OnDeferredSafeSitesResult(bool proceed,
+                                 std::optional<ThrottleCheckResult> result);
 
   void UpdateRequestThrottleAction(
       content::NavigationThrottle::ThrottleAction action);
+
+  ThrottleCheckResult WillStartOrRedirectRequest(bool is_redirect);
 
   RequestThrottleAction request_throttle_action_ =
       RequestThrottleAction::kNoRequest;
@@ -81,7 +86,7 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   base::TimeTicks defer_time_;
   base::TimeDelta defer_duration_;
 
-  SafeSitesNavigationThrottle safe_sites_navigation_throttle_;
+  std::unique_ptr<content::NavigationThrottle> safe_sites_navigation_throttle_;
 
   raw_ptr<PolicyBlocklistService, DanglingUntriaged> blocklist_service_;
 

@@ -28,16 +28,18 @@ namespace content {
 //     workers only if they have opted in to being embedded by asserting CORS or
 //     CORP headers.
 //
-// 3.  The frame or worker may be an "isolated application", corresponding to a
-//     mostly TBD set of restrictions we're exploring in
-//     https://crbug.com/1206150, and which currently gate the set of APIs
-//     which specify [IsolatedContext] attributes.
+// 3.  The frame or worker may be an "isolated context", which provides
+//     additional isolation and integrity guarantees compared to cross-origin
+//     isolation. This isolation level grants access to APIs gated on the
+//     [IsolatedContext] IDL attribute in addition to [CrossOriginIsolated].
+//     Isolated contexts are specified in [3] below.
 //
 // The enum below is ordered from least-isolated to most-isolated.
 //
 // [1]
 // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/crossOriginIsolated
 // [2] https://w3c.github.io/webappsec-permissions-policy/
+// [3] https://wicg.github.io/isolated-web-apps/isolated-contexts.html
 //
 // NOTE: some of the information needed to fully determine a frame or worker's
 // isolation status is currently not available in the browser process.
@@ -57,7 +59,7 @@ enum class WebExposedIsolationLevel {
   kIsolated,
 
   // The frame or worker is in a cross-origin isolated process and agent cluster
-  // that supports application isolation, allowing access to web platform APIs
+  // that is also an isolated context, allowing access to web platform APIs
   // gated on both [CrossOriginIsolated] and [IsolatedContext].
   kIsolatedApplication
 };

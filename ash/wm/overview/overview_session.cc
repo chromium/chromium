@@ -155,7 +155,6 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
 
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
     : delegate_(delegate),
-      overview_start_time_(base::Time::Now()),
       chromevox_enabled_(Shell::Get()
                              ->accessibility_controller()
                              ->spoken_feedback()
@@ -369,6 +368,8 @@ void OverviewSession::Shutdown() {
   // windows in response to work area changes from window activation.
   display_observer_.reset();
 
+  tab_app_selection_widget_.reset();
+
   // Stop observing split view state changes before restoring window focus.
   // Otherwise the activation of the window triggers OnSplitViewStateChanged()
   // that will call into this function again.
@@ -408,8 +409,6 @@ void OverviewSession::Shutdown() {
   if (!was_saved_desk_library_showing) {
     UMA_HISTOGRAM_COUNTS_100("Ash.Overview.OverviewClosedItems",
                              num_start_windows_ - remaining_items);
-    UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Overview.TimeInOverview",
-                               base::Time::Now() - overview_start_time_);
   }
 
   // Explicitly clear the `selected_item_` to avoid dangling raw_ptr detection.
@@ -1285,6 +1284,15 @@ void OverviewSession::UpdateFrameThrottling() {
   }
   Shell::Get()->frame_throttling_controller()->StartThrottling(
       windows_to_throttle);
+}
+
+void OverviewSession::ToggleTabAppSelectionMenu() {
+  if (tab_app_selection_widget_) {
+    tab_app_selection_widget_.reset();
+    return;
+  }
+
+  tab_app_selection_widget_ = TabAppSelectionHost::Create();
 }
 
 void OverviewSession::OnDeskActivationChanged(const Desk* activated,

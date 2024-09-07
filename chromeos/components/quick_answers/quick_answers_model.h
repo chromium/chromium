@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image.h"
@@ -60,6 +61,8 @@ enum class IntentType {
   kTranslation = 3,
   kMaxValue = kTranslation
 };
+
+std::optional<quick_answers::Intent> ToIntent(IntentType intent_type);
 
 enum class QuickAnswerUiElementType {
   kUnknown = 0,

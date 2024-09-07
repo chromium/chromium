@@ -4,9 +4,6 @@
 
 #include "ash/system/unified/unified_system_tray_controller.h"
 
-#include <algorithm>
-#include <memory>
-
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
@@ -21,6 +18,7 @@
 #include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
+#include "ash/system/audio/unified_volume_view.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 #include "ash/system/brightness/quick_settings_display_detailed_view_controller.h"
@@ -42,6 +40,7 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/update_model.h"
+#include "ash/system/nearby_share/nearby_share_detailed_view_controller.h"
 #include "ash/system/nearby_share/nearby_share_feature_pod_controller.h"
 #include "ash/system/network/network_detailed_view_controller.h"
 #include "ash/system/network/network_feature_pod_controller.h"
@@ -66,7 +65,6 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/wm/lock_state_controller.h"
-#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -78,8 +76,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
-
-using global_media_controls::GlobalMediaControlsEntryPoint;
 
 namespace ash {
 
@@ -121,22 +117,18 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
 
   if (!Shell::Get()->session_controller()->IsScreenLocked() &&
       !MediaTray::IsPinnedToShelf()) {
-    if (base::FeatureList::IsEnabled(
-            media::kGlobalMediaControlsCrOSUpdatedUI)) {
-      media_view_controller_ =
-          std::make_unique<QuickSettingsMediaViewController>(this);
-      qs_view->AddMediaView(media_view_controller_->CreateView());
-    } else {
-      media_controls_controller_ =
-          std::make_unique<UnifiedMediaControlsController>(this);
-      qs_view->AddMediaControlsView(media_controls_controller_->CreateView());
-    }
+    media_view_controller_ =
+        std::make_unique<QuickSettingsMediaViewController>(this);
+    qs_view->AddMediaView(media_view_controller_->CreateView());
   }
 
   volume_slider_controller_ =
       std::make_unique<UnifiedVolumeSliderController>(this);
   unified_volume_view_ =
       qs_view->AddSliderView(volume_slider_controller_->CreateView());
+  views::AsViewClass<QuickSettingsSlider>(
+      views::AsViewClass<UnifiedVolumeView>(unified_volume_view_)->slider())
+      ->set_is_toggleable_volume_slider(true);
 
   brightness_slider_controller_ =
       std::make_unique<UnifiedBrightnessSliderController>(
@@ -234,6 +226,10 @@ void UnifiedSystemTrayController::ShowUserChooserView() {
     return;
   }
   ShowDetailedView(std::make_unique<UserChooserDetailedViewController>(this));
+}
+
+void UnifiedSystemTrayController::ShowNearbyShareDetailedView() {
+  ShowDetailedView(std::make_unique<NearbyShareDetailedViewController>(this));
 }
 
 void UnifiedSystemTrayController::ShowNetworkDetailedView() {
@@ -355,15 +351,6 @@ void UnifiedSystemTrayController::OnAudioSettingsButtonClicked() {
   ShowAudioDetailedView();
 }
 
-void UnifiedSystemTrayController::ShowMediaControls() {
-  quick_settings_view_->ShowMediaControls();
-}
-
-void UnifiedSystemTrayController::OnMediaControlsViewClicked() {
-  ShowMediaControlsDetailedView(
-      GlobalMediaControlsEntryPoint::kQuickSettingsMiniPlayer);
-}
-
 void UnifiedSystemTrayController::SetShowMediaView(bool show_media_view) {
   quick_settings_view_->SetShowMediaView(show_media_view);
 }
@@ -420,7 +407,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   create_tile(VIEW_ID_FEATURE_TILE_HOTSPOT,
               std::make_unique<HotspotFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  if (base::FeatureList::IsEnabled(features::kFocusMode)) {
+  if (features::IsFocusModeEnabled()) {
     create_tile(VIEW_ID_FEATURE_TILE_FOCUS_MODE,
                 std::make_unique<FocusModeFeaturePodController>(this),
                 feature_pod_controllers_, tiles);

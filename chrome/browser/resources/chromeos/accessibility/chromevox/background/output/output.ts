@@ -931,45 +931,13 @@ export class Output extends OutputInterface {
       return;
     }
 
-    const options: {
-      annotation: Array<(
-          string | outputTypes.OutputNodeSpan |
-          outputTypes.OutputSelectionSpan | outputTypes.OutputAction)>,
-      isUnique: boolean,
-    } = {annotation: ['name'], isUnique: true};
+    let options:
+        outputTypes.AppendOptions = {annotation: ['name'], isUnique: true};
     const rangeStart = range.start.index;
     const rangeEnd = range.end.index;
+
     if (this.formatOptions_.braille) {
-      options.annotation.push(new outputTypes.OutputNodeSpan(node));
-      const selStart = node.textSelStart;
-      const selEnd = node.textSelEnd;
-
-      if (selStart !== undefined &&
-          // TODO(b/314203187): Determine if not null assertion is acceptable.
-          selEnd! >= rangeStart && selStart <= rangeEnd) {
-        // Editable text selection.
-
-        // |rangeStart| and |rangeEnd| are indices set by the caller and are
-        // assumed to be inside of the range. In braille, we only ever expect
-        // to get ranges surrounding a line as anything smaller doesn't make
-        // sense.
-
-        // |selStart| and |selEnd| reflect the editable selection. The
-        // relative selStart and relative selEnd for the current line are then
-        // just the difference between |selStart|, |selEnd| with |rangeStart|.
-        // See editing_test.js for examples.
-        options.annotation.push(new outputTypes.OutputSelectionSpan(
-            // TODO(b/314203187): Determine if not null assertion is acceptable.
-            selStart - rangeStart, selEnd! - rangeStart));
-      } else if (
-          rangeStart !== 0 || rangeEnd !== range.start.getText().length) {
-        // Non-editable text selection over less than the full contents
-        // covered by the range. We exclude full content underlines because it
-        // is distracting to read braille with all cells underlined with a
-        // cursor.
-        options.annotation.push(
-            new outputTypes.OutputSelectionSpan(rangeStart, rangeEnd));
-      }
+      options = this.brailleOutput_.subNode(range, options);
     }
 
     // Intentionally skip subnode output for

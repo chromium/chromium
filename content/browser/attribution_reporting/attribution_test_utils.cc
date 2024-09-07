@@ -22,6 +22,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
@@ -38,6 +39,7 @@
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -252,6 +254,12 @@ SourceBuilder& SourceBuilder::SetDestinationLimitPriority(int64_t priority) {
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetAttributionScopesData(
+    attribution_reporting::AttributionScopesData attribution_scopes) {
+  registration_.attribution_scopes_data = std::move(attribution_scopes);
+  return *this;
+}
+
 StorableSource SourceBuilder::Build() const {
   StorableSource source(reporting_origin_, registration_, source_origin_,
                         source_type_, is_within_fenced_frame_);
@@ -273,7 +281,8 @@ StoredSource SourceBuilder::BuildStored() const {
       remaining_aggregatable_attribution_budget_, randomized_response_rate_,
       registration_.trigger_data_matching, registration_.event_level_epsilon,
       registration_.aggregatable_debug_reporting_config.config().key_piece,
-      remaining_aggregatable_debug_budget_);
+      remaining_aggregatable_debug_budget_,
+      registration_.attribution_scopes_data);
   source.dedup_keys() = dedup_keys_;
   source.aggregatable_dedup_keys() = aggregatable_dedup_keys_;
   return source;
@@ -403,6 +412,12 @@ TriggerBuilder& TriggerBuilder::SetAggregatableFilteringIdMaxBytes(
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetAttributionScopes(
+    attribution_reporting::AttributionScopesSet attribution_scopes) {
+  attribution_scopes_ = std::move(attribution_scopes);
+  return *this;
+}
+
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
   attribution_reporting::TriggerRegistration reg;
@@ -427,6 +442,7 @@ AttributionTrigger TriggerBuilder::Build(
           aggregatable_filtering_id_max_bytes_);
   reg.aggregatable_debug_reporting_config =
       aggregatable_debug_reporting_config_;
+  reg.attribution_scopes = attribution_scopes_;
 
   return AttributionTrigger(reporting_origin_, std::move(reg),
                             destination_origin_, is_within_fenced_frame_);
@@ -573,7 +589,8 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
         source.aggregatable_dedup_keys(), source.randomized_response_rate(),
         source.trigger_data_matching(), source.event_level_epsilon(),
         source.aggregatable_debug_key_piece(),
-        source.remaining_aggregatable_debug_budget());
+        source.remaining_aggregatable_debug_budget(),
+        source.attribution_scopes_data());
   };
   return tie(a) == tie(b);
 }
@@ -712,7 +729,13 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
       << ",aggregatable_debug_key_piece="
       << source.aggregatable_debug_key_piece()
       << ",remaining_aggregatable_debug_budget="
-      << source.remaining_aggregatable_debug_budget() << ",dedup_keys=[";
+      << source.remaining_aggregatable_debug_budget()
+      << ",attribution_scopes_data="
+      << (source.attribution_scopes_data().has_value()
+              ? SerializeAttributionJson(
+                    source.attribution_scopes_data()->ToJson())
+              : "null")
+      << ",dedup_keys=[";
 
   const char* separator = "";
   for (int64_t dedup_key : source.dedup_keys()) {

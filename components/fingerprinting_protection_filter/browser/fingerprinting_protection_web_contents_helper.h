@@ -28,6 +28,7 @@ namespace subresource_filter {
 namespace mojom {
 class ActivationState;
 }  // namespace mojom
+enum class ActivationDecision;
 enum class LoadPolicy;
 }  // namespace subresource_filter
 
@@ -70,7 +71,8 @@ class FingerprintingProtectionWebContentsHelper
   // throttles created in MaybeAppendNavigationThrottles().
   void NotifyPageActivationComputed(
       content::NavigationHandle* navigation_handle,
-      const subresource_filter::mojom::ActivationState& activation_state);
+      const subresource_filter::mojom::ActivationState& activation_state,
+      const subresource_filter::ActivationDecision& activation_decision);
 
   // Called in WillStartRequest or WillRedirectRequest stage from a
   // ChildFrameNavigationFilteringThrottle.
@@ -91,7 +93,7 @@ class FingerprintingProtectionWebContentsHelper
 
  protected:
   // content::WebContentsObserver:
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(
@@ -100,6 +102,7 @@ class FingerprintingProtectionWebContentsHelper
       content::NavigationHandle* navigation_handle) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
+  void WebContentsDestroyed() override;
 
  private:
   explicit FingerprintingProtectionWebContentsHelper(
@@ -108,12 +111,14 @@ class FingerprintingProtectionWebContentsHelper
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle);
 
+  void Detach();
+
   friend class content::WebContentsUserData<
       FingerprintingProtectionWebContentsHelper>;
 
   // Set of frames across all pages in this WebContents that have had at least
   // one committed or aborted navigation. Keyed by FrameTreeNode ID.
-  std::set<int> navigated_frames_;
+  std::set<content::FrameTreeNodeId> navigated_frames_;
 
   // Keep track of all active throttle managers. Unowned as a throttle manager
   // will notify this class when it's destroyed so we can remove it from this
@@ -121,6 +126,9 @@ class FingerprintingProtectionWebContentsHelper
   base::flat_set<raw_ptr<ThrottleManager, CtnExperimental>> throttle_managers_;
 
   bool is_subresource_blocked_ = false;
+
+  // Tracks refreshes observed.
+  int refresh_count_ = 0;
 
   base::ObserverList<FingerprintingProtectionObserver>::Unchecked
       observer_list_;

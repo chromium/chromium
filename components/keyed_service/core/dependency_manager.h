@@ -11,6 +11,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/dependency_graph.h"
+#include "components/keyed_service/core/features_buildflags.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
 class KeyedServiceBaseFactory;
@@ -148,11 +149,19 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   std::set<raw_ptr<void, SetExperimental>> dead_context_pointers_;
 
 #if DCHECK_IS_ON()
+#if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
+  // Used to count the number of `context` that have been created. This is used
+  // to prevent registering KeyedServiceFactories while any context exist, while
+  // still allowing to register/unregister factories during unit tests.
+  size_t context_created_count_ = 0;
+#else
   // Used to record whether any `context` has been created. This is used
   // to prevent registering KeyedServiceFactories after the creation of
   // a context.
   bool any_context_created_ = false;
 #endif
+#endif
+
   bool disallow_factory_registration_ = false;
   std::string registration_function_name_error_message_;
 };

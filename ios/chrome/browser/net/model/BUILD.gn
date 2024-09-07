@@ -14,10 +14,6 @@ source_set("model") {
     "http_server_properties_factory.h",
     "ios_chrome_http_user_agent_settings.h",
     "ios_chrome_http_user_agent_settings.mm",
-    "ios_chrome_network_delegate.cc",
-    "ios_chrome_network_delegate.h",
-    "ios_chrome_url_request_context_getter.cc",
-    "ios_chrome_url_request_context_getter.h",
     "retryable_url_fetcher.h",
     "retryable_url_fetcher.mm",
   ]
@@ -30,18 +26,37 @@ source_set("model") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/update_client",
-    "//ios/chrome/browser/profile/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/net",
     "//ios/web/common",
+    "//ios/web/public",
+    "//ios/web/public/thread",
     "//net",
     "//net:extras",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
     "//url",
   ]
   public_deps = [
     ":crurl",
     ":net_types",
+    ":network_delegate",
+  ]
+}
+
+source_set("network_delegate") {
+  sources = [
+    "ios_chrome_network_delegate.cc",
+    "ios_chrome_network_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/web/public/thread",
+    "//net",
   ]
 }
 

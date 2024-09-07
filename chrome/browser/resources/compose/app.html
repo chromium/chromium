@@ -60,7 +60,7 @@
     transform-origin: top left;
   }
 
-  #firstRunHeading iron-icon {
+  #firstRunHeading cr-icon {
     --iron-icon-width: 20px;
     --iron-icon-height: 20px;
   }
@@ -372,7 +372,7 @@
     font-size: 11px;
   }
 
-  .icon-buttons-row cr-button iron-icon {
+  .icon-buttons-row cr-button cr-icon {
     width: var(--cr-icon-size);
     height: var(--cr-icon-size);
   }
@@ -410,18 +410,6 @@
     gap:45px;
   }
 
-<if expr="is_win">
-  :host([enable-ui-refinements]) #resultFooter {
-    gap: 22px;
-  }
-</if>
-
-<if expr="is_linux">
-  :host([enable-ui-refinements]) #resultFooter {
-    gap: 15px;
-  }
-</if>
-
   .footer-text {
     display: flex;
     align-items: start;
@@ -431,18 +419,6 @@
     font-size: 11px;
     line-height: 16px;
   }
-
-<if expr="is_win">
-  :host([enable-ui-refinements]) .footer-text {
-    gap: 4px;
-  }
-</if>
-
-<if expr="is_linux">
-  :host([enable-ui-refinements]) .footer-text {
-    gap: 2px;
-  }
-</if>
 
   .footer-text .icon-buttons-row {
     --cr-icon-size: 16px;
@@ -520,7 +496,7 @@
 <div id="firstRunDialog" class="dialog" hidden="[[!showFirstRunDialog_]]">
   <div id="firstRunHeading">
     <div id="firstRunIconContainer">
-      <iron-icon icon="compose:compose"></iron-icon>
+      <cr-icon icon="compose:compose"></cr-icon>
     </div>
     <h1>$i18n{firstRunTitle}</h1>
     <cr-icon-button id="firstRunCloseButton" class="close-button"
@@ -656,18 +632,18 @@
                   <cr-button id="undoButtonRefined" title="$i18n{undo}"
                     disabled="[[!undoEnabled_]]" on-click="onUndoClick_">
                     <div aria-hidden="true"> $i18n{undoButtonText} </div>
-                    <iron-icon aria-hidden="true" slot="suffix-icon"
+                    <cr-icon aria-hidden="true" slot="suffix-icon"
                       icon="compose:undo">
-                    </iron-icon>
+                    </cr-icon>
                   </cr-button>
                 </div>
                 <div class="button-container" hidden="[[!enableUiRefinements]]">
                   <cr-button id="redoButton" title="$i18n{redo}"
                     disabled="[[!redoEnabled_]]" on-click="onRedoClick_">
                     <div aria-hidden="true"> $i18n{redoButtonText} </div>
-                    <iron-icon aria-hidden="true" slot="suffix-icon"
+                    <cr-icon aria-hidden="true" slot="suffix-icon"
                       icon="compose:redo">
-                    </iron-icon>
+                    </cr-icon>
                   </cr-icon-button>
                 </div>
               </div>
@@ -685,7 +661,7 @@
       </div>
       <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
         disabled="[[!isSubmitEnabled_]]">
-        <iron-icon slot="prefix-icon" icon="compose:compose"></iron-icon>
+        <cr-icon slot="prefix-icon" icon="compose:compose"></cr-icon>
         $i18n{submitButton}
       </cr-button>
     </div>
@@ -699,13 +675,17 @@
               hidden$="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{onDeviceUsedFooter}
           </b>
-          <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
+          <!-- <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{dogfoodFooter}</span>
           <span hidden="[[!showDefaultResultFooter_(response_, enableUiRefinements)]]"
               >$i18nRaw{resultFooter}</span>
           <span
             hidden="[[!showRefinementsResultFooter_(response_, enableUiRefinements)]]"
-            >$i18nRaw{refinementsResultFooter}</span>
+            >$i18nRaw{refinementsResultFooter}</span> -->
+          <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{dogfoodFooter}</span>
+          <span hidden="[[showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{resultFooter}</span>
         </div>
         <cr-feedback-buttons id="feedbackButtons"
             on-selected-option-changed="onFeedbackSelectedOptionChanged_"
@@ -731,8 +711,8 @@
       <cr-button id="errorGoBackButton" class="action-button"
         on-click="onErrorGoBackButton_"
         hidden="[[!isBackFromErrorAvailable_(response_)]]">
-        <iron-icon aria-hidden="true" slot="prefix-icon" icon="compose:undo">
-        </iron-icon>
+        <cr-icon aria-hidden="true" slot="prefix-icon" icon="compose:undo">
+        </cr-icon>
         <div aria-hidden="true">
           $i18nRaw{errorFilteredGoBackButton}
         </div>

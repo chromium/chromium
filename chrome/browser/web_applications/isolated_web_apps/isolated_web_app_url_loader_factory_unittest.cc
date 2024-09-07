@@ -916,8 +916,7 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTestBase
   void CreateSignedBundleAndWriteToDisk(base::FilePath web_bundle_path) {
     std::string base_url = relative_urls_ ? "/" : kEd25519AppOriginUrl.spec();
 
-    web_package::WebBundleSigner::Ed25519KeyPair key_pair(kTestPublicKey,
-                                                          kTestPrivateKey);
+    web_package::test::Ed25519KeyPair key_pair(kTestPublicKey, kTestPrivateKey);
 
     bundle_ =
         IsolatedWebAppBuilder(ManifestBuilder().SetStartUrl(base_url))

@@ -9,6 +9,8 @@ import android.app.Activity;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.digital_credentials.DigitalIdentityInterstitialClosedReason;
 import org.chromium.content_public.browser.webid.DigitalIdentityInterstitialType;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
 import org.chromium.ui.base.WindowAndroid;
@@ -71,6 +73,10 @@ public class DigitalIdentitySafetyInterstitialBridge {
                 modalDialogManager,
                 interstitialType,
                 (/*DialogDismissalCause*/ Integer dismissalCause) -> {
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Blink.DigitalIdentityRequest.InterstitialClosedReason",
+                            closedReasonFromDismissalCause(dismissalCause),
+                            DigitalIdentityInterstitialClosedReason.MAX_VALUE + 1);
                     onDone(
                             dismissalCause.intValue()
                                             == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
@@ -94,6 +100,20 @@ public class DigitalIdentitySafetyInterstitialBridge {
                     .onInterstitialDone(
                             mNativeDigitalIdentitySafetyInterstitialBridgeAndroid,
                             statusForMetrics);
+        }
+    }
+
+    private static @DigitalIdentityInterstitialClosedReason int closedReasonFromDismissalCause(
+            Integer dismissalCause) {
+        switch (dismissalCause) {
+            case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                return DigitalIdentityInterstitialClosedReason.OK_BUTTON;
+            case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
+                return DigitalIdentityInterstitialClosedReason.CANCEL_BUTTON;
+            case DialogDismissalCause.NAVIGATE:
+                return DigitalIdentityInterstitialClosedReason.PAGE_NAVIGATED;
+            default:
+                return DigitalIdentityInterstitialClosedReason.OTHER;
         }
     }
 

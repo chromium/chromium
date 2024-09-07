@@ -11,8 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/proto_fetcher.h"
+#include "components/supervised_user/core/browser/proto_fetcher_status.h"
 
 class PrefService;
 
@@ -91,9 +92,7 @@ class FamilyInfoLogSource : public system_logs::SystemLogsSource {
                       base::TimeDelta duration,
                       bool immediately_available);
 
-  std::unique_ptr<
-      supervised_user::ProtoFetcher<kidsmanagement::ListMembersResponse>>
-      fetcher_;
+  std::unique_ptr<supervised_user::ListFamilyMembersFetcher> fetcher_;
   base::ElapsedTimer fetch_timer_;
   base::OneShotTimer list_members_response_timeout_;
 

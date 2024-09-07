@@ -8,6 +8,8 @@
 #include <memory>
 #import <optional>
 
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
 class PrefService;
 class ProfileOAuth2TokenServiceDelegate;
 class ProfileOAuth2TokenService;
@@ -22,6 +24,14 @@ class ConfigurationPolicyProvider;
 namespace password_manager {
 class BulkLeakCheckServiceInterface;
 class RecipientsFetcher;
+}
+
+namespace plus_addresses {
+class PlusAddressService;
+}
+
+namespace tab_groups {
+class TabGroupSyncService;
 }
 
 namespace base {
@@ -83,11 +93,6 @@ bool DisableUpgradeSigninPromo();
 // infobar won't be shown during testing.
 bool DisableUpdateService();
 
-// The main thread freeze detection is interfering with the EarlGrey
-// synchronization.
-// Return true if it should be disabled.
-bool DisableMainThreadFreezeDetection();
-
 // Returns true if any app launch promos should delay themselves so EGTests
 // can start before checking if the promo appears.
 bool DelayAppLaunchPromos();
@@ -96,18 +101,28 @@ bool DelayAppLaunchPromos();
 // provider when testing. May return nullptr.
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();
 
-// Allow overriding the SystemIdentityManager factory. The real factory will
+// Allows overriding the SystemIdentityManager factory. The real factory will
 // be used if this hook returns null.
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager();
 
-// Allow overriding the TrustedVaultClientBackend factory. The real factory
+// Allows overriding the TrustedVaultClientBackend factory. The real factory
 // will be used if this hook returns null.
 std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend();
+
+// Allows overriding the TabGroupSyncService factory. The real factory will be
+// used if this hook returns null.
+std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
+    ChromeBrowserState* browser_state);
 
 // Returns a bulk leak check service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService();
+
+// Returns a plus address service that should be used when testing. The real
+// factory will be used if this hook returns a nullptr.
+std::unique_ptr<plus_addresses::PlusAddressService>
+GetOverriddenPlusAddressService(ProfileIOS* profile);
 
 // Returns a recipients fetcher instance that should be used in EG tests. The
 // real instance will be used if this hook returns a nullptr.

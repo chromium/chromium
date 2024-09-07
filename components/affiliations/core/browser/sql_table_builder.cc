@@ -26,10 +26,11 @@ namespace {
 
 // Appends |name| to |list_of_names|, separating items with ", ".
 void Append(const std::string& name, std::string* list_of_names) {
-  if (list_of_names->empty())
+  if (list_of_names->empty()) {
     *list_of_names = name;
-  else
+  } else {
     *list_of_names += ", " + name;
+  }
 }
 
 // Returns true iff the foreign keys can be safely re-enabled on the database.

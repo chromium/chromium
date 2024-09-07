@@ -29,6 +29,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/saving_enterprise_disabled_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 
 namespace {
@@ -199,6 +200,11 @@ UIColor* BackgroundColor() {
     (id<ASCredentialRequest>)registrationRequest {
   if (![registrationRequest isKindOfClass:[ASPasskeyCredentialRequest class]]) {
     [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
+  if (!IsPasswordCreationUserEnabled()) {
+    [self showSavingDisabledByEnterpriseAlert];
     return;
   }
 
@@ -515,6 +521,20 @@ UIColor* BackgroundColor() {
                                               code:errorCode
                                           userInfo:nil];
   [self.extensionContext cancelRequestWithError:error];
+}
+
+// Displays sheet with information that credential saving is disabled by the
+// enterprise policy.
+- (void)showSavingDisabledByEnterpriseAlert {
+  // TODO(crbug.com/362719658): Check whether it's possible to make the whole
+  // VC a half sheet.
+  SavingEnterpriseDisabledViewController*
+      savingEnterpriseDisabledViewController =
+          [[SavingEnterpriseDisabledViewController alloc] init];
+  savingEnterpriseDisabledViewController.actionHandler = self;
+  [self presentViewController:savingEnterpriseDisabledViewController
+                     animated:YES
+                   completion:nil];
 }
 
 #pragma mark - SuccessfulReauthTimeAccessor

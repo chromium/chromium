@@ -129,6 +129,7 @@ source_set("gbm") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia:skcms",
+    "//third_party/angle:includes",
     "//third_party/libsync",
     "//third_party/minigbm",
     "//ui/base",
@@ -173,8 +174,6 @@ source_set("gbm") {
     ]
     deps += [ "//gpu/vulkan" ]
   }
-
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
 
   defines = [
     "OZONE_IMPLEMENTATION",

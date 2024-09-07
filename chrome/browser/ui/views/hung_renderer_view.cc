@@ -38,6 +38,7 @@
 #include "content/public/common/result_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
@@ -297,7 +298,7 @@ HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
   hung_pages_table_ = hung_pages_table.get();
 
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_BROWSER_HANGMONITOR_RENDERER_WAIT));
 
   SetAcceptCallback(base::BindOnce(&HungRendererDialogView::RestartHangTimer,
@@ -429,7 +430,7 @@ void HungRendererDialogView::UpdateLabels() {
   info_label_->SetText(l10n_util::GetPluralStringFUTF16(
       IDS_BROWSER_HANGMONITOR_RENDERER, hung_pages_table_model_->RowCount()));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetPluralStringFUTF16(IDS_BROWSER_HANGMONITOR_RENDERER_END,
                                        hung_pages_table_model_->RowCount()));
 }

@@ -13,6 +13,7 @@
 
 #include <codecapi.h>
 #include <d3d11_1.h>
+#include <mfapi.h>
 #include <mferror.h>
 #include <mftransform.h>
 
@@ -60,7 +61,13 @@
 #include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
 #endif
 
+using Microsoft::WRL::ComPtr;
+
 namespace media {
+
+BASE_FEATURE(kExpandMediaFoundationEncodingResolutions,
+             "ExpandMediaFoundationEncodingResolutions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 constexpr uint32_t kDefaultGOPLength = 3000;
@@ -85,8 +92,16 @@ constexpr uint8_t kVP9MaxQuantizer = 56;
 constexpr uint8_t kAV1MinQuantizer = 10;
 // //third_party/webrtc/media/engine/webrtc_video_engine.h.
 constexpr uint8_t kAV1MaxQuantizer = 56;
-constexpr gfx::Size kMaxResolution(1920, 1088);
+constexpr gfx::Size k2KMaxResolution(1920, 1088);
+constexpr gfx::Size k4KMaxResolution(3840, 2160);
+constexpr gfx::Size k8KMaxResolution(7680, 4320);
 constexpr gfx::Size kMinResolution(32, 32);
+
+// The range for the quantization parameter is determined by examining the
+// estamitaed QP values from the SW bitrate controller in various encoding
+// scenarios.
+constexpr uint8_t kH264MinQuantizer = 16;
+constexpr uint8_t kH264MaxQuantizer = 51;
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // For H.265, ideally we may reuse Min/MaxQp for H.264 from
@@ -116,6 +131,13 @@ BASE_FEATURE(kMediaFoundationVP9L1T3Support,
              "MediaFoundationVP9L1T3Support",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !defined(ARCH_CPU_X86)
+
+BASE_FEATURE(kMediaFoundationUseSWBRCForH264Camera,
+             "MediaFoundationUseSWBRCForH264Camera",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaFoundationUseSWBRCForH264Desktop,
+             "MediaFoundationUseSWBRCForH264Desktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // For H.265 encoding at L1T1/L1T2 we may use SW bitrate controller when
@@ -383,8 +405,9 @@ MFTEnum2Type GetMFTEnum2Function() {
 
 // If MFTEnum2 is unavailable, this uses MFTEnumEx and doesn't fill any
 // adapter information if there are more than one adapters.
-std::vector<IMFActivate*> EnumerateHardwareEncodersLegacy(VideoCodec codec) {
-  std::vector<IMFActivate*> encoders;
+std::vector<ComPtr<IMFActivate>> EnumerateHardwareEncodersLegacy(
+    VideoCodec codec) {
+  std::vector<ComPtr<IMFActivate>> encoders;
 
   uint32_t flags = MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER;
   MFT_REGISTER_TYPE_INFO input_info;
@@ -459,8 +482,9 @@ std::vector<IMFActivate*> EnumerateHardwareEncodersLegacy(VideoCodec codec) {
   return encoders;
 }
 
-std::vector<IMFActivate*> EnumerateHardwareEncoders(VideoCodec codec) {
-  std::vector<IMFActivate*> encoders;
+std::vector<ComPtr<IMFActivate>> EnumerateHardwareEncoders(VideoCodec codec) {
+  std::vector<ComPtr<IMFActivate>> encoders;
+
   if (!InitializeMediaFoundation()) {
     return encoders;
   }
@@ -550,27 +574,91 @@ std::vector<IMFActivate*> EnumerateHardwareEncoders(VideoCodec codec) {
   return encoders;
 }
 
-bool IsCodecSupportedForEncoding(
-    VideoCodec codec,
-    int* num_temporal_layers,
-    const gpu::GpuDriverBugWorkarounds& workarounds) {
-  *num_temporal_layers = 1;
-
-  std::vector<IMFActivate*> activates = EnumerateHardwareEncoders(codec);
-  if (activates.empty()) {
-    DVLOG(1) << "Hardware encode acceleration is not available for "
-             << GetCodecName(codec);
-    return false;
+UINT32 VideoCodecToMFVideoLevel(VideoCodec code) {
+  switch (code) {
+    case VideoCodec::kH264:
+      return eAVEncH264VLevel5_2;
+    case VideoCodec::kAV1:
+      return eAVEncAV1VLevel5_2;
+    case VideoCodec::kHEVC:
+      return eAVEncH265VLevel5_2;
+    default:
+      NOTREACHED();
   }
+}
+
+constexpr DWORD CalculateMacroBlocksPerSecond(const gfx::Size& size) {
+  constexpr DWORD kMacroBlockWidth = 16u;
+  constexpr DWORD kMacroBlockHeight = 16u;
+  constexpr DWORD kMacroBlockFrameRate = 30u;
+  return (size.GetArea() * kMacroBlockFrameRate) /
+         (kMacroBlockWidth * kMacroBlockHeight);
+}
+
+gfx::Size GetMaxResolutionFromMFT(VideoCodec codec, IMFTransform* encoder) {
+  ComPtr<IMFMediaType> media_type;
+  RETURN_ON_HR_FAILURE(MFCreateMediaType(&media_type),
+                       "Create media type failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video),
+                       "Set major type failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(
+      media_type->SetGUID(MF_MT_SUBTYPE, VideoCodecToMFSubtype(codec)),
+      "Set guid for sub type failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(
+      MFSetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE,
+                         k2KMaxResolution.width(), k2KMaxResolution.height()),
+      "Set attribute size failed", k2KMaxResolution);
+  // Frame rate,30, is dummy value for pass through.
+  RETURN_ON_HR_FAILURE(MFSetAttributeRatio(media_type.Get(), MF_MT_FRAME_RATE,
+                                           /*unNumerator=*/30,
+                                           /*unDenominator=*/1),
+                       "Set attribute ratio failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(media_type->SetUINT32(MF_MT_AVG_BITRATE, 9000000),
+                       "Set avg bitrate failed", k2KMaxResolution);
+  RETURN_ON_HR_FAILURE(
+      media_type->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive),
+      "Set interlace mode failed", k2KMaxResolution);
+
+  if (codec != VideoCodec::kVP9) {
+    RETURN_ON_HR_FAILURE(media_type->SetUINT32(MF_MT_VIDEO_LEVEL,
+                                               VideoCodecToMFVideoLevel(codec)),
+                         "Set video level failed", k2KMaxResolution);
+  }
+
+  RETURN_ON_HR_FAILURE(
+      encoder->SetOutputType(/*stream_id=*/0, media_type.Get(), 0),
+      "Set output type failed", k2KMaxResolution);
+
+  ComPtr<IMFAttributes> attributes;
+  RETURN_ON_HR_FAILURE(encoder->GetAttributes(&attributes),
+                       "Get attributes failed", k2KMaxResolution);
+  uint32_t max_macroblocks_per_second =
+      MFGetAttributeUINT32(attributes.Get(), MF_VIDEO_MAX_MB_PER_SEC, 0);
+  max_macroblocks_per_second &=
+      0x0fffffff;  // Only lower 28 bits are supported.
+
+  if (max_macroblocks_per_second >=
+      CalculateMacroBlocksPerSecond(k8KMaxResolution)) {
+    return k8KMaxResolution;
+  } else if (max_macroblocks_per_second >=
+             CalculateMacroBlocksPerSecond(k4KMaxResolution)) {
+    return k4KMaxResolution;
+  }
+  return k2KMaxResolution;
+}
+
+int GetMaxTemporalLayer(VideoCodec codec,
+                        std::vector<ComPtr<IMFActivate>>& activates,
+                        const gpu::GpuDriverBugWorkarounds& workarounds) {
+  int num_temporal_layers = 1;
 
   for (size_t i = 0; i < activates.size(); i++) {
-    *num_temporal_layers = std::max(
-        GetNumSupportedTemporalLayers(activates[i], codec, workarounds),
-        *num_temporal_layers);
-    activates[i]->Release();
+    num_temporal_layers = std::max(
+        GetNumSupportedTemporalLayers(activates[i].Get(), codec, workarounds),
+        num_temporal_layers);
   }
 
-  return true;
+  return num_temporal_layers;
 }
 
 // Per
@@ -625,6 +713,11 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
     case VideoCodec::kAV1: {
       config.max_quantizer = kAV1MaxQuantizer;
       config.min_quantizer = kAV1MinQuantizer;
+      break;
+    }
+    case VideoCodec::kH264: {
+      config.max_quantizer = kH264MaxQuantizer;
+      config.min_quantizer = kH264MinQuantizer;
       break;
     }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -720,22 +813,46 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
   SupportedProfiles profiles;
   for (auto codec : supported_codecs) {
-    int num_temporal_layers = 1;
-    if (!IsCodecSupportedForEncoding(codec, &num_temporal_layers,
-                                     workarounds_)) {
+    auto activates = EnumerateHardwareEncoders(codec);
+    if (activates.empty()) {
+      DVLOG(1) << "Hardware encode acceleration is not available for "
+               << GetCodecName(codec);
       continue;
     }
 
+    int num_temporal_layers =
+        GetMaxTemporalLayer(codec, activates, workarounds_);
     auto bitrate_mode = VideoEncodeAccelerator::kConstantMode |
                         VideoEncodeAccelerator::kVariableMode;
     if (codec == VideoCodec::kH264) {
       bitrate_mode |= VideoEncodeAccelerator::kExternalMode;
     }
 
-    // There's no easy way to enumerate the supported resolution bounds, so we
-    // just choose reasonable default values.
-    SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN,
-                             /*max_resolution=*/kMaxResolution,
+    gfx::Size max_resolution = k2KMaxResolution;
+
+    if (base::FeatureList::IsEnabled(
+            kExpandMediaFoundationEncodingResolutions)) {
+      // https://crbug.com/40233328, Ideally we'd want supported profiles to
+      // return the max supported resolution and then during configure() to
+      // find the encoder which can support the right resolution.
+      // For now checking only the first encoder seems okay, but we probably
+      // still need the configure() part: ensure that selected one supports the
+      // given resolution of the first encoder.
+      IMFActivate* activate = activates[0].Get();
+      ComPtr<IMFTransform> encoder;
+      if (FAILED(activate->ActivateObject(IID_PPV_ARGS(&encoder)))) {
+        continue;
+      }
+
+      CHECK(encoder);
+      max_resolution = GetMaxResolutionFromMFT(codec, encoder.Get());
+      DVLOG(3) << __func__ << ": " << codec
+               << " codec, max resolution width: " << max_resolution.width()
+               << ", height: " << max_resolution.height();
+      activate->ShutdownObject();
+    }
+
+    SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN, max_resolution,
                              kMaxFrameRateNumerator, kMaxFrameRateDenominator,
                              bitrate_mode, {SVCScalabilityMode::kL1T1});
     profile.min_resolution = kMinResolution;
@@ -832,13 +949,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     return false;
   }
   client_ = client;
-  // Unsupported frame size should be rejected. However, to avoid breaking
-  // existing applications, only a warning is printed.
-  if (!IsFrameSizeAllowed(config.input_visible_size)) {
-    MEDIA_LOG(WARNING, media_log_)
-        << config.input_visible_size.ToString()
-        << " is not supported by profile " << profile_;
-  }
+
   input_visible_size_ = config.input_visible_size;
   if (config.framerate > 0) {
     frame_rate_ = config.framerate;
@@ -862,7 +973,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
 
   SetState(kInitializing);
 
-  std::vector<IMFActivate*> activates = EnumerateHardwareEncoders(codec_);
+  std::vector<ComPtr<IMFActivate>> activates =
+      EnumerateHardwareEncoders(codec_);
 
   if (activates.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
@@ -871,19 +983,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   }
 
   bool activated = ActivateAsyncEncoder(activates, config.is_constrained_h264);
-  if (!activates.empty()) {
-    // Release the enumerated instances if any.
-    // According to Windows Dev Center,
-    // https://docs.microsoft.com/en-us/windows/win32/api/mfapi/nf-mfapi-mftenumex
-    // The caller must release the pointers.
-    for (size_t i = 0; i < activates.size(); i++) {
-      if (activates[i]) {
-        activates[i]->Release();
-        activates[i] = nullptr;
-      }
-    }
-    activates.clear();
-  }
+  activates.clear();
 
   if (!activated) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
@@ -891,47 +991,9 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  // Use SW BRC only in the case CBR encoding with number of temporal layers no
-  // more than 3.
-  // Qualcomm (and possibly other vendor) AV1 HMFT does not work with SW BRC.
-  // More info: https://crbug.com/343757696
-  const bool use_sw_brc =
-      bitrate_allocation_.GetMode() == Bitrate::Mode::kConstant &&
-      base::FeatureList::IsEnabled(kMediaFoundationUseSoftwareRateCtrl) &&
-      vendor_ != DriverVendor::kQualcomm &&  // SW BRC and QCOM AV1 HMFT not ok
-      num_temporal_layers_ <= 3;
-
-  if (use_sw_brc &&
-      (codec_ == VideoCodec::kVP9
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-       || (codec_ == VideoCodec::kHEVC && num_temporal_layers_ <= 2 &&
-           ((vendor_ == DriverVendor::kIntel &&
-             workarounds_.disable_hevc_hmft_cbr_encoding) ||
-            base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH265)))
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#if BUILDFLAG(ENABLE_LIBAOM)
-       || codec_ == VideoCodec::kAV1
-#endif
-       )) {
-    VideoRateControlWrapper::RateControlConfig rate_config =
-        CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
-                                   frame_rate_, num_temporal_layers_, codec_,
-                                   content_type_);
-    if (codec_ == VideoCodec::kVP9) {
-      rate_ctrl_ = VP9RateControl::Create(rate_config);
-    } else if (codec_ == VideoCodec::kAV1) {
-#if BUILDFLAG(ENABLE_LIBAOM)
-      // If libaom is not enabled, |rate_ctrl_| will not be initialized.
-      rate_ctrl_ = AV1RateControl::Create(rate_config);
-#endif
-    }
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    else if (codec_ == VideoCodec::kHEVC) {
-      // Reuse the H.264 rate controller for HEVC.
-      rate_ctrl_ = H264RateControl::Create(rate_config);
-    }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  }
+  // Set the SW implementation of the rate controller. Do nothing if SW RC is
+  // not supported.
+  SetSWRateControl();
 
   if (!SetEncoderModes()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
@@ -1023,6 +1085,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
              PrintHr(hr)});
     return false;
   }
+  encoder_needs_input_counter_ = 0;
 
   encoder_info_.implementation_name = "MediaFoundationVideoEncodeAccelerator";
   // Currently, MFVEA does not support odd resolution well. The implementation
@@ -1049,6 +1112,13 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
 
   encoder_info_.supports_frame_size_change =
       !workarounds_.disable_media_foundation_frame_size_change;
+
+  if (rate_ctrl_) {
+    // Software rate control should always have a trusted QP. We are safe to
+    // report encoder info right away.
+    client_->NotifyEncoderInfoChange(encoder_info_);
+    encoder_info_sent_ = true;
+  }
 
   return true;
 }
@@ -1117,7 +1187,11 @@ void MediaFoundationVideoEncodeAccelerator::EncodeInternal(
     case kEncoding: {
       pending_input_queue_.push_back(
           MakeInput(std::move(frame), options, discard_output));
-      FeedInputs();
+      // Check the status of METransformNeedInput counter, only feed input when
+      // MFT is ready.
+      if (encoder_needs_input_counter_ > 0) {
+        FeedInputs();
+      }
       break;
     }
     case kInitializing: {
@@ -1283,23 +1357,23 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
 }
 
 bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(gfx::Size size) {
-  // TODO (crbug.com/40942709): Figure out how to get max supported resolution
-  // from MF API. Once it's done and GetSupportedProfiles() returns the true max
-  // resolution, we should use it here.
-  // Since GetSupportedProfiles() is very expensive, its result will need to
-  // be cashed in a static variable at the GPU process level.
+  if (max_resolution_.IsEmpty()) {
+    DCHECK(encoder_);
+    max_resolution_ = GetMaxResolutionFromMFT(codec_, encoder_.Get());
+  }
+
   if (size.width() >= kMinResolution.width() &&
       size.height() >= kMinResolution.height() &&
-      size.width() <= kMaxResolution.width() &&
-      size.height() <= kMaxResolution.height()) {
+      size.width() <= max_resolution_.width() &&
+      size.height() <= max_resolution_.height()) {
     return true;
   }
 
   size.Transpose();
   if (size.width() >= kMinResolution.width() &&
       size.height() >= kMinResolution.height() &&
-      size.width() <= kMaxResolution.width() &&
-      size.height() <= kMaxResolution.height()) {
+      size.width() <= max_resolution_.width() &&
+      size.height() <= max_resolution_.height()) {
     return true;
   }
   return false;
@@ -1340,6 +1414,8 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
       return;
     }
   }
+  // Reset the need input counter since MFT was notified to end stream.
+  encoder_needs_input_counter_ = 0;
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, 0);
   if (FAILED(hr)) {
     NotifyErrorStatus(
@@ -1480,7 +1556,7 @@ bool MediaFoundationVideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 }
 
 bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
-    std::vector<IMFActivate*>& activates,
+    std::vector<ComPtr<IMFActivate>>& activates,
     bool is_constrained_h264) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1488,7 +1564,7 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
   // Try to create the encoder with priority according to merit value.
   HRESULT hr = E_FAIL;
   for (auto& activate : activates) {
-    auto vendor = GetDriverVendor(activate);
+    auto vendor = GetDriverVendor(activate.Get());
 
     // Skip NVIDIA GPU due to https://crbug.com/1088650 for constrained
     // baseline profile H.264 encoding, and go to the next instance according
@@ -1512,7 +1588,6 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       DCHECK(SUCCEEDED(hr));
       activate_ = activate;
       vendor_ = vendor;
-      activate = nullptr;
 
       // Print the friendly name.
       base::win::ScopedCoMem<WCHAR> friendly_name;
@@ -1668,6 +1743,97 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
   RETURN_ON_HR_FAILURE(hr, "Couldn't set input media type", false);
 
   return true;
+}
+
+void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Use SW BRC only in the case CBR encoding with number of temporal layers no
+  // more than 3.
+  if (bitrate_allocation_.GetMode() != Bitrate::Mode::kConstant ||
+      !base::FeatureList::IsEnabled(kMediaFoundationUseSoftwareRateCtrl) ||
+      num_temporal_layers_ > 3) {
+    return;
+  }
+
+  // The following codecs support SW BRC: VP9, H264, HEVC, and AV1.
+  VideoCodec kCodecsHaveSWBRC[] = {
+      VideoCodec::kVP9,
+      VideoCodec::kH264,
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+      VideoCodec::kHEVC,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_LIBAOM)
+      VideoCodec::kAV1,
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+  };
+  if (!base::Contains(kCodecsHaveSWBRC, codec_)) {
+    return;
+  }
+
+#if BUILDFLAG(ENABLE_LIBAOM)
+  // Qualcomm (and possibly other vendor) AV1 HMFT does not work with SW BRC.
+  // More info: https://crbug.com/343757696
+  if (codec_ == VideoCodec::kAV1 && vendor_ == DriverVendor::kQualcomm) {
+    return;  // SW BRC and QCOM AV1 HMFT not ok
+  }
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+
+  if (codec_ == VideoCodec::kH264) {
+    // H264 SW BRC supports up to two temporal layers.
+    if (num_temporal_layers_ > 2) {
+      return;
+    }
+
+    // Check feature flag for the camera source.
+    if (content_type_ == VideoEncodeAccelerator::Config::ContentType::kCamera &&
+        !base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH264Camera)) {
+      return;
+    }
+
+    // Check feature flag for the desktop source.
+    if (content_type_ ==
+            VideoEncodeAccelerator::Config::ContentType::kDisplay &&
+        !base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH264Desktop)) {
+      return;
+    }
+  }
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  if (codec_ == VideoCodec::kHEVC) {
+    // H264 SW BRC supports up to two temporal layers.
+    if (num_temporal_layers_ > 2) {
+      return;
+    }
+
+    // Check feature flag.
+    if ((vendor_ != DriverVendor::kIntel ||
+         !workarounds_.disable_hevc_hmft_cbr_encoding) &&
+        !base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH265)) {
+      return;
+    }
+  }
+#endif
+
+  VideoRateControlWrapper::RateControlConfig rate_config =
+      CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
+                                 frame_rate_, num_temporal_layers_, codec_,
+                                 content_type_);
+  if (codec_ == VideoCodec::kVP9) {
+    rate_ctrl_ = VP9RateControl::Create(rate_config);
+  } else if (codec_ == VideoCodec::kAV1) {
+#if BUILDFLAG(ENABLE_LIBAOM)
+    // If libaom is not enabled, |rate_ctrl_| will not be initialized.
+    rate_ctrl_ = AV1RateControl::Create(rate_config);
+#endif
+  } else if (codec_ == VideoCodec::kH264) {
+    rate_ctrl_ = H264RateControl::Create(rate_config);
+  } else if (codec_ == VideoCodec::kHEVC) {
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    // Reuse the H.264 rate controller for HEVC.
+    rate_ctrl_ = H264RateControl::Create(rate_config);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  }
 }
 
 bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
@@ -1843,6 +2009,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
   DVLOG(3) << __func__;
   DCHECK(input_sample_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(encoder_needs_input_counter_ > 0);
   TRACE_EVENT2("media", "MediaFoundationVideoEncodeAccelerator::ProcessInput",
                "timestamp", input.frame->timestamp(), "discard_output",
                input.discard_output);
@@ -1882,7 +2049,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
           input.options.key_frame
               ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
               : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
-      // H.265 SW BRC needs timestamp information.
+      // H.264 and H.265 SW BRC need timestamp information.
       frame_params.timestamp = input.frame->timestamp().InMilliseconds();
       temporal_id =
           svc_parser_->AssignTemporalIdBySvcSpec(input_since_keyframe_count_);
@@ -1892,14 +2059,29 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       // If there exists a rate_ctrl_, the qp computed by rate_ctrl_ should be
       // set on sample metadata and carried over from input to output.
       metadata_qp = rate_ctrl_->ComputeQP(frame_params);
+      if (codec_ == VideoCodec::kH264) {
+        if (metadata_qp.value() >= 0) {
+          // For H.264, the qp value should be in the range of 1-51.
+          metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
+          quantizer = metadata_qp;
+        } else {
+          // Negative QP values mean that the frame should be dropped. We use
+          // maximum QP in that case.
+          // Drop frame functionality is not supported yet.
+          // TODO(b/361250558): Support drop frame for H.264 Rate Controller
+          quantizer = kH264MaxQuantizer;
+          metadata_qp = quantizer;
+        }
+      }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      if (codec_ == VideoCodec::kHEVC) {
+      else if (codec_ == VideoCodec::kHEVC) {
         // For HEVC, the qp value should be in the range of 1-51.
         metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
         quantizer = metadata_qp;
-      } else
+      }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      {
+      else {
+        // VP9 or AV1 codec.
         quantizer = QindextoAVEncQP(metadata_qp.value());
       }
     } else if (input.discard_output) {
@@ -1943,6 +2125,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     TRACE_EVENT1("media", "IMFTransform::ProcessInput", "timestamp",
                  input.frame->timestamp());
     hr = encoder_->ProcessInput(input_stream_id_, input_sample_.Get(), 0);
+    encoder_needs_input_counter_--;
   }
   // Check if ProcessInput() actually accepted the sample, if not, remember
   // that we don't need to prepare sample next time and can just use it.
@@ -2451,6 +2634,7 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
 
   switch (event_type) {
     case METransformNeedInput: {
+      encoder_needs_input_counter_++;
       if (state_ == kInitializing) {
         // HMFT is not ready for receiving inputs until the first
         // METransformNeedInput event is published.
@@ -2477,6 +2661,8 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
       DCHECK(pending_input_queue_.empty());
       DCHECK(sample_metadata_queue_.empty());
       DCHECK_EQ(state_, kFlushing);
+      // Reset the need input counter after drain complete.
+      encoder_needs_input_counter_ = 0;
       auto hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
       if (FAILED(hr)) {
         SetState(kError);

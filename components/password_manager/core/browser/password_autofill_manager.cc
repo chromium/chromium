@@ -187,7 +187,8 @@ PasswordAutofillManager::GetDriver() {
   return password_manager_driver_.get();
 }
 
-void PasswordAutofillManager::OnSuggestionsShown() {}
+void PasswordAutofillManager::OnSuggestionsShown(
+    base::span<const Suggestion> suggestions) {}
 
 void PasswordAutofillManager::OnSuggestionsHidden() {}
 
@@ -237,7 +238,7 @@ void PasswordAutofillManager::OnUnlockItemAccepted(
 
 void PasswordAutofillManager::DidAcceptSuggestion(
     const Suggestion& suggestion,
-    const SuggestionPosition& position) {
+    const SuggestionMetadata& metadata) {
   using metrics_util::PasswordDropdownSelectedOption;
   switch (suggestion.type) {
     case autofill::SuggestionType::kGeneratePasswordEntry:
@@ -352,7 +353,8 @@ void PasswordAutofillManager::DidAcceptSuggestion(
 }
 
 void PasswordAutofillManager::DidPerformButtonActionForSuggestion(
-    const Suggestion&) {
+    const Suggestion&,
+    const autofill::SuggestionButtonAction&) {
   // Button actions do currently not exist for password entries.
   NOTREACHED_IN_MIGRATION();
 }
@@ -575,7 +577,7 @@ void PasswordAutofillManager::UpdatePopup(std::vector<Suggestion> suggestions) {
         autofill::SuggestionHidingReason::kNoSuggestions);
     return;
   }
-  autofill_client_->UpdatePopup(
+  autofill_client_->UpdateAutofillSuggestions(
       suggestions, autofill::FillingProduct::kPassword,
       autofill::AutofillSuggestionTriggerSource::kPasswordManager);
   last_popup_open_args_.suggestions = std::move(suggestions);

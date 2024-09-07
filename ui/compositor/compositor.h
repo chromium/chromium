@@ -464,6 +464,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   bool IsLocked() { return lock_manager_.IsLocked(); }
 
+  bool output_is_secure() const { return output_is_secure_; }
   void SetOutputIsSecure(bool output_is_secure);
 
   const cc::LayerTreeDebugState& GetLayerTreeDebugState() const;
@@ -519,6 +520,15 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   display::VariableRefreshRateState vrr_state_for_testing() const {
     return vrr_state_;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Sets the list of refresh rates that the compositor may request to use.
+  void SetSeamlessRefreshRates(
+      const std::vector<float>& seamless_refresh_rates);
+
+  // Notifies observers of a new refresh rate preference.
+  void OnSetPreferredRefreshRate(float refresh_rate);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   friend class base::RefCounted<Compositor>;
@@ -590,6 +600,9 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   std::optional<base::TimeDelta> max_vsync_interval_ = std::nullopt;
   display::VariableRefreshRateState vrr_state_ =
       display::VariableRefreshRateState::kVrrNotCapable;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::vector<float> seamless_refresh_rates_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const bool use_external_begin_frame_control_;
   const bool force_software_compositor_;

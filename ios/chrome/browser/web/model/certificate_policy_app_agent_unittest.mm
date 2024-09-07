@@ -14,9 +14,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/block_cleanup_test.h"
@@ -52,7 +52,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     startup_information_mock_ =
         [OCMockObject mockForProtocol:@protocol(StartupInformation)];
 
-    chrome_browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+    chrome_browser_state_ = profile_manager_.AddProfileWithBuilder(
         TestChromeBrowserState::Builder());
 
     BrowserList* browser_list =
@@ -220,7 +220,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   AppState* app_state_;
   CertificatePolicyAppAgent* app_agent_;
   raw_ptr<ChromeBrowserState> chrome_browser_state_;

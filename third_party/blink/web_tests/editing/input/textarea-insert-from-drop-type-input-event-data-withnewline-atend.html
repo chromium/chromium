@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<textarea id="text" cols="100">Dragging and dropping first line including interchange newline
+  at the end should set the event.data with the text for inputType insertFromDrop</textarea>
+<script>
+  const text = document.getElementById("text");
+  let eventData;
+  text.addEventListener('input', (evt) => {
+    if(evt.inputType == 'insertFromDrop')
+      eventData = evt.data;
+  });
+  test(function () {
+    text.focus();
+    // Selecting first line of the text including newline at the end.
+    text.setSelectionRange(0, 63);
+    const selectedData = getSelection().toString();
+    // Note drag and drop doesn't work well with pointerActionSequence, so using
+    // eventSender.
+
+    // Move mouse to the first line of the text.
+    eventSender.mouseMoveTo((text.offsetLeft + 10), text.offsetTop + 10);
+    eventSender.mouseDown();
+    eventSender.leapForward(500);
+    // Move mouse to the second line of the text.
+    eventSender.mouseMoveTo(text.offsetLeft + 10 , text.offsetHeight);
+    eventSender.mouseUp();
+    // Event data should now be set with the first line of the text
+    assert_equals(selectedData, "Dragging and dropping first line including interchange newline\n");
+    assert_equals(eventData, selectedData);
+  }, 'Input event data for inputType insertFromDrop should be set');
+</script>
+</body>
+</html>

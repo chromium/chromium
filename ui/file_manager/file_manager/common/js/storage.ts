@@ -70,7 +70,9 @@ class StorageChangeTracker {
     try {
       changedKeys[key] = {newValue: JSON.parse(newValue)};
     } catch (error) {
-      console.warn(
+      // This is expected when window.localStorage is used directly instead of
+      // `local.storage` defined below.
+      console.debug(
           `Cannot parse local storage value from key '${key}' as JSON`, error);
       changedKeys[key] = {newValue};
     }

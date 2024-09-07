@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "net/ssl/client_cert_identity.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -69,7 +70,7 @@ class CertificateSelector : public views::DialogDelegateView,
   // DialogDelegateView:
   bool Accept() override;
   std::u16string GetWindowTitle() const override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
 
   // views::TableViewObserver:

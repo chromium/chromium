@@ -727,5 +727,29 @@ TEST(NativeValueTraitsImplTest, PassAsSpanAllowSequence) {
   }
 }
 
+TEST(NativeValueTraitsImplTest, PassAsSpanSequenceOfUnrestricted) {
+  test::TaskEnvironment task_environment;
+  NonThrowableExceptionState exception_state;
+  V8TestingScope scope;
+
+  v8::Local<v8::Object> v8_object =
+      EvaluateScriptForObject(scope, "[1, -Infinity, NaN, Infinity, 42]");
+
+  using testing::Eq;
+  using testing::IsNan;
+  EXPECT_THAT(
+      NativeValueTraits<PassAsSpanSequence<float>>::ArgumentValue(
+          scope.GetIsolate(), 0, v8_object, exception_state)
+          .as_span(),
+      testing::ElementsAre(1, -std::numeric_limits<float>::infinity(), IsNan(),
+                           std::numeric_limits<float>::infinity(), 42));
+  EXPECT_THAT(
+      NativeValueTraits<PassAsSpanSequence<double>>::ArgumentValue(
+          scope.GetIsolate(), 0, v8_object, exception_state)
+          .as_span(),
+      testing::ElementsAre(1, -std::numeric_limits<double>::infinity(), IsNan(),
+                           std::numeric_limits<double>::infinity(), 42));
+}
+
 }  // namespace
 }  // namespace blink

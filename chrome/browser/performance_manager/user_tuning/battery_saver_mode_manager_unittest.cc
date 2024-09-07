@@ -119,7 +119,7 @@ class BatterySaverModeManagerTest : public ::testing::Test {
   void SetUp() override {
     auto source = std::make_unique<FakePowerMonitorSource>();
     power_monitor_source_ = source.get();
-    base::PowerMonitor::Initialize(std::move(source));
+    base::PowerMonitor::GetInstance()->Initialize(std::move(source));
 
     performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
         local_state_.registry());
@@ -147,7 +147,9 @@ class BatterySaverModeManagerTest : public ::testing::Test {
     manager()->Start();
   }
 
-  void TearDown() override { base::PowerMonitor::ShutdownForTesting(); }
+  void TearDown() override {
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
+  }
 
   BatterySaverModeManager* manager() {
     return BatterySaverModeManager::GetInstance();

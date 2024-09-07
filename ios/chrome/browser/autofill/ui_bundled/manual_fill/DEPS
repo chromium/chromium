@@ -7,6 +7,8 @@ specific_include_rules = {
 }
 
 include_rules = [
+  "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/ui/menu",
+  "+ios/chrome/browser/webauthn/model",
 ]

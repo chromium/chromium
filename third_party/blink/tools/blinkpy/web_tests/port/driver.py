@@ -379,7 +379,8 @@ class Driver(TestURIMapper):
             # In the timeout case, we kill the hung process as well.
             # Add a delay to allow process to finish post-run hooks, such as dumping code coverage data.
             out, err = self._server_process.stop(
-                self._port.get_option('driver_kill_timeout_secs'))
+                timeout_secs=self._port.get_option('driver_kill_timeout_secs'),
+                send_sigterm=self._port.get_option('kill_driver_with_sigterm'))
             if out:
                 text += out
             if err:
@@ -422,7 +423,8 @@ class Driver(TestURIMapper):
             # means that the server process is restarted after every test
             # anyway, so this just accelerates the inevitable.
             out, err = self._server_process.stop(
-                self._port.get_option('driver_kill_timeout_secs'))
+                timeout_secs=self._port.get_option('driver_kill_timeout_secs'),
+                send_sigterm=self._port.get_option('kill_driver_with_sigterm'))
             if out:
                 text += out
             if err:
@@ -585,12 +587,17 @@ class Driver(TestURIMapper):
         return self._server_process.pid()
 
     def stop(self, timeout_secs=None):
-        if timeout_secs is None:
-            # Add a delay to allow process to finish post-run hooks, such as dumping code coverage data.
-            timeout_secs = self._port.get_option('driver_kill_timeout_secs')
+        # Add a delay to allow process to finish post-run hooks, such as dumping
+        # code coverage data; but allow for 0 timeout if explicitly requested.
+        if timeout_secs != 0:
+            timeout_secs = max(
+                timeout_secs or 0,
+                self._port.get_option('driver_kill_timeout_secs', 0))
 
         if self._server_process:
-            self._server_process.stop(timeout_secs)
+            self._server_process.stop(
+                timeout_secs=timeout_secs,
+                send_sigterm=self._port.get_option('kill_driver_with_sigterm'))
             self._server_process = None
             if self._profiler:
                 self._profiler.profile_after_exit()

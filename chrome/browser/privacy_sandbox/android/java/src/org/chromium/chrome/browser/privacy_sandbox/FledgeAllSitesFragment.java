@@ -14,6 +14,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.favicon.LargeIconBridge;
 
@@ -24,13 +26,19 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceClickListener {
     private PreferenceScreen mPreferenceScreen;
     private LargeIconBridge mLargeIconBridge;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_fledge_all_sites_sub_page_title);
+        mPageTitle.set(getString(R.string.settings_fledge_all_sites_sub_page_title));
         mPreferenceScreen = getPreferenceManager().createPreferenceScreen(getStyledContext());
         setPreferenceScreen(mPreferenceScreen);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

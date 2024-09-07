@@ -12,6 +12,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -36,13 +37,15 @@ ui::ImageModel GetAuthenticationModeIcon(
     case CardUnmaskChallengeOptionType::kEmailOtp:
       return ui::ImageModel::FromVectorIcon(vector_icons::kEmailOutlineIcon);
     case CardUnmaskChallengeOptionType::kCvc:
-      return ui::ImageModel();
+      // CVC auth has its own authentication dialog in the single challenge
+      // option case.
     case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-      // TODO(crbug.com/41494927): Add kThreeDomainSecure logic.
+      // 3DS auth has its own authentication dialog in the single challenge
+      // option case.
     case CardUnmaskChallengeOptionType::kUnknownType:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -57,8 +60,8 @@ CardUnmaskAuthenticationSelectionDialogView::
   // view's lifecycle. The ok button label will be set later once we have more
   // details on the challenge options that will be displayed in the dialog,
   // since the label can change based on the challenge options.
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 GetDialogButtonLabel(ui::mojom::DialogButton::kCancel));
 
   SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
@@ -93,7 +96,7 @@ void CardUnmaskAuthenticationSelectionDialogView::Dismiss(
 
 void CardUnmaskAuthenticationSelectionDialogView::UpdateContent() {
   ReplaceContentWithProgressThrobber();
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
 }
 
 bool CardUnmaskAuthenticationSelectionDialogView::Accept() {
@@ -247,7 +250,7 @@ void CardUnmaskAuthenticationSelectionDialogView::OnChallengeOptionSelected(
     const CardUnmaskChallengeOption::ChallengeOptionId&
         selected_challenge_option_id) {
   controller_->SetSelectedChallengeOptionId(selected_challenge_option_id);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
 }
 
 std::unique_ptr<views::RadioButton>

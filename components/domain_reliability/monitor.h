@@ -21,9 +21,9 @@
 #include "components/domain_reliability/uploader.h"
 #include "components/domain_reliability/util.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_response_info.h"
 #include "net/socket/connection_attempts.h"
@@ -51,7 +51,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityMonitor
     static bool ShouldReportRequest(const RequestInfo& request);
 
     GURL url;
-    net::NetworkAnonymizationKey network_anonymization_key;
+    net::IsolationInfo isolation_info;
     int net_error;
     net::HttpResponseInfo response_info;
     bool allow_credentials;

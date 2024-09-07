@@ -73,6 +73,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -96,7 +97,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -105,6 +106,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -120,6 +122,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -180,6 +183,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -229,6 +233,12 @@
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/lens/region_search/lens_region_search_helper.h"
 #include "components/lens/lens_features.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #endif
 
 namespace {
@@ -1131,8 +1141,8 @@ void MoveTabsToNewWindow(Browser* browser,
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
   std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
 
   tab_groups::TabGroupVisualData visual_data;
@@ -1147,8 +1157,8 @@ void MoveTabsToNewWindow(Browser* browser,
     visual_data = tab_groups::TabGroupVisualData(old_visual_data->title(),
                                                  old_visual_data->color(),
                                                  false /* is_collapsed */);
-    if (wrapper_service && wrapper_service->GetGroup(group.value())) {
-      observation_pauser = wrapper_service->CreateScopedLocalObserverPauser();
+    if (tab_group_service && tab_group_service->GetGroup(group.value())) {
+      observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
     }
   }
 
@@ -1474,6 +1484,16 @@ bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
   base::UmaHistogramEnumeration(
       "ReadingList.BookmarkBarState.OnEveryAddToReadingList",
       browser->bookmark_bar_state());
+#if !BUILDFLAG(IS_ANDROID)
+  if (toast_features::IsEnabled(toast_features::kReadingListToast)) {
+    ToastController* const toast_controller =
+        browser->GetFeatures().toast_controller();
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(
+          ToastParams(ToastId::kAddedToReadingList));
+    }
+  }
+#endif
   return true;
 }
 
@@ -1820,17 +1840,6 @@ void RouteMediaInvokedFromAppMenu(Browser* browser) {
 
   dialog_controller->ShowMediaRouterDialog(
       media_router::MediaRouterDialogActivationLocation::APP_MENU);
-}
-
-void CutCopyPaste(Browser* browser, int command_id) {
-  if (command_id == IDC_CUT) {
-    base::RecordAction(UserMetricsAction("Cut"));
-  } else if (command_id == IDC_COPY) {
-    base::RecordAction(UserMetricsAction("Copy"));
-  } else {
-    base::RecordAction(UserMetricsAction("Paste"));
-  }
-  browser->window()->CutCopyPaste(command_id);
 }
 
 void Find(Browser* browser) {
@@ -2330,6 +2339,21 @@ void OpenCommerceProductSpecificationsTab(Browser* browser,
                                           const int position) {
   if (static_cast<int>(urls.size()) <
       commerce::kProductSpecificationsMinTabsCount) {
+    return;
+  }
+
+  auto* prefs = browser->profile()->GetPrefs();
+  // If user has not accepted the latest disclosure, show the disclosure dialog
+  // first.
+  if (prefs &&
+      prefs->GetInteger(
+          commerce::kProductSpecificationsAcceptedDisclosureVersion) !=
+          static_cast<int>(shopping_service::mojom::
+                               ProductSpecificationsDisclosureVersion::kV1)) {
+    commerce::DialogArgs dialog_args(urls, std::string(), /*in_new_tab=*/true);
+    commerce::ProductSpecificationsDisclosureDialog::ShowDialog(
+        browser->profile(), browser->tab_strip_model()->GetActiveWebContents(),
+        std::move(dialog_args));
     return;
   }
 

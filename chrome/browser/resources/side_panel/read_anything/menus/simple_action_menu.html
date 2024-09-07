@@ -1,0 +1,41 @@
+<style include="read-anything-toolbar">
+  .has-icon-false {
+    display: none;
+  }
+
+  .has-icon-true {
+    display: inline-flex;
+  }
+
+  .check-mark-showing-true {
+    visibility: visible;
+  }
+
+  .check-mark-showing-false {
+    visibility: hidden;
+  }
+</style>
+
+<cr-lazy-render id="lazyMenu">
+  <template>
+    <cr-action-menu accessibility-label="[[label]]"
+        role-description="$i18n{menu}"
+        tabindex="-1">
+      <template is="dom-repeat" items="[[menuItems]]"
+          index-as="index"
+          initial-count="[[initialCount]]">
+        <button class="dropdown-item" on-click="onClick_">
+          <cr-icon class$="button-image check-mark
+              check-mark-showing-[[isItemSelected_(index, currentSelectedIndex)]]"
+              icon="read-anything-20:check-mark"
+              aria-label="$i18n{selected}">
+          </cr-icon>
+          <cr-icon class$="button-image has-icon-[[doesItemHaveIcon_(item)]]"
+              icon="[[itemIcon_(item)]]">
+          </cr-icon>
+          [[item.title]]
+        </button>
+      </template>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

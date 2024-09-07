@@ -52,8 +52,6 @@ target(link_target_type, "service_sources") {
     "retaining_one_shot_timer_holder.h",
     "scheduler.cc",
     "scheduler.h",
-    "scheduler_dfs.cc",
-    "scheduler_dfs.h",
     "scheduler_task_runner.cc",
     "scheduler_task_runner.h",
     "sequence_id.h",
@@ -286,6 +284,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/skia_gl_image_representation.h",
     "shared_image/wrapped_graphite_texture_backing.cc",
     "shared_image/wrapped_graphite_texture_backing.h",
+    "shared_image/wrapped_graphite_texture_holder.cc",
+    "shared_image/wrapped_graphite_texture_holder.h",
     "shared_image/wrapped_sk_image_backing.cc",
     "shared_image/wrapped_sk_image_backing.h",
     "shared_image/wrapped_sk_image_backing_factory.cc",
@@ -433,8 +433,7 @@ target(link_target_type, "gles2_sources") {
       "shared_image/texture_holder_vk.h",
     ]
 
-    if (is_linux || is_chromeos || is_fuchsia || is_android || is_win ||
-        is_apple) {
+    if (is_linux || is_fuchsia || is_win) {
       sources += [
         "external_semaphore.cc",
         "external_semaphore.h",
@@ -462,7 +461,7 @@ target(link_target_type, "gles2_sources") {
       ]
     }
 
-    if ((is_linux || is_chromeos) && use_dawn) {
+    if (is_linux && use_dawn) {
       sources += [
         "shared_image/external_vk_image_dawn_representation.cc",
         "shared_image/external_vk_image_dawn_representation.h",

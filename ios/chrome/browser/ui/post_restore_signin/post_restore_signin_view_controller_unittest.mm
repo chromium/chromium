@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
 
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -47,12 +48,9 @@ class PostRestoreSignInViewControllerTest : public PlatformTest {
 
 TEST_F(PostRestoreSignInViewControllerTest, uiStrings) {
   [view_controller_ loadView];
-  EXPECT_TRUE(
-      [view_controller_.titleText isEqualToString:@"Welcome Back, Given"]);
-  EXPECT_TRUE([view_controller_.primaryActionString
-      isEqualToString:@"Continue as Given"]);
-  EXPECT_TRUE([view_controller_.secondaryActionString
-      isEqualToString:@"Don't Sign In"]);
+  EXPECT_NSEQ(@"Welcome back, Given", view_controller_.titleText);
+  EXPECT_NSEQ(@"Continue as Given", view_controller_.primaryActionString);
+  EXPECT_NSEQ(@"Don't sign in", view_controller_.secondaryActionString);
 
   NSString* expectedDisclaimer;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -69,7 +67,6 @@ TEST_F(PostRestoreSignInViewControllerTest, uiStrings) {
 TEST_F(PostRestoreSignInViewControllerTest, uiStringsWithoutName) {
   ClearUserName();
   [view_controller_ loadView];
-  EXPECT_TRUE([view_controller_.titleText isEqualToString:@"Welcome Back"]);
-  EXPECT_TRUE(
-      [view_controller_.primaryActionString isEqualToString:@"Continue"]);
+  EXPECT_NSEQ(@"Welcome back", view_controller_.titleText);
+  EXPECT_NSEQ(@"Continue", view_controller_.primaryActionString);
 }

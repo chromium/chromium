@@ -6,8 +6,8 @@
 
 #include <stdlib.h>  // For malloc
 
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "ppapi/c/dev/ppb_var_deprecated.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/c/ppb_core.h"
@@ -507,10 +507,8 @@ void PPB_Var_Deprecated_Proxy::OnMsgCreateObjectDeprecated(
 }
 
 void PPB_Var_Deprecated_Proxy::SetAllowPluginReentrancy() {
-  if (dispatcher()->IsPlugin())
-    NOTREACHED_IN_MIGRATION();
-  else
-    static_cast<HostDispatcher*>(dispatcher())->set_allow_plugin_reentrancy();
+  CHECK(!dispatcher()->IsPlugin());
+  static_cast<HostDispatcher*>(dispatcher())->set_allow_plugin_reentrancy();
 }
 
 void PPB_Var_Deprecated_Proxy::DoReleaseObject(int64_t object_id) {

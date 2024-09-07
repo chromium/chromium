@@ -19,7 +19,6 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
-#import "ios/chrome/browser/crash_report/model/main_thread_freeze_detector.h"
 
 using previous_session_info_constants::DeviceBatteryState;
 using previous_session_info_constants::DeviceThermalState;
@@ -403,7 +402,9 @@ bool MobileSessionShutdownMetricsProvider::HasCrashLogs() {
 }
 
 bool MobileSessionShutdownMetricsProvider::LastSessionEndedFrozen() {
-  return [MainThreadFreezeDetector sharedInstance].lastSessionEndedFrozen;
+  // TODO(crbug.com/362431905): Try to get this from MetricKit now that MTFD is
+  // gone.
+  return false;
 }
 
 bool MobileSessionShutdownMetricsProvider::

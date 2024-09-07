@@ -17,8 +17,8 @@ def DeleteNodes(item, delete_key=None, matcher=None):
 
   def ShouldDelete(thing):
     return json_parse.IsDict(thing) and (
-        delete_key is not None and delete_key in thing or
-        matcher is not None and matcher(thing))
+        delete_key is not None and delete_key in thing
+        or matcher is not None and matcher(thing))
 
   if json_parse.IsDict(item):
     toDelete = []
@@ -30,8 +30,10 @@ def DeleteNodes(item, delete_key=None, matcher=None):
     for key in toDelete:
       del item[key]
   elif type(item) == list:
-    item[:] = [DeleteNodes(thing, delete_key, matcher)
-        for thing in item if not ShouldDelete(thing)]
+    item[:] = [
+        DeleteNodes(thing, delete_key, matcher) for thing in item
+        if not ShouldDelete(thing)
+    ]
 
   return item
 

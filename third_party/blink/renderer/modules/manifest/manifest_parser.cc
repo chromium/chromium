@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/modules/navigatorcontentutils/navigator_content_utils.h"
@@ -2300,9 +2299,7 @@ Vector<SafeUrlPattern> ManifestParser::ParseScopePatterns(
 
     std::optional<PatternInit> init = MaybeCreatePatternInit(pattern_object);
     if (init.has_value()) {
-      auto base_url = init->base_url.IsValid()
-                          ? init->base_url
-                          : manifest_url_;
+      auto base_url = init->base_url.IsValid() ? init->base_url : manifest_url_;
       std::optional<SafeUrlPattern> pattern =
           ParseScopePattern(init.value(), base_url);
       if (pattern.has_value()) {

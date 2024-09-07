@@ -115,7 +115,7 @@ CertificateManagerPageHandler::GetCertSource(
         break;
       case certificate_manager_v2::mojom::CertificateSource::
           kPlatformClientCert:
-        source_ptr = CreatePlatformClientCertSource(&remote_client_);
+        source_ptr = CreatePlatformClientCertSource(&remote_client_, profile_);
         break;
       case certificate_manager_v2::mojom::CertificateSource::
           kEnterpriseTrustedCerts:

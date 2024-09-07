@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
@@ -146,9 +148,27 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryWithIssueCheck) {
 }
 
 TEST_F(CastDeviceSelectorViewTest, ShowPermissionRejectedError) {
-  CreateCastDeviceSelectorView(/*show_devices=*/false);
+  // Initialize `local_state` with TestingBrowserProcess::GetGlobal().
+  // `g_browser_process` will then be associated with this local state.
+  std::unique_ptr<ScopedTestingLocalState> local_state =
+      std::make_unique<ScopedTestingLocalState>(
+          TestingBrowserProcess::GetGlobal());
+
+  CreateCastDeviceSelectorView(/*show_devices=*/true);
+
+  // Show the permission rejected error.
   view()->OnPermissionRejected();
   EXPECT_TRUE(view()->GetCloseButtonForTesting()->GetVisible());
   EXPECT_TRUE(view()->GetPermissionRejectedViewForTesting()->GetVisible());
   EXPECT_FALSE(view()->GetDeviceContainerViewForTesting()->GetVisible());
+
+  // Dismiss the error.
+  views::test::ButtonTestApi(view()->GetCloseButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_FALSE(view()->GetPermissionRejectedViewForTesting()->GetVisible());
+
+  // The permission rejected error is not showing.
+  view()->OnPermissionRejected();
+  EXPECT_FALSE(view()->GetPermissionRejectedViewForTesting()->GetVisible());
 }

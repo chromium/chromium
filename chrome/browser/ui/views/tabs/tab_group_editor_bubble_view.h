@@ -28,6 +28,7 @@ class TabGroupId;
 
 namespace views {
 class ToggleButton;
+class Separator;
 }  // namespace views
 
 class ColorPickerView;
@@ -38,12 +39,14 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(TabGroupEditorBubbleView, views::BubbleDialogDelegateView)
 
  public:
-  static constexpr int TAB_GROUP_HEADER_CXMENU_SAVE_GROUP = 13;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 14;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 15;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_SHARE_OR_MANAGE = 16;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP = 17;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 18;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_SAVE_GROUP = 1;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 2;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 3;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_MANAGE_SHARING = 4;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_SHARE = 5;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP = 6;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_DELETE_GROUP = 7;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 8;
 
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
@@ -75,20 +78,38 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   ~TabGroupEditorBubbleView() override;
 
   void UpdateGroup();
-  const std::u16string GetTextForCloseButton();
-  const std::u16string GetSaveToggleAccessibleName();
+  const std::u16string GetTextForCloseButton() const;
+  const std::u16string GetSaveToggleAccessibleName() const;
+
+  bool CanSaveGroups() const;
+  bool CanShareGroups() const;
+  bool IsGroupSaved() const;
+  bool IsGroupShared() const;
+  bool ShouldShowSavedFooter() const;
+
+  // When certain settings change, the menu items need to be updated, this
+  // method destroys the children of the view, and then recreates them in the
+  // correct order/visibility.
+  void RebuildMenuContents();
+  void UpdateMenuContentsVisibility();
+
+  std::unique_ptr<views::Separator> BuildSeparator();
+  std::unique_ptr<ColorPickerView> BuildColorPicker();
+  std::unique_ptr<views::LabelButton> BuildNewTabInGroupButton();
+  std::unique_ptr<views::LabelButton> BuildUngroupButton();
+  std::unique_ptr<views::LabelButton> BuildHideGroupButton();
+  std::unique_ptr<views::LabelButton> BuildDeleteGroupButton();
+  std::unique_ptr<views::LabelButton> BuildMoveGroupToNewWindowButton();
+  std::unique_ptr<views::LabelButton> BuildManageSharedGroupButton();
+  std::unique_ptr<views::LabelButton> BuildShareGroupButton();
 
   void OnSaveTogglePressed();
   void NewTabInGroupPressed();
   void UngroupPressed();
   void ShareOrManagePressed();
-  void CloseGroupPressed();
+  void HideGroupPressed();
   void DeleteGroupPressed();
   void MoveGroupToNewWindowPressed();
-
-  // True if the "Share group" / "Manage sharing" button should be added to
-  // the editor bubble.
-  bool ShouldAddShareManageButton();
 
   // The action for moving a group to a new window is only enabled when the
   // tabstrip contains more than just the tabs in the current group.
@@ -109,14 +130,15 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   // Returns the view responsible for being able to save a tab group. It
   // most notably contains a toggle button to save and unsave the group.
-  views::View* CreateSavedTabGroupItem();
+  views::View* CreateSavedTabGroupToggle(views::LabelButton* layout_helper);
+
+  // Creates the set of tab group colors to display and returns the color that
+  // is initially selected.
+  tab_groups::TabGroupColorId InitColorSet();
 
   // the implementation of the ungroup command. This method is static so that
   // it can be called from dialogs as a callback.
   static void Ungroup(const Browser* browser, tab_groups::TabGroupId group);
-
-  const raw_ptr<const Browser> browser_;
-  const tab_groups::TabGroupId group_;
 
   class TitleFieldController : public views::TextfieldController {
    public:
@@ -133,8 +155,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
    private:
     const raw_ptr<TabGroupEditorBubbleView> parent_;
   };
-
-  TitleFieldController title_field_controller_;
 
   class TitleField : public views::Textfield {
     METADATA_HEADER(TitleField, views::Textfield)
@@ -155,8 +175,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
     // itself.
     bool stop_context_menu_propagation_;
   };
-
-  raw_ptr<TitleField> title_field_;
+  std::unique_ptr<TitleField> BuildTitleField(const std::u16string& title);
 
   class Footer : public views::View {
     METADATA_HEADER(Footer, views::View)
@@ -166,25 +185,36 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
     static void OpenLearnMorePage(const Browser* browser_);
   };
-  raw_ptr<Footer> footer_;
 
+  TitleFieldController title_field_controller_;
   Colors colors_;
-  raw_ptr<ColorPickerView> color_selector_;
 
+  const raw_ptr<const Browser> browser_;
+  const tab_groups::TabGroupId group_;
+
+  // ptr access to specific children. must be cleared and reset by
+  // RebuildMenuContents
+  raw_ptr<TitleField> title_field_ = nullptr;
+  raw_ptr<ColorPickerView> color_selector_ = nullptr;
+  raw_ptr<Footer> footer_ = nullptr;
   raw_ptr<views::ToggleButton> save_group_toggle_ = nullptr;
   raw_ptr<views::ImageView> save_group_icon_ = nullptr;
   raw_ptr<views::Label> save_group_label_ = nullptr;
+
+  // the different menu items, used for referring back to specific children for
+  // styling.
   std::vector<raw_ptr<views::LabelButton>> menu_items_;
 
   // If true will use the |anchor_rect_| provided in the constructor, otherwise
   // fall back to using the anchor view bounds.
   const bool use_set_anchor_rect_;
 
-  // Creates the set of tab group colors to display and returns the color that
-  // is initially selected.
-  tab_groups::TabGroupColorId InitColorSet();
-
+  // The first title shown to the user when the bubble dialog is opened. Used
+  // for logging whether the user changes the title.
   std::u16string title_at_opening_;
+
+  // Stored value for constructor param.
+  bool stop_context_menu_propagation_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_VIEW_H_

@@ -16,6 +16,11 @@
 /// Sets the background color of the consumer.
 - (void)setBackgroundColor:(UIColor*)backgroundColor;
 
+/// Sets the loading progress.
+/// This value is bound between 0 (meaning no progress) and 1 (meaning the page
+/// has fully loaded).
+- (void)setLoadingProgress:(float)progress;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_RESULT_PAGE_CONSUMER_H_

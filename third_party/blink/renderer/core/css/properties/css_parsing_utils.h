@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -83,35 +82,22 @@ constexpr size_t kMaxNumAnimationLonghands = 12;
 void Complete4Sides(CSSValue* side[4]);
 
 // TODO(timloh): These should probably just be consumeComma and consumeSlash.
-bool ConsumeCommaIncludingWhitespace(CSSParserTokenRange&);
 bool ConsumeCommaIncludingWhitespace(CSSParserTokenStream&);
-bool ConsumeSlashIncludingWhitespace(CSSParserTokenRange&);
 bool ConsumeSlashIncludingWhitespace(CSSParserTokenStream&);
-// ConsumeFunction expects the range starts with a FunctionToken.
-CSSParserTokenRange ConsumeFunction(CSSParserTokenRange&);
-CSSParserTokenRange ConsumeFunction(CSSParserTokenStream&);
 
 // https://drafts.csswg.org/css-syntax/#typedef-any-value
 //
 // Consumes component values until it reaches a token that is not allowed
 // for <any-value>.
-CORE_EXPORT bool ConsumeAnyValue(CSSParserTokenRange&);
+CORE_EXPORT void ConsumeAnyValue(CSSParserTokenStream&);
 
-CSSPrimitiveValue* ConsumeInteger(
-    CSSParserTokenRange&,
-    const CSSParserContext&,
-    double minimum_value = -std::numeric_limits<double>::max(),
-    const bool is_percentage_allowed = true);
 CSSPrimitiveValue* ConsumeInteger(
     CSSParserTokenStream&,
     const CSSParserContext&,
     double minimum_value = -std::numeric_limits<double>::max(),
     const bool is_percentage_allowed = true);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
 CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
-    T&,
+    CSSParserTokenStream&,
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange = CSSPrimitiveValue::ValueRange::kInteger);
 CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream&,
@@ -119,23 +105,13 @@ CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream&,
 bool ConsumeNumberRaw(CSSParserTokenStream&,
                       const CSSParserContext& context,
                       double& result);
-CSSPrimitiveValue* ConsumeNumber(CSSParserTokenRange&,
-                                 const CSSParserContext&,
-                                 CSSPrimitiveValue::ValueRange);
 CSSPrimitiveValue* ConsumeNumber(CSSParserTokenStream&,
                                  const CSSParserContext&,
                                  CSSPrimitiveValue::ValueRange);
-CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange&,
-                                 const CSSParserContext&,
-                                 CSSPrimitiveValue::ValueRange,
-                                 UnitlessQuirk = UnitlessQuirk::kForbid);
 CSSPrimitiveValue* ConsumeLength(CSSParserTokenStream&,
                                  const CSSParserContext&,
                                  CSSPrimitiveValue::ValueRange,
                                  UnitlessQuirk = UnitlessQuirk::kForbid);
-CSSPrimitiveValue* ConsumePercent(CSSParserTokenRange&,
-                                  const CSSParserContext&,
-                                  CSSPrimitiveValue::ValueRange);
 CSSPrimitiveValue* ConsumePercent(CSSParserTokenStream&,
                                   const CSSParserContext&,
                                   CSSPrimitiveValue::ValueRange);
@@ -149,13 +125,6 @@ CSSPrimitiveValue* ConsumeNumberOrPercent(
 CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenStream&,
                                      const CSSParserContext&);
 CSSPrimitiveValue* ConsumeLengthOrPercent(
-    CSSParserTokenRange&,
-    const CSSParserContext&,
-    CSSPrimitiveValue::ValueRange,
-    UnitlessQuirk = UnitlessQuirk::kForbid,
-    CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone,
-    AllowCalcSize = AllowCalcSize::kForbid);
-CSSPrimitiveValue* ConsumeLengthOrPercent(
     CSSParserTokenStream&,
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange,
@@ -167,16 +136,6 @@ CSSPrimitiveValue* ConsumeSVGGeometryPropertyLength(
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange);
 
-CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
-    CSSParserTokenRange&,
-    const CSSParserContext&,
-    std::optional<WebFeature> unitless_zero_feature);
-CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
-    CSSParserTokenRange&,
-    const CSSParserContext&,
-    std::optional<WebFeature> unitless_zero_feature,
-    double minimum_value,
-    double maximum_value);
 CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
     CSSParserTokenStream&,
     const CSSParserContext&,
@@ -190,39 +149,23 @@ CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
 CSSPrimitiveValue* ConsumeTime(CSSParserTokenStream&,
                                const CSSParserContext&,
                                CSSPrimitiveValue::ValueRange);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSPrimitiveValue* ConsumeResolution(T&, const CSSParserContext&);
+CSSPrimitiveValue* ConsumeResolution(CSSParserTokenStream&,
+                                     const CSSParserContext&);
 CSSValue* ConsumeRatio(CSSParserTokenStream&, const CSSParserContext&);
-CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream&);
-CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenRange&,
-                                      CSSValueID lower,
-                                      CSSValueID upper);
 CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenStream&,
                                       CSSValueID lower,
                                       CSSValueID upper);
 template <CSSValueID, CSSValueID...>
 inline bool IdentMatches(CSSValueID id);
 template <CSSValueID... allowedIdents>
-CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
-template <CSSValueID... allowedIdents>
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream&);
 
-CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange&,
-                                        const CSSParserContext&);
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenStream&,
                                         const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSCustomIdentValue* ConsumeDashedIdent(T&, const CSSParserContext&);
-CSSStringValue* ConsumeString(CSSParserTokenRange&);
+CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream&,
+                                        const CSSParserContext&);
 CSSStringValue* ConsumeString(CSSParserTokenStream&);
-StringView ConsumeStringAsStringView(CSSParserTokenRange&);
-cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange&,
-                                  const CSSParserContext&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
                                   const CSSParserContext&);
 
@@ -243,29 +186,17 @@ CSSValue* ConsumeLineWidth(CSSParserTokenStream&,
                            const CSSParserContext&,
                            UnitlessQuirk);
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValuePair* ConsumePosition(T&,
+CSSValuePair* ConsumePosition(CSSParserTokenStream&,
                               const CSSParserContext&,
                               UnitlessQuirk,
                               std::optional<WebFeature> three_value_position);
-bool ConsumePosition(CSSParserTokenRange&,
-                     const CSSParserContext&,
-                     UnitlessQuirk,
-                     std::optional<WebFeature> three_value_position,
-                     CSSValue*& result_x,
-                     CSSValue*& result_y);
 bool ConsumePosition(CSSParserTokenStream&,
                      const CSSParserContext&,
                      UnitlessQuirk,
                      std::optional<WebFeature> three_value_position,
                      CSSValue*& result_x,
                      CSSValue*& result_y);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-bool ConsumeOneOrTwoValuedPosition(T&,
+bool ConsumeOneOrTwoValuedPosition(CSSParserTokenStream&,
                                    const CSSParserContext&,
                                    UnitlessQuirk,
                                    CSSValue*& result_x,
@@ -370,7 +301,6 @@ bool IsDefaultKeyword(StringView);
 bool IsHashIdentifier(const CSSParserToken&);
 CORE_EXPORT bool IsDashedIdent(const CSSParserToken&);
 
-CSSValue* ConsumeCSSWideKeyword(CSSParserTokenRange&);
 CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream&);
 
 // This function returns false for CSS-wide keywords, 'default', and any
@@ -401,11 +331,8 @@ CSSValue* ConsumeAnimationDuration(CSSParserTokenStream&,
                                    const CSSParserContext&);
 // https://drafts.csswg.org/scroll-animations-1/#typedef-timeline-range-name
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenStream&);
-CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTimelineRangeNameAndPercent(T&, const CSSParserContext&);
+CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenStream&,
+                                             const CSSParserContext&);
 CSSValue* ConsumeAnimationDelay(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeAnimationRange(CSSParserTokenStream&,
                                 const CSSParserContext&,
@@ -519,56 +446,23 @@ CSSValue* ConsumeMathDepth(CSSParserTokenStream& stream,
 CSSValue* ConsumeFontPalette(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumePaletteMixFunction(CSSParserTokenStream&,
                                     const CSSParserContext&);
-CSSValueList* ConsumeFontFamily(CSSParserTokenRange&);
 CSSValueList* ConsumeFontFamily(CSSParserTokenStream&);
 CSSValueList* ConsumeNonGenericFamilyNameList(CSSParserTokenStream& stream);
-CSSValue* ConsumeGenericFamily(CSSParserTokenRange&);
 CSSValue* ConsumeGenericFamily(CSSParserTokenStream&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFamilyName(T&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-String ConcatenateFamilyName(T&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontStretchKeywordOnly(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontStretch(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontStyle(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontWeight(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontFeatureSettings(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-cssvalue::CSSFontFeatureValue* ConsumeFontFeatureTag(T&,
+CSSValue* ConsumeFamilyName(CSSParserTokenStream&);
+String ConcatenateFamilyName(CSSParserTokenStream&);
+CSSIdentifierValue* ConsumeFontStretchKeywordOnly(CSSParserTokenStream&,
+                                                  const CSSParserContext&);
+CSSValue* ConsumeFontStretch(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeFontStyle(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeFontWeight(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream&,
+                                     const CSSParserContext&);
+cssvalue::CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenStream&,
                                                      const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontVariantCSS21(T&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontTechIdent(T&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSIdentifierValue* ConsumeFontFormatIdent(T&);
+CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenStream&);
+CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenStream&);
+CSSIdentifierValue* ConsumeFontFormatIdent(CSSParserTokenStream&);
 CSSValueID FontFormatToId(String);
 bool IsSupportedKeywordTech(CSSValueID keyword);
 bool IsSupportedKeywordFormat(CSSValueID keyword);
@@ -671,10 +565,8 @@ CSSValue* ConsumeBorderWidth(CSSParserTokenStream&,
 CSSValue* ConsumeSVGPaint(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ParseSpacing(CSSParserTokenStream&, const CSSParserContext&);
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeSingleContainerName(T&, const CSSParserContext&);
+CSSValue* ConsumeSingleContainerName(CSSParserTokenStream&,
+                                     const CSSParserContext&);
 CSSValue* ConsumeContainerName(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeContainerType(CSSParserTokenStream&);
 
@@ -683,7 +575,7 @@ UnitlessQuirk UnitlessUnlessShorthand(const CSSParserLocalContext&);
 // https://drafts.csswg.org/css-counter-styles-3/#typedef-counter-style-name
 CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenStream&,
                                              const CSSParserContext&);
-AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange&,
+AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenStream&,
                                               const CSSParserContext&);
 
 CSSValue* ConsumeFontSizeAdjust(CSSParserTokenStream&, const CSSParserContext&);
@@ -720,15 +612,6 @@ bool IsCustomIdent(CSSValueID id) {
 template <CSSValueID head, CSSValueID... tail>
 bool IsCustomIdent(CSSValueID id) {
   return id != head && IsCustomIdent<tail...>(id);
-}
-
-template <CSSValueID... names>
-CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() != kIdentToken ||
-      !IdentMatches<names...>(range.Peek().Id())) {
-    return nullptr;
-  }
-  return CSSIdentifierValue::Create(range.ConsumeIncludingWhitespace().Id());
 }
 
 template <CSSValueID... names>
@@ -804,12 +687,11 @@ inline bool AtIdent(const CSSParserToken& token, const char* ident) {
          EqualIgnoringASCIICase(token.Value(), ident);
 }
 
-template <typename T>
-bool ConsumeIfIdent(T& range_or_stream, const char* ident) {
-  if (!AtIdent(range_or_stream.Peek(), ident)) {
+inline bool ConsumeIfIdent(CSSParserTokenStream& stream, const char* ident) {
+  if (!AtIdent(stream.Peek(), ident)) {
     return false;
   }
-  range_or_stream.ConsumeIncludingWhitespace();
+  stream.ConsumeIncludingWhitespace();
   return true;
 }
 
@@ -817,19 +699,18 @@ inline bool AtDelimiter(const CSSParserToken& token, UChar c) {
   return token.GetType() == kDelimiterToken && token.Delimiter() == c;
 }
 
-template <typename T>
-bool ConsumeIfDelimiter(T& range_or_stream, UChar c) {
-  if (!AtDelimiter(range_or_stream.Peek(), c)) {
+inline bool ConsumeIfDelimiter(CSSParserTokenStream& stream, UChar c) {
+  if (!AtDelimiter(stream.Peek(), c)) {
     return false;
   }
-  range_or_stream.ConsumeIncludingWhitespace();
+  stream.ConsumeIncludingWhitespace();
   return true;
 }
 
 CORE_EXPORT CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream&,
                                                        const CSSParserContext&);
-CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream&,
-                                      const CSSParserContext&);
+CORE_EXPORT CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream&,
+                                                  const CSSParserContext&);
 
 // If the stream starts with “!important”, consumes it and returns true.
 // If the stream is at EOF, returns false.

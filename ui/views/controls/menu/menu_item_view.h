@@ -309,7 +309,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   gfx::Size GetIconPreferredSize() const;
 
   // Sets the command id of this menu item.
-  void SetCommand(int command) { command_ = command; }
+  void SetCommand(int command);
 
   // Returns the command id of this item.
   int GetCommand() const { return command_; }
@@ -415,6 +415,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   // Returns the corresponding border padding from the `MenuConfig`.
   int GetItemHorizontalBorder() const;
+
+  virtual void UpdateAccessibleCheckedState();
 
   void SetTriggerActionWithNonIconChildViews(
       bool trigger_action_with_non_icon_child_views) {
@@ -594,6 +596,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // `vertical_margin_` is not set.
   int GetVerticalMargin() const;
 
+  void UpdateAccessibleRole();
   void UpdateAccessibleKeyShortcuts();
   void UpdateAccessibleSelection();
 

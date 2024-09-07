@@ -994,7 +994,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
       WebContents::Create(new_contents_params));
 
   new_web_contents->GetController().LoadURLWithParams(
-      NavigationController::LoadURLParams(GURL(url::kAboutBlankURL)));
+      NavigationController::LoadURLParams(
+          embedded_test_server()->GetURL("/empty.html")));
   EXPECT_TRUE(WaitForLoadStop(new_web_contents.get()));
 
   // Start a cross-process navigation.

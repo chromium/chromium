@@ -435,6 +435,8 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   void OnCompositingChildResizing(ui::Compositor* compositor) final;
   void OnFrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) final;
+  void OnSetPreferredRefreshRate(ui::Compositor*,
+                                 float preferred_refresh_rate) override;
 
   // We don't use a std::unique_ptr for |window_| since we need this ptr to be
   // valid during its deletion. (Window's dtor notifies observers that may

@@ -43,6 +43,10 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="AIWriter.writeStreaming"/>
   <int value="12" label="AIRewriter.rewrite"/>
   <int value="13" label="AIRewriter.rewriteStreaming"/>
+  <int value="14" label="ai.summarizer.summarize"/>
+  <int value="15" label="ai.summarizer.summarizeStreaming"/>
+  <int value="16" label="ai.summarizer.create"/>
+  <int value="17" label="ai.summarizer.destroy"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AIAPI) -->
@@ -96,6 +100,22 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/model_streaming_responder.mojom:ModelStreamingResponseStatus) -->
+
+<!-- LINT.IfChange(LoadTranslateKitResult) -->
+
+<enum name="LoadTranslateKitResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">Success to load TranslateKit binary.</int>
+  <int value="2" label="InvalidBinary">
+    Fails due to invalid TranslateKit binary.
+  </int>
+  <int value="3" label="InvalidFunctionPointer">
+    Success to load TranslateKit binary but one or more function pointers are
+    null.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/services/on_device_translation/translate_kit_client.h:LoadTranslateKitResult) -->
 
 </enums>
 

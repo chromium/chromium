@@ -17,13 +17,6 @@ namespace crypto {
 
 namespace {
 
-enum class TPMOperation {
-  kMessageSigning,
-  kMessageVerify,
-  kWrappedKeyCreation,
-  kNewKeyCreation,
-};
-
 enum class KeyType {
   kHardwareKey,
   kVirtualizedKey,
@@ -44,20 +37,6 @@ std::string GetHistogramPrefixForKeyType(KeyType type) {
     case KeyType::kVirtualizedKey:
       return "Virtual.";
   }
-}
-
-std::string GetHistogramSuffixForOperation(TPMOperation operation) {
-  switch (operation) {
-    case TPMOperation::kMessageSigning:
-      return "MessageSigning";
-    case TPMOperation::kMessageVerify:
-      return "MessageVerify";
-    case TPMOperation::kNewKeyCreation:
-      return "NewKeyCreation";
-    case TPMOperation::kWrappedKeyCreation:
-      return "WrappedKeyCreation";
-  }
-  return "";
 }
 
 std::string GetHistogramSuffixForAlgo(internal::TPMSupport algo) {
@@ -95,10 +74,9 @@ void ReportUmaLatency(TPMOperation operation,
                       internal::TPMSupport algo,
                       base::TimeDelta latency,
                       KeyType type = KeyType::kHardwareKey) {
-  std::string histogram_name = "Crypto.TPMDuration." +
-                               GetHistogramPrefixForKeyType(type) +
-                               GetHistogramSuffixForOperation(operation) +
-                               GetHistogramSuffixForAlgo(algo);
+  std::string histogram_name =
+      "Crypto.TPMDuration." + GetHistogramPrefixForKeyType(type) +
+      OperationToString(operation) + GetHistogramSuffixForAlgo(algo);
   base::UmaHistogramMediumTimes(histogram_name, latency);
 }
 
@@ -106,10 +84,9 @@ void ReportUmaOperationSuccess(TPMOperation operation,
                                internal::TPMSupport algo,
                                bool status,
                                KeyType type = KeyType::kHardwareKey) {
-  std::string histogram_name = "Crypto.TPMOperation." +
-                               GetHistogramPrefixForKeyType(type) +
-                               GetHistogramSuffixForOperation(operation) +
-                               GetHistogramSuffixForAlgo(algo);
+  std::string histogram_name =
+      "Crypto.TPMOperation." + GetHistogramPrefixForKeyType(type) +
+      OperationToString(operation) + GetHistogramSuffixForAlgo(algo);
   base::UmaHistogramBoolean(histogram_name, status);
 }
 
@@ -211,6 +188,7 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
   std::unique_ptr<UnexportableKeyProvider> provider =
       GetUnexportableKeyProvider(std::move(config));
   if (!provider) {
+    base::UmaHistogramEnumeration("Crypto.TPMSupportType", supported_algo);
     return;
   }
 
@@ -298,6 +276,30 @@ void MeasureTpmOperationsInternalForTesting() {
 }
 
 }  // namespace internal
+
+std::string OperationToString(TPMOperation operation) {
+  switch (operation) {
+    case TPMOperation::kMessageSigning:
+      return "MessageSigning";
+    case TPMOperation::kMessageVerify:
+      return "MessageVerify";
+    case TPMOperation::kNewKeyCreation:
+      return "NewKeyCreation";
+    case TPMOperation::kWrappedKeyCreation:
+      return "WrappedKeyCreation";
+  }
+}
+
+std::string AlgorithmToString(SignatureVerifier::SignatureAlgorithm algorithm) {
+  switch (algorithm) {
+    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+      return "RSA";
+    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+      return "ECDSA";
+  }
+}
 
 void MaybeMeasureTpmOperations(UnexportableKeyProvider::Config config) {
   static BASE_FEATURE(kTpmLatencyMetrics, "TpmLatencyMetrics",

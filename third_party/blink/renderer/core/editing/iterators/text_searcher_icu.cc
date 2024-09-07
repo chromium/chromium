@@ -106,7 +106,7 @@ class ICULockableSearcher {
 
 static bool IsWholeWordMatch(const UChar* text,
                              unsigned text_length,
-                             MatchResultICU& result) {
+                             const MatchResultICU& result) {
   const wtf_size_t result_end = result.start + result.length;
   DCHECK_LE(result_end, text_length);
   UChar32 first_character;
@@ -148,7 +148,7 @@ void TextSearcherICU::SetPattern(const StringView& pattern,
                                  FindOptions options) {
   DCHECK_GT(pattern.length(), 0u);
   options_ = options;
-  SetCaseSensitivity(!(options & kCaseInsensitive));
+  SetCaseSensitivity(!options.IsCaseInsensitive());
   SetPattern(pattern.Characters16(), pattern.length());
   if (ContainsKanaLetters(pattern.ToString())) {
     NormalizeCharactersIntoNFCForm(pattern.Characters16(), pattern.length(),
@@ -169,15 +169,16 @@ void TextSearcherICU::SetOffset(wtf_size_t offset) {
   DCHECK_EQ(status, U_ZERO_ERROR);
 }
 
-bool TextSearcherICU::NextMatchResult(MatchResultICU& result) {
-  while (NextMatchResultInternal(result)) {
-    if (!ShouldSkipCurrentMatch(result))
-      return true;
+std::optional<MatchResultICU> TextSearcherICU::NextMatchResult() {
+  while (std::optional<MatchResultICU> result = NextMatchResultInternal()) {
+    if (!ShouldSkipCurrentMatch(*result)) {
+      return result;
+    }
   }
-  return false;
+  return std::nullopt;
 }
 
-bool TextSearcherICU::NextMatchResultInternal(MatchResultICU& result) {
+std::optional<MatchResultICU> TextSearcherICU::NextMatchResultInternal() {
   UErrorCode status = U_ZERO_ERROR;
   const int match_start = usearch_next(searcher_, &status);
   DCHECK(U_SUCCESS(status));
@@ -187,23 +188,22 @@ bool TextSearcherICU::NextMatchResultInternal(MatchResultICU& result) {
   if (!(match_start >= 0 &&
         static_cast<wtf_size_t>(match_start) < text_length_)) {
     DCHECK_EQ(match_start, USEARCH_DONE);
-    result.start = 0;
-    result.length = 0;
-    return false;
+    return std::nullopt;
   }
 
-  result.start = static_cast<wtf_size_t>(match_start);
-  result.length = usearch_getMatchedLength(searcher_);
+  MatchResultICU result = {
+      static_cast<wtf_size_t>(match_start),
+      base::checked_cast<wtf_size_t>(usearch_getMatchedLength(searcher_))};
   // Might be possible to get zero-length result with some Unicode characters
   // that shouldn't actually match but is matched by ICU such as \u0080.
   if (result.length == 0u) {
-    result.start = 0;
-    return false;
+    return std::nullopt;
   }
-  return true;
+  return result;
 }
 
-bool TextSearcherICU::ShouldSkipCurrentMatch(MatchResultICU& result) const {
+bool TextSearcherICU::ShouldSkipCurrentMatch(
+    const MatchResultICU& result) const {
   int32_t text_length_i32;
   const UChar* text = usearch_getText(searcher_, &text_length_i32);
   unsigned text_length = text_length_i32;
@@ -213,13 +213,11 @@ bool TextSearcherICU::ShouldSkipCurrentMatch(MatchResultICU& result) const {
   if (!normalized_search_text_.empty() && !IsCorrectKanaMatch(text, result))
     return true;
 
-  if ((options_ & kWholeWord) && !IsWholeWordMatch(text, text_length, result))
-    return true;
-  return false;
+  return options_.IsWholeWord() && !IsWholeWordMatch(text, text_length, result);
 }
 
 bool TextSearcherICU::IsCorrectKanaMatch(const UChar* text,
-                                         MatchResultICU& result) const {
+                                         const MatchResultICU& result) const {
   Vector<UChar> normalized_match;
   NormalizeCharactersIntoNFCForm(text + result.start, result.length,
                                  normalized_match);

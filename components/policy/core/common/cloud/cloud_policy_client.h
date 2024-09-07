@@ -290,6 +290,16 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& client_id,
       DMAuth enrollment_token_auth);
 
+  // Attempts to enroll a policy agent, (i.e. Omaha, Keystone, or the Chrome
+  // Enterprise Companion App) with the device management service using an
+  // enrollment token. Results in a registration change or error notification.
+  // To emphasize, this method is used to register browser (e.g. for
+  // machine-level policies).
+  virtual void RegisterPolicyAgentWithEnrollmentToken(
+      const std::string& token,
+      const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate);
+
   // Attempts to register the profile with the device management service using a
   // OIDC response from a third party IdP's authentication. Results in a
   // registration change or error notification.
@@ -332,6 +342,7 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void UploadPolicyValidationReport(
       CloudPolicyValidatorBase::Status status,
       const std::vector<ValueValidationIssue>& value_validation_issues,
+      const ValidationAction action,
       const std::string& policy_type,
       const std::string& policy_token);
 
@@ -873,6 +884,15 @@ class POLICY_EXPORT CloudPolicyClient {
 
   enterprise_management::PolicyFetchRequest::SignatureType
   GetPolicyFetchRequestSignatureType();
+
+  // Fills a request and creates a job for browser or policy agent enrollment,
+  // which differ only by request type.
+  virtual void RegisterBrowserOrPolicyAgentWithEnrollmentToken(
+      const std::string& token,
+      const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate,
+      bool is_mandatory,
+      DeviceManagementService::JobConfiguration::JobType type);
 
 #if BUILDFLAG(IS_WIN)
   // Callback to get browser device identifier.

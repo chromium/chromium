@@ -66,14 +66,13 @@ interface SizeOption {
   size: number;
 }
 
-// TODO(crbug.com/341282609): Choose production size values. Add icons and
-// labels.
+// TODO(crbug.com/341282609): Choose production size values. Add labels.
 const ERASER_SIZES: SizeOption[] = [
-  {icon: 'pen-size-1', name: 'sizeExtraThin', size: 1},
-  {icon: 'pen-size-2', name: 'sizeThin', size: 2},
-  {icon: 'pen-size-3', name: 'sizeExtraMedium', size: 3},
-  {icon: 'pen-size-4', name: 'sizeThick', size: 6},
-  {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
+  {icon: 'eraser-size-1', name: 'sizeExtraThin', size: 1},
+  {icon: 'eraser-size-2', name: 'sizeThin', size: 2},
+  {icon: 'eraser-size-3', name: 'sizeExtraMedium', size: 3},
+  {icon: 'eraser-size-4', name: 'sizeThick', size: 6},
+  {icon: 'eraser-size-5', name: 'sizeExtraThick', size: 8},
 ];
 
 const HIGHLIGHTER_SIZES: SizeOption[] = [
@@ -92,6 +91,10 @@ const PEN_SIZES: SizeOption[] = [
   {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
 ];
 
+// LINT.IfChange(HighlighterOpacity)
+const HIGHLIGHTER_OPACITY: number = 0.4;
+// LINT.ThenChange(//pdf/pdf_ink_brush.cc:HighlighterOpacity)
+
 /**
  * @param hex A hex-coded color string, formatted as '#ffffff'.
  * @returns The `Color` in RGB values.
@@ -104,6 +107,28 @@ function hexToColor(hex: string): Color {
     g: Number.parseInt(hex.substring(3, 5), 16),
     b: Number.parseInt(hex.substring(5, 7), 16),
   };
+}
+
+/**
+ * @param color The `Color` in RGB values.
+ * @returns A hex-coded color string, formatted as '#ffffff'.
+ */
+function colorToHex(color: Color): string {
+  const rgb = [color.r, color.g, color.b]
+                  .map(value => value.toString(16).padStart(2, '0'))
+                  .join('');
+  return `#${rgb}`;
+}
+
+/**
+ * Blends `colorValue` with highlighter opacity on a white background.
+ * @param colorValue The red, green, or blue value of a color.
+ * @returns The new respective red, green, or blue value of a color that has
+ * been transformed using the highlighter transparency on a white background.
+ */
+function blendHighlighterColorValue(colorValue: number): number {
+  return Math.round(
+      colorValue * HIGHLIGHTER_OPACITY + 255 * (1 - HIGHLIGHTER_OPACITY));
 }
 
 /**
@@ -158,23 +183,23 @@ export class ViewerSidePanelElement extends CrLitElement {
         AnnotationBrushType.ERASER,
         {
           type: AnnotationBrushType.ERASER,
-          size: ERASER_SIZES[2].size,
+          size: ERASER_SIZES[2]!.size,
         },
       ],
       [
         AnnotationBrushType.HIGHLIGHTER,
         {
           type: AnnotationBrushType.HIGHLIGHTER,
-          color: hexToColor(HIGHLIGHTER_COLORS[0].color),
-          size: HIGHLIGHTER_SIZES[2].size,
+          color: hexToColor(HIGHLIGHTER_COLORS[0]!.color),
+          size: HIGHLIGHTER_SIZES[2]!.size,
         },
       ],
       [
         AnnotationBrushType.PEN,
         {
           type: AnnotationBrushType.PEN,
-          color: hexToColor(PEN_COLORS[0].color),
-          size: PEN_SIZES[2].size,
+          color: hexToColor(PEN_COLORS[0]!.color),
+          size: PEN_SIZES[2]!.size,
         },
       ],
     ]);
@@ -237,8 +262,25 @@ export class ViewerSidePanelElement extends CrLitElement {
     this.brushDirty_ = true;
   }
 
+  protected getIcon_(type: AnnotationBrushType): string {
+    const isCurrentType = this.isCurrentType_(type);
+    switch (type) {
+      case AnnotationBrushType.ERASER:
+        return isCurrentType ? 'pdf:ink-eraser-fill' : 'pdf:ink-eraser';
+      case AnnotationBrushType.HIGHLIGHTER:
+        return isCurrentType ? 'pdf:ink-highlighter-fill' :
+                               'pdf:ink-highlighter';
+      case AnnotationBrushType.PEN:
+        return isCurrentType ? 'pdf:ink-pen-fill' : 'pdf:ink-pen';
+    }
+  }
+
   protected isCurrentType_(type: AnnotationBrushType): boolean {
     return this.currentType_ === type;
+  }
+
+  protected isCurrentSize_(size: number): boolean {
+    return this.getCurrentBrush_().size === size;
   }
 
   protected isCurrentColor_(hex: string): boolean {
@@ -259,6 +301,22 @@ export class ViewerSidePanelElement extends CrLitElement {
     return this.currentType_ === AnnotationBrushType.HIGHLIGHTER ?
         'highlighterColors' :
         'penColors';
+  }
+
+  protected getVisibleColor_(hex: string): string {
+    if (this.currentType_ !== AnnotationBrushType.HIGHLIGHTER) {
+      return hex;
+    }
+
+    // Highlighter colors are transparent, but the side panel background is
+    // dark. Instead of setting the alpha value, calculate the RGB of the
+    // highlighter color with transparency on a white background.
+    const color = hexToColor(hex);
+    color.r = blendHighlighterColorValue(color.r);
+    color.g = blendHighlighterColorValue(color.g);
+    color.b = blendHighlighterColorValue(color.b);
+
+    return colorToHex(color);
   }
 
   protected getCurrentBrushSizes_(): SizeOption[] {

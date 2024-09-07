@@ -52,11 +52,13 @@ function awaitOnErrorOccurred(num, callback) {
 // Generate a deterministic frameId for a given frameId.
 function normalizeFrameId(frameId) {
   chrome.test.assertTrue(typeof frameId == 'number');
-  if (frameId === -1 || frameId === 0)
+  if (frameId === -1 || frameId === 0) {
     return frameId; // unknown or main frame.
-  if (!(frameId in normalizeFrameId.cached))
+  }
+  if (!(frameId in normalizeFrameId.cached)) {
     normalizeFrameId.cached[frameId] =
       Object.keys(normalizeFrameId.cached).length + 1;
+  }
   return normalizeFrameId.cached[frameId];
 }
 normalizeFrameId.cached = {};

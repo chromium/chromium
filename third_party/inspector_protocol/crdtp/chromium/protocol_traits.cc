@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,9 +53,8 @@ Binary Binary::fromString(std::string data) {
 }
 
 // static
-Binary Binary::fromSpan(const uint8_t* data, size_t size) {
-  return Binary(scoped_refptr<base::RefCountedBytes>(
-      new base::RefCountedBytes(data, size)));
+Binary Binary::fromSpan(base::span<const uint8_t> data) {
+  return Binary(base::MakeRefCounted<base::RefCountedBytes>(data));
 }
 
 // static
@@ -61,8 +62,7 @@ bool ProtocolTypeTraits<Binary>::Deserialize(DeserializerState* state,
                                              Binary* value) {
   auto* tokenizer = state->tokenizer();
   if (tokenizer->TokenTag() == cbor::CBORTokenTag::BINARY) {
-    const span<uint8_t> bin = tokenizer->GetBinary();
-    *value = Binary::fromSpan(bin.data(), bin.size());
+    *value = Binary::fromSpan(tokenizer->GetBinary());
     return true;
   }
   if (tokenizer->TokenTag() == cbor::CBORTokenTag::STRING8) {

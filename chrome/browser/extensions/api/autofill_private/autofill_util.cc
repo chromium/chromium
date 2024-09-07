@@ -50,18 +50,18 @@ std::string GetStringFromProfile(const autofill::AutofillProfile& profile,
   return base::UTF16ToUTF8(profile.GetRawInfo(type));
 }
 
-// Converts AutofillProfile::Source enum to the WebUI idl one.
-autofill_private::AddressSource ConvertProfileSource(
-    autofill::AutofillProfile::Source source) {
-  switch (source) {
-    case autofill::AutofillProfile::Source::kLocalOrSyncable:
-      return autofill_private::AddressSource::kLocalOrSyncable;
-    case autofill::AutofillProfile::Source::kAccount:
-      return autofill_private::AddressSource::kAccount;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return autofill_private::AddressSource::kNone;
+// Converts AutofillProfile::RecordType enum to the WebUI idl one.
+autofill_private::AddressRecordType ConvertProfileRecordType(
+    autofill::AutofillProfile::RecordType record_type) {
+  switch (record_type) {
+    case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
+      return autofill_private::AddressRecordType::kLocalOrSyncable;
+    case autofill::AutofillProfile::RecordType::kAccount:
+    case autofill::AutofillProfile::RecordType::kAccountHome:
+    case autofill::AutofillProfile::RecordType::kAccountWork:
+      return autofill_private::AddressRecordType::kAccount;
   }
+  NOTREACHED();
 }
 
 autofill_private::AddressEntry ProfileToAddressEntry(
@@ -95,7 +95,8 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   address.metadata->summary_label = base::UTF16ToUTF8(label_pieces[0]);
   address.metadata->summary_sublabel =
       base::UTF16ToUTF8(label.substr(label_pieces[0].size()));
-  address.metadata->source = ConvertProfileSource(profile.source());
+  address.metadata->record_type =
+      ConvertProfileRecordType(profile.record_type());
 
   return address;
 }
@@ -334,8 +335,6 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   card.metadata->summary_sublabel = base::UTF16ToUTF8(label_pieces.second);
   card.metadata->is_local =
       credit_card.record_type() == autofill::CreditCard::RecordType::kLocalCard;
-  card.metadata->is_cached = credit_card.record_type() ==
-                             autofill::CreditCard::RecordType::kFullServerCard;
   // IsValid() checks if both card number and expiration date are valid.
   // IsServerCard() checks whether there is a duplicated server card in
   // |personal_data|.

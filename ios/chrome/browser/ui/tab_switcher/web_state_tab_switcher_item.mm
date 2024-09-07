@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/weak_ptr.h"
 #import "components/favicon/ios/web_favicon_driver.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"

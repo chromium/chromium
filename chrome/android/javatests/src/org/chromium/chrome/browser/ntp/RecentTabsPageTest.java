@@ -10,22 +10,30 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,6 +55,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -57,7 +66,9 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -75,6 +86,8 @@ import java.util.concurrent.ExecutionException;
 public class RecentTabsPageTest {
     private static final String EMAIL = "email@gmail.com";
     private static final String NAME = "Email Emailson";
+    private static final int COLOR_ID = TabGroupColorId.YELLOW;
+    private static final int COLOR_ID_2 = TabGroupColorId.RED;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -86,7 +99,7 @@ public class RecentTabsPageTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(8)
+                    .setRevision(9)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
                     .build();
 
@@ -117,6 +130,99 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testRecentlyClosedGroupNoColorContentDescriptions() throws ExecutionException {
+        mPage = loadRecentTabsPage();
+        // Set a recently closed group with a title and confirm a view is rendered for it.
+        final RecentlyClosedGroup titleGroup =
+                new RecentlyClosedGroup(2, 0, "Group Title", COLOR_ID);
+        Token titleTabGroupId = new Token(27839L, 4789L);
+        titleGroup
+                .getTabs()
+                .add(
+                        new RecentlyClosedTab(
+                                0,
+                                0,
+                                "Tab Title 0",
+                                new GURL("https://www.example.com/url/0"),
+                                titleTabGroupId));
+        titleGroup
+                .getTabs()
+                .add(
+                        new RecentlyClosedTab(
+                                1,
+                                0,
+                                "Tab Title 1",
+                                new GURL("https://www.example.com/url/1"),
+                                titleTabGroupId));
+
+        // Set a recently closed group without a title and confirm a view is rendered for it.
+        final RecentlyClosedGroup noTitleGroup = new RecentlyClosedGroup(3, 0, null, COLOR_ID_2);
+        Token noTitleTabGroupId = new Token(798L, 4389L);
+        noTitleGroup
+                .getTabs()
+                .add(
+                        new RecentlyClosedTab(
+                                0,
+                                0,
+                                "Tab Title 0",
+                                new GURL("https://www.example.com/url/0"),
+                                noTitleTabGroupId));
+
+        List<RecentlyClosedEntry> entries = new ArrayList<>();
+        entries.add(titleGroup);
+        entries.add(noTitleGroup);
+        setRecentlyClosedEntries(entries);
+        assertEquals(2, mManager.getRecentlyClosedEntries(2).size());
+        final String titleGroupString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getString(
+                                            R.string.recent_tabs_group_closure_with_title,
+                                            titleGroup.getTitle());
+                        });
+        final String titleGroupAccessibilityString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getString(
+                                            R.string
+                                                    .recent_tabs_group_closure_with_title_accessibility,
+                                            titleGroup.getTitle());
+                        });
+        final String noTitleGroupString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals.recent_tabs_group_closure_without_title,
+                                            noTitleGroup.getTabs().size(),
+                                            noTitleGroup.getTabs().size());
+                        });
+        final String noTitleGroupAccessibilityString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals
+                                                    .recent_tabs_group_closure_without_title_accessibility,
+                                            noTitleGroup.getTabs().size(),
+                                            noTitleGroup.getTabs().size());
+                        });
+        final View titleGroupView = waitForView(titleGroupString);
+        final View noTitleGroupView = waitForTabCountTitleView(noTitleGroupString);
+        assertEquals(titleGroupAccessibilityString, titleGroupView.getContentDescription());
+        assertEquals(noTitleGroupAccessibilityString, noTitleGroupView.getContentDescription());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage"})
     public void testRecentlyClosedTabs() throws ExecutionException {
         mPage = loadRecentTabsPage();
         // Set a recently closed tab and confirm a view is rendered for it.
@@ -124,7 +230,7 @@ public class RecentTabsPageTest {
                 new RecentlyClosedTab(
                         0, 0, "Tab Title", new GURL("https://www.example.com/"), null);
         setRecentlyClosedEntries(Collections.singletonList(tab));
-        Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
+        assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String title = tab.getTitle();
         final View view = waitForView(title);
 
@@ -144,19 +250,89 @@ public class RecentTabsPageTest {
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
         openContextMenuAndInvokeItem(
                 mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
-        Assert.assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
+        assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(title);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage"})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testRecentlyClosedGroupColor() throws ExecutionException {
+        mPage = loadRecentTabsPage();
+        // Set a recently closed group and confirm a view is rendered for it.
+        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, "Group Title", COLOR_ID);
+
+        setRecentlyClosedEntries(Collections.singletonList(group));
+        assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
+        final String title = group.getTitle();
+        final View view = waitForView(title);
+
+        ImageView iconView = (ImageView) mPage.getView().findViewById(R.id.row_icon);
+        assertNotNull(iconView.getBackground());
+        assertEquals(View.VISIBLE, iconView.getVisibility());
+        assertThat(iconView.getBackground(), instanceOf(GradientDrawable.class));
+
+        GradientDrawable bgDrawable = (GradientDrawable) iconView.getBackground();
+        assertEquals(GradientDrawable.OVAL, bgDrawable.getShape());
+        assertEquals(
+                ColorStateList.valueOf(
+                        ColorPickerUtils.getTabGroupColorPickerItemColor(
+                                mActivity, COLOR_ID, /* isIncognito= */ false)),
+                bgDrawable.getColor());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage"})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testRecentlyClosedGroupIconDoesNotPersist() throws ExecutionException {
+        mPage = loadRecentTabsPage();
+        // Set a recently closed group and confirm a view is rendered for it.
+        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, "Group Title", COLOR_ID);
+
+        setRecentlyClosedEntries(Collections.singletonList(group));
+        assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
+        final String groupString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getString(
+                                            R.string.recent_tabs_group_closure_with_title,
+                                            group.getTitle());
+                        });
+        final View view = waitForView(groupString);
+
+        // Test clicking the group to simulate an open action.
+        final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPage.onChildClick(null, null, groupIdx, 0, 0);
+                });
+        verify(mManager, times(1)).openRecentlyClosedEntry(mTabModel, group);
+
+        // Clear the recently closed tabs with the context menu and confirm the view is gone.
+        openContextMenuAndInvokeItem(
+                mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
+        waitForViewToDisappear(groupString);
+
+        // Check that the remaining show history row item does not have an icon visible.
+        ImageView iconView = (ImageView) mPage.getView().findViewById(R.id.row_icon);
+        assertEquals(View.GONE, iconView.getVisibility());
     }
 
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithTitle() throws Exception {
         mPage = loadRecentTabsPage();
         // Set a recently closed group and confirm a view is rendered for it.
-        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, "Group Title");
+        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, "Group Title", COLOR_ID);
         Token tabGroupId = new Token(27839L, 4789L);
         group.getTabs()
                 .add(
@@ -175,7 +351,7 @@ public class RecentTabsPageTest {
                                 new GURL("https://www.example.com/url/1"),
                                 tabGroupId));
         setRecentlyClosedEntries(Collections.singletonList(group));
-        Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
+        assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String groupString =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -185,7 +361,22 @@ public class RecentTabsPageTest {
                                             R.string.recent_tabs_group_closure_with_title,
                                             group.getTitle());
                         });
+        final String groupAccessibilityString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Resources res = mActivity.getResources();
+                            final @StringRes int colorDesc =
+                                    ColorPickerUtils
+                                            .getTabGroupColorPickerItemColorAccessibilityString(
+                                                    group.getColor());
+                            return res.getString(
+                                    R.string
+                                            .recent_tabs_group_closure_with_title_with_color_accessibility,
+                                    group.getTitle(),
+                                    res.getString(colorDesc));
+                        });
         final View view = waitForView(groupString);
+        assertEquals(groupAccessibilityString, view.getContentDescription());
 
         mRenderTestRule.render(mPage.getView(), "recently_closed_group_with_title");
 
@@ -199,20 +390,21 @@ public class RecentTabsPageTest {
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
         openContextMenuAndInvokeItem(
                 mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
-        Assert.assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
+        assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(groupString);
     }
 
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithoutTitle() throws Exception {
         mPage = loadRecentTabsPage();
         long time = 904881600000L;
         // Set a recently closed group and confirm a view is rendered for it.
-        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, time, null);
+        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, time, null, COLOR_ID);
         Token tabGroupId = new Token(798L, 4389L);
         group.getTabs()
                 .add(
@@ -231,17 +423,52 @@ public class RecentTabsPageTest {
                                 new GURL("https://www.example.com/url/1"),
                                 tabGroupId));
         setRecentlyClosedEntries(Collections.singletonList(group));
-        Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
+        assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String groupString =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mActivity
                                     .getResources()
-                                    .getString(
-                                            R.string.recent_tabs_group_closure_without_title,
+                                    .getQuantityString(
+                                            R.plurals.recent_tabs_group_closure_without_title,
+                                            group.getTabs().size(),
                                             group.getTabs().size());
                         });
-        final View view = waitForView(groupString);
+        final String groupAccessibilityString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Resources res = mActivity.getResources();
+                            final @StringRes int colorDesc =
+                                    ColorPickerUtils
+                                            .getTabGroupColorPickerItemColorAccessibilityString(
+                                                    group.getColor());
+                            return res.getQuantityString(
+                                    R.plurals
+                                            .recent_tabs_group_closure_without_title_with_color_accessibility,
+                                    group.getTabs().size(),
+                                    group.getTabs().size(),
+                                    res.getString(colorDesc));
+                        });
+        List<String> domainList = new ArrayList<>();
+        for (RecentlyClosedTab tab : group.getTabs()) {
+            String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
+            domainList.add(domain);
+        }
+        final String groupDomainString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals.recent_tabs_group_closure_domain_text,
+                                            group.getTabs().size(),
+                                            group.getTabs().size(),
+                                            String.join(", ", domainList));
+                        });
+        final View view = waitForTabCountTitleView(groupString);
+        assertEquals(groupAccessibilityString, view.getContentDescription());
+        final TextView domainView = (TextView) waitForView(groupDomainString);
+        assertEquals(groupDomainString, domainView.getText());
 
         mRenderTestRule.render(mPage.getView(), "recently_closed_group_without_title");
 
@@ -255,7 +482,7 @@ public class RecentTabsPageTest {
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
         openContextMenuAndInvokeItem(
                 mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
-        Assert.assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
+        assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(groupString);
     }
 
@@ -296,7 +523,7 @@ public class RecentTabsPageTest {
                                 new GURL("https://www.example.com/url/2"),
                                 null));
         setRecentlyClosedEntries(Collections.singletonList(event));
-        Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
+        assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final int size = event.getTabs().size();
         final String eventString =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -305,7 +532,25 @@ public class RecentTabsPageTest {
                                     .getResources()
                                     .getString(R.string.recent_tabs_bulk_closure, size);
                         });
-        final View view = waitForView(eventString);
+        List<String> domainList = new ArrayList<>();
+        for (RecentlyClosedTab tab : event.getTabs()) {
+            String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
+            domainList.add(domain);
+        }
+        final String eventDomainString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals.recent_tabs_group_closure_domain_text,
+                                            event.getTabs().size(),
+                                            event.getTabs().size(),
+                                            String.join(", ", domainList));
+                        });
+        final View view = waitForTabCountTitleView(eventString);
+        final TextView domainView = (TextView) waitForView(eventDomainString);
+        assertEquals(eventDomainString, domainView.getText());
 
         mRenderTestRule.render(mPage.getView(), "recently_closed_bulk_event");
 
@@ -319,7 +564,7 @@ public class RecentTabsPageTest {
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
         openContextMenuAndInvokeItem(
                 mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
-        Assert.assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
+        assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(eventString);
     }
 
@@ -418,6 +663,20 @@ public class RecentTabsPageTest {
                             "Could not find view with this text: " + text,
                             views.size(),
                             Matchers.is(1));
+                });
+        return views.get(0);
+    }
+
+    /** Waits for the view with the specified text to appear. */
+    private View waitForTabCountTitleView(final String text) {
+        final ArrayList<View> views = new ArrayList<>();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    mPage.getView().findViewsWithText(views, text, View.FIND_VIEWS_WITH_TEXT);
+                    Criteria.checkThat(
+                            "Could not find views with this text: " + text,
+                            views.size(),
+                            Matchers.is(2));
                 });
         return views.get(0);
     }

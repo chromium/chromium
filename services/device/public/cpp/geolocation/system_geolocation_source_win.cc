@@ -14,8 +14,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
+#include "services/device/public/cpp/device_features.h"
 
 namespace device {
 
@@ -95,44 +97,105 @@ ComPtr<IAppCapability> CreateAppCapability(std::string_view name) {
   return app_capability;
 }
 
-// Check the current access status for `app_capability` and return the
-// equivalent LocationSystemPermissionStatus.
-LocationSystemPermissionStatus GetLocationSystemPermissionStatus(
-    ComPtr<IAppCapability> app_capability) {
+}  // namespace
+
+class SystemGeolocationSourceWin::AccessCheckHelper {
+ public:
+  AccessCheckHelper(
+      base::WeakPtr<SystemGeolocationSourceWin> source,
+      scoped_refptr<base::SequencedTaskRunner> source_task_runner);
+
+  // This function periodically checks and informs `source_` about the system's
+  // geolocation permission status. It handles potential access failures and
+  // ensures `source_` is always updated on any permission changes by scheduling
+  // regular checks.
+  void PollPermissionStatus();
+
+ private:
+  // Minimum and maximum polling intervals (in milliseconds). Any value fetched
+  // from Finch config (features::kWinSystemLocationPermissionPollingParam) will
+  // be clamped within this range to ensure reasonable polling frequency
+  static constexpr int kMinPollingIntervalMs = 500;
+  static constexpr int kMaxPollingIntervalMs = 3000;
+  // The interval (in milliseconds) at which to poll for permission changes.
+  const int polling_interval_;
+  // COM interface to check the app's capability to access location.
+  ComPtr<IAppCapability> location_capability_;
+  base::WeakPtr<SystemGeolocationSourceWin> source_;
+  scoped_refptr<base::SequencedTaskRunner> source_task_runner_;
+  base::WeakPtrFactory<SystemGeolocationSourceWin::AccessCheckHelper>
+      weak_ptr_factory_{this};
+};
+
+SystemGeolocationSourceWin::AccessCheckHelper::AccessCheckHelper(
+    base::WeakPtr<SystemGeolocationSourceWin> source,
+    scoped_refptr<base::SequencedTaskRunner> source_task_runner)
+    : polling_interval_(
+          std::clamp(features::kWinSystemLocationPermissionPollingParam.Get(),
+                     kMinPollingIntervalMs,
+                     kMaxPollingIntervalMs)),
+      location_capability_(CreateAppCapability("location")),
+      source_(source),
+      source_task_runner_(source_task_runner) {
+  PollPermissionStatus();
+}
+
+void SystemGeolocationSourceWin::AccessCheckHelper::PollPermissionStatus() {
   using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
       AppCapabilityAccessStatus;
   using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
       AppCapabilityAccessStatus_Allowed;
   using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
       AppCapabilityAccessStatus_UserPromptRequired;
-  if (!app_capability) {
-    return LocationSystemPermissionStatus::kNotDetermined;
+
+  // If the location capability object is not available (potentially due
+  // to initialization failure or other issues), post a task to notify the
+  // SystemGeolocationSourceWin that the permission status is 'kNotDetermined'
+  // and exit the function early without scheduling next poll.
+  if (!location_capability_) {
+    source_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SystemGeolocationSourceWin::OnPermissionStatusUpdated,
+                       source_,
+                       LocationSystemPermissionStatus::kNotDetermined));
+    return;
   }
+
+  LocationSystemPermissionStatus status =
+      LocationSystemPermissionStatus::kDenied;
   AppCapabilityAccessStatus access_status;
-  HRESULT hr = app_capability->CheckAccess(&access_status);
+  HRESULT hr = location_capability_->CheckAccess(&access_status);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to get location access status: "
                << logging::SystemErrorCodeToString(hr);
     RecordUmaCheckAccessError(hr);
-    return LocationSystemPermissionStatus::kNotDetermined;
+    status = LocationSystemPermissionStatus::kNotDetermined;
+  } else if (access_status == AppCapabilityAccessStatus_Allowed) {
+    status = LocationSystemPermissionStatus::kAllowed;
+  } else if (access_status == AppCapabilityAccessStatus_UserPromptRequired) {
+    status = LocationSystemPermissionStatus::kNotDetermined;
   }
-  if (access_status == AppCapabilityAccessStatus_Allowed) {
-    return LocationSystemPermissionStatus::kAllowed;
-  }
-  if (access_status == AppCapabilityAccessStatus_UserPromptRequired) {
-    return LocationSystemPermissionStatus::kNotDetermined;
-  }
-  return LocationSystemPermissionStatus::kDenied;
+
+  source_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SystemGeolocationSourceWin::OnPermissionStatusUpdated,
+                     source_, status));
+
+  // Schedule next poll.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SystemGeolocationSourceWin::AccessCheckHelper::PollPermissionStatus,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::Milliseconds(polling_interval_));
 }
 
-}  // namespace
-
-SystemGeolocationSourceWin::SystemGeolocationSourceWin()
-    : location_capability_(CreateAppCapability("location")) {
-  if (location_capability_) {
-    PollPermissionStatus();
-    RecordUmaInitialPermissionStatus(permission_status_.value());
-  }
+SystemGeolocationSourceWin::SystemGeolocationSourceWin() {
+  access_check_helper_ = base::SequenceBound<AccessCheckHelper>(
+      base::ThreadPool::CreateCOMSTATaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
+      weak_factory_.GetWeakPtr(),
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 SystemGeolocationSourceWin::~SystemGeolocationSourceWin() = default;
@@ -152,9 +215,14 @@ void SystemGeolocationSourceWin::RegisterPermissionUpdateCallback(
   }
 }
 
-void SystemGeolocationSourceWin::PollPermissionStatus() {
-  // Poll the current permission status and notify if the status has changed.
-  auto status = GetLocationSystemPermissionStatus(location_capability_);
+void SystemGeolocationSourceWin::OnPermissionStatusUpdated(
+    LocationSystemPermissionStatus status) {
+  // Record the first polled permission status.
+  if (!permission_status_.has_value()) {
+    RecordUmaInitialPermissionStatus(status);
+  }
+
+  // Handle permission status change.
   if (status != permission_status_) {
     permission_status_ = status;
     if (permission_update_callback_) {
@@ -163,13 +231,6 @@ void SystemGeolocationSourceWin::PollPermissionStatus() {
     RecordUmaPermissionStatusChanged(status, has_pending_system_prompt_);
     has_pending_system_prompt_ = false;
   }
-
-  // Schedule next poll.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&SystemGeolocationSourceWin::PollPermissionStatus,
-                     weak_factory_.GetWeakPtr()),
-      base::Milliseconds(500));
 }
 
 void SystemGeolocationSourceWin::OnLaunchUriSuccess(uint8_t launched) {

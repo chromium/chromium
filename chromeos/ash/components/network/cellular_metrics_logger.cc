@@ -35,14 +35,13 @@ const char kESimUMAFeatureName[] = "ESim";
 const char kEnterpriseESimUMAFeatureName[] = "EnterpriseESim";
 
 // Checks whether the current logged in user type is an owner or regular.
-bool IsLoggedInUserOwnerOrRegular() {
+bool IsLoggedInUserRegular() {
   if (!LoginState::IsInitialized())
     return false;
 
   LoginState::LoggedInUserType user_type =
       LoginState::Get()->GetLoggedInUserType();
-  return user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER ||
-         user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR;
+  return user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR;
 }
 
 SimType GetSimType(const NetworkState* network) {
@@ -723,8 +722,9 @@ void CellularMetricsLogger::OnInitializationTimeout() {
 }
 
 void CellularMetricsLogger::LoggedInStateChanged() {
-  if (!IsLoggedInUserOwnerOrRegular())
+  if (!IsLoggedInUserRegular()) {
     return;
+  }
 
   // This flag enures that activation state is only logged once when
   // the user logs in.
@@ -990,7 +990,7 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
 
 void CellularMetricsLogger::CheckForESimProfileStatusMetric() {
   if (!cellular_esim_profile_handler_ || !is_cellular_available_ ||
-      is_esim_profile_status_logged_ || !IsLoggedInUserOwnerOrRegular()) {
+      is_esim_profile_status_logged_ || !IsLoggedInUserRegular()) {
     return;
   }
 
@@ -1032,8 +1032,9 @@ void CellularMetricsLogger::CheckForESimProfileStatusMetric() {
 
 void CellularMetricsLogger::CheckForPSimActivationStateMetric() {
   if (!is_cellular_available_ || is_psim_activation_state_logged_ ||
-      !IsLoggedInUserOwnerOrRegular())
+      !IsLoggedInUserRegular()) {
     return;
+  }
 
   NetworkStateHandler::NetworkStateList network_list;
   network_state_handler_->GetVisibleNetworkListByType(
@@ -1059,7 +1060,7 @@ void CellularMetricsLogger::CheckForPSimActivationStateMetric() {
 
 void CellularMetricsLogger::CheckForCellularServiceCountMetric() {
   if (!is_cellular_available_ || is_service_count_logged_ ||
-      !IsLoggedInUserOwnerOrRegular()) {
+      !IsLoggedInUserRegular()) {
     return;
   }
 

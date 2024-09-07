@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/pixel_format_utils.h"
 #include "media/capture/video_capture_types.h"
@@ -53,6 +54,8 @@ class CAPTURE_EXPORT CameraBufferFactory {
   std::map<std::pair<cros::mojom::HalPixelFormat, gfx::BufferUsage>,
            ChromiumPixelFormat>
       resolved_format_usages_;
+
+  gpu::GpuMemoryBufferSupport gpu_memory_buffer_support_;
 };
 
 }  // namespace media

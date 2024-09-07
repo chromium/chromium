@@ -27,8 +27,8 @@
 namespace extensions {
 
 namespace {
-using EmbedderMap =
-    base::flat_map<int32_t, std::unique_ptr<MimeHandlerViewEmbedder>>;
+using EmbedderMap = base::flat_map<content::FrameTreeNodeId,
+                                   std::unique_ptr<MimeHandlerViewEmbedder>>;
 
 EmbedderMap* GetMimeHandlerViewEmbeddersMap() {
   static base::NoDestructor<EmbedderMap> instance;
@@ -38,7 +38,7 @@ EmbedderMap* GetMimeHandlerViewEmbeddersMap() {
 
 // static
 MimeHandlerViewEmbedder* MimeHandlerViewEmbedder::Get(
-    int32_t frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   const auto& map = *GetMimeHandlerViewEmbeddersMap();
   auto it = map.find(frame_tree_node_id);
   if (it == map.cend())
@@ -47,10 +47,11 @@ MimeHandlerViewEmbedder* MimeHandlerViewEmbedder::Get(
 }
 
 // static
-void MimeHandlerViewEmbedder::Create(int32_t frame_tree_node_id,
-                                     const GURL& resource_url,
-                                     const std::string& stream_id,
-                                     const std::string& internal_id) {
+void MimeHandlerViewEmbedder::Create(
+    content::FrameTreeNodeId frame_tree_node_id,
+    const GURL& resource_url,
+    const std::string& stream_id,
+    const std::string& internal_id) {
   DCHECK(
       !base::Contains(*GetMimeHandlerViewEmbeddersMap(), frame_tree_node_id));
   GetMimeHandlerViewEmbeddersMap()->insert_or_assign(
@@ -59,10 +60,11 @@ void MimeHandlerViewEmbedder::Create(int32_t frame_tree_node_id,
           frame_tree_node_id, resource_url, stream_id, internal_id)));
 }
 
-MimeHandlerViewEmbedder::MimeHandlerViewEmbedder(int32_t frame_tree_node_id,
-                                                 const GURL& resource_url,
-                                                 const std::string& stream_id,
-                                                 const std::string& internal_id)
+MimeHandlerViewEmbedder::MimeHandlerViewEmbedder(
+    content::FrameTreeNodeId frame_tree_node_id,
+    const GURL& resource_url,
+    const std::string& stream_id,
+    const std::string& internal_id)
     : content::WebContentsObserver(
           content::WebContents::FromFrameTreeNodeId(frame_tree_node_id)),
       frame_tree_node_id_(frame_tree_node_id),
@@ -164,7 +166,8 @@ void MimeHandlerViewEmbedder::RenderFrameCreated(
                      weak_factory_.GetWeakPtr()));
 }
 
-void MimeHandlerViewEmbedder::FrameDeleted(int frame_tree_node_id) {
+void MimeHandlerViewEmbedder::FrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   // TODO(mcnee): RenderFrameDeleted seems like a better fit for the child frame
   // case (i.e. |placeholder_render_frame_host_for_inner_contents_|), though
   // we'd still need FrameDeleted for |frame_tree_node_id_|.

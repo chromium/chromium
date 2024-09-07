@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, SkipInFlow) {
 
   EnterPin();
   test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
 
   TapSkipButton();
 
@@ -332,13 +332,11 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, FinishedFlow) {
 
   EnterPin();
   test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
 
   EnterPin();
   test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS()
-      .CreateVisibilityWaiter(true, {kPinSetupScreenDoneStep})
-      ->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kPinSetupScreenDoneStep)->Wait();
 
   test::OobeJS().TapOnPath(kDoneButton);
 

@@ -5,6 +5,7 @@
 import 'chrome://print/print_preview.js';
 
 import type {PrintPreviewAdvancedSettingsItemElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -182,5 +183,23 @@ suite('AdvancedItemTest', function() {
     const searchBubbleHits = control.querySelectorAll('.search-bubble');
     assertEquals(1, searchBubbleHits.length);
     assertEquals('1 result', searchBubbleHits[0]!.textContent);
+  });
+
+  // Test that certain Japanese characters can be searched after normalizing
+  // and removing diacritics (see b/353394050).
+  test('QueryJapaneseCharacters', function() {
+    const settingName = 'ジョブシート';
+    item.capability = {
+      display_name: settingName,
+      id: 'capability',
+      type: 'SELECT',
+      select_cap: {
+        option: [],
+      },
+    };
+
+    const queryText = stripDiacritics(settingName);
+    const query = new RegExp(`(${queryText})`, 'ig');
+    assertTrue(item.hasMatch(query));
   });
 });

@@ -143,8 +143,6 @@ bool AddressComponent::SameAs(const AddressComponent& other) const {
   }
 
   if (subcomponents_.size() != other.subcomponents_.size()) {
-    CHECK(base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel))
-        << GetStorageTypeName();
     return false;
   }
   for (size_t i = 0; i < other.subcomponents_.size(); i++) {
@@ -376,7 +374,7 @@ void AddressComponent::FillTreeGaps() {
     return;
   }
 
-  bool has_empty_child = base::ranges::any_of(
+  bool has_empty_child = std::ranges::any_of(
       Subcomponents(),
       [](const AddressComponent* c) { return c->GetValue().empty(); });
 
@@ -488,8 +486,7 @@ void AddressComponent::ParseValueAndAssignSubcomponents() {
   }
 
   bool parsing_successful =
-      base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
-              GroupTypeOfFieldType(GetStorageType()) == FieldTypeGroup::kAddress
+      GroupTypeOfFieldType(GetStorageType()) == FieldTypeGroup::kAddress
           ? ParseValueAndAssignSubcomponentsByI18nParsingRules()
           : ParseValueAndAssignSubcomponentsByRegularExpressions();
 
@@ -526,8 +523,7 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpressions() {
 
 void AddressComponent::
     TryParseValueAndAssignSubcomponentsRespectingSetValues() {
-  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
-      GroupTypeOfFieldType(GetStorageType()) == FieldTypeGroup::kAddress) {
+  if (GroupTypeOfFieldType(GetStorageType()) == FieldTypeGroup::kAddress) {
     i18n_model_definition::ValueParsingResults results =
         i18n_model_definition::ParseValueByI18nRegularExpression(
             base::UTF16ToUTF8(GetValue()), GetStorageType(), GetCountryCode());
@@ -565,7 +561,7 @@ bool AddressComponent::IsValueCompatibleWithDescendants(
     return AreStringTokenCompatible(GetValue(), value);
   }
 
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       Subcomponents(), [value](const AddressComponent* c) {
         return c->IsValueCompatibleWithDescendants(value);
       });
@@ -673,7 +669,7 @@ bool AddressComponent::AssignParsedValuesToSubcomponentsRespectingSetValues(
 }
 
 bool AddressComponent::AllDescendantsAreEmpty() const {
-  return base::ranges::all_of(Subcomponents(), [](const AddressComponent* c) {
+  return std::ranges::all_of(Subcomponents(), [](const AddressComponent* c) {
     return c->GetValue().empty() && c->AllDescendantsAreEmpty();
   });
 }
@@ -701,7 +697,7 @@ bool AddressComponent::IsStructureValid() const {
   // overlapping portion of the unstructured string, but it guarantees that all
   // information in the components is contained in the unstructured
   // representation.
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       Subcomponents(), [this](const AddressComponent* c) {
         return AreStringTokenCompatible(c->GetValue(), GetValue());
       });
@@ -1058,9 +1054,6 @@ bool AddressComponent::IsMergeableWithComponent(
     bool is_mergeable = true;
 
     if (subcomponents_.size() != newer_component.subcomponents_.size()) {
-      CHECK(
-          base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel))
-          << GetStorageTypeName();
       return false;
     }
     for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {

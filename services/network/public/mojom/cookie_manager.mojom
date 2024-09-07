@@ -97,11 +97,11 @@ enum CookieExemptionReason {
     kUserSetting = 1,
     k3PCDMetadata = 2,
     k3PCDDeprecationTrial = 3,
-    k3PCDHeuristics = 4,
-    kEnterprisePolicy = 5,
-    kStorageAccess = 6,
-    kTopLevelStorageAccess = 7,
-    kCorsOptIn = 8,
+    kTopLevel3PCDDeprecationTrial = 4,
+    k3PCDHeuristics = 5,
+    kEnterprisePolicy = 6,
+    kStorageAccess = 7,
+    kTopLevelStorageAccess = 8,
     kScheme = 9,
 };
 

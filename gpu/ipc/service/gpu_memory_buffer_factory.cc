@@ -22,11 +22,41 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory_dxgi.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "gpu/ipc/service/gpu_memory_buffer_factory_android_hardware_buffer.h"
-#endif
-
 namespace gpu {
+
+#if BUILDFLAG(IS_ANDROID)
+namespace {
+
+class GpuMemoryBufferFactoryStub : public GpuMemoryBufferFactory {
+ public:
+  GpuMemoryBufferFactoryStub() = default;
+  GpuMemoryBufferFactoryStub(const GpuMemoryBufferFactoryStub&) = delete;
+  GpuMemoryBufferFactoryStub& operator=(const GpuMemoryBufferFactoryStub&) =
+      delete;
+  ~GpuMemoryBufferFactoryStub() override = default;
+
+  // GpuMemoryBufferFactory:
+  gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
+      gfx::GpuMemoryBufferId id,
+      const gfx::Size& size,
+      const gfx::Size& framebuffer_size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      int client_id,
+      SurfaceHandle surface_handle) override {
+    return gfx::GpuMemoryBufferHandle();
+  }
+  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
+                              int client_id) override {}
+  bool FillSharedMemoryRegionWithBufferContents(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory) override {
+    return false;
+  }
+};
+
+}  // namespace
+#endif
 
 // static
 std::unique_ptr<GpuMemoryBufferFactory>
@@ -36,7 +66,11 @@ GpuMemoryBufferFactory::CreateNativeType(
 #if BUILDFLAG(IS_APPLE)
   return std::make_unique<GpuMemoryBufferFactoryIOSurface>();
 #elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<GpuMemoryBufferFactoryAndroidHardwareBuffer>();
+  // Android does not support creating native GMBs (i.e., from
+  // AHardwareBuffers), but the codebase is structured such that it is necessary
+  // to have a factory that vends invalid GMB handles rather than having no
+  // factory at all.
+  return std::make_unique<GpuMemoryBufferFactoryStub>();
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<GpuMemoryBufferFactoryNativePixmap>(
       vulkan_context_provider);

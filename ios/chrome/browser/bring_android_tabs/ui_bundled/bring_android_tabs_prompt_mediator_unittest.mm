@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/bring_android_tabs/model/fake_bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
@@ -40,7 +40,7 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
     // Create the BringAndroidTabsToIOSService.
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browser_state_.get());
+            GetDispatcherForProfile(browser_state_.get());
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForBrowserState(browser_state_.get());
     sync_sessions::SessionSyncService* session_sync_service =

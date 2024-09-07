@@ -12,12 +12,12 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {isModal} from '../../common/js/dialog_type.js';
-import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
+import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {entriesToURLs, getTreeItemEntry, isDirectoryEntry, isFakeEntry, isGrandRootEntryInDrive, isNonModifiable, isRecentRootType, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getExtension, getType, isEncrypted} from '../../common/js/file_type.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
-import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
@@ -28,8 +28,7 @@ import {readSubDirectories, updateFileData} from '../../state/ducks/all_entries.
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {DialogType} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
-import type {XfTree} from '../../widgets/xf_tree.js';
-import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import {isTreeItem, isXfTree} from '../../widgets/xf_tree_util.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
 import {type ActionsModel, CommonActionId, InternalActionId} from './actions_model.js';
@@ -40,16 +39,7 @@ import {getAllowedVolumeTypes, maybeStoreTimeOfFirstPin} from './holding_space_u
 import {PathComponent} from './path_component.js';
 import type {Command} from './ui/command.js';
 import {type CanExecuteEvent, type CommandEvent} from './ui/command.js';
-import type {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import type {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
-
-/**
- * Type predicate to assert that the supplied `_tree` is of type `XfTree` if the
- * new directory tree flag is enabled.
- */
-function isXfTree(_tree: XfTree|DirectoryTree|null): _tree is XfTree|null {
-  return isNewDirectoryTreeEnabled();
-}
 
 /**
  * Used to filter out `VolumeInfo` that don't exist and maintain the return
@@ -307,12 +297,12 @@ export class NewFolderCommand extends FilesCommand {
     let targetDirectory: DirectoryEntry|FilesAppDirEntry|null|undefined;
     let executedFromDirectoryTree: boolean;
 
-    if (isDirectoryTree(event.target)) {
+    if (isXfTree(event.target)) {
       const focusedTreeItem = getFocusedTreeItem(event.target);
       targetDirectory = getTreeItemEntry(focusedTreeItem) as DirectoryEntry |
           FilesAppDirEntry | null;
       executedFromDirectoryTree = true;
-    } else if (isDirectoryTreeItem(event.target)) {
+    } else if (isTreeItem(event.target)) {
       targetDirectory = getTreeItemEntry(event.target) as DirectoryEntry |
           FilesAppDirEntry | null;
       executedFromDirectoryTree = true;
@@ -341,27 +331,18 @@ export class NewFolderCommand extends FilesCommand {
 
                 // Select new directory and start rename operation.
                 if (executedFromDirectoryTree) {
-                  const directoryTree = fileManager.ui.directoryTree;
-                  if (isXfTree(directoryTree)) {
-                    const parentFileKey = directoryEntry.toURL();
-                    // After new directory is created on parent directory, we
-                    // need to expand it otherwise the new child item won't
-                    // show, and also trigger a re-scan for the parent
-                    // directory.
-                    getStore().dispatch(updateFileData({
-                      key: parentFileKey,
-                      partialFileData: {expanded: true},
-                    }));
-                    getStore().dispatch(readSubDirectories(parentFileKey));
-                    fileManager.ui.directoryTreeContainer
-                        ?.renameItemWithKeyWhenRendered(newDirectory.toURL());
-                  } else {
-                    directoryTree?.updateAndSelectNewDirectory(
-                        directoryEntry, newDirectory);
-                    assert(directoryTree.selectedItem);
-                    fileManager.directoryTreeNamingController.attachAndStart(
-                        directoryTree.selectedItem, false, null);
-                  }
+                  const parentFileKey = directoryEntry.toURL();
+                  // After new directory is created on parent directory, we
+                  // need to expand it otherwise the new child item won't
+                  // show, and also trigger a re-scan for the parent
+                  // directory.
+                  getStore().dispatch(updateFileData({
+                    key: parentFileKey,
+                    partialFileData: {expanded: true},
+                  }));
+                  getStore().dispatch(readSubDirectories(parentFileKey));
+                  fileManager.ui.directoryTreeContainer
+                      ?.renameItemWithKeyWhenRendered(newDirectory.toURL());
                   this.busy_ = false;
                 } else {
                   directoryModel.updateAndSelectNewDirectory(newDirectory)
@@ -425,7 +406,7 @@ export class NewFolderCommand extends FilesCommand {
       event.command.setHidden(true);
       return;
     }
-    if (isDirectoryTree(event.target) || isDirectoryTreeItem(event.target)) {
+    if (isXfTree(event.target) || isTreeItem(event.target)) {
       const entry = entries[0];
       if (!entry || isFakeEntry(entry) || isTeamDrivesGrandRoot(entry)) {
         event.canExecute = false;
@@ -711,7 +692,6 @@ export class DeleteCommand extends FilesCommand {
       fileManager: CommandHandlerDeps): boolean {
     return entries.length > 0 &&
         !this.containsReadOnlyEntry_(entries, fileManager) &&
-        fileManager.directoryModel.canDeleteEntries() &&
         hasCapability(fileManager, entries, 'canDelete');
   }
 
@@ -1036,8 +1016,8 @@ export class CutCopyCommand extends FilesCommand {
     const volumeManager = fileManager.volumeManager;
     command.setHidden(false);
 
-    /** @returns {boolean} If the operation is allowed in the Directory Tree. */
-    function canDoDirectoryTree() {
+    /** If the operation is allowed in the Directory Tree. */
+    function canDoDirectoryTree(): boolean {
       let entry: Entry|FilesAppEntry|null;
       if (target && 'entry' in target) {
         entry = target.entry as Entry | FilesAppEntry;
@@ -1142,18 +1122,17 @@ export class RenameCommand extends FilesCommand {
         isRemovableRoot = true;
       }
     }
-    if (isDirectoryTree(event.target) || isDirectoryTreeItem(event.target)) {
+    if (isXfTree(event.target) || isTreeItem(event.target)) {
       assert(fileManager.directoryTreeNamingController);
       assert(volumeInfo);
-      if (isDirectoryTree(event.target)) {
+      if (isXfTree(event.target)) {
         const treeItem = getFocusedTreeItem(event.target);
         assert(treeItem);
         fileManager.directoryTreeNamingController.attachAndStart(
             treeItem, isRemovableRoot, volumeInfo);
-      } else if (isDirectoryTreeItem(event.target)) {
-        const directoryItem = event.target as DirectoryItem | XfTreeItem;
+      } else if (isTreeItem(event.target)) {
         fileManager.directoryTreeNamingController.attachAndStart(
-            directoryItem, isRemovableRoot, volumeInfo);
+            event.target, isRemovableRoot, volumeInfo);
       }
     } else {
       fileManager.namingController.initiateRename(isRemovableRoot, volumeInfo);
@@ -1642,14 +1621,10 @@ export class VolumeSwitchCommand extends FilesCommand {
 
   execute(_event: CommandEvent, fileManager: CommandHandlerDeps) {
     const directoryTree = fileManager.ui.directoryTree;
-    if (isXfTree(directoryTree)) {
-      const items = directoryTree?.items;
-      const treeItemEntry = getTreeItemEntry(items && items[this.index_ - 1]);
-      if (treeItemEntry) {
-        getStore().dispatch(changeDirectory({toKey: treeItemEntry.toURL()}));
-      }
-    } else {
-      directoryTree?.activateByIndex(this.index_ - 1);
+    const items = directoryTree?.items;
+    const treeItemEntry = getTreeItemEntry(items && items[this.index_ - 1]);
+    if (treeItemEntry) {
+      getStore().dispatch(changeDirectory({toKey: treeItemEntry.toURL()}));
     }
   }
 

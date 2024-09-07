@@ -37,16 +37,11 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         mNativeAddToHomescreenMediator = AddToHomescreenMediatorJni.get().initialize(this);
     }
 
-    void startForAppMenu(
-            @NonNull WebContents webContents, int menuItemType, boolean universalInstall) {
+    void startForAppMenu(@NonNull WebContents webContents, int menuItemType) {
         if (mNativeAddToHomescreenMediator == 0) return;
 
         AddToHomescreenMediatorJni.get()
-                .startForAppMenu(
-                        mNativeAddToHomescreenMediator,
-                        webContents,
-                        menuItemType,
-                        universalInstall);
+                .startForAppMenu(mNativeAddToHomescreenMediator, webContents, menuItemType);
     }
 
     @CalledByNative
@@ -127,10 +122,7 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         long initialize(AddToHomescreenMediator instance);
 
         void startForAppMenu(
-                long nativeAddToHomescreenMediator,
-                WebContents webContents,
-                int menuItemType,
-                boolean universalInstall);
+                long nativeAddToHomescreenMediator, WebContents webContents, int menuItemType);
 
         void addToHomescreen(
                 long nativeAddToHomescreenMediator, String title, @AppType int appType);

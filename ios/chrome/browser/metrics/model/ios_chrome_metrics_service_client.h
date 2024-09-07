@@ -5,37 +5,33 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_IOS_CHROME_METRICS_SERVICE_CLIENT_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_IOS_CHROME_METRICS_SERVICE_CLIENT_H_
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include <memory>
-#include <set>
-#include <string>
-#include <string_view>
+#import <memory>
+#import <set>
+#import <string>
+#import <string_view>
 
-#include "base/callback_list.h"
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/sequence_checker.h"
-#include "components/metrics/file_metrics_provider.h"
-#include "components/metrics/metrics_log_uploader.h"
-#include "components/metrics/metrics_service_client.h"
-#include "components/metrics/persistent_synthetic_trial_observer.h"
-#include "components/omnibox/browser/omnibox_event_global_tracker.h"
-#include "components/ukm/observers/history_delete_observer.h"
-#include "components/ukm/observers/ukm_consent_state_observer.h"
-#include "components/variations/synthetic_trial_registry.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
-#include "ios/web/public/deprecated/global_web_state_observer.h"
+#import "base/callback_list.h"
+#import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
+#import "base/sequence_checker.h"
+#import "components/metrics/file_metrics_provider.h"
+#import "components/metrics/metrics_log_uploader.h"
+#import "components/metrics/metrics_service_client.h"
+#import "components/metrics/persistent_synthetic_trial_observer.h"
+#import "components/omnibox/browser/omnibox_event_global_tracker.h"
+#import "components/ukm/observers/history_delete_observer.h"
+#import "components/ukm/observers/ukm_consent_state_observer.h"
+#import "components/variations/synthetic_trial_registry.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
+#import "ios/web/public/deprecated/global_web_state_observer.h"
 
-class ChromeBrowserState;
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
-
-// TODO(crbug.com/358356195): Remove this typedef when this header is updated
-// to use ProfileManagerIOS.
 class ProfileManagerIOS;
-using ChromeBrowserStateManager = ProfileManagerIOS;
 
 namespace metrics {
 class MetricsService;
@@ -56,7 +52,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                       public ukm::HistoryDeleteObserver,
                                       public ukm::UkmConsentStateObserver,
                                       public web::GlobalWebStateObserver,
-                                      public ChromeBrowserStateManagerObserver {
+                                      public ProfileManagerObserverIOS {
  public:
   IOSChromeMetricsServiceClient(const IOSChromeMetricsServiceClient&) = delete;
   IOSChromeMetricsServiceClient& operator=(
@@ -107,13 +103,12 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   void WebStateDidStartLoading(web::WebState* web_state) override;
   void WebStateDidStopLoading(web::WebState* web_state) override;
 
-  // ChromeBrowserStateManagerObserver:
-  void OnChromeBrowserStateManagerDestroyed(
-      ChromeBrowserStateManager* manager) override;
-  void OnChromeBrowserStateCreated(ChromeBrowserStateManager* manager,
-                                   ChromeBrowserState* browser_state) override;
-  void OnChromeBrowserStateLoaded(ChromeBrowserStateManager* manager,
-                                  ChromeBrowserState* browser_state) override;
+  // ProfileManagerObserverIOS:
+  void OnProfileManagerDestroyed(ProfileManagerIOS* manager) override;
+  void OnProfileCreated(ProfileManagerIOS* manager,
+                        ChromeBrowserState* profile) override;
+  void OnProfileLoaded(ProfileManagerIOS* manager,
+                       ChromeBrowserState* profile) override;
 
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
 
@@ -147,9 +142,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // there was recent activity.
   void RegisterForNotifications();
 
-  // Register to observe events on a browser state's services.
+  // Register to observe events on a Profile's services.
   // Returns true if registration was successful.
-  bool RegisterForBrowserStateEvents(ChromeBrowserState* browser_state);
+  bool RegisterForProfileEvents(ChromeBrowserState* profile);
 
   // Called when a tab is parented.
   void OnTabParented(web::WebState* web_state);
@@ -177,10 +172,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // The UkmService that `this` is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
 
-  // Observation of the ChromeBrowserStateManager.
-  base::ScopedObservation<ChromeBrowserStateManager,
-                          ChromeBrowserStateManagerObserver>
-      browser_state_manager_observation_{this};
+  // Observation of the ProfileManagerIOS.
+  base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
+      profile_manager_observation_{this};
 
   // Whether we registered all notification listeners successfully.
   bool notification_listeners_active_ = true;

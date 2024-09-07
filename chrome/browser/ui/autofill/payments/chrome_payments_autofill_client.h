@@ -29,11 +29,16 @@
 
 class GURL;
 
+namespace webauthn {
+class InternalAuthenticator;
+}
+
 namespace autofill {
 
 #if BUILDFLAG(IS_ANDROID)
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
+class AutofillDriver;
 class AutofillErrorDialogControllerImpl;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillMessageController;
@@ -65,6 +70,7 @@ struct VirtualCardManualFallbackBubbleOptions;
 
 namespace payments {
 
+class MandatoryReauthManager;
 class PaymentsWindowManager;
 
 // Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop
@@ -131,7 +137,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback) override;
-  void CreditCardUploadCompleted(bool card_saved,
+  void CreditCardUploadCompleted(PaymentsRpcResult result,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;
   void HideSaveCardPrompt() override;
@@ -139,7 +145,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback) override;
-  void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
+  void VirtualCardEnrollCompleted(PaymentsRpcResult result) override;
   void OnVirtualCardDataAvailable(
       const VirtualCardManualFallbackBubbleOptions& options) override;
   void ConfirmSaveIbanLocally(const Iban& iban,
@@ -200,6 +206,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::Iban> ibans_to_suggest) override;
   void HideTouchToFillPaymentMethod() override;
+  std::unique_ptr<webauthn::InternalAuthenticator>
+  CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
+  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
+      override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification
@@ -312,6 +322,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       card_unmask_authentication_selection_controller_;
 
   std::unique_ptr<IbanAccessManager> iban_access_manager_;
+
+  std::unique_ptr<payments::MandatoryReauthManager>
+      payments_mandatory_reauth_manager_;
 
   // Used to cache client side risk data. The cache is invalidated when the
   // chrome browser tab is closed.

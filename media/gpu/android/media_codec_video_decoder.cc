@@ -264,7 +264,10 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
       enable_threaded_texture_mailboxes_(
           gpu_preferences.enable_threaded_texture_mailboxes),
       allow_nonsecure_overlays_(
-          base::FeatureList::IsEnabled(media::kAllowNonSecureOverlays)) {
+          base::FeatureList::IsEnabled(media::kAllowNonSecureOverlays)),
+      use_block_model_(base::FeatureList::IsEnabled(kMediaCodecBlockModel) &&
+                       device_info_->SdkVersion() >=
+                           base::android::SDK_VERSION_R) {
   DVLOG(2) << __func__;
   surface_chooser_helper_.chooser()->SetClientCallbacks(
       base::BindRepeating(&MediaCodecVideoDecoder::OnSurfaceChosen,
@@ -712,6 +715,7 @@ void MediaCodecVideoDecoder::CreateCodec() {
   config->initial_expected_coded_size = decoder_config_.coded_size();
   config->container_color_space = decoder_config_.color_space_info();
   config->hdr_metadata = decoder_config_.hdr_metadata();
+  config->use_block_model = use_block_model_;
   SelectMediaCodec(decoder_config_, requires_secure_codec_, &config->name,
                    &is_software_codec_);
 
@@ -807,7 +811,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
       base::SequencedTaskRunner::GetCurrentDefault(),
       decoder_config_.coded_size(),
       decoder_config_.color_space_info().ToGfxColorSpace(),
-      coded_size_alignment);
+      coded_size_alignment, use_block_model_);
 
   // If the target surface changed while codec creation was in progress,
   // transition to it immediately.
@@ -921,7 +925,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
     return false;
 
   PendingDecode& pending_decode = pending_decodes_.front();
-  if (!pending_decode.buffer->end_of_stream() &&
+  if (!use_block_model_ && !pending_decode.buffer->end_of_stream() &&
       pending_decode.buffer->is_key_frame() &&
       pending_decode.buffer->size() > max_input_size_) {
     // If we we're already using the provided resolution, try to guess something

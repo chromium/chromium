@@ -62,7 +62,7 @@ class AllPlusAddressesBottomSheetViewBinder {
             PlusProfile plusProfile = model.get(PLUS_PROFILE);
 
             TextView origin = view.findViewById(R.id.plus_profile_origin);
-            origin.setText(plusProfile.getOrigin());
+            origin.setText(plusProfile.getDisplayName());
 
             ChipView plusAddressChip = view.findViewById(R.id.plus_address);
             plusAddressChip.getPrimaryTextView().setText(plusProfile.getPlusAddress());

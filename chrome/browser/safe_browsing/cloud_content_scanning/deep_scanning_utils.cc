@@ -12,14 +12,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
-#include "components/prefs/pref_service.h"
-#endif
 
 namespace safe_browsing {
 
@@ -44,6 +37,7 @@ std::string MaybeGetUnscannedReason(BinaryUploadService::Result result) {
     case BinaryUploadService::Result::UNKNOWN:
     case BinaryUploadService::Result::UPLOAD_FAILURE:
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
       return "SERVICE_UNAVAILABLE";
     case BinaryUploadService::Result::FILE_ENCRYPTED:
       return "FILE_PASSWORD_PROTECTED";
@@ -405,35 +399,9 @@ std::string BinaryUploadServiceResultToString(
       return "FileEncrypted";
     case BinaryUploadService::Result::TOO_MANY_REQUESTS:
       return "TooManyRequests";
+    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
+      return "IncompleteResponse";
   }
-}
-
-std::string GetProfileEmail(Profile* profile) {
-  if (!profile) {
-    return std::string();
-  }
-
-  std::string email =
-      GetProfileEmail(IdentityManagerFactory::GetForProfile(profile));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (email.empty()) {
-    email = profile->GetPrefs()->GetString(
-        enterprise_signin::prefs::kProfileUserEmail);
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-  return email;
-}
-
-std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
-  // If the profile is not signed in, GetPrimaryAccountInfo() returns an
-  // empty account info.
-  return identity_manager
-             ? identity_manager
-                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                   .email
-             : std::string();
 }
 
 void IncrementCrashKey(ScanningCrashKey key, int delta) {

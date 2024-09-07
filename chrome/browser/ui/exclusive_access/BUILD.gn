@@ -46,6 +46,7 @@ source_set("exclusive_access") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/blocked_content",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

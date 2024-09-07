@@ -93,7 +93,6 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
         mListPropertyModel.set(SuggestionListProperties.CHILD_TRANSLATION_Y, 0.0f);
     }
 
-    @NonNull
     @Override
     public void onProgress(
             @NonNull WindowInsetsCompat windowInsetsCompat,

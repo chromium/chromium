@@ -43,6 +43,7 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/public/v8_platform.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/draw_utils/coordinates.h"
 #include "pdf/draw_utils/shadow.h"
 #include "pdf/input_utils.h"
@@ -347,8 +348,7 @@ std::string ConvertViewIntToViewString(unsigned long view_int) {
     case PDFDEST_VIEW_UNKNOWN_MODE:
       return "";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -492,8 +492,7 @@ void ParamsTransformPageToScreen(unsigned long view_fit_type,
     case PDFDEST_VIEW_UNKNOWN_MODE:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -530,8 +529,7 @@ void InitializeSDK(bool enable_v8,
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (font_mapping_mode == FontMappingMode::kBlink &&
-      base::FeatureList::IsEnabled(features::kWinPdfUseFontProxy)) {
+  if (font_mapping_mode == FontMappingMode::kBlink) {
     g_font_mapping_mode = font_mapping_mode;
     InitializeWindowsFontMapper();
   }
@@ -1018,18 +1016,19 @@ void PDFiumEngine::PrintBegin() {
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPages(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
-  if (page_numbers.empty())
+  if (page_indices.empty()) {
     return std::vector<uint8_t>();
+  }
 
   return print_params.rasterize_pdf
-             ? PrintPagesAsRasterPdf(page_numbers, print_params)
-             : PrintPagesAsPdf(page_numbers, print_params);
+             ? PrintPagesAsRasterPdf(page_indices, print_params)
+             : PrintPagesAsPdf(page_indices, print_params);
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
   DCHECK(HasPermission(DocumentPermission::kPrintLowQuality));
 
@@ -1039,24 +1038,25 @@ std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
 
   KillFormFocus();
 
-  return print_.PrintPagesAsPdf(page_numbers, print_params);
+  return print_.PrintPagesAsPdf(page_indices, print_params);
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsPdf(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
   DCHECK(HasPermission(DocumentPermission::kPrintHighQuality));
   DCHECK(doc());
 
   KillFormFocus();
 
-  for (int page_number : page_numbers) {
-    pages_[page_number]->GetPage();
-    if (!IsPageVisible(page_number))
-      pages_[page_number]->Unload();
+  for (int page_index : page_indices) {
+    pages_[page_index]->GetPage();
+    if (!IsPageVisible(page_index)) {
+      pages_[page_index]->Unload();
+    }
   }
 
-  return print_.PrintPagesAsPdf(page_numbers, print_params);
+  return print_.PrintPagesAsPdf(page_indices, print_params);
 }
 
 void PDFiumEngine::KillFormFocus() {
@@ -2174,9 +2174,13 @@ bool PDFiumEngine::IsReadOnly() const {
 
 void PDFiumEngine::SetReadOnly(bool enable) {
   read_only_ = enable;
+  SetFormHighlight(!read_only_);
+  ClearTextSelection();
+}
 
+void PDFiumEngine::SetFormHighlight(bool enable_form) {
   // Restore form highlights.
-  if (!read_only_) {
+  if (enable_form) {
     FPDF_SetFormFieldHighlightAlpha(form(), kFormHighlightAlpha);
     return;
   }
@@ -2184,8 +2188,9 @@ void PDFiumEngine::SetReadOnly(bool enable) {
   // Hide form highlights.
   FPDF_SetFormFieldHighlightAlpha(form(), /*alpha=*/0);
   KillFormFocus();
+}
 
-  // Unselect text.
+void PDFiumEngine::ClearTextSelection() {
   SelectionChangeInvalidator selection_invalidator(this);
   selection_.clear();
 }
@@ -2287,7 +2292,7 @@ void PDFiumEngine::HandleAccessibilityAction(
       ScrollBasedOnScrollAlignment(action_data.target_rect,
                                    action_data.horizontal_scroll_alignment,
                                    action_data.vertical_scroll_alignment);
-      break;
+      return;
     }
     case AccessibilityAction::kDoDefaultAction: {
       if (PageIndexInBounds(action_data.page_index)) {
@@ -2300,11 +2305,11 @@ void PDFiumEngine::HandleAccessibilityAction(
                                     WindowOpenDisposition::CURRENT_TAB);
         }
       }
-      break;
+      return;
     }
     case AccessibilityAction::kScrollToGlobalPoint: {
       ScrollToGlobalPoint(action_data.target_rect, action_data.target_point);
-      break;
+      return;
     }
     case AccessibilityAction::kSetSelection: {
       if (IsPageCharacterIndexInBounds(action_data.selection_start_index) &&
@@ -2312,16 +2317,16 @@ void PDFiumEngine::HandleAccessibilityAction(
         SetSelection(action_data.selection_start_index,
                      action_data.selection_end_index);
         gfx::Rect target_rect = action_data.target_rect;
-        if (GetVisibleRect().Contains(target_rect))
-          return;
-        client_->ScrollBy(GetScreenRect(target_rect).OffsetFromOrigin());
+        if (!GetVisibleRect().Contains(target_rect)) {
+          client_->ScrollBy(GetScreenRect(target_rect).OffsetFromOrigin());
+        }
       }
-      break;
+      return;
     }
     case AccessibilityAction::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
+  NOTREACHED();
 }
 
 std::string PDFiumEngine::GetLinkAtPosition(const gfx::Point& point) {
@@ -3055,10 +3060,10 @@ void PDFiumEngine::CalculateVisiblePages() {
   SetCurrentPage(most_visible_page);
 }
 
-bool PDFiumEngine::IsPageVisible(int index) const {
+bool PDFiumEngine::IsPageVisible(int page_index) const {
   // CalculateVisiblePages() must have been called first to populate
   // `visible_pages_`. Otherwise, this will always return false.
-  return base::Contains(visible_pages_, index);
+  return base::Contains(visible_pages_, page_index);
 }
 
 PageOrientation PDFiumEngine::GetCurrentOrientation() const {
@@ -4172,6 +4177,7 @@ bool PDFiumEngine::HandleTabEventWithModifiers(int modifiers) {
       return !!FORM_OnKeyDown(form(), pages_[last_focused_page_]->GetPage(),
                               FWL_VKEY_Tab, modifiers);
   }
+  NOTREACHED();
 }
 
 bool PDFiumEngine::HandleTabForward(int modifiers) {
@@ -4315,6 +4321,14 @@ void PDFiumEngine::MaybeRequestPendingThumbnail(int page_index) {
       std::move(pending_thumbnail.send_callback));
   pending_thumbnails_.erase(it);
 }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+gfx::Size PDFiumEngine::GetThumbnailSize(int page_index,
+                                         float device_pixel_ratio) {
+  CHECK(PageIndexInBounds(page_index));
+  return pages_[page_index]->GetThumbnailSize(device_pixel_ratio);
+}
+#endif
 
 PDFiumEngine::ProgressivePaint::ProgressivePaint(int index,
                                                  const gfx::Rect& rect)

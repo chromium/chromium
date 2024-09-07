@@ -73,12 +73,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTime {
   // nullopt).
   WeeklyTime ConvertToTimezone(int timezone_offset) const;
 
-  // Creates a new WeeklyTime that has |timezone_offset_| set to
-  // |timezone_offset|. This function is to be used to set the timezone of
-  // timezone agnostic WeeklyTime objects, i.e. objects where |timezone_offset_|
-  // == nullopt.
-  WeeklyTime ConvertToCustomTimezone(int timezone_offset) const;
-
   // Return WeeklyTime structure from WeeklyTimeProto. Return nullptr if
   // WeeklyTime structure isn't correct.
   static std::unique_ptr<WeeklyTime> ExtractFromProto(

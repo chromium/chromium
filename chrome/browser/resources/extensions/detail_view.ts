@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './host_permissions_toggle_list.js';
 import './runtime_host_permissions.js';
@@ -148,7 +148,7 @@ export class ExtensionsDetailViewElement extends
       /** Whether the extensions blocklist text is shown. */
       showBlocklistText_: {
         type: Boolean,
-        computed: 'computeShowBlocklistText_(data.blacklistText)',
+        computed: 'computeShowBlocklistText_(data.blocklistText)',
       },
 
       /**
@@ -281,7 +281,7 @@ export class ExtensionsDetailViewElement extends
   private hasSevereWarnings_(): boolean {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
-        this.data.disableReasons.updateRequired || !!this.data.blacklistText ||
+        this.data.disableReasons.updateRequired || !!this.data.blocklistText ||
         this.data.disableReasons.publishedInStoreRequired ||
         this.data.runtimeWarnings.length > 0;
   }
@@ -576,7 +576,7 @@ export class ExtensionsDetailViewElement extends
   }
 
   private computeShowBlocklistText_(): boolean {
-    return !this.showSafetyCheck_ && !!this.data.blacklistText;
+    return !this.showSafetyCheck_ && !!this.data.blocklistText;
   }
 
   private showRepairButton_(): boolean {
@@ -596,7 +596,7 @@ export class ExtensionsDetailViewElement extends
     // would be redundant since all blocklisted items are necessarily not
     // included in the Safe Browsing allowlist.
     return this.data.showSafeBrowsingAllowlistWarning &&
-        !this.data.blacklistText;
+        !this.data.blocklistText;
   }
 
   /** Opens the action menu for the extension. */

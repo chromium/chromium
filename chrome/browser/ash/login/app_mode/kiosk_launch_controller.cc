@@ -23,9 +23,11 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/syslog_logging.h"
@@ -66,6 +68,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/user.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -115,6 +118,10 @@ void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
     case KioskAppType::kWebApp:
       base::UmaHistogramLongTimes("Kiosk.LaunchDuration.Web", duration);
       break;
+    case KioskAppType::kIsolatedWebApp:
+      // TODO(crbug.com/361019026): add a separate uma value for IWA.
+      NOTIMPLEMENTED();
+      break;
   }
 }
 
@@ -130,6 +137,11 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
     case KioskAppType::kWebApp:
       return std::make_unique<WebKioskAppServiceLauncher>(
           profile, kiosk_app_id.account_id, network_delegate);
+    case KioskAppType::kIsolatedWebApp:
+      // TODO(crbug.com/361018151): impl an app service based launcher or reuse
+      // WebKioskAppServiceLauncher since IWAs are installed as Web Apps.
+      NOTIMPLEMENTED();
+      return nullptr;
   }
 }
 

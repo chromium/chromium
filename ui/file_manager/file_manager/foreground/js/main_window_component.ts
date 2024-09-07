@@ -8,7 +8,6 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isDirectoryEntry, isRecentRootType, isSameEntry, isTrashEntry} from '../../common/js/entry_utils.js';
-import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
@@ -23,7 +22,6 @@ import type {FileSelectionHandler} from './file_selection.js';
 import type {NamingController} from './naming_controller.js';
 import type {TaskController} from './task_controller.js';
 import {Command} from './ui/command.js';
-import type {DirectoryItem} from './ui/directory_tree.js';
 import type {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileTapHandler, TapEvent} from './ui/file_tap_handler.js';
 import {EventType, ListType, ListTypesForUMA} from './ui/list_container.js';
@@ -345,12 +343,7 @@ export class MainWindowComponent {
       if (!focusedItem) {
         return;
       }
-      if (isNewDirectoryTreeEnabled()) {
-        focusedItem.selected = true;
-      } else {
-        const directoryItem = focusedItem as DirectoryItem;
-        directoryItem.activate();
-      }
+      focusedItem.selected = true;
       if (this.dialogType_ !== DialogType.FULL_PAGE &&
           !focusedItem.hasAttribute('renaming') &&
           isSameEntry(

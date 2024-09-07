@@ -159,7 +159,6 @@
 <translation id="6503257047630241175">RTF કન્ટેન્ટ</translation>
 <translation id="6539092367496845964">કંઈક ખોટું થયું હતું. થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="654149438358937226">તમામ નોટિફિકેશનને બ્લૉક કરો</translation>
-<translation id="6612467943526193239">કેલિબ્રેશનથી બહાર નીકળવા માટે Esc દબાવો.</translation>
 <translation id="6620110761915583480">ફાઇલ સાચવો</translation>
 <translation id="6699343763173986273">મીડિયા આગલો ટ્રૅક</translation>
 <translation id="6808150112686056157">મીડિયા સ્ટોપ</translation>
@@ -206,7 +205,7 @@
 <translation id="8328145009876646418">ડાબી કિનારી</translation>
 <translation id="8331626408530291785">ઉપર સ્ક્રોલ કરો</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 વર્ષ}one{# વર્ષ}other{# વર્ષ}}</translation>
-<translation id="8393700583063109961">સંદેશ મોકલો</translation>
+<translation id="8393700583063109961">મેસેજ મોકલો</translation>
 <translation id="8394908167088220973">મીડિયા ચલાવો/થોભાવો</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 વ}one{# વ}other{# વ}}</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>

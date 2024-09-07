@@ -32,32 +32,28 @@
 
 namespace blink {
 
-enum VTTNodeType {
-  kVTTNodeTypeNone = 0,
-  kVTTNodeTypeClass,
-  kVTTNodeTypeItalic,
-  kVTTNodeTypeLanguage,
-  kVTTNodeTypeBold,
-  kVTTNodeTypeUnderline,
-  kVTTNodeTypeRuby,
-  kVTTNodeTypeRubyText,
-  kVTTNodeTypeVoice
+enum class VttNodeType {
+  kNone = 0,
+  kClass,
+  kItalic,
+  kLanguage,
+  kBold,
+  kUnderline,
+  kRuby,
+  kRubyText,
+  kVoice
 };
 
 class VTTElement final : public Element {
  public:
   HTMLElement* CreateEquivalentHTMLElement(Document&);
 
-  VTTElement(const QualifiedName&, Document*);
-  VTTElement(VTTNodeType, Document*);
+  VTTElement(VttNodeType, Document*);
 
   Element& CloneWithoutAttributesAndChildren(Document&) const override;
 
-  void SetVTTNodeType(VTTNodeType type) {
-    web_vtt_node_type_ = static_cast<unsigned>(type);
-  }
-  VTTNodeType WebVTTNodeType() const {
-    return static_cast<VTTNodeType>(web_vtt_node_type_);
+  VttNodeType GetVttNodeType() const {
+    return static_cast<VttNodeType>(vtt_node_type_);
   }
 
   bool IsPastNode() const { return is_past_node_; }
@@ -83,11 +79,9 @@ class VTTElement final : public Element {
   void Trace(Visitor*) const override;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle& style) override;
-
   Member<TextTrack> track_;
   unsigned is_past_node_ : 1;
-  unsigned web_vtt_node_type_ : 4;
+  const unsigned vtt_node_type_ : 4;
 
   AtomicString language_;
 };

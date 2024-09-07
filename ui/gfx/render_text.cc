@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/render_text.h"
 
 #include <limits.h>
@@ -413,6 +408,7 @@ StyleIterator::StyleIterator(
     const BreakList<BaselineStyle>* baselines,
     const BreakList<int>* font_size_overrides,
     const BreakList<Font::Weight>* weights,
+    const BreakList<SkTypefaceID>* resolved_typefaces,
     const BreakList<cc::PaintFlags::Style>* fill_styles,
     const BreakList<SkScalar>* stroke_widths,
     const StyleArray* styles)
@@ -420,6 +416,7 @@ StyleIterator::StyleIterator(
       baselines_(baselines),
       font_size_overrides_(font_size_overrides),
       weights_(weights),
+      resolved_typefaces_(resolved_typefaces),
       fill_styles_(fill_styles),
       stroke_widths_(stroke_widths),
       styles_(styles) {
@@ -427,6 +424,7 @@ StyleIterator::StyleIterator(
   baseline_ = baselines_->breaks().begin();
   font_size_override_ = font_size_overrides_->breaks().begin();
   weight_ = weights_->breaks().begin();
+  resolved_typeface_ = resolved_typefaces_->breaks().begin();
   fill_style_ = fill_styles_->breaks().begin();
   stroke_width_ = stroke_widths_->breaks().begin();
   for (size_t i = 0; i < styles_->size(); ++i)
@@ -445,6 +443,7 @@ Range StyleIterator::GetTextBreakingRange() const {
   Range range = baselines_->GetRange(baseline_);
   range = range.Intersect(font_size_overrides_->GetRange(font_size_override_));
   range = range.Intersect(weights_->GetRange(weight_));
+  range = range.Intersect(resolved_typefaces_->GetRange(resolved_typeface_));
   range = range.Intersect(fill_styles_->GetRange(fill_style_));
   range = range.Intersect(stroke_widths_->GetRange(stroke_width_));
   for (size_t i = 0; i < styles_->size(); ++i)
@@ -459,6 +458,8 @@ void StyleIterator::IncrementToPosition(size_t position) {
   font_size_override_ = IncrementBreakListIteratorToPosition(
       *font_size_overrides_, font_size_override_, position);
   weight_ = IncrementBreakListIteratorToPosition(*weights_, weight_, position);
+  resolved_typeface_ = IncrementBreakListIteratorToPosition(
+      *resolved_typefaces_, resolved_typeface_, position);
   fill_style_ = IncrementBreakListIteratorToPosition(*fill_styles_, fill_style_,
                                                      position);
   stroke_width_ = IncrementBreakListIteratorToPosition(*stroke_widths_,
@@ -529,6 +530,7 @@ std::unique_ptr<RenderText> RenderText::CreateInstanceOfSameStyle(
   render_text->font_size_overrides_ = font_size_overrides_;
   render_text->colors_ = colors_;
   render_text->weights_ = weights_;
+  render_text->resolved_typefaces_ = resolved_typefaces_;
   render_text->fill_styles_ = fill_styles_;
   render_text->stroke_widths_ = stroke_widths_;
   render_text->glyph_width_for_test_ = glyph_width_for_test_;
@@ -548,6 +550,7 @@ void RenderText::SetText(std::u16string text) {
   baselines_.Reset();
   font_size_overrides_.Reset();
   weights_.Reset();
+  resolved_typefaces_.Reset();
   fill_styles_.Reset();
   stroke_widths_.Reset();
   for (auto& style : styles_)
@@ -609,7 +612,7 @@ void RenderText::SetFontList(const FontList& font_list) {
       (font_style & Font::STRIKE_THROUGH) != 0);
   baseline_ = kInvalidBaseline;
   cached_bounds_and_offset_valid_ = false;
-  OnLayoutTextAttributeChanged(false);
+  OnLayoutTextAttributeChanged();
 }
 
 void RenderText::SetCursorEnabled(bool cursor_enabled) {
@@ -639,7 +642,7 @@ void RenderText::SetObscuredRevealIndex(std::optional<size_t> index) {
 void RenderText::SetObscuredGlyphSpacing(int spacing) {
   if (obscured_glyph_spacing_ != spacing) {
     obscured_glyph_spacing_ = spacing;
-    OnLayoutTextAttributeChanged(true);
+    OnLayoutTextAttributeChanged();
   }
 }
 
@@ -895,35 +898,35 @@ void RenderText::SetCompositionRange(const Range& composition_range) {
         Range(0, text_.length()).Contains(composition_range));
   composition_range_.set_end(composition_range.end());
   composition_range_.set_start(composition_range.start());
-  OnLayoutTextAttributeChanged(false);
+  OnLayoutTextAttributeChanged();
 }
 
 void RenderText::SetColor(SkColor value) {
   if (colors_.ClearAndSetInitialValue(value)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyColor(SkColor value, const Range& range) {
   if (colors_.ApplyValue(value, range))
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
 }
 
 void RenderText::SetBaselineStyle(BaselineStyle value) {
   if (baselines_.ClearAndSetInitialValue(value)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyBaselineStyle(BaselineStyle value, const Range& range) {
   if (baselines_.ApplyValue(value, range))
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
 }
 
 void RenderText::ApplyFontSizeOverride(int font_size_override,
                                        const Range& range) {
   if (font_size_overrides_.ApplyValue(font_size_override, range))
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
 }
 
 void RenderText::SetStyle(TextStyle style, bool value) {
@@ -931,7 +934,7 @@ void RenderText::SetStyle(TextStyle style, bool value) {
     cached_bounds_and_offset_valid_ = false;
     // TODO(oshima|msw): Not all style change requires layout changes.
     // Consider optimizing based on the type of change.
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
@@ -940,56 +943,57 @@ void RenderText::ApplyStyle(TextStyle style, bool value, const Range& range) {
     cached_bounds_and_offset_valid_ = false;
     // TODO(oshima|msw): Not all style change requires layout changes.
     // Consider optimizing based on the type of change.
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::SetWeight(Font::Weight weight) {
   if (weights_.ClearAndSetInitialValue(weight)) {
     cached_bounds_and_offset_valid_ = false;
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyWeight(Font::Weight weight, const Range& range) {
   if (weights_.ApplyValue(weight, range)) {
     cached_bounds_and_offset_valid_ = false;
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::SetFillStyle(cc::PaintFlags::Style style) {
   if (fill_styles_.ClearAndSetInitialValue(style)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyFillStyle(cc::PaintFlags::Style style,
                                 const Range& range) {
   if (fill_styles_.ApplyValue(style, range)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::SetStrokeWidth(SkScalar stroke_width) {
   if (stroke_widths_.ClearAndSetInitialValue(stroke_width)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyStrokeWidth(SkScalar stroke_width, const Range& range) {
   if (stroke_widths_.ApplyValue(stroke_width, range)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
+
 void RenderText::SetEliding(bool value) {
   elidings_.ClearAndSetInitialValue(value);
-  OnLayoutTextAttributeChanged(false);
+  OnLayoutTextAttributeChanged();
 }
 
 void RenderText::ApplyEliding(bool value, const Range& range) {
   elidings_.ApplyValue(value, range);
-  OnLayoutTextAttributeChanged(false);
+  OnLayoutTextAttributeChanged();
 }
 
 bool RenderText::GetStyle(TextStyle style) const {
@@ -1002,7 +1006,7 @@ void RenderText::SetDirectionalityMode(DirectionalityMode mode) {
     directionality_mode_ = mode;
     text_direction_ = base::i18n::UNKNOWN_DIRECTION;
     cached_bounds_and_offset_valid_ = false;
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
@@ -1525,16 +1529,16 @@ RenderText::RenderText() = default;
 
 internal::StyleIterator RenderText::GetTextStyleIterator() const {
   return internal::StyleIterator(&colors_, &baselines_, &font_size_overrides_,
-                                 &weights_, &fill_styles_, &stroke_widths_,
-                                 &styles_);
+                                 &weights_, &resolved_typefaces_, &fill_styles_,
+                                 &stroke_widths_, &styles_);
 }
 
 internal::StyleIterator RenderText::GetLayoutTextStyleIterator() const {
   EnsureLayoutTextUpdated();
-  return internal::StyleIterator(&layout_colors_, &layout_baselines_,
-                                 &layout_font_size_overrides_, &layout_weights_,
-                                 &layout_fill_styles_, &layout_stroke_widths_,
-                                 &layout_styles_);
+  return internal::StyleIterator(
+      &layout_colors_, &layout_baselines_, &layout_font_size_overrides_,
+      &layout_weights_, &layout_resolved_typefaces_, &layout_fill_styles_,
+      &layout_stroke_widths_, &layout_styles_);
 }
 
 bool RenderText::IsHomogeneous() const {
@@ -1631,7 +1635,7 @@ size_t RenderText::DisplayIndexToTextIndex(size_t index) const {
   return GetTextIndex(GetGraphemeIteratorAtDisplayTextIndex(index));
 }
 
-void RenderText::OnLayoutTextAttributeChanged(bool text_changed) {
+void RenderText::OnLayoutTextAttributeChanged() {
   layout_text_up_to_date_ = false;
 }
 
@@ -1662,8 +1666,12 @@ void RenderText::EnsureLayoutTextUpdated() const {
   if (obscured_reveal_index_.has_value()) {
     reveal_index = obscured_reveal_index_.value();
     // Move |reveal_index| to the beginning of the surrogate pair, if needed.
-    if (reveal_index < text_.size())
-      U16_SET_CP_START(text_.data(), 0, reveal_index);
+    if (reveal_index < text_.size()) {
+      // SAFETY: U16_SET_CP_START() internally checks for underflow, and we know
+      // that reveal_index is before the end of the string since it is checked
+      // right above.
+      UNSAFE_BUFFERS(U16_SET_CP_START(text_.data(), 0, reveal_index));
+    }
   }
 
   BreakList<bool>::const_iterator eliding_iterator = elidings_.breaks().begin();
@@ -1761,6 +1769,7 @@ void RenderText::EnsureLayoutTextUpdated() const {
       layout_baselines_.ApplyValue(styles.baseline(), range);
       layout_font_size_overrides_.ApplyValue(styles.font_size_override(),
                                              range);
+      layout_resolved_typefaces_.ApplyValue(styles.resolved_typeface(), range);
       layout_fill_styles_.ApplyValue(styles.fill_style(), range);
       layout_stroke_widths_.ApplyValue(styles.stroke_width(), range);
       layout_weights_.ApplyValue(styles.weight(), range);
@@ -2021,6 +2030,7 @@ void RenderText::UpdateStyleLengths() {
   baselines_.SetMax(text_length);
   font_size_overrides_.SetMax(text_length);
   weights_.SetMax(text_length);
+  resolved_typefaces_.SetMax(text_length);
   fill_styles_.SetMax(text_length);
   stroke_widths_.SetMax(text_length);
   for (auto& style : styles_)
@@ -2034,6 +2044,7 @@ void RenderText::UpdateLayoutStyleLengths(size_t max_length) const {
   layout_font_size_overrides_.SetMax(max_length);
   layout_weights_.SetMax(max_length);
   layout_fill_styles_.SetMax(max_length);
+  layout_resolved_typefaces_.SetMax(max_length);
   layout_stroke_widths_.SetMax(max_length);
   for (auto& layout_style : layout_styles_)
     layout_style.SetMax(max_length);
@@ -2134,8 +2145,7 @@ void RenderText::OnTextAttributeChanged() {
   text_elided_ = false;
 
   layout_text_up_to_date_ = false;
-
-  OnLayoutTextAttributeChanged(true);
+  OnLayoutTextAttributeChanged();
 }
 
 std::u16string RenderText::Elide(const std::u16string& text,
@@ -2254,6 +2264,7 @@ std::u16string RenderText::Elide(const std::u16string& text,
     RestoreBreakList(render_text.get(), &render_text->font_size_overrides_);
     render_text->weights_ = weights_;
     RestoreBreakList(render_text.get(), &render_text->weights_);
+    RestoreBreakList(render_text.get(), &render_text->resolved_typefaces_);
     RestoreBreakList(render_text.get(), &render_text->fill_styles_);
     RestoreBreakList(render_text.get(), &render_text->stroke_widths_);
 

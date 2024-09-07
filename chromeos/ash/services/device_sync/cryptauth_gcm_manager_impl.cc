@@ -16,6 +16,7 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/gcm_constants.h"
 #include "components/gcm_driver/gcm_driver.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -189,14 +190,14 @@ bool IsDeviceSyncGroupNameValid(const gcm::IncomingMessage& message) {
   return is_device_sync_group_name_valid;
 }
 
-void RecordGCMRegistrationMetrics(gcm::GCMClient::Result result,
+void RecordGCMRegistrationMetrics(instance_id::InstanceID::Result result,
                                   base::TimeDelta execution_time) {
   base::UmaHistogramCustomTimes(
       "CryptAuth.Gcm.Registration.AttemptTimeWithRetries", execution_time,
       base::Seconds(1) /* min */, base::Minutes(10) /* max */,
       100 /* buckets */);
 
-  base::UmaHistogramEnumeration("CryptAuth.Gcm.Registration.Result", result);
+  base::UmaHistogramEnumeration("CryptAuth.Gcm.Registration.Result2", result);
 }
 
 }  // namespace
@@ -207,13 +208,13 @@ CryptAuthGCMManagerImpl::Factory*
 
 // static
 std::unique_ptr<CryptAuthGCMManager> CryptAuthGCMManagerImpl::Factory::Create(
-    gcm::GCMDriver* gcm_driver,
+    instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* pref_service) {
   if (factory_instance_)
-    return factory_instance_->CreateInstance(gcm_driver, pref_service);
+    return factory_instance_->CreateInstance(instance_id_driver, pref_service);
 
   return base::WrapUnique(
-      new CryptAuthGCMManagerImpl(gcm_driver, pref_service));
+      new CryptAuthGCMManagerImpl(instance_id_driver, pref_service));
 }
 
 // static
@@ -223,15 +224,18 @@ void CryptAuthGCMManagerImpl::Factory::SetFactoryForTesting(Factory* factory) {
 
 CryptAuthGCMManagerImpl::Factory::~Factory() = default;
 
-CryptAuthGCMManagerImpl::CryptAuthGCMManagerImpl(gcm::GCMDriver* gcm_driver,
-                                                 PrefService* pref_service)
-    : gcm_driver_(gcm_driver),
+CryptAuthGCMManagerImpl::CryptAuthGCMManagerImpl(
+    instance_id::InstanceIDDriver* instance_id_driver,
+    PrefService* pref_service)
+    : instance_id_driver_(instance_id_driver),
       pref_service_(pref_service),
       registration_in_progress_(false) {}
 
 CryptAuthGCMManagerImpl::~CryptAuthGCMManagerImpl() {
   if (IsListening())
-    gcm_driver_->RemoveAppHandler(kCryptAuthGcmAppId);
+    instance_id_driver_->GetInstanceID(kCryptAuthGcmAppId)
+        ->gcm_driver()
+        ->RemoveAppHandler(kCryptAuthGcmAppId);
 }
 
 void CryptAuthGCMManagerImpl::StartListening() {
@@ -240,11 +244,15 @@ void CryptAuthGCMManagerImpl::StartListening() {
     return;
   }
 
-  gcm_driver_->AddAppHandler(kCryptAuthGcmAppId, this);
+  instance_id_driver_->GetInstanceID(kCryptAuthGcmAppId)
+      ->gcm_driver()
+      ->AddAppHandler(kCryptAuthGcmAppId, this);
 }
 
 bool CryptAuthGCMManagerImpl::IsListening() {
-  return gcm_driver_->GetAppHandler(kCryptAuthGcmAppId) == this;
+  return instance_id_driver_->GetInstanceID(kCryptAuthGcmAppId)
+             ->gcm_driver()
+             ->GetAppHandler(kCryptAuthGcmAppId) == this;
 }
 
 void CryptAuthGCMManagerImpl::RegisterWithGCM() {
@@ -257,11 +265,12 @@ void CryptAuthGCMManagerImpl::RegisterWithGCM() {
   registration_in_progress_ = true;
   gcm_registration_start_timestamp_ = base::TimeTicks::Now();
 
-  std::vector<std::string> sender_ids(1, kCryptAuthGcmSenderId);
-  gcm_driver_->Register(
-      kCryptAuthGcmAppId, sender_ids,
-      base::BindOnce(&CryptAuthGCMManagerImpl::OnRegistrationCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+  instance_id_driver_->GetInstanceID(kCryptAuthGcmAppId)
+      ->GetToken(
+          kCryptAuthGcmSenderId, instance_id::kGCMScope,
+          /*time_to_live=*/base::TimeDelta(), /*flags=*/{},
+          base::BindOnce(&CryptAuthGCMManagerImpl::OnRegistrationCompleted,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 std::string CryptAuthGCMManagerImpl::GetRegistrationId() {
@@ -341,13 +350,13 @@ void CryptAuthGCMManagerImpl::OnSendAcknowledged(
 
 void CryptAuthGCMManagerImpl::OnRegistrationCompleted(
     const std::string& registration_id,
-    gcm::GCMClient::Result result) {
+    instance_id::InstanceID::Result result) {
   registration_in_progress_ = false;
   RecordGCMRegistrationMetrics(
       result, base::TimeTicks::Now() -
                   gcm_registration_start_timestamp_ /* execution_time */);
 
-  if (result != gcm::GCMClient::SUCCESS) {
+  if (result != instance_id::InstanceID::Result::SUCCESS) {
     PA_LOG(WARNING) << "GCM registration failed with result="
                     << static_cast<int>(result);
     for (auto& observer : observers_)

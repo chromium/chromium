@@ -104,11 +104,6 @@ interface CastWebContents {
   // *never* be exposed through |remote_interfaces|.
   SetInterfacesForRenderer(pending_remote<RemoteInterfaces> remote_interfaces);
 
-  // Sets URL rewrite rules for modifying navigation requests.
-  // Note: this must be called before LoadUrl in order for the rules to take
-  // effect on the requests.
-  SetUrlRewriteRules(url_rewrite.mojom.UrlRequestRewriteRules rules);
-
   // ===========================================================================
   // Page Lifetime
   // ===========================================================================

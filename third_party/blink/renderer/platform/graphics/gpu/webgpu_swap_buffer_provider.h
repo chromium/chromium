@@ -11,6 +11,7 @@
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/shared_image_pool.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -54,7 +55,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   ~WebGPUSwapBufferProvider() override;
 
   viz::SharedImageFormat Format() const;
-  const gfx::Size& Size() const;
+  gfx::Size Size() const;
   cc::Layer* CcLayer();
   void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
@@ -110,36 +111,16 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
  private:
   // Holds resources and synchronization for one of the swapchain images.
-  struct SwapBuffer : WTF::RefCounted<SwapBuffer> {
-    SwapBuffer(
-        base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-        scoped_refptr<gpu::ClientSharedImage> shared_image,
-        gpu::SyncToken creation_token,
-        gfx::Size size);
-    SwapBuffer(const SwapBuffer&) = delete;
-    SwapBuffer& operator=(const SwapBuffer&) = delete;
-    ~SwapBuffer();
+  class SwapBuffer : public gpu::ClientImage {
+   public:
+    explicit SwapBuffer(scoped_refptr<gpu::ClientSharedImage> shared_image);
 
-    gfx::Size size;
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture;
 
-    // A weak ptr to the context provider so that the destructor can
-    // destroy shared images.
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider;
-
-    // A token signaled when the previous user of the image is finished using
-    // it. It could be WebGPU, the compositor or the shared image creation.
-    gpu::SyncToken access_finished_token;
+   protected:
+    friend class RefCounted<SwapBuffer>;
+    ~SwapBuffer() override;
   };
-
-  scoped_refptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
-      gpu::SharedImageInterface* sii,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-      const gfx::Size& size,
-      SkAlphaType alpha_type);
-
-  void RecycleSwapBuffer(scoped_refptr<SwapBuffer> swap_buffer);
 
   void MailboxReleased(scoped_refptr<SwapBuffer> swap_buffer,
                        const gpu::SyncToken& sync_token,
@@ -157,13 +138,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   wgpu::Device device_;
   scoped_refptr<cc::TextureLayer> layer_;
   bool neutered_ = false;
-
-  // The maximum number of in-flight swap-buffers waiting to be used for
-  // recycling.
-  static constexpr int kMaxRecycledSwapBuffers = 3;
-
-  WTF::Vector<scoped_refptr<SwapBuffer>> unused_swap_buffers_;
-  scoped_refptr<SwapBuffer> last_swap_buffer_;
   const viz::SharedImageFormat shared_image_format_;
   const wgpu::TextureFormat format_;
   const wgpu::TextureUsage usage_;
@@ -174,6 +148,10 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       cc::PaintFlags::FilterQuality::kLow;
   int max_texture_size_;
 
+  // Pool of SwapBuffers which manages creation, release and recycling of
+  // SwapBuffer resources.
+  std::unique_ptr<gpu::SharedImagePool<SwapBuffer>> swap_buffer_pool_;
+  scoped_refptr<SwapBuffer> last_swap_buffer_;
   scoped_refptr<SwapBuffer> current_swap_buffer_;
 };
 

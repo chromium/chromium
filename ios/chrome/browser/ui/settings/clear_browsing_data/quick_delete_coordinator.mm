@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -29,6 +29,8 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mediator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_view_controller.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface QuickDeleteCoordinator () <QuickDeleteBrowsingDataDelegate,
                                       QuickDeletePresentationCommands,
@@ -49,8 +51,8 @@
                                    browser:(Browser*)browser
             canPerformTabsClosureAnimation:
                 (BOOL)canPerformTabsClosureAnimation {
-  if (self = [super initWithBaseViewController:viewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
     _canPerformTabsClosureAnimation = canPerformTabsClosureAnimation;
   }
   return self;
@@ -67,7 +69,7 @@
       [[BrowsingDataCounterWrapperProducer alloc]
           initWithBrowserState:browserState];
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   BrowsingDataRemover* browsingDataRemover =
       BrowsingDataRemoverFactory::GetForBrowserState(browserState);
   DiscoverFeedService* discoverFeedService =
@@ -82,6 +84,7 @@
           canPerformTabsClosureAnimation:_canPerformTabsClosureAnimation];
 
   _viewController = [[QuickDeleteViewController alloc] init];
+  _viewController.modalPresentationStyle = UIModalPresentationFormSheet;
   _mediator.consumer = _viewController;
   _mediator.presentationHandler = self;
 
@@ -181,6 +184,12 @@
                               allInactiveTabs:allInactiveTabsWillClose
                           browsingDataRemover:browsingDataRemover];
   };
+
+  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationCommandsHandler
+      displayTabGridInMode:TabGridOpeningMode::kRegular];
+
   [_viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:dismissCompletionBlock];
@@ -199,6 +208,9 @@
 - (void)stopBrowsingDataPage {
   [_browsingDataCoordinator stop];
   _browsingDataCoordinator = nil;
+
+  // Move Voiceover focus to the browsing data row.
+  [_viewController focusOnBrowsingDataRow];
 }
 
 #pragma mark - Private
@@ -217,10 +229,28 @@
                                         tabGroupsWithTabsToClose
                     allInactiveTabs:(BOOL)animateAllInactiveTabs
                 browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover {
-  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationCommandsHandler
-      displayTabGridInMode:TabGridOpeningMode::kRegular];
+  base::OnceClosure onRemoverCompletion = base::BindOnce(
+      [](UIWindow* window) {
+        window.userInteractionEnabled = YES;
+        window.accessibilityElementsHidden = NO;
+
+        // Inform Voiceover users that their browsing data has been deleted.
+        // Otherwise, users will only hear that the deletion is in progress.
+        // Also make Voiceover focus on the first element of the new page.
+        UIAccessibilityPostNotification(
+            UIAccessibilityScreenChangedNotification,
+            l10n_util::GetNSString(
+                IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE));
+        // Add vibration at the end of the animation including after the tabs
+        // rearrange.
+        TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+      },
+      self.baseViewController.view.window);
+
+  base::OnceClosure onAnimationCompletion = base::BindOnce(
+      &BrowsingDataRemover::RemoveInRange, browsingDataRemover->AsWeakPtr(),
+      beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS,
+      std::move(onRemoverCompletion));
 
   id<TabsAnimationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabsAnimationCommands);
@@ -228,16 +258,8 @@
   [handler animateTabsClosureForTabs:activeTabsToClose
                               groups:tabGroupsWithTabsToClose
                      allInactiveTabs:animateAllInactiveTabs
-                   completionHandler:^{
-                     browsingDataRemover->RemoveInRange(
-                         beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS,
-                         base::BindOnce([]() {
-                           // Add vibration at the end of the animation
-                           // including after the tabs rearrange.
-                           TriggerHapticFeedbackForNotification(
-                               UINotificationFeedbackTypeSuccess);
-                         }));
-                   }];
+                   completionHandler:base::CallbackToBlock(
+                                         std::move(onAnimationCompletion))];
 }
 
 // Disconnects all instances.

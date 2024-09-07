@@ -72,13 +72,12 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
   MOCK_METHOD2(SetFrameSinkDebugLabel,
                void(const FrameSinkId& frame_sink_id,
                     const std::string& debug_label));
-  MOCK_METHOD5(
-      CreateCompositorFrameSink,
-      void(const FrameSinkId&,
-           const std::optional<FrameSinkBundleId>&,
-           mojo::PendingReceiver<mojom::CompositorFrameSink>,
-           mojo::PendingRemote<mojom::CompositorFrameSinkClient>,
-           mojo::PendingRemote<blink::mojom::RenderInputRouterClient>));
+  MOCK_METHOD5(CreateCompositorFrameSink,
+               void(const FrameSinkId&,
+                    const std::optional<FrameSinkBundleId>&,
+                    mojo::PendingReceiver<mojom::CompositorFrameSink>,
+                    mojo::PendingRemote<mojom::CompositorFrameSinkClient>,
+                    input::mojom::RenderInputRouterConfigPtr));
   void CreateRootCompositorFrameSink(
       mojom::RootCompositorFrameSinkParamsPtr params) override {
     MockCreateRootCompositorFrameSink(params->frame_sink_id);

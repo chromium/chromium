@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -34,11 +35,19 @@ class HealthdInternalsMessageHandler : public content::WebUIMessageHandler {
   // Handle the `getHealthdTelemetryInfo` request.
   void HandleGetHealthdTelemetryInfo(const base::Value::List& args);
 
+  // Handle the `getHealthdProcessInfo` request.
+  void HandleGetHealthdProcessInfo(const base::Value::List& args);
+
   // Handle the telemetry result from `probe_service_`.
   void HandleTelemetryResult(base::Value callback_id,
                              cros_healthd::mojom::TelemetryInfoPtr info);
 
-  // Reply the `getHealthdTelemetryInfo` request.
+  // Handle the process result from `probe_service_`.
+  void HandleMultipleProcessResult(
+      base::Value callback_id,
+      cros_healthd::mojom::MultipleProcessResultPtr process_result);
+
+  // Reply the `getHealthdTelemetryInfo` and `getHealthdProcessInfo` requests.
   void ReplyHealthdInternalInfo(base::Value callback_id,
                                 base::Value::Dict result);
 

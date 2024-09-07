@@ -8,6 +8,11 @@
 #include "chrome/browser/ui/webui/data_sharing/data_sharing.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 class DataSharingPageHandler;
 class DataSharingUI;
@@ -35,6 +40,9 @@ class DataSharingUI : public UntrustedTopChromeWebUIController,
   ~DataSharingUI() override;
 
   void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          pending_receiver);
+  void BindInterface(
       mojo::PendingReceiver<data_sharing::mojom::PageHandlerFactory> receiver);
 
   void ApiInitComplete();
@@ -51,6 +59,7 @@ class DataSharingUI : public UntrustedTopChromeWebUIController,
                          mojo::PendingReceiver<data_sharing::mojom::PageHandler>
                              receiver) override;
 
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<DataSharingPageHandler> page_handler_;
 
   mojo::Receiver<data_sharing::mojom::PageHandlerFactory>

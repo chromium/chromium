@@ -23,7 +23,7 @@ static_library("reorder") {
     "//base",
     "//base:i18n",
     "//chrome/browser/ash/app_list",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/app_icon_color_cache",
     "//components/sync/model",
     "//third_party/icu",
     "//ui/base",

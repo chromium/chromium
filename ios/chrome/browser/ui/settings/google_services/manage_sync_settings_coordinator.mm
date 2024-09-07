@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -132,8 +132,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                          browser:(Browser*)browser
                                     accountState:
                                         (SyncSettingsAccountState)accountState {
-  if (self = [super initWithBaseViewController:navigationController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:navigationController
+                                        browser:browser])) {
     _baseNavigationController = navigationController;
     _accountState = accountState;
   }
@@ -159,8 +159,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
   self.mediator = [[ManageSyncSettingsMediator alloc]
         initWithSyncService:self.syncService
-            identityManager:IdentityManagerFactory::GetForBrowserState(
-                                browserState)
+            identityManager:IdentityManagerFactory::GetForProfile(browserState)
       authenticationService:self.authService
       accountManagerService:ChromeAccountManagerServiceFactory::
                                 GetForBrowserState(browserState)

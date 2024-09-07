@@ -43,14 +43,18 @@ enum class PlusAddressModalCompletionStatus {
   kMaxValue = kConfirmPlusAddressError,
 };
 
-// Logs plus address creation modal events triggered by user.
-void RecordModalEvent(PlusAddressModalEvent plus_address_modal_event);
+// Logs plus address creation modal events triggered by user. `is_notice_screen`
+// indicates whether the modal included the legal notice.
+void RecordModalEvent(PlusAddressModalEvent plus_address_modal_event,
+                      bool is_notice_screen);
 
 // Logs plus address creation modal/bottom sheet shown duration for each
-// closing `status`.
+// closing `status`. `is_notice_screen` indicates whether the modal included the
+// legal notice.
 void RecordModalShownOutcome(PlusAddressModalCompletionStatus status,
                              base::TimeDelta modal_shown_duration,
-                             int refresh_count);
+                             int refresh_count,
+                             bool is_notice_screen);
 
 // Logs plus address autofill suggestion events.
 void RecordAutofillSuggestionEvent(

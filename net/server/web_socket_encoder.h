@@ -10,7 +10,9 @@
 #include <string_view>
 #include <vector>
 
+#include "net/base/net_export.h"
 #include "net/server/web_socket.h"
+#include "net/server/web_socket_parse_result.h"
 #include "net/websockets/websocket_deflater.h"
 #include "net/websockets/websocket_inflater.h"
 
@@ -18,7 +20,7 @@ namespace net {
 
 class WebSocketDeflateParameters;
 
-class WebSocketEncoder final {
+class NET_EXPORT WebSocketEncoder final {
  public:
   static const char kClientExtensions[];
 
@@ -38,9 +40,9 @@ class WebSocketEncoder final {
   static std::unique_ptr<WebSocketEncoder> CreateClient(
       const std::string& response_extensions);
 
-  WebSocket::ParseResult DecodeFrame(std::string_view frame,
-                                     int* bytes_consumed,
-                                     std::string* output);
+  WebSocketParseResult DecodeFrame(std::string_view frame,
+                                   int* bytes_consumed,
+                                   std::string* output);
   void EncodeTextFrame(std::string_view frame,
                        int masking_key,
                        std::string* output);

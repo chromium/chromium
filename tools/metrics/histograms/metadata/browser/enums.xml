@@ -390,6 +390,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="InstantRendererForNewTabPage"/>
   <int value="4" label="ExtensionProcess"/>
   <int value="5" label="JitDisabled"/>
+  <int value="6" label="V8OptDisabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/content_browser_client.h:SpareProcessRefusedByEmbedderReason) -->

@@ -82,15 +82,6 @@ void LogMlShadowPredictions(const AutofillField& field) {
           field.heuristic_type(HeuristicSource::kDefault),
           field.heuristic_type(HeuristicSource::kMachineLearning),
           submitted_types));
-#else
-  // In builds without internal patterns, compare against the legacy heuristics
-  // instead.
-  base::UmaHistogramSparse(
-      "Autofill.ShadowPredictions.LegacyPatternSourceToMLModel",
-      GetShadowPrediction(
-          field.heuristic_type(HeuristicSource::kLegacy),
-          field.heuristic_type(HeuristicSource::kMachineLearning),
-          submitted_types));
 #endif  // BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }

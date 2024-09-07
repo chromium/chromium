@@ -70,7 +70,6 @@ source_set("browser_tests") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/child_accounts/parent_access_code:test_support",
     "//chrome/browser/ash/login/test:test_support",

@@ -15,11 +15,6 @@ class PrefRegistrySyncable;
 
 class PrefRegistrySimple;
 
-class ProfileManagerIOS;
-// TODO(crbug.com/358356195): Remove this typedef when this header is updated
-// to use ProfileManagerIOS.
-using ChromeBrowserStateManager = ProfileManagerIOS;
-
 @class PushNotificationAccountContextManager;
 enum class PushNotificationClientId;
 class PushNotificationClientManager;
@@ -89,7 +84,6 @@ class PushNotificationService {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  protected:
-  PushNotificationService(ChromeBrowserStateManager* manager);
   // Registers the device with the push notification server. By supplying a list
   // of the GAIA IDs currently logged into Chrome on the device and the device's
   // APNS token, the server associates the GAIA IDs to the device, which allows

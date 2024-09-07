@@ -22,7 +22,7 @@
       aria-roledescription$="[[i18n('certificateManagerV2SubpageBackButtonAriaRoleDescription',subpageTitle)]]"
       on-click="onBackButtonClick_">
   </cr-icon-button>
-  <h2>[[subpageTitle]]</h2>
+  <h2 class="cr-title-text">[[subpageTitle]]</h2>
 </div>
 <template is="dom-repeat" items="[[subpageCertLists]]">
   <certificate-list-v2
@@ -30,6 +30,8 @@
       header-text="[[item.headerText]]"
       hide-export="[[item.hideExport]]"
       show-import="[[item.showImport]]"
+      hide-if-empty="[[item.hideIfEmpty]]"
+      hide-header="[[item.hideHeader]]"
       in-subpage>
   </certificate-list-v2>
 </template>

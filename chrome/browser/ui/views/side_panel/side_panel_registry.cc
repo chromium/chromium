@@ -68,9 +68,11 @@ bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
   // SidePanelRegistryObservers of the entry's registration because some
   // registry observers can call SidePanelEntryObserver methods for `entry`.
   entry->AddObserver(this);
-  for (SidePanelRegistryObserver& observer : observers_)
-    observer.OnEntryRegistered(this, entry.get());
+  SidePanelEntry* entry_ptr = entry.get();
   entries_.push_back(std::move(entry));
+  for (SidePanelRegistryObserver& observer : observers_) {
+    observer.OnEntryRegistered(this, entry_ptr);
+  }
   return true;
 }
 

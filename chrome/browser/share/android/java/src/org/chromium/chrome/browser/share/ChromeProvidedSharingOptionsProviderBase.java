@@ -266,8 +266,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     protected void initializeFirstPartyOptionsInOrder() {
         maybeAddPageInfoFirstPartyOption();
         maybeAddCopyFirstPartyOption();
-        // Only show a limited first party share selection for automotive.
-        if (!BuildInfo.getInstance().isAutomotive) {
+        // Only show a limited first party share selection for automotive and PDF pages.
+        if (!isAutomotive() && !isPdfTab()) {
             maybeAddLongScreenshotFirstPartyOption();
             maybeAddPrintFirstPartyOption();
         }
@@ -317,6 +317,14 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
+    }
+
+    private boolean isPdfTab() {
+        return mTabProvider.get().isNativePage() && mTabProvider.get().getNativePage().isPdf();
+    }
+
+    private static boolean isAutomotive() {
+        return BuildInfo.getInstance().isAutomotive;
     }
 
     private FirstPartyOption createCopyLinkFirstPartyOption() {

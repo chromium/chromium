@@ -116,7 +116,7 @@ struct AX_BASE_EXPORT AXNodeData {
   //
 
   void AddBoolAttribute(ax::mojom::BoolAttribute attribute, bool value);
-  void AddChildTreeId(const ui::AXTreeID& tree_id);
+  void AddChildTreeId(const AXTreeID& tree_id);
   void AddIntAttribute(ax::mojom::IntAttribute attribute, int32_t value);
   void AddFloatAttribute(ax::mojom::FloatAttribute attribute, float value);
   // This method cannot be used to set kChildTreeId due to a common
@@ -148,6 +148,10 @@ struct AX_BASE_EXPORT AXNodeData {
   //
   // Convenience functions.
   //
+
+  // Return the DOMNodeID, if this object was associated with a DOM Node in
+  // an HTML renderer, otherwise return 0.
+  int GetDOMNodeId() const;
 
   // Adds the name attribute or replaces it if already present. Also sets the
   // NameFrom attribute if not already set.

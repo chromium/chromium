@@ -254,8 +254,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, CreateFromParser) {
   // The fenced frame is set-up synchronously, so it should exist immediately.
   RenderFrameHostImplWrapper dummy_child_frame(
       primary_main_frame_host()->child_at(0)->current_frame_host());
-  EXPECT_NE(dummy_child_frame->inner_tree_main_frame_tree_node_id(),
-            FrameTreeNode::kFrameTreeNodeInvalidId);
+  EXPECT_TRUE(dummy_child_frame->inner_tree_main_frame_tree_node_id());
   FrameTreeNode* inner_frame_tree_node = FrameTreeNode::GloballyFindByID(
       dummy_child_frame->inner_tree_main_frame_tree_node_id());
   EXPECT_TRUE(inner_frame_tree_node);
@@ -1873,8 +1872,10 @@ IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
   // The following attempt to create a fenced frame is expected to fail since
   // it would otherwise be contained in a sandbox that doesn't have the
   // allow-same-origin attribute. See kFencedFrameMandatoryUnsandboxedFlags.
-  EXPECT_FALSE(ExecJs(primary_main_frame_host(), kAddFencedFrameScript,
-                      EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(
+      ExecJs(primary_main_frame_host(), kAddFencedFrameScript,
+             EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE |
+                 EvalJsOptions::EXECUTE_SCRIPT_HONOR_JS_CONTENT_SETTINGS));
   EXPECT_EQ(previous_fenced_frame_count,
             primary_main_frame_host()->GetFencedFrames().size());
 }
@@ -2344,7 +2345,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
   ASSERT_EQ(1u, primary_main_frame_host()->child_count());
   RenderFrameHostImpl* parent_fenced_frame_rfh =
       primary_main_frame_host()->child_at(0)->current_frame_host();
-  int inner_node_id =
+  FrameTreeNodeId inner_node_id =
       parent_fenced_frame_rfh->inner_tree_main_frame_tree_node_id();
   parent_fenced_frame_rfh =
       FrameTreeNode::GloballyFindByID(inner_node_id)->current_frame_host();
@@ -2469,9 +2470,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          // This feature allows `runAdAuction()`'s promise to resolve to a
          // `FencedFrameConfig` object upon developer request.
          {blink::features::kFencedFramesAPIChanges, {}},
-         {blink::features::kFencedFramesM120FeaturesPart1, {}},
          {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
-         {blink::features::kFencedFramesM120FeaturesPart2, {}},
          {blink::features::kFencedFramesReportingAttestationsChanges, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
          {blink::features::
@@ -2646,6 +2645,50 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
               expected_current_frame_status);
     EXPECT_EQ(props->HasDisabledNetworkForCurrentAndDescendantFrameTrees(),
               expected_nested_frame_status);
+  }
+
+  // Sends a basic resource request with a fenced frame nonce attached, and
+  // synchronously waits for it to complete. Returns net::ERR_* code resulting
+  // from the request. We can use this to test how a fenced frame nonce is
+  // handled after the fenced frame is no longer available, like after the frame
+  // is destroyed.
+  int SendResourceRequestWithNonce(const GURL url,
+                                   const base::UnguessableToken& nonce) {
+    // Construct the resource request.
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+        web_contents()
+            ->GetPrimaryMainFrame()
+            ->GetStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess();
+
+    auto request = std::make_unique<network::ResourceRequest>();
+
+    request->url = url;
+    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    request->method = net::HttpRequestHeaders::kGetMethod;
+    request->trusted_params = network::ResourceRequest::TrustedParams();
+    request->trusted_params->isolation_info =
+        net::IsolationInfo::CreateTransientWithNonce(nonce);
+
+    std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
+        network::SimpleURLLoader::Create(std::move(request),
+                                         TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    base::RunLoop run_loop;
+    network::SimpleURLLoader::HeadersOnlyCallback headers_only_callback =
+        base::BindOnce(
+            [](base::OnceClosure quit_closure,
+               scoped_refptr<net::HttpResponseHeaders> headers) {
+              std::move(quit_closure).Run();
+            },
+            run_loop.QuitClosure());
+
+    network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
+    simple_url_loader_ptr->DownloadHeadersOnly(
+        url_loader_factory.get(), std::move(headers_only_callback));
+    run_loop.Run();
+
+    return simple_url_loader->NetError();
   }
 
   ~FencedFrameParameterizedBrowserTest() override {
@@ -6372,6 +6415,56 @@ IN_PROC_BROWSER_TEST_F(
   VerifyFencedFrameNetworkStatus(
       fenced_frame_rfh,
       DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       ClearNonceFromNetworkContextAfterFencedFrameIsRemoved) {
+  // Create main frame.
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create fenced frame.
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title0.html");
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          primary_main_frame_host(), fenced_frame_url, net::OK,
+          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+
+  // When the fenced frame is removed, its nonces will be cleared from the
+  // `NetworkContext` after a delay. For testing, we should override that delay
+  // to zero, and provide a callback to fire on completion. We should also hang
+  // onto the nonce so we can use it in a request after the frame is removed.
+  base::RunLoop run_loop;
+  StoragePartitionImpl* ff_storage_partition =
+      static_cast<StoragePartitionImpl*>(
+          fenced_frame_rfh->GetStoragePartition());
+  ff_storage_partition->SetClearNoncesInNetworkContextParamsForTesting(
+      base::Minutes(0), run_loop.QuitClosure());
+  base::UnguessableToken ff_nonce =
+      *(fenced_frame_rfh->GetIsolationInfoForSubresources().nonce());
+
+  // Disable network in the fenced frame.
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh, R"(
+                window.fence.disableUntrustedNetwork();
+              )"));
+
+  // First, verify that a request sent with the fenced frame's nonce will fail.
+  int pre_net_error = SendResourceRequestWithNonce(fenced_frame_url, ff_nonce);
+  EXPECT_EQ(pre_net_error, net::ERR_NETWORK_ACCESS_REVOKED);
+
+  // Then, destroy the fenced frame corresponding to the nonce.
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), R"(
+                document.getElementsByTagName('fencedframe')[0].remove();
+              )"));
+
+  // Wait for the destruction to complete
+  run_loop.Run();
+
+  // Finally, verify that the same request from before succeeds, because the
+  // nonce was removed.
+  int post_net_error = SendResourceRequestWithNonce(fenced_frame_url, ff_nonce);
+  EXPECT_EQ(post_net_error, net::OK);
 }
 
 class FencedFrameReportEventBrowserTest

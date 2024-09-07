@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_web_provider.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -87,7 +87,8 @@ TEST_F(LensOmniboxClientTest, AutocompleteAccept) {
   match.destination_url = GURL("https://www.google.com/search?q=search+terms");
 
   OCMExpect([mock_delegate_ omniboxDidAcceptText:input_text
-                                  destinationURL:match.destination_url]);
+                                  destinationURL:match.destination_url
+                                thumbnailRemoved:NO]);
   UseAutocompleteMatch(input_text, match);
 
   EXPECT_OCMOCK_VERIFY(mock_delegate_);

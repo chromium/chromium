@@ -111,7 +111,7 @@ class IDBCursorTest : public testing::Test {
     // Set up `transaction`.
     IDBDatabase* db = MakeGarbageCollected<IDBDatabase>(
         execution_context, mojo::NullAssociatedReceiver(), mojo::NullRemote(),
-        mock_database.BindNewEndpointAndPassDedicatedRemote());
+        mock_database.BindNewEndpointAndPassDedicatedRemote(), /*priority=*/0);
 
     MockIDBTransaction mock_transaction_remote;
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);

@@ -150,7 +150,6 @@ class PrimaryAccountManagerTest : public testing::Test,
     DCHECK(!manager_);
     manager_ = std::make_unique<PrimaryAccountManager>(
         &test_signin_client_, token_service_.get(), account_tracker_.get());
-    manager_->Initialize();
     manager_->AddObserver(this);
   }
 

@@ -67,28 +67,13 @@ void CSSVariableData::ExtractFeatures(const CSSParserToken& token,
   has_line_height_units |= IsLineHeightUnitToken(token);
 }
 
-CSSVariableData* CSSVariableData::Create(CSSTokenizedValue value,
-                                         bool is_animation_tainted,
-                                         bool needs_variable_resolution) {
-  bool has_font_units = false;
-  bool has_root_font_units = false;
-  bool has_line_height_units = false;
-  while (!value.range.AtEnd()) {
-    ExtractFeatures(value.range.Consume(), has_font_units, has_root_font_units,
-                    has_line_height_units);
-  }
-  return Create(value.text, is_animation_tainted, needs_variable_resolution,
-                has_font_units, has_root_font_units, has_line_height_units);
-}
-
 CSSVariableData* CSSVariableData::Create(const String& original_text,
                                          bool is_animation_tainted,
                                          bool needs_variable_resolution) {
   bool has_font_units = false;
   bool has_root_font_units = false;
   bool has_line_height_units = false;
-  CSSTokenizer tokenizer(original_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(original_text);
   while (!stream.AtEnd()) {
     ExtractFeatures(stream.ConsumeRaw(), has_font_units, has_root_font_units,
                     has_line_height_units);
@@ -111,8 +96,7 @@ String CSSVariableData::Serialize() const {
     serialized_text.Append(OriginalText());
     serialized_text.Resize(serialized_text.length() - 1);
 
-    CSSTokenizer tokenizer(OriginalText());
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(OriginalText());
     CSSParserTokenType last_token_type = kEOFToken;
     for (;;) {
       CSSParserTokenType token_type = stream.ConsumeRaw().GetType();
@@ -175,10 +159,7 @@ const CSSValue* CSSVariableData::ParseForSyntax(
   DCHECK(!NeedsVariableResolution());
   // TODO(timloh): This probably needs a proper parser context for
   // relative URL resolution.
-  CSSTokenizer tokenizer(OriginalText());
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  return syntax.Parse(CSSTokenizedValue{range, OriginalText()},
+  return syntax.Parse(OriginalText(),
                       *StrictCSSParserContext(secure_context_mode),
                       is_animation_tainted_);
 }

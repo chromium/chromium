@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
+
 #include <memory>
+#include <string>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "content/browser/indexed_db/indexed_db_bucket_context.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-shared.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "content/browser/indexed_db/indexed_db_fake_backing_store.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -18,6 +22,9 @@
 #include "url/gurl.h"
 
 namespace content {
+
+using testing::SizeIs;
+using ITS = storage::mojom::IdbTransactionState;
 
 class IndexedDBBucketContextTest : public testing::Test {
  public:
@@ -189,6 +196,125 @@ TEST_F(IndexedDBBucketContextTest, BucketSpaceDecay) {
   task_environment_.FastForwardBy(
       IndexedDBBucketContext::kBucketSpaceCacheTimeLimit / 2);
   EXPECT_EQ(bucket_context_->GetBucketSpaceToAllot(), 0);
+}
+
+// Verifies state history is calculated correctly based on snapshots.
+TEST_F(IndexedDBBucketContextTest, MetadataRecordingStateHistory) {
+  bucket_context_->StartMetadataRecording();
+
+  // Helper function to make a idb internals metadata snapshot with a single
+  // transaction.
+  auto make_snapshot = [](std::u16string db_name, int64_t tid, ITS state,
+                          double age) {
+    storage::mojom::IdbBucketMetadataPtr metadata =
+        storage::mojom::IdbBucketMetadata::New();
+    auto db = storage::mojom::IdbDatabaseMetadata::New();
+    db->name = db_name;
+    auto tx = storage::mojom::IdbTransactionMetadata::New();
+    tx->tid = tid;
+    tx->state = state;
+    tx->age = age;
+    tx->connection_id = 0;
+    db->transactions.push_back(std::move(tx));
+    metadata->databases.push_back(std::move(db));
+
+    // Add to a second parallel connection_id to test that it doesn't interfere.
+    db = storage::mojom::IdbDatabaseMetadata::New();
+    db->name = db_name;
+    tx = storage::mojom::IdbTransactionMetadata::New();
+    tx->connection_id = 1;
+    tx->tid = tid;
+    tx->state = state;
+    tx->age = age * 2;
+    db->transactions.push_back(std::move(tx));
+    metadata->databases.push_back(std::move(db));
+
+    return metadata;
+  };
+
+  bucket_context_->metadata_recording_buffer_.push_back(
+      make_snapshot(u"database0", /* tid = */ 1, ITS::kStarted,
+                    /* age = */ 0));
+
+  // Add another transaction with a different tid to ensure it does not
+  // interfere.
+  auto tx = storage::mojom::IdbTransactionMetadata::New();
+  tx->tid = 2;
+  tx->state = ITS::kRunning;
+  tx->age = 4;
+  bucket_context_->metadata_recording_buffer_[1]
+      ->databases[0]
+      ->transactions.push_back(std::move(tx));
+
+  bucket_context_->metadata_recording_buffer_.push_back(
+      make_snapshot(u"database0", /* tid = */ 1, ITS::kRunning,
+                    /* age = */ 10));
+  bucket_context_->metadata_recording_buffer_.push_back(
+      make_snapshot(u"database0", /* tid = */ 1, ITS::kCommitting,
+                    /* age = */ 20));
+  bucket_context_->metadata_recording_buffer_.push_back(
+      make_snapshot(u"database0", /* tid = */ 1, ITS::kRunning,
+                    /* age = */ 30));
+  bucket_context_->metadata_recording_buffer_.push_back(
+      make_snapshot(u"database0", /* tid = */ 1, ITS::kFinished,
+                    /* age = */ 50));
+
+  std::vector<storage::mojom::IdbBucketMetadataPtr> result =
+      bucket_context_->StopMetadataRecording();
+  EXPECT_THAT(result, SizeIs(6));
+
+  // Snapshot 0
+  EXPECT_THAT(result[0]->databases, SizeIs(0));
+
+  // Snapshot 1.
+  tx = std::move(result[1]->databases[0]->transactions[0]);
+  EXPECT_THAT(tx->state_history, SizeIs(1));
+  EXPECT_EQ(tx->state_history[0]->state, ITS::kStarted);
+  EXPECT_EQ(tx->state_history[0]->duration, 0);
+
+  // Snapshot 2.
+  tx = std::move(result[2]->databases[0]->transactions[0]);
+  EXPECT_THAT(tx->state_history, SizeIs(2));
+  EXPECT_EQ(tx->state_history[0]->state, ITS::kStarted);
+  EXPECT_EQ(tx->state_history[0]->duration, 10);
+  EXPECT_EQ(tx->state_history[1]->state, ITS::kRunning);
+  EXPECT_EQ(tx->state_history[1]->duration, 0);
+
+  // Snapshot 3.
+  tx = std::move(result[3]->databases[0]->transactions[0]);
+  EXPECT_THAT(tx->state_history, SizeIs(3));
+  EXPECT_EQ(tx->state_history[0]->state, ITS::kStarted);
+  EXPECT_EQ(tx->state_history[0]->duration, 10);
+  EXPECT_EQ(tx->state_history[1]->state, ITS::kRunning);
+  EXPECT_EQ(tx->state_history[1]->duration, 10);
+  EXPECT_EQ(tx->state_history[2]->state, ITS::kCommitting);
+  EXPECT_EQ(tx->state_history[2]->duration, 0);
+
+  // Snapshot 4.
+  tx = std::move(result[4]->databases[0]->transactions[0]);
+  EXPECT_THAT(tx->state_history, SizeIs(4));
+  EXPECT_EQ(tx->state_history[0]->state, ITS::kStarted);
+  EXPECT_EQ(tx->state_history[0]->duration, 10);
+  EXPECT_EQ(tx->state_history[1]->state, ITS::kRunning);
+  EXPECT_EQ(tx->state_history[1]->duration, 10);
+  EXPECT_EQ(tx->state_history[2]->state, ITS::kCommitting);
+  EXPECT_EQ(tx->state_history[2]->duration, 10);
+  EXPECT_EQ(tx->state_history[3]->state, ITS::kRunning);
+  EXPECT_EQ(tx->state_history[3]->duration, 0);
+
+  // Snapshot 5.
+  tx = std::move(result[5]->databases[0]->transactions[0]);
+  EXPECT_THAT(tx->state_history, SizeIs(5));
+  EXPECT_EQ(tx->state_history[0]->state, ITS::kStarted);
+  EXPECT_EQ(tx->state_history[0]->duration, 10);
+  EXPECT_EQ(tx->state_history[1]->state, ITS::kRunning);
+  EXPECT_EQ(tx->state_history[1]->duration, 10);
+  EXPECT_EQ(tx->state_history[2]->state, ITS::kCommitting);
+  EXPECT_EQ(tx->state_history[2]->duration, 10);
+  EXPECT_EQ(tx->state_history[3]->state, ITS::kRunning);
+  EXPECT_EQ(tx->state_history[3]->duration, 20);
+  EXPECT_EQ(tx->state_history[4]->state, ITS::kFinished);
+  EXPECT_EQ(tx->state_history[4]->duration, 0);
 }
 
 }  // namespace content

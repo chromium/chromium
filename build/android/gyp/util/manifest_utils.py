@@ -113,6 +113,12 @@ def SetTargetApiIfUnset(manifest_node, target_sdk_version):
   return curr_target_sdk_version is None
 
 
+def OverrideMinSdkVersionIfPresent(manifest_node, min_sdk_version):
+  uses_sdk_node = manifest_node.find('./uses-sdk')
+  if uses_sdk_node is not None:
+    NamespacedSet(uses_sdk_node, 'minSdkVersion', min_sdk_version)
+
+
 def _SortAndStripElementTree(root):
   # Sort alphabetically with two exceptions:
   # 1) Put <application> node last (since it's giant).

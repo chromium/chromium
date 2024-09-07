@@ -138,7 +138,7 @@ std::map<OsType, int> SyncDeviceInfoObserver::CountActiveDevicesByOsType(
   std::map<OsType, int> count_by_os_type;
   const base::Time now = base::Time::Now();
   for (const syncer::DeviceInfo* device_info :
-       device_info_tracker_->GetAllDeviceInfo()) {
+       device_info_tracker_->GetAllChromeDeviceInfo()) {
     if (!IsDeviceActive(device_info->last_updated_timestamp(), now,
                         active_threshold)) {
       continue;

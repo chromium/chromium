@@ -26,7 +26,6 @@ def _sign_app(paths, config, dest_dir):
     commands.copy_files(
         os.path.join(paths.input, "{.app_product}Util".format(config)),
         paths.work)
-    commands.copy_files(os.path.join(paths.input, "UpdaterSetup"), paths.work)
     parts.sign_all(paths, config)
     commands.make_dir(dest_dir)
     commands.move_file(os.path.join(paths.work, config.app_dir),
@@ -34,8 +33,6 @@ def _sign_app(paths, config, dest_dir):
     commands.move_file(
         os.path.join(paths.work, "{.app_product}Util".format(config)),
         os.path.dirname(dest_dir))
-    commands.move_file(os.path.join(paths.work, "UpdaterSetup"),
-                       os.path.dirname(dest_dir))
 
 
 def _package_and_sign_dmg(paths, config):
@@ -201,8 +198,6 @@ def sign_all(orig_paths,
             os.path.join(notary_paths.work,
                          "{.app_product}Util".format(config)),
             orig_paths.output)
-        commands.move_file(os.path.join(notary_paths.work, "UpdaterSetup"),
-                           orig_paths.output)
         package_paths = orig_paths.replace_work(
             os.path.join(notary_paths.work, config.packaging_basename))
         _package_zip(package_paths, config)

@@ -19,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -29,6 +30,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
@@ -192,6 +194,8 @@ public class MainSettingsFragmentTest {
 
     @Before
     public void setup() {
+        // ObservableSupplierImpl needs a Looper.
+        Looper.prepare();
         MockitoAnnotations.initMocks(this);
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
@@ -318,10 +322,18 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_SEARCH_ENGINE, SearchEngineSettings.class);
         if (supportThirdPartyFillingSetting()) {
             assertSettingsExists(MainSettings.PREF_AUTOFILL_OPTIONS, null);
+            assertSettingsExists(MainSettings.PREF_AUTOFILL_SECTION, null);
+            assertSettingsExists(MainSettings.PREF_PRIVACY_SECTION, null);
         } else {
             Assert.assertNull(
                     "Third party filling setting should be hidden",
                     mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_OPTIONS));
+            Assert.assertNull(
+                    "Autofill section header should be hidden",
+                    mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_SECTION));
+            Assert.assertNull(
+                    "Privacy section header should be hidden",
+                    mMainSettings.findPreference(MainSettings.PREF_PRIVACY_SECTION));
         }
         assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);
@@ -363,6 +375,52 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_DOWNLOADS, DownloadSettings.class);
         assertSettingsExists(MainSettings.PREF_DEVELOPER, DeveloperSettings.class);
         assertSettingsExists("about_chrome", AboutChromeSettings.class);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID
+    })
+    public void testLegacyOrderRemainsConsistent() {
+        launchSettingsActivity();
+        @Nullable Preference prevPref = null;
+        for (int i = 0; i < mMainSettings.getPreferenceScreen().getPreferenceCount(); ++i) {
+            Preference pref = mMainSettings.getPreferenceScreen().getPreference(i);
+            if (!pref.isShown()) { // Skip invisible prefs.
+                continue;
+            }
+            if (prevPref == null) { // Skip first pref.
+                prevPref = pref;
+                continue;
+            }
+            assertTrue(
+                    prevPref.getTitle() + " should precede " + pref.getTitle(),
+                    pref.getOrder() > prevPref.getOrder());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
+    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
+    public void testConsistentOrder() {
+        launchSettingsActivity();
+        @Nullable Preference prevPref = null;
+        for (int i = 0; i < mMainSettings.getPreferenceScreen().getPreferenceCount(); ++i) {
+            Preference pref = mMainSettings.getPreferenceScreen().getPreference(i);
+            if (!pref.isShown()) { // Skip invisible prefs.
+                continue;
+            }
+            if (prevPref == null) { // Skip first pref.
+                prevPref = pref;
+                continue;
+            }
+            assertTrue(
+                    prevPref.getTitle() + " should precede " + pref.getTitle(),
+                    pref.getOrder() > prevPref.getOrder());
+        }
     }
 
     @Test
@@ -410,6 +468,34 @@ public class MainSettingsFragmentTest {
                     Criteria.checkThat(
                             snackbarMessage.getText().toString(),
                             Matchers.is(expectedSnackbarMessage));
+                });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testPressingTurnOffSyncWhileTheUNOFlagIsEnabled() {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+
+        launchSettingsActivity();
+
+        onView(withText(R.string.sync_category_title)).perform(click());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText(R.string.turn_off_sync)).perform(click());
+        onView(withText(R.string.continue_button)).perform(click());
+        Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNotNull(
+                mSyncTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
+
+        Activity activity = mSettingsActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SnackbarManager snackbarManager =
+                            ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+                    Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(false));
+                    TextView snackbarMessage = activity.findViewById(R.id.snackbar_message);
+                    Criteria.checkThat(snackbarMessage, Matchers.nullValue());
                 });
     }
 
@@ -782,6 +868,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/362211398")
     public void
             testAccountManagementRowForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
                     throws InterruptedException {

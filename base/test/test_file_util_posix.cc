@@ -12,11 +12,11 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/notimplemented.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -115,8 +115,8 @@ FilePermissionRestorer::FilePermissionRestorer(const FilePath& path)
 }
 
 FilePermissionRestorer::~FilePermissionRestorer() {
-  if (!RestorePermissionInfo(path_, info_, length_))
-    NOTREACHED();
+  const bool success = RestorePermissionInfo(path_, info_, length_);
+  CHECK(success);
 }
 
 }  // namespace base

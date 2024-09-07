@@ -25,15 +25,11 @@ TEST(PickerMathSearchTest, NoResult) {
 TEST(PickerMathSearchTest, OnePlusOneEqualsTwo) {
   EXPECT_THAT(
       PickerMathSearch(u"1 + 1"),
-      Optional(AllOf(
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::TextData>(Field(
-                  "text", &PickerSearchResult::TextData::primary_text, u"2"))),
-          Property("data", &PickerSearchResult::data,
-                   VariantWith<PickerSearchResult::TextData>(
-                       Field("source", &PickerSearchResult::TextData::source,
-                             PickerSearchResult::TextData::Source::kMath))))));
+      Optional(AllOf(VariantWith<PickerTextResult>(
+                         Field("text", &PickerTextResult::primary_text, u"2")),
+                     VariantWith<PickerTextResult>(
+                         Field("source", &PickerTextResult::source,
+                               PickerTextResult::Source::kMath)))));
 }
 
 TEST(PickerMathSearchTest, ReturnsExamples) {
@@ -41,15 +37,11 @@ TEST(PickerMathSearchTest, ReturnsExamples) {
   EXPECT_THAT(results, Not(IsEmpty()));
   EXPECT_THAT(
       results,
-      Each(Property(
-          "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::SearchRequestData>(AllOf(
-              Field("primary_text",
-                    &PickerSearchResult::SearchRequestData::primary_text,
-                    Not(IsEmpty())),
-              Field("secondary_text",
-                    &PickerSearchResult::SearchRequestData::secondary_text,
-                    Not(IsEmpty())))))));
+      Each(VariantWith<PickerSearchRequestResult>(AllOf(
+          Field("primary_text", &PickerSearchRequestResult::primary_text,
+                Not(IsEmpty())),
+          Field("secondary_text", &PickerSearchRequestResult::secondary_text,
+                Not(IsEmpty()))))));
 }
 
 }  // namespace

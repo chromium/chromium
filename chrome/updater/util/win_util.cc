@@ -58,6 +58,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/win/atl.h"
+#include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
@@ -574,150 +575,16 @@ HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
   return ShellExecuteAndWait(file_path, parameters, L"runas");
 }
 
-// Based on https://learn.microsoft.com/en-us/archive/blogs/aaron_margosis/
-// faq-how-do-i-start-a-program-as-the-desktop-user-from-an-elevated-app.
-HResultOr<DWORD> RunDeElevated(const base::CommandLine& command_line) {
-  const HWND hwnd = ::GetShellWindow();
-  if (!hwnd) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-
-  DWORD pid = 0;
-  if (!::GetWindowThreadProcessId(hwnd, &pid)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-
-  base::win::ScopedHandle shell_process(
-      ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
-  if (!shell_process.IsValid()) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-
-  CAccessToken token;
-  if (!token.GetProcessToken(MAXIMUM_ALLOWED)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  CTokenPrivileges previous_privileges;
-  if (!token.EnablePrivilege(SE_IMPERSONATE_NAME, &previous_privileges)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  absl::Cleanup restore_previous_privileges = [&] {
-    token.EnableDisablePrivileges(previous_privileges);
-  };
-
-  CAccessToken shell_token;
-  if (!shell_token.GetProcessToken(TOKEN_DUPLICATE, shell_process.Get())) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-
-  CAccessToken duplicated_shell_token;
-  if (!shell_token.CreatePrimaryToken(
-          &duplicated_shell_token, TOKEN_QUERY | TOKEN_ASSIGN_PRIMARY |
-                                       TOKEN_DUPLICATE | TOKEN_ADJUST_DEFAULT |
-                                       TOKEN_ADJUST_SESSIONID)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-
-  STARTUPINFO startupinfo = {};
-  PROCESS_INFORMATION pi = {};
-  if (!::CreateProcessWithTokenW(
-          duplicated_shell_token.GetHandle(), 0,
-          command_line.GetProgram().value().c_str(),
-          std::wstring(command_line.GetCommandLineString()).data(), 0, nullptr,
-          nullptr, &startupinfo, &pi)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-
-  ::CloseHandle(pi.hThread);
-  const base::Process process(pi.hProcess);
-  pid = process.Pid();
-  VLOG(1) << __func__ << ": Started process, PID: " << pid;
-
-  // Allow the spawned process to show windows in the foreground.
-  if (!::AllowSetForegroundWindow(pid)) {
-    VPLOG(1) << __func__ << ": ::AllowSetForegroundWindow failed";
-  }
-
-  int ret_val = 0;
-  if (!process.WaitForExit(&ret_val)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-
-  return base::ok(static_cast<DWORD>(ret_val));
-}
-
-HRESULT RunDeElevatedNoWait(const std::wstring& path,
-                            const std::wstring& parameters) {
-  Microsoft::WRL::ComPtr<IShellWindows> shell;
-  HRESULT hr = ::CoCreateInstance(CLSID_ShellWindows, nullptr,
-                                  CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&shell));
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  long hwnd = 0;
-  Microsoft::WRL::ComPtr<IDispatch> dispatch;
-  hr = shell->FindWindowSW(base::win::ScopedVariant(CSIDL_DESKTOP).AsInput(),
-                           base::win::ScopedVariant().AsInput(), SWC_DESKTOP,
-                           &hwnd, SWFO_NEEDDISPATCH, &dispatch);
-  if (hr == S_FALSE || FAILED(hr)) {
-    return hr == S_FALSE ? E_FAIL : hr;
-  }
-
-  Microsoft::WRL::ComPtr<IServiceProvider> service;
-  hr = dispatch.As(&service);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IShellBrowser> browser;
-  hr = service->QueryService(SID_STopLevelBrowser, IID_PPV_ARGS(&browser));
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IShellView> view;
-  hr = browser->QueryActiveShellView(&view);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  hr = view->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&dispatch));
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IShellFolderViewDual> folder;
-  hr = dispatch.As(&folder);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  hr = folder->get_Application(&dispatch);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IShellDispatch2> shell_dispatch;
-  hr = dispatch.As(&shell_dispatch);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  return shell_dispatch->ShellExecute(
-      base::win::ScopedBstr(path).Get(),
-      base::win::ScopedVariant(parameters.c_str()),
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant);
-}
-
 HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
   if (!IsElevatedWithUACOn()) {
     auto process = base::LaunchProcess(cmd_line, {});
     return process.IsValid() ? S_OK : HRESULTFromLastError();
   }
 
+  // Custom processing is used here instead of using
+  // `base::CommandLine::FromString` because this `cmd_line` string can have a
+  // parameter format that is different from what is expected of
+  // `base::CommandLine` parameters.
   std::wstring command_format = cmd_line;
   int num_args = 0;
   base::win::ScopedLocalAllocTyped<wchar_t*> argv(
@@ -727,7 +594,7 @@ HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
     return E_INVALIDARG;
   }
 
-  return RunDeElevatedNoWait(
+  return base::win::RunDeElevatedNoWait(
       argv.get()[0],
       base::JoinString(
           [&]() -> std::vector<std::wstring> {

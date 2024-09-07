@@ -70,7 +70,8 @@ bool HasDocType(const WebDocument& doc) {
 // https://crbug.com/788788
 #if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_DomSerializerTests DISABLED_DomSerializerTests
-#elif defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER)
+#elif defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    defined(ADDRESS_SANITIZER)
 // http://crbug.com/1350508
 #define MAYBE_DomSerializerTests DISABLED_DomSerializerTests
 #else

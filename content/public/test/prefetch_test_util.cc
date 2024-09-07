@@ -68,8 +68,7 @@ TestPrefetchWatcherImpl::~TestPrefetchWatcherImpl() {
 
 void TestPrefetchWatcherImpl::OnPrefetchResponseCompleted(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  const PrefetchContainer::Key& key =
-      prefetch_container->GetPrefetchContainerKey();
+  const PrefetchContainer::Key& key = prefetch_container->key();
   response_completed_prefetches_.emplace(key, prefetch_container);
   if (response_completed_quit_closures_.contains(key)) {
     auto quit_closure = std::move(response_completed_quit_closures_[key]);

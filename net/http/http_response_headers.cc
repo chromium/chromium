@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -907,9 +908,8 @@ size_t HttpResponseHeaders::FindHeader(size_t from,
   return std::string::npos;
 }
 
-bool HttpResponseHeaders::GetCacheControlDirective(
-    std::string_view directive,
-    base::TimeDelta* result) const {
+std::optional<base::TimeDelta> HttpResponseHeaders::GetCacheControlDirective(
+    std::string_view directive) const {
   static constexpr std::string_view name("cache-control");
   std::string value;
 
@@ -945,11 +945,10 @@ bool HttpResponseHeaders::GetCacheControlDirective(
     // string. For the overflow case we use
     // base::TimeDelta::FiniteMax().InSeconds().
     seconds = std::min(seconds, base::TimeDelta::FiniteMax().InSeconds());
-    *result = base::Seconds(seconds);
-    return true;
+    return base::Seconds(seconds);
   }
 
-  return false;
+  return std::nullopt;
 }
 
 void HttpResponseHeaders::AddHeader(std::string::const_iterator name_begin,
@@ -1209,28 +1208,30 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
   // Cache-Control directive must_revalidate overrides stale-while-revalidate.
   bool must_revalidate = HasHeaderValue("cache-control", "must-revalidate");
 
-  if (must_revalidate || !GetStaleWhileRevalidateValue(&lifetimes.staleness)) {
-    DCHECK_EQ(base::TimeDelta(), lifetimes.staleness);
-  }
+  lifetimes.staleness =
+      must_revalidate
+          ? base::TimeDelta()
+          : GetStaleWhileRevalidateValue().value_or(base::TimeDelta());
 
   // NOTE: "Cache-Control: max-age" overrides Expires, so we only check the
   // Expires header after checking for max-age in GetFreshnessLifetimes.  This
   // is important since "Expires: <date in the past>" means not fresh, but
   // it should not trump a max-age value.
-  if (GetMaxAgeValue(&lifetimes.freshness))
+  std::optional<base::TimeDelta> max_age_value = GetMaxAgeValue();
+  if (max_age_value) {
+    lifetimes.freshness = max_age_value.value();
     return lifetimes;
+  }
 
   // If there is no Date header, then assume that the server response was
   // generated at the time when we received the response.
-  Time date_value;
-  if (!GetDateValue(&date_value))
-    date_value = response_time;
+  Time date_value = GetDateValue().value_or(response_time);
 
-  Time expires_value;
-  if (GetExpiresValue(&expires_value)) {
+  std::optional<Time> expires_value = GetExpiresValue();
+  if (expires_value) {
     // The expires value can be a date in the past!
     if (expires_value > date_value) {
-      lifetimes.freshness = expires_value - date_value;
+      lifetimes.freshness = expires_value.value() - date_value;
       return lifetimes;
     }
 
@@ -1267,11 +1268,11 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
        response_code_ == HTTP_PARTIAL_CONTENT) &&
       !must_revalidate) {
     // TODO(darin): Implement a smarter heuristic.
-    Time last_modified_value;
-    if (GetLastModifiedValue(&last_modified_value)) {
+    std::optional<Time> last_modified_value = GetLastModifiedValue();
+    if (last_modified_value) {
       // The last-modified value can be a date in the future!
-      if (last_modified_value <= date_value) {
-        lifetimes.freshness = (date_value - last_modified_value) / 10;
+      if (last_modified_value.value() <= date_value) {
+        lifetimes.freshness = (date_value - last_modified_value.value()) / 10;
         return lifetimes;
       }
     }
@@ -1343,14 +1344,10 @@ base::TimeDelta HttpResponseHeaders::GetCurrentAge(
     const Time& current_time) const {
   // If there is no Date header, then assume that the server response was
   // generated at the time when we received the response.
-  Time date_value;
-  if (!GetDateValue(&date_value))
-    date_value = response_time;
+  Time date_value = GetDateValue().value_or(response_time);
 
-  // If there is no Age header, then assume age is zero.  GetAgeValue does not
-  // modify its out param if the value does not exist.
-  base::TimeDelta age_value;
-  GetAgeValue(&age_value);
+  // If there is no Age header, then assume age is zero.
+  base::TimeDelta age_value = GetAgeValue().value_or(base::TimeDelta());
 
   base::TimeDelta apparent_age =
       std::max(base::TimeDelta(), response_time - date_value);
@@ -1364,14 +1361,14 @@ base::TimeDelta HttpResponseHeaders::GetCurrentAge(
   return current_age;
 }
 
-bool HttpResponseHeaders::GetMaxAgeValue(base::TimeDelta* result) const {
-  return GetCacheControlDirective("max-age", result);
+std::optional<base::TimeDelta> HttpResponseHeaders::GetMaxAgeValue() const {
+  return GetCacheControlDirective("max-age");
 }
 
-bool HttpResponseHeaders::GetAgeValue(base::TimeDelta* result) const {
+std::optional<base::TimeDelta> HttpResponseHeaders::GetAgeValue() const {
   std::string value;
   if (!EnumerateHeader(nullptr, "Age", &value))
-    return false;
+    return std::nullopt;
 
   // Parse the delta-seconds as 1*DIGIT.
   uint32_t seconds;
@@ -1383,36 +1380,35 @@ bool HttpResponseHeaders::GetAgeValue(base::TimeDelta* result) const {
       // caches should transmit values that overflow.
       seconds = std::numeric_limits<decltype(seconds)>::max();
     } else {
-      return false;
+      return std::nullopt;
     }
   }
 
-  *result = base::Seconds(seconds);
-  return true;
+  return base::Seconds(seconds);
 }
 
-bool HttpResponseHeaders::GetDateValue(Time* result) const {
-  return GetTimeValuedHeader("Date", result);
+std::optional<Time> HttpResponseHeaders::GetDateValue() const {
+  return GetTimeValuedHeader("Date");
 }
 
-bool HttpResponseHeaders::GetLastModifiedValue(Time* result) const {
-  return GetTimeValuedHeader("Last-Modified", result);
+std::optional<Time> HttpResponseHeaders::GetLastModifiedValue() const {
+  return GetTimeValuedHeader("Last-Modified");
 }
 
-bool HttpResponseHeaders::GetExpiresValue(Time* result) const {
-  return GetTimeValuedHeader("Expires", result);
+std::optional<Time> HttpResponseHeaders::GetExpiresValue() const {
+  return GetTimeValuedHeader("Expires");
 }
 
-bool HttpResponseHeaders::GetStaleWhileRevalidateValue(
-    base::TimeDelta* result) const {
-  return GetCacheControlDirective("stale-while-revalidate", result);
+std::optional<base::TimeDelta>
+HttpResponseHeaders::GetStaleWhileRevalidateValue() const {
+  return GetCacheControlDirective("stale-while-revalidate");
 }
 
-bool HttpResponseHeaders::GetTimeValuedHeader(const std::string& name,
-                                              Time* result) const {
+std::optional<Time> HttpResponseHeaders::GetTimeValuedHeader(
+    const std::string& name) const {
   std::string value;
   if (!EnumerateHeader(nullptr, name, &value))
-    return false;
+    return std::nullopt;
 
   // In case of parsing the Expires header value, an invalid string 0 should be
   // treated as expired according to the RFC 9111 section 5.3 as below:
@@ -1422,8 +1418,7 @@ bool HttpResponseHeaders::GetTimeValuedHeader(const std::string& name,
   if (base::FeatureList::IsEnabled(
           features::kTreatHTTPExpiresHeaderValueZeroAsExpired) &&
       name == "Expires" && value == "0") {
-    *result = Time::Min();
-    return true;
+    return Time::Min();
   }
 
   // When parsing HTTP dates it's beneficial to default to GMT because:
@@ -1433,11 +1428,14 @@ bool HttpResponseHeaders::GetTimeValuedHeader(const std::string& name,
   //    (crbug.com/135131) this better matches our cookie expiration
   //    time parser which ignores timezone specifiers and assumes GMT.
   // 4. This is exactly what Firefox does.
-  // TODO(pauljensen): The ideal solution would be to return false if the
-  // timezone could not be understood so as to avoid makeing other calculations
+  // TODO(pauljensen): The ideal solution would be to return std::nullopt if the
+  // timezone could not be understood so as to avoid making other calculations
   // based on an incorrect time.  This would require modifying the time
   // library or duplicating the code. (http://crbug.com/158327)
-  return Time::FromUTCString(value.c_str(), result);
+  Time result;
+  return Time::FromUTCString(value.c_str(), &result)
+             ? std::make_optional(result)
+             : std::nullopt;
 }
 
 // We accept the first value of "close" or "keep-alive" in a Connection or

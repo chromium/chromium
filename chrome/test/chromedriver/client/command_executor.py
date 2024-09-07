@@ -281,7 +281,7 @@ class CommandExecutor(object):
     self._http_timeout = 10
     # see https://crbug.com/1045241: short timeout seems to introduce flakiness
     if util.IsMac() or util.IsWindows():
-      self._http_timeout = 30
+      self._http_timeout = 60
     if http_timeout is not None:
       self._http_timeout = http_timeout
     self._http_client = http.client.HTTPConnection(

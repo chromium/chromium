@@ -173,8 +173,9 @@ ui::WindowShowState DetermineWindowShowState(Profile* profile,
   if (!extension || container != apps::LaunchContainer::kLaunchContainerWindow)
     return ui::SHOW_STATE_DEFAULT;
 
-  if (chrome::IsRunningInForcedAppMode())
+  if (IsRunningInForcedAppMode()) {
     return ui::SHOW_STATE_FULLSCREEN;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ash, LAUNCH_TYPE_FULLSCREEN launches in a maximized app window and
@@ -496,7 +497,6 @@ WebContents* NavigateApplicationWindow(Browser* browser,
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionApp(extension);
   }
-  web_app::SetAppPrefsForWebContents(web_contents);
 
   return web_contents;
 }

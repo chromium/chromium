@@ -69,7 +69,7 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
       CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
           url_loader_factory) override;
   URLLoaderFactory* GetScriptLoaderFactory() override;
-  void WillSendRequest(WebURLRequest&) override;
+  void FinalizeRequest(WebURLRequest&) override;
   WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest& request) override;
   mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()

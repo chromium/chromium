@@ -15,7 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/authpolicy/data_pipe_utils.h"
+#include "chrome/browser/ash/kerberos/data_pipe_utils.h"
 #include "chrome/browser/ash/kerberos/kerberos_ticket_expiry_notification.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

@@ -45,8 +45,6 @@
 #import "components/variations/service/variations_service.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/browser_state/model/chrome_browser_state_manager_impl.h"
-#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/component_updater/model/ios_component_updater_configurator.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/application_breadcrumbs_logger.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -56,18 +54,21 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
-#import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_api.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_controller.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
@@ -209,7 +210,7 @@ void ApplicationContextImpl::StartTearDown() {
   }
 
   // Need to clear browser states before the IO thread.
-  chrome_browser_state_manager_.reset();
+  profile_manager_.reset();
 
   // The policy providers managed by `browser_policy_connector_` need to shut
   // down while the IO threads is still alive. The monitoring framework owned by
@@ -311,22 +312,13 @@ const std::string& ApplicationContextImpl::GetApplicationCountry() {
   return application_country_;
 }
 
-// TODO(crbug.com/358299872): After all usage has changed to
-// GetProfileManager(), remove this method.
-ChromeBrowserStateManager*
-ApplicationContextImpl::GetChromeBrowserStateManager() {
+ProfileManagerIOS* ApplicationContextImpl::GetProfileManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetProfileManager();
-}
-
-ChromeBrowserStateManager* ApplicationContextImpl::GetProfileManager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!chrome_browser_state_manager_) {
-    chrome_browser_state_manager_ =
-        std::make_unique<ChromeBrowserStateManagerImpl>(
-            GetLocalState(), base::PathService::CheckedGet(ios::DIR_USER_DATA));
+  if (!profile_manager_) {
+    profile_manager_ = std::make_unique<ProfileManagerIOSImpl>(
+        GetLocalState(), base::PathService::CheckedGet(ios::DIR_USER_DATA));
   }
-  return chrome_browser_state_manager_.get();
+  return profile_manager_.get();
 }
 
 metrics_services_manager::MetricsServicesManager*
@@ -521,17 +513,8 @@ SystemIdentityManager* ApplicationContextImpl::GetSystemIdentityManager() {
 AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!account_profile_mapper_) {
-    ChromeBrowserStateManager* manager = GetChromeBrowserStateManager();
-    BrowserStateInfoCache* info_cache = manager->GetBrowserStateInfoCache();
-    size_t profile_count = info_cache->GetNumberOfBrowserStates();
-    if (profile_count == 0) {
-      // This case can happens on the first startup.
-      // TODO(crbug.com/331783685): AccountProfileMapper needs to listen for
-      // profiles being added and removed.
-      profile_count = 1;
-    }
-    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-        GetSystemIdentityManager(), profile_count);
+    account_profile_mapper_ =
+        std::make_unique<AccountProfileMapper>(GetSystemIdentityManager());
   }
   return account_profile_mapper_.get();
 }
@@ -539,8 +522,8 @@ AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
 IncognitoSessionTracker* ApplicationContextImpl::GetIncognitoSessionTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!incognito_session_tracker_) {
-    incognito_session_tracker_ = std::make_unique<IncognitoSessionTracker>(
-        GetChromeBrowserStateManager());
+    incognito_session_tracker_ =
+        std::make_unique<IncognitoSessionTracker>(GetProfileManager());
   }
   return incognito_session_tracker_.get();
 }
@@ -555,13 +538,16 @@ PushNotificationService* ApplicationContextImpl::GetPushNotificationService() {
   return push_notification_service_.get();
 }
 
-UpgradeCenter* ApplicationContextImpl::GetUpgradeCenter() {
+AdditionalFeaturesController*
+ApplicationContextImpl::GetAdditionalFeaturesController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!upgrade_center_) {
-    upgrade_center_ = [[UpgradeCenter alloc] init];
-    DCHECK(upgrade_center_);
+  if (!additional_features_controller_) {
+    // TODO(crbug.com/355550974): Uncomment the following once the API is
+    // implemented.
+    /*additional_features_controller_ =
+        ios::provider::CreateAdditionalFeaturesController();*/
   }
-  return upgrade_center_;
+  return additional_features_controller_.get();
 }
 
 os_crypt_async::OSCryptAsync* ApplicationContextImpl::GetOSCryptAsync() {
@@ -618,11 +604,9 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
   // Request saving the local state prefs and all loaded ChromeBrowserStates'
   // prefs (taking care not to create the objects if they have not been created
   // yet).
-  if (chrome_browser_state_manager_) {
-    std::vector<ChromeBrowserState*> loaded_browser_states =
-        chrome_browser_state_manager_->GetLoadedBrowserStates();
-
-    for (ChromeBrowserState* browser_state : loaded_browser_states) {
+  if (profile_manager_) {
+    for (ChromeBrowserState* browser_state :
+         profile_manager_->GetLoadedProfiles()) {
       switch (app_state) {
         case AppState::kForeground:
           // Nothing extra to do when entering foreground.

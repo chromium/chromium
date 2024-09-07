@@ -19,7 +19,6 @@ class ChromeMallUIDelegate : public MallUIDelegate {
 
  private:
   raw_ptr<content::WebUI> web_ui_;  // Owns `this`.
-  apps::DeviceInfoManager device_info_manager_;
 };
 
 }  // namespace ash

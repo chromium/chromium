@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -18,9 +19,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-using chrome_test_util::ManualFallbackPasswordIconMatcher;
-using chrome_test_util::ManualFallbackPasswordTableViewMatcher;
-using chrome_test_util::ManualFallbackProfilesIconMatcher;
 using chrome_test_util::TapWebElementWithId;
 
 namespace {
@@ -35,7 +33,7 @@ id<GREYMatcher> KeyboardAccessoryAddressManualFill() {
   return [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
              ? grey_accessibilityLabel(l10n_util::GetNSString(
                    IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA))
-             : ManualFallbackProfilesIconMatcher();
+             : manual_fill::ProfilesIconMatcher();
 }
 
 // Matcher for the username chip button of a password option shown in the manual
@@ -149,9 +147,9 @@ id<GREYMatcher> UsernameChipButton() {
       performAction:TapWebElementWithId(kFormElementNormal)];
 
   // Tap the password icon to open manual fallback.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Confirm that the password option is visible.

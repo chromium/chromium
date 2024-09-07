@@ -344,6 +344,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Returns the appropriate meta key present on the given keyboard.
   ui::mojom::MetaKey GetMetaKey(const KeyboardDevice& keyboard) const;
+  ui::mojom::MetaKey GetMetaKey(int device_id) const;
 
   // Returns the meta key to display in the UI to represent the overall current
   // keyboard situation. This will only return either Launcher, Search, or
@@ -377,6 +378,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
       const KeyboardDevice& keyboard) const;
   const std::vector<TopRowActionKey>* GetTopRowActionKeys(int device_id) const;
 
+  // Whether or not the given keyboard is a split modifier keyboard and
+  // qualifies to forcibly enable features.
+  bool IsSplitModifierKeyboardForOverride(const KeyboardDevice& keyboard) const;
+
   void SetBoardNameForTesting(const std::string& board_name);
 
   const base::flat_map<int, KeyboardInfo>& keyboard_info_map() const {
@@ -386,6 +391,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool IsModifierSplitEnabled() const {
     return modifier_split_dogfood_controller_->IsEnabled();
   }
+
+  void ForceEnableFeature();
 
   void ResetModifierSplitDogfoodControllerForTesting();
 

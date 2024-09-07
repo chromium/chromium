@@ -76,6 +76,9 @@
   <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY" desc="Title for Third-Party Sign In settings, which control whether websites can access browser third-party sign in API.">
     Third-party sign-in
   </message>
+  <message name="IDS_HAND_TRACKING_PERMISSION_TITLE" desc="Title of the permission to use Hand tracking [CHAR_LIMIT=32]">
+    Hand tracking
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_USE_MIC" desc="The category filter 'Mic' for site settings.">
     Microphone
   </message>
@@ -652,6 +655,21 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_FEDERATED_IDENTITY_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to use AR. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can show sign-in prompts. When off, sites can't show sign-in prompts.
+  </message>
+
+
+  <!-- Hand Tracking -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HAND_TRACKING_ASK" desc="Summary text explaining that sites need to ask for permission before using hand tracking and that it is the recommended setting.">
+    Ask before allowing sites to track your hands (recommended)
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HAND_TRACKING_BLOCKED" desc="Summary text explaining that sites are blocked from using hand tracking.">
+    Don't allow sites to track your hands
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HAND_TRACKING_A11Y" desc="The screen reader announcement describing a toggle with two option, controling whether sites can request permission to use hand tracking. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can ask to track your hands. When off, sites can’t track your hands.
+  </message>
+  <message name="IDS_ANDROID_HAND_TRACKING_PERMISSION_OFF" desc="The message to show when the hand tracking permission needs to be turned on in Android settings.">
+    To let <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> use hand tracking, also turn on hand tracking in <ph name="BEGIN_LINK">&lt;link&gt;</ph>system settings<ph name="END_LINK">&lt;/link&gt;</ph>.
   </message>
 
   <!-- Idle Detection -->

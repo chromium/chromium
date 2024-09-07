@@ -146,7 +146,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.custom_tabs_bottombar_item, parent, false);
         button.setId(mId);
-        button.setImageBitmap(mIcon);
+        button.setImageDrawable(getIcon(context));
         button.setContentDescription(mDescription);
         if (mPendingIntent == null) {
             button.setEnabled(false);
@@ -341,6 +341,30 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                 /* tinted= */ true,
                 /* onToolbar= */ true,
                 ButtonType.CCT_SHARE_BUTTON);
+    }
+
+    @VisibleForTesting
+    public static CustomButtonParams createOpenInBrowserButton(
+            Context context, int backgroundColor) {
+        int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
+        String description =
+                context.getResources().getString(R.string.menu_open_in_product_default);
+
+        TintedDrawable drawable =
+                TintedDrawable.constructTintedDrawable(
+                        context, R.drawable.ic_open_in_new_white_24dp);
+        boolean useLightTint = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
+        drawable.setTint(ThemeUtils.getThemedToolbarIconTint(context, useLightTint));
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+
+        return new CustomButtonParamsImpl(
+                id,
+                bitmap,
+                description,
+                /* pendingIntent= */ null,
+                /* tinted= */ true,
+                /* onToolbar= */ true,
+                ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
     }
 
     /**

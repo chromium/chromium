@@ -660,7 +660,7 @@ void EditContext::SetSelection(int start,
   selection_start_ = start;
   selection_end_ = end;
 
-  if (DomWindow()->GetFrame()) {
+  if (DomWindow() && DomWindow()->GetFrame()) {
     DomWindow()->GetFrame()->Client()->DidChangeSelection(
         /*is_selection_empty=*/selection_start_ == selection_end_,
         blink::SyncCondition::kNotForced);

@@ -159,6 +159,7 @@ export {SettingsDevicePageElement} from './device_page/device_page.js';
 export {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerSource, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
 export {SettingsDisplayElement} from './device_page/display.js';
 export {DisplayLayoutElement} from './device_page/display_layout.js';
+export {NightLightScheduleType} from './device_page/display_night_light.js';
 export {getDisplaySettingsProvider, setDisplaySettingsProviderForTesting} from './device_page/display_settings_mojo_interface_provider.js';
 export * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 export {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, fakeGraphicsTablets2, fakeKeyboards, fakeKeyboards2, fakeMice, fakeMice2, fakeMouseButtonActions, fakePointingSticks, fakePointingSticks2, fakeStyluses, fakeTouchpads, fakeTouchpads2} from './device_page/fake_input_device_data.js';

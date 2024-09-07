@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OMNIBOX_CLIENT_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OMNIBOX_CLIENT_H_
 
-#include <memory>
+#import <memory>
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 @protocol LensOmniboxClientDelegate;
 @protocol LensWebProvider;
 namespace feature_engagement {
@@ -69,6 +69,9 @@ class LensOmniboxClient final : public OmniboxClient {
   void DiscardNonCommittedNavigations() override;
   const std::u16string& GetTitle() const override;
   gfx::Image GetFavicon() const override;
+  void OnThumbnailRemoved() override;
+  void OnFocusChanged(OmniboxFocusState state,
+                      OmniboxFocusChangeReason reason) override;
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
@@ -90,6 +93,7 @@ class LensOmniboxClient final : public OmniboxClient {
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
   __weak id<LensWebProvider> web_provider_;
   __weak id<LensOmniboxClientDelegate> delegate_;
+  BOOL thumbnail_removed_in_session_;
 
   base::WeakPtrFactory<LensOmniboxClient> weak_factory_{this};
 };

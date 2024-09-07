@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -53,6 +54,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
@@ -432,7 +434,7 @@ void ServiceWorkerClientOwner::HasMainFrameWindowClient(
 ScopedServiceWorkerClient
 ServiceWorkerClientOwner::CreateServiceWorkerClientForWindow(
     bool are_ancestors_secure,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   auto client = std::make_unique<ServiceWorkerClient>(
       context_->AsWeakPtr(), are_ancestors_secure, frame_tree_node_id);
   auto weak_client = client->AsWeakPtr();
@@ -725,8 +727,12 @@ void ServiceWorkerContextCore::AddWarmUpRequest(
     const GURL& document_url,
     const blink::StorageKey& key,
     ServiceWorkerContext::WarmUpServiceWorkerCallback callback) {
+  // kSpeculativeServiceWorkerWarmUp enqueues navigation candidate URLs. This is
+  // the queue length of the candidate URLs.
   static const size_t kRequestQueueLength =
-      blink::features::kSpeculativeServiceWorkerWarmUpRequestQueueLength.Get();
+      base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kSpeculativeServiceWorkerWarmUp,
+          "sw_warm_up_request_queue_length", 1000);
 
   // Erase redundant warm-up requests.
   std::vector<ServiceWorkerContext::WarmUpServiceWorkerCallback>
@@ -955,7 +961,11 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
     observer_list_->Notify(FROM_HERE,
                            &ServiceWorkerContextCoreObserver::OnStopped, id);
     for (auto& observer : sync_observer_list_->observers) {
-      observer.OnStopped(id, version->scope());
+      const std::optional<ServiceWorkerRunningInfo> running_info =
+          wrapper_->GetRunningServiceWorkerInfo(id);
+      if (running_info.has_value()) {
+        observer.OnStopped(id, /*worker_info=*/running_info.value());
+      }
     }
   }
 
@@ -1023,7 +1033,12 @@ void ServiceWorkerContextCore::DeleteAndStartOver(StatusCallback callback) {
   for (const auto& live_version_itr : live_versions_) {
     ServiceWorkerVersion* live_version = live_version_itr.second;
     for (auto& observer : sync_observer_list_->observers) {
-      observer.OnStopped(live_version->version_id(), live_version->scope());
+      const std::optional<ServiceWorkerRunningInfo> running_info =
+          wrapper_->GetRunningServiceWorkerInfo(live_version->version_id());
+      if (running_info.has_value()) {
+        observer.OnStopped(live_version->version_id(),
+                           /*worker_info=*/running_info.value());
+      }
     }
   }
 
@@ -1214,7 +1229,12 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
                              &ServiceWorkerContextCoreObserver::OnStopped,
                              version->version_id());
       for (auto& observer : sync_observer_list_->observers) {
-        observer.OnStopped(version->version_id(), version->scope());
+        const std::optional<ServiceWorkerRunningInfo> running_info =
+            wrapper_->GetRunningServiceWorkerInfo(version->version_id());
+        if (running_info.has_value()) {
+          observer.OnStopped(version->version_id(),
+                             /*worker_info=*/running_info.value());
+        }
       }
       break;
     case blink::EmbeddedWorkerStatus::kStarting:

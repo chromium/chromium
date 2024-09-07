@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_form_cache_impl.h"
 
+#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 
@@ -13,16 +14,18 @@ PasswordFormCacheImpl::PasswordFormCacheImpl() = default;
 
 PasswordFormCacheImpl::~PasswordFormCacheImpl() = default;
 
-bool PasswordFormCacheImpl::HasPasswordForm(
+const PasswordForm* PasswordFormCacheImpl::GetPasswordForm(
     PasswordManagerDriver* driver,
     autofill::FormRendererId form_id) const {
-  return GetMatchedManager(driver, form_id) != nullptr;
+  const PasswordFormManager* form_manager = GetMatchedManager(driver, form_id);
+  return form_manager ? form_manager->GetParsedObservedForm() : nullptr;
 }
 
-bool PasswordFormCacheImpl::HasPasswordForm(
+const PasswordForm* PasswordFormCacheImpl::GetPasswordForm(
     PasswordManagerDriver* driver,
     autofill::FieldRendererId field_id) const {
-  return GetMatchedManager(driver, field_id) != nullptr;
+  const PasswordFormManager* form_manager = GetMatchedManager(driver, field_id);
+  return form_manager ? form_manager->GetParsedObservedForm() : nullptr;
 }
 
 PasswordFormManager* PasswordFormCacheImpl::GetMatchedManager(

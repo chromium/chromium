@@ -16,6 +16,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
+#include "net/http/http_stream_key.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -186,6 +187,9 @@ class FakeStreamSocket : public MockClientSocket {
   bool was_ever_used_ = false;
   std::optional<SSLInfo> ssl_info_;
 };
+
+// Convert a ClientSocketPool::GroupId to an HttpStreamKey.
+HttpStreamKey GroupIdToHttpStreamKey(const ClientSocketPool::GroupId& group_id);
 
 }  // namespace net
 

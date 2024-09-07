@@ -80,6 +80,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
@@ -1385,7 +1386,7 @@ void DevToolsWindow::ActivateContents(WebContents* contents) {
   }
 }
 
-void DevToolsWindow::AddNewContents(
+WebContents* DevToolsWindow::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -1406,7 +1407,7 @@ void DevToolsWindow::AddNewContents(
       toolbox_web_contents_->GetRenderWidgetHostView()->SetSize(size);
     }
     UpdateBrowserWindow();
-    return;
+    return nullptr;
   }
 
   WebContents* inspected_web_contents = GetInspectedWebContents();
@@ -1415,6 +1416,7 @@ void DevToolsWindow::AddNewContents(
         source, std::move(new_contents), target_url, disposition,
         window_features, user_gesture, was_blocked);
   }
+  return nullptr;
 }
 
 void DevToolsWindow::WebContentsCreated(WebContents* source_contents,
@@ -1981,7 +1983,9 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
   checked_sharing_process_id_ = rph_id;
 
   if (!base::FeatureList::IsEnabled(
-          ::features::kDevToolsSharedProcessInfobar)) {
+          ::features::kDevToolsSharedProcessInfobar) ||
+      !base::FeatureList::IsEnabled(
+          ::features::kProcessPerSiteUpToMainFrameThreshold)) {
     return;
   }
 

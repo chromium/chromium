@@ -57,7 +57,10 @@ def FetchValues(file_list, is_official_build=None):
     FetchValuesFromFile(values, file_name)
 
   script_dirname = os.path.dirname(os.path.realpath(__file__))
-  lastchange_filename = os.path.join(script_dirname, "LASTCHANGE")
+  if official_build == '1':
+    lastchange_filename = os.path.join(script_dirname, "LASTCHANGE")
+  else:
+    lastchange_filename = os.path.join(script_dirname, "LASTCHANGE.dummy")
   lastchange_values = {}
   FetchValuesFromFile(lastchange_values, lastchange_filename)
 

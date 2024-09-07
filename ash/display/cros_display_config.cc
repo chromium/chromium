@@ -5,7 +5,7 @@
 #include "ash/display/cros_display_config.h"
 
 #include <optional>
-#include <strstream>
+#include <sstream>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -923,6 +923,11 @@ void CrosDisplayConfig::OverscanCalibration(
       std::move(callback).Run(
           crosapi::mojom::DisplayConfigResult::kInvalidOperationError);
       return;
+    case crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays:
+      DISPLAY_LOG(ERROR) << "Operation not supported: " << op;
+      std::move(callback).Run(
+          crosapi::mojom::DisplayConfigResult::kInvalidOperationError);
+      return;
   }
   std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
 }
@@ -932,6 +937,31 @@ void CrosDisplayConfig::TouchCalibration(
     crosapi::mojom::DisplayConfigOperation op,
     crosapi::mojom::TouchCalibrationPtr calibration,
     TouchCalibrationCallback callback) {
+  // For native touch display mapping.
+  if (op ==
+      crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays) {
+    if (touch_calibrator_ && touch_calibrator_->IsCalibrating()) {
+      DISPLAY_LOG(ERROR) << "Touch calibration already active.";
+      std::move(callback).Run(
+          crosapi::mojom::DisplayConfigResult::kCalibrationInProgressError);
+      return;
+    }
+    if (!touch_calibrator_) {
+      touch_calibrator_ = std::make_unique<TouchCalibratorController>();
+    }
+    // For native calibration, |callback| is not run until calibration
+    // completes.
+    touch_calibrator_->StartNativeTouchscreenMappingExperience(base::BindOnce(
+        [](TouchCalibrationCallback callback, bool result) {
+          std::move(callback).Run(
+              result ? crosapi::mojom::DisplayConfigResult::kSuccess
+                     : crosapi::mojom::DisplayConfigResult::
+                           kCalibrationFailedError);
+        },
+        std::move(callback)));
+    return;
+  }
+
   display::Display display = GetDisplay(display_id);
   if (display.id() == display::kInvalidDisplayId) {
     std::move(callback).Run(

@@ -612,16 +612,23 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   const std::string seed_str = base::NumberToString(params.seed);
   std::optional<std::string> relative_manifest_id;
   if (random.next_bool()) {
-    std::string path = "manifest_id_" + seed_str;
+    std::string manifest_id_path = "manifest_id_" + seed_str;
     if (random.next_bool()) {
-      path += "?query=test";
+      manifest_id_path += "?query=test";
     }
     if (random.next_bool()) {
-      path += "#fragment";
+      manifest_id_path += "#fragment";
     }
-    relative_manifest_id = path;
+    relative_manifest_id = manifest_id_path;
   }
-  const GURL scope = params.base_url.Resolve("scope" + seed_str + "/");
+  std::string scope_path = "scope" + seed_str + "/";
+  if (random.next_bool()) {
+    scope_path += "?query=test";
+  }
+  if (random.next_bool()) {
+    scope_path += "#fragment";
+  }
+  const GURL scope(params.base_url.Resolve(scope_path));
   const GURL start_url = scope.Resolve("start" + seed_str);
   const webapps::AppId app_id = GenerateAppId(relative_manifest_id, start_url);
 

@@ -330,8 +330,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
         // support. This is easy to confuse with with an address line 1 field.
         // This is currently allowlisted for MX which prefers pairs of
         // street location and address overflow fields.
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableParsingOfStreetLocation) &&
         context.client_country == GeoIpCountryCode("MX") &&
         ParseField(context, scanner, street_location_patterns,
                    &street_location_, "ADDRESS_HOME_STREET_LOCATION")) {
@@ -351,8 +349,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
     }
     if (!(between_streets_or_landmark_ || between_streets_ ||
           between_streets_line_1_ || between_streets_line_2_) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForBetweenStreetsOrLandmark) &&
         i18n_model_definition::IsTypeEnabledForCountry(
             ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, country_code) &&
         ParseField(context, scanner, between_streets_or_landmark_patterns,
@@ -362,8 +358,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
     }
 
     if (!(overflow_and_landmark_ || overflow_) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForAddressOverflowAndLandmark) &&
         i18n_model_definition::IsTypeEnabledForCountry(
             ADDRESS_HOME_OVERFLOW_AND_LANDMARK, country_code) &&
         ParseField(context, scanner, overflow_and_landmark_patterns,
@@ -375,8 +369,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
     // we don't want them both to be in the same form section. This would
     // probably point to some problem in the classification.
     if (!(overflow_and_landmark_ || overflow_) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForAddressOverflow) &&
         i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_OVERFLOW,
                                                        country_code) &&
         ParseField(context, scanner, overflow_patterns, &overflow_,
@@ -394,10 +386,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
-    // TODO(crbug.com/40734406): Remove finch guard once launched.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForApartmentNumbers) &&
-        !apartment_number_ &&
+    if (!apartment_number_ &&
         i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_APT_NUM,
                                                        country_code) &&
         ParseField(context, scanner, apartment_number_patterns,
@@ -405,9 +394,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForBetweenStreets) &&
-        i18n_model_definition::IsTypeEnabledForCountry(
+    if (i18n_model_definition::IsTypeEnabledForCountry(
             ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
       if (!between_streets_ && !between_streets_line_1_ &&
           ParseField(context, scanner, between_streets_patterns,
@@ -762,9 +749,7 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
       base::FeatureList::IsEnabled(
           features::kAutofillEnableLabelPrecedenceForTurkishAddresses)) {
     std::swap(results_to_match[0], results_to_match[1]);
-  } else if (context.client_country == GeoIpCountryCode("MX") &&
-             base::FeatureList::IsEnabled(
-                 features::kAutofillPreferLabelsInSomeCountries)) {
+  } else if (context.client_country == GeoIpCountryCode("MX")) {
     // We may want to consider whether we unify this logic with the previous
     // block. Currently, we don't swap the language if page_language ==
     // LanguageCode("es") because Spanish is spoken in many countries and we
@@ -856,12 +841,9 @@ AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForDependentLocality(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  const bool is_enabled_dependent_locality_parsing =
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableDependentLocalityParsing);
-  // TODO(crbug.com/40160818) Remove feature check when launched.
-  if (dependent_locality_ || !is_enabled_dependent_locality_parsing)
+  if (dependent_locality_) {
     return RESULT_MATCH_NONE;
+  }
 
   base::span<const MatchPatternRef> dependent_locality_patterns =
       GetMatchPatterns(ADDRESS_HOME_DEPENDENT_LOCALITY, context.page_language,
@@ -925,8 +907,6 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsOrLandmark(
   AddressCountryCode country_code(context.client_country.value());
   if (between_streets_or_landmark_ || landmark_ || between_streets_ ||
       between_streets_line_1_ || between_streets_line_2_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreetsOrLandmark) ||
       !i18n_model_definition::IsTypeEnabledForCountry(
           ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, country_code)) {
     return RESULT_MATCH_NONE;
@@ -948,8 +928,6 @@ AddressFieldParser::ParseNameAndLabelForOverflowAndLandmark(
   AddressCountryCode country_code(context.client_country.value());
   //  TODO(crbug.com/40266693) Remove feature check when launched.
   if (overflow_and_landmark_ || overflow_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflowAndLandmark) ||
       !i18n_model_definition::IsTypeEnabledForCountry(
           ADDRESS_HOME_OVERFLOW_AND_LANDMARK, country_code)) {
     return RESULT_MATCH_NONE;
@@ -969,8 +947,6 @@ AddressFieldParser::ParseNameAndLabelForOverflow(ParsingContext& context,
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (overflow_and_landmark_ || overflow_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflow) ||
       !i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_OVERFLOW,
                                                       country_code)) {
     return RESULT_MATCH_NONE;
@@ -987,11 +963,8 @@ AddressFieldParser::ParseNameAndLabelForLandmark(ParsingContext& context,
                                                  AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
-  if (landmark_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForLandmark) ||
-      !i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_LANDMARK,
-                                                      country_code)) {
+  if (landmark_ || !i18n_model_definition::IsTypeEnabledForCountry(
+                       ADDRESS_HOME_LANDMARK, country_code)) {
     return RESULT_MATCH_NONE;
   }
 
@@ -1008,8 +981,6 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreets(
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (between_streets_ || between_streets_line_1_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets) ||
       !i18n_model_definition::IsTypeEnabledForCountry(
           ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
     return RESULT_MATCH_NONE;
@@ -1028,8 +999,6 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsLines12(
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (between_streets_line_2_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets) ||
       !i18n_model_definition::IsTypeEnabledForCountry(
           ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
     return RESULT_MATCH_NONE;
@@ -1059,11 +1028,8 @@ AddressFieldParser::ParseNameAndLabelForAdminLevel2(ParsingContext& context,
                                                     AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
-  if (admin_level2_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAdminLevel2) ||
-      !i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_ADMIN_LEVEL2,
-                                                      country_code)) {
+  if (admin_level2_ || !i18n_model_definition::IsTypeEnabledForCountry(
+                           ADDRESS_HOME_ADMIN_LEVEL2, country_code)) {
     return RESULT_MATCH_NONE;
   }
 

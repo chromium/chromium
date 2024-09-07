@@ -323,7 +323,8 @@
           disabled="[[disabled_]]">
         <template is="dom-if" if="[[isApnManaged_(globalPolicy)]]">
           <cr-policy-indicator id="apnManagedIcon"
-              indicator-type="devicePolicy">
+              indicator-type="devicePolicy"
+              icon-aria-label="$i18n{internetApnPageTitle}">
           </cr-policy-indicator>
         </template>
       </cr-link-row>

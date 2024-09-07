@@ -370,7 +370,7 @@ cc::YUVSubsampling CrabbyAVIFImageDecoder::GetYUVSubsampling() const {
       // crabbyavif::AVIF_PIXEL_FORMAT_NONE.
       CHECK(!IsDecodedSizeAvailable());
       return cc::YUVSubsampling::kUnknown;
-    case crabbyavif::AVIF_PIXEL_FORMAT_COUNT:
+    default:
       break;
   }
   NOTREACHED() << "Invalid YUV format: " << avif_yuv_format_;
@@ -875,8 +875,7 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
     // crbug.com/1198455.
     decoder_->strictFlags &= ~crabbyavif::AVIF_STRICT_PIXI_REQUIRED;
 
-    if (base::FeatureList::IsEnabled(features::kGainmapHdrImages) &&
-        base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
+    if (base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
       decoder_->enableParsingGainMapMetadata = crabbyavif::CRABBY_AVIF_TRUE;
     }
 
@@ -1337,7 +1336,6 @@ void CrabbyAVIFImageDecoder::ColorCorrectImage(int from_row,
 bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
     SkGainmapInfo& out_gainmap_info,
     scoped_refptr<SegmentReader>& out_gainmap_data) const {
-  CHECK(base::FeatureList::IsEnabled(features::kGainmapHdrImages));
   if (!base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
     return false;
   }

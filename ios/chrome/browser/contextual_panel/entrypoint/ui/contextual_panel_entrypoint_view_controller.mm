@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -142,6 +143,14 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
                        withAction:@selector(updateLabelFont)];
   }
+
+  // TODO(crbug.com/361110974): Have bubbles gracefully handle orientation
+  // changes without needing to dismiss here.
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self
+             selector:@selector(dismissIPHWithoutAnimation)
+                 name:UIDeviceOrientationDidChangeNotification
+               object:nil];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -158,9 +167,12 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
 - (void)displayEntrypointView:(BOOL)display {
   if (!display) {
-    [self.mutator dismissIPHAnimated:NO];
+    [self dismissIPHWithoutAnimation];
   }
-  self.view.hidden = !display || !_entrypointDisplayed;
+
+  BOOL hidden = !display || !_entrypointDisplayed;
+  [self.visibilityDelegate setContextualPanelEntrypointHidden:hidden];
+
   _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 }
 
@@ -364,6 +376,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _label.font = [self entrypointLabelFont];
 }
 
+- (void)dismissIPHWithoutAnimation {
+  [self.mutator dismissIPHAnimated:NO];
+}
+
 // Returns the preferred font and size given the current ContentSizeCategory.
 - (UIFont*)entrypointLabelFont {
   return PreferredFontForTextStyleWithMaxCategory(
@@ -421,6 +437,18 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
       "IOSContextualPanelEntrypointLargeChipDismissedWithSwipe"));
 }
 
+// Refreshes the VoiceOver bounding box if VoiceOver is currently running and
+// the entrypoint is focused.
+- (void)refreshVoiceOverBoundingBoxIfFocused {
+  if (!UIAccessibilityIsVoiceOverRunning() ||
+      ![_entrypointContainer accessibilityElementIsFocused]) {
+    return;
+  }
+
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  _entrypointContainer);
+}
+
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:
@@ -464,18 +492,23 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   self.view.alpha = 0;
   self.view.transform = CGAffineTransformMakeScale(0.95, 0.95);
 
-  self.view.hidden = !_entrypointDisplayed;
+  [self.visibilityDelegate setContextualPanelEntrypointHidden:NO];
+
   _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
+  __weak ContextualPanelEntrypointViewController* weakSelf = self;
+
   [UIView animateWithDuration:kEntrypointDisplayingAnimationTime
-                        delay:0
-                      options:(UIViewAnimationOptionCurveEaseIn |
-                               UIViewAnimationOptionAllowUserInteraction)
-                   animations:^{
-                     self.view.alpha = 1;
-                     self.view.transform = CGAffineTransformIdentity;
-                   }
-                   completion:nil];
+      delay:0
+      options:(UIViewAnimationOptionCurveEaseIn |
+               UIViewAnimationOptionAllowUserInteraction)
+      animations:^{
+        self.view.alpha = 1;
+        self.view.transform = CGAffineTransformIdentity;
+      }
+      completion:^(BOOL completed) {
+        [weakSelf refreshVoiceOverBoundingBoxIfFocused];
+      }];
 }
 
 - (void)hideEntrypoint {
@@ -483,12 +516,14 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   [self transitionToContextualPanelOpenedState:NO];
 
   _entrypointDisplayed = NO;
-  self.view.hidden = YES;
+  [self.visibilityDelegate setContextualPanelEntrypointHidden:YES];
   _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
   [self.mutator setLocationBarLabelCenteredBetweenContent:NO];
 
   [self.view layoutIfNeeded];
+
+  [self refreshVoiceOverBoundingBoxIfFocused];
 }
 
 - (void)transitionToLargeEntrypoint {
@@ -527,7 +562,9 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                       options:(UIViewAnimationOptionCurveEaseOut |
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToLargeEntrypoint
-                   completion:nil];
+                   completion:^(BOOL completed) {
+                     [weakSelf refreshVoiceOverBoundingBoxIfFocused];
+                   }];
 }
 
 - (void)transitionToSmallEntrypoint {
@@ -554,7 +591,9 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                       options:(UIViewAnimationOptionCurveEaseOut |
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToSmallEntrypoint
-                   completion:nil];
+                   completion:^(BOOL completed) {
+                     [weakSelf refreshVoiceOverBoundingBoxIfFocused];
+                   }];
 
   [_entrypointContainer removeGestureRecognizer:_swipeRecognizer];
 

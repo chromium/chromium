@@ -760,13 +760,12 @@ bool GetPostData(
     // TODO(caseq): Also support blobs.
     if (element.type() != network::DataElement::Tag::kBytes)
       return false;
-    const std::vector<uint8_t>& bytes =
+    base::span<const uint8_t> bytes =
         element.As<network::DataElementBytes>().bytes();
     auto data_entry = protocol::Network::PostDataEntry::Create().Build();
-    data_entry->SetBytes(
-        protocol::Binary::fromSpan(bytes.data(), bytes.size()));
+    data_entry->SetBytes(protocol::Binary::fromSpan(bytes));
     data_entries->push_back(std::move(data_entry));
-    result->append(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+    result->append(base::as_string_view(bytes));
   }
   return true;
 }
@@ -1035,6 +1034,9 @@ Network::CookieExemptionReason GetProtocolCookieExemptionReason(
       return Network::CookieExemptionReasonEnum::TPCDMetadata;
     case net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial:
       return Network::CookieExemptionReasonEnum::TPCDDeprecationTrial;
+    case net::CookieInclusionStatus::ExemptionReason::
+        kTopLevel3PCDDeprecationTrial:
+      return Network::CookieExemptionReasonEnum::TopLevelTPCDDeprecationTrial;
     case net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics:
       return Network::CookieExemptionReasonEnum::TPCDHeuristics;
     case net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy:
@@ -1043,8 +1045,6 @@ Network::CookieExemptionReason GetProtocolCookieExemptionReason(
       return Network::CookieExemptionReasonEnum::StorageAccess;
     case net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess:
       return Network::CookieExemptionReasonEnum::TopLevelStorageAccess;
-    case net::CookieInclusionStatus::ExemptionReason::kCorsOptIn:
-      return Network::CookieExemptionReasonEnum::CorsOptIn;
     case net::CookieInclusionStatus::ExemptionReason::kScheme:
       return Network::CookieExemptionReasonEnum::Scheme;
   }

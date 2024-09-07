@@ -87,7 +87,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   void OnTestEnd(const testing::TestInfo& test_info) override {
     TestingBrowserProcess::TearDownAndDeleteInstance();
     // Some tests cause ChildThreadImpl to initialize a PowerMonitor.
-    base::PowerMonitor::ShutdownForTesting();
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
 #if BUILDFLAG(IS_WIN)
     // Running tests locally on Windows machines with some degree of
     // accessibility enabled can cause this flag to become implicitly set.
@@ -163,11 +163,7 @@ void ChromeUnitTestSuite::InitializeProviders() {
   content::RegisterPathProvider();
   ui::RegisterPathProvider();
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-                                          ash::DIR_PREINSTALLED_COMPONENTS,
-#else
                                           chrome::DIR_INTERNAL_PLUGINS,
-#endif
                                           chrome::DIR_USER_DATA);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -36,6 +36,15 @@ const char kFilterDelayWouldDisallow[] =
     "WouldDisallow";
 const char kFilterDelayAllowed[] =
     "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.Allowed";
+const char kFilterDelayAliasDisallowed[] =
+    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias."
+    "Disallowed";
+const char kFilterDelayAliasWouldDisallow[] =
+    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias."
+    "WouldDisallow";
+const char kFilterDelayAliasChecked[] =
+    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias."
+    "Checked";
 
 class FingerprintingProtectionChildNavigationThrottleTest
     : public ChildFrameNavigationFilteringThrottleTestHarness {
@@ -105,6 +114,10 @@ TEST_F(FingerprintingProtectionChildNavigationThrottleTest, DelayMetrics) {
   histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 1);
   histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 0);
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
+
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
 }
 
 TEST_F(FingerprintingProtectionChildNavigationThrottleTest,
@@ -141,12 +154,16 @@ TEST_F(FingerprintingProtectionChildNavigationThrottleTest,
   histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
   histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
+
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
 }
 
-class FingerprintingProtectionChildNavigationThrottleCnameTest
+class FingerprintingProtectionChildNavigationThrottleAliasTest
     : public FingerprintingProtectionChildNavigationThrottleTest {
  public:
-  FingerprintingProtectionChildNavigationThrottleCnameTest() {
+  FingerprintingProtectionChildNavigationThrottleAliasTest() {
     feature_list_.InitAndEnableFeature(
         fingerprinting_protection_filter::features::
             kUseCnameAliasesForFingerprintingProtectionFilter);
@@ -156,7 +173,7 @@ class FingerprintingProtectionChildNavigationThrottleCnameTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
+TEST_F(FingerprintingProtectionChildNavigationThrottleAliasTest,
        FilterOnWillProcessResponse) {
   base::HistogramTester histogram_tester;
   InitializeDocumentSubresourceFilterWithSubstringRules(
@@ -178,9 +195,13 @@ TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
   histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 1);
   histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 0);
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 0);
+
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 1);
 }
 
-TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
+TEST_F(FingerprintingProtectionChildNavigationThrottleAliasTest,
        DryRunOnWillProcessResponse) {
   base::HistogramTester histogram_tester;
   InitializeDocumentSubresourceFilterWithSubstringRules(
@@ -201,9 +222,9 @@ TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
 
-  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
 
   ChildFrameNavigationFilteringThrottleTestHarness::
       CreateTestSubframeAndInitNavigation(
@@ -216,12 +237,16 @@ TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
 
-  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
+
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 2);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
 }
 
-TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
+TEST_F(FingerprintingProtectionChildNavigationThrottleAliasTest,
        AllowedDnsAliasesShouldNotFilter) {
   base::HistogramTester histogram_tester;
   InitializeDocumentSubresourceFilterWithSubstringRules(
@@ -245,6 +270,10 @@ TEST_F(FingerprintingProtectionChildNavigationThrottleCnameTest,
   histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
   histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 0);
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
+
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 1);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 0);
+  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
 }
 }  // namespace
 }  // namespace fingerprinting_protection_filter

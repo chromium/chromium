@@ -281,7 +281,7 @@ TEST_F(PriceInsightsCellTest, TestPriceHistoryUIWithVariantNoTracking) {
       kPriceHistorySecondarySubtitleIdentifier, cell_.contentView);
   EXPECT_TRUE([secondary_subtitle.text
       isEqualToString:l10n_util::GetNSString(
-                          IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION)]);
+                          IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS)]);
 }
 
 // Tests the presence of UI elements in the Price History components when only

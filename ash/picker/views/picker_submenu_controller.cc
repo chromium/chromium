@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_submenu_view.h"
 #include "base/scoped_observation.h"
 #include "ui/base/ui_base_types.h"
@@ -57,7 +57,7 @@ void PickerSubmenuController::OnViewIsDeleting(views::View* observed_view) {
 
 void PickerSubmenuController::Show(
     views::View* anchor_view,
-    std::vector<std::unique_ptr<PickerItemView>> items) {
+    std::vector<std::unique_ptr<PickerListItemView>> items) {
   widget_ = std::make_unique<views::Widget>(CreateInitParams(
       anchor_view, std::make_unique<PickerSubmenuView>(
                        anchor_view->GetBoundsInScreen(), std::move(items))));

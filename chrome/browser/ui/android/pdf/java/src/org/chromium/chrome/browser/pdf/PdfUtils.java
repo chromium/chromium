@@ -8,19 +8,15 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.BuildCompat;
-import androidx.fragment.app.FragmentManager;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.fakepdf.PdfDocumentListener;
-import org.chromium.chrome.browser.fakepdf.PdfDocumentRequest;
-import org.chromium.chrome.browser.fakepdf.PdfViewSettings;
-import org.chromium.chrome.browser.fakepdf.PdfViewerFragment;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -55,7 +51,6 @@ public class PdfUtils {
     private static final String TAG = "PdfUtils";
     private static final String PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO = "inline_pdf_in_incognito";
     private static boolean sShouldOpenPdfInlineForTesting;
-    private static boolean sSkipLoadPdfForTesting;
 
     /**
      * Determines whether the navigation is to a pdf file.
@@ -104,7 +99,12 @@ public class PdfUtils {
         return uri.getScheme();
     }
 
-    /** Determines whether to open pdf inline. */
+    /**
+     * Determines whether to open pdf inline.
+     *
+     * @param isIncognito Whether the current page is in an incognito mode.
+     * @return Whether to open pdf inline.
+     */
     @CalledByNative
     public static boolean shouldOpenPdfInline(boolean isIncognito) {
         if (sShouldOpenPdfInlineForTesting) return true;
@@ -123,6 +123,12 @@ public class PdfUtils {
         return BuildCompat.isAtLeastV();
     }
 
+    /**
+     * Retrieve pdf specific information from NativePage.
+     *
+     * @param nativePage The NativePage being used to retrieve pdf information.
+     * @return Pdf information including filename, filepath etc.
+     */
     public static PdfInfo getPdfInfo(NativePage nativePage) {
         if (nativePage == null || !nativePage.isPdf()) {
             return null;
@@ -200,45 +206,23 @@ public class PdfUtils {
         sShouldOpenPdfInlineForTesting = shouldOpenPdfInlineForTesting;
     }
 
-    static PdfDocumentRequest getPdfDocumentRequest(String pdfFilePath) {
+    static Uri getUriFromFilePath(@NonNull String pdfFilePath) {
         Uri uri = Uri.parse(pdfFilePath);
         String scheme = uri.getScheme();
-        PdfDocumentRequest.Builder builder = new PdfDocumentRequest.Builder();
         try {
             if (UrlConstants.CONTENT_SCHEME.equals(scheme)) {
-                builder.setUri(uri);
+                return uri;
             } else if (UrlConstants.FILE_SCHEME.equals(scheme)) {
                 File file = new File(Objects.requireNonNull(uri.getPath()));
-                builder.setFile(file);
+                return ChromeFileProvider.generateUri(file);
             } else {
                 File file = new File(pdfFilePath);
-                // TODO: use builder.setFile(file) once supported.
-                Uri generatedUri = ChromeFileProvider.generateUri(file);
-                builder.setUri(generatedUri);
+                return ChromeFileProvider.generateUri(file);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Couldn't generate PdfDocumentRequest: " + e);
+            Log.e(TAG, "Couldn't generate Uri: " + e);
             return null;
         }
-        builder.setPdfViewSettings(
-                new PdfViewSettings(/* overrideDefaultUrlClickBehavior= */ true));
-        return new PdfDocumentRequest(builder);
-    }
-
-    static void loadPdf(
-            PdfViewerFragment pdfViewerFragment,
-            PdfDocumentRequest pdfDocumentRequest,
-            PdfDocumentListener pdfDocumentListener,
-            FragmentManager fragmentManager,
-            int fragmentContainerViewId) {
-        if (sSkipLoadPdfForTesting) {
-            return;
-        }
-        // ProjectorContext.installProjectorGlobalsForTest(ContextUtils.getApplicationContext());
-        pdfViewerFragment.show(
-                fragmentManager, String.valueOf(fragmentContainerViewId), fragmentContainerViewId);
-        pdfViewerFragment.loadRequest(pdfDocumentRequest, pdfDocumentListener);
-        // TODO: pdfViewerFragment.addPdfEventsListener(eventsListener);
     }
 
     /**
@@ -308,9 +292,5 @@ public class PdfUtils {
 
     private static void recordIsPdfDownloadUrlDecoded(boolean decodeResult) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlDecoded", decodeResult);
-    }
-
-    static void skipLoadPdfForTesting(boolean skipLoadPdfForTesting) {
-        sSkipLoadPdfForTesting = skipLoadPdfForTesting;
     }
 }

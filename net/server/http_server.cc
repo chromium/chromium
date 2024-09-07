@@ -26,6 +26,7 @@
 #include "net/server/http_server_request_info.h"
 #include "net/server/http_server_response_info.h"
 #include "net/server/web_socket.h"
+#include "net/server/web_socket_parse_result.h"
 #include "net/socket/server_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_server_socket.h"
@@ -253,17 +254,19 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
   while (read_buf->GetSize() > 0) {
     if (connection->web_socket()) {
       std::string message;
-      WebSocket::ParseResult result = connection->web_socket()->Read(&message);
-      if (result == WebSocket::FRAME_INCOMPLETE)
+      WebSocketParseResult result = connection->web_socket()->Read(&message);
+      if (result == WebSocketParseResult::FRAME_INCOMPLETE) {
         break;
+      }
 
-      if (result == WebSocket::FRAME_CLOSE ||
-          result == WebSocket::FRAME_ERROR) {
+      if (result == WebSocketParseResult::FRAME_CLOSE ||
+          result == WebSocketParseResult::FRAME_ERROR) {
         Close(connection->id());
         return ERR_CONNECTION_CLOSED;
       }
-      if (result == WebSocket::FRAME_OK_FINAL)
+      if (result == WebSocketParseResult::FRAME_OK_FINAL) {
         delegate_->OnWebSocketMessage(connection->id(), std::move(message));
+      }
       if (HasClosedConnection(connection))
         return ERR_CONNECTION_CLOSED;
       continue;

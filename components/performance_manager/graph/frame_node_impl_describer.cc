@@ -76,7 +76,8 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
           impl->document_.has_nonempty_beforeunload);
   doc.Set("network_almost_idle", impl->document_.network_almost_idle.value());
   doc.Set("had_form_interaction", impl->document_.had_form_interaction.value());
-  ret.Set("had_user_edits", impl->document_.had_user_edits.value());
+  doc.Set("had_user_edits", impl->document_.had_user_edits.value());
+  doc.Set("uses_webrtc", impl->document_.uses_web_rtc.value());
   ret.Set("document", std::move(doc));
 
   // Frame node properties.
@@ -89,7 +90,7 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("is_holding_weblock", impl->is_holding_weblock_.value());
   ret.Set("is_holding_indexeddb_lock",
           impl->is_holding_indexeddb_lock_.value());
-  ret.Set("is_current", impl->is_current_.value());
+  ret.Set("is_current", impl->IsCurrent());
   ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
   ret.Set("is_audible", impl->is_audible_.value());
   ret.Set("is_capturing_media_stream",

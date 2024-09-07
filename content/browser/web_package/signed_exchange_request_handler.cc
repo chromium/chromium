@@ -33,7 +33,7 @@ bool SignedExchangeRequestHandler::IsSupportedMimeType(
 
 SignedExchangeRequestHandler::SignedExchangeRequestHandler(
     uint32_t url_loader_options,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const base::UnguessableToken& devtools_navigation_token,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     URLLoaderThrottlesGetter url_loader_throttles_getter,

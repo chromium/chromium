@@ -18,7 +18,6 @@
 namespace ash {
 
 class ClipboardHistoryItem;
-class PickerSearchResult;
 
 // A provider to fetch clipboard history.
 class ASH_EXPORT PickerClipboardHistoryProvider {

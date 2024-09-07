@@ -22,6 +22,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/web_test/browser/web_test_control_host.h"
 #include "content/web_test/common/web_test_switches.h"
 #include "ipc/ipc_channel.h"
@@ -141,7 +142,8 @@ void DevToolsProtocolTestBindings::HandleMessagesFromLog(
     base::EscapeJSONString(str_message.value(), true, &param);
     std::string javascript = "DevToolsAPI.dispatchMessage(" + param + ");";
     web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::UTF8ToUTF16(javascript), base::NullCallback());
+        base::UTF8ToUTF16(javascript), base::NullCallback(),
+        ISOLATED_WORLD_ID_GLOBAL);
   }
 }
 
@@ -189,7 +191,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     std::string code = "DevToolsAPI.dispatchMessage(" + param + ");";
     std::u16string javascript = base::UTF8ToUTF16(code);
     web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        javascript, base::NullCallback());
+        javascript, base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
     return;
   }
 
@@ -203,7 +205,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
                        base::NumberToString(pos ? 0 : total_size) + ");";
     std::u16string javascript = base::UTF8ToUTF16(code);
     web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        javascript, base::NullCallback());
+        javascript, base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
   }
 }
 

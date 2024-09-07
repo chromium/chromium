@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टॅब गटबद्ध केले आहेत</translation>
 <translation id="1657719826150349398">टॅब खाली हलवा</translation>
 <translation id="1713541401465507417">सर्व टॅब आणि गट बंद करा</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> टॅब गटबद्ध केला आहे</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बुकमार्क करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बुकमार्क करा}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">आता तयार केला आहे</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{एका दिवसानंतर बंद करा}other{<ph name="DAY_COUNT_MANY" /> दिवसांनंतर बंद करा}}</translation>
 <translation id="4777866634702576038">टॅब गट हटवायचा आहे का?</translation>
+<translation id="4783638485675352219">ऑपरेटिंग सिस्टीमसह या डिव्हाइसमधील उघड्या टॅबची शीर्षके आणि URLs शेअर करा</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="4870911314065352661">सर्व टॅब बंद करायचे आहेत का?</translation>

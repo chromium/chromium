@@ -12,11 +12,12 @@
 
 :host {
   --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
-  --cr-realbox-height: 44px;
-  --cr-realbox-icon-left-position: 12px;
-  --cr-realbox-icon-size-in-searchbox: 20px;
-  --cr-realbox-icon-top-position: 0;
-  --cr-realbox-min-width: var(--ntp-search-box-width);
+  --cr-searchbox-height: 44px;
+  --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+  --cr-searchbox-icon-left-position: 12px;
+  --cr-searchbox-icon-size-in-searchbox: 20px;
+  --cr-searchbox-icon-top-position: 0;
+  --cr-searchbox-min-width: var(--ntp-search-box-width);
   --ntp-theme-text-shadow: none;
   --ntp-one-google-bar-height: 56px;
   --ntp-search-box-width: 337px;
@@ -35,7 +36,7 @@
  * point available to be shown.
  */
 :host([realbox-can-show-secondary-side][realbox-had-secondary-side]),
-:host([realbox-can-show-secondary-side][realbox-width-behavior_='wide']) {
+:host([realbox-can-show-secondary-side][searchbox-width-behavior_='wide']) {
   --ntp-search-box-width: 746px;
 }
 
@@ -52,7 +53,7 @@
 }
 
 :host([realbox-is-tall_]) {
-  --cr-realbox-height: 48px;
+  --cr-searchbox-height: 48px;
 }
 
 /*A module width of 768px with 18px gaps on each side. */
@@ -123,7 +124,7 @@ cr-most-visited {
   z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
 }
 
-#realboxContainer {
+#searchboxContainer {
   display: inherit;
   margin-bottom: 16px;
   position: relative;
@@ -153,11 +154,11 @@ ntp-middle-slot-promo {
   max-width: var(--ntp-search-box-width);
 }
 
-cr-realbox {
+cr-searchbox {
   visibility: hidden;
 }
 
-cr-realbox[shown] {
+cr-searchbox[shown] {
   visibility: visible;
 }
 

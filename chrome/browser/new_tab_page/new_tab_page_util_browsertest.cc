@@ -4,6 +4,8 @@
 
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 
+#include <string>
+
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -50,7 +52,9 @@ class NewTabPageUtilEnableFlagBrowserTest : public NewTabPageUtilBrowserTest {
  public:
   NewTabPageUtilEnableFlagBrowserTest() {
     features_.InitWithFeatures(
-        {ntp_features::kNtpChromeCartModule, ntp_features::kNtpDriveModule},
+        {ntp_features::kNtpChromeCartModule, ntp_features::kNtpDriveModule,
+         ntp_features::kNtpCalendarModule,
+         ntp_features::kNtpOutlookCalendarModule},
         {});
   }
 };
@@ -58,8 +62,10 @@ class NewTabPageUtilEnableFlagBrowserTest : public NewTabPageUtilBrowserTest {
 class NewTabPageUtilDisableFlagBrowserTest : public NewTabPageUtilBrowserTest {
  public:
   NewTabPageUtilDisableFlagBrowserTest() {
-    features_.InitWithFeatures({}, {ntp_features::kNtpChromeCartModule,
-                                    ntp_features::kNtpDriveModule});
+    features_.InitWithFeatures(
+        {}, {ntp_features::kNtpChromeCartModule, ntp_features::kNtpDriveModule,
+             ntp_features::kNtpCalendarModule,
+             ntp_features::kNtpOutlookCalendarModule});
   }
 };
 
@@ -93,20 +99,66 @@ IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, EnableDriveByToT) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(IsDriveModuleEnabled());
-  CheckInternalsLog("Drive module enabled: default feature flag value");
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " enabled: default feature flag value");
 #else
   EXPECT_FALSE(IsDriveModuleEnabled());
-  CheckInternalsLog("Drive module disabled: default feature flag value");
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " disabled: default feature flag value");
 #endif
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest, EnableDriveByFlag) {
   EXPECT_TRUE(IsDriveModuleEnabled());
-  CheckInternalsLog("Drive module enabled: feature flag forced on");
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " enabled: feature flag forced on");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
                        DisableDriveByFlag) {
   EXPECT_FALSE(IsDriveModuleEnabled());
-  CheckInternalsLog("Drive module disabled: feature flag forced off");
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " disabled: feature flag forced off");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest,
+                       EnableGoogleCalendarByFlag) {
+  EXPECT_TRUE(IsGoogleCalendarModuleEnabled(true));
+  CheckInternalsLog(std::string(ntp_features::kNtpCalendarModule.name) +
+                    " enabled: feature flag forced on");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
+                       DisableGoogleCalendarByFlag) {
+  EXPECT_FALSE(IsGoogleCalendarModuleEnabled(true));
+  CheckInternalsLog(std::string(ntp_features::kNtpCalendarModule.name) +
+                    " disabled: feature flag forced off");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest,
+                       GoogleCalendarIsNotManaged) {
+  EXPECT_FALSE(IsGoogleCalendarModuleEnabled(false));
+  CheckInternalsLog(std::string(ntp_features::kNtpCalendarModule.name) +
+                    " disabled: account not managed");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest,
+                       EnableOutlookCalendarByFlag) {
+  EXPECT_TRUE(IsOutlookCalendarModuleEnabled(true));
+  CheckInternalsLog(std::string(ntp_features::kNtpOutlookCalendarModule.name) +
+                    " enabled: feature flag forced on");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
+                       DisableOutlookCalendarByFlag) {
+  EXPECT_FALSE(IsOutlookCalendarModuleEnabled(true));
+  CheckInternalsLog(std::string(ntp_features::kNtpOutlookCalendarModule.name) +
+                    " disabled: feature flag forced off");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest,
+                       OutlookCalendarIsNotManaged) {
+  EXPECT_FALSE(IsOutlookCalendarModuleEnabled(false));
+  CheckInternalsLog(std::string(ntp_features::kNtpOutlookCalendarModule.name) +
+                    " disabled: account not managed");
 }

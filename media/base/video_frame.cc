@@ -481,42 +481,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapNativeTextures(
 }
 
 // static
-scoped_refptr<VideoFrame> VideoFrame::WrapSharedImages(
-    VideoPixelFormat format,
-    scoped_refptr<gpu::ClientSharedImage> shared_images[kMaxPlanes],
-    gpu::SyncToken sync_token,
-    uint32_t texture_target,
-    ReleaseMailboxCB mailbox_holder_release_cb,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    base::TimeDelta timestamp) {
-  scoped_refptr<VideoFrame> frame = CreateFrameForNativeTexturesInternal(
-      format, coded_size, visible_rect, natural_size, timestamp);
-  if (!frame) {
-    return nullptr;
-  }
-
-  for (size_t i = 0; i < kMaxPlanes; ++i) {
-    if (shared_images[i]) {
-      frame->mailbox_holders_[i] = gpu::MailboxHolder(
-          shared_images[i]->mailbox(), sync_token,
-          base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
-              ? shared_images[i]->GetTextureTarget()
-              : texture_target);
-      frame->shared_images_[i] = shared_images[i]->MakeUnowned();
-    }
-  }
-  frame->mailbox_holders_and_gmb_release_cb_ =
-      WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
-
-  DCHECK(frame->HasTextures());
-  DCHECK_GT(frame->NumTextures(), 0u);
-
-  return frame;
-}
-
-// static
 scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
     VideoPixelFormat format,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
@@ -539,7 +503,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
         base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
             ? shared_image->GetTextureTarget()
             : texture_target);
-    frame->shared_images_[0] = shared_image->MakeUnowned();
+    frame->shared_image_ = shared_image->MakeUnowned();
   }
   frame->mailbox_holders_and_gmb_release_cb_ =
       WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
@@ -589,7 +553,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
   // VideoFrame MappableSI client. This works well since it is also eventual
   // goal of ClientSharedImage for rest of the chrome. crbug.com/40286368 for
   // more details on the work.
-  frame->shared_images_[0] = std::move(shared_image);
+  frame->shared_image_ = std::move(shared_image);
   return frame;
 }
 
@@ -817,7 +781,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
         base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
             ? shared_image->GetTextureTarget()
             : texture_target);
-    frame->shared_images_[0] = shared_image->MakeUnowned();
+    frame->shared_image_ = shared_image->MakeUnowned();
   }
   return frame;
 }
@@ -1337,9 +1301,9 @@ size_t VideoFrame::NumTextures() const {
   return i;
 }
 
-bool VideoFrame::HasSharedImages() const {
-  return wrapped_frame_ ? wrapped_frame_->HasSharedImages()
-                        : shared_images_[0] != nullptr;
+bool VideoFrame::HasSharedImage() const {
+  return wrapped_frame_ ? wrapped_frame_->HasSharedImage()
+                        : shared_image_ != nullptr;
 }
 
 bool VideoFrame::HasMappableGpuBuffer() const {
@@ -1350,8 +1314,8 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   if (wrapped_frame_) {
     return wrapped_frame_->HasNativeGpuMemoryBuffer();
   } else if (is_mappable_si_enabled_) {
-    CHECK(shared_images_[0]);
-    return !shared_images_[0]->IsSharedMemoryForVideoFrame();
+    CHECK(shared_image_);
+    return !shared_image_->IsSharedMemoryForVideoFrame();
   } else if (gpu_memory_buffer_) {
     return gpu_memory_buffer_->GetType() != gfx::SHARED_MEMORY_BUFFER;
   }
@@ -1372,7 +1336,7 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
     // When MappableSI is enabled, there can only be 1 shared image
     // even for multiplanar formats.
     CHECK_EQ(NumTextures(), 1U);
-    if (auto mapping = shared_images_[0]->Map()) {
+    if (auto mapping = shared_image_->Map()) {
       return base::WrapUnique(
           new VideoFrame::ScopedMapping(nullptr, std::move(mapping)));
     }
@@ -1392,7 +1356,7 @@ gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
     // When MappableSI is enabled, there can only be 1 shared image
     // even for multiplanar formats.
     CHECK_EQ(NumTextures(), 1U);
-    return shared_images_[0]->CloneGpuMemoryBufferHandle();
+    return shared_image_->CloneGpuMemoryBufferHandle();
   }
   if (gpu_memory_buffer_) {
     return gpu_memory_buffer_->CloneHandle();
@@ -1527,13 +1491,10 @@ const gpu::MailboxHolder& VideoFrame::mailbox_holder(
                         : mailbox_holders_[texture_index];
 }
 
-scoped_refptr<gpu::ClientSharedImage> VideoFrame::shared_image(
-    size_t texture_index) const {
+scoped_refptr<gpu::ClientSharedImage> VideoFrame::shared_image() const {
   DCHECK(HasTextures());
-  DCHECK(IsValidPlane(format(), texture_index));
-  DCHECK(HasSharedImages());
-  return wrapped_frame_ ? wrapped_frame_->shared_image(texture_index)
-                        : shared_images_[texture_index];
+  DCHECK(HasSharedImage());
+  return wrapped_frame_ ? wrapped_frame_->shared_image() : shared_image_;
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

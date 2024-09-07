@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/bad_message.h"
@@ -287,8 +288,6 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
 }
 
 IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
-  using std::string_literals::operator""s;
-
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(
@@ -306,18 +305,18 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
     // Note that when truncation of this cookie string occurs, no histogram
     // entries get recorded because the code bails out early on the resulting
     // empty cookie string.
-    std::string cookie_string = ctl_string + "foo1=bar"s;
+    std::string cookie_string = base::StrCat({ctl_string, "foo1=bar"});
     SetCookieFromJS(frame, cookie_string);
 
     // Control char in the middle of the string.
-    cookie_string = "foo2=bar;"s + ctl_string + "httponly"s;
+    cookie_string = base::StrCat({"foo2=bar;", ctl_string, "httponly"});
     SetCookieFromJS(frame, cookie_string);
 
-    cookie_string = "foo3=ba"s + ctl_string + "r; httponly"s;
+    cookie_string = base::StrCat({"foo3=ba", ctl_string, "r; httponly"});
     SetCookieFromJS(frame, cookie_string);
 
     // Control char at the end of the string.
-    cookie_string = "foo4=bar;" + ctl_string;
+    cookie_string = base::StrCat({"foo4=bar;", ctl_string});
     SetCookieFromJS(frame, cookie_string);
   }
 
@@ -325,8 +324,6 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
 }
 
 IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
-  using std::string_literals::operator""s;
-
   std::string cookie_string;
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
@@ -348,22 +345,22 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
     std::string ctl_string(1, test);
 
     // ctrl char at start of string
-    cookie_string = ctl_string + "foo=bar"s;
+    cookie_string = base::StrCat({ctl_string, "foo=bar"});
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
     // ctrl char at middle of string
-    cookie_string = "foo=bar;"s + ctl_string + "httponly"s;
+    cookie_string = base::StrCat({"foo=bar;", ctl_string, "httponly"});
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
-    cookie_string = "foo=ba"s + ctl_string + "r; httponly"s;
+    cookie_string = base::StrCat({"foo=ba", ctl_string, "r; httponly"});
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
     // ctrl char at end of string
-    cookie_string = "foo=bar;"s + "httponly;"s + ctl_string;
+    cookie_string = base::StrCat({"foo=bar;", "httponly;", ctl_string});
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
   }
   // Test if there are multiple control characters that terminate.
-  cookie_string = "foo=bar;\xA\xDhttponly"s;
+  cookie_string = "foo=bar;\xA\xDhttponly";
   EXPECT_TRUE(NavigateToURL(shell(), http_url));
 }
 

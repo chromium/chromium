@@ -23,8 +23,6 @@
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
-namespace chrome {
-
 namespace {
 
 // If the device is running in forced app mode, returns the ID of the app for
@@ -139,4 +137,3 @@ bool IsWebKioskOriginAllowed(const PrefService* prefs, const GURL& origin) {
 #endif
 }
 
-}  // namespace chrome

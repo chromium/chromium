@@ -12,5 +12,6 @@
 // normal forward-declaration of `ProfileIOS` once the migration is complete.
 
 class ChromeBrowserState;
+using ProfileIOS = ChromeBrowserState;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_IOS_FORWARD_H_

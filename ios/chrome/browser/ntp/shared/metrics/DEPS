@@ -1,0 +1,12 @@
+include_rules = [
+  "+ios/chrome/browser/discover_feed/model/feed_constants.h",
+  "+ios/chrome/browser/metrics/model/constants.h",
+  "+ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h",
+]
+
+specific_include_rules = {
+  # TODO(crbug.com/40820398): Remove this dependency.
+  "^feed_metrics_recorder.mm": [
+    "+components/feed/core/common/pref_names.h"
+  ],
+}

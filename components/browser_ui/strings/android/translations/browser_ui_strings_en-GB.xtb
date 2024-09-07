@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1192844206376121885">This will delete all data and cookies stored by <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Next</translation>
+<translation id="1240190568154816272">Chrome tips</translation>
 <translation id="1242008676835033345">Embedded on <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">To save you data, this page's images have been optimised by Google.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
 <translation id="1779089405699405702">Image decoder</translation>
 <translation id="1785415724048343560">Recommended for best experience</translation>
+<translation id="1799920918471566157">Chrome tips</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Location access is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Hang up</translation>
@@ -147,6 +149,7 @@
 <translation id="3448554387819310837">When on, sites can ask to use your camera. When off, sites can't use your camera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome will block cookies again tomorrow}other{# days until Chrome blocks cookies again}}</translation>
 <translation id="3521663503435878242">Sites under <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Don't allow sites to track your hands</translation>
 <translation id="3536227077203206203">Allowed this time</translation>
 <translation id="3538390592868664640">Block sites from creating a 3D map of your surroundings or tracking camera position</translation>
 <translation id="3544058026430919413">A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.</translation>
@@ -157,6 +160,7 @@
 <translation id="3600792891314830896">Mute sites that play sound</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3628308229821498208">Suggested searches</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}}</translation>
 <translation id="3697164069658504920">When on, sites can ask to use USB devices. When off, sites can't use USB devices.</translation>
 <translation id="3707034683772193706">A site that you visit can save a small amount of info with Chrome, mainly to validate that you're not a bot</translation>
 <translation id="3721953990244350188">Dismiss and show next available action</translation>
@@ -218,6 +222,7 @@
 <translation id="4644713492825682049">Delete and reset</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4676059169848868271">To let <ph name="APP_NAME" /> use hand tracking, also turn on hand tracking in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4755971844837804407">When on, sites can show any ad to you. When off, sites can't show intrusive or misleading ads.</translation>
 <translation id="4779083564647765204">Zoom</translation>
@@ -236,6 +241,7 @@
 <translation id="4996978546172906250">Share via</translation>
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5007392906805964215">Review</translation>
+<translation id="5014182796621173645">You visited <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
@@ -245,6 +251,7 @@
 <translation id="5091663350197390230">When on, sites can use JavaScript. When off, sites can't use JavaScript.</translation>
 <translation id="5099358668261120049">This will clear all data and cookies stored by <ph name="ORIGIN" /> or by its app on your home screen.</translation>
 <translation id="5100237604440890931">Collapsed – click to expand.</translation>
+<translation id="5116239826668864748">You can use Chrome any time that you tap links in messages, documents and other apps</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Price drop on your open tabs}other{Price drops on your open tabs}}</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
@@ -276,6 +283,7 @@
 <translation id="5553374991681107062">Latest</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> blocked</translation>
+<translation id="5632485077360054581">Show me how</translation>
 <translation id="5649053991847567735">Automatic downloads</translation>
 <translation id="5668404140385795438">Override a website’s request to prevent zooming in</translation>
 <translation id="5677928146339483299">Blocked</translation>
@@ -286,6 +294,7 @@
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5740126560802162366">Sites can save data on your device</translation>
+<translation id="5750869797196646528">Hand tracking</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5844448279347999754">When on, sites can ask to see text and images saved to your clipboard. When off, sites can't see text or images saved to your clipboard.</translation>
@@ -347,12 +356,15 @@
 <translation id="656065428026159829">See more</translation>
 <translation id="6561560012278703671">Use quieter messaging (blocks notification prompts from interrupting you)</translation>
 <translation id="6593061639179217415">Desktop site</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> site}other{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sites}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Protected content</translation>
 <translation id="662080504995468778">Stay</translation>
 <translation id="6653342741369270081">Press the back button to exit full screen.</translation>
+<translation id="6683865262523156564">This site is in a group that can see your activity. The group is defined by <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
+<translation id="6709432001666529933">Ask before allowing sites to track your hands (recommended)</translation>
 <translation id="6722828510648505498">Block sign-in prompts from identity services.</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="6749077623962119521">Reset permissions?</translation>
@@ -360,6 +372,7 @@
 <translation id="6787751205395685251">Select an option for <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6818926723028410516">Select items</translation>
+<translation id="6838525730752203626">Use Chrome by default</translation>
 <translation id="6840760312327750441">To group tabs, touch and hold a tab. Then, drag it onto another tab.</translation>
 <translation id="6864395892908308021">This device can't read NFC</translation>
 <translation id="6870169401250095575">Hide safety check card</translation>
@@ -411,6 +424,7 @@
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">Don't allow a site to use third-party cookies</translation>
+<translation id="7688240020069572972">Hide Chrome tips card</translation>
 <translation id="7719367874908701697">Page zoom</translation>
 <translation id="7759147511335618829">MIDI device control and reprogramme.</translation>
 <translation id="7781829728241885113">Yesterday</translation>
@@ -476,6 +490,7 @@
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8617611086246832542">When on, the desktop view of websites is shown. When off, the mobile view of websites is shown.</translation>
 <translation id="8649036394979866943">Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage your tracking protections<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">When on, sites can ask to track your hands. When off, sites can't track your hands.</translation>
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>
 <translation id="868929229000858085">Search your contacts</translation>

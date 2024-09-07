@@ -245,6 +245,11 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                         this::onIsUserVerifyingPlatformAuthenticatorAvailableResponse);
     }
 
+    @Override
+    public void getClientCapabilities(final GetClientCapabilities_Response callback) {
+        // TODO(crbug.com/360327828): Implement.
+    }
+
     /**
      * Retrieves the set of credentials for the given relying party, and filters them to match the
      * given input credential IDs. Optionally, may also filter the credentials to only return those

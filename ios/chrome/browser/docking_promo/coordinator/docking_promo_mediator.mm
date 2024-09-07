@@ -37,7 +37,7 @@ NSString* const kDockingPromoAnimation = @"docking_promo";
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
               timeSinceLastForeground:(base::TimeDelta)timeSinceLastForeground {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _promosManager = promosManager;
     _timeSinceLastForeground = timeSinceLastForeground;
   }

@@ -93,7 +93,8 @@ bool BrowserFeaturePromoController::CanShowPromoForElement(
   auto* const privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile);
   if (privacy_sandbox_service &&
-      privacy_sandbox_service->GetRequiredPromptType() !=
+      privacy_sandbox_service->GetRequiredPromptType(
+          PrivacySandboxService::SurfaceType::kDesktop) !=
           PrivacySandboxService::PromptType::kNone) {
     return false;
   }

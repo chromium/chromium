@@ -57,8 +57,8 @@ NET_EXPORT bool GetPreferredExtensionForMimeType(
 
 // Returns true if this the mime_type_pattern matches a given mime-type.
 // Checks for absolute matching and wildcards. MIME types are case insensitive.
-NET_EXPORT bool MatchesMimeType(const std::string& mime_type_pattern,
-                                const std::string& mime_type);
+NET_EXPORT bool MatchesMimeType(std::string_view mime_type_pattern,
+                                std::string_view mime_type);
 
 // Parses |type_str| for |mime_type| and any |params|. Returns false if mime
 // cannot be parsed, and does not modify |mime_type| or |params|.

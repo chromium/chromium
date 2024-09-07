@@ -3,6 +3,7 @@ include_rules = [
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/client/gles2_interface_stub.h",
     "+gpu/command_buffer/client/shared_image_interface.h",
+    "+gpu/command_buffer/client/shared_image_pool.h",
     "+gpu/command_buffer/client/webgpu_interface.h",
     "+gpu/command_buffer/client/webgpu_interface_stub.h",
     "+gpu/command_buffer/common/capabilities.h",

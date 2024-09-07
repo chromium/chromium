@@ -154,11 +154,11 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # TODO(b/245336251): Migrate diagnostics app tests to Typescript and
       # remove exception.
       'chrome/test/data/webui/chromeos/diagnostics',
+      'chrome/test/data/webui/chromeos/nearby_share',
       # TODO(b/315002705): Migrate shimless rma app tests to Typescript and
       # remove exception.
       'chrome/test/data/webui/chromeos/shimless_rma',
       'chrome/test/data/webui/cr_components/chromeos',
-      'chrome/test/data/webui/nearby_share',
       'components/policy/resources/webui',
       'ui/webui/resources/js',
       'ui/webui/resources/mojo',

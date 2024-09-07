@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 66;
+  reserved 11, 12, 16, 29, 32, 66;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -218,8 +218,6 @@ enum OptimizationType {
   PRICE_INSIGHTS = 30;
   // Information about which JavaScript functions should be eager compiled.
   V8_COMPILE_HINTS = 31;
-  // Provides Page Insights features for a URL.
-  PAGE_INSIGHTS = 32;
   // This optimization provides information about shoppinge page types of this
   // page.
   SHOPPING_PAGE_TYPES = 33;
@@ -278,6 +276,15 @@ enum OptimizationType {
   // This optimization helps determine if this merchant page is a good candidate
   // for enabling price/amount extraction.
   AMOUNT_EXTRACTION_ALLOWLIST = 67;
+  // This optimization provides information about sites for which pages Autofill
+  // prediction improvements should be triggered on.
+  AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST = 68;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for buy now pay later provider Affirm to enable amount extraction.
+  AMOUNT_EXTRACTION_ALLOWLIST_AFFIRM = 69;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for buy now pay later provider Zip to enable amount extraction.
+  AMOUNT_EXTRACTION_ALLOWLIST_ZIP = 70;
 }
 
 // Presents semantics for how page load URLs should be matched.

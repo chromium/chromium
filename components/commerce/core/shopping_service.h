@@ -266,11 +266,11 @@ class ShoppingService : public KeyedService,
   virtual void GetPriceInsightsInfoForUrl(const GURL& url,
                                           PriceInsightsInfoCallback callback);
 
-  // This API fetches valid discounts information on the provided |urls| and
+  // This API fetches valid discounts information on the provided |url| and
   // passes the payload back to the caller via |callback|. Call will run after
   // the fetch is completed.
-  virtual void GetDiscountInfoForUrls(const std::vector<GURL>& urls,
-                                      DiscountInfoCallback callback);
+  virtual void GetDiscountInfoForUrl(const GURL& url,
+                                     DiscountInfoCallback callback);
 
   virtual void GetProductSpecificationsForUrls(
       const std::vector<GURL>& urls,
@@ -445,6 +445,9 @@ class ShoppingService : public KeyedService,
   // Test classes are also friends.
   friend class ShoppingServiceTestBase;
   friend class ShoppingServiceTest;
+  // TODO(b/362316113): Pass HistoryService through handler constructor instead
+  // of having the handler as a friend.
+  friend class ShoppingServiceHandler;
 
   // A notification that a WebWrapper has been created. This typically
   // corresponds to a user creating a tab.
@@ -603,11 +606,11 @@ class ShoppingService : public KeyedService,
   bool IsDiscountInfoApiEnabled();
 
   void GetDiscountInfoFromOptGuide(const GURL& url,
-                                   DiscountsOptGuideCallback callback);
+                                   DiscountInfoCallback callback);
 
   void HandleOptGuideDiscountInfoResponse(
       const GURL& url,
-      DiscountsOptGuideCallback callback,
+      DiscountInfoCallback callback,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
@@ -631,6 +634,12 @@ class ShoppingService : public KeyedService,
 
   void OnGetOnDemandProductInfo(const GURL& url,
                                 const std::optional<const ProductInfo>& info);
+
+  // TODO(b/362316113): Remove once history service is passed through handler
+  // constructor.
+  virtual void QueryHistoryForUrl(
+      const GURL& url,
+      history::HistoryService::QueryURLCallback callback);
 
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;
@@ -713,6 +722,10 @@ class ShoppingService : public KeyedService,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  const raw_ptr<history::HistoryService> history_service_;
+
+  base::CancelableTaskTracker cancelable_task_tracker_;
 
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);

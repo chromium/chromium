@@ -81,17 +81,16 @@ std::string PlaybackContext::ToString() const {
       queue_name.c_str());
 }
 
-PlaybackData::PlaybackData(const PlaybackState state,
-                           const std::string& title,
-                           const GURL& url,
-                           std::optional<int> media_start,
-                           std::optional<int> media_end,
-                           bool initial_playback)
+PlaybackData::PlaybackData(
+    const PlaybackState state,
+    const std::string& title,
+    const GURL& url,
+    const base::flat_set<std::pair<int, int>>& media_segments,
+    bool initial_playback)
     : state(state),
       title(title),
       url(url),
-      media_start(media_start),
-      media_end(media_end),
+      media_segments(media_segments),
       initial_playback(initial_playback) {}
 
 PlaybackData::PlaybackData(const PlaybackData&) = default;
@@ -99,5 +98,30 @@ PlaybackData::PlaybackData(const PlaybackData&) = default;
 PlaybackData& PlaybackData::operator=(const PlaybackData&) = default;
 
 PlaybackData::~PlaybackData() = default;
+
+std::string PlaybackData::ToString() const {
+  std::string segments_str;
+  for (auto it = media_segments.begin(); it != media_segments.end(); it++) {
+    segments_str += (it == media_segments.begin() ? "" : ", ") +
+                    base::StringPrintf("{%d, %d}", it->first, it->second);
+  }
+  return base::StringPrintf(
+      "PlaybackData(state=%d, title=\"%s\", url=\"%s\", media_segments=[%s], "
+      "initial_playback=%d)",
+      state, title.c_str(), url.spec().c_str(), segments_str.c_str(),
+      initial_playback);
+}
+
+bool PlaybackData::CanAggregateWithNewData(const PlaybackData& new_data) const {
+  return url == new_data.url;
+}
+
+void PlaybackData::AggregateWithNewData(const PlaybackData& new_data) {
+  CHECK(CanAggregateWithNewData(new_data));
+  for (const auto& media_segment : new_data.media_segments) {
+    media_segments.insert(media_segment);
+  }
+  initial_playback |= new_data.initial_playback;
+}
 
 }  // namespace ash::youtube_music

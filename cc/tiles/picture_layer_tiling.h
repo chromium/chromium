@@ -40,6 +40,7 @@ class TracedValue;
 namespace cc {
 
 class DrawImage;
+class GlobalStateThatImpactsTilePriority;
 class PictureLayerTiling;
 class PrioritizedTile;
 
@@ -61,6 +62,8 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const = 0;
   virtual ScrollOffsetMap GetRasterInducingScrollOffsets() const = 0;
+  virtual const GlobalStateThatImpactsTilePriority& global_tile_state()
+      const = 0;
 
  protected:
   virtual ~PictureLayerTilingClient() {}
@@ -190,8 +193,9 @@ class CC_EXPORT PictureLayerTiling {
 
   // For testing functionality.
   void CreateAllTilesForTesting() {
-    SetLiveTilesRect(tiling_data_.tiling_rect());
+    CreateAllTilesForTesting(tiling_data_.tiling_rect());
   }
+  void CreateAllTilesForTesting(const gfx::Rect& rect_to_raster);
   const TilingData& TilingDataForTesting() const { return tiling_data_; }
   std::vector<Tile*> AllTilesForTesting() const {
     std::vector<Tile*> all_tiles;
@@ -219,14 +223,11 @@ class CC_EXPORT PictureLayerTiling {
   const gfx::Rect& GetCurrentVisibleRectForTesting() const {
     return current_visible_rect_;
   }
-  void SetTilePriorityRectsForTesting(
-      const gfx::Rect& visible_rect_in_content_space,
-      const gfx::Rect& skewport,
-      const gfx::Rect& soon_border_rect,
-      const gfx::Rect& eventually_rect) {
-    SetTilePriorityRects(1.f, visible_rect_in_content_space, skewport,
-                         soon_border_rect, eventually_rect, Occlusion());
-  }
+  void SetTilePriorityRectsForTesting(const gfx::Rect& visible_rect,
+                                      const gfx::Rect& skewport_rect,
+                                      const gfx::Rect& soon_border_rect,
+                                      const gfx::Rect& eventually_rect,
+                                      bool evicts_tiles = false);
 
   using TileMap = std::unordered_map<TileIndex, std::unique_ptr<Tile>>;
 
@@ -250,12 +251,11 @@ class CC_EXPORT PictureLayerTiling {
 
   void ComputeTilePriorityRects(
       const gfx::Rect& visible_rect_in_layer_space,
-      const gfx::Rect& skewport_in_layer_space,
+      const gfx::Rect& skewport_rect_in_layer_space,
       const gfx::Rect& soon_border_rect_in_layer_space,
       const gfx::Rect& eventually_rect_in_layer_space,
       float ideal_contents_scale,
-      const Occlusion& occlusion_in_layer_space,
-      TileMemoryLimitPolicy memory_limit_policy);
+      const Occlusion& occlusion_in_layer_space);
 
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;
@@ -361,20 +361,16 @@ class CC_EXPORT PictureLayerTiling {
   }
 
   void SetLiveTilesRect(const gfx::Rect& live_tiles_rect);
-  void VerifyLiveTilesRect() const;
+  void VerifyTiles() const;
   Tile* CreateTile(const Tile::CreateInfo& info);
   // Removes the tile at i, j and returns it. Returns nullptr if the tile did
   // not exist.
   std::unique_ptr<Tile> TakeTileAt(int i, int j);
   bool TilingMatchesTileIndices(const PictureLayerTiling* twin) const;
 
-  // Save the required data for computing tile priorities later.
-  void SetTilePriorityRects(float content_to_screen_scale,
-                            const gfx::Rect& visible_rect_in_content_space,
-                            const gfx::Rect& skewport,
-                            const gfx::Rect& soon_border_rect,
-                            const gfx::Rect& eventually_rect,
-                            const Occlusion& occlusion_in_layer_space);
+  void SetPriorityRect(const gfx::Rect& rect_in_layer_space,
+                       PriorityRectType rect_type,
+                       bool evicts_tiles = false);
 
   bool IsTileOccludedOnCurrentTree(const Tile* tile) const;
   Tile::CreateInfo CreateInfoForTile(int i, int j) const;
@@ -470,11 +466,20 @@ class CC_EXPORT PictureLayerTiling {
 
   bool can_require_tiles_for_activation_ = false;
 
+  gfx::Rect tiling_rect_in_layer_space_;
+
   // Iteration rects in content space.
   gfx::Rect current_visible_rect_;
   gfx::Rect current_skewport_rect_;
   gfx::Rect current_soon_border_rect_;
   gfx::Rect current_eventually_rect_;
+
+  // Iteration rects in layer space.
+  gfx::Rect current_visible_rect_in_layer_space_;
+  gfx::Rect current_skewport_rect_in_layer_space_;
+  gfx::Rect current_soon_border_rect_in_layer_space_;
+  gfx::Rect current_eventually_rect_in_layer_space_;
+
   // Other properties used for tile iteration and prioritization.
   float current_content_to_screen_scale_ = 0.f;
   Occlusion current_occlusion_in_layer_space_;

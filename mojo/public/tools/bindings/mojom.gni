@@ -1257,6 +1257,9 @@ template("mojom") {
       if (defined(invoker.blink_cpp_typemaps)) {
         cpp_typemap_configs = invoker.blink_cpp_typemaps
       }
+      if (defined(invoker.ts_typemaps)) {
+        ts_typemap_configs = invoker.ts_typemaps
+      }
       if (defined(invoker.export_define_blink)) {
         export_defines_overridden = true
         export_defines = [ invoker.export_define_blink ]
@@ -2276,15 +2279,19 @@ template("mojom") {
       action(generator_ts_target_name) {
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
-        sources = sources_list
+        sources = sources_list + [ type_mappings_path ]
         deps = [
           ":$parser_target_name",
+          ":$type_mappings_target_name",
           "//mojo/public/tools/bindings:precompile_templates",
         ]
 
         outputs = []
         foreach(base_path, output_file_base_paths) {
-          outputs += [ "$root_gen_dir/$base_path-webui.ts" ]
+          outputs += [
+            "$root_gen_dir/$base_path-webui.ts",
+            "$root_gen_dir/$base_path-converters.ts",
+          ]
         }
         args = common_generator_args
         response_file_contents = source_filelist
@@ -2293,6 +2300,8 @@ template("mojom") {
           "--filelist={{response_file_name}}",
           "-g",
           "typescript",
+          "--typemap",
+          rebase_path(type_mappings_path, root_build_dir),
         ]
 
         if (!defined(invoker.scramble_message_ids) ||

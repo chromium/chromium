@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
@@ -33,6 +34,48 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   return base::EqualsCaseInsensitiveASCII(host, "google.com") ||
          base::EqualsCaseInsensitiveASCII(host, "www.google.com");
 }
+
+/// Detect special URL that requests the bottom sheet resize.
+BOOL IsMinimizeBottomSheetURL(const GURL& URL) {
+  if (!URL.SchemeIs("ae-action")) {
+    return NO;
+  }
+  std::string_view host = URL.host_piece();
+  return base::EqualsCaseInsensitiveASCII(host, "resultpanel-header-show");
+}
+
+/// Detect special URL that requests the bottom sheet resize.
+BOOL IsMaximizeBottomSheetURL(const GURL& URL) {
+  if (!URL.SchemeIs("ae-action")) {
+    return NO;
+  }
+  std::string_view host = URL.host_piece();
+  return base::EqualsCaseInsensitiveASCII(host, "resultpanel-header-hide");
+}
+
+// Maps `value` of the closed interval [`in_min`, `in_max`] to
+// [`out_min`, `out_max`].
+float IntervalMap(float value,
+                  float in_min,
+                  float in_max,
+                  float out_min,
+                  float out_max) {
+  CHECK_GE(value, in_min);
+  CHECK_LE(value, in_max);
+  return out_min + (value - in_min) * (out_max - out_min) / (in_max - in_min);
+}
+
+// Value of the progress bar when lens request starts.
+const CGFloat kProgressBarLensRequestStarted = 0.15f;
+
+// Value of the progress bar when a response is received.
+const CGFloat kProgressBarLensResponseReceived = 0.40f;
+
+// Value of an empty progress bar.
+const CGFloat kProgressBarEmpty = 0.0f;
+
+// Value of a full progress bar.
+const CGFloat kProgressBarFull = 1.0f;
 
 }  // namespace
 
@@ -55,6 +98,8 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegateBridge;
   /// Bridges C++ WebStateObserver methods to this mediator.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+  /// Whether the inflight request was initiated by Lens.
+  BOOL _isInflightRequestLensInitiated;
 }
 
 - (instancetype)
@@ -92,9 +137,10 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 }
 
 - (void)disconnect {
-  _policyDeciderBridge.reset();
-  _webState->RemoveObserver(_webStateObserverBridge.get());
-  _webState.reset();
+  if (_webState) {
+    [self detachWebState];
+    _webState.reset();
+  }
   _webStateObserverBridge.reset();
   _webStateDelegateBridge.reset();
 }
@@ -104,9 +150,19 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 - (void)loadResultsURL:(GURL)URL {
   CHECK(_webState, kLensOverlayNotFatalUntil);
 
+  _isInflightRequestLensInitiated = YES;
+  [_consumer setLoadingProgress:kProgressBarLensResponseReceived];
   _webState->OpenURL(web::WebState::OpenURLParams(
       URL, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+}
+
+- (void)handleSearchRequestStarted {
+  [_consumer setLoadingProgress:kProgressBarLensRequestStarted];
+}
+
+- (void)handleSearchRequestErrored {
+  [_consumer setLoadingProgress:kProgressBarFull];
 }
 
 #pragma mark - CRWWebStatePolicyDecider
@@ -117,6 +173,17 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   GURL URL = net::GURLWithNSURL(request.URL);
   if (requestInfo.target_frame_is_main && !IsValidURLToOpenInResultsPage(URL)) {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
+
+    if (IsMaximizeBottomSheetURL(URL)) {
+      [self.presentationDelegate requestMaximizeBottomSheet];
+      return;
+    }
+
+    if (IsMinimizeBottomSheetURL(URL)) {
+      [self.presentationDelegate requestMinimizeBottomSheet];
+      return;
+    }
+
     OpenNewTabCommand* command =
         [[OpenNewTabCommand alloc] initWithURL:URL
                                       referrer:web::Referrer()
@@ -133,11 +200,29 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
+  _isInflightRequestLensInitiated = NO;
   [self updateBackgroundColor];
 }
 
 - (void)webStateDidChangeUnderPageBackgroundColor:(web::WebState*)webState {
   [self updateBackgroundColor];
+}
+
+- (void)webState:(web::WebState*)webState
+    didChangeLoadingProgress:(double)webStateProgress {
+  float progress = webStateProgress;
+
+  // If the current navigation is the direct product of a Lens Overlay search,
+  // then the progress from before the search should be factored in, and the
+  // webState loading progress should be adjusted to reflect the remaining
+  // portion of the overall progress.
+  if (_isInflightRequestLensInitiated) {
+    progress =
+        IntervalMap(webStateProgress, kProgressBarEmpty, kProgressBarFull,
+                    kProgressBarLensResponseReceived, kProgressBarFull);
+  }
+
+  [_consumer setLoadingProgress:progress];
 }
 
 #pragma mark - CRWWebStateDelegate
@@ -240,6 +325,7 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   _policyDeciderBridge =
       std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
   AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
+  _webState->GetWebViewProxy().allowsBackForwardNavigationGestures = NO;
 
   if (self.consumer) {
     _webState->SetWebUsageEnabled(true);

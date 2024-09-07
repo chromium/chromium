@@ -51,25 +51,21 @@ public interface AccountManagerFacade {
     void removeObserver(AccountsChangeObserver observer);
 
     /**
-     * Retrieves corresponding {@link CoreAccountInfo}s for filtered accounts.
-     * The {@link Promise} will be fulfilled once the accounts cache is populated and gaia ids are
-     * fetched. If an error occurs while getting account list, the returned {@link Promise} will
-     * wrap an empty array.
+     * Retrieves corresponding {@link CoreAccountInfo}s for filtered accounts. The {@link Promise}
+     * will be fulfilled once the accounts cache is populated and gaia ids are fetched. If an error
+     * occurs while getting account list, the returned {@link Promise} will wrap an empty array.
      *
-     * Since a different {@link Promise} will be returned every time the accounts get updated,
-     * this makes he {@link Promise}t a bad candidate for end users to cache locally unless
-     * the end users are awaiting the {@link CoreAccountInfo}s for current list of accounts only.
+     * <p>Since a different {@link Promise} will be returned every time the accounts get updated,
+     * this makes he {@link Promise}t a bad candidate for end users to cache locally unless the end
+     * users are awaiting the {@link CoreAccountInfo}s for current list of accounts only.
      */
     @MainThread
     Promise<List<CoreAccountInfo>> getCoreAccountInfos();
 
-    /** @return Whether or not there is an account authenticator for Google accounts. */
-    @AnyThread
-    boolean hasGoogleAccountAuthenticator();
-
     /**
-     * Synchronously gets an OAuth2 access token. May return a cached version, use
-     * {@link #invalidateAccessToken} to invalidate a token in the cache.
+     * Synchronously gets an OAuth2 access token. May return a cached version, use {@link
+     * #invalidateAccessToken} to invalidate a token in the cache.
+     *
      * @param coreAccountInfo The {@link CoreAccountInfo} for which the token is requested.
      * @param scope OAuth2 scope for which the requested token should be valid.
      * @return The OAuth2 access token as an AccessTokenData with a string and an expiration time.

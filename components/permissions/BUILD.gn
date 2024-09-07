@@ -63,6 +63,8 @@ source_set("permissions") {
     "contexts/speaker_selection_permission_context.h",
     "contexts/wake_lock_permission_context.cc",
     "contexts/wake_lock_permission_context.h",
+    "contexts/web_app_installation_permission_context.cc",
+    "contexts/web_app_installation_permission_context.h",
     "contexts/webxr_permission_context.cc",
     "contexts/webxr_permission_context.h",
     "contexts/window_management_permission_context.cc",

@@ -5,18 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_LEFT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_RIGHT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_LEFT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_RIGHT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
-
-import android.graphics.drawable.Drawable;
 
 import androidx.test.filters.SmallTest;
 
@@ -27,38 +18,29 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /** Tests for {@link TabGroupRowMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-    ChromeFeatureList.DATA_SHARING_ANDROID
-})
+@EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID, ChromeFeatureList.DATA_SHARING})
 public class TabGroupRowMediatorUnitTest {
     private static final String SYNC_GROUP_ID1 = "remote one";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
-    @Mock private Callback<Drawable> mFaviconCallback1;
-    @Mock private Callback<Drawable> mFaviconCallback2;
-    @Mock private Callback<Drawable> mFaviconCallback3;
-    @Mock private Callback<Drawable> mFaviconCallback4;
+    @Mock private FaviconResolver mFaviconResolver;
 
     private PropertyModel buildTestModel(List<SavedTabGroupTab> savedTabs) {
         SavedTabGroup group = new SavedTabGroup();
@@ -82,17 +64,24 @@ public class TabGroupRowMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testFavicons_zero() {
+        PropertyModel propertyModel = buildTestModel(Arrays.asList());
+        ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
+        assertEquals(0, clusterData.totalCount);
+        assertEquals(0, clusterData.firstUrls.size());
+    }
+
+    @Test
+    @SmallTest
     public void testFavicons_one() {
         SavedTabGroupTab tab = new SavedTabGroupTab();
         tab.url = JUnitTestGURLs.URL_1;
 
         PropertyModel propertyModel = buildTestModel(Arrays.asList(tab));
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        assertNull(propertyModel.get(ASYNC_FAVICON_TOP_RIGHT));
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT));
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
-        assertNull(propertyModel.get(PLUS_COUNT));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
+        ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
+        assertEquals(1, clusterData.totalCount);
+        assertEquals(1, clusterData.firstUrls.size());
+        assertEquals(JUnitTestGURLs.URL_1, clusterData.firstUrls.get(0));
     }
 
     @Test
@@ -104,13 +93,11 @@ public class TabGroupRowMediatorUnitTest {
         tab2.url = JUnitTestGURLs.URL_2;
 
         PropertyModel propertyModel = buildTestModel(Arrays.asList(tab1, tab2));
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT));
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
-        assertNull(propertyModel.get(PLUS_COUNT));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_2), eq(mFaviconCallback2));
+        ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
+        assertEquals(2, clusterData.totalCount);
+        assertEquals(2, clusterData.firstUrls.size());
+        assertEquals(JUnitTestGURLs.URL_1, clusterData.firstUrls.get(0));
+        assertEquals(JUnitTestGURLs.URL_2, clusterData.firstUrls.get(1));
     }
 
     @Test
@@ -124,14 +111,12 @@ public class TabGroupRowMediatorUnitTest {
         tab3.url = JUnitTestGURLs.URL_3;
 
         PropertyModel propertyModel = buildTestModel(Arrays.asList(tab1, tab2, tab3));
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
-        propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT).accept(mFaviconCallback3);
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
-        assertNull(propertyModel.get(PLUS_COUNT));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_2), eq(mFaviconCallback2));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_3), eq(mFaviconCallback3));
+        ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
+        assertEquals(3, clusterData.totalCount);
+        assertEquals(3, clusterData.firstUrls.size());
+        assertEquals(JUnitTestGURLs.URL_1, clusterData.firstUrls.get(0));
+        assertEquals(JUnitTestGURLs.URL_2, clusterData.firstUrls.get(1));
+        assertEquals(JUnitTestGURLs.URL_3, clusterData.firstUrls.get(2));
     }
 
     @Test
@@ -147,15 +132,13 @@ public class TabGroupRowMediatorUnitTest {
         tab4.url = JUnitTestGURLs.BLUE_1;
 
         PropertyModel propertyModel = buildTestModel(Arrays.asList(tab1, tab2, tab3, tab4));
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
-        propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT).accept(mFaviconCallback3);
-        propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT).accept(mFaviconCallback4);
-        assertNull(propertyModel.get(PLUS_COUNT));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_2), eq(mFaviconCallback2));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_3), eq(mFaviconCallback3));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.BLUE_1), eq(mFaviconCallback4));
+        ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
+        assertEquals(4, clusterData.totalCount);
+        assertEquals(4, clusterData.firstUrls.size());
+        assertEquals(JUnitTestGURLs.URL_1, clusterData.firstUrls.get(0));
+        assertEquals(JUnitTestGURLs.URL_2, clusterData.firstUrls.get(1));
+        assertEquals(JUnitTestGURLs.URL_3, clusterData.firstUrls.get(2));
+        assertEquals(JUnitTestGURLs.BLUE_1, clusterData.firstUrls.get(3));
     }
 
     @Test
@@ -173,13 +156,12 @@ public class TabGroupRowMediatorUnitTest {
         tab5.url = JUnitTestGURLs.BLUE_2;
 
         PropertyModel propertyModel = buildTestModel(Arrays.asList(tab1, tab2, tab3, tab4, tab5));
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
-        propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT).accept(mFaviconCallback3);
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
-        assertEquals(2, propertyModel.get(PLUS_COUNT).intValue());
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_2), eq(mFaviconCallback2));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_3), eq(mFaviconCallback3));
+        ClusterData clusterData = propertyModel.get(CLUSTER_DATA);
+        assertEquals(5, clusterData.totalCount);
+        assertEquals(4, clusterData.firstUrls.size());
+        assertEquals(JUnitTestGURLs.URL_1, clusterData.firstUrls.get(0));
+        assertEquals(JUnitTestGURLs.URL_2, clusterData.firstUrls.get(1));
+        assertEquals(JUnitTestGURLs.URL_3, clusterData.firstUrls.get(2));
+        assertEquals(JUnitTestGURLs.BLUE_1, clusterData.firstUrls.get(3));
     }
 }

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_details_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"

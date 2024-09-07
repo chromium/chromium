@@ -21,6 +21,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
@@ -40,6 +41,7 @@
 #include "ash/login_status.h"
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/public/cpp/accessibility_controller_client.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -64,6 +66,7 @@
 #include "ash/system/power/scoped_backlights_forced_off.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/wm/window_util.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -93,19 +96,25 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/event_sink.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
 
 using session_manager::SessionState;
 
 namespace ash {
 namespace {
+
+// How much distance to travel with each generated scroll event.
+const int kScrollDelta = 15;
 
 AccessibilityController* g_instance = nullptr;
 
@@ -267,6 +276,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityDictationLocale,
     prefs::kAccessibilityDictationLocaleOfflineNudge,
     prefs::kAccessibilityDisableTrackpadEnabled,
+    prefs::kAccessibilityDisableTrackpadMode,
     prefs::kAccessibilityFocusHighlightEnabled,
     prefs::kAccessibilityHighContrastEnabled,
     prefs::kAccessibilityLargeCursorEnabled,
@@ -1195,6 +1205,8 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAccessibilityFaceGazeEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityDisableTrackpadEnabled,
                                 false);
+  registry->RegisterIntegerPref(prefs::kAccessibilityDisableTrackpadMode,
+                                static_cast<int>(DisableTrackpadMode::kNever));
 
   // Not syncable because it might change depending on application locale,
   // user settings, and because different languages can cause speech recognition
@@ -1464,6 +1476,9 @@ void AccessibilityController::RegisterProfilePrefs(
     registry->RegisterBooleanPref(
         prefs::kAccessibilityFaceGazeCursorUseAcceleration,
         kDefaultFaceGazeCursorUseAcceleration,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterDictionaryPref(
+        prefs::kAccessibilityFaceGazeGesturesToKeyCombos,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterDictionaryPref(
         prefs::kAccessibilityFaceGazeGesturesToMacros,
@@ -1937,6 +1952,11 @@ void AccessibilityController::SetDisableTrackpadEventRewriter(
   disable_trackpad_event_rewriter_ = rewriter;
 }
 
+void AccessibilityController::SetFilterKeysEventRewriter(
+    FilterKeysEventRewriter* rewriter) {
+  filter_keys_event_rewriter_ = rewriter;
+}
+
 void AccessibilityController::HideSwitchAccessBackButton() {
   if (IsSwitchAccessRunning()) {
     switch_access_bubble_controller_->HideBackButton();
@@ -2407,6 +2427,11 @@ AccessibilityController::GetDisableTrackpadEventRewriterForTest() {
   return disable_trackpad_event_rewriter_;
 }
 
+FilterKeysEventRewriter*
+AccessibilityController::GetFilterKeysEventRewriterForTest() {
+  return filter_keys_event_rewriter_;
+}
+
 void AccessibilityController::DisableAutoClickConfirmationDialogForTest() {
   no_auto_click_confirmation_dialog_for_testing_ = true;
 }
@@ -2589,6 +2614,13 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
             &AccessibilityController::UpdateFlashNotificationsFromPrefs,
             base::Unretained(this)));
   }
+  if (::features::IsAccessibilityDisableTrackpadEnabled()) {
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityDisableTrackpadMode,
+        base::BindRepeating(
+            &AccessibilityController::UpdateDisableTrackpadFromPrefs,
+            base::Unretained(this)));
+  }
 
   for (const std::unique_ptr<Feature>& feature : features_) {
     // Log previous duration and clear duration metric if necessary
@@ -2625,6 +2657,9 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   }
   if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     UpdateFlashNotificationsFromPrefs();
+  }
+  if (::features::IsAccessibilityDisableTrackpadEnabled()) {
+    UpdateDisableTrackpadFromPrefs();
   }
 }
 
@@ -2850,6 +2885,18 @@ void AccessibilityController::UpdateFlashNotificationsFromPrefs() {
       prefs::kAccessibilityFlashNotificationsEnabled));
   flash_screen_controller_->set_color(active_user_prefs_->GetInteger(
       prefs::kAccessibilityFlashNotificationsColor));
+}
+
+void AccessibilityController::UpdateDisableTrackpadFromPrefs() {
+  if (!disable_trackpad_event_rewriter_ ||
+      !::features::IsAccessibilityDisableTrackpadEnabled()) {
+    return;
+  }
+  // TODO(b:354176487): Send trackpad mode to event rewriter
+  disable_trackpad_event_rewriter_->SetEnabled(
+      active_user_prefs_->GetInteger(
+          prefs::kAccessibilityDisableTrackpadMode) !=
+      static_cast<int>(DisableTrackpadMode::kNever));
 }
 
 void AccessibilityController::UpdateColorCorrectionFromPrefs() {
@@ -3556,6 +3603,40 @@ bool AccessibilityController::VerifyFeaturesDataForTesting() {
 void AccessibilityController::SetVirtualKeyboardVisibleCallbackForTesting(
     base::RepeatingCallback<void()> callback) {
   set_virtual_keyboard_visible_callback_ = std::move(callback);
+}
+
+void AccessibilityController::ScrollAtPoint(
+    const gfx::Point& target,
+    AccessibilityScrollDirection direction) {
+  float scroll_x = 0.0f;
+  float scroll_y = 0.0f;
+  switch (direction) {
+    case AccessibilityScrollDirection::kUp:
+      scroll_y = kScrollDelta;
+      break;
+    case AccessibilityScrollDirection::kDown:
+      scroll_y = -kScrollDelta;
+      break;
+    case AccessibilityScrollDirection::kLeft:
+      scroll_x = kScrollDelta;
+      break;
+    case AccessibilityScrollDirection::kRight:
+      scroll_x = -kScrollDelta;
+  }
+
+  // Generate a scroll event at the target location.
+  aura::Window* root_window = window_util::GetRootWindowAt(target);
+  gfx::Point location_in_pixels(target);
+  ::wm::ConvertPointFromScreen(root_window, &location_in_pixels);
+  aura::WindowTreeHost* host = root_window->GetHost();
+  host->ConvertDIPToPixels(&location_in_pixels);
+  ui::ScrollEvent scroll(
+      ui::EventType::kScroll, gfx::PointF(location_in_pixels),
+      gfx::PointF(location_in_pixels), ui::EventTimeForNow(),
+      ui::EF_IS_SYNTHESIZED, scroll_x, scroll_y, 0 /* x_offset_ordinal */,
+      0 /* y_offset_ordinal */, 2 /* finger_count */);
+  ui::MouseWheelEvent wheel(scroll);
+  std::ignore = host->GetEventSink()->OnEventFromSource(&wheel);
 }
 
 }  // namespace ash

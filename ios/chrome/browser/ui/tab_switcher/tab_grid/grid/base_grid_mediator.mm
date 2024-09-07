@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
@@ -150,9 +150,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>>
       _scopedWebStateObservation;
 
-  // ItemID of the dragged tab. Used to check if the dropped tab is from the
-  // same Chrome window.
-  web::WebStateID _dragItemID;
+  // The current Browser.
   base::WeakPtr<Browser> _browser;
 
   // Items selected for editing.
@@ -163,7 +161,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     CHECK(modeHolder);
     _modeHolder = modeHolder;
     [modeHolder addObserver:self];
@@ -431,6 +429,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)closeTabGroup:(const TabGroup*)group andDeleteGroup:(BOOL)deleteGroup {
+  if (!group) {
+    return;
+  }
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
 
@@ -469,6 +470,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)ungroupTabGroup:(const TabGroup*)group {
+  if (!group) {
+    return;
+  }
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
 
@@ -1086,15 +1090,18 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   WebStateList* webStateList = self.webStateList;
   int closedGroupsCount = groupIDs.size();
 
-  if (IsTabGroupSyncEnabled() && closedGroupsCount > 0) {
-    tab_groups::TabGroupSyncService* syncService =
-        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+  if (closedGroupsCount > 0) {
+    tab_groups::TabGroupSyncService* syncService = nil;
+    if (IsTabGroupSyncEnabled()) {
+      syncService = tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+    }
 
     // Find and close all groups in `groupIDs`.
     for (const TabGroup* group : webStateList->GetGroups()) {
       tab_groups::TabGroupId groupID = group->tab_group_id();
       if (groupIDs.contains(groupID)) {
+        // CloseTabGroupLocally handles it correctly when syncService is nil.
         tab_groups::utils::CloseTabGroupLocally(group, webStateList,
                                                 syncService);
       }
@@ -1134,7 +1141,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 }
 
-- (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
+- (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
+            sourceView:(UIView*)sourceView {
   if (IsTabGroupSyncEnabled()) {
     [self.tabGroupsHandler
         showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
@@ -1144,14 +1152,15 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 
   DCHECK(!IsTabGroupSyncEnabled());
-  [self closeTabGroup:group andDeleteGroup:YES];
+  [self closeTabGroup:group.get() andDeleteGroup:YES];
 }
 
-- (void)closeTabGroup:(const TabGroup*)group {
-  [self closeTabGroup:group andDeleteGroup:NO];
+- (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group {
+  [self closeTabGroup:group.get() andDeleteGroup:NO];
 }
 
-- (void)ungroupTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
+- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
+             sourceView:(UIView*)sourceView {
   if (IsTabGroupSyncEnabled()) {
     [self.tabGroupsHandler
         showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
@@ -1161,7 +1170,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 
   DCHECK(!IsTabGroupSyncEnabled());
-  [self ungroupTabGroup:group];
+  [self ungroupTabGroup:group.get()];
 }
 
 - (void)closeAllItems {
@@ -1292,16 +1301,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   return [self dragItemForItemWithID:item.identifier];
 }
 
-- (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
-  _dragItemID = item.identifier;
-}
-
-- (void)dragWillBeginForTabGroupItem:(TabSwitcherItem*)item {
-  NOTREACHED_IN_MIGRATION();
-}
-
 - (void)dragSessionDidEnd {
-  _dragItemID = web::WebStateID();
   // Update buttons as the number of items or the number of selected items might
   // have changed.
   [self.toolbarsMutator setButtonsEnabled:YES];
@@ -1322,16 +1322,6 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       return UIDropOperationForbidden;
     }
 
-    // If the dropped tab is from the same Chrome window and has been removed,
-    // cancel the drop operation.
-    if (_dragItemID == tabInfo.tabID &&
-        GetWebStateIndex(self.webStateList,
-                         WebStateSearchCriteria{
-                             .identifier = tabInfo.tabID,
-                             .pinned_state = PinnedState::kNonPinned,
-                         }) == WebStateList::kInvalidIndex) {
-      return UIDropOperationCancel;
-    }
     if (self.browserState->IsOffTheRecord() == tabInfo.incognito) {
       return UIDropOperationMove;
     }

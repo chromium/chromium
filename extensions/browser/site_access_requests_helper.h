@@ -10,6 +10,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/url_pattern.h"
 
 namespace content {
 class WebContents;
@@ -38,12 +39,21 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
   ~SiteAccessRequestsHelper() override;
 
   // Adds `extension` to the set of extensions with site access requests.
-  // Extension must not have granted access to the current site.
-  void AddRequest(const Extension& extension);
+  // Request will be matched to `filter`, if existent. Extension must not have
+  // granted access to the current site.
+  void AddRequest(const Extension& extension,
+                  const std::optional<URLPattern>& filter);
+
+  // Updates the site access request entry for `extension`. Request will be
+  // matched to `filter, if existent.
+  void UpdateRequest(const Extension& extension,
+                     const std::optional<URLPattern>& filter);
 
   // Removes `extension_id` from the set of extensions with site access
-  // requests. Returns whether request was removed.
-  bool RemoveRequest(const ExtensionId& extension_id);
+  // requests. Request will be matches to `filter`, if existent. Returns whether
+  // request was removed.
+  bool RemoveRequest(const ExtensionId& extension_id,
+                     const std::optional<URLPattern>& filter);
 
   // Removes `extension` from the set of extensions with site access requests
   // iff extension has granted access to the current site. Returns whether
@@ -57,9 +67,12 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
   // reset on cross-origin navigation, along with their dismissals if existent.
   void UserDismissedRequest(const ExtensionId& extension_id);
 
+  // Returns whether `extension_id` has a site access request for this tab.
+  bool HasRequest(const ExtensionId& extension_id) const;
+
   // Returns whether `extension_id` has a site access request that has not been
-  // dismissed by the user.
-  bool HasActiveRequest(const ExtensionId& extension_id);
+  // dismissed by the user and matches the URLPattern filter, if existent.
+  bool HasActiveRequest(const ExtensionId& extension_id) const;
 
   // Returns whether helper has any site access requests.
   bool HasRequests();
@@ -81,8 +94,9 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
   raw_ptr<content::WebContents> web_contents_;
   int tab_id_;
 
-  // Extensions that have a site access request for this tab's origin.
-  std::set<ExtensionId> extensions_with_requests_;
+  // Extensions that have a site access request on this tab's origin. If pattern
+  // is provided, request will only be shown for URLs that match it.
+  std::map<ExtensionId, std::optional<URLPattern>> extensions_with_requests_;
 
   // Extensions that have a site access request for this tab's origin which was
   // dismissed by the user.

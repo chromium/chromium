@@ -65,6 +65,9 @@ class MockMojoMediaStreamDispatcherHost
                void(const base::UnguessableToken&,
                     int32_t,
                     SetZoomLevelCallback));
+  MOCK_METHOD2(RequestCapturedSurfaceControlPermission,
+               void(const base::UnguessableToken&,
+                    RequestCapturedSurfaceControlPermissionCallback));
   MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
   MOCK_METHOD5(ApplySubCaptureTarget,
                void(const base::UnguessableToken&,

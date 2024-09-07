@@ -16,8 +16,8 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -90,7 +90,6 @@ base::TimeDelta GetWaitThresholdForCapabilities() {
 }
 
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
-                                    PrefService* local_state,
                                     const base::Version& current_version) {
   DCHECK(browser_state);
   DCHECK(current_version.IsValid());
@@ -147,7 +146,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
 
   // Avoid showing the upgrade sign-in promo when the device restore sign-in
   // promo should be shown instead.
-  if (GetPreRestoreIdentity(local_state).has_value()) {
+  if (GetPreRestoreIdentity(browser_state->GetPrefs()).has_value()) {
     return false;
   }
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
@@ -24,6 +25,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/views/test/widget_activation_waiter.h"
 
 namespace enterprise_data_protection {
 
@@ -64,6 +66,12 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
         "/enterprise/data_protection/clipboard_test_page.html");
   }
 
+  void FocusWebContents() {
+    browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+    views::test::WaitForWidgetActive(
+        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget(), true);
+  }
+
   void WriteTextToClipboard(const std::string& text) {
     // Clear the clipboard before writing so that test cases where the write is
     // blocked don't read whatever data happened to have been in the system
@@ -71,7 +79,7 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
     ui::Clipboard::GetForCurrentThread()->Clear(
         ui::ClipboardBuffer::kCopyPaste);
 
-    browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+    FocusWebContents();
     ASSERT_TRUE(content::ExecJs(
         rfh(), base::StringPrintf("navigator.clipboard.writeText(\"%s\");",
                                   text.c_str())));
@@ -254,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
   // This is required because pasting fails if it's attempted by JS while the
   // page is not focused.
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  FocusWebContents();
   content::ExecuteScriptAsync(
       rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
 
@@ -283,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
   // This is required because pasting fails if it's attempted by JS while the
   // page is not focused.
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  FocusWebContents();
   content::ExecuteScriptAsync(
       rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
 
@@ -312,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
   // This is required because pasting fails if it's attempted by JS while the
   // page is not focused.
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  FocusWebContents();
   content::ExecuteScriptAsync(
       rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
 
@@ -341,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
   // This is required because pasting fails if it's attempted by JS while the
   // page is not focused.
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  FocusWebContents();
   content::ExecuteScriptAsync(
       rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
 

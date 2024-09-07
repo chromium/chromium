@@ -11,14 +11,13 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_commands.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_mediator.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
@@ -32,8 +31,6 @@ using base::UserMetricsAction;
 @end
 
 @implementation DefaultBrowserGenericPromoCoordinator {
-  // The mediator for the generic default browser promo.
-  DefaultBrowserGenericPromoMediator* _mediator;
   // Main view controller for this coordinator.
   DefaultBrowserGenericPromoViewController* _viewController;
   // Default browser promo command handler.
@@ -61,10 +58,10 @@ using base::UserMetricsAction;
   if (IsSegmentedDefaultBrowserPromoEnabled()) {
     segmentation_platform::SegmentationPlatformService* segmentationService =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForBrowserState(browserState);
+            GetForProfile(browserState);
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browserState);
+            GetDispatcherForProfile(browserState);
 
     _mediator = [[DefaultBrowserGenericPromoMediator alloc]
            initWithSegmentationService:segmentationService

@@ -87,7 +87,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
       network::mojom::RequestDestination destination,
       bool skip_service_worker,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       ServiceWorkerAccessedCallback service_worker_accessed_callback);
 
   ServiceWorkerControlleeRequestHandler(
@@ -182,7 +182,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   GURL stripped_url_;
   blink::StorageKey storage_key_;
   bool force_update_started_;
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
   std::string parent_client_uuid_;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;

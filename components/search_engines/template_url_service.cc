@@ -47,7 +47,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/choice_made_location.h"
-#include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -1463,10 +1463,13 @@ void TemplateURLService::OnWebDataServiceRequestDone(
     if (updated_keywords_metadata.HasBuiltinKeywordData()) {
       web_data_service_->SetBuiltinKeywordDataVersion(
           updated_keywords_metadata.builtin_keyword_data_version);
-      web_data_service_->SetBuiltinKeywordMilestone(
-          updated_keywords_metadata.builtin_keyword_milestone);
       web_data_service_->SetBuiltinKeywordCountry(
           updated_keywords_metadata.builtin_keyword_country);
+
+      // Added 20/08/2024.
+      // This is used for database cleanup.
+      // TODO(b/361013517): Remove the call and cleanup the code in a year.
+      web_data_service_->ClearBuiltinKeywordMilestone();
     }
 
     if (updated_keywords_metadata.HasStarterPackData()) {
@@ -1492,14 +1495,14 @@ void TemplateURLService::OnWebDataServiceRequestDone(
 std::u16string TemplateURLService::GetKeywordShortName(
     const std::u16string& keyword,
     bool* is_omnibox_api_extension_keyword,
-    bool* is_ask_google_keyword) const {
+    bool* is_gemini_keyword) const {
   const TemplateURL* template_url = GetTemplateURLForKeyword(keyword);
 
   // TODO(sky): Once LocationBarView adds a listener to the TemplateURLService
   // to track changes to the model, this should become a DCHECK.
   if (template_url) {
-    *is_ask_google_keyword = template_url->starter_pack_id() ==
-                             TemplateURLStarterPackData::kAskGoogle;
+    *is_gemini_keyword =
+        template_url->starter_pack_id() == TemplateURLStarterPackData::kGemini;
     *is_omnibox_api_extension_keyword =
         template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION;
     return template_url->AdjustedShortNameForLocaleDirection();
@@ -1943,11 +1946,10 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
 
   // Past bugs might have caused either of these fields to be empty.  Just
   // delete this data off the server.
-  if (specifics.url().empty() || specifics.sync_guid().empty()) {
-    change_list->push_back(
-        syncer::SyncChange(FROM_HERE,
-                           syncer::SyncChange::ACTION_DELETE,
-                           sync_data));
+  if (specifics.url().empty() || specifics.sync_guid().empty() ||
+      specifics.keyword().empty()) {
+    change_list->emplace_back(FROM_HERE, syncer::SyncChange::ACTION_DELETE,
+                              sync_data);
     UMA_HISTOGRAM_ENUMERATION(kDeleteSyncedEngineHistogramName,
         DELETE_ENGINE_EMPTY_FIELD, DELETE_ENGINE_MAX);
     return nullptr;
@@ -1966,14 +1968,6 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
   data.SetShortName(base::UTF8ToUTF16(specifics.short_name()));
   data.originating_url = GURL(specifics.originating_url());
   std::u16string keyword(base::UTF8ToUTF16(specifics.keyword()));
-  // NOTE: Once this code has shipped in a couple of stable releases, we can
-  // probably remove the migration portion, comment out the
-  // "autogenerate_keyword" field entirely in the .proto file, and fold the
-  // empty keyword case into the "delete data" block above.
-  bool reset_keyword =
-      specifics.autogenerate_keyword() || specifics.keyword().empty();
-  if (reset_keyword)
-    keyword = u"dummy";  // Will be replaced below.
   DCHECK(!keyword.empty());
   data.SetKeyword(keyword);
   data.SetURL(specifics.url());
@@ -2011,9 +2005,7 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
                                   search_engine_choice_service);
 
   DCHECK_EQ(TemplateURL::NORMAL, turl->type());
-  if (reset_keyword || deduped) {
-    if (reset_keyword)
-      turl->ResetKeywordIfNecessary(search_terms_data, true);
+  if (deduped) {
     syncer::SyncData updated_sync_data = CreateSyncDataFromTemplateURL(*turl);
     change_list->push_back(syncer::SyncChange(
         FROM_HERE, syncer::SyncChange::ACTION_UPDATE, updated_sync_data));

@@ -178,6 +178,10 @@ class MetadataWriter {
       base::span<const char* const> class_labels,
       int top_k_outputs,
       std::optional<float> threshold);
+  void AddOutputConfigForMultiClassClassifier(
+      const std::vector<std::string>& class_labels,
+      int top_k_outputs,
+      std::optional<float> threshold);
 
   // Adds a MultiClassClassifier with one threshold per label.
   void AddOutputConfigForMultiClassClassifier(

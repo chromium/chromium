@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_text_label.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/browser/speech/tts_controller_impl.h"
@@ -108,7 +109,7 @@ gfx::FontList GetFontList(TypographyToken token) {
 const gfx::VectorIcon& GetResultTypeIcon(ResultType result_type) {
   switch (result_type) {
     case ResultType::kDefinitionResult:
-      return omnibox::kAnswerDictionaryIcon;
+      return chromeos::kDictionaryIcon;
     case ResultType::kTranslationResult:
       return omnibox::kAnswerTranslationIcon;
     case ResultType::kUnitConversionResult:

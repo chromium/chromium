@@ -124,7 +124,6 @@ class ASH_EXPORT HoverHighlightView : public views::Button {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
   void OnFocus() override;
 
   // Adds a view that acts as a container for all views that are added into the

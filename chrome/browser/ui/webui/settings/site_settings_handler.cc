@@ -784,9 +784,9 @@ void SiteSettingsHandler::RegisterMessages() {
       base::BindRepeating(&SiteSettingsHandler::HandleGetNumCookiesString,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getOsGlobalPermissionStatus",
+      "getSystemDeniedPermissions",
       base::BindRepeating(
-          &SiteSettingsHandler::HandleGetOSGlobalPermissionStatus,
+          &SiteSettingsHandler::HandleGetSystemDeniedPermissions,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "openSystemPermissionSettings",
@@ -973,7 +973,7 @@ void SiteSettingsHandler::OnZoomLevelChanged(
 void SiteSettingsHandler::OnSystemPermissionChanged(
     ContentSettingsType content_type,
     bool is_blocked) {
-  FireWebUIListener("osGlobalPermissionChanged", GetOSGlobalPermissionStatus());
+  FireWebUIListener("osGlobalPermissionChanged", GetSystemDeniedPermissions());
 }
 
 void SiteSettingsHandler::HandleFetchUsageTotal(const base::Value::List& args) {
@@ -2361,14 +2361,14 @@ void SiteSettingsHandler::HandleGetNumCookiesString(
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(string));
 }
 
-void SiteSettingsHandler::HandleGetOSGlobalPermissionStatus(
+void SiteSettingsHandler::HandleGetSystemDeniedPermissions(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const std::string callback_id = args[0].GetString();
 
   AllowJavascript();
   ResolveJavascriptCallback(base::Value(callback_id),
-                            GetOSGlobalPermissionStatus());
+                            GetSystemDeniedPermissions());
 }
 
 void SiteSettingsHandler::HandleOpenSystemPermissionSettings(
@@ -2584,44 +2584,30 @@ void SiteSettingsHandler::SendNotificationPermissionReviewList() {
       service->PopulateNotificationPermissionReviewData());
 }
 
-base::Value SiteSettingsHandler::GetOSGlobalPermissionStatus() {
-  // TODO(b/331784136): Make the settings link clickable.
-  base::Value::Dict block_messages_dict;
+base::Value SiteSettingsHandler::GetSystemDeniedPermissions() {
+  base::Value::List blocked_permissions;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // This functionality is targeting cros.
+  // This is used to display warning messages in the UI in case that
+  // geolocation, microphone or camera are disabled at the system level. At the
+  // moment this functionality is only targeting CrOS.
   if (system_permission_settings::IsDenied(
           ContentSettingsType::MEDIASTREAM_CAMERA)) {
-    block_messages_dict.Set(
-        site_settings::ContentSettingsTypeToGroupName(
-            ContentSettingsType::MEDIASTREAM_CAMERA),
-        base::Value(l10n_util::GetStringFUTF16(
-            IDS_PAGE_INFO_CAMERA_SYSTEM_SETTINGS_DESCRIPTION,
-            l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK))));
+    blocked_permissions.Append(site_settings::ContentSettingsTypeToGroupName(
+        ContentSettingsType::MEDIASTREAM_CAMERA));
   }
   if (system_permission_settings::IsDenied(
           ContentSettingsType::MEDIASTREAM_MIC)) {
-    block_messages_dict.Set(
-        site_settings::ContentSettingsTypeToGroupName(
-            ContentSettingsType::MEDIASTREAM_MIC),
-        base::Value(l10n_util::GetStringFUTF16(
-            IDS_PAGE_INFO_MICROPHONE_SYSTEM_SETTINGS_DESCRIPTION,
-            l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK))));
+    blocked_permissions.Append(site_settings::ContentSettingsTypeToGroupName(
+        ContentSettingsType::MEDIASTREAM_MIC));
   }
   if (system_permission_settings::IsDenied(ContentSettingsType::GEOLOCATION)) {
-    block_messages_dict.Set(
-        site_settings::ContentSettingsTypeToGroupName(
-            ContentSettingsType::GEOLOCATION),
-        base::Value(l10n_util::GetStringFUTF16(
-            IDS_PAGE_INFO_LOCATION_SYSTEM_SETTINGS_DESCRIPTION,
-            l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK))));
+    blocked_permissions.Append(site_settings::ContentSettingsTypeToGroupName(
+        ContentSettingsType::GEOLOCATION));
   }
 #endif
 
-  return base::Value(std::move(block_messages_dict));
+  return base::Value(std::move(blocked_permissions));
 }
 
 }  // namespace settings

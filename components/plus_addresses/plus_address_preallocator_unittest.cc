@@ -22,6 +22,7 @@
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_prefs.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -30,10 +31,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using base::test::RunOnceCallback;
+using test::CreatePreallocatedPlusAddress;
 using ::testing::_;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
@@ -41,16 +42,6 @@ using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
-
-base::Value CreatePreallocatedPlusAddress(
-    base::Time end_of_life,
-    std::string address = "some@plus.com") {
-  return base::Value(
-      base::Value::Dict()
-          .Set(PlusAddressPreallocator::kEndOfLifeKey,
-               base::TimeToValue(end_of_life))
-          .Set(PlusAddressPreallocator::kPlusAddressKey, std::move(address)));
-}
 
 PlusProfileOrError PlusProfileFromPreallocatedAddress(
     const url::Origin& origin,
@@ -78,7 +69,9 @@ base::RepeatingCallback<bool()> AlwaysEnabled() {
   return base::BindRepeating([]() { return true; });
 }
 
-}  // namespace
+base::RepeatingCallback<bool()> NeverEnabled() {
+  return base::BindRepeating([]() { return false; });
+}
 
 class PlusAddressPreallocatorTest : public ::testing::Test {
  public:
@@ -202,6 +195,78 @@ TEST_F(PlusAddressPreallocatorTest,
   EXPECT_EQ(GetPreallocatedAddressesNext(), 1);
 }
 
+// Tests that an empty cache means a synchronous allocation is not successful.
+TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationNoPlusAddresses) {
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  EXPECT_EQ(allocator.AllocatePlusAddressSynchronously(
+                url::Origin::Create(GURL("https://foo.com")),
+                PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
+}
+
+// Tests that a cache of only outdated plus addresses means that a synchronous
+// allocation is not possible
+TEST_F(PlusAddressPreallocatorTest, SychronousAllocationOutdatedPlusAddresses) {
+  SetPreallocatedAddresses(base::Value::List()
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() - base::Days(1)))
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() - base::Days(2))));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  EXPECT_EQ(allocator.AllocatePlusAddressSynchronously(
+                url::Origin::Create(GURL("https://foo.com")),
+                PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
+}
+
+// Tests that valid plus addresses in the cache means that a synchronous
+// allocation is possible.
+TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationValidPlusAddresses) {
+  SetPreallocatedAddresses(base::Value::List()
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(1)))
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(2))));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  EXPECT_NE(allocator.AllocatePlusAddressSynchronously(
+                url::Origin::Create(GURL("https://foo.com")),
+                PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
+}
+
+// Tests that no synchronous allocation is possible if plus addresses are not
+// enabled.
+TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationNotEnabled) {
+  SetPreallocatedAddresses(base::Value::List()
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(1)))
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(2))));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), NeverEnabled());
+  EXPECT_EQ(allocator.AllocatePlusAddressSynchronously(
+                url::Origin::Create(GURL("https://foo.com")),
+                PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
+}
+
+// Tests that no synchronous allocation is possible if the facet is not valid
+TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationInvalidFacet) {
+  SetPreallocatedAddresses(base::Value::List()
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(1)))
+                               .Append(CreatePreallocatedPlusAddress(
+                                   base::Time::Now() + base::Days(2))));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  EXPECT_EQ(allocator.AllocatePlusAddressSynchronously(
+                url::Origin(), PlusAddressAllocator::AllocationMode::kAny),
+            std::nullopt);
+}
+
 // Tests that preallocated plus addresses are requested on startup if there are
 // fewer than the minimum size present.
 TEST_F(PlusAddressPreallocatorTest, RequestPreallocatedAddressesOnStartup) {
@@ -253,9 +318,9 @@ TEST_F(PlusAddressPreallocatorTest,
 
   EXPECT_CALL(http_client(), PreallocatePlusAddresses).Times(0);
 
-  PlusAddressPreallocator allocator(
-      &pref_service(), &setting_service(), &http_client(),
-      /*is_enabled_check*/ base::BindRepeating([]() { return false; }));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(),
+                                    /*is_enabled_check=*/NeverEnabled());
   task_environment().FastForwardBy(
       PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
 }
@@ -460,6 +525,35 @@ TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddressForOpaqueOrigin) {
                                 callback.Get());
 }
 
+// Tests that trying to allocate a plus address while the global toggle is off
+// results in an error.
+TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddressWithToggleOff) {
+  setting_service().set_is_plus_addresses_enabled(false);
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  base::MockCallback<PlusAddressRequestCallback> callback;
+  EXPECT_CALL(callback,
+              Run(PlusProfileOrError(base::unexpected(PlusAddressRequestError(
+                  PlusAddressRequestErrorType::kUserSignedOut)))));
+  allocator.AllocatePlusAddress(url::Origin::Create(GURL("https://foo.com")),
+                                PlusAddressAllocator::AllocationMode::kAny,
+                                callback.Get());
+}
+
+// Tests that trying to allocate a plus address while the `IsEnabledCheck` is
+// false results in an error.
+TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddressWithServiceDisabled) {
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), NeverEnabled());
+  base::MockCallback<PlusAddressRequestCallback> callback;
+  EXPECT_CALL(callback,
+              Run(PlusProfileOrError(base::unexpected(PlusAddressRequestError(
+                  PlusAddressRequestErrorType::kUserSignedOut)))));
+  allocator.AllocatePlusAddress(url::Origin::Create(GURL("https://foo.com")),
+                                PlusAddressAllocator::AllocationMode::kAny,
+                                callback.Get());
+}
+
 // Tests that allocating plus addresses returns pre-allocated plus addresses
 // from the pool and cycles through them.
 TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddress) {
@@ -649,14 +743,14 @@ TEST_F(PlusAddressPreallocatorTest,
 
 // Tests that removing plus addresses works correctly.
 TEST_F(PlusAddressPreallocatorTest, RemoveAllocatedPlusAddress) {
-  const std::string kPlusAddress1 = "plus1@plusfoo.com";
-  const std::string kPlusAddress2 = "plus2@plusbar.com";
+  const auto kPlusAddress1 = PlusAddress("plus1@plusfoo.com");
+  const auto kPlusAddress2 = PlusAddress("plus2@plusbar.com");
   SetPreallocatedAddresses(
       base::Value::List()
           .Append(CreatePreallocatedPlusAddress(
-              base::Time::Now() + base::Days(1), kPlusAddress1))
+              base::Time::Now() + base::Days(1), *kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(
-              base::Time::Now() + base::Days(2), kPlusAddress2)));
+              base::Time::Now() + base::Days(2), *kPlusAddress2)));
   SetPreallocatedAddressesNext(1);
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
@@ -674,4 +768,44 @@ TEST_F(PlusAddressPreallocatorTest, RemoveAllocatedPlusAddress) {
   EXPECT_EQ(GetPreallocatedAddressesNext(), 0);
 }
 
+// Tests that errors encountered during allocation are forward to pending
+// allocation requests.
+TEST_F(PlusAddressPreallocatorTest, ErrorDuringAllocationRequest) {
+  ASSERT_THAT(GetPreallocatedAddresses(), IsEmpty());
+
+  const url::Origin kValidOrigin1 =
+      url::Origin::Create(GURL("https://foo.com"));
+  const url::Origin kValidOrigin2 =
+      url::Origin::Create(GURL("https://bar.com"));
+  constexpr auto kMode = PlusAddressAllocator::AllocationMode::kAny;
+  constexpr auto kNotFound = base::unexpected(
+      PlusAddressRequestError::AsNetworkError(net::HTTP_NOT_FOUND));
+  base::MockCallback<PlusAddressRequestCallback> callback1;
+  base::MockCallback<PlusAddressRequestCallback> callback2;
+  MockFunction<void()> check;
+  PlusAddressHttpClient::PreallocatePlusAddressesCallback preallocate_callback;
+  {
+    InSequence s;
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(MoveArg(&preallocate_callback));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(callback1, Run(PlusProfileOrError(kNotFound)));
+    EXPECT_CALL(callback2, Run(PlusProfileOrError(kNotFound)));
+    EXPECT_CALL(check, Call);
+  }
+
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  allocator.AllocatePlusAddress(kValidOrigin1, kMode, callback1.Get());
+  // Work-around to deal with asynchronicity.
+  task_environment().FastForwardBy(base::Milliseconds(1));
+  ASSERT_TRUE(preallocate_callback);
+  allocator.AllocatePlusAddress(kValidOrigin2, kMode, callback2.Get());
+  // No error is returned until the server replies with an error.
+  check.Call();
+  std::move(preallocate_callback).Run(kNotFound);
+  check.Call();
+}
+
+}  // namespace
 }  // namespace plus_addresses

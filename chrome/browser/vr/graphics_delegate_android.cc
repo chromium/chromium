@@ -6,10 +6,10 @@
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
+#include "device/vr/android/xr_image_transport_base.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/ipc/common/android/android_hardware_buffer_utils.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -88,18 +88,18 @@ bool GraphicsDelegateAndroid::PreRender() {
            << shared_buffer_->shared_image->mailbox().ToDebugString()
            << " sync_token: " << shared_buffer_->sync_token.ToDebugString();
 
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, shared_buffer_->local_texture);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  GLenum target = shared_buffer_->local_texture.target;
+  glBindTexture(target, shared_buffer_->local_texture.id);
+  glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   // Bind our image/texture/memory buffer as the draw framebuffer.
   glGenFramebuffersEXT(1, &draw_frame_buffer_);
   glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, draw_frame_buffer_);
-  glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                            GL_TEXTURE_EXTERNAL_OES,
-                            shared_buffer_->local_texture, 0);
+  glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target,
+                            shared_buffer_->local_texture.id, 0);
 
   return true;
 }
@@ -146,7 +146,9 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
 
   if (!shared_buffer_) {
     shared_buffer_ = std::make_unique<device::WebXrSharedBuffer>();
-    glGenTextures(1, &shared_buffer_->local_texture);
+    shared_buffer_->local_texture.target =
+        device::XrImageTransportBase::SharedBufferTextureTarget();
+    glGenTextures(1, &shared_buffer_->local_texture.id);
   }
 
   if (shared_buffer_->shared_image) {
@@ -190,8 +192,10 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
     return false;
   }
 
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, shared_buffer_->local_texture);
-  glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
+  glBindTexture(shared_buffer_->local_texture.target,
+                shared_buffer_->local_texture.id);
+  glEGLImageTargetTexture2DOES(shared_buffer_->local_texture.target,
+                               egl_image.get());
   shared_buffer_->local_eglimage = std::move(egl_image);
 
   // Save size to avoid resize next time.

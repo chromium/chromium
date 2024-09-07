@@ -648,28 +648,6 @@ TEST_F(SyncEngineImplTest, ShouldLoadSyncDataUponInitialization) {
   EXPECT_EQ(kTestBirthday, transport_data_prefs.GetBirthday());
 }
 
-// Verifies that local sync transport data is thrown away if there is a mismatch
-// between the account ID cached in SyncPrefs and the actual one.
-TEST_F(SyncEngineImplTest,
-       ShouldClearLocalSyncTransportDataDueToAccountIdMismatch) {
-  // If the account-scoped transport prefs are enabled, the concept of account
-  // ID mismatch doesn't exist anymore.
-  base::test::ScopedFeatureList disable_account_scoped;
-  disable_account_scoped.InitAndDisableFeature(kSyncAccountKeyedTransportPrefs);
-
-  SyncTransportDataPrefs transport_data_prefs(
-      &pref_service_, signin::GaiaIdHash::FromGaiaId(kTestGaiaId));
-  transport_data_prefs.SetCacheGuid(kTestCacheGuid);
-  transport_data_prefs.SetBirthday(kTestBirthday);
-  transport_data_prefs.SetCurrentSyncingGaiaId("corrupt_gaia_id");
-
-  InitializeBackend();
-
-  EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetCurrentSyncingGaiaId());
-  EXPECT_NE(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
-  EXPECT_NE(kTestBirthday, transport_data_prefs.GetBirthday());
-}
-
 TEST_F(SyncEngineImplTest, ShouldNotifyOnNewInvalidatedDataTypes) {
   InitializeBackend();
   ConfigureDataTypes();

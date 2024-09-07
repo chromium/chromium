@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/x509_util_win.h"
 
 #include <string_view>
@@ -23,6 +18,14 @@ namespace net {
 
 namespace x509_util {
 
+base::span<const uint8_t> CertContextAsSpan(PCCERT_CONTEXT os_cert) {
+  // SAFETY: `os_cert` is a pointer to a CERT_CONTEXT which contains a pointer
+  // to the certificate DER encoded data in `pbCertEncoded` of length
+  // `cbCertEncoded`.
+  return UNSAFE_BUFFERS(
+      base::make_span(os_cert->pbCertEncoded, os_cert->cbCertEncoded));
+}
+
 scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
     PCCERT_CONTEXT os_cert,
     const std::vector<PCCERT_CONTEXT>& os_chain) {
@@ -35,16 +38,16 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
     X509Certificate::UnsafeCreateOptions options) {
   if (!os_cert || !os_cert->pbCertEncoded || !os_cert->cbCertEncoded)
     return nullptr;
-  bssl::UniquePtr<CRYPTO_BUFFER> cert_handle(x509_util::CreateCryptoBuffer(
-      base::make_span(os_cert->pbCertEncoded, os_cert->cbCertEncoded)));
+  bssl::UniquePtr<CRYPTO_BUFFER> cert_handle(
+      x509_util::CreateCryptoBuffer(CertContextAsSpan(os_cert)));
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
   for (PCCERT_CONTEXT os_intermediate : os_chain) {
     if (!os_intermediate || !os_intermediate->pbCertEncoded ||
         !os_intermediate->cbCertEncoded)
       return nullptr;
-    intermediates.push_back(x509_util::CreateCryptoBuffer(base::make_span(
-        os_intermediate->pbCertEncoded, os_intermediate->cbCertEncoded)));
+    intermediates.push_back(
+        x509_util::CreateCryptoBuffer(CertContextAsSpan(os_intermediate)));
   }
 
   return X509Certificate::CreateFromBufferUnsafeOptions(
@@ -105,9 +108,8 @@ SHA256HashValue CalculateFingerprint256(PCCERT_CONTEXT cert) {
   // * < Windows Vista does not have universal SHA-256 support.
   // * More efficient on Windows > Vista (less overhead since non-default CSP
   // is not needed).
-  std::string_view der_cert(reinterpret_cast<const char*>(cert->pbCertEncoded),
-                            cert->cbCertEncoded);
-  crypto::SHA256HashString(der_cert, sha256.data, sizeof(sha256.data));
+  crypto::SHA256HashString(base::as_string_view(CertContextAsSpan(cert)),
+                           sha256.data, sizeof(sha256.data));
   return sha256;
 }
 

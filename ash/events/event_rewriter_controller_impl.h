@@ -23,6 +23,7 @@ namespace ash {
 
 class AccessibilityEventRewriter;
 class DisableTrackpadEventRewriter;
+class FilterKeysEventRewriter;
 class KeyboardDrivenEventRewriter;
 class PrerewrittenEventForwarder;
 
@@ -79,6 +80,7 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   raw_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_ = nullptr;
   raw_ptr<DisableTrackpadEventRewriter> disable_trackpad_event_rewriter_ =
       nullptr;
+  raw_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter_ = nullptr;
   raw_ptr<PeripheralCustomizationEventRewriter>
       peripheral_customization_event_rewriter_ = nullptr;
   raw_ptr<PrerewrittenEventForwarder> prerewritten_event_forwarder_ = nullptr;

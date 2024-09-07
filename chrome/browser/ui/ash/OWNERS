@@ -7,16 +7,10 @@ xiyuan@chromium.org
 
 per-file cast_config_controller*=file://chrome/browser/media/router/OWNERS
 per-file chrome_keyboard_ui*=yhanada@chromium.org
-per-file clipboard_history*=file://ash/clipboard/OWNERS
-per-file default_pinned_apps.*=tsergeant@chromium.org
 per-file *auth*=file://ash/login/OWNERS
-per-file *login*=file://ash/login/OWNERS
 per-file keyboard_*=yhanada@chromium.org
 per-file *wallpaper*=file://ash/wallpaper/OWNERS
 per-file *capture_mode*=file://ash/capture_mode/OWNERS
 per-file recording_service_browsertest.cc=file://ash/capture_mode/OWNERS
 per-file thumbnail_loader*=file://chrome/browser/ui/ash/holding_space/OWNERS
 per-file system_tray_tray_cast_browsertest_media_router_chromeos.cc=file://chrome/browser/media/router/discovery/access_code/OWNERS
-
-# Must be updated when a new OS settings section is added.
-per-file chrome_new_window_client*=file://chrome/browser/resources/ash/settings/OWNERS

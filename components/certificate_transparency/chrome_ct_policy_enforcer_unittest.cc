@@ -63,7 +63,6 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     ASSERT_TRUE(chain_.get());
     test_log_id_ = std::string(kTestLogID, crypto::kSHA256Length);
     another_log_id_.assign(crypto::kSHA256Length, 1);
-    clock_.SetNow(test_now_);
   }
 
   scoped_refptr<ChromeCTPolicyEnforcer> MakeChromeCTPolicyEnforcer(
@@ -71,7 +70,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
       std::map<std::string, OperatorHistoryEntry> log_operator_history) {
     return base::MakeRefCounted<ChromeCTPolicyEnforcer>(
         test_now_, std::move(disqualified_logs),
-        std::move(log_operator_history), &clock_);
+        std::move(log_operator_history));
   }
 
   void FillListWithSCTsOfOrigin(
@@ -155,7 +154,6 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
 
  protected:
   base::Time test_now_;
-  base::SimpleTestClock clock_;
   scoped_refptr<X509Certificate> chain_;
   std::string test_log_id_;
   std::string another_log_id_;
@@ -181,9 +179,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughFreshSCTs) {
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 
   // Two SCTs from TLS, one of them from a disqualified log after the
   // disqualification time.
@@ -196,9 +194,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughFreshSCTs) {
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
   policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 
   // Two embedded SCTs, one of them from a disqualified log before the
   // disqualification time.
@@ -210,9 +208,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughFreshSCTs) {
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
   policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 
   // Two embedded SCTs, one of them from a disqualified log after the
   // disqualification time.
@@ -224,9 +222,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughFreshSCTs) {
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
   policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest,
@@ -245,9 +243,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 
   // One SCT from TLS, one Embedded SCT from after disqualification time.
   // The embedded SCT is still counted towards the diversity requirement even
@@ -261,9 +259,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
   policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithNonEmbeddedSCTs) {
@@ -277,9 +275,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithNonEmbeddedSCTs) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, EnforcementDisabledByBinaryAge) {
@@ -293,15 +291,14 @@ TEST_F(ChromeCTPolicyEnforcerTest, EnforcementDisabledByBinaryAge) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 
-  clock_.Advance(base::Days(71));
-
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
+            policy_enforcer->CheckCompliance(chain_.get(), scts,
+                                             base::Time::Now() + base::Days(71),
+                                             NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithEmbeddedSCTs) {
@@ -315,9 +312,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithEmbeddedSCTs) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest,
@@ -343,9 +340,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithPooledEmbeddedSCTs) {
@@ -370,9 +367,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithPooledEmbeddedSCTs) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughSCTs) {
@@ -386,9 +383,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughSCTs) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest,
@@ -412,9 +409,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
 
   // |chain_| is valid for 10 years - over 180 days - so requires 3 SCTs.
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest,
@@ -434,9 +431,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
 
   // |chain_| is valid for 10 years - over 180 days - so requires 3 SCTs.
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest,
@@ -459,9 +456,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
 
   // |chain_| is valid for 10 years - over 180 days - so requires 3 SCTs.
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedTimestamp) {
@@ -472,8 +469,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedTimestamp) {
       "\x5d\x67\x93\xd4\x44\xd1\x0a\x67\xac\xbb\x4f\x4f\x4f\xf4";
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
-  base::Time past_disqualification = base::Time::Now() - base::Hours(1);
-  base::Time future_disqualification = base::Time::Now() + base::Hours(1);
+  base::Time now = base::Time::Now();
+  base::Time past_disqualification = now - base::Hours(1);
+  base::Time future_disqualification = now + base::Hours(1);
   disqualified_logs.emplace_back(kModifiedTestLogID, future_disqualification);
   disqualified_logs.emplace_back(kTestLogID, past_disqualification);
 
@@ -481,13 +479,13 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedTimestamp) {
       MakeChromeCTPolicyEnforcer(disqualified_logs, log_operator_history);
 
   base::Time disqualification_time;
-  EXPECT_TRUE(
-      policy_enforcer->IsLogDisqualified(kTestLogID, &disqualification_time));
+  EXPECT_TRUE(policy_enforcer->IsLogDisqualified(kTestLogID, now,
+                                                 &disqualification_time));
   EXPECT_EQ(disqualification_time, past_disqualification);
   EXPECT_EQ(policy_enforcer->GetLogDisqualificationTime(kTestLogID),
             past_disqualification);
 
-  EXPECT_FALSE(policy_enforcer->IsLogDisqualified(kModifiedTestLogID,
+  EXPECT_FALSE(policy_enforcer->IsLogDisqualified(kModifiedTestLogID, now,
                                                   &disqualification_time));
   EXPECT_EQ(disqualification_time, future_disqualification);
   EXPECT_EQ(policy_enforcer->GetLogDisqualificationTime(kModifiedTestLogID),
@@ -502,8 +500,8 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedReturnsFalseOnUnknownLog) {
       "\x5d\x67\x93\xd4\x44\xd1\x0a\x67\xac\xbb\x4f\x4f\x4f\xf4";
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
-  disqualified_logs.emplace_back(kModifiedTestLogID,
-                                 base::Time::Now() - base::Days(1));
+  base::Time now = base::Time::Now();
+  disqualified_logs.emplace_back(kModifiedTestLogID, now - base::Days(1));
 
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(disqualified_logs, log_operator_history);
@@ -511,7 +509,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedReturnsFalseOnUnknownLog) {
   base::Time unused;
   // IsLogDisqualified should return false for a log that is not in the
   // disqualified list.
-  EXPECT_FALSE(policy_enforcer->IsLogDisqualified(kTestLogID, &unused));
+  EXPECT_FALSE(policy_enforcer->IsLogDisqualified(kTestLogID, now, &unused));
   EXPECT_EQ(policy_enforcer->GetLogDisqualificationTime(kTestLogID),
             std::nullopt);
 }
@@ -541,9 +539,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
       MakeChromeCTPolicyEnforcer(disqualified_logs, log_operator_history);
 
   // SCTs should comply since retirement date is in the future.
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest,
@@ -572,9 +570,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
       MakeChromeCTPolicyEnforcer(disqualified_logs, log_operator_history);
 
   // SCTs should not comply since retirement date is in the past.
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, UpdatedSCTRequirements) {
@@ -652,8 +650,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdatedSCTRequirements) {
         // In any other case, the 'not enough' check should trip.
         expected = CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
       }
-      EXPECT_EQ(expected, policy_enforcer->CheckCompliance(cert.get(), scts,
-                                                           NetLogWithSource()))
+      EXPECT_EQ(expected,
+                policy_enforcer->CheckCompliance(
+                    cert.get(), scts, base::Time::Now(), NetLogWithSource()))
           << " for: " << (validity_end - validity_start).InDays() << " and "
           << scts_required << " scts=" << scts.size() << " j=" << j;
     }
@@ -675,9 +674,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyDifferentOperators) {
@@ -690,9 +689,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyDifferentOperators) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, ConformsToPolicyDueToOperatorSwitch) {
@@ -714,9 +713,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToPolicyDueToOperatorSwitch) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToPolicyDueToOperatorSwitch) {
@@ -735,9 +734,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToPolicyDueToOperatorSwitch) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitches) {
@@ -757,9 +756,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitches) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitchesBeforeSCTTimestamp) {
@@ -783,9 +782,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitchesBeforeSCTTimestamp) {
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer->CheckCompliance(
+                chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
 }  // namespace certificate_transparency

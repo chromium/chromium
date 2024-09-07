@@ -3,25 +3,19 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/permission_bubble/permission_bubble_browser_test_util.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 PermissionBubbleBrowserTest::PermissionBubbleBrowserTest() = default;
 

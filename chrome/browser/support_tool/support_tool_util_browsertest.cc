@@ -36,8 +36,9 @@ namespace {
 constexpr char kCaseId[] = "case-id";
 constexpr char kEmail[] = "test@test.com";
 constexpr char kIssueDescription[] = "fake issue description";
+constexpr char kUploadId[] = "testing_id";
 
-class SupportToolUtilTest : public PlatformBrowserTest {
+class SupportToolUtilTest : public InProcessBrowserTest {
  public:
   SupportToolUtilTest() = default;
 
@@ -49,7 +50,7 @@ class SupportToolUtilTest : public PlatformBrowserTest {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
     policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
-    PlatformBrowserTest::SetUpInProcessBrowserTestFixture();
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
  protected:
@@ -101,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilTest, GetSupportToolHandler) {
       GetAllAvailableDataCollectorsOnDevice();
 
   std::unique_ptr<SupportToolHandler> handler = GetSupportToolHandler(
-      kCaseId, kEmail, kIssueDescription, browser()->profile(),
+      kCaseId, kEmail, kIssueDescription, kUploadId, browser()->profile(),
       std::set<support_tool::DataCollectorType>(data_collectors.begin(),
                                                 data_collectors.end()));
   EXPECT_EQ(data_collectors.size(),
@@ -125,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilLoginScreenTest, GetSupportToolHandler) {
       support_tool::DataCollectorType::SIGN_IN_STATE};
 
   std::unique_ptr<SupportToolHandler> handler = GetSupportToolHandler(
-      kCaseId, kEmail, kIssueDescription, signin_profile,
+      kCaseId, kEmail, kIssueDescription, kUploadId, signin_profile,
       std::set<support_tool::DataCollectorType>(all_data_collectors.begin(),
                                                 all_data_collectors.end()));
   EXPECT_EQ(all_data_collectors.size() - excluded_data_collectors.size(),
@@ -133,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilLoginScreenTest, GetSupportToolHandler) {
 
   // Verify that the data collectors are excluded when they're not supported on
   // login screen.
-  handler = GetSupportToolHandler(kCaseId, kEmail, kIssueDescription,
+  handler = GetSupportToolHandler(kCaseId, kEmail, kIssueDescription, kUploadId,
                                   signin_profile, excluded_data_collectors);
   EXPECT_EQ(0U, handler->GetDataCollectorsForTesting().size());
 }

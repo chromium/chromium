@@ -26,7 +26,6 @@
 
 namespace blink {
 
-class DOMException;
 class LocalFrame;
 class VideoCapturerSource;
 
@@ -75,10 +74,6 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest,
                            CaptureTimeAndMetadataPlumbing);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest, ChangeSource);
-  FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest,
-                           SendWheelWithoutSessionIdFails);
-  FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest,
-                           SetZoomLevelWithoutSessionIdFails);
 
   // MediaStreamVideoSource overrides.
   void OnSourceCanDiscardAlpha(bool can_discard_alpha) override;
@@ -98,13 +93,6 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   std::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void SendWheel(double relative_x,
-                 double relative_y,
-                 int wheel_delta_x,
-                 int wheel_delta_y,
-                 base::OnceCallback<void(DOMException*)> callback) override;
-  void SetZoomLevel(int zoom_level,
-                    base::OnceCallback<void(DOMException*)> callback) override;
   void ApplySubCaptureTarget(
       media::mojom::blink::SubCaptureTargetType type,
       const base::Token& sub_capture_target,

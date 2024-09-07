@@ -30,6 +30,7 @@
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
@@ -522,11 +523,10 @@ void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
       secondary_action_pause_->GetVisible()
           ? HoldingSpaceCommandId::kPauseItem
           : HoldingSpaceCommandId::kResumeItem;
-  if (!holding_space_util::ExecuteInProgressCommand(
-          item(), command_id,
-          holding_space_metrics::EventSource::kHoldingSpaceItem)) {
-    NOTREACHED();
-  }
+  const bool success = holding_space_util::ExecuteInProgressCommand(
+      item(), command_id,
+      holding_space_metrics::EventSource::kHoldingSpaceItem);
+  CHECK(success);
 }
 
 void HoldingSpaceItemChipView::UpdateImage() {

@@ -21,8 +21,8 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
@@ -75,7 +75,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
             initWithBrowserState:browser_state_.get()];
 
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_.get());
     BrowsingDataRemover* browsing_data_remover =
         BrowsingDataRemoverFactory::GetForBrowserState(browser_state_.get());
     DiscoverFeedService* discover_feed_service =
@@ -178,7 +178,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
   void triggerUpdateUICallbackForAutofillResults(int num_suggestions,
                                                  int num_cards,
                                                  int num_addresses) {
-    browsing_data::AutofillCounter autofillCounter(nullptr, nullptr);
+    browsing_data::AutofillCounter autofillCounter(nullptr, nullptr, nullptr);
     const browsing_data::AutofillCounter::AutofillResult autofillResult(
         &autofillCounter, num_suggestions, num_cards, num_addresses, false);
     OCMExpect([consumer_ updateAutofillWithResult:autofillResult]);
@@ -405,7 +405,7 @@ TEST_F(QuickDeleteMediatorTest, TestAddressesSummary) {
     };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr);
+  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::AutofillCounter::AutofillResult result(
@@ -455,7 +455,7 @@ TEST_F(QuickDeleteMediatorTest, TestCardsSummary) {
     };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr);
+  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::AutofillCounter::AutofillResult result(
@@ -509,7 +509,7 @@ TEST_F(QuickDeleteMediatorTest, TestSuggestionsSummary) {
     };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr);
+  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::AutofillCounter::AutofillResult result(

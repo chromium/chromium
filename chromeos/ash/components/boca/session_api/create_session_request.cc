@@ -4,7 +4,10 @@
 
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 
+#include <string>
+
 #include "base/json/json_writer.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
@@ -27,14 +30,14 @@ namespace ash::boca {
 CreateSessionRequest::CreateSessionRequest(
     google_apis::RequestSender* sender,
     std::string gaia_id,
-    int duration_in_sec,
+    base::TimeDelta duration,
     ::boca::Session::SessionState session_state,
     CreateSessionCallback callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),
       teacher_gaia_id_(std::move(gaia_id)),
-      duration_(duration_in_sec),
+      duration_(duration),
       session_state_(session_state),
       url_base_(kSchoolToolsApiBaseUrl),
       callback_(std::move(callback)) {}
@@ -76,7 +79,7 @@ bool CreateSessionRequest::GetContentData(std::string* upload_content_type,
     root.Set("teacher", std::move(teacher));
   }
   base::Value::Dict duration;
-  duration.Set("seconds", duration_);
+  duration.Set("seconds", static_cast<int>(duration_.InSeconds()));
   root.Set("duration", std::move(duration));
 
   root.Set("session_state", session_state_);

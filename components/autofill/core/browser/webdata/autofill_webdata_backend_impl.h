@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_BACKEND_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -123,14 +124,12 @@ class AutofillWebDataBackendImpl
                                            WebDatabase* db);
 
   // Removes an Autofill profile from the web database.
-  WebDatabase::State RemoveAutofillProfile(
-      const std::string& guid,
-      AutofillProfile::Source profile_source,
-      WebDatabase* db);
+  WebDatabase::State RemoveAutofillProfile(const std::string& guid,
+                                           WebDatabase* db);
 
   // Returns the Autofill profiles from the web database.
   std::unique_ptr<WDTypedResult> GetAutofillProfiles(
-      AutofillProfile::Source profile_source,
+      std::optional<AutofillProfile::RecordType> record_type,
       WebDatabase* db);
 
   // Returns the number of values such that all for autofill entries with that
@@ -219,18 +218,6 @@ class AutofillWebDataBackendImpl
   std::unique_ptr<WDTypedResult> GetMaskedBankAccounts(WebDatabase* db);
 
   WebDatabase::State ClearAllServerData(WebDatabase* db);
-
-  // Removes Autofill records from the database. Valid only for local cards and
-  // kLocalOrSyncable profiles.
-  WebDatabase::State RemoveAutofillDataModifiedBetween(base::Time delete_begin,
-                                                       base::Time delete_end,
-                                                       WebDatabase* db);
-
-  // Removes origin URLs associated with local credit cards from the database.
-  // Autofill profiles don't store an origin, so this doesn't apply to them.
-  WebDatabase::State RemoveOriginURLsModifiedBetween(base::Time delete_begin,
-                                                     base::Time delete_end,
-                                                     WebDatabase* db);
 
   // Clears all the credit card benefits from the database.
   WebDatabase::State ClearAllCreditCardBenefits(WebDatabase* db);

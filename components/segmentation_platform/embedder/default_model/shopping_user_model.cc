@@ -23,14 +23,15 @@ using proto::SegmentId;
 constexpr SegmentId kShoppingUserSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER;
 constexpr int64_t kShoppingUserSignalStorageLength = 28;
-constexpr int64_t kShoppingUserMinSignalCollectionLength = 1;
-constexpr int64_t kModelVersion = 2;
+constexpr int64_t kShoppingUserMinSignalCollectionLength = 0;
+constexpr int64_t kModelVersion = 3;
 
 // InputFeatures.
 
 constexpr std::array<int32_t, 1> kProductDetailAvailableEnums{1};
+constexpr std::array<float, 1> kShoppingUserDefaultValue{0};
 
-constexpr std::array<MetadataWriter::UMAFeature, 2> kShoppingUserUMAFeatures = {
+constexpr std::array<MetadataWriter::UMAFeature, 3> kShoppingUserUMAFeatures = {
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "Commerce.PriceDrops.ActiveTabNavigationComplete.IsProductDetailPage",
         7,
@@ -38,7 +39,13 @@ constexpr std::array<MetadataWriter::UMAFeature, 2> kShoppingUserUMAFeatures = {
         kProductDetailAvailableEnums.size()),
     MetadataWriter::UMAFeature::FromUserAction(
         "Autofill_PolledCreditCardSuggestions",
-        7)};
+        7),
+    MetadataWriter::UMAFeature::FromValueHistogram(
+        "IOS.ParcelTracking.Tracked.AutoTrack",
+        7,
+        proto::Aggregation::LATEST_OR_DEFAULT,
+        kShoppingUserDefaultValue.size(),
+        kShoppingUserDefaultValue.data())};
 }  // namespace
 
 // static
@@ -71,6 +78,12 @@ ShoppingUserModel::GetModelConfig() {
   writer.AddUmaFeatures(kShoppingUserUMAFeatures.data(),
                         kShoppingUserUMAFeatures.size());
 
+  // Adding custom inputs.
+  writer.AddCustomInput(MetadataWriter::CustomInput{
+      .tensor_length = 1,
+      .fill_policy = proto::CustomInput::FILL_FROM_SHOPPING_SERVICE,
+      .name = "TotalShoppingBookmarkCount"});
+
   // Set OutputConfig.
   writer.AddOutputConfigForBinaryClassifier(
       /*threshold=*/0.5f,
@@ -89,7 +102,7 @@ void ShoppingUserModel::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kShoppingUserUMAFeatures.size()) {
+  if (inputs.size() != kShoppingUserUMAFeatures.size() + 1 /*custom_inputs*/) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
@@ -99,7 +112,7 @@ void ShoppingUserModel::ExecuteModelWithInput(
 
   // Determine if the user is a shopping user using  price tracking, price drop,
   // product detail page info, etc. features count.
-  if (inputs[0] > 1 || inputs[1] > 1) {
+  if (inputs[0] > 1 || inputs[1] > 1 || inputs[2] > 0 || inputs[3] > 0) {
     result = 1;  // User classified as shopping user;
   }
 

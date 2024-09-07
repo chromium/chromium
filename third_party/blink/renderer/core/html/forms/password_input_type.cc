@@ -276,9 +276,4 @@ bool PasswordInputType::SupportsInputModeAttribute() const {
   return true;
 }
 
-// TODO: This override function should be removed once the feature is shipped.
-bool PasswordInputType::IsAutoDirectionalityFormAssociated() const {
-  return RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled();
-}
-
 }  // namespace blink

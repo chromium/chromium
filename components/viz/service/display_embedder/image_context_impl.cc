@@ -15,13 +15,15 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
+#include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace {
@@ -129,6 +131,12 @@ void ImageContextImpl::CreateFallbackImage(
     gpu::SharedContextState* context_state) {
   const int num_planes = format().NumberOfPlanes();
 
+  if (format().PrefersExternalSampler()) {
+    // Skia can't allocate a fallback texture since the original texture was
+    // externally allocated.
+    return;
+  }
+
   if (context_state->graphite_context()) {
     const auto& tex_infos = texture_infos();
     if (tex_infos.size() != static_cast<size_t>(num_planes) ||
@@ -139,6 +147,18 @@ void ImageContextImpl::CreateFallbackImage(
                   << format().ToString();
       return;
     }
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+    skgpu::graphite::DawnTextureInfo dawn_info;
+    bool success = skgpu::graphite::TextureInfos::GetDawnTextureInfo(
+        tex_infos[0], &dawn_info);
+    if (success && dawn_info.fFormat == wgpu::TextureFormat::External) {
+      // Skia can't allocate a fallback texture since the original texture was
+      // externally allocated.
+      return;
+    }
+#endif
+
     for (int plane_index = 0; plane_index < num_planes; plane_index++) {
       SkISize sk_size =
           gfx::SizeToSkISize(format().GetPlaneSize(plane_index, size()));
@@ -171,9 +191,7 @@ void ImageContextImpl::CreateFallbackImage(
   // allocated. Skia will skip drawing a null GrPromiseImageTexture, do nothing
   // and leave it null.
   const auto& formats = backend_formats();
-  // Return early if SIFormat prefers external sampler.
-  if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal ||
-      format().PrefersExternalSampler()) {
+  if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal) {
     return;
   }
 

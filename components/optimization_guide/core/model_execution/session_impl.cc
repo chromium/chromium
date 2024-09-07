@@ -996,4 +996,8 @@ void SessionImpl::GetSizeInTokens(
   GetOrCreateSession().GetSizeInTokens(text, std::move(callback));
 }
 
+const SamplingParams SessionImpl::GetSamplingParams() const {
+  return sampling_params_;
+}
+
 }  // namespace optimization_guide

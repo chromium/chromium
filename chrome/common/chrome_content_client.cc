@@ -75,7 +75,7 @@
 #include "base/win/windows_version.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
 #endif
 
@@ -230,8 +230,15 @@ void ChromeContentClient::AddContentDecryptionModules(
 //
 // Example standard schemes: https://, chrome-extension://, chrome://, file://
 // Example nonstandard schemes: mailto:, data:, javascript:, about:
+//
+// Warning: Adding a scheme here will make URLs with that scheme incompatible
+// with other parts of the web. If you just need the URL parser to handle the
+// hostname or path correctly, you don't need to add a scheme here since
+// non-special scheme URLs are now supported (see http://crbug.com/40063064 for
+// details). If you add a new scheme, please also add WPT tests for it like
+// https://crrev.com/c/5790445.
 static const char* const kChromeStandardURLSchemes[] = {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     extensions::kExtensionScheme,
 #endif
     chrome::kIsolatedAppScheme,   chrome::kChromeNativeScheme,
@@ -249,11 +256,11 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   schemes->extension_schemes.push_back(extensions::kExtensionScheme);
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   schemes->savable_schemes.push_back(extensions::kExtensionScheme);
 #endif
   schemes->savable_schemes.push_back(chrome::kChromeSearchScheme);
@@ -262,7 +269,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   // chrome-search: resources shouldn't trigger insecure content warnings.
   schemes->secure_schemes.push_back(chrome::kChromeSearchScheme);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Treat extensions as secure because communication with them is entirely in
   // the browser, so there is no danger of manipulation or eavesdropping on
   // communication with them by third parties.
@@ -276,7 +283,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->no_access_schemes.push_back(chrome::kChromeNativeScheme);
   schemes->secure_schemes.push_back(chrome::kChromeNativeScheme);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   schemes->service_worker_schemes.push_back(extensions::kExtensionScheme);
   schemes->service_worker_schemes.push_back(url::kFileScheme);
 

@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
@@ -63,19 +64,18 @@ TEST_F(ManualFillAddressFormAutofilliOSTest, CreationWithMiddleName) {
       [[ManualFillAddress alloc] initWithProfile:*profile];
 
   EXPECT_TRUE(manualFillAddress);
-  EXPECT_TRUE([firstName isEqualToString:manualFillAddress.firstName]);
-  EXPECT_TRUE(
-      [middleName isEqualToString:manualFillAddress.middleNameOrInitial]);
-  EXPECT_TRUE([lastName isEqualToString:manualFillAddress.lastName]);
-  EXPECT_TRUE([company isEqualToString:manualFillAddress.company]);
-  EXPECT_TRUE([line1 isEqualToString:manualFillAddress.line1]);
-  EXPECT_TRUE([line2 isEqualToString:manualFillAddress.line2]);
-  EXPECT_TRUE([zip isEqualToString:manualFillAddress.zip]);
-  EXPECT_TRUE([city isEqualToString:manualFillAddress.city]);
-  EXPECT_TRUE([state isEqualToString:manualFillAddress.state]);
-  EXPECT_TRUE([@"United States" isEqualToString:manualFillAddress.country]);
-  EXPECT_TRUE([phoneNumber isEqualToString:manualFillAddress.phoneNumber]);
-  EXPECT_TRUE([emailAddress isEqualToString:manualFillAddress.emailAddress]);
+  EXPECT_NSEQ(firstName, manualFillAddress.firstName);
+  EXPECT_NSEQ(middleName, manualFillAddress.middleNameOrInitial);
+  EXPECT_NSEQ(lastName, manualFillAddress.lastName);
+  EXPECT_NSEQ(company, manualFillAddress.company);
+  EXPECT_NSEQ(line1, manualFillAddress.line1);
+  EXPECT_NSEQ(line2, manualFillAddress.line2);
+  EXPECT_NSEQ(zip, manualFillAddress.zip);
+  EXPECT_NSEQ(city, manualFillAddress.city);
+  EXPECT_NSEQ(state, manualFillAddress.state);
+  EXPECT_NSEQ(@"United States", manualFillAddress.country);
+  EXPECT_NSEQ(phoneNumber, manualFillAddress.phoneNumber);
+  EXPECT_NSEQ(emailAddress, manualFillAddress.emailAddress);
 }
 
 // Tests the creation of an address from an autofill::AutofillProfile.
@@ -114,17 +114,16 @@ TEST_F(ManualFillAddressFormAutofilliOSTest, CreationWithMiddleInitial) {
       [[ManualFillAddress alloc] initWithProfile:*profile];
 
   EXPECT_TRUE(manualFillAddress);
-  EXPECT_TRUE([firstName isEqualToString:manualFillAddress.firstName]);
-  EXPECT_TRUE(
-      [middleInitial isEqualToString:manualFillAddress.middleNameOrInitial]);
-  EXPECT_TRUE([lastName isEqualToString:manualFillAddress.lastName]);
-  EXPECT_TRUE([company isEqualToString:manualFillAddress.company]);
-  EXPECT_TRUE([line1 isEqualToString:manualFillAddress.line1]);
-  EXPECT_TRUE([line2 isEqualToString:manualFillAddress.line2]);
-  EXPECT_TRUE([zip isEqualToString:manualFillAddress.zip]);
-  EXPECT_TRUE([city isEqualToString:manualFillAddress.city]);
-  EXPECT_TRUE([state isEqualToString:manualFillAddress.state]);
-  EXPECT_TRUE([@"United States" isEqualToString:manualFillAddress.country]);
-  EXPECT_TRUE([phoneNumber isEqualToString:manualFillAddress.phoneNumber]);
-  EXPECT_TRUE([emailAddress isEqualToString:manualFillAddress.emailAddress]);
+  EXPECT_NSEQ(firstName, manualFillAddress.firstName);
+  EXPECT_NSEQ(middleInitial, manualFillAddress.middleNameOrInitial);
+  EXPECT_NSEQ(lastName, manualFillAddress.lastName);
+  EXPECT_NSEQ(company, manualFillAddress.company);
+  EXPECT_NSEQ(line1, manualFillAddress.line1);
+  EXPECT_NSEQ(line2, manualFillAddress.line2);
+  EXPECT_NSEQ(zip, manualFillAddress.zip);
+  EXPECT_NSEQ(city, manualFillAddress.city);
+  EXPECT_NSEQ(state, manualFillAddress.state);
+  EXPECT_NSEQ(@"United States", manualFillAddress.country);
+  EXPECT_NSEQ(phoneNumber, manualFillAddress.phoneNumber);
+  EXPECT_NSEQ(emailAddress, manualFillAddress.emailAddress);
 }

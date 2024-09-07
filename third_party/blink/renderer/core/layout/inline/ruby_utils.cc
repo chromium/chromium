@@ -540,7 +540,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
         PhysicalRect rect =
             ComputeRubyEmHeightBox(*To<PhysicalBoxFragment>(fragment));
         LayoutUnit block_size;
-        if (IsHorizontalWritingMode(line_style.GetWritingMode())) {
+        if (line_style.IsHorizontalWritingMode()) {
           item_under = item_over + rect.Bottom();
           item_over += rect.offset.top;
           block_size = fragment->Size().height;
@@ -565,8 +565,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
           else if (overflow > LayoutUnit())
             has_under_annotation = true;
         }
-      } else if (RuntimeEnabledFeatures::RubyAnnotationSpaceFixEnabled() &&
-                 fragment && box && box->IsAtomicInlineLevel() &&
+      } else if (fragment && box && box->IsAtomicInlineLevel() &&
                  !box->IsInitialLetterBox()) {
         item_under = ComputeEmHeight(item).LineHeight();
       } else if (item.IsInlineBox()) {

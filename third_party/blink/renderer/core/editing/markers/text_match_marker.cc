@@ -44,12 +44,6 @@ const PhysicalRect& TextMatchMarker::GetRect() const {
   return rect_;
 }
 
-void TextMatchMarker::NullifyLayoutRect() {
-  layout_status_ = LayoutStatus::kValidNull;
-  // Now |rendered_rect_| can not be accessed until |SetRenderedRect| is
-  // called.
-}
-
 void TextMatchMarker::Invalidate() {
   layout_status_ = LayoutStatus::kInvalid;
 }

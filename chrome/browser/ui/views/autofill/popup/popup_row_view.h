@@ -95,7 +95,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
   void OnPaint(gfx::Canvas* canvas) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* focused_now) override;
@@ -115,6 +114,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // Attempts to process a key press `event`. Returns true if it did (and the
   // parent no longer needs to handle it).
   virtual bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
+
+  // Returns if the popup row is available for selection.
+  virtual bool IsSelectable() const;
 
   // Returns the view representing the content area of the row.
   PopupRowContentView& GetContentView() { return *content_view_; }

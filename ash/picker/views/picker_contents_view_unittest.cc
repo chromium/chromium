@@ -31,7 +31,7 @@ TEST_F(PickerContentsViewTest, DefaultHasNoChildren) {
   EXPECT_THAT(view->page_container_for_testing()->children(), IsEmpty());
 }
 
-TEST_F(PickerContentsViewTest, AddPageCreatesHiddenChildren) {
+TEST_F(PickerContentsViewTest, AddPageFirstChildIsVisible) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
@@ -43,7 +43,7 @@ TEST_F(PickerContentsViewTest, AddPageCreatesHiddenChildren) {
   EXPECT_THAT(
       view->page_container_for_testing()->children(),
       ElementsAre(
-          AllOf(page1, Pointee(Property(&views::View::GetVisible, false))),
+          AllOf(page1, Pointee(Property(&views::View::GetVisible, true))),
           AllOf(page2, Pointee(Property(&views::View::GetVisible, false)))));
 }
 

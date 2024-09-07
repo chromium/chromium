@@ -7,7 +7,6 @@
 
 #import "base/functional/bind.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -34,7 +33,7 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
 
   void UploadSaveCardPromptCallbackFn(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details) {
     last_user_decision_ = user_decision;
     last_user_provided_card_details_ = user_provided_card_details;
@@ -82,7 +81,7 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
   std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate_;
   std::optional<payments::PaymentsAutofillClient::SaveCardOfferUserDecision>
       last_user_decision_;
-  std::optional<AutofillClient::UserProvidedCardDetails>
+  std::optional<payments::PaymentsAutofillClient::UserProvidedCardDetails>
       last_user_provided_card_details_;
   std::optional<bool> card_saved_;
   bool ran_on_confirmation_closed_callback_ = false;
@@ -261,8 +260,6 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
 
 // Tests that the infobar expires when reloading the page.
 TEST_F(AutofillSaveCardInfoBarDelegateTest, ShouldExpire_True_WhenReload) {
-  feature_list_.InitAndEnableFeature(kAutofillStickyInfobarIos);
-
   nav_details_that_expire_.is_reload = true;
   nav_details_that_expire_.entry_id = kNavEntryId;
   delegate_->set_nav_entry_id(kNavEntryId);
@@ -272,8 +269,6 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest, ShouldExpire_True_WhenReload) {
 // Tests that the infobar expires when new navigation ID.
 TEST_F(AutofillSaveCardInfoBarDelegateTest,
        ShouldExpire_True_WhenDifferentNavEntryId) {
-  feature_list_.InitAndEnableFeature(kAutofillStickyInfobarIos);
-
   nav_details_that_expire_.is_reload = false;
   nav_details_that_expire_.entry_id = kNavEntryId;
   const int different_nav_id = kNavEntryId - 1;
@@ -287,6 +282,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
 // to false shouldn't change the returned value.
 TEST_F(AutofillSaveCardInfoBarDelegateTest,
        ShouldExpire_True_WhenNoStickyInfobarAndNoUserGesture) {
+  feature_list_.InitAndDisableFeature(kAutofillStickyInfobarIos);
   nav_details_that_expire_.has_user_gesture = false;
 
   EXPECT_TRUE(delegate_->ShouldExpire(nav_details_that_expire_));
@@ -297,8 +293,6 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
 // to true should return true.
 TEST_F(AutofillSaveCardInfoBarDelegateTest,
        ShouldExpire_True_WhenStickyInfobarAndUserGesture) {
-  feature_list_.InitAndEnableFeature(kAutofillStickyInfobarIos);
-
   nav_details_that_expire_.has_user_gesture = true;
   EXPECT_TRUE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
@@ -306,8 +300,6 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
 // Tests that the infobar doesn't expire when the page is the same.
 TEST_F(AutofillSaveCardInfoBarDelegateTest,
        ShouldExpire_False_WhenNoDifferentPage) {
-  feature_list_.InitAndEnableFeature(kAutofillStickyInfobarIos);
-
   nav_details_that_expire_.is_navigation_to_different_page = false;
   EXPECT_FALSE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
@@ -315,8 +307,6 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
 // Tests that the infobar doesn't expire when the page is the same.
 TEST_F(AutofillSaveCardInfoBarDelegateTest,
        ShouldExpire_False_WhenDidReplaceEntry) {
-  feature_list_.InitAndEnableFeature(kAutofillStickyInfobarIos);
-
   nav_details_that_expire_.did_replace_entry = true;
   EXPECT_FALSE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
@@ -338,8 +328,6 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
 // didn't change.
 TEST_F(AutofillSaveCardInfoBarDelegateTest,
        ShouldExpire_False_WhenNoReloadAndSameNavEntryId) {
-  feature_list_.InitAndEnableFeature(kAutofillStickyInfobarIos);
-
   nav_details_that_expire_.is_reload = false;
   nav_details_that_expire_.entry_id = kNavEntryId;
   delegate_->set_nav_entry_id(kNavEntryId);
@@ -351,8 +339,6 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
 // to false should return false.
 TEST_F(AutofillSaveCardInfoBarDelegateTest,
        ShouldExpire_False_WhenStickyInfobar) {
-  feature_list_.InitAndEnableFeature(kAutofillStickyInfobarIos);
-
   nav_details_that_expire_.has_user_gesture = false;
   EXPECT_FALSE(delegate_->ShouldExpire(nav_details_that_expire_));
 }

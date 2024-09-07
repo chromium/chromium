@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -79,9 +80,8 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PerformanceManagerTabHelper>(*web_contents) {
   // We have an early WebContents creation hook so should see it when there is
-  // only a single frame, and it is not yet created. We sanity check that here.
+  // only a single frame. We sanity check that here.
 #if DCHECK_IS_ON()
-  DCHECK(!web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   size_t frame_count = 0;
   web_contents->ForEachRenderFrameHost(
       [&frame_count](content::RenderFrameHost* render_frame_host) {
@@ -110,8 +110,14 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
       web_contents->GetWeakPtr(), web_contents->GetBrowserContext()->UniqueId(),
       web_contents->GetVisibleURL(), initial_property_flags,
       web_contents->GetLastActiveTimeTicks());
+
+  // If the main frame was activated during WebContentsImpl::Init, we missed the
+  // RenderFrameCreated notification, so synthesize it now.
   content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
-  DCHECK(main_rfh);
+  CHECK(main_rfh);
+  if (main_rfh->IsRenderFrameLive()) {
+    RenderFrameCreated(main_rfh);
+  }
 
   ConnectWindowOpenRelationshipIfExists(this, web_contents);
 }
@@ -210,9 +216,10 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
           base::BindOnce(
               [](GURL url, url::Origin origin, FrameNodeImpl* frame_node) {
                 if (!url.is_empty())
-                  frame_node->OnNavigationCommitted(std::move(url),
-                                                    std::move(origin),
-                                                    /*same_document=*/false);
+                  frame_node->OnNavigationCommitted(
+                      std::move(url), std::move(origin),
+                      /*same_document=*/false,
+                      /*is_served_from_back_forward_cache=*/false);
               },
               render_frame_host->GetLastCommittedURL(),
               render_frame_host->GetLastCommittedOrigin()));
@@ -271,30 +278,17 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
            "dispatched before RenderFrameCreated with a live RenderFrame\n";
   }
   // If neither frame could be looked up there's nothing to do.
-  if (!old_frame && !new_frame)
+  if (!old_frame && !new_frame) {
     return;
+  }
 
   // Perform the swap in the graph.
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(
-                     [](FrameNodeImpl* old_frame, FrameNodeImpl* new_frame) {
-                       if (old_frame) {
-                         // Prerendering is a special case where
-                         // old_frame->is_current() may be false.
-                         // TODO(crbug.com/40182881): assert that
-                         // old_frame->is_current() or its PageState is
-                         // kPrerendering.
-                         old_frame->SetIsCurrent(false);
-                       }
-
-                       if (new_frame) {
-                         // The very first frame to be created is already
-                         // current by default except in the special case of
-                         // prerendering.
-                         // TODO(crbug.com/40182881): assert that
-                         // old_frame is null or its PageState is kPrerendering.
-                         new_frame->SetIsCurrent(true);
-                       }
+                     [](FrameNodeImpl* old_frame, FrameNodeImpl* new_frame,
+                        GraphImpl* graph) {
+                       FrameNodeImpl::UpdateCurrentFrame(old_frame, new_frame,
+                                                         graph);
                      },
                      old_frame, new_frame));
 }
@@ -400,11 +394,13 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
 
   // Notify the frame of the committed URL.
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&FrameNodeImpl::OnNavigationCommitted,
-                                base::Unretained(frame_node),
-                                render_frame_host->GetLastCommittedURL(),
-                                render_frame_host->GetLastCommittedOrigin(),
-                                navigation_handle->IsSameDocument()));
+      FROM_HERE,
+      base::BindOnce(&FrameNodeImpl::OnNavigationCommitted,
+                     base::Unretained(frame_node),
+                     render_frame_host->GetLastCommittedURL(),
+                     render_frame_host->GetLastCommittedOrigin(),
+                     navigation_handle->IsSameDocument(),
+                     navigation_handle->IsServedFromBackForwardCache()));
 
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;

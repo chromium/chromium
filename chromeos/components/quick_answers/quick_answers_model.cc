@@ -41,6 +41,21 @@ int GetFormulaMessageId(bool is_multiply, bool is_approximate) {
 
 namespace quick_answers {
 
+std::optional<quick_answers::Intent> ToIntent(IntentType intent_type) {
+  switch (intent_type) {
+    case IntentType::kDictionary:
+      return quick_answers::Intent::kDefinition;
+    case IntentType::kTranslation:
+      return quick_answers::Intent::kTranslation;
+    case IntentType::kUnit:
+      return quick_answers::Intent::kUnitConversion;
+    case IntentType::kUnknown:
+      return std::nullopt;
+  }
+
+  CHECK(false) << "Invalid intent type enum value provided";
+}
+
 PhoneticsInfo::PhoneticsInfo() = default;
 PhoneticsInfo::PhoneticsInfo(const PhoneticsInfo&) = default;
 PhoneticsInfo::~PhoneticsInfo() = default;

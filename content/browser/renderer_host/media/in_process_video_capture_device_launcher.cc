@@ -191,6 +191,16 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
     std::unique_ptr<media::VideoCaptureDevice>& device_out) {
   DCHECK_EQ(device_out.get(), nullptr);
 #if BUILDFLAG(IS_MAC)
+  // Use ScreenCaptureKit with picker if specified. `desktop_id` for the picker
+  // is not compatible with the other implementations.
+  if (picker) {
+    device_out = picker->CreateDevice(desktop_id);
+    if (device_out) {
+      return kScreenCaptureKitDeviceMac;
+    }
+    return kNoImplementation;
+  }
+
   // Prefer using ScreenCaptureKit. After that try DesktopCaptureDeviceMac, and
   // if both fail, use the generic DesktopCaptureDevice.
   if (base::FeatureList::IsEnabled(kScreenCaptureKitMac) ||
@@ -198,8 +208,7 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
        base::FeatureList::IsEnabled(kScreenCaptureKitMacWindow)) ||
       (desktop_id.type == DesktopMediaID::TYPE_SCREEN &&
        base::FeatureList::IsEnabled(kScreenCaptureKitMacScreen))) {
-    device_out = picker ? picker->CreateDevice(desktop_id)
-                        : CreateScreenCaptureKitDeviceMac(desktop_id);
+    device_out = CreateScreenCaptureKitDeviceMac(desktop_id);
     if (device_out) {
       return kScreenCaptureKitDeviceMac;
     }

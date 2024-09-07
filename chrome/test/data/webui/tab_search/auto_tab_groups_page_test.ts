@@ -4,11 +4,12 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import type {AutoTabGroupsPageElement, AutoTabGroupsResultsElement, CrInputElement, Tab, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {AutoTabGroupsPageElement, AutoTabGroupsResultsElement, CrInputElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSyncBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {createProfileData, createTab} from './tab_search_test_data.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 import {TestTabSearchSyncBrowserProxy} from './test_tab_search_sync_browser_proxy.js';
 
@@ -22,6 +23,7 @@ suite('AutoTabGroupsPageTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testApiProxy = new TestTabSearchApiProxy();
+    testApiProxy.setProfileData(createProfileData());
     const session = createSession();
     testApiProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
@@ -39,6 +41,7 @@ suite('AutoTabGroupsPageTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testApiProxy = new TestTabSearchApiProxy();
+    testApiProxy.setProfileData(createProfileData());
     const session = createSession();
     testApiProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
@@ -52,26 +55,6 @@ suite('AutoTabGroupsPageTest', () => {
 
     document.body.appendChild(autoTabGroupsResults);
     return microtasksFinished();
-  }
-
-  function createTab(override: Partial<Tab> = {}): Tab {
-    return Object.assign(
-        {
-          active: false,
-          alertStates: [],
-          index: -1,
-          faviconUrl: null,
-          tabId: -1,
-          groupId: -1,
-          pinned: false,
-          title: '',
-          url: {url: 'about:blank'},
-          isDefaultFavicon: false,
-          showIcon: false,
-          lastActiveTimeTicks: -1,
-          lastActiveElapsedText: '',
-        },
-        override);
   }
 
   function createSession(override: Partial<TabOrganizationSession> = {}):

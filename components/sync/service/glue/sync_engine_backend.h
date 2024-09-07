@@ -176,9 +176,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Record histograms related to Nigori data type.
   void RecordNigoriMemoryUsageAndCountsHistograms();
 
-  // Returns types that have local changes yet to be synced to the server.
-  DataTypeSet GetTypesWithUnsyncedData() const;
-
   bool HasUnsyncedItemsForTest() const;
 
   // Called on each device infos change and might be called more than once with

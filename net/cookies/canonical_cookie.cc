@@ -368,22 +368,12 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   DCHECK(!creation_time.is_null());
 
-  CookiePrefix prefix_case_sensitive = cookie_util::GetCookiePrefix(
-      parsed_cookie.Name(), /*check_insensitively=*/false);
-  CookiePrefix prefix_case_insensitive = cookie_util::GetCookiePrefix(
-      parsed_cookie.Name(), /*check_insensitively=*/true);
+  CookiePrefix prefix = cookie_util::GetCookiePrefix(parsed_cookie.Name());
 
-  bool is_sensitive_prefix_valid = cookie_util::IsCookiePrefixValid(
-      prefix_case_sensitive, url, parsed_cookie);
-  bool is_insensitive_prefix_valid = cookie_util::IsCookiePrefixValid(
-      prefix_case_insensitive, url, parsed_cookie);
   bool is_cookie_prefix_valid =
-      base::FeatureList::IsEnabled(net::features::kCaseInsensitiveCookiePrefix)
-          ? is_insensitive_prefix_valid
-          : is_sensitive_prefix_valid;
+      cookie_util::IsCookiePrefixValid(prefix, url, parsed_cookie);
 
-  RecordCookiePrefixMetrics(prefix_case_sensitive, prefix_case_insensitive,
-                            is_insensitive_prefix_valid);
+  RecordCookiePrefixMetrics(prefix);
 
   if (parsed_cookie.Name() == "") {
     is_cookie_prefix_valid = !HasHiddenPrefixName(parsed_cookie.Value());
@@ -489,8 +479,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   // Check for "__" prefixed names, excluding the cookie prefixes.
   bool name_prefixed_with_underscores =
-      (prefix_case_insensitive == COOKIE_PREFIX_NONE) &&
-      parsed_cookie.Name().starts_with("__");
+      (prefix == COOKIE_PREFIX_NONE) && parsed_cookie.Name().starts_with("__");
 
   UMA_HISTOGRAM_BOOLEAN("Cookie.DoubleUnderscorePrefixedName",
                         name_prefixed_with_underscores);
@@ -1077,33 +1066,9 @@ std::string CanonicalCookie::BuildCookieAttributesLine(
 }
 
 // static
-void CanonicalCookie::RecordCookiePrefixMetrics(
-    CookiePrefix prefix_case_sensitive,
-    CookiePrefix prefix_case_insensitive,
-    bool is_insensitive_prefix_valid) {
+void CanonicalCookie::RecordCookiePrefixMetrics(CookiePrefix prefix) {
   const char kCookiePrefixHistogram[] = "Cookie.CookiePrefix";
-  UMA_HISTOGRAM_ENUMERATION(kCookiePrefixHistogram, prefix_case_sensitive,
-                            COOKIE_PREFIX_LAST);
-
-  // For this to be true there must a prefix, so we know it's not
-  // COOKIE_PREFIX_NONE.
-  bool is_case_variant = prefix_case_insensitive != prefix_case_sensitive;
-
-  if (is_case_variant) {
-    const char kCookiePrefixVariantHistogram[] =
-        "Cookie.CookiePrefix.CaseVariant";
-    UMA_HISTOGRAM_ENUMERATION(kCookiePrefixVariantHistogram,
-                              prefix_case_insensitive, COOKIE_PREFIX_LAST);
-
-    const char kVariantValidHistogram[] =
-        "Cookie.CookiePrefix.CaseVariantValid";
-    UMA_HISTOGRAM_BOOLEAN(kVariantValidHistogram, is_insensitive_prefix_valid);
-  }
-
-  const char kVariantCountHistogram[] = "Cookie.CookiePrefix.CaseVariantCount";
-  if (prefix_case_insensitive > CookiePrefix::COOKIE_PREFIX_NONE) {
-    UMA_HISTOGRAM_BOOLEAN(kVariantCountHistogram, is_case_variant);
-  }
+  UMA_HISTOGRAM_ENUMERATION(kCookiePrefixHistogram, prefix, COOKIE_PREFIX_LAST);
 }
 
 // static

@@ -100,6 +100,8 @@
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
@@ -133,8 +135,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
@@ -151,7 +153,6 @@
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
-#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
@@ -201,6 +202,7 @@
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
+#import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
@@ -209,8 +211,6 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
@@ -596,10 +596,12 @@ enum class ToolbarKind {
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
+  SafeAreaProvider* _safeAreaProvider;
 
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
   QuickDeleteCoordinator* _quickDeleteCoordinator;
+  LensPromoCoordinator* _lensPromoCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -703,13 +705,19 @@ enum class ToolbarKind {
   if (active) {
     // If the NTP was stopped because of a -setActive:NO call, then the NTP
     // needs to be restarted when -setActive:YES is called subsequently (i.e.
-    // clear browsing data). This should not be needed for any other use case,
+    // delete browsing data). This should not be needed for any other use case,
     // but on initial startup this is inevitably called after restoring tabs, so
     // cannot assert that it has not been started.
     web::WebState* webState =
         self.browser->GetWebStateList()->GetActiveWebState();
     if (webState && NewTabPageTabHelper::FromWebState(webState)->IsActive() &&
         !self.NTPCoordinator.started) {
+      // Avoid Voiceover focus to be stollen if the BrowserViewController is not
+      // the top view.
+      BOOL ntpIsTopView = !self.viewController.presentedViewController;
+      self.NTPCoordinator.canfocusAccessibilityOmniboxWhenViewAppears =
+          ntpIsTopView;
+
       [self.NTPCoordinator start];
     }
   } else {
@@ -789,6 +797,8 @@ enum class ToolbarKind {
 
   [_countryCodePickerCoordinator stop];
   _countryCodePickerCoordinator = nil;
+
+  [self dismissLensPromo];
 }
 
 #pragma mark - Private
@@ -1068,6 +1078,8 @@ enum class ToolbarKind {
 
   _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
 
+  _safeAreaProvider = [[SafeAreaProvider alloc] initWithBrowser:self.browser];
+
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 
@@ -1100,8 +1112,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.webStateList =
       self.browser->GetWebStateList()->AsWeakPtr();
   _viewControllerDependencies.voiceSearchController = _voiceSearchController;
-  _viewControllerDependencies.safeAreaProvider =
-      [[SafeAreaProvider alloc] initWithBrowser:self.browser];
+  _viewControllerDependencies.safeAreaProvider = _safeAreaProvider;
   _viewControllerDependencies.pagePlaceholderBrowserAgent =
       PagePlaceholderBrowserAgent::FromBrowser(self.browser);
 }
@@ -1508,6 +1519,10 @@ enum class ToolbarKind {
   _quickDeleteCoordinator = nil;
 
   [self hideDriveFilePicker];
+
+  [self hideContextualSheet];
+
+  [self dismissLensPromo];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -1657,16 +1672,6 @@ enum class ToolbarKind {
 }
 
 - (void)sharePage {
-  if (IsLensOverlayAvailable()) {
-    // Remap share button as Lens overlay entrypoint if the feature is enabled
-    // otherwise fallback to the share page logic. This is a temporary override
-    // and a dedicated button will be used before releasing this feature.
-    [HandlerForProtocol(self.dispatcher, LensOverlayCommands)
-        createAndShowLensUI:YES];
-
-    return;
-  }
-
   // Defocus Find-In-Page before opening the share sheet. This will result in
   // closing the Find-In-Page for some OS versions.
   [self defocusFindInPage];
@@ -1739,10 +1744,8 @@ enum class ToolbarKind {
 #pragma mark - AutofillBottomSheetCommands
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
-  // Do not present the bottom sheet if there is already another VC presented
-  // in which case the coordinator will end up in a bad state.
-  if (self.passwordSuggestionBottomSheetCoordinator ||
-      self.viewController.presentedViewController) {
+  // Do not present the bottom sheet if it is already being presented.
+  if (self.passwordSuggestionBottomSheetCoordinator) {
     return;
   }
   self.passwordSuggestionBottomSheetCoordinator =
@@ -1760,10 +1763,8 @@ enum class ToolbarKind {
 }
 
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
-  // Do not present the bottom sheet if there is already another VC presented
-  // in which case the coordinator will end up in a bad state.
-  if (self.paymentsSuggestionBottomSheetCoordinator ||
-      self.viewController.presentedViewController) {
+  // Do not present the bottom sheet if it is already being presented.
+  if (self.paymentsSuggestionBottomSheetCoordinator) {
     return;
   }
   self.paymentsSuggestionBottomSheetCoordinator =
@@ -2111,6 +2112,19 @@ enum class ToolbarKind {
   _omniboxPositionChoiceCoordinator = nil;
 }
 
+- (void)showLensPromo {
+  [_lensPromoCoordinator stop];
+  _lensPromoCoordinator = [[LensPromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [_lensPromoCoordinator start];
+}
+
+- (void)dismissLensPromo {
+  [_lensPromoCoordinator stop];
+  _lensPromoCoordinator = nil;
+}
+
 #pragma mark - BrowserViewVisibilityConsumer
 
 - (void)browserViewDidChangeVisibility {
@@ -2292,6 +2306,11 @@ enum class ToolbarKind {
 - (void)hideDriveFilePicker {
   [_driveFilePickerCoordinator stop];
   _driveFilePickerCoordinator = nil;
+}
+
+- (void)setDriveFilePickerSelectedIdentity:
+    (id<SystemIdentity>)selectedIdentity {
+  [_driveFilePickerCoordinator setSelectedIdentity:selectedIdentity];
 }
 
 #pragma mark - FeedCommands
@@ -2933,13 +2952,10 @@ enum class ToolbarKind {
 
 - (void)showParcelTrackingOptInPromptWithParcels:
     (NSArray<CustomTextCheckingResult*>*)parcels {
-  web::WebState* activeWebState = self.activeWebState;
-  CHECK(activeWebState);
   [self dismissParcelTrackingOptInPrompt];
   self.parcelTrackingOptInCoordinator = [[ParcelTrackingOptInCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                        webState:activeWebState
                          parcels:parcels];
   [self.parcelTrackingOptInCoordinator start];
 }
@@ -2987,10 +3003,8 @@ enum class ToolbarKind {
     return;
   }
 
-  // Do not present the bottom sheet if there is already another VC presented
-  // in which case the coordinator will end up in a bad state.
-  if (self.passwordSuggestionCoordinator ||
-      self.viewController.presentedViewController) {
+  // Do not present the bottom sheet if it is already being presented.
+  if (self.passwordSuggestionCoordinator) {
     return;
   }
 
@@ -3317,6 +3331,24 @@ enum class ToolbarKind {
     return UIEdgeInsetsZero;
   }
 
+  LensOverlayTabHelper* lensOverlayTabHelper =
+      LensOverlayTabHelper::FromWebState(webState);
+  bool isLensOverlayAvailable =
+      IsLensOverlayAvailable() && lensOverlayTabHelper;
+
+  bool isBuildingLensOverlay =
+      isLensOverlayAvailable &&
+      lensOverlayTabHelper->IsCapturingLensOverlaySnapshot();
+  bool isUpdatingLensOverlayTabSwitcherSnapshot =
+      isLensOverlayAvailable &&
+      lensOverlayTabHelper->IsUpdatingTabSwitcherSnapshot();
+
+  if (isUpdatingLensOverlayTabSwitcherSnapshot && _safeAreaProvider) {
+    return _safeAreaProvider.safeArea;
+  } else if (isBuildingLensOverlay) {
+    return lensOverlayTabHelper->GetSnapshotInsets();
+  }
+
   UIEdgeInsets maxViewportInsets =
       _fullscreenController->GetMaxViewportInsets();
 
@@ -3492,6 +3524,14 @@ enum class ToolbarKind {
   UrlLoadParams urlLoadParams =
       UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
   _urlLoadingBrowserAgent->Load(urlLoadParams);
+}
+
+- (void)presentLensIconBubble {
+  __weak NewTabPageCoordinator* weakNTPCoordinator = _NTPCoordinator;
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+      prepareToPresentModal:^{
+        [weakNTPCoordinator presentLensIconBubble];
+      }];
 }
 
 #pragma mark - WebNavigationNTPDelegate
@@ -3801,10 +3841,11 @@ enum class ToolbarKind {
 
   [_quickDeleteCoordinator stop];
 
+  SceneState* sceneState = self.browser->GetSceneState();
   _quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
-          initWithBaseViewController:top_view_controller::
-                                         TopPresentedViewControllerFrom(
-                                             self.viewController)
+          initWithBaseViewController:
+              top_view_controller::TopPresentedViewControllerFrom(
+                  sceneState.window.rootViewController)
                              browser:self.browser
       canPerformTabsClosureAnimation:canPerformTabsClosureAnimation];
   [_quickDeleteCoordinator start];

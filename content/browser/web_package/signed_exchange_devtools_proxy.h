@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 class GURL;
@@ -47,7 +48,7 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
   SignedExchangeDevToolsProxy(
       const GURL& outer_request_url,
       network::mojom::URLResponseHeadPtr outer_response_head,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       std::optional<const base::UnguessableToken> devtools_navigation_token,
       bool report_raw_headers);
 
@@ -78,7 +79,7 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
  private:
   const GURL outer_request_url_;
   const network::mojom::URLResponseHeadPtr outer_response_;
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
   const std::optional<const base::UnguessableToken> devtools_navigation_token_;
   const bool devtools_enabled_;
   std::vector<SignedExchangeError> errors_;

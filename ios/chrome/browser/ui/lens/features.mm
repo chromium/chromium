@@ -6,17 +6,6 @@
 
 #import "base/metrics/field_trial_params.h"
 
-BASE_FEATURE(kLensWebPageEarlyTransitionEnabled,
-             "LensWebPageEarlyTransitionEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kLoadingProgressThreshold[] = "LoadingProgressThreshold";
-
-double LensWebPageEarlyTransitionLoadingProgressThreshold() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kLensWebPageEarlyTransitionEnabled, kLoadingProgressThreshold, 0.5);
-}
-
 BASE_FEATURE(kLensFiltersAblationModeEnabled,
              "LensFiltersAblationModeEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);

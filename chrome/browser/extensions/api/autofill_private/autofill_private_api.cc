@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -112,24 +113,24 @@ autofill::BrowserAutofillManager* GetBrowserAutofillManager(
 autofill::AutofillProfile CreateNewAutofillProfile(
     autofill::PersonalDataManager* personal_data,
     std::optional<std::string_view> country_code) {
-  autofill::AutofillProfile::Source source =
+  autofill::AutofillProfile::RecordType record_type =
       personal_data->address_data_manager().IsEligibleForAddressAccountStorage()
-          ? autofill::AutofillProfile::Source::kAccount
-          : autofill::AutofillProfile::Source::kLocalOrSyncable;
+          ? autofill::AutofillProfile::RecordType::kAccount
+          : autofill::AutofillProfile::RecordType::kLocalOrSyncable;
   if (country_code &&
       !personal_data->address_data_manager().IsCountryEligibleForAccountStorage(
           country_code.value())) {
     // Note: addresses from unsupported countries can't be saved in account.
     // TODO(crbug.com/40263955): remove temporary unsupported countries
     // filtering.
-    source = autofill::AutofillProfile::Source::kLocalOrSyncable;
+    record_type = autofill::AutofillProfile::RecordType::kLocalOrSyncable;
   }
 
   AddressCountryCode address_country_code =
       country_code.has_value()
           ? AddressCountryCode(std::string(*country_code))
           : autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
-  return autofill::AutofillProfile(source, address_country_code);
+  return autofill::AutofillProfile(record_type, address_country_code);
 }
 
 }  // namespace
@@ -834,12 +835,15 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
       !personal_data_manager->payments_data_manager()
            .IsPaymentMethodsMandatoryReauthEnabled(),
       MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
-  client->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
-      l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT),
-      base::BindOnce(
-          &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
-              UpdateMandatoryAuthTogglePref,
-          this));
+  client->GetPaymentsAutofillClient()
+      ->GetOrCreatePaymentsMandatoryReauthManager()
+      ->AuthenticateWithMessage(
+          l10n_util::GetStringUTF16(
+              IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT),
+          base::BindOnce(
+              &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+                  UpdateMandatoryAuthTogglePref,
+              this));
 
   return RespondNow(NoArguments());
 #else
@@ -907,7 +911,8 @@ ExtensionFunction::ResponseAction AutofillPrivateGetLocalCardFunction::Run() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     // Based on the result of the auth, we will be asynchronously returning the
     // card if the user can edit the local card.
-    client->GetOrCreatePaymentsMandatoryReauthManager()
+    client->GetPaymentsAutofillClient()
+        ->GetOrCreatePaymentsMandatoryReauthManager()
         ->AuthenticateWithMessage(
             l10n_util::GetStringUTF16(
                 IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT),
@@ -1037,6 +1042,29 @@ AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
       parameters->enabled);
 
   return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetUserAnnotationsEntriesFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetUserAnnotationsEntriesFunction::Run() {
+  std::vector<autofill_private::UserAnnotationsEntry> result;
+
+  // TODO(crbug.com/361437117): Replace stubby data with real API call result.
+  result.emplace_back();
+  result.back().entry_id = 1;
+  result.back().key = "Date of birth";
+  result.back().value = "15/02/1989";
+
+  result.emplace_back();
+  result.back().entry_id = 2;
+  result.back().key = "Frequent flyer program";
+  result.back().value = "Aadvantage";
+
+  return RespondNow(ArgumentList(
+      api::autofill_private::GetUserAnnotationsEntries::Results::Create(
+          result)));
 }
 
 }  // namespace extensions

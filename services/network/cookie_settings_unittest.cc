@@ -2544,6 +2544,111 @@ TEST_P(CookieSettingsTpcdTrialTest, OverrideDefaultBlock3pcSetting) {
             CONTENT_SETTING_BLOCK);
 }
 
+TEST_P(CookieSettingsTpcdTrialTest, IsCookieAccessible) {
+  GURL top_level_url = GURL(kURL);
+  GURL url = GURL(kOtherURL);
+
+  CookieSettings settings;
+  net::CookieInclusionStatus status;
+  settings.set_block_third_party_cookies(true);
+  settings.set_mitigations_enabled_for_3pcd(true);
+
+  settings.set_content_settings(
+      ContentSettingsType::TPCD_TRIAL,
+      {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
+
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      MakeCanonicalSameSiteNoneCookie("name", kOtherURL);
+
+  EXPECT_EQ(settings.IsCookieAccessible(
+                *cookie, GURL(kOtherURL), net::SiteForCookies(),
+                url::Origin::Create(GURL(kURL)), net::FirstPartySetMetadata(),
+                GetCookieSettingOverrides(), &status),
+            Is3pcdTrialEligible());
+  EXPECT_EQ(
+      status.exemption_reason() ==
+          net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial,
+      Is3pcdTrialEligible());
+}
+
+TEST_P(CookieSettingsTpcdTrialTest, AnnotateAndMoveUserBlockedCookies) {
+  GURL top_level_url = GURL(kURL);
+  GURL url = GURL(kOtherURL);
+
+  CookieSettings settings;
+  net::CookieInclusionStatus status;
+  settings.set_block_third_party_cookies(true);
+  settings.set_mitigations_enabled_for_3pcd(true);
+
+  settings.set_content_settings(
+      ContentSettingsType::TPCD_TRIAL,
+      {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
+
+  net::CookieAccessResultList maybe_included_cookies = {
+      {*MakeCanonicalSameSiteNoneCookie("third_party", kOtherURL), {}}};
+  net::CookieAccessResultList excluded_cookies = {
+      {*MakeCanonicalSameSiteNoneCookie("excluded_other", kOtherURL),
+       // The ExclusionReason below is irrelevant, as long as there is one.
+       net::CookieAccessResult(net::CookieInclusionStatus(
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))}};
+
+  url::Origin origin = url::Origin::Create(GURL(kURL));
+
+  // Note that `url` does not match the `top_frame_origin`.
+  EXPECT_EQ(settings.AnnotateAndMoveUserBlockedCookies(
+                GURL(kOtherURL), net::SiteForCookies(), &origin,
+                net::FirstPartySetMetadata(), GetCookieSettingOverrides(),
+                maybe_included_cookies, excluded_cookies),
+            Is3pcdTrialEligible());
+
+  if (Is3pcdTrialEligible()) {
+    EXPECT_THAT(maybe_included_cookies,
+                ElementsAre(MatchesCookieWithAccessResult(
+                    net::MatchesCookieWithName("third_party"),
+                    MatchesCookieAccessResult(
+                        AllOf(net::IsInclude(),
+                              net::HasExactlyExemptionReason(
+                                  net::CookieInclusionStatus::ExemptionReason::
+                                      k3PCDDeprecationTrial)),
+                        _, _, _))));
+    EXPECT_THAT(
+        excluded_cookies,
+        UnorderedElementsAre(MatchesCookieWithAccessResult(
+            net::MatchesCookieWithName("excluded_other"),
+            MatchesCookieAccessResult(
+                HasExactlyExclusionReasonsForTesting(
+                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                        net::CookieInclusionStatus::ExclusionReason::
+                            EXCLUDE_SECURE_ONLY}),
+                _, _, _))));
+  } else {
+    EXPECT_THAT(maybe_included_cookies, IsEmpty());
+    EXPECT_THAT(
+        excluded_cookies,
+        UnorderedElementsAre(
+            MatchesCookieWithAccessResult(
+                net::MatchesCookieWithName("excluded_other"),
+                MatchesCookieAccessResult(
+                    HasExactlyExclusionReasonsForTesting(
+                        std::vector<
+                            net::CookieInclusionStatus::ExclusionReason>{
+                            net::CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_SECURE_ONLY,
+                            net::CookieInclusionStatus::
+                                EXCLUDE_USER_PREFERENCES}),
+                    _, _, _)),
+            MatchesCookieWithAccessResult(
+                net::MatchesCookieWithName("third_party"),
+                MatchesCookieAccessResult(
+                    HasExactlyExclusionReasonsForTesting(
+                        std::vector<
+                            net::CookieInclusionStatus::ExclusionReason>{
+                            net::CookieInclusionStatus::
+                                EXCLUDE_USER_PREFERENCES}),
+                    _, _, _))));
+  }
+}
+
 TEST_P(CookieSettingsTpcdTrialTest, PreserveBlockAllCookiesSetting) {
   GURL top_level_url = GURL(kURL);
   GURL url = GURL(kOtherURL);
@@ -2744,10 +2849,10 @@ TEST_P(CookieSettingsTopLevelTpcdTrialTest, IsCookieAccessible) {
                 url::Origin::Create(GURL(kURL)), net::FirstPartySetMetadata(),
                 GetCookieSettingOverrides(), &status),
             IsTopLevel3pcdTrialEligible());
-  EXPECT_EQ(
-      status.exemption_reason() ==
-          net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial,
-      IsTopLevel3pcdTrialEligible());
+  EXPECT_EQ(status.exemption_reason() ==
+                net::CookieInclusionStatus::ExemptionReason::
+                    kTopLevel3PCDDeprecationTrial,
+            IsTopLevel3pcdTrialEligible());
 }
 
 TEST_P(CookieSettingsTopLevelTpcdTrialTest, AnnotateAndMoveUserBlockedCookies) {
@@ -2785,7 +2890,7 @@ TEST_P(CookieSettingsTopLevelTpcdTrialTest, AnnotateAndMoveUserBlockedCookies) {
                         AllOf(net::IsInclude(),
                               net::HasExactlyExemptionReason(
                                   net::CookieInclusionStatus::ExemptionReason::
-                                      k3PCDDeprecationTrial)),
+                                      kTopLevel3PCDDeprecationTrial)),
                         _, _, _))));
     EXPECT_THAT(
         excluded_cookies,

@@ -62,3 +62,41 @@ TEST_F(HatsNextWebDialogTest, ParseSurveyQuestionAnswer) {
   EXPECT_EQ(answers[0], 1);
   EXPECT_EQ(answers[1], 2);
 }
+
+TEST_F(HatsNextWebDialogTest, EncodeUkmQuestionAnswers) {
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({0}),
+            static_cast<uint64_t>(0));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({}),
+            static_cast<uint64_t>(0));
+
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({1}),
+            static_cast<uint64_t>(0b1));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({2}),
+            static_cast<uint64_t>(0b10));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({1, 2}),
+            static_cast<uint64_t>(0b11));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({3}),
+            static_cast<uint64_t>(0b100));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({1, 3}),
+            static_cast<uint64_t>(0b101));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({2, 3}),
+            static_cast<uint64_t>(0b110));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({1, 2, 3}),
+            static_cast<uint64_t>(0b111));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({4}),
+            static_cast<uint64_t>(0b1000));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({1, 4}),
+            static_cast<uint64_t>(0b1001));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({2, 4}),
+            static_cast<uint64_t>(0b1010));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({1, 2, 4}),
+            static_cast<uint64_t>(0b1011));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({3, 4}),
+            static_cast<uint64_t>(0b1100));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({1, 3, 4}),
+            static_cast<uint64_t>(0b1101));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({2, 3, 4}),
+            static_cast<uint64_t>(0b1110));
+  EXPECT_EQ(HatsNextWebDialog::EncodeUkmQuestionAnswers({1, 2, 3, 4}),
+            static_cast<uint64_t>(0b1111));
+}

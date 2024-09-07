@@ -14,14 +14,12 @@
 #include "base/memory/ptr_util.h"
 #include "cc/base/features.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
-#include "cc/scheduler/redraw_reason.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_resource_updater.h"
@@ -124,7 +122,7 @@ bool VideoLayerImpl::WillDraw(DrawMode draw_mode,
         settings.use_gpu_memory_buffer_resources,
         layer_tree_impl()->max_texture_size());
   }
-  updater_->ObtainFrameResources(frame_);
+  updater_->ObtainFrameResource(frame_);
   return true;
 }
 
@@ -179,10 +177,10 @@ void VideoLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   if (is_clipped()) {
     clip_rect_opt = clip_rect();
   }
-  updater_->AppendQuads(render_pass, frame_, transform, quad_rect,
-                        visible_quad_rect, draw_properties().mask_filter_info,
-                        clip_rect_opt, contents_opaque(), draw_opacity(),
-                        GetSortingContextId());
+  updater_->AppendQuad(render_pass, frame_, transform, quad_rect,
+                       visible_quad_rect, draw_properties().mask_filter_info,
+                       clip_rect_opt, contents_opaque(), draw_opacity(),
+                       GetSortingContextId());
 }
 
 void VideoLayerImpl::DidDraw(viz::ClientResourceProvider* resource_provider) {
@@ -191,7 +189,7 @@ void VideoLayerImpl::DidDraw(viz::ClientResourceProvider* resource_provider) {
 
   DCHECK(frame_.get());
 
-  updater_->ReleaseFrameResources();
+  updater_->ReleaseFrameResource();
   provider_client_impl_->PutCurrentFrame();
   frame_ = nullptr;
 
@@ -218,7 +216,21 @@ gfx::ContentColorUsage VideoLayerImpl::GetContentColorUsage() const {
 
 void VideoLayerImpl::SetNeedsRedraw() {
   UnionUpdateRect(gfx::Rect(bounds()));
-  layer_tree_impl()->SetNeedsRedraw(RedrawReason::kVideoLayer);
+  layer_tree_impl()->SetNeedsRedraw();
+}
+
+DamageReasonSet VideoLayerImpl::GetDamageReasons() const {
+  // Treat all update_rect() as kVideoLayer updates. However keep
+  // LayerPropertyChanged() as kUntracked because it probably has nothing to do
+  // with the video itself.
+  DamageReasonSet reasons;
+  if (!update_rect().IsEmpty()) {
+    reasons.Put(DamageReason::kVideoLayer);
+  }
+  if (LayerPropertyChanged()) {
+    reasons.Put(DamageReason::kUntracked);
+  }
+  return reasons;
 }
 
 std::optional<base::TimeDelta> VideoLayerImpl::GetPreferredRenderInterval() {

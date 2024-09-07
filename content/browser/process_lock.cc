@@ -27,8 +27,8 @@ ProcessLock ProcessLock::CreateAllowAnySite(
       storage_partition_config, web_exposed_isolation_info,
       web_exposed_isolation_level, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false,
-      std::nullopt));
+      /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+      /*is_pdf=*/false, /*is_fenced=*/false, std::nullopt));
 }
 
 // static

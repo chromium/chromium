@@ -34,15 +34,19 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#include "base/test/scoped_feature_list.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/base_win_buildflags.h"
+#include "base/win/windows_version.h"
 #endif
 
 namespace {
@@ -377,6 +381,37 @@ TEST_F(ProcessTest, SetProcessPriority) {
   EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserBlocking));
   EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
+  // Eco QoS level read & write are not supported prior to WIN11_22H2,
+  // Priority::kUserVisible has same behavior as Priority::kUserBlocking, and
+  // is translated as Priority::kUserBlocking.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11_22H2) {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserVisible);
+  } else {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+  }
+
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kBestEffort));
+  EXPECT_EQ(process.GetPriority(), Process::Priority::kBestEffort);
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11_22H2) {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserVisible);
+  } else {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+  }
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserBlocking));
+  EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+#elif !BUILDFLAG(IS_APPLE)
+  // On other platforms, Process::Priority::kUserVisible is translated as
+  // Process::Priority::kUserBlocking.
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
+  EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+#endif
+
   int new_os_priority = process.GetOSPriority();
   EXPECT_EQ(old_os_priority, new_os_priority);
 }
@@ -428,7 +463,7 @@ class FunctionTestThread : public PlatformThread::Delegate {
   FunctionTestThread& operator=(const FunctionTestThread&) = delete;
 
   void ThreadMain() override {
-    PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+    PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
     while (true) {
       PlatformThread::Sleep(Milliseconds(100));
     }
@@ -460,7 +495,7 @@ class RTDisplayFunctionTestThread : public PlatformThread::Delegate {
       delete;
 
   void ThreadMain() override {
-    PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+    PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
     while (true) {
       PlatformThread::Sleep(Milliseconds(100));
     }
@@ -510,7 +545,7 @@ MULTIPROCESS_TEST_MAIN(ProcessThreadBackgroundingMain) {
   FunctionTestThread thread1, thread2, thread3;
   base::test::ScopedFeatureList scoped_feature_list(kSetThreadBgForBgProcess);
   PlatformThreadChromeOS::InitializeFeatures();
-  PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+  PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
 
   // Register signal handler to be notified to create threads after backgrounding.
   signal(SIGUSR1, sig_create_threads_after_bg);
@@ -551,7 +586,7 @@ MULTIPROCESS_TEST_MAIN(ProcessThreadBackgroundingMain) {
 // that the threads in the process are backgrounded correctly.
 TEST_F(ProcessTest, ProcessThreadBackgrounding) {
   if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault,
-                                           ThreadType::kCompositing)) {
+                                           ThreadType::kDisplayCritical)) {
     return;
   }
 
@@ -572,7 +607,7 @@ TEST_F(ProcessTest, ProcessThreadBackgrounding) {
   }
 
   // Verify that the threads are initially in the foreground.
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), false);
 
   EXPECT_TRUE(process.SetPriority(Process::Priority::kBestEffort));
@@ -586,14 +621,14 @@ TEST_F(ProcessTest, ProcessThreadBackgrounding) {
   }
 
   // Verify that the threads are backgrounded.
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), true);
 
   EXPECT_TRUE(process.SetPriority(Process::Priority::kUserBlocking));
   EXPECT_TRUE(process.GetPriority() == base::Process::Priority::kUserBlocking);
 
   // Verify that the threads are foregrounded.
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), false);
 }
 
@@ -620,7 +655,7 @@ MULTIPROCESS_TEST_MAIN(ProcessRTAudioBgMain) {
 // Test the property of kRealTimeAudio threads in a backgrounded process.
 TEST_F(ProcessTest, ProcessRTAudioBg) {
   if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault,
-                                           ThreadType::kCompositing)) {
+                                           ThreadType::kDisplayCritical)) {
     return;
   }
 
@@ -667,7 +702,7 @@ MULTIPROCESS_TEST_MAIN(ProcessRTDisplayBgMain) {
       {kSetThreadBgForBgProcess, kSetRtForDisplayThreads}, {});
   PlatformThreadChromeOS::InitializeFeatures();
 
-  PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+  PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
 
   if (!PlatformThread::Create(0, &thread1, &handle1)) {
     ADD_FAILURE() << "ProcessRTDisplayBgMain: Failed to create thread1";
@@ -682,10 +717,10 @@ MULTIPROCESS_TEST_MAIN(ProcessRTDisplayBgMain) {
   }
 }
 
-// Test the property of kCompositing threads in a backgrounded process.
+// Test the property of kDisplayCritical threads in a backgrounded process.
 TEST_F(ProcessTest, ProcessRTDisplayBg) {
   if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault,
-                                           ThreadType::kCompositing)) {
+                                           ThreadType::kDisplayCritical)) {
     return;
   }
 
@@ -706,7 +741,7 @@ TEST_F(ProcessTest, ProcessRTDisplayBg) {
   }
 
   AssertThreadsRT(process.Pid(), true);
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), false);
 
   EXPECT_TRUE(process.SetPriority(Process::Priority::kBestEffort));
@@ -715,7 +750,7 @@ TEST_F(ProcessTest, ProcessRTDisplayBg) {
   // Verify that the threads transitioned away from RT when process is
   // kBestEffort
   AssertThreadsRT(process.Pid(), false);
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), true);
 
   EXPECT_TRUE(process.SetPriority(Process::Priority::kUserBlocking));
@@ -723,7 +758,7 @@ TEST_F(ProcessTest, ProcessRTDisplayBg) {
 
   // Verify that it is back to RT when process is kUserBlocking
   AssertThreadsRT(process.Pid(), true);
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), false);
 }
 

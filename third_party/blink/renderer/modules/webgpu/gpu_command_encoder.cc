@@ -282,7 +282,7 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     }
   }
 
-  wgpu::RenderPassDescriptorMaxDrawCount max_draw_count = {};
+  wgpu::RenderPassMaxDrawCount max_draw_count = {};
   if (descriptor->hasMaxDrawCount()) {
     max_draw_count.maxDrawCount = descriptor->maxDrawCount();
     dawn_desc.nextInChain = &max_draw_count;

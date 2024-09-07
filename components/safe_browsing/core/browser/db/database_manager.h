@@ -102,15 +102,13 @@ class SafeBrowsingDatabaseManager
 
   // Cancels a pending API check if the result is no longer needed. Returns true
   // if the client was found and the check successfully cancelled. This should
-  // be called on the UI thread when kSafeBrowsingOnUIThread is enabled and on
-  // the IO thread otherwise.
+  // be called on the UI thread.
   virtual bool CancelApiCheck(Client* client);
 
   // Cancels a pending check if the result is no longer needed.  Also called
   // after the result has been handled. Api checks are handled separately. To
   // cancel an API check use CancelApiCheck. If |client| doesn't exist anymore,
-  // ignore this call. This should be called on the UI thread when
-  // kSafeBrowsingOnUIThread is enabled and on the IO thread otherwise.
+  // ignore this call. This should be called on the UI thread.
   virtual void CancelCheck(Client* client) = 0;
 
   //
@@ -135,8 +133,7 @@ class SafeBrowsingDatabaseManager
   // the database at all.  Returns true if we can synchronously determine that
   // the url is safe. Otherwise it returns false, and |client| is called
   // asynchronously with the result when it is ready. This should be called on
-  // the UI thread when kSafeBrowsingOnUIThread is enabled and on the IO thread
-  // otherwise.
+  // the UI thread.
   virtual bool CheckApiBlocklistUrl(const GURL& url, Client* client);
 
   // Check if the |url| matches any of the full-length hashes from the client-
@@ -150,8 +147,7 @@ class SafeBrowsingDatabaseManager
   // URL will only be checked for the threat types in |threat_types|.
   // |check_type| specifies the type of check the url will be checked against.
   // See comments above CheckBrowseUrlType's definition for more details. This
-  // should be called on the UI thread when kSafeBrowsingOnUIThread is enabled
-  // and on the IO thread otherwise.
+  // should be called on the UI thread.
   virtual bool CheckBrowseUrl(
       const GURL& url,
       const SBThreatTypeSet& threat_types,
@@ -173,8 +169,7 @@ class SafeBrowsingDatabaseManager
   // the url doesn't belong to any such list and the check can happen
   // synchronously, returns true. Otherwise it returns false, and |client| is
   // called asynchronously with the result when it is ready. Returns true if the
-  // list is not yet available. This should be called on the UI thread when
-  // kSafeBrowsingOnUIThread is enabled and on the IO thread otherwise.
+  // list is not yet available. This should be called on the UI thread.
   virtual bool CheckUrlForSubresourceFilter(const GURL& url,
                                             Client* client) = 0;
 
@@ -196,8 +191,7 @@ class SafeBrowsingDatabaseManager
   // a match on this list, the realtime full URL Safe Browsing lookup isn't
   // performed. The returned value includes some details about the store state
   // when the call was made. If used, it should be used for logging purposes
-  // only. This should be called on the UI thread when kSafeBrowsingOnUIThread
-  // is enabled and on the IO thread otherwise.
+  // only. This should be called on the UI thread.
   virtual std::optional<HighConfidenceAllowlistCheckLoggingDetails>
   CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
@@ -210,8 +204,7 @@ class SafeBrowsingDatabaseManager
   // Check if the |url| matches any of the full-length hashes from the download
   // allowlist. Runs `callback` asynchronously with true if there was a match
   // and false otherwise. To make sure we are conservative we will return true
-  // if an error occurs. This should be called on the UI thread when
-  // kSafeBrowsingOnUIThread is enabled and on the IO thread otherwise.
+  // if an error occurs. This should be called on the UI thread.
   virtual void MatchDownloadAllowlistUrl(
       const GURL& url,
       base::OnceCallback<void(bool)> callback) = 0;
@@ -239,16 +232,14 @@ class SafeBrowsingDatabaseManager
 
   //
   // Methods to indicate when to start or suspend the SafeBrowsing operations.
-  // These functions should be called on the UI thread when
-  // kSafeBrowsingOnUIThread is enabled and on the IO thread otherwise.
+  // These functions should be called on the UI thread.
   //
 
   // Called to initialize objects that are used on the thread, such as the v4
   // protocol manager.  This may be called multiple times during the life of the
   // DatabaseManager. All subclasses should override this method and call the
-  // base class method at the top of it. This should be called on the UI thread
-  // when kSafeBrowsingOnUIThread is enabled and on the IO thread otherwise.
-  virtual void StartOnSBThread(
+  // base class method at the top of it. This should be called on the UI thread.
+  virtual void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config);
 
@@ -265,9 +256,8 @@ class SafeBrowsingDatabaseManager
 
   // Called to stop or shutdown operations. All subclasses should override this
   // method and call the base class method at the bottom of it. This should be
-  // called on the UI thread when kSafeBrowsingOnUIThread is enabled and on the
-  // IO thread otherwise.
-  virtual void StopOnSBThread(bool shutdown);
+  // called on the UI thread.
+  virtual void StopOnUIThread(bool shutdown);
 
   // Called to check if database is ready or not.
   virtual bool IsDatabaseReady() const = 0;
@@ -293,9 +283,8 @@ class SafeBrowsingDatabaseManager
     raw_ptr<Client> client_;
   };
 
-  SafeBrowsingDatabaseManager(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  explicit SafeBrowsingDatabaseManager(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   virtual ~SafeBrowsingDatabaseManager();
 
@@ -323,27 +312,19 @@ class SafeBrowsingDatabaseManager
 
   // Called when the SafeBrowsingProtocolManager has received the full hash and
   // api results for prefixes of the |url| argument in CheckApiBlocklistUrl.
-  // This should be called on the UI thread when kSafeBrowsingOnUIThread is
-  // enabled and on the IO thread otherwise.
+  // This should be called on the UI thread.
   void OnThreatMetadataResponse(std::unique_ptr<SafeBrowsingApiCheck> check,
                                 const ThreatMetadata& md);
 
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner() {
-    return ui_task_runner_;
-  }
-
-  // SafeBrowsingDatabaseManager passes its |io_task_runner| construction
+  // SafeBrowsingDatabaseManager passes its |ui_task_runner| construction
   // parameter to its RefCountedDeleteOnSequence base class, which exposes its
-  // passed-in task runner as owning_task_runner(). Expose that |io_task_runner|
-  // parameter internally as io_task_runner() for clarity.
-  // Note if kSafeBrowsingOnUIThread is enabled that'll be the UI thread.
-  scoped_refptr<base::SequencedTaskRunner> sb_task_runner() {
+  // passed-in task runner as owning_task_runner(). Expose that |ui_task_runner|
+  // parameter internally as ui_task_runner() for clarity.
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner() {
     return owning_task_runner();
   }
 
   typedef std::set<raw_ptr<SafeBrowsingApiCheck, SetExperimental>> ApiCheckSet;
-
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   // In-progress checks. This set owns the SafeBrowsingApiCheck pointers and is
   // responsible for deleting them when removing from the set.
@@ -354,7 +335,7 @@ class SafeBrowsingDatabaseManager
   // extensions that have been blocklisted since.
   void NotifyDatabaseUpdateFinished();
 
-  // Created and destroyed via StartOnSBThread/StopOnSBThread.
+  // Created and destroyed via StartOnUIThread/StopOnUIThread.
   std::unique_ptr<V4GetHashProtocolManager> v4_get_hash_protocol_manager_;
 
   // A list of parties to be notified about database updates.

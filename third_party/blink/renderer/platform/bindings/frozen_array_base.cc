@@ -42,8 +42,8 @@ v8::Local<v8::Value> FrozenArrayBase::ToV8(ScriptState* script_state) const {
 
 v8::Local<v8::Value> FrozenArrayBase::ToV8(ScriptState* script_state) {
   v8::Local<v8::Object> wrapper;
-  if (DOMDataStore::GetWrapper(script_state->GetIsolate(), this)
-          .ToLocal(&wrapper)) [[likely]] {
+  if (DOMDataStore::GetWrapper(script_state, this).ToLocal(&wrapper))
+      [[likely]] {
     return wrapper;
   }
 

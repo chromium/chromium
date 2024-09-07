@@ -9,6 +9,9 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_types.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
@@ -28,6 +31,14 @@ class IOSPromoOnDesktopTest : public ::testing::Test {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     RegisterProfilePrefs(prefs()->registry());
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+    local_state_.registry()->RegisterBooleanPref(prefs::kPromotionsEnabled,
+                                                 true);
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   // Getter for the test syncable prefs service.
@@ -46,6 +57,9 @@ class IOSPromoOnDesktopTest : public ::testing::Test {
 
   // Getter for the testing profile.
   TestingProfile* profile() { return &profile_; }
+
+ protected:
+  TestingPrefServiceSimple local_state_;
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -230,6 +244,14 @@ TEST_F(
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestTrueForPasswordPromo) {
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the promotions are
+// disabled.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestFalsePromotionsDisabled) {
+  local_state_.SetBoolean(prefs::kPromotionsEnabled, false);
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has already

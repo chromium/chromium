@@ -37,7 +37,37 @@ class DemoSetupController
     // Enrolling in Demo Mode.
     kEnrollment,
     // Setup is complete.
-    kComplete
+    kComplete,
+  };
+
+  // The types of the result of each component loading during the demo mode
+  // setup process. This enum is tied directly to a UMA enum
+  // `DemoModeSetupComponentLoadingResult` defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other). Entries should never be modified or
+  // reordered. Entries can only be removed by deprecating it and its value
+  // should never be reused. New ones should be added to the end (right before
+  // the max value).
+  enum class DemoSetupComponentLoadingResult {
+    // The app component loading success and the resources component loading
+    // success.
+    kAppSuccessResourcesSuccess = 0,
+
+    // The app component loading success and the resources component loading
+    // failure.
+    kAppSuccessResourcesFailure = 1,
+
+    // The app component loading failure and the resources component loading
+    // success.
+    kAppFailureResourcesSuccess = 2,
+
+    // The app component loading failure and the resources component loading
+    // failure.
+    kAppFailureResourcesFailure = 3,
+
+    // Add future entries above this comment, in sync with enums.xml.
+    // Update kMaxValue to the last value.
+    kMaxValue = kAppFailureResourcesFailure,
   };
 
   // Contains information related to setup error.
@@ -47,7 +77,7 @@ class DemoSetupController
     // `DemoModeSetupError` defined in //tools/metrics/histograms/enums.xml, and
     // should always reflect it (do not change one without changing the other).
     // Entries should never be modified or reordered. Entries can only be
-    // removed by depracating it and its value should never be reused. New ones
+    // removed by deprecating it and its value should never be reused. New ones
     // should be added to the end (right before the max value).
     enum class ErrorCode {
       // Cannot perform offline setup without online FRE check.
@@ -116,10 +146,13 @@ class DemoSetupController
       kUnexpectedError = 31,
       // Too many requests error.
       kTooManyRequestsError = 32,
+      // No Error - Success Code. This is only used to record the UMA metrics so
+      // we can know the success rate of the whole demo mode setup process.
+      kSuccess = 33,
 
       // Add future entries above this comment, in sync with enums.xml.
       // Update kMaxValue to the last value.
-      kMaxValue = kTooManyRequestsError
+      kMaxValue = kSuccess,
     };
 
     // Type of recommended recovery from the setup error.

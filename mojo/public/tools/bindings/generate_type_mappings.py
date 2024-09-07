@@ -105,6 +105,7 @@ def LoadTsTypemapConfig(path):
       for entry in config['types']:
         configs[entry['mojom']] = {
             'typename': entry['ts'],
+            'type_import': entry.get('ts_import', None),
             'converter_import': entry['import'],
             'converter': entry['converter'],
         }
@@ -155,10 +156,11 @@ def main():
   if params.ts_config_path:
     ts_typemaps = LoadTsTypemapConfig(params.ts_config_path)
 
-  WriteFile(json.dumps({
-      'c++': cpp_typemaps,
-      'ts': ts_typemaps
-  }, indent=2), params.output)
+  WriteFile(
+      json.dumps({
+          'c++': cpp_typemaps,
+          'typescript': ts_typemaps
+      }, indent=2), params.output)
 
 
 if __name__ == '__main__':

@@ -44,7 +44,7 @@ static const char kOCSPTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
 
 }  // namespace
 
-class OCSPBrowserTest : public PlatformBrowserTest,
+class OCSPBrowserTest : public InProcessBrowserTest,
                         public network::mojom::SSLConfigClient {
  public:
   OCSPBrowserTest() = default;
@@ -710,17 +710,6 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
         // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
-using AIABrowserTest = OCSPBrowserTest;
-
-IN_PROC_BROWSER_TEST_F(AIABrowserTest, TestHTTPSAIA) {
-  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-  cert_config.intermediate = net::EmbeddedTestServer::IntermediateType::kByAIA;
-
-  DoConnection(cert_config);
-  ssl_test_util::CheckAuthenticatedState(
-      chrome_test_utils::GetActiveWebContents(this), AuthState::NONE);
-}
 
 class EVBrowserTest : public OCSPBrowserTest {
  public:

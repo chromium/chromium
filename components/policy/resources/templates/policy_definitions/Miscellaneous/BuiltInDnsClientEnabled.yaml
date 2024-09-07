@@ -21,7 +21,6 @@ items:
   value: null
 owners:
 - ericorth@chromium.org
-- pmarko@chromium.org
 schema:
   type: boolean
 supported_on:

@@ -40,6 +40,7 @@
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -56,6 +57,35 @@ namespace extensions {
 
 namespace {
 
+// Gets the current activation token for `extension`.
+std::optional<base::UnguessableToken> GetActivationTokenForWorkerBasedExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension) {
+  CHECK(BackgroundInfo::IsServiceWorkerBased(&extension));
+  std::optional<base::UnguessableToken> activation_token =
+      ServiceWorkerTaskQueue::Get(browser_context)
+          ->GetCurrentActivationToken(extension.id());
+
+  // For the on the record profile...
+  if (!browser_context->IsOffTheRecord()) {
+    // Service worker-based extensions always have an activation token
+    CHECK(activation_token.has_value());
+  }
+
+  // For the off the record profile...
+  if (browser_context->IsOffTheRecord()) {
+    if (IncognitoInfo::IsSplitMode(&extension)) {
+      // Split mode extensions will have a separate activation token.
+      CHECK(activation_token.has_value());
+    } else if (IncognitoInfo::IsSpanningMode(&extension)) {
+      // Spanning mode extensions will not have a separate activation token.
+      CHECK(!activation_token.has_value());
+    }
+  }
+
+  return activation_token;
+}
+
 using ::content::BrowserContext;
 
 // Returns the current activation sequence of |extension| if the extension is
@@ -64,8 +94,8 @@ std::optional<base::UnguessableToken> GetWorkerActivationToken(
     BrowserContext* browser_context,
     const Extension& extension) {
   if (BackgroundInfo::IsServiceWorkerBased(&extension)) {
-    return ServiceWorkerTaskQueue::Get(browser_context)
-        ->GetCurrentActivationToken(extension.id());
+    return GetActivationTokenForWorkerBasedExtension(browser_context,
+                                                     extension);
   }
   return std::nullopt;
 }

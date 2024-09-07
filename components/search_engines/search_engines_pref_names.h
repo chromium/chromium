@@ -42,6 +42,15 @@ inline constexpr char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
 inline constexpr char kDefaultSearchProviderChoiceScreenCompletionVersion[] =
     "default_search_provider.choice_screen_completion_version";
 
+// Prepopulated id of the search engine chosen in a guest session if the user
+// decides to propagate the default search engine to all guest sessions. The
+// prepopulated id indicates that the search engine choice dialog should not be
+// displayed in the next guest sessions and should be used to set the guest
+// sessions default search engine.
+// Defaults to 0;
+inline constexpr char kDefaultSearchProviderGuestModePrepopulatedId[] =
+    "default_search_provider.guest_mode_prepopulated_id";
+
 // Display state of the choice screen from which the user selected their
 // default search engine. It is stored for logging purposes, only for a limited
 // time, and cleared when that time runs out, or when we are able to report

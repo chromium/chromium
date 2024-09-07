@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
@@ -15,8 +16,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
+#include "content/public/common/content_client.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/android/accessibility_state.h"
@@ -26,6 +27,7 @@
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
 #include "ui/strings/grit/ax_strings.h"
 
@@ -68,6 +70,16 @@ enum {
 
 }  // namespace
 
+namespace ui {
+// static
+std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
+    BrowserAccessibilityManager* manager,
+    AXNode* node) {
+  return base::WrapUnique(
+      new content::BrowserAccessibilityAndroid(manager, node));
+}
+}  // namespace ui
+
 namespace content {
 
 namespace {
@@ -75,13 +87,6 @@ namespace {
 // AT will communicate invalid content to the user.
 constexpr int kMinimumCharacterCountForInvalid = 7;
 }  // namespace
-
-// static
-std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
-    BrowserAccessibilityManager* manager,
-    ui::AXNode* node) {
-  return base::WrapUnique(new BrowserAccessibilityAndroid(manager, node));
-}
 
 using UniqueIdMap = std::unordered_map<int32_t, BrowserAccessibilityAndroid*>;
 // Map from each AXPlatformNode's unique id to its instance.
@@ -110,7 +115,7 @@ void BrowserAccessibilityAndroid::ResetLeafCache() {
 }
 
 BrowserAccessibilityAndroid::BrowserAccessibilityAndroid(
-    BrowserAccessibilityManager* manager,
+    ui::BrowserAccessibilityManager* manager,
     ui::AXNode* node)
     : BrowserAccessibility(manager, node) {
   g_unique_id_map.Get()[GetUniqueId()] = this;
@@ -120,6 +125,11 @@ BrowserAccessibilityAndroid::~BrowserAccessibilityAndroid() {
   if (auto id = GetUniqueId()) {
     g_unique_id_map.Get().erase(id);
   }
+}
+
+std::u16string BrowserAccessibilityAndroid::GetLocalizedString(
+    int message_id) const {
+  return CHECK_DEREF(GetContentClient()).GetLocalizedString(message_id);
 }
 
 void BrowserAccessibilityAndroid::OnLocationChanged() {
@@ -207,11 +217,27 @@ bool BrowserAccessibilityAndroid::IsCollapsed() const {
 }
 
 bool BrowserAccessibilityAndroid::IsCollection() const {
-  return ui::IsTableLike(GetRole());
+  switch (GetRole()) {
+    case ax::mojom::Role::kDescriptionList:
+    case ax::mojom::Role::kList:
+    case ax::mojom::Role::kListBox:
+    case ax::mojom::Role::kTree:
+      return true;
+    default:
+      return ui::IsTableLike(GetRole());
+  }
 }
 
 bool BrowserAccessibilityAndroid::IsCollectionItem() const {
-  return ui::IsTableItem(GetRole());
+  switch (GetRole()) {
+    case ax::mojom::Role::kListBoxOption:
+    case ax::mojom::Role::kListItem:
+    case ax::mojom::Role::kTerm:
+    case ax::mojom::Role::kTreeItem:
+      return true;
+    default:
+      return ui::IsCellOrTableHeader(GetRole());
+  }
 }
 
 bool BrowserAccessibilityAndroid::IsContentInvalid() const {
@@ -219,8 +245,7 @@ bool BrowserAccessibilityAndroid::IsContentInvalid() const {
       GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse) {
     // We will not report content as invalid until a certain number of
     // characters have been typed to prevent verbose announcements to the user.
-    return (GetSubstringTextContentUTF16(
-                LengthAtLeast(kMinimumCharacterCountForInvalid))
+    return (GetSubstringTextContentUTF16(kMinimumCharacterCountForInvalid)
                 .length() > kMinimumCharacterCountForInvalid);
   }
 
@@ -355,8 +380,9 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // The root is not interesting if it doesn't have a title, even
   // though it's focusable.
   if (ui::IsPlatformDocument(GetRole()) &&
-      GetSubstringTextContentUTF16(NonEmptyPredicate()).empty())
+      GetSubstringTextContentUTF16(1).empty()) {
     return false;
+  }
 
   // Mark as uninteresting if it's hidden, even if it is focusable.
   if (IsInvisibleOrIgnored())
@@ -582,7 +608,7 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
     // and allow the child nodes to be set as a leaf.
 
     // Headings with text can drop their children (with exceptions).
-    std::u16string name = GetSubstringTextContentUTF16(NonEmptyPredicate());
+    std::u16string name = GetSubstringTextContentUTF16(1);
     if (GetRole() == ax::mojom::Role::kHeading && !name.empty()) {
       bool ret = IsLeafConsideringChildren();
       g_leaf_map.Get()[this] = ret;
@@ -672,7 +698,7 @@ int BrowserAccessibilityAndroid::GetTextContentLengthUTF16() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
-    std::optional<EarlyExitPredicate> predicate) const {
+    std::optional<size_t> min_length) const {
   if (ui::IsIframe(GetRole()))
     return std::u16string();
 
@@ -703,13 +729,13 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
 
     // To prevent extra commas, only add if the text is non-empty
     if (!text.empty() && !value.empty()) {
-      text = value + u", " + text;
+      text = base::JoinString({std::move(value), std::move(text)}, u", ");
     } else if (!value.empty()) {
-      text = value;
+      text = std::move(value);
     }
   } else if (text.empty()) {
     // When a node does not have a name (e.g. a label), use its value instead.
-    text = value;
+    text = std::move(value);
   }
 
   // For almost all focusable nodes we try to get text from contents, but for
@@ -751,18 +777,25 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
     }
   }
 
+  size_t text_length = text.size();
+  std::vector<std::u16string> inner_text({std::move(text)});
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
-  if (text.empty() && ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
-                       (IsFocusable() && HasOnlyTextAndImageChildren()))) {
+  if (text_length == 0 && ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
+                           (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
-      text += static_cast<BrowserAccessibilityAndroid*>(it.get())
-                  ->GetSubstringTextContentUTF16(predicate);
-      if (predicate && predicate.value().Run(text)) {
+      std::u16string child_text =
+          static_cast<BrowserAccessibilityAndroid*>(it.get())
+              ->GetSubstringTextContentUTF16(min_length);
+      text_length += child_text.size();
+      inner_text.push_back(std::move(child_text));
+      if (min_length && text_length >= *min_length) {
         break;
       }
     }
   }
+
+  text = base::JoinString(inner_text, u"");
 
   if (text.empty() &&
       (ui::IsLink(GetRole()) || ui::IsImageOrVideo(GetRole())) &&
@@ -1098,22 +1131,28 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   // "heading level 1", etc. - and if the heading consists of a link,
   // append the word link as well.
   if (GetRole() == ax::mojom::Role::kHeading) {
-    std::u16string role_description;
+    std::vector<std::u16string> role_description;
     int level = GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
     if (level >= 1 && level <= 6) {
       std::vector<std::u16string> values;
       values.push_back(base::NumberToString16(level));
-      role_description = base::ReplaceStringPlaceholders(
-          GetLocalizedString(IDS_AX_ROLE_HEADING_WITH_LEVEL), values, nullptr);
+      role_description.push_back(base::ReplaceStringPlaceholders(
+          GetLocalizedString(IDS_AX_ROLE_HEADING_WITH_LEVEL), values, nullptr));
     } else {
-      role_description = GetLocalizedString(IDS_AX_ROLE_HEADING);
+      role_description.push_back(GetLocalizedString(IDS_AX_ROLE_HEADING));
     }
 
     if (IsHeadingLink()) {
-      role_description += u" " + GetLocalizedString(IDS_AX_ROLE_LINK);
+      role_description.push_back(GetLocalizedString(IDS_AX_ROLE_LINK));
     }
 
-    return role_description;
+    // For visited links, we additionally want to append "visited" to the
+    // description.
+    if (HasState(ax::mojom::State::kVisited)) {
+      role_description.push_back(GetLocalizedString(IDS_AX_STATE_LINK_VISITED));
+    }
+
+    return base::JoinString(role_description, u" ");
   }
 
   // If this node is a link and the parent is a heading, return the role
@@ -1123,6 +1162,16 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
         static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
     if (parent->IsHeadingLink())
       return parent->GetRoleDescription();
+  }
+
+  // If this node is a link and visited, append "visited" to the description.
+  if (ui::IsLink(GetRole())) {
+    std::vector<std::u16string> role_description = {
+        GetLocalizedStringForRoleDescription()};
+    if (HasState(ax::mojom::State::kVisited)) {
+      role_description.push_back(GetLocalizedString(IDS_AX_STATE_LINK_VISITED));
+    }
+    return base::JoinString(role_description, u" ");
   }
 
   // If this node is an image, check status and potentially add unlabeled role.
@@ -1171,10 +1220,10 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kDescriptionList:
     case ax::mojom::Role::kDetails:
     case ax::mojom::Role::kEmphasis:
-    case ax::mojom::Role::kFooterAsNonLandmark:
     case ax::mojom::Role::kForm:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
     case ax::mojom::Role::kRowGroup:
+    case ax::mojom::Role::kSectionFooter:
+    case ax::mojom::Role::kSectionHeader:
     case ax::mojom::Role::kSectionWithoutName:
     case ax::mojom::Role::kStrong:
     case ax::mojom::Role::kSubscript:
@@ -1676,8 +1725,7 @@ void BrowserAccessibilityAndroid::GetLineBoundaries(
     std::vector<int32_t>* line_ends,
     int offset) {
   // If this node has no children, treat it as all one line.
-  if (GetSubstringTextContentUTF16(NonEmptyPredicate()).size() > 0 &&
-      !InternalChildCount()) {
+  if (GetSubstringTextContentUTF16(1).size() > 0 && !InternalChildCount()) {
     line_starts->push_back(offset);
     line_ends->push_back(offset + GetTextContentUTF16().size());
   }
@@ -1871,11 +1919,11 @@ bool BrowserAccessibilityAndroid::HasImage() const {
   return false;
 }
 
-BrowserAccessibility*
+ui::BrowserAccessibility*
 BrowserAccessibilityAndroid::PlatformGetLowestPlatformAncestor() const {
-  BrowserAccessibility* current_object =
+  ui::BrowserAccessibility* current_object =
       const_cast<BrowserAccessibilityAndroid*>(this);
-  BrowserAccessibility* lowest_unignored_node = current_object;
+  ui::BrowserAccessibility* lowest_unignored_node = current_object;
   if (lowest_unignored_node->IsIgnored())
     lowest_unignored_node = lowest_unignored_node->PlatformGetParent();
   DCHECK(!lowest_unignored_node || !lowest_unignored_node->IsIgnored())
@@ -1883,10 +1931,10 @@ BrowserAccessibilityAndroid::PlatformGetLowestPlatformAncestor() const {
          "unignored object or nullptr.";
 
   // `highest_leaf_node` could be nullptr.
-  BrowserAccessibility* highest_leaf_node = lowest_unignored_node;
+  ui::BrowserAccessibility* highest_leaf_node = lowest_unignored_node;
   // For the purposes of this method, a leaf node does not include leaves in the
   // internal accessibility tree, only in the platform exposed tree.
-  for (BrowserAccessibility* ancestor_node = lowest_unignored_node;
+  for (ui::BrowserAccessibility* ancestor_node = lowest_unignored_node;
        ancestor_node; ancestor_node = ancestor_node->PlatformGetParent()) {
     if (ancestor_node->IsLeaf())
       highest_leaf_node = ancestor_node;

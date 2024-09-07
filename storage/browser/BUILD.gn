@@ -47,6 +47,8 @@ component("browser") {
     "blob/blob_url_store_impl.h",
     "blob/blob_url_utils.cc",
     "blob/blob_url_utils.h",
+    "blob/features.cc",
+    "blob/features.h",
     "blob/mojo_blob_reader.cc",
     "blob/mojo_blob_reader.h",
     "blob/scoped_file.cc",

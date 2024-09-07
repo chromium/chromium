@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -19,7 +20,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/auto_reset.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -329,7 +329,7 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
   // printing is complete.
   void WaitForCallback() {
     base::RunLoop run_loop;
-    base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
+    base::AutoReset<raw_ptr<base::RunLoop>> auto_reset(&run_loop_, &run_loop);
     run_loop.Run();
   }
 
@@ -363,9 +363,7 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
     return static_cast<TestPrintJobWin*>(print_job_.get());
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -446,7 +444,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
       test::GetPrintTicket(mojom::PrinterType::kLocal);
   const char kTestData[] = "abc";
   auto print_data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-      kTestData, sizeof(kTestData));
+      base::as_byte_span(kTestData));
   PrinterHandler::PrintCallback callback =
       base::BindOnce(&TestPrintViewManagerWin::FakePrintCallback,
                      base::Unretained(print_view_manager.get()));

@@ -6,6 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -50,51 +51,58 @@ suite('UpdateContent', () => {
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
     emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
+    return microtasksFinished();
   });
 
-  suite('after update content, read aloud is', () => {
-    test('playable if done with distillation', () => {
-      chrome.readingMode.requiresDistillation = false;
-      app.updateContent();
-      assertTrue(app.isReadAloudPlayable());
-    });
-
-    test('not playable if still requires distillation', () => {
-      chrome.readingMode.requiresDistillation = true;
-      app.updateContent();
-      assertFalse(app.isReadAloudPlayable());
-    });
-  });
-
-  test('hides loading page', () => {
+  test('playable if done with distillation', async () => {
+    chrome.readingMode.requiresDistillation = false;
     app.updateContent();
+    await microtasksFinished();
 
-    const emptyState = app.querySelector<HTMLElement>('#empty-state-container');
+    assertTrue(app.$.toolbar.isReadAloudPlayable);
+  });
+
+  test('not playable if still requires distillation', async () => {
+    chrome.readingMode.requiresDistillation = true;
+    app.updateContent();
+    await microtasksFinished();
+
+    assertFalse(app.$.toolbar.isReadAloudPlayable);
+  });
+
+  test('hides loading page', async () => {
+    app.updateContent();
+    await microtasksFinished();
+
+    assertTrue(!!app.shadowRoot);
+    const emptyState =
+        app.shadowRoot.querySelector<HTMLElement>('#empty-state-container');
     assertTrue(!!emptyState);
     assertTrue(emptyState.hidden);
   });
 
-  test('container clears old content when it receives new content', () => {
-    const expected1 = 'Gotta keep one jump ahead of the breadline.';
-    new FakeTreeBuilder()
-        .root(1)
-        .addText(2, /* parentId= */ 1, expected1)
-        .build(readingMode);
+  test(
+      'container clears old content when it receives new content', async () => {
+        const expected1 = 'Gotta keep one jump ahead of the breadline.';
+        new FakeTreeBuilder()
+            .root(1)
+            .addText(2, /* parentId= */ 1, expected1)
+            .build(readingMode);
+        app.updateContent();
+        await microtasksFinished();
 
-    app.updateContent();
+        assertEquals(expected1, app.$.container.textContent);
 
-    assertEquals(expected1, app.$.container.textContent);
+        const expected2 = 'One swing ahead of the sword.';
+        new FakeTreeBuilder()
+            .root(1)
+            .addText(2, /* parentId= */ 1, expected2)
+            .build(readingMode);
+        app.updateContent();
+        await microtasksFinished();
 
-    const expected2 = 'One swing ahead of the sword.';
-    new FakeTreeBuilder()
-        .root(1)
-        .addText(2, /* parentId= */ 1, expected2)
-        .build(readingMode);
-
-    app.updateContent();
-
-    // There should be nothing from the first content here, we should only have
-    // the new content.
-    assertEquals(expected2, app.$.container.textContent);
-  });
+        // There should be nothing from the first content here, we should only
+        // have the new content.
+        assertEquals(expected2, app.$.container.textContent);
+      });
 });

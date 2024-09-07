@@ -11,6 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -26,7 +29,10 @@ BrowserUpdaterClient::BrowserUpdaterClient(
     scoped_refptr<updater::UpdateService> update_service)
     : update_service_(update_service) {}
 
-BrowserUpdaterClient::~BrowserUpdaterClient() = default;
+BrowserUpdaterClient::~BrowserUpdaterClient() {
+  // Weak pointers must be invalidated on the app's main sequence.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void BrowserUpdaterClient::Register(base::OnceClosure complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -71,7 +77,8 @@ void BrowserUpdaterClient::GetUpdaterVersionCompleted(
 }
 
 void BrowserUpdaterClient::CheckForUpdate(
-    updater::UpdateService::StateChangeCallback version_updater_callback) {
+    base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
+        version_updater_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   updater::UpdateService::UpdateState update_state;
@@ -88,7 +95,8 @@ void BrowserUpdaterClient::CheckForUpdate(
 }
 
 void BrowserUpdaterClient::UpdateCompleted(
-    updater::UpdateService::StateChangeCallback callback,
+    base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
+        callback,
     updater::UpdateService::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Result of update was: " << result;
@@ -130,17 +138,51 @@ void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
     base::OnceCallback<void(bool)> callback,
     const std::vector<updater::UpdateService::AppState>& apps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::string app_id = GetAppId();
-  std::move(callback).Run(
-      std::find_if(apps.begin(), apps.end(),
-                   [&](const updater::UpdateService::AppState& app) {
-                     return base::EqualsCaseInsensitiveASCII(app.app_id,
-                                                             app_id);
-                   }) != apps.end());
+  std::move(callback).Run(std::find_if(apps.begin(), apps.end(),
+                                       &BrowserUpdaterClient::AppMatches) !=
+                          apps.end());
+}
+
+// User and System BrowserUpdaterClients must be kept separate - the template
+// function causes there to be two static variables instead of one.
+template <updater::UpdaterScope scope>
+scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::GetClient(
+    base::RepeatingCallback<scoped_refptr<updater::UpdateService>()>
+        proxy_provider) {
+  // Multiple UpdateServiceProxies interfere with each other. Reuse a current
+  // BrowserUpdaterClient if possible. BrowserUpdaterClients are refcounted, but
+  // bad to keep around indefinitely since they can hold the RPC server open.
+  // Using a static NoDestruct weak pointer keeps the objects' lifetime
+  // controlled by the refcounting, but allows the function to reuse them when
+  // they're alive.
+  struct WeakPointerHolder {
+    base::WeakPtr<BrowserUpdaterClient> client;
+  };
+
+  static base::NoDestructor<WeakPointerHolder> existing;
+  if (existing->client) {
+    return base::WrapRefCounted(existing->client.get());
+  }
+
+  // Else, make a new one:
+  auto new_client =
+      base::MakeRefCounted<BrowserUpdaterClient>(proxy_provider.Run());
+  existing->client = new_client->weak_ptr_factory_.GetWeakPtr();
+  return new_client;
 }
 
 scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create(
     updater::UpdaterScope scope) {
-  return base::MakeRefCounted<BrowserUpdaterClient>(
-      CreateUpdateServiceProxy(scope, base::Seconds(15)));
+  return Create(base::BindRepeating(&updater::CreateUpdateServiceProxy, scope,
+                                    base::Seconds(15)),
+                scope);
+}
+
+scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create(
+    base::RepeatingCallback<scoped_refptr<updater::UpdateService>()>
+        proxy_provider,
+    updater::UpdaterScope scope) {
+  return scope == updater::UpdaterScope::kSystem
+             ? GetClient<updater::UpdaterScope::kSystem>(proxy_provider)
+             : GetClient<updater::UpdaterScope::kUser>(proxy_provider);
 }

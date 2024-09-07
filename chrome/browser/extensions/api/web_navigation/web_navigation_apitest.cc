@@ -40,6 +40,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -124,10 +125,12 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
 
     if (has_user_gesture_) {
       render_frame_host_->ExecuteJavaScriptWithUserGestureForTests(
-          base::UTF8ToUTF16(script_), base::NullCallback());
+          base::UTF8ToUTF16(script_), base::NullCallback(),
+          content::ISOLATED_WORLD_ID_GLOBAL);
     } else {
-      render_frame_host_->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script_),
-                                                    base::NullCallback());
+      render_frame_host_->ExecuteJavaScriptForTests(
+          base::UTF8ToUTF16(script_), base::NullCallback(),
+          content::ISOLATED_WORLD_ID_GLOBAL);
     }
     script_was_executed_ = true;
   }

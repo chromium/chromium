@@ -260,26 +260,10 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   // record before we move it into |completion_cb|.
   auto codec_image_holder = std::move(record.codec_image_holder);
 
-  scoped_refptr<VideoFrame> frame;
-  if (absl::holds_alternative<scoped_refptr<gpu::ClientSharedImage>>(
-          record.shared_image)) {
-    frame = VideoFrame::WrapSharedImage(
-        pixel_format,
-        absl::get<scoped_refptr<gpu::ClientSharedImage>>(record.shared_image),
-        gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES,
-        VideoFrame::ReleaseMailboxCB(), frame_info.coded_size,
-        frame_info.visible_rect, natural_size, timestamp);
-  } else {
-    gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
-    mailbox_holders[0] =
-        gpu::MailboxHolder(absl::get<gpu::Mailbox>(record.shared_image),
-                           gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES);
-
-    frame = VideoFrame::WrapNativeTextures(
-        pixel_format, mailbox_holders, VideoFrame::ReleaseMailboxCB(),
-        frame_info.coded_size, frame_info.visible_rect, natural_size,
-        timestamp);
-  }
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
+      pixel_format, std::move(record.shared_image), gpu::SyncToken(),
+      GL_TEXTURE_EXTERNAL_OES, VideoFrame::ReleaseMailboxCB(),
+      frame_info.coded_size, frame_info.visible_rect, natural_size, timestamp);
 
   // If, for some reason, we failed to create a frame, then fail.  Note that we
   // don't need to call |release_cb|; dropping it is okay since the api says so.

@@ -11,7 +11,14 @@
 #ifndef UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 #define UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 
-static const GLEnums::EnumToString enum_to_string_table[] = {
+namespace {
+
+struct EnumToString {
+  uint32_t value;
+  std::string_view name;
+};
+
+static constexpr EnumToString kEnumToStringTable[] = {
     {
         0x00,
         "GL_CLOSE_PATH_NV",
@@ -6947,9 +6954,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
     },
 };
 
-const GLEnums::EnumToString* const GLEnums::enum_to_string_table_ =
-    enum_to_string_table;
-const size_t GLEnums::enum_to_string_table_len_ =
-    sizeof(enum_to_string_table) / sizeof(enum_to_string_table[0]);
+}  // namespace
 
 #endif  //  UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_

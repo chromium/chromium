@@ -53,7 +53,9 @@ SpeechRecognitionController* SpeechRecognitionController::From(
 }
 
 SpeechRecognitionController::SpeechRecognitionController(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), speech_recognizer_(&window) {}
+    : Supplement<LocalDOMWindow>(window),
+      speech_recognizer_(&window),
+      on_device_speech_recognition_(&window) {}
 
 SpeechRecognitionController::~SpeechRecognitionController() {
   // FIXME: Call m_client->pageDestroyed(); once we have implemented a client.
@@ -101,15 +103,23 @@ void SpeechRecognitionController::Start(
 }
 
 void SpeechRecognitionController::OnDeviceWebSpeechAvailable(
-    String language,
+    const String& language,
     base::OnceCallback<void(bool)> callback) {
-  GetSpeechRecognizer()->OnDeviceWebSpeechAvailable(language,
-                                                    std::move(callback));
+  GetOnDeviceSpeechRecognition()->OnDeviceWebSpeechAvailable(
+      language, std::move(callback));
+}
+
+void SpeechRecognitionController::InstallOnDeviceSpeechRecognition(
+    const String& language,
+    base::OnceCallback<void(bool)> callback) {
+  GetOnDeviceSpeechRecognition()->InstallOnDeviceSpeechRecognition(
+      language, std::move(callback));
 }
 
 void SpeechRecognitionController::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(speech_recognizer_);
+  visitor->Trace(on_device_speech_recognition_);
 }
 
 media::mojom::blink::SpeechRecognizer*
@@ -120,6 +130,16 @@ SpeechRecognitionController::GetSpeechRecognizer() {
             GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
   return speech_recognizer_.get();
+}
+
+media::mojom::blink::OnDeviceSpeechRecognition*
+SpeechRecognitionController::GetOnDeviceSpeechRecognition() {
+  if (!on_device_speech_recognition_.is_bound()) {
+    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+        on_device_speech_recognition_.BindNewPipeAndPassReceiver(
+            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  }
+  return on_device_speech_recognition_.get();
 }
 
 }  // namespace blink

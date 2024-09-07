@@ -118,7 +118,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   if (browser && browser->is_type_normal()) {
     tab_search_container = std::make_unique<TabSearchContainer>(
         tab_strip_->controller(), browser->tab_strip_model(),
-        render_tab_search_before_tab_strip_, this);
+        render_tab_search_before_tab_strip_, this,
+        browser->browser_window_features()->tab_declutter_controller());
     tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                       views::LayoutAlignment::kCenter);
   }
@@ -582,7 +583,7 @@ class TabSearchPositionMetricsLogger {
   // Logs the UMA metric for the tab search position.
   void LogMetrics() {
     base::UmaHistogramEnumeration(
-        "Tabs.TabSearch.IsTrailingTabstrip",
+        "Tabs.TabSearch.PositionInTabstrip",
         tabs::GetTabSearchTrailingTabstrip(profile_)
             ? TabStripRegionView::TabSearchPositionEnum::kTrailing
             : TabStripRegionView::TabSearchPositionEnum::kLeading);

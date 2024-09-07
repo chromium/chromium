@@ -34,7 +34,6 @@ extern const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT;
 extern const base::FeatureParam<int> kEnableArcIdleManagerDelayMs;
 extern const base::FeatureParam<bool>
     kEnableArcIdleManagerPendingIdleReactivate;
-BASE_DECLARE_FEATURE(kEnableArcNearbyShareFuseBox);
 BASE_DECLARE_FEATURE(kEnableArcS2Idle);
 BASE_DECLARE_FEATURE(kEnableArcVmDataMigration);
 BASE_DECLARE_FEATURE(kEnableFriendlierErrorDialog);
@@ -108,7 +107,6 @@ extern const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond;
 extern const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond;
 extern const base::FeatureParam<base::TimeDelta> kVmmSwapTrimInterval;
 extern const base::FeatureParam<base::TimeDelta> kVmmSwapMinShrinkInterval;
-BASE_DECLARE_FEATURE(kXdgMode);
 BASE_DECLARE_FEATURE(kPriorityAppLmkDelay);
 extern const base::FeatureParam<int> kPriorityAppLmkDelaySecond;
 extern const base::FeatureParam<std::string> kPriorityAppLmkDelayList;

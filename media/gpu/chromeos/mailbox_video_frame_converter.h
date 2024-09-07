@@ -21,7 +21,7 @@
 #include "media/gpu/chromeos/frame_resource_converter.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace base {

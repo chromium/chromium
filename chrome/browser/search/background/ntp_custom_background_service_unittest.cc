@@ -25,6 +25,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
@@ -316,15 +317,19 @@ TEST_F(NtpCustomBackgroundServiceTest, UpdatingPrefUpdatesNtpTheme) {
 
   sync_preferences::TestingPrefServiceSyncable* pref_service =
       profile().GetTestingPrefService();
-  pref_service->SetUserPref(prefs::kNtpCustomBackgroundDict,
-                            GetBackgroundInfoAsDict(kUrlFoo, GURL()));
+  pref_service->SetUserPref(
+      std::string(GetThemePrefNameInMigration(
+          ThemePrefInMigration::kNtpCustomBackgroundDict)),
+      GetBackgroundInfoAsDict(kUrlFoo, GURL()));
 
   auto custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrlFoo, custom_background->custom_background_url);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 
-  pref_service->SetUserPref(prefs::kNtpCustomBackgroundDict,
-                            GetBackgroundInfoAsDict(kUrlBar, GURL()));
+  pref_service->SetUserPref(
+      std::string(GetThemePrefNameInMigration(
+          ThemePrefInMigration::kNtpCustomBackgroundDict)),
+      GetBackgroundInfoAsDict(kUrlBar, GURL()));
 
   custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrlBar, custom_background->custom_background_url);
@@ -383,8 +388,10 @@ TEST_F(NtpCustomBackgroundServiceTest, SyncPrefOverridesAndRemovesLocalImage) {
   EXPECT_TRUE(base::PathExists(path));
 
   // Update custom_background info via Sync.
-  pref_service->SetUserPref(prefs::kNtpCustomBackgroundDict,
-                            GetBackgroundInfoAsDict(kUrl, GURL()));
+  pref_service->SetUserPref(
+      std::string(GetThemePrefNameInMigration(
+          ThemePrefInMigration::kNtpCustomBackgroundDict)),
+      GetBackgroundInfoAsDict(kUrl, GURL()));
   task_environment_.RunUntilIdle();
 
   auto custom_background = custom_background_service_->GetCustomBackground();

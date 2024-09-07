@@ -22,7 +22,6 @@ void DisplayUtil::DisplayToScreenInfo(ScreenInfo* screen_info,
   screen_info->depth = display.color_depth();
   screen_info->depth_per_component = display.depth_per_component();
   screen_info->is_monochrome = display.is_monochrome();
-  screen_info->display_frequency = display.display_frequency();
 
   // TODO(crbug.com/41478398): Expose panel orientation via a proper web
   // API instead of window.screen.orientation.angle.

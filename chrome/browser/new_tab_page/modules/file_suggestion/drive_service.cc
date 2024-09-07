@@ -11,11 +11,13 @@
 #include <utility>
 
 #include "base/hash/hash.h"
+#include "base/i18n/number_formatting.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -278,16 +280,26 @@ bool DriveService::GetDriveModuleSegmentationData() {
 }
 
 void DriveService::GetDriveFilesInternal() {
+  const base::Time last_dismissed_time =
+      pref_service_->GetTime(kLastDismissedTimePrefName);
   // Bail if module is still dismissed.
-  if (!pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
-      base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
-          kDismissDuration) {
-    for (auto& callback : callbacks_) {
-      std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+  if (!last_dismissed_time.is_null()) {
+    base::TimeDelta elapsed_time = base::Time::Now() - last_dismissed_time;
+    if (elapsed_time < kDismissDuration) {
+      const std::string remaining_hours =
+          base::NumberToString((kDismissDuration - elapsed_time).InHours());
+      LogModuleDismissed(ntp_features::kNtpDriveModule, true, remaining_hours);
+
+      for (auto& callback : callbacks_) {
+        std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+      }
+      callbacks_.clear();
+      return;
     }
-    callbacks_.clear();
-    return;
   }
+
+  LogModuleDismissed(ntp_features::kNtpDriveModule, false,
+                     /*remaining_hours=*/"0");
 
   // Skip fetch and jump straight to data parsing when serving fake data.
   if (base::GetFieldTrialParamValueByFeature(
@@ -327,6 +339,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
 
   token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
+    LogModuleError(ntp_features::kNtpDriveModule, error.error_message());
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     }
@@ -396,26 +409,35 @@ void DriveService::OnJsonReceived(const std::string& token,
   const int net_error = url_loader_->NetError();
   url_loader_.reset();
 
-  if (net_error != net::OK || !response_body) {
+  if (net_error == net::OK && response_body) {
+    cached_json_ = std::move(response_body);
+    cached_json_time_ = base::Time::Now();
+    cached_json_token_ = token;
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        *cached_json_, base::BindOnce(&DriveService::OnJsonParsed,
+                                      weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (net_error != net::OK) {
+    LogModuleError(
+        ntp_features::kNtpDriveModule,
+        base::StrCat({"net error ", base::NumberToString(net_error)}));
+  } else if (!response_body) {
+    LogModuleError(ntp_features::kNtpDriveModule, "no JSON response body");
+  }
     base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                   ItemSuggestRequestResult::kNetworkError);
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     }
     callbacks_.clear();
-    return;
-  }
-  cached_json_ = std::move(response_body);
-  cached_json_time_ = base::Time::Now();
-  cached_json_token_ = token;
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *cached_json_,
-      base::BindOnce(&DriveService::OnJsonParsed, weak_factory_.GetWeakPtr()));
 }
 
 void DriveService::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
+    LogModuleError(ntp_features::kNtpDriveModule, "JSON parse error");
     base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                   ItemSuggestRequestResult::kJsonParseError);
     for (auto& callback : callbacks_) {
@@ -426,6 +448,7 @@ void DriveService::OnJsonParsed(
   }
   auto* items = result->GetDict().FindList("item");
   if (!items) {
+    LogModuleError(ntp_features::kNtpDriveModule, "no items in JSON");
     base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                   ItemSuggestRequestResult::kContentError);
     for (auto& callback : callbacks_) {

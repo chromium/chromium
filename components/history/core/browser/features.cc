@@ -80,19 +80,4 @@ BASE_FEATURE(kPopulateVisitedLinkDatabase,
              "PopulateVisitedLinkDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncSegmentsData,
-             "SyncSegmentsData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The maximum number of New Tab Page displays to show with synced segments
-// data.
-const base::FeatureParam<int> kMaxNumNewTabPageDisplays(
-    &kSyncSegmentsData,
-    "MaxNumNumNewTabPageDisplays",
-    5);
-
-bool IsSyncSegmentsDataEnabled() {
-  return base::FeatureList::IsEnabled(kSyncSegmentsData);
-}
-
 }  // namespace history

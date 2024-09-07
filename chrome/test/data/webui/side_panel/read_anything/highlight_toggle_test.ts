@@ -58,7 +58,9 @@ suite('HighlightToggle', () => {
     test('highlighting is turned off', () => {
       assertEquals('read-anything:highlight-off', highlightButton.ironIcon);
       assertStringContains(highlightButton.title, 'on');
-      assertEquals(1, chrome.readingMode.highlightGranularity);
+      assertEquals(
+          chrome.readingMode.noHighlighting,
+          chrome.readingMode.highlightGranularity);
       assertFalse(chrome.readingMode.isHighlightOn());
       assertTrue(highlightEmitted);
     });

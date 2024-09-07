@@ -267,8 +267,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3602",
             "version": "1.0"
-          },
-          "source_debug_key": "111"
+          }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3602000"
@@ -289,8 +288,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3603",
             "version": "1.0"
-          },
-          "source_debug_key": "111"
+          }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3603000"
@@ -311,8 +309,7 @@
             "reporting_origin": "https://another-reporter.test",
             "scheduled_report_time": "3604",
             "version": "1.0"
-          },
-          "trigger_debug_key": "555"
+          }
         },
         "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3604000"
@@ -333,8 +330,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3605",
             "version": "1.0"
-          },
-          "trigger_debug_key": "666"
+          }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3605000"

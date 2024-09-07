@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
-import static org.chromium.chrome.browser.gsa.GSAState.GOOGLE_APP_CLASS_NAME;
-import static org.chromium.chrome.browser.gsa.GSAState.PACKAGE_NAME;
-import static org.chromium.chrome.browser.gsa.GSAState.VOICE_SEARCH_INTENT_ACTION;
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_CLASS_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_PACKAGE_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.VOICE_SEARCH_INTENT_ACTION;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_HOME;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_LENS;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH;
@@ -104,7 +104,7 @@ class GoogleBottomBarActionsHandler {
     void onSearchboxMicTap() {
         GoogleBottomBarLogger.logButtonClicked(SEARCHBOX_VOICE_SEARCH);
         Intent intent = new Intent(VOICE_SEARCH_INTENT_ACTION);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
 
         startGoogleAppActivityForResult(intent, "openGoogleAppVoiceSearch");
     }
@@ -146,7 +146,7 @@ class GoogleBottomBarActionsHandler {
 
     private void openGoogleAppSearch() {
         Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
 
         startGoogleAppActivityForResult(intent, "openGoogleAppSearch");
     }
@@ -154,7 +154,7 @@ class GoogleBottomBarActionsHandler {
     private void openGoogleAppHome() {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_INFO);
-        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+        intent.setClassName(GSA_PACKAGE_NAME, GSA_CLASS_NAME);
 
         startGoogleAppActivityForResult(intent, "openGoogleAppHome");
     }

@@ -31,15 +31,15 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/iban_value"
+            android:id="@+id/iban_primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary"
             android:ellipsize="middle"/>
-        <!-- This line will appear when it's necessary to display the IBAN nickname -->
+        <!-- This line will appear when the IBAN has a nickname -->
         <TextView
-            android:id="@+id/iban_nickname"
+            android:id="@+id/iban_secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"

@@ -5,12 +5,15 @@
 #include "ash/wm/window_properties.h"
 
 #include "ash/wm/window_state.h"
+#include "ui/base/class_property.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_EXPORT, ash::WindowState*)
 
 namespace ash {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideDuringWindowDragging, false)
+
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kOverrideWindowIconResourceIdKey, -1)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsOverviewItemKey, false)
 

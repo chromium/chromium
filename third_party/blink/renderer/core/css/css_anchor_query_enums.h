@@ -35,6 +35,7 @@ enum class CSSAnchorValue {
 };
 
 enum class CSSAnchorSizeValue {
+  kImplicit,
   kWidth,
   kHeight,
   kBlock,

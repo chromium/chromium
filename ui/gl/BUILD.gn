@@ -38,6 +38,19 @@ buildflag_header("buildflags") {
   ]
 }
 
+component("gl_enums") {
+  sources = [
+    "gl_enums.cc",
+    "gl_enums.h",
+    "gl_enums_implementation_autogen.h",
+    "gl_export.h",
+  ]
+
+  defines = [ "GL_IMPLEMENTATION" ]
+
+  public_deps = [ "//third_party/angle:includes" ]
+}
+
 component("gl") {
   output_name = "gl_wrapper"  # Avoid colliding with OS X"s libGL.dylib.
 
@@ -68,10 +81,6 @@ component("gl") {
     "gl_display_manager.h",
     "gl_egl_api_implementation.cc",
     "gl_egl_api_implementation.h",
-    "gl_enums.cc",
-    "gl_enums.h",
-    "gl_enums_implementation_autogen.h",
-    "gl_export.h",
     "gl_features.cc",
     "gl_features.h",
     "gl_fence.cc",
@@ -149,21 +158,15 @@ component("gl") {
     defines += [ "GPU_ENABLE_SERVICE_LOGGING" ]
   }
 
-  include_dirs = [ "//third_party/mesa_headers" ]
-
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
-
   deps = [
     ":buildflags",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
-
-    # ANGLE includes are used cross-platform.
-    "//third_party/angle:includes",
     "//ui/base:ozone_buildflags",
     "//ui/gfx/mojom",
   ]
   public_deps = [
+    ":gl_enums",
     "//base",
     "//third_party/mesa_headers",
     "//ui/events/platform",
@@ -422,12 +425,11 @@ static_library("gl_unittest_utils") {
     "gpu_timing_fake.h",
   ]
 
-  configs += [ "//third_party/khronos:khronos_headers" ]
-
   deps = [
     ":gl",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
   ]
 }
 
@@ -442,8 +444,6 @@ static_library("test_support") {
     "test/gl_test_support.h",
   ]
 
-  configs += [ "//third_party/khronos:khronos_headers" ]
-
   public_deps = [
     ":gl",
     "//ui/gl/init",
@@ -451,6 +451,7 @@ static_library("test_support") {
   deps = [
     "//base/test:test_support",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//ui/base",
   ]
 
@@ -517,8 +518,6 @@ test("gl_unittests") {
     ]
   }
 
-  include_dirs = [ "//third_party/khronos" ]
-
   deps = [
     ":gl",
     ":gl_unittest_utils",
@@ -527,6 +526,7 @@ test("gl_unittests") {
     "//base",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//ui/base:base",
     "//ui/gfx",
     "//ui/gfx:test_support",

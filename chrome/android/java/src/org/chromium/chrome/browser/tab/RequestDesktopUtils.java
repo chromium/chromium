@@ -22,6 +22,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
@@ -202,11 +203,17 @@ public class RequestDesktopUtils {
 
     /**
      * Determines whether the desktop site global setting should be enabled by default.
+     *
      * @param displaySizeInInches The device primary display size, in inches.
      * @param context The current context.
      * @return Whether the desktop site global setting should be default-enabled.
      */
     static boolean shouldDefaultEnableGlobalSetting(double displaySizeInInches, Context context) {
+        // Desktop Android always requests desktop sites.
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
+            return true;
+        }
+
         // Do not default-enable if memory is below threshold.
         if (SysUtils.amountOfPhysicalMemoryKB()
                 < DEFAULT_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT_THRESHOLD_MB
@@ -281,7 +288,8 @@ public class RequestDesktopUtils {
         int smallestScreenWidthDp = DisplayUtil.getCurrentSmallestScreenWidth(activity);
         boolean isOnExternalDisplay = isOnExternalDisplay(activity);
         if (isOnExternalDisplay
-                || smallestScreenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP) {
+                || smallestScreenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
+                || BuildConfig.IS_DESKTOP_ANDROID) {
             return;
         }
         PrefService prefService = UserPrefs.get(profile);
@@ -301,6 +309,12 @@ public class RequestDesktopUtils {
     public static boolean maybeShowDefaultEnableGlobalSettingMessage(
             Profile profile, MessageDispatcher messageDispatcher, Context context) {
         if (messageDispatcher == null) return false;
+
+        // Desktop devices always request desktop sites so there's no need to show a message to
+        // the user.
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
+            return false;
+        }
 
         // Present the message only if the global setting has been default-enabled.
         if (!ChromeSharedPreferences.getInstance()

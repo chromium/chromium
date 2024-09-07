@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_document_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -41,7 +41,6 @@ namespace {
 // IntersectionObserver with an EventCallback.
 class IntersectionObserverDelegateImpl final
     : public IntersectionObserverDelegate {
-
  public:
   IntersectionObserverDelegateImpl(
       ExecutionContext* context,
@@ -101,11 +100,9 @@ void ParseMargin(const String& margin_parameter,
   // "1px 2px 3px" = top left/right bottom
   // "1px 2px 3px 4px" = top left right bottom
 
-  CSSTokenizer tokenizer(margin_parameter);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange token_range(tokens);
-  token_range.ConsumeWhitespace();
-  while (token_range.Peek().GetType() != kEOFToken &&
+  CSSParserTokenStream stream(margin_parameter);
+  stream.ConsumeWhitespace();
+  while (stream.Peek().GetType() != kEOFToken &&
          !exception_state.HadException()) {
     if (margin.size() == 4) {
       exception_state.ThrowDOMException(
@@ -113,10 +110,11 @@ void ParseMargin(const String& margin_parameter,
           "Extra text found at the end of " + marginName + "Margin.");
       break;
     }
-    const CSSParserToken& token = token_range.ConsumeIncludingWhitespace();
+    const CSSParserToken token = stream.Peek();
     switch (token.GetType()) {
       case kPercentageToken:
         margin.push_back(Length::Percent(token.NumericValue()));
+        stream.ConsumeIncludingWhitespace();
         break;
       case kDimensionToken:
         switch (token.GetUnitType()) {
@@ -132,6 +130,7 @@ void ParseMargin(const String& margin_parameter,
                 DOMExceptionCode::kSyntaxError,
                 marginName + "Margin must be specified in pixels or percent.");
         }
+        stream.ConsumeIncludingWhitespace();
         break;
       default:
         exception_state.ThrowDOMException(
@@ -141,10 +140,9 @@ void ParseMargin(const String& margin_parameter,
   }
 }
 
-void ParseThresholds(
-    const V8UnionDoubleOrDoubleSequence* threshold_parameter,
-    Vector<float>& thresholds,
-    ExceptionState& exception_state) {
+void ParseThresholds(const V8UnionDoubleOrDoubleSequence* threshold_parameter,
+                     Vector<float>& thresholds,
+                     ExceptionState& exception_state) {
   switch (threshold_parameter->GetContentType()) {
     case V8UnionDoubleOrDoubleSequence::ContentType::kDouble:
       thresholds.push_back(

@@ -87,12 +87,6 @@ ci/linux-fuzz-coverage
 ci/linux-headless-shell-rel
 ci/linux-js-code-coverage
 ci/linux-lacros-archive-rel
-ci/linux-lacros-builder-fyi-rel
-ci/linux-lacros-builder-rel (reclient)
-ci/linux-lacros-code-coverage
-ci/linux-lacros-dbg-fyi
-ci/linux-lacros-dbg-tests-fyi
-ci/linux-lacros-tester-fyi-rel
 ci/linux-official
 ci/linux-perfetto-rel
 ci/linux-rel-no-external-ip
@@ -198,7 +192,6 @@ reviver/android-launcher
 reviver/android-x64-launcher
 reviver/coverage-runner
 reviver/fuchsia-coordinator
-reviver/lacros-coordinator
 reviver/linux-launcher
 reviver/mac-launcher
 reviver/runner
@@ -209,7 +202,6 @@ try/android-10-arm64-rel
 try/android-11-x86-rel
 try/android-12-x64-dbg
 try/android-12l-x64-dbg
-try/android-angle-chromium-try
 try/android-arm-compile-dbg
 try/android-arm64-all-targets-dbg
 try/android-arm64-rel
@@ -285,6 +277,7 @@ try/ios17-beta-simulator
 try/ios17-sdk-simulator
 try/ios18-beta-simulator
 try/ios18-sdk-simulator
+try/lacros-amd64-generic-rel
 try/lacros-arm-generic-rel
 try/lacros-arm64-generic-rel
 try/layout_test_leak_detection
@@ -322,9 +315,7 @@ try/linux-headless-shell-rel
 try/linux-js-code-coverage
 try/linux-js-coverage-rel
 try/linux-lacros-clang-tidy-rel
-try/linux-lacros-code-coverage
 try/linux-lacros-dbg
-try/linux-lacros-fyi-rel
 try/linux-lacros-rel
 try/linux-lacros-rel-compilator
 try/linux-layout-tests-edit-ng

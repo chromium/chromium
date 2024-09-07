@@ -68,7 +68,7 @@ __stack_chk_fail() {
 }
 #endif  // !defined(NDEBUG)
 
-void NO_STACK_PROTECTOR ResetStackCanaryIfPossible() {
+NO_STACK_PROTECTOR void ResetStackCanaryIfPossible() {
   uintptr_t canary;
   base::RandBytes(base::byte_span_from_ref(canary));
   // First byte should be the null byte for string functions.

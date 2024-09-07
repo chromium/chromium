@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">Создадена е група со картички (<ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1657719826150349398">Премести ја картичката надолу</translation>
 <translation id="1713541401465507417">Затвори ги сите картички и групи</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Дознајте повеќе<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Создадена е група со <ph name="TABS_COUNT_ONE" /> картичка</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Обележи <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Обележи <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Обележи <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Создадено пред малку</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Затвори по 1 ден}one{Затвори по <ph name="DAY_COUNT_MANY" /> ден}other{Затвори по <ph name="DAY_COUNT_MANY" /> дена}}</translation>
 <translation id="4777866634702576038">Да се избрише групата картички?</translation>
+<translation id="4783638485675352219">Споделете ги насловите и URL-адресите на отворените картички од уредов со оперативниот систем</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> рецензија)}one{(<ph name="REVIEWS_COUNT_MANY" /> рецензија)}other{(<ph name="REVIEWS_COUNT_MANY" /> рецензии)}}</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4870911314065352661">Да се затворат сите картички?</translation>

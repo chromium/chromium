@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import '../i18n_setup.js';
 import '../icons.html.js';
+import '../privacy_icons.html.js';
 import './safety_hub_module.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -393,7 +394,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
                 'safetyHubRevokedPermissionsSecondaryLabel' :
                 'safetyCheckUnusedSitePermissionsSecondaryLabel',
             this.sites_.length);
-    this.headerIconString_ = 'settings:permissions';
+    this.headerIconString_ = 'privacy:page-info';
   }
 
   private onUndoClick_(e: Event) {

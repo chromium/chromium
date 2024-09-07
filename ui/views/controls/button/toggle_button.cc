@@ -41,11 +41,6 @@ namespace views {
 namespace {
 
 // Constants are measured in dip.
-
-// Margins from edge of track to edge of view.
-constexpr int kTrackHorizontalMargin = 6;
-// Inset from the rounded edge of the thumb to the rounded edge of the track.
-constexpr int kHorizontalThumbInset = 2;
 constexpr gfx::Size kTrackSize = gfx::Size(26, 16);
 constexpr int kThumbInset = -4;
 constexpr int kThumbInsetSelected = -2;
@@ -373,10 +368,6 @@ void ToggleButton::SetAcceptsEvents(bool accepts_events) {
 
 bool ToggleButton::GetAcceptsEvents() const {
   return accepts_events_;
-}
-
-int ToggleButton::GetVisualHorizontalMargin() const {
-  return kTrackHorizontalMargin - kHorizontalThumbInset;
 }
 
 void ToggleButton::AddLayerToRegion(ui::Layer* layer,

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_LOAD_PROFILE_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chromeos/ash/components/login/auth/login_performer.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 
 class Profile;
@@ -61,12 +63,40 @@ using CheckCryptohomeCallback =
     base::OnceCallback<std::unique_ptr<CancellableJob>(
         CryptohomeMountStateCallback callback)>;
 
+// Possible errors when performin signin.
+enum class PerformSigninError { kPolicyLoadFailed, kAllowlistCheckFailed };
+
+// The final result of a perform signin operation.
+using PerformSigninResult =
+    base::expected<UserContext, std::variant<PerformSigninError, AuthFailure>>;
+
+// Convenience alias to declare callbacks to `PerformSigninResult`.
+using PerformSigninResultCallback =
+    base::OnceCallback<void(PerformSigninResult result)>;
+
+// Convenience alias to declare functions that perform signin.
+using PerformSigninCallback =
+    base::OnceCallback<std::unique_ptr<CancellableJob>(
+        KioskAppType app_type,
+        AccountId account_id,
+        PerformSigninResultCallback callback)>;
+
+// Convenience alias to declare callbacks to the signin `Profile`.
+using StartSessionResultCallback = base::OnceCallback<void(Profile& result)>;
+
+// Convenience alias to declare functions that start the session.
+using StartSessionCallback = base::OnceCallback<std::unique_ptr<CancellableJob>(
+    const UserContext& user_context,
+    StartSessionResultCallback on_done)>;
+
 // Same as `LoadProfile` above but allows callers to replace the sub-callbacks
 // it executes. Useful in tests.
 [[nodiscard]] std::unique_ptr<CancellableJob> LoadProfileWithCallbacks(
     const AccountId& app_account_id,
     KioskAppType app_type,
     CheckCryptohomeCallback check_cryptohome,
+    PerformSigninCallback perform_signin,
+    StartSessionCallback start_session,
     LoadProfileResultCallback on_done);
 
 }  // namespace ash::kiosk

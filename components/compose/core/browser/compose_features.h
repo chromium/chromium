@@ -74,6 +74,15 @@ BASE_DECLARE_FEATURE(kEnableNudgeForUnspecifiedHint);
 // A kill switch for additional metrics added to ComposeTextUsageLogger.
 BASE_DECLARE_FEATURE(kEnableAdditionalTextMetrics);
 
+// Enables or disables the Happiness Tracking System for Compose acceptance.
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeAcceptance);
+
+// Enables or disables the Happiness Tracking System for Compose on close.
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeClose);
+
+// Enables or disables the Happiness Tracking System for nudge dismissal.
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_

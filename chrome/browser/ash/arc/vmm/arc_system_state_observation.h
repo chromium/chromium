@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ash/throttle_service.h"
+#include "chromeos/ash/components/throttle/throttle_service.h"
 
 namespace content {
 class BrowserContext;

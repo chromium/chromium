@@ -73,7 +73,7 @@ void LogAddressProfileImportUkm(
   if (import_type == AutofillProfileImportType::kNewProfile &&
       !existing_profiles.empty() && import_candidate) {
     builder.SetDuplicationRank(GetDuplicationRank(
-        AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+        AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
             *import_candidate, existing_profiles,
             AutofillProfileComparator(app_locale))));
   }
@@ -145,7 +145,7 @@ void LogNewProfileImportDecision(
         base::StrCat({kNameBase, "UserHasExistingProfile"}), decision);
 
     int duplication_rank = GetDuplicationRank(
-        AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+        AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
             import_candidate, existing_profiles,
             AutofillProfileComparator(app_locale)));
     if (duplication_rank == 1) {
@@ -158,7 +158,7 @@ void LogNewProfileImportDecision(
 void LogNewProfileStorageLocation(const AutofillProfile& import_candidate) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.StorageNewAddressIsSavedTo",
-      import_candidate.source());
+      import_candidate.record_type());
 }
 
 void LogProfileUpdateImportDecision(
@@ -172,7 +172,7 @@ void LogProfileUpdateImportDecision(
                                 decision);
 
   int duplication_rank = GetDuplicationRank(
-      AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+      AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
           import_candidate, existing_profiles,
           AutofillProfileComparator(app_locale)));
   if (duplication_rank == 1) {

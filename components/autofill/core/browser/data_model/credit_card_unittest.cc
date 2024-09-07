@@ -37,14 +37,13 @@ using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
 
 namespace autofill {
+namespace {
 
 const CreditCard::RecordType LOCAL_CARD = CreditCard::RecordType::kLocalCard;
 const CreditCard::RecordType MASKED_SERVER_CARD =
     CreditCard::RecordType::kMaskedServerCard;
 const CreditCard::RecordType FULL_SERVER_CARD =
     CreditCard::RecordType::kFullServerCard;
-
-namespace {
 
 // From
 // https://www.paypalobjects.com/en_US/vhelp/paypalmanager_help/credit_card_numbers.htm
@@ -90,8 +89,6 @@ std::u16string GetYearInTheFuture() {
   AutofillClock::Now().LocalExplode(&now);
   return base::NumberToString16(now.year + 4);
 }
-
-}  // namespace
 
 TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
@@ -1693,8 +1690,8 @@ TEST_P(CreditCardMatchingTypesTest, Cases) {
                   ASCIIToUTF16(test_case.card_exp_year));
 
   FieldTypeSet matching_types;
-  card.GetMatchingTypes(UTF8ToUTF16(test_case.value), test_case.locale,
-                        &matching_types);
+  card.GetMatchingTypesWithProfileSources(UTF8ToUTF16(test_case.value),
+                                          test_case.locale, &matching_types);
   EXPECT_EQ(test_case.expected_matched_types, matching_types);
 }
 
@@ -1984,4 +1981,5 @@ INSTANTIATE_TEST_SUITE_P(
                                    "guid_b", 1, current_time - base::Days(30),
                                    LESS}));
 
+}  // namespace
 }  // namespace autofill

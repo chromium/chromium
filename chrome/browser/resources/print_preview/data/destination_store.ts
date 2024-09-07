@@ -264,12 +264,10 @@ export class DestinationStore extends EventTarget {
             this.onPrintersAdded_(type, printers));
 
     // <if expr="is_chromeos">
-    if (loadTimeData.getBoolean('isLocalPrinterObservingEnabled')) {
-      addListenerCallback(
-          'local-printers-updated',
-          (printers: LocalDestinationInfo[]) =>
-              this.onLocalPrintersUpdated_(printers));
-    }
+    addListenerCallback(
+        'local-printers-updated',
+        (printers: LocalDestinationInfo[]) =>
+            this.onLocalPrintersUpdated_(printers));
     // </if>
   }
 
@@ -986,10 +984,6 @@ export class DestinationStore extends EventTarget {
 
   // <if expr="is_chromeos">
   private observeLocalPrinters_() {
-    if (!loadTimeData.getBoolean('isLocalPrinterObservingEnabled')) {
-      return;
-    }
-
     this.nativeLayerCros_.observeLocalPrinters().then(
         (printers: LocalDestinationInfo[]) =>
             this.onLocalPrintersUpdated_(printers));

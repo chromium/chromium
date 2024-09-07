@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -198,6 +199,30 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
   }
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Whether to show a re-auth interstitial instead of the parent approval
+// interstitial.
+bool SupervisedUserNavigationThrottle::ShouldShowReauthInterstitial(
+    const Profile* profile) {
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::
+              kForceSupervisedUserReauthenticationForBlockedSites)) {
+    return false;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile);
+  CHECK(identity_manager);
+
+  // Show the re-auth interstitial if the account is in a persistent error
+  // state. If the error state is transient, show the approval interstitial
+  // instead (an approval request will either succeed, or display a "try again
+  // later" message).
+  return identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+}
+#endif
+
 void SupervisedUserNavigationThrottle::OnInterstitialResult(
     CallbackActions action,
     bool already_sent_request,
@@ -208,8 +233,27 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
       break;
     }
     case kCancelWithInterstitial: {
+      CHECK(navigation_handle());
       Profile* profile = Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      if (ShouldShowReauthInterstitial(profile)) {
+        // Show the re-authentication interstitial if the user signed out of the
+        // content area, as parent's approval requires authentication. This
+        // interstitial is only available on Linux/Mac/Windows as ChromeOS and
+        // Android have different re-auth mechanisms.
+        CancelDeferredNavigation(
+            content::NavigationThrottle::ThrottleCheckResult(
+                CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+                supervised_user::CreateReauthenticationInterstitial(
+                    *navigation_handle(),
+                    SupervisedUserVerificationPage::VerificationPurpose::
+                        BLOCKED_SITE)));
+        return;
+      }
+#endif
+
       std::string interstitial_html =
           supervised_user::SupervisedUserInterstitial::GetHTMLContents(
               SupervisedUserServiceFactory::GetForProfile(profile),

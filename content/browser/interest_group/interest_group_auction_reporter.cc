@@ -43,6 +43,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/common/content_client.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -153,6 +154,28 @@ void SetReportWinReportingIds(
   reporting_id_field =
       auction_worklet::mojom::ReportingIdField::kInterestGroupName;
   interest_group_name_reporting_id = interest_group_name;
+}
+
+// If any of private aggregation request is wrong, calls ReportBadMessage and
+// returns false.
+bool ValidateReportingPrivateAggregationRequests(
+    const PrivateAggregationRequests& pa_requests) {
+  std::optional<std::string> error =
+      content::ValidatePrivateAggregationRequests(pa_requests);
+  if (error.has_value()) {
+    mojo::ReportBadMessage(*error);
+    return false;
+  }
+
+  for (const auto& request : pa_requests) {
+    if (IsPrivateAggregationRequestReservedOnce(*request)) {
+      mojo::ReportBadMessage(
+          "Reporting Private Aggregation request using reserved.once");
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -353,7 +376,7 @@ void InterestGroupAuctionReporter::InitializeFromServerResponse(
 
 base::RepeatingClosure
 InterestGroupAuctionReporter::OnNavigateToWinningAdCallback(
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   return base::BindRepeating(
       &InterestGroupAuctionReporter::OnNavigateToWinningAd,
       weak_ptr_factory_.GetWeakPtr(), frame_tree_node_id);
@@ -620,22 +643,16 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
                                   seller_info->trace_id);
   seller_worklet_handle_.reset();
 
-  // The mojom API declaration should ensure none of these are null.
-  DCHECK(base::ranges::none_of(
-      pa_requests,
-      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-             request_ptr) { return request_ptr.is_null(); }));
-
   log_private_aggregation_requests_callback_.Run(pa_requests);
 
   PrivateAggregationTimings timings;
   timings.script_run_time = reporting_latency;
+
+  if (!ValidateReportingPrivateAggregationRequests(pa_requests)) {
+    pa_requests.clear();
+  }
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
-    if (!HasValidFilteringId(request)) {
-      mojo::ReportBadMessage("Private Aggregation filtering ID invalid");
-    }
-
     // reportResult() only gets executed for seller when there was an auction
     // winner so we consider is_winner to be true, which results in
     // "reserved.loss" reports not being reported. Bid reject reason is not
@@ -809,8 +826,9 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   // An exception to this is contextual bids, which have access to page
   // information anyway.
   if (winning_bid_info_.provided_as_additional_bid ||
-      IsKAnonForReporting(winning_bid_info_.storage_interest_group, chosen_ad,
-                          selected_buyer_and_seller_reporting_id)) {
+      IsKAnonForReporting(
+          winning_bid_info_.storage_interest_group, chosen_ad,
+          winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     SetReportWinReportingIds(
         winning_bid_info_.storage_interest_group->interest_group.name,
         winning_bid_info_.selected_buyer_and_seller_reporting_id, chosen_ad,
@@ -935,12 +953,6 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
 
   bidder_worklet_handle_.reset();
 
-  // The mojom API declaration should ensure none of these are null.
-  DCHECK(base::ranges::none_of(
-      pa_requests,
-      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-             request_ptr) { return request_ptr.is_null(); }));
-
   log_private_aggregation_requests_callback_.Run(pa_requests);
 
   PrivateAggregationKey agg_key = {
@@ -949,12 +961,12 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
           .aggregation_coordinator_origin};
   PrivateAggregationTimings timings;
   timings.script_run_time = reporting_latency;
+
+  if (!ValidateReportingPrivateAggregationRequests(pa_requests)) {
+    pa_requests.clear();
+  }
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
-    if (!HasValidFilteringId(request)) {
-      mojo::ReportBadMessage("Private Aggregation filtering ID invalid");
-    }
-
     // Only winner's reportWin() gets executed, so is_winner is true, which
     // results in "reserved.loss" reports not being reported. Bid reject reason
     // is not meaningful thus not supported in reportWin(), so it is set to
@@ -1061,7 +1073,7 @@ void InterestGroupAuctionReporter::OnReportingComplete(
 }
 
 void InterestGroupAuctionReporter::OnNavigateToWinningAd(
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   if (navigated_to_winning_ad_) {
     return;
   }
@@ -1159,7 +1171,8 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
   if (!navigated_to_winning_ad_) {
     return;
   }
-  int frame_tree_node_id = auction_worklet_manager_->GetFrameTreeNodeID();
+  FrameTreeNodeId frame_tree_node_id =
+      auction_worklet_manager_->GetFrameTreeNodeID();
   interest_group_manager_->EnqueueReports(
       InterestGroupManagerImpl::ReportType::kSendReportTo,
       std::move(pending_report_urls_), frame_tree_node_id, frame_origin_,

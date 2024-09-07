@@ -96,7 +96,6 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
                              EditorStates::kDeclineConsent,
                              EditorStates::kBlocked,
                              EditorStates::kBlockedByUnsupportedRegion,
-                             EditorStates::kBlockedByManagedStatus,
                              EditorStates::kBlockedByConsent,
                              EditorStates::kBlockedBySetting,
                              EditorStates::kBlockedByTextLength,
@@ -122,6 +121,7 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
                              EditorStates::kRequest,
                              EditorStates::kBlockedByUnsupportedCapability,
                              EditorStates::kBlockedByUnknownCapability,
+                             EditorStates::kBlockedByPolicy,
                          }));
 
 TEST_P(EditorStateMetrics, RecordsForWrite) {
@@ -1284,7 +1284,6 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
                              EditorStates::kDeclineConsent,
                              EditorStates::kBlocked,
                              EditorStates::kBlockedByUnsupportedRegion,
-                             EditorStates::kBlockedByManagedStatus,
                              EditorStates::kBlockedByConsent,
                              EditorStates::kBlockedBySetting,
                              EditorStates::kBlockedByTextLength,
@@ -1310,6 +1309,7 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
                              EditorStates::kRequest,
                              EditorStates::kBlockedByUnsupportedCapability,
                              EditorStates::kBlockedByUnknownCapability,
+                             EditorStates::kBlockedByPolicy,
                          }));
 
 TEST_P(DoesNotWriteCriticalStateMetrics, ForRewrite) {

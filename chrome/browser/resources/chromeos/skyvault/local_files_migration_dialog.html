@@ -82,26 +82,19 @@
     <img src="chrome://resources/images/business.svg"
       alt="Managed Icon" class="managed-icon">
   </div>
-  <!-- TODO(b/334511998): Use i18n strings. -->
-  <div slot="title" id="title">Your files will be uploaded to OneDrive.</div>
+  <div slot="title" id="title"></div>
   <div slot="body">
-    <!-- TODO(b/334511998): Use i18n strings. -->
-    <p class="message">
-      Your administrator will start uploading your files to
-      OneDrive. Local storage will be restricted.
-    </p>
+    <p class="message" id="start-message"></p>
+    <p class="message" id="done-message"></p>
   </div>
 
   <div slot="button-container">
-    <!-- TODO(b/334511998): Use i18n strings. -->
     <!-- Style as secondary, i.e. cancel-button. -->
     <cr-button id="upload-now-button" class="cancel-button">
-      Upload now
+      $i18n{uploadNow}
     </cr-button>
-    <!-- TODO(b/334511998): Use i18n strings. -->
     <!-- OK button is the default. -->
     <cr-button id="dismiss-button" class="action-button">
-      OK
     </cr-button>
   </div>
 </cr-dialog>

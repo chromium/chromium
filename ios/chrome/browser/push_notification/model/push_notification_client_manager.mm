@@ -8,13 +8,17 @@
 
 #import <vector>
 
+#import "base/feature_list.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
+#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/safety_check_notifications/model/safety_check_notification_client.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
@@ -34,8 +38,14 @@ PushNotificationClientManager::PushNotificationClientManager() {
   }
 
   if (IsSafetyCheckNotificationsEnabled()) {
+    AddPushNotificationClient(std::make_unique<SafetyCheckNotificationClient>(
+        base::SequencedTaskRunner::GetCurrentDefault()));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     AddPushNotificationClient(
-        std::make_unique<SafetyCheckNotificationClient>());
+        std::make_unique<SendTabPushNotificationClient>());
   }
 }
 PushNotificationClientManager::~PushNotificationClientManager() = default;
@@ -71,18 +81,15 @@ void PushNotificationClientManager::HandleNotificationInteraction(
 UIBackgroundFetchResult
 PushNotificationClientManager::HandleNotificationReception(
     NSDictionary<NSString*, id>* user_info) {
-  UIBackgroundFetchResult result = UIBackgroundFetchResultNoData;
   for (auto& client : clients_) {
-    UIBackgroundFetchResult client_result =
+    std::optional<UIBackgroundFetchResult> client_result =
         client.second->HandleNotificationReception(user_info);
-    if (client_result == UIBackgroundFetchResultNewData) {
-      return UIBackgroundFetchResultNewData;
-    } else if (client_result == UIBackgroundFetchResultFailed) {
-      result = client_result;
+    if (client_result.has_value()) {
+      return client_result.value();
     }
   }
 
-  return result;
+  return UIBackgroundFetchResultNoData;
 }
 
 void PushNotificationClientManager::RegisterActionableNotifications() {
@@ -114,6 +121,10 @@ PushNotificationClientManager::GetClients() {
   if (IsSafetyCheckNotificationsEnabled()) {
     client_ids.push_back(PushNotificationClientId::kSafetyCheck);
   }
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    client_ids.push_back(PushNotificationClientId::kSendTab);
+  }
   return client_ids;
 }
 
@@ -140,6 +151,9 @@ std::string PushNotificationClientManager::PushNotificationClientIdToString(
     }
     case PushNotificationClientId::kSafetyCheck: {
       return kSafetyCheckNotificationKey;
+    }
+    case PushNotificationClientId::kSendTab: {
+      return kSendTabNotificationKey;
     }
   }
 }

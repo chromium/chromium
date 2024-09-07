@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog_args.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "ui/views/native_window_tracker.h"

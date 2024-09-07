@@ -1,0 +1,52 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module policy.local_user_files.mojom;
+
+enum CloudProvider {
+  kGoogleDrive,
+  kOneDrive,
+};
+
+enum TimeUnit {
+  kMinutes,
+  kHours,
+};
+
+// Structure to hold the time unit and its value
+struct TimeUnitAndValue {
+  TimeUnit unit;
+  uint32 value;
+};
+
+// A renderer uses this to invoke methods that are implemented
+// in the browser process.
+interface PageHandlerFactory {
+  // Creates a PageHandler to handle communication with the WebUI page.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// A renderer uses this to invoke methods that are implemented
+// in the browser process.
+interface PageHandler {
+  // Fetches initial information to display in the dialog.
+  GetInitialDialogInfo() => (
+    CloudProvider cloud_provider,
+    TimeUnitAndValue remaining_time,
+    string start_date_and_time);
+
+  // Closes the dialog and initiates the file upload immediately.
+  UploadNow();
+
+  // Closes the dialog without initiating the upload.
+  Close();
+};
+
+// The browser uses this to invoke methods that are implemented
+// in the renderer.
+interface Page {
+  // Updates the remaining time in the UI.
+  UpdateRemainingTime(TimeUnitAndValue remaining_time);
+};

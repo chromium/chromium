@@ -37,6 +37,54 @@ Suggestion::PasswordSuggestionDetails::operator=(PasswordSuggestionDetails&&) =
     default;
 Suggestion::PasswordSuggestionDetails::~PasswordSuggestionDetails() = default;
 
+Suggestion::PlusAddressPayload::PlusAddressPayload() = default;
+
+Suggestion::PlusAddressPayload::PlusAddressPayload(
+    std::optional<std::u16string> address)
+    : address(std::move(address)) {}
+
+Suggestion::PlusAddressPayload::PlusAddressPayload(const PlusAddressPayload&) =
+    default;
+
+Suggestion::PlusAddressPayload::PlusAddressPayload(PlusAddressPayload&&) =
+    default;
+
+Suggestion::PlusAddressPayload& Suggestion::PlusAddressPayload::operator=(
+    const PlusAddressPayload&) = default;
+
+Suggestion::PlusAddressPayload& Suggestion::PlusAddressPayload::operator=(
+    PlusAddressPayload&&) = default;
+
+Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
+
+Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload() =
+    default;
+
+Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
+    const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill,
+    const FieldTypeSet& field_types_to_fill,
+    const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons)
+    : values_to_fill(std::move(values_to_fill)),
+      field_types_to_fill(std::move(field_types_to_fill)),
+      ignorable_skip_reasons(std::move(ignorable_skip_reasons)) {}
+
+Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
+    const PredictionImprovementsPayload&) = default;
+
+Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
+    PredictionImprovementsPayload&&) = default;
+
+Suggestion::PredictionImprovementsPayload&
+Suggestion::PredictionImprovementsPayload::operator=(
+    const PredictionImprovementsPayload&) = default;
+
+Suggestion::PredictionImprovementsPayload&
+Suggestion::PredictionImprovementsPayload::operator=(
+    PredictionImprovementsPayload&&) = default;
+
+Suggestion::PredictionImprovementsPayload::~PredictionImprovementsPayload() =
+    default;
+
 Suggestion::Text::Text() = default;
 
 Suggestion::Text::Text(std::u16string value,
@@ -123,6 +171,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kEmail";
     case Suggestion::Icon::kEmpty:
       return "kEmpty";
+    case Suggestion::Icon::kError:
+      return "kError";
     case Suggestion::Icon::kGlobe:
       return "kGlobe";
     case Suggestion::Icon::kGoogle:

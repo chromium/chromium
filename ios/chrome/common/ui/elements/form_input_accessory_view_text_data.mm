@@ -21,7 +21,7 @@
         (NSString*)creditCardManualFillButtonAccessibilityLabel
        addressManualFillButtonAccessibilityLabel:
            (NSString*)addressManualFillButtonAccessibilityLabel {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _closeButtonTitle = [closeButtonTitle copy];
     _closeButtonAccessibilityLabel = [closeButtonAccessibilityLabel copy];
     _nextButtonAccessibilityLabel = [nextButtonAccessibilityLabel copy];

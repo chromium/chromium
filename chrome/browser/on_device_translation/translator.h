@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
 
-#include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
+#include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 

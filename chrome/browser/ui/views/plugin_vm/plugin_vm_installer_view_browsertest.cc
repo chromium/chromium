@@ -36,6 +36,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/test/ax_event_counter.h"
 
@@ -126,7 +127,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   void CheckSetupFailed() {
     EXPECT_TRUE(HasAcceptButton());
     EXPECT_TRUE(HasCancelButton());
-    EXPECT_EQ(view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
+    EXPECT_EQ(view_->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
               l10n_util::GetStringUTF16(IDS_PLUGIN_VM_INSTALLER_RETRY_BUTTON));
     EXPECT_EQ(view_->GetTitle(),
               l10n_util::GetStringUTF16(IDS_PLUGIN_VM_INSTALLER_ERROR_TITLE));
@@ -135,9 +136,9 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   void CheckSetupIsFinishedSuccessfully() {
     EXPECT_TRUE(HasAcceptButton());
     EXPECT_TRUE(HasCancelButton());
-    EXPECT_EQ(view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL),
+    EXPECT_EQ(view_->GetDialogButtonLabel(ui::mojom::DialogButton::kCancel),
               l10n_util::GetStringUTF16(IDS_APP_CLOSE));
-    EXPECT_EQ(view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
+    EXPECT_EQ(view_->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
               l10n_util::GetStringUTF16(IDS_PLUGIN_VM_INSTALLER_LAUNCH_BUTTON));
     EXPECT_EQ(view_->GetTitle(), l10n_util::GetStringUTF16(
                                      IDS_PLUGIN_VM_INSTALLER_FINISHED_TITLE));

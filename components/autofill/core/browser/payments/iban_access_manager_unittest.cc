@@ -21,8 +21,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
+namespace autofill {
 namespace {
 
 constexpr char16_t kFullIbanValue[] = u"CH5604835012345678009";
@@ -30,8 +33,6 @@ constexpr int64_t kInstrumentId = 12345678;
 constexpr int kDaysSinceLastUsed = 3;
 constexpr int kDefaultUnmaskIbanLatencyMs = 200;
 constexpr size_t kDefaultUseCount = 4;
-
-}  // namespace
 
 class IbanAccessManagerTest : public testing::Test {
  public:
@@ -407,7 +408,8 @@ class IbanAccessManagerMandatoryReauthTest : public IbanAccessManagerTest {
 
   payments::MockMandatoryReauthManager& mandatory_reauth_manager() {
     return *static_cast<payments::MockMandatoryReauthManager*>(
-        autofill_client_.GetOrCreatePaymentsMandatoryReauthManager());
+        autofill_client_.GetPaymentsAutofillClient()
+            ->GetOrCreatePaymentsMandatoryReauthManager());
   }
 };
 
@@ -669,4 +671,5 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_ServerIban_Fail) {
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
+}  // namespace
 }  // namespace autofill

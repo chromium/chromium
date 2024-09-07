@@ -134,6 +134,12 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="AccountInPrefState">
+  <int value="0" label="Account is fully known"/>
+  <int value="1" label="Account is unkown"/>
+  <int value="2" label="Account is not full: gaia or email missing"/>
+</enum>
+
 <!-- LINT.IfChange(AccountManagedStatusFinderOutcome) -->
 
 <enum name="AccountManagedStatusFinderOutcome">
@@ -166,6 +172,13 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="One of multiple signed in match, any signed out"/>
   <int value="7" label="With signed in, one of signed out match"/>
   <int value="8" label="With signed in, no match"/>
+</enum>
+
+<enum name="AccountStartupState">
+  <int value="0" label="Account is known with a valid token"/>
+  <int value="1" label="Account is known with an invalid token"/>
+  <int value="2" label="Account is unknown with a valid token"/>
+  <int value="3" label="Account is uknown with an invalid token"/>
 </enum>
 
 <enum name="BooleanGetAccountsSucceeded">
@@ -394,6 +407,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="With primary account id, with sync consent"/>
   <int value="2" label="Empty primary account id, no sync consent"/>
   <int value="3" label="[Error] Empty primary accountid, with sync consent"/>
+</enum>
+
+<enum name="PendingResolutionSource">
+  <int value="0" label="Sign in (reauth)"/>
+  <int value="1" label="Sign out"/>
 </enum>
 
 <enum name="ResumeBlockedRequestsTrigger">
@@ -633,11 +651,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Revoked by Dice migration"/>
   <int value="2" label="Revoked as secondary account"/>
   <int value="3" label="Revoked on load due to cookie settings"/>
-</enum>
-
-<enum name="SigninPendingResolution">
-  <int value="0" label="Sign in (reauth)"/>
-  <int value="1" label="Sign out"/>
 </enum>
 
 <enum name="SigninReauthResult">

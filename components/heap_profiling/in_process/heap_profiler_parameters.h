@@ -9,14 +9,11 @@
 
 #include "base/feature_list.h"
 #include "base/json/json_value_converter.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/profiler/process_type.h"
 #include "base/time/time.h"
 
 namespace heap_profiling {
-
-// If this is enabled, heap profiling in subprocesses is controlled centrally
-// from the browser process.
-BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
 
 // If this is disabled, the client will not collect heap profiles. If it is
 // enabled, the client may enable the sampling heap profiler (with probability
@@ -25,6 +22,21 @@ BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
 // profiles will then be reported through the metrics service iff metrics
 // reporting is enabled.
 BASE_DECLARE_FEATURE(kHeapProfilerReporting);
+
+// If this is enabled, heap profiling in subprocesses is controlled centrally
+// from the browser process.
+BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
+
+// The probability of including a child process in each snapshot that's taken
+// when kHeapProfilerCentralControl is enabled, as a percentage from 0 to 100.
+// Defaults to 100, but can be set lower to sub-sample process types that are
+// very common (mainly renderers) to keep data volume low. Samples from child
+// processes are weighted in inverse proportion to the snapshot probability to
+// normalize the aggregated results.
+extern const base::FeatureParam<int> kGpuSnapshotProbability;
+extern const base::FeatureParam<int> kNetworkSnapshotProbability;
+extern const base::FeatureParam<int> kRendererSnapshotProbability;
+extern const base::FeatureParam<int> kUtilitySnapshotProbability;
 
 // Parameters to control the heap profiler.
 struct HeapProfilerParameters {

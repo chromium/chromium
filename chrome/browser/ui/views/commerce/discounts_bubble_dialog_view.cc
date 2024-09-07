@@ -23,6 +23,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -58,7 +59,7 @@ DiscountsBubbleDialogView::DiscountsBubbleDialogView(
           views::DialogContentType::kControl, views::DialogContentType::kText);
   set_margins(
       gfx::Insets::TLBR(dialog_insets.top(), 0, dialog_insets.bottom(), 0));
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   GURL url = web_contents->GetLastCommittedURL();
   std::string seller_domain = url.spec();
@@ -238,7 +239,8 @@ void DiscountsBubbleDialogView::OnDialogClosing() {
 
   commerce::metrics::DiscountsMetricCollector::
       DiscountsBubbleCopyStatusOnBubbleClosed(
-          tab_helper->IsDiscountsCouponCodeCopied());
+          tab_helper->IsDiscountsCouponCodeCopied(),
+          tab_helper->GetDiscounts());
 }
 
 BEGIN_METADATA(DiscountsBubbleDialogView)

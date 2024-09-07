@@ -159,22 +159,34 @@ base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
   // Reporting API itself clamps values to 30 days:
   // https://wicg.github.io/attribution-reporting-api/#valid-source-expiry-range
 
+  base::TimeDelta duration;
+
   if (const std::string* str = value.GetIfString()) {
     uint64_t seconds;
     if (!base::StringToUint64(*str, &seconds)) {
       return base::unexpected(ParseError());
     }
-    return std::clamp(base::Seconds(seconds), clamp_min, clamp_max);
-  } else if (std::optional<int> int_value = value.GetIfInt()) {
-    if (*int_value < 0) {
-      return base::unexpected(ParseError());
-    }
-    return std::clamp(base::Seconds(*int_value), clamp_min, clamp_max);
+    duration = base::Seconds(seconds);
+  } else {
+    ASSIGN_OR_RETURN(duration, ParseDuration(value));
+  }
+
+  if (duration.is_negative()) {
+    return base::unexpected(ParseError());
+  }
+
+  return std::clamp(duration, clamp_min, clamp_max);
+}
+
+base::expected<base::TimeDelta, ParseError> ParseDuration(
+    const base::Value& value) {
+  if (std::optional<int> int_value = value.GetIfInt()) {
+    return base::Seconds(*int_value);
   } else if (std::optional<double> double_value = value.GetIfDouble()) {
-    if (*double_value < 0 || HasFractionalPart(*double_value)) {
+    if (HasFractionalPart(*double_value)) {
       return base::unexpected(ParseError());
     }
-    return std::clamp(base::Seconds(*double_value), clamp_min, clamp_max);
+    return base::Seconds(*double_value);
   } else {
     return base::unexpected(ParseError());
   }

@@ -820,7 +820,7 @@ GridLayoutTrackCollection::CreateSubgridTrackCollection(
       std::swap(subgrid_baselines.major, subgrid_baselines.minor);
     }
 
-    subgrid_track_collection.baselines_ = std::move(subgrid_baselines);
+    subgrid_track_collection.baselines_.emplace(std::move(subgrid_baselines));
   }
 
   subgrid_track_collection.gutter_size_ = subgrid_gutter_size;
@@ -856,8 +856,9 @@ GridSizingTrackCollection::GridSizingTrackCollection(
     : GridLayoutTrackCollection(track_direction) {
   ranges_ = std::move(ranges);
 
-  if (must_create_baselines)
-    baselines_ = Baselines();
+  if (must_create_baselines) {
+    baselines_.emplace();
+  }
 
   wtf_size_t set_count = 0;
   for (const auto& range : ranges_) {

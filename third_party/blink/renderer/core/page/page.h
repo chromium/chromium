@@ -29,6 +29,7 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/types/pass_key.h"
+#include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
+#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
@@ -131,13 +133,15 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       Page* opener,
       AgentGroupScheduler& agent_group_scheduler,
       const BrowsingContextGroupInfo& browsing_context_group_info,
-      const ColorProviderColorMaps* color_provider_colors);
+      const ColorProviderColorMaps* color_provider_colors,
+      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
 
   Page(base::PassKey<Page>,
        ChromeClient& chrome_client,
        AgentGroupScheduler& agent_group_scheduler,
        const BrowsingContextGroupInfo& browsing_context_group_info,
        const ColorProviderColorMaps* color_provider_colors,
+       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
        bool is_ordinary);
   Page(const Page&) = delete;
   Page& operator=(const Page&) = delete;
@@ -536,6 +540,16 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // related pages will include the new page instead of the old page, etc.
   void TakePropertiesForLocalMainFrameSwap(Page* old_page);
 
+  // These are null(opt) unless this window was opened as a partitioned popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  const SecurityOrigin* GetPartitionedPopinOpenerTopFrameOrigin() const;
+  const std::optional<net::SiteForCookies>
+  GetPartitionedPopinOpenerSiteForCookies() const;
+
+  // This is true if the popin opener access information is set.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  bool IsPartitionedPopin() const;
+
  private:
   friend class ScopedPagePauser;
   class CloseTaskHandler;
@@ -729,6 +743,15 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       network::mojom::AttributionSupport::kUnset;
 
   Member<CloseTaskHandler> close_task_handler_;
+
+  // When the renderer opens a view representing a Partitioned Popin, the
+  // entire frame tree is partitioned as though it was an iframe in the opener.
+  // Because of this, the renderer must have knowledge of the top_frame_origin
+  // and site_for_cookies the opener would use for itself. These are used in
+  // document.cc to calculate parameters critical for access to storage.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  scoped_refptr<SecurityOrigin> partitioned_popin_opener_top_frame_origin_;
+  std::optional<net::SiteForCookies> partitioned_popin_opener_site_for_cookies_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;

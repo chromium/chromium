@@ -3,106 +3,118 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/checkbox/checkbox.js';
+import './cra/cra-accordion.js';
+import './cra/cra-accordion-item.js';
 import './cra/cra-icon-button.js';
 import './cra/cra-icon.js';
 
+import {
+  Checkbox as CrosCheckbox,
+} from 'chrome://resources/cros_components/checkbox/checkbox.js';
 import {
   classMap,
   css,
   CSSResultGroup,
   html,
-  nothing,
   PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {assertInstanceof} from '../core/utils/assert.js';
 
 export class ExpandableCard extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
-    #container {
-      border: 1px solid var(--cros-sys-separator);
-      border-radius: 12px;
-    }
+    cra-accordion {
+      --cros-card-background-color: none;
 
-    #header {
-      align-items: center;
-      display: flex;
-      flex-flow: row;
-      gap: 8px;
-      padding: 4px;
-
-      &.disabled {
-        color: var(--cros-sys-disabled);
+      &::part(card) {
+        width: initial;
       }
     }
 
-    slot[name="header"]::slotted(*) {
-      flex: 1;
+    cros-checkbox {
+      margin: -8px -14px;
     }
 
-    #content {
-      align-items: stretch;
-      display: flex;
-      flex-flow: column;
-      padding: 8px 16px 16px;
+    cra-accordion-item {
+      &::part(content) {
+        padding: 0 14px 18px;
+      }
+
+      &.hide-content::part(content) {
+        display: none;
+      }
+    }
+
+    slot[name="content"]::slotted(*) {
+      width: 100%;
     }
   `;
 
   static override properties: PropertyDeclarations = {
     expanded: {type: Boolean},
     disabled: {type: Boolean},
+    hideContent: {type: Boolean},
   };
 
   expanded = false;
 
   disabled = false;
 
-  private onToggleExpand() {
-    this.dispatchEvent(new CustomEvent('toggle-expand'));
+  /**
+   * Hides the content and the arrow. The component still emits
+   * "expandable-card-expanded" and "expandable-card-collapsed" event, but only
+   * the checkbox state would change.
+   */
+  hideContent = false;
+
+  private onExpanded() {
+    this.dispatchEvent(new CustomEvent('expandable-card-expanded'));
+  }
+
+  private onCollapsed() {
+    this.dispatchEvent(new CustomEvent('expandable-card-collapsed'));
+  }
+
+  private onCheckboxClick(ev: Event) {
+    const target = assertInstanceof(ev.target, CrosCheckbox);
+    if (target.checked) {
+      this.onExpanded();
+    } else {
+      this.onCollapsed();
+    }
   }
 
   private get shouldExpand(): boolean {
     return this.expanded && !this.disabled;
   }
 
-  private renderContent(): RenderResult {
-    if (!this.shouldExpand) {
-      return nothing;
-    }
-    return html`
-      <div id="content">
-        <slot name="content"></slot>
-      </div>
-    `;
-  }
-
   override render(): RenderResult {
     const classes = {
-      disabled: this.disabled,
+      'hide-content': this.hideContent,
     };
-
-    return html`<div id="container">
-      <div id="header" class=${classMap(classes)}>
+    // The whole header of cros-accordion can be focused, so tabindex=-1 is set
+    // on the checkbox to make it unfocusable.
+    return html`<cra-accordion variant="compact">
+      <cra-accordion-item
+        ?disabled=${this.disabled}
+        ?expanded=${this.shouldExpand}
+        @cros-accordion-item-expanded=${this.onExpanded}
+        @cros-accordion-item-collapsed=${this.onCollapsed}
+        class=${classMap(classes)}
+      >
         <cros-checkbox
+          slot="leading"
           ?checked=${this.shouldExpand}
-          @change=${this.onToggleExpand}
           ?disabled=${this.disabled}
+          @change=${this.onCheckboxClick}
+          tabindex="-1"
         >
         </cros-checkbox>
-        <slot name="header"></slot>
-        <cra-icon-button
-          @click=${this.onToggleExpand}
-          buttonstyle="floating"
-          ?disabled=${this.disabled}
-        >
-          <cra-icon
-            name=${this.shouldExpand ? 'chevron_up' : 'chevron_down'}
-            slot="icon"
-          ></cra-icon>
-        </cra-icon-button>
-      </div>
-      ${this.renderContent()}
-    </div>`;
+        <slot name="header" slot="title"></slot>
+        <slot name="content"></slot>
+      </cra-accordion-item>
+    </cra-accordion>`;
   }
 }
 

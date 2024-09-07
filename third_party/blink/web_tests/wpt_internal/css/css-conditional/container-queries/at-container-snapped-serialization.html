@@ -20,7 +20,7 @@
 
   const tests = [
       ["scroll-state(snapped: inline)", "Normalize spaces"],
-      ["scroll-STate(snapped: )", "No value - invalid, serializes as <general-enclosed>"],
+      ["scroll-STate(snapped:    )", "No value - invalid, serializes as <general-enclosed>"],
       ["scroll-state(snapped)", "Boolean context"],
       ["scroll-state((snapped: inline) or (snapped: block))", "Logical with 'or'"],
       ["scroll-state (snapped: inline)", "Not a scroll-state function with space before '('"]

@@ -13,10 +13,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.util.Consumer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -60,6 +63,22 @@ public class TabGroupListView extends FrameLayout {
 
     void setRecyclerViewAdapter(RecyclerView.Adapter adapter) {
         mRecyclerView.setAdapter(adapter);
+    }
+
+    void setOnIsScrolledChanged(Consumer<Boolean> onIsScrolledMaybeChanged) {
+        // Layout listener is for when items are removed that stops the view from being scrollable.
+        mRecyclerView.addOnLayoutChangeListener(
+                (view, i, i1, i2, i3, i4, i5, i6, i7) ->
+                        onIsScrolledMaybeChanged.accept(
+                                mRecyclerView.computeVerticalScrollOffset() != 0));
+        mRecyclerView.addOnScrollListener(
+                new OnScrollListener() {
+                    @Override
+                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                        onIsScrolledMaybeChanged.accept(
+                                mRecyclerView.computeVerticalScrollOffset() != 0);
+                    }
+                });
     }
 
     void setEmptyStateVisible(boolean visible) {

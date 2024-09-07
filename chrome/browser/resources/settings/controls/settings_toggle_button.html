@@ -60,8 +60,8 @@
 <div id="outerRow" noSubLabel$="[[!subLabel]]">
   <template is="dom-if" if="[[icon]]">
     <span id="icon" aria-hidden="true">
-      <iron-icon slot="icon" icon="[[icon]]">
-      </iron-icon>
+      <cr-icon slot="icon" icon="[[icon]]">
+      </cr-icon>
     </span>
   </template>
   <div class="flex" id="labelWrapper" hidden$="[[!label]]">
@@ -69,8 +69,8 @@
     <div class="cr-secondary-text label" id="sub-label">
       <template is="dom-if" if="[[subLabelIcon]]">
         <span id="sub-label-icon" aria-hidden="true">
-          <iron-icon slot="icon" icon="[[subLabelIcon]]">
-          </iron-icon>
+          <cr-icon slot="icon" icon="[[subLabelIcon]]">
+          </cr-icon>
         </span>
       </template>
       <span id="sub-label-text" aria-hidden="[[!ariaShowSublabel]]">

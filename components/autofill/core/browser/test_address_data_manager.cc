@@ -28,30 +28,25 @@ TestAddressDataManager::TestAddressDataManager(
 TestAddressDataManager::~TestAddressDataManager() = default;
 
 void TestAddressDataManager::AddProfile(const AutofillProfile& profile) {
-  std::unique_ptr<AutofillProfile> profile_ptr =
-      std::make_unique<AutofillProfile>(profile);
-  profile_ptr->FinalizeAfterImport();
-  GetProfileStorage(profile.source()).push_back(std::move(profile_ptr));
+  AutofillProfile profile_copy = profile;
+  profile_copy.FinalizeAfterImport();
+  profiles_.push_back(std::move(profile_copy));
   NotifyObservers();
 }
 
 void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
-  std::vector<std::unique_ptr<AutofillProfile>>& storage =
-      GetProfileStorage(profile.source());
   auto adm_profile =
-      base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
-  if (adm_profile != storage.end()) {
-    **adm_profile = profile;
+      base::ranges::find(profiles_, profile.guid(), &AutofillProfile::guid);
+  if (adm_profile != profiles_.end()) {
+    *adm_profile = profile;
     NotifyObservers();
   }
 }
 
 void TestAddressDataManager::RemoveProfile(const std::string& guid) {
   const AutofillProfile* profile = GetProfileByGUID(guid);
-  std::vector<std::unique_ptr<AutofillProfile>>& profiles =
-      GetProfileStorage(profile->source());
-  profiles.erase(base::ranges::find(profiles, profile,
-                                    &std::unique_ptr<AutofillProfile>::get));
+  profiles_.erase(
+      base::ranges::find(profiles_, profile->guid(), &AutofillProfile::guid));
   NotifyObservers();
 }
 
@@ -64,12 +59,10 @@ void TestAddressDataManager::LoadProfiles() {
 }
 
 void TestAddressDataManager::RecordUseOf(const AutofillProfile& profile) {
-  std::vector<std::unique_ptr<AutofillProfile>>& storage =
-      GetProfileStorage(profile.source());
   auto adm_profile =
-      base::ranges::find(storage, profile.guid(), &AutofillProfile::guid);
-  if (adm_profile != storage.end()) {
-    (*adm_profile)->RecordAndLogUse();
+      base::ranges::find(profiles_, profile.guid(), &AutofillProfile::guid);
+  if (adm_profile != profiles_.end()) {
+    adm_profile->RecordAndLogUse();
   }
 }
 
@@ -97,8 +90,7 @@ bool TestAddressDataManager::IsEligibleForAddressAccountStorage() const {
 }
 
 void TestAddressDataManager::ClearProfiles() {
-  GetProfileStorage(AutofillProfile::Source::kLocalOrSyncable).clear();
-  GetProfileStorage(AutofillProfile::Source::kAccount).clear();
+  profiles_.clear();
 }
 
 }  // namespace autofill

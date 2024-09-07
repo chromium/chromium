@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="canvas" width="10" height="10"></canvas>
+<script src="../../resources/js-test.js"></script>
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+}
+
+function test() {
+    shouldNotThrow(`
+        const canvas = document.getElementById("canvas");
+        const gl = canvas.getContext("webgl");
+        gl.vertexAttrib1fv(0, [NaN])
+    `);
+}
+
+test();
+
+</script>
+</body>
+</html>
+

@@ -143,7 +143,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -2449,12 +2449,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(search_features::kLauncherImageSearchOcr);
   }
 
-  if (options.enable_fsps_in_recents) {
-    enabled_features.push_back(ash::features::kFSPsInRecents);
-  } else {
-    disabled_features.push_back(ash::features::kFSPsInRecents);
-  }
-
   if (options.enable_google_one_offer_files_banner) {
     enabled_features.push_back(ash::features::kGoogleOneOfferFilesBanner);
   } else {
@@ -3492,6 +3486,16 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "setLocalFilesMigrationDestination") {
+    const std::string* provider = value.FindString("provider");
+    ASSERT_TRUE(provider);
+    ASSERT_TRUE(*provider == download_dir_util::kLocationGoogleDrive ||
+                *provider == download_dir_util::kLocationOneDrive);
+    g_browser_process->local_state()->SetString(
+        prefs::kLocalUserFilesMigrationDestination, *provider);
+    return;
+  }
+
   if (name == "skipSkyVaultMigration") {
     file_manager::VolumeManager* volume_manager = VolumeManager::Get(profile());
     volume_manager->OnMigrationSucceededForTesting();
@@ -3833,13 +3837,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isBannersFrameworkEnabled") {
     *output = options.enable_banners_framework ? "true" : "false";
-    return;
-  }
-
-  if (name == "isDarkModeEnabled") {
-    *output = ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-                  ? "true"
-                  : "false";
     return;
   }
 

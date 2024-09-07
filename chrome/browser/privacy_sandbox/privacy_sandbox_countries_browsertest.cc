@@ -66,117 +66,45 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxCountriesBrowserTest, ConsentCountryTest) {
       GetParam().is_variation_country_empty, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PrivacySandboxCountriesBrowserTest,
-    testing::Values(
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .enabled_features = {{kPrivacySandboxLocalNoticeConfirmation,
-                                  {{"default-to-os-country", "true"}}}},
-            .variation_country = "gb",
-            // Expectations
-            .is_consent_country = true,
-            .is_rest_of_world = false,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = false,
-        },
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .enabled_features = {{kPrivacySandboxLocalNoticeConfirmation,
-                                  {{"default-to-os-country", "true"}}}},
-            .variation_country = "GB",
-            // Expectations
-            .is_consent_country = true,
-            .is_rest_of_world = false,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = false,
-        },
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .enabled_features = {{kPrivacySandboxLocalNoticeConfirmation,
-                                  {{"default-to-os-country", "true"}}}},
-            .variation_country = "us",
-            // Expectations
-            .is_consent_country = false,
-            .is_rest_of_world = true,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = false,
-        },
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .enabled_features = {{kPrivacySandboxLocalNoticeConfirmation,
-                                  {{"default-to-os-country", "false"}}}},
-            .variation_country = "gb",
-            // Expectations
-            .is_consent_country = true,
-            .is_rest_of_world = false,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = false,
-        },
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .enabled_features = {{kPrivacySandboxLocalNoticeConfirmation,
-                                  {{"default-to-os-country", "false"}}}},
-            .variation_country = "GB",
-            // Expectations
-            .is_consent_country = true,
-            .is_rest_of_world = false,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = false,
-        },
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .enabled_features = {{kPrivacySandboxLocalNoticeConfirmation,
-                                  {{"default-to-os-country", "false"}}}},
-            .variation_country = "us",
-            // Expectations
-            .is_consent_country = false,
-            .is_rest_of_world = true,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = false,
-        },
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
-            .variation_country = "gb",
-            // Expectations
-            .is_consent_country = true,
-            .is_rest_of_world = false,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = false,
-        },
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
-            .variation_country = "us",
-            // Expectations
-            .is_consent_country = false,
-            .is_rest_of_world = true,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = false,
-        },
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .enabled_features = {{kPrivacySandboxLocalNoticeConfirmation,
-                                  {{"default-to-os-country", "false"}}}},
-            .variation_country = "",
-            // Expectations
-            .is_consent_country = false,
-            .is_rest_of_world = false,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = true,
-        },
-        PrivacySandboxCountriesTestData{
-            // Inputs
-            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
-            .variation_country = "",
-            // Expectations
-            .is_consent_country = false,
-            .is_rest_of_world = false,
-            .is_varation_service_ready = true,
-            .is_variation_country_empty = true,
-        }));
+INSTANTIATE_TEST_SUITE_P(,
+                         PrivacySandboxCountriesBrowserTest,
+                         testing::Values(
+                             PrivacySandboxCountriesTestData{
+                                 // Inputs
+                                 .variation_country = "gb",
+                                 // Expectations
+                                 .is_consent_country = true,
+                                 .is_rest_of_world = false,
+                                 .is_varation_service_ready = true,
+                                 .is_variation_country_empty = false,
+                             },
+                             PrivacySandboxCountriesTestData{
+                                 // Inputs
+                                 .variation_country = "GB",
+                                 // Expectations
+                                 .is_consent_country = true,
+                                 .is_rest_of_world = false,
+                                 .is_varation_service_ready = true,
+                                 .is_variation_country_empty = false,
+                             },
+                             PrivacySandboxCountriesTestData{
+                                 // Inputs
+                                 .variation_country = "us",
+                                 // Expectations
+                                 .is_consent_country = false,
+                                 .is_rest_of_world = true,
+                                 .is_varation_service_ready = true,
+                                 .is_variation_country_empty = false,
+                             },
+                             PrivacySandboxCountriesTestData{
+                                 // Inputs
+                                 .variation_country = "",
+                                 // Expectations
+                                 .is_consent_country = false,
+                                 .is_rest_of_world = false,
+                                 .is_varation_service_ready = true,
+                                 .is_variation_country_empty = true,
+                             }));
 
 }  // namespace
 }  // namespace privacy_sandbox

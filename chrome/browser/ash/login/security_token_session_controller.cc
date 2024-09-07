@@ -33,7 +33,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/security_token_session_restriction_view.h"
+#include "chrome/browser/ui/ash/security_token_restriction/security_token_session_restriction_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"

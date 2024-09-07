@@ -72,7 +72,8 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
 
   RTCEncodedVideoUnderlyingSink* CreateSink(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
-        script_state, transformer_.GetBroker());
+        script_state, transformer_.GetBroker(),
+        /*detach_frame_data_on_write=*/false);
   }
 
   RTCEncodedVideoStreamTransformer* GetTransformer() { return &transformer_; }

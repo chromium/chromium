@@ -5,6 +5,7 @@
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
@@ -12,6 +13,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/common/load_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents.h"
@@ -175,11 +177,12 @@ void FingerprintingProtectionWebContentsHelper::WillDestroyThrottleManager(
 
 void FingerprintingProtectionWebContentsHelper::NotifyPageActivationComputed(
     content::NavigationHandle* navigation_handle,
-    const subresource_filter::mojom::ActivationState& activation_state) {
+    const subresource_filter::mojom::ActivationState& activation_state,
+    const subresource_filter::ActivationDecision& activation_decision) {
   if (ThrottleManager* throttle_manager =
           GetThrottleManager(*navigation_handle)) {
-    throttle_manager->OnPageActivationComputed(navigation_handle,
-                                               activation_state);
+    throttle_manager->OnPageActivationComputed(
+        navigation_handle, activation_state, activation_decision);
   }
 }
 
@@ -189,10 +192,17 @@ void FingerprintingProtectionWebContentsHelper::
         subresource_filter::LoadPolicy load_policy) {
   // TODO(https://crbug.com/40280666): Notify throttle manager after blink
   // communication is implemented.
+  if (load_policy == subresource_filter::LoadPolicy::WOULD_DISALLOW ||
+      load_policy == subresource_filter::LoadPolicy::DISALLOW) {
+    if (ThrottleManager* throttle_manager =
+            GetThrottleManager(*navigation_handle)) {
+      throttle_manager->NotifyDisallowLoadPolicy(navigation_handle);
+    }
+  }
 }
 
 void FingerprintingProtectionWebContentsHelper::FrameDeleted(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   navigated_frames_.erase(frame_tree_node_id);
 }
 
@@ -226,6 +236,9 @@ void FingerprintingProtectionWebContentsHelper::ReadyToCommitNavigation(
 
 void FingerprintingProtectionWebContentsHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->GetReloadType() != content::ReloadType::NONE) {
+    refresh_count_++;
+  }
   if (navigation_handle->IsPrerenderedPageActivation() ||
       navigation_handle->IsServedFromBackForwardCache()) {
     if (!navigation_handle->HasCommitted()) {
@@ -329,6 +342,18 @@ void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedResources() {
   for (auto& observer : observer_list_) {
     observer.OnSubresourceBlocked();
   }
+}
+
+void FingerprintingProtectionWebContentsHelper::WebContentsDestroyed() {
+  // The user has closed the tab or otherwise destroyed the web contents. Flush
+  // metrics.
+  Detach();
+}
+
+void FingerprintingProtectionWebContentsHelper::Detach() {
+  base::UmaHistogramCounts100(
+      "FingerprintingProtection.WebContentsObserver.RefreshCount",
+      refresh_count_);
 }
 
 void FingerprintingProtectionWebContentsHelper::AddObserver(

@@ -6,6 +6,7 @@
 #define REMOTING_PROTOCOL_SESSION_AUTHZ_AUTHENTICATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -14,6 +15,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/session_authz_service_client.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
@@ -68,6 +70,7 @@ class SessionAuthzAuthenticator : public Authenticator {
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
+  const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
 
@@ -130,6 +133,7 @@ class SessionAuthzAuthenticator : public Authenticator {
   std::unique_ptr<Authenticator> underlying_;
   std::unique_ptr<internal::VerifySessionTokenResponseStruct>
       verify_token_response_;
+  std::optional<SessionPolicies> session_policies_;
   std::unique_ptr<SessionAuthzReauthorizer> reauthorizer_;
 
   SessionAuthzState session_authz_state_ = SessionAuthzState::NOT_STARTED;

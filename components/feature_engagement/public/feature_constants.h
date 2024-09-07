@@ -79,6 +79,7 @@ BASE_DECLARE_FEATURE(kIPHWebUITabStripFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopSnoozeFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopPwaInstallFeature);
 BASE_DECLARE_FEATURE(kIPHProfileSwitchFeature);
+BASE_DECLARE_FEATURE(kIPHSupervisedUserProfileSigninFeature);
 BASE_DECLARE_FEATURE(kIPHWebUiHelpBubbleTestFeature);
 BASE_DECLARE_FEATURE(kIPHPriceTrackingInSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHBackNavigationMenuFeature);
@@ -100,7 +101,6 @@ BASE_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature);
 BASE_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature);
-BASE_DECLARE_FEATURE(kIPHAddToHomescreenMessageFeature);
 BASE_DECLARE_FEATURE(kIPHAppSpecificHistory);
 BASE_DECLARE_FEATURE(kIPHAutoDarkOptOutFeature);
 BASE_DECLARE_FEATURE(kIPHAutoDarkUserEducationMessageFeature);
@@ -162,6 +162,7 @@ BASE_DECLARE_FEATURE(kIPHTabGroupsRemoteGroupFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSurfaceFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSurfaceOnHideFeature);
 BASE_DECLARE_FEATURE(kIPHTabSwitcherButtonFeature);
+BASE_DECLARE_FEATURE(kIPHTabSwitcherButtonSwitchIncognitoFeature);
 BASE_DECLARE_FEATURE(kIPHTabSwitcherFloatingActionButtonFeature);
 BASE_DECLARE_FEATURE(kIPHTranslateMenuButtonFeature);
 BASE_DECLARE_FEATURE(kIPHVideoTutorialNTPChromeIntroFeature);
@@ -234,6 +235,7 @@ BASE_DECLARE_FEATURE(kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
 BASE_DECLARE_FEATURE(kIPHiOSSavedTabGroupClosed);
 BASE_DECLARE_FEATURE(kIPHiOSContextualPanelSampleModelFeature);
 BASE_DECLARE_FEATURE(kIPHiOSContextualPanelPriceInsightsFeature);
+BASE_DECLARE_FEATURE(kIPHHomeCustomizationMenuFeature);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET

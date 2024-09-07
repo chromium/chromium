@@ -72,15 +72,16 @@ MHTMLFileHandleWriter::~MHTMLFileHandleWriter() {}
 
 void MHTMLFileHandleWriter::WriteContentsImpl(
     std::vector<blink::WebThreadSafeData> mhtml_contents) {
-  mojom::MhtmlSaveStatus save_status = mojom::MhtmlSaveStatus::kSuccess;
-  for (const blink::WebThreadSafeData& data : mhtml_contents) {
-    if (!data.IsEmpty() &&
-        file_.WriteAtCurrentPos(data.data(), data.size()) < 0) {
-      save_status = mojom::MhtmlSaveStatus::kFileWritingError;
-      break;
+  for (const auto& data : mhtml_contents) {
+    if (data.IsEmpty()) {
+      continue;
+    }
+    if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(data))) {
+      Finish(mojom::MhtmlSaveStatus::kFileWritingError);
+      return;
     }
   }
-  Finish(save_status);
+  Finish(mojom::MhtmlSaveStatus::kSuccess);
 }
 
 void MHTMLFileHandleWriter::Close() {

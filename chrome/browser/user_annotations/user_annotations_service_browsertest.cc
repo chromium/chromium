@@ -144,19 +144,14 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
 
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
 
-  EXPECT_EQ(1,
-            optimization_guide::RetryForHistogramUntilCountReached(
-                &histogram_tester, "UserAnnotations.DidAddFormSubmission", 1));
-  histogram_tester.ExpectUniqueSample("UserAnnotations.DidAddFormSubmission",
-                                      true, 1);
-
-  base::test::TestFuture<
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-      test_future;
-  service()->RetrieveAllEntries(test_future.GetCallback());
-
-  auto entries = test_future.Take();
-  EXPECT_FALSE(entries.empty());
+  EXPECT_EQ(1, optimization_guide::RetryForHistogramUntilCountReached(
+                   &histogram_tester,
+                   "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+                   "FormsAnnotations",
+                   1));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus.FormsAnnotations",
+      1);
 }
 
 class UserAnnotationsServiceExplicitAllowlistBrowserTest
@@ -183,15 +178,9 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount("UserAnnotations.DidAddFormSubmission", 0);
-
-  base::test::TestFuture<
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-      test_future;
-  service()->RetrieveAllEntries(test_future.GetCallback());
-
-  auto entries = test_future.Take();
-  EXPECT_TRUE(entries.empty());
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus.FormsAnnotations",
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
@@ -204,19 +193,14 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
 
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
 
-  EXPECT_EQ(1,
-            optimization_guide::RetryForHistogramUntilCountReached(
-                &histogram_tester, "UserAnnotations.DidAddFormSubmission", 1));
-  histogram_tester.ExpectUniqueSample("UserAnnotations.DidAddFormSubmission",
-                                      true, 1);
-
-  base::test::TestFuture<
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-      test_future;
-  service()->RetrieveAllEntries(test_future.GetCallback());
-
-  auto entries = test_future.Take();
-  EXPECT_FALSE(entries.empty());
+  EXPECT_EQ(1, optimization_guide::RetryForHistogramUntilCountReached(
+                   &histogram_tester,
+                   "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+                   "FormsAnnotations",
+                   1));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus.FormsAnnotations",
+      1);
 }
 
 }  // namespace user_annotations

@@ -10,6 +10,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_utils.h"
@@ -87,15 +88,15 @@ void DigitalIdentityMultiStepDialog::Delegate::Update(
   SetCloseCallback(base::BindOnce(&Delegate::OnDialogClosed,
                                   weak_ptr_factory_.GetWeakPtr()));
 
-  int button_mask = ui::DIALOG_BUTTON_CANCEL;
+  int button_mask = static_cast<int>(ui::mojom::DialogButton::kCancel);
   if (accept_button) {
-    button_mask |= ui::DIALOG_BUTTON_OK;
+    button_mask |= static_cast<int>(ui::mojom::DialogButton::kOk);
     views::ConfigureBubbleButtonForParams(*this, /*button_view=*/nullptr,
-                                          ui::DIALOG_BUTTON_OK,
+                                          ui::mojom::DialogButton::kOk,
                                           CreateButtonModel(*accept_button));
   }
   views::ConfigureBubbleButtonForParams(*this, /*button_view=*/nullptr,
-                                        ui::DIALOG_BUTTON_CANCEL,
+                                        ui::mojom::DialogButton::kCancel,
                                         CreateButtonModel(cancel_button));
 
   SetButtons(button_mask);

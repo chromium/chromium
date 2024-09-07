@@ -381,6 +381,18 @@ void BirchBarView::RemoveChip(BirchItem* removed_item,
       .SetOpacity(removing_chip->layer(), 0.0f);
 }
 
+void BirchBarView::UpdateChip(BirchItem* item) {
+  auto iter = std::find_if(
+      chips_.begin(), chips_.end(),
+      [item](BirchChipButtonBase* chip) { return chip->GetItem() == item; });
+
+  if (iter == chips_.end()) {
+    return;
+  }
+
+  (*iter)->Init(item);
+}
+
 int BirchBarView::GetMaximumHeight() const {
   return GetExpectedLayoutType(kMaxChipsNum) == LayoutType::kOneByFour
              ? kChipHeight

@@ -33,6 +33,17 @@ chromium-metrics-reviews@google.com.
   <variant name="Other"/>
 </variants>
 
+<histogram name="MessagePumpEpoll.WatchedFileDescriptors"
+    units="FileDescriptors" expires_after="2025-08-01">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    The number of file descriptors in the watch list for the epoll message pump.
+    Sampled periodically every minute for each thread with an epoll message
+    pump.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.BeginImplFrameLatency2" units="microseconds"
     expires_after="M85">
   <owner>stanisc@chromium.org</owner>
@@ -136,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.SchedQoS.SetProcessStateError" enum="QoSErrorType"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>kawasin@google.com</owner>
   <owner>joelaf@google.com</owner>
   <summary>
@@ -146,7 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.SchedQoS.SetThreadStateError" enum="QoSErrorType"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>kawasin@google.com</owner>
   <owner>joelaf@google.com</owner>
   <summary>
@@ -364,17 +375,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Length" variants="Length"/>
   <token key="NamedThread" variants="NamedThread"/>
-</histogram>
-
-<histogram base="true" name="ThreadPool.NumTasksBeforeDetach" units="tasks"
-    expires_after="M85">
-  <owner>fdoray@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Number of tasks executed by a SchedulerWorker before it detached. Recorded
-    when a SchedulerWorker detaches.
-  </summary>
 </histogram>
 
 <histogram base="true" name="ThreadPool.UnnecessaryWakeup" enum="BooleanHit"

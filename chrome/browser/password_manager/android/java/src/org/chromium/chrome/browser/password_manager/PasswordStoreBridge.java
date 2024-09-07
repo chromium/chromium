@@ -152,6 +152,11 @@ public class PasswordStoreBridge {
         PasswordStoreBridgeJni.get().clearAllPasswords(mNativePasswordStoreBridge);
     }
 
+    /** Empties the profile store. */
+    public void clearAllPasswordsFromProfileStore() {
+        PasswordStoreBridgeJni.get().clearAllPasswordsFromProfileStore(mNativePasswordStoreBridge);
+    }
+
     /** Destroys its C++ counterpart. */
     public void destroy() {
         if (mNativePasswordStoreBridge != 0) {
@@ -209,6 +214,8 @@ public class PasswordStoreBridge {
                 long nativePasswordStoreBridge, PasswordStoreCredential[] credentials);
 
         void clearAllPasswords(long nativePasswordStoreBridge);
+
+        void clearAllPasswordsFromProfileStore(long nativePasswordStoreBridge);
 
         void destroy(long nativePasswordStoreBridge);
     }

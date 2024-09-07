@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -37,7 +38,9 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
-      SessionID tab_id);
+      SessionID tab_id,
+      std::unique_ptr<SafeBrowsingLookupMechanism>
+          hash_realtime_lookup_mechanism);
   UrlRealTimeMechanism(const UrlRealTimeMechanism&) = delete;
   UrlRealTimeMechanism& operator=(const UrlRealTimeMechanism&) = delete;
   ~UrlRealTimeMechanism() override;
@@ -96,8 +99,21 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       std::optional<ThreatSource> threat_source,
       HashDatabaseFallbackTrigger fallback_trigger);
 
+  // This function is called once the hash-prefix real-time check has completed,
+  // which which temporarily stores the results in this class for logging
+  // purposes only.
+  void OnHashRealTimeCompleteCheckResult(
+      std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result);
+  void OnHashRealTimeCompleteCheckResultInternal(SBThreatType threat_type);
+
   void MaybePerformSuspiciousSiteDetection(
       RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type);
+
+  // This sends back the real-time URL lookup result to the caller.
+  // Additionally, If a background HPRT was sent and the result returned in
+  // time, this logs that result.
+  void CompleteCheckInternal(
+      std::unique_ptr<CompleteCheckResult> complete_check_result);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -109,6 +125,10 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // Whether the high confidence allowlist can be checked. It is set to
   // false when enterprise real time URL lookup is enabled.
   bool can_check_high_confidence_allowlist_;
+
+  // Whether the hash realtime look has completed when URL realtime lookup
+  // completes.
+  bool is_hash_realtime_lookup_complete_ = false;
 
   // URL Lookup service suffix for logging metrics.
   std::string url_lookup_service_metric_suffix_;
@@ -139,6 +159,11 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // The current tab ID. Used sometimes for identifying the referrer chain. Can
   // be |SessionID::InvalidValue()|.
   SessionID tab_id_;
+
+  // This will be populated in cases where the sampled HPRT lookup should be
+  // sent.
+  std::unique_ptr<SafeBrowsingLookupMechanism> hash_realtime_lookup_mechanism_ =
+      nullptr;
 
   base::WeakPtrFactory<UrlRealTimeMechanism> weak_factory_{this};
 };

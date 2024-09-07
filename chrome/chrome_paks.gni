@@ -89,7 +89,7 @@ template("chrome_repack_percent") {
         ]
       }
     }
-    if (enable_extensions) {
+    if (enable_extensions_core) {
       sources += [ "$root_gen_dir/extensions/extensions_browser_resources_${percent}_percent.pak" ]
       deps += [ "//extensions:extensions_browser_resources" ]
     }
@@ -174,6 +174,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/inline_login_resources.pak",
         "$root_gen_dir/chrome/key_value_pair_viewer_shared_resources.pak",
         "$root_gen_dir/chrome/lens_search_bubble_resources.pak",
+        "$root_gen_dir/chrome/lens_shared_resources.pak",
         "$root_gen_dir/chrome/lens_untrusted_resources.pak",
         "$root_gen_dir/chrome/management_resources.pak",
         "$root_gen_dir/chrome/new_tab_page_instant_resources.pak",
@@ -211,6 +212,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/data_sharing:resources",
         "//chrome/browser/resources/lens/overlay:resources",
         "//chrome/browser/resources/lens/overlay/search_bubble:resources",
+        "//chrome/browser/resources/lens/shared:resources",
         "//chrome/browser/resources/search_engine_choice:resources",
         "//content/browser/devtools:devtools_resources",
         "//content/browser/tracing:resources",
@@ -253,6 +255,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/webui/ash_firmware_update_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_focus_mode_player_resources.pak",
         "$root_gen_dir/ash/webui/ash_focus_mode_resources.pak",
+        "$root_gen_dir/ash/webui/ash_graduation_resources.pak",
         "$root_gen_dir/ash/webui/ash_help_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_mall_cros_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_media_app_resources.pak",
@@ -344,6 +347,7 @@ template("chrome_extra_paks") {
         "//ash/webui/firmware_update_ui/resources:resources",
         "//ash/webui/focus_mode/resources:resources",
         "//ash/webui/focus_mode/untrusted_resources:resources",
+        "//ash/webui/graduation/resources:resources",
         "//ash/webui/mall/resources",
         "//ash/webui/os_feedback_ui/resources:resources",
         "//ash/webui/os_feedback_ui/untrusted_resources:resources",
@@ -457,19 +461,24 @@ template("chrome_extra_paks") {
       deps += [ "//chrome/browser/resources/discards:resources" ]
     }
 
+    if (enable_extensions_core) {
+      sources += [
+        "$root_gen_dir/extensions/extensions_renderer_resources.pak",
+        "$root_gen_dir/extensions/extensions_resources.pak",
+      ]
+      deps += [ "//extensions:extensions_resources" ]
+    }
     if (enable_extensions) {
       sources += [
         "$root_gen_dir/chrome/extensions_resources.pak",
         "$root_gen_dir/chrome/sync_file_system_internals_resources.pak",
-        "$root_gen_dir/extensions/extensions_renderer_resources.pak",
-        "$root_gen_dir/extensions/extensions_resources.pak",
       ]
       deps += [
         "//chrome/browser/resources/extensions:resources",
         "//chrome/browser/resources/sync_file_system_internals:resources",
-        "//extensions:extensions_resources",
       ]
     }
+
     if (enable_pdf) {
       sources += [ "$root_gen_dir/chrome/pdf_resources.pak" ]
       deps += [ "//chrome/browser/resources/pdf:resources" ]

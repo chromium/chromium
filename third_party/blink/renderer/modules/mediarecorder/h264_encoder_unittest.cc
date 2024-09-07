@@ -92,7 +92,6 @@ class H264EncoderFixture : public ::testing::Test {
 
   void EncodeFrame() {
     encoder_.StartFrameEncode(
-        CrossThreadBindRepeating(base::TimeTicks::Now),
         media::VideoFrame::CreateBlackFrame({kFrameWidth, kFrameHeight}),
         base::TimeTicks::Now());
   }
@@ -179,8 +178,7 @@ TEST_F(H264EncoderFixture, ErrorCallOnTooLargeFrame) {
                              /*hardware_video_encoder=*/false,
                              media::SVCScalabilityMode::kL1T1));
   EXPECT_CALL(*mock_metrics_provider_, MockSetError);
-  encoder_.StartFrameEncode(CrossThreadBindRepeating(base::TimeTicks::Now),
-                            frame, base::TimeTicks::Now());
+  encoder_.StartFrameEncode(frame, base::TimeTicks::Now());
   EXPECT_TRUE(on_error_called_);
 }
 

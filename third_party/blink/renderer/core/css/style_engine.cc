@@ -220,13 +220,17 @@ StyleEngine::StyleEngine(Document& document)
           MakeGarbageCollected<StyleContainmentScopeTree>()),
       document_style_sheet_collection_(
           MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
-      resolver_(MakeGarbageCollected<StyleResolver>(document)) {
+      resolver_(MakeGarbageCollected<StyleResolver>(document)),
+      preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
+      owner_preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
+      owner_color_scheme_(mojom::blink::ColorScheme::kLight) {
   if (document.GetFrame()) {
     global_rule_set_ = MakeGarbageCollected<CSSGlobalRuleSet>();
     font_selector_ = CreateCSSFontSelectorFor(document);
     font_selector_->RegisterForInvalidationCallbacks(this);
     if (const FrameOwner* owner = document.GetFrame()->Owner()) {
       owner_color_scheme_ = owner->GetColorScheme();
+      owner_preferred_color_scheme_ = owner->GetPreferredColorScheme();
     }
 
     // Viewport styles are only processed in the main frame of a page with an
@@ -688,13 +692,11 @@ void StyleEngine::UpdateCounterStyles() {
 
 void StyleEngine::MarkPositionTryStylesDirty(
     const HeapHashSet<Member<RuleSet>>& changed_rule_sets) {
-  if (RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
-    for (RuleSet* rule_set : changed_rule_sets) {
-      CHECK(rule_set);
-      for (StyleRulePositionTry* try_rule : rule_set->PositionTryRules()) {
-        if (try_rule) {
-          dirty_position_try_names_.insert(try_rule->Name());
-        }
+  for (RuleSet* rule_set : changed_rule_sets) {
+    CHECK(rule_set);
+    for (StyleRulePositionTry* try_rule : rule_set->PositionTryRules()) {
+      if (try_rule) {
+        dirty_position_try_names_.insert(try_rule->Name());
       }
     }
   }
@@ -734,7 +736,7 @@ void StyleEngine::UpdateActiveStyle() {
   DCHECK(GetDocument().IsActive());
   DCHECK(IsMainThread());
   TRACE_EVENT0("blink", "Document::updateActiveStyle");
-  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded();
+  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(*this);
   UpdateViewport();
   UpdateActiveStyleSheets();
   UpdateGlobalRuleSet();
@@ -4012,7 +4014,7 @@ bool StyleEngine::SupportsDarkColorScheme() {
 }
 
 void StyleEngine::UpdateColorScheme() {
-  auto* settings = GetDocument().GetSettings();
+  const Settings* settings = GetDocument().GetSettings();
   if (!settings) {
     return;
   }
@@ -4023,7 +4025,11 @@ void StyleEngine::UpdateColorScheme() {
 
   mojom::blink::PreferredColorScheme old_preferred_color_scheme =
       preferred_color_scheme_;
-  preferred_color_scheme_ = settings->GetPreferredColorScheme();
+  if (GetDocument().IsInMainFrame()) {
+    preferred_color_scheme_ = settings->GetPreferredColorScheme();
+  } else {
+    preferred_color_scheme_ = owner_preferred_color_scheme_;
+  }
   bool old_force_dark_mode_enabled = force_dark_mode_enabled_;
   force_dark_mode_enabled_ = settings->GetForceDarkModeEnabled();
   bool media_feature_override_color_scheme = false;
@@ -4070,7 +4076,7 @@ void StyleEngine::UpdateColorScheme() {
 }
 
 void StyleEngine::UpdateColorSchemeMetrics() {
-  auto* settings = GetDocument().GetSettings();
+  const Settings* settings = GetDocument().GetSettings();
   if (settings->GetForceDarkModeEnabled()) {
     UseCounter::Count(GetDocument(), WebFeature::kForcedDarkMode);
   }
@@ -4181,25 +4187,26 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
                                     color_scheme_changed);
 }
 
-void StyleEngine::SetOwnerColorScheme(mojom::blink::ColorScheme color_scheme) {
+void StyleEngine::SetOwnerColorScheme(
+    mojom::blink::ColorScheme color_scheme,
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
   DCHECK(!GetDocument().IsInMainFrame());
-  if (owner_color_scheme_ == color_scheme) {
-    return;
+  if (owner_preferred_color_scheme_ != preferred_color_scheme) {
+    owner_preferred_color_scheme_ = preferred_color_scheme;
+    GetDocument().ColorSchemeChanged();
   }
-  owner_color_scheme_ = color_scheme;
-  UpdateColorSchemeBackground(true);
+  if (owner_color_scheme_ != color_scheme) {
+    owner_color_scheme_ = color_scheme;
+    UpdateColorSchemeBackground(true);
+  }
 }
 
 mojom::blink::PreferredColorScheme StyleEngine::ResolveColorSchemeForEmbedding(
     const ComputedStyle* embedder_style) const {
-  const bool embedder_color_scheme_is_normal =
-      !embedder_style || embedder_style->ColorScheme().empty();
   // ...if 'color-scheme' is 'normal' and there's no 'color-scheme' meta tag,
   // the propagated scheme is the preferred color-scheme of the embedder
   // document.
-  if (embedder_color_scheme_is_normal &&
-      GetPageColorSchemes() ==
-          static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal)) {
+  if (!embedder_style || embedder_style->ColorSchemeFlagsIsNormal()) {
     return GetPreferredColorScheme();
   }
   return embedder_style && embedder_style->UsedColorScheme() ==
@@ -4214,7 +4221,8 @@ void StyleEngine::UpdateForcedBackgroundColor() {
   forced_background_color_ = LayoutTheme::GetTheme().SystemColor(
       CSSValueID::kCanvas, color_scheme,
       GetDocument().GetPage()->GetColorProviderForPainting(
-          color_scheme, forced_colors_ != ForcedColors::kNone));
+          color_scheme, forced_colors_ != ForcedColors::kNone),
+      GetDocument().IsInWebAppScope());
 }
 
 Color StyleEngine::ColorAdjustBackgroundColor() const {
@@ -4466,11 +4474,6 @@ bool InvalidatePositionTryNames(Element* root,
 }  // namespace
 
 bool StyleEngine::UpdateLastSuccessfulPositionFallbacks() {
-  if (!RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
-    CHECK(dirty_position_try_names_.empty());
-    CHECK(last_successful_option_dirty_set_.empty());
-    return false;
-  }
   bool invalidated = false;
   if (!dirty_position_try_names_.empty()) {
     // Added, removed, or modified @position-try rules.
@@ -4492,6 +4495,46 @@ bool StyleEngine::UpdateLastSuccessfulPositionFallbacks() {
     last_successful_option_dirty_set_.clear();
   }
   return invalidated;
+}
+
+void StyleEngine::RevisitActiveStyleSheetsForInspector() {
+  // TODO(crbug.com/337076014): Also revisit other stylesheets such as those in
+  // shadow trees, user sheets, and UA sheets.
+  const RuleFeatureSet& global_features = GetRuleFeatureSet();
+  const ActiveStyleSheetVector& active_style_sheets =
+      GetDocumentStyleSheetCollection().ActiveStyleSheets();
+  for (const ActiveStyleSheet& sheet : active_style_sheets) {
+    // We need to revisit each sheet twice, once with the global rule set and
+    // once with the sheet's associated rule set.
+    // The global rule set contains the rule invalidation data we're currently
+    // using for style invalidations. However, if a stylesheet change occurs,
+    // we may throw out the global rule set data and rebuild it from the
+    // individual sheets' data, so the inspector needs to know about both.
+    StyleSheetContents* contents = sheet.first->Contents();
+    RevisitStyleRulesForInspector(global_features, contents->ChildRules());
+    if (contents->HasRuleSet()) {
+      RevisitStyleRulesForInspector(contents->GetRuleSet().Features(),
+                                    contents->ChildRules());
+    }
+  }
+}
+
+void StyleEngine::RevisitStyleRulesForInspector(
+    const RuleFeatureSet& features,
+    const HeapVector<Member<StyleRuleBase>>& rules) {
+  for (StyleRuleBase* rule : rules) {
+    if (StyleRule* style_rule = DynamicTo<StyleRule>(rule)) {
+      for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
+           selector = CSSSelectorList::Next(*selector)) {
+        InvalidationSetToSelectorMap::SelectorScope selector_scope(
+            style_rule, style_rule->SelectorIndex(*selector));
+        features.RevisitSelectorForInspector(*selector);
+      }
+    } else if (StyleRuleGroup* style_rule_group =
+                   DynamicTo<StyleRuleGroup>(rule)) {
+      RevisitStyleRulesForInspector(features, style_rule_group->ChildRules());
+    }
+  }
 }
 
 }  // namespace blink

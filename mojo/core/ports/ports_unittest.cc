@@ -377,10 +377,9 @@ class PortsTest : public testing::Test, public MessageRouter {
       // Wait for any Node to signal that it's idle.
       base::AutoUnlock global_unlock(global_lock_);
       std::vector<base::WaitableEvent*> events;
-      for (const auto& entry : nodes_) {
+      for (const auto& entry : nodes_)
         events.push_back(&entry.second->idle_event());
-      }
-      base::WaitableEvent::WaitMany(events);
+      base::WaitableEvent::WaitMany(events.data(), events.size());
     }
   }
 

@@ -10,11 +10,10 @@
 
 @implementation PasswordProtectionViewController
 
-#pragma mark - Public
+#pragma mark - UIViewController
 
 - (void)viewDidLoad {
   self.image = [UIImage imageNamed:@"legacy_password_breach_illustration"];
-  self.helpButtonAvailable = NO;
   self.titleString = l10n_util::GetNSString(
       IDS_PAGE_INFO_CHANGE_PASSWORD_SAVED_PASSWORD_SUMMARY);
   self.primaryActionString =

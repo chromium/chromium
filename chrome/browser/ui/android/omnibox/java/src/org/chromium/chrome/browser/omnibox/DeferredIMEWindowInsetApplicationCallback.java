@@ -92,12 +92,10 @@ public class DeferredIMEWindowInsetApplicationCallback
         mDeferredKeyboardHeight = NO_DEFERRED_KEYBOARD_HEIGHT;
     }
 
-    @NonNull
     @Override
     public void onStart(
             @NonNull WindowInsetsAnimationCompat animation, @NonNull BoundsCompat bounds) {}
 
-    @NonNull
     @Override
     public void onProgress(
             @NonNull WindowInsetsCompat windowInsetsCompat,

@@ -637,8 +637,8 @@ void ThreadController::RunLevelTracker::TimeKeeper::MaybeEmitIncomingWakeupFlow(
     return;
   }
 
-  perfetto::Flow::ProcessScoped(reinterpret_cast<uint64_t>(&(outer_.get())))(
-      ctx);
+  perfetto::TerminatingFlow::ProcessScoped(
+      reinterpret_cast<uint64_t>(&(outer_.get())))(ctx);
 #endif
 }
 

@@ -8,6 +8,8 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
@@ -17,6 +19,8 @@ const char kSuffixRTTUnknown[] = ".RTTUnkown";
 const char kSuffixRTTBelow200[] = ".RTTBelow200";
 const char kSuffixRTT200to450[] = ".RTT200To450";
 const char kSuffixRTTAbove450[] = ".RTTAbove450";
+const char kIncognito[] = ".Incognito";
+const char kNoIncognito[] = ".NoIncognito";
 
 }  // namespace internal
 
@@ -43,14 +47,21 @@ ChromeGWSAbandonedPageLoadMetricsObserver::
 
 std::vector<std::string>
 ChromeGWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
-  std::vector<std::string> base_suffixes =
-      GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes();
+  std::vector<std::string> suffixes;
+  // Add the incognito suffix if the current profile is incognito mode.
+  for (std::string& suffix :
+       GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes()) {
+    suffixes.push_back(suffix);
+    suffixes.push_back(suffix + (IsIncognitoProfile()
+                                     ? internal::kIncognito
+                                     : internal::kNoIncognito));
+  }
   // Make sure each histogram logged will log a version without connection type,
   // and a version with the connection type, to allow filtering if needed.
   // TODO(https://crbug.com/347706997): Consider doing this for the WebView
   // version as well.
   std::vector<std::string> suffixes_with_rtt;
-  for (std::string& base_suffix : base_suffixes) {
+  for (std::string& base_suffix : suffixes) {
     suffixes_with_rtt.push_back(base_suffix);
     suffixes_with_rtt.push_back(
         base_suffix +
@@ -69,4 +80,12 @@ void ChromeGWSAbandonedPageLoadMetricsObserver::AddSRPMetricsToUKMIfNeeded(
     builder.SetRTT(ukm::GetSemanticBucketMinForDurationTiming(
         rtt.value().InMilliseconds()));
   }
+}
+
+bool ChromeGWSAbandonedPageLoadMetricsObserver::IsIncognitoProfile() const {
+  if (Profile* profile = Profile::FromBrowserContext(
+          GetDelegate().GetWebContents()->GetBrowserContext())) {
+    return profile->IsIncognitoProfile();
+  }
+  return false;
 }

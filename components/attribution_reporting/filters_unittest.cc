@@ -214,6 +214,17 @@ const struct {
             {*FilterConfig::Create({}, /*lookback_window=*/base::Seconds(1))}),
     },
     {
+        "lookback_window_gt_int_max",
+        base::test::ParseJson(R"json({"_lookback_window": 2147483648})json"),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
+        FiltersDisjunction({*FilterConfig::Create(
+            {},
+            /*lookback_window=*/base::Seconds(2147483648))}),
+        FiltersDisjunction({*FilterConfig::Create(
+            {},
+            /*lookback_window=*/base::Seconds(2147483648))}),
+    },
+    {
         "wrong_type",
         base::Value("foo"),
         base::unexpected(SourceRegistrationError::kFilterDataDictInvalid),

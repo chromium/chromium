@@ -27,10 +27,9 @@ VideoStreamView::VideoStreamView()
       // Placeholder initialization. OnThemeChanged() is expected to be called
       // to re-assign `preview_base_color_` value.
       preview_base_color_(SK_ColorBLACK) {
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kImage,
-      l10n_util::GetStringUTF16(
-          IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME));
 
   raster_context_provider_ =
       content::GetContextFactory()->SharedMainThreadRasterContextProvider();
@@ -107,13 +106,9 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
                         raster_context_provider_.get());
 }
 
-int VideoStreamView::GetHeightForWidth(int w) const {
-  return w / targeted_aspect_ratio_;
-}
-
 gfx::Size VideoStreamView::CalculatePreferredSize(
     const views::SizeBounds& /*available_size*/) const {
-  return gfx::Size(width(), GetHeightForWidth(width()));
+  return gfx::Size(width(), width() / targeted_aspect_ratio_);
 }
 
 void VideoStreamView::OnThemeChanged() {

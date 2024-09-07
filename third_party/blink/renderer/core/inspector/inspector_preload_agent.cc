@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspected_frames.h"
+#include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
+#include "third_party/blink/renderer/core/inspector/protocol/preload.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_candidate.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
@@ -195,8 +199,9 @@ std::unique_ptr<protocol::Preload::RuleSet> BuildProtocolRuleSet(
 
 }  // namespace internal
 
-InspectorPreloadAgent::InspectorPreloadAgent()
-    : enabled_(&agent_state_, /*default_value=*/false) {}
+InspectorPreloadAgent::InspectorPreloadAgent(InspectedFrames* inspected_frames)
+    : enabled_(&agent_state_, /*default_value=*/false),
+      inspected_frames_(inspected_frames) {}
 
 InspectorPreloadAgent::~InspectorPreloadAgent() = default;
 
@@ -267,6 +272,11 @@ void InspectorPreloadAgent::SpeculationCandidatesUpdated(
       std::move(preloading_attempt_sources));
 }
 
+void InspectorPreloadAgent::Trace(Visitor* visitor) const {
+  InspectorBaseAgent<protocol::Preload::Metainfo>::Trace(visitor);
+  visitor->Trace(inspected_frames_);
+}
+
 protocol::Response InspectorPreloadAgent::enable() {
   EnableInternal();
   return protocol::Response::Success();
@@ -283,6 +293,31 @@ void InspectorPreloadAgent::EnableInternal() {
 
   enabled_.Set(true);
   instrumenting_agents_->AddInspectorPreloadAgent(this);
+
+  ReportRuleSetsAndSources();
+}
+
+void InspectorPreloadAgent::ReportRuleSetsAndSources() {
+  for (LocalFrame* inspected_frame : *inspected_frames_) {
+    Document* document = inspected_frame->GetDocument();
+    String loader_id = IdentifiersFactory::LoaderId(document->Loader());
+    auto* speculation_rules = DocumentSpeculationRules::FromIfExists(*document);
+    if (!speculation_rules) {
+      continue;
+    }
+
+    // Report existing rule sets.
+    for (const SpeculationRuleSet* speculation_rule_set :
+         speculation_rules->rule_sets()) {
+      GetFrontend()->ruleSetUpdated(
+          internal::BuildProtocolRuleSet(*speculation_rule_set, loader_id));
+    }
+
+    // Queues an update that will result in `SpeculationCandidatesUpdated` being
+    // called asynchronously and sources being reported to the frontend.
+    speculation_rules->QueueUpdateSpeculationCandidates(
+        /*force_style_update=*/true);
+  }
 }
 
 }  // namespace blink

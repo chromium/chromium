@@ -77,10 +77,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/sync/sync_error_notifier.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
-#include "chrome/browser/ui/webui/trusted_vault/trusted_vault_dialog_delegate.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/trusted_vault/features.h"
 #include "ui/views/test/widget_test.h"
@@ -1321,55 +1319,24 @@ class SingleClientNigoriWithWebApiAndDialogUIParamTest
       public SingleClientNigoriWithWebApiTest {
  public:
   SingleClientNigoriWithWebApiAndDialogUIParamTest() {
-    if (GetParam()) {
-      std::vector<base::test::FeatureRef> enabled_features =
-          ash::standalone_browser::GetFeatureRefs();
-      enabled_features.push_back(
-          trusted_vault::kChromeOSTrustedVaultUseWebUIDialog);
-      feature_list_.InitWithFeatures(enabled_features,
-                                     /*disabled_features=*/{});
-      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-          ash::switches::kEnableLacrosForTesting);
-    } else {
       feature_list_.InitAndDisableFeature(
           trusted_vault::kChromeOSTrustedVaultUseWebUIDialog);
-    }
   }
 
   ~SingleClientNigoriWithWebApiAndDialogUIParamTest() override = default;
 
-  void SetUpOnMainThread() override {
-    SingleClientNigoriWithWebApiTest::SetUpOnMainThread();
-    if (GetParam()) {
-      trusted_vault_widget_shown_waiter_ =
-          std::make_unique<views::NamedWidgetShownWaiter>(
-              views::test::AnyWidgetTestPasskey{},
-              TrustedVaultDialogDelegate::kWidgetName);
-    }
-  }
 
   bool WaitForTrustedVaultReauthCompletion() {
-    if (GetParam()) {
-      CHECK(trusted_vault_widget_shown_waiter_);
-      views::Widget* trusted_vault_widged =
-          trusted_vault_widget_shown_waiter_->WaitIfNeededAndGet();
-      views::test::WidgetDestroyedWaiter(trusted_vault_widged).Wait();
-      return true;
-    } else {
       return TabClosedChecker(
                  GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
           .Wait();
-    }
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-  std::unique_ptr<views::NamedWidgetShownWaiter>
-      trusted_vault_widget_shown_waiter_;
 };
 
-IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiAndDialogUIParamTest,
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiAndDialogUIParamTest,
                        ShouldAcceptTrustedVaultKeysUponAshSystemNotification) {
   // Mimic the account being already using a trusted vault passphrase.
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
@@ -1420,7 +1387,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiAndDialogUIParamTest,
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiAndDialogUIParamTest,
     ShouldImproveTrustedVaultRecoverabilityUponAshSystemNotification) {
   // Mimic the key being available upon startup but recoverability degraded.
@@ -1481,9 +1448,6 @@ IN_PROC_BROWSER_TEST_P(
                   .Wait());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SingleClientNigoriWithWebApiAndDialogUIParamTest,
-                         ::testing::Bool());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,

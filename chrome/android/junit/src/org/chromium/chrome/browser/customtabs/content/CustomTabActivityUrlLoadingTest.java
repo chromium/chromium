@@ -36,6 +36,8 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
+import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristicsJni;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -78,11 +80,13 @@ public class CustomTabActivityUrlLoadingTest {
     @Rule public JniMocker mocker = new JniMocker();
 
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
+    @Mock CustomTabAuthUrlHeuristics.Natives mCustomTabAuthUrlHeuristicsJniMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+        mocker.mock(CustomTabAuthUrlHeuristicsJni.TEST_HOOKS, mCustomTabAuthUrlHeuristicsJniMock);
 
         when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);

@@ -16,7 +16,28 @@ import {
 {%- if not loop.last -%},{% endif -%}
 {%- endfor %}
 } from '{{path}}';
+{% endfor -%}
 
+{%- if typemapped_structs|length > 0 %}
+{%-  for struct in typemapped_structs.keys() %}
+import {
+  {{struct.name}}DataView,
+  {{struct.name}}TypeMapper,
+} from './{{converters_filename}}';
+{%-  endfor %}
+{%- endif %}
+
+{% for path, types in typemap_imports.items()|sort -%}
+import type {
+{%- for type in types|sort %}
+  {{type}}
+{%- if not loop.last -%},{% endif -%}
+{%- endfor %}
+} from '{{path}}';
+{% endfor %}
+
+{% for typemap in typemapped_structs.values() -%}
+import { {{typemap.converter}} } from './{{typemap.converter_import}}';
 {% endfor -%}
 
 {#--- Constants #}

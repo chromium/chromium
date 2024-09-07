@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_BAD_MESSAGE_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_BAD_MESSAGE_H_
 
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace content {
@@ -20,6 +21,11 @@ namespace bad_message {
 // Returns true if `frame` is not prerendering (when autofill updates are
 // disallowed). Kills the renderer if we are prerendering.
 bool CheckFrameNotPrerendering(content::RenderFrameHost* frame);
+
+// Returns true if `trigger_source` is a trigger source that may be used in
+// renderer -> browser communication. Kills the renderer and returns false
+// otherwise.
+bool CheckValidTriggerSource(AutofillSuggestionTriggerSource trigger_source);
 
 // Returns true if `form.fields` contains a field identified by `field_id`.
 // Kills the renderer otherwise.

@@ -37,4 +37,6 @@ message LockUnlockRecord {
     LockEvent lock_event = 3;
     UnlockEvent unlock_event = 4;
   }
+
+  optional .reporting.SessionUnaffiliatedUser unaffiliated_user = 5;
 }

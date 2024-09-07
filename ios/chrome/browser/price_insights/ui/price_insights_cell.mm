@@ -120,16 +120,18 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
                       : l10n_util::GetNSString(
                             IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION)
                 : self.item.title;
-    NSString* priceHistoryDescription =
-        self.item.canPriceTrack
-            ? nil
-            : l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION);
 
     if ([self hasVariants]) {
       primarySubtitle = self.item.variants;
-      secondarySubtitle = priceHistoryDescription;
+      secondarySubtitle =
+          self.item.canPriceTrack
+              ? nil
+              : l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS);
     } else {
-      primarySubtitle = priceHistoryDescription;
+      primarySubtitle =
+          self.item.canPriceTrack
+              ? nil
+              : l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION);
       secondarySubtitle = nil;
     }
 
@@ -415,11 +417,6 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
         [_trackButton.widthAnchor constraintEqualToConstant:0];
     _trackButtonWidthConstraint.active = YES;
     _trackButton.pointerInteractionEnabled = YES;
-  }
-
-  if (!self.item.isPriceTracked) {
-    _trackButton.accessibilityLabel = l10n_util::GetNSString(
-        IDS_PRICE_TRACKING_NOT_TRACKING_ACCESSIBILITY_DESCRIPTION);
   }
 
   [_trackButton setAttributedTitle:title forState:UIControlStateNormal];

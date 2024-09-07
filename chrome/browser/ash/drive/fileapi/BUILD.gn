@@ -16,7 +16,7 @@ static_library("fileapi") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/fileapi",
     "//storage/browser",
   ]
 

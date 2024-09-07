@@ -187,7 +187,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 @synthesize destinationCustomizationModel = _destinationCustomizationModel;
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _isIncognito = isIncognito;
   }
   return self;

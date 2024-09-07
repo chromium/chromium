@@ -1128,6 +1128,16 @@ TEST(KURLTest, IPv4EmbeddedIPv6Address) {
   EXPECT_FALSE(KURL(u"http://[::1.2.]/").IsValid());
 }
 
+// Regression test for https://crbug.com/362674372.
+TEST(KURLTest, SetQueryTwice) {
+  KURL url("data:example");
+  EXPECT_EQ(url.GetString(), "data:example");
+  url.SetQuery("q=1");
+  EXPECT_EQ(url.GetString(), "data:example?q=1");
+  url.SetQuery("q=2");
+  EXPECT_EQ(url.GetString(), "data:example?q=2");
+}
+
 enum class PortIsValid {
   // The constructor does strict checking. Ports which are considered valid by
   // the constructor are kAlways valid.

@@ -9,6 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -49,11 +50,12 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
   SetModalType(ui::mojom::ModalType::kSystem);
 
   SetTitle(IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_TITLE);
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_CONTINUE_BUTTON));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_UPGRADE_BUTTON));
   SetShowCloseButton(false);

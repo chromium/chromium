@@ -118,6 +118,10 @@ public class PageInfoDiscoverabilityTest {
                             .value(ContentSettingsType.GEOLOCATION, true));
             parameters.add(
                     new ParameterSet()
+                            .name("RequestType.kHandTracking")
+                            .value(ContentSettingsType.HAND_TRACKING, true));
+            parameters.add(
+                    new ParameterSet()
                             .name("RequestType.kIdleDetection")
                             .value(ContentSettingsType.IDLE_DETECTION, true));
             parameters.add(

@@ -658,7 +658,9 @@ void ContainerNode::WillRemoveChild(Node& child) {
     // above.
     //
     // CHECK_EQ(GetDocument(), child.GetDocument());
-    ChildFrameDisconnector(child).Disconnect();
+    ChildFrameDisconnector(
+        child, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+        .Disconnect();
   }
 
   if (GetDocument() != child.GetDocument()) {
@@ -694,8 +696,9 @@ void ContainerNode::WillRemoveChildren() {
   }
 
   CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
-  ChildFrameDisconnector(*this).Disconnect(
-      ChildFrameDisconnector::kDescendantsOnly);
+  ChildFrameDisconnector(
+      *this, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+      .Disconnect(ChildFrameDisconnector::kDescendantsOnly);
 }
 
 LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
@@ -855,9 +858,11 @@ void ContainerNode::ParserRemoveChild(Node& old_child) {
 
   // This may cause arbitrary Javascript execution via onunload handlers.
   CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
-  if (old_child.ConnectedSubframeCount())
-    ChildFrameDisconnector(old_child).Disconnect();
-
+  if (old_child.ConnectedSubframeCount()) {
+    ChildFrameDisconnector(
+        old_child, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+        .Disconnect();
+  }
   if (old_child.parentNode() != this)
     return;
 
@@ -1217,6 +1222,10 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   if (!InActiveDocument())
     return;
   if (Element* element = DynamicTo<Element>(this)) {
+    if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+      CHECK(inserted_node->IsElementNode());
+      inserted_node->FlatTreeParentChanged();
+    }
     if (!element->GetComputedStyle()) {
       // There is no need to mark for style recalc if the parent element does
       // not already have a ComputedStyle. For instance if we insert nodes into
@@ -1695,7 +1704,7 @@ Element* ContainerNode::GetAutofocusDelegate() const {
     // focusable_area is not click-focusable and the call was initiated by the
     // user clicking. I don't believe this is currently possible, so DCHECK
     // instead.
-    DCHECK(focusable_area->IsFocusable());
+    DCHECK(focusable_area->IsMouseFocusable());
 
     return focusable_area;
   }

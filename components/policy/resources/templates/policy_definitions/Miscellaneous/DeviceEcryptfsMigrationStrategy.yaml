@@ -26,7 +26,6 @@ items:
   value: 2
 owners:
 - igorcov@chromium.org
-- pmarko@chromium.org
 schema:
   enum:
   - 0

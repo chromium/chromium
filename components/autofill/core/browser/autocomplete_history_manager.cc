@@ -298,7 +298,7 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
     const FormFieldData& field) {
   // We don't want to save a trimmed string, but we want to make sure that the
   // value is neither empty nor only whitespaces.
-  bool is_value_valid = base::ranges::any_of(
+  bool is_value_valid = std::ranges::any_of(
       field.value(), std::not_fn(base::IsUnicodeWhitespace<char16_t>));
   return is_value_valid && IsMeaningfulFieldName(field.name()) &&
          !field.name().empty() && field.IsTextInputElement() &&

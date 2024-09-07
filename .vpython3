@@ -59,14 +59,14 @@ wheel: <
 # platform.
 wheel: <
   name: "infra/python/wheels/pytype/${vpython_platform}"
-  version: "version:2021.11.2"
+  version: "version:2024.1.24"
   match_tag: <
     platform: "manylinux1_x86_64"
   >
 >
 wheel: <
   name: "infra/python/wheels/importlab-py3"
-  version: "version:0.6.1"
+  version: "version:0.8"
   match_tag: <
     platform: "manylinux1_x86_64"
   >
@@ -86,10 +86,11 @@ wheel: <
   >
 >
 wheel: <
-  name: "infra/python/wheels/libcst-py3"
-  version: "version:0.3.19"
-  match_tag: <
-    platform: "manylinux1_x86_64"
+  name: "infra/python/wheels/libcst/${vpython_platform}"
+  version: "version:1.1.0"
+  # No 32-bit Windows wheel available for a dependency (google-cloud-pubsub).
+  not_match_tag: <
+    platform: "win32"
   >
 >
 wheel: <
@@ -101,21 +102,11 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/typing-extensions-py3"
-  version: "version:4.0.1"
-  match_tag: <
-    platform: "manylinux1_x86_64"
-  >
+  version: "version:4.3.0"
 >
 wheel: <
   name: "infra/python/wheels/tabulate-py3"
-  version: "version:0.8.9"
->
-wheel: <
-  name: "infra/python/wheels/typed-ast/${vpython_platform}"
-  version: "version:1.5.3"
-  match_tag: <
-    platform: "manylinux1_x86_64"
-  >
+  version: "version:0.8.10"
 >
 wheel: <
   name: "infra/python/wheels/ninja/${vpython_platform}"
@@ -127,9 +118,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/mypy-extensions-py3"
   version: "version:0.4.3"
-  match_tag: <
-    platform: "manylinux1_x86_64"
-  >
 >
 
 # Common utilities.
@@ -288,6 +276,14 @@ wheel: <
   name: "infra/python/wheels/google-cloud-kms-py3"
   version: "version:2.11.1"
 >
+wheel: <
+  name: "infra/python/wheels/google-cloud-pubsub-py3"
+  version: "version:2.9.0"
+>
+wheel: <
+  name: "infra/python/wheels/typing-inspect-py3"
+  version: "version:0.7.1"
+>
 
 # Used by Web Platform Tests (WPT) codebase in
 # //third_party/wpt_tools
@@ -411,7 +407,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/toml-py3"
-  version: "version:0.10.1"
+  version: "version:0.10.2"
 >
 
 # Used by: pytest-py3:7.3.1
@@ -671,3 +667,28 @@ wheel: <
     platform: "win32"
   >
 >
+
+# Needed by pytype
+wheel: <
+  name: "infra/python/wheels/jinja2-py3"
+  version: "version:3.1.2"
+>
+
+# Needed by pytype
+wheel: <
+  name: "infra/python/wheels/pycnite-py3"
+  version: "version:2023.10.11"
+>
+
+# Needed by pytype
+wheel: <
+  name: "infra/python/wheels/pydot-py2_py3"
+  version: "version:1.4.2"
+>
+
+# Needed by jinja2
+wheel: <
+  name: "infra/python/wheels/markupsafe/${vpython_platform}"
+  version: "version:2.0.1"
+>
+

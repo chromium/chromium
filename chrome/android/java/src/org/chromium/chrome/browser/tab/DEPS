@@ -53,6 +53,7 @@ include_rules = [
   "+chrome/browser/flags",
   "+chrome/browser/preferences",
   "+chrome/browser/tab",
+  "+chrome/browser/ui/android/ephemeraltab",
   "+chrome/browser/ui/android/native_page",
   "+chrome/browser/version",
   "+components/browser_ui/styles/android",

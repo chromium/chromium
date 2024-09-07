@@ -98,9 +98,7 @@ void RegisterComponentsForUpdate(
         std::make_unique<component_updater::
                              TrustTokenKeyCommitmentsComponentInstallerPolicy>(
             /* on_commitments_ready= */ base::BindRepeating(
-                [](const std::string& raw_commitments) {
-                  NOTREACHED_IN_MIGRATION();
-                })));
+                [](const std::string& raw_commitments) { NOTREACHED(); })));
   }
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(

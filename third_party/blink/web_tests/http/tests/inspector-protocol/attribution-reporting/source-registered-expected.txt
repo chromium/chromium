@@ -38,6 +38,13 @@ Test that the Storage.attributionReportingSourceRegistered event is fired.
         ]
         priority : 0
         reportingOrigin : https://devtools.test:8443
+        scopesData : {
+            limit : 1
+            maxEventStates : 3
+            values : [
+                [0] : a
+            ]
+        }
         sourceOrigin : <string>
         time : <number>
         triggerDataMatching : modulus

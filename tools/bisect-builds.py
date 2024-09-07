@@ -24,6 +24,7 @@ import re
 import shlex
 import subprocess
 import sys
+import tarfile
 import tempfile
 import threading
 import traceback
@@ -59,6 +60,11 @@ ANDROID_RELEASE_BASE_URL_SIGNED = 'gs://chrome-signed/android-B0urB0N'
 
 # A special bucket that need to be skipped.
 ANDROID_INVALID_BUCKET = 'gs://chrome-signed/android-B0urB0N/Test'
+
+# iOS bucket
+IOS_RELEASE_BASE_URL = 'gs://chrome-unsigned/ios-G1N'
+IOS_RELEASE_BASE_URL_SIGNED = 'gs://chrome-signed/ios-G1N'
+IOS_ARCHIVE_BASE_URL = 'gs://bling-archive'
 
 # Base URL for downloading release builds.
 GOOGLE_APIS_URL = 'commondatastorage.googleapis.com'
@@ -111,6 +117,12 @@ PATH_CONTEXT = {
             'archive_name': None,
             'archive_extract_dir': 'android-arm64'
         },
+        'android-arm64-high': {
+            'binary_name': None,
+            'listing_platform_dir': 'high-arm_64/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-arm64'
+        },
         'android-x86': {
             'binary_name': None,
             'listing_platform_dir': 'x86/',
@@ -122,6 +134,18 @@ PATH_CONTEXT = {
             'listing_platform_dir': 'x86_64/',
             'archive_name': None,
             'archive_extract_dir': 'android-x64'
+        },
+        'ios': {
+            'binary_name': None,
+            'listing_platform_dir': 'ios/',
+            'archive_name': None,
+            'archive_extract_dir': None,
+        },
+        'ios-simulator': {
+            'binary_name': 'Chromium.app',
+            'listing_platform_dir': '',
+            'archive_name': 'Chromium.tar.gz',
+            'archive_extract_dir': None,
         },
         'linux64': {
             'binary_name': 'chrome',
@@ -169,8 +193,13 @@ PATH_CONTEXT = {
         },
         'android-arm64': {
             'binary_name': None,
-            # See for why not high_end: https://crbug.com/350944660#comment7
             'listing_platform_dir': 'android_arm64-builder-perf/',
+            'archive_name': 'full-build-linux.zip',
+            'archive_extract_dir': 'full-build-linux'
+        },
+        'android-arm64-high': {
+            'binary_name': None,
+            'listing_platform_dir': 'android_arm64_high_end-builder-perf/',
             'archive_name': 'full-build-linux.zip',
             'archive_extract_dir': 'full-build-linux'
         },
@@ -295,6 +324,38 @@ MONOCHROME_APK_FILENAMES = {
     'chrome_dev': 'MonochromeDev.apk',
     'chrome_stable': 'MonochromeStable.apk',
     'chromium': 'ChromePublic.apk',
+}
+
+TRICHROME_APK_FILENAMES = {
+    'chrome': 'TrichromeChromeGoogle.apks',
+    'chrome_beta': 'TrichromeChromeGoogleBeta.apks',
+    'chrome_canary': 'TrichromeChromeGoogleCanary.apks',
+    'chrome_dev': 'TrichromeChromeGoogleDev.apks',
+    'chrome_stable': 'TrichromeChromeGoogleStable.apks',
+}
+
+TRICHROME64_APK_FILENAMES = {
+    'chrome': 'TrichromeChromeGoogle6432.apks',
+    'chrome_beta': 'TrichromeChromeGoogle6432Beta.apks',
+    'chrome_canary': 'TrichromeChromeGoogle6432Canary.apks',
+    'chrome_dev': 'TrichromeChromeGoogle6432Dev.apks',
+    'chrome_stable': 'TrichromeChromeGoogle6432Stable.apks',
+}
+
+TRICHROME_LIBRARY_FILENAMES = {
+    'chrome': 'TrichromeLibraryGoogle.apk',
+    'chrome_beta': 'TrichromeLibraryGoogleBeta.apk',
+    'chrome_canary': 'TrichromeLibraryGoogleCanary.apk',
+    'chrome_dev': 'TrichromeLibraryGoogleDev.apk',
+    'chrome_stable': 'TrichromeLibraryGoogleStable.apk',
+}
+
+TRICHROME64_LIBRARY_FILENAMES = {
+    'chrome': 'TrichromeLibraryGoogle6432.apk',
+    'chrome_beta': 'TrichromeLibraryGoogle6432Beta.apk',
+    'chrome_canary': 'TrichromeLibraryGoogle6432Canary.apk',
+    'chrome_dev': 'TrichromeLibraryGoogle6432Dev.apk',
+    'chrome_stable': 'TrichromeLibraryGoogle6432Stable.apk',
 }
 
 WEBVIEW_APK_FILENAMES = {
@@ -492,6 +553,8 @@ class ArchiveBuild(abc.ABC):
   def _save_rev_list_cache(self, revisions):
     if not self.use_local_cache:
       return
+    if not revisions:
+      return
     cache = {}
     cache_filename = self._rev_list_cache_filename
     # Load cache for all of the builds.
@@ -595,6 +658,18 @@ class ArchiveBuild(abc.ABC):
     """Get the pathname for extracted chrome binary"""
     return '%s/*/%s' % (tempdir, self.binary_name)
 
+  def _run(self, runcommand, cwd=None):
+    # is_verbos is a global variable.
+    if is_verbose:
+      print(('Running ' + str(runcommand)))
+    subproc = subprocess.Popen(runcommand,
+                               cwd=cwd,
+                               bufsize=-1,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    (stdout, stderr) = subproc.communicate()
+    return subproc.returncode, stdout, stderr
+
   def _install_revision(self, download, tempdir):
     """Unzip and/or install the given download to tempdir. Return executable
     binary."""
@@ -612,46 +687,24 @@ class ArchiveBuild(abc.ABC):
   def _launch_revision(self, tempdir, executable, args=()):
     args = [*self._get_extra_args(), *args]
     runcommand = []
-    # TODO: self.command
     for token in shlex.split(self.command):
       if token == '%a':
         runcommand.extend(args)
       else:
         runcommand.append(
             token.replace('%p', executable).replace('%s', ' '.join(args)))
+    return self._run(runcommand, cwd=tempdir)
 
-    # is_verbos is a global variable.
-    if is_verbose:
-      print(('Running ' + str(runcommand)))
-    # Run the build as many times as specified.
-    subproc = subprocess.Popen(runcommand,
-                               cwd=tempdir,
-                               bufsize=-1,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    (stdout, stderr) = subproc.communicate()
-    return subproc.returncode, stdout, stderr
-
-  def run_revision(self, download, args):
+  def run_revision(self, download, tempdir, args=()):
     """Run downloaded archive"""
-    # Create a temp directory and unzip the revision into it.
-    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
-      # On Windows 10, file system needs to be readable from App Container.
-      if sys.platform == 'win32' and platform.release() == '10':
-        icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
-        proc = subprocess.Popen(icacls_cmd,
-                                bufsize=0,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-        proc.communicate()
-      executable = self._install_revision(download, tempdir)
-      result = None
-      for _ in range(self.num_runs):
-        returncode, _, _ = result = self._launch_revision(
-            tempdir, executable, args)
-        if returncode:
-          break
-      return result
+    executable = self._install_revision(download, tempdir)
+    result = None
+    for _ in range(self.num_runs):
+      returncode, _, _ = result = self._launch_revision(tempdir, executable,
+                                                        args)
+      if returncode:
+        break
+    return result
 
 
 class LooseVersion(BaseLooseVersion):
@@ -711,9 +764,11 @@ class ReleaseBuild(ArchiveBuild):
   def _get_listing_url(self):
     return self._get_release_bucket()
 
-  def _get_archive_path(self, build_number):
+  def _get_archive_path(self, build_number, archive_name=None):
+    if archive_name is None:
+      archive_name = self.archive_name
     return '/'.join((self._get_release_bucket(), str(build_number),
-                     self.listing_platform_dir.rstrip('/'), self.archive_name))
+                     self.listing_platform_dir.rstrip('/'), archive_name))
 
   @property
   def _rev_list_cache_key(self):
@@ -729,8 +784,7 @@ class ReleaseBuild(ArchiveBuild):
     return [LooseVersion(x) for x in revisions]
 
   def get_download_url(self, revision):
-    return '%s/%s/%s%s' % (self._get_release_bucket(), revision,
-                           self.listing_platform_dir, self.archive_name)
+    return self._get_archive_path(revision)
 
 
 class ArchiveBuildWithCommitPosition(ArchiveBuild):
@@ -886,8 +940,16 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
     return self._get_listing_url()
 
   def get_download_url(self, revision):
+    archive_name = self.archive_name
+    # `archive_name` was changed for chromeos, win and win64 at revision 591483
+    # This is patched for backward compatibility.
+    if revision < 591483:
+      if self.platform == 'chromeos':
+        archive_name = 'chrome-linux.zip'
+      elif self.platform in ('win', 'win64'):
+        archive_name = 'chrome-win32.zip'
     return '%s/%s%s/%s' % (self.base_url, self.listing_platform_dir, revision,
-                           self.archive_name)
+                           archive_name)
 
 
 class ASANBuild(SnapshotBuild):
@@ -957,7 +1019,27 @@ class AndroidBuildMixin:
     # The args could be set via self.run_revision
     self.flags = flag_changer.FlagChanger(
         self.device, chrome.PACKAGE_INFO[self.apk].cmdline_file)
-    self.binary_name = GetAndroidApkFilename(self.device, self.apk)
+    self.binary_name = self._get_apk_filename()
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    sdk = self.device.build_version_sdk
+    apk_mapping = None
+    if 'webview' in self.apk.lower():
+      apk_mapping = WEBVIEW_APK_FILENAMES
+    # Need these logic to bisect very old build. Release binaries are stored
+    # forever and occasionally there are requests to bisect issues introduced
+    # in very old versions.
+    elif sdk < version_codes.LOLLIPOP:
+      apk_mapping = CHROME_APK_FILENAMES
+    elif sdk < version_codes.NOUGAT:
+      apk_mapping = CHROME_MODERN_APK_FILENAMES
+    else:
+      apk_mapping = MONOCHROME_APK_FILENAMES
+    if self.apk not in apk_mapping:
+      raise BisectException(
+          'Bisecting on Android only supported for these apks: [%s].' %
+          '|'.join(apk_mapping))
+    return apk_mapping[self.apk]
 
   def _install_revision(self, download, tempdir):
     apk_path = super()._install_revision(download, tempdir)
@@ -972,13 +1054,47 @@ class AndroidBuildMixin:
     return '%s/*/apks/%s' % (tempdir, self.binary_name)
 
 
+class AndroidTrichromeMixin(AndroidBuildMixin):
+
+  def __init__(self, options):
+    self._64bit_platforms = ('android-arm64', 'android-x64',
+                             'android-arm64-high')
+    super().__init__(options)
+    if self.device.build_version_sdk < version_codes.Q:
+      raise BisectException("Trichrome is only supported after Android Q.")
+    self.library_binary_name = self._get_library_filename()
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    if self.platform in self._64bit_platforms and prefer_64bit:
+      apk_mapping = TRICHROME64_APK_FILENAMES
+    else:
+      apk_mapping = TRICHROME_APK_FILENAMES
+    if self.apk not in apk_mapping:
+      raise BisectException(
+          'Bisecting on Android only supported for these apks: [%s].' %
+          '|'.join(apk_mapping))
+    return apk_mapping[self.apk]
+
+  def _get_library_filename(self, prefer_64bit=True):
+    apk_mapping = None
+    if self.platform in self._64bit_platforms and prefer_64bit:
+      apk_mapping = TRICHROME64_LIBRARY_FILENAMES
+    else:
+      apk_mapping = TRICHROME_LIBRARY_FILENAMES
+    if self.apk not in apk_mapping:
+      raise BisectException(
+          'Bisecting for Android Trichrome only supported for these apks: [%s].'
+          % '|'.join(apk_mapping))
+    return apk_mapping[self.apk]
+
+
 class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
 
   def __init__(self, options):
     super().__init__(options)
     self.signed = options.signed
     # We could download the apk directly from build bucket
-    self.archive_name = GetAndroidApkFilename(self.device, self.apk)
+    self.archive_name = self.binary_name
 
   def _get_release_bucket(self):
     if self.signed:
@@ -1001,6 +1117,66 @@ class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
     InstallOnAndroid(self.device, download)
 
 
+class AndroidTrichromeReleaseBuild(AndroidTrichromeMixin, AndroidReleaseBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    # Release build will download the binary directly from GCS bucket.
+    self.archive_name = self.binary_name
+    self.library_archive_name = self.library_binary_name
+
+  def _get_library_filename(self, prefer_64bit=True):
+    if self.apk == 'chrome' and self.platform == 'android-arm64-high':
+      raise BisectException('chrome debug build is not supported for %s' %
+                            self.platform)
+    return super()._get_library_filename(prefer_64bit)
+
+  def get_download_url(self, revision):
+    # M112 is when we started serving 6432 to 4GB+ devices. Before this it was
+    # only to 6GB+ devices.
+    if revision >= LooseVersion('112'):
+      trichrome = self.binary_name
+      trichrome_library = self.library_binary_name
+    else:
+      trichrome = self._get_apk_filename(prefer_64bit=False)
+      trichrome_library = self._get_library_filename(prefer_64bit=False)
+    return {
+        'trichrome': self._get_archive_path(revision, trichrome),
+        'trichrome_library': self._get_archive_path(revision,
+                                                    trichrome_library),
+    }
+
+  def _install_revision(self, download, tempdir):
+    if not isinstance(download, dict):
+      raise Exception("Trichrome should download multiple files from GCS.")
+    # AndroidRelease build downloads the apks directly from GCS bucket.
+    # Trichrome need to install the trichrome_library first.
+    InstallOnAndroid(self.device, download['trichrome_library'])
+    InstallOnAndroid(self.device, download['trichrome'])
+
+
+class AndroidTrichromeOfficialBuild(AndroidTrichromeMixin, OfficialBuild):
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    filename = super()._get_apk_filename(prefer_64bit)
+    return filename.replace(".apks", ".minimal.apks")
+
+  def _install_revision(self, download, tempdir):
+    UnzipFilenameToDir(download, tempdir)
+    trichrome_library_filename = self._get_library_filename()
+    trichrome_library_path = glob.glob(
+        f'{tempdir}/*/apks/{trichrome_library_filename}')
+    if len(trichrome_library_path) == 0:
+      raise Exception(
+          f'Can not find {trichrome_library_filename} from {tempdir}')
+    trichrome_filename = self._get_apk_filename()
+    trichrome_path = glob.glob(f'{tempdir}/*/apks/{trichrome_filename}')
+    if len(trichrome_path) == 0:
+      raise Exception(f'Can not find {trichrome_filename} from {tempdir}')
+    InstallOnAndroid(self.device, trichrome_library_path[0])
+    InstallOnAndroid(self.device, trichrome_path[0])
+
+
 class LinuxReleaseBuild(ReleaseBuild):
 
   def _get_extra_args(self):
@@ -1019,15 +1195,152 @@ class AndroidSnapshotBuild(AndroidBuildMixin, SnapshotBuild):
   pass
 
 
+class IOSReleaseBuild(ReleaseBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.signed = options.signed
+    if not self.signed:
+      print('WARNING: --signed is recommended for iOS release builds.')
+    self.device_id = options.device_id
+    if not self.device_id:
+      raise BisectException('--device-id is required for iOS builds.')
+    self.ipa = options.ipa
+    if not self.ipa:
+      raise BisectException('--ipa is required for iOS builds.')
+    if self.ipa.endswith('.ipa'):
+      self.ipa = self.ipa[:-4]
+    self.binary_name = self.archive_name = f'{self.ipa}.ipa'
+
+  def _get_release_bucket(self):
+    if self.signed:
+      return IOS_RELEASE_BASE_URL_SIGNED
+    return IOS_RELEASE_BASE_URL
+
+  def _get_archive_path(self, build_number, archive_name=None):
+    if archive_name is None:
+      archive_name = self.archive_name
+    # The format for iOS build is
+    # {IOS_RELEASE_BASE_URL}/{build_number}/{sdk_version}
+    # /{builder_name}/{build_number}/{archive_name}
+    # that it's not possible to generate the actual archive_path for a build.
+    # That we are returning a path with wildcards and expecting only one match.
+    return (f'{self._get_release_bucket()}/{build_number}/*/'
+            f'{self.listing_platform_dir.rstrip("/")}/*/{archive_name}')
+
+  def _install_revision(self, download, tempdir):
+    # install ipa
+    retcode, stdout, stderr = self._run([
+        'xcrun', 'devicectl', 'device', 'install', 'app', '--device',
+        self.device_id, download
+    ])
+    if retcode:
+      raise BisectException(f'Install app error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    # extract and return CFBundleIdentifier from ipa.
+    UnzipFilenameToDir(download, tempdir)
+    plist = glob.glob(f'{tempdir}/Payload/*/Info.plist')
+    if not plist:
+      raise BisectException(f'Could not find Info.plist from {tempdir}.')
+    retcode, stdout, stderr = self._run(
+        ['plutil', '-extract', 'CFBundleIdentifier', 'raw', plist[0]])
+    if retcode:
+      raise BisectException(f'Extract bundle identifier error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    bundle_identifier = stdout.strip()
+    return bundle_identifier
+
+  def _launch_revision(self, tempdir, bundle_identifier, args=()):
+    retcode, stdout, stderr = self._run([
+        'xcrun', 'devicectl', 'device', 'process', 'launch', '--device',
+        self.device_id, bundle_identifier, *args
+    ])
+    if retcode:
+      print(f'Warning: App launching error, code:{retcode}\n'
+            f'stdout:\n{stdout}\n'
+            f'stderr:\n{stderr}')
+    return retcode, stdout, stderr
+
+
+class IOSSimulatorReleaseBuild(ReleaseBuild):
+  """
+  chrome/ci/ios-simulator is generating this build and archiving it in
+  gs://bling-archive with Chrome versions. It's not actually a release build,
+  but it's similar to one.
+  """
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.device_id = options.device_id
+    if not self.device_id:
+      raise BisectException('--device-id is required for iOS Simulator.')
+
+  def _get_release_bucket(self):
+    return IOS_ARCHIVE_BASE_URL
+
+  def _get_archive_path(self, build_number, archive_name=None):
+    if archive_name is None:
+      archive_name = self.archive_name
+    # The path format for ios-simulator build is
+    # {%chromium_version%}/{%timestamp%}/Chromium.tar.gz
+    # that it's not possible to generate the actual archive_path for a build.
+    # We are returning a path with wildcards and expecting only one match.
+    return f'{self._get_release_bucket()}/{build_number}/*/{archive_name}'
+
+  def _get_extract_binary_glob(self, tempdir):
+    return f'{tempdir}/{self.binary_name}'
+
+  def _install_revision(self, download, tempdir):
+    executable = super()._install_revision(download, tempdir)
+    # install app
+    retcode, stdout, stderr = self._run(
+        ['xcrun', 'simctl', 'install', self.device_id, executable])
+    if retcode:
+      raise BisectException(f'Install app error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    # extract and return CFBundleIdentifier from app.
+    plist = glob.glob(f'{executable}/Info.plist')
+    if not plist:
+      raise BisectException(f'Could not find Info.plist from {executable}.')
+    retcode, stdout, stderr = self._run(
+        ['plutil', '-extract', 'CFBundleIdentifier', 'raw', plist[0]])
+    if retcode:
+      raise BisectException(f'Extract bundle identifier error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    bundle_identifier = stdout.strip()
+    return bundle_identifier
+
+  def _launch_revision(self, tempdir, bundle_identifier, args=()):
+    retcode, stdout, stderr = self._run(
+        ['xcrun', 'simctl', 'launch', self.device_id, bundle_identifier, *args])
+    if retcode:
+      print(f'Warning: App launching error, code:{retcode}\n'
+            f'stdout:\n{stdout}\n'
+            f'stderr:\n{stderr}')
+    return retcode, stdout, stderr
+
+
 def create_archive_build(options):
   if options.release_builds:
-    if options.archive.startswith('android'):
+    if options.archive == 'android-arm64-high':
+      return AndroidTrichromeReleaseBuild(options)
+    elif options.archive.startswith('android'):
       return AndroidReleaseBuild(options)
     elif options.archive.startswith('linux'):
       return LinuxReleaseBuild(options)
+    elif options.archive == 'ios-simulator':
+      return IOSSimulatorReleaseBuild(options)
+    elif options.archive == 'ios':
+      return IOSReleaseBuild(options)
     return ReleaseBuild(options)
   elif options.official_builds:
-    if options.archive.startswith('android'):
+    if options.archive == 'android-arm64-high':
+      return AndroidTrichromeOfficialBuild(options)
+    elif options.archive.startswith('android'):
       return AndroidOfficialBuild(options)
     return OfficialBuild(options)
   elif options.asan:
@@ -1052,6 +1365,13 @@ def UnzipFilenameToDir(filename, directory):
   if not os.path.isdir(directory):
     os.mkdir(directory)
   os.chdir(directory)
+
+  # Support for tar archives.
+  if tarfile.is_tarfile(filename):
+    tf = tarfile.open(filename, 'r')
+    tf.extractall(directory)
+    os.chdir(cwd)
+    return
 
   # The Python ZipFile does not support symbolic links, which makes it
   # unsuitable for Mac builds. so use ditto instead.
@@ -1087,28 +1407,33 @@ def gsutil_download(download_url, filename):
   RunGsutilCommand(command)
 
 
-def _GetMappingFromAndroidApk(device, apk):
-  sdk = device.build_version_sdk
-  if 'webview' in apk.lower():
-    return WEBVIEW_APK_FILENAMES
-  # Need these logic to bisect very old build. Release binaries are stored
-  # forever and occasionally there are requests to bisect issues introduced
-  # in very old versions.
-  elif sdk < version_codes.LOLLIPOP:
-    return CHROME_APK_FILENAMES
-  elif sdk < version_codes.NOUGAT:
-    return CHROME_MODERN_APK_FILENAMES
-  return MONOCHROME_APK_FILENAMES
-
-
-def GetAndroidApkFilename(device, apk):
-  return _GetMappingFromAndroidApk(device, apk)[apk]
-
-
-def RunRevision(archive_build, revision, zip_file, args):
-  """Given a zipped revision, unzip it and run the test."""
-  print('Trying revision %s...' % str(revision))
-  return archive_build.run_revision(zip_file, args)
+def EvaluateRevision(archive_build, download, revision, args, evaluate):
+  """fetch.wait_for(), archive_build.run_revision() and evaluate the result."""
+  while True:
+    exit_status = stdout = stderr = None
+    # Create a temp directory and unzip the revision into it.
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      # On Windows 10, file system needs to be readable from App Container.
+      if sys.platform == 'win32' and platform.release() == '10':
+        icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
+        proc = subprocess.Popen(icacls_cmd,
+                                bufsize=0,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        proc.communicate()
+      # run_revision
+      print(f'Trying revision {revision!s}: {download!s} in {tempdir!s}')
+      try:
+        exit_status, stdout, stderr = archive_build.run_revision(
+            download, tempdir, args)
+      except SystemExit:
+        raise
+      except Exception:
+        traceback.print_exc(file=sys.stderr)
+      # evaluate
+      answer = evaluate(revision, exit_status, stdout, stderr)
+      if answer != 'r':
+        return answer
 
 
 # The arguments release_builds, status, stdout and stderr are unused.
@@ -1158,28 +1483,42 @@ def DidCommandSucceed(rev, exit_status, stdout, stderr):
 
 
 class DownloadJob:
-  """DownloadJob represents a task to download a given url."""
+  """
+  DownloadJob represents a task to download a given url.
+  """
 
   def __init__(self, url, rev, name=None):
-    self.url = url
+    """
+    Args:
+      url: The url to download or a dict of {key: url} to download multiple
+        targets.
+      rev: The revision of the target.
+      name: The name of the thread.
+    """
+    if isinstance(url, dict):
+      self.is_multiple = True
+      self.urls = url
+    else:
+      self.is_multiple = False
+      self.urls = {None: url}
     self.rev = rev
     self.name = name
 
-    _, ext = os.path.splitext(urllib.parse.urlparse(self.url).path)
-    fd, self.tmp_file = tempfile.mkstemp(suffix=ext)
-    os.close(fd)
+    self.results = {}
     self.quit_event = threading.Event()
     self.progress_event = threading.Event()
     self.thread = None
 
   def _clear_up_tmp_files(self):
-    if self.tmp_file:
+    if not self.results:
+      return
+    for tmp_file in self.results.values():
       try:
-        os.unlink(self.tmp_file)
-        self.tmp_file = None
+        os.unlink(tmp_file)
       except FileNotFoundError:
         # Handle missing archives.
         pass
+    self.results = None
 
   def __del__(self):
     self._clear_up_tmp_files()
@@ -1199,14 +1538,24 @@ class DownloadJob:
     # Send a \r to let all progress messages use just one line of output.
     print(progress, end='\r', flush=True)
 
+  def _fetch(self, url, tmp_file):
+    if url.startswith('gs'):
+      gsutil_download(url, tmp_file)
+    else:
+      urllib.request.urlretrieve(url, tmp_file, self._report_hook)
+      if self.progress_event and self.progress_event.is_set():
+        print()
+
   def fetch(self):
     try:
-      if self.url.startswith('gs'):
-        gsutil_download(self.url, self.tmp_file)
-      else:
-        urllib.request.urlretrieve(self.url, self.tmp_file, self._report_hook)
-        if self.progress_event and self.progress_event.is_set():
-          print()
+      for key, url in self.urls.items():
+        # Keep the basename as part of tempfile name that make it easier to
+        # identify what's been downloaded.
+        basename = os.path.basename(urllib.parse.urlparse(url).path)
+        fd, tmp_file = tempfile.mkstemp(suffix=basename)
+        self.results[key] = tmp_file
+        os.close(fd)
+        self._fetch(url, tmp_file)
     except RuntimeError:
       pass
 
@@ -1237,27 +1586,15 @@ class DownloadJob:
         # The parameter to join is needed to keep the main thread responsive to
         # signals. Without it, the program will not respond to interruptions.
         self.thread.join(1)
-      return self.tmp_file
+      if self.quit_event.is_set():
+        raise Exception('The DownloadJob was stopped.')
+      if self.is_multiple:
+        return self.results
+      else:
+        return self.results[None]
     except (KeyboardInterrupt, SystemExit):
       self.stop()
       raise
-
-
-def VerifyEndpoint(fetch, archive_build, rev, try_args, evaluate,
-                   expected_answer):
-  zip_file = fetch.wait_for()
-  try:
-    (exit_status, stdout, stderr) = RunRevision(archive_build, rev, zip_file,
-                                                try_args)
-  except Exception as e:
-    if not isinstance(e, SystemExit):
-      traceback.print_exc(file=sys.stderr)
-    exit_status = None
-    stdout = None
-    stderr = None
-  if (evaluate(rev, exit_status, stdout, stderr) != expected_answer):
-    print('Unexpected result at a range boundary! Your range is not correct.')
-    raise SystemExit
 
 
 def Bisect(archive_build,
@@ -1287,163 +1624,108 @@ def Bisect(archive_build,
     - If rev 50 is bad, the download of rev 75 is cancelled, and the next test
       is run on rev 25.
   """
-  good_rev = archive_build.good_revision
-  bad_rev = archive_build.bad_revision
-
   print('Downloading list of known revisions.', end=' ')
   print('If the range is large, this can take several minutes...')
   if not archive_build.use_local_cache:
     print('(use --use-local-cache to cache and re-use the list of revisions)')
   else:
     print()
-  revlist = archive_build.get_rev_list()
-
-  # Figure out our bookends and first pivot point; fetch the pivot revision.
-  minrev = 0
-  maxrev = len(revlist) - 1
-  pivot = maxrev // 2
-  rev = revlist[pivot]
-  fetch = archive_build.get_download_job(rev, 'initial_fetch').start()
+  rev_list = archive_build.get_rev_list()
+  # Ensure rev_list[0] is good and rev_list[-1] is bad for easier process.
+  if archive_build.good_revision > archive_build.bad_revision:
+    rev_list = rev_list[::-1]
 
   if verify_range:
-    minrev_fetch = archive_build.get_download_job(revlist[minrev],
-                                                  'minrev_fetch').start()
-    maxrev_fetch = archive_build.get_download_job(revlist[maxrev],
-                                                  'maxrev_fetch').start()
+    good_rev_fetch = archive_build.get_download_job(rev_list[0],
+                                                    'good_rev_fetch').start()
+    bad_rev_fetch = archive_build.get_download_job(rev_list[-1],
+                                                   'bad_rev_fetch').start()
     try:
-      VerifyEndpoint(minrev_fetch, archive_build, revlist[minrev], try_args,
-                     evaluate, 'b' if bad_rev < good_rev else 'g')
-      VerifyEndpoint(maxrev_fetch, archive_build, revlist[maxrev], try_args,
-                     evaluate, 'g' if bad_rev < good_rev else 'b')
+      good_download = good_rev_fetch.wait_for()
+      answer = EvaluateRevision(archive_build, good_download, rev_list[0],
+                                try_args, evaluate)
+      if answer != 'g':
+        print(f'Expecting revision {rev_list[0]} to be good but got {answer}. '
+              'Please make sure the --good is a good revision.')
+        raise SystemExit
+      bad_download = bad_rev_fetch.wait_for()
+      answer = EvaluateRevision(archive_build, bad_download, rev_list[-1],
+                                try_args, evaluate)
+      if answer != 'b':
+        print(f'Expecting revision {rev_list[-1]} to be bad but got {answer}. '
+              'Please make sure that the issue can be reproduced for --bad.')
+        raise SystemExit
     except (KeyboardInterrupt, SystemExit):
       print('Cleaning up...')
-      fetch.stop()
-      sys.exit(0)
+      return None, None
     finally:
-      minrev_fetch.stop()
-      maxrev_fetch.stop()
+      good_rev_fetch.stop()
+      bad_rev_fetch.stop()
 
-  fetch.wait_for()
-
-  # Binary search time!
-  prefetch_revisions = True
-  while fetch and maxrev - minrev > 1:
-    if bad_rev < good_rev:
-      min_str, max_str = 'bad', 'good'
-    else:
-      min_str, max_str = 'good', 'bad'
-    print('You have about %d more steps left.' %
-          ((maxrev - minrev).bit_length() - 1))
-    print('Bisecting range [%s (%s), %s (%s)].' %
-          (revlist[minrev], min_str, revlist[maxrev], max_str))
-
-    # Pre-fetch next two possible pivots
-    #   - down_pivot is the next revision to check if the current revision turns
-    #     out to be bad.
-    #   - up_pivot is the next revision to check if the current revision turns
-    #     out to be good.
-    down_pivot = int((pivot - minrev) / 2) + minrev
-    down_fetch = None
-    if prefetch_revisions:
-      if down_pivot != pivot and down_pivot != minrev:
-        down_rev = revlist[down_pivot]
-        down_fetch = archive_build.get_download_job(down_rev,
-                                                    'down_fetch').start()
-    up_pivot = int((maxrev - pivot) / 2) + pivot
-    up_fetch = None
-    if prefetch_revisions:
-      if up_pivot != pivot and up_pivot != maxrev:
-        up_rev = revlist[up_pivot]
-        up_fetch = archive_build.get_download_job(up_rev, 'up_fetch').start()
-
-    # Run test on the pivot revision.
-    exit_status = None
-    stdout = None
-    stderr = None
-    try:
-      zip_file = fetch.wait_for()
-      (exit_status, stdout, stderr) = RunRevision(archive_build, rev, zip_file,
-                                                  try_args)
-    except SystemExit:
-      raise
-    except Exception:
-      traceback.print_exc(file=sys.stderr)
-
-    # Call the evaluate function to see if the current revision is good or bad.
-    # On that basis, kill one of the background downloads and complete the
-    # other, as described in the comments above.
-    try:
-      answer = evaluate(rev, exit_status, stdout, stderr)
-      prefetch_revisions = True
-      if ((answer == 'g' and good_rev < bad_rev)
-          or (answer == 'b' and bad_rev < good_rev)):
-        fetch.stop()
-        minrev = pivot
-        if down_fetch:
-          down_fetch.stop()  # Kill the download of the older revision.
-          fetch = None
-        if up_fetch:
-          up_fetch.wait_for()
-          pivot = up_pivot
-          fetch = up_fetch
-      elif ((answer == 'b' and good_rev < bad_rev)
-            or (answer == 'g' and bad_rev < good_rev)):
-        fetch.stop()
-        maxrev = pivot
-        if up_fetch:
-          up_fetch.stop()  # Kill the download of the newer revision.
-          fetch = None
-        if down_fetch:
-          down_fetch.wait_for()
-          pivot = down_pivot
-          fetch = down_fetch
-      elif answer == 'r':
-        # Don't redundantly prefetch.
-        prefetch_revisions = False
-      elif answer == 'u':
-        # Nuke the revision from the revlist and choose a new pivot.
-        fetch.stop()
-        revlist.pop(pivot)
-        maxrev -= 1  # Assumes maxrev >= pivot.
-
-        if maxrev - minrev > 1:
-          # Alternate between using down_pivot or up_pivot for the new pivot
-          # point, without affecting the range. Do this instead of setting the
-          # pivot to the midpoint of the new range because adjacent revisions
-          # are likely affected by the same issue that caused the (u)nknown
-          # response.
-          if up_fetch and down_fetch:
-            fetch = [up_fetch, down_fetch][len(revlist) % 2]
-          elif up_fetch:
-            fetch = up_fetch
-          else:
-            fetch = down_fetch
-          fetch.wait_for()
-          if fetch == up_fetch:
-            pivot = up_pivot - 1  # Subtracts 1 because revlist was resized.
-          else:
-            pivot = down_pivot
-
-        if down_fetch and fetch != down_fetch:
-          down_fetch.stop()
-        if up_fetch and fetch != up_fetch:
-          up_fetch.stop()
+  prefetch = {}
+  try:
+    while len(rev_list) > 2:
+      print('You have %d revisions with about %d steps left.' %
+            (len(rev_list), (len(rev_list).bit_length() - 1)))
+      print('Bisecting range [%s (bad), %s (good)].' %
+            (rev_list[0], rev_list[-1]))
+      # clean prefetch to keep only the valid fetches
+      for key in list(prefetch.keys()):
+        if key not in rev_list:
+          prefetch.pop(key).stop()
+      # get next revision to evaluate from prefetch
+      if prefetch:
+        fetch = None
+        # For any possible index in rev_list, abs(mid - index) < abs(mid -
+        # pivot). This will ensure that we can always get a fetch from prefetch.
+        pivot = len(rev_list)
+        for revision, pfetch in prefetch.items():
+          prefetch_pivot = rev_list.index(revision)
+          # Prefer the revision closer to the mid point.
+          mid_point = len(rev_list) // 2
+          if abs(mid_point - pivot) > abs(mid_point - prefetch_pivot):
+            fetch = pfetch
+            pivot = prefetch_pivot
+        prefetch.pop(rev_list[pivot])
+      # or just the mid point
       else:
-        assert False, 'Unexpected return value from evaluate(): ' + answer
-    except (KeyboardInterrupt, SystemExit):
-      print('Cleaning up...')
-      if fetch:
+        pivot = len(rev_list) // 2
+        fetch = archive_build.get_download_job(rev_list[pivot], 'fetch').start()
+      # prefetch left_pivot = len(rev_list[:pivot+1]) // 2
+      left_revision = rev_list[(pivot + 1) // 2]
+      if left_revision != rev_list[0] and left_revision not in prefetch:
+        prefetch[left_revision] = archive_build.get_download_job(
+            left_revision, 'prefetch').start()
+      # prefetch right_pivot = len(rev_list[pivot:]) // 2
+      right_revision = rev_list[(len(rev_list) + pivot) // 2]
+      if right_revision != rev_list[-1] and right_revision not in prefetch:
+        prefetch[right_revision] = archive_build.get_download_job(
+            right_revision, 'prefetch').start()
+      try:
+        # evaluate the revision
+        download = fetch.wait_for()
+        answer = EvaluateRevision(archive_build, download, rev_list[pivot],
+                                  try_args, evaluate)
+        # Ensure rev_list[0] is good and rev_list[-1] is bad after adjust.
+        if answer == 'g':  # good
+          rev_list = rev_list[pivot:]
+        elif answer == 'b':  # bad
+          # Retain the pivot element within the list to act as a confirmed
+          # boundary for identifying bad revisions.
+          rev_list = rev_list[:pivot + 1]
+        elif answer == 'u':  # unknown
+          # Nuke the revision from the rev_list.
+          rev_list.pop(pivot)
+        else:
+          assert False, 'Unexpected return value from evaluate(): ' + answer
+      finally:
         fetch.stop()
-      if down_fetch:
-        down_fetch.stop()
-      if up_fetch:
-        up_fetch.stop()
-      sys.exit(0)
-
-    rev = revlist[pivot]
-
-  return (revlist[minrev], revlist[maxrev])
-
+    # end of `while len(rev_list) > 2`
+  finally:
+    for each in prefetch.values():
+      each.stop()
+    prefetch.clear()
+  return sorted((rev_list[0], rev_list[-1]))
 
 def GetChromiumRevision(url, default=999999999):
   """Returns the chromium revision read from given URL."""
@@ -1756,6 +2038,10 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
                     dest='apk',
                     default='chromium',
                     help='Apk you want to bisect.')
+  parser.add_option('--ipa',
+                    dest='ipa',
+                    default='canary.ipa',
+                    help='ipa you want to bisect.')
   parser.add_option('--signed',
                     dest='signed',
                     action='store_true',
@@ -1818,8 +2104,9 @@ def ParseCommandLine(args=None):
       parser.print_help()
       sys.exit(1)
 
-  if opts.signed and not opts.archive.startswith('android-'):
-    print('Signed bisection is only supported for Android platform.')
+  if opts.signed and not (opts.archive.startswith('android-')
+                          or opts.archive.startswith('ios')):
+    print('Signed bisection is only supported for Android and iOS platform.')
     exit(1)
 
   if opts.signed and not opts.release_builds:
@@ -1920,7 +2207,8 @@ def main():
 
   min_chromium_rev, max_chromium_rev = Bisect(archive_build, args, evaluator,
                                               opts.verify_range)
-
+  if min_chromium_rev is None or max_chromium_rev is None:
+    return
   # We're done. Let the user know the results in an official manner.
   if good_rev > bad_rev:
     print(DONE_MESSAGE_GOOD_MAX %

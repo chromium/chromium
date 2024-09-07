@@ -499,19 +499,16 @@ class PlatformAppNavigationRedirectorFencedFrameBrowserTest
 IN_PROC_BROWSER_TEST_F(PlatformAppNavigationRedirectorFencedFrameBrowserTest,
                        DoNotLaunchAppInFencedFrames) {
   // Set a response for a fenced frame.
-  embedded_test_server()->RegisterRequestHandler(
-      base::BindRepeating([](const net::test_server::HttpRequest& request) {
-        const char kFencedFramePage[] = "target.html";
-        if (request.GetURL().ExtractFileName() == kFencedFramePage) {
-          auto response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          response->set_content_type("text/html");
-          response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
-          return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
-              std::move(response));
-        } else {
-          return std::unique_ptr<net::test_server::HttpResponse>();
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.GetURL().ExtractFileName() != "target.html") {
+          return {};
         }
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_content_type("text/html");
+        response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
+        return response;
       }));
 
   ASSERT_TRUE(StartEmbeddedTestServer());

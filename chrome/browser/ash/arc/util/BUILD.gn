@@ -19,7 +19,7 @@ static_library("util") {
     "//base",
     "//chrome/browser/ash/arc/idle_manager",
     "//chrome/browser/ash/arc/instance_throttle",
-    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/crosapi:browser_util",
     "//chromeos/ui/base",
     "//ui/aura",
     "//ui/views",

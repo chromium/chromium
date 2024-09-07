@@ -525,6 +525,10 @@ void ConsumerHost::TracingSession::OnTraceData(
   if (trace_processor_) {
     // Copy packets into a trace file chunk.
     size_t position = 0;
+    // TraceProcessorStorage::Parse(), a third-party dependency, takes
+    // std::unique_ptr<uint8_t[]> as the argument and takes ownership of the
+    // data. This makes the conversion to base::HeapArray() challenging so the
+    // code was left as-is.
     std::unique_ptr<uint8_t[]> data(new uint8_t[max_size]);
     for (perfetto::TracePacket& packet : packets) {
       auto [preamble, preamble_size] = packet.GetProtoPreamble();

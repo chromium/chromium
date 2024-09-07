@@ -29,7 +29,8 @@ bool WebStateContentIsSecureHtml(const web::WebState* web_state);
 bool JsonStringToFormData(NSString* json_string,
                           autofill::FormData* form_data,
                           const GURL& page_url,
-                          const autofill::FieldDataManager& field_data_manager);
+                          const autofill::FieldDataManager& field_data_manager,
+                          const std::string& frame_id);
 
 // Whether the |origin| matches the last committed URl in the |web_state|.
 bool OriginMatchesLastCommittedURLOrigin(web::WebState* web_state,

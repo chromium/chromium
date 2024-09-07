@@ -17,8 +17,11 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -27,6 +30,7 @@ class EdgeToEdgeBottomChinMediator
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener,
                 EdgeToEdgeSupplier.ChangeObserver,
                 NavigationBarColorProvider.Observer,
+                FullscreenManager.Observer,
                 BottomControlsLayer {
     private static final String TAG = "E2EBottomChin";
 
@@ -45,6 +49,7 @@ class EdgeToEdgeBottomChinMediator
     private final @NonNull EdgeToEdgeController mEdgeToEdgeController;
     private final @NonNull NavigationBarColorProvider mNavigationBarColorProvider;
     private final @NonNull BottomControlsStacker mBottomControlsStacker;
+    private final @NonNull FullscreenManager mFullscreenManager;
 
     /**
      * Build a new mediator for the bottom chin component.
@@ -60,6 +65,7 @@ class EdgeToEdgeBottomChinMediator
      *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
+     * @param fullscreenManager The {@link FullscreenManager} for provide the fullscreen state.
      */
     EdgeToEdgeBottomChinMediator(
             PropertyModel model,
@@ -67,13 +73,15 @@ class EdgeToEdgeBottomChinMediator
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
             @NonNull NavigationBarColorProvider navigationBarColorProvider,
-            @NonNull BottomControlsStacker bottomControlsStacker) {
+            @NonNull BottomControlsStacker bottomControlsStacker,
+            @NonNull FullscreenManager fullscreenManager) {
         mModel = model;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mLayoutManager = layoutManager;
         mEdgeToEdgeController = edgeToEdgeController;
         mNavigationBarColorProvider = navigationBarColorProvider;
         mBottomControlsStacker = bottomControlsStacker;
+        mFullscreenManager = fullscreenManager;
 
         // Add observers.
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
@@ -81,6 +89,7 @@ class EdgeToEdgeBottomChinMediator
         mEdgeToEdgeController.registerObserver(this);
         mNavigationBarColorProvider.addObserver(this);
         mBottomControlsStacker.addLayer(this);
+        mFullscreenManager.addObserver(this);
 
         // Initialize model with appropriate values.
         mModel.set(Y_OFFSET, 0);
@@ -100,12 +109,14 @@ class EdgeToEdgeBottomChinMediator
         assert mEdgeToEdgeController != null;
         assert mNavigationBarColorProvider != null;
         assert mBottomControlsStacker != null;
+        assert mFullscreenManager != null;
 
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
         mLayoutManager.removeObserver(this);
         mEdgeToEdgeController.unregisterObserver(this);
         mNavigationBarColorProvider.removeObserver(this);
         mBottomControlsStacker.removeLayer(this);
+        mFullscreenManager.removeObserver(this);
     }
 
     /**
@@ -121,6 +132,7 @@ class EdgeToEdgeBottomChinMediator
                         && !mIsPagedOptedIntoEdgeToEdge
                         && isBottomChinAllowed(
                                 mLayoutManager.getActiveLayoutType(), mEdgeToEdgeBottomInsetDp)
+                        && !mFullscreenManager.getPersistentFullscreenMode()
                         && !mIsKeyboardVisible;
 
         boolean heightChanged = mModel.get(HEIGHT) != newHeight;
@@ -169,11 +181,23 @@ class EdgeToEdgeBottomChinMediator
         mModel.set(DIVIDER_COLOR, dividerColor);
     }
 
-    // KeyboardVisibilityDelegate.KeyboardVisibilityListener,
+    // KeyboardVisibilityDelegate.KeyboardVisibilityListener
 
     @Override
     public void keyboardVisibilityChanged(boolean isShowing) {
         mIsKeyboardVisible = isShowing;
+        updateHeightAndVisibility();
+    }
+
+    // FullscreenManager.Observer
+
+    @Override
+    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        updateHeightAndVisibility();
+    }
+
+    @Override
+    public void onExitFullscreen(Tab tab) {
         updateHeightAndVisibility();
     }
 

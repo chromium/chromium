@@ -11,6 +11,8 @@ source_set("core") {
     "analysis_settings.h",
     "common.cc",
     "common.h",
+    "connectors_manager_base.cc",
+    "connectors_manager_base.h",
     "connectors_prefs.cc",
     "connectors_prefs.h",
     "connectors_service_base.cc",
@@ -52,6 +54,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "connectors_manager_base_unittest.cc",
     "connectors_service_base_unittest.cc",
     "enterprise_connectors_policy_handler_unittest.cc",
     "reporting_service_settings_unittest.cc",

@@ -12,7 +12,7 @@
 #import "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/browser_state.h"
 
@@ -31,7 +31,7 @@ bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
     // to parental controls. Additionally, the retiring prefs-based
     // `IsSubjectToParentalControls` will also return false.
     return IsPrimaryAccountSubjectToParentalControls(
-               IdentityManagerFactory::GetForBrowserState(browserState)) ==
+               IdentityManagerFactory::GetForProfile(browserState)) ==
            signin::Tribool::kTrue;
   } else {
     return IsSubjectToParentalControls(*browserState->GetPrefs());

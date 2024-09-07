@@ -84,7 +84,7 @@ std::map<ui::Accelerator, int> AcceleratorsFromMapping(
 }
 
 const std::map<ui::Accelerator, int>& GetAcceleratorTable() {
-  if (!chrome::IsRunningInForcedAppMode()) {
+  if (!IsRunningInForcedAppMode()) {
     static base::NoDestructor<std::map<ui::Accelerator, int>> accelerators(
         AcceleratorsFromMapping(kAppWindowAcceleratorMap,
                                 std::size(kAppWindowAcceleratorMap)));
@@ -183,7 +183,7 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   views::FocusManager* focus_manager = GetFocusManager();
   const std::map<ui::Accelerator, int>& accelerator_table =
       GetAcceleratorTable();
-  const bool is_kiosk_app_mode = chrome::IsRunningInForcedAppMode();
+  const bool is_kiosk_app_mode = IsRunningInForcedAppMode();
 
   // Ensures that kiosk mode accelerators are enabled when in kiosk mode (to be
   // future proof). This is needed because GetAcceleratorTable() uses a static
@@ -204,8 +204,9 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   for (auto iter = accelerator_table.begin(); iter != accelerator_table.end();
        ++iter) {
     if (is_kiosk_app_mode &&
-        !chrome::IsCommandAllowedInAppMode(iter->second, /* is_popup */ false))
+        !IsCommandAllowedInAppMode(iter->second, /* is_popup */ false)) {
       continue;
+    }
 
     focus_manager->RegisterAccelerator(
         iter->first, ui::AcceleratorManager::kNormalPriority, this);

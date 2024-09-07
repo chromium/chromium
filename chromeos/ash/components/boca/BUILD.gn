@@ -12,10 +12,43 @@ static_library("boca") {
     "boca_app_client.h",
     "boca_role_util.cc",
     "boca_role_util.h",
+    "boca_session_manager.cc",
+    "boca_session_manager.h",
   ]
   deps = [
     "//ash",
     "//ash/constants",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/network",
+    "//components/signin/public/identity_manager",
+  ]
+
+  allow_circular_includes_from =
+      [ "//chromeos/ash/components/boca/session_api" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "boca_session_manager_unittest.cc" ]
+
+  deps = [
+    ":boca",
+    "//ash:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/network",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//google_apis/common",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

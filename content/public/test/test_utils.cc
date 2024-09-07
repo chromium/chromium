@@ -353,7 +353,8 @@ void MessageLoopRunner::Quit() {
 }
 
 LoadStopObserver::LoadStopObserver(WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {}
 
 void LoadStopObserver::Wait() {
   if (!seen_)

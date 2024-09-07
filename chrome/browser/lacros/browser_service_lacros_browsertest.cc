@@ -660,29 +660,17 @@ class BrowserServiceLacrosNonSyncingProfilesBrowserTest
         profile_manager->GetPrimaryUserProfilePath());
   }
 
-  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
  private:
-  // Start tracking the logged histograms from the beginning, since the FRE can
-  // be triggered and completed before we enter the test body.
-  base::HistogramTester histogram_tester_;
-
   profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
       non_enterprise_domain_setter_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
-                       PRE_NewWindow_OpensFirstRun) {
-  // Dummy case to set up the primary profile.
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
-}
+                       PRE_NewWindow_OpensFirstRun) {}
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun) {
   EXPECT_TRUE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   base::test::TestFuture<CreationResult> new_window_future;
   browser_service()->NewWindow(
@@ -697,24 +685,14 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   EXPECT_EQ(new_window_future.Get(), CreationResult::kSuccess);
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
-      FirstRunService::EntryPoint::kOther, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
-                       PRE_NewWindow_OpensFirstRun_UiClose) {
-  // Dummy case to set up the primary profile.
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
-}
-
+                       PRE_NewWindow_OpensFirstRun_UiClose) {}
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun_UiClose) {
   EXPECT_TRUE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   base::test::TestFuture<CreationResult> new_window_future;
   browser_service()->NewWindow(
@@ -729,23 +707,14 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   EXPECT_EQ(new_window_future.Get(), CreationResult::kProfileNotExist);
 
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
-      FirstRunService::EntryPoint::kOther, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
-                       PRE_NewTab_OpensFirstRun) {
-  // Dummy case to set up the primary profile.
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
-}
+                       PRE_NewTab_OpensFirstRun) {}
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewTab_OpensFirstRun) {
   EXPECT_TRUE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   base::test::TestFuture<CreationResult> new_tab_future;
   browser_service()->NewTab(/*profile_id=*/std::nullopt,
@@ -756,9 +725,6 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   EXPECT_EQ(new_tab_future.Get(), CreationResult::kSuccess);
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
-      FirstRunService::EntryPoint::kOther, 1);
 }
 
 class BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest
@@ -770,24 +736,14 @@ class BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest,
-                       PRE_NewWindow_OpensFirstRun) {
-  // Dummy case to set up the primary profile.
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
-}
-IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest,
                        NewWindow_OpensFirstRun) {
   EXPECT_FALSE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
                 /*profile_id=*/std::nullopt, CreationResult::kSuccess);
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 }
 
 class BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest
@@ -813,23 +769,12 @@ class BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest,
-    PRE_NewWindow_OpensFirstRun) {
-  // Dummy case to set up the primary profile.
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
-}
-IN_PROC_BROWSER_TEST_F(
-    BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest,
     NewWindow_OpensFirstRun) {
   EXPECT_FALSE(ShouldOpenFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
                 /*profile_id=*/std::nullopt, CreationResult::kSuccess);
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  histogram_tester().ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 }

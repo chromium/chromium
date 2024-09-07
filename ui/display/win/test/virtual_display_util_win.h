@@ -42,8 +42,6 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
   int64_t AddDisplay(uint8_t id, const DisplayParams& display_params) override;
   void RemoveDisplay(int64_t display_id) override;
   void ResetDisplays() override;
-  static const DisplayParams k1920x1080;
-  static const DisplayParams k1024x768;
 
  private:
   // display::DisplayObserver:

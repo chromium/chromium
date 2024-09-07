@@ -6,6 +6,9 @@ module blink.mojom;
 
 // ============ Definition for WebFeature used for UseCounter ===============
 //
+// Documentation:
+// https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/use_counter_wiki.md
+//
 // Do not change assigned numbers of existing items: add new features
 // to the end of the list.
 //
@@ -15,6 +18,9 @@ module blink.mojom;
 //
 // A WebFeature conceptually represents some particular web-exposed API
 // or code path which can be used/triggered by a web page.
+//
+// LINT.IfChange(WebFeature)
+
 enum WebFeature {
   kOBSOLETE_PageDestruction = 0,
   kWorkerStart = 4,
@@ -3770,8 +3776,8 @@ enum WebFeature {
   kIDNA2008DeviationCharacterInHostnameOfIFrame = 4428,
   kWindowOpenPopupOnMobile = 4429,
   kWindowOpenedAsPopupOnMobile = 4430,
-  kPrivateNetworkAccessIgnoredCrossOriginPreflightError = 4431,
-  kPrivateNetworkAccessIgnoredCrossSitePreflightError = 4432,
+  kOBSOLETE_PrivateNetworkAccessIgnoredCrossOriginPreflightError = 4431,
+  kOBSOLETE_PrivateNetworkAccessIgnoredCrossSitePreflightError = 4432,
   kLinkRelPrerenderSameOrigin = 4433,
   kLinkRelPrerenderSameSiteCrossOrigin = 4434,
   kLinkRelPrerenderCrossSite = 4435,
@@ -3959,8 +3965,8 @@ enum WebFeature {
   kPaymentRequestActivationlessShow = 4607,
   kWebAppTabbed = 4608,
   kFetchLater = 4609,
-  kURLPatternReliantOnImplicitURLComponentsInString = 4610,
-  kURLPatternReliantOnLaterComponentFromBaseURL = 4611,
+  kOBSOLETE_URLPatternReliantOnImplicitURLComponentsInString = 4610,
+  kOBSOLETE_URLPatternReliantOnLaterComponentFromBaseURL = 4611,
   kV8Navigator_CreateAuctionNonce_Method = 4612,
   kCrossOriginWindowFrameElement = 4613,
   kQuirksModeAboutBlankDocument = 4614,
@@ -4345,17 +4351,17 @@ enum WebFeature {
   kLinkRelPayment = 4976,
   kV8GPUAdapter_RequestAdapterInfo_Method = 4977,
   kOBSOLETE_V8ModelGenericSession_Destroy_Method = 4978,
-  kV8AITextSession_Execute_Method = 4979,
-  kV8AITextSession_ExecuteStreaming_Method = 4980,
-  kV8AI_CanCreateGenericSession_Method = 4981,
-  kV8AI_CreateGenericSession_Method = 4982,
-  kV8AI_DefaultGenericSessionOptions_Method = 4983,
-  kV8AITextSession_Prompt_Method = 4984,
-  kV8AITextSession_PromptStreaming_Method = 4985,
-  kV8AI_CanCreateTextSession_Method = 4986,
-  kV8AI_CreateTextSession_Method = 4987,
+  kOBSOLETE_V8AITextSession_Execute_Method = 4979,
+  kOBSOLETE_V8AITextSession_ExecuteStreaming_Method = 4980,
+  kOBSOLETE_V8AI_CanCreateGenericSession_Method = 4981,
+  kOBSOLETE_V8AI_CreateGenericSession_Method = 4982,
+  kOBSOLETE_V8AI_DefaultGenericSessionOptions_Method = 4983,
+  kOBSOLETE_V8AITextSession_Prompt_Method = 4984,
+  kOBSOLETE_V8AITextSession_PromptStreaming_Method = 4985,
+  kOBSOLETE_V8AI_CanCreateTextSession_Method = 4986,
+  kOBSOLETE_V8AI_CreateTextSession_Method = 4987,
   kOBSOLETE_V8AI_DefaultTextSessionOptions_Method = 4988,
-  kV8AITextSession_Destroy_Method = 4989,
+  kOBSOLETE_V8AITextSession_Destroy_Method = 4989,
   kImportMapIntegrity = 4990,
   kSelectElementAppearanceNone = 4991,
   kRubyPositionAlternate = 4992,
@@ -4383,7 +4389,7 @@ enum WebFeature {
   kARIAColIndexTextAttribute = 5014,
   kARIARowIndexTextAttribute = 5015,
   kV8PointerEvent_PersistentDeviceId_AttributeGetter = 5016,
-  kDelegatedInkExpectedImprovement = 5017,
+  kOBSOLETE_DelegatedInkExpectedImprovement = 5017,
   kCSSSelectorNthChildOfSelector = 5018,
   kDisableStandardizedBrowserZoom = 5019,
   kV8FileSystemObserver_Constructor = 5020,
@@ -4404,13 +4410,13 @@ enum WebFeature {
   kWebGPUSubgroupsFeatures = 5035,
   kAudioContextOnError = 5036,
   kNoVarySearchPrerender = 5037,
-  kV8AITextSession_Clone_Method = 5038,
+  kOBSOLETE_V8AITextSession_Clone_Method = 5038,
   kGamepadHapticActuatorType = 5039,
   kSelectionDirection = 5040,
   kSelectionGetComposedRanges = 5041,
   kEyeDropperOpen = 5042,
   kFlexNewColumnWrapIntrinsicSize = 5043,
-  kV8AI_TextModelInfo_Method = 5044,
+  kOBSOLETE_V8AI_TextModelInfo_Method = 5044,
   kEventTimingSimulatedClickWithNoKeyboardInteraction = 5045,
   kViewTransitionGroupNesting = 5046,
   kV8LanguageDetector_Detect_Method = 5047,
@@ -4438,6 +4444,34 @@ enum WebFeature {
   kV8AIRewriter_Rewrite_Method = 5069,
   kV8AIRewriter_RewriteStreaming_Method = 5070,
   kV8AIRewriter_Destroy_Method = 5071,
+  kFencedFrameCanLoadOpaqueURL = 5072,
+  kV8Performance_Memory_AttributeGetter_NotLockedToSite = 5073,
+  kPartitionedPopin_OpenAttempt = 5074,
+  kPartitionedPopin_Opened = 5075,
+  kV8AISummarizer_SharedContext_AttributeGetter = 5076,
+  kV8AISummarizer_Type_AttributeGetter = 5077,
+  kV8AISummarizer_Format_AttributeGetter = 5078,
+  kV8AISummarizer_Length_AttributeGetter = 5079,
+  kV8AIAssistantCapabilities_Available_AttributeGetter = 5080,
+  kV8AIAssistantCapabilities_DefaultTopK_AttributeGetter = 5081,
+  kV8AIAssistantCapabilities_MaxTopK_AttributeGetter = 5082,
+  kV8AIAssistantCapabilities_DefaultTemperature_AttributeGetter = 5083,
+  kV8AIAssistantFactory_Capabilities_Method = 5084,
+  kV8AIAssistantFactory_Create_Method = 5085,
+  kV8AI_Assistant_AttributeGetter = 5086,
+  kV8AIAssistant_MaxTokens_AttributeGetter = 5087,
+  kV8AIAssistant_TokensSoFar_AttributeGetter = 5088,
+  kV8AIAssistant_TokensLeft_AttributeGetter = 5089,
+  kV8AIAssistant_TopK_AttributeGetter = 5090,
+  kV8AIAssistant_Temperature_AttributeGetter = 5091,
+  kV8AIAssistant_Clone_Method = 5092,
+  kV8AIAssistant_Destroy_Method = 5093,
+  kV8AIAssistant_Prompt_Method = 5094,
+  kV8AIAssistant_PromptStreaming_Method = 5095,
+  kV8Window_PopinContextTypesSupported_Method = 5096,
+  kV8Window_PopinContextType_Method = 5097,
+  kWebAuthentication_AttestationFormats = 5098,
+
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
@@ -4446,7 +4480,6 @@ enum WebFeature {
 
   // Also, run update_use_counter_feature_enum.py in
   // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
-  // TODO(dcheng): Fix https://crbug.com/742517 and use the autogenerated
-  // constants.
-  kNumberOfFeatures,  // This enum value must be last.
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FeatureObserver)

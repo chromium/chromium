@@ -12,6 +12,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <new>
 #include <optional>
 #include <ostream>
 #include <string_view>
@@ -367,8 +368,7 @@ class EnumTable {
 
  private:
 #ifdef ARCH_CPU_64_BITS
-  // Align the data on a cache line boundary.
-  alignas(64)
+  alignas(std::hardware_destructive_interference_size)
 #endif
       std::initializer_list<Entry> data_;
   bool is_sorted_;

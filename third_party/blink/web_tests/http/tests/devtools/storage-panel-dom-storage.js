@@ -59,7 +59,7 @@ import * as Application from 'devtools/panels/application/application.js';
     TestRunner.deprecatedRunAfterPendingDispatches(function() {
       TestRunner.addResult(name(storage) + ' content: ');
       var view = Application.ResourcesPanel.ResourcesPanel.instance().domStorageView;
-      dumpDataGridContent(view.dataGrid);
+      dumpDataGridContent(view.dataGridForTesting);
       TestRunner.deprecatedRunAfterPendingDispatches(() => testStorageInView(storages));
     });
   }

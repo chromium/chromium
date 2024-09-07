@@ -9,6 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -77,6 +78,7 @@ import java.util.List;
 public class Fido2CredentialRequestRobolectricTest {
     private static final String TEST_CHANNEL_EXTRA = "stable";
     private static final Boolean TEST_INCOGNITO_EXTRA = true;
+    private static final String TEST_CLIENT_DATA_JSON = "{ClientDataJSON}";
 
     private Fido2CredentialRequest mRequest;
     private PublicKeyCredentialCreationOptions mCreationOptions;
@@ -144,7 +146,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest = new Fido2CredentialRequest(mAuthenticationContextProviderMock);
 
         Fido2ApiTestHelper.mockFido2CredentialRequestJni(mMocker);
-        Fido2ApiTestHelper.mockClientDataJson(mMocker, "{}");
+        Fido2ApiTestHelper.mockClientDataJson(mMocker, TEST_CLIENT_DATA_JSON);
 
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
 
@@ -199,7 +201,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onError);
 
         verify(mCredManHelperMock, times(1))
-                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
+                .startMakeRequest(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -222,7 +224,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onError);
 
         verify(mCredManHelperMock, times(0))
-                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
+                .startMakeRequest(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -246,7 +248,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onError);
 
         verify(mCredManHelperMock, times(1))
-                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
+                .startMakeRequest(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -267,7 +269,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onError);
 
         verify(mCredManHelperMock, times(0))
-                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
+                .startMakeRequest(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -289,7 +291,7 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(mFido2ApiCallHelper.getChannelExtraOrNull()).isEqualTo(TEST_CHANNEL_EXTRA);
         assertThat(mFido2ApiCallHelper.getIncognitoExtraOrNull()).isTrue();
         verify(mCredManHelperMock, times(0))
-                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
+                .startMakeRequest(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -349,7 +351,13 @@ public class Fido2CredentialRequestRobolectricTest {
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isFalse();
         verify(mCredManHelperMock)
-                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
+                .startMakeRequest(
+                        any(),
+                        any(),
+                        /* clientDataJson= */ eq(null),
+                        /* clientDataHash= */ eq(null),
+                        any(),
+                        any());
     }
 
     @Test
@@ -390,8 +398,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 .startGetRequest(
                         eq(mRequestOptions),
                         eq(originString),
-                        /* isCrossOrigin= */ eq(false),
-                        /* maybeClientDataHash= */ eq(null),
+                        eq(TEST_CLIENT_DATA_JSON.getBytes()),
+                        /* clientDataHash= */ notNull(),
                         /* getCallback= */ any(),
                         /* errorCallback= */ any(),
                         /* ignoreGpm= */ eq(false));
@@ -427,8 +435,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 .startPrefetchRequest(
                         eq(mRequestOptions),
                         eq(originString),
-                        /* isCrossOrigin= */ eq(false),
-                        /* maybeClientDataHash= */ eq(null),
+                        eq(TEST_CLIENT_DATA_JSON.getBytes()),
+                        /* clientDataHash= */ any(),
                         /* getCallback= */ any(),
                         /* errorCallback= */ any(),
                         /* barrier= */ any(),
@@ -481,8 +489,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 .startGetRequest(
                         eq(mRequestOptions),
                         /* originString= */ any(),
-                        /* isCrossOrigin= */ eq(false),
-                        /* maybeClientDataHash= */ eq(null),
+                        eq(TEST_CLIENT_DATA_JSON.getBytes()),
+                        /* clientDataHash= */ notNull(),
                         /* getCallback= */ any(),
                         /* errorCallback= */ any(),
                         /* ignoreGpm= */ eq(false));
@@ -550,13 +558,7 @@ public class Fido2CredentialRequestRobolectricTest {
         verify(mCredManHelperMock).setNoCredentialsFallback(setNoCredentialsParamCaptor.capture());
         verify(mCredManHelperMock)
                 .startGetRequest(
-                        any(),
-                        any(),
-                        anyBoolean(),
-                        any(),
-                        any(),
-                        any(),
-                        /* ignoreGpm= */ eq(false));
+                        any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
 
         // Now run the no credentials fallback action:
         setNoCredentialsParamCaptor.getValue().run();
@@ -588,13 +590,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
         verify(mCredManHelperMock)
                 .startGetRequest(
-                        any(),
-                        any(),
-                        anyBoolean(),
-                        any(),
-                        any(),
-                        any(),
-                        /* ignoreGpm= */ eq(false));
+                        any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
@@ -621,13 +617,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
         verify(mCredManHelperMock)
                 .startGetRequest(
-                        any(),
-                        any(),
-                        anyBoolean(),
-                        any(),
-                        any(),
-                        any(),
-                        /* ignoreGpm= */ eq(false));
+                        any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(false));
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
@@ -678,7 +668,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
         verify(mCredManHelperMock)
                 .startGetRequest(
-                        any(), any(), anyBoolean(), any(), any(), any(), /* ignoreGpm= */ eq(true));
+                        any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(true));
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
@@ -753,8 +743,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 .startPrefetchRequest(
                         eq(mRequestOptions),
                         eq(originString),
-                        /* isCrossOrigin= */ eq(false),
-                        /* maybeClientDataHash= */ eq(null),
+                        eq(TEST_CLIENT_DATA_JSON.getBytes()),
+                        /* clientDataHash= */ notNull(),
                         /* getCallback= */ any(),
                         /* errorCallback= */ any(),
                         /* barrier= */ any(),
@@ -792,8 +782,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 .startPrefetchRequest(
                         eq(mRequestOptions),
                         eq(originString),
-                        /* isCrossOrigin= */ eq(false),
-                        /* maybeClientDataHash= */ eq(null),
+                        eq(TEST_CLIENT_DATA_JSON.getBytes()),
+                        /* clientDataHash= */ notNull(),
                         /* getCallback= */ any(),
                         /* errorCallback= */ any(),
                         /* barrier= */ any(),
@@ -997,7 +987,7 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(mCallback.getStatus()).isNull();
         verify(mCredManHelperMock, times(1))
                 .startPrefetchRequest(
-                        any(), any(), anyBoolean(), any(), any(), any(), any(), anyBoolean());
+                        any(), any(), any(), any(), any(), any(), any(), anyBoolean());
     }
 
     @Test
@@ -1022,7 +1012,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onError);
 
         verify(mCredManHelperMock, times(1))
-                .startGetRequest(any(), any(), anyBoolean(), any(), any(), any(), anyBoolean());
+                .startGetRequest(any(), any(), any(), any(), any(), any(), anyBoolean());
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 

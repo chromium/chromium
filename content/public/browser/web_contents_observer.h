@@ -17,6 +17,7 @@
 #include "components/viz/common/vertical_scroll_direction.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
@@ -181,7 +182,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // destroyed.
   // Use |RenderFrameHostChanged| to listen for when a RenderFrameHost object is
   // made the current host for a frame.
-  virtual void FrameDeleted(int frame_tree_node_id) {}
+  virtual void FrameDeleted(FrameTreeNodeId frame_tree_node_id) {}
 
   // This method is invoked whenever one of the frames of a WebContents changes
   // its |RenderFrameHost::GetLifecycleState()| i.e., when RenderFrameHost
@@ -934,7 +935,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // to work. This will be invoked right after `new_contents` is created, but
   // before its `WasDiscarded` is set to true and before it's attached to a tab
   // strip.
+  // TODO(crbug.com/347770670): Remove this once new WebContents are no longer
+  // created during discard operations.
   virtual void AboutToBeDiscarded(WebContents* new_contents) {}
+
+  // Called when WebContents has finished its discard operation.
+  virtual void WasDiscarded() {}
 
   // Called when WebContents received a request to lock the keyboard.
   virtual void KeyboardLockRequested() {}

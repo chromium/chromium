@@ -321,7 +321,8 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
   filler_->FillUsernameAndPassword(credential.username(),
                                    credential.password());
   if (access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(prefs)) {
-    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet();
+    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
+        prefs, web_contents_->GetTopLevelNativeWindow(), profile);
   } else {
     // TODO: crbug.com/340437382 - Deprecate the migration warning sheet.
     ShowPasswordMigrationWarningIfNeeded();

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/finder/find_results.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -249,14 +250,14 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
 
     FindBuffer buffer(
         EphemeralRangeInFlatTree(start_position, range.EndPosition()));
-    Results match_results = buffer.FindMatches(search_text, options);
+    FindResults match_results = buffer.FindMatches(search_text, options);
     if (!match_results.IsEmpty()) {
-      if (!(options & kBackwards)) {
-        BufferMatchResult match = match_results.front();
+      if (!options.IsBackwards()) {
+        FindResults::BufferMatchResult match = match_results.front();
         return buffer.RangeFromBufferIndex(match.start,
                                            match.start + match.length);
       }
-      BufferMatchResult match = match_results.back();
+      FindResults::BufferMatchResult match = match_results.back();
       last_match_range =
           buffer.RangeFromBufferIndex(match.start, match.start + match.length);
     }
@@ -349,18 +350,19 @@ Node* FindBuffer::BackwardVisibleTextNode(Node& start_node) {
   return GetVisibleTextNode<BackwardDirection>(start_node);
 }
 
-FindBuffer::Results FindBuffer::FindMatches(const WebString& search_text,
-                                            const blink::FindOptions options) {
+FindResults FindBuffer::FindMatches(const WebString& search_text,
+                                    const blink::FindOptions options) {
   // We should return empty result if it's impossible to get a match (buffer is
   // empty or too short), or when something went wrong in layout, in which case
   // |offset_mapping_| is null.
   if (buffer_.empty() || search_text.length() > buffer_.size() ||
       !offset_mapping_)
-    return Results();
+    return FindResults();
   String search_text_16_bit = search_text;
   search_text_16_bit.Ensure16Bit();
   FoldQuoteMarksAndSoftHyphens(search_text_16_bit);
-  return Results(*this, &text_searcher_, buffer_, search_text_16_bit, options);
+  return FindResults(*this, &text_searcher_, buffer_, search_text_16_bit,
+                     options);
 }
 
 void FindBuffer::CollectTextUntilBlockBoundary(
@@ -558,83 +560,6 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
     buffer_.Append(text_for_unit.Characters16(), text_for_unit.length());
     last_unit_end = unit.TextContentEnd();
   }
-}
-
-// FindBuffer::Results implementation.
-FindBuffer::Results::Results() {
-  empty_result_ = true;
-}
-
-FindBuffer::Results::Results(const FindBuffer& find_buffer,
-                             TextSearcherICU* text_searcher,
-                             const Vector<UChar>& buffer,
-                             const String& search_text,
-                             const blink::FindOptions options) {
-  // We need to own the |search_text| because |text_searcher_| only has a
-  // StringView (doesn't own the search text).
-  search_text_ = search_text;
-  find_buffer_ = &find_buffer;
-  text_searcher_ = text_searcher;
-  text_searcher_->SetPattern(search_text_, options);
-  text_searcher_->SetText(buffer.data(), buffer.size());
-  text_searcher_->SetOffset(0);
-}
-
-FindBuffer::Results::Iterator FindBuffer::Results::begin() const {
-  if (empty_result_)
-    return end();
-  text_searcher_->SetOffset(0);
-  return Iterator(*find_buffer_, text_searcher_);
-}
-
-FindBuffer::Results::Iterator FindBuffer::Results::end() const {
-  return Iterator();
-}
-
-bool FindBuffer::Results::IsEmpty() const {
-  return begin() == end();
-}
-
-FindBuffer::BufferMatchResult FindBuffer::Results::front() const {
-  return *begin();
-}
-
-FindBuffer::BufferMatchResult FindBuffer::Results::back() const {
-  Iterator last_result;
-  for (Iterator it = begin(); it != end(); ++it) {
-    last_result = it;
-  }
-  return *last_result;
-}
-
-unsigned FindBuffer::Results::CountForTesting() const {
-  unsigned result = 0;
-  for (Iterator it = begin(); it != end(); ++it) {
-    ++result;
-  }
-  return result;
-}
-
-// Findbuffer::Results::Iterator implementation.
-FindBuffer::Results::Iterator::Iterator(const FindBuffer& find_buffer,
-                                        TextSearcherICU* text_searcher)
-    : find_buffer_(&find_buffer),
-      text_searcher_(text_searcher),
-      has_match_(true) {
-  operator++();
-}
-
-const FindBuffer::BufferMatchResult FindBuffer::Results::Iterator::operator*()
-    const {
-  DCHECK(has_match_);
-  return FindBuffer::BufferMatchResult({match_.start, match_.length});
-}
-
-void FindBuffer::Results::Iterator::operator++() {
-  DCHECK(has_match_);
-  has_match_ = text_searcher_->NextMatchResult(match_);
-  if (has_match_ && find_buffer_ && find_buffer_->IsInvalidMatch(match_))
-    operator++();
 }
 
 }  // namespace blink

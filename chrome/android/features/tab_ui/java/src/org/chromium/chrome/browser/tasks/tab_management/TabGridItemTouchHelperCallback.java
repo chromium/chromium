@@ -380,11 +380,31 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mCurrentActionState = ItemTouchHelper.ACTION_STATE_IDLE;
         if (prevActionState != ItemTouchHelper.ACTION_STATE_DRAG) return;
         // If this item view becomes stale after the dragging animation is finished, manually clean
-        // it out. TODO(yuezhanggg): Figure out why the deleting signal is not properly sent when
-        // item is being dragged (crbug: 995799).
-        if (recyclerView.getAdapter().getItemCount() == 0 && recyclerView.getChildCount() != 0) {
-            recyclerView.getLayoutManager().removeView(viewHolder.itemView);
-        }
+        // it out. Post this call as otherwise there is an IllegalStateException. See:
+        // crbug.com/361498419. When the post task is executed we need to ensure that the
+        // state is still inconcistent i.e. the view holder is a child of the recycler view,
+        // but the adapter doesn't contain the item. If so we should remove the view. Previous
+        // attempts to fix this also checked for matching item positions in the adapter, but
+        // this led to phantom items in the recycler view due to the position the item view
+        // thought it had pre-post being inconsistent with the state after the post.
+        // TODO(crbug.com/40641179): Figure out why the deleting signal is not properly sent when
+        // item is being dragged.
+        Runnable removeViewHolderRunnable =
+                () -> {
+                    if (viewHolder.itemView.getParent() == null
+                            || recyclerView.getChildCount() == 0) {
+                        return;
+                    }
+
+                    @Nullable var adapter = recyclerView.getAdapter();
+                    if (adapter == null) return;
+
+                    @Nullable var layoutManager = recyclerView.getLayoutManager();
+                    if (layoutManager != null && adapter.getItemCount() == 0) {
+                        layoutManager.removeView(viewHolder.itemView);
+                    }
+                };
+        recyclerView.post(removeViewHolderRunnable);
     }
 
     @Override

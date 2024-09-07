@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_RLZ_RLZ_TRACKER_DELEGATE_IMPL_H_
 #define IOS_CHROME_BROWSER_RLZ_RLZ_TRACKER_DELEGATE_IMPL_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/callback_list.h"
-#include "base/functional/callback.h"
-#include "components/rlz/rlz_tracker_delegate.h"
+#import "base/callback_list.h"
+#import "base/functional/callback.h"
+#import "components/rlz/rlz_tracker_delegate.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 struct OmniboxLog;
 
 // RLZTrackerDelegateImpl implements RLZTrackerDelegate abstract interface

@@ -267,7 +267,6 @@ class WebTransport::Stream final {
   }
 
   void OnWritable(MojoResult result, const mojo::HandleSignalsState& state) {
-    DCHECK_EQ(result, MOJO_RESULT_OK);
     Receive();
   }
 

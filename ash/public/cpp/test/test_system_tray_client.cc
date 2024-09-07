@@ -218,4 +218,8 @@ void TestSystemTrayClient::ShowPointingStickSettings() {
   ++show_pointing_stick_settings_count_;
 }
 
+void TestSystemTrayClient::ShowNearbyShareSettings() {
+  ++show_nearby_share_settings_count_;
+}
+
 }  // namespace ash

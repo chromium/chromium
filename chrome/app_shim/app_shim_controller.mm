@@ -19,6 +19,7 @@
 #include "base/hash/md5.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
+#include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
@@ -544,6 +545,7 @@ mojo::PlatformChannelEndpoint AppShimController::ConnectToBrowser(
 
   mojo::PlatformChannel channel;
   mach_msg_base_t message{};
+  base::ScopedMachMsgDestroy scoped_message(&message.header);
   message.header.msgh_id = app_mode::kBootstrapMsgId;
   message.header.msgh_bits =
       MACH_MSGH_BITS(MACH_MSG_TYPE_MOVE_SEND, MACH_MSG_TYPE_MOVE_SEND);
@@ -553,7 +555,9 @@ mojo::PlatformChannelEndpoint AppShimController::ConnectToBrowser(
   message.header.msgh_remote_port =
       server_endpoint.TakePlatformHandle().ReleaseMachSendRight();
   kern_return_t kr = mach_msg_send(&message.header);
-  if (kr != KERN_SUCCESS) {
+  if (kr == KERN_SUCCESS) {
+    scoped_message.Disarm();
+  } else {
     MACH_LOG(ERROR, kr) << "mach_msg_send";
     return mojo::PlatformChannelEndpoint();
   }

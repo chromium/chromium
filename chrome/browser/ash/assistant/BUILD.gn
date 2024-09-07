@@ -33,7 +33,6 @@ source_set("unit_tests") {
     ":assistant",
     "//ash/public/cpp",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
@@ -54,7 +53,6 @@ if (is_chromeos_device) {
     sources_metadata = [ "assistant_integration_test.yaml" ]
 
     deps = [
-      ":assistant",
       "//ash",
       "//ash:test_support",
       "//ash/public/cpp",

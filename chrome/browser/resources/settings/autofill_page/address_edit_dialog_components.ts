@@ -14,6 +14,7 @@ export class AddressComponentUi {
   private readonly fieldType_: chrome.autofillPrivate.FieldType;
   private readonly originalValue_?: string;
   private readonly existingAddress_: boolean;
+  private readonly onValueUpdateListener_: () => void;
   private readonly skipValidation_: boolean;
   private addressFields_:
       Map<chrome.autofillPrivate.FieldType, string|undefined>;
@@ -29,6 +30,7 @@ export class AddressComponentUi {
       undefined,
       fieldType: chrome.autofillPrivate.FieldType,
       label: string,
+      onValueUpdateListener: () => void,
       additionalClassName: string = '',
       isTextarea: boolean = false,
       skipValidation: boolean = false,
@@ -39,18 +41,13 @@ export class AddressComponentUi {
     this.originalValue_ = originalFields?.get(fieldType);
     this.fieldType_ = fieldType;
     this.label = label;
+    this.onValueUpdateListener_ = onValueUpdateListener;
     this.additionalClassName = additionalClassName;
     this.isTextarea = isTextarea;
     this.isRequired = isRequired;
     this.skipValidation_ = skipValidation;
     this.isValidatable_ = false;
   }
-
-  /**
-   * Notifications from data class (as alternative to change listeners
-   * in DOM) are important to sync actual data updates with validation.
-   */
-  onValueUpdateListener?: () => void;
 
   /**
    * Being validatable for an address component means that its invalid state
@@ -86,7 +83,7 @@ export class AddressComponentUi {
     const changed = value !== this.value;
     this.addressFields_.set(this.fieldType_, value);
     if (changed) {
-      this.onValueUpdateListener?.();
+      this.onValueUpdateListener_();
     }
   }
 

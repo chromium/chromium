@@ -53,8 +53,7 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
   void StartForAppMenu(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& java_web_contents,
-      int title_id,
-      bool universal_install);
+      int title_id);
 
   // Called from the Java side when the user accepts app installation from the
   // dialog.
@@ -113,10 +112,6 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
       event_callback_;
 
   int app_menu_type_ = AppBannerSettingsHelper::APP_MENU_OPTION_UNKNOWN;
-
-  // Keeps track of whether the Universal Install dialog was used to trigger the
-  // Add to homescreen process.
-  bool universal_install_ = false;
 
   AddToHomescreenMediator(const AddToHomescreenMediator&) = delete;
   AddToHomescreenMediator& operator=(const AddToHomescreenMediator&) = delete;

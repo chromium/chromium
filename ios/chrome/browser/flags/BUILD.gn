@@ -21,6 +21,7 @@ source_set("flags") {
     "//components/bookmarks/common",
     "//components/browser_sync:switches",
     "//components/commerce/core:feature_list",
+    "//components/data_sharing/public",
     "//components/dom_distiller/core",
     "//components/download/public/background_service:public",
     "//components/enterprise",
@@ -71,6 +72,8 @@ source_set("flags") {
     "//ios/chrome/browser/first_run/ui_bundled:field_trial",
     "//ios/chrome/browser/follow/model:feature_flags",
     "//ios/chrome/browser/iph_for_new_chrome_user/model:features",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:policy_util",
@@ -84,8 +87,6 @@ source_set("flags") {
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/text_selection/model:model_utils",
     "//ios/chrome/browser/ui/lens:features",
-    "//ios/chrome/browser/ui/ntp:feature_flags",
-    "//ios/chrome/browser/ui/ntp:field_trial",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/page_info:features",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
@@ -126,7 +127,6 @@ source_set("client_side") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/first_run/ui_bundled:field_trial",
     "//ios/chrome/browser/shared/model/paths",
-    "//ios/chrome/browser/ui/ntp:field_trial",
     "//ios/chrome/browser/variations/model:store",
   ]
 }

@@ -19,8 +19,8 @@
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector_mock.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -49,8 +49,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             CreateMockPolicyService(), &schema_registry_));
-    browser_state_ =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -100,7 +99,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
     const base::FilePath path = GetBrowserStatePath();
-    const std::string& name = GetBrowserStateName();
+    const std::string& name = GetProfileName();
     std::unique_ptr<em::ChromeUserProfileInfo> report =
         generator_.MaybeGenerate(path, name, ReportType::kFull);
 
@@ -118,8 +117,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
     return browser_state_->GetStatePath();
   }
 
-  const std::string& GetBrowserStateName() const {
-    return browser_state_->GetBrowserStateName();
+  const std::string& GetProfileName() const {
+    return browser_state_->GetProfileName();
   }
 
   ReportingDelegateFactoryIOS delegate_factory_;
@@ -128,7 +127,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
 
   policy::SchemaRegistry schema_registry_;

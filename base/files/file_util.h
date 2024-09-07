@@ -24,7 +24,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
-#include "base/strings/cstring_view.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 
@@ -441,23 +440,6 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStream(FilePath* path);
 BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
                                                          FilePath* path);
 
-#if BUILDFLAG(IS_WIN)
-// Retrieves the path `%systemroot%\SystemTemp`, if available, else retrieves
-// `%programfiles%`.
-// Returns the path in `temp` and `true` if the path is writable by the caller,
-// which is usually only when the caller is running as admin or system.
-// Returns `false` otherwise.
-// Both paths are only accessible to admin and system processes, and are
-// therefore secure.
-BASE_EXPORT bool GetSecureSystemTemp(FilePath* temp);
-
-// Set whether or not the use of %systemroot%\SystemTemp or %programfiles% is
-// permitted for testing. This is so tests that run as admin will still continue
-// to use %TMP% so their files will be correctly cleaned up by the test
-// launcher.
-BASE_EXPORT void SetDisableSecureSystemTempForTesting(bool disabled);
-#endif  // BUILDFLAG(IS_WIN)
-
 // Do NOT USE in new code. Use ScopedTempDir instead.
 // TODO(crbug.com/40446440) Remove existing usage and make this an
 // implementation detail inside ScopedTempDir.
@@ -577,15 +559,6 @@ BASE_EXPORT std::optional<uint64_t> ReadFile(const FilePath& filename,
 // TODO(crbug.com/40284755): Migrate callers to the span variant.
 BASE_EXPORT int ReadFile(const FilePath& filename, char* data, int max_size);
 
-// Writes the given buffer into the file, overwriting any data that was
-// previously there.  Returns the number of bytes written, or -1 on error.
-// If file doesn't exist, it gets created with read/write permissions for all.
-// Note that the other variants of WriteFile() below may be easier to use.
-// TODO(crbug.com/40284755): Migrate callers to the span variant.
-UNSAFE_BUFFER_USAGE BASE_EXPORT int WriteFile(const FilePath& filename,
-                                              const char* data,
-                                              int size);
-
 // Writes |data| into the file, overwriting any data that was previously there.
 // Returns true if and only if all of |data| was written. If the file does not
 // exist, it gets created with read/write permissions for all.
@@ -641,8 +614,9 @@ BASE_EXPORT FilePath GetUniquePath(const FilePath& path);
 // suffix printf format string in cases where the default format doesn't work
 // (for example because you need a filename without spaces in it). Passing
 // " (%d)" as `suffix_format` makes this behave identical to `GetUniquePath()`.
-BASE_EXPORT FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
-                                                   cstring_view suffix_format);
+BASE_EXPORT FilePath
+GetUniquePathWithSuffixFormat(const FilePath& path,
+                              std::string_view suffix_format);
 
 // Sets the given |fd| to non-blocking mode.
 // Returns true if it was able to set it in the non-blocking mode, otherwise

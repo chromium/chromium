@@ -42,6 +42,7 @@ SANDBOX_POLICY_EXPORT extern const char kServiceSandboxWithJit[];
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 SANDBOX_POLICY_EXPORT extern const char kScreenAISandbox[];
 #endif
+SANDBOX_POLICY_EXPORT extern const char kVideoEffectsSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kSpeechRecognitionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kVideoCaptureSandbox[];
 

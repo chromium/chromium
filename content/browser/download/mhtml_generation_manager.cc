@@ -290,12 +290,12 @@ class MHTMLGenerationManager::Job {
   MHTMLGenerationParams params_;
 
   // The IDs of frames that still need to be processed.
-  base::queue<int> pending_frame_tree_node_ids_;
+  base::queue<FrameTreeNodeId> pending_frame_tree_node_ids_;
 
   // Identifies a frame to which we've sent through
   // MhtmlFileWriter::SerializeAsMHTML but for which we didn't yet process
   // the response via SerializeAsMHTMLResponse.
-  int frame_tree_node_id_of_busy_frame_;
+  FrameTreeNodeId frame_tree_node_id_of_busy_frame_;
 
   // The handle to the file the MHTML is saved to for the browser process.
   base::File browser_file_;
@@ -345,7 +345,6 @@ MHTMLGenerationManager::Job::Job(
     const MHTMLGenerationParams& params,
     MHTMLGenerationResult::GenerateMHTMLCallback callback)
     : params_(params),
-      frame_tree_node_id_of_busy_frame_(FrameTreeNode::kFrameTreeNodeInvalidId),
       mhtml_boundary_marker_(net::GenerateMimeMultipartBoundary()),
       salt_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       callback_(std::move(callback)),
@@ -372,8 +371,7 @@ void MHTMLGenerationManager::Job::initializeJob(WebContents* web_contents) {
   for (FrameTreeNode* node : static_cast<WebContentsImpl*>(web_contents)
                                  ->GetPrimaryFrameTree()
                                  .Nodes()) {
-    if (node->current_frame_host()->inner_tree_main_frame_tree_node_id() !=
-        FrameTreeNode::kFrameTreeNodeInvalidId) {
+    if (node->current_frame_host()->inner_tree_main_frame_tree_node_id()) {
       // Skip inner tree placeholder nodes.
       continue;
     }
@@ -417,7 +415,7 @@ mojom::MhtmlSaveStatus MHTMLGenerationManager::Job::SendToNextRenderFrame() {
   DCHECK(browser_file_.IsValid());
   DCHECK(!pending_frame_tree_node_ids_.empty());
 
-  int frame_tree_node_id = pending_frame_tree_node_ids_.front();
+  FrameTreeNodeId frame_tree_node_id = pending_frame_tree_node_ids_.front();
   pending_frame_tree_node_ids_.pop();
 
   FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
@@ -447,8 +445,7 @@ mojom::MhtmlSaveStatus MHTMLGenerationManager::Job::SendToNextRenderFrame() {
       mojom::MhtmlOutputHandle::NewFileHandle(browser_file_.Duplicate());
 
   // Send a Mojo request to Renderer to serialize its frame.
-  DCHECK_EQ(FrameTreeNode::kFrameTreeNodeInvalidId,
-            frame_tree_node_id_of_busy_frame_);
+  DCHECK(frame_tree_node_id_of_busy_frame_.is_null());
   frame_tree_node_id_of_busy_frame_ = frame_tree_node_id;
 
   auto response_callback = base::BindOnce(&Job::SerializeAsMHTMLResponse,
@@ -635,7 +632,7 @@ void MHTMLGenerationManager::Job::SerializeAsMHTMLResponse(
   TRACE_EVENT_NESTABLE_ASYNC_END0("page-serialization", "WaitingOnRenderer",
                                   this);
 
-  frame_tree_node_id_of_busy_frame_ = FrameTreeNode::kFrameTreeNodeInvalidId;
+  frame_tree_node_id_of_busy_frame_ = FrameTreeNodeId();
 
   // If the renderer succeeded, update the resource digests.
   if (save_status == mojom::MhtmlSaveStatus::kSuccess)
@@ -681,9 +678,7 @@ void MHTMLGenerationManager::Job::MaybeSendToNextRenderFrame(
 }
 
 bool MHTMLGenerationManager::Job::CurrentFrameDone() const {
-  bool waiting_for_response_from_renderer =
-      frame_tree_node_id_of_busy_frame_ !=
-      FrameTreeNode::kFrameTreeNodeInvalidId;
+  bool waiting_for_response_from_renderer = !!frame_tree_node_id_of_busy_frame_;
   return !waiting_for_response_from_renderer && !waiting_on_data_streaming_;
 }
 
@@ -709,12 +704,13 @@ bool MHTMLGenerationManager::Job::WriteToFileAndUpdateHash(
     base::File* file,
     crypto::SecureHash* secure_hash,
     std::string to_write) {
-  bool result = UNSAFE_TODO(file->WriteAtCurrentPos(to_write.data(),
-                                                    to_write.size())) >= 0;
-  if (result && secure_hash) {
+  if (!file->WriteAtCurrentPosAndCheck(base::as_byte_span(to_write))) {
+    return false;
+  }
+  if (secure_hash) {
     secure_hash->Update(to_write.data(), to_write.size());
   }
-  return result;
+  return true;
 }
 
 // static

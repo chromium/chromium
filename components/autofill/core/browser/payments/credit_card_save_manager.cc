@@ -520,8 +520,7 @@ void CreditCardSaveManager::OnDidUploadCard(
 
   // Show credit card upload feedback.
   client_->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
-      result == PaymentsRpcResult::kSuccess,
-      std::move(on_confirmation_closed_callback));
+      result, std::move(on_confirmation_closed_callback));
 
   // Init virtual card enrollment since there is no save card
   // confirmation bubble showing if the flag is disabled.
@@ -760,7 +759,7 @@ void CreditCardSaveManager::OfferCardUploadSave() {
     // attempting to save, since if there were any we would have matched it and
     // not be saving this card.
     bool found_server_card_with_same_last_four_but_different_expiration =
-        base::ranges::any_of(server_cards, [&](const auto* server_card) {
+        std::ranges::any_of(server_cards, [&](const auto* server_card) {
           return server_card->HasSameNumberAs(upload_request_.card) &&
                  !server_card->HasSameExpirationDateAs(upload_request_.card);
         });
@@ -1106,7 +1105,8 @@ int CreditCardSaveManager::GetDetectedValues() const {
 
 void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
     SaveCardOfferUserDecision user_decision,
-    const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
+    const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+        user_provided_card_details) {
   switch (user_decision) {
     case SaveCardOfferUserDecision::kAccepted:
 
@@ -1142,7 +1142,8 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
 
 void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
     SaveCardOfferUserDecision user_decision,
-    const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
+    const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+        user_provided_card_details) {
   switch (user_decision) {
     case SaveCardOfferUserDecision::kAccepted: {
       // If accepted, clear all CvcStorage strikes for this CVC, in case the CVC
@@ -1216,7 +1217,8 @@ void CreditCardSaveManager::OnUserDidAcceptExpirationDateFixFlow(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
-    const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
+    const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+        user_provided_card_details) {
   // If cardholder name was explicitly requested for the user to enter/confirm,
   // replace the name on |upload_request_.card| with the entered name.  (Note
   // that it is possible a name already existed on the card if conflicting names

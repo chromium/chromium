@@ -67,11 +67,9 @@ XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
 XRWebGLBinding::XRWebGLBinding(XRSession* session,
                                WebGLRenderingContextBase* webgl_context,
                                bool webgl2)
-    : session_(session), webgl_context_(webgl_context), webgl2_(webgl2) {}
-
-double XRWebGLBinding::nativeProjectionScaleFactor() const {
-  return session_->NativeFramebufferScale();
-}
+    : XRGraphicsBinding(session),
+      webgl_context_(webgl_context),
+      webgl2_(webgl2) {}
 
 bool XRWebGLBinding::usesDepthValues() const {
   return false;
@@ -104,14 +102,14 @@ WebGLTexture* XRWebGLBinding::getReflectionCubeMap(
     return nullptr;
   }
 
-  if (session_->ended()) {
+  if (session()->ended()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Cannot get a reflection cube map for a session which has ended.");
     return nullptr;
   }
 
-  if (session_ != light_probe->session()) {
+  if (session() != light_probe->session()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "LightProbe comes from a different session than this binding");
@@ -180,10 +178,10 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
   XRFrame* frame = camera->Frame();
   DCHECK(frame);
 
-  XRSession* session = frame->session();
-  DCHECK(session);
+  XRSession* frame_session = frame->session();
+  DCHECK(frame_session);
 
-  if (!session->IsFeatureEnabled(
+  if (!frame_session->IsFeatureEnabled(
           device::mojom::XRSessionFeature::CAMERA_ACCESS)) {
     DVLOG(2) << __func__ << ": raw camera access is not enabled on a session";
     exception_state.ThrowDOMException(
@@ -206,14 +204,14 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
     return nullptr;
   }
 
-  if (session_ != session) {
+  if (session() != frame_session) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Camera comes from a different session than this binding");
     return nullptr;
   }
 
-  XRWebGLLayer* base_layer = session->renderState()->baseLayer();
+  XRWebGLLayer* base_layer = frame_session->renderState()->baseLayer();
   DCHECK(base_layer);
 
   // This resource is owned by the XRWebGLLayer, and is freed in OnFrameEnd();
@@ -227,14 +225,14 @@ XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
 
   XRFrame* frame = view->frame();
 
-  if (session_ != frame->session()) {
+  if (session() != frame->session()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "View comes from a different session than this binding");
     return nullptr;
   }
 
-  if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
+  if (!session()->IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
     DVLOG(2) << __func__ << ": depth sensing is not enabled on a session";
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -260,8 +258,8 @@ XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
 }
 
 void XRWebGLBinding::Trace(Visitor* visitor) const {
-  visitor->Trace(session_);
   visitor->Trace(webgl_context_);
+  XRGraphicsBinding::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 

@@ -147,7 +147,7 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
                              base::SingleThreadTaskRunner::GetCurrentDefault());
   web_database_service->AddTable(
       std::unique_ptr<WebDatabaseTable>(new KeywordTable()));
-  web_database_service->LoadDatabase();
+  web_database_service->LoadDatabase(g_browser_process->os_crypt_async());
 
   web_data_service_ = new KeywordWebDataService(
       web_database_service.get(),

@@ -842,6 +842,7 @@ TEST_P(ImageDecodeAcceleratorStubTest, FailedDecodes) {
 }
 
 TEST_P(ImageDecodeAcceleratorStubTest, OutOfOrderDecodeSyncTokens) {
+  sync_point_manager()->set_suppress_fatal_log_for_testing();
   {
     InSequence call_sequence;
     EXPECT_CALL(image_decode_accelerator_worker_, DoDecode(gfx::Size(100, 100)))
@@ -884,6 +885,7 @@ TEST_P(ImageDecodeAcceleratorStubTest, OutOfOrderDecodeSyncTokens) {
 }
 
 TEST_P(ImageDecodeAcceleratorStubTest, ZeroReleaseCountDecodeSyncToken) {
+  sync_point_manager()->set_suppress_fatal_log_for_testing();
   EXPECT_CALL(image_decode_accelerator_worker_, DoDecode(gfx::Size(100, 100)))
       .Times(1);
   const SyncToken decode_sync_token = SendDecodeRequest(

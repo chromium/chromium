@@ -67,10 +67,6 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
       !is_confirmed.has_value()) {
     return std::nullopt;
   }
-  if (!IsSyncingPlusAddresses()) {
-    return PlusProfile(std::move(profile_id), std::move(facet_str),
-                       std::move(plus_address), *is_confirmed);
-  }
   affiliations::FacetURI facet =
       affiliations::FacetURI::FromPotentiallyInvalidSpec(facet_str);
   if (!facet.is_valid()) {
@@ -78,32 +74,6 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
   }
   return PlusProfile(std::move(profile_id), std::move(facet),
                      std::move(plus_address), *is_confirmed);
-}
-
-// Creates a list of PlusProfiles by parsing each dict-value in `list` that
-// fits this schema (in TS notation):
-// {
-//   "facet": string,
-//   "plusEmail": {
-//     "plusAddress": string
-//     "plusMode": string,
-//   }
-// }[]
-// The returned list only contains PlusProfiles which could be parsed.
-std::vector<PlusProfile> ParsePlusProfilesFromV1ProfileList(
-    base::Value::List list) {
-  std::vector<PlusProfile> profiles;
-  profiles.reserve(list.size());
-  for (base::Value& entry : list) {
-    if (!entry.is_dict()) {
-      continue;
-    }
-    if (std::optional<PlusProfile> maybe_profile =
-            ParsePlusProfileFromV1Dict(std::move(entry.GetDict()))) {
-      profiles.push_back(std::move(*maybe_profile));
-    }
-  }
-  return profiles;
 }
 
 // Attempts to parse a string of format "[0-9]+s" into a `base::TimeDelta`.
@@ -164,30 +134,6 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Create(
       return ParsePlusProfileFromV1Dict(std::move(first_val.GetDict()));
     }
   }
-  return std::nullopt;
-}
-
-std::optional<PlusAddressMap> ParsePlusAddressMapFromV1List(
-    data_decoder::DataDecoder::ValueOrError response) {
-  if (!response.has_value() || !response->is_dict()) {
-    return std::nullopt;
-  }
-  // Use iterators to avoid looking up by JSON keys.
-  for (std::pair<const std::string&, base::Value&> first_level_entry :
-       response->GetDict()) {
-    auto [first_key, first_val] = first_level_entry;
-    if (base::MatchPattern(first_key, "*Profiles") && first_val.is_list()) {
-      PlusAddressMap site_to_plus_address;
-      // Parse the list of profiles and add the result to the mapping.
-      for (PlusProfile& profile :
-           ParsePlusProfilesFromV1ProfileList(std::move(first_val.GetList()))) {
-        site_to_plus_address[std::move(absl::get<std::string>(profile.facet))] =
-            std::move(profile.plus_address);
-      }
-      return site_to_plus_address;
-    }
-  }
-  // Return nullopt if the `*Profiles` key is not present.
   return std::nullopt;
 }
 

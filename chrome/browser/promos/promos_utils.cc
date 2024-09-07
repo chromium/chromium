@@ -12,9 +12,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_types.h"
+#include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
@@ -267,6 +269,15 @@ bool ShouldShowIOSPasswordPromo(Profile* profile) {
 }
 
 bool ShouldShowIOSDesktopPromo(Profile* profile, IOSPromoType promo_type) {
+  // Don't show the promo if the local state exists and `kPromotionsEnabled` is
+  // false (likely overridden by policy).
+#if !BUILDFLAG(IS_ANDROID)
+  PrefService* local_state = g_browser_process->local_state();
+  if (local_state && !local_state->GetBoolean(prefs::kPromotionsEnabled)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   IOSPromoPrefsConfig promo_prefs(promo_type);
   // Show the promo if the user hasn't opted out, is not in the cooldown
   // period and is within the impression limit for this promo.

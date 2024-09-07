@@ -15,7 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
-#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
@@ -28,7 +28,7 @@
 namespace content {
 
 // An implementation of PrivateAggregationManager used for interest group tests
-// that tracks PrivateAggregationBudgetKey::Api::kProtectedAudience reports.
+// that tracks PrivateAggregationCallerApi::kProtectedAudience reports.
 class TestInterestGroupPrivateAggregationManager
     : public PrivateAggregationManager,
       public blink::mojom::PrivateAggregationHost {
@@ -43,7 +43,7 @@ class TestInterestGroupPrivateAggregationManager
   bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      PrivateAggregationCallerApi api_for_budgeting,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,

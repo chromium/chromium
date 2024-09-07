@@ -15,7 +15,9 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -169,9 +171,7 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
   CHECK(thread_checker_.CalledOnValidThread());
 
   // Prevent initializing twice.
-  if (out_) {
-    NOTREACHED();
-  }
+  CHECK(!out_);
 
   print_temp_leaks_ =
       command_line.HasSwitch(switches::kTestLauncherPrintTempLeaks);
@@ -592,11 +592,10 @@ bool TestResultsTracker::SaveSummaryAsJSON(
     return false;
 
   File output(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
-  if (!output.IsValid())
+  if (!output.IsValid()) {
     return false;
-
-  int json_size = static_cast<int>(json.size());
-  if (output.WriteAtCurrentPos(json.data(), json_size) != json_size) {
+  }
+  if (!output.WriteAtCurrentPosAndCheck(base::as_byte_span(json))) {
     return false;
   }
 

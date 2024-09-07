@@ -11,10 +11,7 @@
 #include "components/signin/core/browser/signin_metrics_service.h"
 
 SigninMetricsServiceFactory::SigninMetricsServiceFactory()
-    : ProfileKeyedServiceFactory("SigninMetricsHelper",
-                                 ProfileSelections::Builder()
-                                     .WithAshInternals(ProfileSelection::kNone)
-                                     .Build()) {
+    : ProfileKeyedServiceFactory("SigninMetricsHelper") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

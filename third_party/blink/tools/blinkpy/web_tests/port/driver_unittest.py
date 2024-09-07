@@ -227,7 +227,10 @@ class DriverTest(unittest.TestCase):
             def has_crashed(self):
                 return self.crashed
 
-            def stop(self, timeout=0.0):
+            def stop(self,
+                     timeout_secs=0.0,
+                     kill_tree=True,
+                     send_sigterm=False):
                 pass
 
         def assert_crash(driver,

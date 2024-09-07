@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -350,19 +351,19 @@ class NET_EXPORT HttpResponseHeaders
                                 const base::Time& response_time,
                                 const base::Time& current_time) const;
 
-  // The following methods extract values from the response headers.  If a
-  // value is not present, or is invalid, then false is returned.  Otherwise,
-  // true is returned and the out param is assigned to the corresponding value.
-  bool GetMaxAgeValue(base::TimeDelta* value) const;
-  bool GetAgeValue(base::TimeDelta* value) const;
-  bool GetDateValue(base::Time* value) const;
-  bool GetLastModifiedValue(base::Time* value) const;
-  bool GetExpiresValue(base::Time* value) const;
-  bool GetStaleWhileRevalidateValue(base::TimeDelta* value) const;
+  // The following methods extract values from the response headers.  If a value
+  // is not present, or is invalid, then std::nullopt is returned.  Otherwise,
+  // the value is returned directly.
+  std::optional<base::TimeDelta> GetMaxAgeValue() const;
+  std::optional<base::TimeDelta> GetAgeValue() const;
+  std::optional<base::Time> GetDateValue() const;
+  std::optional<base::Time> GetLastModifiedValue() const;
+  std::optional<base::Time> GetExpiresValue() const;
+  std::optional<base::TimeDelta> GetStaleWhileRevalidateValue() const;
 
   // Extracts the time value of a particular header.  This method looks for the
   // first matching header value and parses its value as a HTTP-date.
-  bool GetTimeValuedHeader(const std::string& name, base::Time* result) const;
+  std::optional<base::Time> GetTimeValuedHeader(const std::string& name) const;
 
   // Determines if this response indicates a keep-alive connection.
   bool IsKeepAlive() const;
@@ -466,10 +467,9 @@ class NET_EXPORT HttpResponseHeaders
   size_t FindHeader(size_t from, std::string_view name) const;
 
   // Search the Cache-Control header for a directive matching |directive|. If
-  // present, treat its value as a time offset in seconds, write it to |result|,
-  // and return true.
-  bool GetCacheControlDirective(std::string_view directive,
-                                base::TimeDelta* result) const;
+  // present, treat its value as a time offset in seconds.
+  std::optional<base::TimeDelta> GetCacheControlDirective(
+      std::string_view directive) const;
 
   // Add header->value pair(s) to our list. The value will be split into
   // multiple values if it contains unquoted commas. If `contains_commas` is

@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/profile_invalidation_provider.h"
@@ -45,12 +46,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 using ::testing::_;
 using ::testing::InvokeWithoutArgs;
@@ -142,7 +137,7 @@ class UserRemoteCommandsServiceTest
         g_browser_process->profile_manager()->user_data_dir();
     profile_ = Profile::CreateProfile(
         dest_path.Append(FILE_PATH_LITERAL("New Profile 1")),
-        /*delegate=*/nullptr, Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
 #else
     profile_ = chrome_test_utils::GetProfile(this);
 #endif

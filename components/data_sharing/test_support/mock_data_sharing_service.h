@@ -63,6 +63,12 @@ class MockDataSharingService : public DataSharingService {
       EnsureGroupVisibility,
       void(const GroupId&,
            base::OnceCallback<void(const GroupDataOrFailureOutcome&)>));
+  MOCK_METHOD2(
+      GetSharedEntitiesPreview,
+      void(const GroupToken&,
+           base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>));
+  MOCK_METHOD0(GetUIDelegate, DataSharingUIDelegate*());
+  MOCK_METHOD0(GetServiceStatus, ServiceStatus());
 };
 
 }  // namespace data_sharing

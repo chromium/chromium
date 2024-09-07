@@ -34,9 +34,6 @@ namespace gl {
 
 class SwapChainPresenter;
 
-inline constexpr int kNumVideoProcessorTypes = 2;
-enum class VideoProcessorType : int { kSDR = 0, kHDR = 1 };
-
 // Cache video processor and its size.
 struct VideoProcessorWrapper {
   VideoProcessorWrapper();
@@ -524,7 +521,8 @@ class GL_EXPORT DCLayerTree {
   // Store the largest video processor for SDR and HDR content
   // to avoid problems in (http://crbug.com/1121061) and
   // (http://crbug.com/1472975).
-  VideoProcessorWrapper video_processor_wrapper_[kNumVideoProcessorTypes];
+  VideoProcessorWrapper video_processor_wrapper_sdr_;
+  VideoProcessorWrapper video_processor_wrapper_hdr_;
 
   // Current video processor input and output colorspace.
   gfx::ColorSpace video_input_color_space_;

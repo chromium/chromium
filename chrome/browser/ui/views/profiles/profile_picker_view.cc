@@ -1145,3 +1145,6 @@ void ProfilePicker::NotifyAccountSelected(const std::string& gaia_id) {
   g_profile_picker_view->NotifyAccountSelected(gaia_id);
 }
 #endif
+
+BEGIN_METADATA(ProfilePickerView)
+END_METADATA

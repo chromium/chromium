@@ -30,7 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
 namespace {
 
 constexpr char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
@@ -44,8 +43,6 @@ std::string FormatModalDurationMetrics(
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
-
-}  // namespace
 
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
@@ -320,4 +317,6 @@ TEST_F(PlusAddressCreationControllerDesktopDisabledTest, NullService) {
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 }
+
+}  // namespace
 }  // namespace plus_addresses

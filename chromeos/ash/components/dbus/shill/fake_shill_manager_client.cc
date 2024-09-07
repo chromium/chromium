@@ -404,9 +404,9 @@ void FakeShillManagerClient::ConfigureService(
   if (type == shill::kTypeWifi) {
     GetString(properties, shill::kSSIDProperty, &name);
 
+    // Use the hex SSID if the SSID was not found in the UI data.
     if (name.empty()) {
-      std::string hex_name;
-      GetString(properties, shill::kWifiHexSsid, &hex_name);
+      std::string hex_name = GetStringValue(properties, shill::kWifiHexSsid);
       if (!hex_name.empty()) {
         std::vector<uint8_t> bytes;
         if (base::HexStringToBytes(hex_name, &bytes)) {
@@ -445,6 +445,16 @@ void FakeShillManagerClient::ConfigureService(
   // Set all the properties.
   for (auto iter : properties) {
     service_client->SetServiceProperty(service_path, iter.first, iter.second);
+  }
+
+  if (type == shill::kTypeWifi) {
+    // Wi-Fi networks should always have an SSID. Since the `name` is determined
+    // using the SSID or the hex SSID we can simply set the SSID property
+    // directly and know that it will be set correctly if it wasn't already.
+    // This is done to emulate Shill behavior.
+    CHECK(!name.empty());
+    service_client->SetServiceProperty(service_path, shill::kSSIDProperty,
+                                       base::Value(name));
   }
 
   // If the Profile property is set, add it to ProfileClient.
@@ -940,6 +950,30 @@ void FakeShillManagerClient::RemoveManagerService(
   GetListProperty(shill::kServiceCompleteListProperty)
       .EraseValue(service_path_value);
   CallNotifyObserversPropertyChanged(shill::kServiceCompleteListProperty);
+}
+
+void FakeShillManagerClient::RestartTethering() {
+  auto my_error_callback = [](const std::string& error_name,
+                              const std::string& error_message) {
+    LOG(ERROR) << "Unexpected error occurred: " << error_name << " "
+               << error_message;
+    NOTREACHED();
+  };
+  DisableTethering(
+      base::BindOnce(&FakeShillManagerClient::OnDisableTetheringSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(my_error_callback));
+}
+
+void FakeShillManagerClient::OnDisableTetheringSuccess(
+    const std::string& result) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeShillManagerClient::EnableTethering,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     shill::WiFiInterfacePriority::OS_REQUEST,
+                     base::DoNothing(), base::DoNothing()),
+      interactive_delay_);
 }
 
 void FakeShillManagerClient::ClearManagerServices() {

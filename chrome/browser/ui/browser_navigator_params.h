@@ -35,7 +35,6 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tab_groups/tab_group_id.h"
 #endif
 
@@ -123,9 +122,9 @@ struct NavigateParams {
   // The frame name to be used for the main frame.
   std::string frame_name;
 
-  // The browser-global ID of the frame to navigate, or
-  // content::RenderFrameHost::kNoFrameTreeNodeId for the main frame.
-  int frame_tree_node_id = content::RenderFrameHost::kNoFrameTreeNodeId;
+  // The browser-global ID of the frame to navigate, or the default invalid
+  // value for the main frame.
+  content::FrameTreeNodeId frame_tree_node_id;
 
   // Any redirect URLs that occurred for this navigation before |url|.
   // Usually empty.

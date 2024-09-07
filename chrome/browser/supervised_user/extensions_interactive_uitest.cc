@@ -74,6 +74,7 @@ InteractiveBrowserTestApi::StateChange PageWithMatchingTitle(
 class SupervisedUserExtensionsParentalControlsUiTest
     : public InteractiveFamilyLiveTest,
       public testing::WithParamInterface<std::tuple<
+          FamilyLiveTest::RpcMode,
           /*permissions_switch_state=*/FamilyLinkToggleState,
           /*extensions_switch_state=*/FamilyLinkToggleState,
           // Depending on the ExtensionHandlingMode only one switch
@@ -81,7 +82,8 @@ class SupervisedUserExtensionsParentalControlsUiTest
           // Toggling the other switch should have no effect to the result.
           /*extensions_handling_mode=*/ExtensionHandlingMode>> {
  public:
-  SupervisedUserExtensionsParentalControlsUiTest() {
+  SupervisedUserExtensionsParentalControlsUiTest()
+      : InteractiveFamilyLiveTest(GetRpcMode()) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -273,16 +275,20 @@ class SupervisedUserExtensionsParentalControlsUiTest
                                    : "blocked extension message")));
   }
 
-  static FamilyLinkToggleState GetPermissionsSwitchTargetState() {
+  static FamilyLiveTest::RpcMode GetRpcMode() {
     return std::get<0>(GetParam());
   }
 
-  static FamilyLinkToggleState GetExtensionsSwitchTargetState() {
+  static FamilyLinkToggleState GetPermissionsSwitchTargetState() {
     return std::get<1>(GetParam());
   }
 
-  static ExtensionHandlingMode GetExtensionHandlingMode() {
+  static FamilyLinkToggleState GetExtensionsSwitchTargetState() {
     return std::get<2>(GetParam());
+  }
+
+  static ExtensionHandlingMode GetExtensionHandlingMode() {
+    return std::get<3>(GetParam());
   }
 
  private:
@@ -308,14 +314,13 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
           ExtensionHandlingMode::kExtensionsGovernedByExtensionsSwitch &&
       GetExtensionsSwitchTargetState() == FamilyLinkToggleState::kEnabled;
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Set the FL switch in the value that require parent approvals for
   // extension installation.
   RunTestSequence(
       Log("Set config that requires parental approvals."),
-      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kResetStateObserverId, child(),
                           BrowserState::SetAdvancedSettingsDefault()));
 
   InstallExtension(child().browser()->profile());
@@ -325,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       // Parent sets both the FL Permissions and Extensions switches.
       // Only one of them impacts the handling of supervised user extensions.
       WaitForStateSeeding(
-          kDefineStateObserverId, head_of_household(), child(),
+          kDefineStateObserverId, child(),
           BrowserState::AdvancedSettingsToggles(
               {FamilyLinkToggleConfiguration(
                    {.type = FamilyLinkToggleType::kExtensionsToggle,
@@ -353,6 +358,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserExtensionsParentalControlsUiTest,
     testing::Combine(
+        testing::Values(FamilyLiveTest::RpcMode::kProd,
+                        FamilyLiveTest::RpcMode::kTestImpersonation),
         /*permissions_switch_target_value=*/
         testing::Values(FamilyLinkToggleState::kEnabled,
                         FamilyLinkToggleState::kDisabled),
@@ -364,15 +371,16 @@ INSTANTIATE_TEST_SUITE_P(
             ExtensionHandlingMode::kExtensionsGovernedByPermissionsSwitch,
             ExtensionHandlingMode::kExtensionsGovernedByExtensionsSwitch)),
     [](const auto& info) {
-      return std::string(
-                 (std::get<0>(info.param) == FamilyLinkToggleState::kEnabled
+      return ToString(std::get<0>(info.param)) +
+             std::string(
+                 (std::get<1>(info.param) == FamilyLinkToggleState::kEnabled
                       ? "WithPermissionsOn"
                       : "WithPermissionsOff")) +
              std::string(
-                 (std::get<1>(info.param) == FamilyLinkToggleState::kEnabled
+                 (std::get<2>(info.param) == FamilyLinkToggleState::kEnabled
                       ? "WithExtensionsOn"
                       : "WithExtensionsOff")) +
-             std::string((std::get<2>(info.param) ==
+             std::string((std::get<3>(info.param) ==
                                   ExtensionHandlingMode::
                                       kExtensionsGovernedByPermissionsSwitch
                               ? "ManagedByPermissionsSwitch"

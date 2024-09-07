@@ -58,7 +58,7 @@ bool AXEventRecorderAuraLinux::ShouldUseATSPI() {
 }
 
 AXEventRecorderAuraLinux::AXEventRecorderAuraLinux(
-    base::WeakPtr<ui::AXPlatformTreeManager> manager,
+    base::WeakPtr<AXPlatformTreeManager> manager,
     base::ProcessId pid,
     const AXTreeSelector& selector)
     : manager_(manager), pid_(pid), selector_(selector) {

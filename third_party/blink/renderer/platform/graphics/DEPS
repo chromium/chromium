@@ -103,4 +103,7 @@ specific_include_rules = {
   "video_frame_image_util_test.cc": [
     "+media/renderers/shared_image_video_frame_test_utils.h",
   ],
+  "web_graphics_context_3d_video_frame_pool.h": [
+    "+base/cancelable_callback.h",
+  ],
 }

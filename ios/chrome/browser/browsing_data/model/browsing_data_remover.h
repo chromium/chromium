@@ -25,6 +25,9 @@ class BrowsingDataRemover : public KeyedService {
 
   ~BrowsingDataRemover() override;
 
+  // Returns a weak pointer to BrowsingDataRemover.
+  base::WeakPtr<BrowsingDataRemover> AsWeakPtr();
+
   // Is the service currently in the process of removing data?
   virtual bool IsRemoving() const = 0;
 
@@ -58,6 +61,8 @@ class BrowsingDataRemover : public KeyedService {
 
  private:
   base::ObserverList<BrowsingDataRemoverObserver, true> observers_;
+
+  base::WeakPtrFactory<BrowsingDataRemover> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_H_

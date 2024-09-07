@@ -21,6 +21,7 @@
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_fetcher_consumer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential+PasswordForm.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
@@ -45,19 +46,6 @@
 
 using password_manager::CredentialUIEntry;
 using password_manager::PasswordForm;
-
-namespace manual_fill {
-
-NSString* const ManagePasswordsAccessibilityIdentifier =
-    @"kManualFillManagePasswordsAccessibilityIdentifier";
-NSString* const ManageSettingsAccessibilityIdentifier =
-    @"kManualFillManageSettingsAccessibilityIdentifier";
-NSString* const OtherPasswordsAccessibilityIdentifier =
-    @"kManualFillOtherPasswordsAccessibilityIdentifier";
-NSString* const SuggestPasswordAccessibilityIdentifier =
-    @"kManualFillSuggestPasswordAccessibilityIdentifier";
-
-}  // namespace manual_fill
 
 // Checks if two credential are connected. They are considered connected if they
 // have the same host.
@@ -311,9 +299,10 @@ BOOL AreCredentialsAtIndicesConnected(
               isConnectedToNextItem:isConnectedToNextItem
                     contentInjector:self
                         menuActions:menuActions
+                          cellIndex:i
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
              showAutofillFormButton:_showAutofillFormButton
-             shouldReauthToAutofill:![self isFromAllPasswordsContext]];
+            fromAllPasswordsContext:[self isFromAllPasswordsContext]];
     [items addObject:item];
   }
   return items;
@@ -347,7 +336,7 @@ BOOL AreCredentialsAtIndicesConnected(
                    [weakSelf.navigator openPasswordSuggestion];
                  }];
       suggestPasswordItem.accessibilityIdentifier =
-          manual_fill::SuggestPasswordAccessibilityIdentifier;
+          manual_fill::kSuggestPasswordAccessibilityIdentifier;
       [actions addObject:suggestPasswordItem];
     }
 
@@ -363,7 +352,7 @@ BOOL AreCredentialsAtIndicesConnected(
                    [weakSelf.navigator openAllPasswordsList];
                  }];
       otherPasswordsItem.accessibilityIdentifier =
-          manual_fill::OtherPasswordsAccessibilityIdentifier;
+          manual_fill::kOtherPasswordsAccessibilityIdentifier;
       [actions addObject:otherPasswordsItem];
     }
 
@@ -378,7 +367,7 @@ BOOL AreCredentialsAtIndicesConnected(
                  [weakSelf.navigator openPasswordManager];
                }];
     managePasswordsItem.accessibilityIdentifier =
-        manual_fill::ManagePasswordsAccessibilityIdentifier;
+        manual_fill::kManagePasswordsAccessibilityIdentifier;
     [actions addObject:managePasswordsItem];
 
     NSString* manageSettingsTitle =
@@ -391,7 +380,7 @@ BOOL AreCredentialsAtIndicesConnected(
                  [weakSelf.navigator openPasswordSettings];
                }];
     manageSettingsItem.accessibilityIdentifier =
-        manual_fill::ManageSettingsAccessibilityIdentifier;
+        manual_fill::kManageSettingsAccessibilityIdentifier;
 
     [actions addObject:manageSettingsItem];
 
@@ -474,10 +463,15 @@ BOOL AreCredentialsAtIndicesConnected(
 // Requests the appropriate delegate to open the details of the given credential
 // in edit mode.
 - (void)openPasswordDetailsInEditMode:(CredentialUIEntry)credential {
-  if ([self isFromAllPasswordsContext]) {
+  BOOL fromAllPasswordContext = [self isFromAllPasswordsContext];
+  if (fromAllPasswordContext) {
+    base::RecordAction(base::UserMetricsAction(
+        "ManualFallback_OtherPasswords_OverflowMenu_Edit"));
     [self.delegate manualFillPasswordMediator:self
         didTriggerOpenPasswordDetailsInEditMode:credential];
   } else {
+    base::RecordAction(
+        base::UserMetricsAction("ManualFallback_Password_OverflowMenu_Edit"));
     [self.navigator openPasswordDetailsInEditModeForCredential:credential];
   }
 }
@@ -540,9 +534,11 @@ BOOL AreCredentialsAtIndicesConnected(
                                       shouldReauth:shouldReauth];
 }
 
-- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion {
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index {
   [self.delegate manualFillPasswordMediatorWillInjectContent:self];
-  [self.contentInjector autofillFormWithSuggestion:formSuggestion];
+  [self.contentInjector autofillFormWithSuggestion:formSuggestion
+                                           atIndex:index];
 }
 
 - (BOOL)isActiveFormAPasswordForm {

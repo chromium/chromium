@@ -143,8 +143,7 @@ class CC_EXPORT PictureLayerTilingSet {
                             float ideal_contents_scale,
                             double current_frame_time_in_seconds,
                             const Occlusion& occlusion_in_layer_space,
-                            bool can_require_tiles_for_activation,
-                            TileMemoryLimitPolicy memory_limit_policy);
+                            bool can_require_tiles_for_activation);
 
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;
@@ -235,7 +234,7 @@ class CC_EXPORT PictureLayerTilingSet {
   scoped_refptr<RasterSource> raster_source_;
 
   gfx::Rect visible_rect_in_layer_space_;
-  gfx::Rect skewport_in_layer_space_;
+  gfx::Rect skewport_rect_in_layer_space_;
   gfx::Rect soon_border_rect_in_layer_space_;
   gfx::Rect eventually_rect_in_layer_space_;
 

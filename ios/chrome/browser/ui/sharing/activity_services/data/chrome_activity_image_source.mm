@@ -24,7 +24,7 @@
 - (instancetype)initWithImage:(UIImage*)image title:(NSString*)title {
   DCHECK(image);
   DCHECK(title);
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _image = image;
     _title = title;
   }

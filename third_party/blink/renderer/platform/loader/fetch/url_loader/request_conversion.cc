@@ -255,9 +255,6 @@ scoped_refptr<network::ResourceRequestBody> NetworkResourceRequestBodyFor(
         ToCrossVariantMojoType(std::move(stream_body)),
         network::ResourceRequestBody::ReadOnlyOnce(true));
   }
-  if (dest_body) {
-    dest_body->SetAllowHTTP1ForStreamingUpload(false);
-  }
   return dest_body;
 }
 

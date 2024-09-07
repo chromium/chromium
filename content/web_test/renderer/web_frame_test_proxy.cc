@@ -71,10 +71,6 @@ std::string URLSuitableForTestResult(const std::string& url) {
   return filename;
 }
 
-void BlockRequest(blink::WebURLRequest& request) {
-  request.SetUrl(GURL("255.255.255.255"));
-}
-
 bool IsLocalHost(const std::string& host) {
   return host == "127.0.0.1" || host == "localhost" || host == "[::1]";
 }
@@ -442,13 +438,40 @@ void WebFrameTestProxy::DidDispatchPingLoader(const blink::WebURL& url) {
   RenderFrameImpl::DidDispatchPingLoader(url);
 }
 
-void WebFrameTestProxy::WillSendRequest(blink::WebURLRequest& request,
-                                        ForRedirect for_redirect,
-                                        const blink::WebURL& upstream_url) {
-  RenderFrameImpl::WillSendRequest(request, for_redirect, upstream_url);
-
+std::optional<blink::WebURL> WebFrameTestProxy::WillSendRequest(
+    const blink::WebURL& target,
+    const blink::WebSecurityOrigin& security_origin,
+    const net::SiteForCookies& site_for_cookies,
+    ForRedirect for_redirect,
+    const blink::WebURL& upstream_url) {
+  std::optional<blink::WebURL> adjusted_url = RenderFrameImpl::WillSendRequest(
+      target, security_origin, site_for_cookies, for_redirect, upstream_url);
   // Need to use GURL for host() and SchemeIs()
-  GURL url = request.Url();
+  GURL url = adjusted_url.has_value() ? *adjusted_url : target;
+
+  std::string host = url.host();
+  if (!host.empty() &&
+      (url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme))) {
+    if (!IsLocalHost(host) && !IsTestHost(host) &&
+        !HostIsUsedBySomeTestsToGenerateError(host) &&
+        ((site_for_cookies.scheme() != url::kHttpScheme &&
+          site_for_cookies.scheme() != url::kHttpsScheme) ||
+         IsLocalHost(site_for_cookies.registrable_domain())) &&
+        !test_runner_->TestConfig().allow_external_pages) {
+      GetWebTestControlHostRemote()->PrintMessage(
+          std::string("Blocked access to external URL ") +
+          url.possibly_invalid_spec() + "\n");
+      return GURL("255.255.255.255");
+    }
+  }
+
+  // Set the new substituted URL.
+  return RewriteWebTestsURL(url.spec(),
+                            test_runner()->IsWebPlatformTestsMode());
+}
+
+void WebFrameTestProxy::FinalizeRequest(blink::WebURLRequest& request) {
+  RenderFrameImpl::FinalizeRequest(request);
 
   // Warning: this may be null in some cross-site cases.
   net::SiteForCookies site_for_cookies = request.SiteForCookies();
@@ -465,27 +488,6 @@ void WebFrameTestProxy::WillSendRequest(blink::WebURLRequest& request,
     request.SetReferrerPolicy(blink::ReferrerUtils::NetToMojoReferrerPolicy(
         blink::ReferrerUtils::GetDefaultNetReferrerPolicy()));
   }
-
-  std::string host = url.host();
-  if (!host.empty() &&
-      (url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme))) {
-    if (!IsLocalHost(host) && !IsTestHost(host) &&
-        !HostIsUsedBySomeTestsToGenerateError(host) &&
-        ((site_for_cookies.scheme() != url::kHttpScheme &&
-          site_for_cookies.scheme() != url::kHttpsScheme) ||
-         IsLocalHost(site_for_cookies.registrable_domain())) &&
-        !test_runner_->TestConfig().allow_external_pages) {
-      GetWebTestControlHostRemote()->PrintMessage(
-          std::string("Blocked access to external URL ") +
-          url.possibly_invalid_spec() + "\n");
-      BlockRequest(request);
-      return;
-    }
-  }
-
-  // Set the new substituted URL.
-  request.SetUrl(RewriteWebTestsURL(request.Url().GetString().Utf8(),
-                                    test_runner()->IsWebPlatformTestsMode()));
 }
 
 void WebFrameTestProxy::BeginNavigation(

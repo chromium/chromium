@@ -27,7 +27,6 @@ MONITORINFOEX CreateMonitorInfo(const gfx::Rect& monitor,
   monitor_info.rcWork = work.ToRECT();
   size_t device_char_count = ARRAYSIZE(monitor_info.szDevice);
   wcsncpy(monitor_info.szDevice, device_name.c_str(), device_char_count);
-  monitor_info.szDevice[device_char_count-1] = L'\0';
   return monitor_info;
 }
 

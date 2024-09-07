@@ -18,7 +18,7 @@ blink_python_runner("make_generated_permissions_policy_features") {
   script = "../renderer/build/scripts/make_permissions_policy_features.py"
 
   inputs = scripts_for_json5_files + [
-             "../renderer/build/scripts/make_permissions_policy_features.py",
+             "../renderer/build/scripts/make_runtime_features_utilities.py",
              "../renderer/core/permissions_policy/permissions_policy_features.json5",
              "../renderer/build/scripts/templates/permissions_policy_features_generated.cc.tmpl",
            ]
@@ -39,7 +39,8 @@ blink_python_runner("make_generated_document_policy_features") {
 
   inputs =
       scripts_for_json5_files + [
-        "../renderer/build/scripts/make_document_policy_features.py",
+        "../renderer/build/scripts/make_runtime_features_utilities.py",
+        "../renderer/build/scripts/make_runtime_features.py",
         "../renderer/build/scripts/make_document_policy_features_util.py",
         "../renderer/core/permissions_policy/document_policy_features.json5",
         "../renderer/build/scripts/templates/document_policy_features.cc.tmpl",
@@ -60,9 +61,10 @@ blink_python_runner("make_generated_features") {
   script = "../renderer/build/scripts/make_common_features.py"
 
   inputs = scripts_for_json5_files + [
-             "../renderer/build/scripts/make_common_features.py",
-             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/build/scripts/make_runtime_features_utilities.py",
+             "../renderer/build/scripts/make_runtime_features.py",
              "../renderer/build/scripts/templates/features_generated.cc.tmpl",
+             "../renderer/platform/runtime_enabled_features.json5",
            ]
   outputs = [ "$root_gen_dir/third_party/blink/common/features_generated.cc" ]
 
@@ -83,9 +85,10 @@ blink_python_runner("make_generated_origin_trials") {
   script = "../renderer/build/scripts/make_origin_trials.py"
 
   inputs = scripts_for_json5_files + [
-             "../renderer/build/scripts/make_origin_trials.py",
-             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/build/scripts/make_runtime_features_utilities.py",
+             "../renderer/build/scripts/make_runtime_features.py",
              "../renderer/build/scripts/templates/origin_trials.cc.tmpl",
+             "../renderer/platform/runtime_enabled_features.json5",
            ]
   outputs = [
     "$root_gen_dir/third_party/blink/common/origin_trials/origin_trials.cc",
@@ -105,8 +108,10 @@ blink_python_runner("make_runtime_feature_state_contexts_impl") {
       "../renderer/build/scripts/make_runtime_feature_state_contexts_impl.py"
 
   inputs = scripts_for_json5_files + [
-             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/build/scripts/make_runtime_features_utilities.py",
+             "../renderer/build/scripts/make_runtime_features.py",
              "../renderer/build/scripts/templates/runtime_feature_state_context.cc.tmpl",
+             "../renderer/platform/runtime_enabled_features.json5",
            ]
 
   outputs = [ "$root_gen_dir/third_party/blink/common/runtime_feature_state/runtime_feature_state_context.cc" ]

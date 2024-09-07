@@ -43,7 +43,7 @@ namespace content {
 CriticalClientHintsThrottle::CriticalClientHintsThrottle(
     BrowserContext* context,
     ClientHintsControllerDelegate* client_hint_delegate,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : context_(context),
       client_hint_delegate_(client_hint_delegate),
       frame_tree_node_id_(frame_tree_node_id) {

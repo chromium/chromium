@@ -23,6 +23,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram
+    name="VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits.InOutPercentage"
+    units="%" expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the percentage of history annotated visits that have a visit
+    duration greater than zero milliseconds and that will be leveratged to
+    produce history aggregate data. Logged every time the History URL visit data
+    fetcher executes and the associated features and params are enabled.
+  </summary>
+</histogram>
+
 <histogram name="VisitedURLRanking.Fetch.{Fetcher}.Success"
     enum="BooleanSuccess" expires_after="2025-03-22">
   <owner>romanarora@chromium.org</owner>

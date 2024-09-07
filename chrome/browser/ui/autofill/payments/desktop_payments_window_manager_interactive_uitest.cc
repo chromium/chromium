@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
                        FlowStartedConsentNotGivenYetHistogramBucketLogs) {
   RunTestSequence(
       TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
-      FlushEvents(), Check([this]() {
+      Check([this]() {
         return histogram_tester_.GetBucketCount(
                    kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
                    autofill_metrics::Vcn3dsFlowEvent::kFlowStarted) == 1;
@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
           AfterHide(
               PaymentsWindowUserConsentDialogView::kTopViewId,
               []() { EXPECT_EQ(BrowserList::GetInstance()->size(), 2U); }),
-          FlushEvents(), Check([this]() {
+          Check([this]() {
             return histogram_tester_.GetBucketCount(
                        kVcn3dsFlowEventsHistogramName,
                        autofill_metrics::Vcn3dsFlowEvent::
@@ -927,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
       // must be used.
       InSameContext(
           Steps(PressButton(views::DialogClientView::kCancelButtonElementId),
-                FlushEvents(), Check([this]() {
+                Check([this]() {
                   return histogram_tester_.GetBucketCount(
                              kVcn3dsFlowEventsHistogramName,
                              autofill_metrics::Vcn3dsFlowEvent::

@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.ContextualSearchTabPromotionDelegate;
@@ -62,10 +61,10 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSuppl
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
+import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -73,7 +72,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.gsa.ContextReporter;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -122,6 +120,8 @@ import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
+import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryButtonController;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
@@ -253,8 +253,7 @@ public class RootUiCoordinator
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
     /**
-     * A controller which is used to show an Incognito re-auth dialog when the feature is
-     * available.
+     * A controller which is used to show an Incognito re-auth dialog when the feature is available.
      */
     private @Nullable IncognitoReauthController mIncognitoReauthController;
 
@@ -342,8 +341,6 @@ public class RootUiCoordinator
     private AppMenuObserver mAppMenuObserver;
     private boolean mKeyboardVisibleDuringFoldTransition;
     private Long mKeyboardVisibilityTimestamp;
-    private DataSharingTabManager mDataSharingTabManager;
-    private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
 
     private OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -524,24 +521,6 @@ public class RootUiCoordinator
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mIncognitoTabSwitcherSupplier = incognitoTabSwitcherSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
-
-        mDataSharingTabSwitcherDelegate =
-                new DataSharingTabSwitcherDelegate() {
-                    @Override
-                    public void openTabGroupWithTabId(Integer tabId) {
-                        TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
-                        assert tabSwitcher != null;
-                        tabSwitcher.requestOpenTabGroupDialog(tabId);
-                    }
-                };
-
-        mDataSharingTabManager =
-                new DataSharingTabManager(
-                        mDataSharingTabSwitcherDelegate,
-                        mProfileSupplier,
-                        this::getBottomSheetController,
-                        mShareDelegateSupplier,
-                        mWindowAndroid);
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mTopUiThemeColorProvider =
@@ -933,6 +912,23 @@ public class RootUiCoordinator
                 mLayoutManager);
         initBoardingPassDetector();
 
+        if (EphemeralTabCoordinator.isSupported()) {
+            Supplier<TabCreator> tabCreator =
+                    () ->
+                            mTabCreatorManagerSupplier
+                                    .get()
+                                    .getTabCreator(
+                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
+            mEphemeralTabCoordinatorSupplier.set(
+                    new EphemeralTabCoordinator(
+                            mActivity,
+                            mWindowAndroid,
+                            mActivity.getWindow().getDecorView(),
+                            mActivityTabProvider,
+                            tabCreator,
+                            getBottomSheetController(),
+                            canPreviewPromoteToTab()));
+        }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             ReadAloudController controller =
@@ -945,7 +941,8 @@ public class RootUiCoordinator
                             mBottomControlsStacker,
                             mLayoutManagerSupplier,
                             mWindowAndroid,
-                            mActivityLifecycleDispatcher);
+                            mActivityLifecycleDispatcher,
+                            mLayoutStateProviderOneShotSupplier);
             mReadAloudControllerSupplier.set(controller);
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {
@@ -965,6 +962,11 @@ public class RootUiCoordinator
                 contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
             }
         }
+    }
+
+    /** Preview Tab can be promoted to a normal tab by default. */
+    protected boolean canPreviewPromoteToTab() {
+        return true;
     }
 
     protected boolean isContextualSearchEnabled() {
@@ -1026,10 +1028,6 @@ public class RootUiCoordinator
                     .get()
                     .hideContextualSearch(OverlayPanel.StateChangeReason.UNKNOWN);
         }
-    }
-
-    public ContextReporter.SelectionReporter getContextReporter() {
-        return null;
     }
 
     /**
@@ -1509,6 +1507,14 @@ public class RootUiCoordinator
                             new AdaptiveButtonActionMenuCoordinator(),
                             mWindowAndroid,
                             ChromeSharedPreferences.getInstance());
+            PageSummaryButtonController pageSummaryButtonController =
+                    new PageSummaryButtonController(
+                            mActivity,
+                            mBottomSheetController,
+                            mModalDialogManagerSupplier.get(),
+                            mActivityTabProvider,
+                            PageInfoSharingControllerImpl.getInstance());
+
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
@@ -1528,6 +1534,8 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.READER_MODE, readerModeToolbarButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.READ_ALOUD, readAloudButtonController);
+            adaptiveToolbarButtonController.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.PAGE_SUMMARY, pageSummaryButtonController);
             mContextualPageActionController =
                     new ContextualPageActionController(
                             mProfileSupplier,
@@ -1617,10 +1625,9 @@ public class RootUiCoordinator
                             mAppMenuDelegate,
                             mActivityLifecycleDispatcher,
                             mBottomSheetController,
-                            mDataSharingTabManager,
+                            getDataSharingTabManager(),
                             mTabContentManagerSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
-                            mSnackbarManagerSupplier.get(),
                             getMerchantTrustSignalsCoordinatorSupplier(),
                             omniboxActionDelegate,
                             mEphemeralTabCoordinatorSupplier,
@@ -1954,7 +1961,8 @@ public class RootUiCoordinator
                             mWindowAndroid,
                             activityTabProvider,
                             browserControlsManager,
-                            layoutManager);
+                            layoutManager,
+                            mFullscreenManager);
             supplier.set(mEdgeToEdgeController);
 
             if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
@@ -2193,6 +2201,7 @@ public class RootUiCoordinator
     }
 
     public DataSharingTabManager getDataSharingTabManager() {
-        return mDataSharingTabManager;
+        // This should only be called on an instance of TabbedRootUiCoordinator.
+        return null;
     }
 }

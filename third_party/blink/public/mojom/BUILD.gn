@@ -29,7 +29,9 @@ mojom("mojom_platform") {
     "aggregation_service/aggregatable_report.mojom",
     "ai/ai_manager.mojom",
     "ai/ai_rewriter.mojom",
+    "ai/ai_summarizer.mojom",
     "ai/ai_text_session.mojom",
+    "ai/ai_text_session_info.mojom",
     "ai/ai_writer.mojom",
     "ai/model_streaming_responder.mojom",
     "annotation/annotation.mojom",
@@ -236,6 +238,7 @@ mojom("mojom_platform") {
     "user_agent/user_agent_metadata.mojom",
     "v8_cache_options.mojom",
     "wake_lock/wake_lock.mojom",
+    "web_install/web_install.mojom",
     "web_launch/web_launch.mojom",
     "webaudio/audio_context_manager.mojom",
     "webdatabase/web_database.mojom",
@@ -1347,6 +1350,7 @@ mojom("mojom_core") {
     "page/prerender_page_param.mojom",
     "page/widget.mojom",
     "page_state/page_state.mojom",
+    "partitioned_popins/partitioned_popin_params.mojom",
 
     # transferable_message.mojom depends the other messaging/ mojom files here.
     "messaging/cloneable_message.mojom",

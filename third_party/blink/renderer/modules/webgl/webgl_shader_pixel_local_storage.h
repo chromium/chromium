@@ -25,7 +25,7 @@ class WebGLShaderPixelLocalStorage final : public WebGLExtension {
 
   WebGLExtensionName GetName() const override;
 
-  GLboolean isCoherent() const;
+  bool isCoherent() const;
 
   void framebufferTexturePixelLocalStorageWEBGL(GLint plane,
                                                 WebGLTexture*,

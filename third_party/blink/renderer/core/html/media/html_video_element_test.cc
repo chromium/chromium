@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html/media/media_video_visibility_tracker.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::_;
+using testing::Return;
 
 namespace blink {
 
@@ -39,6 +41,7 @@ class HTMLVideoElementMockMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_METHOD(void,
               RecordVideoOcclusionState,
               (std::string_view occlusion_state));
+  MOCK_METHOD(gfx::Size, NaturalSize, (), (const));
 };
 }  // namespace
 
@@ -83,6 +86,12 @@ class HTMLVideoElementTest : public PaintTestConfigurations,
                              request_visibility_callback) const {
     DCHECK(video_);
     video_->RequestVisibility(std::move(request_visibility_callback));
+  }
+
+  const MediaVideoVisibilityTracker::OcclusionState& TrackerOcclusionState() {
+    DCHECK(video_);
+    DCHECK(video_->visibility_tracker_for_tests());
+    return video_->visibility_tracker_for_tests()->occlusion_state_;
   }
 
  private:
@@ -274,7 +283,7 @@ TEST_P(HTMLVideoElementTest,
       "has sufficiently visible video: {True}, occluded area: {0.00}, "
       "occluding rects: {None}, intersection rect: {x: 8, y: 8, width: 300, "
       "height: 150}, video element rect: {x: 8, y: 8, width: 300, height: "
-      "150}, visibility threshold: {0.80}";
+      "150}, visibility threshold: {10000}";
   EXPECT_CALL((*MockMediaPlayer()),
               RecordVideoOcclusionState(expected_occlusion_state));
   RequestVisibility(base::DoNothing());
@@ -333,10 +342,47 @@ TEST_P(HTMLVideoElementTest,
   const std::string expected_occlusion_state =
       "has sufficiently visible video: {False}, occluded area: {0.00}, "
       "occluding rects: {None}, intersection rect: {None}, video element rect: "
-      "{None}, visibility threshold: {0.80}";
+      "{None}, visibility threshold: {10000}";
   EXPECT_CALL((*MockMediaPlayer()),
               RecordVideoOcclusionState(expected_occlusion_state));
   RequestVisibility(base::DoNothing());
+}
+
+TEST_P(HTMLVideoElementTest, VideoVisibilityTrackerVideoElementRectDimensions) {
+  const auto& expected_natural_size = gfx::Size(1920, 1080);
+  EXPECT_CALL(*MockMediaPlayer(), NaturalSize())
+      .WillRepeatedly(Return(expected_natural_size));
+
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  video()->setAttribute(html_names::kStyleAttr,
+                        AtomicString("width: 300px; height: 300px"));
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+
+  video()->Play();
+  EXPECT_TRUE(video()->GetWebMediaPlayer());
+  ASSERT_EQ(expected_natural_size,
+            gfx::Size(video()->videoWidth(), video()->videoHeight()));
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(), nullptr);
+
+  RequestVisibility(base::DoNothing());
+
+  // Verify that the visibility tracker is using the content rect for the
+  // `video_element_rect`.
+  const auto occlusion_state = TrackerOcclusionState();
+  LayoutBox* box = To<LayoutBox>(video()->GetLayoutObject());
+  EXPECT_EQ(box->AbsoluteBoundingBoxRect().width(),
+            occlusion_state.video_element_rect.Width());
+  EXPECT_GT(box->AbsoluteBoundingBoxRect().height(),
+            occlusion_state.video_element_rect.Height());
+
+  // Verify that the `video_element_rect` intersects the `HTMLVideoElement`
+  // bounds.
+  const auto intersection = Intersection(box->VisualRectInDocument(),
+                                         occlusion_state.video_element_rect);
+  EXPECT_EQ(occlusion_state.video_element_rect, intersection);
 }
 
 }  // namespace blink

@@ -14,8 +14,8 @@
 @interface SwitchProfileSettingsTableViewController
     : SettingsRootTableViewController <UITableViewDelegate>
 
-// Name of the active browser state.
-@property(nonatomic, copy) NSString* activeBrowserStateName;
+// Name of the active profile.
+@property(nonatomic, copy) NSString* activeProfileName;
 
 // InfobarTranslateModalDelegate for this ViewController.
 @property(nonatomic, strong) id<SwitchProfileSettingsDelegate> delegate;

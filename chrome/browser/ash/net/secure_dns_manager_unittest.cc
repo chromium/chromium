@@ -13,6 +13,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver.h"
 #include "chrome/browser/net/secure_dns_config.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -154,7 +156,6 @@ class SecureDnsManagerObserver : public SecureDnsManager::Observer {
     doh_template_uri_ = template_uris;
   }
   void OnModeChanged(const std::string& mode) override { doh_mode_ = mode; }
-
   void OnSecureDnsManagerShutdown() override {
     secure_dns_manager_->RemoveObserver(this);
     secure_dns_manager_ = nullptr;
@@ -186,16 +187,37 @@ class SecureDnsManagerTest : public testing::Test {
         prefs::kDnsOverHttpsExcludedDomains, base::Value::List());
     local_state_.registry()->RegisterListPref(
         prefs::kDnsOverHttpsIncludedDomains, base::Value::List());
+    local_state_.registry()->RegisterBooleanPref(
+        ::prefs::kBuiltInDnsClientEnabled, true);
+    local_state_.registry()->RegisterBooleanPref(
+        ::prefs::kAdditionalDnsQueryTypesEnabled, true);
     network_handler_test_helper_.RegisterPrefs(profile_prefs_.registry(),
                                                local_state_.registry());
     network_handler_test_helper_.InitializePrefs(&local_state_, &local_state_);
     network_handler_test_helper_.AddDefaultProfiles();
-    secure_dns_manager_ = std::make_unique<SecureDnsManager>(local_state());
+
+    // SystemNetworkContextManager cannot be instantiated here,
+    // which normally owns the StubResolverConfigReader instance, so
+    // inject a StubResolverConfigReader instance here.
+    stub_resolver_config_reader_ =
+        std::make_unique<StubResolverConfigReader>(&local_state_);
+    SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
+        stub_resolver_config_reader_.get());
+
+    secure_dns_manager_ = std::make_unique<SecureDnsManager>(
+        local_state(), /*is_profile_managed=*/true);
     secure_dns_manager_observer_ =
         std::make_unique<SecureDnsManagerObserver>(secure_dns_manager_.get());
   }
 
-  void TearDown() override { NetworkHandler::Get()->ShutdownPrefServices(); }
+  void TearDown() override {
+    NetworkHandler::Get()->ShutdownPrefServices();
+    secure_dns_manager_observer_.reset();
+    secure_dns_manager_.reset();
+    SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
+        nullptr);
+    stub_resolver_config_reader_.reset();
+  }
 
   void ChangeNetworkOncSource(const std::string& path,
                               ::onc::ONCSource onc_source) {
@@ -215,6 +237,7 @@ class SecureDnsManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
+  std::unique_ptr<StubResolverConfigReader> stub_resolver_config_reader_;
   TestingPrefServiceSimple local_state_;
   TestingPrefServiceSimple profile_prefs_;
   std::unique_ptr<SecureDnsManager> secure_dns_manager_;
@@ -232,7 +255,8 @@ TEST_F(SecureDnsManagerTest, SetModeOff) {
                 ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             "");
   EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
-  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(), "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            base::Value(SecureDnsConfig::kModeOff));
 }
 
 TEST_F(SecureDnsManagerTest, SetModeOffIgnoresTemplates) {
@@ -247,7 +271,8 @@ TEST_F(SecureDnsManagerTest, SetModeOffIgnoresTemplates) {
                 ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             "");
   EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
-  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(), "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeOff);
 }
 
 TEST_F(SecureDnsManagerTest, SetModeSecure) {

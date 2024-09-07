@@ -2637,9 +2637,6 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
 // Tests that Delegated Ink in the frame correctly sets
 // needs_synchronous_dcomp_commit on the render pass.
 TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kUseDCompSurfacesForDelegatedInk);
   overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
   // Test that needs_synchronous_dcomp_commit on the render pass gets set to
   // false as default.
@@ -2686,9 +2683,6 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
 // kNumberOfFramesBeforeDisablingDCLayers in
 // components/viz/service/display/overlay_processor_win.cc.
 TEST_P(OverlayProcessorWinSurfacePlaneTest, DelegatedInkSurfaceHysteresis) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kUseDCompSurfacesForDelegatedInk);
   overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
 
   overlay_processor_->SetFrameHasDelegatedInk();

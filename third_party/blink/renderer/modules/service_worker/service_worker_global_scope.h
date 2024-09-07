@@ -239,11 +239,14 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // native fetch.
   void RespondToFetchEventWithNoResponse(
       int fetch_event_id,
+      FetchEvent* fetch_event,
       const KURL& request_url,
       bool range_request,
       std::optional<network::DataElementChunkedDataPipe> request_body,
       base::TimeTicks event_dispatch_time,
       base::TimeTicks respond_with_settled_time);
+  void OnStreamingUploadCompletion(int fetch_event_id);
+
   // Responds to the fetch event with |response|.
   void RespondToFetchEvent(int fetch_event_id,
                            const KURL& request_url,
@@ -722,6 +725,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       fetch_response_callbacks_;
 
   HeapHashMap<int, Member<FetchEvent>> pending_preload_fetch_events_;
+  HeapHashMap<int, Member<FetchEvent>> pending_streaming_upload_fetch_events_;
 
   // Track outstanding FetchEvent objects still waiting for a response by
   // request URL.  This information can be used as a hint that cache_storage

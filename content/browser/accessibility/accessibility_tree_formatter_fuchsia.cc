@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/accessibility_tree_formatter_fuchsia.h"
+
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "content/browser/accessibility/browser_accessibility_fuchsia.h"
+#include "ui/accessibility/platform/fuchsia/browser_accessibility_fuchsia.h"
 
 namespace content {
 namespace {
@@ -225,7 +226,8 @@ void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
   base::Value::List children;
 
   fuchsia_accessibility_semantics::Node fuchsia_node =
-      static_cast<const BrowserAccessibilityFuchsia&>(node).ToFuchsiaNodeData();
+      static_cast<const ui::BrowserAccessibilityFuchsia&>(node)
+          .ToFuchsiaNodeData();
 
   for (uint32_t child_id : fuchsia_node.child_ids().value()) {
     ui::AXPlatformNodeFuchsia* child_node =
@@ -255,8 +257,8 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
     base::Value::Dict* dict) const {
   dict->Set("id", node.GetId());
 
-  const BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
-      static_cast<const BrowserAccessibilityFuchsia*>(&node);
+  const ui::BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+      static_cast<const ui::BrowserAccessibilityFuchsia*>(&node);
 
   CHECK(browser_accessibility_fuchsia);
 

@@ -32,9 +32,9 @@ class BirchChipContextMenuModel : public ui::SimpleMenuModel {
     kHideDriveSuggestions,      // Hide all Drive related chips.
     kHideChromeTabSuggestions,  // Hide all Chrome tab related chips.
     kHideMediaSuggestions,      // Hide all media related chips.
+    kHideCoralSuggestions,      // Hide all coral related chips.
     kCustomizeSuggestions,  // Pop out the expanded bar menu with customizing
                             // suggestions options.
-    kFeedback,              // Send user feedback for birch bar.
   };
 
   BirchChipContextMenuModel(ui::SimpleMenuModel::Delegate* delegate,

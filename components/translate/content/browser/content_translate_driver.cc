@@ -23,7 +23,6 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
-#include "components/translate/core/browser/translate_model_service.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -59,15 +58,13 @@ BASE_FEATURE(kAutoHrefTranslateAllOrigins,
 
 ContentTranslateDriver::ContentTranslateDriver(
     content::WebContents& web_contents,
-    language::UrlLanguageHistogram* url_language_histogram,
-    translate::TranslateModelService* translate_model_service)
+    language::UrlLanguageHistogram* url_language_histogram)
     : content::WebContentsObserver(&web_contents),
       translate_manager_(nullptr),
       is_otr_context_(web_contents.GetBrowserContext()->IsOffTheRecord()),
       max_reload_check_attempts_(kMaxTranslateLoadCheckAttempts),
       next_page_seq_no_(0),
-      language_histogram_(url_language_histogram),
-      translate_model_service_(translate_model_service) {}
+      language_histogram_(url_language_histogram) {}
 
 ContentTranslateDriver::~ContentTranslateDriver() = default;
 
@@ -368,38 +365,6 @@ void ContentTranslateDriver::OnPageTranslated(
   translate_manager_->PageTranslated(source_lang, translated_lang, error_type);
   for (auto& observer : translation_observers_)
     observer.OnPageTranslated(source_lang, translated_lang, error_type);
-}
-
-void ContentTranslateDriver::GetLanguageDetectionModel(
-    GetLanguageDetectionModelCallback callback) {
-  if (!translate_model_service_) {
-    std::move(callback).Run(base::File());
-    return;
-  }
-  // If the model file is not available, request the translate model service
-  // notify |this| when it is. The two-step process is to ensure that
-  // the model file and callback lifetimes are carefully managed so they
-  // are not freed without be handled on the appropriate thread, particularly
-  // for the model file.
-  if (!translate_model_service_->IsModelAvailable()) {
-    translate_model_service_->NotifyOnModelFileAvailable(base::BindOnce(
-        &ContentTranslateDriver::OnLanguageModelFileAvailabilityChanged,
-        weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-
-  OnLanguageModelFileAvailabilityChanged(std::move(callback), true);
-}
-
-void ContentTranslateDriver::OnLanguageModelFileAvailabilityChanged(
-    GetLanguageDetectionModelCallback callback,
-    bool is_available) {
-  if (!is_available) {
-    std::move(callback).Run(base::File());
-    return;
-  }
-  std::move(callback).Run(
-      translate_model_service_->GetLanguageDetectionModelFile());
 }
 
 }  // namespace translate

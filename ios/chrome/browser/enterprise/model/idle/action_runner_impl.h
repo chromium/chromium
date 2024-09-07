@@ -5,10 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_ACTION_RUNNER_IMPL_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_ACTION_RUNNER_IMPL_H_
 
-#import "ios/chrome/browser/enterprise/model/idle/action_runner.h"
-
 #import "ios/chrome/browser/enterprise/model/idle/action.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/enterprise/model/idle/action_runner.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace enterprise_idle {
 

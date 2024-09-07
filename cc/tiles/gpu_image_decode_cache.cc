@@ -67,12 +67,12 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -586,7 +586,7 @@ class GpuImageDecodeTaskImpl : public TileTask {
   GpuImageDecodeTaskImpl(GpuImageDecodeCache* cache,
                          const DrawImage& draw_image,
                          const ImageDecodeCache::TracingInfo& tracing_info,
-                         GpuImageDecodeCache::DecodeTaskType task_type)
+                         ImageDecodeCache::TaskType task_type)
       : TileTask(TileTask::SupportsConcurrentExecution::kYes,
                  TileTask::SupportsBackgroundThreadPriority::kNo),
         cache_(cache),
@@ -611,9 +611,9 @@ class GpuImageDecodeTaskImpl : public TileTask {
     devtools_instrumentation::ScopedImageDecodeTask image_decode_task(
         &image_.paint_image(),
         devtools_instrumentation::ScopedImageDecodeTask::DecodeType::kGpu,
-        ImageDecodeCache::ToScopedTaskType(tracing_info_.task_type),
+        ImageDecodeCache::ToScopedTaskType(task_type_),
         ImageDecodeCache::ToScopedImageType(image_type));
-    cache_->DecodeImageInTask(image_, tracing_info_.task_type);
+    cache_->DecodeImageInTask(image_, task_type_);
   }
 
   // Overridden from TileTask:
@@ -635,7 +635,7 @@ class GpuImageDecodeTaskImpl : public TileTask {
   raw_ptr<GpuImageDecodeCache, DanglingUntriaged> cache_;
   DrawImage image_;
   const ImageDecodeCache::TracingInfo tracing_info_;
-  const GpuImageDecodeCache::DecodeTaskType task_type_;
+  const ImageDecodeCache::TaskType task_type_;
 };
 
 // Task which creates an image from decoded data. Typically this involves
@@ -1269,26 +1269,24 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRef(
     ClientId client_id,
     const DrawImage& draw_image,
     const TracingInfo& tracing_info) {
-  DCHECK_EQ(tracing_info.task_type, TaskType::kInRaster);
   return GetTaskForImageAndRefInternal(client_id, draw_image, tracing_info,
-                                       DecodeTaskType::kPartOfUploadTask);
+                                       TaskType::kInRaster);
 }
 
 ImageDecodeCache::TaskResult
 GpuImageDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(
     ClientId client_id,
     const DrawImage& draw_image) {
-  return GetTaskForImageAndRefInternal(
-      client_id, draw_image,
-      TracingInfo(0, TilePriority::NOW, TaskType::kOutOfRaster),
-      DecodeTaskType::kStandAloneDecodeTask);
+  return GetTaskForImageAndRefInternal(client_id, draw_image,
+                                       TracingInfo(0, TilePriority::NOW),
+                                       TaskType::kOutOfRaster);
 }
 
 ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
     ClientId client_id,
     const DrawImage& draw_image,
     const TracingInfo& tracing_info,
-    DecodeTaskType task_type) {
+    TaskType task_type) {
   DCHECK_GE(client_id, kDefaultClientId);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -1306,19 +1304,18 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
   scoped_refptr<ImageData> new_data;
   if (!image_data) {
     // We need an ImageData, create one now. Note that hardware decode
-    // acceleration is allowed only in the DecodeTaskType::kPartOfUploadTask
-    // case. This prevents the img.decode() and checkerboard images paths from
-    // going through hardware decode acceleration.
+    // acceleration is allowed only in the TaskType::kInRaster case. This
+    // prevents the img.decode() and checkerboard images paths from going
+    // through hardware decode acceleration.
     new_data = CreateImageData(
         draw_image,
-        task_type ==
-            DecodeTaskType::kPartOfUploadTask /* allow_hardware_decode */);
+        task_type == TaskType::kInRaster /* allow_hardware_decode */);
     image_data = new_data.get();
   } else if (image_data->decode.decode_failure) {
     // We have already tried and failed to decode this image, so just return.
     return TaskResult(false /* need_unref */, false /* is_at_raster_decode */,
                       image_data->decode.can_do_hardware_accelerated_decode());
-  } else if (task_type == DecodeTaskType::kPartOfUploadTask &&
+  } else if (task_type == TaskType::kInRaster &&
              !image_data->upload.task_map.empty() &&
              !image_data->HasUploadedData()) {
     // If there are pending upload tasks and we haven't had data uploaded yet,
@@ -1349,7 +1346,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
     DCHECK(task);
     return TaskResult(task,
                       image_data->decode.can_do_hardware_accelerated_decode());
-  } else if (task_type == DecodeTaskType::kStandAloneDecodeTask &&
+  } else if (task_type == TaskType::kOutOfRaster &&
              !image_data->decode.stand_alone_task_map.empty() &&
              !image_data->HasUploadedData()) {
     // If there are pending decode tasks and we haven't had decoded data yet,
@@ -1413,7 +1410,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
   }
 
   scoped_refptr<TileTask> task;
-  if (task_type == DecodeTaskType::kPartOfUploadTask) {
+  if (task_type == TaskType::kInRaster) {
     // Ref image and create a upload and decode tasks. We will release this ref
     // in UploadTaskCompleted.
     RefImage(draw_image, cache_key);
@@ -1969,7 +1966,7 @@ void GpuImageDecodeCache::UploadImageInTask(const DrawImage& draw_image) {
 
 void GpuImageDecodeCache::OnImageDecodeTaskCompleted(
     const DrawImage& draw_image,
-    DecodeTaskType task_type) {
+    TaskType task_type) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::OnImageDecodeTaskCompleted");
   base::AutoLock lock(lock_);
@@ -1979,10 +1976,9 @@ void GpuImageDecodeCache::OnImageDecodeTaskCompleted(
   DCHECK(image_data);
   UMA_HISTOGRAM_BOOLEAN("Compositing.DecodeLCPCandidateImage.Hardware",
                         draw_image.paint_image().may_be_lcp_candidate());
-  if (task_type == DecodeTaskType::kPartOfUploadTask) {
+  if (task_type == TaskType::kInRaster) {
     image_data->decode.task_map.clear();
   } else {
-    DCHECK(task_type == DecodeTaskType::kStandAloneDecodeTask);
     image_data->decode.stand_alone_task_map.clear();
   }
 
@@ -2046,15 +2042,16 @@ scoped_refptr<TileTask> GpuImageDecodeCache::GetImageDecodeTaskAndRef(
     ClientId client_id,
     const DrawImage& draw_image,
     const TracingInfo& tracing_info,
-    DecodeTaskType task_type) {
+    TaskType task_type) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::GetImageDecodeTaskAndRef");
   auto cache_key = InUseCacheKeyFromDrawImage(draw_image);
 
   // This ref is kept alive while an upload task may need this decode. We
   // release this ref in UploadTaskCompleted.
-  if (task_type == DecodeTaskType::kPartOfUploadTask)
+  if (task_type == TaskType::kInRaster) {
     RefImageDecode(draw_image, cache_key);
+  }
 
   ImageData* image_data = GetImageDataForDrawImage(draw_image, cache_key);
   DCHECK(image_data);
@@ -2072,8 +2069,9 @@ scoped_refptr<TileTask> GpuImageDecodeCache::GetImageDecodeTaskAndRef(
 
   // We didn't have an existing locked image, create a task to lock or decode.
   ImageTaskMap* task_map = &image_data->decode.stand_alone_task_map;
-  if (task_type == DecodeTaskType::kPartOfUploadTask)
+  if (task_type == TaskType::kInRaster) {
     task_map = &image_data->decode.task_map;
+  }
 
   scoped_refptr<TileTask> existing_task =
       GetTaskFromMapForClientId(client_id, *task_map);

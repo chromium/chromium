@@ -51,9 +51,6 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   void OnNotifierIconUpdated(const message_center::NotifierId& notifier_id,
                              const gfx::ImageSkia& icon) override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   views::ScrollView* get_scroller_view_for_test() { return scroller_; }
   views::Label* get_notification_settings_lable_for_test() {
     return notification_settings_label_;

@@ -2,7 +2,6 @@
 # Instead:
 # 1. Modify //infra/config/targets/binaries.star and/or //infra/config/targets/tests.star (for tests defined using targets.tests.junit_test)
 # 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-pyl-files.py
 
 {
   "absl_hardening_tests": {
@@ -266,10 +265,6 @@
     "label": "//fuchsia_web/runners:cast_runner_unittests",
     "type": "console_test_launcher",
   },
-  "cast_shell": {
-    "label": "//chromecast:cast_shell",
-    "type": "additional_compile_target",
-  },
   "cast_shell_apk": {
     "label": "//chromecast:cast_shell_apk",
     "type": "additional_compile_target",
@@ -325,6 +320,14 @@
   "chrome/updater:all": {
     "label": "//chrome/updater:all",
     "type": "additional_compile_target",
+  },
+  "chrome_ai_wpt_tests": {
+    "label": "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests",
+    "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
   },
   "chrome_all_tast_tests": {
     "label": "//chromeos:chrome_all_tast_tests",
@@ -605,10 +608,6 @@
     "label": "//content/test:content_unittests",
     "type": "windowed_test_launcher",
   },
-  "courgette_unittests": {
-    "label": "//courgette:courgette_unittests",
-    "type": "console_test_launcher",
-  },
   "cq_medium_tast_tests": {
     "label": "//chromeos:cq_medium_tast_tests",
     "type": "generated_script",
@@ -734,6 +733,17 @@
   "empty_main": {
     "label": "//testing:empty_main",
     "type": "additional_compile_target",
+  },
+  "enterprise_companion_integration_tests": {
+    "label": "//chrome/enterprise_companion:enterprise_companion_integration_tests",
+    "type": "script",
+    "script": "//testing/scripts/run_telemetry_as_googletest.py",
+    "args": [
+      "test_service/enterprise_companion_integration_tests_launcher.py",
+      "--test-output-dir=${ISOLATED_OUTDIR}",
+      "--test-launcher-bot-mode",
+      "--gtest_shuffle",
+    ],
   },
   "enterprise_companion_tests": {
     "label": "//chrome/enterprise_companion:enterprise_companion_tests",
@@ -1325,14 +1335,6 @@
     "label": "//chrome/test:performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
     "type": "generated_script",
   },
-  "performance_test_suite_eve": {
-    "label": "//chrome/test:performance_test_suite_eve",
-    "type": "generated_script",
-  },
-  "performance_test_suite_octopus": {
-    "label": "//chrome/test:performance_test_suite_octopus",
-    "type": "generated_script",
-  },
   "performance_web_engine_test_suite": {
     "label": "//content/test:performance_web_engine_test_suite",
     "type": "script",
@@ -1413,16 +1415,8 @@
     "label": "//remoting:remoting_unittests",
     "type": "windowed_test_launcher",
   },
-  "resource_sizes_chromecast": {
-    "label": "//chromecast:resource_sizes_chromecast",
-    "type": "generated_script",
-  },
   "resource_sizes_cronet_sample_apk": {
     "label": "//components/cronet/android:resource_sizes_cronet_sample_apk",
-    "type": "generated_script",
-  },
-  "resource_sizes_lacros_chrome": {
-    "label": "//chromeos/lacros:resource_sizes_lacros_chrome",
     "type": "generated_script",
   },
   "rust_build_tests": {
@@ -1651,6 +1645,10 @@
   },
   "traffic_annotation_auditor_dependencies": {
     "label": "//:traffic_annotation_auditor_dependencies",
+    "type": "additional_compile_target",
+  },
+  "traffic_annotation_proto": {
+    "label": "//chrome/browser/privacy:traffic_annotation_proto",
     "type": "additional_compile_target",
   },
   "trichrome_chrome_bundle_smoke_test": {
@@ -1993,6 +1991,7 @@
       "--test-launcher-jobs=1",
       "--test-launcher-retry-limit=0",
       "--enable-pixel-output-in-tests",
+      "--enable-unsafe-swiftshader",
     ],
   },
   "xvfb_py_unittests": {

@@ -82,6 +82,10 @@ AudioTrackRecorder::AudioTrackRecorder(
                        main_thread_task_runner,
                        WTF::BindRepeating(&CallbackInterface::OnEncodedAudio,
                                           WrapPersistent(callback_interface))),
+                   base::BindPostTask(
+                       main_thread_task_runner,
+                       WTF::BindOnce(&CallbackInterface::OnAudioEncodingError,
+                                     WrapPersistent(callback_interface))),
                    bits_per_second,
                    bitrate_mode)),
       callback_interface_(callback_interface) {
@@ -104,26 +108,27 @@ std::unique_ptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
     CodecId codec,
     scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
     OnEncodedAudioCB on_encoded_audio_cb,
+    OnEncodedAudioErrorCB on_encoded_audio_error_cb,
     uint32_t bits_per_second,
     BitrateMode bitrate_mode) {
   std::unique_ptr<AudioTrackEncoder> encoder;
   switch (codec) {
     case CodecId::kPcm:
       return std::make_unique<AudioTrackPcmEncoder>(
-          std::move(on_encoded_audio_cb));
+          std::move(on_encoded_audio_cb), std::move(on_encoded_audio_error_cb));
     case CodecId::kAac:
 #if HAS_AAC_ENCODER
       return std::make_unique<AudioTrackMojoEncoder>(
           encoder_task_runner, codec, std::move(on_encoded_audio_cb),
-          bits_per_second);
+          std::move(on_encoded_audio_error_cb), bits_per_second);
 #endif
       NOTREACHED_IN_MIGRATION() << "AAC encoder is not supported.";
       return nullptr;
     case CodecId::kOpus:
     default:
       return std::make_unique<AudioTrackOpusEncoder>(
-          std::move(on_encoded_audio_cb), bits_per_second,
-          bitrate_mode == BitrateMode::kVariable);
+          std::move(on_encoded_audio_cb), std::move(on_encoded_audio_error_cb),
+          bits_per_second, bitrate_mode == BitrateMode::kVariable);
   }
 }
 

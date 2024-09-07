@@ -142,6 +142,7 @@ void ExternalAppResolutionCommand::Abort(webapps::InstallResultCode code) {
 
 void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
     webapps::WebAppUrlLoaderResult result) {
+  GetMutableDebugValue().Set("load_url_result", base::ToString(result));
   if (result == webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     data_retriever_->GetWebAppInstallInfo(
         web_contents_.get(),

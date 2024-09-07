@@ -30,7 +30,6 @@ constexpr std::string_view kTestChallenge = "VGhpcyBpcyBhIHRlc3QgY2hhbGxlbmdl";
 constexpr std::string_view kCredentialId =
     "VGhpcyBpcyBhIHRlc3QgQ3JlZGVudGlhbCBJRC4=";
 constexpr std::string_view kGooglePaymentsRpid = "google.com";
-}  // namespace
 
 class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
  public:
@@ -471,4 +470,5 @@ TEST_P(CreditCardRiskBasedAuthenticatorCardBenefitsTest,
             IsCreditCardBenefitsEnabled());
 }
 
+}  // namespace
 }  // namespace autofill

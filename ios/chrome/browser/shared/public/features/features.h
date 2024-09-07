@@ -10,7 +10,7 @@
 #include "Availability.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#import "ios/chrome/browser/ui/ntp/feed_top_section/notifications_promo_view_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"
 
 namespace base {
 class TimeDelta;
@@ -35,15 +35,27 @@ BASE_DECLARE_FEATURE(kTestFeature);
 // Feature to add the Safety Check module to the Magic Stack.
 BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
 
+// Killswitch for conditionally hiding the Safety Check module in the Magic
+// Stack if no issues are found.
+BASE_DECLARE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
+
+// Feature to enable Safety Check Push Notifications.
+BASE_DECLARE_FEATURE(kSafetyCheckNotifications);
+
+// A parameter defining the duration of user inactivity required before
+// displaying Safety Check push notifications.
+extern const char kSafetyCheckNotificationsUserInactiveThreshold[];
+
+// Returns the time duration of user inactivity that must elapse before Safety
+// Check notifications are displayed.
+const base::TimeDelta InactiveThresholdForSafetyCheckNotifications();
+
 // A parameter representing how many hours must elapse before the Safety Check
 // is automatically run in the Magic Stack.
 extern const char kSafetyCheckMagicStackAutorunHoursThreshold[];
 
 // How many hours between each autorun of the Safety Check in the Magic Stack.
 const base::TimeDelta TimeDelayForSafetyCheckAutorun();
-
-// Feature to enable Safety Check Push Notifications.
-BASE_DECLARE_FEATURE(kSafetyCheckNotifications);
 
 // Feature to enable the refactored implementation of the `OmahaService`, using
 // new `OmahaServiceObserver`(s) for Omaha clients. Acts as a killswitch.
@@ -318,18 +330,14 @@ BASE_DECLARE_FEATURE(kBottomOmniboxDefaultSetting);
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 
-// Feature flag that enables default browser video in settings experiment.
-BASE_DECLARE_FEATURE(kDefaultBrowserVideoInSettings);
-
 // Feature flag to try using the page theme color in the top toolbar
 BASE_DECLARE_FEATURE(kThemeColorInTopToolbar);
 
-// Feature flag enabling the Tab Grid to always bounce (even when the content
-// fits the screen already).
-BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
-
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
+
+// Whether the Safety Check module is hidden when no issues are found.
+bool ShouldHideSafetyCheckModuleIfNoIssues();
 
 // Whether Safety Check Push Notifications should be sent to the user.
 bool IsSafetyCheckNotificationsEnabled();
@@ -409,6 +417,18 @@ BASE_DECLARE_FEATURE(kTabGroupSync);
 
 // Whether the tab groups should be syncing.
 bool IsTabGroupSyncEnabled();
+
+// Feature flag to enable Shared Tab Groups.
+BASE_DECLARE_FEATURE(kSharedTabGroups);
+
+// Whether the Shared Tab Groups feature is enabled.
+bool IsSharedTabGroupsEnabled();
+
+// Feature flag to enable Tab Group Indicator.
+BASE_DECLARE_FEATURE(kTabGroupIndicator);
+
+// Whether the Tab Group Indicator feature is enabled.
+bool IsTabGroupIndicatorEnabled();
 
 // Feature flag to disable Lens LVF features.
 BASE_DECLARE_FEATURE(kDisableLensCamera);
@@ -563,6 +583,10 @@ BASE_DECLARE_FEATURE(kTabResumption1_5);
 // images.
 extern const char kTR15SalientImageParam[];
 
+// A value for `kTR15SalientImageParam` to enable thumbnails images for local
+// tabs and not salient images.
+extern const char kTR15SalientImageThumbnailsOnly[];
+
 // A parameter to indicate whether the Tab resumption tile should have a see
 // more button.
 extern const char kTR15SeeMoreButtonParam[];
@@ -620,8 +644,12 @@ bool IsTabResumptionEnabledForMostRecentTabOnly();
 // Whether the tab resumption enhancements feature is enabled.
 bool IsTabResumption1_5Enabled();
 
-// Whether the tab resumption with salient images is enabled.
+// Whether the tab resumption with salient images for distant tabs (or fallback
+// for local tabs) is enabled.
 bool IsTabResumption1_5SalientImageEnabled();
+
+// Whether the tab resumption with salient images for local tabs is enabled.
+bool IsTabResumption1_5ThumbnailsImageEnabled();
 
 // Whether the tab resumption with see more button is enabled.
 bool IsTabResumption1_5SeeMoreEnabled();
@@ -746,16 +774,14 @@ bool IsRichBubbleWithoutImageEnabled();
 // Feature flag to enable account confirmation snackbar on startup.
 BASE_DECLARE_FEATURE(kIdentityConfirmationSnackbar);
 
-// Feature param to specify how much time between identity confirmation snackbar
-// triggers to avoid over-prompting. Overridable through Finch.
+// Feature params to specify how much time between identity confirmation
+// snackbar triggers to avoid over-prompting. Overridable through Finch.
 extern const base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval;
-
-// Feature param to specify how much time to keep between the identity
-// confirmation snackbar and the last sign-in to avoid over-prompting.
-// Overridable through Finch.
+    kIdentityConfirmationMinDisplayInterval1;
 extern const base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinTimeSinceSignin;
+    kIdentityConfirmationMinDisplayInterval2;
+extern const base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinDisplayInterval3;
 
 // Feature flag to enable the registration of customized UITrait arrays. This
 // feature flag is related to the effort to remove invocations of

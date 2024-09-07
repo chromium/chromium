@@ -21,6 +21,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/test/test_screen.h"
@@ -120,7 +121,8 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     // and ShouldShowCloseButton() respectively to determine the button area.
     GetBubbleFrameView()->ResetWindowControls();
 
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kNone));
   }
   void set_should_show_window_title(bool should_show_window_title) {
     should_show_window_title_ = should_show_window_title;

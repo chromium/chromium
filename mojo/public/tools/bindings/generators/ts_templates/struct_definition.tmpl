@@ -8,9 +8,66 @@ export const {{struct.name}}_{{constant.name}}: {{constant.kind|ts_type_maybe_nu
 {{enum_def(enum)}}
 {%  endfor %}
 
+export interface {{struct.name}}MojoType {
+{%- for packed_field in struct.packed.packed_fields %}
+{%-   if packed_field|is_nullable_value_kind_packed_field %}
+{%-     if packed_field|is_primary_nullable_value_kind_packed_field %}
+{%-       set original_field = packed_field.original_field %}
+{%-       set name = original_field.name %}
+{%-       set kind = original_field.kind %}
+  {{name}}: {{kind|ts_type_maybe_nullable}};
+{%-     endif %}
+{%-   else %}
+  {% set f = packed_field.field -%}
+  {{f.name}}: {{f.kind|ts_type_maybe_nullable}};
+{%-   endif %}
+{%- endfor %}
+}
+
+{% if struct in typemapped_structs -%}
+export type {{struct.name}} = {{typemapped_structs[struct].typename}};
+{%- else %}
+export type {{struct.name}} = {{struct.name}}MojoType;
+{%- endif %}
+
+{%- if struct in typemapped_structs %}
+{%   set typemap = typemapped_structs[struct] %}
+const converterFor{{struct.name}}: {{struct.name}}TypeMapper<{{typemap.typename}}>
+    = new {{typemap.converter}}();
+
+{#- TODO(ffred): there's a lot of dups with mojo type decl, refactor and move #}
+{# them into macros #}
+const adapterFor{{struct.name}} = new mojo.internal.TypemapAdapter(
+  (mappedType: {{typemap.typename}}): {{struct.name}}MojoType => {
+      return {
+{%-   for packed_field in struct.packed.packed_fields %}
+{%-     if packed_field|is_nullable_value_kind_packed_field %}
+{%-       if packed_field|is_primary_nullable_value_kind_packed_field %}
+{%-         set original_field = packed_field.original_field %}
+{%-         set name = original_field.name %}
+{%-         set kind = original_field.kind %}
+        {{name}}: converterFor{{struct.name}}.{{name}}(mappedType),
+{%-      endif %}
+{%-    else %}
+  {%- set f = packed_field.field %}
+        {{f.name}}: converterFor{{struct.name}}.{{f.name}}(mappedType),
+{%-    endif %}
+{%-   endfor %}
+      };
+  },
+  (mojoType: {{struct.name}}MojoType) =>
+      converterFor{{struct.name}}.convert(new {{struct.name}}DataView(mojoType)),
+);
+
+mojo.internal.TypemappedStruct<{{typemap.typename}}, {{struct.name}}MojoType> (
+{%- else %}
 mojo.internal.Struct(
+{%- endif %}
     {{struct.name}}Spec.$,
     '{{struct.name}}',
+{%- if struct in typemapped_structs %}
+    adapterFor{{struct.name}},
+{%- endif %}
     [
 {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
       mojo.internal.StructField(
@@ -51,19 +108,3 @@ mojo.internal.Struct(
 export const {{struct.name}}_Deserialize =
     mojo.internal.createStructDeserializer({{struct.name}}Spec.$);
 {% endif %}
-
-export interface {{struct.name}} {
-{%- for packed_field in struct.packed.packed_fields %}
-{%-   if packed_field|is_nullable_value_kind_packed_field %}
-{%-     if packed_field|is_primary_nullable_value_kind_packed_field %}
-{%-       set original_field = packed_field.original_field %}
-{%-       set name = original_field.name %}
-{%-       set kind = original_field.kind %}
-  {{name}}: {{kind|ts_type_maybe_nullable}};
-{%-     endif %}
-{%-   else %}
-  {% set f = packed_field.field -%}
-  {{f.name}}: {{f.kind|ts_type_maybe_nullable}};
-{%-   endif %}
-{%- endfor %}
-}

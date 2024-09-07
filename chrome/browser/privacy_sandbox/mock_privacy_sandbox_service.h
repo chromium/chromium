@@ -27,7 +27,7 @@ class MockPrivacySandboxService : public PrivacySandboxService {
 
   MOCK_METHOD(PrivacySandboxService::PromptType,
               GetRequiredPromptType,
-              (),
+              (PrivacySandboxService::SurfaceType),
               (override));
   MOCK_METHOD(void,
               PromptActionOccurred,

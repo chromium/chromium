@@ -75,8 +75,7 @@ base::LazyInstance<RandomNameGenerator>::Leaky g_name_generator =
     LAZY_INSTANCE_INITIALIZER;
 
 int DebugError(const char* message, int error_code) {
-  NOTREACHED_IN_MIGRATION() << "Oops: " << message;
-  return error_code;
+  NOTREACHED() << "Oops: " << message;
 }
 
 #define OOPS(x) DebugError(#x, x)

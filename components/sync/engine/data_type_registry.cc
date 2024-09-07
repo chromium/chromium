@@ -132,17 +132,6 @@ KeystoreKeysHandler* DataTypeRegistry::keystore_keys_handler() {
   return sync_encryption_handler_->GetKeystoreKeysHandler();
 }
 
-DataTypeSet DataTypeRegistry::GetTypesWithUnsyncedData() const {
-  DataTypeSet types;
-  for (const std::unique_ptr<DataTypeWorker>& worker :
-       connected_data_type_workers_) {
-    if (worker->HasLocalChanges()) {
-      types.Put(worker->GetDataType());
-    }
-  }
-  return types;
-}
-
 bool DataTypeRegistry::HasUnsyncedItems() const {
   // For data type workers, we ask them individually.
   for (const std::unique_ptr<DataTypeWorker>& worker :

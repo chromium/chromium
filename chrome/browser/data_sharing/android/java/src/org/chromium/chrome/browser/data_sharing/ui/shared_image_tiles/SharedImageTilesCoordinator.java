@@ -10,7 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -35,6 +43,8 @@ public class SharedImageTilesCoordinator {
     private final PropertyModel mModel;
     private final SharedImageTilesView mView;
     private final @SharedImageTilesType int mType;
+    private final @NonNull DataSharingService mDataSharingService;
+    private @NonNull String mCollaborationId;
     private int mAvailableTileCount;
     private int mIconTilesCount;
 
@@ -44,15 +54,20 @@ public class SharedImageTilesCoordinator {
      * @param context The Android context used to inflate the views.
      * @param type The {@link SharedImageTilesType} of the SharedImageTiles.
      * @param color The {@link SharedImageTilesColor} of the SharedImageTiles.
+     * @param dataSharingService Used to fetch tab group data.
      */
     public SharedImageTilesCoordinator(
-            Context context, @SharedImageTilesType int type, @SharedImageTilesColor int color) {
+            Context context,
+            @SharedImageTilesType int type,
+            @SharedImageTilesColor int color,
+            @NonNull DataSharingService dataSharingService) {
         mModel =
                 new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS)
                         .with(SharedImageTilesProperties.COLOR_THEME, color)
                         .build();
         mContext = context;
         mType = type;
+        mDataSharingService = dataSharingService;
 
         mView =
                 (SharedImageTilesView)
@@ -60,8 +75,63 @@ public class SharedImageTilesCoordinator {
 
         PropertyModelChangeProcessor.create(mModel, mView, SharedImageTilesViewBinder::bind);
         mMediator = new SharedImageTilesMediator(mModel);
+    }
 
-        initializeSharedImageTiles();
+    /**
+     * Update the collaborationId for a SharedImageTiles component.
+     *
+     * @param collaborationId The new collaborationId or null to reset.
+     */
+    public void updateCollaborationId(@Nullable String collaborationId) {
+        mCollaborationId = collaborationId;
+        if (mCollaborationId == null) {
+            updateTilesCount(0);
+            return;
+        }
+
+        // Fetch group information from DataSharingService.
+        mDataSharingService.readGroup(
+                mCollaborationId,
+                (result) -> {
+                    if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
+                        // Error occurred. Remove all view.
+                        updateTilesCount(0);
+                        return;
+                    }
+
+                    assert result.groupData != null;
+                    extractGroupMemberInfo(result.groupData);
+                });
+    }
+
+    private void extractGroupMemberInfo(GroupData groupData) {
+        // TODO(b/361642045): Call showAvatars here.
+        updateTilesCount(groupData.members.size());
+
+        List<String> emails = new ArrayList<>();
+        for (GroupMember member : groupData.members) {
+            if (member.email != null && !member.email.isEmpty()) {
+                emails.add(member.email);
+            }
+        }
+
+        // Let the UI delegate draw the icon tiles.
+        DataSharingUIDelegate dataSharingUIDelegate = mDataSharingService.getUIDelegate();
+        assert dataSharingUIDelegate != null;
+
+        Callback<Boolean> successCallback =
+                (success) -> {
+                    if (!success) {
+                        updateTilesCount(0);
+                    }
+                };
+
+        dataSharingUIDelegate.showAvatars(
+                mContext,
+                getAllIconViews(),
+                emails,
+                /* success= */ successCallback,
+                /* config= */ null);
     }
 
     /** Populate the shared_image_tiles container with the specific icons. */
@@ -99,21 +169,6 @@ public class SharedImageTilesCoordinator {
         return mView;
     }
 
-    /**
-     * Update the tiles count for a SharedImageTiles component.
-     *
-     * @param count The new count number.
-     */
-    public void updateTilesCount(int count) {
-        // TODO(b/325533985): |mAvailableTileCount| should be replace by the actual number of icons
-        // needed.
-        mAvailableTileCount = count;
-        mModel.set(SharedImageTilesProperties.SHOW_ADD_BUTTON, false);
-        mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
-        mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
-        initializeSharedImageTiles();
-    }
-
     /** Get all icon views. */
     public List<ViewGroup> getAllIconViews() {
         assert (mView.getChildCount() >= mIconTilesCount);
@@ -128,5 +183,16 @@ public class SharedImageTilesCoordinator {
     /** Get the Android context used by the component. */
     public @NonNull Context getContext() {
         return mContext;
+    }
+
+    @VisibleForTesting
+    void updateTilesCount(int count) {
+        // TODO(b/325533985): |mAvailableTileCount| should be replace by the actual number of icons
+        // needed.
+        mAvailableTileCount = count;
+        mModel.set(SharedImageTilesProperties.SHOW_ADD_BUTTON, false);
+        mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
+        mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
+        initializeSharedImageTiles();
     }
 }

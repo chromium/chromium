@@ -24,6 +24,7 @@ found in the LICENSE file.
     android:visibility="gone"
     android:clipToOutline="true"
     android:background="@drawable/tab_label_icon_background"
+    android:importantForAccessibility="no"
     app:cornerRadiusTopStart="@dimen/tab_card_label_icon_radius"
     app:cornerRadiusTopEnd="@dimen/tab_card_label_icon_radius"
     app:cornerRadiusBottomStart="@dimen/tab_card_label_icon_radius"

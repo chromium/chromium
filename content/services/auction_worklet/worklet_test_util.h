@@ -29,6 +29,7 @@ class AuctionV8Helper;
 extern const char kJavascriptMimeType[];
 extern const char kJsonMimeType[];
 extern const char kWasmMimeType[];
+extern const char kAdAuctionTrustedSignalsMimeType[];
 
 // "X-Allow-Fledge: true" header.
 extern const char kAllowFledgeHeader[];

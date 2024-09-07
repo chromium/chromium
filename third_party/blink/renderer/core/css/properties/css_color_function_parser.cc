@@ -6,28 +6,19 @@
 
 #include <cmath>
 
-#include "base/containers/fixed_flat_map.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_color_channel_keywords.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 
 namespace blink {
-
-struct ColorFunctionParser::FunctionMetadata {
-  // The name/binding for positional color channels 0, 1 and 2.
-  std::array<CSSValueID, 3> channel_name;
-
-  // The value (number) that equals 100% for the corresponding positional color
-  // channel.
-  std::array<double, 3> channel_percentage;
-};
 
 namespace {
 
@@ -98,91 +89,6 @@ Color::ColorSpace ColorSpaceFromColorSpaceArgument(CSSValueID id) {
   }
 }
 
-// Unique entries in kFunctionMetadataMap.
-enum class FunctionMetadataEntry : uint8_t {
-  kLegacyRgb,  // Color::ColorSpace::kSRGBLegacy
-  kColorRgb,   // Color::ColorSpace::kSRGB,
-               // Color::ColorSpace::kSRGBLinear,
-               // Color::ColorSpace::kDisplayP3,
-               // Color::ColorSpace::kA98RGB,
-               // Color::ColorSpace::kProPhotoRGB,
-               // Color::ColorSpace::kRec2020
-  kColorXyz,   // Color::ColorSpace::kXYZD50,
-               // Color::ColorSpace::kXYZD65
-  kLab,        // Color::ColorSpace::kLab
-  kOkLab,      // Color::ColorSpace::kOklab
-  kLch,        // Color::ColorSpace::kLch
-  kOkLch,      // Color::ColorSpace::kOklch
-  kHsl,        // Color::ColorSpace::kHSL
-  kHwb,        // Color::ColorSpace::kHWB
-};
-
-constexpr double kPercentNotApplicable =
-    std::numeric_limits<double>::quiet_NaN();
-
-constexpr auto kFunctionMetadataMap =
-    base::MakeFixedFlatMap<FunctionMetadataEntry,
-                           ColorFunctionParser::FunctionMetadata>({
-        // rgb(); percentage mapping: r,g,b=255
-        {FunctionMetadataEntry::kLegacyRgb,
-         {{CSSValueID::kR, CSSValueID::kG, CSSValueID::kB}, {255, 255, 255}}},
-
-        // color(... <predefined-rgb-params> ...); percentage mapping: r,g,b=1
-        {FunctionMetadataEntry::kColorRgb,
-         {{CSSValueID::kR, CSSValueID::kG, CSSValueID::kB}, {1, 1, 1}}},
-
-        // color(... <xyz-params> ...); percentage mapping: x,y,z=1
-        {FunctionMetadataEntry::kColorXyz,
-         {{CSSValueID::kX, CSSValueID::kY, CSSValueID::kZ}, {1, 1, 1}}},
-
-        // lab(); percentage mapping: l=100 a,b=125
-        {FunctionMetadataEntry::kLab,
-         {{CSSValueID::kL, CSSValueID::kA, CSSValueID::kB}, {100, 125, 125}}},
-
-        // oklab(); percentage mapping: l=1 a,b=0.4
-        {FunctionMetadataEntry::kOkLab,
-         {{CSSValueID::kL, CSSValueID::kA, CSSValueID::kB}, {1, 0.4, 0.4}}},
-
-        // lch(); percentage mapping: l=100 c=150 h=n/a
-        {FunctionMetadataEntry::kLch,
-         {{CSSValueID::kL, CSSValueID::kC, CSSValueID::kH},
-          {100, 150, kPercentNotApplicable}}},
-
-        // oklch(); percentage mapping: l=1 c=0.4 h=n/a
-        {FunctionMetadataEntry::kOkLch,
-         {{CSSValueID::kL, CSSValueID::kC, CSSValueID::kH},
-          {1, 0.4, kPercentNotApplicable}}},
-
-        // hsl(); percentage mapping: h=n/a s,l=100
-        {FunctionMetadataEntry::kHsl,
-         {{CSSValueID::kH, CSSValueID::kS, CSSValueID::kL},
-          {kPercentNotApplicable, 100, 100}}},
-
-        // hwb(); percentage mapping: h=n/a w,b=100
-        {FunctionMetadataEntry::kHwb,
-         {{CSSValueID::kH, CSSValueID::kW, CSSValueID::kB},
-          {kPercentNotApplicable, 100, 100}}},
-    });
-
-constexpr auto kColorSpaceFunctionMap =
-    base::MakeFixedFlatMap<Color::ColorSpace, FunctionMetadataEntry>({
-        {Color::ColorSpace::kSRGBLegacy, FunctionMetadataEntry::kLegacyRgb},
-        {Color::ColorSpace::kSRGB, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kSRGBLinear, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kDisplayP3, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kA98RGB, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kProPhotoRGB, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kRec2020, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kXYZD50, FunctionMetadataEntry::kColorXyz},
-        {Color::ColorSpace::kXYZD65, FunctionMetadataEntry::kColorXyz},
-        {Color::ColorSpace::kLab, FunctionMetadataEntry::kLab},
-        {Color::ColorSpace::kOklab, FunctionMetadataEntry::kOkLab},
-        {Color::ColorSpace::kLch, FunctionMetadataEntry::kLch},
-        {Color::ColorSpace::kOklch, FunctionMetadataEntry::kOkLch},
-        {Color::ColorSpace::kHSL, FunctionMetadataEntry::kHsl},
-        {Color::ColorSpace::kHWB, FunctionMetadataEntry::kHwb},
-    });
-
 bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
   if (color_space == Color::ColorSpace::kHSL ||
       color_space == Color::ColorSpace::kHWB) {
@@ -215,7 +121,8 @@ std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
       // depend on that value (i.e it's a dummy argument). Ditto for the null
       // color provider.
       return StyleColor::ColorFromKeyword(
-          value_id, mojom::blink::ColorScheme::kLight, nullptr);
+          value_id, mojom::blink::ColorScheme::kLight, nullptr,
+          /*is_in_web_app_scope=*/false);
     }
     return std::nullopt;
   }
@@ -225,7 +132,15 @@ std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
     if (!color1 || !color2) {
       return std::nullopt;
     }
-    return color_mix_value->Mix(*color1, *color2);
+    // We can only mix with percentages being numeric literals from here,
+    // as we don't have a length conversion data to resolve against yet.
+    if ((!color_mix_value->Percentage1() ||
+         color_mix_value->Percentage1()->IsNumericLiteralValue()) &&
+        (!color_mix_value->Percentage2() ||
+         color_mix_value->Percentage2()->IsNumericLiteralValue())) {
+      return color_mix_value->Mix(*color1, *color2,
+                                  CSSToLengthConversionData());
+    }
   }
   return std::nullopt;
 }
@@ -245,12 +160,12 @@ CSSValue* ConsumeRelativeColorChannel(
     using Flags = CSSMathExpressionNode::Flags;
 
     // Don't consume the range if the parsing fails.
-    CSSParserSavePoint savepoint(stream);
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
     CSSMathFunctionValue* calc_value = CSSMathFunctionValue::Create(
         CSSMathExpressionNode::ParseMathFunction(
-            token.FunctionId(), css_parsing_utils::ConsumeFunction(stream),
-            context, Flags({AllowPercent}), kCSSAnchorQueryTypesNone,
-            color_channel_map),
+            token.FunctionId(), stream, context, Flags({AllowPercent}),
+            kCSSAnchorQueryTypesNone, color_channel_map),
         CSSPrimitiveValue::ValueRange::kAll);
     if (calc_value) {
       const CalculationResultCategory category = calc_value->Category();
@@ -258,7 +173,8 @@ CSSValue* ConsumeRelativeColorChannel(
         return nullptr;
       }
       // Consume the range, since it has succeeded.
-      savepoint.Release();
+      guard.Release();
+      stream.ConsumeWhitespace();
       return calc_value;
     }
   }
@@ -315,11 +231,11 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     color_space_ = ColorSpaceFromFunctionName(function_id);
   }
 
-  auto function_entry = kColorSpaceFunctionMap.find(color_space_);
-  CHECK(function_entry != kColorSpaceFunctionMap.end());
+  auto function_entry = ColorFunction::kColorSpaceMap.find(color_space_);
+  CHECK(function_entry != ColorFunction::kColorSpaceMap.end());
   auto function_metadata_entry =
-      kFunctionMetadataMap.find(function_entry->second);
-  CHECK(function_metadata_entry != kFunctionMetadataMap.end());
+      ColorFunction::kMetadataMap.find(function_entry->second);
+  CHECK(function_metadata_entry != ColorFunction::kMetadataMap.end());
   function_metadata_ = &function_metadata_entry->second;
 
   if (unresolved_origin_color_) {
@@ -604,6 +520,7 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   }
 
   std::optional<Color> resolved_color;
+  bool has_alpha = false;
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
@@ -637,22 +554,21 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     }
 
     // Parse alpha.
-    bool expect_alpha = false;
     if (is_legacy_syntax_) {
       if (!Color::IsLegacyColorSpace(color_space_)) {
         return nullptr;
       }
       // , <alpha-value>?
       if (css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
-        expect_alpha = true;
+        has_alpha = true;
       }
     } else {
       // / <alpha-value>?
       if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
-        expect_alpha = true;
+        has_alpha = true;
       }
     }
-    if (expect_alpha) {
+    if (has_alpha) {
       if (!ConsumeAlpha(stream, context)) {
         return nullptr;
       }
@@ -709,89 +625,87 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
 
     // The parsing was successful, so we need to consume the input.
     guard.Release();
-
-    // We should be able to resolve channel values for all non-relative colors
-    // and all relative colors where the origin color is resolvable at parse
-    // time.
-    if (!IsRelativeColor() || origin_color_.has_value()) {
-      // Resolve channel values.
-      for (int i = 0; i < 3; i++) {
-        if (channel_types_[i] != ChannelType::kNone) {
-          channels_[i] = ResolveColorChannel(
-              unresolved_channels_[i], channel_types_[i],
-              function_metadata_->channel_percentage[i], color_channel_map_);
-
-          if (ColorChannelIsHue(color_space_, i)) {
-            // Non-finite values should be clamped to the range [0, 360].
-            // Since 0 = 360 in this case, they can all simply become zero.
-            if (!isfinite(channels_[i].value())) {
-              channels_[i] = 0.0;
-            }
-
-            // Wrap hue to be in the range [0, 360].
-            channels_[i].value() =
-                fmod(fmod(channels_[i].value(), 360.0) + 360.0, 360.0);
-          }
-        }
-      }
-
-      if (expect_alpha) {
-        if (alpha_channel_type_ != ChannelType::kNone) {
-          alpha_ = ResolveAlpha(unresolved_alpha_, alpha_channel_type_,
-                                color_channel_map_);
-        } else {
-          alpha_.reset();
-        }
-      } else if (IsRelativeColor()) {
-        alpha_ = color_channel_map_.at(CSSValueID::kAlpha);
-      }
-
-      MakePerColorSpaceAdjustments();
-
-      resolved_color = Color::FromColorSpace(
-          color_space_, channels_[0], channels_[1], channels_[2], alpha_);
-      if (IsRelativeColor() && Color::IsLegacyColorSpace(color_space_)) {
-        resolved_color->ConvertToColorSpace(Color::ColorSpace::kSRGB);
-      }
-    }
-
-    if (IsRelativeColor()) {
-      context.Count(WebFeature::kCSSRelativeColor);
-    } else {
-      switch (color_space_) {
-        case Color::ColorSpace::kSRGB:
-        case Color::ColorSpace::kSRGBLinear:
-        case Color::ColorSpace::kDisplayP3:
-        case Color::ColorSpace::kA98RGB:
-        case Color::ColorSpace::kProPhotoRGB:
-        case Color::ColorSpace::kRec2020:
-          context.Count(WebFeature::kCSSColor_SpaceRGB);
-          if (resolved_color.has_value() &&
-              !IsInGamutRec2020(*resolved_color)) {
-            context.Count(WebFeature::kCSSColor_SpaceRGB_outOfRec2020);
-          }
-          break;
-        case Color::ColorSpace::kOklab:
-        case Color::ColorSpace::kOklch:
-          context.Count(WebFeature::kCSSColor_SpaceOkLxx);
-          if (resolved_color.has_value() &&
-              !IsInGamutRec2020(*resolved_color)) {
-            context.Count(WebFeature::kCSSColor_SpaceOkLxx_outOfRec2020);
-          }
-          break;
-        case Color::ColorSpace::kXYZD50:
-        case Color::ColorSpace::kXYZD65:
-        case Color::ColorSpace::kLab:
-        case Color::ColorSpace::kLch:
-        case Color::ColorSpace::kSRGBLegacy:
-        case Color::ColorSpace::kHSL:
-        case Color::ColorSpace::kHWB:
-        case Color::ColorSpace::kNone:
-          break;
-      }
-    }
   }
   stream.ConsumeWhitespace();
+
+  // We should be able to resolve channel values for all non-relative colors
+  // and all relative colors where the origin color is resolvable at parse
+  // time.
+  if (!IsRelativeColor() || origin_color_.has_value()) {
+    // Resolve channel values.
+    for (int i = 0; i < 3; i++) {
+      if (channel_types_[i] != ChannelType::kNone) {
+        channels_[i] = ResolveColorChannel(
+            unresolved_channels_[i], channel_types_[i],
+            function_metadata_->channel_percentage[i], color_channel_map_);
+
+        if (ColorChannelIsHue(color_space_, i)) {
+          // Non-finite values should be clamped to the range [0, 360].
+          // Since 0 = 360 in this case, they can all simply become zero.
+          if (!isfinite(channels_[i].value())) {
+            channels_[i] = 0.0;
+          }
+
+          // Wrap hue to be in the range [0, 360].
+          channels_[i].value() =
+              fmod(fmod(channels_[i].value(), 360.0) + 360.0, 360.0);
+        }
+      }
+    }
+
+    if (has_alpha) {
+      if (alpha_channel_type_ != ChannelType::kNone) {
+        alpha_ = ResolveAlpha(unresolved_alpha_, alpha_channel_type_,
+                              color_channel_map_);
+      } else {
+        alpha_.reset();
+      }
+    } else if (IsRelativeColor()) {
+      alpha_ = color_channel_map_.at(CSSValueID::kAlpha);
+    }
+
+    MakePerColorSpaceAdjustments();
+
+    resolved_color = Color::FromColorSpace(color_space_, channels_[0],
+                                           channels_[1], channels_[2], alpha_);
+    if (IsRelativeColor() && Color::IsLegacyColorSpace(color_space_)) {
+      resolved_color->ConvertToColorSpace(Color::ColorSpace::kSRGB);
+    }
+  }
+
+  if (IsRelativeColor()) {
+    context.Count(WebFeature::kCSSRelativeColor);
+  } else {
+    switch (color_space_) {
+      case Color::ColorSpace::kSRGB:
+      case Color::ColorSpace::kSRGBLinear:
+      case Color::ColorSpace::kDisplayP3:
+      case Color::ColorSpace::kA98RGB:
+      case Color::ColorSpace::kProPhotoRGB:
+      case Color::ColorSpace::kRec2020:
+        context.Count(WebFeature::kCSSColor_SpaceRGB);
+        if (resolved_color.has_value() && !IsInGamutRec2020(*resolved_color)) {
+          context.Count(WebFeature::kCSSColor_SpaceRGB_outOfRec2020);
+        }
+        break;
+      case Color::ColorSpace::kOklab:
+      case Color::ColorSpace::kOklch:
+        context.Count(WebFeature::kCSSColor_SpaceOkLxx);
+        if (resolved_color.has_value() && !IsInGamutRec2020(*resolved_color)) {
+          context.Count(WebFeature::kCSSColor_SpaceOkLxx_outOfRec2020);
+        }
+        break;
+      case Color::ColorSpace::kXYZD50:
+      case Color::ColorSpace::kXYZD65:
+      case Color::ColorSpace::kLab:
+      case Color::ColorSpace::kLch:
+      case Color::ColorSpace::kSRGBLegacy:
+      case Color::ColorSpace::kHSL:
+      case Color::ColorSpace::kHWB:
+      case Color::ColorSpace::kNone:
+        break;
+    }
+  }
 
   if (resolved_color.has_value()) {
     return cssvalue::CSSColor::Create(*resolved_color);

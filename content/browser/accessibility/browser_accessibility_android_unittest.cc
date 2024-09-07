@@ -8,20 +8,19 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
-
 namespace content {
 
 namespace {
 BrowserAccessibilityManagerAndroid* ToBrowserAccessibilityManagerAndroid(
-    BrowserAccessibilityManager* manager) {
+    ui::BrowserAccessibilityManager* manager) {
   return static_cast<BrowserAccessibilityManagerAndroid*>(manager);
 }
 }  // namespace
@@ -86,6 +85,7 @@ BrowserAccessibilityAndroidTest::~BrowserAccessibilityAndroidTest() = default;
 void BrowserAccessibilityAndroidTest::SetUp() {
   test_browser_accessibility_delegate_ =
       std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+
   SetContentClient(&client_);
 }
 
@@ -105,21 +105,21 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetTextOnly) {
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids = {para1.id};
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, para1, text1), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
-  BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
+  ui::BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
   EXPECT_TRUE(para_obj->IsLeaf());
   EXPECT_TRUE(para_obj->CanFireEvents());
-  BrowserAccessibility* text_obj = manager->GetFromID(111);
+  ui::BrowserAccessibility* text_obj = manager->GetFromID(111);
   EXPECT_TRUE(text_obj->IsLeaf());
   EXPECT_FALSE(text_obj->CanFireEvents());
-  BrowserAccessibility* updated =
+  ui::BrowserAccessibility* updated =
       manager->RetargetBrowserAccessibilityForEvents(
           text_obj, RetargetEventType::RetargetEventTypeBlinkHover);
   // |updated| should be the paragraph.
@@ -144,21 +144,21 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetHeading) {
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids = {heading1.id};
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, heading1, text1), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
-  BrowserAccessibility* heading_obj = root_obj->PlatformGetChild(0);
+  ui::BrowserAccessibility* heading_obj = root_obj->PlatformGetChild(0);
   EXPECT_TRUE(heading_obj->IsLeaf());
   EXPECT_TRUE(heading_obj->CanFireEvents());
-  BrowserAccessibility* text_obj = manager->GetFromID(111);
+  ui::BrowserAccessibility* text_obj = manager->GetFromID(111);
   EXPECT_TRUE(text_obj->IsLeaf());
   EXPECT_FALSE(text_obj->CanFireEvents());
-  BrowserAccessibility* updated =
+  ui::BrowserAccessibility* updated =
       manager->RetargetBrowserAccessibilityForEvents(
           text_obj, RetargetEventType::RetargetEventTypeBlinkHover);
   // |updated| should be the heading.
@@ -184,21 +184,21 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetFocusable) {
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids = {para1.id};
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, para1, text1), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
-  BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
+  ui::BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
   EXPECT_FALSE(para_obj->IsLeaf());
   EXPECT_TRUE(para_obj->CanFireEvents());
-  BrowserAccessibility* text_obj = manager->GetFromID(111);
+  ui::BrowserAccessibility* text_obj = manager->GetFromID(111);
   EXPECT_TRUE(text_obj->IsLeaf());
   EXPECT_TRUE(text_obj->CanFireEvents());
-  BrowserAccessibility* updated =
+  ui::BrowserAccessibility* updated =
       manager->RetargetBrowserAccessibilityForEvents(
           text_obj, RetargetEventType::RetargetEventTypeBlinkHover);
   // |updated| should be the paragraph.
@@ -271,32 +271,32 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids = {container.id};
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, container, form, label, label_text,
                                      input_time, input_container, input_text,
                                      button, button_text),
           node_id_delegate_, test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
-  BrowserAccessibility* label_obj = manager->GetFromID(label.id);
+  ui::BrowserAccessibility* label_obj = manager->GetFromID(label.id);
   EXPECT_TRUE(label_obj->IsLeaf());
   EXPECT_TRUE(label_obj->CanFireEvents());
-  BrowserAccessibility* label_text_obj = manager->GetFromID(label_text.id);
+  ui::BrowserAccessibility* label_text_obj = manager->GetFromID(label_text.id);
   EXPECT_TRUE(label_text_obj->IsLeaf());
   EXPECT_FALSE(label_text_obj->CanFireEvents());
-  BrowserAccessibility* updated =
+  ui::BrowserAccessibility* updated =
       manager->RetargetBrowserAccessibilityForEvents(
           label_text_obj, RetargetEventType::RetargetEventTypeBlinkHover);
   EXPECT_EQ(label.id, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
 
-  BrowserAccessibility* input_time_obj = manager->GetFromID(input_time.id);
+  ui::BrowserAccessibility* input_time_obj = manager->GetFromID(input_time.id);
   EXPECT_TRUE(input_time_obj->IsLeaf());
   EXPECT_TRUE(input_time_obj->CanFireEvents());
-  BrowserAccessibility* input_time_container_obj =
+  ui::BrowserAccessibility* input_time_container_obj =
       manager->GetFromID(input_container.id);
   EXPECT_TRUE(input_time_container_obj->IsLeaf());
   EXPECT_FALSE(input_time_container_obj->CanFireEvents());
@@ -304,7 +304,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
       input_time_container_obj, RetargetEventType::RetargetEventTypeBlinkHover);
   EXPECT_EQ(input_time.id, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
-  BrowserAccessibility* input_text_obj = manager->GetFromID(input_text.id);
+  ui::BrowserAccessibility* input_text_obj = manager->GetFromID(input_text.id);
   EXPECT_TRUE(input_text_obj->IsLeaf());
   EXPECT_FALSE(input_text_obj->CanFireEvents());
   updated = manager->RetargetBrowserAccessibilityForEvents(
@@ -312,10 +312,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
   EXPECT_EQ(input_time.id, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
 
-  BrowserAccessibility* button_obj = manager->GetFromID(button.id);
+  ui::BrowserAccessibility* button_obj = manager->GetFromID(button.id);
   EXPECT_TRUE(button_obj->IsLeaf());
   EXPECT_TRUE(button_obj->CanFireEvents());
-  BrowserAccessibility* button_text_obj = manager->GetFromID(button_text.id);
+  ui::BrowserAccessibility* button_text_obj =
+      manager->GetFromID(button_text.id);
   EXPECT_TRUE(button_text_obj->IsLeaf());
   EXPECT_FALSE(button_text_obj->CanFireEvents());
   updated = manager->RetargetBrowserAccessibilityForEvents(
@@ -351,11 +352,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestGetTextContent) {
   root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids = {container_para.id};
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, container_para, text1, text2, text3),
           node_id_delegate_, test_browser_accessibility_delegate_.get()));
-  BrowserAccessibility* container_obj = manager->GetFromID(11);
+  ui::BrowserAccessibility* container_obj = manager->GetFromID(11);
   // Default caller gets full text.
   EXPECT_EQ(u"1Foo2Bar3Baz", container_obj->GetTextContentUTF16());
 
@@ -364,15 +365,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestGetTextContent) {
   // No predicate returns all text.
   EXPECT_EQ(u"1Foo2Bar3Baz", node->GetSubstringTextContentUTF16(std::nullopt));
   // Non-empty predicate terminates after one text node.
-  EXPECT_EQ(u"1Foo", node->GetSubstringTextContentUTF16(
-                         BrowserAccessibilityAndroid::NonEmptyPredicate()));
+  EXPECT_EQ(u"1Foo", node->GetSubstringTextContentUTF16(1));
   // Length of 5 not satisfied by one node.
-  EXPECT_EQ(u"1Foo2Bar", node->GetSubstringTextContentUTF16(
-                             BrowserAccessibilityAndroid::LengthAtLeast(5)));
+  EXPECT_EQ(u"1Foo2Bar", node->GetSubstringTextContentUTF16(5));
   // Length of 10 not satisfied by two nodes.
-  EXPECT_EQ(u"1Foo2Bar3Baz",
-            node->GetSubstringTextContentUTF16(
-                BrowserAccessibilityAndroid::LengthAtLeast(10)));
+  EXPECT_EQ(u"1Foo2Bar3Baz", node->GetSubstringTextContentUTF16(10));
   manager.reset();
 }
 
@@ -410,7 +407,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
   tree.nodes[5].SetImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed);
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
 
@@ -463,7 +460,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
   tree.nodes[5].SetImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation);
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
 
@@ -507,7 +504,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
       ax::mojom::IntAttribute::kTextDirection,
       static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
 
@@ -562,7 +559,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
   tree.nodes[4].SetImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed);
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
 
@@ -621,7 +618,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
   tree.nodes[4].SetImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation);
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
 
@@ -674,7 +671,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
   tree.nodes[2].SetImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded);
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
 

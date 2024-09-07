@@ -209,7 +209,7 @@ ProcessManagerDelegate* TestExtensionsBrowserClient::GetProcessManagerDelegate()
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 TestExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
     const url::Origin& app_origin,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     content::BrowserContext* browser_context) {
   return mojo::PendingRemote<network::mojom::URLLoaderFactory>();
 }
@@ -290,6 +290,9 @@ bool TestExtensionsBrowserClient::IsMinBrowserVersionSupported(
     const std::string& min_version) {
   return true;
 }
+
+void TestExtensionsBrowserClient::CreateExtensionWebContentsObserver(
+    content::WebContents* web_contents) {}
 
 ExtensionWebContentsObserver*
 TestExtensionsBrowserClient::GetExtensionWebContentsObserver(

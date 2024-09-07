@@ -226,6 +226,8 @@ viz_component("service") {
     "hit_test/hit_test_aggregator_delegate.h",
     "hit_test/hit_test_manager.cc",
     "hit_test/hit_test_manager.h",
+    "input/input_manager.cc",
+    "input/input_manager.h",
     "layers/layer_context_impl.cc",
     "layers/layer_context_impl.h",
     "performance_hint/boost_manager.cc",
@@ -269,6 +271,7 @@ viz_component("service") {
     "//cc/paint",
     "//components/crash/core/common:crash_key",
     "//components/input",
+    "//components/input:mojom",
     "//components/startup_metric_utils",
 
     # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
@@ -576,6 +579,8 @@ viz_source_set("unit_tests") {
     "frame_sinks/video_detector_unittest.cc",
     "gl/gpu_service_impl_unittest.cc",
     "hit_test/hit_test_aggregator_unittest.cc",
+    "input/mock_input_manager.cc",
+    "input/mock_input_manager.h",
     "main/viz_main_impl_unittest.cc",
     "performance_hint/boost_manager_unittest.cc",
     "surfaces/referenced_surface_tracker_unittest.cc",
@@ -583,11 +588,9 @@ viz_source_set("unit_tests") {
     "transitions/transferable_resource_tracker_unittest.cc",
   ]
 
-  if (!use_aura && !is_mac) {
+  if (!use_aura && !is_mac && !is_win) {
     sources -= [ "display_embedder/buffer_queue_unittest.cc" ]
   }
-
-  configs = [ "//third_party/khronos:khronos_headers" ]
 
   deps = [
     ":service",
@@ -597,6 +600,7 @@ viz_source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
+    "//components/input",
     "//components/viz/client",
     "//components/viz/common",
     "//components/viz/host",
@@ -614,6 +618,7 @@ viz_source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//third_party/libyuv",
     "//ui/display/types",
     "//ui/gfx:test_support",

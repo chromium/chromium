@@ -26,19 +26,15 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -46,6 +42,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -172,7 +169,6 @@ class UserManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    wallpaper_controller_client_.reset();
     user_image_manager_registry_.reset();
     if (user_manager_) {
       user_manager_->Destroy();
@@ -211,9 +207,6 @@ class UserManagerTest : public testing::Test {
   void ResetUserManager() {
     // Initialize the UserManager singleton to a fresh ChromeUserManagerImpl
     // instance.
-    // WallpaperControllerClient needs to be recreated, too, because
-    // it subscribes UserManager singleton.
-    wallpaper_controller_client_.reset();
     user_image_manager_registry_.reset();
     if (user_manager_) {
       user_manager_->Destroy();
@@ -226,10 +219,6 @@ class UserManagerTest : public testing::Test {
     // follow initialization order in
     // `BrowserProcessPlatformPart::InitializeUserManager()`
     user_manager_->Initialize();
-    wallpaper_controller_client_ = std::make_unique<
-        WallpaperControllerClientImpl>(
-        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
-    wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
     // ChromeUserManagerImpl ctor posts a task to reload policies.
     // Also ensure that all existing ongoing user manager tasks are completed.
@@ -316,8 +305,6 @@ class UserManagerTest : public testing::Test {
   // and set it back to what it was during |TearDown|.
   std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_type_;
-  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
-  TestWallpaperController test_wallpaper_controller_;
 
   content::BrowserTaskEnvironment task_environment_;
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -346,23 +333,6 @@ TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
   EXPECT_FALSE(IsEphemeralAccountId(EmptyAccountId()));
 
   EXPECT_EQ(GetUserManagerOwnerId(), kOwnerAccountId);
-}
-
-TEST_F(UserManagerTest, GetProfilePrefs) {
-  // Log in the user and create the profile.
-  user_manager::UserManager::Get()->UserLoggedIn(
-      kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
-      false /* browser_restart */, false /* is_child */);
-  user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  ASSERT_FALSE(user->GetProfilePrefs());
-  Profile& profile = profiles::testing::CreateProfileSync(
-      g_browser_process->profile_manager(),
-      ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
-  EXPECT_TRUE(user->GetProfilePrefs());
-  EXPECT_EQ(profile.GetPrefs(), user->GetProfilePrefs());
-
-  ResetUserManager();
 }
 
 // Tests that `IsEphemeralAccountId(account_id)` returns false when `account_id`
@@ -597,11 +567,6 @@ TEST_F(UserManagerTest, RemoveUser) {
 }
 
 TEST_F(UserManagerTest, RemoveRegularUsersExceptOwnerFromList) {
-  // System salt is needed to remove user wallpaper.
-  SystemSaltGetter::Initialize();
-  SystemSaltGetter::Get()->SetRawSaltForTesting(
-      SystemSaltGetter::RawSalt({1, 2, 3, 4, 5, 6, 7, 8}));
-
   user_manager::UserManager::Get()->UserLoggedIn(
       kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
       false /* browser_restart */, false /* is_child */);
@@ -629,7 +594,6 @@ TEST_F(UserManagerTest, RemoveRegularUsersExceptOwnerFromList) {
   EXPECT_EQ((*users)[2]->GetAccountId(), kAccountId0);
   EXPECT_EQ((*users)[3]->GetAccountId(), kOwnerAccountId);
 
-  test_wallpaper_controller_.ClearCounts();
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ true,
       /* owner= */ kOwnerAccountId.GetUserEmail());
@@ -640,8 +604,6 @@ TEST_F(UserManagerTest, RemoveRegularUsersExceptOwnerFromList) {
   // Kiosk is not a regular user and is not removed.
   EXPECT_EQ((*users)[0]->GetAccountId(), kKioskAccountId);
   EXPECT_EQ((*users)[1]->GetAccountId(), kOwnerAccountId);
-  // Verify that the wallpaper is removed when user is removed.
-  EXPECT_EQ(2, test_wallpaper_controller_.remove_user_wallpaper_count());
 }
 
 TEST_F(UserManagerTest, RegularUserLoggedInAsEphemeral) {
@@ -670,22 +632,27 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
   user_manager::UserManager::Get()->UserLoggedIn(
       kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
       false /* browser_restart */, false /* is_child */);
-  user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  Profile& profile = profiles::testing::CreateProfileSync(
-      g_browser_process->profile_manager(),
-      ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
+
+  TestingPrefServiceSimple prefs;
+  user_manager::UserManagerBase::RegisterProfilePrefs(prefs.registry());
+  // To simplify the dependency, register the pref directly.
+  // In production, this is registered in ash::PowerPrefs.
+  prefs.registry()->RegisterBooleanPref(prefs::kAllowScreenLock, true);
+
+  user_manager::UserManager::Get()->OnUserProfileCreated(kOwnerAccountId,
+                                                         &prefs);
 
   // Verify that the user is allowed to lock the screen.
   EXPECT_TRUE(user_manager::UserManager::Get()->GetActiveUser()->CanLock());
   EXPECT_EQ(1U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
   // The user is not allowed to lock the screen.
-  profile.GetPrefs()->SetBoolean(prefs::kAllowScreenLock, false);
+  prefs.SetBoolean(prefs::kAllowScreenLock, false);
   EXPECT_FALSE(user_manager::UserManager::Get()->GetActiveUser()->CanLock());
   EXPECT_EQ(0U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
-  ResetUserManager();
+  user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+      kOwnerAccountId);
 }
 
 TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {

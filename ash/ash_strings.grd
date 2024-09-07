@@ -666,6 +666,12 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_TOOLTIP" desc="The tooltip text to notify that bluetooth is unavailable.">
         Bluetooth is unavailable
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_STATE_TITLE" desc="The main label for the Bluetooth Quick Settings detailed view when Bluetooth is unavailable.">
+        Bluetooth unavailable
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_STATE_SUBTITLE" desc="The secondary label for the Bluetooth Quick Settings detailed view when Bluetooth is unavailable.">
+        Try shutting down your device.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP_LEGACY" desc="The tooltip text to notify that multiple bluetooth devices are connected. [ICU Syntax]">
         {NUM_DEVICES, plural,
          =1 {Connected to a device}
@@ -865,23 +871,23 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FEEDBACK_BUTTON" desc="The text used for the feedback button.">
         Send feedback
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" desc="The text used for the ending moment, as well as the tooltip.">
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
         Time's up. Great job!
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_1" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
-        Time’s up. You did it!
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_1" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
+        Time's up. You did it!
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_2" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
-        Time’s up. You’re on a roll!
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_2" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
+        Time's up. You're on a roll!
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_3" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_3" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
         All done. Way to go!
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_4" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_4" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
         All done. Keep it up!
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_5" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
-        Time’s up. Done and done!
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_5" desc="The text used for the ending moment, as well as the tooltip. [CHAR_LIMIT=22]">
+        Time's up. Done and done!
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT" desc="The accessibility alert for the ending moment nudge.">
         <ph name="TITLE">$1<ex>Time's up. Great job!</ex></ph> You've just focused for <ph name="FOCUSED_TIME">$2<ex>24 minutes</ex></ph>. Open Quick settings to focus again.
@@ -1112,7 +1118,11 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL" desc="The accessible text for the volume slider in the tray.">
         Volume
       </message>
-
+      <message name="IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibile text for the slider when it is focused and not muted.">
+      <ph name="VOLUME_LEVEL">$1<ex>55</ex></ph>, Hitting enter will mute audio.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_MUTED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessible text for the slider when it is muted.">
+      <ph name="VOLUME_LEVEL">$1<ex>55</ex></ph>, Muted </message>
       <message name="IDS_ASH_ACCESSIBILITY_FEATURE_SHORTCUT_DISABLED_TITLE"
                desc="Title to indicate that the shortcut for an accessibility feature has been disabled.">
         Shortcut turned off
@@ -1799,13 +1809,34 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Improve lighting
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_STUDIO_LOOK_NAME" desc="Text for name of the studio look effect in the VC bubble, which is a toggle for enabling or disabling face retouching and portrait relighting.">
-        Studio Look
+        Appearance effects
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_TITLE" desc="The title of the video conference bubble.">
         Video call controls
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP" desc="Tooltip shown for a toggle to enable or disable sidetone.">
         Toggle sidetone
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_PREFERENCE_STATE_ACCESSIBLE_NAME" desc="Text for screen readers describing the state of a Studio Look preference. The commas are significant as they will introduce a pause in the spoken text.">
+        <ph name="PREFERENCE_TITLE">$1<ex>Studio Look preference</ex></ph>, <ph name="EFFECT_NAME">$2<ex>Face retouch</ex></ph>, toggle button, <ph name="STATE">$3<ex>on</ex></ph>
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_BUTTON_TOOLTIP" desc="Tooltip for the settings button in the VC bubble which opens a menu containing the VC settings.">
+        Settings
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_STUDIO_LOOK_PREFERENCE" desc="Text for the Studio Look preference title in the VC settings menu.">
+        Appearance effects preferences
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_AUDIO_SETTINGS" desc="Text for the audio settings item in the VC settings menu.">
+        Audio settings
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_FACE_RETOUCH" desc="Text for the face retouch preference in the VC settings menu.">
+        Portrait touch-up
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_PORTRAIT_RELIGHTING" desc="Text for the portrait relighting preference in the VC settings menu.">
+        Improve lighting
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_PRIVACY_SETTINGS" desc="Text for the privacy settings item in the VC settings menu.">
+        Privacy settings
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE" desc="The title of the bubble when sidetone is enabled.">
         Listen to your mic sound
@@ -1825,7 +1856,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
         Dismiss
       </message>
-        <message name="IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME" desc="Text for name of the 'Create With AI' button in the VC bubble, which invokes the webui for the creation.">
+      <message name="IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME" desc="Text for name of the 'Create With AI' button in the VC bubble, which invokes the webui for the creation.">
         Create with AI
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_LINUX_APP_WARNING_TEXT" desc="Text for the warning label placed inside the VC bubble when there's any linux app running.">
@@ -4146,7 +4177,7 @@ No devices connected.
         Sign out
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_ACCESSIBILITY_SETTINGS" desc="Label for accelerator action - Open accessibility quick settings.">
-        Open accessibility quick settings
+        Open accessibility options
       </message>
 
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_CAMERA_PREVIEW" translateable="false" desc="Label for accelerator action - Focus on the camera preview.">
@@ -4900,11 +4931,20 @@ No devices connected.
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER" desc="Text to display as placeholder in the password field when password is the only auth method.">
         Password
       </message>
+      <message name="IDS_ASH_LOGIN_POD_PIN_PLACEHOLDER" desc="Text to display as placeholder in the password field when pin is the only auth method.">
+        PIN
+      </message>
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER" desc="Text to display as placeholder in the password field when both password and pin are allowed.">
         PIN or password
       </message>
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME" desc="The accessible name of the pin input field used for PIN Auto-submit">
         Enter your PIN
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_DIALOG_ACCESSIBLE_NAME" desc="The accessible name of the in session auth dialog">
+        Verify your identity
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_DIALOG_ACCESSIBLE_DESCRIPTION" desc="The accessible name of the in session auth dialog">
+        Press escape to close
       </message>
       <message name="IDS_ASH_LOGIN_PIN_INPUT_DIGITS_REMAINING" desc="Screen reader message telling the user how many digits are remaining for the PIN input field. [ICU Syntax]">
         {NUM_DIGITS, plural,
@@ -5184,6 +5224,9 @@ No devices connected.
       <message name="IDS_ASH_LOGIN_POD_TPM_LOCKED_ISSUE_DESCRIPTION" desc="Message shown as part of the TPM locked warning bubble when TPM is locked.">
         Your Chromebook needs to stay on and connected to power during this time. Make sure the charger or adapter cables are completely plugged in, both to your Chromebook and the power outlet. Do not turn off your Chromebook.
       </message>
+      <message name="IDS_ASH_LOGIN_POD_PIN_LOCKED_WARNING" desc="Message shown when pin is soft locked due to multiple wrong attempts.">
+        Too many PIN attempts. Wait <ph name="TIME_LEFT">$1<ex>15 minutes, 10 seconds</ex></ph> and try PIN again, or enter password to sign in immediately.
+      </message>
 
       <!-- Authentication strings -->
 
@@ -5277,6 +5320,9 @@ No devices connected.
       <message name="IDS_ASH_IN_SESSION_AUTH_ACCESSIBLE_TITLE" desc="Accessibility text read by chromevox to indicate which website / app we are authenticating for.">
         Verify your identity: <ph name="ORIGIN_NAME">$1<ex>example.com</ex></ph> would like to confirm it's you
       </message>
+      <message name="IDS_ASH_IN_SESSION_WEBAUTHN_PROMPT" desc="Prompt for WebAuthN in the auth dialog">
+        <ph name="ORIGIN_NAME">$1<ex>example.com</ex></ph> would like to confirm it's you
+      </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT" desc="Text shown in the settings auth dialog.">
         ChromeOS Settings would like to confirm it's you
       </message>
@@ -5296,7 +5342,10 @@ No devices connected.
         Incorrect PIN
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS" desc="Text shown in the auth dialog to tell the user that PIN auth has reached maximum attempts">
-        Too many attempts
+        Too many PIN attempts
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_PIN_DELAY_REQUIRED" desc="Text shown in the auth dialog to tell the user that PIN auth has reached many attempts and a rate limiting delay is in effect">
+        Too many PIN attempts. Wait <ph name="TIME_LEFT">$1<ex>1 hour, 15 minutes, 10 seconds</ex></ph> and try again
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_AVAILABLE" desc="Text shown in the auth dialog to remind user that fingerprint auth is supported">
         Touch the fingerprint sensor
@@ -5341,6 +5390,9 @@ No devices connected.
       </message>
       <message name="IDS_ASH_MAHI_PANEL_DISCLAIMER" desc="Text for the disclaimer label in the Mahi panel">
         Quality may vary when using generative AI.
+      </message>
+      <message name="IDS_ASH_MAHI_PANEL_DISCLAIMER_FEEDBACK_DISABLED" desc="Text for the disclaimer label in the Mahi panel when the feedback buttons are disabled">
+        Generative AI is experimental and content may be inaccurate, misleading, or offensive. Contact your administrator to report an issue. <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Learn more</ex></ph>
       </message>
       <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT" desc="Text for the learn more link that user can navigate to learn more about the project information">
         Learn more
@@ -5406,7 +5458,7 @@ No devices connected.
         Back to question
       </message>
       <message name="IDS_ASH_MAHI_PANEL_INPUT_PLACEHOLDER_TEXT" desc="Placeholder text for the Mahi panel input textfield.">
-        Ask a question.
+        Ask a question
       </message>
       <message name="IDS_ASH_MAHI_PANEL_INPUT_TEXTFIELD_SEND_BUTTON_ACCESSIBLE_NAME" desc="Tooltip for the Mahi panel input textfield send button.">
         Send
@@ -6377,11 +6429,14 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_VIDEO_RECORD_TABLET" desc="The capture label message which shows in the middle of the screen when in fullscreen video record mode in tablet mode.">
         Tap anywhere to record full screen
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE" desc="The caputre label message which shows in the middle of the screen when in region image capture mode.">
+      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE" desc="The capture label message which shows in the middle of the screen when in region image capture mode.">
         Drag to select an area to capture
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD" desc="The caputre label message which shows in the middle of the screen when in region video record mode.">
+      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD" desc="The capture label message which shows in the middle of the screen when in region video record mode.">
         Drag to select an area to record
+      </message>
+      <message name="IDS_ASH_SUNFISH_CAPTURE_LABEL" desc="The capture label message which shows in the middle of the screen when in sunfish session." translateable="false">
+        Drag to select an area to search
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_WINDOW_IMAGE_CAPTURE" desc="The capture label message which shows in the middle of the screen when in window image capture mode in tablet mode.">
         Select a window to capture
@@ -7520,9 +7575,17 @@ New install
         desc="This string appears as the label text of a button. The button is part of a truncated list of search results. Clicking the button will show all the search results.">
         Show all
       </message>
-      <message name="IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME"
-        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of search results of a particular category (e.g. Google Drive files). The placeholder is the name of the category. Clicking the button will show all the search results for that particular category of results.">
-        Show all <ph name="CATEGORY_NAME">$1<ex>Drive Files</ex></ph>
+      <message name="IDS_PICKER_SEE_MORE_LINKS_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of search results from the user's browsing history. Clicking the button will show all the browsing history search results.">
+        Show all browsing history content
+      </message>
+      <message name="IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of search results from the ChromeOS Files app. Clicking the button will show all the search results from Files. 'Files' is the ChromeOS Files app product name and the correct localized version of the product name should be used.">
+        Show all Files content
+      </message>
+      <message name="IDS_PICKER_SEE_MORE_DRIVE_FILES_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of Google Drive search results. Clicking the button will show all the Google Drive search results. 'Google Drive' is a product name and the correct localized version of the product name should be used.">
+        Show all Google Drive content
       </message>
       <message name="IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME"
         desc="This string is appears as the tooltip of a button. The button is part of a row of emojis. Clicking the button will show more emojis.">
@@ -7879,12 +7942,6 @@ New install
       </message>
       <message name="IDS_GLANCEABLES_TASKS_EDIT_IN_TASKS_LABEL" desc="A glanceables label button placed under the task title textfield that allows users to edit the task in Google Tasks website.">
         Edit in Google Tasks
-      </message>
-      <message name="IDS_GLANCEABLES_ERROR_DISMISS" desc="A glanceables bubble (classroom or tasks) displays a notification with an error message when an error occurs during any action within said glanceables bubble. This is the text that is displayed on the button within said notification in order to dismiss it.">
-        Dismiss
-      </message>
-      <message name="IDS_GLANCEABLES_ERROR_RELOAD" desc="A glanceables bubble (classroom or tasks) displays a notification with an error message when an error occurs during any action within said glanceables bubble. This is the text that is displayed on the button within said notification in order to reload the list of tasks to update it.">
-        Reload
       </message>
       <message name="IDS_GLANCEABLES_CLASSROOM_SEE_ALL_BUTTON_ACCESSIBLE_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking this button, which will open a corresponding website. This is the text announced by ChromeVox for this button.">
         See all classwork on Google Classroom website
@@ -8688,6 +8745,14 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_BIRCH_SEND_FEEDBACK" desc="Context menu item that sends feedback about suggestions in informed restore/overview UI">
         Send feedback
+      </message>
+
+      <!-- Ash style -->
+      <message name="IDS_ASH_ERROR_MESSAGE_TOAST_DISMISS" desc="An error message toast is a notification that shows up when an error occurs. This is the text that is displayed on the button within said notification in order to dismiss it.">
+        Dismiss
+      </message>
+      <message name="IDS_ASH_ERROR_MESSAGE_TOAST_RELOAD" desc="An error message toast is a notification that shows up when an error occurs. This is the text that is displayed on the button within said notification in order to reload the contents.">
+        Reload
       </message>
      </messages>
     </release>

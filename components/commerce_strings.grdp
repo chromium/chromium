@@ -332,9 +332,6 @@
     <message name="IDS_DISCOUNT_EXPIRATION_DATE" desc="Text shown in the discount dialog to tell users the discount expiration date.">
       Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>.
     </message>
-    <message name="IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout.">
-      Copy
-    </message>
     <message name="IDS_TWO_STRINGS_CONNECTOR" desc="This is used to connect two sentences together by using a ending period and a space. The first sentence does not contain an ending period, but the second sentence will.">
       <ph name="FIRST_STRING">$1<ex>Use this code at checkout</ex></ph>. <ph name="SECOND_STRING">$2<ex>Valid until Aug 15 2023.</ex></ph>
     </message>
@@ -356,16 +353,6 @@
     <message name="IDS_DISCOUNTS_COUPON_CODE_BUTTON_TOOLTIP_CLICKED" desc="The tooltip message for a button containing a copyable coupon code in the discounts bubble on Desktop. This message is shown when the button is hovered over and if the button has been clicked.">
       Copied to clipboard
     </message>
-    <if expr="use_titlecase">
-      <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
-        Discount Found
-      </message>
-    </if> <!-- use_titlecase -->
-    <if expr="not use_titlecase">
-      <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
-        Discount found
-      </message>
-    </if> <!-- not use_titlecase -->
   </if>
 
   <!-- Android only -->
@@ -465,7 +452,7 @@
     Price Insights
   </message>
   <message name="IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE" desc="The snackbar button title for Price Insights when the user has notification enabled.">
-    VIEW
+    View
   </message>
   <message name="IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED" desc="The snackbar title for Price Insights when the user has notification disabled.">
     You can view price drops for products you track anytime.
@@ -477,10 +464,7 @@
     Typical price for <ph name="PRODUCT_NAME">$1<ex>iPhone 15 Pro</ex></ph> is <ph name="LOW_PRICE">$2<ex>500</ex></ph> - <ph name="HIGH_PRICE">$3<ex>600</ex></ph> but current price is <ph name="CURRENT_PRICE">$4<ex>600</ex></ph> across the web.
   </message>
   <message name="IDS_BUYING_OPTIONS_ACCESSIBILITY_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string for the buying option component of Price Insights.">
-    Open a page that shows other stores that sell this product.
-  </message>
-  <message name="IDS_PRICE_TRACKING_NOT_TRACKING_ACCESSIBILITY_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string for the price tracking button when the current product is not being tracked.">
-    Not tracking
+    Search more buying options from other stores that sell this product.
   </message>
   <message name="IDS_PRICE_TRACKING_DESCRIPTION_TRACKED" desc="The description text for the price tracking section of price insights when the product is already being tracked.">
     You're already tracking this product
@@ -499,6 +483,12 @@
   </message>
   <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT" desc="The label for the alert's button that redirects the user to Chrome's application settings in iOS.">
     Settings
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_MESSAGE" desc="The snackbar title for Price Insights when the user successfully untrack a product.">
+    Price tracking stopped.
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_BUTTON_TITLE" desc="The snackbar button title for Price Insights when the user successfully untrack a product..">
+    Undo
   </message>
   <if expr="use_titlecase">
     <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
@@ -527,15 +517,48 @@
     Shopping list
   </message>
 
+  <!-- For Discounts -->
+  <message name="IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout.">
+      Copy
+  </message>
+  <if expr="use_titlecase">
+    <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
+      Discount Found
+    </message>
+  </if> <!-- use_titlecase -->
+  <if expr="not use_titlecase">
+    <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
+      Discount found
+    </message>
+  </if> <!-- not use_titlecase -->
+    <!-- Discounts Android only -->
+  <if expr="is_android">
+    <message name="IDS_DISCOUNT_CODE_COPIED_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout. This text will show on the button after user has clicked on the copy button to indicate that the discount code has been copied.">
+      Copied
+    </message>
+    <message name="IDS_DISCOUNT_EXPIRATION_DATE_ANDROID" desc="Text shown in the discount dialog to tell users the discount expiration date.">
+      Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>
+    </message>
+    </if> <!-- is_android -->
+
   <!-- For Compare -->
+  <message name="IDS_COMPARE_ADD_NEW_COLUMN" translateable="false" desc="Label shown on hover for the button for adding a new column in comparison table.">
+    Add similar products you want to compare
+  </message>
+  <message name="IDS_COMPARE_CITATION_A11Y_LABEL" desc="The accessibility label for a citation in the compare feature's UI.">
+    Citation <ph name="CURRENT_CITATION">$1<ex>1</ex></ph> of <ph name="MAX_CITATIONS">$2<ex>3</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Laptop</ex></ph>, <ph name="URL">$4<ex>http://example.com</ex></ph>
+  </message>
   <message name="IDS_COMPARE_DEFAULT_PAGE_TITLE" desc="The default page title for the tab compare feature.">
     Compare
+  </message>
+  <message name="IDS_COMPARE_DEFAULT_TABLE_TITLE" desc="The default title for a new comparison table.">
+    New table
   </message>
   <message name="IDS_COMPARE_DELETE" desc="The title of the menu item for deleting the tab compare table.">
     Delete comparison table
   </message>
   <message name="IDS_COMPARE_DISCLAIMER" desc="Disclaimer text shown in tab compare UIs.">
-    This is an experimental feature and won't always get it right.
+    The tab titles and URLs of pages you add to the table are sent to Google, saved to your account <ph name="EMAIL">$1<ex>test@gmail.com</ex></ph>, and may be seen by human reviewers to improve this feature.
   </message>
   <message name="IDS_COMPARE_EMPTY_PRODUCT_SELECTOR" desc="The text displayed in the product selector when there is no currently selected product.">
     Add a tab
@@ -544,10 +567,10 @@
     First, open tabs and visit sites
   </message>
   <message name="IDS_COMPARE_EMPTY_STATE_TITLE" desc="The title of the prompt that shows for tab compare when no products have been selected.">
-    Missing some info
+    Compare products
   </message>
   <message name="IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION" desc="The description of the prompt that shows for tab compare when no products have been selected.">
-    Something will show here once you select something from the dropdown under this
+    Add tabs with similar products to easily compare the details that matter to you
   </message>
   <message name="IDS_COMPARE_ENTRY_POINT_DEFAULT" desc="The default text for the Compare entry point button.">
     Compare tabs?
@@ -558,11 +581,17 @@
   <message name="IDS_COMPARE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Compare feedback form.">
     Send feedback for Compare
   </message>
-  <message name="IDS_COMPARE_LEARN_MORE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about tab compare.">
-    Learn more about Compare.
+  <message name="IDS_COMPARE_LEARN_MORE" desc="Text for a link in the compare page that links to a help article about tab compare.">
+    Learn about comparison tables
+  </message>
+  <message name="IDS_COMPARE_LEARN_MORE_A11Y_LABEL" desc="Accessibility label for a link that links to a help article about tab compare.">
+    Learn about comparison tables
   </message>
   <message name="IDS_COMPARE_OFFLINE_TOAST_MESSAGE" desc="The message that shows when tab compare is offline.">
-    Check your connection and try again.
+    Check your connection and try again
+  </message>
+  <message name="IDS_COMPARE_OPEN_PRODUCT_PAGE_IN_NEW_TAB" translateable="false" desc="Accessibility label for the button for opening product page in a new tab in comparison table.">
+    Open product page in new tab
   </message>
   <message name="IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT" desc="The default text for the Compare page action chip before adding the current page.">
     Add to Comparison?
@@ -597,12 +626,33 @@
   <message name="IDS_COMPARE_SUGGESTIONS_SECTION" desc="The title of the section in the product selection drop-down in the tab compare UI that shows a list of tabs suggested by the browser to be put into the table.">
     Suggestions
   </message>
+  <message name="IDS_COMPARE_TABLE_MENU_A11Y_LABEL" desc="The accessibility label for the 3-dot menu containing actions for the table in the compare UI.">
+    More actions for Compare table
+  </message>
+  <message name="IDS_COMPARE_TITLE_INPUT_A11Y_LABEL" desc="The accessibility label for the input field for the table name in the compare feature's UI.">
+    Compare table title, edit text
+  </message>
   <message name="IDS_TOOLTIP_COMPARE_ENTRY_POINT_CLOSE" desc="The tooltip text for the close button within the Compare entry point button.">
     Dismiss suggestion
   </message>
+  <message name="IDS_COMPARE_SYNC_PROMO_MESSAGE" desc="The message on the sync promo for compare when user does not have sync enabled.">
+    Compare products
+  </message>
+  <message name="IDS_COMPARE_SYNC_PROMO_DESCRIPTION" desc="The description on the sync promo for compare when user does not have sync enabled">
+    To see comparison tables, turn on sync
+  </message>
+  <message name="IDS_COMPARE_SYNC_PROMO_BUTTON" desc="The text on the sync button of the sync promo for compare, when user does not have sync enabled.">
+    Turn on sync
+  </message>
+  <message name="IDS_COMPARE_ERROR_TITLE" desc="The title for the error message in the compare UI when data cannot be loaded.">
+    Compare isn't available right now
+  </message>
+  <message name="IDS_COMPARE_ERROR_DESCRIPTION" desc="The description in the compare UI when data cannot be loaded.">
+    Something went wrong. Try again later.
+  </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
-    Chrome can help you compare similar products side-by-side
+    Compare similar products side-by-side
   </message>
   <message name="IDS_COMPARE_DISCLOSURE_ITEMS_HEADER" desc="The text for the Compare disclosure items header.">
     Things to consider
@@ -611,16 +661,13 @@
     This feature uses AI and won't always get it right
   </message>
   <message name="IDS_COMPARE_DISCLOSURE_TAB_ITEM" desc="The text for the Compare disclosure item that states what tab data is shared with Google.">
-    Selected tab titles and URLs using are sent to Google
+    The tab titles and URLs of pages you add to the table are sent to Google
   </message>
   <message name="IDS_COMPARE_DISCLOSURE_ACCOUNT_ITEM" desc="The text for the Compare disclosure item that states where the data is stored.">
     Comparison tables are saved to your account <ph name="EMAIL">$1<ex>test@gmail.com</ex></ph>
   </message>
   <message name="IDS_COMPARE_DISCLOSURE_DATA_ITEM" desc="The text for the Compare disclosure item that states who might see the data.">
-    Data may be seen by trained reviewers to improve the feature
-  </message>
-  <message name="IDS_COMPARE_DISCLOSURE_LEARN_MORE" desc="The text for the Compare disclosure statement if user wants to learn more about the feature.">
-    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph> about comparison tables
+    Data may be seen by trained reviewers to improve this feature
   </message>
   <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
     Let's go

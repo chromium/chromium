@@ -15,15 +15,15 @@
       .dark="${this.isThemeDark_()}" .backgroundColor="${this.backgroundColor_}"
       ?hidden="${!this.logoEnabled_}">
   </ntp-logo>
-  <div id="realboxContainer">
-    <cr-realbox id="realbox" ?is-dark="${this.isThemeDark_()}"
+  <div id="searchboxContainer">
+    <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
         ?color-source-is-baseline="${this.colorSourceIsBaseline}"
         @open-lens-search="${this.onOpenLensSearch_}"
         @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"
         ?had-secondary-side="${this.realboxHadSecondarySide}"
         @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
         ?can-show-secondary-side="${this.realboxCanShowSecondarySide}">
-    </cr-realbox>
+    </cr-searchbox>
     ${this.showLensUploadDialog_ ? html`
       <ntp-lens-upload-dialog id="lensUploadDialog"
           @close-lens-search="${this.onCloseLensSearch_}">

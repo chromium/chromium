@@ -239,6 +239,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Remove never translate language"/>
   <int value="15" label="Add never translate site"/>
   <int value="16" label="Remove never translate site"/>
+  <int value="17" label="Open translate settings"/>
 </enum>
 
 <enum name="TranslationStatus">

@@ -162,6 +162,17 @@ public class ShoppingService {
         void onResult(GURL url, PriceInsightsInfo info);
     }
 
+    /** A callback for acquiring discounts information about a page. */
+    public interface DiscountInfoCallback {
+        /**
+         * A notification that fetching discounts information for the URL has completed.
+         *
+         * @param url The URL the discounts info was fetched for.
+         * @param info A list of available discounts for the URL or empty if none is available.
+         */
+        void onResult(GURL url, List<DiscountInfo> info);
+    }
+
     /** A pointer to the native side of the object. */
     private long mNativeShoppingServiceAndroid;
 
@@ -233,6 +244,22 @@ public class ShoppingService {
 
         ShoppingServiceJni.get()
                 .getPriceInsightsInfoForUrl(mNativeShoppingServiceAndroid, this, url, callback);
+    }
+
+    /**
+     * Fetch discounts information for a URL.
+     *
+     * @param url The URL to fetch price insights info for.
+     * @param callback The callback that will run after the fetch is completed.
+     */
+    public void getDiscountInfoForUrl(GURL url, DiscountInfoCallback callback) {
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(url, null);
+            return;
+        }
+
+        ShoppingServiceJni.get()
+                .getDiscountInfoForUrl(mNativeShoppingServiceAndroid, this, url, callback);
     }
 
     /**
@@ -409,6 +436,16 @@ public class ShoppingService {
                 .isPriceInsightsEligible(mNativeShoppingServiceAndroid, this);
     }
 
+    // This is a feature check for the "discounts on navigation", which will return true
+    // if the user has the feature flag enabled, has MSBB enabled, and (if
+    // applicable) is in an eligible country and locale.
+    public boolean isDiscountEligibleToShowOnNavigation() {
+        if (mNativeShoppingServiceAndroid == 0) return false;
+
+        return ShoppingServiceJni.get()
+                .isDiscountEligibleToShowOnNavigation(mNativeShoppingServiceAndroid, this);
+    }
+
     @CalledByNative
     private void destroy() {
         mNativeShoppingServiceAndroid = 0;
@@ -540,6 +577,12 @@ public class ShoppingService {
     }
 
     @CalledByNative
+    private static void runDiscountInfoCallback(
+            DiscountInfoCallback callback, GURL url, List<DiscountInfo> infos) {
+        callback.onResult(url, infos);
+    }
+
+    @CalledByNative
     private static CommerceSubscription createSubscription(
             int type, int idType, int managementType, String id) {
         return new CommerceSubscription(type, idType, id, managementType, null);
@@ -647,5 +690,14 @@ public class ShoppingService {
                 PriceInsightsInfoCallback callback);
 
         boolean isPriceInsightsEligible(long nativeShoppingServiceAndroid, ShoppingService caller);
+
+        void getDiscountInfoForUrl(
+                long nativeShoppingServiceAndroid,
+                ShoppingService caller,
+                GURL url,
+                DiscountInfoCallback callback);
+
+        boolean isDiscountEligibleToShowOnNavigation(
+                long nativeShoppingServiceAndroid, ShoppingService caller);
     }
 }

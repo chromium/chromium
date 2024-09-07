@@ -52,8 +52,8 @@ class EditorMenuView : public PreTargetHandlerView {
   // PreTargetHandlerView:
   void AddedToWidget() override;
   void RequestFocus() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
@@ -66,6 +66,8 @@ class EditorMenuView : public PreTargetHandlerView {
   EditorMenuTextfieldView* textfield_for_testing() { return textfield_; }
 
  private:
+  const EditorMenuMode editor_menu_mode_;
+
   void InitLayout(const PresetTextQueries& preset_text_queries);
   void AddTitleContainer();
   void AddChipsContainer(const PresetTextQueries& preset_text_queries);
@@ -77,8 +79,6 @@ class EditorMenuView : public PreTargetHandlerView {
 
   void OnSettingsButtonPressed();
   void OnChipButtonPressed(const std::string& text_query_id);
-
-  EditorMenuMode editor_menu_mode_;
 
   // `delegate_` outlives `this`.
   raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;

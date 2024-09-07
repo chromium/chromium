@@ -469,8 +469,7 @@ class IndexedDBDatabaseOperationTest : public IndexedDBDatabaseTest {
         {{GetDatabaseLockId(db_->metadata().name),
           PartitionedLockManager::LockType::kExclusive}};
     db_->lock_manager().AcquireLocks(
-        std::move(lock_requests),
-        transaction_->mutable_locks_receiver()->AsWeakPtr(),
+        std::move(lock_requests), *transaction_->mutable_locks_receiver(),
         base::BindOnce(&IndexedDBTransaction::Start,
                        transaction_->AsWeakPtr()));
 

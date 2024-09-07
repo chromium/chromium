@@ -4,6 +4,7 @@
 """Definitions of builders in the tryserver.chromium.swangle builder group."""
 
 load("//lib/branches.star", "branches")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
@@ -30,6 +31,25 @@ consoles.list_view(
         branches.selector.ANDROID_BRANCHES,
         branches.selector.DESKTOP_BRANCHES,
     ],
+)
+
+try_.builder(
+    name = "dawn-chromium-presubmit",
+    branch_selector = [
+        branches.selector.ANDROID_BRANCHES,
+        branches.selector.DESKTOP_BRANCHES,
+    ],
+    description_html = "Runs Chromium presubmit tests on Dawn CLs",
+    mirrors = [
+        "ci/Dawn Chromium Presubmit",
+    ],
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+        retry_without_patch = False,
+    ),
+    gn_args = "ci/Dawn Chromium Presubmit",
+    execution_timeout = 30 * time.minute,
+    main_list_view = "try",
 )
 
 try_.builder(

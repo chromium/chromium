@@ -50,32 +50,25 @@ class PlusAddressAffiliationMatchHelper {
   // Returns the complete list of plus profiles that are affiliated with `facet`
   // based on their facet value. Only valid web facets must be passed-in.
   void GetAffiliatedPlusProfiles(
-      const PlusProfile::facet_t& facet,
+      const affiliations::FacetURI& facet,
       AffiliatedPlusProfilesCallback result_callback);
-
-  // Requests and caches the list of PSL extensions.
-  void GetPSLExtensions(PSLExtensionCallback callback);
 
  private:
   void OnPSLExtensionsReceived(std::vector<std::string> psl_extensions);
 
-  // Queries the plus address cache for entries with facets that satisfy either
-  // exact or PSL matching against the provided `facet`.
-  void ProcessExactAndPSLMatches(
-      base::RepeatingCallback<void(std::vector<PlusProfile>)>
-          matches_received_callback,
-      const affiliations::FacetURI& facet,
-      const base::flat_set<std::string>& psl_extensions);
+  // Queries the affiliation service for group affiliated facets of the
+  // requested `facet`. Notably, the response always contains the requested
+  // facet, even when no entries were found on the local cache.
+  void RequestGroupInfo(AffiliatedPlusProfilesCallback result_callback,
+                        const affiliations::FacetURI& facet,
+                        base::TimeTicks start_time,
+                        const base::flat_set<std::string>& psl_extensions);
 
   void OnGroupingInfoReceived(
-      base::RepeatingCallback<void(std::vector<PlusProfile>)>
-          matches_received_callback,
+      AffiliatedPlusProfilesCallback result_callback,
+      base::TimeTicks start_time,
+      const base::flat_set<std::string>& psl_extensions,
       const std::vector<affiliations::GroupedFacets>& results);
-
-  // Merges results from various affiliation types, prioritizes them, eliminates
-  // duplicates, and delivers a ranked list of affiliated plus profiles.
-  void MergeResults(AffiliatedPlusProfilesCallback result_callback,
-                    std::vector<std::vector<PlusProfile>> results);
 
   std::optional<base::flat_set<std::string>> psl_extensions_;
   std::vector<PSLExtensionCallback> psl_extensions_callbacks_;

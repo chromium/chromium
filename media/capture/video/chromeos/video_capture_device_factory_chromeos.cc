@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
@@ -18,6 +19,7 @@ namespace {
 
 gpu::GpuMemoryBufferManager* g_gpu_buffer_manager = nullptr;
 scoped_refptr<gpu::SharedImageInterface> g_shared_image_interface = nullptr;
+scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_ = nullptr;
 
 }  // namespace
 
@@ -81,6 +83,18 @@ VideoCaptureDeviceFactoryChromeOS::GetBufferManager() {
 void VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
     gpu::GpuMemoryBufferManager* buffer_manager) {
   g_gpu_buffer_manager = buffer_manager;
+}
+
+// static
+void VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
+  gpu_channel_host_ = std::move(gpu_channel_host);
+}
+
+// static
+scoped_refptr<gpu::GpuChannelHost>
+VideoCaptureDeviceFactoryChromeOS::GetGpuChannelHost() {
+  return gpu_channel_host_;
 }
 
 // static

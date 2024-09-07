@@ -190,9 +190,6 @@ class CORE_EXPORT ElementRuleCollector {
     current_matching_tree_scope_ = &tree_scope;
     result_.BeginAddingAuthorRulesForTreeScope(tree_scope);
   }
-  void FinishAddingAuthorRulesForTreeScope() {
-    current_matching_tree_scope_ = nullptr;
-  }
 
   // Return the pseudo id if the style request is for rules associated with a
   // pseudo element, or kPseudoNone if not.

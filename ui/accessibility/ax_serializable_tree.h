@@ -19,7 +19,7 @@ class AX_EXPORT AXSerializableTree : public AXTree {
 
   // Create a TreeSource adapter for this tree. The client gets ownership
   // of the return value and should delete it when done.
-  virtual AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>*
+  virtual AXTreeSource<const AXNode*, AXTreeData*, AXNodeData>*
   CreateTreeSource();
 };
 

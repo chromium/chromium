@@ -104,6 +104,9 @@ BASE_FEATURE(kIPHPasswordsManagementBubbleDuringSigninFeature,
 BASE_FEATURE(kIPHPasswordsWebAppProfileSwitchFeature,
              "IPH_PasswordsWebAppProfileSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHSupervisedUserProfileSigninFeature,
+             "IPH_SupervisedUserProfileSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPasswordManagerShortcutFeature,
              "IPH_PasswordManagerShortcut",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -221,9 +224,6 @@ BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAppSpecificHistory,
              "IPH_AppSpecificHistory",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAddToHomescreenMessageFeature,
-             "IPH_AddToHomescreenMessage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutoDarkOptOutFeature,
              "IPH_AutoDarkOptOut",
@@ -402,6 +402,9 @@ BASE_FEATURE(kIPHTabGroupsSurfaceOnHideFeature,
 BASE_FEATURE(kIPHTabSwitcherButtonFeature,
              "IPH_TabSwitcherButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabSwitcherButtonSwitchIncognitoFeature,
+             "IPH_TabSwitcherButtonSwitchIncognito",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabSwitcherFloatingActionButtonFeature,
              "IPH_TabSwitcherFloatingActionButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -608,6 +611,9 @@ BASE_FEATURE(kIPHiOSContextualPanelSampleModelFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSContextualPanelPriceInsightsFeature,
              "IPH_iOSContextualPanelPriceInsights",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHHomeCustomizationMenuFeature,
+             "IPH_HomeCustomizationMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.

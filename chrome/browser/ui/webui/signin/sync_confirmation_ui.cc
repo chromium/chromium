@@ -159,8 +159,8 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
       {"icons.html.js", IDR_SIGNIN_ICONS_HTML_JS},
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
-      {"tangible_sync_style_shared.css.js",
-       IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS},
+      {"tangible_sync_style_shared_lit.css.js",
+       IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_LIT_CSS_JS},
       {"sync_confirmation_browser_proxy.js",
        IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_BROWSER_PROXY_JS},
       {"sync_confirmation.js",
@@ -224,6 +224,9 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   source->AddResourcePath(
       "sync_confirmation_app.js",
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_APP_JS);
+  source->AddResourcePath(
+      "sync_confirmation_app.css.js",
+      IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_APP_CSS_JS);
   source->AddResourcePath(
       "sync_confirmation_app.html.js",
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_APP_HTML_JS);
@@ -331,6 +334,9 @@ void SyncConfirmationUI::InitializeForSyncDisabled(
   source->AddResourcePath(
       "sync_disabled_confirmation_app.js",
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_DISABLED_CONFIRMATION_APP_JS);
+  source->AddResourcePath(
+      "sync_disabled_confirmation_app.css.js",
+      IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_DISABLED_CONFIRMATION_APP_CSS_JS);
   source->AddResourcePath(
       "sync_disabled_confirmation_app.html.js",
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_DISABLED_CONFIRMATION_APP_HTML_JS);

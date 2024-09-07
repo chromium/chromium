@@ -44,7 +44,7 @@ namespace screen_ai {
 namespace {
 
 // How often it would be checked that the service is idle and can be shutdown.
-constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(10);
+constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(5);
 
 // How long after all clients are disconnected, it is checked if service is
 // idle.
@@ -304,12 +304,13 @@ void ScreenAIService::BindMainContentExtractor(
 }
 
 std::optional<chrome_screen_ai::VisualAnnotation>
-ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
-                                            bool a11y_tree_request) {
-  auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
-  CHECK(entry != ocr_client_types_.end()) << "OCR client type is not set.";
+ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
+  CHECK(base::Contains(ocr_client_types_,
+                       screen_ai_annotators_.current_receiver()));
+  mojom::OcrClientType client_type =
+      ocr_client_types_.find(screen_ai_annotators_.current_receiver())->second;
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.OCR.ClientType",
-                                GetClientType(entry->second));
+                                GetClientType(client_type));
 
   ocr_last_used_ = base::TimeTicks::Now();
   auto result = library_->PerformOcr(image);
@@ -318,6 +319,11 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
   unsigned image_size = image.width() * image.height();
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
 
+  if (!result) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.OCR.Failed.ClientType",
+        GetClientType(client_type));
+  }
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Successful",
                             result.has_value());
   base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
@@ -338,9 +344,9 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
                             elapsed_time);
   }
 
-  // If needed to extend to more clients, an identifier can be passed from the
-  // client to introduce itself and these metrics can be collected based on it.
-  if (a11y_tree_request) {
+  // MediaApp provides OCR for ChromeOS PDF viewer.
+  if (client_type == mojom::OcrClientType::kPdfViewer ||
+      client_type == mojom::OcrClientType::kMediaApp) {
     base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount.PDF",
                                 lines_count);
     base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time.PDF",
@@ -360,7 +366,7 @@ void ScreenAIService::PerformOcrAndReturnAnnotation(
     const SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {
   std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/false);
+      PerformOcrAndRecordMetrics(image);
 
   if (annotation_proto) {
     std::move(callback).Run(ConvertProtoToVisualAnnotation(*annotation_proto));
@@ -374,7 +380,7 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
     const SkBitmap& image,
     PerformOcrAndReturnAXTreeUpdateCallback callback) {
   std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/true);
+      PerformOcrAndRecordMetrics(image);
   ui::AXTreeUpdate update = ConvertVisualAnnotationToTreeUpdate(
       annotation_proto, gfx::Rect(image.width(), image.height()));
 
@@ -509,34 +515,17 @@ void ScreenAIService::CheckIdleStateAfterDelay() {
 }
 
 void ScreenAIService::ShutDownIfNoClients() {
-  bool ocr_has_clients = screen_ai_annotators_.size();
-  bool main_content_extraction_has_clients =
-      screen2x_main_content_extractors_.size();
-  if (!ocr_has_clients && !main_content_extraction_has_clients) {
-    VLOG(2) << "Shutting down since no client.";
-    base::Process::TerminateCurrentProcessImmediately(0);
-  }
-
-  // Collect data on whether each functionality of the service is idle.
-  // This will be used to plan further to shut down the service when idle, or
-  // track features which keep the service in idle state.
-  // TODO(b/353718857): Shut down when both features are idle, after ensuring
-  // all clients support reconnecting.
   const base::TimeTicks kIdlenessThreshold =
       base::TimeTicks::Now() - kIdleCheckingDelay;
-  if (!ocr_idle_reported_ && !ocr_last_used_.is_null() &&
-      ocr_last_used_ < kIdlenessThreshold) {
-    ocr_idle_reported_ = true;
-    base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Idle.Connected",
-                              ocr_has_clients);
-  }
-  if (!main_content_extraction_idle_reported_ &&
-      !main_content_extraction_last_used_.is_null() &&
-      main_content_extraction_last_used_ < kIdlenessThreshold) {
-    main_content_extraction_idle_reported_ = true;
-    base::UmaHistogramBoolean(
-        "Accessibility.ScreenAI.MainContentExtraction.Idle.Connected",
-        main_content_extraction_has_clients);
+  bool ocr_not_needed =
+      !screen_ai_annotators_.size() || ocr_last_used_ < kIdlenessThreshold;
+  bool main_content_extractioncan_not_needed =
+      !screen2x_main_content_extractors_.size() ||
+      main_content_extraction_last_used_ < kIdlenessThreshold;
+
+  if (ocr_not_needed && main_content_extractioncan_not_needed) {
+    VLOG(2) << "Shutting down since no client or idle.";
+    base::Process::TerminateCurrentProcessImmediately(0);
   }
 }
 

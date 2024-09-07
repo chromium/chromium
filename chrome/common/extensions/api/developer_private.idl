@@ -70,7 +70,8 @@ namespace developerPrivate {
     EXTENSION_SERVICE_WORKER_BACKGROUND,
     TAB_CONTENTS,
     OFFSCREEN_DOCUMENT,
-    EXTENSION_SIDE_PANEL
+    EXTENSION_SIDE_PANEL,
+    DEVELOPER_TOOLS
   };
 
   enum ErrorType {
@@ -88,7 +89,7 @@ namespace developerPrivate {
     ENABLED,
     DISABLED,
     TERMINATED,
-    BLACKLISTED
+    BLOCKLISTED
   };
 
   enum CommandScope {
@@ -241,7 +242,7 @@ namespace developerPrivate {
   };
 
   dictionary ExtensionInfo {
-    DOMString? blacklistText;
+    DOMString? blocklistText;
     SafetyCheckStrings? safetyCheckText;
     Command[] commands;
     ControlledInfo? controlledInfo;

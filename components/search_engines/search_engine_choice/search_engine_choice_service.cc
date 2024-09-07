@@ -27,6 +27,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
@@ -289,11 +290,9 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
   }
   CHECK(default_search_engine);
 
-  if (switches::kSearchEngineChoiceTriggerSkipFor3p.Get()) {
-    if (default_search_engine->GetEngineType(
-            template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
-      return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
-    }
+  if (default_search_engine->GetEngineType(
+          template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
+    return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
   }
 
   if (!template_url_service.IsPrepopulatedOrDefaultProviderByPolicy(
@@ -334,14 +333,6 @@ int SearchEngineChoiceService::GetCountryId() {
       return absl::get<int>(country_override.value());
     }
     return country_codes::kCountryIDUnknown;
-  }
-
-  bool force_eea_country =
-      switches::kSearchEngineChoiceTriggerWithForceEeaCountry.Get();
-  if (force_eea_country) {
-    // `kSearchEngineChoiceTriggerWithForceEeaCountry` forces the search engine
-    // choice country to Belgium.
-    return country_codes::CountryStringToCountryID("BE");
   }
 
   if (!country_id_cache_.has_value()) {
@@ -606,6 +597,15 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState(
 
   MaybeRecordChoiceScreenDisplayState(display_state.value(),
                                       /*is_from_cached_state=*/true);
+}
+
+// static
+void SearchEngineChoiceService::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  registry->RegisterInt64Pref(
+      prefs::kDefaultSearchProviderGuestModePrepopulatedId, 0);
+#endif
 }
 
 int SearchEngineChoiceService::GetCountryIdInternal() {

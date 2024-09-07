@@ -387,6 +387,8 @@ ConvertPaymentInstrumentPaymentRailToSyncPaymentRail(
   switch (payment_rail) {
     case PaymentInstrument::PaymentRail::kPix:
       return sync_pb::PaymentInstrument_SupportedRail_PIX;
+    case PaymentInstrument::PaymentRail::kPaymentHyperlink:
+      return sync_pb::PaymentInstrument_SupportedRail_PAYMENT_HYPERLINK;
     case PaymentInstrument::PaymentRail::kUnknown:
       return sync_pb::PaymentInstrument_SupportedRail_SUPPORTED_RAIL_UNKNOWN;
   }
@@ -972,9 +974,8 @@ template bool AreAnyItemsDifferent<>(
     const std::vector<std::unique_ptr<CreditCardCloudTokenData>>&,
     const std::vector<CreditCardCloudTokenData>&);
 
-template bool AreAnyItemsDifferent<>(
-    const std::vector<std::unique_ptr<BankAccount>>&,
-    const std::vector<BankAccount>&);
+template bool AreAnyItemsDifferent<>(const std::vector<BankAccount>&,
+                                     const std::vector<BankAccount>&);
 
 template <class Item>
 bool AreAnyItemsDifferent(const std::vector<Item>& old_data,

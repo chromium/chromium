@@ -116,7 +116,7 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
                                  SkPDF::StructureElementNode* tag) {
   bool valid = false;
 
-  tag->fNodeId = ax_node->GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId);
+  tag->fNodeId = ax_node->data().GetDOMNodeId();
   switch (ax_node->GetRole()) {
     case ax::mojom::Role::kRootWebArea:
       tag->fTypeString = kPDFStructureTypeDocument;
@@ -172,8 +172,7 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       std::vector<int> header_ids;
       header_ids.reserve(header_nodes.size());
       for (ui::AXNode* header_node : header_nodes) {
-        header_ids.push_back(header_node->GetIntAttribute(
-            ax::mojom::IntAttribute::kDOMNodeId));
+        header_ids.push_back(header_node->data().GetDOMNodeId());
       }
       tag->fAttributes.appendNodeIdArray(
           kPDFTableAttributeOwner, kPDFTableCellHeadersAttribute, header_ids);

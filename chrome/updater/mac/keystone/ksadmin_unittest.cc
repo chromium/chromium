@@ -141,8 +141,8 @@ TEST(KSAdminTest, Register) {
                 (const std::string& app_id,
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
-                 StateChangeCallback state_update,
-                 Callback callback),
+                 base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void,
                 Update,
@@ -150,12 +150,13 @@ TEST(KSAdminTest, Register) {
                  const std::string& install_data_index,
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
-                 StateChangeCallback state_update,
-                 Callback callback),
+                 base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void,
                 UpdateAll,
-                (StateChangeCallback state_update, Callback callback),
+                (base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void,
                 Install,
@@ -163,8 +164,8 @@ TEST(KSAdminTest, Register) {
                  const std::string& client_install_data,
                  const std::string& install_data_index,
                  Priority priority,
-                 StateChangeCallback state_update,
-                 Callback callback),
+                 base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void, CancelInstalls, (const std::string& app_id), (override));
     MOCK_METHOD(void,
@@ -174,8 +175,8 @@ TEST(KSAdminTest, Register) {
                  const std::string& install_args,
                  const std::string& install_data,
                  const std::string& install_settings,
-                 StateChangeCallback state_update,
-                 Callback callback),
+                 base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
 
    protected:

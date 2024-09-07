@@ -685,6 +685,16 @@ void FakeUserDataAuthClient::RemovePrepareAuthFactorProgressObserver(
   progress_observers_.RemoveObserver(observer);
 }
 
+void FakeUserDataAuthClient::AddAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  auth_factor_status_observer_list_.AddObserver(observer);
+}
+
+void FakeUserDataAuthClient::RemoveAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  auth_factor_status_observer_list_.RemoveObserver(observer);
+}
+
 void FakeUserDataAuthClient::IsMounted(
     const ::user_data_auth::IsMountedRequest& request,
     IsMountedCallback callback) {
@@ -1300,12 +1310,9 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
   const UserCryptohomeState& user_state = user_it->second;
 
   std::vector<std::string> auth_factor_labels;
-  if (!request.auth_factor_label().empty()) {
-    auth_factor_labels.push_back(request.auth_factor_label());
-  } else {
-    for (auto label : request.auth_factor_labels()) {
-      auth_factor_labels.push_back(label);
-    }
+  auth_factor_labels.reserve(request.auth_factor_labels_size());
+  for (auto label : request.auth_factor_labels()) {
+    auth_factor_labels.push_back(label);
   }
 
   const ::user_data_auth::AuthInput& auth_input = request.auth_input();

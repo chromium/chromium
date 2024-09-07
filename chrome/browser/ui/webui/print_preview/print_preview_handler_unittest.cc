@@ -18,6 +18,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -288,8 +289,7 @@ class FakePrintPreviewUI : public PrintPreviewUI {
       int index,
       scoped_refptr<base::RefCountedMemory>* data) const override {
     *data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-        reinterpret_cast<const unsigned char*>(kTestData),
-        sizeof(kTestData) - 1);
+        base::byte_span_from_cstring(kTestData));
   }
 
   void OnPrintPreviewRequest(int request_id) override {}

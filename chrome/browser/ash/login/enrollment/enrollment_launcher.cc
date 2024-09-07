@@ -122,13 +122,15 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
   void EnrollUsingToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
   void EnrollUsingEnrollmentToken() override;
-  void ClearAuth(base::OnceClosure callback) override;
+  void ClearAuth(base::OnceClosure callback,
+                 bool revoke_oauth2_tokens) override;
   void GetDeviceAttributeUpdatePermission() override;
   void UpdateDeviceAttributes(const std::string& asset_id,
                               const std::string& location) override;
   void Setup(const policy::EnrollmentConfig& enrollment_config,
              const std::string& enrolling_user_domain) override;
   bool InProgress() const override;
+  std::string GetOAuth2RefreshToken() const override;
 
  private:
   // Attempt enrollment using `auth_data` for authentication.
@@ -157,6 +159,9 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
   // Called by ProfileHelper when a signin profile clearance has finished.
   // `callback` is a callback, that was passed to ClearAuth() before.
   void OnSigninProfileCleared(base::OnceClosure callback);
+
+  // Revokes OAuth2 tokens stored in the oauth_fetcher_ or auth_data_.
+  void RevokeOAuth2Tokens();
 
   raw_ptr<EnrollmentStatusConsumer> status_consumer_;
 
@@ -246,27 +251,36 @@ void EnrollmentLauncherImpl::EnrollUsingEnrollmentToken() {
       policy::DMAuth::FromEnrollmentToken(enrollment_config_.enrollment_token));
 }
 
-void EnrollmentLauncherImpl::ClearAuth(base::OnceClosure callback) {
-  if (oauth_status_ != OAUTH_NOT_STARTED) {
-    if (oauth_fetcher_) {
-      if (!oauth_fetcher_->OAuth2AccessToken().empty()) {
-        (new TokenRevoker())->Start(oauth_fetcher_->OAuth2AccessToken());
-      }
-
-      if (!oauth_fetcher_->OAuth2RefreshToken().empty()) {
-        (new TokenRevoker())->Start(oauth_fetcher_->OAuth2RefreshToken());
-      }
-
-      oauth_fetcher_.reset();
-    } else if (auth_data_.has_oauth_token()) {
-      // EnrollUsingToken was called.
-      (new TokenRevoker())->Start(auth_data_.oauth_token());
-    }
+void EnrollmentLauncherImpl::ClearAuth(base::OnceClosure callback,
+                                       bool revoke_oauth2_tokens) {
+  if (revoke_oauth2_tokens) {
+    RevokeOAuth2Tokens();
   }
+
   auth_data_ = policy::DMAuth::NoAuth();
   SigninProfileHandler::Get()->ClearSigninProfile(
       base::BindOnce(&EnrollmentLauncherImpl::OnSigninProfileCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void EnrollmentLauncherImpl::RevokeOAuth2Tokens() {
+  if (oauth_status_ == OAUTH_NOT_STARTED) {
+    return;
+  }
+  if (oauth_fetcher_) {
+    if (!oauth_fetcher_->OAuth2AccessToken().empty()) {
+      (new TokenRevoker())->Start(oauth_fetcher_->OAuth2AccessToken());
+    }
+
+    if (!oauth_fetcher_->OAuth2RefreshToken().empty()) {
+      (new TokenRevoker())->Start(oauth_fetcher_->OAuth2RefreshToken());
+    }
+
+    oauth_fetcher_.reset();
+  } else if (auth_data_.has_oauth_token()) {
+    // EnrollUsingToken was called.
+    (new TokenRevoker())->Start(auth_data_.oauth_token());
+  }
 }
 
 void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
@@ -336,6 +350,12 @@ bool EnrollmentLauncherImpl::InProgress() const {
   // which covers the whole enrollment process whether it ends with success or
   // failure.
   return enrollment_handler_ != nullptr;
+}
+
+std::string EnrollmentLauncherImpl::GetOAuth2RefreshToken() const {
+  CHECK(oauth_fetcher_);
+
+  return oauth_fetcher_->OAuth2RefreshToken();
 }
 
 void EnrollmentLauncherImpl::GetDeviceAttributeUpdatePermission() {

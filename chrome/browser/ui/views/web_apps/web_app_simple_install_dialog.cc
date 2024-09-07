@@ -29,6 +29,7 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -127,7 +128,7 @@ void ShowSimpleInstallDialogForWebApps(
                 &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
             .SetDialogDestroyingCallback(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
-            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
+            .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
             .AddCustomField(
                 std::make_unique<views::BubbleDialogModelHost::CustomView>(
                     WebAppIconNameAndOriginView::Create(icon_image, app_name,

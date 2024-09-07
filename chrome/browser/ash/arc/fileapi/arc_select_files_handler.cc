@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -29,7 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -298,8 +296,6 @@ void ArcSelectFilesHandler::OnFileSelectorEvent(
     mojom::FileSystemHost::OnFileSelectorEventCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool isFilesNewDirectoryTreeOn =
-      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   std::string quotedClickTargetName =
       base::GetQuotedJSONString(event->click_target->name.c_str());
   std::string script;
@@ -311,9 +307,7 @@ void ArcSelectFilesHandler::OnFileSelectorEvent(
       script = kScriptClickCancel;
       break;
     case mojom::FileSelectorEventType::CLICK_DIRECTORY:
-      script = base::StringPrintf(isFilesNewDirectoryTreeOn
-                                      ? kScriptClickDirectoryForNewTree
-                                      : kScriptClickDirectory,
+      script = base::StringPrintf(kScriptClickDirectory,
                                   quotedClickTargetName.c_str());
       break;
     case mojom::FileSelectorEventType::CLICK_FILE:
@@ -331,11 +325,8 @@ void ArcSelectFilesHandler::GetFileSelectorElements(
     mojom::FileSystemHost::GetFileSelectorElementsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool isFilesNewDirectoryTreeOn =
-      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   dialog_holder_->ExecuteJavaScript(
-      isFilesNewDirectoryTreeOn ? kScriptGetElementsForNewTree
-                                : kScriptGetElements,
+      kScriptGetElements,
       base::BindOnce(&OnGetElementsScriptResults, std::move(callback)));
 }
 

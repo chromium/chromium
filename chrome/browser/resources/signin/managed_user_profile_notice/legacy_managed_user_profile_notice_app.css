@@ -1,0 +1,230 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=/signin_shared.css.js
+ * #import=/signin_vars.css.js
+ * #import=/tangible_sync_style_shared_lit.css.js
+ * #scheme=relative
+ * #include=signin-shared tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --banner-height: 244px;
+  --footer-margin: 40px;
+  --text-container-margin-inline: auto;
+  --text-container-margin-bottom: calc(48px + var(--footer-margin));
+  --text-container-margin-top: 104px;
+  --info-box-margin-inline: auto;
+  --info-box-margin-top: 32px;
+  --info-box-width: 530px;
+  color: var(--cr-primary-text-color);
+  display: block;
+}
+
+:host([is-modal-dialog_][use-legacy-ui_]) {
+  --banner-height: 128px;
+  --footer-margin: 16px;
+  --text-container-margin-inline: 32px;
+  --text-container-margin-bottom: 0;
+  --text-container-margin-top: 72px;
+  --info-box-margin-inline: 0;
+  --info-box-margin-top: 28px;
+  --info-box-width: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 512px;
+  position: relative;
+  width: 512px;
+}
+
+.main-container:not(.dialog) {
+  height: calc(100vh -
+      (2*var(--action-container-padding) + var(--cr-button-height)));
+  width: 100vw;
+}
+
+.action-container {
+  align-items: flex-end;
+  bottom: 0;
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  /* Hotfix for cases where the linkData checkbox may be pushed under the
+    action container so that it remains clickable. */
+  pointer-events: none;
+}
+
+.action-container cr-button {
+  /* Reverts inherited pointer-events value from .action-container. */
+  pointer-events: all;
+}
+
+.action-container.dialog {
+  margin-top: auto;
+}
+
+.tangible-sync-style:not(.dialog) #content-container {
+  left: 50%;
+  position: relative;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#header-container {
+  position: relative;
+  width: 100%;
+}
+
+.dialog #header-container {
+  height: var(--banner-height);
+}
+
+#avatar-container {
+  height: var(--tangible-sync-style-avatar-size);
+  left: 0;
+  margin: auto;
+  position: relative;
+  right: 0;
+  width: var(--tangible-sync-style-avatar-size);
+  z-index: 1;
+}
+
+.dialog #avatar-container {
+  bottom: calc(var(--tangible-sync-style-avatar-size)/-2);
+  position: absolute;
+}
+
+#avatar {
+  border: 2px solid var(--md-background-color);
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+}
+
+.work-badge {
+  bottom: 0;
+  position: absolute;
+}
+
+#text-container {
+  text-align: center;
+}
+
+.dialog #text-container {
+  margin-bottom: var(--text-container-margin-bottom);
+  margin-inline: var(--text-container-margin-inline);
+  margin-top: var(--text-container-margin-top);
+}
+
+.subtitle {
+  margin-top: 0;
+}
+
+.info-box {
+  align-items: center;
+  border: 1px solid var(--google-grey-200);
+  border-radius: 8px;
+  color: var(--google-grey-700);
+  display: flex;
+  flex-direction: row;
+  margin-inline: var(--info-box-margin-inline);
+  margin-top: var(--info-box-margin-top);
+  padding: 12px 0;
+  padding-inline-end: 18px;
+  width: var(--info-box-width);
+}
+
+.info-box > p {
+  flex-grow: 1;
+  margin-block: 0;
+  text-align: start;
+}
+
+.icon-container {
+  --icon-container-size: 28px;
+  --icon-container-margin: 16px;
+  background-color: var(--google-grey-100);
+  border-radius: 50%;
+  height: var(--icon-container-size);
+  margin-inline: var(--icon-container-margin);
+  width: var(--icon-container-size);
+}
+
+.icon-container cr-icon {
+  --icon-size: 16px;
+  --iron-icon-height: var(--icon-size);
+  --iron-icon-width: var(--icon-size);
+  padding: calc((var(--icon-container-size) - var(--icon-size)) / 2);
+}
+
+.action-container {
+  flex-wrap: wrap-reverse;
+  max-width: 100%;
+  right: 0;
+}
+
+.action-container #cancel-button {
+  font-weight: normal;
+}
+
+#linkData {
+  margin: 16px 32px;
+}
+
+.tangible-sync-style-left-banner {
+  content: url(images/left-banner.svg);
+}
+
+.tangible-sync-style-right-banner {
+  content: url(images/right-banner.svg);
+}
+
+.dialog .tangible-sync-style-left-banner,
+.dialog .tangible-sync-style-right-banner {
+  display: none;
+}
+
+.tangible-sync-style-dialog-illustration {
+  content: url(images/dialog_illustration.svg);
+  top: 100px;
+}
+
+.tangible-sync-style:not(.dialog) .tangible-sync-style-dialog-illustration {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .work-badge {
+    border-color: var(--md-background-color);
+  }
+
+  .work-badge > cr-icon {
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12),
+       0 0 6px rgba(60, 64, 67, 0.15);
+  }
+
+  .info-box {
+    border-color: var(--google-grey-600);
+    color: var(--google-grey-100);
+  }
+
+  .icon-container {
+    background-color: var(--google-grey-700);
+  }
+
+  .tangible-sync-style-right-banner {
+    content: url(images/right-banner-dark.svg);
+  }
+
+  .tangible-sync-style-left-banner {
+    content: url(images/left-banner-dark.svg);
+  }
+
+  .tangible-sync-style-dialog-illustration {
+    content: url(images/dialog_illustration_dark.svg);
+  }
+}

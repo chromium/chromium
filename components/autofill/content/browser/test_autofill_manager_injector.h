@@ -72,10 +72,9 @@ class TestAutofillManagerInjectorBase {
 //         autofill_manager_injector_;
 //   };
 template <typename T>
+  requires(std::derived_from<T, AutofillManager>)
 class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
  public:
-  static_assert(std::is_base_of_v<AutofillManager, T>);
-
   TestAutofillManagerInjector() = default;
   TestAutofillManagerInjector(const TestAutofillManagerInjector&) = delete;
   TestAutofillManagerInjector& operator=(const TestAutofillManagerInjector&) =

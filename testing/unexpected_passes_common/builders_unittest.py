@@ -16,6 +16,8 @@ from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import unittest_utils
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 class FakeFilesystemTestCaseWithFileCreation(fake_filesystem_unittest.TestCase):
   def CreateFile(self, *args, **kwargs):

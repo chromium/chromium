@@ -57,7 +57,7 @@ const media::VideoCodec kWebMVideoCodecsToQuery[] = {
 };
 
 const media::VideoCodec kMP4VideoCodecsToQuery[] = {
-    media::VideoCodec::kVP9,
+    media::VideoCodec::kVP9,         media::VideoCodec::kAV1,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     media::VideoCodec::kH264,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -128,13 +128,6 @@ void DetermineKeySystemSupport(const std::string& key_system,
           capability.video_codecs.emplace(codec, kAllProfiles);
         }
       }
-    }
-    // Check for AV1 support if enabled.
-    // TODO(b/314185968): Add `media::VideoCodec::kAV1` to
-    // `kMP4VideoCodecsToQuery` when flag removed.
-    if (base::FeatureList::IsEnabled(media::kEnableEncryptedAV1) &&
-        MediaCodecUtil::CanDecode(media::VideoCodec::kAV1, is_secure)) {
-      capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
     }
   }
 

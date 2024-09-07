@@ -155,18 +155,10 @@ public class AppBannerManager {
         };
     }
 
-    /** Returns the language option to use for the add to homescreen dialog and menu item. */
-    public static InstallStringPair getHomescreenLanguageOption(WebContents webContents) {
-        AppBannerManager manager =
-                webContents != null ? AppBannerManager.forWebContents(webContents) : null;
-        if (manager != null && manager.getIsPwa(webContents)) {
-            return PWA_PAIR;
-        } else {
-            return NON_PWA_PAIR;
-        }
-    }
-
-    /** Returns the language option to use for the add to homescreen dialog and menu item. */
+    /**
+     * Returns the manifest id if the current page is installable, otherwise returns the empty
+     * string.
+     */
     public static String maybeGetManifestId(WebContents webContents) {
         AppBannerManager manager =
                 webContents != null ? AppBannerManager.forWebContents(webContents) : null;
@@ -222,16 +214,6 @@ public class AppBannerManager {
         return AppBannerManagerJni.get().getJavaBannerManagerForWebContents(contents);
     }
 
-    /**
-     * Checks whether the renderer has navigated to a PWA.
-     *
-     * @param contents The web contents to check.
-     * @return true if the site has been determined to contain a PWA.
-     */
-    public boolean getIsPwa(WebContents contents) {
-        return !TextUtils.equals("", AppBannerManagerJni.get().getInstallableWebAppName(contents));
-    }
-
     public String getManifestId(WebContents contents) {
         return AppBannerManagerJni.get().getInstallableWebAppManifestId(contents);
     }
@@ -239,8 +221,6 @@ public class AppBannerManager {
     @NativeMethods
     public interface Natives {
         AppBannerManager getJavaBannerManagerForWebContents(WebContents webContents);
-
-        String getInstallableWebAppName(WebContents webContents);
 
         String getInstallableWebAppManifestId(WebContents webContents);
 

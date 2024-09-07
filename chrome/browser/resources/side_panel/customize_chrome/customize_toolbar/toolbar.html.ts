@@ -32,18 +32,21 @@ export function getHtml(this: ToolbarElement) {
   ${
       this.categories_.map(
           (category, categoryIndex) => html`
-    <div class="choose-icons-row category-title">${category.displayName}</div>
+    <h3 class="choose-icons-row category-title">${category.displayName}</h3>
     ${
               this.actions_.map(
-                  (action) => action.category === category.id ? html`
+                  (action) => action.category === category.id ?
+                      html`
       <div class="toggle-container choose-icons-row">
-        <img class="toggle-icon" src="${action.iconUrl.url}"></img>
+        <img class="toggle-icon" src="${action.iconUrl.url}"
+            aria-hidden="true"></img>
         <div class="toggle-title">${action.displayName}</div>
         <cr-toggle @change="${this.getActionToggleHandler_(action.id)}"
-            ?checked="${action.pinned}"></cr-toggle>
+            ?checked="${action.pinned}" aria-label="${
+                          action.displayName}"></cr-toggle>
       </div>
     ` :
-                                                                '')}
+                      '')}
     ${
               categoryIndex !== this.categories_.length - 1 ?
                   html`<hr class="sp-hr">` :

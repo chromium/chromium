@@ -4,9 +4,6 @@
 
 #include "components/reporting/encryption/verification.h"
 
-#include <string>
-#include <string_view>
-
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/util/status.h"
 
@@ -24,6 +21,7 @@ constexpr uint8_t kDevVerificationKey[kKeySize] = {
     0xC6, 0x2C, 0x4D, 0x25, 0x9E, 0x3E, 0x99, 0xA0, 0x2E, 0x08, 0x15,
     0x8C, 0x38, 0xB7, 0x6C, 0x08, 0xDF, 0xE7, 0x6E, 0x3A, 0xD6, 0x5A,
     0xC5, 0x58, 0x09, 0xE4, 0xAB, 0x89, 0x3A, 0x31, 0x53, 0x07};
+
 }  // namespace
 
 // static
@@ -41,10 +39,8 @@ std::string_view SignatureVerifier::VerificationKeyDev() {
 SignatureVerifier::SignatureVerifier(std::string_view verification_public_key)
     : verification_public_key_(verification_public_key) {}
 
-SignatureVerifier::~SignatureVerifier() = default;
-
 Status SignatureVerifier::Verify(std::string_view message,
-                                 std::string_view signature) const {
+                                 std::string_view signature) {
   if (signature.size() != kSignatureSize) {
     return Status{error::FAILED_PRECONDITION, "Wrong signature size"};
   }

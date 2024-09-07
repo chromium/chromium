@@ -7,7 +7,7 @@ module remote_cocoa.mojom;
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/base/accelerators/mojom/accelerator.mojom";
-import "ui/base/mojom/ui_base_types.mojom";
+import "ui/base/mojom/dialog_button.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/display/mojom/display.mojom";
 import "ui/events/mojom/event.mojom";
@@ -162,9 +162,6 @@ interface NativeWidgetNSWindowHost {
   // Called when the blob of data that represents the NSWindow's restorable
   // state has changed.
   OnWindowStateRestorationDataChanged(array<uint8> data);
-
-  // Called when this widget is reparented to another window.
-  OnWindowParentChanged(uint64 new_parent_id);
 
   // Called when the toolbar reveal status changes. The toolbar is visible
   // either because there are outstanding reveal locks or the mouse is

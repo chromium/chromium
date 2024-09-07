@@ -158,8 +158,7 @@ MojoResult MessagePipeDispatcher::WriteMessage(
       return MOJO_RESULT_FAILED_PRECONDITION;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return MOJO_RESULT_UNKNOWN;
+    NOTREACHED();
   }
 
   // We may need to update anyone watching our signals in case we just exceeded
@@ -181,8 +180,7 @@ MojoResult MessagePipeDispatcher::ReadMessage(
         rv == ports::ERROR_PORT_STATE_UNEXPECTED)
       return MOJO_RESULT_INVALID_ARGUMENT;
 
-    NOTREACHED_IN_MIGRATION();
-    return MOJO_RESULT_UNKNOWN;
+    NOTREACHED();
   }
 
   if (!*message) {

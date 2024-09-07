@@ -256,6 +256,9 @@ bool HTMLFencedFrameElement::canLoadOpaqueURL(ScriptState* script_state) {
           "removed. Please use navigator.canLoadAdAuctionFencedFrame() "
           "instead."));
 
+  UseCounter::Count(LocalDOMWindow::From(script_state)->document(),
+                    WebFeature::kFencedFrameCanLoadOpaqueURL);
+
   LocalFrame* frame_to_check = LocalDOMWindow::From(script_state)->GetFrame();
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(frame_to_check && context);
@@ -341,9 +344,8 @@ void HTMLFencedFrameElement::ParseAttribute(
         GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
-            WebString::FromUTF8(
-                "Error while parsing the 'sandbox' attribute: " +
-                parsed.error_message)));
+            "Error while parsing the 'sandbox' attribute: " +
+                String::FromUTF8(parsed.error_message)));
       }
     }
     SetSandboxFlags(current_flags);
@@ -575,8 +577,10 @@ LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutIFrame>(this);
 }
 
-bool HTMLFencedFrameElement::SupportsFocus(UpdateBehavior) const {
-  return frame_delegate_ && frame_delegate_->SupportsFocus();
+FocusableState HTMLFencedFrameElement::SupportsFocus(UpdateBehavior) const {
+  return (frame_delegate_ && frame_delegate_->SupportsFocus())
+             ? FocusableState::kFocusable
+             : FocusableState::kNotFocusable;
 }
 
 PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(

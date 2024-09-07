@@ -23,6 +23,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/favicon_status.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/reload_type.h"
@@ -140,7 +141,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   void SetTitle(std::u16string title) override;
   const std::u16string& GetTitle() override;
   void SetAppTitle(const std::u16string& app_title) override;
-  const std::u16string& GetAppTitle() override;
+  const std::optional<std::u16string>& GetAppTitle() override;
   void SetPageState(const blink::PageState& state,
                     NavigationEntryRestoreContext* context) override;
   blink::PageState GetPageState() override;
@@ -396,8 +397,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Indicates which FrameTreeNode to navigate.  Currently only used if the
   // --site-per-process flag is passed.
-  int frame_tree_node_id() const { return frame_tree_node_id_; }
-  void set_frame_tree_node_id(int frame_tree_node_id) {
+  FrameTreeNodeId frame_tree_node_id() const { return frame_tree_node_id_; }
+  void set_frame_tree_node_id(FrameTreeNodeId frame_tree_node_id) {
     frame_tree_node_id_ = frame_tree_node_id;
   }
 
@@ -549,7 +550,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // web app displayed in an app window may use this string instead of the
   // regular title. See
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
-  std::u16string app_title_;
+  std::optional<std::u16string> app_title_;
   FaviconStatus favicon_;
   SSLStatus ssl_;
   ui::PageTransition transition_type_;
@@ -601,12 +602,12 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // value is not needed after the entry commits and is not persisted.
   bool can_load_local_resources_;
 
-  // If not -1, this indicates which FrameTreeNode to navigate.  This field is
+  // If valid, this indicates which FrameTreeNode to navigate.  This field is
   // not persisted because it is experimental and only used when the
   // --site-per-process flag is passed.  It is cleared in |ResetForCommit|
   // because we only use it while the navigation is pending.
   // TODO(creis): Move this to FrameNavigationEntry.
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
 
   // Whether the URL load carries a user gesture.
   bool has_user_gesture_;

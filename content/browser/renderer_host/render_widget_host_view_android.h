@@ -172,9 +172,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
                           const gfx::Rect& node_bounds_in_screen) override;
   bool ShouldInitiateStylusWriting() override;
   void NotifyHoverActionStylusWritable(bool stylus_writable) override;
+  void OnStartStylusWriting() override;
   void OnEditElementFocusedForStylusWriting(
       const gfx::Rect& focused_edit_bounds,
       const gfx::Rect& caret_bounds) override;
+  void OnEditElementFocusClearedForStylusWriting() override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
   void Destroy() override;
@@ -437,6 +439,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   void RegisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
   void UnregisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
+
+  void PassImeRenderWidgetHost(
+      mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote);
 
  protected:
   ~RenderWidgetHostViewAndroid() override;

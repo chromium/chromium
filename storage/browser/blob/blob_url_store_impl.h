@@ -26,6 +26,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
     : public blink::mojom::BlobURLStore {
  public:
   BlobURLStoreImpl(const blink::StorageKey& storage_key,
+                   const url::Origin& renderer_origin,
+                   int render_process_host_id,
                    base::WeakPtr<BlobUrlRegistry> registry,
                    BlobURLValidityCheckBehavior validity_check_options =
                        BlobURLValidityCheckBehavior::DEFAULT);
@@ -60,6 +62,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   bool BlobUrlIsValid(const GURL& url, const char* method) const;
 
   const blink::StorageKey storage_key_;
+  // The origin used by the worker/document associated with this BlobURLStore on
+  // the renderer side. This will almost always be the same as `storage_key_`'s
+  // origin, except in the case of data: URL workers, as described in the linked
+  //  bug.
+  // TODO(crbug.com/40051700): Make the storage key's origin always match this.
+  const url::Origin renderer_origin_;
+  const int render_process_host_id_;
 
   base::WeakPtr<BlobUrlRegistry> registry_;
 

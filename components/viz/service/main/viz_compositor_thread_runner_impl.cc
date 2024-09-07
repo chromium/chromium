@@ -43,7 +43,7 @@ namespace {
 const char kThreadName[] = "VizCompositorThread";
 
 std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
-  const base::ThreadType thread_type = base::ThreadType::kCompositing;
+  const base::ThreadType thread_type = base::ThreadType::kDisplayCritical;
 #if BUILDFLAG(IS_ANDROID)
   auto thread = std::make_unique<base::android::JavaHandlerThread>(kThreadName,
                                                                    thread_type);
@@ -200,6 +200,7 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
         params->activation_deadline_in_frames;
   }
   init_params.output_surface_provider = output_surface_provider_.get();
+  init_params.gpu_service = gpu_service;
   init_params.gmb_context_provider =
       gmb_video_frame_pool_context_provider_.get();
   init_params.restart_id = params->restart_id;
@@ -218,6 +219,21 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
       std::move(params->frame_sink_manager), nullptr,
       std::move(params->frame_sink_manager_client),
       shared_image_interface_provider_.get());
+}
+
+void VizCompositorThreadRunnerImpl::RequestBeginFrameForGpuService(
+    bool toggle) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VizCompositorThreadRunnerImpl::
+                         RequestBeginFrameForGpuServiceOnCompositorThread,
+                     base::Unretained(this), toggle));
+}
+
+void VizCompositorThreadRunnerImpl::
+    RequestBeginFrameForGpuServiceOnCompositorThread(bool toggle) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  frame_sink_manager_->RequestBeginFrameForGpuService(toggle);
 }
 
 void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {

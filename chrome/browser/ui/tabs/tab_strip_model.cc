@@ -601,7 +601,7 @@ void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
 
   for (auto notification : notifications) {
     const int final_index = GetIndexOfTab(notification.handle);
-    const tabs::TabModel* const tab = GetTabAtIndex(final_index);
+    tabs::TabModel* tab = GetTabAtIndex(final_index);
     if (notification.initial_index != final_index) {
       SendMoveNotificationForWebContents(notification.initial_index,
                                          final_index, tab->contents(),
@@ -609,8 +609,8 @@ void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
     }
 
     if (notification.intial_group != tab->group()) {
-      TabGroupStateChanged(final_index, tab->contents(),
-                           notification.intial_group, tab->group());
+      TabGroupStateChanged(final_index, tab, notification.intial_group,
+                           tab->group());
     }
   }
 
@@ -912,13 +912,6 @@ void TabStripModel::AddSelectionFromAnchorTo(int index) {
 bool TabStripModel::IsTabSelected(int index) const {
   CHECK(ContainsIndex(index));
   return selection_model_.IsSelected(index);
-}
-
-std::optional<base::Time> TabStripModel::GetLastAccessed(int index) const {
-  if (ContainsIndex(index)) {
-    return selection_model_.GetLastAccessed(index);
-  }
-  return std::nullopt;
 }
 
 void TabStripModel::SetSelectionFromModel(ui::ListSelectionModel source) {
@@ -2583,6 +2576,7 @@ void TabStripModel::InsertTabAtIndexImpl(
     bool pin,
     bool active) {
   WebContents* web_contents = tab_model->contents();
+  tabs::TabModel* tab_ptr = tab_model.get();
 
   contents_data_->AddTabRecursive(std::move(tab_model), index, group, pin);
 
@@ -2605,7 +2599,7 @@ void TabStripModel::InsertTabAtIndexImpl(
   OnChange(change, selection);
 
   if (group_model_ && group.has_value()) {
-    TabGroupStateChanged(index, web_contents, std::nullopt, group);
+    TabGroupStateChanged(index, tab_ptr, std::nullopt, group);
   }
 }
 
@@ -2645,7 +2639,7 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   ValidateTabStripModel();
 
   if (group_model_ && old_group) {
-    TabGroupStateChanged(index, tab->contents(), old_group, std::nullopt);
+    TabGroupStateChanged(index, tab, old_group, std::nullopt);
   }
 
   return old_data;
@@ -2690,8 +2684,7 @@ void TabStripModel::MoveTabToIndexImpl(
   }
 
   if (group_model_ && (initial_group != tab->group())) {
-    TabGroupStateChanged(final_index, web_contents, initial_group,
-                         tab->group());
+    TabGroupStateChanged(final_index, tab, initial_group, tab->group());
   }
 }
 
@@ -2725,7 +2718,7 @@ void TabStripModel::MoveTabsToIndexImpl(
 
   for (auto notification : notifications) {
     const int final_index = GetIndexOfTab(notification.handle);
-    const tabs::TabModel* const tab = GetTabAtIndex(final_index);
+    tabs::TabModel* tab = GetTabAtIndex(final_index);
     if (notification.initial_index != final_index) {
       SendMoveNotificationForWebContents(notification.initial_index,
                                          final_index, tab->contents(),
@@ -2733,15 +2726,15 @@ void TabStripModel::MoveTabsToIndexImpl(
     }
 
     if (group_model_ && notification.intial_group != tab->group()) {
-      TabGroupStateChanged(final_index, tab->contents(),
-                           notification.intial_group, tab->group());
+      TabGroupStateChanged(final_index, tab, notification.intial_group,
+                           tab->group());
     }
   }
 }
 
 void TabStripModel::TabGroupStateChanged(
     int index,
-    WebContents* web_contents,
+    tabs::TabModel* tab,
     const std::optional<tab_groups::TabGroupId> initial_group,
     const std::optional<tab_groups::TabGroupId> new_group) {
   if (!group_model_) {
@@ -2755,7 +2748,7 @@ void TabStripModel::TabGroupStateChanged(
   if (initial_group.has_value()) {
     // Send the observation
     for (auto& observer : observers_) {
-      observer.TabGroupedStateChanged(std::nullopt, web_contents, index);
+      observer.TabGroupedStateChanged(std::nullopt, tab, index);
     }
     // Update the group model.
     RemoveTabFromGroupModel(initial_group.value());
@@ -2764,7 +2757,7 @@ void TabStripModel::TabGroupStateChanged(
   if (new_group.has_value()) {
     // Send the observation
     for (auto& observer : observers_) {
-      observer.TabGroupedStateChanged(new_group.value(), web_contents, index);
+      observer.TabGroupedStateChanged(new_group.value(), tab, index);
     }
     // Update the group model.
     AddTabToGroupModel(new_group.value());

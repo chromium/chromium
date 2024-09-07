@@ -18,6 +18,9 @@ import {clearBody} from '../utils.js';
 
 const DEFAULT_BLACK_CURSOR_COLOR = 0;
 const RED_CURSOR_COLOR = 0xd93025;
+const INTERNAL_TRACKPAD_NEVER_DISABLED = 0;
+const INTERNAL_TRACKPAD_ALWAYS_DISABLED = 1;
+const INTERNAL_TRACKPAD_MOUSE_CONNECTED_DISABLED = 2;
 
 /**
  * Possible control types for settings.
@@ -33,6 +36,8 @@ suite('<settings-cursor-and-touchpad-page>', () => {
   let prefElement: SettingsPrefsElement;
   const overscrollFeatureEnabled =
       loadTimeData.getBoolean('isAccessibilityOverscrollSettingFeatureEnabled');
+  const disableInternalTrackpadFeatureEnabled =
+      loadTimeData.getBoolean('isAccessibilityDisableTrackpadEnabled');
 
   async function initPage() {
     prefElement = document.createElement('settings-prefs');
@@ -83,6 +88,19 @@ suite('<settings-cursor-and-touchpad-page>', () => {
 
   function getFaceGazePageRow(): CrLinkRowElement|null {
     return page.shadowRoot!.querySelector<CrLinkRowElement>('#faceGazePageRow');
+  }
+
+  async function getDisableInternalTrackpadSelectElement() {
+    await initPage();
+    const disableInternalTrackpadDropdown =
+        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#disableInternalTrackpad');
+    assert(disableInternalTrackpadDropdown);
+    await waitAfterNextRender(disableInternalTrackpadDropdown);
+    const disableInternalTrackpadSelectElement =
+        disableInternalTrackpadDropdown.shadowRoot!.querySelector('select');
+    assert(disableInternalTrackpadSelectElement);
+    return disableInternalTrackpadSelectElement;
   }
 
   test('cursor color prefs and dropdown synced', async () => {
@@ -717,4 +735,97 @@ suite('<settings-cursor-and-touchpad-page>', () => {
 
     assertFalse(isVisible(dominantHandControl));
   });
+
+  if (disableInternalTrackpadFeatureEnabled) {
+    test(
+        'disable internal trackpad prefs and dropdown synced when in default state',
+        async () => {
+          await initPage();
+          const disableInternalTrackpadSelectElement =
+              await getDisableInternalTrackpadSelectElement();
+
+          // Make sure disable trackpad dropdown is set to never disabled,
+          // matching default pref state.
+          assertEquals(
+              String(INTERNAL_TRACKPAD_NEVER_DISABLED),
+              disableInternalTrackpadSelectElement.value);
+        });
+
+    test(
+        'disable internal trackpad prefs and dropdown synced when set to always disabled',
+        async () => {
+          await initPage();
+          const disableInternalTrackpadSelectElement =
+              await getDisableInternalTrackpadSelectElement();
+          assert(disableInternalTrackpadSelectElement);
+
+          // Turn disable internal trackpad to always disabled, and verify pref
+          // is also set to always disabled.
+          disableInternalTrackpadSelectElement.value =
+              String(INTERNAL_TRACKPAD_ALWAYS_DISABLED);
+          disableInternalTrackpadSelectElement.dispatchEvent(
+              new CustomEvent('change'));
+          const disableInternalTrackpadModePref =
+              page.getPref('settings.a11y.disable_trackpad_mode');
+          assertEquals(
+              INTERNAL_TRACKPAD_ALWAYS_DISABLED,
+              disableInternalTrackpadModePref.value);
+        });
+
+    test(
+        'disable internal trackpad prefs and dropdown synced when set to when mouse connected',
+        async () => {
+          await initPage();
+          const disableInternalTrackpadSelectElement =
+              await getDisableInternalTrackpadSelectElement();
+
+          // Turn disable internal trackpad to disable when mouse is connected,
+          // and verify pref is also set to disable when mouse is connected.
+          disableInternalTrackpadSelectElement.value =
+              String(INTERNAL_TRACKPAD_MOUSE_CONNECTED_DISABLED);
+          disableInternalTrackpadSelectElement.dispatchEvent(
+              new CustomEvent('change'));
+          const disableInternalTrackpadModePref =
+              page.getPref('settings.a11y.disable_trackpad_mode');
+          assertEquals(
+              INTERNAL_TRACKPAD_MOUSE_CONNECTED_DISABLED,
+              disableInternalTrackpadModePref.value);
+        });
+
+    test(
+        'disable internal trackpad prefs and dropdown synced when set to never disabled',
+        async () => {
+          await initPage();
+          const disableInternalTrackpadSelectElement =
+              await getDisableInternalTrackpadSelectElement();
+
+          // Turn disable internal trackpad value back to default, and verify
+          // pref is also default.
+          disableInternalTrackpadSelectElement.value =
+              String(INTERNAL_TRACKPAD_NEVER_DISABLED);
+          disableInternalTrackpadSelectElement.dispatchEvent(
+              new CustomEvent('change'));
+          const disableInternalTrackpadModePref =
+              page.getPref('settings.a11y.disable_trackpad_mode');
+          assertEquals(
+              INTERNAL_TRACKPAD_NEVER_DISABLED,
+              disableInternalTrackpadModePref.value);
+        });
+  } else {
+    test('disable internal trackpad feature disabled', async () => {
+      await initPage();
+      const disableInternalTrackpadDropdown =
+          page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+              '#disableInternalTrackpad');
+
+      // No setting visible.
+      assertNull(disableInternalTrackpadDropdown);
+
+      // Pref has default value.
+      assertEquals(
+          page.prefs.settings.a11y.disable_trackpad_mode.value,
+          INTERNAL_TRACKPAD_NEVER_DISABLED);
+      assertFalse(page.prefs.settings.a11y.disable_trackpad_enabled.value);
+    });
+  }
 });

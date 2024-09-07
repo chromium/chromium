@@ -5,13 +5,13 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -89,7 +89,8 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   std::vector<std::string> Dump(ui::AXMode mode) override {
     std::vector<std::string> dump;
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
-    BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+    ui::BrowserAccessibility* root =
+        GetManager()->GetBrowserAccessibilityRoot();
 
     size_t start_index = 0;
     size_t length = scenario_.script_instructions.size();
@@ -167,7 +168,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
 
   EvalJsResult EvaluateScript(
       AXTreeFormatter* formatter,
-      BrowserAccessibility* root,
+      ui::BrowserAccessibility* root,
       const std::vector<AXScriptInstruction>& instructions,
       size_t start_index,
       size_t end_index) {

@@ -484,7 +484,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(
           *resource_request, browser_context, wc_getter,
-          nullptr /* navigation_ui_data */, RenderFrameHost::kNoFrameTreeNodeId,
+          nullptr /* navigation_ui_data */, FrameTreeNodeId(),
           /*navigation_id=*/std::nullopt);
 
   // Create a BrowserContext getter using |service_worker_context|.
@@ -531,7 +531,7 @@ WorkerScriptFetcher::CreateFactoryBundle(
     non_network_factories.emplace(
         url::kFileSystemScheme,
         CreateFileSystemURLLoaderFactory(
-            worker_process_id, RenderFrameHost::kNoFrameTreeNodeId,
+            worker_process_id, FrameTreeNodeId(),
             storage_partition->GetFileSystemContext(), storage_domain,
             request_initiator_storage_key));
   }

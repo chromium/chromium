@@ -12,6 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -31,7 +32,7 @@ const int kCountdownUpdateIntervalMs = 1000;  // 1 second.
 IdleActionWarningDialogView::IdleActionWarningDialogView(
     base::TimeTicks idle_action_time)
     : idle_action_time_(idle_action_time) {
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetModalType(ui::mojom::ModalType::kSystem);
   SetShowCloseButton(false);

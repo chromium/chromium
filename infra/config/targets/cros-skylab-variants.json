@@ -22,19 +22,6 @@
     "enabled": true,
     "identifier": "JACUZZI_RELEASE_LKGM"
   },
-  "CROS_VOLTEER_PUBLIC_LKGM": {
-    "skylab": {
-      "cros_board": "volteer",
-      "cros_model": "voxel",
-      "use_lkgm": true,
-      "bucket": "chromiumos-image-archive",
-      "dut_pool": "chromium",
-      "public_builder": "cros_test_platform_public",
-      "public_builder_bucket": "testplatform-public"
-    },
-    "enabled": true,
-    "identifier": "VOLTEER_PUBLIC_LKGM"
-  },
   "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM": {
     "skylab": {
       "cros_board": "volteer",

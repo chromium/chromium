@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -199,6 +200,7 @@ ShoppingService::ShoppingService(
                   /*require_sync_feature_enabled=*/!base::FeatureList::
                       IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))),
       web_extractor_(std::move(web_extractor)),
+      history_service_(history_service),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
@@ -305,8 +307,8 @@ ShoppingService::ShoppingService(
     }
   }
 
-  if (history_service) {
-    history_service_observation_.Observe(history_service);
+  if (history_service_) {
+    history_service_observation_.Observe(history_service_);
   }
 }
 
@@ -731,21 +733,15 @@ void ShoppingService::GetPriceInsightsInfoForUrl(
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 
-void ShoppingService::GetDiscountInfoForUrls(const std::vector<GURL>& urls,
-                                             DiscountInfoCallback callback) {
-  const auto barrier_callback = base::BarrierCallback<DiscountsPair>(
-      urls.size(),
-      base::BindOnce(&ShoppingService::OnGetAllDiscountsFromOptGuide,
-                     weak_ptr_factory_.GetWeakPtr(), urls,
-                     std::move(callback)));
-  for (const GURL& url : urls) {
-    GetDiscountInfoFromOptGuide(url, barrier_callback);
-  }
+void ShoppingService::GetDiscountInfoForUrl(const GURL& url,
+                                            DiscountInfoCallback callback) {
+  GetDiscountInfoFromOptGuide(url, std::move(callback));
 }
 
 void ShoppingService::GetProductSpecificationsForUrls(
     const std::vector<GURL>& urls,
     ProductSpecificationsCallback callback) {
+  UMA_HISTOGRAM_COUNTS_100("Commerce.Compare.Table.ColumnCount", urls.size());
   auto cluster_id_callback =
       base::BarrierCallback<const UrlProductIdentifierTuple&>(
           urls.size(),
@@ -759,6 +755,11 @@ void ShoppingService::GetProductSpecificationsForUrls(
                     cluster_ids.push_back(std::get<1>(t).value());
                   }
                 }
+
+                UMA_HISTOGRAM_PERCENTAGE(
+                    "Commerce.Compare.Table.PercentageValidProducts",
+                    (float)cluster_ids.size() / (float)data.size());
+
                 if (!service || cluster_ids.empty()) {
                   std::move(callback).Run(std::move(cluster_ids), std::nullopt);
                   return;
@@ -1451,12 +1452,11 @@ void ShoppingService::HandleOptGuideShoppingPageTypesResponse(
 
 void ShoppingService::GetDiscountInfoFromOptGuide(
     const GURL& url,
-    DiscountsOptGuideCallback callback) {
+    DiscountInfoCallback callback) {
   if (!opt_guide_ || !IsDiscountInfoApiEnabled()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       DiscountsPair(url, std::vector<DiscountInfo>())));
+        base::BindOnce(std::move(callback), url, std::vector<DiscountInfo>()));
     return;
   }
 
@@ -1468,16 +1468,28 @@ void ShoppingService::GetDiscountInfoFromOptGuide(
 
 void ShoppingService::HandleOptGuideDiscountInfoResponse(
     const GURL& url,
-    DiscountsOptGuideCallback callback,
+    DiscountInfoCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
-    std::move(callback).Run(DiscountsPair(url, std::vector<DiscountInfo>()));
+    std::move(callback).Run(url, std::vector<DiscountInfo>());
     return;
   }
 
-  std::move(callback).Run(
-      DiscountsPair(url, OptGuideResultToDiscountInfos(metadata)));
+  std::vector<DiscountInfo> discount_infos =
+      OptGuideResultToDiscountInfos(metadata);
+
+  if (discount_infos.size() != 0) {
+    base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                  DiscountsFetchResult::kInfoFromOptGuide);
+  }
+
+  if (discounts_storage_) {
+    discounts_storage_->HandleServerDiscounts(url, std::move(discount_infos),
+                                              std::move(callback));
+  } else {
+    std::move(callback).Run(url, std::move(discount_infos));
+  }
 }
 
 std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
@@ -1576,34 +1588,6 @@ std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
   }
 
   return discount_infos;
-}
-
-void ShoppingService::OnGetAllDiscountsFromOptGuide(
-    const std::vector<GURL>& urls,
-    DiscountInfoCallback callback,
-    const std::vector<DiscountsPair>& results) {
-  DiscountsMap map;
-  std::vector<std::string> urls_to_check_in_db;
-
-  for (const auto& discount_pair : results) {
-    const GURL& url = discount_pair.first;
-    const std::vector<DiscountInfo>& discount_infos = discount_pair.second;
-
-    if (discount_infos.empty()) {
-      urls_to_check_in_db.push_back(url.spec());
-    } else {
-      map.insert(discount_pair);
-      base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
-                                    DiscountsFetchResult::kInfoFromOptGuide);
-    }
-  }
-
-  if (discounts_storage_) {
-    discounts_storage_->HandleServerDiscounts(
-        urls_to_check_in_db, std::move(map), std::move(callback));
-  } else {
-    std::move(callback).Run(std::move(map));
-  }
 }
 
 void ShoppingService::SetDiscountsStorageForTesting(
@@ -1870,6 +1854,18 @@ void ShoppingService::OnHistoryDeletions(
   // reliable way to clear entries from the revently viewed list. If a user is
   // deleting items from history, clear the whole list.
   recently_visited_tabs_.clear();
+}
+
+void ShoppingService::QueryHistoryForUrl(
+    const GURL& url,
+    history::HistoryService::QueryURLCallback callback) {
+  if (!history_service_) {
+    std::move(callback).Run(history::QueryURLResult());
+    return;
+  }
+
+  history_service_->QueryURL(url, false, std::move(callback),
+                             &cancelable_task_tracker_);
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {

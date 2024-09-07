@@ -1,3 +1,5 @@
+// META: script=resources/workaround-for-362676838.js
+
 promise_test(async t => {
   // Make sure the prompt api is enabled.
   assert_true(!!ai);
@@ -5,7 +7,7 @@ promise_test(async t => {
   const iframe = document.createElement('iframe');
   document.childNodes[document.childNodes.length - 1].appendChild(iframe);
 
-  const session = await iframe.contentWindow.ai.createTextSession();
+  const session = await iframe.contentWindow.ai.assistant.create();
   session.prompt('hello');
   // Detach the iframe.
   iframe.remove();

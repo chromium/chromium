@@ -119,8 +119,6 @@ class ProfileMetrics {
   static void LogProfileAddNewUser(ProfileAdd metric);
   static void LogProfileAddSignInFlowOutcome(
       ProfileSignedInFlowOutcome outcome);
-  static void LogLacrosPrimaryProfileFirstRunOutcome(
-      ProfileSignedInFlowOutcome outcome);
   static void LogProfileAvatarSelection(size_t icon_index);
   static void LogProfileDeleteUser(ProfileDelete metric);
   static void LogProfileLaunch(Profile* profile);

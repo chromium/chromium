@@ -12,6 +12,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.PerformException;
 import androidx.test.filters.SmallTest;
 
@@ -42,7 +44,12 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -50,6 +57,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -67,6 +75,9 @@ public final class PrivacySandboxDialogTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule
+    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+
+    @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
@@ -79,9 +90,15 @@ public final class PrivacySandboxDialogTest {
     @Mock private SettingsLauncher mSettingsLauncher;
 
     private Dialog mDialog;
+    private String mTestPage;
+    private EmbeddedTestServer mTestServer;
 
     @Before
     public void setUp() {
+        Context appContext = getInstrumentation().getTargetContext().getApplicationContext();
+        mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
+        mTestPage = mTestServer.getURL("/chrome/test/data/android/google.html");
+
         MockitoAnnotations.initMocks(this);
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
@@ -125,7 +142,9 @@ public final class PrivacySandboxDialogTest {
                         mDialog = null;
                     }
                     PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                            sActivityTestRule.getActivity(), sActivityTestRule.getProfile(false));
+                            sActivityTestRule.getActivity(),
+                            sActivityTestRule.getProfile(false),
+                            SurfaceType.BR_APP);
                     mDialog = PrivacySandboxDialogController.getDialogForTesting();
                 });
     }
@@ -139,7 +158,8 @@ public final class PrivacySandboxDialogTest {
         while (true) {
             try {
                 onView(withId(R.id.more_button)).inRoot(isDialog()).perform(click());
-                var promptType = mFakePrivacySandboxBridge.getRequiredPromptType();
+                var promptType =
+                        mFakePrivacySandboxBridge.getRequiredPromptType(SurfaceType.BR_APP);
                 if (promptType == PromptType.M1_CONSENT) {
                     assertEquals(
                             "Last dialog action",
@@ -173,7 +193,8 @@ public final class PrivacySandboxDialogTest {
                             new PrivacySandboxDialogConsentEEA(
                                     sActivityTestRule.getActivity(),
                                     new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
-                                    false);
+                                    false,
+                                    SurfaceType.BR_APP);
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_consent_dialog");
@@ -188,7 +209,8 @@ public final class PrivacySandboxDialogTest {
                     mDialog =
                             new PrivacySandboxDialogNoticeEEA(
                                     sActivityTestRule.getActivity(),
-                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)));
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
+                                    SurfaceType.BR_APP);
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_notice_dialog");
@@ -203,7 +225,8 @@ public final class PrivacySandboxDialogTest {
                     mDialog =
                             new PrivacySandboxDialogNoticeROW(
                                     sActivityTestRule.getActivity(),
-                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)));
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
+                                    SurfaceType.BR_APP);
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_row_notice_dialog");
@@ -218,7 +241,8 @@ public final class PrivacySandboxDialogTest {
                     mDialog =
                             new PrivacySandboxDialogNoticeRestricted(
                                     sActivityTestRule.getActivity(),
-                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)));
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
+                                    SurfaceType.BR_APP);
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_restricted_notice_dialog");
@@ -230,7 +254,9 @@ public final class PrivacySandboxDialogTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                            sActivityTestRule.getActivity(), sActivityTestRule.getProfile(true));
+                            sActivityTestRule.getActivity(),
+                            sActivityTestRule.getProfile(true),
+                            SurfaceType.BR_APP);
                 });
         // Verify that nothing is shown.
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
@@ -243,6 +269,50 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
         // Verify that nothing is shown. Notice & Consent share a title.
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true"
+    })
+    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    public void testCCTLaunchDialogUpdatesDialogClass() throws IOException {
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
+        // Launch a CCT activity and click a button
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(), mTestPage));
+
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog), true);
+        tryClickOn(withId(R.id.ack_button));
+        assertEquals(
+                "Set surface type",
+                SurfaceType.AGACCT,
+                (int) mFakePrivacySandboxBridge.getLastSurfaceType());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true/suppress-dialog-for-external-app-launches/false"
+    })
+    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    public void testBRAPPLaunchDialogUpdatesDialogClass() throws IOException {
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
+        // Launch a basic activity and click a button
+        sActivityTestRule.loadUrl(mTestPage);
+
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog), true);
+        tryClickOn(withId(R.id.ack_button));
+        assertEquals(
+                "Set surface type",
+                SurfaceType.BR_APP,
+                (int) mFakePrivacySandboxBridge.getLastSurfaceType());
     }
 
     @Test

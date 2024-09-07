@@ -186,7 +186,11 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(OwnerSettingsServiceAshTest, SingleSetTest) {
+TEST_F(OwnerSettingsServiceAshTest, SingleSetTestSHA1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ownership::kOwnerSettingsWithSha256);
+
   TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("beta-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("stable-channel"));
@@ -202,9 +206,9 @@ TEST_F(OwnerSettingsServiceAshTest, SingleSetTest) {
              kOwnerKeyHistogramName, OwnerKeyUmaEvent::kStoredPolicySuccess));
 }
 
-TEST_F(OwnerSettingsServiceAshTest, SingleSetTestSha256) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ownership::kOwnerSettingsWithSha256);
+TEST_F(OwnerSettingsServiceAshTest, SingleSetTestSHA256) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ownership::kOwnerSettingsWithSha256);
 
   TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("beta-channel"));
@@ -386,9 +390,13 @@ TEST_F(OwnerSettingsServiceAshTest,
       device_policy_->payload().deviceextendedautoupdateenabled().value());
 }
 
-// Test that OwnerSettingsServiceAsh can successfully sign a policy and that the
-// signature is correct.
-TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccess) {
+// Test that OwnerSettingsServiceAsh can successfully sign a policy with SHA1
+// and that the signature is correct.
+TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ownership::kOwnerSettingsWithSha256);
+
   auto policy = std::make_unique<enterprise_management::PolicyData>();
   policy->set_username("username0");
 
@@ -415,9 +423,11 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccess) {
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
+// Test that OwnerSettingsServiceAsh can successfully sign a policy with SHA256
+// and that the signature is correct.
 TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA256) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ownership::kOwnerSettingsWithSha256);
+  base::test::ScopedFeatureList scoped_feature_list(
+      ownership::kOwnerSettingsWithSha256);
 
   auto policy = std::make_unique<enterprise_management::PolicyData>();
   policy->set_username("username0");

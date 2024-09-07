@@ -384,8 +384,7 @@ enum class BreakStatus {
 // fragmentation (kDisableFragmentation). kBrokeBefore is never returned here
 // (if we need a break before the node, that's something that will be determined
 // by the parent algorithm).
-BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
-                                BoxFragmentBuilder*);
+BreakStatus FinishFragmentation(BoxFragmentBuilder*);
 
 // Special rules apply for finishing fragmentation when building fragmentainers.
 BreakStatus FinishFragmentationForFragmentainer(BoxFragmentBuilder*);

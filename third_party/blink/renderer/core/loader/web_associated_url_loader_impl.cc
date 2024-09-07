@@ -259,7 +259,7 @@ void WebAssociatedURLLoaderImpl::ClientAdapter::DidReceiveData(
     return;
   }
 
-  client_->DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
+  client_->DidReceiveData(data);
 }
 
 void WebAssociatedURLLoaderImpl::ClientAdapter::DidFinishLoading(
@@ -321,7 +321,7 @@ class WebAssociatedURLLoaderImpl::Observer final
   void Dispose() {
     parent_ = nullptr;
     // TODO(keishi): Remove IsIteratingOverObservers() check when
-    // HeapObserverSet() supports removal while iterating.
+    // HeapObserverList() supports removal while iterating.
     if (!GetExecutionContext()
              ->ContextLifecycleObserverSet()
              .IsIteratingOverObservers()) {

@@ -10,11 +10,20 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/send_tab_to_self_entry.h"
+#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/mock_sharing_device_source.h"
 #include "components/sharing_message/mock_sharing_message_sender.h"
@@ -28,6 +37,8 @@
 #include "components/sharing_message/sharing_message_handler.h"
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/vapid_key_manager.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -37,6 +48,8 @@
 #include "crypto/ec_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -206,6 +219,7 @@ class SharingServiceTest : public testing::Test {
           base::WrapUnique(device_source_.get()),
           base::WrapUnique(handler_registry_.get()),
           base::WrapUnique(fcm_handler_.get()), &test_sync_service_,
+          &favicon_service_, &send_tab_to_self_model_,
           base::SingleThreadTaskRunner::GetCurrentDefault());
     }
     task_environment_.RunUntilIdle();
@@ -215,8 +229,11 @@ class SharingServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_features_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service;
   syncer::TestSyncService test_sync_service_;
+  testing::NiceMock<favicon::MockFaviconService> favicon_service_;
+  send_tab_to_self::TestSendTabToSelfModel send_tab_to_self_model_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
  private:
@@ -313,6 +330,119 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
   EXPECT_EQ(SharingSendMessageResult::kSuccessful, send_message_result());
   ASSERT_TRUE(send_message_response());
   EXPECT_TRUE(ProtoEquals(expected_response_message, *send_message_response()));
+}
+
+TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
+  scoped_features_.InitAndEnableFeature(
+      send_tab_to_self::kSendTabToSelfIOSPushNotifications);
+
+  const std::string title = "title";
+  const std::string device_name = "device name";
+  const std::string host = "www.example.com";
+  const std::string destination_url = "https://www.example.com/";
+  const std::string icon_url = "https://www.example.com/favicon.ico";
+  const std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  EXPECT_CALL(*device_source_, GetDeviceByGuid(guid))
+      .Times(2)
+      .WillRepeatedly([](const std::string& guid)
+                          -> std::optional<SharingTargetDeviceInfo> {
+        return SharingTargetDeviceInfo(guid, kDeviceName,
+                                       SharingDevicePlatform::kIOS,
+                                       /*pulse_interval=*/base::TimeDelta(),
+                                       syncer::DeviceInfo::FormFactor::kUnknown,
+                                       /*last_updated_timestamp=*/base::Time());
+      });
+
+  ON_CALL(favicon_service_, GetFaviconImageForPageURL)
+      .WillByDefault(
+          [icon_url](auto, favicon_base::FaviconImageCallback callback, auto) {
+            favicon_base::FaviconImageResult result;
+            result.icon_url = GURL(icon_url);
+            std::move(callback).Run(result);
+            base::CancelableTaskTracker::TaskId kTaskId = 1;
+            return kTaskId;
+          });
+
+  // Create the expected proto.
+  sync_pb::UnencryptedSharingMessage message;
+  sync_pb::SendTabToSelfPush* push_notification_entry =
+      message.mutable_send_tab_message();
+  push_notification_entry->set_title(l10n_util::GetStringFUTF8(
+      IDS_SEND_TAB_PUSH_NOTIFICATION_TITLE_USER_GIVEN_DEVICE_NAME,
+      base::UTF8ToUTF16(device_name)));
+  push_notification_entry->set_text(l10n_util::GetStringFUTF8(
+      IDS_SEND_TAB_PUSH_NOTIFICATION_BODY, base::UTF8ToUTF16(title),
+      base::UTF8ToUTF16(host)));
+  push_notification_entry->set_destination_url(destination_url);
+  push_notification_entry->set_placeholder_title(l10n_util::GetStringUTF8(
+      IDS_SEND_TAB_PUSH_NOTIFICATION_PLACEHOLDER_TITLE));
+  push_notification_entry->set_placeholder_body(l10n_util::GetStringUTF8(
+      IDS_SEND_TAB_PUSH_NOTIFICATION_PLACEHOLDER_BODY));
+  push_notification_entry->set_entry_unique_guid(guid);
+  auto* icon = push_notification_entry->add_icon();
+  icon->set_url(icon_url);
+
+  EXPECT_CALL(*sharing_message_sender_,
+              SendUnencryptedMessageToDevice(testing::_,
+                                             base::test::EqualsProto(message),
+                                             testing::_, testing::_));
+
+  send_tab_to_self::SendTabToSelfEntry entry =
+      send_tab_to_self::SendTabToSelfEntry(guid, GURL(destination_url), title,
+                                           base::Time(), device_name, guid);
+  GetSharingService()->EntryAddedLocally(&entry);
+}
+
+TEST_F(SharingServiceTest, SendTabEntryAddedLocally_FeatureDisabled) {
+  scoped_features_.InitAndDisableFeature(
+      send_tab_to_self::kSendTabToSelfIOSPushNotifications);
+
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  EXPECT_CALL(*device_source_, GetDeviceByGuid(guid)).Times(0);
+
+  ON_CALL(favicon_service_, GetFaviconImageForPageURL)
+      .WillByDefault(
+          [](auto, favicon_base::FaviconImageCallback callback, auto) {
+            std::move(callback).Run(favicon_base::FaviconImageResult());
+            base::CancelableTaskTracker::TaskId kTaskId = 1;
+            return kTaskId;
+          });
+
+  EXPECT_CALL(*sharing_message_sender_, SendUnencryptedMessageToDevice)
+      .Times(0);
+
+  send_tab_to_self::SendTabToSelfEntry entry =
+      send_tab_to_self::SendTabToSelfEntry(
+          "guid", GURL("https://www.example.com"), "title", base::Time(),
+          "device name", guid);
+  GetSharingService()->EntryAddedLocally(&entry);
+}
+
+TEST_F(SharingServiceTest, SendTabEntryAddedLocally_NonIOSDevice) {
+  scoped_features_.InitAndEnableFeature(
+      send_tab_to_self::kSendTabToSelfIOSPushNotifications);
+
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  EXPECT_CALL(*device_source_, GetDeviceByGuid(guid))
+      .WillOnce([](const std::string& guid)
+                    -> std::optional<SharingTargetDeviceInfo> {
+        return SharingTargetDeviceInfo(guid, kDeviceName,
+                                       SharingDevicePlatform::kAndroid,
+                                       /*pulse_interval=*/base::TimeDelta(),
+                                       syncer::DeviceInfo::FormFactor::kUnknown,
+                                       /*last_updated_timestamp=*/base::Time());
+      });
+
+  EXPECT_CALL(*sharing_message_sender_, SendUnencryptedMessageToDevice)
+      .Times(0);
+
+  send_tab_to_self::SendTabToSelfEntry entry =
+      send_tab_to_self::SendTabToSelfEntry(
+          "guid", GURL("https://www.example.com"), "title", base::Time(),
+          "device name", guid);
+  GetSharingService()->EntryAddedLocally(&entry);
 }
 
 TEST_F(SharingServiceTest, DeviceRegistration) {

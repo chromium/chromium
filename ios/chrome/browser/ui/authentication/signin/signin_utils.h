@@ -8,12 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "components/signin/public/identity_manager/tribool.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class ChromeAccountManagerService;
-class ChromeBrowserState;
-class PrefService;
 
 namespace base {
 class TimeDelta;
@@ -27,7 +26,6 @@ base::TimeDelta GetWaitThresholdForCapabilities();
 
 // Returns true if this user sign-in upgrade should be shown for `browserState`.
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
-                                    PrefService* local_state,
                                     const base::Version& current_version);
 
 // Returns true if the web sign-in dialog can be presented. If false, user

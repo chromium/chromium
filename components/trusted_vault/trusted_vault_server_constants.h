@@ -72,6 +72,7 @@ GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url,
 std::string GetSecurityDomainPath(SecurityDomainId domain);
 std::optional<SecurityDomainId> GetSecurityDomainByName(
     std::string_view domain);
+std::string_view GetSecurityDomainName(SecurityDomainId id);
 
 }  // namespace trusted_vault
 

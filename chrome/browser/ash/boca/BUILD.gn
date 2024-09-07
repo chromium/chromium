@@ -15,14 +15,36 @@ static_library("boca") {
     "boca_manager_factory.cc",
     "boca_manager_factory.h",
   ]
+
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//base",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/on_task",
+    "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/signin/public/identity_manager",
+    "//components/user_manager",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "boca_manager_unittest.cc" ]
+
+  deps = [
+    ":boca",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/boca",
+    "//content/test:test_support",
+    "//google_apis/common",
     "//services/network/public/cpp",
   ]
 }

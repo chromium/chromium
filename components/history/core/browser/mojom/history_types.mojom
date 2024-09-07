@@ -13,11 +13,21 @@ enum DeviceType {
   kDesktop,
   kPhone,
   kTablet,
+  kAutomotive,
+  kWearable,
+  kTv,
 };
 
 // Reasons for showing tab in Tab Resumption module.
-enum Decorator {
+enum DecorationType {
+  kVisitedXAgo,
   kMostRecent,
+  kFrequentlyVisitedAtTime,
+};
+
+struct Decoration {
+  DecorationType type;
+  string display_string;
 };
 
 // Represents a tab generated from synced sessions.
@@ -36,13 +46,10 @@ struct Tab {
   string title;
 
   // Info about the reason this tab is being shown.
-  Decorator? decorator;
+  Decoration? decoration;
 
   // Time since tab was last active.
   mojo_base.mojom.TimeDelta relative_time;
-
-  // Relative time to display on UI (i.e. 2 hours ago).
-  string relative_time_text;
 
   // Timestamp to be sent back to handler.
   mojo_base.mojom.Time? timestamp;

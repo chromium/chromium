@@ -16,7 +16,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/session_util.h"
+#include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -120,6 +120,11 @@ void NearbyShareDelegateImpl::SetNearbyShareServiceForTest(
     NearbySharingService* service) {
   nearby_share_service_ = service;
   AddNearbyShareServiceObservers();
+}
+
+void NearbyShareDelegateImpl::SetNearbyShareSettingsForTest(
+    NearbyShareSettings* settings) {
+  nearby_share_settings_ = settings;
 }
 
 // In Quick Share v1, not used.
@@ -245,4 +250,10 @@ std::u16string NearbyShareDelegateImpl::GetPlaceholderFeatureName() const {
   }
 
   return nearby_share_settings_->GetVisibility();
+}
+
+void NearbyShareDelegateImpl::SetVisibility(
+    ::nearby_share::mojom::Visibility visibility) {
+  DCHECK(nearby_share_settings_);
+  return nearby_share_settings_->SetVisibility(visibility);
 }

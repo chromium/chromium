@@ -106,8 +106,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 
   auto PushPEPCPromptButton(ui::ElementIdentifier button_identifier) {
     return InAnyContext(
-        Steps(WaitForShow(button_identifier), FlushEvents(),
-              PressButton(button_identifier),
+        Steps(WaitForShow(button_identifier), PressButton(button_identifier),
               WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId)));
   }
 
@@ -325,7 +324,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
     AddStep(steps,
             Steps(
                 // Dismiss the prompt.
-                FlushEvents(), Do([this]() {
+                Do([this]() {
                   auto* manager =
                       permissions::PermissionRequestManager::FromWebContents(
                           browser()->tab_strip_model()->GetActiveWebContents());
@@ -726,15 +725,12 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       // scrim.
       ClickOnPEPCElement("camera-microphone"),
       InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
-      FlushEvents(), Do([&]() {
+      Do([&]() {
         auto* scrim_view =
             static_cast<EmbeddedPermissionPromptContentScrimView*>(
                 waiter.WaitIfNeededAndGet()->GetContentsView());
         scrim_view->OnMousePressed(ui::MouseEvent(
             ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-        scrim_view->OnMouseReleased(ui::MouseEvent(
-            ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
       }),
       CheckEntrySinceLastCheck(
@@ -787,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
     RunTestSequence(ClickOnPEPCElement(element_action.element_name),
                     InAnyContext(WaitForShow(
                         EmbeddedPermissionPromptBaseView::kMainViewId)),
-                    FlushEvents(),
+
                     InAnyContext(CheckView(
                         EmbeddedPermissionPromptBaseView::kMainViewId,
                         [&previous_x](views::View* view) {

@@ -23,6 +23,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -138,7 +139,7 @@ void DrawPixmap(x11::Connection* connection,
   for (int row = 0; row < height; row += rows_per_request) {
     size_t n_rows = std::min<size_t>(rows_per_request, height - row);
     auto data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-        vec.data() + row * row_bytes, n_rows * row_bytes);
+        base::span(vec).subspan(row * row_bytes, n_rows * row_bytes));
     connection->PutImage({
         .format = x11::ImageFormat::ZPixmap,
         .drawable = drawable,

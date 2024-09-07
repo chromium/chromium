@@ -53,14 +53,11 @@ std::optional<mojom::blink::AutomaticBeaconType> GetAutomaticBeaconType(
   if (input == blink::kDeprecatedFencedFrameTopNavigationBeaconType) {
     return mojom::blink::AutomaticBeaconType::kDeprecatedTopNavigation;
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM120FeaturesPart2)) {
-    if (input == blink::kFencedFrameTopNavigationStartBeaconType) {
-      return mojom::blink::AutomaticBeaconType::kTopNavigationStart;
-    }
-    if (input == blink::kFencedFrameTopNavigationCommitBeaconType) {
-      return mojom::blink::AutomaticBeaconType::kTopNavigationCommit;
-    }
+  if (input == blink::kFencedFrameTopNavigationStartBeaconType) {
+    return mojom::blink::AutomaticBeaconType::kTopNavigationStart;
+  }
+  if (input == blink::kFencedFrameTopNavigationCommitBeaconType) {
+    return mojom::blink::AutomaticBeaconType::kTopNavigationCommit;
   }
   return std::nullopt;
 }
@@ -289,10 +286,8 @@ void Fence::setReportEventDataForAutomaticBeacons(
         "the maximum length, which is 64KB.");
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM120FeaturesPart2) &&
-      event->eventType() ==
-          blink::kDeprecatedFencedFrameTopNavigationBeaconType) {
+  if (event->eventType() ==
+      blink::kDeprecatedFencedFrameTopNavigationBeaconType) {
     AddConsoleMessage(event->eventType() + " is deprecated in favor of " +
                           kFencedFrameTopNavigationCommitBeaconType + ".",
                       mojom::blink::ConsoleMessageLevel::kWarning);

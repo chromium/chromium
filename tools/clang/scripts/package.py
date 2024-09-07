@@ -190,18 +190,9 @@ def main():
       '--bucket',
       default=DEFAULT_GCS_BUCKET,
       help='Google Cloud Storage bucket where the target archive is uploaded')
-  parser.add_argument('--build-mac-arm', action='store_true',
-                      help='Build arm binaries. Only valid on macOS.')
   parser.add_argument('--revision',
                       help='LLVM revision to use. Default: based on update.py')
   args = parser.parse_args()
-
-  if args.build_mac_arm and sys.platform != 'darwin':
-    print('--build-mac-arm only valid on macOS')
-    return 1
-  if args.build_mac_arm and platform.machine() == 'arm64':
-    print('--build-mac-arm only valid on intel to cross-build arm')
-    return 1
 
   if args.revision:
     # Use upload_revision.py to set the revision first.
@@ -226,7 +217,7 @@ def main():
     # 'Mac_arm64' here when there's no flag and 'Mac' when --build-mac-intel is
     # passed. Also update the build script to explicitly pass a default triple
     # then.
-    if args.build_mac_arm or platform.machine() == 'arm64':
+    if platform.machine() == 'arm64':
       gcs_platform = 'Mac_arm64'
     else:
       gcs_platform = 'Mac'
@@ -248,8 +239,6 @@ def main():
         os.path.join(THIS_DIR, 'build.py'), '--bootstrap', '--disable-asserts',
         '--run-tests', '--pgo'
     ]
-    if args.build_mac_arm:
-      build_cmd.append('--build-mac-arm')
     if sys.platform != 'darwin':
       build_cmd.append('--thinlto')
     if sys.platform.startswith('linux'):

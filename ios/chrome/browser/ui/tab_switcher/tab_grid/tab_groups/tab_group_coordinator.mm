@@ -7,7 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
@@ -100,6 +100,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 }
 
 - (void)stop {
+  [_mediator disconnect];
   _mediator = nil;
   _tabContextMenuHelper = nil;
 
@@ -277,7 +278,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)gridViewControllerScrollViewDidScroll:
     (BaseGridViewController*)gridViewController {
-  // No-op.
+  [self.viewController gridViewControllerDidScroll];
 }
 
 - (void)gridViewControllerDropAnimationWillBegin:

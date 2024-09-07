@@ -9,7 +9,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
-
 namespace {
 
 constexpr char kAppLocale[] = "dummy_locale";
@@ -18,8 +17,6 @@ constexpr int kBillableServiceNumber = 12345678;
 constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr char16_t kCapitalizedIbanRegex[] =
     u"^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}[A-Z0-9]{0,18}$";
-
-}  // namespace
 
 class GetIbanUploadDetailsRequestTest : public testing::Test {
  public:
@@ -129,4 +126,5 @@ TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingValidationRegex) {
   EXPECT_FALSE(IsResponseComplete());
 }
 
+}  // namespace
 }  // namespace autofill::payments

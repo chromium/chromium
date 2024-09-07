@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
@@ -502,6 +503,75 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantHostPermission) {
         prefs->GetRuntimeGrantedPermissions(extension->id());
     EXPECT_FALSE(permissions->effective_hosts().MatchesURL(kUrl));
     EXPECT_FALSE(permissions->effective_hosts().MatchesURL(kUrl2));
+  }
+}
+
+// Tests ScriptingPermissinsModifier::GrantHostPermission() grants optional host
+// permissions which may have been withheld
+TEST_F(ScriptingPermissionsModifierUnitTest, GrantedOptionalHostPermission) {
+  InitializeEmptyExtensionService();
+
+  // Add an extension with <all_urls> optional host permission.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("extension")
+          .AddOptionalHostPermission(URLPattern::kAllUrlsPattern)
+          .SetLocation(ManifestLocation::kInternal)
+          .Build();
+  PermissionsUpdater(profile()).InitializePermissions(extension.get());
+
+  ScriptingPermissionsModifier modifier(profile(), extension);
+
+  const GURL kUrl("https://www.chromium.org/");
+  const GURL kOtherUrl("https://www.example.com/");
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(permissions_manager->HasGrantedHostPermission(*extension, kUrl));
+
+  const PermissionsData* permissions_data = extension->permissions_data();
+  auto get_page_access = [&permissions_data](const GURL& url) {
+    return permissions_data->GetPageAccess(url, 0, nullptr);
+  };
+
+  // No host permissions should have been granted to the extension at this
+  // point.
+  ASSERT_EQ(PermissionsData::PageAccess::kDenied, get_page_access(kUrl));
+
+  // Now grant the optional host permissions.
+  PermissionsUpdater updater(profile());
+  updater.GrantOptionalPermissions(
+      *extension, PermissionsParser::GetOptionalPermissions(extension.get()),
+      base::DoNothing());
+
+  // The extension should now be allowed to run on all hosts. Verify this by
+  // checking the page access on kUrl and kOtherUrl.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  {
+    std::unique_ptr<const PermissionSet> permissions =
+        prefs->GetRuntimeGrantedPermissions(extension->id());
+    ASSERT_TRUE(permissions->effective_hosts().MatchesURL(kUrl));
+    ASSERT_EQ(PermissionsData::PageAccess::kAllowed, get_page_access(kUrl));
+    ASSERT_EQ(PermissionsData::PageAccess::kAllowed,
+              get_page_access(kOtherUrl));
+  }
+
+  // Grant the extension access to kUrl only by first withholding all host
+  // permissions and then granting access to kUrl only.
+  modifier.SetWithholdHostPermissions(true);
+  EXPECT_FALSE(permissions_manager->HasGrantedHostPermission(*extension, kUrl));
+  EXPECT_EQ(PermissionsData::PageAccess::kWithheld, get_page_access(kUrl));
+  modifier.GrantHostPermission(kUrl);
+
+  // Verify that kUrl is re-granted as the extension had already been granted
+  // access to <all_urls> which encompasses access to kUrl. Access to kOtherUrl
+  // should now be withheld.
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension, kUrl));
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_page_access(kUrl));
+  EXPECT_EQ(PermissionsData::PageAccess::kWithheld, get_page_access(kOtherUrl));
+  {
+    std::unique_ptr<const PermissionSet> permissions =
+        prefs->GetRuntimeGrantedPermissions(extension->id());
+    EXPECT_TRUE(permissions->effective_hosts().MatchesURL(kUrl));
+    EXPECT_FALSE(permissions->effective_hosts().MatchesURL(kOtherUrl));
   }
 }
 

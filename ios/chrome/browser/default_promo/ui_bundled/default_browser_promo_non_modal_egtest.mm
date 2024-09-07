@@ -29,24 +29,11 @@ namespace {
 // slightly delayed.
 constexpr base::TimeDelta kShowPromoWebpageLoadWaitTime = base::Seconds(5);
 
-// Returns a matcher to "Link You Copied" row.
-id<GREYMatcher> LinkYouCopiedMatcher() {
-  NSString* a11yLabelText = l10n_util::GetNSString(IDS_LINK_FROM_CLIPBOARD);
-  return grey_accessibilityLabel(a11yLabelText);
-}
-
 // Returns a matcher for the non modal promo title.
 id<GREYMatcher> NonModalTitleMatcher() {
   NSString* a11yLabelText =
       l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_NON_MODAL_TITLE);
   return grey_accessibilityLabel(a11yLabelText);
-}
-
-// Returns a matcher for Omnibox in NTP.
-id<GREYMatcher> FakeOmniboxMatcher() {
-  NSString* a11yLabelText = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
-  return grey_allOf(grey_accessibilityLabel(a11yLabelText),
-                    grey_kindOfClass([UIButton class]), nil);
 }
 
 }  // namespace
@@ -59,6 +46,7 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 
 - (void)setUp {
   [super setUp];
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey clearDefaultBrowserPromoData];
 }
 
@@ -68,14 +56,18 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 }
 
 // Test that a non modal default modal promo appears when it is triggered by
-// pasting a copied link.
+// using the share menu.
 - (void)testNonModalAppears {
-  [ChromeEarlGrey copyURLToPasteBoard];
-  [[EarlGrey selectElementWithMatcher:FakeOmniboxMatcher()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:LinkYouCopiedMatcher()];
-  [[EarlGrey selectElementWithMatcher:LinkYouCopiedMatcher()]
-      performAction:grey_tap()];
+  const GURL destinationUrl = self.testServer->GetURL("/destination.html");
+  [ChromeEarlGrey loadURL:destinationUrl];
+
+  [ChromeEarlGreyUI openShareMenu];
+
+  // Verify that the share menu is up and contains a Copy action.
+  [ChromeEarlGrey verifyActivitySheetVisible];
+  // Start the Copy action and verify that the share menu gets dismissed.
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
 
   // Wait until the promo appears.
   NSString* description = @"Wait for the promo to appear.";

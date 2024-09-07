@@ -122,10 +122,10 @@ class ManagePasswordsUIController
       const std::u16string& username,
       const password_manager::PasswordForm& form_to_update) override;
   void OnKeychainError() override;
-  void OnPasskeySaved(const std::u16string& username,
-                      bool gpm_pin_created) override;
+  void OnPasskeySaved(bool gpm_pin_created) override;
   void OnPasskeyDeleted() override;
   void OnPasskeyUpdated() override;
+  void OnPasskeyNotAccepted() override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);
@@ -173,7 +173,6 @@ class ManagePasswordsUIController
   bool DidAuthForAccountStoreOptInFail() const override;
   bool BubbleIsManualFallbackForSaving() const override;
   bool GpmPinCreatedDuringRecentPasskeyCreation() const override;
-  std::u16string GetRecentlySavedPasskeyUsername() const override;
   void OnBubbleShown() override;
   void OnBubbleHidden() override;
   void OnNoInteraction() override;
@@ -222,11 +221,17 @@ class ManagePasswordsUIController
   }
 #endif  // defined(UNIT_TEST)
 
+  // Hides the bubble if opened. Mocked in the tests.
+  virtual void HidePasswordBubble();
+
+  bool IsShowingBubble() const {
+    return bubble_status_ == BubbleStatus::SHOWN ||
+           bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
+  }
+
  protected:
   explicit ManagePasswordsUIController(content::WebContents* web_contents);
 
-  // Hides the bubble if opened. Mocked in the tests.
-  virtual void HidePasswordBubble();
 
   // Called when a PasswordForm is autofilled, when a new PasswordForm is
   // submitted, or when a navigation occurs to update the visibility of the
@@ -285,11 +290,6 @@ class ManagePasswordsUIController
     // UpdateBubbleAndIconVisibility() and will be focused automatically.
     SHOULD_POP_UP_WITH_FOCUS,
   };
-
-  bool IsShowingBubble() const {
-    return bubble_status_ == BubbleStatus::SHOWN ||
-           bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
-  }
 
   // Returns whether saving credentials prompts for the current form in
   // |passwords_data_| is blocked due to explicit action of the user asking to

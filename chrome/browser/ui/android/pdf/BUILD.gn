@@ -15,6 +15,7 @@ android_library("pdf_provider_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
+  resources_package = "com.google.android.material"
 }
 
 generate_jni("pdf_jni_headers") {
@@ -32,6 +33,7 @@ android_library("java") {
     ":java_resources",
     ":pdf_provider_java",
     "//base:base_java",
+    "//base:content_uri_utils_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/fakepdf:java",
     "//chrome/browser/ui/android/native_page:java",
@@ -39,9 +41,11 @@ android_library("java") {
     "//components/browser_ui/styles/android:java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:url_java",

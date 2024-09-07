@@ -43,10 +43,10 @@ static_library("storage_queue") {
   deps = [
     ":storage_configuration",
     ":storage_uploader_interface",
-    ":storage_util",
     "//base",
     "//components/reporting/compression:compression_module",
     "//components/reporting/encryption:encryption_module_interface",
+    "//components/reporting/encryption:verification",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/resources:resource_managed_buffer",
@@ -61,25 +61,33 @@ static_library("storage_queue") {
   ]
 }
 
-static_library("storage_module") {
+static_library("storage") {
   sources = [
-    "storage_module.cc",
-    "storage_module.h",
+    "storage.cc",
+    "storage.h",
   ]
 
   public_deps = [ ":storage_configuration" ]
 
   deps = [
-    ":storage",
-    ":storage_base",
-    ":storage_module_interface",
+    ":storage_queue",
     ":storage_uploader_interface",
     "//base",
     "//components/reporting/compression:compression_module",
+    "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:encryption_module_interface",
+    "//components/reporting/encryption:primitives",
+    "//components/reporting/encryption:verification",
+    "//components/reporting/health:health_module",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/resources:resource_manager",
+    "//components/reporting/util:file",
     "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+    "//components/reporting/util:task_runner_context",
+    "//crypto",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
 
@@ -90,6 +98,27 @@ static_library("storage_module_interface") {
   ]
   deps = [
     "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+  ]
+}
+
+static_library("storage_module") {
+  sources = [
+    "storage_module.cc",
+    "storage_module.h",
+  ]
+
+  public_deps = [ ":storage_configuration" ]
+
+  deps = [
+    ":storage",
+    ":storage_module_interface",
+    ":storage_uploader_interface",
+    "//base",
+    "//components/reporting/compression:compression_module",
+    "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/util:status",
@@ -115,102 +144,17 @@ static_library("test_support") {
   ]
 }
 
-static_library("storage_util") {
-  sources = [
-    "storage_util.cc",
-    "storage_util.h",
-  ]
-  deps = [
-    ":storage_configuration",
-    "//base",
-    "//components/reporting/util:file",
-    "//components/reporting/util:status",
-  ]
-}
-
-static_library("key_delivery") {
-  sources = [
-    "key_delivery.cc",
-    "key_delivery.h",
-  ]
-  deps = [
-    ":storage_uploader_interface",
-    "//base",
-    "//components/reporting/encryption:encryption_module_interface",
-    "//components/reporting/util:status",
-  ]
-}
-
-static_library("storage") {
-  sources = [
-    "storage.cc",
-    "storage.h",
-  ]
-
-  public_deps = [ ":storage_configuration" ]
-
-  deps = [
-    ":key_delivery",
-    ":storage_base",
-    ":storage_queue",
-    ":storage_uploader_interface",
-    ":storage_util",
-    "//base",
-    "//components/reporting/compression:compression_module",
-    "//components/reporting/encryption:encryption_module",
-    "//components/reporting/encryption:encryption_module_interface",
-    "//components/reporting/encryption:primitives",
-    "//components/reporting/proto:record_constants",
-    "//components/reporting/proto:record_proto",
-    "//components/reporting/resources:resource_manager",
-    "//components/reporting/util:file",
-    "//components/reporting/util:status",
-    "//components/reporting/util:status_macros",
-    "//components/reporting/util:task_runner_context",
-    "//crypto",
-    "//third_party/protobuf:protobuf_lite",
-  ]
-}
-
-static_library("storage_base") {
-  sources = [
-    "storage_base.cc",
-    "storage_base.h",
-  ]
-  deps = [
-    ":storage_configuration",
-    ":storage_queue",
-    ":storage_uploader_interface",
-    "//components/reporting/encryption:encryption_module_interface",
-    "//components/reporting/encryption:primitives",
-    "//components/reporting/encryption:verification",
-    "//components/reporting/proto:record_constants",
-    "//components/reporting/proto:record_proto",
-    "//components/reporting/util:file",
-    "//components/reporting/util:status",
-    "//components/reporting/util:status_macros",
-    "//components/reporting/util:task_runner_context",
-  ]
-}
-
 # All unit tests are built as part of the //components:components_unittests
 # target and must be one targets named "unit_tests".
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "key_delivery_unittest.cc",
-    "legacy_storage_degradation_unittest.cc",
-    "legacy_storage_unittest.cc",
-    "storage_degradation_unittest.cc",
     "storage_queue_stress_test.cc",
     "storage_queue_unittest.cc",
     "storage_unittest.cc",
-    "storage_util_unittest.cc",
   ]
   deps = [
-    ":key_delivery",
     ":storage",
-    ":storage_base",
     ":storage_configuration",
     ":storage_module",
     ":storage_queue",
@@ -230,7 +174,6 @@ source_set("unit_tests") {
     "//components/reporting/proto:record_proto",
     "//components/reporting/resources:resource_managed_buffer",
     "//components/reporting/resources:resource_manager",
-    "//components/reporting/storage:storage_util",
     "//components/reporting/util:file",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",

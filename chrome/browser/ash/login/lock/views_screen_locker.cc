@@ -29,8 +29,8 @@
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -208,10 +208,12 @@ void ViewsScreenLocker::UpdateChallengeResponseAuthAvailability(
       account_id, enable_challenge_response);
 }
 
-void ViewsScreenLocker::OnPinCanAuthenticate(const AccountId& account_id,
-                                             bool can_authenticate) {
-  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
-                                                       can_authenticate);
+void ViewsScreenLocker::OnPinCanAuthenticate(
+    const AccountId& account_id,
+    bool can_authenticate,
+    cryptohome::PinLockAvailability available_at) {
+  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(
+      account_id, can_authenticate, available_at);
 }
 
 }  // namespace ash

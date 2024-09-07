@@ -153,9 +153,7 @@ def __android_compile_resources_handler(ctx, cmd):
         for k in ["--dependencies-res-zips=", "--dependencies-res-zip-overlays=", "--extra-res-packages="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
-                fn, v = __filearg(ctx, arg)
-                if fn:
-                    inputs.append(ctx.fs.canonpath(fn))
+                _, v = __filearg(ctx, arg)
                 for f in v:
                     f = ctx.fs.canonpath(f)
                     inputs.append(f)
@@ -195,11 +193,6 @@ def __android_compile_java_handler(ctx, cmd):
 
     inputs = []
     for i, arg in enumerate(cmd.args):
-        # read .sources file.
-        if arg.startswith("@"):
-            sources = str(ctx.fs.read(ctx.fs.canonpath(arg.removeprefix("@")))).splitlines()
-            for source in sources:
-                inputs.append(ctx.fs.canonpath(source))
         for k in ["--classpath=", "--bootclasspath=", "--processorpath="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
@@ -217,9 +210,7 @@ def __android_compile_java_handler(ctx, cmd):
 
 def __android_dex_handler(ctx, cmd):
     out = cmd.outputs[0]
-    inputs = [
-        out.replace("obj/", "gen/").replace(".dex.jar", ".build_config.json"),
-    ]
+    inputs = []
 
     # Add __dex.desugardeps to the outputs.
     outputs = [
@@ -231,9 +222,7 @@ def __android_dex_handler(ctx, cmd):
         for k in ["--class-inputs=", "--bootclasspath=", "--classpath=", "--class-inputs-filearg=", "--dex-inputs-filearg="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
-                fn, v = __filearg(ctx, arg)
-                if fn:
-                    inputs.append(ctx.fs.canonpath(fn))
+                _, v = __filearg(ctx, arg)
                 for f in v:
                     f, _, _ = f.partition(":")
                     f = ctx.fs.canonpath(f)
@@ -252,9 +241,7 @@ def __android_turbine_handler(ctx, cmd):
         for k in ["--classpath=", "--processorpath="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
-                fn, v = __filearg(ctx, arg)
-                if fn:
-                    inputs.append(ctx.fs.canonpath(fn))
+                _, v = __filearg(ctx, arg)
                 for f in v:
                     f, _, _ = f.partition(":")
                     inputs.append(ctx.fs.canonpath(f))

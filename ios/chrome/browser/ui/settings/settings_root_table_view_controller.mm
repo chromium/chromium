@@ -87,7 +87,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   if (self.showCancelDuringEditing) {
     self.navigationItem.leftBarButtonItem =
         self.tableView.editing ? [self createEditModeCancelButton]
-                               : self.backButtonItem;
+                               : self.customLeftBarButtonItem;
   }
 
   // The following two lines cause the table view to refresh the cell heights
@@ -183,7 +183,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
 
-  self.backButtonItem = self.navigationItem.leftBarButtonItem;
+  self.customLeftBarButtonItem = self.navigationItem.leftBarButtonItem;
   self.shouldShowDeleteButtonInToolbar = YES;
   self.extendedLayoutIncludesOpaqueBars = YES;
 }

@@ -165,20 +165,8 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD0(DurationChanged, void());
   MOCK_METHOD0(SizeChanged, void());
   MOCK_METHOD1(SetCcLayer, void(cc::Layer*));
-  MOCK_METHOD5(AddAudioTrack,
-               WebMediaPlayer::TrackId(const WebString&,
-                                       WebMediaPlayerClient::AudioTrackKind,
-                                       const WebString&,
-                                       const WebString&,
-                                       bool));
-  MOCK_METHOD1(RemoveAudioTrack, void(WebMediaPlayer::TrackId));
-  MOCK_METHOD5(AddVideoTrack,
-               WebMediaPlayer::TrackId(const WebString&,
-                                       WebMediaPlayerClient::VideoTrackKind,
-                                       const WebString&,
-                                       const WebString&,
-                                       bool));
-  MOCK_METHOD1(RemoveVideoTrack, void(WebMediaPlayer::TrackId));
+  MOCK_METHOD1(AddMediaTrack, void(const media::MediaTrack& track));
+  MOCK_METHOD1(RemoveMediaTrack, void(const media::MediaTrack&));
   MOCK_METHOD1(MediaSourceOpened, void(std::unique_ptr<WebMediaSource>));
   MOCK_METHOD2(RemotePlaybackCompatibilityChanged, void(const WebURL&, bool));
   MOCK_METHOD0(WasAlwaysMuted, bool());
@@ -838,8 +826,7 @@ class WebMediaPlayerImplTest
     client->DidReceiveResponse(response);
 
     // Copy over the file data.
-    client->DidReceiveData(reinterpret_cast<const char*>(data->data()),
-                           static_cast<int>(data->size()));
+    client->DidReceiveData(base::as_chars(data->AsSpan()));
 
     // If we're pretending to be a streaming resource, don't complete the load;
     // otherwise the DataSource will not be marked as streaming.

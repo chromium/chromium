@@ -216,6 +216,11 @@ template("mojolpm_fuzzer_test") {
 #   seed_corpus_sources (optional)
 #       List of source .textproto files used to build a seed corpus.
 #
+#   ensure_remote (optional)
+#       Ensures that for ever listed remotes, the "new" action is called before
+#       any other actions related to this remote. This ensures the remote
+#       always exists.
+#
 # Example:
 #  mojolpm_generated_fuzzer("foo_mojolpm_fuzzer") {
 #    sources = [ "foo_mojolpm_fuzzer.cc" ]
@@ -289,6 +294,10 @@ template("mojolpm_generated_fuzzer") {
         "--output_file_format",
         rebase_path("${target_gen_dir}/${_target_name}", root_build_dir),
       ]
+
+      if (defined(invoker.ensure_remote) && invoker.ensure_remote) {
+        args += [ "--ensure-remote" ]
+      }
 
       outputs = [
         "${target_gen_dir}/${_target_name}.h",

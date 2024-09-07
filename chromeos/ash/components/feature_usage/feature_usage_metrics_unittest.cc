@@ -31,8 +31,9 @@ class FeatureUsageMetricsTest : public ::testing::Test,
                                 public FeatureUsageMetrics::Delegate {
  public:
   FeatureUsageMetricsTest() {
-    if (!base::PowerMonitor::IsInitialized()) {
-      base::PowerMonitor::Initialize(
+    if (auto* power_monitor = base::PowerMonitor::GetInstance();
+        !power_monitor->IsInitialized()) {
+      power_monitor->Initialize(
           std::make_unique<base::PowerMonitorDeviceSource>());
     }
 

@@ -273,17 +273,12 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 // accommodate the autocompletions.
 BASE_FEATURE(kRichAutocompletion,
              "OmniboxRichAutocompletion",
-             enabled_by_default_desktop_only);
+             enabled_by_default_desktop_ios);
 
 // Feature used to enable Pedals in the NTP Realbox.
 BASE_FEATURE(kNtpRealboxPedals,
              "NtpRealboxPedals",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, appends Query Tiles to the Omnibox ZPS on New Tab Page.
-BASE_FEATURE(kQueryTilesInZPSOnNTP,
-             "OmniboxQueryTilesInZPSOnNTP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, adds a grey square background to search icons, and makes answer
 // icon square instead of round.
@@ -416,6 +411,13 @@ BASE_FEATURE(kLogUrlScoringSignals,
              "LogUrlScoringSignals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If true, enables history scoring signal annotator for populating history
+// scoring signals associated with Search suggestions. These signals will be
+// empty for Search suggestions otherwise.
+BASE_FEATURE(kEnableHistoryScoringSignalsAnnotatorForSearches,
+             "EnableHistoryScoringSignalsAnnotatorForSearches",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, (floating-point) ML model scores are mapped to (integral)
 // relevance scores by means of a piecewise function. This allows for the
 // integration of URL model scores with search traditional scores.
@@ -481,12 +483,6 @@ BASE_FEATURE(kMergeSubtypes, "MergeSubtypes", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
              "OmniboxTouchDownTriggerForPrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, shows the policy indicator for Default Search Provider set by
-// Enterprise policy chrome://settings.
-BASE_FEATURE(kPolicyIndicationForManagedDefaultSearch,
-             "PolicyIndicationForManagedDefaultSearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, site search engines featured by policy are shown on @ state in
 // the omnibox above starter pack suggestions.
@@ -565,19 +561,22 @@ BASE_FEATURE(kOmniboxElegantTextHeight,
              "OmniboxElegantTextHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOmniboxAblateVisibleNetworks,
+             "OmniboxAblateVisibleNetworks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       std::vector<const base::Feature*>{{
           &kOmniboxAnswerActions,
-          &kQueryTilesInZPSOnNTP,
           &kAnimateSuggestionsListAppearance,
-          &kGroupingFrameworkForNonZPS,
           &kOmniboxTouchDownTriggerForPrefetch,
           &kOmniboxAsyncViewInflation,
           &kRichAutocompletion,
           &kUseFusedLocationProvider,
           &kOmniboxElegantTextHeight,
+          &kOmniboxAblateVisibleNetworks,
       }});
 
   return reinterpret_cast<jlong>(kFeatureMap.get());

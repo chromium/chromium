@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/features.h"
@@ -23,6 +24,7 @@
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/stats.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
+#include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/saved_tab_groups/utils.h"
@@ -43,17 +45,20 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     PrefService* pref_service,
     std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger)
     : model_(std::move(model)),
-      sync_bridge_mediator_(model_.get(),
-                            pref_service,
-                            std::move(saved_tab_group_configuration),
-                            std::move(shared_tab_group_configuration)),
-      pref_service_(pref_service),
-      metrics_logger_(std::move(metrics_logger)) {
+      sync_bridge_mediator_(std::make_unique<TabGroupSyncBridgeMediator>(
+          model_.get(),
+          pref_service,
+          std::move(saved_tab_group_configuration),
+          std::move(shared_tab_group_configuration))),
+      metrics_logger_(std::move(metrics_logger)),
+      pref_service_(pref_service) {
   model_->AddObserver(this);
 }
 
 TabGroupSyncServiceImpl::~TabGroupSyncServiceImpl() {
-  model_->RemoveObserver(this);
+  for (auto& observer : observers_) {
+    observer.OnWillBeDestroyed();
+  }
 }
 
 void TabGroupSyncServiceImpl::SetCoordinator(
@@ -86,28 +91,40 @@ void TabGroupSyncServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void TabGroupSyncServiceImpl::SetIsInitializedForTesting(bool initialized) {
+  is_initialized_ = initialized;
+}
+
 void TabGroupSyncServiceImpl::Shutdown() {
   metrics_logger_.reset();
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSavedTabGroupControllerDelegate() {
-  return sync_bridge_mediator_.GetSavedTabGroupControllerDelegate();
+  return sync_bridge_mediator_->GetSavedTabGroupControllerDelegate();
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
-  return sync_bridge_mediator_.GetSharedTabGroupControllerDelegate();
+  return sync_bridge_mediator_->GetSharedTabGroupControllerDelegate();
 }
 
 void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
+  if (!is_initialized_) {
+    VLOG(2) << __func__ << " Invoked before init";
+    pending_actions_.emplace_back(
+        base::BindOnce(&TabGroupSyncServiceImpl::AddGroup,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(group)));
+    return;
+  }
+
   VLOG(2) << __func__;
   base::Uuid group_id = group.saved_guid();
   LocalTabGroupID local_group_id = group.local_group_id().value();
   group.SetCreatedBeforeSyncingTabGroups(
-      !sync_bridge_mediator_.IsSavedBridgeSyncing());
+      !sync_bridge_mediator_->IsSavedBridgeSyncing());
   group.SetCreatorCacheGuid(
-      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge());
+      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
   model_->Add(std::move(group));
 
   LogEvent(TabGroupEvent::kTabGroupCreated, local_group_id);
@@ -184,7 +201,7 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
   SavedTabGroupTab new_tab(url, title, group->saved_guid(), position,
                            /*saved_tab_guid=*/std::nullopt, tab_id);
   new_tab.SetCreatorCacheGuid(
-      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge());
+      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
 
   UpdateAttributions(group_id);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
@@ -192,11 +209,10 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
   LogEvent(TabGroupEvent::kTabAdded, group_id, std::nullopt);
 }
 
-void TabGroupSyncServiceImpl::UpdateTab(const LocalTabGroupID& group_id,
-                                        const LocalTabID& tab_id,
-                                        const std::u16string& title,
-                                        GURL url,
-                                        std::optional<size_t> position) {
+void TabGroupSyncServiceImpl::UpdateTab(
+    const LocalTabGroupID& group_id,
+    const LocalTabID& tab_id,
+    const SavedTabGroupTabBuilder& tab_builder) {
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
@@ -213,14 +229,8 @@ void TabGroupSyncServiceImpl::UpdateTab(const LocalTabGroupID& group_id,
   // Update attributions for the tab first.
   UpdateAttributions(group_id, tab_id);
 
-  // Update URL and title for the tab.
-  SavedTabGroupTab updated_tab(*tab);
-  updated_tab.SetLocalTabID(tab_id);
-  updated_tab.SetTitle(title);
-  updated_tab.SetURL(url);
-  if (position.has_value()) {
-    updated_tab.SetPosition(position.value());
-  }
+  // Use the builder to create the updated tab.
+  SavedTabGroupTab updated_tab = tab_builder.Build(*tab);
 
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab));
@@ -340,6 +350,14 @@ void TabGroupSyncServiceImpl::OpenTabGroup(
 void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id) {
+  if (!is_initialized_) {
+    VLOG(2) << __func__ << " Invoked before init";
+    pending_actions_.emplace_back(
+        base::BindOnce(&TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping,
+                       weak_ptr_factory_.GetWeakPtr(), sync_id, local_id));
+    return;
+  }
+
   VLOG(2) << __func__;
   model_->OnGroupOpenedInTabStrip(sync_id, local_id);
 }
@@ -374,15 +392,22 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
 void TabGroupSyncServiceImpl::ConnectLocalTabGroup(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id) {
+  if (!is_initialized_) {
+    VLOG(2) << __func__ << " Invoked before init";
+    pending_actions_.emplace_back(
+        base::BindOnce(&TabGroupSyncServiceImpl::ConnectLocalTabGroup,
+                       weak_ptr_factory_.GetWeakPtr(), sync_id, local_id));
+    return;
+  }
+
   VLOG(2) << __func__;
-  CHECK(is_initialized_);
   coordinator_->ConnectLocalTabGroup(sync_id, local_id);
 }
 
 bool TabGroupSyncServiceImpl::IsRemoteDevice(
     const std::optional<std::string>& cache_guid) const {
   std::optional<std::string> local_cache_guid =
-      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge();
+      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge();
   if (!local_cache_guid || !cache_guid) {
     return false;
   }
@@ -409,6 +434,24 @@ void TabGroupSyncServiceImpl::RecordTabGroupEvent(
   }
 
   metrics_logger_->LogEvent(event_details, group, tab);
+}
+
+void TabGroupSyncServiceImpl::HandleTabGroupsReordered(TriggerSource source) {
+  if (!is_initialized_) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnTabGroupsReordered(source);
+  }
+}
+
+void TabGroupSyncServiceImpl::SavedTabGroupReorderedLocally() {
+  HandleTabGroupsReordered(TriggerSource::LOCAL);
+}
+
+void TabGroupSyncServiceImpl::SavedTabGroupReorderedFromSync() {
+  HandleTabGroupsReordered(TriggerSource::REMOTE);
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
@@ -588,7 +631,8 @@ void TabGroupSyncServiceImpl::SavedTabGroupLocalIdChanged(
   }
 
   for (auto& observer : observers_) {
-    observer.OnTabGroupUpdated(*saved_tab_group, TriggerSource::LOCAL);
+    observer.OnTabGroupLocalIdChanged(group_guid,
+                                      saved_tab_group->local_group_id());
   }
 }
 
@@ -605,6 +649,13 @@ void TabGroupSyncServiceImpl::NotifyServiceInitialized() {
   VLOG(2) << __func__;
 
   is_initialized_ = true;
+
+  while (!pending_actions_.empty()) {
+    auto callback = std::move(pending_actions_.front());
+    pending_actions_.pop_front();
+    std::move(callback).Run();
+  }
+
   for (auto& observer : observers_) {
     observer.OnInitialized();
   }
@@ -620,7 +671,7 @@ void TabGroupSyncServiceImpl::UpdateAttributions(
     const LocalTabGroupID& group_id,
     const std::optional<LocalTabID>& tab_id) {
   model_->UpdateLastUpdaterCacheGuidForGroup(
-      sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge(), group_id,
+      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge(), group_id,
       tab_id);
 }
 

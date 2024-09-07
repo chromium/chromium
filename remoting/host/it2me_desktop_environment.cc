@@ -98,10 +98,6 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
 
 std::string It2MeDesktopEnvironment::GetCapabilities() const {
   std::string capabilities = BasicDesktopEnvironment::GetCapabilities();
-  if (desktop_environment_options().enable_file_transfer()) {
-    capabilities += " ";
-    capabilities += protocol::kFileTransferCapability;
-  }
 
   // TODO: joedow - Move MultiStream capability to a shared base
   // class once all platforms and connection modes support it.

@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -124,6 +125,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
             case ScreenMode.PENDING:
                 throw new IllegalStateException("Unrecognized restriction status.");
         }
+        mDelegate.maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
 
         mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ true);
         mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ true);
@@ -148,6 +150,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
             case ScreenMode.PENDING:
                 throw new IllegalStateException("Unrecognized restriction status.");
         }
+        mDelegate.maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
 
         if (mShouldSignOutOnDecline) {
             mSigninManager.signOut(

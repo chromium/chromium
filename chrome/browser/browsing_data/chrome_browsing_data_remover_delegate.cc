@@ -89,6 +89,8 @@
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
+#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -503,27 +505,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       no_state_prefetch_manager->ClearData(
           prerender::NoStatePrefetchManager::CLEAR_PRERENDER_CONTENTS |
           prerender::NoStatePrefetchManager::CLEAR_PRERENDER_HISTORY);
-    }
-
-    // The saved Autofill profiles and credit cards can include the origin from
-    // which these profiles and credit cards were learned.  These are a form of
-    // history, so clear them as well.
-    // TODO(dmurph): Support all backends with filter (crbug.com/113621).
-    scoped_refptr<autofill::AutofillWebDataService> web_data_service =
-        WebDataServiceFactory::GetAutofillWebDataForProfile(
-            profile_, ServiceAccessType::EXPLICIT_ACCESS);
-    if (web_data_service.get()) {
-      web_data_service->RemoveOriginURLsModifiedBetween(delete_begin_,
-                                                        delete_end_);
-      // Ask for a call back when the above call is finished.
-      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
-          FROM_HERE, base::DoNothing(),
-          CreateTaskCompletionClosure(TracingDataType::kAutofillOrigins));
-
-      autofill::PersonalDataManager* data_manager =
-          autofill::PersonalDataManagerFactory::GetForBrowserContext(profile_);
-      if (data_manager)
-        data_manager->Refresh();
     }
 
     base::ThreadPool::PostTaskAndReply(
@@ -1066,8 +1047,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     if (web_data_service.get()) {
       web_data_service->RemoveFormElementsAddedBetween(delete_begin_,
                                                        delete_end_);
-      web_data_service->RemoveAutofillDataModifiedBetween(delete_begin_,
-                                                          delete_end_);
       // Clear out the Autofill StrikeDatabase in its entirety.
       // TODO(crbug.com/40594007): Respect |delete_begin_| and |delete_end_| and
       // only clear out entries whose last strikes were created in that
@@ -1077,15 +1056,17 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (strike_database)
         strike_database->ClearAllStrikes();
 
+      autofill::PersonalDataManager* data_manager =
+          autofill::PersonalDataManagerFactory::GetForBrowserContext(profile_);
+      data_manager->address_data_manager().RemoveLocalProfilesModifiedBetween(
+          delete_begin_, delete_end_);
+      data_manager->payments_data_manager().RemoveLocalDataModifiedBetween(
+          delete_begin_, delete_end_);
+
       // Ask for a call back when the above calls are finished.
       web_data_service->GetDBTaskRunner()->PostTaskAndReply(
           FROM_HERE, base::DoNothing(),
           CreateTaskCompletionClosure(TracingDataType::kAutofillData));
-
-      autofill::PersonalDataManager* data_manager =
-          autofill::PersonalDataManagerFactory::GetForBrowserContext(profile_);
-      if (data_manager)
-        data_manager->Refresh();
     }
   }
 

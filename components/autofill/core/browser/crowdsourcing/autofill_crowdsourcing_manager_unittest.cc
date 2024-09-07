@@ -68,7 +68,6 @@
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace autofill {
-
 namespace {
 
 using ::base::UTF8ToUTF16;
@@ -195,8 +194,6 @@ class AutofillCrowdsourcingManagerWithCustomPayloadSize
   size_t length_;
 };
 
-}  // namespace
-
 // This tests AutofillCrowdsourcingManager. AutofillCrowdsourcingManagerTest
 // implements AutofillCrowdsourcingManager::Observer and creates an instance of
 // AutofillCrowdsourcingManager. Then it records responses to different
@@ -243,12 +240,13 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
   }
 
   void OnLoadedServerPredictions(
-      std::string response_xml,
-      const std::vector<FormSignature>& form_signatures) {
-    ResponseData response;
-    response.response = std::move(response_xml);
-    response.type_of_response = ResponseType::kQuerySuccessful;
-    responses().push_back(response);
+      std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
+    if (!response) {
+      return;
+    }
+    responses().push_back({.type_of_response = ResponseType::kQuerySuccessful,
+                           .signature = {},
+                           .response = std::move(response->response)});
   }
 
   TestAutofillClient& client() { return client_; }
@@ -1097,8 +1095,7 @@ class AutofillServerCommunicationTest
 
   // AutofillCrowdsourcingManager::Observer implementation.
   void OnLoadedServerPredictions(
-      std::string /* response_xml */,
-      const std::vector<FormSignature>& /*form_signatures */) {
+      std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
     ASSERT_TRUE(run_loop_);
     run_loop_->QuitWhenIdle();
   }
@@ -1599,19 +1596,20 @@ TEST_P(AutofillUploadTest, RichMetadata) {
     // Only first upload has metadata.
     const bool expect_metadata = i == 0;
     EXPECT_EQ(upload.has_randomized_form_metadata(), expect_metadata);
-    ASSERT_EQ(std::all_of(upload.field().begin(), upload.field().end(),
-                          [](AutofillUploadContents::Field field) {
-                            return field.has_randomized_field_metadata();
-                          }),
-              expect_metadata);
+    ASSERT_EQ(
+        std::all_of(upload.field_data().begin(), upload.field_data().end(),
+                    [](AutofillUploadContents::Field field) {
+                      return field.has_randomized_field_metadata();
+                    }),
+        expect_metadata);
     if (expect_metadata) {
       EXPECT_TRUE(upload.randomized_form_metadata().has_id());
       EXPECT_TRUE(upload.randomized_form_metadata().has_name());
       EXPECT_TRUE(upload.randomized_form_metadata().has_url());
       ASSERT_TRUE(upload.randomized_form_metadata().url().has_checksum());
       EXPECT_EQ(upload.randomized_form_metadata().url().checksum(), 3608731642);
-      EXPECT_EQ(upload.field_size(), 3);
-      for (const auto& f : upload.field()) {
+      EXPECT_EQ(upload.field_data_size(), 3);
+      for (const auto& f : upload.field_data()) {
         EXPECT_TRUE(f.randomized_field_metadata().has_id());
         EXPECT_TRUE(f.randomized_field_metadata().has_name());
         EXPECT_TRUE(f.randomized_field_metadata().has_type());
@@ -1714,27 +1712,27 @@ TEST_P(AutofillUploadTest, SuccessfulSubmissionOnDisabledThrottling) {
   // The first upload must be successfully sent to the Autofill server.
   ASSERT_TRUE(request.ParseFromString(payloads()[0]));
   ASSERT_TRUE(request.has_upload());
-  ASSERT_EQ(request.upload().field_size(), 3);
+  ASSERT_EQ(request.upload().field_data_size(), 3);
   // Metadata must be stored in non-throttled upload. Since it is encoded, only
   // check for presence.
   EXPECT_TRUE(
-      request.upload().field(0).randomized_field_metadata().has_label());
+      request.upload().field_data(0).randomized_field_metadata().has_label());
   EXPECT_TRUE(
-      request.upload().field(1).randomized_field_metadata().has_label());
+      request.upload().field_data(1).randomized_field_metadata().has_label());
   EXPECT_TRUE(
-      request.upload().field(2).randomized_field_metadata().has_label());
+      request.upload().field_data(2).randomized_field_metadata().has_label());
 
   // The second upload also must be successfully sent to the Autofill server.
   ASSERT_TRUE(request.ParseFromString(payloads()[1]));
   ASSERT_TRUE(request.has_upload());
-  ASSERT_EQ(request.upload().field_size(), 3);
+  ASSERT_EQ(request.upload().field_data_size(), 3);
   // Metadata must be cleared in throttled uploads.
   EXPECT_FALSE(
-      request.upload().field(0).randomized_field_metadata().has_label());
+      request.upload().field_data(0).randomized_field_metadata().has_label());
   EXPECT_FALSE(
-      request.upload().field(1).randomized_field_metadata().has_label());
+      request.upload().field_data(1).randomized_field_metadata().has_label());
   EXPECT_FALSE(
-      request.upload().field(2).randomized_field_metadata().has_label());
+      request.upload().field_data(2).randomized_field_metadata().has_label());
 }
 
 TEST_P(AutofillUploadTest, PeriodicReset) {
@@ -1872,24 +1870,24 @@ TEST_P(AutofillUploadTest, ThrottleMetadataOnPasswordManagerUploads) {
   // contain 2 fields.
   ASSERT_TRUE(request.ParseFromString(payloads()[0]));
   ASSERT_TRUE(request.has_upload());
-  ASSERT_EQ(request.upload().field_size(), 2);
+  ASSERT_EQ(request.upload().field_data_size(), 2);
   // Metadata must be stored in non-throttled upload. Since the metadata is
   // encoded, only check for presence.
   EXPECT_TRUE(
-      request.upload().field(0).randomized_field_metadata().has_label());
+      request.upload().field_data(0).randomized_field_metadata().has_label());
   EXPECT_TRUE(
-      request.upload().field(1).randomized_field_metadata().has_label());
+      request.upload().field_data(1).randomized_field_metadata().has_label());
 
   // The second upload request received by the server must be parseable and
   // contain 2 fields.
   ASSERT_TRUE(request.ParseFromString(payloads()[1]));
   ASSERT_TRUE(request.has_upload());
-  ASSERT_EQ(request.upload().field_size(), 2);
+  ASSERT_EQ(request.upload().field_data_size(), 2);
   // Metadata must be cleared in throttled uploads.
   EXPECT_FALSE(
-      request.upload().field(0).randomized_field_metadata().has_label());
+      request.upload().field_data(0).randomized_field_metadata().has_label());
   EXPECT_FALSE(
-      request.upload().field(1).randomized_field_metadata().has_label());
+      request.upload().field_data(1).randomized_field_metadata().has_label());
 }
 
 // Note that we omit DEFAULT_URL from the test params. We don't actually want
@@ -1899,4 +1897,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutofillUploadTest,
                          ::testing::Values(FINCHED_URL, COMMAND_LINE_URL));
 
+}  // namespace
 }  // namespace autofill

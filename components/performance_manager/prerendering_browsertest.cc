@@ -174,7 +174,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
 
   // Start prerendering a document. Test that the prerendering frame tree is
   // added as additional frame nodes, but GetMainFrameNode is unchanged.
-  int prerender_host = prerender_helper_.AddPrerender(kPrerenderingUrl);
+  content::FrameTreeNodeId prerender_host =
+      prerender_helper_.AddPrerender(kPrerenderingUrl);
   base::WeakPtr<PageNode> page_node2 =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   const FrameNode* prerender_main_frame_node = nullptr;

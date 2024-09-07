@@ -175,7 +175,7 @@ gfx::Size NotifierButtonWrapperView::CalculatePreferredSize(
 
 void NotifierButtonWrapperView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  contents_->GetAccessibleNodeData(node_data);
+  contents_->GetViewAccessibility().GetAccessibleNodeData(node_data);
 }
 
 void NotifierButtonWrapperView::OnFocus() {
@@ -487,7 +487,9 @@ bool NotifierSettingsView::NotifierButton::GetChecked() const {
 
 void NotifierSettingsView::NotifierButton::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  static_cast<views::View*>(checkbox_)->GetAccessibleNodeData(node_data);
+  static_cast<views::View*>(checkbox_)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(node_data);
 }
 
 void NotifierSettingsView::NotifierButton::GridChanged() {
@@ -675,6 +677,10 @@ NotifierSettingsView::NotifierSettingsView() {
     NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
     NotifierSettingsController::Get()->GetNotifiers();
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kList);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
 }
 
 NotifierSettingsView::~NotifierSettingsView() {
@@ -696,12 +702,6 @@ void NotifierSettingsView::SetQuietModeState(bool is_quiet_mode) {
     quiet_mode_icon_->SetImage(gfx::CreateVectorIcon(
         kDoNotDisturbDisabledIcon, kMenuIconSize, icon_color));
   }
-}
-
-void NotifierSettingsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kList;
-  node_data->SetName(l10n_util::GetStringUTF16(
-      IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
 }
 
 void NotifierSettingsView::OnNotifiersUpdated(

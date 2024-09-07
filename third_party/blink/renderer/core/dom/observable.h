@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_OBSERVABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_OBSERVABLE_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -17,8 +19,10 @@ class ObservableInternalObserver;
 class ScriptState;
 class Subscriber;
 class SubscribeOptions;
+class V8CatchCallback;
 class V8Mapper;
 class V8Predicate;
+class V8Reducer;
 class V8SubscribeCallback;
 class V8UnionObservableInspectorOrObserverCallback;
 class V8UnionObserverOrObserverCallback;
@@ -76,6 +80,14 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
                         ExceptionState& exception_state);
   Observable* inspect(ScriptState*,
                       V8UnionObservableInspectorOrObserverCallback*);
+  // See documentation above `flatMap()` and `switchMap()` for why this method
+  // accepts an `exception_state`, even though it does not throw an exception
+  // itself.
+  //
+  // This is the implementation for the `Observable#catch()` method, although
+  // internally in C++ it has to be named something other than `catch()` due to
+  // `catch` being a language keyword.
+  Observable* catchImpl(ScriptState*, V8CatchCallback*, ExceptionState&);
 
   // Promise-returning operators. See
   // https://wicg.github.io/observable/#promise-returning-operators.
@@ -90,6 +102,11 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
                                   V8Predicate*,
                                   SubscribeOptions*);
   ScriptPromise<IDLAny> find(ScriptState*, V8Predicate*, SubscribeOptions*);
+  ScriptPromise<IDLAny> reduce(ScriptState*, V8Reducer*);
+  ScriptPromise<IDLAny> reduce(ScriptState*,
+                               V8Reducer*,
+                               v8::Local<v8::Value>,
+                               SubscribeOptions*);
 
   void Trace(Visitor*) const override;
 
@@ -103,6 +120,12 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
                                    SubscribeOptions*);
 
  private:
+  // Used by both overloads of `reduce()`.
+  ScriptPromise<IDLAny> ReduceInternal(ScriptState*,
+                                       V8Reducer*,
+                                       std::optional<ScriptValue>,
+                                       SubscribeOptions*);
+
   // The `ScriptState` argument does not need to be associated with a valid
   // context (this method early-returns in that case).
   void SubscribeInternal(ScriptState*,

@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
@@ -195,7 +195,7 @@ public class AddressAccessorySheetViewTest {
 
     @Test
     @MediumTest
-    public void testAddingPlusAddressSectionToTheModelRendersClickableActions()
+    public void testAddingPlusAddressInfoToTheModelRendersClickableActions()
             throws ExecutionException {
         final AtomicBoolean clicked = new AtomicBoolean();
 
@@ -203,7 +203,7 @@ public class AddressAccessorySheetViewTest {
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
-                                    new PlusAddressSection(
+                                    new PlusAddressInfo(
                                             /* origin= */ "google.com",
                                             new UserInfoField.Builder()
                                                     .setDisplayText("example@gmail.com")

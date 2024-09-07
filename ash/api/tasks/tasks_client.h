@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/models/list_model.h"
 
 namespace ash::api {
@@ -20,16 +21,25 @@ struct TaskList;
 // Interface for the tasks browser client.
 class ASH_EXPORT TasksClient {
  public:
-  using GetTaskListsCallback =
-      base::OnceCallback<void(bool sucess,
-                              const ui::ListModel<TaskList>* task_lists)>;
-  using GetTasksCallback =
-      base::OnceCallback<void(bool success, const ui::ListModel<Task>* tasks)>;
+  // This function can fetch data from either the local cache or from the API
+  // server. `success` indicates if the function fetches data successfully. The
+  // optional `http_error` indicates the HTTP error encountered if exists.
+  using GetTaskListsCallback = base::OnceCallback<void(
+      bool success,
+      std::optional<google_apis::ApiErrorCode> http_error,
+      const ui::ListModel<TaskList>* task_lists)>;
+  using GetTasksCallback = base::OnceCallback<void(
+      bool success,
+      std::optional<google_apis::ApiErrorCode> http_error,
+      const ui::ListModel<Task>* tasks)>;
 
   // Done callback for `AddTask` and `UpdateTask`. If the request completes
   // successfully, `task` points to the newly created or updated task, or
-  // `nullptr` otherwise.
-  using OnTaskSavedCallback = base::OnceCallback<void(const Task* task)>;
+  // `nullptr` otherwise. `http_error` is the http error code returned from the
+  // request of the Google Tasks API.
+  using OnTaskSavedCallback =
+      base::OnceCallback<void(google_apis::ApiErrorCode http_error,
+                              const Task* task)>;
 
   // Verifies if the Tasks integration is disabled by admin by checking:
   // 1) if the integrations is not listed in

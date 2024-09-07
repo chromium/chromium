@@ -3,15 +3,23 @@
 // found in the LICENSE file.
 
 #include "components/saved_tab_groups/saved_tab_group.h"
+
 #include "base/token.h"
 #include "build/build_config.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace tab_groups {
 namespace {
+
+using testing::ElementsAre;
+
+MATCHER_P(HasTabGuid, guid, "") {
+  return arg.saved_tab_guid() == guid;
+}
 
 base::Uuid MakeUniqueGUID() {
   static uint64_t unique_value = 0;
@@ -180,6 +188,35 @@ TEST(SavedTabGroupTest, AddTabFromSyncRespectsPositions) {
   SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[0], second_tab);
   EXPECT_EQ(second_tab->position(), 0u);
+}
+
+TEST(SavedTabGroupTest, AddTabFromSyncUsesPositionAsIndexForSharedGroup) {
+  // Create a shared group and 2 tabs.
+  SavedTabGroup group = CreateDefaultEmptySavedTabGroup();
+  group.SetCollaborationId("collaboration");
+
+  SavedTabGroupTab tab_0 = CreateDefaultSavedTabGroupTab(group.saved_guid());
+  tab_0.SetPosition(0);
+  group.AddTabFromSync(tab_0);
+
+  // Insert a new tab to the end.
+  SavedTabGroupTab tab_1 = CreateDefaultSavedTabGroupTab(group.saved_guid());
+  tab_1.SetPosition(1);
+  group.AddTabFromSync(tab_1);
+
+  EXPECT_THAT(group.saved_tabs(),
+              ElementsAre(HasTabGuid(tab_0.saved_tab_guid()),
+                          HasTabGuid(tab_1.saved_tab_guid())));
+
+  // Insert a new tab to the beginning (before the given position).
+  SavedTabGroupTab tab_before_0 =
+      CreateDefaultSavedTabGroupTab(group.saved_guid());
+  tab_before_0.SetPosition(0);
+  group.AddTabFromSync(tab_before_0);
+  EXPECT_THAT(group.saved_tabs(),
+              ElementsAre(HasTabGuid(tab_before_0.saved_tab_guid()),
+                          HasTabGuid(tab_0.saved_tab_guid()),
+                          HasTabGuid(tab_1.saved_tab_guid())));
 }
 
 TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {

@@ -25,9 +25,10 @@ class WebContents;
 // mode.
 class BrowserNavigatorTest : public InProcessBrowserTest {
  public:
-  void SetUp() override;
+  BrowserNavigatorTest();
 
  protected:
+  void SetUpOnMainThread() override;
   NavigateParams MakeNavigateParams() const;
   NavigateParams MakeNavigateParams(Browser* browser) const;
 

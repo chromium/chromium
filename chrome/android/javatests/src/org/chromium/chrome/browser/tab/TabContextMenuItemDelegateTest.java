@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
 
@@ -75,16 +74,6 @@ public class TabContextMenuItemDelegateTest {
                 () -> {
                     mModalDialogManager.dismissAllDialogs(DialogDismissalCause.ACTIVITY_DESTROYED);
                 });
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void testOpenInNewTabInGroup_NewGroup_ParityEnabled_ContextMenuDialogEnabled() {
-        openNewTabUsingContextMenu();
-
-        assertTrue(mModalDialogManager.isShowing());
     }
 
     @Test

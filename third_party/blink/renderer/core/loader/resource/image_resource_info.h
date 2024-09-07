@@ -55,7 +55,6 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
   // TODO(hiroshige): Remove this. crbug.com/666214
   virtual void EmulateLoadStartedForInspector(
       ResourceFetcher*,
-      const KURL&,
       const AtomicString& initiator_name) = 0;
 
   virtual void LoadDeferredImage(ResourceFetcher* fetcher) = 0;

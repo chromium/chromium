@@ -106,8 +106,8 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   // If safe alignment is specified (e.g. "align-self: safe end") and the
   // object overflows its containing block it'll become start aligned instead.
   // This field indicates the "start" edge of the containing block.
-  std::optional<InsetBias> safe_inline_inset_bias;
-  std::optional<InsetBias> safe_block_inset_bias;
+  std::optional<InsetBias> inline_safe_inset_bias;
+  std::optional<InsetBias> block_safe_inset_bias;
 
   LayoutUnit InlineEndOffset() const {
     return available_size.inline_size - inline_end;

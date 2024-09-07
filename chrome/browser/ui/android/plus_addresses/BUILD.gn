@@ -5,6 +5,16 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+android_library("plus_addresses_helper_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/plus_addresses/utils/PlusAddressesHelper.java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/android:chrome_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
@@ -18,7 +28,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationErrorStateInfo.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationNormalStateInfo.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
   ]
@@ -50,6 +64,8 @@ android_resources("java_resources") {
     "java/res/color/refresh_plus_address_icon_tint_list.xml",
     "java/res/drawable/proposed_plus_address_background.xml",
     "java/res/layout/all_plus_addresses_bottom_sheet.xml",
+    "java/res/layout/plus_address_creation_error_state.xml",
+    "java/res/layout/plus_address_creation_normal_state.xml",
     "java/res/layout/plus_address_creation_prompt.xml",
     "java/res/layout/plus_profile_info_view.xml",
     "java/res/values-night/colors.xml",
@@ -67,8 +83,11 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetUIInfo.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationErrorStateInfo.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationNormalStateInfo.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/utils/PlusAddressesHelper.java",
   ]
 }
 

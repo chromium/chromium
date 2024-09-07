@@ -250,6 +250,9 @@ class ASH_EXPORT CaptureModeController
   // the capture session.
   void PerformCapture();
 
+  // Called by a capture session behavior to perform an image capture search.
+  void PerformImageSearch();
+
   void EndVideoRecording(EndRecordingReason reason);
 
   // Posts a task to the blocking pool to check the availability of the given
@@ -468,6 +471,12 @@ class ASH_EXPORT CaptureModeController
                        const CaptureModeBehavior* behavior,
                        scoped_refptr<base::RefCountedMemory> png_bytes);
 
+  // Called back when an image has been captured to trigger a search request.
+  // `jpeg_bytes` is the buffer containing the captured image in a JPEG format.
+  void OnImageCapturedForSearch(
+      bool was_cursor_originally_blocked,
+      scoped_refptr<base::RefCountedMemory> jpeg_bytes);
+
   // Called back when an attempt to save the image file has been completed, with
   // `file_saved_path` indicating whether the attempt succeeded or failed. If
   // `file_saved_path` is empty, the attempt failed. `png_bytes` is the buffer
@@ -629,6 +638,8 @@ class ASH_EXPORT CaptureModeController
   void PerformScreenshotOfGivenWindow(aura::Window* given_window,
                                       BehaviorType behavior_type);
 
+  bool ShouldClearCaptureRegion(BehaviorType behavior_type) const;
+
   // Gets the corresponding `SaveLocation` enum value on the given `path`.
   CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);
 
@@ -723,6 +734,8 @@ class ASH_EXPORT CaptureModeController
   base::OnceClosure on_countdown_finished_callback_for_test_;
 
   base::OnceClosure on_video_recording_started_callback_for_test_;
+
+  base::OnceClosure on_image_captured_for_search_callback_for_test_;
 
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;

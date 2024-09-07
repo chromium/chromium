@@ -5,21 +5,11 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
 #define COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
 
-#include <optional>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
-#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/version_info/channel.h"
 
 class PrefService;
-
-namespace tpcd::experiment {
-class EligibilityServiceTest;
-}  // namespace tpcd::experiment
 
 namespace privacy_sandbox {
 
@@ -44,38 +34,6 @@ class TrackingProtectionOnboarding : public KeyedService {
     kEligible = 1,
     kOnboarded = 2,
     kMaxValue = kOnboarded,
-  };
-
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  enum class NoticeAction {
-    // Other action taken - notice dismissed due to other actions.
-    kOther = 0,
-    // Using the GotIt button.
-    kGotIt = 1,
-    // Using the Settings button.
-    kSettings = 2,
-    // Using the LearnMore button - only on Clank.
-    kLearnMore = 3,
-    // The X button on desktop / swipe away on Clank.
-    kClosed = 4,
-    kMaxValue = kClosed,
-  };
-
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  enum class NoticeType {
-    kNone,
-    // The notice in question is a Mode B Onboarding Notice.
-    kModeBOnboarding,
-    // The notice in question is a silent Mode B Onboarding Notice.
-    kModeBSilentOnboarding,
-  };
-
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  enum class SurfaceType {
-    kDesktop = 0,
-    kBrApp = 1,
-    kAGACCT = 2,
-    kMaxValue = kAGACCT,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -115,48 +73,11 @@ class TrackingProtectionOnboarding : public KeyedService {
     kMaxValue = kOnboarded,
   };
 
-  class Observer {
-   public:
-    // Fired when a profile's tracking protection onboarding state is changed.
-    virtual void OnTrackingProtectionOnboardingUpdated(
-        OnboardingStatus onboarding_status) {}
-
-    // Fired when a profile's tracking protection silent onboarding state is
-    // changed.
-    virtual void OnTrackingProtectionSilentOnboardingUpdated(
-        SilentOnboardingStatus onboarding_status) {}
-  };
-
-  TrackingProtectionOnboarding(PrefService* pref_service,
-                               version_info::Channel channel,
-                               bool is_silent_onboarding_enabled = false);
+  explicit TrackingProtectionOnboarding(PrefService* pref_service);
   ~TrackingProtectionOnboarding() override;
 
   // KeyedService:
   void Shutdown() override;
-
-  virtual void AddObserver(Observer* observer);
-  virtual void RemoveObserver(Observer* observer);
-
-  // To be called by the Mode B experiment service to indicate that the profile
-  // is eligible for onboarding.
-  void MaybeMarkModeBEligible();
-
-  // To be called by the Mode B experiment service to indicate that the profile
-  // is no longer eligible for onboarding.
-  void MaybeMarkModeBIneligible();
-
-  // To be called by the experiment service to indicate that the profile is
-  // eligible for silent onboarding.
-  void MaybeMarkModeBSilentEligible();
-
-  // To be called by the experiment service to indicate that the profile is no
-  // longer eligible for silent onboarding.
-  void MaybeMarkModeBSilentIneligible();
-
-  // To be called by the Mode B experiment service in BETA, DEV and CANARY only
-  // to reset the user's prefs for testing.
-  void MaybeResetModeBOnboardingPrefs();
 
   // Indicates the onboarding status for the user. Return value is the enum
   // defined above.
@@ -166,42 +87,8 @@ class TrackingProtectionOnboarding : public KeyedService {
   // enum defined above.
   SilentOnboardingStatus GetSilentOnboardingStatus() const;
 
-  // To be Called by UI code when the user has been shown the notice.
-  void NoticeShown(SurfaceType surface, NoticeType notice_type);
-
-  // To be called by UI code when the user has taken action on the notice.
-  void NoticeActionTaken(SurfaceType surface,
-                         NoticeType notice_type,
-                         NoticeAction action);
-
-  // Called by UI code to determine what type of notice is required.
-  NoticeType GetRequiredNotice(SurfaceType surface);
-
-  // Called by UI code to determine if we should run the 3PCD UI logic.
-  bool ShouldRunUILogic(SurfaceType surface);
-
-  // Returns the time delta from Onboarded to Acknowledged.
-  std::optional<base::TimeDelta> OnboardedToAcknowledged();
-
-  // Returns the timestamp for when the profile was onboarded.
-  std::optional<base::Time> GetOnboardingTimestamp();
-
-  // Returns the timestamp for when the profile was silently onboarded.
-  std::optional<base::Time> GetSilentOnboardingTimestamp();
-
  private:
-  friend class tpcd::experiment::EligibilityServiceTest;
-
-  // Called when the underlying onboarding pref is changed.
-  virtual void OnOnboardingPrefChanged() const;
-  // Called when the underlying silent onboarding pref is changed.
-  virtual void OnSilentOnboardingPrefChanged() const;
-
-  base::ObserverList<Observer>::Unchecked observers_;
   raw_ptr<PrefService> pref_service_;
-  PrefChangeRegistrar pref_change_registrar_;
-  version_info::Channel channel_;
-  bool is_silent_onboarding_enabled_;
 };
 
 }  // namespace privacy_sandbox

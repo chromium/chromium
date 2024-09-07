@@ -36,12 +36,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "extensions/common/constants.h"
@@ -265,8 +263,7 @@ void ChromeAppDelegate::InitWebContents(content::WebContents* web_contents) {
 void ChromeAppDelegate::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
   // Only do this for the primary main frame.
-  if (!chrome::IsRunningInForcedAppMode() &&
-      frame_host->IsInPrimaryMainFrame()) {
+  if (!IsRunningInForcedAppMode() && frame_host->IsInPrimaryMainFrame()) {
     // Due to a bug in the way apps reacted to default zoom changes, some apps
     // can incorrectly have host level zoom settings. These aren't wanted as
     // apps cannot be zoomed, so are removed. This should be removed if apps

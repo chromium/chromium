@@ -8,7 +8,6 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
-import android.accounts.AuthenticatorDescription;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.annotation.SuppressLint;
@@ -135,11 +134,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         } catch (IOException ex) {
             throw new AuthException(AuthException.TRANSIENT, ex);
         }
-    }
-
-    @Override
-    public AuthenticatorDescription[] getAuthenticatorTypes() {
-        return mAccountManager.getAuthenticatorTypes();
     }
 
     protected boolean hasFeatures(Account account, String[] features) {

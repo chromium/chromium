@@ -186,6 +186,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
     return reinterpret_cast<internal::MessageHeaderV2*>(mutable_data());
   }
 
+  const internal::MessageHeaderV3* header_v3() const {
+    DCHECK_GE(version(), 3u);
+    return reinterpret_cast<const internal::MessageHeaderV3*>(data());
+  }
+
   uint32_t version() const { return header()->version; }
 
   uint32_t interface_id() const { return header()->interface_id; }
@@ -305,6 +310,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   const char* method_name() const { return method_name_; }
   void set_method_name(const char* method_name) { method_name_ = method_name; }
 #endif
+
+  int64_t creation_timeticks_us() const;
 
  private:
   // Internal constructor used by |CreateFromMessageHandle()| when either there

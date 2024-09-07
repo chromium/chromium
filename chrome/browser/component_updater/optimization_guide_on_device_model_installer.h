@@ -42,6 +42,7 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
   bool AllowUpdatesOnMeteredConnections() const override;
 
  private:
+  // The on-device state manager should be accessed in the UI thread.
   scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
       state_manager_;
 };

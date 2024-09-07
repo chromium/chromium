@@ -15,7 +15,7 @@
 #include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_WIN)

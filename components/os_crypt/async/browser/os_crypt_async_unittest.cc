@@ -20,6 +20,10 @@
 #include "crypto/hkdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "components/os_crypt/sync/key_storage_linux.h"
+#endif
+
 namespace os_crypt_async {
 
 namespace {
@@ -64,6 +68,28 @@ class OSCryptAsyncTest : public ::testing::Test {
                             option);
     run_loop.Run();
     return std::move(*encryptor);
+  }
+
+  // Simulate a 'locked' OSCrypt keychain on platforms that need it, which makes
+  // OSCrypt::IsEncryptionAvailable return false, without hitting a CHECK on
+  // Linux. Note this is different from using the full OSCryptMocker, because in
+  // this state, no key is available for encryption. Returns a
+  // ScopedClosureRunner that will reset the behavior back to default when it
+  // goes out of scope.
+  [[nodiscard]] static std::optional<base::ScopedClosureRunner>
+  MaybeSimulateLockedKeyChain() {
+#if BUILDFLAG(IS_LINUX)
+    OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(
+        []() -> std::unique_ptr<KeyStorageLinux> { return nullptr; }));
+    return std::nullopt;
+#elif BUILDFLAG(IS_APPLE)
+    OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/true);
+    return base::ScopedClosureRunner(base::BindOnce([]() {
+      OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/false);
+    }));
+#else
+    return std::nullopt;
+#endif
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -263,6 +289,7 @@ TEST_F(OSCryptAsyncTest, EncryptorOption) {
   }
   // Check that with just BLAH provider, data can still be decrypted.
   {
+    auto cleanup = MaybeSimulateLockedKeyChain();
     ProviderList providers;
     providers.emplace_back(
         /*precedence=*/5u,
@@ -270,6 +297,14 @@ TEST_F(OSCryptAsyncTest, EncryptorOption) {
                                           /*use_for_encryption=*/false));
     OSCryptAsync factory(std::move(providers));
     Encryptor encryptor = GetInstanceSync(factory);
+
+    // The only provider has indicated that it is not to be used for encryption,
+    // so encryption should not be available, as OSCrypt fallback is not
+    // available.
+    ASSERT_FALSE(encryptor.IsEncryptionAvailable());
+    // Decryption is possible, as long as the data is encrypted with the BLAH
+    // key.
+    ASSERT_TRUE(encryptor.IsDecryptionAvailable());
 
     auto plaintext = encryptor.DecryptData(*blah_ciphertext);
     // The correct provider based on the encrypted data header should have been
@@ -608,6 +643,23 @@ TEST_F(OSCryptAsyncDeathTest, OverlappingNamesBackwards) {
         std::ignore = GetInstanceSync(factory);
       },
       "Tags must not overlap.");
+}
+
+TEST_F(OSCryptAsyncTest, NoCrashWithLongNames) {
+  ProviderList providers;
+  providers.emplace_back(
+      /*precedence=*/10u,
+      std::make_unique<TestKeyProvider>("ABC", /*use_for_encryption=*/true));
+  providers.emplace_back(
+      /*precedence=*/5u,
+      std::make_unique<TestKeyProvider>(
+          "TEST_REALLY_LOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG_NAME",
+          /*use_for_encryption=*/true));
+  providers.emplace_back(
+      /*precedence=*/15u,
+      std::make_unique<TestKeyProvider>("XYZ", /*use_for_encryption=*/true));
+  OSCryptAsync factory(std::move(providers));
+  GetInstanceSync(factory);
 }
 
 }  // namespace os_crypt_async

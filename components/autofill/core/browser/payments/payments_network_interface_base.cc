@@ -219,14 +219,9 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
 
     // This case occurs when the request hits the client-side timeout. This is
     // quite complex as the call could still complete on the server side, but we
-    // were not willing to wait any longer for the server. The best
-    // representation is `kTryAgainFailure`, but it may not be correct for the
-    // UX to *immediately* try again in all cases.
-    //
-    // TODO(crbug.com/40287257): Consider whether it makes more sense to add a
-    // new PaymentsRpcResult::kClientSideTimeout and return that here.
+    // were not willing to wait any longer for the server.
     case net::ERR_TIMED_OUT: {
-      result = PaymentsRpcResult::kTryAgainFailure;
+      result = PaymentsRpcResult::kClientSideTimeout;
       break;
     }
 

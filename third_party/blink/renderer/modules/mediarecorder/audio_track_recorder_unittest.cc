@@ -321,6 +321,10 @@ class MockAudioTrackRecorderCallbackInterface
        std::optional<media::AudioEncoder::CodecDescription> codec_description,
        base::TimeTicks capture_time),
       (override));
+  MOCK_METHOD(void,
+              OnAudioEncodingError,
+              (media::EncoderStatus status),
+              (override));
   MOCK_METHOD(void, OnSourceReadyStateChanged, (), (override));
   void Trace(Visitor* v) const override { v->Trace(weak_factory_); }
   WeakCell<AudioTrackRecorder::CallbackInterface>* GetWeakCell() {

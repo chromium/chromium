@@ -24,6 +24,10 @@ class ArcNotificationSurfaceManager {
     virtual void OnNotificationSurfaceRemoved(
         ArcNotificationSurface* surface) = 0;
 
+    // Invoked when `ax_tree_id_` of notification surface changes.
+    virtual void OnNotificationSurfaceAXTreeIdChanged(
+        ArcNotificationSurface* surface) {}
+
    protected:
     virtual ~Observer() = default;
   };
@@ -39,6 +43,8 @@ class ArcNotificationSurfaceManager {
       const std::string& notification_id) const = 0;
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+  virtual void OnNotificationSurfaceAXTreeIdChanged(
+      ArcNotificationSurface* surface) {}
 
  protected:
   ArcNotificationSurfaceManager();

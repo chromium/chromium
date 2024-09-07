@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -157,8 +158,8 @@ void AuthenticationDialog::ConfigureOkButton() {
 }
 
 void AuthenticationDialog::SetUIDisabled(bool is_disabled) {
-  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK, !is_disabled);
-  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_CANCEL, !is_disabled);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, !is_disabled);
+  SetButtonEnabled(ui::mojom::DialogButton::kCancel, !is_disabled);
   password_field_->SetReadOnly(is_disabled);
 }
 

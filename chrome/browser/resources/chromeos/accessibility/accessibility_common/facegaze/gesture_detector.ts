@@ -146,11 +146,14 @@ export class GestureDetector {
 
     // Look through the facial gestures to see which were detected by mediapipe.
     const gestures: FacialGesture[] = [];
+    const gestureInfoForSettings:
+        Array<{gesture: FacialGesture, confidence: number}> = [];
     for (const [faceGazeGesture, mediapipeGestures] of
              FacialGesturesToMediapipeGestures) {
       const confidence = confidenceMap.get(faceGazeGesture);
-      if (confidence === undefined) {
-        // This gesture isn't in-use by FaceGaze at the moment.
+      if (!this.shouldSendGestureDetectionInfo_ && !confidence) {
+        // Settings is not requesting gesture detection information and
+        // this gesture is not currently used by FaceGaze.
         continue;
       }
 
@@ -171,15 +174,27 @@ export class GestureDetector {
         continue;
       }
 
-      // TODO(b:341771347): Call API to send gesture information to the
-      // settings page.
+      // For gestures detected with a confidence value over a threshold value of
+      // 1, add the gesture and confidence value to the array of information
+      // that will be sent to settings.
+      if (this.shouldSendGestureDetectionInfo_ && score >= 0.01) {
+        gestureInfoForSettings.push(
+            {gesture: faceGazeGesture, confidence: score * 100});
+      }
 
-      if (score < confidence) {
+      if (confidence && score < confidence) {
         continue;
       }
 
       gestures.push(faceGazeGesture);
     }
+
+    if (this.shouldSendGestureDetectionInfo_ &&
+        gestureInfoForSettings.length > 0) {
+      chrome.accessibilityPrivate.sendGestureInfoToSettings(
+          gestureInfoForSettings);
+    }
+
     return gestures;
   }
 }

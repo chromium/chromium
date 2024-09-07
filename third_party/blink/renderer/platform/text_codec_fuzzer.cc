@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/fuzzed_data_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
@@ -26,6 +27,7 @@ class TextCodecFuzzHarness {};
 // Fuzzer for WTF::TextCodec.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static blink::BlinkFuzzerTestSupport test_support;
+  blink::test::TaskEnvironment task_environment;
   // The fuzzer picks 3 bytes off the end of the data to initialize metadata, so
   // abort if the input is smaller than that.
   if (size < 3)

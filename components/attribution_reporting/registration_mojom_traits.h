@@ -273,7 +273,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return data.attribution_scopes_set();
   }
 
-  static std::optional<uint32_t> attribution_scope_limit(
+  static uint32_t attribution_scope_limit(
       const attribution_reporting::AttributionScopesData& data) {
     return data.attribution_scope_limit();
   }
@@ -364,7 +364,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.destination_limit_priority;
   }
 
-  static const attribution_reporting::AttributionScopesData&
+  static const std::optional<attribution_reporting::AttributionScopesData>&
   attribution_scopes_data(
       const attribution_reporting::SourceRegistration& source) {
     return source.attribution_scopes_data;

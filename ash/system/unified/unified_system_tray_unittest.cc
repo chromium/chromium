@@ -42,13 +42,13 @@
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -774,9 +774,9 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
   // Set a large enough screen size.
   UpdateDisplay("1600x900");
 
-  // The following code adds 2 more row in the tile section and 1 media control
-  // view to the qs bubble. In this case the main page should be larger than the
-  // default detailed page height.
+  // The following code adds 2 more row in the tile section and 1 media view to
+  // the qs bubble. In this case the main page should be larger than the default
+  // detailed page height.
 
   // Enables nearby sharing to show the tile.
   auto* test_delegate = static_cast<TestNearbyShareDelegate*>(
@@ -791,33 +791,25 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
   locale_list.emplace_back("en-US", u"English (United States)");
   Shell::Get()->system_tray_model()->SetLocaleList(std::move(locale_list),
                                                    "en-US");
-  // Adds the media control view.
+  // Adds the media view.
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();
   auto* qs_view = tray->bubble()->quick_settings_view();
   auto* tray_controller = tray->bubble()->unified_system_tray_controller();
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    auto media_controller =
-        std::make_unique<QuickSettingsMediaViewController>(tray_controller);
+  auto media_controller =
+      std::make_unique<QuickSettingsMediaViewController>(tray_controller);
 
-    // Outside tests the QuickSettingsMediaViewController is set in
-    // UnifiedSystemTrayController::CreateQuickSettingsView() which is not
-    // called here, but we need to reference QuickSettingsMediaViewController in
-    // QuickSettingsMediaViewContainer::MaybeShowMediaView() when calling
-    // QuickSettingsView::SetShowMediaView(), so we need to manually set the
-    // controller for testing.
-    tray_controller->SetMediaViewControllerForTesting(
-        std::move(media_controller));
+  // Outside tests the QuickSettingsMediaViewController is set in
+  // UnifiedSystemTrayController::CreateQuickSettingsView() which is not
+  // called here, but we need to reference QuickSettingsMediaViewController in
+  // QuickSettingsMediaViewContainer::MaybeShowMediaView() when calling
+  // QuickSettingsView::SetShowMediaView(), so we need to manually set the
+  // controller for testing.
+  tray_controller->SetMediaViewControllerForTesting(
+      std::move(media_controller));
 
-    qs_view->AddMediaView(
-        tray_controller->media_view_controller()->CreateView());
-    qs_view->SetShowMediaView(true);
-  } else {
-    auto media_controller =
-        std::make_unique<UnifiedMediaControlsController>(tray_controller);
-    qs_view->AddMediaControlsView(media_controller->CreateView());
-    qs_view->ShowMediaControls();
-  }
+  qs_view->AddMediaView(tray_controller->media_view_controller()->CreateView());
+  qs_view->SetShowMediaView(true);
 
   auto* bubble_view = tray->bubble()->GetBubbleView();
 
@@ -896,6 +888,13 @@ TEST_F(PowerTrayViewTest, BatteryVisibility) {
   power_tray_view()->OnPowerStatusChanged();
 
   EXPECT_FALSE(power_tray_view()->GetVisible());
+}
+
+TEST_F(PowerTrayViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  power_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
 }
 
 }  // namespace ash

@@ -19,6 +19,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -76,7 +77,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       base::OnceCallback<void(FatalErrorType fatal_error_type,
                               const std::vector<std::string>& errors)>;
 
-  int GetFrameTreeNodeID();
+  FrameTreeNodeId GetFrameTreeNodeID();
 
   // Delegate class to allow dependency injection in tests. Note that passed in
   // URLLoaderFactories can crash and be restarted, so passing in raw pointers

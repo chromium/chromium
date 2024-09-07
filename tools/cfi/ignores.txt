@@ -16,7 +16,7 @@
 # with guards against non-Clang compilers; see the definition of NO_SANITIZE in
 # Chromium), e.g.
 #
-# __attribute__((no_sanitize("cfi-unrelated-cast")))
+# [[clang::no_sanitize("cfi-unrelated-cast")]]
 
 [cfi-unrelated-cast|cfi-derived-cast]
 
@@ -191,7 +191,6 @@ src:*media/gpu/vaapi/va_stubs.cc
 
 # Calls to auto-generated stubs by generate_library_loader.py
 src:*content/browser/speech/tts_linux.cc
-src:*device/udev_linux/udev1_loader.cc
 
 # Calls to auto-generated stubs by ui/gl/generate_bindings.py
 src:*ui/gl/gl_bindings_autogen_*
@@ -205,7 +204,7 @@ src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 
 src:*components/os_crypt/sync/*
 
-src:*content/browser/accessibility/browser_accessibility_auralinux.cc
+src:*ui/accessibility/platform/browser_accessibility_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_node_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_atk_hyperlink.cc
 src:*ui/accessibility/platform/ax_platform_node_auralinux_unittest.cc

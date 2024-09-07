@@ -64,7 +64,7 @@
     fill: var(--panel-icon-color);
   }
 
-  .message-container iron-icon {
+  .message-container cr-icon {
     height: var(--cr-icon-size);
     padding: 6px;
     width: var(--cr-icon-size);
@@ -221,9 +221,9 @@ this text can be found by Ctrl + F because it isn't hidden. -->
 
     <div id="safetyCheckWarningContainer" class="message-container"
         hidden$="[[!showSafetyCheck_]]">
-      <iron-icon aria-hidden="true" icon="extensions-icons:my_extensions"
+      <cr-icon aria-hidden="true" icon="extensions-icons:my_extensions"
           class="message-icon">
-      </iron-icon>
+      </cr-icon>
       <div class="message-text">
         <span class="section-title" aria-level="2">
           $i18n{safetyCheckExtensionsDetailPagePrimaryLabel}
@@ -242,9 +242,9 @@ this text can be found by Ctrl + F because it isn't hidden. -->
 
     <div id="mv2DeprecationMessage" class="message-container"
         hidden$="[[!showMv2DeprecationMessage_]]">
-      <iron-icon aria-hidden="true" icon$="[[getMv2DeprecationMessageIcon_()]]"
+      <cr-icon aria-hidden="true" icon$="[[getMv2DeprecationMessageIcon_()]]"
           class="message-icon">
-      </iron-icon>
+      </cr-icon>
       <div class="message-text">
         <span class="section-title" aria-level="2">
           [[getMv2DeprecationMessageHeader_()]]
@@ -324,7 +324,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
     <div id="warnings" hidden$="[[!hasSevereWarnings_(data.*)]]">
       <div id="runtime-warnings" hidden$="[[!data.runtimeWarnings.length]]"
           class="cr-row continuation warning control-line">
-        <iron-icon class="warning-icon" icon="cr:error"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:error"></cr-icon>
         <span>
           <template is="dom-repeat" items="[[data.runtimeWarnings]]">
             [[item]]
@@ -339,7 +339,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
       </div>
       <div class="cr-row continuation warning" id="suspicious-warning"
           hidden$="[[!data.disableReasons.suspiciousInstall]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
         <span>
           $i18n{itemSuspiciousInstall}
           <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}"
@@ -351,35 +351,35 @@ this text can be found by Ctrl + F because it isn't hidden. -->
       <div class="cr-row continuation warning control-line"
           id="corrupted-warning"
           hidden$="[[!showRepairButton_(data.disableReasons.corruptInstall)]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
         <span>$i18n{itemCorruptInstall}</span>
         <cr-button id="repair-button" class="action-button"
             on-click="onRepairClick_">
           $i18n{itemRepair}
         </cr-button>
       </div>
-      <div class="cr-row continuation warning" id="blacklisted-warning"
+      <div class="cr-row continuation warning" id="blocklisted-warning"
           hidden$="[[!showBlocklistText_]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
-        <span>[[data.blacklistText]]</span>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
+        <span>[[data.blocklistText]]</span>
       </div>
       <div class="cr-row continuation warning" id="update-required-warning"
           hidden$="[[!data.disableReasons.updateRequired]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
         <span>$i18n{updateRequiredByPolicy}</span>
       </div>
       <div class="cr-row continuation warning"
           id="published-in-store-required-warning"
           hidden$="[[!data.disableReasons.publishedInStoreRequired]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
         <span>$i18n{publishedInStoreRequiredByPolicy}</span>
       </div>
     </div>
     <div id="allowlist-warning" class="cr-row continuation"
         hidden$="[[!showAllowlistWarning_(data.*)]]">
-      <iron-icon class="warning-icon"
+      <cr-icon class="warning-icon"
           icon="extensions-icons:safebrowsing_warning">
-      </iron-icon>
+      </cr-icon>
       <span class="cr-secondary-text">
         $i18n{itemAllowlistWarning}
         <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank"
@@ -510,7 +510,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
                     aria-label="$i18n{itemShowAccessRequestsLearnMore}"
                     href="$i18n{showAccessRequestsInToolbarLearnMoreLink}"
                     target="_blank">
-                  <iron-icon icon="cr:help-outline"></iron-icon>
+                  <cr-icon icon="cr:help-outline"></cr-icon>
                 </a>
               </div>
             </extensions-toggle-row>

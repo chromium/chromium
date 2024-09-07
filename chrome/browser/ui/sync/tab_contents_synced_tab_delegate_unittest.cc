@@ -19,6 +19,10 @@
 
 namespace {
 
+// The minimum time between two sync updates of `last_active_time` when the tab
+// hasn't changed.
+constexpr base::TimeDelta kSyncActiveTimeThreshold = base::Minutes(10);
+
 class TestSyncedTabDelegate : public TabContentsSyncedTabDelegate {
  public:
   explicit TestSyncedTabDelegate(content::WebContents* web_contents) {
@@ -103,15 +107,6 @@ TEST_F(TabContentsSyncedTabDelegateTest,
 // than a threshold has passed, and is returning the WebContents last active
 // time if more time has passed.
 TEST_F(TabContentsSyncedTabDelegateTest, CachedLastActiveTime) {
-  base::TimeDelta threshold = base::Minutes(3);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{syncer::kSyncSessionOnVisibilityChanged,
-        {{"SyncSessionOnVisibilityChangedTimeThreshold",
-          base::NumberToString(threshold.InMinutes()) + "m"}}}},
-      /*disabled_features=*/{});
-
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
   TestSyncedTabDelegate delegate(web_contents.get());
   window_getter_.AddWindow(sync_pb::SyncEnums_BrowserType_TYPE_TABBED,
@@ -128,7 +123,7 @@ TEST_F(TabContentsSyncedTabDelegateTest, CachedLastActiveTime) {
 
   // If not enough time has passed, the cached time should be returned.
   base::TimeTicks before_threshold_ticks =
-      original_time_ticks + threshold - base::Minutes(1);
+      original_time_ticks + kSyncActiveTimeThreshold - base::Minutes(1);
   base::Time before_threshold = base::Time() + base::Seconds(2);
   content::WebContentsTester::For(web_contents.get())
       ->SetLastActiveTimeTicks(before_threshold_ticks);
@@ -138,7 +133,7 @@ TEST_F(TabContentsSyncedTabDelegateTest, CachedLastActiveTime) {
 
   // After the threshold has passed, the new value should be returned.
   base::TimeTicks after_threshold_ticks =
-      original_time_ticks + threshold + base::Minutes(1);
+      original_time_ticks + kSyncActiveTimeThreshold + base::Minutes(1);
   base::Time after_threshold = base::Time() + base::Seconds(3);
   content::WebContentsTester::For(web_contents.get())
       ->SetLastActiveTimeTicks(after_threshold_ticks);
@@ -151,15 +146,6 @@ TEST_F(TabContentsSyncedTabDelegateTest, CachedLastActiveTime) {
 // return the value from the WebState even if less time than the threshold has
 // passed.
 TEST_F(TabContentsSyncedTabDelegateTest, ResetCachedLastActiveTime) {
-  base::TimeDelta threshold = base::Minutes(3);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{syncer::kSyncSessionOnVisibilityChanged,
-        {{"SyncSessionOnVisibilityChangedTimeThreshold",
-          base::NumberToString(threshold.InMinutes()) + "m"}}}},
-      /*disabled_features=*/{});
-
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
   TestSyncedTabDelegate delegate(web_contents.get());
   window_getter_.AddWindow(sync_pb::SyncEnums_BrowserType_TYPE_TABBED,
@@ -178,7 +164,7 @@ TEST_F(TabContentsSyncedTabDelegateTest, ResetCachedLastActiveTime) {
 
   // Even if not enough time has passed, the cached time should not be returned.
   base::TimeTicks before_threshold_ticks =
-      original_time_ticks + threshold - base::Minutes(1);
+      original_time_ticks + kSyncActiveTimeThreshold - base::Minutes(1);
   base::Time before_threshold = base::Time() + base::Seconds(2);
   content::WebContentsTester::For(web_contents.get())
       ->SetLastActiveTimeTicks(before_threshold_ticks);

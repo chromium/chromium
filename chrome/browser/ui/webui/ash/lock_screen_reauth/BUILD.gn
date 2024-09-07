@@ -33,8 +33,9 @@ static_library("lock_screen_reauth") {
     "//chrome/browser/ash",
     "//chrome/browser/ash/login",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
+    "//chromeos/ash/components/http_auth_dialog",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/network",
     "//chromeos/services/network_config/public/mojom",
@@ -63,7 +64,9 @@ static_library("lock_screen_reauth") {
     "//chrome/browser/resources/chromeos/gaia_action_buttons:resources",
     "//chrome/browser/resources/chromeos/lock_screen_reauth:resources",
     "//chrome/browser/resources/gaia_auth_host:resources",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/internet",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/login/auth",
@@ -86,6 +89,8 @@ static_library("lock_screen_reauth") {
     "//ui/strings:ui_strings",
   ]
 
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/login/lock/online_reauth" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/lock/online_reauth",
+    "//chrome/browser/ui/ash/login",
+  ]
 }

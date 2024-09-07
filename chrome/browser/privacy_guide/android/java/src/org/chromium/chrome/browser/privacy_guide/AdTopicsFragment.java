@@ -15,6 +15,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 
 /** Controls the behavior of the Topics privacy guide page. */
 public class AdTopicsFragment extends PrivacyGuideBasePage {
+    private MaterialSwitchWithText mAdTopicsSwitch;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -23,14 +25,23 @@ public class AdTopicsFragment extends PrivacyGuideBasePage {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        MaterialSwitchWithText adTopicsSwitch = view.findViewById(R.id.ad_topics_switch);
-        adTopicsSwitch.setChecked(PrivacyGuideUtils.isAdTopicsEnabled(getProfile()));
+        mAdTopicsSwitch = view.findViewById(R.id.ad_topics_switch);
 
-        adTopicsSwitch.setOnCheckedChangeListener(
+        mAdTopicsSwitch.setOnCheckedChangeListener(
                 (button, isChecked) -> {
                     PrivacyGuideMetricsDelegate.recordMetricsOnAdTopicsChange(isChecked);
                     UserPrefs.get(getProfile())
                             .setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, isChecked);
                 });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setAdTopicsSwitchState();
+    }
+
+    private void setAdTopicsSwitchState() {
+        mAdTopicsSwitch.setChecked(PrivacyGuideUtils.isAdTopicsEnabled(getProfile()));
     }
 }

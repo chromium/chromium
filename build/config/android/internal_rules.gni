@@ -93,13 +93,13 @@ java_library_patterns = [
 # set of patterns that other targets can use to filter out java targets.
 java_target_patterns = java_library_patterns + java_resource_patterns
 
-_r8_path = "//third_party/r8/lib/r8.jar"
+_r8_path = "//third_party/r8/cipd/lib/r8.jar"
 _custom_r8_path = "//third_party/r8/custom_r8.jar"
 
 # This duplication is intentional, so we avoid updating the r8.jar used by
 # dexing unless necessary, since each update invalidates all incremental dexing
 # and unnecessarily slows down all bots.
-_d8_path = "//third_party/r8/d8/lib/r8.jar"
+_d8_path = "//third_party/r8/d8/cipd/lib/r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
 _custom_lint_jar_path = "//third_party/android_build_tools/lint/custom_lint.jar"
@@ -938,7 +938,7 @@ template("test_runner_script") {
       deps += [ ":${invoker.test_suite}$build_config_target_suffix" ]
 
       _rebased_robolectric_runtime_deps_dir =
-          rebase_path("//third_party/robolectric/lib", root_build_dir)
+          rebase_path("//third_party/robolectric/cipd/lib", root_build_dir)
       _rebased_resource_apk = rebase_path(invoker.resource_apk, root_build_dir)
       executable_args += [
         "--resource-apk",
@@ -1661,6 +1661,7 @@ if (enable_java_templates) {
                    _custom_d8_path,
                    _d8_path,
                    android_sdk_jar,
+                   invoker.build_config,
                  ] + java_paths_for_inputs
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
@@ -1705,11 +1706,9 @@ if (enable_java_templates) {
           args += [ "--library" ]
         }
         if (defined(invoker.input_dex_filearg)) {
-          inputs += [ invoker.build_config ]
           args += [ "--dex-inputs-filearg=${invoker.input_dex_filearg}" ]
         }
         if (defined(invoker.input_classes_filearg)) {
-          inputs += [ invoker.build_config ]
           args += [ "--class-inputs-filearg=${invoker.input_classes_filearg}" ]
 
           # Required for the same reason as unprocessed_jar_path is added to
@@ -1791,7 +1790,7 @@ if (enable_java_templates) {
       # The name needs to match the SOURCES_JSON_FILES_SUFFIX in
       # generate_coverage_metadata_for_java.py.
       _sources_json_file = "$target_out_dir/${target_name}__jacoco_sources.json"
-      _jacococli_jar = "//third_party/jacoco/lib/jacococli.jar"
+      _jacococli_jar = "//third_party/jacoco/cipd/lib/jacococli.jar"
 
       script = "//build/android/gyp/jacoco_instr.py"
       inputs = invoker.source_files + java_paths_for_inputs + [
@@ -3175,7 +3174,7 @@ if (enable_java_templates) {
       }
 
       if (invoker.use_turbine) {
-        _turbine_jar_path = "//third_party/turbine/turbine.jar"
+        _turbine_jar_path = "//third_party/turbine/cipd/turbine.jar"
         inputs += [ _turbine_jar_path ]
         outputs += [ invoker.generated_jar_path ]
         args += [

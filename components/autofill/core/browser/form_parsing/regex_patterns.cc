@@ -30,23 +30,18 @@ base::span<const MatchPatternRef> GetMatchPatterns(
   if (!language_code.empty() && it == kPatternMap.end())
     it = kPatternMap.find(std::make_pair(name, ""));
   CHECK(it != kPatternMap.end());
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   switch (pattern_source) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     case PatternSource::kLegacy:
       return it->second[0];
-    case PatternSource::kDefault:
-      return it->second[1];
-    case PatternSource::kExperimental:
-      return it->second[2];
-  }
 #else
-  switch (pattern_source) {
-    case PatternSource::kLegacy:
+    case PatternSource::kDefault:
       return it->second[0];
-  }
+    case PatternSource::kExperimental:
+      return it->second[1];
 #endif
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -83,11 +78,11 @@ MatchingPattern MatchPatternRef::operator*() const {
   return {
       .positive_pattern = p.positive_pattern,
       .negative_pattern = p.negative_pattern,
-      .positive_score = p.positive_score,
       .match_field_attributes = is_supplementary()
                                     ? DenseSet({MatchAttribute::kName})
                                     : p.match_field_attributes,
       .form_control_types = p.form_control_types,
+      .feature = p.feature,
   };
 }
 

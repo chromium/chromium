@@ -9,6 +9,7 @@
 
 #include "content/browser/browser_thread_impl.h"
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -162,10 +163,11 @@ void BrowserThreadImpl::ResetGlobalsForTesting(BrowserThread::ID identifier) {
 
 // static
 const char* BrowserThreadImpl::GetThreadName(BrowserThread::ID thread) {
-  static const char* const kBrowserThreadNames[BrowserThread::ID_COUNT] = {
-      "",                 // UI (name assembled in browser_main_loop.cc).
-      "Chrome_IOThread",  // IO
-  };
+  static const std::array<const char* const, BrowserThread::ID_COUNT>
+      kBrowserThreadNames = {
+          "",                 // UI (name assembled in browser_main_loop.cc).
+          "Chrome_IOThread",  // IO
+      };
 
   if (BrowserThread::UI < thread && thread < BrowserThread::ID_COUNT)
     return kBrowserThreadNames[thread];

@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Minimi
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
+import org.chromium.chrome.browser.latency_injection.StartupLatencyInjector;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -130,6 +131,7 @@ public class ChromeCachedFlags {
                         SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_QUERY,
                         SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_REF,
                         SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_SCHEME_HOST,
+                        StartupLatencyInjector.CLANK_STARTUP_LATENCY_PARAM_MS,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,

@@ -23,14 +23,23 @@ namespace commerce {
 // Data containers that are provided by the above callbacks:
 
 // Discount cluster types.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DiscountClusterType)
 enum class DiscountClusterType {
   kUnspecified = 0,
   kOfferLevel = 1,
   kPageLevel = 2,
   kMaxValue = kPageLevel,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:DiscountClusterType)
 
 // Discount types.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
 enum class DiscountType {
   kUnspecified = 0,
   kFreeListingWithCode = 1,
@@ -262,8 +271,8 @@ struct EntryPointInfo {
 };
 
 // Callbacks and typedefs for various accessors in the shopping service.
-using DiscountsMap = std::map<GURL, std::vector<DiscountInfo>>;
-using DiscountInfoCallback = base::OnceCallback<void(const DiscountsMap&)>;
+using DiscountInfoCallback =
+    base::OnceCallback<void(const GURL&, const std::vector<DiscountInfo>)>;
 using MerchantInfoCallback =
     base::OnceCallback<void(const GURL&, std::optional<MerchantInfo>)>;
 using PriceInsightsInfoCallback =

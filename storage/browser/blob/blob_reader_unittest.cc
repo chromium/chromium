@@ -683,20 +683,22 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingle) {
   MojoResult pipe_result = mojo::CreateDataPipe(nullptr, producer, consumer);
   ASSERT_EQ(MOJO_RESULT_OK, pipe_result);
 
-  int bytes_read = net::ERR_UNEXPECTED;
-  reader_->ReadSingleMojoDataItem(
-      std::move(producer),
-      base::BindLambdaForTesting([&](int result) { bytes_read = result; }));
-  base::RunLoop().RunUntilIdle();
+  std::optional<int> read_result;
+  base::RunLoop read_loop;
+  reader_->ReadSingleMojoDataItem(std::move(producer),
+                                  base::BindLambdaForTesting([&](int result) {
+                                    read_result = result;
+                                    read_loop.Quit();
+                                  }));
+  read_loop.Run();
 
-  ASSERT_EQ(kData.size(), static_cast<size_t>(bytes_read));
+  ASSERT_TRUE(read_result.has_value());
+  EXPECT_EQ(*read_result, net::OK);
 
-  size_t num_bytes = base::checked_cast<size_t>(bytes_read);
+  size_t num_bytes = kData.size();
   std::vector<uint8_t> buffer(num_bytes);
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
-  MojoResult read_result = consumer->ReadData(flags, buffer, num_bytes);
-  ASSERT_EQ(MOJO_RESULT_OK, read_result);
-  ASSERT_EQ(kData.size(), num_bytes);
+  EXPECT_EQ(MOJO_RESULT_OK, consumer->ReadData(flags, buffer, num_bytes));
 
   EXPECT_EQ(base::as_string_view(base::as_byte_span(buffer)), kData);
 }
@@ -730,20 +732,22 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingleRange) {
   MojoResult pipe_result = mojo::CreateDataPipe(nullptr, producer, consumer);
   ASSERT_EQ(MOJO_RESULT_OK, pipe_result);
 
-  int bytes_read = net::ERR_UNEXPECTED;
-  reader_->ReadSingleMojoDataItem(
-      std::move(producer),
-      base::BindLambdaForTesting([&](int result) { bytes_read = result; }));
-  base::RunLoop().RunUntilIdle();
+  std::optional<int> read_result;
+  base::RunLoop read_loop;
+  reader_->ReadSingleMojoDataItem(std::move(producer),
+                                  base::BindLambdaForTesting([&](int result) {
+                                    read_result = result;
+                                    read_loop.Quit();
+                                  }));
+  read_loop.Run();
 
-  ASSERT_EQ(range_length, static_cast<uint64_t>(bytes_read));
+  ASSERT_TRUE(read_result.has_value());
+  EXPECT_EQ(*read_result, net::OK);
 
-  size_t num_bytes = base::checked_cast<size_t>(bytes_read);
+  size_t num_bytes = range_length;
   std::vector<uint8_t> buffer(num_bytes);
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
-  MojoResult read_result = consumer->ReadData(flags, buffer, num_bytes);
-  ASSERT_EQ(MOJO_RESULT_OK, read_result);
-  ASSERT_EQ(range_length, num_bytes);
+  EXPECT_EQ(MOJO_RESULT_OK, consumer->ReadData(flags, buffer, num_bytes));
 
   EXPECT_EQ(
       base::as_string_view(base::as_byte_span(buffer)).substr(0, num_bytes),

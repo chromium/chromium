@@ -97,6 +97,7 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/rust_templates/module.tmpl",
     "$mojom_generator_root/generators/rust_templates/struct.tmpl",
     "$mojom_generator_root/generators/rust_templates/union.tmpl",
+    "$mojom_generator_root/generators/ts_templates/converter_interface_declarations.tmpl",
     "$mojom_generator_root/generators/ts_templates/enum_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/interface_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/module_definition.tmpl",

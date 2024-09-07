@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
+
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -16,6 +20,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /**
@@ -31,6 +36,7 @@ import org.chromium.url.GURL;
  */
 /*package*/ class PlusAddressCreationMediator extends EmptyBottomSheetObserver
         implements PlusAddressCreationDelegate, TabModelObserver, LayoutStateObserver {
+    private final PropertyModel mModel;
     private final PlusAddressCreationBottomSheetContent mBottomSheetContent;
     private final BottomSheetController mBottomSheetController;
     private final LayoutStateProvider mLayoutStateProvider;
@@ -51,12 +57,14 @@ import org.chromium.url.GURL;
      * @param bridge The bridge to signal UI flow events (onConfirmed, onCanceled, etc.) to.
      */
     PlusAddressCreationMediator(
+            PropertyModel model,
             PlusAddressCreationBottomSheetContent bottomSheetContent,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
             TabModelSelector tabModelSelector,
             PlusAddressCreationViewBridge bridge) {
+        mModel = model;
         mBottomSheetContent = bottomSheetContent;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProvider = layoutStateProvider;
@@ -72,15 +80,15 @@ import org.chromium.url.GURL;
 
     /** Requests to show the bottom sheet content. */
     void requestShowContent() {
-        mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
+        mModel.set(VISIBLE, true);
     }
 
     void updateProposedPlusAddress(String plusAddress) {
         mBottomSheetContent.setProposedPlusAddress(plusAddress);
     }
 
-    void showError() {
-        mBottomSheetContent.showError();
+    void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
+        mBottomSheetContent.showError(errorStateInfo);
     }
 
     void hideRefreshButton() {
@@ -89,7 +97,7 @@ import org.chromium.url.GURL;
 
     /** Hide the bottom sheet (if showing) and clean up observers. */
     void destroy() {
-        mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
+        mModel.set(VISIBLE, false);
         mBottomSheetController.removeObserver(this);
         mLayoutStateProvider.removeObserver(this);
         mTabModel.removeObserver(this);
@@ -113,8 +121,7 @@ import org.chromium.url.GURL;
 
     @Override
     public void onConfirmFinished() {
-        mBottomSheetController.hideContent(
-                mBottomSheetContent, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+        mModel.set(VISIBLE, false);
     }
 
     @Override
@@ -148,7 +155,7 @@ import org.chromium.url.GURL;
         // ways such as by opening a link from another app. In this case we want to hide the bottom
         // sheet rather than keeping the bottom sheet open while this tab loads behind the scrim.
         if (lastId != tab.getId()) {
-            mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
+            mModel.set(VISIBLE, false);
         }
     }
 
@@ -158,7 +165,7 @@ import org.chromium.url.GURL;
         // When the browser layout changes away from browsing to say the tab switcher, then the
         // bottom sheet must be hidden.
         if (layoutType != LayoutType.BROWSING) {
-            mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
+            mModel.set(VISIBLE, false);
         }
     }
 }

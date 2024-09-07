@@ -27,9 +27,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/components/growth/action_performer.h"
-#include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -105,8 +106,8 @@ base::TimeDelta GetTimeToTriggerDelayedCampaigns() {
 void MaybeTriggerSlot(growth::Slot slot) {
   const auto action_type = GetActionTypeBySlot(slot);
   if (!action_type) {
-    LOG(ERROR) << "Invalid: no supported action type for slot "
-               << static_cast<int>(action_type.value());
+    CAMPAIGNS_LOG(ERROR) << "Invalid: no supported action type for slot "
+                         << static_cast<int>(action_type.value());
     return;
   }
 
@@ -121,7 +122,7 @@ void MaybeTriggerSlot(growth::Slot slot) {
 
   auto campaign_id = growth::GetCampaignId(campaign);
   if (!campaign_id) {
-    LOG(ERROR) << "Invalid: Missing campaign id.";
+    CAMPAIGNS_LOG(ERROR) << "Invalid: Missing campaign id.";
     return;
   }
 
@@ -134,48 +135,6 @@ void MaybeTriggerSlot(growth::Slot slot) {
   campaigns_manager->PerformAction(campaign_id.value(),
                                    growth::GetCampaignGroupId(campaign),
                                    action_type.value(), payload);
-}
-
-void MaybeTriggerCampaignsOnEvent(const std::string& event) {
-  if (!ash::features::IsGrowthCampaignsTriggerByEventEnabled()) {
-    return;
-  }
-
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
-
-  growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = event;
-  campaigns_manager->SetTrigger(std::move(trigger));
-
-  MaybeTriggerSlot(growth::Slot::kNudge);
-  MaybeTriggerSlot(growth::Slot::kNotification);
-}
-
-void MaybeTriggerCampaignsWhenAppOpened() {
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
-
-  auto app_group_id = GetAppGroupId();
-
-  // If `app_group_id` is defined, record the `event` and trigger campaigns
-  // based on the trigger `event`. An `app_group_id` is used to configurate how
-  // often, i.e. the interval, to show the nudges.
-  if (app_group_id) {
-    campaigns_manager->RecordEventForTargeting(growth::CampaignEvent::kEvent,
-                                               app_group_id.value());
-    MaybeTriggerCampaignsOnEvent(app_group_id.value());
-  }
-
-  if (!ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
-    return;
-  }
-
-  growth::Trigger trigger(growth::TriggerType::kAppOpened);
-  campaigns_manager->SetTrigger(std::move(trigger));
-
-  MaybeTriggerSlot(growth::Slot::kNudge);
-  MaybeTriggerSlot(growth::Slot::kNotification);
 }
 
 void MaybeTriggerCampaignsWhenCampaignsLoaded() {
@@ -227,13 +186,13 @@ content::WebContents* FindActiveWebContent(
 
     const auto* tab_strip_model = browser->tab_strip_model();
     if (!tab_strip_model) {
-      LOG(ERROR) << "No tab_strip_model.";
+      CAMPAIGNS_LOG(ERROR) << "No tab_strip_model.";
       continue;
     }
 
     auto* active_web_contents = tab_strip_model->GetActiveWebContents();
     if (!active_web_contents) {
-      LOG(ERROR) << "No active web contents.";
+      CAMPAIGNS_LOG(ERROR) << "No active web contents.";
       continue;
     }
 
@@ -295,17 +254,17 @@ bool HasValidPwaBrowserForAppId(const std::string& app_id) {
   auto* browser = GetActiveBrowser();
 
   if (!browser) {
-    LOG(ERROR) << "No browser window";
+    CAMPAIGNS_LOG(ERROR) << "No browser window";
     return false;
   }
 
   if (browser->type() != Browser::TYPE_APP) {
-    LOG(ERROR) << "Not pwa browser type";
+    CAMPAIGNS_LOG(ERROR) << "Not pwa browser type";
     return false;
   }
 
   if (!web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
-    LOG(ERROR) << "Browser belongs to a different app";
+    CAMPAIGNS_LOG(ERROR) << "Browser belongs to a different app";
     return false;
   }
 
@@ -383,7 +342,8 @@ void CampaignsManagerSession::OnSessionStateChanged() {
   } else {
     // TODO: b/338085893 - Add metric to track the case that settings service
     // is not available at this point.
-    LOG(ERROR) << "Owner settings service unavailable for the profile.";
+    CAMPAIGNS_LOG(ERROR)
+        << "Owner settings service unavailable for the profile.";
   }
 }
 
@@ -402,7 +362,7 @@ void CampaignsManagerSession::OnInstanceUpdate(
   auto app_id = update.AppId();
   auto app_type = GetAppType(app_id);
   if (!app_type) {
-    LOG(ERROR) << "Invalid app type for " << app_id;
+    CAMPAIGNS_LOG(ERROR) << "Invalid app type for " << app_id;
     return;
   }
 
@@ -437,6 +397,23 @@ void CampaignsManagerSession::OnInstanceRegistryWillBeDestroyed(
   if (scoped_observation_.GetSource() == cache) {
     scoped_observation_.Reset();
   }
+}
+
+void CampaignsManagerSession::MaybeTriggerCampaignsOnEvent(
+    const std::string& event) {
+  if (!ash::features::IsGrowthCampaignsTriggerByEventEnabled()) {
+    return;
+  }
+
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  growth::Trigger trigger(growth::TriggerType::kEvent);
+  trigger.event = event;
+  campaigns_manager->SetTrigger(std::move(trigger));
+
+  MaybeTriggerSlot(growth::Slot::kNudge);
+  MaybeTriggerSlot(growth::Slot::kNotification);
 }
 
 void CampaignsManagerSession::PrimaryPageChanged(
@@ -589,7 +566,7 @@ void CampaignsManagerSession::HandleWebBrowserInstanceUpdate(
   // Non web browser app such as text editor will be handled like default
   // app type.
   if (!IsWebBrowserAppId(app_id)) {
-    LOG(ERROR) << "Not a web broswer: " << app_id;
+    CAMPAIGNS_LOG(ERROR) << "Not a web broswer: " << app_id;
     HandleAppInstanceUpdate(update);
     return;
   }
@@ -628,7 +605,7 @@ void CampaignsManagerSession::HandlePwaInstanceUpdate(
   // mismatch.
   auto app_id = update.AppId();
   if (!HasValidPwaBrowserForAppId(app_id)) {
-    LOG(ERROR) << "Invalid web app browser";
+    CAMPAIGNS_LOG(ERROR) << "Invalid web app browser";
     return;
   }
 
@@ -647,4 +624,30 @@ void CampaignsManagerSession::HandleAppInstanceDestruction(
     return;
   }
   ClearAppOpenContext();
+}
+
+void CampaignsManagerSession::MaybeTriggerCampaignsWhenAppOpened() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  auto app_group_id = GetAppGroupId();
+
+  // If `app_group_id` is defined, record the `event` and trigger campaigns
+  // based on the trigger `event`. An `app_group_id` is used to configurate how
+  // often, i.e. the interval, to show the nudges.
+  if (app_group_id) {
+    campaigns_manager->RecordEvent(
+        GetEventName(growth::CampaignEvent::kEvent, app_group_id.value()));
+    MaybeTriggerCampaignsOnEvent(app_group_id.value());
+  }
+
+  if (!ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
+    return;
+  }
+
+  growth::Trigger trigger(growth::TriggerType::kAppOpened);
+  campaigns_manager->SetTrigger(std::move(trigger));
+
+  MaybeTriggerSlot(growth::Slot::kNudge);
+  MaybeTriggerSlot(growth::Slot::kNotification);
 }

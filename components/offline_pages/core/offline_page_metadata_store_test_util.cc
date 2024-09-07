@@ -106,8 +106,9 @@ OfflinePageMetadataStoreTestUtil::GetPageByOfflineId(int64_t offline_id) {
       store(), criteria,
       base::BindLambdaForTesting(
           [&](const std::vector<OfflinePageItem>& cb_pages) {
-            if (!cb_pages.empty())
+            if (!cb_pages.empty()) {
               page = new OfflinePageItem(cb_pages[0]);
+            }
             run_loop.Quit();
           }));
   task->Execute(base::DoNothing());

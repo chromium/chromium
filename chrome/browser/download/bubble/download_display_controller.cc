@@ -101,11 +101,11 @@ DownloadDisplayController::DownloadDisplayController(
   if (display) {
     MaybeShowButtonWhenCreated();
   }
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 }
 
 DownloadDisplayController::~DownloadDisplayController() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 void DownloadDisplayController::OnNewItem(bool show_animation) {

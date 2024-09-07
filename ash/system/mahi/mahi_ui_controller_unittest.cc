@@ -4,6 +4,7 @@
 
 #include "ash/system/mahi/mahi_ui_controller.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "ash/system/mahi/test/mock_mahi_ui_controller_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_forward.h"
+#include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -63,6 +65,18 @@ void ChangeLockState(bool locked) {
   Shell::Get()->session_controller()->SetSessionInfo(info);
 }
 
+void UpdateSession(uint32_t session_id, const std::string& email) {
+  UserSession session;
+  session.session_id = session_id;
+  session.user_info.type = user_manager::UserType::kRegular;
+  session.user_info.account_id = AccountId::FromUserEmail(email);
+  session.user_info.display_name = email;
+  session.user_info.display_email = email;
+  session.user_info.is_new_profile = false;
+
+  SessionController::Get()->UpdateUserSession(session);
+}
+
 }  // namespace
 
 class MahiUiControllerTest : public AshTestBase {
@@ -84,7 +98,10 @@ class MahiUiControllerTest : public AshTestBase {
  private:
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
 
     ON_CALL(delegate_, GetView).WillByDefault(Return(&delegate_view_));
     AshTestBase::SetUp();
@@ -495,7 +512,9 @@ class MahiUiControllerWithSessionTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+        {});
     ui_controller_ = std::make_unique<NiceMock<MahiUiController>>();
     delegate_ = std::make_unique<NiceMock<MockMahiUiControllerDelegate>>(
         ui_controller_.get());
@@ -586,6 +605,55 @@ TEST_F(MahiUiControllerWithSessionTest,
         mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
         /*sample=*/1, /*expected_count=*/i + 1);
   }
+}
+
+TEST_F(MahiUiControllerWithSessionTest, PanelCloseOnSessionStateChanged) {
+  std::vector<session_manager::SessionState> non_active_session_states = {
+      session_manager::SessionState::UNKNOWN,
+      session_manager::SessionState::OOBE,
+      session_manager::SessionState::LOGIN_PRIMARY,
+      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE,
+      session_manager::SessionState::LOCKED,
+      session_manager::SessionState::LOGIN_SECONDARY,
+      session_manager::SessionState::RMA};
+
+  SessionInfo info;
+  for (size_t i = 0; i < non_active_session_states.size(); i++) {
+    info.state = session_manager::SessionState::ACTIVE;
+    Shell::Get()->session_controller()->SetSessionInfo(info);
+
+    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+    EXPECT_TRUE(ui_controller()->IsMahiPanelOpen());
+
+    // Set the session to a non-active state, the panel should be closed.
+    auto state = non_active_session_states[i];
+    info.state = state;
+    Shell::Get()->session_controller()->SetSessionInfo(info);
+    base::test::RunUntil([&state] {
+      return Shell::Get()->session_controller()->GetSessionState() == state;
+    });
+    EXPECT_FALSE(ui_controller()->IsMahiPanelOpen());
+  }
+}
+
+TEST_F(MahiUiControllerWithSessionTest, PanelCloseOnActiveUserChanged) {
+  // Set up two users, user1 is the active user.
+  UpdateSession(1u, "user1@test.com");
+  UpdateSession(2u, "user2@test.com");
+  std::vector<uint32_t> order = {1u, 2u};
+  SessionController::Get()->SetUserSessionOrder(order);
+  base::test::RunUntil(
+      [&] { return Shell::Get()->session_controller()->IsUserPrimary(); });
+
+  ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+  EXPECT_TRUE(ui_controller()->IsMahiPanelOpen());
+
+  // Make user2 the active user, the panel should be closed.
+  order = {2u, 1u};
+  SessionController::Get()->SetUserSessionOrder(order);
+  base::test::RunUntil(
+      [&] { return !Shell::Get()->session_controller()->IsUserPrimary(); });
+  EXPECT_FALSE(ui_controller()->IsMahiPanelOpen());
 }
 
 }  // namespace ash

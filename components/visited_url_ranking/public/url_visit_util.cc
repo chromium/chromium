@@ -73,6 +73,21 @@ PlatformType GetPlatformInput() {
 #endif
 }
 
+int GetPriority(DecorationType type) {
+  switch (type) {
+    case DecorationType::kMostRecent:
+      return 3;
+    case DecorationType::kFrequentlyVisitedAtTime:
+      return 2;
+    case DecorationType::kFrequentlyVisited:
+      return 2;
+    case DecorationType::kVisitedXAgo:
+      return 1;
+    case DecorationType::kUnknown:
+      return 0;
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<url_deduplication::URLDeduplicationHelper>
@@ -336,6 +351,19 @@ const history::AnnotatedVisit* GetHistoryEntryVisitIfExists(
   }
 
   return nullptr;
+}
+
+const Decoration& GetMostRelevantDecoration(
+    const URLVisitAggregate& url_visit_aggregate) {
+  const Decoration* result;
+  int max_priority = -1;
+  for (const auto& decoration : url_visit_aggregate.decorations) {
+    if (GetPriority(decoration.GetType()) > max_priority) {
+      result = &decoration;
+      max_priority = GetPriority(decoration.GetType());
+    }
+  }
+  return *result;
 }
 
 }  // namespace visited_url_ranking

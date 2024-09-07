@@ -18,6 +18,17 @@ import java.util.List;
  */
 public abstract class StripLayoutView implements VirtualView {
 
+    /** Handler for click actions on VirtualViews. */
+    public interface StripLayoutViewOnClickHandler {
+        /**
+         * Handles the click action.
+         *
+         * @param time The time of the click action.
+         * @param view View that received the click.
+         */
+        void onClick(long time, StripLayoutView view);
+    }
+
     /** A property for animations to use for changing the drawX of the view. */
     public static final FloatProperty<StripLayoutView> DRAW_X =
             new FloatProperty<>("drawX") {
@@ -66,11 +77,16 @@ public abstract class StripLayoutView implements VirtualView {
     // A11y variables.
     private String mAccessibilityDescription = "";
 
+    // Event handlers.
+    private final StripLayoutViewOnClickHandler mOnClickHandler;
+
     /**
      * @param incognito The incognito state of the view.
+     * @param clickHandler @{@link StripLayoutViewOnClickHandler} for this view.
      */
-    protected StripLayoutView(boolean incognito) {
+    protected StripLayoutView(boolean incognito, StripLayoutViewOnClickHandler clickHandler) {
         mIsIncognito = incognito;
+        mOnClickHandler = clickHandler;
     }
 
     /**
@@ -266,6 +282,11 @@ public abstract class StripLayoutView implements VirtualView {
     @Override
     public void getTouchTarget(RectF outTarget) {
         outTarget.set(mTouchTargetBounds);
+    }
+
+    @Override
+    public void handleClick(long time) {
+        mOnClickHandler.onClick(time, this);
     }
 
     /**

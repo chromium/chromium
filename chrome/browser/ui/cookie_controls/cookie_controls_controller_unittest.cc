@@ -1612,37 +1612,76 @@ TEST_F(CookieControlsUserBypassTest,
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
+TEST_F(CookieControlsUserBypassTest,
+       BlockingStatusLimitedWhenCookieControlsModePrefIsLimited) {
+  NavigateAndCommit(GURL("https://cool.things.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, /*protections_on=*/true,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kLimited, zero_expiration(),
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kLimited)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/false, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kLimited,
+                           /*should_highlight=*/false));
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kLimited));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
 class CookieControlsUserBypassTrackingProtectionUiTest
     : public CookieControlsUserBypassTest,
       public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
  public:
-  CookieControlsUserBypassTrackingProtectionUiTest() {
-    feature_list_.InitWithFeatures(
-        {
-            privacy_sandbox::kFingerprintingProtectionUserBypass,
-            privacy_sandbox::kFingerprintingProtectionSetting,
-            privacy_sandbox::kIpProtectionUserBypass,
-            privacy_sandbox::kIpProtectionV1,
-        },
-        {});
-  }
+  CookieControlsUserBypassTrackingProtectionUiTest() = default;
   ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;
 
+  void SetUp() override {
+    CookieControlsUserBypassTest::SetUp();
+    if (std::get<0>(GetParam())) {
+      cookie_settings()->SetThirdPartyCookieSetting(
+          GURL("https://example.com"), ContentSetting::CONTENT_SETTING_BLOCK);
+    } else {
+      tracking_protection_settings()->AddTrackingProtectionException(
+          GURL("https://example.com"));
+      cookie_settings()->SetThirdPartyCookieSetting(
+          GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
+    }
+
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    if (std::get<1>(GetParam())) {
+      enabled_features.push_back(privacy_sandbox::kIpProtectionUserBypass);
+      enabled_features.push_back(privacy_sandbox::kIpProtectionV1);
+      profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
+    }
+    if (std::get<2>(GetParam())) {
+      enabled_features.push_back(
+          privacy_sandbox::kFingerprintingProtectionUserBypass);
+    }
+    feature_list_.InitWithFeatures(enabled_features, {});
+  }
+
   std::vector<TrackingProtectionFeature> GetFeatureVector(
-      CookieControlsEnforcement enforcement,
-      bool protections_on) {
+      CookieControlsEnforcement enforcement) {
+    bool protections_on = std::get<0>(GetParam());
     std::vector<TrackingProtectionFeature> features_list;
     features_list.push_back(
         {FeatureType::kThirdPartyCookies, enforcement,
          protections_on ? BlockingStatus::kBlocked : BlockingStatus::kAllowed});
     // Currently these ACT features do not support different enforcement types.
-    if (tracking_protection_settings()->IsIpProtectionEnabled()) {
+    if (std::get<1>(GetParam())) {
       features_list.push_back({FeatureType::kIpProtection,
                                CookieControlsEnforcement::kNoEnforcement,
                                protections_on ? BlockingStatus::kHidden
                                               : BlockingStatus::kVisible});
     }
-    if (tracking_protection_settings()->IsFingerprintingProtectionEnabled()) {
+    if (std::get<2>(GetParam())) {
       features_list.push_back({FeatureType::kFingerprintingProtection,
                                CookieControlsEnforcement::kNoEnforcement,
                                protections_on ? BlockingStatus::kLimited
@@ -1657,29 +1696,13 @@ class CookieControlsUserBypassTrackingProtectionUiTest
 
 TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
        AddsActFeaturesToVectorBasedOnFeatureAndExceptionStatus) {
-  bool protections_on = std::get<0>(GetParam());
-  if (protections_on) {
-    cookie_settings()->SetThirdPartyCookieSetting(
-        GURL("https://example.com"), ContentSetting::CONTENT_SETTING_BLOCK);
-  } else {
-    tracking_protection_settings()->AddTrackingProtectionException(
-        GURL("https://example.com"));
-    cookie_settings()->SetThirdPartyCookieSetting(
-        GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
-  }
-  profile()->GetPrefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
-                                    std::get<1>(GetParam()));
-  profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled,
-                                    std::get<2>(GetParam()));
-
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_CALL(*mock(),
               OnStatusChanged(
-                  /*controls_visible=*/true, protections_on,
+                  /*controls_visible=*/true, std::get<0>(GetParam()),
                   CookieControlsEnforcement::kNoEnforcement,
                   CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
-                  GetFeatureVector(CookieControlsEnforcement::kNoEnforcement,
-                                   protections_on)));
+                  GetFeatureVector(CookieControlsEnforcement::kNoEnforcement)));
 
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
@@ -1689,5 +1712,5 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     CookieControlsUserBypassTrackingProtectionUiTest,
     testing::Combine(/*protections_on*/ testing::Bool(),
-                     /*kFingerprintingProtectionEnabled*/ testing::Bool(),
-                     /*kIpProtectionEnabled*/ testing::Bool()));
+                     /*kIpProtectionUserBypass*/ testing::Bool(),
+                     /*kFingerprintingProtectionUserBypass*/ testing::Bool()));

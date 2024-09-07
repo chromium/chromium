@@ -9,10 +9,8 @@
 namespace safe_browsing {
 
 FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : TestSafeBrowsingDatabaseManager(std::move(ui_task_runner),
-                                      std::move(io_task_runner)) {}
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : TestSafeBrowsingDatabaseManager(std::move(ui_task_runner)) {}
 
 FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() = default;
 
@@ -59,7 +57,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
     pattern_type = it1->second;
   }
 
-  sb_task_runner()->PostTask(
+  ui_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync, url,
                      result_threat_type, pattern_type, client));
@@ -81,7 +79,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckDownloadUrl(
       continue;
     }
 
-    sb_task_runner()->PostTask(
+    ui_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckDownloadURLAsync,
                        url_chain, result_threat_type, client));

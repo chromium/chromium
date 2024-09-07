@@ -74,7 +74,9 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
  public:
   MahiWebContentsManagerBrowserTest() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kMahi}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+        {});
 #endif
   }
   ~MahiWebContentsManagerBrowserTest() override = default;

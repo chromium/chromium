@@ -122,7 +122,7 @@ void CloudProfileReportingService::CreateReportScheduler() {
           profile_->GetPath(), GetProfileName(profile_), &delegate_factory);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   params.profile_request_generator->ToggleExtensionReport(
-      CanUploadExtensionInfo(profile_));
+      base::BindRepeating(&CanUploadExtensionInfo, profile_));
 #endif
   report_scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
 }

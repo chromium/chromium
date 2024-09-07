@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
+#include "net/device_bound_sessions/jwk_utils.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "url/gurl.h"
@@ -45,11 +46,6 @@ std::string Base64UrlEncode(std::string_view data) {
   base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &output);
   return output;
-}
-
-base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
-  return base::Value::Dict().Set("SubjectPublicKeyInfo",
-                                 Base64UrlEncode(base::as_string_view(pubkey)));
 }
 
 std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
@@ -111,8 +107,14 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     std::string_view challenge,
     const GURL& registration_url,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::span<const uint8_t> pubkey,
+    base::span<const uint8_t> pubkey_spki,
     base::Time timestamp) {
+  base::Value::Dict jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
+  if (jwk.empty()) {
+    DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
+    return std::nullopt;
+  }
+
   auto payload =
       base::Value::Dict()
           .Set("aud", registration_url.spec())
@@ -122,7 +124,7 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
           // there's no other option.
           .Set("iat", static_cast<double>(
                           (timestamp - base::Time::UnixEpoch()).InSeconds()))
-          .Set("key", CreatePublicKeyInfo(pubkey));
+          .Set("key", std::move(jwk));
   return CreateHeaderAndPayloadWithCustomPayload(algorithm, /*schema=*/"",
                                                  payload);
 }

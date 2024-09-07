@@ -24,6 +24,8 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   static GPUTexture* Create(GPUDevice* device,
                             const GPUTextureDescriptor* webgpu_desc,
                             ExceptionState& exception_state);
+  static GPUTexture* Create(GPUDevice* device,
+                            const wgpu::TextureDescriptor* desc);
   static GPUTexture* CreateError(GPUDevice* device,
                                  const wgpu::TextureDescriptor* desc);
 

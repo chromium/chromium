@@ -3763,6 +3763,37 @@ TEST_F(ScreenWinTestTwoDisplaysOneInternal, InternalDisplayIdSet) {
 
 namespace {
 
+// One display with a max-length |szDevice| value.
+class ScreenWinTestOneDisplayLongName : public ScreenWinTest {
+ public:
+  ScreenWinTestOneDisplayLongName() = default;
+
+  ScreenWinTestOneDisplayLongName(const ScreenWinTestOneDisplayLongName&) =
+      delete;
+  ScreenWinTestOneDisplayLongName& operator=(
+      const ScreenWinTestOneDisplayLongName&) = delete;
+
+  void SetUpScreen(TestScreenWinInitializer* initializer) override {
+    const wchar_t* device_name = L"ThisDeviceNameIs32CharactersLong";
+    EXPECT_EQ(::wcslen(device_name),
+              static_cast<size_t>(ARRAYSIZE(MONITORINFOEX::szDevice)));
+    initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
+                            gfx::Rect(0, 0, 1920, 1100), device_name, 1.0);
+  }
+};
+
+}  // namespace
+
+TEST_F(ScreenWinTestOneDisplayLongName, CheckIdStability) {
+  // Callers may use the display ID as a way to persist data like window
+  // coordinates across runs. As a result, the IDs must remain stable.
+  Screen* screen = GetScreen();
+  ASSERT_EQ(1, screen->GetNumDisplays());
+  EXPECT_EQ(1875308985, screen->GetAllDisplays()[0].id());
+}
+
+namespace {
+
 // Zero displays.
 class ScreenWinTestNoDisplay : public ScreenWinTest {
  public:

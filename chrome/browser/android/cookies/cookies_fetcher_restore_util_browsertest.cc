@@ -40,8 +40,11 @@ class CookiesFetcherRestoreUtilBrowserTest : public AndroidBrowserTest {
 
   void AddCookie(std::string partition_key) {
     JNIEnv* env = base::android::AttachCurrentThread();
+    Profile* profile =
+        Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext())
+            ->GetPrimaryOTRProfile(/*create_if_needed=*/false);
     CookiesFetcherRestoreCookiesImpl(
-        env,
+        env, profile,
         jni_zero::JavaParamRef<jstring>(
             env, base::android::ConvertUTF8ToJavaString(env, "test").obj()),
         jni_zero::JavaParamRef<jstring>(
@@ -64,7 +67,10 @@ class CookiesFetcherRestoreUtilBrowserTest : public AndroidBrowserTest {
     net::CookieList cookies_for_profile;
     {
       base::RunLoop loop;
-      GetCookieServiceClient()->GetAllCookies(
+      Profile* profile = Profile::FromBrowserContext(
+                             GetActiveWebContents()->GetBrowserContext())
+                             ->GetPrimaryOTRProfile(/*create_if_needed=*/false);
+      GetCookieServiceClient(profile)->GetAllCookies(
           base::BindLambdaForTesting([&](const net::CookieList& cookies) {
             cookies_for_profile = cookies;
             loop.Quit();

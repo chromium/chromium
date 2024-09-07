@@ -30,7 +30,7 @@ build_webui("build_overlay") {
     "feedback.svg",
     "icon_clear.svg",
     "info.svg",
-    "arrow_right.svg",
+    "bidirectional_arrow.svg",
     "learn_more.svg",
     "lens_overlay.html",
     "side_panel/side_panel.html",
@@ -70,6 +70,8 @@ build_webui("build_overlay") {
     "language_browser_proxy.ts",
     "metrics_utils.ts",
     "post_selection_paint_worklet.ts",
+    "screenshot_bitmap_browser_proxy.ts",
+    "screenshot_utils.ts",
     "selection_utils.ts",
     "shimmer_circle_paint_worklet.ts",
     "side_panel/side_panel_browser_proxy.ts",
@@ -78,6 +80,7 @@ build_webui("build_overlay") {
   ]
 
   ts_deps = [
+    "//chrome/browser/resources/lens/shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
@@ -103,6 +106,11 @@ build_webui("build_overlay") {
     "$root_gen_dir/chrome/browser/lens/core/mojom/polygon.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/geometry.mojom-webui.ts",
   ]
+
+  ts_path_mappings =
+      [ "/lens/shared/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/lens/shared/tsc/*",
+                    target_gen_dir) ]
 
   webui_context_type = "untrusted"
 }

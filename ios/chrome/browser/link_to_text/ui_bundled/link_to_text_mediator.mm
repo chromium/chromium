@@ -36,7 +36,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     DCHECK(webStateList);
     _webStateList = webStateList->AsWeakPtr();
   }

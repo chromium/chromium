@@ -626,6 +626,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     } else if (flag == "include-full-ads") {
       auction_server_request_flags.Put(
           blink::AuctionServerRequestFlagsEnum::kIncludeFullAds);
+    } else if (flag == "omit-user-bidding-signals") {
+      auction_server_request_flags.Put(
+          blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals);
     }
   }
   interest_group_update.auction_server_request_flags =

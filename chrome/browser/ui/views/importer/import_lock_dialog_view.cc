@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/layout/fill_layout.h"
 
 using base::UserMetricsAction;
@@ -47,7 +48,7 @@ ImportLockDialogView::ImportLockDialogView(
     : callback_(std::move(callback)) {
   SetTitle(importer_lock_title_id);
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_IMPORTER_LOCK_OK));
 
   auto done_callback = [](ImportLockDialogView* dialog, bool accepted) {

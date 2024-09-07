@@ -100,11 +100,10 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
               browser,
               group.saved_guid()),
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kButton, /*name=*/GetAccessibleNameForButton(),
-      /*description=*/std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetName(GetAccessibleNameForButton());
+  GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF16(
+      IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
   SetTextProperties(group);
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupButtonElementId);

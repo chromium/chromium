@@ -63,6 +63,10 @@ class MagicStackBridge {
         MagicStackBridgeJni.get().dismissSafeBrowsingModule(mProfile);
     }
 
+    void dismissCompromisedPasswordsModule() {
+        MagicStackBridgeJni.get().dismissCompromisedPasswordsModule(mProfile);
+    }
+
     @NativeMethods
     interface Natives {
         @JniType("std::optional<MenuNotificationEntry>")
@@ -72,5 +76,7 @@ class MagicStackBridge {
         void dismissActiveModule(@JniType("Profile*") Profile profile);
 
         void dismissSafeBrowsingModule(@JniType("Profile*") Profile profile);
+
+        void dismissCompromisedPasswordsModule(@JniType("Profile*") Profile profile);
     }
 }

@@ -170,14 +170,20 @@ class CONTENT_EXPORT WebContentsDelegate {
   // properties of the window. If `was_blocked` is non-nullptr, then
   // `*was_blocked` will be set to true if the popup gets blocked, and left
   // unchanged otherwise.
-  virtual void AddNewContents(
+  //
+  // Returns a web contents instance where navigation will happen. If the
+  // navigation has been captured by a different web contents that will be
+  // returned. Otherwise, this function may return `new_contents` or `nullptr`.
+  // TODO: crbug.com/361717755: Always return the web contents instance
+  // navigation will happen in, or nullptr otherwise.
+  virtual WebContents* AddNewContents(
       WebContents* source,
       std::unique_ptr<WebContents> new_contents,
       const GURL& target_url,
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
-      bool* was_blocked) {}
+      bool* was_blocked);
 
   // Selects the specified contents, bringing its container to the front.
   virtual void ActivateContents(WebContents* contents) {}
@@ -808,6 +814,10 @@ class CONTENT_EXPORT WebContentsDelegate {
       base::OnceCallback<void(const SkBitmap&)> callback);
 
 #if BUILDFLAG(IS_ANDROID)
+  // Synchronous version of |MaybeCopyContentAreaAsBitmap|. Return an
+  // empty bitmap if embedder is not showing any custom view.
+  virtual SkBitmap MaybeCopyContentAreaAsBitmapSync();
+
   // Notifies the delegate that the back forward transition animation state
   // has changed. If necessary, the delegate should use this notification to
   // hold on its animation until the back forward transition has completed.

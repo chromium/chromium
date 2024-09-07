@@ -695,13 +695,13 @@ interface mixin WebGLRenderingContextBase {
     void validateProgram(WebGLProgram program);
 
     [NoAllocDirectCall] void vertexAttrib1f(GLuint indx, GLfloat x);
-    void vertexAttrib1fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib1fv(GLuint indx, Float32List values);
     [NoAllocDirectCall] void vertexAttrib2f(GLuint indx, GLfloat x, GLfloat y);
-    void vertexAttrib2fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib2fv(GLuint indx, Float32List values);
     [NoAllocDirectCall] void vertexAttrib3f(GLuint indx, GLfloat x, GLfloat y, GLfloat z);
-    void vertexAttrib3fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib3fv(GLuint indx, Float32List values);
     [NoAllocDirectCall] void vertexAttrib4f(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-    void vertexAttrib4fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib4fv(GLuint indx, Float32List values);
     [NoAllocDirectCall] void vertexAttribPointer(GLuint indx, GLint size, GLenum type, GLboolean normalized,
                                                     GLsizei stride, GLintptr offset);
 

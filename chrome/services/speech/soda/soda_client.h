@@ -13,6 +13,7 @@ namespace soda {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(LoadSodaResultValue)
 enum class LoadSodaResultValue {
   kUnknown = 0,
   kSuccess = 1,
@@ -20,6 +21,7 @@ enum class LoadSodaResultValue {
   kFunctionPointerInvalid = 3,
   kMaxValue = kFunctionPointerInvalid,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:LoadSodaResult)
 
 // The client that wraps the plain C-style interface between Chrome and the
 // Speech On-Device API (SODA). Changes to the interface must be backwards

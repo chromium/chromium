@@ -5,13 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_UTIL_H_
 
-#include <stddef.h>
-
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -30,19 +27,10 @@ bool IsShowAutofillSignaturesEnabled();
 // characters that are part of delimiter set {' ', '.', ',', '-', '_', '@'}.
 
 // Currently, a token for the purposes of this method is defined as {'@'}.
-// Returns true if the |full_string| has a |prefix| as a prefix and the prefix
+// Returns true if the `full_string` has a `prefix` as a prefix and the prefix
 // ends on a token.
-bool IsPrefixOfEmailEndingWithAtSign(const std::u16string& full_string,
-                                     const std::u16string& prefix);
-
-// Finds the first occurrence of a searched substring |field_contents| within
-// the string |suggestion| starting at token boundaries and returns the index to
-// the end of the located substring, or std::u16string::npos if the substring is
-// not found. "preview-on-hover" feature is one such use case where the
-// substring |field_contents| may not be found within the string |suggestion|.
-size_t GetTextSelectionStart(const std::u16string& suggestion,
-                             const std::u16string& field_contents,
-                             bool case_sensitive);
+bool IsPrefixOfEmailEndingWithAtSign(std::u16string_view full_string,
+                                     std::u16string_view prefix);
 
 bool IsCheckable(const FormFieldData::CheckStatus& check_status);
 bool IsChecked(const FormFieldData::CheckStatus& check_status);
@@ -50,19 +38,23 @@ void SetCheckStatus(FormFieldData* form_field_data,
                     bool isCheckable,
                     bool isChecked);
 
-// Lowercases and tokenizes a given |attribute| string.
+// Lowercases and tokenizes a given `attribute` string.
 // Considers any ASCII whitespace character as a possible separator.
 // Also ignores empty tokens, resulting in a collapsing of whitespace.
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
     std::string_view attribute);
 
 // Returns `value` stripped from its whitespaces.
-std::u16string RemoveWhitespace(const std::u16string& value);
+std::u16string RemoveWhitespace(std::u16string_view value);
+
+// Returns the credit card field `value` trimmed from whitespace and with stop
+// characters removed.
+std::u16string SanitizeCreditCardFieldValue(std::u16string_view value);
 
 // Returns true if and only if the field value has no character except the
 // formatting characters. This means that the field value is a formatting string
 // entered by the website and not a real value entered by the user.
-bool SanitizedFieldIsEmpty(const std::u16string& value);
+bool SanitizedFieldIsEmpty(std::u16string_view value);
 
 // Returns true if focused_field_type corresponds to a fillable field.
 bool IsFillable(mojom::FocusedFieldType focused_field_type);

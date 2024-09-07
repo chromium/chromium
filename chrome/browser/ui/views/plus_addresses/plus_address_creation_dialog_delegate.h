@@ -18,10 +18,9 @@ class WebContents;
 
 namespace views {
 class ImageButton;
-class Label;
 class MdTextButton;
-class StyledLabel;
-class TableLayoutView;
+class ProgressBar;
+class View;
 }  // namespace views
 
 namespace plus_addresses {
@@ -36,7 +35,6 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
       base::WeakPtr<PlusAddressCreationController> controller,
       content::WebContents* web_contents,
       const std::string& primary_email_address,
-      bool offer_refresh,
       bool show_notice);
   PlusAddressCreationDialogDelegate(const PlusAddressCreationDialogDelegate&) =
       delete;
@@ -48,14 +46,29 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   void OnWidgetInitialized() override;
 
   // PlusAddressCreationView:
-  void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile) override;
+  void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile,
+                         bool offer_refresh) override;
   void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile) override;
-  void HideRefreshButton() override;
 
   // Calls the respective controller method for `type`.
   void HandleButtonPress(PlusAddressViewButtonType type);
 
  private:
+  // Helper methods for view setup.
+
+  // Creates the logo displayed at the top of the dialog.
+  std::unique_ptr<views::View> CreateLogo();
+
+  // Creates a hidden refresh button.
+  std::unique_ptr<views::ImageButton> CreateRefreshButton();
+
+  // Creates a view containing the two buttons for the dialog and saves a
+  // pointer to the confirm button to `confirm_button_`.
+  std::unique_ptr<views::View> CreateButtons();
+
+  // Shows and hides the progress bar at the top of the dialog.
+  void SetProgressBarVisibility(bool is_visible);
+
   // Updates the modal dialog to show error messages.
   void ShowErrorStateUI();
 
@@ -65,10 +78,15 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
 
   base::WeakPtr<PlusAddressCreationController> controller_;
   raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<views::TableLayoutView> plus_address_label_container_ = nullptr;
-  raw_ptr<views::Label> plus_address_label_ = nullptr;
-  raw_ptr<views::ImageButton> refresh_button_ = nullptr;
-  raw_ptr<views::StyledLabel> error_report_label_ = nullptr;
+  raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
+
+  // The container for the suggested plus address and the refresh button.
+  class PlusAddressContainerView;
+  raw_ptr<PlusAddressContainerView> plus_address_container_ = nullptr;
+
+  raw_ptr<views::View> error_report_label_ = nullptr;
+
+  // The button for confirming the modal dialog.
   raw_ptr<views::MdTextButton> confirm_button_ = nullptr;
 };
 

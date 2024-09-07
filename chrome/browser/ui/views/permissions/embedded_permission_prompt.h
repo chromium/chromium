@@ -19,7 +19,6 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 
 class Browser;
 
@@ -137,7 +136,7 @@ class EmbeddedPermissionPrompt
   Variant os_system_settings_variant_ = Variant::kUninitialized;
 
   Variant embedded_prompt_variant_ = Variant::kUninitialized;
-  views::UniqueWidgetPtr content_scrim_widget_;
+  std::unique_ptr<views::Widget> content_scrim_widget_;
   views::ViewTracker prompt_view_tracker_;
 
   base::Time current_variant_first_display_time_;

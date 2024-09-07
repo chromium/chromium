@@ -494,10 +494,7 @@ void PictureLayerTilingSet::UpdatePriorityRects(
     const gfx::Rect& visible_rect_in_layer_space,
     double current_frame_time_in_seconds,
     float ideal_contents_scale) {
-  visible_rect_in_layer_space_ = gfx::Rect();
-  eventually_rect_in_layer_space_ = gfx::Rect();
-
-  // We keep things as floats in here.
+  bool has_visible_rects = false;
   if (!visible_rect_in_layer_space.IsEmpty()) {
     gfx::RectF eventually_rectf(visible_rect_in_layer_space);
     eventually_rectf.Inset(-tiling_interest_area_padding_ /
@@ -506,14 +503,26 @@ void PictureLayerTilingSet::UpdatePriorityRects(
             gfx::RectF(raster_source_->recorded_bounds()))) {
       visible_rect_in_layer_space_ = visible_rect_in_layer_space;
       eventually_rect_in_layer_space_ = gfx::ToEnclosingRect(eventually_rectf);
+      has_visible_rects = true;
     }
   }
 
-  skewport_in_layer_space_ =
+  if (!has_visible_rects) {
+    visible_rect_in_layer_space_ = gfx::Rect();
+    eventually_rect_in_layer_space_ = gfx::Rect();
+    skewport_rect_in_layer_space_ = gfx::Rect();
+    soon_border_rect_in_layer_space_ = gfx::Rect();
+    // If we have no visible rect, clear all interest rects.
+    visible_rect_history_.clear();
+    return;
+  }
+
+  skewport_rect_in_layer_space_ =
       ComputeSkewport(visible_rect_in_layer_space_,
                       current_frame_time_in_seconds, ideal_contents_scale);
-  DCHECK(skewport_in_layer_space_.Contains(visible_rect_in_layer_space_));
-  DCHECK(eventually_rect_in_layer_space_.Contains(skewport_in_layer_space_));
+  DCHECK(skewport_rect_in_layer_space_.Contains(visible_rect_in_layer_space_));
+  DCHECK(
+      eventually_rect_in_layer_space_.Contains(skewport_rect_in_layer_space_));
 
   soon_border_rect_in_layer_space_ =
       ComputeSoonBorderRect(visible_rect_in_layer_space_, ideal_contents_scale);
@@ -536,8 +545,7 @@ bool PictureLayerTilingSet::UpdateTilePriorities(
     float ideal_contents_scale,
     double current_frame_time_in_seconds,
     const Occlusion& occlusion_in_layer_space,
-    bool can_require_tiles_for_activation,
-    TileMemoryLimitPolicy memory_limit_policy) {
+    bool can_require_tiles_for_activation) {
   StateSinceLastTilePriorityUpdate::AutoClear auto_clear_state(
       &state_since_last_tile_priority_update_);
 
@@ -554,9 +562,9 @@ bool PictureLayerTilingSet::UpdateTilePriorities(
     tiling->set_can_require_tiles_for_activation(
         can_require_tiles_for_activation);
     tiling->ComputeTilePriorityRects(
-        visible_rect_in_layer_space_, skewport_in_layer_space_,
+        visible_rect_in_layer_space_, skewport_rect_in_layer_space_,
         soon_border_rect_in_layer_space_, eventually_rect_in_layer_space_,
-        ideal_contents_scale, occlusion_in_layer_space, memory_limit_policy);
+        ideal_contents_scale, occlusion_in_layer_space);
     all_tiles_done_ &= tiling->all_tiles_done();
   }
   return true;

@@ -16,10 +16,15 @@ SidePanelEntry::SidePanelEntry(
     Id id,
     base::RepeatingCallback<std::unique_ptr<views::View>()>
         create_content_callback,
-    base::RepeatingCallback<GURL()> open_in_new_tab_url_callback)
-    : key_(id),
-      create_content_callback_(std::move(create_content_callback)),
-      open_in_new_tab_url_callback_(std::move(open_in_new_tab_url_callback)) {}
+    std::optional<base::RepeatingCallback<GURL()>> open_in_new_tab_url_callback,
+    std::optional<base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>>
+        more_info_callback)
+    : key_(id), create_content_callback_(std::move(create_content_callback)) {
+  open_in_new_tab_url_callback_ =
+      open_in_new_tab_url_callback.value_or(base::NullCallbackAs<GURL()>());
+  more_info_callback_ = more_info_callback.value_or(
+      base::NullCallbackAs<std::unique_ptr<ui::MenuModel>()>());
+}
 
 SidePanelEntry::SidePanelEntry(
     Key key,
@@ -86,8 +91,20 @@ GURL SidePanelEntry::GetOpenInNewTabURL() const {
   return open_in_new_tab_url_callback_.Run();
 }
 
+std::unique_ptr<ui::MenuModel> SidePanelEntry::GetMoreInfoMenuModel() const {
+  if (more_info_callback_.is_null()) {
+    return nullptr;
+  }
+
+  return more_info_callback_.Run();
+}
+
 bool SidePanelEntry::SupportsNewTabButton() {
   return !open_in_new_tab_url_callback_.is_null();
+}
+
+bool SidePanelEntry::SupportsMoreInfoButton() {
+  return !more_info_callback_.is_null();
 }
 
 void SidePanelEntry::ResetLoadTimestamp() {

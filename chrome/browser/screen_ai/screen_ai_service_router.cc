@@ -5,6 +5,7 @@
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -44,6 +45,18 @@ enum class ComponentAvailability {
 
   kMaxValue = kUnavailableWithoutNetwork,
 };
+
+bool IsModelFileContentReadable(base::File& file) {
+  if (!file.IsValid()) {
+    return false;
+  }
+  int file_size = file.GetLength();
+  if (!file_size) {
+    return false;
+  }
+  std::vector<uint8_t> buffer(file_size);
+  return file.ReadAndCheck(0, base::make_span(buffer));
+}
 
 // The name of the file that contains the list of files that are downloaded with
 // the component and are required to initialize the library.
@@ -99,10 +112,9 @@ ComponentFiles::ComponentFiles(
     base::FilePath relative_path(relative_file_path);
 #endif
     const base::FilePath full_path = component_folder.Append(relative_path);
-
     model_files_[relative_path] =
         base::File(full_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (!model_files_[relative_path].IsValid()) {
+    if (!IsModelFileContentReadable(model_files_[relative_path])) {
       VLOG(0) << "Could not open " << full_path;
       model_files_.clear();
       return;

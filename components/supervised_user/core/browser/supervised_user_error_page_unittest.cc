@@ -32,7 +32,7 @@ TEST_P(SupervisedUserErrorPageTest_GetBlockMessageID, GetBlockMessageID) {
   BlockMessageIDTestParameter param = GetParam();
   EXPECT_EQ(param.expected_result,
             GetBlockMessageID(param.reason, param.single_parent))
-      << "reason = " << FilteringBehaviorReasonToString(param.reason)
+      << "reason = " << int(param.reason)
       << " single parent = " << param.single_parent;
 }
 

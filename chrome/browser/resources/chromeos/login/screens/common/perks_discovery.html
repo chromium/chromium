@@ -8,6 +8,10 @@ found in the LICENSE file.
     height: 48px;
     width: 48px;
   }
+  #perk-illustration {
+    max-width: 100%;
+    max-height: 100%;
+  }
   .illustration {
     display: flex;
     align-items: center;
@@ -49,7 +53,7 @@ found in the LICENSE file.
       [[getCurrentPerkAdditionalText(currentPerk)]]
     </p>
   </div>
-  <div slot="content" aria-hidden="true"
+  <div slot="content" id="perk-illustration" aria-hidden="true"
         class="flex layout vertical center center-justified">
     <template is="dom-repeat" items="{{perksList}}"
             rendered-item-count="{{itemIllustrationsRendered}}">

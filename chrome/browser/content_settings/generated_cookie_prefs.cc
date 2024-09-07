@@ -69,6 +69,8 @@ CookiePrimarySetting ToCookiePrimarySetting(
       return CookiePrimarySetting::BLOCK_THIRD_PARTY;
     case CookieControlsMode::kIncognitoOnly:
       return CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO;
+    case CookieControlsMode::kLimited:
+      return CookiePrimarySetting::LIMIT_THIRD_PARTY;
     case CookieControlsMode::kOff:
       return CookiePrimarySetting::ALLOW_ALL;
   }

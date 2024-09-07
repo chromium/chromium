@@ -237,8 +237,6 @@ class BASE_EXPORT ThreadGroup {
     void ScheduleStart(scoped_refptr<WorkerThread> worker);
     void ScheduleAdjustMaxTasks();
     void ScheduleReleaseTaskSource(RegisteredTaskSource task_source);
-    // Unlocks held_lock. Flushes this executor.
-    void FlushWorkerCreation(CheckedLock* held_lock);
 
    protected:
     explicit BaseScopedCommandsExecutor(ThreadGroup* outer);
@@ -256,7 +254,6 @@ class BASE_EXPORT ThreadGroup {
     absl::InlinedVector<scoped_refptr<WorkerThread>, 2> workers_to_start_;
     bool must_schedule_adjust_max_tasks_ = false;
   };
-  virtual std::unique_ptr<BaseScopedCommandsExecutor> GetExecutor() = 0;
 
   // Allows a task source to be pushed to a ThreadGroup's PriorityQueue at the
   // end of a scope, when all locks have been released.
@@ -332,24 +329,11 @@ class BASE_EXPORT ThreadGroup {
   void PushTaskSourceAndWakeUpWorkersImpl(
       BaseScopedCommandsExecutor* executor,
       RegisteredTaskSourceAndTransaction transaction_with_task_source);
-  void OnShutDownStartedImpl(BaseScopedCommandsExecutor* executor);
-
-  virtual ThreadGroupWorkerDelegate* GetWorkerDelegate(
-      WorkerThread* worker) = 0;
 
   // Returns the desired number of awake workers, given current workload and
   // concurrency limits.
   size_t GetDesiredNumAwakeWorkersLockRequired() const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  // Examines the list of WorkerThreads and increments |max_tasks_| for each
-  // worker that has been within the scope of a MAY_BLOCK ScopedBlockingCall for
-  // more than BlockedThreshold(). Reschedules a call if necessary.
-  void AdjustMaxTasks();
-
-  // Schedules AdjustMaxTasks() if required.
-  void MaybeScheduleAdjustMaxTasksLockRequired(
-      BaseScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Enqueues all task sources from `new_priority_queue` into this thread group.
   void EnqueueAllTaskSources(PriorityQueue* new_priority_queue);
@@ -367,9 +351,18 @@ class BASE_EXPORT ThreadGroup {
     return after_start().blocked_workers_poll_period;
   }
 
+  // Schedules AdjustMaxTasks() if required.
+  void MaybeScheduleAdjustMaxTasksLockRequired(
+      BaseScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Starts calling AdjustMaxTasks() periodically on
   // |service_thread_task_runner_|.
-  void ScheduleAdjustMaxTasks();
+  virtual void ScheduleAdjustMaxTasks() = 0;
+
+  // Examines the list of WorkerThreads and increments |max_tasks_| for each
+  // worker that has been within the scope of a MAY_BLOCK ScopedBlockingCall for
+  // more than BlockedThreshold(). Reschedules a call if necessary.
+  virtual void AdjustMaxTasks() = 0;
 
   // Returns true if AdjustMaxTasks() should periodically be called on
   // |service_thread_task_runner_|.

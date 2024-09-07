@@ -324,12 +324,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
 void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("useSystemDefaultPrinter", false);
-  source->AddBoolean(
-      "isPrintPreviewSetupAssistanceEnabled",
-      base::FeatureList::IsEnabled(::features::kPrintPreviewSetupAssistance));
-  source->AddBoolean(
-      "isLocalPrinterObservingEnabled",
-      base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
 #else
   bool system_default_printer = profile->GetPrefs()->GetBoolean(
       prefs::kPrintPreviewUseSystemDefaultPrinter);

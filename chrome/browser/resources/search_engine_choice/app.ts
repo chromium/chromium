@@ -2,32 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://search-engine-choice/tangible_sync_style_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import './strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import type {SearchEngineChoice} from './browser_proxy.js';
 import {SearchEngineChoiceBrowserProxy} from './browser_proxy.js';
 import {PageHandler_ScrollState} from './search_engine_choice.mojom-webui.js';
 import type {PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
 
-export interface SearchEngineChoiceAppElement {
+export interface AppElement {
   $: {
-    infoDialog: CrDialogElement,
     actionButton: CrButtonElement,
     infoLink: HTMLElement,
     choiceList: HTMLElement,
@@ -35,72 +34,55 @@ export interface SearchEngineChoiceAppElement {
   };
 }
 
-const SearchEngineChoiceAppElementBase = I18nMixin(PolymerElement);
+const AppElementBase = I18nMixinLit(CrLitElement);
 
-export class SearchEngineChoiceAppElement extends
-    SearchEngineChoiceAppElementBase {
+export class AppElement extends AppElementBase {
   static get is() {
     return 'search-engine-choice-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The choice list is passed as JSON because it doesn't change
        * dynamically, so it would be better to have it available as loadtime
        * data.
        */
-      choiceList_: {
-        type: Array,
-        value() {
-          return JSON.parse(loadTimeData.getString('choiceList'));
-        },
-      },
+      choiceList_: {type: Array},
 
       // The choice will always be > 0 when selected for prepopulated engines
       // and == 0 for a custom search engine.
-      selectedChoice_: {
-        type: Number,
-        value: -1,
-        observer: 'onSelectedChoiceChanged_',
-      },
+      selectedChoice_: {type: Number},
 
-      isActionButtonDisabled_: {
-        type: Boolean,
-        computed: 'computeActionButtonDisabled_(selectedChoice_, ' +
-            'hasUserScrolledToTheBottom_)',
-      },
-
-      actionButtonText_: {
-        type: String,
-        computed: 'getActionButtonText_(hasUserScrolledToTheBottom_)',
-      },
-
-      hasUserScrolledToTheBottom_: {
-        type: Boolean,
-        value: false,
-      },
-
-      snippetDisplayed_: Boolean,
+      isActionButtonDisabled_: {type: Boolean},
+      actionButtonText_: {type: String},
+      hasUserScrolledToTheBottom_: {type: Boolean},
+      showInfoDialog_: {type: Boolean},
     };
   }
 
-  private choiceList_: SearchEngineChoice[];
-  private selectedChoice_: string;
-  private pageHandler_: PageHandlerRemote;
-  private hasUserScrolledToTheBottom_: boolean;
-  private actionButtonText_: string;
-  private snippetDisplayed_: boolean;
-  private resizeObserver_: ResizeObserver|null = null;
+  protected choiceList_: SearchEngineChoice[] =
+      JSON.parse(loadTimeData.getString('choiceList'));
+  protected selectedChoice_: number = -1;
+  protected isActionButtonDisabled_: boolean = false;
+  protected hasUserScrolledToTheBottom_: boolean = false;
+  protected showInfoDialog_: boolean = false;
+  protected actionButtonText_: string = '';
+  protected showGuestCheckbox_: boolean =
+      loadTimeData.getBoolean('showGuestCheckbox');
+  protected saveGuestModeSearchEngineChoice_: boolean = false;
 
-  constructor() {
-    super();
-    this.pageHandler_ = SearchEngineChoiceBrowserProxy.getInstance().handler;
-  }
+  private resizeObserver_: ResizeObserver|null = null;
+  private pageHandler_: PageHandlerRemote =
+      SearchEngineChoiceBrowserProxy.getInstance().handler;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -114,16 +96,17 @@ export class SearchEngineChoiceAppElement extends
         // Fetch the favicon from the Favicon Service for custom search
         // engines.
         searchEngine.iconPath =
-            getFaviconForPageURL(searchEngine?.url!, false, '', 24);
+            getFaviconForPageURL(searchEngine.url!, false, '', 24);
       } else {
         searchEngine.iconPath = 'image-set(url(' + searchEngine.iconPath +
             ') 1x, url(' + searchEngine.iconPath + '@2x) 2x)';
       }
     });
+    this.requestUpdate();
 
     this.addResizeObserver_();
 
-    afterNextRender(this, () => {
+    this.updateComplete.then(() => {
       const isPageScrollable =
           document.body.scrollHeight > document.body.clientHeight;
 
@@ -143,6 +126,34 @@ export class SearchEngineChoiceAppElement extends
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.resizeObserver_!.disconnect();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('selectedChoice_')) {
+      this.onSelectedChoiceChanged_(
+          this.selectedChoice_,
+          changedPrivateProperties.get('selectedChoice_') as number |
+              undefined);
+    }
+
+    if (changedPrivateProperties.has('hasUserScrolledToTheBottom_')) {
+      this.actionButtonText_ = this.i18n(
+          this.hasUserScrolledToTheBottom_ ? 'submitButtonText' :
+                                             'moreButtonText');
+    }
+
+    if (changedPrivateProperties.has('hasUserScrolledToTheBottom_') ||
+        changedPrivateProperties.has('selectedChoice_')) {
+      // The action button will be disabled if the user scrolls to the bottom of
+      // the list without making a search engine choice.
+      this.isActionButtonDisabled_ =
+          this.hasUserScrolledToTheBottom_ && this.selectedChoice_ === -1;
+    }
   }
 
   private addResizeObserver_() {
@@ -178,25 +189,21 @@ export class SearchEngineChoiceAppElement extends
     this.resizeObserver_.observe(document.body);
   }
 
-  private onLinkClicked_() {
-    this.$.infoDialog.showModal();
+  protected onLinkClicked_(e: Event) {
+    e.preventDefault();
+    this.showInfoDialog_ = true;
     this.pageHandler_.handleLearnMoreLinkClicked();
   }
 
-  private needsUserChoice_() {
-    return parseInt(this.selectedChoice_) === -1;
+  protected onCheckboxStateChange_(e: CustomEvent<{value: boolean}>) {
+    this.saveGuestModeSearchEngineChoice_ = e.detail.value;
   }
 
-  // The action button will be disabled if the user scrolls to the bottom of
-  // the list without making a search engine choice.
-  private computeActionButtonDisabled_() {
-    return this.hasUserScrolledToTheBottom_ && this.needsUserChoice_();
-  }
-
-  private onActionButtonClicked_() {
+  protected onActionButtonClicked_() {
     if (this.hasUserScrolledToTheBottom_) {
       this.pageHandler_.handleSearchEngineChoiceSelected(
-          parseInt(this.selectedChoice_));
+          this.selectedChoice_,
+          this.showGuestCheckbox_ && this.saveGuestModeSearchEngineChoice_);
       return;
     }
 
@@ -219,12 +226,12 @@ export class SearchEngineChoiceAppElement extends
     window.removeEventListener('scrollend', this.onPageScrollEnd_.bind(this));
   }
 
-  private getMarketingSnippetClass_(item: SearchEngineChoice) {
+  protected getMarketingSnippetClass_(item: SearchEngineChoice) {
     return item.showMarketingSnippet ? '' : 'truncate-text';
   }
 
-  private onInfoDialogButtonClicked_() {
-    this.$.infoDialog.close();
+  protected onInfoDialogButtonClicked_() {
+    this.showInfoDialog_ = false;
   }
 
   private resetSnippetState_(prepopulatedId: number) {
@@ -236,7 +243,7 @@ export class SearchEngineChoiceAppElement extends
     const choice =
         this.choiceList_.find(elem => elem.prepopulateId === prepopulatedId)!;
     choice.showMarketingSnippet = false;
-    this.snippetDisplayed_ = false;
+    this.requestUpdate();
   }
 
   private showSearchEngineSnippet_(prepopulateId: number) {
@@ -249,19 +256,23 @@ export class SearchEngineChoiceAppElement extends
         this.choiceList_.find(elem => elem.prepopulateId === prepopulateId)!;
 
     choice.showMarketingSnippet = true;
-    this.snippetDisplayed_ = true;
+    this.requestUpdate();
   }
 
-  private onSelectedChoiceChanged_(
-      newPrepopulatedId: string, oldPrepopulatedId: string) {
+  protected onSelectedChoiceChangedByUser_(e: CustomEvent<{value: string}>) {
+    this.selectedChoice_ = Number.parseInt(e.detail.value);
+  }
+
+  protected onSelectedChoiceChanged_(
+      newPrepopulatedId: number, oldPrepopulatedId: number|undefined) {
     // No search engine selected.
-    if (parseInt(newPrepopulatedId) === -1) {
+    if (newPrepopulatedId === -1) {
       return;
     }
 
     chrome.metricsPrivate.recordUserAction('ExpandSearchEngineDescription');
-    this.resetSnippetState_(parseInt(oldPrepopulatedId));
-    this.showSearchEngineSnippet_(parseInt(newPrepopulatedId));
+    this.resetSnippetState_(oldPrepopulatedId as number);
+    this.showSearchEngineSnippet_(newPrepopulatedId);
   }
 
   private onPageResize_() {
@@ -288,19 +299,12 @@ export class SearchEngineChoiceAppElement extends
     this.pageHandler_.recordScrollState(this.getScrollState_());
     this.handleContentScrollStateUpdate_(/*forceFullyDisplayed=*/ true);
   }
-
-  private getActionButtonText_() {
-    return this.i18n(
-        this.hasUserScrolledToTheBottom_ ? 'submitButtonText' :
-                                           'moreButtonText');
-  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'search-engine-choice-app': SearchEngineChoiceAppElement;
+    'search-engine-choice-app': AppElement;
   }
 }
 
-customElements.define(
-    SearchEngineChoiceAppElement.is, SearchEngineChoiceAppElement);
+customElements.define(AppElement.is, AppElement);

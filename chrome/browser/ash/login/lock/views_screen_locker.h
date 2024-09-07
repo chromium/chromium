@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_LOCK_VIEWS_SCREEN_LOCKER_H_
 #define CHROME_BROWSER_ASH_LOGIN_LOCK_VIEWS_SCREEN_LOCKER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 
@@ -75,7 +77,9 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                        bool success);
   void UpdatePinKeyboardState(const AccountId& account_id);
   void UpdateChallengeResponseAuthAvailability(const AccountId& account_id);
-  void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);
+  void OnPinCanAuthenticate(const AccountId& account_id,
+                            bool can_authenticate,
+                            cryptohome::PinLockAvailability available_at);
 
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;
 

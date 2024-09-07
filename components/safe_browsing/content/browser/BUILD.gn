@@ -97,8 +97,8 @@ source_set("browser") {
     "threat_details_history.h",
     "unsafe_resource_util.cc",
     "unsafe_resource_util.h",
-    "url_checker_on_sb.cc",
-    "url_checker_on_sb.h",
+    "url_checker_holder.cc",
+    "url_checker_holder.h",
     "web_contents_key.cc",
     "web_contents_key.h",
   ]

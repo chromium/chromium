@@ -83,6 +83,8 @@ TEST_F(DownloadItemViewTest, AccessibleProperties) {
   ASSERT_TRUE(item_view);
   item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            item_view->GetStatusTextForTesting() + u" ");
 }
 
 }  // namespace

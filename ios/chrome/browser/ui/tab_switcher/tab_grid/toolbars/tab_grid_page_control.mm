@@ -213,7 +213,7 @@ TabGridPage ThirdTabGridPage() {
 
 - (instancetype)init {
   CGRect frame = CGRectMake(0, 0, kOverallWidth, kOverallHeight);
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     // Default to the regular tab page as the selected page.
     _selectedPage = TabGridPageRegularTabs;
 

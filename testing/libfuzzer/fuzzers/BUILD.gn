@@ -7,7 +7,6 @@
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
-import("//ui/gl/features.gni")
 import("//v8/gni/v8.gni")
 
 # root BUILD depends on this target. Needed for package discovery
@@ -31,14 +30,6 @@ fuzzer_test("string_compare_proto_fuzzer") {
     "//third_party/libprotobuf-mutator",
   ]
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-}
-
-fuzzer_test("courgette_fuzzer") {
-  sources = [ "courgette_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//courgette:courgette_lib",
-  ]
 }
 
 fuzzer_test("snappy_compress_fuzzer") {
@@ -454,93 +445,4 @@ test("paint_vector_icon_fuzztest") {
     "//third_party/fuzztest:fuzztest_gtest_main",
     "//ui/gfx:gfx",
   ]
-}
-
-proto_library("command_buffer_lpm_fuzzer_proto") {
-  sources = [ "command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.proto" ]
-
-  use_protobuf_full = true
-  deps = [ "//third_party/protobuf:protobuf_full" ]
-}
-
-if (!is_win) {
-  fuzzer_test("command_buffer_lpm_fuzzer") {
-    sources = [
-      "command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.cc",
-      "command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.h",
-      "command_buffer_lpm_fuzzer/webgpu_support.cc",
-      "command_buffer_lpm_fuzzer/webgpu_support.h",
-    ]
-
-    # This is a hack. These files should be pulled in as a result of the
-    # dependency on //gpu:webgpu which has a public dependency on
-    # //gpu/command_buffer/client:webgpu_sources, but for some reason these files
-    # get dropped in component builds, so manually add them to the sources here.
-    if (is_component_build) {
-      sources += [
-        "//gpu/command_buffer/client/webgpu_implementation.cc",
-        "//gpu/command_buffer/client/webgpu_implementation.h",
-      ]
-
-      if (use_dawn) {
-        sources += [
-          "//gpu/command_buffer/client/dawn_client_memory_transfer_service.cc",
-          "//gpu/command_buffer/client/dawn_client_memory_transfer_service.h",
-          "//gpu/command_buffer/client/dawn_client_serializer.cc",
-          "//gpu/command_buffer/client/dawn_client_serializer.h",
-        ]
-      }
-    }
-
-    deps = [
-      ":command_buffer_lpm_fuzzer_proto",
-      "//base",
-      "//base/test:test_support",
-      "//build:chromeos_buildflags",
-      "//components/viz/common:shared_image_format",
-      "//components/viz/test:test_support",  # TODO: huge; is there something
-                                             # more
-
-      # targeted?
-      "//content/public/common:static_switches",
-      "//gpu:gles2",
-      "//gpu:gpu",
-      "//gpu:test_support",
-      "//gpu:webgpu",
-      "//gpu/command_buffer/client",
-      "//gpu/command_buffer/client:gles2_c_lib",
-      "//gpu/command_buffer/client:gles2_implementation",
-      "//gpu/command_buffer/common",
-      "//gpu/command_buffer/common:gles2_utils",
-      "//gpu/command_buffer/service",
-      "//gpu/config",
-      "//gpu/ipc:gl_in_process_context",
-      "//gpu/ipc/client",
-      "//gpu/ipc/common",
-      "//gpu/ipc/host",
-      "//gpu/ipc/service:service",
-      "//gpu/webgpu:common",
-      "//mojo/core/embedder",
-      "//mojo/core/embedder",
-      "//mojo/public/cpp/bindings",
-      "//testing/gmock",
-      "//testing/gtest:gtest",
-      "//third_party/libprotobuf-mutator",
-      "//ui/gfx:gfx",
-      "//ui/gl:gl",
-      "//ui/gl:test_support",
-      "//ui/gl/init:init",
-      "//url",
-    ]
-
-    if (use_dawn) {
-      deps += [
-        "//third_party/dawn/include/dawn:cpp_headers",
-        "//third_party/dawn/src/dawn:proc",
-        "//third_party/dawn/src/dawn/native",
-      ]
-    }
-
-    libfuzzer_options = [ "max_len=16384" ]
-  }
 }

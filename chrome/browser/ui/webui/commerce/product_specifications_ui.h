@@ -18,6 +18,10 @@ namespace base {
 class RefCountedMemory;
 }
 
+namespace content {
+class BrowserContext;
+}
+
 namespace ui {
 class ColorChangeHandler;
 }
@@ -68,6 +72,8 @@ class ProductSpecificationsUIConfig
  public:
   ProductSpecificationsUIConfig();
   ~ProductSpecificationsUIConfig() override;
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 }  // namespace commerce

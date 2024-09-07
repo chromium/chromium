@@ -11,9 +11,9 @@
     [Measure, RaisesException]
     constructor (RTCEncodedAudioFrame originalFrame, optional RTCEncodedAudioFrameOptions options = {});
     readonly attribute unsigned long timestamp;  // RTP timestamp.
-    attribute ArrayBuffer data;
+    [CallWith=ExecutionContext] attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();
-    stringifier;
+    [CallWith=ExecutionContext] stringifier;
   [RuntimeEnabled=RTCEncodedFrameSetMetadata, Measure, RaisesException]
   void setMetadata(RTCEncodedAudioFrameMetadata metadata);
 };

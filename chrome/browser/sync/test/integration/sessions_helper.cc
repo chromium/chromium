@@ -87,6 +87,20 @@ bool SessionsSyncBridgeHasTabWithURL(int browser_index, const GURL& url) {
   return false;
 }
 
+bool CompareSyncedSessions(const sync_sessions::SyncedSession* lhs,
+                           const sync_sessions::SyncedSession* rhs) {
+  if (!lhs || !rhs || lhs->windows.empty() || rhs->windows.empty()) {
+    // Catchall for uncomparable data.
+    return false;
+  }
+
+  return lhs->windows < rhs->windows;
+}
+
+void SortSyncedSessions(SyncedSessionVector* sessions) {
+  base::ranges::sort(*sessions, CompareSyncedSessions);
+}
+
 }  // namespace
 
 bool GetLocalSession(int browser_index,
@@ -123,33 +137,6 @@ bool OpenMultipleTabs(int browser_index, const std::vector<GURL>& urls) {
     ShowSingletonTab(browser, url);
   }
   return WaitForTabsToLoad(browser_index, urls);
-}
-
-bool OpenTabFromSourceIndex(int browser_index,
-                            int index_of_source_tab,
-                            const GURL& url,
-                            WindowOpenDisposition disposition) {
-  content::WebContents* source_contents =
-      test()
-          ->GetBrowser(browser_index)
-          ->tab_strip_model()
-          ->GetWebContentsAt(index_of_source_tab);
-
-  content::OpenURLParams open_url_params(url, content::Referrer(), disposition,
-                                         ui::PAGE_TRANSITION_LINK, false,
-                                         false);
-  open_url_params.source_render_frame_id =
-      source_contents->GetPrimaryMainFrame()->GetRoutingID();
-  open_url_params.source_render_process_id =
-      source_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
-
-  content::WebContents* new_contents = source_contents->OpenURL(
-      open_url_params, /*navigation_handle_callback=*/{});
-  if (!new_contents) {
-    return false;
-  }
-
-  return WaitForTabToLoad(browser_index, url, new_contents);
 }
 
 void CloseTab(int browser_index, int tab_index) {
@@ -192,14 +179,6 @@ void NavigateTabForward(int browser_index) {
   content::TestNavigationObserver observer(web_contents);
   web_contents->GetController().GoForward();
   observer.WaitForNavigationFinished();
-}
-
-bool ExecJs(int browser_index, int tab_index, const std::string& script) {
-  return content::ExecJs(test()
-                             ->GetBrowser(browser_index)
-                             ->tab_strip_model()
-                             ->GetWebContentsAt(tab_index),
-                         script);
 }
 
 bool WaitForTabsToLoad(int browser_index, const std::vector<GURL>& urls) {
@@ -310,20 +289,6 @@ bool GetSessionData(int browser_index, SyncedSessionVector* sessions) {
   }
   SortSyncedSessions(sessions);
   return true;
-}
-
-bool CompareSyncedSessions(const sync_sessions::SyncedSession* lhs,
-                           const sync_sessions::SyncedSession* rhs) {
-  if (!lhs || !rhs || lhs->windows.empty() || rhs->windows.empty()) {
-    // Catchall for uncomparable data.
-    return false;
-  }
-
-  return lhs->windows < rhs->windows;
-}
-
-void SortSyncedSessions(SyncedSessionVector* sessions) {
-  base::ranges::sort(*sessions, CompareSyncedSessions);
 }
 
 bool NavigationEquals(const sessions::SerializedNavigationEntry& expected,

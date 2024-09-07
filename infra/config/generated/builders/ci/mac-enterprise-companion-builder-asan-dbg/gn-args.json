@@ -1,0 +1,13 @@
+{
+  "gn_args": {
+    "enable_enterprise_companion": true,
+    "is_asan": true,
+    "is_component_build": false,
+    "is_debug": true,
+    "symbol_level": 1,
+    "target_cpu": "x64",
+    "target_os": "mac",
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

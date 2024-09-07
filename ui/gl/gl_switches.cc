@@ -141,6 +141,9 @@ const char kEnableDirectCompositionVideoOverlays[] =
 // only used on Windows, as LUID is a Windows specific structure.
 const char kUseAdapterLuid[] = "use-adapter-luid";
 
+// Allow usage of SwiftShader for WebGL
+const char kEnableUnsafeSwiftShader[] = "enable-unsafe-swiftshader";
+
 // Used for overriding the swap chain format for direct composition SDR video
 // overlays.
 const char kDirectCompositionVideoSwapChainFormat[] =
@@ -162,6 +165,7 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kEnableSwapBuffersWithBounds,
     kEnableDirectCompositionVideoOverlays,
     kDirectCompositionVideoSwapChainFormat,
+    kEnableUnsafeSwiftShader,
 };
 const size_t kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
     std::size(kGLSwitchesCopiedFromGpuProcessHost);

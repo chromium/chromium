@@ -1391,7 +1391,8 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   HistoryItem::ViewState view_state;
   view_state.scroll_offset_ = ScrollOffset(0, 100);
-  scrollable_area->SetPendingHistoryRestoreScrollOffset(view_state, true);
+  scrollable_area->SetPendingHistoryRestoreScrollOffset(
+      view_state, true, mojom::blink::ScrollBehavior::kAuto);
   scrollable_area->ApplyPendingHistoryRestoreScrollOffset();
   EXPECT_EQ(ScrollOffset(0, 100), scrollable_area->GetScrollOffset());
 
@@ -1650,13 +1651,8 @@ TEST_P(PaintLayerScrollableAreaTest, UsedColorSchemeRootScrollbarsDark) {
       mojom::blink::PreferredColorScheme::kDark);
   UpdateAllLifecyclePhasesForTest();
 
-  if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled()) {
-    EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
-              mojom::blink::ColorScheme::kDark);
-  } else {
-    EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
-              mojom::blink::ColorScheme::kLight);
-  }
+  EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kDark);
   EXPECT_EQ(non_root_scrollable_area_dark->UsedColorSchemeScrollbars(),
             mojom::blink::ColorScheme::kDark);
   EXPECT_EQ(non_root_scrollable_area_normal->UsedColorSchemeScrollbars(),
@@ -1806,11 +1802,7 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   // Root scrollbars should be set for invalidation after the color scheme
   // change.
-  if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled()) {
-    ExpectEqAllScrollControlsNeedPaintInvalidation(root_scrollable_area, true);
-  } else {
-    ExpectEqAllScrollControlsNeedPaintInvalidation(root_scrollable_area, false);
-  }
+  ExpectEqAllScrollControlsNeedPaintInvalidation(root_scrollable_area, true);
 
   // Non root scrollbars should not change.
   ExpectEqAllScrollControlsNeedPaintInvalidation(non_root_scrollable_area,
@@ -1858,23 +1850,14 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   // Root scrollbars should be set for invalidation after the color scheme
   // change.
-  if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled()) {
-    ExpectEqAllScrollControlsNeedPaintInvalidation(root_scrollable_area, true);
-  } else {
-    ExpectEqAllScrollControlsNeedPaintInvalidation(root_scrollable_area, false);
-  }
+  ExpectEqAllScrollControlsNeedPaintInvalidation(root_scrollable_area, true);
 
   // Non root scrollbars should not change.
   ExpectEqAllScrollControlsNeedPaintInvalidation(non_root_scrollable_area,
                                                  false);
 
-  if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled()) {
-    EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
-              mojom::blink::ColorScheme::kDark);
-  } else {
-    EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
-              mojom::blink::ColorScheme::kLight);
-  }
+  EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kDark);
 }
 
 TEST_P(PaintLayerScrollableAreaTest,
@@ -1897,9 +1880,8 @@ TEST_P(PaintLayerScrollableAreaTest,
   UpdateAllLifecyclePhasesForTest();
 
   root_scrollable_area->UsedColorSchemeScrollbars();
-  EXPECT_EQ(GetDocument().IsUseCounted(
-                WebFeature::kUsedColorSchemeRootScrollbarsDark),
-            RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled());
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kUsedColorSchemeRootScrollbarsDark));
 }
 
 // TODO(crbug.com/1020913): Actually this tests a situation that should not

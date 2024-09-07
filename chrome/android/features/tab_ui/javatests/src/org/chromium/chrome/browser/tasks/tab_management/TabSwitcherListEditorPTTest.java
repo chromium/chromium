@@ -16,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -26,7 +28,6 @@ import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -52,12 +53,13 @@ public class TabSwitcherListEditorPTTest {
         editor.pressBackToExit();
 
         // Go back to PageStation for InitialStateRule to reset
-        PageStation previousPage = tabSwitcher.leaveHubToPreviousTabViaBack();
-        assertFinalDestination(previousPage);
+        firstPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+        assertFinalDestination(firstPage);
     }
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testCreateTabGroupOf1() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -68,12 +70,13 @@ public class TabSwitcherListEditorPTTest {
         editor.openAppMenuWithEditor().groupTabs();
 
         // Go back to PageStation for InitialStateRule to reset
-        PageStation previousPage = tabSwitcher.leaveHubToPreviousTabViaBack();
-        assertFinalDestination(previousPage);
+        firstPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+        assertFinalDestination(firstPage);
     }
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testCreateTabGroupOf2() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -87,8 +90,9 @@ public class TabSwitcherListEditorPTTest {
         editor.openAppMenuWithEditor().groupTabs();
 
         // Go back to PageStation for InitialStateRule to reset
-        PageStation previousPage = tabSwitcher.leaveHubToPreviousTabViaBack();
-        assertFinalDestination(previousPage);
+        secondPage =
+                tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
+        assertFinalDestination(secondPage);
     }
 
     @Test
@@ -111,13 +115,14 @@ public class TabSwitcherListEditorPTTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> tabSwitcher.getActivity().getSnackbarManager().dismissAllSnackbars());
 
-        PageStation newPage = tabSwitcher.openNewTab();
-        assertFinalDestination(newPage);
+        RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
+        assertFinalDestination(ntp);
     }
 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    @DisabledTest(message = "crbug.com/360800262")
     public void testCreateTabGroupOf2_parity() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -135,7 +140,8 @@ public class TabSwitcherListEditorPTTest {
         dialog.pressDone();
 
         // Go back to PageStation for InitialStateRule to reset
-        PageStation previousPage = tabSwitcher.leaveHubToPreviousTabViaBack();
-        assertFinalDestination(previousPage);
+        secondPage =
+                tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
+        assertFinalDestination(secondPage);
     }
 }

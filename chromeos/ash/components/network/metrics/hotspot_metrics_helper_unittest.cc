@@ -159,7 +159,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotAllowStatusHistogram) {
 
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   SetHotspotAllowStatus(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoMobileData);
   histogram_tester_.ExpectTotalCount(
@@ -195,7 +195,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotAllowStatusHistogram) {
 TEST_F(HotspotMetricsHelperTest, HotspotUsageConfigHistogram) {
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   auto mojom_config = hotspot_config::mojom::HotspotConfig::New();
   mojom_config->auto_disable = true;
   mojom_config->band = hotspot_config::mojom::WiFiBand::kAutoChoose;

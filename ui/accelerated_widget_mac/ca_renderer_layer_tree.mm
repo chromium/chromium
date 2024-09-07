@@ -1150,6 +1150,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
       if (update_contents) {
         metal::UpdateHDRCopierLayer(ca_layer_, io_surface_.get(),
                                     tree()->metal_device_,
+                                    tree()->display_hdr_headroom_,
                                     io_surface_color_space_, hdr_metadata_);
       }
       break;

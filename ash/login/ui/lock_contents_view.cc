@@ -27,7 +27,6 @@
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view_constants.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/lock_screen_media_view.h"
 #include "ash/login/ui/login_auth_user_view.h"
 #include "ash/login/ui/login_big_user_view.h"
@@ -45,6 +44,7 @@
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/management_disclosure_client.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -79,7 +79,6 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_type.h"
-#include "media/base/media_switches.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -156,6 +155,12 @@ keyboard::KeyboardUIController* GetKeyboardControllerForWidget(
 
 bool IsPublicAccountUser(const LoginUserInfo& user) {
   return user.basic_user_info.type == user_manager::UserType::kPublicAccount;
+}
+
+bool IsTimeInFuture(cryptohome::PinLockAvailability available_time) {
+  return available_time.has_value() &&
+         available_time.value() > base::Time::Now() &&
+         available_time.value() < base::Time::Max();
 }
 
 //
@@ -334,6 +339,11 @@ LockContentsView::LockContentsView(
   bottom_status_indicator_->SetLayoutManager(
       std::move(bottom_status_indicator_layout));
 
+  // TODO(b/330527825): Implement the management disclosure client that will be
+  // used to display the new disclosure.
+  // SetManagementDisclosureClient(
+  // Shell::Get()->login_screen_controller()->GetManagementDisclosureClient());
+
   std::string enterprise_domain_manager = Shell::Get()
                                               ->system_tray_model()
                                               ->enterprise_domain()
@@ -393,6 +403,10 @@ LockContentsView::LockContentsView(
   }
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(screen_type_ == LockScreen::ScreenType::kLogin
+                                    ? IDS_ASH_LOGIN_SCREEN_ACCESSIBLE_NAME
+                                    : IDS_ASH_LOCK_SCREEN_ACCESSIBLE_NAME));
 }
 
 LockContentsView::~LockContentsView() {
@@ -559,6 +573,11 @@ void LockContentsView::SetHasKioskApp(bool has_kiosk_apps) {
   UpdateKioskDefaultMessageVisibility();
 }
 
+void LockContentsView::SetManagementDisclosureClient(
+    ManagementDisclosureClient* client) {
+  management_disclosure_client_ = client;
+}
+
 void LockContentsView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
   LayoutTopHeader();
@@ -629,10 +648,6 @@ void LockContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfWidget* shelf_widget = shelf->shelf_widget();
   GetViewAccessibility().SetNextFocus(shelf_widget);
   GetViewAccessibility().SetPreviousFocus(shelf->GetStatusAreaWidget());
-  node_data->SetName(
-      l10n_util::GetStringUTF16(screen_type_ == LockScreen::ScreenType::kLogin
-                                    ? IDS_ASH_LOGIN_SCREEN_ACCESSIBLE_NAME
-                                    : IDS_ASH_LOCK_SCREEN_ACCESSIBLE_NAME));
 }
 
 bool LockContentsView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -669,7 +684,6 @@ void LockContentsView::ApplyUserChanges(
   opt_secondary_big_view_ = nullptr;
   users_list_ = nullptr;
   middle_spacing_view_ = nullptr;
-  media_controls_view_ = nullptr;
   media_view_ = nullptr;
   layout_actions_.clear();
   pending_users_change_.reset();
@@ -812,6 +826,11 @@ void LockContentsView::OnUserAuthFactorsChanged(
   state->autosubmit_pin_length =
       user_manager::KnownUser(Shell::Get()->local_state())
           .GetUserPinLength(user);
+  // If PIN is enabled, or PIN is disabled and permanently locked, reset
+  // the `pin_available_at` as it's meaningless.
+  if (enable_pin || !IsTimeInFuture(state->pin_available_at)) {
+    state->pin_available_at = std::nullopt;
+  }
   state->show_challenge_response_auth = enable_smart_card;
 
   LoginBigUserView* big_user =
@@ -821,14 +840,23 @@ void LockContentsView::OnUserAuthFactorsChanged(
   }
 }
 
-void LockContentsView::OnPinEnabledForUserChanged(const AccountId& user,
-                                                  bool enabled) {
+void LockContentsView::OnPinEnabledForUserChanged(
+    const AccountId& user,
+    bool enabled,
+    cryptohome::PinLockAvailability available_at) {
   UserState* state = FindStateForUser(user);
   if (!state) {
     LOG(ERROR) << "Unable to find user when changing PIN state to " << enabled;
     return;
   }
-  if (state->show_pin == enabled) {
+
+  // If PIN is enabled, or PIN is disabled and permanently locked, reset
+  // the `pin_available_at` as it's meaningless.
+  if (enabled || !IsTimeInFuture(available_at)) {
+    available_at = std::nullopt;
+  }
+
+  if (state->show_pin == enabled && state->pin_available_at == available_at) {
     LOG(WARNING)
         << "Unexpected call to OnPinEnabledForUserChanged; state unchanged.";
     return;
@@ -838,6 +866,7 @@ void LockContentsView::OnPinEnabledForUserChanged(const AccountId& user,
   state->autosubmit_pin_length =
       user_manager::KnownUser(Shell::Get()->local_state())
           .GetUserPinLength(user);
+  state->pin_available_at = available_at;
 
   LoginBigUserView* big_user =
       TryToFindBigUser(user, true /*require_auth_active*/);
@@ -1009,7 +1038,7 @@ void LockContentsView::OnAuthDisabledForUser(
 
   if (auth_disabled_data.disable_lock_screen_media) {
     Shell::Get()->media_controller()->SuspendMediaSessions();
-    HideMediaControlsLayout();
+    HideMediaView();
   }
 
   LoginBigUserView* big_user =
@@ -1416,21 +1445,12 @@ void LockContentsView::SetLowDensitySpacing(views::View* spacing_middle,
                            std::min(available_width, desired_width));
 }
 
-void LockContentsView::SetMediaControlsSpacing(bool landscape) {
+void LockContentsView::SetMediaViewSpacing(bool landscape) {
   int total_width = GetPreferredSize().width();
 
-  auto get_media_view_width = [&media_controls_view = media_controls_view_,
-                               &media_view = media_view_]() {
-    if (media_controls_view) {
-      return media_controls_view->GetPreferredSize().width();
-    }
-    CHECK(media_view);
-    return media_view->GetPreferredSize().width();
-  };
-
   int available_width =
-      total_width -
-      (primary_big_view_->GetPreferredSize().width() + get_media_view_width());
+      total_width - (primary_big_view_->GetPreferredSize().width() +
+                     media_view_->GetPreferredSize().width());
   if (available_width <= 0) {
     SetPreferredWidthForView(middle_spacing_view_, 0);
     return;
@@ -1446,22 +1466,26 @@ void LockContentsView::SetMediaControlsSpacing(bool landscape) {
   SetPreferredWidthForView(middle_spacing_view_, desired_width);
 }
 
-bool LockContentsView::AreMediaControlsEnabled() const {
-  return screen_type_ == LockScreen::ScreenType::kLock &&
-         !expanded_view_->GetVisible() &&
-         Shell::Get()->media_controller()->AreLockScreenMediaKeysEnabled();
+void LockContentsView::CreateMediaView() {
+  CHECK(middle_spacing_view_);
+  middle_spacing_view_->SetVisible(true);
+
+  CHECK(media_view_);
+  media_view_->SetVisible(true);
+
+  // Set |spacing_middle|.
+  AddDisplayLayoutAction(base::BindRepeating(
+      &LockContentsView::SetMediaViewSpacing, base::Unretained(this)));
+
+  DeprecatedLayoutImmediately();
 }
 
-void LockContentsView::HideMediaControlsLayout() {
+void LockContentsView::HideMediaView() {
   CHECK(middle_spacing_view_);
   middle_spacing_view_->SetVisible(false);
 
-  if (media_controls_view_) {
-    media_controls_view_->SetVisible(false);
-  } else {
-    CHECK(media_view_);
-    media_view_->SetVisible(false);
-  }
+  CHECK(media_view_);
+  media_view_->SetVisible(false);
 
   // Don't allow media keys to be used on lock screen since controls are hidden.
   Shell::Get()->media_controller()->SetMediaControlsDismissed(true);
@@ -1469,22 +1493,10 @@ void LockContentsView::HideMediaControlsLayout() {
   DeprecatedLayoutImmediately();
 }
 
-void LockContentsView::CreateMediaControlsLayout() {
-  CHECK(middle_spacing_view_);
-  middle_spacing_view_->SetVisible(true);
-
-  if (media_controls_view_) {
-    media_controls_view_->SetVisible(true);
-  } else {
-    CHECK(media_view_);
-    media_view_->SetVisible(true);
-  }
-
-  // Set |spacing_middle|.
-  AddDisplayLayoutAction(base::BindRepeating(
-      &LockContentsView::SetMediaControlsSpacing, base::Unretained(this)));
-
-  DeprecatedLayoutImmediately();
+bool LockContentsView::AreMediaControlsEnabled() const {
+  return screen_type_ == LockScreen::ScreenType::kLock &&
+         !expanded_view_->GetVisible() &&
+         Shell::Get()->media_controller()->AreLockScreenMediaKeysEnabled();
 }
 
 void LockContentsView::OnWillChangeFocus(View* focused_before,
@@ -1559,36 +1571,21 @@ void LockContentsView::CreateLowDensityLayout(
 
   primary_big_view_ = main_view_->AddChildView(std::move(primary_big_view));
 
-  // Space between primary user and media controls.
+  // Space between primary user and the media view.
   middle_spacing_view_ =
       main_view_->AddChildView(std::make_unique<NonAccessibleView>());
   middle_spacing_view_->SetVisible(false);
 
   // Build the view for media controls. Using base::Unretained(this) is safe
   // here because these callbacks are used by a media view owned by |this|.
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    media_view_ =
-        main_view_->AddChildView(std::make_unique<LockScreenMediaView>(
-            base::BindRepeating(&LockContentsView::AreMediaControlsEnabled,
-                                base::Unretained(this)),
-            base::BindRepeating(&LockContentsView::CreateMediaControlsLayout,
-                                base::Unretained(this)),
-            base::BindRepeating(&LockContentsView::HideMediaControlsLayout,
-                                base::Unretained(this))));
-    media_view_->SetVisible(false);
-  } else {
-    LockScreenMediaControlsView::Callbacks media_controls_callbacks;
-    media_controls_callbacks.media_controls_enabled = base::BindRepeating(
-        &LockContentsView::AreMediaControlsEnabled, base::Unretained(this));
-    media_controls_callbacks.hide_media_controls = base::BindRepeating(
-        &LockContentsView::HideMediaControlsLayout, base::Unretained(this));
-    media_controls_callbacks.show_media_controls = base::BindRepeating(
-        &LockContentsView::CreateMediaControlsLayout, base::Unretained(this));
-    media_controls_view_ =
-        main_view_->AddChildView(std::make_unique<LockScreenMediaControlsView>(
-            media_controls_callbacks));
-    media_controls_view_->SetVisible(false);
-  }
+  media_view_ = main_view_->AddChildView(std::make_unique<LockScreenMediaView>(
+      base::BindRepeating(&LockContentsView::AreMediaControlsEnabled,
+                          base::Unretained(this)),
+      base::BindRepeating(&LockContentsView::CreateMediaView,
+                          base::Unretained(this)),
+      base::BindRepeating(&LockContentsView::HideMediaView,
+                          base::Unretained(this))));
+  media_view_->SetVisible(false);
 
   if (users.size() > 1) {
     // Space between primary user and secondary user.
@@ -1943,6 +1940,7 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
             GetKeyboardControllerForView() ? keyboard_shown_ : false;
         auth_metadata.show_pinpad_for_pw = state->show_pin_pad_for_password;
         auth_metadata.autosubmit_pin_length = state->autosubmit_pin_length;
+        auth_metadata.pin_available_at = state->pin_available_at;
         if (state->show_pin) {
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
         }
@@ -2178,6 +2176,8 @@ std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(
       base::BindRepeating(
           &LockContentsView::OnAuthFactorIsHidingPasswordChanged,
           base::Unretained(this), user.basic_user_info.account_id);
+  auth_user_callbacks.on_pin_unlock = base::BindRepeating(
+      &LockContentsView::OnPinUnlock, base::Unretained(this), is_primary);
 
   LoginPublicAccountUserView::Callbacks public_account_callbacks;
   public_account_callbacks.on_tap = auth_user_callbacks.on_tap;
@@ -2410,6 +2410,15 @@ void LockContentsView::RecordAndResetPasswordAttempts(
   AuthEventsRecorder::Get()->OnExistingUserLoginScreenExit(
       outcome, unlock_attempt_by_user_[account_id]);
   unlock_attempt_by_user_[account_id] = 0;
+}
+
+void LockContentsView::OnPinUnlock(bool is_primary) {
+  LoginBigUserView* to_update =
+      is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
+  AccountId user = to_update->GetCurrentUser().basic_user_info.account_id;
+  data_dispatcher_->SetPinEnabledForUser(user, true,
+                                         /*avaiable_at*/ std::nullopt);
+  HideAuthErrorMessage();
 }
 
 BEGIN_METADATA(LockContentsView)

@@ -10,6 +10,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "device/vr/android/local_texture.h"
+#include "device/vr/android/web_xr_presentation_state.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_bindings.h"
@@ -30,8 +32,6 @@ struct SyncToken;
 namespace device {
 
 class MailboxToSurfaceBridge;
-class WebXrPresentationState;
-struct WebXrSharedBuffer;
 
 using XrFrameCallback = base::RepeatingCallback<void(const gfx::Transform&)>;
 using XrInitStatusCallback = base::OnceCallback<void(bool success)>;
@@ -46,6 +46,8 @@ class XrImageTransportBase {
   // If true, use shared buffer transport aka DRAW_INTO_TEXTURE_MAILBOX.
   // If false, use Surface transport aka SUBMIT_AS_MAILBOX_HOLDER.
   static bool UseSharedBuffer();
+
+  static GLuint SharedBufferTextureTarget();
 
   explicit XrImageTransportBase(
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
@@ -105,12 +107,12 @@ class XrImageTransportBase {
   // renderer has most recently populated and submitted back to the device for
   // rendering. There must be a texture in the `RenderingFrame` state of the
   // `WebXrPresentationState` machine for this to properly return data.
-  GLuint GetRenderingTextureId(WebXrPresentationState* webxr);
+  LocalTexture GetRenderingTexture(WebXrPresentationState* webxr);
 
   // Runs before the rest of the initialization for the XrImageTransport to
   // allow for any specialized gl context setup or other setup that may be
   // needed by the particular runtime that's in use.
-  virtual void DoRuntimeInitialization() = 0;
+  virtual void DoRuntimeInitialization(int texture_target) = 0;
 
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 
@@ -130,7 +132,7 @@ class XrImageTransportBase {
   // Used for Surface transport (Android N)
   //
   // samplerExternalOES texture data for WebXR content image.
-  GLuint transport_texture_id_ = 0;
+  LocalTexture transport_texture_;
   gfx::Size surface_size_;
   scoped_refptr<gl::SurfaceTexture> transport_surface_texture_;
   gfx::Transform transport_surface_texture_uv_transform_;

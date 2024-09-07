@@ -66,6 +66,12 @@ class AutoPipSettingHelper {
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
 
+  // Called by the AutoPictureInPictureTabHelper when automatic
+  // picture-in-picture has been preemptively blocked. Used to record associated
+  // `Media.AutoPictureInPicture.PromptResultV2` metrics.
+  void OnAutoPipBlockedByPermission();
+  void OnAutoPipBlockedByIncognito();
+
  private:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -84,7 +90,24 @@ class AutoPipSettingHelper {
     // The user chose to allow automatic picture-in-picture this time.
     kAllowOnce = 3,
 
-    kMaxValue = kAllowOnce,
+    // The prompt was not shown because the user has already allowed automatic
+    // picture-in-picture for every visit.
+    kNotShownAllowedOnEveryVisit = 4,
+
+    // The prompt was not shown because the user has already allowed automatic
+    // picture-in-picture for this visit.
+    kNotShownAllowedOnce = 5,
+
+    // The prompt was not shown because the user has already blocked automatic
+    // picture-in-picture (and therefore no picture-in-picture was shown at
+    // all).
+    kNotShownBlocked = 6,
+
+    // The prompt was not shown because automatic picture-in-picture was blocked
+    // due to the user being in incognito mode.
+    kNotShownIncognito = 7,
+
+    kMaxValue = kNotShownIncognito,
   };
 
   // Returns the content setting, modified as needed by any embargo.

@@ -45,12 +45,15 @@ class CastStreamingIntegrationTest(
     # This property actually comes off the class, not 'self'.
     tab = self.tab
 
+    tab.action_runner.WaitForJavaScriptCondition(
+        'document.readyState === "complete"')
+
     # Request a frame.
     tab.ExecuteJavaScript('domAutomationController.setFrameRequest(1)')
 
     # Wait until the test is done.
     tab.action_runner.WaitForJavaScriptCondition(
-        'domAutomationController._done', timeout=10)
+        'domAutomationController._done')
     has_failed = tab.EvaluateJavaScript('domAutomationController._failure')
 
     try:
@@ -58,7 +61,7 @@ class CastStreamingIntegrationTest(
         self.fail('page indicated test failure')
       else:
         # Actually run the test and capture the screenshot.
-        screenshot = tab.Screenshot(5)
+        screenshot = tab.Screenshot()
         self._UploadTestResultToSkiaGold(page.name, screenshot, page)
     finally:
       self._RestartBrowser('Must restart after every test')

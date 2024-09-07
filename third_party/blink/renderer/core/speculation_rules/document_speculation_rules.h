@@ -71,16 +71,16 @@ class CORE_EXPORT DocumentSpeculationRules
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 
+  // Requests a future call to UpdateSpeculationCandidates, if none is yet
+  // scheduled.
+  void QueueUpdateSpeculationCandidates(bool force_style_update = false);
+
   void Trace(Visitor*) const override;
 
  private:
   // Retrieves a valid proxy to the speculation host in the browser.
   // May be null if the execution context does not exist.
   mojom::blink::SpeculationHost* GetHost();
-
-  // Requests a future call to UpdateSpeculationCandidates, if none is yet
-  // scheduled.
-  void QueueUpdateSpeculationCandidates(bool force_style_update = false);
 
   // Executes in a microtask after QueueUpdateSpeculationCandidates.
   void UpdateSpeculationCandidatesMicrotask();

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_list_view.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/text_constants.h"
@@ -28,9 +29,12 @@ RelaunchChromeView::RelaunchChromeView(content::WebContents* web_contents,
       controller_(PasswordsModelDelegateFromWebContents(web_contents), prefs) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_.GetContinueButtonText());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_.GetNoThanksButtonText());
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller_.GetContinueButtonText());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 controller_.GetNoThanksButtonText());
 
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());

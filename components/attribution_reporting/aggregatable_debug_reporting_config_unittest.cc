@@ -42,7 +42,7 @@ using ::testing::Pair;
 using ::testing::Property;
 using ::testing::SizeIs;
 
-constexpr size_t kNumSourceDebugDataTypes = 13;
+constexpr size_t kNumSourceDebugDataTypes = 15;
 constexpr size_t kNumTriggerDebugDataTypes = 21;
 
 TEST(AggregatableDebugReportingConfig, Parse) {
@@ -836,6 +836,10 @@ TEST(AggregatableDebugReportingConfig, SourceDebugDataTypes) {
           DebugDataType::kSourceReportingOriginPerSiteLimit,
       },
       {
+          "source-scopes-channel-capacity-limit",
+          DebugDataType::kSourceScopesChannelCapacityLimit,
+      },
+      {
           "source-storage-limit",
           DebugDataType::kSourceStorageLimit,
       },
@@ -846,6 +850,10 @@ TEST(AggregatableDebugReportingConfig, SourceDebugDataTypes) {
       {
           "source-trigger-state-cardinality-limit",
           DebugDataType::kSourceTriggerStateCardinalityLimit,
+      },
+      {
+          "source-max-event-states-limit",
+          DebugDataType::kSourceMaxEventStatesLimit,
       },
       {
           "source-unknown-error",

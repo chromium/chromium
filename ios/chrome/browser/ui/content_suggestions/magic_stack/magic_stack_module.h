@@ -26,8 +26,13 @@ enum class ContentSuggestionsModuleType;
 // The type of the module config.
 @property(nonatomic, assign, readonly) ContentSuggestionsModuleType type;
 
-// YES if the "See More" button should be shown for this module.
+// YES to display the "See More" button for this module.
+// This button takes precedence over the notifications opt-in button.
 @property(nonatomic, assign) BOOL shouldShowSeeMore;
+
+// YES to display the notifications opt-in button for this module.
+// This button is hidden if the "See More" button is shown.
+@property(nonatomic, assign) BOOL showNotificationsOptIn;
 
 // The delegate of the module.
 @property(nonatomic, weak) id<MagicStackModuleDelegate> delegate;

@@ -392,6 +392,7 @@ class CORE_EXPORT Node : public EventTarget {
   virtual bool IsPseudoElement() const { return false; }
   virtual bool IsScrollMarkerPseudoElement() const { return false; }
   virtual bool IsScrollMarkerGroupPseudoElement() const { return false; }
+  virtual bool IsScrollButtonPseudoElement() const { return false; }
   virtual bool IsMediaControlElement() const { return false; }
   virtual bool IsMediaControls() const { return false; }
   virtual bool IsMediaElement() const { return false; }
@@ -402,6 +403,11 @@ class CORE_EXPORT Node : public EventTarget {
   virtual bool IsFrameOwnerElement() const { return false; }
   virtual bool IsMediaRemotingInterstitial() const { return false; }
   virtual bool IsPictureInPictureInterstitial() const { return false; }
+
+  // Either ::scroll-marker or ::scroll-*-button pseudo element.
+  bool IsScrollControlPseudoElement() const {
+    return IsScrollMarkerPseudoElement() || IsScrollButtonPseudoElement();
+  }
 
   // Traverses the ancestors of this node and returns true if any of them are
   // either a MediaControlElement or MediaControls.
@@ -1039,7 +1045,10 @@ class CORE_EXPORT Node : public EventTarget {
                          mojom::blink::ConsoleMessageLevel level,
                          const String& message);
 
- private:
+  // Called when a node changes its flat tree parent, either because slot
+  // assignments changed, or the node got reparented by a moveBefore().
+  void FlatTreeParentChanged();
+
  private:
   enum NodeFlags : uint32_t {
     // getNodeType() is called extensively. As it's called quite a bit its
@@ -1207,10 +1216,6 @@ class CORE_EXPORT Node : public EventTarget {
   TransientMutationObserverRegistry();
 
   ShadowRoot* GetSlotAssignmentRoot() const;
-
-  // Called when a node changes its flat tree parent, either because slot
-  // assignments changed, or the node got reparented by a moveBefore().
-  void FlatTreeParentChanged();
 
   // EventTarget ends with a single 32-bit member, so put one 32-bit member
   // first to avoid padding on 64-bit.

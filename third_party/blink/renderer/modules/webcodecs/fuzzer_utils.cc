@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "media/base/limits.h"
 #include "media/base/sample_format.h"
@@ -637,8 +638,7 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
   if (proto.bitmap_width() > 0 && proto.bitmap_width() < bitmap_size)
     bitmap_size -= bitmap_size % (proto.bitmap_width() * kBytesPerPixel);
   NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(
-      reinterpret_cast<const unsigned char*>(proto.rgb_bitmap().data()),
-      bitmap_size));
+      base::as_byte_span(proto.rgb_bitmap()).first(bitmap_size)));
 
   ImageData* image_data = ImageData::Create(data_u8, proto.bitmap_width(),
                                             IGNORE_EXCEPTION_FOR_TESTING);

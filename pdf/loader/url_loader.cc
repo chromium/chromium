@@ -186,7 +186,7 @@ bool UrlLoader::WillFollowRedirect(
 void UrlLoader::DidSendData(uint64_t bytes_sent,
                             uint64_t total_bytes_to_be_sent) {
   // Doesn't apply to PDF viewer requests.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Modeled on `content::PepperURLLoaderHost::DidReceiveResponse()`.
@@ -205,19 +205,19 @@ void UrlLoader::DidReceiveResponse(const blink::WebURLResponse& response) {
 
 void UrlLoader::DidDownloadData(uint64_t data_length) {
   // Doesn't apply to PDF viewer requests.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Modeled on `content::PepperURLLoaderHost::DidReceiveData()`.
-void UrlLoader::DidReceiveData(const char* data, int data_length) {
+void UrlLoader::DidReceiveData(base::span<const char> data) {
   DCHECK_EQ(state_, LoadingState::kStreamingData);
 
   // It's surprisingly difficult to guarantee that this is always >0.
-  if (data_length < 1)
+  if (data.empty()) {
     return;
+  }
 
-  // TODO(crbug.com/40284755): spanify to fix the errors.
-  buffer_.insert(buffer_.end(), data, UNSAFE_TODO(data + data_length));
+  buffer_.insert(buffer_.end(), data.begin(), data.end());
 
   // Defer loading if the buffer is too full.
   if (!deferring_loading_ && buffer_.size() >= buffer_upper_threshold_) {

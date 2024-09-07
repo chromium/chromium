@@ -22,6 +22,7 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -142,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
   EXPECT_EQ(dialog->GetOkButton(),
             dialog->DialogDelegate::GetInitiallyFocusedView());
   EXPECT_FALSE(picker_->GetDialogViewForTesting()->IsDialogButtonEnabled(
-      ui::DIALOG_BUTTON_OK));
+      ui::mojom::DialogButton::kOk));
 }
 
 // Validate that the dialog title changes to match the source type when there's

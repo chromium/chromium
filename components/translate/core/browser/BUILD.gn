@@ -93,7 +93,6 @@ static_library("translate_model_service") {
     "translate_model_service.h",
   ]
   deps = [
-    ":browser",
     "//base",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",

@@ -55,9 +55,9 @@ Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<h1>foo</h1>{}<br><h2>bar</h2>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h1>foo</h1><p><br></p><p><br></p><h2>bar</h2>" but got "<h1>foo</h1><p><br></p><br><h2>bar</h2>"
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<p>foo</p>{<h1>bar</h1>}<p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><div><br></div><p>baz</p>" but got "<p>foo</p><h1><br></h1><h1>baz<br></h1>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><div><br></div><p>baz</p>" but got "<p>foo</p><h1><br></h1><h1>baz</h1>"
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<p>foo</p>{<h1>bar</h1>}<p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><br></p><p>baz</p>" but got "<p>foo</p><h1><br></h1><h1>baz<br></h1>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><br></p><p>baz</p>" but got "<p>foo</p><h1><br></h1><h1>baz</h1>"
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<table><tr><td>foo[]bar</table>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><div>foo</div><div>bar</div></td></tr></tbody></table>" but got "<table><tbody><tr><td>foo<br>bar</td></tr></tbody></table>"
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<table><tr><td>foo[]bar</table>" compare innerHTML

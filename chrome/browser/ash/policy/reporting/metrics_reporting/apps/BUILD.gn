@@ -25,6 +25,7 @@ static_library("apps") {
   deps = [
     "//base",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/chromeos/reporting",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/login/session",
     "//components/prefs",
@@ -60,6 +61,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/reporting/metrics_reporting",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/reporting",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/session_manager",
@@ -101,6 +103,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/reporting/metrics_reporting",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/reporting",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui",

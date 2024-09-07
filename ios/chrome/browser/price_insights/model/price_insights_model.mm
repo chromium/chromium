@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
@@ -20,6 +21,21 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+// The histogram used to record the availability of ProductInfo.
+const char kPriceInsightsModelProductInfo[] =
+    "IOS.PriceInsights.Model.ProductInfo";
+
+// The histogram used to record the availability of PriceInsightsInfo.
+const char kPriceInsightsModelPriceInsightsInfo[] =
+    "IOS.PriceInsights.Model.PriceInsightsInfo";
+
+// The histogram used to record if the page can be tracked and user is eligible
+// to track.
+const char kPriceInsightsModelCanTrack[] = "IOS.PriceInsights.Model.CanTrack";
+
+// The histogram used to record whether or not the page is being tracked.
+const char kPriceInsightsModelIsSubscribed[] =
+    "IOS.PriceInsights.Model.IsSubscribed";
 
 std::string getHighConfidenceMomentsText() {
   std::string low_price_value = GetLowPriceParamValue();
@@ -73,7 +89,11 @@ void PriceInsightsModel::FetchConfigurationForWebState(
 void PriceInsightsModel::OnProductInfoUrlReceived(
     const GURL& url,
     const std::optional<const commerce::ProductInfo>& info) {
-  if (!info.has_value()) {
+  bool has_valid_info =
+      info.has_value() &&
+      (!info->title.empty() || !info->product_cluster_title.empty());
+  base::UmaHistogramBoolean(kPriceInsightsModelProductInfo, has_valid_info);
+  if (!has_valid_info) {
     price_insights_executions_[url]->is_subscribed_processed = true;
     price_insights_executions_[url]->is_price_insights_info_processed = true;
     RunCallbacks(url);
@@ -92,6 +112,7 @@ void PriceInsightsModel::OnProductInfoUrlReceived(
 
   bool can_track_price =
       shopping_service_->IsShoppingListEligible() && CanTrackPrice(info);
+  base::UmaHistogramBoolean(kPriceInsightsModelCanTrack, can_track_price);
   price_insights_executions_[url]->config->can_price_track = can_track_price;
   if (can_track_price && info.value().product_cluster_id.has_value()) {
     uint64_t cluster_id = info.value().product_cluster_id.value();
@@ -109,6 +130,8 @@ void PriceInsightsModel::OnProductInfoUrlReceived(
 void PriceInsightsModel::OnPriceInsightsInfoUrlReceived(
     const GURL& url,
     const std::optional<commerce::PriceInsightsInfo>& info) {
+  base::UmaHistogramBoolean(kPriceInsightsModelPriceInsightsInfo,
+                            info.has_value());
   if (info.has_value()) {
     price_insights_executions_[url]->config->price_insights_info = info.value();
   }
@@ -119,6 +142,7 @@ void PriceInsightsModel::OnPriceInsightsInfoUrlReceived(
 
 void PriceInsightsModel::OnIsSubscribedReceived(const GURL& url,
                                                 bool is_subscribed) {
+  base::UmaHistogramBoolean(kPriceInsightsModelIsSubscribed, is_subscribed);
   price_insights_executions_[url]->config->is_subscribed = is_subscribed;
   price_insights_executions_[url]->is_subscribed_processed = true;
 
@@ -166,6 +190,13 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   if (!execution_it->second->config) {
     return;
   }
+
+  if (!execution_it->second->config->price_insights_info.has_value() &&
+      !execution_it->second->config->can_price_track) {
+    execution_it->second->config = nullptr;
+    return;
+  }
+
   execution_it->second->config->entrypoint_image_name =
       base::SysNSStringToUTF8(kDownTrendSymbol);
   execution_it->second->config->image_type =

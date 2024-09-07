@@ -211,6 +211,12 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // real time lookups.
   bool CanPerformFullURLLookup(const GURL& url);
 
+  // Helper method to get the correct type of hash look up mechanism.
+  std::unique_ptr<SafeBrowsingLookupMechanism> GetHashRealTimeLookupMechanism(
+      const GURL& url,
+      bool can_use_hash_real_time_service,
+      bool can_use_hash_real_time_db_manager);
+
   // This will decide which mechanism to use for a lookup and then perform it.
   KickOffLookupMechanismResult KickOffLookupMechanism(const GURL& url);
 
@@ -261,11 +267,12 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   const net::HttpRequestHeaders headers_;
   const int load_flags_;
   const bool has_user_gesture_;
-  // TODO(crbug.com/40683815): |weak_web_state_| is only used on iOS, and
-  // |web_contents_getter_|, |render_process_id_|, |render_frame_token_|, and
-  // |frame_tree_node_id_| are used on all other platforms.  This class should
-  // be refactored to use only the common functionality can be shared across
-  // platforms.
+  // TODO(https://crbug.com/40683815): |weak_web_state_| is only used on iOS,
+  // and |web_contents_getter_|, |render_process_id_|, |render_frame_token_|,
+  // and |frame_tree_node_id_| are used on all other platforms.  This class
+  // should be refactored to use only the common functionality can be shared
+  // across platforms. Note that this blocks the refactoring of
+  // components/security_interstitials, https://crbug.com/40686246.
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   const security_interstitials::UnsafeResource::RenderProcessId
       render_process_id_ =

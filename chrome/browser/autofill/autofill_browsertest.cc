@@ -71,16 +71,17 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-using base::ASCIIToUTF16;
-using base::UTF16ToASCII;
-using testing::_;
-using testing::MockFunction;
-using testing::Sequence;
-using testing::UnorderedElementsAre;
-using testing::UnorderedElementsAreArray;
-
 namespace autofill {
 namespace {
+
+using ::base::ASCIIToUTF16;
+using ::base::UTF16ToASCII;
+using ::testing::_;
+using ::testing::AssertionResult;
+using ::testing::MockFunction;
+using ::testing::Sequence;
+using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 ACTION_P(InvokeClosure, closure) {
   closure.Run();
@@ -99,8 +100,7 @@ class AutofillTest : public InProcessBrowserTest {
     explicit TestAutofillManager(ContentAutofillDriver* driver)
         : BrowserAutofillManager(driver, "en-US") {}
 
-    [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
-        int min_num_awaited_calls) {
+    [[nodiscard]] AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
       return forms_seen_waiter_.Wait(min_num_awaited_calls);
     }
 
@@ -114,9 +114,6 @@ class AutofillTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    // Don't want Keychain coming up on Mac.
-    test::DisableSystemServices(browser()->profile()->GetPrefs());
-
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
     WaitForPersonalDataManagerToBeLoaded(browser()->profile());
@@ -136,7 +133,6 @@ class AutofillTest : public InProcessBrowserTest {
         ->GetAutofillManager()
         .client()
         .HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
-    test::ReenableSystemServices();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -185,8 +181,8 @@ class AutofillTest : public InProcessBrowserTest {
     // Shortcut explicit save prompts and automatically accept.
     test_api(personal_data_manager()->address_data_manager())
         .set_auto_accept_address_imports(true);
-    TestAutofillManagerWaiter waiter(*autofill_manager(),
-                                     {AutofillManagerEvent::kFormSubmitted});
+    TestAutofillManagerSingleEventWaiter submission_waiter(
+        *autofill_manager(), &AutofillManager::Observer::OnFormSubmitted);
     ASSERT_TRUE(
         content::ExecJs(web_contents(), GetJSToFillForm(data) + submit_js));
     if (simulate_click) {
@@ -196,7 +192,7 @@ class AutofillTest : public InProcessBrowserTest {
           browser()->tab_strip_model()->GetActiveWebContents(), 0,
           blink::WebMouseEvent::Button::kLeft);
     }
-    ASSERT_TRUE(waiter.Wait(1));
+    ASSERT_TRUE(std::move(submission_waiter).Wait());
     // Form submission might have triggered an import. The imported data is only
     // available through the PDM after it has asynchronously updated the
     // database. Wait for all pending DB tasks to complete.
@@ -433,11 +429,11 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
   // Two valid phone numbers are imported, two invalid ones are removed.
   EXPECT_THAT(
       actual_phone_numbers,
-      UnorderedElementsAreArray({base::FeatureList::IsEnabled(
-                                     features::kAutofillInferCountryCallingCode)
-                                     ? u"14088714567"
-                                     : u"4088714567",
-                                 u"+4940808179000", u"", u""}));
+      UnorderedElementsAre(base::FeatureList::IsEnabled(
+                               features::kAutofillInferCountryCallingCode)
+                               ? u"14088714567"
+                               : u"4088714567",
+                           u"+4940808179000", u"", u""));
 }
 
 // Prepend country codes when formatting phone numbers if:
@@ -884,7 +880,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, DeferWhilePrerendering) {
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   prerender_helper().NavigatePrimaryPage(initial_url);
 
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   auto* rfh = prerender_helper().GetPrerenderedMainFrameHost(host_id);
   MockAutofillManager* mock = autofill_manager(rfh);
 

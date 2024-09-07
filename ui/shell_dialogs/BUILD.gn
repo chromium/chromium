@@ -41,7 +41,7 @@ component("shell_dialogs") {
     "//url",
   ]
 
-  if (is_chromeos || is_castos || is_cast_android) {
+  if (is_chromeos || is_castos) {
     sources += [ "shell_dialog_stub.cc" ]
   }
 

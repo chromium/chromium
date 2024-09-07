@@ -78,6 +78,25 @@ reviewer.
 </variants>
 
 <variants name="PSNotice">
+  <variant name="MeasurementNoticeModal"
+      summary="Restricted notice on Desktop."/>
+  <variant name="MeasurementNoticeModalClankBrApp"
+      summary="Restricted notice on Clank Browser App."/>
+  <variant name="MeasurementNoticeModalClankCCT"
+      summary="Restricted notice on Clank CCT."/>
+  <variant name="ProtectedAudienceMeasurementNoticeModal"
+      summary="Notice with info about PA and Measurement APIs on Desktop."/>
+  <variant name="ProtectedAudienceMeasurementNoticeModalClankBrApp"
+      summary="Notice with info about PA and Measurement APIs on Clank
+               Browser App."/>
+  <variant name="ProtectedAudienceMeasurementNoticeModalClankCCT"
+      summary="Notice with info about PA and Measurement APIs on Clank CCT."/>
+  <variant name="ThreeAdsAPIsNoticeModal"
+      summary="Notice with three APIs on Desktop."/>
+  <variant name="ThreeAdsAPIsNoticeModalClankBrApp"
+      summary="Notice with three APIs on Clank Browser App."/>
+  <variant name="ThreeAdsAPIsNoticeModalClankCCT"
+      summary="Notice with three APIs on Clank CCT."/>
   <variant name="TopicsConsentDesktopModal"
       summary="Consent notice with Topics API on Desktop."/>
   <variant name="TopicsConsentModalClankBrApp"
@@ -186,7 +205,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.ClearBrowsingData.TabsEnabled" enum="BooleanEnabled"
-    expires_after="2024-12-31">
+    expires_after="2025-03-02">
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -455,7 +474,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DIPSErrorCodes" enum="DIPSErrorCode"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -471,8 +490,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientBounce"
-    units="ms" expires_after="2024-08-22">
-  <owner>jdh@chromium.org</owner>
+    units="ms" expires_after="2025-02-22">
   <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -511,7 +529,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.QuickDelete.TabsEnabled" enum="BooleanEnabled"
-    expires_after="2024-12-31">
+    expires_after="2025-03-02">
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -544,7 +562,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacyGuide.CanShowNTPPromo" enum="Boolean"
-    expires_after="2024-10-06">
+    expires_after="2025-04-01">
   <owner>msramek@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -688,7 +706,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.ActivityTypeStorage.RecordsLength"
-    units="count" expires_after="2024-12-24">
+    units="count" expires_after="2025-02-23">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -900,7 +918,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime2"
-    units="ms" expires_after="2024-12-15">
+    units="ms" expires_after="2025-02-16">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -912,7 +930,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.Error"
-    enum="SqliteLoggedResultCode" expires_after="2024-12-15">
+    enum="SqliteLoggedResultCode" expires_after="2025-02-16">
   <owner>dmcardle@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <summary>
@@ -1204,7 +1222,7 @@ reviewer.
 <histogram
     name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForEligibilityStoredInPrefs"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1215,15 +1233,6 @@ reviewer.
 
     For a given client, the metric will not be recorded again so long as the set
     eligibility is available from the pref service local state.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.M1AdMeasurementSetReason"
-    enum="M1AdMeasurementSetReason" expires_after="2024-09-30">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the reason that the Privacy Sandbox Ads Measurement API is modified.
   </summary>
 </histogram>
 
@@ -1392,6 +1401,17 @@ reviewer.
     initialization, including cases where shut down abruptly, subtract the
     number of true events for &quot;ShutdownBeforeFinishingInitialization&quot;;
     from this metric's total count.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.DbSize"
+    units="KiB" expires_after="2025-07-30">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the size of the PrivateAggregationBudgetStorage database on disk.
+    Recorded after successfully opening the database, but before initialization
+    finishes.
   </summary>
 </histogram>
 
@@ -1571,83 +1591,6 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the NoticeActionTaken function marked
-    the user to have acknowledged the onboarding notice.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the NoticeShown function changed the
-    user from eligible to onboarded.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.EligibleToOnboardedDuration"
-    units="ms" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration it takes while being eligible up till onboarding to
-    3PCD. This occurs once during the process of onboarding.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.LastShownToAckedDuration"
-    units="ms" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration it takes to acknowledge the notice from the last time
-    it was shown. This occurs once during the process of onboarding.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the MaybeMarkEligible function changed
-    the user to eligible.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the MaybeMarkIneligible function
-    changed the user to ineligible.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.OnboardedToAckedDuration"
-    units="ms" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the time it takes to acknowledge the notice for 3PCD after being
-    onboarded. This occurs once during the process of onboarding.
-  </summary>
-</histogram>
-
-<histogram
     name="PrivacySandbox.TrackingProtection.OnboardingStartup.AckedSince"
     units="ms" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
@@ -1698,50 +1641,6 @@ reviewer.
   <summary>
     Records the time it takes while waiting to be onboarded to 3PCD. This occurs
     once per profile during the startup of onboarding.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SilentOnboarding.DidNoticeShownOnboard"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>linnan@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the NoticeShown function changed the
-    user from eligible to silent onboarded.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SilentOnboarding.EligibleToOnboardedDuration"
-    units="ms" expires_after="2024-12-08">
-  <owner>linnan@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration it takes while being eligible up till silent onboarding
-    to 3PCD control groups. This occurs once during the process of onboarding.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkEligible"
-    enum="Boolean" expires_after="2024-12-08">
-  <owner>linnan@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the MaybeMarkSilentEligible function
-    changed the user to eligible.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkIneligible"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>linnan@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the MaybeMarkSilentIneligible function
-    changed the user to ineligible.
   </summary>
 </histogram>
 

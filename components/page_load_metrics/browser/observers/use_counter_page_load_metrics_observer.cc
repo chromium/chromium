@@ -298,8 +298,7 @@ void UseCounterMetricsRecorder::RecordWebDXFeatures(
   std::set<int32_t> webdx_features;
 
   for (int32_t feature = 1;
-       feature < static_cast<int32_t>(WebDXFeature::kNumberOfFeatures);
-       feature++) {
+       feature <= static_cast<int32_t>(WebDXFeature::kMaxValue); feature++) {
     if (uma_webdx_features_.IsRecordedOrDeferred(
             static_cast<WebDXFeature>(feature))) {
       webdx_features.insert(feature);
@@ -308,7 +307,7 @@ void UseCounterMetricsRecorder::RecordWebDXFeatures(
 
   ukm::UkmRecorder::Get()->RecordWebDXFeatures(
       ukm_source_id, webdx_features,
-      static_cast<size_t>(WebDXFeature::kNumberOfFeatures) - 1);
+      static_cast<size_t>(WebDXFeature::kMaxValue));
 }
 
 const base::flat_map<blink::mojom::WebFeature, blink::mojom::WebDXFeature>&
@@ -396,11 +395,11 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSSelectorUserValid, WebDXFeature::kUserPseudos},
           {WebFeature::kCSSSelectorUserInvalid, WebDXFeature::kUserPseudos},
           {WebFeature::kWebCodecs, WebDXFeature::kWebcodecs},
-          {WebFeature::kHidGetDevices, WebDXFeature::kWebhid},
+          {WebFeature::kHidDeviceOpen, WebDXFeature::kWebhid},
           {WebFeature::kV8LockManager_Request_Method, WebDXFeature::kWebLocks},
           {WebFeature::kWebPImage, WebDXFeature::kWebp},
           {WebFeature::kWebTransport, WebDXFeature::kWebtransport},
-          {WebFeature::kUsbGetDevices, WebDXFeature::kWebusb},
+          {WebFeature::kUsbDeviceOpen, WebDXFeature::kWebusb},
           {WebFeature::kVTTCue, WebDXFeature::kWebvtt},
           {WebFeature::kCSSSelectorPseudoWhere, WebDXFeature::kWhere},
           {WebFeature::kDataListElement, WebDXFeature::kDatalist},
@@ -420,6 +419,24 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kImageSet, WebDXFeature::kImageSet},
           {WebFeature::kStructuredCloneMethod, WebDXFeature::kStructuredClone},
           {WebFeature::kSlotAssignNode, WebDXFeature::kSlotAssign},
+          {WebFeature::kDeviceMotionSecureOrigin,
+           WebDXFeature::kDeviceOrientationEvents},
+          {WebFeature::kDeviceOrientationAbsoluteSecureOrigin,
+           WebDXFeature::kDeviceOrientationEvents},
+          {WebFeature::kDeviceOrientationSecureOrigin,
+           WebDXFeature::kDeviceOrientationEvents},
+          {WebFeature::kGamepadButtons, WebDXFeature::kDRAFT_Gamepad},
+          {WebFeature::kWakeLockAcquireScreenLock,
+           WebDXFeature::kScreenWakeLock},
+          {WebFeature::kWakeLockAcquireSystemLock,
+           WebDXFeature::kScreenWakeLock},
+          {WebFeature::kWebBluetoothRemoteServerConnect,
+           WebDXFeature::kWebBluetooth},
+          {WebFeature::kWebNfcNdefReaderScan, WebDXFeature::kWebNfc},
+          {WebFeature::kSerialPortOpen, WebDXFeature::kDRAFT_Serial},
+          {WebFeature::kModuleDedicatedWorker, WebDXFeature::kJsModulesWorkers},
+          {WebFeature::kModuleSharedWorker,
+           WebDXFeature::kJsModulesSharedWorkers},
       });
 
   return *kMap;

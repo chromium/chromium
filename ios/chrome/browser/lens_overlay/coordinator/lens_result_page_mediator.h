@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_web_provider.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
 #import "ios/web/public/web_state.h"
 
@@ -29,6 +30,10 @@
 
 /// Delegate for the result page web state.
 @property(nonatomic, weak) id<LensResultPageWebStateDelegate> webStateDelegate;
+
+/// Presentation delegate for requesting bottom sheet resizing.
+@property(nonatomic, weak) id<LensOverlayBottomSheetPresentationDelegate>
+    presentationDelegate;
 
 - (instancetype)
      initWithWebStateParams:(const web::WebState::CreateParams&)params

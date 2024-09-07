@@ -66,6 +66,7 @@
 <translation id="1104860668737945357">Кнопка "Управление паролями". Нажмите ее, чтобы перейти к управлению паролями в настройках Chrome.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: выберите разрешение</translation>
+<translation id="1113000785583998331">Сохранить код IBAN?</translation>
 <translation id="1113869188872983271">&amp;Отменить изменение порядка</translation>
 <translation id="1118429183611783760">Пылесосы и уборка полов</translation>
 <translation id="1122714970786750095">Электроника и электротехника</translation>
@@ -179,6 +180,7 @@
 <translation id="1308113895091915999">Есть предложение</translation>
 <translation id="1309375166585231290">Твои родители пока не одобрили этот сайт</translation>
 <translation id="1310677614877521969">Веб-хостинги</translation>
+<translation id="1310938305420497484">Сначала нужно открыть несколько вкладок и сайтов.</translation>
 <translation id="1314311879718644478">Смотрите контент в режиме дополненной реальности.</translation>
 <translation id="1314509827145471431">Скрепление справа</translation>
 <translation id="1316805916535763484">Открытые онлайн-курсы</translation>
@@ -230,6 +232,7 @@
 <translation id="1391625539203220400">Сохранить код IBAN на этом устройстве?</translation>
 <translation id="139305205187523129">Сайт <ph name="HOST_NAME" /> не отправил данных.</translation>
 <translation id="1405567553485452995">Светло-зеленый</translation>
+<translation id="1406500794671479665">Проверка…</translation>
 <translation id="1406812885827747674">Разрешить в этот раз</translation>
 <translation id="14070772729708640">Файлы загружены в папку "<ph name="FOLDER_NAME" />" сервиса "<ph name="CLOUD_PROVIDER" />"</translation>
 <translation id="1407135791313364759">Открыть все</translation>
@@ -240,6 +243,7 @@
 <translation id="1414134146594747368">Образование детей от 0 до 5 лет</translation>
 <translation id="1419305130220238697">Кнопка "Управлять скачанными файлами в Chrome". Нажмите ее, чтобы управлять файлами, скачанными в Chrome.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, чтобы разрешить подключение</translation>
+<translation id="14222610277930434">Часто посещаете</translation>
 <translation id="1422930527989633628">Разрешено отправлять запрос на поиск устройств Bluetooth поблизости</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1427192966110103169">Домашние плавательные бассейны, сауны и спа</translation>
@@ -289,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;Эта ошибка может возникать при использовании портала Wi-Fi, для работы с которым требуется выполнить вход.&lt;/p&gt;
     &lt;p&gt;Чтобы устранить проблему, нажмите &lt;strong&gt;Подключиться&lt;/strong&gt; на нужной веб-странице.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Список записей из истории</translation>
+<translation id="1515436033764190215">ч. назад</translation>
 <translation id="151720253492607760">Оставить запрет</translation>
 <translation id="1517433312004943670">Укажите номер телефона</translation>
 <translation id="1519264250979466059">Дата сборки</translation>
@@ -335,6 +340,7 @@
 <translation id="1584492003828271317">Персонализация объявлений зависит от этого параметра, предлагаемой сайтами рекламы, настроек файлов cookie, а также от параметров сайта, который у вас открыт.</translation>
 <translation id="1586541204584340881">Установленные расширения.</translation>
 <translation id="1588438908519853928">Обычный</translation>
+<translation id="159103247796286390">Переименовать таблицу</translation>
 <translation id="1592005682883173041">Доступ к данным на устройстве</translation>
 <translation id="159274626729231974">Кинофестивали</translation>
 <translation id="1593359183944365958">270 градусов</translation>
@@ -377,10 +383,10 @@
 <translation id="1662550410081243962">Сохранять и автоматически подставлять платежные данные</translation>
 <translation id="1663943134801823270">Это карты и адреса, указанные в Chrome. Вы можете изменить их на странице <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Фотополимер для флексопечати</translation>
+<translation id="166624440456221306">Удалить сравнительную таблицу</translation>
 <translation id="1668071460721346172">Получить электронное письмо</translation>
 <translation id="1671391448414634642">Страницы на этом языке (<ph name="SOURCE_LANGUAGE" />) будут автоматически переводиться на <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Список только тех посещенных вами страниц, на которых зафиксированы <ph name="BEGIN_LINK" />события, связанные с устаревшими технологиями<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Начиная с короткого края</translation>
 <translation id="168693727862418163">Такое значение правила не предусмотрено и будет проигнорировано.</translation>
 <translation id="168841957122794586">Сертификат сервера содержит ненадежный криптографический ключ.</translation>
@@ -423,6 +429,7 @@
 <translation id="1739422091279046802">изменение масштаба и прокрутка</translation>
 <translation id="1741613555002899862">Необходимо указать значение и ввести действительную строку, если для правила DnsOverHttpsMode выбрано значение <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Постельное белье</translation>
+<translation id="1743892871127720056">Заголовок сравнительной таблицы, редактировать текст</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Как мы используем эти данные.<ph name="END_BOLD" /> По мере того как вы посещаете сайты, Chrome определяет, какие темы вас интересуют. Названия тем заданы, например "Искусство и развлечения", "Покупки" или "Спорт". В дальнейшем посещаемые вами сайты могут запрашивать у Chrome несколько таких тем рекламы (но не историю браузера), чтобы персонализировать рекламу для вас.</translation>
 <translation id="1746113442205726301">Смещение изображения по оси Y</translation>
 <translation id="1746531169546376413">0 градусов</translation>
@@ -457,7 +464,6 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC-код находится на обратной стороне вашей карты. Это 3 цифры в правом верхнем углу поля для подписи.</translation>
 <translation id="1810391395243432441">Защитите пароли при помощи блокировки экрана</translation>
-<translation id="1810597570737826742">{count,plural, =1{Место {position} в списке из {count} дополнительного адреса}one{Место {position} в списке из {count} дополнительного адреса}few{Место {position} в списке из {count} дополнительных адресов}many{Место {position} в списке из {count} дополнительных адресов}other{Место {position} в списке из {count} дополнительного адреса}}</translation>
 <translation id="1812527064848182527">горизонтальная ориентация</translation>
 <translation id="1812975699435941848">Санитарное просвещение и медицинское образование</translation>
 <translation id="1816436748874040213">Может запрашивать разрешение на изменение масштаба и прокрутку содержимого демонстрируемых вкладок</translation>
@@ -477,6 +483,7 @@
 <translation id="1839551713262164453">При проверке значений политик обнаружены ошибки</translation>
 <translation id="1840009953725035797">Домашние кинотеатры</translation>
 <translation id="1842969606798536927">Оплатить</translation>
+<translation id="184517536440397176">Чтобы смотреть этот сайт, тебе нужно разрешение родителя или законного представителя. Сначала мы хотим убедиться, что это действительно ты.</translation>
 <translation id="1846432862466000825">Пластик (архивный)</translation>
 <translation id="1848640291751752317">скачанных файлов</translation>
 <translation id="1848982255014129637">Фотобумага (с высоким лоском)</translation>
@@ -539,7 +546,6 @@
 <translation id="1974060860693918893">Дополнительные</translation>
 <translation id="1975457531113383421">Входной лоток</translation>
 <translation id="1975584088563498795">Почтовый ящик 10</translation>
-<translation id="1976610264358655503">Часто посещаете</translation>
 <translation id="1978555033938440688">Версия ПО</translation>
 <translation id="1979156660928743046">Мультимедийные данные</translation>
 <translation id="1988881251331415125">Если все правильно, <ph name="BEGIN_LINK" />воспользуйтесь инструментом "Диагностика соединений Chrome"<ph name="END_LINK" />.</translation>
@@ -592,6 +598,7 @@
 <translation id="2071692954027939183">Уведомления заблокированы автоматически, потому что вы обычно запрещаете их показ.</translation>
 <translation id="2071852865256799872">Этим браузером управляет ваша организация, а профилем – <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="2074733626795553847">Разблокировать тему "<ph name="TOPIC" />"</translation>
+<translation id="2074771604462073334">Посещено</translation>
 <translation id="2078956195623975415">Музыкальные и танцевальные игры</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2080021694978766903">Максимальное число записей для этого правила: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -649,7 +656,7 @@
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверьте, нет ли опечаток в имени хоста <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Доступ администратора ко всем данным</translation>
-<translation id="2166378884831602661">Этот сайт не может обеспечить безопасное соединение</translation>
+<translation id="2166378884831602661">Этот сайт не может обеспечить безопасное подключение</translation>
 <translation id="2168151236314517198">Администратор запретил печатать этот контент.</translation>
 <translation id="2172089022819052306">Ремонт и обслуживание транспортных средств</translation>
 <translation id="2174875517416416684">Не удалось завершить транзакцию. Средства списаны не были.</translation>
@@ -713,6 +720,7 @@
 <translation id="2276057643614339130">Печатная основа</translation>
 <translation id="2277103315734023688">Перемотать вперед</translation>
 <translation id="2277753418458118549">Показать сведения о подключении</translation>
+<translation id="2277949605527755300">Сайт <ph name="URL" /> запрашивает разрешение на отслеживание рук</translation>
 <translation id="22792995594807632">Проверьте файлы, перед тем как скачивать их</translation>
 <translation id="2283340219607151381">Сохранять и автоматически подставлять адреса</translation>
 <translation id="2283447177162560884">Удалена страница "<ph name="PAGE_TITLE" />"</translation>
@@ -741,6 +749,7 @@
 <translation id="2337852623177822836">Эта настройка управляется администратором</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> запрашивает подключение</translation>
 <translation id="2346319942568447007">Скопированное изображение</translation>
+<translation id="2348509731468399833">Отслеживание цен приостановлено.</translation>
 <translation id="2349957959687031096">Кнопка "Открыть вкладку в режиме инкогнито". Нажмите ее, чтобы открыть такую вкладку.</translation>
 <translation id="2350796302381711542">Использовать <ph name="HANDLER_HOSTNAME" /> для обработки ссылок типа "<ph name="PROTOCOL" />" вместо сервиса "<ph name="REPLACED_HANDLER_TITLE" />"?</translation>
 <translation id="2353297238722298836">Доступ к камере и микрофону разрешен</translation>
@@ -748,6 +757,7 @@
 <translation id="2355395290879513365">Злоумышленники могут видеть изображения, которые видны вам, и изменять их в целях мошенничества.</translation>
 <translation id="2356070529366658676">Спрашивать</translation>
 <translation id="2356926036049612643">Оптимизатор V8</translation>
+<translation id="2356941001189392209">URL только тех посещенных вами страниц, на которых зафиксированы события, связанные с устаревшими технологиями.</translation>
 <translation id="2357481397660644965">Вашим устройством управляет <ph name="DEVICE_MANAGER" />, а аккаунтом – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Несколько</translation>
 <translation id="2359808026110333948">Продолжить</translation>
@@ -761,6 +771,7 @@
 <translation id="23703388716193220">Инвентарь для гольфа</translation>
 <translation id="2370368710215137370">Загрузка файлов</translation>
 <translation id="2374629208601905275">В соответствии с законом вашей страны Chrome просит выбрать поисковую систему по умолчанию. Эти поисковые системы популярны в вашей стране. Они расположены в случайном порядке.</translation>
+<translation id="2376455483361831781">Новая таблица</translation>
 <translation id="2377241607395428273">ПО для работы с графикой и анимацией</translation>
 <translation id="2378084239755710604">Окно сохранения данных карты закрыто.</translation>
 <translation id="237978325638124213">Духи и парфюмерия</translation>
@@ -813,6 +824,7 @@
 <translation id="2469153820345007638">В порядке от 1 до N</translation>
 <translation id="24699311393038040">Бумага (с покрытием)</translation>
 <translation id="2470767536994572628">При редактировании заметок документ вернется в одностраничный режим и исходную ориентацию.</translation>
+<translation id="2471632709106952369">Сравнительные таблицы</translation>
 <translation id="2473810985261856484">Юридические услуги</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
 <translation id="2479410451996844060">Недействительный URL поисковой системы.</translation>
@@ -889,6 +901,7 @@
 <translation id="2616412942031748191">Поисковая оптимизация и маркетинг</translation>
 <translation id="2618206371527040026">Научные конференции и публикации</translation>
 <translation id="2619052155095999743">Вставить</translation>
+<translation id="2622754869869445457">Последняя посещенная вкладка</translation>
 <translation id="2625385379895617796">Часы спешат</translation>
 <translation id="262745152991669301">Разрешено отправлять запрос на подключение к USB-устройствам</translation>
 <translation id="2628224721443278970">Войти в Microsoft OneDrive</translation>
@@ -901,6 +914,7 @@
 <translation id="2651465929321991146">История и вкладки</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2655752832536625875">Ванная комната</translation>
+<translation id="2656194288057285221">Кнопка "Закрыть совет по работе с Chrome". Чтобы использовать ее, нажмите Ввод.</translation>
 <translation id="2657637947725373811">{0,plural, =1{Передать конфиденциальный файл?}one{Передать конфиденциальные файлы?}few{Передать конфиденциальные файлы?}many{Передать конфиденциальные файлы?}other{Передать конфиденциальные файлы?}}</translation>
 <translation id="2658843814961855121">Трудовое законодательство</translation>
 <translation id="2660779039299703961">Событие</translation>
@@ -915,7 +929,7 @@
 <translation id="2674804415323431591">Скрыть подсказки</translation>
 <translation id="2677748264148917807">Закрыть</translation>
 <translation id="2683195745483370038">Другие результаты</translation>
-<translation id="2686919536310834199">Оставить отзыв на функцию "Генератор текстов"</translation>
+<translation id="2686919536310834199">Оставить отзыв о генераторе текстов</translation>
 <translation id="2687555958734450033">Оптимальный вариант</translation>
 <translation id="2688186765492306706">500 x 760 мм</translation>
 <translation id="2688969097326701645">Да, продолжить</translation>
@@ -1049,6 +1063,7 @@
 <translation id="2959274854674276289">Вегетарианская кухня</translation>
 <translation id="2961809451460302960">Страхование жизни</translation>
 <translation id="2962073860865348475">12 x 18 дюймов</translation>
+<translation id="2967082089043584472">Добавлено в таблицу "<ph name="SET" />"</translation>
 <translation id="2967098518029543669">сохраните его в аккаунте Google</translation>
 <translation id="297173220375858963">Настольные издательские системы</translation>
 <translation id="2972581237482394796">&amp;Повторить</translation>
@@ -1234,11 +1249,11 @@
 <translation id="3307649904964670439">Кнопка "Настроить Chrome". Нажмите ее, чтобы настроить внешний вид браузера.</translation>
 <translation id="3308006649705061278">Подразделение (OU)</translation>
 <translation id="3318016344440038475">Телекомедии</translation>
-<translation id="3321152582690622182">Отслеживание не ведется</translation>
 <translation id="3324687287337751929">4 x 6 дюймов</translation>
 <translation id="3324983252691184275">Малиновый</translation>
 <translation id="3325027355611702542">Жилые автоприцепы и дома на колесах</translation>
 <translation id="3325568918769906282">по убыванию</translation>
+<translation id="3325662270238538525">Недавно открытые или измененные файлы, в том числе их названия, цифровой отпечаток содержимого, источник скачивания и метаданные.</translation>
 <translation id="3329013043687509092">Насыщенность</translation>
 <translation id="3333762389743153920">Не подходит для виртуальной карты</translation>
 <translation id="3336044043987989409">Чтобы разрешить подключение к устройствам или серверам в вашей частной сети, обновите страницу.</translation>
@@ -1252,6 +1267,7 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Перемотать на 10 секунд назад</translation>
 <translation id="3352881017886802007">Спортивные игры</translation>
+<translation id="3354508510846323339">Цитата <ph name="CURRENT_CITATION" /> из <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Изменить настройки прокси-сервера...</translation>
 <translation id="335809815767823">Экспорт завершен</translation>
 <translation id="3359387651158939842">Если вы сохраните карту, то при будущих покупках с помощью Google Pay ее реквизиты будут заполняться автоматически.</translation>
@@ -1283,6 +1299,7 @@
 <translation id="3402261774528610252">Сайт использует устаревший протокол TLS 1.0 или TLS 1.1. В будущем эти протоколы будут отключены, из-за чего пользователи не смогут зайти на сайт. На сервере нужно включить протокол TLS 1.2 или более поздней версии.</translation>
 <translation id="3405664148539009465">Настроить шрифты</translation>
 <translation id="3407789382767355356">вход через сторонние сервисы</translation>
+<translation id="340924996148642843">Функция сравнения сейчас недоступна</translation>
 <translation id="3409896703495473338">Открыть настройки безопасности</translation>
 <translation id="3414275587143250384">Распределенные и облачные вычисления</translation>
 <translation id="3414952576877147120">Размер:</translation>
@@ -1379,6 +1396,7 @@
 <translation id="3567901620846335314">100 x 150 мм</translation>
 <translation id="3568886473829759308">Перейти на сайт, чтобы посмотреть услуги компании или опубликованную ей информацию</translation>
 <translation id="3570079787344939099">Изменение масштаба и прокрутка</translation>
+<translation id="357244642999988503">Удалить столбец</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1396,6 +1414,7 @@
 <translation id="3586931643579894722">Скрыть подробности</translation>
 <translation id="3587725436724465984">Ваша организация указала, что сайт <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> может нарушать ее правила. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="3587738293690942763">Середина</translation>
+<translation id="3600106876108433070">Подробнее о сравнительных таблицах…</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Кнопка "Открыть настройки конфиденциальности в аккаунте Google". Нажмите ее, чтобы открыть настройки конфиденциальности в аккаунте Google.</translation>
 <translation id="3603507503523709">Приложение заблокировано администратором</translation>
@@ -1410,6 +1429,7 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы запустить проверку безопасности в настройках Chrome.</translation>
 <translation id="3615309852743236517">Маникюр и педикюр</translation>
 <translation id="3620239073311576716">Униформа и рабочая одежда</translation>
+<translation id="3621401353678567613">Включите уведомления в настройках, чтобы узнавать о снижении цен на интересующие вас товары.</translation>
 <translation id="362276910939193118">Показать всю историю</translation>
 <translation id="3623041590998910684">Чтобы использовать камеру, предоставьте браузеру Chrome доступ в <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Романтические фильмы</translation>
@@ -1438,6 +1458,7 @@
 <translation id="365641980390710834">Повседневная одежда</translation>
 <translation id="3658742229777143148">Версия</translation>
 <translation id="3659521826520353662">Какие сайты, заданные администратором, посещают пользователи и в какое время: <ph name="ALLOWLISTED_WEBSITES" />.</translation>
+<translation id="3664479564786885722">Узнайте, в каких ещё магазинах продается этот товар.</translation>
 <translation id="3664782872746246217">Ключевые слова:</translation>
 <translation id="3665100783276035932">Большинство сайтов работают без изменений</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Подробнее…<ph name="LINK_END1" /></translation>
@@ -1514,9 +1535,9 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" />")</translation>
 <translation id="3792826587784915501">Артхаус и независимое кино</translation>
 <translation id="3793574014653384240">Количество недавних сбоев и их причины</translation>
-<translation id="3796417399166194741"><ph name="SITE" /> не обеспечивает защищенное подключение с браузером Chrome</translation>
 <translation id="3799805948399000906">Шрифт запрошен</translation>
 <translation id="3801265110651850478">Отправлять Do Not Track в запросах веб-страниц</translation>
+<translation id="3801297763951514916">Часто посещаете</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803801106042434208">Эти поисковые системы популярны в вашем регионе.</translation>
 <translation id="3807366285948165054">Смещение изображения по оси X</translation>
@@ -1575,6 +1596,7 @@
 <translation id="3910231615117880630">Подробнее о встроенном контенте…</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Как вы можете управлять своими данными.<ph name="END_BOLD" /> Chrome автоматически удаляет сайты, добавленные более 30 дней назад. Если вы повторно посетите сайт, он может вновь появиться в списке. Также в настройках Chrome можно запретить некоторым или всем сайтам предлагать вам рекламу.</translation>
 <translation id="3921869355029467742">Ввести защитный код</translation>
+<translation id="3927538228901078312">Нет сравнительных таблиц.</translation>
 <translation id="3927932062596804919">Запретить</translation>
 <translation id="3930260846839546333">Женские сумки</translation>
 <translation id="3937834511546249636">Оборонная промышленность</translation>
@@ -1609,6 +1631,7 @@
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Менее 1 МБ</translation>
 <translation id="3990250421422698716">Смещение</translation>
+<translation id="3990532701115075684">Отслеживание рук</translation>
 <translation id="3992684624889376114">Об этой странице</translation>
 <translation id="3995639283717357522">Применить правила</translation>
 <translation id="399754345297554962">Стандартизированные тесты и вступительные экзамены</translation>
@@ -1623,6 +1646,12 @@
 <translation id="4023431997072828269">Поскольку вы отправляете эту форму с использованием незащищенного подключения, ваша информация может стать известна посторонним.</translation>
 <translation id="4025325634010721551">Правила перезапущены</translation>
 <translation id="4025338605225449265">Денежные единицы и обмен валют</translation>
+<translation id="4027270464942389997"><ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Злоумышленники могут перехватить и изменить информацию,<ph name="END_STRONG" /> которой вы обмениваетесь с этим сайтом.
+      <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Рекомендуем зайти на эту страницу позже,<ph name="END_STRONG" /> если вы подключены к общедоступной сети. Безопаснее всего использовать надежную сеть Wi-Fi, например домашнюю или рабочую.
+    <ph name="END_LIST" />
+
+Вы также можете предложить владельцу сайта перейти на HTTPS. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="4030383055268325496">&amp;Отменить добавление</translation>
 <translation id="4030545038933060179">Если функция включена, здесь будет показываться список тем на основе недавней истории браузера.</translation>
 <translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
@@ -1636,6 +1665,7 @@
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4059523390906550209">Подробнее о защите конфиденциальных данных</translation>
 <translation id="4060880210388108757">Инди и альтернативная музыка</translation>
+<translation id="4060883793524802469">Удалить из таблиц</translation>
 <translation id="4063063121357725926">Разрешите Google находить скидки на товары, которые вы добавляете в корзину</translation>
 <translation id="406358100705415968">Средства индивидуальной защиты</translation>
 <translation id="4065659219963895623">Рестораны</translation>
@@ -1650,6 +1680,7 @@
 <translation id="4082393374666368382">Настройки – Управление</translation>
 <translation id="4084219288110917128">Конверт C1</translation>
 <translation id="4085326869263783566">Генератор текстов. Чтобы открыть его, нажмите Tab и Ввод.</translation>
+<translation id="4085769736382018559">Сравните товары</translation>
 <translation id="4088981014127559358">Смещение изображений на лицевой стороне по оси Y</translation>
 <translation id="4089152113577680600">Лоток 14</translation>
 <translation id="4092349052316400070">Указать этот адрес</translation>
@@ -1769,6 +1800,7 @@
 <translation id="4277028893293644418">Сбросить пароль</translation>
 <translation id="4277529130885813215">Использовать другое устройство</translation>
 <translation id="4277937682389409325">Местный адрес</translation>
+<translation id="4278090321534187713">Карты, которые не принимает этот продавец, отключены</translation>
 <translation id="4278390842282768270">Разрешены</translation>
 <translation id="4281998142035485137">{0,plural, =1{Открыть конфиденциальный файл?}one{Открыть конфиденциальные файлы?}few{Открыть конфиденциальные файлы?}many{Открыть конфиденциальные файлы?}other{Открыть конфиденциальные файлы?}}</translation>
 <translation id="4282280603030594840">Покупка автомобиля</translation>
@@ -1815,6 +1847,7 @@
 <translation id="4340810192899866471">Импортировать из файла JSON</translation>
 <translation id="4340982228985273705">По нашим данным, этот компьютер не является корпоративным, поэтому в соответствии с правилом на него можно автоматически устанавливать только расширения из Интернет-магазина Chrome. URL для обновления: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Тематические парки</translation>
+<translation id="4344072791302852930">Добавить вкладку</translation>
 <translation id="4348834659292907206">Подключение к сайту <ph name="SITE" /> не защищено.</translation>
 <translation id="4349365535725594680">Невозможно поделиться конфиденциальным контентом</translation>
 <translation id="4349810866125026513">Все равно загрузить</translation>
@@ -1863,6 +1896,7 @@
 <translation id="4451135742916150903">Разрешено отправлять запрос на подключение к HID-устройствам</translation>
 <translation id="4451684391620232683">Показанный пользователю текст:</translation>
 <translation id="4452328064229197696">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Google Менеджере паролей.</translation>
+<translation id="4452957520362597816">Установка веб-приложений</translation>
 <translation id="4456937135469235202">Приключенческие туры</translation>
 <translation id="4464826014807964867">Веб-сайты со сведениями от вашей организации</translation>
 <translation id="4466576951214254884">Студенческие кредиты и займы на образование</translation>
@@ -1879,6 +1913,7 @@
 <translation id="4493480324863638523">Недопустимый URL. Укажите URL в стандартном виде, например http://example.com или https://example.com.</translation>
 <translation id="4494323206460475851">В настройках вы можете посмотреть темы рекламы и заблокировать те из них, которыми вы не хотите делиться с сайтами. Также Chrome автоматически удаляет темы, которые добавлены более четырех недель назад.</translation>
 <translation id="4500587658229086076">небезопасный контент</translation>
+<translation id="450602096898954067">Наши специалисты могут анализировать эти данные, чтобы улучшать функцию.</translation>
 <translation id="4506176782989081258">Ошибка проверки: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Обратитесь за помощью к системному администратору.</translation>
 <translation id="450710068430902550">Доступ администратора</translation>
@@ -1901,6 +1936,7 @@
 <translation id="4541810033354695636">Дополненная реальность</translation>
 <translation id="4542971377163063093">Лоток 6</translation>
 <translation id="4543072026714825470">Чтобы оплачивать покупки быстрее, сохраните карту и платежный адрес в аккаунте Google.</translation>
+<translation id="454441086898495030">Добавить в таблицу сравнения "<ph name="SET" />"?</translation>
 <translation id="4546730006268514143">Превышено время ожидания</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Вы используете блокировку экрана для ввода паролей</translation>
@@ -1969,6 +2005,7 @@
 <translation id="4702504834785592287">Сторона</translation>
 <translation id="4702656508969495934">Показываются автоматические субтитры. Чтобы открыть их, используйте переключатель окон.</translation>
 <translation id="4703342001883078444">Семья и взаимоотношения</translation>
+<translation id="4704745399240123930">Виртуальные и другие карты, которые не принимает этот продавец, отключены.</translation>
 <translation id="4708268264240856090">Соединение прервано</translation>
 <translation id="4708276642004148190">Водоснабжение и водное хозяйство</translation>
 <translation id="471880041731876836">Доступ запрещен</translation>
@@ -1984,7 +2021,6 @@
 <translation id="4732860731866514038">Скачивание языкового пакета (<ph name="LANGUAGE" />)… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> запрашивает данные о местоположении вашего устройства.</translation>
 <translation id="473414950835101501">Использование камер.</translation>
-<translation id="4736732123074402682">Проверьте подключение и повторите попытку.</translation>
 <translation id="4736825316280949806">Перезапустите Chromium.</translation>
 <translation id="4736934858538408121">Виртуальная карта</translation>
 <translation id="473775607612524610">Обновить</translation>
@@ -2054,6 +2090,7 @@
 <translation id="4850886885716139402">Смотреть</translation>
 <translation id="4854853140771946034">Быстро создать заметку в Google Keep</translation>
 <translation id="485902285759009870">Проверка кода…</translation>
+<translation id="4860260582253463350">Прежде чем перейти на YouTube, подтверди, что это действительно ты. Будут выбраны параметры, заданные твоим родителем или законным представителем в Family Link.</translation>
 <translation id="4864406669374375262">Версия скопирована в буфер обмена</translation>
 <translation id="486459320933704969">Чтобы смотреть этот сайт, тебе нужно разрешение родителя или законного представителя.</translation>
 <translation id="4864801646102013152">Ремонт и обустройство дома</translation>
@@ -2155,6 +2192,7 @@
 <translation id="5030338702439866405">Кем выдан</translation>
 <translation id="503069730517007720">Необходимый корневой сертификат для программы "<ph name="SOFTWARE_NAME" />" не установлен. Чтобы устранить проблему, попросите системного администратора ознакомиться с инструкциями по настройке программы "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">О Переводчике Google</translation>
+<translation id="5034930251282078640">Добавить для сравнения?</translation>
 <translation id="503498442187459473">Сайт <ph name="HOST" /> запрашивает доступ к камере и микрофону.</translation>
 <translation id="5035135400558156732">Садоводство</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -2182,6 +2220,7 @@
 <translation id="5087286274860437796">Сертификат сервера не действителен в настоящее время.</translation>
 <translation id="5087580092889165836">Добавить карту</translation>
 <translation id="5088142053160410913">Сообщение оператору</translation>
+<translation id="5090647584136241764">Добавьте вкладки с похожими товарами, чтобы сравнить важные характеристики.</translation>
 <translation id="5093232627742069661">Фальцовка гармошкой в два сгиба</translation>
 <translation id="5094747076828555589">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Chromium не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="5097099694988056070">статистические данные устройства, например об использовании процессора или оперативной памяти;</translation>
@@ -2313,8 +2352,10 @@
 <translation id="5331585574693522196">Использовать по умолчанию</translation>
 <translation id="5332219387342487447">Способ доставки</translation>
 <translation id="5332769172018416402">Отправить сообщение</translation>
+<translation id="5334013548165032829">Подробные системные журналы.</translation>
 <translation id="5334145288572353250">Сохранить адрес?</translation>
 <translation id="5340250774223869109">Приложение заблокировано</translation>
+<translation id="5342693890921195472">мин. назад</translation>
 <translation id="534295439873310000">Устройства с NFC</translation>
 <translation id="5344522958567249764">Настройки конфиденциальности в рекламе</translation>
 <translation id="5344579389779391559">Если вы откроете эту страницу, с вашего счета могут быть списаны средства</translation>
@@ -2336,6 +2377,7 @@
 <translation id="5385857628869214740">Юмор</translation>
 <translation id="5385966243497224160">Предпросмотр URL с протоколом, отличным от HTTPS, запрещен</translation>
 <translation id="5386426401304769735">В цепочке сертификатов этого сайта есть сертификат, подписанный с помощью алгоритма SHA-1.</translation>
+<translation id="5391010642126249196">Вы посещали</translation>
 <translation id="539203134595252721">Настольный теннис</translation>
 <translation id="5392506727170022660">Металл (полуглянцевый)</translation>
 <translation id="5394069166371280357">Семейные телешоу</translation>
@@ -2379,6 +2421,7 @@
 <translation id="5465724643247062031">Стекло (непрозрачное)</translation>
 <translation id="5466018172325111652">Вам не пришел код? <ph name="BEGIN_LINK" />Получить новый<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Повторить изменения</translation>
+<translation id="5472588168895083535">Отслеживание рук заблокировано</translation>
 <translation id="547963486735802022">Попробуйте перенести файлы ещё раз.</translation>
 <translation id="5481076368049295676">Посещение этой страницы может привести к установке вредоносной программы, которая похищает или удаляет данные. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">Предлагать помощь с написанием</translation>
@@ -2444,9 +2487,9 @@
 <translation id="5570825185877910964">Защитить аккаунт</translation>
 <translation id="5571083550517324815">Этот адрес не поддерживается. Выберите другой.</translation>
 <translation id="5572434905385510939">22 x 28 дюймов</translation>
-<translation id="5572851009514199876">Выполните вход, чтобы Chrome определил, разрешен ли вам доступ к этому сайту.</translation>
 <translation id="5578606540385219379">Поставщики услуг</translation>
 <translation id="5580958916614886209">Проверьте месяц в сроке действия карты и повторите попытку</translation>
+<translation id="5583442610070676234">Ещё действия с таблицей "<ph name="COMPARE_SET_NAME" />"</translation>
 <translation id="558420943003240152">Управление паролями и ключами доступа</translation>
 <translation id="5586446728396275693">Нет сохраненных адресов</translation>
 <translation id="5586831831248371458">Искать: <ph name="KEYWORD_SUFFIX" /></translation>
@@ -2533,6 +2576,7 @@
 <translation id="5742806904559466333">Бары, клубы и ночная жизнь</translation>
 <translation id="5743684619253032786">Товары для ухода за ногтями</translation>
 <translation id="5745733273847572235">Разрешено отправлять запрос на доступ к информации о местоположении</translation>
+<translation id="5750869797196646528">Отслеживание рук</translation>
 <translation id="5759751709240058861">Использование и перемещение вашей камеры.</translation>
 <translation id="5763042198335101085">Укажите действительный адрес электронной почты.</translation>
 <translation id="5764725887548570807">Недействительный формат источника.</translation>
@@ -2551,6 +2595,7 @@
 <translation id="5785756445106461925">Обратите внимание, что на странице обнаружен небезопасный контент. Возможно, при передаче ресурсы просматриваются третьими лицами, а злоумышленники могут получить доступ к странице и изменить ее поведение или внешний вид.</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Этот способ оплаты будет удален с устройства.</translation>
+<translation id="5794065675298686371">Отслеживайте цены</translation>
 <translation id="5800727402210090597">Ремонт и обслуживание мобильных телефонов</translation>
 <translation id="580241730938216256">Обновить</translation>
 <translation id="5804241973901381774">Разрешения</translation>
@@ -2590,6 +2635,7 @@
 <translation id="5879989559903563723">Недоступно в гостевом режиме</translation>
 <translation id="5880050725127890683">Проверка безопасности Chrome</translation>
 <translation id="5884465125445718607">Конверт Chinese 6</translation>
+<translation id="5886961930368713749">Отправить отзыв о функции сравнения</translation>
 <translation id="5887400589839399685">Карта сохранена</translation>
 <translation id="5887687176710214216">Последнее посещение: вчера</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
@@ -2704,6 +2750,8 @@
 <translation id="6080696365213338172">Вы используете сертификат, предоставленный администратором, поэтому он может заблокировать передачу данных на сайт <ph name="DOMAIN" />.</translation>
 <translation id="6085149458302186532">Этикетки (цветные)</translation>
 <translation id="6087312102907839798">Связанные запросы</translation>
+<translation id="6089505343295765444">Даже если вы удалите вкладки из истории Chrome, они останутся видны в сравнительных таблицах.</translation>
+<translation id="6093795393556121384">Карта проверена</translation>
 <translation id="6094273045989040137">Аннотировать</translation>
 <translation id="6094290315941448991">Администратор запретил запись видео с экрана, когда показаны конфиденциальные данные.</translation>
 <translation id="6099269767116481177">22 x 29,5 дюйма</translation>
@@ -2778,12 +2826,14 @@
 <translation id="6228346913624365233">Транспортные средства класса люкс</translation>
 <translation id="6229196330202833460">Трансляция фильмов и телепередач</translation>
 <translation id="6234122620015464377">Подрезать после каждого документа</translation>
+<translation id="6234310016144827337">Проверьте подключение и повторите попытку.</translation>
 <translation id="6236290670123303279">Настройки</translation>
 <translation id="623825323736974198">Настройте список сайтов, которые всегда будут активными. Выделенная для них память не будет освобождаться.</translation>
 <translation id="6240447795304464094">Логотип Google Pay</translation>
 <translation id="6240964651812394252">Чтобы использовать Google Менеджер паролей с вашей операционной системой, перезапустите Chrome и предоставьте доступ к менеджеру паролей на компьютере. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="6241121617266208201">Скрыть варианты заполнения</translation>
 <translation id="624499991300733384">Сервис для компоновки печатных материалов</translation>
+<translation id="6246316216123107851"><ph name="NUM_DAYS" /> дн. назад</translation>
 <translation id="6246868321321344665">Ваша организация может просматривать пароли, историю и другие данные о работе в браузере в рабочем и личном профилях.</translation>
 <translation id="6250932670816326647">Средства для принятия ванн и ухода за телом</translation>
 <translation id="6251906504834538140">{0,plural, =1{Файл нельзя переместить}one{<ph name="FILE_COUNT" /> файл нельзя переместить}few{<ph name="FILE_COUNT" /> файла нельзя переместить}many{<ph name="FILE_COUNT" /> файлов нельзя переместить}other{<ph name="FILE_COUNT" /> файла нельзя переместить}}</translation>
@@ -2843,7 +2893,6 @@
 <translation id="634500758737709758">Маршрут</translation>
 <translation id="6348220984832452017">Текущие изменения</translation>
 <translation id="6349101878882523185">Установите приложение "<ph name="APP_NAME" />"</translation>
-<translation id="6351398281531821890">СМОТРЕТЬ</translation>
 <translation id="6351658970066645919">Удалить данные о работе в браузере</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}=2{2 пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}few{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}many{# паролей (для <ph name="DOMAIN_LIST" />, синхронизировано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}}</translation>
 <translation id="6355392890578844978">Компания или организация не управляет этим браузером. Действиями на этом устройстве можно управлять вне браузера Chromium. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -2883,6 +2932,7 @@
 <translation id="640163077447496506">Срок действия истекает сегодня</translation>
 <translation id="6402537308870515461">Проверьте файлы, перед тем как переносить их</translation>
 <translation id="6403167778944553">Спальня и ванная</translation>
+<translation id="6403434564317313607">Заголовки и URL вкладок, которые вы добавляете в таблицу, отправляются в Google и сохраняются в вашем аккаунте <ph name="EMAIL" />. Наши специалисты могут проверять эти данные, чтобы улучшать функцию.</translation>
 <translation id="6404511346730675251">Изменить закладку</translation>
 <translation id="6405181733356710802">Открыть приложение "<ph name="APP_NAME" />"?</translation>
 <translation id="6410264514553301377">Введите срок действия и CVC-код карты <ph name="CREDIT_CARD" /></translation>
@@ -2948,6 +2998,7 @@
 <translation id="6513005815064132016">Разрешено отправлять запрос на отслеживание положения камеры</translation>
 <translation id="6517596291481585650">Внимание! Это правило не объединено, так как оно не является списком.</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
+<translation id="6519885440226079262">Может запрашивать разрешение на отслеживание рук</translation>
 <translation id="6520026037299163656">Веб-приложения и онлайн-инструменты</translation>
 <translation id="65203098586853226">Перевод: <ph name="SOURCE" /> – <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">Не выбрано</translation>
@@ -2958,6 +3009,7 @@
 <translation id="6529602333819889595">&amp;Повторить удаление</translation>
 <translation id="6535617236508021606">Карта сохранена в вашем аккаунте Google, поэтому вы можете расплачиваться ею в сервисах Google.</translation>
 <translation id="6536221421038631327">Если вы отмените подписку Passpoint на устройстве <ph name="DEVICE_TYPE" />, данные о связанных сетях будут удалены. Сменить тарифный план можно в приложении "<ph name="FRIENDLY_NAME" />". <ph name="LEARN_MORE" /></translation>
+<translation id="653801826293432362">Чтобы появились сравнительные таблицы, включите синхронизацию.</translation>
 <translation id="6539092367496845964">Произошла ошибка. Повторите попытку позже.</translation>
 <translation id="6540488083026747005">Вы разрешили сторонние файлы cookie для этого сайта.</translation>
 <translation id="6545864417968258051">Поиск Bluetooth-устройств</translation>
@@ -2987,6 +3039,7 @@
 <translation id="6599642189720630047">Отслеживаемые товары</translation>
 <translation id="6606309334576464871">Chrome запрещает сайтам отслеживать ваши действия в интернете с помощью сторонних файлов cookie.
             <ph name="NEW_LINE" />Если функции сайта не работают, <ph name="START_LINK" />попробуйте временно предоставить это разрешение<ph name="END_LINK" />.</translation>
+<translation id="6613742613135780554">отслеживание рук</translation>
 <translation id="6613866251791999074">Узнать больше о выборе поисковой системы в Chrome</translation>
 <translation id="6615297766614333076">Укладчик 2</translation>
 <translation id="6619496928666593220">Код IBAN не получен</translation>
@@ -3047,6 +3100,7 @@
 <translation id="6710648923880003133">Сгенерировать надежный пароль</translation>
 <translation id="671076103358959139">Токен регистрации:</translation>
 <translation id="6711464428925977395">На прокси-сервере возникла проблема или адрес указан неверно.</translation>
+<translation id="6716039223770814796">Сравнение товаров из категории "<ph name="COMPARE_SET_NAME" />" · Товаров: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запрашивает разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры.</translation>
 <translation id="6717692133381953670">Вкладка отправлена с устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6718612893943028815">Использовать камеру?</translation>
@@ -3055,7 +3109,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6734506549556896534">Игры-симуляторы</translation>
-<translation id="6735783933931458444">Часто посещаете в это время дня</translation>
 <translation id="6737708609449480586">Выпечка</translation>
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="6739943577740687354">Эта функция использует искусственный интеллект, а он может ошибаться.</translation>
@@ -3074,6 +3127,7 @@
 <translation id="6770747695101757579">Бумага (хлопковая)</translation>
 <translation id="677257480647123231">Безопасность детей в интернете</translation>
 <translation id="6775759552199460396">JIS B2</translation>
+<translation id="6777088782163649345">Пользуйся YouTube с родительскими настройками</translation>
 <translation id="6779348349813025131">Google Менеджеру паролей необходим доступ к Связке ключей macOS</translation>
 <translation id="6782656837469339439">Год окончания действия</translation>
 <translation id="6785990323398321538">Вы в любой момент можете изменить поисковую систему по умолчанию в настройках Chrome.</translation>
@@ -3108,6 +3162,7 @@
 <translation id="6832753933931306326">Форма была заполнена</translation>
 <translation id="6841864657731852591">Цилиндр для глубокой печати</translation>
 <translation id="6842196666980060516">184 x 260 мм</translation>
+<translation id="6844998850832008753">Отслеживание рук разрешено только в этот раз</translation>
 <translation id="6849023911358004088">Кнопка "Открыть настройки безопасности". Нажмите ее, чтобы задать параметры Безопасного просмотра и других функций в настройках Chrome.</translation>
 <translation id="6852204201400771460">Перезапустить приложение?</translation>
 <translation id="6857776781123259569">Настроить пароли</translation>
@@ -3117,11 +3172,13 @@
 <translation id="6865166112578825782">Подставить адрес</translation>
 <translation id="6865412394715372076">Невозможно подтвердить карту.</translation>
 <translation id="6868573634057275953">Возобновить обновление</translation>
+<translation id="6871813064737840684">История изменения цены на этот товар в каталогах разных ресурсов</translation>
 <translation id="6873456682041376666">Верхний лоток</translation>
 <translation id="6874604403660855544">&amp;Повторить добавление</translation>
 <translation id="6880941331070119097">Дорогой вариант</translation>
 <translation id="6881240511396774766">Быстро создать документ Google</translation>
 <translation id="6882210908253838664">Если сайт не работает, попробуйте временно разрешить ему использовать сторонние файлы cookie. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="6882418526420053414">Для сайта <ph name="SITE" /> не поддерживается защищенное подключение</translation>
 <translation id="6883221904761970440">Экран проверки учетных данных для защищенных платежей закрыт</translation>
 <translation id="6884662655240309489">Размер: 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" />, <ph name="SHORT_URL" /></translation>
@@ -3135,6 +3192,7 @@
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Организация (O)</translation>
+<translation id="6903907808598579934">Включить синхронизацию</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="691024665142758461">скачивание нескольких файлов</translation>
 <translation id="6915804003454593391">Пользователь:</translation>
@@ -3224,6 +3282,7 @@
 <translation id="7064443976734085921">Компактные автомобили</translation>
 <translation id="7064851114919012435">Контактные данные</translation>
 <translation id="7067633076996245366">Соул и R&amp;B</translation>
+<translation id="706960991003274248">Сравнительные таблицы сохраняются в вашем аккаунте <ph name="EMAIL" />.</translation>
 <translation id="7070144569727915108">системных настройках</translation>
 <translation id="70705239631109039">Подключение к сайту небезопасно</translation>
 <translation id="7075452647191940183">Запрос слишком велик.</translation>
@@ -3270,6 +3329,7 @@
 <translation id="714064300541049402">Смещение изображений на оборотной стороне по оси X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Повторить</translation>
+<translation id="7150146631451105528"><ph name="DATE" /></translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}many{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способов оплаты}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}}</translation>
 <translation id="7153618581592392745">Бледно-лиловый</translation>
 <translation id="7156870133441232244">На сервере нужно обновить протокол TLS до версии 1.2 или более поздней.</translation>
@@ -3315,6 +3375,7 @@
 <translation id="722454870747268814">Новая вкладка инкогнито</translation>
 <translation id="7227293336683593977">История изменения цен</translation>
 <translation id="7227747683324411744">Если вы посетите этот сайт, злоумышленники могут обманом заставить вас установить вредоносное ПО, которое будет мешать вашей работе в браузере (например, менять стартовую страницу или показывать дополнительную рекламу на сайтах).</translation>
+<translation id="7232352818707016189">Ещё действия для сравнительной таблицы</translation>
 <translation id="7233592378249864828">Распечатать лист для подтверждения</translation>
 <translation id="7234112195906418665">Путешествия и перевозки</translation>
 <translation id="7236417832106250253">Выполнено <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3367,6 +3428,7 @@
 <translation id="7346081071264046066">"с энтузиазмом принять приглашение на свадьбу"</translation>
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7353601530677266744">Командная строка</translation>
+<translation id="7356678400607112844">Последнее посещение</translation>
 <translation id="7359588939039777303">Реклама заблокирована.</translation>
 <translation id="7360451453306104998">Если компания Google найдет доступные скидки, вы увидите их во время оформления покупки.</translation>
 <translation id="7363096869660964304">Тем не менее ваши действия будут видны работодателю и интернет-провайдеру, а также доступны веб-сайтам, которые вы посещаете.</translation>
@@ -3432,6 +3494,7 @@
 <translation id="7440140511386898319">Почитать офлайн</translation>
 <translation id="7441627299479586546">Неверный субъект политики</translation>
 <translation id="7441864845853794192">Экзотические продукты и деликатесы</translation>
+<translation id="7442389976360981500">Разрешить отслеживание рук?</translation>
 <translation id="7442725080345379071">Светло-оранжевый</translation>
 <translation id="7444046173054089907">Сайт заблокирован</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Сегодня файлы cookie снова будут заблокированы}=1{Завтра файлы cookie снова будут заблокированы}one{Файлы cookie будут снова заблокированы через # день}few{Файлы cookie будут снова заблокированы через # дня}many{Файлы cookie будут снова заблокированы через # дней}other{Файлы cookie будут снова заблокированы через # дня}}</translation>
@@ -3488,12 +3551,6 @@
 <translation id="7535087603100972091">Значение</translation>
 <translation id="753556296624075801">Технологии Google</translation>
 <translation id="7537536606612762813">Обязательная</translation>
-<translation id="7541586907443866208">Злоумышленники смогут просматривать и изменять данные, которыми вы обмениваетесь с сайтом.
-    &lt;ul&gt;
-    &lt;li&gt;Если вы подключены к общедоступной сети, например в аэропорту или отеле, повторите попытку позже, используя надежную сеть (дома или на работе).&lt;/li&gt;
-    &lt;li&gt;Если вы знаете владельца сайта, сообщите ему об уязвимости.&lt;/li&gt;
-    &lt;/ul&gt;
-    Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="7542995811387359312">Автозаполнение отключено – незащищенное подключение.</translation>
 <translation id="7543525346216957623">Попроси родителя помочь</translation>
 <translation id="7546409722674205727">Запуск приложения "<ph name="APP_NAME" />"…</translation>
@@ -3587,6 +3644,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, действительна до <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Адрес доставки</translation>
 <translation id="7682451652090915298">Регби</translation>
+<translation id="768344142657640519">Вы только что открывали</translation>
 <translation id="7684683146428206649">Металл</translation>
 <translation id="7684817988830401358">Кнопка "Удалить данные о работе в браузере". Нажмите ее, чтобы удалить историю браузера, файлы cookie, кеш и другие данные в настройках Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{Файл "<ph name="FILE_NAME" />" заблокирован из-за ограничений, связанных с политикой}one{<ph name="FILE_COUNT" /> файл заблокирован из-за ограничений, связанных с политикой}few{<ph name="FILE_COUNT" /> файла заблокированы из-за ограничений, связанных с политикой}many{<ph name="FILE_COUNT" /> файлов заблокированы из-за ограничений, связанных с политикой}other{<ph name="FILE_COUNT" /> файла заблокировано из-за ограничений, связанных с политикой}}</translation>
@@ -3606,6 +3664,7 @@
 <translation id="7705992072972338699">Оптический диск (с высоким лоском)</translation>
 <translation id="7706689436519265630">Файлы, которые вы копируете или перемещаете, передаются на проверку в Google Cloud или сторонние сервисы. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО, а также могут храниться на основании правил компании.</translation>
 <translation id="7709911732293795808">Страхование</translation>
+<translation id="7714351089363296478">Вы только что открывали</translation>
 <translation id="7714404809393719981">Фотобумага (полуглянцевая)</translation>
 <translation id="7714424966701020172">Выбран вариант "Заполнить поля для имени и фамилии"</translation>
 <translation id="7714464543167945231">Сертификат</translation>
@@ -3669,7 +3728,6 @@
 <translation id="7825558994363763489">Микроволновые печи</translation>
 <translation id="782886543891417279">Возможно, вам нужно перейти на страницу входа сети Wi-Fi (<ph name="WIFI_NAME" />).</translation>
 <translation id="7831993212387676366">Что такое список покупок</translation>
-<translation id="7832078172950550575">Вы можете искать информацию в истории браузера, формулируя запросы простыми словами, например "пиццерии рядом со мной" или "парки для прогулки с семьей в центре". Ваши запросы, лучшие совпадения и содержимое найденных страниц отправляются в Google. Наши специалисты могут просматривать такие данные, чтобы улучшать эту функцию. <ph name="BEGIN_LINK" />Настроить поиск в истории<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Запись экрана начата</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="784404208867107517">История с распределением по группам</translation>
@@ -3706,7 +3764,7 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">CVC-код этой карты будет зашифрован и сохранен на устройстве, чтобы вы могли оплачивать покупки быстрее.</translation>
 <translation id="7937554595067888181">Действует до <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="7938490694919717008">Показывать при оформлении покупок, какие бонусы и преимущества дают карты. Подробнее <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />о преимуществах карт<ph name="CARD_BENEFIT_HELP_LINK_END" />…</translation>
+<translation id="7938490694919717008">При оформлении покупок показывать, какие бонусы и преимущества дают карты. Подробнее <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />о преимуществах карт<ph name="CARD_BENEFIT_HELP_LINK_END" />…</translation>
 <translation id="7938958445268990899">Сертификат сервера еще не действителен.</translation>
 <translation id="7941628148012649605">Конверт Chou 4</translation>
 <translation id="794169214536209644">Конфеты и сладости</translation>
@@ -3735,6 +3793,7 @@
 <translation id="7967636097426665267">Коммуникационное оборудование</translation>
 <translation id="79682505114836835">Недопустимый шестнадцатеричный код цвета (<ph name="VALUE" />).</translation>
 <translation id="7968982339740310781">Просмотреть сведения</translation>
+<translation id="7975858430722947486">Добавлено для сравнения</translation>
 <translation id="7976214039405368314">слишком много запросов</translation>
 <translation id="7977538094055660992">Устройство вывода</translation>
 <translation id="7979595116210197019">Общественное питание</translation>
@@ -3864,6 +3923,7 @@
 <translation id="8220602974062798186">Заблокировать категорию "<ph name="TOPIC" />" и связанные с ней темы?</translation>
 <translation id="8228419419708659934">Двухстраничный режим</translation>
 <translation id="8228477714872026922">Сайт <ph name="ORIGIN" /> запрашивает доступ к устройству в вашей сети:</translation>
+<translation id="822925450938886901">Правила и дополнительную информацию можно найти на странице chrome://management в браузере.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Температура платформы</translation>
@@ -4064,6 +4124,7 @@
 <translation id="8558347880669160417">Дано разовое разрешение на доступ к микрофону и камере</translation>
 <translation id="8559762987265718583">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Несколько документов/без разбора по копиям</translation>
+<translation id="8564466070529550495">Виртуальная карта недоступна. Повторите попытку позже.</translation>
 <translation id="8564985650692024650">Chromium рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
 <translation id="8570895683659698018">Хобби и отдых</translation>
 <translation id="8574841453995331336">Холодильники и морозильные камеры</translation>
@@ -4073,6 +4134,7 @@
 <translation id="8581064022803799721">Эта страница сохранена в папке "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="8586082901536468629">Инвентарь для сквоша и ракетбола</translation>
 <translation id="858637041960032120">Добавьте номер</translation>
+<translation id="8587100480629037893">Отслеживание рук запрещено</translation>
 <translation id="8589998999637048520">Лучшее качество</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> и не только</translation>
 <translation id="8597726363542221027">Подержанные транспортные средства</translation>
@@ -4096,6 +4158,7 @@
 <translation id="865032292777205197">датчики движения</translation>
 <translation id="865255447216708819">Пленка для обратной печати</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
+<translation id="8660780831677950176">Часто посещаете в это время дня</translation>
 <translation id="8662463432865928030">Коммерческая недвижимость</translation>
 <translation id="8663226718884576429">Информация о заказе, <ph name="TOTAL_LABEL" />, дополнительные сведения</translation>
 <translation id="8663909737634214500">Оптический диск</translation>
@@ -4113,6 +4176,7 @@
 <translation id="8687429322371626002">Вашим устройством и аккаунтом управляет <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Свободно</translation>
 <translation id="868922510921656628">Число страниц в наборе</translation>
+<translation id="8695996513186494922">Сравнить вкладки?</translation>
 <translation id="869891660844655955">Срок действия</translation>
 <translation id="8699041776323235191">HID-устройство</translation>
 <translation id="8699985386408839112">Конверт Kaku 1</translation>
@@ -4180,6 +4244,7 @@
 <translation id="8811470563853401328">Сохранить адрес в аккаунте?</translation>
 <translation id="8811725516933141693">Чтобы начать чат с Gemini, введите "@gemini"</translation>
 <translation id="8813277370772331957">Напомнить позже</translation>
+<translation id="8814547618907885931">Посмотреть все сравнительные таблицы</translation>
 <translation id="8814707942599948500">Конверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
 <translation id="8820817407110198400">Закладки</translation>
@@ -4232,6 +4297,7 @@
 <translation id="8919740778133505789">Спортивные автомобили</translation>
 <translation id="8919895429178014996">Скрыть все объекты</translation>
 <translation id="8922013791253848639">Всегда разрешать рекламу на этом сайте</translation>
+<translation id="8922734931659847428">URL только тех посещенных вами страниц, на которых зафиксированы <ph name="BEGIN_LINK" />события, связанные с устаревшими технологиями<ph name="END_LINK" />.</translation>
 <translation id="8924109546403192898">Когда Chrome сообщает о событиях безопасности, вашему администратору отправляется информация о них. К ней относятся URL страниц, которые вы посещали в Chrome или с которых копировали данные, названия файлов и метаданные, сведения о сбоях браузера и вкладок, а также имя, которое вы используете для входа в веб-приложения, систему на устройстве и в Chrome.</translation>
 <translation id="892588693504540538">Отверстие в правом верхнем углу</translation>
 <translation id="8926389886865778422">Больше не спрашивать</translation>
@@ -4299,6 +4365,7 @@
 <translation id="9051072642122229460">Кофеварки и эспрессо-машины</translation>
 <translation id="9053840549256861041">Мы запускаем новую функцию конфиденциальности в рекламе. Теперь для оценки эффективности рекламы сайты будут получать от Chrome только определенные данные, например сведения о времени, когда вам была показана реклама.</translation>
 <translation id="9053955920216300738">URL страниц, которые вы посещаете.</translation>
+<translation id="9054288282721240609">Отслеживание рук разрешено</translation>
 <translation id="9056953843249698117">Магазин</translation>
 <translation id="9062620674789239642">Возможно, он был перемещен, изменен или удален.</translation>
 <translation id="9063398205799684336">Конверт Kaku 2</translation>
@@ -4342,13 +4409,13 @@
 <translation id="9133985615769429248">Если устройством пользуется кто-то ещё, настройте блокировку экрана, чтобы только вы могли получать доступ к своим сохраненным паролям.</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, виртуальная карта</translation>
 <translation id="9137013805542155359">Показать оригинал</translation>
-<translation id="9137248913990643158">Войдите в Chrome, прежде чем использовать это приложение.</translation>
 <translation id="9138037198177304356">Доступ к уведомлениям разрешен</translation>
 <translation id="9139318394846604261">Покупки</translation>
 <translation id="9141013498910525015">Управление адресами</translation>
 <translation id="9144951720726881238">Срок действия:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Войдите в аккаунт<ph name="END_LINK" />
     ещё раз, а затем вернитесь на эту вкладку, чтобы сгенерировать текст.</translation>
+<translation id="9145936855791010051">Compare</translation>
 <translation id="9148507642005240123">&amp;Отменить изменения</translation>
 <translation id="9148599396704355100">Низкие цены</translation>
 <translation id="9150025764986957246">Что вы можете ввести</translation>
@@ -4382,7 +4449,6 @@
 <translation id="9191834167571392248">Отверстие в левом нижнем углу</translation>
 <translation id="9192361865877479444">Металл (матовый)</translation>
 <translation id="9192947025498305328">Экологически чистая косметика</translation>
-<translation id="919455784772793601">Открыть страницу с другими магазинами, которые продают этот товар.</translation>
 <translation id="9199905725844810519">Печать заблокирована</translation>
 <translation id="9205078245616868884">Данные зашифрованы с помощью кодовой фразы. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="920643408853370361">Туристическое страхование</translation>
@@ -4407,6 +4473,7 @@
 <translation id="944540589955480312">Использовать пароли и ключи доступа, сохраненные в аккаунте Google</translation>
 <translation id="945646848072568856">Chrome запрещает сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете.</translation>
 <translation id="945855313015696284">Проверьте данные и удалите недействительные карты.</translation>
+<translation id="94613679163347541">Сравнить товары из категории "<ph name="CATEGORY" />"?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать сайт в Google Сайтах, нажмите Tab, а затем Ввод.</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Сегодня Chrome снова ограничит использование файлов cookie}=1{Завтра Chrome снова ограничит использование файлов cookie}one{Chrome снова ограничит использование файлов cookie через # день}few{Chrome снова ограничит использование файлов cookie через # дня}many{Chrome снова ограничит использование файлов cookie через # дней}other{Chrome снова ограничит использование файлов cookie через # дня}}</translation>
 <translation id="949314938206378263">Чтобы смотреть этот сайт, нужно получить разрешение родителя через Family Link.</translation>

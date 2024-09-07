@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.URL
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Size;
@@ -33,6 +32,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -132,9 +132,7 @@ public class SingleTabSwitcherOnNtpMediator {
     private static ThumbnailProvider getThumbnailProvider(TabContentManager tabContentManager) {
         if (tabContentManager == null) return null;
 
-        return (tabId, thumbnailSize, callback, isSelected) -> {
-            tabContentManager.getTabThumbnailWithCallback(tabId, thumbnailSize, callback);
-        };
+        return new TabContentManagerThumbnailProvider(tabContentManager);
     }
 
     private static Size getThumbnailSize(Context context) {
@@ -252,10 +250,10 @@ public class SingleTabSwitcherOnNtpMediator {
         mThumbnailProvider.getTabThumbnailWithCallback(
                 mMostRecentTab.getId(),
                 mThumbnailSize,
-                (Bitmap tabThumbnail) -> {
+                /* isSelected= */ false,
+                (Drawable tabThumbnail) -> {
                     mPropertyModel.set(TAB_THUMBNAIL, tabThumbnail);
-                },
-                /* isSelected= */ false);
+                });
     }
 
     /** Update the title of the single tab switcher. */

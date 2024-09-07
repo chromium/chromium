@@ -12,9 +12,9 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
@@ -202,6 +202,10 @@ SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
   representation()->EndWriteAccess();
 }
 
+bool SkiaImageRepresentation::ScopedWriteAccess::NeedGraphiteContextSubmit() {
+  return representation()->NeedGraphiteContextSubmitBeforeEndAccess();
+}
+
 SkiaImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     SkiaImageRepresentation* representation,
     std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures)
@@ -224,6 +228,10 @@ SkiaImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
   representation()->EndReadAccess();
 }
 
+bool SkiaImageRepresentation::ScopedReadAccess::NeedGraphiteContextSubmit() {
+  return representation()->NeedGraphiteContextSubmitBeforeEndAccess();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // SkiaGaneshImageRepresentation
 
@@ -234,6 +242,11 @@ SkiaGaneshImageRepresentation::SkiaGaneshImageRepresentation(
     MemoryTypeTracker* tracker)
     : SkiaImageRepresentation(manager, backing, tracker),
       gr_context_(gr_context) {}
+
+bool SkiaGaneshImageRepresentation::NeedGraphiteContextSubmitBeforeEndAccess() {
+  // Ganesh shouldn't need a Graphite context submit.
+  return false;
+}
 
 SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
     base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
@@ -515,6 +528,12 @@ SkiaGraphiteImageRepresentation::SkiaGraphiteImageRepresentation(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
     : SkiaImageRepresentation(manager, backing, tracker) {}
+
+bool SkiaGraphiteImageRepresentation::
+    NeedGraphiteContextSubmitBeforeEndAccess() {
+  // As default, assume Graphite context submit is needed.
+  return true;
+}
 
 SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
     ScopedGraphiteWriteAccess(
@@ -875,14 +894,6 @@ wgpu::Texture DawnImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage,
     const gfx::Rect& update_rect) {
-#if BUILDFLAG(IS_WIN)
-  // The `update_rect` is a hint to update only certain portion
-  // of shared image but it doesn't have to match the size of shared image for
-  // eg. CopyOutput cases where an empty rect is passed to as there is no intent
-  // to update the shared image. Keeping this windows only for helping compare
-  // with DComp/DXGI cases.
-  DCHECK_EQ(update_rect, gfx::Rect(size()));
-#endif
   return this->BeginAccess(usage, internal_usage);
 }
 

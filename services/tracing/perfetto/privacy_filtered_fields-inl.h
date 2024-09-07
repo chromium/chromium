@@ -19,13 +19,13 @@ namespace tracing {
 struct MessageInfo {
   // List of accepted field ids in the output for this message. The end of list
   // is marked by a -1.
-  // RAW_PTR_EXCLUSION: #global-scope
+  // RAW_PTR_EXCLUSION: constant data that is not freed.
   RAW_PTR_EXCLUSION const int* accepted_field_ids;
 
   // List of sub messages that correspond to the accepted field ids list. There
   // is no end of list marker and the length is this list is equal to length of
   // |accepted_field_ids| - 1.
-  // RAW_PTR_EXCLUSION: #global-scope
+  // RAW_PTR_EXCLUSION: constant data that is not freed.
   RAW_PTR_EXCLUSION const MessageInfo* const* const sub_messages;
 };
 
@@ -57,7 +57,7 @@ constexpr MessageInfo kMajorState = {kMajorStateIndices, nullptr};
 constexpr int kMinorStateIndices[] = {
     1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16,
     17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-    33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, -1};
+    33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, -1};
 constexpr MessageInfo kMinorState = {kMinorStateIndices, nullptr};
 
 // Proto Message: ChromeCompositorStateMachine

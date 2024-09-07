@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/mac/seatbelt.h"
 
 #include <errno.h>
@@ -17,6 +12,7 @@
 
 #include <iterator>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/mac_util.h"
@@ -91,8 +87,7 @@ TEST_F(SeatbeltTest, Ftruncate) {
 
   const std::string contents =
       "Wouldn't it be nice to be able to use ftruncate?\n";
-  EXPECT_EQ(static_cast<int>(contents.length()),
-            file.WriteAtCurrentPos(contents.data(), contents.length()));
+  EXPECT_TRUE(file.WriteAtCurrentPosAndCheck(base::as_byte_span(contents)));
   EXPECT_EQ(static_cast<int64_t>(contents.length()), file.GetLength());
 
   base::PlatformFile fd = file.GetPlatformFile();
@@ -125,16 +120,17 @@ MULTIPROCESS_TEST_MAIN(ProcessSelfInfo) {
   std::string error;
   CHECK(Seatbelt::Init(profile, 0, &error)) << error;
 
-  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+  std::array<int, 4> mib = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
   kinfo_proc proc;
   size_t size = sizeof(proc);
 
-  int rv = sysctl(mib, std::size(mib), &proc, &size, nullptr, 0);
+  int rv = sysctl(mib.data(), mib.size(), &proc, &size, nullptr, 0);
   PCHECK(rv == 0);
 
-  mib[std::size(mib) - 1] = getppid();
+  mib.back() = getppid();
+
   errno = 0;
-  rv = sysctl(mib, std::size(mib), &proc, &size, nullptr, 0);
+  rv = sysctl(mib.data(), mib.size(), &proc, &size, nullptr, 0);
   PCHECK(rv == -1);
   PCHECK(errno == EPERM);
 

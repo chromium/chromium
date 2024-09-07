@@ -73,6 +73,7 @@ void MultiLogCTVerifier::Verify(
     X509Certificate* cert,
     std::string_view stapled_ocsp_response,
     std::string_view sct_list_from_tls_extension,
+    base::Time current_time,
     SignedCertificateTimestampAndStatusList* output_scts,
     const NetLogWithSource& net_log) const {
   DCHECK(cert);
@@ -89,8 +90,8 @@ void MultiLogCTVerifier::Verify(
                                   cert->intermediate_buffers().front().get(),
                                   &precert_entry)) {
       VerifySCTs(embedded_scts, precert_entry,
-                 ct::SignedCertificateTimestamp::SCT_EMBEDDED, cert,
-                 output_scts);
+                 ct::SignedCertificateTimestamp::SCT_EMBEDDED, current_time,
+                 cert, output_scts);
     }
   }
 
@@ -112,12 +113,12 @@ void MultiLogCTVerifier::Verify(
   ct::SignedEntryData x509_entry;
   if (ct::GetX509SignedEntry(cert->cert_buffer(), &x509_entry)) {
     VerifySCTs(sct_list_from_ocsp, x509_entry,
-               ct::SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE, cert,
-               output_scts);
+               ct::SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE,
+               current_time, cert, output_scts);
 
     VerifySCTs(sct_list_from_tls_extension, x509_entry,
-               ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION, cert,
-               output_scts);
+               ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+               current_time, cert, output_scts);
   }
 
   net_log.AddEvent(NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_CHECKED, [&] {
@@ -129,6 +130,7 @@ void MultiLogCTVerifier::VerifySCTs(
     std::string_view encoded_sct_list,
     const ct::SignedEntryData& expected_entry,
     ct::SignedCertificateTimestamp::Origin origin,
+    base::Time current_time,
     X509Certificate* cert,
     SignedCertificateTimestampAndStatusList* output_scts) const {
   if (logs_.empty())
@@ -151,13 +153,15 @@ void MultiLogCTVerifier::VerifySCTs(
     }
     decoded_sct->origin = origin;
 
-    VerifySingleSCT(decoded_sct, expected_entry, cert, output_scts);
+    VerifySingleSCT(decoded_sct, expected_entry, current_time, cert,
+                    output_scts);
   }
 }
 
 bool MultiLogCTVerifier::VerifySingleSCT(
     scoped_refptr<ct::SignedCertificateTimestamp> sct,
     const ct::SignedEntryData& expected_entry,
+    base::Time current_time,
     X509Certificate* cert,
     SignedCertificateTimestampAndStatusList* output_scts) const {
   // Assume this SCT is untrusted until proven otherwise.
@@ -175,7 +179,7 @@ bool MultiLogCTVerifier::VerifySingleSCT(
   }
 
   // SCT verified ok, just make sure the timestamp is legitimate.
-  if (sct->timestamp > base::Time::Now()) {
+  if (sct->timestamp > current_time) {
     AddSCTAndLogStatus(sct, ct::SCT_STATUS_INVALID_TIMESTAMP, output_scts);
     return false;
   }

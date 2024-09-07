@@ -327,8 +327,11 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
     }
   } else {
     resource_host_->FlushRecording(FlushReason::kWritePixels);
-    if (!GetOrCreateResourceProvider())
+
+    // Short-circuit out if an error occurred while flushing the recording.
+    if (!ResourceProvider()->IsValid()) {
       return false;
+    }
   }
 
   return ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
@@ -410,13 +413,10 @@ scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
     return nullptr;
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
-  // make sure "hint" is properly taken into account, as well as after
-  // FlushRecording, in case the playback crashed the GPU context.
+  // make sure "hint" is properly taken into account.
   if (!GetOrCreateResourceProvider())
     return nullptr;
   resource_host_->FlushRecording(reason);
-  if (!GetOrCreateResourceProvider())
-    return nullptr;
   return ResourceProvider()->Snapshot(reason);
 }
 

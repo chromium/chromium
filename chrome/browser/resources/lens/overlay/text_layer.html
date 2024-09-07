@@ -8,6 +8,17 @@
     cursor: text;
   }
 
+  #textRenderCanvas {
+    visibility: hidden;
+  }
+
+  .background-image {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .translated-line,
   .word {
     cursor: text;
     opacity: 0;
@@ -16,9 +27,37 @@
     user-select: none;
   }
 
+  .translated-line {
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
+    opacity: 100%;
+    pointer-events: none;
+    white-space: pre;
+  }
+
+  .translated-word {
+    cursor: text;
+    pointer-events: all;
+    user-select: none;
+  }
+
+  :host([debug-mode]) .translated-line {
+    border: 1px solid orange;
+  }
+
+  :host([debug-mode]) .translated-word {
+    border: 1px solid teal;
+  }
+
   :host([debug-mode]) .word {
     border: 1px solid blue;
     opacity: 50%;
+  }
+
+  :host(:not([should-render-translate-words])) .translated-line,
+  :host(:not([should-render-translate-words])) .background-image {
+    display: none;
   }
 
   .highlighted-line {
@@ -27,12 +66,36 @@
     opacity: 60%;
   }
 </style>
-<template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]">
-  <div style$="[[getWordStyle(item, parentHeight, parentWidth)]]" class="word"
+<template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]"
+  index-as="wordIndex">
+  <div
+    style$="[[getWordStyle(item, wordIndex, shouldRenderTranslateWords, selectionOverlayRect)]]"
+    class="word"
     on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
+  </div>
+</template>
+<template id="translateContainer" is="dom-repeat"
+  items="[[renderedTranslateLines]]" as="translatedLineData"
+  index-as="lineIndex">
+  <template is="dom-if" if="[[translatedLineData.line.backgroundImageData]]">
+    <img class="background-image"
+      style$="[[getBackgroundImageDataStyle(translatedLineData,selectionOverlayRect)]]"
+      src="[[getBlobUrlFromImageData(translatedLineData.line.backgroundImageData)]]">
+  </template>
+  <div
+    style$="[[getTranslatedLineStyle(translatedLineData,selectionOverlayRect)]]"
+    class="translated-line">
+    <template is="dom-repeat" items="[[translatedLineData.words]]"
+      as="translatedWordData" index-as="wordIndex">
+      <span class="translated-word"
+        data-line-index$="[[lineIndex]]"
+        data-word-index$="[[translatedWordData.index]]"
+        lang$="[[currentTranslateLanguage]]">[[translatedWordData.word.plainText]][[translatedWordData.word.textSeparator]]</span>
+    </template>
   </div>
 </template>
 <template is="dom-repeat" items="[[highlightedLines]]">
   <div style$="[[getHighlightedLineStyle(item)]]" class="highlighted-line">
   </div>
 </template>
+<canvas id="textRenderCanvas"></canvas>

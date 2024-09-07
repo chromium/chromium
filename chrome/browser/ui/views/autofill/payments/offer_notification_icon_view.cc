@@ -40,10 +40,8 @@ OfferNotificationIconView::OfferNotificationIconView(
                          "PaymentsOfferNotification") {
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kOfferNotificationChipElementId);
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }
 
 OfferNotificationIconView::~OfferNotificationIconView() = default;
@@ -92,10 +90,8 @@ void OfferNotificationIconView::MaybeShowPageActionLabel() {
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   AnimateIn(IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT);
   controller->OnIconExpanded();
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }
 
 void OfferNotificationIconView::HidePageActionLabel() {

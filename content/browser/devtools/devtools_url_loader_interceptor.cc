@@ -10,6 +10,7 @@
 #include "content/browser/devtools/devtools_url_loader_interceptor.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/barrier_closure.h"
@@ -1287,10 +1288,7 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
   }
 
   std::vector<std::unique_ptr<net::CanonicalCookie>> cookies;
-  base::Time response_date;
-  std::optional<base::Time> server_time = std::nullopt;
-  if (headers.GetDateValue(&response_date))
-    server_time = std::make_optional(response_date);
+  std::optional<base::Time> server_time = headers.GetDateValue();
   base::Time now = base::Time::Now();
 
   const std::string_view name("Set-Cookie");

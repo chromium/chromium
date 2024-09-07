@@ -225,21 +225,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-lacros-fyi-rel",
-    mirrors = [
-        "ci/linux-lacros-builder-fyi-rel",
-        "ci/linux-lacros-tester-fyi-rel",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-lacros-builder-fyi-rel",
-            "try_builder",
-            "no_symbols",
-        ],
-    ),
-)
-
-try_.builder(
     name = "linux-layout-tests-edit-ng",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -358,10 +343,16 @@ try_.orchestrator_builder(
     builder_config_settings = builder_config.try_settings(
         is_compile_only = True,
     ),
-    gn_args = "try/linux-rel",
+    gn_args = gn_args.config(
+        configs = [
+            "try/linux-rel",
+            "no_reclient",
+        ],
+    ),
     compilator = "linux-full-remote-rel-compilator",
     contact_team_email = "chrome-build-team@google.com",
     siso_configs = ["builder", "remote-library-link", "remote-exec-link"],
+    siso_output_local_strategy = "minimum",
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
@@ -926,13 +917,6 @@ try_.builder(
     name = "linux-chromeos-code-coverage",
     mirrors = ["ci/linux-chromeos-code-coverage"],
     gn_args = "ci/linux-chromeos-code-coverage",
-    execution_timeout = 20 * time.hour,
-)
-
-try_.builder(
-    name = "linux-lacros-code-coverage",
-    mirrors = ["ci/linux-lacros-code-coverage"],
-    gn_args = "ci/linux-lacros-code-coverage",
     execution_timeout = 20 * time.hour,
 )
 

@@ -150,6 +150,11 @@ class MODULES_EXPORT AXObjectCacheImpl
       return;
     }
     ax_tree_source_->Freeze();
+
+    // Force a cache reset for mutable cached object properties. Any property
+    // values cached while the tree is frozen is valid until the next thaw.
+    IncrementGenerationalCacheId();
+
     CHECK(FocusedObject());
     DUMP_WILL_BE_CHECK(!IsDirty());
   }
@@ -287,8 +292,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleTextMarkerDataAdded(Node* start, Node* end) override;
   void HandleValueChanged(Node*) override;
   void HandleUpdateActiveMenuOption(Node*) override;
-  void DidShowMenuListPopup(LayoutObject*) override;
-  void DidHideMenuListPopup(LayoutObject*) override;
+  void DidShowMenuListPopup(Node*) override;
+  void DidHideMenuListPopup(Node*) override;
   void HandleLoadStart(Document*) override;
   void HandleLoadComplete(Document*) override;
   void HandleClicked(Node*) override;
@@ -556,6 +561,11 @@ class MODULES_EXPORT AXObjectCacheImpl
     return !pending_objects_to_serialize_.empty();
   }
   bool IsDirty() override;
+
+  // The generation ID is used in conjunction with a temporary cache to store
+  // results for repeated calculations during the serialization process that
+  // are immutable during the update process.
+  uint64_t GenerationalCacheId() { return generational_cache_id_; }
 
   // Set the id of the node to fetch image data for. Normally the content
   // of images is not part of the accessibility tree, but one node at a
@@ -1248,6 +1258,12 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Whether or not the load event was sent in a previous serialization.
   bool load_sent_ = false;
+
+  void IncrementGenerationalCacheId() { ++generational_cache_id_; }
+
+  // Used to determine if a previously computed attribute is from the same
+  // serialization update.
+  uint64_t generational_cache_id_ = 0;
 };
 
 // This is the only subclass of AXObjectCache.

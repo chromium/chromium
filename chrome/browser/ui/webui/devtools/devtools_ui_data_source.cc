@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -43,7 +44,7 @@ std::string PathWithoutParams(const std::string& path) {
 scoped_refptr<base::RefCountedMemory> CreateNotFoundResponse() {
   const char kHttpNotFound[] = "HTTP/1.1 404 Not Found\n\n";
   return base::MakeRefCounted<base::RefCountedStaticMemory>(
-      kHttpNotFound, strlen(kHttpNotFound));
+      base::byte_span_from_cstring(kHttpNotFound));
 }
 
 // DevToolsDataSource ---------------------------------------------------------

@@ -30,13 +30,23 @@ constexpr char kGetTokensResponse[] = R"({
             "expires_in": 3600,
             "token_type": "Bearer"
          })";
-constexpr char kGetUserEmailResponseForUser[] = R"({"email": "user@test.com"})";
-constexpr char kGetUserEmailResponseForServiceAccount[] =
-    R"({"email": "robot@chromoting.com"})";
+// Note: We include "email" in the Token Info response because we require that
+// the scopes contain "userinfo.email", which causes "email" to be included.
+constexpr char kGetTokenInfoResponseForUser[] = R"({
+            "email": "user@test.com",
+            "expires_in": 3600,
+            "scope": "scope1 scope2"
+         })";
+constexpr char kGetTokenInfoResponseForServiceAccount[] = R"({
+            "email": "robot@chromoting.com",
+            "expires_in": 3600,
+            "scope": "scope1 scope2"
+         })";
 
 // Known values for testing config file generation.
 constexpr char kTestUserEmail[] = "user@test.com";
 constexpr char kTestRobotEmail[] = "robot@chromoting.com";
+constexpr char kTestScopes[] = "scope1 scope2";
 constexpr char kTestRobotAuthCode[] = "robot_auth_code";
 constexpr char kTestDirectoryId[] = "test_directory_id";
 constexpr char kTestMachineName[] = "test_machine_name";
@@ -141,8 +151,8 @@ class TestHostStarter : public HostStarterBase {
   ~TestHostStarter() override;
 
   // HostStarterBase implementation.
-  void RegisterNewHost(const std::string& access_token,
-                       const std::string& public_key) override;
+  void RegisterNewHost(const std::string& public_key,
+                       std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_removed) override;
   void ReportError(const std::string& error_message,
                    base::OnceClosure on_done) override;
@@ -156,6 +166,8 @@ class TestHostStarter : public HostStarterBase {
 
   void clear_service_account_email() { service_account_email_.clear(); }
 
+  void clear_scopes() { scopes_.clear(); }
+
   void clear_robot_authorization_code() { robot_authorization_code_.clear(); }
 
  private:
@@ -165,6 +177,7 @@ class TestHostStarter : public HostStarterBase {
   std::string directory_id_{kTestDirectoryId};
   std::string owner_account_email_{kTestUserEmail};
   std::string service_account_email_{kTestRobotEmail};
+  std::string scopes_{kTestScopes};
   std::string robot_authorization_code_{kTestRobotAuthCode};
 
   base::OnceClosure configure_gaia_for_service_account_;
@@ -182,13 +195,13 @@ TestHostStarter::TestHostStarter(
 
 TestHostStarter::~TestHostStarter() = default;
 
-void TestHostStarter::RegisterNewHost(const std::string& access_token,
-                                      const std::string& public_key) {
+void TestHostStarter::RegisterNewHost(const std::string& public_key,
+                                      std::optional<std::string> access_token) {
   // Set up the TestUrlLoaderFactory so it will provide service account
   // responses rather than user account responses.
   std::move(configure_gaia_for_service_account_).Run();
 
-  user_access_token_ = access_token;
+  user_access_token_ = access_token.value_or(std::string());
   OnNewHostRegistered(directory_id_, owner_account_email_,
                       service_account_email_, robot_authorization_code_);
 }
@@ -244,6 +257,7 @@ class HostStarterBaseTest : public testing::Test {
   // Reference to the DaemonControllerDelegate used for testing, which is owned
   // by |test_host_starter_|.
   raw_ptr<TestDaemonControllerDelegate> test_daemon_controller_delegate_;
+  scoped_refptr<DaemonController> daemon_controller_;
 
   std::optional<HostStarter::Result> start_result_;
   std::unique_ptr<TestHostStarter> test_host_starter_;
@@ -256,10 +270,10 @@ HostStarterBaseTest::~HostStarterBaseTest() = default;
 void HostStarterBaseTest::SetUp() {
   shared_url_loader_factory_ = test_url_loader_factory_.GetSafeWeakWrapper();
   test_daemon_controller_delegate_ = new TestDaemonControllerDelegate();
-  scoped_refptr<DaemonController> daemon_controller(new DaemonController(
-      base::WrapUnique(test_daemon_controller_delegate_.get())));
+  daemon_controller_ = new DaemonController(
+      base::WrapUnique(test_daemon_controller_delegate_.get()));
   test_host_starter_ = std::make_unique<TestHostStarter>(
-      shared_url_loader_factory_, daemon_controller,
+      shared_url_loader_factory_, daemon_controller_,
       base::BindOnce(
           &HostStarterBaseTest::ConfigureGaiaResponseForServiceAccount,
           base::Unretained(this)));
@@ -272,6 +286,10 @@ void HostStarterBaseTest::TearDown() {
   // Clear the test instance and allow the threads to shut down so ASAN doesn't
   // detect it as leaked.
   test_host_starter_.reset();
+
+  task_environment_.GetMainThreadTaskRunner()->ReleaseSoon(
+      FROM_HERE, std::move(daemon_controller_));
+
   task_environment_.RunUntilIdle();
 }
 
@@ -288,16 +306,16 @@ void HostStarterBaseTest::ConfigureGaiaResponseForUser() {
   test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(), kGetTokensResponse);
   test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
-      kGetUserEmailResponseForUser);
+      GaiaUrls::GetInstance()->oauth2_token_info_url().spec(),
+      kGetTokenInfoResponseForUser);
 }
 
 void HostStarterBaseTest::ConfigureGaiaResponseForServiceAccount() {
   test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(), kGetTokensResponse);
   test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
-      kGetUserEmailResponseForServiceAccount);
+      GaiaUrls::GetInstance()->oauth2_token_info_url().spec(),
+      kGetTokenInfoResponseForServiceAccount);
 }
 
 TEST_F(HostStarterBaseTest, StartHostUsingOAuth) {
@@ -381,6 +399,88 @@ TEST_F(HostStarterBaseTest, CorpCodePath) {
   EXPECT_TRUE(config->FindString(kPrivateKeyConfigPath));
   // Ensure we did not write a PIN hash value since no PIN was provided.
   EXPECT_FALSE(config->FindString(kHostSecretHashConfigPath));
+
+  // Verify Stop() was not called.
+  EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
+}
+
+TEST_F(HostStarterBaseTest, CloudCodePath) {
+  HostStarter::Params params;
+  params.owner_email = kTestUserEmail;
+  params.api_key = "API_KEY_FOR_TESTING";
+
+  test_host_starter().StartHost(std::move(params), GetCompletionCallback());
+  RunUntilQuit();
+
+  // Make sure the operation completed successfully.
+  EXPECT_EQ(start_result(), HostStarter::START_COMPLETE);
+
+  // Verify no user access token was provided and no errors were reported.
+  EXPECT_EQ(test_host_starter().user_access_token(), std::string());
+  EXPECT_EQ(test_host_starter().error_message(), std::string());
+
+  // Verify the configuration dict has the expected fields populated.
+  auto config = test_daemon_controller_delegate().GetConfig();
+  ASSERT_TRUE(config.has_value());
+  const std::string* value = config->FindString(kHostOwnerConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestUserEmail);
+  value = config->FindString(kServiceAccountConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestRobotEmail);
+  value = config->FindString(kOAuthRefreshTokenConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kRefreshToken);
+  value = config->FindString(kHostIdConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestDirectoryId);
+  // We use the value from GetHostname() if no name is provided.
+  EXPECT_TRUE(config->FindString(kHostNameConfigPath));
+  // Just check for existence here.
+  EXPECT_TRUE(config->FindString(kPrivateKeyConfigPath));
+  // Ensure we did not write a PIN hash value since no PIN was provided.
+  EXPECT_FALSE(config->FindString(kHostSecretHashConfigPath));
+
+  // Verify Stop() was not called.
+  EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
+}
+
+TEST_F(HostStarterBaseTest, LegacyCloudCodePath) {
+  HostStarter::Params params;
+  params.owner_email = kTestUserEmail;
+  params.pin = "123456";
+
+  test_host_starter().StartHost(std::move(params), GetCompletionCallback());
+  RunUntilQuit();
+
+  // Make sure the operation completed successfully.
+  EXPECT_EQ(start_result(), HostStarter::START_COMPLETE);
+
+  // Verify no user access token was provided and no errors were reported.
+  EXPECT_EQ(test_host_starter().user_access_token(), std::string());
+  EXPECT_EQ(test_host_starter().error_message(), std::string());
+
+  // Verify the configuration dict has the expected fields populated.
+  auto config = test_daemon_controller_delegate().GetConfig();
+  ASSERT_TRUE(config.has_value());
+  const std::string* value = config->FindString(kHostOwnerConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestUserEmail);
+  value = config->FindString(kServiceAccountConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestRobotEmail);
+  value = config->FindString(kOAuthRefreshTokenConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kRefreshToken);
+  value = config->FindString(kHostIdConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestDirectoryId);
+  // We use the value from GetHostname() if no name is provided.
+  EXPECT_TRUE(config->FindString(kHostNameConfigPath));
+  // Just check for existence here.
+  EXPECT_TRUE(config->FindString(kPrivateKeyConfigPath));
+  // Ensure we wrote a PIN hash value since a PIN was provided.
+  EXPECT_TRUE(config->FindString(kHostSecretHashConfigPath));
 
   // Verify Stop() was not called.
   EXPECT_FALSE(test_daemon_controller_delegate().stop_called());

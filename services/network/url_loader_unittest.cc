@@ -3304,6 +3304,7 @@ TEST_F(URLLoaderTest, UploadChunkedDataPipe) {
   ResourceRequest request =
       CreateResourceRequest("POST", test_server()->GetURL("/echo"));
   request.request_body = base::MakeRefCounted<ResourceRequestBody>();
+  request.request_body->SetAllowHTTP1ForStreamingUpload(true);
   request.request_body->SetToChunkedDataPipe(
       data_pipe_getter.GetDataPipeGetterRemote(),
       ResourceRequestBody::ReadOnlyOnce(false));
@@ -3329,8 +3330,55 @@ TEST_F(URLLoaderTest, UploadChunkedDataPipe) {
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 }
 
+TEST_F(URLLoaderTest, UploadChunkedDataPipeOverHTTP2) {
+  const std::string kRequestBody = "Request Body";
+
+  TestChunkedDataPipeGetter data_pipe_getter;
+
+  ResourceRequest request = CreateResourceRequest(
+      "POST", net::QuicSimpleTestServer::GetFileURL("/echo"));
+  request.request_body = base::MakeRefCounted<ResourceRequestBody>();
+  request.request_body->SetToChunkedDataPipe(
+      data_pipe_getter.GetDataPipeGetterRemote(),
+      ResourceRequestBody::ReadOnlyOnce(false));
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  context().mutable_factory_params().is_orb_enabled = false;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  mojom::ChunkedDataPipeGetter::GetSizeCallback get_size_callback =
+      data_pipe_getter.WaitForGetSize();
+  mojo::BlockingCopyFromString(kRequestBody,
+                               data_pipe_getter.WaitForStartReading());
+  std::move(get_size_callback).Run(net::OK, kRequestBody.size());
+  delete_run_loop.Run();
+  client()->RunUntilComplete();
+
+  EXPECT_EQ(kRequestBody, ReadBody());
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+}
+
+TEST_F(URLLoaderTest, UploadChunkedDataPipeNotAllowHTTP1) {
+  const std::string kRequestBody = "Request Body";
+
+  TestChunkedDataPipeGetter data_pipe_getter;
+
+  auto resource_request_body = base::MakeRefCounted<ResourceRequestBody>();
+  resource_request_body->SetToChunkedDataPipe(
+      data_pipe_getter.GetDataPipeGetterRemote(),
+      ResourceRequestBody::ReadOnlyOnce(false));
+  set_request_body(std::move(resource_request_body));
+
+  EXPECT_EQ(net::ERR_H2_OR_QUIC_REQUIRED, Load(test_server()->GetURL("/echo")));
+}
+
 // Tests a request body with ReadOnceStream.
-TEST_F(URLLoaderTest, UploadReadOnceStream) {
+TEST_F(URLLoaderTest, UploadChunkedDataPipeReadOnceStream) {
   const std::string kRequestBody = "Request Body";
 
   TestChunkedDataPipeGetter data_pipe_getter;
@@ -3338,6 +3386,7 @@ TEST_F(URLLoaderTest, UploadReadOnceStream) {
   ResourceRequest request =
       CreateResourceRequest("POST", test_server()->GetURL("/echo"));
   request.request_body = base::MakeRefCounted<ResourceRequestBody>();
+  request.request_body->SetAllowHTTP1ForStreamingUpload(true);
   request.request_body->SetToChunkedDataPipe(
       data_pipe_getter.GetDataPipeGetterRemote(),
       ResourceRequestBody::ReadOnlyOnce(true));

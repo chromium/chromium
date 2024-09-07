@@ -401,6 +401,15 @@ void CertVerifierServiceFactoryImpl::GetPlatformRootStoreInfo(
 }
 #endif
 
+void CertVerifierServiceFactoryImpl::UpdateNetworkTime(
+    base::Time system_time,
+    base::TimeTicks system_ticks,
+    base::Time current_time) {
+  proc_params_.time_tracker.emplace(system_time, system_ticks, current_time,
+                                    base::TimeDelta());
+  UpdateVerifierServices();
+}
+
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 void CertVerifierServiceFactoryImpl::SetUseChromeRootStore(
     bool use_crs,

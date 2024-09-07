@@ -595,8 +595,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderingChangePasswordNavigationThrottleBrowserTest,
   ExpectNeitherUmaNorUkmMetric();
 
   // Ensure we canceled the prerender.
-  EXPECT_EQ(prerender_helper_.GetHostForUrl(kWellKnownUrl),
-            RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(prerender_helper_.GetHostForUrl(kWellKnownUrl).is_null());
 }
 
 constexpr ResponseDelayParams kDelayParams[] = {{0, 1}, {1, 0}};

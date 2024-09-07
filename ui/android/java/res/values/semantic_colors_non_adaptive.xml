@@ -168,4 +168,8 @@ found in the LICENSE file.
     <color name="price_drop_annotation_bg_color_dark">@color/baseline_tertiary_30</color>
     <color name="price_drop_annotation_text_green_light">@color/baseline_tertiary_40</color>
     <color name="price_drop_annotation_text_green_dark">@color/baseline_tertiary_80</color>
+
+    <!-- Price insights colors -->
+    <color name="price_insights_sheet_bg_color_light">@color/baseline_surface_tint_light_alph_5</color>
+    <color name="price_insights_sheet_bg_color_dark">@color/baseline_neutral_variant_80_alpha_5</color>
 </resources>

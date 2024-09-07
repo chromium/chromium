@@ -55,9 +55,6 @@ endif
 if WITH_DEBUG_SOURCES
 libxml2_la_SOURCES += debugXML.c
 endif
-if WITH_FTP_SOURCES
-libxml2_la_SOURCES += nanoftp.c
-endif
 if WITH_HTML_SOURCES
 libxml2_la_SOURCES += HTMLparser.c HTMLtree.c
 endif

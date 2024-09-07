@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -83,6 +84,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.layer.cornerRadius = 10.;
   self.tableView.accessibilityIdentifier = kAccountMenuTableViewId;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
@@ -187,6 +189,12 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         DequeueTableViewCell<TableViewAccountCell>(tableView);
     [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
     cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
+    BOOL lastSecondaryIdentity =
+        (indexPath.row == [_accountMenuDataSource tableView:self.tableView
+                                      numberOfRowsInSection:indexPath.section] -
+                              2);
+    cell.separatorInset = UIEdgeInsetsMake(
+        0., /*left=*/(lastSecondaryIdentity) ? 16. : 60., 0., 0.);
     return cell;
   }
 
@@ -199,16 +207,16 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     case RowIdentifierErrorExplanation: {
       SettingsImageDetailTextCell* cell =
           DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
-      SettingsImageDetailTextItem* item =
-          [[SettingsImageDetailTextItem alloc] initWithType:0];
-      item.detailText =
-          l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
-      item.image =
-          DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
-      item.imageViewTintColor = [UIColor colorNamed:kRed500Color];
-      [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
+      cell.backgroundColor =
+          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+      cell.detailTextLabel.text =
+          l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
+      cell.image =
+          DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
+      cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      [cell setImageViewTintColor:[UIColor colorNamed:kRed500Color]];
       return cell;
     }
     case RowIdentifierErrorButton:
@@ -231,12 +239,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   }
   // If the function has not returned yet. This cell contains only text.
 
-  TableViewTextItem* item = [[TableViewTextItem alloc] init];
-  item.textColor = [UIColor colorNamed:kBlueColor];
-  item.accessibilityTraits = UIAccessibilityTraitButton;
-  item.text = label;
   TableViewTextCell* cell = DequeueTableViewCell<TableViewTextCell>(tableView);
-  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  cell.accessibilityTraits = UIAccessibilityTraitButton;
+  cell.isAccessibilityElement = YES;
+  cell.textLabel.text = label;
+  cell.accessibilityLabel = label;
+  cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  cell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
+  cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = accessibilityIdentifier;
   return cell;
 }
@@ -373,10 +383,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)updatePrimaryAccount {
   CentralAccountView* identityAccountItem = [[CentralAccountView alloc]
-      initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-        avatarImage:self.dataSource.primaryAccountAvatar
-               name:self.dataSource.primaryAccountUserFullName
-              email:self.dataSource.primaryAccountEmail];
+        initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
+          avatarImage:self.dataSource.primaryAccountAvatar
+                 name:self.dataSource.primaryAccountUserFullName
+                email:self.dataSource.primaryAccountEmail
+      managementState:self.dataSource.managementState];
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }

@@ -9,8 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
-
 namespace plus_addresses {
 
 PreallocatedPlusAddress::PreallocatedPlusAddress(PlusAddress plus_address,
@@ -32,7 +30,7 @@ PreallocatedPlusAddress& PreallocatedPlusAddress::operator=(
 PreallocatedPlusAddress::~PreallocatedPlusAddress() = default;
 
 PlusProfile::PlusProfile(std::optional<std::string> profile_id,
-                         facet_t facet,
+                         affiliations::FacetURI facet,
                          PlusAddress plus_address,
                          bool is_confirmed)
     : profile_id(std::move(profile_id)),
@@ -90,7 +88,7 @@ std::ostream& operator<<(std::ostream& os,
 std::ostream& operator<<(std::ostream& os, const PlusProfile& profile) {
   os << "PlusProfile(profile_id=" << profile.profile_id.value_or("")
      << ",facet=";
-  absl::visit([&](const auto& f) { os << f; }, profile.facet);
+  os << profile.facet;
   return os << ",plus_address=" << *profile.plus_address
             << ",is_confirmed=" << profile.is_confirmed << ")";
 }

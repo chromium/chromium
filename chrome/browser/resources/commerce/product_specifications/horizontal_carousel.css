@@ -66,44 +66,24 @@
     scroll-snap-type: x mandatory;
   }
 
-  :host(:not([can-scroll])) #carouselContainer {
+  :host(:not([can-scroll_])) #carouselContainer {
     scrollbar-width: none;
   }
 
-  :host([can-scroll]) #carouselContainer::-webkit-scrollbar {
+  :host([can-scroll_]) #carouselContainer::-webkit-scrollbar {
     background: transparent;
     height: 6px;
+    width: 0;
   }
 
-  :host([can-scroll]) #carouselContainer::-webkit-scrollbar-thumb {
+  :host([can-scroll_]) #carouselContainer::-webkit-scrollbar-thumb {
     background:
         var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
     border-radius: 8px;
   }
 
-  ::slotted([slot=selector]) {
+  #startProbe,
+  #endProbe {
     position: sticky;
-    right: 0;
     top: 0;
-  }
-
-  :host([can-scroll]) ::slotted([slot=selector]) {
-    /* Prevent scrolling past the slotted selector. */
-    position: absolute;
-    z-index: 2;
-  }
-
-  #gradientLayer {
-    display: none;
-  }
-
-  :host([can-scroll]) #gradientLayer {
-    background: linear-gradient(270deg, white 10%, transparent 110%);
-    display: block;
-    height: 50px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 134px;
-    z-index: 1;
   }

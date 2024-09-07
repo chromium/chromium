@@ -481,6 +481,10 @@ void Profile::MaybeSendDestroyedNotification() {
 
   NotifyWillBeDestroyed();
 
+#if BUILDFLAG(IS_ANDROID)
+  NotifyJavaOnProfileWillBeDestroyed();
+#endif
+
   for (auto& observer : observers_) {
     observer.OnProfileWillBeDestroyed(this);
   }

@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @interface WrangledBrowser ()
 @property(nonatomic, weak, readonly) BrowserCoordinator* coordinator;
@@ -21,7 +21,7 @@
 @synthesize inactiveBrowser = _inactiveBrowser;
 
 - (instancetype)initWithCoordinator:(BrowserCoordinator*)coordinator {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     DCHECK(coordinator.browser);
     _coordinator = coordinator;
   }

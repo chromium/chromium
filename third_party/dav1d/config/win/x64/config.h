@@ -45,6 +45,8 @@
 
 #define HAVE_IO_H 1
 
+#define HAVE_SYS_TYPES_H 1
+
 #define TRIM_DSP_FUNCTIONS 1
 
 #define UNICODE 1

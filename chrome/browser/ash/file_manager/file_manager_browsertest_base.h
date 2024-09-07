@@ -207,9 +207,6 @@ class FileManagerBrowserTestBase
     // Whether tests should enable local image search by query.
     bool enable_local_image_search = false;
 
-    // Whether test should run with the fsps-in-recents flag.
-    bool enable_fsps_in_recents = false;
-
     // Whether tests should enable Google One offer Files banner. This flag is
     // enabled by default.
     bool enable_google_one_offer_files_banner = true;

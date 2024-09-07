@@ -199,6 +199,12 @@ private shouldShowDeviceIcon_:
         return 'tab_resumption:phone';
       case DeviceType.kTablet:
         return 'tab_resumption:tablet';
+      case DeviceType.kAutomotive:
+        return 'tab_resumption:automotive';
+      case DeviceType.kWearable:
+        return 'tab_resumption:wearable';
+      case DeviceType.kTv:
+        return 'tab_resumption:tv';
       default:
         return 'tab_resumption:globe';
     }
@@ -213,7 +219,6 @@ private shouldShowDeviceIcon_:
   private computeFaviconSize_(): number {
     return 24;
   }
-
   private computeShouldShowDeviceName_(tab: Tab): boolean {
     return !this.shouldShowDeviceIcon_ && !!this.computeDeviceName_(tab);
   }

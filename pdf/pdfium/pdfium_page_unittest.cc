@@ -21,6 +21,7 @@
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
@@ -114,6 +115,27 @@ base::FilePath GetThumbnailTestData(const std::string& expectation_file_prefix,
       .AppendASCII(file_dir)
       .AppendASCII(file_name);
 }
+
+constexpr struct {
+  size_t page_index;
+  float device_pixel_ratio;
+  gfx::Size expected_thumbnail_size;
+} kGenerateThumbnailTestParams[] = {
+    {0, 1, {108, 140}},  // ANSI Letter
+    {1, 1, {108, 152}},  // ISO 216 A4
+    {2, 1, {140, 140}},  // Square
+    {3, 1, {540, 108}},  // Wide
+    {4, 1, {108, 540}},  // Tall
+    {5, 1, {1399, 46}},  // Super wide
+    {6, 1, {46, 1399}},  // Super tall
+    {0, 2, {216, 280}},  // ANSI Letter
+    {1, 2, {214, 303}},  // ISO 216 A4
+    {2, 2, {255, 255}},  // Square
+    {3, 2, {571, 114}},  // Wide
+    {4, 2, {114, 571}},  // Tall
+    {5, 2, {1399, 46}},  // Super wide
+    {6, 2, {46, 1399}},  // Super tall
+};
 
 }  // namespace
 
@@ -1132,27 +1154,6 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnail) {
       InitializeEngine(&client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
   ASSERT_EQ(7, engine->GetNumberOfPages());
 
-  static constexpr struct {
-    size_t page_index;
-    float device_pixel_ratio;
-    gfx::Size expected_thumbnail_size;
-  } kGenerateThumbnailTestParams[] = {
-      {0, 1, {108, 140}},  // ANSI Letter
-      {1, 1, {108, 152}},  // ISO 216 A4
-      {2, 1, {140, 140}},  // Square
-      {3, 1, {540, 108}},  // Wide
-      {4, 1, {108, 540}},  // Tall
-      {5, 1, {1399, 46}},  // Super wide
-      {6, 1, {46, 1399}},  // Super tall
-      {0, 2, {216, 280}},  // ANSI Letter
-      {1, 2, {214, 303}},  // ISO 216 A4
-      {2, 2, {255, 255}},  // Square
-      {3, 2, {571, 114}},  // Wide
-      {4, 2, {114, 571}},  // Tall
-      {5, 2, {1399, 46}},  // Super wide
-      {6, 2, {46, 1399}},  // Super tall
-  };
-
 #if defined(ARCH_CPU_ARM64)
   std::string file_name =
       GetParam() ? "variable_page_sizes_arm64" : "variable_page_sizes";
@@ -1177,6 +1178,21 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailForAnnotation) {
                         /*expected_thumbnail_size=*/{255, 255},
                         "signature_widget");
 }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+TEST_P(PDFiumPageThumbnailTest, GetThumbnailSize) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
+  ASSERT_EQ(7, engine->GetNumberOfPages());
+
+  for (const auto& params : kGenerateThumbnailTestParams) {
+    EXPECT_EQ(
+        params.expected_thumbnail_size,
+        engine->GetThumbnailSize(params.page_index, params.device_pixel_ratio));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageThumbnailTest, testing::Bool());
 

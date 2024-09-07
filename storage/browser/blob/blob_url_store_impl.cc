@@ -14,6 +14,7 @@
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/blob/blob_url_utils.h"
+#include "storage/browser/blob/features.h"
 #include "url/url_util.h"
 
 namespace storage {
@@ -65,9 +66,13 @@ class BlobURLTokenImpl : public blink::mojom::BlobURLToken {
 
 BlobURLStoreImpl::BlobURLStoreImpl(
     const blink::StorageKey& storage_key,
+    const url::Origin& renderer_origin,
+    int render_process_host_id,
     base::WeakPtr<BlobUrlRegistry> registry,
     BlobURLValidityCheckBehavior validity_check_behavior)
     : storage_key_(storage_key),
+      renderer_origin_(renderer_origin),
+      render_process_host_id_(render_process_host_id),
       registry_(std::move(registry)),
       validity_check_behavior_(validity_check_behavior) {}
 
@@ -94,6 +99,7 @@ void BlobURLStoreImpl::Register(
 
   if (registry_)
     registry_->AddUrlMapping(url, std::move(blob), storage_key_,
+                             renderer_origin_, render_process_host_id_,
                              unsafe_agent_cluster_id, unsafe_top_level_site);
   urls_.insert(url);
   std::move(callback).Run();
@@ -117,9 +123,21 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
+  if (base::FeatureList::IsEnabled(
+          features::kBlockCrossPartitionBlobUrlFetching) &&
+      !registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
+                              storage_key_)) {
+    BlobURLLoaderFactory::Create(mojo::NullRemote(), url, std::move(receiver));
+    std::move(callback).Run(std::nullopt, std::nullopt);
+    return;
+  }
 
   BlobURLLoaderFactory::Create(registry_->GetBlobFromUrl(url), url,
                                std::move(receiver));
+  // When a fragment URL is present, registry_->GetUnsafeAgentClusterID(url) and
+  // registry_->GetUnsafeTopLevelSite(url) will return nullopt because their
+  // implementations don't remove the fragment and only support fragmentless
+  // URLs (crbug.com/40775506).
   std::move(callback).Run(registry_->GetUnsafeAgentClusterID(url),
                           registry_->GetUnsafeTopLevelSite(url));
 }

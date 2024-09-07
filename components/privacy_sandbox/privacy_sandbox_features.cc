@@ -108,7 +108,7 @@ const char kPrivacySandboxEnrollmentOverrides[] =
 
 BASE_FEATURE(kPrivacySandboxAttestationsLoadPreInstalledComponent,
              "PrivacySandboxAttestationsLoadPreInstalledComponent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
              "PrivacySandboxProactiveTopicsBlocking",
@@ -122,6 +122,10 @@ BASE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting,
              "PrivateAggregationDebugReportingCookieDeprecationTesting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivateAggregationDebugReportingIgnoreSiteExceptions,
+             "PrivateAggregationDebugReportingIgnoreSiteExceptions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrivacySandboxInternalsDevUI,
              "PrivacySandboxInternalsDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -130,13 +134,21 @@ BASE_FEATURE(kRelatedWebsiteSetsDevUI,
              "RelatedWebsiteSetsDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFingerprintingProtectionSetting,
-             "FingerprintingProtectionSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFingerprintingProtectionUx,
              "FingerprintingProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAddLimit3pcsSetting,
+             "AddLimit3pcsSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAlwaysBlock3pcsIncognito,
+             "AlwaysBlock3pcsIncognito",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTrackingProtection3pcdUx,
+             "TrackingProtection3pcdUx",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFingerprintingProtectionUserBypass,
              "FingerprintingProtectionUserBypass",
@@ -228,17 +240,19 @@ BASE_FEATURE(kPrivacySandboxPrivacyGuideAdTopics,
              "PrivacySandboxPrivacyGuideAdTopics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxLocalNoticeConfirmation,
-             "PrivacySandboxLocalNoticeConfirmation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool>
-    kPrivacySandboxLocalNoticeConfirmationDefaultToOSCountry{
-        &kPrivacySandboxLocalNoticeConfirmation, "default-to-os-country",
-        false};
-
 BASE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel,
              "PrivacySandboxMigratePrefsToNoticeConsentDataModel",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxPrivacyPolicy,
+             "PrivacySandboxPrivacyPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxSentimentSurvey,
+             "PrivacySandboxSentimentSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kPrivacySandboxSentimentSurveyTriggerId{
+    &kPrivacySandboxSentimentSurvey, "sentiment-survey-trigger-id", ""};
 
 }  // namespace privacy_sandbox

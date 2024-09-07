@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/webui/ash/set_time_dialog/set_time_dialog.h"
+#include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"

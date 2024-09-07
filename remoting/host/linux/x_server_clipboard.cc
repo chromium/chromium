@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/host/linux/x_server_clipboard.h"
 
 #include <limits>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -268,7 +274,7 @@ void XServerClipboard::SendTargetsResponse(x11::Window requestor,
       .format = CHAR_BIT * sizeof(x11::Atom),
       .data_len = std::size(targets),
       .data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-          &targets[0], sizeof(targets)),
+          base::as_byte_span(targets)),
   });
   connection_->Flush();
 }
@@ -290,8 +296,8 @@ void XServerClipboard::SendTimestampResponse(x11::Window requestor,
       .type = x11::Atom::INTEGER,
       .format = CHAR_BIT * sizeof(x11::Time),
       .data_len = 1,
-      .data = base::MakeRefCounted<base::RefCountedStaticMemory>(&time,
-                                                                 sizeof(time)),
+      .data = base::MakeRefCounted<base::RefCountedStaticMemory>(
+          base::byte_span_from_ref(time)),
   });
   connection_->Flush();
 }
@@ -310,7 +316,7 @@ void XServerClipboard::SendStringResponse(x11::Window requestor,
         .format = 8,
         .data_len = static_cast<uint32_t>(data_.size()),
         .data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-            data_.data(), data_.size()),
+            base::as_byte_span(data_)),
     });
     connection_->Flush();
   }

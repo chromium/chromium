@@ -30,11 +30,11 @@ UNKNOWN focusable has_input_focus label='Action verbs'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable label='Summary' actions='{DEFAULT}'
 ++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
+++++++++++++++STATIC_TEXT hidden
 ++++++++++++STATIC_TEXT label='Summary'
 ++++++++++++++UNKNOWN label='Summary'
 ++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden label='Details'
+++++++++++STATIC_TEXT hidden
 ++++++UNKNOWN focusable actions='{DEFAULT}' value='Pop-up button'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable selected label='Pop-up button' actions='{DEFAULT}'

@@ -213,7 +213,8 @@ found in the LICENSE file.
                     </LinearLayout>
                     <TextView
                         android:id="@+id/readaloud_playback_speed"
-                        android:layout_width="@dimen/readaloud_menu_buttons_width"
+                        android:layout_width="wrap_content"
+                        android:maxLines="1"
                         android:layout_height="@dimen/readaloud_menu_buttons_width"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentBottom="true"

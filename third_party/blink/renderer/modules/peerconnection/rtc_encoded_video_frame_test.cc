@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
@@ -276,7 +277,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
 
   // Move the WebRTC frame out, as if the frame had been written into
   // an encoded insertable stream's WritableStream to be sent on.
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   DummyExceptionStateForTesting exception_state;
   encoded_frame->setMetadata(metadata, exception_state);
@@ -553,7 +555,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorOnEmptyFrameWorks) {
 
   // Move the WebRTC frame out, as if the frame had been written into
   // an encoded insertable stream's WritableStream to be sent on.
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame =
@@ -578,7 +581,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
   frame_options->setMetadata(encoded_frame->getMetadata());
   // Move the WebRTC frame out, as if the frame had been written into
   // an encoded insertable stream's WritableStream to be sent on.
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
@@ -739,6 +743,38 @@ TEST_F(RTCEncodedVideoFrameTest,
             "Cannot create a new VideoFrame: invalid modification of "
             "payloadType in RTCEncodedVideoFrameMetadata.");
   EXPECT_EQ(new_frame, nullptr);
+}
+
+TEST_F(RTCEncodedVideoFrameTest, ReadingDataOnEmptyFrameGivesDetachedFrame) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+
+  RTCEncodedVideoFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
+
+  DOMArrayBuffer* data = encoded_frame->data(v8_scope.GetExecutionContext());
+  EXPECT_NE(data, nullptr);
+  EXPECT_TRUE(data->IsDetached());
+}
+
+TEST_F(RTCEncodedVideoFrameTest, PassWebRTCDetachesFrameData) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+
+  RTCEncodedVideoFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
+
+  DOMArrayBuffer* data = encoded_frame->data(v8_scope.GetExecutionContext());
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/true);
+  EXPECT_NE(data, nullptr);
+  EXPECT_TRUE(data->IsDetached());
 }
 
 }  // namespace blink

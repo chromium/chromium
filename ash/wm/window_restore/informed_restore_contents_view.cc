@@ -68,6 +68,9 @@ constexpr gfx::Insets kContextMenuLabelInsets = gfx::Insets::VH(0, 16);
 // Width of the actions container, which includes multiple buttons that users
 // can take actions to change their settings.
 constexpr int kActionsContainerWidth = 300;
+constexpr int kActionsContainerWidthSmallScreen = 200;
+constexpr int kSmallScreenThreshold = 800;
+
 // Height of the container that holds the items view.
 constexpr int kItemsViewContainerHeight = 240;
 // Minimum height of the container that holds the screenshot.
@@ -155,6 +158,7 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
 }
 
 void InformedRestoreContentsView::UpdateOrientation() {
+  primary_container_view_ = nullptr;
   settings_button_ = nullptr;
   preview_container_view_ = nullptr;
   items_container_view_ = nullptr;
@@ -181,6 +185,21 @@ void InformedRestoreContentsView::UpdateContents() {
         std::make_unique<InformedRestoreScreenshotIconRowView>(apps_infos));
     UpdateIconRowClipArea();
   }
+}
+
+void InformedRestoreContentsView::UpdatePrimaryContainerPreferredWidth(
+    aura::Window* root_window,
+    std::optional<bool> is_landscape) {
+  const bool landscape_mode =
+      is_landscape.value_or(display::Screen::GetScreen()
+                                ->GetDisplayNearestWindow(root_window)
+                                .is_landscape());
+  const int preferred_width =
+      landscape_mode && root_window->bounds().width() < kSmallScreenThreshold
+          ? kActionsContainerWidthSmallScreen
+          : kActionsContainerWidth;
+  primary_container_view_->SetPreferredSize(gfx::Size(
+      preferred_width, primary_container_view_->GetPreferredSize().height()));
 }
 
 void InformedRestoreContentsView::OnRestoreButtonPressed() {
@@ -299,10 +318,10 @@ InformedRestoreContentsView::CreateButtonContainerBuilder() {
 }
 
 void InformedRestoreContentsView::CreateChildViews() {
-  const bool landscape_mode =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
-          .is_landscape();
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  const bool landscape_mode = display::Screen::GetScreen()
+                                  ->GetDisplayNearestWindow(root)
+                                  .is_landscape();
 
   SetOrientation(landscape_mode ? views::BoxLayout::Orientation::kHorizontal
                                 : views::BoxLayout::Orientation::kVertical);
@@ -326,7 +345,7 @@ void InformedRestoreContentsView::CreateChildViews() {
       break;
   }
 
-  auto* primary_container_view = AddChildView(
+  primary_container_view_ = AddChildView(
       // In landscape mode, this box layout view is the container for the left
       // hand side (in LTR) of the contents view. It contains the title,
       // description, buttons container, and settings button. In portrait mode,
@@ -415,13 +434,14 @@ void InformedRestoreContentsView::CreateChildViews() {
   views::View* spacer;
   if (landscape_mode) {
     // Add the buttons to the left hand side container view.
-    primary_container_view->AddChildView(
+    primary_container_view_->AddChildView(
         CreateButtonContainerBuilder()
             .SetProperty(views::kMarginsKey, kButtonContainerChildMargins)
             .Build());
     spacer =
-        primary_container_view->AddChildView(std::make_unique<views::View>());
-    primary_container_view->AddChildView(CreateSettingsButtonBuilder().Build());
+        primary_container_view_->AddChildView(std::make_unique<views::View>());
+    primary_container_view_->AddChildView(
+        CreateSettingsButtonBuilder().Build());
   } else {
     // Add a footer view that contains the buttons.
     AddChildView(
@@ -448,10 +468,11 @@ void InformedRestoreContentsView::CreateChildViews() {
           ? kItemsViewContainerHeight
           : std::max(kScreenshotContainerMinHeight, screenshot_height);
 
-  primary_container_view->SetPreferredSize(gfx::Size(
+  primary_container_view_->SetPreferredSize(gfx::Size(
       kActionsContainerWidth,
       landscape_mode ? primary_container_height
-                     : primary_container_view->GetPreferredSize().height()));
+                     : primary_container_view_->GetPreferredSize().height()));
+  UpdatePrimaryContainerPreferredWidth(root, landscape_mode);
 
   // Set the screenshot preview container vertical margin based on the height of
   // the screenshot.

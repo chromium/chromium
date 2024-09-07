@@ -113,14 +113,6 @@ bool IsUseAXPositionForDocumentMarkersEnabled() {
       ::features::kUseAXPositionForDocumentMarkers);
 }
 
-BASE_FEATURE(kUseMoveNotCopyInAXTreeCombiner,
-             "UseMoveNotCopyInAXTreeCombiner",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsUseMoveNotCopyInAXTreeCombinerEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kUseMoveNotCopyInAXTreeCombiner);
-}
-
 BASE_FEATURE(kUseMoveNotCopyInMergeTreeUpdate,
              "UseMoveNotCopyInMergeTreeUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -173,6 +165,14 @@ BASE_FEATURE(kAccessibilityFaceGaze,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityFaceGazeEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityFaceGaze);
+}
+
+BASE_FEATURE(kAccessibilityFaceGazeGravityWells,
+             "AccessibilityFaceGazeGravityWells",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityFaceGazeGravityWellsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityFaceGazeGravityWells);
 }
 
 BASE_FEATURE(kAccessibilityReducedAnimationsInKiosk,
@@ -262,6 +262,13 @@ bool IsAccessibilityFlashScreenFeatureEnabled() {
       ::features::kAccessibilityFlashScreenFeature);
 }
 
+BASE_FEATURE(kAccessibilityFilterKeys,
+             "AccessibilityFilterKeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityFilterKeysEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityFilterKeys);
+}
+
 BASE_FEATURE(kAccessibilityShakeToLocate,
              "AccessibilityShakeToLocate",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -324,14 +331,8 @@ bool IsMainNodeAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(::features::kMainNodeAnnotations);
 }
 
-BASE_FEATURE(kPdfOcr,
-             "PdfOcr",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
-);
+// This feature has a 10% holdback to measure memory impact.
+BASE_FEATURE(kPdfOcr, "PdfOcr", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPdfOcrEnabled() {
   return base::FeatureList::IsEnabled(::features::kPdfOcr);
@@ -346,7 +347,12 @@ bool IsReadAnythingReadAloudEnabled() {
 
 BASE_FEATURE(kReadAloudAutoVoiceSwitching,
              "ReadAloudAutoVoiceSwitching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+);
 bool IsReadAloudAutoVoiceSwitchingEnabled() {
   return IsReadAnythingReadAloudEnabled() &&
          base::FeatureList::IsEnabled(::features::kReadAloudAutoVoiceSwitching);
@@ -354,7 +360,12 @@ bool IsReadAloudAutoVoiceSwitchingEnabled() {
 
 BASE_FEATURE(kReadAloudLanguagePackDownloading,
              "ReadAloudLanguagePackDownloading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+);
 bool IsReadAloudLanguagePackDownloadingEnabled() {
   return IsReadAnythingReadAloudEnabled() &&
          base::FeatureList::IsEnabled(
@@ -375,6 +386,8 @@ BASE_FEATURE(kReadAnythingReadAloudPhraseHighlighting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
+         base::FeatureList::IsEnabled(
+             ::features::kReadAnythingReadAloudAutomaticWordHighlighting) &&
          base::FeatureList::IsEnabled(
              ::features::kReadAnythingReadAloudPhraseHighlighting);
 }
@@ -407,6 +420,14 @@ BASE_FEATURE(kReadAnythingDocsIntegration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingDocsIntegrationEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingDocsIntegration);
+}
+
+BASE_FEATURE(kReadAnythingDocsLoadMoreButton,
+             "ReadAnythingDocsLoadMoreButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingDocsLoadMoreButtonEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kReadAnythingDocsLoadMoreButton);
 }
 
 // This feature is only for debug purposes and for security/privacy reasons,

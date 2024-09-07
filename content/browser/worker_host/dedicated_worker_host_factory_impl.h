@@ -55,6 +55,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   void CreateWorkerHost(
       const blink::DedicatedWorkerToken& token,
       const GURL& script_url,
+      const url::Origin& renderer_origin,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           broker_receiver,
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,

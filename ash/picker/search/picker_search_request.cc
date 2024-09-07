@@ -83,8 +83,7 @@ const char* SearchSourceToHistogram(PickerSearchSource source) {
   std::vector<PickerSearchResult*> results_to_remove;
 
   for (PickerSearchResult& link : omnibox_results) {
-    auto* link_data =
-        std::get_if<PickerSearchResult::BrowsingHistoryData>(&link.data());
+    auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       deduped_results.push_back(std::move(link));
       continue;
@@ -189,8 +188,7 @@ PickerSearchRequest::PickerSearchRequest(std::u16string_view query,
       MarkSearchStarted(PickerSearchSource::kEditorWrite);
       HandleEditorSearchResults(
           PickerSearchSource::kEditorWrite,
-          PickerEditorSearch(PickerSearchResult::EditorData::Mode::kWrite,
-                             query));
+          PickerEditorSearch(PickerEditorResult::Mode::kWrite, query));
     }
 
     if (base::Contains(available_categories, PickerCategory::kEditorRewrite)) {
@@ -198,8 +196,7 @@ PickerSearchRequest::PickerSearchRequest(std::u16string_view query,
       MarkSearchStarted(PickerSearchSource::kEditorRewrite);
       HandleEditorSearchResults(
           PickerSearchSource::kEditorRewrite,
-          PickerEditorSearch(PickerSearchResult::EditorData::Mode::kRewrite,
-                             query));
+          PickerEditorSearch(PickerEditorResult::Mode::kRewrite, query));
     }
   }
 

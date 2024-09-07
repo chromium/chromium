@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_INSTALLER_KEY_ROTATION_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -14,11 +15,10 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
-#include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
 
-namespace enterprise_attestation {
-class CloudManagementDelegate;
-}  // namespace enterprise_attestation
+namespace enterprise_management {
+class DeviceManagementRequest;
+}
 
 namespace enterprise_connectors {
 
@@ -31,8 +31,6 @@ class KeyRotationManagerImpl : public KeyRotationManager {
       std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
 
   KeyRotationManagerImpl(
-      std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
-          management_delegate,
       std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
 
   ~KeyRotationManagerImpl() override;
@@ -44,23 +42,16 @@ class KeyRotationManagerImpl : public KeyRotationManager {
       const std::string& nonce,
       base::OnceCallback<void(KeyRotationResult)> result_callback) override;
 
- private:
-  // Gets the `response_code` from the upload key request and continues
-  // the key rotation process. `result_callback` returns the rotation result.
-  // The `old_key_pair` is only required in key rotation flows and will be used
-  // to restore local storage if upload failed.
+  base::expected<const enterprise_management::DeviceManagementRequest,
+                 KeyRotationResult>
+  CreateUploadKeyRequest() override;
+
   void OnDmServerResponse(
       scoped_refptr<SigningKeyPair> old_key_pair,
       base::OnceCallback<void(KeyRotationResult)> result_callback,
-      KeyNetworkDelegate::HttpResponseCode response_code);
+      KeyNetworkDelegate::HttpResponseCode response_code) override;
 
-  void OnUploadPublicKeyCompleted(
-      scoped_refptr<SigningKeyPair> old_key_pair,
-      base::OnceCallback<void(KeyRotationResult)> callback,
-      const policy::DMServerJobResult result);
-
-  std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
-      cloud_management_delegate_;
+ private:
   std::unique_ptr<KeyNetworkDelegate> network_delegate_;
   std::unique_ptr<KeyPersistenceDelegate> persistence_delegate_;
   base::WeakPtrFactory<KeyRotationManagerImpl> weak_factory_{this};

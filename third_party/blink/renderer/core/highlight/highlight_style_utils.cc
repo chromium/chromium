@@ -44,7 +44,8 @@ mojom::blink::ColorScheme UsedColorScheme(
 // Returns the forced foreground color for the given |pseudo|.
 Color ForcedForegroundColor(PseudoId pseudo,
                             mojom::blink::ColorScheme color_scheme,
-                            const ui::ColorProvider* color_provider) {
+                            const ui::ColorProvider* color_provider,
+                            bool is_in_web_app_scope) {
   CSSValueID keyword = CSSValueID::kHighlighttext;
   switch (pseudo) {
     case kPseudoIdTargetText:
@@ -65,14 +66,15 @@ Color ForcedForegroundColor(PseudoId pseudo,
       NOTREACHED_IN_MIGRATION();
       break;
   }
-  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
-                                             color_provider);
+  return LayoutTheme::GetTheme().SystemColor(
+      keyword, color_scheme, color_provider, is_in_web_app_scope);
 }
 
 // Returns the forced ‘background-color’ for the given |pseudo|.
 Color ForcedBackgroundColor(PseudoId pseudo,
                             mojom::blink::ColorScheme color_scheme,
-                            const ui::ColorProvider* color_provider) {
+                            const ui::ColorProvider* color_provider,
+                            bool is_in_web_app_scope) {
   CSSValueID keyword = CSSValueID::kHighlight;
   switch (pseudo) {
     case kPseudoIdTargetText:
@@ -93,8 +95,8 @@ Color ForcedBackgroundColor(PseudoId pseudo,
       NOTREACHED_IN_MIGRATION();
       break;
   }
-  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
-                                             color_provider);
+  return LayoutTheme::GetTheme().SystemColor(
+      keyword, color_scheme, color_provider, is_in_web_app_scope);
 }
 
 // Returns the forced background color if |property| is ‘background-color’,
@@ -104,13 +106,16 @@ Color ForcedColor(const ComputedStyle& originating_style,
                   const ComputedStyle* pseudo_style,
                   PseudoId pseudo,
                   const CSSProperty& property,
-                  const ui::ColorProvider* color_provider) {
+                  const ui::ColorProvider* color_provider,
+                  bool is_in_web_app_scope) {
   mojom::blink::ColorScheme color_scheme =
       UsedColorScheme(originating_style, pseudo_style);
   if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
-    return ForcedBackgroundColor(pseudo, color_scheme, color_provider);
+    return ForcedBackgroundColor(pseudo, color_scheme, color_provider,
+                                 is_in_web_app_scope);
   }
-  return ForcedForegroundColor(pseudo, color_scheme, color_provider);
+  return ForcedForegroundColor(pseudo, color_scheme, color_provider,
+                               is_in_web_app_scope);
 }
 
 // Returns the UA default ‘color’ for the given |pseudo|.
@@ -132,7 +137,8 @@ std::optional<Color> DefaultForegroundColor(
     case kPseudoIdTargetText:
       return LayoutTheme::GetTheme().PlatformTextSearchColor(
           false /* active match */, document.InForcedColorsMode(), color_scheme,
-          document.GetColorProviderForPainting(color_scheme));
+          document.GetColorProviderForPainting(color_scheme),
+          document.IsInWebAppScope());
     case kPseudoIdSpellingError:
     case kPseudoIdGrammarError:
     case kPseudoIdHighlight:
@@ -298,7 +304,8 @@ std::optional<Color> HighlightStyleUtils::MaybeResolveColor(
   if (UseForcedColors(document, originating_style, pseudo_style)) {
     return ForcedColor(originating_style, pseudo_style, pseudo, property,
                        document.GetColorProviderForPainting(
-                           UsedColorScheme(originating_style, pseudo_style)));
+                           UsedColorScheme(originating_style, pseudo_style)),
+                       document.IsInWebAppScope());
   }
   if (UseDefaultHighlightColors(pseudo_style, pseudo, property)) {
     return DefaultHighlightColor(document, originating_style, pseudo_style,

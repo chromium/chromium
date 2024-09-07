@@ -72,6 +72,7 @@ GL_EXPORT extern const char kDisableGLExtensions[];
 GL_EXPORT extern const char kEnableSwapBuffersWithBounds[];
 GL_EXPORT extern const char kEnableDirectCompositionVideoOverlays[];
 GL_EXPORT extern const char kUseAdapterLuid[];
+GL_EXPORT extern const char kEnableUnsafeSwiftShader[];
 
 GL_EXPORT extern const char kDirectCompositionVideoSwapChainFormat[];
 

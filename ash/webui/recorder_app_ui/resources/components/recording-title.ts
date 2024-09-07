@@ -12,10 +12,12 @@ import {
   Textfield,
 } from 'chrome://resources/cros_components/textfield/textfield.js';
 import {
+  createRef,
   css,
   html,
   nothing,
   PropertyDeclarations,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
@@ -30,7 +32,7 @@ import {
 import {computed, signal} from '../core/reactive/signal.js';
 import {RecordingMetadata} from '../core/recording_data_manager.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
-import {assertInstanceof} from '../core/utils/assert.js';
+import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 
 import {RecordingTitleSuggestion} from './recording-title-suggestion.js';
 
@@ -50,9 +52,14 @@ export class RecordingTitle extends ReactiveLitElement {
     }
 
     recording-title-suggestion {
+      /*
+       * TODO: b/361221415 - Remove the old properties when stable Chrome
+       * supports new one.
+       */
+      inset-area: bottom span-right;
       position: absolute;
       position-anchor: --title-textfield;
-      inset-area: bottom span-right;
+      position-area: bottom span-right;
       margin-top: 4.5px;
       max-width: 402px;
       min-width: 360px;
@@ -99,6 +106,25 @@ export class RecordingTitle extends ReactiveLitElement {
   private readonly recordingDataManager = useRecordingDataManager();
 
   private readonly platformHandler = usePlatformHandler();
+
+  private readonly renameContainer = createRef<HTMLDivElement>();
+
+  private readonly suggestTitleButton = createRef<HTMLButtonElement>();
+
+  private readonly recordingTitleSuggestion =
+    createRef<RecordingTitleSuggestion>();
+
+  get renameContainerForTest(): HTMLDivElement {
+    return assertExists(this.renameContainer.value);
+  }
+
+  get suggestTitleButtonForTest(): HTMLButtonElement {
+    return assertExists(this.suggestTitleButton.value);
+  }
+
+  get titleSuggestionForTest(): RecordingTitleSuggestion {
+    return assertExists(this.recordingTitleSuggestion.value);
+  }
 
   private readonly transcription = new ScopedAsyncComputed(this, async () => {
     if (this.recordingMetadataSignal.value === null) {
@@ -224,6 +250,7 @@ export class RecordingTitle extends ReactiveLitElement {
       @close=${this.closeSuggestionDialog}
       @change=${this.onSuggestTitle}
       .suggestedTitles=${this.suggestedTitles}
+      ${ref(this.recordingTitleSuggestion)}
     ></recording-title-suggestion>`;
   }
 
@@ -238,6 +265,8 @@ export class RecordingTitle extends ReactiveLitElement {
               slot="trailing"
               shape="circle"
               @click=${this.openSuggestionDialog}
+              ${ref(this.suggestTitleButton)}
+              aria-label=${i18n.titleSuggestionButtonTooltip}
             >
               <cra-icon slot="icon" name="pen_spark"></cra-icon>
             </cra-icon-button>`;
@@ -260,6 +289,7 @@ export class RecordingTitle extends ReactiveLitElement {
         tabindex="0"
         @focus=${this.startEditTitle}
         @click=${this.startEditTitle}
+        ${ref(this.renameContainer)}
       >
         ${this.recordingMetadata?.title ?? ''}
         <cra-tooltip>${i18n.titleRenameTooltip}</cra-tooltip>

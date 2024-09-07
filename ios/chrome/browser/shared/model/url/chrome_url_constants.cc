@@ -152,3 +152,8 @@ const char kManagementLearnMoreURL[] =
 
 const char kEnhancedSafeBrowsingLearnMoreURL[] =
     "https://support.google.com/chrome?p=safe_browsing_preferences";
+
+const char kMyActivityURL[] = "https://myactivity.google.com/myactivity";
+
+const char kLearnMoreLensURL[] =
+    "https://support.google.com/chrome/?p=google_lens_ios";

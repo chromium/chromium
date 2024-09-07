@@ -264,8 +264,10 @@ void DidNavigateFrame(RenderFrameHostManager* rfh_manager,
   rfh_manager->DidNavigateFrame(rfh, true /* was_caused_by_user_gesture */,
                                 false /* is_same_document_navigation */,
                                 false /* clear_proxies_on_commit */,
-                                blink::FramePolicy(), false
-                                /* allow_subframe_paint_holding */);
+                                blink::FramePolicy(),
+                                false
+                                /* allow_subframe_paint_holding */,
+                                /*is_initiated_by_animated_transition=*/false);
 }
 
 class TestDevToolsClientHost : public DevToolsAgentHostClient {
@@ -607,7 +609,8 @@ TEST_P(RenderFrameHostManagerTest, ChromeSchemeProcesses) {
   // Navigate our first tab to the chrome url and then to the destination,
   // ensuring we grant bindings to the chrome URL.
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kChromeUrl);
-  EXPECT_TRUE(main_rfh()->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(
+      main_rfh()->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kDestUrl);
 
   EXPECT_FALSE(contents()->GetSpeculativePrimaryMainFrame());
@@ -1172,7 +1175,7 @@ TEST_P(RenderFrameHostManagerTest, WebUI) {
 
   // Commit.
   DidNavigateFrame(manager, host);
-  EXPECT_TRUE(host->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(host->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 }
 
 // Tests that we can open a WebUI link in a new tab from a WebUI page and still
@@ -1214,13 +1217,13 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
   // At this point, the initial RFH should have set the WebUI bindings.  This
   // should happen as part of selecting that RFH for the WebUI navigation in
   // GetFrameHostForNavigation().
-  EXPECT_TRUE(host1->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(host1->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   // Commit and ensure we still have bindings.
   DidNavigateFrame(manager1, host1);
   SiteInstance* webui_instance = host1->GetSiteInstance();
   EXPECT_EQ(host1, manager1->current_frame_host());
-  EXPECT_TRUE(host1->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(host1->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   // Now simulate clicking a link that opens in a new tab.
   std::unique_ptr<TestWebContents> web_contents2(
@@ -1247,7 +1250,7 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
   // SiteInstance.  We should grant bindings immediately.
   EXPECT_EQ(host2, manager2->current_frame_host());
   EXPECT_TRUE(host2->web_ui());
-  EXPECT_TRUE(host2->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(host2->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   DidNavigateFrame(manager2, host2);
 }
@@ -2459,7 +2462,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
       contents()->GetPrimaryFrameTree().root()->render_manager();
   RenderFrameHostImpl* webui_rfh = NavigateToEntry(main_rfhm, &webui_entry);
   EXPECT_EQ(webui_rfh, GetPendingFrameHost(main_rfhm));
-  EXPECT_TRUE(webui_rfh->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(webui_rfh->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   // Before it commits, do a cross-process navigation in a subframe.  This
   // should not grant WebUI bindings to the subframe's RVH.
@@ -2472,7 +2475,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* bar_rfh =
       NavigateToEntry(subframe_rfhm, &subframe_entry);
-  EXPECT_FALSE(bar_rfh->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_FALSE(bar_rfh->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 }
 
 // This class intercepts RenderFrameProxyHost creations, and overrides their

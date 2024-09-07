@@ -25,6 +25,7 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/snappy/src/snappy.h"
 
 namespace tracing {
 
@@ -38,16 +39,24 @@ BASE_FEATURE(kPresetTracing,
 
 namespace {
 
+const char kBackgroundTracingFieldTrial[] = "BackgroundTracing";
+
 const base::FeatureParam<std::string> kTracingTriggerRulesConfig{
     &kTracingTriggers, "config", ""};
+const base::FeatureParam<bool> kTracingTriggerRulesCompressed{
+    &kTracingTriggers, "compressed", false};
 const base::FeatureParam<std::string> kFieldTracingConfig{&kFieldTracing,
                                                           "config", ""};
+const base::FeatureParam<bool> kFieldTracingCompressed{&kFieldTracing,
+                                                       "compressed", false};
 const base::FeatureParam<bool> kFieldTracingAnonymized{&kFieldTracing,
                                                        "anonymized", true};
 const base::FeatureParam<bool> kStartupFieldTracing{&kFieldTracing, "startup",
                                                     false};
 const base::FeatureParam<std::string> kPresetTracingConfig{&kPresetTracing,
                                                            "config", ""};
+const base::FeatureParam<bool> kPresetTracingCompressed{&kPresetTracing,
+                                                        "compressed", false};
 
 bool BlockingWriteTraceToFile(const base::FilePath& output_file,
                               std::string file_contents) {
@@ -111,9 +120,9 @@ GetBackgroundTracingConfigFromFile(const base::FilePath& config_file) {
 }
 
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
-GetTracingConfigFromFeature(
-    const base::Feature& feature,
-    const base::FeatureParam<std::string> feature_param) {
+GetTracingConfigFromFeature(const base::Feature& feature,
+                            const base::FeatureParam<std::string> feature_param,
+                            bool is_compressed) {
   if (!base::FeatureList::IsEnabled(feature)) {
     return std::nullopt;
   }
@@ -121,6 +130,16 @@ GetTracingConfigFromFeature(
   if (!base::Base64Decode(feature_param.Get(), &serialized_config)) {
     return std::nullopt;
   }
+
+  if (is_compressed) {
+    std::string decompressed_config;
+    if (!snappy::Uncompress(serialized_config.data(), serialized_config.size(),
+                            &decompressed_config)) {
+      return std::nullopt;
+    }
+    serialized_config = std::move(decompressed_config);
+  }
+
   perfetto::protos::gen::ChromeFieldTracingConfig config;
   if (config.ParseFromString(serialized_config)) {
     return config;
@@ -223,6 +242,48 @@ bool SetupPresetTracingFromFieldTrial() {
   return false;
 }
 
+bool SetupSystemTracingFromFieldTrial() {
+  if (tracing::GetBackgroundTracingSetupMode() !=
+      BackgroundTracingSetupMode::kFromFieldTrial) {
+    return false;
+  }
+
+  auto& manager = content::BackgroundTracingManager::GetInstance();
+  auto trigger_config = tracing::GetTracingTriggerRulesConfig();
+  if (!trigger_config) {
+    return false;
+  }
+  return manager.InitializePerfettoTriggerRules(std::move(*trigger_config));
+}
+
+bool SetupFieldTracingFromFieldTrial() {
+  if (GetBackgroundTracingSetupMode() !=
+      BackgroundTracingSetupMode::kFromFieldTrial) {
+    return false;
+  }
+
+  content::BackgroundTracingManager::DataFiltering data_filtering =
+      content::BackgroundTracingManager::ANONYMIZE_DATA;
+  if (tracing::HasBackgroundTracingOutputPath()) {
+    data_filtering = content::BackgroundTracingManager::NO_DATA_FILTERING;
+    if (!tracing::SetBackgroundTracingOutputPath()) {
+      return false;
+    }
+  } else if (!tracing::ShouldAnonymizeFieldTracing()) {
+    data_filtering = content::BackgroundTracingManager::NO_DATA_FILTERING;
+  }
+
+  auto& manager = content::BackgroundTracingManager::GetInstance();
+  auto field_tracing_config = tracing::GetFieldTracingConfig();
+  if (field_tracing_config) {
+    return manager.InitializeFieldScenarios(std::move(*field_tracing_config),
+                                            data_filtering);
+  }
+  std::unique_ptr<content::BackgroundTracingConfig> config =
+      manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
+  return manager.SetActiveScenario(std::move(config), data_filtering);
+}
+
 bool HasBackgroundTracingOutputPath() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(switches::kBackgroundTracingOutputPath);
@@ -281,7 +342,8 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
 
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetFieldTracingConfig() {
-  return GetTracingConfigFromFeature(kFieldTracing, kFieldTracingConfig);
+  return GetTracingConfigFromFeature(kFieldTracing, kFieldTracingConfig,
+                                     kFieldTracingCompressed.Get());
 }
 
 bool ShouldAnonymizeFieldTracing() {
@@ -294,7 +356,8 @@ bool ShouldTraceStartup() {
 
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetPresetTracingConfig() {
-  return GetTracingConfigFromFeature(kPresetTracing, kPresetTracingConfig);
+  return GetTracingConfigFromFeature(kPresetTracing, kPresetTracingConfig,
+                                     kPresetTracingCompressed.Get());
 }
 
 std::optional<perfetto::protos::gen::TracingTriggerRulesConfig>
@@ -306,6 +369,15 @@ GetTracingTriggerRulesConfig() {
   if (!base::Base64Decode(kTracingTriggerRulesConfig.Get(),
                           &serialized_config)) {
     return std::nullopt;
+  }
+
+  if (kTracingTriggerRulesCompressed.Get()) {
+    std::string decompressed_config;
+    if (!snappy::Uncompress(serialized_config.data(), serialized_config.size(),
+                            &decompressed_config)) {
+      return std::nullopt;
+    }
+    serialized_config = std::move(decompressed_config);
   }
   perfetto::protos::gen::TracingTriggerRulesConfig config;
   if (config.ParseFromString(serialized_config)) {

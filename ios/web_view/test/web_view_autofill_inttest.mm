@@ -329,6 +329,7 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
   EXPECT_NSEQ(main_frame_id, fetched_suggestion.frameID);
 
   [autofill_controller_ acceptSuggestion:fetched_suggestion
+                                 atIndex:0
                        completionHandler:nil];
   NSString* filled_script =
       [NSString stringWithFormat:@"document.getElementById('%@').value",

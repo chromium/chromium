@@ -26,11 +26,12 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_IBAN_OUTCOME_HISTOGRAM;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NAME;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NUMBER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.IS_ACCEPTABLE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.NETWORK_NAME;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ON_CREDIT_CARD_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MINOR_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
@@ -60,6 +61,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -157,21 +159,33 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* value= */ "FR7630006000011234567890189");
     private static final AutofillSuggestion VISA_SUGGESTION =
             createCreditCardSuggestion(
-                    VISA.getName(), VISA.getNumber(), /* applyDeactivatedStyle= */ false);
+                    VISA.getCardNameForAutofillDisplay(),
+                    VISA.getObfuscatedLastFourDigits(),
+                    VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
+                    /* applyDeactivatedStyle= */ false);
+    private static final AutofillSuggestion NICKNAMED_VISA_SUGGESTION =
+            createCreditCardSuggestion(
+                    NICKNAMED_VISA.getCardNameForAutofillDisplay(),
+                    NICKNAMED_VISA.getObfuscatedLastFourDigits(),
+                    NICKNAMED_VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
+                    /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
-                    MASTERCARD.getName(),
-                    MASTERCARD.getNumber(),
+                    MASTERCARD.getCardNameForAutofillDisplay(),
+                    MASTERCARD.getObfuscatedLastFourDigits(),
+                    MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
-                    VIRTUAL_CARD.getName(),
-                    VIRTUAL_CARD.getNumber(),
+                    VIRTUAL_CARD.getCardNameForAutofillDisplay(),
+                    VIRTUAL_CARD.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "Merchant doesn't accept this virtual card",
                     /* applyDeactivatedStyle= */ true);
     private static final AutofillSuggestion ACCEPTABLE_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
-                    VIRTUAL_CARD.getName(),
-                    VIRTUAL_CARD.getNumber(),
+                    VIRTUAL_CARD.getCardNameForAutofillDisplay(),
+                    VIRTUAL_CARD.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "Virtual Card",
                     /* applyDeactivatedStyle= */ false);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -231,7 +245,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    public void testShowCreditCardsWithOneEntry() throws TimeoutException {
+    public void testShowCreditCardSuggestionsWithOneEntry() throws TimeoutException {
         mCoordinator.showSheet(
                 List.of(VISA), List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ false);
 
@@ -244,15 +258,19 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
 
-        Optional<PropertyModel> cardModel = getCardModelByAutofillName(itemList, VISA);
-        assertTrue(cardModel.isPresent());
-        assertThat(cardModel.get().get(CARD_NAME), is(VISA.getCardNameForAutofillDisplay()));
-        assertThat(cardModel.get().get(CARD_NUMBER), is(VISA.getObfuscatedLastFourDigits()));
-        assertTrue(cardModel.get().get(IS_ACCEPTABLE));
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(itemList, VISA_SUGGESTION);
+        assertTrue(cardSuggestionModel.isPresent());
+        assertThat(cardSuggestionModel.get().get(MAIN_TEXT), is(VISA_SUGGESTION.getLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(MINOR_TEXT), is(VISA_SUGGESTION.getSecondaryLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(FIRST_LINE_LABEL), is(VISA_SUGGESTION.getSublabel()));
+        assertFalse(cardSuggestionModel.get().get(APPLY_DEACTIVATED_STYLE));
     }
 
     @Test
-    public void testShowCreditCardsWithTwoEntries() throws TimeoutException {
+    public void testShowCreditCardSuggestionsWithTwoEntries() throws TimeoutException {
         mCoordinator.showSheet(
                 List.of(VISA, MASTERCARD),
                 List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
@@ -267,18 +285,28 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
 
-        Optional<PropertyModel> cardModel = getCardModelByAutofillName(itemList, VISA);
-        assertTrue(cardModel.isPresent());
-        assertThat(cardModel.get().get(CARD_NAME), is(VISA.getCardNameForAutofillDisplay()));
-        assertThat(cardModel.get().get(CARD_NUMBER), is(VISA.getObfuscatedLastFourDigits()));
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(itemList, VISA_SUGGESTION);
+        assertTrue(cardSuggestionModel.isPresent());
+        assertThat(cardSuggestionModel.get().get(MAIN_TEXT), is(VISA_SUGGESTION.getLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(MINOR_TEXT), is(VISA_SUGGESTION.getSecondaryLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(FIRST_LINE_LABEL), is(VISA_SUGGESTION.getSublabel()));
 
-        cardModel = getCardModelByAutofillName(itemList, MASTERCARD);
-        assertThat(cardModel.get().get(CARD_NAME), is(MASTERCARD.getCardNameForAutofillDisplay()));
-        assertThat(cardModel.get().get(CARD_NUMBER), is(MASTERCARD.getObfuscatedLastFourDigits()));
+        cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(itemList, MASTERCARD_SUGGESTION);
+        assertThat(cardSuggestionModel.get().get(MAIN_TEXT), is(MASTERCARD_SUGGESTION.getLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(MINOR_TEXT),
+                is(MASTERCARD_SUGGESTION.getSecondaryLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(FIRST_LINE_LABEL),
+                is(MASTERCARD_SUGGESTION.getSublabel()));
     }
 
     @Test
-    public void testShowCreditCardsWithNonAcceptableEntries() throws TimeoutException {
+    public void testShowCreditCardSuggestionsWithNonAcceptableEntries() throws TimeoutException {
         HistogramWatcher metricsWatcher =
                 HistogramWatcher.newSingleRecordWatcher(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, 2);
 
@@ -294,12 +322,15 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
 
-        Optional<PropertyModel> cardModel = getCardModelByAutofillName(itemList, VIRTUAL_CARD);
-        assertTrue(cardModel.isPresent());
-        assertFalse(cardModel.get().get(IS_ACCEPTABLE));
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(
+                        itemList, NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION);
+        assertTrue(cardSuggestionModel.isPresent());
+        assertTrue(cardSuggestionModel.get().get(APPLY_DEACTIVATED_STYLE));
 
-        cardModel = getCardModelByAutofillName(itemList, MASTERCARD);
-        assertTrue(cardModel.get().get(IS_ACCEPTABLE));
+        cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(itemList, MASTERCARD_SUGGESTION);
+        assertFalse(cardSuggestionModel.get().get(APPLY_DEACTIVATED_STYLE));
     }
 
     @Test
@@ -345,40 +376,42 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    public void testNoCallbackForCreditCardOnSelectingItemBeforeInputTime() {
+    public void testNoCallbackForCreditCardSuggestionOnSelectingItemBeforeInputTime() {
         mCoordinator.showSheet(
                 List.of(VISA), List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        Optional<PropertyModel> cardModel =
-                getCardModelByAutofillName(mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), VISA);
-        assertNotNull(cardModel.get().get(ON_CREDIT_CARD_CLICK_ACTION));
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(
+                        mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), VISA_SUGGESTION);
+        assertNotNull(cardSuggestionModel.get().get(ON_CREDIT_CARD_CLICK_ACTION));
 
         // Clicking after an interval less than the threshold should be a no-op.
         mClock.advanceCurrentTimeMillis(
                 InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD - 100);
-        cardModel.get().get(ON_CREDIT_CARD_CLICK_ACTION).run();
+        cardSuggestionModel.get().get(ON_CREDIT_CARD_CLICK_ACTION).run();
         verify(mDelegateMock, times(0))
                 .creditCardSuggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
 
         // Clicking after the threshold should work.
         mClock.advanceCurrentTimeMillis(100);
-        cardModel.get().get(ON_CREDIT_CARD_CLICK_ACTION).run();
+        cardSuggestionModel.get().get(ON_CREDIT_CARD_CLICK_ACTION).run();
         verify(mDelegateMock, times(1))
                 .creditCardSuggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
     }
 
     @Test
-    public void testCallsCallbackForCreditCardOnSelectingItem() {
+    public void testCallsCallbackForCreditCardSuggestionOnSelectingItem() {
         mCoordinator.showSheet(
                 List.of(VISA), List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        Optional<PropertyModel> cardModel =
-                getCardModelByAutofillName(mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), VISA);
-        assertNotNull(cardModel.get().get(ON_CREDIT_CARD_CLICK_ACTION));
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(
+                        mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), VISA_SUGGESTION);
+        assertNotNull(cardSuggestionModel.get().get(ON_CREDIT_CARD_CLICK_ACTION));
 
-        advanceClockAndClick(cardModel.get());
+        advanceClockAndClick(cardSuggestionModel.get());
         verify(mDelegateMock).creditCardSuggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
         assertEquals(
                 1,
@@ -392,19 +425,20 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    public void testCallsCallbackForVirtualCardOnSelectingItem() {
+    public void testCallsCallbackForVirtualCardSuggestionOnSelectingItem() {
         mCoordinator.showSheet(
                 List.of(VIRTUAL_CARD),
                 List.of(ACCEPTABLE_VIRTUAL_CARD_SUGGESTION),
                 /* shouldShowScanCreditCard= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        Optional<PropertyModel> cardModel =
-                getCardModelByAutofillName(
-                        mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), VIRTUAL_CARD);
-        assertNotNull(cardModel.get().get(ON_CREDIT_CARD_CLICK_ACTION));
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(
+                        mTouchToFillPaymentMethodModel.get(SHEET_ITEMS),
+                        ACCEPTABLE_VIRTUAL_CARD_SUGGESTION);
+        assertNotNull(cardSuggestionModel.get().get(ON_CREDIT_CARD_CLICK_ACTION));
 
-        advanceClockAndClick(cardModel.get());
+        advanceClockAndClick(cardSuggestionModel.get());
         verify(mDelegateMock)
                 .creditCardSuggestionSelected(VIRTUAL_CARD.getGUID(), VIRTUAL_CARD.getIsVirtual());
         assertEquals(
@@ -503,29 +537,31 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    public void testCardModelForNicknamedCardContainsANetworkName() {
+    public void testCardSuggestionModelForNicknamedCardContainsANetworkName() {
         mCoordinator.showSheet(
                 List.of(NICKNAMED_VISA),
-                List.of(VISA_SUGGESTION),
+                List.of(NICKNAMED_VISA_SUGGESTION),
                 /* shouldShowScanCreditCard= */ false);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
 
-        Optional<PropertyModel> cardModel = getCardModelByAutofillName(itemList, NICKNAMED_VISA);
-        assertTrue(cardModel.isPresent());
-        assertEquals("visa", cardModel.get().get(NETWORK_NAME));
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(itemList, NICKNAMED_VISA_SUGGESTION);
+        assertTrue(cardSuggestionModel.isPresent());
+        assertEquals("visa", cardSuggestionModel.get().get(NETWORK_NAME));
     }
 
     @Test
-    public void testCardModelForACardWithoutANicknameDoesNotContainANetworkName() {
+    public void testCardSuggestionModelForACardWithoutANicknameDoesNotContainANetworkName() {
         mCoordinator.showSheet(
                 List.of(VISA), List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ false);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
 
-        Optional<PropertyModel> cardModel = getCardModelByAutofillName(itemList, VISA);
-        assertTrue(cardModel.isPresent());
-        assertTrue(cardModel.get().get(NETWORK_NAME).isEmpty());
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModelBySuggestionLabel(itemList, VISA_SUGGESTION);
+        assertTrue(cardSuggestionModel.isPresent());
+        assertTrue(cardSuggestionModel.get().get(NETWORK_NAME).isEmpty());
     }
 
     @Test
@@ -657,15 +693,13 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .collect(Collectors.toList());
     }
 
-    private static Optional<PropertyModel> getCardModelByAutofillName(
-            ModelList items, CreditCard card) {
+    private static Optional<PropertyModel> getCardSuggestionModelBySuggestionLabel(
+            ModelList items, AutofillSuggestion suggestion) {
         return StreamSupport.stream(items.spliterator(), false)
                 .filter(
                         item ->
                                 item.type == CREDIT_CARD
-                                        && item.model
-                                                .get(CARD_NAME)
-                                                .equals(card.getCardNameForAutofillDisplay()))
+                                        && item.model.get(MAIN_TEXT).equals(suggestion.getLabel()))
                 .findFirst()
                 .map(item -> item.model);
     }
@@ -680,8 +714,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .map(item -> item.model);
     }
 
-    private void advanceClockAndClick(PropertyModel cardModel) {
+    private void advanceClockAndClick(PropertyModel cardSuggestionModel) {
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
-        cardModel.get(ON_CREDIT_CARD_CLICK_ACTION).run();
+        cardSuggestionModel.get(ON_CREDIT_CARD_CLICK_ACTION).run();
     }
 }

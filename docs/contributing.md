@@ -133,8 +133,10 @@ Chromium workflow is not the same as the GitHub pull request workflow.
 
 ## Uploading a change for review
 
-Note: go through the [commit checklist][commit-checklist] for Chromium before
-uploading a change for review.
+Note: If your change is to a dependent project, see the documentation on
+[changing dependencies](dependencies.md#changing-dependencies). Otherwise, go
+through the [commit checklist][commit-checklist] for Chromium before uploading a
+change for review.
 
 Chromium uses a Gerrit instance hosted at
 <https://chromium-review.googlesource.com> for code reviews. In order to upload

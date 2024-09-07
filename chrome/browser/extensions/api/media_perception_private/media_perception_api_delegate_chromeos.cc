@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/chromeos/delegate_to_browser_gpu_service_accelerator_factory.h"
 #include "content/public/browser/render_frame_host.h"
@@ -43,7 +43,6 @@ api::media_perception_private::ComponentInstallationError
 GetComponentInstallationErrorForComponentManagerAshError(
     const component_updater::ComponentManagerAsh::Error error) {
   switch (error) {
-    case component_updater::ComponentManagerAsh::Error::ERROR_MAX:
     case component_updater::ComponentManagerAsh::Error::NONE:
       return api::media_perception_private::ComponentInstallationError::kNone;
     case component_updater::ComponentManagerAsh::Error::UNKNOWN_COMPONENT:

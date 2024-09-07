@@ -83,6 +83,14 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
     new_rule = CSSParser::ParseRule(
         context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
         parent_rule_for_nesting, rule_string);
+
+    if (!new_rule && parent_rule_for_nesting &&
+        RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
+      // Retry as a CSSNestedDeclarations rule.
+      // https://drafts.csswg.org/cssom/#insert-a-css-rule
+      new_rule = CSSParser::ParseNestedDeclarationsRule(
+          context, nesting_type, parent_rule_for_nesting, rule_string);
+    }
   }
 
   if (!new_rule) {
@@ -109,7 +117,8 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
     return nullptr;
   }
 
-  if (!new_rule->IsConditionRule() && !new_rule->IsStyleRule()) {
+  if (!new_rule->IsConditionRule() && !new_rule->IsStyleRule() &&
+      !new_rule->IsNestedDeclarationsRule()) {
     for (const CSSRule* current = &parent_rule; current != nullptr;
          current = current->parentRule()) {
       if (IsA<CSSStyleRule>(current)) {
@@ -117,8 +126,8 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
         // so inserting this rule is not allowed.
         exception_state.ThrowDOMException(
             DOMExceptionCode::kHierarchyRequestError,
-            "Only conditional nested group rules and style rules may be "
-            "nested.");
+            "Only conditional nested group rules, style rules, and nested "
+            "declaration rules may be nested.");
         return nullptr;
       }
     }

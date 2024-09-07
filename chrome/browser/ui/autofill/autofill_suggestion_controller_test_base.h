@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -173,9 +174,10 @@ class AutofillSuggestionControllerTestBase
     FocusWebContentsOnFrame(
         static_cast<ContentAutofillDriver&>(manager.driver())
             .render_frame_host());
-    client().popup_controller(manager).Show(std::move(suggestions),
-                                            trigger_source,
-                                            AutoselectFirstSuggestion(false));
+    client().popup_controller(manager).Show(
+        AutofillSuggestionController::GenerateSuggestionUiSessionId(),
+        std::move(suggestions), trigger_source,
+        AutoselectFirstSuggestion(false));
   }
 
   input::NativeWebKeyboardEvent CreateKeyPressEvent(int windows_key_code) {
@@ -213,17 +215,20 @@ class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
   ~AutofillExternalDelegateForPopupTest() override;
 
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
-  MOCK_METHOD(void, OnSuggestionsShown, (), (override));
+  MOCK_METHOD(void,
+              OnSuggestionsShown,
+              (base::span<const Suggestion>),
+              (override));
   MOCK_METHOD(void, OnSuggestionsHidden, (), (override));
   MOCK_METHOD(void, DidSelectSuggestion, (const Suggestion&), (override));
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion&,
-               const AutofillSuggestionDelegate::SuggestionPosition&),
+               const AutofillSuggestionDelegate::SuggestionMetadata&),
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,
-              (const Suggestion&),
+              (const Suggestion&, const SuggestionButtonAction&),
               (override));
   MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
 };

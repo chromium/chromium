@@ -40,6 +40,8 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   void OnNonPersistentNotificationCreated();
   void SetHadFormInteraction();
   void SetHadUserEdits();
+  void OnStartedUsingWebRTC();
+  void OnStoppedUsingWebRTC();
   void OnFirstContentfulPaint(base::TimeDelta time_since_navigation_start);
   void OnWebMemoryMeasurementRequested(
       WebMemoryMeasurementMode mode,
@@ -53,6 +55,7 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
 
   bool had_form_interaction_ = false;
   bool had_user_edits_ = false;
+  int num_web_rtc_usage_ = 0;
 };
 
 }  // namespace blink

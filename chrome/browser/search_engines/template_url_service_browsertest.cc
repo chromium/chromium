@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,9 +30,6 @@ class TemplateURLServiceBrowserTest : public InProcessBrowserTest {
   TemplateURLService* template_url_service() {
     return TemplateURLServiceFactory::GetForProfile(browser()->profile());
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kSearchEngineChoiceTrigger};
 };
 
 // Checks the logic associated with changing countries when reloading the

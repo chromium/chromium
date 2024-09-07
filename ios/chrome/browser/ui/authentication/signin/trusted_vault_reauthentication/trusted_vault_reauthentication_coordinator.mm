@@ -10,7 +10,7 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
@@ -134,20 +134,19 @@ using l10n_util::GetNSStringF;
       ^(BOOL success, NSError* error) {
         [weakSelf trustedVaultDialogDoneWithSuccess:success error:error];
       };
-  std::string securityDomainPath = GetSecurityDomainPath(_securityDomainID);
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
       _dialogCancelCallback =
           TrustedVaultClientBackendFactory::GetForBrowserState(
               self.browser->GetBrowserState())
-              ->Reauthentication(self.identity, securityDomainPath,
+              ->Reauthentication(self.identity, _securityDomainID,
                                  self.baseViewController, callback);
       break;
     case SigninTrustedVaultDialogIntentDegradedRecoverability:
       _dialogCancelCallback =
           TrustedVaultClientBackendFactory::GetForBrowserState(
               self.browser->GetBrowserState())
-              ->FixDegradedRecoverability(self.identity, securityDomainPath,
+              ->FixDegradedRecoverability(self.identity, _securityDomainID,
                                           self.baseViewController, callback);
       break;
   }

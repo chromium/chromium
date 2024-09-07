@@ -6,11 +6,21 @@
 
 #include "base/no_destructor.h"
 
+namespace {
+std::vector<std::string>& GetDistillableDomainsInternal() {
+  static base::NoDestructor<std::vector<std::string>> g_domains;
+  return *g_domains;
+}
+}  // namespace
+
 namespace a11y {
 
 const std::vector<std::string>& GetDistillableDomains() {
-  static const base::NoDestructor<std::vector<std::string>> g_domains;
-  return *g_domains;
+  return GetDistillableDomainsInternal();
+}
+
+void SetDistillableDomainsForTesting(std::vector<std::string> domains) {
+  GetDistillableDomainsInternal().swap(domains);
 }
 
 }  // namespace a11y

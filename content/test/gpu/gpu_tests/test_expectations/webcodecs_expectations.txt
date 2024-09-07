@@ -5,12 +5,12 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac highsierra mojave catalina bigsur monterey ventura sonoma
+#         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
-#             android-sm-a235m android-sm-s911u1
+#             android-sm-a235m android-sm-s911u1 android-moto-g-power-5g---2023
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -34,6 +34,7 @@
 #             apple-angle-metal-renderer:-apple-m2
 #         arm
 #         google google-0xffff google-0xc0de
+#         imagination
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
@@ -118,23 +119,6 @@ crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-c
 # Looks like AMD RX 5500 XT can't control HEVC CBR bitrate well.
 crbug.com/1465531 [ win amd-0x7340 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_* [ Failure ]
 
-# The following expectations are added to enable WebCodecs tests on Sherlock.
-# unexpected_pass_finder is disabled so that the tool does not automatically remove these expectations.
-# TODO(crbug.com/40250273) Enable unexpected_pass_finder once test is running regularly on Sherlock.
-# finder:disable-unused
-
-# TexImage2d tests crashes GPU on Sherlock devices.
-crbug.com/1400465 [ fuchsia fuchsia-board-sherlock ] WebCodecs_TexImage2d_* [ Failure ]
-
-# EncodeDecode tests fail to call flush on the decoder.
-crbug.com/1400465 [ fuchsia fuchsia-board-sherlock ] WebCodecs_EncodeDecode_* [ Failure ]
-
-# Camera tests fail with NotFoundError on Sherlock devices.
-crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_DrawImage_camera [ Failure ]
-crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_Encode_camera_* [ Failure ]
-crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_TexImage2d_camera [ Failure ]
-crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ Failure ]
-
 # Encoding rate control bitrate is too far off on older Windows Qualcomm GPUs.
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_3000000 [ Failure ]
@@ -142,14 +126,12 @@ crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hv
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
 
-# finder:enable-unused
-
 crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
 crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/361615553 [ chromeos chromeos-board-jacuzzi ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-hardware [ Failure ]
 
-crbug.com/1507162 [ chromeos chromeos-board-volteer ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_3000000 [ Failure ]
 
 crbug.com/1466102 [ nvidia-0x2184 nvidia_lt_31.0.15.4601 win ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
 crbug.com/1517101 [ win amd-0x7340 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]

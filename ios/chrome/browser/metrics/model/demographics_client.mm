@@ -8,8 +8,8 @@
 #import "base/time/time.h"
 #import "components/network_time/network_time_tracker.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -33,7 +33,12 @@ base::Time DemographicsClient::GetNetworkTime() const {
 }
 
 syncer::SyncService* DemographicsClient::GetSyncService() {
-  return SyncServiceFactory::GetForBrowserState(GetCachedBrowserState());
+  CHECK_EQ(GetNumberOfProfilesOnDisk(), 1);
+  if (ChromeBrowserState* cached_browser_state = GetCachedBrowserState()) {
+    return SyncServiceFactory::GetForBrowserState(cached_browser_state);
+  }
+
+  return nullptr;
 }
 
 PrefService* DemographicsClient::GetLocalState() {
@@ -41,31 +46,45 @@ PrefService* DemographicsClient::GetLocalState() {
 }
 
 PrefService* DemographicsClient::GetProfilePrefs() {
-  return GetCachedBrowserState()->GetPrefs();
+  CHECK_EQ(GetNumberOfProfilesOnDisk(), 1);
+  if (ChromeBrowserState* cached_browser_state = GetCachedBrowserState()) {
+    return cached_browser_state->GetPrefs();
+  }
+
+  return nullptr;
 }
 
 int DemographicsClient::GetNumberOfProfilesOnDisk() {
   return GetApplicationContext()
-      ->GetChromeBrowserStateManager()
-      ->GetBrowserStateInfoCache()
-      ->GetNumberOfBrowserStates();
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
+      ->GetNumberOfProfiles();
 }
 
-// TODO(crbug.com/355629111): this API needs to be re-designed to work
-// with Multiple Identities.
+// Note: this method is only called when GetNumberOfProfilesOnDisk() == 1 thus
+// the value should be stable across a single execution of the application. The
+// reason is that ProfileManagerIOS only delete the data for a Profile during
+// the application startup, so GetNumberOfProfilesOnDisk() can never decrease
+// without restarting the application, and thus the return value cannot change
+// (since the method must not be called if GetNumberOfProfilesOnDisk() > 1).
 ChromeBrowserState* DemographicsClient::GetCachedBrowserState() {
-  ChromeBrowserState* chrome_browser_state = chrome_browser_state_.get();
-  if (!chrome_browser_state) {
-    chrome_browser_state = GetApplicationContext()
-                               ->GetChromeBrowserStateManager()
-                               ->GetLastUsedBrowserStateDeprecatedDoNotUse();
-
-    CHECK(chrome_browser_state);
-    chrome_browser_state_ = chrome_browser_state->AsWeakPtr();
+  CHECK_EQ(GetNumberOfProfilesOnDisk(), 1);
+  if (ChromeBrowserState* cached_browser_state = chrome_browser_state_.get()) {
+    return cached_browser_state;
   }
 
-  CHECK(chrome_browser_state);
-  return chrome_browser_state;
+  const std::vector<ChromeBrowserState*> loaded_profiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+
+  // Even if there is only one Profile on disk, it may have not been loaded yet.
+  if (loaded_profiles.empty()) {
+    return nullptr;
+  }
+
+  CHECK_EQ(loaded_profiles.size(), 1u);
+  ChromeBrowserState* cached_browser_state = loaded_profiles.back();
+  chrome_browser_state_ = cached_browser_state->AsWeakPtr();
+  return cached_browser_state;
 }
 
 }  //  namespace metrics

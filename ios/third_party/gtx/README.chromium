@@ -2,6 +2,7 @@ Name: GTXiLib
 Short Name: GTX
 URL: https://github.com/google/GTXiLib
 Version: 1
+Revision: fe4ac00283cfc71c8958dce67b583ffe97e72dad
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no

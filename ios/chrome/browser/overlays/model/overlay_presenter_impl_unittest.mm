@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_user_data.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

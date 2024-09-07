@@ -19,7 +19,5 @@ include_rules = [
   "+chrome/browser/ash/arc/test",
   "+chrome/browser/ash/arc/util",
   "+chrome/browser/ash/arc/vmm",
-  "+chrome/browser/ash/throttle_observer.h",
-  "+chrome/browser/ash/throttle_service.h",
   "+chrome/test/base",
 ]

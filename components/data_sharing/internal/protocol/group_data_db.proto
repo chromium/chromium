@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+import "components/data_sharing/public/protocol/group_data.proto";
+
+package data_sharing_pb;
+
+message GroupMetadata {
+  // Group data gets updated whenever corresponding CollaborationGroup changes.
+  // This field is derived from
+  // `CollaborationGroupSpecifics::changed_at_timestamp_millis_since_unix_epoch`
+  // that triggered last successful update. In other words, if it doesn't match
+  // the value in CollaborationGroup, then GroupData should be considered stale.
+  optional string last_processed_version_token = 1;
+};
+
+message GroupEntity {
+  optional GroupMetadata metadata = 1;
+
+  optional GroupData data = 2;
+};

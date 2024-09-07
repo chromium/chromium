@@ -114,8 +114,8 @@ void GlanceablesListFooterView::SetTitleText(const std::u16string& title_text) {
 
 void GlanceablesListFooterView::SetSeeAllAccessibleName(
     const std::u16string& see_all_accessible_name) {
-  see_all_button_->GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kLink, see_all_accessible_name);
+  see_all_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kLink);
+  see_all_button_->GetViewAccessibility().SetName(see_all_accessible_name);
 }
 
 BEGIN_METADATA(GlanceablesListFooterView)

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 
 #include <utility>
+
+#include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
@@ -73,6 +75,9 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
       return css_parsing_utils::ConsumeTransformList(stream, context);
     case CSSSyntaxType::kCustomIdent:
       return css_parsing_utils::ConsumeCustomIdent(stream, context);
+    case CSSSyntaxType::kString:
+      DCHECK(RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled());
+      return css_parsing_utils::ConsumeString(stream);
     default:
       NOTREACHED_IN_MIGRATION();
       return nullptr;
@@ -114,16 +119,15 @@ const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
 
 }  // namespace
 
-const CSSValue* CSSSyntaxDefinition::Parse(CSSTokenizedValue value,
+const CSSValue* CSSSyntaxDefinition::Parse(StringView text,
                                            const CSSParserContext& context,
                                            bool is_animation_tainted) const {
   if (IsUniversal()) {
-    return CSSVariableParser::ParseUniversalSyntaxValue(value, context,
+    return CSSVariableParser::ParseUniversalSyntaxValue(text, context,
                                                         is_animation_tainted);
   }
   for (const CSSSyntaxComponent& component : syntax_components_) {
-    CSSTokenizer tokenizer(value.text);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(text);
     stream.ConsumeWhitespace();
     if (const CSSValue* result =
             ConsumeSyntaxComponent(component, stream, context)) {

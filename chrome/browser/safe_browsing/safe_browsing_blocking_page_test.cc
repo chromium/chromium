@@ -117,6 +117,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -263,10 +264,10 @@ bool Click(Browser* browser, const std::string& node_id) {
   // We don't use EvalJs for this one, since clicking
   // the button/link may navigate away before the injected javascript can
   // reply, hanging the test.
-  rfh->ExecuteJavaScriptForTests(u"document.getElementById('" +
-                                     base::ASCIIToUTF16(node_id) +
-                                     u"').click();\n",
-                                 base::NullCallback());
+  rfh->ExecuteJavaScriptForTests(
+      u"document.getElementById('" + base::ASCIIToUTF16(node_id) +
+          u"').click();\n",
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   return true;
 }
 
@@ -705,8 +706,7 @@ class SafeBrowsingBlockingPageBrowserTest
     factory_.SetTestUIManager(
         new FakeSafeBrowsingUIManager(std::move(blocking_page_factory)));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -1990,7 +1990,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       TimestampInFallbackCSBRRSent) {
+                       FallbackCSBRRSentWithExpectedFieldsPopulated) {
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -2010,6 +2010,14 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   ASSERT_TRUE(report.ParseFromString(serialized));
   // The timstamp of the warning shown should be in CSBRRs.
   EXPECT_TRUE(report.has_warning_shown_timestamp_msec());
+
+  // The `client_properties` field should be populated in fallback CSBRRs.
+  EXPECT_TRUE(report.has_client_properties());
+  EXPECT_TRUE(report.client_properties().has_url_api_type());
+  EXPECT_TRUE(report.client_properties().has_is_async_check());
+  EXPECT_EQ(report.client_properties().url_api_type(),
+            ClientSafeBrowsingReportRequest::PVER4_NATIVE);
+  EXPECT_FALSE(report.client_properties().is_async_check());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -2535,8 +2543,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -3160,8 +3167,7 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -3307,8 +3313,7 @@ class SafeBrowsingBlockingPageAsyncChecksTestBase
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 
@@ -3741,7 +3746,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
   SetupUrlRealTimeVerdictInCacheManager(prerender_url, browser()->profile(),
                                         /*is_unsafe=*/false);
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_render_frame_host =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
   EXPECT_NE(prerender_render_frame_host, nullptr);
@@ -4211,8 +4217,7 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 
@@ -4323,8 +4328,7 @@ class SafeBrowsingBlockingPageHashRealTimeCheckTest
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 
@@ -4470,6 +4474,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest,
 }
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
                        TriggerHitReportAndClientSafeBrowsingReportRequest) {
+  if (base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency)) {
+    // If the extended reporting pref dependency is removed, this test will not
+    // be run since it is testing HPRT lookup cases.
+    // TODO(crbug.com/362530516): Remove this test case and add a new test for
+    // sampled HPRT lookups.
+    return;
+  }
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   SetUpAndNavigateToUrl(/*is_unsafe=*/true);
   ASSERT_TRUE(IsShowingInterstitial());

@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarInteractiveTest,
                        ShowsDefaultBrowserPromptRefreshDisabled) {
   ShowPromptForTesting();
   RunTestSequence(
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        ShowsDefaultBrowserPromptOnNewTab) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       WaitForShow(ConfirmInfoBar::kInfoBarElementId));
 }
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   int height;
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       WithView(ConfirmInfoBar::kInfoBarElementId,
                [&height](ConfirmInfoBar* info_bar) {
                  height = info_bar->target_height_for_testing();
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   // This flush is needed to prevent TSan builders from flaking.
-                  FlushEvents(),
+
                   PressButton(ConfirmInfoBar::kOkButtonElementId),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 
@@ -198,13 +198,13 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       // Open two tabs
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       // Dismiss prompt on one tab
       PressButton(ConfirmInfoBar::kDismissButtonElementId),
       // Wait for hide
-      WaitForHide(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      WaitForHide(ConfirmInfoBar::kInfoBarElementId),
       // Move tab to new window
       InstrumentNextTab(kTabMovedToNewWindowId, AnyBrowser()),
       Do([&]() { chrome::MoveTabsToNewWindow(browser(), {1}); }),

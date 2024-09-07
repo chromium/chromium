@@ -9,12 +9,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
+#include "url/gurl.h"
 
 // Forward declaration of the browser profile and `SessionID`.
 class Profile;
 class SessionID;
 
-namespace ash {
+namespace ash::boca {
 
 // `OnTaskSystemWebAppManager` implementation that is essentially a thin wrapper
 // around SWA window management APIs, specifically launch, close, and window
@@ -31,13 +32,15 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   SessionID GetActiveSystemWebAppWindowID() override;
   void SetPinStateForSystemWebAppWindow(bool pinned,
                                         SessionID window_id) override;
+  void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) override;
+  void CreateBackgroundTabWithUrl(SessionID window_id, GURL url) override;
 
  private:
   raw_ptr<Profile> profile_;
 
-  base::WeakPtrFactory<OnTaskSystemWebAppManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OnTaskSystemWebAppManagerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // CHROME_BROWSER_ASH_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_IMPL_H_

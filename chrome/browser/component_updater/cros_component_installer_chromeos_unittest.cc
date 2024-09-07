@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
@@ -71,7 +72,7 @@ void RecordLoadResult(std::optional<ComponentManagerAsh::Error>* result_out,
 // callback. It expects a success result to be reported.
 void WrapInstallerCallback(update_client::Callback callback,
                            const update_client::CrxInstaller::Result& result) {
-  EXPECT_EQ(0, result.error);
+  EXPECT_EQ(0, result.result.code_);
   std::move(callback).Run(update_client::Error::NONE);
 }
 
@@ -208,7 +209,7 @@ class CrOSComponentInstallerTest : public testing::Test {
                                         .AppendASCII("cros-components");
     preinstalled_components_path_override_ =
         std::make_unique<base::ScopedPathOverride>(
-            ash::DIR_PREINSTALLED_COMPONENTS,
+            chrome::DIR_INTERNAL_PLUGINS,
             preinstalled_cros_components_.DirName());
 
     user_cros_components_ =
@@ -327,6 +328,8 @@ class CrOSComponentInstallerTest : public testing::Test {
     EXPECT_EQ(component_install_path,
               image_loader_client()->GetComponentInstallPath(component_name));
   }
+
+  base::HistogramTester histogram_tester_;
 
  private:
   // Creates a fake component at the specified path. Returns the target path on
@@ -568,6 +571,10 @@ TEST_F(CrOSComponentInstallerTest, LoadPreinstalledComponent_Skip_Mount) {
   VerifyComponentLoaded(cros_component_manager, kTestComponentName, load_result,
                         install_path.value());
   EXPECT_EQ(base::FilePath(kTestComponentMountPath), mount_path);
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 1);
 }
 
 TEST_F(CrOSComponentInstallerTest,
@@ -603,6 +610,10 @@ TEST_F(CrOSComponentInstallerTest,
   VerifyComponentLoaded(cros_component_manager, kTestComponentName, load_result,
                         install_path.value());
   EXPECT_EQ(base::FilePath(kTestComponentMountPath), mount_path);
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 1);
 }
 
 TEST_F(CrOSComponentInstallerTest, LoadInstalledComponent) {
@@ -633,6 +644,10 @@ TEST_F(CrOSComponentInstallerTest, LoadInstalledComponent) {
   VerifyComponentLoaded(cros_component_manager, kTestComponentName, load_result,
                         install_path.value());
   EXPECT_EQ(base::FilePath(kTestComponentMountPath), mount_path);
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 1);
 }
 
 TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_Skip_Mount) {
@@ -659,6 +674,10 @@ TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_Skip_Mount) {
   ASSERT_TRUE(load_result.has_value());
   EXPECT_EQ(ComponentManagerAsh::Error::NOT_FOUND, load_result.value());
   EXPECT_TRUE(mount_path.empty());
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NOT_FOUND, 1);
 
   EXPECT_TRUE(
       cros_component_manager->GetCompatiblePath(kTestComponentName).empty());
@@ -698,6 +717,10 @@ TEST_F(CrOSComponentInstallerTest, LoadObsoleteInstalledComponent_Skip_Mount) {
   EXPECT_EQ(ComponentManagerAsh::Error::NOT_FOUND, load_result.value());
   EXPECT_TRUE(mount_path.empty());
 
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NOT_FOUND, 1);
+
   EXPECT_TRUE(
       cros_component_manager->GetCompatiblePath(kTestComponentName).empty());
 
@@ -735,6 +758,10 @@ TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_DontForce_Mount) {
   VerifyComponentLoaded(cros_component_manager, kTestComponentName, load_result,
                         GetInstalledComponentPath(kTestComponentName, "2.0"));
   EXPECT_EQ(base::FilePath(kTestComponentMountPath), mount_path);
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 1);
 }
 
 TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_ForceTwice) {
@@ -794,6 +821,13 @@ TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_ForceTwice) {
     EXPECT_EQ(load_result1.value(),
               ComponentManagerAsh::Error::UPDATE_IN_PROGRESS);
   }
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 2);
+  histogram_tester_.ExpectBucketCount(
+      "ComponentUpdater.InstallResult",
+      ComponentManagerAsh::Error::UPDATE_IN_PROGRESS, 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 1);
 }
 
 TEST_F(CrOSComponentInstallerTest,
@@ -826,6 +860,11 @@ TEST_F(CrOSComponentInstallerTest,
   ASSERT_TRUE(load_result.has_value());
   EXPECT_EQ(ComponentManagerAsh::Error::INSTALL_FAILURE, load_result.value());
   EXPECT_TRUE(mount_path.empty());
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "ComponentUpdater.InstallResult",
+      ComponentManagerAsh::Error::INSTALL_FAILURE, 1);
 
   EXPECT_TRUE(
       cros_component_manager->GetCompatiblePath(kTestComponentName).empty());
@@ -873,6 +912,10 @@ TEST_F(CrOSComponentInstallerTest,
   VerifyComponentLoaded(cros_component_manager, kTestComponentName, load_result,
                         GetInstalledComponentPath(kTestComponentName, "2.0"));
   EXPECT_EQ(base::FilePath(kTestComponentMountPath), mount_path);
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 1);
 }
 
 TEST_F(CrOSComponentInstallerTest, RegisterAllRegistersInstalledComponent) {
@@ -953,6 +996,10 @@ TEST_F(CrOSComponentInstallerTest,
   VerifyComponentLoaded(cros_component_manager, kTestComponentName, load_result,
                         install_path.value());
   EXPECT_EQ(base::FilePath(kTestComponentMountPath), mount_path);
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 1);
 }
 
 TEST_F(CrOSComponentInstallerTest,
@@ -994,6 +1041,10 @@ TEST_F(CrOSComponentInstallerTest,
   VerifyComponentLoaded(cros_component_manager, kTestComponentName, load_result,
                         install_path.value());
   EXPECT_EQ(base::FilePath(kTestComponentMountPath), mount_path);
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 1);
 }
 
 TEST_F(CrOSComponentInstallerTest, LoadCache) {
@@ -1119,6 +1170,10 @@ TEST_F(CrOSComponentInstallerTest,
                         load_result2,
                         GetInstalledComponentPath(kTestComponentName, "2.0"));
   EXPECT_EQ(mount_path1, mount_path2);
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 2);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 2);
 }
 
 TEST_F(CrOSComponentInstallerTest, LoadGrowthComponent) {
@@ -1153,6 +1208,10 @@ TEST_F(CrOSComponentInstallerTest, LoadGrowthComponent) {
                         load_result,
                         GetInstalledComponentPath(kGrowthCampaignsName, "1.0"));
   EXPECT_EQ(base::FilePath("/run/imageloader/growth-campaigns"), mount_path);
+
+  histogram_tester_.ExpectTotalCount("ComponentUpdater.InstallResult", 1);
+  histogram_tester_.ExpectBucketCount("ComponentUpdater.InstallResult",
+                                      ComponentManagerAsh::Error::NONE, 1);
 }
 
 }  // namespace component_updater

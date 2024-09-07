@@ -127,8 +127,7 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
   container_builder_.SetIsFieldsetContainer();
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    BreakStatus status =
-        FinishFragmentation(Borders().block_end, &container_builder_);
+    BreakStatus status = FinishFragmentation(&container_builder_);
     if (status == BreakStatus::kNeedsEarlierBreak) {
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.

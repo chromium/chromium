@@ -95,6 +95,7 @@ class PinRequestViewTest : public LoginTestBase,
     request.help_button_enabled = true;
     request.obscure_pin = false;
     request.pin_length = pin_length;
+    request.title = u"Sample Title";
     request.on_pin_request_done = base::DoNothing();
     view_ = new PinRequestView(std::move(request), this);
 
@@ -532,6 +533,8 @@ TEST_F(PinRequestViewTest, AccessibleProperties) {
 
   view_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample Title");
 }
 
 class PinRequestWidgetTest : public PinRequestViewTest {

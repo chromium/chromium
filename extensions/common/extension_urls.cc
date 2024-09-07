@@ -90,7 +90,7 @@ GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id) {
               extension_id);
 }
 
-GURL GetWebstoreItemSnippetURL(const std::string& extension_id) {
+GURL GetWebstoreItemSnippetURL(const extensions::ExtensionId& extension_id) {
   if (g_item_snippet_url_for_test_) {
     // Return `<base URL><extension_id>`. There is no suffix if the URL is
     // overridden by a test.

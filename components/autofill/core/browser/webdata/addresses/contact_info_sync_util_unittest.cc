@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using sync_pb::ContactInfoSpecifics;
@@ -26,17 +25,20 @@ constexpr char kGuid[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kInvalidGuid[] = "1234";
 constexpr int kNonChromeModifier = 1234;
 const auto kUseDate = base::Time::FromSecondsSinceUnixEpoch(123);
+const auto kUseDate2 = base::Time::FromSecondsSinceUnixEpoch(34);
+// No third last use date, to test that absence is handled correctly.
 const auto kModificationDate = base::Time::FromSecondsSinceUnixEpoch(456);
 
 // Returns a profile with all fields set. Contains identical data to the data
 // returned from `ConstructBaseSpecifics()`.
 AutofillProfile ConstructBaseProfile(
     AddressCountryCode country_code = AddressCountryCode("ES")) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kAccount,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kAccount,
                           country_code);
 
   profile.set_use_count(123);
-  profile.set_use_date(kUseDate);
+  profile.set_use_date(kUseDate, 1);
+  profile.set_use_date(kUseDate2, 2);
   profile.set_modification_date(kModificationDate);
   profile.set_language_code("en");
   profile.set_profile_label("profile_label");
@@ -327,6 +329,7 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
   specifics.set_guid(kGuid);
   specifics.set_use_count(123);
   specifics.set_use_date_unix_epoch_seconds(kUseDate.ToTimeT());
+  specifics.set_use_date2_unix_epoch_seconds(kUseDate2.ToTimeT());
   specifics.set_date_modified_unix_epoch_seconds(kModificationDate.ToTimeT());
   specifics.set_language_code("en");
   specifics.set_profile_label("profile_label");
@@ -657,8 +660,6 @@ ContactInfoSpecifics ConstructCompleteSpecificsIN() {
   return specifics;
 }
 
-}  // namespace
-
 enum class I18nCountryModel {
   kLegacy = 0,
   kAU = 1,
@@ -675,25 +676,14 @@ class ContactInfoSyncUtilTest
       public testing::WithParamInterface<I18nCountryModel> {
  public:
   ContactInfoSyncUtilTest() {
-    features_.InitWithFeatures(
-        {features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseAUAddressModel,
-         features::kAutofillUseBRAddressModel,
-         features::kAutofillUseCAAddressModel,
-         features::kAutofillUseDEAddressModel,
-         features::kAutofillUseFRAddressModel,
-         features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAddressOverflow,
-         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-         features::kAutofillEnableSupportForAdminLevel2,
-         features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableDependentLocalityParsing},
-        {});
+    features_.InitWithFeatures({features::kAutofillUseAUAddressModel,
+                                features::kAutofillUseCAAddressModel,
+                                features::kAutofillUseDEAddressModel,
+                                features::kAutofillUseFRAddressModel,
+                                features::kAutofillUseINAddressModel,
+                                features::kAutofillUseITAddressModel,
+                                features::kAutofillTrackMultipleUseDates},
+                               {});
   }
 
   AutofillProfile GetAutofillProfileForCountry(I18nCountryModel country_model) {
@@ -755,17 +745,17 @@ TEST_P(ContactInfoSyncUtilTest,
 // Test that only profiles with valid GUID are converted.
 TEST_F(ContactInfoSyncUtilTest,
        CreateContactInfoEntityDataFromAutofillProfile_InvalidGUID) {
-  AutofillProfile profile(kInvalidGuid, AutofillProfile::Source::kAccount,
+  AutofillProfile profile(kInvalidGuid, AutofillProfile::RecordType::kAccount,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);
 }
 
-// Test that AutofillProfiles with invalid source are not converted.
+// Test that AutofillProfiles with invalid record type are not converted.
 TEST_F(ContactInfoSyncUtilTest,
-       CreateContactInfoEntityDataFromAutofillProfile_InvalidSource) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+       CreateContactInfoEntityDataFromAutofillProfile_InvalidRecordType) {
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
@@ -847,9 +837,9 @@ TEST_P(ContactInfoSyncUtilTest, CreateAutofillProfileFromContactInfoSpecifics) {
       GetContactInfoSpecificsForCountry(GetParam());
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
 
-  std::unique_ptr<AutofillProfile> converted_profile =
+  std::optional<AutofillProfile> converted_profile =
       CreateAutofillProfileFromContactInfoSpecifics(specifics);
-  ASSERT_TRUE(converted_profile != nullptr);
+  ASSERT_TRUE(converted_profile.has_value());
   EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(*converted_profile));
 }
 
@@ -858,7 +848,8 @@ TEST_F(ContactInfoSyncUtilTest,
        CreateAutofillProfileFromContactInfoSpecifics_InvalidGUID) {
   ContactInfoSpecifics specifics;
   specifics.set_guid(kInvalidGuid);
-  EXPECT_EQ(CreateAutofillProfileFromContactInfoSpecifics(specifics), nullptr);
+  EXPECT_FALSE(
+      CreateAutofillProfileFromContactInfoSpecifics(specifics).has_value());
 }
 
 // Tests that if a token's `value` changes by external means, its observations
@@ -866,7 +857,7 @@ TEST_F(ContactInfoSyncUtilTest,
 TEST_F(ContactInfoSyncUtilTest, ObservationResetting) {
   // Create a profile and collect an observation for NAME_FIRST.
   AutofillProfile profile = test::GetFullProfile();
-  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   test_api(profile.token_quality())
       .AddObservation(NAME_FIRST,
                       ProfileTokenQuality::ObservationType::kAccepted);
@@ -885,9 +876,9 @@ TEST_F(ContactInfoSyncUtilTest, ObservationResetting) {
 
   // Simulate syncing the `specifics` back to Autofill. Expect that the
   // NAME_FIRST observations are cleared.
-  std::unique_ptr<AutofillProfile> updated_profile =
+  std::optional<AutofillProfile> updated_profile =
       CreateAutofillProfileFromContactInfoSpecifics(*specifics);
-  ASSERT_NE(updated_profile, nullptr);
+  ASSERT_TRUE(updated_profile.has_value());
   EXPECT_TRUE(updated_profile->token_quality()
                   .GetObservationTypesForFieldType(NAME_FIRST)
                   .empty());
@@ -900,4 +891,5 @@ INSTANTIATE_TEST_SUITE_P(AutofillI18nModels,
                                          I18nCountryModel::kMX,
                                          I18nCountryModel::kIN));
 
+}  // namespace
 }  // namespace autofill

@@ -22,6 +22,7 @@ UpstreamLoader::UpstreamLoader(
   receiver_set_.Add(this, data_remote.InitWithNewPipeAndPassReceiver());
   resource_request->request_body =
       base::MakeRefCounted<network::ResourceRequestBody>();
+  resource_request->request_body->SetAllowHTTP1ForStreamingUpload(true);
   resource_request->request_body->SetToChunkedDataPipe(
       std::move(data_remote),
       network::ResourceRequestBody::ReadOnlyOnce(false));

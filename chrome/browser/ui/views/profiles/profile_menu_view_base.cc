@@ -40,6 +40,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -232,22 +233,17 @@ class CircularImageButton : public views::ImageButton {
                       const gfx::VectorIcon& icon,
                       const std::u16string& text,
                       int button_size = kCircularImageButtonSize,
-                      bool has_background_color = false,
-                      bool show_border = false,
-                      SkColor themed_icon_color = SK_ColorTRANSPARENT)
+                      bool has_background_color = false)
       : ImageButton(std::move(callback)),
         icon_(icon),
         button_size_(button_size),
-        has_background_color_(has_background_color),
-        show_border_(show_border),
-        themed_icon_color_(themed_icon_color) {
+        has_background_color_(has_background_color) {
     SetTooltipText(text);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
     InstallCircleHighlightPathGenerator(this);
 
-    const int kBorderThickness = show_border_ ? 1 : 0;
-    const SkScalar kButtonRadius = (button_size_ + 2 * kBorderThickness) / 2.0f;
+    const SkScalar kButtonRadius = button_size_ / 2.0f;
     if (has_background_color_) {
       SetBackground(views::CreateThemedRoundedRectBackground(
           kColorProfileMenuIconButtonBackground, kButtonRadius));
@@ -270,12 +266,6 @@ class CircularImageButton : public views::ImageButton {
             return ink_drop_highlight;
           },
           this));
-    }
-
-    // TODO(crbug.com/40259490): Remove border for Chrome Refresh 2023.
-    if (show_border_) {
-      SetBorder(views::CreateThemedRoundedRectBorder(
-          kBorderThickness, kButtonRadius, ui::kColorMenuSeparator));
     }
   }
 
@@ -301,23 +291,13 @@ class CircularImageButton : public views::ImageButton {
 
  private:
   const raw_ref<const gfx::VectorIcon> icon_;
-  // In Chrome Refresh 2023, this kind of button could have different sizes in
-  // different sections of the Profile Menu, which is also different from the
-  // size in the previous version of the menu.
-  int button_size_;
-  // In Chrome Refresh 2023, some buttons on the Profile Menu have a background
-  // color that is based on the profile theme color and on light or dark mode,
-  // while other buttons have a transparent background. In the previous version
-  // of the menu, all backgrounds are transparent.
-  bool has_background_color_;
-  bool show_border_;
-  // In the Profile Menu previous to Chrome Refresh 2023, icons that appears on
-  // top of a background with the profile theme color (e.g. edit button) have a
-  // different color than the default icon color. For the default icons, this is
-  // set to transparent and not used.
-  // TODO(crbug.com/40259490): Remove this parameter after Chrome Refresh 2023
-  // is launched.
-  SkColor themed_icon_color_;
+  // This kind of button could have different sizes in different sections of the
+  // Profile Menu.
+  const int button_size_;
+  // Some buttons on the Profile Menu have a background color that is based on
+  // the profile theme color and on light or dark mode, while other buttons have
+  // a transparent background.
+  const bool has_background_color_;
 };
 
 BEGIN_METADATA(CircularImageButton)
@@ -551,7 +531,7 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
       browser_(browser),
       anchor_button_(anchor_button),
       close_bubble_helper_(this, browser) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // TODO(tluk): Remove when fixing https://crbug.com/822075
   // The sign in webview will be clipped on the bottom corners without these
   // margins, see related bug <http://crbug.com/593203>.
@@ -916,8 +896,7 @@ void ProfileMenuViewBase::AddShortcutFeatureButton(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                               base::Unretained(this), std::move(action)),
           icon, text, kCircularImageButtonRefreshSize,
-          /*has_background_color=*/true,
-          /*show_border=*/false));
+          /*has_background_color=*/true));
   button->SetFlipCanvasOnPaintForRTLUI(false);
 }
 

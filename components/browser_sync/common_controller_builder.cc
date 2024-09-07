@@ -47,8 +47,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/reading_list_local_data_batch_uploader.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_data_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sharing_message/sharing_message_bridge.h"
+#include "components/sharing_message/sharing_message_data_type_controller.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
@@ -166,13 +169,11 @@ CommonControllerBuilder::~CommonControllerBuilder() = default;
 
 void CommonControllerBuilder::SetAutofillWebDataService(
     const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
-    const scoped_refptr<base::SequencedTaskRunner>& db_thread,
     const scoped_refptr<autofill::AutofillWebDataService>&
         web_data_service_on_disk,
     const scoped_refptr<autofill::AutofillWebDataService>&
         web_data_service_in_memory) {
   autofill_web_data_ui_thread_.Set(ui_thread);
-  autofill_web_data_db_thread_.Set(db_thread);
   autofill_web_data_service_on_disk_.Set(web_data_service_on_disk);
   autofill_web_data_service_in_memory_.Set(web_data_service_in_memory);
 }
@@ -299,6 +300,11 @@ void CommonControllerBuilder::SetSessionSyncService(
   session_sync_service_.Set(session_sync_service);
 }
 
+void CommonControllerBuilder::SetSharingMessageBridge(
+    SharingMessageBridge* sharing_message_bridge) {
+  sharing_message_bridge_.Set(sharing_message_bridge);
+}
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 void CommonControllerBuilder::SetSupervisedUserSettingsService(
     supervised_user::SupervisedUserSettingsService*
@@ -306,6 +312,11 @@ void CommonControllerBuilder::SetSupervisedUserSettingsService(
   supervised_user_settings_service_.Set(supervised_user_settings_service);
 }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+void CommonControllerBuilder::SetTemplateURLService(
+    TemplateURLService* template_url_service) {
+  template_url_service_.Set(template_url_service);
+}
 
 void CommonControllerBuilder::SetUserEventService(
     syncer::UserEventService* user_event_service) {
@@ -331,14 +342,14 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
           device_info_sync_service_.value()->GetControllerDelegate().get())));
 
-  // These features are enabled only if there's a DB thread to post tasks to.
-  if (autofill_web_data_db_thread_.value()) {
+  // These features are enabled only if there's a web data service on disk.
+  if (autofill_web_data_service_on_disk_.value()) {
     if (!disabled_types.Has(syncer::AUTOFILL)) {
       // Note: Transport mode is not and will not be supported.
       controllers.push_back(std::make_unique<DataTypeController>(
           syncer::AUTOFILL,
           std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-              autofill_web_data_db_thread_.value(),
+              autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
               base::BindRepeating(
                   &AutocompleteDelegateFromDataService,
                   base::RetainedRef(
@@ -352,7 +363,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
       controllers.push_back(std::make_unique<syncer::DataTypeController>(
           syncer::AUTOFILL_PROFILE,
           std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-              autofill_web_data_db_thread_.value(),
+              autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
               base::BindRepeating(
                   &AutofillProfileDelegateFromDataService,
                   base::RetainedRef(
@@ -366,14 +377,14 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
           std::make_unique<autofill::ContactInfoDataTypeController>(
               /*delegate_for_full_sync_mode=*/
               std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                  autofill_web_data_db_thread_.value(),
+                  autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
                   base::BindRepeating(
                       &ContactInfoDelegateFromDataService,
                       base::RetainedRef(
                           autofill_web_data_service_on_disk_.value()))),
               /*delegate_for_transport_mode=*/
               std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                  autofill_web_data_db_thread_.value(),
+                  autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
                   base::BindRepeating(
                       &ContactInfoDelegateFromDataService,
                       base::RetainedRef(
@@ -555,8 +566,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   // `kEnterprisePlusAddressServerUrl` is checked to prevent enabling the
   // feature in dev builds via the field trial config.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS) &&
-      plus_address_webdata_service_.value() && google_groups_manager_.value() &&
-      base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
+      plus_address_webdata_service_.value() && google_groups_manager_.value()) {
     controllers.push_back(
         std::make_unique<plus_addresses::PlusAddressDataTypeController>(
             syncer::PLUS_ADDRESS,
@@ -623,6 +633,19 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
                       kLegacyFullSyncModeOnly));
   }
 
+  if (!disabled_types.Has(syncer::SHARING_MESSAGE) &&
+      sharing_message_bridge_.value()) {
+    syncer::DataTypeControllerDelegate* sharing_message_delegate =
+        sharing_message_bridge_.value()->GetControllerDelegate().get();
+    controllers.push_back(std::make_unique<SharingMessageDataTypeController>(
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            sharing_message_delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            sharing_message_delegate)));
+  }
+
   if (!disabled_types.Has(syncer::READING_LIST)) {
     // The transport-mode delegate may or may not be null depending on
     // platform and feature toggle state.
@@ -645,6 +668,17 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             : nullptr,
         std::make_unique<reading_list::ReadingListLocalDataBatchUploader>(
             dual_reading_list_model_.value())));
+  }
+
+  if (!disabled_types.Has(syncer::SEARCH_ENGINES) &&
+      template_url_service_.value()) {
+    controllers.push_back(
+        std::make_unique<syncer::SyncableServiceBasedDataTypeController>(
+            syncer::SEARCH_ENGINES,
+            data_type_store_service_.value()->GetStoreFactory(),
+            template_url_service_.value()->AsWeakPtr(), dump_stack,
+            syncer::SyncableServiceBasedDataTypeController::DelegateMode::
+                kLegacyFullSyncModeOnly));
   }
 
   if (!disabled_types.Has(syncer::USER_EVENTS)) {
@@ -759,14 +793,14 @@ CommonControllerBuilder::CreateWalletDataTypeController(
         type == syncer::AUTOFILL_WALLET_OFFER);
   auto delegate_for_full_sync_mode =
       std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-          autofill_web_data_db_thread_.value(),
+          autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
           base::BindRepeating(
               delegate_from_web_data,
               base::RetainedRef(autofill_web_data_service_on_disk_.value())));
   auto delegate_for_transport_mode =
       with_transport_mode_support
           ? std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                autofill_web_data_db_thread_.value(),
+                autofill_web_data_service_in_memory_.value()->GetDBTaskRunner(),
                 base::BindRepeating(
                     delegate_from_web_data,
                     base::RetainedRef(

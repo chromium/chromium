@@ -456,6 +456,13 @@ enum FieldType {
   // classification for the field.
   // SERVER_RESPONSE_PENDING = 161;
 
+  // Improved Prediction indicates that this field is support by the predition
+  // improvement system.
+  // This type is a metatype and does not correspond to a specific sort of
+  // data.
+  // It should not take precedence over existing types.
+  IMPROVED_PREDICTION = 162,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -466,7 +473,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 162,
+  MAX_VALID_FIELD_TYPE = 163,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -484,7 +491,8 @@ enum class FieldTypeGroup {
   kUnfillable,
   kIban,
   kStandaloneCvcField,
-  kMaxValue = kStandaloneCvcField,
+  kPredictionImprovements,
+  kMaxValue = kPredictionImprovements,
 };
 
 template <>

@@ -108,6 +108,14 @@ void ClearWithValueStore(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
+base::Value::List KeysFromDict(base::Value::Dict dict) {
+  base::Value::List list = base::Value::List::with_capacity(dict.size());
+  for (auto item : dict) {
+    list.Append(std::move(item.first));
+  }
+  return list;
+}
+
 }  // namespace
 
 // static
@@ -130,6 +138,14 @@ StorageFrontend::ResultStatus::ResultStatus() = default;
 StorageFrontend::ResultStatus::ResultStatus(const ResultStatus&) = default;
 
 StorageFrontend::ResultStatus::~ResultStatus() = default;
+
+// Implementation of GetKeysResult.
+
+StorageFrontend::GetKeysResult::GetKeysResult() = default;
+
+StorageFrontend::GetKeysResult::GetKeysResult(GetKeysResult&& other) = default;
+
+StorageFrontend::GetKeysResult::~GetKeysResult() = default;
 
 // Implementation of GetResult.
 
@@ -196,6 +212,20 @@ void StorageFrontend::OnReadFinished(
   std::move(callback).Run(std::move(get_result));
 }
 
+void StorageFrontend::OnReadKeysFinished(
+    base::OnceCallback<void(GetKeysResult)> callback,
+    GetResult get_result) {
+  GetKeysResult get_keys_result;
+
+  get_keys_result.status = get_result.status;
+  get_keys_result.data =
+      get_result.status.success
+          ? std::optional(KeysFromDict(std::move(*get_result.data)))
+          : std::nullopt;
+
+  std::move(callback).Run(std::move(get_keys_result));
+}
+
 void StorageFrontend::OnWriteFinished(
     const ExtensionId& extension_id,
     StorageAreaNamespace storage_area,
@@ -255,6 +285,15 @@ void StorageFrontend::GetValues(scoped_refptr<const Extension> extension,
                      base::BindOnce(&StorageFrontend::OnReadFinished,
                                     weak_factory_.GetWeakPtr(), extension->id(),
                                     storage_area, std::move(callback))));
+}
+
+void StorageFrontend::GetKeys(
+    scoped_refptr<const Extension> extension,
+    StorageAreaNamespace storage_area,
+    base::OnceCallback<void(GetKeysResult)> callback) {
+  GetValues(extension, storage_area, std::nullopt,
+            base::BindOnce(&StorageFrontend::OnReadKeysFinished,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void StorageFrontend::GetBytesInUse(

@@ -767,6 +767,11 @@ void RootFrameViewport::SetScrollsnapchangingTargetIds(
   LayoutViewport().SetScrollsnapchangingTargetIds(new_target_ids);
 }
 
+void RootFrameViewport::SetScrollsnapchangeTargetIds(
+    std::optional<cc::TargetSnapAreaElementIds> new_target_ids) {
+  LayoutViewport().SetScrollsnapchangeTargetIds(new_target_ids);
+}
+
 void RootFrameViewport::
     UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
         const cc::TargetSnapAreaElementIds& new_target_ids) {
@@ -795,6 +800,11 @@ std::optional<cc::ElementId> RootFrameViewport::GetTargetedSnapAreaId() {
 void RootFrameViewport::SetTargetedSnapAreaId(
     const std::optional<cc::ElementId>& id) {
   LayoutViewport().SetTargetedSnapAreaId(id);
+}
+
+void RootFrameViewport::SetSnappedQueryTargetIds(
+    std::optional<cc::TargetSnapAreaElementIds> new_target_ids) {
+  LayoutViewport().SetSnappedQueryTargetIds(new_target_ids);
 }
 
 }  // namespace blink

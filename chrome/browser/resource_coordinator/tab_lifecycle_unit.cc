@@ -43,6 +43,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom.h"
 #include "url/gurl.h"
 
@@ -156,6 +157,10 @@ class TabLifecycleUnitExternalImpl : public TabLifecycleUnitExternal {
     return tab_lifecycle_unit_->GetDiscardCount();
   }
 
+  base::Time GetLastFocusedTime() const override {
+    return tab_lifecycle_unit_->GetLastFocusedTime();
+  }
+
  private:
   raw_ptr<TabLifecycleUnitSource::TabLifecycleUnit> tab_lifecycle_unit_ =
       nullptr;
@@ -185,10 +190,13 @@ TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
   // Visible tabs are treated as having been immediately focused, while
   // non-visible tabs have their focus set to the last active time (the time at
   // which they stopped being the active tab in a tabstrip).
-  if (GetVisibility() == content::Visibility::VISIBLE)
-    last_focused_time_ = NowTicks();
-  else
-    last_focused_time_ = web_contents->GetLastActiveTimeTicks();
+  if (GetVisibility() == content::Visibility::VISIBLE) {
+    last_focused_time_ticks_ = NowTicks();
+    last_focused_time_ = Now();
+  } else {
+    last_focused_time_ticks_ = web_contents->GetLastActiveTimeTicks();
+    last_focused_time_ = web_contents->GetLastActiveTime();
+  }
 }
 
 TabLifecycleUnitSource::TabLifecycleUnit::~TabLifecycleUnit() {
@@ -207,13 +215,18 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetWebContents(
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::SetFocused(bool focused) {
-  const bool was_focused = last_focused_time_ == base::TimeTicks::Max();
-  if (focused == was_focused)
-    return;
-  last_focused_time_ = focused ? base::TimeTicks::Max() : NowTicks();
+  const bool was_focused = last_focused_time_ticks_ == base::TimeTicks::Max();
 
-  if (!focused)
+  if (focused == was_focused) {
     return;
+  }
+
+  last_focused_time_ticks_ = focused ? base::TimeTicks::Max() : NowTicks();
+  last_focused_time_ = focused ? base::Time::Max() : Now();
+
+  if (!focused) {
+    return;
+  }
 
   switch (GetState()) {
     case LifecycleUnitState::DISCARDED: {
@@ -278,7 +291,12 @@ std::u16string TabLifecycleUnitSource::TabLifecycleUnit::GetTitle() const {
   return web_contents()->GetTitle();
 }
 
-base::TimeTicks TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTime()
+base::TimeTicks
+TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTimeTicks() const {
+  return last_focused_time_ticks_;
+}
+
+base::Time TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTime()
     const {
   return last_focused_time_;
 }
@@ -296,7 +314,7 @@ base::ProcessHandle TabLifecycleUnitSource::TabLifecycleUnit::GetProcessHandle()
 
 LifecycleUnit::SortKey TabLifecycleUnitSource::TabLifecycleUnit::GetSortKey()
     const {
-  return SortKey(last_focused_time_);
+  return SortKey(last_focused_time_ticks_);
 }
 
 content::Visibility TabLifecycleUnitSource::TabLifecycleUnit::GetVisibility()
@@ -310,8 +328,9 @@ TabLifecycleUnitSource::TabLifecycleUnit::GetLoadingState() const {
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Load() {
-  if (GetLoadingState() != LifecycleUnitLoadingState::UNLOADED)
+  if (GetLoadingState() != LifecycleUnitLoadingState::UNLOADED) {
     return false;
+  }
 
   // TODO(chrisha): Make this work more elegantly in the case of background tab
   // loading as well, which uses a NavigationThrottle that can be released.
@@ -496,9 +515,8 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
       content::WebContents::Create(create_params);
   content::WebContents* raw_null_contents = null_contents.get();
 
-  performance_manager::user_tuning::UserPerformanceTuningManager::
-      PreDiscardResourceUsage::CreateForWebContents(
-          null_contents.get(), tab_memory_footprint_estimate, discard_reason);
+  UpdatePreDiscardResourceUsage(raw_null_contents, discard_reason,
+                                tab_memory_footprint_estimate);
 
   // Attach the ResourceCoordinatorTabHelper. In production code this has
   // already been attached by now due to AttachTabHelpers, but there's a long
@@ -520,24 +538,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   null_contents->GetController().CopyStateFrom(&old_contents->GetController(),
                                                /* needs_reload */ false);
 
-  // First try to fast-kill the process, if it's just running a single tab.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!GetRenderProcessHost()->FastShutdownIfPossible(1u, false) &&
-      discard_reason == LifecycleUnitDiscardReason::URGENT) {
-    content::RenderFrameHost* main_frame = old_contents->GetPrimaryMainFrame();
-    // We avoid fast shutdown on tabs with beforeunload handlers on the main
-    // frame, as that is often an indication of unsaved user state.
-    DCHECK(main_frame);
-    if (!main_frame->GetSuddenTerminationDisablerState(
-            blink::mojom::SuddenTerminationDisablerType::
-                kBeforeUnloadHandler)) {
-      GetRenderProcessHost()->FastShutdownIfPossible(
-          1u, /* skip_unload_handlers */ true);
-    }
-  }
-#else
-  GetRenderProcessHost()->FastShutdownIfPossible(1u, false);
-#endif
+  AttemptFastKillForDiscard(old_contents, discard_reason);
 
   // Replace the discarded tab with the null version.
   const int index = tab_strip_model_->GetIndexOfWebContents(old_contents);
@@ -561,6 +562,49 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   SetState(LifecycleUnitState::DISCARDED,
            DiscardReasonToStateChangeReason(discard_reason));
   DCHECK_EQ(GetLoadingState(), LifecycleUnitLoadingState::UNLOADED);
+
+  web_contents()->NotifyWasDiscarded();
+}
+
+void TabLifecycleUnitSource::TabLifecycleUnit::
+    FinishDiscardAndPreserveWebContents(
+        LifecycleUnitDiscardReason discard_reason,
+        uint64_t tab_memory_footprint_estimate) {
+  UpdatePreDiscardResourceUsage(web_contents(), discard_reason,
+                                tab_memory_footprint_estimate);
+
+  AttemptFastKillForDiscard(web_contents(), discard_reason);
+
+  web_contents()->Discard();
+
+  SetState(LifecycleUnitState::DISCARDED,
+           DiscardReasonToStateChangeReason(discard_reason));
+}
+
+void TabLifecycleUnitSource::TabLifecycleUnit::AttemptFastKillForDiscard(
+    content::WebContents* web_contents,
+    LifecycleUnitDiscardReason discard_reason) {
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  CHECK(main_frame);
+  content::RenderProcessHost* render_process_host = main_frame->GetProcess();
+  CHECK(render_process_host);
+
+  // First try to fast-kill the process, if it's just running a single tab.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!render_process_host->FastShutdownIfPossible(1u, false) &&
+      discard_reason == LifecycleUnitDiscardReason::URGENT) {
+    // We avoid fast shutdown on tabs with beforeunload handlers on the main
+    // frame, as that is often an indication of unsaved user state.
+    if (!main_frame->GetSuddenTerminationDisablerState(
+            blink::mojom::SuddenTerminationDisablerType::
+                kBeforeUnloadHandler)) {
+      render_process_host->FastShutdownIfPossible(
+          1u, /*skip_unload_handlers=*/true);
+    }
+  }
+#else
+  render_process_host->FastShutdownIfPossible(1u, false);
+#endif
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
@@ -594,7 +638,11 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
 
   discard_reason_ = reason;
 
-  FinishDiscard(reason, tab_memory_footprint_estimate);
+  if (base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
+    FinishDiscardAndPreserveWebContents(reason, tab_memory_footprint_estimate);
+  } else {
+    FinishDiscard(reason, tab_memory_footprint_estimate);
+  }
 
   return true;
 }
@@ -637,9 +685,22 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckMediaUsage(
   }
 }
 
-content::RenderProcessHost*
-TabLifecycleUnitSource::TabLifecycleUnit::GetRenderProcessHost() const {
-  return web_contents()->GetPrimaryMainFrame()->GetProcess();
+void TabLifecycleUnitSource::TabLifecycleUnit::UpdatePreDiscardResourceUsage(
+    content::WebContents* web_contents,
+    LifecycleUnitDiscardReason discard_reason,
+    uint64_t tab_memory_footprint_estimate) {
+  auto* const pre_discard_resource_usage =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          PreDiscardResourceUsage::PreDiscardResourceUsage::FromWebContents(
+              web_contents);
+  if (pre_discard_resource_usage == nullptr) {
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        PreDiscardResourceUsage::CreateForWebContents(
+            web_contents, tab_memory_footprint_estimate, discard_reason);
+  } else {
+    pre_discard_resource_usage->UpdateDiscardInfo(tab_memory_footprint_estimate,
+                                                  discard_reason);
+  }
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::OnLifecycleUnitStateChanged(

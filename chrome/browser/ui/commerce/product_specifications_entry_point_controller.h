@@ -7,11 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/compare/cluster_manager.h"
-#include "content/public/browser/web_contents.h"
 
 class Browser;
 
@@ -33,6 +30,14 @@ class ProductSpecificationsEntryPointController
 
     // Called when entry points should hide.
     virtual void HideEntryPoint() {}
+  };
+
+  // Possible source actions that could trigger compare entry points. These must
+  // be kept in sync with the values in enums.xml.
+  enum class CompareEntryPointTrigger {
+    FROM_SELECTION = 0,
+    FROM_NAVIGATION = 1,
+    kMaxValue = FROM_NAVIGATION,
   };
 
   explicit ProductSpecificationsEntryPointController(Browser* browser);

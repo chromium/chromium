@@ -690,7 +690,7 @@ gCrWeb.fill.isElementInsideFormOrFieldSet = function(
 /**
  * @param element Form or form input element.
  */
-gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
+function setUniqueIDIfNeeded(element: IndexableElement): void {
   try {
     const uniqueID = gCrWeb.fill.ID_SYMBOL;
     if (typeof element[uniqueID] === 'undefined') {
@@ -702,13 +702,14 @@ gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
     }
   } catch (e) {
   }
-};
+}
 
 /**
  * @param element Form or form input element.
  * @return Unique stable ID converted to string..
  */
 gCrWeb.fill.getUniqueID = function(element: any): string {
+  setUniqueIDIfNeeded(element);
   try {
     const uniqueID = gCrWeb.fill.ID_SYMBOL;
     if (typeof element[uniqueID]! !== 'undefined' &&

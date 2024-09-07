@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 
-#include "base/time/time.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -584,6 +583,8 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, NewBrowserPopupIsRegistered) {
   EXPECT_FALSE(
       static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed());
   EXPECT_TRUE(window_tracker->IsFirstTimePopup());
+  popup_browser->OnWindowClosing();
+  EXPECT_FALSE(window_tracker->IsFirstTimePopup());
 }
 
 TEST_F(OnTaskLockedSessionWindowTrackerTest, BrowserClose) {
@@ -601,4 +602,22 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, BrowserClose) {
   browser()->OnWindowClosing();
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(window_tracker->browser());
+}
+
+TEST_F(OnTaskLockedSessionWindowTrackerTest, BrowserTrackingOverride) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  std::unique_ptr<Browser> normal_browser(CreateTestBrowser(/*popup=*/false));
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  window_tracker->InitializeBrowserInfoForTracking(normal_browser.get());
+  ASSERT_NE(window_tracker->browser(), browser());
+  EXPECT_EQ(window_tracker->browser(), normal_browser.get());
+  // Set back to nullptr so during tear down we are not accessing a deleted
+  // normal_browser ptr. Since normal_browser is created only in the lifetime of
+  // this one unittest, and we set the window_tracker to track this, by the time
+  // tear down is called, normal_browser ptr is freed, but there is still a ref
+  // to that ptr by the window_tracker during tear down.
+  window_tracker->InitializeBrowserInfoForTracking(nullptr);
 }

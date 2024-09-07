@@ -69,7 +69,7 @@ Network.responseReceived{
         headers : {
             Accept-Ranges : bytes
             Connection : Keep-Alive
-            Content-Length : 441
+            Content-Length : 474
             Content-Type : text/html
             Date : <string>
             ETag : <string>
@@ -105,7 +105,7 @@ Network.responseReceivedExtraInfo{
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
-        Content-Length : 441
+        Content-Length : 474
         Content-Type : text/html
         Date : <string>
         ETag : <string>
@@ -119,7 +119,7 @@ Network.responseReceivedExtraInfo{
     statusCode : 200
 }
 Network.loadingFinished{
-    encodedDataLength : 702
+    encodedDataLength : 735
     requestId : <string>
     timestamp : <number>
 }

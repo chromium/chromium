@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 
@@ -51,7 +51,7 @@ TextClassifierModelServiceFactory::BuildServiceInstanceFor(
   // The optimization guide service must be available for the text classifier
   // model service to be created.
   auto* opt_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(browser_state);
   if (!opt_guide) {
     return nullptr;
   }

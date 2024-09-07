@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_ALLOCATOR_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_ALLOCATOR_H_
 
-#include <string_view>
+#include <optional>
 
 #include "components/plus_addresses/plus_address_types.h"
 
@@ -41,12 +41,19 @@ class PlusAddressAllocator {
                                    AllocationMode mode,
                                    PlusAddressRequestCallback callback) = 0;
 
+  // Attempts to allocate a plus address for `origin` synchronously. If none is
+  // available synchronously, it returns `std::nullopt` and does no further
+  // work.
+  virtual std::optional<PlusProfile> AllocatePlusAddressSynchronously(
+      const url::Origin& origin,
+      AllocationMode mode) = 0;
+
   // Returns whether a plus address for `origin` may be refreshed.
   virtual bool IsRefreshingSupported(const url::Origin& origin) const = 0;
 
   // Removes `plus_address` from the allocation pool. Depending on the
   // implementation, this may be a no-op.
-  virtual void RemoveAllocatedPlusAddress(std::string_view plus_address) = 0;
+  virtual void RemoveAllocatedPlusAddress(const PlusAddress& plus_address) = 0;
 };
 
 }  // namespace plus_addresses

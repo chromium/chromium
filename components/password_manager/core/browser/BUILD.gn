@@ -206,6 +206,7 @@ static_library("browser") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings",
     "//components/url_formatter",
+    "//device/fido:fido",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/accessibility:accessibility",
@@ -213,14 +214,29 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
+      "first_cct_page_load_passwords_ukm_recorder.cc",
+      "first_cct_page_load_passwords_ukm_recorder.h",
       "password_credential_filler.h",
       "password_credential_filler_impl.cc",
       "password_credential_filler_impl.h",
+      "split_stores_and_local_upm.cc",
+      "split_stores_and_local_upm.h",
     ]
-    deps += [ "//components/webauthn/android" ]
+    deps += [
+      ":password_manager_buildflags",
+      "//components/webauthn/android",
+    ]
+    deps += [
+      "//components/webauthn/android",
+      "//services/metrics/public/cpp:ukm_builders",
+    ]
   }
 
   if (!is_android) {
+    sources += [
+      "os_crypt_async_migrator.cc",
+      "os_crypt_async_migrator.h",
+    ]
     deps += [ "//components/webauthn/core/browser:passkey_model" ]
   }
 
@@ -484,7 +500,13 @@ source_set("unit_tests") {
     "votes_uploader_unittest.cc",
   ]
   if (is_android) {
-    sources += [ "password_credential_filler_impl_unittest.cc" ]
+    sources += [
+      "first_cct_page_load_passwords_ukm_recorder_unittest.cc",
+      "password_credential_filler_impl_unittest.cc",
+      "split_stores_and_local_upm_unittest.cc",
+    ]
+  } else {
+    sources += [ "os_crypt_async_migrator_unittest.cc" ]
   }
   if (use_blink) {
     sources += [ "http_credentials_cleaner_unittest.cc" ]
@@ -555,7 +577,10 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    deps += [ "//components/webauthn/android" ]
+    deps += [
+      ":password_manager_buildflags",
+      "//components/webauthn/android",
+    ]
   }
 }
 

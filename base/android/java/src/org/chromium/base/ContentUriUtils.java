@@ -19,56 +19,14 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 
-import java.io.File;
 import java.io.IOException;
 
 /** This class provides methods to access content URI schemes. */
 public abstract class ContentUriUtils {
     private static final String TAG = "ContentUriUtils";
-    private static FileProviderUtil sFileProviderUtil;
-
-    // Guards access to sFileProviderUtil.
-    private static final Object sLock = new Object();
-
-    /**
-     * Provides functionality to translate a file into a content URI for use
-     * with a content provider.
-     */
-    public interface FileProviderUtil {
-        /**
-         * Generate a content URI from the given file.
-         *
-         * @param file The file to be translated.
-         */
-        Uri getContentUriFromFile(File file);
-    }
 
     // Prevent instantiation.
     private ContentUriUtils() {}
-
-    public static void setFileProviderUtil(FileProviderUtil util) {
-        synchronized (sLock) {
-            sFileProviderUtil = util;
-        }
-    }
-
-    /**
-     * Get a URI for |file| which has the image capture. This function assumes that path of |file|
-     * is based on the result of UiUtils.getDirectoryForImageCapture().
-     *
-     * @param file image capture file.
-     * @return URI for |file|.
-     * @throws IllegalArgumentException when the given File is outside the paths supported by the
-     *         provider.
-     */
-    public static Uri getContentUriFromFile(File file) {
-        synchronized (sLock) {
-            if (sFileProviderUtil != null) {
-                return sFileProviderUtil.getContentUriFromFile(file);
-            }
-        }
-        return null;
-    }
 
     /**
      * Opens the content URI for the specified mode, and returns the file descriptor to the caller.

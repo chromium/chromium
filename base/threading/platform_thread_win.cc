@@ -371,10 +371,10 @@ namespace {
 
 void SetCurrentThreadPriority(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  if (thread_type == ThreadType::kCompositing &&
+  if (thread_type == ThreadType::kDisplayCritical &&
       pump_type_hint == MessagePumpType::UI &&
       !g_above_normal_compositing_browser) {
-    // Ignore kCompositing thread type for UI thread as Windows has a
+    // Ignore kDisplayCritical thread type for UI thread as Windows has a
     // priority boost mechanism. See
     // https://docs.microsoft.com/en-us/windows/win32/procthread/priority-boosts
     return;
@@ -414,7 +414,6 @@ void SetCurrentThreadPriority(ThreadType thread_type,
     case ThreadType::kDefault:
       desired_priority = THREAD_PRIORITY_NORMAL;
       break;
-    case ThreadType::kCompositing:
     case ThreadType::kDisplayCritical:
       desired_priority = THREAD_PRIORITY_ABOVE_NORMAL;
       break;
@@ -465,7 +464,6 @@ void SetCurrentThreadQualityOfService(ThreadType thread_type) {
       desire_ecoqos = true;
       break;
     case ThreadType::kDefault:
-    case ThreadType::kCompositing:
     case ThreadType::kDisplayCritical:
     case ThreadType::kRealtimeAudio:
       desire_ecoqos = false;

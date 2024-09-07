@@ -6,7 +6,7 @@ import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 
-assert(enable_extensions || enable_desktop_android_extensions)
+assert(enable_extensions_core)
 
 source_set("renderer") {
   sources = [
@@ -172,6 +172,8 @@ source_set("renderer") {
     "renderer_frame_context_data.h",
     "resource_bundle_source_map.cc",
     "resource_bundle_source_map.h",
+    "resource_request_policy.cc",
+    "resource_request_policy.h",
     "runtime_custom_bindings.cc",
     "runtime_custom_bindings.h",
     "safe_builtins.cc",

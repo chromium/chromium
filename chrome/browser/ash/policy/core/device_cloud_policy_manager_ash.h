@@ -155,7 +155,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // Called when UserManager is created.
   void OnUserManagerCreated(user_manager::UserManager* user_manager);
   // Called just before UserManager is destroyed.
-  void OnUserManagerWillBeDestroyed(user_manager::UserManager* user_manager);
+  void OnUserManagerWillBeDestroyed();
 
   // user_manager::UserManager::Observer:
   void OnUserToBeRemoved(const AccountId& account_id) override;

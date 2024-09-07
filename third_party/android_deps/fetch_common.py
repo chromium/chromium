@@ -41,7 +41,8 @@ def do_latest(spec):
     # If no latest info was found just hope the versions are sorted and the
     # last one is the latest (as is commonly the case).
     if spec.version_filter is not None:
-        versions = [v for v in versions if spec.version_filter in v]
+        r = re.compile(spec.version_filter)
+        versions = [v for v in versions if r.search(v)]
     latest = versions[-1]
     print(latest + f'.{spec.patch_version}')
 

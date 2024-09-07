@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
@@ -25,7 +26,7 @@ Font CreateVerticalUprightTestFont(const AtomicString& family_name,
                                    float size) {
   return CreateTestFont(
       family_name, font_path, size, /* ligatures */ nullptr,
-      [](FontDescription* font_description) {
+      kNormalVariantEmoji, [](FontDescription* font_description) {
         font_description->SetOrientation(FontOrientation::kVerticalUpright);
       });
 }

@@ -36,6 +36,7 @@ source_set("unit_tests") {
     ":mall",
     "//base",
     "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/test:test_support",
     "//chromeos/ash/components/system",
     "//chromeos/constants",

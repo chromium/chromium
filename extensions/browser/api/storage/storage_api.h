@@ -61,6 +61,20 @@ class StorageStorageAreaGetFunction : public SettingsFunction {
                               StorageFrontend::GetResult result);
 };
 
+class StorageStorageAreaGetKeysFunction : public SettingsFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("storage.getKeys", STORAGE_GETKEYS)
+
+ protected:
+  ~StorageStorageAreaGetKeysFunction() override = default;
+
+  // SettingsFunction:
+  ResponseAction Run() override;
+
+  // Called after getting keys from storage.
+  void OnGetKeysOperationFinished(StorageFrontend::GetKeysResult result);
+};
+
 class StorageStorageAreaSetFunction : public SettingsFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("storage.set", STORAGE_SET)

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,12 +42,11 @@ ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(
   DCHECK(parent_web_contents_);
 
   if (!parent_web_contents_->GetTopLevelNativeWindow()) {
-    // Some tests construct this with a WebContents that has no window. If we
-    // keep web contents in this case, WasParentDestroyed() will always return
-    // true, even though there is no real window to check. Thus, there is no
-    // window to track here. Reset the web contents in this case, and just keep
-    // the profile.
-    CHECK_IS_TEST();
+    // WebContents were created without a top-level window. This can happen when
+    // the callers pass a dummy WebContents, or in some tests. There is no
+    // window to track in this case. Reset the WebContents pointer and just keep
+    // the profile. If we keep web contents in this case, WasParentDestroyed()
+    // will always return true, even though there is no real window to check.
     parent_web_contents_.reset();
   }
 }

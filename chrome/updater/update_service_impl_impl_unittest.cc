@@ -84,7 +84,8 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   std::vector<std::optional<update_client::CrxComponent>> crxs;
   base::RunLoop loop;
   internal::GetComponents(
-      base::MakeRefCounted<PolicyService>(CreateExternalConstants()),
+      base::MakeRefCounted<PolicyService>(CreateExternalConstants(),
+                                          /*usage_stats_enabled=*/true),
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, metadata, {}, {}, {},
       UpdateService::Priority::kForeground, false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed,

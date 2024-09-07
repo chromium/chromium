@@ -69,6 +69,8 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   static constexpr webui::ResourcePath kResources[] = {
       {"dice_web_signin_intercept_app.js",
        IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_DICE_WEB_SIGNIN_INTERCEPT_APP_JS},
+      {"dice_web_signin_intercept_app.css.js",
+       IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_DICE_WEB_SIGNIN_INTERCEPT_APP_CSS_JS},
       {"dice_web_signin_intercept_app.html.js",
        IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_DICE_WEB_SIGNIN_INTERCEPT_APP_HTML_JS},
       {"dice_web_signin_intercept_browser_proxy.js",
@@ -86,6 +88,8 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
        IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_CHROME_SIGNIN_CHROME_SIGNIN_HTML},
       {"chrome_signin/chrome_signin_app.js",
        IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_CHROME_SIGNIN_CHROME_SIGNIN_APP_JS},
+      {"chrome_signin/chrome_signin_app.css.js",
+       IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_CHROME_SIGNIN_CHROME_SIGNIN_APP_CSS_JS},
       {"chrome_signin/chrome_signin_app.html.js",
        IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_CHROME_SIGNIN_CHROME_SIGNIN_APP_HTML_JS},
   };

@@ -25,6 +25,8 @@
 
 namespace {
 
+constexpr base::TimeDelta kWaitForNotificationTimeout = base::Seconds(10);
+
 // Wait for a view that contains a partial match to the given `text`, then tap
 // it.
 void WaitForThenTapText(NSString* text) {
@@ -60,9 +62,10 @@ void TapNotification() {
   auto notification =
       springboardApplication.otherElements[@"Notification"].firstMatch;
   BOOL notificationAppeared = [notification
-      waitForExistenceWithTimeout:base::test::ios::kWaitForUIElementTimeout
-                                      .InSecondsF()];
-  [notification tap];
+      waitForExistenceWithTimeout:kWaitForNotificationTimeout.InSecondsF()];
+  if (notificationAppeared) {
+    [notification tap];
+  }
   XCTAssert(notificationAppeared, @"A notification did not appear");
 }
 
@@ -88,7 +91,7 @@ void MaybeDismissNotification() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  std::string triggerTime = "2.5s";
+  std::string triggerTime = "3s";
 
   if ([self isRunningTest:@selector(testToggleTipsNotificationsMenuItem)]) {
     triggerTime = "72h";
@@ -96,7 +99,7 @@ void MaybeDismissNotification() {
 
   // Enable Tips Notifications with trigger time params.
   std::string enableFeatures = base::StringPrintf(
-      "--enable-features=%s:%s/%s,%s/%s,%s/%s", kIOSTipsNotifications.name,
+      "--enable-features=%s:%s/%s/%s/%s/%s/%s", kIOSTipsNotifications.name,
       kIOSTipsNotificationsUnknownTriggerTimeParam, triggerTime.c_str(),
       kIOSTipsNotificationsLessEngagedTriggerTimeParam, triggerTime.c_str(),
       kIOSTipsNotificationsActiveSeekerTriggerTimeParam, triggerTime.c_str());
@@ -136,6 +139,7 @@ void MaybeDismissNotification() {
   // Long press the SetUpList module.
   id<GREYMatcher> setUpList =
       grey_accessibilityID(set_up_list::kDefaultBrowserItemID);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:setUpList];
   [[EarlGrey selectElementWithMatcher:setUpList]
       performAction:grey_longPress()];
 
@@ -150,7 +154,7 @@ void MaybeDismissNotification() {
                 forLocalStatePref:kTipsNotificationsSentPref];
 
   // Tap the menu item to enable notifications.
-  TapText(@"Turn on Notifications");
+  TapText(@"Turn on notifications");
   MaybeTapAllowNotifications();
 
   // Tap the confirmation snackbar.
@@ -166,7 +170,7 @@ void MaybeDismissNotification() {
       performAction:grey_longPress()];
 
   // Tap the menu item to enable notifications.
-  TapText(@"Turn off Notifications");
+  TapText(@"Turn off notifications");
 
   // Tap the confirmation snackbar.
   WaitForThenTapText(@"notifications turned off");
@@ -197,6 +201,7 @@ void MaybeDismissNotification() {
 
   // Wait for and tap the What's New notification.
   TapNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify that the What's New screen is showing.
   id<GREYMatcher> whatsNewView = grey_accessibilityID(@"kWhatsNewListViewId");
@@ -212,6 +217,7 @@ void MaybeDismissNotification() {
   if ([ChromeEarlGrey isIPhoneIdiom]) {
     // Wait for and tap the Omnibox Position notification.
     TapNotification();
+    [ChromeEarlGreyUI waitForAppToIdle];
 
     // Verify that the Omnibox Position view is showing.
     id<GREYMatcher> omniboxPositionView = grey_accessibilityID(
@@ -226,6 +232,7 @@ void MaybeDismissNotification() {
 
   // Wait for and tap the Default Browser Notification.
   TapNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify that the Default Browser Promo is visible.
   id<GREYMatcher> defaultBrowserView =
@@ -239,6 +246,7 @@ void MaybeDismissNotification() {
 
   // Wait for and tap the Docking promo notification.
   TapNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify the Docking promo is showing.
   id<GREYMatcher> dockingPromoView =
@@ -252,6 +260,7 @@ void MaybeDismissNotification() {
 
   // Wait for and tap the Signin notification.
   TapNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify the signin screen is showing.
   id<GREYMatcher> signinView =
@@ -264,4 +273,41 @@ void MaybeDismissNotification() {
       performAction:grey_tap()];
 }
 
+// Tests that the Lens Promo appears when tapping on the Lens notification.
+- (void)testLensNotification {
+  MaybeDismissNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [self optInToTipsNotifications:{}];
+
+  // Request the notification and tap it.
+  [ChromeEarlGrey requestTipsNotification:TipsNotificationType::kLens];
+  TapNotification();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                          @"kLensPromoAXID")];
+  // Tap "Show me how".
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
+      performAction:grey_tap()];
+  id<GREYMatcher> instructions =
+      grey_accessibilityID(@"kLensPromoInstructionsAXID");
+  // Swipe down to dismiss the instructions.
+  [[EarlGrey selectElementWithMatcher:instructions]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Tap "Show me how" again.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
+      performAction:grey_tap()];
+  // Tap "Go To Lens".
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Request the notification a second time.
+  [ChromeEarlGrey requestTipsNotification:TipsNotificationType::kLens];
+  TapNotification();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                          @"kLensPromoAXID")];
+  TapText(@"Done");
+}
 @end

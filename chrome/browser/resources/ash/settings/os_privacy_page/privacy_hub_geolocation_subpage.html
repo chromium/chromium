@@ -52,6 +52,10 @@
     color: var(--cr-primary-text-color) !important;
   }
 
+  settings-privacy-hub-system-service-row {
+    cursor: pointer;
+  }
+
   cr-dialog {
     --cr-dialog-body-padding-horizontal: 32px;
     --cr-dialog-button-container-padding-bottom: 32px;
@@ -141,24 +145,28 @@
   <div class="list-frame">
       <settings-privacy-hub-system-service-row
           class="list-item"
+          on-click="onTimeZoneClick_"
           name="$i18n{privacyHubSystemServicesAutomaticTimeZoneName}"
           permission-state="[[automaticTimeZoneText_]]"
           icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
       </settings-privacy-hub-system-service-row>
       <settings-privacy-hub-system-service-row
           class="list-item"
+          on-click="onNightLightClick_"
           name="$i18n{privacyHubSystemServicesSunsetScheduleName}"
           permission-state="[[nightLightText_]]"
           icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
       </settings-privacy-hub-system-service-row>
       <settings-privacy-hub-system-service-row
           class="list-item"
+          on-click="onDarkThemeClick_"
           name="$i18n{privacyHubSystemServicesDarkThemeName}"
           permission-state="[[darkThemeText_]]"
           icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
       </settings-privacy-hub-system-service-row>
       <settings-privacy-hub-system-service-row
           class="list-item"
+          on-click="onLocalWeatherClick_"
           name="$i18n{privacyHubSystemServicesLocalWeatherName}"
           permission-state="[[localWeatherText_]]"
           icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">

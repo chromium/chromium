@@ -35,6 +35,54 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
       return 0;
   }
 }
+
+InterpolableNumber* ConvertFilterOperationToInterpolableNumber(
+    CSSValueID type,
+    const CSSValue& item) {
+  switch (type) {
+    case CSSValueID::kGrayscale:
+    case CSSValueID::kSepia:
+    case CSSValueID::kSaturate:
+    case CSSValueID::kInvert:
+    case CSSValueID::kBrightness:
+    case CSSValueID::kContrast:
+    case CSSValueID::kOpacity: {
+      const CSSPrimitiveValue& value = To<CSSPrimitiveValue>(item);
+      if (value.IsPercentage()) {
+        return MakeGarbageCollected<InterpolableNumber>(
+            *value.ConvertLiteralsFromPercentageToNumber());
+      }
+      return MakeGarbageCollected<InterpolableNumber>(value);
+    }
+    case CSSValueID::kHueRotate: {
+      return MakeGarbageCollected<InterpolableNumber>(
+          To<CSSPrimitiveValue>(item));
+    }
+    default:
+      return MakeGarbageCollected<InterpolableNumber>(0);
+  }
+}
+
+InterpolableNumber* CreateDefaultValue(CSSValueID type) {
+  // See https://www.w3.org/TR/filter-effects-1/#filter-functions for the
+  // mapping of OperationType to initial value.
+  switch (type) {
+    case CSSValueID::kGrayscale:
+    case CSSValueID::kSepia:
+    case CSSValueID::kSaturate:
+    case CSSValueID::kInvert:
+    case CSSValueID::kBrightness:
+    case CSSValueID::kContrast:
+    case CSSValueID::kOpacity:
+      return MakeGarbageCollected<InterpolableNumber>(1);
+    case CSSValueID::kHueRotate:
+      return MakeGarbageCollected<InterpolableNumber>(
+          0, CSSPrimitiveValue::UnitType::kDegrees);
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
 }  // namespace
 
 // static
@@ -48,19 +96,30 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
   FilterOperation::OperationType type = filter.GetType();
   switch (type) {
     case FilterOperation::OperationType::kGrayscale:
-    case FilterOperation::OperationType::kHueRotate:
     case FilterOperation::OperationType::kSaturate:
     case FilterOperation::OperationType::kSepia:
       value = MakeGarbageCollected<InterpolableNumber>(
-          To<BasicColorMatrixFilterOperation>(filter).Amount());
+          To<BasicColorMatrixFilterOperation>(filter).Amount(),
+          CSSPrimitiveValue::UnitType::kNumber);
+      break;
+
+    case FilterOperation::OperationType::kHueRotate:
+      value = MakeGarbageCollected<InterpolableNumber>(
+          To<BasicColorMatrixFilterOperation>(filter).Amount(),
+          CSSPrimitiveValue::UnitType::kDegrees);
       break;
 
     case FilterOperation::OperationType::kBrightness:
+      value = MakeGarbageCollected<InterpolableNumber>(
+          To<BasicComponentTransferFilterOperation>(filter).Amount());
+      break;
+
     case FilterOperation::OperationType::kContrast:
     case FilterOperation::OperationType::kInvert:
     case FilterOperation::OperationType::kOpacity:
       value = MakeGarbageCollected<InterpolableNumber>(
-          To<BasicComponentTransferFilterOperation>(filter).Amount());
+          To<BasicComponentTransferFilterOperation>(filter).Amount(),
+          CSSPrimitiveValue::UnitType::kNumber);
       break;
 
     case FilterOperation::OperationType::kBlur:
@@ -111,8 +170,9 @@ InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
     case FilterOperation::OperationType::kSaturate:
     case FilterOperation::OperationType::kSepia:
     case FilterOperation::OperationType::kHueRotate:
-      value = MakeGarbageCollected<InterpolableNumber>(
-          FilterOperationResolver::ResolveNumericArgumentForFunction(filter));
+      value = filter.length() > 0 ? ConvertFilterOperationToInterpolableNumber(
+                                        filter.FunctionType(), filter.Item(0))
+                                  : CreateDefaultValue(filter.FunctionType());
       break;
 
     case FilterOperation::OperationType::kBlur:
@@ -139,15 +199,19 @@ InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
 // static
 InterpolableFilter* InterpolableFilter::CreateInitialValue(
     FilterOperation::OperationType type) {
-  // See https://drafts.fxtf.org/filter-effects-1/#filter-functions for the
-  // mapping of OperationType to initial value.
+  // See https://www.w3.org/TR/filter-effects-1/#filter-functions for the
+  // mapping of OperationType to initial value for interpolation.
   InterpolableValue* value = nullptr;
   switch (type) {
     case FilterOperation::OperationType::kGrayscale:
     case FilterOperation::OperationType::kInvert:
     case FilterOperation::OperationType::kSepia:
-    case FilterOperation::OperationType::kHueRotate:
       value = MakeGarbageCollected<InterpolableNumber>(0);
+      break;
+
+    case FilterOperation::OperationType::kHueRotate:
+      value = MakeGarbageCollected<InterpolableNumber>(
+          0, CSSPrimitiveValue::UnitType::kDegrees);
       break;
 
     case FilterOperation::OperationType::kBrightness:
@@ -180,8 +244,9 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
     case FilterOperation::OperationType::kHueRotate:
     case FilterOperation::OperationType::kSaturate:
     case FilterOperation::OperationType::kSepia: {
-      double value =
-          ClampParameter(To<InterpolableNumber>(*value_).Value(), type_);
+      double value = ClampParameter(To<InterpolableNumber>(*value_).Value(
+                                        state.CssToLengthConversionData()),
+                                    type_);
       return MakeGarbageCollected<BasicColorMatrixFilterOperation>(value,
                                                                    type_);
     }
@@ -190,8 +255,9 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
     case FilterOperation::OperationType::kContrast:
     case FilterOperation::OperationType::kInvert:
     case FilterOperation::OperationType::kOpacity: {
-      double value =
-          ClampParameter(To<InterpolableNumber>(*value_).Value(), type_);
+      double value = ClampParameter(To<InterpolableNumber>(*value_).Value(
+                                        state.CssToLengthConversionData()),
+                                    type_);
       return MakeGarbageCollected<BasicComponentTransferFilterOperation>(value,
                                                                          type_);
     }

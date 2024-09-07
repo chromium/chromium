@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './auto_tab_groups/auto_tab_groups_page.js';
+import './tab_organization_selector.js';
 import './tab_search_page.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
@@ -26,6 +27,7 @@ export class TabSearchAppElement extends CrLitElement {
       tabNames_: {type: Array},
       tabIcons_: {type: Array},
       tabOrganizationEnabled_: {type: Boolean},
+      declutterEnabled_: {type: Boolean},
     };
   }
 
@@ -40,6 +42,8 @@ export class TabSearchAppElement extends CrLitElement {
       ['images/tab_search.svg', 'images/auto_tab_groups.svg'];
   protected tabOrganizationEnabled_: boolean =
       loadTimeData.getBoolean('tabOrganizationEnabled');
+  protected declutterEnabled_: boolean =
+      loadTimeData.getBoolean('declutterEnabled');
 
   static override get styles() {
     return getCss();
@@ -76,7 +80,7 @@ export class TabSearchAppElement extends CrLitElement {
 
   protected onSelectedTabChanged_(e: CustomEvent<{value: number}>) {
     this.selectedTabIndex_ = e.detail.value;
-    if (this.selectedTabIndex_ === 1) {
+    if (this.selectedTabIndex_ === 1 && !this.declutterEnabled_) {
       const autoTabGroupsPage =
           this.shadowRoot!.querySelector('auto-tab-groups-page')!;
       autoTabGroupsPage.classList.toggle('changed-state', false);

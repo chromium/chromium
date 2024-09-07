@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_web_provider.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -49,7 +49,8 @@ LensOmniboxClient::LensOmniboxClient(
     : browser_state_(browser_state),
       engagement_tracker_(tracker),
       web_provider_(web_provider),
-      delegate_(omnibox_delegate) {
+      delegate_(omnibox_delegate),
+      thumbnail_removed_in_session_(NO) {
   CHECK(engagement_tracker_);
 }
 
@@ -205,6 +206,15 @@ gfx::Image LensOmniboxClient::GetFavicon() const {
   return gfx::Image();
 }
 
+void LensOmniboxClient::OnThumbnailRemoved() {
+  thumbnail_removed_in_session_ = YES;
+}
+
+void LensOmniboxClient::OnFocusChanged(OmniboxFocusState state,
+                                       OmniboxFocusChangeReason reason) {
+  thumbnail_removed_in_session_ = NO;
+}
+
 void LensOmniboxClient::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
@@ -218,7 +228,9 @@ void LensOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
-  [delegate_ omniboxDidAcceptText:text destinationURL:destination_url];
+  [delegate_ omniboxDidAcceptText:text
+                   destinationURL:destination_url
+                 thumbnailRemoved:thumbnail_removed_in_session_];
 }
 
 base::WeakPtr<OmniboxClient> LensOmniboxClient::AsWeakPtr() {

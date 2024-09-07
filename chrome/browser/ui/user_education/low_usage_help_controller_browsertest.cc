@@ -63,16 +63,14 @@ class LowUsageHelpControllerBrowsertest : public InteractiveFeaturePromoTest {
                     base::Unretained(this)));
           }
         }),
-        WaitForEvent(kBrowserViewElementId, kStartupSessionEvent),
-        // Wait for everything to settle.
-        FlushEvents());
+        WaitForEvent(kBrowserViewElementId, kStartupSessionEvent));
   }
 
   auto VerifyPromoShown() {
     return Steps(
         WaitForShow(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-        FlushEvents(),
+
         CheckResult([this]() { return GetFeaturePromoStatus(); },
                     user_education::FeaturePromoStatus::kBubbleShowing));
   }
@@ -99,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(LowUsageHelpControllerBrowsertest,
   RunTestSequence(
       // Processing new sessions happens on a one-frame delay, so clear the call
       // stack and let an IPH trigger.
-      FlushEvents(),
+
       // Verify that the IPH has not been requested.
       CheckResult([this]() { return GetFeaturePromoStatus(); },
                   user_education::FeaturePromoStatus::kNotRunning));

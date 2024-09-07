@@ -55,18 +55,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground"
-    enum="Boolean" expires_after="2024-09-29">
-  <owner>blundell@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records whether the first navigation commit after a cold start occurred
-    before UmaUtils.hasComeToForegroundWithNative() became true. Recorded only
-    for startups in which startup metrics were being tracked.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.Cold.FirstPaintOccurredPreForeground"
     enum="Boolean" expires_after="2025-01-05">
   <owner>blundell@chromium.org</owner>
@@ -108,19 +96,6 @@ chromium-metrics-reviews@google.com.
     Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed, utilizing
     ColdStartTracker. Only logged if the URL of the first navigation is checked
     by SafeBrowsing API.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.Cold.FirstSafeBrowsingResponseTime.Tabbed"
-    units="ms" expires_after="2024-11-17">
-  <owner>pasko@chromium.org</owner>
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The time it took GmsCore SafetyNet API to respond to the first hash-prefix
-    SafeBrowsing database request in the process lifetime. Recorded at the same
-    time as Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed. Only logged
-    if the URL of the first navigation is checked by SafetyNet API.
   </summary>
 </histogram>
 
@@ -457,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Experimental.{name}.Tabbed.ColdStartTracker"
-    units="ms" expires_after="2024-12-30">
+    units="ms" expires_after="2025-03-02">
   <owner>pasko@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -534,7 +509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.GURLEnsureMainDexInitialized" units="ms"
-    expires_after="2024-11-17">
+    expires_after="2025-02-16">
   <owner>mthiesse@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -573,6 +548,22 @@ chromium-metrics-reviews@google.com.
     StartSurface is shown at launch. This histogram is only recorded when
     StartSurface is shown at launch due to &quot;return to tab switcher&quot;
     feature.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.MainIconLaunchTotalWaitTime" units="ms"
+    expires_after="2025-03-03">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    The total time a user waits for the Clank startup ablation study. The
+    enabled arms of the study prescribes an amount of time to delay the launch
+    of Clank, and this histogram records the amount of time waited to verify
+    ablation and any additional delay.
+
+    Recorded only when the main Chrome launcher icon is used to start the app
+    (i.e. LaunchCauseType is MAIN_LAUNCHER_ICON or MAIN_LAUNCHER_ICON_SHORTCUT)
+    and after the ablation occurs.
   </summary>
 </histogram>
 

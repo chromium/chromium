@@ -24,8 +24,6 @@ source_set("model") {
     "//base",
     "//components/component_updater",
     "//components/download/public/background_service:public",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:prediction",
@@ -39,9 +37,13 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/web",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
   ]
   frameworks = [ "UIKit.framework" ]
   public_deps = [
@@ -55,6 +57,7 @@ source_set("download_client_header") {
   deps = [
     "//base",
     "//components/download/public/background_service:public",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
@@ -90,9 +93,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

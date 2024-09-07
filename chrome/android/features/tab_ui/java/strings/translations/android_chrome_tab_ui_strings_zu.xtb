@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">Amathebhu angu-<ph name="TABS_COUNT_MANY" /> aqoqiwe</translation>
 <translation id="1657719826150349398">Yisa ithebhu phansi</translation>
 <translation id="1713541401465507417">Vala wonke amathebhu namaqembu</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Funda kabanzi<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Iqembu lethebhu elingu-<ph name="TABS_COUNT_ONE" /></translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ithebhu}one{<ph name="TABS_COUNT_MANY" /> amathebhu}other{<ph name="TABS_COUNT_MANY" /> amathebhu}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Faka ibhukhimakhi kuthebhu engu-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Faka ibhukhimakhi kumathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Faka ibhukhimakhi kumathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Kusanda kusungulwa</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Vala ngemva kosuku olu-1}one{Vala ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}other{Vala ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="4777866634702576038">Sula iqembu lethebhu?</translation>
+<translation id="4783638485675352219">Yabelana ngezihloko nama-URL wamathebhu avuliwe ukusuka kule divayisi ngesistimu yokusebenza</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(isibuyekezo esingu-<ph name="REVIEWS_COUNT_ONE" />)}one{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}other{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Buka</translation>
 <translation id="4870911314065352661">Vala wonke amathebhu?</translation>

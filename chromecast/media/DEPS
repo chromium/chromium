@@ -3,6 +3,7 @@ include_rules = [
   "+chromecast/external_mojo",
   "+chromecast/net/socket_util.h",
   "+content/public/renderer",
+  "+media",
   "+media/audio",
   "+media/base",
   "+media/cdm",

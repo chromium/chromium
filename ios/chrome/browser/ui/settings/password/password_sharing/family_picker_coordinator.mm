@@ -5,10 +5,11 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_mediator.h"
@@ -25,6 +26,10 @@
   NSArray<RecipientInfoForIOSDisplay*>* _recipients;
 }
 
+// The navigation controller displaying the view controller.
+@property(nonatomic, strong)
+    TableViewNavigationController* navigationController;
+
 // Main view controller for this coordinator.
 @property(nonatomic, strong) FamilyPickerViewController* viewController;
 
@@ -33,9 +38,25 @@
 
 @end
 
-@implementation FamilyPickerCoordinator
+@implementation FamilyPickerCoordinator {
+  // Whether the view should have a back button that navigates to the password
+  // picker view.
+  BOOL _shouldNavigateBack;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                recipients:
+                                    (NSArray<RecipientInfoForIOSDisplay*>*)
+                                        recipients {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _recipients = recipients;
+  }
+  return self;
+}
 
 - (instancetype)
     initWithBaseNavigationController:
@@ -43,11 +64,12 @@
                              browser:(Browser*)browser
                           recipients:(NSArray<RecipientInfoForIOSDisplay*>*)
                                          recipients {
-  self = [super initWithBaseViewController:navigationController
-                                   browser:browser];
+  self = [self initWithBaseViewController:navigationController
+                                  browser:browser
+                               recipients:recipients];
   if (self) {
     _baseNavigationController = navigationController;
-    _recipients = recipients;
+    _shouldNavigateBack = YES;
   }
   return self;
 }
@@ -64,25 +86,46 @@
                                  ->GetSharedURLLoaderFactory()];
   self.mediator.consumer = self.viewController;
 
-  if (self.shouldNavigateBack) {
+  if (_shouldNavigateBack) {
     [self.viewController setupLeftBackButton];
+
+    CHECK(self.baseNavigationController);
+    self.baseNavigationController.presentationController.delegate = self;
+    [self.baseNavigationController pushViewController:self.viewController
+                                             animated:YES];
+
   } else {
     [self.viewController setupLeftCancelButton];
-  }
 
-  CHECK(self.baseNavigationController);
-  self.baseNavigationController.presentationController.delegate = self;
-  // Disable animation when the view is displayed on top of the spinner view so
-  // that it looks as the spinner is replaced with the loaded data.
-  [self.baseNavigationController pushViewController:self.viewController
-                                           animated:self.shouldNavigateBack];
+    self.navigationController = [[TableViewNavigationController alloc]
+        initWithTable:self.viewController];
+    [self.navigationController
+        setModalPresentationStyle:UIModalPresentationFormSheet];
+    self.navigationController.navigationBar.prefersLargeTitles = NO;
+    self.navigationController.sheetPresentationController.detents = @[
+      [UISheetPresentationControllerDetent mediumDetent],
+      [UISheetPresentationControllerDetent largeDetent]
+    ];
+
+    self.navigationController.presentationController.delegate = self;
+
+    [self.baseViewController presentViewController:self.navigationController
+                                          animated:YES
+                                        completion:nil];
+  }
 
   LogPasswordSharingInteraction(
       PasswordSharingInteraction::kFamilyPickerOpened);
 }
 
 - (void)stop {
+  if (!_shouldNavigateBack) {
+    [self.viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+  }
   self.viewController = nil;
+  self.navigationController = nil;
   self.mediator = nil;
 }
 

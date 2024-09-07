@@ -243,8 +243,11 @@ void NavigationPredictor::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver) {
   CHECK(render_frame_host);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(!IsPrerendering(*render_frame_host));
+  CHECK(!IsPrerendering(*render_frame_host));
+
+  if (!base::FeatureList::IsEnabled(blink::features::kNavigationPredictor)) {
+    return;
+  }
 
   // Only valid for the main frame.
   if (render_frame_host->GetParentOrOuterDocument())
@@ -646,8 +649,14 @@ void NavigationPredictor::ReportAnchorElementsLeftViewport(
 
 void NavigationPredictor::ReportAnchorElementsPositionUpdate(
     std::vector<blink::mojom::AnchorElementPositionUpdatePtr> elements) {
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kNavigationPredictorNewViewportFeatures));
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kNavigationPredictorNewViewportFeatures)) {
+    mojo::ReportBadMessage(
+        "ReportAnchorElementsPositionUpdate should only be called with "
+        "kNavigationPredictorNewViewportFeatures enabled.");
+    return;
+  }
+
   auto& user_interactions =
       GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
   for (const auto& element : elements) {

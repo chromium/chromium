@@ -199,19 +199,19 @@ void WebAppNavigationBrowserTest::SetUp() {
   https_server_.AddDefaultHandlers(GetChromeTestDataDir());
   // Register a request handler that will return empty pages. Tests are
   // responsible for adding elements and firing events on these empty pages.
-  https_server_.RegisterRequestHandler(
-      base::BindRepeating([](const net::test_server::HttpRequest& request) {
+  https_server_.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
         // Let the default request handlers handle redirections.
         if (request.GetURL().path() == "/server-redirect" ||
             request.GetURL().path() == "/client-redirect") {
-          return std::unique_ptr<net::test_server::HttpResponse>();
+          return {};
         }
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_content_type("text/html");
         response->AddCustomHeader("Access-Control-Allow-Origin", "*");
         response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
-        return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
-            std::move(response));
+        return response;
       }));
 
   WebAppBrowserTestBase::SetUp();

@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">Se han agrupado <ph name="TABS_COUNT_MANY" /> pestañas</translation>
 <translation id="1657719826150349398">Bajar pestaña</translation>
 <translation id="1713541401465507417">Cerrar todas las pestañas y grupos</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Se ha agrupado <ph name="TABS_COUNT_ONE" /> pestaña</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña}other{<ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Añadir <ph name="TABS_COUNT_ONE" /> pestaña seleccionada a marcadores}other{Añadir <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas a marcadores}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Creado ahora mismo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Cerrar después de 1 día}other{Cerrar después de <ph name="DAY_COUNT_MANY" /> días}}</translation>
 <translation id="4777866634702576038">¿Eliminar grupo de pestañas?</translation>
+<translation id="4783638485675352219">Compartir con el sistema operativo los títulos y las URLs de las pestañas abiertas de este dispositivo</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> reseña)}other{(<ph name="REVIEWS_COUNT_MANY" /> reseñas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4870911314065352661">¿Cerrar todas las pestañas?</translation>

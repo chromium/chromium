@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
+#include "chrome/common/chrome_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
@@ -45,6 +46,10 @@ void Profile::InitJavaObject() {
                                     j_otr_profile_id);
 }
 
+void Profile::NotifyJavaOnProfileWillBeDestroyed() {
+  Java_Profile_onProfileWillBeDestroyed(AttachCurrentThread(), j_obj_);
+}
+
 void Profile::DestroyJavaObject() {
   Java_Profile_onNativeDestroyed(AttachCurrentThread(), j_obj_);
 }
@@ -59,6 +64,11 @@ ScopedJavaLocalRef<jobject> JNI_Profile_GetOriginalProfile(JNIEnv* env,
   Profile* original_profile = self->GetOriginalProfile();
   DCHECK(original_profile);
   return original_profile->GetJavaObject();
+}
+
+jboolean JNI_Profile_IsInitialProfile(JNIEnv* env, jlong ptr) {
+  Profile* self = reinterpret_cast<Profile*>(ptr);
+  return self->GetBaseName().value() == chrome::kInitialProfile;
 }
 
 ScopedJavaLocalRef<jobject> JNI_Profile_GetOffTheRecordProfile(

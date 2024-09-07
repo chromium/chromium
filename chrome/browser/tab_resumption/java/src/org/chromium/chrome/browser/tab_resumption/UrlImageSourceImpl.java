@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_resumption;
 import android.content.Context;
 
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -14,18 +15,17 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 /** UrlImageProvider.UrlImageSource implementation for production. */
 public class UrlImageSourceImpl implements UrlImageProvider.UrlImageSource {
     private final Context mContext;
-    private final TabContentManager mTabContentManager;
+    private final TabContentManagerThumbnailProvider mTabContentManagerThumbnailProvider;
 
     UrlImageSourceImpl(Context context, TabContentManager tabContentManager) {
         mContext = context;
-        mTabContentManager = tabContentManager;
+        mTabContentManagerThumbnailProvider =
+                new TabContentManagerThumbnailProvider(tabContentManager);
     }
 
     @Override
     public ThumbnailProvider createThumbnailProvider() {
-        return (tabId, thumbnailSize, callback, isSelected) -> {
-            mTabContentManager.getTabThumbnailWithCallback(tabId, thumbnailSize, callback);
-        };
+        return mTabContentManagerThumbnailProvider;
     }
 
     @Override

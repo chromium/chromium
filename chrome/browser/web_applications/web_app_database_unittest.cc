@@ -777,6 +777,29 @@ TEST_F(WebAppDatabaseTest, RemovesFragmentFromSyncProtoManifestIdPath) {
                                       false, 1);
 }
 
+TEST_F(WebAppDatabaseTest, RemovesFragmentAndQueriesFromScopeDuringParsing) {
+  std::unique_ptr<WebApp> app = test::CreateRandomWebApp({});
+  EXPECT_TRUE(app->scope().is_valid());
+  EXPECT_FALSE(app->scope().has_ref());
+  std::string basic_scope_path = app->scope().spec();
+  std::string scope_path_with_queries_and_fragment =
+      base::StrCat({basic_scope_path, "?query=abc", "fragment"});
+
+  // Create a WebAppProto with a scope that has queries and fragments.
+  std::unique_ptr<WebAppProto> proto = WebAppDatabase::CreateWebAppProto(*app);
+  proto->set_scope(scope_path_with_queries_and_fragment);
+  EXPECT_EQ(proto->scope(), scope_path_with_queries_and_fragment);
+
+  // Re-parse the app from the proto.
+  auto reparsed_app = WebAppDatabase::CreateWebApp(*proto);
+  ASSERT_TRUE(reparsed_app);
+
+  // Loaded app should have had the fragment and query stripped.
+  EXPECT_EQ(reparsed_app->scope(), basic_scope_path);
+  EXPECT_FALSE(reparsed_app->scope().has_ref());
+  EXPECT_FALSE(reparsed_app->scope().has_query());
+}
+
 class WebAppDatabaseProtoDataTest : public ::testing::Test {
  public:
   std::unique_ptr<WebApp> CreateMinimalWebApp() {

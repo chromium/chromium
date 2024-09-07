@@ -22,6 +22,7 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -558,17 +559,12 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
           holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
       break;
     default:
-      if (holding_space_util::IsInProgressCommand(command_id)) {
-        for (const HoldingSpaceItem* item : items) {
-          if (!holding_space_util::ExecuteInProgressCommand(
-                  item, command_id,
-                  holding_space_metrics::EventSource::
-                      kHoldingSpaceItemContextMenu)) {
-            NOTREACHED();
-          }
-        }
-      } else {
-        NOTREACHED();
+      CHECK(holding_space_util::IsInProgressCommand(command_id));
+      for (const HoldingSpaceItem* item : items) {
+        const bool success = holding_space_util::ExecuteInProgressCommand(
+            item, command_id,
+            holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
+        CHECK(success);
       }
       break;
   }

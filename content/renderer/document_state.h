@@ -29,6 +29,13 @@ class CONTENT_EXPORT DocumentState
     return static_cast<DocumentState*>(document_loader->GetExtraData());
   }
 
+  // Clones this. Passed to the document loader of a newly committed empty
+  // document that replaces an existing document. This is done for discard
+  // operations or javascript URL navigations such that the new document loader
+  // behaves simiarly to the previous one. `navigation_state_` is not cloned
+  // as this is specific to the original document.
+  std::unique_ptr<blink::WebDocumentLoader::ExtraData> Clone() override;
+
   // For LoadDataWithBaseURL navigations, |was_load_data_with_base_url_request_|
   // is set to true and |data_url_| is set to the data URL of the navigation.
   // Otherwise, |was_load_data_with_base_url_request_| is false and |data_url_|

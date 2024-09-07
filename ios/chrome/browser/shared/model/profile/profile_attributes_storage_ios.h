@@ -12,25 +12,22 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
 class PrefRegistrySimple;
 class PrefService;
+class ProfileAttributesIOS;
 
-// TODO(crbug.com/359492423): Remove this forward declaration and typedef when
-// no usage of BrowserStateInfoCache remains.
-class ProfileAttributesStorageIOS;
-using BrowserStateInfoCache = ProfileAttributesStorageIOS;
-
-// This class saves various information about browser states to local
-// preferences.
-// TODO(crbug.com/359522668): Update the API of this class to refer to "Profile"
-// instead of "BrowserState".
-
+// This class saves various information about profiles to local preferences.
 class ProfileAttributesStorageIOS {
  public:
+  // Callback that can modify and then return a ProfileAttributesIOS.
+  using ProfileAttributesCallback =
+      base::OnceCallback<ProfileAttributesIOS(ProfileAttributesIOS)>;
+
   explicit ProfileAttributesStorageIOS(PrefService* prefs);
 
   ProfileAttributesStorageIOS(const ProfileAttributesStorageIOS&) = delete;
@@ -39,48 +36,57 @@ class ProfileAttributesStorageIOS {
 
   ~ProfileAttributesStorageIOS();
 
-  void AddBrowserState(std::string_view name,
-                       std::string_view gaia_id,
-                       std::string_view user_name);
-  void RemoveBrowserState(std::string_view name);
+  // Register profile with `name`.
+  void AddProfile(std::string_view name);
 
-  // Returns the count of known browser states.
-  size_t GetNumberOfBrowserStates() const;
+  // Remove informations about profile with `name`.
+  void RemoveProfile(std::string_view name);
 
-  // Gets and sets information related to browser states.
-  size_t GetIndexOfBrowserStateWithName(std::string_view name) const;
-  const std::string& GetNameOfBrowserStateAtIndex(size_t index) const;
-  const std::string& GetGAIAIdOfBrowserStateAtIndex(size_t index) const;
-  const std::string& GetUserNameOfBrowserStateAtIndex(size_t index) const;
-  bool BrowserStateIsAuthenticatedAtIndex(size_t index) const;
-  void SetAuthInfoOfBrowserStateAtIndex(size_t index,
-                                        std::string_view gaia_id,
-                                        std::string_view user_name);
-  void SetBrowserStateIsAuthErrorAtIndex(size_t index, bool value);
-  bool BrowserStateIsAuthErrorAtIndex(size_t index) const;
-  base::Time GetLastActiveTimeOfBrowserStateAtIndex(size_t index) const;
-  void SetLastActiveTimeOfBrowserStateAtIndex(size_t index, base::Time time);
+  // Returns the count of known profiles.
+  size_t GetNumberOfProfiles() const;
 
-  // Register the given browser state with the given scene. Browser state name
-  // should not be empty.
-  void SetBrowserStateForSceneID(std::string_view scene_id,
-                                 std::string_view browser_state_name);
+  // Returns whether a profile with `name` exists.
+  bool HasProfileWithName(std::string_view name) const;
+
+  // Retrieves the information for profile at `index`.
+  ProfileAttributesIOS GetAttributesForProfileAtIndex(size_t index) const;
+
+  // Retrieves the information for profile with `name`.
+  ProfileAttributesIOS GetAttributesForProfileWithName(
+      std::string_view name) const;
+
+  // Convenience method to modify the attributes for a profile at `index`.
+  // The callback is invoked synchronously and can modify the attributes
+  // and the data will be saved to the preferences if changed.
+  void UpdateAttributesForProfileAtIndex(size_t index,
+                                         ProfileAttributesCallback callback);
+
+  // Convenience method to modify the attributes for a profile with `name`.
+  // The callback is invoked synchronously and can modify the attributes
+  // and the data will be saved to the preferences if changed.
+  void UpdateAttributesForProfileWithName(std::string_view name,
+                                          ProfileAttributesCallback callback);
+
+  // Returns the index of the profile with `name` or std::string::npos if
+  // not found.
+  // TODO(crbug.com/331783685): make private once ChromeAccountManagerService
+  // no longer uses indices to refer to profile to use.
+  size_t GetIndexOfProfileWithName(std::string_view name) const;
+
+  // Register the given profile with the given scene.
+  void SetProfileNameForSceneID(std::string_view scene_id,
+                                std::string_view profile_name);
+
   // Removes the given scene records.
-  void ClearBrowserStateForSceneID(std::string_view scene_id);
+  void ClearProfileNameForSceneID(std::string_view scene_id);
 
-  // Returns the name of the browser state associated to the given scene.
-  const std::string& GetBrowserStateNameForSceneID(std::string_view scene_id);
+  // Returns the name of the profile associated to the given scene.
+  const std::string& GetProfileNameForSceneID(std::string_view scene_id);
 
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  // Returns the dictionary storing information about a browser state.
-  const base::Value::Dict* GetInfoForBrowserStateAtIndex(size_t index) const;
-
-  // Saves the browser state info to a cache.
-  void SetInfoForBrowserStateAtIndex(size_t index, base::Value::Dict info);
-
   raw_ptr<PrefService> prefs_;
   std::vector<std::string> sorted_keys_;
 };

@@ -12,28 +12,10 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/whats_new/constants.h"
 
-namespace {
-
-// Clean up user defaults.
-// TODO(crbug.com/40274920): Safe to remove in M123+.
-void CleanUpWhatsNewUserDefaults() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  [defaults removeObjectForKey:kWhatsNewM116PromoRegistrationKey];
-  [defaults removeObjectForKey:kWhatsNewPromoRegistrationKey];
-  [defaults removeObjectForKey:kWhatsNewDaysAfterFre];
-  [defaults removeObjectForKey:kWhatsNewLaunchesAfterFre];
-  [defaults removeObjectForKey:kWhatsNewM116DaysAfterFre];
-  [defaults removeObjectForKey:kWhatsNewM116LaunchesAfterFre];
-}
-
-}  // namespace
-
 // For users who have already viewed What's New M116, the ensures that the promo
 // is not triggered again until the next version of What's New.
 // Note that we no longer write userDefault.
 bool WasWhatsNewUsed() {
-  CleanUpWhatsNewUserDefaults();
 
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kWhatsNewM116UsageEntryKey];

@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent_observing.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
@@ -61,12 +60,14 @@
 
 - (void)stop {
   [_panelContentCoordinator stop];
+  _panelContentCoordinator = nil;
 
   if (_viewController) {
     [self removeViewControllerFromBaseViewController];
   }
 
   _animatedFullscreenDisabler = nullptr;
+  _observerBridge = nullptr;
 }
 
 - (void)traitCollectionDidChangeForViewController:

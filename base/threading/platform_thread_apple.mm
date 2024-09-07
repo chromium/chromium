@@ -300,7 +300,6 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
     case ThreadType::kDefault:
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
       break;
-    case ThreadType::kCompositing:
     case ThreadType::kDisplayCritical: {
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
       break;

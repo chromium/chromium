@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/printing/usb_printer_detector.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -1508,8 +1507,6 @@ TEST_F(CupsPrintersManagerTest, ActiveNetworkStrengthChanged) {
 
 // Tests that local printers observers are triggered when added.
 TEST_F(CupsPrintersManagerTest, AddLocalPrintersObserver) {
-  feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
-
   // Add the same observer twice to verify it's only added once and triggered
   // once.
   FakeLocalPrintersObserver observer1;
@@ -1527,8 +1524,6 @@ TEST_F(CupsPrintersManagerTest, AddLocalPrintersObserver) {
 
 // Tests that when a new local printer is detected the observer is triggered.
 TEST_F(CupsPrintersManagerTest, LocalPrintersDetected) {
-  feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
-
   // The observer should fire when first registered.
   FakeLocalPrintersObserver observer1;
   manager_->AddLocalPrintersObserver(&observer1);
@@ -1556,8 +1551,6 @@ TEST_F(CupsPrintersManagerTest, LocalPrintersDetected) {
 // Tests that the polling printer status requests trigger the local printers
 // observer up until the max time allocated for polling statuses.
 TEST_F(CupsPrintersManagerTest, PrinterStatusPolling) {
-  feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
-
   // Add `RecentPrinter` to the Print Preview sticky settings so it'll get
   // polled for status. `OldPrinter` will not get queried.
   ::printing::PrintPreviewStickySettings* sticky_settings =

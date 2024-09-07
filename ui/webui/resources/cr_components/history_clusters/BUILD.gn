@@ -22,27 +22,31 @@ mojom("mojo_bindings") {
 build_webui("build") {
   grd_prefix = "cr_components_history_clusters"
 
-  web_component_files = [
-    "cluster.ts",
-    "clusters.ts",
-    "cluster_menu.ts",
-    "horizontal_carousel.ts",
-    "page_favicon.ts",
-    "search_query.ts",
-    "url_visit.ts",
-  ]
-
   non_web_component_files = [
     "browser_proxy.ts",
+    "cluster.ts",
+    "cluster.html.ts",
+    "clusters.ts",
+    "clusters.html.ts",
+    "cluster_menu.ts",
+    "cluster_menu.html.ts",
+    "horizontal_carousel.ts",
+    "horizontal_carousel.html.ts",
+    "page_favicon.ts",
+    "page_favicon.html.ts",
+    "search_query.ts",
+    "search_query.html.ts",
+    "url_visit.ts",
+    "url_visit.html.ts",
     "metrics_proxy.ts",
     "utils.ts",
   ]
 
   css_files = [
     "cluster.css",
+    "clusters.css",
     "cluster_menu.css",
     "history_clusters_shared_style.css",
-    "history_clusters_shared_style_lit.css",
     "horizontal_carousel.css",
     "page_favicon.css",
     "search_query.css",
@@ -63,18 +67,19 @@ build_webui("build") {
 
   ts_out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/history_clusters"
-  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
   ts_composite = true
   ts_deps = [
     "../page_image_service:build_ts",
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/history:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  html_to_wrapper_template = "detect"
   webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")

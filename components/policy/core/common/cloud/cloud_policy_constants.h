@@ -64,6 +64,7 @@ extern const char kValueRequestActiveDirectoryEnrollPlayUser[];
 extern const char kValueRequestActiveDirectoryPlayActivity[];
 extern const char kValueRequestAppInstallReport[];
 extern const char kValueRequestRegisterBrowser[];
+extern const char kValueRequestRegisterPolicyAgent[];
 extern const char kValueRequestChromeDesktopReport[];
 extern const char kValueRequestInitialEnrollmentStateRetrieval[];
 extern const char kValueRequestUploadPolicyValidationReport[];
@@ -82,6 +83,8 @@ extern const char kChromeSigninExtensionPolicyType[];
 extern const char kChromeMachineLevelUserCloudPolicyType[];
 extern const char kChromeMachineLevelExtensionCloudPolicyType[];
 extern const char kChromeRemoteCommandPolicyType[];
+extern const char kGoogleUpdateMachineLevelAppsPolicyType[];
+extern const char kGoogleUpdateMachineLevelOmahaPolicyType[];
 
 // Remote command type for `type` field in DeviceRemoteCommandRequest.
 // Command for Chrome OS Ash user.

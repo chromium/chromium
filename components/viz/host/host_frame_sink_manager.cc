@@ -24,7 +24,6 @@
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom-forward.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/privileged/mojom/compositing/renderer_settings.mojom.h"
-#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
 namespace viz {
 
@@ -180,11 +179,10 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-    std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-        viz_rir_client_remote) {
+    input::mojom::RenderInputRouterConfigPtr render_input_router_config) {
   CreateFrameSink(frame_sink_id, /*bundle_id=*/std::nullopt,
                   std::move(receiver), std::move(client),
-                  std::move(viz_rir_client_remote));
+                  std::move(render_input_router_config));
 }
 
 void HostFrameSinkManager::CreateFrameSinkBundle(
@@ -201,7 +199,7 @@ void HostFrameSinkManager::CreateBundledCompositorFrameSink(
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
   CreateFrameSink(frame_sink_id, bundle_id, std::move(receiver),
-                  std::move(client), /* viz_rir_client_remote= */ std::nullopt);
+                  std::move(client), /* render_input_router_config= */ nullptr);
 }
 
 void HostFrameSinkManager::CreateFrameSink(
@@ -209,8 +207,7 @@ void HostFrameSinkManager::CreateFrameSink(
     std::optional<FrameSinkBundleId> bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-    std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-        viz_rir_client_remote) {
+    input::mojom::RenderInputRouterConfigPtr render_input_router_config) {
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
   DCHECK(data.IsFrameSinkRegistered());
 
@@ -223,15 +220,9 @@ void HostFrameSinkManager::CreateFrameSink(
 
   data.is_root = false;
   data.has_created_compositor_frame_sink = true;
-
-  mojo::PendingRemote<blink::mojom::RenderInputRouterClient>
-      viz_rir_client_remote_value = mojo::NullRemote();
-  if (viz_rir_client_remote.has_value()) {
-    viz_rir_client_remote_value = std::move(*viz_rir_client_remote);
-  }
   frame_sink_manager_->CreateCompositorFrameSink(
       frame_sink_id, bundle_id, std::move(receiver), std::move(client),
-      std::move(viz_rir_client_remote_value));
+      std::move(render_input_router_config));
 }
 
 void HostFrameSinkManager::OnFrameTokenChanged(

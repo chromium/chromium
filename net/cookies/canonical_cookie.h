@@ -374,14 +374,11 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
  private:
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest,
                            TestGetAndAdjustPortForTrustworthyUrls);
-  FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestPrefixHistograms);
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestHasHiddenPrefixName);
 
   // Records histograms to measure how often cookie prefixes appear in
   // the wild and how often they would be blocked.
-  static void RecordCookiePrefixMetrics(CookiePrefix prefix_case_sensitive,
-                                        CookiePrefix prefix_case_insensitive,
-                                        bool is_insensitive_prefix_valid);
+  static void RecordCookiePrefixMetrics(CookiePrefix prefix);
 
   // Returns the appropriate port value for the given `source_url` depending on
   // if the url is considered trustworthy or not.

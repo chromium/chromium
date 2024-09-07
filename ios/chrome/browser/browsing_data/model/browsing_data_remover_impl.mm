@@ -18,6 +18,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/autofill/core/browser/address_data_manager.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -36,7 +38,6 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
-#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/system_snapshots_cleaner.h"
@@ -52,6 +53,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_remover_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
@@ -62,7 +64,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
@@ -153,6 +155,17 @@ bool IsActivityIndicatorNeeded(bool isOffTheRecord,
                                BrowsingDataRemoveMask mask) {
   return !isOffTheRecord &&
          IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_SITE_DATA);
+}
+
+void CloseTabsHelper(base::WeakPtr<Browser> browser,
+                     base::Time delete_begin,
+                     base::Time delete_end,
+                     const tabs_closure_util::WebStateIDToTime& tabs_info) {
+  if (!browser) {
+    return;
+  }
+  tabs_closure_util::CloseTabs(browser->GetWebStateList(), delete_begin,
+                               delete_end, tabs_info);
 }
 
 }  // namespace
@@ -304,11 +317,6 @@ void BrowsingDataRemoverImpl::RemoveInRange(base::Time start_time,
   DCHECK(!IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) ||
          (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) &&
           !browser_state_->IsOffTheRecord()));
-
-  // Closing tabs can only be performed if the tabs cache has been set.
-  CHECK(!IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) ||
-        (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) &&
-         cached_tabs_info_initialized_));
 
   // browsing_data::RecordDeletionForPeriod(time_period);
   removal_queue_.emplace(start_time, end_time, mask, std::move(callback));
@@ -518,28 +526,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       tab_service->ClearEntries();
     }
 
-    // The saved Autofill profiles and credit cards can include the origin from
-    // which these profiles and credit cards were learned.  These are a form of
-    // history, so clear them as well.
-    scoped_refptr<autofill::AutofillWebDataService> web_data_service =
-        ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-            browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
-    if (web_data_service.get()) {
-      web_data_service->RemoveOriginURLsModifiedBetween(delete_begin,
-                                                        delete_end);
-      // Ask for a call back when the above call is finished.
-      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
-          FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
-
-      autofill::PersonalDataManager* data_manager =
-          autofill::PersonalDataManagerFactory::GetForBrowserState(
-              browser_state_);
-
-      if (data_manager) {
-        data_manager->Refresh();
-      }
-    }
-
     // Remove language histogram history.
     language::UrlLanguageHistogram* language_histogram =
         UrlLanguageHistogramFactory::GetForBrowserState(browser_state_);
@@ -586,8 +572,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     if (web_data_service.get()) {
       web_data_service->RemoveFormElementsAddedBetween(delete_begin,
                                                        delete_end);
-      web_data_service->RemoveAutofillDataModifiedBetween(delete_begin,
-                                                          delete_end);
 
       // Clear out the Autofill StrikeDatabase in its entirety.
       autofill::StrikeDatabase* strike_database =
@@ -596,17 +580,17 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
         strike_database->ClearAllStrikes();
       }
 
-      // Ask for a call back when the above calls are finished.
-      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
-          FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
-
       autofill::PersonalDataManager* data_manager =
           autofill::PersonalDataManagerFactory::GetForBrowserState(
               browser_state_);
+      data_manager->address_data_manager().RemoveLocalProfilesModifiedBetween(
+          delete_begin, delete_end);
+      data_manager->payments_data_manager().RemoveLocalDataModifiedBetween(
+          delete_begin, delete_end);
 
-      if (data_manager) {
-        data_manager->Refresh();
-      }
+      // Ask for a call back when the above calls are finished.
+      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
+          FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
     }
   }
 
@@ -687,15 +671,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
   // Close tabs.
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS)) {
-    BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state_);
-    for (Browser* browser : browser_list->BrowsersOfType(
-             BrowserList::BrowserType::kRegularAndInactive)) {
-      current_task_runner->PostTask(
-          FROM_HERE, base::BindOnce(&tabs_closure_util::CloseTabs,
-                                    browser->GetWebStateList(), delete_begin,
-                                    delete_end, cached_tabs_info_));
-    }
+    MaybeFetchTabsInfoThenCloseTabs(delete_begin, delete_end);
   }
 
   // Always wipe accumulated network related data (TransportSecurityState and
@@ -766,6 +742,52 @@ void BrowsingDataRemoverImpl::OnKeywordsLoaded(base::Time delete_begin,
   std::move(callback).Run();
 }
 
+void BrowsingDataRemoverImpl::MaybeFetchTabsInfoThenCloseTabs(
+    base::Time delete_begin,
+    base::Time delete_end) {
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state_);
+  scoped_refptr<base::SequencedTaskRunner> current_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  SessionRestorationService* service =
+      SessionRestorationServiceFactory::GetForBrowserState(browser_state_);
+  for (Browser* browser : browser_list->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
+    if (cached_tabs_info_initialized_) {
+      current_task_runner->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&CloseTabsHelper, browser->AsWeakPtr(), delete_begin,
+                         delete_end, cached_tabs_info_),
+          CreatePendingTaskCompletionClosure());
+    } else {
+      service->LoadDataFromStorage(
+          browser,
+          base::BindRepeating(
+              &tabs_closure_util::GetLastCommittedTimestampFromStorage),
+          base::BindOnce(&BrowsingDataRemoverImpl::OnTabsInformationLoaded,
+                         GetWeakPtr(), browser->AsWeakPtr(), delete_begin,
+                         delete_end, CreatePendingTaskCompletionClosure()));
+    }
+  }
+}
+
+void BrowsingDataRemoverImpl::OnTabsInformationLoaded(
+    base::WeakPtr<Browser> weak_browser,
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::OnceClosure callback,
+    tabs_closure_util::WebStateIDToTime result) {
+  Browser* browser = weak_browser.get();
+  if (browser) {
+    tabs_closure_util::WebStateIDToTime tabs_info =
+        tabs_closure_util::GetTabsInfoForCache(result, delete_begin,
+                                               delete_end);
+    tabs_closure_util::CloseTabs(browser->GetWebStateList(), delete_begin,
+                                 delete_end, tabs_info);
+  }
+  std::move(callback).Run();
+}
+
 void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!removal_queue_.empty());
@@ -779,7 +801,7 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
     account_consistency_service->OnBrowsingDataRemoved();
   }
   if (OptimizationGuideService* optimization_guide_service =
-          OptimizationGuideServiceFactory::GetForBrowserState(browser_state_)) {
+          OptimizationGuideServiceFactory::GetForProfile(browser_state_)) {
     optimization_guide_service->OnBrowsingDataRemoved();
   }
 

@@ -17,13 +17,15 @@ void SendLogMessage(const std::string& message) {
 }  // namespace
 
 MediaStreamPowerLogger::MediaStreamPowerLogger() {
-  base::PowerMonitor::AddPowerSuspendObserver(this);
-  base::PowerMonitor::AddPowerThermalObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->AddPowerSuspendObserver(this);
+  power_monitor->AddPowerThermalObserver(this);
 }
 
 MediaStreamPowerLogger::~MediaStreamPowerLogger() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
-  base::PowerMonitor::RemovePowerThermalObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->RemovePowerSuspendObserver(this);
+  power_monitor->RemovePowerThermalObserver(this);
 }
 
 void MediaStreamPowerLogger::OnSuspend() {

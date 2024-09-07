@@ -206,6 +206,7 @@ interface Source {
   debugCookieSet: boolean;
   remainingAggregatableDebugBudget: number;
   aggregatableDebugKeyPiece: string;
+  attributionScopesData: string;
 }
 
 function newSource(mojo: WebUISource): Source {
@@ -236,6 +237,7 @@ function newSource(mojo: WebUISource): Source {
     debugCookieSet: mojo.debugCookieSet,
     remainingAggregatableDebugBudget: mojo.remainingAggregatableDebugBudget,
     aggregatableDebugKeyPiece: mojo.aggregatableDebugKeyPiece,
+    attributionScopesData: mojo.attributionScopesDataJson,
   };
 }
 
@@ -264,6 +266,7 @@ function initSourceTable(panel: HTMLElement):
         valueColumn('Filter Data', 'filterData', asCode),
         valueColumn('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
         'Event-Level Fields',
+        valueColumn('Attribution Scopes Data', 'attributionScopesData', asCode),
         valueColumn(
             'Epsilon', 'eventLevelEpsilon',
             asCustomNumber((v: number) => v.toFixed(3))),
@@ -758,6 +761,10 @@ const sourceRegistrationStatusText:
           'Rejected: trigger state cardinality exceeds limit',
       [StoreSourceResult.kDestinationPerDayReportingLimitReached]:
           'Rejected: destination per day reporting limit reached',
+      [StoreSourceResult.kExceedsMaxScopesChannelCapacity]:
+          'Rejected: scopes channel capacity exceeds max allowed',
+      [StoreSourceResult.kExceedsMaxEventStatesLimit]:
+          'Rejected: event states exceeds limit',
     };
 
 const commonResult = {

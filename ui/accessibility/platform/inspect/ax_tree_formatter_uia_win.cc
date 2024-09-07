@@ -472,12 +472,12 @@ void AXTreeFormatterUia::AddDefaultFilters(
   AddPropertyFilter(
       property_filters,
       GetPropertyName(
-          ui::UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId()) +
+          UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId()) +
           "=*");
 }
 
 base::Value::Dict AXTreeFormatterUia::BuildTree(
-    ui::AXPlatformNodeDelegate* start) const {
+    AXPlatformNodeDelegate* start) const {
   Microsoft::WRL::ComPtr<IUIAutomationElement> start_element;
   GetUIAElementFromDelegate(start, uia_.Get(), &start_element);
 
@@ -537,7 +537,7 @@ base::Value::Dict AXTreeFormatterUia::BuildTreeForSelector(
 }
 
 base::Value::Dict AXTreeFormatterUia::BuildNode(
-    ui::AXPlatformNodeDelegate* node) const {
+    AXPlatformNodeDelegate* node) const {
   Microsoft::WRL::ComPtr<IUIAutomationElement> uia_element;
   GetUIAElementFromDelegate(node, uia_.Get(), &uia_element);
   // Note that we have to go through external UIA APIs to get a reference to
@@ -1174,7 +1174,7 @@ void AXTreeFormatterUia::BuildCacheRequests() {
 
 void AXTreeFormatterUia::BuildCustomPropertiesMap() {
   GetCustomPropertiesMap().insert(
-      {ui::UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId(),
+      {UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId(),
        "VirtualContent"});
 }
 

@@ -289,7 +289,7 @@ bool ShouldShowNotificationForVolume(
   // manager is opened only for the active user.
   if (ash::LoginDisplayHost::default_host() ||
       ash::ScreenLocker::default_screen_locker() ||
-      chrome::IsRunningInForcedAppMode() ||
+      IsRunningInForcedAppMode() ||
       profile != ProfileManager::GetActiveUserProfile()) {
     return false;
   }
@@ -737,7 +737,6 @@ void EventRouter::ObserveEvents() {
     pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, cb);
     pref_change_registrar_->Add(prefs::kOfficeFileMovedToOneDrive, cb);
     pref_change_registrar_->Add(prefs::kOfficeFileMovedToGoogleDrive, cb);
-    pref_change_registrar_->Add(prefs::kLocalUserFilesAllowed, cb);
   }
 
   {

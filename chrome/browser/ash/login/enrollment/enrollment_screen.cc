@@ -8,6 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -43,6 +45,7 @@
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -82,6 +85,7 @@ constexpr int64_t kMaxDelayMS = 8 * 60 * 1000;  // 8 minutes
 
 constexpr char kUserActionCancelTPMCheck[] = "cancel-tpm-check";
 constexpr char kUserActionSkipDialogConfirmation[] = "skip-confirmation";
+constexpr char kUserActionUsingSamlApi[] = "using-saml-api";
 
 // Max number of retries to check install attributes state.
 constexpr int kMaxInstallAttributesStateCheckRetries = 60;
@@ -248,7 +252,8 @@ void EnrollmentScreen::CreateEnrollmentLauncher() {
   }
 }
 
-void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
+void EnrollmentScreen::ClearAuth(base::OnceClosure callback,
+                                 bool revoke_oauth2_tokens) {
   if (switches::IsTpmDynamic()) {
     wait_state_timer_.Stop();
     install_state_retries_ = 0;
@@ -257,9 +262,11 @@ void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
     std::move(callback).Run();
     return;
   }
+
   enrollment_launcher_->ClearAuth(
       base::BindOnce(&EnrollmentScreen::OnAuthCleared,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      revoke_oauth2_tokens);
 }
 
 void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
@@ -513,6 +520,9 @@ void EnrollmentScreen::OnLoginDone(
   UMA(enrollment_failed_once_ ? policy::kMetricEnrollmentRestarted
                               : policy::kMetricEnrollmentStarted);
 
+  signin_artifacts_ = std::make_unique<login::OnlineSigninArtifacts>(
+      std::move(signin_artifacts));
+
   if (view_) {
     view_->ShowEnrollmentWorkingScreen();
   }
@@ -604,10 +614,19 @@ void EnrollmentScreen::OnConfirmationClosed() {
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Confirmation closed.";
+
+  bool revoke_oauth2_tokens = true;
+
+  if (MaybeStoreUserContextInWizardContext()) {
+    // Prevents the oauth2 tokens from being revoked.
+    revoke_oauth2_tokens = false;
+  }
+
   // The callback passed to ClearAuth is either called immediately or gets
   // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
-  ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED));
+  ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED),
+            revoke_oauth2_tokens);
 }
 
 void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
@@ -851,6 +870,10 @@ void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
     OnCancel();
     return;
   }
+  if (action_id == kUserActionUsingSamlApi) {
+    using_saml_api_ = true;
+    return;
+  }
   BaseScreen::OnUserAction(args);
 }
 
@@ -973,6 +996,40 @@ void EnrollmentScreen::HideOfflineMessage(NetworkStateInformer::State state,
     error_screen_->Hide();
   }
   histogram_helper_.OnErrorHide();
+}
+
+bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
+  if (!features::IsOobeAddUserDuringEnrollmentEnabled() ||
+      effective_config_.mode != policy::EnrollmentConfig::MODE_MANUAL) {
+    return false;
+  }
+
+  CHECK(signin_artifacts_);
+  CHECK(enrollment_launcher_);
+  CHECK(enrollment_succeeded_);
+
+  const AccountId account_id = AccountId::FromNonCanonicalEmail(
+      signin_artifacts_->email, signin_artifacts_->gaia_id,
+      AccountType::GOOGLE);
+  std::unique_ptr<UserContext> user_context =
+      login::BuildUserContextForGaiaSignIn(
+          /*user_type=*/user_manager::UserType::kRegular,
+          /*account_id=*/account_id,
+          /*using_saml=*/signin_artifacts_->using_saml,
+          /*using_saml_api=*/using_saml_api_,
+          /*password=*/signin_artifacts_->password.value_or(""),
+          /*password_attributes=*/SamlPasswordAttributes(),
+          /*sync_trusted_vault_keys=*/std::nullopt,
+          /*challenge_response_key=*/std::nullopt);
+  user_context->SetRefreshToken(enrollment_launcher_->GetOAuth2RefreshToken());
+
+  signin_artifacts_.reset();
+
+  CHECK(LoginDisplayHost::default_host());
+  CHECK_DEREF(LoginDisplayHost::default_host()->GetWizardContext())
+      .user_context = std::move(user_context);
+
+  return true;
 }
 
 }  // namespace ash

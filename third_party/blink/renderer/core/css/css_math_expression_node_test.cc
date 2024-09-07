@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 
 #include <algorithm>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -334,13 +336,11 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
       ss << ")";
     }
 
-    CSSTokenizer tokenizer(String(ss.str().c_str()));
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(String(ss.str().c_str()));
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
 
     if (test_case.expected) {
@@ -365,13 +365,11 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctions) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(String(test_case.input.c_str()));
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(String(test_case.input.c_str()));
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
     CSSToLengthConversionData resolver{};
@@ -419,13 +417,11 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctionsSerialization) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case.input);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(test_case.input);
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->CustomCSSText(), test_case.input);
   }
@@ -441,13 +437,11 @@ TEST(CSSMathExpressionNode, TestExponentialFunctions) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(String(test_case.input.c_str()));
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(String(test_case.input.c_str()));
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
     CSSToLengthConversionData resolver;
@@ -469,13 +463,11 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsSerialization) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case.input);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(test_case.input);
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->CustomCSSText(), test_case.input);
     EXPECT_EQ(!res->HasPercentage(),
@@ -524,6 +516,26 @@ TEST(CSSMathExpressionNode, IdentifierLiteralConversion) {
             AtomicString("test"));
 }
 
+TEST(CSSMathExpressionNode, ColorChannelKeywordConversion) {
+  const CSSMathExpressionKeywordLiteral* css_node =
+      CSSMathExpressionKeywordLiteral::Create(
+          CSSValueID::kAlpha,
+          CSSMathExpressionKeywordLiteral::Context::kColorChannel);
+  EXPECT_TRUE(css_node->IsKeywordLiteral());
+  EXPECT_EQ(css_node->Category(), kCalcNumber);
+  EXPECT_EQ(css_node->GetValue(), CSSValueID::kAlpha);
+  scoped_refptr<const CalculationExpressionNode> calc_node =
+      css_node->ToCalculationExpression(CSSToLengthConversionData());
+  EXPECT_TRUE(calc_node->IsColorChannelKeyword());
+  EXPECT_EQ(
+      To<CalculationExpressionColorChannelKeywordNode>(*calc_node).Value(),
+      ColorChannelKeyword::kAlpha);
+  auto* node = CSSMathExpressionNode::Create(*calc_node);
+  EXPECT_TRUE(node->IsKeywordLiteral());
+  EXPECT_EQ(To<CSSMathExpressionKeywordLiteral>(node)->GetValue(),
+            CSSValueID::kAlpha);
+}
+
 TEST(CSSMathExpressionNode, TestProgressNotation) {
   const struct TestCase {
     const std::string input;
@@ -535,13 +547,11 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(String(test_case.input.c_str()));
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(String(test_case.input.c_str()));
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
     CSSToLengthConversionData resolver;
@@ -560,13 +570,11 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(String(test_case.input.c_str()));
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(String(test_case.input.c_str()));
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_TRUE(res);
     EXPECT_TRUE(res->IsOperation());
@@ -586,13 +594,11 @@ TEST(CSSMathExpressionNode, TestInvalidProgressNotation) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(String(test_case.c_str()));
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(String(test_case.c_str()));
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+        CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_FALSE(res);
   }
@@ -611,14 +617,12 @@ TEST(CSSMathExpressionNode, TestFunctionsWithNumberReturn) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case.input);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(test_case.input);
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* css_node =
         CSSMathExpressionNode::ParseMathFunction(
-            CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+            CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
             kCSSAnchorQueryTypesNone);
     EXPECT_EQ(css_node->CustomCSSText(), test_case.input);
     EXPECT_EQ(css_node->Category(), test_case.category);
@@ -649,14 +653,12 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithSubstitution) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case.input);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(test_case.input);
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* css_node =
         CSSMathExpressionNode::ParseMathFunction(
-            CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+            CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
             kCSSAnchorQueryTypesNone, color_channel_map);
     EXPECT_EQ(css_node->Category(), test_case.category);
     EXPECT_TRUE(css_node->IsNumericLiteral());
@@ -680,14 +682,12 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithInvalidChannelName) {
   };
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(test_case);
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* css_node =
         CSSMathExpressionNode::ParseMathFunction(
-            CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+            CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
             kCSSAnchorQueryTypesNone, color_channel_map);
     EXPECT_EQ(css_node, nullptr);
   }
@@ -703,14 +703,12 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
       {CSSValueID::kAlpha, std::nullopt},
   };
 
-  CSSTokenizer tokenizer(input);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  const CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(input);
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   const CSSMathExpressionNode* css_node =
       CSSMathExpressionNode::ParseMathFunction(
-          CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+          CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
           kCSSAnchorQueryTypesNone, color_channel_map);
   EXPECT_EQ(css_node->Category(), CalculationResultCategory::kCalcNumber);
   EXPECT_TRUE(css_node->IsOperation());
@@ -723,6 +721,24 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
   EXPECT_EQ(keyword->GetValue(), CSSValueID::kH);
   EXPECT_EQ(keyword->GetContext(),
             CSSMathExpressionKeywordLiteral::Context::kColorChannel);
+
+  CSSToLengthConversionData resolver{};
+  scoped_refptr<const CalculationExpressionNode> node =
+      css_node->ToCalculationExpression(resolver);
+  EXPECT_TRUE(node->IsOperation());
+  const CalculationExpressionOperationNode* operation_node =
+      To<CalculationExpressionOperationNode>(node.get());
+  EXPECT_EQ(operation_node->GetOperator(), CalculationOperator::kMultiply);
+  const CalculationExpressionOperationNode::Children& operands =
+      operation_node->GetChildren();
+  EXPECT_EQ(operands.size(), 2u);
+  EXPECT_TRUE(operands[0]->IsColorChannelKeyword());
+  EXPECT_EQ(To<CalculationExpressionColorChannelKeywordNode>(operands[0].get())
+                ->Value(),
+            ColorChannelKeyword::kH);
+  EXPECT_TRUE(operands[1]->IsNumber());
+  EXPECT_EQ(To<CalculationExpressionNumberNode>(operands[1].get())->Value(),
+            0.5);
 }
 
 }  // anonymous namespace

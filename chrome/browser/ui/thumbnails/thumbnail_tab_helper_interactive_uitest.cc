@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
       CheckTabCountInBrowserIndex(1, 4), CheckActiveTabInBrowserIndex(1, 3),
       ObserveState(kBrowserRemovedState, [this]() { return GetBrowser(1); }),
       // Can't close browser when WebContents is notifying observers.
-      FlushEvents(), Do([this]() {
+      Do([this]() {
         // Override manual value set in MemorySaverInteractiveTestMixin to
         // prepare for tab strip being destroyed along with the browser.
         resource_coordinator::GetTabLifecycleUnitSource()

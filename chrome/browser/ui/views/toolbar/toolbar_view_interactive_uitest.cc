@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonMenu) {
           "description."));
 #else
       // Don't try to send an event to the menu before it's fully shown.
-      FlushEvents(),
+
       // Dismiss the context menu by clicking on it.
       Log("Moving mouse to menu."),
       MoveMouseTo(kToolbarBackButtonMenuElementId),

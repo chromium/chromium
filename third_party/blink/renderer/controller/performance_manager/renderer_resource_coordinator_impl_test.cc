@@ -158,10 +158,11 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
       *mock_process_coordination_unit_,
       OnV8ContextCreated(
           MatchV8ContextDescription(main_frame->GetLocalFrameToken()), _));
+  // This load must include some non-empty script to force context creation.
   frame_test_helpers::LoadHTMLString(
       main_frame,
       "<!DOCTYPE html>"
-      "<iframe id='iframe-id'></iframe>",
+      "<iframe id='iframe-id'></iframe><script>0;</script>",
       url_test_helpers::ToKURL("https://example.com/subframe.html"));
   mock_process_coordination_unit_->VerifyExpectations();
 

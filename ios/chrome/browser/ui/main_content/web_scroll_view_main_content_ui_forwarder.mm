@@ -55,7 +55,7 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 
 - (instancetype)initWithUpdater:(MainContentUIStateUpdater*)updater
                    webStateList:(WebStateList*)webStateList {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _updater = updater;
     DCHECK(_updater);
     _webStateList = webStateList;

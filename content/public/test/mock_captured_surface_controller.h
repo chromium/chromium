@@ -44,6 +44,13 @@ class MockCapturedSurfaceController final : public CapturedSurfaceController {
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           reply_callback) override;
 
+  void SetRequestPermissionResponse(
+      blink::mojom::CapturedSurfaceControlResult request_permission_result);
+
+  void RequestPermission(
+      base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+          reply_callback) override;
+
  private:
   std::optional<blink::mojom::CapturedSurfaceControlResult> send_wheel_result_;
   std::optional<
@@ -51,6 +58,8 @@ class MockCapturedSurfaceController final : public CapturedSurfaceController {
       get_zoom_level_result_;
   std::optional<blink::mojom::CapturedSurfaceControlResult>
       set_zoom_level_result_;
+  std::optional<blink::mojom::CapturedSurfaceControlResult>
+      request_permission_result_;
 };
 
 }  // namespace content

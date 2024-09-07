@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Tento web nemůže žádat o oprávnění</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Zobrazit nápovědu<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">Chcete-li povolit párování, <ph name="BEGIN_LINK" />zapněte Bluetooth<ph name="END_LINK" />.</translation>
+<translation id="3878792656892132392">Aplikace <ph name="APP_NAME" /> potřebuje oprávnění ke sledování vašich rukou.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Nápověda<ph name="END_LINK" /> k vyhledávání zařízení…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> pro tento web potřebuje oprávnění k přístupu k mikrofonu.</translation>
 <translation id="5230560987958996918">Web <ph name="SITE" /> chce vyhledat zařízení Bluetooth v okolí. Byla nalezena následující zařízení:</translation>

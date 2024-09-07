@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file implements a dialog allowing the user to pick between installed
 // X session types. It finds sessions by looking for .desktop files in
 // /etc/X11/sessions and in the xsessions folder (if any) in each XDG system

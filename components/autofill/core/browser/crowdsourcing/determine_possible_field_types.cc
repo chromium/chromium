@@ -146,10 +146,11 @@ void FindAndSetPossibleFieldTypesForField(
   base::TrimWhitespace(value, base::TRIM_ALL, &value);
 
   for (const AutofillProfile& profile : profiles) {
-    profile.GetMatchingTypes(value, app_locale, &matching_types);
+    profile.GetMatchingTypesWithProfileSources(value, app_locale,
+                                               &matching_types);
   }
   for (const CreditCard& card : credit_cards) {
-    card.GetMatchingTypes(value, app_locale, &matching_types);
+    card.GetMatchingTypesWithProfileSources(value, app_locale, &matching_types);
   }
   // If the input's content matches a valid email format, include email
   // address as one of the possible matching types.

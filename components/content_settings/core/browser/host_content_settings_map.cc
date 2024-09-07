@@ -320,8 +320,6 @@ void HostContentSettingsMap::RegisterProfilePrefs(
   // Ensure the content settings are all registered.
   content_settings::ContentSettingsRegistry::GetInstance();
 
-  registry->RegisterIntegerPref(prefs::kContentSettingsWindowLastTabIndex, 0);
-
   // Register the prefs for the content settings providers.
   content_settings::DefaultProvider::RegisterProfilePrefs(registry);
   content_settings::PrefProvider::RegisterProfilePrefs(registry);
@@ -418,7 +416,7 @@ ContentSetting HostContentSettingsMap::GetContentSetting(
     const GURL& secondary_url,
     ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
-  DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
+  CHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
   const base::Value value =
       GetWebsiteSetting(primary_url, secondary_url, content_type, info);
@@ -429,7 +427,7 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type) const {
-  DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
+  CHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
   const base::Value value =
       GetWebsiteSettingInternal(primary_url, secondary_url, content_type,
@@ -541,7 +539,7 @@ bool HostContentSettingsMap::IsRestrictedToSecureOrigins(
     ContentSettingsType type) const {
   const ContentSettingsInfo* content_settings_info =
       content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
-  DCHECK(content_settings_info);
+  CHECK(content_settings_info);
 
   return content_settings_info->origin_restriction() ==
          ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY;
@@ -608,7 +606,7 @@ HostContentSettingsMap::GetPatternsForContentSettingsType(
     ContentSettingsType type) {
   const WebsiteSettingsInfo* website_settings_info =
       content_settings::WebsiteSettingsRegistry::GetInstance()->Get(type);
-  DCHECK(website_settings_info);
+  CHECK(website_settings_info);
   content_settings::PatternPair patterns = GetPatternsFromScopingType(
       website_settings_info->scoping_type(), primary_url, secondary_url);
   return patterns;
@@ -620,7 +618,7 @@ void HostContentSettingsMap::SetContentSettingCustomScope(
     ContentSettingsType content_type,
     ContentSetting setting,
     const content_settings::ContentSettingConstraints& constraints) {
-  DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
+  CHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
 
   base::Value value;
@@ -657,7 +655,7 @@ base::WeakPtr<HostContentSettingsMap> HostContentSettingsMap::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void HostContentSettingsMap::SetClockForTesting(base::Clock* clock) {
+void HostContentSettingsMap::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
   for (content_settings::UserModifiableProvider* provider :
        user_modifiable_providers_) {
@@ -702,7 +700,7 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     // For some ContentSettingTypes, collect exception histograms broken out by
     // ContentSetting.
     if (ShouldCollectFineGrainedExceptionHistograms(content_type)) {
-      DCHECK(content_info);
+      CHECK(content_info);
       for (int setting = 0; setting < CONTENT_SETTING_NUM_SETTINGS; ++setting) {
         ContentSetting content_setting = IntToContentSetting(setting);
         if (!content_info->IsSettingValid(content_setting))
@@ -996,6 +994,9 @@ base::Value HostContentSettingsMap::GetWebsiteSetting(
     const GURL& secondary_url,
     ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
+  CHECK(content_settings::WebsiteSettingsRegistry::GetInstance()->Get(
+      content_type));
+
   // Check if the requested setting is allowlisted.
   // TODO(raymes): Move this into GetContentSetting. This has nothing to do with
   // website settings

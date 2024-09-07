@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.bottom_sheet;
 
-import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.DISMISS_HANDLER;
-import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.VISIBLE;
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_ACTION;
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_TITLE;
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TEXT;
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
 
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -25,14 +26,14 @@ class SimpleNoticeSheetViewBinder {
      */
     static void bindSimpleNoticeSheetView(
             PropertyModel model, SimpleNoticeSheetView view, PropertyKey propertyKey) {
-        if (propertyKey == DISMISS_HANDLER) {
-            view.setDismissHandler(model.get(DISMISS_HANDLER));
-        } else if (propertyKey == VISIBLE) {
-            boolean visibilityChangeSuccessful = view.setVisible(model.get(VISIBLE));
-            if (!visibilityChangeSuccessful && model.get(VISIBLE)) {
-                assert model.get(DISMISS_HANDLER) != null;
-                model.get(DISMISS_HANDLER).onResult(BottomSheetController.StateChangeReason.NONE);
-            }
+        if (propertyKey == SHEET_TITLE) {
+            view.setTitle(model.get(SHEET_TITLE));
+        } else if (propertyKey == SHEET_TEXT) {
+            view.setText(model.get(SHEET_TEXT));
+        } else if (propertyKey == BUTTON_TITLE) {
+            view.setButtonText(model.get(BUTTON_TITLE));
+        } else if (propertyKey == BUTTON_ACTION) {
+            view.setButtonAction(model.get(BUTTON_ACTION));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

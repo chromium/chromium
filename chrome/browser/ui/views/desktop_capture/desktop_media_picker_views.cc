@@ -49,6 +49,7 @@
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -404,9 +405,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 #endif
 
   SetModalType(params.modality);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
-  SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
+  SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](DesktopMediaPickerDialogView* dialog) {
         // If the dialog is being closed then notify the parent about it.
@@ -987,8 +988,8 @@ std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {
 }
 
 bool DesktopMediaPickerDialogView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  return button != ui::DIALOG_BUTTON_OK ||
+    ui::mojom::DialogButton button) const {
+  return button != ui::mojom::DialogButton::kOk ||
          GetSelectedController()->GetSelection().has_value() ||
          accepted_source_.has_value();
 }
@@ -998,7 +999,7 @@ views::View* DesktopMediaPickerDialogView::GetInitiallyFocusedView() {
 }
 
 bool DesktopMediaPickerDialogView::Accept() {
-  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   // Ok button should only be enabled when a source is selected.
   std::optional<DesktopMediaID> source_optional =

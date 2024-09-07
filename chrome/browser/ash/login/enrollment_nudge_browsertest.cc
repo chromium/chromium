@@ -67,7 +67,7 @@ class EnrollmentNudgeTest : public OobeBaseTest {
 
   void WaitForEnrollmentNudgeDialogToOpen() {
     test::OobeJS()
-        .CreateWaiter(test::GetOobeElementPath({kEnrollmentNudgeDialog}) +
+        .CreateWaiter(test::GetOobeElementPath(kEnrollmentNudgeDialog) +
                       ".open")
         ->Wait();
   }

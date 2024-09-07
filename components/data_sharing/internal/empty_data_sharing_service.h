@@ -60,6 +60,12 @@ class EmptyDataSharingService : public DataSharingService {
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
       override;
+  void GetSharedEntitiesPreview(
+      const GroupToken& group_token,
+      base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
+          callback) override;
+  DataSharingUIDelegate* GetUIDelegate() override;
+  DataSharingService::ServiceStatus GetServiceStatus() override;
 };
 
 }  // namespace data_sharing

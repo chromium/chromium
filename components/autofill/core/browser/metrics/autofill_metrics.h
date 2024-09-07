@@ -502,7 +502,10 @@ class AutofillMetrics {
     PAYMENTS_RESULT_VCN_RETRIEVAL_TRY_AGAIN_FAILURE = 4,
     // Request failed in virtual card information retrieval; don't try again.
     PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE = 5,
-    kMaxValue = PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE,
+    // Request took longer time to finish than the set client-side timeout. The
+    // request may still complete on the server side.
+    PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT = 6,
+    kMaxValue = PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT,
   };
 
   // For measuring the network request time of various Wallet API calls. See

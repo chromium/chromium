@@ -17,8 +17,9 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.base.task.SingleThreadTaskRunner;
+import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
@@ -59,7 +60,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
 
     private final Context mContext;
     private final CableAuthenticatorUI mUi;
-    private final SingleThreadTaskRunner mTaskRunner;
+    private final TaskRunner mTaskRunner;
     // mFCMEvent contains the serialized event data that was stored in the notification's
     // PendingIntent.
     private final byte[] mFCMEvent;
@@ -111,8 +112,8 @@ class CableAuthenticator implements AuthenticationContextProvider {
 
         // networkContext can only be used from the UI thread, therefore all
         // short-lived work is done on that thread.
-        mTaskRunner = PostTask.createSingleThreadTaskRunner(TaskTraits.UI_USER_VISIBLE);
-        assert mTaskRunner.belongsToCurrentThread();
+        mTaskRunner = PostTask.createTaskRunner(TaskTraits.UI_USER_VISIBLE);
+        ThreadUtils.assertOnUiThread();
 
         WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
         CableAuthenticatorJni.get().setup(registration, networkContext, secret);
@@ -247,7 +248,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
      */
     @CalledByNative
     public void onComplete(boolean ok, int errorCode) {
-        assert mTaskRunner.belongsToCurrentThread();
+        ThreadUtils.assertOnUiThread();
         mUi.onComplete(ok, errorCode);
     }
 
@@ -389,7 +390,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
 
     /** Called to indicate that either USB or Bluetooth transports are ready for processing. */
     void onTransportReady() {
-        assert mTaskRunner.belongsToCurrentThread();
+        ThreadUtils.assertOnUiThread();
 
         if (mServerLinkData != null) {
             mHandle = CableAuthenticatorJni.get().startServerLink(this, mServerLinkData);
@@ -405,7 +406,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
     }
 
     void close() {
-        assert mTaskRunner.belongsToCurrentThread();
+        ThreadUtils.assertOnUiThread();
         CableAuthenticatorJni.get().stop(mHandle);
     }
 

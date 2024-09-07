@@ -48,10 +48,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::HasSubstr;
-
 namespace autofill::payments {
 namespace {
+
+using ::testing::HasSubstr;
 
 using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
 
@@ -126,8 +126,6 @@ struct CardUnmaskOptions {
   // If true, use only legacy instrument id.
   bool use_only_legacy_id = false;
 };
-
-}  // namespace
 
 class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
                                      public testing::Test {
@@ -936,6 +934,42 @@ TEST_F(PaymentsNetworkInterfaceTest, GetDetailsSuccess) {
   EXPECT_NE(nullptr, legal_message_.get());
 }
 
+TEST_F(PaymentsNetworkInterfaceTest, GetDetailsSuccessRequestLatencyMetric) {
+  base::HistogramTester histogram_tester;
+
+  StartGettingUploadDetails();
+  IssueOAuthToken();
+  ReturnResponse(
+      payments_network_interface_.get(), net::HTTP_OK,
+      "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails."
+      "Success",
+      1);
+}
+
+TEST_F(PaymentsNetworkInterfaceTest, GetDetailsFailureRequestLatencyMetric) {
+  base::HistogramTester histogram_tester;
+
+  StartGettingUploadDetails();
+  IssueOAuthToken();
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                 "{ \"error\": { \"code\": \"INTERNAL\" }, \"context_token\": "
+                 "\"some_token\", \"legal_message\": {} }");
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails."
+      "Failure",
+      1);
+}
+
 TEST_F(PaymentsNetworkInterfaceTest, GetUploadDetailsVariationsTest) {
   // Register a trial and variation id, so that there is data in variations
   // headers.
@@ -1184,7 +1218,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadFailureDueToClientSideTimeout) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
 
-  EXPECT_EQ(PaymentsRpcResult::kTryAgainFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kClientSideTimeout, result_);
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentsNetworkInterface.UploadCardRequest.ClientSideTimedOut",
       /*sample=*/true, /*expected_bucket_count=*/1);
@@ -1376,7 +1410,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskFailureDueToClientSideTimeout) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
 
-  EXPECT_EQ(PaymentsRpcResult::kTryAgainFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kClientSideTimeout, result_);
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentsNetworkInterface.UnmaskCardRequest.ClientSideTimedOut",
       /*sample=*/true, /*expected_bucket_count=*/1);
@@ -1595,6 +1629,10 @@ class UpdateVirtualCardEnrollmentTest
         ReturnResponse(payments_network_interface_.get(),
                        net::HTTP_REQUEST_TIMEOUT, "");
         break;
+      case PaymentsRpcResult::kClientSideTimeout:
+        ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT,
+                       "");
+        break;
       case PaymentsRpcResult::kNone:
         NOTREACHED_IN_MIGRATION();
         break;
@@ -1642,7 +1680,8 @@ INSTANTIATE_TEST_SUITE_P(
                         PaymentsRpcResult::kTryAgainFailure,
                         PaymentsRpcResult::kVcnRetrievalPermanentFailure,
                         PaymentsRpcResult::kPermanentFailure,
-                        PaymentsRpcResult::kNetworkError)));
+                        PaymentsRpcResult::kNetworkError,
+                        PaymentsRpcResult::kClientSideTimeout)));
 
 // Parameterized test that tests all combinations of
 // VirtualCardEnrollmentSource and VirtualCardEnrollmentRequestType against all
@@ -1676,7 +1715,8 @@ INSTANTIATE_TEST_SUITE_P(
                         PaymentsRpcResult::kTryAgainFailure,
                         PaymentsRpcResult::kVcnRetrievalPermanentFailure,
                         PaymentsRpcResult::kPermanentFailure,
-                        PaymentsRpcResult::kNetworkError)));
+                        PaymentsRpcResult::kNetworkError,
+                        PaymentsRpcResult::kClientSideTimeout)));
 
 // Parameterized test that tests all combinations of
 // VirtualCardEnrollmentSource and server PaymentsRpcResult. This test
@@ -1733,6 +1773,9 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
       ReturnResponse(payments_network_interface_.get(),
                      net::HTTP_REQUEST_TIMEOUT, "");
       break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
     case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
       break;
@@ -1740,4 +1783,5 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
   EXPECT_EQ(result, result_);
 }
 
+}  // namespace
 }  // namespace autofill::payments

@@ -18,6 +18,10 @@ namespace media {
 
 namespace {
 
+BASE_FEATURE(kVaapiVideoDecodeLinuxZeroCopyGL,
+             "VaapiVideoDecodeLinuxZeroCopyGL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 VideoDecoderType GetPreferredLinuxDecoderImplementation() {
   // VaapiVideoDecoder flag is required for VaapiVideoDecoder.
   if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux)) {
@@ -45,20 +49,28 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
 std::vector<Fourcc> GetPreferredRenderableFourccs(
     const gpu::GpuPreferences& gpu_preferences) {
   std::vector<Fourcc> renderable_fourccs;
-  // TODO(crbug.com/349428388): For HEVC Main 10 and VP9 Profile2 10-bit video,
-  // the current implementation requires additional VPP to convert the P010
-  // format to a renderable format. This VPP happens on the Vulkan path
-  // (P010 -> NV12) and OpenGL path (P010 -> AR24). While this VPP introduces a
-  // loss of color depth, it should be optimized for zero-copy path in the
-  // future.
 #if BUILDFLAG(ENABLE_VULKAN)
-  // Support for zero-copy NV12 textures preferentially.
+  // Support for zero-copy NV12/P010 textures preferentially.
   if (gpu_preferences.gr_context_type == gpu::GrContextType::kVulkan) {
     renderable_fourccs.emplace_back(Fourcc::NV12);
-  }
+    renderable_fourccs.emplace_back(Fourcc::P010);
+  } else
 #endif  // BUILDFLAG(ENABLE_VULKAN)
+    // Allow zero-copy formats with GL for testing or in controlled
+    // environments.
+    if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL &&
+        base::FeatureList::IsEnabled(kVaapiVideoDecodeLinuxZeroCopyGL)) {
+      renderable_fourccs.emplace_back(Fourcc::NV12);
+      renderable_fourccs.emplace_back(Fourcc::P010);
+    }
 
   // Support 1-copy argb textures.
+  //
+  // TODO(crbug.com/349428388): For VP9 Profile2 and HEVC Main 10 10-bit video,
+  // the current implementation requires additional VPP to convert the NV12/P010
+  // format to a renderable format AR24. While this VPP introduces a loss of
+  // color depth (P010 -> AR24), it should be optimized for zero-copy path in
+  // the future.
   renderable_fourccs.emplace_back(Fourcc::AR24);
 
   return renderable_fourccs;

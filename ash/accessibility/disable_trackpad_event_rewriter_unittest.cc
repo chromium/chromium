@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accessibility/test_event_recorder.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -16,31 +17,6 @@
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
-
-namespace {
-
-class EventCapturer : public ui::EventRewriter {
- public:
-  EventCapturer() = default;
-  EventCapturer(const EventCapturer&) = delete;
-  EventCapturer& operator=(const EventCapturer&) = delete;
-  ~EventCapturer() override = default;
-
-  // ui::EventRewriter:
-  ui::EventDispatchDetails RewriteEvent(
-      const ui::Event& event,
-      const Continuation continuation) override {
-    events_.push_back(event.Clone());
-    return SendEvent(continuation, &event);
-  }
-
-  const std::vector<std::unique_ptr<ui::Event>>& events() { return events_; }
-
- private:
-  std::vector<std::unique_ptr<ui::Event>> events_;
-};
-
-}  // namespace
 
 namespace ash {
 
@@ -60,13 +36,13 @@ class DisableTrackpadEventRewriterTest : public AshTestBase {
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
         event_rewriter());
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
-        &event_capturer_);
+        &event_recorder_);
     event_rewriter()->SetEnabled(true);
   }
 
   void TearDown() override {
     GetContext()->GetHost()->GetEventSource()->RemoveEventRewriter(
-        &event_capturer_);
+        &event_recorder_);
     GetContext()->GetHost()->GetEventSource()->RemoveEventRewriter(
         event_rewriter());
     event_rewriter_.reset();
@@ -75,7 +51,7 @@ class DisableTrackpadEventRewriterTest : public AshTestBase {
   }
 
   ui::test::EventGenerator* generator() { return generator_; }
-  EventCapturer* event_capturer() { return &event_capturer_; }
+  TestEventRecorder* event_recorder() { return &event_recorder_; }
   DisableTrackpadEventRewriter* event_rewriter() {
     return event_rewriter_.get();
   }
@@ -85,7 +61,7 @@ class DisableTrackpadEventRewriterTest : public AshTestBase {
   raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   // Records events delivered to the next event rewriter after
   // DisableTrackpadEventRewriter.
-  EventCapturer event_capturer_;
+  TestEventRecorder event_recorder_;
   // The DisableTrackpadEventRewriter instance.
   std::unique_ptr<DisableTrackpadEventRewriter> event_rewriter_;
 };
@@ -93,47 +69,64 @@ class DisableTrackpadEventRewriterTest : public AshTestBase {
 TEST_F(DisableTrackpadEventRewriterTest, KeyboardEventsNotCanceledIfDisabled) {
   event_rewriter()->SetEnabled(false);
   generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
-  ASSERT_EQ(1U, event_capturer()->events().size());
+  ASSERT_EQ(1U, event_recorder()->events().size());
   ASSERT_EQ(ui::EventType::kKeyPressed,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
   generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  ASSERT_EQ(2u, event_capturer()->events().size());
+  ASSERT_EQ(2u, event_recorder()->events().size());
   ASSERT_EQ(ui::EventType::kKeyReleased,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
 }
 
 TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsNotCanceledIfDisabled) {
   event_rewriter()->SetEnabled(false);
   generator()->PressLeftButton();
-  EXPECT_EQ(1U, event_capturer()->events().size());
+  EXPECT_EQ(1U, event_recorder()->events().size());
   EXPECT_EQ(ui::EventType::kMousePressed,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
   generator()->ReleaseLeftButton();
-  EXPECT_EQ(2U, event_capturer()->events().size());
+  EXPECT_EQ(2U, event_recorder()->events().size());
   EXPECT_EQ(ui::EventType::kMouseReleased,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
 }
 
 TEST_F(DisableTrackpadEventRewriterTest, KeyboardEventsNotCanceled) {
   generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
-  ASSERT_EQ(1U, event_capturer()->events().size());
+  ASSERT_EQ(1U, event_recorder()->events().size());
   ASSERT_EQ(ui::EventType::kKeyPressed,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
   generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  ASSERT_EQ(2u, event_capturer()->events().size());
+  ASSERT_EQ(2u, event_recorder()->events().size());
   ASSERT_EQ(ui::EventType::kKeyReleased,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
 }
 
-TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsNotCanceled) {
+TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsCanceledWhenEnabled) {
+  event_rewriter()->SetEnabled(true);
   generator()->PressLeftButton();
-  EXPECT_EQ(1U, event_capturer()->events().size());
-  EXPECT_EQ(ui::EventType::kMousePressed,
-            event_capturer()->events().back()->type());
+  EXPECT_EQ(0U, event_recorder()->events().size());
   generator()->ReleaseLeftButton();
-  EXPECT_EQ(2U, event_capturer()->events().size());
-  EXPECT_EQ(ui::EventType::kMouseReleased,
-            event_capturer()->events().back()->type());
+  EXPECT_EQ(0U, event_recorder()->events().size());
+}
+
+TEST_F(DisableTrackpadEventRewriterTest, DisableAfterFiveControlKeyPresses) {
+  event_rewriter()->SetEnabled(true);
+
+  int controlKeyPressCount = 0;
+
+  // Simulate pressing and releasing the control key 5 times.
+  for (int i = 0; i < 5; ++i) {
+    generator()->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    ++controlKeyPressCount;
+    generator()->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+
+    // After the 5th press, check if the rewriter is disabled.
+    if (controlKeyPressCount == 5) {
+      EXPECT_FALSE(event_rewriter()->IsEnabled());
+    } else {
+      EXPECT_TRUE(event_rewriter()->IsEnabled());
+    }
+  }
 }
 
 }  // namespace ash

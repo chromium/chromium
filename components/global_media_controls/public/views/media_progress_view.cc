@@ -116,6 +116,8 @@ MediaProgressView::MediaProgressView(
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
+  GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
+  GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
 }
 
 MediaProgressView::~MediaProgressView() = default;
@@ -143,8 +145,6 @@ void MediaProgressView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
   node_data->SetNameChecked(l10n_util::GetStringUTF16(
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
-  node_data->AddAction(ax::mojom::Action::kIncrement);
-  node_data->AddAction(ax::mojom::Action::kDecrement);
 }
 
 bool MediaProgressView::HandleAccessibleAction(

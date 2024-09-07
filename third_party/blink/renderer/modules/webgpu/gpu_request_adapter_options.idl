@@ -13,4 +13,5 @@ dictionary GPURequestAdapterOptions {
     GPUPowerPreference powerPreference;
     boolean forceFallbackAdapter = false;
     [RuntimeEnabled=WebGPUExperimentalFeatures] boolean compatibilityMode = false;
+    [RuntimeEnabled=WebXRLayers] boolean xrCompatible = false;
 };

@@ -12,7 +12,9 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/webrtc/net_address_utils.h"
 #include "net/base/io_buffer.h"
@@ -112,7 +114,8 @@ class UdpPacketSocket : public rtc::AsyncPacketSocket {
   void OnReadCompleted(int result);
   void HandleReadResult(int result);
 
-  std::unique_ptr<net::UDPServerSocket> socket_;
+  std::unique_ptr<net::UDPServerSocket> socket_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
   State state_ = STATE_CLOSED;
   int error_ = 0;
@@ -123,9 +126,16 @@ class UdpPacketSocket : public rtc::AsyncPacketSocket {
   scoped_refptr<net::IOBuffer> receive_buffer_;
   net::IPEndPoint receive_address_;
 
-  bool send_pending_ = false;
-  std::list<PendingPacket> send_queue_;
-  int send_queue_size_ = 0;
+  bool send_pending_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  std::list<PendingPacket> send_queue_ GUARDED_BY_CONTEXT(thread_checker_);
+  int send_queue_size_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
+
+  THREAD_CHECKER(thread_checker_);
+
+  // Cache a WeakPtr instance to prevent calling memory barrier functions for
+  // each send callback.
+  base::WeakPtr<UdpPacketSocket> weak_ptr_;
+  base::WeakPtrFactory<UdpPacketSocket> weak_factory_{this};
 };
 
 UdpPacketSocket::PendingPacket::PendingPacket(const void* buffer,
@@ -138,7 +148,9 @@ UdpPacketSocket::PendingPacket::PendingPacket(const void* buffer,
   memcpy(data->data(), buffer, buffer_size);
 }
 
-UdpPacketSocket::UdpPacketSocket() = default;
+UdpPacketSocket::UdpPacketSocket() {
+  weak_ptr_ = weak_factory_.GetWeakPtr();
+}
 
 UdpPacketSocket::~UdpPacketSocket() {
   Close();
@@ -147,6 +159,7 @@ UdpPacketSocket::~UdpPacketSocket() {
 bool UdpPacketSocket::Init(const rtc::SocketAddress& local_address,
                            uint16_t min_port,
                            uint16_t max_port) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_LE(min_port, max_port);
   net::IPEndPoint local_endpoint;
   if (!webrtc::SocketAddressToIPEndPoint(local_address, &local_endpoint)) {
@@ -213,6 +226,8 @@ int UdpPacketSocket::SendTo(const void* data,
                             size_t data_size,
                             const rtc::SocketAddress& address,
                             const rtc::PacketOptions& options) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   if (state_ != STATE_BOUND) {
     NOTREACHED_IN_MIGRATION();
     return EINVAL;
@@ -231,8 +246,7 @@ int UdpPacketSocket::SendTo(const void* data,
     return EWOULDBLOCK;
   }
 
-  PendingPacket packet(data, data_size, endpoint, options);
-  send_queue_.push_back(packet);
+  send_queue_.emplace_back(data, data_size, endpoint, options);
   send_queue_size_ += data_size;
 
   DoSend();
@@ -240,8 +254,11 @@ int UdpPacketSocket::SendTo(const void* data,
 }
 
 int UdpPacketSocket::Close() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   state_ = STATE_CLOSED;
   socket_.reset();
+  weak_ptr_.reset();
   return 0;
 }
 
@@ -256,6 +273,8 @@ int UdpPacketSocket::GetOption(rtc::Socket::Option option, int* value) {
 }
 
 int UdpPacketSocket::SetOption(rtc::Socket::Option option, int value) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   if (state_ != STATE_BOUND) {
     NOTREACHED_IN_MIGRATION();
     return EINVAL;
@@ -311,6 +330,8 @@ void UdpPacketSocket::SetError(int error) {
 }
 
 void UdpPacketSocket::DoSend() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   // SendTo() usually completes synchronously however if the socket is not able
   // to send, it will return ERR_IO_PENDING. In that case, we break out of the
   // send loop to allow it time to finish sending packets. Once the socket is
@@ -322,10 +343,9 @@ void UdpPacketSocket::DoSend() {
         packet.data->bytes(), packet.data->size(),
         packet.options.packet_time_params,
         (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds());
-    int result =
-        socket_->SendTo(packet.data.get(), packet.data->size(), packet.address,
-                        base::BindOnce(&UdpPacketSocket::OnSendCompleted,
-                                       base::Unretained(this)));
+    int result = socket_->SendTo(
+        packet.data.get(), packet.data->size(), packet.address,
+        base::BindOnce(&UdpPacketSocket::OnSendCompleted, weak_ptr_));
     if (result != net::ERR_IO_PENDING) {
       OnSendCompleted(result);
     } else {
@@ -335,6 +355,8 @@ void UdpPacketSocket::DoSend() {
 }
 
 void UdpPacketSocket::OnSendCompleted(int result) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   // If |send_pending_| is true, that means OnSendCompleted was run via the
   // callback we provide to the socket because it is able to process send
   // packets again. In that case, we want to call DoSend() so that any packets
@@ -377,19 +399,22 @@ void UdpPacketSocket::OnSendCompleted(int result) {
 }
 
 void UdpPacketSocket::DoRead() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   int result = 0;
   while (result >= 0) {
     receive_buffer_ =
         base::MakeRefCounted<net::IOBufferWithSize>(kReceiveBufferSize);
-    result = socket_->RecvFrom(receive_buffer_.get(), kReceiveBufferSize,
-                               &receive_address_,
-                               base::BindOnce(&UdpPacketSocket::OnReadCompleted,
-                                              base::Unretained(this)));
+    result = socket_->RecvFrom(
+        receive_buffer_.get(), kReceiveBufferSize, &receive_address_,
+        base::BindOnce(&UdpPacketSocket::OnReadCompleted, weak_ptr_));
     HandleReadResult(result);
   }
 }
 
 void UdpPacketSocket::OnReadCompleted(int result) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   HandleReadResult(result);
   if (result >= 0) {
     DoRead();

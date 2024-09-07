@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <bit>
 #include <map>
 #include <set>
@@ -14,23 +15,31 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "bidding_and_auction_server_key_fetcher.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "net/http/http_request_headers.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_request.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_response.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/common/oblivious_http_header_key_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -244,30 +253,45 @@ TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 void TrustedSignalsFetcher::FetchBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& trusted_bidding_signals_url,
+    const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
-  StartRequest(url_loader_factory, trusted_bidding_signals_url,
-               BuildBiddingSignalsRequestBody(compression_groups),
-               std::move(callback));
+  EncryptRequestBodyAndStart(
+      url_loader_factory, trusted_bidding_signals_url, bidding_and_auction_key,
+      BuildBiddingSignalsRequestBody(compression_groups), std::move(callback));
 }
 
 void TrustedSignalsFetcher::FetchScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& trusted_scoring_signals_url,
+    const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,
     Callback callback) {
   NOTIMPLEMENTED();
 }
 
-void TrustedSignalsFetcher::StartRequest(
+void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& trusted_signals_url,
-    std::string request_body,
+    const BiddingAndAuctionServerKey& bidding_and_auction_key,
+    std::string plaintext_request_body,
     Callback callback) {
   DCHECK(!simple_url_loader_);
   DCHECK(!callback_);
   trusted_signals_url_ = trusted_signals_url;
   callback_ = std::move(callback);
+
+  // Add encryption for request body.
+  auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+      bidding_and_auction_key.id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+      EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM);
+  CHECK(maybe_key_config.ok());
+
+  auto maybe_ciphertext_request_body =
+      quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
+          std::move(plaintext_request_body), bidding_and_auction_key.key,
+          *maybe_key_config, kRequestMediaType);
+  CHECK(maybe_ciphertext_request_body.ok());
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
@@ -283,8 +307,15 @@ void TrustedSignalsFetcher::StartRequest(
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
-  simple_url_loader_->AttachStringForUpload(std::move(request_body),
-                                            kRequestMediaType);
+  simple_url_loader_->AttachStringForUpload(
+      maybe_ciphertext_request_body->EncapsulateAndSerialize(),
+      kRequestMediaType);
+  // ObliviousHttpRequest::Context is a move-only type, with no default
+  // constructor, but ReleaseContext() return by value, so have to somewhat
+  // awkwardly wrap it in a unique_ptr to store it in an already-created
+  // TrustedSignalsFetcher.
+  ohttp_context_ = std::make_unique<quiche::ObliviousHttpRequest::Context>(
+      std::move(maybe_ciphertext_request_body).value().ReleaseContext());
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory,
       base::BindOnce(&TrustedSignalsFetcher::OnRequestComplete,
@@ -294,22 +325,193 @@ void TrustedSignalsFetcher::StartRequest(
 void TrustedSignalsFetcher::OnRequestComplete(
     std::unique_ptr<std::string> response_body) {
   if (!response_body) {
-    std::move(callback_).Run(base::unexpected(ErrorInfo(base::StringPrintf(
+    std::move(callback_).Run(base::unexpected(base::StringPrintf(
         "Failed to load %s error = %s.", trusted_signals_url_.spec().c_str(),
-        net::ErrorToString(simple_url_loader_->NetError()).c_str()))));
+        net::ErrorToString(simple_url_loader_->NetError()).c_str())));
     return;
   }
 
   if (simple_url_loader_->ResponseInfo()->mime_type != kResponseMediaType) {
-    std::move(callback_).Run(base::unexpected(ErrorInfo(
+    std::move(callback_).Run(base::unexpected(
         base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
-                           trusted_signals_url_.spec().c_str()))));
+                           trusted_signals_url_.spec().c_str())));
     return;
   }
 
-  // TODO(crbug.com/333445540): Parse the response.
-  std::move(callback_).Run(
-      base::unexpected(ErrorInfo("Response parsing not yet implemented")));
+  // `simple_url_loader_` is no longer needed.
+  simple_url_loader_.reset();
+
+  // The oblivious HTTP code returns an error on empty response bodies, so only
+  // try and decrypt if the body is not empty, to give an error about size
+  // rather than OHTTP failing in that case.
+  std::string plaintext_response_body;
+  if (response_body->size() > 0u) {
+    auto maybe_plaintext_response_body =
+        quiche::ObliviousHttpResponse::CreateClientObliviousResponse(
+            std::move(*response_body), *ohttp_context_, kResponseMediaType);
+    // `ohttp_context_` is no longer needed.
+    ohttp_context_.reset();
+
+    if (!maybe_plaintext_response_body.ok()) {
+      // Don't output OHTTP error strings, directly, as they're often not very
+      // user-friendly.
+      std::move(callback_).Run(
+          base::unexpected(CreateError("OHTTP decryption failed")));
+      return;
+    }
+    plaintext_response_body =
+        std::move(maybe_plaintext_response_body).value().ConsumePlaintextData();
+  }
+
+  base::SpanReader reader(base::as_byte_span(plaintext_response_body));
+  uint8_t compression_scheme_bytes;
+  uint32_t cbor_length;
+  if (!reader.ReadU8BigEndian(compression_scheme_bytes) ||
+      !reader.ReadU32BigEndian(cbor_length)) {
+    std::move(callback_).Run(base::unexpected(CreateError(
+        base::StringPrintf("Response body is shorter than a %s header",
+                           kResponseMediaType.data()))));
+    return;
+  }
+
+  // Only the first to bits are used for compression format in the whole byte.
+  compression_scheme_bytes &= 0x03;
+  if (compression_scheme_bytes == 0x00) {
+    compression_scheme_ =
+        auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone;
+  } else if (compression_scheme_bytes == 0x02) {
+    compression_scheme_ =
+        auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip;
+  } else {
+    std::move(callback_).Run(base::unexpected(CreateError(base::StringPrintf(
+        "Unsupported compression scheme: %u", compression_scheme_bytes))));
+    return;
+  }
+
+  base::span<const uint8_t> remaining_span = reader.remaining_span();
+  if (remaining_span.size() < cbor_length) {
+    std::move(callback_).Run(
+        base::unexpected(CreateError("Length header exceeds body size")));
+    return;
+  }
+
+  base::span<const uint8_t> cbor = remaining_span.subspan(0, cbor_length);
+  data_decoder::DataDecoder::ParseCborIsolated(
+      cbor, base::BindOnce(&TrustedSignalsFetcher::OnCborParsed,
+                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TrustedSignalsFetcher::OnCborParsed(
+    data_decoder::DataDecoder::ValueOrError value_or_error) {
+  std::move(callback_).Run(ParseDataDecoderResult(std::move(value_or_error)));
+}
+
+TrustedSignalsFetcher::SignalsFetchResult
+TrustedSignalsFetcher::ParseDataDecoderResult(
+    data_decoder::DataDecoder::ValueOrError value_or_error) {
+  if (!value_or_error.has_value()) {
+    return base::unexpected(CreateError("Failed to parse response as CBOR"));
+  }
+
+  if (!value_or_error->is_dict()) {
+    // Since the data is CBOR, use CBOR type names in error messages ("map"
+    // instead of JSON "object" or Value "dict").
+    return base::unexpected(CreateError("Response body is not a map"));
+  }
+
+  base::Value::Dict& dict = value_or_error->GetDict();
+
+  // Get compression groups.
+  base::Value::List* compression_groups = dict.FindList("compressionGroups");
+  if (!compression_groups) {
+    return base::unexpected(
+        CreateError("Response is missing compressionGroups array"));
+  }
+
+  CompressionGroupResultMap compression_groups_out;
+  for (auto& compression_group : *compression_groups) {
+    int compression_group_id;
+    auto compression_group_result =
+        ParseCompressionGroup(compression_group, compression_group_id);
+
+    if (!compression_group_result.has_value()) {
+      return base::unexpected(std::move(compression_group_result).error());
+    }
+
+    if (!compression_groups_out
+             .try_emplace(compression_group_id,
+                          std::move(compression_group_result).value())
+             .second) {
+      return base::unexpected(CreateError(base::StringPrintf(
+          "Response contains two compression groups with id %i",
+          compression_group_id)));
+    }
+  }
+
+  return compression_groups_out;
+}
+
+base::expected<TrustedSignalsFetcher::CompressionGroupResult, std::string>
+TrustedSignalsFetcher::ParseCompressionGroup(
+    const base::Value& compression_group_value,
+    int& compression_group_id) {
+  if (!compression_group_value.is_dict()) {
+    return base::unexpected(CreateError(
+        base::StringPrintf("Compression group is not of type map")));
+  }
+
+  const base::Value::Dict& compression_group_dict =
+      compression_group_value.GetDict();
+  std::optional<int> compression_group_id_opt =
+      compression_group_dict.FindInt("compressionGroupId");
+  if (!compression_group_id_opt.has_value() || *compression_group_id_opt < 0) {
+    return base::unexpected(CreateError(
+        base::StringPrintf("Compression group must have a non-negative integer "
+                           "compressionGroupId")));
+  }
+
+  const base::Value* ttl_ms_value = compression_group_dict.Find("ttlMs");
+  // Default TTL is 0.
+  base::TimeDelta ttl;
+  if (ttl_ms_value) {
+    if (!ttl_ms_value->is_int()) {
+      return base::unexpected(CreateError(base::StringPrintf(
+          "Compression group %i ttlMs value is not an integer",
+          *compression_group_id_opt)));
+    }
+    // Treat negative values as 0. Using zero is more robust if these values are
+    // ever used to set a timer.
+    ttl = base::Milliseconds(std::max(0, ttl_ms_value->GetInt()));
+  }
+
+  const std::string* content = compression_group_dict.FindString("content");
+  if (!content) {
+    return base::unexpected(CreateError(
+        base::StringPrintf("Compression group %i missing content string",
+                           *compression_group_id_opt)));
+  }
+
+  compression_group_id = *compression_group_id_opt;
+
+  CompressionGroupResult result;
+  result.compression_scheme = compression_scheme_;
+  // TODO(crbug.com/333445540): This copy is unnecessary, since Value::Dict
+  // allows its values to be moved. Instead, make `compression_group_data` a
+  // std::string. Can then either switch the API to using a mojom::BigString and
+  // pass to Mojo as a std::string, and have the other end use BigBuffer
+  // directly (Which is what mojom::BigString is typemapped to), or continue to
+  // use mojom::BigBuffer pass as a span<uint8_t>.
+  result.compression_group_data =
+      std::vector<uint8_t>(content->begin(), content->end());
+  result.ttl = ttl;
+  return result;
+}
+
+std::string TrustedSignalsFetcher::CreateError(
+    const std::string& error_message) {
+  return base::StringPrintf("Failed to load %s: %s.",
+                            trusted_signals_url_.spec().c_str(),
+                            error_message.c_str());
 }
 
 }  // namespace content

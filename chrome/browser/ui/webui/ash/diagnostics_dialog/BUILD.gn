@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("diagnostics_dialog") {
+  sources = [
+    "diagnostics_dialog.cc",
+    "diagnostics_dialog.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/webui/diagnostics_ui",
+    "//ash/webui/diagnostics_ui:url_constants",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//ui/display",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "diagnostics_dialog_unittest.cc" ]
+
+  deps = [
+    ":diagnostics_dialog",
+    "//base",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//components/session_manager/core",
+    "//testing/gtest",
+  ]
+}

@@ -10,7 +10,6 @@ include_rules = [
   "+components/metrics",
   "+components/version_info/channel.h",
   "+components/zucchini",
-  "+courgette",
   "+third_party/crashpad",
 ]
 

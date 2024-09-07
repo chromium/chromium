@@ -87,10 +87,11 @@ void PickRequestTask::Choose(
   RequestCompareFunction comparator = nullptr;
 
   // Choose which comparison function to use based on policy.
-  if (policy_->RetryCountIsMoreImportantThanRecency())
+  if (policy_->RetryCountIsMoreImportantThanRecency()) {
     comparator = &PickRequestTask::RetryCountFirstCompareFunction;
-  else
+  } else {
     comparator = &PickRequestTask::RecencyFirstCompareFunction;
+  }
 
   bool non_user_requested_tasks_remaining = false;
   bool cleanup_needed = false;

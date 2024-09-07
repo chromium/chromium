@@ -44,9 +44,11 @@ static_library("internal") {
     "//components/segmentation_platform/internal:internal",
     "//components/segmentation_platform/public",
     "//components/sessions",
+    "//components/strings",
     "//components/sync_sessions",
     "//components/url_deduplication",
     "//components/visited_url_ranking/public",
+    "//ui/base",
     "//url",
   ]
 }

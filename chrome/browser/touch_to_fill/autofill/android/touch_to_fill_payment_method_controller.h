@@ -93,6 +93,7 @@ class TouchToFillPaymentMethodController
  private:
   // Gets or creates the Java counterpart.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
+  void ResetJavaObject();
 
   // Observes creation of ContentAutofillDrivers to inject a
   // TouchToFillDelegateAndroidImpl into the BrowserAutofillManager.

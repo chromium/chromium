@@ -70,6 +70,19 @@ std::u16string TimeDurationFormatWithSecondsString(const TimeDelta& delta,
   return str;
 }
 
+// Calls TimeDurationCompactFormatWithSeconds() with |delta| and |width| and
+// returns the resulting string. On failure, adds a failed expectation and
+// returns an empty string.
+std::u16string TimeDurationCompactFormatWithSecondsString(
+    const TimeDelta& delta,
+    DurationFormatWidth width) {
+  std::u16string str;
+  EXPECT_TRUE(TimeDurationCompactFormatWithSeconds(delta, width, &str))
+      << "Failed to format " << delta.ToInternalValue() << " with width "
+      << width;
+  return str;
+}
+
 TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault12h) {
   // Test for a locale defaulted to 12h clock.
   // As an instance, we use third_party/icu/source/data/locales/en.txt.
@@ -453,6 +466,133 @@ TEST(TimeFormattingTest, TimeDurationFormatWithSeconds) {
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NARROW));
   EXPECT_EQ(u"15:42:00",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NUMERIC));
+}
+
+TEST(TimeFormattingTest, TimeDurationCompactFormatWithSeconds) {
+  test::ScopedRestoreICUDefaultLocale restore_locale;
+
+  // US English.
+  i18n::SetICUDefaultLocale("en_US");
+
+  // Test different formats.
+  TimeDelta delta = Seconds(15 * 3600 + 42 * 60 + 30);
+  EXPECT_EQ(
+      u"15 hours, 42 minutes, 30 seconds",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(
+      u"15 hr, 42 min, 30 sec",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"15h 42m 30s", TimeDurationCompactFormatWithSecondsString(
+                                delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"15:42:30", TimeDurationCompactFormatWithSecondsString(
+                             delta, DURATION_WIDTH_NUMERIC));
+
+  // Test edge case when hour >= 100.
+  delta = Seconds(125 * 3600 + 42 * 60 + 30);
+  EXPECT_EQ(
+      u"125 hours, 42 minutes, 30 seconds",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(
+      u"125 hr, 42 min, 30 sec",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"125h 42m 30s", TimeDurationCompactFormatWithSecondsString(
+                                 delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"125:42:30", TimeDurationCompactFormatWithSecondsString(
+                              delta, DURATION_WIDTH_NUMERIC));
+
+  // Test edge case when hour = 0.
+  delta = Seconds(0 * 3600 + 7 * 60 + 30);
+  EXPECT_EQ(
+      u"7 minutes, 30 seconds",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(u"7 min, 30 sec", TimeDurationCompactFormatWithSecondsString(
+                                  delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"7m 30s", TimeDurationCompactFormatWithSecondsString(
+                           delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"0:07:30", TimeDurationCompactFormatWithSecondsString(
+                            delta, DURATION_WIDTH_NUMERIC));
+
+  // Test edge case when hour = 1.
+  delta = Seconds(1 * 3600 + 7 * 60 + 30);
+  EXPECT_EQ(
+      u"1 hour, 7 minutes, 30 seconds",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(u"1 hr, 7 min, 30 sec", TimeDurationCompactFormatWithSecondsString(
+                                        delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"1h 7m 30s", TimeDurationCompactFormatWithSecondsString(
+                              delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"1:07:30", TimeDurationCompactFormatWithSecondsString(
+                            delta, DURATION_WIDTH_NUMERIC));
+
+  // Test edge case when minute = 0.
+  delta = Seconds(15 * 3600 + 0 * 60 + 30);
+  EXPECT_EQ(
+      u"15 hours, 0 minutes, 30 seconds",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(u"15 hr, 0 min, 30 sec", TimeDurationCompactFormatWithSecondsString(
+                                         delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"15h 0m 30s", TimeDurationCompactFormatWithSecondsString(
+                               delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"15:00:30", TimeDurationCompactFormatWithSecondsString(
+                             delta, DURATION_WIDTH_NUMERIC));
+
+  // Test edge case when minute = 1.
+  delta = Seconds(15 * 3600 + 1 * 60 + 30);
+  EXPECT_EQ(
+      u"15 hours, 1 minute, 30 seconds",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(u"15 hr, 1 min, 30 sec", TimeDurationCompactFormatWithSecondsString(
+                                         delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"15h 1m 30s", TimeDurationCompactFormatWithSecondsString(
+                               delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"15:01:30", TimeDurationCompactFormatWithSecondsString(
+                             delta, DURATION_WIDTH_NUMERIC));
+
+  // Test edge case when hour = 0 and minute = 0.
+  delta = Seconds(0 * 3600 + 0 * 60 + 30);
+  EXPECT_EQ(u"30 seconds", TimeDurationCompactFormatWithSecondsString(
+                               delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(u"30 sec", TimeDurationCompactFormatWithSecondsString(
+                           delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"30s", TimeDurationCompactFormatWithSecondsString(
+                        delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"0:00:30", TimeDurationCompactFormatWithSecondsString(
+                            delta, DURATION_WIDTH_NUMERIC));
+
+  // Test edge case when second = 0.
+  delta = Seconds(15 * 3600 + 42 * 60 + 0);
+  EXPECT_EQ(
+      u"15 hours, 42 minutes, 0 seconds",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(u"15 hr, 42 min, 0 sec", TimeDurationCompactFormatWithSecondsString(
+                                         delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"15h 42m 0s", TimeDurationCompactFormatWithSecondsString(
+                               delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"15:42:00", TimeDurationCompactFormatWithSecondsString(
+                             delta, DURATION_WIDTH_NUMERIC));
+
+  // Test edge case when second = 1.
+  delta = Seconds(15 * 3600 + 42 * 60 + 1);
+  EXPECT_EQ(
+      u"15 hours, 42 minutes, 1 second",
+      TimeDurationCompactFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(u"15 hr, 42 min, 1 sec", TimeDurationCompactFormatWithSecondsString(
+                                         delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"15h 42m 1s", TimeDurationCompactFormatWithSecondsString(
+                               delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"15:42:01", TimeDurationCompactFormatWithSecondsString(
+                             delta, DURATION_WIDTH_NUMERIC));
+
+  // Test edge case when delta = 0.
+  delta = Seconds(0);
+  EXPECT_EQ(u"0 seconds", TimeDurationCompactFormatWithSecondsString(
+                              delta, DURATION_WIDTH_WIDE));
+  EXPECT_EQ(u"0 sec", TimeDurationCompactFormatWithSecondsString(
+                          delta, DURATION_WIDTH_SHORT));
+  EXPECT_EQ(u"0s", TimeDurationCompactFormatWithSecondsString(
+                       delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"0:00:00", TimeDurationCompactFormatWithSecondsString(
+                            delta, DURATION_WIDTH_NUMERIC));
 }
 
 TEST(TimeFormattingTest, TimeIntervalFormat) {

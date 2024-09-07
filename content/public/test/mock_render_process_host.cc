@@ -198,6 +198,10 @@ bool MockRenderProcessHost::IsJitDisabled() {
   return false;
 }
 
+bool MockRenderProcessHost::AreV8OptimizationsDisabled() {
+  return false;
+}
+
 bool MockRenderProcessHost::IsPdf() {
   return false;
 }

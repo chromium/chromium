@@ -33,6 +33,15 @@ class CONTENT_EXPORT DownloadItemUtils {
   static RenderFrameHost* GetRenderFrameHost(
       const download::DownloadItem* downloadItem);
 
+  // Get the original WebContents that triggers the download. The returned
+  // WebContents might be different from that of calling GetWebContents(). If
+  // the primary page of the WebContents changes, GetWebContents() will return
+  // null, while this method will still return the original WebContents. Only
+  // call this method when you really need to get the Tab that triggers the
+  // download.
+  static WebContents* GetOriginalWebContents(
+      const download::DownloadItem* downloadItem);
+
   // Attach information to a DownloadItem.
   static void AttachInfo(download::DownloadItem* downloadItem,
                          BrowserContext* browser_context,

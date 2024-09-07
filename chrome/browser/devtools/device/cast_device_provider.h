@@ -47,6 +47,7 @@ class CastDeviceProvider
 
  private:
   class DeviceListerDelegate;
+  friend class CastDeviceProviderTest;
 
   ~CastDeviceProvider() override;
 

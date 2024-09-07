@@ -26,7 +26,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
+#include "device/vr/android/local_texture.h"
 #include "ui/gl/scoped_egl_image.h"
 #endif
 
@@ -74,7 +74,7 @@ struct SwapChainInfo {
   // depending on *how* you want to use it; so we can't use it at the moment.
   uint32_t openxr_texture;
 
-  uint32_t shared_buffer_texture;
+  LocalTexture shared_buffer_texture;
 
   // The size of the texture used for the shared buffer; which may be different
   // than the size of the actual swapchain image, as this size is influenced by

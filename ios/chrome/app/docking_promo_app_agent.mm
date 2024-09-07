@@ -100,11 +100,8 @@
 
 // Registers the Docking Promo with the PromosManager.
 - (void)registerPromo {
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     PromosManager* promosManager =
         PromosManagerFactory::GetForBrowserState(browserState);
     promosManager->RegisterPromoForSingleDisplay(
@@ -114,11 +111,8 @@
 
 // Deregisters the Docking Promo from the PromosManager.
 - (void)deregisterPromo {
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     PromosManager* promosManager =
         PromosManagerFactory::GetForBrowserState(browserState);
     promosManager->DeregisterPromo(promos_manager::Promo::DockingPromo);

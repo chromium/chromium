@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/android_buildflags.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/features.h"
 #include "shortcut_info.h"
@@ -301,9 +302,19 @@ void ShortcutInfo::UpdateBestSplashIcon(
 }
 
 void ShortcutInfo::UpdateDisplayMode(bool webapk_compatible) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  constexpr bool is_desktop_android = true;
+#else
+  constexpr bool is_desktop_android = false;
+#endif
+
   if (webapk_compatible) {
     if (!IsWebApkDisplayMode(display)) {
       display = DisplayMode::kMinimalUi;
+    }
+  } else if (is_desktop_android) {
+    if (!IsWebApkDisplayMode(display)) {
+      display = DisplayMode::kStandalone;
     }
   } else {
     if (IsWebApkDisplayMode(display)) {

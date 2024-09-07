@@ -61,6 +61,8 @@ const char kFastPairAssociateAccountNotificationId[] =
     "cros_fast_pair_associate_account_notification_id";
 const char kFastPairDiscoverySubsequentNotificationId[] =
     "cros_fast_pair_discovery_subsequent_notification_id";
+const char kFastPairDisplayPasskeyNotificationId[] =
+    "cros_fast_pair_display_passkey_notification_id";
 constexpr char kRetroactiveSuccessFunnelMetric[] =
     "FastPair.RetroactivePairing";
 
@@ -1530,6 +1532,22 @@ TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_DismissedByOS) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByOs);
+}
+
+TEST_F(FastPairPresenterImplTest, ShowPasskey) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDisplayPasskeyNotificationId));
+
+  SetIdentityManager(identity_manager_);
+
+  Login(user_manager::UserType::kRegular);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowPasskey(/*device name=*/std::u16string(),
+                                    /*passkey=*/0);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDisplayPasskeyNotificationId));
 }
 
 }  // namespace quick_pair

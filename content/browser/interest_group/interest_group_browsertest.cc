@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <optional>
@@ -70,6 +66,7 @@
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_observer.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -351,6 +348,10 @@ base::Value::List AuctionServerRequestFlagsToList(
   }
   if (flags.Has(blink::AuctionServerRequestFlagsEnum::kIncludeFullAds)) {
     result.Append("include-full-ads");
+  }
+  if (flags.Has(
+          blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals)) {
+    result.Append("omit-user-bidding-signals");
   }
   return result;
 }
@@ -735,7 +736,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kAllowURNsInIframes, {}},
          {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
          {blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot, {}},
-         {blink::features::kFencedFramesM120FeaturesPart1, {}},
          {features::kBackForwardCache, {}},
          {features::kFledgeUseInterestGroupCache, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
@@ -3648,7 +3648,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                     /*name=*/"cars")
                     .SetAuctionServerRequestFlags(
                         {blink::AuctionServerRequestFlagsEnum::kOmitAds,
-                         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
+                         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds,
+                         blink::AuctionServerRequestFlagsEnum::
+                             kOmitUserBiddingSignals})
                     .Build()));
 
   scoped_refptr<StorageInterestGroups> groups =
@@ -3660,13 +3662,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       blink::AuctionServerRequestFlagsEnum::kOmitAds));
   EXPECT_TRUE(group.auction_server_request_flags.Has(
       blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
+  EXPECT_TRUE(group.auction_server_request_flags.Has(
+      blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupValidReportingIds) {
   GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
   auto origin = url::Origin::Create(url);
-  std::vector<std::string> selectable_buyer_and_seller_reporting_ids = {
+  const std::vector<std::string> kSelectableBuyerAndSellerReportingIds = {
       "selectable_id1", "selectable_id2"};
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
@@ -3709,7 +3713,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       2u);
   EXPECT_EQ(
       group.ads.value()[0].selectable_buyer_and_seller_reporting_ids.value(),
-      selectable_buyer_and_seller_reporting_ids);
+      kSelectableBuyerAndSellerReportingIds);
 
   EXPECT_EQ(group.ads.value()[1].render_url(),
             GURL("https://example.com/render2"));
@@ -5708,6 +5712,78 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       decisionLogicURL: $2,
       maxTrustedScoringSignalsURLLength: -1000
   })",
+                                  origin, url)));
+  WaitForAccessObserved({});
+}
+
+class InterestGroupCoordinatorBrowserTest : public InterestGroupBrowserTest {
+ public:
+  InterestGroupCoordinatorBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kFledgeTrustedSignalsKVv2Support},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
+                       RunAdAuctionValidTrustedScoringSignalsCoordinator) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsCoordinator: "https://example.test"
+})",
+                                                 origin, url)));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
+                       RunAdAuctionHTTPSchemeTrustedScoringSignalsCoordinator) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+          "trustedScoringSignalsCoordinator 'http://example.test' for "
+          "AuctionAdConfig with seller '%s' must be a valid https origin.",
+          origin.Serialize().c_str()),
+      RunAuctionAndWait(JsReplace(R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsCoordinator: "http://example.test"
+})",
+                                  origin, url)));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
+                       RunAdAuctionOpaqueTrustedScoringSignalsCoordinator) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+          "trustedScoringSignalsCoordinator 'data:,foo' for "
+          "AuctionAdConfig with seller '%s' must be a valid https origin.",
+          origin.Serialize().c_str()),
+      RunAuctionAndWait(JsReplace(R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsCoordinator: "data:,foo"
+})",
                                   origin, url)));
   WaitForAccessObserved({});
 }
@@ -8005,7 +8081,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
               EXPECT_EQ(request.debug_key(), debug_key);
 
               EXPECT_EQ(budget_key.api(),
-                        PrivateAggregationBudgetKey::Api::kProtectedAudience);
+                        PrivateAggregationCallerApi::kProtectedAudience);
               EXPECT_EQ(budget_key.origin(), test_origin_);
               EXPECT_EQ(budget_denied_behavior,
                         PrivateAggregationBudgeter::BudgetDeniedBehavior::
@@ -8311,7 +8387,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
             request_returned = std::move(generator).Run(contributions);
 
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kProtectedAudience);
+                      PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), test_origin_);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
@@ -11252,7 +11328,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
 
   // Check ResourceRequest structs of report requests.
-  const GURL kExpectedReportUrls[] = {
+  const auto kExpectedReportUrls = std::to_array<GURL>({
       // Return value from seller's ReportResult() method.
       embedded_https_test_server().GetURL("a.test", "/echoall?report_seller"),
       // Return value from winning bidder's ReportWin() method.
@@ -11273,7 +11349,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       embedded_https_test_server().GetURL(
           "a.test", "/echo?bidder_debug_report_loss/bikes"),
       embedded_https_test_server().GetURL(
-          "a.test", "/echo?bidder_debug_report_loss/shoes")};
+          "a.test", "/echo?bidder_debug_report_loss/shoes"),
+  });
 
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
@@ -14025,6 +14102,474 @@ interestGroupBuyers: [$1]
                              GURL(ad_components[2].render_url()), ad_frame);
   NavigateFencedFrameAndWait((*components)[2], GURL(url::kAboutBlankURL),
                              ad_frame);
+}
+
+class InterestGroupAuctionFledgeDealSupportDisabledTest
+    : public InterestGroupBrowserTest {
+ public:
+  explicit InterestGroupAuctionFledgeDealSupportDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeAuctionDealSupport);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionFledgeDealSupportDisabledTest,
+                       FeatureDetection) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  ASSERT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
+
+  const char kQuerySelectableReportingIds[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'selectableReportingIds');
+  )";
+  EXPECT_EQ(false, EvalJs(shell(), kQuerySelectableReportingIds));
+}
+
+// When an interest group contains selectableBuyerAndSellerReportingIds,
+// and the feature is disabled, we expect the selectable to never be set,
+// and therefore should be treated as a regular bid as if it was never there.
+//
+// reportWin() receives:
+//  - buyerAndSellerReportingId (original behavior)
+//
+// scoreAd() receives:
+//  - none of the reporting ids (original behavior)
+//
+// reportResult() receives:
+//  - buyerAndSellerReportingId (original behavior)
+//
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionFledgeDealSupportDisabledTest,
+                       RunAdAuctionWithWinnerWithSelectedAndAllReportingIds) {
+  const GURL url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  const auto origin = url::Origin::Create(url);
+
+  // These scripts are generated by this test.
+  constexpr char kBiddingLogicPath[] =
+      "/interest_group/test_generated_bidding_argument_validator.js";
+  constexpr char kDecisionLogicPath[] =
+      "/interest_group/test_generated_decision_argument_validator.js";
+  constexpr char kBiddingLogicScript[] = R"(
+function generateBid(
+    interestGroup, unusedAuctionSignals, unusedPerBuyerSignals,
+    unusedTrustedBiddingSignals, unusedBrowserSignals) {
+  const ad = interestGroup.ads[0];
+  // Verify that none of the reporting IDs are present in generate bid.
+  if (('selectableBuyerAndSellerReportingIds' in ad) ||
+      ('buyerReportingId' in ad) ||
+      ('buyerAndSellerReportingId' in ad)) {
+    throw "generateBid should not get any reporting ids when feature is disabled.";
+  }
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL,
+    'selectedBuyerAndSellerReportingId': 'selectable_id1'};
+}
+
+function reportWin(unusedAuctionSignals, unusedPerBuyerSignals,
+                   unusedSellerSignals, browserSignals) {
+  let reportUrl = browserSignals.interestGroupOwner +
+      '/report_bidder/checksPassed';
+  if (browserSignals.buyerReportingId !== undefined ||
+      browserSignals.buyerAndSellerReportingId !== "bsid" ||
+      browserSignals.selectedBuyerAndSellerReportingId !== undefined) {
+    reportUrl = browserSignals.interestGroupOwner +
+    '/report_bidder/checksFailed';
+  }
+  sendReportTo(reportUrl);
+ }
+)";
+
+  constexpr char kDecisionLogicScript[] = R"(
+function scoreAd(
+     adMetadata, bid, auctionConfig, unusedTrustedScoringSignals,
+     browserSignals) {
+   if (browserSignals.selectedBuyerAndSellerReportingId !== undefined ||
+       browserSignals.buyerAndSellerReportingId !== undefined) {
+     throw "scoreAd should not get reporting id";
+   }
+   return bid;
+}
+
+function reportResult(auctionConfig, browserSignals) {
+  let reportUrl = auctionConfig.seller + '/report_seller/checksPassed';
+  if (browserSignals.selectedBuyerAndSellerReportingId !== undefined ||
+      browserSignals.buyerAndSellerReportingId !== "bsid") {
+    reportUrl = auctionConfig.seller + '/report_seller/checksFailed';
+  }
+
+  sendReportTo(reportUrl);
+}
+)";
+
+  network_responder_->RegisterNetworkResponse(
+      kBiddingLogicPath, kBiddingLogicScript, "application/javascript");
+  network_responder_->RegisterNetworkResponse(
+      kDecisionLogicPath, kDecisionLogicScript, "application/javascript");
+  GURL ad_url_with_selectable =
+      embedded_https_test_server().GetURL("a.test", "/echo?Selectable");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroup(
+          blink::TestInterestGroupBuilder(origin, "selectables")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test", kBiddingLogicPath))
+              .SetAds({{{ad_url_with_selectable,
+                         /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+                         /*buyer_reporting_id=*/"brid",
+                         /*buyer_and_seller_reporting_id=*/"bsid",
+                         /*selectable_buyer_and_seller_reporting_ids=*/
+                         std::vector<std::string>{"selectable_id1",
+                                                  "selectable_id2"},
+                         /*ad_render_id=*/std::nullopt}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+   seller: $1,
+   decisionLogicURL: $2,
+   interestGroupBuyers: [$1],
+   auctionSignals: {x: 1}
+               })",
+      origin,
+      embedded_https_test_server().GetURL("a.test", kDecisionLogicPath));
+
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config,
+                                           ad_url_with_selectable);
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "a.test", "/report_seller/checksPassed"));
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "a.test", "/report_bidder/checksPassed"));
+}
+
+// When an interest group contains selectableBuyerAndSellerReportingIds,
+// and one is selected in generateBid, this verifies that:
+//
+// reportWin() receives:
+//  - selectedBuyerAndSellerReportingId
+//  - buyerAndSellerReportingId (if present)
+//  - buyerReportingId (if present)
+//
+// scoreAd() receives:
+//  - selectedBuyerAndSellerReportingId
+//  - buyerAndSellerReportingId (if present)
+//
+// reportResult() receives:
+//  - selectedBuyerAndSellerReportingId
+//  - buyerAndSellerReportingId (if present)
+//
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithWinnerWithSelectedAndAllReportingIds) {
+  const GURL url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  const auto origin = url::Origin::Create(url);
+
+  // These scripts are generated by this test.
+  constexpr char kBiddingLogicPath[] =
+      "/interest_group/test_generated_bidding_argument_validator.js";
+  constexpr char kDecisionLogicPath[] =
+      "/interest_group/test_generated_decision_argument_validator.js";
+  constexpr char kBiddingLogicScript[] = R"(
+function generateBid(
+    interestGroup, unusedAuctionSignals, unusedPerBuyerSignals,
+    unusedTrustedBiddingSignals, unusedBrowserSignals) {
+  const ad = interestGroup.ads[0];
+  // Verify all of these are present in generate bid,
+  // if selectableBuyerAndSellerReportingIds is present.
+  if (ad.selectableBuyerAndSellerReportingIds.length !== 2 ||
+      ad.selectableBuyerAndSellerReportingIds[0] !== "selectable_id1" ||
+      ad.selectableBuyerAndSellerReportingIds[1] !== "selectable_id2" ||
+      ad.buyerReportingId !== "brid" ||
+      ad.buyerAndSellerReportingId !== "bsid" ) {
+    throw "generateBid does not contain valid reporting ids";
+  }
+  selectedReportingId = ad.selectableBuyerAndSellerReportingIds[0];
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL,
+          'selectedBuyerAndSellerReportingId': selectedReportingId};
+ }
+
+ function reportWin(unusedAuctionSignals, unusedPerBuyerSignals,
+                    unusedSellerSignals, browserSignals) {
+  let reportUrl = browserSignals.interestGroupOwner + '/report_bidder/checksPassed';
+  if (browserSignals.buyerReportingId !== "brid" ||
+      browserSignals.buyerAndSellerReportingId !== "bsid" ||
+      browserSignals.selectedBuyerAndSellerReportingId !== "selectable_id1") {
+    reportUrl = browserSignals.interestGroupOwner + '/report_bidder/checksFailed';
+  }
+  sendReportTo(browserSignals.interestGroupOwner +
+               '/report_bidder/checksPassed');
+}
+)";
+
+  constexpr char kDecisionLogicScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, unusedTrustedScoringSignals,
+    browserSignals) {
+  if (browserSignals.selectedBuyerAndSellerReportingId !== "selectable_id1" ||
+      browserSignals.buyerAndSellerReportingId !== "bsid") {
+    throw "scoreAd does not contain valid reporting ids";
+  }
+  return bid;
+}
+
+function reportResult(auctionConfig, browserSignals) {
+  let reportUrl = auctionConfig.seller + '/report_seller/checksPassed';
+  if (browserSignals.selectedBuyerAndSellerReportingId !== "selectable_id1" ||
+    browserSignals.buyerAndSellerReportingId !== "bsid") {
+    reportUrl = auctionConfig.seller + '/report_seller/checksFailed';
+  }
+
+  sendReportTo(reportUrl);
+}
+)";
+
+  network_responder_->RegisterNetworkResponse(
+      kBiddingLogicPath, kBiddingLogicScript, "application/javascript");
+  network_responder_->RegisterNetworkResponse(
+      kDecisionLogicPath, kDecisionLogicScript, "application/javascript");
+  GURL ad_url_with_selectable =
+      embedded_https_test_server().GetURL("a.test", "/echo?Selectable");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(origin, "selectables")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test", kBiddingLogicPath))
+              .SetAds({{{ad_url_with_selectable,
+                         /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+                         /*buyer_reporting_id=*/"brid",
+                         /*buyer_and_seller_reporting_id=*/"bsid",
+                         /*selectable_buyer_and_seller_reporting_ids=*/
+                         std::vector<std::string>{"selectable_id1",
+                                                  "selectable_id2"},
+                         /*ad_render_id=*/std::nullopt}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+   seller: $1,
+   decisionLogicURL: $2,
+   interestGroupBuyers: [$1],
+   auctionSignals: {x: 1}
+               })",
+      origin,
+      embedded_https_test_server().GetURL("a.test", kDecisionLogicPath));
+
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config,
+                                           ad_url_with_selectable);
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "a.test", "/report_seller/checksPassed"));
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "a.test", "/report_bidder/checksPassed"));
+}
+
+// When an interest group contains selectableBuyerAndSellerReportingIds,
+// and one isn't selected in generateBid, this verifies that:
+//
+// reportWin() receives:
+//  - buyerAndSellerReportingId (original behavior)
+//
+// scoreAd() receives:
+//  - none of the reporting ids (original behavior)
+//
+// reportResult() receives:
+//  - buyerAndSellerReportingId (original behavior)
+//
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionWithWinnerWithNoSelectedValidateReportingIds) {
+  const GURL url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  const auto origin = url::Origin::Create(url);
+  const std::vector<std::string> kSelectableBuyerAndSellerReportingIds = {
+      "selectable_id1", "selectable_id2"};
+
+  // These scripts are generated by this test.
+  constexpr char kBiddingLogicPath[] =
+      "/interest_group/test_generated_bidding_argument_validator.js";
+  constexpr char kDecisionLogicPath[] =
+      "/interest_group/test_generated_decision_argument_validator.js";
+  constexpr char kBiddingLogicScript[] = R"(
+function generateBid(
+    interestGroup, unusedAuctionSignals, unusedPerBuyerSignals,
+    unusedTrustedBiddingSignals, unusedBrowserSignals) {
+  const ad = interestGroup.ads[0];
+  if (ad.selectableBuyerAndSellerReportingIds !== undefined &&
+      ad.buyerReportingId === "brid" &&
+      ad.buyerAndSellerReportingId === "bsid" ) {
+    return {'ad': ad, 'bid': 1000, 'render': ad.renderURL};
+  }
+  throw "generateBid does not contain valid reporting ids";
+}
+
+function reportWin(unusedAuctionSignals, unusedPerBuyerSignals,
+                    unusedSellerSignals, browserSignals) {
+  let reportUrl = browserSignals.interestGroupOwner + '/report_bidder/checksPassed';
+  if (browserSignals.buyerReportingId === "brid" ||
+    browserSignals.buyerAndSellerReportingId !== "bsid" ||
+    browserSignals.selectedBuyerAndSellerReportingId === "selectable_id1") {
+    reportUrl = browserSignals.interestGroupOwner + '/report_bidder/checksFailed';
+  }
+  sendReportTo(reportUrl);
+}
+)";
+
+  constexpr char kDecisionLogicScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, unusedTrustedScoringSignals,
+    browserSignals) {
+  // These ids are only present when selected is present, which it is not.
+  if (browserSignals.selectedBuyerAndSellerReportingId === undefined &&
+      browserSignals.buyerAndSellerReportingId === undefined) {
+    return bid;
+  }
+  throw "scoreAd does not contain valid reporting ids";
+}
+
+function reportResult(auctionConfig, browserSignals) {
+  let reportUrl = auctionConfig.seller + '/report_seller/checksPassed';
+  if (browserSignals.selectedBuyerAndSellerReportingId !== undefined ||
+    browserSignals.buyerAndSellerReportingId !== "bsid") {
+    reportUrl = auctionConfig.seller + '/report_seller/checksFailed';
+  }
+
+  sendReportTo(reportUrl);
+}
+)";
+
+  network_responder_->RegisterNetworkResponse(
+      kBiddingLogicPath, kBiddingLogicScript, "application/javascript");
+  network_responder_->RegisterNetworkResponse(
+      kDecisionLogicPath, kDecisionLogicScript, "application/javascript");
+  GURL ad_url = embedded_https_test_server().GetURL("a.test", "/echo?ad");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(origin, "selectables")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test", kBiddingLogicPath))
+              .SetAds({{{ad_url,
+                         /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+                         /*buyer_reporting_id=*/"brid",
+                         /*buyer_and_seller_reporting_id=*/"bsid",
+                         kSelectableBuyerAndSellerReportingIds,
+                         /*ad_render_id=*/std::nullopt}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+   seller: $1,
+   decisionLogicURL: $2,
+   interestGroupBuyers: [$1],
+   auctionSignals: {x: 1}
+               })",
+      origin,
+      embedded_https_test_server().GetURL("a.test", kDecisionLogicPath));
+
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "a.test", "/report_seller/checksPassed"));
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "a.test", "/report_bidder/checksPassed"));
+}
+
+// When an interest group contains selectableBuyerAndSellerReportingIds,
+// and the one selected in generateBid is not present within the original array,
+// this verifies that a worklet error is thrown and the bid is discarded.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithInvalidSelectedReportingId) {
+  const GURL url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  const auto origin = url::Origin::Create(url);
+  const std::vector<std::string> kSelectableBuyerAndSellerReportingIds = {
+      "selectable_id1", "selectable_id2"};
+
+  // These scripts are generated by this test.
+  constexpr char kBiddingLogicPath[] =
+      "/interest_group/test_generated_bidding_argument_validator.js";
+  constexpr char kDecisionLogicPath[] =
+      "/interest_group/test_generated_decision_argument_validator.js";
+
+  constexpr char kBiddingLogicScript[] = R"(
+function generateBid(
+    interestGroup, unusedAuctionSignals, unusedPerBuyerSignals,
+    unusedTrustedBiddingSignals, unusedBrowserSignals) {
+  const ad = interestGroup.ads[0];
+  if (ad.selectableBuyerAndSellerReportingIds !== undefined) {
+    return {'ad': ad, 'bid': 1, 'render': ad.renderURL,
+            'selectedBuyerAndSellerReportingId':"invalid-selectedReportingId"};
+  }
+  throw "generateBid does not contain valid reporting ids";
+}
+
+function reportWin(unusedAuctionSignals, unusedPerBuyerSignals,
+                   unusedSellerSignals, browserSignals) {
+  throw "reportWin should not be called";
+}
+)";
+
+  constexpr char kDecisionLogicScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, unusedTrustedScoringSignals,
+    browserSignals) {
+  throw "scoreAd should not be called";
+}
+
+function reportResult(auctionConfig, browserSignals) {
+  throw "reportResult should not be called";
+}
+)";
+
+  // Expected worklet error
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "*Worklet error: *generateBid() Invalid selected buyer and seller "
+      "reporting id*");
+
+  network_responder_->RegisterNetworkResponse(
+      kBiddingLogicPath, kBiddingLogicScript, "application/javascript");
+  network_responder_->RegisterNetworkResponse(
+      kDecisionLogicPath, kDecisionLogicScript, "application/javascript");
+  GURL ad_url_with_selectable =
+      embedded_https_test_server().GetURL("a.test", "/echo?Selectable");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(origin, "selectables")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test", kBiddingLogicPath))
+              .SetAds({{{ad_url_with_selectable,
+                         /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+                         /*buyer_reporting_id=*/std::nullopt,
+                         /*buyer_and_seller_reporting_id=*/std::nullopt,
+                         kSelectableBuyerAndSellerReportingIds,
+                         /*ad_render_id=*/std::nullopt}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+   seller: $1,
+   decisionLogicURL: $2,
+   interestGroupBuyers: [$1],
+   auctionSignals: {x: 1}
+               })",
+      origin,
+      embedded_https_test_server().GetURL("a.test", kDecisionLogicPath));
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 // These end-to-end tests validate that information from navigator-exposed APIs
@@ -17585,28 +18130,42 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url;
   url::Origin origin;
   std::string host;
-  RenderFrameHost* execution_targets[] = {
+  const auto execution_targets = std::to_array<RenderFrameHost*>({
       main_frame,
       // Test the next two cases twice, to make sure the caching logic works, or
       // at least doesn't prevent duplicate warnings.
-      same_origin_iframe, same_origin_iframe, cross_origin_iframe,
-      cross_origin_iframe, inner_cross_origin_iframe,
+      same_origin_iframe,
+      same_origin_iframe,
+      cross_origin_iframe,
+      cross_origin_iframe,
+      inner_cross_origin_iframe,
       same_origin_iframe_in_cross_origin_iframe,
       cross_origin_iframe_with_permissions,
       nested_cross_origin_iframe_with_permissions,
       same_origin_iframe_in_cross_origin_iframe_with_permissions,
-      same_origin_iframe_in_cross_origin_iframe2, cross_origin_join_only,
-      cross_origin_run_auction_only};
+      same_origin_iframe_in_cross_origin_iframe2,
+      cross_origin_join_only,
+      cross_origin_run_auction_only,
+  });
 
   // The execution targets that are expected to have permissions warnings.
-  RenderFrameHost* execution_targets_with_all_warnings[] = {
-      cross_origin_iframe, inner_cross_origin_iframe,
-      same_origin_iframe_in_cross_origin_iframe,
-      same_origin_iframe_in_cross_origin_iframe2};
-  RenderFrameHost* execution_targets_with_join_warnings[] = {
-      cross_origin_run_auction_only};
-  RenderFrameHost* execution_targets_with_run_auction_warnings[] = {
-      cross_origin_join_only};
+  const auto execution_targets_with_all_warnings =
+      std::to_array<RenderFrameHost*>({
+          cross_origin_iframe,
+          inner_cross_origin_iframe,
+          same_origin_iframe_in_cross_origin_iframe,
+          same_origin_iframe_in_cross_origin_iframe2,
+      });
+
+  const auto execution_targets_with_join_warnings =
+      std::to_array<RenderFrameHost*>({
+          cross_origin_run_auction_only,
+      });
+
+  const auto execution_targets_with_run_auction_warnings =
+      std::to_array<RenderFrameHost*>({
+          cross_origin_join_only,
+      });
 
   for (size_t i = 0; i < std::size(execution_targets); ++i) {
     SCOPED_TRACE(i);
@@ -17789,9 +18348,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
   GURL url;
   url::Origin origin;
   std::string host;
-  RenderFrameHost* execution_targets[] = {main_frame, same_origin_iframe,
-                                          cross_origin_iframe,
-                                          inner_cross_origin_iframe};
+  const auto execution_targets = std::to_array<RenderFrameHost*>({
+      main_frame,
+      same_origin_iframe,
+      cross_origin_iframe,
+      inner_cross_origin_iframe,
+  });
 
   for (auto* execution_target : execution_targets) {
     url = execution_target->GetLastCommittedURL();
@@ -18241,30 +18803,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
                 .Build()));
   }
 
-  int number_of_bidder_threads =
-      1 +
-      static_cast<int>(
-          features::kFledgeBidderWorkletThreadPoolSizeLogarithmicScalingFactor
-              .Get() *
-          std::log10(kNumGroups));
-
-  // With existing field trial configuration, only 1-2 threads are possible.
-  // With 2 threads, expect result "/echo?5", as generateBid() is called 5 times
-  // on each context.
-  CHECK(number_of_bidder_threads == 1 || number_of_bidder_threads == 2);
-
-  EXPECT_EQ(
-      embedded_https_test_server().GetURL(
-          "c.test", (number_of_bidder_threads == 1) ? "/echo?10" : "/echo?5"),
-      RunAuctionAndWaitForUrl(JsReplace(
-          R"({
+  EXPECT_EQ(embedded_https_test_server().GetURL("c.test", "/echo?10"),
+            RunAuctionAndWaitForUrl(JsReplace(
+                R"({
                   seller: $1,
                   decisionLogicURL: $2,
                   interestGroupBuyers: [$1],
                 })",
-          test_origin,
-          embedded_https_test_server().GetURL(
-              "a.test", "/interest_group/decision_logic.js"))));
+                test_origin,
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/decision_logic.js"))));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -19283,7 +19831,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
             EXPECT_EQ(request.payload_contents().contributions[0].value, 5);
             EXPECT_EQ(request.shared_info().reporting_origin, test_origin);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kProtectedAudience);
+                      PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), test_origin);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
@@ -19322,24 +19870,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   run_loop.Run();
 }
 
-class LeaveAdInterestGroupFromAdComponentBrowserTest
-    : public base::test::WithFeatureOverride,
-      public InterestGroupFencedFrameBrowserTest {
- public:
-  LeaveAdInterestGroupFromAdComponentBrowserTest()
-      : base::test::WithFeatureOverride(
-            blink::features::kFencedFramesM120FeaturesPart2) {}
-
-  ~LeaveAdInterestGroupFromAdComponentBrowserTest() override = default;
-
-  bool IsLeaveAdInterestGroupFromAdComponentEnabled() { return GetParam(); }
-};
-
 // Before M120: Leaving the interest group an ad component is not supported.
 // M120 and afterwards: Leaving the group from an ad component that is same
 // origin to interest group owner should succeed.
-IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
-                       SameOriginAdComponentsLeaveSucceedFrom120) {
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       SameOriginAdComponentsLeaveSucceed) {
   url::Origin test_origin =
       url::Origin::Create(embedded_https_test_server().GetURL("a.test", "/"));
   GURL ad_component_url = embedded_https_test_server().GetURL(
@@ -19349,32 +19884,20 @@ IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
   // The main frame will have an origin of "a.test".
   ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
 
-  if (IsLeaveAdInterestGroupFromAdComponentEnabled()) {
-    // InterestGroupAccessObserver should see the join, auction and the leave.
-    WaitForAccessObserved(
-        {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
-         {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-         {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
-         {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
-         {"global", TestInterestGroupObserver::kLeave, test_origin, "cars"}});
-  } else {
-    // InterestGroupAccessObserver should see the join and auction, but not the
-    // leave.
-    WaitForAccessObserved(
-        {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
-         {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-         {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
-         {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
-  }
+  // InterestGroupAccessObserver should see the join, auction and the leave.
+  WaitForAccessObserved(
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+       {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
+       {"global", TestInterestGroupObserver::kLeave, test_origin, "cars"}});
 
-  // The state of the interest groups depends on the feature toggle.
-  EXPECT_EQ(GetAllInterestGroups().empty(),
-            IsLeaveAdInterestGroupFromAdComponentEnabled());
+  EXPECT_TRUE(GetAllInterestGroups().empty());
 }
 
 // Leaving the group from a site that is cross origin to interest group owner
 // should always fail, regardless of whether this is an ad component or not.
-IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        CrossOriginAdComponentsLeaveFail) {
   url::Origin test_origin =
       url::Origin::Create(embedded_https_test_server().GetURL("a.test", "/"));
@@ -19397,9 +19920,6 @@ IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
   // The ad should not leave the interest group.
   EXPECT_EQ(1u, GetAllInterestGroups().size());
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    LeaveAdInterestGroupFromAdComponentBrowserTest);
 
 class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
  public:
@@ -19675,13 +20195,7 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
     : public InterestGroupFencedFrameBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  InterestGroupAdComponentAutomaticBeaconBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kFencedFramesM120FeaturesPart2},
-        /*disabled_features=*/
-        {});
-  }
+  InterestGroupAdComponentAutomaticBeaconBrowserTest() = default;
 
   std::unique_ptr<NetworkResponder> CreateNetworkResponder() override {
     // Fenced frame window.fence.reportEvent API requires a responder that
@@ -23393,6 +23907,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
         'realTimeReporting');
   )";
 
+  const char kQuerySelectableReportingIds[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'selectableReportingIds');
+  )";
+
   const char kQueryAll[] = R"(
     navigator.protectedAudience.queryFeatureSupport('*');
   )";
@@ -23400,10 +23919,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
   EXPECT_EQ(40, EvalJs(shell(), kQueryComponentLimit));
   EXPECT_EQ(true, EvalJs(shell(), kQueryUrlReplacements));
   EXPECT_EQ(true, EvalJs(shell(), kQueryReportingTimeout));
+  EXPECT_EQ(true, EvalJs(shell(), kQuerySelectableReportingIds));
   EXPECT_EQ(false, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
   EXPECT_EQ(false, EvalJs(shell(), kQueryRealTimeReporting));
-  // Since only older features are on in this feature, * isn't available yet.
-  EXPECT_EQ(nullptr, EvalJs(shell(), kQueryAll));
+  auto all_result = EvalJs(shell(), kQueryAll);
+  EXPECT_THAT(all_result.value, base::test::IsJson(R"({
+   "adComponentsLimit": 40,
+   "deprecatedRenderURLReplacements": true,
+   "permitCrossOriginTrustedSignals": false,
+   "realTimeReporting": false,
+   "reportingTimeout": true,
+   "selectableReportingIds": true
+})")) << all_result.error;
 }
 
 // Worklet handling of zero seller timeout.
@@ -24503,6 +25030,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                 "permitCrossOriginTrustedSignals": true,
                 "realTimeReporting": false,
                 "reportingTimeout": true,
+                "selectableReportingIds": true,
               })"))
       << all_result.error;
 }
@@ -24930,6 +25458,7 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
                 "permitCrossOriginTrustedSignals": false,
                 "realTimeReporting": true,
                 "reportingTimeout": true,
+                "selectableReportingIds": true,
               })"))
       << all_result.error;
 }
@@ -25068,7 +25597,8 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingDisabledTest, FeatureDetection) {
 }
 
 class InterestGroupPreconnectOwnerAndSignalsOriginsTest
-    : public InterestGroupBrowserTest {
+    : public InterestGroupBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   InterestGroupPreconnectOwnerAndSignalsOriginsTest() {
     feature_list_.InitWithFeatures(/*enabled_features=*/
@@ -25180,13 +25710,15 @@ class InterestGroupPreconnectOwnerAndSignalsOriginsTest
     return num_signals_requests_;
   }
 
+  bool UseConfigWithComponentAuction() const { return GetParam(); }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   size_t num_owner_requests_ GUARDED_BY(requests_lock_) = 0;
   size_t num_signals_requests_ GUARDED_BY(requests_lock_) = 0;
 };
 
-IN_PROC_BROWSER_TEST_F(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
                        PreconnectsToOwnerAndSignalsOrigins) {
   GURL joining_url = embedded_https_test_server().GetURL("c.test", "/echo");
   url::Origin joining_origin = url::Origin::Create(joining_url);
@@ -25248,15 +25780,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
       interest_group_without_ads.owner, cached_signals_origin));
   EXPECT_EQ(cached_signals_origin, signals_origin);
 
-  const char kConfigTemplate[] = R"({
+  std::string config_template;
+  if (UseConfigWithComponentAuction()) {
+    config_template = R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        auctionSignals: "bidderAllowsComponentAuction,"+
+                        "sellerAllowsComponentAuction",
+        componentAuctions:
+            [{
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$3],
+              auctionSignals: "bidderAllowsComponentAuction,"+
+                              "sellerAllowsComponentAuction"
+            }]
+      })";
+  } else {
+    config_template = R"({
     seller: $1,
     decisionLogicURL: $2,
     interestGroupBuyers: [$3],
     sellerTimeout: 3000,
   })";
+  }
 
   std::string auction_config =
-      JsReplace(kConfigTemplate, joining_origin,
+      JsReplace(config_template, joining_origin,
                 embedded_https_test_server().GetURL(
                     "c.test", "/interest_group/decision_logic.js"),
                 owner_origin);
@@ -25292,6 +25842,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
   EXPECT_EQ(GetNumOwnerRequests(), 1u);
   EXPECT_EQ(GetNumSignalsRequests(), 1u);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InterestGroupPreconnectOwnerAndSignalsOriginsTest,
+                         testing::Bool());
 
 }  // namespace
 

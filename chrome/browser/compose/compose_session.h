@@ -224,7 +224,11 @@ class ComposeSession
 
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
+  void LaunchHatsSurvey(compose::ComposeSessionCloseReason close_reason);
+
   void SetSkipFeedbackUiForTesting(bool allowed);
+
+  bool HasExpired();
 
  private:
   void ProcessError(compose::EvalLocation eval_location,
@@ -268,9 +272,8 @@ class ComposeSession
       int request_id,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
-  void UpdateAXSnapshotAndContinueComposeIfNecessary(
-      int request_id,
-      const ui::AXTreeUpdate& update);
+  void UpdateAXSnapshotAndContinueComposeIfNecessary(int request_id,
+                                                     ui::AXTreeUpdate& update);
 
   // Continues the compose request if all page context has been received.
   // Note that this adds necessary metadata that may have been populated from

@@ -216,9 +216,4 @@ void FakeSyncManager::UpdateActiveDevicesInvalidationInfo(
   // Do nothing.
 }
 
-DataTypeSet FakeSyncManager::GetTypesWithUnsyncedData() {
-  NOTIMPLEMENTED();
-  return DataTypeSet();
-}
-
 }  // namespace syncer

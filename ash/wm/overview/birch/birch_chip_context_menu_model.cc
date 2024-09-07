@@ -76,6 +76,13 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_MEDIA_SUGGESTIONS),
           CreateIconForMenuItem(kForbidIcon));
       break;
+    case BirchSuggestionType::kCoral:
+      add_hide_suggestion_item();
+      // TODO(yulunwu) Replace with product name.
+      AddItemWithIcon(base::to_underlying(CommandId::kHideCoralSuggestions),
+                      u"Hide all coral suggestions",
+                      CreateIconForMenuItem(kForbidIcon));
+      break;
     default:
       break;
   }
@@ -84,6 +91,7 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
       base::to_underlying(CommandId::kCustomizeSuggestions),
       l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CUSTOMIZE_SUGGESTIONS),
       sub_menu_model_.get(), CreateIconForMenuItem(kPencilIcon));
+
   if (chip_type == BirchSuggestionType::kWeather) {
     bool is_celsius = GetPrefService()->GetBoolean(prefs::kBirchUseCelsius);
     AddItem(base::to_underlying(CommandId::kToggleTemperatureUnits),
@@ -91,10 +99,6 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
                 is_celsius ? IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_FAHRENHEIT
                            : IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_CELSIUS));
   }
-  AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
-  AddItemWithIcon(base::to_underlying(CommandId::kFeedback),
-                  l10n_util::GetStringUTF16(IDS_ASH_BIRCH_SEND_FEEDBACK),
-                  CreateIconForMenuItem(kFeedbackIcon));
 }
 
 BirchChipContextMenuModel::~BirchChipContextMenuModel() = default;

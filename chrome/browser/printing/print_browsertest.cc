@@ -550,6 +550,13 @@ void PrintBrowserTest::SetPrinterLanguageTypeForSubsequentContexts(
 }
 #endif
 
+void PrintBrowserTest::SetUserSettingsPageRangesForSubsequentContext(
+    const PageRanges& page_ranges) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  test_printing_context_factory_.SetUserSettingsPageRangesForSubsequentContext(
+      page_ranges);
+}
+
 void PrintBrowserTest::SetNewDocumentJobId(int job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   test_printing_context_factory_.SetJobIdOnNewDocument(job_id);
@@ -2013,7 +2020,7 @@ IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  int prerender_id = prerender_helper_.AddPrerender(
+  content::FrameTreeNodeId prerender_id = prerender_helper_.AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(prerender_id);
@@ -2046,7 +2053,7 @@ IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest,
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  int prerender_id = prerender_helper_.AddPrerender(
+  content::FrameTreeNodeId prerender_id = prerender_helper_.AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(prerender_id);

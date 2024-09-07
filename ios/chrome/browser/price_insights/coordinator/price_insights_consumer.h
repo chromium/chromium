@@ -17,8 +17,10 @@ enum class PriceBucket;
 @protocol PriceInsightsConsumer <NSObject>
 
 // Notifies the modulator that the user successfully tracked a price with or
-// without notifications being granted by the user.
-- (void)didStartPriceTrackingWithNotification:(BOOL)granted;
+// without notifications being granted by the user. It also can show a snackbar
+// to inform the user of the completion of the tracking status.
+- (void)didStartPriceTrackingWithNotification:(BOOL)granted
+                               showCompletion:(BOOL)showCompletion;
 
 // Notifies the modulator that the trackable item was successfully unsubscribed
 // to.
@@ -30,15 +32,15 @@ enum class PriceBucket;
 
 // Displays a UIAlert in the modulator that directs the user to the OS
 // permission settings to enable push notification permissions.
-- (void)presentPushNotificationPermissionAlertForItem:(PriceInsightsItem*)item;
+- (void)presentPushNotificationPermissionAlert;
 
 // Displays a UIAlert in the modulator that indicates to the user that an error
 // has occurred during the price tracking subscription process.
-- (void)presentStartPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item;
+- (void)presentStartPriceTrackingErrorAlert;
 
 // Displays a UIAlert in the modulator that indicates to the user that an error
 // has occurred during the price tracking subscription cancellation process.
-- (void)presentStopPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item;
+- (void)presentStopPriceTrackingErrorAlert;
 
 @end
 

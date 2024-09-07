@@ -66,11 +66,11 @@ class PDFiumPrint {
                                          const gfx::Rect& printable_area);
 
   std::vector<uint8_t> PrintPagesAsPdf(
-      const std::vector<int>& page_numbers,
+      const std::vector<int>& page_indices,
       const blink::WebPrintParams& print_params);
 
  private:
-  ScopedFPDFDocument CreatePrintPdf(const std::vector<int>& page_numbers,
+  ScopedFPDFDocument CreatePrintPdf(const std::vector<int>& page_indices,
                                     const blink::WebPrintParams& print_params);
 
   ScopedFPDFDocument CreateRasterPdf(ScopedFPDFDocument doc, int dpi);

@@ -168,7 +168,8 @@ class ContentSettingsPattern {
   // all subdomains and ports.
   static ContentSettingsPattern FromURL(const GURL& url);
 
-  // Returns a pattern that matches exactly this URL.
+  // Returns a pattern that matches exactly this URL. (Paths are ignored for
+  // non-"file://" URLs.)
   static ContentSettingsPattern FromURLNoWildcard(const GURL& url);
 
   // Converts a given url to a ContentSettingsPattern that represents a site,

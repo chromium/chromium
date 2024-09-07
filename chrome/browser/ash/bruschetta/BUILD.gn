@@ -94,9 +94,6 @@ static_library("test_support") {
   public_deps = [
     ":bruschetta",
     "//base",
-
-    # TODO(b/335293444): Replace this with //c/b/a/guest_os.
-    "//chrome/browser/ash",
   ]
 }
 
@@ -142,7 +139,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os:test_support",
     "//chrome/browser/ash/guest_os/public",

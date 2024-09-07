@@ -366,18 +366,31 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     args.pyl_files_dir = args.pyl_files_dir or THIS_DIR
     args.output_dir = args.output_dir or args.pyl_files_dir
 
-    def absolute_file_path(filename):
+    def pyl_dir_path(filename):
       return os.path.join(args.pyl_files_dir, filename)
 
-    args.waterfalls_pyl_path = absolute_file_path('waterfalls.pyl')
-    args.mixins_pyl_path = absolute_file_path('mixins.pyl')
-    args.test_suites_pyl_path = absolute_file_path('test_suites.pyl')
-    args.test_suite_exceptions_pyl_path = absolute_file_path(
+    args.waterfalls_pyl_path = pyl_dir_path('waterfalls.pyl')
+    args.test_suite_exceptions_pyl_path = pyl_dir_path(
         'test_suite_exceptions.pyl')
-    args.gn_isolate_map_pyl_path = absolute_file_path('gn_isolate_map.pyl')
-    args.variants_pyl_path = absolute_file_path('variants.pyl')
     args.autoshard_exceptions_json_path = os.path.join(
         args.infra_config_dir, 'targets', 'autoshard_exceptions.json')
+
+    if args.pyl_files_dir == THIS_DIR:
+
+      def infra_config_testing_path(filename):
+        return os.path.join(args.infra_config_dir, 'generated', 'testing',
+                            filename)
+
+      args.gn_isolate_map_pyl_path = infra_config_testing_path(
+          'gn_isolate_map.pyl')
+      args.mixins_pyl_path = infra_config_testing_path('mixins.pyl')
+      args.test_suites_pyl_path = infra_config_testing_path('test_suites.pyl')
+      args.variants_pyl_path = infra_config_testing_path('variants.pyl')
+    else:
+      args.gn_isolate_map_pyl_path = pyl_dir_path('gn_isolate_map.pyl')
+      args.mixins_pyl_path = pyl_dir_path('mixins.pyl')
+      args.test_suites_pyl_path = pyl_dir_path('test_suites.pyl')
+      args.variants_pyl_path = pyl_dir_path('variants.pyl')
 
     return args
 

@@ -16,9 +16,14 @@
 -All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/0
 -All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/2
 
+# crbug.com/362833242
+-WebRtcCaptureFromElementBrowserTest.VerifyCanvasCaptureWebGLFrames
+
 # crbug.com/1428300
 -OpenCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
 
 # crbug.com/343335591
 -FormControlsBrowserTest.Button
 
+# crbug.com/364371348
+-All/BackForwardCacheNetworkLimitBrowserTest.ImageStillLoading*

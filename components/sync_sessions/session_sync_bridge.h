@@ -85,7 +85,7 @@ class SessionSyncBridge : public syncer::DataTypeSyncBridge,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<SessionStore> store,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void StartLocalSessionEventHandler();
+  void StartLocalSessionEventHandler(bool is_new_session);
   void DeleteForeignSessionFromUI(const std::string& tag);
   void DoGarbageCollection(SessionStore::WriteBatch* write_batch);
   std::unique_ptr<SessionStore::WriteBatch> CreateSessionStoreWriteBatch();

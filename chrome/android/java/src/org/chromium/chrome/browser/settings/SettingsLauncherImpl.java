@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.settings;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -97,19 +96,8 @@ public class SettingsLauncherImpl implements SettingsLauncher {
             Context context,
             @Nullable Class<? extends Fragment> fragment,
             @Nullable Bundle fragmentArgs) {
-        Intent intent = new Intent();
-        intent.setClass(context, SettingsActivity.class);
-        if (!(context instanceof Activity)) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        }
-        if (fragment != null) {
-            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragment.getName());
-        }
-        if (fragmentArgs != null) {
-            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, fragmentArgs);
-        }
-        return intent;
+        String fragmentName = fragment == null ? null : fragment.getName();
+        return SettingsIntentUtil.createIntent(context, fragmentName, fragmentArgs);
     }
 
     @Override

@@ -145,8 +145,7 @@ std::unique_ptr<ClientSafeBrowsingReportRequest> CreateDownloadReport(
     PopulateDownloadWarningActions(download, report.get());
     base::Time warning_first_shown_time =
         DownloadItemWarningData::WarningFirstShownTime(download);
-    if (!warning_first_shown_time.is_null() &&
-        base::FeatureList::IsEnabled(kDownloadReportWithoutUserDecision)) {
+    if (!warning_first_shown_time.is_null()) {
       report->set_warning_shown_timestamp_msec(
           warning_first_shown_time.InMillisecondsSinceUnixEpoch());
     }
@@ -392,7 +391,7 @@ void SafeBrowsingService::Start() {
 
   if (!enabled_) {
     enabled_ = true;
-    services_delegate_->StartOnSBThread(
+    services_delegate_->StartOnUIThread(
         g_browser_process->shared_url_loader_factory(), GetV4ProtocolConfig());
   }
 }
@@ -400,7 +399,7 @@ void SafeBrowsingService::Start() {
 void SafeBrowsingService::Stop(bool shutdown) {
   ui_manager_->Stop(shutdown);
 
-  services_delegate_->StopOnSBThread(shutdown);
+  services_delegate_->StopOnUIThread(shutdown);
 
   enabled_ = false;
 }

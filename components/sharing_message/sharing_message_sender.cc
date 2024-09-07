@@ -13,6 +13,7 @@
 #include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
+#include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 
 SharingMessageSender::SharingMessageSender(
@@ -147,6 +148,9 @@ SharingMessageSender::MaybeGetSendMessageDelegate(
     int trace_id,
     const std::string& message_guid,
     DelegateType delegate_type) {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("sharing", "Sharing.SendMessage",
+                                    TRACE_ID_LOCAL(trace_id), "message_type",
+                                    SharingMessageTypeToString(message_type));
   auto delegate_iter = send_delegates_.find(delegate_type);
   if (delegate_iter == send_delegates_.end()) {
     return nullptr;

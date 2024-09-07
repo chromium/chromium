@@ -102,10 +102,7 @@ void EscapeStringForJSON(const String& str, StringBuilder* dst) {
   for (unsigned i = 0; i < str.length(); ++i) {
     UChar c = str[i];
     if (!EscapeChar(c, dst)) {
-      if (c < 32 ||
-          (!RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled() &&
-           c > 126) ||
-          c == '<' || c == '>') {
+      if (c < 32 || c == '<' || c == '>') {
         // 1. Escaping <, > to prevent script execution.
         AppendUnsignedAsHex(c, dst);
       } else {
@@ -251,35 +248,35 @@ std::unique_ptr<JSONValue> JSONString::Clone() const {
 
 JSONObject::~JSONObject() = default;
 
-void JSONObject::SetBoolean(const String& name, bool value) {
-  SetValue(name, std::make_unique<JSONBasicValue>(value));
+bool JSONObject::SetBoolean(const String& name, bool value) {
+  return SetValue(name, std::make_unique<JSONBasicValue>(value));
 }
 
-void JSONObject::SetInteger(const String& name, int value) {
-  SetValue(name, std::make_unique<JSONBasicValue>(value));
+bool JSONObject::SetInteger(const String& name, int value) {
+  return SetValue(name, std::make_unique<JSONBasicValue>(value));
 }
 
-void JSONObject::SetDouble(const String& name, double value) {
-  SetValue(name, std::make_unique<JSONBasicValue>(value));
+bool JSONObject::SetDouble(const String& name, double value) {
+  return SetValue(name, std::make_unique<JSONBasicValue>(value));
 }
 
-void JSONObject::SetString(const String& name, const String& value) {
-  SetValue(name, std::make_unique<JSONString>(value));
+bool JSONObject::SetString(const String& name, const String& value) {
+  return SetValue(name, std::make_unique<JSONString>(value));
 }
 
-void JSONObject::SetValue(const String& name,
+bool JSONObject::SetValue(const String& name,
                           std::unique_ptr<JSONValue> value) {
-  Set(name, value);
+  return Set(name, value);
 }
 
-void JSONObject::SetObject(const String& name,
+bool JSONObject::SetObject(const String& name,
                            std::unique_ptr<JSONObject> value) {
-  Set(name, value);
+  return Set(name, value);
 }
 
-void JSONObject::SetArray(const String& name,
+bool JSONObject::SetArray(const String& name,
                           std::unique_ptr<JSONArray> value) {
-  Set(name, value);
+  return Set(name, value);
 }
 
 bool JSONObject::GetBoolean(const String& name, bool* output) const {

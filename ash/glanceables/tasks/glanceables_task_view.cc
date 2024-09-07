@@ -510,10 +510,10 @@ void GlanceablesTaskView::UpdateTaskTitleViewForState(
       break;
     case TaskTitleViewState::kEdit:
       task_title_before_edit_ = task_title_;
-      task_title_textfield_ =
-          tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
-              base::BindRepeating(&GlanceablesTaskView::OnFinishedEditing,
-                                  base::Unretained(this))));
+      task_title_textfield_ = tasks_title_view_->AddChildView(
+          std::make_unique<TaskViewTextField>(base::BindRepeating(
+              &GlanceablesTaskView::OnFinishedEditing,
+              state_change_weak_ptr_factory_.GetWeakPtr())));
       task_title_textfield_->SetText(task_title_);
       GetWidget()->widget_delegate()->SetCanActivate(true);
       task_title_textfield_->RequestFocus();
@@ -664,14 +664,14 @@ void GlanceablesTaskView::CheckButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork,
-        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+        ErrorMessageToast::ButtonActionType::kDismiss);
     return;
   }
 
   if (task_id_.empty()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantMarkComplete,
-        GlanceablesErrorMessageView::ButtonActionType::kReload);
+        ErrorMessageToast::ButtonActionType::kReload);
     return;
   }
 
@@ -689,7 +689,7 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork,
-        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+        ErrorMessageToast::ButtonActionType::kDismiss);
     return;
   }
   RecordUserModifyingTask();
@@ -742,7 +742,8 @@ void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
   }
 }
 
-void GlanceablesTaskView::OnSaved(const api::Task* task) {
+void GlanceablesTaskView::OnSaved(google_apis::ApiErrorCode http_error,
+                                  const api::Task* task) {
   saving_task_changes_ = false;
   if (task_title_button_) {
     task_title_button_->SetEnabled(true);

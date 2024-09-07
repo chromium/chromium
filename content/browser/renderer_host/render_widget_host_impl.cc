@@ -46,12 +46,12 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/timeout_monitor.h"
 #include "components/input/utils.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
@@ -119,6 +119,7 @@
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -150,7 +151,7 @@
 #include "content/browser/renderer_host/input/fling_scheduler_mac.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
-#include "ui/base/cocoa/cursor_utils.h"
+#include "ui/base/cocoa/cursor_accessibility_scale_factor.h"
 #endif
 
 using blink::DragOperationsMask;
@@ -1152,6 +1153,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
 void RenderWidgetHostImpl::ClearVisualProperties() {
   old_visual_properties_.reset();
+  visual_properties_ack_pending_ = false;
 }
 
 bool RenderWidgetHostImpl::UpdateVisualProperties(bool propagate) {
@@ -2966,22 +2968,41 @@ input::StylusInterface* RenderWidgetHostImpl::GetStylusInterface() {
 }
 
 void RenderWidgetHostImpl::OnStartStylusWriting() {
+  if (view_) {
+    view_->OnStartStylusWriting();
+  }
+}
+
+void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting() {
   if (blink_frame_widget_) {
     auto callback = base::BindOnce(
-        &RenderWidgetHostImpl::OnEditElementFocusedForStylusWriting,
+        &RenderWidgetHostImpl::OnUpdateElementFocusForStylusWritingHandled,
         weak_factory_.GetWeakPtr());
     blink_frame_widget_->OnStartStylusWriting(std::move(callback));
   }
 }
 
-void RenderWidgetHostImpl::OnEditElementFocusedForStylusWriting(
+void RenderWidgetHostImpl::OnUpdateElementFocusForStylusWritingHandled(
     const std::optional<gfx::Rect>& focused_edit_bounds,
     const std::optional<gfx::Rect>& caret_bounds) {
   if (view_) {
-    view_->OnEditElementFocusedForStylusWriting(
-        focused_edit_bounds.value_or(gfx::Rect()),
-        caret_bounds.value_or(gfx::Rect()));
+    if (focused_edit_bounds.has_value() && caret_bounds.has_value()) {
+      view_->OnEditElementFocusedForStylusWriting(focused_edit_bounds.value(),
+                                                  caret_bounds.value());
+    } else {
+      view_->OnEditElementFocusClearedForStylusWriting();
+    }
   }
+}
+
+void RenderWidgetHostImpl::PassImeRenderWidgetHost(
+    mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!blink_frame_widget_) {
+    return;
+  }
+  blink_frame_widget_->PassImeRenderWidgetHost(std::move(pending_remote));
+#endif
 }
 
 void RenderWidgetHostImpl::SetMouseCapture(bool capture) {
@@ -3172,6 +3193,10 @@ void RenderWidgetHostImpl::NotifyUISchedulerOfGestureEventUpdate(
   CHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserUIThreadScheduler::Get()->OnScrollStateUpdate(
       GetScrollStateUpdateFromGestureEvent(gesture_event));
+}
+
+void RenderWidgetHostImpl::OnInputIgnored(const blink::WebInputEvent& event) {
+  delegate_->OnInputIgnored(event);
 }
 
 void RenderWidgetHostImpl::DecrementInFlightEventCount(
@@ -3461,12 +3486,12 @@ void RenderWidgetHostImpl::OnSnapshotReceived(int snapshot_id,
 #endif
 }
 
-BrowserAccessibilityManager*
+ui::BrowserAccessibilityManager*
 RenderWidgetHostImpl::GetRootBrowserAccessibilityManager() {
   return delegate_ ? delegate_->GetRootBrowserAccessibilityManager() : nullptr;
 }
 
-BrowserAccessibilityManager*
+ui::BrowserAccessibilityManager*
 RenderWidgetHostImpl::GetOrCreateRootBrowserAccessibilityManager() {
   return delegate_ ? delegate_->GetOrCreateRootBrowserAccessibilityManager()
                    : nullptr;
@@ -3504,9 +3529,15 @@ void RenderWidgetHostImpl::CreateFrameSink(
          std::optional<mojo::PendingRemote<
              blink::mojom::RenderInputRouterClient>> viz_rir_client_remote,
          const viz::FrameSinkId& frame_sink_id) {
+        input::mojom::RenderInputRouterConfigPtr config;
+        if (input::TransferInputToViz()) {
+          DCHECK(viz_rir_client_remote.has_value());
+          config = input::mojom::RenderInputRouterConfig::New();
+          config->rir_client = std::move(viz_rir_client_remote.value());
+        }
         GetHostFrameSinkManager()->CreateCompositorFrameSink(
             frame_sink_id, std::move(receiver), std::move(client),
-            std::move(viz_rir_client_remote));
+            std::move(config));
       },
       std::move(compositor_frame_sink_receiver),
       std::move(compositor_frame_sink_client),
@@ -3708,7 +3739,7 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
 
   // The root BrowserAccessibilityManager only is reachable if there's a
   // delegate() still, ie we're not in shutdown. This can be null in tests.
-  BrowserAccessibilityManager* accessibility_manager =
+  ui::BrowserAccessibilityManager* accessibility_manager =
       GetRootBrowserAccessibilityManager();
   if (accessibility_manager) {
     accessibility_manager->SetPageScaleFactor(metadata.page_scale_factor);

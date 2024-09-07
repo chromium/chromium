@@ -273,10 +273,11 @@ AudioInputStream* AudioManagerPulse::MakeInputStream(
                               base::Unretained(this)),
           input_context_, input_mainloop_);
     }
-
+    bool should_mute_system_audio =
+        (device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId);
     if (loopback_manager_) {
-      return loopback_manager_->MakeLoopbackStream(params,
-                                                   std::move(log_callback));
+      return loopback_manager_->MakeLoopbackStream(
+          params, std::move(log_callback), should_mute_system_audio);
     }
 
     return nullptr;

@@ -64,6 +64,17 @@ class CrosapiManager;
 
 class TestingProfileManager;
 
+// WARNING WARNING WARNING WARNING
+// Do not use this class. See docs/chrome_browser_design_principles.md for
+// details. Either write a browser test which provides both a "class Browser"
+// and a "class BrowserView" or a unit test which requires neither.
+// Historically, features were written that take a "class Browser" as an input
+// parameter. "class Browser" cannot be stubbed/faked/mocked, and this class was
+// written as a workaround to create a "class Browser" without a "class
+// BrowserView". This cannot happen in production code and thus results in test
+// logic leaking into production code. New features should not take "class
+// Browser" as input, and should instead perform dependency injection.
+//
 // Base class for browser based unit tests. BrowserWithTestWindowTest creates a
 // Browser with a TestingProfile and TestBrowserWindow. To add a tab use
 // AddTab. For example, the following adds a tab and navigates to two URLs:

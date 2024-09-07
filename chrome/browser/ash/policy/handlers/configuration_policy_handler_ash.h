@@ -271,6 +271,27 @@ class ArcLocationServicePolicyHandler : public ArcServicePolicyHandler {
                            PrefValueMap* prefs) override;
 };
 
+// Maps Chrome Compose policy into ChromeOS Orca settings
+class HelpMeWritePolicyHandler : public IntRangePolicyHandlerBase {
+ public:
+  enum class HelpMeWritePolicyValue {
+    kEnabledWithModelImprovement = 0,
+    kEnabledWithoutModelImprovement = 1,
+    kDisabled = 2,
+  };
+
+  HelpMeWritePolicyHandler();
+
+  HelpMeWritePolicyHandler(const HelpMeWritePolicyHandler&) = delete;
+  HelpMeWritePolicyHandler& operator=(const HelpMeWritePolicyHandler&) = delete;
+
+  ~HelpMeWritePolicyHandler() override = default;
+
+  // IntRangePolicyHandlerBase:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+};
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_ASH_H_

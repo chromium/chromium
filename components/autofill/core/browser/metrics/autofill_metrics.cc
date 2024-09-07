@@ -149,6 +149,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK = 45,
   GROUP_ADDRESS_HOME_HOUSE_NUMBER_AND_APT = 46,
   GROUP_STANDALONE_CREDIT_CARD_VERIFICATION = 47,
+  GROUP_PREDICTION_IMPROVEMENTS = 48,
   // Note: if adding an enum value here, run
   // tools/metrics/histograms/update_autofill_enums.py
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
@@ -250,6 +251,10 @@ int GetFieldTypeGroupPredictionQualityMetric(
 
     case FieldTypeGroup::kIban:
       group = GROUP_IBAN;
+      break;
+
+    case FieldTypeGroup::kPredictionImprovements:
+      group = GROUP_PREDICTION_IMPROVEMENTS;
       break;
 
     case FieldTypeGroup::kAddress:
@@ -411,6 +416,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
         case SINGLE_USERNAME_FORGOT_PASSWORD:
         case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+        case IMPROVED_PREDICTION:
           NOTREACHED_IN_MIGRATION()
               << field_type << " type is not in that group.";
           group = GROUP_AMBIGUOUS;
@@ -602,7 +608,7 @@ bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
         return field.value() == form_field->value() &&
                form_field->is_autofilled();
       };
-  return base::ranges::any_of(form, is_autofilled_with_same_value);
+  return std::ranges::any_of(form, is_autofilled_with_same_value);
 }
 
 void LogOnlyFillWhenFocusedRationalizationQuality(
@@ -1010,7 +1016,9 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
       return "ServerCardUnmask";
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
       return "ServerIbanUnmask";
-    default:
+    case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
+      return "3dsFetchVirtualCard";
+    case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }
 }
@@ -1122,6 +1130,9 @@ void AutofillMetrics::LogRealPanResult(PaymentsRpcResult result,
       DCHECK_EQ(card_type, PaymentsRpcCardType::kVirtualCard);
       metric_result = PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE;
       break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      metric_result = PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT;
+      break;
     case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
       return;
@@ -1186,6 +1197,9 @@ void AutofillMetrics::LogRealPanDuration(base::TimeDelta duration,
     case PaymentsRpcResult::kNetworkError:
       result_suffix = "NetworkError";
       break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      result_suffix = "ClientSideTimeout";
+      break;
     case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
       return;
@@ -1232,6 +1246,9 @@ void AutofillMetrics::LogUnmaskingDuration(base::TimeDelta duration,
       break;
     case PaymentsRpcResult::kNetworkError:
       result_suffix = "NetworkError";
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      result_suffix = "ClientSideTimeout";
       break;
     case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
@@ -1435,12 +1452,10 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   size_t num_local_cards = 0;
   size_t num_local_cards_with_nickname = 0;
   size_t num_local_cards_with_invalid_number = 0;
-  size_t num_masked_cards = 0;
-  size_t num_masked_cards_with_nickname = 0;
-  size_t num_unmasked_cards = 0;
+  size_t num_server_cards = 0;
+  size_t num_server_cards_with_nickname = 0;
   size_t num_disused_local_cards = 0;
-  size_t num_disused_masked_cards = 0;
-  size_t num_disused_unmasked_cards = 0;
+  size_t num_disused_server_cards = 0;
 
   // Concatenate the local and server cards into one big collection of raw
   // CreditCard pointers.
@@ -1478,36 +1493,21 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         UMA_HISTOGRAM_COUNTS_1000(
             "Autofill.DaysSinceLastUse.StoredCreditCard.Server",
             days_since_last_use);
-        UMA_HISTOGRAM_COUNTS_1000(
-            "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Masked",
-            days_since_last_use);
-        num_masked_cards += 1;
-        num_disused_masked_cards += disused_delta;
+        num_server_cards += 1;
+        num_disused_server_cards += disused_delta;
         if (card->HasNonEmptyValidNickname())
-          num_masked_cards_with_nickname += 1;
+          num_server_cards_with_nickname += 1;
         break;
       case CreditCard::RecordType::kFullServerCard:
-        UMA_HISTOGRAM_COUNTS_1000(
-            "Autofill.DaysSinceLastUse.StoredCreditCard.Server",
-            days_since_last_use);
-        UMA_HISTOGRAM_COUNTS_1000(
-            "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Unmasked",
-            days_since_last_use);
-        num_unmasked_cards += 1;
-        num_disused_unmasked_cards += disused_delta;
-        break;
       case CreditCard::RecordType::kVirtualCard:
-        // This card type is not persisted in Chrome.
+        // These card types are not persisted in Chrome.
         NOTREACHED_IN_MIGRATION();
         break;
     }
   }
 
   // Calculate some summary info.
-  const size_t num_server_cards = num_masked_cards + num_unmasked_cards;
   const size_t num_cards = num_local_cards + num_server_cards;
-  const size_t num_disused_server_cards =
-      num_disused_masked_cards + num_disused_unmasked_cards;
   const size_t num_disused_cards =
       num_disused_local_cards + num_disused_server_cards;
 
@@ -1522,13 +1522,9 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
       num_local_cards_with_invalid_number);
   UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardCount.Server",
                             num_server_cards);
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardCount.Server.Masked",
-                            num_masked_cards);
   UMA_HISTOGRAM_COUNTS_1000(
-      "Autofill.StoredCreditCardCount.Server.Masked.WithNickname",
-      num_masked_cards_with_nickname);
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardCount.Server.Unmasked",
-                            num_unmasked_cards);
+      "Autofill.StoredCreditCardCount.Server.WithNickname",
+      num_server_cards_with_nickname);
 
   // For card types held by the user, log how many are disused.
   if (num_cards) {
@@ -1542,16 +1538,6 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   if (num_server_cards) {
     UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardDisusedCount.Server",
                               num_disused_server_cards);
-  }
-  if (num_masked_cards) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Autofill.StoredCreditCardDisusedCount.Server.Masked",
-        num_disused_masked_cards);
-  }
-  if (num_unmasked_cards) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Autofill.StoredCreditCardDisusedCount.Server.Unmasked",
-        num_disused_unmasked_cards);
   }
 
   // Log the number of server cards that are enrolled with virtual cards.
@@ -2395,25 +2381,20 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
     if (auto* event =
             absl::get_if<HeuristicPredictionFieldLogEvent>(&log_event)) {
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
       switch (event->pattern_source) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         case PatternSource::kLegacy:
           heuristic_legacy_type = event->field_type;
           break;
+#else
         case PatternSource::kDefault:
           heuristic_default_type = event->field_type;
           break;
         case PatternSource::kExperimental:
           heuristic_experimental_type = event->field_type;
           break;
-      }
-#else
-      switch (event->pattern_source) {
-        case PatternSource::kLegacy:
-          heuristic_legacy_type = event->field_type;
-          break;
-      }
 #endif
+      }
 
       if (event->is_active_pattern_source) {
         heuristic_type = event->field_type;
@@ -3241,6 +3222,9 @@ const std::string PaymentsRpcResultToMetricsSuffix(PaymentsRpcResult result) {
     case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
     case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
       result_suffix = ".VcnRetrievalFailure";
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      result_suffix = ".ClientSideTimeout";
       break;
     case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();

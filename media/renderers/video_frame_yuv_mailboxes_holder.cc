@@ -29,22 +29,6 @@ namespace media {
 
 namespace {
 
-viz::SharedImageFormat PlaneSharedImageFormat(int num_channels,
-                                              bool supports_red) {
-  switch (num_channels) {
-    case 1:
-      return supports_red ? viz::SinglePlaneFormat::kR_8
-                          : viz::SinglePlaneFormat::kLUMINANCE_8;
-    case 2:
-      return viz::SinglePlaneFormat::kRG_88;
-    case 3:
-      return viz::SinglePlaneFormat::kRGBX_8888;
-    case 4:
-      return viz::SinglePlaneFormat::kRGBA_8888;
-  }
-  NOTREACHED();
-}
-
 // Returns multiplanar format equivalent of a VideoPixelFormat.
 viz::SharedImageFormat VideoPixelFormatToSharedImageFormat(
     VideoPixelFormat video_format) {
@@ -81,12 +65,10 @@ VideoFrameYUVMailboxesHolder::~VideoFrameYUVMailboxesHolder() {
 }
 
 void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
-  if (holders_[0].mailbox.IsZero())
+  // Don't destroy shared image we don't own.
+  if (!shared_image_) {
     return;
-
-  // Don't destroy shared images we don't own.
-  if (!created_shared_images_)
-    return;
+  }
 
   auto* ri = provider_->RasterInterface();
   DCHECK(ri);
@@ -95,61 +77,36 @@ void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
 
   auto* sii = provider_->SharedImageInterface();
   DCHECK(sii);
-  for (unsigned int i = 0; i < kMaxPlanes; ++i) {
-    if (shared_images_[i]) {
-      sii->DestroySharedImage(token, std::move(shared_images_[i]));
-    }
-    holders_[i].mailbox.SetZero();
+  if (shared_image_) {
+    sii->DestroySharedImage(token, std::move(shared_image_));
   }
-
-  created_shared_images_ = false;
 }
 
-void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
+const gpu::Mailbox& VideoFrameYUVMailboxesHolder::VideoFrameToMailbox(
     const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider,
-    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes],
-    bool allow_multiplanar_for_upload) {
+    viz::RasterContextProvider* raster_context_provider) {
   yuva_info_ = VideoFrameGetSkYUVAInfo(video_frame);
   num_planes_ = yuva_info_.planeDimensions(plane_sizes_);
 
-  // If we have cached shared images but the provider or video has changed we
-  // need to release shared images created on the old context and recreate them.
-  if (created_shared_images_ &&
+  // If we have cached shared image but the provider or video has changed we
+  // need to release shared image created on the old context and recreate them.
+  if (shared_image_ &&
       (provider_.get() != raster_context_provider ||
        video_frame->coded_size() != cached_video_size_ ||
        video_frame->ColorSpace() != cached_video_color_space_)) {
     ReleaseCachedData();
   }
   provider_ = raster_context_provider;
-  DCHECK(provider_);
+  CHECK(provider_);
   auto* ri = provider_->RasterInterface();
-  DCHECK(ri);
-
-  if (video_frame->HasTextures()) {
-    // Video frames with mailboxes will have shared images per plane as new
-    // multiplanar shared image with mailbox path should not go through
-    // VideoFrameToMailboxes.
-    DCHECK_EQ(num_planes_, video_frame->NumTextures());
-    for (size_t plane = 0; plane < video_frame->NumTextures(); ++plane) {
-      holders_[plane] = video_frame->mailbox_holder(plane);
-      DCHECK(holders_[plane].texture_target == GL_TEXTURE_2D ||
-             holders_[plane].texture_target == GL_TEXTURE_EXTERNAL_OES ||
-             holders_[plane].texture_target == GL_TEXTURE_RECTANGLE_ARB)
-          << "Unsupported texture target " << std::hex << std::showbase
-          << holders_[plane].texture_target;
-      ri->WaitSyncTokenCHROMIUM(holders_[plane].sync_token.GetConstData());
-      mailboxes[plane] = holders_[plane].mailbox;
-    }
-    return;
-  }
+  CHECK(ri);
+  auto* sii = provider_->SharedImageInterface();
+  CHECK(sii);
 
   CHECK(!video_frame->HasTextures());
   constexpr SkAlphaType kPlaneAlphaType = kPremul_SkAlphaType;
-  auto* sii = provider_->SharedImageInterface();
-  DCHECK(sii);
 
-  // These SharedImages will be written to (and later read from) via the raster
+  // This SharedImage will be written to (and later read from) via the raster
   // interface. The full usage depends on whether raster is OOP or is going
   // over the GLES2 interface.
   gpu::SharedImageUsageSet mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
@@ -158,10 +115,10 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
   if (caps.gpu_rasterization) {
     mailbox_usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
-    // NOTE: This GLES2 usage is *only* for raster, as these SharedImages are
+    // NOTE: This GLES2 usage is *only* for raster, as this SharedImage is
     // created to hold YUV data that is then converted to RGBA via the raster
     // interface before being shared with some other use case (e.g., WebGL).
-    // There is no flow wherein these SharedImages are directly exposed to
+    // There is no flow wherein this SharedImage is directly exposed to
     // WebGL. Moreover, this raster usage is by definition *only* over GLES2
     // (since this is non-OOP-R). It is critical to specify both of these facts
     // to the service side to ensure that the needed SharedImage backing gets
@@ -172,69 +129,21 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
                      gpu::SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY;
   }
 
-  // Enabled with flags UseWritePixelsYUV and
-  // UseMultiPlaneFormatForHardwareVideo.
-  if (allow_multiplanar_for_upload) {
-    SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
-    viz::SharedImageFormat format =
-        VideoPixelFormatToSharedImageFormat(video_frame->format());
-    CHECK(format.is_multi_plane());
+  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
+  viz::SharedImageFormat format =
+      VideoPixelFormatToSharedImageFormat(video_frame->format());
+  CHECK(format.is_multi_plane());
 
-    // Create a multiplanar shared image to upload the data to, if one doesn't
-    // exist already.
-    if (!created_shared_images_) {
-      auto client_shared_image = sii->CreateSharedImage(
-          {format, video_frame->coded_size(), video_frame->ColorSpace(),
-           kTopLeft_GrSurfaceOrigin, kPlaneAlphaType, mailbox_usage,
-           "VideoFrameYUV"},
-          gpu::kNullSurfaceHandle);
-      CHECK(client_shared_image);
-      holders_[0].mailbox = client_shared_image->mailbox();
-      holders_[0].texture_target = GL_TEXTURE_2D;
-      shared_images_[0] = std::move(client_shared_image);
-
-      // Split up shared image creation from upload so we only have to wait on
-      // one sync token.
-      ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-
-      cached_video_size_ = video_frame->coded_size();
-      cached_video_color_space_ = video_frame->ColorSpace();
-      created_shared_images_ = true;
-    }
-
-    for (size_t plane = 0; plane < num_planes_; ++plane) {
-      SkColorType color_type =
-          viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane);
-      SkImageInfo info =
-          SkImageInfo::Make(plane_sizes_[plane], color_type, kPlaneAlphaType);
-      pixmaps[plane] =
-          SkPixmap(info, video_frame->data(plane), video_frame->stride(plane));
-    }
-    SkYUVAPixmaps yuv_pixmap =
-        SkYUVAPixmaps::FromExternalPixmaps(yuva_info_, pixmaps);
-    ri->WritePixelsYUV(holders_[0].mailbox, yuv_pixmap);
-    mailboxes[0] = holders_[0].mailbox;
-    return;
-  }
-
-  // Create shared images to upload the data to, if they doesn't exist already.
-  if (!created_shared_images_) {
-    for (size_t plane = 0; plane < num_planes_; ++plane) {
-      gfx::Size tex_size = {plane_sizes_[plane].width(),
-                            plane_sizes_[plane].height()};
-      int num_channels = yuva_info_.numChannelsInPlane(plane);
-      viz::SharedImageFormat format =
-          PlaneSharedImageFormat(num_channels, caps.texture_rg);
-      auto client_shared_image =
-          sii->CreateSharedImage({format, tex_size, video_frame->ColorSpace(),
-                                  kTopLeft_GrSurfaceOrigin, kPlaneAlphaType,
-                                  mailbox_usage, "VideoFrameYUV"},
-                                 gpu::kNullSurfaceHandle);
-      CHECK(client_shared_image);
-      holders_[plane].mailbox = client_shared_image->mailbox();
-      holders_[plane].texture_target = GL_TEXTURE_2D;
-      shared_images_[plane] = std::move(client_shared_image);
-    }
+  // Create a multiplanar shared image to upload the data to, if one doesn't
+  // exist already.
+  if (!shared_image_) {
+    auto client_shared_image = sii->CreateSharedImage(
+        {format, video_frame->coded_size(), video_frame->ColorSpace(),
+         kTopLeft_GrSurfaceOrigin, kPlaneAlphaType, mailbox_usage,
+         "VideoFrameYUV"},
+        gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    shared_image_ = std::move(client_shared_image);
 
     // Split up shared image creation from upload so we only have to wait on
     // one sync token.
@@ -242,21 +151,20 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
 
     cached_video_size_ = video_frame->coded_size();
     cached_video_color_space_ = video_frame->ColorSpace();
-    created_shared_images_ = true;
   }
 
   for (size_t plane = 0; plane < num_planes_; ++plane) {
-    int num_channels = yuva_info_.numChannelsInPlane(plane);
-    SkColorType color_type = SkYUVAPixmapInfo::DefaultColorTypeForDataType(
-        SkYUVAPixmaps::DataType::kUnorm8, num_channels);
+    SkColorType color_type =
+        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane);
     SkImageInfo info =
         SkImageInfo::Make(plane_sizes_[plane], color_type, kPlaneAlphaType);
-    ri->WritePixels(
-        holders_[plane].mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-        GL_TEXTURE_2D,
-        SkPixmap(info, video_frame->data(plane), video_frame->stride(plane)));
-    mailboxes[plane] = holders_[plane].mailbox;
+    pixmaps[plane] =
+        SkPixmap(info, video_frame->data(plane), video_frame->stride(plane));
   }
+  SkYUVAPixmaps yuv_pixmap =
+      SkYUVAPixmaps::FromExternalPixmaps(yuva_info_, pixmaps);
+  ri->WritePixelsYUV(shared_image_->mailbox(), yuv_pixmap);
+  return shared_image_->mailbox();
 }
 
 // static

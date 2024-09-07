@@ -50,7 +50,7 @@ void AccessibilityTreeFormatterAndroidExternal::RecursiveBuildTree(
   base::Value::List children;
 
   for (size_t i = 0; i < node.GetChildCount(); ++i) {
-    BrowserAccessibility* child_node = android_node->PlatformGetChild(i);
+    ui::BrowserAccessibility* child_node = android_node->PlatformGetChild(i);
     base::Value::Dict child_dict;
     RecursiveBuildTree(*child_node, &child_dict);
     children.Append(std::move(child_dict));

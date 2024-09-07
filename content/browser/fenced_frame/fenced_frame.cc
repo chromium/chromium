@@ -191,7 +191,7 @@ bool FencedFrame::IsHidden() {
   return web_contents_->IsHidden();
 }
 
-int FencedFrame::GetOuterDelegateFrameTreeNodeId() {
+FrameTreeNodeId FencedFrame::GetOuterDelegateFrameTreeNodeId() {
   DCHECK(outer_delegate_frame_tree_node_);
   return outer_delegate_frame_tree_node_->frame_tree_node_id();
 }

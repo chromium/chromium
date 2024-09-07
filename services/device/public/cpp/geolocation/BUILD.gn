@@ -28,6 +28,8 @@ component("geolocation") {
   }
   if (is_apple) {
     sources += [
+      "location_manager_delegate.h",
+      "location_manager_delegate.mm",
       "system_geolocation_source_apple.h",
       "system_geolocation_source_apple.mm",
     ]
@@ -35,6 +37,9 @@ component("geolocation") {
       "CoreLocation.framework",
       "Foundation.framework",
     ]
+    if (is_mac) {
+      frameworks += [ "CoreWLAN.framework" ]
+    }
   }
   if (is_win) {
     sources += [

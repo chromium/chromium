@@ -326,16 +326,55 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
   ];
   registerItem.resultCallback =
       ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
-        dispatch_async(self->_parentQueue, ^{
           if (reply) {
-            reply([self wrapError:gotFailure
-                       withStdout:gotStdout
-                        andStderr:gotStderr]);
+            dispatch_async(self->_parentQueue, ^{
+              reply([self wrapError:gotFailure
+                         withStdout:gotStdout
+                          andStderr:gotStderr]);
+            });
           }
-        });
       };
 
   [self addWorkItems:@[ registerItem ]];
+}
+
+- (void)installUpdaterWithReply:(void (^)(NSError* _Nullable))reply {
+  CRURegistrationWorkItem* installItem = [[CRURegistrationWorkItem alloc] init];
+  installItem.binPathCallback = ^{
+    return [self syncBundledHelperPath];
+  };
+  installItem.args = @[ @"--install" ];
+  installItem.resultCallback =
+      ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
+        if (reply) {
+          dispatch_async(self->_parentQueue, ^{
+            reply([self wrapError:gotFailure
+                       withStdout:gotStdout
+                        andStderr:gotStderr]);
+          });
+        }
+      };
+  [self addWorkItems:@[ installItem ]];
+}
+
+- (void)markActiveWithReply:(void (^)(NSError* _Nullable))reply {
+  // "Mark active" doesn't use an external program, so it may run concurrently
+  // with out-of-process tasks. It still uses _privateQueue so the SSD/HDD
+  // access runs with the intended priority.
+  dispatch_async(_privateQueue, ^{
+    NSError* error;
+    BOOL success = [self syncWriteActiveFileWithError:&error];
+    if (!reply) {
+      return;
+    }
+    dispatch_async(self->_parentQueue, ^{
+      reply(success
+                ? nil
+                : [NSError errorWithDomain:CRURegistrationErrorDomain
+                                      code:CRURegistrationErrorFilesystem
+                                  userInfo:@{NSUnderlyingErrorKey : error}]);
+    });
+  });
 }
 
 #pragma mark - CRURegistration private methods
@@ -376,6 +415,67 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
         });
         [self syncMaybeStartMoreWork];
       }];
+}
+
+- (NSURL*)syncBundledHelperPath {
+  NSURL* bundleURL = NSBundle.mainBundle.bundleURL;
+  NSString* helperPathInBundle = [NSString
+      stringWithFormat:@"Contents/Helpers/%1$s.app/Contents/MacOS/%1$s",
+                       PRODUCT_FULLNAME_STRING];
+  NSURL* helperURL = [bundleURL URLByAppendingPathComponent:helperPathInBundle
+                                                isDirectory:NO];
+  NSFileManager* fm = [NSFileManager defaultManager];
+  if ([fm isExecutableFileAtPath:helperURL.path]) {
+    return helperURL;
+  }
+  // Look for a test updater bundle instead.
+  helperPathInBundle =
+      [NSString stringWithFormat:
+                    @"Contents/Helpers/%1$s_test.app/Contents/MacOS/%1$s_test",
+                    PRODUCT_FULLNAME_STRING];
+  helperURL = [bundleURL URLByAppendingPathComponent:helperPathInBundle
+                                         isDirectory:NO];
+  if ([fm isExecutableFileAtPath:helperURL.path]) {
+    return helperURL;
+  }
+  return nil;
+}
+
+/**
+ * Writes an empty file to the path the updater uses as a "product was active"
+ * sentinel for the provided app ID. Stomps on any file already at this path.
+ * Does not validate the app ID; app IDs are assumed not to be under user
+ * control, so a malicious string here could theoretically be some kind of
+ * weird directory traversal attack.
+ */
+- (BOOL)syncWriteActiveFileWithError:(NSError**)error {
+  NSFileManager* fm = [NSFileManager defaultManager];
+  NSURL* library = [fm URLForDirectory:NSLibraryDirectory
+                              inDomain:NSUserDomainMask
+                     appropriateForURL:nil
+                                create:NO
+                                 error:error];
+  if (!library) {
+    return NO;
+  }
+  NSString* activesPathUnderLibrary =
+      [NSString stringWithFormat:@"%s/%s/Actives", COMPANY_SHORTNAME_STRING,
+                                 KEYSTONE_NAME];
+  NSURL* activesPath =
+      [library URLByAppendingPathComponent:activesPathUnderLibrary
+                               isDirectory:YES];
+  if (![fm createDirectoryAtURL:activesPath
+          withIntermediateDirectories:YES
+                           attributes:nil
+                                error:error]) {
+    return NO;
+  }
+  NSURL* target = [activesPath URLByAppendingPathComponent:_appId
+                                               isDirectory:NO];
+  return [@"" writeToFile:target.path
+               atomically:NO
+                 encoding:NSUTF8StringEncoding
+                    error:error];
 }
 
 @end

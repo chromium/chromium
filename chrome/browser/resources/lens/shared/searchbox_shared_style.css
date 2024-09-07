@@ -1,0 +1,79 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+ #searchboxContainer {
+  display: flex;
+  font-family: Roboto, Arial, sans-serif;
+  width: 100%;
+  z-index: 2;  /* Searchbox should render in front of the results iframe. */
+  /* TODO(jdonnelly): Specify these in a color mixer and consider moving this
+   * import from polymer to the top level HTML file. */
+  /* Colors used in the cr-searchbox results dropdown */
+  --color-searchbox-answer-icon-background: #d3e3fdff;
+  --color-searchbox-answer-icon-foreground: #041e49ff;
+  --color-searchbox-results-action-chip:#a8c7faff;
+  --color-searchbox-results-action-chip-icon: #0b57d0ff;
+  --color-searchbox-results-action-chip-focus-outline: #0b57d0ff;
+  --color-searchbox-results-background-hovered:#e9e9eaff;
+  --color-searchbox-results-button-hover: #202124ff;
+  --color-searchbox-results-dim-selected: #5f6368ff;
+  --color-searchbox-results-focus-indicator: #e9e9eaff;
+  --color-searchbox-results-foreground: #202124;
+  --color-searchbox-results-foreground-dimmed: #5f6368ff;
+  --color-searchbox-results-icon-focused-outline: #1a73e8ff;
+  --color-searchbox-results-icon-selected: #5f6368ff;
+  --color-searchbox-results-icon: #5f6368ff;
+  --color-searchbox-results-typed-prefix: #70757A;
+  --color-searchbox-results-url: #1967d2ff;
+  --color-searchbox-results-url-selected: #1967d2ff;
+  --color-searchbox-search-icon-background: #5F6368;
+  /* Colors specific to the cr-searchbox input */
+  --color-searchbox-background-hovered: #F1F3F4;
+  --color-searchbox-background: #F1F3F4;
+  --color-searchbox-border: #dadce0ff;
+  --color-searchbox-foreground: #3C4043;
+  --color-searchbox-placeholder: #70757A;
+  --color-searchbox-shadow: #20212451;
+  /* Variables used by cr-realbox */
+  --cr-searchbox-height: 52px;
+  --cr-searchbox-icon-left-position: 10px;
+  --cr-searchbox-icon-top-position: 1px;
+  --cr-searchbox-match-font-weight: 400;
+  --cr-searchbox-min-width: min(calc(100vw - 16px), 768px);
+  --cr-searchbox-icon-size-in-searchbox: 24px;
+}
+
+:host([dark-mode]) #searchboxContainer {
+  /* Colors used in the cr-searchbox results dropdown */
+  --color-searchbox-answer-icon-background: #004a77ff;
+  --color-searchbox-answer-icon-foreground: #c2e7ffff;
+  --color-searchbox-results-action-chip: #047db7ff;
+  --color-searchbox-results-action-chip-icon: #a8c7faff;
+  --color-searchbox-results-action-chip-focus-outline: #669df6ff;
+  --color-searchbox-results-background-hovered: #50504fff;
+  --color-searchbox-results-button-hover: #fdfcfb1a;
+  --color-searchbox-results-dim-selected: #c7c7c7ff;
+  --color-searchbox-results-focus-indicator: #50504fff;
+  --color-searchbox-results-foreground: #E8EAED;
+  --color-searchbox-results-foreground-dimmed: #c7c7c7ff;
+  --color-searchbox-results-icon: #c7c7c7ff;
+  --color-searchbox-results-icon-focused-outline: #a8c7faff;
+  --color-searchbox-results-icon-selected: #c7c7c7ff;
+  --color-searchbox-results-typed-prefix: #9DA3A9;
+  --color-searchbox-results-url: #a8c7faff;
+  --color-searchbox-results-url-selected: #a8c7faff;
+  --color-searchbox-search-icon-background: #5F6368;
+  /* Colors specific to the cr-searchbox input */
+  --color-searchbox-background-hovered: #4a4a4aff;
+  --color-searchbox-background: #303134;
+  --color-searchbox-border: #dadce0ff;
+  --color-searchbox-foreground: #BDC1C6;
+  --color-searchbox-placeholder: ##9E9E9E;
+  --color-searchbox-shadow: #20212451;
+}

@@ -139,6 +139,8 @@ std::string GetStringNameForOptimizationTarget(
       return "ModelExecutionFeaturePromptAPI";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING:
       return "SegmentationMetricsClustering";
+    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SUMMARIZE:
+      return "ModelExecutionFeatureSummarize";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

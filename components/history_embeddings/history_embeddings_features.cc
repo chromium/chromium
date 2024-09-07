@@ -98,6 +98,9 @@ const base::FeatureParam<int> kScheduledEmbeddingsMax(&kHistoryEmbeddings,
 const base::FeatureParam<bool> kSendQualityLog(&kHistoryEmbeddings,
                                                "SendQualityLog",
                                                false);
+const base::FeatureParam<bool> kSendQualityLogV2(&kHistoryEmbeddings,
+                                                 "SendQualityLogV2",
+                                                 false);
 
 const base::FeatureParam<int> kEmbedderNumThreads(&kHistoryEmbeddings,
                                                   "EmbeddingsNumThreads",
@@ -132,9 +135,31 @@ const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout(
     "EmbeddingsServiceTimeout",
     base::Seconds(60));
 
-const base::FeatureParam<std::string> kFilterTerms(&kHistoryEmbeddings,
-                                                   "FilterTerms",
-                                                   "");
+const base::FeatureParam<std::string> kFilterHashes(&kHistoryEmbeddings,
+                                                    "FilterHashes",
+                                                    "");
+
+const base::FeatureParam<bool> kEnableSidePanel(&kHistoryEmbeddings,
+                                                "EnableSidePanel",
+                                                false);
+
+const base::FeatureParam<double> kWordMatchMinEmbeddingScore(
+    &kHistoryEmbeddings,
+    "WordMatchMinEmbeddingScore",
+    1.0);
+
+const base::FeatureParam<int> kWordMatchMinTermLength(&kHistoryEmbeddings,
+                                                      "WordMatchMinTermLength",
+                                                      3);
+
+const base::FeatureParam<double> kWordMatchScoreBoostFactor(
+    &kHistoryEmbeddings,
+    "WordMatchScoreBoostFactor",
+    0.2);
+
+const base::FeatureParam<int> kWordMatchLimit(&kHistoryEmbeddings,
+                                              "WordMatchLimit",
+                                              5);
 
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)

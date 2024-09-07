@@ -152,8 +152,7 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
                            static_cast<int>(interactionOffset()));
   traced_value->SetInteger(
       "nodeId", target_ ? target_->GetDomNodeId() : kInvalidDOMNodeId);
-  traced_value->SetString("frame",
-                          String::FromUTF8(GetFrameIdForTracing(frame)));
+  traced_value->SetString("frame", GetFrameIdForTracing(frame));
   return traced_value;
 }
 

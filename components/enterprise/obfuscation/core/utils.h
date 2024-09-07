@@ -37,14 +37,18 @@ base::expected<std::vector<uint8_t>, Error> CreateHeader(
 // (https://crsrc.org/c/crypto/aead.h) in an insecure way to act as a file
 // access deterrent. Master key is stored in memory and can be leaked.
 // Counter increments every chunk to protect against reordering/truncation.
-// TODO(b/351151997): Change to add padding and support for data chunks of
-// variable size.
+// The size of the encrypted chunk is prepended to the returned encrypted chunk.
 base::expected<std::vector<uint8_t>, Error> ObfuscateDataChunk(
     base::span<const uint8_t> data,
     const std::vector<uint8_t>& key,
     const std::vector<uint8_t>& nonce_prefix,
     uint32_t counter,
     bool is_last_chunk);
+
+// Extracts the size of the obfuscated data chunk from the beginning of the
+// provided data.
+base::expected<size_t, Error> GetObfuscatedChunkSize(
+    base::span<const uint8_t> data);
 
 // Computes the derived key and extracts the nonce prefix from the header.
 base::expected<std::pair</*derived key*/ std::vector<uint8_t>,
@@ -56,6 +60,8 @@ GetHeaderData(const std::vector<uint8_t>& header);
 // in an insecure way to act as a file access deterrent. Master key is stored in
 // memory and can be leaked. Counter increments every chunk to protect against
 // reordering/truncation.
+// The size of the encrypted chunk is expected to be prepended to the input
+// data.
 base::expected<std::vector<uint8_t>, Error> DeobfuscateDataChunk(
     base::span<const uint8_t> data,
     const std::vector<uint8_t>& key,

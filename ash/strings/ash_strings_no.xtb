@@ -43,6 +43,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Tilkoblede enheter</translation>
 <translation id="1155734730463845512">Nåværende batterinivå: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Generativ AI er på forsøksstadiet, og innholdet kan være unøyaktig, villedende eller støtende. Kontakt administratoren din for å rapportere eventuelle problemer. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">på og i bruk</translation>
 <translation id="1163437384438183174">Fjern telefonstyring fra hyllen</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
@@ -304,6 +305,8 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2049240716062114887">Skrivebordsnavnet ble endret til <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2064048859448024834">Kameraforhåndsvisningen er på</translation>
+<translation id="2065098273523946419">Finn ut mer-link. Viderekobling til nettleseren ved aktivering</translation>
+<translation id="2067220651560163985">Vis temperaturen i celsius</translation>
 <translation id="2067602449040652523">Lysstyrke på tastaturet</translation>
 <translation id="2075520525463668108">Slå av/på <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> er <ph name="CAPTURE_STATE" /></translation>
 <translation id="2079545284768500474">Angre</translation>
@@ -359,6 +362,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2318576281648121272">I dag, <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> – kategori for søkeresultat</translation>
 <translation id="2322173485024759474">Én bokstav tilbake</translation>
+<translation id="2326112202058075478">Vis flere emojier</translation>
 <translation id="2335091074961603075">Chromebooken eller Bluetooth-enheten bruker en eldre versjon av Bluetooth. Bruk den interne mikrofonen for å få bedre lydkvalitet.</translation>
 <translation id="2339073806695260576">Trykk på pekepennknappen på hyllen for å ta et notat, ta et skjermbilde, bruke laserpekeren eller bruke forstørrelsesglasset.</translation>
 <translation id="2341729377289034582">Låst til vertikal</translation>
@@ -392,6 +396,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2426051945783024481">Kamerarammen er midtstilt automatisk</translation>
 <translation id="2427507373259914951">Venstreklikk</translation>
 <translation id="2429753432712299108">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Før du godtar dette, må du bekrefte at denne tilgangskoden vises på den aktuelle enheten: <ph name="PASSKEY" /></translation>
+<translation id="2430444791038754658">Tiden er ute. Dette går unna!</translation>
 <translation id="2435457462613246316">Vis passord</translation>
 <translation id="2437771564543046790">Lavt batterinivå. Batterisparing er på</translation>
 <translation id="243878895369688216">Åpnet i går</translation>
@@ -405,6 +410,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="246052086404491029">Vis detaljert informasjon</translation>
 <translation id="2465145153332031561">Batteritilstand: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Syklusantall: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Bekreft oppløsningen</translation>
+<translation id="2475783092753560388">Sett inn <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Det oppsto en feil</translation>
 <translation id="2478076885740497414">Installér appen</translation>
 <translation id="2482878487686419369">Varsler</translation>
@@ -420,6 +426,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2509468283778169019">Caps Lock er på</translation>
 <translation id="2514415433888497495">Stopp <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> er <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2515962024736506925">Åpne alternativer for tilgjengelighet</translation>
 <translation id="2516416533263263796">Fokus er på. 10 minutter gjenstår</translation>
 <translation id="2516637483312286228">Endre spillkontroller</translation>
 <translation id="252054055865191167">Markeringsverktøy</translation>
@@ -462,6 +469,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2670350619068134931">Reduserte animasjoner</translation>
 <translation id="2673968385134502798">Spill</translation>
 <translation id="2678852583403169292">Tekstopplesing-menyen</translation>
+<translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> forrige uke</translation>
 <translation id="2687510499067466116">Hurtigtasten er endret</translation>
 <translation id="2689613560355655046">Skrivebord 8</translation>
 <translation id="2695305337569143674">nett</translation>
@@ -512,10 +520,12 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2849936225196189499">Kritisk</translation>
 <translation id="2860184359326882502">Beste treff</translation>
 <translation id="2865888419503095837">Nettverksinformasjon</translation>
+<translation id="2869095047958348710">Forrige <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">Bytt hovedskjerm</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="2876338922445400217">Zoom inn på skjermen</translation>
 <translation id="2878884018241093801">Ingen nylige elementer</translation>
+<translation id="2880541185262491188">For mange PIN-kodeforsøk. Vent <ph name="TIME_LEFT" />, og prøv på nytt</translation>
 <translation id="2885950158625301909">Finn ut mer</translation>
 <translation id="2891209721153296020">«Fjern merking»</translation>
 <translation id="2894949423239620203">Kabelen kan påvirke ytelsen</translation>
@@ -540,6 +550,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2968761508099987738">Den nåværende posisjonen din støttes ikke for øyeblikket.</translation>
 <translation id="2970920913501714344">installere apper, utvidelser og temaer</translation>
 <translation id="2977598380246111477">Neste nummer</translation>
+<translation id="2980700224869191055">Uttrykksikonet <ph name="EMOTICON_NAME" /></translation>
 <translation id="2985148236010982088">Se alle appene</translation>
 <translation id="2992272421330787632">Skjul alle medieforslag</translation>
 <translation id="2992327365391326550">Enhetens mikrofonknapp er slått av.</translation>
@@ -618,6 +629,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3264031581203585083">Skjul alle Google Disk-forslag</translation>
 <translation id="3265032511221679826">Vil du slå på nøyaktig posisjonstilgang?</translation>
 <translation id="3269597722229482060">Høyreklikk</translation>
+<translation id="3271554781793662131">Søk for å sette inn</translation>
 <translation id="3273040715184276344">Caps Lock er av</translation>
 <translation id="3274634049061007184">Se apper fra telefonen din</translation>
 <translation id="3289364673986435196">På/av-meny</translation>
@@ -651,6 +663,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3386978599540877378">fullskjermlupen</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Vil du slå på diktering?</translation>
+<translation id="3392702002175498061">Vis alt innhold i nettleserloggen</translation>
 <translation id="3394432020929931914">, vises</translation>
 <translation id="3401474642070997151">For å tilpasse forslagene, høyreklikk eller trykk og hold på et forslag</translation>
 <translation id="3405101454990027959">Slå på mikrofontilgang</translation>
@@ -727,6 +740,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3619536907358025872">Innstillinger for skjermopptak</translation>
 <translation id="3621202678540785336">Inndata</translation>
 <translation id="3621712662352432595">Lydinnstillinger</translation>
+<translation id="362253242168828226">Emojien <ph name="EMOJI_NAME" /></translation>
 <translation id="3626281679859535460">Lysstyrke</translation>
 <translation id="3628323833346754646">Fremre knapp</translation>
 <translation id="3630697955794050612">av</translation>
@@ -761,6 +775,7 @@ Koble enheten til strøm.</translation>
 <translation id="3706423975342040244">Underholdning</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> og <ph name="UNAVAILABLE_DLC_TWO" /> er ikke tilgjengelige.</translation>
 <translation id="3708186454126126312">Tidligere tilkoblet</translation>
+<translation id="3711282657843423160">Du er ferdig. Fortsett sånn!</translation>
 <translation id="3712143870407382523">Velg et vindu for denne siden</translation>
 <translation id="371370241367527062">Mikrofon foran</translation>
 <translation id="3713734891607377840">Åpne når nedlastingen er fullført</translation>
@@ -785,6 +800,7 @@ Koble enheten til strøm.</translation>
 <translation id="3799080171973636491">Du trykket på hurtigtasten for lupen for hele skjermen. Vil du slå den på?</translation>
 <translation id="380165613292957338">Hei! Hva kan jeg hjelpe deg med?</translation>
 <translation id="3804737937830804242">Skjul kameraet</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Ingen andre resultater.}other{# emojier. Ingen andre resultater.}}</translation>
 <translation id="3824784079442479685">Dette gir <ph name="APP_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="3826099427150913765">Bytt til passord</translation>
 <translation id="383058930331066723">Batterisparing er på</translation>
@@ -799,6 +815,7 @@ Koble enheten til strøm.</translation>
 <translation id="385300504083504382">Begynnelsen</translation>
 <translation id="3859364108019690">Kan ikke strømme apper</translation>
 <translation id="3861651314799684201">Trykk på Enter for å ta opp hele skjermen</translation>
+<translation id="3870197372373144624">Prøv å slå av enheten.</translation>
 <translation id="3886872229787704059">Åpnet i dag</translation>
 <translation id="3891340733213178823">Trykk på Control+Shift+Q to ganger for å logge av.</translation>
 <translation id="3893630138897523026">ChromeVox (muntlig tilbakemelding)</translation>
@@ -867,6 +884,7 @@ Koble enheten til strøm.</translation>
 <translation id="4114315158543974537">Slå på Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktiver skrivebordet til venstre</translation>
+<translation id="4119928251231465047">For mange PIN-kodeforsøk</translation>
 <translation id="412298498316631026">vindu</translation>
 <translation id="4123259114412175274">For å låse opp Chromebooken, sørg for at Bluetooth er påslått på telefonen</translation>
 <translation id="4125970834901680537">Kan ikke strømme apper i nettbrettmodus. Prøv på nytt i laptopmodus.</translation>
@@ -914,6 +932,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4264977415328155183">, skjules</translation>
 <translation id="4265259722091164182">Store og små bokstaver som i titler</translation>
 <translation id="4269883910223712419">Administratoren av denne enheten kan</translation>
+<translation id="4271841440229266861">Vis alt innhold i Filer</translation>
 <translation id="4274537685965975248">Hurtigtasten Ctrl + Alt + nedoverpil er endret. For å bruke End-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + høyrepilen.</translation>
 <translation id="4275283744500212192">Åpne alternativene for vindusoppsett</translation>
 <translation id="4275663329226226506">Medier</translation>
@@ -941,6 +960,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4327147325944669226">Ta opp spillet</translation>
 <translation id="4333628967105022692">Lacros støttes ikke når flere brukere er logget på.</translation>
 <translation id="4338109981321384717">Forstørrelsesglass</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, lyden er kuttet</translation>
 <translation id="4351244548802238354">Lukk dialogboks</translation>
 <translation id="4356872429719185452">Vis detaljer for wifi-sonen. Wifi-sonen slås på.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> – opptak</translation>
@@ -1032,6 +1052,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox er slått på</translation>
+<translation id="4665182893355091947">Du er ferdig. Fortsett sånn!</translation>
 <translation id="4666911709726371538">Flere apper</translation>
 <translation id="4667099493359681081">Laster ned <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Batterisparing er slått på</translation>
@@ -1045,6 +1066,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4706121060329443414">Vi forsøker å laste ned filene senere. Inntil videre blir tale sendt til Google for behandling.</translation>
 <translation id="470644585772471629">Fargeinvertering</translation>
 <translation id="4708065238214351979">Gjør tastaturet lysere</translation>
+<translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> neste uke</translation>
 <translation id="4717575069099566988">USB-C-kabelen din støtter ikke USB4. Enhetens ytelse kan være begrenset.</translation>
 <translation id="4724328513667182700">Seks tips for å komme i gang med <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">OFTE BRUKT</translation>
@@ -1148,6 +1170,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5013847959275396160">Skjul verktøylinjen</translation>
 <translation id="5016558321564993266">Slå av/på markøren. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Søkekategorier</translation>
+<translation id="5025389392398927910">Søk for å redigere tekst</translation>
 <translation id="5030659775136592441">Vis bokmerkebehandlingen</translation>
 <translation id="5030687792513154421">Tiden er ute</translation>
 <translation id="5033299697334913360">Klikk hvor som helst for å ta bilde i fullskjerm</translation>
@@ -1253,6 +1276,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5369573834963677938">Ansiktskontroll blir tilgjengelig for andre brukere på enheten</translation>
 <translation id="5369717264580061086">Forhåndsvis filen i Filer-appen</translation>
 <translation id="5377367976106153749">Vil du slå på tilgang til kameraet?</translation>
+<translation id="5378450298115733949">Mer</translation>
 <translation id="5379115545237091094">For mange forsøk</translation>
 <translation id="5383434787520761436">Ingen Google Disk-filer</translation>
 <translation id="5391307769715781764">Vil du erstatte det lagrede skrivebordet?</translation>
@@ -1282,6 +1306,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5503884284981862082">Åpne/lukk Google-assistenten</translation>
 <translation id="550391772491508736">Gjenoppta castingen</translation>
 <translation id="5506975627792768506">Slå på forstørreren av eller på</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />. Hvis du trykker på Enter, kuttes lyden.</translation>
 <translation id="5512042095225963688">Slett forrige ord</translation>
 <translation id="5519005148254860683">Vis Google Huskeliste</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -1333,6 +1358,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ber om din oppmerksomhet.</translation>
 <translation id="5662075790140998213">Skrivebord 10</translation>
 <translation id="5662709761327382534">Mikrofonopptak er <ph name="CURRENT_STATE" />. Trykk på Enter for å slå mikrofonopptak <ph name="NEW_STATE" /></translation>
+<translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5672890847723042801">Systemverktøy</translation>
 <translation id="5673434351075758678">Fra «<ph name="FROM_LOCALE" />» til «<ph name="TO_LOCALE" />» etter at innstillingene dine ble synkronisert.</translation>
@@ -1486,6 +1512,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6141988275892716286">Bekreft nedlastingen</translation>
 <translation id="6143578372829139382">Del på YouTube</translation>
 <translation id="6147182561428020853">Nå kan du blokkere apper som er installert på denne <ph name="DEVICE_TYPE" />-enheten</translation>
+<translation id="6153745728877356366">Søk for å åpne</translation>
 <translation id="6154006699632741460">Den eksterne enheten støttes ikke</translation>
 <translation id="6156960295318603523">Språkinnstillinger</translation>
 <translation id="6158923546703693047">Informasjon om innholdskilden</translation>
@@ -1503,7 +1530,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6185696379715117369">Opp én side</translation>
 <translation id="619335566042889110">Lad helt nå</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">Studiobilde</translation>
 <translation id="6199775032047436064">Laster inn gjeldende side på nytt</translation>
 <translation id="6200515304866777730">Støttes ikke av appen</translation>
 <translation id="6210042900243040400">Koble til <ph name="NAME" /> som tidligere har blitt lagret i <ph name="EMAIL" /></translation>
@@ -1671,6 +1697,7 @@ Nylig installert</translation>
 <translation id="6782919488259222803">Søk på gjeldende side</translation>
 <translation id="6786750046913594791">Lukk mappen</translation>
 <translation id="6790428901817661496">Spill av</translation>
+<translation id="6792262051831399889">Utilgjengelig</translation>
 <translation id="679368458793552943">Zoom inn når forstørreren er på</translation>
 <translation id="6794287755901682422">Dette elementet har <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6797745268063125932">La funksjonen være på</translation>
@@ -1745,8 +1772,10 @@ Nylig installert</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> er koblet fra</translation>
 <translation id="7055910611768509537">Pekepennen har ikke vært brukt på over en uke</translation>
 <translation id="7061457967428964661">Kameraforhåndsvisning – trykk på Ctrl + piltastene for å flytte forhåndsvisningen til et annet hjørne</translation>
+<translation id="7064351585062927183">Neste <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Administratoren din har slått av dette nettverket.</translation>
 <translation id="7067196344162293536">Automatisk retning</translation>
+<translation id="7067569040620564762">Tiden er ute. Over og ut!</translation>
 <translation id="7068360136237591149">Åpne filer</translation>
 <translation id="7076293881109082629">Pålogging</translation>
 <translation id="7076878155205969899">Kutt lyden</translation>
@@ -1760,6 +1789,7 @@ Nylig installert</translation>
 <translation id="7108254681523785542">Velg et element for å lime det inn. Du kan se utklippstavlen ved å trykke på <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="7116969082764510092">Skrivebord 11</translation>
 <translation id="7118268675952955085">skjermbilde</translation>
+<translation id="7118597077555700347">Åpne <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Velg neste ord eller bokstav</translation>
 <translation id="7126996685418858413">Åpnet den siste uken</translation>
 <translation id="7130207228079676353">MEST SANNSYNLIG</translation>
@@ -1780,6 +1810,7 @@ Nylig installert</translation>
 <translation id="7189412385142492784">Hvor langt unna er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er festet til nedre høyre hjørne. Konflikt med systemoverflaten.</translation>
 <translation id="7219573373513695352">Ingen enheter er koblet til</translation>
+<translation id="7226347284543965442">Tiden er ute. Du klarte det!</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" /> % batteri gjenstår. Koble enheten til strøm.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook må startes på nytt for å ta i bruk en oppdatering. Dette kan ta opptil ett minutt.</translation>
@@ -1881,6 +1912,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7579778809502851308">Skjermbilde</translation>
 <translation id="7593891976182323525">Søk eller Shift</translation>
 <translation id="7598054670902114203">Øyeblikksbilde av prosessorbruken: <ph name="CPU_USEAGE" /> %. Temperatur: <ph name="TEMPERATURE" /> grader celsius. Gjeldende hastighet: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
+<translation id="7599378375976398913">Setter inn det valgte resultatet</translation>
 <translation id="7600875258240007829">Se alle varslene</translation>
 <translation id="7601417191446344542">Vil du slå på varsler om avslått mikrofon?</translation>
 <translation id="7607002721634913082">Satt på pause</translation>
@@ -1889,6 +1921,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7613620083300976559">Slå på spillkontroller</translation>
 <translation id="761736749114493194">Slå av/på kamerainnramming. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Still et spørsmål</translation>
 <translation id="7634648064048557203">Kameraet er festet til nedre høyre hjørne</translation>
 <translation id="7638572816805275740">Ta et skjermbilde eller et skjermopptak av vinduet</translation>
 <translation id="7642106959537987271">modus for fargeinvertering</translation>
@@ -2071,6 +2104,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8198456017687137612">Casting-fanen</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Du har nettopp fokusert i <ph name="FOCUSED_TIME" />. Åpne hurtiginnstillingene for å starte fokus igjen.</translation>
+<translation id="8203224998425013577">Vis flere emojier og GIF-er</translation>
 <translation id="8203795194971602413">Høyreklikk</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebooken må være påslått og koblet til strøm i denne perioden. Sørg for at lader- eller adapterkabelen er plugget helt inn i både Chromebooken og stikkontakten. Ikke slå av Chromebook.</translation>
@@ -2083,6 +2117,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8239034820133090126">Aktiver skrivebordet til høyre</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" /> – app</translation>
+<translation id="825129991941217170">Vis alt innhold i Google Disk</translation>
 <translation id="8257510091797044096">Konfigurer enheten</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8262312463845990408">Slå av/på avspilling</translation>
@@ -2097,7 +2132,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8315514906653279104">Slår på …</translation>
 <translation id="8331351032546853669">Nedlasting venter</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
-<translation id="8340621004014372743">Still et spørsmål.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /><ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Dårlig svar</translation>
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>
@@ -2171,6 +2205,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8615778328722901791">Åpne verktøylinjen</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Skru ned volumet</translation>
+<translation id="862543346640737572">Emojier og GIF-er</translation>
 <translation id="8627191004499078455">Koblet til <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Tilgjengelighetsinnstillinger</translation>
 <translation id="8634326941504371857">Filene dine på denne enheten og i Google Disk</translation>
@@ -2237,6 +2272,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8841375032071747811">Tilbakeknapp</translation>
 <translation id="8843682306134542540">Slå av/på rotasjonslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8845001906332463065">Få hjelp</translation>
+<translation id="8847100217801213944">Vis temperaturen i fahrenheit</translation>
 <translation id="8849001918648564819">Skjult</translation>
 <translation id="8853703225951107899">PIN-koden eller passordet kunne fremdeles ikke verifiseres. Merk: Hvis du nylig har byttet passord, bruker du det gamle passordet. Det nye passordet blir tatt i bruk når du logger av.</translation>
 <translation id="8855885154700222542">Tast for fullskjermmodus</translation>
@@ -2270,7 +2306,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8951539504029375108">Kun godkjente Thunderbolt-enheter er kompatible med Chromebooken din</translation>
 <translation id="8956420987536947088">Åpne tidligere vinduer og apper</translation>
 <translation id="8959380109429710384">Du har trykket på hurtigtasten for forstørrelse av hele skjermen. Bruk Ctrl + Alt + piltastene for å bevege deg rundt i den innzoomede visningen.</translation>
-<translation id="896335827708646237">Åpne hurtiginnstillingene for tilgjengelighet</translation>
 <translation id="8964525410783593407">1 t</translation>
 <translation id="8973885907461690937">Sett fokus på menyikonet</translation>
 <translation id="8980862970816311842">Flytt et appikon inn eller ut av en mappe i apprutenettet</translation>
@@ -2280,6 +2315,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="899350903320462459">Lås opp enheten som <ph name="LOGIN_ID" /> for å utføre varselhandlingen</translation>
 <translation id="8993733019280019776">Snakker du? Mikrofonen din er av. Velg mikrofonen for å slå den på.</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGRING</translation>
+<translation id="9003374957546315126">Emojier med mer</translation>
 <translation id="9005984960510803406">Åpne Crosh-vindu</translation>
 <translation id="9017320285115481645">Skriv inn koden for foreldretilgang til Family Link.</translation>
 <translation id="9024331582947483881">full skjerm</translation>
@@ -2288,6 +2324,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9030665205623277906">Øyeblikksbilde av prosessorbruken: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9047624247355796468">Åpne innstillinger for <ph name="NETWORK_NAME" /></translation>
+<translation id="9050012935252397793">Bluetooth er utilgjengelig</translation>
 <translation id="906458777597946297">Maksimer vinduet</translation>
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9070640332319875144">Assistent-innstillinger</translation>
@@ -2310,6 +2347,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9098969848082897657">Demp telefonen</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Angre siste handling</translation>
+<translation id="9126642911267312373">Bluetooth er utilgjengelig</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Om 1 min}other{Om # min}}</translation>
 <translation id="9129245940793250979">Bakre knapp</translation>
 <translation id="9133335900048457298">Kan ikke ta opp beskyttet innhold</translation>

@@ -2857,19 +2857,6 @@ TEST(CanonicalCookieTest, SecureCookiePrefix) {
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
-  {
-    base::test::ScopedFeatureList scope_feature_list;
-    scope_feature_list.InitAndDisableFeature(
-        features::kCaseInsensitiveCookiePrefix);
-
-    EXPECT_TRUE(CanonicalCookie::CreateForTesting(https_url, "__secure-A=C;",
-                                                  creation_time, server_time));
-    EXPECT_TRUE(CanonicalCookie::CreateForTesting(https_url, "__SECURE-A=C;",
-                                                  creation_time, server_time));
-    EXPECT_TRUE(CanonicalCookie::CreateForTesting(https_url, "__SeCuRe-A=C;",
-                                                  creation_time, server_time));
-  }
-
   // A typoed prefix does not have to be Secure.
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
       https_url, "__SecureA=B; Secure", creation_time, server_time));
@@ -3006,27 +2993,6 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
       CookieSourceType::kUnknown, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
-
-  {
-    base::test::ScopedFeatureList scope_feature_list;
-    scope_feature_list.InitAndDisableFeature(
-        features::kCaseInsensitiveCookiePrefix);
-
-    EXPECT_TRUE(CanonicalCookie::Create(
-        http_url, "__host-A=B; Domain=" + domain + "; Path=/;", creation_time,
-        server_time, /*cookie_partition_key=*/std::nullopt,
-        CookieSourceType::kUnknown, &status));
-
-    EXPECT_TRUE(CanonicalCookie::Create(
-        http_url, "__HOST-A=B; Domain=" + domain + "; Path=/;", creation_time,
-        server_time, /*cookie_partition_key=*/std::nullopt,
-        CookieSourceType::kUnknown, &status));
-
-    EXPECT_TRUE(CanonicalCookie::Create(
-        http_url, "__HoSt-A=B; Domain=" + domain + "; Path=/;", creation_time,
-        server_time, /*cookie_partition_key=*/std::nullopt,
-        CookieSourceType::kUnknown, &status));
-  }
 
   // Rules don't apply for a typoed prefix.
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
@@ -3523,10 +3489,6 @@ TEST(CanonicalCookieTest, TestSetCreationDate) {
 TEST(CanonicalCookieTest, TestPrefixHistograms) {
   base::HistogramTester histograms;
   const char kCookiePrefixHistogram[] = "Cookie.CookiePrefix";
-  const char kCookiePrefixVariantHistogram[] =
-      "Cookie.CookiePrefix.CaseVariant";
-  const char kVariantValidHistogram[] = "Cookie.CookiePrefix.CaseVariantValid";
-  const char kVariantCountHistogram[] = "Cookie.CookiePrefix.CaseVariantCount";
   GURL https_url("https://www.example.test");
   base::Time creation_time = base::Time::Now();
   std::optional<base::Time> server_time = std::nullopt;
@@ -3554,39 +3516,14 @@ TEST(CanonicalCookieTest, TestPrefixHistograms) {
       https_url, "__SecureA=B; Path=/; Secure", creation_time, server_time));
   histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_SECURE, 2);
 
-  // Test prefix case variants
-  const int sensitive_value_host =
-      histograms.GetBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_HOST);
-  const int sensitive_value_secure =
-      histograms.GetBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_SECURE);
-
+  // Prefix case variants will also increment the histogram.
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
       https_url, "__SECURE-A=B; Path=/; Secure", creation_time, server_time));
-  histograms.ExpectBucketCount(kCookiePrefixVariantHistogram,
-                               COOKIE_PREFIX_SECURE, 1);
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_SECURE,
-                               sensitive_value_secure);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_SECURE, 3);
 
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
       https_url, "__HOST-A=B; Path=/; Secure", creation_time, server_time));
-  histograms.ExpectBucketCount(kCookiePrefixVariantHistogram,
-                               COOKIE_PREFIX_HOST, 1);
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_HOST,
-                               sensitive_value_host);
-
-  // True indicates a variant
-  histograms.ExpectBucketCount(kVariantCountHistogram, true, 2);
-  histograms.ExpectBucketCount(kVariantCountHistogram, false, 4);
-
-  // Invalid variants
-  EXPECT_FALSE(CanonicalCookie::CreateForTesting(https_url, "__SECURE-A=B",
-                                                 creation_time, server_time));
-
-  EXPECT_FALSE(CanonicalCookie::CreateForTesting(https_url, "__HOST-A=B;",
-                                                 creation_time, server_time));
-
-  histograms.ExpectBucketCount(kVariantValidHistogram, true, 2);
-  histograms.ExpectBucketCount(kVariantValidHistogram, false, 2);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_HOST, 3);
 }
 
 TEST(CanonicalCookieTest, TestHasNonASCIIHistograms) {
@@ -4535,6 +4472,21 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
   EXPECT_TRUE(cc);
   EXPECT_EQ(too_long_domain, cc->DomainWithoutDot());
   EXPECT_TRUE(status.IsInclude());
+}
+
+// Regression test for https://crbug.com/362535230.
+TEST(CanonicalCookieTest, CreateSanitizedCookie_NoncanonicalDomain) {
+  CookieInclusionStatus status;
+
+  std::unique_ptr<CanonicalCookie> cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("foo://LOCALhost"), "name", "value", /*domain=*/"", /*path=*/"",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(status.IsInclude());
+  ASSERT_TRUE(cc);
+  EXPECT_TRUE(cc->IsCanonical());
+  EXPECT_EQ(cc->Domain(), "localhost");
 }
 
 // Make sure that the source scheme and port are set correctly for cookies that
@@ -5786,15 +5738,10 @@ TEST(CanonicalCookieTest, TestGetAndAdjustPortForTrustworthyUrls) {
   std::string_view ws_scheme(url::kWsScheme);
   std::string_view wss_scheme(url::kWssScheme);
 
-  EXPECT_EQ(url::DefaultPortForScheme(http_scheme.data(), http_scheme.length()),
-            80);
-  EXPECT_EQ(url::DefaultPortForScheme(ws_scheme.data(), ws_scheme.length()),
-            80);
-  EXPECT_EQ(
-      url::DefaultPortForScheme(https_scheme.data(), https_scheme.length()),
-      443);
-  EXPECT_EQ(url::DefaultPortForScheme(wss_scheme.data(), wss_scheme.length()),
-            443);
+  EXPECT_EQ(url::DefaultPortForScheme(http_scheme), 80);
+  EXPECT_EQ(url::DefaultPortForScheme(ws_scheme), 80);
+  EXPECT_EQ(url::DefaultPortForScheme(https_scheme), 443);
+  EXPECT_EQ(url::DefaultPortForScheme(wss_scheme), 443);
 
   const GURL secure_http = GURL("https://example.com");
   const GURL secure_http_custom_port = GURL("https://example.com:123");

@@ -88,6 +88,13 @@ template("_androidx_prebuilt") {
         "//android_webview/tools/system_webview_shell:*",
         "//third_party/android_deps:*",
       ]
+    } else if (target_name == "androidx_room_room_guava_java") {
+      deps -= [ ":androidx_room_room_runtime_jvm_java" ]
+      deps += [ ":androidx_room_room_runtime_android_java" ]
+    } else if (target_name == "androidx_sqlite_sqlite_framework_android_java" ||
+               target_name == "androidx_room_room_runtime_android_java") {
+      deps -= [ ":androidx_sqlite_sqlite_jvm_java" ]
+      deps += [ ":androidx_sqlite_sqlite_android_java" ]
     }
   }
 
@@ -98,6 +105,7 @@ template("_androidx_prebuilt") {
     }
   }
 }
+
 
 template("androidx_java_prebuilt") {
   _androidx_prebuilt(target_name) {

@@ -52,7 +52,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/model/sync/utils/test",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/common/ui/colors",

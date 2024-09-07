@@ -20,9 +20,11 @@
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -365,6 +367,18 @@ FillInPrivateAggregationRequest(
   return request_with_event_type;
 }
 
+bool IsPrivateAggregationRequestReservedOnce(
+    const auction_worklet::mojom::PrivateAggregationRequest& request) {
+  if (request.contribution->is_histogram_contribution()) {
+    return false;
+  }
+  return request.contribution->get_for_event_contribution()
+             ->event_type->is_reserved() &&
+         request.contribution->get_for_event_contribution()
+                 ->event_type->get_reserved() ==
+             auction_worklet::mojom::ReservedEventType::kReservedOnce;
+}
+
 void SplitContributionsIntoBatchesThenSendToHost(
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
     PrivateAggregationManager& pa_manager,
@@ -418,7 +432,7 @@ void SplitContributionsIntoBatchesThenSendToHost(
     bool bound = pa_manager.BindNewReceiver(
         /*worklet_origin=*/reporting_origin,
         /*top_frame_origin=*/main_frame_origin,
-        PrivateAggregationBudgetKey::Api::kProtectedAudience,
+        PrivateAggregationCallerApi::kProtectedAudience,
         /*context_id=*/std::nullopt,
         /*timeout=*/std::nullopt, aggregation_coordinator_origin,
         PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
@@ -458,6 +472,29 @@ bool IsValidFilteringId(std::optional<uint64_t> filtering_id) {
   }
 
   return filtering_id.value_or(0) <= 255;
+}
+
+std::optional<std::string> ValidatePrivateAggregationRequests(
+    const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
+        pa_requests) {
+  bool additional_extensions_allowed = base::FeatureList::IsEnabled(
+      blink::features::
+          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+  for (const auto& request : pa_requests) {
+    // The mojom API declaration should ensure none of these are null.
+    CHECK(!request.is_null());
+
+    if (!HasValidFilteringId(request)) {
+      return "Private Aggregation filtering ID invalid";
+    }
+
+    if (!auction_worklet::
+            IsValidPrivateAggregationRequestForAdditionalExtensions(
+                *request, additional_extensions_allowed)) {
+      return "Private Aggregation request using disabled features";
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace content

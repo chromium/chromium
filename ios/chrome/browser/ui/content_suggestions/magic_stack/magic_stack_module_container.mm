@@ -67,6 +67,7 @@ const CGFloat kSeparatorHeight = 0.5;
   UILabel* _subtitle;
   BOOL _isPlaceholder;
   UIButton* _seeMoreButton;
+  UIButton* _notificationsOptInButton;
   UIView* _contentView;
   UIView* _separator;
   UIStackView* _stackView;
@@ -122,41 +123,26 @@ const CGFloat kSeparatorHeight = 0.5;
       [_title.bottomAnchor constraintEqualToAnchor:_titleStackView.bottomAnchor]
     ]];
 
-    _seeMoreButton = [[UIButton alloc] init];
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
-    buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
-    NSDictionary* attributes = @{
-      NSFontAttributeName :
-          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
-    };
-    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
-        initWithString:l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_SEE_MORE)
-            attributes:attributes];
-    buttonConfiguration.attributedTitle = attributedTitle;
-    _seeMoreButton.configuration = buttonConfiguration;
-    [_seeMoreButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                         forState:UIControlStateNormal];
-    _seeMoreButton.titleLabel.numberOfLines = 2;
-    _seeMoreButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-    _seeMoreButton.contentHorizontalAlignment =
-        UIControlContentHorizontalAlignmentTrailing;
-    [_seeMoreButton
-        setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                        forAxis:
-                                            UILayoutConstraintAxisHorizontal];
+    _seeMoreButton = [self
+        actionButton:l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_SEE_MORE)];
+    _seeMoreButton.hidden = YES;
     [_seeMoreButton addTarget:self
                        action:@selector(seeMoreButtonWasTapped:)
              forControlEvents:UIControlEventTouchUpInside];
-    [_seeMoreButton setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                      forAxis:UILayoutConstraintAxisHorizontal];
-    _seeMoreButton.pointerInteractionEnabled = YES;
     [_titleStackView addArrangedSubview:_seeMoreButton];
-    _seeMoreButton.accessibilityIdentifier = _seeMoreButton.titleLabel.text;
-    _seeMoreButton.hidden = YES;
+
+    _notificationsOptInButton =
+        [self actionButton:l10n_util::GetNSString(
+                               IDS_IOS_MAGIC_STACK_TURN_ON_NOTIFICATIONS)];
+    _notificationsOptInButton.hidden = YES;
+    [_notificationsOptInButton
+               addTarget:self
+                  action:@selector(notificationsOptInButtonWasTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
+    [_titleStackView addArrangedSubview:_notificationsOptInButton];
 
     _subtitle = [[UILabel alloc] init];
+    _subtitle.hidden = YES;
     _subtitle.font = [MagicStackModuleContainer fontForSubtitle];
     _subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _subtitle.numberOfLines = 0;
@@ -218,6 +204,46 @@ const CGFloat kSeparatorHeight = 0.5;
   [self resetCell];
 }
 
+// Creates a button with the specified `title` positioned in the module's
+// top-right corner.
+//
+// NOTE: This helper method does not associate an action with the generated
+// button. Use `-addTarget:action:forControlEvents:` to attach an action.
+- (UIButton*)actionButton:(NSString*)title {
+  UIButton* button = [[UIButton alloc] init];
+
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
+  buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
+  buttonConfiguration.attributedTitle = [[NSAttributedString alloc]
+      initWithString:title
+          attributes:@{
+            NSFontAttributeName :
+                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+          }];
+  button.configuration = buttonConfiguration;
+
+  [button setTitleColor:[UIColor colorNamed:kBlueColor]
+               forState:UIControlStateNormal];
+  button.titleLabel.numberOfLines = 2;
+  button.titleLabel.adjustsFontForContentSizeCategory = YES;
+
+  button.contentHorizontalAlignment =
+      UIControlContentHorizontalAlignmentTrailing;
+  [button
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+  [button setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                            forAxis:UILayoutConstraintAxisHorizontal];
+  button.pointerInteractionEnabled = YES;
+  button.accessibilityIdentifier = button.titleLabel.text;
+
+  return button;
+}
+
 - (void)configureWithConfig:(MagicStackModule*)config {
   [self resetCell];
   // Ensures that the modules conforms to a height of kModuleMaxHeight. For
@@ -258,6 +284,11 @@ const CGFloat kSeparatorHeight = 0.5;
 
   _seeMoreButton.hidden = !config.shouldShowSeeMore;
 
+  // The "See More" button takes precedence over the notifications opt-in
+  // button.
+  _notificationsOptInButton.hidden =
+      config.shouldShowSeeMore || !config.showNotificationsOptIn;
+
   if ([self shouldShowSubtitle]) {
     // TODO(crbug.com/40279482): Update MagicStackModuleContainer to take an id
     // config in its initializer so the container can build itself from a
@@ -265,6 +296,7 @@ const CGFloat kSeparatorHeight = 0.5;
     NSString* subtitle = [self subtitleStringForConfig:config];
     _subtitle.text = subtitle;
     _subtitle.accessibilityIdentifier = subtitle;
+    _subtitle.hidden = NO;
   }
 
   if ([_title.text length] == 0) {
@@ -291,6 +323,8 @@ const CGFloat kSeparatorHeight = 0.5;
       [[NSMutableArray alloc] initWithObjects:_title, nil];
   if (config.shouldShowSeeMore) {
     [accessibilityElements addObject:_seeMoreButton];
+  } else if (config.showNotificationsOptIn) {
+    [accessibilityElements addObject:_notificationsOptInButton];
   } else if ([self shouldShowSubtitle]) {
     [accessibilityElements addObject:_subtitle];
   }
@@ -324,6 +358,9 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kParcelTracking:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      // Price Tracking Promo design does not use title.
+      return @"";
     default:
       NOTREACHED_IN_MIGRATION();
       return @"";
@@ -426,11 +463,16 @@ const CGFloat kSeparatorHeight = 0.5;
 - (NSArray<UIAction*>*)contextMenuActions {
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
-  if (IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled()) {
-    [actions addObject:[self toggleTipsNotificationsAction]];
+  if ((IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled()) ||
+      (self.type == ContentSuggestionsModuleType::kSafetyCheck &&
+       IsSafetyCheckNotificationsEnabled())) {
+    [actions addObject:[self toggleNotificationsActionForModuleType:self.type]];
   }
+
   [actions addObject:[self hideAction]];
+
   [actions addObject:[self customizeCardAction]];
+
   return actions;
 }
 
@@ -463,25 +505,73 @@ const CGFloat kSeparatorHeight = 0.5;
   return hideAction;
 }
 
+// Returns the `PushNotificationClientId` associated with the specified `type`.
+// Currently, push notifications are exclusively supported by the Set Up List
+// and Safety Check modules.
+- (PushNotificationClientId)pushNotificationClientId:
+    (ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
+
+  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
+    return PushNotificationClientId::kSafetyCheck;
+  }
+
+  if (IsSetUpListModuleType(type)) {
+    return PushNotificationClientId::kTips;
+  }
+
+  NOTREACHED();
+}
+
+// Retrieves the message ID for the push notification feature title associated
+// with the specified `ContentSuggestionsModuleType`. Currently, push
+// notifications are exclusively supported by the Set Up List and Safety Check
+// modules.
+- (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
+
+  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
+    return IDS_IOS_SAFETY_CHECK_TITLE;
+  }
+
+  if (IsSetUpListModuleType(type)) {
+    return content_suggestions::SetUpListTitleStringID();
+  }
+
+  NOTREACHED();
+}
+
 // Returns the menu action to opt-in to Tips Notifications.
-- (UIAction*)toggleTipsNotificationsAction {
-  BOOL optedIn = [self optedInToTipsNotifications];
+- (UIAction*)toggleNotificationsActionForModuleType:
+    (ContentSuggestionsModuleType)moduleType {
+  const PushNotificationClientId clientId =
+      [self pushNotificationClientId:moduleType];
+
+  BOOL optedIn = [self optedInToNotificationsForClient:clientId];
+
   __weak __typeof(self) weakSelf = self;
+
   NSString* title;
   NSString* symbol;
+
+  int featureTitle = [self pushNotificationTitleMessageId:moduleType];
+
   if (optedIn) {
     title = l10n_util::GetNSStringF(
         IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM_OFF,
-        l10n_util::GetStringUTF16(
-            content_suggestions::SetUpListTitleStringID()));
+        l10n_util::GetStringUTF16(featureTitle));
     symbol = kBellSlashSymbol;
   } else {
-    title = l10n_util::GetNSStringF(
-        IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
-        l10n_util::GetStringUTF16(
-            content_suggestions::SetUpListTitleStringID()));
+    title =
+        l10n_util::GetNSStringF(IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
+                                l10n_util::GetStringUTF16(featureTitle));
     symbol = kBellSymbol;
   }
+
   return [UIAction
       actionWithTitle:title
                 image:DefaultSymbolWithPointSize(symbol, 18)
@@ -495,11 +585,17 @@ const CGFloat kSeparatorHeight = 0.5;
               }];
 }
 
+// Handles taps on the "See More" button.
 - (void)seeMoreButtonWasTapped:(UIButton*)button {
   [_delegate seeMoreWasTappedForModuleType:_type];
 }
 
-// YES if this container should show a context menu when the user performs a
+// Handles taps on the notifications opt-in button.
+- (void)notificationsOptInButtonWasTapped:(UIButton*)button {
+  [_delegate enableNotifications:_type];
+}
+
+// `YES` if this container should show a context menu when the user performs a
 // long-press gesture.
 - (BOOL)allowsLongPress {
   switch (_type) {
@@ -517,15 +613,19 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 }
 
-// Based on ContentSuggestionsModuleType, returns YES if the module should show
-// a subtitle.
+// Determines if a subtitle should be displayed based on the
+// `ContentSuggestionsModuleType`. Returns `NO` if a Magic Stack module action
+// button is currently displayed.
 - (BOOL)shouldShowSubtitle {
-  switch (_type) {
-    case ContentSuggestionsModuleType::kSafetyCheck:
-      return YES;
-    default:
-      return NO;
+  if (!_seeMoreButton.isHidden || !_notificationsOptInButton.isHidden) {
+    return NO;
   }
+
+  if (_type == ContentSuggestionsModuleType::kSafetyCheck) {
+    return YES;
+  }
+
+  return NO;
 }
 
 // Returns the module's subtitle, if any, given the Magic Stack module `type`.
@@ -626,10 +726,20 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 }
 
-// Returns YES if the user has already opted-in to Tips Notifications.
-- (BOOL)optedInToTipsNotifications {
+// Returns YES if the user has already opted-in to notifications for the
+// specified `clientId`.
+- (BOOL)optedInToNotificationsForClient:(PushNotificationClientId)clientId {
+  // Currently, push notifications are exclusively supported for the Set Up List
+  // and Safety Check modules.
+  CHECK(clientId == PushNotificationClientId::kTips ||
+        clientId == PushNotificationClientId::kSafetyCheck);
+
+  // IMPORTANT: Notifications for Set Up List and Safety Check are managed
+  // through the app-wide notification settings. If a feature that utilizes
+  // per-profile notification settings is being introduced, ensure a `gaia_id`
+  // is passed to `GetMobileNotificationPermissionStatusForClient()` below.
   return push_notification_settings::
-      GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kTips, "");
+      GetMobileNotificationPermissionStatusForClient(clientId, "");
 }
+
 @end

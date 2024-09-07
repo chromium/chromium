@@ -53,6 +53,83 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CrosDisks.Error.Fuse.PrematureTermination.{FileSystem}"
+    enum="DaemonError" expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the FUSE daemon serving the {FileSystem} filesystem when
+    it unexpectedly terminated (i.e. before being requested by cros-disks to
+    unmount and exit).
+  </summary>
+  <token key="FileSystem">
+    <variant name="archive"/>
+    <variant name="drivefs"/>
+    <variant name="fuseblk.exfat"/>
+    <variant name="fuseblk.ntfs"/>
+    <variant name="fusebox"/>
+    <variant name="rar"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs"/>
+    <variant name="zip"/>
+  </token>
+</histogram>
+
+<histogram name="CrosDisks.Error.{Action}.{FileSystem}" enum="DaemonError"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the program performing the {Action} action on a partition
+    with the {FileSystem} filesystem.
+  </summary>
+  <token key="Action">
+    <variant name="Format"/>
+    <variant name="Rename"/>
+  </token>
+  <token key="FileSystem">
+    <variant name="exfat"/>
+    <variant name="ntfs"/>
+    <variant name="vfat"/>
+  </token>
+</histogram>
+
+<histogram name="CrosDisks.Error.{SysCall}.{FileSystem}" enum="PopularOSErrno"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the `{SysCall}` system call when the ChromeOS cros-disks
+    daemon deals with a `{FileSystem}` filesystem.
+  </summary>
+  <token key="SysCall">
+    <variant name="mount"/>
+    <variant name="syncfs"/>
+    <variant name="umount"/>
+    <variant name="umount2"/>
+  </token>
+  <token key="FileSystem">
+    <variant name="archive"/>
+    <variant name="drivefs"/>
+    <variant name="exfat"/>
+    <variant name="ext2"/>
+    <variant name="ext3"/>
+    <variant name="ext4"/>
+    <variant name="fuseblk.exfat"/>
+    <variant name="fuseblk.ntfs"/>
+    <variant name="fusebox"/>
+    <variant name="hfsplus"/>
+    <variant name="iso9660"/>
+    <variant name="ntfs3"/>
+    <variant name="rar"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs"/>
+    <variant name="udf"/>
+    <variant name="vfat"/>
+    <variant name="zip"/>
+  </token>
+</histogram>
+
 <histogram name="CrosDisks.FilesystemType" enum="CrosDisksFilesystemType"
     expires_after="2025-03-01">
   <owner>fdegros@chromium.org</owner>
@@ -93,49 +170,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CrosDisks.MountError.{FileSystem}" enum="PopularOSErrno"
-    expires_after="2025-03-01">
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The error returned by the mount() system call when the ChromeOS cros-disks
-    daemon tries to mount a file system.
-  </summary>
-  <token key="FileSystem">
-    <variant name="exfat"/>
-    <variant name="ext2"/>
-    <variant name="ext3"/>
-    <variant name="ext4"/>
-    <variant name="fuse"/>
-    <variant name="hfsplus"/>
-    <variant name="iso9660"/>
-    <variant name="ntfs"/>
-    <variant name="udf"/>
-    <variant name="vfat"/>
-  </token>
-</histogram>
-
-<histogram name="CrosDisks.PrematureTermination.{Daemon}" enum="DaemonError"
-    expires_after="2025-03-01">
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Error returned by a FUSE daemon that unexpectedly terminated (i.e. before
-    being requested by cros-disks to unmount and exit).
-  </summary>
-  <token key="Daemon">
-    <variant name="drivefs"/>
-    <variant name="fuse-archive"/>
-    <variant name="fusebox"/>
-    <variant name="mount-exfat-fuse"/>
-    <variant name="mount-zip"/>
-    <variant name="ntfs-3g"/>
-    <variant name="rar2fs"/>
-    <variant name="smbfs"/>
-    <variant name="sshfs"/>
-  </token>
-</histogram>
-
 <histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
     enum="CrosDisksFilesystemType" expires_after="2025-03-01">
   <owner>fdegros@chromium.org</owner>
@@ -147,14 +181,61 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CrosDisks.UnmountError.{FileSystem}" enum="PopularOSErrno"
+<histogram name="CrosDisks.Time.Fuse.PrematureTermination.{FileSystem}"
+    units="ms" expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time after which the FUSE daemon serving the {FileSystem} filesystem
+    unexpectedly terminated (i.e. before being requested by cros-disks to
+    unmount and exit).
+  </summary>
+  <token key="FileSystem">
+    <variant name="archive"/>
+    <variant name="drivefs"/>
+    <variant name="fuseblk.exfat"/>
+    <variant name="fuseblk.ntfs"/>
+    <variant name="fusebox"/>
+    <variant name="rar"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs"/>
+    <variant name="zip"/>
+  </token>
+</histogram>
+
+<histogram name="CrosDisks.Time.{Action}.{FileSystem}" units="ms"
     expires_after="2025-03-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error returned by the umount() system call when the ChromeOS cros-disks
-    daemon tries to unmount a file system.
+    Time taken by the program performing the {Action} action on a partition with
+    the {FileSystem} filesystem.
   </summary>
+  <token key="Action">
+    <variant name="Format"/>
+    <variant name="Rename"/>
+  </token>
+  <token key="FileSystem">
+    <variant name="exfat"/>
+    <variant name="ntfs"/>
+    <variant name="vfat"/>
+  </token>
+</histogram>
+
+<histogram name="CrosDisks.Time.{SysCall}.{FileSystem}" units="ms"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time taken by the `{SysCall}` system call when the ChromeOS cros-disks
+    daemon deals with a `{FileSystem}` filesystem.
+  </summary>
+  <token key="SysCall">
+    <variant name="mount"/>
+    <variant name="syncfs"/>
+    <variant name="umount"/>
+    <variant name="umount2"/>
+  </token>
   <token key="FileSystem">
     <variant name="archive"/>
     <variant name="drivefs"/>
@@ -162,10 +243,12 @@ chromium-metrics-reviews@google.com.
     <variant name="ext2"/>
     <variant name="ext3"/>
     <variant name="ext4"/>
+    <variant name="fuseblk.exfat"/>
+    <variant name="fuseblk.ntfs"/>
     <variant name="fusebox"/>
     <variant name="hfsplus"/>
     <variant name="iso9660"/>
-    <variant name="ntfs"/>
+    <variant name="ntfs3"/>
     <variant name="rar"/>
     <variant name="smbfs"/>
     <variant name="sshfs"/>

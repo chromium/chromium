@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
@@ -30,6 +31,8 @@ enum class Purpose;
 class PinStorageCryptohome {
  public:
   using BoolCallback = base::OnceCallback<void(bool)>;
+  using AvailabilityCallback =
+      base::OnceCallback<void(bool, std::optional<base::Time>)>;
 
   // Check to see if the cryptohome implementation can store PINs.
   static void IsSupported(BoolCallback result);
@@ -59,7 +62,7 @@ class PinStorageCryptohome {
                  AuthOperationCallback callback);
   void CanAuthenticate(std::unique_ptr<UserContext> user_context,
                        Purpose purpose,
-                       BoolCallback result);
+                       AvailabilityCallback result_callback);
   void TryAuthenticate(std::unique_ptr<UserContext> user_context,
                        const Key& key,
                        Purpose purpose,

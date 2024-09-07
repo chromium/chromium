@@ -10,13 +10,17 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "components/commerce/core/shopping_service.h"
-#include "components/commerce/core/subscriptions/subscriptions_observer.h"
-#include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/image/image.h"
+
+// TODO(https://crbug.com/362675963): Once //c/b/ui/views/commerce/ gets
+// modularized, the declaration of enum class PriceInsightsIconLabelType can
+// move back into class PriceInsightsIconView, and we can include
+// //c/b/ui/views/commerce/price_insights_icon_view.h directly, without
+// circular dependencies.
+enum class PriceInsightsIconLabelType;
 
 class GURL;
 class SidePanelRegistry;
@@ -73,8 +77,7 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
 
   // Return the page action label. If no label should be shown, return
   // PriceInsightsIconLabelType::kNone.
-  virtual PriceInsightsIconView::PriceInsightsIconLabelType
-  GetPriceInsightsIconLabelTypeForPage();
+  virtual PriceInsightsIconLabelType GetPriceInsightsIconLabelTypeForPage();
 
   // The URL for the last fetched product image. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
@@ -262,8 +265,7 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
   base::TimeTicks page_action_icon_compute_start_time_;
 
   // The price insights icon label type for the current page load.
-  PriceInsightsIconView::PriceInsightsIconLabelType price_insights_label_type_ =
-      PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+  PriceInsightsIconLabelType price_insights_label_type_;
 
   base::WeakPtrFactory<CommerceUiTabHelper> weak_ptr_factory_{this};
 };

@@ -12,7 +12,6 @@
 #include "content/browser/browser_process_io_thread.h"
 #include "content/browser/startup_data_impl.h"
 #include "content/common/features.h"
-#include "content/common/mojo_core_library_support.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 
@@ -23,18 +22,13 @@ MojoIpcSupport::MojoIpcSupport(
     : io_thread_(std::move(io_thread)) {
   scoped_refptr<base::SingleThreadTaskRunner> mojo_ipc_task_runner =
       io_thread_->task_runner();
-  if (!IsMojoCoreSharedLibraryEnabled()) {
-    // NOTE: If Mojo Core was loaded via shared library, IPC support is already
-    // initialized.
-    if (base::FeatureList::IsEnabled(features::kMojoDedicatedThread)) {
-      mojo_ipc_thread_.StartWithOptions(
-          base::Thread::Options(base::MessagePumpType::IO, 0));
-      mojo_ipc_task_runner = mojo_ipc_thread_.task_runner();
-    }
-    mojo_ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
-        mojo_ipc_task_runner,
-        mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
+  if (base::FeatureList::IsEnabled(features::kMojoDedicatedThread)) {
+    mojo_ipc_thread_.StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0));
+    mojo_ipc_task_runner = mojo_ipc_thread_.task_runner();
   }
+  mojo_ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
+      mojo_ipc_task_runner, mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
 }
 
 MojoIpcSupport::~MojoIpcSupport() = default;

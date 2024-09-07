@@ -32,6 +32,13 @@ BASE_FEATURE(kAdaptiveScreenBrightnessLogging,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// Enable revamp of AI settings page.
+BASE_FEATURE(kAiSettingsPageRefresh,
+             "AiSettingsPageRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppPreloadService,
              "AppPreloadService",
@@ -279,24 +286,7 @@ BASE_FEATURE(kDesktopPWAsIconHealthChecks,
              "DesktopPWAsIconHealthChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDesktopPWAsLinkCapturing,
-             "DesktopPWAsLinkCapturing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<LinkCapturingState>::Option kLinkCapturingParams[] = {
-    {LinkCapturingState::kDefaultOn, "on_by_default"},
-    {LinkCapturingState::kDefaultOff, "off_by_default"},
-    {LinkCapturingState::kReimplDefaultOn, "reimpl_default_on"},
-    {LinkCapturingState::kReimplDefaultOff, "reimpl_default_off"}};
-
-const base::FeatureParam<LinkCapturingState> kLinkCapturingDefaultState{
-    &kDesktopPWAsLinkCapturing, "link_capturing_state",
-    LinkCapturingState::kDefaultOn, &kLinkCapturingParams};
-
-const base::FeatureParam<int> kLinkCapturingIPHGuardrailStorageDuration{
-    &kDesktopPWAsLinkCapturing, "link_capturing_guardrail_storage_duration",
-    kTotalDaysToStoreLinkCapturingIPHGuardrails};
-
-BASE_FEATURE(kDesktopPWAsLinkCapturingWithScopeExtensions,
+BASE_FEATURE(kPwaNavigationCapturingWithScopeExtensions,
              "DesktopPWAsLinkCapturingWithScopeExtensions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -517,14 +507,6 @@ constexpr base::FeatureParam<int>
     kHappinessTrackingSurveysForDesktopWhatsNewJpActivationPercentage{
         &kHappinessTrackingSurveysForDesktopWhatsNew,
         "jp_activation_percentage", 80};
-// Enables or disables the Happiness Tracking System for Chrome What's New v2.
-BASE_FEATURE(kHappinessTrackingSurveysForDesktopWhatsNewV2,
-             "HappinessTrackingSurveysForDesktopWhatsNewV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopWhatsNewV2Time{
-        &kHappinessTrackingSurveysForDesktopWhatsNewV2, "whats-new-v2-time",
-        base::Seconds(20)};
 
 // Happiness tracking surveys for the M1 Privacy Sandbox settings.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopM1AdPrivacyPage,
@@ -1049,16 +1031,6 @@ BASE_FEATURE(kPrerenderFallbackToPreconnect,
 BASE_FEATURE(kPrintPreviewCrosPrimary,
              "PrintPreviewCrosPrimary",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable improved printer state and error state messaging for Print Preview.
-BASE_FEATURE(kPrintPreviewSetupAssistance,
-             "PrintPreviewSetupAssistance",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Enables the observing of local printers to provide UI surfaces with live
-// updates.
-BASE_FEATURE(kLocalPrinterObserving,
-             "LocalPrinterObserving",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables or disables push subscriptions keeping Chrome running in the
@@ -1135,6 +1107,16 @@ BASE_FEATURE(kSafetyHubMagicStack,
 BASE_FEATURE(kSafetyHubFollowup,
              "SafetyHubFollowup",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Safety Hub HaTS survey on Android.
+BASE_FEATURE(kSafetyHubAndroidSurvey,
+             "SafetyHubAndroidSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<std::string> kSafetyHubAndroidTriggerId(
+    &kSafetyHubAndroidSurvey,
+    "trigger_id",
+    /*default_value=*/"");
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.

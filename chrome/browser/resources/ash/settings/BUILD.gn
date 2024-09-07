@@ -11,7 +11,7 @@ import("./os_settings.gni")
 assert(is_chromeos_ash, "ChromeOS Settings is ChromeOS only")
 
 nearby_share_tsc_dir =
-    "$root_gen_dir/chrome/browser/resources/nearby_share/shared/tsc"
+    "$root_gen_dir/chrome/browser/resources/chromeos/nearby_share/shared/tsc"
 
 build_webui("build") {
   grd_prefix = "os_settings"
@@ -495,6 +495,7 @@ build_webui("build") {
   icons_html_files = [
     "app_management_icons.html",
     "icons.html",
+    "os_a11y_page/facegaze_icons.html",
     "os_settings_icons.html",
   ]
 
@@ -574,7 +575,7 @@ build_webui("build") {
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cellular_setup:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
-    "//chrome/browser/resources/nearby_share/shared:build_ts",
+    "//chrome/browser/resources/chromeos/nearby_share/shared:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/polymer/v3_0:library",
@@ -593,11 +594,11 @@ build_webui("build") {
   ]
 
   extra_grdp_deps = [
-    "//chrome/browser/resources/nearby_share/shared:build_json_grdp",
+    "//chrome/browser/resources/chromeos/nearby_share/shared:build_json_grdp",
     "//third_party/liblouis:build_grdp",
   ]
   extra_grdp_files = [
-    "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_json_resources.grdp",
+    "$root_gen_dir/chrome/browser/resources/chromeos/nearby_share/shared/nearby_share_json_resources.grdp",
     "$root_gen_dir/third_party/liblouis/liblouis_resources.grdp",
   ]
 
@@ -606,8 +607,8 @@ build_webui("build") {
     # when !optimize_webui, because otherwise those are included as part of the
     # bundle and don't need to be included separately.
     extra_grdp_deps +=
-        [ "//chrome/browser/resources/nearby_share/shared:build_grdp" ]
-    extra_grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/resources.grdp" ]
+        [ "//chrome/browser/resources/chromeos/nearby_share/shared:build_grdp" ]
+    extra_grdp_files += [ "$root_gen_dir/chrome/browser/resources/chromeos/nearby_share/shared/resources.grdp" ]
   }
 
   webui_context_type = "trusted"

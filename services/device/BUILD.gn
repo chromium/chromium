@@ -369,7 +369,21 @@ source_set("tests") {
   }
 
   if (is_apple) {
-    sources += [ "geolocation/core_location_provider_unittest.cc" ]
+    sources += [
+      "geolocation/core_location_provider_unittest.cc",
+      "public/cpp/geolocation/system_geolocation_source_apple_unittest.mm",
+    ]
+    deps += [
+      "//services/device/public/cpp/geolocation",
+      "//third_party/ocmock",
+    ]
+    frameworks = [
+      "CoreLocation.framework",
+      "Foundation.framework",
+    ]
+    if (is_mac) {
+      frameworks += [ "CoreWLAN.framework" ]
+    }
   }
 
   # UsbContext is a libusb-specific object.

@@ -119,16 +119,15 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
 
  protected:
   void ParseAttribute(const AttributeModificationParams&) override;
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
   void FinishParsingChildren() final;
 
  private:
   void AttributeChanged(const AttributeModificationParams&) override;
   bool ShouldHaveFocusAppearance() const final;
-  bool IsFocusable(UpdateBehavior update_behavior =
-                       UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState IsFocusableState(
+      UpdateBehavior update_behavior) const override;
   bool IsKeyboardFocusable(UpdateBehavior update_behavior =
                                UpdateBehavior::kStyleAndLayout) const override;
   void DefaultEventHandler(Event&) final;

@@ -22,8 +22,7 @@ def main_run(args):
         tempfile_path,
         '--skip-set-lpac-acls=1',
     ],
-                            cwd=os.path.join(common.SRC_DIR, 'out',
-                                             args.build_config_fs))
+                            cwd=args.build_dir)
 
     with open(tempfile_path) as f:
       isolated_results = json.load(f)

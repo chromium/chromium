@@ -132,6 +132,15 @@ bool IsExplicitBrowserSigninUIOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);
 }
 
+BASE_FEATURE(kImprovedSigninUIOnDesktop,
+             "ImprovedSigninUIOnDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsImprovedSigninUIOnDesktopEnabled() {
+  return IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+         base::FeatureList::IsEnabled(kImprovedSigninUIOnDesktop);
+}
+
 #if BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
@@ -164,20 +173,17 @@ BASE_FEATURE(kPreconnectAccountCapabilitiesPostSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// Flag guarding the refresh of the metrics services states after the related
-// prefs are restored during the device restoration, to enable metrics upload
-// if it's allowed by those restored prefs.
-BASE_FEATURE(kUpdateMetricsServicesStateInRestore,
-             "UpdateMetricsServicesStateInRestore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kAlwaysLoadDeviceAccounts,
              "kAlwaysLoadDeviceAccounts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE(kBatchUploadDesktop,
+             "BatchUploadDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace switches
 

@@ -163,16 +163,6 @@ bool SelectByGuid(sql::Database* db,
                   std::initializer_list<std::string_view> columns,
                   std::string_view guid);
 
-// Wrapper around `SelectBuilder()` that restricts it to the half-open interval
-// [low, high[ of `column_between`.
-void SelectBetween(sql::Database* db,
-                   sql::Statement& statement,
-                   std::string_view table_name,
-                   std::initializer_list<std::string_view> columns,
-                   std::string_view column_between,
-                   int64_t low,
-                   int64_t high);
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_TABLE_UTILS_H_

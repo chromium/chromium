@@ -6,7 +6,10 @@
 
 #include <cstring>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -18,7 +21,6 @@ namespace growth {
 namespace {
 
 constexpr char kGrowthFramework[] = "ChromeOS Growth Framework";
-constexpr char kGrowthCampaignsEventNamePrefix[] = "ChromeOSAshGrowthCampaigns";
 constexpr char kGrowthCampaignsEventUsed[] =
     "ChromeOSAshGrowthCampaigns_EventUsed";
 constexpr char kGrowthCampaignsEventTrigger[] =
@@ -38,6 +40,11 @@ feature_engagement::FeatureConfig CreateEmptyConfig() {
       kGrowthCampaignsEventTrigger,
       feature_engagement::Comparator(feature_engagement::ANY, 0), 0, 0);
   return config;
+}
+
+bool HasDebugClearEventsSwitch() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kGrowthCampaignsClearEventsAtSessionStart);
 }
 
 }  // namespace
@@ -77,7 +84,16 @@ CampaignsConfigurationProvider::MaybeProvideAllowedEventPrefixes(
     return {};
   }
 
-  return {kGrowthCampaignsEventNamePrefix};
+  // By returning empty prefixes, the `feature engagement` component will
+  // clear all events with the `kGrowthCampaignsEventNamePrefix` and prevent
+  // evaluating/recording the events with the prefix.
+  // NOTE: To make growth framework events targeting work, need to remove the
+  // debugging switch and restart the device again.
+  if (HasDebugClearEventsSwitch()) {
+    return {};
+  } else {
+    return {growth::GetGrowthCampaignsEventNamePrefix()};
+  }
 }
 
 void CampaignsConfigurationProvider::SetConfig(

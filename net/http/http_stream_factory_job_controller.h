@@ -305,8 +305,10 @@ class HttpStreamFactory::JobController
   void OnPoolPreconnectsComplete(int rv);
 
   // Used to call HttpStreamRequest::OnSwitchesToHttpStreamPool() later.
-  void CallOnSwitchesToHttpStreamPool(HttpStreamKey stream_key,
-                                      quic::ParsedQuicVersion quic_version);
+  void CallOnSwitchesToHttpStreamPool(
+      HttpStreamKey stream_key,
+      AlternativeServiceInfo alternative_service_info,
+      quic::ParsedQuicVersion quic_version);
 
   const raw_ptr<HttpStreamFactory> factory_;
   const raw_ptr<HttpNetworkSession> session_;

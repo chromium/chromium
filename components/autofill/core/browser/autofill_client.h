@@ -16,6 +16,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
@@ -61,12 +62,6 @@ namespace version_info {
 enum class Channel;
 }
 
-#if !BUILDFLAG(IS_IOS)
-namespace webauthn {
-class InternalAuthenticator;
-}
-#endif
-
 namespace autofill {
 
 class AddressNormalizer;
@@ -74,7 +69,6 @@ class AutocompleteHistoryManager;
 class AutofillAblationStudy;
 class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
-class AutofillDriver;
 class AutofillDriverFactory;
 class AutofillMlPredictionModelHandler;
 class AutofillOptimizationGuide;
@@ -82,7 +76,6 @@ class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
 class AutofillPredictionImprovementsDelegate;
 class AutofillProfile;
-enum class CreditCardFetchResult;
 class FormDataImporter;
 class LogManager;
 class PersonalDataManager;
@@ -91,7 +84,6 @@ struct Suggestion;
 enum class WebauthnDialogState;
 
 namespace payments {
-class MandatoryReauthManager;
 class PaymentsAutofillClient;
 }
 
@@ -139,14 +131,6 @@ class AutofillClient {
     // prompt shown on the same tab.
     kAutoDeclined,
     kMaxValue = kAutoDeclined,
-  };
-
-  // Used for explicitly requesting the user to enter/confirm cardholder name,
-  // expiration date month and year.
-  struct UserProvidedCardDetails {
-    std::u16string cardholder_name;
-    std::u16string expiration_date_month;
-    std::u16string expiration_date_year;
   };
 
   // Required arguments to create a dropdown showing autofill suggestions.
@@ -333,21 +317,8 @@ class AutofillClient {
   // Gets a FastCheckoutClient instance (can be null for unsupported platforms).
   virtual FastCheckoutClient* GetFastCheckoutClient();
 
-#if !BUILDFLAG(IS_IOS)
-  // Creates the appropriate implementation of InternalAuthenticator. May be
-  // null for platforms that don't support this, in which case standard CVC
-  // authentication will be used instead.
-  virtual std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateCreditCardInternalAuthenticator(AutofillDriver* driver);
-#endif
-
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(SuggestionType suggestion_type) = 0;
-
-  // Gets or creates a payments autofill mandatory re-auth manager. This will be
-  // used to handle payments mandatory re-auth related flows.
-  virtual payments::MandatoryReauthManager*
-  GetOrCreatePaymentsMandatoryReauthManager();
 
   // Show an edit address profile dialog, giving the user an option to alter
   // autofill profile data. `on_user_decision_callback` is used to react to the
@@ -375,11 +346,25 @@ class AutofillClient {
       bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) = 0;
 
+  // A unique identifier for suggestions UI (i.e. the keyboard accessory on
+  // mobile and the popup on Desktop). Calling `ShowAutofillSuggestions`
+  // generates a new identifier, but calling `UpdateAutofillSuggestions` does
+  // not. Therefore the identifier can be used to decide whether to update or
+  // close suggestions UI in asynchronous execution flows. There is at most one
+  // suggestion UI showing at a time.
+  using SuggestionUiSessionId =
+      base::IdTypeU32<struct SuggestionUiSessionIdTag>;
+
   // Shows Autofill suggestions with the given `values`, `labels`, `icons`, and
   // `identifiers` for the element at `element_bounds`. `delegate` will be
   // notified of suggestion events, e.g., the user accepting a suggestion.
-  // The suggestions are shown asynchronously on Desktop and Android.
-  virtual void ShowAutofillSuggestions(
+  // Note that suggestions are shown asynchronously on Desktop and Android. As a
+  // result, calling `GetSessionIdForCurrentAutofillSuggestions` directly after
+  // this method will return not return the same identifier, since the UI is not
+  // showing yet.
+  // `SuggestionUiSessionId` is only implemented on Chrome for Desktop and
+  // Android. On other platforms, the returned identifier is meaningless.
+  virtual SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) = 0;
 
@@ -388,22 +373,28 @@ class AutofillClient {
       base::span<const SelectOption> datalist) = 0;
 
   // Informs the client that the suggestion UI needs to be kept alive. Call
-  // before |UpdatePopup| to update the open popup in-place.
+  // before `UpdateAutofillSuggestions` to update the open popup in-place.
   virtual void PinAutofillSuggestions() = 0;
 
   // Returns the information of the popup on the screen, if there is one that is
   // showing. Note that this implemented only on Desktop.
   virtual std::optional<PopupScreenLocation> GetPopupScreenLocation() const;
 
+  // Returns the identifier of the suggestion UI that is currently showing or
+  // `std::nullopt` is there is none.
+  virtual std::optional<SuggestionUiSessionId>
+  GetSessionIdForCurrentAutofillSuggestions() const;
+
   // Returns (not elided) suggestions currently held by the UI.
   virtual base::span<const Suggestion> GetAutofillSuggestions() const;
 
-  // Updates the popup contents with the newly given suggestions.
-  // `trigger_source` indicates the reason for updating the popup. (However, the
-  // password manager makes no distinction).
-  virtual void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                           FillingProduct main_filling_product,
-                           AutofillSuggestionTriggerSource trigger_source) = 0;
+  // Updates the shown Autofill suggestions. `trigger_source` indicates the
+  // reason for updating the popup. (However, the password manager makes no
+  // distinction).
+  virtual void UpdateAutofillSuggestions(
+      const std::vector<Suggestion>& suggestions,
+      FillingProduct main_filling_product,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Hides the Autofill suggestions UI if it is currently showing.
   virtual void HideAutofillSuggestions(SuggestionHidingReason reason) = 0;

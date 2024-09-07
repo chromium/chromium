@@ -1163,8 +1163,9 @@ bool MoveSetupOutOfInstallFolder(const base::FilePath& setup_exe) {
 
   base::FilePath tmp_dir;
   base::FilePath temp_file;
-  if (!(::IsUserAnAdmin() ? base::GetSecureSystemTemp(&tmp_dir)
-                          : base::PathService::Get(base::DIR_TEMP, &tmp_dir))) {
+  if (!(::IsUserAnAdmin()
+            ? base::PathService::Get(base::DIR_SYSTEM_TEMP, &tmp_dir)
+            : base::PathService::Get(base::DIR_TEMP, &tmp_dir))) {
     NOTREACHED_IN_MIGRATION();
     return false;
   }

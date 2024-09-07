@@ -13,6 +13,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/views/layout/table_layout.h"
@@ -42,7 +43,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   SetAnchorView(anchor);
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
   SetEnableArrowKeyTraversal(true);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(parent_widget->IsActive());
   SetUseDefaultFillLayout(true);
 

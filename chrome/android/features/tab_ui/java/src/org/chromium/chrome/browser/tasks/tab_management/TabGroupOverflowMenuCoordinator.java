@@ -20,7 +20,9 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.LifetimeAssert;
@@ -36,10 +38,11 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuItemViewBinder;
 import org.chromium.ui.listmenu.ListSectionDividerViewBinder;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
+import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -51,7 +54,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
     /** Helper interface for handling menu item clicks for tab group related actions. */
     @FunctionalInterface
     public interface OnItemClickedCallback {
-        void onClick(@IdRes int menuId, int tabId);
+        void onClick(@IdRes int menuId, int tabId, @Nullable String collaborationId);
     }
 
     private static class OverflowMenuHolder {
@@ -64,16 +67,20 @@ public abstract class TabGroupOverflowMenuCoordinator {
         private AnchoredPopupWindow mMenuWindow;
 
         OverflowMenuHolder(
-                View anchorView,
+                RectProvider anchorViewRectProvider,
+                boolean horizontalOverlapAnchor,
+                boolean verticalOverlapAnchor,
+                @StyleRes int animStyle,
+                @HorizontalOrientation int horizontalOrientation,
                 @LayoutRes int menuLayout,
                 OnItemClickedCallback onItemClickedCallback,
                 boolean isIncognito,
                 int tabId,
+                @Nullable String collaborationId,
                 @DimenRes int popupWidthRes,
                 @Nullable Callback<OverflowMenuHolder> onDismiss,
                 Activity activity) {
-            Context context = anchorView.getContext();
-            mContext = context;
+            mContext = activity;
             mComponentCallbacks =
                     new ComponentCallbacks() {
                         @Override
@@ -85,9 +92,9 @@ public abstract class TabGroupOverflowMenuCoordinator {
                         @Override
                         public void onLowMemory() {}
                     };
-            context.registerComponentCallbacks(mComponentCallbacks);
+            mContext.registerComponentCallbacks(mComponentCallbacks);
 
-            mContentView = LayoutInflater.from(context).inflate(menuLayout, null);
+            mContentView = LayoutInflater.from(mContext).inflate(menuLayout, null);
 
             ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);
             ModelListAdapter adapter =
@@ -113,28 +120,33 @@ public abstract class TabGroupOverflowMenuCoordinator {
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(
                     (p, v, pos, id) -> {
-                        onItemClickedCallback.onClick((int) id, tabId);
+                        onItemClickedCallback.onClick((int) id, tabId, collaborationId);
                         mMenuWindow.dismiss();
                     });
 
             View decorView = activity.getWindow().getDecorView();
-            ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
 
             final @DrawableRes int bgDrawableId =
                     isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
 
             mMenuWindow =
                     new AnchoredPopupWindow(
-                            context,
+                            mContext,
                             decorView,
-                            AppCompatResources.getDrawable(context, bgDrawableId),
+                            AppCompatResources.getDrawable(mContext, bgDrawableId),
                             mContentView,
-                            rectProvider);
+                            anchorViewRectProvider);
             mMenuWindow.setFocusable(true);
-            mMenuWindow.setHorizontalOverlapAnchor(true);
-            mMenuWindow.setVerticalOverlapAnchor(true);
-            mMenuWindow.setAnimationStyle(R.style.EndIconMenuAnim);
-            int popupWidth = context.getResources().getDimensionPixelSize(popupWidthRes);
+            mMenuWindow.setHorizontalOverlapAnchor(horizontalOverlapAnchor);
+            mMenuWindow.setVerticalOverlapAnchor(verticalOverlapAnchor);
+            mMenuWindow.setPreferredHorizontalOrientation(horizontalOrientation);
+            // Override animation style or animate from anchor as default.
+            if (animStyle == ResourcesCompat.ID_NULL) {
+                mMenuWindow.setAnimationStyle(animStyle);
+            } else {
+                mMenuWindow.setAnimateFromAnchor(true);
+            }
+            int popupWidth = mContext.getResources().getDimensionPixelSize(popupWidthRes);
             mMenuWindow.setMaxWidth(popupWidth);
 
             // Resize if any new elements are added.
@@ -254,21 +266,57 @@ public abstract class TabGroupOverflowMenuCoordinator {
 
     // TODO(crbug.com/357878838): Pass the activity through constructor and setup test to test this
     // method
+    /** See {@link #createAndShowMenu(RectProvider, int, boolean, boolean, Integer, Activity)} */
     protected void createAndShowMenu(View anchorView, int tabId, @NonNull Activity activity) {
+        createAndShowMenu(
+                new ViewRectProvider(anchorView),
+                tabId,
+                /* horizontalOverlapAnchor= */ true,
+                /* verticalOverlapAnchor= */ true,
+                R.style.EndIconMenuAnim,
+                HorizontalOrientation.MAX_AVAILABLE_SPACE,
+                activity);
+    }
+
+    /**
+     * Creates a menu view and renders it within an @{@link AnchoredPopupWindow}
+     *
+     * @param anchorViewRectProvider Rect provider for view to anchor the menu.
+     * @param tabId ID of Tab the menu needs to be shown for.
+     * @param horizontalOverlapAnchor If true, horizontally overlaps menu with the anchor view.
+     * @param verticalOverlapAnchor If true, vertically overlaps menu with the anchor view.
+     * @param animStyle Animation style to apply for menu show/hide.
+     * @param horizontalOrientation @{@link HorizontalOrientation} to use for the menu position.
+     * @param activity Activity to get resources and decorView for menu.
+     */
+    protected void createAndShowMenu(
+            RectProvider anchorViewRectProvider,
+            int tabId,
+            boolean horizontalOverlapAnchor,
+            boolean verticalOverlapAnchor,
+            @StyleRes int animStyle,
+            @HorizontalOrientation int horizontalOrientation,
+            @NonNull Activity activity) {
         assert mMenuHolder == null;
         boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
+        @Nullable String collaborationId = getCollaborationIdOrNull(tabId);
         mMenuHolder =
                 new OverflowMenuHolder(
-                        anchorView,
+                        anchorViewRectProvider,
+                        horizontalOverlapAnchor,
+                        verticalOverlapAnchor,
+                        animStyle,
+                        horizontalOrientation,
                         mMenuLayout,
                         mOnItemClickedCallback,
                         isIncognito,
                         tabId,
+                        collaborationId,
                         getMenuWidth(),
                         this::onDismiss,
                         activity);
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
-        configureMenuItems(mMenuHolder.getModelList(), isIncognito, tabId);
+        configureMenuItems(mMenuHolder.getModelList(), isIncognito, tabId, collaborationId);
         mMenuHolder.show();
     }
 
@@ -280,8 +328,8 @@ public abstract class TabGroupOverflowMenuCoordinator {
         onMenuDismissed();
     }
 
-    private void configureMenuItems(ModelList modelList, boolean isIncognito, int tabId) {
-        @Nullable String collaborationId = getCollaborationIdOrNull(tabId);
+    private void configureMenuItems(
+            ModelList modelList, boolean isIncognito, int tabId, @Nullable String collaborationId) {
         boolean hasCollaborationData =
                 !TextUtils.isEmpty(collaborationId)
                         && mIdentityManager != null

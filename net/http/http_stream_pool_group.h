@@ -12,13 +12,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_session_key.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
 
@@ -63,17 +66,23 @@ class HttpStreamPool::Group {
 
   const NetLogWithSource& net_log() { return net_log_; }
 
-  // Creates an HttpStreamRequest. Will call delegate's methods. See the
-  // comments of HttpStreamRequest::Delegate methods for details.
-  // TODO(crbug.com/346835898): Support QUIC.
-  std::unique_ptr<HttpStreamRequest> RequestStream(
-      HttpStreamRequest::Delegate* delegate,
-      RequestPriority priority,
-      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-      bool enable_ip_based_pooling,
-      bool enable_alternative_services,
-      quic::ParsedQuicVersion quic_version,
-      const NetLogWithSource& net_log);
+  bool force_quic() const { return force_quic_; }
+
+  // Creates a Job to attempt connection(s). We have separate methods for
+  // creating and starting a Job to ensure that the owner of the Job can
+  // properly manage the lifetime of the Job, even when StartJob() synchronously
+  // calls one of the delegate's methods.
+  std::unique_ptr<Job> CreateJob(Job::Delegate* delegate,
+                                 NextProto expected_protocol);
+
+  // Starts a Job. Will call one of Job::Delegate methods to notify results.
+  void StartJob(Job* job,
+                RequestPriority priority,
+                const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+                bool enable_ip_based_pooling,
+                bool enable_alternative_services,
+                quic::ParsedQuicVersion quic_version,
+                const NetLogWithSource& net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that this method finishes synchronously, or `callback` is called, once
@@ -131,6 +140,9 @@ class HttpStreamPool::Group {
   // the per-pool limit, not the per-group limit.
   std::optional<RequestPriority> GetPriorityIfStalledByPoolLimit() const;
 
+  // Closes all streams in this group and cancels all pending requests.
+  void FlushWithError(int error, std::string_view net_log_close_reason_utf8);
+
   // Increments the generation of this group. Closes idle streams. Streams
   // handed out before this increment won't be reused. Cancels in-flight
   // connection attempts.
@@ -138,19 +150,24 @@ class HttpStreamPool::Group {
 
   void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 
-  // Cancels all on-going requests.
-  void CancelRequests(int error);
+  // Cancels all on-going jobs.
+  void CancelJobs(int error);
 
   // Called when the server required HTTP/1.1. Clears the current SPDY session
   // if exists.
   void OnRequiredHttp11();
 
-  // Called when the in-flight job has completed.
-  void OnJobComplete();
+  // Called when the attempt manager has completed.
+  void OnAttemptManagerComplete();
+
+  // Retrieves information on the current state of the group as a base::Value.
+  base::Value::Dict GetInfoAsValue() const;
 
   void CleanupTimedoutIdleStreamSocketsForTesting();
 
-  Job* GetJobForTesting() const { return in_flight_job_.get(); }
+  AttemptManager* GetAttemptManagerForTesting() const {
+    return attempt_manager_.get();
+  }
 
  private:
   struct IdleStreamSocket {
@@ -172,10 +189,17 @@ class HttpStreamPool::Group {
     kForce,
   };
 
+  static base::expected<void, std::string_view> IsIdleStreamSocketUsable(
+      const IdleStreamSocket& idle);
+
+  // If the group is forced to use QUIC and the QUIC version is unknown, try
+  // the preferred QUIC version that is supported by default.
+  void MaybeUpdateQuicVersionWhenForced(quic::ParsedQuicVersion& quic_version);
+
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
 
-  void EnsureInFlightJob();
+  void EnsureAttemptManager();
 
   void MaybeComplete();
 
@@ -184,12 +208,13 @@ class HttpStreamPool::Group {
   const SpdySessionKey spdy_session_key_;
   const QuicSessionKey quic_session_key_;
   const NetLogWithSource net_log_;
+  const bool force_quic_;
 
   size_t handed_out_stream_count_ = 0;
   int64_t generation_ = 0;
   std::list<IdleStreamSocket> idle_stream_sockets_;
 
-  std::unique_ptr<Job> in_flight_job_;
+  std::unique_ptr<AttemptManager> attempt_manager_;
 };
 
 }  // namespace net

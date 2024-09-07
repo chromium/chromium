@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -125,6 +125,7 @@
   self.viewController.textInputDelegate = self;
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
+  self.viewController.isSearchOnlyUI = self.isSearchOnlyUI;
 
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   self.mediator = [[OmniboxMediator alloc]
@@ -157,8 +158,7 @@
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(
       self.textField, std::move(_client), self.browser->GetBrowserState(),
-      omniboxHandler, self.focusDelegate, _toolbarHandler,
-      self.viewController.additionalTextConsumer);
+      omniboxHandler, self.focusDelegate, _toolbarHandler, self.viewController);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
@@ -209,6 +209,7 @@
   self.keyboardAccessoryView = nil;
   self.mediator = nil;
   self.returnDelegate = nil;
+  [self.zeroSuggestPrefetchHelper disconnect];
   self.zeroSuggestPrefetchHelper = nil;
 
   [NSNotificationCenter.defaultCenter removeObserver:self];
@@ -223,7 +224,7 @@
 }
 
 - (void)focusOmnibox {
-  if (!self.keyboardAccessoryView) {
+  if (!self.keyboardAccessoryView && !self.isSearchOnlyUI) {
     TemplateURLService* templateURLService =
         ios::TemplateURLServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
@@ -318,7 +319,9 @@
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
-  [self.viewController setThumbnailImage:image];
+  if (_editView) {
+    _editView->SetThumbnailImage(image);
+  }
 }
 
 #pragma mark Scribble

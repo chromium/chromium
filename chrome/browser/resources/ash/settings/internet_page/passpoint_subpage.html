@@ -60,7 +60,7 @@
   <iron-collapse opened="[[domainsExpanded_]]">
     <template is="dom-repeat"
         items="[[getPasspointDomainsList_(subscription_)]]">
-      <div class="list-item secondary">
+      <div id="domainName" class="list-item secondary">
         [[item]]
       </div>
     </template>

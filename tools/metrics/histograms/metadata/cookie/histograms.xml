@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CommitProblem" enum="CookieCommitProblem"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem occurs trying to commit changes to the cookie store
@@ -134,57 +134,6 @@ chromium-metrics-reviews@google.com.
     Number of times a cookie was set with a name prefixed by
     &quot;__Secure-&quot; or &quot;__Host-&quot; (prefixes reserved by
     https://tools.ietf.org/html/draft-west-cookie-prefixes).
-  </summary>
-</histogram>
-
-<histogram name="Cookie.CookiePrefix.CaseVariant" enum="CookiePrefix"
-    expires_after="2024-07-21">
-  <owner>bingler@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Number of times a cookie was set with a name prefixed by a case variant of
-    &quot;__Secure-&quot; or &quot;__Host-&quot;.
-
-    This is recorded whenever a cookie is created with a case variant prefix.
-    I.e.: Non-variants will not be recorded in this metric nor will cookies
-    without a prefix.
-
-    Case variant prefixes will case-insensitively match cookie prefixes, but
-    won't case-sensitively match. E.x.: &quot;__SeCuRe-&quot; or
-    &quot;__HOST&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.CookiePrefix.CaseVariantCount" enum="Boolean"
-    expires_after="2024-07-21">
-  <owner>bingler@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Records whether or not a cookie prefix was a case variant or not. True
-    indicates a case variant. This is recorded whenever a cookie is created with
-    a cookie prefix.
-
-    Case variant prefixes will case-insensitively match cookie prefixes, but
-    won't case-sensitively match. E.x.: &quot;__SeCuRe-&quot; or
-    &quot;__HOST&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.CookiePrefix.CaseVariantValid" enum="Boolean"
-    expires_after="2024-07-21">
-  <owner>bingler@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Records whether or not a cookie prefix case variant meets the requirements
-    for a cookie prefix. E.x.: `__SECURE-foo=bar` would be rejected due to the
-    lack of the `Secure` attribute. True indicates the cookie's prefix was valid
-    (the cookie may still be invalid for other reasons).
-
-    This is recorded whenever a cookie is created with a case variant prefix.
-
-    Case variant prefixes will case-insensitively match cookie prefixes, but
-    won't case-sensitively match. E.x.: &quot;__SeCuRe-&quot; or
-    &quot;__HOST&quot;.
   </summary>
 </histogram>
 
@@ -244,7 +193,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Cookie.CrossSiteRedirectDowngradeChangesInclusion2.{AccessType}"
-    enum="CookieSameSite2" expires_after="2024-09-01">
+    enum="CookieSameSite2" expires_after="2025-03-01">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -362,6 +311,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.EncryptedAndPlaintextValues" enum="Boolean"
+    expires_after="2025-01-12">
+  <owner>bingler@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records whether or not an entry in the cookie database has both encrypted
+    and plaintext values, which should not happen.
+
+    This metric is recorded every time a cookie is parsed from the cookie
+    database during load.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ErrorInitializeDB" enum="SqliteLoggedResultCode"
     expires_after="2025-02-10">
   <owner>wfh@chromium.org</owner>
@@ -376,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.Experimental.CookiesAllowedForUrlsUsage"
-    enum="CookiesAllowedForUrlsUsage" expires_after="2024-12-24">
+    enum="CookiesAllowedForUrlsUsage" expires_after="2025-02-23">
   <owner>dylancutler@google.com</owner>
   <owner>sandormajor@google.com</owner>
   <summary>
@@ -417,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesSecure" units="minutes"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
@@ -534,7 +496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.InitializationDuration.{Landmark}2"
-    units="ms" expires_after="2024-12-15">
+    units="ms" expires_after="2025-02-16">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -645,7 +607,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.IncludedResponseEffectiveSameSite"
-    enum="CookieEffectiveSameSite" expires_after="2024-12-30">
+    enum="CookieEffectiveSameSite" expires_after="2025-03-02">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -669,9 +631,24 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
     expires_after="2025-02-10">
   <owner>morlovich@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
   <summary>
     Recorded when a problem is recorded when loading the persistent cookie
-    store.
+    store. This histogram has been superceded by Cookie.LoadProblem2, and only
+    records values up to and including 5 (Attempt to delete cookies with
+    matching top_frame_site_keys failed). This histogram is being kept alongside
+    Cookie.LoadProblem2 for data continuity but will be removed in the future.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.LoadProblem2" enum="CookieLoadProblem"
+    expires_after="2025-02-10">
+  <owner>morlovich@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Recorded when a problem is recorded when loading the persistent cookie
+    store. This superceded Cookie.LoadProblem2 in m130 and data prior to that
+    can be found in Cookie.LoadProblem.
   </summary>
 </histogram>
 
@@ -818,7 +795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.PerFirstPartySetCount" units="cookies"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -1165,6 +1142,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.TimeDatabaseMigrationToV24" units="ms"
+    expires_after="2025-07-31">
+  <owner>wfh@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    The amount of time (ms) to migrate a v23 cookie database to v24. Migration
+    occurs upon first startup of a browser version with v23 database code.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2025-02-10">
   <owner>bingler@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
@@ -1185,7 +1172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TimeToRecordPeriodicStats" units="ms"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>bingler@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>

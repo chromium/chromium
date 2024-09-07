@@ -1,0 +1,16 @@
+Tests setPressureStateOverride delivers 2 updates with 1 state change
+PASS: Set pressure state override to 'critical'
+PASS: Received first update.
+PASS: Set pressure state override to 'serious'
+PASS: Received second update.
+[
+    [0] : [
+        [0] : cpu
+        [1] : critical
+    ]
+    [1] : [
+        [0] : cpu
+        [1] : serious
+    ]
+]
+

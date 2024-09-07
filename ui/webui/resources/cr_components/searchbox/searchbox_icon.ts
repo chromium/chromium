@@ -14,7 +14,7 @@ const DOCUMENT_MATCH_TYPE: string = 'document';
 const HISTORY_CLUSTER_MATCH_TYPE: string = 'history-cluster';
 const PEDAL: string = 'pedal';
 
-export interface RealboxIconElement {
+export interface SearchboxIconElement {
   $: {
     container: HTMLElement,
     icon: HTMLElement,
@@ -22,11 +22,11 @@ export interface RealboxIconElement {
   };
 }
 
-// The LHS icon. Used on autocomplete matches as well as the realbox input to
+// The LHS icon. Used on autocomplete matches as well as the searchbox input to
 // render icons, favicons, and entity images.
-export class RealboxIconElement extends PolymerElement {
+export class SearchboxIconElement extends PolymerElement {
   static get is() {
-    return 'cr-realbox-icon';
+    return 'cr-searchbox-icon';
   }
 
   static get template() {
@@ -48,17 +48,11 @@ export class RealboxIconElement extends PolymerElement {
 
       /**
        * The default icon to show when no match is selected and/or for
-       * non-navigation matches. Only set in the context of the realbox input.
+       * non-navigation matches. Only set in the context of the searchbox input.
        */
       defaultIcon: {
         type: String,
         value: '',
-      },
-
-      expandedStateIconsChromeRefresh: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateIcons'),
-        reflectToAttribute: true,
       },
 
       /**  Whether icon should have a background. */
@@ -72,7 +66,7 @@ export class RealboxIconElement extends PolymerElement {
       /**
        * Whether icon is in searchbox or not. Used to prevent
        * the match icon of rich suggestions from showing in the context of the
-       * realbox input.
+       * searchbox input.
        */
       inSearchbox: {
         type: Boolean,
@@ -135,9 +129,9 @@ export class RealboxIconElement extends PolymerElement {
         value: false,
       },
 
-      inSidePanel_: {
+      isLensSearchbox_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('searchboxInSidePanel'),
+        value: () => loadTimeData.getBoolean('isLensSearchbox'),
         reflectToAttribute: true,
       },
     };
@@ -145,7 +139,6 @@ export class RealboxIconElement extends PolymerElement {
 
   backgroundImage: string;
   defaultIcon: string;
-  expandedStateIconsChromeRefresh: boolean;
   hasIconContainerBackground: boolean;
   inSearchbox: boolean;
   isAnswer: boolean;
@@ -204,16 +197,7 @@ export class RealboxIconElement extends PolymerElement {
   }
 
   private computeIconStyle_(): string {
-    if (this.expandedStateIconsChromeRefresh) {
-      if (this.showBackgroundImage_()) {
-        return `background-image: ${this.backgroundImage};` +
-            `background-color: transparent;`;
-      } else {
-        return `-webkit-mask-image: ${this.maskImage};`;
-      }
-    }
-
-    if (this.backgroundImage) {
+    if (this.showBackgroundImage_()) {
       return `background-image: ${this.backgroundImage};` +
           `background-color: transparent;`;
     } else {
@@ -223,7 +207,7 @@ export class RealboxIconElement extends PolymerElement {
 
   // The following icons should not use the GM3 foreground color
   // TODO(niharm): Refactor logic in C++ and send via mojom in
-  // "chrome/browser/ui/webui/realbox/realbox_handler.cc".
+  // "chrome/browser/ui/webui/searchbox/searchbox_handler.cc".
   private showBackgroundImage_(): boolean {
     const imageUrl = this.backgroundImage;
     if (!imageUrl) {
@@ -289,9 +273,9 @@ export class RealboxIconElement extends PolymerElement {
   // All pedals and AiS except weather should be have a background that
   // matches theme.
   // TODO(niharm): Refactor logic in C++ and send via mojom in
-  // "chrome/browser/ui/webui/realbox/realbox_handler.cc".
+  // "chrome/browser/ui/webui/searchbox/searchbox_handler.cc".
   private computeHasIconContainerBackground_(): boolean {
-    if (this.expandedStateIconsChromeRefresh && this.match) {
+    if (this.match) {
       return this.match.type === PEDAL ||
           this.match.type === HISTORY_CLUSTER_MATCH_TYPE ||
           this.match.type === CALCULATOR ||
@@ -301,4 +285,4 @@ export class RealboxIconElement extends PolymerElement {
   }
 }
 
-customElements.define(RealboxIconElement.is, RealboxIconElement);
+customElements.define(SearchboxIconElement.is, SearchboxIconElement);

@@ -1151,14 +1151,6 @@ void BluetoothDeviceFloss::GattConfigureMtu(std::string address,
   // Discover services after configuring MTU
   // This can be done even if configuring MTU failed.
   if (search_uuid.has_value()) {
-    // TODO(b/318402207) - Fast Pair HID mitigation to perform SDP before we
-    // bond with the device in order to get the name before bonding completes.
-    // This can be removed once we get scan responses from a LE scan session.
-    if (!svc_resolved_ && search_uuid.value().value() == "fe2c") {
-      BLUETOOTH_LOG(EVENT) << __func__ << ": Fetching remote UUIDs";
-      FlossDBusManager::Get()->GetAdapterClient()->FetchRemoteUuids(
-          base::DoNothing(), AsFlossDeviceId());
-    }
     FlossDBusManager::Get()->GetGattManagerClient()->DiscoverServiceByUuid(
         base::DoNothing(), address_, search_uuid.value());
   } else if (!IsGattServicesDiscoveryComplete()) {

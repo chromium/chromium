@@ -63,8 +63,9 @@ constexpr std::string_view kDynamicRulesetPref = "dnr_dynamic_ruleset";
 base::flat_set<int> GetDisabledStaticRuleIdsFromDict(
     const base::Value::Dict* disabled_rule_ids_dict,
     RulesetID ruleset_id) {
-  if (!disabled_rule_ids_dict)
+  if (!disabled_rule_ids_dict) {
     return {};
+  }
 
   const base::Value::List* disabled_rule_id_list =
       disabled_rule_ids_dict->FindList(
@@ -92,13 +93,15 @@ base::flat_set<int> GetDisabledStaticRuleIdsFromDict(
 }
 
 size_t CountDisabledRules(const base::Value::Dict* disabled_rule_ids_dict) {
-  if (!disabled_rule_ids_dict)
+  if (!disabled_rule_ids_dict) {
     return 0;
+  }
 
   size_t count = 0;
   for (const auto [key, value] : *disabled_rule_ids_dict) {
-    if (!value.is_list())
+    if (!value.is_list()) {
       continue;
+    }
     count += value.GetList().size();
   }
   return count;
@@ -124,14 +127,16 @@ PrefsHelper::~PrefsHelper() = default;
 PrefsHelper::RuleIdsToUpdate::RuleIdsToUpdate(
     const std::optional<std::vector<int>>& ids_to_disable,
     const std::optional<std::vector<int>>& ids_to_enable) {
-  if (ids_to_disable)
+  if (ids_to_disable) {
     this->ids_to_disable.insert(ids_to_disable->begin(), ids_to_disable->end());
+  }
 
   if (ids_to_enable) {
     for (int id : *ids_to_enable) {
       // |ids_to_disable| takes priority over |ids_to_enable|.
-      if (base::Contains(this->ids_to_disable, id))
+      if (base::Contains(this->ids_to_disable, id)) {
         continue;
+      }
       this->ids_to_enable.insert(id);
     }
   }
@@ -182,8 +187,9 @@ void PrefsHelper::SetDisabledStaticRuleIds(
   if (disabled_rule_ids.empty()) {
     std::unique_ptr<prefs::DictionaryValueUpdate> disabled_rule_ids_dict =
         update.Get();
-    if (disabled_rule_ids_dict)
+    if (disabled_rule_ids_dict) {
       disabled_rule_ids_dict->Remove(base::NumberToString(ruleset_id.value()));
+    }
     return;
   }
 
@@ -192,8 +198,9 @@ void PrefsHelper::SetDisabledStaticRuleIds(
 
   base::Value::List ids_list;
   ids_list.reserve(disabled_rule_ids.size());
-  for (int id : disabled_rule_ids)
+  for (int id : disabled_rule_ids) {
     ids_list.Append(id);
+  }
 
   disabled_rule_ids_dict->Set(base::NumberToString(ruleset_id.value()),
                               base::Value(std::move(ids_list)));
@@ -221,8 +228,9 @@ PrefsHelper::UpdateDisabledStaticRules(
   }
   for (int id : rule_ids_to_update.ids_to_disable) {
     auto pair = result.disabled_rule_ids_after_update.insert(id);
-    if (pair.second)
+    if (pair.second) {
       result.changed = true;
+    }
   }
 
   if (!result.changed) {

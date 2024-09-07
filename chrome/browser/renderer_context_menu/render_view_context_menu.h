@@ -330,8 +330,9 @@ class RenderViewContextMenu
   bool IsSaveAsItemAllowedByPolicy(const GURL& item_url) const;
 
   // Helper function for checking fenced frame tree untrusted network access
-  // status.
-  bool IsSaveAsItemAllowedByUntrustedNetworkStatus() const;
+  // status. For context menu commands that make network requests, this check
+  // should be applied.
+  bool IsAllowedByUntrustedNetworkStatus() const;
 
   // Command enabled query functions.
   bool IsReloadEnabled() const;

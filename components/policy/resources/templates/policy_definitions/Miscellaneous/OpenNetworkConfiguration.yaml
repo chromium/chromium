@@ -11,7 +11,8 @@ features:
   dynamic_refresh: true
   per_profile: true
 owners:
-- pmarko@chromium.org
+- acostinas@google.com
+- miersh@google.com
 - file://components/policy/OWNERS
 schema:
   type: string

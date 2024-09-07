@@ -93,17 +93,17 @@ class ExtensionTelemetryServiceBrowserTest
     extensions::ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    // Enable enterprise policy. Verify that enterprise reporting is enabled.
+    // Helper to set up enterprise reporting and enable by default.
+    event_report_validator_helper_ = std::make_unique<
+        enterprise_connectors::test::EventReportValidatorHelper>(
+        browser()->profile(), /*browser_test=*/true);
+    // Enable enterprise policy.
     enterprise_connectors::test::SetOnSecurityEventReporting(
         /*prefs=*/prefs(),
         /*enabled=*/true,
         /*enabled_event_names=*/{},
         /*enabled_opt_in_events=*/
         {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
-    // Helper to set up enterprise reporting and enable by default.
-    event_report_validator_helper_ = std::make_unique<
-        enterprise_connectors::test::EventReportValidatorHelper>(
-        browser()->profile(), /*browser_test=*/true);
   }
 
   void TearDownOnMainThread() override {

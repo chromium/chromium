@@ -9,8 +9,8 @@
 #import "components/prefs/testing_pref_service.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_capabilities_fetcher_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -22,10 +22,8 @@
 class SigninUtilTest : public PlatformTest {
  public:
   explicit SigninUtilTest() {
-    local_state_.registry()->RegisterDictionaryPref(
-        prefs::kIosPreRestoreAccountInfo);
-
     chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
+    pref_service_ = chrome_browser_state_.get()->GetPrefs();
 
     account_manager_service_ =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
@@ -66,48 +64,48 @@ class SigninUtilTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  TestingPrefServiceSimple local_state_;
+  PrefService* pref_service_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 
 TEST_F(SigninUtilTest, StoreAndGetPreRestoreIdentityFull) {
-  ClearPreRestoreIdentity(&local_state_);
-  EXPECT_FALSE(GetPreRestoreIdentity(&local_state_).has_value());
+  ClearPreRestoreIdentity(pref_service_);
+  EXPECT_FALSE(GetPreRestoreIdentity(pref_service_).has_value());
 
   AccountInfo account = FakeAccountFull();
-  StorePreRestoreIdentity(&local_state_, account,
+  StorePreRestoreIdentity(pref_service_, account,
                           /*history_sync_enabled=*/false);
 
   // Verify that the retrieved account info is the same as what was stored.
-  auto retrieved_account = GetPreRestoreIdentity(&local_state_);
+  auto retrieved_account = GetPreRestoreIdentity(pref_service_);
   EXPECT_TRUE(retrieved_account.has_value());
   ExpectEqualAccountFields(account, retrieved_account.value());
 }
 
 TEST_F(SigninUtilTest, StoreAndGetPreRestoreIdentityMinimal) {
-  ClearPreRestoreIdentity(&local_state_);
-  EXPECT_FALSE(GetPreRestoreIdentity(&local_state_).has_value());
+  ClearPreRestoreIdentity(pref_service_);
+  EXPECT_FALSE(GetPreRestoreIdentity(pref_service_).has_value());
 
   AccountInfo account = FakeAccountMinimal();
-  StorePreRestoreIdentity(&local_state_, account,
+  StorePreRestoreIdentity(pref_service_, account,
                           /*history_sync_enabled=*/false);
 
   // Verify that the retrieved account info is the same as what was stored.
-  auto retrieved_account = GetPreRestoreIdentity(&local_state_);
+  auto retrieved_account = GetPreRestoreIdentity(pref_service_);
   EXPECT_TRUE(retrieved_account.has_value());
   ExpectEqualAccountFields(account, retrieved_account.value());
 }
 
 TEST_F(SigninUtilTest, ClearPreRestoreIdentity) {
-  StorePreRestoreIdentity(&local_state_, FakeAccountFull(),
+  StorePreRestoreIdentity(pref_service_, FakeAccountFull(),
                           /*history_sync_enabled=*/true);
-  EXPECT_TRUE(GetPreRestoreIdentity(&local_state_).has_value());
-  EXPECT_TRUE(GetPreRestoreHistorySyncEnabled(&local_state_));
+  EXPECT_TRUE(GetPreRestoreIdentity(pref_service_).has_value());
+  EXPECT_TRUE(GetPreRestoreHistorySyncEnabled(pref_service_));
 
-  ClearPreRestoreIdentity(&local_state_);
-  EXPECT_FALSE(GetPreRestoreIdentity(&local_state_).has_value());
-  EXPECT_FALSE(GetPreRestoreHistorySyncEnabled(&local_state_));
+  ClearPreRestoreIdentity(pref_service_);
+  EXPECT_FALSE(GetPreRestoreIdentity(pref_service_).has_value());
+  EXPECT_FALSE(GetPreRestoreHistorySyncEnabled(pref_service_));
 }
 
 TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetch) {

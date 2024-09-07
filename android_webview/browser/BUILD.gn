@@ -86,10 +86,6 @@ source_set("browser") {
     "aw_form_database_service.h",
     "aw_http_auth_handler.cc",
     "aw_http_auth_handler.h",
-    "aw_ip_protection_config_provider.cc",
-    "aw_ip_protection_config_provider.h",
-    "aw_ip_protection_config_provider_factory.cc",
-    "aw_ip_protection_config_provider_factory.h",
     "aw_javascript_dialog_manager.cc",
     "aw_javascript_dialog_manager.h",
     "aw_media_url_interceptor.cc",
@@ -151,6 +147,10 @@ source_set("browser") {
     "find_helper.h",
     "icon_helper.cc",
     "icon_helper.h",
+    "ip_protection/aw_ip_protection_core_host.cc",
+    "ip_protection/aw_ip_protection_core_host.h",
+    "ip_protection/aw_ip_protection_core_host_factory.cc",
+    "ip_protection/aw_ip_protection_core_host_factory.h",
     "js_java_interaction/aw_web_message_host_factory.cc",
     "js_java_interaction/aw_web_message_host_factory.h",
     "js_java_interaction/js_reply_proxy.cc",
@@ -230,8 +230,6 @@ source_set("browser") {
     "tracing/aw_tracing_controller.h",
     "tracing/aw_tracing_delegate.cc",
     "tracing/aw_tracing_delegate.h",
-    "tracing/background_tracing_field_trial.cc",
-    "tracing/background_tracing_field_trial.h",
   ]
 
   deps = [

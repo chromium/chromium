@@ -211,8 +211,7 @@ void PpapiDispatcher::OnPluginDispatcherMessageReceived(
   base::PickleIterator iter(msg);
   uint32_t id = 0;
   if (!iter.ReadUInt32(&id)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   std::map<uint32_t, proxy::PluginDispatcher*>::iterator dispatcher =
       plugin_dispatchers_.find(id);

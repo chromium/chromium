@@ -27,6 +27,7 @@
 #include "chromecast/browser/cast_web_contents_impl.h"
 #include "chromecast/browser/cast_web_contents_observer.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
+#include "chromecast/browser/test/cast_browser_test.h"
 #include "chromecast/browser/test_interfaces.test-mojom.h"
 #include "chromecast/mojo/interface_bundle.h"
 #include "content/public/browser/browser_thread.h"
@@ -35,7 +36,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -210,8 +210,9 @@ class TestMessageReceiver : public blink::WebMessagePort::MessageReceiver {
   }
 
   void OnPipeError() override {
-    if (on_pipe_error_callback_)
+    if (on_pipe_error_callback_) {
       std::move(on_pipe_error_callback_).Run();
+    }
   }
 
   base::OnceCallback<void(std::string,
@@ -226,25 +227,14 @@ class TestMessageReceiver : public blink::WebMessagePort::MessageReceiver {
 // =============================================================================
 // Test class
 // =============================================================================
-class CastWebContentsBrowserTest : public content::BrowserTestBase,
+class CastWebContentsBrowserTest : public shell::CastBrowserTest,
                                    public content::WebContentsObserver {
- public:
-  CastWebContentsBrowserTest(const CastWebContentsBrowserTest&) = delete;
-  CastWebContentsBrowserTest& operator=(const CastWebContentsBrowserTest&) =
-      delete;
-
  protected:
-  CastWebContentsBrowserTest() = default;
-  ~CastWebContentsBrowserTest() override = default;
-
-  void SetUp() final {
-    SetUpCommandLine(base::CommandLine::ForCurrentProcess());
-    BrowserTestBase::SetUp();
-  }
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kTestType, "browser");
+    CastBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "MojoJS");
   }
+
   void PreRunTestOnMainThread() override {
     // Pump startup related events.
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -268,6 +258,7 @@ class CastWebContentsBrowserTest : public content::BrowserTestBase,
 
     run_loop_ = std::make_unique<base::RunLoop>();
   }
+
   void PostRunTestOnMainThread() override {
     cast_web_contents_.reset();
     web_contents_.reset();
@@ -301,8 +292,9 @@ class CastWebContentsBrowserTest : public content::BrowserTestBase,
 };
 
 MATCHER_P2(CheckPageState, cwc_ptr, expected_state, "") {
-  if (arg != cwc_ptr)
+  if (arg != cwc_ptr) {
     return false;
+  }
   return arg->page_state() == expected_state;
 }
 
@@ -538,8 +530,9 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailed) {
   content::URLLoaderInterceptor url_interceptor(base::BindRepeating(
       [](const GURL& url,
          content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url != url)
+        if (params->url_request.url != url) {
           return false;
+        }
         network::URLLoaderCompletionStatus status;
         status.error_code = net::ERR_ADDRESS_UNREACHABLE;
         params->client->OnComplete(status);
@@ -1101,11 +1094,13 @@ class TestInterfaceProvider : public mojom::TestAdder,
 
  private:
   void OnRequestHandled() {
-    if (num_requests_to_wait_for_ == 0)
+    if (num_requests_to_wait_for_ == 0) {
       return;
+    }
     DCHECK(wait_callback_);
-    if (--num_requests_to_wait_for_ == 0)
+    if (--num_requests_to_wait_for_ == 0) {
       std::move(wait_callback_).Run();
+    }
   }
 
   mojo::ReceiverSet<mojom::TestAdder> adders_;

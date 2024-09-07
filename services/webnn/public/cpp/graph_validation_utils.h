@@ -31,6 +31,8 @@ enum class Conv2dFilterOperandLayout { kOihw, kHwio, kOhwi, kIhwo };
 // / groups, H is height and W is the width of filter.
 enum class ConvTranspose2dFilterOperandLayout { kIohw, kHwoi, kOhwi };
 
+enum class Pool2dKind { kAverage, kL2, kMax };
+
 // Represents the `MLRoundingType` that is used to compute the output shape.
 enum class RoundingType { kFloor, kCeil };
 
@@ -38,7 +40,7 @@ enum class RoundingType { kFloor, kCeil };
 // direction of the input sequence.
 enum class RecurrentNetworkDirection { kForward, kBackward, kBoth };
 
-enum ReduceKind {
+enum class ReduceKind {
   kL1,
   kL2,
   kLogSum,
@@ -426,6 +428,7 @@ base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateBatchNormalizationAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         const OperandDescriptor& mean,
         const OperandDescriptor& variance,
@@ -435,7 +438,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateConv2dAndInferOutput(const OperandDescriptor& input,
+    ValidateConv2dAndInferOutput(const ContextProperties& context_properties,
+                                 const OperandDescriptor& input,
                                  const OperandDescriptor& filter,
                                  const Conv2dAttributes& attributes);
 
@@ -445,15 +449,26 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateConvTranspose2dAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         const OperandDescriptor& filter,
         const ConvTranspose2dAttributes& attributes);
+
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateDequantizeLinearAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        const OperandDescriptor& scale,
+        const OperandDescriptor& zero_point,
+        std::string_view label);
 
 // Validate and infer output information of pad operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidatePadAndInferOutput(const OperandDescriptor& input,
+    ValidatePadAndInferOutput(const ContextProperties& context_properties,
+                              const OperandDescriptor& input,
                               base::span<const uint32_t> beginning_padding,
                               base::span<const uint32_t> ending_padding,
                               std::string_view label);
@@ -461,22 +476,27 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // Validate and infer output information of matmul operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-matmul
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
-    WEBNN_PUBLIC_CPP) ValidateMatmulAndInferOutput(const OperandDescriptor& a,
-                                                   const OperandDescriptor& b,
-                                                   std::string_view label);
+    WEBNN_PUBLIC_CPP)
+    ValidateMatmulAndInferOutput(const ContextProperties& context_properties,
+                                 const OperandDescriptor& a,
+                                 const OperandDescriptor& b,
+                                 std::string_view label);
 
 // Validate and infer output information of 2-D pooling operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidatePool2dAndInferOutput(const OperandDescriptor& input,
-                                 const Pool2dAttributes& attributes);
+    ValidatePool2dAndInferOutput(const ContextProperties& context_properties,
+                                 const OperandDescriptor& input,
+                                 const Pool2dAttributes& attributes,
+                                 Pool2dKind kind);
 
 // Validate and infer output information of 2-D resample operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateResample2dAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         const absl::variant<base::span<const float>,
                             base::span<const uint32_t>>& scales_or_sizes,
@@ -493,11 +513,23 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                  const uint32_t axis,
                                  std::string_view label);
 
+// Validate and infer output information of gatherElements operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gatherElements
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateGatherElementsAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        const OperandDescriptor& indices,
+        const uint32_t axis,
+        std::string_view label);
+
 // Validate gemm operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateGemmAndInferOutput(const OperandDescriptor& a,
+    ValidateGemmAndInferOutput(const ContextProperties& context_properties,
+                               const OperandDescriptor& a,
                                const OperandDescriptor& b,
                                const GemmAttributes& attributes);
 
@@ -505,7 +537,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gru.
 base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateGruAndInferOutput(const OperandDescriptor& input,
+    ValidateGruAndInferOutput(const ContextProperties& context_properties,
+                              const OperandDescriptor& input,
                               const OperandDescriptor& weight,
                               const OperandDescriptor& recurrent_weight,
                               uint32_t steps,
@@ -516,7 +549,8 @@ base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
 // here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-grucell.
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateGruCellAndInferOutput(const OperandDescriptor& input,
+    ValidateGruCellAndInferOutput(const ContextProperties& context_properties,
+                                  const OperandDescriptor& input,
                                   const OperandDescriptor& weight,
                                   const OperandDescriptor& recurrent_weight,
                                   const OperandDescriptor& hidden_state,
@@ -529,6 +563,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateInstanceNormalizationAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         const InstanceNormalizationAttributes& attributes);
 
@@ -537,6 +572,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateLayerNormalizationAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         base::span<const uint32_t> axes,
         const LayerNormalizationAttributes& attributes);
@@ -545,7 +581,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-lstm.
 base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateLstmAndInferOutput(const OperandDescriptor& input,
+    ValidateLstmAndInferOutput(const ContextProperties& context_properties,
+                               const OperandDescriptor& input,
                                const OperandDescriptor& weight,
                                const OperandDescriptor& recurrent_weight,
                                const uint32_t steps,
@@ -556,7 +593,8 @@ base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
 // in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-lstmcell.
 base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateLstmCellAndInferOutput(const OperandDescriptor& input,
+    ValidateLstmCellAndInferOutput(const ContextProperties& context_properties,
+                                   const OperandDescriptor& input,
                                    const OperandDescriptor& weight,
                                    const OperandDescriptor& recurrent_weight,
                                    const OperandDescriptor& hidden_state,
@@ -577,15 +615,35 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-prelu
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidatePreluAndInferOutput(const OperandDescriptor& input,
+    ValidatePreluAndInferOutput(const ContextProperties& context_properties,
+                                const OperandDescriptor& input,
                                 const OperandDescriptor& slope,
                                 std::string_view label);
+
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateQuantizeLinearAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        const OperandDescriptor& scale,
+        const OperandDescriptor& zero_point,
+        std::string_view label);
+
+// Validate tile operator defined in WebIDL here
+// https://github.com/webmachinelearning/webnn/issues/375
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateTileAndInferOutput(const ContextProperties& context_properties,
+                               const OperandDescriptor& input,
+                               base::span<const uint32_t> repetitions,
+                               std::string_view label);
 
 // Validate transpose operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateTransposeAndInferOutput(const OperandDescriptor& input,
+    ValidateTransposeAndInferOutput(const ContextProperties& context_properties,
+                                    const OperandDescriptor& input,
                                     base::span<const uint32_t> permutation,
                                     std::string_view label);
 
@@ -601,7 +659,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateReduceAndInferOutput(ReduceKind kind,
+    ValidateReduceAndInferOutput(const ContextProperties& context_properties,
+                                 ReduceKind kind,
                                  const OperandDescriptor& input,
                                  std::string_view label,
                                  base::span<const uint32_t> axes,
@@ -611,8 +670,10 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-triangular.
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateTriangularAndInferOutput(const OperandDescriptor& input,
-                                     std::string_view label);
+    ValidateTriangularAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        std::string_view label);
 
 // Validate where operator defined in WebIDL here:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-where.
@@ -624,7 +685,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                 const OperandDescriptor& false_value,
                                 std::string_view label);
 
-// Validate the creation of an MLBuffer given `descriptor`.
+// Validate the creation of an MLTensor given `descriptor`.
 base::expected<void, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     ValidateBuffer(const ContextProperties& context_properties,
                    OperandDescriptor descriptor);
@@ -633,7 +694,7 @@ base::expected<void, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
 // duplication.
 base::expected<void, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     ValidateAxes(base::span<const uint32_t> axes,
-                 const size_t rank,
+                 uint32_t rank,
                  std::string_view label);
 
 // Broadcast the input shapes and return the output shape.

@@ -36,6 +36,8 @@ constexpr char kNumberOfPinAttemptHistogram[] =
     "Ash.Auth.ActiveSessionAuthPinAttempt";
 constexpr char kNumberOfPasswordAttemptHistogram[] =
     "Ash.Auth.ActiveSessionAuthPasswordAttempt";
+constexpr char kNumberOfFingerprintAttemptHistogram[] =
+    "Ash.Auth.ActiveSessionAuthFingerprintAttempt";
 
 // The ceiling to use when clamping the number of PIN attempts that can be
 // recorded for UMA collection.
@@ -44,14 +46,18 @@ constexpr int kMaxRecordedPinAttempts = 20;
 // The ceiling to use when clamping the number of Password attempts that can be
 // recorded for UMA collection.
 constexpr int kMaxRecordedPasswordAttempts = 20;
+
+// The ceiling to use when clamping the number of Fingerprint attempts that can
+// be recorded for UMA collection.
+constexpr int kMaxRecordedFingerprintAttempts = 20;
+
 }  // namespace
 
 ActiveSessionAuthMetricsRecorder::ActiveSessionAuthMetricsRecorder() = default;
 
 ActiveSessionAuthMetricsRecorder::~ActiveSessionAuthMetricsRecorder() = default;
 
-void ActiveSessionAuthMetricsRecorder::RecordShow(
-    ActiveSessionAuthController::Reason reason) {
+void ActiveSessionAuthMetricsRecorder::RecordShow(AuthRequest::Reason reason) {
   CHECK(!open_reason_.has_value());
   CHECK(!open_timer_.has_value());
 
@@ -86,10 +92,16 @@ void ActiveSessionAuthMetricsRecorder::RecordClose() {
                                 password_attempt_counter_,
                                 kMaxRecordedPasswordAttempts);
 
+  // Record to metric the number of fingerprint attempts.
+  base::UmaHistogramExactLinear(kNumberOfFingerprintAttemptHistogram,
+                                fingerprint_attempt_counter_,
+                                kMaxRecordedFingerprintAttempts);
+
   // Reset the state.
   auth_succeeded_ = false;
   pin_attempt_counter_ = 0;
   password_attempt_counter_ = 0;
+  fingerprint_attempt_counter_ = 0;
   started_auth_type_.reset();
   open_reason_.reset();
   open_timer_.reset();
@@ -105,6 +117,16 @@ void ActiveSessionAuthMetricsRecorder::RecordAuthStarted(
     case AuthInputType::kPin:
       ++pin_attempt_counter_;
       break;
+    case AuthInputType::kFingerprint:
+      // Fingerprint authentication begins when the authentication dialog is
+      // shown and the user has fingerprint record(s) and the policy doesn't
+      // prevent its use. The fingerprint session remains active until
+      // explicitly terminated, so even after a failed scan attempt, there's no
+      // need to restart it. This session runs concurrently with password/PIN
+      // authentication attempts. Therefore, we are not tracking "Authentication
+      // Started" events for fingerprint specifically, but rather focusing on
+      // the count of successful and failed attempts.
+      NOTREACHED();
     default:
       NOTREACHED();
   }
@@ -116,19 +138,31 @@ void ActiveSessionAuthMetricsRecorder::RecordAuthStarted(
 
 void ActiveSessionAuthMetricsRecorder::RecordAuthFailed(
     AuthInputType input_type) {
-  CHECK(started_auth_type_.has_value());
-  CHECK_EQ(started_auth_type_.value(), input_type);
+  // Fingerprint authentication can occur concurrently with other
+  // AuthInputType's.
+  if (input_type == AuthInputType::kFingerprint) {
+    ++fingerprint_attempt_counter_;
+  } else {
+    CHECK(started_auth_type_.has_value());
+    CHECK_EQ(started_auth_type_.value(), input_type);
+
+    started_auth_type_.reset();
+  }
 
   // Record to metric the failed authentication type.
   base::UmaHistogramEnumeration(kAuthFailedHistogram, input_type);
-
-  started_auth_type_.reset();
 }
 
 void ActiveSessionAuthMetricsRecorder::RecordAuthSucceeded(
     AuthInputType input_type) {
-  CHECK(started_auth_type_.has_value());
-  CHECK_EQ(started_auth_type_.value(), input_type);
+  // Fingerprint authentication can occur concurrently with other
+  // AuthInputType's.
+  if (input_type == AuthInputType::kFingerprint) {
+    ++fingerprint_attempt_counter_;
+  } else {
+    CHECK(started_auth_type_.has_value());
+    CHECK_EQ(started_auth_type_.value(), input_type);
+  }
 
   // Record to metric the succeeded authentication type.
   base::UmaHistogramEnumeration(kAuthSucceededHistogram, input_type);

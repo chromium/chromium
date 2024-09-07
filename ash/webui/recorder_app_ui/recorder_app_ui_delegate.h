@@ -6,6 +6,7 @@
 #define ASH_WEBUI_RECORDER_APP_UI_RECORDER_APP_UI_DELEGATE_H_
 
 #include "components/soda/constants.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 
 namespace content {
 class BrowserContext;
@@ -24,6 +25,12 @@ class RecorderAppUIDelegate {
 
   virtual void OpenAiFeedbackDialog(
       const std::string& description_template) = 0;
+
+  virtual bool CanUseSpeakerLabelForCurrentProfile() = 0;
+
+  virtual void RecordSpeakerLabelConsent(
+      const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent&
+          consent) = 0;
 
   virtual ~RecorderAppUIDelegate() = default;
 

@@ -504,6 +504,11 @@ void ViewAccessibility::SetName(View& naming_view) {
                             {naming_view.GetViewAccessibility().GetUniqueId()});
 }
 
+void ViewAccessibility::RemoveName() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kName);
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kNameFrom);
+}
+
 std::u16string ViewAccessibility::GetCachedName() const {
   return data_.GetString16Attribute(ax::mojom::StringAttribute::kName);
 }
@@ -728,6 +733,14 @@ void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {
                            placeholder);
 }
 
+void ViewAccessibility::AddAction(ax::mojom::Action action) {
+  if (data_.HasAction(action)) {
+    return;
+  }
+
+  data_.AddAction(action);
+}
+
 void ViewAccessibility::SetCheckedState(ax::mojom::CheckedState checked_state) {
   if (checked_state == data_.GetCheckedState()) {
     return;
@@ -769,7 +782,19 @@ void ViewAccessibility::RemoveChildTreeNodeAppId() {
 }
 
 void ViewAccessibility::SetIsSelected(bool selected) {
+  if (data_.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
+      selected == data_.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
+    return;
+  }
+
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
+
+  // We only want to send the notification if the view gets selected,
+  // this is since the event serves to notify of a selection being made, not of
+  // a selection being unmade.
+  if (selected) {
+    NotifyEvent(ax::mojom::Event::kSelection, true);
+  }
 }
 
 void ViewAccessibility::SetIsMultiselectable(bool multiselectable) {
@@ -860,6 +885,11 @@ void ViewAccessibility::RemoveValue() {
   }
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kValue);
   NotifyEvent(ax::mojom::Event::kValueChanged, true);
+}
+
+std::u16string ViewAccessibility::GetValue() const {
+  return base::UTF8ToUTF16(
+      data_.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
 void ViewAccessibility::SetDefaultActionVerb(
@@ -1268,6 +1298,15 @@ void ViewAccessibility::SetIsCollapsed() {
 void ViewAccessibility::RemoveExpandCollapseState() {
   SetState(ax::mojom::State::kExpanded, false);
   SetState(ax::mojom::State::kCollapsed, false);
+}
+
+void ViewAccessibility::SetIsVertical(bool vertical) {
+  CHECK(!data_.HasState(ax::mojom::State::kHorizontal));
+  if (data_.HasState(ax::mojom::State::kVertical)) {
+    return;
+  }
+
+  SetState(ax::mojom::State::kVertical, vertical);
 }
 
 void ViewAccessibility::SetTextSelStart(int32_t text_sel_start) {

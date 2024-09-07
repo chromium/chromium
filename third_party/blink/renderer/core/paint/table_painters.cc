@@ -719,7 +719,7 @@ void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
       physical_border_rect.offset += child.offset + paint_offset;
 
       BoxSide box_side;
-      if (IsHorizontalWritingMode(fragment_.Style().GetWritingMode())) {
+      if (fragment_.Style().IsHorizontalWritingMode()) {
         box_side = edge.IsInlineAxis() ? BoxSide::kTop : BoxSide::kLeft;
       } else {
         box_side = edge.IsInlineAxis() ? BoxSide::kLeft : BoxSide::kTop;

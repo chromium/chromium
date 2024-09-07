@@ -15,10 +15,11 @@
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/apple/osstatus_logging.h"
+#include "base/apple/scoped_cftyperef.h"
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -32,7 +33,6 @@
 #endif
 
 extern "C" {
-Boolean _CFURLIsFileURL(CFURLRef url);
 CFTypeID SecKeyGetTypeID();
 }  // extern "C"
 
@@ -59,6 +59,12 @@ bool UncachedAmIBundled() {
 #endif
 }
 
+bool CFURLIsFileURL(CFURLRef url) {
+  ScopedCFTypeRef<CFStringRef> scheme(CFURLCopyScheme(url));
+  return CFStringCompare(scheme.get(), CFSTR("file"),
+                         kCFCompareCaseInsensitive) == kCFCompareEqualTo;
+}
+
 }  // namespace
 
 bool AmIBundled() {
@@ -79,9 +85,7 @@ bool AmIBundled() {
 void SetOverrideAmIBundled(bool value) {
 #if BUILDFLAG(IS_IOS)
   // It doesn't make sense not to be bundled on iOS.
-  if (!value) {
-    NOTREACHED();
-  }
+  CHECK(value);
 #endif
   g_override_am_i_bundled = true;
   g_override_am_i_bundled_value = value;
@@ -420,7 +424,7 @@ FilePath CFStringToFilePath(CFStringRef str) {
 }
 
 FilePath CFURLToFilePath(CFURLRef url) {
-  if (!url || !_CFURLIsFileURL(url)) {
+  if (!url || !CFURLIsFileURL(url)) {
     return FilePath();
   }
 
@@ -444,6 +448,14 @@ bool CFRangeToNSRange(CFRange range, NSRange* range_out) {
     return true;
   }
   return false;
+}
+
+span<const uint8_t> CFDataToSpan(CFDataRef data) {
+  return NSDataToSpan(apple::CFToNSPtrCast(data));
+}
+
+span<uint8_t> CFMutableDataToSpan(CFMutableDataRef data) {
+  return NSMutableDataToSpan(apple::CFToNSPtrCast(data));
 }
 
 }  // namespace base::apple

@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_SCHEMA_REGISTRY_FACTORY_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_SCHEMA_REGISTRY_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace policy {
 class CombinedSchemaRegistry;

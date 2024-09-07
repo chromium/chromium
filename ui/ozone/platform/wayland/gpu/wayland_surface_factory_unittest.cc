@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
+
 #include <drm_fourcc.h>
+#include <wayland-util.h>
 
 #include <cstdint>
 #include <memory>
@@ -26,7 +29,6 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
-#include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -1409,9 +1411,34 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
         ASSERT_TRUE(test_viewport);
 
         EXPECT_CALL(*test_viewport,
-                    SetSource(expected_src.x(), expected_src.y(),
-                              expected_src.width(), expected_src.height()))
-            .Times(1);
+                    // TODO(crbug.com/359904707) Use this instead of below
+                    // workaround for rounding errors.
+
+                    // SetSource(expected_src.x(), expected_src.y(),
+                    //           expected_src.width(), expected_src.height()))
+
+                    SetSource(_, _, _, _))
+            .Times(1)
+            .WillOnce(
+                [expected_src](float x, float y, float width, float height) {
+                  auto matches_with_precision_loss = [](float expected,
+                                                        float actual) {
+                    // Allows for a precision loss of 1/256
+                    bool match = std::abs(wl_fixed_from_double(expected) -
+                                          wl_fixed_from_double(actual)) <= 1;
+                    if (!match) {
+                      LOG(ERROR)
+                          << "Expected: " << expected << " Actual: " << actual;
+                    }
+                    return match;
+                  };
+                  EXPECT_TRUE(matches_with_precision_loss(expected_src.x(), x));
+                  EXPECT_TRUE(matches_with_precision_loss(expected_src.y(), y));
+                  EXPECT_TRUE(
+                      matches_with_precision_loss(expected_src.width(), width));
+                  EXPECT_TRUE(matches_with_precision_loss(expected_src.height(),
+                                                          height));
+                });
         EXPECT_CALL(*test_viewport,
                     SetDestination(bounds_dip.width(), bounds_dip.height()))
             .Times(1);

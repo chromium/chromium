@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include <mach/mach_vm.h>
+#include <mach/vm_purgable.h>
 #include <mach/vm_statistics.h>
 
 #include "base/no_destructor.h"
@@ -60,6 +61,8 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
   size_t surface_resident_size = 0;
   size_t surface_swapped_out_size = 0;
   size_t surface_dirty_size = 0;
+  size_t surface_nonpurgeable_size = 0;
+  size_t surface_purgeable_size = 0;
 
   // And IOAccelerator. Per vm_statistics.h in XNU, this is used to
   // "differentiate memory needed by GPU drivers and frameworks from generic
@@ -68,6 +71,8 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
   size_t accelerator_resident_size = 0;
   size_t accelerator_swapped_out_size = 0;
   size_t accelerator_dirty_size = 0;
+  size_t accelerator_nonpurgeable_size = 0;
+  size_t accelerator_purgeable_size = 0;
 
   task_t task = mach_task_self();
   mach_vm_address_t address = 0;
@@ -111,6 +116,17 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
     if (ret != KERN_SUCCESS)
       return false;
 
+    if (info.user_tag != VM_MEMORY_IOSURFACE &&
+        info.user_tag != VM_MEMORY_IOACCELERATOR) {
+      continue;
+    }
+
+    int purgeable_state = 0;
+    ret = mach_vm_purgable_control(task, address, VM_PURGABLE_GET_STATE,
+                                   &purgeable_state);
+
+    purgeable_state = purgeable_state & VM_PURGABLE_STATE_MASK;
+
     switch (info.user_tag) {
       case VM_MEMORY_IOSURFACE:
         surface_virtual_size += size;
@@ -118,6 +134,12 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
         surface_swapped_out_size +=
             info.pages_swapped_out * base::GetPageSize();
         surface_dirty_size += info.pages_dirtied * base::GetPageSize();
+        if (purgeable_state == VM_PURGABLE_VOLATILE ||
+            purgeable_state == VM_PURGABLE_EMPTY) {
+          surface_purgeable_size += size;
+        } else {
+          surface_nonpurgeable_size += size;
+        }
         break;
       case VM_MEMORY_IOACCELERATOR:
         accelerator_virtual_size += size;
@@ -125,6 +147,12 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
         accelerator_swapped_out_size +=
             info.pages_swapped_out * base::GetPageSize();
         accelerator_dirty_size += info.pages_dirtied * base::GetPageSize();
+        if (purgeable_state == VM_PURGABLE_VOLATILE ||
+            purgeable_state == VM_PURGABLE_EMPTY) {
+          accelerator_purgeable_size += size;
+        } else {
+          accelerator_nonpurgeable_size += size;
+        }
         break;
     }
   }
@@ -144,6 +172,8 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
   // Note: not using "dirty_size", as it doesn't contain the swapped out part.
   dump->AddScalar("resident_swapped", "bytes",
                   surface_resident_size + surface_swapped_out_size);
+  dump->AddScalar("nonpurgeable_size", "bytes", surface_nonpurgeable_size);
+  dump->AddScalar("purgeable_size", "bytes", surface_purgeable_size);
 
   // Ditto for IOAccelerator.
   dump = pmd->CreateAllocatorDump("ioaccelerator");
@@ -154,6 +184,8 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
   dump->AddScalar("size", "bytes", accelerator_virtual_size);
   dump->AddScalar("resident_swapped", "bytes",
                   accelerator_resident_size + accelerator_swapped_out_size);
+  dump->AddScalar("nonpurgeable_size", "bytes", accelerator_nonpurgeable_size);
+  dump->AddScalar("purgeable_size", "bytes", accelerator_purgeable_size);
 
   return true;
 }

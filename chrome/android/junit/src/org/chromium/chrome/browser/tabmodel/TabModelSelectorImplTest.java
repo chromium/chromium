@@ -21,17 +21,17 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -66,6 +66,8 @@ public class TabModelSelectorImplTest {
     // Any type other than ActivityType.TABBED works.
     private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private TabContentManager mMockTabContentManager;
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
@@ -73,6 +75,9 @@ public class TabModelSelectorImplTest {
     @Mock
     private IncognitoTabModelObserver.IncognitoReauthDialogDelegate
             mIncognitoReauthDialogDelegateMock;
+
+    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+            new OneshotSupplierImpl<>();
 
     @Mock private TabGroupModelFilter mRegularFilter;
     @Mock private TabGroupModelFilter mIncognitoFilter;
@@ -89,26 +94,23 @@ public class TabModelSelectorImplTest {
     private MockTabCreatorManager mTabCreatorManager;
     private MockTabModel mRegularTabModel;
     private MockTabModel mIncognitoTabModel;
+    private AsyncTabParamsManager mAsyncTabParamsManager;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         doReturn(true).when(mIncognitoProfile).isOffTheRecord();
         mTabCreatorManager = new MockTabCreatorManager();
 
-        AsyncTabParamsManager realAsyncTabParamsManager =
-                AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
-        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
-        profileProviderSupplier.set(mProfileProvider);
+        mAsyncTabParamsManager = AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
+        mProfileProviderSupplier.set(mProfileProvider);
         mTabModelSelector =
                 new TabModelSelectorImpl(
-                        profileProviderSupplier,
+                        mProfileProviderSupplier,
                         mTabCreatorManager,
                         (tabModel) ->
                                 tabModel == mRegularTabModel ? mRegularFilter : mIncognitoFilter,
                         mNextTabPolicySupplier,
-                        realAsyncTabParamsManager,
+                        mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
                         /* startIncognito= */ false);
@@ -339,7 +341,6 @@ public class TabModelSelectorImplTest {
      * TabModelSelectorObserver#onTabModelSelected}.
      */
     @Test
-    @SmallTest
     public void
             testIncognitoReauthDialogDelegate_OnBeforeIncognitoTabModelSelected_called_Before() {
         doNothing().when(mIncognitoReauthDialogDelegateMock).onBeforeIncognitoTabModelSelected();
@@ -373,7 +374,6 @@ public class TabModelSelectorImplTest {
      * {@link TabModelSelectorObserver} listening to {@link TabModelSelectorObserver#onChange()}.
      */
     @Test
-    @SmallTest
     public void testIncognitoReauthDialogDelegate_onAfterRegularTabModelChanged() {
         // Start-off with an Incognito tab model. This is needed to set up the environment.
         mTabModelSelector.selectModel(/* incognito= */ true);
@@ -411,7 +411,6 @@ public class TabModelSelectorImplTest {
     }
 
     @Test
-    @SmallTest
     public void testOnActivityAttachmentChanged() {
         MockTab tab0 = mRegularTabModel.addTab(0);
         MockTab tab1 = mRegularTabModel.addTab(1);
@@ -427,6 +426,49 @@ public class TabModelSelectorImplTest {
             observer.onActivityAttachmentChanged(tab1, /* window= */ null);
         }
         verify(mRegularFilter).moveTabOutOfGroup(tab1.getId());
+    }
+
+    @Test
+    public void testMarkTabStateInitializedReentrancy() {
+        mTabModelSelector.destroy();
+
+        TabModelImpl regularModel = mock(TabModelImpl.class);
+        mTabModelSelector =
+                new TabModelSelectorImpl(
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        (tabModel) -> tabModel == regularModel ? mRegularFilter : mIncognitoFilter,
+                        mNextTabPolicySupplier,
+                        mAsyncTabParamsManager,
+                        /* supportUndo= */ false,
+                        NO_RESTORE_TYPE,
+                        /* startIncognito= */ false);
+        when(mRegularFilter.getTabModel()).thenReturn(regularModel);
+        Mockito.doAnswer((ignored -> mTabModelSelector.getCurrentModel() == regularModel))
+                .when(mRegularFilter)
+                .isCurrentlySelectedFilter();
+        mTabModelSelector.initializeForTesting(regularModel, mIncognitoTabModel);
+        TabModelSelectorObserver observer =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabStateInitialized() {
+                        verify(regularModel, never()).broadcastSessionRestoreComplete();
+                        mTabModelSelector.markTabStateInitialized();
+
+                        // Should not be called due to re-entrancy guard until this observer
+                        // returns.
+                        verify(regularModel, never()).broadcastSessionRestoreComplete();
+                    }
+                };
+
+        mTabModelSelector.addObserver(observer);
+
+        mTabModelSelector.markTabStateInitialized();
+
+        mTabModelSelector.removeObserver(observer);
+
+        // Should be called exactly once.
+        verify(regularModel).broadcastSessionRestoreComplete();
     }
 
     private boolean currentTabModelSupplierHasObservers() {

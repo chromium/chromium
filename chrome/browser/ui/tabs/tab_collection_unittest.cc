@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -103,6 +104,7 @@ class TabCollectionBaseTest : public ::testing::Test {
   std::unique_ptr<Profile> testing_profile_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 class PinnedTabCollectionTest : public TabCollectionBaseTest {
@@ -266,6 +268,7 @@ class TabGroupTabCollectionTest : public TabCollectionBaseTest {
 
  private:
   std::unique_ptr<tabs::TabGroupTabCollection> grouped_collection_;
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 TEST_F(TabGroupTabCollectionTest, AddOperation) {
@@ -611,6 +614,7 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
 
  private:
   std::unique_ptr<tabs::TabStripCollection> tab_strip_collection_;
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 TEST_F(TabStripCollectionTest, CollectionOperations) {

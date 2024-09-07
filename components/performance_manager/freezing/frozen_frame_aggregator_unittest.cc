@@ -112,14 +112,16 @@ TEST_F(FrozenFrameAggregatorTest, NotCurrent) {
   ExpectProcessData(0, 0);
 
   // Make it current. The frame starts being counted.
-  f0->SetIsCurrent(true);
+  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/nullptr,
+                                    /*current_frame_node=*/f0.get(), graph());
   ExpectProcessData(1, 0);
 
   f0->SetLifecycleState(LifecycleState::kFrozen);
   ExpectProcessData(1, 1);
 
   // Make no longer current. Stops being counted.
-  f0->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/f0.get(),
+                                    /*current_frame_node=*/nullptr, graph());
   ExpectProcessData(0, 0);
 }
 
@@ -237,25 +239,20 @@ TEST_F(FrozenFrameAggregatorTest, PageAggregation) {
   ExpectRunning();
 
   // Create a third frame that is not current.
-  auto f1a = CreateFrame(f0.get());
-  f1a->SetIsCurrent(false);
+  auto f1a = CreateFrame(f0.get(), /*is_current=*/false);
   ExpectPageData(2, 0);
   ExpectRunning();
 
   // Swap the f1 and f1a.
-  f1->SetIsCurrent(false);
-  ExpectPageData(1, 0);
-  ExpectRunning();
-  f1a->SetIsCurrent(true);
+  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/f1.get(),
+                                    /*current_frame_node=*/f1a.get(), graph());
   ExpectPageData(2, 0);
   ExpectRunning();
 
   // Freeze the original frame and swap it back.
   f1->SetLifecycleState(LifecycleState::kFrozen);
-  f1a->SetIsCurrent(false);
-  ExpectPageData(1, 0);
-  ExpectRunning();
-  f1->SetIsCurrent(true);
+  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/f1a.get(),
+                                    /*current_frame_node=*/f1.get(), graph());
   ExpectPageData(2, 1);
   ExpectRunning();
 

@@ -196,7 +196,7 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
   if (it->value &= ~static_cast<DelayReasons>(delay_reason)) {
     // The delay must be less than a few seconds because some scripts times out
     // otherwise. This is only applied to milestone based delay.
-    static const base::TimeDelta delay_limit =
+    const base::TimeDelta delay_limit =
         features::kDelayAsyncScriptExecutionDelayLimitParam.Get();
     if (!delay_limit.is_zero() && delay_reason == DelayReason::kLoad &&
         (it->value & static_cast<DelayReasons>(DelayReason::kMilestone))) {

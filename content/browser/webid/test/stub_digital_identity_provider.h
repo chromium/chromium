@@ -26,7 +26,7 @@ class StubDigitalIdentityProvider : public DigitalIdentityProvider {
       DigitalIdentityInterstitialCallback callback) override;
   void Request(WebContents*,
                const url::Origin& origin,
-               const std::string& request,
+               base::Value request,
                DigitalIdentityCallback) override;
 };
 

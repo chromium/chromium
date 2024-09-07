@@ -1003,10 +1003,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptIfLinkClicked) {
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerVotingBrowserTest,
                        VerifyPasswordGenerationUpload) {
-  // Disable Autofill requesting access to AddressBook data. This causes
-  // the test to hang on Mac.
-  autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());
-
   // The form should not be hosted on localhost to enable sending
   // crowdsourcing votes.
   const std::string kTestSignonRealm = "example.com";
@@ -1064,7 +1060,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerVotingBrowserTest,
     histograms.ExpectUniqueSample("Autofill.UploadEvent", 1, 2);
   }
   EXPECT_FALSE(second_prompt_observer.IsSavePromptShownAutomatically());
-  autofill::test::ReenableSystemServices();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForSubmitFromIframe) {
@@ -4582,8 +4577,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
 
   // Ensure that the prerender has started.
   registry_observer.WaitForTrigger(prerender_url);
-  auto prerender_id = prerender_helper()->GetHostForUrl(prerender_url);
-  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  content::FrameTreeNodeId prerender_id =
+      prerender_helper()->GetHostForUrl(prerender_url);
+  EXPECT_TRUE(prerender_id);
   content::test::PrerenderHostObserver host_observer(*WebContents(),
                                                      prerender_id);
   // PrerenderHost is destroyed by net::INVALID_AUTH_CREDENTIALS and it stops
@@ -4625,7 +4621,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   auto prerender_url =
       embedded_test_server()->GetURL("/password/password_form.html");
   // Loads a page in the prerender.
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*WebContents(), host_id);
   content::RenderFrameHost* render_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
@@ -4675,7 +4672,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   auto prerender_url =
       embedded_test_server()->GetURL("/password/password_form.html");
   // Loads a page in the prerender.
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   content::RenderFrameHost* render_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);

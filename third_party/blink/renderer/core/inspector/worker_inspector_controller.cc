@@ -121,19 +121,28 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
       thread_->GetConsoleMessageStorage(), nullptr, session->V8Session());
   session->CreateAndAppend<InspectorEventBreakpointsAgent>(
       session->V8Session());
-  if (auto* scope = DynamicTo<WorkerGlobalScope>(thread_->GlobalScope())) {
+
+  auto* worker_or_worklet_global_scope =
+      DynamicTo<WorkerOrWorkletGlobalScope>(thread_->GlobalScope());
+  auto* worker_global_scope =
+      DynamicTo<WorkerGlobalScope>(thread_->GlobalScope());
+
+  if (worker_or_worklet_global_scope) {
     auto* network_agent = session->CreateAndAppend<InspectorNetworkAgent>(
-        inspected_frames_.Get(), scope, session->V8Session());
+        inspected_frames_.Get(), worker_or_worklet_global_scope,
+        session->V8Session());
+    session->CreateAndAppend<InspectorAuditsAgent>(
+        network_agent, thread_->GetInspectorIssueStorage(),
+        /*inspected_frames=*/nullptr, /*web_autofill_client=*/nullptr);
+  }
+  if (worker_global_scope) {
     auto* virtual_time_controller =
         thread_->GetScheduler()->GetVirtualTimeController();
     DCHECK(virtual_time_controller);
     session->CreateAndAppend<InspectorEmulationAgent>(nullptr,
                                                       *virtual_time_controller);
-    session->CreateAndAppend<InspectorAuditsAgent>(
-        network_agent, thread_->GetInspectorIssueStorage(),
-        /*inspected_frames=*/nullptr, /*web_autofill_client=*/nullptr);
     session->CreateAndAppend<InspectorMediaAgent>(inspected_frames_.Get(),
-                                                  scope);
+                                                  worker_global_scope);
   }
   ++session_count_;
 }

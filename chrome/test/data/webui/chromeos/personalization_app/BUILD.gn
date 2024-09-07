@@ -13,6 +13,9 @@ build_webui_tests("build_webui_tests") {
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
                     target_gen_dir),
+    "chrome://webui-test/chai.js|" +
+        rebase_path("//third_party/node/node_modules/@types/chai/index.d.ts",
+                    target_gen_dir),
   ]
 
   files = [

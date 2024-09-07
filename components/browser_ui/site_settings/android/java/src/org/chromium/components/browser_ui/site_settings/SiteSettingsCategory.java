@@ -24,8 +24,10 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.permissions.PermissionUtil;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.subresource_filter.SubresourceFilterFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -48,6 +50,7 @@ public class SiteSettingsCategory {
         Type.BLUETOOTH_SCANNING,
         Type.CAMERA,
         Type.CLIPBOARD,
+        Type.HAND_TRACKING,
         Type.IDLE_DETECTION,
         Type.DEVICE_LOCATION,
         Type.JAVASCRIPT,
@@ -107,9 +110,10 @@ public class SiteSettingsCategory {
         int ZOOM = 28;
         int STORAGE_ACCESS = 29;
         int TRACKING_PROTECTION = 30;
+        int HAND_TRACKING = 31;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 31;
+        int NUM_ENTRIES = 32;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -151,6 +155,10 @@ public class SiteSettingsCategory {
             permission = android.Manifest.permission.RECORD_AUDIO;
         } else if (type == Type.AUGMENTED_REALITY) {
             permission = android.Manifest.permission.CAMERA;
+        } else if (type == Type.HAND_TRACKING
+                && PackageManagerUtils.hasSystemFeature(
+                        PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)) {
+            permission = PermissionUtil.ANDROID_PERMISSION_HAND_TRACKING;
         } else {
             permission = "";
         }
@@ -214,6 +222,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.GEOLOCATION;
             case Type.FEDERATED_IDENTITY_API:
                 return ContentSettingsType.FEDERATED_IDENTITY_API;
+            case Type.HAND_TRACKING:
+                return ContentSettingsType.HAND_TRACKING;
             case Type.IDLE_DETECTION:
                 return ContentSettingsType.IDLE_DETECTION;
             case Type.JAVASCRIPT:
@@ -295,6 +305,8 @@ public class SiteSettingsCategory {
                 return "device_location";
             case Type.FEDERATED_IDENTITY_API:
                 return "federated_identity_api";
+            case Type.HAND_TRACKING:
+                return "hand_tracking";
             case Type.IDLE_DETECTION:
                 return "idle_detection";
             case Type.JAVASCRIPT:
@@ -561,6 +573,8 @@ public class SiteSettingsCategory {
             permission_string = R.string.android_camera_permission_off;
         } else if (type == ContentSettingsType.AR) {
             permission_string = R.string.android_ar_camera_permission_off;
+        } else if (type == ContentSettingsType.HAND_TRACKING) {
+            permission_string = R.string.android_hand_tracking_permission_off;
         } else if (type == ContentSettingsType.NOTIFICATIONS) {
             permission_string = R.string.android_notifications_permission_off;
         }

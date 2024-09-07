@@ -69,6 +69,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, FindShortcutMixin) {
   RunTest("cr_elements/find_shortcut_mixin_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, FindShortcutMixinLit) {
+  RunTest("cr_elements/find_shortcut_mixin_lit_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, I18nMixin) {
   RunTest("cr_elements/i18n_mixin_test.js", "mocha.run()");
 }
@@ -79,6 +83,15 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, I18nMixinLit) {
 
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrIconButton) {
   RunTest("cr_elements/cr_icon_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrInfiniteList) {
+  RunTest("cr_elements/cr_infinite_list_test.js",
+          "runMochaSuite('InfiniteListTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLazyList) {
+  RunTest("cr_elements/cr_lazy_list_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLazyRender) {

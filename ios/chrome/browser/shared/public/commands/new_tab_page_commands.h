@@ -27,6 +27,9 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 - (void)handleFeedModelOfType:(FeedType)feedType
                 didEndUpdates:(FeedLayoutUpdateType)updateType;
 
+// Presents an IPH bubble to highlight the Lens icon in the NTP Fakebox.
+- (void)presentLensIconBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_NEW_TAB_PAGE_COMMANDS_H_

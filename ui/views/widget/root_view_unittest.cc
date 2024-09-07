@@ -17,8 +17,10 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
@@ -853,7 +855,8 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
  public:
   RootViewTestDialogDelegate() {
     // Ensure that buttons don't influence the layout.
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kNone));
   }
 
   RootViewTestDialogDelegate(const RootViewTestDialogDelegate&) = delete;
@@ -921,15 +924,22 @@ TEST_F(RootViewTest, AnnounceTextAsTest) {
   EXPECT_TRUE(root_view->children()[1]->size().IsEmpty());
   View* const hidden_alert_view = root_view->children()[1];
   ui::AXNodeData node_data;
-  hidden_alert_view->GetAccessibleNodeData(&node_data);
+  hidden_alert_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(kAlertText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kStaticText);
+#elif BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kAlert);
+#else
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kAlert);
+#endif
 
   const std::u16string kPoliteText = u"Something polite";
   root_view->AnnounceTextAs(kPoliteText,
                             ui::AXPlatformNode::AnnouncementType::kPolite);
   View* const hidden_polite_view = root_view->children()[1];
-  hidden_polite_view->GetAccessibleNodeData(&node_data);
+  hidden_polite_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(kPoliteText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   hidden_polite_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
@@ -937,6 +947,14 @@ TEST_F(RootViewTest, AnnounceTextAsTest) {
   ASSERT_TRUE(node_data.GetStringAttribute(
       ax::mojom::StringAttribute::kContainerLiveStatus, &val));
   ASSERT_EQ("polite", val);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kStaticText);
+#elif BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kAlert);
+#else
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kStatus);
+#endif
 }
 
 #endif  // !BUILDFLAG(IS_MAC)
@@ -1030,6 +1048,15 @@ TEST_F(RootViewTest, DoubleClickHandledIffFirstClickHandled) {
   released_event.SetClickCount(2);
   EXPECT_FALSE(root_view->OnMousePressed(pressed_event));
   root_view->OnMouseReleased(released_event);
+}
+
+TEST_F(RootViewTest, AccessibleProperties) {
+  RootViewTestState state(this);
+  internal::RootView* root_view = state.GetRootView();
+
+  ui::AXNodeData data;
+  root_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
 }
 
 }  // namespace views::test

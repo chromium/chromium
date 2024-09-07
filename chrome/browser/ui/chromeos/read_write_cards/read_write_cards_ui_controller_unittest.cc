@@ -72,8 +72,9 @@ class ReadWriteCardsUiControllerTest
       public testing::WithParamInterface<bool> {
  public:
   ReadWriteCardsUiControllerTest() {
-    scoped_feature_list_.InitWithFeatureState(chromeos::features::kMahi,
-                                              IsMahiEnabled());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kMahi, IsMahiEnabled()},
+         {chromeos::features::kFeatureManagementMahi, IsMahiEnabled()}});
   }
   ReadWriteCardsUiControllerTest(const ReadWriteCardsUiControllerTest&) =
       delete;

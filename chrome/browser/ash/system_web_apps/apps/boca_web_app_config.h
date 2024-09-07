@@ -12,7 +12,7 @@
 
 namespace ash {
 // WebUI config for Boca SWA.
-class BocaUIConfig : public content::DefaultWebUIConfig<ash::BocaUI> {
+class BocaUIConfig : public content::DefaultWebUIConfig<ash::boca::BocaUI> {
  public:
   BocaUIConfig();
 

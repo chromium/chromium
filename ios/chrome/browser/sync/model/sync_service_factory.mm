@@ -46,8 +46,8 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -67,6 +67,10 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "url/gurl.h"
 namespace {
+
+// The maximum number of New Tab Page displays to show with synced segments
+// data.
+constexpr int kMaxSyncedNewTabPageDisplays = 5;
 
 std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
@@ -90,7 +94,7 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   init_params.network_connection_tracker =
       GetApplicationContext()->GetNetworkConnectionTracker();
   init_params.channel = ::GetChannel();
-  init_params.debug_identifier = browser_state->GetBrowserStateName();
+  init_params.debug_identifier = browser_state->GetProfileName();
 
   IOSChromeSyncClient* client_ptr =
       static_cast<IOSChromeSyncClient*>(init_params.sync_client.get());
@@ -103,29 +107,25 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   // TODO(crbug.com/40250371): Remove the workaround below once
   // PrivacySandboxSettingsFactory correctly declares its KeyedServices
   // dependencies.
-  if (history::IsSyncSegmentsDataEnabled()) {
-    history::HistoryService* history_service =
-        ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-            browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+  history::HistoryService* history_service =
+      ios::HistoryServiceFactory::GetForBrowserStateIfExists(
+          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
 
-    syncer::DeviceInfoSyncService* device_info_sync_service =
-        DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
+  syncer::DeviceInfoSyncService* device_info_sync_service =
+      DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
 
-    if (history_service && device_info_sync_service) {
-      PrefService* pref_service = browser_state->GetPrefs();
+  if (history_service && device_info_sync_service) {
+    PrefService* pref_service = browser_state->GetPrefs();
 
-      const int display_count = pref_service->GetInteger(
-          prefs::kIosSyncSegmentsNewTabPageDisplayCount);
+    const int display_count =
+        pref_service->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount);
 
-      const int display_limit = history::kMaxNumNewTabPageDisplays.Get();
+    history_service->SetCanAddForeignVisitsToSegmentsOnBackend(
+        display_count < kMaxSyncedNewTabPageDisplays);
 
-      history_service->SetCanAddForeignVisitsToSegmentsOnBackend(display_count <
-                                                                 display_limit);
-
-      history_service->SetDeviceInfoServices(
-          device_info_sync_service->GetDeviceInfoTracker(),
-          device_info_sync_service->GetLocalDeviceInfoProvider());
-    }
+    history_service->SetDeviceInfoServices(
+        device_info_sync_service->GetDeviceInfoTracker(),
+        device_info_sync_service->GetLocalDeviceInfoProvider());
   }
 
   password_manager::PasswordReceiverService* password_receiver_service =

@@ -73,11 +73,14 @@ void CreateCookies(
   run_loop.Run();
 }
 
-std::unique_ptr<TestingProfile> BuildTestingProfile(const base::FilePath& path,
-                                                    Profile::Delegate* delegate,
-                                                    bool tokens_loaded) {
+std::unique_ptr<TestingProfile> BuildTestingProfile(
+    const base::FilePath& path,
+    Profile::Delegate* delegate,
+    Profile::CreateMode create_mode,
+    bool tokens_loaded) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetDelegate(delegate);
+  profile_builder.SetCreateMode(create_mode);
   profile_builder.SetPath(path);
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
@@ -101,8 +104,10 @@ class UnittestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Profile::Delegate* delegate) override {
-    return ::BuildTestingProfile(path, delegate, tokens_loaded_at_creation_);
+      Profile::Delegate* delegate,
+      Profile::CreateMode create_mode) override {
+    return ::BuildTestingProfile(path, delegate, create_mode,
+                                 tokens_loaded_at_creation_);
   }
 
   bool tokens_loaded_at_creation_ = true;
@@ -128,6 +133,7 @@ class DiceSignedInProfileCreatorTest
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::move(profile_manager_unique));
     profile_ = BuildTestingProfile(base::FilePath(), /*delegate=*/nullptr,
+                                   Profile::CreateMode::kSynchronous,
                                    /*tokens_loaded=*/true);
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());

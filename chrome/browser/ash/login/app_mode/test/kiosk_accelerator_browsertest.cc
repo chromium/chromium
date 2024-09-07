@@ -51,8 +51,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, AcceleratorsDontCloseSession) {
   InitializeRegularOnlineKiosk();
   SelectFirstBrowser();
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  ASSERT_FALSE(chrome::PressCloseTabAccelerator(browser()));
-  ASSERT_FALSE(chrome::PressCloseWindowAccelerator(browser()));
+  ASSERT_FALSE(PressCloseTabAccelerator(browser()));
+  ASSERT_FALSE(PressCloseWindowAccelerator(browser()));
   ASSERT_FALSE(ash::PressSignOutAccelerator());
   base::RunLoop loop;
   loop.RunUntilIdle();
@@ -100,7 +100,7 @@ class NonKioskAcceleratorTest : public InProcessBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseTabAccelerator) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  ASSERT_TRUE(chrome::PressCloseTabAccelerator(browser()));
+  ASSERT_TRUE(PressCloseTabAccelerator(browser()));
   TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
   ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseTabAccelerator) {
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseWindowAccelerator) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  ASSERT_TRUE(chrome::PressCloseWindowAccelerator(browser()));
+  ASSERT_TRUE(PressCloseWindowAccelerator(browser()));
   TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
   ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);

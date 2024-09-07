@@ -83,7 +83,7 @@
 #include "third_party/skia/include/core/SkSwizzle.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
@@ -130,11 +130,8 @@
 #include "components/viz/service/display_embedder/skia_output_device_x11.h"
 #endif
 
-#if BUILDFLAG(SKIA_USE_DAWN)
-#include "gpu/command_buffer/service/dawn_context_provider.h"
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(SKIA_USE_DAWN) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
 #include "components/viz/service/display_embedder/skia_output_device_dawn.h"
-#endif
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -332,7 +329,6 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
               dependency_,
               shared_gpu_deps_->memory_tracker())),
       vulkan_context_provider_(dependency_->GetVulkanContextProvider()),
-      dawn_context_provider_(dependency_->GetDawnContextProvider()),
       renderer_settings_(renderer_settings),
       did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
@@ -581,7 +577,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     }
 
     gfx::GpuFenceHandle release_fence;
-    if (!return_release_fence_cb.is_null() && is_using_gl()) {
+    if (!return_release_fence_cb.is_null() && context_state_->IsUsingGL()) {
       DCHECK(release_fence.is_null());
       release_fence = CreateReleaseFenceForGL();
     }
@@ -722,7 +718,10 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       gpu::AddCleanupTaskForGraphiteRecording(std::move(on_finished), &info);
     }
     graphite_context()->insertRecording(info);
-    graphite_context()->submit();
+    if (local_scoped_access &&
+        local_scoped_access->NeedGraphiteContextSubmit()) {
+      graphite_context()->submit();
+    }
     skia_representation->SetCleared();
     return;
   }
@@ -788,7 +787,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
 
   // If GL is used, create the release fence after flush.
   gfx::GpuFenceHandle release_fence;
-  if (!return_release_fence_cb.is_null() && is_using_gl()) {
+  if (!return_release_fence_cb.is_null() && context_state_->IsUsingGL()) {
     DCHECK(release_fence.is_null());
     release_fence = CreateReleaseFenceForGL();
   }
@@ -1107,9 +1106,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     return;
   }
 
-  if (graphite_context() && !graphite_context()->submit()) {
-    DLOG(ERROR) << "CopyOutputRGBA graphite_context->submit() failed";
-    return;
+  if (graphite_context() && scoped_write->NeedGraphiteContextSubmit()) {
+    if (!graphite_context()->submit()) {
+      DLOG(ERROR) << "CopyOutputRGBA graphite_context->submit() failed";
+      return;
+    }
   }
 
   representation->SetCleared();
@@ -1515,9 +1516,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     return;
   }
 
-  if (graphite_context() && !graphite_context()->submit()) {
-    DLOG(ERROR) << "CopyOutputNV12 graphite_context->submit() failed";
-    return;
+  if (graphite_context() &&
+      mailbox_access_data.scoped_write->NeedGraphiteContextSubmit()) {
+    if (!graphite_context()->submit()) {
+      DLOG(ERROR) << "CopyOutputNV12 graphite_context->submit() failed";
+      return;
+    }
   }
 
   if (should_wait_for_gpu_work) {
@@ -1915,11 +1919,11 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
     if (!InitializeForVulkan()) {
       return false;
     }
-  } else if (is_using_graphite_dawn()) {
+  } else if (context_state_->IsGraphiteDawn()) {
     if (!InitializeForDawn()) {
       return false;
     }
-  } else if (is_using_graphite_metal()) {
+  } else if (context_state_->IsGraphiteMetal()) {
     if (!InitializeForMetal()) {
       return false;
     }

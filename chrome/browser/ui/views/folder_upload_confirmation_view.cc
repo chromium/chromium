@@ -13,6 +13,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -28,7 +29,7 @@ FolderUploadConfirmationView::FolderUploadConfirmationView(
       IDS_CONFIRM_FILE_UPLOAD_TITLE,
       base::saturated_cast<int>(selected_files_.size())));
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_CONFIRM_FILE_UPLOAD_OK_BUTTON));
 
   SetAcceptCallback(base::BindOnce(

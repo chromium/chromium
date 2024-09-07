@@ -55,7 +55,10 @@ std::vector<Sandbox> GetSandboxTypesToTest() {
     if (t == Sandbox::kZygoteIntermediateSandbox)
       continue;
 #endif
-
+    // TODO(crbug.com/361128453): Implement
+    if (t == Sandbox::kVideoEffects) {
+      continue;
+    }
     types.push_back(t);
   }
   return types;
@@ -156,6 +159,7 @@ class UtilityProcessSandboxBrowserTest
 
       case Sandbox::kGpu:
       case Sandbox::kRenderer:
+      case Sandbox::kVideoEffects:
       case Sandbox::kZygoteIntermediateSandbox:
         NOTREACHED_IN_MIGRATION();
         break;

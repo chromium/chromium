@@ -80,21 +80,18 @@ static std::string FRERequirementToString(
   }
 }
 
-// Returns true if FRE is allowed to be enabled on Flex by the command line.
-// Note that this function does *not* check whether the device is running Flex
-// or not.
-static bool IsFREOnFlexEnabledByCommandLineSwitch() {
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+// Returns true if we are on Flex and FRE is enabled on Flex.
+static bool IsFlexAndFREOnFlexIsEnabled() {
+  return ash::switches::IsRevenBranding() &&
+         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
              ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex) ==
-         AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways;
+             AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways;
 }
 
 // Returns true if FRE state keys are supported.
 static bool AreFREStateKeysSupported() {
   // TODO(b/331677599): Return IsOfficialGoogleOS().
-  return IsOfficialGoogleChrome() ||
-         (ash::switches::IsRevenBranding() &&
-          IsFREOnFlexEnabledByCommandLineSwitch());
+  return IsOfficialGoogleChrome() || IsFlexAndFREOnFlexIsEnabled();
 }
 
 // Kill switch config request parameters.
@@ -476,7 +473,7 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
     return InitialStateDeterminationRequirement::kDisabled;
   }
   const ash::system::FactoryPingEmbargoState embargo_state =
-      ash::system::GetEnterpriseManagementPingEmbargoState(statistics_provider);
+      ash::system::GetRlzPingEmbargoState(statistics_provider);
   const std::optional<std::string_view> serial_number =
       statistics_provider->GetMachineID();
   if (!serial_number || serial_number->empty()) {

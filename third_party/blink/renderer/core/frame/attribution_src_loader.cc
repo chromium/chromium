@@ -765,15 +765,34 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     return false;
   }
 
+  network::mojom::AttributionSupport support =
+      request.GetAttributionReportingSupport();
+
+  // This could occur for responses loaded from memory cache.
+  if (support == network::mojom::AttributionSupport::kUnset) {
+    // `ResourceFetcher::DidLoadResourceFromMemoryCache()` early returns for
+    // detached frames. We log metrics here to verify that this is never hit in
+    // detached frames.
+    const bool is_detached = !local_frame_->IsAttached();
+    base::UmaHistogramBoolean(
+        "Conversions.NonAttributionSrcRequestUnsetSupport.Detached",
+        is_detached);
+
+    if (is_detached) {
+      // Attribution support is unknown from detached frames, therefore not
+      // registering the response.
+      return false;
+    }
+
+    support = GetSupport();
+  }
+
   auto registration_info = GetRegistrationInfo(
       response.HttpHeaderFields(), local_frame_->DomWindow(), request_id,
       cross_app_web_enabled);
   if (!registration_info.has_value()) {
     return false;
   }
-
-  network::mojom::AttributionSupport support =
-      request.GetAttributionReportingSupport();
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {

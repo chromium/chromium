@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("bruschetta") {
+  sources = [
+    "bruschetta_installer_view.cc",
+    "bruschetta_installer_view.h",
+    "bruschetta_uninstaller_view.cc",
+    "bruschetta_uninstaller_view.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/profiles:profile",
+    "//ui/chromeos",
+    "//ui/strings:ui_strings",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "bruschetta_installer_view_browsertest.cc",
+    "bruschetta_uninstaller_view_browsertest.cc",
+  ]
+
+  deps = [
+    ":bruschetta",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+  ]
+}

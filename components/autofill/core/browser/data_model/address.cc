@@ -149,10 +149,12 @@ void Address::SetRawInfoWithVerificationStatus(FieldType type,
   Root()->SetValueForType(type, value, status);
 }
 
-void Address::GetMatchingTypes(const std::u16string& text,
-                               const std::string& app_locale,
-                               FieldTypeSet* matching_types) const {
-  FormGroup::GetMatchingTypes(text, app_locale, matching_types);
+void Address::GetMatchingTypesWithProfileSources(
+    const std::u16string& text,
+    const std::string& app_locale,
+    FieldTypeSet* matching_types) const {
+  FormGroup::GetMatchingTypesWithProfileSources(text, app_locale,
+                                                matching_types);
 
   std::string country_code = GetRoot().GetCountryCode().value();
 
@@ -264,12 +266,6 @@ VerificationStatus Address::GetVerificationStatusImpl(FieldType type) const {
 
 void Address::SetAddressCountryCode(const std::u16string& country_code,
                                     VerificationStatus verification_status) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
-    Root()->SetValueForType(ADDRESS_HOME_COUNTRY, country_code,
-                            verification_status);
-    return;
-  }
-
   const AddressCountryCode new_address_country_code =
       AddressCountryCode(base::UTF16ToUTF8(country_code));
 

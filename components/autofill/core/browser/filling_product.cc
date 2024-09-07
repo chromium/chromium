@@ -91,9 +91,13 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kComposeSavedStateNotification:
       return FillingProduct::kCompose;
     case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kManagePlusAddress:
+    case SuggestionType::kPlusAddressError:
       return FillingProduct::kPlusAddresses;
+    case SuggestionType::kPredictionImprovementsFeedback:
+      return FillingProduct::kPredictionImprovements;
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
@@ -102,6 +106,10 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
       return FillingProduct::kNone;
+    case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kFillPredictionImprovements:
+      return FillingProduct::kPredictionImprovements;
   }
   NOTREACHED();
 }
@@ -128,6 +136,8 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
       return FillingProduct::kPassword;
     case FieldTypeGroup::kIban:
       return FillingProduct::kIban;
+    case autofill::FieldTypeGroup::kPredictionImprovements:
+      return FillingProduct::kPredictionImprovements;
   }
   NOTREACHED();
 }

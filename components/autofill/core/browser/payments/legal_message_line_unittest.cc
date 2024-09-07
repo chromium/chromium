@@ -20,6 +20,27 @@
 
 namespace autofill {
 
+// Prints out a legal message |line| to |os|.
+std::ostream& operator<<(std::ostream& os, const LegalMessageLine& line) {
+  os << "{text: '" << line.text() << "', links: [";
+  for (const LegalMessageLine::Link& link : line.links()) {
+    os << "{range: (" << link.range.start() << ", " << link.range.end()
+       << "), url: '" << link.url << "'}";
+  }
+  os << "]}";
+  return os;
+}
+
+// Prints out legal message |lines| to |os|.
+std::ostream& operator<<(std::ostream& os, const LegalMessageLines& lines) {
+  os << "[";
+  for (const LegalMessageLine& line : lines) {
+    os << line;
+  }
+  os << "]";
+  return os;
+}
+
 namespace {
 
 using Link = LegalMessageLine::Link;
@@ -251,38 +272,6 @@ const std::vector<TestCase>& TestCaseData() {
   return *cases;
 }
 
-}  // namespace
-
-// Prints out a legal message |line| to |os|.
-std::ostream& operator<<(std::ostream& os, const LegalMessageLine& line) {
-  os << "{text: '" << line.text() << "', links: [";
-  for (const Link& link : line.links()) {
-    os << "{range: (" << link.range.start() << ", " << link.range.end()
-       << "), url: '" << link.url << "'}";
-  }
-
-  os << "]}";
-  return os;
-}
-
-// Prints out legal message |lines| to |os|.
-std::ostream& operator<<(std::ostream& os, const LegalMessageLines& lines) {
-  os << "[";
-  for (const LegalMessageLine& line : lines)
-    os << line;
-
-  os << "]";
-  return os;
-}
-
-// Prints out |test_case| to |os|.
-std::ostream& operator<<(std::ostream& os, const int test_case) {
-  os << "{message_json: '" << TestCaseData()[test_case].message_json
-     << "', expected_lines: " << TestCaseData()[test_case].expected_lines
-     << "}";
-  return os;
-}
-
 class LegalMessageLineTest : public ::testing::TestWithParam<int> {
  public:
   LegalMessageLineTest() = default;
@@ -307,4 +296,5 @@ INSTANTIATE_TEST_SUITE_P(TestCases,
                          LegalMessageLineTest,
                          testing::ValuesIn(TestCaseValues()));
 
+}  // namespace
 }  // namespace autofill

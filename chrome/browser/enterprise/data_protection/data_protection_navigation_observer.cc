@@ -129,7 +129,8 @@ bool IsEnterpriseLookupEnabled(Profile* profile) {
       connectors_service &&
       connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
   return safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
-      profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord());
+      profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
+      profile->IsGuestSession());
 }
 
 bool IsEnterpriseLookupEnabled(content::BrowserContext* context) {
@@ -160,10 +161,6 @@ bool IsScreenshotProtectionEnabled() {
       data_controls::kEnableScreenshotProtection);
 }
 
-bool IsDataProtectionEnabled(Profile* profile) {
-  return IsEnterpriseLookupEnabled(profile) || IsScreenshotProtectionEnabled();
-}
-
 std::string GetIdentifier(content::BrowserContext* browser_context) {
   return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
              browser_context)
@@ -185,6 +182,10 @@ bool IsScreenshotAllowedByDataControls(content::BrowserContext* context,
 }
 
 }  // namespace
+
+bool IsDataProtectionEnabled(Profile* profile) {
+  return IsEnterpriseLookupEnabled(profile) || IsScreenshotProtectionEnabled();
+}
 
 // static
 void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(

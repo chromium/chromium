@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -107,10 +107,6 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
-    if (optimization_guide::features::IsOptimizationHintsEnabled()) {
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
-          ->DoFinalInit();
-    }
     browser_state_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
@@ -133,8 +129,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     optimization_guide::OptimizationMetadata metadata;
     metadata.set_any_metadata(any_metadata);
     OptimizationGuideService* optimization_guide_service =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
     optimization_guide_service->AddHintForTesting(
         GURL(kPriceDropUrl), optimization_guide::proto::PRICE_TRACKING,
         metadata);

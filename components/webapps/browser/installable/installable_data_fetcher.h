@@ -12,7 +12,6 @@
 #include "components/webapps/browser/installable/installable_page_data.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom.h"
-#include "content/public/browser/service_worker_context.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -31,16 +30,12 @@ using FetcherCallback = base::OnceCallback<void(InstallableStatusCode)>;
 class InstallableDataFetcher {
  public:
   InstallableDataFetcher(content::WebContents* web_contents,
-                         content::ServiceWorkerContext* service_worker_context,
                          InstallablePageData& data);
 
   ~InstallableDataFetcher();
 
   void FetchManifest(FetcherCallback finish_callback);
   void FetchWebPageMetadata(FetcherCallback finish_callback);
-  void CheckServiceWorker(FetcherCallback finish_callback,
-                          base::OnceClosure pause_callback,
-                          bool wait_for_worker);
   void CheckAndFetchBestPrimaryIcon(FetcherCallback finish_callback,
                                     bool prefer_maskable,
                                     bool fetch_favicon);
@@ -57,19 +52,11 @@ class InstallableDataFetcher {
       FetcherCallback finish_callback,
       mojom::WebPageMetadataPtr web_page_metadata);
 
-  void OnDidCheckHasServiceWorker(
-      FetcherCallback finish_callback,
-      base::OnceClosure pause_callback,
-      bool wait_for_worker,
-      base::TimeTicks check_service_worker_start_time,
-      content::ServiceWorkerCapability capability);
-
   void OnScreenshotFetched(GURL screenshot_url, const SkBitmap& bitmap);
 
   content::WebContents* web_contents() { return web_contents_.get(); }
 
   base::WeakPtr<content::WebContents> web_contents_;
-  const raw_ptr<content::ServiceWorkerContext> service_worker_context_;
 
   const raw_ref<InstallablePageData> page_data_;
 

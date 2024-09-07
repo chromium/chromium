@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/affiliations/plus_address_affiliation_match_helper.h"
@@ -118,6 +117,15 @@ class PlusAddressService : public KeyedService,
       SuggestionContext suggestion_context,
       autofill::AutofillClient::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type) override;
+  void OnClickedRefreshInlineSuggestion(
+      const url::Origin& last_committed_primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      UpdateSuggestionsCallback update_suggestions_callback) override;
+  void OnShowedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      UpdateSuggestionsCallback update_suggestions_callback) override;
 
   // PlusAddressWebDataService::Observer:
   void OnWebDataChangedBySync(
@@ -137,6 +145,7 @@ class PlusAddressService : public KeyedService,
   // Returns whether plus address creation is supported for the given `origin`.
   // This is true iff:
   // - the plus address filling is enabled,
+  // - the `origin` scheme is https,
   // - `is_off_the_record` is `false`, and
   // - plus address global toggle is on.
   virtual bool IsPlusAddressCreationEnabled(const url::Origin& origin,
@@ -152,11 +161,11 @@ class PlusAddressService : public KeyedService,
 
   // Gets a plus address, if one exists, for the passed-in facet.
   std::optional<PlusAddress> GetPlusAddress(
-      const PlusProfile::facet_t& facet) const;
+      const affiliations::FacetURI& facet) const;
 
   // Same as `GetPlusAddress()`, but returns the entire profile.
   std::optional<PlusProfile> GetPlusProfile(
-      const PlusProfile::facet_t& facet) const;
+      const affiliations::FacetURI& facet) const;
 
   // Returns a list of plus profiles for the `origin` and all affiliated
   // domains.
@@ -200,16 +209,6 @@ class PlusAddressService : public KeyedService,
   bool IsEnabled() const;
 
  private:
-  // Creates and starts a timer to keep `plus_profiles_` and
-  // `plus_addresses_` in sync with a remote plus address server.
-  // This has no effect if this service is not enabled or the timer is already
-  // running.
-  void CreateAndStartTimer();
-
-  // Gets the up-to-date plus address mapping mapping from the remote server
-  // from the PlusAddressHttpClient.
-  void SyncPlusAddressMapping();
-
   // Checks whether `error` is a `HTTP_FORBIDDEN` network error and, if there
   // have been more than `kMaxAllowedForbiddenResponses` such calls without a
   // successful one, disables plus addresses for the session.
@@ -238,15 +237,12 @@ class PlusAddressService : public KeyedService,
   // on `excluded_sites_` set, and scheme is http or https.
   bool IsSupportedOrigin(const url::Origin& origin) const;
 
-  // Updates `plus_profiles_` and `plus_addresses_` using `map`.
-  // TODO(b/322147254): Remove once integration has finished.
-  void UpdatePlusAddressMap(const PlusAddressMap& map);
-
   // Called when PlusAddressService::OnGetAffiliatedPlusProfiles is resolved.
   // Builds a list of suggestions from the list of `affiliated_profiles` and
   // returns it via the `callback`.
   // TODO(crbug.com/340494671): Move to the unnamed namespace.
   void OnGetAffiliatedPlusProfiles(
+      url::Origin origin,
       const autofill::AutofillClient::PasswordFormClassification&
           focused_form_classification,
       const autofill::FormFieldData& focused_field,
@@ -265,11 +261,8 @@ class PlusAddressService : public KeyedService,
 
   metrics::PlusAddressSubmissionLogger submission_logger_;
 
-  // A timer to periodically retrieve all plus addresses from a remote server
-  // to keep this service in sync.
-  base::RepeatingTimer polling_timer_;
-
   // Handles requests to a remote server that this service uses.
+  // TODO(crbug.com/322147254): Move to allocator.
   std::unique_ptr<PlusAddressHttpClient> plus_address_http_client_;
 
   // Responsible for communicating with `PlusAddressTable`.

@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_watch.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
@@ -472,7 +473,7 @@ static CSSPropertyValueSet* UniversalOverlayUserAgentDeclaration() {
   return decl;
 }
 
-// UA rule: ::scroll-marker-group { contain: size !important; }
+// UA rule: ::scroll-marker-group { contain: layout size !important; }
 // The generation of ::scroll-marker pseudo-elements
 // cannot invalidate layout outside of this pseudo-element.
 static CSSPropertyValueSet* ScrollMarkerGroupUserAgentDeclaration() {
@@ -481,9 +482,10 @@ static CSSPropertyValueSet* ScrollMarkerGroupUserAgentDeclaration() {
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
 
   if (decl->IsEmpty()) {
-    decl->SetProperty(CSSPropertyID::kContain,
-                      *CSSIdentifierValue::Create(CSSValueID::kSize),
-                      true /* important */);
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kLayout));
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kSize));
+    decl->SetProperty(CSSPropertyID::kContain, *list, /*important=*/true);
   }
   return decl;
 }
@@ -771,16 +773,15 @@ void StyleResolver::MatchPseudoPartRulesForUAHost(
     const Element& element,
     ElementRuleCollector& collector) {
   const AtomicString& pseudo_id = element.ShadowPseudoId();
-  if (pseudo_id != shadow_element_names::kPseudoInputPlaceholder &&
-      pseudo_id != shadow_element_names::kPseudoFileUploadButton) {
+  if (pseudo_id == g_null_atom) {
     return;
   }
 
-  // We allow ::placeholder pseudo element after ::part(). See
+  // We allow any pseudo element after ::part(). See
   // MatchSlottedRulesForUAHost for a more detailed explanation.
-  DCHECK(element.OwnerShadowHost());
-  MatchPseudoPartRules(*element.OwnerShadowHost(), collector,
-                       /* for_shadow_pseudo */ true);
+  Element* shadow_host = element.OwnerShadowHost();
+  CHECK(shadow_host);
+  MatchPseudoPartRules(*shadow_host, collector, /* for_shadow_pseudo */ true);
 }
 
 void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
@@ -915,8 +916,7 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
     func(default_style_sheets.DefaultForcedColorStyle());
   }
 
-  if (RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled() &&
-      GetDocument().IsJSONDocument()) {
+  if (GetDocument().IsJSONDocument()) {
     func(default_style_sheets.DefaultJSONDocumentStyle());
   }
 
@@ -1482,16 +1482,16 @@ void StyleResolver::ApplyBaseStyleNoCache(
     }
   }
 
-  if (element->IsScrollMarkerGroupPseudoElement()) {
-    cascade.MutableMatchResult().AddMatchedProperties(
-        ScrollMarkerGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
-  }
-
   ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
                                  selector_filter_, cascade.MutableMatchResult(),
                                  state.InsideLink());
 
   if (style_request.IsPseudoStyleRequest()) {
+    if (style_request.pseudo_id == kPseudoIdScrollMarkerGroup) {
+      cascade.MutableMatchResult().AddMatchedProperties(
+          ScrollMarkerGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
+    }
+
     collector.SetPseudoElementStyleRequest(style_request);
     GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(
         style_request.pseudo_id);
@@ -2849,7 +2849,6 @@ void StyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(selector_filter_);
   visitor->Trace(document_);
   visitor->Trace(tracker_);
-  visitor->Trace(formatted_text_element_);
 }
 
 bool StyleResolver::IsForcedColorsModeEnabled() const {
@@ -3190,69 +3189,6 @@ void StyleResolver::PropagateStyleToViewport() {
 #undef PROPAGATE_VALUE
 #undef PROPAGATE_FROM
 
-const ComputedStyle* StyleResolver::StyleForFormattedText(
-    bool is_text_run,
-    const FontDescription& default_font,
-    const CSSPropertyValueSet* css_property_value_set) {
-  return StyleForFormattedText(is_text_run, &default_font,
-                               /*parent_style*/ nullptr,
-                               css_property_value_set);
-}
-
-const ComputedStyle* StyleResolver::StyleForFormattedText(
-    bool is_text_run,
-    const ComputedStyle& parent_style,
-    const CSSPropertyValueSet* css_property_value_set) {
-  return StyleForFormattedText(is_text_run, /*default_font*/ nullptr,
-                               &parent_style, css_property_value_set);
-}
-
-const ComputedStyle* StyleResolver::StyleForFormattedText(
-    bool is_text_run,
-    const FontDescription* default_font,
-    const ComputedStyle* parent_style,
-    const CSSPropertyValueSet* css_property_value_set) {
-  DCHECK_NE(!!parent_style, !!default_font)
-      << "only one of `default_font` or `parent_style` should be specified";
-
-  // Set up our initial style properties based on either the `default_font` or
-  // `parent_style`.
-  ComputedStyleBuilder builder =
-      default_font ? CreateComputedStyleBuilder()
-                   : CreateComputedStyleBuilderInheritingFrom(*parent_style);
-  if (default_font) {
-    builder.SetFontDescription(*default_font);
-  }
-  builder.SetDisplay(is_text_run ? EDisplay::kInline : EDisplay::kBlock);
-
-  if (!css_property_value_set) {
-    return builder.TakeStyle();
-  }
-
-  // Apply any properties in the `css_property_value_set`.
-
-  // Use a dummy/disconnected element when resolving the styles so that we
-  // don't inherit anything from existing elements.
-  StyleResolverState state(
-      GetDocument(), EnsureElementForFormattedText(),
-      nullptr /* StyleRecalcContext */,
-      StyleRequest{parent_style ? parent_style : &InitialStyle()});
-  state.SetStyle(*builder.TakeStyle());
-
-  // Use StyleCascade to apply inheritance in the correct order.
-  STACK_UNINITIALIZED StyleCascade cascade(state);
-  cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
-      GetDocument());
-  cascade.MutableMatchResult().AddMatchedProperties(css_property_value_set,
-                                                    CascadeOrigin::kAuthor,
-                                                    {.is_inline_style = true});
-  cascade.Apply();
-
-  StyleAdjuster::AdjustComputedStyle(state, nullptr);
-
-  return state.TakeStyle();
-}
-
 static Font ComputeInitialLetterFont(const ComputedStyle& style,
                                      const ComputedStyle& paragraph_style) {
   const StyleInitialLetter& initial_letter = style.InitialLetter();
@@ -3311,14 +3247,6 @@ const ComputedStyle* StyleResolver::StyleForInitialLetterText(
   builder.SetLineHeight(Length::Fixed(builder.FontHeight()));
   builder.SetVerticalAlign(EVerticalAlign::kBaseline);
   return builder.TakeStyle();
-}
-
-Element& StyleResolver::EnsureElementForFormattedText() {
-  if (!formatted_text_element_) {
-    formatted_text_element_ =
-        MakeGarbageCollected<Element>(html_names::kSpanTag, &GetDocument());
-  }
-  return *formatted_text_element_;
 }
 
 StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(

@@ -79,7 +79,8 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
 
       geolocationWarningText_: {
         type: String,
-        computed: 'computedGeolocationWarningText(activeTimeZoneDisplayName)',
+        computed: 'computedGeolocationWarningText(activeTimeZoneDisplayName,' +
+            'prefs.ash.user.geolocation_access_level.enforcement)',
       },
 
       shouldShowGeolocationWarningText_: {
@@ -153,8 +154,19 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   }
 
   private computedGeolocationWarningText(): string {
-    return loadTimeData.getStringF(
-        'timeZoneGeolocationWarningText', this.activeTimeZoneDisplayName);
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (this.prefs.ash.user.geolocation_access_level.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return loadTimeData.getStringF(
+          'timeZoneGeolocationManagedWarningText',
+          this.activeTimeZoneDisplayName);
+    } else {
+      return loadTimeData.getStringF(
+          'timeZoneGeolocationWarningText', this.activeTimeZoneDisplayName);
+    }
   }
 
   private computeShouldShowGeolocationWarningText_(): boolean {

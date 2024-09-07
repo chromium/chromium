@@ -20,6 +20,7 @@
 #include "ash/shell.h"
 #include "ash/utility/wm_util.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -62,8 +63,8 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/ash/system_tray_client_impl.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
@@ -252,7 +253,17 @@ void ShowLoginWizardFinish(
     return;
   }
 
+  std::unique_ptr<UserContext> user_context;
   if (ShouldShowSigninScreen(first_screen)) {
+    if (features::IsOobeAddUserDuringEnrollmentEnabled() &&
+        LoginDisplayHost::default_host() &&
+        CHECK_DEREF(LoginDisplayHost::default_host()->GetWizardContext())
+            .user_context) {
+      // Move the user context to the local variable before it's destroyed.
+      user_context = std::move(
+          CHECK_DEREF(LoginDisplayHost::default_host()->GetWizardContext())
+              .user_context);
+    }
     // Shutdown WebUI host to replace with the Mojo one.
     MaybeShutdownLoginDisplayHostWebUI();
   }
@@ -286,6 +297,12 @@ void ShowLoginWizardFinish(
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else {
     display_host = new LoginDisplayHostWebUI();
+  }
+
+  if (features::IsOobeAddUserDuringEnrollmentEnabled() && user_context) {
+    // Restore the user context within the wizard context.
+    CHECK_DEREF(display_host->GetWizardContext()).user_context =
+        std::move(user_context);
   }
 
   // Restore system timezone.

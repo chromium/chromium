@@ -85,7 +85,7 @@ export class ViewerBookmarkElement extends CrLitElement {
     };
   }
 
-  bookmark: Bookmark;
+  bookmark: Bookmark = {title: '', children: []};
   depth: number = 0;
   protected childrenShown_: boolean = false;
 

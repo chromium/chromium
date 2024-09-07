@@ -39,7 +39,7 @@
         (ChromeAccountManagerService*)accountManagerService
                   identityManager:(signin::IdentityManager*)identityManager
                     configuration:(AccountPickerConfiguration*)configuration {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     DCHECK(accountManagerService);
     DCHECK(identityManager);
     _accountManagerService = accountManagerService;

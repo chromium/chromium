@@ -321,8 +321,14 @@ ParsedSessionDescription ParsedSessionDescription::Parse(const String& sdp_type,
 }
 
 void ParsedSessionDescription::DoParse() {
-  description_.reset(webrtc::CreateSessionDescription(
-      type_.Utf8().c_str(), sdp_.Utf8().c_str(), &error_));
+  std::optional<webrtc::SdpType> maybe_type =
+      webrtc::SdpTypeFromString(type_.Utf8().c_str());
+  if (!maybe_type.has_value()) {
+    description_.reset();
+    return;
+  }
+  description_ = webrtc::CreateSessionDescription(*maybe_type,
+                                                  sdp_.Utf8().c_str(), &error_);
 }
 
 // Processes the resulting state changes of a SetLocalDescription() or

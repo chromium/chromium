@@ -227,6 +227,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     return sync_method_ordinals_;
   }
 
+  // If adding a new call to this function, be sure to update the list of
+  // suffixes in histograms.xml
+  static void SetThreadNameSuffixForMetrics(std::string thread_name);
+
  private:
   struct PendingAsyncResponse {
    public:

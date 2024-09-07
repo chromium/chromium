@@ -145,4 +145,11 @@ TEST_F(NetworkTrayViewTest, EthernetVpnIconIsNotClipped) {
   EXPECT_GE(view_size.height(), image_size.height());
 }
 
+TEST_F(NetworkTrayViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  network_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
+}
+
 }  // namespace ash

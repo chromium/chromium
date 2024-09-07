@@ -96,14 +96,14 @@ TEST_F(LoginStateTest, TestSafeModeLoginState) {
 
   // Setting login state to ACTIVE.
   LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
-                                      LoginState::LOGGED_IN_USER_OWNER);
-  EXPECT_EQ(LoginState::LOGGED_IN_USER_OWNER,
+                                      LoginState::LOGGED_IN_USER_REGULAR);
+  EXPECT_EQ(LoginState::LOGGED_IN_USER_REGULAR,
             LoginState::Get()->GetLoggedInUserType());
   EXPECT_TRUE(LoginState::Get()->IsUserLoggedIn());
   EXPECT_FALSE(LoginState::Get()->IsInSafeMode());
 
   EXPECT_EQ(1U, GetNewLoginStateChangesCount());
-  EXPECT_EQ(LoginState::LOGGED_IN_USER_OWNER, logged_in_user_type_);
+  EXPECT_EQ(LoginState::LOGGED_IN_USER_REGULAR, logged_in_user_type_);
 }
 
 TEST_F(LoginStateTest, TestLoggedInStateChangedObserverOnUserTypeChange) {
@@ -118,12 +118,12 @@ TEST_F(LoginStateTest, TestLoggedInStateChangedObserverOnUserTypeChange) {
 
   // Change the user type, without changing the logged in state.
   LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
-                                      LoginState::LOGGED_IN_USER_OWNER);
+                                      LoginState::LOGGED_IN_USER_CHILD);
 
   EXPECT_EQ(1u, GetNewLoginStateChangesCount());
   EXPECT_TRUE(LoginState::Get()->IsUserLoggedIn());
-  EXPECT_EQ(LoginState::LOGGED_IN_USER_OWNER, logged_in_user_type_);
-  EXPECT_EQ(LoginState::LOGGED_IN_USER_OWNER,
+  EXPECT_EQ(LoginState::LOGGED_IN_USER_CHILD, logged_in_user_type_);
+  EXPECT_EQ(LoginState::LOGGED_IN_USER_CHILD,
             LoginState::Get()->GetLoggedInUserType());
 }
 

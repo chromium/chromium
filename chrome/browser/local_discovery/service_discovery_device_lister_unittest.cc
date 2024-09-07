@@ -33,10 +33,33 @@ class ServiceDiscoveryDeviceListerTest : public ::testing::Test {
           this->set_mock_service_watcher(mock_service_watcher.get());
           return mock_service_watcher;
         });
+    ON_CALL(service_discovery_client_, CreateServiceResolver(_, _))
+        .WillByDefault(
+            [this](const std::string& service_name,
+                   ServiceResolver::ResolveCompleteCallback callback) {
+              auto mock_service_resolver =
+                  std::make_unique<MockServiceResolver>(std::move(callback));
+              this->set_mock_service_resolver(mock_service_resolver.get());
+              return mock_service_resolver;
+            });
+
     device_lister_->Start();
   }
 
   void TearDown() override { mock_service_watcher_ = nullptr; }
+
+  void TestDeviceAdded(const std::string& service_name) {
+    EXPECT_CALL(mock_delegate_, OnDeviceChanged(service_type, true, _));
+    mock_service_watcher_->SimulateServiceUpdated(
+        ServiceWatcher::UpdateType::UPDATE_ADDED, service_name);
+
+    ServiceDescription service_description;
+    service_description.service_name = service_name;
+    auto* temp_resolver = mock_service_resolver_.get();
+    mock_service_resolver_ = nullptr;
+    temp_resolver->SimulateResolveComplete(ServiceResolver::STATUS_SUCCESS,
+                                           service_description);
+  }
 
   void TestDeviceRemoved(const std::string& service_name) {
     EXPECT_CALL(mock_delegate_, OnDeviceRemoved(service_type, service_name));
@@ -60,18 +83,23 @@ class ServiceDiscoveryDeviceListerTest : public ::testing::Test {
     mock_service_watcher_ = ptr;
   }
 
+  void set_mock_service_resolver(MockServiceResolver* ptr) {
+    mock_service_resolver_ = ptr;
+  }
+
  private:
   std::unique_ptr<ServiceDiscoveryDeviceLister> device_lister_;
   raw_ptr<MockServiceWatcher> mock_service_watcher_ = nullptr;
+  raw_ptr<MockServiceResolver> mock_service_resolver_ = nullptr;
   MockServiceDiscoveryClient service_discovery_client_;
   MockServiceDiscoveryDeviceListerDelegate mock_delegate_;
 };
 
-// TODO(357705183): Add test cases for adding new devices.
 TEST_F(ServiceDiscoveryDeviceListerTest, OnServicesUpdated) {
   std::string service_name("name");
   TestDeviceRemoved(service_name);
   TestDeviceInvalidated();
   TestPermissionRejected(service_name);
+  TestDeviceAdded(service_name);
 }
 }  // namespace local_discovery

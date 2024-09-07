@@ -72,10 +72,9 @@ TokenResult::~TokenResult() = default;
 
 TokenWebData::TokenWebData(
     scoped_refptr<WebDatabaseService> wdbs,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : WebDataServiceBase(wdbs, std::move(ui_task_runner)),
-      token_backend_(new TokenWebDataBackend(std::move(db_task_runner))) {}
+      token_backend_(new TokenWebDataBackend(wdbs->GetDbSequence())) {}
 
 void TokenWebData::SetTokenForService(
     const std::string& service,
@@ -105,11 +104,5 @@ WebDataServiceBase::Handle TokenWebData::GetAllTokens(
       FROM_HERE, BindOnce(&TokenWebDataBackend::GetAllTokens, token_backend_),
       consumer);
 }
-
-TokenWebData::TokenWebData(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
-    : WebDataServiceBase(nullptr, std::move(ui_task_runner)),
-      token_backend_(new TokenWebDataBackend(std::move(db_task_runner))) {}
 
 TokenWebData::~TokenWebData() {}

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,36 +25,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#endif
-
 namespace viz {
-
-// If enabled, HostGpuMemoryBufferManager will ask the GpuService to create
-// shared memory GMBs rather than doing so itself.
-// TODO(crbug.com/338958218): Remove feature post safe rollout.
-BASE_FEATURE(kCreateSharedMemoryGMBsViaGpuService,
-             "CreateSharedMemoryGMBsViaGpuService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-namespace {
-
-bool WillGetGmbConfigFromGpu() {
-#if BUILDFLAG(IS_OZONE)
-  // Ozone/X11 cannot get buffer formats in the browser process and requires gpu
-  // initialization to be done before it can determine what formats gmb can use.
-  // This limitation comes from the requirement to have GLX bindings
-  // initialized. The buffer formats will be passed through gpu extra info.
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .fetch_buffer_formats_for_gmb_on_gpu;
-#else
-  return false;
-#endif
-}
-
-}  // namespace
 
 HostGpuMemoryBufferManager::PendingBufferInfo::PendingBufferInfo() = default;
 HostGpuMemoryBufferManager::PendingBufferInfo::PendingBufferInfo(
@@ -76,11 +46,6 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
 
   weak_ptr_ = weak_factory_.GetWeakPtr();
 
-  if (!WillGetGmbConfigFromGpu()) {
-    native_configurations_ =
-        gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
-    native_configurations_initialized_.Set();
-  }
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "HostGpuMemoryBufferManager", task_runner_);
 }
@@ -127,69 +92,38 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
     base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
     bool call_sync) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  if (CreateBufferUsesGpuService(format, usage)) {
-    if (auto* gpu_service = GetGpuService()) {
-      PendingBufferInfo buffer_info;
-      buffer_info.size = size;
-      buffer_info.format = format;
-      buffer_info.usage = usage;
-      buffer_info.surface_handle = surface_handle;
-      buffer_info.callback = std::move(callback);
-      pending_buffers_.insert(std::make_pair(id, std::move(buffer_info)));
-      if (call_sync) {
-        gfx::GpuMemoryBufferHandle handle;
-        {
-          mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
-          gpu_service->CreateGpuMemoryBuffer(id, size, format, usage,
-                                             gpu_service_client_id_,
-                                             surface_handle, &handle);
-        }
-        OnGpuMemoryBufferAllocated(gpu_service_version_, id, std::move(handle));
-      } else {
-        gpu_service->CreateGpuMemoryBuffer(
-            id, size, format, usage, gpu_service_client_id_, surface_handle,
-            base::BindOnce(
-                &HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
-                weak_ptr_, gpu_service_version_, id));
-      }
-    } else {
-      // GPU service failed to start. Run the callback with null handle.
-      std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-    }
+
+  auto* gpu_service = GetGpuService();
+  if (!gpu_service) {
+    // GPU service failed to start. Run the callback with null handle.
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
     return;
   }
 
-  gfx::GpuMemoryBufferHandle buffer_handle;
-  // The requests are coming in from untrusted clients. So verify that it is
-  // possible to allocate shared memory buffer first.
-  if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(usage) &&
-      gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(size,
-                                                                 format)) {
-    buffer_handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-        id, size, format, usage);
-    DCHECK_EQ(gfx::SHARED_MEMORY_BUFFER, buffer_handle.type);
-    gpu::AllocatedBufferInfo buffer_info(buffer_handle, size, format);
-    allocated_buffers_.insert(std::make_pair(buffer_handle.id, buffer_info));
-  }
+  PendingBufferInfo buffer_info;
+  buffer_info.size = size;
+  buffer_info.format = format;
+  buffer_info.usage = usage;
+  buffer_info.surface_handle = surface_handle;
+  buffer_info.callback = std::move(callback);
+  pending_buffers_.insert(std::make_pair(id, std::move(buffer_info)));
 
   if (call_sync) {
-    std::move(callback).Run(std::move(buffer_handle));
+    gfx::GpuMemoryBufferHandle handle;
+    {
+      mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
+      gpu_service->CreateGpuMemoryBuffer(id, size, format, usage,
+                                         gpu_service_client_id_, surface_handle,
+                                         &handle);
+    }
+    OnGpuMemoryBufferAllocated(gpu_service_version_, id, std::move(handle));
   } else {
-    task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
-                                                     std::move(buffer_handle)));
+    // Make an async request for the GMB to be created.
+    gpu_service->CreateGpuMemoryBuffer(
+        id, size, format, usage, gpu_service_client_id_, surface_handle,
+        base::BindOnce(&HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
+                       weak_ptr_, gpu_service_version_, id));
   }
-}
-
-bool HostGpuMemoryBufferManager::IsNativeGpuMemoryBufferConfiguration(
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) const {
-  if (WillGetGmbConfigFromGpu()) {
-    DCHECK(native_configurations_initialized_.IsSet())
-        << "On X11 this must have waited for GPU initialization to complete "
-        << "before knowing that GpuMemoryBuffers can be used.";
-  }
-  return native_configurations_.find(gfx::BufferUsageAndFormat(
-             usage, format)) != native_configurations_.end();
 }
 
 std::unique_ptr<gfx::GpuMemoryBuffer>
@@ -253,8 +187,8 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     //    TileManager cancel this wait.
     base::WaitableEvent* waitables[3] = {&completion_event, &shutdown_event_,
                                          cancel_event};
-    size_t index = base::WaitableEvent::WaitMany(
-        base::span(waitables).first(cancel_event ? 3u : 2u));
+    size_t index =
+        base::WaitableEvent::WaitMany(waitables, cancel_event ? 3 : 2);
     if (index > 0) {
       cancelled->data = true;
     }
@@ -334,17 +268,6 @@ bool HostGpuMemoryBufferManager::OnMemoryDump(
   return true;
 }
 
-void HostGpuMemoryBufferManager::SetNativeConfigurations(
-    gpu::GpuMemoryBufferConfigurationSet native_configurations) {
-  if (native_configurations_initialized_.IsSet()) {
-    // The configurations are set on GPU initialization and should not change.
-    DCHECK(native_configurations_ == native_configurations);
-  } else {
-    native_configurations_ = native_configurations;
-    native_configurations_initialized_.Set();
-  }
-}
-
 mojom::GpuService* HostGpuMemoryBufferManager::GetGpuService() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -417,18 +340,6 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
     allocated_buffers_.insert(std::make_pair(id, buffer_info));
   }
   std::move(pending_buffer.callback).Run(std::move(handle));
-}
-
-bool HostGpuMemoryBufferManager::CreateBufferUsesGpuService(
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  if (base::FeatureList::IsEnabled(kCreateSharedMemoryGMBsViaGpuService)) {
-    return true;
-  }
-
-  return gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferType() !=
-             gfx::EMPTY_BUFFER &&
-         IsNativeGpuMemoryBufferConfiguration(format, usage);
 }
 
 }  // namespace viz

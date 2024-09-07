@@ -103,7 +103,6 @@ NSString* HostnameFromGURL(GURL URL) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(syncer::kSyncSessionOnVisibilityChanged);
   if ([self isUsingTabResumption15]) {
     config.features_enabled.push_back(kTabResumption1_5);
   } else {
@@ -352,7 +351,7 @@ NSString* HostnameFromGURL(GURL URL) {
   // Check that the tile is displayed when there is a local tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(true);
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"See More"),
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"See more"),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [[EarlGrey
@@ -377,7 +376,7 @@ NSString* HostnameFromGURL(GURL URL) {
   WaitUntilTabResumptionTileVisibleOrTimeout(true);
   NSError* error = nil;
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"See More"),
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"See more"),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()
                   error:&error];

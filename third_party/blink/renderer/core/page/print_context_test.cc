@@ -133,7 +133,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().body()->setInnerHTML(body_content);
   }
 
-  gfx::Rect PrintSinglePage(SkCanvas& canvas, int page_number = 0) {
+  gfx::Rect PrintSinglePage(SkCanvas& canvas, int page_index = 0) {
     GetDocument().SetPrinting(Document::kBeforePrinting);
     Event* event = MakeGarbageCollected<BeforePrintEvent>();
     GetPrintContext().GetFrame()->DomWindow()->DispatchEvent(*event);
@@ -142,12 +142,12 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kTest);
 
-    gfx::Rect page_rect = GetPrintContext().PageRect(page_number);
+    gfx::Rect page_rect = GetPrintContext().PageRect(page_index);
 
     PaintRecordBuilder builder;
     GraphicsContext& context = builder.Context();
     context.SetPrinting(true);
-    GetDocument().View()->PrintPage(context, page_number, CullRect(page_rect));
+    GetDocument().View()->PrintPage(context, page_index, CullRect(page_rect));
     GetPrintContext().OutputLinkedDestinations(
         context,
         GetDocument().GetLayoutView()->FirstFragment().ContentsProperties(),

@@ -39,8 +39,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -180,11 +180,6 @@ AutocompleteProviderClientImpl::GetKeywordExtensionsDelegate(
   return nullptr;
 }
 
-query_tiles::TileService* AutocompleteProviderClientImpl::GetQueryTileService()
-    const {
-  return nullptr;
-}
-
 OmniboxTriggeredFeatureService*
 AutocompleteProviderClientImpl::GetOmniboxTriggeredFeatureService() const {
   return omnibox_triggered_feature_service_.get();
@@ -242,7 +237,7 @@ AutocompleteProviderClientImpl::GetComponentUpdateService() {
 
 signin::IdentityManager* AutocompleteProviderClientImpl::GetIdentityManager()
     const {
-  return IdentityManagerFactory::GetForBrowserState(browser_state_);
+  return IdentityManagerFactory::GetForProfile(browser_state_);
 }
 
 bool AutocompleteProviderClientImpl::IsOffTheRecord() const {
@@ -268,7 +263,7 @@ bool AutocompleteProviderClientImpl::IsPersonalizedUrlDataCollectionActive()
 
 bool AutocompleteProviderClientImpl::IsAuthenticated() const {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state_);
+      IdentityManagerFactory::GetForProfile(browser_state_);
   signin::ConsentLevel level =
       base::FeatureList::IsEnabled(kIosAutocompleteProviderRequireSync)
           ? signin::ConsentLevel::kSync

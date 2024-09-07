@@ -330,13 +330,13 @@ DOMMatrixReadOnly::DOMMatrixReadOnly(const gfx::Transform& matrix, bool is2d)
 NotShared<DOMFloat32Array> DOMMatrixReadOnly::toFloat32Array() const {
   float array[16];
   matrix_.GetColMajorF(array);
-  return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(array, 16));
+  return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(array));
 }
 
 NotShared<DOMFloat64Array> DOMMatrixReadOnly::toFloat64Array() const {
   double array[16];
   matrix_.GetColMajor(array);
-  return NotShared<DOMFloat64Array>(DOMFloat64Array::Create(array, 16));
+  return NotShared<DOMFloat64Array>(DOMFloat64Array::Create(array));
 }
 
 const String DOMMatrixReadOnly::toString(

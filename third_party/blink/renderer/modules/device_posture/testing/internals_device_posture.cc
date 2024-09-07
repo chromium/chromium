@@ -26,7 +26,7 @@ blink::mojom::DevicePostureType ToMojoDevicePostureType(
 
 }  // namespace
 
-ScriptPromiseUntyped InternalsDevicePosture::setDevicePostureOverride(
+ScriptPromise<IDLUndefined> InternalsDevicePosture::setDevicePostureOverride(
     ScriptState* script_state,
     Internals&,
     V8DevicePostureType posture) {
@@ -39,10 +39,10 @@ ScriptPromiseUntyped InternalsDevicePosture::setDevicePostureOverride(
   device_posture_provider->SetPostureOverride(
       ToMojoDevicePostureType(posture.AsEnum()));
 
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseUntyped InternalsDevicePosture::clearDevicePostureOverride(
+ScriptPromise<IDLUndefined> InternalsDevicePosture::clearDevicePostureOverride(
     ScriptState* script_state,
     Internals&) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
@@ -53,7 +53,7 @@ ScriptPromiseUntyped InternalsDevicePosture::clearDevicePostureOverride(
       device_posture_provider.BindNewPipeAndPassReceiver());
   device_posture_provider->ClearPostureOverride();
 
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 }  // namespace blink

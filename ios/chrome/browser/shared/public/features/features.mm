@@ -9,6 +9,7 @@
 #import "components/country_codes/country_codes.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ui/base/device_form_factor.h"
 
@@ -40,6 +41,10 @@ BASE_FEATURE(kSafetyCheckMagicStack,
              "SafetyCheckMagicStack",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch,
+             "SafetyCheckModuleHiddenIfNoIssuesKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafetyCheckNotifications,
              "SafetyCheckNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -53,6 +58,16 @@ const char kSafetyCheckNotificationsExperimentType[] =
 
 const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
     "SafetyCheckMagicStackAutorunHoursThreshold";
+
+const char kSafetyCheckNotificationsUserInactiveThreshold[] =
+    "SafetyCheckNotificationsUserInactiveThreshold";
+
+const base::TimeDelta InactiveThresholdForSafetyCheckNotifications() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kSafetyCheckNotifications, kSafetyCheckNotificationsUserInactiveThreshold,
+      /*default_value=*/
+      kSafetyCheckNotificationDefaultDelay);
+}
 
 // How many hours between each autorun of the Safety Check in the Magic Stack.
 const base::TimeDelta TimeDelayForSafetyCheckAutorun() {
@@ -177,7 +192,7 @@ BASE_FEATURE(kIOSEditMenuHideSearchWeb,
 
 BASE_FEATURE(kEnableColorLensAndVoiceIconsInHomeScreenWidget,
              "kEnableColorLensAndVoiceIconsInHomeScreenWidget",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              "EnableLensInOmniboxCopiedImage",
@@ -292,20 +307,18 @@ BASE_FEATURE(kBottomOmniboxDefaultSetting,
 BASE_FEATURE(kOnlyAccessClipboardAsync,
              "OnlyAccessClipboardAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDefaultBrowserVideoInSettings,
-             "DefaultBrowserVideoInSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThemeColorInTopToolbar,
              "ThemeColorInTopToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGridAlwaysBounce,
-             "TabGridAlwaysBounce",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
+}
+
+bool ShouldHideSafetyCheckModuleIfNoIssues() {
+  return base::FeatureList::IsEnabled(
+      kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
 }
 
 bool IsSafetyCheckNotificationsEnabled() {
@@ -401,7 +414,7 @@ BASE_FEATURE(kFullscreenImprovement,
 
 BASE_FEATURE(kTabGroupsInGrid,
              "TabGroupsInGrid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupsIPad,
              "TabGroupsIPad",
@@ -422,13 +435,31 @@ bool IsTabGroupSyncEnabled() {
          base::FeatureList::IsEnabled(kTabGroupSync);
 }
 
+BASE_FEATURE(kSharedTabGroups,
+             "SharedTabGroups",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSharedTabGroupsEnabled() {
+  return IsTabGroupSyncEnabled() &&
+         base::FeatureList::IsEnabled(kSharedTabGroups);
+}
+
+BASE_FEATURE(kTabGroupIndicator,
+             "TabGroupIndicator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabGroupIndicatorEnabled() {
+  return IsTabGroupInGridEnabled() &&
+         base::FeatureList::IsEnabled(kTabGroupIndicator);
+}
+
 BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxColorIcons,
              "OmniboxColorIcons",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers,
              "ClearDeviceDataOnSignOutForManagedUsers",
@@ -764,12 +795,23 @@ bool IsTabResumption1_5Enabled() {
 }
 
 const char kTR15SalientImageParam[] = "tr15-salient-image";
+const char kTR15SalientImageThumbnailsOnly[] = "thumbnails-only";
 const char kTR15SeeMoreButtonParam[] = "tr15-see-more-button";
 
 bool IsTabResumption1_5SalientImageEnabled() {
   return IsTabResumption1_5Enabled() &&
-         base::GetFieldTrialParamByFeatureAsBool(kTabResumption1_5,
-                                                 kTR15SalientImageParam, true);
+         base::GetFieldTrialParamByFeatureAsString(
+             kTabResumption1_5, kTR15SalientImageParam, "true") == "true";
+}
+
+bool IsTabResumption1_5ThumbnailsImageEnabled() {
+  return IsTabResumption1_5Enabled() &&
+         (base::GetFieldTrialParamByFeatureAsString(
+              kTabResumption1_5, kTR15SalientImageParam, "true") == "true" ||
+          base::GetFieldTrialParamByFeatureAsString(
+              kTabResumption1_5, kTR15SalientImageParam, "true") ==
+              kTR15SalientImageThumbnailsOnly);
+  ;
 }
 
 bool IsTabResumption1_5SeeMoreEnabled() {
@@ -936,15 +978,20 @@ BASE_FEATURE(kIdentityConfirmationSnackbar,
 
 // Feature parameters for kIdentityConfirmationSnackbar.
 constexpr base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval{
+    kIdentityConfirmationMinDisplayInterval1{
         &kIdentityConfirmationSnackbar,
-        /*name=*/"IdentityConfirmationMinDisplayInterval",
-        /*default_value=*/base::Days(14)};
+        /*name=*/"IdentityConfirmationMinDisplayInterval1",
+        /*default_value=*/base::Days(1)};
 constexpr base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinTimeSinceSignin{
+    kIdentityConfirmationMinDisplayInterval2{
         &kIdentityConfirmationSnackbar,
-        /*name=*/"IdentityConfirmationMinTimeSinceSignin",
-        /*default_value=*/base::Hours(24)};
+        /*name=*/"IdentityConfirmationMinDisplayInterval2",
+        /*default_value=*/base::Days(7)};
+constexpr base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinDisplayInterval3{
+        &kIdentityConfirmationSnackbar,
+        /*name=*/"IdentityConfirmationMinDisplayInterval3",
+        /*default_value=*/base::Days(30)};
 
 BASE_FEATURE(kEnableTraitCollectionRegistration,
              "EnableTraitCollectionRegistration",

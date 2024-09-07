@@ -39,7 +39,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -276,18 +276,17 @@ MATCHER_P2(AddChange, key, data, "") {
   return true;
 }
 
-}  // namespace
-
 class AutofillWalletSyncBridgeTestBase {
  public:
-  AutofillWalletSyncBridgeTestBase() {
-    OSCryptMocker::SetUp();
+  AutofillWalletSyncBridgeTestBase()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
-    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
+    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"),
+             &encryptor_);
     ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
     // Fake that initial sync has been done (so that the bridge immediately
@@ -431,6 +430,7 @@ class AutofillWalletSyncBridgeTestBase {
   autofill::TestAutofillClock test_clock_;
   ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  const os_crypt_async::Encryptor encryptor_;
   NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;
@@ -1590,7 +1590,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SameBankAccountData) {
   BankAccount existing_bank_account =
       test::CreatePixBankAccount(/*instrument_id=*/1234);
   EXPECT_TRUE(table()->SetMaskedBankAccounts({existing_bank_account}));
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   table()->GetMaskedBankAccounts(bank_accounts);
   ASSERT_EQ(1U, bank_accounts.size());
 
@@ -1616,7 +1616,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewBankAccount) {
   BankAccount existing_bank_account =
       test::CreatePixBankAccount(/*instrument_id=*/1234);
   EXPECT_TRUE(table()->SetMaskedBankAccounts({existing_bank_account}));
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   table()->GetMaskedBankAccounts(bank_accounts);
   ASSERT_EQ(1U, bank_accounts.size());
   AutofillWalletSpecifics existing_bank_account_specifics;
@@ -1649,7 +1649,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_UpdatedBankAccount) {
   BankAccount existing_bank_account =
       test::CreatePixBankAccount(/*instrument_id=*/1234);
   EXPECT_TRUE(table()->SetMaskedBankAccounts({existing_bank_account}));
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   table()->GetMaskedBankAccounts(bank_accounts);
   ASSERT_EQ(1U, bank_accounts.size());
 
@@ -1685,7 +1685,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_RemoveBankAccount) {
   BankAccount bank_account_2 =
       test::CreatePixBankAccount(/*instrument_id=*/9999);
   EXPECT_TRUE(table()->SetMaskedBankAccounts({bank_account_1, bank_account_2}));
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   table()->GetMaskedBankAccounts(bank_accounts);
   ASSERT_EQ(2U, bank_accounts.size());
   AutofillWalletSpecifics bank_account_1_specifics;
@@ -1709,7 +1709,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewBankAccount_ExpOff) {
       features::kAutofillEnableSyncingOfPixBankAccounts);
   // Create a bank account on the server.
   BankAccount bank_account = test::CreatePixBankAccount(/*instrument_id=*/1234);
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   AutofillWalletSpecifics bank_account_specifics;
   SetAutofillWalletSpecificsFromBankAccount(bank_account,
                                             &bank_account_specifics);
@@ -1721,4 +1721,5 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewBankAccount_ExpOff) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+}  // namespace
 }  // namespace autofill

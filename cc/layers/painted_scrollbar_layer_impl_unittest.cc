@@ -291,17 +291,6 @@ class PaintedScrollbarLayerImplSolidColorThumbTest : public ::testing::Test {
   std::unique_ptr<LayerTreeImplTestBase> impl_;
 };
 
-class PaintedScrollbarLayerImplFluentOverlayTest
-    : public PaintedScrollbarLayerImplSolidColorThumbTest {
- protected:
-  void SetUp() override {
-    LayerTreeSettings settings;
-    settings.enable_fluent_overlay_scrollbar = true;
-    settings.enable_fluent_scrollbar = true;
-    impl_ = std::make_unique<LayerTreeImplTestBase>(settings);
-  }
-};
-
 TEST_F(PaintedScrollbarLayerImplSolidColorThumbTest, ComputeThumbQuadRect) {
   const PaintedScrollbarLayerImpl* scrollbar_layer_impl_vertical =
       SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical, false,
@@ -346,6 +335,17 @@ TEST_F(PaintedScrollbarLayerImplSolidColorThumbTest,
             gfx::Rect(0, 0, 30, 14));
 }
 
+class PaintedScrollbarLayerImplFluentOverlayTest
+    : public PaintedScrollbarLayerImplSolidColorThumbTest {
+ protected:
+  void SetUp() override {
+    LayerTreeSettings settings;
+    settings.enable_fluent_overlay_scrollbar = true;
+    settings.enable_fluent_scrollbar = true;
+    impl_ = std::make_unique<LayerTreeImplTestBase>(settings);
+  }
+};
+
 // Since the thumb's drawn thickness is smaller than the track's thickness,
 // verify that the computed thickness is the width of the track. This prevents
 // cases where clicking on the margin of the thumb would cause the thumb to not
@@ -372,6 +372,34 @@ TEST_F(PaintedScrollbarLayerImplFluentOverlayTest,
         scrollbar_layer_impl->ComputeHitTestableExpandedThumbQuadRect();
     EXPECT_EQ(scrollbar_layer_impl->bounds().height(), thumb.height());
   }
+}
+
+// Test that when no ThumbColor is set with Fluent Scrollbars enabled,
+// AppendThumbQuads makes an early return and doesn't append any quads.
+TEST_F(PaintedScrollbarLayerImplFluentOverlayTest,
+       NoThumbColorDoesntAppendQuads) {
+  PaintedScrollbarLayerImpl* scrollbar_layer_impl =
+      impl_->AddLayerInActiveTree<PaintedScrollbarLayerImpl>(
+          ScrollbarOrientation::kVertical,
+          /*is_left_side_vertical_scrollbar=*/false, /*is_overlay=*/true);
+  // Set all the correct dimensions required for quads to be appended.
+  const gfx::Rect track_rect(0, 0, 14, 100);
+  scrollbar_layer_impl->SetTrackRect(track_rect);
+  scrollbar_layer_impl->SetThumbThickness(/*thumb_thickness=*/6);
+  scrollbar_layer_impl->SetThumbLength(/*thumb_length=*/30);
+  scrollbar_layer_impl->SetBounds(track_rect.size());
+
+  // Ensure that no track quad will be appended by setting the thickness to
+  // the minimum.
+  scrollbar_layer_impl->SetThumbThickness(
+      scrollbar_layer_impl->GetIdleThicknessScale());
+
+  // AppendThumbQuads should return early after checking that there is no
+  // `thumb_color_` and Fluent scrollbars are enabled.
+  // AppendTrackQuads should return early when the Fluent overlay code decides
+  // it shouldn't append a track quad.
+  impl_->AppendQuads(scrollbar_layer_impl);
+  EXPECT_TRUE(impl_->quad_list().empty());
 }
 
 }  // namespace

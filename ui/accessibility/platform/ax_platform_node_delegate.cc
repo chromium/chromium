@@ -19,7 +19,7 @@ namespace ui {
 
 AXPlatformNodeDelegate::AXPlatformNodeDelegate() : node_(nullptr) {}
 
-AXPlatformNodeDelegate::AXPlatformNodeDelegate(ui::AXNode* node) : node_(node) {
+AXPlatformNodeDelegate::AXPlatformNodeDelegate(AXNode* node) : node_(node) {
   DCHECK(node);
   DCHECK(node->IsDataValid());
 }
@@ -29,7 +29,7 @@ void AXPlatformNodeDelegate::SetNode(AXNode& node) {
   node_ = &node;
 }
 
-ui::AXNodeID AXPlatformNodeDelegate::GetId() const {
+AXNodeID AXPlatformNodeDelegate::GetId() const {
   if (node_)
     return node_->id();
   return kInvalidAXNodeID;
@@ -86,6 +86,55 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
     if (!child || !child->GetDelegate())
       continue;
     text_content += child->GetDelegate()->GetTextContentUTF16();
+  }
+  return text_content;
+}
+
+// https://crbug.com/40889544 - to be removed once we gather some info on
+// the reason for the macOS exception being thrown.
+std::u16string AXPlatformNodeDelegate::GetTextContentUTF16WithInvisibles()
+    const {
+  if (node_) {
+    return node_->GetTextContentUTF16();
+  }
+
+  // Unlike in web content the "kValue" attribute always takes precedence,
+  // because we assume that users of the base impl, such as Views controls,
+  // are carefully crafted by hand, in contrast to HTML pages, where any content
+  // that might be present in the shadow DOM (AKA in the internal accessibility
+  // tree) is actually used by the renderer when assigning the "kValue"
+  // attribute, including any redundant white space.
+  std::u16string value =
+      GetString16Attribute(ax::mojom::StringAttribute::kValue);
+  if (!value.empty()) {
+    return value;
+  }
+
+  // The name of a leaf node in Views is displayed inside the View, i.e.
+  // `GetNameFrom` == `ax::mojom::NameFrom::kContents`, except in text fields,
+  // where the name attribute is the field's label and the value attribute is
+  // the field's text contents. For maximum compatibility with the Web code, we
+  // compute the text of a non-leaf text field from the text contents of its
+  // children, even though we currently know of no such text field in Views.
+  //
+  // TODO(crbug.com/40662009): The check for `IsInvisibleOrIgnored()`
+  // should not be needed. `ChildAtIndex()` and `GetChildCount()` are already
+  // supposed to skip over nodes that are invisible or ignored, but
+  // `ViewAXPlatformNodeDelegate` does not currently implement this behavior.
+  //  if (IsLeaf() && !GetData().IsTextField() && !IsInvisibleOrIgnored()) {
+  //    return GetString16Attribute(ax::mojom::StringAttribute::kName);
+  //  }
+
+  std::u16string text_content;
+  for (size_t i = 0; i < GetChildCount(); ++i) {
+    // TODO(nektar): Add const to all tree traversal methods and remove
+    // const_cast.
+    const AXPlatformNode* child = AXPlatformNode::FromNativeViewAccessible(
+        const_cast<AXPlatformNodeDelegate*>(this)->ChildAtIndex(i));
+    if (!child || !child->GetDelegate()) {
+      continue;
+    }
+    text_content += child->GetDelegate()->GetTextContentUTF16WithInvisibles();
   }
   return text_content;
 }
@@ -414,7 +463,7 @@ bool AXPlatformNodeDelegate::SetHypertextSelection(int start_offset,
 
 TextAttributeMap AXPlatformNodeDelegate::ComputeTextAttributeMap(
     const TextAttributeList& default_attributes) const {
-  ui::TextAttributeMap attributes_map;
+  TextAttributeMap attributes_map;
   attributes_map[0] = default_attributes;
   return attributes_map;
 }
@@ -490,7 +539,7 @@ AXPlatformNode* AXPlatformNodeDelegate::GetFromNodeID(int32_t id) {
 }
 
 AXPlatformNode* AXPlatformNodeDelegate::GetFromTreeIDAndNodeID(
-    const ui::AXTreeID& ax_tree_id,
+    const AXTreeID& ax_tree_id,
     int32_t id) {
   return nullptr;
 }
@@ -522,9 +571,9 @@ std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
   // sorted by the id and we will lose the original order which may be of
   // interest to ATs. The number of ids should be small.
 
-  std::vector<ui::AXPlatformNode*> nodes;
+  std::vector<AXPlatformNode*> nodes;
   for (int32_t target_id : target_ids) {
-    ui::AXPlatformNode* target = GetFromNodeID(target_id);
+    AXPlatformNode* target = GetFromNodeID(target_id);
     if (IsValidRelationTarget(target) && !base::Contains(nodes, target)) {
       nodes.push_back(target);
     }
@@ -550,13 +599,12 @@ AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
   return std::vector<AXPlatformNode*>();
 }
 
-std::vector<ui::AXPlatformNode*>
-AXPlatformNodeDelegate::GetNodesFromRelationIdSet(
+std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetNodesFromRelationIdSet(
     const std::set<AXNodeID>& ids) {
-  std::vector<ui::AXPlatformNode*> nodes;
+  std::vector<AXPlatformNode*> nodes;
 
   for (AXNodeID node_id : ids) {
-    ui::AXPlatformNode* node = GetFromNodeID(node_id);
+    AXPlatformNode* node = GetFromNodeID(node_id);
     if (IsValidRelationTarget(node)) {
       nodes.push_back(node);
     }
@@ -594,7 +642,7 @@ AXPlatformNodeId AXPlatformNodeDelegate::GetUniqueId() const {
 
 AXPlatformNodeDelegate* AXPlatformNodeDelegate::GetParentDelegate() const {
   AXPlatformNode* parent_node =
-      ui::AXPlatformNode::FromNativeViewAccessible(GetParent());
+      AXPlatformNode::FromNativeViewAccessible(GetParent());
   if (parent_node)
     return parent_node->GetDelegate();
   return nullptr;
@@ -1134,7 +1182,7 @@ std::optional<int32_t> AXPlatformNodeDelegate::GetCellIdAriaCoords(
 std::optional<int32_t> AXPlatformNodeDelegate::CellIndexToId(
     int cell_index) const {
   if (node_) {
-    ui::AXNode* cell = node()->GetTableCellFromIndex(cell_index);
+    AXNode* cell = node()->GetTableCellFromIndex(cell_index);
     if (!cell)
       return std::nullopt;
     return cell->id();
@@ -1197,7 +1245,7 @@ AXPlatformNodeDelegate::GetTargetForNativeAccessibilityEvent() {
 }
 
 bool AXPlatformNodeDelegate::AccessibilityPerformAction(
-    const ui::AXActionData& data) {
+    const AXActionData& data) {
   return false;
 }
 
@@ -1273,8 +1321,8 @@ bool AXPlatformNodeDelegate::IsUIANodeSelected() const {
 
 const std::vector<gfx::NativeViewAccessible>
 AXPlatformNodeDelegate::GetUIADirectChildrenInRange(
-    ui::AXPlatformNodeDelegate* start,
-    ui::AXPlatformNodeDelegate* end) {
+    AXPlatformNodeDelegate* start,
+    AXPlatformNodeDelegate* end) {
   return {};
 }
 

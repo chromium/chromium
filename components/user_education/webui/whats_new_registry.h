@@ -49,19 +49,33 @@ class WhatsNewModule {
   WhatsNewModule(const base::Feature& feature,
                  std::string owner,
                  std::optional<BrowserCommand> browser_command = std::nullopt)
-      : feature_(&feature), owner_(owner), browser_command_(browser_command) {}
+      : feature_(&feature),
+        metric_name_(""),
+        owner_(owner),
+        browser_command_(browser_command) {}
 
   // Creates a default-enabled WhatsNewModule in order to enable
   // a browser command on the embedded page.
   //
   // Default-enabled modules do not reference a base::Feature, but must
-  // include an owner string and a browser command.
-  WhatsNewModule(std::string owner,
+  // include a metric string, an owner string and a browser command.
+  WhatsNewModule(std::string metric_name,
+                 std::string owner,
                  std::optional<BrowserCommand> browser_command)
-      : feature_(nullptr), owner_(owner), browser_command_(browser_command) {}
+      : feature_(nullptr),
+        metric_name_(metric_name),
+        owner_(owner),
+        browser_command_(browser_command) {}
 
   std::optional<BrowserCommand> browser_command() const {
     return browser_command_;
+  }
+
+  std::string metric_name() const {
+    if (HasFeature()) {
+      return GetFeatureName();
+    }
+    return metric_name_;
   }
 
   // Return true if the module has a feature, i.e. is not default-enabled.
@@ -83,6 +97,7 @@ class WhatsNewModule {
 
  private:
   raw_ptr<const base::Feature> feature_ = nullptr;
+  std::string metric_name_;
   std::string owner_;
   std::optional<BrowserCommand> browser_command_;
 };
@@ -95,9 +110,18 @@ class WhatsNewModule {
 // with the same name as the base::Feature for your edition.
 class WhatsNewEdition {
  public:
-  WhatsNewEdition(const base::Feature& feature, std::string owner)
-      : feature_(feature), owner_(owner) {}
-  ~WhatsNewEdition() = default;
+  WhatsNewEdition(const base::Feature& feature,
+                  std::string owner,
+                  std::vector<BrowserCommand> browser_commands = {});
+  WhatsNewEdition(WhatsNewEdition&&);
+  WhatsNewEdition& operator=(WhatsNewEdition&&);
+  ~WhatsNewEdition();
+
+  std::vector<BrowserCommand> browser_commands() const {
+    return browser_commands_;
+  }
+
+  std::string metric_name() const { return GetFeatureName(); }
 
   // Return true if the feature is enabled, but not by default.
   // This indicates a feature is in the process of rolling out.
@@ -112,6 +136,7 @@ class WhatsNewEdition {
  private:
   raw_ref<const base::Feature> feature_;
   std::string owner_;
+  std::vector<BrowserCommand> browser_commands_;
 };
 
 // Stores module and edition data used to display the What's New page,

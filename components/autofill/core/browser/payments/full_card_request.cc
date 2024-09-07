@@ -314,6 +314,7 @@ void FullCardRequest::OnDidGetRealPan(
 
   switch (result) {
     // Wait for user retry.
+    case PaymentsRpcResult::kClientSideTimeout:
     case PaymentsRpcResult::kTryAgainFailure: {
       autofill_metrics::LogCvcAuthRetryableError(
           request_->card.record_type(),

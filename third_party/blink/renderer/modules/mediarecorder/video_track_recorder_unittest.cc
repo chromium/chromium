@@ -278,7 +278,8 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
         scheduler::GetSingleThreadTaskRunnerForTesting(), codec_profile,
         WebMediaStreamTrack(component_.Get()),
         mock_callback_interface_->GetWeakCell(),
-        /*bits_per_second=*/1000000, keyframe_config);
+        /*bits_per_second=*/1000000, keyframe_config,
+        /*frame_buffer_pool_limit=*/10);
   }
 
   void Encode(scoped_refptr<media::VideoFrame> frame,
@@ -800,7 +801,6 @@ TEST_P(VideoTrackRecorderTestParam, EncoderHonorsKeyFrameRequests) {
 TEST_P(VideoTrackRecorderTestParam,
        NoSubsequenceKeyFramesWithDefaultKeyFrameConfig) {
   InitializeRecorder(testing::get<0>(GetParam()));
-  auto frame = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
 
   auto origin = base::TimeTicks::Now();
   InSequence s;
@@ -810,6 +810,7 @@ TEST_P(VideoTrackRecorderTestParam,
       .Times(8);
   EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _, _, false))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
+  auto frame = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
   for (int i = 0; i != 10; ++i) {
     Encode(frame, origin + i * base::Minutes(1));
   }
@@ -819,7 +820,6 @@ TEST_P(VideoTrackRecorderTestParam,
 TEST_P(VideoTrackRecorderTestParam, KeyFramesGeneratedWithIntervalCount) {
   // Configure 3 delta frames for every key frame.
   InitializeRecorder(testing::get<0>(GetParam()), /*keyframe_config=*/3u);
-  auto frame = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
 
   auto origin = base::TimeTicks::Now();
   InSequence s;
@@ -832,6 +832,7 @@ TEST_P(VideoTrackRecorderTestParam, KeyFramesGeneratedWithIntervalCount) {
       .Times(2);
   EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _, _, false))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
+  auto frame = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
   for (int i = 0; i != 8; ++i) {
     Encode(frame, origin);
   }
@@ -842,8 +843,6 @@ TEST_P(VideoTrackRecorderTestParam, KeyFramesGeneratedWithIntervalDuration) {
   // Configure 1 key frame every 2 secs.
   InitializeRecorder(testing::get<0>(GetParam()),
                      /*keyframe_config=*/base::Seconds(2));
-  auto frame = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
-
   InSequence s;
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _, _, true));
@@ -853,6 +852,7 @@ TEST_P(VideoTrackRecorderTestParam, KeyFramesGeneratedWithIntervalDuration) {
   EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _, _, true))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   auto origin = base::TimeTicks();
+  auto frame = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
   Encode(frame, origin);                             // Key frame emitted.
   Encode(frame, origin + base::Milliseconds(1000));  //
   Encode(frame, origin + base::Milliseconds(2100));  // Key frame emitted.

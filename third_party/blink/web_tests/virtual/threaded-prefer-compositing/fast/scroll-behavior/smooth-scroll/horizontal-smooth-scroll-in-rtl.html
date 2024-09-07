@@ -1,37 +1,27 @@
 <!DOCTYPE HTML>
 <script src="../../../../../resources/testharness.js"></script>
 <script src="../../../../../resources/testharnessreport.js"></script>
-<script src="../scroll-animation.js"></script>
+<script src='../../../../../resources/gesture-util.js'></script>
 <title>The first programmatic smooth scroll runs on compositor</title>
 <style>
 
 html {
-    writing-mode: vertical-rl;
-    width: 1000px;
+  writing-mode: vertical-rl;
+  width: 1000px;
 }
 
 </style>
 <script>
+promise_test(async () => {
+  await waitForCompositorCommit();
+  await keyboardScroll("ArrowLeft", document);
+  assert_equals(window.scrollX, -KEYBOARD_SCROLL_PIXELS);
 
-function inputDrivenScroll() {
-  return new Promise((resolve, reject) => {
-    eventSender.keyDown("ArrowLeft");
-    resolve();
-  });
-}
-
-promise_test(t => {
-  return inputDrivenScroll()
-  .then(waitForWindowScrollEnd.bind(this, -40, ''))
-  .then(() => {
-    assert_equals(scrollX, -40);
-    scrollBy({left: 40, behavior: "smooth"});})
-  .then(waitForWindowScrollEnd.bind(this, 0, ''))
-  .then(() => {
-    assert_equals(scrollX, 0);
-  });
+  // Scrolling right to return to the start position.
+  await waitForWindowScrollBy({
+    left: KEYBOARD_SCROLL_PIXELS, behavior: "smooth" });
+  assert_equals(window.scrollX, 0);
 }, "This test verifies that both input-driven and programmatic " +
     "smooth scrolls serviced by the compositor thread go to the correct " +
     "scroll position on RTL pages with horizontal overflow.");
-
 </script>

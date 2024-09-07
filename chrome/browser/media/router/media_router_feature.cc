@@ -54,7 +54,11 @@ BASE_FEATURE(kDialMediaRouteProvider,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDelayMediaSinkDiscovery,
              "DelayMediaSinkDiscovery",
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kShowCastPermissionRejectedError,
              "ShowCastPermissionRejectedError",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -68,12 +72,6 @@ BASE_FEATURE(kFallbackToAudioTabMirroring,
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-BASE_FEATURE(kCastMirroringPlayoutDelay,
-             "CastMirroringPlayoutDelay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kCastMirroringPlayoutDelayMs{
-    &kCastMirroringPlayoutDelay, "cast_mirroring_playout_delay_ms", 200};
 
 // TODO(b/202294946): Remove when enabled by default after a few milestones.
 BASE_FEATURE(kGlobalMediaControlsCastStartStop,
@@ -155,6 +153,8 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kMediaRouterCastAllowAllIPs, false,
                                 PrefRegistry::PUBLIC);
+  registry->RegisterBooleanPref(prefs::kSuppressLocalDiscoveryPermissionError,
+                                false);
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -207,8 +207,8 @@ bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
 std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay() {
   std::optional<base::TimeDelta> target_playout_delay;
 
-  // First see if there is a command line switch for mirroring playout delay.
-  // Otherwise, check the relevant feature.
+  // The default playout delay can be overridden with the command line flag
+  // `cast-mirroring-target-playout-delay`.
   const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   if (cl->HasSwitch(switches::kCastMirroringTargetPlayoutDelay)) {
     int switch_playout_delay = 0;
@@ -218,13 +218,6 @@ std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay() {
         IsValidMirroringPlayoutDelayMs(switch_playout_delay)) {
       target_playout_delay = base::Milliseconds(switch_playout_delay);
     }
-  }
-
-  if (!target_playout_delay.has_value() &&
-      base::FeatureList::IsEnabled(kCastMirroringPlayoutDelay) &&
-      IsValidMirroringPlayoutDelayMs(kCastMirroringPlayoutDelayMs.Get())) {
-    target_playout_delay =
-        base::Milliseconds(kCastMirroringPlayoutDelayMs.Get());
   }
 
   return target_playout_delay;

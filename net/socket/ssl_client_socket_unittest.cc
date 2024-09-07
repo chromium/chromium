@@ -6187,6 +6187,40 @@ TEST_F(SSLClientSocketTest, ServerName) {
   EXPECT_EQ(got_server_name, std::nullopt);
 }
 
+TEST_F(SSLClientSocketTest, PostQuantumKeyExchange) {
+  for (bool server_mlkem : {false, true}) {
+    SCOPED_TRACE(server_mlkem);
+
+    SSLServerConfig server_config;
+    server_config.curves_for_testing.push_back(
+        server_mlkem ? NID_X25519MLKEM768 : NID_X25519Kyber768Draft00);
+    ASSERT_TRUE(
+        StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+    for (bool client_mlkem : {false, true}) {
+      SCOPED_TRACE(client_mlkem);
+
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitWithFeatureState(features::kUseMLKEM, client_mlkem);
+
+      for (bool enabled : {false, true}) {
+        SCOPED_TRACE(enabled);
+
+        SSLContextConfig config;
+        config.post_quantum_override = enabled;
+        ssl_config_service_->UpdateSSLConfigAndNotify(config);
+        int rv;
+        ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+        if (enabled && server_mlkem == client_mlkem) {
+          EXPECT_THAT(rv, IsOk());
+        } else {
+          EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+        }
+      }
+    }
+  }
+}
+
 class SSLClientSocketAlpsTest
     : public SSLClientSocketTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {

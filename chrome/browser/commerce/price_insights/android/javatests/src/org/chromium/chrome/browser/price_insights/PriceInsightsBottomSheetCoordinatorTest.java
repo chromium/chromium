@@ -179,6 +179,7 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
                         .getDefaultColor(),
                 priceTrackingButton.getBackgroundTintList().getDefaultColor());
         assertEquals(PRICE_HISTORY_TITLE, priceHistoryTitleView.getText());
+        assertEquals(View.VISIBLE, openUrlButton.getVisibility());
         assertEquals(OPEN_URL_TITLE, openUrlButton.getText());
         assertNotNull(openUrlButtonDrawable);
     }

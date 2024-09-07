@@ -34,6 +34,7 @@
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_factory.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
+#include "chrome/browser/net/default_dns_over_https_config_source.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
@@ -625,6 +626,12 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       base::BindRepeating(
           &SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled,
           base::Unretained(this)));
+
+  if (base::FeatureList::IsEnabled(features::kCertVerificationNetworkTime)) {
+    cert_verifier_time_updater_ =
+        std::make_unique<CertVerifierServiceTimeUpdater>(
+            g_browser_process->network_time_tracker());
+  }
 }
 
 SystemNetworkContextManager::~SystemNetworkContextManager() {
@@ -634,6 +641,7 @@ SystemNetworkContextManager::~SystemNetworkContextManager() {
 // static
 void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   StubResolverConfigReader::RegisterPrefs(registry);
+  DefaultDnsOverHttpsConfigSource::RegisterPrefs(registry);
 
   // Static auth params
   registry->RegisterStringPref(prefs::kAuthSchemes,

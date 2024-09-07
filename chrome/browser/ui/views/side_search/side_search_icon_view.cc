@@ -51,10 +51,8 @@ SideSearchIconView::SideSearchIconView(
   SetUpForInOutAnimation();
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   browser_->tab_strip_model()->AddObserver(this);
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
 }
 
 SideSearchIconView::~SideSearchIconView() {

@@ -30,10 +30,13 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
@@ -51,7 +54,8 @@ import java.util.Map;
 
 /** Shows the permissions and other settings for a particular website. */
 public class SingleWebsiteSettings extends BaseSiteSettingsFragment
-        implements Preference.OnPreferenceChangeListener,
+        implements SettingsPage,
+                Preference.OnPreferenceChangeListener,
                 Preference.OnPreferenceClickListener,
                 CustomDividerFragment {
     /** Interface for a class that wants to receive updates from SingleWebsiteSettings. */
@@ -147,6 +151,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 return "camera_permission_list";
             case ContentSettingsType.GEOLOCATION:
                 return "location_access_list";
+            case ContentSettingsType.HAND_TRACKING:
+                return "hand_tracking_permission_list";
             case ContentSettingsType.MEDIASTREAM_MIC:
                 return "microphone_permission_list";
             case ContentSettingsType.MIDI_SYSEX:
@@ -212,6 +218,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     // Maximum value used for the order of the permissions
     private int mMaxPermissionOrder;
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     private class SingleWebsitePermissionsPopulator
             implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
@@ -291,9 +299,14 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getActivity().setTitle(getContext().getString(R.string.prefs_site_settings));
+        mPageTitle.set(getContext().getString(R.string.prefs_site_settings));
         init();
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override
@@ -1028,6 +1041,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         } else if (showWarningFor(SiteSettingsCategory.Type.NFC)) {
             return SiteSettingsCategory.createFromType(
                     browserContextHandle, SiteSettingsCategory.Type.NFC);
+        } else if (showWarningFor(SiteSettingsCategory.Type.HAND_TRACKING)) {
+            return SiteSettingsCategory.createFromType(
+                    browserContextHandle, SiteSettingsCategory.Type.HAND_TRACKING);
         } else if (showWarningFor(SiteSettingsCategory.Type.AUGMENTED_REALITY)) {
             return SiteSettingsCategory.createFromType(
                     browserContextHandle, SiteSettingsCategory.Type.AUGMENTED_REALITY);

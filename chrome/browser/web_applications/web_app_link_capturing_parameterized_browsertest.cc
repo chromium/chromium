@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,13 +40,13 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -66,11 +67,14 @@ constexpr char kDestinationPageScopeA[] =
     "/banners/link_capturing/scope_a/destination.html";
 constexpr char kDestinationPageScopeB[] =
     "/banners/link_capturing/scope_b/destination.html";
+constexpr char kDestinationPageScopeX[] =
+    "/banners/link_capturing/scope_x/destination.html";
 constexpr char kLinkCaptureTestInputPath[] =
     "chrome/test/data/web_apps/link_capture_test_input.json";
 
 constexpr char kValueScopeA2A[] = "A_TO_A";
 constexpr char kValueScopeA2B[] = "A_TO_B";
+constexpr char kValueScopeA2X[] = "A_TO_X";
 constexpr char kValueLink[] = "LINK";
 constexpr char kValueButton[] = "BTN";
 constexpr char kValueServiceWorkerButton[] = "BTN_SW";
@@ -80,6 +84,21 @@ constexpr char kValueTargetSelf[] = "SELF";
 constexpr char kValueTargetFrame[] = "FRAME";
 constexpr char kValueTargetBlank[] = "BLANK";
 constexpr char kValueTargetNoFrame[] = "NO_FRAME";
+
+// Whether Link capturing is turned on:
+enum class LinkCapturing {
+  kEnabled,
+  kDisabled,
+};
+
+std::string_view ToParamString(LinkCapturing capturing) {
+  switch (capturing) {
+    case LinkCapturing::kEnabled:
+      return "CaptureOn";
+    case LinkCapturing::kDisabled:
+      return "CaptureOff";
+  }
+}
 
 // The starting point for the test:
 enum class StartingPoint {
@@ -96,10 +115,14 @@ std::string_view ToParamString(StartingPoint start) {
   }
 }
 
-// Whether to navigate within the same scope or outside it:
+// Destinations:
+// ScopeA2A: Navigation to an installed app, within same scope.
+// ScopeA2B: Navigation to an installed app, but different scope.
+// ScopeA2X: Navigation to non-installed app (different scope).
 enum class Destination {
   kScopeA2A,
   kScopeA2B,
+  kScopeA2X,
 };
 
 std::string ToIdString(Destination scope) {
@@ -108,6 +131,8 @@ std::string ToIdString(Destination scope) {
       return kValueScopeA2A;
     case Destination::kScopeA2B:
       return kValueScopeA2B;
+    case Destination::kScopeA2X:
+      return kValueScopeA2X;
   }
 }
 
@@ -117,6 +142,8 @@ std::string_view ToParamString(Destination scope) {
       return "ScopeA2A";
     case Destination::kScopeA2B:
       return "ScopeA2B";
+    case Destination::kScopeA2X:
+      return "ScopeA2X";
   }
 }
 
@@ -124,6 +151,7 @@ enum class RedirectType {
   kNone,
   kServerSideViaA,
   kServerSideViaB,
+  kServerSideViaX,
 };
 
 std::string ToIdString(RedirectType redirect, Destination final_destination) {
@@ -134,6 +162,8 @@ std::string ToIdString(RedirectType redirect, Destination final_destination) {
       return kValueScopeA2A;
     case RedirectType::kServerSideViaB:
       return kValueScopeA2B;
+    case RedirectType::kServerSideViaX:
+      return kValueScopeA2X;
   }
 }
 
@@ -145,6 +175,8 @@ std::string_view ToParamString(RedirectType redirect) {
       return "ServerSideViaA";
     case RedirectType::kServerSideViaB:
       return "ServerSideViaB";
+    case RedirectType::kServerSideViaX:
+      return "ServerSideViaX";
   }
 }
 
@@ -269,6 +301,7 @@ std::string_view ToParamString(NavigationTarget target) {
 // be used to construct the values.
 using LinkCaptureTestParam =
     std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
+               LinkCapturing,
                StartingPoint,
                Destination,
                RedirectType,
@@ -445,7 +478,7 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 
 }  // namespace
 
-// This test verifies the link capture logic by testing by launching sites
+// This test verifies the navigation capture logic by testing by launching sites
 // inside app containers and tabs and test what happens when links are
 // left/middle clicked and window.open is used (whether browser objects are
 // reused and what type gets launched).
@@ -479,7 +512,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     std::map<std::string, std::string> parameters;
     parameters["link_capturing_state"] = "reimpl_default_on";
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDesktopPWAsLinkCapturing, parameters);
+        features::kPwaNavigationCapturing, parameters);
     InitializeTestExpectations();
   }
 
@@ -630,6 +663,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
     ASSERT_TRUE(base::WriteFile(json_file_path_, *json_string));
   }
 
+  LinkCapturing GetLinkCapturing() const {
+    return std::get<LinkCapturing>(GetParam());
+  }
+
   blink::mojom::ManifestLaunchHandler_ClientMode GetClientMode() const {
     return std::get<blink::mojom::ManifestLaunchHandler_ClientMode>(GetParam());
   }
@@ -654,6 +691,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
         return embedded_test_server()->GetURL(kDestinationPageScopeA);
       case Destination::kScopeA2B:
         return embedded_test_server()->GetURL(kDestinationPageScopeB);
+      case Destination::kScopeA2X:
+        return embedded_test_server()->GetURL(kDestinationPageScopeX);
     }
   }
 
@@ -669,6 +708,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
         return embedded_test_server()->GetURL(kDestinationPageScopeA);
       case RedirectType::kServerSideViaB:
         return embedded_test_server()->GetURL(kDestinationPageScopeB);
+      case RedirectType::kServerSideViaX:
+        return embedded_test_server()->GetURL(kDestinationPageScopeX);
     }
   }
 
@@ -835,8 +876,14 @@ class WebAppLinkCapturingParameterizedBrowserTest
   std::optional<base::Value> test_expectations_;
 };
 
+// TODO(crbug.com/359600606): Enable on CrOS if needed.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CheckLinkCaptureCombinations DISABLED_CheckLinkCaptureCombinations
+#else
+#define MAYBE_CheckLinkCaptureCombinations CheckLinkCaptureCombinations
+#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
-                       CheckLinkCaptureCombinations) {
+                       MAYBE_CheckLinkCaptureCombinations) {
   testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
 
   const base::Value::Dict& test_case = GetTestCaseDataFromParam();
@@ -847,11 +894,18 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
            "Add the switch '--run-all-tests' to run disabled tests too.";
   }
 
-  // Install all apps.
+  // Install apps for scope A and B (note: scope X is deliberately excluded).
   const webapps::AppId app_a =
       InstallTestWebApp(embedded_test_server()->GetURL(kStartPageScopeA));
   const webapps::AppId app_b =
       InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeB));
+
+  if (GetLinkCapturing() == LinkCapturing::kDisabled) {
+    ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_a),
+              base::ok());
+    ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_b),
+              base::ok());
+  }
 
   std::string element_id = GetElementId();
 
@@ -921,19 +975,25 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
 
 // Pro-tip: To run only one combination from the below list, supply this...
 // WebAppLinkCapturingParameterizedBrowserTest.CheckLinkCaptureCombinations/foo
-// Where foo can be: AppWnd_ScopeA2A_ViaLink_LeftClick_WithOpener_TargetSelf
+// Where foo can be:
+// CaptureOn_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetSelf
 // See ParamToString above for possible values.
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
+                        LinkCapturing::kDisabled  // LinkCapturing turned off.
+                        ),
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
             ),
-        testing::Values(Destination::kScopeA2A,   // Navigate in-scope A.
-                        Destination::kScopeA2B),  // Navigate A -> B.
+        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
+                        Destination::kScopeA2B,  // Navigate A -> B.
+                        Destination::kScopeA2X   // A -> X (X is not installed).
+                        ),
         testing::Values(RedirectType::kNone),
         testing::Values(
             NavigationElement::kElementLink,   // Navigate via element.
@@ -960,6 +1020,9 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
+                        LinkCapturing::kDisabled  // LinkCapturing turned off.
+                        ),
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
@@ -977,9 +1040,12 @@ INSTANTIATE_TEST_SUITE_P(
     Capturable,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
-        // TODO: Add kNavigateExisting.
         testing::Values(
-            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting),
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
+        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
+                        LinkCapturing::kDisabled  // LinkCapturing turned off.
+                        ),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
         testing::Values(Destination::kScopeA2A,  // Navigate A -> A.
                         Destination::kScopeA2B   // Navigate A -> B.
@@ -988,7 +1054,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementLink,
                         NavigationElement::kElementButton),
-        // TODO: Add shift and middle click cases.
         testing::Values(ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
@@ -998,10 +1063,16 @@ INSTANTIATE_TEST_SUITE_P(
 // no longer exist in code but still exist in the expectations json file.
 // Additionally if this test is run with the --rebaseline-link-capturing-test
 // flag any left-over expectations will be cleaned up.
+// TODO(crbug.com/359600606): Enable on CrOS if needed.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CleanupExpectations DISABLED_CleanupExpectations
+#else
+#define MAYBE_CleanupExpectations CleanupExpectations
+#endif  // BUILDFLAG(IS_CHROMEOS)
 using WebAppLinkCapturingParameterizedExpectationTest =
     WebAppLinkCapturingParameterizedBrowserTest;
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedExpectationTest,
-                       CleanupExpectations) {
+                       MAYBE_CleanupExpectations) {
   std::set<std::string> test_cases;
   const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
   for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {

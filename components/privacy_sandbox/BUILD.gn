@@ -39,6 +39,22 @@ source_set("privacy_sandbox_notice_constants") {
   public_deps = [ "//base" ]
 }
 
+source_set("privacy_sandbox_survey_service") {
+  sources = [
+    "privacy_sandbox_survey_service.cc",
+    "privacy_sandbox_survey_service.h",
+  ]
+
+  deps = [
+    ":features",
+    ":privacy_sandbox_prefs",
+    "//components/keyed_service/core:core",
+    "//components/prefs",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("tracking_protection_onboarding") {
   sources = [
     "tracking_protection_onboarding.cc",
@@ -163,6 +179,7 @@ if (use_blink) {
 
     deps = [
       ":privacy_sandbox_prefs",
+      ":privacy_sandbox_survey_service",
       ":tracking_protection_settings",
       "//components/browsing_topics/common:common",
       "//components/content_settings/core/browser",
@@ -219,6 +236,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "privacy_sandbox_notice_storage_unittest.cc",
+    "privacy_sandbox_survey_service_unittest.cc",
     "tracking_protection_onboarding_unittest.cc",
   ]
 
@@ -229,6 +247,7 @@ source_set("unit_tests") {
     ":privacy_sandbox_notice_constants",
     ":privacy_sandbox_notice_storage",
     ":privacy_sandbox_prefs",
+    ":privacy_sandbox_survey_service",
     ":tracking_protection_onboarding",
     ":tracking_protection_prefs",
     ":tracking_protection_settings",

@@ -4,6 +4,7 @@
 
 #include "device/vr/android/xr_renderer.h"
 
+#include "base/check_op.h"
 #include "device/vr/vr_gl_util.h"
 
 namespace device {
@@ -34,7 +35,7 @@ static constexpr char const* kVertexShader = SHADER(
   }
 );
 
-static constexpr char const* kFragmentShader = OEIE_SHADER(
+static constexpr char const* kFragmentShaderExternal = OEIE_SHADER(
   precision highp float;
   uniform samplerExternalOES u_Texture;
   varying vec2 v_TexCoordinate;
@@ -43,37 +44,59 @@ static constexpr char const* kFragmentShader = OEIE_SHADER(
     gl_FragColor = texture2D(u_Texture, v_TexCoordinate);
   }
 );
+
+static constexpr char const* kFragmentShader2D = OEIE_SHADER(
+  precision highp float;
+  uniform sampler2D u_Texture;
+  varying vec2 v_TexCoordinate;
+
+  void main() {
+    gl_FragColor = texture2D(u_Texture, v_TexCoordinate);
+  }
+);
+
 // clang-format on
 
 }  // namespace
 
-XrRenderer::XrRenderer() {
+XrRenderer::Program XrRenderer::CreateProgram(const std::string& vertex,
+                                              const std::string& fragment) {
   std::string error;
   GLuint vertex_shader_handle =
-      vr::CompileShader(GL_VERTEX_SHADER, kVertexShader, error);
+      vr::CompileShader(GL_VERTEX_SHADER, vertex, error);
   // TODO(crbug.com/41403313): fail gracefully if shaders don't compile.
-  CHECK(vertex_shader_handle) << error << "\nvertex_src\n" << kVertexShader;
+  CHECK(vertex_shader_handle) << error << "\nvertex_src\n" << vertex;
 
   GLuint fragment_shader_handle =
-      vr::CompileShader(GL_FRAGMENT_SHADER, kFragmentShader, error);
-  CHECK(fragment_shader_handle) << error << "\nfragment_src\n"
-                                << kFragmentShader;
+      vr::CompileShader(GL_FRAGMENT_SHADER, fragment, error);
+  CHECK(fragment_shader_handle) << error << "\nfragment_src\n" << fragment;
 
-  program_handle_ = vr::CreateAndLinkProgram(vertex_shader_handle,
-                                             fragment_shader_handle, error);
-  CHECK(program_handle_) << error;
+  Program result;
+  result.program_handle_ = vr::CreateAndLinkProgram(
+      vertex_shader_handle, fragment_shader_handle, error);
+  CHECK(result.program_handle_) << error;
 
   // Once the program is linked the shader objects are no longer needed
   glDeleteShader(vertex_shader_handle);
   glDeleteShader(fragment_shader_handle);
 
-  position_handle_ = glGetAttribLocation(program_handle_, "a_Position");
-  clip_rect_handle_ = glGetUniformLocation(program_handle_, "u_ClipRect");
-  texture_handle_ = glGetUniformLocation(program_handle_, "u_Texture");
-  uv_transform_ = glGetUniformLocation(program_handle_, "u_UvTransform");
+  result.position_handle_ =
+      glGetAttribLocation(result.program_handle_, "a_Position");
+  result.texture_handle_ =
+      glGetUniformLocation(result.program_handle_, "u_Texture");
+  result.uv_transform_ =
+      glGetUniformLocation(result.program_handle_, "u_UvTransform");
+
+  return result;
 }
 
-void XrRenderer::Draw(int texture_handle, const float (&uv_transform)[16]) {
+XrRenderer::XrRenderer() {
+  program_external_ = CreateProgram(kVertexShader, kFragmentShaderExternal);
+  program_2d_ = CreateProgram(kVertexShader, kFragmentShader2D);
+}
+
+void XrRenderer::Draw(const LocalTexture& texture,
+                      const float (&uv_transform)[16]) {
   if (!vertex_buffer_ || !index_buffer_) {
     GLuint buffers[2];
     glGenBuffersARB(2, buffers);
@@ -90,33 +113,41 @@ void XrRenderer::Draw(int texture_handle, const float (&uv_transform)[16]) {
                  GL_STATIC_DRAW);
   }
 
-  glUseProgram(program_handle_);
+  CHECK(texture.target == GL_TEXTURE_EXTERNAL_OES ||
+        texture.target == GL_TEXTURE_2D);
+
+  const Program& program = texture.target == GL_TEXTURE_EXTERNAL_OES
+                               ? program_external_
+                               : program_2d_;
+
+  glUseProgram(program.program_handle_);
 
   // Bind vertex attributes
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
 
   // Set up position attribute.
-  glVertexAttribPointer(position_handle_, 2, GL_FLOAT, false, 0, 0);
-  glEnableVertexAttribArray(position_handle_);
+  glVertexAttribPointer(program.position_handle_, 2, GL_FLOAT, false, 0,
+                        nullptr);
+  glEnableVertexAttribArray(program.position_handle_);
 
   // Bind texture. This is not necessarily a 1:1 pixel copy since the
   // size is modified by framebufferScaleFactor and requestViewportScale,
   // so use GL_LINEAR.
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_handle);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glUniform1i(texture_handle_, 0);
+  glBindTexture(texture.target, texture.id);
+  glTexParameteri(texture.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(texture.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(texture.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(texture.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glUniform1i(program.texture_handle_, 0);
 
-  glUniformMatrix4fv(uv_transform_, 1, GL_FALSE, &uv_transform[0]);
+  glUniformMatrix4fv(program.uv_transform_, 1, GL_FALSE, &uv_transform[0]);
 
   // Blit texture to buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
   glDrawElements(GL_TRIANGLES, std::size(kQuadIndices), GL_UNSIGNED_SHORT, 0);
 
-  glDisableVertexAttribArray(position_handle_);
+  glDisableVertexAttribArray(program.position_handle_);
 }
 
 // Note that we don't explicitly delete gl objects here, they're deleted

@@ -49,6 +49,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
@@ -214,10 +216,6 @@ bool ExtensionCanAssertRpId(const extensions::Extension& extension,
   // will be prefixed with the extension scheme to isolate it from web origins.
   if (extension.id() == rp_id) {
     return true;
-  }
-  if (!base::FeatureList::IsEnabled(
-          device::kAllowExtensionsToSetWebAuthnRpIds)) {
-    return false;
   }
 
   // Extensions may not claim eTLDs as RP IDs, even if WebAuthn does not
@@ -667,6 +665,7 @@ void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  bool is_passkey_deleted = false;
   for (auto passkey :
        passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
     if (std::vector<uint8_t>(passkey.user_id().begin(),
@@ -675,6 +674,14 @@ void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
                         std::vector<uint8_t>(passkey.credential_id().begin(),
                                              passkey.credential_id().end()))) {
       passkey_store->DeletePasskey(passkey.credential_id(), FROM_HERE);
+      is_passkey_deleted = true;
+    }
+  }
+  if (is_passkey_deleted) {
+    PasswordsClientUIDelegate* manage_passwords_ui_controller =
+        PasswordsClientUIDelegateFromWebContents(web_contents);
+    if (manage_passwords_ui_controller) {
+      manage_passwords_ui_controller->OnPasskeyNotAccepted();
     }
   }
 }
@@ -994,11 +1001,10 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
     RequestSource request_source,
     device::FidoRequestType request_type,
     device::AuthenticatorType authenticator_type) {
-#if BUILDFLAG(IS_MAC)
   if (request_source != RequestSource::kWebAuthentication) {
     return;
   }
-
+#if BUILDFLAG(IS_MAC)
   if (authenticator_type == device::AuthenticatorType::kTouchID) {
     Profile::FromBrowserContext(GetBrowserContext())
         ->GetPrefs()
@@ -1006,6 +1012,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
             kWebAuthnTouchIdLastUsed,
             base::UnlocalizedTimeFormatWithPattern(
                 base::Time::Now(), "yyyy-MM-dd", icu::TimeZone::getGMT()));
+    webauthn::user_actions::RecordChromeProfileSuccess();
   }
   if (authenticator_type == device::AuthenticatorType::kICloudKeychain) {
     webauthn::user_actions::RecordICloudSuccess();
@@ -1013,7 +1020,14 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
 
   dialog_controller_->RecordMacOsSuccessHistogram(request_type,
                                                   authenticator_type);
-#endif
+#elif BUILDFLAG(IS_WIN)
+  if (authenticator_type == device::AuthenticatorType::kWinNative) {
+    webauthn::user_actions::RecordWindowsHelloSuccess();
+  }
+#endif  // BUILDFLAG(IS_MAC)
+  if (authenticator_type == device::AuthenticatorType::kEnclave) {
+    webauthn::user_actions::RecordGpmSuccess();
+  }
 }
 
 void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
@@ -1131,7 +1145,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
           FIDO_LOG(EVENT)
               << "Creation in GPM not offered (same primary account)";
         } else {
-          dialog_model_->account_name = std::move(account_info.email);
           enclave_controller_ = std::make_unique<GPMEnclaveController>(
               GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
               user_verification_requirement,

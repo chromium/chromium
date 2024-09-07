@@ -14,39 +14,6 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<ui::mojom::DialogButton, ui::DialogButton> {
-  static ui::mojom::DialogButton ToMojom(ui::DialogButton modal_type) {
-    switch (modal_type) {
-      case ui::DIALOG_BUTTON_NONE:
-        return ui::mojom::DialogButton::NONE;
-      case ui::DIALOG_BUTTON_OK:
-        return ui::mojom::DialogButton::OK;
-      case ui::DIALOG_BUTTON_CANCEL:
-        return ui::mojom::DialogButton::CANCEL;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  static bool FromMojom(ui::mojom::DialogButton modal_type,
-                        ui::DialogButton* out) {
-    switch (modal_type) {
-      case ui::mojom::DialogButton::NONE:
-        *out = ui::DIALOG_BUTTON_NONE;
-        return true;
-      case ui::mojom::DialogButton::OK:
-        *out = ui::DIALOG_BUTTON_OK;
-        return true;
-      case ui::mojom::DialogButton::CANCEL:
-        *out = ui::DIALOG_BUTTON_CANCEL;
-        return true;
-      default:
-        NOTREACHED();
-    }
-  }
-};
-
-template <>
 struct EnumTraits<ui::mojom::MenuSourceType, ui::MenuSourceType> {
   static ui::mojom::MenuSourceType ToMojom(ui::MenuSourceType modal_type) {
     switch (modal_type) {

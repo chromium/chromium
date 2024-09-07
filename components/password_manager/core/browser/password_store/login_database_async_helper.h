@@ -55,7 +55,8 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>,
                                    bool)> remote_form_changes_received,
       base::RepeatingClosure sync_enabled_or_disabled_cb,
-      base::RepeatingClosure on_undecryptable_passwords_removed,
+      base::RepeatingCallback<void(password_manager::IsAccountStore)>
+          on_undecryptable_passwords_removed,
       std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Synchronous implementation of PasswordStoreBackend interface.

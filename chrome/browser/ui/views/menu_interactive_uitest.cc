@@ -135,18 +135,18 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
       ui::kAXModeComplete);
 #endif
   // Create a parent widget.
-  Widget* widget = new views::Widget;
-  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+  auto widget = std::make_unique<views::Widget>();
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_WINDOW);
   params.bounds = {0, 0, 200, 200};
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
   params.native_widget = CreateNativeWidget(
-      NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA, &params, widget);
+      NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA, &params, widget.get());
 #endif
   widget->Init(std::move(params));
   widget->Show();
   widget->Activate();
-  views::test::WaitForWidgetActive(widget, true);
+  views::test::WaitForWidgetActive(widget.get(), true);
 
   // Create a focused test button, used to assert that it has accessibility
   // focus before and after menu item is active, but not during.
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 0);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuEnd), 0);
-  SetupMenu(widget);
+  SetupMenu(widget.get());
 
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuStart), 1);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart), 1);
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)  // ChromeOS does not use popup focus override.
   EXPECT_FALSE(first_item_->GetViewAccessibility().IsFocusedForTesting());
 #endif
-  menu_runner_->RunMenuAt(widget, nullptr, gfx::Rect(),
+  menu_runner_->RunMenuAt(widget.get(), nullptr, gfx::Rect(),
                           views::MenuAnchorPosition::kTopLeft,
                           ui::MENU_SOURCE_NONE);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuStart), 2);

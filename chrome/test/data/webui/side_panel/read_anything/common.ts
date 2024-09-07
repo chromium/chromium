@@ -16,8 +16,14 @@ export function mockMetrics(): TestMetricsBrowserProxy {
   return metrics;
 }
 
+// TODO(crbug.com/40927698): Remove this function.
 export function emitEvent(app: AppElement, name: string, options?: any): void {
-  app.$.toolbar.dispatchEvent(new CustomEvent(name, options));
+  emitEventWithTarget(app.$.toolbar, name, options);
+}
+
+export function emitEventWithTarget(
+    target: HTMLElement, name: string, options?: any): void {
+  target.dispatchEvent(new CustomEvent(name, options));
   flush();
 }
 

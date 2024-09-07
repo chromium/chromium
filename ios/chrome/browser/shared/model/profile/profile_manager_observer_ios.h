@@ -5,44 +5,36 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_
 
-#include "base/observer_list_types.h"
+#import "base/observer_list_types.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class ProfileManagerIOS;
 
-// TODO(crbug.com/358356195): Remove this forward declaration and typedef when
-// no usage of ChromeBrowserStateManagerObserver remains.
-class ProfileManagerObserverIOS;
-using ChromeBrowserStateManagerObserver = ProfileManagerObserverIOS;
-
-// An observer that can be registered with a ChromeBrowserStateManager.
+// An observer that can be registered with a ProfileManagerIOS.
 class ProfileManagerObserverIOS : public base::CheckedObserver {
  public:
-  // Called when the ProfileManagerIOS is destroyed. The observer
-  // must unregister itself. This is called as part of the shutdown of the
+  // Called when the ProfileManagerIOS is destroyed. The observer must
+  // unregister itself. This is called as part of the shutdown of the
   // application.
-  virtual void OnChromeBrowserStateManagerDestroyed(
-      ProfileManagerIOS* manager) = 0;
+  virtual void OnProfileManagerDestroyed(ProfileManagerIOS* manager) = 0;
 
-  // Called when a ChromeBrowserState is created, before the initialisation is
-  // complete. In most case `OnBrowserStateAdded(...)` is a better event to
-  // listen to. Will only be called for non-incognito ChromeBrowserState.
+  // Called when a Profile is created, before the initialisation is complete. In
+  // most case `OnProfileLoaded(...)` is a better event to listen to. Will only
+  // be called for non-incognito Profiles.
   //
-  // Invoked automatically for all ChromeBrowserState already created when
-  // an observer is registered with ChromeBrowserStateManager.
-  virtual void OnChromeBrowserStateCreated(
-      ProfileManagerIOS* manager,
-      ChromeBrowserState* browser_state) = 0;
+  // Invoked automatically for all Profiles already created when an observer is
+  // registered with the ProfileManagerIOS.
+  virtual void OnProfileCreated(ProfileManagerIOS* manager,
+                                ProfileIOS* profile) = 0;
 
-  // Called when a ChromeBrowserState has been fully loaded and initialised and
-  // is available through the ProfileManagerIOS. Will only be called for
-  // non-incognito ChromeBrowserState.
+  // Called when a Profile has been fully loaded and initialised and is
+  // available through the ProfileManagerIOS. Will only be called for
+  // non-incognito Profiles.
   //
-  // Invoked automatically for all ChromeBrowserState already loaded when
-  // an observer is registered with ChromeBrowserStateManager.
-  virtual void OnChromeBrowserStateLoaded(
-      ProfileManagerIOS* manager,
-      ChromeBrowserState* browser_state) = 0;
+  // Invoked automatically for all Profiles already loaded when an observer is
+  // registered with the ProfileManagerIOS.
+  virtual void OnProfileLoaded(ProfileManagerIOS* manager,
+                               ProfileIOS* profile) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_

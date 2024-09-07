@@ -203,9 +203,7 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, EncryptedCookies) {
   context->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
 
   net::CookieList cookies = GetCookies(cookie_manager.get());
-  ASSERT_EQ(1u, cookies.size());
-  EXPECT_EQ(kCookieName, cookies[0].Name());
-  EXPECT_EQ("", cookies[0].Value());
+  ASSERT_TRUE(cookies.empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(

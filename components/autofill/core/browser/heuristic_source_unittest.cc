@@ -81,7 +81,7 @@ INSTANTIATE_TEST_SUITE_P(
             .model_predictions_feature = true,
             .pattern_provider_feature = "legacy",
             .expected_active_source = HeuristicSource::kMachineLearning,
-            .expected_nonactive_sources = {HeuristicSource::kLegacy}},
+            .expected_nonactive_sources = {}},
 
         HeuristicSourceParams {
           .model_predictions_feature = false,

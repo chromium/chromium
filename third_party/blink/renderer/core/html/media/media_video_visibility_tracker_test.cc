@@ -91,7 +91,7 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
     return video_element;
   }
 
-  MediaVideoVisibilityTracker* CreateTracker(float visibility_threshold) {
+  MediaVideoVisibilityTracker* CreateTracker(const int visibility_threshold) {
     DCHECK(!tracker_);
     tracker_ = MakeGarbageCollected<MediaVideoVisibilityTracker>(
         *VideoElement(), visibility_threshold, ReportVisibilityCb().Get());
@@ -99,7 +99,7 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
   }
 
   MediaVideoVisibilityTracker* CreateAndAttachVideoVisibilityTracker(
-      float visibility_threshold) {
+      const int visibility_threshold) {
     CreateTracker(visibility_threshold);
     tracker_->Attach();
     return tracker_;
@@ -158,23 +158,19 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
 };
 
 #if DCHECK_IS_ON()
-TEST_F(MediaVideoVisibilityTrackerTest, InvalidThresholdEqualToZero) {
+TEST_F(MediaVideoVisibilityTrackerTest, InvalidThreshold) {
   auto* video = GetDocument().CreateRawElement(html_names::kVideoTag);
   GetDocument().body()->AppendChild(video);
-  EXPECT_DEATH_IF_SUPPORTED(CreateAndAttachVideoVisibilityTracker(0.0), "");
-}
-
-TEST_F(MediaVideoVisibilityTrackerTest, InvalidThresholdGreaterThanOne) {
-  auto* video = GetDocument().CreateRawElement(html_names::kVideoTag);
-  GetDocument().body()->AppendChild(video);
-  EXPECT_DEATH_IF_SUPPORTED(CreateAndAttachVideoVisibilityTracker(1.1), "");
+  EXPECT_DEATH_IF_SUPPORTED(CreateAndAttachVideoVisibilityTracker(0), "");
 }
 #endif  // DCHECK_IS_ON()
 
-TEST_F(MediaVideoVisibilityTrackerTest, NoOcclusion) {
+TEST_F(MediaVideoVisibilityTrackerTest,
+       NoOcclusionDoesNotMeetVisibilityThreshold) {
   LoadMainResource(R"HTML(
     <style>
       video {
+        object-fit: fill;
         width: 50px;
         height: 50px;
       }
@@ -183,8 +179,32 @@ TEST_F(MediaVideoVisibilityTrackerTest, NoOcclusion) {
   )HTML");
   EXPECT_FALSE(VideoElement()->ShouldShowControls());
 
+  EXPECT_CALL(ReportVisibilityCb(), Run(false));
+  CreateAndAttachVideoVisibilityTracker(10000);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  task_environment().FastForwardUntilNoTasksRemain();
+
+  EXPECT_FALSE(IntersectionRect().IsEmpty());
+  EXPECT_TRUE(OccludingRects().empty());
+}
+
+TEST_F(MediaVideoVisibilityTrackerTest, NoOcclusionMeetsVisibilityThreshold) {
+  LoadMainResource(R"HTML(
+    <style>
+      video {
+        object-fit: fill;
+        width: 150px;
+        height: 150px;
+      }
+    </style>
+    <video></video>
+  )HTML");
+  EXPECT_FALSE(VideoElement()->ShouldShowControls());
+
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -199,8 +219,9 @@ TEST_F(MediaVideoVisibilityTrackerTest, VideoControlsAreIgnored) {
   LoadMainResource(R"HTML(
     <style>
       video {
-        width: 50px;
-        height: 50px;
+        object-fit: fill;
+        width: 150px;
+        height: 150px;
       }
     </style>
     <video controls></video>
@@ -208,7 +229,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, VideoControlsAreIgnored) {
   EXPECT_TRUE(VideoElement()->ShouldShowControls());
 
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -219,12 +240,13 @@ TEST_F(MediaVideoVisibilityTrackerTest, VideoControlsAreIgnored) {
 }
 
 TEST_F(MediaVideoVisibilityTrackerTest, NoViewPortIntersection) {
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(10, 10));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 500));
   LoadMainResource(R"HTML(
     <style>
       video {
-        width: 50px;
-        height: 50px;
+        object-fit: fill;
+        width: 150px;
+        height: 150px;
       }
       .spacer {
         height: 500px;
@@ -242,7 +264,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, NoViewPortIntersection) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
 
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -252,7 +274,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, NoViewPortIntersection) {
   EXPECT_FALSE(OccludingRects().empty());
 
   VectorOf<SkIRect> expected_occludning_rect{
-      SkIRect::MakeXYWH(8, -492, 50, 50)};
+      SkIRect::MakeXYWH(8, -158, 150, 150)};
   EXPECT_EQ(expected_occludning_rect, OccludingRects());
 }
 
@@ -265,6 +287,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -284,7 +307,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -305,6 +328,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, SingleElementOccludingAboveThreshold) {
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -313,8 +337,8 @@ TEST_F(MediaVideoVisibilityTrackerTest, SingleElementOccludingAboveThreshold) {
       }
       div {
         background-color: blue;
-        width: 400px;
-        height: 400px;
+        width: 490px;
+        height: 490px;
         position: absolute;
         top: 0;
         left: 0;
@@ -324,7 +348,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, SingleElementOccludingAboveThreshold) {
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
-  CreateAndAttachVideoVisibilityTracker(0.80);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -334,7 +358,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, SingleElementOccludingAboveThreshold) {
   EXPECT_FALSE(OccludingRects().empty());
 
   VectorOf<SkIRect> expected_occludning_rects{
-      SkIRect::MakeXYWH(0, 0, 400, 400)};
+      SkIRect::MakeXYWH(0, 0, 490, 490)};
   EXPECT_EQ(expected_occludning_rects, OccludingRects());
 }
 
@@ -347,6 +371,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -372,8 +397,8 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div class="occluding_div_1"></div>
     <div class="occluding_div_2"></div>
   )HTML");
-  const float visibility_threshold = 0.5;
-  EXPECT_CALL(ReportVisibilityCb(), Run(false));
+  const int visibility_threshold = 125000;
+  EXPECT_CALL(ReportVisibilityCb(), Run(true));
   CreateAndAttachVideoVisibilityTracker(visibility_threshold);
 
   Compositor().BeginFrame();
@@ -388,7 +413,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_THAT(expected_occludning_rects,
               UnorderedElementsAreArray(OccludingRects()));
   EXPECT_EQ(visibility_threshold,
-            OccludedArea() / ComputeArea(IntersectionRect()));
+            ComputeArea(IntersectionRect()) - OccludedArea());
 }
 
 TEST_F(MediaVideoVisibilityTrackerTest,
@@ -400,6 +425,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -407,15 +433,15 @@ TEST_F(MediaVideoVisibilityTrackerTest,
       .occluding_div_1 {
         background-color: blue;
         width: 250px;
-        height: 250px;
+        height: 500px;
         position: absolute;
         top: 0;
         left: 0;
       }
       .occluding_div_2 {
         background-color: red;
-        width: 270px;
-        height: 270px;
+        width: 250px;
+        height: 490px;
         position: absolute;
         top: 0;
         right: 0;
@@ -426,7 +452,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div class="occluding_div_2"></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -436,7 +462,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(OccludingRects().empty());
 
   VectorOf<SkIRect> expected_occludning_rects{
-      SkIRect::MakeXYWH(230, 0, 270, 270), SkIRect::MakeXYWH(0, 0, 250, 250)};
+      SkIRect::MakeXYWH(250, 0, 250, 490), SkIRect::MakeXYWH(0, 0, 250, 500)};
   EXPECT_THAT(expected_occludning_rects,
               UnorderedElementsAreArray(OccludingRects()));
 }
@@ -449,6 +475,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementWithZeroOpacityIsIgnored) {
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -457,8 +484,8 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementWithZeroOpacityIsIgnored) {
       }
       div {
         background-color: blue;
-        width: 400px;
-        height: 400px;
+        width: 500px;
+        height: 500px;
         position: absolute;
         top: 0;
         left: 0;
@@ -472,7 +499,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementWithZeroOpacityIsIgnored) {
   // opacity greater than zero and occludes an area greater than what's allowed
   // by the threshold.
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
-  CreateAndAttachVideoVisibilityTracker(0.80);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -481,7 +508,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementWithZeroOpacityIsIgnored) {
   EXPECT_FALSE(IntersectionRect().IsEmpty());
   EXPECT_FALSE(OccludingRects().empty());
 
-  EXPECT_EQ(VectorOf<SkIRect>{SkIRect::MakeXYWH(0, 0, 400, 400)},
+  EXPECT_EQ(VectorOf<SkIRect>{SkIRect::MakeXYWH(0, 0, 500, 500)},
             OccludingRects());
 
   // Now set opacity to zero and verify that the video is considered visible.
@@ -506,6 +533,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementsBehindVideoAreIgnored) {
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -513,15 +541,15 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementsBehindVideoAreIgnored) {
       .occluding_div_1 {
         background-color: blue;
         width: 250px;
-        height: 250px;
+        height: 500px;
         position: absolute;
         top: 0;
         left: 0;
       }
       .occluding_div_2 {
         background-color: red;
-        width: 270px;
-        height: 270px;
+        width: 250px;
+        height: 500px;
         position: absolute;
         top: 0;
         right: 0;
@@ -532,7 +560,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ElementsBehindVideoAreIgnored) {
     <video></video>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -551,6 +579,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -577,7 +606,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div class="occluding_div_2"></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -602,6 +631,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 500px;
       height: 500px;
@@ -646,7 +676,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   <div class="occluding_div_4"></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.80);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -668,6 +698,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 100%;
         height: 100%;
@@ -675,17 +706,17 @@ TEST_F(MediaVideoVisibilityTrackerTest,
       .occluding_div_1 {
         background-color: blue;
         width: 100%;
-        height: 125px;
+        height: 10px;
         position: absolute;
-        top: 0;
+        top: 485px;
         left: 0;
       }
       .occluding_div_2 {
         background-color: red;
         width: 100%;
-        height: 130px;
+        height: 360px;
         position: absolute;
-        top: 125;
+        top: 125px;
         left: 0;
       }
       .occluding_div_3 {
@@ -693,7 +724,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         width: 100%;
         height: 125px;
         position: absolute;
-        top: 255px;
+        top: 0;
         left: 0;
       }
     </style>
@@ -703,7 +734,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div class="occluding_div_3"></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -713,7 +744,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(OccludingRects().empty());
 
   VectorOf<SkIRect> expected_occludning_rects{
-      SkIRect::MakeXYWH(0, 255, 500, 125), SkIRect::MakeXYWH(0, 125, 500, 130)};
+      SkIRect::MakeXYWH(0, 0, 500, 125), SkIRect::MakeXYWH(0, 125, 500, 360)};
   EXPECT_THAT(expected_occludning_rects,
               UnorderedElementsAreArray(OccludingRects()));
 }
@@ -727,14 +758,15 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         height: 2000px;
       }
       video {
-        width: 50px;
-        height: 50px;
+        object-fit: fill;
+        width: 100px;
+        height: 100px;
       }
     </style>
     <video></video>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -764,8 +796,9 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         height: 2000px;
       }
       video {
-        width: 50px;
-        height: 50px;
+        object-fit: fill;
+        width: 100px;
+        height: 100px;
         position: absolute;
         top: 600px;
         left: 0px;
@@ -774,7 +807,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <video></video>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -805,6 +838,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 200px;
         height: 200px;
@@ -823,7 +857,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -846,6 +880,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 100%;
       height: 100%;
@@ -870,7 +905,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   </host-element>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -892,6 +927,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -911,7 +947,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -951,6 +987,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetContents) {
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 500px;
       height: 500px;
@@ -985,7 +1022,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetContents) {
   <div id="invisible_div"></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1018,6 +1055,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetEndIndexEqualToStartIndex) {
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 500px;
       height: 500px;
@@ -1037,7 +1075,7 @@ TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetEndIndexEqualToStartIndex) {
   <div id="target_div"></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1059,6 +1097,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
       margin: 0;
     }
     video {
+      object-fit: fill;
       position: relative;
       width: 500px;
       height: 500px;
@@ -1078,7 +1117,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  CreateAndAttachVideoVisibilityTracker(0.5);
+  CreateAndAttachVideoVisibilityTracker(10000);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1100,7 +1139,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_CALL(ReportVisibilityCb(), Run(_)).Times(0);
 
   // Create tracker and verify that it is not attached.
-  auto* tracker = CreateTracker(0.5);
+  auto* tracker = CreateTracker(10000);
   ASSERT_FALSE(TrackerAttached());
 
   // Create a `RequestVisibilityCallback` and verify that `MeetsVisibility`
@@ -1120,6 +1159,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1139,7 +1179,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  auto* tracker = CreateAndAttachVideoVisibilityTracker(0.5);
+  auto* tracker = CreateAndAttachVideoVisibilityTracker(10000);
 
   // Initially set the lifecycle state to a value <
   // DocumentUpdateReason::kPaintClean. The `RequestVisibilityCallback` should
@@ -1184,6 +1224,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1203,7 +1244,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
-  auto* tracker = CreateAndAttachVideoVisibilityTracker(0.5);
+  auto* tracker = CreateAndAttachVideoVisibilityTracker(10000);
 
   // Initially set the lifecycle state to a value <
   // DocumentUpdateReason::kPaintClean. The `RequestVisibilityCallback` should
@@ -1249,6 +1290,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1268,7 +1310,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  auto* tracker = CreateAndAttachVideoVisibilityTracker(0.5);
+  auto* tracker = CreateAndAttachVideoVisibilityTracker(10000);
 
   // Note that we do not fast forward the virtual time. This will let us verify
   // that the `hit_test_timer_` is ignored.
@@ -1292,6 +1334,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1311,7 +1354,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  auto* tracker = CreateAndAttachVideoVisibilityTracker(0.5);
+  auto* tracker = CreateAndAttachVideoVisibilityTracker(10000);
 
   // Directly set the `RequestVisibilityCallback`, and verify that no visibility
   // computations are performed.
@@ -1354,6 +1397,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1373,7 +1417,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  auto* tracker = CreateAndAttachVideoVisibilityTracker(0.5);
+  auto* tracker = CreateAndAttachVideoVisibilityTracker(10000);
 
   // Update the lifecycle state to `DocumentUpdateReason::kPaintClean`, this
   // should cache the visibility value.
@@ -1407,6 +1451,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
         margin: 0;
       }
       video {
+        object-fit: fill;
         position: relative;
         width: 500px;
         height: 500px;
@@ -1426,7 +1471,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
     <div></div>
   )HTML");
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
-  auto* tracker = CreateAndAttachVideoVisibilityTracker(0.5);
+  auto* tracker = CreateAndAttachVideoVisibilityTracker(10000);
 
   // Update the lifecycle state to `DocumentUpdateReason::kPaintClean`, this
   // should cache the visibility value.

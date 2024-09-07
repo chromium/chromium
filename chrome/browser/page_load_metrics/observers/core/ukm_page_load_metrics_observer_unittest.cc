@@ -1855,8 +1855,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
               testing::ElementsAre(base::Bucket(25, 1)));
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-                  "SessionWindow.Gap1000ms.Max5000ms"),
-              testing::ElementsAre(base::Bucket(25, 1)));
+                  "SessionWindow.Gap1000ms.Max5000ms2"),
+              testing::ElementsAre(base::Bucket(24000, 1)));
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
@@ -1984,8 +1984,8 @@ TEST_F(UkmPageLoadMetricsObserverTest,
               testing::ElementsAre(base::Bucket(25, 1)));
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-                  "SessionWindow.Gap1000ms.Max5000ms"),
-              testing::ElementsAre(base::Bucket(25, 1)));
+                  "SessionWindow.Gap1000ms.Max5000ms2"),
+              testing::ElementsAre(base::Bucket(24000, 1)));
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability."
                   "CumulativeShiftScoreAtFirstOnHidden"),

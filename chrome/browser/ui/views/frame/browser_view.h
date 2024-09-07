@@ -533,6 +533,7 @@ class BrowserView : public BrowserWindow,
   bool IsBorderlessModeEnabled() const override;
   void ShowChromeLabs() override;
   views::WebView* GetContentsWebView() override;
+  BrowserView* AsBrowserView() override;
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
   void ShowUpdateChromeDialog() override;
@@ -594,7 +595,6 @@ class BrowserView : public BrowserWindow,
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
-  void CutCopyPaste(int command_id) override;
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
@@ -603,7 +603,8 @@ class BrowserView : public BrowserWindow,
   void MaybeShowProfileSwitchIPH() override;
   void ShowHatsDialog(
       const std::string& site_id,
-      const std::optional<std::string>& histogram_name,
+      const std::optional<std::string>& hats_histogram_name,
+      const std::optional<uint64_t> hats_survey_ukm_id,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
@@ -825,6 +826,11 @@ class BrowserView : public BrowserWindow,
   void ApplyScreenshotSettings(bool allow);
 #endif
 
+  // Clipboard commands.
+  void Cut();
+  void Copy();
+  void Paste();
+
  protected:
   // Enumerates where the devtools are docked relative to the browser's main
   // web contents.
@@ -856,6 +862,9 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   class AccessibilityModeObserver;
+
+  // Shared implementation by cut, copy and paste.
+  void CutCopyPaste(int command_id);
 
   // Toggles the look and feel of the browser. If we are in the standard view
   // and this function is called we will swap the layout to the compact version.
@@ -960,11 +969,6 @@ class BrowserView : public BrowserWindow,
   // learning about how frequently the top-row keys are used.
   void UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
                                 int command_id);
-
-  // Calls |method| which is either WebContents::Cut, ::Copy, or ::Paste on
-  // the given WebContents, returning true if it consumed the event.
-  bool DoCutCopyPasteForWebContents(content::WebContents* contents,
-                                    void (content::WebContents::*method)());
 
   // Shows the next app-modal dialog box, if there is one to be shown, or moves
   // an existing showing one to the front.

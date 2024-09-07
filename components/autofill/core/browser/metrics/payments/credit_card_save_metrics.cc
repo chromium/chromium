@@ -246,6 +246,20 @@ void LogCreditCardUploadConfirmationViewResultMetric(
       base::StrCat({base_histogram_name, is_card_uploaded_name}), metric);
 }
 
+void LogGetCardUploadDetailsRequestLatencyMetric(base::TimeDelta duration,
+                                                 bool is_successful) {
+  std::string_view base_histogram_name =
+      "Autofill.PaymentsNetworkInterface.RequestLatency."
+      "GetCardUploadDetails";
+  std::string_view is_successful_name = is_successful ? ".Success" : ".Failure";
+
+  // Record the metric twice to get the duration for all call types and bucketed
+  // based on success.
+  base::UmaHistogramLongTimes(base::StrCat({base_histogram_name}), duration);
+  base::UmaHistogramLongTimes(
+      base::StrCat({base_histogram_name, is_successful_name}), duration);
+}
+
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,

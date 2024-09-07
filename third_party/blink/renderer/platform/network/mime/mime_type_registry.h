@@ -110,6 +110,10 @@ class PLATFORM_EXPORT MIMETypeRegistry {
   // https://mimesniff.spec.whatwg.org/#xml-mime-type
   static bool IsXMLMIMEType(const String& mime_type);
 
+  // Returns true if the MIME type is suitable for loading as a XML external
+  // entity.
+  static bool IsXMLExternalEntityMIMEType(const String& mime_type);
+
   // Checks to see if a mime type is suitable for being loaded as plain text.
   static bool IsPlainTextMIMEType(const String& mime_type);
 };

@@ -7,7 +7,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 OverscrollActionsTabHelper::~OverscrollActionsTabHelper() {}
 

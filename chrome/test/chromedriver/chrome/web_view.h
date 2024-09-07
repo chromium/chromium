@@ -69,8 +69,7 @@ class WebView {
   // Resume the current page.
   virtual Status Resume(const Timeout* timeout) = 0;
 
-  virtual Status StartBidiServer(std::string bidi_mapper_string,
-                                 const base::Value::Dict& mapper_options) = 0;
+  virtual Status StartBidiServer(std::string bidi_mapper_string) = 0;
 
   // Send the BiDi command to the BiDiMapper
   virtual Status PostBidiCommand(base::Value::Dict command) = 0;

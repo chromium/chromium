@@ -87,6 +87,9 @@ export async function selectSeaPenThumbnail(
     thumbnail: SeaPenThumbnail, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
   let promise: ReturnType<SeaPenProviderInterface['selectSeaPenThumbnail']>;
+
+  store.dispatch(seaPenAction.beginSelectSeaPenThumbnailAction(thumbnail));
+
   const shouldPreview = await shouldShowFullscreenPreview(provider);
   if (shouldPreview) {
     provider.makeTransparent();
@@ -102,8 +105,6 @@ export async function selectSeaPenThumbnail(
     store.beginBatchUpdate();
     promise = provider.selectSeaPenThumbnail(thumbnail.id, shouldPreview);
   }
-
-  store.dispatch(seaPenAction.beginSelectSeaPenThumbnailAction(thumbnail));
 
   const {success} = await promise;
 

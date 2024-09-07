@@ -168,6 +168,51 @@ class OptionalOrRawPtrToGCedMatcher : public MatchFinder::MatchCallback {
   RecordCache& record_cache_;
 };
 
+class OptionalMemberMatcher : public MatchFinder::MatchCallback {
+ public:
+  OptionalMemberMatcher(DiagnosticsReporter& diagnostics,
+                        RecordCache& record_cache)
+      : diagnostics_(diagnostics), record_cache_(record_cache) {}
+
+  void Register(MatchFinder& match_finder) {
+    // Matches fields and new-expressions of type std::optional or
+    // absl::optional where the template argument is known to refer to a
+    // garbage-collected type.
+    auto optional_gced_type =
+        hasType(classTemplateSpecializationDecl(
+                    hasAnyName("::absl::optional", "::std::optional"),
+                    hasTemplateArgument(0, refersToType(MemberType())))
+                    .bind("type"));
+    // On stack optional<Member> is safe, so we don't need to find variables
+    // here.Matching fields should suffice.
+    auto optional_field = fieldDecl(optional_gced_type).bind("bad_decl");
+    auto optional_new_expression =
+        cxxNewExpr(has(cxxConstructExpr(optional_gced_type))).bind("bad_new");
+    match_finder.addDynamicMatcher(optional_field, this);
+    match_finder.addDynamicMatcher(optional_new_expression, this);
+  }
+
+  void run(const MatchFinder::MatchResult& result) override {
+    auto* type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("type");
+    auto* member = result.Nodes.getNodeAs<clang::CXXRecordDecl>("member");
+    if (auto* bad_decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl")) {
+      if (Config::IsIgnoreAnnotated(bad_decl) ||
+          IsOnStack(bad_decl, record_cache_)) {
+        return;
+      }
+      diagnostics_.OptionalDeclUsedWithMember(bad_decl, type, member);
+    } else {
+      auto* bad_new = result.Nodes.getNodeAs<clang::Expr>("bad_new");
+      assert(bad_new);
+      diagnostics_.OptionalNewExprUsedWithMember(bad_new, type, member);
+    }
+  }
+
+ private:
+  DiagnosticsReporter& diagnostics_;
+  RecordCache& record_cache_;
+};
+
 class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
  public:
   explicit CollectionOfGarbageCollectedMatcher(DiagnosticsReporter& diagnostics,
@@ -271,13 +316,13 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
 };
 
 // For the absl::variant checker, we need to match the inside of a variadic
-// template class, which doesn't seem easy with the built-in matchers: define a
-// custom matcher to go through the template parameter list.
+// template class, which doesn't seem easy with the built-in matchers: define
+// a custom matcher to go through the template parameter list.
 AST_MATCHER_P(clang::TemplateArgument,
               parameterPackHasAnyElement,
               // Clang exports other instantiations of Matcher via
-              // using-declarations in public headers, e.g. `using TypeMatcher =
-              // Matcher<QualType>`.
+              // using-declarations in public headers, e.g. `using TypeMatcher
+              // = Matcher<QualType>`.
               //
               // Once https://reviews.llvm.org/D89920, a Clang patch adding a
               // similar alias for template arguments, lands, this can be
@@ -285,8 +330,9 @@ AST_MATCHER_P(clang::TemplateArgument,
               // internal namespace any longer.
               clang::ast_matchers::internal::Matcher<clang::TemplateArgument>,
               InnerMatcher) {
-  if (Node.getKind() != clang::TemplateArgument::Pack)
+  if (Node.getKind() != clang::TemplateArgument::Pack) {
     return false;
+  }
   return llvm::any_of(Node.pack_elements(),
                       [&](const clang::TemplateArgument& Arg) {
                         return InnerMatcher.matches(Arg, Finder, Builder);
@@ -297,8 +343,8 @@ AST_MATCHER_P(clang::TemplateArgument,
 // That's because `absl::variant` doesn't work well with concurrent marking.
 // Oilpan uses an object's type to know how to trace it. If the type stored in
 // an `absl::variant` changes while the object is concurrently being marked,
-// Oilpan might fail to find a matching pair of element type and reference. This
-// in turn can lead to UAFs and other memory corruptions.
+// Oilpan might fail to find a matching pair of element type and reference.
+// This in turn can lead to UAFs and other memory corruptions.
 class VariantGarbageCollectedMatcher : public MatchFinder::MatchCallback {
  public:
   explicit VariantGarbageCollectedMatcher(DiagnosticsReporter& diagnostics)
@@ -343,8 +389,9 @@ class MemberOnStackMatcher : public MatchFinder::MatchCallback {
 
   void run(const MatchFinder::MatchResult& result) override {
     auto* member = result.Nodes.getNodeAs<clang::VarDecl>("var");
-    if (Config::IsIgnoreAnnotated(member))
+    if (Config::IsIgnoreAnnotated(member)) {
       return;
+    }
     diagnostics_.MemberOnStack(member);
   }
 
@@ -411,9 +458,11 @@ AST_MATCHER(clang::CXXRecordDecl, isDisallowedNewClass) {
 
   // Otherwise, lookup in the base classes.
   for (auto& base_spec : Node.bases()) {
-    if (auto* base = base_spec.getType()->getAsCXXRecordDecl())
-      if (matches(*base, Finder, Builder))
+    if (auto* base = base_spec.getType()->getAsCXXRecordDecl()) {
+      if (matches(*base, Finder, Builder)) {
         return true;
+      }
+    }
   }
 
   return false;
@@ -424,8 +473,9 @@ size_t RoundUp(size_t value, size_t align) {
   return (value + align - 1) & ~(align - 1);
 }
 
-// Very approximate way of calculating size of a record based on fields. Doesn't
-// take into account alignment of base subobjects, but only its own fields.
+// Very approximate way of calculating size of a record based on fields.
+// Doesn't take into account alignment of base subobjects, but only its own
+// fields.
 size_t RequiredSizeForFields(const clang::ASTContext& context,
                              size_t current_size,
                              const std::vector<clang::QualType>& field_types) {
@@ -460,8 +510,9 @@ class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
 
   void run(const MatchFinder::MatchResult& result) override {
     auto* class_decl = result.Nodes.getNodeAs<clang::RecordDecl>("record");
-    if (class_decl->isDependentType() || class_decl->isUnion())
+    if (class_decl->isDependentType() || class_decl->isUnion()) {
       return;
+    }
 
     if (auto* member_decl = result.Nodes.getNodeAs<clang::FieldDecl>("field");
         member_decl && Config::IsIgnoreAnnotated(member_decl)) {
@@ -532,12 +583,12 @@ class GCedVarOrField : public MatchFinder::MatchCallback {
     auto gced_field =
         fieldDecl(hasType(GarbageCollectedType())).bind("bad_field");
     // As opposed to definitions, declarations of function templates with
-    // unfulfilled requires-clauses get instantiated and as such are observable
-    // in the clang AST (as functions without a body). If such a method takes a
-    // GCed type as a parameter, we should not alert on it since the method is
-    // never actually used. This is common in Blink due to the implementation of
-    // the variant CHECK_* and DCHECK_* macros (specifically the
-    // DEFINE_CHECK_OP_IMPL macro).
+    // unfulfilled requires-clauses get instantiated and as such are
+    // observable in the clang AST (as functions without a body). If such a
+    // method takes a GCed type as a parameter, we should not alert on it
+    // since the method is never actually used. This is common in Blink due to
+    // the implementation of the variant CHECK_* and DCHECK_* macros
+    // (specifically the DEFINE_CHECK_OP_IMPL macro).
     auto unimplemented_template_instance_parameter =
         parmVarDecl(hasAncestor(functionDecl(hasParent(functionTemplateDecl()),
                                              unless(hasBody(stmt())))));
@@ -622,6 +673,11 @@ void FindBadPatterns(clang::ASTContext& ast_context,
 
   GCedVarOrField gced_var_or_field(diagnostics, ast_context.getSourceManager());
   gced_var_or_field.Register(match_finder);
+
+  OptionalMemberMatcher optional_member(diagnostics, record_cache);
+  if (options.enable_optional_member_check) {
+    optional_member.Register(match_finder);
+  }
 
   match_finder.matchAST(ast_context);
 }

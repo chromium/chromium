@@ -22,7 +22,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -105,7 +104,6 @@ DeviceTrustTestEnvironmentWin::~DeviceTrustTestEnvironmentWin() {
 std::unique_ptr<KeyRotationCommand>
 DeviceTrustTestEnvironmentWin::CreateCommand(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    policy::BrowserDMTokenStorage* dm_token_storage,
     policy::DeviceManagementService* device_management_service) {
   if (!worker_thread_.IsRunning()) {
     // Make sure the worker thread is running. Its task runner can be reused for

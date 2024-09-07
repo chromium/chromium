@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 namespace utils = extensions::api_test_utils;
 
@@ -35,10 +36,10 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
   };
 
   ExtensionEchoPrivateApiTest()
-      : expected_dialog_buttons_(ui::DIALOG_BUTTON_NONE),
+      : expected_dialog_buttons_(
+            static_cast<int>(ui::mojom::DialogButton::kNone)),
         dialog_action_(DIALOG_TEST_ACTION_NONE),
-        dialog_invocation_count_(0) {
-  }
+        dialog_invocation_count_(0) {}
 
   ~ExtensionEchoPrivateApiTest() override {}
 
@@ -157,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
                        GetUserConsent_InvalidOrigin) {
   const int tab_id = OpenAndActivateTab();
 
-  expected_dialog_buttons_ =  ui::DIALOG_BUTTON_NONE;
+  expected_dialog_buttons_ = static_cast<int>(ui::mojom::DialogButton::kNone);
   dialog_action_ = DIALOG_TEST_ACTION_NONE;
 
   auto function = base::MakeRefCounted<EchoPrivateGetUserConsentFunction>();
@@ -174,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, GetUserConsent_NoTabIdSet) {
-  expected_dialog_buttons_ = ui::DIALOG_BUTTON_NONE;
+  expected_dialog_buttons_ = static_cast<int>(ui::mojom::DialogButton::kNone);
   dialog_action_ = DIALOG_TEST_ACTION_NONE;
 
   auto function = base::MakeRefCounted<EchoPrivateGetUserConsentFunction>();
@@ -193,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
   // Open and activate another tab.
   OpenAndActivateTab();
 
-  expected_dialog_buttons_ = ui::DIALOG_BUTTON_NONE;
+  expected_dialog_buttons_ = static_cast<int>(ui::mojom::DialogButton::kNone);
   dialog_action_ = DIALOG_TEST_ACTION_NONE;
 
   auto function = base::MakeRefCounted<EchoPrivateGetUserConsentFunction>();
@@ -212,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, GetUserConsent_ClosedTab) {
   const int tab_id = OpenAndActivateTab();
   ASSERT_TRUE(CloseTabWithId(tab_id));
 
-  expected_dialog_buttons_ = ui::DIALOG_BUTTON_NONE;
+  expected_dialog_buttons_ = static_cast<int>(ui::mojom::DialogButton::kNone);
   dialog_action_ = DIALOG_TEST_ACTION_NONE;
 
   auto function = base::MakeRefCounted<EchoPrivateGetUserConsentFunction>();
@@ -230,7 +231,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, GetUserConsent_ClosedTab) {
 IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
                        GetUserConsent_AllowRedeemPrefNotSet) {
   const int tab_id = OpenAndActivateTab();
-  expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+  expected_dialog_buttons_ =
+      static_cast<int>(ui::mojom::DialogButton::kCancel) |
+      static_cast<int>(ui::mojom::DialogButton::kOk);
   dialog_action_ = DIALOG_TEST_ACTION_ACCEPT;
 
   RunDefaultGetUserFunctionAndExpectResultEquals(tab_id, true);
@@ -244,7 +247,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
   scoped_testing_cros_settings_.device_settings()->Set(
       ash::kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
 
-  expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+  expected_dialog_buttons_ =
+      static_cast<int>(ui::mojom::DialogButton::kCancel) |
+      static_cast<int>(ui::mojom::DialogButton::kOk);
   dialog_action_ = DIALOG_TEST_ACTION_ACCEPT;
 
   RunDefaultGetUserFunctionAndExpectResultEquals(tab_id, true);
@@ -258,7 +263,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
   scoped_testing_cros_settings_.device_settings()->Set(
       ash::kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
 
-  expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+  expected_dialog_buttons_ =
+      static_cast<int>(ui::mojom::DialogButton::kCancel) |
+      static_cast<int>(ui::mojom::DialogButton::kOk);
   dialog_action_ = DIALOG_TEST_ACTION_CANCEL;
 
   RunDefaultGetUserFunctionAndExpectResultEquals(tab_id, false);
@@ -272,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
   scoped_testing_cros_settings_.device_settings()->Set(
       ash::kAllowRedeemChromeOsRegistrationOffers, base::Value(false));
 
-  expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL;
+  expected_dialog_buttons_ = static_cast<int>(ui::mojom::DialogButton::kCancel);
   dialog_action_ = DIALOG_TEST_ACTION_CANCEL;
 
   RunDefaultGetUserFunctionAndExpectResultEquals(tab_id, false);

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +20,15 @@ namespace {
 
 constexpr const char kUserActionFinish[] = "finished";
 constexpr const char kUserActionLoaded[] = "loaded";
+
+// Campaign ids from
+// google3/chromeos/growth/campaigns/stop_gap_campaigns/stop_gap_campaigns_enums.ts
+constexpr const int kPerkGamgeeId100 = 49;
+constexpr const int kPerkGamgeeIdExperiment = 33;
+constexpr const int kPerkGamgeeIdControl = 38;
+constexpr const int kPerkStandardGamgeeId100 = 48;
+constexpr const int kPerkStandardGamgeeIdExperiment = 32;
+constexpr const int kPerkStandardGamgeeIdControl = 37;
 
 // Current max amount of perks we should get from the server.
 constexpr const int kMaxPerksFetched = 10;
@@ -232,6 +242,17 @@ void PerksDiscoveryScreen::GetOobePerksPayloadAndShow() {
 
   campaign_id_ = growth::GetCampaignId(campaign).value();
   group_id_ = growth::GetCampaignGroupId(campaign);
+  if (campaign_id_ == kPerkGamgeeId100 ||
+      campaign_id_ == kPerkGamgeeIdControl ||
+      campaign_id_ == kPerkGamgeeIdExperiment ||
+      campaign_id_ == kPerkStandardGamgeeId100 ||
+      campaign_id_ == kPerkStandardGamgeeIdExperiment ||
+      campaign_id_ == kPerkStandardGamgeeIdControl) {
+    // Mark the gamgee perk screen as shown for this user.
+    ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+        prefs::kOobePerksDiscoveryGamgeeShown, true);
+  }
+
   auto* payload = GetPayloadBySlot(campaign, growth::Slot::kOobePerkDiscovery);
   if (!payload) {
     LOG(ERROR) << "Payload object is null. Failed to retrieve payload for "

@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_manager.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_chromeos_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/account_manager_core/account_manager_facade.h"
@@ -23,75 +24,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace signin_ui_util {
-namespace {
-
-account_manager::AccountManagerFacade::AccountAdditionSource
-GetAddAccountSourceFromAccessPoint(signin_metrics::AccessPoint access_point) {
-  switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeSettingsTurnOnSyncButton;
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kAvatarBubbleTurnOnSyncAddAccount;
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeExtensionAddAccount;
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeSyncPromoAddAccount;
-    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeMenuTurnOnSync;
-    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeSigninPromoAddAccount;
-    default:
-      NOTREACHED_IN_MIGRATION()
-          << "Add account is requested from an unknown access point "
-          << static_cast<int>(access_point);
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kMaxValue;
-  }
-}
-
-account_manager::AccountManagerFacade::AccountAdditionSource
-GetAccountReauthSourceFromAccessPoint(
-    signin_metrics::AccessPoint access_point) {
-  switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeSettingsReauthAccountButton;
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kAvatarBubbleReauthAccountButton;
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeExtensionReauth;
-    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeSyncPromoReauth;
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kContentAreaReauth;
-    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeMenuTurnOnSync;
-    default:
-      NOTREACHED_IN_MIGRATION()
-          << "Reauth is requested from an unknown access point "
-          << static_cast<int>(access_point);
-      return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kMaxValue;
-  }
-}
-}  // namespace
 
 void SigninUiDelegateImplLacros::ShowSigninUI(
     Profile* profile,

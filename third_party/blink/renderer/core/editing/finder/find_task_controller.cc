@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
+#include "third_party/blink/renderer/core/editing/finder/find_results.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -108,10 +109,10 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
     bool full_range_searched = true;
     PositionInFlatTree next_task_start_position;
 
-    blink::FindOptions find_options =
-        (options_->forward ? 0 : kBackwards) |
-        (options_->match_case ? 0 : kCaseInsensitive) |
-        (options_->new_session ? kStartInSelection : 0);
+    auto find_options = FindOptions()
+                            .SetBackwards(!options_->forward)
+                            .SetCaseInsensitive(!options_->match_case)
+                            .SetStartingInSelection(options_->new_session);
     const auto start_time = base::TimeTicks::Now();
 
     auto time_allotment_expired = [start_time]() {
@@ -124,10 +125,10 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
     while (search_start < search_end) {
       // Find in the whole block.
       FindBuffer buffer(EphemeralRangeInFlatTree(search_start, search_end));
-      FindBuffer::Results match_results =
+      FindResults match_results =
           buffer.FindMatches(search_text_, find_options);
       bool yielded_while_iterating_results = false;
-      for (FindBuffer::BufferMatchResult match : match_results) {
+      for (FindResults::BufferMatchResult match : match_results) {
         const EphemeralRangeInFlatTree ephemeral_match_range =
             buffer.RangeFromBufferIndex(match.start,
                                         match.start + match.length);

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_CONNECTIVITY_PUBLIC_CPP_FAKE_PASSPOINT_SERVICE_H_
 #define CHROMEOS_ASH_SERVICES_CONNECTIVITY_PUBLIC_CPP_FAKE_PASSPOINT_SERVICE_H_
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,7 +19,7 @@ class FakePasspointSubscription;
 
 // Implements a fake version of the PasspointService mojo interface for testing
 // purpose.
-class FakePasspointService
+class COMPONENT_EXPORT(FAKE_PASSPOINT_SERVICE) FakePasspointService
     : public chromeos::connectivity::mojom::PasspointService {
  public:
   // Creates the global instance with a fake implementation.
@@ -51,6 +52,10 @@ class FakePasspointService
 
   void AddFakePasspointSubscription(
       FakePasspointSubscription fake_subscription);
+
+  // Clear all existing fake passpoint subscriptions, and it does not notify
+  // its listeners.
+  void ClearAll();
 
  private:
   FakePasspointService();

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -59,7 +60,7 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
   PrefetchURLLoader(
       int32_t request_id,
       uint32_t options,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const network::ResourceRequest& resource_request,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
@@ -118,7 +119,7 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
 
   void OnNetworkConnectionError();
 
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
 
   // Set in the constructor and updated when redirected.
   network::ResourceRequest resource_request_;

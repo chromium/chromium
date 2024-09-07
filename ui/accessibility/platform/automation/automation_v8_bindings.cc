@@ -528,7 +528,7 @@ void AutomationV8Bindings::SendTreeChangeEvent(
   automation_v8_router_->DispatchEvent("automationInternal.onTreeChange", args);
 }
 
-void AutomationV8Bindings::SendNodesRemovedEvent(const ui::AXTreeID& tree_id,
+void AutomationV8Bindings::SendNodesRemovedEvent(const AXTreeID& tree_id,
                                                  const std::vector<int>& ids) {
   base::Value::List args;
   args.Append(tree_id.ToString());
@@ -543,8 +543,7 @@ void AutomationV8Bindings::SendNodesRemovedEvent(const ui::AXTreeID& tree_id,
                                        args);
 }
 
-void AutomationV8Bindings::SendChildTreeIDEvent(
-    const ui::AXTreeID& child_tree_id) {
+void AutomationV8Bindings::SendChildTreeIDEvent(const AXTreeID& child_tree_id) {
   base::Value::List args;
   args.Append(child_tree_id.ToString());
   automation_v8_router_->DispatchEvent("automationInternal.onChildTreeID",
@@ -559,7 +558,7 @@ void AutomationV8Bindings::SendTreeDestroyedEvent(const AXTreeID& tree_id) {
 }
 
 void AutomationV8Bindings::SendGetTextLocationResult(
-    const ui::AXActionData& data,
+    const AXActionData& data,
     const std::optional<gfx::Rect>& rect) {
   base::Value::Dict params;
   params.Set("treeID", data.target_tree_id.ToString());
@@ -581,7 +580,7 @@ void AutomationV8Bindings::SendGetTextLocationResult(
       "automationInternal.onGetTextLocationResult", args);
 }
 
-void AutomationV8Bindings::SendActionResultEvent(const ui::AXActionData& data,
+void AutomationV8Bindings::SendActionResultEvent(const AXActionData& data,
                                                  bool result) {
   base::Value::List args;
   args.Append(data.target_tree_id.ToString());
@@ -604,9 +603,9 @@ void AutomationV8Bindings::SendAutomationEvent(
   event_params.Set("targetID", base::Value(event.id));
   event_params.Set("eventType", base::Value(automation_event_type_str));
 
-  event_params.Set("eventFrom", base::Value(ui::ToString(event.event_from)));
+  event_params.Set("eventFrom", base::Value(ToString(event.event_from)));
   event_params.Set("eventFromAction",
-                   base::Value(ui::ToString(event.event_from_action)));
+                   base::Value(ToString(event.event_from_action)));
   event_params.Set("actionRequestID", base::Value(event.action_request_id));
   event_params.Set("mouseX", base::Value(mouse_location.x()));
   event_params.Set("mouseY", base::Value(mouse_location.y()));
@@ -615,11 +614,10 @@ void AutomationV8Bindings::SendAutomationEvent(
   base::Value::List value_intents;
   for (const auto& intent : event.event_intents) {
     base::Value::Dict dict;
-    dict.Set("command", base::Value(ui::ToString(intent.command)));
-    dict.Set("inputEventType",
-             base::Value(ui::ToString(intent.input_event_type)));
-    dict.Set("textBoundary", base::Value(ui::ToString(intent.text_boundary)));
-    dict.Set("moveDirection", base::Value(ui::ToString(intent.move_direction)));
+    dict.Set("command", base::Value(ToString(intent.command)));
+    dict.Set("inputEventType", base::Value(ToString(intent.input_event_type)));
+    dict.Set("textBoundary", base::Value(ToString(intent.text_boundary)));
+    dict.Set("moveDirection", base::Value(ToString(intent.move_direction)));
     value_intents.Append(std::move(dict));
   }
 
@@ -631,8 +629,7 @@ void AutomationV8Bindings::SendAutomationEvent(
       "automationInternal.onAccessibilityEvent", args);
 }
 
-void AutomationV8Bindings::SendTreeSerializationError(
-    const ui::AXTreeID& tree_id) {
+void AutomationV8Bindings::SendTreeSerializationError(const AXTreeID& tree_id) {
   base::Value::List args;
   args.Append(tree_id.ToString());
   automation_v8_router_->DispatchEvent(
@@ -1996,8 +1993,8 @@ void AutomationV8Bindings::GetState(
 void AutomationV8Bindings::GetImageAnnotation(
     v8::Isolate* isolate,
     v8::ReturnValue<v8::Value> result,
-    ui::AutomationAXTreeWrapper* tree_wrapper,
-    ui::AXNode* node) const {
+    AutomationAXTreeWrapper* tree_wrapper,
+    AXNode* node) const {
   std::string status_string = std::string();
   auto status = node->data().GetImageAnnotationStatus();
   switch (status) {

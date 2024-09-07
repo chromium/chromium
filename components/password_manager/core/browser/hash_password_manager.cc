@@ -181,12 +181,6 @@ bool HashPasswordManager::SavePasswordHash(
   return should_save ? EncryptAndSave(password_hash_data) : false;
 }
 
-void HashPasswordManager::ClearSavedPasswordHash() {
-  if (prefs_) {
-    prefs_->ClearPref(prefs::kSyncPasswordHash);
-  }
-}
-
 void HashPasswordManager::ClearSavedPasswordHash(const std::string& username,
                                                  bool is_gaia_password) {
   CheckPrefs(is_gaia_password);

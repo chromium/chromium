@@ -222,6 +222,9 @@ UIColor* DimColorIncognito() {
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
     return _match.answer_type == omnibox::ANSWER_TYPE_DICTIONARY ? 3 : 1;
   }
+  if (_match.answer->second_line().text_fields().empty()) {
+    return 1;
+  }
   // Answers specify their own limit on the number of lines to show but are
   // additionally capped here at 3 to guard against unreasonable values.
   const SuggestionAnswer::TextField& first_text_field =

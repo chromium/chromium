@@ -9,6 +9,13 @@
 
 namespace autofill {
 
+namespace {
+
+const char kPrimaryAccountEmail[] = "syncuser@example.com";
+const char kSyncTransportAccountEmail[] = "transport@example.com";
+
+}  // anonymous namespace
+
 PersonalDataLoadedObserverMock::PersonalDataLoadedObserverMock() = default;
 PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() = default;
 
@@ -29,6 +36,39 @@ void WaitForPendingDBTasks(AutofillWebDataService& webdata_service) {
   webdata_service.GetDBTaskRunner()->PostTask(FROM_HERE,
                                               run_loop.QuitClosure());
   run_loop.Run();
+}
+
+void MakePrimaryAccountAvailable(
+    bool use_sync_transport_mode,
+    signin::IdentityTestEnvironment& identity_test_env,
+    syncer::TestSyncService& sync_service) {
+  std::string email = use_sync_transport_mode ? kSyncTransportAccountEmail
+                                              : kPrimaryAccountEmail;
+  // Set the account in both IdentityManager and SyncService.
+  CoreAccountInfo account_info;
+  signin::ConsentLevel consent_level = use_sync_transport_mode
+                                           ? signin::ConsentLevel::kSignin
+                                           : signin::ConsentLevel::kSync;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  identity_test_env.ClearPrimaryAccount();
+  account_info =
+      identity_test_env.MakePrimaryAccountAvailable(email, consent_level);
+#else
+  // In ChromeOS-Ash, clearing/resetting the primary account is not supported.
+  // So if an account already exists, reuse it (and make sure it matches).
+  if (identity_test_env.identity_manager()->HasPrimaryAccount(consent_level)) {
+    account_info = identity_test_env.identity_manager()->GetPrimaryAccountInfo(
+        consent_level);
+    ASSERT_EQ(account_info.email, email);
+  } else {
+    account_info =
+        identity_test_env.MakePrimaryAccountAvailable(email, consent_level);
+  }
+#endif
+  sync_service.SetSignedIn(use_sync_transport_mode
+                               ? signin::ConsentLevel::kSignin
+                               : signin::ConsentLevel::kSync,
+                           account_info);
 }
 
 }  // namespace autofill

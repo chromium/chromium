@@ -70,6 +70,7 @@ struct AuctionServerRequestFlags {
   // render ID would appear (currently just the ads, componentAds and prevWins
   // fields).
   bool include_full_ads = false;
+  bool omit_user_bidding_signals = false;
 };
 
 // A container used for making changes to ad render URLs. 'match' is what we use
@@ -523,10 +524,16 @@ struct AuctionAdConfigNonSharedParams {
   // The ad render url replacements for their respective ad URL. If promise is
   // never given, this will resolve to an empty vector.
   AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements deprecated_render_url_replacements;
+
   // The maximum length limit for the trusted scoring signal fetch URL. Can
   // only be set as either 0 or a positive number. A value of 0 indicates
   // that there is no limit.
   int32 max_trusted_scoring_signals_url_length = 0;
+
+  // An optional field for matching the encryption key, and indicating which
+  // version of the key-value server the auction uses for fetching trusted
+  // scoring signals.
+  url.mojom.Origin? trusted_scoring_signals_coordinator;
 };
 
 // Configuration to pass to RunAdAuction().

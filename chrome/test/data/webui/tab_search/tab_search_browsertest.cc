@@ -23,8 +23,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, Search) {
   RunTest("tab_search/search_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchTest, InfiniteList) {
-  RunTest("tab_search/infinite_list_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(TabSearchTest, SelectableLazyList) {
+  RunTest("tab_search/selectable_lazy_list_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchTest, Item) {
@@ -35,6 +35,10 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, MediaTabs) {
   RunTest("tab_search/tab_search_media_tabs_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchTest, Organization) {
-  RunTest("tab_search/auto_tab_groups_page_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(TabSearchTest, Declutter) {
+  RunTest("tab_search/declutter_page_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchTest, OrganizationSelector) {
+  RunTest("tab_search/tab_organization_selector_test.js", "mocha.run()");
 }

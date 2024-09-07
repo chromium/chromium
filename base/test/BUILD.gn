@@ -449,6 +449,18 @@ shared_library("test_shared_library") {
   deps = [ ":native_library_test_utils" ]
 }
 
+if (is_ios) {
+  ios_framework_bundle("test_shared_library_ios") {
+    testonly = true
+    output_name = "test_shared_library_ios"
+    info_plist = "ios/native-library-Info.plist"
+
+    sources = [ "test_shared_library.cc" ]
+
+    deps = [ ":native_library_test_utils" ]
+  }
+}
+
 if (is_fuchsia || is_linux || is_chromeos) {
   shared_library("malloc_wrapper") {
     testonly = true
@@ -488,6 +500,7 @@ if (is_android) {
     deps = [
       ":file_provider_resources",
       "//base:base_java",
+      "//base:content_uri_utils_java",
       "//base:process_launcher_java",
       "//testing/android/native_test:native_main_runner_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -658,6 +671,7 @@ if (is_android) {
       "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_fragment_fragment_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit",
@@ -684,6 +698,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/FacilityCheckIn.java",
       "android/javatests/src/org/chromium/base/test/transit/FacilityCheckOut.java",
       "android/javatests/src/org/chromium/base/test/transit/FacilitySwap.java",
+      "android/javatests/src/org/chromium/base/test/transit/FragmentElement.java",
       "android/javatests/src/org/chromium/base/test/transit/InstrumentationThreadCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/LogicalElement.java",
       "android/javatests/src/org/chromium/base/test/transit/MoreViewConditions.java",

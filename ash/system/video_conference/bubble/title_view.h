@@ -17,14 +17,13 @@ namespace ash::video_conference {
 class TitleView : public views::BoxLayoutView {
   METADATA_HEADER(TitleView, views::BoxLayoutView)
  public:
-  explicit TitleView();
+  explicit TitleView(base::OnceClosure close_bubble_callback);
   TitleView(const TitleView&) = delete;
   TitleView& operator=(const TitleView&) = delete;
   ~TitleView() override;
 
  private:
   raw_ptr<IconButton> sidetone_button_ = nullptr;
-  views::UniqueWidgetPtr sidetone_bubble_widget_;
 
   void OnSidetoneButtonClicked(const ui::Event& event);
   void CloseSidetoneBubble();

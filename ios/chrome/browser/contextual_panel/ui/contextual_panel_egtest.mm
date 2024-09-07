@@ -6,6 +6,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -69,7 +70,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
       {kContextualPanelForceShowEntrypoint, {}});
 
   if ([self isRunningTest:@selector(testOpenContextualPanelFromNormalIPH)] ||
-      [self isRunningTest:@selector(testOpenContextualPanelFromRichIPH)]) {
+      [self isRunningTest:@selector(testOpenContextualPanelFromRichIPH)] ||
+      [self isRunningTest:@selector(testOrientationChangeDismissesIPH)]) {
     config.iph_feature_enabled =
         feature_engagement::kIPHiOSContextualPanelSampleModelFeature.name;
   }
@@ -196,6 +198,15 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
   [ChromeEarlGrey closeTabAtIndex:0];
 }
 
+// Tests that closing the last tab before the large entrypoint callback is run
+// doesn't crash.
+- (void)testCloseLastTabBeforeLargeEntrypointAppears {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
+
+  // Close the tab.
+  [ChromeEarlGrey closeTabAtIndex:0];
+}
+
 // Tests that the contextual panel transitions neatly between iOS sheet
 // controller (full iPad layout) and the panel's custom sheet component (other
 // window open/iPhone-style layout).
@@ -297,6 +308,58 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
       selectElementWithMatcher:grey_accessibilityID(
                                    @"ContextualPanelEntrypointLabelAXID")]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Test that the Contextual Panel entrypoint IPH is dismissed when the device
+// orientation changes.
+- (void)testOrientationChangeDismissesIPH {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
+
+  // Check that the IPH has appeared.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              @"BubbleViewLabelIdentifier")];
+
+  // Switch to landscape.
+  GREYAssert(
+      [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                    error:nil],
+      @"Could not rotate device to Landscape Left");
+
+  // Check that the IPH has disappeared.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 @"BubbleViewLabelIdentifier")];
+}
+
+// Tests that opening the keyboard on iPhone closes the panel. On iPad, the
+// panel is presented modally, so the panel wouldn't close.
+- (void)testKeyboardOpenClosesPanelOniPhone {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test conditions don't happen on iPad.");
+  }
+
+  // Open a page wth a text field.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointImageViewAXID")]
+      performAction:grey_tap()];
+
+  // Check that the contextual panel opened up.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open the keyboard by tapping a text field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("un")];
+
+  // Check that the contextual panel is closed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

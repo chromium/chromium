@@ -5,6 +5,7 @@
 group("chromium_providers") {
   deps = [
     # The individual API implementations.
+    "//ios/chrome/browser/providers/additional_features:chromium_additional_features",
     "//ios/chrome/browser/providers/app_distribution:chromium_app_distribution",
     "//ios/chrome/browser/providers/app_utils:chromium_app_utils",
     "//ios/chrome/browser/providers/branded_images:chromium_branded_images",

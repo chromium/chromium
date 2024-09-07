@@ -4,8 +4,6 @@
 
 #include "ash/webui/camera_app_ui/camera_app_events_sender.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/metrics/structured/structured_events.h"
@@ -32,10 +30,6 @@ class CameraAppEventsSenderTest : public testing::Test {
   ~CameraAppEventsSenderTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kCameraAppCrosEvents},
-        /*disabled_features=*/{});
-
     events_sender_ = std::make_unique<CameraAppEventsSender>(kTestLanguage);
 
     metrics_recorder_ =
@@ -53,9 +47,6 @@ class CameraAppEventsSenderTest : public testing::Test {
 
   std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
       metrics_recorder_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CameraAppEventsSenderTest, StartSession) {

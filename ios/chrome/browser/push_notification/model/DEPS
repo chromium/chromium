@@ -6,6 +6,7 @@ include_rules = [
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tips_notifications/model",
   "+ios/chrome/browser/safety_check_notifications/model",
+  "+ios/chrome/browser/send_tab_to_self/model",
   "+ios/chrome/browser/url_loading",
 ]
 

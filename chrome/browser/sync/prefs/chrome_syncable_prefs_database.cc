@@ -34,9 +34,11 @@
 #include "components/variations/service/google_groups_manager_prefs.h"
 #include "ui/events/ash/pref_names.h"
 #endif
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/pref_names.h"  // nogncheck
+#endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/supervised_user/core/common/pref_names.h"
-#include "extensions/browser/pref_names.h"  // nogncheck
 #endif
 
 namespace browser_sync {
@@ -358,6 +360,7 @@ enum {
   kAccessibilityFlashNotificationsEnabled = 100298,
   kAccessibilityFlashNotificationsColor = 100299,
   kPinnedChromeLabsMigrationComplete = 100300,
+  kAccessibilityFaceGazeGesturesToKeyCombos = 100301,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -478,7 +481,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kHomePageIsNewTabPage, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kNtpCustomBackgroundDict,
+    {prefs::kNtpCustomBackgroundDictDoNotUse,
      {syncable_prefs_ids::kNtpCustomBackgroundDict, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
@@ -531,7 +534,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     {extensions::pref_names::kPinnedExtensions,
      {syncable_prefs_ids::kPinnedExtensions, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
@@ -1145,6 +1148,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAccessibilityFaceGazeCursorUseAcceleration,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeGesturesToKeyCombos,
+     {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToKeyCombos,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableDict}},
     {ash::prefs::kAccessibilityFaceGazeGesturesToMacros,
      {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToMacros,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
@@ -1226,11 +1233,11 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAccessibilityMainNodeAnnotationsEnabled,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kBrowserColorScheme,
+    {prefs::kBrowserColorSchemeDoNotUse,
      {syncable_prefs_ids::kBrowserColorScheme, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kBrowserColorVariant,
+    {prefs::kBrowserColorVariantDoNotUse,
      {syncable_prefs_ids::kBrowserColorVariant, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
@@ -1258,7 +1265,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kExtensionsUIDeveloperMode, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kGrayscaleThemeEnabled,
+    {prefs::kGrayscaleThemeEnabledDoNotUse,
      {syncable_prefs_ids::kGrayscaleThemeEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
@@ -1318,7 +1325,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kURLsToRestoreOnStartup, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
-    {prefs::kUserColor,
+    {prefs::kUserColorDoNotUse,
      {syncable_prefs_ids::kUserColor, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},

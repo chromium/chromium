@@ -26,6 +26,7 @@ rust_bindgen("crabbyavif_dav1d_bindings") {
 
 rust_static_library("crabbyavif_dav1d_sys") {
   crate_root = "src/sys/dav1d-sys/src/lib.rs"
+
   # This is a wrapper interface to a C library. So unsafe has to be allowed.
   allow_unsafe = true
   crate_name = "dav1d_sys"
@@ -36,8 +37,9 @@ rust_static_library("crabbyavif_dav1d_sys") {
 
   _bindgen_output = get_target_outputs(":crabbyavif_dav1d_bindings")
   inputs = _bindgen_output
-  rustenv = [ "CRABBYAVIF_DAV1D_BINDINGS_RS=" +
-              rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
+  rustenv =
+      [ "CRABBYAVIF_DAV1D_BINDINGS_RS=" +
+        rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
 }
 
 rust_bindgen("crabbyavif_libyuv_bindings") {
@@ -46,6 +48,7 @@ rust_bindgen("crabbyavif_libyuv_bindings") {
   bindgen_flags = [
     "no-doc-comments",
     "generate=functions,types,vars,methods,constructors,destructors",
+    "allowlist-item=AR30ToAB30",
     "allowlist-item=ARGBAttenuate",
     "allowlist-item=ARGBUnattenuate",
     "allowlist-item=Convert16To8Plane",
@@ -84,6 +87,7 @@ rust_bindgen("crabbyavif_libyuv_bindings") {
     "allowlist-item=I444AlphaToARGBMatrix",
     "allowlist-item=I444ToARGBMatrix",
     "allowlist-item=I444ToRGB24Matrix",
+    "allowlist-item=P010ToAR30Matrix",
     "allowlist-item=ScalePlane",
     "allowlist-item=ScalePlane_12",
     "allowlist-item=YuvConstants",
@@ -104,6 +108,7 @@ rust_bindgen("crabbyavif_libyuv_bindings") {
 
 rust_static_library("crabbyavif_libyuv_sys") {
   crate_root = "src/sys/libyuv-sys/src/lib.rs"
+
   # This is a wrapper interface to a C++ library. So unsafe has to be allowed.
   allow_unsafe = true
   crate_name = "libyuv_sys"
@@ -114,12 +119,14 @@ rust_static_library("crabbyavif_libyuv_sys") {
 
   _bindgen_output = get_target_outputs(":crabbyavif_libyuv_bindings")
   inputs = _bindgen_output
-  rustenv = [ "CRABBYAVIF_LIBYUV_BINDINGS_RS=" +
-              rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
+  rustenv =
+      [ "CRABBYAVIF_LIBYUV_BINDINGS_RS=" +
+        rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
 }
 
 rust_static_library("crabbyavif") {
   crate_root = "src/src/lib.rs"
+
   # This library exposes a C API and uses a couple of C/C++ libraries. So unsafe
   # has to be allowed in order to allow those. The core library itself does not
   # contain any unsafe Rust.

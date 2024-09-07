@@ -12,10 +12,12 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_category_type.h"
+#include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
@@ -31,6 +33,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
@@ -55,6 +58,7 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
+using ::testing::IsSupersetOf;
 using ::testing::Key;
 using ::testing::Not;
 using ::testing::Pointee;
@@ -165,7 +169,7 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerSearchResult::DriveFile(
+            std::move(callback).Run({PickerDriveFileResult(
                 /*id=*/std::nullopt,
                 /*title=*/u"test drive file",
                 /*url=*/GURL(), base::FilePath())});
@@ -180,12 +184,10 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
       &submenu_controller_, &preview_controller_));
   widget->Show();
 
-  EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(Property(
-                  "data", &ash::PickerSearchResult::data,
-                  VariantWith<ash::PickerSearchResult::DriveFileData>(Field(
-                      "title", &ash::PickerSearchResult::DriveFileData::title,
-                      u"test drive file")))))
+  EXPECT_CALL(
+      mock_delegate,
+      SelectZeroStateResult(VariantWith<ash::PickerDriveFileResult>(Field(
+          "title", &ash::PickerDriveFileResult::title, u"test drive file"))))
       .Times(1);
 
   ASSERT_THAT(
@@ -197,19 +199,87 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
   LeftClickOn(*item_view);
 }
 
+TEST_F(PickerZeroStateViewTest, ShowsSuggestedLocalFileResultsInRowFormat) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGrid);
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({PickerLocalFileResult(u"a", {}),
+                                     PickerLocalFileResult(u"b", {}),
+                                     PickerLocalFileResult(u"c", {})});
+          });
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
+      &submenu_controller_, &preview_controller_));
+  widget->Show();
+
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateResult(VariantWith<ash::PickerLocalFileResult>(_)))
+      .Times(1);
+
+  ASSERT_THAT(
+      view->primary_section_view_for_testing()->item_views_for_testing(),
+      IsSupersetOf({
+          AsView<PickerImageItemView>(
+              Property(&PickerListItemView::GetAccessibleName, u"a")),
+          AsView<PickerImageItemView>(
+              Property(&PickerListItemView::GetAccessibleName, u"b")),
+          AsView<PickerImageItemView>(
+              Property(&PickerListItemView::GetAccessibleName, u"c")),
+      }));
+  PickerItemView* item_view =
+      view->primary_section_view_for_testing()->item_views_for_testing()[0];
+  ASSERT_TRUE(views::IsViewClass<PickerImageItemView>(item_view));
+  ViewDrawnWaiter().Wait(item_view);
+  LeftClickOn(*item_view);
+}
+
+TEST_F(PickerZeroStateViewTest, ShowsMoreItemsButtonForLocalFiles) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGrid);
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({PickerLocalFileResult({}, {})});
+          });
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
+      &submenu_controller_, &preview_controller_));
+  widget->Show();
+
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateCategory(PickerCategory::kLocalFiles))
+      .Times(1);
+
+  views::View* more_items_button = view->primary_section_view_for_testing()
+                                       ->GetImageRowMoreItemsButtonForTesting();
+  ASSERT_TRUE(more_items_button);
+  ViewDrawnWaiter().Wait(more_items_button);
+  LeftClickOn(*more_items_button);
+}
+
 TEST_F(PickerZeroStateViewTest, DisplayingCapsLockResultSetsCapsLockDisplayed) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run(
-                {PickerSearchResult::DriveFile(
+                {PickerDriveFileResult(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
                      /*url=*/GURL(), base::FilePath()),
-                 PickerSearchResult::CapsLock(
+                 PickerCapsLockResult(
                      /*enabled=*/true,
-                     PickerSearchResult::CapsLockData::Shortcut::kAltSearch)});
+                     PickerCapsLockResult::Shortcut::kAltSearch)});
           });
   EXPECT_CALL(mock_delegate, SetCapsLockDisplayed(true)).Times(1);
 
@@ -231,10 +301,10 @@ TEST_F(PickerZeroStateViewTest,
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run(
-                {PickerSearchResult::CapsLock(
+                {PickerCapsLockResult(
                      /*enabled=*/true,
-                     PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
-                 PickerSearchResult::DriveFile(
+                     PickerCapsLockResult::Shortcut::kAltSearch),
+                 PickerDriveFileResult(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
                      /*url=*/GURL(), base::FilePath())});
@@ -254,11 +324,8 @@ TEST_F(PickerZeroStateViewTest,
   task_environment()->RunUntilIdle();
 
   EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(Property(
-                  "data", &ash::PickerSearchResult::data,
-                  VariantWith<ash::PickerSearchResult::CapsLockData>(Field(
-                      "enabled",
-                      &ash::PickerSearchResult::CapsLockData::enabled, true)))))
+              SelectZeroStateResult(VariantWith<ash::PickerCapsLockResult>(
+                  Field("enabled", &ash::PickerCapsLockResult::enabled, true))))
       .Times(1);
 
   PickerItemView* item_view =
@@ -275,10 +342,10 @@ TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run(
-                {PickerSearchResult::CapsLock(
+                {PickerCapsLockResult(
                      /*enabled=*/true,
-                     PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
-                 PickerSearchResult::DriveFile(
+                     PickerCapsLockResult::Shortcut::kAltSearch),
+                 PickerDriveFileResult(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
                      /*url=*/GURL(), base::FilePath())});
@@ -296,11 +363,8 @@ TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
   widget->Show();
 
   EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(Property(
-                  "data", &ash::PickerSearchResult::data,
-                  VariantWith<ash::PickerSearchResult::CapsLockData>(Field(
-                      "enabled",
-                      &ash::PickerSearchResult::CapsLockData::enabled, true)))))
+              SelectZeroStateResult(VariantWith<ash::PickerCapsLockResult>(
+                  Field("enabled", &ash::PickerCapsLockResult::enabled, true))))
       .Times(1);
 
   PickerItemView* item_view = view->category_section_views_for_testing()
@@ -331,14 +395,14 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({
-                PickerSearchResult::Editor(
-                    PickerSearchResult::EditorData::Mode::kRewrite,
+                PickerEditorResult(
+                    PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"a",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kUnknown,
                     "query_a"),
-                PickerSearchResult::Editor(
-                    PickerSearchResult::EditorData::Mode::kRewrite,
+                PickerEditorResult(
+                    PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"b",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kUnknown,
@@ -370,14 +434,14 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({
-                PickerSearchResult::Editor(
-                    PickerSearchResult::EditorData::Mode::kRewrite,
+                PickerEditorResult(
+                    PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"a",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kShorten,
                     "shorten"),
-                PickerSearchResult::Editor(
-                    PickerSearchResult::EditorData::Mode::kRewrite,
+                PickerEditorResult(
+                    PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"b",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kEmojify,
@@ -408,17 +472,14 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
 TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
-      .WillOnce(
-          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({
-                PickerSearchResult::CaseTransform(
-                    PickerSearchResult::CaseTransformData::kUpperCase),
-                PickerSearchResult::CaseTransform(
-                    PickerSearchResult::CaseTransformData::kLowerCase),
-                PickerSearchResult::CaseTransform(
-                    PickerSearchResult::CaseTransformData::kTitleCase),
-            });
-          });
+      .WillOnce([](MockZeroStateViewDelegate::SuggestedResultsCallback
+                       callback) {
+        std::move(callback).Run({
+            PickerCaseTransformResult(PickerCaseTransformResult::kUpperCase),
+            PickerCaseTransformResult(PickerCaseTransformResult::kLowerCase),
+            PickerCaseTransformResult(PickerCaseTransformResult::kTitleCase),
+        });
+      });
   PickerZeroStateView view(&mock_delegate, {}, kPickerWidth, &asset_fetcher_,
                            &submenu_controller_, &preview_controller_);
 
@@ -456,7 +517,7 @@ TEST_F(PickerZeroStateViewTest, RequestsPseudoFocusAfterGettingSuggestedItems) {
 
   EXPECT_CALL(mock_delegate, RequestPseudoFocus(_));
 
-  suggested_results_callback.Run({PickerSearchResult::DriveFile(
+  suggested_results_callback.Run({PickerDriveFileResult(
       /*id=*/std::nullopt,
       /*title=*/u"test drive file",
       /*url=*/GURL(), base::FilePath())});

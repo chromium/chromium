@@ -10,6 +10,7 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace extensions {
 
@@ -18,8 +19,11 @@ BrowserFrameContextData::CloneFrameContextData() const {
   return std::make_unique<BrowserFrameContextData>(frame_);
 }
 
-bool BrowserFrameContextData::HasIsolatedContextCapability() const {
-  return frame_ && content::HasIsolatedContextCapability(frame_);
+bool BrowserFrameContextData::HasControlledFrameCapability() const {
+  return frame_ &&
+         frame_->IsFeatureEnabled(
+             blink::mojom::PermissionsPolicyFeature::kControlledFrame) &&
+         content::HasIsolatedContextCapability(frame_);
 }
 
 std::unique_ptr<FrameContextData>

@@ -67,6 +67,13 @@ class CORE_EXPORT FragmentBuilder {
   }
   TextDirection Direction() const { return writing_direction_.Direction(); }
 
+  // Return true if this is a builder for the root fragment.
+  bool IsRoot() const;
+
+  // Return true if this is a builder for the root fragment, and the root is
+  // paginated.
+  bool IsPaginatedRoot() const;
+
   // Return the previous (incoming) break token that was generated for the
   // previous fragment of this node.
   const BreakToken* PreviousBreakToken() const { return previous_break_token_; }
@@ -211,7 +218,8 @@ class CORE_EXPORT FragmentBuilder {
       const LogicalOffset& child_offset,
       LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
       LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart,
-      bool is_hidden_for_paint = false);
+      bool is_hidden_for_paint = false,
+      bool allow_top_layer_nodes = false);
 
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_direction| is the current text direction for determining

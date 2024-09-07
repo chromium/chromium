@@ -16,6 +16,8 @@ class WithOpt : public GarbageCollected<WithOpt> {
   absl::optional<Traceable>
       optional_field3_;  // Optional fields are disallowed.
   std::optional<Traceable> optional_field4_;
+  absl::optional<Member<Base>> optional_field5_;
+  std::optional<Member<Base>> optional_field6_;
   base::raw_ptr<Base> raw_ptr_field_;
   base::raw_ptr<Traceable> raw_ptr_field2_;
   base::raw_ref<Base> raw_ref_field_;
@@ -33,11 +35,16 @@ void DisallowedUseOfOptional() {
     absl::optional<Traceable> optional_traceable;  // Must be okay.
     (void)optional_traceable;
 
+    absl::optional<Member<Base>> optional_member;  // Must be okay.
+    (void)optional_member;
+
     new absl::optional<Base>;  // New expression with gced optionals are not
                                // allowed.
 
     new absl::optional<Traceable>;  // New expression with traceable optionals
                                     // are not allowed.
+
+    new absl::optional<Member<Base>>;
   }
 
   {
@@ -50,11 +57,16 @@ void DisallowedUseOfOptional() {
     std::optional<Traceable> optional_traceable;  // Must be okay.
     (void)optional_traceable;
 
+    std::optional<Member<Base>> optional_member;  // Must be okay.
+    (void)optional_member;
+
     new std::optional<Base>;  // New expression with gced optionals are not
                                // allowed.
 
     new std::optional<Traceable>;  // New expression with traceable optionals
                                    // are not allowed.
+
+    new std::optional<Member<Base>>;
   }
 
   {
@@ -101,6 +113,8 @@ class OnStack {
     (void)optional_field2_;
     (void)optional_field3_;
     (void)optional_field4_;
+    (void)optional_field5_;
+    (void)optional_field6_;
     (void)raw_ptr_field_;
     (void)raw_ptr_field2_;
     (void)raw_ref_field_;
@@ -113,6 +127,8 @@ class OnStack {
   std::optional<Base> optional_field2_;
   absl::optional<Traceable> optional_field3_;
   std::optional<Traceable> optional_field4_;
+  absl::optional<Member<Base>> optional_field5_;
+  std::optional<Member<Base>> optional_field6_;
   base::raw_ptr<Base> raw_ptr_field_;
   base::raw_ptr<Traceable> raw_ptr_field2_;
   base::raw_ref<Base> raw_ref_field_;

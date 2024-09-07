@@ -62,7 +62,7 @@ class AX_BASE_EXPORT AXTreeID {
   explicit AXTreeID(ax::mojom::AXTreeIDType type);
   explicit AXTreeID(const std::string& string);
 
-  friend struct mojo::UnionTraits<ax::mojom::AXTreeIDDataView, ui::AXTreeID>;
+  friend struct mojo::UnionTraits<ax::mojom::AXTreeIDDataView, AXTreeID>;
   friend AX_BASE_EXPORT const AXTreeID& AXTreeIDUnknown();
   friend void swap(AXTreeID& first, AXTreeID& second);
 
@@ -72,7 +72,7 @@ class AX_BASE_EXPORT AXTreeID {
 
 // For use in std::unordered_map.
 struct AX_BASE_EXPORT AXTreeIDHash {
-  size_t operator()(const ui::AXTreeID& tree_id) const;
+  size_t operator()(const AXTreeID& tree_id) const;
 };
 
 AX_BASE_EXPORT std::ostream& operator<<(std::ostream& stream,

@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1192844206376121885">Týmto odstránite všetky dáta a súbory cookie uložené webom <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Ďalej</translation>
+<translation id="1240190568154816272">Tipy pre Chrome</translation>
 <translation id="1242008676835033345">Vložené na webe <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Zastaviť</translation>
 <translation id="1289742167380433257">Google optimalizoval obrázky tejto stránky, aby vám ušetril dáta.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Pýtať sa, či chcete povoliť webu pripojiť sa k zariadeniu (odporúčané)</translation>
 <translation id="1779089405699405702">Dekodér obrázkov</translation>
 <translation id="1785415724048343560">Odporúčané pre najlepší dojem</translation>
+<translation id="1799920918471566157">Tipy pre Chrome</translation>
 <translation id="1818308510395330587">Fotoaparát zapnite aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />, aby mohla aplikácia <ph name="APP_NAME" /> používať RR.</translation>
 <translation id="1887786770086287077">Prístup k polohe je v tomto zariadení vypnutý. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Zložiť</translation>
@@ -147,6 +149,7 @@
 <translation id="3448554387819310837">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať vašu kameru. Keď je táto možnosť vypnutá, weby nemôžu používať vašu kameru.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome bude zajtra súbory cookie znova blokovať}few{Chrome bude súbory cookie znova blokovať o # dni}many{Chrome bude súbory cookie znova blokovať o # dňa}other{Chrome bude súbory cookie znova blokovať o # dní}}</translation>
 <translation id="3521663503435878242">Weby v doméne <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Nepovoliť webom sledovať vaše ruky</translation>
 <translation id="3536227077203206203">Momentálne povolené</translation>
 <translation id="3538390592868664640">Brániť webom vytvárať priestorovú mapu okolia a sledovať pozíciu kamery</translation>
 <translation id="3544058026430919413">Firma môže definovať skupinu webov, ktoré môžu pomocou súborov cookie zdieľať vašu aktivitu v danej skupine. Táto možnosť je v režime inkognito vypnutá.</translation>
@@ -157,6 +160,7 @@
 <translation id="3600792891314830896">Stlmiť weby, ktoré prehrávajú zvuk</translation>
 <translation id="3602290021589620013">Ukážka</translation>
 <translation id="3628308229821498208">Navrhované vyhľadávania</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}few{<ph name="RWS_MEMBERS_COUNT" /> weby v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}many{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />'s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> webov v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}}</translation>
 <translation id="3697164069658504920">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať zariadenia s rozhraním USB. Keď je táto možnosť vypnutá, weby nemôžu používať zariadenia s rozhraním USB.</translation>
 <translation id="3707034683772193706">Web, ktorý navštívite, môže v Chrome uložiť malé množstvo informácií, najmä na overenie, že nie ste robot</translation>
 <translation id="3721953990244350188">Zavrieť a zobraziť ďalšiu dostupnú akciu</translation>
@@ -218,6 +222,7 @@
 <translation id="4644713492825682049">Odstrániť a resetovať</translation>
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
 <translation id="4670064810192446073">Virtuálna realita</translation>
+<translation id="4676059169848868271">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> sledovať ruky, zapnite sledovanie rúk aj v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Senzory pohybu alebo svetla</translation>
 <translation id="4755971844837804407">Keď je táto možnosť zapnutá, weby vám môžu zobrazovať ľubovoľné reklamy. Keď je táto možnosť vypnutá, weby nemôžu zobrazovať obťažujúce ani zavádzajúce reklamy.</translation>
 <translation id="4779083564647765204">Lupa</translation>
@@ -236,6 +241,7 @@
 <translation id="4996978546172906250">Zdieľať</translation>
 <translation id="5001526427543320409">Súbory cookie tretích strán</translation>
 <translation id="5007392906805964215">Prezrieť</translation>
+<translation id="5014182796621173645">Boli ste tam <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Povoliť</translation>
 <translation id="5048398596102334565">Povoliť webom prístup k senzorom pohybu (odporúčané)</translation>
 <translation id="5050380848339752099">Tento web chce zdieľať informácie s aplikáciou mimo režimu inkognito.</translation>
@@ -245,6 +251,7 @@
 <translation id="5091663350197390230">Keď je táto možnosť zapnutá, weby môžu používať JavaScript. Keď je táto možnosť vypnutá, weby nemôžu používať JavaScript.</translation>
 <translation id="5099358668261120049">Týmto odstránite všetky dáta a súbory cookie uložené webom <ph name="ORIGIN" /> alebo jeho aplikáciou na ploche.</translation>
 <translation id="5100237604440890931">Zbalená (rozbalíte ju kliknutím)</translation>
+<translation id="5116239826668864748">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách</translation>
 <translation id="5123685120097942451">Karta inkognito</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pokles ceny na otvorených kartách}few{Poklesy cien na otvorených kartách}many{Poklesy cien na otvorených kartách}other{Poklesy cien na otvorených kartách}}</translation>
 <translation id="5186036860380548585">Možnosť je k dispozícii v hornej časti obrazovky</translation>
@@ -276,6 +283,7 @@
 <translation id="5553374991681107062">Najnovšie</translation>
 <translation id="5556459405103347317">Znova načítať</translation>
 <translation id="5591840828808741583">Blokované: <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Ukázať postup</translation>
 <translation id="5649053991847567735">Automatické sťahovanie</translation>
 <translation id="5668404140385795438">Ignorovať požiadavku webových stránok na zákaz priblíženia</translation>
 <translation id="5677928146339483299">Blokované</translation>
@@ -286,6 +294,7 @@
 <translation id="5706552988683188916">Týmto odstránite súbory cookie a ďalšie dáta webu <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Súbory cookie tretích strán sú v anonymnom režime blokované</translation>
 <translation id="5740126560802162366">Weby môžu ukladať údaje vo vašom zariadení</translation>
+<translation id="5750869797196646528">Sledovanie rúk</translation>
 <translation id="5771720122942595109">Blokované: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Povolenia</translation>
 <translation id="5844448279347999754">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie zobrazovať text a obrázky uložené do schránky. Keď je táto možnosť vypnutá, weby nemôžu zobrazovať text ani obrázky uložené do schránky.</translation>
@@ -347,12 +356,15 @@
 <translation id="656065428026159829">Zobraziť viac</translation>
 <translation id="6561560012278703671">Používať tichší režim (blokovať rušivé výzvy na odber upozornení)</translation>
 <translation id="6593061639179217415">Web pre počítače</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Boli povolené súbory cookie pre <ph name="RWS_MEMBERS_COUNT" /> web vlastníka <ph name="RWS_OWNER" />}few{Boli povolené súbory cookie pre <ph name="RWS_MEMBERS_COUNT" /> weby vlastníka <ph name="RWS_OWNER" />}many{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sites}other{Boli povolené súbory cookie pre <ph name="RWS_MEMBERS_COUNT" /> webov vlastníka <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Chránený obsah</translation>
 <translation id="662080504995468778">Zostať</translation>
 <translation id="6653342741369270081">Režim celej obrazovky ukončíte klepnutím na tlačidlo Späť.</translation>
+<translation id="6683865262523156564">Tento web je v skupine, ktorej sa zobrazuje vaša aktivita. Skupina je definovaná vlastníkom <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Práve sťahované položky</translation>
+<translation id="6709432001666529933">Pýtať sa, či chcete povoliť webom sledovať vaše ruky (odporúčané)</translation>
 <translation id="6722828510648505498">Blokujte výzvy na prihlásenie od služieb identity.</translation>
 <translation id="6746124502594467657">Presunúť nadol</translation>
 <translation id="6749077623962119521">Chcete resetovať povolenia?</translation>
@@ -360,6 +372,7 @@
 <translation id="6787751205395685251">Vybrať možnosť pre web <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Prehrať</translation>
 <translation id="6818926723028410516">Vyberte položky</translation>
+<translation id="6838525730752203626">Používajte Chrome predvolene</translation>
 <translation id="6840760312327750441">Ak chcete zoskupiť karty, pridržte niektorú z nich. Potom ju presuňte na inú.</translation>
 <translation id="6864395892908308021">Toto zariadenie nedokáže čítať NFC</translation>
 <translation id="6870169401250095575">Skryť kartu Kontrola bezpečnosti</translation>
@@ -411,6 +424,7 @@
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7667547420449112975">Čarodejník z krajiny Oz</translation>
 <translation id="7684642910516280563">Nepovoľte webu používať súbory cookie tretej strany</translation>
+<translation id="7688240020069572972">Skryť kartu s tipmi pre Chrome</translation>
 <translation id="7719367874908701697">Priblíženie stránky</translation>
 <translation id="7759147511335618829">Ovlád. a preprogramov. zar. MIDI</translation>
 <translation id="7781829728241885113">Včera</translation>
@@ -476,6 +490,7 @@
 <translation id="8609465669617005112">Presunúť nahor</translation>
 <translation id="8617611086246832542">Keď je táto možnosť zapnutá, je aktívne zobrazenie webov v počítači. Keď je táto možnosť vypnutá, je aktívne zobrazenie webov v mobile.</translation>
 <translation id="8649036394979866943">Chrome obmedzuje väčšine webom možnosť sledovať vás pri prehliadaní pomocou súborov cookie tretích strán. Prejdite do nastavení a <ph name="BEGIN_LINK" />spravujte ochrany pred sledovaním<ph name="END_LINK" />.</translation>
+<translation id="8676316391139423634">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie sledovať vaše ruky. Keď je vypnutá, weby nemôžu sledovať vaše ruky.</translation>
 <translation id="8676374126336081632">Vymazať vstup</translation>
 <translation id="8681886425883659911">Na weboch, o ktorých sa vie, že zobrazujú obťažujúce alebo zavádzajúce reklamy, sú reklamy blokované</translation>
 <translation id="868929229000858085">Prehľadať kontakty</translation>

@@ -380,6 +380,26 @@ class EnterpriseReportingPrivateGetHotfixesFunction : public ExtensionFunction {
 
 #endif  // BUILDFLAG(IS_WIN)
 
+class EnterpriseReportingPrivateReportDataMaskingEventFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "enterprise.reportingPrivate.reportDataMaskingEvent",
+      ENTERPRISEREPORTINGPRIVATE_REPORTDATAMASKINGEVENT)
+
+  EnterpriseReportingPrivateReportDataMaskingEventFunction();
+  EnterpriseReportingPrivateReportDataMaskingEventFunction(
+      const EnterpriseReportingPrivateReportDataMaskingEventFunction&) = delete;
+  EnterpriseReportingPrivateReportDataMaskingEventFunction& operator=(
+      const EnterpriseReportingPrivateReportDataMaskingEventFunction&) = delete;
+
+ private:
+  ~EnterpriseReportingPrivateReportDataMaskingEventFunction() override;
+
+  // ExtensionFunction:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_ENTERPRISE_REPORTING_PRIVATE_API_H_

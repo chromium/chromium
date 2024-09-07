@@ -24,6 +24,9 @@
     <message name="IDS_AR_INFOBAR_TEXT" desc="Text requesting permission for a site to use AR">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to create a 3D map of your surroundings and track camera position
     </message>
+    <message name="IDS_HAND_TRACKING_INFOBAR_TEXT" desc="Text requesting permission for a site to use Hand tracking">
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to track your hands
+    </message>
     <message name="IDS_IDLE_DETECTION_INFOBAR_TEXT" desc="Text requesting permission for a site to know when the user is idle.">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to know when you're actively using this device
     </message>
@@ -72,6 +75,9 @@
     </message>
     <message name="IDS_MESSAGE_MISSING_XR_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android scene understanding and hand tracking permission when a website has requested access to scene understanding and hand tracking, but Chrome is missing the Android scene understanding and hand tracking permission.">
       Allow an immersive experience?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android hand tracking permission when a website has requested access to scene understanding and hand tracking, but Chrome is missing the Android scene understanding and hand tracking permission.">
+      Allow hand tracking?
     </message>
     <message name="IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android storage access permission when a website has requested access to storage access, but Chrome is missing the Android storage access permission.">
       Allow storage access?
@@ -136,6 +142,9 @@
   <message name="IDS_AR_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use AR. Follows a prompt: 'This site would like to:">
     Create a 3D map of your surroundings and track camera position
   </message>
+  <message name="IDS_HAND_TRACKING_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use Hand tracking. Follows a prompt: 'This site would like to:">
+    Track your hands
+  </message>
   <message name="IDS_KEYBOARD_LOCK_PERMISSIONS_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to lock the user's keyboard. When the keyboard is locked, any keyboard input usually handled by the browser or the OS is handled by the website instead. Follows a prompt: 'This site would like to:">
     Lock and use your keyboard
   </message>
@@ -176,6 +185,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to scroll and zoom a captured tab.">
     Scroll and zoom the contents of your shared tab
+  </message>
+  <message name="IDS_WEB_APP_INSTALLATION_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to install a web app.">
+    Ask to install web apps
   </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow
@@ -313,6 +325,22 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     </message>
     <message name="IDS_POINTER_LOCK_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to lock and use mouse input.">
       Lock your mouse?
+    </message>
+
+    <message name="IDS_HAND_TRACKING_PERMISSION_CHIP" desc="Button text representing a request for using hand tracking from a website. When clicked, shows a permission prompt bubble with more information.">
+      Allow hand tracking?
+    </message>
+    <message name="IDS_HAND_TRACKING_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for using hand tracking from a website. When clicked, shows a permission prompt bubble with more information.">
+      Hand tracking blocked
+    </message>
+    <message name="IDS_PERMISSIONS_HAND_TRACKING_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been granted..">
+      Hand tracking allowed
+    </message>
+    <message name="IDS_PERMISSIONS_HAND_TRACKING_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been granted once.">
+      Hand tracking allowed this time
+    </message>
+    <message name="IDS_PERMISSIONS_HAND_TRACKING_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been denied.">
+      Hand tracking not allowed
     </message>
 
     <message name="IDS_GEOLOCATION_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">

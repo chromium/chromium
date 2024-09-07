@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <numbers>
 #include <utility>
@@ -27,6 +32,7 @@
 #include "remoting/protocol/fake_video_renderer.h"
 #include "remoting/protocol/ice_connection_to_client.h"
 #include "remoting/protocol/ice_connection_to_host.h"
+#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/video_stream.h"
@@ -324,7 +330,7 @@ class ConnectionTest : public testing::Test,
     {
       testing::InSequence sequence;
       EXPECT_CALL(host_event_handler_, OnConnectionAuthenticating());
-      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticated());
+      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticated(nullptr));
     }
     EXPECT_CALL(host_event_handler_, OnConnectionChannelsConnected())
         .WillOnce(InvokeWithoutArgs(this, &ConnectionTest::OnHostConnected));
@@ -347,10 +353,15 @@ class ConnectionTest : public testing::Test,
     EXPECT_CALL(client_event_handler_, OnRouteChanged(_, _))
         .Times(testing::AnyNumber());
 
+    NetworkSettings network_settings(NetworkSettings::NAT_TRAVERSAL_OUTGOING);
+
+    host_connection_->ApplyNetworkSettings(network_settings);
+
     client_connection_->Connect(
         std::move(owned_client_session_),
         TransportContext::ForTests(protocol::TransportRole::CLIENT),
         &client_event_handler_);
+    client_connection_->ApplyNetworkSettings(network_settings);
     client_session_->SimulateConnection(host_session_);
 
     run_loop_ = std::make_unique<base::RunLoop>();

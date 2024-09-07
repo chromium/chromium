@@ -9,6 +9,7 @@
 
 #include "ash/auth/views/auth_input_row_view.h"
 #include "ash/auth/views/auth_view_utils.h"
+#include "ash/auth/views/fingerprint_view.h"
 #include "ash/auth/views/pin_container_view.h"
 #include "ash/auth/views/pin_status_view.h"
 #include "ash/login/ui/non_accessible_view.h"
@@ -123,6 +124,10 @@ raw_ptr<PinStatusView> AuthContainerView::TestApi::GetPinStatusView() {
   return view_->pin_status_;
 }
 
+raw_ptr<FingerprintView> AuthContainerView::TestApi::GetFingerprintView() {
+  return view_->fingerprint_view_;
+}
+
 AuthInputType AuthContainerView::TestApi::GetCurrentInputType() {
   return view_->current_input_type_;
 }
@@ -149,17 +154,16 @@ AuthContainerView::AuthContainerView(AuthFactorSet auth_factors)
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout_ = SetLayoutManager(std::move(layout));
 
-  // Add password input view and set visibility of the view.
+  // Add child views and adjust their visibility.
   AddPasswordView();
 
-  // Add pin container view and set visibility of the view.
   AddPinView();
 
-  // Add switch button and set visibility of the view.
   AddSwitchButton();
 
-  // Add pin status view.
   AddPinStatusView();
+
+  AddFingerprintView();
 }
 
 AuthContainerView::~AuthContainerView() {
@@ -172,6 +176,8 @@ AuthContainerView::~AuthContainerView() {
   password_observer_.reset();
 
   pin_status_ = nullptr;
+
+  fingerprint_view_ = nullptr;
 }
 
 void AuthContainerView::AddPasswordView() {
@@ -216,6 +222,14 @@ void AuthContainerView::AddPinStatusView() {
   pin_status_->SetVisible(false);
 }
 
+void AuthContainerView::AddFingerprintView() {
+  CHECK_EQ(fingerprint_view_, nullptr);
+  fingerprint_view_ = AddChildView(std::make_unique<FingerprintView>());
+  if (available_auth_factors_.Has(AuthInputType::kFingerprint)) {
+    SetFingerprintState(FingerprintState::AVAILABLE_DEFAULT);
+  }
+}
+
 gfx::Size AuthContainerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   int preferred_height = 0;
@@ -231,6 +245,11 @@ gfx::Size AuthContainerView::CalculatePreferredSize(
 
   if (pin_status_->GetVisible()) {
     preferred_height += pin_status_->GetPreferredSize(available_size).height();
+  }
+
+  if (fingerprint_view_->GetVisible()) {
+    preferred_height +=
+        fingerprint_view_->GetPreferredSize(available_size).height();
   }
 
   if (switch_button_->GetVisible()) {
@@ -280,6 +299,9 @@ void AuthContainerView::SetHasPin(bool has_pin) {
   }
   available_auth_factors_.PutOrRemove(AuthInputType::kPin, has_pin);
 
+  CHECK(fingerprint_view_);
+  fingerprint_view_->SetHasPin(has_pin);
+
   UpdateAuthInput();
   UpdateSwitchButtonState();
   PreferredSizeChanged();
@@ -293,6 +315,16 @@ void AuthContainerView::SetPinStatus(const std::u16string& status_str) {
   pin_status_->SetText(status_str);
   pin_status_->SetVisible(!status_str.empty());
   PreferredSizeChanged();
+}
+
+void AuthContainerView::SetFingerprintState(FingerprintState state) {
+  CHECK(fingerprint_view_);
+  fingerprint_view_->SetState(state);
+}
+
+void AuthContainerView::NotifyFingerprintAuthFailure() {
+  CHECK(fingerprint_view_);
+  fingerprint_view_->NotifyAuthFailure();
 }
 
 void AuthContainerView::SetInputEnabled(bool enabled) {

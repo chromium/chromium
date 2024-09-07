@@ -246,8 +246,8 @@ CSSValue* ComputedStyleUtils::ValueForOffset(const ComputedStyle& style,
 
 const CSSValue* ComputedStyleUtils::ValueForColor(
     const StyleColor& style_color) {
-  if (style_color.IsUnresolvedColorMixFunction()) {
-    return style_color.GetUnresolvedColorMix().ToCSSColorMixValue();
+  if (style_color.IsUnresolvedColorFunction()) {
+    return style_color.GetUnresolvedColorFunction().ToCSSValue();
   }
   if (style_color.IsCurrentColor()) {
     return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);

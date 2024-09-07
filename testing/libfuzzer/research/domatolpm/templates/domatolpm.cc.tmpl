@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <limits>
 #include <string>
 
@@ -12,13 +13,13 @@
 
 namespace {
 {% for func in functions %}
-std::string {{func['name']}}(domatolpm::Context* ctx, {{func['proto_type']}});
+std::string {{func['name']}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func['proto_type']}});
 {% endfor %}
 {% for func in oneoffunctions %}
-std::string {{func['name']}}(domatolpm::Context* ctx, {{func['proto_type']}});
+std::string {{func['name']}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func['proto_type']}});
 {% endfor %}
 {% for func in stfunctions %}
-std::string {{func['name']}}(domatolpm::Context* ctx, {{func['proto_type']}});
+std::string {{func['name']}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func['proto_type']}});
 {% endfor %}
 
 template <typename From, typename To>
@@ -27,8 +28,7 @@ template <typename From, typename To>
                                                    const To& min = std::numeric_limits<To>::min(),
                                                    const To& max = std::numeric_limits<To>::max()) {
     To conv = arg;
-    To bound = max - min;
-    return std::to_string((conv % bound) + min);
+    return std::to_string(std::clamp(conv, min, max));
 }
 
 [[maybe_unused]] std::string handle_float(domatolpm::Context* ctx [[maybe_unused]], const float& arg) {
@@ -53,7 +53,7 @@ template <typename From, typename To>
 }
 
 {% if generate_one_line_handler -%}
-std::string handle_one_line(domatolpm::Context* ctx, const {{proto_ns}}line& arg) {
+std::string handle_one_line(domatolpm::Context* ctx, const {{proto_ns}}::line& arg) {
     ctx->GetBuilder()->append("{{line_prefix}}");
     ctx->GetBuilder()->append(handle_line(ctx, arg));
     ctx->GetBuilder()->append("{{line_suffix}}\n");
@@ -63,11 +63,11 @@ std::string handle_one_line(domatolpm::Context* ctx, const {{proto_ns}}line& arg
 
 {% for func in functions %}
 {% if not func.creates_new() and func.exprs|length == 1 %}
-[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, {{func.proto_type}}) {
+[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func.proto_type}}) {
     return {{func.exprs[0].repr()}};
 }
 {% else %}
-[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, {{func.proto_type}}) {
+[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func.proto_type}}) {
     std::string buf;
 {% if func.creates_new() %}
     std::string varname = std::string("{{func.creator['var_prefix']}}") + ctx->GetNewID();
@@ -101,7 +101,7 @@ std::string handle_one_line(domatolpm::Context* ctx, const {{proto_ns}}line& arg
 {% endfor %}
 
 {% for func in stfunctions %}
-[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, {{func.proto_type}}) {
+[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func.proto_type}}) {
     static const char *possibilities[] = {
         {% for string in func.strings %}
         {{string.repr()}},
@@ -112,7 +112,7 @@ std::string handle_one_line(domatolpm::Context* ctx, const {{proto_ns}}line& arg
 {% endfor %}
 
 {% for func in oneoffunctions %}
-[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, {{func.proto_type}}) {
+[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func.proto_type}}) {
     {% for k, v in func.all_except_last().items() %}
     if (arg.has_{{k}}()) {
         {% if v|length == 1 %}
@@ -147,7 +147,7 @@ std::string handle_one_line(domatolpm::Context* ctx, const {{proto_ns}}line& arg
 {% endfor %}
 
 {% if generate_repeated_lines %}
-std::string handle_lines(domatolpm::Context* ctx, const {{proto_ns}}lines& arg) {
+std::string handle_lines(domatolpm::Context* ctx, const {{proto_ns}}::lines& arg) {
     for (const auto& line: arg.lines_v()) {
         handle_one_line(ctx, line);
     }
@@ -157,9 +157,9 @@ std::string handle_lines(domatolpm::Context* ctx, const {{proto_ns}}lines& arg) 
 
 }
 
+namespace {{cpp_ns}} {
 
-
-bool {{root.name}}(domatolpm::Context* ctx, {{root.proto_type}}) {
+bool {{root.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{root.proto_type}}) {
     std::string buf;
     buf.reserve(1024 * 128);
 {% for expr in root.exprs %}
@@ -168,3 +168,5 @@ bool {{root.name}}(domatolpm::Context* ctx, {{root.proto_type}}) {
     ctx->GetBuilder()->append(buf);
     return true;
 }
+
+} // {{cpp_ns}}

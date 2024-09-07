@@ -17,6 +17,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -34,6 +35,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_storage.pb.h"
@@ -52,6 +54,7 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
+#include "third_party/snappy/src/snappy.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "url/origin.h"
 
@@ -63,6 +66,19 @@ using PassKey = base::PassKey<InterestGroupStorage>;
 using auction_worklet::mojom::BiddingBrowserSignalsPtr;
 using auction_worklet::mojom::PreviousWinPtr;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AdProtoDecompressionOutcome)
+enum class AdProtoDecompressionOutcome {
+  kSuccess = 0,
+  kFailure = 1,
+
+  kMaxValue = kFailure,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:AdProtoDecompressionOutcome)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -181,6 +197,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 27 - 2024/05 - crrev.com/c/5521957
 // Version 28 - 2024/06 - crrev.com/c/5647523
 // Version 29 - 2024/06 - crrev.com/c/5753049
+// Version 30 - 2024/08 - crrev.com/c/5707491
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -219,12 +236,14 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 27 stores k-anon values and update times in interest group table.
 // Version 28 adds trusted bidding signals coordinator.
 // Version 29 adds selectableBuyerAndSellerReportingIds field to ad object.
+// Version 30 compresses the AdsProto field using Snappy compression and runs a
+// VACUUM command.
 
-const int kCurrentVersionNumber = 29;
+const int kCurrentVersionNumber = 30;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 29;
+const int kCompatibleVersionNumber = 30;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -417,8 +436,11 @@ AdProtos GetAdProtosFromAds(std::vector<blink::InterestGroup::Ad> ads) {
   return ad_protos;
 }
 
-std::string Serialize(
+// Upgrade code needs to serialize without compression -- otherwise, the
+// Serialize() method below is used.
+std::string SerializeUncompressed(
     const std::optional<std::vector<blink::InterestGroup::Ad>>& ads) {
+  base::TimeTicks start = base::TimeTicks::Now();
   std::string serialized_ads;
   AdProtos ad_protos =
       ads.has_value() ? GetAdProtosFromAds(ads.value()) : AdProtos();
@@ -433,7 +455,30 @@ std::string Serialize(
         InterestGroupStorageProtoSerializationResult::kFailed);
     // TODO(crbug.com/355010821): Consider bubbling out the failure.
   }
+  base::UmaHistogramTimes("Storage.InterestGroup.AdProtoSerializationTime",
+                          base::TimeTicks::Now() - start);
   return serialized_ads;
+}
+
+std::string Serialize(
+    const std::optional<std::vector<blink::InterestGroup::Ad>>& ads) {
+  std::string serialized_ads = SerializeUncompressed(ads);
+
+  std::string compressed;
+  base::TimeTicks start = base::TimeTicks::Now();
+  snappy::Compress(serialized_ads.data(), serialized_ads.size(), &compressed);
+  base::UmaHistogramTimes("Storage.InterestGroup.AdProtoCompressionTime",
+                          base::TimeTicks::Now() - start);
+  if (serialized_ads.size() > 0u) {
+    base::UmaHistogramPercentage(
+        "Storage.InterestGroup.AdProtoCompressionRatio",
+        compressed.size() * 100 / serialized_ads.size());
+  }
+  base::UmaHistogramCounts1M("Storage.InterestGroup.AdProtoSizeUncompressed",
+                             serialized_ads.size());
+  base::UmaHistogramCounts1M("Storage.InterestGroup.AdProtoSizeCompressed",
+                             compressed.size());
+  return compressed;
 }
 
 std::optional<std::vector<blink::InterestGroup::Ad>>
@@ -455,19 +500,22 @@ DeserializeInterestGroupAdVectorJson(const PassKey& passkey,
   return result;
 }
 
+// Upgrade code needs to deserialize without decompression -- otherwise,
+// DecompressAndDeserializeInterestGroupAdVectorProto() is used.
 std::optional<std::vector<blink::InterestGroup::Ad>>
 DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
                                       const std::string& serialized_ads) {
+  base::TimeTicks start = base::TimeTicks::Now();
   AdProtos ad_protos;
 
   bool success = ad_protos.ParseFromString(serialized_ads);
 
   if (success) {
-    base::UmaHistogramEnumeration(
+    UMA_HISTOGRAM_ENUMERATION(
         "Storage.InterestGroup.ProtoDeserializationResult.AdProtos",
         InterestGroupStorageProtoDeserializationResult::kSucceeded);
   } else {
-    base::UmaHistogramEnumeration(
+    UMA_HISTOGRAM_ENUMERATION(
         "Storage.InterestGroup.ProtoDeserializationResult.AdProtos",
         InterestGroupStorageProtoDeserializationResult::kFailed);
     // TODO(crbug.com/355010821): Consider bubbling out the failure.
@@ -520,7 +568,29 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
           std::move(allowed_reporting_origins_vector);
     }
   }
+  UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoDeserializationTime",
+                      base::TimeTicks::Now() - start);
   return out;
+}
+
+std::optional<std::vector<blink::InterestGroup::Ad>>
+DecompressAndDeserializeInterestGroupAdVectorProto(
+    const PassKey& passkey,
+    const std::string& compressed) {
+  std::string serialized_ads;
+  base::TimeTicks start = base::TimeTicks::Now();
+  if (!snappy::Uncompress(compressed.data(), compressed.size(),
+                          &serialized_ads)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.AdProtoDecompressionOutcome",
+        AdProtoDecompressionOutcome::kFailure);
+    return std::nullopt;
+  }
+  UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoDecompressionTime",
+                      base::TimeTicks::Now() - start);
+  UMA_HISTOGRAM_ENUMERATION("Storage.InterestGroup.AdProtoDecompressionOutcome",
+                            AdProtoDecompressionOutcome::kSuccess);
+  return DeserializeInterestGroupAdVectorProto(passkey, serialized_ads);
 }
 
 std::string Serialize(
@@ -1115,6 +1185,90 @@ bool VacuumDB(sql::Database& db) {
   return db.Execute(kVacuum);
 }
 
+bool UpgradeV29SchemaToV30(sql::Database& db, sql::MetaTable& meta_table) {
+  // There are no new columns, but the `ads_pb` and `ad_components_pb` columns
+  // get compressed with Snappy.
+
+  // clang-format off
+  sql::Statement select_prev_groups(
+      db.GetCachedStatement(SQL_FROM_HERE,
+      "SELECT owner,"
+      "name,"
+      "ads_pb,"
+      "ad_components_pb "
+      "FROM interest_groups"));
+      //  clang-format-on
+  if (!select_prev_groups.is_valid()) {
+    return false;
+  }
+
+  // clang-format off
+  sql::Statement update_group(db.GetCachedStatement(SQL_FROM_HERE,
+      "UPDATE interest_groups "
+      "SET ads_pb=?,"
+        "ad_components_pb=? "
+      "WHERE owner=? AND name=?"));
+  // clang-format on
+  if (!update_group.is_valid()) {
+    return false;
+  }
+
+  while (select_prev_groups.Step()) {
+    update_group.Reset(/*clear_bound_vars=*/true);
+
+    // Update the `ads_pb` and `ad_components_pb` columns with their contents
+    // compressed with Snappy.
+    std::string compressed_ads_pb;
+    base::span<const uint8_t> ads_pb = select_prev_groups.ColumnBlob(2);
+    base::TimeTicks start_ads = base::TimeTicks::Now();
+    snappy::Compress(reinterpret_cast<const char*>(ads_pb.data()),
+                     ads_pb.size(), &compressed_ads_pb);
+    UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoCompressionTime",
+                        base::TimeTicks::Now() - start_ads);
+    update_group.BindBlob(0, base::as_byte_span(compressed_ads_pb));
+    if (ads_pb.size() > 0u) {
+      base::UmaHistogramPercentage(
+          "Storage.InterestGroup.AdProtoCompressionRatio",
+          compressed_ads_pb.size() * 100 / ads_pb.size());
+    }
+    UMA_HISTOGRAM_COUNTS_1M("Storage.InterestGroup.AdProtoSizeUncompressed",
+                            ads_pb.size());
+    UMA_HISTOGRAM_COUNTS_1M("Storage.InterestGroup.AdProtoSizeCompressed",
+                            compressed_ads_pb.size());
+
+    std::string compressed_ad_components_pb;
+    base::span<const uint8_t> ad_components_pb =
+        select_prev_groups.ColumnBlob(3);
+    base::TimeTicks start_ad_components = base::TimeTicks::Now();
+    snappy::Compress(reinterpret_cast<const char*>(ad_components_pb.data()),
+                     ad_components_pb.size(), &compressed_ad_components_pb);
+    UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoCompressionTime",
+                        base::TimeTicks::Now() - start_ad_components);
+    update_group.BindBlob(1, base::as_byte_span(compressed_ad_components_pb));
+    if (ad_components_pb.size() > 0u) {
+      base::UmaHistogramPercentage(
+          "Storage.InterestGroup.AdProtoCompressionRatio",
+          compressed_ad_components_pb.size() * 100 / ad_components_pb.size());
+    }
+    UMA_HISTOGRAM_COUNTS_1M("Storage.InterestGroup.AdProtoSizeUncompressed",
+                            ad_components_pb.size());
+    UMA_HISTOGRAM_COUNTS_1M("Storage.InterestGroup.AdProtoSizeCompressed",
+                            compressed_ad_components_pb.size());
+
+    update_group.BindString(2, select_prev_groups.ColumnString(0));
+    update_group.BindString(3, select_prev_groups.ColumnString(1));
+
+    if (!update_group.Run()) {
+      return false;
+    }
+  }
+  if (!select_prev_groups.Succeeded()) {
+    return false;
+  }
+
+  return true;
+}
+
 bool UpgradeV27SchemaToV28(sql::Database& db, sql::MetaTable& meta_table) {
   // Make a table with new columns `trusted_bidding_signals_protocol_version`
   // and `trusted_bidding_signals_coordinator.`
@@ -1224,7 +1378,7 @@ bool UpgradeV27SchemaToV28(sql::Database& db, sql::MetaTable& meta_table) {
 }
 
 bool UpgradeV26SchemaToV27(sql::Database& db, sql::MetaTable& meta_table) {
-  // Make a table with new columns `last_k_anon_updated_time` and `kanon_keys.`
+  // Make a table with new columns `last_k_anon_updated_time` and `kanon_keys`.
   static const char kInterestGroupTableSql[] =
       // clang-format off
     "CREATE TABLE new_interest_groups("
@@ -2118,8 +2272,8 @@ bool UpgradeV15SchemaToV16(sql::Database& db,
                                              kSelectIGsWithAds.ColumnString(3),
                                              /*for_components=*/true);
 
-    std::string serialized_ads = Serialize(ads);
-    std::string serialized_ad_components = Serialize(ad_components);
+    std::string serialized_ads = SerializeUncompressed(ads);
+    std::string serialized_ad_components = SerializeUncompressed(ad_components);
 
     sql::Statement insert_value_into_IG(db.GetCachedStatement(
         SQL_FROM_HERE,
@@ -2879,6 +3033,12 @@ bool UpgradeDB(sql::Database& db,
         // forwards-compatible because `FromInterestGroupAdValue` correctly
         // handles the lack of a value for
         // `selectable_buyer_and_seller_reporting_ids`.
+        ABSL_FALLTHROUGH_INTENDED;
+      case 29:
+        vacuum_db_post_upgrade = true;
+        if (!UpgradeV29SchemaToV30(db, meta_table)) {
+          return false;
+        }
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
           return false;
         }
@@ -3153,10 +3313,11 @@ void PopulateInterestGroupFromQueryResult(sql::Statement& load,
   if (load.GetColumnType(19) != sql::ColumnType::kNull) {
     group.interest_group.user_bidding_signals = load.ColumnString(19);
   }
-  group.interest_group.ads =
-      DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(20));
+  group.interest_group.ads = DecompressAndDeserializeInterestGroupAdVectorProto(
+      passkey, load.ColumnString(20));
   group.interest_group.ad_components =
-      DeserializeInterestGroupAdVectorProto(passkey, load.ColumnString(21));
+      DecompressAndDeserializeInterestGroupAdVectorProto(passkey,
+                                                         load.ColumnString(21));
   group.interest_group.ad_sizes =
       DeserializeStringSizeMap(load.ColumnString(22));
   group.interest_group.size_groups =
@@ -3370,7 +3531,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
           "last_k_anon_updated_time,"
           "kanon_keys) "
         "VALUES("
-          "?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+          "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         ));
 
   // clang-format on
@@ -4264,10 +4425,9 @@ bool GetBidCount(sql::Database& db,
   return bid_count.Succeeded();
 }
 
-void DoGetDebugReportLockout(
+std::optional<base::Time> DoGetDebugReportLockout(
     sql::Database& db,
-    std::optional<base::Time> ignore_before,
-    DebugReportLockoutAndCooldowns& debug_report_lockout_and_cooldowns) {
+    std::optional<base::Time> ignore_before) {
   sql::Statement sent_time(
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT last_report_sent_time "
@@ -4276,13 +4436,13 @@ void DoGetDebugReportLockout(
   if (!sent_time.is_valid()) {
     DLOG(ERROR) << "GetLastDebugReportSentDate SQL statement did not compile: "
                 << db.GetErrorMessage();
-    return;
+    return std::nullopt;
   }
   sent_time.BindTime(0, ignore_before.value_or(base::Time::Min()));
   if (sent_time.Step()) {
-    debug_report_lockout_and_cooldowns.last_report_sent_time =
-        sent_time.ColumnTime(0);
+    return sent_time.ColumnTime(0);
   }
+  return std::nullopt;
 }
 
 std::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
@@ -5529,6 +5689,14 @@ std::vector<std::string> InterestGroupStorage::ClearOriginJoinedInterestGroups(
   return std::move(left_interest_groups.value());
 }
 
+std::optional<base::Time> InterestGroupStorage::GetDebugReportLockout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return std::nullopt;
+  }
+  return DoGetDebugReportLockout(*db_, GetSampleDebugReportStartingFrom());
+}
+
 std::optional<DebugReportLockoutAndCooldowns>
 InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
     base::flat_set<url::Origin> origins) {
@@ -5537,22 +5705,12 @@ InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
     return std::nullopt;
   }
   DebugReportLockoutAndCooldowns debug_report_lockout_and_cooldowns;
+
   // Ignore lockout and cooldowns whose start time is before
   // kFledgeEnableFilteringDebugReportStartingFrom.
-  std::optional<base::Time> ignore_before;
-  if (blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
-      base::Milliseconds(0)) {
-    // Also ceil kFledgeEnableFilteringDebugReportStartingFrom to its nearest
-    // next hour, in the same way as lockout and cooldown start time are ceiled.
-    // Otherwise, it's possible that the ceiled lockout/cooldowns collected
-    // before this flag being greater than the flag, which caused them not being
-    // ignored when they should be.
-    ignore_before = base::Time::FromDeltaSinceWindowsEpoch(
-        blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get()
-            .CeilToMultiple(base::Hours(1)));
-  }
-  DoGetDebugReportLockout(*db_, ignore_before,
-                          debug_report_lockout_and_cooldowns);
+  std::optional<base::Time> ignore_before = GetSampleDebugReportStartingFrom();
+  debug_report_lockout_and_cooldowns.last_report_sent_time =
+      DoGetDebugReportLockout(*db_, ignore_before);
   DoGetDebugReportCooldowns(*db_, std::move(origins), ignore_before,
                             debug_report_lockout_and_cooldowns);
   return debug_report_lockout_and_cooldowns;

@@ -19,13 +19,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/android_buildflags.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
-#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/common/constants.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
@@ -72,12 +73,7 @@ InstallableParams ParamsToFetchPrimaryIcon() {
 InstallableParams ParamsToPerformInstallableCheck() {
   InstallableParams params;
   params.check_eligibility = true;
-  params.installable_criteria =
-      InstallableCriteria::kImplicitManifestFieldsHTML;
-  if (base::FeatureList::IsEnabled(
-          features::kUniversalInstallRootScopeNoManifest)) {
     params.installable_criteria = InstallableCriteria::kNoManifestAtRootScope;
-  }
   return params;
 }
 
@@ -218,7 +214,16 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
 
   installable_status_code_ = data.GetFirstError();
 
-  if (!webapk_compatible) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  constexpr bool is_desktop_android = true;
+#else
+  constexpr bool is_desktop_android = false;
+#endif
+
+  // Desktop Android is allowed to install incompatible sites as apps.
+  // Regular Android installs them as shortcuts.
+  // TODO(b/362975239): Fix the compatibility check on desktop Android.
+  if (!webapk_compatible && !is_desktop_android) {
     PrepareToAddShortcut();
     return;
   }

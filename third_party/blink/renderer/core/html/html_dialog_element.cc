@@ -299,7 +299,8 @@ bool HTMLDialogElement::IsKeyboardFocusable(
   }
   // This handles cases such as <dialog tabindex=0>, <dialog contenteditable>,
   // etc.
-  return Element::SupportsFocus(update_behavior) &&
+  return Element::SupportsFocus(update_behavior) !=
+             FocusableState::kNotFocusable &&
          GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
 }
 
@@ -400,6 +401,11 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLDialogElement* old_modal_dialog = document.ActiveModalDialog();
   HTMLElement::RemovedFrom(insertion_point);
   InertSubtreesChanged(document, old_modal_dialog);
+
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    return;
+  }
+
   SetIsModal(false);
 
   if (close_watcher_) {
@@ -409,8 +415,6 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
-  if (!RuntimeEnabledFeatures::CloseWatcherEnabled())
-    return;
   // https://wicg.github.io/close-watcher/#patch-dialog cancelAction
 
   Event* dialog_event = close_watcher_event->cancelable()
@@ -423,8 +427,6 @@ void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
 }
 
 void HTMLDialogElement::CloseWatcherFiredClose() {
-  if (!RuntimeEnabledFeatures::CloseWatcherEnabled())
-    return;
   // https://wicg.github.io/close-watcher/#patch-dialog closeAction
 
   close();

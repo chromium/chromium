@@ -103,9 +103,9 @@ class UseCounterMetricsRecorder {
       uma_permissions_policy_header2_;
 
   // To keep tracks of which features have been measured.
-  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kMaxValue) + 1>
       ukm_features_recorded_;
-  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kMaxValue) + 1>
       webdev_metrics_ukm_features_recorded_;
 };
 

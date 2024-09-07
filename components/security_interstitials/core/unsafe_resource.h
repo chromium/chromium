@@ -48,17 +48,23 @@ struct UnsafeResource {
 
   using UrlCheckCallback = base::RepeatingCallback<void(UrlCheckResult)>;
 
-  // TODO(crbug.com/40686246): These are content/ specific ids that need to be
-  // plumbed through this struct.
+  // TODO(https://crbug.com/40686246): These are content/ specific types that
+  // are used in this struct, in violation of layering. Refactor and remove
+  // them.
+  //
+  // TODO(https://crbug.com/40683815): Note that components/safe_browsing relies
+  // on this violation of layering to implement its own layering violation, so
+  // that issue might need to be fixed first.
+
   // Equivalent to GlobalRenderFrameHostId.
   using RenderProcessId = int;
   using RenderFrameToken = std::optional<base::UnguessableToken>;
-  // See RenderFrameHost::GetFrameTreeNodeId.
+  // This is the underlying value type of content::FrameTreeNodeId.
   using FrameTreeNodeId = int;
   // Copies of the sentinel values used in content/.
   // Equal to ChildProcessHost::kInvalidUniqueID.
   static constexpr RenderProcessId kNoRenderProcessId = -1;
-  // Equal to RenderFrameHost::kNoFrameTreeNodeId.
+  // Equal to the invalid value of content::FrameTreeNodeId.
   static constexpr FrameTreeNodeId kNoFrameTreeNodeId = -1;
 
   UnsafeResource();

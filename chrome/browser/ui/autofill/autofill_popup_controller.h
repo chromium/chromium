@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 
 namespace input {
 struct NativeWebKeyboardEvent;
@@ -61,9 +62,11 @@ class AutofillPopupController : public AutofillSuggestionController {
   // observed out of bounds - see `PopupRowView` for more detail.
   virtual bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const = 0;
 
-  // Executes the action associated with the button that is displayed in the
-  // suggestion at `index`. Button actions depend on the type of the suggestion.
-  virtual void PerformButtonActionForSuggestion(int index) = 0;
+  // Executes the `button_action` associated with the button that is displayed
+  // in the suggestion at `index`.
+  virtual void PerformButtonActionForSuggestion(
+      int index,
+      const SuggestionButtonAction& button_action) = 0;
 
   // If the filter is set, returns the same number of items as returned by
   // `AutofillSuggestionController::GetSuggestions()`, indicating how each

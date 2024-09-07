@@ -114,8 +114,8 @@ class VirtualCardEnrollmentManager {
   using VirtualCardEnrollmentFieldsLoadedCallback = base::OnceCallback<void(
       VirtualCardEnrollmentFields* virtual_card_enrollment_fields)>;
 
-  using VirtualCardEnrollmentUpdateResponseCallback =
-      base::OnceCallback<void(bool)>;
+  using VirtualCardEnrollmentUpdateResponseCallback = base::OnceCallback<void(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result)>;
 
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit
@@ -206,7 +206,8 @@ class VirtualCardEnrollmentManager {
 
   // Called after virtual card enrollment is completed. Will show enroll result
   // to users.
-  void OnVirtualCardEnrollCompleted(bool is_vcn_enrolled);
+  void OnVirtualCardEnrollCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result);
 
   // Resets the state of this VirtualCardEnrollmentManager.
   virtual void Reset();

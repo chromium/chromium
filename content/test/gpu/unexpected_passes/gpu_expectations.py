@@ -3,12 +3,12 @@
 # found in the LICENSE file.
 """GPU-specific implementation of the unexpected passes' expectations module."""
 
-from __future__ import print_function
-
 import collections
 import logging
 import os
 from typing import FrozenSet, List, Optional, Set
+
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 import validate_tag_consistency
 
@@ -20,6 +20,62 @@ from unexpected_passes_common import expectations
 EXPECTATIONS_DIR = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', 'gpu_tests',
                  'test_expectations'))
+
+
+@dataclasses.dataclass
+class _OverlappingTagConfig:
+  identifier_tags: List[Set[str]]
+  tags_to_remove: Set[str]
+
+  def AppliesToTags(self, typ_tags: Set[str]) -> bool:
+    for it in self.identifier_tags:
+      if it <= typ_tags:
+        return True
+    return False
+
+
+_SPECIFIC_MAC_VERSIONS = validate_tag_consistency.TAG_SPECIALIZATIONS[
+    'OS_TAGS']['mac']
+
+
+def _GenerateMacIdentifierTags(gpu: str) -> List[Set[str]]:
+  identifier_tags = []
+  for mac_version in _SPECIFIC_MAC_VERSIONS:
+    identifier_tags.append({gpu, mac_version})
+  return identifier_tags
+
+
+_DUAL_GPU_MAC_TAG_CONFIGS = [
+    # 2015 Macbook Pros.
+    _OverlappingTagConfig(identifier_tags=[
+        {'amd-0x6821', 'mac'},
+        {'amd-0x6821', 'intel-0xd26'},
+    ] + _GenerateMacIdentifierTags('amd-0x6821'),
+                          tags_to_remove={
+                              'intel',
+                              'intel-0xd26',
+                          }),
+    # 15" 2019 Macbook Pros.
+    _OverlappingTagConfig(identifier_tags=[
+        {'amd-0x67ef', 'mac'},
+        {'amd-0x67ef', 'intel-0x3e9b'},
+    ] + _GenerateMacIdentifierTags('amd-0x67ef'),
+                          tags_to_remove={
+                              'intel',
+                              'intel-0x3e9b',
+                              'intel-gen-9',
+                          }),
+    # 16" 2019 Macbook Pros.
+    _OverlappingTagConfig(identifier_tags=[
+        {'amd-0x7340', 'mac'},
+        {'amd-0x7340', 'intel-0x3e9b'},
+    ] + _GenerateMacIdentifierTags('amd-0x7340'),
+                          tags_to_remove={
+                              'intel',
+                              'intel-0x3e9b',
+                              'intel-gen-9',
+                          }),
+]
 
 
 class GpuExpectations(expectations.Expectations):
@@ -70,10 +126,8 @@ class GpuExpectations(expectations.Expectations):
   def _ConsolidateKnownOverlappingTags(self, typ_tags: FrozenSet[str]
                                        ) -> FrozenSet[str]:
     typ_tags = set(typ_tags)
-    # 2015 Macbook Pros w/ dual GPUs.
-    if {'amd-0x6821', 'intel-0xd26'} <= typ_tags:
-      typ_tags -= {'intel', 'intel-0xd26'}
-    # 2019 Macbook Pros w/ dual GPUs.
-    elif {'amd-0x67ef', 'intel-0x3e9b'} <= typ_tags:
-      typ_tags -= {'intel', 'intel-0x3e9b'}
+    for tag_config in _DUAL_GPU_MAC_TAG_CONFIGS:
+      if tag_config.AppliesToTags(typ_tags):
+        typ_tags -= tag_config.tags_to_remove
+        break
     return frozenset(typ_tags)

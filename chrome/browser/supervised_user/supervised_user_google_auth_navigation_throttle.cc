@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -162,25 +163,11 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  content::WebContents* web_contents = navigation_handle()->GetWebContents();
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  // Create the re-authentication page.
-  std::unique_ptr<SupervisedUserVerificationPage> blocking_page =
-      std::make_unique<SupervisedUserVerificationPage>(
-          web_contents, profile->GetProfileUserName(), request_url,
-          SupervisedUserVerificationPage::VerificationPurpose::
-              REAUTH_REQUIRED_SITE,
-          std::make_unique<SupervisedUserVerificationControllerClient>(
-              web_contents, profile->GetPrefs(),
-              g_browser_process->GetApplicationLocale(),
-              GURL(chrome::kChromeUINewTabURL), request_url));
-
   // Cancel the navigation and show the re-authentication page.
-  std::string interstitial_html = blocking_page->GetHTMLContents();
-  security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      navigation_handle(), std::move(blocking_page));
+  std::string interstitial_html =
+      supervised_user::CreateReauthenticationInterstitial(
+          *navigation_handle(), SupervisedUserVerificationPage::
+                                    VerificationPurpose::REAUTH_REQUIRED_SITE);
   return content::NavigationThrottle::ThrottleCheckResult(
       content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
       interstitial_html);

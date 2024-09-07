@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -82,10 +83,10 @@ OneClickSigninDialogView::OneClickSigninDialogView(
   constexpr int kMinimumDialogLabelWidth = 400;
   views::Builder<OneClickSigninDialogView>(this)
       .SetButtonLabel(
-          ui::DIALOG_BUTTON_OK,
+          ui::mojom::DialogButton::kOk,
           l10n_util::GetStringUTF16(IDS_ONE_CLICK_SIGNIN_DIALOG_OK_BUTTON))
       .SetButtonLabel(
-          ui::DIALOG_BUTTON_CANCEL,
+          ui::mojom::DialogButton::kCancel,
           l10n_util::GetStringUTF16(IDS_ONE_CLICK_SIGNIN_DIALOG_UNDO_BUTTON))
       .SetModalType(ui::mojom::ModalType::kWindow)
       .SetTitle(IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW)

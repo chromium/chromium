@@ -27,8 +27,9 @@ void RegisterWhatsNewModulesForTests(whats_new::WhatsNewRegistry* registry) {
   // Test Module
   registry->RegisterModule(
       whats_new::WhatsNewModule(kTestModule, "mickeyburks@chromium.org"));
-  registry->RegisterModule(whats_new::WhatsNewModule(
-      "mickeyburks@chromium.org", BrowserCommand::kNoOpCommand));
+  registry->RegisterModule(
+      whats_new::WhatsNewModule("TestDefaultModule", "mickeyburks@chromium.org",
+                                BrowserCommand::kNoOpCommand));
 }
 
 void RegisterWhatsNewEditionsForTests(whats_new::WhatsNewRegistry* registry) {
@@ -80,10 +81,9 @@ TEST(WhatsNewRegistrarTest, CheckModuleHistograms) {
   RegisterWhatsNewModulesForTests(&registry);
   const auto& modules = registry.modules();
   for (const auto& module : modules) {
-    if (module.HasFeature()) {
-      if (!base::Contains(*variants, module.GetFeatureName())) {
-        missing_modules.emplace_back(module.GetFeatureName());
-      }
+    const auto metric_name = module.metric_name();
+    if (!base::Contains(*variants, metric_name)) {
+      missing_modules.emplace_back(metric_name);
     }
   }
   ASSERT_TRUE(missing_modules.empty())
@@ -111,10 +111,9 @@ TEST(WhatsNewRegistrarTest, CheckModuleActions) {
   RegisterWhatsNewModulesForTests(&registry);
   const auto& modules = registry.modules();
   for (const auto& module : modules) {
-    if (module.HasFeature()) {
-      if (!base::Contains(suffixes[0], module.GetFeatureName())) {
-        missing_modules.emplace_back(module.GetFeatureName());
-      }
+    const auto metric_name = module.metric_name();
+    if (!base::Contains(suffixes[0], metric_name)) {
+      missing_modules.emplace_back(metric_name);
     }
   }
   ASSERT_TRUE(missing_modules.empty())
@@ -141,8 +140,9 @@ TEST(WhatsNewRegistrarTest, CheckEditionActions) {
   RegisterWhatsNewEditionsForTests(&registry);
   const auto& editions = registry.editions();
   for (const auto& edition : editions) {
-    if (!base::Contains(suffixes[0], edition.GetFeatureName())) {
-      missing_editions.emplace_back(edition.GetFeatureName());
+    const auto metric_name = edition.metric_name();
+    if (!base::Contains(suffixes[0], metric_name)) {
+      missing_editions.emplace_back(metric_name);
     }
   }
   ASSERT_TRUE(missing_editions.empty())

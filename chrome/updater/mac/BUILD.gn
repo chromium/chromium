@@ -49,19 +49,19 @@ mac_app_bundle("updater_bundle") {
       [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
 
   sources = [ "main.cc" ]
-  deps = [
+  public_deps = [
     ":keystone_agent_bundle_resource_executable",
     ":keystone_agent_bundle_resource_plist",
+    ":ksadmin",
+    ":ksadmin_link",
     ":updater_bundle_helpers",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers_ksinstall",
     ":updater_bundle_keystone_plist",
+  ]
+  deps = [
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
-  ]
-  public_deps = [
-    ":ksadmin",
-    ":ksadmin_link",
   ]
 }
 
@@ -72,20 +72,23 @@ mac_app_bundle("updater_bundle_test") {
       [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
 
   sources = [ "main.cc" ]
-  deps = [
+  public_deps = [
     ":keystone_agent_bundle_resource_executable_test",
     ":keystone_agent_bundle_resource_plist",
+    ":ksadmin_test_copy",
     ":updater_bundle_helpers_test",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers_ksinstall",
     ":updater_bundle_keystone_plist",
+  ]
+  if (is_asan) {
+    public_deps +=
+        [ ":keystone_agent_bundle_resource_executable_test_asan_dylib" ]
+  }
+  deps = [
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
   ]
-  if (is_asan) {
-    deps += [ ":keystone_agent_bundle_resource_executable_test_asan_dylib" ]
-  }
-  public_deps = [ ":ksadmin_test_copy" ]
 }
 
 source_set("privileged_helper_sources") {
@@ -607,7 +610,6 @@ artifact_zip("updater_zip") {
     "$root_build_dir/Updater Packaging/signing/pkg-dmg",
     "$root_build_dir/Updater Packaging/signing/pkg/postinstall",
     "$root_build_dir/chrome/updater/.install",
-    "$root_build_dir/UpdaterSetup",
     "$root_build_dir/qualification_app",
     "$root_build_dir/${updater_product_full_name}Util",
   ]
@@ -618,7 +620,6 @@ artifact_zip("updater_zip") {
     ":updater_bundle",
     ":updater_bundle_test",
     ":updater_install_script",
-    "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
     "//chrome/updater/test/qualification_app",
     "//chrome/updater/tools:${updater_product_full_name}Util",

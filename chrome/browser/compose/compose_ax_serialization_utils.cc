@@ -209,8 +209,6 @@ optimization_guide::proto::AXRole RoleToProto(ax::mojom::Role role) {
       return optimization_guide::proto::AXRole::AX_ROLE_FIGURE;
     case ax::mojom::Role::kFooter:
       return optimization_guide::proto::AXRole::AX_ROLE_FOOTER;
-    case ax::mojom::Role::kFooterAsNonLandmark:
-      return optimization_guide::proto::AXRole::AX_ROLE_FOOTERASNONLANDMARK;
     case ax::mojom::Role::kForm:
       return optimization_guide::proto::AXRole::AX_ROLE_FORM;
     case ax::mojom::Role::kGenericContainer:
@@ -229,8 +227,6 @@ optimization_guide::proto::AXRole RoleToProto(ax::mojom::Role role) {
       return optimization_guide::proto::AXRole::AX_ROLE_GROUP;
     case ax::mojom::Role::kHeader:
       return optimization_guide::proto::AXRole::AX_ROLE_HEADER;
-    case ax::mojom::Role::kHeaderAsNonLandmark:
-      return optimization_guide::proto::AXRole::AX_ROLE_HEADERASNONLANDMARK;
     case ax::mojom::Role::kHeading:
       return optimization_guide::proto::AXRole::AX_ROLE_HEADING;
     case ax::mojom::Role::kIframe:
@@ -396,6 +392,10 @@ optimization_guide::proto::AXRole RoleToProto(ax::mojom::Role role) {
       return optimization_guide::proto::AXRole::AX_ROLE_SEARCHBOX;
     case ax::mojom::Role::kSection:
       return optimization_guide::proto::AXRole::AX_ROLE_SECTION;
+    case ax::mojom::Role::kSectionFooter:
+      return optimization_guide::proto::AXRole::AX_ROLE_SECTIONFOOTER;
+    case ax::mojom::Role::kSectionHeader:
+      return optimization_guide::proto::AXRole::AX_ROLE_SECTIONHEADER;
     case ax::mojom::Role::kSectionWithoutName:
       return optimization_guide::proto::AXRole::AX_ROLE_SECTIONWITHOUTNAME;
     case ax::mojom::Role::kSlider:
@@ -699,8 +699,9 @@ optimization_guide::proto::AXIntAttribute IntAttributeToProto(
     case ax::mojom::IntAttribute::kDropeffectDeprecated:
       return optimization_guide::proto::AXIntAttribute::
           AX_IA_DROPEFFECTDEPRECATED;
-    case ax::mojom::IntAttribute::kDOMNodeId:
-      return optimization_guide::proto::AXIntAttribute::AX_IA_DOMNODEID;
+    case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
+      return optimization_guide::proto::AXIntAttribute::
+          AX_IA_DOMNODEIDDEPRECATED;
     case ax::mojom::IntAttribute::kIsPopup:
       return optimization_guide::proto::AXIntAttribute::AX_IA_ISPOPUP;
     case ax::mojom::IntAttribute::kNextWindowFocusId:

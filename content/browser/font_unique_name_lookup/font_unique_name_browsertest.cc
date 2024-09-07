@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -29,52 +25,67 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-const char* const kExpectedFontFamilyNames[] = {
-    "AndroidClock",     "Droid Sans Mono",  "Roboto",
-    "Noto Color Emoji", "Noto Sans Lao UI", "Noto Sans Lao UI",
-    "Noto Sans Thai",   "Noto Sans Thai",   "Noto Sans Thai UI",
-    "Noto Sans Thai UI"};
+const auto kExpectedFontFamilyNames = std::to_array({
+    "AndroidClock",
+    "Droid Sans Mono",
+    "Roboto",
+    "Noto Color Emoji",
+    "Noto Sans Lao UI",
+    "Noto Sans Lao UI",
+    "Noto Sans Thai",
+    "Noto Sans Thai",
+    "Noto Sans Thai UI",
+    "Noto Sans Thai UI",
+});
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-const char* const kExpectedFontFamilyNames[] = {"Ahem",
-                                                "Arimo",
-                                                "Arimo",
-                                                "Arimo",
-                                                "Arimo",
-                                                "Cousine",
-                                                "Cousine",
-                                                "Cousine",
-                                                "Cousine",
-                                                "DejaVu Sans",
-                                                "DejaVu Sans",
-                                                "Garuda",
-                                                "Gelasio",
-                                                "Gelasio",
-                                                "Gelasio",
-                                                "Gelasio",
-                                                "Lohit Devanagari",
-                                                "Lohit Gurmukhi",
-                                                "Lohit Tamil",
-                                                "Noto Sans Khmer",
-                                                "Tinos",
-                                                "Tinos",
-                                                "Tinos",
-                                                "Tinos",
-                                                "Mukti Narrow",
-                                                "Tinos"};
+const auto kExpectedFontFamilyNames = std::to_array({
+    "Ahem",
+    "Arimo",
+    "Arimo",
+    "Arimo",
+    "Arimo",
+    "Cousine",
+    "Cousine",
+    "Cousine",
+    "Cousine",
+    "DejaVu Sans",
+    "DejaVu Sans",
+    "Garuda",
+    "Gelasio",
+    "Gelasio",
+    "Gelasio",
+    "Gelasio",
+    "Lohit Devanagari",
+    "Lohit Gurmukhi",
+    "Lohit Tamil",
+    "Noto Sans Khmer",
+    "Tinos",
+    "Tinos",
+    "Tinos",
+    "Tinos",
+    "Mukti Narrow",
+    "Tinos",
+});
 #elif BUILDFLAG(IS_APPLE)
-const char* const kExpectedFontFamilyNames[] = {"American Typewriter",
-                                                "Arial Narrow",
-                                                "Baskerville",
-                                                "Devanagari MT",
-                                                "DIN Alternate",
-                                                "Gill Sans",
-                                                "Iowan Old Style",
-                                                "Malayalam Sangam MN",
-                                                "Hiragino Maru Gothic Pro",
-                                                "Hiragino Kaku Gothic StdN"};
+const auto kExpectedFontFamilyNames = std::to_array({
+    "American Typewriter",
+    "Arial Narrow",
+    "Baskerville",
+    "Devanagari MT",
+    "DIN Alternate",
+    "Gill Sans",
+    "Iowan Old Style",
+    "Malayalam Sangam MN",
+    "Hiragino Maru Gothic Pro",
+    "Hiragino Kaku Gothic StdN",
+});
 #elif BUILDFLAG(IS_WIN)
-const char* const kExpectedFontFamilyNames[] = {
-    "Cambria Math", "MingLiU_HKSCS-ExtB", "NSimSun", "Calibri"};
+const auto kExpectedFontFamilyNames = std::to_array({
+    "Cambria Math",
+    "MingLiU_HKSCS-ExtB",
+    "NSimSun",
+    "Calibri",
+});
 #endif
 
 }  // namespace

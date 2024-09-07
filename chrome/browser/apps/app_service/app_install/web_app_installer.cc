@@ -202,6 +202,7 @@ void WebAppInstaller::OnManifestRetrieved(
         case AppInstallSurface::kAppInstallUriUnknown:
         case AppInstallSurface::kAppInstallUriShowoff:
         case AppInstallSurface::kAppInstallUriMall:
+        case AppInstallSurface::kAppInstallUriMallV2:
         case AppInstallSurface::kAppInstallUriGetit:
         case AppInstallSurface::kAppInstallUriLauncher:
         case AppInstallSurface::kAppInstallUriPeripherals:
@@ -228,6 +229,7 @@ void WebAppInstaller::OnManifestRetrieved(
         case AppInstallSurface::kAppInstallUriUnknown:
         case AppInstallSurface::kAppInstallUriShowoff:
         case AppInstallSurface::kAppInstallUriMall:
+        case AppInstallSurface::kAppInstallUriMallV2:
         case AppInstallSurface::kAppInstallUriGetit:
         case AppInstallSurface::kAppInstallUriLauncher:
         case AppInstallSurface::kAppInstallUriPeripherals:

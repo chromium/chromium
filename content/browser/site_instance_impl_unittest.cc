@@ -77,7 +77,8 @@ SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
                   WebExposedIsolationInfo::CreateNonIsolated(),
                   WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
                   /*does_site_request_dedicated_process_for_coop=*/false,
-                  /*is_jit_disabled=*/false, /*is_pdf=*/false,
+                  /*is_jit_disabled=*/false,
+                  /*are_v8_optimizations_disabled=*/false, /*is_pdf=*/false,
                   /*is_fenced=*/false,
                   /*agent_cluster_key=*/std::nullopt);
 }
@@ -305,7 +306,9 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                WebExposedIsolationInfo::CreateNonIsolated(),
                WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/true,
-               /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false,
+               /*is_jit_disabled=*/false,
+               /*are_v8_optimizations_disabled=*/false,
+               /*is_pdf=*/false, /*is_fenced=*/false,
                /*agent_cluster_key=*/std::nullopt);
   EXPECT_TRUE(
       site_info_1.IsSamePrincipalWith(site_info_1_with_isolation_request));
@@ -323,9 +326,30 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                WebExposedIsolationInfo::CreateNonIsolated(),
                WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
-               /*is_jit_disabled=*/true, /*is_pdf=*/false, /*is_fenced=*/false,
+               /*is_jit_disabled=*/true,
+               /*are_v8_optimizations_disabled=*/false,
+               /*is_pdf=*/false, /*is_fenced=*/false,
                /*agent_cluster_key=*/std::nullopt);
   EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_jit_disabled));
+
+  // Check that SiteInfos with differing values of
+  // `are_v8_optimizations_disabled` are not considered same-principal.
+  auto site_info_1_with_optimizations_disabled =
+      SiteInfo(GURL("https://www.foo.com") /* site_url */,
+               GURL("https://foo.com") /* process_lock_url */,
+               /*requires_origin_keyed_process=*/false,
+               /*requires_origin_keyed_process_by_default=*/false,
+               /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
+               CreateStoragePartitionConfigForTesting(),
+               WebExposedIsolationInfo::CreateNonIsolated(),
+               WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+               /*does_site_request_dedicated_process_for_coop=*/false,
+               /*is_jit_disabled=*/false,
+               /*are_v8_optimizations_disabled=*/true,
+               /*is_pdf=*/false, /*is_fenced=*/false,
+               /*agent_cluster_key=*/std::nullopt);
+  EXPECT_FALSE(
+      site_info_1.IsSamePrincipalWith(site_info_1_with_optimizations_disabled));
 
   // Check that SiteInfos with differing values of `is_pdf` are not considered
   // same-principal.
@@ -339,8 +363,9 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                WebExposedIsolationInfo::CreateNonIsolated(),
                WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
-               /*is_jit_disabled=*/false, /*is_pdf=*/true, /*is_fenced=*/false,
-               /*agent_cluster_key=*/std::nullopt);
+               /*is_jit_disabled=*/false,
+               /*are_v8_optimizations_disabled=*/false, /*is_pdf=*/true,
+               /*is_fenced=*/false, /*agent_cluster_key=*/std::nullopt);
   EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_pdf));
 
   auto site_info_1_with_is_fenced =
@@ -353,8 +378,9 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                WebExposedIsolationInfo::CreateNonIsolated(),
                WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
-               /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/true,
-               /*agent_cluster_key=*/std::nullopt);
+               /*is_jit_disabled=*/false,
+               /*are_v8_optimizations_disabled=*/false, /*is_pdf=*/false,
+               /*is_fenced=*/true, /*agent_cluster_key=*/std::nullopt);
   EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_is_fenced));
 
   {
@@ -875,7 +901,8 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
       WebExposedIsolationInfo::CreateNonIsolated(),
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false,
+      /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+      /*is_pdf=*/false, /*is_fenced=*/false,
       /*agent_cluster_key=*/std::nullopt);
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.
@@ -1197,7 +1224,7 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfo) {
 
   // Simulate granting WebUI bindings for the process.
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
-      webui_host->GetID(), BINDINGS_POLICY_WEB_UI);
+      webui_host->GetID(), BindingsPolicySet({BindingsPolicyValue::kWebUi}));
 
   EXPECT_TRUE(webui_instance->HasProcess());
   EXPECT_TRUE(webui_instance->IsSuitableForUrlInfo(
@@ -1679,7 +1706,8 @@ TEST_F(SiteInstanceTest, OriginalURL) {
       WebExposedIsolationInfo::CreateNonIsolated(),
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false,
+      /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+      /*is_pdf=*/false, /*is_fenced=*/false,
       /*agent_cluster_key=*/std::nullopt);
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.  In
@@ -1813,7 +1841,8 @@ ProcessLock ProcessLockFromString(const std::string& url) {
       WebExposedIsolationInfo::CreateNonIsolated(),
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false,
+      /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+      /*is_pdf=*/false, /*is_fenced=*/false,
       /*agent_cluster_key=*/std::nullopt));
 }
 

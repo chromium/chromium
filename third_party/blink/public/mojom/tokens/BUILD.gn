@@ -116,8 +116,8 @@ mojom_component("tokens") {
           cpp = "::blink::WebNNContextToken"
         },
         {
-          mojom = "blink.mojom.WebNNBufferToken"
-          cpp = "::blink::WebNNBufferToken"
+          mojom = "blink.mojom.WebNNTensorToken"
+          cpp = "::blink::WebNNTensorToken"
         },
       ]
       traits_headers = [
@@ -142,6 +142,11 @@ mojom_component("tokens") {
   export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
 
   generate_java = true
+
+  webui_module_path = "/"
+
+  # Used from locations that rely on legacy bindings.
+  generate_legacy_js_bindings = true
 }
 
 source_set("tokens_traits_headers") {

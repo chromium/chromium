@@ -14,6 +14,7 @@
 #include <libxml/xmlerror.h>
 #include <libxml/xmlstring.h>
 #include <libxml/tree.h>
+#include <libxml/parser.h>
 
 #ifdef LIBXML_SCHEMAS_ENABLED
 
@@ -155,6 +156,10 @@ XMLPUBFUN void
 					 xmlRelaxNGParserCtxtPtr ctxt,
 					 xmlStructuredErrorFunc serror,
 					 void *ctx);
+XMLPUBFUN void
+		    xmlRelaxNGSetResourceLoader	(xmlRelaxNGParserCtxtPtr ctxt,
+						 xmlResourceLoader loader,
+						 void *vctxt);
 XMLPUBFUN xmlRelaxNGPtr
 		    xmlRelaxNGParse		(xmlRelaxNGParserCtxtPtr ctxt);
 XMLPUBFUN void

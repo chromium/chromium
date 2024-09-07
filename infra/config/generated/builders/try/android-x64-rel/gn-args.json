@@ -4,6 +4,7 @@
     "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
     "dcheck_always_on": true,
     "debuggable_apks": false,
+    "enable_chrome_android_internal": false,
     "ffmpeg_branding": "Chrome",
     "is_component_build": false,
     "is_debug": false,
@@ -18,7 +19,6 @@
     "use_clang_coverage": true,
     "use_jacoco_coverage": true,
     "use_remoteexec": true,
-    "use_siso": true,
-    "webview_instrumentation_tests_process_mode": "multiple"
+    "use_siso": true
   }
 }

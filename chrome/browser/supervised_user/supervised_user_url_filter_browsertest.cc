@@ -49,6 +49,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -97,13 +98,14 @@ class SupervisedUserURLFilterTestBase : public MixinBasedInProcessBrowserTest {
   void SendAccessRequest(WebContents* tab) {
     tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"supervisedUserErrorPageController.requestPermission()",
-        base::NullCallback());
+        base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
     return;
   }
 
   void GoBack(WebContents* tab) {
     tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"supervisedUserErrorPageController.goBack()", base::NullCallback());
+        u"supervisedUserErrorPageController.goBack()", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     return;
   }
 
@@ -306,9 +308,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
   // Check that we got the interstitial.
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
 
-  // Trigger a no-op change to the site lists, which will notify observers of
-  // the URL filter.
-  GetSupervisedUserService()->OnSiteListUpdated();
+  // Set the host as blocked through manual blocklisting, should not change the
+  // interstitial state.
+  base::Value::Dict dict;
+  dict.Set(test_url.host(), false);
+  supervised_user_settings_service->SetLocalSetting(
+      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
 
   EXPECT_EQ(tab, tab_strip->GetActiveWebContents());
 }
@@ -649,13 +654,11 @@ class MockSupervisedUserURLFilterObserver
       const MockSupervisedUserURLFilterObserver&) = delete;
 
   // SupervisedUserURLFilter::Observer:
-  void OnSiteListUpdated() override {}
   MOCK_METHOD(void,
               OnURLChecked,
               (const GURL& url,
                supervised_user::FilteringBehavior behavior,
-               supervised_user::FilteringBehaviorReason reason,
-               bool uncertain),
+               supervised_user::FilteringBehaviorDetails details),
               (override));
 
  private:
@@ -708,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterPrerenderingTest, OnURLChecked) {
   // Ensure that prerendering has started.
   registry_observer.WaitForTrigger(prerender_url);
   auto prerender_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  EXPECT_TRUE(prerender_id);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      prerender_id);
   // Prerendering is canceled.

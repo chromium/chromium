@@ -92,8 +92,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE:
-        if (!GetAutofillTable()->RemoveAutofillProfile(
-                change->storage_key(), AutofillProfile::Source::kAccount)) {
+        if (!GetAutofillTable()->RemoveAutofillProfile(change->storage_key())) {
           return syncer::ModelError(FROM_HERE,
                                     "Failed to delete profile from table.");
         }
@@ -102,7 +101,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         // Deserialize the ContactInfoSpecifics and add/update them in the DB.
         DCHECK(change->data().specifics.has_contact_info());
-        std::unique_ptr<AutofillProfile> remote =
+        std::optional<AutofillProfile> remote =
             CreateAutofillProfileFromContactInfoSpecifics(
                 change->data().specifics.contact_info());
         // Since the specifics are guaranteed to be valid by
@@ -112,8 +111,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
         // we check the existence of the profile manually and act accordingly.
         // TODO(crbug.com/40100455): Consider adding an AddOrUpdate() function
         // to AutofillTable's API.
-        if (GetAutofillTable()->GetAutofillProfile(
-                remote->guid(), AutofillProfile::Source::kAccount)) {
+        if (GetAutofillTable()->GetAutofillProfile(remote->guid())) {
           if (!GetAutofillTable()->UpdateAutofillProfile(*remote)) {
             return syncer::ModelError(FROM_HERE,
                                       "Failed to update profile in table.");
@@ -178,7 +176,7 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
     const AutofillProfileChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!change_processor()->IsTrackingMetadata() ||
-      change.data_model().source() != AutofillProfile::Source::kAccount) {
+      !change.data_model().IsAccountProfile()) {
     return;
   }
 
@@ -211,7 +209,7 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
 void ContactInfoSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   if (!GetAutofillTable()->RemoveAllAutofillProfiles(
-          AutofillProfile::Source::kAccount)) {
+          AutofillProfile::RecordType::kAccount)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete profiles from table."});
   }
@@ -285,21 +283,21 @@ AutofillSyncMetadataTable* ContactInfoSyncBridge::GetSyncMetadataStore() {
 std::unique_ptr<syncer::MutableDataBatch>
 ContactInfoSyncBridge::GetDataAndFilter(
     base::RepeatingCallback<bool(const std::string&)> filter) {
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  std::vector<AutofillProfile> profiles;
   if (!GetAutofillTable()->GetAutofillProfiles(
-          AutofillProfile::Source::kAccount, profiles)) {
+          AutofillProfile::RecordType::kAccount, profiles)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load profiles from table."});
     return nullptr;
   }
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
-    const std::string& guid = profile->guid();
+  for (const AutofillProfile& profile : profiles) {
+    const std::string& guid = profile.guid();
     if (filter.Run(guid)) {
       batch->Put(
           guid,
           CreateContactInfoEntityDataFromAutofillProfile(
-              *profile,
+              profile,
               GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(guid)));
     }
   }

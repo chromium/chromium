@@ -26,6 +26,8 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_prope
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
+import type {SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TooltipMixin} from '../tooltip_mixin.js';
@@ -70,6 +72,15 @@ export class SiteListElement extends SiteListElementBase {
       },
 
       categoryHeader: String,
+
+      /**
+       * Optional warning message to be displayed bellow the category header.
+       */
+      systemPermissionWarningKey_: {
+        type: String,
+        value: null,
+        observer: 'attachSystemPermissionSettingsLinkClick_',
+      },
 
       /**
        * The site serving as the model for the currently open action menu.
@@ -170,6 +181,7 @@ export class SiteListElement extends SiteListElementBase {
 
   readOnlyList: boolean;
   categoryHeader: string;
+  private systemPermissionWarningKey_: string|null;
   private actionMenuSite_: SiteException|null;
   private showEditExceptionDialog_: boolean;
   sites: SiteException[];
@@ -193,6 +205,8 @@ export class SiteListElement extends SiteListElementBase {
   constructor() {
     super();
 
+    this.updateCategoryWarning_();
+
     /**
      * The element to return focus to, when the currently active dialog is
      * closed.
@@ -215,7 +229,47 @@ export class SiteListElement extends SiteListElementBase {
         'onIncognitoStatusChanged',
         (hasIncognito: boolean) =>
             this.onIncognitoStatusChanged_(hasIncognito));
+    this.addWebUiListener(
+        'osGlobalPermissionChanged', (messages: ContentSettingsTypes[]) => {
+          this.setCategoryWarning_(messages.includes(this.category));
+        });
     this.browserProxy.updateIncognitoStatus();
+  }
+
+  /**
+   * Update the category warning when the OS permission for this category
+   * changed.
+   */
+  private updateCategoryWarning_() {
+    this.browserProxy.getSystemDeniedPermissions().then(
+        (messages: ContentSettingsTypes[]) => {
+          this.setCategoryWarning_(messages.includes(this.category));
+        });
+  }
+
+  /**
+   * Sets the category warning when the OS permission for this category changed.
+   */
+  private setCategoryWarning_(categoryBlocked: boolean) {
+    this.set(
+        'systemPermissionWarningKey_', ((category: ContentSettingsTypes) => {
+          // We return null as warningKey in case the category is not one of
+          // the listed, as the warning in case of an OS level block is
+          // supported only for camera, microphone and location permissions.
+          if (!categoryBlocked) {
+            return null;
+          }
+          switch (category) {
+            case ContentSettingsTypes.CAMERA:
+              return 'siteSettingsContentCameraBlockedByOs';
+            case ContentSettingsTypes.MIC:
+              return 'siteSettingsContentMicBlockedByOs';
+            case ContentSettingsTypes.GEOLOCATION:
+              return 'siteSettingsContentLocationBlockedByOs';
+            default:
+              return null;
+          }
+        })(this.category));
   }
 
   /**
@@ -266,11 +320,45 @@ export class SiteListElement extends SiteListElementBase {
     }
   }
 
-  /**
-   * Whether there are any site exceptions added for this content setting.
-   */
+  /** Whether there are any site exceptions added for this content setting. */
   private hasSites_(): boolean {
     return this.sites.length > 0;
+  }
+
+  /** Whether the header warning should be shown. */
+  private showHeaderWarning_(): boolean {
+    return this.hasSites_() && (this.systemPermissionWarningKey_ !== null);
+  }
+
+  /** The text of the warning. Null if the warning is not to be shown. */
+  private getSystemPermissionWarning_(): TrustedHTML {
+    const sanitizeOptions: SanitizeInnerHtmlOpts = {tags: ['a'], attrs: ['id']};
+    if (this.systemPermissionWarningKey_ !== null) {
+      return this.i18nAdvanced(
+          this.systemPermissionWarningKey_, sanitizeOptions);
+    }
+    return sanitizeInnerHtml('');
+  }
+
+  /** Attempts to open the system permission settings. */
+  private onSystemPermissionSettingsLinkClick_(event: MouseEvent) {
+    // Prevents navigation to href='#'.
+    event.preventDefault();
+    if (this.category !== null) {
+      this.browserProxy.openSystemPermissionSettings(this.category);
+    }
+  }
+
+  /** Attached the click action to the anchor element. */
+  private attachSystemPermissionSettingsLinkClick_(): void {
+    const elementId = 'openSystemSettingsLink';
+    const element: HTMLElement|null|undefined =
+        this.shadowRoot?.querySelector(`#${elementId}`);
+    if (element !== null && element !== undefined) {
+      element!.addEventListener('click', (me: MouseEvent) => {
+        this.onSystemPermissionSettingsLinkClick_(me);
+      });
+    }
   }
 
   /**

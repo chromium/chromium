@@ -524,10 +524,10 @@ void RecordDownloadMimeType(const std::string& mime_type_string,
                             bool is_transient) {
   DownloadContent download_content =
       DownloadContentFromMimeType(mime_type_string, true);
-  UMA_HISTOGRAM_ENUMERATION("Download.Start.ContentType", download_content,
-                            DownloadContent::MAX);
+  base::UmaHistogramEnumeration("Download.Start.ContentType", download_content,
+                                DownloadContent::MAX);
 #if BUILDFLAG(IS_ANDROID)
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       base::StrCat({"Download.Start.ContentType.",
                     is_transient ? "Transient" : "NonTransient"}),
       download_content, DownloadContent::MAX);
@@ -538,10 +538,10 @@ void RecordDownloadMimeTypeForNormalProfile(const std::string& mime_type_string,
                                             bool is_transient) {
   DownloadContent download_content =
       DownloadContentFromMimeType(mime_type_string, false);
-  UMA_HISTOGRAM_ENUMERATION("Download.Start.ContentType.NormalProfile",
-                            download_content, DownloadContent::MAX);
+  base::UmaHistogramEnumeration("Download.Start.ContentType.NormalProfile",
+                                download_content, DownloadContent::MAX);
 #if BUILDFLAG(IS_ANDROID)
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       base::StrCat({"Download.Start.ContentType.NormalProfile.",
                     is_transient ? "Transient" : "NonTransient"}),
       download_content, DownloadContent::MAX);

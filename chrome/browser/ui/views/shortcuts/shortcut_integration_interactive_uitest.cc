@@ -136,28 +136,26 @@ class ShortcutIntegrationMultiProfileInteractiveUiTest
   // Returns a step that behaves as if the user deleted the given profile.
   [[nodiscard]] static MultiStep DeleteProfile(Profile* profile) {
     base::FilePath profile_path = profile->GetPath();
-    return Steps(FlushEvents(), Do([profile_path] {
-                   ProfileManager* profile_manager =
-                       g_browser_process->profile_manager();
-                   profile_manager->GetDeleteProfileHelper()
-                       .MaybeScheduleProfileForDeletion(
-                           profile_path, base::DoNothing(),
-                           ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
-                 }));
+    return Steps(Do([profile_path] {
+      ProfileManager* profile_manager = g_browser_process->profile_manager();
+      profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+          profile_path, base::DoNothing(),
+          ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+    }));
   }
 
   // Returns a step that locks the given profile.
   [[nodiscard]] static MultiStep LockProfile(Profile* profile) {
     base::FilePath profile_path = profile->GetPath();
-    return Steps(FlushEvents(), Do([profile_path] {
-                   ProfileAttributesEntry* entry =
-                       g_browser_process->profile_manager()
-                           ->GetProfileAttributesStorage()
-                           .GetProfileAttributesWithPath(profile_path);
-                   ASSERT_NE(entry, nullptr);
-                   entry->LockForceSigninProfile(true);
-                   EXPECT_TRUE(entry->IsSigninRequired());
-                 }));
+    return Steps(Do([profile_path] {
+      ProfileAttributesEntry* entry =
+          g_browser_process->profile_manager()
+              ->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(profile_path);
+      ASSERT_NE(entry, nullptr);
+      entry->LockForceSigninProfile(true);
+      EXPECT_TRUE(entry->IsSigninRequired());
+    }));
   }
 
   // Creates shortcuts in both profiles.

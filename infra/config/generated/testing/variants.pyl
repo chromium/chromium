@@ -2,7 +2,6 @@
 # Instead:
 # 1. Modify //infra/config/targets/variants.star
 # 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-pyl-files.py
 
 {
   'AMD_RADEON_RX_5500_XT': {
@@ -31,18 +30,6 @@
     'identifier': 'RELEASE_LKGM',
     'skylab': {
       'use_lkgm': True,
-    },
-  },
-  'CROS_VOLTEER_PUBLIC_LKGM': {
-    'identifier': 'VOLTEER_PUBLIC_LKGM',
-    'skylab': {
-      'cros_board': 'volteer',
-      'cros_model': 'voxel',
-      'use_lkgm': True,
-      'bucket': 'chromiumos-image-archive',
-      'dut_pool': 'chromium',
-      'public_builder': 'cros_test_platform_public',
-      'public_builder_bucket': 'testplatform-public',
     },
   },
   'CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM': {
@@ -91,70 +78,6 @@
     'args': [
       '--deploy-lacros',
     ],
-  },
-  'LACROS_VERSION_SKEW_BETA': {
-    'identifier': 'Lacros version skew testing ash beta',
-    'description': 'Run with ash-chrome version 128.0.6613.28',
-    'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v128.0.6613.28/test_ash_chrome',
-    ],
-    'swarming': {
-      'cipd_packages': [
-        {
-          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v128.0.6613.28',
-          'revision': 'version:128.0.6613.28',
-        },
-      ],
-    },
-  },
-  'LACROS_VERSION_SKEW_CANARY': {
-    'identifier': 'Lacros version skew testing ash canary',
-    'description': 'Run with ash-chrome version 129.0.6659.0',
-    'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v129.0.6659.0/test_ash_chrome',
-    ],
-    'swarming': {
-      'cipd_packages': [
-        {
-          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v129.0.6659.0',
-          'revision': 'version:129.0.6659.0',
-        },
-      ],
-    },
-  },
-  'LACROS_VERSION_SKEW_DEV': {
-    'identifier': 'Lacros version skew testing ash dev',
-    'description': 'Run with ash-chrome version 129.0.6630.0',
-    'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v129.0.6630.0/test_ash_chrome',
-    ],
-    'swarming': {
-      'cipd_packages': [
-        {
-          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v129.0.6630.0',
-          'revision': 'version:129.0.6630.0',
-        },
-      ],
-    },
-  },
-  'LACROS_VERSION_SKEW_STABLE': {
-    'identifier': 'Lacros version skew testing ash stable',
-    'description': 'Run with ash-chrome version 127.0.6533.114',
-    'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v127.0.6533.114/test_ash_chrome',
-    ],
-    'swarming': {
-      'cipd_packages': [
-        {
-          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v127.0.6533.114',
-          'revision': 'version:127.0.6533.114',
-        },
-      ],
-    },
   },
   'LINUX_INTEL_UHD_630_STABLE': {
     'identifier': 'UHD 630',
@@ -226,6 +149,18 @@
     ],
     'mixins': [
       'ios_runtime_cache_17_5',
+    ],
+  },
+  'SIM_IPAD_AIR_5TH_GEN_18_1': {
+    'identifier': 'iPad Air (5th generation) 18.1',
+    'args': [
+      '--platform',
+      'iPad Air (5th generation)',
+      '--version',
+      '18.1',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_1',
     ],
   },
   'SIM_IPAD_AIR_6TH_GEN_18_0': {
@@ -310,6 +245,18 @@
     ],
     'mixins': [
       'ios_runtime_cache_18_0',
+    ],
+  },
+  'SIM_IPHONE_14_18_1': {
+    'identifier': 'iPhone 14 18.1',
+    'args': [
+      '--platform',
+      'iPhone 14',
+      '--version',
+      '18.1',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_1',
     ],
   },
   'SIM_IPHONE_14_PLUS_16_4': {
@@ -418,6 +365,18 @@
     ],
     'mixins': [
       'ios_runtime_cache_18_0',
+    ],
+  },
+  'SIM_IPHONE_SE_3RD_GEN_18_1': {
+    'identifier': 'iPhone SE (3rd generation) 18.1',
+    'args': [
+      '--platform',
+      'iPhone SE (3rd generation)',
+      '--version',
+      '18.1',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_1',
     ],
   },
   'SIM_IPHONE_X_16_4': {

@@ -84,7 +84,7 @@ ChildThreadImpl::Options GetOptions(
 
 viz::VizMainImpl::ExternalDependencies CreateVizMainDependencies() {
   viz::VizMainImpl::ExternalDependencies deps;
-  if (!base::PowerMonitor::IsInitialized()) {
+  if (!base::PowerMonitor::GetInstance()->IsInitialized()) {
     deps.power_monitor_source =
         std::make_unique<base::PowerMonitorDeviceSource>();
   }

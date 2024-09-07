@@ -130,6 +130,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -531,7 +532,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
     content::WebContentsConsoleObserver confirm_observer(second_tab);
     confirm_observer.SetPattern("*confirm*suppressed*");
     second_tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"confirm('Activate!');", base::NullCallback());
+        u"confirm('Activate!');", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     ASSERT_TRUE(confirm_observer.Wait());
   }
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -543,7 +545,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
     content::WebContentsConsoleObserver prompt_observer(second_tab);
     prompt_observer.SetPattern("*prompt*suppressed*");
     second_tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"prompt('Activate!');", base::NullCallback());
+        u"prompt('Activate!');", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     ASSERT_TRUE(prompt_observer.Wait());
   }
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -556,7 +559,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
   base::RunLoop alert_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(alert_wait.QuitClosure());
   second_tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"alert('Activate!');", base::NullCallback());
+      u"alert('Activate!');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   alert_wait.Run();
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
@@ -674,7 +678,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DialogDefersNavigationCommit) {
 
     js_dialog_manager->SetDialogShownCallbackForTesting(run_loop.QuitClosure());
     contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"alert('one'); ", base::NullCallback());
+        u"alert('one'); ", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     run_loop.Run();
 
     ASSERT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
@@ -723,7 +728,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CrossProcessNavCancelsDialogs) {
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"alert('one'); alert('two');", base::NullCallback());
+      u"alert('one'); alert('two');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   dialog_wait.Run();
   EXPECT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
 
@@ -834,7 +840,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_SadTabCancelsDialogs) {
 
   // Start a navigation to trigger the beforeunload dialog.
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"window.location.href = 'about:blank'", base::NullCallback());
+      u"window.location.href = 'about:blank'", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   AppModalDialogController* alert = ui_test_utils::WaitForAppModalDialog();
   EXPECT_TRUE(alert->IsValid());
   AppModalDialogQueue* dialog_queue = AppModalDialogQueue::GetInstance();
@@ -871,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, SadTabCancelsSubframeDialogs) {
       u"f = document.createElement('iframe');"
       u"f.srcdoc = '<script>alert(1)</script>';"
       u"document.body.appendChild(f);",
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   dialog_wait.Run();
   EXPECT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
 
@@ -908,7 +915,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ReloadThenCancelBeforeUnload) {
 
   // Clear the beforeunload handler so the test can easily exit.
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"onbeforeunload=null;", base::NullCallback());
+      u"onbeforeunload=null;", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 }
 
 // Test for crbug.com/11647.  A page closed with window.close() should not have
@@ -920,8 +928,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(kOpenNewBeforeUnloadPage,
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          kOpenNewBeforeUnloadPage, base::NullCallback(),
+          content::ISOLATED_WORLD_ID_GLOBAL);
 
   // Close the new window with JavaScript, which should show a single
   // beforeunload dialog.  Then show another alert, to make it easy to verify
@@ -930,8 +939,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
       ->tab_strip_model()
       ->GetWebContentsAt(0)
       ->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(u"w.close(); alert('bar');",
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          u"w.close(); alert('bar');", base::NullCallback(),
+          content::ISOLATED_WORLD_ID_GLOBAL);
   AppModalDialogController* alert = ui_test_utils::WaitForAppModalDialog();
   alert->view()->AcceptAppModalDialog();
 
@@ -1187,14 +1197,15 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, AppIdSwitch) {
   ASSERT_TRUE(launch_done.Wait());
   Browser* app_browser = browser_change.Wait();
   EXPECT_TRUE(app_browser->is_type_app());
-  {
-    // From launch_mode_recorder.cc:
-    constexpr char kLaunchModesHistogram[] = "Launch.Modes";
-    const base::HistogramBase::Sample LM_AS_WEBAPP_IN_WINDOW_BY_APP_ID = 24;
 
-    tester.ExpectUniqueSample(kLaunchModesHistogram,
-                              LM_AS_WEBAPP_IN_WINDOW_BY_APP_ID, 1);
+#if BUILDFLAG(IS_WIN)
+  {  // From launch_mode_recorder.cc:
+    constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
+    const base::HistogramBase::Sample kWebAppOther = 22;
+
+    tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }
+#endif  // BUILDFLAG(IS_WIN)
 
   // Check that the number of browsers and tabs is correct.
   EXPECT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -1368,7 +1379,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
                                     : chrome::startup::IsFirstRun::kNo;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
   launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kNo,
-                nullptr, /*restore_tabbed_browser=*/true);
+                /*restore_tabbed_browser=*/true);
 
   // The launch should have created a new browser.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -2563,7 +2574,8 @@ void CheckDisplayModeMQ(const std::u16string& display_mode,
         DCHECK(value.is_bool());
         js_result = value.GetBool();
         run_loop.Quit();
-      }));
+      }),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   run_loop.Run();
   EXPECT_TRUE(js_result);
 }

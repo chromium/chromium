@@ -57,9 +57,10 @@ typedef NS_ENUM(NSUInteger, SuggestionProviderType) {
                           webState:(web::WebState*)webState
                  completionHandler:(SuggestionsReadyCompletion)completion;
 
-// Handles user selection of a suggestion for the specified form and
+// Handles user selection of a suggestion at |index| for the specified form and
 // field, invoking |completion| when finished.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                        form:(NSString*)formName
              formRendererID:(autofill::FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier

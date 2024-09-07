@@ -259,16 +259,21 @@ MemoryInfo* WindowPerformance::memory(ScriptState* script_state) const {
   // course over time about what changes would be implemented) can be found at
   // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/no00RdMnGio,
   // and the relevant bug is https://crbug.com/807651.
+  const bool is_locked_to_site = Platform::Current()->IsLockedToSite();
   auto* memory_info = MakeGarbageCollected<MemoryInfo>(
-      Platform::Current()->IsLockedToSite()
-          ? MemoryInfo::Precision::kPrecise
-          : MemoryInfo::Precision::kBucketized);
+      is_locked_to_site ? MemoryInfo::Precision::kPrecise
+                        : MemoryInfo::Precision::kBucketized);
   // Record Web Memory UKM.
   const uint64_t kBytesInKB = 1024;
   auto* execution_context = ExecutionContext::From(script_state);
   ukm::builders::PerformanceAPI_Memory_Legacy(execution_context->UkmSourceID())
       .SetJavaScript(memory_info->usedJSHeapSize() / kBytesInKB)
       .Record(execution_context->UkmRecorder());
+  if (!is_locked_to_site) {
+    UseCounter::Count(
+        execution_context,
+        WebFeature::kV8Performance_Memory_AttributeGetter_NotLockedToSite);
+  }
   return memory_info;
 }
 

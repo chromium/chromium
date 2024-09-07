@@ -2,24 +2,30 @@
     <div id="details" hidden$="[[shouldHideCategory_(site)]]">
       <div id="permissionItem"
           class$="list-item [[permissionInfoStringClass_(site.source,
-                                                  category,
-                                                  site.setting,
-                                                  permissionWarnings_)]]">
+                                            category,
+                                            site.setting,
+                                            systemPermissionWarningKey_)]]">
         <div>
-          <iron-icon icon="[[icon]]" aria-hidden="true" role="presentation">
-          </iron-icon>
+          <cr-icon icon="[[icon]]" aria-hidden="true" role="presentation">
+          </cr-icon>
         </div>
         <div class="middle" id="permissionHeader">
           [[label]]
           <div class="secondary" id="permissionSecondary"
+              hidden$="[[!showSystemPermissionWarning_(site.source,
+                  category,site.setting,systemPermissionWarningKey_)]]"
+              inner-h-t-m-l="[[getSystemPermissionWarning_(
+                  systemPermissionWarningKey_)]]">
+          </div>
+          <div class="secondary" id="permissionSecondary"
               hidden$="[[!hasPermissionInfoString_(site.source,
                                         category,
-                                        site.setting, permissionWarnings_)]]"
+                                        site.setting, 
+                                        systemPermissionWarningKey_)]]"
               inner-h-t-m-l="[[permissionInfoString_(
                 site.source,
                 category,
                 site.setting,
-                permissionWarnings_,
                 '$i18nPolymer{siteSettingsAllowlisted}',
                 '$i18nPolymer{siteSettingsAdsBlockBlocklistedSingular}',
                 '$i18nPolymer{siteSettingsAdsBlockNotBlocklistedSingular}',
@@ -42,7 +48,7 @@
             aria-describedby="permissionSecondary"
             on-change="onPermissionSelectionChange_"
             disabled$="[[!isPermissionUserControlled_(site.source, category,
-                                          site.setting, permissionWarnings_)]]">
+                              site.setting, systemPermissionWarningKey_)]]">
           <option id="default" value$="[[contentSettingEnum_.DEFAULT]]">
             [[defaultSettingString_(
                 defaultSetting_,

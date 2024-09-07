@@ -660,9 +660,9 @@ TEST_F(BrowserManagerWithForceSwitchWithoutLacrosUserTest,
       session_manager::SessionState::LOGIN_PRIMARY);
   // Trigger the pre-launch logic as the log in screen is ready.
   fake_browser_manager_->TriggerLoginPromptVisible();
-  // Expect the prelaunch logic was called as the force switch was passed,
-  // even if no Lacros users were present in the system.
-  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 1);
+  // Now prelaunch logic is removed due to lacros sunset. Prelaunch should not
+  // happen.
+  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
 }
 
 class BrowserManagerWithLacrosUserTest : public BrowserManagerTest {
@@ -679,8 +679,9 @@ TEST_F(BrowserManagerWithLacrosUserTest, AllowUseOfLacrosOnNormalCPUs) {
       session_manager::SessionState::LOGIN_PRIMARY);
   // Trigger the pre-launch logic as the log in screen is ready.
   fake_browser_manager_->TriggerLoginPromptVisible();
-  // Expect that the prelaunch logic was called.
-  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 1);
+  // Now prelaunch logic is removed due to lacros sunset. Prelaunch should not
+  // happen in any case
+  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
 }
 
 class BrowserManagerWithOldCPUTest : public BrowserManagerWithLacrosUserTest {

@@ -5,11 +5,7 @@
 #ifndef DEVICE_UDEV_LINUX_UDEV1_LOADER_H_
 #define DEVICE_UDEV_LINUX_UDEV1_LOADER_H_
 
-#include <memory>
-
 #include "device/udev_linux/udev_loader.h"
-
-class LibUdev1Loader;
 
 namespace device {
 
@@ -23,7 +19,6 @@ class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) Udev1Loader : public UdevLoader {
   ~Udev1Loader() override;
 
  private:
-  bool Init() override;
   const char* udev_device_get_action(udev_device* udev_device) override;
   const char* udev_device_get_devnode(udev_device* udev_device) override;
   const char* udev_device_get_devtype(udev_device* udev_device) override;
@@ -73,8 +68,6 @@ class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) Udev1Loader : public UdevLoader {
   void udev_monitor_unref(udev_monitor* udev_monitor) override;
   udev* udev_new() override;
   void udev_unref(udev* udev) override;
-
-  std::unique_ptr<LibUdev1Loader> lib_loader_;
 };
 
 }  // namespace device

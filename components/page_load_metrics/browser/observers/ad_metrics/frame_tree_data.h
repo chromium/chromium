@@ -129,11 +129,9 @@ enum class MediaStatus {
 // specific to the top frame in the tree.
 class FrameTreeData final {
  public:
-  using FrameTreeNodeId = PageLoadMetricsObserver::FrameTreeNodeId;
-
   // |root_frame_tree_node_id| is the root frame of the subtree that
   // FrameTreeData stores information for.
-  explicit FrameTreeData(FrameTreeNodeId root_frame_tree_node_id,
+  explicit FrameTreeData(content::FrameTreeNodeId root_frame_tree_node_id,
                          int heavy_ad_network_threshold_noise);
   ~FrameTreeData();
 
@@ -186,7 +184,7 @@ class FrameTreeData final {
     return cpu_usage_[static_cast<size_t>(status)];
   }
 
-  FrameTreeNodeId root_frame_tree_node_id() const {
+  content::FrameTreeNodeId root_frame_tree_node_id() const {
     return root_frame_tree_node_id_;
   }
 
@@ -288,7 +286,7 @@ class FrameTreeData final {
 
   // The frame tree node id of root frame of the subtree that |this| is
   // tracking information for.
-  const FrameTreeNodeId root_frame_tree_node_id_;
+  const content::FrameTreeNodeId root_frame_tree_node_id_;
 
   // TODO(ericrobinson): May want to move this to ResourceLoadAggregator.
   // Number of resources loaded by the frame (both complete and incomplete).

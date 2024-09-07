@@ -12,7 +12,7 @@ test(function() {
     selection.collapse(div, 0);
     document.execCommand('Outdent');
 
-    assert_equals(div.innerHTML, '<ul><li>foo<br></li></ul>');
+    assert_equals(div.innerHTML, '<ul><li>foo</li></ul>');
     assert_true(selection.isCollapsed);
     assert_equals(selection.anchorNode, div.querySelector('li').firstChild);
     assert_equals(selection.anchorOffset, 0);

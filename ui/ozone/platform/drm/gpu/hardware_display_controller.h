@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <xf86drmMode.h>
+
 #include <map>
 #include <memory>
 #include <vector>
@@ -21,6 +22,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
@@ -165,8 +168,12 @@ class HardwareDisplayController {
       const scoped_refptr<DrmDevice>& drm,
       uint32_t crtc);
   bool HasCrtc(const scoped_refptr<DrmDevice>& drm, uint32_t crtc) const;
+  // Returns true if the controllers are configured for hardware mirroring. Note
+  // that controllers for tiled display will not support hardware mirroring.
   bool IsMirrored() const;
+  // Returns true if any of the controllers are enabled.
   bool IsEnabled() const;
+  bool IsTiled() const;
   gfx::Size GetModeSize() const;
 
   gfx::Point origin() const { return origin_; }
@@ -189,6 +196,11 @@ class HardwareDisplayController {
 
   // Adds trace records to |context|.
   void WriteIntoTrace(perfetto::TracedValue context) const;
+
+  size_t NumOfSupportedCursorSizesForTesting() const;
+  gfx::Size CurrentCursorSizeForTesting() const;
+
+  std::optional<TileProperty> GetTileProperty() const { return tile_property_; }
 
  private:
   // These values are persisted to logs. Entries should not be
@@ -217,11 +229,11 @@ class HardwareDisplayController {
       gfx::GpuFenceHandle* release_fence);
   void AllocateCursorBuffers();
   DrmDumbBuffer* NextCursorBuffer(const SkBitmap& image);
-  bool UpdateCursorImage();
+  void UpdateCursorImage();
   void UpdateCursorLocation();
   void ResetCursor();
   void DisableCursor();
-  void ProbeValidCursorSizes();
+  void InitSupportedCursorSizes();
 
   std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format) const;
 
@@ -238,11 +250,13 @@ class HardwareDisplayController {
   DrmOverlayPlaneList current_planes_;
   base::TimeTicks time_of_last_flip_;
 
-  // Stores all the valid width/height for cursor plane. We assume the
-  // width/height are always the same here.
-  std::vector<int> valid_cursor_sizes_;
-  // |cursor_buffer_map_| stores active buffers for each |valid_cursor_sizes_|.
-  base::flat_map<int, std::vector<std::unique_ptr<DrmDumbBuffer>>>
+  // Stores all the supported sizes for cursor plane.
+  std::vector<gfx::Size> supported_cursor_sizes_;
+  // |cursor_buffer_map_| stores active buffers for each
+  // |supported_cursor_sizes_|.
+  base::flat_map<gfx::Size,
+                 std::vector<std::unique_ptr<DrmDumbBuffer>>,
+                 CursorSizeComparator>
       cursor_buffer_map_;
   gfx::Point cursor_location_;
   raw_ptr<DrmDumbBuffer> current_cursor_ = nullptr;
@@ -256,6 +270,10 @@ class HardwareDisplayController {
   PageFlipWatchdog watchdog_;
 
   raw_ptr<DrmModifiersFilter> drm_modifiers_filter_;
+
+  // If this object represents a tiled display, then the primary tile is denoted
+  // by |tile_property_|.location.
+  std::optional<TileProperty> tile_property_;
 
   base::WeakPtrFactory<HardwareDisplayController> weak_ptr_factory_{this};
 };

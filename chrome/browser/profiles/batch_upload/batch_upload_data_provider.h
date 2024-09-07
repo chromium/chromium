@@ -10,6 +10,8 @@
 
 #include "base/types/id_type.h"
 
+enum class BatchUploadDataType;
+
 // Representation of a single item to be displayed in the BatchUpload dialog.
 struct BatchUploadDataItemModel {
   // Strong Alias ID which is reprenseted as an int.
@@ -69,6 +71,12 @@ struct BatchUploadDataContainer {
 // Storage through the Batch Upload dialog.
 class BatchUploadDataProvider {
  public:
+  explicit BatchUploadDataProvider(BatchUploadDataType type);
+
+  virtual ~BatchUploadDataProvider();
+
+  BatchUploadDataType GetDataType() const;
+
   // Returns whether the data type has local data that are allowed to be
   // uploaded. This is a lightweight version of `GetLocalData()` that is not
   // expected to allocate memory to be used to perform early checks.
@@ -86,7 +94,10 @@ class BatchUploadDataProvider {
   virtual bool MoveToAccountStorage(
       const std::vector<BatchUploadDataItemModel::Id>& item_ids_to_move) = 0;
 
-  virtual ~BatchUploadDataProvider();
+ private:
+  // The type should always match when `this` is a value of a map keyed by
+  // `BatchUploadDataType`.
+  const BatchUploadDataType type_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_DATA_PROVIDER_H_

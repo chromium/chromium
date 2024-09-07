@@ -23,6 +23,7 @@ found in the LICENSE file.
     <color name="default_icon_color_accent1_baseline">@color/default_icon_color_blue_light</color>
     <color name="default_icon_color_on_accent1_baseline">@color/default_icon_color_on_accent1_dark</color>
     <color name="default_icon_color_on_accent1_container_baseline">@color/default_icon_color_on_accent1_container_dark</color>
+    <color name="default_icon_color_on_accent1_reverse_container_baseline">@color/default_icon_color_on_accent1_container_light</color>
     <color name="default_icon_color_secondary_baseline">@color/default_icon_color_secondary_light</color>
     <color name="hairline_stroke_color_baseline">@color/hairline_stroke_color_light</color>
     <color name="default_icon_color_disabled_baseline">@color/default_icon_color_disabled_light</color>
@@ -102,6 +103,7 @@ found in the LICENSE file.
     <color name="drag_shadow_outline_color">@color/baseline_neutral_variant_30_alpha_20</color>
     <color name="gm3_baseline_surface_container">@color/gm3_baseline_surface_container_dark</color>
     <color name="gm3_baseline_surface">@color/gm3_baseline_surface_dark</color>
+    <color name="price_insights_sheet_bg_color_baseline">@color/price_insights_sheet_bg_color_dark</color>
 
     <!-- Menu colors -->
     <color name="menu_list_item_icon_color">@color/baseline_neutral_variant_80</color>

@@ -14,34 +14,43 @@
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_binary_support_limits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_lost_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_cell_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_logical_not_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_normalization_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_op_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_prelu_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_quantize_dequantize_linear_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_single_input_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -134,7 +143,7 @@ void MLContext::destroy(ScriptState* script_state,
     OnLost(0, "destroy() called on MLContext.");
 
     for (const auto& graph : graphs_) {
-      graph->OnConnectionError();
+      graph->destroy();
     }
 
     for (const auto& graph_builder : graph_builders_) {
@@ -225,23 +234,89 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   op_support_limits->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.output()));
 
-  MLArgMinMaxSupportLimits* argmin = MLArgMinMaxSupportLimits::Create();
+  MLSingleInputSupportLimits* argmin = MLSingleInputSupportLimits::Create();
   argmin->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.arg_min_max_input));
   argmin->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.arg_min_max_output));
   op_support_limits->setArgMin(argmin);
-  MLArgMinMaxSupportLimits* argmax = MLArgMinMaxSupportLimits::Create();
+  MLSingleInputSupportLimits* argmax = MLSingleInputSupportLimits::Create();
   argmax->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.arg_min_max_input));
   argmax->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.arg_min_max_output));
   op_support_limits->setArgMax(argmax);
 
+  MLBatchNormalizationSupportLimits* batch_normalization =
+      MLBatchNormalizationSupportLimits::Create();
+  batch_normalization->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setMean(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setVariance(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setBias(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  batch_normalization->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.batch_normalization_input));
+  op_support_limits->setBatchNormalization(batch_normalization);
+
+  MLSingleInputSupportLimits* cast = MLSingleInputSupportLimits::Create();
+  cast->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.cast_input));
+  cast->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.cast_input));
+  op_support_limits->setCast(cast);
+
+  MLSingleInputSupportLimits* clamp = MLSingleInputSupportLimits::Create();
+  clamp->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.clamp_input));
+  clamp->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.clamp_input));
+  op_support_limits->setClamp(clamp);
+
   MLConcatSupportLimits* concat = MLConcatSupportLimits::Create();
   concat->setInputs(
       SupportedDataTypesToSupportLimits(data_type_limits.concat_inputs));
+  concat->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.concat_inputs));
   op_support_limits->setConcat(concat);
+
+  MLConv2dSupportLimits* conv2d = MLConv2dSupportLimits::Create();
+  conv2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.conv2d_input));
+  conv2d->setFilter(
+      SupportedDataTypesToSupportLimits(data_type_limits.conv2d_input));
+  conv2d->setBias(
+      SupportedDataTypesToSupportLimits(data_type_limits.conv2d_input));
+  conv2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.conv2d_input));
+  op_support_limits->setConv2d(conv2d);
+
+  MLConv2dSupportLimits* conv_transpose2d = MLConv2dSupportLimits::Create();
+  conv_transpose2d->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.conv_transpose2d_input));
+  conv_transpose2d->setFilter(SupportedDataTypesToSupportLimits(
+      data_type_limits.conv_transpose2d_input));
+  conv_transpose2d->setBias(SupportedDataTypesToSupportLimits(
+      data_type_limits.conv_transpose2d_input));
+  conv_transpose2d->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.conv_transpose2d_input));
+  op_support_limits->setConvTranspose2d(conv_transpose2d);
+
+  MLQuantizeDequantizeLinearSupportLimits* dequantize_linear =
+      MLQuantizeDequantizeLinearSupportLimits::Create();
+  dequantize_linear->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.dequantize_linear_input));
+  dequantize_linear->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.dequantize_linear_scale));
+  dequantize_linear->setZeroPoint(SupportedDataTypesToSupportLimits(
+      data_type_limits.dequantize_linear_input));
+  dequantize_linear->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.dequantize_linear_scale));
+  op_support_limits->setDequantizeLinear(dequantize_linear);
 
   // Element-wise binary ops.
   MLBinarySupportLimits* add = MLBinarySupportLimits::Create();
@@ -375,6 +450,12 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   reciprocal->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.reciprocal_input));
   op_support_limits->setReciprocal(reciprocal);
+  MLSingleInputSupportLimits* sign = MLSingleInputSupportLimits::Create();
+  sign->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.sign_input));
+  sign->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.sign_input));
+  op_support_limits->setSign(sign);
   MLSingleInputSupportLimits* sin = MLSingleInputSupportLimits::Create();
   sin->setInput(SupportedDataTypesToSupportLimits(data_type_limits.sin_input));
   sin->setOutput(SupportedDataTypesToSupportLimits(data_type_limits.sin_input));
@@ -395,12 +476,30 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   elu->setOutput(SupportedDataTypesToSupportLimits(data_type_limits.elu_input));
   op_support_limits->setElu(elu);
 
+  MLSingleInputSupportLimits* expand = MLSingleInputSupportLimits::Create();
+  expand->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.expand_input));
+  expand->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.expand_input));
+  op_support_limits->setExpand(expand);
+
   MLGatherSupportLimits* gather = MLGatherSupportLimits::Create();
   gather->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.gather_input));
   gather->setIndices(
       SupportedDataTypesToSupportLimits(data_type_limits.gather_indices));
+  gather->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.gather_input));
   op_support_limits->setGather(gather);
+
+  MLGatherSupportLimits* gather_elements = MLGatherSupportLimits::Create();
+  gather_elements->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.gather_elements_input));
+  gather_elements->setIndices(SupportedDataTypesToSupportLimits(
+      data_type_limits.gather_elements_indices));
+  gather_elements->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.gather_elements_input));
+  op_support_limits->setGatherElements(gather_elements);
 
   MLSingleInputSupportLimits* gelu = MLSingleInputSupportLimits::Create();
   gelu->setInput(
@@ -409,6 +508,87 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.gelu_input));
   op_support_limits->setGelu(gelu);
 
+  MLGemmSupportLimits* gemm = MLGemmSupportLimits::Create();
+  gemm->setA(SupportedDataTypesToSupportLimits(data_type_limits.gemm_input));
+  gemm->setB(SupportedDataTypesToSupportLimits(data_type_limits.gemm_input));
+  gemm->setC(SupportedDataTypesToSupportLimits(data_type_limits.gemm_input));
+  gemm->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.gemm_input));
+  op_support_limits->setGemm(gemm);
+
+  MLGruSupportLimits* gru = MLGruSupportLimits::Create();
+  gru->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setRecurrentWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setRecurrentBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setInitialHiddenState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  gru->setOutputs(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_input));
+  op_support_limits->setGru(gru);
+
+  MLGruCellSupportLimits* gru_cell = MLGruCellSupportLimits::Create();
+  gru_cell->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setRecurrentWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setHiddenState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setRecurrentBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  gru_cell->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.gru_cell_input));
+  op_support_limits->setGruCell(gru_cell);
+
+  MLSingleInputSupportLimits* hard_sigmoid =
+      MLSingleInputSupportLimits::Create();
+  hard_sigmoid->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.hard_sigmoid_input));
+  hard_sigmoid->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.hard_sigmoid_input));
+  op_support_limits->setHardSigmoid(hard_sigmoid);
+
+  MLSingleInputSupportLimits* hard_swish = MLSingleInputSupportLimits::Create();
+  hard_swish->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.hard_swish_input));
+  hard_swish->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.hard_swish_input));
+  op_support_limits->setHardSwish(hard_swish);
+
+  MLNormalizationSupportLimits* instance_normalization =
+      MLNormalizationSupportLimits::Create();
+  instance_normalization->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.instance_normalization_input));
+  instance_normalization->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.instance_normalization_input));
+  instance_normalization->setBias(SupportedDataTypesToSupportLimits(
+      data_type_limits.instance_normalization_input));
+  instance_normalization->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.instance_normalization_input));
+  op_support_limits->setInstanceNormalization(instance_normalization);
+
+  MLNormalizationSupportLimits* layer_normalization =
+      MLNormalizationSupportLimits::Create();
+  layer_normalization->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.layer_normalization_input));
+  layer_normalization->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.layer_normalization_input));
+  layer_normalization->setBias(SupportedDataTypesToSupportLimits(
+      data_type_limits.layer_normalization_input));
+  layer_normalization->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.layer_normalization_input));
+  op_support_limits->setLayerNormalization(layer_normalization);
+
   MLSingleInputSupportLimits* leaky_relu = MLSingleInputSupportLimits::Create();
   leaky_relu->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.leaky_relu_input));
@@ -416,12 +596,200 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.leaky_relu_input));
   op_support_limits->setLeakyRelu(leaky_relu);
 
+  MLSingleInputSupportLimits* linear = MLSingleInputSupportLimits::Create();
+  linear->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.linear_input));
+  linear->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.linear_input));
+  op_support_limits->setLinear(linear);
+
+  MLLstmSupportLimits* lstm = MLLstmSupportLimits::Create();
+  lstm->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setRecurrentWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setRecurrentBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setPeepholeWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setInitialHiddenState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setInitialCellState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  lstm->setOutputs(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_input));
+  op_support_limits->setLstm(lstm);
+
+  MLLstmCellSupportLimits* lstm_cell = MLLstmCellSupportLimits::Create();
+  lstm_cell->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setRecurrentWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setHiddenState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setCellState(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setRecurrentBias(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setPeepholeWeight(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  lstm_cell->setOutputs(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.lstm_cell_input));
+  op_support_limits->setLstmCell(lstm_cell);
+
+  MLBinarySupportLimits* matmul = MLBinarySupportLimits::Create();
+  matmul->setA(
+      SupportedDataTypesToSupportLimits(data_type_limits.matmul_input));
+  matmul->setB(
+      SupportedDataTypesToSupportLimits(data_type_limits.matmul_input));
+  matmul->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.matmul_input));
+  op_support_limits->setMatmul(matmul);
+
+  MLSingleInputSupportLimits* pad = MLSingleInputSupportLimits::Create();
+  pad->setInput(SupportedDataTypesToSupportLimits(data_type_limits.pad_input));
+  pad->setOutput(SupportedDataTypesToSupportLimits(data_type_limits.pad_input));
+  op_support_limits->setPad(pad);
+
+  // Pool2d.
+  MLSingleInputSupportLimits* average_pool2d =
+      MLSingleInputSupportLimits::Create();
+  average_pool2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.average_pool2d_input));
+  average_pool2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.average_pool2d_input));
+  op_support_limits->setAveragePool2d(average_pool2d);
+
+  MLSingleInputSupportLimits* l2_pool2d = MLSingleInputSupportLimits::Create();
+  l2_pool2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.l2_pool2d_input));
+  l2_pool2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.l2_pool2d_input));
+  op_support_limits->setL2Pool2d(l2_pool2d);
+
+  MLSingleInputSupportLimits* max_pool2d = MLSingleInputSupportLimits::Create();
+  max_pool2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.max_pool2d_input));
+  max_pool2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.max_pool2d_input));
+  op_support_limits->setMaxPool2d(max_pool2d);
+
+  MLPreluSupportLimits* prelu = MLPreluSupportLimits::Create();
+  prelu->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.prelu_input));
+  prelu->setSlope(
+      SupportedDataTypesToSupportLimits(data_type_limits.prelu_input));
+  prelu->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.prelu_input));
+  op_support_limits->setPrelu(prelu);
+
+  MLQuantizeDequantizeLinearSupportLimits* quantize_linear =
+      MLQuantizeDequantizeLinearSupportLimits::Create();
+  quantize_linear->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.quantize_linear_input));
+  quantize_linear->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.quantize_linear_input));
+  quantize_linear->setZeroPoint(SupportedDataTypesToSupportLimits(
+      data_type_limits.quantize_linear_zero_point));
+  quantize_linear->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.quantize_linear_zero_point));
+  op_support_limits->setQuantizeLinear(quantize_linear);
+
+  // Reduction ops.
+  MLSingleInputSupportLimits* reduce_l1 = MLSingleInputSupportLimits::Create();
+  reduce_l1->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_l1_input));
+  reduce_l1->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_l1_input));
+  op_support_limits->setReduceL1(reduce_l1);
+  MLSingleInputSupportLimits* reduce_l2 = MLSingleInputSupportLimits::Create();
+  reduce_l2->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_l2_input));
+  reduce_l2->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_l2_input));
+  op_support_limits->setReduceL2(reduce_l2);
+  MLSingleInputSupportLimits* reduce_log_sum =
+      MLSingleInputSupportLimits::Create();
+  reduce_log_sum->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_log_sum_input));
+  reduce_log_sum->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_log_sum_input));
+  op_support_limits->setReduceLogSum(reduce_log_sum);
+  MLSingleInputSupportLimits* reduce_log_sum_exp =
+      MLSingleInputSupportLimits::Create();
+  reduce_log_sum_exp->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.reduce_log_sum_exp_input));
+  reduce_log_sum_exp->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.reduce_log_sum_exp_input));
+  op_support_limits->setReduceLogSumExp(reduce_log_sum_exp);
+  MLSingleInputSupportLimits* reduce_max = MLSingleInputSupportLimits::Create();
+  reduce_max->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_max_input));
+  reduce_max->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_max_input));
+  op_support_limits->setReduceMax(reduce_max);
+  MLSingleInputSupportLimits* reduce_mean =
+      MLSingleInputSupportLimits::Create();
+  reduce_mean->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_mean_input));
+  reduce_mean->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_mean_input));
+  op_support_limits->setReduceMean(reduce_mean);
+  MLSingleInputSupportLimits* reduce_min = MLSingleInputSupportLimits::Create();
+  reduce_min->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_min_input));
+  reduce_min->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_min_input));
+  op_support_limits->setReduceMin(reduce_min);
+  MLSingleInputSupportLimits* reduce_product =
+      MLSingleInputSupportLimits::Create();
+  reduce_product->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_product_input));
+  reduce_product->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_product_input));
+  op_support_limits->setReduceProduct(reduce_product);
+  MLSingleInputSupportLimits* reduce_sum = MLSingleInputSupportLimits::Create();
+  reduce_sum->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_sum_input));
+  reduce_sum->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_sum_input));
+  op_support_limits->setReduceSum(reduce_sum);
+  MLSingleInputSupportLimits* reduce_sum_square =
+      MLSingleInputSupportLimits::Create();
+  reduce_sum_square->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.reduce_sum_square_input));
+  reduce_sum_square->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.reduce_sum_square_input));
+  op_support_limits->setReduceSumSquare(reduce_sum_square);
+
   MLSingleInputSupportLimits* relu = MLSingleInputSupportLimits::Create();
   relu->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.relu_input));
   relu->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.relu_input));
   op_support_limits->setRelu(relu);
+
+  MLSingleInputSupportLimits* resample2d = MLSingleInputSupportLimits::Create();
+  resample2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.resample2d_input));
+  resample2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.resample2d_input));
+  op_support_limits->setResample2d(resample2d);
+
+  MLSingleInputSupportLimits* reshape = MLSingleInputSupportLimits::Create();
+  reshape->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reshape_input));
+  reshape->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reshape_input));
+  op_support_limits->setReshape(reshape);
 
   MLSingleInputSupportLimits* sigmoid = MLSingleInputSupportLimits::Create();
   sigmoid->setInput(
@@ -465,12 +833,42 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.split_input));
   op_support_limits->setSplit(split);
 
+  MLSingleInputSupportLimits* tanh = MLSingleInputSupportLimits::Create();
+  tanh->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.tanh_input));
+  tanh->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.tanh_input));
+  op_support_limits->setTanh(tanh);
+
+  MLSingleInputSupportLimits* tile = MLSingleInputSupportLimits::Create();
+  tile->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.tile_input));
+  tile->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.tile_input));
+  op_support_limits->setTile(tile);
+
+  MLSingleInputSupportLimits* transpose = MLSingleInputSupportLimits::Create();
+  transpose->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.transpose_input));
+  transpose->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.transpose_input));
+  op_support_limits->setTranspose(transpose);
+
+  MLSingleInputSupportLimits* triangular = MLSingleInputSupportLimits::Create();
+  triangular->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.triangular_input));
+  triangular->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.triangular_input));
+  op_support_limits->setTriangular(triangular);
+
   MLWhereSupportLimits* where = MLWhereSupportLimits::Create();
   where->setCondition(
       SupportedDataTypesToSupportLimits(data_type_limits.where_condition));
   where->setTrueValue(
       SupportedDataTypesToSupportLimits(data_type_limits.where_value));
   where->setFalseValue(
+      SupportedDataTypesToSupportLimits(data_type_limits.where_value));
+  where->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.where_value));
   op_support_limits->setWhere(where);
 
@@ -481,9 +879,9 @@ void MLContext::OnGraphCreated(MLGraph* graph) {
   graphs_.insert(graph);
 }
 
-ScriptPromise<MLBuffer> MLContext::createBuffer(
+ScriptPromise<MLTensor> MLContext::createBuffer(
     ScriptState* script_state,
-    const MLBufferDescriptor* descriptor,
+    const MLTensorDescriptor* descriptor,
     ExceptionState& exception_state) {
   ScopedMLTrace scoped_trace("MLContext::createBuffer");
   if (!script_state->ContextIsValid()) {
@@ -511,40 +909,45 @@ ScriptPromise<MLBuffer> MLContext::createBuffer(
                        descriptor->dimensions()),
                    [&exception_state](std::string error) {
                      exception_state.ThrowTypeError(String(error));
-                     return ScriptPromise<MLBuffer>();
+                     return ScriptPromise<MLTensor>();
                    });
 
   RETURN_IF_ERROR(webnn::ValidateBuffer(properties_, validated_descriptor),
                   [&exception_state](std::string error) {
                     exception_state.ThrowTypeError(String(error));
-                    return ScriptPromise<MLBuffer>();
+                    return ScriptPromise<MLTensor>();
                   });
 
-  // TODO(crbug.com/343638938): Pass real buffer usages.
-  auto buffer_info = webnn::mojom::blink::BufferInfo::New(
-      validated_descriptor, webnn::MLBufferUsage());
+  // WebNN bitfield values have the same value as enums.
+  webnn::MLTensorUsage usage;
+  if (descriptor->hasUsage()) {
+    usage = webnn::MLTensorUsage::FromEnumBitmask(descriptor->usage());
+  }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLBuffer>>(
+  auto buffer_info =
+      webnn::mojom::blink::BufferInfo::New(validated_descriptor, usage);
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLTensor>>(
       script_state, exception_state.GetContext());
   pending_resolvers_.insert(resolver);
 
-  // Use `WebNNContext` to create `WebNNBuffer` message pipe.
+  // Use `WebNNContext` to create `WebNNTensor` message pipe.
   context_remote_->CreateBuffer(
       std::move(buffer_info),
-      WTF::BindOnce(&MLContext::DidCreateWebNNBuffer, WrapPersistent(this),
+      WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
-                    std::move(validated_descriptor)));
+                    std::move(validated_descriptor), usage));
 
   return resolver->Promise();
 }
 
 void MLContext::writeBuffer(
     ScriptState* script_state,
-    MLBuffer* dst_buffer,
+    MLTensor* dst_buffer,
     const MaybeShared<DOMArrayBufferView>& src_data_view,
     uint64_t src_element_offset,
     ExceptionState& exception_state) {
-  WriteWebNNBuffer(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_buffer,
                    src_data_view->ByteSpanMaybeShared(), src_element_offset,
                    src_data_view->TypeSize(),
                    /*src_element_count=*/std::nullopt, exception_state);
@@ -552,35 +955,35 @@ void MLContext::writeBuffer(
 
 void MLContext::writeBuffer(
     ScriptState* script_state,
-    MLBuffer* dst_buffer,
+    MLTensor* dst_buffer,
     const MaybeShared<DOMArrayBufferView>& src_data_view,
     uint64_t src_element_offset,
     uint64_t src_element_count,
     ExceptionState& exception_state) {
-  WriteWebNNBuffer(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_buffer,
                    src_data_view->ByteSpanMaybeShared(), src_element_offset,
                    src_data_view->TypeSize(), src_element_count,
                    exception_state);
 }
 
 void MLContext::writeBuffer(ScriptState* script_state,
-                            MLBuffer* dst_buffer,
+                            MLTensor* dst_buffer,
                             const DOMArrayBufferBase* src_data_base,
                             uint64_t src_byte_offset,
                             ExceptionState& exception_state) {
-  WriteWebNNBuffer(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_buffer,
                    src_data_base->ByteSpanMaybeShared(), src_byte_offset,
                    /*src_data_type_size_bytes=*/1,
                    /*src_element_count=*/std::nullopt, exception_state);
 }
 
 void MLContext::writeBuffer(ScriptState* script_state,
-                            MLBuffer* dst_buffer,
+                            MLTensor* dst_buffer,
                             const DOMArrayBufferBase* src_data_base,
                             uint64_t src_byte_offset,
                             uint64_t src_byte_size,
                             ExceptionState& exception_state) {
-  WriteWebNNBuffer(script_state, dst_buffer,
+  WriteWebNNTensor(script_state, dst_buffer,
                    src_data_base->ByteSpanMaybeShared(), src_byte_offset,
                    /*src_data_type_size_bytes=*/1,
                    /*src_element_count=*/src_byte_size, exception_state);
@@ -588,7 +991,7 @@ void MLContext::writeBuffer(ScriptState* script_state,
 
 ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
     ScriptState* script_state,
-    MLBuffer* src_buffer,
+    MLTensor* src_buffer,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -602,13 +1005,20 @@ ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
     return EmptyPromise();
   }
 
+  if (!src_buffer->Usage().Has(webnn::MLTensorUsageFlags::kReadFrom)) {
+    exception_state.ThrowTypeError(
+        "The source buffer doesn't have read access.");
+    return EmptyPromise();
+  }
+
   return src_buffer->ReadBufferImpl(script_state, exception_state);
 }
 
-ScriptPromise<void> MLContext::readBuffer(ScriptState* script_state,
-                                          MLBuffer* src_buffer,
-                                          DOMArrayBufferBase* dst_data,
-                                          ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> MLContext::readBuffer(
+    ScriptState* script_state,
+    MLTensor* src_buffer,
+    DOMArrayBufferBase* dst_data,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -624,9 +1034,9 @@ ScriptPromise<void> MLContext::readBuffer(ScriptState* script_state,
   return src_buffer->ReadBufferImpl(script_state, dst_data, exception_state);
 }
 
-ScriptPromise<void> MLContext::readBuffer(
+ScriptPromise<IDLUndefined> MLContext::readBuffer(
     ScriptState* script_state,
-    MLBuffer* src_buffer,
+    MLTensor* src_buffer,
     MaybeShared<DOMArrayBufferView> dst_data,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -645,8 +1055,8 @@ ScriptPromise<void> MLContext::readBuffer(
                                     exception_state);
 }
 
-void MLContext::WriteWebNNBuffer(ScriptState* script_state,
-                                 MLBuffer* dst_buffer,
+void MLContext::WriteWebNNTensor(ScriptState* script_state,
+                                 MLTensor* dst_buffer,
                                  base::span<const uint8_t> src_data,
                                  uint64_t src_element_offset,
                                  unsigned src_data_type_size_bytes,
@@ -661,6 +1071,12 @@ void MLContext::WriteWebNNBuffer(ScriptState* script_state,
   if (dst_buffer->context() != this) {
     exception_state.ThrowTypeError(
         "The destination buffer wasn't created with this context.");
+    return;
+  }
+
+  if (!dst_buffer->Usage().Has(webnn::MLTensorUsageFlags::kWriteTo)) {
+    exception_state.ThrowTypeError(
+        "The destination buffer doesn't have write access.");
     return;
   }
 
@@ -748,10 +1164,11 @@ void MLContext::dispatch(ScriptState* script_state,
                          exception_state);
 }
 
-void MLContext::DidCreateWebNNBuffer(
+void MLContext::DidCreateWebNNTensor(
     ScopedMLTrace scoped_trace,
-    ScriptPromiseResolver<blink::MLBuffer>* resolver,
+    ScriptPromiseResolver<blink::MLTensor>* resolver,
     webnn::OperandDescriptor validated_descriptor,
+    webnn::MLTensorUsage usage,
     webnn::mojom::blink::CreateBufferResultPtr result) {
   pending_resolvers_.erase(resolver);
 
@@ -768,9 +1185,9 @@ void MLContext::DidCreateWebNNBuffer(
     return;
   }
 
-  auto* buffer = MakeGarbageCollected<MLBuffer>(
+  auto* buffer = MakeGarbageCollected<MLTensor>(
       resolver->GetExecutionContext(), this, std::move(validated_descriptor),
-      std::move(result->get_success()), base::PassKey<MLContext>());
+      usage, std::move(result->get_success()), base::PassKey<MLContext>());
   buffers_.insert(buffer);
 
   resolver->Resolve(buffer);

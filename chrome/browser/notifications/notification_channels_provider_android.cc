@@ -495,7 +495,7 @@ NotificationChannelsProviderAndroid::RenewContentSetting(
 }
 
 void NotificationChannelsProviderAndroid::SetClockForTesting(
-    base::Clock* clock) {
+    const base::Clock* clock) {
   clock_ = clock;
 }
 

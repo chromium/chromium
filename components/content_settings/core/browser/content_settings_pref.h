@@ -86,7 +86,7 @@ class ContentSettingsPref {
   // Tries to lock |lock_|. If successful, returns true and releases the lock.
   bool TryLockForTesting() const;
 
-  void SetClockForTesting(base::Clock* clock);
+  void SetClockForTesting(const base::Clock* clock);
 
  private:
   // Reads all content settings exceptions from the preference and loads them
@@ -163,7 +163,7 @@ class ContentSettingsPref {
 
   base::ThreadChecker thread_checker_;
 
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
 };
 
 }  // namespace content_settings

@@ -20,4 +20,6 @@ interface RTCRtpReceiver {
     [Measure,
      CallWith=ScriptState,
      RaisesException] RTCInsertableStreams createEncodedStreams();
+    [RuntimeEnabled=RTCRtpScriptTransform, RaisesException=Setter]
+    attribute RTCRtpScriptTransform? transform;
 };

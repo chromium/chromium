@@ -40,8 +40,6 @@ std::string ErrorToString(component_updater::ComponentManagerAsh::Error error) {
       return "NOT_FOUND";
     case component_updater::ComponentManagerAsh::Error::UPDATE_IN_PROGRESS:
       return "UPDATE_IN_PROGRESS";
-    case component_updater::ComponentManagerAsh::Error::ERROR_MAX:
-      return "ERROR_MAX";
   }
   return "Unknown error code";
 }

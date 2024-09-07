@@ -14,6 +14,8 @@ source_set("model") {
     "//components/power_bookmarks/core",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web",
+    "//ios/web/public/thread",
   ]
 }

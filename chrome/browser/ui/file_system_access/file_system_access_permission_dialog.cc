@@ -9,6 +9,7 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_util.h"
@@ -17,10 +18,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
-
-#if defined(TOOLKIT_VIEWS)
-#include "components/constrained_window/constrained_window_views.h"
-#endif
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCancelButtonId);
 
@@ -160,14 +157,9 @@ void ShowFileSystemAccessPermissionDialog(
     const RequestData& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
     content::WebContents* web_contents) {
-  auto model = CreateFileSystemAccessPermissionDialog(web_contents, request,
-                                             std::move(callback));
-#if defined(TOOLKIT_VIEWS)
-  constrained_window::ShowWebModal(std::move(model), web_contents);
-#else
-  // Run callback as if the dialog was instantly cancelled.
-  std::move(callback).Run(permissions::PermissionAction::DISMISSED);
-#endif
+  chrome::ShowTabModal(CreateFileSystemAccessPermissionDialog(
+                           web_contents, request, std::move(callback)),
+                       web_contents);
 }
 
 std::unique_ptr<ui::DialogModel>

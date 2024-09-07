@@ -10,13 +10,14 @@
 #include "services/network/web_bundle/web_bundle_chunked_buffer.h"
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
 namespace {
-constexpr unsigned char kNumeric10Chars[] = "0123456789";
-constexpr unsigned char kSmallAlphabet10Chars[] = "abcdefghij";
-constexpr unsigned char kLargeAlphabet10Chars[] = "ABCDEFGHIJ";
+constexpr char kNumeric10Chars[] = "0123456789";
+constexpr char kSmallAlphabet10Chars[] = "abcdefghij";
+constexpr char kLargeAlphabet10Chars[] = "ABCDEFGHIJ";
 }  // namespace
 
 class WebBundleChunkedBufferTest : public ::testing::Test {
@@ -39,9 +40,9 @@ class WebBundleChunkedBufferTest : public ::testing::Test {
               buffer.ContainsAll(test_case.offset, test_case.length));
     EXPECT_EQ(test_case.expected_available_length,
               buffer.GetAvailableLength(test_case.offset, test_case.length));
-    auto data = std::vector<unsigned char>(test_case.length, 0);
+    std::vector<unsigned char> data(test_case.length);
     EXPECT_EQ(test_case.expected_available_length,
-              buffer.ReadData(test_case.offset, test_case.length, data.data()));
+              buffer.ReadData(test_case.offset, data));
     EXPECT_EQ(std::string(data.begin(),
                           data.begin() + test_case.expected_available_length),
               test_case.expected_read_result);
@@ -51,9 +52,8 @@ class WebBundleChunkedBufferTest : public ::testing::Test {
       auto data_source =
           buffer.CreateDataSource(test_case.offset, test_case.length);
       EXPECT_EQ(test_case.expected_available_length, data_source->GetLength());
-      auto result = data_source->Read(
-          0,
-          base::span<char>(reinterpret_cast<char*>(data.data()), data.size()));
+      auto result =
+          data_source->Read(0, base::as_writable_chars(base::span(data)));
       EXPECT_EQ(MOJO_RESULT_OK, result.result);
       EXPECT_EQ(test_case.expected_available_length, result.bytes_read);
       EXPECT_EQ(std::string(data.begin(),
@@ -66,7 +66,7 @@ class WebBundleChunkedBufferTest : public ::testing::Test {
 TEST_F(WebBundleChunkedBufferTest, Chunk) {
   constexpr unsigned char kData[] = "Hello World!";
   constexpr size_t kDataLength = sizeof(kData);
-  auto data = base::MakeRefCounted<base::RefCountedBytes>(kData, kDataLength);
+  auto data = base::MakeRefCounted<base::RefCountedBytes>(kData);
   uint64_t start_pos = 10;
   Chunk chunk = Chunk(start_pos, std::move(data));
   EXPECT_EQ(start_pos, chunk.start_pos());
@@ -88,18 +88,18 @@ TEST_F(WebBundleChunkedBufferTest, EmptyBuffer) {
   EXPECT_TRUE(buffer.CreateDataSource(0, 0) == nullptr);
   EXPECT_TRUE(buffer.CreateDataSource(0, 10) == nullptr);
   EXPECT_TRUE(buffer.CreateDataSource(10, 10) == nullptr);
-  std::vector<unsigned char> data(10, 0);
-  EXPECT_FALSE(buffer.ReadData(0, 10, data.data()));
-  EXPECT_FALSE(buffer.ReadData(10, 10, data.data()));
+  std::vector<unsigned char> data(10);
+  EXPECT_FALSE(buffer.ReadData(0, data));
+  EXPECT_FALSE(buffer.ReadData(10, data));
 
-  // Appendding 0 byte doesn't do anything.
-  buffer.Append(kNumeric10Chars, 0);
+  // Appendding 0 bytes doesn't do anything.
+  buffer.Append({});
   EXPECT_TRUE(buffer.empty());
 }
 
 TEST_F(WebBundleChunkedBufferTest, ReadTest_OneChunk) {
   WebBundleChunkedBuffer buffer;
-  buffer.Append(kNumeric10Chars, 10);
+  buffer.Append(base::byte_span_from_cstring(kNumeric10Chars));
 
   ReadTestCase test_cases[] = {
       {0, 0, true, 0, ""},
@@ -122,9 +122,9 @@ TEST_F(WebBundleChunkedBufferTest, ReadTest_OneChunk) {
 
 TEST_F(WebBundleChunkedBufferTest, ReadTest_MultipleChunks) {
   WebBundleChunkedBuffer buffer;
-  buffer.Append(kNumeric10Chars, 10);
-  buffer.Append(kSmallAlphabet10Chars, 10);
-  buffer.Append(kLargeAlphabet10Chars, 10);
+  buffer.Append(base::byte_span_from_cstring(kNumeric10Chars));
+  buffer.Append(base::byte_span_from_cstring(kSmallAlphabet10Chars));
+  buffer.Append(base::byte_span_from_cstring(kLargeAlphabet10Chars));
 
   ReadTestCase test_cases1[] = {
       {0, 0, true, 0, ""},
@@ -157,9 +157,9 @@ TEST_F(WebBundleChunkedBufferTest, ReadTest_MultipleChunks) {
 
   // Append many chunks to trigger the binary search logic in FindChunk.
   for (size_t i = 0; i < 50; ++i) {
-    buffer.Append(kNumeric10Chars, 10);
-    buffer.Append(kSmallAlphabet10Chars, 10);
-    buffer.Append(kLargeAlphabet10Chars, 10);
+    buffer.Append(base::byte_span_from_cstring(kNumeric10Chars));
+    buffer.Append(base::byte_span_from_cstring(kSmallAlphabet10Chars));
+    buffer.Append(base::byte_span_from_cstring(kLargeAlphabet10Chars));
   }
 
   ReadTestCase test_cases2[] = {
@@ -174,9 +174,9 @@ TEST_F(WebBundleChunkedBufferTest, ReadTest_MultipleChunks) {
 TEST_F(WebBundleChunkedBufferTest, PartialBuffer) {
   WebBundleChunkedBuffer buffer;
 
-  buffer.Append(kNumeric10Chars, 10);
-  buffer.Append(kSmallAlphabet10Chars, 10);
-  buffer.Append(kLargeAlphabet10Chars, 10);
+  buffer.Append(base::byte_span_from_cstring(kNumeric10Chars));
+  buffer.Append(base::byte_span_from_cstring(kSmallAlphabet10Chars));
+  buffer.Append(base::byte_span_from_cstring(kLargeAlphabet10Chars));
 
   // 0123456789 abcdefghij ABCDEFGHIJ
   //  ~~~~~~
@@ -237,7 +237,7 @@ TEST_F(WebBundleChunkedBufferTest, FindChunk) {
 
   // Append many chunks to trigger the binary search logic in FindChunk.
   for (size_t i = 0; i < 50; ++i) {
-    buffer.Append(kNumeric10Chars, 10);
+    buffer.Append(base::byte_span_from_cstring(kNumeric10Chars));
   }
   for (int i = 0; i < 510; ++i) {
     SCOPED_TRACE(::testing::Message() << "i: " << i);
@@ -259,10 +259,10 @@ TEST_F(WebBundleChunkedBufferTest, FindChunk) {
 TEST_F(WebBundleChunkedBufferTest, DataSource) {
   WebBundleChunkedBuffer buffer;
 
-  buffer.Append(kNumeric10Chars, 10);
-  buffer.Append(kSmallAlphabet10Chars, 10);
-  buffer.Append(kLargeAlphabet10Chars, 10);
-  buffer.Append(kNumeric10Chars, 10);
+  buffer.Append(base::byte_span_from_cstring(kNumeric10Chars));
+  buffer.Append(base::byte_span_from_cstring(kSmallAlphabet10Chars));
+  buffer.Append(base::byte_span_from_cstring(kLargeAlphabet10Chars));
+  buffer.Append(base::byte_span_from_cstring(kNumeric10Chars));
 
   // 0123456789 abcdefghij ABCDEFGHIJ 0123456789
   //                 ~~~~~ ~~

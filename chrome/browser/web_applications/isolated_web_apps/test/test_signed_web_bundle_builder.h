@@ -24,11 +24,11 @@ namespace test {
 std::string EncodeAsPng(const SkBitmap& bitmap);
 
 // Pieces related to Ed25519 keys:
-web_package::WebBundleSigner::Ed25519KeyPair GetDefaultEd25519KeyPair();
+web_package::test::Ed25519KeyPair GetDefaultEd25519KeyPair();
 web_package::SignedWebBundleId GetDefaultEd25519WebBundleId();
 
 // Pieces related to EcdsaP256 keys:
-web_package::WebBundleSigner::EcdsaP256KeyPair GetDefaultEcdsaP256KeyPair();
+web_package::test::EcdsaP256KeyPair GetDefaultEcdsaP256KeyPair();
 web_package::SignedWebBundleId GetDefaultEcdsaP256WebBundleId();
 
 }  // namespace test
@@ -49,18 +49,18 @@ struct TestSignedWebBundle {
 class TestSignedWebBundleBuilder {
  public:
   explicit TestSignedWebBundleBuilder(
-      web_package::WebBundleSigner::KeyPair key_pair =
-          web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom(),
-      web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {
-          /*integrity_block_errors=*/{},
-          /*signatures_errors=*/{}});
+      web_package::test::KeyPair key_pair =
+          web_package::test::Ed25519KeyPair::CreateRandom(),
+      web_package::test::WebBundleSigner::ErrorsForTesting errors_for_testing =
+          {/*integrity_block_errors=*/{},
+           /*signatures_errors=*/{}});
 
   explicit TestSignedWebBundleBuilder(
-      std::vector<web_package::WebBundleSigner::KeyPair> key_pairs,
+      web_package::test::KeyPairs key_pairs,
       const web_package::SignedWebBundleId& web_bundle_id,
-      web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {
-          /*integrity_block_errors=*/{},
-          /*signatures_errors=*/{}});
+      web_package::test::WebBundleSigner::ErrorsForTesting errors_for_testing =
+          {/*integrity_block_errors=*/{},
+           /*signatures_errors=*/{}});
   ~TestSignedWebBundleBuilder();
 
   static constexpr std::string_view kTestManifestUrl =
@@ -77,7 +77,7 @@ class TestSignedWebBundleBuilder {
     BuildOptions(BuildOptions&&);
     ~BuildOptions();
 
-    BuildOptions& AddKeyPair(web_package::WebBundleSigner::KeyPair key_pair) {
+    BuildOptions& AddKeyPair(web_package::test::KeyPair key_pair) {
       key_pairs_.push_back(std::move(key_pair));
       return *this;
     }
@@ -113,19 +113,20 @@ class TestSignedWebBundleBuilder {
     }
 
     BuildOptions& SetErrorsForTesting(
-        web_package::WebBundleSigner::ErrorsForTesting errors_for_testing) {
+        web_package::test::WebBundleSigner::ErrorsForTesting
+            errors_for_testing) {
       errors_for_testing_ = errors_for_testing;
       return *this;
     }
 
-    std::vector<web_package::WebBundleSigner::KeyPair> key_pairs_;
+    web_package::test::KeyPairs key_pairs_;
     std::optional<web_package::SignedWebBundleId> web_bundle_id_;
     base::Version version_;
     std::string app_name_;
     std::optional<GURL> primary_url_;
     std::optional<GURL> base_url_;
     std::optional<std::string_view> index_html_content_;
-    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing_;
+    web_package::test::WebBundleSigner::ErrorsForTesting errors_for_testing_;
   };
 
   // Adds a manifest type payload to the bundle.
@@ -155,11 +156,11 @@ class TestSignedWebBundleBuilder {
       BuildOptions build_options = BuildOptions());
 
  private:
-  std::vector<web_package::WebBundleSigner::KeyPair> key_pairs_;
+  web_package::test::KeyPairs key_pairs_;
 
   // This field is always set if there's more than one entry in `key_pairs_`.
   std::optional<web_package::SignedWebBundleId> web_bundle_id_;
-  web_package::WebBundleSigner::ErrorsForTesting errors_for_testing_;
+  web_package::test::WebBundleSigner::ErrorsForTesting errors_for_testing_;
   web_package::WebBundleBuilder builder_;
 };
 

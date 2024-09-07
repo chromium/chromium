@@ -13,6 +13,12 @@ BASE_FEATURE(kVisitedURLRankingService,
              "VisitedURLRankingService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<bool>
+    kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits{
+        &kVisitedURLRankingService,
+        /*name=*/"history_fetcher_discard_zero_duration_visits",
+        /*default_value=*/true};
+
 const char kVisitedURLRankingFetchDurationInHoursParam[] =
     "VisitedURLRankingFetchDurationInHoursParam";
 
@@ -72,5 +78,25 @@ constexpr base::FeatureParam<std::string>
         &kVisitedURLRankingDeduplication,
         /*name=*/"url_deduplication_excluded_prefixes",
         /*default_value=*/"www."};
+
+BASE_FEATURE(kVisitedURLRankingDecorations,
+             "VisitedURLRankingDecorations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kVisitedURLRankingDecorationTimeOfDay{
+    &kVisitedURLRankingDecorations,
+    /*name=*/"decorations_time_of_day_threshold",
+    /*default_value=*/5};
+
+constexpr base::FeatureParam<int> kVisitedURLRankingFrequentlyVisitedThreshold{
+    &kVisitedURLRankingDecorations,
+    /*name=*/"decorations_frequently_visited_threshold",
+    /*default_value=*/5};
+
+constexpr base::FeatureParam<int>
+    kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold{
+        &kVisitedURLRankingDecorations,
+        /*name=*/"decorations_recently_visited_minutes_threshold",
+        /*default_value=*/1};
 
 }  // namespace visited_url_ranking::features

@@ -26,8 +26,8 @@ source_set("privacy_guide") {
     "//components/unified_consent",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common/ui/promo_style",
   ]
@@ -78,7 +78,7 @@ source_set("unit_tests") {
     ":privacy_guide",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
   ]

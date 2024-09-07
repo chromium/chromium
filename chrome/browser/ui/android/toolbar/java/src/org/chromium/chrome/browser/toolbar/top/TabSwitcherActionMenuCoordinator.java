@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -74,12 +76,15 @@ public class TabSwitcherActionMenuCoordinator {
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         return createOnLongClickListener(
                 new TabSwitcherActionMenuCoordinator(profile, tabModelSelectorSupplier),
+                profile,
                 onItemClicked);
     }
 
     // internal helper function to create a long click listener.
     protected static OnLongClickListener createOnLongClickListener(
-            TabSwitcherActionMenuCoordinator menu, Callback<Integer> onItemClicked) {
+            TabSwitcherActionMenuCoordinator menu,
+            Profile profile,
+            Callback<Integer> onItemClicked) {
         return (view) -> {
             Context context = view.getContext();
             menu.displayMenu(
@@ -90,6 +95,8 @@ public class TabSwitcherActionMenuCoordinator {
                         recordUserActions(id);
                         onItemClicked.onResult(id);
                     });
+            TrackerFactory.getTrackerForProfile(profile)
+                    .notifyEvent(EventConstants.TAB_SWITCHER_BUTTON_LONG_CLICKED);
             return true;
         };
     }

@@ -16,7 +16,7 @@
 
   /** Render the selected part of the image again so it appears glowing over
       the scrim */
-  #backgroundImage {
+  #backgroundImageCanvas {
     clip-path: rect(var(--selection-top)
                     calc(var(--selection-left) + var(--selection-width))
                     calc(var(--selection-top) + var(--selection-height))
@@ -98,7 +98,10 @@
     style$="[[getScrimStyleProperties(height, width)]]">
 </div>
 <div hidden$="[[!hasSelection(height, width)]]">
-  <img id="backgroundImage" src="[[screenshotDataUri]]">
+  <canvas id="backgroundImageCanvas" height="[[canvasPhysicalHeight]]"
+      width="[[canvasPhysicalWidth]]"
+      style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;">
+  </canvas>
   <!-- This inner postSelection div isn't technically required, but helps make
    testing easier and more readable. -->
   <div id="postSelection"></div>

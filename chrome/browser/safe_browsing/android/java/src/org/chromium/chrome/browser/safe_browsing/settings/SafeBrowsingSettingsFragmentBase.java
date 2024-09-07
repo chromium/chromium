@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -26,15 +28,21 @@ import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSettingsFragment {
     private SafeBrowsingSettingsFragmentHelper.CustomTabIntentHelper mCustomTabHelper;
     private SafeBrowsingBridge mSafeBrowsingBridge;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         SettingsUtils.addPreferencesFromResource(this, getPreferenceResource());
-        getActivity().setTitle(R.string.prefs_section_safe_browsing_title);
+        mPageTitle.set(getString(R.string.prefs_section_safe_browsing_title));
 
         onCreatePreferencesInternal(bundle, s);
 
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

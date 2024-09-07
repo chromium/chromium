@@ -6,7 +6,7 @@
 
 #import "components/translate/core/browser/translate_ranker.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 #import "ios/web/public/browser_state.h"
@@ -17,12 +17,10 @@ namespace translate {
 
 void TranslateRankerMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (auto* state : browser_states) {
-    TranslateRanker* ranker = TranslateRankerFactory::GetForBrowserState(state);
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    TranslateRanker* ranker =
+        TranslateRankerFactory::GetForBrowserState(browser_state);
     DCHECK(ranker);
     UpdateLoggingState();
     std::vector<metrics::TranslateEventProto> translate_events;
@@ -35,12 +33,10 @@ void TranslateRankerMetricsProvider::ProvideCurrentSessionData(
 }
 
 void TranslateRankerMetricsProvider::UpdateLoggingState() {
-  std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (auto* state : browser_states) {
-    TranslateRanker* ranker = TranslateRankerFactory::GetForBrowserState(state);
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    TranslateRanker* ranker =
+        TranslateRankerFactory::GetForBrowserState(browser_state);
     DCHECK(ranker);
     ranker->EnableLogging(logging_enabled_);
   }

@@ -12,7 +12,7 @@
 #import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 bool IsPriceTrackingEnabled(ChromeBrowserState* browser_state) {
   if (!IsPriceNotificationsEnabled()) {
@@ -30,8 +30,7 @@ bool IsPriceTrackingEnabled(ChromeBrowserState* browser_state) {
 bool IsPriceNotificationsEnabled() {
   std::string country = base::ToLowerASCII(variations::GetCurrentCountryCode(
       GetApplicationContext()->GetVariationsService()));
-  std::string current_locale = base::ToLowerASCII(
-      base::SysNSStringToUTF8([NSLocale currentLocale].localeIdentifier));
+  std::string current_locale = GetApplicationContext()->GetApplicationLocale();
 
   // commerce::IsEnabledForCountryAndLocale expectes format with "-", not "_"
   // (as observed locally). E.g. "en-US", not "en_US".

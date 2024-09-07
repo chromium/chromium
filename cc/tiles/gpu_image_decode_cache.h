@@ -37,7 +37,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 
 namespace viz {
 class RasterContextProvider;
@@ -151,8 +151,6 @@ class CC_EXPORT GpuImageDecodeCache
     : public ImageDecodeCache,
       public base::trace_event::MemoryDumpProvider {
  public:
-  enum class DecodeTaskType { kPartOfUploadTask, kStandAloneDecodeTask };
-
   explicit GpuImageDecodeCache(viz::RasterContextProvider* context,
                                bool use_transfer_cache,
                                SkColorType color_type,
@@ -205,8 +203,7 @@ class CC_EXPORT GpuImageDecodeCache
   void UploadImageInTask(const DrawImage& image);
 
   // Called by Decode / Upload tasks when tasks are finished.
-  void OnImageDecodeTaskCompleted(const DrawImage& image,
-                                  DecodeTaskType task_type);
+  void OnImageDecodeTaskCompleted(const DrawImage& image, TaskType task_type);
   void OnImageUploadTaskCompleted(const DrawImage& image);
 
   bool SupportsColorSpaceConversion() const;
@@ -709,7 +706,7 @@ class CC_EXPORT GpuImageDecodeCache
       ClientId client_id,
       const DrawImage& image,
       const TracingInfo& tracing_info,
-      DecodeTaskType task_type) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      TaskType task_type) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Note that this function behaves as if it was public (all of the same locks
   // need to be acquired). Uses |client_id| to identify which client created a
@@ -719,7 +716,7 @@ class CC_EXPORT GpuImageDecodeCache
   TaskResult GetTaskForImageAndRefInternal(ClientId client_id,
                                            const DrawImage& image,
                                            const TracingInfo& tracing_info,
-                                           DecodeTaskType task_type);
+                                           TaskType task_type);
 
   void RefImageDecode(const DrawImage& draw_image,
                       const InUseCacheKey& cache_key)

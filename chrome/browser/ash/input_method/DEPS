@@ -31,6 +31,7 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
+  "+chrome/browser/ui/ash/input_method",
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/aura/accessibility",
   "+chrome/browser/ui/browser_finder.h",

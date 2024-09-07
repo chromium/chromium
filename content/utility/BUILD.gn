@@ -74,7 +74,7 @@ source_set("utility") {
     "//services/tracing/public/mojom",
     "//services/video_capture:lib",
     "//services/video_capture/public/mojom:constants",
-    "//services/video_effects:buildflags",
+    "//services/video_effects/buildflags",
     "//third_party/blink/public:blink_headers",
     "//url",
   ]

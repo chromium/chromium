@@ -40,7 +40,8 @@ InterpolationValue CSSFontStretchInterpolationType::CreateFontStretchValue(
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+      0, CSSPrimitiveValue::UnitType::kPercentage));
 }
 
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertInitial(

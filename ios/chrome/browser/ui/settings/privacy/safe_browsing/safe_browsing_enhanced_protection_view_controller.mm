@@ -76,7 +76,7 @@ const CGFloat kSymbolSize = 20;
 @implementation SafeBrowsingEnhancedProtectionViewController
 
 - (instancetype)initWithStyle:(UITableViewStyle)style {
-  if (self = [super initWithStyle:style]) {
+  if ((self = [super initWithStyle:style])) {
     // Wraps view controller to properly show navigation bar, otherwise "Done"
     // button won't show.
     self.navigationController =

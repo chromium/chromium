@@ -233,6 +233,29 @@ GetIsolatedWebAppById(const WebAppRegistrar& registrar,
   return *iwa;
 }
 
+base::flat_map<web_package::SignedWebBundleId,
+               std::reference_wrapper<const WebApp>>
+GetInstalledIwas(const WebAppRegistrar& registrar) {
+  base::flat_map<web_package::SignedWebBundleId,
+                 std::reference_wrapper<const WebApp>>
+      installed_iwas;
+  for (const WebApp& web_app : registrar.GetApps()) {
+    if (!web_app.isolation_data().has_value()) {
+      continue;
+    }
+    auto url_info = IsolatedWebAppUrlInfo::Create(web_app.start_url());
+    if (!url_info.has_value()) {
+      LOG(ERROR) << "Unable to calculate IsolatedWebAppUrlInfo from "
+                 << web_app.start_url();
+      continue;
+    }
+
+    installed_iwas.try_emplace(url_info->web_bundle_id(), std::ref(web_app));
+  }
+
+  return installed_iwas;
+}
+
 KeyRotationLookupResult LookupRotatedKey(
     const web_package::SignedWebBundleId& web_bundle_id,
     base::optional_ref<base::Value::Dict> debug_log) {

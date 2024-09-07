@@ -17,10 +17,10 @@
 #import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
 #import "base/uuid.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class AuthenticationService;
 enum class BookmarkStorageType;
-class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
 

@@ -29,6 +29,9 @@
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
+// Moves Voiceover focus to the browsing data row.
+- (void)focusOnBrowsingDataRow;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_QUICK_DELETE_VIEW_CONTROLLER_H_

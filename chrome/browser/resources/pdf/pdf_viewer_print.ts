@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This import is necessary for html_to_wrapper to detect this is a Polymer
-// element.
-import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import './elements/viewer_error_dialog.js';
 import './elements/viewer_page_indicator.js';
 import './elements/viewer_zoom_toolbar.js';
-import './pdf_viewer_shared_style.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {isRTL} from 'chrome://resources/js/util.js';
@@ -23,8 +19,9 @@ import type {ViewerZoomToolbarElement} from './elements/viewer_zoom_toolbar.js';
 import {deserializeKeyEvent, LoadState, serializeKeyEvent} from './pdf_scripting_api.js';
 import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
-import {getTemplate} from './pdf_viewer_print.html.js';
-import type {DestinationMessageData, DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
+import {getCss} from './pdf_viewer_print.css.js';
+import {getHtml} from './pdf_viewer_print.html.js';
+import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
@@ -44,8 +41,12 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
     return 'pdf-viewer-print';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private isPrintPreviewLoadingFinished_: boolean = false;
@@ -79,9 +80,9 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
               assert(paths.length === 4);
               assert(paths[3] === 'print.pdf');
               // Valid Print Preview UI ID
-              assert(!Number.isNaN(parseInt(paths[1])));
+              assert(!Number.isNaN(parseInt(paths[1]!)));
               // Valid page index (can be negative for PDFs).
-              assert(!Number.isNaN(parseInt(paths[2])));
+              assert(!Number.isNaN(parseInt(paths[2]!)));
               return url.toString();
             },
             createHTML: () => assertNotReached(),
@@ -295,36 +296,25 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       case 'documentDimensions':
         this.setDocumentDimensions(data as DocumentDimensionsMessageData);
         return;
+      case 'documentFocusChanged':
+        // TODO(crbug.com/40125884): Draw a focus rect around plugin.
+        return;
       case 'loadProgress':
         this.updateProgress((data as {progress: number}).progress);
         return;
-      case 'navigateToDestination':
-        const destinationData = data as DestinationMessageData;
-        this.viewport.handleNavigateToDestination(
-            destinationData.page, destinationData.x, destinationData.y,
-            destinationData.zoom);
-        return;
       case 'printPreviewLoaded':
         this.handlePrintPreviewLoaded_();
-        return;
-      case 'setSmoothScrolling':
-        this.viewport.setSmoothScrolling((data as (MessageData & {
-                                            smoothScrolling: boolean,
-                                          })).smoothScrolling);
-        return;
-      case 'touchSelectionOccurred':
-        this.sendScriptingMessage({
-          type: 'touchSelectionOccurred',
-        });
-        return;
-      case 'documentFocusChanged':
-        // TODO(crbug.com/40125884): Draw a focus rect around plugin.
         return;
       case 'sendKeyEvent':
         const keyEvent = deserializeKeyEvent((data as KeyEventData).keyEvent) as
             ExtendedKeyEvent;
         keyEvent.fromPlugin = true;
         this.handleKeyEvent(keyEvent);
+        return;
+      case 'touchSelectionOccurred':
+        this.sendScriptingMessage({
+          type: 'touchSelectionOccurred',
+        });
         return;
       case 'beep':
       case 'formFocusChange':

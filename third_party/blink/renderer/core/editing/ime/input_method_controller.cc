@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
@@ -1274,12 +1275,16 @@ EphemeralRange InputMethodController::EphemeralRangeForOffsets(
 
 bool InputMethodController::SetSelectionOffsets(
     const PlainTextRange& selection_offsets) {
-  return SetSelectionOffsets(selection_offsets, TypingContinuation::kEnd);
+  return SetSelectionOffsets(selection_offsets, TypingContinuation::kEnd,
+                             /*show_handle=*/false,
+                             /*show_context_menu=*/false);
 }
 
 bool InputMethodController::SetSelectionOffsets(
     const PlainTextRange& selection_offsets,
-    TypingContinuation typing_continuation) {
+    TypingContinuation typing_continuation,
+    bool show_handle,
+    bool show_context_menu) {
   const EphemeralRange range = EphemeralRangeForOffsets(selection_offsets);
   if (range.IsNull())
     return false;
@@ -1288,22 +1293,36 @@ bool InputMethodController::SetSelectionOffsets(
       SelectionInDOMTree::Builder().SetBaseAndExtent(range).Build(),
       SetSelectionOptions::Builder()
           .SetShouldCloseTyping(typing_continuation == TypingContinuation::kEnd)
+          .SetShouldShowHandle(show_handle)
           .Build());
+
+  if (show_context_menu) {
+    ContextMenuAllowedScope scope;
+    GetFrame().GetEventHandler().ShowNonLocatedContextMenu(
+        /*override_target_element=*/nullptr, kMenuSourceTouch);
+  }
   return true;
 }
 
 bool InputMethodController::SetEditableSelectionOffsets(
-    const PlainTextRange& selection_offsets) {
+    const PlainTextRange& selection_offsets,
+    bool show_handle,
+    bool show_context_menu) {
   return SetEditableSelectionOffsets(selection_offsets,
-                                     TypingContinuation::kEnd);
+                                     TypingContinuation::kEnd, show_handle,
+                                     show_context_menu);
 }
 
 bool InputMethodController::SetEditableSelectionOffsets(
     const PlainTextRange& selection_offsets,
-    TypingContinuation typing_continuation) {
+    TypingContinuation typing_continuation,
+    bool show_handle,
+    bool show_context_menu) {
   if (!GetEditor().CanEdit())
     return false;
-  return SetSelectionOffsets(selection_offsets, typing_continuation);
+
+  return SetSelectionOffsets(selection_offsets, typing_continuation,
+                             show_handle, show_context_menu);
 }
 
 void InputMethodController::RemoveSuggestionMarkerInCompositionRange() {

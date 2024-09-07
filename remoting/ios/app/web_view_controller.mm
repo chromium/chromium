@@ -17,7 +17,7 @@
 @implementation WebViewController
 
 - (instancetype)initWithUrl:(NSString*)url title:(NSString*)title {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _urlString = url;
     self.title = title;
   }

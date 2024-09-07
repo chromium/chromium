@@ -39,7 +39,6 @@ source_set("unit_tests") {
     ":device_info",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
     "//chromeos/ash/components/dbus/chromebox_for_meetings",

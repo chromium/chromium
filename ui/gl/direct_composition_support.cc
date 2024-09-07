@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/direct_composition_support.h"
 
 #include <dcomp.h>
@@ -15,6 +10,7 @@
 #include <set>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -869,13 +865,14 @@ gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo() {
     result_output->hdr_enabled =
         desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
     result_output->primaries.fRX = desc.RedPrimary[0];
-    result_output->primaries.fRY = desc.RedPrimary[1];
+    // SAFETY: required from Windows API.
+    result_output->primaries.fRY = UNSAFE_BUFFERS(desc.RedPrimary[1]);
     result_output->primaries.fGX = desc.GreenPrimary[0];
-    result_output->primaries.fGY = desc.GreenPrimary[1];
+    result_output->primaries.fGY = UNSAFE_BUFFERS(desc.GreenPrimary[1]);
     result_output->primaries.fBX = desc.BluePrimary[0];
-    result_output->primaries.fBY = desc.BluePrimary[1];
+    result_output->primaries.fBY = UNSAFE_BUFFERS(desc.BluePrimary[1]);
     result_output->primaries.fWX = desc.WhitePoint[0];
-    result_output->primaries.fWY = desc.WhitePoint[1];
+    result_output->primaries.fWY = UNSAFE_BUFFERS(desc.WhitePoint[1]);
     result_output->min_luminance = desc.MinLuminance;
     result_output->max_luminance = desc.MaxLuminance;
     result_output->max_full_frame_luminance = desc.MaxFullFrameLuminance;

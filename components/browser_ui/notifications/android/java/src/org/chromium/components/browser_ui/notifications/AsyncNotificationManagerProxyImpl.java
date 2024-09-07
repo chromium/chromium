@@ -170,6 +170,8 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
                 () -> {
                     try (scopedEvent) {
                         runnable.run();
+                    } catch (Exception e) {
+                        Log.e(TAG, "unable to run a runnable.", e);
                     }
                 });
     }

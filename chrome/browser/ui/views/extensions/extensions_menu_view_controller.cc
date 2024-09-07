@@ -592,14 +592,14 @@ void ExtensionsMenuViewController::UpdateMainPage(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  // Update subheader.
+  // Update site settings.
   std::u16string current_site = GetCurrentHost(web_contents);
   bool is_site_settings_toggle_visible =
       IsSiteSettingsToggleVisible(*toolbar_model_, web_contents);
   bool is_site_settings_toggle_on =
       IsSiteSettingsToggleOn(browser_, web_contents);
-  main_page->UpdateSubheader(current_site, is_site_settings_toggle_visible,
-                             is_site_settings_toggle_on);
+  main_page->UpdateSiteSettings(current_site, is_site_settings_toggle_visible,
+                                is_site_settings_toggle_on);
 
   // Update message section.
   ExtensionsMenuMainPageView::MessageSectionState message_section_state =
@@ -859,10 +859,53 @@ void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
     return;
   }
 
-  // TODO(crbug.com/330588494): Add to correct index based on alphabetic order.
-  int index = 0;
-  AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
-                                       GetActiveWebContents());
+  // Add the request iff it's an active one.
+  auto* permissions_manager =
+      extensions::PermissionsManager::Get(browser_->profile());
+  if (permissions_manager->HasActiveSiteAccessRequest(tab_id, extension_id)) {
+    // TODO(crbug.com/330588494): Add to correct index based on alphabetic
+    // order.
+    int index = 0;
+    AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
+                                         GetActiveWebContents());
+  }
+}
+
+void ExtensionsMenuViewController::OnSiteAccessRequestUpdated(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  DCHECK(current_page_);
+
+  // Ignore requests for other tabs.
+  int current_tab_id =
+      extensions::ExtensionTabUtil::GetTabId(GetActiveWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  // Site access requests only affect the 'user customized access' section in
+  // the main page.
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
+  if (!main_page || main_page->GetMessageSectionState() !=
+                        ExtensionsMenuMainPageView::MessageSectionState::
+                            kUserCustomizedAccess) {
+    return;
+  }
+
+  // Update the request iff it's an active one.
+  auto* permissions_manager =
+      extensions::PermissionsManager::Get(browser_->profile());
+  if (permissions_manager->HasActiveSiteAccessRequest(tab_id, extension_id)) {
+    // TODO(crbug.com/330588494): Add to correct index based on alphabetic
+    // order.
+    int index = 0;
+    AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
+                                         GetActiveWebContents());
+    return;
+  }
+
+  // Otherwise, remove the request if existent.
+  main_page->RemoveExtensionRequestingAccess(extension_id);
 }
 
 void ExtensionsMenuViewController::OnSiteAccessRequestRemoved(

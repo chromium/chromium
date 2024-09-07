@@ -13,7 +13,7 @@
   // NO-OP
 }
 
-- (void)setQueryText:(NSString*)text {
+- (void)setQueryText:(NSString*)text clearSelection:(BOOL)clearSelection {
   // NO-OP
 }
 
@@ -22,6 +22,16 @@
 }
 
 - (void)reloadResult:(id<ChromeLensOverlayResult>)result {
+  // NO-OP
+}
+
+- (void)removeSelectionWithClearText:(BOOL)clearText {
+  // NO-OP
+}
+
+- (void)setOcclusionInsets:(UIEdgeInsets)occlusionInsets
+                reposition:(BOOL)reposition
+                  animated:(BOOL)animated {
   // NO-OP
 }
 

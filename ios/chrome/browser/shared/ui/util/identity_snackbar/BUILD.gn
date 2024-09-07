@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("identity_snackbar") {
+  sources = [
+    "identity_snackbar_message.h",
+    "identity_snackbar_message.mm",
+    "identity_snackbar_message_view.h",
+    "identity_snackbar_message_view.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

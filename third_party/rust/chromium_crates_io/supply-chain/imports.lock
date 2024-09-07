@@ -2,21 +2,14 @@
 # cargo-vet imports lock
 
 [[publisher.libc]]
-version = "0.2.155"
-when = "2024-05-17"
-user-id = 5820
-user-login = "the8472"
+version = "0.2.158"
+when = "2024-08-19"
+user-id = 55123
+user-login = "rust-lang-owner"
 
 [[publisher.windows-sys]]
 version = "0.52.0"
 when = "2023-11-15"
-user-id = 64539
-user-login = "kennykerr"
-user-name = "Kenny Kerr"
-
-[[publisher.windows-targets]]
-version = "0.52.5"
-when = "2024-04-12"
 user-id = 64539
 user-login = "kennykerr"
 user-name = "Kenny Kerr"

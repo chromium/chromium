@@ -83,7 +83,8 @@ void UpdateProcessTypeAndTitles(
 
   // The rest of this block will happen only once per WebContents.
   GURL page_url = contents->GetLastCommittedURL();
-  bool is_webui = rfh->GetEnabledBindings() & content::BINDINGS_POLICY_WEB_UI;
+  bool is_webui =
+      rfh->GetEnabledBindings().Has(content::BindingsPolicyValue::kWebUi);
 
   if (is_webui) {
     process.renderer_type = ProcessMemoryInformation::RENDERER_CHROME;

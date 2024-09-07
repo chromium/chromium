@@ -10,6 +10,9 @@
 
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
@@ -100,6 +103,14 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
         content::WebContents::CreateParams(profile()));
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents_.get());
+
+    // Normally this would be done by ReadAnythingSidePanelControllerGlue as it
+    // creates the WebView, but this unit test skips that step.
+    ReadAnythingSidePanelControllerGlue::CreateForWebContents(
+        web_contents_.get(), browser()
+                                 ->GetActiveTabInterface()
+                                 ->GetTabFeatures()
+                                 ->read_anything_side_panel_controller());
   }
 
   void TearDown() override {
@@ -167,6 +178,162 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
 }
 
 TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnLanguagePrefChange_StoresEnabledLangsInPrefs) {
+  const char kLang1[] = "en-au";
+  const char kLang2[] = "en-gb";
+  const char kDisabledLang[] = "en-us";
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnLanguagePrefChange(kLang1, true);
+  OnLanguagePrefChange(kLang2, true);
+  OnLanguagePrefChange(kDisabledLang, false);
+
+  const base::Value::List* langs = &profile()->GetPrefs()->GetList(
+      prefs::kAccessibilityReadAnythingLanguagesEnabled);
+  ASSERT_EQ(langs->size(), 2u);
+  ASSERT_EQ((*langs)[0].GetString(), kLang1);
+  ASSERT_EQ((*langs)[1].GetString(), kLang2);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnLanguagePrefChange_SameLang_StoresLatestInPrefs) {
+  const char kLang[] = "bn";
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+  PrefService* prefs = profile()->GetPrefs();
+
+  OnLanguagePrefChange(kLang, true);
+  ASSERT_EQ(
+      prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled).size(),
+      1u);
+
+  OnLanguagePrefChange(kLang, false);
+  ASSERT_TRUE(prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
+                  .empty());
+
+  OnLanguagePrefChange(kLang, true);
+  ASSERT_EQ(
+      prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled).size(),
+      1u);
+}
+
+// Until the kReadAloudAutoVoiceSwitching flag is enabled on all platforms,
+// there is slightly different behavior that needs to be tested on ChromeOS
+// vs. other platforms.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnHandlerConstructed_WithReadAloud_SendsStoredReadAloudInfo) {
+  // Build the voice and lang info.
+  const char kLang1[] = "en";
+  const char kLang2[] = "fr";
+  const char kLang3[] = "it";
+  const char kVoice1[] = "Rapunzel";
+  const char kVoice2[] = "Eugene";
+  const char kVoice3[] = "Cassandra";
+  base::Value::Dict voices = base::Value::Dict()
+                                 .Set(kLang1, kVoice1)
+                                 .Set(kLang2, kVoice2)
+                                 .Set(kLang3, kVoice3);
+  base::Value::List langs;
+  langs.Append(kLang1);
+  langs.Append(kLang2);
+  langs.Append(kLang3);
+
+  // Set the values in prefs.
+  double expected_speech_rate = 1.2;
+  read_anything::mojom::HighlightGranularity expected_highlight_granularity =
+      read_anything::mojom::HighlightGranularity::kOff;
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->SetDouble(prefs::kAccessibilityReadAnythingSpeechRate,
+                   expected_speech_rate);
+  prefs->SetDict(prefs::kAccessibilityReadAnythingVoiceName, std::move(voices));
+  prefs->SetList(prefs::kAccessibilityReadAnythingLanguagesEnabled,
+                 std::move(langs));
+  prefs->SetInteger(prefs::kAccessibilityReadAnythingHighlightGranularity, 1);
+
+  // Verify the values passed to the page are correct.
+  EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
+                         _, _, _, _, _, _, _, expected_speech_rate, _, _,
+                         expected_highlight_granularity))
+      .Times(1)
+      .WillOnce(testing::WithArgs<8, 9>(testing::Invoke(
+          [&](base::Value::Dict voices, base::Value::List langs) {
+            EXPECT_THAT(voices, base::test::DictionaryHasValue(
+                                    kLang1, base::Value(kVoice1)));
+            EXPECT_THAT(voices, base::test::DictionaryHasValue(
+                                    kLang2, base::Value(kVoice2)));
+            EXPECT_THAT(voices, base::test::DictionaryHasValue(
+                                    kLang3, base::Value(kVoice3)));
+            EXPECT_EQ(3u, langs.size());
+            EXPECT_EQ(langs[0].GetString(), kLang1);
+            EXPECT_EQ(langs[1].GetString(), kLang2);
+            EXPECT_EQ(langs[2].GetString(), kLang3);
+          })));
+
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnVoiceChange_StoresInPrefs) {
+  const char kLang1[] = "hi";
+  const char kLang2[] = "ja";
+  const char kVoice1[] = "Ariel";
+  const char kVoice2[] = "Sebastian";
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnVoiceChange(kVoice1, kLang1);
+  OnVoiceChange(kVoice2, kLang2);
+
+  const base::Value::Dict* voices = &profile()->GetPrefs()->GetDict(
+      prefs::kAccessibilityReadAnythingVoiceName);
+  ASSERT_EQ(voices->size(), 2u);
+  EXPECT_THAT(*voices,
+              base::test::DictionaryHasValue(kLang1, base::Value(kVoice1)));
+  EXPECT_THAT(*voices,
+              base::test::DictionaryHasValue(kLang2, base::Value(kVoice2)));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnVoiceChange_SameLang_StoresLatestInPrefs) {
+  const char kLang[] = "es-es";
+  const char kVoice1[] = "Simba";
+  const char kVoice2[] = "Nala";
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnVoiceChange(kVoice1, kLang);
+  OnVoiceChange(kVoice2, kLang);
+
+  const base::Value::Dict* voices = &profile()->GetPrefs()->GetDict(
+      prefs::kAccessibilityReadAnythingVoiceName);
+  ASSERT_EQ(voices->size(), 1u);
+  EXPECT_THAT(*voices,
+              base::test::DictionaryHasValue(kLang, base::Value(kVoice2)));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnVoiceChange_SameVoiceDifferentLang_StoresBothInPrefs) {
+  const char kLang1[] = "pt-pt";
+  const char kLang2[] = "pt-br";
+  const char kVoice[] = "Peter Parker";
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnVoiceChange(kVoice, kLang1);
+  OnVoiceChange(kVoice, kLang2);
+
+  const base::Value::Dict* voices = &profile()->GetPrefs()->GetDict(
+      prefs::kAccessibilityReadAnythingVoiceName);
+  ASSERT_EQ(voices->size(), 2u);
+  EXPECT_THAT(*voices,
+              base::test::DictionaryHasValue(kLang1, base::Value(kVoice)));
+  EXPECT_THAT(*voices,
+              base::test::DictionaryHasValue(kLang2, base::Value(kVoice)));
+}
+#else
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
        OnHandlerConstructed_WithReadAloud_SendsStoredReadAloudInfo) {
   // Build the voice and lang info.
   const char kVoice[] = "Maria";
@@ -226,192 +393,6 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
   ASSERT_EQ(voice, kVoice2);
 }
 
-TEST_F(ReadAnythingUntrustedPageHandlerTest,
-       OnLanguagePrefChange_StoresEnabledLangsInPrefs) {
-  const char kLang1[] = "en-au";
-  const char kLang2[] = "en-gb";
-  const char kDisabledLang[] = "en-us";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-
-  OnLanguagePrefChange(kLang1, true);
-  OnLanguagePrefChange(kLang2, true);
-  OnLanguagePrefChange(kDisabledLang, false);
-
-  const base::Value::List* langs = &profile()->GetPrefs()->GetList(
-      prefs::kAccessibilityReadAnythingLanguagesEnabled);
-  ASSERT_EQ(langs->size(), 2u);
-  ASSERT_EQ((*langs)[0].GetString(), kLang1);
-  ASSERT_EQ((*langs)[1].GetString(), kLang2);
-}
-
-TEST_F(ReadAnythingUntrustedPageHandlerTest,
-       OnLanguagePrefChange_SameLang_StoresLatestInPrefs) {
-  const char kLang[] = "bn";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  PrefService* prefs = profile()->GetPrefs();
-
-  OnLanguagePrefChange(kLang, true);
-  ASSERT_EQ(
-      prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled).size(),
-      1u);
-
-  OnLanguagePrefChange(kLang, false);
-  ASSERT_TRUE(prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
-                  .empty());
-
-  OnLanguagePrefChange(kLang, true);
-  ASSERT_EQ(
-      prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled).size(),
-      1u);
-}
-
-class ReadAnythingUntrustedPageHandlerWithAutoVoiceSwitchingTest
-    : public BrowserWithTestWindowTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAloudAutoVoiceSwitching},
-        {features::kReadAnythingWithScreen2x, features::kPdfOcr});
-    BrowserWithTestWindowTest::SetUp();
-    AddTab(browser(), GURL(url::kAboutBlankURL));
-    web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(profile()));
-    test_web_ui_ = std::make_unique<content::TestWebUI>();
-    test_web_ui_->set_web_contents(web_contents_.get());
-  }
-
-  void TearDown() override {
-    handler_.reset();
-    test_web_ui_.reset();
-    web_contents_.reset();
-    BrowserWithTestWindowTest::TearDown();
-  }
-
-  void OnVoiceChange(const std::string& voice, const std::string& lang) {
-    handler_->OnVoiceChange(voice, lang);
-  }
-
- protected:
-  testing::NiceMock<MockPage> page_;
-  std::unique_ptr<ReadAnythingUntrustedPageHandler> handler_;
-  std::unique_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<content::TestWebUI> test_web_ui_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ReadAnythingUntrustedPageHandlerWithAutoVoiceSwitchingTest,
-       OnHandlerConstructed_WithReadAloud_SendsStoredReadAloudInfo) {
-  // Build the voice and lang info.
-  const char kLang1[] = "en";
-  const char kLang2[] = "fr";
-  const char kLang3[] = "it";
-  const char kVoice1[] = "Rapunzel";
-  const char kVoice2[] = "Eugene";
-  const char kVoice3[] = "Cassandra";
-  base::Value::Dict voices = base::Value::Dict()
-                                 .Set(kLang1, kVoice1)
-                                 .Set(kLang2, kVoice2)
-                                 .Set(kLang3, kVoice3);
-  base::Value::List langs;
-  langs.Append(kLang1);
-  langs.Append(kLang2);
-  langs.Append(kLang3);
-
-  // Set the values in prefs.
-  double expected_speech_rate = 1.2;
-  read_anything::mojom::HighlightGranularity expected_highlight_granularity =
-      read_anything::mojom::HighlightGranularity::kOff;
-  PrefService* prefs = profile()->GetPrefs();
-  prefs->SetDouble(prefs::kAccessibilityReadAnythingSpeechRate,
-                   expected_speech_rate);
-  prefs->SetDict(prefs::kAccessibilityReadAnythingVoiceName, std::move(voices));
-  prefs->SetList(prefs::kAccessibilityReadAnythingLanguagesEnabled,
-                 std::move(langs));
-  prefs->SetInteger(prefs::kAccessibilityReadAnythingHighlightGranularity, 1);
-
-  // Verify the values passed to the page are correct.
-  EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
-                         _, _, _, _, _, _, _, expected_speech_rate, _, _,
-                         expected_highlight_granularity))
-      .Times(1)
-      .WillOnce(testing::WithArgs<8, 9>(testing::Invoke(
-          [&](base::Value::Dict voices, base::Value::List langs) {
-            EXPECT_THAT(voices, base::test::DictionaryHasValue(
-                                    kLang1, base::Value(kVoice1)));
-            EXPECT_THAT(voices, base::test::DictionaryHasValue(
-                                    kLang2, base::Value(kVoice2)));
-            EXPECT_THAT(voices, base::test::DictionaryHasValue(
-                                    kLang3, base::Value(kVoice3)));
-            EXPECT_EQ(3u, langs.size());
-            EXPECT_EQ(langs[0].GetString(), kLang1);
-            EXPECT_EQ(langs[1].GetString(), kLang2);
-            EXPECT_EQ(langs[2].GetString(), kLang3);
-          })));
-
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-}
-
-TEST_F(ReadAnythingUntrustedPageHandlerWithAutoVoiceSwitchingTest,
-       OnVoiceChange_StoresInPrefs) {
-  const char kLang1[] = "hi";
-  const char kLang2[] = "ja";
-  const char kVoice1[] = "Ariel";
-  const char kVoice2[] = "Sebastian";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-
-  OnVoiceChange(kVoice1, kLang1);
-  OnVoiceChange(kVoice2, kLang2);
-
-  const base::Value::Dict* voices = &profile()->GetPrefs()->GetDict(
-      prefs::kAccessibilityReadAnythingVoiceName);
-  ASSERT_EQ(voices->size(), 2u);
-  EXPECT_THAT(*voices,
-              base::test::DictionaryHasValue(kLang1, base::Value(kVoice1)));
-  EXPECT_THAT(*voices,
-              base::test::DictionaryHasValue(kLang2, base::Value(kVoice2)));
-}
-
-TEST_F(ReadAnythingUntrustedPageHandlerWithAutoVoiceSwitchingTest,
-       OnVoiceChange_SameLang_StoresLatestInPrefs) {
-  const char kLang[] = "es-es";
-  const char kVoice1[] = "Simba";
-  const char kVoice2[] = "Nala";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-
-  OnVoiceChange(kVoice1, kLang);
-  OnVoiceChange(kVoice2, kLang);
-
-  const base::Value::Dict* voices = &profile()->GetPrefs()->GetDict(
-      prefs::kAccessibilityReadAnythingVoiceName);
-  ASSERT_EQ(voices->size(), 1u);
-  EXPECT_THAT(*voices,
-              base::test::DictionaryHasValue(kLang, base::Value(kVoice2)));
-}
-
-TEST_F(ReadAnythingUntrustedPageHandlerWithAutoVoiceSwitchingTest,
-       OnVoiceChange_SameVoiceDifferentLang_StoresBothInPrefs) {
-  const char kLang1[] = "pt-pt";
-  const char kLang2[] = "pt-br";
-  const char kVoice[] = "Peter Parker";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-
-  OnVoiceChange(kVoice, kLang1);
-  OnVoiceChange(kVoice, kLang2);
-
-  const base::Value::Dict* voices = &profile()->GetPrefs()->GetDict(
-      prefs::kAccessibilityReadAnythingVoiceName);
-  ASSERT_EQ(voices->size(), 2u);
-  EXPECT_THAT(*voices,
-              base::test::DictionaryHasValue(kLang1, base::Value(kVoice)));
-  EXPECT_THAT(*voices,
-              base::test::DictionaryHasValue(kLang2, base::Value(kVoice)));
-}
+#endif  // IS_CHROME_OS_ASH
 
 }  // namespace

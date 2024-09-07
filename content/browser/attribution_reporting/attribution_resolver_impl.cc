@@ -183,21 +183,33 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
 
   ASSIGN_OR_RETURN(
       const auto randomized_response_data,
-      delegate_->GetRandomizedResponse(common_info.source_type(),
-                                       reg.trigger_specs,
-                                       reg.event_level_epsilon),
+      delegate_->GetRandomizedResponse(
+          common_info.source_type(), reg.trigger_specs, reg.event_level_epsilon,
+          reg.attribution_scopes_data),
       [&](auto error) -> StoreSourceResult {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
         switch (error) {
           case attribution_reporting::RandomizedResponseError::
               kExceedsChannelCapacityLimit:
             return make_result(StoreSourceResult::ExceedsMaxChannelCapacity(
-                delegate_->GetMaxChannelCapacity(common_info.source_type())));
+                attribution_reporting::GetMaxChannelCapacity(
+                    common_info.source_type())));
+          case attribution_reporting::RandomizedResponseError::
+              kExceedsScopesChannelCapacityLimit:
+            return make_result(
+                StoreSourceResult::ExceedsMaxScopesChannelCapacity(
+                    attribution_reporting::GetMaxChannelCapacityScopes(
+                        common_info.source_type())));
           case attribution_reporting::RandomizedResponseError::
               kExceedsTriggerStateCardinalityLimit:
             return make_result(
                 StoreSourceResult::ExceedsMaxTriggerStateCardinality(
                     attribution_reporting::MaxTriggerStateCardinality()));
+          case attribution_reporting::RandomizedResponseError::
+              kExceedsMaxEventStatesLimit:
+            return make_result(StoreSourceResult::ExceedsMaxEventStatesLimit(
+                source.registration()
+                    .attribution_scopes_data->max_event_states()));
         }
       });
   DCHECK(attribution_reporting::IsValid(randomized_response_data.response(),
@@ -325,6 +337,12 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
 
   if (!storage_.DeactivateSourcesForDestinationLimit(*source_ids_to_deactivate,
                                                      source_time)) {
+    return make_result(StoreSourceResult::InternalError());
+  }
+
+  if (!storage_.UpdateOrRemoveSourcesWithIncompatibleScopeFields(source,
+                                                                 source_time) ||
+      !storage_.RemoveSourcesWithOutdatedScopes(source, source_time)) {
     return make_result(StoreSourceResult::InternalError());
   }
 

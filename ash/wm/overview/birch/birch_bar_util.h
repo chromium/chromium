@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash::birch_bar_util {
@@ -23,6 +24,9 @@ std::unique_ptr<views::Button> CreateAddonButton(
 std::unique_ptr<views::View> CreateWeatherTemperatureView(
     const std::u16string& temp_str,
     bool fahrenheit);
+
+// Gets suggestion type from the given command Id.
+BirchSuggestionType CommandIdToSuggestionType(int command_id);
 
 }  // namespace ash::birch_bar_util
 

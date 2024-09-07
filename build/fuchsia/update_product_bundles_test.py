@@ -61,10 +61,10 @@ class TestUpdateProductBundles(unittest.TestCase):
     update_product_bundles.remove_repositories(['foo', 'bar', 'fizz', 'buzz'])
 
     ffx_mock.assert_has_calls([
-        mock.call(cmd=('repository', 'remove', 'foo'), check=True),
-        mock.call(cmd=('repository', 'remove', 'bar'), check=True),
-        mock.call(cmd=('repository', 'remove', 'fizz'), check=True),
-        mock.call(cmd=('repository', 'remove', 'buzz'), check=True),
+        mock.call(cmd=('repository', 'remove', 'foo')),
+        mock.call(cmd=('repository', 'remove', 'bar')),
+        mock.call(cmd=('repository', 'remove', 'fizz')),
+        mock.call(cmd=('repository', 'remove', 'buzz')),
     ])
 
   @mock.patch('os.path.exists')
@@ -98,11 +98,9 @@ class TestUpdateProductBundles(unittest.TestCase):
 
       self._ffx_mock.assert_has_calls([
           mock.call(cmd=('--machine', 'json', 'repository', 'list'),
-                    capture_output=True,
-                    check=True),
+                    capture_output=True),
           mock.call(cmd=('repository', 'remove',
-                         'workstation-eng.chromebook-x64'),
-                    check=True)
+                         'workstation-eng.chromebook-x64'))
       ])
 
   @mock.patch('update_product_bundles.running_unattended', return_value=True)
@@ -134,14 +132,12 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--base-url', f'gs://fuchsia-sdk/development/1.1.1', '--auth',
             auth_file
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64'),
             '--auth', auth_file
-        ],
-                  check=True)
+        ])
     ])
 
   @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
@@ -185,13 +181,11 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--machine', 'json', 'product', 'lookup', 'terminal.x64', '2.2.2',
             '--base-url', 'gs://fuchsia/development/2.2.2'
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.IMAGES_ROOT, 'terminal', 'x64')
-        ],
-                  check=True)
+        ])
     ])
 
   @mock.patch('update_sdk.GetSDKOverrideGCSPath',
@@ -219,13 +213,11 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--machine', 'json', 'product', 'lookup', 'terminal.x64', '2.2.2',
             '--base-url', 'gs://my-bucket'
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.IMAGES_ROOT, 'terminal', 'x64')
-        ],
-                  check=True)
+        ])
     ])
 
   @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
@@ -271,13 +263,11 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--machine', 'json', 'product', 'lookup', 'terminal.x64', '1.1.1',
             '--base-url', 'gs://fuchsia-sdk/development/1.1.1'
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64')
-        ],
-                  check=True)
+        ])
     ])
 
   @mock.patch('update_sdk.GetSDKOverrideGCSPath',
@@ -307,13 +297,11 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--machine', 'json', 'product', 'lookup', 'terminal.x64', '1.1.1',
             '--base-url', 'gs://fuchsia-sdk/development/1.1.1'
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64')
-        ],
-                  check=True)
+        ])
     ])
 
 

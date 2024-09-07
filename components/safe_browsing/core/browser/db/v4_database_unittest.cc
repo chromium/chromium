@@ -27,8 +27,7 @@ class FakeV4Store : public V4Store {
               const bool hash_prefix_matches)
       : V4Store(
             task_runner,
-            base::FilePath(store_path.value() + FILE_PATH_LITERAL(".store")),
-            std::make_unique<InMemoryHashPrefixMap>()),
+            base::FilePath(store_path.value() + FILE_PATH_LITERAL(".store"))),
         hash_prefix_should_match_(hash_prefix_matches) {}
 
   HashPrefixStr GetMatchingHashPrefix(const FullHashStr& full_hash) override {

@@ -251,6 +251,11 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   // Map which retains the exact supported refresh rates, keyed by their
   // interval conversion value which may be subject to precision loss.
   base::flat_map<base::TimeDelta, float> exact_supported_refresh_rates_;
+  // The maximum interval that the display supports. Used for VRR (variable
+  // refresh rate) or continuous range framerate selection in
+  // `FrameIntervalDecider`. Absent if the display does not support those
+  // features.
+  std::optional<base::TimeDelta> max_vsync_interval_ = std::nullopt;
 };
 
 }  // namespace viz

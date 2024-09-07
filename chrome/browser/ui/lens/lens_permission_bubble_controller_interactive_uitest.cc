@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(LensPermissionBubbleInteractiveUiTest,
             "Lens.Overlay.PermissionBubble.ByInvocationSource.AppMenu.Shown",
             /*expected_count=*/1);
       })),
-      FlushEvents(), PressButton(kLensPermissionDialogCancelButtonElementId),
+      PressButton(kLensPermissionDialogCancelButtonElementId),
       CheckCancelButtonResults());
 }
 
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(LensPermissionBubbleInteractiveUiTest,
             "Lens.Overlay.PermissionBubble.ByInvocationSource.AppMenu.Shown",
             /*expected_count=*/1);
       })),
-      FlushEvents(), PressButton(kLensPermissionDialogOkButtonElementId),
+      PressButton(kLensPermissionDialogOkButtonElementId),
       CheckContinueButtonResults());
 }
 

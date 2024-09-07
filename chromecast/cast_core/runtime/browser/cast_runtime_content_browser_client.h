@@ -25,8 +25,6 @@ class RuntimeApplication;
 
 namespace chromecast {
 
-class RuntimeServiceImpl;
-
 class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
  public:
   explicit CastRuntimeContentBrowserClient(
@@ -55,11 +53,8 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id) override;
-
- protected:
-  void InitializeCoreComponents(CastWebService* web_service);
 
  private:
   class Observer : public cast_receiver::StreamingResolutionObserver,
@@ -96,7 +91,6 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
 
   // Wrapper around the observers used with the cast_receiver component.
   Observer observer_;
-  std::unique_ptr<RuntimeServiceImpl> runtime_service_;
 };
 
 }  // namespace chromecast

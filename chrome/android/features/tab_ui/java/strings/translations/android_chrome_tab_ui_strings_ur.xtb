@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ٹیبز کا گروپ بن گیا</translation>
 <translation id="1657719826150349398">ٹیب کو نیچے منتقل کریں</translation>
 <translation id="1713541401465507417">تمام ٹیبز اور گروپس کو بند کریں</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ٹیب کا گروپ بن گیا</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو بُک مارک کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو بُک مارک کریں}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">ابھی ابھی تخلیق کیا گیا</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 دن کے بعد بند کریں}other{<ph name="DAY_COUNT_MANY" /> دن کے بعد بند کریں}}</translation>
 <translation id="4777866634702576038">ٹیب گروپ کو حذف کریں؟</translation>
+<translation id="4783638485675352219">‏اس آلے کے کھلے ہوئے ٹیبز کے عنوانات اور URLs کا آپریٹنگ سسٹم کے ساتھ اشتراک کریں</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> جائزہ)}other{(<ph name="REVIEWS_COUNT_MANY" /> جائزے)}}</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="4870911314065352661">سبھی ٹیبز بند کریں؟</translation>

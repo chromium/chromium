@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
+#import "ios/public/provider/chrome/browser/modals/modals_api.h"
 
 namespace {
 
@@ -46,6 +47,13 @@ NSString* const kTabGroupsSection = @"TabGroups";
 
 typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
     TabGroupsPanelSnapshot;
+
+// Returns the accessibility identifier to set on a TabGroupsPanelCell when
+// positioned at the given index.
+NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
+  return [NSString
+      stringWithFormat:@"%@%ld", kTabGroupsPanelCellIdentifierPrefix, index];
+}
 
 }  // namespace
 
@@ -89,7 +97,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
                configurationHandler:^(TabGroupsPanelCell* cell,
                                       NSIndexPath* indexPath,
                                       TabGroupsPanelItem* item) {
-                 [weakSelf configureCell:cell withItem:item];
+                 [weakSelf configureCell:cell
+                                withItem:item
+                                 atIndex:indexPath.item];
                }];
 
   _dataSource = [[UICollectionViewDiffableDataSource alloc]
@@ -152,6 +162,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   [_collectionView.collectionViewLayout invalidateLayout];
 }
 
+- (void)prepareForAppearance {
+  [_collectionView reloadData];
+}
+
 #pragma mark TabGroupsPanelConsumer
 
 - (void)populateItems:(NSArray<TabGroupsPanelItem*>*)items {
@@ -184,6 +198,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   }
   [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+- (void)dismissModals {
+  ios::provider::DismissModalsForCollectionView(_collectionView);
 }
 
 #pragma mark UICollectionViewDelegate
@@ -341,8 +359,12 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
 }
 
 - (void)configureCell:(TabGroupsPanelCell*)cell
-             withItem:(TabGroupsPanelItem*)item {
+             withItem:(TabGroupsPanelItem*)item
+              atIndex:(NSUInteger)index {
+  CHECK(cell);
+  CHECK(item);
   cell.item = item;
+  cell.accessibilityIdentifier = PanelCellAccessibilityIdentifier(index);
   TabGroupsPanelItemData* itemData = [_itemDataSource dataForItem:item];
   cell.titleLabel.text = itemData.title;
   cell.dot.backgroundColor = itemData.color;

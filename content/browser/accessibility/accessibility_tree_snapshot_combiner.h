@@ -22,7 +22,7 @@ class AccessibilityTreeSnapshotCombiner
     : public base::RefCounted<AccessibilityTreeSnapshotCombiner> {
  public:
   AccessibilityTreeSnapshotCombiner(
-      base::OnceCallback<void(const ui::AXTreeUpdate&)> callback,
+      base::OnceCallback<void(ui::AXTreeUpdate&)> callback,
       mojom::SnapshotAccessibilityTreeParamsPtr params);
 
   // This method will request a snapshot for the given RenderFrameHostImpl. The
@@ -37,10 +37,10 @@ class AccessibilityTreeSnapshotCombiner
   ~AccessibilityTreeSnapshotCombiner();
 
   void ReceiveSnapshotFromRenderFrameHost(bool is_root,
-                                          const ui::AXTreeUpdate& snapshot);
+                                          ui::AXTreeUpdate& snapshot);
 
   ui::AXTreeCombiner combiner_;
-  base::OnceCallback<void(const ui::AXTreeUpdate&)> callback_;
+  base::OnceCallback<void(ui::AXTreeUpdate&)> callback_;
   mojom::SnapshotAccessibilityTreeParamsPtr params_;
 };
 

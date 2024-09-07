@@ -50,6 +50,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/padded_button.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/native_widget_delegate.h"
@@ -790,6 +791,37 @@ TEST_F(ArcNotificationContentViewTest, TraversalFocusReverseByShiftTab) {
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_EQ(GetControlButtonsView()->close_button(),
             focus_manager->GetFocusedView());
+
+  CloseNotificationView();
+}
+
+TEST_F(ArcNotificationContentViewTest, AccessibleProperties) {
+  std::string key("notification id");
+  auto notification_item = std::make_unique<MockArcNotificationItem>(key);
+  auto notification = CreateNotification(notification_item.get());
+
+  PrepareSurface(key);
+  CreateAndShowNotificationView(notification);
+  ArcNotificationContentView* content_view = GetArcNotificationContentView();
+  ASSERT_TRUE(content_view);
+  ArcNotificationSurface* surface = content_view->surface_;
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(surface);
+  content_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(surface->GetAXTreeId(), ui::AXTreeIDUnknown());
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+
+  surface->SetAXTreeId(ui::AXTreeID::CreateNewAXTreeID());
+  data = ui::AXNodeData();
+  content_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(surface->GetAXTreeId(), ui::AXTreeIDUnknown());
+  EXPECT_EQ(data.role, ax::mojom::Role::kClient);
+
+  content_view->SetSurface(nullptr);
+  data = ui::AXNodeData();
+  content_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
 
   CloseNotificationView();
 }

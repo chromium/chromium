@@ -88,7 +88,8 @@
           "builder": "android-cronet-x86-dbg-lollipop-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-cronet-x86-dbg-lollipop-tests/targets"
     }
   },
   "$build/code_coverage": {

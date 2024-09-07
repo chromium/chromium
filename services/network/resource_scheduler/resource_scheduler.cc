@@ -25,7 +25,6 @@
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
@@ -99,39 +98,15 @@ uint64_t CalculateTrackId(ResourceScheduler* scheduler) {
   return (reinterpret_cast<uint64_t>(scheduler) << 32) | sNextId++;
 }
 
-BASE_FEATURE(kMaxNumDelayableRequestsPerHostPerClientFeature,
-             "MaxNumDelayableRequestsPerHostPerClientFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDelayablePriorityThresholdFeature,
-             "DelayablePriorityThresholdFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<net::RequestPriority>::Option
-    kRequestPriorities[] = {
-        {net::LOWEST, "lowest"},
-        {net::LOW, "low"},
-        {net::MEDIUM, "medium"},
-        {net::HIGHEST, "highest"},
-};
-
 }  // namespace
 
 // The maximum number of requests to allow be in-flight at any point in time per
 // host. This limit does not apply to hosts that support request prioritization
 // when |delay_requests_on_multiplexed_connections| is true.
-MIRACLE_PARAMETER_FOR_INT(GetMaxNumDelayableRequestsPerHostPerClient,
-                          kMaxNumDelayableRequestsPerHostPerClientFeature,
-                          "MaxNumDelayableRequestsPerHostPerClient",
-                          6)
+static const size_t kMaxNumDelayableRequestsPerHostPerClient = 6;
 
 // The priority level below which resources are considered to be delayable.
-MIRACLE_PARAMETER_FOR_ENUM(GetDelayablePriorityThreshold,
-                           kDelayablePriorityThresholdFeature,
-                           "DelayablePriorityThreshold",
-                           net::MEDIUM,
-                           net::RequestPriority,
-                           kRequestPriorities)
+static const net::RequestPriority kDelayablePriorityThreshold = net::MEDIUM;
 
 // Returns the duration after which the timer to dispatch queued requests should
 // fire.
@@ -809,9 +784,7 @@ class ResourceScheduler::Client
     if (base::Contains(in_flight_requests_, request))
       attributes |= kAttributeInFlight;
 
-    const net::RequestPriority kPriorityThreshold =
-        GetDelayablePriorityThreshold();
-    if (request->url_request()->priority() < kPriorityThreshold) {
+    if (request->url_request()->priority() < kDelayablePriorityThreshold) {
       if (params_for_network_quality_
               .delay_requests_on_multiplexed_connections) {
         // Resources below the delayable priority threshold that are considered
@@ -857,14 +830,12 @@ class ResourceScheduler::Client
       return false;
     }
 
-    const size_t kMaxSameHostCount =
-        GetMaxNumDelayableRequestsPerHostPerClient();
     size_t same_host_count = 0;
     for (const ScheduledResourceRequestImpl* in_flight_request :
          in_flight_requests_) {
       if (active_request_host == in_flight_request->scheme_host_port()) {
         same_host_count++;
-        if (same_host_count >= kMaxSameHostCount) {
+        if (same_host_count >= kMaxNumDelayableRequestsPerHostPerClient) {
           return true;
         }
       }

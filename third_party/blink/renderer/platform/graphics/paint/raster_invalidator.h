@@ -156,7 +156,7 @@ class PLATFORM_EXPORT RasterInvalidator
   Callback& callback_;
   gfx::Vector2dF layer_offset_;
   gfx::Size layer_bounds_;
-  PropertyTreeState layer_state_ = PropertyTreeState::Root();
+  TraceablePropertyTreeState layer_state_{PropertyTreeState::Root()};
   Vector<PaintChunkInfo> old_paint_chunks_info_;
   Member<const PaintArtifact> current_paint_artifact_;
   Member<const PaintArtifact> old_paint_artifact_;

@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -46,7 +46,7 @@
 - (instancetype)initWithBrowser:(Browser*)browser
                        scenario:(MenuScenarioHistogram)scenario {
   DCHECK(browser);
-  if (self = [super initWithScenario:scenario]) {
+  if ((self = [super initWithScenario:scenario])) {
     _browser = browser;
   }
   return self;

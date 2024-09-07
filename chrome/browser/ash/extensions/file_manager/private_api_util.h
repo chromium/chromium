@@ -32,10 +32,6 @@ class File;
 class FilePath;
 }  // namespace base
 
-namespace content {
-class RenderFrameHost;
-}
-
 namespace drive {
 class EventLogger;
 }
@@ -120,15 +116,13 @@ void VolumeToVolumeMetadata(
     extensions::api::file_manager_private::VolumeMetadata* volume_metadata);
 
 // Returns the local FilePath associated with |url|. If the file isn't of the
-// type FileSystemBackend handles, returns an empty
-// FilePath. |render_frame_host| and |profile| are needed to obtain the
-// FileSystemContext currently in use.
+// type FileSystemBackend handles, returns an empty FilePath.
 //
 // Local paths will look like "/home/chronos/user/MyFiles/Downloads/foo/bar.txt"
 // or "/special/drive/foo/bar.txt".
-base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
-                                   Profile* profile,
-                                   const GURL& url);
+base::FilePath GetLocalPathFromURL(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const GURL& url);
 
 // The callback type is used for GetSelectedFileInfo().
 typedef base::OnceCallback<void(const std::vector<ui::SelectedFileInfo>&)>

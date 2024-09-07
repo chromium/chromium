@@ -23,9 +23,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
  public:
   using Ptr = std::unique_ptr<SessionAccessor, base::OnTaskRunnerDeleter>;
 
-  static Ptr Create(scoped_refptr<base::SequencedTaskRunner> task_runner,
+  static Ptr Create(const ChromeML& chrome_ml,
+                    scoped_refptr<base::SequencedTaskRunner> task_runner,
                     ChromeMLModel model,
-                    base::File adaptation_data = base::File());
+                    on_device_model::AdaptationAssets adaptation_assets =
+                        on_device_model::AdaptationAssets());
 
   ~SessionAccessor();
 
@@ -42,11 +44,12 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
  private:
   class Canceler;
 
-  SessionAccessor(scoped_refptr<base::SequencedTaskRunner> task_runner,
+  SessionAccessor(const ChromeML& chrome_ml,
+                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                   ChromeMLModel model);
 
   void CloneFrom(SessionAccessor* other);
-  void CreateInternal(base::File adaptation_data);
+  void CreateInternal(on_device_model::AdaptationAssets adaptation_assets);
   void ExecuteInternal(on_device_model::mojom::InputOptionsPtr input,
                        ChromeMLExecutionOutputFn output_fn,
                        ChromeMLContextSavedFn context_saved_fn,
@@ -55,6 +58,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
   void SizeInTokensInternal(const std::string& text,
                             ChromeMLSizeInTokensFn size_in_tokens_fn);
 
+  const raw_ref<const ChromeML> chrome_ml_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ChromeMLModel model_;
   ChromeMLSession session_ = 0;

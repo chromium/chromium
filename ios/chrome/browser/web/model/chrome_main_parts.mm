@@ -54,7 +54,6 @@
 #import "components/variations/variations_ids_provider.h"
 #import "components/variations/variations_switches.h"
 #import "ios/chrome/browser/application_context/model/application_context_impl.h"
-#import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/flags/about_flags.h"
@@ -63,12 +62,13 @@
 #import "ios/chrome/browser/open_from_clipboard/model/create_clipboard_recent_content.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
@@ -76,6 +76,7 @@
 #import "ios/chrome/browser/web/model/ios_thread_profiler.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_controller.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/base/network_change_notifier.h"
@@ -187,8 +188,9 @@ void IOSChromeMainParts::PreCreateThreads() {
   // Check the first run state early; this must be done before IO is disallowed
   // so that later calls can use the cached value.
   static crash_reporter::CrashKeyString<4> key("first-run");
-  if (FirstRun::IsChromeFirstRun())
+  if (FirstRun::IsChromeFirstRun()) {
     key.Set("yes");
+  }
 
   // Compute device restore flag before IO is disallowed on UI thread, so the
   // value is available from cache synchronously.
@@ -312,22 +314,22 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
           /*in_memory_database=*/false);
 
   // Ensure that the KeyedService factories are registered.
-  EnsureBrowserStateKeyedServiceFactoriesBuilt();
+  EnsureProfileKeyedServiceFactoriesBuilt();
   BrowserStateDependencyManager::GetInstance()
       ->DisallowKeyedServiceFactoryRegistration(
-          "EnsureBrowserStateKeyedServiceFactoriesBuilt()");
+          "EnsureProfileKeyedServiceFactoriesBuilt()");
 
-  // Ensure the ChromeBrowserState is loaded and initialized.
-  ChromeBrowserStateManager* browser_state_manager =
-      application_context_->GetChromeBrowserStateManager();
+  // Ensure the Profiles are loaded and initialized.
+  ProfileManagerIOS* profile_manager =
+      application_context_->GetProfileManager();
 
-  // Load all BrowserStates.
-  browser_state_manager->LoadBrowserStates();
+  // Load all Profiles.
+  profile_manager->LoadProfiles();
 
   // TODO(crbug.com/325257407): Factor all of the code that uses this to instead
   // initialize for every browser state.
   ChromeBrowserState* last_used_browser_state =
-      browser_state_manager->GetLastUsedBrowserStateDeprecatedDoNotUse();
+      profile_manager->GetLastUsedProfileDeprecatedDoNotUse();
 
   // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
   // blocking pool, which is disabled until the CreateThreads phase of startup.
@@ -453,12 +455,22 @@ void IOSChromeMainParts::SetUpFieldTrials(
   std::vector<std::string> variation_ids =
       RegisterAllFeatureVariationParameters(&flags_storage, feature_list.get());
 
+  // TODO(crbug.com/355550974): Uncomment the following once the API is
+  // implemented.
+  /*
+  // Register additional features to the feature list.
+  AdditionalFeaturesController* additional_features_controller =
+      application_context_->GetAdditionalFeaturesController();
+  additional_features_controller->RegisterFeatureList(feature_list.get());
+  */
+
 #if !BUILDFLAG(USE_BLINK)
   // TODO(crbug.com/40261735) Move variations to PostEarlyInitialization.
   application_context_->GetVariationsService()->SetUpFieldTrials(
       variation_ids, command_line_variation_ids,
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), &ios_field_trials_);
+  // additional_features_controller->FeatureListDidCompleteSetup();
 #endif
 }
 

@@ -4,8 +4,6 @@
 
 #include "ash/webui/camera_app_ui/camera_app_events_sender.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
@@ -17,10 +15,6 @@ namespace ash {
 namespace {
 
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
-
-bool CanSendEvents() {
-  return base::FeatureList::IsEnabled(ash::features::kCameraAppCrosEvents);
-}
 
 camera_app::mojom::PhotoDetailsPtr* GetPhotoDetails(
     const camera_app::mojom::CaptureEventParamsPtr& params) {
@@ -158,10 +152,6 @@ CameraAppEventsSender::CreateConnection() {
 
 void CameraAppEventsSender::SendStartSessionEvent(
     camera_app::mojom::StartSessionEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   auto language = static_cast<base::HistogramBase::Sample>(
       base::HashMetricName(system_language_));
   metrics::structured::StructuredMetricsClient::Record(std::move(
@@ -174,10 +164,6 @@ void CameraAppEventsSender::SendStartSessionEvent(
 
 void CameraAppEventsSender::SendCaptureEvent(
     camera_app::mojom::CaptureEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_Capture()
           .SetMode(static_cast<cros_events::CameraAppMode>(params->mode))
@@ -217,10 +203,6 @@ void CameraAppEventsSender::SendCaptureEvent(
 
 void CameraAppEventsSender::SendAndroidIntentEvent(
     camera_app::mojom::AndroidIntentEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_AndroidIntent()
           .SetMode(static_cast<cros_events::CameraAppMode>(params->mode))
@@ -232,10 +214,6 @@ void CameraAppEventsSender::SendAndroidIntentEvent(
 
 void CameraAppEventsSender::SendOpenPTZPanelEvent(
     camera_app::mojom::OpenPTZPanelEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_OpenPTZPanel()
           .SetSupportPan(static_cast<int64_t>(params->support_pan))
@@ -245,10 +223,6 @@ void CameraAppEventsSender::SendOpenPTZPanelEvent(
 
 void CameraAppEventsSender::SendDocScanActionEvent(
     camera_app::mojom::DocScanActionEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(
       std::move(cros_events::CameraApp_DocScanAction().SetActionType(
           static_cast<cros_events::CameraAppDocScanActionType>(
@@ -257,10 +231,6 @@ void CameraAppEventsSender::SendDocScanActionEvent(
 
 void CameraAppEventsSender::SendDocScanResultEvent(
     camera_app::mojom::DocScanResultEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_DocScanResult()
           .SetResultType(static_cast<cros_events::CameraAppDocScanResultType>(
@@ -272,10 +242,6 @@ void CameraAppEventsSender::SendDocScanResultEvent(
 
 void CameraAppEventsSender::SendOpenCameraEvent(
     camera_app::mojom::OpenCameraEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   std::string camera_module_id;
   auto& camera_module = params->camera_module;
   if (camera_module->is_mipi_camera()) {
@@ -297,10 +263,6 @@ void CameraAppEventsSender::SendOpenCameraEvent(
 
 void CameraAppEventsSender::SendLowStorageActionEvent(
     camera_app::mojom::LowStorageActionEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(
       std::move(cros_events::CameraApp_LowStorageAction().SetActionType(
           static_cast<cros_events::CameraAppLowStorageActionType>(
@@ -309,10 +271,6 @@ void CameraAppEventsSender::SendLowStorageActionEvent(
 
 void CameraAppEventsSender::SendBarcodeDetectedEvent(
     camera_app::mojom::BarcodeDetectedEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_BarcodeDetected()
           .SetContentType(static_cast<cros_events::CameraAppBarcodeContentType>(
@@ -324,10 +282,6 @@ void CameraAppEventsSender::SendBarcodeDetectedEvent(
 
 void CameraAppEventsSender::SendPerfEvent(
     camera_app::mojom::PerfEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_Perf()
           .SetEventType(static_cast<cros_events::CameraAppPerfEventType>(
@@ -342,29 +296,17 @@ void CameraAppEventsSender::SendPerfEvent(
 }
 
 void CameraAppEventsSender::SendUnsupportedProtocolEvent() {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(
       std::move(cros_events::CameraApp_UnsupportedProtocol()));
 }
 
 void CameraAppEventsSender::UpdateMemoryUsageEventParams(
     camera_app::mojom::MemoryUsageEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   session_memory_usage_ = params.Clone();
 }
 
 void CameraAppEventsSender::SendOcrEvent(
     camera_app::mojom::OcrEventParamsPtr params) {
-  if (!CanSendEvents()) {
-    return;
-  }
-
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_Ocr()
           .SetEventType(static_cast<cros_events::CameraAppOcrEventType>(

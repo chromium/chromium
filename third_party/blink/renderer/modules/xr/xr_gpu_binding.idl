@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary XRGPUProjectionLayerInit {
+  required GPUTextureFormat colorFormat;
+  GPUTextureFormat? depthStencilFormat;
+  GPUTextureUsageFlags textureUsage = 0x10; // GPUTextureUsage.RENDER_ATTACHMENT
+  double scaleFactor = 1.0;
+};
+
+[
+    SecureContext,
+    Exposed=Window,
+    RuntimeEnabled=WebXRLayers
+] interface XRGPUBinding {
+  [RaisesException] constructor(XRSession session, GPUDevice device);
+
+  readonly attribute double nativeProjectionScaleFactor;
+
+  [RaisesException]
+  XRProjectionLayer createProjectionLayer(XRGPUProjectionLayerInit init);
+
+  [RaisesException]
+  XRGPUSubImage getViewSubImage(XRProjectionLayer layer, XRView view);
+
+  GPUTextureFormat getPreferredColorFormat();
+};

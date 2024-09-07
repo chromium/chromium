@@ -317,14 +317,15 @@ void WaitForEmpyOmnibox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText("foo")];
 
-  id<GREYMatcher> cancelButton = grey_accessibilityLabel(@"Clear Text");
+  id<GREYMatcher> cancelButton = grey_accessibilityLabel(@"Clear text");
 
   [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
   WaitForEmpyOmnibox();
 }
 
 // Types JavaScript into Omnibox and verify that an alert is displayed.
-- (void)testTypeJavaScriptIntoOmnibox {
+// TODO(crbug.com/362621166): Test is flaky.
+- (void)DISABLED_testTypeJavaScriptIntoOmnibox {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   [ChromeEarlGreyUI

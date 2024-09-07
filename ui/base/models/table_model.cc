@@ -17,25 +17,22 @@ namespace ui {
 
 TableColumn::TableColumn()
     : id(0),
-      title(),
-      alignment(LEFT),
       width(-1),
       percent(),
       min_visible_width(0),
+      alignment(LEFT),
       sortable(false),
-      initial_sort_is_ascending(true) {
-}
+      initial_sort_is_ascending(true) {}
 
 TableColumn::TableColumn(int id, Alignment alignment, int width, float percent)
-    : id(id),
-      title(l10n_util::GetStringUTF16(id)),
-      alignment(alignment),
+    : title(l10n_util::GetStringUTF16(id)),
+      id(id),
       width(width),
       percent(percent),
       min_visible_width(0),
+      alignment(alignment),
       sortable(false),
-      initial_sort_is_ascending(true) {
-}
+      initial_sort_is_ascending(true) {}
 
 TableColumn::TableColumn(const TableColumn& other) = default;
 

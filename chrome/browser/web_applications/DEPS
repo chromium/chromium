@@ -13,3 +13,9 @@ include_rules = {
   "+third_party/liburlpattern",
   "+url",
 }
+
+specific_include_rules = {
+  "system_media_controls_bridge_browsertest.cc": [
+    "+components/system_media_controls/system_media_controls.h",
+  ],
+}

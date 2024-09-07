@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "pdf/ink/ink_brush.h"
 #include "pdf/ink/ink_brush_family.h"
 #include "pdf/ink/ink_brush_paint.h"
@@ -32,15 +33,19 @@ float GetCornerRounding(PdfInkBrush::Type type) {
     case PdfInkBrush::Type::kPen:
       return 1.0f;
   }
+  NOTREACHED();
 }
 
 float GetOpacity(PdfInkBrush::Type type) {
   switch (type) {
     case PdfInkBrush::Type::kHighlighter:
+      // LINT.IfChange(HighlighterOpacity)
       return 0.4f;
+      // LINT.ThenChange(//chrome/browser/resources/pdf/elements/viewer_side_panel.ts:HighlighterOpacity)
     case PdfInkBrush::Type::kPen:
       return 1.0f;
   }
+  NOTREACHED();
 }
 
 std::unique_ptr<InkBrush> CreateInkBrush(PdfInkBrush::Type type,

@@ -16,8 +16,8 @@
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector_mock.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -41,8 +41,7 @@ class ReportGeneratorIOSTest : public PlatformTest {
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             CreateMockPolicyService(), &schema_registry_));
-    browser_state_ =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -103,14 +102,14 @@ class ReportGeneratorIOSTest : public PlatformTest {
     return browser_state_->GetStatePath();
   }
 
-  const std::string& GetBrowserStateName() {
-    return browser_state_->GetBrowserStateName();
+  const std::string& GetProfileName() {
+    return browser_state_->GetProfileName();
   }
 
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
 
   ReportingDelegateFactoryIOS delegate_factory_;
@@ -162,7 +161,7 @@ TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
   EXPECT_EQ(1, browser_report.chrome_user_profile_infos_size());
   auto profile_info = browser_report.chrome_user_profile_infos(0);
   EXPECT_EQ(GetBrowserStatePath().AsUTF8Unsafe(), profile_info.id());
-  EXPECT_EQ(GetBrowserStateName(), profile_info.name());
+  EXPECT_EQ(GetProfileName(), profile_info.name());
   EXPECT_TRUE(profile_info.has_is_detail_available());
   EXPECT_TRUE(profile_info.is_detail_available());
   EXPECT_EQ(2, profile_info.chrome_policies_size());

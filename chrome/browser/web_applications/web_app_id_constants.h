@@ -169,6 +169,10 @@ inline constexpr char kPlayBooksAppId[] = "jglfhlbohpgcbefmhdmpancnijacbbji";
 inline constexpr char kPrintManagementAppId[] =
     "fglkccnmnaankjodgccmiodmlkpaiodc";
 
+// Generated as:web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
+//      "chrome://recorder-app/"))
+inline constexpr char kRecorderAppId[] = "aegafoechlhchmknlbhmofidaodfkhhk";
+
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt,
 // GURL("chrome://sanitize/"))
 inline constexpr char kSanitizeAppId[] = "kochjemhjheifpfhkppkameonoheenjk";

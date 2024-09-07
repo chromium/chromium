@@ -1,11 +1,14 @@
 include_rules = [
   "+components/endpoint_fetcher",
   "+components/signin/public/identity_manager",
+  "+components/sqlite_proto",
   "+components/sync/base",
   "+components/sync/protocol",
   "+components/sync/test",
   "+net/http",
   "+net/base",
+  "+services/data_decoder/public/cpp",
   "+services/network/public/cpp",
   "+services/network/test",
+  "+sql",
 ]

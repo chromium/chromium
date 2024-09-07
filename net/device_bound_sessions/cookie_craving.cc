@@ -4,6 +4,8 @@
 
 #include "net/device_bound_sessions/cookie_craving.h"
 
+#include <optional>
+
 #include "base/strings/strcat.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
@@ -11,6 +13,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
+#include "net/device_bound_sessions/proto/storage.pb.h"
 #include "url/url_canon.h"
 
 namespace net::device_bound_sessions {
@@ -21,6 +24,56 @@ namespace {
 // unnecessarily long placeholder so as to not eat into the 4096-char limit for
 // a cookie name-value pair.
 const char kPlaceholderValue[] = "v";
+
+proto::CookieSameSite ProtoEnumFromCookieSameSite(CookieSameSite same_site) {
+  switch (same_site) {
+    case CookieSameSite::UNSPECIFIED:
+      return proto::CookieSameSite::COOKIE_SAME_SITE_UNSPECIFIED;
+    case CookieSameSite::NO_RESTRICTION:
+      return proto::CookieSameSite::NO_RESTRICTION;
+    case CookieSameSite::LAX_MODE:
+      return proto::CookieSameSite::LAX_MODE;
+    case CookieSameSite::STRICT_MODE:
+      return proto::CookieSameSite::STRICT_MODE;
+  }
+}
+
+CookieSameSite CookieSameSiteFromProtoEnum(proto::CookieSameSite proto) {
+  switch (proto) {
+    case proto::CookieSameSite::COOKIE_SAME_SITE_UNSPECIFIED:
+      return CookieSameSite::UNSPECIFIED;
+    case proto::CookieSameSite::NO_RESTRICTION:
+      return CookieSameSite::NO_RESTRICTION;
+    case proto::CookieSameSite::LAX_MODE:
+      return CookieSameSite::LAX_MODE;
+    case proto::CookieSameSite::STRICT_MODE:
+      return CookieSameSite::STRICT_MODE;
+  }
+}
+
+proto::CookieSourceScheme ProtoEnumFromCookieSourceScheme(
+    CookieSourceScheme scheme) {
+  switch (scheme) {
+    case CookieSourceScheme::kUnset:
+      return proto::CookieSourceScheme::UNSET;
+    case CookieSourceScheme::kNonSecure:
+      return proto::CookieSourceScheme::NON_SECURE;
+    case CookieSourceScheme::kSecure:
+      return proto::CookieSourceScheme::SECURE;
+  }
+}
+
+CookieSourceScheme CookieSourceSchemeFromProtoEnum(
+    proto::CookieSourceScheme proto) {
+  switch (proto) {
+    case proto::CookieSourceScheme::UNSET:
+      return CookieSourceScheme::kUnset;
+    case proto::CookieSourceScheme::NON_SECURE:
+      return CookieSourceScheme::kNonSecure;
+    case proto::CookieSourceScheme::SECURE:
+      return CookieSourceScheme::kSecure;
+  }
+}
 
 }  // namespace
 
@@ -75,10 +128,7 @@ std::optional<CookieCraving> CookieCraving::Create(
   std::string path = cookie_util::CanonPathWithString(
       url, parsed_cookie.HasPath() ? parsed_cookie.Path() : "");
 
-  // Note: This is a deviation from CanonicalCookie. In CookieCraving, we do not
-  // honor non-default values for the kCaseInsensitiveCookiePrefix feature.
-  CookiePrefix prefix =
-      cookie_util::GetCookiePrefix(name, /*check_insensitively=*/true);
+  CookiePrefix prefix = cookie_util::GetCookiePrefix(name);
   if (!cookie_util::IsCookiePrefixValid(prefix, url, parsed_cookie)) {
     return std::nullopt;
   }
@@ -144,10 +194,7 @@ bool CookieCraving::IsValid() const {
     return false;
   }
 
-  // Note: This is a deviation from CanonicalCookie. Here, we always check case
-  // insensitively. See comment above in Create().
-  CookiePrefix prefix =
-      cookie_util::GetCookiePrefix(Name(), /*check_insensitively=*/true);
+  CookiePrefix prefix = cookie_util::GetCookiePrefix(Name());
   switch (prefix) {
     case COOKIE_PREFIX_HOST:
       if (!SecureAttribute() || Path() != "/" || !IsHostCookie()) {
@@ -261,9 +308,101 @@ CookieCraving& CookieCraving::operator=(CookieCraving&& other) = default;
 
 CookieCraving::~CookieCraving() = default;
 
+bool CookieCraving::IsEqualForTesting(const CookieCraving& other) const {
+  return Name() == other.Name() && Domain() == other.Domain() &&
+         Path() == other.Path() &&
+         SecureAttribute() == other.SecureAttribute() &&
+         IsHttpOnly() == other.IsHttpOnly() && SameSite() == other.SameSite() &&
+         SourceScheme() == other.SourceScheme() &&
+         SourcePort() == other.SourcePort() &&
+         CreationDate() == other.CreationDate() &&
+         PartitionKey() == other.PartitionKey();
+}
+
 std::ostream& operator<<(std::ostream& os, const CookieCraving& cc) {
   os << cc.DebugString();
   return os;
+}
+
+proto::CookieCraving CookieCraving::ToProto() const {
+  CHECK(IsValid());
+
+  proto::CookieCraving proto;
+  proto.set_name(Name());
+  proto.set_domain(Domain());
+  proto.set_path(Path());
+  proto.set_secure(SecureAttribute());
+  proto.set_httponly(IsHttpOnly());
+  proto.set_source_port(SourcePort());
+  proto.set_creation_time(
+      CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  proto.set_same_site(ProtoEnumFromCookieSameSite(SameSite()));
+  proto.set_source_scheme(ProtoEnumFromCookieSourceScheme(SourceScheme()));
+
+  if (IsPartitioned()) {
+    // TODO(crbug.com/356581003) The serialization below does not handle
+    // nonced cookies. Need to figure out whether this is required.
+    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_partition_key =
+            net::CookiePartitionKey::Serialize(PartitionKey());
+    CHECK(serialized_partition_key.has_value());
+    proto.mutable_serialized_partition_key()->set_top_level_site(
+        serialized_partition_key->TopLevelSite());
+    proto.mutable_serialized_partition_key()->set_has_cross_site_ancestor(
+        serialized_partition_key->has_cross_site_ancestor());
+  }
+
+  return proto;
+}
+
+// static
+std::optional<CookieCraving> CookieCraving::CreateFromProto(
+    const proto::CookieCraving& proto) {
+  if (!proto.has_name() || !proto.has_domain() || !proto.has_path() ||
+      !proto.has_secure() || !proto.has_httponly() ||
+      !proto.has_source_port() || !proto.has_creation_time() ||
+      !proto.has_same_site() || !proto.has_source_scheme()) {
+    return std::nullopt;
+  }
+
+  // Retrieve the serialized cookie partition key if present.
+  std::optional<CookiePartitionKey> partition_key;
+  if (proto.has_serialized_partition_key()) {
+    const proto::SerializedCookiePartitionKey& serialized_key =
+        proto.serialized_partition_key();
+    if (!serialized_key.has_top_level_site() ||
+        !serialized_key.has_has_cross_site_ancestor()) {
+      return std::nullopt;
+    }
+    base::expected<std::optional<CookiePartitionKey>, std::string>
+        restored_key = CookiePartitionKey::FromStorage(
+            serialized_key.top_level_site(),
+            serialized_key.has_cross_site_ancestor());
+    if (!restored_key.has_value() || *restored_key == std::nullopt) {
+      return std::nullopt;
+    }
+    partition_key = std::move(*restored_key);
+  }
+
+  CookieCraving cookie_craving{
+      proto.name(),
+      proto.domain(),
+      proto.path(),
+      base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(proto.creation_time())),
+      proto.secure(),
+      proto.httponly(),
+      CookieSameSiteFromProtoEnum(proto.same_site()),
+      std::move(partition_key),
+      CookieSourceSchemeFromProtoEnum(proto.source_scheme()),
+      proto.source_port()};
+
+  if (!cookie_craving.IsValid()) {
+    return std::nullopt;
+  }
+
+  return cookie_craving;
 }
 
 }  // namespace net::device_bound_sessions

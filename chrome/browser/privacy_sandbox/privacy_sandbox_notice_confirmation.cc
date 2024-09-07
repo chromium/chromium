@@ -60,10 +60,7 @@ bool IsConfirmationRequired(ConfirmationType confirmation_type,
         IsFeatureParamEnabled(confirmation_type);
     EmitHistogram(confirmation_type, is_confirmation_required !=
                                          is_confirmation_required_override);
-    if (!base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxLocalNoticeConfirmation)) {
-      return is_confirmation_required_override;
-    }
+    return is_confirmation_required_override;
   }
   return is_confirmation_required;
 }

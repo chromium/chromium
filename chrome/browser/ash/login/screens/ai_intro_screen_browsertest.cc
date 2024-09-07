@@ -34,7 +34,8 @@ class AiIntroScreenTest : public OobeBaseTest {
   AiIntroScreenTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kFeatureManagementOobeAiIntro,
-         features::kFeatureManagementOobeGeminiIntro},
+         features::kFeatureManagementOobeGeminiIntro,
+         features::kOobeGeminiIntroForTesting},
         {});
   }
 

@@ -40,6 +40,7 @@ const IGNORED_ELEMENTS: Set<string> = new Set([
   'CONTENT',
   'CR-ACTION-MENU',
   'CR-DIALOG',
+  'CR-ICON',
   'CR-ICON-BUTTON',
   'CR-RIPPLE',
   'CR-SLIDER',

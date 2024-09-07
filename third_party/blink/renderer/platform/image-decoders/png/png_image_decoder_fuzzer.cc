@@ -18,6 +18,8 @@
 // so the fuzzer will read both directories passed, but all new generated
 // testcases will go into ~/another_dir_to_store_corpus
 
+#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -25,8 +27,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -42,6 +44,7 @@ std::unique_ptr<ImageDecoder> CreatePNGDecoder() {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support;
+  test::TaskEnvironment task_environment;
   auto buffer = SharedBuffer::Create(data, size);
   auto decoder = CreatePNGDecoder();
   static constexpr bool kAllDataReceived = true;

@@ -6,12 +6,12 @@
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_
 
 #import "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/actions/omnibox_pedal.h"
-#include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#include "ios/chrome/browser/autocomplete/model/tab_matcher_impl.h"
+#import "components/omnibox/browser/actions/omnibox_pedal.h"
+#import "components/omnibox/browser/autocomplete_provider_client.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/autocomplete/model/tab_matcher_impl.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class AutocompleteScoringModelService;
 class OnDeviceTailModelService;
 struct ProviderStateService;
@@ -60,7 +60,6 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
   std::unique_ptr<KeywordExtensionsDelegate> GetKeywordExtensionsDelegate(
       KeywordProvider* keyword_provider) override;
-  query_tiles::TileService* GetQueryTileService() const override;
   OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
       const override;
   AutocompleteScoringModelService* GetAutocompleteScoringModelService()

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] 2nd square is properly affected by shape.
-  assert_approx_equals: expected 97 +/- 0.5 but got 97.6875
-[FAIL] 9th square is properly affected by shape.
-  assert_approx_equals: expected 92 +/- 0.5 but got 92.65625
-Harness: the test ran to completion.
-

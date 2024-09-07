@@ -135,6 +135,14 @@ void TabStripSceneLayer::FinishBuildingFrame(
                              group_bottom_layers_.end());
 }
 
+void TabStripSceneLayer::UpdateOffsetTag(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jobj,
+    const JavaParamRef<jobject>& joffset_tag) {
+  viz::OffsetTag tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
+  layer()->SetOffsetTag(tag);
+}
+
 void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              const JavaParamRef<jobject>& jobj,
                                              jint width,

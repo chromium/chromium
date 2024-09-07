@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 using content::OpenURLParams;
 using content::Referrer;
@@ -56,9 +57,9 @@ std::u16string AccessibilityLabelsBubbleModel::GetMessageText() const {
 }
 
 std::u16string AccessibilityLabelsBubbleModel::GetButtonLabel(
-    ui::DialogButton button) const {
+    ui::mojom::DialogButton button) const {
   return l10n_util::GetStringUTF16(
-      button == ui::DIALOG_BUTTON_OK
+      button == ui::mojom::DialogButton::kOk
           ? IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_BUBBLE_ENABLE
           : IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_BUBBLE_DISABLE);
 }

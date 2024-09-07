@@ -48,6 +48,7 @@ InProcessVideoCaptureProvider::CreateDeviceLauncher() {
 
 void InProcessVideoCaptureProvider::OpenNativeScreenCapturePicker(
     DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback) {
@@ -57,8 +58,8 @@ void InProcessVideoCaptureProvider::OpenNativeScreenCapturePicker(
       FROM_HERE,
       base::BindOnce(&NativeScreenCapturePicker::Open,
                      native_screen_capture_picker_->GetWeakPtr(), type,
-                     std::move(picker_callback), std::move(cancel_callback),
-                     std::move(error_callback)));
+                     std::move(created_callback), std::move(picker_callback),
+                     std::move(cancel_callback), std::move(error_callback)));
 }
 
 void InProcessVideoCaptureProvider::CloseNativeScreenCapturePicker(

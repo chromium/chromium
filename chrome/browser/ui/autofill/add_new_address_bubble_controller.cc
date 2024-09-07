@@ -84,8 +84,8 @@ void AddNewAddressBubbleController::OnAddButtonClicked() {
   if (delegate_) {
     delegate_->ShowEditor(
         AutofillProfile(is_eligible_for_account_storage_
-                            ? AutofillProfile::Source::kAccount
-                            : AutofillProfile::Source::kLocalOrSyncable,
+                            ? AutofillProfile::RecordType::kAccount
+                            : AutofillProfile::RecordType::kLocalOrSyncable,
                         country_code_),
         l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_EDITOR_TITLE),
         GetFooterMessage(),

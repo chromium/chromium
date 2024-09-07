@@ -100,6 +100,8 @@ class AutofillPlusAddressDelegate {
   // Starts a session for logging a form submission UKM specific to plus
   // addresses. `suggestion_type` is the type of the first shown plus address
   // suggestion.
+  // TODO(crbug.com/362445807): Investigate whether this can be moved into AED
+  // as well and be combined with OnShowedInlineSuggestion.
   virtual void OnPlusAddressSuggestionShown(
       AutofillManager& manager,
       FormGlobalId form,
@@ -107,6 +109,27 @@ class AutofillPlusAddressDelegate {
       SuggestionContext suggestion_context,
       AutofillClient::PasswordFormClassification::Type form_type,
       SuggestionType suggestion_type) = 0;
+
+  using UpdateSuggestionsCallback =
+      base::OnceCallback<void(std::vector<Suggestion>,
+                              AutofillSuggestionTriggerSource)>;
+
+  // Calls `update_suggestions_callback` with updated suggestions. The updated
+  // suggestions may either contain a "loading new proposed plus address"
+  // suggestion, or the new proposed plus address if one is cached.
+  virtual void OnClickedRefreshInlineSuggestion(
+      const url::Origin& last_committed_primary_main_frame_origin,
+      base::span<const Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      UpdateSuggestionsCallback update_suggestions_callback) = 0;
+
+  // Checks whether any of the suggestions still require a suggested plus
+  // address and, if so, trigger a network request for one. On completion of
+  // that request, it runs `update_suggestions_callback`.
+  virtual void OnShowedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const Suggestion> current_suggestions,
+      UpdateSuggestionsCallback update_suggestions_callback) = 0;
 };
 
 }  // namespace autofill

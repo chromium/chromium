@@ -402,11 +402,11 @@ struct StructTraits<blink::mojom::WebNNContextTokenDataView,
           blink::WebNNContextToken> {};
 
 template <>
-struct StructTraits<blink::mojom::WebNNBufferTokenDataView,
-                    blink::WebNNBufferToken>
+struct StructTraits<blink::mojom::WebNNTensorTokenDataView,
+                    blink::WebNNTensorToken>
     : public blink::TokenMojomTraitsHelper<
-          blink::mojom::WebNNBufferTokenDataView,
-          blink::WebNNBufferToken> {};
+          blink::mojom::WebNNTensorTokenDataView,
+          blink::WebNNTensorToken> {};
 
 }  // namespace mojo
 

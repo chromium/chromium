@@ -54,6 +54,8 @@ NSString* const kSafetyCheckCompromisedPasswordsCountOverride =
 NSString* const kSimulatePostDeviceRestore = @"SimulatePostDeviceRestore";
 NSString* const kShouldIgnoreHistorySyncDeclineLimits =
     @"ShouldIgnoreHistorySyncDeclineLimits";
+NSString* const kSafetyCheckNotificationsInactivityThreshold =
+    @"SafetyCheckNotificationsInactivityThreshold";
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -290,6 +292,17 @@ std::optional<int> DisplaySwitchProfile() {
   }
 
   return switchProfileCount;
+}
+
+std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications() {
+  int threshold = [[NSUserDefaults standardUserDefaults]
+      integerForKey:kSafetyCheckNotificationsInactivityThreshold];
+
+  if (threshold == 0) {
+    return std::nullopt;
+  }
+
+  return threshold;
 }
 
 }  // namespace experimental_flags

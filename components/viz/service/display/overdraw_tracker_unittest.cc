@@ -45,40 +45,23 @@ void AppendDrawQuad(AggregatedFrame* frame,
 }
 
 TEST_F(OverdrawTrackerTest, OverdrawCalculations) {
-  OverdrawTracker::Settings settings;
-  OverdrawTracker tracker(settings);
-  base::TimeTicks start_time = tracker.start_time_for_testing();
-
-  {
-    AggregatedFrame frame = MakeAggregatedFrame(gfx::Rect(20, 20));
-    for (const auto& rect :
-         {gfx::Rect(0, 0, 20, 20), gfx::Rect(10, 0, 10, 20),
-          gfx::Rect(10, 10, 10, 10), gfx::Rect(5, 5, 10, 10)}) {
-      AppendDrawQuad(&frame, rect);
-    }
-
-    tracker.EstimateAndRecordOverdraw(&frame, start_time);
-
-    auto data = tracker.TakeDataAsTimeSeries();
-    EXPECT_THAT(data, testing::ElementsAreArray({2.0}));
-    tracker.Reset();
+  AggregatedFrame frame = MakeAggregatedFrame(gfx::Rect(20, 20));
+  for (const auto& rect :
+       {gfx::Rect(0, 0, 20, 20), gfx::Rect(10, 0, 10, 20),
+        gfx::Rect(10, 10, 10, 10), gfx::Rect(5, 5, 10, 10)}) {
+    AppendDrawQuad(&frame, rect);
   }
+
+  EXPECT_EQ(OverdrawTracker::EstimateOverdraw(&frame), 2.0);
 }
 
 TEST_F(OverdrawTrackerTest, OverdrawCalculationsOfQuadsWithTransform) {
-  OverdrawTracker::Settings settings;
-  OverdrawTracker tracker(settings);
-  base::TimeTicks start_time = tracker.start_time_for_testing();
-
   {
     // Check that Transforms of quads are taken into account.
     AggregatedFrame frame = MakeAggregatedFrame(gfx::Rect(20, 20));
     AppendDrawQuad(&frame, gfx::Rect(10, 10), gfx::Transform::MakeScale(2));
-    tracker.EstimateAndRecordOverdraw(&frame, start_time);
 
-    auto data = tracker.TakeDataAsTimeSeries();
-    EXPECT_THAT(data, testing::ElementsAreArray({1.0f}));
-    tracker.Reset();
+    EXPECT_EQ(OverdrawTracker::EstimateOverdraw(&frame), 1.0);
   }
 
   {
@@ -89,11 +72,8 @@ TEST_F(OverdrawTrackerTest, OverdrawCalculationsOfQuadsWithTransform) {
     gfx::Transform rotation_transform;
     rotation_transform.Rotate(5.0f);
     AppendDrawQuad(&frame, gfx::Rect(10, 10), rotation_transform);
-    tracker.EstimateAndRecordOverdraw(&frame, start_time);
 
-    auto data = tracker.TakeDataAsTimeSeries();
-    EXPECT_THAT(data, testing::ElementsAreArray({0.0f}));
-    tracker.Reset();
+    EXPECT_EQ(OverdrawTracker::EstimateOverdraw(&frame), 0.0);
   }
 }
 

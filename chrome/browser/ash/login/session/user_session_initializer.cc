@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
+#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
@@ -45,10 +46,11 @@
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
-#include "chrome/browser/ui/ash/media_client_impl.h"
+#include "chrome/browser/ui/ash/media_client/media_client_impl.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/peripheral_data_access_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -282,6 +284,12 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   // Ensure that the `GlanceablesKeyedService` for `profile` is created. It is
   // created one per user in a multiprofile session.
   GlanceablesKeyedServiceFactory::GetInstance()->GetService(profile);
+
+  if (boca_util::IsEnabled()) {
+    // Ensure that the `BocaManager` for `profile` is created. It is created one
+    // per user in a multiprofile session.
+    BocaManagerFactory::GetInstance()->GetForProfile(profile);
+  }
 
   screen_ai::dlc_installer::ManageInstallation(
       g_browser_process->local_state());

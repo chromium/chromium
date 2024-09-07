@@ -77,7 +77,8 @@ enum class ComposeFreOrMsbbSessionCloseReason {
   kAckedOrAcceptedWithoutInsert = 2,
   kAckedOrAcceptedWithInsert = 3,
   kReplacedWithNewSession = 4,
-  kMaxValue = kReplacedWithNewSession,
+  kExceededMaxDuration = 5,
+  kMaxValue = kExceededMaxDuration,
 };
 
 // Keep in sync with ComposeSessionCloseReasonType in
@@ -85,10 +86,15 @@ enum class ComposeFreOrMsbbSessionCloseReason {
 enum class ComposeSessionCloseReason {
   kInsertedResponse = 0,
   kCloseButtonPressed = 1,
-  kAbandoned = 2,
+  kAbandoned = 2,  // Tab closed or navigated away with an open session.
   kReplacedWithNewSession = 3,
-  kCanceledBeforeResponseReceived = 4,
-  kMaxValue = kCanceledBeforeResponseReceived,
+  kCanceledBeforeResponseReceived =
+      4,  // Close button pressed with pending navigation.
+  kExceededMaxDuration = 5,
+  kEndedAtFre = 6,
+  kAckedFreEndedAtMsbb = 7,
+  kEndedAtMsbb = 8,
+  kMaxValue = kEndedAtMsbb,
 };
 
 // Keep in sync with ComposeSessionEventCounts in
@@ -314,6 +320,11 @@ struct ComposeSessionEvents {
   unsigned int on_device_responses = 0;
   // Number of server responses received.
   unsigned int server_responses = 0;
+
+  // True if amy compose response was filtered
+  bool session_contained_filtered_response = false;
+  // True if any compose response contained error
+  bool session_contained_any_error = false;
 };
 
 // Enum with the possible reasons for it being impossible to open the Compose
@@ -438,6 +449,8 @@ void LogComposeRequestStatus(EvalLocation eval_location,
 void LogComposeRequestDuration(base::TimeDelta duration,
                                EvalLocation eval_location,
                                bool is_ok);
+
+void LogComposeSessionCloseReason(ComposeSessionCloseReason reason);
 
 void LogComposeFirstRunSessionCloseReason(
     ComposeFreOrMsbbSessionCloseReason reason);

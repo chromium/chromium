@@ -11,8 +11,6 @@
 
 @class NSException;
 
-namespace chrome {
-
 // Installs the Objective-C exception preprocessor. This records crash keys for
 // NSException objects. The preprocessor will also make fatal any exception that
 // is not handled.
@@ -25,7 +23,5 @@ BASE_DECLARE_FEATURE(kForceCrashOnExceptions);
 
 // Removes the exception preprocessor if it is installed.
 void UninstallObjcExceptionPreprocessor();
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_MAC_EXCEPTION_PROCESSOR_H_

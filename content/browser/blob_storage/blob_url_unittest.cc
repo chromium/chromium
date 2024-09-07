@@ -213,7 +213,7 @@ class BlobURLTest : public testing::Test {
     request.method = method;
     request.headers = extra_headers;
 
-    storage::BlobURLStoreImpl url_store(storage_key,
+    storage::BlobURLStoreImpl url_store(storage_key, storage_key.origin(), 0,
                                         blob_url_registry_.AsWeakPtr());
 
     mojo::PendingRemote<blink::mojom::Blob> blob_remote;

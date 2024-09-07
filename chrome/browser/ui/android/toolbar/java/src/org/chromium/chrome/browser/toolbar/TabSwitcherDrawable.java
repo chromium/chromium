@@ -220,7 +220,7 @@ public class TabSwitcherDrawable extends TintedDrawable {
 
     /**
      * This call is responsible for setting whether the notification bubble shows on the icon or
-     * not. Any non-test callsite should be guarded by the DATA_SHARING_ANDROID flag.
+     * not. Any non-test callsite should be guarded by the DATA_SHARING flag.
      */
     public void setNotificationIconStatus(boolean shouldShow) {
         mShouldShowNotificationIcon = shouldShow;

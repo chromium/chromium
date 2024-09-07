@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
+#include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -350,9 +350,11 @@ class GaiaScreenHandler final
   // Gaia sign-in page.
   bool IsGaiaHiddenByError();
 
-  // After proxy auth information has been supplied, this function re-enables
-  // responding to network state notifications.
-  void ReenableNetworkStateUpdatesAfterProxyAuth();
+  // After proxy auth is cancelled or information has been supplied, this
+  // function re-enables responding to network state notifications, and
+  // reactivates the authentication flow autoreload functionality (if enabled by
+  // policy).
+  void OnProxyAuthDone();
 
   // Error screen hide callback which records error screen metrics and shows
   // GAIA.

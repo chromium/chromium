@@ -14,9 +14,12 @@
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,8 +28,18 @@ namespace optimization_guide {
 
 namespace {
 
-TEST(OptimizationGuideFeaturesTest,
-     TestGetOptimizationGuideServiceGetHintsURLHTTPSOnly) {
+class OptimizationGuideFeaturesTest : public testing::Test {
+ public:
+  void SetUp() override {
+    model_execution::prefs::RegisterProfilePrefs(prefs_.registry());
+  }
+
+ private:
+  TestingPrefServiceSimple prefs_;
+};
+
+TEST_F(OptimizationGuideFeaturesTest,
+       TestGetOptimizationGuideServiceGetHintsURLHTTPSOnly) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -39,8 +52,8 @@ TEST(OptimizationGuideFeaturesTest,
       url::kHttpsScheme));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     TestGetOptimizationGuideServiceGetHintsURLViaFinch) {
+TEST_F(OptimizationGuideFeaturesTest,
+       TestGetOptimizationGuideServiceGetHintsURLViaFinch) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   std::string optimization_guide_service_url = "https://finchserver.com/";
@@ -52,7 +65,7 @@ TEST(OptimizationGuideFeaturesTest,
             optimization_guide_service_url);
 }
 
-TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
+TEST_F(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeature(features::kModelQualityLogging);
@@ -60,17 +73,23 @@ TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
   EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
 
   // Compose, wallpaper search and tab organization should be enabled by
-  // default whereas test feature should be disabled.
+  // default whereas product specifications should be disabled by default.
+  MqlsFeatureRegistry& registry = MqlsFeatureRegistry::GetInstance();
   EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
-      UserVisibleFeatureKey::kWallpaperSearch));
+      registry.GetFeature(proto::LogAiDataRequest::FeatureCase::kCompose)));
+  EXPECT_TRUE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kTabOrganization)));
+  EXPECT_TRUE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kWallpaperSearch)));
+  EXPECT_FALSE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kProductSpecifications)));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     ModelQualityLoggingAlwaysDisabledForTestAndUnspecifiedFeatures) {
+TEST_F(OptimizationGuideFeaturesTest,
+       ModelQualityLoggingAlwaysDisabledForTestAndUnspecifiedFeatures) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -81,43 +100,43 @@ TEST(OptimizationGuideFeaturesTest,
   EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
 }
 
-TEST(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingDisabled) {
+TEST_F(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
 
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kModelQualityLogging,
-      {{"model_execution_feature_compose", "false"},
-       {"model_execution_feature_wallpaper_search", "false"},
-       {"model_execution_feature_tab_organization", "false"}});
+  MqlsFeatureRegistry& registry = MqlsFeatureRegistry::GetInstance();
+  const MqlsFeatureMetadata* metadata =
+      registry.GetFeature(proto::LogAiDataRequest::FeatureCase::kCompose);
+
+  scoped_feature_list.InitAndDisableFeature(*metadata->field_trial_feature());
 
   EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
-
-  // All features should be disabled for logging.
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(metadata));
+  // TabOrganization should still be enabled.
+  EXPECT_TRUE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kTabOrganization)));
 }
 
-TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDisabled) {
+TEST_F(OptimizationGuideFeaturesTest, ModelQualityLoggingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndDisableFeature(features::kModelQualityLogging);
 
   // All features logging should be disabled if ModelQualityLogging is disabled.
   EXPECT_FALSE(features::IsModelQualityLoggingEnabled());
+  MqlsFeatureRegistry& registry = MqlsFeatureRegistry::GetInstance();
   EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      UserVisibleFeatureKey::kWallpaperSearch));
+      registry.GetFeature(proto::LogAiDataRequest::FeatureCase::kCompose)));
+  EXPECT_FALSE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kTabOrganization)));
+  EXPECT_FALSE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kWallpaperSearch)));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     OptimizationGuidePersonalizedFetchingDefaultBehaviour) {
+TEST_F(OptimizationGuideFeaturesTest,
+       OptimizationGuidePersonalizedFetchingDefaultBehaviour) {
   features::RequestContextSet allowedContexts =
       features::GetAllowedContextsForPersonalizedMetadata();
 
@@ -128,8 +147,8 @@ TEST(OptimizationGuideFeaturesTest,
       optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     OptimizationGuidePersonalizedFetchingPopulatedParam) {
+TEST_F(OptimizationGuideFeaturesTest,
+       OptimizationGuidePersonalizedFetchingPopulatedParam) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuidePersonalizedFetching,
@@ -151,8 +170,8 @@ TEST(OptimizationGuideFeaturesTest,
       allowedContexts.Has(optimization_guide::proto::CONTEXT_BOOKMARKS));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     OptimizationGuidePersonalizedFetchingEmptyParam) {
+TEST_F(OptimizationGuideFeaturesTest,
+       OptimizationGuidePersonalizedFetchingEmptyParam) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuidePersonalizedFetching,
@@ -172,7 +191,7 @@ TEST(OptimizationGuideFeaturesTest,
       optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
 }
 
-TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
+TEST_F(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
   struct TestCase {
     std::string label;
     bool enabled;
@@ -306,7 +325,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
   }
 }
 
-TEST(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
+TEST_F(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
   EXPECT_TRUE(features::GetPredictionModelVersionsInKillSwitch().empty());
   {
     base::test::ScopedFeatureList scoped_feature_list;
@@ -324,8 +343,8 @@ TEST(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
   }
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     IsPerformanceClassCompatibleWithOnDeviceModel) {
+TEST_F(OptimizationGuideFeaturesTest,
+       IsPerformanceClassCompatibleWithOnDeviceModel) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
@@ -341,7 +360,7 @@ TEST(OptimizationGuideFeaturesTest,
       OnDeviceModelPerformanceClass::kVeryHigh));
 }
 
-TEST(OptimizationGuideFeaturesTest, AllowedAdaptationRanks) {
+TEST_F(OptimizationGuideFeaturesTest, AllowedAdaptationRanks) {
   // Default value
   EXPECT_THAT(features::GetOnDeviceModelAllowedAdaptationRanks(),
               testing::ElementsAre(32));

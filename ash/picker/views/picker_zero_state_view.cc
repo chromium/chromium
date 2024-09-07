@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/picker_asset_fetcher.h"
@@ -30,6 +31,7 @@
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -110,9 +112,10 @@ PickerZeroStateView::PickerZeroStateView(
       continue;
     }
 
-    auto result = PickerSearchResult::Category(category);
+    auto result = PickerCategoryResult(category);
     GetOrCreateSectionView(category)->AddResult(
         std::move(result), preview_controller_,
+        PickerSectionView::LocalFileResultStyle::kList,
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
   }
@@ -163,14 +166,14 @@ views::View* PickerZeroStateView::GetItemBelow(views::View* item) {
 }
 
 views::View* PickerZeroStateView::GetItemLeftOf(views::View* item) {
-  if (!Contains(item) || !views::IsViewClass<PickerItemView>(item)) {
+  if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemLeftOf(item);
 }
 
 views::View* PickerZeroStateView::GetItemRightOf(views::View* item) {
-  if (!Contains(item) || !views::IsViewClass<PickerItemView>(item)) {
+  if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemRightOf(item);
@@ -211,6 +214,9 @@ void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
                                              PickerSectionView* section) {
   PickerItemView* view = section->AddResult(
       result, preview_controller_,
+      base::FeatureList::IsEnabled(ash::features::kPickerGrid)
+          ? PickerSectionView::LocalFileResultStyle::kRow
+          : PickerSectionView::LocalFileResultStyle::kList,
       base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                           weak_ptr_factory_.GetWeakPtr(), result));
 
@@ -228,48 +234,22 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   // always has at least one child.
   if (primary_section_view_ == nullptr) {
     primary_section_view_ = section_list_view_->AddSectionAt(0);
+    primary_section_view_->SetImageRowProperties(
+        l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL),
+        base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            PickerCategory::kLocalFiles),
+        l10n_util::GetStringUTF16(
+            IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME));
   }
 
-  auto new_window_submenu =
-      views::Builder<PickerItemWithSubmenuView>()
-          .SetSubmenuController(submenu_controller_)
-          .SetText(l10n_util::GetStringUTF16(IDS_PICKER_NEW_MENU_LABEL))
-          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-              kSystemMenuPlusIcon, cros_tokens::kCrosSysOnSurface))
-          .Build();
-
-  // Some Editor results are shown directly in the section, some shown behind
-  // submenus. Iterate through the results and put them into the right View.
-  auto length_submenu =
-      views::Builder<PickerItemWithSubmenuView>()
-          .SetSubmenuController(submenu_controller_)
-          .SetText(
-              l10n_util::GetStringUTF16(IDS_PICKER_CHANGE_LENGTH_MENU_LABEL))
-          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-              chromeos::kEditorMenuShortenIcon, cros_tokens::kCrosSysOnSurface))
-          .Build();
-
-  auto tone_submenu =
-      views::Builder<PickerItemWithSubmenuView>()
-          .SetSubmenuController(submenu_controller_)
-          .SetText(l10n_util::GetStringUTF16(IDS_PICKER_CHANGE_TONE_MENU_LABEL))
-          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-              chromeos::kEditorMenuEmojifyIcon, cros_tokens::kCrosSysOnSurface))
-          .Build();
-
-  // Case transformation results are shown in a submenu.
-  auto case_transform_submenu =
-      views::Builder<PickerItemWithSubmenuView>()
-          .SetSubmenuController(submenu_controller_)
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))
-          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-              kPickerSentenceCaseIcon, cros_tokens::kCrosSysOnSurface))
-          .Build();
+  std::unique_ptr<PickerItemWithSubmenuView> new_window_submenu;
+  std::unique_ptr<PickerItemWithSubmenuView> length_submenu;
+  std::unique_ptr<PickerItemWithSubmenuView> tone_submenu;
+  std::unique_ptr<PickerItemWithSubmenuView> case_transform_submenu;
 
   for (const PickerSearchResult& result : results) {
-    if (std::holds_alternative<PickerSearchResult::CapsLockData>(
-            result.data())) {
+    if (std::holds_alternative<PickerCapsLockResult>(result)) {
       delegate_->SetCapsLockDisplayed(true);
       switch (delegate_->GetCapsLockPosition()) {
         case PickerCapsLockPosition::kTop:
@@ -289,31 +269,71 @@ void PickerZeroStateView::OnFetchSuggestedResults(
                              GetOrCreateSectionView(PickerCategoryType::kMore));
           break;
       }
-    } else if (std::holds_alternative<PickerSearchResult::NewWindowData>(
-                   result.data())) {
+    } else if (std::holds_alternative<PickerNewWindowResult>(result)) {
+      if (new_window_submenu == nullptr) {
+        new_window_submenu =
+            views::Builder<PickerItemWithSubmenuView>()
+                .SetSubmenuController(submenu_controller_)
+                .SetText(l10n_util::GetStringUTF16(IDS_PICKER_NEW_MENU_LABEL))
+                .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                    kSystemMenuPlusIcon, cros_tokens::kCrosSysOnSurface))
+                .Build();
+      }
+
       new_window_submenu->AddEntry(
           result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                                       weak_ptr_factory_.GetWeakPtr(), result));
     } else if (const auto* editor_data =
-                   std::get_if<PickerSearchResult::EditorData>(
-                       &result.data())) {
+                   std::get_if<PickerEditorResult>(&result)) {
       auto callback =
           base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                               weak_ptr_factory_.GetWeakPtr(), result);
       switch (GetEditorSubmenu(editor_data->category)) {
         case EditorSubmenu::kNone:
-          primary_section_view_->AddResult(result, preview_controller_,
-                                           std::move(callback));
+          primary_section_view_->AddResult(
+              result, preview_controller_,
+              PickerSectionView::LocalFileResultStyle::kList,
+              std::move(callback));
           break;
         case EditorSubmenu::kLength:
+          if (length_submenu == nullptr) {
+            length_submenu = views::Builder<PickerItemWithSubmenuView>()
+                                 .SetSubmenuController(submenu_controller_)
+                                 .SetText(l10n_util::GetStringUTF16(
+                                     IDS_PICKER_CHANGE_LENGTH_MENU_LABEL))
+                                 .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                                     chromeos::kEditorMenuShortenIcon,
+                                     cros_tokens::kCrosSysOnSurface))
+                                 .Build();
+          }
           length_submenu->AddEntry(result, std::move(callback));
           break;
         case EditorSubmenu::kTone:
+          if (tone_submenu == nullptr) {
+            tone_submenu = views::Builder<PickerItemWithSubmenuView>()
+                               .SetSubmenuController(submenu_controller_)
+                               .SetText(l10n_util::GetStringUTF16(
+                                   IDS_PICKER_CHANGE_TONE_MENU_LABEL))
+                               .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                                   chromeos::kEditorMenuEmojifyIcon,
+                                   cros_tokens::kCrosSysOnSurface))
+                               .Build();
+          }
           tone_submenu->AddEntry(result, std::move(callback));
           break;
       }
-    } else if (std::holds_alternative<PickerSearchResult::CaseTransformData>(
-                   result.data())) {
+    } else if (std::holds_alternative<PickerCaseTransformResult>(result)) {
+      if (case_transform_submenu == nullptr) {
+        case_transform_submenu =
+            views::Builder<PickerItemWithSubmenuView>()
+                .SetSubmenuController(submenu_controller_)
+                .SetText(l10n_util::GetStringUTF16(
+                    IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))
+                .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                    kPickerSentenceCaseIcon, cros_tokens::kCrosSysOnSurface))
+                .Build();
+      }
+
       case_transform_submenu->AddEntry(
           result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                                       weak_ptr_factory_.GetWeakPtr(), result));
@@ -322,20 +342,19 @@ void PickerZeroStateView::OnFetchSuggestedResults(
     }
   }
 
-  if (!new_window_submenu->IsEmpty()) {
+  if (new_window_submenu != nullptr && !new_window_submenu->IsEmpty()) {
     primary_section_view_->AddItemWithSubmenu(std::move(new_window_submenu));
   }
 
-  if (!length_submenu->IsEmpty()) {
+  if (length_submenu != nullptr && !length_submenu->IsEmpty()) {
     primary_section_view_->AddItemWithSubmenu(std::move(length_submenu));
   }
 
-  if (!tone_submenu->IsEmpty()) {
+  if (tone_submenu != nullptr && !tone_submenu->IsEmpty()) {
     primary_section_view_->AddItemWithSubmenu(std::move(tone_submenu));
   }
 
-  // Add the submenu for case transformation.
-  if (!case_transform_submenu->IsEmpty()) {
+  if (case_transform_submenu != nullptr && !case_transform_submenu->IsEmpty()) {
     GetOrCreateSectionView(PickerCategoryType::kCaseTransformations)
         ->AddItemWithSubmenu(std::move(case_transform_submenu));
   }

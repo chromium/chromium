@@ -269,7 +269,8 @@ bool Http2Connection::HandleData(int rv) {
     ResponseDelegate* delegate_ptr = delegate.get();
     response_map_[stream_id] = std::move(delegate);
     embedded_test_server_->HandleRequest(delegate_ptr->GetWeakPtr(),
-                                         std::move(request_map_[stream_id]));
+                                         std::move(request_map_[stream_id]),
+                                         socket_.get());
     request_map_.erase(stream_id);
   }
   adapter_->Send();

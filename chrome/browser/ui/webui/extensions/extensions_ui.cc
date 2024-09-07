@@ -23,9 +23,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/extensions/permissions_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -445,8 +445,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                   extension_urls::kExtensionsSidebarUtmSource),
               g_browser_process->GetApplicationLocale())
               .spec()));
-  source->AddString("hostPermissionsLearnMoreLink",
-                    chrome_extension_constants::kRuntimeHostPermissionsHelpURL);
+  source->AddString(
+      "hostPermissionsLearnMoreLink",
+      extension_permissions_constants::kRuntimeHostPermissionsHelpURL);
   source->AddBoolean(kInDevModeKey, in_dev_mode);
   source->AddBoolean(kShowActivityLogKey,
                      base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -463,7 +464,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                          extensions_features::kExtensionsMenuAccessControl));
   source->AddString(
       "showAccessRequestsInToolbarLearnMoreLink",
-      chrome_extension_constants::kShowAccessRequestsInToolbarHelpURL);
+      extension_permissions_constants::kShowAccessRequestsInToolbarHelpURL);
   source->AddBoolean(
       "enableUserPermittedSites",
       base::FeatureList::IsEnabled(

@@ -39,11 +39,11 @@ OneTimePermissionProvider::OneTimePermissionProvider(
   // main function for the browser process is run (which initializes the HCSM).
   // For this reason, the PowerMonitor is always initialized before the observer
   // is added here.
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 }
 
 OneTimePermissionProvider::~OneTimePermissionProvider() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 // TODO(b/307193732): handle the PartitionKey in all relevant methods, including
@@ -221,7 +221,7 @@ void OneTimePermissionProvider::ShutdownOnUIThread() {
   RemoveAllObservers();
 }
 
-void OneTimePermissionProvider::SetClockForTesting(base::Clock* clock) {
+void OneTimePermissionProvider::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
 }
 

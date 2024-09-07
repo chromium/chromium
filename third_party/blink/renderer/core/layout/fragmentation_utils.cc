@@ -489,6 +489,10 @@ void SetupFragmentBuilderForFragmentation(
 
     if (clone_box_end_decorations) {
       builder->SetShouldCloneBoxEndDecorations(true);
+
+      // If block-end border+padding is cloned, they should be repeated in every
+      // fragment, so breaking before them would be wrong and make no sense.
+      builder->SetShouldPreventBreakBeforeBlockEndDecorations(true);
     }
 
     builder->SetRequiresContentBeforeBreaking(requires_content_before_breaking);
@@ -538,8 +542,7 @@ bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder& builder) {
   return !builder.HasInflowChildBreakInside();
 }
 
-BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
-                                BoxFragmentBuilder* builder) {
+BreakStatus FinishFragmentation(BoxFragmentBuilder* builder) {
   const BlockNode& node = builder->Node();
   const ConstraintSpace& space = builder->GetConstraintSpace();
   LayoutUnit space_left = FragmentainerSpaceLeft(*builder,
@@ -565,10 +568,18 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
 
   LayoutUnit final_block_size = desired_block_size;
 
+  LayoutUnit trailing_border_padding =
+      builder->BorderScrollbarPadding().block_end;
   LayoutUnit subtractable_border_padding;
-  if ((desired_block_size > trailing_border_padding && !node.IsTableCell()) ||
-      (previous_break_token && previous_break_token->MonolithicOverflow())) {
-    if (!builder->ShouldCloneBoxEndDecorations() || node.IsTable()) {
+  if (!builder->ShouldPreventBreakBeforeBlockEndDecorations()) {
+    if (desired_block_size > trailing_border_padding ||
+        (previous_break_token && previous_break_token->MonolithicOverflow())) {
+      // There is a last-resort breakpoint before trailing border and padding,
+      // if progress can still be guaranteed.
+      //
+      // Note that we're always guaranteed progress if there's incoming
+      // monolithic overflow. We're going to move past monolithic overflow, and
+      // just add as many fragments we need in order to get past the overflow.
       subtractable_border_padding = trailing_border_padding;
     }
   }
@@ -639,16 +650,6 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
     // means that there's something unbreakable (monolithic) inside (or we'd
     // already have broken inside). We'll allow this to overflow the
     // fragmentainer.
-    //
-    // There is a last-resort breakpoint before trailing border and padding, so
-    // first check if we can break there and still make progress. Don't allow a
-    // break here for table cells, though, as that might disturb the row
-    // stretching machinery, causing an infinite loop. We'd add the stretch
-    // amount to the block-size to the content box of the table cell, even
-    // though we're past it. We're always guaranteed progress if there's
-    // incoming monolithic overflow, so in such cases we can always break before
-    // border / padding (and add as many fragments we need in order to get past
-    // the overflow).
     DCHECK_GE(desired_intrinsic_block_size, trailing_border_padding);
     DCHECK_GE(desired_block_size, trailing_border_padding);
 

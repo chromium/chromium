@@ -25,9 +25,6 @@ extern const char kSecurityOrigin[];
 // language checks and to obtain the list of available languages.
 GURL GetTranslateSecurityOrigin();
 
-// Return whether sub frame language detection is enabled.
-bool IsSubFrameLanguageDetectionEnabled();
-
 // Return whether TFLite-based language detection is enabled.
 bool IsTFLiteLanguageDetectionEnabled();
 

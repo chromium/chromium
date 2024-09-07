@@ -479,7 +479,7 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
   out->set_is_gaia_with_skip_save_password_form(
       data.is_gaia_with_skip_save_password_form());
   out->set_likely_contains_captcha(data.likely_contains_captcha());
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       out->child_frames(),
       [&](int predecessor) {
         return predecessor == -1 ||

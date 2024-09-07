@@ -23,10 +23,6 @@ namespace ash::floating_sso {
 
 namespace {
 
-int64_t SerializeTime(const base::Time& t) {
-  return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
-}
-
 base::Time DeserializeTime(int64_t proto_time) {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
 }
@@ -139,6 +135,10 @@ sync_pb::CookieSpecifics_CookieSourceType ProtoEnumFromCookieSourceType(
 
 }  // namespace
 
+int64_t ToMicrosSinceWindowsEpoch(const base::Time& t) {
+  return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
 std::unique_ptr<net::CanonicalCookie> FromSyncProto(
     const sync_pb::CookieSpecifics& proto) {
   base::expected<std::optional<net::CookiePartitionKey>, std::string>
@@ -208,13 +208,13 @@ std::optional<sync_pb::CookieSpecifics> ToSyncProto(
   proto.set_domain(cookie.Domain());
   proto.set_path(cookie.Path());
   proto.set_creation_time_windows_epoch_micros(
-      SerializeTime(cookie.CreationDate()));
+      ToMicrosSinceWindowsEpoch(cookie.CreationDate()));
   proto.set_expiry_time_windows_epoch_micros(
-      SerializeTime(cookie.ExpiryDate()));
+      ToMicrosSinceWindowsEpoch(cookie.ExpiryDate()));
   proto.set_last_access_time_windows_epoch_micros(
-      SerializeTime(cookie.LastAccessDate()));
+      ToMicrosSinceWindowsEpoch(cookie.LastAccessDate()));
   proto.set_last_update_time_windows_epoch_micros(
-      SerializeTime(cookie.LastUpdateDate()));
+      ToMicrosSinceWindowsEpoch(cookie.LastUpdateDate()));
   proto.set_secure(cookie.IsSecure());
   proto.set_httponly(cookie.IsHttpOnly());
   proto.set_site_restrictions(ProtoEnumFromCookieSameSite(cookie.SameSite()));

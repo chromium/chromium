@@ -30,6 +30,8 @@ class DisabledAuthMessageView : public views::View {
 
     const std::u16string& GetDisabledAuthMessageContent() const;
 
+    void SetDisabledAuthMessageTitleForTesting(std::u16string message_title);
+
    private:
     const raw_ptr<DisabledAuthMessageView> view_;
   };
@@ -51,16 +53,21 @@ class DisabledAuthMessageView : public views::View {
 
   // views::View:
   void RequestFocus() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
  private:
+  void OnMessageTitleChanged();
+  void UpdateAccessibleName();
+
+  base::CallbackListSubscription message_title_changed_subscription_;
   raw_ptr<views::Label> message_title_;
   raw_ptr<views::Label> message_contents_;
   raw_ptr<views::ImageView> message_icon_;
   // The preferred width of the view, this is set in `SetAuthDisabledMessage`.
   int preferred_width_;
+
+  base::WeakPtrFactory<DisabledAuthMessageView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

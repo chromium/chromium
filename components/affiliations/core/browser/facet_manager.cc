@@ -144,10 +144,11 @@ void FacetManager::Prefetch(const base::Time& keep_fresh_until) {
   // If an initial fetch if needed, trigger that (the refetch will be scheduled
   // once the initial fetch completes). Otherwise schedule the next refetch.
   base::Time next_required_fetch(GetNextRequiredFetchTimeDueToPrefetch());
-  if (next_required_fetch <= clock_->Now())
+  if (next_required_fetch <= clock_->Now()) {
     backend_->SignalNeedNetworkRequest();
-  else if (next_required_fetch < base::Time::Max())
+  } else if (next_required_fetch < base::Time::Max()) {
     backend_->RequestNotificationAtTime(facet_uri_, next_required_fetch);
+  }
 
   // For a finite |keep_fresh_until|, schedule a callback so that once the
   // prefetch expires, it can be removed from |keep_fresh_untils_|, and also the
@@ -188,10 +189,11 @@ void FacetManager::OnFetchFailed() {
 
 void FacetManager::NotifyAtRequestedTime() {
   base::Time next_required_fetch(GetNextRequiredFetchTimeDueToPrefetch());
-  if (next_required_fetch <= clock_->Now())
+  if (next_required_fetch <= clock_->Now()) {
     backend_->SignalNeedNetworkRequest();
-  else if (next_required_fetch < base::Time::Max())
+  } else if (next_required_fetch < base::Time::Max()) {
     backend_->RequestNotificationAtTime(facet_uri_, next_required_fetch);
+  }
 
   auto iter_first_non_expired =
       keep_fresh_until_thresholds_.upper_bound(clock_->Now());

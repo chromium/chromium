@@ -43,6 +43,11 @@ FingerprintingProtectionChildNavigationThrottle::
 #define SUBFRAME_FILTERING_HISTOGRAM(name) \
   UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(        \
       name, total_defer_time_, base::Microseconds(1), base::Seconds(10), 50)
+  if (did_alias_check_) {
+    SUBFRAME_FILTERING_HISTOGRAM(
+        "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
+        "NameAlias.Checked");
+  }
   switch (load_policy_) {
     case subresource_filter::LoadPolicy::EXPLICITLY_ALLOW:
       [[fallthrough]];
@@ -52,11 +57,21 @@ FingerprintingProtectionChildNavigationThrottle::
           "Allowed");
       break;
     case subresource_filter::LoadPolicy::WOULD_DISALLOW:
+      if (did_alias_check_determine_load_policy_) {
+        SUBFRAME_FILTERING_HISTOGRAM(
+            "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
+            "NameAlias.WouldDisallow");
+      }
       SUBFRAME_FILTERING_HISTOGRAM(
           "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
           "WouldDisallow");
       break;
     case subresource_filter::LoadPolicy::DISALLOW:
+      if (did_alias_check_determine_load_policy_) {
+        SUBFRAME_FILTERING_HISTOGRAM(
+            "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
+            "NameAlias.Disallowed");
+      }
       SUBFRAME_FILTERING_HISTOGRAM(
           "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
           "Disallowed");

@@ -37,20 +37,28 @@ import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
-import {i18n} from '../core/i18n.js';
+import {RecordingTitle} from '../components/recording-title.js';
+import {SummarizationView} from '../components/summarization-view.js';
 import {
-  AnimationFrameController,
-} from '../core/lit/animation_frame_controller.js';
+  AudioPlayerController,
+  ReactiveAudio,
+} from '../core/audio_player_controller.js';
+import {i18n} from '../core/i18n.js';
 import {useRecordingDataManager} from '../core/lit/context.js';
 import {
+  ComputedState,
   ReactiveLitElement,
   ScopedAsyncComputed,
-  ScopedAsyncEffect,
 } from '../core/reactive/lit.js';
-import {computed, signal} from '../core/reactive/signal.js';
+import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
-import {assertExists, assertInstanceof} from '../core/utils/assert.js';
+import {
+  assert,
+  assertExists,
+  assertInstanceof,
+} from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
+import {InteriorMutableArray} from '../core/utils/interior_mutable_array.js';
 
 /**
  * Mapping from playback speed to icon names.
@@ -71,6 +79,17 @@ const PLAYBACK_SPEED_ICON_MAP = new Map([
 ]);
 
 const PLAYBACK_SPEEDS = Array.from(PLAYBACK_SPEED_ICON_MAP.keys());
+
+let initialAudio: ReactiveAudio|null = null;
+
+/**
+ * Sets the inner audio used for the playback page for continuous playback.
+ *
+ * This should be called before the playback page is rendered.
+ */
+export function setInitialAudio(audio: ReactiveAudio|null): void {
+  initialAudio = audio;
+}
 
 /**
  * Playback page of Recorder App.
@@ -176,11 +195,17 @@ export class PlaybackPage extends ReactiveLitElement {
       & > div {
         color: var(--cros-sys-on_surface_variant);
         font: 440 24px/32px var(--monospace-font-family);
+
+        /*
+         * TODO: b/361221415 - Remove the old properties when stable Chrome
+         * supports new one.
+         */
+        inset-area: top;
         letter-spacing: 0.03em;
         margin-bottom: 4px;
         position: absolute;
         position-anchor: --waveform;
-        inset-area: top;
+        position-area: top;
       }
     }
 
@@ -331,14 +356,6 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly recordingIdSignal = this.propSignal('recordingId');
 
-  private latestAudioSrc: string|null = null;
-
-  private readonly currentTime = signal(0);
-
-  private readonly audioPlaying = signal(false);
-
-  private readonly audio = new Audio();
-
   private readonly menu = createRef<CraMenu>();
 
   private readonly deleteRecordingDialog = createRef<DeleteRecordingDialog>();
@@ -349,13 +366,26 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly recordingDataManager = useRecordingDataManager();
 
-  private readonly playbackSpeed = signal(1);
-
   private readonly playbackSpeedMenu = createRef<CraMenu>();
 
   private readonly playbackSpeedMenuOpened = signal(false);
 
   private readonly floatingVolume = createRef<HTMLElement>();
+
+  private readonly backButton = createRef<HTMLButtonElement>();
+
+  private readonly playPauseButton = createRef<HTMLButtonElement>();
+
+  private readonly transcriptionButtonRef = createRef<HTMLButtonElement>();
+
+  private readonly recordingTitle = createRef<RecordingTitle>();
+
+  private readonly summarizationView = createRef<SummarizationView>();
+
+  private readonly audioPlayer = new AudioPlayerController(
+    this,
+    this.recordingIdSignal,
+  );
 
   // TODO(pihsun): Loading spinner when loading metadata.
   private readonly recordingMetadata = computed(() => {
@@ -364,21 +394,6 @@ export class PlaybackPage extends ReactiveLitElement {
       return null;
     }
     return this.recordingDataManager.getMetadata(id).value;
-  });
-
-  // This is marked as protected to suppress the unused member error.
-  protected readonly autoplay = new ScopedAsyncEffect(this, async (signal) => {
-    const id = this.recordingIdSignal.value;
-    if (id === null) {
-      return;
-    }
-    const data = await this.recordingDataManager.getAudioFile(id);
-    signal.throwIfAborted();
-    this.revokeAudio();
-    this.latestAudioSrc = URL.createObjectURL(data);
-    this.audio.src = this.latestAudioSrc;
-    this.audio.load();
-    await this.audio.play();
   });
 
   private readonly transcription = new ScopedAsyncComputed(this, async () => {
@@ -402,49 +417,56 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly showTranscription = signal(false);
 
-  constructor() {
-    super();
+  // TODO(pihsun): ScopedEffect without the async part?
+  private autoOpenTranscription: Dispose|null = null;
 
-    // TODO(pihsun): These will look much better as decorator...
-    this.addController(
-      new AnimationFrameController(() => {
-        // We use AnimationFrameController instead of the timeupdate event
-        // since timeupdate fires infrequently and doesn't look smooth while
-        // playing.
-        // TODO(shik): Pause/Resume the animation frame loop properly,
-        // especially when the audio is fully played and stopped so we
-        // won't
-        // keep the audio stream open as the audio server would be kept
-        // awake as well.
-        this.currentTime.value = this.audio.currentTime;
-        this.audioPlaying.value = !this.audio.paused;
-      }),
-    );
-
-    this.audio.addEventListener('ratechange', () => {
-      if (this.audio.playbackRate !== this.playbackSpeed.value) {
-        // TODO(pihsun): Integrate with error reporting.
-        // TODO(pihsun): Check if this will be fired on pause.
-        console.warn(
-          'Audio playback speed mismatch',
-          this.audio.playbackRate,
-          this.playbackSpeed.value,
-        );
-      }
-    });
+  get pauseButtonForTest(): HTMLButtonElement {
+    assert(this.audioPlayer.playing.value, 'The playback is already paused');
+    return assertExists(this.playPauseButton.value);
   }
 
-  private revokeAudio() {
-    if (this.latestAudioSrc !== null) {
-      URL.revokeObjectURL(this.latestAudioSrc);
-      this.latestAudioSrc = null;
+  get backButtonForTest(): HTMLButtonElement {
+    return assertExists(this.backButton.value);
+  }
+
+  get transcriptionToggleButtonForTest(): HTMLButtonElement {
+    return assertExists(this.transcriptionButtonRef.value);
+  }
+
+  get recordingTitleForTest(): RecordingTitle {
+    return assertExists(this.recordingTitle.value);
+  }
+
+  get summarizationViewForTest(): SummarizationView {
+    return assertExists(this.summarizationView.value);
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (this.autoOpenTranscription === null) {
+      this.autoOpenTranscription = effect(() => {
+        if (this.transcription.state === ComputedState.DONE) {
+          // We only updates the transcription open state when it's just
+          // computed.
+          const transcription = this.transcription.valueSignal.peek();
+
+          // Default to show transcription panel if there's a non-empty
+          // transcription.
+          this.showTranscription.value =
+            transcription !== null && !transcription.isEmpty();
+        }
+      });
+    }
+    if (initialAudio !== null) {
+      this.audioPlayer.setInnerAudio(initialAudio);
+      initialAudio = null;
     }
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.audio.pause();
-    this.revokeAudio();
+    this.autoOpenTranscription?.();
+    this.autoOpenTranscription = null;
   }
 
   private onWordClick(ev: CustomEvent<{startMs: number}>) {
@@ -452,16 +474,11 @@ export class PlaybackPage extends ReactiveLitElement {
     // seeked audio and the real timing of the word being spoken.
     // Investigate if it's from audio playing inaccuracy or from inherit
     // soda event timestamp inaccuracy.
-    this.audio.currentTime = ev.detail.startMs / 1000;
+    this.audioPlayer.currentTime.value = ev.detail.startMs / 1000;
   }
 
   private onPlayPauseClick() {
-    if (this.audio.paused) {
-      // TODO(pihsun): This is async, should we await it?
-      void this.audio.play();
-    } else {
-      this.audio.pause();
-    }
+    this.audioPlayer.togglePlaying();
   }
 
   private toggleTranscription() {
@@ -472,17 +489,18 @@ export class PlaybackPage extends ReactiveLitElement {
     if (this.powers.value === null) {
       return nothing;
     }
-    const recordingLength = formatDuration(
+    const currentTime = this.audioPlayer.currentTime.value;
+    const currentTimeString = formatDuration(
       {
-        seconds: this.currentTime.value,
+        seconds: currentTime,
       },
       1,
     );
     return html`
-      <div>${recordingLength}</div>
+      <div>${currentTimeString}</div>
       <audio-waveform
-        .values=${this.powers.value}
-        .currentTime=${this.currentTime.value}
+        .values=${new InteriorMutableArray(this.powers.value)}
+        .currentTime=${currentTime}
         .transcription=${this.transcription.value}
       >
       </audio-waveform>
@@ -504,37 +522,45 @@ export class PlaybackPage extends ReactiveLitElement {
     return html`<transcription-view
       .transcription=${transcription}
       @word-clicked=${this.onWordClick}
-      .currentTime=${this.currentTime.value}
+      .currentTime=${this.audioPlayer.currentTime.value}
       seekable
     >
-      <summarization-view .transcription=${transcription}></summarization-view>
+      <summarization-view
+        .transcription=${transcription}
+        ${ref(this.summarizationView)}
+      ></summarization-view>
     </transcription-view>`;
   }
 
   private renderPlayPauseButton() {
+    const ariaLabel = this.audioPlayer.playing.value ?
+      i18n.playbackPauseButtonTooltip :
+      i18n.playbackPlayButtonTooltip;
     return html`<cra-icon-button
       id="play-button"
       shape="circle"
       @click=${this.onPlayPauseClick}
+      ${ref(this.playPauseButton)}
+      aria-label=${ariaLabel}
     >
       <cra-icon
         slot="icon"
-        .name=${this.audioPlaying.value ? 'pause_hero' : 'play_hero'}
+        .name=${this.audioPlayer.playing.value ? 'pause_hero' : 'play_hero'}
       ></cra-icon>
     </cra-icon-button>`;
   }
 
   private onTimelineInput(ev: Event) {
     const target = assertInstanceof(ev.target, CrosSlider);
-    this.audio.currentTime = target.value;
+    this.audioPlayer.currentTime.value = target.value;
   }
 
   private onForward10Secs() {
-    this.audio.currentTime += 10;
+    this.audioPlayer.currentTime.value += 10;
   }
 
   private onRewind10Secs() {
-    this.audio.currentTime -= 10;
+    this.audioPlayer.currentTime.value -= 10;
   }
 
   private onDeleteClick() {
@@ -544,7 +570,7 @@ export class PlaybackPage extends ReactiveLitElement {
   private deleteRecording() {
     if (this.recordingId !== null) {
       this.recordingDataManager.remove(this.recordingId);
-      navigateTo('/');
+      navigateTo('index');
     }
   }
 
@@ -593,11 +619,17 @@ export class PlaybackPage extends ReactiveLitElement {
   }
 
   private renderHeader() {
+    const transcriptionLabel = this.showTranscription.value ?
+      i18n.playbackHideTranscriptButtonTooltip :
+      i18n.playbackShowTranscriptButtonTooltip;
     const transcriptionToggleButton =
       this.transcription.value === null ? nothing : html`
             <cra-icon-button
               buttonstyle="toggle"
+              .selected=${live(this.showTranscription.value)}
               @click=${this.toggleTranscription}
+              ${ref(this.transcriptionButtonRef)}
+              aria-label=${transcriptionLabel}
             >
               <cra-icon slot="icon" name="notes"></cra-icon>
               <cra-icon slot="selectedIcon" name="notes"></cra-icon>
@@ -606,21 +638,30 @@ export class PlaybackPage extends ReactiveLitElement {
 
     return html`
       <div id="header" class="sheet">
-        <cra-icon-button buttonstyle="floating" href="/">
+        <cra-icon-button
+          buttonstyle="floating"
+          @click=${() => navigateTo('index')}
+          ${ref(this.backButton)}
+          aria-label=${i18n.backToMainButtonTooltip}
+        >
           <cra-icon slot="icon" name="arrow_back"></cra-icon>
         </cra-icon-button>
-        <recording-title .recordingMetadata=${this.recordingMetadata.value}>
+        <recording-title
+          .recordingMetadata=${this.recordingMetadata.value}
+          ${ref(this.recordingTitle)}
+        >
         </recording-title>
         ${transcriptionToggleButton}
         <cra-icon-button
           buttonstyle="floating"
           id="show-menu"
           @click=${this.toggleMenu}
+          aria-label=${i18n.playbackMenuButtonTooltip}
         >
           <cra-icon slot="icon" name="more_vertical"></cra-icon>
         </cra-icon-button>
+        ${this.renderMenu()}
       </div>
-      ${this.renderMenu()}
     `;
   }
 
@@ -628,9 +669,10 @@ export class PlaybackPage extends ReactiveLitElement {
     if (this.recordingMetadata.value === null) {
       return nothing;
     }
+    const currentTime = this.audioPlayer.currentTime.value;
 
     const currentTimeString = formatDuration({
-      seconds: this.currentTime.value,
+      seconds: currentTime,
     });
     const totalTimeString = formatDuration({
       milliseconds: this.recordingMetadata.value.durationMs,
@@ -645,8 +687,9 @@ export class PlaybackPage extends ReactiveLitElement {
         min="0"
         max=${this.recordingMetadata.value.durationMs / 1000}
         step="0.1"
-        .value=${this.currentTime.value}
+        .value=${currentTime}
         @input=${this.onTimelineInput}
+        aria-label=${i18n.playbackSeekSliderAriaLabel}
       ></cros-slider>
       <div>
         <span>${currentTimeString}</span>
@@ -657,19 +700,18 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private renderSpeedControl(): RenderResult {
     const iconName = assertExists(
-      PLAYBACK_SPEED_ICON_MAP.get(this.playbackSpeed.value),
+      PLAYBACK_SPEED_ICON_MAP.get(this.audioPlayer.playbackSpeed.value),
     );
     const menuItems = PLAYBACK_SPEEDS.map((speed) => {
       const label =
         speed === 1.0 ? i18n.playbackSpeedNormalOption : speed.toString();
       const onClick = () => {
-        this.playbackSpeed.value = speed;
-        this.audio.playbackRate = speed;
+        this.audioPlayer.playbackSpeed.value = speed;
       };
 
       return html`<cra-menu-item
         headline=${label}
-        ?checked=${this.playbackSpeed.value === speed}
+        ?checked=${this.audioPlayer.playbackSpeed.value === speed}
         @cros-menu-item-triggered=${onClick}
       ></cra-menu-item>`;
     });
@@ -699,6 +741,8 @@ export class PlaybackPage extends ReactiveLitElement {
         id="show-speed-menu"
         @click=${togglePlaybackSpeedMenu}
         .selected=${live(this.playbackSpeedMenuOpened.value)}
+        aria-haspopup="true"
+        aria-label=${i18n.playbackSpeedButtonTooltip}
       >
         <cra-icon slot="icon" .name=${iconName}></cra-icon>
         <cra-icon slot="selectedIcon" .name=${iconName}></cra-icon>
@@ -708,33 +752,33 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private onVolumeInput(ev: Event) {
     const slider = assertInstanceof(ev.target, CrosSlider);
-    this.audio.muted = false;
-    this.audio.volume = slider.value / 100;
+    this.audioPlayer.muted.value = false;
+    this.audioPlayer.volume.value = slider.value / 100;
     this.requestUpdate();
   }
 
   private toggleMuted() {
-    this.audio.muted = !this.audio.muted;
+    this.audioPlayer.muted.update((s) => !s);
     this.requestUpdate();
   }
 
   private renderVolumeIcon() {
-    const {muted, volume} = this.audio;
+    const {muted, volume} = this.audioPlayer;
     const iconName = (() => {
-      if (muted) {
+      if (muted.value) {
         return 'volume_mute';
       }
-      if (volume === 0) {
+      if (volume.value === 0) {
         return 'volume_off';
       }
-      return volume < 0.5 ? 'volume_down' : 'volume_up';
+      return volume.value < 0.5 ? 'volume_down' : 'volume_up';
     })();
     return html`<cra-icon slot="icon" .name=${iconName}></cra-icon>`;
   }
 
   private renderVolumeSlider() {
-    const {muted, volume} = this.audio;
-    const volumeDisplay = muted ? 0 : Math.round(volume * 100);
+    const {muted, volume} = this.audioPlayer;
+    const volumeDisplay = muted.value ? 0 : Math.round(volume.value * 100);
     return html`
       <cros-slider
         withlabel
@@ -742,6 +786,7 @@ export class PlaybackPage extends ReactiveLitElement {
         min="0"
         max="100"
         @input=${this.onVolumeInput}
+        aria-label=${i18n.playbackVolumeAriaLabel}
       ></cros-slider>
     `;
   }
@@ -762,7 +807,11 @@ export class PlaybackPage extends ReactiveLitElement {
   private renderVolumeControl(): RenderResult {
     return html`
       <div id="inline-slider">
-        <cra-icon-button buttonstyle="floating" @click=${this.toggleMuted}>
+        <cra-icon-button
+          buttonstyle="floating"
+          @click=${this.toggleMuted}
+          aria-label=${i18n.playbackMuteButtonTooltip}
+        >
           ${this.renderVolumeIcon()}
         </cra-icon-button>
         ${this.renderVolumeSlider()}
@@ -771,6 +820,7 @@ export class PlaybackPage extends ReactiveLitElement {
         <cra-icon-button
           buttonstyle="floating"
           @click=${this.showFloatingVolume}
+          aria-label=${i18n.playbackVolumeAriaLabel}
         >
           ${this.renderVolumeIcon()}
         </cra-icon-button>
@@ -805,21 +855,36 @@ export class PlaybackPage extends ReactiveLitElement {
           <div id="audio-waveform-container" class="sheet">
             ${this.renderAudioWaveform()}
           </div>
-          <div id="transcription-container" class="sheet">
+          <div
+            id="transcription-container"
+            class="sheet"
+            aria-label=${i18n.playbackTranscriptLandmarkAriaLabel}
+            role="region"
+          >
             ${this.renderTranscription()}
           </div>
         </div>
       </div>
-      <div id="footer">
+      <div
+        id="footer"
+        aria-label=${i18n.playbackControlsLandmarkAriaLabel}
+        role="complementary"
+      >
         ${this.renderAudioTimeline()}
         <div id="actions">
           <div id="volume-controls">${this.renderVolumeControl()}</div>
           <div id="middle-controls">
-            <secondary-button @click=${this.onRewind10Secs}>
+            <secondary-button
+              @click=${this.onRewind10Secs}
+              aria-label=${i18n.playbackBackwardButtonTooltip}
+            >
               <cra-icon slot="icon" name="replay_10"></cra-icon>
             </secondary-button>
             ${this.renderPlayPauseButton()}
-            <secondary-button @click=${this.onForward10Secs}>
+            <secondary-button
+              @click=${this.onForward10Secs}
+              aria-label=${i18n.playbackForwardButtonTooltip}
+            >
               <cra-icon slot="icon" name="forward_10"></cra-icon>
             </secondary-button>
           </div>

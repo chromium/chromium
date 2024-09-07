@@ -107,11 +107,6 @@ class WebSocketStream::UnderlyingSink final : public UnderlyingSinkBase {
   void ErrorControllerBecauseClosed();
   void FinishWriteCallback(ScriptPromiseResolver<IDLUndefined>*);
   void ResolveClose(bool was_clean);
-  void SendAny(ScriptState*,
-               v8::Local<v8::Value> v8chunk,
-               ScriptPromiseResolver<IDLUndefined>*,
-               base::OnceClosure callback,
-               ExceptionState&);
   void SendArrayBuffer(ScriptState*,
                        DOMArrayBuffer*,
                        size_t offset,
@@ -217,17 +212,46 @@ ScriptPromise<IDLUndefined> WebSocketStream::UnderlyingSink::write(
     ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " write()";
   is_writing_ = true;
+
+  v8::Local<v8::Value> v8chunk = chunk.V8Value();
+  auto* isolate = script_state->GetIsolate();
+  DOMArrayBuffer* data = nullptr;
+  size_t offset = 0;
+  size_t length = 0;
+  if (v8chunk->IsArrayBuffer()) {
+    data = NativeValueTraits<DOMArrayBuffer>::NativeValue(isolate, v8chunk,
+                                                          exception_state);
+    if (exception_state.HadException()) {
+      closed_ = true;
+      is_writing_ = false;
+      return EmptyPromise();
+    }
+    length = data->ByteLength();
+  } else if (v8chunk->IsArrayBufferView()) {
+    NotShared<DOMArrayBufferView> data_view =
+        NativeValueTraits<NotShared<DOMArrayBufferView>>::NativeValue(
+            isolate, v8chunk, exception_state);
+    if (exception_state.HadException()) {
+      closed_ = true;
+      is_writing_ = false;
+      return EmptyPromise();
+    }
+    data = data_view->buffer();
+    offset = data_view->byteOffset();
+    length = data_view->byteLength();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto result = resolver->Promise();
   base::OnceClosure callback =
       WTF::BindOnce(&UnderlyingSink::FinishWriteCallback,
                     WrapWeakPersistent(this), WrapPersistent(resolver));
-  v8::Local<v8::Value> v8chunk = chunk.V8Value();
-  SendAny(script_state, v8chunk, resolver, std::move(callback),
-          exception_state);
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state);
+  if (data) {
+    SendArrayBuffer(script_state, data, offset, length, resolver,
+                    std::move(callback));
+  } else {
+    SendString(script_state, v8chunk, resolver, std::move(callback));
   }
   return result;
 }
@@ -328,46 +352,6 @@ void WebSocketStream::UnderlyingSink::ResolveClose(bool was_clean) {
 
   close_resolver_->Reject(
       creator_->CreateWebSocketError(kWebSocketNotCleanlyClosedErrorMessage));
-}
-
-void WebSocketStream::UnderlyingSink::SendAny(
-    ScriptState* script_state,
-    v8::Local<v8::Value> v8chunk,
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    base::OnceClosure callback,
-    ExceptionState& exception_state) {
-  DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " SendAny()";
-  auto* isolate = script_state->GetIsolate();
-
-  if (v8chunk->IsArrayBuffer()) {
-    DOMArrayBuffer* data = NativeValueTraits<DOMArrayBuffer>::NativeValue(
-        isolate, v8chunk, exception_state);
-    if (exception_state.HadException()) {
-      closed_ = true;
-      is_writing_ = false;
-      return;
-    }
-    SendArrayBuffer(script_state, data, 0, data->ByteLength(), resolver,
-                    std::move(callback));
-    return;
-  }
-
-  if (v8chunk->IsArrayBufferView()) {
-    NotShared<DOMArrayBufferView> data =
-        NativeValueTraits<NotShared<DOMArrayBufferView>>::NativeValue(
-            isolate, v8chunk, exception_state);
-    if (exception_state.HadException()) {
-      closed_ = true;
-      is_writing_ = false;
-      return;
-    }
-
-    SendArrayBuffer(script_state, data->buffer(), data->byteOffset(),
-                    data->byteLength(), resolver, std::move(callback));
-    return;
-  }
-
-  SendString(script_state, v8chunk, resolver, std::move(callback));
 }
 
 void WebSocketStream::UnderlyingSink::SendArrayBuffer(

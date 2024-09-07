@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/mac/icloud_keychain.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
@@ -14,6 +9,7 @@
 
 #include <optional>
 
+#include "base/apple/foundation_util.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -41,18 +37,15 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/mac/icloud_keychain_sys.h"
 
+using base::apple::NSDataToSpan;
+
 namespace device::fido::icloud_keychain {
 
 namespace {
 
-base::span<const uint8_t> ToSpan(NSData* data) {
-  return base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(data.bytes),
-                                   data.length);
-}
-
 std::vector<uint8_t> ToVector(NSData* data) {
-  const auto* p = reinterpret_cast<const uint8_t*>(data.bytes);
-  return std::vector<uint8_t>(p, p + data.length);
+  auto span = NSDataToSpan(data);
+  return {span.begin(), span.end()};
 }
 
 AuthenticatorSupportedOptions AuthenticatorOptions() {
@@ -327,7 +320,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
             authorization.credential;
 
     std::optional<cbor::Value> attestation_object_value =
-        cbor::Reader::Read(ToSpan(result.rawAttestationObject));
+        cbor::Reader::Read(NSDataToSpan(result.rawAttestationObject));
     if (!attestation_object_value || !attestation_object_value->is_map()) {
       FIDO_LOG(ERROR) << "iCKC: failed to parse attestation CBOR";
       std::move(callback).Run(
@@ -349,7 +342,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
 
     std::vector<uint8_t> credential_id_from_auth_data =
         response.attestation_object.authenticator_data().GetCredentialId();
-    base::span<const uint8_t> credential_id = ToSpan(result.credentialID);
+    base::span<const uint8_t> credential_id = NSDataToSpan(result.credentialID);
     if (!base::ranges::equal(credential_id_from_auth_data, credential_id)) {
       FIDO_LOG(ERROR) << "iCKC: credential ID mismatch: "
                       << base::HexEncode(credential_id_from_auth_data) << " vs "
@@ -414,7 +407,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
 
     std::optional<AuthenticatorData> authenticator_data =
         AuthenticatorData::DecodeAuthenticatorData(
-            ToSpan(result.rawAuthenticatorData));
+            NSDataToSpan(result.rawAuthenticatorData));
     if (!authenticator_data) {
       FIDO_LOG(ERROR) << "iCKC: invalid authData";
       std::move(callback).Run(GetAssertionStatus::kAuthenticatorResponseInvalid,
@@ -430,13 +423,13 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
 
     AuthenticatorGetAssertionResponse response(
         std::move(*authenticator_data),
-        fido_parsing_utils::Materialize(ToSpan(result.signature)),
+        fido_parsing_utils::Materialize(NSDataToSpan(result.signature)),
         transport_used);
     response.user_entity = PublicKeyCredentialUserEntity(
-        fido_parsing_utils::Materialize(ToSpan(result.userID)));
+        fido_parsing_utils::Materialize(NSDataToSpan(result.userID)));
     response.credential = PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey,
-        fido_parsing_utils::Materialize(ToSpan(result.credentialID)));
+        fido_parsing_utils::Materialize(NSDataToSpan(result.credentialID)));
     response.user_selected = true;
 
     std::vector<AuthenticatorGetAssertionResponse> responses;

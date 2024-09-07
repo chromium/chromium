@@ -129,7 +129,6 @@ static_library("app_restore") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/window_predictor",
-    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/scheduled_task_handler",
   ]
@@ -151,7 +150,6 @@ static_library("test_support") {
     "//ash/components/arc:arc_test_support",
     "//ash/components/arc/mojom",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
@@ -192,7 +190,6 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/crosapi:browser_util",
@@ -264,7 +261,6 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc/window_predictor",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/common:constants",

@@ -53,56 +53,48 @@ class WebTestFinder(object):
         self,
         args,
         test_lists=None,
-        exclude_test_lists=None,
         filter_files=None,
+        inverted_filter_files=None,
         fastest_percentile=None,
         filters=None,
     ):
-        # The second entry of each element is true if the path is to be
-        # included, and false if excluded.
-        paths = [(path, True) for path in self._strip_test_dir_prefixes(args)]
+        filters = filters or []
+        paths = self._strip_test_dir_prefixes(args)
         if test_lists:
             new_paths = self._read_test_list_files(
                 test_lists, self._port.TEST_PATH_SEPARATOR)
-            paths.extend((path, True) for path in new_paths)
+            new_paths = [
+                self._strip_test_dir_prefix(new_path) for new_path in new_paths
+            ]
+            paths += new_paths
 
         all_tests = []
         if not paths or fastest_percentile:
             all_tests = self._port.tests(None)
 
-        test_files = set()
+        path_tests = []
+        if paths:
+            path_tests = self._port.tests(paths)
+
+        test_files = None
         running_all_tests = False
         if fastest_percentile:
             times_trie = self._times_trie()
             if times_trie:
                 fastest_tests = self._fastest_tests(times_trie, all_tests,
                                                     fastest_percentile)
-                test_files.update(fastest_tests)
+                test_files = list(set(fastest_tests).union(path_tests))
             else:
                 _log.warning(
                     'Running all the tests the first time to generate timing data.'
                 )
+                test_files = all_tests
                 running_all_tests = True
+        elif paths:
+            test_files = path_tests
         else:
-            running_all_tests = not paths and not test_lists
-
-        if running_all_tests:
-            test_files.update(all_tests)
-
-        if exclude_test_lists:
-            new_paths = self._read_test_list_files(
-                exclude_test_lists, self._port.TEST_PATH_SEPARATOR)
-            paths.extend((path, False) for path in new_paths)
-            if new_paths:
-                running_all_tests = False
-
-        for path, include in sorted(paths):
-            path_tests = self._port.tests([path])
-            if include:
-                test_files.update(path_tests)
-            else:
-                test_files -= set(path_tests)
-        test_files = sorted(test_files)
+            test_files = all_tests
+            running_all_tests = True
 
         all_filters = []
         if filters:
@@ -111,13 +103,16 @@ class WebTestFinder(object):
             file_filters = self._read_filter_files(
                 filter_files, self._port.TEST_PATH_SEPARATOR)
             all_filters = all_filters + file_filters
+        if inverted_filter_files:
+            file_filters = self._read_filter_files(
+                inverted_filter_files, self._port.TEST_PATH_SEPARATOR)
+            all_filters = all_filters + self._invert_filters(file_filters)
 
         test_files = filter_tests(test_files, all_filters)
 
         # de-dupe the test list and paths here before running them.
         test_files = list(OrderedDict.fromkeys(test_files))
-        paths = list(
-            OrderedDict.fromkeys(path for path, include in paths if include))
+        paths = list(OrderedDict.fromkeys(paths))
         return (paths, test_files, running_all_tests)
 
     def _times_trie(self):
@@ -194,6 +189,20 @@ class WebTestFinder(object):
                 raise
         return filters
 
+    def _invert_filters(self, filters):
+        inverted_filters = []
+        for terms in filters:
+            inverted_filter = []
+            for term in terms:
+                if term.startswith('-'):
+                    inverted_filter.append(term[1:])
+                elif term.startswith('+'):
+                    inverted_filter.append('-' + term[1:])
+                else:
+                    inverted_filter.append('-' + term)
+            inverted_filters.append(inverted_filter)
+        return inverted_filters
+
     def _read_test_list_files(self, filenames, test_path_separator):
         fs = self._filesystem
         positive_matches = []
@@ -210,13 +219,11 @@ class WebTestFinder(object):
                         _log.debug(
                             'test-list %s contains a negative filter %s' %
                             (filename, line))
-                        continue
-                    positive_matches.append(self._strip_test_dir_prefix(line))
+                    positive_matches.append(line)
             except IOError as error:
                 if error.errno == errno.ENOENT:
                     _log.critical('')
-                    _log.critical('--(exclude-)test-list file "%s" not found',
-                                  filename)
+                    _log.critical('--test-list file "%s" not found', filename)
                 raise
         return positive_matches
 
@@ -371,9 +378,9 @@ def filter_tests(tests, filters):
         else:
             return (len(k), k)
 
-    for filter in filters:
+    for terms in filters:
         # Validate the filter
-        for term in filter:
+        for term in terms:
             if (term.startswith('-') and not term[1:]) or not term:
                 raise ValueError('Empty filter entry "%s"' % (term, ))
             for i, c in enumerate(term):
@@ -383,13 +390,13 @@ def filter_tests(tests, filters):
                     raise ValueError('Bad test filter "%s" specified; '
                                      'unescaped wildcards are only allowed at '
                                      'the end' % (term, ))
-            if term.startswith('-') and term[1:] in filter:
+            if term.startswith('-') and term[1:] in terms:
                 raise ValueError('Both "%s" and "%s" specified in test '
                                  'filter' % (term, term[1:]))
 
         # Separate the negative/positive globless terms and glob terms
-        include_by_default = all(term.startswith('-') for term in filter)
-        exact_neg_terms, exact_pos_terms, glob_terms = _extract_terms(filter)
+        include_by_default = all(term.startswith('-') for term in terms)
+        exact_neg_terms, exact_pos_terms, glob_terms = _extract_terms(terms)
 
         filtered_tests = []
         for test in tests:

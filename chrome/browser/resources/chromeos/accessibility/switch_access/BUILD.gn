@@ -44,6 +44,7 @@ ts_modules = [
   "nodes/back_button_node.ts",
   "nodes/basic_node.ts",
   "nodes/combo_box_node.ts",
+  "nodes/desktop_node.ts",
   "nodes/group_node.ts",
   "nodes/keyboard_node.ts",
   "nodes/switch_access_node.ts",
@@ -59,7 +60,6 @@ ts_modules = [
 
 # JS files needed to compile TS.
 js_modules = [
-  "nodes/desktop_node.js",
   "nodes/editable_text_node.js",
   "nodes/modal_dialog_node.js",
   "nodes/slider_node.js",
@@ -186,8 +186,9 @@ test_deps = [
   "//ash",
   "//ash/keyboard/ui",
   "//base",
-  "//chrome/browser/ash",
+  "//chrome/browser/ash/accessibility",
   "//chrome/browser/ash/crosapi",
+  "//chrome/browser/ash/system_web_apps",
   "//chrome/common",
   "//chromeos",
 ]

@@ -188,7 +188,7 @@ void CustomScrollbar::UpdateScrollbarParts() {
     SetFrameRect(gfx::Rect(
         Location(), gfx::Size(is_horizontal ? Width() : new_thickness,
                               is_horizontal ? new_thickness : Height())));
-    if (LayoutBox* box = GetScrollableArea()->GetLayoutBox()) {
+    if (LayoutBox* box = GetLayoutBox()) {
       box->SetChildNeedsLayout();
       // LayoutNG may attempt to reuse line-box fragments. It will do this even
       // if the |LayoutObject::ChildNeedsLayout| is true (set above).
@@ -204,7 +204,7 @@ void CustomScrollbar::UpdateScrollbarParts() {
   // If we didn't return above, it means that there is no change or the change
   // doesn't affect layout of the box. Update position to reflect the change if
   // any.
-  if (LayoutBox* box = GetScrollableArea()->GetLayoutBox()) {
+  if (LayoutBox* box = GetLayoutBox()) {
     // It's not ready to position scrollbar parts if the containing box has not
     // been inserted into the layout tree.
     if (box->IsLayoutView() || box->Parent())

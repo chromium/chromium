@@ -4,10 +4,10 @@
   "id": "/",
   "scope": "/",
   "start_url": "/index.html",
-  "display": "standalone",
   "permissions_policy": {
     "clipboard-read": [ "*" ],
     "clipboard-write": [ "*" ],
+    "controlled-frame": [ "*" ],
     "cross-origin-isolated": [ "*" ],
     "direct-sockets": [ "*" ],
     "fullscreen": [ "*" ],

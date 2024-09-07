@@ -178,8 +178,7 @@ bool FilePathWatcherFSEvents::WatchWithChangeInfo(
   callback_ = callback;
 
   FSEventStreamEventId start_event = kFSEventStreamEventIdSinceNow;
-  StartEventStream(start_event, path);
-  return true;
+  return StartEventStream(start_event, path);
 }
 
 void FilePathWatcherFSEvents::Cancel() {
@@ -204,6 +203,15 @@ void FilePathWatcherFSEvents::FSEventsCallback(
   FilePathWatcherFSEvents* watcher =
       reinterpret_cast<FilePathWatcherFSEvents*>(event_watcher);
   bool root_changed = watcher->ResolveTargetPath();
+  if (watcher->resolved_target_.empty()) {
+    RecordCallbackErrorUma(
+        WatchWithChangeInfoResult::kFSEventsResolvedTargetError);
+    watcher->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FilePathWatcherFSEvents::ReportError,
+                       watcher->weak_factory_.GetWeakPtr(), watcher->target_));
+  }
+
   FSEventStreamEventId root_change_at = FSEventStreamGetLatestEventId(stream);
   CFArrayRef cf_event_paths = base::apple::CFCast<CFArrayRef>(event_paths);
   std::map<FSEventStreamEventId, ChangeEvent> events;
@@ -263,7 +271,22 @@ void FilePathWatcherFSEvents::FSEventsCallback(
                            return;
                          }
                          FilePathWatcherFSEvents* watcher = weak_watcher.get();
-                         watcher->UpdateEventStream(root_change_at);
+                         WatchWithChangeInfoResult update_stream_result =
+                             watcher->UpdateEventStream(root_change_at);
+
+                         if (update_stream_result ==
+                             WatchWithChangeInfoResult::
+                                 kFSEventsEventStreamStartError) {
+                           // Failed to re-initialize the FSEvents event stream.
+                           RecordCallbackErrorUma(update_stream_result);
+                           watcher->task_runner()->PostTask(
+                               FROM_HERE,
+                               base::BindOnce(
+                                   &FilePathWatcherFSEvents::ReportError,
+                                   watcher->weak_factory_.GetWeakPtr(),
+                                   watcher->target_));
+                         }
+
                        },
                        watcher->weak_factory_.GetWeakPtr(), root_change_at));
   }
@@ -292,7 +315,9 @@ void FilePathWatcherFSEvents::DispatchEvents(
 
   std::vector<FSEventStreamEventId> coalesced_event_ids;
   bool coalesce_target_deletion = coalesce_next_target_deletion_;
+  bool coalesce_target_creation = coalesce_next_target_creation_;
   coalesce_next_target_deletion_ = false;
+  coalesce_next_target_creation_ = false;
 
   for (const auto& [event_id, event] : events) {
     const auto& [event_flags, event_path, event_inode] = event;
@@ -308,8 +333,16 @@ void FilePathWatcherFSEvents::DispatchEvents(
 
     // The `kFSEventStreamEventFlagRootChanged` flag signals that there has been
     // a change along the root path.
-    if ((event_flags & kFSEventStreamEventFlagRootChanged) &&
-        event_path == target) {
+    if (event_flags & kFSEventStreamEventFlagRootChanged) {
+      // The event path should always be the same path as the target for a root
+      // changed event. In the case that it's not, skip processing the event.
+      if (event_path != target) {
+        // TODO(b/362494756): Cleanup usage of this macro once the File System
+        // Change Observers feature is rolled out.
+        DUMP_WILL_BE_NOTREACHED();
+        continue;
+      }
+
       // If the target path does not exist, either the target or one of its
       // parent directories have been deleted or renamed.
       struct stat buffer;
@@ -318,24 +351,20 @@ void FilePathWatcherFSEvents::DispatchEvents(
         // the following, duplicate delete event.
         coalesce_next_target_deletion_ = true;
         FilePathWatcher::ChangeInfo change_info = {
-            file_path_type, FilePathWatcher::ChangeType::kDeleted, event_path};
-        callback_.Run(std::move(change_info),
-                      report_modified_path_ ? event_path : target,
+            file_path_type, FilePathWatcher::ChangeType::kDeleted, target};
+        callback_.Run(std::move(change_info), target,
                       /*error=*/false);
         continue;
       }
 
-      // TODO(b/357118831): Add handling for rename events along the dir path to
-      // `target`, and report the change type accordingly depending on the move
-      // type. According to FSEvents, this occurs when the
-      // `kFSEventStreamEventFlagRootChanged` flag is present and the event id
-      // is equal to 0. Differentiate between a true rename along the path to
-      // target and the target itself being created initially by checking if the
-      // next event is a 'create' event on the target path.
-      //
-      // Otherwise, if the target has been created, ignore the "root change"
-      // event and fall through to report only the following create event on the
-      // next call to `DispatchEvents`.
+      // Otherwise, a rename has occurred on the target path (which represents a
+      // move into-scope), or the target has been created initially. Both
+      // scenarios are reported as 'create' events.
+      coalesce_next_target_creation_ = true;
+      FilePathWatcher::ChangeInfo change_info = {
+          file_path_type, FilePathWatcher::ChangeType::kCreated, target};
+      callback_.Run(std::move(change_info), target,
+                    /*error=*/false);
       continue;
     }
 
@@ -359,6 +388,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
                       /*error=*/false);
         continue;
       }
+
       // Based on testing, moves within-scope for FSEvents will have
       // consecutive event ids that differ by 1, and the event with the higher
       // event id represents the "moved to" part of a move event. This allows
@@ -429,6 +459,15 @@ void FilePathWatcherFSEvents::DispatchEvents(
       bool exists = (stat(event_path.value().c_str(), &file_stat) == 0) &&
                     (file_stat.st_ino == event_inode.value_or(0));
 
+      // If we've already reported a create event resulting from a move
+      // into-scope for the target path, skip reporting a duplicate create
+      // event which has already been reported as a result of the previous root
+      // changed event.
+      if (exists && event_path == target && coalesce_target_creation) {
+        coalesce_next_target_creation_ = false;
+        continue;
+      }
+
       // If the current event's inode exists, the underlying file or
       // directory exists. This signals a move into-scope and is reported as
       // a 'created event. Otherwise, the event is reported as a 'deleted'
@@ -455,7 +494,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
     if (event_flags & kFSEventStreamEventFlagItemRemoved) {
       // Skip over coalesced delete events, that have already been reported for
       // a delete event on the target path.
-      if (coalesce_target_deletion) {
+      if (coalesce_target_deletion && event_path == target) {
         coalesce_next_target_deletion_ = false;
         continue;
       }
@@ -467,11 +506,16 @@ void FilePathWatcherFSEvents::DispatchEvents(
       continue;
     }
 
-    // The `kFSEventStreamEventFlagItemInodeMetaMod` flag is the only signal
-    // we currently have for a given batch of event flags to determine if the
-    // contents of a file have been modified. This flag does not appear in the
-    // scenario of a new file write, which is reported as 'created'.
-    if (event_flags & kFSEventStreamEventFlagItemInodeMetaMod) {
+    // When both the `kFSEventStreamEventFlagItemInodeMetaMod` and
+    // `kFSEventStreamEventFlagItemModified` flags are present, this is a signal
+    // that the contents of a file have been modified. This takes precedence
+    // over reporting a 'create' event, given that it's possible for the
+    // `kFSEventStreamEventFlagItemCreated` flag to be reported in the same
+    // `event_flags` batch as both of the
+    // `kFSEventStreamEventFlagItemInodeMetaMod` and
+    // `kFSEventStreamEventFlagItemModified` flags.
+    if ((event_flags & kFSEventStreamEventFlagItemInodeMetaMod) &&
+        (event_flags & kFSEventStreamEventFlagItemModified)) {
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
       callback_.Run(std::move(change_info),
@@ -480,7 +524,20 @@ void FilePathWatcherFSEvents::DispatchEvents(
       continue;
     }
 
+    // The `kFSEventStreamEventFlagItemCreated` flag signals a create event.
+    // The `kFSEventStreamEventFlagItemCreated` flag takes precedence over the
+    // `kFSEventStreamEventFlagItemModified` flag, in the scenario that both the
+    // `kFSEventStreamEventFlagItemCreated` and the
+    // `kFSEventStreamEventFlagItemModified` flag are present in the same batch
+    // of `event_flags`.
     if (event_flags & kFSEventStreamEventFlagItemCreated) {
+      // If the current event is for the target path, skip reporting a duplicate
+      // create event, since we've already reported one earlier as a result of
+      // the previous root changed event.
+      if (coalesce_target_creation && event_path == target) {
+        coalesce_next_target_creation_ = false;
+        continue;
+      }
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kCreated, event_path};
       callback_.Run(std::move(change_info),
@@ -489,6 +546,8 @@ void FilePathWatcherFSEvents::DispatchEvents(
       continue;
     }
 
+    // Otherwise, if the `kFSEventStreamEventFlagItemModified` flag is present,
+    // report a 'modified' event.
     if (event_flags & kFSEventStreamEventFlagItemModified) {
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
@@ -500,12 +559,12 @@ void FilePathWatcherFSEvents::DispatchEvents(
   }
 }
 
-void FilePathWatcherFSEvents::UpdateEventStream(
+WatchWithChangeInfoResult FilePathWatcherFSEvents::UpdateEventStream(
     FSEventStreamEventId start_event) {
   // It can happen that the watcher gets canceled while tasks that call this
   // function are still in flight, so abort if this situation is detected.
   if (resolved_target_.empty()) {
-    return;
+    return WatchWithChangeInfoResult::kFSEventsResolvedTargetError;
   }
 
   if (fsevent_stream_) {
@@ -534,22 +593,16 @@ void FilePathWatcherFSEvents::UpdateEventStream(
           kFSEventStreamCreateFlagUseExtendedData);
   FSEventStreamSetDispatchQueue(fsevent_stream_, queue_.get());
 
-  if (!FSEventStreamStart(fsevent_stream_)) {
-    task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&FilePathWatcherFSEvents::ReportError,
-                                  weak_factory_.GetWeakPtr(), target_));
+  if (FSEventStreamStart(fsevent_stream_)) {
+    return WatchWithChangeInfoResult::kSuccess;
   }
+  return WatchWithChangeInfoResult::kFSEventsEventStreamStartError;
 }
 
 bool FilePathWatcherFSEvents::ResolveTargetPath() {
   base::FilePath resolved = ResolvePath(target_).StripTrailingSeparators();
   bool changed = resolved != resolved_target_;
   resolved_target_ = resolved;
-  if (resolved_target_.empty()) {
-    task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&FilePathWatcherFSEvents::ReportError,
-                                  weak_factory_.GetWeakPtr(), target_));
-  }
   return changed;
 }
 
@@ -567,13 +620,18 @@ void FilePathWatcherFSEvents::DestroyEventStream() {
   fsevent_stream_ = nullptr;
 }
 
-void FilePathWatcherFSEvents::StartEventStream(FSEventStreamEventId start_event,
+bool FilePathWatcherFSEvents::StartEventStream(FSEventStreamEventId start_event,
                                                const base::FilePath& path) {
   DCHECK(resolved_target_.empty());
 
   target_ = path;
   ResolveTargetPath();
-  UpdateEventStream(start_event);
+  WatchWithChangeInfoResult stream_start_result =
+      UpdateEventStream(start_event);
+
+  RecordWatchWithChangeInfoResultUma(stream_start_result);
+
+  return stream_start_result == WatchWithChangeInfoResult::kSuccess;
 }
 
 }  // namespace content

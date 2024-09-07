@@ -10,11 +10,10 @@ import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://cus
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromeSection} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {CustomizeToolbarClientCallbackRouter, CustomizeToolbarHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
-import type {CustomizeToolbarClientRemote, CustomizeToolbarHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
+import type {CustomizeToolbarHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
 import {CustomizeToolbarApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar/customize_toolbar_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -25,7 +24,6 @@ suite('AppTest', () => {
   let customizeChromeApp: AppElement;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouter: CustomizeChromePageRemote;
-  let metrics: MetricsTracker;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -40,19 +38,17 @@ suite('AppTest', () => {
                          .callbackRouter.$.bindNewPipeAndPassRemote();
     customizeChromeApp = document.createElement('customize-chrome-app');
     document.body.appendChild(customizeChromeApp);
-    metrics = fakeMetricsPrivate();
   });
 
   suite('Metrics', () => {
     suiteSetup(() => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      customizeChromeApp = document.createElement('customize-chrome-app');
-      document.body.appendChild(customizeChromeApp);
       loadTimeData.overrideValues({
         'extensionsCardEnabled': true,
       });
     });
-    test('Rendering extensions card section sets metric', async () => {
+
+    test('rendering extensions card section sets metric', async () => {
+      const metrics = fakeMetricsPrivate();
       window.dispatchEvent(new Event('load'));
       const eventPromise = eventToPromise(
           'detect-extensions-card-section-impression', customizeChromeApp);
@@ -274,27 +270,12 @@ suite('AppTest', () => {
 
   suite('PageTransitions', () => {
     let toolbarCustomizationHandler: TestMock<CustomizeToolbarHandlerInterface>;
-    let customizeToolbarCallbackRouterRemote: CustomizeToolbarClientRemote;
 
     suiteSetup(() => {
       loadTimeData.overrideValues({
         'toolbarCustomizationEnabled': true,
       });
-
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-      handler = installMock(
-          CustomizeChromePageHandlerRemote,
-          (mock: CustomizeChromePageHandlerRemote) =>
-              CustomizeChromeApiProxy.setInstance(
-                  mock, new CustomizeChromePageCallbackRouter()));
-
-      handler.setResultFor('getBackgroundImages', new Promise(() => {}));
-      handler.setResultFor('getBackgroundCollections', new Promise(() => {}));
-
-      callbackRouter = CustomizeChromeApiProxy.getInstance()
-                           .callbackRouter.$.bindNewPipeAndPassRemote();
-
       toolbarCustomizationHandler = installMock(
           CustomizeToolbarHandlerRemote,
           (mock: CustomizeToolbarHandlerRemote) =>
@@ -306,16 +287,6 @@ suite('AppTest', () => {
           'listCategories', Promise.resolve([]));
       toolbarCustomizationHandler.setResultFor(
           'getIsCustomized', Promise.resolve({customized: false}));
-
-      customizeToolbarCallbackRouterRemote =
-          CustomizeToolbarApiProxy.getInstance()
-              .callbackRouter.$.bindNewPipeAndPassRemote();
-      assertTrue(!!customizeToolbarCallbackRouterRemote);
-
-      customizeChromeApp = document.createElement('customize-chrome-app');
-      document.body.appendChild(customizeChromeApp);
-
-      metrics = fakeMetricsPrivate();
     });
 
     test(

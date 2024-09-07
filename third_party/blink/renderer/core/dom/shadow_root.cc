@@ -53,7 +53,7 @@ namespace blink {
 class ReferenceTargetIdObserver : public IdTargetObserver {
  public:
   ReferenceTargetIdObserver(const AtomicString& id, ShadowRoot* root)
-      : IdTargetObserver(root->GetIdTargetObserverRegistry(), id),
+      : IdTargetObserver(root->EnsureIdTargetObserverRegistry(), id),
         root_(root) {}
 
   using IdTargetObserver::Id;
@@ -82,13 +82,7 @@ ShadowRoot::ShadowRoot(Document& document,
                        ShadowRootMode mode,
                        SlotAssignmentMode assignment_mode)
     : DocumentFragment(nullptr, kCreateShadowRoot),
-      TreeScope(
-          *this,
-          document,
-          static_cast<V8ObservableArrayCSSStyleSheet::SetAlgorithmCallback>(
-              &ShadowRoot::OnAdoptedStyleSheetSet),
-          static_cast<V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback>(
-              &ShadowRoot::OnAdoptedStyleSheetDelete)),
+      TreeScope(*this, document),
       child_shadow_root_count_(0),
       mode_(static_cast<unsigned>(mode)),
       registered_with_parent_shadow_root_(false),
@@ -131,27 +125,6 @@ Node* ShadowRoot::Clone(Document&,
 
 String ShadowRoot::innerHTML() const {
   return CreateMarkup(this, kChildrenOnly);
-}
-
-// This forwards to the TreeScope implementation.
-void ShadowRoot::OnAdoptedStyleSheetSet(
-    ScriptState* script_state,
-    V8ObservableArrayCSSStyleSheet& observable_array,
-    uint32_t index,
-    Member<CSSStyleSheet>& sheet,
-    ExceptionState& exception_state) {
-  TreeScope::OnAdoptedStyleSheetSet(script_state, observable_array, index,
-                                    sheet, exception_state);
-}
-
-// This forwards to the TreeScope implementation.
-void ShadowRoot::OnAdoptedStyleSheetDelete(
-    ScriptState* script_state,
-    V8ObservableArrayCSSStyleSheet& observable_array,
-    uint32_t index,
-    ExceptionState& exception_state) {
-  TreeScope::OnAdoptedStyleSheetDelete(script_state, observable_array, index,
-                                       exception_state);
 }
 
 void ShadowRoot::setInnerHTML(const String& html,
@@ -269,12 +242,10 @@ void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
 
   // In the case of input types like button where the child element is not
   // in a container, we need to explicit adjust directionality.
-  if (RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled()) {
-    if (TextControlElement* text_element =
-            HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
-                &host())) {
-      text_element->AdjustDirectionalityIfNeededAfterChildrenChanged(change);
-    }
+  if (TextControlElement* text_element =
+          HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
+              &host())) {
+    text_element->AdjustDirectionalityIfNeededAfterChildrenChanged(change);
   }
 }
 
@@ -327,7 +298,9 @@ void ShadowRoot::ReferenceTargetChanged() {
   // the host element's ID, since they may have been referring to the reference
   // target instead.
   if (const auto& id = host().GetIdAttribute()) {
-    host().GetTreeScope().GetIdTargetObserverRegistry().NotifyObservers(id);
+    if (auto* registry = host().GetTreeScope().GetIdTargetObserverRegistry()) {
+      registry->NotifyObservers(id);
+    }
   }
 }
 

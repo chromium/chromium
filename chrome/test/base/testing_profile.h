@@ -117,7 +117,7 @@ class TestingProfile : public Profile {
 
     template <typename... Ts>
       requires(... && std::same_as<Ts, TestingFactory>)
-    TestingFactories(Ts&&... ts) {
+    TestingFactories(Ts&&... ts) {  // NOLINT(runtime/explicit)
       (..., factories_.push_back(std::move(ts)));
     }
 
@@ -154,12 +154,15 @@ class TestingProfile : public Profile {
     Builder& operator=(const Builder&) = delete;
     ~Builder();
 
-    // Sets a Delegate to be called back during profile init. This causes the
-    // final initialization to be performed via a task so the caller must run
-    // a MessageLoop. Caller maintains ownership of the Delegate
-    // and must manage its lifetime so it continues to exist until profile
-    // initialization is complete.
+    // Sets a Delegate to be called back during profile init. Caller maintains
+    // ownership of the Delegate and must manage its lifetime so it continues
+    // to exist until profile initialization is complete.
     Builder& SetDelegate(Delegate* delegate);
+
+    // Sets profile creation mode to the given one.
+    // Setting CreateMode::kAsynchronous causes the final initialization
+    // to be performed via a task so the caller must run a MessageLoop.
+    Builder& SetCreateMode(CreateMode create_mode);
 
     // Adds a testing factory to the TestingProfile. These testing factories
     // are applied before the ProfileKeyedServices are created.
@@ -261,6 +264,7 @@ class TestingProfile : public Profile {
 #endif
     base::FilePath path_;
     raw_ptr<Delegate> delegate_ = nullptr;
+    CreateMode create_mode_ = CreateMode::kSynchronous;
     bool guest_session_ = false;
     bool allows_browser_windows_ = true;
     bool is_new_profile_ = false;
@@ -294,13 +298,16 @@ class TestingProfile : public Profile {
   // Multi-profile aware constructor that takes the path to a directory managed
   // for this profile and a delegate. This constructor is meant to be used
   // for unittesting the ProfileManager.
-  TestingProfile(const base::FilePath& path, Delegate* delegate);
+  TestingProfile(const base::FilePath& path,
+                 Delegate* delegate,
+                 CreateMode create_mode);
 
   // Full constructor allowing the setting of all possible instance data.
   // Callers should use Builder::Build() instead of invoking this constructor.
   TestingProfile(
       const base::FilePath& path,
       Delegate* delegate,
+      CreateMode create_mode,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       scoped_refptr<ExtensionSpecialStoragePolicy> extension_policy,
 #endif
@@ -488,10 +495,10 @@ class TestingProfile : public Profile {
 
  private:
   // Common initialization between the two constructors.
-  void Init(bool is_supervised_profile);
+  void Init(bool is_supervised_profile, CreateMode create_mode);
 
   // Finishes initialization when a profile is created asynchronously.
-  void FinishInit();
+  void FinishInit(CreateMode create_mode);
 
   void InitializeProfileType();
 

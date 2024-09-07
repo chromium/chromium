@@ -222,7 +222,7 @@ ui::WindowShowState PersistedShowStateToShowState(int state) {
     case PERSISTED_SHOW_STATE_DOCKED_DEPRECATED:
       return ui::SHOW_STATE_NORMAL;
   }
-  NOTREACHED_IN_MIGRATION();
+  DUMP_WILL_BE_NOTREACHED();
   return ui::SHOW_STATE_NORMAL;
 }
 

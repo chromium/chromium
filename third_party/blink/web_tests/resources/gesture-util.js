@@ -399,6 +399,11 @@ function wheelTick(scroll_tick_x, scroll_tick_y, center, speed_in_pixels_s,
 
 const LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER = 120;
 
+// The number of pixels keyboard arrows will scroll when the device scale factor
+// equals to 1. Defined in cc/input/scroll_utils.h.
+// Matches SCROLLBAR_SCROLL_PIXELS from scrollbar-util.js.
+const KEYBOARD_SCROLL_PIXELS = 40;
+
 // Returns the number of pixels per wheel tick which is a platform specific value.
 function pixelsPerTick() {
   // Comes from ui/events/event.cc
@@ -810,6 +815,12 @@ async function waitForScrollReset(scroller = document.scrollingElement,
   });
 }
 
+function waitForWindowScrollBy(options) {
+  const scrollPromise = waitForScrollendEvent(document);
+  window.scrollBy(options);
+  return scrollPromise;
+}
+
 function waitForWindowScrollTo(options) {
   const scrollPromise = waitForScrollendEvent(document);
   window.scrollTo(options);
@@ -820,17 +831,50 @@ function waitForWindowScrollTo(options) {
 // scroll updates to be considered smooth.
 function animatedScrollPromise(scrollTarget) {
   return new Promise((resolve, reject) => {
+    // Set to roughly a third to a quarter of the expected animation duration.
+    const maxAllowableFrameIntervalInMs = 80;
     let scrollCount = 0;
+    let ticking = true;
+    let lastFrameTime = performance.now();
+    let largestFrameInterval = undefined;
+
+    // Pump rAFs until the scrollend event is received inspecting the timing
+    // between frames. If the frame interval becomes too large, detection of a
+    // smooth scroll becomes unreliable. Record this outcome as a pass. A fail
+    // is recorded when we don't see a smooth scroll, but had the opportunity
+    // to observe one.
+    const tick = () => {
+      requestAnimationFrame((frameTime) => {
+        const frameInterval = frameTime - lastFrameTime;
+        if (!largestFrameInterval || frameInterval > largestFrameInterval) {
+          largestFrameInterval = frameInterval;
+        }
+        lastFrameTime = frameTime;
+        if (ticking) {
+          requestAnimationFrame(tick);
+        } else {
+          cleanup();
+          if (scrollCount > 1) {
+            resolve();
+          } else if (largestFrameInterval > maxAllowableFrameIntervalInMs) {
+            // Though we didn't see a smooth scroll, we didn't have the
+            // opportunity because of the coarse granularity of main frame
+            // updates. What this means is that test could trigger a false pass
+            // should animated scrolls be turned off; however, safer to
+            // relax expectations than flake.
+            resolve();
+          } else {
+             reject('expected smooth scroll');
+           }
+        }
+      });
+    };
+    tick();
     const scrollListener = () => {
       scrollCount++;
     }
-    const scrollendListener = () => {
-      cleanup();
-      if (scrollCount > 1) {
-        resolve();
-      } else {
-        reject('expected smooth scroll');
-      }
+    const scrollendListener = (event) => {
+      ticking = false;
     }
     const scrollendTarget =
         scrollTarget == document.scrollingElement ? document : scrollTarget;

@@ -79,6 +79,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_preference.h"
@@ -105,18 +106,6 @@
 namespace content {
 
 namespace {
-
-// On X11, we do not know GpuMemoryBuffer configuration support until receiving
-// the initial GPUInfo.
-bool CanUpdateGmbGpuPreferences() {
-#if BUILDFLAG(IS_OZONE)
-  return !ui::OzonePlatform::GetInstance()
-              ->GetPlatformProperties()
-              .fetch_buffer_formats_for_gmb_on_gpu;
-#else
-  return true;
-#endif
-}
 
 #if BUILDFLAG(IS_ANDROID)
 // NOINLINE to ensure this function is used in crash reports.
@@ -412,12 +401,10 @@ void RequestVideoMemoryUsageStats(
 
 // Determines if SwiftShader is available as a fallback for WebGL.
 bool SwiftShaderAllowed() {
-#if BUILDFLAG(ENABLE_SWIFTSHADER)
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableSoftwareRasterizer);
-#else
-  return false;
-#endif
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  return !command_line->HasSwitch(switches::kDisableSoftwareRasterizer) &&
+         features::IsSwiftShaderAllowed(command_line);
 }
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
@@ -1328,17 +1315,6 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
     gpu::GpuPreferences* gpu_preferences,
     GpuProcessKind kind) const {
   DCHECK(gpu_preferences);
-
-  // For performance reasons, discourage storing VideoFrames in a biplanar
-  // GpuMemoryBuffer if this is not native, see https://crbug.com/791676.
-  auto* gpu_memory_buffer_manager =
-      GpuMemoryBufferManagerSingleton::GetInstance();
-  if (gpu_memory_buffer_manager && CanUpdateGmbGpuPreferences()) {
-    gpu_preferences->disable_biplanar_gpu_memory_buffers_for_video_frames =
-        !gpu_memory_buffer_manager->IsNativeGpuMemoryBufferConfiguration(
-            gfx::BufferFormat::YUV_420_BIPLANAR,
-            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
-  }
 
   gpu_preferences->gpu_program_cache_size = gpu::GetDefaultGpuDiskCacheSize();
 

@@ -196,7 +196,7 @@ class IndependentFlattener : public base::HistogramFlattener {
   }
 
  private:
-  const raw_ptr<MetricsLog, AcrossTasksDanglingUntriaged> log_;
+  const raw_ptr<MetricsLog> log_;
 };
 
 // Used to mark histogram samples as reported so that they are not included in
@@ -985,13 +985,21 @@ void MetricsService::MetricsLogHistogramWriter::
       required_flags_, histogram_snapshot_manager_.get());
 }
 
+void MetricsService::MetricsLogHistogramWriter::NotifyLogBeingFinalized() {
+  // Since the `flattener_` references the `log`, make sure it is destroyed so
+  // the pointer doesn't become dangling.
+  histogram_snapshot_manager()->ResetFlattener();
+  flattener_.reset();
+}
+
 MetricsService::IndependentMetricsLoader::IndependentMetricsLoader(
     std::unique_ptr<MetricsLog> log,
     std::string app_version,
     std::string signing_key)
     : log_(std::move(log)),
-      flattener_(new IndependentFlattener(log_.get())),
-      snapshot_manager_(new base::HistogramSnapshotManager(flattener_.get())),
+      flattener_(std::make_unique<IndependentFlattener>(log_.get())),
+      snapshot_manager_(
+          std::make_unique<base::HistogramSnapshotManager>(flattener_.get())),
       app_version_(std::move(app_version)),
       signing_key_(std::move(signing_key)) {
   CHECK(log_);
@@ -1654,6 +1662,7 @@ MetricsService::FinalizedLog MetricsService::SnapshotDeltasAndFinalizeLog(
     std::string&& current_app_version,
     std::string&& signing_key) {
   log_histogram_writer->SnapshotStatisticsRecorderDeltas();
+  log_histogram_writer->NotifyLogBeingFinalized();
   return FinalizeLog(std::move(log), truncate_events, std::move(close_time),
                      current_app_version, signing_key);
 }
@@ -1668,6 +1677,7 @@ MetricsService::SnapshotUnloggedSamplesAndFinalizeLog(
     std::string&& current_app_version,
     std::string&& signing_key) {
   log_histogram_writer->SnapshotStatisticsRecorderUnloggedSamples();
+  log_histogram_writer->NotifyLogBeingFinalized();
   return FinalizeLog(std::move(log), truncate_events, std::move(close_time),
                      current_app_version, signing_key);
 }

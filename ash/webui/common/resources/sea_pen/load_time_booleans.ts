@@ -22,14 +22,18 @@ export function isSeaPenUseExptTemplateEnabled() {
   return loadTimeData.getBoolean('isSeaPenUseExptTemplateEnabled');
 }
 
-export function isSeaPenEnterpriseEnabled() {
-  return loadTimeData.getBoolean('isSeaPenEnterpriseEnabled');
-}
-
 export function isLacrosEnabled() {
   return loadTimeData.getBoolean('isLacrosEnabled');
 }
 
 export function isVcResizeThumbnailEnabled() {
   return loadTimeData.getBoolean('isVcResizeThumbnailEnabled');
+}
+
+export function isManagedSeaPenEnabled() {
+  return loadTimeData.getBoolean('isManagedSeaPenEnabled');
+}
+
+export function isManagedSeaPenFeedbackEnabled() {
+  return loadTimeData.getBoolean('isManagedSeaPenFeedbackEnabled');
 }

@@ -195,13 +195,11 @@ class GraphBuilderCoreml {
   AddOperationForBatchNormalization(
       const mojom::BatchNormalization& operation,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForCast(
-      uint64_t input_operand_id,
-      uint64_t output_operand_id,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
-      const mojom::Clamp& operation,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForCast(uint64_t input_operand_id,
+                           uint64_t output_operand_id,
+                           CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForClamp(const mojom::Clamp& operation,
+                            CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConcat(
       const mojom::Concat& operation,
       CoreML::Specification::MILSpec::Block& block);
@@ -258,16 +256,14 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLinear(
       const mojom::Linear& operation,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForMatmul(
-      uint64_t input_x_operand_id,
-      uint64_t input_y_operand_id,
-      bool transpose_x,
-      bool transpose_y,
-      uint64_t output_operand_id,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForMatmul(
-      const mojom::Matmul& operation,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForMatmul(uint64_t input_x_operand_id,
+                             uint64_t input_y_operand_id,
+                             bool transpose_x,
+                             bool transpose_y,
+                             uint64_t output_operand_id,
+                             CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForMatmul(const mojom::Matmul& operation,
+                             CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForPad(
       const mojom::Pad& operation,
       CoreML::Specification::MILSpec::Block& block);
@@ -293,9 +289,10 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForSoftmax(
       const mojom::Softmax& operation,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
-      const mojom::Transpose& operation,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForSplit(const mojom::Split& operation,
+                            CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForTranspose(const mojom::Transpose& operation,
+                                CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForWhere(
       const mojom::Where& operation,
       CoreML::Specification::MILSpec::Block& block);

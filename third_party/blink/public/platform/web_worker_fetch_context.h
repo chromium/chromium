@@ -89,10 +89,17 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   // The returned URLLoaderFactory is owned by |this|.
   virtual URLLoaderFactory* GetScriptLoaderFactory() { return nullptr; }
 
+  // Called before a request is looked up from the cache. Allows the worker
+  // to override the url.
+  virtual std::optional<WebURL> WillSendRequest(const WebURL& url) {
+    return std::nullopt;
+  }
+
   // Called when a request is about to be sent out to modify the request to
   // handle the request correctly in the loading stack later. (Example: service
-  // worker)
-  virtual void WillSendRequest(WebURLRequest&) = 0;
+  // worker). Clients that need to change the url should do it in
+  // OverrideRequestUrl(), not here.
+  virtual void FinalizeRequest(WebURLRequest&) = 0;
 
   // Creates URLLoaderThrottles for the `request`.
   virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(

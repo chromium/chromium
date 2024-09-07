@@ -182,6 +182,8 @@ source_set("web_applications") {
     "jobs/uninstall/uninstall_job.cc",
     "jobs/uninstall/uninstall_job.h",
     "jobs/uninstall/web_app_uninstall_and_replace_job.h",
+    "link_capturing_redirect_navigation_throttle.cc",
+    "link_capturing_redirect_navigation_throttle.h",
     "locks/all_apps_lock.cc",
     "locks/all_apps_lock.h",
     "locks/app_lock.cc",
@@ -339,6 +341,8 @@ source_set("web_applications") {
     "web_app_translation_manager.h",
     "web_app_ui_manager.cc",
     "web_app_ui_manager.h",
+    "web_app_ui_state_manager.cc",
+    "web_app_ui_state_manager.h",
     "web_app_uninstall_dialog_user_options.h",
     "web_app_utils.cc",
     "web_app_utils.h",
@@ -348,6 +352,8 @@ source_set("web_applications") {
     "web_contents/web_app_icon_downloader.h",
     "web_contents/web_contents_manager.cc",
     "web_contents/web_contents_manager.h",
+    "web_install_service_impl.cc",
+    "web_install_service_impl.h",
   ]
 
   if (is_chromeos) {
@@ -957,11 +963,14 @@ source_set("web_applications_unit_tests") {
       "//ash/components/arc:arc_test_support",
       "//ash/components/arc/mojom",
       "//ash/constants",
-      "//chrome/browser/ash",
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc:test_support",
+      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/common/chromeos/extensions",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/system",
       "//components/arc:arc_test_support",
     ]
   }
@@ -1037,6 +1046,7 @@ source_set("web_applications_browser_tests") {
     "web_app_internals_browsertest.cc",
     "web_app_origin_association_manager_browsertest.cc",
     "web_app_scope_extensions_browsertest.cc",
+    "web_app_ui_state_manager_browsertest.cc",
   ]
 
   if (is_chromeos) {
@@ -1080,6 +1090,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
@@ -1105,6 +1116,7 @@ source_set("web_applications_browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/login:test_support",
       "//chrome/browser/ash/login/ui",
       "//chrome/browser/ash/policy/core",
@@ -1172,7 +1184,10 @@ source_set("app_service_browser_tests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ui/ash/shelf" ]
+    deps += [
+      "//chrome/browser/ash/app_list",
+      "//chrome/browser/ui/ash/shelf",
+    ]
   }
 }
 

@@ -24,6 +24,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -649,7 +650,8 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheEnabledTest,
         subframe_url.c_str());
     content::TestNavigationObserver navigation_observer(original_contents);
     original_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(create_frame_script), base::NullCallback());
+        base::ASCIIToUTF16(create_frame_script), base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     navigation_observer.Wait();
   }
 
@@ -808,7 +810,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourcePrerenderTest, ViewSourceForPrerender) {
   set_target(content::WebContents::FromRenderFrameHost(referrer_frame));
 
   prerender_test_helper().AddPrerender(prerender_url);
-  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_test_helper().GetHostForUrl(prerender_url);
   content::RenderFrameHost* prerender_frame =
       prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
   EXPECT_TRUE(prerender_frame);

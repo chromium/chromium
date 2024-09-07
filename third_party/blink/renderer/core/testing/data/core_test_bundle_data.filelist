@@ -303,6 +303,7 @@ testing/data/move_caret.html
 testing/data/move_range.html
 testing/data/move_range_selection_extent.html
 testing/data/move_range_selection_extent_input_field.html
+testing/data/named-frame-a-b-c.html
 testing/data/navigate_to_same.html
 testing/data/navigation-api/onnavigate-preventDefault.html
 testing/data/navigation-api/onnavigate-window-stop.html
@@ -389,7 +390,6 @@ testing/data/popup/select_event_remove_on_click.html
 testing/data/popup/select_mid_screen.html
 testing/data/popup/select_rtl.html
 testing/data/popup/select_rtl_width.html
-testing/data/popup/select_with_datalist.html
 testing/data/postmessage_test.html
 testing/data/prerender/any_prerender.html
 testing/data/prerender/multiple_prerenders.html
@@ -407,6 +407,7 @@ testing/data/priorities/injected-async.js
 testing/data/priorities/injected.js
 testing/data/promote_img_in_viewport_priority.html
 testing/data/push_state.html
+testing/data/push_state_empty.html
 testing/data/reload_post.html
 testing/data/resize_scroll_fixed_layout.html
 testing/data/resize_scroll_fixed_width.html

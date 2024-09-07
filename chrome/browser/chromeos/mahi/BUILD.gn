@@ -49,7 +49,6 @@ static_library("mahi") {
     deps += [
       "//ash",
       "//ash/constants",
-      "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/mahi",
     ]
   }

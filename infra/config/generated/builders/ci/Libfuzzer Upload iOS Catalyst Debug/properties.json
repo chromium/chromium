@@ -80,5 +80,5 @@
   ],
   "upload_bucket": "chromium-browser-libfuzzer",
   "upload_directory": "ios-catalyst-debug",
-  "xcode_build_version": "16a5211f"
+  "xcode_build_version": "16a5230g"
 }

@@ -749,10 +749,10 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
 
   for (const auto& track : tracks->tracks()) {
     if (track->type() == MediaTrack::Type::kAudio) {
-      client_->AddAudioTrack(track->id().value(), track->label().value(),
+      client_->AddAudioTrack(track->track_id().value(), track->label().value(),
                              track->language().value(), track->enabled());
     } else if (track->type() == MediaTrack::Type::kVideo) {
-      client_->AddVideoTrack(track->id().value(), track->label().value(),
+      client_->AddVideoTrack(track->track_id().value(), track->label().value(),
                              track->language().value(), track->enabled());
     } else {
       // Text tracks are not supported through this code path.

@@ -26,6 +26,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/persisted_data.h"
+#include "components/update_client/update_client_errors.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -391,6 +392,12 @@ void PersistedData::GetActiveBits(
 base::Time PersistedData::GetThrottleUpdatesUntil() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delegate_->GetThrottleUpdatesUntil();
+}
+
+void PersistedData::SetLastUpdateCheckError(
+    const update_client::CategorizedError& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->SetLastUpdateCheckError(error);
 }
 
 void PersistedData::SetThrottleUpdatesUntil(const base::Time& time) {

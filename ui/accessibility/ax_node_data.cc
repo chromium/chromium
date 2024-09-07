@@ -174,7 +174,7 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kAriaCellRowSpan:
     case ax::mojom::IntAttribute::kImageAnnotationStatus:
     case ax::mojom::IntAttribute::kDropeffectDeprecated:
-    case ax::mojom::IntAttribute::kDOMNodeId:
+    case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
     case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
     case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
       return false;
@@ -640,6 +640,10 @@ AXTextAttributes AXNodeData::GetTextAttributes() const {
                       &text_attributes.highlight_types);
 
   return text_attributes;
+}
+
+int AXNodeData::GetDOMNodeId() const {
+  return id > 0 ? id : 0;
 }
 
 void AXNodeData::SetName(const std::string& name) {
@@ -1670,8 +1674,7 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::IntAttribute::kDropeffectDeprecated:
         result += " dropeffect=" + value;
         break;
-      case ax::mojom::IntAttribute::kDOMNodeId:
-        result += " dom_node_id=" + value;
+      case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
         break;
       case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
         result +=

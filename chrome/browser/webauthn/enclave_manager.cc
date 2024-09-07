@@ -901,8 +901,9 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 UserVerifyingKeyProviderConfigChromeos MakeUserVerifyingKeyConfig(
     EnclaveManager::UVKeyOptions options) {
-  UserVerifyingKeyProviderConfigChromeos config{
-      .dialog_controller = options.dialog_controller, .rp_id = options.rp_id};
+  UserVerifyingKeyProviderConfigChromeos config{options.dialog_controller,
+                                                /*window=*/nullptr,
+                                                options.rp_id};
   if (options.render_frame_host_id) {
     auto* rfh = content::RenderFrameHost::FromID(options.render_frame_host_id);
     // This is ultimately invoked from GpmEnclaveController, which can't outlive
@@ -1059,8 +1060,8 @@ ParseVaultAndMemberResponse(const int32_t key_version,
   }
   const std::vector<uint8_t>& member_proof = it->second.GetBytestring();
 
-  auto member_keys_source = trusted_vault::PrecomputedMemberKeys(
-      key_version, wrapped_sds, member_proof);
+  auto member_keys_source =
+      trusted_vault::MemberKeys(key_version, wrapped_sds, member_proof);
 
   return std::make_pair(std::move(*vault), std::move(member_keys_source));
 }

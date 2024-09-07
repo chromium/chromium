@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_MANAGER_BROWSERTEST_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_MANAGER_BROWSERTEST_H_
 
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"

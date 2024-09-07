@@ -18,6 +18,7 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -87,11 +88,6 @@ class CONTENT_EXPORT PrivateAggregationHost
   static constexpr char kApiReportVersionWithoutFilteringId[] = "0.1";
   static constexpr char kApiReportVersionWithFilteringId[] = "1.0";
 
-  // The maximum number of contributions that can go in an `AggregatableReport`,
-  // after merging. Aligns with
-  // `attribution_reporting::kMaxAggregationKeysPerSource`.
-  static constexpr size_t kMaxNumberOfContributions = 20;
-
   static constexpr size_t kDefaultFilteringIdMaxBytes = 1;
 
   // The maximum allowed context_id string length.
@@ -106,6 +102,11 @@ class CONTENT_EXPORT PrivateAggregationHost
   // testing.
   static constexpr base::TimeDelta kTimeForLocalProcessing =
       base::Milliseconds(100);
+
+  // Returns the maximum number of contributions that can go in an
+  // `AggregatableReport` after merging. Marked public for testing; this enables
+  // golden report unittests to match the browser's actual behavior.
+  static size_t GetMaxNumContributions(PrivateAggregationCallerApi api);
 
   // `on_report_request_details_received` and `browser_context` must be
   // non-null.
@@ -135,7 +136,7 @@ class CONTENT_EXPORT PrivateAggregationHost
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      PrivateAggregationCallerApi api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
@@ -166,10 +167,11 @@ class CONTENT_EXPORT PrivateAggregationHost
       AggregatableReportRequest::DelayType delay_type,
       base::Uuid report_id,
       const url::Origin& reporting_origin,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      PrivateAggregationCallerApi api_for_budgeting,
       std::optional<std::string> context_id,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t specified_filtering_id_max_bytes,
+      size_t max_num_contributions,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions);
 

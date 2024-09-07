@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
-#include "cc/scheduler/redraw_reason.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -129,7 +128,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void NotifyReadyToActivate() override;
   bool IsReadyToActivate() override;
   void NotifyReadyToDraw() override;
-  void SetNeedsRedrawOnImplThread(RedrawReason reason) override;
+  void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
   void SetNeedsUpdateDisplayTreeOnImplThread() override {}
   void SetNeedsPrepareTilesOnImplThread() override;
@@ -145,8 +144,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void DidCompletePageScaleAnimationOnImplThread() override;
   void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                    bool skip_draw) override;
-  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
-                                    RedrawReason reason) override;
+  void SetNeedsImplSideInvalidation(
+      bool needs_first_draw_on_activation) override;
   void NotifyImageDecodeRequestFinished(int request_id,
                                         bool decode_succeeded) override;
   void NotifyTransitionRequestFinished(uint32_t sequence_id) override;

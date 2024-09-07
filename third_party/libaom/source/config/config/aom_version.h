@@ -9,11 +9,14 @@
  * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
  */
 
+#ifndef AOM_VERSION_H_
+#define AOM_VERSION_H_
 #define VERSION_MAJOR 3
-#define VERSION_MINOR 9
-#define VERSION_PATCH 1
-#define VERSION_EXTRA "356-gf6b976de02"
+#define VERSION_MINOR 10
+#define VERSION_PATCH 0
+#define VERSION_EXTRA "53-gdee70e618b"
 #define VERSION_PACKED \
   ((VERSION_MAJOR << 16) | (VERSION_MINOR << 8) | (VERSION_PATCH))
-#define VERSION_STRING_NOSP "3.9.1-356-gf6b976de02"
-#define VERSION_STRING " 3.9.1-356-gf6b976de02"
+#define VERSION_STRING_NOSP "3.10.0-53-gdee70e618b"
+#define VERSION_STRING " 3.10.0-53-gdee70e618b"
+#endif  // AOM_VERSION_H_

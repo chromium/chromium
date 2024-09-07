@@ -45,7 +45,10 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterClient {
       const std::optional<std::vector<gfx::Rect>>& character_bounds,
       const std::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
   virtual StylusInterface* GetStylusInterface() = 0;
+  // Initiate stylus handwriting.
   virtual void OnStartStylusWriting() = 0;
+  // Update which editable element has focus for stylus writing.
+  virtual void UpdateElementFocusForStylusWriting() = 0;
 };
 
 }  // namespace input

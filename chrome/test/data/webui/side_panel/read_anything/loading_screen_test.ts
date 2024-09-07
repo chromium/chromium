@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -25,7 +25,9 @@ suite('LoadingScreen', () => {
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
     app.showLoading();
-    emptyState = document.querySelector<SpEmptyStateElement>('sp-empty-state')!;
+    emptyState =
+        app.shadowRoot!.querySelector<SpEmptyStateElement>('sp-empty-state')!;
+    return microtasksFinished();
   });
 
   test('shows spinner', () => {
@@ -58,8 +60,7 @@ suite('LoadingScreen', () => {
     assertTrue(!!selection);
     selection.removeAllRanges();
     selection.addRange(range);
-
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals('', document.getSelection()?.toString());
   });

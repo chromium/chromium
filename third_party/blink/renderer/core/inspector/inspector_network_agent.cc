@@ -39,6 +39,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/containers/span_or_size.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -830,10 +831,8 @@ static bool FormDataToString(
 
   for (const auto& element : body->Elements()) {
     auto data_entry = protocol::Network::PostDataEntry::create().build();
-    auto bytes = protocol::Binary::fromSpan(
-        reinterpret_cast<const uint8_t*>(element.data_.data()),
-        element.data_.size());
-    data_entry->setBytes(std::move(bytes));
+    data_entry->setBytes(
+        protocol::Binary::fromSpan(base::as_byte_span(element.data_)));
     data_entries->push_back(std::move(data_entry));
   }
 
@@ -1171,7 +1170,7 @@ InspectorNetworkAgent::~InspectorNetworkAgent() = default;
 
 void InspectorNetworkAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
-  visitor->Trace(worker_global_scope_);
+  visitor->Trace(worker_or_worklet_global_scope_);
   visitor->Trace(resources_data_);
   visitor->Trace(replay_xhrs_);
   visitor->Trace(pending_xhr_replay_data_);
@@ -1433,8 +1432,8 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
       // overwriting
       !request.GetDevToolsStackId().has_value()) {
     ExecutionContext* context = nullptr;
-    if (worker_global_scope_) {
-      context = worker_global_scope_.Get();
+    if (worker_or_worklet_global_scope_) {
+      context = worker_or_worklet_global_scope_.Get();
     } else if (loader && loader->GetFrame()) {
       context = loader->GetFrame()->GetDocument()->domWindow();
     }
@@ -1517,10 +1516,17 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
 
   // Main Worker requests are initiated in the browser, so saved_type will not
   // be found. We therefore must explicitly set it.
-  if (worker_global_scope_ &&
-      worker_global_scope_->MainResourceIdentifier() == identifier) {
-    DCHECK(saved_type == InspectorPageAgent::kOtherResource);
-    type = InspectorPageAgent::kScriptResource;
+  if (worker_or_worklet_global_scope_ &&
+      worker_or_worklet_global_scope_->IsWorkerGlobalScope()) {
+    WorkerGlobalScope* worker_global_scope =
+        To<WorkerGlobalScope>(worker_or_worklet_global_scope_.Get());
+    auto main_resource_identifier =
+        worker_global_scope->MainResourceIdentifier();
+
+    if (main_resource_identifier == identifier) {
+      DCHECK(saved_type == InspectorPageAgent::kOtherResource);
+      type = InspectorPageAgent::kScriptResource;
+    }
   }
 
   // Resources are added to NetworkResourcesData as a WeakMember here and
@@ -1595,31 +1601,39 @@ protocol::Response InspectorNetworkAgent::streamResourceContent(
 
 void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
                                            DocumentLoader* loader,
-                                           const char* data,
+                                           const char* data_ptr,
                                            uint64_t data_length) {
+  auto data = data_ptr
+                  ? base::SpanOrSize<const char>(
+                        // DidReceiveData should receive a base::SpanOrSize
+                        // instead of a pointer
+                        // and size.
+                        UNSAFE_TODO(base::span(
+                            data_ptr, base::checked_cast<size_t>(data_length))))
+                  : base::SpanOrSize<const char>(data_length);
   String request_id = RequestId(loader, identifier);
   Maybe<protocol::Binary> binary_data;
 
-  if (data) {
+  if (auto data_span = data.span(); data_span) {
     NetworkResourcesData::ResourceData const* resource_data =
         resources_data_->Data(request_id);
     if (resource_data && !resource_data->HasContent() &&
         (!resource_data->CachedResource() ||
          resource_data->CachedResource()->GetDataBufferingPolicy() ==
              kDoNotBufferData ||
-         IsErrorStatusCode(resource_data->HttpStatusCode())))
-      resources_data_->MaybeAddResourceData(request_id, data, data_length);
+         IsErrorStatusCode(resource_data->HttpStatusCode()))) {
+      resources_data_->MaybeAddResourceData(request_id, data_span->data(),
+                                            data_span->size());
+    }
 
     if (streaming_request_ids_.Contains(request_id)) {
-      binary_data =
-          protocol::Binary::fromSpan(reinterpret_cast<const uint8_t*>(data),
-                                     base::checked_cast<size_t>(data_length));
+      binary_data = protocol::Binary::fromSpan(base::as_bytes(*data_span));
     }
   }
 
   GetFrontend()->dataReceived(
       request_id, base::TimeTicks::Now().since_origin().InSecondsF(),
-      static_cast<int>(data_length),
+      static_cast<int>(data.size()),
       static_cast<int>(
           resources_data_->GetAndClearPendingEncodedDataLength(request_id)),
       std::move(binary_data));
@@ -2135,8 +2149,9 @@ bool InspectorNetworkAgent::CanGetResponseBodyBlob(const String& request_id) {
       resource_data ? resource_data->DownloadedFileBlob() : nullptr;
   if (!blob)
     return false;
-  if (worker_global_scope_)
+  if (worker_or_worklet_global_scope_) {
     return true;
+  }
   LocalFrame* frame = IdentifiersFactory::FrameById(inspected_frames_,
                                                     resource_data->FrameId());
   return frame && frame->GetDocument();
@@ -2280,9 +2295,9 @@ protocol::Response InspectorNetworkAgent::emulateNetworkConditions(
       return protocol::Response::ServerError("Unknown connection type");
   }
 
-  if (worker_global_scope_) {
-    if (worker_global_scope_->IsServiceWorkerGlobalScope() ||
-        worker_global_scope_->IsSharedWorkerGlobalScope()) {
+  if (worker_or_worklet_global_scope_) {
+    if (worker_or_worklet_global_scope_->IsServiceWorkerGlobalScope() ||
+        worker_or_worklet_global_scope_->IsSharedWorkerGlobalScope()) {
       // In service workers and shared workers, we don't inspect the main thread
       // so we must post a task there to make it possible to use
       // NetworkStateNotifier.
@@ -2484,17 +2499,18 @@ String InspectorNetworkAgent::NavigationInitiatorInfo(LocalFrame* frame) {
 
 InspectorNetworkAgent::InspectorNetworkAgent(
     InspectedFrames* inspected_frames,
-    WorkerGlobalScope* worker_global_scope,
+    WorkerOrWorkletGlobalScope* worker_or_worklet_global_scope,
     v8_inspector::V8InspectorSession* v8_session)
     : inspected_frames_(inspected_frames),
-      worker_global_scope_(worker_global_scope),
+      worker_or_worklet_global_scope_(worker_or_worklet_global_scope),
       v8_session_(v8_session),
       resources_data_(MakeGarbageCollected<NetworkResourcesData>(
           kDefaultTotalBufferSize,
           kDefaultResourceBufferSize)),
-      devtools_token_(worker_global_scope_
-                          ? worker_global_scope_->GetParentDevToolsToken()
-                          : inspected_frames->Root()->GetDevToolsFrameToken()),
+      devtools_token_(
+          worker_or_worklet_global_scope_
+              ? worker_or_worklet_global_scope_->GetParentDevToolsToken()
+              : inspected_frames->Root()->GetDevToolsFrameToken()),
       enabled_(&agent_state_, /*default_value=*/false),
       cache_disabled_(&agent_state_, /*default_value=*/false),
       bypass_service_worker_(&agent_state_, /*default_value=*/false),
@@ -2508,8 +2524,11 @@ InspectorNetworkAgent::InspectorNetworkAgent(
       max_post_data_size_(&agent_state_, /*default_value=*/0),
       accepted_encodings_(&agent_state_,
                           /*default_value=*/false) {
-  DCHECK((IsMainThread() && !worker_global_scope_) ||
-         (!IsMainThread() && worker_global_scope_));
+  DCHECK((IsMainThread() &&
+          (!worker_or_worklet_global_scope_ ||
+           worker_or_worklet_global_scope_->IsWorkletGlobalScope())) ||
+         (!IsMainThread() && worker_or_worklet_global_scope_));
+  DCHECK(worker_or_worklet_global_scope_ || inspected_frames_);
 }
 
 void InspectorNetworkAgent::ShouldForceCorsPreflight(bool* result) {
@@ -2546,8 +2565,9 @@ void InspectorNetworkAgent::getRequestPostData(
 }
 
 ExecutionContext* InspectorNetworkAgent::GetTargetExecutionContext() const {
-  if (worker_global_scope_)
-    return worker_global_scope_.Get();
+  if (worker_or_worklet_global_scope_) {
+    return worker_or_worklet_global_scope_.Get();
+  }
   DCHECK(inspected_frames_);
   return inspected_frames_->Root()->DomWindow();
 }

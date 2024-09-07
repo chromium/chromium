@@ -11,10 +11,10 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
@@ -117,6 +117,10 @@ class MockProductSpecificationsServerProxy
 };
 
 class ProductSpecificationsServerProxyTest : public testing::Test {
+ public:
+  ProductSpecificationsServerProxyTest()
+      : prefs_(std::make_unique<TestingPrefServiceSimple>()) {}
+
  protected:
   void SetUp() override {
     account_checker_ = std::make_unique<MockAccountChecker>();
@@ -127,8 +131,9 @@ class ProductSpecificationsServerProxyTest : public testing::Test {
     ON_CALL(*account_checker_, IsSyncTypeEnabled)
         .WillByDefault(testing::Return(true));
 
-    RegisterPrefs(prefs_.registry());
-    account_checker_->SetPrefs(&prefs_);
+    RegisterCommercePrefs(prefs_->registry());
+    SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
+    account_checker_->SetPrefs(prefs_.get());
 
     server_proxy_ = std::make_unique<MockProductSpecificationsServerProxy>(
         account_checker_.get());
@@ -136,8 +141,8 @@ class ProductSpecificationsServerProxyTest : public testing::Test {
 
   void TearDown() override { test_features_.Reset(); }
 
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<MockAccountChecker> account_checker_;
-  TestingPrefServiceSimple prefs_;
   std::unique_ptr<MockProductSpecificationsServerProxy> server_proxy_;
 
   base::test::TaskEnvironment task_environment_;

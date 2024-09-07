@@ -10,6 +10,6 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:shape="rectangle"
-    app:surfaceElevation="@dimen/tab_resumption_module_tile_reason_background_color_elevation">
+    app:surfaceElevation="@dimen/tab_resumption_module_icon_background_color_elevation">
   <corners android:radius="@dimen/default_rounded_corner_radius"/>
 </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>

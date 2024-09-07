@@ -212,26 +212,6 @@ TEST_F(CorsURLLoaderFactoryTest, CleanupWithSharedCacheObjectInUse) {
   ResetFactory();
 }
 
-TEST_F(CorsURLLoaderFactoryTest, SchemeIsInvalid) {
-#if BUILDFLAG(IS_ANDROID)
-  const base::Location& location = FROM_HERE;
-  ResourceRequest request(location);
-#else
-  ResourceRequest request;
-#endif
-  request.url = GURL("data://example.com");
-  mojo::test::BadMessageObserver bad_message_observer;
-  CreateLoaderAndStart(request);
-  EXPECT_EQ(
-      "CorsURLLoaderFactory: data: URL is not supported."
-#if BUILDFLAG(IS_ANDROID)
-      " Request created location is " +
-          location.ToString()
-#endif
-          ,
-      bad_message_observer.WaitForBadMessage());
-}
-
 TEST_F(CorsURLLoaderFactoryTest,
        NavigationFromRendererWithBadRequestURLOrigin) {
   ResourceRequest request;

@@ -32,8 +32,8 @@ class SubAppsPermissionsPolicyBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
   base::ScopedTempDir scoped_temp_dir_;
   base::FilePath bundle_path_;
-  web_package::WebBundleSigner::Ed25519KeyPair key_pair_ =
-      web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom();
+  web_package::test::Ed25519KeyPair key_pair_ =
+      web_package::test::Ed25519KeyPair::CreateRandom();
 
   TestSignedWebBundle CreateBundle() const {
     constexpr std::string_view manifest =

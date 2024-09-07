@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_url_loader.h"
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -129,9 +130,7 @@ class BackgroundResponseProcessorTestUtil
       std::optional<mojo_base::BigBuffer>& cached_metadata_buffer,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       BackgroundResponseProcessor::Client* client) {
-    if (expect_maybe_start_processing_response_not_called_) {
-      NOTREACHED();
-    }
+    CHECK(!expect_maybe_start_processing_response_not_called_);
     response_received_ = true;
     if (result_of_maybe_start_processing_response_) {
       head_ = std::move(head);

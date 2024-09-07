@@ -255,13 +255,14 @@ base::FilePath SodaInstallerImplChromeOS::GetLanguagePath(
 }
 
 void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
-  if (never_download_soda_for_testing_)
+  if (soda_binary_installed_ || never_download_soda_for_testing_) {
     return;
+  }
+
   // Clear cached path in case this is a reinstallation (path could
   // change).
   SetSodaBinaryPath(base::FilePath());
 
-  soda_binary_installed_ = false;
   is_soda_downloading_ = true;
   soda_progress_ = 0.0;
 
@@ -339,10 +340,24 @@ std::vector<std::string>
 SodaInstallerImplChromeOS::GetLiveCaptionEnabledLanguages() const {
   auto enabled_languages = SodaInstaller::GetLiveCaptionEnabledLanguages();
   // extra CrOS languages.
-  for (const char* const enabled_language : kDefaultCrOSEnabledLanguages) {
-    enabled_languages.push_back(enabled_language);
+  if (base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages) &&
+      base::FeatureList::IsEnabled(kCrosSodaConchLanguages)) {
+    for (const char* const enabled_language : kDefaultCrOSEnabledLanguages) {
+      enabled_languages.push_back(enabled_language);
+    }
   }
   return enabled_languages;
+}
+
+std::string SodaInstallerImplChromeOS::GetLanguageDlcNameForLocale(
+    const std::string& locale) const {
+  const auto& language_info = available_languages_.find(locale);
+  if (language_info == available_languages_.end()) {
+    LOG(DFATAL) << "Asked for unavailable language " << locale;
+    return std::string();
+  }
+
+  return language_info->second.dlc_name;
 }
 
 void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {

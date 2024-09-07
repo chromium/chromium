@@ -16,8 +16,8 @@ enum class PushNotificationClientId;
 @interface PushNotificationAccountContextManager : NSObject
 
 // The designated initializer. `manager` must not be nil.
-- (instancetype)initWithChromeBrowserStateManager:
-    (ChromeBrowserStateManager*)manager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -438,7 +438,7 @@ DOMArrayBuffer* XMLHttpRequest::ResponseArrayBuffer() {
       //
       response_array_buffer_failure_ = !buffer;
     } else {
-      response_array_buffer_ = DOMArrayBuffer::Create(nullptr, 0);
+      response_array_buffer_ = DOMArrayBuffer::Create(base::span<uint8_t>());
     }
   }
 
@@ -517,6 +517,16 @@ void XMLHttpRequest::setTimeout(unsigned timeout,
 
 void XMLHttpRequest::setResponseType(const String& response_type,
                                      ExceptionState& exception_state) {
+  const bool is_window =
+      GetExecutionContext() && GetExecutionContext()->IsWindow();
+  // 1. If the current global object is not a Window object and the given value
+  // is "document", then return.
+  if (!is_window && response_type == "document") {
+    return;
+  }
+
+  // 2. If this’s state is loading or done, then throw an "InvalidStateError"
+  // DOMException.
   if (state_ >= kLoading) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The response type cannot be set if the "
@@ -527,7 +537,7 @@ void XMLHttpRequest::setResponseType(const String& response_type,
   // Newer functionality is not available to synchronous requests in window
   // contexts, as a spec-mandated attempt to discourage synchronous XHR use.
   // responseType is one such piece of functionality.
-  if (GetExecutionContext() && GetExecutionContext()->IsWindow() && !async_) {
+  if (is_window && !async_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The response type cannot be changed for "
                                       "synchronous requests made from a "

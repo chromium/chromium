@@ -205,7 +205,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterBooleanPref(prefs::kSuggestedContentEnabled, true);
     registry->RegisterBooleanPref(prefs::kMagicBoostEnabled, true);
     registry->RegisterBooleanPref(prefs::kHmrEnabled, true);
+    registry->RegisterBooleanPref(prefs::kHmrFeedbackAllowed, true);
     registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
+    registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
     registry->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);
     registry->RegisterListPref(
         chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList);

@@ -39,6 +39,7 @@ import org.chromium.ui.modelutil.PropertyModel;
     private final PropertyModel mModel;
     private final AutofillSaveCardBottomSheetCoordinator.NativeDelegate mDelegate;
     private final boolean mIsServerCard;
+    private final boolean mIsLoadingDisabled;
     private @SaveCardPromptResult int mLoadingResult;
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -72,6 +73,7 @@ import org.chromium.ui.modelutil.PropertyModel;
      * @param bottomSheetController The controller to use for showing or hiding the content.
      * @param delegate The delegate to signal UI flow events (OnUiShown, OnUiAccepted, etc.) to.
      * @param isServerCard Whether or not the bottom sheet is for a server card save.
+     * @param isLoadingDisabled Whether or not the loading for the card save is disabled.
      */
     AutofillSaveCardBottomSheetMediator(
             AutofillSaveCardBottomSheetContent content,
@@ -79,13 +81,15 @@ import org.chromium.ui.modelutil.PropertyModel;
             BottomSheetController bottomSheetController,
             PropertyModel model,
             AutofillSaveCardBottomSheetCoordinator.NativeDelegate delegate,
-            boolean isServerCard) {
+            boolean isServerCard,
+            boolean isLoadingDisabled) {
         mContent = content;
         mLifecycle = lifecycle;
         mBottomSheetController = bottomSheetController;
         mModel = model;
         mDelegate = delegate;
         mIsServerCard = isServerCard;
+        mIsLoadingDisabled = isLoadingDisabled;
     }
 
     /** Requests to show the bottom sheet content. */
@@ -100,6 +104,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
     public void onAccepted() {
         if (mIsServerCard
+                && !mIsLoadingDisabled
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION)) {
             mModel.set(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, true);

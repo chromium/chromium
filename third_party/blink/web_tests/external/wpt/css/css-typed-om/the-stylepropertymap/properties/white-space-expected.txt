@@ -1,41 +1,9 @@
 This is a testharness.js-based test.
-Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Can set 'white-space-collapse' to the 'discard' keyword: discard
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 [FAIL] Can set 'white-space-collapse' to the 'preserve-spaces' keyword: preserve-spaces
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'text-wrap-mode' to CSS-wide keywords: initial
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
-[FAIL] Can set 'text-wrap-mode' to CSS-wide keywords: inherit
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
-[FAIL] Can set 'text-wrap-mode' to CSS-wide keywords: unset
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
-[FAIL] Can set 'text-wrap-mode' to CSS-wide keywords: revert
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
-[FAIL] Can set 'text-wrap-mode' to var() references:  var(--A)
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
-[FAIL] Can set 'text-wrap-mode' to the 'wrap' keyword: wrap
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
-[FAIL] Can set 'text-wrap-mode' to the 'nowrap' keyword: nowrap
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
-[FAIL] Can set 'text-wrap-style' to CSS-wide keywords: initial
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
-[FAIL] Can set 'text-wrap-style' to CSS-wide keywords: inherit
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
-[FAIL] Can set 'text-wrap-style' to CSS-wide keywords: unset
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
-[FAIL] Can set 'text-wrap-style' to CSS-wide keywords: revert
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
-[FAIL] Can set 'text-wrap-style' to var() references:  var(--A)
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
-[FAIL] Can set 'text-wrap-style' to the 'auto' keyword: auto
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
-[FAIL] Can set 'text-wrap-style' to the 'balance' keyword: balance
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
-[FAIL] Can set 'text-wrap-style' to the 'stable' keyword: stable
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
-[FAIL] Can set 'text-wrap-style' to the 'pretty' keyword: pretty
-  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
 [FAIL] Can set 'white-space-trim' to CSS-wide keywords: initial
   Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
 [FAIL] Can set 'white-space-trim' to CSS-wide keywords: inherit

@@ -65,6 +65,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     private static final String GOOGLE_SANS_MEDIUM = "google sans medium";
     private static final String GOOGLE_SANS_BOLD = "google sans bold";
     private static final String NOTO_COLOR_EMOJI_COMPAT = "noto color emoji compat";
+    private static final String GOOGLE_SANS_FLEX = "google sans flex";
 
     private final Context mAppContext;
     private final FontsContractWrapper mFontsContract;
@@ -316,6 +317,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         map.put(GOOGLE_SANS_MEDIUM, createFontQuery("Google Sans", 500));
         map.put(GOOGLE_SANS_BOLD, createFontQuery("Google Sans", 700));
         map.put(NOTO_COLOR_EMOJI_COMPAT, createFontQuery("Noto Color Emoji Compat", 400));
+        map.put(GOOGLE_SANS_FLEX, createFontQuery("Google Sans Flex", 400));
         return map;
     }
 

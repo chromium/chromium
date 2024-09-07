@@ -218,7 +218,7 @@ public class TestSupport {
             Assert.assertEquals(expectedEntry.url, entry.url);
             Assert.assertEquals(expectedEntry.title, entry.title);
             Assert.assertEquals(expectedEntry.lastActiveTime, entry.lastActiveTime);
-            Assert.assertEquals(expectedEntry.localTabId, entry.localTabId);
+            Assert.assertEquals(expectedEntry.getLocalTabId(), entry.getLocalTabId());
         }
     }
 }

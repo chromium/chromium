@@ -637,8 +637,12 @@ public class WarmupManager {
             String url, boolean usePrefetchProxy, @Nullable String verifiedSourceOrigin) {
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.startPrefetchFromCCT")) {
             ThreadUtils.assertOnUiThread();
-            if (!ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
-                Log.e(TAG, "Prefetch failed because CCTNavigationalPrefetch is not enabled.");
+            if (!ChromeFeatureList.sPrefetchBrowserInitiatedTriggers.isEnabled()
+                    || !ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
+                Log.w(
+                        TAG,
+                        "Prefetch failed because PrefetchBrowserInitiatedTriggers and/or"
+                                + " CCTNavigationalPrefetch is not enabled.");
                 return;
             }
 

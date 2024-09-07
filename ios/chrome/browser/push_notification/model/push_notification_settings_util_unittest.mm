@@ -17,11 +17,12 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -36,30 +37,29 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
  public:
   PushNotificationSettingsUtilTest() {
     TestChromeBrowserState* test_chrome_browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
+        profile_manager_.AddProfileWithBuilder(
             TestChromeBrowserState::Builder());
 
-    const std::string browser_state_name =
-        test_chrome_browser_state->GetBrowserStateName();
+    const std::string profile_name =
+        test_chrome_browser_state->GetProfileName();
     pref_service_ = test_chrome_browser_state->GetPrefs();
 
-    browser_state_info()->RemoveBrowserState(browser_state_name);
     manager_ = [[PushNotificationAccountContextManager alloc]
-        initWithChromeBrowserStateManager:&browser_state_manager_];
+        initWithProfileManager:&profile_manager_];
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
     // TODO(b/318863934): Remove flag when enabled by default.
     feature_list_.InitWithFeatures(
         {/*enabled=*/kContentNotificationExperiment, kIOSTipsNotifications,
          kSafetyCheckNotifications},
         {/*disabled=*/});
-    AddTestCasesToManager(manager_, browser_state_info(),
+    AddTestCasesToManager(manager_, profile_attributes_storage(),
                           base::SysNSStringToUTF8(fake_id_.gaiaID),
-                          browser_state_name);
+                          profile_name);
   }
-  BrowserStateInfoCache* browser_state_info() const {
+  ProfileAttributesStorageIOS* profile_attributes_storage() const {
     return GetApplicationContext()
-        ->GetChromeBrowserStateManager()
-        ->GetBrowserStateInfoCache();
+        ->GetProfileManager()
+        ->GetProfileAttributesStorage();
   }
   void TurnNotificationForKey(BOOL on,
                               const std::string key,
@@ -79,12 +79,19 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
     pref_service->SetBoolean(commerce::kPriceEmailNotificationsEnabled, on);
   }
   void AddTestCasesToManager(PushNotificationAccountContextManager* manager,
-                             BrowserStateInfoCache* info_cache,
+                             ProfileAttributesStorageIOS* storage,
                              const std::string& gaia_id,
-                             const std::string browser_state_name) {
+                             const std::string profile_name) {
     // Construct the BrowserStates with the given gaia id and add the gaia id
     // into the AccountContextManager.
-    info_cache->AddBrowserState(browser_state_name, gaia_id, std::string());
+    storage->UpdateAttributesForProfileWithName(
+        profile_name,
+        base::BindOnce(
+            [](const std::string& gaia_id, ProfileAttributesIOS attr) {
+              attr.SetAuthenticationInfo(gaia_id, /*user_name=*/std::string());
+              return attr;
+            },
+            gaia_id));
     [manager addAccount:gaia_id];
   }
 
@@ -92,7 +99,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
   raw_ptr<PrefService> pref_service_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   FakeSystemIdentity* fake_id_;
   PushNotificationAccountContextManager* manager_;
   base::test::ScopedFeatureList feature_list_;

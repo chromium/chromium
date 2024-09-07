@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
+#include "third_party/blink/renderer/core/dom/events/mutation_event_suppression_scope.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -730,7 +731,8 @@ Node* Node::moveBefore(Node* new_child,
   // to run during atomic moves.
   const bool perform_state_preserving_atomic_move =
       isConnected() && new_child->isConnected() && GetDocument().IsActive() &&
-      (GetTreeScope() == new_child->GetTreeScope());
+      (GetTreeScope() == new_child->GetTreeScope()) &&
+      new_child->IsElementNode();
 
   if (perform_state_preserving_atomic_move) {
     // When `moveBefore()` is called, AND we're actually performing a
@@ -746,6 +748,9 @@ Node* Node::moveBefore(Node* new_child,
     // use case in the future.
     UseCounter::Count(&GetDocument(), WebFeature::kCrossShadowAtomicMove);
   }
+
+  // Mutation events are disabled during the `moveBefore()` API.
+  MutationEventSuppressionScope scope(GetDocument());
 
   Node* return_node = insertBefore(new_child, ref_child, exception_state);
 
@@ -2324,10 +2329,6 @@ Node::InsertionNotificationRequest Node::InsertedInto(
     cache->NodeIsConnected(this);
   }
 
-  if (GetDocument().StatePreservingAtomicMoveInProgress() &&
-      (IsElementNode() || IsTextNode())) {
-    FlatTreeParentChanged();
-  }
   return kInsertionDone;
 }
 

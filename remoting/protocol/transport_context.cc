@@ -61,8 +61,6 @@ scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
   return new protocol::TransportContext(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
-      protocol::NetworkSettings(
-          protocol::NetworkSettings::NAT_TRAVERSAL_OUTGOING),
       role);
 }
 
@@ -71,22 +69,16 @@ TransportContext::TransportContext(
     rtc::SocketFactory* socket_factory,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     OAuthTokenGetter* oauth_token_getter,
-    const NetworkSettings& network_settings,
     TransportRole role)
     : port_allocator_factory_(std::move(port_allocator_factory)),
       socket_factory_(socket_factory),
       url_loader_factory_(url_loader_factory),
       oauth_token_getter_(oauth_token_getter),
-      network_settings_(network_settings),
       role_(role) {
   DCHECK(socket_factory_);
 }
 
 TransportContext::~TransportContext() = default;
-
-void TransportContext::Prepare() {
-  EnsureFreshIceConfig();
-}
 
 void TransportContext::GetIceConfig(GetIceConfigCallback callback) {
   EnsureFreshIceConfig();
@@ -106,13 +98,6 @@ void TransportContext::EnsureFreshIceConfig() {
   // Check if request is already pending.
   if (ice_config_request_) {
     HOST_LOG << "ICE Config request is already pending.";
-    return;
-  }
-
-  // Don't need to make ICE config request if both STUN and Relay are disabled.
-  if ((network_settings_.flags & (NetworkSettings::NAT_TRAVERSAL_STUN |
-                                  NetworkSettings::NAT_TRAVERSAL_RELAY)) == 0) {
-    HOST_LOG << "Skipping ICE Config request as STUN and RELAY are disabled";
     return;
   }
 

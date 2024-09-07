@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +28,9 @@
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
+#include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
@@ -60,6 +63,13 @@ const std::string kGpuCrashLogTimeout =
     "Failed to modeset within " +
     base::NumberToString(kWaitForModesetTimeout.InSeconds()) +
     " s of the first page flip failure. Crashing GPU process.";
+
+SkBitmap CreateBitmap(int width, int height) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(SK_ColorTRANSPARENT);
+  return bitmap;
+}
 
 class FakeFenceFD {
  public:
@@ -109,7 +119,8 @@ class HardwareDisplayControllerTest : public testing::Test {
       bool use_atomic,
       size_t movable_planes = 0,
       const std::vector<uint64_t>& supported_modifiers = {},
-      std::unique_ptr<DrmModifiersFilter> modifiers_filter = nullptr);
+      std::unique_ptr<DrmModifiersFilter> modifiers_filter = nullptr,
+      bool has_size_hints = false);
   void SchedulePageFlip(DrmOverlayPlaneList planes);
   void OnSubmission(gfx::SwapResult swap_result,
                     gfx::GpuFenceHandle release_fence);
@@ -157,9 +168,14 @@ class HardwareDisplayControllerTest : public testing::Test {
 
   uint32_t primary_crtc_ = 0;
   uint32_t secondary_crtc_ = 0;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void HardwareDisplayControllerTest::SetUp() {
+  // Enable the |kUseDynamicCursorSize| feature for test.
+  scoped_feature_list_.InitAndEnableFeature(ui::kUseDynamicCursorSize);
   successful_page_flips_count_ = 0;
   last_swap_result_ = gfx::SwapResult::SWAP_FAILED;
 
@@ -179,7 +195,8 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(
     bool use_atomic,
     size_t movable_planes,
     const std::vector<uint64_t>& supported_modifiers,
-    std::unique_ptr<DrmModifiersFilter> modifiers_filter) {
+    std::unique_ptr<DrmModifiersFilter> modifiers_filter,
+    bool has_size_hints) {
   // This will change the plane_manager of the drm.
   // HardwareDisplayController is tied to the plane_manager CRTC states.
   // Destruct the controller before destructing the plane manager its CRTC
@@ -197,6 +214,22 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(
   drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc*/ 2, movable_planes,
       {DRM_FORMAT_XRGB8888}, drm_format_modifiers);
+
+  if (has_size_hints) {
+    std::vector<gfx::Size> supported_cursor_sizes = {
+        gfx::Size(64, 64), gfx::Size(128, 128), gfx::Size(256, 256)};
+    for (FakeDrmDevice::PlaneProperties plane : drm_->plane_properties()) {
+      for (DrmWrapper::Property property : plane.properties) {
+        if (property.id == kTypePropId &&
+            property.value == DRM_PLANE_TYPE_CURSOR) {
+          ScopedDrmPropertyBlob size_hints_blob =
+              drm_->CreateSizeHintsBlob(supported_cursor_sizes);
+          drm_->AddProperty(plane.id, {.id = kSizeHintsPropId,
+                                       .value = size_hints_blob->id()});
+        }
+      }
+    }
+  }
 
   // Add one connected connector with no modes (sterile).
   auto& connector_props = drm_->AddConnector();
@@ -225,8 +258,9 @@ bool HardwareDisplayControllerTest::ModesetWithPlanes(
   CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  for (const CrtcCommitRequest& crtc_request : request_for_update)
+  for (const CrtcCommitRequest& crtc_request : request_for_update) {
     controller_->UpdateState(crtc_request);
+  }
 
   return status;
 }
@@ -237,8 +271,9 @@ bool HardwareDisplayControllerTest::DisableController() {
   CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  for (const CrtcCommitRequest& crtc_request : request_for_update)
+  for (const CrtcCommitRequest& crtc_request : request_for_update) {
     controller_->UpdateState(crtc_request);
+  }
 
   return status;
 }
@@ -261,8 +296,9 @@ void HardwareDisplayControllerTest::OnSubmission(
 
 void HardwareDisplayControllerTest::OnPresentation(
     const gfx::PresentationFeedback& feedback) {
-  if (!feedback.failed())
+  if (!feedback.failed()) {
     successful_page_flips_count_++;
+  }
   last_presentation_feedback_ = feedback;
 }
 
@@ -765,10 +801,12 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterRemoveCrtc) {
   const HardwareDisplayPlane* primary_crtc_plane = nullptr;
   const HardwareDisplayPlane* secondary_crtc_plane = nullptr;
   for (const auto& plane : drm_->plane_manager()->planes()) {
-    if (plane->in_use() && plane->owning_crtc() == primary_crtc_)
+    if (plane->in_use() && plane->owning_crtc() == primary_crtc_) {
       primary_crtc_plane = plane.get();
-    if (plane->in_use() && plane->owning_crtc() == secondary_crtc_)
+    }
+    if (plane->in_use() && plane->owning_crtc() == secondary_crtc_) {
       secondary_crtc_plane = plane.get();
+    }
   }
 
   ASSERT_NE(nullptr, primary_crtc_plane);
@@ -805,9 +843,11 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterDestroyingCrtc) {
   EXPECT_EQ(1, successful_page_flips_count_);
 
   const HardwareDisplayPlane* owned_plane = nullptr;
-  for (const auto& plane : drm_->plane_manager()->planes())
-    if (plane->in_use())
+  for (const auto& plane : drm_->plane_manager()->planes()) {
+    if (plane->in_use()) {
       owned_plane = plane.get();
+    }
+  }
   ASSERT_TRUE(owned_plane != nullptr);
   EXPECT_EQ(primary_crtc_, owned_plane->owning_crtc());
   std::unique_ptr<CrtcController> crtc =
@@ -834,8 +874,9 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterAddCrtc) {
 
   HardwareDisplayPlane* primary_crtc_plane = nullptr;
   for (const auto& plane : drm_->plane_manager()->planes()) {
-    if (plane->in_use() && primary_crtc_ == plane->owning_crtc())
+    if (plane->in_use() && primary_crtc_ == plane->owning_crtc()) {
       primary_crtc_plane = plane.get();
+    }
   }
 
   ASSERT_TRUE(primary_crtc_plane != nullptr);
@@ -1109,10 +1150,12 @@ TEST_F(HardwareDisplayControllerTest, CrashOnTooManyFlakyPlaneAssignments) {
          "flakes";
   auto successes = kPageFlipWatcherHistorySize - (2 * flakes);
 
-  for (size_t i = 0; i < successes; ++i)
+  for (size_t i = 0; i < successes; ++i) {
     do_successful_flip();
-  for (size_t i = 0; i < flakes; ++i)
+  }
+  for (size_t i = 0; i < flakes; ++i) {
     do_flake();
+  }
 
   EXPECT_DEATH_IF_SUPPORTED(
       do_flake(),
@@ -1167,10 +1210,12 @@ TEST_F(HardwareDisplayControllerTest, CrashOnTooManyFailedPlaneAssignments) {
   auto failures = kPlaneAssignmentMaximumFailures;
   auto successes = kPageFlipWatcherHistorySize - failures;
 
-  for (size_t i = 0; i < successes; ++i)
+  for (size_t i = 0; i < successes; ++i) {
     do_successful_flip();
-  for (size_t i = 0; i < (failures - 1); ++i)
+  }
+  for (size_t i = 0; i < (failures - 1); ++i) {
     do_failed_flip();
+  }
 
   EXPECT_DEATH_IF_SUPPORTED(
       do_failed_flip(),
@@ -1229,8 +1274,9 @@ TEST_F(HardwareDisplayControllerTest, Disable) {
 
   int planes_in_use = 0;
   for (const auto& plane : drm_->plane_manager()->planes()) {
-    if (plane->in_use())
+    if (plane->in_use()) {
       planes_in_use++;
+    }
   }
   // No plane should be in use.
   ASSERT_EQ(0, planes_in_use);
@@ -1487,6 +1533,37 @@ TEST_F(HardwareDisplayControllerTest, ModifiersFilter) {
   EXPECT_EQ(I915_FORMAT_MOD_X_TILED, valid_modifiers[0]);
 }
 
+TEST_F(HardwareDisplayControllerTest, DynamicCursorSize) {
+  // The dynamic cursor size feature is currently only supported on Intel GPUs.
+  drm_->SetDriverName("i915");
+
+  // Kernel driver may or may not provide cursor "SIZE_HINTS" property.
+  // Without "SIZE_HINTS", there should be only one supported size by default.
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/0,
+                      /*supported_modifiers=*/{}, /*modifiers_filter=*/nullptr,
+                      /*has_size_hints=*/false);
+  EXPECT_EQ(1u, controller_->NumOfSupportedCursorSizesForTesting());
+
+  // With "SIZE_HINTS", there should be 3 supported sizes.
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/0,
+                      /*supported_modifiers=*/{}, /*modifiers_filter=*/nullptr,
+                      /*has_size_hints=*/true);
+  EXPECT_EQ(3u, controller_->NumOfSupportedCursorSizesForTesting());
+
+  // HardwareDisplayController should select the smallest size in the supported
+  // list that fits the input cursor bitmap.
+  controller_->SetCursor(CreateBitmap(25, 25));
+  EXPECT_EQ(gfx::Size(64, 64), controller_->CurrentCursorSizeForTesting());
+
+  controller_->SetCursor(CreateBitmap(25, 65));
+  EXPECT_EQ(gfx::Size(128, 128), controller_->CurrentCursorSizeForTesting());
+
+  // If the input bitmap exceeds the max supported size, make sure the largest
+  // size supported is used.
+  controller_->SetCursor(CreateBitmap(300, 300));
+  EXPECT_EQ(gfx::Size(256, 256), controller_->CurrentCursorSizeForTesting());
+}
+
 TEST_F(HardwareDisplayControllerMockedDeviceTest,
        TestSeamlessMode_MatchingSizeFailedProbe) {
   MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm_.get());
@@ -1508,6 +1585,54 @@ TEST_F(HardwareDisplayControllerMockedDeviceTest,
       .WillRepeatedly(Return(false));
   EXPECT_FALSE(
       controller_->TestSeamlessMode(primary_crtc_, matching_size_mode));
+}
+
+TEST_F(HardwareDisplayControllerTest, NotTiled) {
+  EXPECT_FALSE(controller_->IsTiled());
+}
+
+TEST_F(HardwareDisplayControllerTest, GetTilePropertyNoTile) {
+  EXPECT_EQ(controller_->GetTileProperty(), std::nullopt);
+}
+
+TEST_F(HardwareDisplayControllerTest, IsTiled) {
+  TileProperty tile_property = {.group_id = 123,
+                                .scale_to_fit_display = true,
+                                .tile_size = gfx::Size(300, 200),
+                                .tile_layout = gfx::Size(3, 2),
+                                .location = gfx::Point(1, 2)};
+
+  auto tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      tile_property);
+  auto hdc_controller = std::make_unique<HardwareDisplayController>(
+      std::move(tiled_crtc_controller), gfx::Point(), nullptr);
+
+  EXPECT_TRUE(hdc_controller->IsTiled());
+}
+
+TEST_F(HardwareDisplayControllerTest, GetTileProperty) {
+  TileProperty tile_property = {.group_id = 123,
+                                .scale_to_fit_display = true,
+                                .tile_size = gfx::Size(300, 200),
+                                .tile_layout = gfx::Size(3, 2),
+                                .location = gfx::Point(1, 2)};
+
+  auto tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      tile_property);
+  auto hdc_controller = std::make_unique<HardwareDisplayController>(
+      std::move(tiled_crtc_controller), gfx::Point(), nullptr);
+
+  std::optional<TileProperty> actual_tile_property =
+      hdc_controller->GetTileProperty();
+  ASSERT_TRUE(actual_tile_property.has_value());
+
+  EXPECT_EQ(actual_tile_property->group_id, 123);
+  EXPECT_TRUE(actual_tile_property->scale_to_fit_display);
+  EXPECT_EQ(actual_tile_property->tile_size, gfx::Size(300, 200));
+  EXPECT_EQ(actual_tile_property->tile_layout, gfx::Size(3, 2));
+  EXPECT_EQ(actual_tile_property->location, gfx::Point(1, 2));
 }
 
 }  // namespace ui

@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -78,8 +79,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
-#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -878,8 +879,8 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
 
   const base::FilePath supervised_path =
       temp_dir_.GetPath().AppendASCII("Supervised");
-  auto supervised_profile =
-      std::make_unique<TestingProfile>(supervised_path, nullptr);
+  auto supervised_profile = std::make_unique<TestingProfile>(
+      supervised_path, nullptr, Profile::CreateMode::kSynchronous);
   supervised_profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                             supervised_user::kChildAccountSUID);
 
@@ -892,8 +893,8 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
 
   const base::FilePath nonsupervised_path =
       temp_dir_.GetPath().AppendASCII("Non-Supervised");
-  auto nonsupervised_profile =
-      std::make_unique<TestingProfile>(nonsupervised_path, nullptr);
+  auto nonsupervised_profile = std::make_unique<TestingProfile>(
+      nonsupervised_path, nullptr, Profile::CreateMode::kSynchronous);
   profile_manager->RegisterTestingProfile(std::move(nonsupervised_profile),
                                           true);
 
@@ -925,12 +926,14 @@ class UnittestGuestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
+      Delegate* delegate,
+      Profile::CreateMode create_mode) override {
     TestingProfile::Builder builder;
     if (create_profiles_as_guest_)
       builder.SetGuestSession();
     builder.SetPath(path);
     builder.SetDelegate(delegate);
+    builder.SetCreateMode(create_mode);
     return builder.Build();
   }
 
@@ -2434,3 +2437,43 @@ TEST_F(ProfileManagerTest, ChildSession) {
   EXPECT_TRUE(profile->IsChild());
 }
 #endif
+
+// Tests that a new profile's entry in the profile attributes storage is setup
+// with the same values that are in the profile prefs.
+TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
+  using base::Bucket;
+  using base::BucketsAre;
+
+  base::HistogramTester histogram_tester;
+  const std::string kHistogramName =
+      "Profile.NumberOfProfilesAtProfileCreation";
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath dest_path = temp_dir_.GetPath();
+
+  base::FilePath path_1 = dest_path.Append(FILE_PATH_LITERAL("Profile 1"));
+  profile_manager->GetProfile(path_1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1)));
+
+  Profile* profile_2 = profile_manager->GetProfile(
+      dest_path.Append(FILE_PATH_LITERAL("Profile 2")));
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+
+  // Incognito profile should not affect the count.
+  EXPECT_TRUE(profile_2->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Delete one profile to decrement the count.
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      path_1, base::DoNothing(), ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+  content::RunAllTasksUntilIdle();
+
+  profile_manager->GetProfile(dest_path.Append(FILE_PATH_LITERAL("Profile 3")));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 2)));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}

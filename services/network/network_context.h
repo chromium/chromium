@@ -543,6 +543,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const std::optional<std::string>& label) override;
   void RevokeNetworkForNonces(const std::vector<base::UnguessableToken>& nonces,
                               RevokeNetworkForNoncesCallback callback) override;
+  void ClearNonces(const std::vector<base::UnguessableToken>& nonces) override;
   void ExemptUrlFromNetworkRevocationForNonce(
       const GURL& exempted_url,
       const base::UnguessableToken& nonce,

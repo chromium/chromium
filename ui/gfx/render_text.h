@@ -109,6 +109,7 @@ class StyleIterator {
                 const BreakList<BaselineStyle>* baselines,
                 const BreakList<int>* font_size_overrides,
                 const BreakList<Font::Weight>* weights,
+                const BreakList<SkTypefaceID>* resolved_typefaces,
                 const BreakList<cc::PaintFlags::Style>* fill_styles,
                 const BreakList<SkScalar>* stroke_widths,
                 const StyleArray* styles);
@@ -122,6 +123,7 @@ class StyleIterator {
   int font_size_override() const { return font_size_override_->second; }
   bool style(TextStyle s) const { return style_[s]->second; }
   Font::Weight weight() const { return weight_->second; }
+  SkTypefaceID resolved_typeface() const { return resolved_typeface_->second; }
   cc::PaintFlags::Style fill_style() const { return fill_style_->second; }
   SkScalar stroke_width() const { return stroke_width_->second; }
 
@@ -142,6 +144,7 @@ class StyleIterator {
   raw_ptr<const BreakList<BaselineStyle>> baselines_;
   raw_ptr<const BreakList<int>> font_size_overrides_;
   raw_ptr<const BreakList<Font::Weight>> weights_;
+  raw_ptr<const BreakList<SkTypefaceID>> resolved_typefaces_;
   raw_ptr<const BreakList<cc::PaintFlags::Style>> fill_styles_;
   raw_ptr<const BreakList<SkScalar>> stroke_widths_;
   raw_ptr<const StyleArray> styles_;
@@ -150,6 +153,7 @@ class StyleIterator {
   BreakList<BaselineStyle>::const_iterator baseline_;
   BreakList<int>::const_iterator font_size_override_;
   BreakList<Font::Weight>::const_iterator weight_;
+  BreakList<SkTypefaceID>::const_iterator resolved_typeface_;
   BreakList<cc::PaintFlags::Style>::const_iterator fill_style_;
   BreakList<SkScalar>::const_iterator stroke_width_;
   std::array<BreakList<bool>::const_iterator, TEXT_STYLE_COUNT> style_;
@@ -656,6 +660,12 @@ class GFX_EXPORT RenderText {
     glyph_height_for_test_ = height;
   }
 
+  // Specify whether missing glyphs introduce additional run breaks. Glyph
+  // support is very platform-dependent and this allows for consistent testing.
+  void ignore_missing_glyph_breaks_for_test(bool enabled) {
+    ignore_missing_glyph_breaks_for_test_ = enabled;
+  }
+
  protected:
   RenderText();
 
@@ -700,6 +710,12 @@ class GFX_EXPORT RenderText {
   SkScalar strike_thickness_factor() const { return strike_thickness_factor_; }
 
   const BreakList<SkColor>& layout_colors() const { return layout_colors_; }
+  BreakList<SkTypefaceID>& layout_resolved_typefaces() const {
+    return layout_resolved_typefaces_;
+  }
+  BreakList<SkTypefaceID>& resolved_typefaces() const {
+    return resolved_typefaces_;
+  }
 
   // Whether all the BreakLists have only one break.
   bool IsHomogeneous() const;
@@ -782,9 +798,8 @@ class GFX_EXPORT RenderText {
   size_t DisplayIndexToTextIndex(size_t index) const;
 
   // Notifies that layout text, or attributes that affect the layout text
-  // shape have changed. |text_changed| is true if the content of the
-  // |layout_text_| has changed, not just attributes.
-  virtual void OnLayoutTextAttributeChanged(bool text_changed);
+  // shape have changed.
+  virtual void OnLayoutTextAttributeChanged();
 
   // Notifies that attributes that affect the display text shape have changed.
   virtual void OnDisplayTextAttributeChanged() = 0;
@@ -865,6 +880,9 @@ class GFX_EXPORT RenderText {
   float glyph_width_for_test_ = 0;
   // Fixed height of glyphs. This should only be set in test environments.
   float glyph_height_for_test_ = 0;
+  // Prevents breaking glyphs based on font support. This should only be set in
+  // test environments.
+  bool ignore_missing_glyph_breaks_for_test_ = false;
 
  private:
   friend class test::RenderTextTestApi;
@@ -982,6 +1000,7 @@ class GFX_EXPORT RenderText {
   BreakList<BaselineStyle> baselines_{BaselineStyle::kNormalBaseline};
   BreakList<int> font_size_overrides_{0};
   BreakList<Font::Weight> weights_{Font::Weight::NORMAL};
+  mutable BreakList<SkTypefaceID> resolved_typefaces_;
   BreakList<cc::PaintFlags::Style> fill_styles_{cc::PaintFlags::kFill_Style};
   BreakList<SkScalar> stroke_widths_{0.f};
   internal::StyleArray styles_;
@@ -990,6 +1009,7 @@ class GFX_EXPORT RenderText {
   mutable BreakList<SkColor> layout_colors_;
   mutable BreakList<BaselineStyle> layout_baselines_;
   mutable BreakList<int> layout_font_size_overrides_;
+  mutable BreakList<SkTypefaceID> layout_resolved_typefaces_;
   mutable BreakList<Font::Weight> layout_weights_;
   mutable BreakList<cc::PaintFlags::Style> layout_fill_styles_;
   mutable BreakList<SkScalar> layout_stroke_widths_;

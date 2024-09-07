@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -84,14 +84,10 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   std::unique_ptr<
       base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>>
       _scopedWebStateObservation;
-
-  // ItemID of the dragged tab. Used to check if the dropped tab is from the
-  // same Chrome window.
-  web::WebStateID _dragItemID;
 }
 
 - (instancetype)initWithConsumer:(id<PinnedTabCollectionConsumer>)consumer {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     DCHECK(IsPinnedTabsEnabled());
     _consumer = consumer;
     _webStateListObserverBridge =
@@ -313,22 +309,6 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   return CreateTabDragItem(webState);
 }
 
-- (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
-  NOTREACHED() << "There is no tab groups in the pinned tabs section";
-}
-
-- (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
-  _dragItemID = item.identifier;
-}
-
-- (void)dragWillBeginForTabGroupItem:(TabGroupItem*)item {
-  NOTREACHED() << "There is no tab groups in the pinned tabs section";
-}
-
-- (void)dragSessionDidEnd {
-  _dragItemID = web::WebStateID();
-}
-
 - (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session
                                        toIndex:(NSUInteger)destinationIndex {
   UIDragItem* dragItem = session.localDragSession.items.firstObject;
@@ -439,11 +419,6 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];
 }
 
-- (NSArray<UIDragItem*>*)allSelectedDragItems {
-  NOTREACHED() << "You should not be able to drag and drop multiple "
-                  "items. There is no selection mode in pinned tabs.";
-}
-
 #pragma mark - Private
 
 - (void)addWebStateObservations {
@@ -464,20 +439,6 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 
 // Returns the `UIDropOperation` corresponding to the given `tabInfo`.
 - (UIDropOperation)dropOperationForTabInfo:(TabInfo*)tabInfo {
-  // If the dropped tab is from the same Chrome window and has been removed,
-  // cancel the drop operation.
-  if (_dragItemID == tabInfo.tabID) {
-    const BOOL tabExists =
-        GetWebStateIndex(self.webStateList,
-                         WebStateSearchCriteria{
-                             .identifier = tabInfo.tabID,
-                             .pinned_state = PinnedState::kPinned,
-                         }) != WebStateList::kInvalidIndex;
-    if (!tabExists) {
-      return UIDropOperationCancel;
-    }
-  }
-
   if (tabInfo.incognito) {
     return UIDropOperationForbidden;
   }

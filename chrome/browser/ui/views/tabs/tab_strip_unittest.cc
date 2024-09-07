@@ -250,17 +250,38 @@ TEST_P(TabStripTest, AccessibilityEvents) {
 
   controller_->AddTab(0, TabActive::kInactive);
   controller_->AddTab(1, TabActive::kActive);
+  Tab* tab = tab_strip_->tab_at(1);
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionAdd));
   EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kSelection));
+  ui::AXNodeData node_data;
+  tab->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionRemove));
 
+  tab = tab_strip_->tab_at(0);
   controller_->RemoveTab(1);
+  node_data = ui::AXNodeData();
+  tab->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionAdd));
+  EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionRemove));
+
+  // Before the Widget actcivation changes to true, it must be deactivated
+  // first.
+  widget_->OnNativeWidgetActivationChanged(false);
+  node_data = ui::AXNodeData();
+  tab->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionAdd));
   EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kSelection));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionRemove));
 
   // When activating widget, refire selection event on tab.
   widget_->OnNativeWidgetActivationChanged(true);
+  node_data = ui::AXNodeData();
+  tab->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionAdd));
   EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kSelection));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionRemove));

@@ -5,17 +5,14 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ML_GPU_BLOCKLIST_H_
 #define SERVICES_ON_DEVICE_MODEL_ML_GPU_BLOCKLIST_H_
 
+#include "base/component_export.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
 
 namespace ml {
 
-// A policy controlling what kinds of GPUs are allowed to run the service.
-struct GpuBlocklist final {
-  bool skip_for_testing = false;
-
-  // Checks if the GPU is on the blocklist.
-  bool IsGpuBlocked(const ChromeMLAPI& api) const;
-};
+// Checks if the GPU is on the blocklist.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+bool IsGpuBlocked(const ChromeMLAPI& api);
 
 }  // namespace ml
 

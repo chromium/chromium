@@ -65,13 +65,13 @@ class SupervisedUserNavigationObserver
                                const GURL& url,
                                supervised_user::FilteringBehaviorReason reason,
                                int64_t navigation_id,
-                               int frame_id,
+                               content::FrameTreeNodeId frame_id,
                                const OnInterstitialResultCallback& callback);
 
   // WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
 
@@ -80,9 +80,9 @@ class SupervisedUserNavigationObserver
 
   // Called when interstitial error page is no longer being shown in the main
   // frame.
-  void OnInterstitialDone(int frame_id);
+  void OnInterstitialDone(content::FrameTreeNodeId frame_id);
 
-  const std::map<int,
+  const std::map<content::FrameTreeNodeId,
                  std::unique_ptr<supervised_user::SupervisedUserInterstitial>>&
   interstitials_for_test() const {
     return supervised_user_interstitials_;
@@ -100,7 +100,7 @@ class SupervisedUserNavigationObserver
   void OnRequestBlockedInternal(const GURL& url,
                                 supervised_user::FilteringBehaviorReason reason,
                                 int64_t navigation_id,
-                                int frame_id,
+                                content::FrameTreeNodeId frame_id,
                                 const OnInterstitialResultCallback& callback);
 
   void URLFilterCheckCallback(const GURL& url,
@@ -114,7 +114,7 @@ class SupervisedUserNavigationObserver
                              supervised_user::FilteringBehaviorReason reason,
                              bool initial_page_load,
                              int64_t navigation_id,
-                             int frame_id,
+                             content::FrameTreeNodeId frame_id,
                              const OnInterstitialResultCallback& callback);
 
   // Filters the RenderFrameHost if render frame is live.
@@ -145,7 +145,8 @@ class SupervisedUserNavigationObserver
 
   // Keeps track of the blocked frames. It maps the frame's globally unique
   // id to its corresponding |SupervisedUserInterstitial| instance.
-  std::map<int, std::unique_ptr<supervised_user::SupervisedUserInterstitial>>
+  std::map<content::FrameTreeNodeId,
+           std::unique_ptr<supervised_user::SupervisedUserInterstitial>>
       supervised_user_interstitials_;
 
   std::set<std::string> requested_hosts_;

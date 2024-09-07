@@ -57,8 +57,9 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
 
     std::vector<RulesetInfo*> rulesets_to_index;
     for (auto& ruleset : data_.rulesets) {
-      if (ruleset.did_load_successfully())
+      if (ruleset.did_load_successfully()) {
         continue;
+      }
 
       rulesets_to_index.push_back(&ruleset);
     }
@@ -258,8 +259,9 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
   DCHECK_EQ(source.indexed_path().DirName(), source.json_path().DirName());
 
   std::set<int> rule_ids_to_add;
-  for (const dnr_api::Rule& rule : rules_to_add)
+  for (const dnr_api::Rule& rule : rules_to_add) {
     rule_ids_to_add.insert(rule.id);
+  }
 
   std::vector<dnr_api::Rule> new_rules;
   if (!GetNewDynamicRules(source, std::move(rule_ids_to_remove),

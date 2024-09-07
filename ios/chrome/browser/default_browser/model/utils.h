@@ -210,9 +210,6 @@ bool IsDefaultBrowserPromoGenericTailoredTrainEnabled();
 // tailored experiment is enabled.
 bool IsDefaultBrowserPromoOnlyGenericArmTrain();
 
-// Returns true if client is in default browser video in settings experiment.
-bool IsDefaultBrowserVideoInSettingsEnabled();
-
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.
 bool HasUserInteractedWithFullscreenPromoBefore();

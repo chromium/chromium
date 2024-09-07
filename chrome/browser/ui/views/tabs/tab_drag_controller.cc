@@ -35,7 +35,8 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -95,10 +96,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/remote_cocoa/browser/window.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-#include "ui/aura/client/drag_drop_client.h"
 #endif
 
 #if defined(USE_AURA)
@@ -694,12 +691,6 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
     Attach(source_context_, gfx::Point(), nullptr);
     if (num_dragging_tabs() == source_context_->GetTabStripModel()->count()) {
       if (ShouldDragWindowUsingSystemDnD()) {
-        // When dragging all of a window's tabs, just hide that window instead
-        // of creating a new hidden one.
-        // We don't actually hide the window yet, because on some platforms
-        // (e.g. Wayland) the drag and drop session must be started before
-        // hiding the window. The next ContinueDragging() call will take care of
-        // hiding the window.
         StartSystemDnDSessionIfNecessary(attached_context_, point_in_screen);
         return;
       }
@@ -959,12 +950,6 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   const bool tab_strip_changed = (target_context != attached_context_);
   last_point_in_screen_ = point_in_screen;
 
-  if (current_state_ == DragState::kDraggingUsingSystemDragAndDrop &&
-      GetAttachedBrowserWidget()->IsVisible()) {
-    // See the comment in Drag() where we start the drag session.
-    GetAttachedBrowserWidget()->Hide();
-  }
-
   if (tab_strip_changed) {
     is_dragging_new_browser_ = false;
     did_restore_window_ = false;
@@ -1125,6 +1110,16 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
 
   system_drag_and_drop_session_running_ = true;
 
+  if (attached_context_ == source_context_ &&
+      num_dragging_tabs() == source_context_->GetTabStripModel()->count()) {
+    // When dragging all of a window's tabs, we just hide that window instead of
+    // creating a new hidden one. On some platforms (e.g. Wayland) the drag and
+    // drop session must be started before hiding the window, so defer until the
+    // drag has started.
+    drag_started_callback_ = base::BindOnce(
+        &TabDragController::HideAttachedContext, weak_factory_.GetWeakPtr());
+  }
+
   auto data_provider = ui::OSExchangeDataProviderFactory::CreateProvider();
   // Set data in a format that is accepted by TabStrip so that a drop can
   // happen.
@@ -1142,6 +1137,16 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
       std::move(drag_loop_done_callback_);
 
   VLOG(1) << __func__ << " Starting system DnD session";
+
+#if defined(USE_AURA)
+  aura::Window* root_window =
+      context->GetWidget()->GetNativeWindow()->GetRootWindow();
+  aura::client::DragDropClient* client =
+      aura::client::GetDragDropClient(root_window);
+  if (client) {
+    drag_drop_client_observation_.Observe(client);
+  }
+#endif  // defined(USE_AURA)
 
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   context->GetWidget()->RunShellDrag(
@@ -1168,6 +1173,20 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
   }
 
   return ref ? Liveness::ALIVE : Liveness::DELETED;
+}
+
+void TabDragController::HideAttachedContext() {
+  CHECK_EQ(current_state_, DragState::kDraggingUsingSystemDragAndDrop);
+  CHECK(GetAttachedBrowserWidget()->IsVisible());
+
+  // See the comment in StartSystemDnDSessionIfNecessary() where we start the
+  // drag session.
+  GetAttachedBrowserWidget()->Hide();
+
+  // Stop observing, as we're only interested in knowing when the drag started.
+#if defined(USE_AURA)
+  drag_drop_client_observation_.Reset();
+#endif  // defined(USE_AURA)
 }
 
 gfx::Rect TabDragController::GetEnclosingRectForDraggedTabs() {
@@ -2799,14 +2818,14 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
 
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
 
-  if (!wrapper_service || !wrapper_service->GetGroup(group_.value())) {
+  if (!tab_group_service || !tab_group_service->GetGroup(group_.value())) {
     return;
   }
 
-  observation_pauser_ = wrapper_service->CreateScopedLocalObserverPauser();
+  observation_pauser_ = tab_group_service->CreateScopedLocalObserverPauser();
 }
 
 void TabDragController::MaybeResumeTrackingSavedTabGroup() {
@@ -2819,12 +2838,25 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
 
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
 
-  if (!wrapper_service) {
+  if (!tab_group_service) {
     return;
   }
 
   observation_pauser_.reset();
 }
+
+#if defined(USE_AURA)
+void TabDragController::OnDragStarted() {
+  VLOG(1) << __func__;
+  if (drag_started_callback_) {
+    std::move(drag_started_callback_).Run();
+  }
+}
+
+void TabDragController::OnDragDropClientDestroying() {
+  drag_drop_client_observation_.Reset();
+}
+#endif  // defined(USE_AURA)

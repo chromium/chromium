@@ -33,6 +33,8 @@ generate_jar_jni("system_jni") {
   classes = [
     "java/util/Arrays.class",
     "java/util/Collection.class",
+    "java/util/List.class",
+    "java/util/Map.class",
   ]
   visibility = [ ":*" ]
 }

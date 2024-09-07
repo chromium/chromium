@@ -72,4 +72,19 @@ TEST(MIMETypeRegistryTest, TextXMLType) {
   EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("text/XSL"));
 }
 
+TEST(MIMETypeRegistryTest, XMLExternalEntityMIMEType) {
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLExternalEntityMIMEType(
+      "application/xml-external-parsed-entity"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLExternalEntityMIMEType(
+      "text/xml-external-parsed-entity"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLExternalEntityMIMEType(
+      "application/XML-external-parsed-entity"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLExternalEntityMIMEType(
+      "text/XML-external-parsed-entity"));
+
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLExternalEntityMIMEType("text/plain"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLExternalEntityMIMEType("text/html"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLExternalEntityMIMEType("text/xml"));
+}
+
 }  // namespace blink

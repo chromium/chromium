@@ -103,6 +103,8 @@
 #define XML_NANO_HTTP_READ	2
 #define XML_NANO_HTTP_NONE	4
 
+#define __xmlIOErr(domain, code, extra) ((void) 0)
+
 typedef struct xmlNanoHTTPCtxt {
     char *protocol;	/* the protocol name */
     char *hostname;	/* the host name */

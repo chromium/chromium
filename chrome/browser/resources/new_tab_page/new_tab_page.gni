@@ -46,6 +46,7 @@ all_css_files = [
 if (optimize_webui) {
   # Transpiled Mojo JS files to be excluded from the bundle in optimized builds.
   mojo_js_files = [
+    "calendar_data.mojom-webui.js",
     "file_suggestion.mojom-webui.js",
     "google_calendar.mojom-webui.js",
     "history_types.mojom-webui.js",

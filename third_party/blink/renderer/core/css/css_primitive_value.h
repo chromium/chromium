@@ -414,6 +414,11 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   CSSPrimitiveValue* Divide(const CSSPrimitiveValue& value) const = delete;
   // Note: value / this is not allowed until typed arithmetic is implemented.
   CSSPrimitiveValue* DivideBy(const CSSPrimitiveValue& value) const = delete;
+  // Replaces every percentage numeric literal node with number typed numeric
+  // literal node with value divided by 100 (e.g. 93% -> 0.93). This is needed
+  // e.g. for interpolation between <number> and <percentage>, see
+  // https://www.w3.org/TR/filter-effects-1/#interpolation-of-filter-functions.
+  CSSPrimitiveValue* ConvertLiteralsFromPercentageToNumber() const;
 
   // TODO(crbug.com/979895): The semantics of these untyped getters are not very
   // clear if |this| is a math function. Do not add new callers before further

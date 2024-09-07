@@ -7,6 +7,8 @@ package org.chromium.components.embedder_support.delegate;
 import android.graphics.Bitmap;
 import android.view.KeyEvent;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -245,6 +247,18 @@ public class WebContentsDelegateAndroid {
      */
     public boolean maybeCopyContentAreaAsBitmap(Callback<Bitmap> callback) {
         return false;
+    }
+
+    /**
+     * Synchronous version of {@link #maybeCopyContentAreaAsBitmap(long)}
+     *
+     * @return Null if there is no native view corresponding to the currently committed navigation
+     *     entry or capture fails; otherwise, a bitmap object.
+     */
+    @Nullable
+    @CalledByNative
+    public Bitmap maybeCopyContentAreaAsBitmapSync() {
+        return null;
     }
 
     /**

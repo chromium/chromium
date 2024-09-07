@@ -127,7 +127,7 @@ DCOMPTexture::DCOMPTexture(
   IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
   receiver_.Bind(std::move(receiver), runner);
   context_state_->AddContextLostObserver(this);
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   channel_->AddRoute(route_id, sequence_);
 }
 
@@ -138,7 +138,7 @@ DCOMPTexture::~DCOMPTexture() {
   DCHECK(!channel_);
 
   context_state_->RemoveContextLostObserver(this);
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 
   if (window_pos_timer_.IsRunning()) {
     window_pos_timer_.Stop();

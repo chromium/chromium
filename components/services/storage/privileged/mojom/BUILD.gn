@@ -4,18 +4,40 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojom_bucket") {
-  sources = [ "indexed_db_internals_types.mojom" ]
+# Privileged interfaces that are exposed to WebUI renderers.
+mojom("mojom_webui") {
+  sources = [
+    "bucket_client_info.mojom",
+    "indexed_db_internals_types.mojom",
+  ]
   public_deps = [
     "//components/services/storage/public/mojom/buckets",
     "//mojo/public/mojom/base",
+    "//third_party/blink/public/mojom/tokens",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
+  ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "storage.mojom.BucketClientInfo"
+          cpp = "::storage::BucketClientInfo"
+        },
+      ]
+      traits_headers = [ "bucket_client_info_mojom_traits.h" ]
+      traits_sources = [ "bucket_client_info_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//components/services/storage/privileged/cpp",
+        "//third_party/blink/public/mojom/tokens",
+      ]
+    },
   ]
 
   webui_module_path = "/"
 }
 
+# Privileged interfaces that are not exposed to renderers.
 mojom("mojom") {
   sources = [
     "indexed_db_client_state_checker.mojom",
@@ -30,7 +52,7 @@ mojom("mojom") {
   enable_js_fuzzing = false
 
   public_deps = [
-    ":mojom_bucket",
+    ":mojom_webui",
     "//components/services/storage/public/mojom",
     "//third_party/blink/public/mojom:mojom_core",
   ]

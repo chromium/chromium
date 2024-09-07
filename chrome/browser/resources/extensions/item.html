@@ -168,7 +168,7 @@
     margin-inline-end: 12px;
   }
 
-  #blacklisted-warning:empty {
+  #blocklisted-warning:empty {
     display: none;
   }
 
@@ -194,8 +194,8 @@
           <div class="source-icon-wrapper" role="img"
               aria-describedby="a11yAssociation"
               aria-label$="[[computeSourceIndicatorText_(data.*)]]">
-            <iron-icon icon="[[computeSourceIndicatorIcon_(data.*)]]">
-            </iron-icon>
+            <cr-icon icon="[[computeSourceIndicatorIcon_(data.*)]]">
+            </cr-icon>
           </div>
         </div>
       </template>
@@ -228,7 +228,7 @@
       <template is="dom-if"
           if="[[showSevereWarnings(data.disableReasons.*, data.*)]]">
         <div id="warnings">
-          <iron-icon class="message-icon" icon="cr:error"></iron-icon>
+          <cr-icon class="message-icon" icon="cr:error"></cr-icon>
           <span id="runtime-warnings" aria-describedby="a11yAssociation"
               hidden$="[[!data.runtimeWarnings.length]]">
             <template is="dom-repeat" items="[[data.runtimeWarnings]]">
@@ -247,15 +247,15 @@
               hidden$="[[!data.disableReasons.corruptInstall]]">
             $i18n{itemCorruptInstall}
           </span>
-          <span id="blacklisted-warning"><!-- No whitespace
-            -->[[data.blacklistText]]<!-- so we can use :empty in css.
+          <span id="blocklisted-warning"><!-- No whitespace
+            -->[[data.blocklistText]]<!-- so we can use :empty in css.
          --></span>
         </div>
       </template>
       <template is="dom-if"
           if="[[showMv2DeprecationWarning_(data.disableReasons.*, data.*)]]">
           <div id="warnings">
-            <iron-icon class="message-icon" icon="cr:error"></iron-icon>
+            <cr-icon class="message-icon" icon="cr:error"></cr-icon>
             <span id="mv2-deprecation-warning"
                 aria-describedby="a11yAssociation">
               $i18n{mv2DeprecationUnsupportedExtensionOffText}
@@ -265,9 +265,9 @@
       <template is="dom-if"
           if="[[showAllowlistWarning_(data.disableReasons.*, data.*)]]">
         <div id="allowlist-warning">
-          <iron-icon class="message-icon"
+          <cr-icon class="message-icon"
               icon="extensions-icons:safebrowsing_warning">
-          </iron-icon>
+          </cr-icon>
           <span class="cr-secondary-text" aria-describedby="a11yAssociation">
             $i18n{itemAllowlistWarning}
             <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank"

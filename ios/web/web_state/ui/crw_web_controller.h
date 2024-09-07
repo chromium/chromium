@@ -198,10 +198,6 @@ class WebStateImpl;
 // Adds the webView back in the view hierarchy.
 - (void)addWebViewToViewHierarchy;
 
-// Notifies this controller that the surface size has changed due to
-// multiwindow action or orientation change.
-- (void)surfaceSizeChanged;
-
 // Injects an opaque NSData block into a WKWebView to restore or serialize. Only
 // supported on iOS15+. On earlier iOS versions, `setSessionStateData` is
 // a no-op, and `sessionStateData` will return nil.

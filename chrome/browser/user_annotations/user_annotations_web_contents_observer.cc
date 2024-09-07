@@ -8,6 +8,8 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/compose/buildflags.h"
@@ -27,6 +29,16 @@ UserAnnotationsWebContentsObserver::UserAnnotationsWebContentsObserver(
     content::WebContents* web_contents,
     user_annotations::UserAnnotationsService* user_annotations_service)
     : user_annotations_service_(CHECK_DEREF(user_annotations_service)) {
+  // Always ensure AutofillClientProvider is instantiated prior to observing the
+  // AutofillManager. TabHelpers are currently not instantiated before
+  // TabFeatures in the tab restore case. See crbug.com/362038320 for more
+  // details.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  autofill::AutofillClientProvider& autofill_client_provider =
+      autofill::AutofillClientProviderFactory::GetForProfile(profile);
+  autofill_client_provider.CreateClientForWebContents(web_contents);
+
   autofill_managers_observation_.Observe(
       web_contents, autofill::ScopedAutofillManagersObservation::
                         InitializationPolicy::kObservePreexistingManagers);
@@ -76,12 +88,12 @@ void UserAnnotationsWebContentsObserver::OnFormSubmitted(
 
 void UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted(
     const autofill::FormData& form,
-    const ui::AXTreeUpdate& snapshot) {
+    ui::AXTreeUpdate& snapshot) {
   optimization_guide::proto::AXTreeUpdate ax_tree;
 #if BUILDFLAG(ENABLE_COMPOSE)
   ComposeAXSerializationUtils::PopulateAXTreeUpdate(snapshot, &ax_tree);
 #endif
-  user_annotations_service_->AddFormSubmission(ax_tree, form);
+  user_annotations_service_->AddFormSubmission(std::move(ax_tree), form);
 }
 
 }  // namespace user_annotations

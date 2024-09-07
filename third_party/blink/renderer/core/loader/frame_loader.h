@@ -181,7 +181,8 @@ class CORE_EXPORT FrameLoader final {
       const KURL&,
       WebFrameLoadType,
       std::optional<HistoryItem::ViewState>,
-      mojom::blink::ScrollRestorationType);
+      mojom::blink::ScrollRestorationType,
+      mojom::blink::ScrollBehavior scroll_behavior);
 
   // This will attempt to detach the current document. It will dispatch unload
   // events and abort XHR requests. Returns true if the frame is ready to
@@ -272,9 +273,11 @@ class CORE_EXPORT FrameLoader final {
   // Clears any information about client navigation, see client_navigation_.
   void ClearClientNavigation();
 
-  void RestoreScrollPositionAndViewState(WebFrameLoadType,
-                                         const HistoryItem::ViewState&,
-                                         mojom::blink::ScrollRestorationType);
+  void RestoreScrollPositionAndViewState(
+      WebFrameLoadType,
+      const HistoryItem::ViewState&,
+      mojom::blink::ScrollRestorationType,
+      mojom::blink::ScrollBehavior scroll_behavior);
 
   void DetachDocumentLoader(Member<DocumentLoader>&,
                             bool flush_microtask_queue = false);

@@ -37,6 +37,10 @@ namespace prerender {
 class ChromeNoStatePrefetchContentsDelegate;
 }
 
+namespace tabs {
+class TabModel;
+}  // namespace tabs
+
 // A "tab contents" is a WebContents that is used as a tab in a browser window
 // (or the equivalent on Android). The TabHelpers class allows specific classes
 // to attach the set of tab helpers that is used for tab contents.
@@ -59,6 +63,7 @@ class TabHelpers {
 #else
   friend class Browser;
   friend class chrome::BrowserTabStripModelDelegate;
+  friend class tabs::TabModel;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // chrome::Navigate creates WebContents that are destined for the tab strip,

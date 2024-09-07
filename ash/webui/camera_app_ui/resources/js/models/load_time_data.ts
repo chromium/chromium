@@ -86,3 +86,11 @@ export function isCCADisallowed(): boolean {
 export function getOsVersion(): string {
   return loadTimeData.getString('os_version');
 }
+
+
+/**
+ * Returns if BigBuffer can be used.
+ */
+export function getCanUseBigBuffer(): boolean {
+  return loadTimeData.getBoolean('can_use_big_buffer');
+}

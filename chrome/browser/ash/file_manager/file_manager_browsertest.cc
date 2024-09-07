@@ -397,6 +397,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         //     .EnableSkyVault(),
         TestCase("fileDisplayFileSystemDisabled")
             .DontMountVolumes()
+            .EnableSkyVault(),
+        TestCase("fileDisplaySkyVaultMigrationToGoogleDrive")
+            .DontMountVolumes()
+            .EnableSkyVault(),
+        TestCase("fileDisplaySkyVaultMigrationToOneDrive")
+            .DontMountVolumes()
             .EnableSkyVault()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
@@ -1399,9 +1405,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsNested"),
         TestCase("recentsNoRenameForPlayFiles").EnableArc(),
         TestCase("recentsPlayFiles").EnableArc(),
-        TestCase("recentsSearchPlayFilesShowDownloads")
-            .EnableArc()
-            .EnableFSPsInRecents(),
+        TestCase("recentsSearchPlayFilesShowDownloads").EnableArc(),
         TestCase("recentsReadOnlyHidden"),
         TestCase("recentsRespectSearchWhenSwitchingFilter"),
         TestCase("recentsRespondToTimezoneChangeForGridView"),
@@ -1419,9 +1423,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentVideosDownloads"),
         TestCase("recentVideosDownloadsAndDrive"),
         TestCase("recentVideosDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentFileSystemProviderFiles")
-            .FakeFileSystemProvider()
-            .EnableFSPsInRecents()));
+        TestCase("recentFileSystemProviderFiles").FakeFileSystemProvider()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metadata, /* metadata.ts */

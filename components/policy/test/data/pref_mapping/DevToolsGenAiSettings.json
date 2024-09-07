@@ -51,7 +51,7 @@
           "policies": {},
           "prefs": {
             "devtools.gen_ai_settings": {
-              "value": 2
+              "value": 1
             }
           }
         }

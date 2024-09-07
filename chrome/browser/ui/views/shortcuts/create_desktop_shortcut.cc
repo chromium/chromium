@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check_is_test.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -43,7 +45,7 @@ namespace {
 // desktop of the OS. This API works only if kShortcutsNotApps is enabled.
 // Triggered from the three-dot menu on Chrome, Save & Share > Create Shortcut.
 // Callers of the API should pass a |CreateShortcutDialogCallback| so that the
-// user action on the dialog and the title in the dialog's text field can be
+// user action on the dialog or the title in the dialog's text field can be
 // obtained.
 void ShowCreateDesktopShortcutDialog(
     content::WebContents* web_contents,
@@ -52,8 +54,7 @@ void ShowCreateDesktopShortcutDialog(
     CreateShortcutDialogCallback dialog_action_and_text_callback) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
-    std::move(dialog_action_and_text_callback)
-        .Run(/*is_accepted=*/false, title);
+    std::move(dialog_action_and_text_callback).Run(std::nullopt);
     return;
   }
 
@@ -61,8 +62,7 @@ void ShowCreateDesktopShortcutDialog(
   const web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
   if (!manager || manager->IsDialogActive()) {
-    std::move(dialog_action_and_text_callback)
-        .Run(/*is_accepted=*/false, title);
+    std::move(dialog_action_and_text_callback).Run(std::nullopt);
     return;
   }
 
@@ -96,7 +96,7 @@ void ShowCreateDesktopShortcutDialog(
       .AddCancelButton(base::DoNothing())
       .SetDialogDestroyingCallback(base::BindOnce(
           &CreateDesktopShortcutDelegate::OnClose, delegate_weak_ptr))
-      .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE);
+      .OverrideDefaultButton(ui::mojom::DialogButton::kNone);
 
   auto site_view = std::make_unique<SiteIconTextAndOriginView>(
       icon, title,

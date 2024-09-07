@@ -45,261 +45,22 @@
 #include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-namespace {
-
-base::TimeDelta kDelaySeconds = base::Seconds(2);
-
-}  // namespace
-
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
-    : delay_timer_(FROM_HERE,
-                   kDelaySeconds,
-                   base::BindRepeating(
-                       &ReadAnythingCoordinator::OnTabChangeDelayComplete,
-                       base::Unretained(this))),
-      browser_(browser) {}
+    : browser_(browser) {}
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
-  local_side_panel_switch_delay_timer_.Stop();
-
-  if (features::IsReadAnythingDocsIntegrationEnabled()) {
-    RemoveGDocsHelperExtension();
-  }
-
   // Deregister Read Anything from the global side panel registry. This removes
   // Read Anything as a side panel entry observer.
 
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->RemoveObserver(this);
   }
-  browser_->tab_strip_model()->RemoveObserver(this);
-  Observe(nullptr);
 }
 
 void ReadAnythingCoordinator::Initialize() {
-  browser_->tab_strip_model()->AddObserver(this);
-  Observe(GetActiveWebContents());
-
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->AddObserver(this);
   }
-
-  if (features::IsReadAnythingDocsIntegrationEnabled()) {
-    EmbeddedA11yExtensionLoader::GetInstance()->Init();
-  }
-}
-
-void ReadAnythingCoordinator::AddObserver(
-    ReadAnythingCoordinator::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ReadAnythingCoordinator::RemoveObserver(
-    ReadAnythingCoordinator::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
-  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
-  OnReadAnythingSidePanelEntryShown();
-}
-
-void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
-  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
-  OnReadAnythingSidePanelEntryHidden();
-}
-
-void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryShown() {
-  for (Observer& obs : observers_) {
-    obs.Activate(true);
-  }
-
-  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
-    return;
-  }
-
-  active_local_side_panel_count_++;
-  InstallGDocsHelperExtension();
-}
-
-void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
-  for (Observer& obs : observers_) {
-    obs.Activate(false);
-  }
-
-  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
-    return;
-  }
-
-  active_local_side_panel_count_--;
-  local_side_panel_switch_delay_timer_.Stop();
-  local_side_panel_switch_delay_timer_.Start(
-      FROM_HERE, base::Seconds(30),
-      base::BindRepeating(
-          &ReadAnythingCoordinator::OnLocalSidePanelSwitchDelayTimeout,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
-  auto web_view =
-      std::make_unique<ReadAnythingSidePanelWebView>(browser_->profile());
-
-  return std::move(web_view);
-}
-
-void ReadAnythingCoordinator::StartPageChangeDelay() {
-  // Reset the delay status.
-  post_tab_change_delay_complete_ = false;
-  // Cancel any existing page change delay and start again.
-  delay_timer_.Reset();
-}
-
-void ReadAnythingCoordinator::OnTabChangeDelayComplete() {
-  CHECK(!post_tab_change_delay_complete_);
-  post_tab_change_delay_complete_ = true;
-  auto* web_contents = GetActiveWebContents();
-  // Web contents should be checked before starting the delay, and the timer
-  // will be canceled if the user navigates or leaves the tab.
-  CHECK(web_contents);
-  if (!web_contents->IsLoading()) {
-    // Ability to show was already checked before timer was started.
-    ActivePageDistillable();
-  }
-}
-
-void ReadAnythingCoordinator::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!selection.active_tab_changed()) {
-    return;
-  }
-  Observe(GetActiveWebContents());
-  if (IsActivePageDistillable()) {
-    StartPageChangeDelay();
-  } else {
-    ActivePageNotDistillable();
-  }
-}
-
-void ReadAnythingCoordinator::DidStopLoading() {
-  if (!post_tab_change_delay_complete_) {
-    return;
-  }
-  if (IsActivePageDistillable()) {
-    ActivePageDistillable();
-  } else {
-    ActivePageNotDistillable();
-  }
-}
-
-void ReadAnythingCoordinator::PrimaryPageChanged(content::Page& page) {
-  // On navigation, cancel any running delays.
-  delay_timer_.Stop();
-
-  if (!IsActivePageDistillable()) {
-    // On navigation, if we shouldn't show the IPH hide it. Otherwise continue
-    // to show it.
-    ActivePageNotDistillable();
-  }
-}
-
-content::WebContents* ReadAnythingCoordinator::GetActiveWebContents() const {
-  return browser_->tab_strip_model()->GetActiveWebContents();
-}
-
-bool ReadAnythingCoordinator::IsActivePageDistillable() const {
-  auto* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return false;
-  }
-
-  auto url = web_contents->GetLastCommittedURL();
-
-  for (const std::string& distillable_domain : a11y::GetDistillableDomains()) {
-    // If the url's domain is found in distillable domains AND the url has a
-    // filename (i.e. it is not a home page or sub-home page), show the promo.
-    if (url.DomainIs(distillable_domain) && !url.ExtractFileName().empty()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void ReadAnythingCoordinator::ActivePageNotDistillable() {
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHReadingModeSidePanelFeature);
-  for (Observer& obs : observers_) {
-    obs.OnActivePageDistillable(false);
-  }
-}
-
-void ReadAnythingCoordinator::ActivePageDistillable() {
-  browser_->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHReadingModeSidePanelFeature);
-  for (Observer& obs : observers_) {
-    obs.OnActivePageDistillable(true);
-  }
-}
-
-void ReadAnythingCoordinator::InstallGDocsHelperExtension() {
-#if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(true);
-#else
-  EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#else
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser_->profile())
-          ->extension_service();
-  if (!service) {
-    // In tests, the service might not be created.
-    CHECK_IS_TEST();
-    return;
-  }
-  extensions::ComponentLoader* component_loader = service->component_loader();
-  if (!component_loader->Exists(
-          extension_misc::kReadingModeGDocsHelperExtensionId)) {
-    component_loader->Add(
-        IDR_READING_MODE_GDOCS_HELPER_MANIFEST,
-        base::FilePath(FILE_PATH_LITERAL("reading_mode_gdocs_helper")));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-void ReadAnythingCoordinator::RemoveGDocsHelperExtension() {
-#if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(false);
-#else
-  EmbeddedA11yExtensionLoader::GetInstance()->RemoveExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#else
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser_->profile())
-          ->extension_service();
-  if (!service) {
-    // In tests, the service might not be created.
-    CHECK_IS_TEST();
-    return;
-  }
-  service->component_loader()->Remove(
-      extension_misc::kReadingModeGDocsHelperExtensionId);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-void ReadAnythingCoordinator::ActivePageNotDistillableForTesting() {
-  ActivePageNotDistillable();
-}
-
-void ReadAnythingCoordinator::ActivePageDistillableForTesting() {
-  ActivePageDistillable();
 }
 
 void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
@@ -316,12 +77,4 @@ void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
     side_panel_ui->SetNoDelaysForTesting(true);  // IN-TEST
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   }
-}
-
-void ReadAnythingCoordinator::OnLocalSidePanelSwitchDelayTimeout() {
-  if (active_local_side_panel_count_ > 0) {
-    return;
-  }
-
-  RemoveGDocsHelperExtension();
 }

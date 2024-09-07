@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/accessibility_helper.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_ocr.h"
@@ -1685,10 +1686,7 @@ void PDFiumPage::RequestThumbnail(float device_pixel_ratio,
 Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   DCHECK(available());
 
-  FPDF_PAGE page = GetPage();
-  gfx::Size page_size(base::saturated_cast<int>(FPDF_GetPageWidthF(page)),
-                      base::saturated_cast<int>(FPDF_GetPageHeightF(page)));
-  Thumbnail thumbnail(page_size, device_pixel_ratio);
+  Thumbnail thumbnail = GetThumbnail(device_pixel_ratio);
   const gfx::Size& image_size = thumbnail.image_size();
 
   ScopedFPDFBitmap fpdf_bitmap(FPDFBitmap_CreateEx(
@@ -1717,9 +1715,24 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   return thumbnail;
 }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+gfx::Size PDFiumPage::GetThumbnailSize(float device_pixel_ratio) {
+  return GetThumbnail(device_pixel_ratio).image_size();
+}
+#endif
+
 void PDFiumPage::GenerateAndSendThumbnail(float device_pixel_ratio,
                                           SendThumbnailCallback send_callback) {
   std::move(send_callback).Run(GenerateThumbnail(device_pixel_ratio));
+}
+
+Thumbnail PDFiumPage::GetThumbnail(float device_pixel_ratio) {
+  CHECK(available());
+
+  FPDF_PAGE page = GetPage();
+  gfx::Size page_size(base::saturated_cast<int>(FPDF_GetPageWidthF(page)),
+                      base::saturated_cast<int>(FPDF_GetPageHeightF(page)));
+  return Thumbnail(page_size, device_pixel_ratio);
 }
 
 void PDFiumPage::MarkAvailable() {

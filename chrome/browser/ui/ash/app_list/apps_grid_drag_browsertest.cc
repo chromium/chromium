@@ -18,13 +18,9 @@
 #include "content/public/test/browser_test.h"
 #include "ui/events/test/event_generator.h"
 
-class AppsGridDragBrowserTest : public InProcessBrowserTest,
-                                public testing::WithParamInterface<bool> {
+class AppsGridDragBrowserTest : public InProcessBrowserTest {
  public:
-  AppsGridDragBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        app_list_features::kDragAndDropRefactor, GetParam());
-  }
+  AppsGridDragBrowserTest() {}
   AppsGridDragBrowserTest(const AppsGridDragBrowserTest&) = delete;
   AppsGridDragBrowserTest& operator=(const AppsGridDragBrowserTest&) = delete;
   ~AppsGridDragBrowserTest() override = default;
@@ -47,11 +43,8 @@ class AppsGridDragBrowserTest : public InProcessBrowserTest,
     root_apps_grid_test_api_ = std::make_unique<ash::test::AppsGridViewTestApi>(
         app_list_test_api()->GetTopLevelAppsGridView());
 
-    if (GetParam()) {
-      ash::ShellTestApi()
-          .drag_drop_controller()
-          ->SetDisableNestedLoopForTesting(true);
-    }
+    ash::ShellTestApi().drag_drop_controller()->SetDisableNestedLoopForTesting(
+        true);
   }
 
   // Starts mouse drag on the specified view.
@@ -97,15 +90,12 @@ class AppsGridDragBrowserTest : public InProcessBrowserTest,
   std::unique_ptr<ash::test::AppsGridViewTestApi> root_apps_grid_test_api_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ash::AppListTestApi app_list_test_api_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, AppsGridDragBrowserTest, testing::Bool());
-
 // Verifies that reordering app list items by mouse drag works as expected on
 // the bubble apps grid.
-IN_PROC_BROWSER_TEST_P(AppsGridDragBrowserTest, ItemReorderByMouseDrag) {
+IN_PROC_BROWSER_TEST_F(AppsGridDragBrowserTest, ItemReorderByMouseDrag) {
   // Get the top level item ids before any operations.
   const std::vector<std::string> default_top_level_ids =
       app_list_test_api()->GetTopLevelViewIdList();
@@ -132,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(AppsGridDragBrowserTest, ItemReorderByMouseDrag) {
 
 // Verifies that merging two items into a folder and moving an item out of a
 // folder work as expected on the bubble apps grid.
-IN_PROC_BROWSER_TEST_P(AppsGridDragBrowserTest, ItemMerge) {
+IN_PROC_BROWSER_TEST_F(AppsGridDragBrowserTest, ItemMerge) {
   // Record the item count before any operations.
   const size_t default_top_level_item_count =
       app_list_test_api()->GetTopLevelViewIdList().size();
@@ -189,7 +179,6 @@ IN_PROC_BROWSER_TEST_P(AppsGridDragBrowserTest, ItemMerge) {
       root_apps_grid_test_api_->GetViewAtVisualIndex(/*page=*/0, /*slot=*/2)
           ->GetBoundsInScreen()
           .CenterPoint());
-  folder_apps_grid_test_api.FireFolderItemReparentTimer();
   event_generator_->MoveMouseTo(
       CalculatePositionBetweenAdjacentTopLevelItems(/*prev_item_index=*/2));
   root_apps_grid_test_api_->FireReorderTimerAndWaitForAnimationDone();

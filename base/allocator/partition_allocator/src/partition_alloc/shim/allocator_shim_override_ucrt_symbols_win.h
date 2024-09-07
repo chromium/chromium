@@ -268,6 +268,183 @@ errno_t _wdupenv_s(wchar_t** buffer,
 }
 #endif
 
+#if !defined(NDEBUG)
+typedef void (*_CRT_DUMP_CLIENT)(void*, size_t);
+
+int _crtDbgFlag = 0;
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+_CRT_DUMP_CLIENT _CrtSetDumpClient(_CRT_DUMP_CLIENT) {
+  PA_CHECK(false) << "This routine has not been implemented";
+  __builtin_unreachable();
+  return nullptr;
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+int _CrtDumpMemoryLeaks() {
+  PA_CHECK(false) << "This routine has not been implemented";
+  __builtin_unreachable();
+  return 0;
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+int _CrtSetDbgFlag(int new_flag) {
+  int old_flag = _crtDbgFlag;
+  _crtDbgFlag = new_flag;
+  return old_flag;
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _malloc_dbg(size_t size, int, const char*, int) {
+  return ShimMalloc(size, nullptr);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void _free_dbg(void* ptr, int) {
+  ShimFree(ptr, nullptr);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _realloc_dbg(void* ptr,
+                                        size_t size,
+                                        int,
+                                        const char*,
+                                        int) {
+  return ShimRealloc(ptr, size, nullptr);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _calloc_dbg(size_t n,
+                                       size_t size,
+                                       int,
+                                       const char*,
+                                       int) {
+  return ShimCalloc(n, size, nullptr);
+}
+
+// _msize() is the Windows equivalent of malloc_size().
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) size_t _msize_dbg(void* memblock, int) {
+  return ShimGetSizeEstimate(memblock, nullptr);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _aligned_malloc_dbg(size_t size,
+                                               size_t alignment,
+                                               const char*,
+                                               int) {
+  return ShimAlignedMalloc(size, alignment, nullptr);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _aligned_realloc_dbg(void* address,
+                                                size_t size,
+                                                size_t alignment,
+                                                const char*,
+                                                int) {
+  return ShimAlignedRealloc(address, size, alignment, nullptr);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void _aligned_free_dbg(void* address) {
+  ShimAlignedFree(address, nullptr);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _recalloc_dbg(void* block,
+                                         size_t count,
+                                         size_t size,
+                                         int,
+                                         const char*,
+                                         int) {
+  return _recalloc_base(block, count, size);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void* _expand_dbg(void*, size_t, int, const char*, int) {
+  PA_CHECK(false) << "This routine has not been implemented";
+  __builtin_unreachable();
+}
+
+// The following uncommon _aligned_* routines are not used in Chromium and have
+// been shimmed to immediately crash to ensure that implementations are added if
+// uses are introduced.
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _aligned_recalloc_dbg(void* address,
+                                                 size_t num,
+                                                 size_t size,
+                                                 size_t alignment,
+                                                 const char*,
+                                                 int) {
+  PA_CHECK(false) << "This routine has not been implemented";
+  __builtin_unreachable();
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+size_t _aligned_msize_dbg(void* address, size_t alignment, size_t offset) {
+  PA_CHECK(false) << "This routine has not been implemented";
+  __builtin_unreachable();
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _aligned_offset_malloc_dbg(size_t const size,
+                                                      size_t const alignment,
+                                                      size_t const offset,
+                                                      const char*,
+                                                      int const) {
+  PA_CHECK(false) << "This routine has not been implemented";
+  __builtin_unreachable();
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _aligned_offset_realloc_dbg(void* address,
+                                                       size_t size,
+                                                       size_t alignment,
+                                                       size_t offset) {
+  PA_CHECK(false) << "This routine has not been implemented";
+  __builtin_unreachable();
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+__declspec(restrict) void* _aligned_offset_recalloc_dbg(void* address,
+                                                        size_t num,
+                                                        size_t size,
+                                                        size_t alignment,
+                                                        size_t offset,
+                                                        const char*,
+                                                        int) {
+  PA_CHECK(false) << "This routine has not been implemented";
+  __builtin_unreachable();
+}
+
+#if defined(COMPONENT_BUILD)
+// Overrides CRT functions which internally call malloc() and expect callers
+// will free().
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+char* _strdup_dbg(const char* strSource) {
+  return _strdup(strSource);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+wchar_t* _wcsdup_dbg(const wchar_t* strSource) {
+  return _wcsdup(strSource);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+errno_t _dupenv_s_dbg(char** buffer,
+                      size_t* number_of_elements,
+                      const char* varname) {
+  return _dupenv_s(buffer, number_of_elements, varname);
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+errno_t _wdupenv_s_dbg(wchar_t** buffer,
+                       size_t* number_of_elements,
+                       const wchar_t* varname) {
+  return _wdupenv_s(buffer, number_of_elements, varname);
+}
+#endif  // defined(COMPONENT_BUILD)
+
+#endif  // !defined(NDEBUG)
+
 }  // extern "C"
 #endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 

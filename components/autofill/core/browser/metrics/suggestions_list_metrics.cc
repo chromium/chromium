@@ -38,7 +38,7 @@ SuggestionRankingContext::GetRelativePositionEnum(size_t legacy_index,
 }
 
 bool SuggestionRankingContext::RankingsAreDifferent() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       suggestion_rankings_difference_map, [](const auto& pair) {
         return pair.second != RelativePosition::kRankedSame;
       });

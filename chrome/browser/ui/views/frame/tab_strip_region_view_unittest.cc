@@ -210,12 +210,12 @@ TEST_P(TabStripRegionViewTest, TabSearchPositionLoggedOnConstruction) {
                                    : TabSearchPositionEnum::kLeading;
 
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount("Tabs.TabSearch.IsTrailingTabstrip",
+  histogram_tester.ExpectBucketCount("Tabs.TabSearch.PositionInTabstrip",
                                      TabSearchPositionEnum::kLeading, 0);
-  histogram_tester.ExpectBucketCount("Tabs.TabSearch.IsTrailingTabstrip",
+  histogram_tester.ExpectBucketCount("Tabs.TabSearch.PositionInTabstrip",
                                      TabSearchPositionEnum::kTrailing, 0);
   BuildTabStripRegionView();
-  histogram_tester.ExpectBucketCount("Tabs.TabSearch.IsTrailingTabstrip",
+  histogram_tester.ExpectBucketCount("Tabs.TabSearch.PositionInTabstrip",
                                      expected_enum_val, 1);
 }
 

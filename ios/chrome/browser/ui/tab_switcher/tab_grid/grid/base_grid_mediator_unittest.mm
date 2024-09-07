@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -841,17 +841,29 @@ TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
 
 // Tests that closing the last tab of a selected group clears the selection.
 TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
+  scoped_feature_list_.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+
+  tab_groups::MockTabGroupSyncService* mock_service =
+      static_cast<tab_groups::MockTabGroupSyncService*>(
+          tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+              browser_state_.get()));
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
   WebStateList* web_state_list = browser_->GetWebStateList();
-  web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
-  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
+  const TabGroup* group = web_state_list->CreateGroup({1}, {}, tab_group_id);
   mode_holder_.mode = TabGridMode::kSelection;
   [mediator_
       addToSelectionItemID:[GridItemIdentifier groupIdentifier:group
                                               withWebStateList:web_state_list]];
   EXPECT_EQ(1UL, [mediator_ allSelectedDragItems].count);
 
-  browser_->GetWebStateList()->CloseWebStateAt(1,
-                                               WebStateList::CLOSE_USER_ACTION);
+  EXPECT_CALL(*mock_service, GetGroup(tab_group_id))
+      .WillOnce(testing::Return(TestSavedGroup()));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id));
+  EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id)).Times(0);
+
+  [mediator_ closeItemsWithTabIDs:{} groupIDs:{tab_group_id} tabCount:1];
 
   EXPECT_EQ(0UL, [mediator_ allSelectedDragItems].count);
 }
@@ -900,8 +912,8 @@ TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
           tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
               browser_state_.get()));
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  other_web_state_list->CreateGroup({1}, {}, tab_group_id);
-  const TabGroup* group = other_web_state_list->GetGroupOfWebStateAt(1);
+  const TabGroup* group =
+      other_web_state_list->CreateGroup({1}, {}, tab_group_id);
   EXPECT_EQ(1u, other_web_state_list->GetGroups().size());
 
   EXPECT_CALL(*mock_service, GetGroup(tab_group_id))
@@ -914,6 +926,62 @@ TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
                                    groupIdentifier:group
                                   withWebStateList:other_web_state_list]];
   EXPECT_EQ(0u, other_web_state_list->GetGroups().size());
+}
+
+// Tests that closing multiple selected items doesn't delete saved groups.
+TEST_P(BaseGridMediatorTest, CloseSelectedTabsAndGroups) {
+  scoped_feature_list_.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a b c [ 1 d e ] [ 2 f g ] h", browser_->GetBrowserState()));
+
+  tab_groups::MockTabGroupSyncService* mock_service =
+      static_cast<tab_groups::MockTabGroupSyncService*>(
+          tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+              browser_state_.get()));
+
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+  const TabGroup* group_2 = builder.GetTabGroupForIdentifier('2');
+  TabGroupId tab_group_id_1 = group_1->tab_group_id();
+  TabGroupId tab_group_id_2 = group_2->tab_group_id();
+  web::WebState* web_state_a = builder.GetWebStateForIdentifier('a');
+  web::WebState* web_state_b = builder.GetWebStateForIdentifier('b');
+
+  mode_holder_.mode = TabGridMode::kSelection;
+  [mediator_
+      addToSelectionItemID:[GridItemIdentifier tabIdentifier:web_state_a]];
+  [mediator_
+      addToSelectionItemID:[GridItemIdentifier tabIdentifier:web_state_b]];
+  [mediator_
+      addToSelectionItemID:[GridItemIdentifier groupIdentifier:group_1
+                                              withWebStateList:web_state_list]];
+  [mediator_
+      addToSelectionItemID:[GridItemIdentifier groupIdentifier:group_2
+                                              withWebStateList:web_state_list]];
+
+  // 2 tabs, 2 tab groups.
+  EXPECT_EQ(4UL, [mediator_ allSelectedDragItems].count);
+
+  EXPECT_CALL(*mock_service, GetGroup(tab_group_id_1))
+      .WillOnce(testing::Return(TestSavedGroup()));
+  EXPECT_CALL(*mock_service, GetGroup(tab_group_id_2))
+      .WillOnce(testing::Return(TestSavedGroup()));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id_1));
+  EXPECT_CALL(*mock_service, RemoveLocalTabGroupMapping(tab_group_id_2));
+  EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id_1)).Times(0);
+  EXPECT_CALL(*mock_service, RemoveGroup(tab_group_id_2)).Times(0);
+
+  [mediator_ closeItemsWithTabIDs:{web_state_a->GetUniqueIdentifier(),
+                                   web_state_b->GetUniqueIdentifier()}
+                         groupIDs:{tab_group_id_1, tab_group_id_2}
+                         tabCount:6];
+
+  ASSERT_EQ("| c h", builder.GetWebStateListDescription());
+  EXPECT_EQ(0UL, [mediator_ allSelectedDragItems].count);
 }
 
 // Tests that closing the last tab of a selected group in a batch operation

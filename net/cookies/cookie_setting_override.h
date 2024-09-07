@@ -32,21 +32,16 @@ enum class CookieSettingOverride {
   // Corresponds to skipping checks on the TOP_LEVEL_TPCD_TRIAL content setting,
   // which backs 3PC accesses granted via top-level 3PC deprecation trial.
   kSkipTopLevelTPCDTrial = 5,
-  // Corresponds to checks that may grant 3PCs when a request opts into
-  // credentials and CORS protection.
-  // One example are subresource requests that are same-site with the top-level
-  // site but originate from a cross-site embed.
-  kCrossSiteCredentialedWithCORS = 6,
   // When specified, third party cookies should be forced disabled.
   // Other cookie exceptions like the storage access API could result in
   // third party cookies still being used when this is forced disabled.
   // Used by WebView.
-  kForceDisableThirdPartyCookies = 7,
+  kForceDisableThirdPartyCookies = 6,
   // When present, the caller may use an existing Storage Access API grant to
   // access third-party cookies. Note that some integrations which have more
   // stringent requirements, such as the FedCM/SAA integration (which requires
   // the `identity-credentials-get` policy), are not in scope for this variant.
-  kStorageAccessGrantEligibleViaHeader = 8,
+  kStorageAccessGrantEligibleViaHeader = 7,
 
   kMaxValue = kStorageAccessGrantEligibleViaHeader,
 };

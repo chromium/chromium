@@ -57,7 +57,7 @@ void FlushedMap::Purge() {
 void FlushedMap::Flush(EventBuffer<StructuredEventProto>& buffer,
                        FlushedCallback callback) {
   // Generate the new path to flush the buffer to.
-  base::FilePath path = GenerateFilePath();
+  const base::FilePath path = GenerateFilePath();
 
   // Flush the buffer. This depends on the implementation of |buffer|.
   buffer.Flush(path,
@@ -177,7 +177,7 @@ void FlushedMap::OnFlushed(FlushedCallback callback,
   keys_.push_back(*key);
 
   // Check if we have room to contain this data.
-  bool under_quota = resource_info_.HasRoom(key->size);
+  const bool under_quota = resource_info_.HasRoom(key->size);
 
   // We have flushed at this point, the resources needs to be consumed.
   resource_info_.Consume(key->size);

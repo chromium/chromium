@@ -38,11 +38,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private static final float REMOVE_PART_1_FINAL_SCALE = 0.6f;
     private static final float REMOVE_PART_2_FINAL_SCALE = 0f;
 
-    // Because the removal animation is split into two parts we don't want to rely on
-    // getRemoveDuration().
-    private static final long REMOVE_PART_1_DURATION = 100;
-    private static final long REMOVE_PART_2_DURATION = 100;
-    private static final long REMOVE_DURATION = REMOVE_PART_1_DURATION + REMOVE_PART_2_DURATION;
+    public static final long DEFAULT_REMOVE_DURATION = 200;
 
     /** Holds a set of pending and running animations of a type. */
     private static class AnimatorHolder {
@@ -91,8 +87,8 @@ public class TabListItemAnimator extends SimpleItemAnimator {
             for (var entry : mPendingAnimators.entrySet()) {
                 Animator animator = entry.getValue();
                 animator.setStartDelay(delay);
-                animator.start();
                 mRunningAnimators.put(entry.getKey(), animator);
+                animator.start();
             }
             mPendingAnimators.clear();
         }
@@ -105,8 +101,8 @@ public class TabListItemAnimator extends SimpleItemAnimator {
             Animator animator = mPendingAnimators.get(holder);
             mPendingAnimators.remove(holder);
             if (animator != null) {
-                animator.start();
                 mRunningAnimators.put(holder, animator);
+                animator.start();
                 // This call should remove the animator for mRunningAnimators.
                 animator.end();
             }
@@ -142,10 +138,11 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private AnimatorHolder mMoves = new AnimatorHolder("Move");
     private AnimatorHolder mRemovals = new AnimatorHolder("Removal");
 
-    private final boolean mRearrangeUseStandardEasing;
+    private final boolean mRemoveEmphasizedAccelerate;
 
-    TabListItemAnimator(boolean rearrangeUseStandardEasing) {
-        mRearrangeUseStandardEasing = rearrangeUseStandardEasing;
+    TabListItemAnimator(boolean removeEmphasizedAccelerate) {
+        mRemoveEmphasizedAccelerate = removeEmphasizedAccelerate;
+        setRemoveDuration(DEFAULT_REMOVE_DURATION);
     }
 
     @Override
@@ -167,17 +164,17 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         // beginning.
         mRemovals.runAllPendingAnimations();
         if (hasRemovals) {
-            mMoves.runAllPendingAnimationsDelayed(REMOVE_DURATION);
+            mMoves.runAllPendingAnimationsDelayed(getRemoveDuration());
         } else {
             mMoves.runAllPendingAnimations();
         }
         if (hasRemovals) {
-            mChanges.runAllPendingAnimationsDelayed(REMOVE_DURATION);
+            mChanges.runAllPendingAnimationsDelayed(getRemoveDuration());
         } else {
             mChanges.runAllPendingAnimations();
         }
         if (hasRemovals || hasMoves || hasChanges) {
-            long delay = hasRemovals ? REMOVE_DURATION : 0;
+            long delay = hasRemovals ? getRemoveDuration() : 0;
             long moveDuration = hasMoves ? getMoveDuration() : 0;
             long changeDuration = hasMoves ? getChangeDuration() : 0;
             delay += Math.max(moveDuration, changeDuration);
@@ -433,7 +430,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         if (TabUiFeatureUtilities.shouldUseListMode() || !shouldUseShrinkCloseAnimation(holder)) {
             animator = buildGenericRemoveAnimator(holder);
         } else {
-            animator = buildTabRemoveAnimatorForItemAnimator(holder);
+            animator = buildTabRemoveAnimator(holder);
         }
         mRemovals.put(holder, animator);
         return true;
@@ -453,8 +450,8 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         // This is adapted from DefaultItemAnimator.
         View view = holder.itemView;
         ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(view, View.ALPHA, 0f);
-        alphaAnimator.setDuration(REMOVE_DURATION);
-        alphaAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        alphaAnimator.setDuration(getRemoveDuration());
+        alphaAnimator.setInterpolator(getGenericRemoveInterpolator());
         alphaAnimator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
@@ -473,11 +470,11 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         return alphaAnimator;
     }
 
-    /** Builds an animator that shrinks and fades a tab. */
-    public static Animator buildTabRemoveAnimator(ViewHolder holder) {
+    private Animator buildTabRemoveAnimator(ViewHolder holder) {
         // This is a new custom remove animation that happens in two parts.
         // Part 1 shrinks from 100% -> 60%.
         // Part 2 shrinks from 60% -> 0% while fading to 0 alpha.
+        long partDuration = getRemoveDuration() / 2;
         View view = holder.itemView;
         AnimatorSet part1Shrink = new AnimatorSet();
         ObjectAnimator part1ScaleX =
@@ -485,7 +482,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         ObjectAnimator part1ScaleY =
                 ObjectAnimator.ofFloat(view, View.SCALE_Y, REMOVE_PART_1_FINAL_SCALE);
         part1Shrink.play(part1ScaleX).with(part1ScaleY);
-        part1Shrink.setDuration(REMOVE_PART_1_DURATION);
+        part1Shrink.setDuration(partDuration);
         part1Shrink.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
 
         AnimatorSet part2ShrinkAndFade = new AnimatorSet();
@@ -494,25 +491,10 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         ObjectAnimator part2ScaleY =
                 ObjectAnimator.ofFloat(view, View.SCALE_Y, REMOVE_PART_2_FINAL_SCALE);
         part2ShrinkAndFade.play(part2ScaleX).with(part2ScaleY);
-        part2ShrinkAndFade.setDuration(REMOVE_PART_2_DURATION);
+        part2ShrinkAndFade.setDuration(partDuration);
         part2ShrinkAndFade.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
 
         AnimatorSet animator = new AnimatorSet();
-        animator.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        view.setScaleX(ORIGINAL_SCALE);
-                        view.setScaleY(ORIGINAL_SCALE);
-                        view.setAlpha(1f);
-                    }
-                });
-        animator.play(part1Shrink).before(part2ShrinkAndFade);
-        return animator;
-    }
-
-    private Animator buildTabRemoveAnimatorForItemAnimator(ViewHolder holder) {
-        Animator animator = buildTabRemoveAnimator(holder);
         animator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
@@ -522,11 +504,15 @@ public class TabListItemAnimator extends SimpleItemAnimator {
 
                     @Override
                     public void onAnimationEnd(Animator animator) {
+                        view.setScaleX(ORIGINAL_SCALE);
+                        view.setScaleY(ORIGINAL_SCALE);
+                        view.setAlpha(1f);
                         dispatchRemoveFinished(holder);
                         mRemovals.remove(holder);
                         dispatchFinishedWhenAllAnimationsDone();
                     }
                 });
+        animator.play(part1Shrink).before(part2ShrinkAndFade);
         return animator;
     }
 
@@ -538,8 +524,12 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     }
 
     private Interpolator getRearrangeInterpolator() {
-        return mRearrangeUseStandardEasing
-                ? Interpolators.STANDARD_INTERPOLATOR
-                : Interpolators.LINEAR_INTERPOLATOR;
+        return Interpolators.STANDARD_INTERPOLATOR;
+    }
+
+    private Interpolator getGenericRemoveInterpolator() {
+        return mRemoveEmphasizedAccelerate
+                ? Interpolators.EMPHASIZED_ACCELERATE
+                : Interpolators.STANDARD_ACCELERATE;
     }
 }

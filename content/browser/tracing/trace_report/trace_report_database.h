@@ -137,8 +137,8 @@ class CONTENT_EXPORT TraceReportDatabase {
 
   // Delete all reports older than |age| from today.
   bool DeleteTraceReportsOlderThan(const base::TimeDelta age);
-  // Delete all trace content older than |age| from today.
-  bool DeleteTraceContentOlderThan(const base::TimeDelta age);
+  // Delete old trace content, keeping up to `max_traces`.
+  bool DeleteOldTraceContent(size_t max_traces);
 
   // Mark all reports that are pending upload as skipped with `skip_reason`.
   bool AllPendingUploadSkipped(SkipUploadReason skip_reason);

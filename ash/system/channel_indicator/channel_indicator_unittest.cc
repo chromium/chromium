@@ -18,6 +18,7 @@
 #include "ash/test_shell_delegate.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -157,6 +158,23 @@ TEST_P(ChannelIndicatorViewTest, Visible) {
     EXPECT_FALSE(IsViewSquished(
         GetPrimaryUnifiedSystemTray()->channel_indicator_view()->image_view()));
   }
+}
+
+TEST_P(ChannelIndicatorViewTest, AccessibleProperties) {
+  ShellDelegate* shell_delegate = Shell::Get()->shell_delegate();
+  UnifiedSystemTray* tray =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->unified_system_tray();
+  ChannelIndicatorView* channel_indicator_view = tray->channel_indicator_view();
+  if (!channel_indicator_utils::IsDisplayableChannel(
+          shell_delegate->GetChannel())) {
+    EXPECT_FALSE(channel_indicator_view);
+    GTEST_SKIP()
+        << "Test is only valid when channel indicator view is not null.";
+  }
+
+  ui::AXNodeData data;
+  channel_indicator_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kLabelText);
 }
 
 }  // namespace ash

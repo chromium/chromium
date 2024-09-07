@@ -69,7 +69,8 @@ class WebAppPrefGuardrails {
 
   // Returns an instance of the WebAppPrefGuardrails built to handle when the
   // IPH bubble for apps launched via link capturing should be shown.
-  static WebAppPrefGuardrails GetForLinkCapturingIph(PrefService* pref_service);
+  static WebAppPrefGuardrails GetForNavigationCapturingIph(
+      PrefService* pref_service);
 
   // The time values are stored as a string-flavored base::value representing
   // the int64_t number of microseconds since the Windows epoch, using
@@ -255,8 +256,8 @@ inline constexpr GuardrailPrefNames kMlPromoPrefNames{
     .block_reason_name = "ML_guardrail_blocked",
 };
 
-// -----------------------IPH Link Capturing guardrails-------------------
-// Link capturing In Product Help (IPH) is limited by guardrails to avoid
+// -----------------------IPH Navigation Capturing guardrails-------------------
+// Navigation capturing In Product Help (IPH) is limited by guardrails to avoid
 // becoming a nuisance to users. This is an overview of how they work:
 // - Accepting the IPH bubble will not decrease further prompts, and resets
 // existing guardrails. All values are measured globally and not per app.
@@ -264,19 +265,21 @@ inline constexpr GuardrailPrefNames kMlPromoPrefNames{
 // - The IPH bubble shows up 6 times at max, after which it does not show up
 // again.
 // - Example scenarios for triggering guardrails:
-//   - User launches a site in an installed app with link capturing enabled and
-//   dismisses the IPH prompt. The prompt is then seen on days 0, 1, 2, 3, 4 and
-//   5, after which the user never sees the IPH prompt again.
-inline constexpr GuardrailData kIPHLinkCapturingGuardrails{
-    // Number of times IPH bubble can show up for any apps launched via link
-    // capturing before it's muted.
+//   - User launches a site in an installed app with navigation capturing
+//   enabled and dismisses the IPH prompt. The prompt is then seen on days 0, 1,
+//   2, 3, 4 and 5, after which the user never sees the IPH prompt again.
+inline constexpr GuardrailData kIPHNavigationCapturingGuardrails{
+    // Number of times IPH bubble can show up for any apps launched via
+    // navigation capturing before it's muted.
     .global_not_accept_count = 6,
-    // Number of days to mute IPH for link captured app launches after it's
-    // dismissed for any app.
+    // Number of days to mute IPH for navigation captured app launches after
+    // it's dismissed for any app.
     .global_mute_after_dismiss_days = 1,
 };
 
-inline constexpr GuardrailPrefNames kIPHLinkCapturingPrefNames{
+// TODO(crbug.com/362123239): Rename pref keys from link capturing to navigation
+// capturing, migrate data if needed.
+inline constexpr GuardrailPrefNames kIPHNavigationCapturingPrefNames{
     .last_dismiss_time_name = "IPH_link_capturing_last_time_dismissed",
     .not_accepted_count_name =
         "IPH_link_capturing_consecutive_not_accepted_num",

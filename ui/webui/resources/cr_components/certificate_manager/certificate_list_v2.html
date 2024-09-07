@@ -1,53 +1,55 @@
-<style include="cr-shared-style">
-  .header-row {
-    display: flex;
-    font-weight: 500;
-    align-items: center;
-  }
+<style include="cr-shared-style certificate-manager-style-v2">
 
   .header-buttons {
     margin-left: auto;
   }
 
-  .card {
-    background-color: var(--cr-card-background-color);
-    border-radius: var(--cr-card-border-radius);
-    box-shadow: var(--cr-card-shadow);
-  }
-
   .no-certs {
     border-top: none;
   }
-</style>
 
-<cr-expand-button class="cr-row first" expanded="{{expanded_}}">
-  <div class="header-row">
+  /* Used when list is embedded in a subpage; added in .ts code */
+  .subpage-padding {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .list-title {
+    display: flex;
+    align-items: center;
+  }
+</style>
+<div hidden$="[[hideEverything_]]">
+  <div id="listHeader" class="section-title list-title first"
+      hidden$="[[hideHeader]]">
     [[headerText]]
     <div class="header-buttons">
-      <cr-button class="action-button"
-          hidden$="[[!showImport]]" id="importCert" on-click="onImportCertClick_">
+      <cr-button hidden$="[[!showImport]]" id="importCert"
+          on-click="onImportCertClick_">
         <!-- TODO(crbug.com/40928765): localize -->
         Import
       </cr-button>
       <!-- TODO(crbug.com/40928765): button for "import and bind" -->
-      <cr-button class="action-button"
-          hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
+      <cr-button hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
           aria-label="[[i18n('certificateManagerV2ExportButtonAriaLabel', headerText)]]"
           id="exportCerts" on-click="onExportCertsClick_">
         [[i18n("certificateManagerV2ExportButtonLabel")]]
       </cr-button>
     </div>
+    <cr-expand-button id="expandButton" expanded="{{expanded_}}" no-hover
+        hidden$="[[hideCollapseButton_(noCollapse, hasCerts_)]]">
+    </cr-expand-button>
   </div>
-</cr-expand-button>
-<cr-collapse id="certs" opened="[[expanded_]]">
-  <template is="dom-repeat" items="[[certificates_]]">
-    <certificate-entry-v2
-        cert-source="[[certSource]]"
-        display-name="[[item.displayName]]"
-        sha256hash-hex="[[item.sha256hashHex]]">
-    </certificate-entry-v2>
-  </template>
-  <div id="noCertsRow" class="cr-row no-certs" hidden="[[hasCerts_]]">
-    [[i18n("certificateManagerV2NoCertificatesRow")]]
-  </div>
-</cr-collapse>
+
+  <cr-collapse id="certs" opened="[[expanded_]]">
+    <template is="dom-repeat" items="[[certificates_]]">
+      <certificate-entry-v2
+          cert-source="[[certSource]]"
+          display-name="[[item.displayName]]"
+          sha256hash-hex="[[item.sha256hashHex]]">
+      </certificate-entry-v2>
+    </template>
+    <div id="noCertsRow" class="cr-row no-certs" hidden="[[hasCerts_]]">
+      [[i18n("certificateManagerV2NoCertificatesRow")]]
+    </div>
+  </cr-collapse>
+</div>

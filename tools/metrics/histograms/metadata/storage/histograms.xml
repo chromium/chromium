@@ -51,6 +51,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TopSites" summary="TopSites"/>
   <variant name="TrustTokens" summary="TrustTokens"/>
   <variant name="UKMMetrics" summary="UKMMetrics"/>
+  <variant name="UserAnnotations" summary="UserAnnotations"/>
   <variant name="UserNotes" summary="UserNotes"/>
   <variant name="Web" summary="Web"/>
 </variants>
@@ -128,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.PermissionRenewedDeltaToExpiration"
-    units="hours" expires_after="2024-12-24">
+    units="hours" expires_after="2025-02-23">
   <owner>cfredric@chromium.org</owner>
   <owner>johannhof@chromium.org</owner>
   <summary>
@@ -251,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DOMStorage.CommitSizeBytesAggregated" units="bytes"
-    expires_after="2024-11-28">
+    expires_after="2025-02-16">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -285,8 +286,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.LargeValueReadError" enum="FileErrorCode"
+    expires_after="2025-03-02">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    FileErrorCode when IndexedDB fails to read a blob-wrapped (large) value.
+    Recorded in the renderer process for the first value that failed to be
+    unwrapped in a transaction. This error causes the transaction to abort,
+    preventing further read attempts on other values.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.QuotaCheckTime2.{QuotaCheckResult}" units="ms"
-    expires_after="2024-12-15">
+    expires_after="2025-02-16">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -301,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBEnv.DeleteTableBackupFile" enum="BooleanSuccess"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -310,7 +323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBEnv.IOError" enum="LevelDBIOErrorMethods"
-    expires_after="2024-08-01">
+    expires_after="2025-08-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Methods where leveldb's Chromium environment has IO errors.</summary>
@@ -340,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBEnv.MissingFiles" units="files"
-    expires_after="2024-08-01">
+    expires_after="2025-08-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -372,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MojoLevelDBEnv.IOError" enum="LevelDBIOErrorMethods"
-    expires_after="2024-08-01">
+    expires_after="2025-08-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -415,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.ResultCode.{DatabaseTag}"
-    enum="SqliteLoggedResultCode" expires_after="2024-09-15">
+    enum="SqliteLoggedResultCode" expires_after="2025-09-15">
   <owner>asully@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -453,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Blob.FileReaderLoader.DataPipeNotReadableMojoError"
-    enum="FileReaderLoaderMojoResult" expires_after="2024-12-14">
+    enum="FileReaderLoaderMojoResult" expires_after="2025-02-16">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -463,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Blob.FileReaderLoader.FailureType2"
-    enum="FileReaderLoaderFailureType" expires_after="2024-12-14">
+    enum="FileReaderLoaderFailureType" expires_after="2025-02-16">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -477,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Blob.FileReaderLoader.ReadError2" enum="NetErrorCodes"
-    expires_after="2024-12-14">
+    expires_after="2025-02-16">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -541,6 +554,21 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     A Clear-Site-Data response header was seen with the given values.
+  </summary>
+</histogram>
+
+<histogram name="Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction"
+    enum="Boolean" expires_after="2025-09-01">
+  <owner>memmott@chromium.org</owner>
+  <owner>dslee@chromium.org</owner>
+  <owner>christinesm@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    Records whether a site attempted to observe a symlink or a junction using
+    the File System Observer API. Recorded on every observe() call after
+    validating the handle and ensuring that read permissions on the handle are
+    granted. This is always reported as false on Android, Fuchsia, and iOS.
+    Symlinks for File System Observer are not supported on these platforms.
   </summary>
 </histogram>
 
@@ -723,6 +751,96 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the size of each ad component renderURL in bytes. Recorded for each
     ad component, each time an interest group is successfully joined.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoCompressionRatio" units="%"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the percentage ratio of compressed size divided by uncompressed size
+    of the AdsProto, times 100. Recorded each time the AdProto is compressed,
+    including both during interest group insertion, and database migration from
+    older uncompressed versions, unless uncompressed size is 0. Includes both
+    ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoCompressionTime" units="ms"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the time taken to compress the ad proto. Recorded each time the
+    AdProto is compressed, including both during interest group insertion, and
+    database migration from older uncompressed versions. Includes both ads and
+    ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoDecompressionOutcome"
+    enum="AdProtoDecompressionOutcome" expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the outcome of interest group AdProto decompression, recorded on
+    each decompression attempt. Includes both ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoDecompressionTime" units="ms"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the outcome of interest group AdProto decompression, recorded on
+    each successful decompression attempt. Includes both ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoDeserializationTime" units="ms"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the time taken to deserialize the ad proto. Recorded each time the
+    AdProto is deserialized. Includes both ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoSerializationTime" units="ms"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the time taken to serialize the ad proto. Recorded each time the
+    AdProto is serialized, including both during interest group insertion, and
+    database migration. Includes both ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoSizeCompressed" units="bytes"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the size of the compressed AdProto, recorded each time the AdProto
+    is compressed, including both during interest group insertion, and database
+    migration from older uncompressed versions, even if the uncompressed size is
+    0. Includes both ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoSizeUncompressed" units="bytes"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the size of the uncompressed AdProto, recorded each time the AdProto
+    is compressed, including both during interest group insertion, and database
+    migration from older uncompressed versions, even if the uncompressed size is
+    0. Includes both ads and ad components.
   </summary>
 </histogram>
 
@@ -1708,7 +1826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.StoragePressure.Bubble"
-    enum="StoragePressureBubbleUserAction" expires_after="2024-09-01">
+    enum="StoragePressureBubbleUserAction" expires_after="2025-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

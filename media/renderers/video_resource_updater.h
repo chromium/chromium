@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -46,12 +45,9 @@ class ClientSharedImageInterface;
 namespace media {
 class PaintCanvasVideoRenderer;
 
-// Specifies what type of data is contained in the mailboxes, as well as how
-// many mailboxes will be present.
+// Specifies what type of data is contained in the mailbox.
 enum class VideoFrameResourceType {
   NONE,
-  YUV,
-  YUVA,
   RGB,
   RGBA_PREMULTIPLIED,
   RGBA,
@@ -62,18 +58,18 @@ enum class VideoFrameResourceType {
   VIDEO_HOLE,
 };
 
-class MEDIA_EXPORT VideoFrameExternalResources {
+class MEDIA_EXPORT VideoFrameExternalResource {
  public:
   VideoFrameResourceType type = VideoFrameResourceType::NONE;
-  std::vector<viz::TransferableResource> resources;
-  std::vector<viz::ReleaseCallback> release_callbacks;
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
 
   uint32_t bits_per_channel = 8;
 
-  VideoFrameExternalResources();
-  VideoFrameExternalResources(VideoFrameExternalResources&& other);
-  VideoFrameExternalResources& operator=(VideoFrameExternalResources&& other);
-  ~VideoFrameExternalResources();
+  VideoFrameExternalResource();
+  VideoFrameExternalResource(VideoFrameExternalResource&& other);
+  VideoFrameExternalResource& operator=(VideoFrameExternalResource&& other);
+  ~VideoFrameExternalResource();
 };
 
 // VideoResourceUpdater is used by the video system to produce frame content as
@@ -99,32 +95,32 @@ class MEDIA_EXPORT VideoResourceUpdater
   ~VideoResourceUpdater() override;
 
   // For each CompositorFrame the following sequence is expected:
-  // 1. ObtainFrameResources(): Import resources for the next video frame with
+  // 1. ObtainFrameResource(): Import resource for the next video frame with
   //    viz::ClientResourceProvider. This will reuse existing GPU or
   //    SharedMemory buffers if possible, otherwise it will allocate new ones.
-  // 2. AppendQuads(): Add DrawQuads to CompositorFrame for video.
-  // 3. ReleaseFrameResources(): After the CompositorFrame has been submitted,
-  //    remove imported resources from viz::ClientResourceProvider.
-  void ObtainFrameResources(scoped_refptr<VideoFrame> video_frame);
-  void ReleaseFrameResources();
+  // 2. AppendQuad(): Add DrawQuad to CompositorFrame for video.
+  // 3. ReleaseFrameResource(): After the CompositorFrame has been submitted,
+  //    remove imported resource from viz::ClientResourceProvider.
+  void ObtainFrameResource(scoped_refptr<VideoFrame> video_frame);
+  void ReleaseFrameResource();
   // Appends a quad representing |frame| to |render_pass|.
   // At most one quad is expected to be appended, this is enforced by the users
   // of this class (e.g: VideoFrameSubmitter). Producing only one quad will
   // allow viz to optimize compositing when the only content changing per-frame
   // is the video.
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
-                   scoped_refptr<VideoFrame> frame,
-                   gfx::Transform transform,
-                   gfx::Rect quad_rect,
-                   gfx::Rect visible_quad_rect,
-                   const gfx::MaskFilterInfo& mask_filter_info,
-                   std::optional<gfx::Rect> clip_rect,
-                   bool context_opaque,
-                   float draw_opacity,
-                   int sorting_context_id);
+  void AppendQuad(viz::CompositorRenderPass* render_pass,
+                  scoped_refptr<VideoFrame> frame,
+                  gfx::Transform transform,
+                  gfx::Rect quad_rect,
+                  gfx::Rect visible_quad_rect,
+                  const gfx::MaskFilterInfo& mask_filter_info,
+                  std::optional<gfx::Rect> clip_rect,
+                  bool context_opaque,
+                  float draw_opacity,
+                  int sorting_context_id);
 
   // TODO(kylechar): This is only public for testing, make private.
-  VideoFrameExternalResources CreateExternalResourcesFromVideoFrame(
+  VideoFrameExternalResource CreateExternalResourceFromVideoFrame(
       scoped_refptr<VideoFrame> video_frame);
 
   viz::SharedImageFormat YuvSharedImageFormat(int bits_per_channel);
@@ -135,16 +131,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   class HardwarePlaneResource;
   class SoftwarePlaneResource;
 
-  // A resource that will be embedded in a DrawQuad in the next CompositorFrame.
-  // Each video plane will correspond to one FrameResource.
-  struct FrameResource {
-    FrameResource();
-    FrameResource(viz::ResourceId id, const gfx::Size& size);
-
-    viz::ResourceId id;
-    gfx::Size size_in_pixels;
-  };
-
   bool software_compositor() const { return context_provider_ == nullptr; }
 
   // Reallocate |upload_pixels_| with the requested size.
@@ -153,16 +139,13 @@ class MEDIA_EXPORT VideoResourceUpdater
   // Obtain a resource of the right format by either recycling an
   // unreferenced but appropriately formatted resource, or by
   // allocating a new resource.
-  // Additionally, if the |unique_id| and |plane_index| match, then
-  // it is assumed that the resource has the right data already and will only be
-  // used for reading, and so is returned even if it is still referenced.
-  // Passing -1 for |plane_index| avoids returning referenced
-  // resources.
+  // Additionally, if the |unique_id| matches, then it is assumed that the
+  // resource has the right data already and will only be used for reading, and
+  // so is returned even if it is still referenced.
   PlaneResource* RecycleOrAllocateResource(const gfx::Size& resource_size,
                                            viz::SharedImageFormat si_format,
                                            const gfx::ColorSpace& color_space,
-                                           VideoFrame::ID unique_id,
-                                           int plane_index);
+                                           VideoFrame::ID unique_id);
   PlaneResource* AllocateResource(const gfx::Size& plane_size,
                                   viz::SharedImageFormat format,
                                   const gfx::ColorSpace& color_space);
@@ -173,12 +156,12 @@ class MEDIA_EXPORT VideoResourceUpdater
   // https://crbug.com/582170
   void CopyHardwarePlane(VideoFrame* video_frame,
                          const gpu::MailboxHolder& mailbox_holder,
-                         VideoFrameExternalResources* external_resources);
+                         VideoFrameExternalResource* external_resources);
 
-  // Get resources ready to be appended into DrawQuads. This is used for GPU
+  // Get resource ready to be appended into DrawQuad. This is used for GPU
   // compositing most of the time, except for the cases mentioned in
   // CreateForSoftwarePlanes().
-  VideoFrameExternalResources CreateForHardwarePlanes(
+  VideoFrameExternalResource CreateForHardwarePlanes(
       scoped_refptr<VideoFrame> video_frame);
 
   // Get the shared image format for creating resource which is used for
@@ -189,13 +172,6 @@ class MEDIA_EXPORT VideoResourceUpdater
       int bits_per_channel,
       const gfx::ColorSpace& input_frame_color_space,
       bool& texture_needs_rgb_conversion_out);
-
-  // Get the subplane shared image format used for creating
-  // SoftwarePlaneResource per plane for multiplanar formats.
-  std::optional<viz::SharedImageFormat> GetSoftwareSubplaneFormat(
-      VideoPixelFormat input_frame_format,
-      const gfx::ColorSpace& input_frame_color_space,
-      viz::SharedImageFormat output_si_format);
 
   // Transfer RGB pixels from the video frame to software resource through
   // canvas via PaintCanvasVideoRenderer.
@@ -208,15 +184,6 @@ class MEDIA_EXPORT VideoResourceUpdater
                                PlaneResource* plane_resource,
                                viz::SharedImageFormat output_si_format);
 
-  // Write/copy YUV pixels per plane from video frame to hardware resource
-  // through WritePixels or TexSubImage2D. Also perform bit downshifting for
-  // channel format mismatch between input frame and supported shared image
-  // format.
-  bool WriteYUVPixelsPerPlaneToPerTexture(scoped_refptr<VideoFrame> video_frame,
-                                          HardwarePlaneResource* plane_resource,
-                                          size_t bits_per_channel,
-                                          size_t plane_index);
-
   // Write/copy YUV pixels for all planes from video frame to hardware resource
   // through WritePixelsYUV. Also perform bit downshifting for
   // channel format mismatch between input frame and supported shared image
@@ -226,10 +193,10 @@ class MEDIA_EXPORT VideoResourceUpdater
       HardwarePlaneResource* resource,
       size_t bits_per_channel);
 
-  // Get resources ready to be appended into DrawQuads. This is always used for
+  // Get resource ready to be appended into DrawQuad. This is always used for
   // software compositing. This is also used for GPU compositing when the input
   // video frame has no textures.
-  VideoFrameExternalResources CreateForSoftwarePlanes(
+  VideoFrameExternalResource CreateForSoftwarePlanes(
       scoped_refptr<VideoFrame> video_frame);
 
   gpu::raster::RasterInterface* RasterInterface();
@@ -265,11 +232,9 @@ class MEDIA_EXPORT VideoResourceUpdater
 
   VideoFrameResourceType frame_resource_type_;
 
-  uint32_t frame_bits_per_channel_;
-
-  // Resources that will be placed into quads by the next call to
+  // Id of resource that will be placed into quad by the next call to
   // AppendDrawQuads().
-  std::vector<FrameResource> frame_resources_;
+  viz::ResourceId frame_resource_id_;
   // If the video resource is a hole punching VideoFrame sent by Chromecast,
   // the VideoFrame carries an |overlay_plane_id_| to activate the video
   // overlay, but there is no video content to display within VideoFrame.

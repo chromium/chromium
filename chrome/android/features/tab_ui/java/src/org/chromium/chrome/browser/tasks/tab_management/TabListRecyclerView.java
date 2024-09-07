@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.RunOnNextLayout;
+import org.chromium.chrome.browser.hub.RunOnNextLayoutDelegate;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -34,48 +36,36 @@ import java.util.List;
 
 /** A custom RecyclerView implementation for the tab grid, to handle show/hide logic in class. */
 class TabListRecyclerView extends RecyclerView
-        implements TabListMediator.TabGridAccessibilityHelper {
+        implements TabListMediator.TabGridAccessibilityHelper, RunOnNextLayout {
     private boolean mBlockTouchInput;
     private ImageView mShadowImageView;
     // Null unless item animations are disabled.
     @Nullable private RecyclerView.ItemAnimator mDisabledAnimatorHolder;
-    // Null if there is no runnable to execute on the next layout.
-    @Nullable private Runnable mOnNextLayoutRunnable;
+
+    private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
 
     private TabListItemAnimator mTabListItemAnimator;
 
     /** Basic constructor to use during inflation from xml. */
     public TabListRecyclerView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
+        mRunOnNextLayoutDelegate = new RunOnNextLayoutDelegate(this);
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        if (mOnNextLayoutRunnable != null) {
-            Runnable runnable = mOnNextLayoutRunnable;
-            mOnNextLayoutRunnable = null;
-            runnable.run();
-        }
+        runOnNextLayoutRunnables();
     }
 
-    /**
-     * Sets a runnable to start an animation that executes on next layout. This ensures any
-     * positioning changes will be accounted for. If the view is not attached or will not be laid
-     * out the runnable is executed immediately to avoid blocking indefinitely.
-     *
-     * @param runnable the runnable that executes on next layout.
-     */
-    void runAnimationOnNextLayout(Runnable runnable) {
-        mOnNextLayoutRunnable = runnable;
+    @Override
+    public void runOnNextLayout(Runnable runnable) {
+        mRunOnNextLayoutDelegate.runOnNextLayout(runnable);
+    }
 
-        // If the view is detached or won't conduct a new layout then trigger the runnable
-        // immediately rather than waiting for it to be attached.
-        if (!isLayoutRequested()) {
-            Runnable runNow = mOnNextLayoutRunnable;
-            mOnNextLayoutRunnable = null;
-            runNow.run();
-        }
+    @Override
+    public void runOnNextLayoutRunnables() {
+        mRunOnNextLayoutDelegate.runOnNextLayoutRunnables();
     }
 
     @Override
@@ -113,9 +103,9 @@ class TabListRecyclerView extends RecyclerView
         if (!ChromeFeatureList.sGtsCloseTabAnimation.isEnabled()) return;
 
         if (mTabListItemAnimator == null) {
-            boolean rearrangeUseStandardEasing =
-                    ChromeFeatureList.sGtsCloseTabAnimationRearrangeStandardEasing.getValue();
-            mTabListItemAnimator = new TabListItemAnimator(rearrangeUseStandardEasing);
+            boolean removeEmphasizedAccelerate =
+                    ChromeFeatureList.sGtsCloseTabAnimationRemoveEmphasizedAccelerate.getValue();
+            mTabListItemAnimator = new TabListItemAnimator(removeEmphasizedAccelerate);
             setItemAnimator(mTabListItemAnimator);
         }
     }

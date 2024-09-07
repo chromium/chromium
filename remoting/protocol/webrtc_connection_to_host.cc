@@ -56,6 +56,11 @@ void WebrtcConnectionToHost::Disconnect(ErrorCode error) {
   session_->Close(error);
 }
 
+void WebrtcConnectionToHost::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_->ApplyNetworkSettings(settings);
+}
+
 const SessionConfig& WebrtcConnectionToHost::config() {
   return session_->config();
 }

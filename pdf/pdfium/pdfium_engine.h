@@ -24,6 +24,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
@@ -194,7 +195,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   virtual bool HandleInputEvent(const blink::WebInputEvent& event);
   void PrintBegin();
   virtual std::vector<uint8_t> PrintPages(
-      const std::vector<int>& page_numbers,
+      const std::vector<int>& page_indices,
       const blink::WebPrintParams& print_params);
   void PrintEnd();
   void StartFind(const std::u16string& text, bool case_sensitive);
@@ -276,8 +277,8 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Gets the index of the most visible page, or -1 if none are visible.
   int GetMostVisiblePage();
 
-  // Returns whether the page at `index` is visible or not.
-  virtual bool IsPageVisible(int index) const;
+  // Returns whether the page at `page_index` is visible or not.
+  virtual bool IsPageVisible(int page_index) const;
 
   // Gets the current layout orientation.
   PageOrientation GetCurrentOrientation() const;
@@ -399,6 +400,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void RequestThumbnail(int page_index,
                         float device_pixel_ratio,
                         SendThumbnailCallback send_callback);
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Virtual to support testing.
+  virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);
+#endif
 
   // DocumentLoader::Client:
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override;
@@ -625,11 +630,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   bool ExtendSelection(int page_index, int char_index);
 
   std::vector<uint8_t> PrintPagesAsRasterPdf(
-      const std::vector<int>& page_numbers,
+      const std::vector<int>& page_indices,
       const blink::WebPrintParams& print_params);
 
   std::vector<uint8_t> PrintPagesAsPdf(
-      const std::vector<int>& page_numbers,
+      const std::vector<int>& page_indices,
       const blink::WebPrintParams& print_params);
 
   // Checks if `page` has selected text in a form element. If so, sets that as
@@ -844,6 +849,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Checks whether a given `page_index` exists in `pending_thumbnails_`. If so,
   // requests the thumbnail for that page.
   void MaybeRequestPendingThumbnail(int page_index);
+
+  // Sets whether form highlight should be enabled or cleared.
+  void SetFormHighlight(bool enable_form);
+
+  void ClearTextSelection();
 
   const raw_ptr<PDFiumEngineClient> client_;
 

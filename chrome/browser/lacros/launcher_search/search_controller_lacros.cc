@@ -17,6 +17,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
 namespace crosapi {
 
@@ -109,8 +110,9 @@ void SearchControllerLacros::OnResultChanged(AutocompleteController* controller,
   std::vector<mojom::SearchResultPtr> results;
   for (AutocompleteMatch match : autocomplete_controller_->result()) {
     // Calculator results are honorary answer results.
-    const bool is_answer = match.answer.has_value() ||
-                           match.type == AutocompleteMatchType::CALCULATOR;
+    const bool is_answer =
+        match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
+        match.type == AutocompleteMatchType::CALCULATOR;
     auto result =
         is_answer
             ? CreateAnswerResult(match, autocomplete_controller_.get(), query_,

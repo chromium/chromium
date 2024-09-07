@@ -146,8 +146,7 @@ class MockCertVerifyProc : public CertVerifyProc {
                      const std::string& sct_list,
                      int flags,
                      CertVerifyResult* verify_result,
-                     const NetLogWithSource& net_log,
-                     std::optional<base::Time> time_now) override;
+                     const NetLogWithSource& net_log) override;
 
   const CertVerifyResult result_;
   const int error_ = OK;
@@ -159,8 +158,7 @@ int MockCertVerifyProc::VerifyInternal(X509Certificate* cert,
                                        const std::string& sct_list,
                                        int flags,
                                        CertVerifyResult* verify_result,
-                                       const NetLogWithSource& net_log,
-                                       std::optional<base::Time> time_now) {
+                                       const NetLogWithSource& net_log) {
   *verify_result = result_;
   verify_result->verified_cert = cert;
   return error_;
@@ -222,7 +220,7 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
           std::move(cert_net_fetcher), std::move(crl_set),
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
-          CreateSslSystemTrustStore(), instance_params);
+          CreateSslSystemTrustStore(), instance_params, std::nullopt);
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
@@ -232,7 +230,7 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           CreateSslSystemTrustStoreChromeRoot(
               std::make_unique<net::TrustStoreChrome>()),
-          instance_params);
+          instance_params, std::nullopt);
 #endif
     default:
       return nullptr;

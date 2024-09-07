@@ -1,10 +1,9 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="../../../resources/percent-based-util.js"></script>
 <style>
   html {
-    -webkit-writing-mode: vertical-rl;
+    writing-mode: vertical-rl;
   }
   body {
     margin: 0px;
@@ -25,41 +24,34 @@
 <div id="anchor"></div>
 
 <script>
-  var asyncTest = async_test("Verify smooth scroll interaction with scroll anchoring on page with vertical-lr writing mode");
+  const changer_desired_width = "100px";
+  const pixelsToScrollX = -205;
+  // End position: changer width + pixelsToScrollX.
+  const endX = -305;
 
-  // The element that will change in height.
-  var ch;
-  // Initital scroll position.
-  var initialX = -10;
-  var initialY = 0;
-  // Amount to smooth scroll by.
-  const { x: userScrollX } = calculatePixelsToScroll(
-    document.scrollingElement, -205, 0
-  );
-  // Amount to change the height of the element above the viewport.
-  var changerX = 100;
-  // End position: height of ch + userScroll.
-  var endX = -305;
-  var source = GestureSourceType.MOUSE_INPUT;
-
-  function scrollListener() {
-    // The value on Linux appears to be slightly different
-    if (approx_equals(window.scrollX, endX, 0.5)) {
-      asyncTest.done();
-      return;
+  function addScrollListener(target) {
+    const scrollListener = () => {
+      if (target.style.width != changer_desired_width) {
+        target.style.width = changer_desired_width;
+      }
     }
-
-    if (ch.style.width != "100")
-      ch.style.width = changerX;
+    document.addEventListener("scroll", scrollListener, { once: true });
   }
 
-  window.onload = async () => {
-    ch = document.getElementById("changer");
-    document.addEventListener("scroll", scrollListener);
+  promise_test(async () => {
+    await waitForCompositorReady();
+    await waitForScrollReset(document.scrollingElement);
 
-    // Smooth scroll.
-    smoothScroll(userScrollX, 100, 100, source, 'right', SPEED_INSTANT, !isPercentBasedScrollingEnabled());
-    await raf();
-    window.scrollTo(initialX, initialY);
-  }
+    // Scroll to the left (10px) so the anchor is invisible.
+    document.getElementById('anchor').scrollIntoView();
+    await waitForScrollendEvent(document);
+
+    const changer = document.getElementById("changer");
+    addScrollListener(changer);
+    await smoothScrollWithXY(
+      pixelsToScrollX, 0, 100, 100, GestureSourceType.MOUSE_INPUT,
+      SPEED_INSTANT);
+    assert_equals(window.scrollX, endX);
+  }, "Verify smooth scroll interaction with scroll anchoring on page with " +
+     "vertical-lr writing mode.");
 </script>

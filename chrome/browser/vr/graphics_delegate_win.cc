@@ -69,12 +69,11 @@ bool GraphicsDelegateWin::PreRender() {
   }
 
   // Create a texture id and associate it with shared image.
-  dest_texture_id_ = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
-      client_shared_image_->mailbox().name);
-  gl_->BeginSharedImageAccessDirectCHROMIUM(
-      dest_texture_id_, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  shared_image_texture_ = client_shared_image_->CreateGLTexture(gl_);
+  scoped_shared_image_access_ =
+      shared_image_texture_->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
 
-  gl_->BindTexture(GL_TEXTURE_2D, dest_texture_id_);
+  gl_->BindTexture(GL_TEXTURE_2D, scoped_shared_image_access_->texture_id());
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -85,9 +84,13 @@ bool GraphicsDelegateWin::PreRender() {
   gl_->GenFramebuffers(1, &draw_frame_buffer_);
   gl_->BindFramebuffer(GL_DRAW_FRAMEBUFFER, draw_frame_buffer_);
   gl_->FramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                            GL_TEXTURE_2D, dest_texture_id_, 0);
+                            GL_TEXTURE_2D,
+                            scoped_shared_image_access_->texture_id(), 0);
 
   if (gl_->GetError() != GL_NO_ERROR) {
+    gpu::SharedImageTexture::ScopedAccess::EndAccess(
+        std::move(scoped_shared_image_access_));
+    shared_image_texture_.reset();
     // Clear any remaining GL errors.
     while (gl_->GetError() != GL_NO_ERROR) {
     }
@@ -102,14 +105,12 @@ void GraphicsDelegateWin::PostRender() {
   gl_->BindFramebuffer(GL_FRAMEBUFFER, 0);
   gl_->DeleteFramebuffers(1, &draw_frame_buffer_);
 
-  gl_->EndSharedImageAccessDirectCHROMIUM(dest_texture_id_);
-  gl_->DeleteTextures(1, &dest_texture_id_);
-  gl_->BindTexture(GL_TEXTURE_2D, 0);
-  dest_texture_id_ = 0;
-  draw_frame_buffer_ = 0;
-
   // Generate a SyncToken after GPU is done accessing the texture.
-  gl_->GenSyncTokenCHROMIUM(access_done_sync_token_.GetData());
+  access_done_sync_token_ = gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      std::move(scoped_shared_image_access_));
+  shared_image_texture_.reset();
+  gl_->BindTexture(GL_TEXTURE_2D, 0);
+  draw_frame_buffer_ = 0;
 
   // Flush.
   gl_->ShallowFlushCHROMIUM();

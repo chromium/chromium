@@ -95,7 +95,7 @@ class AttributionSrcLocalFrameClient : public EmptyLocalFrameClient {
     return URLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
   }
 
-  void DispatchWillSendRequest(ResourceRequest& request) override {
+  void DispatchFinalizeRequest(ResourceRequest& request) override {
     if (request.GetRequestContext() ==
         mojom::blink::RequestContextType::ATTRIBUTION_SRC) {
       request_head_ = request;
@@ -1118,6 +1118,29 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
       }
     }
   }
+}
+
+// Regression test for https://crbug.com/363947060.
+TEST_F(AttributionSrcLoaderTest,
+       UnsetAttributionSupportForNonAttributionSrcRequest_NoCrash) {
+  KURL url = ToKURL(kUrl);
+  ResourceRequest request(url);
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(http_names::kAttributionReportingRegisterTrigger,
+                              AtomicString(R"({})"));
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response);
+  host.WaitUntilBoundAndFlush();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+
+  mock_data_host->Flush();
+  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
 }
 
 }  // namespace

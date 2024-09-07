@@ -47,7 +47,8 @@
           "builder": "android-bfcache-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-bfcache-rel/targets"
     }
   },
   "$build/reclient": {

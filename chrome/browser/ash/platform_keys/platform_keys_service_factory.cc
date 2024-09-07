@@ -85,8 +85,7 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
       const user_manager::User* user =
           ProfileHelper::Get()->GetUserByProfile(profile);
       // Use the device-wide system key slot only if the user is affiliated on
-      // the
-      // device.
+      // the device.
       const bool use_system_key_slot = user->IsAffiliated();
       return std::make_unique<ClientCertStoreAsh>(
           nullptr,  // no additional provider
@@ -103,7 +102,7 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
                           public SystemTokenCertDbStorage::Observer {
  public:
   DelegateForDevice() {
-    scoped_observeration_.Observe(SystemTokenCertDbStorage::Get());
+    scoped_observation_.Observe(SystemTokenCertDbStorage::Get());
   }
 
   ~DelegateForDevice() override = default;
@@ -128,11 +127,11 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
  private:
   base::ScopedObservation<SystemTokenCertDbStorage,
                           SystemTokenCertDbStorage::Observer>
-      scoped_observeration_{this};
+      scoped_observation_{this};
 
   // SystemTokenCertDbStorage::Observer
   void OnSystemTokenCertDbDestroyed() override {
-    scoped_observeration_.Reset();
+    scoped_observation_.Reset();
     ShutDown();
   }
 };
@@ -154,8 +153,9 @@ PlatformKeysServiceFactory* PlatformKeysServiceFactory::GetInstance() {
 
 // static
 PlatformKeysService* PlatformKeysServiceFactory::GetDeviceWideService() {
-  if (device_wide_service_for_testing_)
+  if (device_wide_service_for_testing_) {
     return device_wide_service_for_testing_;
+  }
 
   if (!device_wide_service_) {
     device_wide_service_ = std::make_unique<PlatformKeysServiceImpl>(
@@ -177,6 +177,7 @@ void PlatformKeysServiceFactory::SetDeviceWideServiceForTesting(
 
 void PlatformKeysServiceFactory::SetTestingMode(bool is_testing_mode) {
   map_to_softoken_attrs_for_testing_ = is_testing_mode;
+  allow_alternative_params_for_testing_ = is_testing_mode;
 }
 
 PlatformKeysServiceFactory::PlatformKeysServiceFactory()
@@ -211,6 +212,8 @@ PlatformKeysServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<PlatformKeysServiceImpl>(std::move(delegate));
   platform_keys_service_impl->SetMapToSoftokenAttrsForTesting(
       map_to_softoken_attrs_for_testing_);
+  platform_keys_service_impl->SetAllowAlternativeParamsForTesting(
+      allow_alternative_params_for_testing_);
 
   return platform_keys_service_impl;
 }

@@ -9,10 +9,10 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 @class BrowserCoordinator;
 @class BrowserViewController;
-class ChromeBrowserState;
 @protocol SyncPresenter;
 
 // Implementation of BrowserProvider -- for the most part a wrapper around

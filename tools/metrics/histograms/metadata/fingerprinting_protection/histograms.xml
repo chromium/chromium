@@ -23,6 +23,33 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram
+    name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias.{Result}"
+    units="microseconds" expires_after="2025-08-29">
+  <owner>thesalsa@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>johnykim@google.com</owner>
+  <summary>
+    Records the total time a child frame navigation was delayed due to alias
+    checking, whether the check was triggered, and calculating whether it should
+    be disallowed. Logged for all navigations that were marked {Result}.
+
+    A {Result} marked as Checked indicates that the alias check was triggered,
+    while Disallowed and WouldDisallow are LoadPolicy decisions determined by
+    alias checking. Because alias checks are counted with
+    FingerprintingProtection.DocumentLoad.SubframeFilteringDelay, alias allowed
+    decisions can be derived.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+  <token key="Result">
+    <variant name="Checked"/>
+    <variant name="Disallowed"/>
+    <variant name="WouldDisallow"/>
+  </token>
+</histogram>
+
+<histogram
     name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.{Result}"
     units="microseconds" expires_after="2025-04-30">
   <owner>thesalsa@google.com</owner>
@@ -263,6 +290,19 @@ chromium-metrics-reviews@google.com.
 
     Note: this histogram is emitted for all clients, both ones which have
     high-resolution timer available and those which don't.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.WebContentsObserver.RefreshCount"
+    units="refresh counts" expires_after="2025-08-20">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    The count of refreshes on the first document after a Fingerprinting
+    Protection throttling completes. This metric is experimental and for
+    data-gathering.
   </summary>
 </histogram>
 

@@ -15,10 +15,6 @@ proto_library("v4_store_proto") {
   link_deps = [ ":safebrowsing_proto" ]
 }
 
-proto_library("metadata_proto") {
-  sources = [ "metadata.proto" ]
-}
-
 # This target is shared between the desktop and mobile versions.
 group("safe_browsing_db_shared") {
   deps = [

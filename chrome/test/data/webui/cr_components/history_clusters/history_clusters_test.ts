@@ -261,6 +261,7 @@ suite('history-clusters', () => {
         await imageServiceHandler.whenCalled('getPageImageUrl');
     await microtasksFinished();
     assertEquals(PageImageServiceClientId.Journeys, clientId);
+    assertTrue(!!urlVisit.visit);
     assertEquals(urlVisit.visit.normalizedUrl, pageUrl);
 
     // Verify the icon element received the handler's response.
@@ -288,6 +289,7 @@ suite('history-clusters', () => {
   test('sets scroll target', async () => {
     const clustersElement = await setupClustersElement();
     clustersElement.scrollTarget = document.body;
+    await microtasksFinished();
 
     assertEquals(document.body, clustersElement.$.clusters.scrollTarget);
   });
@@ -295,6 +297,7 @@ suite('history-clusters', () => {
   test('sets scroll offset', async () => {
     const clustersElement = await setupClustersElement();
     clustersElement.scrollOffset = 123;
+    await microtasksFinished();
     assertEquals(123, clustersElement.$.clusters.scrollOffset);
   });
 

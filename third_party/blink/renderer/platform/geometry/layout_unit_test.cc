@@ -35,6 +35,12 @@
 
 namespace blink {
 
+template <class T>
+class LayoutUnitTypedTest : public testing::Test {};
+using LayoutUnitTypes =
+    ::testing::Types<LayoutUnit, TextRunLayoutUnit, InlineLayoutUnit>;
+TYPED_TEST_SUITE(LayoutUnitTypedTest, LayoutUnitTypes);
+
 TEST(LayoutUnitTest, LayoutUnitInt) {
   EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(INT_MIN).ToInt());
   EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(INT_MIN / 2).ToInt());
@@ -327,6 +333,14 @@ TEST(LayoutUnitTest, LayoutUnitMultiplication) {
   }
 }
 
+TYPED_TEST(LayoutUnitTypedTest, MultiplicationByInt) {
+  const auto quarter_max = TypeParam::kIntMax / 4;
+  EXPECT_EQ(TypeParam(quarter_max * 2), TypeParam(quarter_max) * 2);
+  EXPECT_EQ(TypeParam(quarter_max * 3), TypeParam(quarter_max) * 3);
+  EXPECT_EQ(TypeParam(quarter_max * 4), TypeParam(quarter_max) * 4);
+  EXPECT_EQ(TypeParam::Max(), TypeParam(quarter_max) * 5);
+}
+
 TEST(LayoutUnitTest, LayoutUnitDivision) {
   EXPECT_EQ(1, (LayoutUnit(1) / LayoutUnit(1)).ToInt());
   EXPECT_EQ(0, (LayoutUnit(1) / LayoutUnit(2)).ToInt());
@@ -364,6 +378,20 @@ TEST(LayoutUnitTest, LayoutUnitDivision) {
             (LayoutUnit(LayoutUnit::kIntMax) / LayoutUnit(2)).ToInt());
   EXPECT_EQ(LayoutUnit::kIntMax,
             (LayoutUnit(LayoutUnit::kIntMax) / LayoutUnit(0.5)).ToInt());
+}
+
+TEST(LayoutUnitTest, LayoutUnitDivisionByInt) {
+  EXPECT_EQ(LayoutUnit(1), LayoutUnit(1) / 1);
+  EXPECT_EQ(LayoutUnit(0.5), LayoutUnit(1) / 2);
+  EXPECT_EQ(LayoutUnit(-0.5), LayoutUnit(1) / -2);
+  EXPECT_EQ(LayoutUnit(-0.5), LayoutUnit(-1) / 2);
+  EXPECT_EQ(LayoutUnit(0.5), LayoutUnit(-1) / -2);
+
+  EXPECT_DOUBLE_EQ(LayoutUnit::kIntMax / 2.0,
+                   (LayoutUnit(LayoutUnit::kIntMax) / 2).ToDouble());
+  EXPECT_DOUBLE_EQ(
+      InlineLayoutUnit::kIntMax / 2.0,
+      (InlineLayoutUnit(InlineLayoutUnit::kIntMax) / 2).ToDouble());
 }
 
 TEST(LayoutUnitTest, LayoutUnitMulDiv) {
@@ -545,6 +573,42 @@ TEST(LayoutUnitTest, Raw64FromRaw32) {
 
   // The following code should fail to compile.
   // TextRunLayoutUnit back_to_32{InlineLayoutUnit(value)};
+}
+
+TEST(LayoutUnitTest, To) {
+#define TEST_ROUND_TRIP(T1, T2)                      \
+  EXPECT_EQ(T1(value), T2(value).To<T1>()) << value; \
+  EXPECT_EQ(T2(value), T1(value).To<T2>()) << value;
+
+  for (const float value : {1.0f, 1.5f, -1.0f}) {
+    TEST_ROUND_TRIP(LayoutUnit, TextRunLayoutUnit);
+    TEST_ROUND_TRIP(LayoutUnit, InlineLayoutUnit);
+    TEST_ROUND_TRIP(TextRunLayoutUnit, InlineLayoutUnit);
+  }
+#undef TEST_ROUND_TRIP
+}
+
+TEST(LayoutUnitTest, ToClampSameFractional64To32) {
+  EXPECT_EQ(
+      TextRunLayoutUnit::Max(),
+      InlineLayoutUnit(TextRunLayoutUnit::kIntMax + 1).To<TextRunLayoutUnit>());
+  EXPECT_EQ(
+      TextRunLayoutUnit::Min(),
+      InlineLayoutUnit(TextRunLayoutUnit::kIntMin - 1).To<TextRunLayoutUnit>());
+}
+
+TEST(LayoutUnitTest, ToClampLessFractional64To32) {
+  EXPECT_EQ(LayoutUnit::Max(),
+            InlineLayoutUnit(LayoutUnit::kIntMax + 1).To<LayoutUnit>());
+  EXPECT_EQ(LayoutUnit::Min(),
+            InlineLayoutUnit(LayoutUnit::kIntMin - 1).To<LayoutUnit>());
+}
+
+TEST(LayoutUnitTest, ToClampMoreFractional) {
+  EXPECT_EQ(TextRunLayoutUnit::Max(),
+            LayoutUnit(TextRunLayoutUnit::kIntMax + 1).To<TextRunLayoutUnit>());
+  EXPECT_EQ(TextRunLayoutUnit::Min(),
+            LayoutUnit(TextRunLayoutUnit::kIntMin - 1).To<TextRunLayoutUnit>());
 }
 
 TEST(LayoutUnitTest, Raw64Ceil) {

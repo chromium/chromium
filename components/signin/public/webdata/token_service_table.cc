@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/os_crypt/sync/os_crypt.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -60,11 +60,11 @@ WebDatabaseTable::TypeKey TokenServiceTable::GetTypeKey() const {
 }
 
 bool TokenServiceTable::CreateTablesIfNecessary() {
-  if (!db_->DoesTableExist("token_service")) {
-    if (!db_->Execute("CREATE TABLE token_service ("
-                      "service VARCHAR PRIMARY KEY NOT NULL,"
-                      "encrypted_token BLOB,"
-                      "binding_key BLOB)")) {
+  if (!db()->DoesTableExist("token_service")) {
+    if (!db()->Execute("CREATE TABLE token_service ("
+                       "service VARCHAR PRIMARY KEY NOT NULL,"
+                       "encrypted_token BLOB,"
+                       "binding_key BLOB)")) {
       DUMP_WILL_BE_NOTREACHED() << "Failed creating token_service table";
       return false;
     }
@@ -84,7 +84,7 @@ bool TokenServiceTable::MigrateToVersion(int version,
 
 bool TokenServiceTable::RemoveAllTokens() {
   VLOG(1) << "Remove all tokens";
-  sql::Statement s(db_->GetUniqueStatement("DELETE FROM token_service"));
+  sql::Statement s(db()->GetUniqueStatement("DELETE FROM token_service"));
 
   bool result = s.Run();
   LOG_IF(ERROR, !result) << "Failed to remove all tokens";
@@ -93,7 +93,7 @@ bool TokenServiceTable::RemoveAllTokens() {
 
 bool TokenServiceTable::RemoveTokenForService(const std::string& service) {
   sql::Statement s(
-      db_->GetUniqueStatement("DELETE FROM token_service WHERE service = ?"));
+      db()->GetUniqueStatement("DELETE FROM token_service WHERE service = ?"));
   s.BindString(0, service);
 
   bool result = s.Run();
@@ -106,7 +106,7 @@ bool TokenServiceTable::SetTokenForService(
     const std::string& token,
     const std::vector<uint8_t>& wrapped_binding_key) {
   std::string encrypted_token;
-  bool encrypted = OSCrypt::EncryptString(token, &encrypted_token);
+  bool encrypted = encryptor()->EncryptString(token, &encrypted_token);
   if (!encrypted) {
     LOG(ERROR) << "Failed to encrypt token (token will not be saved to DB).";
     return false;
@@ -114,7 +114,7 @@ bool TokenServiceTable::SetTokenForService(
 
   // Don't bother with a cached statement since this will be a relatively
   // infrequent operation.
-  sql::Statement s(db_->GetUniqueStatement(
+  sql::Statement s(db()->GetUniqueStatement(
       "INSERT OR REPLACE INTO token_service "
       "(service, encrypted_token, binding_key) VALUES (?, ?, ?)"));
   s.BindString(0, service);
@@ -128,7 +128,7 @@ bool TokenServiceTable::SetTokenForService(
 
 TokenServiceTable::Result TokenServiceTable::GetAllTokens(
     std::map<std::string, TokenWithBindingKey>* tokens) {
-  sql::Statement s(db_->GetUniqueStatement(
+  sql::Statement s(db()->GetUniqueStatement(
       "SELECT service, encrypted_token, binding_key FROM token_service"));
 
   UMA_HISTOGRAM_BOOLEAN("Signin.TokenTable.GetAllTokensSqlStatementValidity",
@@ -154,7 +154,7 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
                     s.ColumnBlobAsString(1, &encrypted_token) &&
                     s.ColumnBlobAsVector(2, &wrapped_binding_key);
     if (entry_ok) {
-      if (OSCrypt::DecryptString(encrypted_token, &decrypted_token)) {
+      if (encryptor()->DecryptString(encrypted_token, &decrypted_token)) {
         (*tokens)[service] = TokenServiceTable::TokenWithBindingKey(
             std::move(decrypted_token), std::move(wrapped_binding_key));
         read_token_result = READ_ONE_TOKEN_SUCCESS;
@@ -181,9 +181,9 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
 }
 
 bool TokenServiceTable::MigrateToVersion130AddBindingKeyColumn() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   return transaction.Begin() &&
-         db_->Execute(
+         db()->Execute(
              "ALTER TABLE token_service ADD COLUMN binding_key BLOB") &&
          transaction.Commit();
 }

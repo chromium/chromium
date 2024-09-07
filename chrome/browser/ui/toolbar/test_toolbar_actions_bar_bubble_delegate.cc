@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_restrictions.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 class TestToolbarActionsBarBubbleDelegate::DelegateImpl
     : public ToolbarActionsBarBubbleDelegate {
@@ -29,7 +30,7 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
   }
   std::u16string GetActionButtonText() override { return parent_->action_; }
   std::u16string GetDismissButtonText() override { return parent_->dismiss_; }
-  ui::DialogButton GetDefaultDialogButton() override {
+  ui::mojom::DialogButton GetDefaultDialogButton() override {
     return parent_->default_button_;
   }
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>
@@ -62,7 +63,7 @@ TestToolbarActionsBarBubbleDelegate::TestToolbarActionsBarBubbleDelegate(
       body_(body),
       action_(action),
       dismiss_(dismiss),
-      default_button_(ui::DIALOG_BUTTON_NONE) {}
+      default_button_(ui::mojom::DialogButton::kNone) {}
 
 TestToolbarActionsBarBubbleDelegate::~TestToolbarActionsBarBubbleDelegate() {
   // If the bubble didn't close, it means that it still owns the DelegateImpl,

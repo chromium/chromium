@@ -25,6 +25,7 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension.h"
 #include "net/http/http_response_headers.h"
@@ -159,8 +160,9 @@ std::ostream& operator<<(std::ostream& output, const RequestAction& action) {
 
 std::ostream& operator<<(std::ostream& output,
                          const std::optional<RequestAction>& action) {
-  if (!action)
+  if (!action) {
     return output << "empty Optional<RequestAction>";
+  }
   return output << *action;
 }
 
@@ -422,8 +424,9 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
 
   // Serialize |rules|.
   base::Value::List builder;
-  for (const auto& rule : rules)
+  for (const auto& rule : rules) {
     builder.Append(rule.ToValue());
+  }
   JSONFileValueSerializer(source.json_path()).Serialize(std::move(builder));
 
   // Index ruleset.
@@ -436,12 +439,14 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
     return false;
   }
 
-  if (!result.warnings.empty())
+  if (!result.warnings.empty()) {
     return false;
+  }
 
   DCHECK_EQ(IndexStatus::kSuccess, result.status);
-  if (expected_checksum)
+  if (expected_checksum) {
     *expected_checksum = result.ruleset_checksum;
+  }
 
   LoadRulesetResult load_result =
       source.CreateVerifiedMatcher(result.ruleset_checksum, matcher);
@@ -461,12 +466,18 @@ FileBackedRulesetSource CreateTemporarySource(RulesetID id,
 dnr_api::ModifyHeaderInfo CreateModifyHeaderInfo(
     dnr_api::HeaderOperation operation,
     std::string header,
-    std::optional<std::string> value) {
+    std::optional<std::string> value,
+    std::optional<std::string> regex_filter,
+    std::optional<std::string> regex_substitution,
+    std::optional<dnr_api::HeaderRegexOptions> regex_options) {
   dnr_api::ModifyHeaderInfo header_info;
 
   header_info.operation = std::move(operation);
   header_info.header = std::move(header);
   header_info.value = std::move(value);
+  header_info.regex_filter = std::move(regex_filter);
+  header_info.regex_substitution = std::move(regex_substitution);
+  header_info.regex_options = std::move(regex_options);
 
   return header_info;
 }
@@ -511,8 +522,9 @@ std::vector<GURL> RulesetManagerObserver::GetAndResetRequestSeen() {
 void RulesetManagerObserver::WaitForExtensionsWithRulesetsCount(size_t count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ASSERT_FALSE(expected_count_);
-  if (current_count_ == count)
+  if (current_count_ == count) {
     return;
+  }
 
   expected_count_ = count;
   run_loop_ = std::make_unique<base::RunLoop>();
@@ -522,8 +534,9 @@ void RulesetManagerObserver::WaitForExtensionsWithRulesetsCount(size_t count) {
 void RulesetManagerObserver::OnRulesetCountChanged(size_t count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_count_ = count;
-  if (expected_count_ != count)
+  if (expected_count_ != count) {
     return;
+  }
 
   ASSERT_TRUE(run_loop_.get());
 
@@ -551,8 +564,9 @@ void WarningServiceObserver::WaitForWarning() {
 
 void WarningServiceObserver::ExtensionWarningsChanged(
     const ExtensionIdSet& affected_extensions) {
-  if (!base::Contains(affected_extensions, extension_id_))
+  if (!base::Contains(affected_extensions, extension_id_)) {
     return;
+  }
 
   run_loop_.Quit();
 }

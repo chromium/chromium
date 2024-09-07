@@ -291,9 +291,7 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)
-                                ? R.id.universal_install
-                                : R.id.add_to_homescreen_id));
+                        R.id.universal_install));
         Assert.assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
@@ -493,7 +491,7 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.add_to_homescreen_id));
+                        R.id.universal_install));
         Assert.assertNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
@@ -538,8 +536,7 @@ public class CustomTabActivityAppMenuTest {
         openAppMenuAndAssertMenuShown();
         PropertyModel addToHomeScreenPropertyModel =
                 AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.add_to_homescreen_id);
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.universal_install);
 
         Assert.assertNull(addToHomeScreenPropertyModel);
 
@@ -622,6 +619,7 @@ public class CustomTabActivityAppMenuTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/361629264")
     public void testOpenInBrowser() throws Exception {
         // Augment the CustomTabsSession to catch the callback.
         CallbackHelper callbackTriggered = new CallbackHelper();

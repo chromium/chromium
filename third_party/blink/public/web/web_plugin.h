@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_H_
 
+#include "base/containers/span.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
@@ -135,7 +136,7 @@ class WebPlugin {
   }
 
   virtual void DidReceiveResponse(const WebURLResponse&) = 0;
-  virtual void DidReceiveData(const char* data, size_t data_length) = 0;
+  virtual void DidReceiveData(base::span<const char> data) = 0;
   virtual void DidFinishLoading() = 0;
   virtual void DidFailLoading(const WebURLError&) = 0;
 
@@ -155,9 +156,9 @@ class WebPlugin {
   // A returned value of 0 indicates failure.
   virtual int PrintBegin(const WebPrintParams& print_params) { return 0; }
 
-  // Prints the page specified by `page_number`, using the parameters passed to
+  // Prints the page specified by `page_index`, using the parameters passed to
   // `PrintBegin()`, into `canvas`.
-  virtual void PrintPage(int page_number, cc::PaintCanvas* canvas) {}
+  virtual void PrintPage(int page_index, cc::PaintCanvas* canvas) {}
 
   // Ends the print session. Further calls to `PrintPages()` will fail.
   virtual void PrintEnd() {}

@@ -27,6 +27,8 @@
     position: absolute;
     right: 0;
     width: var(--clear-icon-size);
+    /* Necessary to be above the '#hover-layer' in cr-input. */
+    z-index: 1;
   }
 
   :host-context([dir=rtl]) #clearSearch {

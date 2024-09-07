@@ -1942,10 +1942,19 @@ class Port(object):
         if pac_url is not None:
             args.append("--proxy-pac-url=" + pac_url)
 
-        if ENABLE_THREADED_COMPOSITING_FLAG not in args:
-            # We run single-threaded by default.
-            # Note that this logic is mirrored in wptrunner:
-            # third_party/wpt_tools/wpt/tools/wptrunner/wptrunner/browsers/content_shell.py
+        # We run single-threaded by default (overriding content_shell's default,
+        # which is to enable threading).
+        #
+        # But we use threading if we find --enable-threaded-compositing in
+        # virtual test suite args, or if the user explicitly passed it as:
+        #
+        #   --additional-driver-flag=--enable-threaded-compositing
+        #
+        # (Note content_shell only understands --disable-threaded-compositing,
+        # not --enable-threaded-compositing.)
+        #
+        if ENABLE_THREADED_COMPOSITING_FLAG not in (
+                args + self._specified_additional_driver_flags()):
             args.append(DISABLE_THREADED_COMPOSITING_FLAG)
             args.append(DISABLE_THREADED_ANIMATION_FLAG)
         else:
@@ -1955,6 +1964,9 @@ class Port(object):
                 args.remove(DISABLE_THREADED_COMPOSITING_FLAG)
             if DISABLE_THREADED_ANIMATION_FLAG in args:
                 args.remove(DISABLE_THREADED_ANIMATION_FLAG)
+
+        # Always support running web tests using SwiftShader for compositing or WebGL
+        args.append('--enable-unsafe-swiftshader')
 
         startup_trace_file = self.startup_trace_file_for_test(test_name)
         if startup_trace_file is not None:

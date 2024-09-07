@@ -75,6 +75,8 @@ public class PageInfoContainer extends FrameLayout {
         ChromeImageButton closeButton = findViewById(R.id.page_info_close);
         closeButton.setVisibility(params.showCloseButton ? VISIBLE : GONE);
         closeButton.setOnClickListener(v -> params.closeButtonClickCallback.run());
+        View closeButtonLeftPadding = findViewById(R.id.page_info_close_left_padding);
+        closeButtonLeftPadding.setVisibility(params.showCloseButton ? VISIBLE : GONE);
 
         ChromeImageButton backButton = findViewById(R.id.subpage_back_button);
         backButton.setOnClickListener(v -> params.backButtonClickCallback.run());

@@ -2063,18 +2063,6 @@
       ]
     },
     {
-      "id": 332,
-      "cr_bugs": [1045586],
-      "description": "Send empty video hdr metadata due to crashes on AMD",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "use_empty_video_hdr_metadata"
-      ]
-    },
-    {
       "id": 334,
       "description": "Some drivers seem to require as to use original texture whenever possible",
       "cr_bugs": [1052114, 1117370],

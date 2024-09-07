@@ -55,12 +55,14 @@ enum {
   DIR_SIGNIN_PROFILE_EXTENSIONS,        // Directory under which a cache of
                                         // force-installed extensions is
                                         // maintained for the signin profile.
-  DIR_PREINSTALLED_COMPONENTS,          // Directory that contains pre-installed
-                                        // components.
   DIR_DEVICE_POLICY_EXTERNAL_DATA,     // Directory where device policy external
                                        // data resources are cached.
   DIR_DEVICE_POLICY_SCREENSAVER_DATA,  // Directory where the device policy
                                        // managed screensaver images are cached.
+  FILE_DEVICE_LOCAL_ACCOUNT_FIRST_POLICY_FETCH,  // File location to mark that
+                                                 // the first policy fetch for
+                                                 // device local accounts has
+                                                 // been scheduled.
   PATH_END
 };
 

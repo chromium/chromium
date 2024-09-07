@@ -157,6 +157,7 @@ struct ProcessManager::ExtensionRenderFrameData {
       case extensions::mojom::ViewType::kExtensionGuest:
       case extensions::mojom::ViewType::kExtensionPopup:
       case extensions::mojom::ViewType::kTabContents:
+      case extensions::mojom::ViewType::kDeveloperTools:
         return true;
 
       case extensions::mojom::ViewType::kInvalid:

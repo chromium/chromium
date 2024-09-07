@@ -75,6 +75,24 @@ bool IsDasherlessProfile(Profile* profile) {
 
 namespace policy {
 
+// Take over policy management from UserPolicySigninService to avoid conflicts
+void ShutdownUserPolicySigninService(Profile* profile) {
+  // Shutdown `UserPolicySigninService` if needed for Dasher-based profiles, so
+  // this class can be the only sign in service controlling
+  // UserCloudPolicyManager.
+  if (!IsDasherlessProfile(profile)) {
+    auto* user_policy_signin_service =
+        UserPolicySigninServiceFactory::GetForProfile(profile);
+    // Only one sign in service should be managing policies, so we need to
+    // shutdown `UserPolicySigninService` before starting restoration process.
+    if (user_policy_signin_service) {
+      VLOG_POLICY(2, OIDC_ENROLLMENT) << "Shutting down user policy signin "
+                                         "service in favor of OIDC service";
+      user_policy_signin_service->Shutdown();
+    }
+  }
+}
+
 OidcProfileManagerObserverBridge::OidcProfileManagerObserverBridge(
     UserPolicyOidcSigninService* user_policy_signin_service)
     : user_policy_signin_service_(user_policy_signin_service) {
@@ -145,6 +163,7 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
     bool switch_to_entry,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
     PolicyFetchCallback callback) {
+  ShutdownUserPolicySigninService(profile_);
   FetchPolicyForSignedInUser(
       account_id, dm_token, client_id, user_affiliation_ids,
       std::move(profile_url_loader_factory),
@@ -156,18 +175,7 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
 }
 
 void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
-  if (!IsDasherlessProfile(profile_)) {
-    auto* user_policy_signin_service =
-        UserPolicySigninServiceFactory::GetForProfile(profile_);
-    // Only one sign in service should be managing policies, so we need to
-    // shutdown `UserPolicySigninService` before starting restoration process.
-    if (user_policy_signin_service) {
-      VLOG_POLICY(2, OIDC_ENROLLMENT) << "Shutting down user policy signin "
-                                         "service in favor of OIDC service";
-      user_policy_signin_service->Shutdown();
-    }
-  }
-
+  ShutdownUserPolicySigninService(profile_);
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Attempting to restore OIDC profile policy via backup DM token";
   std::string dm_token = profile_->GetPrefs()->GetString(
@@ -257,7 +265,7 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
 
     // User account management would be included in unified consent dialog.
     enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
-
+    CHECK(profile_);
     policy::CloudPolicyManager* user_policy_manager =
         profile_->GetUserCloudPolicyManager();
 

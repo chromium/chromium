@@ -316,8 +316,8 @@ class DeskModelWrapperTest : public testing::Test {
   std::unique_ptr<LocalDeskDataManager> data_manager_;
   std::unique_ptr<syncer::DataTypeStore> store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
-  std::unique_ptr<DeskSyncBridge> bridge_;
   testing::NiceMock<MockDeskModelObserver> mock_observer_;
+  std::unique_ptr<DeskSyncBridge> bridge_;
   std::unique_ptr<DeskModelWrapper> model_wrapper_;
 };
 

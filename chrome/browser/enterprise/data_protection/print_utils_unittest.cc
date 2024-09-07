@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/data_protection/print_utils.h"
 
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -78,7 +79,7 @@ constexpr char16_t kUserJustification[] = u"User justification";
 
 scoped_refptr<base::RefCountedMemory> CreateData() {
   return base::MakeRefCounted<base::RefCountedStaticMemory>(
-      reinterpret_cast<const unsigned char*>(kTestData), sizeof(kTestData) - 1);
+      base::byte_span_from_cstring(kTestData));
 }
 
 const std::set<std::string>* PrintMimeTypes() {

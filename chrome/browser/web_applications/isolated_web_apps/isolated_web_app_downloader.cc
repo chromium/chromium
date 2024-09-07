@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/thread_pool.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -19,6 +20,49 @@
 #include "url/gurl.h"
 
 namespace web_app {
+
+void ScopedTempWebBundleFile::Create(
+    base::OnceCallback<void(ScopedTempWebBundleFile)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce([]() -> ScopedTempWebBundleFile {
+        auto file = std::make_unique<base::ScopedTempFile>();
+        if (!file->Create()) {
+          return ScopedTempWebBundleFile(/*file=*/nullptr);
+        }
+        return ScopedTempWebBundleFile(std::move(file));
+      }),
+      std::move(callback));
+}
+
+ScopedTempWebBundleFile::ScopedTempWebBundleFile(
+    std::unique_ptr<base::ScopedTempFile> file)
+    : file_(std::move(file)) {}
+
+ScopedTempWebBundleFile::~ScopedTempWebBundleFile() {
+  if (!file_) {
+    return;
+  }
+
+  // Deleting the file must happen on a thread that allows blocking.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](std::unique_ptr<base::ScopedTempFile> file) {
+            // `file` is deleted here.
+          },
+          std::move(file_)));
+}
+
+ScopedTempWebBundleFile& ScopedTempWebBundleFile::operator=(
+    ScopedTempWebBundleFile&&) = default;
+ScopedTempWebBundleFile::ScopedTempWebBundleFile(ScopedTempWebBundleFile&&) =
+    default;
+
+const base::FilePath& ScopedTempWebBundleFile::path() const {
+  CHECK(file_) << "`path()` must not be called on a nullptr `file_`.";
+  return file_->path();
+}
 
 // static
 std::unique_ptr<IsolatedWebAppDownloader>

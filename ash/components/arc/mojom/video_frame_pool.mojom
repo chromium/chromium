@@ -35,13 +35,9 @@ interface VideoFramePool {
 };
 
 // Video frame pool client, needs to provide video frames to the pool.
-// Next Method ID: 2
+// Deprecated method IDs: 0
+// Next method ID: 2
 interface VideoFramePoolClient {
-  // Request a set of video frames from the client with specified properties.
-  // The pool client needs to add frames to the pool using AddVideoFrame().
-  DEPRECATED_RequestVideoFrames@0(VideoPixelFormat format, Size coded_size,
-                       Rect visible_rect, uint32 num_frames);
-
   // Request a set of video frames from the client with specified properties.
   // The pool client needs to add frames to the pool using AddVideoFrame().
   // The pool client should call the response callback before making any

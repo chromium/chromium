@@ -415,7 +415,8 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
     content::NavigationHandle* navigation_handle,
     bool is_adframe,
     bool should_ignore_detected_ad) {
-  const FrameTreeNodeId ad_id = navigation_handle->GetFrameTreeNodeId();
+  const content::FrameTreeNodeId ad_id =
+      navigation_handle->GetFrameTreeNodeId();
   // If an existing subframe is navigating and it was an ad previously that
   // hasn't navigated yet, then we need to update it.
   const auto& id_and_data = ad_frames_data_.find(ad_id);
@@ -675,7 +676,8 @@ void AdsPageLoadMetricsObserver::MediaStartedPlaying(
 void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Rect& main_frame_intersection_rect) {
-  int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      render_frame_host->GetFrameTreeNodeId();
   if (render_frame_host->IsInPrimaryMainFrame()) {
     page_ad_density_tracker_.UpdateMainFrameRect(main_frame_intersection_rect);
     return;
@@ -686,7 +688,7 @@ void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
   FrameTreeData* ancestor_data = FindFrameData(frame_tree_node_id);
   if (ancestor_data &&
       frame_tree_node_id == ancestor_data->root_frame_tree_node_id()) {
-    RectId rect_id = RectId(RectType::kIFrame, frame_tree_node_id);
+    RectId rect_id = RectId(RectType::kIFrame, frame_tree_node_id.value());
 
     // Only add frames if they are visible.
     if (!ancestor_data->is_display_none()) {
@@ -745,7 +747,8 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 #endif
 }
 
-void AdsPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
+void AdsPageLoadMetricsObserver::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   frame_navigation_starts_.erase(frame_tree_node_id);
 
   const auto& id_and_data = ad_frames_data_.find(frame_tree_node_id);
@@ -785,7 +788,8 @@ void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
     if (!render_frame_host)
       continue;
 
-    FrameTreeNodeId frame_node_id = render_frame_host->GetFrameTreeNodeId();
+    content::FrameTreeNodeId frame_node_id =
+        render_frame_host->GetFrameTreeNodeId();
     FrameTreeData* ad_frame_data = FindFrameData(frame_node_id);
 
     if (ad_frame_data) {
@@ -800,8 +804,12 @@ void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
   }
 }
 
-void AdsPageLoadMetricsObserver::OnAdAuctionComplete() {
-  aggregate_frame_data_->OnAdAuctionComplete();
+void AdsPageLoadMetricsObserver::OnAdAuctionComplete(
+    bool is_server_auction,
+    bool is_on_device_auction,
+    content::AuctionResult result) {
+  aggregate_frame_data_->OnAdAuctionComplete(is_server_auction,
+                                             is_on_device_auction, result);
 }
 
 void AdsPageLoadMetricsObserver::OnSubresourceFilterGoingAway() {
@@ -985,12 +993,45 @@ void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
         "TopFrameNavigationToFirstAdFirstContentfulPaint",
         first_ad_fcp_after_main_nav_start.value());
 
-    if (aggregate_frame_data_->completed_fledge_auction_before_fcp()) {
-      PAGE_LOAD_HISTOGRAM(
+    std::string fcp_after_auction_metric_name;
+    if (aggregate_frame_data_->completed_fledge_server_auction_before_fcp()) {
+      if (aggregate_frame_data_
+              ->completed_fledge_on_device_auction_before_fcp()) {
+        fcp_after_auction_metric_name =
+            "PageLoad.Clients.Ads.AdPaintTiming."
+            "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+            "ServerAndDeviceAuctions";
+      } else {
+        fcp_after_auction_metric_name =
+            "PageLoad.Clients.Ads.AdPaintTiming."
+            "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction";
+        if (aggregate_frame_data_->completed_only_winning_fledge_auctions()) {
+          PAGE_LOAD_HISTOGRAM(
+              "PageLoad.Clients.Ads.AdPaintTiming."
+              "TopFrameNavigationToFirstAdFirstContentfulPaintAfterWinning"
+              "ServerAuction",
+              first_ad_fcp_after_main_nav_start.value());
+        }
+      }
+    } else if (aggregate_frame_data_
+                   ->completed_fledge_on_device_auction_before_fcp()) {
+      fcp_after_auction_metric_name =
           "PageLoad.Clients.Ads.AdPaintTiming."
-          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterAuction",
-          first_ad_fcp_after_main_nav_start.value());
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction";
+      if (aggregate_frame_data_->completed_only_winning_fledge_auctions()) {
+        PAGE_LOAD_HISTOGRAM(
+            "PageLoad.Clients.Ads.AdPaintTiming."
+            "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+            "WinningDeviceAuction",
+            first_ad_fcp_after_main_nav_start.value());
+      }
+    } else {
+      fcp_after_auction_metric_name =
+          "PageLoad.Clients.Ads.AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction";
     }
+    PAGE_LOAD_HISTOGRAM(fcp_after_auction_metric_name,
+                        first_ad_fcp_after_main_nav_start.value());
   }
 
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kNonVisible);
@@ -1254,7 +1295,8 @@ void AdsPageLoadMetricsObserver::ProcessOngoingNavigationResource(
   ongoing_navigation_resources_.erase(frame_id_and_request);
 }
 
-FrameTreeData* AdsPageLoadMetricsObserver::FindFrameData(FrameTreeNodeId id) {
+FrameTreeData* AdsPageLoadMetricsObserver::FindFrameData(
+    content::FrameTreeNodeId id) {
   const auto& id_and_data = ad_frames_data_.find(id);
   if (id_and_data == ad_frames_data_.end())
     return nullptr;
@@ -1479,7 +1521,7 @@ void AdsPageLoadMetricsObserver::UpdateAggregateMemoryUsage(
 }
 
 void AdsPageLoadMetricsObserver::CleanupDeletedFrame(
-    FrameTreeNodeId id,
+    content::FrameTreeNodeId id,
     FrameTreeData* frame_data,
     bool update_density_tracker,
     bool record_metrics) {
@@ -1490,7 +1532,7 @@ void AdsPageLoadMetricsObserver::CleanupDeletedFrame(
     RecordPerFrameMetrics(*frame_data, GetDelegate().GetPageUkmSourceId());
 
   if (update_density_tracker) {
-    page_ad_density_tracker_.RemoveRect(RectId(RectType::kIFrame, id),
+    page_ad_density_tracker_.RemoveRect(RectId(RectType::kIFrame, id.value()),
                                         /*recalculate_viewport_density=*/true);
   }
 }

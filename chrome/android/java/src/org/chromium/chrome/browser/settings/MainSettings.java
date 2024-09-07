@@ -21,6 +21,7 @@ import androidx.preference.Preference;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -92,6 +94,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_SIGN_IN = "sign_in";
     public static final String PREF_MANAGE_SYNC = "manage_sync";
     public static final String PREF_GOOGLE_SERVICES = "google_services";
+    public static final String PREF_BASICS_SECTION = "basics_section";
     public static final String PREF_SEARCH_ENGINE = "search_engine";
     public static final String PREF_PASSWORDS = "passwords";
     public static final String PREF_TABS = "tabs";
@@ -99,6 +102,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_HOME_MODULES_CONFIG = "home_modules_config";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
+    public static final String PREF_AUTOFILL_SECTION = "autofill_section";
+    public static final String PREF_PRIVACY_SECTION = "privacy_section";
     public static final String PREF_PRIVACY = "privacy";
     public static final String PREF_SAFETY_CHECK = "safety_check";
     public static final String PREF_NOTIFICATIONS = "notifications";
@@ -120,6 +125,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     // Will be true if `onSignedOut()` was called when the current activity state is not
     // `Lifecycle.State.STARTED`.
     private boolean mShouldShowSnackbar;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     public MainSettings() {
         setHasOptionsMenu(true);
@@ -133,12 +139,17 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().setTitle(R.string.settings);
+        mPageTitle.set(getString(R.string.settings));
         mPasswordCheck = PasswordCheckFactory.getOrCreate();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
         if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
             signinManager.addSignInStateObserver(this);
         }
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override
@@ -193,7 +204,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private void createPreferences() {
         mManagedPreferenceDelegate = createManagedPreferenceDelegate();
 
-        SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
+        SettingsUtils.addPreferencesFromResource(
+                this,
+                useLegacySettingsOrder() ? R.xml.main_preferences_legacy : R.xml.main_preferences);
 
         ProfileDataCache profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getContext());
@@ -347,7 +360,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         if (NightModeUtils.isNightModeSupported()) {
-            addPreferenceIfAbsent(PREF_UI_THEME)
+            Preference themePref = addPreferenceIfAbsent(PREF_UI_THEME);
+            themePref
                     .getExtras()
                     .putInt(
                             ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
@@ -463,6 +477,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && ChromeFeatureList.isEnabled(
                         AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
+            addPreferenceIfAbsent(PREF_AUTOFILL_SECTION);
+            addPreferenceIfAbsent(PREF_PRIVACY_SECTION);
             addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
             Preference preference = findPreference(PREF_AUTOFILL_OPTIONS);
             preference.setFragment(null);
@@ -477,6 +493,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         return true; // Means event is consumed.
                     });
         } else {
+            removePreferenceIfPresent(PREF_AUTOFILL_SECTION);
+            removePreferenceIfPresent(PREF_PRIVACY_SECTION);
             removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
         }
         findPreference(PREF_AUTOFILL_PAYMENTS)
@@ -500,6 +518,25 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             /* managePasskeys= */ false);
                     return true;
                 });
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList
+                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            // This is temporary code needed for migrating people to UPM. With UPM there is no
+            // longer passwords setting page in Chrome, so we need to ask users to export their
+            // passwords here, in main settings.
+            boolean startPasswordsExportFlow =
+                    getArguments() != null
+                            && getArguments()
+                                    .containsKey(PasswordManagerHelper.START_PASSWORDS_EXPORT)
+                            && getArguments()
+                                    .getBoolean(PasswordManagerHelper.START_PASSWORDS_EXPORT);
+            if (startPasswordsExportFlow) {
+                PasswordManagerHelper.getForProfile(getProfile())
+                        .launchExportFlow(getContext(), mModalDialogManagerSupplier);
+                getArguments().putBoolean(PasswordManagerHelper.START_PASSWORDS_EXPORT, false);
+            }
+        }
     }
 
     private void updatePlusAddressesPreference() {
@@ -551,8 +588,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
         // SignOutCoordinator.startSignOutFlow(), in other words SignOutCoordinator.showSnackbar()
         // should be private method.
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+        // onSignedOut() is also called when a supervised account revokes the sync consent without
+        // signing out, in this case the Snackbar should not be shown.
+        if (IdentityServicesProvider.get()
+                                .getIdentityManager(getProfile())
+                                .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                        == null
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             // Show the signout snackbar, or wait until `onStart()` if the fragment is not in the
             // `STARTED` state.
             if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
@@ -615,5 +658,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void setModalDialogManagerSupplier(
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+    }
+
+    private boolean useLegacySettingsOrder() {
+        return !ChromeFeatureList.isEnabled(
+                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
     }
 }

@@ -16,17 +16,19 @@
 namespace blink {
 
 class InvalidationSet;
+class StyleEngine;
 class StyleRule;
 
 // Implements a back-mapping from InvalidationSet entries to the selectors that
 // placed them there, for use in diagnostic traces.
 // Only active while the appropriate tracing configuration is enabled.
-class InvalidationSetToSelectorMap final
+class CORE_EXPORT InvalidationSetToSelectorMap final
     : public GarbageCollected<InvalidationSetToSelectorMap> {
  public:
   // A small helper to bundle together a StyleRule plus an index into its
   // selector list.
-  class IndexedSelector final : public GarbageCollected<IndexedSelector> {
+  class CORE_EXPORT IndexedSelector final
+      : public GarbageCollected<IndexedSelector> {
    public:
     IndexedSelector(StyleRule* style_rule, unsigned selector_index);
     void Trace(Visitor*) const;
@@ -35,6 +37,8 @@ class InvalidationSetToSelectorMap final
     String GetSelectorText() const;
 
    private:
+    friend struct WTF::HashTraits<
+        blink::InvalidationSetToSelectorMap::IndexedSelector>;
     Member<StyleRule> style_rule_;
     unsigned selector_index_;
   };
@@ -52,7 +56,7 @@ class InvalidationSetToSelectorMap final
   // Instantiates a new mapping if a diagnostic tracing session with the
   // appropriate configuration has started, or deletes an existing mapping if
   // tracing is no longer enabled.
-  CORE_EXPORT static void StartOrStopTrackingIfNeeded();
+  static void StartOrStopTrackingIfNeeded(StyleEngine& style_engine);
 
   // Call at the start and end of indexing features for a given selector.
   static void BeginSelector(StyleRule* style_rule, unsigned selector_index);
@@ -83,6 +87,11 @@ class InvalidationSetToSelectorMap final
     ~CombineScope();
   };
 
+  // Call when an invalidation set is no longer in use, for example when it is
+  // being destroyed.
+  static void RemoveEntriesForInvalidationSet(
+      const InvalidationSet* invalidation_set);
+
   // Given an invalidation set and a selector feature representing an entry in
   // that invalidation set, returns a list of selectors that contributed to that
   // entry existing in that invalidation set.
@@ -96,14 +105,15 @@ class InvalidationSetToSelectorMap final
 
  protected:
   friend class InvalidationSetToSelectorMapTest;
-  CORE_EXPORT static Persistent<InvalidationSetToSelectorMap>&
-  GetInstanceReference();
+  static Persistent<InvalidationSetToSelectorMap>& GetInstanceReference();
 
  private:
   // The back-map is stored in two levels: first from an invalidation set
   // pointer to a map of entries, then from each entry to a list of selectors.
   // We don't retain a strong pointer to the InvalidationSet because we don't
-  // need it for any purpose other than as a lookup key.
+  // need it for any purpose other than as a lookup key, and because extra refs
+  // on InvalidationSets may cause copy-on-writes that diverge from untraced
+  // execution.
   using InvalidationSetEntry = std::pair<SelectorFeatureType, AtomicString>;
   using InvalidationSetEntryMap =
       HeapHashMap<InvalidationSetEntry, Member<IndexedSelectorList>>;
@@ -116,5 +126,36 @@ class InvalidationSetToSelectorMap final
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+// These two HashTraits specializations are needed so that
+// HeapHashSet<Member<IndexedSelector>> will do value-wise comparisons instead
+// of pointer-wise comparisons.
+template <>
+struct HashTraits<blink::InvalidationSetToSelectorMap::IndexedSelector>
+    : TwoFieldsHashTraits<
+          blink::InvalidationSetToSelectorMap::IndexedSelector,
+          &blink::InvalidationSetToSelectorMap::IndexedSelector::style_rule_,
+          &blink::InvalidationSetToSelectorMap::IndexedSelector::
+              selector_index_> {};
+
+template <>
+struct HashTraits<
+    blink::Member<blink::InvalidationSetToSelectorMap::IndexedSelector>>
+    : MemberHashTraits<blink::InvalidationSetToSelectorMap::IndexedSelector> {
+  using IndexedSelector = blink::InvalidationSetToSelectorMap::IndexedSelector;
+  static unsigned GetHash(const blink::Member<IndexedSelector>& key) {
+    return WTF::GetHash(*key);
+  }
+  static bool Equal(const blink::Member<IndexedSelector>& a,
+                    const blink::Member<IndexedSelector>& b) {
+    return HashTraits<IndexedSelector>::Equal(*a, *b);
+  }
+
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INVALIDATION_SET_TO_SELECTOR_MAP_H_

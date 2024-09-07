@@ -18,11 +18,14 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+
+namespace {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 using autofill::autofill_metrics::MandatoryReauthAuthenticationFlowEvent;
@@ -104,7 +107,9 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthSettingsPageMetricsTest,
   base::HistogramTester histogram_tester;
 
   ON_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
-              autofill_client()->GetOrCreatePaymentsMandatoryReauthManager()),
+              autofill_client()
+                  ->GetPaymentsAutofillClient()
+                  ->GetOrCreatePaymentsMandatoryReauthManager()),
           AuthenticateWithMessage)
       .WillByDefault(
           testing::WithArg<1>([auth_success = IsUserAuthSuccessful()](
@@ -134,7 +139,9 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthSettingsPageMetricsTest,
   base::HistogramTester histogram_tester;
 
   ON_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
-              autofill_client()->GetOrCreatePaymentsMandatoryReauthManager()),
+              autofill_client()
+                  ->GetPaymentsAutofillClient()
+                  ->GetOrCreatePaymentsMandatoryReauthManager()),
           AuthenticateWithMessage)
       .WillByDefault(
           testing::WithArg<1>([auth_success = IsUserAuthSuccessful()](
@@ -248,3 +255,5 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
     }
   }
 }
+
+}  // namespace

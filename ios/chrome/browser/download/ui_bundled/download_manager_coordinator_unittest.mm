@@ -23,16 +23,16 @@
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/installation_notifier.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_delegate.h"
+#import "ios/chrome/browser/download/ui_bundled/legacy_download_manager_view_controller.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_delegate.h"
-#import "ios/chrome/browser/download/ui_bundled/legacy_download_manager_view_controller.h"
 #import "ios/chrome/test/fakes/fake_contained_presenter.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -642,7 +642,7 @@ TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
   alert_overlays::AlertRequest* config =
       queue->front_request()->GetConfig<alert_overlays::AlertRequest>();
   ASSERT_TRUE(config);
-  EXPECT_NSEQ(@"Stop Download?", config->title());
+  EXPECT_NSEQ(@"Stop download?", config->title());
   EXPECT_FALSE(config->message());
   ASSERT_EQ(2U, config->button_configs().size());
   alert_overlays::ButtonConfig stop_button = config->button_configs()[0][0];
@@ -689,7 +689,7 @@ TEST_F(DownloadManagerCoordinatorTest, DecidePolicyForDownload) {
   alert_overlays::AlertRequest* config =
       queue->front_request()->GetConfig<alert_overlays::AlertRequest>();
   ASSERT_TRUE(config);
-  EXPECT_NSEQ(@"Start New Download?", config->title());
+  EXPECT_NSEQ(@"Start new download?", config->title());
   EXPECT_NSEQ(@"This will stop all progress for your current download.",
               config->message());
   ASSERT_EQ(2U, config->button_configs().size());
@@ -732,7 +732,7 @@ TEST_F(DownloadManagerCoordinatorTest,
   alert_overlays::AlertRequest* config =
       queue->front_request()->GetConfig<alert_overlays::AlertRequest>();
   ASSERT_TRUE(config);
-  EXPECT_NSEQ(@"Start New Download?", config->title());
+  EXPECT_NSEQ(@"Start new download?", config->title());
   EXPECT_NSEQ(@"This will stop all progress for your current download.",
               config->message());
   ASSERT_EQ(2U, config->button_configs().size());

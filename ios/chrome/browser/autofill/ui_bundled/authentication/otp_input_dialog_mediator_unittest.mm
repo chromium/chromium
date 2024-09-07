@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_mediator_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_mutator.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -72,16 +73,15 @@ class OtpInputDialogMediatorTest : public PlatformTest {
 TEST_F(OtpInputDialogMediatorTest, SetConsumer) {
   OCMExpect([consumer_
       setContent:[OCMArg checkWithBlock:^BOOL(OtpInputDialogContent* content) {
-        EXPECT_TRUE([content.windowTitle
-            isEqualToString:base::SysUTF16ToNSString(
-                                model_controller_->GetWindowTitle())]);
-        EXPECT_TRUE([content.textFieldPlaceholder
-            isEqualToString:base::SysUTF16ToNSString(
-                                model_controller_
-                                    ->GetTextfieldPlaceholderText())]);
-        EXPECT_TRUE([content.confirmButtonLabel
-            isEqualToString:base::SysUTF16ToNSString(
-                                model_controller_->GetOkButtonLabel())]);
+        EXPECT_NSEQ(
+            content.windowTitle,
+            base::SysUTF16ToNSString(model_controller_->GetWindowTitle()));
+        EXPECT_NSEQ(content.textFieldPlaceholder,
+                    base::SysUTF16ToNSString(
+                        model_controller_->GetTextfieldPlaceholderText()));
+        EXPECT_NSEQ(
+            content.confirmButtonLabel,
+            base::SysUTF16ToNSString(model_controller_->GetOkButtonLabel()));
         return YES;
       }]]);
 

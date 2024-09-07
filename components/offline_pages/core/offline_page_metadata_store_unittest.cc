@@ -806,10 +806,12 @@ class OfflinePageMetadataStoreTest : public testing::Test {
       statement.BindString(15, item.snippet);
       statement.BindString(16, item.attribution);
 
-      if (!statement.Run())
+      if (!statement.Run()) {
         return ItemActionStatus::STORE_ERROR;
-      if (db->GetLastChangeCount() == 0)
+      }
+      if (db->GetLastChangeCount() == 0) {
         return ItemActionStatus::ALREADY_EXISTS;
+      }
       return ItemActionStatus::SUCCESS;
     });
     return ExecuteSync<ItemActionStatus>(store, result_callback,

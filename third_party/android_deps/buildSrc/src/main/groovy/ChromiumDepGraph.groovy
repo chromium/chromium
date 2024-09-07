@@ -138,6 +138,9 @@ class ChromiumDepGraph {
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
             licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
             licenseName: 'BSD'),
+        jakarta_inject_jakarta_inject_api: new PropertyOverride(
+            // Help gradle resolve the same version that our 3pp script does.
+            versionFilter: '\\d+\\.\\d+\\.\\d+$'),
         javax_annotation_javax_annotation_api: new PropertyOverride(
             isShipped: false,  // Annotations are stripped by R8.
             licenseName: 'CDDLv1.1',

@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.AnimationPlaybackRateChanged"
-    enum="DevToolsAnimationPlaybackRateChanged" expires_after="2024-12-15">
+    enum="DevToolsAnimationPlaybackRateChanged" expires_after="2025-02-16">
   <owner>yangguo@chromium.org</owner>
   <owner>changhaohan@chromium.org</owner>
   <owner>ergunsh@chromium.org</owner>
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceLoaded"
-    enum="DevToolsDeveloperResourceLoaded" expires_after="2024-12-31">
+    enum="DevToolsDeveloperResourceLoaded" expires_after="2025-03-02">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceScheme"
-    enum="DevToolsDeveloperResourceScheme" expires_after="2024-12-31">
+    enum="DevToolsDeveloperResourceScheme" expires_after="2025-03-02">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
@@ -525,23 +525,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"
-    expires_after="2024-12-15">
+    expires_after="2025-02-23">
   <owner>bmeurer@google.com</owner>
   <owner>changhaohan@chromium.org</owner>
   <summary>Specified DevTools sidebar pane was shown.</summary>
 </histogram>
 
-<histogram name="DevTools.Sources.SidebarTabShown"
-    enum="DevToolsSourcesSidebarTab" expires_after="2024-09-15">
-  <owner>bmeurer@google.com</owner>
-  <owner>kimanh@chromium.org</owner>
-  <summary>
-    Specified DevTools sidebar tab was shown in the Sources panel.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.SourcesPanelFileDebugged" enum="DevToolsMediaType"
-    expires_after="2024-12-31">
+    expires_after="2025-03-02">
   <owner>bmeurer@google.com</owner>
   <owner>szuend@google.com</owner>
   <summary>
@@ -552,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SourcesPanelFileOpened" enum="DevToolsMediaType"
-    expires_after="2024-12-31">
+    expires_after="2025-03-02">
   <owner>bmeurer@google.com</owner>
   <owner>szuend@google.com</owner>
   <summary>
@@ -587,7 +578,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.TraceLoad" units="ms" expires_after="2024-12-15">
+<histogram name="DevTools.TraceLoad" units="ms" expires_after="2025-02-16">
   <owner>paulirish@chromium.org</owner>
   <owner>jacktfranklin@chromium.org</owner>
   <owner>victorporof@chromium.org</owner>

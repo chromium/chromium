@@ -24,7 +24,8 @@ enum class CookiePrimarySetting {
   ALLOW_ALL,
   BLOCK_THIRD_PARTY_INCOGNITO,
   BLOCK_THIRD_PARTY,
-  BLOCK_ALL
+  BLOCK_ALL,
+  LIMIT_THIRD_PARTY
 };
 
 // The base class for generated preferences which support WebUI cookie controls

@@ -79,12 +79,6 @@ void ScriptPromiseResolverBase::Reject(bool value) {
   Reject<IDLBoolean>(value);
 }
 
-void ScriptPromiseResolverBase::Reject(ExceptionState& exception_state) {
-  DCHECK(exception_state.HadException());
-  Reject(exception_state.GetException());
-  exception_state.ClearException();
-}
-
 void ScriptPromiseResolverBase::RejectWithDOMException(
     DOMExceptionCode exception_code,
     const String& message) {

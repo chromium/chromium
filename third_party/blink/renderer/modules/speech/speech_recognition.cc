@@ -120,7 +120,7 @@ void SpeechRecognition::abort() {
 
 ScriptPromise<IDLBoolean> SpeechRecognition::onDeviceWebSpeechAvailable(
     ScriptState* script_state,
-    String lang,
+    const String& lang,
     ExceptionState& exception_state) {
   if (!controller_ || !GetExecutionContext()) {
     return EmptyPromise();
@@ -134,6 +134,27 @@ ScriptPromise<IDLBoolean> SpeechRecognition::onDeviceWebSpeechAvailable(
       lang, WTF::BindOnce([](SpeechRecognition*,
                              ScriptPromiseResolver<IDLBoolean>* resolver,
                              bool available) { resolver->Resolve(available); },
+                          WrapPersistent(this), WrapPersistent(resolver)));
+
+  return result;
+}
+
+ScriptPromise<IDLBoolean> SpeechRecognition::installOnDeviceSpeechRecognition(
+    ScriptState* script_state,
+    const String& lang,
+    ExceptionState& exception_state) {
+  if (!controller_ || !GetExecutionContext()) {
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
+      script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
+
+  controller_->InstallOnDeviceSpeechRecognition(
+      lang, WTF::BindOnce([](SpeechRecognition*,
+                             ScriptPromiseResolver<IDLBoolean>* resolver,
+                             bool success) { resolver->Resolve(success); },
                           WrapPersistent(this), WrapPersistent(resolver)));
 
   return result;

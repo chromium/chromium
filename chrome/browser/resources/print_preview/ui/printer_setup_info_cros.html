@@ -36,7 +36,7 @@
 
   /* TODO(b/290239226): Remove hard-coded SVG colors after print-preview is
                         configured to use dynamic colors. */
-  iron-icon {
+  cr-icon {
     --cros-sys-illo-base: #FFFFFF;
     --cros-sys-illo-color1-2: #DBE1FF;
     --cros-sys-illo-color3: #EE9829;
@@ -54,7 +54,7 @@
       color: var(--google-grey-400);
     }
 
-    iron-icon {
+    cr-icon {
       --cros-sys-illo-base: #000000;
       --cros-sys-illo-color1-2: #414659;
       --cros-sys-illo-color3: #FFB866;
@@ -65,9 +65,9 @@
   }
 </style>
 <div class="container">
-  <iron-icon icon="print-preview:no-printer-available"
+  <cr-icon icon="print-preview:no-printer-available"
       hidden$="[[!showIllustration]]">
-  </iron-icon>
+  </cr-icon>
   <div class="message-container">
     <h2 class="message-heading">[[getMessageHeading(messageType)]]</h2>
     <p class="message-detail">[[getMessageDetail(messageType)]]</p>

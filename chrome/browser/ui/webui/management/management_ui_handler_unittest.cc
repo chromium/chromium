@@ -67,6 +67,7 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
+#include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -300,6 +301,14 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
 
   const std::string GetDeviceManager() const override { return device_domain; }
   void SetDeviceDomain(const std::string& domain) { device_domain = domain; }
+
+  const ash::SecureDnsManager* GetSecureDnsManager() const override {
+    return secure_dns_manager_.get();
+  }
+  void CreateSecureDnsManagerForTesting(PrefService* local_state) {
+    secure_dns_manager_ = std::make_unique<ash::SecureDnsManager>(
+        local_state, /*is_profile_managed=*/true);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
@@ -309,6 +318,9 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   device_signals::MockUserPermissionService mock_user_permission_service_;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<ash::SecureDnsManager> secure_dns_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 // We need to use a different base class for ChromeOS and non ChromeOS case.
@@ -616,6 +628,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     handler_.SetDeviceDomain(GetTestConfig().device_domain);
+    handler_.CreateSecureDnsManagerForTesting(&local_state_);
 #endif
     base::Value::Dict data =
         handler_.GetContextualManagedDataForTesting(profile_.get());
@@ -1218,7 +1231,8 @@ TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
       {kManagementReportExtensions, "extension"},
       {kManagementReportAndroidApplications, "android application"},
       {kManagementReportDlpEvents, "dlp events"},
-      {kManagementReportLoginLogout, "login-logout"}};
+      {kManagementReportLoginLogout, "login-logout"},
+      {kManagementReportFileEvents, "file events"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }
@@ -1243,7 +1257,8 @@ TEST_F(ManagementUIHandlerTests,
       {kManagementExtensionReportUsername, "username"},
       {kManagementReportExtensions, "extension"},
       {kManagementReportAndroidApplications, "android application"},
-      {kManagementReportLoginLogout, "login-logout"}};
+      {kManagementReportLoginLogout, "login-logout"},
+      {kManagementReportFileEvents, "file events"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }
@@ -1317,7 +1332,8 @@ TEST_F(ManagementUIHandlerTests, ReportDeviceXdrEventsEnabled) {
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
       {kManagementReportAppInfoAndActivity, "app info and activity"},
-      {kManagementReportLoginLogout, "login-logout"}};
+      {kManagementReportLoginLogout, "login-logout"},
+      {kManagementReportFileEvents, "file events"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }
@@ -1484,10 +1500,10 @@ TEST_F(ManagementUIHandlerTests,
   local_state_.Set(prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
   local_state_.Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                    base::Value("www.test-dns.com"));
-
   // Owned by |scoped_user_manager|.
   auto user_manager =
       std::make_unique<user_manager::FakeUserManager>(&local_state_);
+
   // The DNS templates with identifiers only work is a user is logged in.
   const AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
   user_manager->AddUser(account_id);

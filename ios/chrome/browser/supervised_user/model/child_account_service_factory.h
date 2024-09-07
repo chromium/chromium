@@ -5,24 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_CHILD_ACCOUNT_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_CHILD_ACCOUNT_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "components/supervised_user/core/browser/child_account_service.h"
+#import "base/no_destructor.h"
+#import "components/supervised_user/core/browser/child_account_service.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
-
-// Singleton that owns ChildAccountService object and associates
-// them with ChromeBrowserState.
-class ChildAccountServiceFactory : public BrowserStateKeyedServiceFactory {
+// Singleton that owns ChildAccountService objects and associates
+// them with Profiles.
+class ChildAccountServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static supervised_user::ChildAccountService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static supervised_user::ChildAccountService* GetForProfile(
+      ProfileIOS* profile);
 
   static ChildAccountServiceFactory* GetInstance();
-
-  ChildAccountServiceFactory(const ChildAccountServiceFactory&) = delete;
-  ChildAccountServiceFactory& operator=(const ChildAccountServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<ChildAccountServiceFactory>;

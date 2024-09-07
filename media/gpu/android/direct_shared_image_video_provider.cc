@@ -42,12 +42,6 @@ scoped_refptr<gpu::SharedContextState> GetSharedContext(
 
 }  // namespace
 
-// Allows DirectSharedImageVideoProvider to use ClientSharedImage (instead of
-// Mailbox) to access shared images.
-BASE_FEATURE(kUseClientSharedImageForAndroidVideo,
-             "UseClientSharedImageForAndroidVideo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 DirectSharedImageVideoProvider::DirectSharedImageVideoProvider(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetStubCB get_stub_cb,
@@ -138,87 +132,40 @@ void GpuSharedImageVideoFactory::CreateImage(
     scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (base::FeatureList::IsEnabled(
-          media::kUseClientSharedImageForAndroidVideo)) {
-    if (!stub_) {
-      return;
-    }
-
-    auto codec_image =
-        base::MakeRefCounted<CodecImage>(spec.coded_size, drdc_lock);
-
-    TRACE_EVENT0("media", "GpuSharedImageVideoFactory::CreateVideoFrame");
-
-    scoped_refptr<gpu::GpuChannelSharedImageInterface>
-        gpu_channel_shared_image_interface =
-            stub_->channel()->shared_image_stub()->shared_image_interface();
-    scoped_refptr<gpu::ClientSharedImage> shared_image =
-        gpu_channel_shared_image_interface->CreateSharedImageForAndroidVideo(
-            spec.coded_size, spec.color_space, codec_image, drdc_lock);
-    if (!shared_image) {
-      return;
-    }
-
-    SharedImageVideoProvider::ImageRecord record;
-    record.shared_image = std::move(shared_image);
-    record.is_vulkan = is_vulkan_;
-
-    // Since |codec_image|'s ref holders can be destroyed by stub destruction,
-    // we create a ref to it for the MaybeRenderEarlyManager.  This is a hack;
-    // we should not be sending the CodecImage at all.  The
-    // MaybeRenderEarlyManager should work with some other object that happens
-    // to be used by CodecImage, and non-GL things, to hold the output buffer,
-    // etc.
-    record.codec_image_holder = base::MakeRefCounted<CodecImageHolder>(
-        base::SequencedTaskRunner::GetCurrentDefault(), std::move(codec_image),
-        std::move(drdc_lock));
-
-    std::move(image_ready_cb).Run(std::move(record));
-  } else {
-    // Generate a shared image mailbox.
-    auto mailbox = gpu::Mailbox::Generate();
-    auto codec_image =
-        base::MakeRefCounted<CodecImage>(spec.coded_size, drdc_lock);
-
-    TRACE_EVENT0("media", "GpuSharedImageVideoFactory::CreateVideoFrame");
-
-    if (!CreateImageInternal(spec, mailbox, codec_image, drdc_lock)) {
-      return;
-    }
-
-    // This callback destroys the shared image when video frame is
-    // released/destroyed. This callback has a weak pointer to the shared image
-    // stub because shared image stub could be destroyed before video frame. In
-    // those cases there is no need to destroy the shared image as the shared
-    // image stub destruction will cause all the shared images to be destroyed.
-    auto destroy_shared_image =
-        stub_->channel()
-            ->shared_image_stub()
-            ->GetSharedImageDestructionCallback(mailbox);
-
-    // Guarantee that the SharedImage is destroyed even if the VideoFrame is
-    // dropped. Otherwise we could keep shared images we don't need alive.
-    auto release_cb = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-        base::BindPostTaskToCurrentDefault(std::move(destroy_shared_image)),
-        gpu::SyncToken());
-
-    SharedImageVideoProvider::ImageRecord record;
-    record.shared_image = mailbox;
-    record.release_cb = std::move(release_cb);
-    record.is_vulkan = is_vulkan_;
-
-    // Since |codec_image|'s ref holders can be destroyed by stub destruction,
-    // we create a ref to it for the MaybeRenderEarlyManager.  This is a hack;
-    // we should not be sending the CodecImage at all.  The
-    // MaybeRenderEarlyManager should work with some other object that happens
-    // to be used by CodecImage, and non-GL things, to hold the output buffer,
-    // etc.
-    record.codec_image_holder = base::MakeRefCounted<CodecImageHolder>(
-        base::SequencedTaskRunner::GetCurrentDefault(), std::move(codec_image),
-        std::move(drdc_lock));
-
-    std::move(image_ready_cb).Run(std::move(record));
+  if (!stub_) {
+    return;
   }
+
+  auto codec_image =
+      base::MakeRefCounted<CodecImage>(spec.coded_size, drdc_lock);
+
+  TRACE_EVENT0("media", "GpuSharedImageVideoFactory::CreateVideoFrame");
+
+  scoped_refptr<gpu::GpuChannelSharedImageInterface>
+      gpu_channel_shared_image_interface =
+          stub_->channel()->shared_image_stub()->shared_image_interface();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      gpu_channel_shared_image_interface->CreateSharedImageForAndroidVideo(
+          spec.coded_size, spec.color_space, codec_image, drdc_lock);
+  if (!shared_image) {
+    return;
+  }
+
+  SharedImageVideoProvider::ImageRecord record;
+  record.shared_image = std::move(shared_image);
+  record.is_vulkan = is_vulkan_;
+
+  // Since |codec_image|'s ref holders can be destroyed by stub destruction,
+  // we create a ref to it for the MaybeRenderEarlyManager.  This is a hack;
+  // we should not be sending the CodecImage at all.  The
+  // MaybeRenderEarlyManager should work with some other object that happens
+  // to be used by CodecImage, and non-GL things, to hold the output buffer,
+  // etc.
+  record.codec_image_holder = base::MakeRefCounted<CodecImageHolder>(
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(codec_image),
+      std::move(drdc_lock));
+
+  std::move(image_ready_cb).Run(std::move(record));
 }
 
 bool GpuSharedImageVideoFactory::CreateImageInternal(

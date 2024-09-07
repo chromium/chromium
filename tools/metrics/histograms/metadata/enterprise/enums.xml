@@ -2158,6 +2158,9 @@ chromium-metrics-reviews@google.com.
   <int value="1292" label="AdHocCodeSigningForPWAsEnabled"/>
   <int value="1293" label="KioskWebAppOfflineEnabled"/>
   <int value="1294" label="GraduationEnablementStatus"/>
+  <int value="1295" label="HelpMeReadSettings"/>
+  <int value="1296" label="GenAiDefaultSettings"/>
+  <int value="1297" label="KioskActiveWiFiCredentialsScopeChangeEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//remoting/remoting_options.gni")
+
 source_set("encoder") {
   sources = [
     "audio_encoder.h",
@@ -45,7 +47,7 @@ source_set("encoder") {
 
   # Currently, building WebrtcVideoEncoderGpu is only supported on Windows and
   # Linux, and encoding with WebrtcVideoEncoderGpu is only supported on Windows.
-  if (is_win || is_linux || is_chromeos) {
+  if (remoting_enable_h264 && (is_win || is_linux || is_chromeos)) {
     public_configs = [ "//skia:skia_config" ]
     sources += [
       "webrtc_video_encoder_gpu.cc",

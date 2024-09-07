@@ -378,7 +378,7 @@ class HostScannerImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
   const multidevice::RemoteDeviceRefList test_devices_;
   const std::vector<ScannedDeviceInfo> test_scanned_device_infos;
 

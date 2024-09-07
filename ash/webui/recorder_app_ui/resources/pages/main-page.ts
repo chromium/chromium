@@ -4,30 +4,43 @@
 
 import 'chrome://resources/mwc/@material/web/iconbutton/filled-icon-button.js';
 import '../components/cra/cra-icon-button.js';
+import '../components/cra/cra-icon-dropdown.js';
 import '../components/cra/cra-icon.js';
 import '../components/delete-recording-dialog.js';
-import '../components/mic-selection-menu.js';
+import '../components/mic-selection-button.js';
 import '../components/onboarding-dialog.js';
 import '../components/recording-file-list.js';
 import '../components/recording-info-dialog.js';
 import '../components/secondary-button.js';
 import '../components/settings-menu.js';
 
-import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
+import {
+  createRef,
+  css,
+  html,
+  nothing,
+  ref,
+} from 'chrome://resources/mwc/lit/index.js';
 
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
-import {MicSelectionMenu} from '../components/mic-selection-menu.js';
+import {RecordingFileList} from '../components/recording-file-list.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {SettingsMenu} from '../components/settings-menu.js';
+import {AudioPlayerController} from '../core/audio_player_controller.js';
+import {i18n} from '../core/i18n.js';
 import {
   useMicrophoneManager,
   useRecordingDataManager,
 } from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {computed, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
 import {settings} from '../core/state/settings.js';
-import {assertExists, assertInstanceof} from '../core/utils/assert.js';
+import {assertExists} from '../core/utils/assert.js';
+import {isObjectEmpty} from '../core/utils/utils.js';
+
+import {setInitialAudio} from './playback-page.js';
 
 /**
  * Main page of Recorder App.
@@ -91,7 +104,34 @@ export class MainPage extends ReactiveLitElement {
         --cra-icon-button-container-width: 136px;
       }
 
+      anchor-name: --record-button;
       margin: 0;
+    }
+
+    #start-record-nudge {
+      align-items: center;
+      display: flex;
+      flex-flow: column;
+      inset-area: top span-all;
+      position: absolute;
+      position-anchor: --record-button;
+
+      & > div {
+        background: var(--cros-sys-primary);
+        border-radius: var(--border-radius-rounded-with-short-side);
+        color: var(--cros-sys-on_primary);
+        font: var(--cros-body-1-font);
+      }
+
+      & > .dot {
+        height: 8px;
+        margin: 4px;
+        width: 8px;
+      }
+
+      & > .text {
+        padding: 8px 16px;
+      }
     }
   `;
 
@@ -106,20 +146,68 @@ export class MainPage extends ReactiveLitElement {
 
   private readonly exportDialog = createRef<ExportDialog>();
 
-  private lastDeleteId: string|null = null;
+  private readonly startRecordingButton = createRef<HTMLButtonElement>();
 
-  private get micSelectionMenu(): MicSelectionMenu|null {
-    return this.shadowRoot?.querySelector('mic-selection-menu') ?? null;
-  }
+  private readonly recordingFileList = createRef<RecordingFileList>();
+
+  private readonly currentPlayingId = signal<string|null>(null);
+
+  private readonly currentPlayingRecordingLength = computed(() => {
+    const id = this.currentPlayingId.value;
+    if (id === null) {
+      return null;
+    }
+    const durationMs =
+      this.recordingDataManager.getMetadata(id).value?.durationMs ?? null;
+    return durationMs === null ? null : durationMs / 1000;
+  });
+
+  private readonly audioPlayer = new AudioPlayerController(
+    this,
+    this.currentPlayingId,
+    /* autoPlay= */ true,
+  );
+
+  private readonly inlinePlayingItemInfo = computed(() => {
+    if (this.currentPlayingId.value === null ||
+        this.currentPlayingRecordingLength.value === null) {
+      return null;
+    }
+    const progress = 100 *
+      (this.audioPlayer.currentTime.value /
+       this.currentPlayingRecordingLength.value);
+    return {
+      id: this.currentPlayingId.value,
+      playing: this.audioPlayer.playing.value,
+      progress,
+    };
+  });
+
+  private lastDeleteId: string|null = null;
 
   private get settingsMenu(): SettingsMenu|null {
     return this.shadowRoot?.querySelector('settings-menu') ?? null;
   }
 
+  get startRecordingButtonForTest(): HTMLButtonElement {
+    return assertExists(this.startRecordingButton.value);
+  }
+
+  get recordingFileListForTest(): RecordingFileList {
+    return assertExists(this.recordingFileList.value);
+  }
+
   private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
 
   private onRecordingClick(ev: CustomEvent<string>) {
-    navigateTo(`/playback?id=${ev.detail}`);
+    const id = ev.detail;
+    const audio = this.audioPlayer.takeInnerAudio();
+    if (audio.recordingId === id) {
+      setInitialAudio(audio);
+    } else {
+      audio.revoke();
+    }
+    navigateTo('playback', {id: ev.detail});
   }
 
   private onDeleteRecordingClick(ev: CustomEvent<string>) {
@@ -132,6 +220,9 @@ export class MainPage extends ReactiveLitElement {
 
   private onDeleteRecording() {
     if (this.lastDeleteId !== null) {
+      if (this.lastDeleteId === this.currentPlayingId.value) {
+        this.currentPlayingId.value = null;
+      }
       this.recordingDataManager.remove(this.lastDeleteId);
       this.lastDeleteId = null;
     }
@@ -149,45 +240,67 @@ export class MainPage extends ReactiveLitElement {
     dialog.show();
   }
 
+  private onPlayRecordingClick(ev: CustomEvent<string>) {
+    const recordingId = ev.detail;
+    if (this.currentPlayingId.value === recordingId) {
+      this.audioPlayer.togglePlaying();
+    } else {
+      this.currentPlayingId.value = recordingId;
+    }
+  }
+
   private onClickRecordButton() {
     // TODO(shik): Should we let the record page read the store value
     // directly?
+    // TODO(pihsun): The typed route accepts string only as parameters for now.
+    // Have some way to integrate with schema.ts so this is not needed?
     const includeSystemAudio = settings.value.includeSystemAudio.toString();
     const micId = assertExists(
       this.microphoneManager.getSelectedMicId().value,
       'There is no selected microphone.',
     );
-    navigateTo(
-      `/record?includeSystemAudio=${includeSystemAudio}&micId=${micId}`,
-    );
+    navigateTo('record', {
+      includeSystemAudio,
+      micId,
+    });
+  }
+
+  private renderStartRecordNudge() {
+    if (!isObjectEmpty(this.recordingMetadataMap.value)) {
+      return nothing;
+    }
+    return html`
+      <div id="start-record-nudge">
+        <div class="text">${i18n.mainStartRecordNudge}</div>
+        <div class="dot"></div>
+      </div>
+    `;
   }
 
   private renderRecordButton() {
-    return html`<cra-icon-button
-      id="record-button"
-      shape="circle"
-      @click=${this.onClickRecordButton}
-    >
-      <cra-icon slot="icon" name="circle_fill"></cra-icon>
-    </cra-icon-button>`;
-  }
-
-  private renderMicSelectionButton() {
-    const onClick = (ev: Event) => {
-      this.micSelectionMenu?.show(assertInstanceof(ev.target, HTMLElement));
-    };
-    // TODO: b/336963138 - This should be a new icon-dropdown component that
-    // combines button with a dropdown.
-    return html`<secondary-button @click=${onClick} id="mic-selection-button">
-      <cra-icon slot="icon" name="mic"></cra-icon>
-    </secondary-button>`;
+    return [
+      this.renderStartRecordNudge(),
+      html`<cra-icon-button
+        id="record-button"
+        shape="circle"
+        @click=${this.onClickRecordButton}
+        ${ref(this.startRecordingButton)}
+        aria-label=${i18n.mainStartRecordButtonTooltip}
+      >
+        <cra-icon slot="icon" name="circle_fill"></cra-icon>
+      </cra-icon-button>`,
+    ];
   }
 
   private renderSettingsButton() {
     const onClick = () => {
       this.settingsMenu?.show();
     };
-    return html`<secondary-button @click=${onClick}>
+    return html`<secondary-button
+      id="settings-header"
+      @click=${onClick}
+      aria-label=${i18n.settingsHeader}
+    >
       <cra-icon slot="icon" name="settings"></cra-icon>
     </secondary-button>`;
   }
@@ -199,6 +312,7 @@ export class MainPage extends ReactiveLitElement {
         s.onboardingDone = true;
       });
     }
+
     return html`
       <onboarding-dialog
         ?open=${onboarding}
@@ -215,17 +329,23 @@ export class MainPage extends ReactiveLitElement {
       <div id="root" ?inert=${onboarding}>
         <recording-file-list
           .recordingMetadataMap=${this.recordingMetadataMap.value}
+          .inlinePlayingItem=${this.inlinePlayingItemInfo.value}
           @recording-clicked=${this.onRecordingClick}
           @delete-recording-clicked=${this.onDeleteRecordingClick}
           @export-recording-clicked=${this.onExportRecordingClick}
           @show-recording-info-clicked=${this.onShowRecordingInfoClick}
+          @play-recording-clicked=${this.onPlayRecordingClick}
+          ${ref(this.recordingFileList)}
         >
         </recording-file-list>
-        <div id="actions">
-          ${this.renderMicSelectionButton()}${this.renderRecordButton()}
-          ${this.renderSettingsButton()}
+        <div
+          id="actions"
+          aria-label=${i18n.mainRecordingBarLandmarkAriaLabel}
+          role="region"
+        >
+          <mic-selection-button></mic-selection-button>
+          ${this.renderRecordButton()}${this.renderSettingsButton()}
         </div>
-        <mic-selection-menu></mic-selection-menu>
         <settings-menu></settings-menu>
       </div>
     `;

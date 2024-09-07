@@ -25,6 +25,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/branding_buildflags.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service_internal.h"
 #include "components/component_updater/component_updater_utils.h"
@@ -545,8 +546,14 @@ std::unique_ptr<ComponentUpdateService> ComponentUpdateServiceFactory(
 
 // Register prefs required by the component update service.
 void RegisterComponentUpdateServicePrefs(PrefRegistrySimple* registry) {
-  // The component updates are enabled by default, if the preference is not set.
-  registry->RegisterBooleanPref(prefs::kComponentUpdatesEnabled, true);
+  // If the preference is not set the component updates are enabled by default
+  // unless in Chrome for Testing where we never want components to be updated
+  // automatically.
+  constexpr bool kComponentUpdatesEnabledByDefault =
+      !BUILDFLAG(CHROME_FOR_TESTING);
+
+  registry->RegisterBooleanPref(prefs::kComponentUpdatesEnabled,
+                                kComponentUpdatesEnabledByDefault);
 }
 
 }  // namespace component_updater

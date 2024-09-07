@@ -1463,7 +1463,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   {
     NonPrimaryPageCookieAccessObserver cookie_observer(GetWebContents());
     prerender_test_helper().AddPrerender(prerender_url);
-    int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+    content::FrameTreeNodeId host_id =
+        prerender_test_helper().GetHostForUrl(prerender_url);
     content::RenderFrameHost* prerender_frame =
         prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
     EXPECT_NE(prerender_frame, nullptr);
@@ -1506,7 +1507,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
 
   prerender_test_helper().AddPrerender(prerender_url);
-  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_test_helper().GetHostForUrl(prerender_url);
   content::RenderFrameHost* prerender_frame =
       prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
   EXPECT_NE(prerender_frame, nullptr);
@@ -1867,7 +1869,9 @@ class ContentSettingsPdfTest : public PDFExtensionTestBase {
   bool UseOopif() const override { return true; }
 
   testing::AssertionResult IsJavaScriptEnabled(content::RenderFrameHost* host) {
-    return content::ExecJs(host, "");
+    return content::ExecJs(
+        host, "",
+        content::EvalJsOptions::EXECUTE_SCRIPT_HONOR_JS_CONTENT_SETTINGS);
   }
 };
 

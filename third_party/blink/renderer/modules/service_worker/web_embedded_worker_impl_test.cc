@@ -10,20 +10,28 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -35,6 +43,8 @@
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_client.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 #include "third_party/blink/public/web/web_embedded_worker_start_data.h"
+#include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
@@ -49,7 +59,10 @@
 namespace blink {
 namespace {
 
-const char* kNotFoundScriptURL = "https://www.example.com/sw-404.js";
+const std::string kServer = "https://a.test";
+const std::string kNotFoundScriptURL = kServer + "/sw-404.js";
+const std::string kTimedOutURL = kServer + "/timedout.js";
+const std::string kEmptyURL = kServer + "/empty.js";
 
 // A fake URLLoader which is used for off-main-thread script fetch tests.
 class FakeURLLoader final : public URLLoader {
@@ -82,7 +95,8 @@ class FakeURLLoader final : public URLLoader {
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
       URLLoaderClient* client) override {
-    if (request->url.spec() == kNotFoundScriptURL) {
+    const std::string url = request->url.spec();
+    if (url == kNotFoundScriptURL) {
       WebURLResponse response;
       response.SetMimeType("text/javascript");
       response.SetHttpStatusCode(404);
@@ -92,7 +106,23 @@ class FakeURLLoader final : public URLLoader {
       client->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
       return;
     }
-    // Don't handle other requests intentionally to emulate ongoing load.
+    if (url == kEmptyURL) {
+      WebURLResponse response;
+      response.SetMimeType("text/javascript");
+      response.SetHttpHeaderField(http_names::kContentType, "text/javascript");
+      response.SetCurrentRequestUrl(url_test_helpers::ToKURL(kEmptyURL));
+      response.SetHttpStatusCode(200);
+      client->DidReceiveResponse(response,
+                                 /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+                                 /*cached_metadata=*/std::nullopt);
+      client->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
+      return;
+    }
+    if (url == kTimedOutURL) {
+      // Don't handle other requests intentionally to emulate ongoing load.
+      return;
+    }
+    NOTREACHED();
   }
 
   void Freeze(LoaderFreezeMode) override {}
@@ -132,7 +162,7 @@ class FakeWebServiceWorkerFetchContext final
           url_loader_factory) override {
     return nullptr;
   }
-  void WillSendRequest(WebURLRequest&) override {}
+  void FinalizeRequest(WebURLRequest&) override {}
   WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest& request) override {
     return {};
@@ -172,6 +202,183 @@ class FakeBrowserInterfaceBroker final
   mojo::Receiver<mojom::blink::BrowserInterfaceBroker> receiver_{this};
 };
 
+class OnFallbackReceiver
+    : public mojom::blink::ServiceWorkerFetchResponseCallback {
+ public:
+  mojo::PendingRemote<mojom::blink::ServiceWorkerFetchResponseCallback>
+  BindNewPipeAndPassRemote() {
+    return response_callback_receiver_.BindNewPipeAndPassRemote();
+  }
+
+  std::optional<network::DataElementChunkedDataPipe> WaitFallbackRequestBody() {
+    run_loop_.Run();
+    CHECK(fallback_request_body_);
+    return std::move(*fallback_request_body_);
+  }
+
+ private:
+  // mojom::blink::ServiceWorkerFetchResponseCallback overrides:
+  void OnResponse(
+      mojom::blink::FetchAPIResponsePtr response,
+      mojom::blink::ServiceWorkerFetchEventTimingPtr timing) override {
+    NOTREACHED();
+  }
+  void OnResponseStream(
+      mojom::blink::FetchAPIResponsePtr response,
+      mojom::blink::ServiceWorkerStreamHandlePtr body_as_stream,
+      mojom::blink::ServiceWorkerFetchEventTimingPtr timing) override {
+    NOTREACHED();
+  }
+  void OnFallback(
+      std::optional<network::DataElementChunkedDataPipe> request_body,
+      mojom::blink::ServiceWorkerFetchEventTimingPtr timing) override {
+    fallback_request_body_ = std::move(request_body);
+    response_callback_receiver_.reset();
+    run_loop_.Quit();
+  }
+
+  mojo::Receiver<mojom::blink::ServiceWorkerFetchResponseCallback>
+      response_callback_receiver_{this};
+  base::RunLoop run_loop_;
+  std::optional<std::optional<network::DataElementChunkedDataPipe>>
+      fallback_request_body_;
+};
+
+class MojoHandleWatcher {
+ public:
+  explicit MojoHandleWatcher(mojo::Handle handle)
+      : handle_watcher_(FROM_HERE,
+                        mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+                        base::SequencedTaskRunner::GetCurrentDefault()) {
+    handle_watcher_.Watch(handle,
+                          MOJO_HANDLE_SIGNAL_READABLE |
+                              MOJO_HANDLE_SIGNAL_WRITABLE |
+                              MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                          base::BindRepeating(&MojoHandleWatcher::OnReady,
+                                              base::Unretained(this)));
+  }
+
+  void Wait() {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    handle_watcher_.ArmOrNotify();
+    run_loop_->Run();
+  }
+
+  typedef base::OnceCallback<void(void)> DoneCallBack;
+  void WaitAsync(DoneCallBack callback) {
+    done_callback_ = std::move(callback);
+    handle_watcher_.ArmOrNotify();
+  }
+
+ private:
+  void OnReady(MojoResult result) {
+    CHECK_EQ(result, MOJO_RESULT_OK);
+    if (done_callback_) {
+      std::move(done_callback_).Run();
+      return;
+    }
+    run_loop_->Quit();
+  }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+  mojo::SimpleWatcher handle_watcher_;
+  DoneCallBack done_callback_;
+};
+
+class TestDataUploader : public network::mojom::blink::ChunkedDataPipeGetter {
+ public:
+  explicit TestDataUploader(const std::string& upload_contents)
+      : upload_contents_(upload_contents) {}
+
+  mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>
+  BindNewPipeAndPassRemote() {
+    auto pending_remote = receiver_.BindNewPipeAndPassRemote();
+    receiver_.set_disconnect_with_reason_handler(base::BindLambdaForTesting(
+        [&](uint32_t reason, const std::string& description) {
+          LOG(INFO) << "TestDataUploader Mojo closed reason" << reason
+                    << ", desc=" << description;
+        }));
+    return pending_remote;
+  }
+
+  void CallGetSizeCallback() {
+    std::move(get_size_callback_).Run(0, upload_contents_.size());
+  }
+
+ private:
+  // network::mojom::blink::ChunkedDataPipeGetter implementation:
+  void GetSize(GetSizeCallback get_size_callback) override {
+    get_size_callback_ = std::move(get_size_callback);
+  }
+  void StartReading(mojo::ScopedDataPipeProducerHandle producer) override {
+    producer_ = std::move(producer);
+
+    handle_watcher_ = std::make_unique<MojoHandleWatcher>(producer_.get());
+    handle_watcher_->WaitAsync(
+        base::BindOnce(&TestDataUploader::OnMojoReady, base::Unretained(this)));
+  }
+
+  void OnMojoReady() {
+    size_t bytes_written = 0;
+    CHECK_EQ(MOJO_RESULT_OK,
+             producer_->WriteData(base::as_byte_span(upload_contents_)
+                                      .subspan(0u, upload_contents_.size()),
+                                  MOJO_WRITE_DATA_FLAG_NONE, bytes_written));
+    CHECK_EQ(upload_contents_.size(), bytes_written);
+  }
+
+  const std::string upload_contents_;
+  mojo::ScopedDataPipeProducerHandle producer_;
+  std::unique_ptr<MojoHandleWatcher> handle_watcher_;
+  mojo::Receiver<network::mojom::blink::ChunkedDataPipeGetter> receiver_{this};
+  GetSizeCallback get_size_callback_;
+};
+
+class TestDataPipeReader {
+ public:
+  explicit TestDataPipeReader(
+      mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>
+          chunked_data_pipe_getter,
+      uint32_t capacity_read_pipe_size)
+      : chunked_data_pipe_getter_(std::move(chunked_data_pipe_getter)) {
+    CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(capacity_read_pipe_size,
+                                                  producer_, consumer_));
+    handle_watcher_ = std::make_unique<MojoHandleWatcher>(consumer_.get());
+
+    chunked_data_pipe_getter_.set_disconnect_with_reason_handler(
+        base::BindLambdaForTesting(
+            [&](uint32_t reason, const std::string& description) {
+              LOG(INFO) << "TestDataPipeReader Mojo closed reason" << reason
+                        << ", desc=" << description;
+            }));
+
+    chunked_data_pipe_getter_->GetSize(
+        base::BindLambdaForTesting([](int32_t status, uint64_t size) {}));
+    chunked_data_pipe_getter_->StartReading(std::move(producer_));
+  }
+  TestDataPipeReader(TestDataPipeReader&&) = default;
+
+  std::string Read() {
+    handle_watcher_->Wait();
+    std::string buffer(20u, '\0');
+    size_t actually_read_bytes = 0;
+    CHECK_EQ(MOJO_RESULT_OK,
+             consumer_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                 base::as_writable_byte_span(buffer),
+                                 actually_read_bytes));
+    return buffer.substr(0, actually_read_bytes);
+  }
+
+  bool IsConnected() const { return chunked_data_pipe_getter_.is_connected(); }
+
+ private:
+  mojo::ScopedDataPipeProducerHandle producer_;
+  mojo::ScopedDataPipeConsumerHandle consumer_;
+  std::unique_ptr<MojoHandleWatcher> handle_watcher_;
+
+  mojo::Remote<network::mojom::ChunkedDataPipeGetter> chunked_data_pipe_getter_;
+};
+
 class MockServiceWorkerContextClient final
     : public WebServiceWorkerContextClient {
  public:
@@ -184,8 +391,14 @@ class MockServiceWorkerContextClient final
                devtools_agent_remote,
            CrossVariantMojoReceiver<mojom::DevToolsAgentHostInterfaceBase>));
 
-  void WorkerContextStarted(WebServiceWorkerContextProxy* proxy,
-                            scoped_refptr<base::SequencedTaskRunner>) override {
+  void SetWebPolicyContainer(WebPolicyContainer* web_policy_container) {
+    web_policy_container_ = web_policy_container;
+  }
+
+  void WorkerContextStarted(
+      WebServiceWorkerContextProxy* proxy,
+      scoped_refptr<base::SequencedTaskRunner> worker_task_runner) override {
+    worker_task_runner_ = std::move(worker_task_runner);
     mojo::PendingAssociatedRemote<mojom::blink::ServiceWorkerHost> host_remote;
     auto host_receiver = host_remote.InitWithNewEndpointAndPassReceiver();
 
@@ -240,6 +453,22 @@ class MockServiceWorkerContextClient final
         /*ancestor_frame_type=*/mojom::blink::AncestorFrameType::kNormalFrame,
         blink::BlinkStorageKey());
 
+    MockPolicyContainerHost mock_policy_container_host;
+    web_policy_container_->remote =
+        mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote();
+    web_policy_container_ = nullptr;
+
+    // ControllerServiceWorker requires Clone to ensure
+    // CrossOriginResourcePolicyChecker. See
+    // ServiceWorkerGlobalScope::DispatchFetchEventForSubresource().
+    mojo::Remote<mojom::blink::ControllerServiceWorker>
+        stub_controller_service_worker;
+    proxy->BindControllerServiceWorker(
+        stub_controller_service_worker.BindNewPipeAndPassReceiver());
+    stub_controller_service_worker->Clone(
+        controller_service_worker_.BindNewPipeAndPassReceiver(),
+        network::CrossOriginEmbedderPolicy(), mojo::NullRemote());
+
     // To make the other side callable.
     host_receiver.EnableUnassociatedUsage();
     associated_interfaces_recevier_from_browser.EnableUnassociatedUsage();
@@ -276,7 +505,68 @@ class MockServiceWorkerContextClient final
       int fetch_event_id,
       std::unique_ptr<WebServiceWorkerError> error) override {}
 
-  void WorkerContextDestroyed() override { termination_event_.Signal(); }
+  TestDataPipeReader DispatchFetchEventForSubresourceAndCreateReader(
+      const std::string& upload_contents,
+      uint32_t capacity_read_pipe_size) {
+    OnFallbackReceiver on_fallback_receiver;
+    worker_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MockServiceWorkerContextClient::
+                           DispatchFetchEventForSubresourceonWorkerThread,
+                       base::Unretained(this),
+                       base::Unretained(&on_fallback_receiver),
+                       upload_contents));
+    auto fallback_request_body = on_fallback_receiver.WaitFallbackRequestBody();
+    return TestDataPipeReader(
+        fallback_request_body->ReleaseChunkedDataPipeGetter(),
+        capacity_read_pipe_size);
+  }
+
+  void DispatchFetchEventForSubresourceonWorkerThread(
+      OnFallbackReceiver* on_fallback_receiver,
+      const std::string& upload_contents) {
+    auto request = mojom::blink::FetchAPIRequest::New();
+    request->url = url_test_helpers::ToKURL(kServer);
+    request->method = "POST";
+    request->is_main_resource_load = false;
+
+    test_data_uploader_ = std::make_unique<TestDataUploader>(upload_contents);
+    ResourceRequestBody src(test_data_uploader_->BindNewPipeAndPassRemote());
+    request->body = std::move(src);
+    auto params = mojom::blink::DispatchFetchEventParams::New();
+    params->request = std::move(request);
+    params->client_id = "foo";
+    params->resulting_client_id = "bar";
+
+    controller_service_worker_->DispatchFetchEventForSubresource(
+        std::move(params), on_fallback_receiver->BindNewPipeAndPassRemote(),
+        base::DoNothing());
+  }
+
+  void CollectAllGarbageOnWorkerThread() {
+    base::RunLoop run_loop;
+    worker_task_runner_->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          blink::WebHeap::CollectAllGarbageForTesting();
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  void CallUploaderGetSizeCallback() {
+    base::RunLoop run_loop;
+    worker_task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                    test_data_uploader_->CallGetSizeCallback();
+                                    run_loop.Quit();
+                                  }));
+    run_loop.Run();
+  }
+
+  void WorkerContextDestroyed() override {
+    test_data_uploader_.reset();
+    controller_service_worker_.reset();
+    termination_event_.Signal();
+  }
 
   // These methods must be called on the main thread.
   void WaitUntilScriptEvaluated() { script_evaluated_event_.Wait(); }
@@ -289,6 +579,12 @@ class MockServiceWorkerContextClient final
   base::WaitableEvent script_evaluated_event_;
   base::WaitableEvent termination_event_;
   base::WaitableEvent classic_script_load_failure_event_;
+
+  scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
+  mojo::Remote<mojom::blink::ControllerServiceWorker>
+      controller_service_worker_;
+  std::unique_ptr<TestDataUploader> test_data_uploader_;
+  raw_ptr<WebPolicyContainer> web_policy_container_;
 };
 
 class WebEmbeddedWorkerImplTest : public testing::Test {
@@ -296,28 +592,23 @@ class WebEmbeddedWorkerImplTest : public testing::Test {
   void SetUp() override {
     mock_client_ = std::make_unique<MockServiceWorkerContextClient>();
     worker_ = std::make_unique<WebEmbeddedWorkerImpl>(mock_client_.get());
-
-    script_url_ = url_test_helpers::ToKURL("https://www.example.com/sw.js");
-    WebURLResponse response(script_url_);
-    response.SetMimeType("text/javascript");
-    response.SetHttpStatusCode(200);
-    url_test_helpers::RegisterMockedURLLoadWithCustomResponse(script_url_, "",
-                                                              response);
   }
 
   std::unique_ptr<WebEmbeddedWorkerStartData> CreateStartData() {
+    const WebURL script_url = url_test_helpers::ToKURL(kTimedOutURL);
     WebFetchClientSettingsObject outside_settings_object(
         network::mojom::ReferrerPolicy::kDefault,
-        /*outgoing_referrer=*/WebURL(script_url_),
+        /*outgoing_referrer=*/script_url,
         blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade);
     auto start_data = std::make_unique<WebEmbeddedWorkerStartData>(
         std::move(outside_settings_object));
-    start_data->script_url = script_url_;
+    start_data->script_url = script_url;
     start_data->user_agent = WebString("dummy user agent");
     start_data->script_type = mojom::blink::ScriptType::kClassic;
     start_data->wait_for_debugger_mode =
         WebEmbeddedWorkerStartData::kDontWaitForDebugger;
     start_data->policy_container = std::make_unique<WebPolicyContainer>();
+    mock_client_->SetWebPolicyContainer(start_data->policy_container.get());
     return start_data;
   }
 
@@ -333,7 +624,6 @@ class WebEmbeddedWorkerImplTest : public testing::Test {
   }
 
   test::TaskEnvironment task_environment_;
-  WebURL script_url_;
   std::unique_ptr<MockServiceWorkerContextClient> mock_client_;
   std::unique_ptr<WebEmbeddedWorkerImpl> worker_;
 };
@@ -396,6 +686,45 @@ TEST_F(WebEmbeddedWorkerImplTest, ScriptNotFound) {
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   mock_client_->WaitUntilFailedToLoadClassicScript();
+
+  // Terminate the worker for cleanup.
+  worker_->TerminateWorkerContext();
+  worker_->WaitForShutdownForTesting();
+}
+
+TEST_F(WebEmbeddedWorkerImplTest, GCOnWorkerThreadShouldNotCauseUploadFail) {
+  std::unique_ptr<WebEmbeddedWorkerStartData> start_data = CreateStartData();
+  start_data->script_url = url_test_helpers::ToKURL(kEmptyURL);
+  FakeBrowserInterfaceBroker browser_interface_broker;
+  worker_->StartWorkerContext(
+      std::move(start_data),
+      // CreateStartData(),
+      /*installed_scripts_manager_params=*/nullptr,
+      /*content_settings_proxy=*/mojo::NullRemote(),
+      /*cache_storage_remote=*/mojo::NullRemote(),
+      browser_interface_broker.BindNewPipeAndPassRemote(),
+      InterfaceRegistry::GetEmptyInterfaceRegistry(),
+      scheduler::GetSingleThreadTaskRunnerForTesting());
+  mock_client_->WaitUntilScriptEvaluated();
+
+  // We need to fulfill mojo pipe to let BytesUploader await it and
+  // not to have Oilpan references. See the loop in
+  // BytesUploader::WriteDataOnPipe().
+  TestDataPipeReader reader =
+      mock_client_->DispatchFetchEventForSubresourceAndCreateReader(
+          /*upload_contents=*/"foobarbaz",
+          /*capacity_read_pipe_size=*/3u);
+  // Confirm mojo piping is connected.
+  EXPECT_EQ("foo", reader.Read());
+
+  mock_client_->CollectAllGarbageOnWorkerThread();
+  EXPECT_TRUE(reader.IsConnected());
+
+  EXPECT_EQ("bar", reader.Read());
+  EXPECT_EQ("baz", reader.Read());
+  mock_client_->CallUploaderGetSizeCallback();
+  mock_client_->CollectAllGarbageOnWorkerThread();
+  EXPECT_FALSE(reader.IsConnected());
 
   // Terminate the worker for cleanup.
   worker_->TerminateWorkerContext();

@@ -10,10 +10,8 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
 
 namespace system_permission_settings {
 
@@ -35,24 +33,14 @@ class PlatformHandleImpl : public PlatformHandle {
   bool CanPrompt(ContentSettingsType type) override { return false; }
 
   bool IsDenied(ContentSettingsType type) override {
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::
-                kCrosSystemLevelPermissionBlockedWarnings)) {
       return ash::privacy_hub_util::ContentBlocked(type);
-    }
-    return false;
   }
 
   bool IsAllowed(ContentSettingsType type) override { return !IsDenied(type); }
 
   void OpenSystemSettings(content::WebContents*,
                           ContentSettingsType type) override {
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::
-                kCrosSystemLevelPermissionBlockedWarnings)) {
-      ash::privacy_hub_util::OpenSystemSettings(
-          ProfileManager::GetActiveUserProfile(), type);
-    }
+    ash::privacy_hub_util::OpenSystemSettings(type);
   }
 
   void Request(ContentSettingsType type,

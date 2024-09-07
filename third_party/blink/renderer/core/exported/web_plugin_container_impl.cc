@@ -431,7 +431,7 @@ int WebPluginContainerImpl::PrintBegin(
   return web_plugin_->PrintBegin(print_params);
 }
 
-void WebPluginContainerImpl::PrintPage(int page_number, GraphicsContext& gc) {
+void WebPluginContainerImpl::PrintPage(int page_index, GraphicsContext& gc) {
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           gc, *element_->GetLayoutObject(), DisplayItem::kWebPlugin))
     return;
@@ -441,7 +441,7 @@ void WebPluginContainerImpl::PrintPage(int page_number, GraphicsContext& gc) {
   gc.Save();
 
   cc::PaintCanvas* canvas = gc.Canvas();
-  web_plugin_->PrintPage(page_number, canvas);
+  web_plugin_->PrintPage(page_index, canvas);
   gc.Restore();
 }
 
@@ -700,9 +700,8 @@ void WebPluginContainerImpl::DidReceiveResponse(
   web_plugin_->DidReceiveResponse(url_response);
 }
 
-void WebPluginContainerImpl::DidReceiveData(const char* data,
-                                            size_t data_length) {
-  web_plugin_->DidReceiveData(data, data_length);
+void WebPluginContainerImpl::DidReceiveData(base::span<const char> data) {
+  web_plugin_->DidReceiveData(data);
 }
 
 void WebPluginContainerImpl::DidFinishLoading() {

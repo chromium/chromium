@@ -7,6 +7,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -17,6 +19,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
+
+class MqlsFeatureMetadata;
 
 namespace {
 
@@ -31,13 +35,12 @@ class TestModelQualityLogsUploaderService
     : public ModelQualityLogsUploaderService {
  public:
   explicit TestModelQualityLogsUploaderService(
-      network::TestURLLoaderFactory* url_loader_factory)
+      network::TestURLLoaderFactory* url_loader_factory,
+      TestingPrefServiceSimple* prefs)
       : ModelQualityLogsUploaderService(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 url_loader_factory),
-            &prefs_) {
-    model_execution::prefs::RegisterLocalStatePrefs(prefs_.registry());
-  }
+            prefs) {}
 
   ~TestModelQualityLogsUploaderService() override = default;
 
@@ -46,10 +49,7 @@ class TestModelQualityLogsUploaderService
   TestModelQualityLogsUploaderService& operator=(
       const TestModelQualityLogsUploaderService&) = delete;
 
-  bool CanUploadLogs(UserVisibleFeatureKey feature) override { return true; }
-
- private:
-  TestingPrefServiceSimple prefs_;
+  bool CanUploadLogs(const MqlsFeatureMetadata*) override { return true; }
 };
 
 }  // namespace
@@ -59,11 +59,16 @@ class ModelQualityLogEntryTest : public testing::Test {
   ModelQualityLogEntryTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        uploader_(&url_loader_factory_) {}
+        uploader_(&url_loader_factory_, &prefs_) {}
   ~ModelQualityLogEntryTest() override = default;
 
   base::WeakPtr<ModelQualityLogsUploaderService> uploader() {
     return uploader_.GetWeakPtr();
+  }
+
+  void SetUp() override {
+    model_execution::prefs::RegisterProfilePrefs(prefs_.registry());
+    model_execution::prefs::RegisterLocalStatePrefs(prefs_.registry());
   }
 
   int NumPendingUploads() {
@@ -82,6 +87,7 @@ class ModelQualityLogEntryTest : public testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   network::TestURLLoaderFactory url_loader_factory_;
+  TestingPrefServiceSimple prefs_;
   TestModelQualityLogsUploaderService uploader_;
 };
 

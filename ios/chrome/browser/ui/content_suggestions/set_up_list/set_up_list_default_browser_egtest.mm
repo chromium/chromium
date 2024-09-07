@@ -152,17 +152,19 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 }  // namespace
 
 // Tests the Default Browser item in the Set Up List.
-@interface SetUpListTestCase : ChromeTestCase
+@interface SetUpListDefaultBrowserTestCase : ChromeTestCase
 @end
 
-@implementation SetUpListTestCase
+@implementation SetUpListDefaultBrowserTestCase
 
 #pragma mark - BaseEarlGreyTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Enable Segmented Default Browser Promos.
+  // Enable Segmented Default Browser promos and iPad tailored Default Browser
+  // promo strings.
   config.features_enabled.push_back(kSegmentedDefaultBrowserPromo);
+  config.features_enabled.push_back(kDefaultBrowserPromoIPadExperimentalString);
   // Set first run details to show Set Up List.
   config.additional_args.push_back("-FirstRunRecency");
   config.additional_args.push_back("1");
@@ -317,11 +319,11 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 // Opens the Set Up List "See More" view.
 - (void)openSeeMore {
-  id seeMoreButton =
-      grey_allOf(grey_text(@"See More"), grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> seeMoreButton =
+      grey_allOf(grey_text(@"See more"), grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:seeMoreButton] performAction:grey_tap()];
-  // Swipe up to expand the "See More" view.
-  id setUpListSubtitle = chrome_test_util::ContainsPartialText(
+  // Swipe up to expand the "See more" view.
+  id<GREYMatcher> setUpListSubtitle = chrome_test_util::ContainsPartialText(
       @"Complete these suggested actions below");
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:setUpListSubtitle];
   if (![ChromeEarlGrey isIPadIdiom]) {

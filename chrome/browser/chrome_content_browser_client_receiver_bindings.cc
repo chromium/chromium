@@ -43,7 +43,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -74,9 +73,9 @@
 #include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros_basic.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
-#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif
 
@@ -136,7 +135,6 @@ namespace {
 // thread.
 void MaybeCreateSafeBrowsingForRenderer(
     int process_id,
-    base::WeakPtr<content::ResourceContext> resource_context,
     base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>(
         bool safe_browsing_enabled,
         bool should_check_on_sb_disabled,
@@ -161,7 +159,7 @@ void MaybeCreateSafeBrowsingForRenderer(
       safe_browsing::IsSafeBrowsingEnabled(*pref_service);
 
   safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-      process_id, std::move(resource_context),
+      process_id,
       base::BindRepeating(get_checker_delegate, safe_browsing_enabled,
                           // Navigation initiated from renderer should never
                           // check when safe browsing is disabled, because
@@ -233,12 +231,9 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (safe_browsing_service_) {
-    content::ResourceContext* resource_context =
-        render_process_host->GetBrowserContext()->GetResourceContext();
     registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
         base::BindRepeating(
             &MaybeCreateSafeBrowsingForRenderer, render_process_host->GetID(),
-            resource_context->GetWeakPtr(),
             base::BindRepeating(
                 &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
                 base::Unretained(this))),
@@ -341,7 +336,7 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       }));
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
   if (!site.SchemeIs(extensions::kExtensionScheme))
     return;
@@ -501,7 +496,7 @@ void ChromeContentBrowserClient::
             std::move(receiver), render_frame_host);
       },
       &render_frame_host));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   associated_registry.AddInterface<extensions::mojom::LocalFrameHost>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,
@@ -511,7 +506,7 @@ void ChromeContentBrowserClient::
                 std::move(receiver), render_frame_host);
           },
           &render_frame_host));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   associated_registry.AddInterface<offline_pages::mojom::MhtmlPageNotifier>(
       base::BindRepeating(

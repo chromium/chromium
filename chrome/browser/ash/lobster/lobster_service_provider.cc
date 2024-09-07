@@ -49,7 +49,7 @@ std::unique_ptr<KeyedService> LobsterServiceProvider::BuildInstanceFor(
   std::unique_ptr<manta::SnapperProvider> snapper_provider =
       manta::MantaServiceFactory::GetForProfile(profile)
           ->CreateSnapperProvider();
-  return std::make_unique<LobsterService>(std::move(snapper_provider));
+  return std::make_unique<LobsterService>(std::move(snapper_provider), profile);
 }
 
 std::unique_ptr<KeyedService>

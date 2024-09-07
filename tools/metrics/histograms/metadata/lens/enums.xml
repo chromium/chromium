@@ -67,6 +67,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Learn more action"/>
   <int value="8" label="Send feedback action"/>
   <int value="9" label="Tap region selection"/>
+  <int value="10" label="Translate mode button enable action"/>
+  <int value="11" label="Translate mode button disable action"/>
+  <int value="12" label="Translate source language changed"/>
+  <int value="13" label="Translate target language changed"/>
+  <int value="14" label="Translate text selection"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/lens/core/mojom/lens.mojom:UserAction) -->

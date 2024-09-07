@@ -317,6 +317,21 @@ void ExtensionActionAPI::Shutdown() {
     observer.OnExtensionActionAPIShuttingDown();
 }
 
+void ExtensionActionAPI::OnActionPinnedStateChanged(
+    const ExtensionId& extension_id,
+    bool is_pinned) {
+  // TODO(crbug.com/360916928): Today, no action APIs are compiled.
+  // Unfortunately, this means we miss out on the compiled types, which would be
+  // rather helpful here.
+  base::Value::List args;
+  base::Value::Dict change;
+  change.Set("isOnToolbar", is_pinned);
+  args.Append(std::move(change));
+  DispatchEventToExtension(browser_context_, extension_id,
+                           events::ACTION_ON_USER_SETTINGS_CHANGED,
+                           "action.onUserSettingsChanged", std::move(args));
+}
+
 //
 // ExtensionActionFunction
 //
@@ -635,9 +650,9 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
       ToolbarActionsModel::Get(Profile::FromBrowserContext(browser_context()))
           ->IsActionPinned(extension_id());
 
-  // TODO(devlin): Today, no action APIs are compiled. Unfortunately, this
-  // means we miss out on the compiled types, which would be rather helpful
-  // here.
+  // TODO(crbug.com/360916928): Today, no action APIs are compiled.
+  // Unfortunately, this means we miss out on the compiled types, which would be
+  // rather helpful here.
   base::Value::Dict ui_settings;
   ui_settings.Set("isOnToolbar", is_pinned);
 
@@ -648,8 +663,9 @@ ActionOpenPopupFunction::ActionOpenPopupFunction() = default;
 ActionOpenPopupFunction::~ActionOpenPopupFunction() = default;
 
 ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
-  // Unfortunately, the action API types aren't compiled. However, the bindings
-  // should still valid the form of the arguments.
+  // TODO(crbug.com/360916928): Unfortunately, the action API types aren't
+  // compiled. However, the bindings should still valid the form of the
+  // arguments.
   EXTENSION_FUNCTION_VALIDATE(args().size() == 1u);
   EXTENSION_FUNCTION_VALIDATE(extension());
   const base::Value& options = args()[0];

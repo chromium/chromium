@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -87,8 +87,7 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
   }
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
   }
 
   OCMockObject<SigninPresenter>* signin_presenter() {

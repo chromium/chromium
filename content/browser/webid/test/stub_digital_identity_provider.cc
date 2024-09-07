@@ -30,7 +30,7 @@ StubDigitalIdentityProvider::ShowDigitalIdentityInterstitial(
 
 void StubDigitalIdentityProvider::Request(WebContents*,
                                           const url::Origin& origin,
-                                          const std::string& request,
+                                          base::Value request,
                                           DigitalIdentityCallback) {}
 
 }  // namespace content

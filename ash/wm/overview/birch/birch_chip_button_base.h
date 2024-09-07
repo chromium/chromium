@@ -22,6 +22,9 @@ class BirchChipButtonBase : public views::Button {
   BirchChipButtonBase& operator=(const BirchChipButtonBase&) = delete;
   ~BirchChipButtonBase() override;
 
+  // Configure the chip with given `item`.
+  virtual void Init(BirchItem* item) = 0;
+
   // Get birch item attached to the chip.
   virtual const BirchItem* GetItem() const = 0;
   virtual BirchItem* GetItem() = 0;

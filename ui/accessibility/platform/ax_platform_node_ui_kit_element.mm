@@ -35,7 +35,8 @@
   if (!container) {
     return nil;
   }
-  if (self = [super initWithAccessibilityContainer:platformNode->GetParent()]) {
+  if ((self =
+           [super initWithAccessibilityContainer:platformNode->GetParent()])) {
     _node = platformNode;
     _needsToUpdateChildren = YES;
     _gettingChildren = NO;

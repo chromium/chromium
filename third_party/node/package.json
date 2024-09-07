@@ -4,7 +4,8 @@
   "author": "dpapad@chromium.org",
   "dependencies": {
     "@mediapipe/tasks-vision": "0.10.9",
-    "@types/chai": "4.2.22",
+    "@rollup/wasm-node": "4.21.0",
+    "@types/chai": "4.3.16",
     "@types/d3": "7.4.0",
     "@types/dom-mediacapture-transform": "0.1.7",
     "@types/dom-speech-recognition": "0.0.1",
@@ -14,7 +15,7 @@
     "@types/filesystem": "0.0.32",
     "@types/filewriter": "0.0.29",
     "@types/google.analytics": "0.0.42",
-    "@types/mocha": "9.0.0",
+    "@types/mocha": "10.0.6",
     "@types/offscreencanvas": "2019.6.4",
     "@types/trusted-types": "1.0.6",
     "@types/w3c-image-capture": "1.0.8",
@@ -28,9 +29,8 @@
     "eslint-plugin-jsdoc": "46.8.2",
     "html-minifier": "4.0.0",
     "lit": "3.0.2",
-    "rollup": "4.19.1",
     "svgo": "3.0.2",
-    "terser": "5.31.0",
+    "terser": "5.31.6",
     "typescript": "5.5.3"
   }
 }

@@ -172,7 +172,7 @@ void TreeViewTest::SetUp() {
   ViewsTestBase::SetUp();
   widget_ = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                    Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   widget_->Init(std::move(params));
@@ -631,17 +631,78 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
   Add(Add(GetNodeByTitle("c"), 0, "c1"), 0, "c11");
   tree()->SetModel(&model_);
 
+  int root_children_set_size = 3;
+  const int root_pos_in_set = 1;
+  const int root_set_size = 1;
+  int a_pos_in_set = 1;
+  int b_pos_in_set = 2;
+  int c_pos_in_set = 3;
+
+  ui::AXNodeData data;
+
   // Remove c11, which shouldn't have any effect on the tree.
   EXPECT_EQ("root [a b c]", TreeViewContentsAsString());
   EXPECT_EQ("root [a b c]", TreeViewAccessibilityContentsAsString());
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(4u, GetRowCount());
+  data = GetAccessibilityViewByName("root")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+            1);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            root_pos_in_set);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kInvisible));
+
+  data = GetAccessibilityViewByName("a")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_children_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            a_pos_in_set);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(data.HasAction(ax::mojom::Action::kFocus));
+  EXPECT_TRUE(data.HasAction(ax::mojom::Action::kScrollToMakeVisible));
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+            2);
+
+  data = GetAccessibilityViewByName("b")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_children_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            b_pos_in_set);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(data.HasAction(ax::mojom::Action::kFocus));
+  EXPECT_TRUE(data.HasAction(ax::mojom::Action::kScrollToMakeVisible));
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+            2);
+
+  data = GetAccessibilityViewByName("c")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_children_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            c_pos_in_set);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(data.HasAction(ax::mojom::Action::kFocus));
+  EXPECT_TRUE(data.HasAction(ax::mojom::Action::kScrollToMakeVisible));
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+            2);
 
   // Expand b1, then collapse it and remove its only child, b1. This shouldn't
   // effect the tree.
   tree()->Expand(GetNodeByTitle("b"));
+  data = GetAccessibilityViewByName("b1")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 1);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 1);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(data.HasAction(ax::mojom::Action::kFocus));
+  EXPECT_TRUE(data.HasAction(ax::mojom::Action::kScrollToMakeVisible));
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+            3);
+
   tree()->Collapse(GetNodeByTitle("b"));
+  data = GetAccessibilityViewByName("b1")->GetData();
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kInvisible));
   ClearAccessibilityEvents();
   model_.Remove(GetNodeByTitle("b1")->parent(), GetNodeByTitle("b1"));
   EXPECT_EQ("root [a b c]", TreeViewContentsAsString());
@@ -655,6 +716,8 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
       accessibility_events());
 
   // Remove 'b'.
+  root_children_set_size = 2;
+  c_pos_in_set = 2;
   ClearAccessibilityEvents();
   model_.Remove(GetNodeByTitle("b")->parent(), GetNodeByTitle("b"));
   EXPECT_EQ("root [a c]", TreeViewContentsAsString());
@@ -670,6 +733,23 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
           std::make_pair(GetTreeAccessibilityView(),
                          ax::mojom::Event::kRowCountChanged)}),
       accessibility_events());
+  data = GetAccessibilityViewByName("root")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            root_pos_in_set);
+
+  data = GetAccessibilityViewByName("a")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_children_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            a_pos_in_set);
+
+  data = GetAccessibilityViewByName("c")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_children_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            c_pos_in_set);
 
   // Remove 'c11', shouldn't visually change anything.
   ClearAccessibilityEvents();
@@ -679,6 +759,24 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(3u, GetRowCount());
+  data = GetAccessibilityViewByName("root")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            root_pos_in_set);
+
+  data = GetAccessibilityViewByName("a")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_children_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            a_pos_in_set);
+
+  data = GetAccessibilityViewByName("c")->GetData();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            root_children_set_size);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            c_pos_in_set);
+
   // Node "c11" is not visible, hence no accessibility event needed.
   EXPECT_EQ(AccessibilityEventsVector(), accessibility_events());
 

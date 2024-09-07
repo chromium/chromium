@@ -119,6 +119,9 @@ class ShoppingServiceHandler
                             GetProductInfoForUrlCallback callback) override;
   void GetPriceInsightsInfoForCurrentUrl(
       GetPriceInsightsInfoForCurrentUrlCallback callback) override;
+  void GetPriceInsightsInfoForUrl(
+      const GURL& url,
+      GetPriceInsightsInfoForUrlCallback callback) override;
   void GetProductSpecificationsForUrls(
       const std::vector<::GURL>& urls,
       GetProductSpecificationsForUrlsCallback callback) override;
@@ -170,6 +173,9 @@ class ShoppingServiceHandler
   void DeclineProductSpecificationDisclosure() override;
   void GetProductSpecificationsFeatureState(
       GetProductSpecificationsFeatureStateCallback callback) override;
+  void GetPageTitleFromHistory(
+      const GURL& url,
+      GetPageTitleFromHistoryCallback callback) override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,

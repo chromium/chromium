@@ -9,6 +9,7 @@
 #include <string>
 
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_export.h"
 
 namespace net {
 
@@ -16,7 +17,7 @@ namespace net {
 // This is geared toward servers in that it keeps a map of the headers and
 // values rather than just a list of header strings (which net::HttpRequestInfo
 // does).
-class HttpServerRequestInfo {
+class NET_EXPORT HttpServerRequestInfo {
  public:
   HttpServerRequestInfo();
   HttpServerRequestInfo(const HttpServerRequestInfo& other);

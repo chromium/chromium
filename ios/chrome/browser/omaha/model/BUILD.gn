@@ -9,7 +9,6 @@ source_set("model") {
   ]
   public_deps = [
     "//base",
-    "//ios/chrome/browser/upgrade/model",
     "//ios/chrome/browser/upgrade/model:public",
   ]
   deps = [
@@ -20,15 +19,16 @@ source_set("model") {
     "//components/profile_metrics",
     "//components/version_info",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/omaha:omaha_api",
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ios/web",
+    "//ios/web/public/thread",
     "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
     "//third_party/libxml:xml_writer",
     "//url",
   ]
@@ -44,8 +44,6 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/version_info",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/upgrade/model",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/common",
     "//ios/chrome/test:test_support",

@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -808,8 +809,10 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   }
 }
 
-// TODO(crbug.com/358221944): Fix and re-enable.
-- (void)DISABLED_testShowFullURLInWebContextMenu {
+// Tests that one (and only one, meaning the menu title is not present) button
+// partially containing the url is present and tapping on it shows an alert
+// showing the full URL.
+- (void)testShowFullURLInWebContextMenu {
   const GURL pageURL = self.testServer->GetURL(kLongLinkPageURL);
   const GURL longURL =
       self.testServer->GetURL(base::SysNSStringToUTF8(kLongLinkHref));
@@ -821,17 +824,48 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 
   LongPressElement(kInitialPageDestinationLongLinkID);
 
+  std::u16string formattedURL = url_formatter::FormatUrl(longURL);
+  NSString* stringURL = base::SysUTF16ToNSString(formattedURL);
+
   [ChromeEarlGrey waitForForegroundWindowCount:1];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          ShowFullURLFromWebContextMenuButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuButtonContainingText([stringURL
+                     substringToIndex:20])] performAction:grey_tap()];
+
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_ancestor(grey_accessibilityID(
                                               @"AlertAccessibilityIdentifier")),
-                                          grey_text(base::SysUTF8ToNSString(
-                                              longURL.spec())),
-                                          nil)]
+                                          grey_text(stringURL), nil)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests "Share Image" action in the web context menu when long
+// pressing an image in a web page, and tests that triggering the
+// action does present the Share menu as expected.
+- (void)testShareImageInWebContextMenu {
+  [self setUpHistogramTester];
+
+  const GURL shortTitleURL = self.testServer->GetURL(kShortTruncationPageUrl);
+
+  [ChromeEarlGrey loadURL:shortTitleURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+  [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
+      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey verifyShareActionWithURL:shortTitleURL pageTitle:@"Image"];
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:13  // Number refering to
+                       // SharingScenario::ShareInWebContextMenu
+      forHistogram:@"Mobile.Share.EntryPoints"];
+  if (error) {
+    GREYFail([error description]);
+  }
 }
 
 @end

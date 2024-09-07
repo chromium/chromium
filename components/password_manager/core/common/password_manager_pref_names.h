@@ -230,15 +230,6 @@ inline constexpr char kAccountStoragePerAccountSettings[] =
     "profile.password_account_storage_settings";
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-// String that represents the sync password hash.
-inline constexpr char kSyncPasswordHash[] = "profile.sync_password_hash";
-
-// String that represents the sync password length and salt. Its format is
-// encrypted and converted to base64 string "<password length, as ascii
-// int>.<16 char salt>".
-inline constexpr char kSyncPasswordLengthAndHashSalt[] =
-    "profile.sync_password_length_and_hash_salt";
-
 // Indicates the time (in seconds) when last cleaning of obsolete HTTP
 // credentials was performed.
 inline constexpr char kLastTimeObsoleteHttpCredentialsRemoved[] =
@@ -345,6 +336,13 @@ inline constexpr char kRelaunchChromeBubbleDismissedCounter[] =
 inline constexpr char kClearingUndecryptablePasswords[] =
     "password_manager.clearing_undecryptable_passwords";
 #endif
+
+// Boolean pref indicating if passwords were migrated to OSCryptAsync. Two for
+// each store.
+inline constexpr char kProfileStoreMigratedToOSCryptAsync[] =
+    "password_manager.profile_store_migrated_to_os_crypt_async";
+inline constexpr char kAccountStoreMigratedToOSCryptAsync[] =
+    "password_manager.account_store_migrated_to_os_crypt_async";
 
 }  // namespace password_manager::prefs
 

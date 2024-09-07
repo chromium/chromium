@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
+import type {CalendarEvent} from '../../../calendar_data.mojom-webui.js';
 import {I18nMixinLit} from '../../../i18n_setup.js';
 import {WindowProxy} from '../../../window_proxy.js';
 

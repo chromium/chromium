@@ -9,14 +9,15 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -113,18 +113,37 @@
   }
 
   PrefService* prefService = browser->GetBrowserState()->GetPrefs();
-  base::Time lastSignin = prefService->GetTime(prefs::kLastSigninTimestamp);
-  if (base::Time::Now() - lastSignin <
-      kIdentityConfirmationMinTimeSinceSignin.Get()) {
+
+  const int displayCount =
+      prefService->GetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount);
+  const base::Time lastPrompted =
+      prefService->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
+
+  base::TimeDelta identityConfirmationMinDisplayInterval;
+  if (displayCount == 0) {
+    // Wait 1 day before the first reminder.
+    // Note: lastPrompted in this case is equal to kLastSigninTimestamp.
+    identityConfirmationMinDisplayInterval =
+        kIdentityConfirmationMinDisplayInterval1.Get();
+  } else if (displayCount == 1) {
+    // Wait 7 days before the second reminder.
+    identityConfirmationMinDisplayInterval =
+        kIdentityConfirmationMinDisplayInterval2.Get();
+  } else if (displayCount == 2) {
+    // Wait 30 days before the third reminder.
+    identityConfirmationMinDisplayInterval =
+        kIdentityConfirmationMinDisplayInterval3.Get();
+  } else {
+    // Stop showing after the third reminder.
     return;
   }
 
-  const base::Time lastPrompted =
-      prefService->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
   if (base::Time::Now() - lastPrompted <
-      kIdentityConfirmationMinDisplayInterval.Get()) {
+      identityConfirmationMinDisplayInterval) {
     return;
   }
+  prefService->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
+                          displayCount + 1);
   prefService->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                        base::Time::Now());
 

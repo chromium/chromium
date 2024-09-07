@@ -12148,7 +12148,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
   //
   // Child Tree
   // ++1 kDocument
-  ui::AXTreeID child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeID child_tree_id = AXTreeID::CreateNewAXTreeID();
 
   // Create tree manager for parent tree.
   AXNodeData root;

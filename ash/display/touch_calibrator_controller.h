@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
+#include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/touch_device_manager.h"
@@ -67,6 +68,11 @@ class ASH_EXPORT TouchCalibratorController
                         bool is_custom_calibration,
                         TouchCalibrationCallback opt_callback);
 
+  // Maps all monitors to their matching touchscreen device. Provided callback
+  // will be called once all displays have been mapped.
+  void StartNativeTouchscreenMappingExperience(
+      TouchCalibrationCallback opt_callback);
+
   // Stops any ongoing calibration process. This is a hard stop which does not
   // save any calibration data. Call CompleteCalibration() if you wish to save
   // calibration data.
@@ -88,11 +94,19 @@ class ASH_EXPORT TouchCalibratorController
                            CustomCalibrationInvalidTouchId);
   FRIEND_TEST_ALL_PREFIXES(TouchCalibratorControllerTest,
                            InternalTouchDeviceIsRejected);
+  FRIEND_TEST_ALL_PREFIXES(TouchCalibratorControllerTest,
+                           Mapping_TwoExternalDisplays_FullFlow);
+  FRIEND_TEST_ALL_PREFIXES(TouchCalibratorControllerTest,
+                           Mapping_TwoExternalDisplays_SkipFirst);
 
   enum class CalibrationState {
     // Indicates that the touch calibration is currently active with the built
     // in native UX.
     kNativeCalibration = 0,
+
+    // Indicates that the touch calibration is currently active with the built
+    // in native UX for all displays.
+    kNativeCalibrationTouchscreenMapping,
 
     // Indicates that the touch calibration is currently active with a custom
     // UX via the extensions API.
@@ -101,6 +115,10 @@ class ASH_EXPORT TouchCalibratorController
     // Indicates that touch calibration is currently inactive.
     kInactive
   };
+
+  // Iterates over to run the calibration experience on the next display.
+  // Used when running the touchscreen mapping experience.
+  void CalibrateNextDisplay();
 
   CalibrationState state_ = CalibrationState::kInactive;
 
@@ -129,8 +147,16 @@ class ASH_EXPORT TouchCalibratorController
   // touch input point pairs that will be used for calibration.
   CalibrationPointPairQuad touch_point_quad_;
 
-  // A callback to be called when touch calibration completes.
+  // A callback to be called when touch calibration completes when started via
+  // `StartCalibration`.
   TouchCalibrationCallback opt_callback_;
+  // A callback to be called when the native touch mapping experience has
+  // completed. This is started via `StartNativeTouchscreenMappingExperience`.
+  TouchCalibrationCallback opt_callback_all_displays_;
+
+  // The list of displays were already mapped to touchscreen devices in the
+  // current instantiation of the touchscreen mapping experience.
+  base::flat_set<int64_t> already_mapped_display_ids_;
 
   // The touch device under calibration may be re-associated to another display
   // during calibration. In such a case, the events originating from the touch

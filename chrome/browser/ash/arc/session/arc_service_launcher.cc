@@ -14,7 +14,6 @@
 #include "ash/components/arc/audio/arc_audio_bridge.h"
 #include "ash/components/arc/camera/arc_camera_bridge.h"
 #include "ash/components/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
-#include "ash/components/arc/clipboard/arc_clipboard_bridge.h"
 #include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
 #include "ash/components/arc/crash_collector/arc_crash_collector_bridge.h"
 #include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
@@ -253,7 +252,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcBootErrorNotification::GetForBrowserContext(profile);
   ArcBootPhaseMonitorBridge::GetForBrowserContext(profile);
   ArcCameraBridge::GetForBrowserContext(profile);
-  ArcClipboardBridge::GetForBrowserContext(profile);
   ArcCrashCollectorBridge::GetForBrowserContext(profile);
   ArcDigitalGoodsBridge::GetForBrowserContext(profile);
   ArcDiskSpaceBridge::GetForBrowserContext(profile);
@@ -447,7 +445,6 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcBootErrorNotification::EnsureFactoryBuilt();
   ArcBootPhaseMonitorBridgeFactory::GetInstance();
   ArcCameraBridge::EnsureFactoryBuilt();
-  ArcClipboardBridge::EnsureFactoryBuilt();
   ArcCrashCollectorBridge::EnsureFactoryBuilt();
   ArcDigitalGoodsBridge::EnsureFactoryBuilt();
   ArcDiskSpaceBridge::EnsureFactoryBuilt();

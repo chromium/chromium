@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator+initialization.h"
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_contained_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_presented_overlay_request_config.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator+initialization.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_impl.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_util.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_view_controller.h"
 #import "ios/chrome/browser/overlays/ui_bundled/test/fake_overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/test/test_overlay_presentation_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"

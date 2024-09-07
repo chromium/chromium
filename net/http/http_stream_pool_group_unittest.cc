@@ -260,6 +260,21 @@ TEST_F(HttpStreamPoolGroupTest, GetIdleStreamSocketDisconnectedDuringIdle) {
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
 }
 
+TEST_F(HttpStreamPoolGroupTest, GetIdleStreamSocketUsedSocketDisconnected) {
+  Group& group = GetTestGroup();
+  ASSERT_FALSE(group.GetIdleStreamSocket());
+
+  auto stream_socket = std::make_unique<FakeStreamSocket>();
+  FakeStreamSocket* raw_stream_socket = stream_socket.get();
+  group.AddIdleStreamSocket(std::move(stream_socket));
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+
+  raw_stream_socket->set_was_ever_used(true);
+  raw_stream_socket->set_is_connected(false);
+  ASSERT_FALSE(group.GetIdleStreamSocket());
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+}
+
 TEST_F(HttpStreamPoolGroupTest, GetIdleStreamSocketTimedout) {
   Group& group = GetTestGroup();
 

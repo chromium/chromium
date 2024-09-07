@@ -293,7 +293,9 @@ void SetExtendedReportingPrefAndMetric(
     PrefService* prefs,
     bool value,
     ExtendedReportingOptInLocation location) {
-  DCHECK(!base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency));
+  // TODO(crbug.com/336547987): Re-enable this DCHECK after the stage 2 is
+  // rolloed out. During stage 1, we still allow users to opt-in and opt-out.
+  // DCHECK(!base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency));
   prefs->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled, value);
   RecordExtendedReportingPrefChanged(*prefs, location);
 }

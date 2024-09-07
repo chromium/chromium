@@ -110,7 +110,8 @@ WorkletLoaderBase::WorkletLoaderBase(
   auction_downloader_ = std::make_unique<AuctionDownloader>(
       url_loader_factory, source_url,
       AuctionDownloader::DownloadMode::kActualDownload, mime_type,
-      /*post_body=*/std::nullopt, std::move(response_started_callback),
+      /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
+      std::move(response_started_callback),
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
                      base::Unretained(this)),
       /*network_events_delegate=*/std::move(network_events_delegate));

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/connection_holder_util.h"
@@ -19,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/fileapi/chrome_content_provider_url_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -27,11 +29,20 @@
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/fusebox/fusebox_moniker.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -62,11 +73,14 @@ class ArcFileSystemBridgeTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::SeneschalClient::InitializeFake();
     ash::VirtualFileProviderClient::InitializeFake();
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile(kTestingProfileName);
+
     auto fake_provider =
         ash::file_system_provider::FakeExtensionProvider::Create(kExtensionId);
     const auto kProviderId = fake_provider->GetId();
@@ -75,6 +89,12 @@ class ArcFileSystemBridgeTest : public testing::Test {
     service->MountFileSystem(kProviderId,
                              ash::file_system_provider::MountOptions(
                                  kFileSystemId, "Test FileSystem"));
+
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    const AccountId account_id(
+        AccountId::FromUserEmail(profile_->GetProfileUserName()));
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
     arc_file_system_bridge_ =
         std::make_unique<ArcFileSystemBridge>(profile_, &arc_bridge_service_);
@@ -85,15 +105,37 @@ class ArcFileSystemBridgeTest : public testing::Test {
   void TearDown() override {
     arc_bridge_service_.file_system()->CloseInstance(&fake_file_system_);
     arc_file_system_bridge_.reset();
+    fake_user_manager_.Reset();
     profile_manager_.reset();
     ash::VirtualFileProviderClient::Shutdown();
+    ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
 
  protected:
+  bool CreateMoniker(fusebox::Moniker* moniker) {
+    base::test::TestFuture<const std::optional<fusebox::Moniker>&> future;
+    arc_file_system_bridge_->CreateMoniker(
+        EncodeToChromeContentProviderUrl(GURL(kTestUrl)),
+        /*read_only=*/true, future.GetCallback());
+    if (!future.Get().has_value()) {
+      return false;
+    }
+    *moniker = future.Get().value();
+    return true;
+  }
+
+  bool DestroyMoniker(const fusebox::Moniker moniker) {
+    base::test::TestFuture<bool> future;
+    arc_file_system_bridge_->DestroyMoniker(moniker, future.GetCallback());
+    return future.Get();
+  }
+
   base::ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   FakeFileSystemInstance fake_file_system_;
@@ -263,6 +305,73 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
 
   // ID is released.
   EXPECT_TRUE(arc_file_system_bridge_->HandleIdReleased(kId));
+}
+
+TEST_F(ArcFileSystemBridgeTest, CreateAndDestroyMoniker) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm"});
+  EXPECT_TRUE(IsArcVmEnabled());
+
+  const guest_os::GuestId arcvm_id = guest_os::GuestId(
+      guest_os::VmType::ARCVM, kArcVmName, /*container_name=*/"");
+  guest_os::GuestOsSessionTracker::GetForProfile(profile_)->AddGuestForTesting(
+      arcvm_id,
+      guest_os::GuestInfo{arcvm_id, /*cid=*/32, /*username=*/"",
+                          /*homedir=*/base::FilePath(), /*ipv4_address=*/"",
+                          /*sftp_vsock_port=*/0});
+
+  fusebox::Server fusebox_server(/*delegate=*/nullptr);
+  fusebox::Moniker moniker;
+  EXPECT_TRUE(CreateMoniker(&moniker));
+  EXPECT_TRUE(guest_os::GuestOsSharePath::GetForProfile(profile_)->IsPathShared(
+      kArcVmName, base::FilePath(fusebox::MonikerMap::GetFilename(moniker))));
+  EXPECT_TRUE(DestroyMoniker(moniker));
+}
+
+TEST_F(ArcFileSystemBridgeTest, MaxNumberOfSharedMonikers) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm"});
+  EXPECT_TRUE(IsArcVmEnabled());
+
+  const guest_os::GuestId arcvm_id = guest_os::GuestId(
+      guest_os::VmType::ARCVM, kArcVmName, /*container_name=*/"");
+  guest_os::GuestOsSessionTracker::GetForProfile(profile_)->AddGuestForTesting(
+      arcvm_id,
+      guest_os::GuestInfo{arcvm_id, /*cid=*/32, /*username=*/"",
+                          /*homedir=*/base::FilePath(), /*ipv4_address=*/"",
+                          /*sftp_vsock_port=*/0});
+
+  fusebox::Server fusebox_server(/*delegate=*/nullptr);
+  arc_file_system_bridge_->SetMaxNumberOfSharedMonikersForTesting(3);
+  fusebox::Moniker monikers[14] = {};          // []
+  EXPECT_TRUE(CreateMoniker(&monikers[0]));    // [0]
+  EXPECT_TRUE(CreateMoniker(&monikers[1]));    // [0, 1]
+  EXPECT_TRUE(CreateMoniker(&monikers[2]));    // [0, 1, 2]
+  EXPECT_TRUE(CreateMoniker(&monikers[3]));    // [1, 2, 3]
+  EXPECT_FALSE(DestroyMoniker(monikers[0]));   // [1, 2, 3]
+  EXPECT_TRUE(DestroyMoniker(monikers[1]));    // [2, 3]
+  EXPECT_TRUE(CreateMoniker(&monikers[4]));    // [2, 3, 4]
+  EXPECT_TRUE(CreateMoniker(&monikers[5]));    // [3, 4, 5]
+  EXPECT_FALSE(DestroyMoniker(monikers[2]));   // [3, 4, 5]
+  EXPECT_TRUE(DestroyMoniker(monikers[4]));    // [3, 5]
+  EXPECT_TRUE(CreateMoniker(&monikers[6]));    // [3, 5, 6]
+  EXPECT_TRUE(CreateMoniker(&monikers[7]));    // [5, 6, 7]
+  EXPECT_FALSE(DestroyMoniker(monikers[3]));   // [5, 6, 7]
+  EXPECT_TRUE(DestroyMoniker(monikers[7]));    // [5, 6]
+  EXPECT_TRUE(CreateMoniker(&monikers[8]));    // [5, 6, 8]
+  EXPECT_TRUE(CreateMoniker(&monikers[9]));    // [6, 8, 9]
+  EXPECT_FALSE(DestroyMoniker(monikers[5]));   // [6, 8, 9]
+  EXPECT_TRUE(DestroyMoniker(monikers[6]));    // [8, 9]
+  EXPECT_TRUE(DestroyMoniker(monikers[8]));    // [9]
+  EXPECT_TRUE(DestroyMoniker(monikers[9]));    // []
+  EXPECT_TRUE(CreateMoniker(&monikers[10]));   // [10]
+  EXPECT_TRUE(CreateMoniker(&monikers[11]));   // [10, 11]
+  EXPECT_TRUE(CreateMoniker(&monikers[12]));   // [10, 11, 12]
+  EXPECT_TRUE(CreateMoniker(&monikers[13]));   // [11, 12, 13]
+  EXPECT_FALSE(DestroyMoniker(monikers[10]));  // [11, 12, 13]
+  EXPECT_TRUE(DestroyMoniker(monikers[13]));   // [11, 12]
+  EXPECT_TRUE(DestroyMoniker(monikers[12]));   // [11]
+  EXPECT_TRUE(DestroyMoniker(monikers[11]));   // []
 }
 
 TEST_F(ArcFileSystemBridgeTest, GetLinuxVFSPathFromExternalFileURL) {

@@ -20,10 +20,11 @@ source_set("coordinator") {
     "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/url_loading/model",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -39,7 +40,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/home_customization/ui",
     "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

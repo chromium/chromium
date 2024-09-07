@@ -12,10 +12,10 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_context.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
@@ -36,8 +36,8 @@
 namespace blink {
 
 class ExecutionContext;
-class MLBuffer;
-class MLBufferDescriptor;
+class MLTensor;
+class MLTensorDescriptor;
 class MLComputeResult;
 class MLContextLostInfo;
 class MLOpSupportLimits;
@@ -79,13 +79,13 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                                          const MLNamedArrayBufferViews& outputs,
                                          ExceptionState& exception_state);
 
-  ScriptPromise<MLBuffer> createBuffer(ScriptState* script_state,
-                                       const MLBufferDescriptor* descriptor,
+  ScriptPromise<MLTensor> createBuffer(ScriptState* script_state,
+                                       const MLTensorDescriptor* descriptor,
                                        ExceptionState& exception_state);
 
   // Writes data specified by array buffer view from offset in elements.
   void writeBuffer(ScriptState* script_state,
-                   MLBuffer* dst_buffer,
+                   MLTensor* dst_buffer,
                    const MaybeShared<DOMArrayBufferView>& src_data,
                    uint64_t src_element_offset,
                    ExceptionState& exception_state);
@@ -93,7 +93,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // Writes data specified by array buffer view from offset and size in
   // elements.
   void writeBuffer(ScriptState* script_state,
-                   MLBuffer* dst_buffer,
+                   MLTensor* dst_buffer,
                    const MaybeShared<DOMArrayBufferView>& src_data,
                    uint64_t src_element_offset,
                    uint64_t src_element_count,
@@ -101,32 +101,33 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   // Writes array buffer data from offset in bytes.
   void writeBuffer(ScriptState* script_state,
-                   MLBuffer* dst_buffer,
+                   MLTensor* dst_buffer,
                    const DOMArrayBufferBase* src_data,
                    uint64_t src_byte_offset,
                    ExceptionState& exception_state);
 
   // Writes array buffer data from offset and size in bytes.
   void writeBuffer(ScriptState* script_state,
-                   MLBuffer* dst_buffer,
+                   MLTensor* dst_buffer,
                    const DOMArrayBufferBase* src_data,
                    uint64_t src_byte_offset,
                    uint64_t src_byte_size,
                    ExceptionState& exception_state);
 
   ScriptPromise<DOMArrayBuffer> readBuffer(ScriptState* script_state,
-                                           MLBuffer* src_buffer,
+                                           MLTensor* src_buffer,
                                            ExceptionState& exception_state);
 
-  ScriptPromise<void> readBuffer(ScriptState* script_state,
-                                 MLBuffer* src_buffer,
-                                 DOMArrayBufferBase* dst_data,
-                                 ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> readBuffer(ScriptState* script_state,
+                                         MLTensor* src_buffer,
+                                         DOMArrayBufferBase* dst_data,
+                                         ExceptionState& exception_state);
 
-  ScriptPromise<void> readBuffer(ScriptState* script_state,
-                                 MLBuffer* src_buffer,
-                                 MaybeShared<DOMArrayBufferView> dst_data,
-                                 ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> readBuffer(
+      ScriptState* script_state,
+      MLTensor* src_buffer,
+      MaybeShared<DOMArrayBufferView> dst_data,
+      ExceptionState& exception_state);
 
   void dispatch(ScriptState* script_state,
                 MLGraph* graph,
@@ -153,17 +154,18 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // `src_element_offset` is the start of the data to write from in the span.
   // `src_element_count` is optional to denote when the entire span will be
   // written.
-  void WriteWebNNBuffer(ScriptState* script_state,
-                        MLBuffer* dst_buffer,
+  void WriteWebNNTensor(ScriptState* script_state,
+                        MLTensor* dst_buffer,
                         base::span<const uint8_t> src_data,
                         uint64_t src_element_offset,
                         unsigned src_data_type_size_bytes,
                         std::optional<uint64_t> src_element_count,
                         ExceptionState& exception_state);
 
-  void DidCreateWebNNBuffer(ScopedMLTrace scoped_trace,
-                            ScriptPromiseResolver<blink::MLBuffer>* resolver,
+  void DidCreateWebNNTensor(ScopedMLTrace scoped_trace,
+                            ScriptPromiseResolver<blink::MLTensor>* resolver,
                             webnn::OperandDescriptor validated_descriptor,
+                            webnn::MLTensorUsage usage,
                             webnn::mojom::blink::CreateBufferResultPtr result);
 
   V8MLDeviceType device_type_;
@@ -182,11 +184,11 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   // Keep a set of unresolved `ScriptPromiseResolver`s which will be
   // rejected when the Mojo pipe is unexpectedly disconnected.
-  HeapHashSet<Member<ScriptPromiseResolver<MLBuffer>>> pending_resolvers_;
+  HeapHashSet<Member<ScriptPromiseResolver<MLTensor>>> pending_resolvers_;
 
   HeapHashSet<WeakMember<MLGraph>> graphs_;
   HeapHashSet<WeakMember<MLGraphBuilder>> graph_builders_;
-  HeapHashSet<WeakMember<MLBuffer>> buffers_;
+  HeapHashSet<WeakMember<MLTensor>> buffers_;
 };
 
 }  // namespace blink

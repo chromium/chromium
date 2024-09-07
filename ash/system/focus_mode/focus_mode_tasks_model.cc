@@ -4,6 +4,8 @@
 
 #include "ash/system/focus_mode/focus_mode_tasks_model.h"
 
+#include <absl/cleanup/cleanup.h>
+
 #include <algorithm>
 
 #include "base/functional/bind.h"
@@ -109,6 +111,16 @@ void FocusModeTasksModel::RequestUpdate() {
   }
 
   if (delegate_) {
+    // If there is a currently selected task, we fetch the task to see if the
+    // title was updated or if it has been completed.
+    if (selected_task_) {
+      delegate_->FetchTask(
+          selected_task_->task_id,
+          base::BindOnce(&FocusModeTasksModel::OnSelectedTaskFetched,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
     delegate_->FetchTasks();
   }
 }
@@ -172,6 +184,15 @@ void FocusModeTasksModel::ClearSelectedTask() {
     selected_task_ = nullptr;
     NotifySelectedTask(observers_, nullptr);
   }
+}
+
+void FocusModeTasksModel::Reset() {
+  NotifySelectedTask(observers_, nullptr);
+  NotifyTaskListChanged(observers_, {});
+  selected_task_ = nullptr;
+  pending_task_ = nullptr;
+  pref_task_id_.reset();
+  tasks_.clear();
 }
 
 void FocusModeTasksModel::SetSelectedTaskFromPrefs(const TaskId& task_id) {
@@ -384,6 +405,43 @@ void FocusModeTasksModel::OnPrefTaskFetched(
     NotifyTaskListChanged(observers_, tasks_);
   }
   NotifySelectedTask(observers_, selected_task_);
+}
+
+void FocusModeTasksModel::OnSelectedTaskFetched(
+    const std::optional<FocusModeTask>& fetched_task) {
+  CHECK(delegate_);
+
+  if (!fetched_task) {
+    LOG(WARNING) << "Fetching Selected task failed. Try again later";
+    return;
+  }
+
+  // Ensure that `FetchTasks` is called afterwards. This will trigger a
+  // `NotifyTaskListChanged`.
+  absl::Cleanup fetch_tasks = [this] { delegate_->FetchTasks(); };
+
+  const TaskId& task_id = fetched_task->task_id;
+  FocusModeTask* task = FindTaskById(task_id, tasks_);
+  if (task == nullptr) {
+    // 'task_id' was not found in the task list. Nothing to update.
+    return;
+  }
+
+  // Update the title if it has changed.
+  bool has_task_title_changed = task->title != fetched_task->title;
+  if (has_task_title_changed) {
+    task->title = fetched_task->title;
+  }
+
+  if (fetched_task->completed) {
+    UpdateTask(TaskUpdate::CompletedUpdate(task_id));
+    return;
+  }
+
+  if (has_task_title_changed && selected_task_ &&
+      selected_task_->task_id == task_id) {
+    NotifySelectedTask(observers_, selected_task_);
+  }
 }
 
 FocusModeTask* FocusModeTasksModel::InsertTaskIntoTaskList(

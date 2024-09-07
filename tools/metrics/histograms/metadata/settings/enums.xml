@@ -26,6 +26,63 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AndroidSettingsFragmentHashes">
+  <int value="-2054907175" label="GroupedWebsitesSettings"/>
+  <int value="-1989639959" label="AdMeasurementFragment"/>
+  <int value="-1897035940" label="ThemeSettingsFragment"/>
+  <int value="-1752194986" label="SingleWebsiteSettings"/>
+  <int value="-1696636734" label="EnhancedProtectionSettingsFragment"/>
+  <int value="-1467975767" label="StandardPreloadingSettingsFragment"/>
+  <int value="-1413642316" label="TopicsFragment"/>
+  <int value="-1285374344" label="TopicsBlockedFragment"/>
+  <int value="-1200678803" label="SearchEngineSettings"/>
+  <int value="-1035378917" label="PrivacySettingsFragment"/>
+  <int value="-988526347" label="RWSCookieSettings"/>
+  <int value="-980428258" label="FledgeAllSitesFragment"/>
+  <int value="-894030932" label="AutofillLocalIbanEditor"/>
+  <int value="-847585811" label="DeveloperSettings"/>
+  <int value="-745020245" label="AllSiteSettings"/>
+  <int value="-676399019" label="SecureDnsSettings"/>
+  <int value="-571101369" label="SafeBrowsingSettingsFragment"/>
+  <int value="-518410470" label="GoogleServicesSettings"/>
+  <int value="-475543757" label="IpProtectionSettingsFragment"/>
+  <int value="-275160283" label="ExtendedPreloadingSettingsFragment"/>
+  <int value="-273029950" label="PasswordCheckFragmentView"/>
+  <int value="-191422304" label="AccountManagementFragment"/>
+  <int value="-132150623" label="TracingCategoriesSettings"/>
+  <int value="-121335732" label="AutofillProfilesFragment"/>
+  <int value="-90603956" label="ChosenObjectSettings"/>
+  <int value="-67456740" label="MainSettings"/>
+  <int value="-45144853" label="DownloadSettings"/>
+  <int value="-27162861" label="FledgeFragment"/>
+  <int value="19814032" label="ClearBrowsingDataFragmentAdvanced"/>
+  <int value="51577713" label="AccessibilitySettings"/>
+  <int value="91451948" label="ContextualSearchSettingsFragment"/>
+  <int value="383093746" label="PrivacySandboxSettingsFragment"/>
+  <int value="406265787" label="LanguageSettings"/>
+  <int value="436870314" label="SiteSettings"/>
+  <int value="453432714" label="AboutChromeSettings"/>
+  <int value="460038414" label="PreloadPagesSettingsFragment"/>
+  <int value="493474121" label="StandardProtectionSettingsFragment"/>
+  <int value="513483078" label="DoNotTrackSettings"/>
+  <int value="590543987" label="StorageAccessSubpageSettings"/>
+  <int value="887082954" label="FingerprintingProtectionSettingsFragment"/>
+  <int value="894297033" label="SingleCategorySettings"/>
+  <int value="903277107" label="FledgeBlockedSitesFragment"/>
+  <int value="1118292269" label="HomeModulesConfigSettings"/>
+  <int value="1322563897" label="TopicsManageFragment"/>
+  <int value="1370078648" label="AdaptiveToolbarSettingsFragment"/>
+  <int value="1370406966" label="AutofillLocalCardEditor"/>
+  <int value="1421890558" label="PasswordSettings"/>
+  <int value="1505293227" label="PrivacySettings"/>
+  <int value="1603955025" label="SafetyHubPermissionsFragment"/>
+  <int value="1676521220" label="SelectLanguageFragment"/>
+  <int value="1849593145" label="AndroidPaymentAppsFragment"/>
+  <int value="1891640238" label="AutofillPaymentMethodsFragment"/>
+  <int value="1952237285" label="TracingSettings"/>
+  <int value="1968319616" label="ClearBrowsingDataFragmentBasic"/>
+</enum>
+
 <enum name="BooleanRedirected">
   <int value="0" label="Not redirected"/>
   <int value="1" label="Redirected"/>

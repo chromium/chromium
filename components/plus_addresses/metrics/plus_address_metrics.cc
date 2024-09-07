@@ -13,25 +13,29 @@
 
 namespace plus_addresses::metrics {
 
-void RecordModalEvent(
-    PlusAddressModalEvent plus_address_modal_event) {
-  base::UmaHistogramEnumeration("PlusAddresses.Modal.Events",
+void RecordModalEvent(PlusAddressModalEvent plus_address_modal_event,
+                      bool is_notice_screen) {
+  base::UmaHistogramEnumeration(is_notice_screen
+                                    ? "PlusAddresses.ModalWithNotice.Events"
+                                    : "PlusAddresses.Modal.Events",
                                 plus_address_modal_event);
 }
 
-void RecordModalShownOutcome(
-    PlusAddressModalCompletionStatus status,
-    base::TimeDelta modal_shown_duration,
-    int refresh_count) {
+void RecordModalShownOutcome(PlusAddressModalCompletionStatus status,
+                             base::TimeDelta modal_shown_duration,
+                             int refresh_count,
+                             bool is_notice_screen) {
   base::UmaHistogramTimes(
       base::ReplaceStringPlaceholders(
-          "PlusAddresses.Modal.$1.ShownDuration",
+          is_notice_screen ? "PlusAddresses.ModalWithNotice.$1.ShownDuration"
+                           : "PlusAddresses.Modal.$1.ShownDuration",
           {PlusAddressModalCompletionStatusToString(status)},
           /*offsets=*/nullptr),
       modal_shown_duration);
   base::UmaHistogramExactLinear(
       base::ReplaceStringPlaceholders(
-          "PlusAddresses.Modal.$1.Refreshes",
+          is_notice_screen ? "PlusAddresses.ModalWithNotice.$1.Refreshes"
+                           : "PlusAddresses.Modal.$1.Refreshes",
           {PlusAddressModalCompletionStatusToString(status)},
           /*offsets=*/nullptr),
       refresh_count, /*exclusive_max=*/31);

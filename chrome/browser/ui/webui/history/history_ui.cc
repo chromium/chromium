@@ -136,6 +136,11 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"turnOnSyncPromo", IDS_HISTORY_TURN_ON_SYNC_PROMO},
       {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
       {"title", IDS_HISTORY_TITLE},
+      {"compareHistorySyncMessage", IDS_COMPARE_SYNC_PROMO_MESSAGE},
+      {"compareHistorySyncDescription", IDS_COMPARE_SYNC_PROMO_DESCRIPTION},
+      {"compareHistorySyncButton", IDS_COMPARE_SYNC_PROMO_BUTTON},
+      {"compareHistoryErrorMessage", IDS_COMPARE_ERROR_TITLE},
+      {"compareHistoryErrorDescription", IDS_COMPARE_ERROR_DESCRIPTION},
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -189,11 +194,14 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile);
   source->AddBoolean("enableHistoryEmbeddings", enable_history_embeddings);
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
+      {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
       {"historyEmbeddingsPromoLabel", IDS_HISTORY_EMBEDDINGS_PROMO_LABEL},
       {"historyEmbeddingsPromoClose", IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE},
       {"historyEmbeddingsPromoHeading", IDS_HISTORY_EMBEDDINGS_PROMO_HEADING},
       {"historyEmbeddingsPromoBody", IDS_HISTORY_EMBEDDINGS_PROMO_BODY},
+      {"historyEmbeddingsPromoSettingsLinkText",
+       IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT},
       {"historyEmbeddingsShowByLabel",
        IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL},
       {"historyEmbeddingsShowByDate", IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE},
@@ -216,13 +224,9 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
-  source->AddString(
-      "historyEmbeddingsPromoBody",
-      l10n_util::GetStringFUTF16(IDS_HISTORY_EMBEDDINGS_PROMO_BODY,
-                                 chrome::kHistorySearchSettingURL));
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
                      history_embeddings::kSearchQueryMinimumWordCount.Get());
-  source->AddString("historyEmbeddingsLearnMoreUrl",
+  source->AddString("historyEmbeddingsSettingsUrl",
                     chrome::kHistorySearchSettingURL);
 
   // History clusters
@@ -322,7 +326,9 @@ void HistoryUI::BindInterface(
   history_clusters_handler_ =
       std::make_unique<history_clusters::HistoryClustersHandler>(
           std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-          web_ui()->GetWebContents());
+          web_ui()->GetWebContents(),
+          // HistoryUI should always be in a tab. Look it up unconditionally.
+          tabs::TabInterface::GetFromContents(web_ui()->GetWebContents()));
 }
 
 void HistoryUI::BindInterface(

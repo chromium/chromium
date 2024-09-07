@@ -16,8 +16,7 @@ public class IdentityService extends Service {
             new IIdentityService.Stub() {
                 @Override
                 public String getRuntimeHostBrowserPackageName() {
-                    return HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(
-                            getApplicationContext());
+                    return HostBrowserUtils.computeHostBrowserPackageName(getApplicationContext());
                 }
             };
 

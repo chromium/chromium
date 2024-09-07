@@ -40,7 +40,7 @@ const WrapperTypeInfo kWrapperTypeInfoBody{
 namespace bindings {
 
 ObservableArrayBase::ObservableArrayBase(
-    ScriptWrappable* platform_object,
+    GarbageCollectedMixin* platform_object,
     ObservableArrayExoticObject* observable_array_exotic_object)
     : platform_object_(platform_object),
       observable_array_exotic_object_(observable_array_exotic_object) {

@@ -36,8 +36,6 @@ class PLATFORM_EXPORT PaintRecordBuilder final {
   // propagated to this builder's internal context.
   explicit PaintRecordBuilder(GraphicsContext& containing_context);
 
-  ~PaintRecordBuilder();  // override;
-
   GraphicsContext& Context() { return context_; }
 
   // Returns a PaintRecord capturing all drawing performed on the builder's
@@ -53,7 +51,7 @@ class PLATFORM_EXPORT PaintRecordBuilder final {
       const PropertyTreeState& replay_state = PropertyTreeState::Root());
 
  private:
-  PaintController& paint_controller_;
+  PaintController paint_controller_;
   GraphicsContext context_;
 };
 

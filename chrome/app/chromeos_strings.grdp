@@ -760,7 +760,7 @@
     Available devices
   </message>
   <message name="IDS_BLUETOOTH_PAIRING_PAIRING_NO_AVAILABLE_DEVICES" desc="Bluetooth pairing dialog: Title for the list of Bluetooth devices when no devices are available for pairing.">
-    No devices found nearby
+    Looking for nearby discoverable devices...
   </message>
   <message name="IDS_BLUETOOTH_PAIRING_PAIRING_BLUETOOTH_DISABLED" desc="Bluetooth pairing dialog: Title for the list of Bluetooth devices when Bluetooth is disabled so no devices are found for pairing.">
     Bluetooth is turned off. To see available devices, turn Bluetooth on.
@@ -2563,9 +2563,6 @@
   </message>
   <message name="IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE2" desc="User that was not logged in tries to unlock the device">
     Please make sure you are verifying <ph name="ACCOUNT">$1<ex>test@example.com</ex></ph> to unlock the session.
-  </message>
-  <message name="IDS_LOCK_SCREEN_REAUTH_SUBTITLE" desc="Subtitle for lock screen user re-auth dialog">
-    Sign in to <ph name="ACCOUNT">$1<ex>test@example.com</ex></ph> again to verify this account
   </message>
   <message name="IDS_LOCK_MANUAL_PASSWORD_SUBTITLE" desc="Subtitle for the manual password setting dialog.">
     Enter your password again to verify your account.

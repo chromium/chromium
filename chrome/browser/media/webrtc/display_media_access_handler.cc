@@ -605,7 +605,7 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
        (media_id.type == content::DesktopMediaID::TYPE_WINDOW &&
         !media_id.window_id)) &&
       system_media_permissions::CheckSystemScreenCapturePermission() !=
-          system_media_permissions::SystemPermission::kAllowed) {
+          system_permission_settings::SystemPermission::kAllowed) {
     RejectRequest(
         web_contents.get(),
         blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED);

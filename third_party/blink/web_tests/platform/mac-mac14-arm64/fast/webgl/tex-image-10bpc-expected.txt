@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ensure 10bpc image is not crushed to 8bpc in texImage2D
-  assert_unreached: webgl2 context not available Reached unreachable code
-Harness: the test ran to completion.
-

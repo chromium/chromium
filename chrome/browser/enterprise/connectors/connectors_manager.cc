@@ -14,7 +14,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -41,34 +40,12 @@ static constexpr enterprise_connectors::AnalysisConnector
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 constexpr char kReportingConnectorUrlFlag[] = "reporting-connector-url";
-
-std::optional<GURL> GetReportingConnectorUrlOverride() {
-  // Ignore this flag on Stable and Beta to avoid abuse.
-  if (!g_browser_process || !g_browser_process->browser_policy_connector()
-                                 ->IsCommandLineSwitchSupported()) {
-    return std::nullopt;
-  }
-
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(kReportingConnectorUrlFlag)) {
-    GURL url = GURL(cmd->GetSwitchValueASCII(kReportingConnectorUrlFlag));
-    if (url.is_valid()) {
-      return url;
-    } else {
-      VLOG(1) << "--" << kReportingConnectorUrlFlag
-              << " is set to an invalid URL";
-    }
-  }
-
-  return std::nullopt;
-}
-
 }  // namespace
 
 ConnectorsManager::ConnectorsManager(PrefService* pref_service,
                                      const ServiceProviderConfig* config,
                                      bool observe_prefs)
-    : service_provider_config_(config) {
+    : ConnectorsManagerBase(pref_service, config, observe_prefs) {
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Start observing tab strip models for all browsers.
   BrowserList* browser_list = BrowserList::GetInstance();
@@ -98,7 +75,8 @@ ConnectorsManager::~ConnectorsManager() {
 ConnectorsManager::~ConnectorsManager() = default;
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
+bool ConnectorsManager::IsAnalysisConnectorEnabled(
+    AnalysisConnector connector) const {
   if (analysis_connector_settings_.count(connector) == 0 &&
       prefs()->HasPrefPath(ConnectorPref(connector))) {
     CacheAnalysisConnectorPolicy(connector);
@@ -110,52 +88,19 @@ bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 bool ConnectorsManager::IsConnectorEnabledForLocalAgent(
     AnalysisConnector connector) const {
-  if (!IsConnectorEnabled(connector)) {
+  if (!IsAnalysisConnectorEnabled(connector)) {
     return false;
   }
   return analysis_connector_settings_.at(connector)[0].is_local_analysis();
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-bool ConnectorsManager::IsConnectorEnabled(ReportingConnector connector) const {
-  if (reporting_connector_settings_.count(connector) == 1)
-    return true;
-
-  const char* pref = ConnectorPref(connector);
-  return pref && prefs()->HasPrefPath(pref);
-}
-
-std::optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
-    ReportingConnector connector) {
-  if (!IsConnectorEnabled(connector))
-    return std::nullopt;
-
-  if (reporting_connector_settings_.count(connector) == 0)
-    CacheReportingConnectorPolicy(connector);
-
-  // If the connector is still not in memory, it means the pref is set to an
-  // empty list or that it is not a list.
-  if (reporting_connector_settings_.count(connector) == 0)
-    return std::nullopt;
-
-  // While multiple services can be set by the connector policies, only the
-  // first one is considered for now.
-  auto reporting_settings =
-      reporting_connector_settings_[connector][0].GetReportingSettings();
-
-  std::optional<GURL> url_override = GetReportingConnectorUrlOverride();
-  if (reporting_settings && url_override) {
-    reporting_settings->reporting_url = std::move(*url_override);
-  }
-
-  return reporting_settings;
-}
-
 std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
-  if (!IsConnectorEnabled(connector))
+  if (!IsAnalysisConnectorEnabled(connector)) {
     return std::nullopt;
+  }
 
   if (analysis_connector_settings_.count(connector) == 0)
     CacheAnalysisConnectorPolicy(connector);
@@ -177,8 +122,9 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     AnalysisConnector connector) {
-  if (!IsConnectorEnabled(connector))
+  if (!IsAnalysisConnectorEnabled(connector)) {
     return std::nullopt;
+  }
 
   if (analysis_connector_settings_.count(connector) == 0)
     CacheAnalysisConnectorPolicy(connector);
@@ -267,30 +213,8 @@ void ConnectorsManager::OnPrefChanged(AnalysisConnector connector) {
 #endif
 }
 
-void ConnectorsManager::OnPrefChanged(ReportingConnector connector) {
-  CacheReportingConnectorPolicy(connector);
-  if (!telemetry_observer_callback_.is_null()) {
-    telemetry_observer_callback_.Run();
-  }
-}
-
-void ConnectorsManager::CacheReportingConnectorPolicy(
-    ReportingConnector connector) {
-  reporting_connector_settings_.erase(connector);
-
-  // Connectors with non-existing policies should not reach this code.
-  const char* pref = ConnectorPref(connector);
-  DCHECK(pref);
-
-  const base::Value::List& policy_value = prefs()->GetList(pref);
-  for (const base::Value& service_settings : policy_value) {
-    reporting_connector_settings_[connector].emplace_back(
-        service_settings, *service_provider_config_);
-  }
-}
-
 bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
-  if (IsConnectorEnabled(connector)) {
+  if (IsAnalysisConnectorEnabled(connector)) {
     if (analysis_connector_settings_.count(connector) == 0)
       CacheAnalysisConnectorPolicy(connector);
 
@@ -307,7 +231,7 @@ bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
 std::optional<std::u16string> ConnectorsManager::GetCustomMessage(
     AnalysisConnector connector,
     const std::string& tag) {
-  if (IsConnectorEnabled(connector)) {
+  if (IsAnalysisConnectorEnabled(connector)) {
     if (analysis_connector_settings_.count(connector) == 0)
       CacheAnalysisConnectorPolicy(connector);
 
@@ -323,7 +247,7 @@ std::optional<std::u16string> ConnectorsManager::GetCustomMessage(
 std::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
     AnalysisConnector connector,
     const std::string& tag) {
-  if (IsConnectorEnabled(connector)) {
+  if (IsAnalysisConnectorEnabled(connector)) {
     if (analysis_connector_settings_.count(connector) == 0)
       CacheAnalysisConnectorPolicy(connector);
 
@@ -339,7 +263,7 @@ std::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
 bool ConnectorsManager::GetBypassJustificationRequired(
     AnalysisConnector connector,
     const std::string& tag) {
-  if (IsConnectorEnabled(connector)) {
+  if (IsAnalysisConnectorEnabled(connector)) {
     if (analysis_connector_settings_.count(connector) == 0)
       CacheAnalysisConnectorPolicy(connector);
 
@@ -355,7 +279,7 @@ bool ConnectorsManager::GetBypassJustificationRequired(
 
 std::vector<std::string> ConnectorsManager::GetAnalysisServiceProviderNames(
     AnalysisConnector connector) {
-  if (IsConnectorEnabled(connector)) {
+  if (IsAnalysisConnectorEnabled(connector)) {
     if (analysis_connector_settings_.count(connector) == 0) {
       CacheAnalysisConnectorPolicy(connector);
     }
@@ -373,29 +297,9 @@ std::vector<std::string> ConnectorsManager::GetAnalysisServiceProviderNames(
   return {};
 }
 
-std::vector<std::string> ConnectorsManager::GetReportingServiceProviderNames(
-    ReportingConnector connector) {
-  if (!IsConnectorEnabled(connector))
-    return {};
-
-  if (reporting_connector_settings_.count(connector) == 0)
-    CacheReportingConnectorPolicy(connector);
-
-  if (reporting_connector_settings_.count(connector) &&
-      !reporting_connector_settings_.at(connector).empty()) {
-    // There can only be one provider right now, but the system is designed to
-    // support multiples, so return a vector.
-    return {reporting_connector_settings_.at(connector)
-                .at(0)
-                .service_provider_name()};
-  }
-
-  return {};
-}
-
 std::vector<const AnalysisConfig*> ConnectorsManager::GetAnalysisServiceConfigs(
     AnalysisConnector connector) {
-  if (IsConnectorEnabled(connector)) {
+  if (IsAnalysisConnectorEnabled(connector)) {
     if (analysis_connector_settings_.count(connector) == 0) {
       CacheAnalysisConnectorPolicy(connector);
     }
@@ -413,12 +317,16 @@ std::vector<const AnalysisConfig*> ConnectorsManager::GetAnalysisServiceConfigs(
 }
 
 DataRegion ConnectorsManager::GetDataRegion() const {
+#if BUILDFLAG(IS_ANDROID)
+  return DataRegion::NO_PREFERENCE;
+#else
   bool apply_data_region =
       prefs()->HasPrefPath(prefs::kChromeDataRegionSetting) &&
       base::FeatureList::IsEnabled(safe_browsing::kDlpRegionalizedEndpoints);
   return apply_data_region ? ChromeDataRegionSettingToEnum(prefs()->GetInteger(
                                  prefs::kChromeDataRegionSetting))
                            : DataRegion::NO_PREFERENCE;
+#endif
 }
 
 void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
@@ -430,7 +338,7 @@ void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   StartObservingPref(AnalysisConnector::FILE_TRANSFER);
 #endif
-  StartObservingPref(ReportingConnector::SECURITY_EVENT);
+  ConnectorsManagerBase::StartObservingPref(ReportingConnector::SECURITY_EVENT);
 }
 
 void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
@@ -445,26 +353,30 @@ void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
   }
 }
 
-void ConnectorsManager::StartObservingPref(ReportingConnector connector) {
-  const char* pref = ConnectorPref(connector);
-  DCHECK(pref);
-  if (!pref_change_registrar_.IsObserved(pref)) {
-    pref_change_registrar_.Add(
-        pref, base::BindRepeating(
-                  static_cast<void (ConnectorsManager::*)(ReportingConnector)>(
-                      &ConnectorsManager::OnPrefChanged),
-                  base::Unretained(this), connector));
+std::optional<GURL> ConnectorsManager::GetReportingConnectorUrlOverride() {
+  // Ignore this flag on Stable and Beta to avoid abuse.
+  if (!g_browser_process || !g_browser_process->browser_policy_connector()
+                                 ->IsCommandLineSwitchSupported()) {
+    return std::nullopt;
   }
+
+  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  if (cmd->HasSwitch(kReportingConnectorUrlFlag)) {
+    GURL url = GURL(cmd->GetSwitchValueASCII(kReportingConnectorUrlFlag));
+    if (url.is_valid()) {
+      return url;
+    } else {
+      VLOG(1) << "--" << kReportingConnectorUrlFlag
+              << " is set to an invalid URL";
+    }
+  }
+
+  return std::nullopt;
 }
 
 const ConnectorsManager::AnalysisConnectorsSettings&
 ConnectorsManager::GetAnalysisConnectorsSettingsForTesting() const {
   return analysis_connector_settings_;
-}
-
-const ConnectorsManager::ReportingConnectorsSettings&
-ConnectorsManager::GetReportingConnectorsSettingsForTesting() const {
-  return reporting_connector_settings_;
 }
 
 const base::RepeatingCallback<void()>

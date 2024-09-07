@@ -23,6 +23,7 @@
 #include "printing/backend/cups_deleters.h"
 #include "printing/backend/cups_helper.h"
 #include "printing/backend/cups_ipp_helper.h"
+#include "printing/backend/cups_weak_functions.h"
 #include "printing/printer_status.h"
 
 namespace printing {

@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
@@ -85,7 +86,7 @@ class ModelExecutionFeaturesController
   // Returns whether the `feature` should be currently allowed for logging model
   // quality logs.
   bool ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey feature) const;
+      const MqlsFeatureMetadata* metadata) const;
 
   // Adds `observer` which can observe the change in feature settings.
   void AddObserver(SettingsEnabledObserver* observer);
@@ -130,10 +131,6 @@ class ModelExecutionFeaturesController
   // settings for `feature`.
   UserValidityResult GetCurrentUserValidityResult(
       UserVisibleFeatureKey feature) const;
-
-  // Returns the enterprise policy value for the `feature`.
-  model_execution::prefs::ModelExecutionEnterprisePolicyValue
-  GetEnterprisePolicyValue(UserVisibleFeatureKey feature) const;
 
   // Performs settings visibility checks specific to History Search. If passed,
   // `kUnknown` is returned. Otherwise, the corresponding enum for the failed

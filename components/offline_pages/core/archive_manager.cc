@@ -70,9 +70,10 @@ void GetStorageStatsImpl(const base::FilePath& temporary_archives_dir,
       std::string extension =
           file_enumerator.GetInfo().GetName().FinalExtension();
 #endif
-      if (extension == "mhtml" || extension == "mht")
+      if (extension == "mhtml" || extension == "mht") {
         storage_stats.public_archives_size +=
             file_enumerator.GetInfo().GetSize();
+      }
     }
   }
   task_runner->PostTask(FROM_HERE,

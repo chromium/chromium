@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -31,7 +32,8 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
                    scoped_refptr<base::SequencedTaskRunner> release_task_runner,
                    const gfx::Size& initial_expected_size,
                    const gfx::ColorSpace& config_color_space,
-                   std::optional<gfx::Size> coded_size_alignment);
+                   std::optional<gfx::Size> coded_size_alignment,
+                   bool use_block_model);
 
   CodecWrapperImpl(const CodecWrapperImpl&) = delete;
   CodecWrapperImpl& operator=(const CodecWrapperImpl&) = delete;
@@ -117,6 +119,9 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   // Used when the color space can't be retrieved from the codec.
   const gfx::ColorSpace config_color_space_;
 
+  // Enables Block Model (LinearBlock).
+  const bool use_block_model_;
+
   // Task runner on which we'll release codec buffers without rendering.  May be
   // null to always do this on the calling task runner.
   scoped_refptr<base::SequencedTaskRunner> release_task_runner_;
@@ -182,7 +187,8 @@ CodecWrapperImpl::CodecWrapperImpl(
     scoped_refptr<base::SequencedTaskRunner> release_task_runner,
     const gfx::Size& initial_expected_size,
     const gfx::ColorSpace& config_color_space,
-    std::optional<gfx::Size> coded_size_alignment)
+    std::optional<gfx::Size> coded_size_alignment,
+    bool use_block_model)
     : state_(State::kFlushed),
       codec_(std::move(codec_surface_pair.first)),
       surface_bundle_(std::move(codec_surface_pair.second)),
@@ -191,6 +197,7 @@ CodecWrapperImpl::CodecWrapperImpl(
       output_buffer_release_cb_(std::move(output_buffer_release_cb)),
       coded_size_alignment_(coded_size_alignment),
       config_color_space_(config_color_space),
+      use_block_model_(use_block_model),
       release_task_runner_(std::move(release_task_runner)) {
   DVLOG(2) << __func__;
 }
@@ -292,10 +299,16 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
     // kFlushed => elided eos => kDrained, and it would still be the first
     // buffer from MediaCodec's perspective.  While kDrained does not imply that
     // it's the first buffer in all cases, it's still safe to elide.
-    if (state_ == State::kFlushed || state_ == State::kDrained)
+    if (state_ == State::kFlushed || state_ == State::kDrained) {
       elided_eos_pending_ = true;
-    else
-      codec_->QueueEOS(input_buffer);
+    } else {
+      if (use_block_model_) {
+        codec_->QueueInputBlock(input_buffer, base::span<const uint8_t>(),
+                                base::TimeDelta(), true);
+      } else {
+        codec_->QueueEOS(input_buffer);
+      }
+    }
     state_ = State::kDraining;
     return QueueStatus::Codes::kOk;
   }
@@ -312,8 +325,13 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
         decrypt_config->encryption_scheme(),
         decrypt_config->encryption_pattern(), buffer.timestamp());
   } else {
-    result = codec_->QueueInputBuffer(input_buffer, buffer.data(),
-                                      buffer.size(), buffer.timestamp());
+    if (use_block_model_) {
+      result = codec_->QueueInputBlock(input_buffer, buffer.AsSpan(),
+                                       buffer.timestamp(), false);
+    } else {
+      result = codec_->QueueInputBuffer(input_buffer, buffer.data(),
+                                        buffer.size(), buffer.timestamp());
+    }
   }
 
   switch (result.code()) {
@@ -532,13 +550,15 @@ CodecWrapper::CodecWrapper(
     scoped_refptr<base::SequencedTaskRunner> release_task_runner,
     const gfx::Size& initial_expected_size,
     const gfx::ColorSpace& config_color_space,
-    std::optional<gfx::Size> coded_size_alignment)
+    std::optional<gfx::Size> coded_size_alignment,
+    bool use_block_model)
     : impl_(new CodecWrapperImpl(std::move(codec_surface_pair),
                                  std::move(output_buffer_release_cb),
                                  std::move(release_task_runner),
                                  initial_expected_size,
                                  config_color_space,
-                                 coded_size_alignment)) {}
+                                 coded_size_alignment,
+                                 use_block_model)) {}
 
 CodecWrapper::~CodecWrapper() {
   // The codec must have already been taken.

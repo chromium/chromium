@@ -247,10 +247,8 @@ ContentAutofillDriverFactory::GetExistingDrivers(
     base::PassKey<ScopedAutofillManagersObservation>) {
   std::vector<ContentAutofillDriver*> drivers;
   drivers.reserve(driver_map_.size());
-  for (const std::pair<content::RenderFrameHost*,
-                       std::unique_ptr<ContentAutofillDriver>>& entry :
-       driver_map_) {
-    drivers.push_back(entry.second.get());
+  for (const auto& [rfh, driver] : driver_map_) {
+    drivers.push_back(driver.get());
   }
   return drivers;
 }

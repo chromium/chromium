@@ -20,7 +20,7 @@
 
 std::u16string HostedDomainForPrimaryAccount(Browser* browser) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser->GetBrowserState());
+      IdentityManagerFactory::GetForProfile(browser->GetBrowserState());
   return base::UTF8ToUTF16(
       identity_manager
           ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(

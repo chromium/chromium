@@ -231,7 +231,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateEmptyToCurrent) {
 
     // Check that expected tables are present.
     EXPECT_TRUE(connection.DoesTableExist("autofill"));
-    EXPECT_TRUE(connection.DoesTableExist("local_addresses"));
+    EXPECT_TRUE(connection.DoesTableExist("addresses"));
     EXPECT_TRUE(connection.DoesTableExist("credit_cards"));
     EXPECT_TRUE(connection.DoesTableExist("local_ibans"));
     EXPECT_TRUE(connection.DoesTableExist("keywords"));
@@ -805,41 +805,10 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion105ToCurrent) {
   }
 }
 
-// Tests that both contact_info tables are created.
-TEST_F(WebDatabaseMigrationTest, MigrateVersion106ToCurrent) {
-  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_106.sql")));
-
-  // Verify pre-conditions.
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    // Check version.
-    EXPECT_EQ(106, VersionFromConnection(&connection));
-
-    // The contact_info tables should not exist.
-    EXPECT_FALSE(connection.DoesTableExist("contact_info"));
-    EXPECT_FALSE(connection.DoesTableExist("contact_info_types"));
-  }
-
-  DoMigration();
-
-  // Verify post-conditions.
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    // Check version.
-    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
-              VersionFromConnection(&connection));
-
-    // The contact_info tables should exist.
-    EXPECT_TRUE(connection.DoesTableExist("contact_info"));
-    EXPECT_TRUE(connection.DoesTableExist("contact_info_type_tokens"));
-  }
-}
+// Version 106 added new contact_info and contact_info_types tables. These
+// tables were since deprecated and replaced by addresses and
+// address_type_tokens. The migration unit test to the current version thus no
+// longer applies.
 
 // Tests addition of card_isser_id in masked_credit_cards table.
 TEST_F(WebDatabaseMigrationTest, MigrateVersion107ToCurrent) {
@@ -910,34 +879,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion108ToCurrent) {
   }
 }
 
-// Tests that the initial_creator_id and last_modifier_id columns are added to
-// the contact_info table.
-TEST_F(WebDatabaseMigrationTest, MigrateVersion109ToCurrent) {
-  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_109.sql")));
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    EXPECT_EQ(109, VersionFromConnection(&connection));
-    EXPECT_FALSE(
-        connection.DoesColumnExist("contact_info", "initial_creator_id"));
-    EXPECT_FALSE(
-        connection.DoesColumnExist("contact_info", "last_modifier_id"));
-  }
-  DoMigration();
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
-              VersionFromConnection(&connection));
-    EXPECT_TRUE(
-        connection.DoesColumnExist("contact_info", "initial_creator_id"));
-    EXPECT_TRUE(connection.DoesColumnExist("contact_info", "last_modifier_id"));
-  }
-}
+// Version 109 added new columns to the contact_info table. This table was since
+// deprecated and replaced by addresses. The migration unit test to the current
+// version thus no longer applies.
 
 // Tests that the virtual_card_enrollment_type column is added to the
 // masked_credit_cards table.
@@ -988,87 +932,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion111ToCurrent) {
   }
 }
 
-// Tests that the autofill_profiles tables are deprecated and any profiles are
-// migrated to the new local_addresses and local_addresses_type_tokens tables.
-TEST_F(WebDatabaseMigrationTest, MigrateVersion112ToCurrent) {
-  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_112.sql")));
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    EXPECT_EQ(112, VersionFromConnection(&connection));
-    EXPECT_FALSE(connection.DoesTableExist("local_addresses"));
-    EXPECT_FALSE(connection.DoesTableExist("local_addresses_type_tokens"));
-
-    // Add two profiles to the legacy tables. This cannot be done via
-    // AutofillTable, since it only operates on the new local_addresses tables.
-    // Note that the ZIP code must be present in the unstructured and
-    // structured address table.
-    ASSERT_TRUE(connection.ExecuteScriptForTesting(R"(
-      INSERT INTO autofill_profiles (guid, date_modified, zipcode)
-      VALUES ('00000000-0000-0000-0000-000000000000', 123, '4567');
-      INSERT INTO autofill_profile_names (guid, full_name)
-      VALUES ('00000000-0000-0000-0000-000000000000', 'full name');
-      INSERT INTO autofill_profile_addresses (guid, zip_code)
-      VALUES ('00000000-0000-0000-0000-000000000000', '4567');
-      INSERT INTO autofill_profiles (guid)
-      VALUES ('00000000-0000-0000-0000-000000000001');
-    )"));
-  }
-  DoMigration();
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
-              VersionFromConnection(&connection));
-    EXPECT_TRUE(connection.DoesTableExist("local_addresses"));
-    EXPECT_TRUE(connection.DoesTableExist("local_addresses_type_tokens"));
-
-    // Expect to find the profiles in the local_addresses tables.
-    // AddressAutofillTable will read from them.
-    autofill::AddressAutofillTable table;
-    table.Init(&connection, /*meta_table=*/nullptr);
-    std::unique_ptr<autofill::AutofillProfile> profile =
-        table.GetAutofillProfile(
-            "00000000-0000-0000-0000-000000000000",
-            autofill::AutofillProfile::Source::kLocalOrSyncable);
-    ASSERT_TRUE(profile);
-    EXPECT_EQ(profile->modification_date(), base::Time::FromTimeT(123));
-    EXPECT_EQ(profile->GetRawInfo(autofill::NAME_FULL), u"full name");
-    EXPECT_EQ(profile->GetRawInfo(autofill::ADDRESS_HOME_ZIP), u"4567");
-
-    EXPECT_TRUE(table.GetAutofillProfile(
-        "00000000-0000-0000-0000-000000000001",
-        autofill::AutofillProfile::Source::kLocalOrSyncable));
-  }
-}
-
-// Tests that the autofill_profiles tables are deprecated and any profiles are
-// migrated to the new local_addresses and local_addresses_type_tokens tables.
-TEST_F(WebDatabaseMigrationTest, MigrateVersion113ToCurrent) {
-  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_113.sql")));
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    EXPECT_EQ(113, VersionFromConnection(&connection));
-    EXPECT_TRUE(connection.DoesTableExist("autofill_profiles"));
-  }
-  DoMigration();
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-
-    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
-              VersionFromConnection(&connection));
-    EXPECT_FALSE(connection.DoesTableExist("autofill_profiles"));
-  }
-}
+// Version 112 and 113 migrated autofill_profiles tables to local_address
+// tables. Since the local_address tables have since been deprecated, the
+// migration unit test to the current version no longer applies.
 
 // Tests that the IBAN value column is encrypted in local_ibans table.
 TEST_F(WebDatabaseMigrationTest, MigrateVersion114ToCurrent) {
@@ -1130,33 +996,10 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion115ToCurrent) {
   }
 }
 
-// Tests verifying an observations column is created for the
-// contact_info_type_tokens and local_addresses_type_tokens tables.
-TEST_F(WebDatabaseMigrationTest, MigrateVersion116ToCurrent) {
-  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_116.sql")));
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-    EXPECT_EQ(116, VersionFromConnection(&connection));
-    EXPECT_FALSE(
-        connection.DoesColumnExist("contact_info_type_tokens", "observations"));
-    EXPECT_FALSE(connection.DoesColumnExist("local_addresses_type_tokens",
-                                            "observations"));
-  }
-  DoMigration();
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
-    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
-              VersionFromConnection(&connection));
-    EXPECT_TRUE(
-        connection.DoesColumnExist("contact_info_type_tokens", "observations"));
-    EXPECT_TRUE(connection.DoesColumnExist("local_addresses_type_tokens",
-                                           "observations"));
-  }
-}
+// Version 116 added new columns to the contact_info_type_tokens and
+// local_addresses_type_tokens tables. These tables were since deprecated and
+// replaced by address_type_tokens. The migration unit test to the current
+// version thus no longer applies.
 
 TEST_F(WebDatabaseMigrationTest, MigrateVersion117ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_117.sql")));
@@ -1510,16 +1353,17 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion130ToCurrent) {
   }
 }
 
-TEST_F(WebDatabaseMigrationTest, MigrateVersion131ToCurrent) {
-  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_131.sql")));
+// Version 131 added new columns to the contact_info and local_addresses tables.
+// These tables were since deprecated and replaced by addresses. The migration
+// unit test to the current version thus no longer applies.
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion132ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_132.sql")));
   {
     sql::Database connection;
     ASSERT_TRUE(connection.Open(GetDatabasePath()));
-    EXPECT_EQ(131, VersionFromConnection(&connection));
-    EXPECT_FALSE(connection.DoesColumnExist("contact_info", "use_date2"));
-    EXPECT_FALSE(connection.DoesColumnExist("contact_info", "use_date3"));
-    EXPECT_FALSE(connection.DoesColumnExist("local_addresses", "use_date2"));
-    EXPECT_FALSE(connection.DoesColumnExist("local_addresses", "use_date3"));
+    EXPECT_EQ(132, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_ibans", "length"));
   }
   DoMigration();
   {
@@ -1527,9 +1371,82 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion131ToCurrent) {
     ASSERT_TRUE(connection.Open(GetDatabasePath()));
     EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
               VersionFromConnection(&connection));
-    EXPECT_TRUE(connection.DoesColumnExist("contact_info", "use_date2"));
-    EXPECT_TRUE(connection.DoesColumnExist("contact_info", "use_date3"));
-    EXPECT_TRUE(connection.DoesColumnExist("local_addresses", "use_date2"));
-    EXPECT_TRUE(connection.DoesColumnExist("local_addresses", "use_date3"));
+    EXPECT_FALSE(connection.DoesColumnExist("masked_ibans", "length"));
+  }
+}
+
+// Tests that addresses stored in the legacy contact_info, local_addresses,
+// contact_info_type_tokens and local_addresses_type_tokens tables are migrated
+// to the addresses and address_type_tokens tables with the correct record type.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion133ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_133.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(133, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("contact_info"));
+    EXPECT_TRUE(connection.DoesTableExist("contact_info_type_tokens"));
+    EXPECT_TRUE(connection.DoesTableExist("local_addresses"));
+    EXPECT_TRUE(connection.DoesTableExist("local_addresses_type_tokens"));
+    EXPECT_FALSE(connection.DoesTableExist("addresses"));
+    EXPECT_FALSE(connection.DoesTableExist("address_type_tokens"));
+
+    // Insert a dummy local and account address to test that they are migrated
+    // correctly.
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(R"(
+      INSERT INTO contact_info (guid)
+      VALUES ('00000000-0000-0000-0000-000000000000');
+      INSERT INTO contact_info_type_tokens (guid, type, value)
+      VALUES ('00000000-0000-0000-0000-000000000000', 7, 'value1');
+      INSERT INTO local_addresses (guid)
+      VALUES ('00000000-0000-0000-0000-000000000001');
+      INSERT INTO local_addresses_type_tokens (guid, type, value)
+      VALUES ('00000000-0000-0000-0000-000000000001', 9, 'value2');
+    )"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesTableExist("contact_info"));
+    EXPECT_FALSE(connection.DoesTableExist("contact_info_type_tokens"));
+    EXPECT_FALSE(connection.DoesTableExist("local_addresses"));
+    EXPECT_FALSE(connection.DoesTableExist("local_addresses_type_tokens"));
+    EXPECT_TRUE(connection.DoesTableExist("addresses"));
+    EXPECT_TRUE(connection.DoesTableExist("address_type_tokens"));
+
+    // Expect both addresses in the migrated table with the correct record type.
+    sql::Statement s_addresses(connection.GetUniqueStatement(
+        "SELECT guid, record_type from addresses ORDER BY guid"));
+    ASSERT_TRUE(s_addresses.Step());
+    EXPECT_EQ(s_addresses.ColumnString(0),
+              "00000000-0000-0000-0000-000000000000");
+    EXPECT_EQ(
+        s_addresses.ColumnInt(1),
+        static_cast<int>(autofill::AutofillProfile::RecordType::kAccount));
+    ASSERT_TRUE(s_addresses.Step());
+    EXPECT_EQ(s_addresses.ColumnString(0),
+              "00000000-0000-0000-0000-000000000001");
+    EXPECT_EQ(s_addresses.ColumnInt(1),
+              static_cast<int>(
+                  autofill::AutofillProfile::RecordType::kLocalOrSyncable));
+    ASSERT_FALSE(s_addresses.Step());
+
+    // Expect that the information from the type tokens tables was merged.
+    sql::Statement s_type_tokens(connection.GetUniqueStatement(
+        "SELECT guid, type, value from address_type_tokens ORDER BY guid"));
+    ASSERT_TRUE(s_type_tokens.Step());
+    EXPECT_EQ(s_type_tokens.ColumnString(0),
+              "00000000-0000-0000-0000-000000000000");
+    EXPECT_EQ(s_type_tokens.ColumnInt(1), 7);
+    EXPECT_EQ(s_type_tokens.ColumnString(2), "value1");
+    ASSERT_TRUE(s_type_tokens.Step());
+    EXPECT_EQ(s_type_tokens.ColumnString(0),
+              "00000000-0000-0000-0000-000000000001");
+    EXPECT_EQ(s_type_tokens.ColumnInt(1), 9);
+    EXPECT_EQ(s_type_tokens.ColumnString(2), "value2");
+    ASSERT_FALSE(s_type_tokens.Step());
   }
 }

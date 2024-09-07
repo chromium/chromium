@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/conflict_resolution.h"
@@ -22,6 +23,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "net/cookies/canonical_cookie.h"
 
 namespace ash::floating_sso {
 
@@ -106,25 +108,62 @@ std::optional<syncer::ModelError>
 FloatingSsoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  // TODO: b/353225533 - send notifications about new and updated cookies, so
-  // that the browser can add them to the cookie jar.
+  std::vector<net::CanonicalCookie> added_or_updated;
+  std::vector<net::CanonicalCookie> deleted;
   std::unique_ptr<StoreWithCache::WriteBatch> batch =
       store_->CreateWriteBatch();
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
-    const sync_pb::CookieSpecifics& specifics =
-        change->data().specifics.cookie();
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
-      case syncer::EntityChange::ACTION_UPDATE:
-        batch->WriteData(change->storage_key(), specifics);
+      case syncer::EntityChange::ACTION_UPDATE: {
+        const sync_pb::CookieSpecifics& specifics =
+            change->data().specifics.cookie();
+        // We save `specifics` locally only when we don't fail to convert it to
+        // a `cookie` here. Alternatively we could still store `specifics` in
+        // the store and then try to create a cookie again in case of a Chrome
+        // update. We don't do this because: (1) in the targeted enterprise
+        // use case we expect affected devices to be on the same Chrome version
+        // and (2) the disparity between client-side and server-side states will
+        // not last long due to short TTL for cookies in Sync.
+        if (std::unique_ptr<net::CanonicalCookie> cookie =
+                FromSyncProto(specifics);
+            cookie) {
+          added_or_updated.push_back(*cookie);
+          batch->WriteData(change->storage_key(), specifics);
+        }
         break;
-      case syncer::EntityChange::ACTION_DELETE:
+      }
+      case syncer::EntityChange::ACTION_DELETE: {
+        const CookieSpecificsEntries& in_memory_data = store_->in_memory_data();
+        auto it = in_memory_data.find(change->storage_key());
+        if (it == in_memory_data.end()) {
+          // Nothing to delete in the local store.
+          break;
+        }
         batch->DeleteData(change->storage_key());
+        if (std::unique_ptr<net::CanonicalCookie> cookie =
+                FromSyncProto(it->second);
+            cookie) {
+          deleted.push_back(*cookie);
+        }
         break;
+      }
     }
   }
+
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   CommitToStore(std::move(batch));
+
+  for (Observer& observer : observers_) {
+    // No need to notify about empty lists of changes.
+    if (!added_or_updated.empty()) {
+      observer.OnCookiesAddedOrUpdatedRemotely(added_or_updated);
+    }
+    if (!deleted.empty()) {
+      observer.OnCookiesRemovedRemotely(deleted);
+    }
+  }
+
   return {};
 }
 
@@ -169,7 +208,7 @@ syncer::ConflictResolution FloatingSsoSyncBridge::ResolveConflict(
 }
 
 const FloatingSsoSyncBridge::CookieSpecificsEntries&
-FloatingSsoSyncBridge::CookieSpecificsEntriesForTest() const {
+FloatingSsoSyncBridge::CookieSpecificsInStore() const {
   return CHECK_DEREF(store_.get()).in_memory_data();
 }
 
@@ -177,9 +216,9 @@ bool FloatingSsoSyncBridge::IsInitialDataReadFinishedForTest() const {
   return is_initial_data_read_finished_;
 }
 
-void FloatingSsoSyncBridge::SetOnCommitCallbackForTest(
+void FloatingSsoSyncBridge::SetOnStoreCommitCallbackForTest(
     base::RepeatingClosure callback) {
-  on_commit_callback_for_test_ = std::move(callback);
+  on_store_commit_callback_for_test_ = std::move(callback);
 }
 
 void FloatingSsoSyncBridge::OnStoreCreated(
@@ -219,8 +258,8 @@ void FloatingSsoSyncBridge::ProcessQueuedCookies() {
 
 void FloatingSsoSyncBridge::OnStoreCommit(
     const std::optional<syncer::ModelError>& error) {
-  if (on_commit_callback_for_test_) {
-    on_commit_callback_for_test_.Run();
+  if (on_store_commit_callback_for_test_) {
+    on_store_commit_callback_for_test_.Run();
   }
   if (error) {
     change_processor()->ReportError(*error);
@@ -278,6 +317,14 @@ void FloatingSsoSyncBridge::DeleteCookie(const std::string& storage_key) {
   batch->DeleteData(storage_key);
 
   CommitToStore(std::move(batch));
+}
+
+void FloatingSsoSyncBridge::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FloatingSsoSyncBridge::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace ash::floating_sso

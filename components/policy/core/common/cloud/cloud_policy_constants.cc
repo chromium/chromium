@@ -69,6 +69,7 @@ const char kValueRequestActiveDirectoryPlayActivity[] =
     "active_directory_play_activity";
 const char kValueRequestAppInstallReport[] = "app_install_report";
 const char kValueRequestRegisterBrowser[] = "register_browser";
+const char kValueRequestRegisterPolicyAgent[] = "register_policy_agent";
 const char kValueRequestChromeDesktopReport[] = "chrome_desktop_report";
 const char kValueRequestChromeOsUserReport[] = "chrome_os_user_report";
 const char kValueRequestInitialEnrollmentStateRetrieval[] =
@@ -107,6 +108,18 @@ const char kChromeMachineLevelUserCloudPolicyType[] =
 const char kChromeMachineLevelExtensionCloudPolicyType[] =
     "google/chrome/machine-level-extension";
 const char kChromeRemoteCommandPolicyType[] = "google/chromeos/remotecommand";
+
+// A policy type which is expanded to google/machine-level-omaha,
+// google/chrome/machine-level-user, and google/chrome/machine-level-extension
+// on the server side. This type is used by policy agents (i.e. GoogleUpdater
+// and Chrome Enterprise Companion App) on Linux, Mac, and Windows.
+// TODO(b/361632880): Consider removing this if google/machine-level-omaha can
+// be requested directly.
+const char kGoogleUpdateMachineLevelAppsPolicyType[] =
+    "google/machine-level-apps";
+
+const char kGoogleUpdateMachineLevelOmahaPolicyType[] =
+    "google/machine-level-omaha";
 
 const char kChromeAshUserRemoteCommandType[] = "google/ash/user/remotecommand";
 const char kChromeDeviceRemoteCommandType[] = "google/ash/device/remotecommand";

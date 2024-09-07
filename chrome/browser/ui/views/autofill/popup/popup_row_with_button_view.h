@@ -45,12 +45,22 @@ class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
 
  public:
   // Determines under which conditions the button (if there is one) is visible.
-  enum class ButtonBehavior {
+  enum class ButtonVisibility : uint8_t {
     // The button is only visible if the cell or the button are selected or
     // hovered.
     kShowOnHoverOrSelect,
     // The button is always visible.
-    kShowAlways,
+    kShowAlways
+  };
+
+  // Determines whether the suggestion is communicated as "selected" or "not
+  // selected" to the controller when the button is selected.
+  enum class ButtonSelectBehavior : uint8_t {
+    // When the button is selected, the suggestion does not count as selected
+    // (and, for example, the content is not previewed).
+    kUnselectSuggestion,
+    // When the button  is selected, the suggestion is also selected.
+    kSelectSuggestion
   };
 
   PopupRowWithButtonView(
@@ -60,7 +70,8 @@ class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
       int line_number,
       std::unique_ptr<PopupRowContentView> content_view,
       std::unique_ptr<views::ImageButton> button,
-      ButtonBehavior button_behavior);
+      ButtonVisibility button_visibility,
+      ButtonSelectBehavior button_select_behavior);
 
   PopupRowWithButtonView(const PopupRowWithButtonView&) = delete;
   PopupRowWithButtonView& operator=(const PopupRowWithButtonView&) = delete;
@@ -109,7 +120,8 @@ class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
   // user input.
   std::optional<RowWithButtonPart> focused_part_;
 
-  ButtonBehavior button_behavior_ = ButtonBehavior::kShowOnHoverOrSelect;
+  const ButtonVisibility button_visibility_;
+  const ButtonSelectBehavior button_select_behavior_;
 };
 
 }  // namespace autofill

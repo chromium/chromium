@@ -32,11 +32,11 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
@@ -53,8 +53,7 @@ public class TabStripSceneLayerTest {
     @Mock private ResourceManager mResourceManager;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private SceneLayer mSceneLayer;
-    @Mock private CompositorOnClickHandler mCompositorOnClickHandler;
-    @Mock private StripLayoutTabDelegate mStripLayoutTabDelegate;
+    @Mock private StripLayoutViewOnClickHandler mOnClickHandler;
     @Mock private TabLoadTrackerCallback mTabLoadTrackerCallback;
     @Mock private LayoutRenderHost mLayoutRenderHost;
     @Mock private LayoutUpdateHost mLayoutUpdateHost;
@@ -92,19 +91,27 @@ public class TabStripSceneLayerTest {
         when(mTabStripSceneMock.init(mTabStripSceneLayer)).thenReturn(1L);
         mModelSelectorButton =
                 new TintedCompositorButton(
-                        mContext, 32.f, 32.f, mCompositorOnClickHandler, R.drawable.ic_incognito);
+                        mContext,
+                        ButtonType.INCOGNITO_SWITCHER,
+                        null,
+                        32.f,
+                        32.f,
+                        mOnClickHandler,
+                        R.drawable.ic_incognito);
         mNewTabButton =
                 new TintedCompositorButton(
                         mContext,
+                        ButtonType.NEW_TAB,
+                        null,
                         32.f,
                         32.f,
-                        mCompositorOnClickHandler,
+                        mOnClickHandler,
                         R.drawable.ic_new_tab_button);
         mStripLayoutTab =
                 new StripLayoutTab(
                         mContext,
                         1,
-                        mStripLayoutTabDelegate,
+                        mOnClickHandler,
                         mTabLoadTrackerCallback,
                         mLayoutUpdateHost,
                         false);

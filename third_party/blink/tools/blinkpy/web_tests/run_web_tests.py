@@ -183,15 +183,10 @@ def _set_up_derived_options(port, options, args):
                 port.host.filesystem.abspath(path))
         options.additional_platform_directory = additional_platform_directories
 
-    # Do not set has_explicit_tests to true when exclude_test_lists is provided.
-    # For builders with an implicit smoke test list, e.g. highdpi flag specific
-    # builder, the smoke test list should always be honored, no matter
-    # exclude_test_lists exists or not.
-    has_explicit_tests = args or options.test_list
-    if not has_explicit_tests and options.smoke is None:
+    if not args and not options.test_list and options.smoke is None:
         options.smoke = port.default_smoke_test_only()
     if options.smoke:
-        if not has_explicit_tests and options.num_retries is None:
+        if not args and not options.test_list and options.num_retries is None:
             # Retry failures 3 times if we're running a smoke test without
             # additional tests. SmokeTests is an explicit list of tests, so we
             # wouldn't retry by default without this special case.

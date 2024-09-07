@@ -16,9 +16,9 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -89,7 +89,7 @@ class LinkCapturingNavigationThrottleBrowserTest : public InProcessBrowserTest {
   GURL start_url_;
   webapps::AppId app_id_;
   base::test::ScopedFeatureList feature_list_{
-      features::kDesktopPWAsLinkCapturing};
+      features::kPwaNavigationCapturing};
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 

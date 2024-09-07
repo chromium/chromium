@@ -77,7 +77,7 @@ uint32_t GpuChannelHost::OrderingBarrier(
     int32_t put_offset,
     std::vector<SyncToken> sync_token_fences,
     uint64_t release_count) {
-  AutoLock lock(context_lock_);
+  AutoLock lock(deferred_message_lock_);
 
   if (pending_ordering_barrier_ &&
       pending_ordering_barrier_->route_id != route_id)
@@ -100,7 +100,7 @@ uint32_t GpuChannelHost::EnqueueDeferredMessage(
     mojom::DeferredRequestParamsPtr params,
     std::vector<SyncToken> sync_token_fences,
     uint64_t release_count) {
-  AutoLock lock(context_lock_);
+  AutoLock lock(deferred_message_lock_);
 
   EnqueuePendingOrderingBarrier();
   enqueued_deferred_message_id_ = next_deferred_message_id_++;
@@ -115,7 +115,7 @@ void GpuChannelHost::CopyToGpuMemoryBufferAsync(
     std::vector<SyncToken> sync_token_dependencies,
     uint64_t release_count,
     base::OnceCallback<void(bool)> callback) {
-  AutoLock lock(context_lock_);
+  AutoLock lock(deferred_message_lock_);
   InternalFlush(UINT32_MAX);
   GetGpuChannel().CopyToGpuMemoryBufferAsync(
       mailbox, std::move(sync_token_dependencies), release_count,
@@ -124,14 +124,17 @@ void GpuChannelHost::CopyToGpuMemoryBufferAsync(
 #endif
 
 void GpuChannelHost::EnsureFlush(uint32_t deferred_message_id) {
-  AutoLock lock(context_lock_);
+  AutoLock lock(deferred_message_lock_);
   InternalFlush(deferred_message_id);
 }
 
 void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
-  AutoLock lock(context_lock_);
-
-  InternalFlush(deferred_message_id);
+  uint32_t cached_flushed_deferred_message_id;
+  {
+    AutoLock lock(deferred_message_lock_);
+    InternalFlush(deferred_message_id);
+    cached_flushed_deferred_message_id = flushed_deferred_message_id_;
+  }
 
   if (sync_point_graph_validation_enabled_) {
     // No need to do synchronous flush when graph validation of sync points is
@@ -155,6 +158,8 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
   //    is used.
   //
   if (skip_flush_if_possible) {
+    base::AutoLock lock(shared_memory_version_lock_);
+
     // If shared memory communication is not established, do so.
     if (!shared_memory_version_client_.has_value()) {
       mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
@@ -166,7 +171,7 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
     // GPUChannel has not processed ids up to the ones that were flushed. IPC
     // needed.
     else if (shared_memory_version_client_->SharedVersionIsLessThan(
-                 flushed_deferred_message_id_)) {
+                 cached_flushed_deferred_message_id)) {
       ipc_needed = true;
     }
   } else {
@@ -181,7 +186,7 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
 }
 
 void GpuChannelHost::EnqueuePendingOrderingBarrier() {
-  context_lock_.AssertAcquired();
+  deferred_message_lock_.AssertAcquired();
   if (!pending_ordering_barrier_)
     return;
   DCHECK_LT(enqueued_deferred_message_id_,
@@ -212,7 +217,7 @@ void GpuChannelHost::EstablishSharedMemoryForFlushVerification() {
 }
 
 void GpuChannelHost::InternalFlush(uint32_t deferred_message_id) {
-  context_lock_.AssertAcquired();
+  deferred_message_lock_.AssertAcquired();
 
   EnqueuePendingOrderingBarrier();
   if (!deferred_messages_.empty() &&

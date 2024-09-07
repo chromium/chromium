@@ -23,6 +23,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/compose/compose_ax_serialization_utils.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -32,10 +33,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/compose/type_conversions.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/compose/core/browser/compose_hats_utils.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/compose_utils.h"
@@ -47,6 +52,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page_navigator.h"
@@ -263,7 +269,6 @@ ComposeSession::~ComposeSession() {
     observer_->OnSessionComplete(node_id_, close_reason_, session_events_);
   }
 
-  // TODO(http://b/348656057): Refactor to remove early returns.
   if (session_events_.fre_view_count > 0 &&
       (!fre_complete_ || session_events_.fre_completed_in_session)) {
     compose::LogComposeFirstRunSessionCloseReason(fre_close_reason_);
@@ -272,6 +277,8 @@ ComposeSession::~ComposeSession() {
     if (!fre_complete_) {
       compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".FRE");
       compose::LogComposeSessionEventCounts(std::nullopt, session_events_);
+      compose::LogComposeSessionCloseReason(
+          compose::ComposeSessionCloseReason::kEndedAtFre);
       return;
     }
   }
@@ -283,6 +290,11 @@ ComposeSession::~ComposeSession() {
     if (!current_msbb_state_) {
       compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".MSBB");
       compose::LogComposeSessionEventCounts(std::nullopt, session_events_);
+      compose::ComposeSessionCloseReason session_close_reason =
+          (session_events_.fre_completed_in_session)
+              ? compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb
+              : compose::ComposeSessionCloseReason::kEndedAtMsbb;
+      compose::LogComposeSessionCloseReason(session_close_reason);
       return;
     }
   }
@@ -591,6 +603,15 @@ void ComposeSession::ModelExecutionComplete(
   compose::mojom::ComposeStatus status =
       ComposeStatusFromOptimizationGuideResult(result);
 
+  if (!session_events_.session_contained_filtered_response &&
+      status == compose::mojom::ComposeStatus::kFiltered) {
+    session_events_.session_contained_filtered_response = true;
+  }
+  if (!session_events_.session_contained_any_error &&
+      status != compose::mojom::ComposeStatus::kOk) {
+    session_events_.session_contained_any_error = true;
+  }
+
   if (status != compose::mojom::ComposeStatus::kOk) {
     compose::LogComposeRequestDuration(request_delta, eval_location,
                                        /* is_ok */ false);
@@ -883,7 +904,7 @@ bool ComposeSession::CanShowFeedbackPage() {
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
-          optimization_guide::UserVisibleFeatureKey::kCompose)) {
+          optimization_guide::proto::LogAiDataRequest::FeatureCase::kCompose)) {
     return false;
   }
 
@@ -1083,7 +1104,7 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
 
 void ComposeSession::UpdateAXSnapshotAndContinueComposeIfNecessary(
     int request_id,
-    const ui::AXTreeUpdate& update) {
+    ui::AXTreeUpdate& update) {
   if (current_ax_snapshot_request_id_ != request_id) {
     return;
   }
@@ -1205,11 +1226,14 @@ void ComposeSession::SetCloseReason(
 
   switch (close_reason) {
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
-    case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
     case compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
       session_events_.close_clicked = true;
       break;
+    case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
+      final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      break;
+    case compose::ComposeSessionCloseReason::kExceededMaxDuration:
     case compose::ComposeSessionCloseReason::kAbandoned:
       final_status_ = optimization_guide::proto::FinalStatus::
           STATUS_FINISHED_WITHOUT_INSERT;
@@ -1221,7 +1245,17 @@ void ComposeSession::SetCloseReason(
         session_events_.edited_result_inserted = true;
       }
       break;
+    case compose::ComposeSessionCloseReason::kEndedAtFre:
+    case compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb:
+    case compose::ComposeSessionCloseReason::kEndedAtMsbb:
+      // If the session ended during the FRE no need to set |final_status_|
+      break;
   }
+}
+
+bool ComposeSession::HasExpired() {
+  return session_duration_->Elapsed() >
+         compose::GetComposeConfig().session_max_allowed_lifetime;
 }
 
 void ComposeSession::SetQualityLogEntryUponError(
@@ -1270,4 +1304,63 @@ void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
 
 void ComposeSession::SetSkipFeedbackUiForTesting(bool allowed) {
   skip_feedback_ui_for_testing_ = allowed;
+}
+
+void ComposeSession::LaunchHatsSurvey(
+    compose::ComposeSessionCloseReason close_reason) {
+  std::string trigger;
+  switch (close_reason) {
+    case compose::ComposeSessionCloseReason::kCloseButtonPressed:
+      if (!base::FeatureList::IsEnabled(
+              compose::features::kHappinessTrackingSurveysForComposeClose)) {
+        return;
+      }
+      trigger = kHatsSurveyTriggerComposeClose;
+      break;
+    case compose::ComposeSessionCloseReason::kInsertedResponse:
+      if (!base::FeatureList::IsEnabled(
+              compose::features::
+                  kHappinessTrackingSurveysForComposeAcceptance)) {
+        return;
+      }
+      trigger = kHatsSurveyTriggerComposeAcceptance;
+
+      break;
+    default:
+      return;
+  }
+
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+      /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  // Determine if the user used any of the response modifiers.
+  bool response_modified =
+      session_events_.shorten_count > 0 || session_events_.lengthen_count > 0 ||
+      session_events_.formal_count > 0 || session_events_.casual_count > 0;
+
+  SurveyBitsData product_specific_bits_data = {
+      {compose::hats::HatsFields::kResponseModified, response_modified},
+      {compose::hats::HatsFields::kSessionContainedFilteredResponse,
+       session_events_.session_contained_filtered_response},
+      {compose::hats::HatsFields::kSessionContainedError,
+       session_events_.session_contained_any_error},
+      {compose::hats::HatsFields::kSessionBeganWithNudge,
+       session_events_.started_with_proactive_nudge}};
+
+  std::string url = web_contents_->GetLastCommittedURL().spec();
+  std::string session_id = session_id_.ToString();
+
+  SurveyStringData product_specific_string_data = {
+      {compose::hats::HatsFields::kSessionID, session_id},
+      {compose::hats::HatsFields::kURL, url},
+      {compose::hats::HatsFields::kLocale,
+       g_browser_process->GetApplicationLocale()}};
+
+  hats_service->LaunchSurveyForWebContents(trigger, web_contents_,
+                                           product_specific_bits_data,
+                                           product_specific_string_data);
 }

@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
@@ -61,6 +60,10 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/url_constants.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/multi_user_window_manager.h"
@@ -139,22 +142,18 @@ bool IncognitoModeForced(const Profile* profile) {
 }
 
 // Change some of the navigation parameters based on the particular URL.
-// Currently this applies to some chrome:// pages which we always want to open
-// in a non-incognito window. Note that even though a ChromeOS guest session is
-// technically an incognito window, these URLs are allowed.
-// Returns true on success. Otherwise, if changing params leads the browser into
-// an erroneous state, returns false.
+// Returns true on success. Otherwise, if changing params leads the browser
+// into an erroneous state, returns false.
 bool AdjustNavigateParamsForURL(NavigateParams* params) {
-  if (params->contents_to_insert || params->switch_to_singleton_tab ||
-      IsURLAllowedInIncognito(params->url, params->initiating_profile) ||
-      params->initiating_profile->IsGuestSession()) {
-    return true;
-  }
-
+  // Check for some chrome:// pages which we always want to open in a
+  // non-incognito window. Note that even though a ChromeOS guest session is
+  // technically an incognito window, these URLs are allowed.
   Profile* profile = params->initiating_profile;
-
-  if (profile->IsOffTheRecord() ||
-      params->disposition == WindowOpenDisposition::OFF_THE_RECORD) {
+  if (!params->contents_to_insert && !params->switch_to_singleton_tab &&
+      !IsURLAllowedInIncognito(params->url, profile) &&
+      !profile->IsGuestSession() &&
+      (profile->IsOffTheRecord() ||
+       params->disposition == WindowOpenDisposition::OFF_THE_RECORD)) {
     profile = profile->GetOriginalProfile();
 
     // If incognito is forced, we punt.
@@ -164,6 +163,20 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
     params->disposition = WindowOpenDisposition::SINGLETON_TAB;
     params->browser = GetOrCreateBrowser(profile, params->user_gesture);
     params->window_action = NavigateParams::SHOW_WINDOW;
+  }
+
+  // Clicking a link to the home tab in a tabbed web app should always open the
+  // link in the home tab.
+  if (web_app::IsHomeTabUrl(params->browser, params->url)) {
+    params->browser->tab_strip_model()->ActivateTabAt(0);
+    // If the navigation URL is the same as the current home tab URL, skip the
+    // navigation.
+    if (params->browser->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetLastCommittedURL() == params->url) {
+      return false;
+    }
+    params->disposition = WindowOpenDisposition::CURRENT_TAB;
   }
 
   return true;
@@ -181,24 +194,18 @@ Browser::ValueSpecified GetOriginSpecified(const NavigateParams& params) {
 // incompatible. The tab index will be -1 unless a singleton or tab switch
 // was requested, in which case it might be the target tab index, or -1
 // if not found.
-std::pair<Browser*, int> GetBrowserAndTabForDisposition(
+std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
     const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
-
-  std::optional<std::pair<Browser*, int>> navigation_result =
-      web_app::MaybeHandleAppNavigation(profile, params);
-  if (navigation_result.has_value()) {
-    return *navigation_result;
-  }
 
   switch (params.disposition) {
     case WindowOpenDisposition::SWITCH_TO_TAB:
 #if !BUILDFLAG(IS_ANDROID)
     {
-      std::pair<Browser*, int> index =
+      std::pair<Browser*, int> browser_and_index =
           GetIndexAndBrowserOfExistingTab(profile, params);
-      if (index.first) {
-        return index;
+      if (browser_and_index.first) {
+        return browser_and_index;
       }
     }
 #endif
@@ -222,10 +229,10 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       // it would load in a random window, potentially opening a second copy.
       // Instead, make an extra effort to see if there's an already open copy.
       if (!WindowCanOpenTabs(params)) {
-        std::pair<Browser*, int> index =
+        std::pair<Browser*, int> browser_and_index =
             GetIndexAndBrowserOfExistingTab(profile, params);
-        if (index.first) {
-          return index;
+        if (browser_and_index.first) {
+          return browser_and_index;
         }
       }
     }
@@ -278,7 +285,6 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
                                                              display);
 
       browser_params.omit_from_session_restore = true;
-
       return {Browser::Create(browser_params), -1};
     }
 #else   // !IS_ANDROID
@@ -306,6 +312,8 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         browser_params.trusted_source = params.trusted_source;
         browser_params.initial_bounds = params.window_features.bounds;
         browser_params.initial_origin_specified = GetOriginSpecified(params);
+        browser_params.can_maximize = !params.is_tab_modal_popup;
+        browser_params.can_fullscreen = !params.is_tab_modal_popup;
         return {Browser::Create(browser_params), -1};
       }
       Browser::CreateParams browser_params =
@@ -439,9 +447,8 @@ base::WeakPtr<content::NavigationHandle> LoadURLInContents(
   load_url_params.impression = params->impression;
   load_url_params.suggested_system_entropy = params->suggested_system_entropy;
 
-  // |frame_tree_node_id| is kNoFrameTreeNodeId for main frame navigations.
-  if (params->frame_tree_node_id ==
-      content::RenderFrameHost::kNoFrameTreeNodeId) {
+  // |frame_tree_node_id| is invalid for main frame navigations.
+  if (params->frame_tree_node_id.is_null()) {
     bool force_no_https_upgrade =
         params->url_typed_with_http_scheme ||
         params->captive_portal_window_type !=
@@ -646,20 +653,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
-  // Middle clicking a link to the home tab in a tabbed web app should open the
-  // link in the home tab.
-  if (web_app::IsHomeTabUrl(source_browser, params->url)) {
-    source_browser->tab_strip_model()->ActivateTabAt(0);
-    // If the navigation URL is the same as the current home tab URL, skip the
-    // navigation.
-    if (source_browser->tab_strip_model()
-            ->GetActiveWebContents()
-            ->GetLastCommittedURL() == params->url) {
-      return nullptr;
-    }
-    params->disposition = WindowOpenDisposition::CURRENT_TAB;
-  }
-
   // Picture-in-picture browser windows must have a source contents in order for
   // the window to function correctly. If we have no source contents to work
   // with (e.g. if an extension popup attempts to open a PiP window), we should
@@ -722,9 +715,22 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  // TODO(crbug.com/364657540): Revisit integration with web_application system
+  // later if needed.
   int singleton_index;
-  std::tie(params->browser, singleton_index) =
-      GetBrowserAndTabForDisposition(*params);
+  bool enqueue_launch_params = false;
+  std::optional<std::tuple<Browser*, int, bool>> app_navigation_result;
+#if !BUILDFLAG(IS_ANDROID)
+  app_navigation_result = web_app::MaybeHandleAppNavigation(*params);
+#endif  // !BUILDFLAG(IS_ANDROID)
+  if (app_navigation_result.has_value()) {
+    std::tie(params->browser, singleton_index, enqueue_launch_params) =
+        app_navigation_result.value();
+  } else {
+    std::tie(params->browser, singleton_index) =
+        GetBrowserAndTabForDisposition(*params);
+  }
+
   if (!params->browser) {
     return nullptr;
   }
@@ -858,7 +864,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     if (!HandleNonNavigationAboutURL(params->url)) {
       // Perform the actual navigation, tracking whether it came from the
       // renderer.
-
       navigation_handle = LoadURLInContents(contents_to_navigate_or_insert,
                                             params->url, params);
     }
@@ -867,6 +872,20 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // it has already been navigated appropriately. We need to do nothing more
     // other than add it to the appropriate tabstrip.
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // At this point, |contents_to_navigate_or_insert| is guaranteed to exist and
+  // be non-NULL, so launch params can be enqueued in the correct web contents.
+  if (enqueue_launch_params) {
+    CHECK(contents_to_navigate_or_insert);
+    CHECK(params->browser);
+    CHECK(web_app::AppBrowserController::IsWebApp(params->browser));
+    web_app::MaybeEnqueueLaunchParams(
+        contents_to_navigate_or_insert,
+        params->browser->app_controller()->app_id(), params->url,
+        /*wait_for_navigation_to_complete=*/true);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // If the user navigated from the omnibox, and the selected tab is going to
   // lose focus, then make sure the focus for the source tab goes away from the

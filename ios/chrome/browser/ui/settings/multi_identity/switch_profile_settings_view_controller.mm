@@ -10,6 +10,9 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -37,7 +40,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @implementation SwitchProfileSettingsTableViewController {
-  NSString* selectedProfile_;
+  NSString* _selectedProfile;
 }
 
 - (instancetype)init {
@@ -79,7 +82,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewAccountItem* currentProfileDetail =
       [[TableViewAccountItem alloc] initWithType:CurrentAccount];
   currentProfileDetail.image = ios::provider::GetSigninDefaultAvatar();
-  currentProfileDetail.text = self.activeBrowserStateName;
+  currentProfileDetail.text = self.activeProfileName;
   currentProfileDetail.mode = TableViewAccountModeNonTappable;
   [model addItem:currentProfileDetail
       toSectionWithIdentifier:CurrentProfilesIdentifier];
@@ -94,19 +97,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:switchToProfileTitle
       forSectionWithIdentifier:LoadedProfilesIdentifier];
 
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  // TODO(crbug.com/336767700): kBrowserStatesLastActive should not be used
-  // here. Use a new prefService key (containing also info of not loaded
-  // browserStates) once available.
-  const base::Value::List& lastActiveBrowserStates =
-      localState->GetList(prefs::kBrowserStatesLastActive);
-  for (const auto& browserStateName : lastActiveBrowserStates) {
+  ProfileAttributesStorageIOS* profileStorage =
+      GetApplicationContext()
+          ->GetProfileManager()
+          ->GetProfileAttributesStorage();
+  size_t profile_count = profileStorage->GetNumberOfProfiles();
+  for (size_t index = 0; index < profile_count; ++index) {
+    ProfileAttributesIOS profileAttribute =
+        profileStorage->GetAttributesForProfileAtIndex(index);
     TableViewAccountItem* accountItemDetail =
         [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
     accountItemDetail.image = ios::provider::GetSigninDefaultAvatar();
     accountItemDetail.text =
-        base::SysUTF8ToNSString(browserStateName.GetString());
-    if ([accountItemDetail.text isEqualToString:self.activeBrowserStateName]) {
+        base::SysUTF8ToNSString(profileAttribute.GetProfileName());
+    if ([accountItemDetail.text isEqualToString:self.activeProfileName]) {
       accountItemDetail.mode = TableViewAccountModeDisabled;
     }
     [model addItem:accountItemDetail
@@ -123,6 +127,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // switch profile within the same window.
   if (!base::ios::IsMultipleScenesSupported()) {
     switchProfileButtonItem.enabled = NO;
+
+    switchProfileButtonItem.text =
+        @"Profile switching isn't supported on iPhones at this time.";
+    switchProfileButtonItem.textAlignment = NSTextAlignmentNatural;
   }
 
   [model addItem:switchProfileButtonItem
@@ -153,7 +161,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // TODO(crbug.com/333520714): Add logic to open the profile in the same window
   // once the API is available.
 
-  [self.delegate openProfileInNewWindow:selectedProfile_];
+  [self.delegate openProfileInNewWindow:_selectedProfile];
 }
 
 #pragma mark - UITableViewDelegate
@@ -161,7 +169,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-  selectedProfile_ = cell.textLabel.text;
+  _selectedProfile = cell.textLabel.text;
 }
 
 @end

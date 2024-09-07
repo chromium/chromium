@@ -5,16 +5,128 @@
 #include "components/sensitive_content/sensitive_content_manager.h"
 
 #include "base/check_deref.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/sensitive_content/sensitive_content_client.h"
 #include "content/public/browser/web_contents.h"
 
 namespace sensitive_content {
 
+namespace {
+
+using LifecycleState = autofill::AutofillDriver::LifecycleState;
+using autofill::AutofillField;
+using autofill::AutofillManager;
+using autofill::FieldType;
+using autofill::FieldTypeGroup;
+using autofill::FormGlobalId;
+
+bool IsSensitiveAutofillType(FieldType type) {
+  static constexpr autofill::FieldTypeSet kNonSensitivePasswordTypes = {
+      FieldType::NOT_ACCOUNT_CREATION_PASSWORD, FieldType::NOT_NEW_PASSWORD,
+      FieldType::NOT_PASSWORD, FieldType::NOT_USERNAME};
+  FieldTypeGroup field_type_group = autofill::GroupTypeOfFieldType(type);
+  // Return true if the field is a credit card or password form field.
+  // A field is a password form field if it's part of
+  // `FieldTypeGroup::kPasswordField`, but it's not prefixed with "NOT_".
+  return field_type_group == FieldTypeGroup::kCreditCard ||
+         field_type_group == FieldTypeGroup::kStandaloneCvcField ||
+         (field_type_group == FieldTypeGroup::kPasswordField &&
+          !kNonSensitivePasswordTypes.contains(type));
+}
+
+}  // namespace
+
 SensitiveContentManager::SensitiveContentManager(
     content::WebContents* web_contents,
     SensitiveContentClient* client)
-    : client_(CHECK_DEREF(client)) {}
+    : client_(CHECK_DEREF(client)) {
+  autofill_managers_observation_.Observe(web_contents);
+}
 
 SensitiveContentManager::~SensitiveContentManager() = default;
+
+void SensitiveContentManager::UpdateContentSensitivity() {
+  const bool content_is_sensitive = !sensitive_fields_.empty();
+  // Prevent unnecessary calls to the client.
+  if (last_content_was_sensitive_ != content_is_sensitive) {
+    client_->SetContentSensitivity(!sensitive_fields_.empty());
+    last_content_was_sensitive_ = content_is_sensitive;
+    base::UmaHistogramBoolean(
+        base::StrCat({client_->GetHistogramPrefix(), "SensitivityChanged"}),
+        content_is_sensitive);
+  }
+}
+
+void SensitiveContentManager::OnFieldTypesDetermined(AutofillManager& manager,
+                                                     FormGlobalId form_id,
+                                                     FieldTypeSource) {
+  if (const autofill::FormStructure* form =
+          manager.FindCachedFormById(form_id)) {
+    for (const std::unique_ptr<AutofillField>& field : form->fields()) {
+      if (IsSensitiveAutofillType(field->Type().GetStorableType())) {
+        sensitive_fields_.insert(field->global_id());
+      } else {
+        sensitive_fields_.erase(field->global_id());
+      }
+    }
+    UpdateContentSensitivity();
+  }
+}
+
+void SensitiveContentManager::OnBeforeFormsSeen(
+    AutofillManager& manager,
+    base::span<const autofill::FormGlobalId> updated_forms,
+    base::span<const autofill::FormGlobalId> removed_forms) {
+  for (const FormGlobalId& form_id : removed_forms) {
+    if (const autofill::FormStructure* form =
+            manager.FindCachedFormById(form_id)) {
+      for (const std::unique_ptr<AutofillField>& field : form->fields()) {
+        sensitive_fields_.erase(field->global_id());
+      }
+    }
+  }
+  UpdateContentSensitivity();
+}
+
+void SensitiveContentManager::OnAutofillManagerStateChanged(
+    autofill::AutofillManager& manager,
+    LifecycleState previous,
+    LifecycleState current) {
+  autofill::LocalFrameToken local_frame_token =
+      manager.driver().GetFrameToken();
+
+  if (previous == LifecycleState::kActive &&
+      current != LifecycleState::kActive) {
+    // The frame is not active anymore, so its fields are not anymore in the
+    // DOM.
+    // If needed, the time complexity can be further improved here by exploiting
+    // that fields from the same frame are next to each other in the set.
+    std::erase_if(sensitive_fields_,
+                  [local_frame_token](autofill::FieldGlobalId field_id) {
+                    return field_id.frame_token == local_frame_token;
+                  });
+  } else if (previous != LifecycleState::kActive &&
+             current == LifecycleState::kActive) {
+    // The frame became active, so its fields are present in the DOM again.
+    const std::map<FormGlobalId, std::unique_ptr<autofill::FormStructure>>&
+        forms = manager.form_structures();
+
+    for (const auto& [form_id, form_structure] : forms) {
+      const std::vector<std::unique_ptr<AutofillField>>& fields =
+          form_structure->fields();
+      for (const std::unique_ptr<AutofillField>& field : fields) {
+        if (IsSensitiveAutofillType(field->Type().GetStorableType())) {
+          sensitive_fields_.insert(field->global_id());
+        }
+      }
+    }
+  }
+
+  UpdateContentSensitivity();
+}
 
 }  // namespace sensitive_content

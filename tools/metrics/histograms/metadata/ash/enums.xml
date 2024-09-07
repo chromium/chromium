@@ -40,6 +40,7 @@ chromium-metrics-reviews@google.com.
 <enum name="ActiveSessionAuthControllerReason">
   <int value="0" label="PasswordManager"/>
   <int value="1" label="Settings"/>
+  <int value="2" label="WebAuthN"/>
 </enum>
 
 <enum name="AltTabMode">
@@ -218,6 +219,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
 <enum name="AuthInputType">
   <int value="0" label="Password"/>
   <int value="1" label="PIN"/>
+  <int value="2" label="Fingerprint"/>
 </enum>
 
 <enum name="AuthMethod">
@@ -1541,6 +1543,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="33" label="Switch Caps Lock Key Pressed Nudge"/>
   <int value="34" label="Help Me Read Nudge"/>
   <int value="35" label="Birch Privacy Nudge"/>
+  <int value="36" label="Video Conference Tray Sidetone Not Supported"/>
+  <int value="37" label="Video Conference Tray Sidetone Enabled"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
@@ -1616,6 +1620,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="21" label="DEPRECATED: Showing glanceables"/>
   <int value="22" label="Exiting overview due to window deactivation"/>
   <int value="23" label="Window restored from previous session"/>
+  <int value="24" label="After user login, close dialog for full restore"/>
 </enum>
 
 <enum name="OverviewStartAction">
@@ -2254,6 +2259,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="48" label="Video Conference Speak On Mute Opt In Confirmation"/>
   <int value="50" label="Game Dashboard Disabled In Tablet Mode"/>
   <int value="51" label="Informed Restore Onboarding Turn On Ask Every Time"/>
+</enum>
+
+<enum name="TogglePickerAction">
+  <int value="0" label="ToggleCapsLock"/>
+  <int value="1" label="TogglePicker"/>
 </enum>
 
 <enum name="TrayBackgroundViewCatalogName">

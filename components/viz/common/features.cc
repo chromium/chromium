@@ -4,6 +4,7 @@
 
 #include "components/viz/common/features.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/command_line.h"
@@ -13,7 +14,6 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/viz/common/delegated_ink_prediction_configuration.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -33,6 +33,15 @@ namespace features {
 BASE_FEATURE(kAndroidBrowserControlsInViz,
              "AndroidBrowserControlsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidBcivWithSuppression,
+             "AndroidBcivWithSuppression",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidBcivZeroBrowserFrames,
+             "AndroidBcivZeroBrowserFrames",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kBackdropFilterMirrorEdgeMode,
@@ -71,6 +80,16 @@ BASE_FEATURE(kDelegatedCompositing,
 #endif
 );
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kDrawQuadSplit[] = "num_of_splits";
+
+// If enabled, overrides the maximum number (exclusive) of quads one draw quad
+// can be split into during occlusion culling.
+BASE_FEATURE(kDrawQuadSplitLimit,
+             "DrawQuadSplitLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 constexpr base::FeatureParam<DelegatedCompositingMode>::Option
     kDelegatedCompositingModeOption[] = {
         {DelegatedCompositingMode::kFull, "full"},
@@ -92,13 +111,15 @@ const base::FeatureParam<DelegatedCompositingMode>
         &kDelegatedCompositingModeOption,
 };
 
+#if BUILDFLAG(IS_WIN)
 // If enabled, the overlay processor will force the use of dcomp surfaces as the
 // render pass backing while delegated ink is being employed. This will avoid
 // the need for finding what surface to synchronize ink updates with by making
 // all surfaces synchronize with dcomp commit
-BASE_FEATURE(kUseDCompSurfacesForDelegatedInk,
-             "UseDCompSurfacesForDelegatedInk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDCompSurfacesForDelegatedInk,
+             "DCompSurfacesForDelegatedInk",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kRenderPassDrawnRect,
              "RenderPassDrawnRect",
@@ -435,6 +456,17 @@ BASE_FEATURE(kVizNullHypothesis,
 BASE_FEATURE(kCrosContentAdjustedRefreshRate,
              "CrosContentAdjustedRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+int DrawQuadSplitLimit() {
+  constexpr int kDefaultDrawQuadSplitLimit = 5;
+  constexpr int kMinDrawQuadSplitLimit = 1;
+  constexpr int kMaxDrawQuadSplitLimit = 15;
+
+  const int split_limit = base::GetFieldTrialParamByFeatureAsInt(
+      kDrawQuadSplitLimit, kDrawQuadSplit, kDefaultDrawQuadSplitLimit);
+  return std::clamp(split_limit, kMinDrawQuadSplitLimit,
+                    kMaxDrawQuadSplitLimit);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsDelegatedCompositingEnabled() {
@@ -609,4 +641,18 @@ bool IsCrosContentAdjustedRefreshRateEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_WIN)
+bool ShouldUseDCompSurfacesForDelegatedInk() {
+  // kDCompSurfacesForDelegatedInk is for delegated ink to work with partial
+  // delegated compositing. This function should return true if the feature
+  // is enabled or partial delegated compositing is enabled - a condition
+  // which requires the use of DCOMP surfaces for delegated ink.
+  if (IsDelegatedCompositingEnabled() &&
+      kDelegatedCompositingModeParam.Get() ==
+          DelegatedCompositingMode::kLimitToUi) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(kDCompSurfacesForDelegatedInk);
+}
+#endif
 }  // namespace features

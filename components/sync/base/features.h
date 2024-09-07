@@ -30,6 +30,13 @@ inline constexpr base::FeatureParam<int> kSyncAndroidNTPPromoMaxImpressions{
 // Controls whether to show a batch upload card in Android unified settings
 // panel.
 BASE_DECLARE_FEATURE(kEnableBatchUploadFromSettings);
+
+// Flag that controls Uno fast-follow features which are:
+// - Batch upload of left-behind bookmarks from the bookmark manager
+// - Turn on bookmarks and reading list when signing in from bookmark manager
+// - Confirmation dialog when turning off “Allow Chrome sign-in”
+// - Promo for signed-in users with bookmarks toggle off
+BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls whether to enable syncing of Autofill Wallet Usage Data.
@@ -37,11 +44,6 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletUsageData);
 
 // Controls whether to enable syncing of Autofill Wallet Credential Data.
 BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
-
-// Controls if the `PlusAddressSyncBridge`, controlling PLUS_ADDRESS should be
-// instantiated.
-// TODO(b/322147254): Cleanup when launched.
-BASE_DECLARE_FEATURE(kSyncPlusAddress);
 
 // Controls if the `PlusAddressSettingSyncBridge`, controlling
 // PLUS_ADDRESS_SETTING should be instantiated.
@@ -160,17 +162,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "SyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold",
         base::Milliseconds(100)};
 
-// If enabled, triggers a synchronisation when WebContentsObserver's
-// -OnVisibilityChanged method is called.
-BASE_DECLARE_FEATURE(kSyncSessionOnVisibilityChanged);
-
-// The minimum time between two sync updates of last_active_time when the tab
-// hasn't changed.
-inline constexpr base::FeatureParam<base::TimeDelta>
-    kSyncSessionOnVisibilityChangedTimeThreshold{
-        &kSyncSessionOnVisibilityChanged,
-        "SyncSessionOnVisibilityChangedTimeThreshold", base::Minutes(10)};
-
 // If enabled, sync-the-transport will auto-start (avoid deferring startup) if
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
@@ -197,9 +188,11 @@ BASE_DECLARE_FEATURE(kMoveThemePrefsToSpecifics);
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// If enabled, SyncTransportDataPrefs are account-keyed (instead of just for the
-// currently-signed-in account).
-BASE_DECLARE_FEATURE(kSyncAccountKeyedTransportPrefs);
+// Kill switch for a change in the internal implementation of
+// SyncService::GetLocalDataDescriptions() and TriggerLocalDataMigration(),
+// which is expected to be a no-op.
+BASE_DECLARE_FEATURE(kSyncEnableModelTypeLocalDataBatchUploaders);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

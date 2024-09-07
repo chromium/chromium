@@ -59,11 +59,15 @@ BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
 // Controls the availability of navigation to file URLs.
 BASE_DECLARE_FEATURE(kRestrictFileURLNavigation);
 
+// If enabled, allows using the
+// `enterprise.reportingPrivate.reportDataMaskingEvent` API.
+BASE_DECLARE_FEATURE(kApiEnterpriseReportingPrivateReportDataMaskingEvent);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////
 
-// For historical reasons, this includes some APIs. Please don't add more.
+// For historical reasons, this includes some APIs. Please don't add more APIs.
 
 // Whether extension contexts can use SharedArrayBuffers unconditionally (i.e.
 // without requiring cross origin isolation).
@@ -193,15 +197,9 @@ BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
 // See the guidance at the top of this file.
 ///////////////////////////////////////////////////////////////////////////////
 
-// If enabled, extensions installed from .zip files (from dev mode) are changed
-// from installing in base::TEMP_DIR to .../<profile_dir>/UnpackedExtensions and
-// persist until removed by the user.
-BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
-
-// If enabled, the button for visiting the chrome webstore in both the
-// extensions menu in the app menu and the chrome://extensions sidebar will send
-// the user to the new chrome webstore URL.
-BASE_DECLARE_FEATURE(kNewWebstoreURL);
+// Enables declarative net request rules to specify response headers as a
+// matching condition.
+BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
 
 // Enables a relaxed rule count for "safe" dynqmic or session scoped rules above
 // the current limit. If disabled, all dynamic and session scoped rules are
@@ -209,20 +207,30 @@ BASE_DECLARE_FEATURE(kNewWebstoreURL);
 // limit.
 BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
 
-// Enables declarative net request rules to specify response headers as a
-// matching condition.
-BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
+// If enabled, extensions installed from .zip files (from dev mode) are changed
+// from installing in base::TEMP_DIR to .../<profile_dir>/UnpackedExtensions and
+// persist until removed by the user.
+BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
 
 // If enabled, include JS call stack data in the extension API request
 // sent to the browser process. This data is used for telemetry purpose
 // only.
 BASE_DECLARE_FEATURE(kIncludeJSCallStackInExtensionApiRequest);
 
+// If enabled, the button for visiting the chrome webstore in both the
+// extensions menu in the app menu and the chrome://extensions sidebar will send
+// the user to the new chrome webstore URL.
+BASE_DECLARE_FEATURE(kNewWebstoreURL);
+
 // If enabled, use the new CWS itemSnippets API to fetch extension info.
 BASE_DECLARE_FEATURE(kUseItemSnippetsAPI);
 
 // If enabled, use the new simpler, more efficient service worker task queue.
 BASE_DECLARE_FEATURE(kUseNewServiceWorkerTaskQueue);
+
+// Enables declarative net request rules to specify a header substitution action
+// type for modifying headers.
+BASE_DECLARE_FEATURE(kDeclarativeNetRequestHeaderSubstitution);
 
 }  // namespace extensions_features
 

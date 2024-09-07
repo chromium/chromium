@@ -2898,12 +2898,6 @@ are declared in tools/grit/grit_rule.gni.
             &amp;Learn More
           </message>
         </if>  <!-- not use_titlecase -->
-        <if expr="is_win">
-          <message name="IDS_DOWNLOAD_MENU_ALWAYS_OPEN_PDF_IN_READER"
-                   desc="Download context menu: Always open PDFs using Adobe Reader">
-            Always open in Adobe Reader
-          </message>
-        </if>
         <message name="IDS_DOWNLOAD_MENU_DEEP_SCAN"
           desc="Download context menu: send file for deep scanning">
           Scan file
@@ -4777,6 +4771,12 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_LEARN_MORE" desc="Used as 'Learn More' link text.">
         Learn More
       </message>
+      <message name="IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_OPT_OUT" desc="Used as 'Opt Out' button text.">
+        Opt Out
+      </message>
+      <message name="IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_RESTART_NEEDED" desc="Used as 'Opt Out' button text.">
+        Opting out of process sharing requires a browser restart. This browser will restart now.
+      </message>
 
       <!-- DevTools attached infobar -->
       <message name="IDS_DEV_TOOLS_INFOBAR_LABEL" desc="Label displayed in an infobar when external debugger is attached to the browser.  The label does not disappear until the user dismisses it, even if the debugger is detached, and so should not imply that the debugger must still be debugging the browser, only that it was, and could still be.">
@@ -5413,7 +5413,7 @@ are declared in tools/grit/grit_rule.gni.
         Open in Web Store
       </message>
 
-      <if expr="enable_extensions">
+      <if expr="enable_extensions_core">
         <message name="IDS_EXTENSION_PROMPT_WARNING_FULL_ACCESS" desc="Permission string for full access to the computer and all websites.">
           Read and change all your data on your computer and all websites
         </message>
@@ -6607,6 +6607,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA" desc="Longer explanation for section of extensions that can't access the current site's data">
         These extensions don't need to see and change information on this site.
       </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL" desc="Text of the label next to the site settings toggle button that allows extensions on site pointed by $1.">
+        Allow extensions on <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
+      </message>
       <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP" desc="Tooltip text for the site setting toggle button when is on.">
         Extensions allowed on this site
       </message>
@@ -6614,13 +6617,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Extensions are not allowed on this site
       </message>
        <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button.">
-        Allow extensions on this site
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button when is on.">
-        Select to block all extensions on this site
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button when is off.'">
-        Select to allow extensions on this site
+        Allow extensions
       </message>
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT" desc="Text of the message section when this site is restricted to all extensions.">
         No extensions need access to this site
@@ -7754,6 +7751,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_WHY_THIS_SUGGESTION" desc="The title of a menu entry and bubble that explains why this suggestion appears in the omnibox popup.">
         Why this suggestion?
       </message>
+      <message name="IDS_OMNIBOX_CLOSE_IPH_SUGGESTION" desc="The text displayed when hovering over the button to close the omnibox IPH suggestion.">
+        Close
+      </message>
+      <message name="IDS_OMNIBOX_THUMBS_UP_SUGGESTION" desc="The text displayed when hovering over the thumbs up button to provide feedback about an omnibox suggestion." translateable="false">
+        Thumbs up submits feedback that you like this result.
+      </message>
+      <message name="IDS_OMNIBOX_THUMBS_DOWN_SUGGESTION" desc="The text displayed when hovering over the thumbs down button to provide feedback about an omnibox suggestion." translateable="false">
+        Thumbs down opens a form for submitting detailed feedback on why you dislike this result.
+      </message>
       <message name="IDS_OMNIBOX_REMOVE_SUGGESTION" desc="The text of a context menu entry to delete an omnibox suggestion.">
         Remove suggestion
       </message>
@@ -7949,6 +7955,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOMIZE_CHROME_MANAGED_NEW_TAB_PAGE" desc="The string that shows on the customize chrome UI when a 3rd party manages the new tab page.">
         <ph name="THIRD_PARTY_NTP_MANAGER">$1<ex>ZomboCom</ex></ph> is managing your new tab page
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_CHROME_MANAGED_NEW_TAB_PAGE_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="Accessibility label for the button that shows on the customize chrome UI when a 3rd party manages the new tab page.">
+        <ph name="THIRD_PARTY_NTP_MANAGER">$1<ex>ZomboCom</ex></ph> is managing your new tab page, opens in a new tab
       </message>
       <message name="IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_CLASSIC_CHROME_LABEL" desc="The label for the button for resetting theme back to default chrome in the New Tab Page customize chrome side panel.">
         Reset to Default Chrome
@@ -8301,7 +8310,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_INTERIORS" desc="The label for a wallpaper search category (ex. Desserts).">
         Interiors
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_LANDSCAPE" desc="The label for a wallpaper search category (ex. Desserts).">
+      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_LANDSCAPE" desc="The label for a wallpaper search category (ex. Desserts)." meaning="Describes visible features of an area of countryside or land.">
         Landscape
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_NATURE" desc="The label for a wallpaper search category (ex. Desserts).">
@@ -8529,7 +8538,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_CREATIVE" desc="The label for a wallpaper search mood (ex Chaotic).">
         Creative
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DARK" desc="The label for a wallpaper search mood (ex Chaotic).">
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DARK" desc="The label for a wallpaper search mood (ex Chaotic)." meaning="Describes a dark mood or tone.">
         Dark
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DREAMY" desc="The label for a wallpaper search mood (ex Chaotic).">
@@ -8550,7 +8559,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_ROMANTIC" desc="The label for a wallpaper search mood (ex Chaotic).">
         Romantic
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SERENE" desc="The label for a wallpaper search mood (ex Chaotic).">
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SERENE" desc="The label for a wallpaper search mood (ex Chaotic)." meaning="A mood that refers to a calm and peaceful state of mind or feeling.">
         Serene
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SNOWY" desc="The label for a wallpaper search mood (ex Chaotic).">
@@ -8597,6 +8606,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_9" desc="Accessibility label describing a wallpaper search inspiration image.">
         A large wave engulfs the ocean, with a dark forest ashore.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SEPARATOR" desc="Text/punctuation that separates strings in a list. For example, 'meadow, oil painting, intellectual, and yellow.'" meaning="List separator for strings.">
+         , '''
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_BUTTON_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label describing the functionality of the button that opens the toolbar customization section of Customize Chrome.">
+        Customize toolbar buttons
       </message>
       <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_LABEL" desc="Label for the description of the functionality of the section of Customize Chrome for selecting toolbar icons.">
         Choose what buttons show in the toolbar
@@ -8666,6 +8681,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_MORE_ACTIONS" desc="The tooltip and accessibility label for the 3 dot menu on a module.">
         More actions for <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULE_HEADER_MORE_ACTIONS_MENU" desc="Text read to screen reader users when navigating to a module's more actions menu.">
+        More actions
       </message>
       <message name="IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT" desc="Text shown on the customize button of an NTP module.">
         Customize cards
@@ -9022,6 +9040,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_SIDE_PANEL_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel resize handle is focused.">
         Side Panel Resize Handle
       </message>
+      <message name="IDS_ACCNAME_SIDE_PANEL_CLOSE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel close button is focused.">
+        Close side panel
+      </message>
       <message name="IDS_SIDE_PANEL_RESIZE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true"
                desc="Accessible alert text announced after a user has resized the side panel via keyboard. This message is for screen reader users.">
                <ph name="WINDOW_SIDE">$1<ex>left</ex></ph> window now <ph name="WINDOW_SIZE_PERCENT">$2<ex>60%</ex></ph> wide, <ph name="PANE_SIDE">$3<ex>right</ex></ph> pane now <ph name="PANE_SIZE_PERCENT">$4<ex>40%</ex></ph> wide.
@@ -9126,8 +9147,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
           is_accessibility_with_no_ui="true">
         Pinned! You can access Google Lens again from the new button on the toolbar
       </message>
+      <message name="IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP" desc="The tooltip for the side panel more info button.">
+        More info
+      </message>
 
       <!-- Bookmarks strings -->
+      <!-- TODO(crbug.com/363277495): Update and mark translateable. -->
+      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_TITLE" translateable="false" desc="Title for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
+        Save to a folder in your Google Account?
+      </message>
+      <!-- TODO(crbug.com/363277495): Update and mark translateable. -->
+      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" translateable="false" desc="Subtitle for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
+        This bookmark is saved only on this device. You can save it in your Google Account.
+      </message>
+      <!-- TODO(crbug.com/363277495): Update and mark translateable. -->
+      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL" translateable="false" desc="OK button label for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
+        Save in account
+      </message>
       <message name="IDS_BOOKMARKS_SORT_BY_TYPE" desc="Menu item label for selecting the bookmarks sort type.">
         Sort by <ph name="SORT_TYPE">$1<ex>Newest</ex></ph>
       </message>
@@ -9407,6 +9443,24 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_READING_MODE_BLUE_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature.">
         Blue
+      </message>
+      <message name="IDS_READING_MODE_VOICE_HIGHLIGHT" desc="Accessibility label for button that opens a dropdown with options for changing the highlight granularity for following along with speech in Read Aloud.">
+        Voice highlight
+      </message>
+      <message name="IDS_READING_MODE_AUTO_HIGHLIGHT_LABEL" desc="Dropdown option for setting the automatic highlight granularity in Read Aloud.">
+        Auto
+      </message>
+      <message name="IDS_READING_MODE_WORD_HIGHLIGHT_LABEL" desc="Dropdown option for setting the word highlight granularity in Read Aloud.">
+        Word
+      </message>
+      <message name="IDS_READING_MODE_PHRASE_HIGHLIGHT_LABEL" desc="Dropdown option for setting the phrase highlight granularity in Read Aloud.">
+        Phrase
+      </message>
+      <message name="IDS_READING_MODE_SENTENCE_HIGHLIGHT_LABEL" desc="Dropdown option for setting the sentence highlight granularity in Read Aloud.">
+        Sentence
+      </message>
+      <message name="IDS_READING_MODE_OFF_HIGHLIGHT_LABEL" desc="Dropdown option for turning off highlighting in Read Aloud.">
+        Off
       </message>
       <message name="IDS_READ_ANYTHING_LOADING" desc="Message to show while Read Anything is figuring out what text to display.">
         Getting ready
@@ -9838,7 +9892,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </if>
       </if>
 
-      <!--IOS Desktop password promo strings-->
+      <!--Desktop to iOS password promo strings-->
       <if expr="_google_chrome">
         <if expr="not is_android">
           <if expr="use_titlecase">
@@ -9872,7 +9926,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </if>
       </if>
 
-      <!--IOS Desktop address promo strings-->
+      <!--Desktop to iOS address promo strings-->
       <if expr="_google_chrome">
         <if expr="not is_android">
           <if expr="use_titlecase">
@@ -9901,6 +9955,40 @@ Keep your key file in a safe place. You will need it to create new versions of y
             You can find it in your Addresses and More
           </message>
           <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop address promo bubble footer which lets the user know how to use their saved addresses on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+            Download Chrome with this QR code, and sign in to your Google Account.
+          </message>
+        </if>
+      </if>
+
+      <!--Desktop to iOS payment promo strings-->
+      <if expr="_google_chrome">
+        <if expr="not is_android">
+          <if expr="use_titlecase">
+            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop payment promo bubble letting users know their card is saved.">
+              Your Card Is Saved
+            </message>
+            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
+              Use This Card On Your iPhone
+            </message>
+            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
+              No Thanks
+            </message>
+          </if>
+          <if expr="not use_titlecase">
+            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop payment promo bubble letting users know their card is saved.">
+              Your card is saved
+            </message>
+            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
+              Use this card on your iPhone
+            </message>
+            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
+              No thanks
+            </message>
+          </if>
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop payment promo bubble which lets the user know they can access their saved payment methods.">
+            You can access it in your Payment Methods
+          </message>
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop payment promo bubble footer which lets the user know how to use their saved payment methods on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
             Download Chrome with this QR code, and sign in to your Google Account.
           </message>
         </if>
@@ -10666,6 +10754,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE" desc="Message indicating that the list of saved passwords for this site is empty.">
           No saved passwords for <ph name="domain">$1<ex>example.com</ex></ph>
         </message>
+        <message name="IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_TITLE" desc="The title of a list of saved passwords for the currently visible site." translateable="false">
+          Saved passwords for <ph name="domain">$1<ex>example.com</ex></ph>
+        </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK" desc="The text of the link in the password sheet that opens the password management section.">
           Manage passwords
         </message>
@@ -11179,8 +11270,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_ORGANIZE_TABS" desc="The label of the 'Organize tabs' Tab context menu item.">
           Organize similar tabs
         </message>
-        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The of 'Show Product Spec' menu item." translateable="false">
-          Show specifications
+        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The text for the context menu item to compare selected tabs." translateable="false">
+          Compare tabs
         </message>
         <if expr="is_chromeos">
           <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_MENU_ITEM_A11Y" desc="The a11y message for menu items in 'Move tabs to another window' when grouped by desk.">
@@ -11277,8 +11368,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_ORGANIZE_TABS" desc="In Title Case: The label of the 'Organize tabs' Tab context menu item.">
           Organize Similar Tabs
         </message>
-        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The of 'Show Product Spec' menu item." translateable="false">
-          Show specifications
+        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="In Title Case: The text for the context menu item to compare selected tabs." translateable="false">
+          Compare Tabs
         </message>
       </if>
 
@@ -11512,6 +11603,24 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_TAB_ORGANIZATION_THUMBS_UP" desc="Accessibility label for the thumbs up icon that a user can click to provide positive feedback about a tab organization." is_accessibility_with_no_ui="true">
         Thumbs up submits feedback that you like this tab group suggestion
+      </message>
+      <message name="IDS_AUTO_TAB_GROUPS_SELECTOR_HEADING" desc="Heading for the auto tab groups button in the tab organization selector.">
+        Group tabs
+      </message>
+      <message name="IDS_AUTO_TAB_GROUPS_SELECTOR_SUBHEADING" desc="Subheading for the auto tab groups button in the tab organization selector.">
+        Check for suggestions
+      </message>
+      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
+        {NUM_TABS, plural,
+          =0 {No unused tabs}
+          =1 {Close 1 unused tab}
+          other {Close # unused tabs}}
+      </message>
+      <message name="IDS_DECLUTTER_SELECTOR_SUBHEADING" desc="Subheading for the declutter button in the tab organization selector.">
+        Review and decide
+      </message>
+      <message name="IDS_DECLUTTER_TITLE" desc="The header text for the declutter UI">
+        Close unused tabs
       </message>
 
       <!-- Strings for Window Titles in Menus -->
@@ -13843,6 +13952,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
           <message name="IDS_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="Text for the menu item that lets the user open a dialog to choose another source language for translation, from a list of available languages.">
             Page is not in <ph name="language">$1<ex>French</ex></ph>
           </message>
+          <message name="IDS_TRANSLATE_BUBBLE_OPEN_LANGUAGE_SETTINGS" desc="Text to show for the translate bubble menu item that opens language settings.">
+            Open language settings
+          </message>
           <message name="IDS_PARTIAL_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="Text for the partial translate bubble menu item that lets the user open a dialog to choose another source language for translation, from a list of available languages.">
             Selection is not in <ph name="language">$1<ex>French</ex></ph>
           </message>
@@ -13907,6 +14019,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="In Title Case: Text to show for the translate bubble menu item which invokes the source language menu.">
             Page Is Not in <ph name="language">$1<ex>French</ex></ph>
+          </message>
+          <message name="IDS_TRANSLATE_BUBBLE_OPEN_LANGUAGE_SETTINGS" desc="In Title Case: Text to show for the translate bubble menu item that opens language settings.">
+            Open Language Settings
           </message>
           <message name="IDS_PARTIAL_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="In Title Case: Text to show for the partial translate bubble menu item which invokes the source language menu.">
             Selection Is Not in <ph name="language">$1<ex>French</ex></ph>
@@ -16733,6 +16848,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_TITLE" desc="The title of a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         Passkey deleted
       </message>
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL" desc="The label in a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager, explaining that the passkeys can be managed in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        You can view and manage your passkeys saved in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LINK" desc="Link text that directs the user to the Google Password Manager passwords page within a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager. See IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL for more details.">
+        Google Password Manager
+      </message>
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_TITLE" translateable="false">
         Bluetooth is disabled
@@ -17389,6 +17510,27 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_OVERLAY_AUTO_DETECT_LANGUAGE_LABEL" desc="Label for the language picker button denoting that source language of the page will be automatically detected.">
       Auto-detect
     </message>
+    <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_LABEL" desc="Label for the translate button. Informs the user that the entire screen will be translated when clicked.">
+      Translate screen
+    </message>
+      <message name="IDS_LENS_OVERLAY_SOURCE_LANGUAGE_PICKER_MENU_TITLE" desc="Label for the source language picker menu title denoting that the user can select a language for the screen to be translated to.">
+      Translate from
+    </message>
+    <message name="IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE" desc="Label for the target language picker menu title denoting that the user can select a language for the screen to be translated to.">
+      Translate to
+    </message>
+    <message name="IDS_LENS_OVERLAY_RECENT_LANGUAGES_LABEL" desc="Label in the language picker menu denoting that the following language menu items are ones that have been selected recently by the user.">
+      Recent languages
+    </message>
+    <message name="IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL" desc="Label in the language picker menu denoting that the following language menu items are all of the possible selections that can be made.">
+      All languages
+    </message>
+    <message name="IDS_LENS_OVERLAY_DETECTED_LABEL" desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
+      Detected
+    </message>
+    <message name="IDS_LENS_OVERLAY_DETECT_LANGUAGE_LABEL" desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
+      Detect language
+    </message>
     <message name="IDS_LENS_SEND_FEEDBACK" desc="Text that is shown in the more options menu to open the feedback dialog.">
       Send feedback
     </message>
@@ -17467,17 +17609,32 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON" desc="Title of the button that lets the user look at all account options. Used when we want to highlight a single returning account in the UI.">
       Choose an account
     </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_NAME" desc="A user's name, to be used in a list of items shared with a website">
+      name
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_EMAIL" desc="A user's email address, to be used in a list of items shared with a website">
+      email address
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_PICTURE" desc="A user's profile picture, to be used in a list of items shared with a website">
+      profile picture
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_STRING" desc="A list of a number of items (that will be shared with a website), for example 'name and email address'.">
+      {count, plural,
+        =1 {{field_1}}
+        =2 {{field_1} and {field_2}}
+        other {{field_1}, {field_2}, and {field_3}}}
+    </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS" desc="The consent text shown to the user before sign up when there is no privacy policy or terms of service.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site.
     </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP" desc="The consent text shown to the user before sign up when there is no privacy policy.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK">$2</ph>terms of service<ph name="END_LINK">$3</ph>.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK">$3</ph>terms of service<ph name="END_LINK">$4</ph>.
     </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS" desc="The consent text shown to the user before sign up when there is no terms of service.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK">$2</ph>privacy policy<ph name="END_LINK">$3</ph>.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK">$3</ph>privacy policy<ph name="END_LINK">$4</ph>.
     </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK1">$2</ph>privacy policy<ph name="END_LINK1">$3</ph> and <ph name="BEGIN_LINK2">$4</ph>terms of service<ph name="END_LINK2">$5</ph>.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK1">$3</ph>privacy policy<ph name="END_LINK1">$4</ph> and <ph name="BEGIN_LINK2">$5</ph>terms of service<ph name="END_LINK2">$6</ph>.
     </message>
     <message name="IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT" desc="Title of the button that lets the user log in to a different account.">
       Use a different account
@@ -17913,6 +18070,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Performance issue alert
       </message>
     </if>
+
+    <!-- Toast Strings-->
+    <if expr="not is_android">
+      <message name="IDS_LINK_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when a link is successfully copied.">
+        Link copied
+      </message>
+      <message name="IDS_IMAGE_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when an image is successfully copied.">
+        Image copied
+      </message>
+      <message name="IDS_LINK_COPIED_TO_HIGHLIGHT_TOAST_BODY" desc="Text on a toast notification that is shown when a link to highlight is successfully copied.">
+        Link copied to highlight
+      </message>
+      <message name="IDS_READING_LIST_TOAST_BODY" desc="Text on a toast notification that is shown when an item is added to the reading list.">
+        Page added to reading list
+      </message>
+      <message name="IDS_READING_LIST_TOAST_BUTTON" desc="Button on a toast notification that allows a user to open a reading list entry.">
+        Open
+      </message>
+    </if>
+
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
       Location
     </message>

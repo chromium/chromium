@@ -35,6 +35,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -57,6 +58,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.UiDisableIf;
 
 /** Tests for the personalized signin promo on the Bookmarks page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -137,6 +139,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     // Signing in with a non-default account is disabled on automotive, which only supports one
     // account per OS profile.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/362215887
     public void testSigninButtonNotDefaultAccount() {
         var continuedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(CONTINUED_HISTOGRAM_NAME, 1);
@@ -158,6 +161,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/362215887
     public void testSigninButtonNewAccount() {
         var continuedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(CONTINUED_HISTOGRAM_NAME, 1);

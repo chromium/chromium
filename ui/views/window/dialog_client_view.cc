@@ -16,6 +16,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -61,11 +62,11 @@ gfx::Size GetBoundingSizeForVerticalStack(const gfx::Size& size1,
 
 constexpr ui::ElementIdentifier kNoElementId;
 
-ui::ElementIdentifier GetButtonId(ui::DialogButton type) {
+ui::ElementIdentifier GetButtonId(ui::mojom::DialogButton type) {
   switch (type) {
-    case ui::DialogButton::DIALOG_BUTTON_OK:
+    case ui::mojom::DialogButton::kOk:
       return DialogClientView::kOkButtonElementId;
-    case ui::DialogButton::DIALOG_BUTTON_CANCEL:
+    case ui::mojom::DialogButton::kCancel:
       return DialogClientView::kCancelButtonElementId;
     default:
       return kNoElementId;
@@ -337,9 +338,9 @@ void DialogClientView::UpdateDialogButtons() {
 }
 
 void DialogClientView::UpdateDialogButton(raw_ptr<MdTextButton>* member,
-                                          ui::DialogButton type) {
+                                          ui::mojom::DialogButton type) {
   DialogDelegate* const delegate = GetDialogDelegate();
-  if (!(delegate->buttons() & type)) {
+  if (!(delegate->buttons() & static_cast<int>(type))) {
     if (*member) {
       button_row_container_->RemoveChildViewT(std::exchange(*member, nullptr));
     }
@@ -378,20 +379,21 @@ void DialogClientView::UpdateDialogButton(raw_ptr<MdTextButton>* member,
       .BuildChildren();
 }
 
-void DialogClientView::ButtonPressed(ui::DialogButton type,
+void DialogClientView::ButtonPressed(ui::mojom::DialogButton type,
                                      const ui::Event& event) {
   DialogDelegate* const delegate = GetDialogDelegate();
   if (!delegate || input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
 
-  DCHECK(type == ui::DIALOG_BUTTON_OK || type == ui::DIALOG_BUTTON_CANCEL);
-  if (type == ui::DIALOG_BUTTON_OK &&
+  DCHECK(type == ui::mojom::DialogButton::kOk ||
+         type == ui::mojom::DialogButton::kCancel);
+  if (type == ui::mojom::DialogButton::kOk &&
       !delegate->ShouldIgnoreButtonPressedEventHandling(ok_button_, event)) {
     delegate->AcceptDialog();
   }
 
-  if (type == ui::DIALOG_BUTTON_CANCEL &&
+  if (type == ui::mojom::DialogButton::kCancel &&
       !delegate->ShouldIgnoreButtonPressedEventHandling(cancel_button_,
                                                         event)) {
     delegate->CancelDialog();
@@ -547,11 +549,11 @@ void DialogClientView::SetupLayout() {
 
 void DialogClientView::UpdateButtonsFromModel() {
   if (PlatformStyle::kIsOkButtonLeading) {
-    UpdateDialogButton(&ok_button_, ui::DIALOG_BUTTON_OK);
-    UpdateDialogButton(&cancel_button_, ui::DIALOG_BUTTON_CANCEL);
+    UpdateDialogButton(&ok_button_, ui::mojom::DialogButton::kOk);
+    UpdateDialogButton(&cancel_button_, ui::mojom::DialogButton::kCancel);
   } else {
-    UpdateDialogButton(&cancel_button_, ui::DIALOG_BUTTON_CANCEL);
-    UpdateDialogButton(&ok_button_, ui::DIALOG_BUTTON_OK);
+    UpdateDialogButton(&cancel_button_, ui::mojom::DialogButton::kCancel);
+    UpdateDialogButton(&ok_button_, ui::mojom::DialogButton::kOk);
   }
 }
 

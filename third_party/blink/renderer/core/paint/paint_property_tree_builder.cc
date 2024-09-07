@@ -404,7 +404,8 @@ class FragmentPaintPropertyTreeBuilder {
                                                  namespace_id);
   }
 
-  MainThreadScrollingReasons GetMainThreadScrollingReasons() const;
+  MainThreadScrollingReasons GetMainThreadScrollingReasons(
+      bool user_scrollable) const;
 
   const LayoutObject& object_;
   PrePaintInfo* pre_paint_info_;
@@ -2639,7 +2640,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
 }
 
 MainThreadScrollingReasons
-FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons() const {
+FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons(
+    bool user_scrollable) const {
   DCHECK(IsA<LayoutBox>(object_));
   auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea();
   DCHECK(scrollable_area);
@@ -2647,6 +2649,17 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons() const {
       full_context_.global_main_thread_scrolling_reasons;
   if (scrollable_area->BackgroundNeedsRepaintOnScroll()) {
     reasons |= cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll;
+  }
+  // Use main-thread scrolling if the scroller is not user scrollable
+  // because the cull rect is not expanded (see CanExpandForScroll in
+  // cull_rect.cc), and the scroller is not registered in
+  // LocalFrameView::UserScrollableAreas().
+  // TODO(crbug.com/349864862): Even if we expand cull rect,
+  // virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-hidden-*.html
+  // will still time out, which will need investigating if we want to improve
+  // scroll performance of non-user-scrollable scrollers.
+  if (!user_scrollable) {
+    reasons |= cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
   }
   return reasons;
 }
@@ -2666,22 +2679,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       state.contents_size =
           scrollable_area->PixelSnappedContentsSize(clip_rect.offset);
       state.overflow_clip_node = properties_->OverflowClip();
-
       state.user_scrollable_horizontal =
           scrollable_area->UserInputScrollable(kHorizontalScrollbar);
       state.user_scrollable_vertical =
           scrollable_area->UserInputScrollable(kVerticalScrollbar);
-
-      if (state.user_scrollable_horizontal || state.user_scrollable_vertical) {
-        object_.GetFrameView()->AddUserScrollableArea(scrollable_area);
-      } else {
-        object_.GetFrameView()->RemoveUserScrollableArea(scrollable_area);
-      }
-
       state.composited_scrolling_preference =
           static_cast<CompositedScrollingPreference>(
               full_context_.composited_scrolling_preference);
-      state.main_thread_scrolling_reasons = GetMainThreadScrollingReasons();
+      state.main_thread_scrolling_reasons = GetMainThreadScrollingReasons(
+          state.user_scrollable_horizontal || state.user_scrollable_vertical);
 
       state.compositor_element_id = scrollable_area->GetScrollElementId();
 

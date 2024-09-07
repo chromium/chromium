@@ -87,7 +87,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
       // the background before the test starts. See discussion on
       // https://crbug.com/347282481 for why clearing the message queue can
       // unearth specific bugs.
-      FlushEvents(),
 
       // Trigger the context menu.
       Do([this]() {

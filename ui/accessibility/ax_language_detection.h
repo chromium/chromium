@@ -217,7 +217,7 @@ class AX_EXPORT AXLanguageInfoStats {
 // TODO(chrishall): Investigate the cost of using AXTreeObserver, given that it
 // has many empty virtual methods which are called for every AXTree change and
 // we are only currently interested in OnAtomicUpdateFinished.
-class AX_EXPORT AXLanguageDetectionObserver : public ui::AXTreeObserver {
+class AX_EXPORT AXLanguageDetectionObserver : public AXTreeObserver {
  public:
   // Observer constructor will register itself with the provided AXTree.
   explicit AXLanguageDetectionObserver(AXTree* tree);
@@ -231,7 +231,7 @@ class AX_EXPORT AXLanguageDetectionObserver : public ui::AXTreeObserver {
       delete;
 
  private:
-  void OnAtomicUpdateFinished(ui::AXTree* tree,
+  void OnAtomicUpdateFinished(AXTree* tree,
                               bool root_changed,
                               const std::vector<Change>& changes) override;
 

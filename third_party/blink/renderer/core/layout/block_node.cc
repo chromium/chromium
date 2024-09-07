@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -1597,8 +1598,21 @@ void BlockNode::HandleScrollMarkerGroup() const {
   context.parent = group_node.GetLayoutBox();
   DCHECK(context.parent);
 
-  To<ScrollMarkerGroupPseudoElement>(group_node.GetLayoutBox()->GetNode())
-      ->ClearFocusGroup();
+  auto* scroll_marker_group =
+      To<ScrollMarkerGroupPseudoElement>(group_node.GetLayoutBox()->GetNode());
+  scroll_marker_group->ClearFocusGroup();
+  if (PseudoElement* scroll_next_button =
+          scroll_marker_group->OriginatingElement()->GetPseudoElement(
+              kPseudoIdScrollNextButton)) {
+    To<ScrollButtonPseudoElement>(scroll_next_button)
+        ->SetScrollMarkerGroup(scroll_marker_group);
+  }
+  if (PseudoElement* scroll_prev_button =
+          scroll_marker_group->OriginatingElement()->GetPseudoElement(
+              kPseudoIdScrollPrevButton)) {
+    To<ScrollButtonPseudoElement>(scroll_prev_button)
+        ->SetScrollMarkerGroup(scroll_marker_group);
+  }
   AttachScrollMarkers(*box_, context);
 
   DCHECK(GetDocument().GetStyleEngine().InScrollMarkersAttachment());

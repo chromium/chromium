@@ -20,6 +20,7 @@ class GPU;
 class GPUAdapterInfo;
 class GPUDevice;
 class GPUDeviceDescriptor;
+class GPURequestAdapterOptions;
 class GPUSupportedFeatures;
 class GPUSupportedLimits;
 class GPUMemoryHeapInfo;
@@ -30,7 +31,8 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
  public:
   GPUAdapter(GPU* gpu,
              wgpu::Adapter handle,
-             scoped_refptr<DawnControlClientHolder> dawn_control_client);
+             scoped_refptr<DawnControlClientHolder> dawn_control_client,
+             const GPURequestAdapterOptions* options);
 
   GPUAdapter(const GPUAdapter&) = delete;
   GPUAdapter& operator=(const GPUAdapter&) = delete;
@@ -58,6 +60,8 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   void AddConsoleWarning(ExecutionContext* execution_context,
                          const char* message);
 
+  bool isXRCompatible() const { return is_xr_compatible_; }
+
  private:
   void OnRequestDeviceCallback(ScriptState* script_state,
                                const GPUDeviceDescriptor* descriptor,
@@ -76,6 +80,7 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   wgpu::AdapterType adapter_type_;
   bool is_consumed_ = false;
   bool is_compatibility_mode_;
+  bool is_xr_compatible_ = false;
   Member<GPUSupportedLimits> limits_;
   Member<GPUSupportedFeatures> features_;
   Member<GPUAdapterInfo> info_;

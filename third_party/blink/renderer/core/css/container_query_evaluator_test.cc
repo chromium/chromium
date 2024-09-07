@@ -80,14 +80,10 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
   bool Eval(String query,
             String custom_property_name,
             String custom_property_value) {
-    CSSTokenizer tokenizer(custom_property_value);
-    CSSParserTokenStream stream(tokenizer);
-    CSSTokenizedValue tokenized_value =
-        CSSParserImpl::ConsumeUnrestrictedPropertyValue(stream);
     const CSSParserContext* context =
         StrictCSSParserContext(SecureContextMode::kSecureContext);
     CSSUnparsedDeclarationValue* value =
-        CSSVariableParser::ParseDeclarationValue(tokenized_value, false,
+        CSSVariableParser::ParseDeclarationValue(custom_property_value, false,
                                                  *context);
     DCHECK(value);
 

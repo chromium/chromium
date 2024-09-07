@@ -12,6 +12,7 @@ import androidx.core.app.NotificationManagerCompat;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.webxr.WebXrAndroidFeatureMap;
@@ -23,6 +24,17 @@ import java.util.Arrays;
 
 /** A utility class for permissions. */
 public class PermissionUtil {
+    /**
+     * TODO(https://crbug.com/331574787): Replace with official strings. At which time, any
+     * additional checks being done to guard this with the immersive feature can likely also be
+     * removed.
+     */
+    public static final String ANDROID_PERMISSION_SCENE_UNDERSTANDING =
+            "android.permission.SCENE_UNDERSTANDING";
+
+    public static final String ANDROID_PERMISSION_HAND_TRACKING =
+            "android.permission.HAND_TRACKING";
+
     /** The permissions associated with requesting location pre-Android S. */
     private static final String[] LOCATION_PERMISSIONS_PRE_S = {
         android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -52,10 +64,9 @@ public class PermissionUtil {
         android.Manifest.permission.POST_NOTIFICATIONS
     };
 
-    /** TODO(https://crbug.com/331574787): Replace with official strings. */
-    private static final String[] OPENXR_PERMISSIONS = {
-        "android.permission.HAND_TRACKING", "android.permission.SCENE_UNDERSTANDING"
-    };
+    private static final String[] OPENXR_PERMISSIONS = {ANDROID_PERMISSION_SCENE_UNDERSTANDING};
+
+    private static final String[] HAND_TRACKING_PERMISSIONS = {ANDROID_PERMISSION_HAND_TRACKING};
 
     /** Signifies there are no permissions associated. */
     private static final String[] EMPTY_PERMISSIONS = {};
@@ -76,9 +87,14 @@ public class PermissionUtil {
                                 .ANDROID_APPROXIMATE_LOCATION_PERMISSION_SUPPORT);
     }
 
+    private static boolean hasImmersiveFeature() {
+        return PackageManagerUtils.hasSystemFeature(PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME);
+    }
+
     private static boolean isOpenXrSupportEnabled() {
         // OpenXR only requires additional permissions after Android 14.
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && hasImmersiveFeature()
                 && WebXrAndroidFeatureMap.isOpenXrEnabled();
     }
 
@@ -112,6 +128,12 @@ public class PermissionUtil {
             case ContentSettingsType.VR:
                 if (isOpenXrSupportEnabled()) {
                     return Arrays.copyOf(OPENXR_PERMISSIONS, OPENXR_PERMISSIONS.length);
+                }
+                return EMPTY_PERMISSIONS;
+            case ContentSettingsType.HAND_TRACKING:
+                if (hasImmersiveFeature() && WebXrAndroidFeatureMap.isHandTrackingEnabled()) {
+                    return Arrays.copyOf(
+                            HAND_TRACKING_PERMISSIONS, HAND_TRACKING_PERMISSIONS.length);
                 }
                 return EMPTY_PERMISSIONS;
             case ContentSettingsType.NOTIFICATIONS:

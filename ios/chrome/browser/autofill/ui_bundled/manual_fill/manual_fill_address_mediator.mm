@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address+AutofillProfile.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -30,11 +31,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using autofill::AutofillProfile;
-
-namespace manual_fill {
-NSString* const ManageAddressAccessibilityIdentifier =
-    @"kManualFillManageAddressAccessibilityIdentifier";
-}  // namespace manual_fill
 
 @interface ManualFillAddressMediator () <PersonalDataManagerObserver>
 
@@ -136,6 +132,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
                     initWithAddress:manualFillAddress
                     contentInjector:self.contentInjector
                         menuActions:menuActions
+                          cellIndex:static_cast<NSInteger>(i)
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
              showAutofillFormButton:_showAutofillFormButton];
     [items addObject:item];
@@ -160,7 +157,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
                [weakSelf.navigationDelegate openAddressSettings];
              }];
   manageAddressesItem.accessibilityIdentifier =
-      manual_fill::ManageAddressAccessibilityIdentifier;
+      manual_fill::kManageAddressAccessibilityIdentifier;
   [self.consumer presentActions:@[ manageAddressesItem ]];
 }
 
@@ -172,14 +169,20 @@ NSString* const ManageAddressAccessibilityIdentifier =
 
   __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-    BOOL offerMigrateToAccount =
-        [weakSelf offerMigrateToAccountForAddress:address];
-    [weakSelf.navigationDelegate
-        openAddressDetailsInEditMode:address
-               offerMigrateToAccount:offerMigrateToAccount];
+    [weakSelf openAddressDetailsInEditMode:address];
   }];
 
   return editAction;
+}
+
+// Requests the `navigationDelegate` to open the details of the given `address`
+// in edit mode.
+- (void)openAddressDetailsInEditMode:(const AutofillProfile*)address {
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_Profiles_OverflowMenu_Edit"));
+  BOOL offerMigrateToAccount = [self offerMigrateToAccountForAddress:address];
+  [self.navigationDelegate openAddressDetailsInEditMode:address
+                                  offerMigrateToAccount:offerMigrateToAccount];
 }
 
 // Evaluates whether or not the option to move the address to the account should
@@ -187,8 +190,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
 - (BOOL)offerMigrateToAccountForAddress:(const AutofillProfile*)address {
   BOOL syncIsEnabled = _personalDataManager->address_data_manager()
                            .IsSyncFeatureEnabledForAutofill();
-  BOOL addressIsLocalOrSyncable =
-      address->source() == autofill::AutofillProfile::Source::kLocalOrSyncable;
+  BOOL addressIsLocalOrSyncable = !address->IsAccountProfile();
   BOOL addressIsEligibleForAccountMigration =
       addressIsLocalOrSyncable &&
       IsEligibleForMigrationToAccount(

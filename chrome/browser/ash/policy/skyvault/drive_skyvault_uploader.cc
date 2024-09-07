@@ -10,8 +10,10 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
@@ -28,6 +30,22 @@
 using storage::FileSystemURL;
 
 namespace policy::local_user_files {
+namespace {
+// Creates a directory at `dir_path`, if it doesn't already exist. Returns true
+// if directory exists or is created successfully.
+bool CreateDirectoryIfNeeded(const base::FilePath& dir_path) {
+  base::File::Error error = base::File::FILE_OK;
+  if (base::DirectoryExists(dir_path)) {
+    return true;
+  }
+  if (!base::CreateDirectoryAndGetError(dir_path, &error)) {
+    PLOG(ERROR) << "Failed to create directory: "
+                << base::File::ErrorToString(error);
+    return false;
+  }
+  return true;
+}
+}  // namespace
 
 DriveSkyvaultUploader::DriveSkyvaultUploader(Profile* profile,
                                              const base::FilePath& file_path,
@@ -43,10 +61,7 @@ DriveSkyvaultUploader::DriveSkyvaultUploader(Profile* profile,
           storage::kFileSystemTypeLocal,
           file_path)),
       target_path_(target_path),
-      callback_(std::move(callback)) {
-  observed_copy_task_id_ = -1;
-  observed_delete_task_id_ = -1;
-}
+      callback_(std::move(callback)) {}
 
 DriveSkyvaultUploader::~DriveSkyvaultUploader() = default;
 
@@ -101,9 +116,33 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
-  // Destination url.
   base::FilePath destination_folder_path =
-      drive_integration_service_->GetMountPointPath().AppendASCII("root");
+      drive_integration_service_->GetMountPointPath()
+          .AppendASCII("root")
+          .Append(target_path_);
+  // Copy will fail if the full path doesn't already exist in drive, so first
+  // create the destination folder if needed.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CreateDirectoryIfNeeded, destination_folder_path),
+      base::BindOnce(&DriveSkyvaultUploader::CreateCopyIOTask,
+                     weak_ptr_factory_.GetWeakPtr(), destination_folder_path));
+}
+
+void DriveSkyvaultUploader::CreateCopyIOTask(
+    const base::FilePath& destination_folder_path,
+    bool created) {
+  if (observed_copy_task_id_) {
+    NOTREACHED_IN_MIGRATION()
+        << "The Copy IOTask was already triggered. Case should not be reached.";
+  }
+
+  if (!created) {
+    OnEndCopy(MigrationUploadError::kCopyFailed);
+    return;
+  }
+
+  // Destination url.
   FileSystemURL destination_folder_url =
       ash::cloud_upload::FilePathToFileSystemURL(profile_, file_system_context_,
                                                  destination_folder_path);
@@ -116,7 +155,6 @@ void DriveSkyvaultUploader::Run() {
 
   std::vector<FileSystemURL> source_urls{source_url_};
   // Always use a copy task. Will convert to a move upon success.
-  // TODO(b/349097896): Pass the destination path.
   std::unique_ptr<file_manager::io_task::IOTask> copy_task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
           file_manager::io_task::OperationType::kCopy, std::move(source_urls),
@@ -150,6 +188,11 @@ void DriveSkyvaultUploader::OnEndCopy(
   if (!destination_file_exists) {
     OnEndUpload();
     return;
+  }
+
+  if (observed_delete_task_id_) {
+    NOTREACHED_IN_MIGRATION() << "The delete IOTask was already triggered. "
+                                 "Case should not be reached.";
   }
 
   std::vector<FileSystemURL> file_urls;
@@ -197,7 +240,7 @@ void DriveSkyvaultUploader::OnCopyStatus(
     case file_manager::io_task::State::kPaused:
       return;
     case file_manager::io_task::State::kInProgress:
-      if (observed_relative_drive_path_.empty()) {
+      if (observed_relative_drive_path_.empty() && !status.outputs.empty()) {
         // It's always one file.
         DCHECK_EQ(status.sources.size(), 1u);
         DCHECK_EQ(status.outputs.size(), 1u);

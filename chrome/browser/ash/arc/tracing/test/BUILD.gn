@@ -26,7 +26,6 @@ static_library("test_support") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/profiles:profile",

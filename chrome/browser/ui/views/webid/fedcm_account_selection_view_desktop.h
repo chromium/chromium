@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
-#include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -272,7 +271,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // AccountSelectionBubbleView::Observer:
   void OnAccountSelected(const Account& account,
-                         const IdentityProviderDisplayData& idp_display_data,
+                         const content::IdentityProviderData& idp_display_data,
                          const ui::Event& event) override;
   void OnLinkClicked(LinkType link_type,
                      const GURL& url,
@@ -288,8 +287,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Returns false if `this` got deleted. In that case, the caller should not
   // access any further member variables.
-  bool ShowVerifyingSheet(const Account& account,
-                          const IdentityProviderDisplayData& idp_display_data);
+  bool ShowVerifyingSheet(
+      const Account& account,
+      const content::IdentityProviderData& idp_display_data);
 
   // Shows the dialog widget.
   void ShowDialogWidget();
@@ -327,18 +327,18 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Shows the multi account picker and updates the internal state.
   void ShowMultiAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_data_list,
+      const std::vector<content::IdentityProviderData>& idp_data_list,
       bool show_back_button,
       bool is_choose_an_account);
 
-  std::vector<IdentityProviderDisplayData> idp_display_data_list_;
+  std::vector<content::IdentityProviderData> idp_data_list_;
 
   // This class needs to own the IDP display data for a newly logged in account
   // since the AccountSelectionBubbleView does not take ownership. This is a
   // vector so it is easy to pass to CreateMultipleAccountChooser in case there
   // are multiple accounts, but it is size 0 when there are no new accounts and
   // size 1 when there are new accounts.
-  std::vector<IdentityProviderDisplayData> new_accounts_idp_display_data_;
+  std::vector<content::IdentityProviderData> new_accounts_idp_display_data_;
 
   std::u16string rp_for_display_;
 

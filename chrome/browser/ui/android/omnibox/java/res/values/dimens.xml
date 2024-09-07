@@ -62,6 +62,11 @@ found in the LICENSE file.
 
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
 
+    <dimen name="incognito_indicator_lateral_margin">8dp</dimen>
+    <dimen name="incognito_indicator_lateral_start_padding">8dp</dimen>
+    <dimen name="incognito_indicator_lateral_end_padding">12dp</dimen>
+    <dimen name="incognito_indicator_text_lateral_start_margin">4dp</dimen>
+
     <!-- Omnibox suggestions -->
     <dimen name="omnibox_suggestion_header_padding_start">24dp</dimen>
     <dimen name="omnibox_suggestion_header_height">40dp</dimen>
@@ -80,9 +85,6 @@ found in the LICENSE file.
     <dimen name="omnibox_carousel_suggestion_padding">12dp</dimen>
     <dimen name="omnibox_carousel_suggestion_padding_smaller">5dp</dimen>
     <dimen name="omnibox_carousel_suggestion_minimum_item_spacing">12dp</dimen>
-    <dimen name="omnibox_query_tiles_carousel_vertical_padding">16dp</dimen>
-    <dimen name="omnibox_query_tiles_carousel_horizontal_leadin">16dp</dimen>
-    <dimen name="omnibox_query_tiles_carousel_horizontal_space">8dp</dimen>
     <dimen name="omnibox_action_chips_container_height">48dp</dimen>
     <dimen name="omnibox_action_chip_spacing">8dp</dimen>
     <dimen name="omnibox_simple_card_leadin">16dp</dimen>

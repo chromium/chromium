@@ -30,14 +30,6 @@ namespace {
 
 constexpr uint32_t kBufferSize = 4096;
 
-content::WebContents* GetWebContents(int frame_tree_node_id) {
-  return content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-}
-
-bool GetTabId(content::WebContents* web_contents, int* tab_id) {
-  return OfflinePageUtils::GetTabId(web_contents, tab_id);
-}
-
 net::RedirectInfo CreateRedirectInfo(const GURL& redirected_url,
                                      int response_code) {
   net::RedirectInfo redirect_info;
@@ -72,7 +64,7 @@ bool ShouldCreateLoader(const network::ResourceRequest& resource_request) {
 // static
 std::unique_ptr<OfflinePageURLLoader> OfflinePageURLLoader::Create(
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& tentative_resource_request,
     content::URLLoaderRequestInterceptor::LoaderCallback callback) {
   if (ShouldCreateLoader(tentative_resource_request)) {
@@ -87,7 +79,7 @@ std::unique_ptr<OfflinePageURLLoader> OfflinePageURLLoader::Create(
 
 OfflinePageURLLoader::OfflinePageURLLoader(
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& tentative_resource_request,
     content::URLLoaderRequestInterceptor::LoaderCallback callback)
     : navigation_ui_data_(navigation_ui_data),
@@ -212,14 +204,16 @@ int OfflinePageURLLoader::GetPageTransition() const {
 
 OfflinePageRequestHandler::Delegate::WebContentsGetter
 OfflinePageURLLoader::GetWebContentsGetter() const {
-  return base::BindRepeating(&GetWebContents, frame_tree_node_id_);
+  return base::BindRepeating(&content::WebContents::FromFrameTreeNodeId,
+                             frame_tree_node_id_);
 }
 
 OfflinePageRequestHandler::Delegate::TabIdGetter
 OfflinePageURLLoader::GetTabIdGetter() const {
-  if (!tab_id_getter_.is_null())
+  if (!tab_id_getter_.is_null()) {
     return tab_id_getter_;
-  return base::BindRepeating(&GetTabId);
+  }
+  return base::BindRepeating(&OfflinePageUtils::GetTabId);
 }
 
 void OfflinePageURLLoader::ReadRawData() {

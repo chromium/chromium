@@ -13,7 +13,7 @@
 @synthesize innerImageView = _innerImageView;
 
 - (instancetype)init {
-  if (self = [super initWithFrame:CGRectZero]) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     UIImageView* innerImageView = [[UIImageView alloc] init];
     [self addSubview:innerImageView];
     _innerImageView = innerImageView;

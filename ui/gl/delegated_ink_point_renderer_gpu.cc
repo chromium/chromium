@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/win/windows_version.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace gl {
@@ -92,6 +93,20 @@ bool DelegatedInkPointRendererGpu::Initialize(
 
 bool DelegatedInkPointRendererGpu::DelegatedInkIsSupported(
     const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device) const {
+  const base::win::OSInfo::VersionNumber& os_version =
+      base::win::OSInfo::GetInstance()->version_number();
+  // Win11 24H2 is first introduced in insider build #26100. Issues related to
+  // the delegated ink trail API, such as flickering in the top 3rd of the
+  // screen are addressed in 24H2.
+  // TODO(crbug.com/40153696) Add 24H2 to base::win::Version.
+  const bool is_24h2_or_greater =
+      (os_version.major > 10) ||
+      (os_version.major == 10 && os_version.build >= 26100);
+
+  if (!is_24h2_or_greater) {
+    return false;
+  }
+
   Microsoft::WRL::ComPtr<IDCompositionInkTrailDevice> ink_trail_device;
   HRESULT hr = dcomp_device.As(&ink_trail_device);
   return hr == S_OK;

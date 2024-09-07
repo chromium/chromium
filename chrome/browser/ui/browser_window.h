@@ -46,6 +46,7 @@
 #endif
 
 class Browser;
+class BrowserView;
 class DownloadBubbleUIController;
 class DownloadShelf;
 class ExclusiveAccessContext;
@@ -525,9 +526,6 @@ class BrowserWindow : public ui::BaseWindow {
   virtual bool HandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) = 0;
 
-  // Clipboard commands applied to the whole browser window.
-  virtual void CutCopyPaste(int command_id) = 0;
-
   // Construct a FindBar implementation for the |browser|.
   virtual std::unique_ptr<FindBar> CreateFindBar() = 0;
 
@@ -557,9 +555,16 @@ class BrowserWindow : public ui::BaseWindow {
   // |product_specific_string_data| should contain key-value pairs where the
   // keys match the field names set for the survey in hats_service.cc, and the
   // values are those which will be associated with the survey response.
+  // The parameters |hats_histogram_name| and |hats_survey_ukm_id| allows HaTS
+  // to log to UMA and UKM, respectively. These values are are populated in
+  // chrome/browser/ui/hats/survey_config.cc and can be configured in finch.
+  // Surveys that opt-in to UMA and UKM will need to have surveys reviewed by
+  // privacy to ensure they are appropriate to log to UMA and/or UKM. This is
+  // enforced through the OWNERS mechanism.
   virtual void ShowHatsDialog(
       const std::string& site_id,
-      const std::optional<std::string>& histogram_name,
+      const std::optional<std::string>& hats_histogram_name,
+      const std::optional<uint64_t> hats_survey_ukm_id,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
@@ -654,19 +659,24 @@ class BrowserWindow : public ui::BaseWindow {
   virtual user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) = 0;
 
-  // Records that the user has engaged with a particular feature that has an
-  // associated promo; this information is used to determine whether to show
-  // specific promos in the future.
+  // Records that the user has performed an action that is relevant to a feature
+  // promo, but is not the "feature used" event. (For those, use
+  // `NotifyPromoFeatureUsed()` instead.)
   //
-  // If `event_name` corresponds to the "used" event for an IPH, prefer using
-  // `NotifyFeaturePromoFeatureUsed()` for clarity instead.
+  // If you have access to a profile but not a browser window,
+  // `UserEducationService::MaybeNotifyPromoFeatureUsed()` does the same thing.
+  //
+  // Use this for events specified in
+  // `FeaturePromoSpecification::SetAdditionalConditions()`.
   virtual void NotifyFeatureEngagementEvent(const char* event_name) = 0;
 
   // Records that the user has engaged the specific `feature` associated with an
   // IPH promo or "New" Badge; this information is used to determine whether to
-  // show the promo or badge in the future. Prefer this to
-  // `NotifyFeatureEngagementEvent()` whenever possible (that will only apply to
-  // specific IPH).
+  // show the promo or badge in the future.
+  //
+  // Prefer this to `NotifyFeatureEngagementEvent()` whenever possible; that
+  // method should only be used for additional events specified when calling
+  // `FeaturePromoSpecification::SetAdditionalConditions()`.
   virtual void NotifyPromoFeatureUsed(const base::Feature& feature) = 0;
 
   // Returns whether a "New" Badge should be shown on the entry point for
@@ -702,6 +712,11 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Returns the WebView backing the tab-contents area of the BrowserWindow.
   virtual views::WebView* GetContentsWebView() = 0;
+
+  // In production code BrowserView is the only subclass for BrowserWindow. The
+  // fact that this is not true in some tests is a problem with the tests. See
+  // https://crbug.com/360163254.
+  virtual BrowserView* AsBrowserView() = 0;
 
  protected:
   friend class BrowserCloseManager;

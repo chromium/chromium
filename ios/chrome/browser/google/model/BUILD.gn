@@ -25,6 +25,7 @@ source_set("google_logo") {
     "//components/search_provider_logos",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/web",
     "//net",

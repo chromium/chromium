@@ -19,6 +19,7 @@
 #include "chromeos/components/security_token_pin/error_generator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
@@ -88,11 +89,12 @@ bool RequestPinView::Accept() {
   return false;
 }
 
-bool RequestPinView::IsDialogButtonEnabled(ui::DialogButton button) const {
+bool RequestPinView::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
   switch (button) {
-    case ui::DialogButton::DIALOG_BUTTON_CANCEL:
+    case ui::mojom::DialogButton::kCancel:
       return true;
-    case ui::DialogButton::DIALOG_BUTTON_OK:
+    case ui::mojom::DialogButton::kOk:
       if (locked_)
         return false;
       // Not locked but the |textfield_| is not enabled. It's just a
@@ -101,7 +103,7 @@ bool RequestPinView::IsDialogButtonEnabled(ui::DialogButton button) const {
       if (!textfield_->GetEnabled())
         return true;
       return textfield_->GetText().size() > 0;
-    case ui::DialogButton::DIALOG_BUTTON_NONE:
+    case ui::mojom::DialogButton::kNone:
       return true;
   }
 

@@ -38,6 +38,8 @@ static_library("dlp") {
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -88,7 +90,10 @@ static_library("dlp") {
     "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/policy/dlp/dialogs" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/policy/dlp",
+  ]
 }
 
 source_set("unit_tests") {
@@ -109,13 +114,16 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/ash/policy/dlp/test:test_support",
     "//chrome/browser/chromeos",
-    "//chrome/browser/chromeos:test_support",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/policy/dlp/dialogs:test_support",
+    "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/enterprise/data_controls:test_support",
     "//chrome/browser/ui",
@@ -181,7 +189,10 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/login:test_support",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/chromeos",
-    "//chrome/browser/chromeos:test_support",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/policy/dlp/dialogs:test_support",
+    "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/enterprise/data_controls:test_support",
     "//chrome/browser/extensions",

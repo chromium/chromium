@@ -15,8 +15,9 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/policy/core/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web",
+    "//ios/web/public",
     "//net",
   ]
 }

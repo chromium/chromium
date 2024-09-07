@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -26,6 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/search/ntp_features.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_data_source.h"
@@ -255,15 +257,27 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    if (GetParam() ==
+        std::string_view(chrome::kChromeUISearchEngineChoiceURL)) {
+      // Command line arguments needed to render chrome://search-engine-choice.
+      command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
+                                      "BE");
+      command_line->AppendSwitch(switches::kForceSearchEngineChoiceScreen);
+      command_line->AppendSwitch(
+          switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
+    }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitchASCII(ash::switches::kSamlPasswordChangeUrl,
                                     "http://password-change.example");
     if (GetParam() == std::string_view("chrome://shimless-rma")) {
       command_line->AppendSwitchASCII(ash::switches::kLaunchRma, "");
     }
+#endif
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpOnMainThread() override {
     browser()->profile()->GetPrefs()->SetBoolean(
         ash::prefs::kSamlInSessionPasswordChangeEnabled, true);
@@ -279,7 +293,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     service->RegisterProvider(std::move(fake_provider));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -369,6 +383,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://read-later.top-chrome",
     "chrome://reset-password",
     "chrome://safe-browsing",
+    "chrome://search-engine-choice",
     "chrome://serviceworker-internals",
     "chrome://segmentation-internals",
     "chrome://settings",

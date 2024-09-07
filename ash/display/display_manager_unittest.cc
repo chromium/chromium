@@ -100,11 +100,18 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override {
     if (!base::Contains(added_displays_, new_display)) {
+      EXPECT_TRUE(base::Contains(active_display_list(), new_display));
       added_displays_.push_back(new_display);
+    }
+  }
+  void OnWillRemoveDisplays(const Displays& removed_displays) override {
+    for (const auto& display : removed_displays) {
+      EXPECT_TRUE(base::Contains(active_display_list(), display));
     }
   }
   void OnDisplaysRemoved(const display::Displays& removed_displays) override {
     for (const auto& display : removed_displays) {
+      EXPECT_FALSE(base::Contains(active_display_list(), display));
       if (!base::Contains(added_displays_, display)) {
         removed_displays_.push_back(display);
       }
@@ -112,6 +119,7 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
   }
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override {
+    EXPECT_TRUE(base::Contains(active_display_list(), display));
     if (!base::Contains(changed_displays_, display)) {
       changed_displays_.push_back(display);
     }
@@ -148,6 +156,10 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
     removed_displays_.clear();
     changed_displays_.clear();
     changed_metrics_.clear();
+  }
+
+  const display::Displays& active_display_list() {
+    return Shell::Get()->display_manager()->active_display_list();
   }
 
  private:
@@ -1495,7 +1507,8 @@ TEST_F(DisplayManagerTest, TouchCalibrationTest) {
 
   // Set the touch calibration data for the secondary display.
   display_manager()->SetTouchCalibrationData(
-      display_info2.id(), point_pair_quad, bounds_at_calibration, touchdevice);
+      display_info2.id(), point_pair_quad, bounds_at_calibration, touchdevice,
+      /*apply_spatial_calibration=*/true);
 
   EXPECT_TRUE(tdm_test_api.AreAssociated(display_info2, touchdevice));
   EXPECT_EQ(touch_data, touch_device_manager->GetCalibrationData(
@@ -1517,8 +1530,8 @@ TEST_F(DisplayManagerTest, TouchCalibrationTest) {
   display::TouchCalibrationData touch_data_2(point_pair_quad_2,
                                              bounds_at_calibration);
   display_manager()->SetTouchCalibrationData(
-      display_info2.id(), point_pair_quad_2, bounds_at_calibration,
-      touchdevice);
+      display_info2.id(), point_pair_quad_2, bounds_at_calibration, touchdevice,
+      /*apply_spatial_calibration=*/true);
 
   EXPECT_EQ(touch_data_2, touch_device_manager->GetCalibrationData(
                               touchdevice, GetDisplayInfoAt(1).id()));
@@ -1539,7 +1552,8 @@ TEST_F(DisplayManagerTest, TouchCalibrationTest) {
 
   // Make sure multiple touch devices works.
   display_manager()->SetTouchCalibrationData(
-      display_info2.id(), point_pair_quad, bounds_at_calibration, touchdevice);
+      display_info2.id(), point_pair_quad, bounds_at_calibration, touchdevice,
+      /*apply_spatial_calibration=*/true);
 
   EXPECT_EQ(touch_data, touch_device_manager->GetCalibrationData(
                             touchdevice, GetDisplayInfoAt(1).id()));
@@ -1550,7 +1564,7 @@ TEST_F(DisplayManagerTest, TouchCalibrationTest) {
 
   display_manager()->SetTouchCalibrationData(
       display_info2.id(), point_pair_quad_2, bounds_at_calibration,
-      touchdevice_2);
+      touchdevice_2, /*apply_spatial_calibration=*/true);
   EXPECT_EQ(touch_data_2, touch_device_manager->GetCalibrationData(
                               touchdevice_2, GetDisplayInfoAt(1).id()));
   EXPECT_EQ(touch_data, touch_device_manager->GetCalibrationData(

@@ -5,14 +5,16 @@
 import './strings.m.js';
 
 import {assert} from '//resources/js/assert.js';
+import {skColorToHexColor, skColorToRgba} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PointF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import {skColorToRgbaWithCustomAlpha} from './color_utils.js';
 import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import {findWordsInRegion} from './find_words_in_region.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
@@ -24,10 +26,20 @@ import {recordLensOverlayInteraction} from './metrics_utils.js';
 import type {CursorData, DetectedTextContextMenuData, SelectedTextContextMenuData} from './selection_overlay.js';
 import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
-import type {Line, Paragraph, Text, Word} from './text.mojom-webui.js';
-import {WritingDirection} from './text.mojom-webui.js';
+import type {BackgroundImageData, Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from './text.mojom-webui.js';
+import {Alignment, WritingDirection} from './text.mojom-webui.js';
 import {getTemplate} from './text_layer.html.js';
+import type {TranslateState} from './translate_button.js';
 import {toPercent} from './values_converter.js';
+
+// Lowest font size that translate text can be rendered at in pixels.
+const MIN_FONT_SIZE = 1;
+// Largest font size that translate text can be rendered at in pixels.
+const MAX_FONT_SIZE = 100;
+// Highest font size where the opacity of the background should be 100%.
+const FONT_SIZE_OPAQUE_BOUND = 10;
+// Lowest font size where the opacity of the background should be transparent
+const FONT_SIZE_TRANSPARENT_BOUND = 18;
 
 // Rotates the target coordinates to be in relation to the line rotation.
 function rotateCoordinateAroundOrigin(
@@ -69,6 +81,8 @@ function isInRange(index: number, start: number, end: number): boolean {
 
 export interface TextLayerElement {
   $: {
+    textRenderCanvas: HTMLCanvasElement,
+    translateContainer: DomRepeat,
     wordsContainer: DomRepeat,
   };
 }
@@ -79,6 +93,19 @@ interface HighlightedLine {
   top: number;
   width: number;
   rotation: number;
+}
+
+interface TranslatedLineData {
+  alignment: Alignment;
+  contentLanguage: string;
+  line: TranslatedLine;
+  words: TranslatedWordData[];
+  paragraphIndex: number;
+}
+
+interface TranslatedWordData {
+  word: Word;
+  index: number;
 }
 
 /*
@@ -98,6 +125,10 @@ export class TextLayerElement extends PolymerElement {
       renderedWords: {
         type: Array,
         value: () => [],
+      },
+      shouldRenderTranslateWords: {
+        type: Boolean,
+        reflectToAttribute: true,
       },
       highlightedLines: {
         type: Array,
@@ -121,19 +152,35 @@ export class TextLayerElement extends PolymerElement {
         value: loadTimeData.getBoolean('enableDebuggingMode'),
         reflectToAttribute: true,
       },
-      parentWidth: {
-        type: Number,
-        value: 0,
-      },
-      parentHeight: {
-        type: Number,
-        value: 0,
+      selectionOverlayRect: {
+        type: Object,
+        observer: 'computeTranslatedWordBoundingBoxes',
       },
     };
   }
 
+  // The rendering context of the canvas used to measure font size of translated
+  // text.
+  private context: CanvasRenderingContext2D;
   // The words rendered in this layer.
   private renderedWords: Word[];
+  // Whether to render the translated text received on the overlay rather than
+  // the detected text.
+  private shouldRenderTranslateWords: boolean;
+  // The current target language the user requested to translate to.
+  private currentTranslateLanguage: string;
+  // All of the translated words returned in OnTextReceived with failed
+  // translations replaced with their non-translated counterpart.
+  private renderedTranslateWords: Word[];
+  // The rendered translated lines in order from OnTextReceived.
+  private renderedTranslateLines: TranslatedLineData[];
+  // The rendered translated paragraphs keyed by the paragraph number.
+  private renderedTranslateParagraphs:
+      {[paragraphNumber: number]: TranslatedParagraph};
+  // The detected words that did not have translations. Keyed by the word index
+  // used when rendering only detected words. This allows us to use the same
+  // detected words when rendering the translated text.
+  private detectedWordToTranslateIndex: {[detectedWordIndex: number]: number};
   // The currently selected lines.
   private highlightedLines: HighlightedLine[];
   // The index of the word in renderedWords at the start of the current
@@ -144,10 +191,9 @@ export class TextLayerElement extends PolymerElement {
   private selectionEndIndex: number;
   // Whether the user is currently selecting text.
   private isSelectingText: boolean;
-  // The height and width of this element. Used to rerender word hit boxes when
-  // the text layer resizes.
-  private parentWidth: number;
-  private parentHeight: number;
+  // The bounds of the parent element. This is updated by the parent to avoid
+  // this class needing to call getBoundingClientRect()
+  private selectionOverlayRect: DOMRect;
 
   // An array that corresponds 1:1 to renderedWords, where lineNumbers[i] is the
   // line number for renderedWords[i]. In addition, the index at lineNumbers[i]
@@ -158,6 +204,17 @@ export class TextLayerElement extends PolymerElement {
   // paragraphNumbers[i] corresponds to the Paragraph in paragraphs[i] that the
   // word belongs in.
   private paragraphNumbers: number[];
+  // An array that corresponds 1:1 to renderedTranslateWords, where
+  // translatedLineNumbers[i] is the line number for renderedTranslateWords[i].
+  // In addition, the index at translatedLineNumbers[i] corresponds to the Line
+  // in lines[i] that the word belongs in.
+  private translatedLineNumbers: number[];
+  // An array that corresponds 1:1 to renderedTranslateWords, where
+  // translatedParagraphNumbers[i] is the line number for
+  // renderedTranslateWords[i]. In addition, the index at
+  // translatedParagraphNumbers[i] corresponds to the Line in lines[i] that the
+  // word belongs in.
+  private translatedParagraphNumbers: number[];
   // The lines received from OnTextReceived.
   private lines: Line[];
   // The paragraphs received from OnTextReceived.
@@ -165,26 +222,31 @@ export class TextLayerElement extends PolymerElement {
   // The content language received from OnTextReceived.
   private contentLanguage: string;
   private eventTracker_: EventTracker = new EventTracker();
-  private resizeObserver: ResizeObserver = new ResizeObserver(() => {
-    const parentRect = this.getBoundingClientRect();
-    this.parentHeight = parentRect.height;
-    this.parentWidth = parentRect.width;
-  });
   private listenerIds: number[];
   // IoU threshold for finding words in region.
   private selectTextTriggerThreshold: number =
       loadTimeData.getValue('selectTextTriggerThreshold');
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
+  override ready() {
+    super.ready();
+    this.context = this.$.textRenderCanvas.getContext('2d')!;
+  }
+
   override connectedCallback() {
     super.connectedCallback();
-
-    this.resizeObserver.observe(this);
 
     this.eventTracker_.add(
         document, 'detect-text-in-region',
         (e: CustomEvent<CenterRotatedBox>) => {
           this.detectTextInRegion(e.detail);
+        });
+    this.eventTracker_.add(
+        document, 'translate-mode-state-changed',
+        (e: CustomEvent<TranslateState>) => {
+          this.unselectWords();
+          this.shouldRenderTranslateWords = e.detail.translateModeEnabled;
+          this.currentTranslateLanguage = e.detail.targetLanguage;
         });
 
     // Set up listener to listen to events from C++.
@@ -206,7 +268,6 @@ export class TextLayerElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
-    this.resizeObserver.unobserve(this);
     this.eventTracker_.removeAll();
   }
 
@@ -223,6 +284,10 @@ export class TextLayerElement extends PolymerElement {
   }
 
   private handlePointerLeave() {
+    if (this.shouldRenderTranslateWords) {
+      // In translate mode, always allow text selection from anywhere.
+      return;
+    }
     this.dispatchEvent(new CustomEvent<CursorData>(
         'set-cursor',
         {bubbles: true, composed: true, detail: {cursor: CursorType.DEFAULT}}));
@@ -235,8 +300,8 @@ export class TextLayerElement extends PolymerElement {
   }
 
   private detectTextInRegion(box: CenterRotatedBox) {
-    const selection = findWordsInRegion(
-        this.renderedWords, box, this.getBoundingClientRect());
+    const selection =
+        findWordsInRegion(this.renderedWords, box, this.selectionOverlayRect);
     if (selection.iou < this.selectTextTriggerThreshold) {
       this.dispatchEvent(new CustomEvent(
           'hide-detected-text-context-menu', {bubbles: true, composed: true}));
@@ -264,7 +329,26 @@ export class TextLayerElement extends PolymerElement {
   handleDownGesture(event: GestureEvent): boolean {
     this.unselectWords();
 
-    const wordIndex = this.wordIndexFromPoint(event.clientX, event.clientY);
+    const translatedWordIndex =
+        this.translatedWordIndexFromPoint(event.clientX, event.clientY);
+    let wordIndex = translatedWordIndex !== null ?
+        translatedWordIndex :
+        this.wordIndexFromPoint(event.clientX, event.clientY);
+    if (wordIndex === null && this.shouldRenderTranslateWords) {
+      // If translate mode is enabled, selecting text should work anywhere, so
+      // select the closest word if the cursor was not actually on top of a
+      // word.
+      const imageBounds = this.selectionOverlayRect;
+      const normalizedX =
+          (event.clientX - imageBounds.left) / imageBounds.width;
+      const normalizedY =
+          (event.clientY - imageBounds.top) / imageBounds.height;
+      const hit = bestHit(
+          this.renderedTranslateWords, {x: normalizedX, y: normalizedY});
+      if (hit) {
+        wordIndex = this.renderedTranslateWords.indexOf(hit);
+      }
+    }
     // Ignore if the click is not on a word.
     if (wordIndex === null) {
       return false;
@@ -279,7 +363,11 @@ export class TextLayerElement extends PolymerElement {
   handleRightClick(event: PointerEvent) {
     // If the user right-clicks a highlighted word, restore the selected text
     // context menu.
-    const wordIndex = this.wordIndexFromPoint(event.clientX, event.clientY);
+    const translatedWordIndex =
+        this.translatedWordIndexFromPoint(event.clientX, event.clientY);
+    const wordIndex = translatedWordIndex !== null ?
+        translatedWordIndex :
+        this.wordIndexFromPoint(event.clientX, event.clientY);
     if (wordIndex !== null &&
         isInRange(
             wordIndex, this.selectionStartIndex, this.selectionEndIndex)) {
@@ -291,21 +379,83 @@ export class TextLayerElement extends PolymerElement {
   }
 
   handleDragGesture(event: GestureEvent) {
-    const imageBounds = this.getBoundingClientRect();
+    const imageBounds = this.selectionOverlayRect;
     const normalizedX = (event.clientX - imageBounds.left) / imageBounds.width;
     const normalizedY = (event.clientY - imageBounds.top) / imageBounds.height;
 
-    const hit = bestHit(this.renderedWords, {x: normalizedX, y: normalizedY});
+    const words = this.shouldRenderTranslateWords ?
+        this.renderedTranslateWords :
+        this.renderedWords;
+    const hit = bestHit(words, {x: normalizedX, y: normalizedY});
 
     if (!hit) {
       return;
     }
 
-    this.selectionEndIndex = this.renderedWords.indexOf(hit);
+    this.selectionEndIndex = words.indexOf(hit);
   }
 
   handleUpGesture() {
     this.sendSelectedText();
+  }
+
+  private computeTranslatedWordBoundingBoxes() {
+    // Return early if we are not in translate mode or there are no rendered
+    // translate words.
+    if (!this.shouldRenderTranslateWords ||
+        !(this.renderedTranslateLines.length > 0) ||
+        !(this.renderedTranslateWords.length > 0)) {
+      return;
+    }
+
+    const wordSpanElements = this.shadowRoot!.querySelectorAll<HTMLSpanElement>(
+        'span[data-word-index]');
+    for (const wordSpanElement of wordSpanElements) {
+      const wordIndexString = wordSpanElement.dataset['wordIndex'];
+      const lineIndexString = wordSpanElement.dataset['lineIndex'];
+      // The word index is guaranteed to exist because of the query selector.
+      assert(wordIndexString);
+      assert(lineIndexString);
+      const wordIndex = parseInt(wordIndexString) ?? -1;
+      const lineIndex = parseInt(lineIndexString) ?? -1;
+      // The word index should always be parseable as a positive number since we
+      // create it as one.
+      assert(wordIndex >= 0);
+      assert(lineIndex >= 0);
+      const word = this.renderedTranslateWords[wordIndex];
+      const translatedLine = this.renderedTranslateLines[lineIndex];
+
+      // Create the geometry and bounding box for the word from the span
+      // element.
+      const boundingRect = wordSpanElement.getBoundingClientRect();
+      const centerX = boundingRect.left - this.selectionOverlayRect.left +
+          boundingRect.width / 2;
+      const centerY = boundingRect.top - this.selectionOverlayRect.top +
+          boundingRect.height / 2;
+
+      const normalizedCenterX = centerX / this.selectionOverlayRect.width;
+      const normalizedCenterY = centerY / this.selectionOverlayRect.height;
+      const normalizedWidth =
+          boundingRect.width / this.selectionOverlayRect.width;
+      const normalizedHeight =
+          boundingRect.height / this.selectionOverlayRect.height;
+      assert(translatedLine.line.geometry);
+      const rotation = translatedLine.line.geometry.boundingBox.rotation;
+
+      const rect = {
+        x: normalizedCenterX,
+        y: normalizedCenterY,
+        width: normalizedWidth,
+        height: normalizedHeight,
+      };
+      const centerRotatedBox = {
+        box: rect,
+        rotation,
+        coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+      };
+      const geometry = {boundingBox: centerRotatedBox, segmentationPolygon: []};
+      word.geometry = geometry;
+    }
   }
 
   private sendSelectedText() {
@@ -332,7 +482,10 @@ export class TextLayerElement extends PolymerElement {
     // On selection complete, send the selected text to C++.
     this.browserProxy.handler.issueTextSelectionRequest(
         highlightedText, this.selectionStartIndex, this.selectionEndIndex);
-    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kTextSelection);
+    recordLensOverlayInteraction(
+        INVOCATION_SOURCE,
+        this.shouldRenderTranslateWords ? UserAction.kTranslateTextSelection :
+                                          UserAction.kTextSelection);
   }
 
   selectAndSendWords(selectionStartIndex: number, selectionEndIndex: number) {
@@ -400,9 +553,58 @@ export class TextLayerElement extends PolymerElement {
     let lineNumber = 0;
     let paragraphNumber = 0;
 
+    // Reset all old translation text.
+    let detectedWordIndex = 0;
+    let translatedWordIndex = 0;
+    let translatedLineNumber = 0;
+    const receivedTranslateLines = [];
+    this.translatedLineNumbers = [];
+    this.translatedParagraphNumbers = [];
+    this.renderedTranslateWords = [];
+    this.renderedTranslateLines = [];
+    this.renderedTranslateParagraphs = {};
+    this.detectedWordToTranslateIndex = {};
+
     // Flatten Text structure to a list of arrays for easier rendering and
     // referencing.
     for (const paragraph of text.textLayout.paragraphs) {
+      const hasParagraphTranslation = paragraph.translation !== null;
+      // We are looking for translated paragraphs first. If they do not exist,
+      // we should default to the detected text. Just because we have
+      // translations for some paragraphs does not mean we have translations
+      // for all paragraphs.
+      if (hasParagraphTranslation) {
+        // Assert the paragraph translation so the linter does not complain.
+        assert(paragraph.translation !== null);
+        for (const line of paragraph.translation.lines) {
+          const translatedWordDataInLine = [];
+          for (const word of line.words) {
+            // We do not filter out words here since the bounding boxes are
+            // calculated by us in the WebUI.
+            const translatedWordData:
+                TranslatedWordData = {word, index: translatedWordIndex};
+            this.renderedTranslateWords.push(word);
+            translatedWordDataInLine.push(translatedWordData);
+            this.translatedLineNumbers.push(translatedLineNumber);
+            this.translatedParagraphNumbers.push(paragraphNumber);
+            translatedWordIndex++;
+          }
+
+          const translatedLineData: TranslatedLineData = {
+            alignment: paragraph.translation.alignment ??
+                Alignment.kDefaultLeftAlgined,
+            contentLanguage: paragraph.contentLanguage ?? '',
+            line,
+            words: translatedWordDataInLine,
+            paragraphIndex: paragraphNumber,
+          };
+          receivedTranslateLines.push(translatedLineData);
+          translatedLineNumber++;
+        }
+        this.renderedTranslateParagraphs[paragraphNumber] =
+            paragraph.translation;
+      }
+
       for (const line of paragraph.lines) {
         for (const word of line.words) {
           // Filter out words with invalid bounding boxes.
@@ -410,10 +612,31 @@ export class TextLayerElement extends PolymerElement {
             receivedWords.push(word);
             this.lineNumbers.push(lineNumber);
             this.paragraphNumbers.push(paragraphNumber);
+
+            // If this word does not have an accompanying translation, it will
+            // be displayed on the screen in translate mode. So we need to add
+            // to our translation text tracking as it will still be selectable.
+            if (!hasParagraphTranslation) {
+              this.renderedTranslateWords.push(word);
+              this.translatedLineNumbers.push(translatedLineNumber);
+              this.translatedParagraphNumbers.push(paragraphNumber);
+              this.detectedWordToTranslateIndex[detectedWordIndex] =
+                  translatedWordIndex;
+              translatedWordIndex++;
+              translatedLineNumber++;
+            }
+            detectedWordIndex++;
           }
         }
         this.lines.push(line);
         lineNumber++;
+
+        // If this line does not have an accompanying translation, it will be
+        // displayed on the screen in translate mode. So we need to increment
+        // the translated line number.
+        if (!hasParagraphTranslation) {
+          translatedLineNumber++;
+        }
       }
       this.paragraphs.push(paragraph);
       paragraphNumber++;
@@ -424,10 +647,94 @@ export class TextLayerElement extends PolymerElement {
     assert(this.lineNumbers.length === this.renderedWords.length);
     assert(this.paragraphNumbers.length === this.renderedWords.length);
 
+    // Our rendered translate words length should match the number of translated
+    // lines we added.
+    assert(
+        this.renderedTranslateWords.length ===
+        this.translatedLineNumbers.length);
+    // Need to set this.renderedTranslateLines to a new array instead of
+    // this.renderedTranslateLines.push() to ensure the dom-repeat updates.
+    this.renderedTranslateLines = receivedTranslateLines;
+    // We need to compute the translated bounding boxes after the next render in
+    // order to make sure the span elements are on the page.
+    afterNextRender(this, () => {
+      this.computeTranslatedWordBoundingBoxes();
+    });
+
     // Used to notify the post selection renderer so that, if a region has
     // already been selected, text in the region can be detected.
     this.dispatchEvent(new CustomEvent(
         'finished-receiving-text', {bubbles: true, composed: true}));
+
+    // Used by the translate button to label the detected language.
+    this.dispatchEvent(new CustomEvent('received-content-language', {
+      bubbles: true,
+      composed: true,
+      detail: {contentLanguage: this.contentLanguage},
+    }));
+  }
+
+  private calculateFontSizePixels(translatedLine: TranslatedLineData): number {
+    const line = translatedLine.line;
+    if (!line.geometry) {
+      return MIN_FONT_SIZE;
+    }
+    // TODO(b/330183480): Currently, we are assuming that word coordinates are
+    // normalized. We should still implement rendering in case this assumption
+    // is ever violated.
+    if (line.geometry.boundingBox.coordinateType !==
+        CenterRotatedBox_CoordinateType.kNormalized) {
+      return MIN_FONT_SIZE;
+    }
+
+    // Convert the normalized line geometry to pixels.
+    const isTopToBottom = this.isTranslatedLineVertical(translatedLine);
+    const translatedLineWidth =
+        (line.geometry.boundingBox.box.width * this.selectionOverlayRect.width);
+    const translatedLineHeight =
+        (line.geometry.boundingBox.box.height *
+         this.selectionOverlayRect.height);
+
+    // Swap width and height if we are rendering the text vertically.
+    const lineWidth =
+        isTopToBottom ? translatedLineHeight : translatedLineWidth;
+    const lineHeight =
+        isTopToBottom ? translatedLineWidth : translatedLineHeight;
+
+    this.$.textRenderCanvas.width = lineWidth;
+    this.$.textRenderCanvas.height = lineHeight;
+    this.resetCanvasPixelRatioIfNeeded();
+
+    // The line translation can contain text that is not actually a part of this
+    // particular line. Because of this, we need to loop through the words and
+    // create the line string ourselves.
+    let text = '';
+    for (let i = 0; i < line.words.length; i++) {
+      const word = line.words[i];
+      text += word.plainText;
+      text += getTextSeparator(word);
+    }
+
+    let low = MIN_FONT_SIZE;
+    let high = MAX_FONT_SIZE;
+    // Use binary search to find optimal font size.
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      // The font families here should cover what is default used by the text in
+      // the HTML.
+      this.context.font = `${mid}px Roboto, "Cantarell", Arial, sans-serif`;
+      const textMetrics = this.context.measureText(text);
+
+      // Check if the text fits within the container
+      const textHeight = textMetrics.actualBoundingBoxAscent +
+          textMetrics.actualBoundingBoxDescent;
+      if (textMetrics.width >= lineWidth || textHeight >= lineHeight) {
+        high = mid - 1;
+      } else {
+        low = mid + 1;
+      }
+    }
+    return Math.min(low - 1, MAX_FONT_SIZE);
   }
 
   // Returns the rectangle circumscribing the given lines.
@@ -453,22 +760,28 @@ export class TextLayerElement extends PolymerElement {
         Math.min(this.selectionStartIndex, this.selectionEndIndex);
     const endIndex = Math.max(this.selectionStartIndex, this.selectionEndIndex);
 
-    let currentLineIndex = this.lineNumbers[startIndex];
-    let startWord: Word = this.renderedWords[startIndex];
-    let endWord: Word = this.renderedWords[startIndex];
+    const words = this.shouldRenderTranslateWords ?
+        this.renderedTranslateWords :
+        this.renderedWords;
+    const lineNumbers = this.shouldRenderTranslateWords ?
+        this.translatedLineNumbers :
+        this.lineNumbers;
+    let currentLineIndex = lineNumbers[startIndex];
+    let startWord: Word = words[startIndex];
+    let endWord: Word = words[startIndex];
 
     // Get max dimensions per line.
     for (let i = startIndex; i <= endIndex; i++) {
-      if (this.lineNumbers[i] !== currentLineIndex) {
+      if (lineNumbers[i] !== currentLineIndex) {
         // Add the line
         newHighlightedLines.push(this.calculateHighlightedLine(
             startWord, endWord, this.isTopToBottomWritingDirection(i)));
 
         // Save new line data.
-        startWord = this.renderedWords[i];
-        currentLineIndex = this.lineNumbers[i];
+        startWord = words[i];
+        currentLineIndex = lineNumbers[i];
       }
-      endWord = this.renderedWords[i];
+      endWord = words[i];
     }
     // Add the last line in the selection
     newHighlightedLines.push(this.calculateHighlightedLine(
@@ -559,7 +872,10 @@ export class TextLayerElement extends PolymerElement {
   // Returns whether the word at the given index is a top to bottom written
   // language.
   private isTopToBottomWritingDirection(wordIndex: number): boolean {
-    const paragraph = this.paragraphs[this.paragraphNumbers[wordIndex]];
+    const paragraphNumbers = this.shouldRenderTranslateWords ?
+        this.translatedParagraphNumbers :
+        this.paragraphNumbers;
+    const paragraph = this.paragraphs[paragraphNumbers[wordIndex]];
     return paragraph.writingDirection === WritingDirection.kTopToBottom;
   }
 
@@ -573,7 +889,9 @@ export class TextLayerElement extends PolymerElement {
         Math.min(this.selectionStartIndex, this.selectionEndIndex);
     const endIndex = Math.max(this.selectionStartIndex, this.selectionEndIndex);
 
-    const selectedWords = this.renderedWords.slice(startIndex, endIndex + 1);
+    const selectedWords = this.shouldRenderTranslateWords ?
+        this.renderedTranslateWords.slice(startIndex, endIndex + 1) :
+        this.renderedWords.slice(startIndex, endIndex + 1);
     return selectedWords
         .map((word, index) => {
           return word.plainText +
@@ -583,13 +901,7 @@ export class TextLayerElement extends PolymerElement {
   }
 
   /** @return The CSS styles string for the given word. */
-  private getWordStyle(word: Word, parentWidth: number, parentHeight: number):
-      string {
-    const horizontalLineMarginPercent =
-        loadTimeData.getInteger('verticalTextMarginPx') / parentWidth;
-    const verticalLineMarginPercent =
-        loadTimeData.getInteger('horizontalTextMarginPx') / parentHeight;
-
+  private getWordStyle(word: Word, wordIndex: number): string {
     // Words without bounding boxes are filtered out, so guaranteed that
     // geometry is not null.
     const wordBoundingBox = word.geometry!.boundingBox;
@@ -601,6 +913,20 @@ export class TextLayerElement extends PolymerElement {
         CenterRotatedBox_CoordinateType.kNormalized) {
       return '';
     }
+
+    // We do not want to render this word if we are in translate mode and the
+    // paragraph this word pertains to has translated text.
+    const paragraph = this.paragraphs[this.paragraphNumbers[wordIndex]];
+    if (this.shouldRenderTranslateWords && paragraph.translation) {
+      return 'display: none;';
+    }
+
+    const horizontalLineMarginPercent =
+        loadTimeData.getInteger('verticalTextMarginPx') /
+        this.selectionOverlayRect.height;
+    const verticalLineMarginPercent =
+        loadTimeData.getInteger('horizontalTextMarginPx') /
+        this.selectionOverlayRect.width;
 
     // Put into an array instead of a long string to keep this code readable.
     const styles: string[] = [
@@ -621,6 +947,174 @@ export class TextLayerElement extends PolymerElement {
       `transform: rotate(${wordBoundingBox.rotation}rad)`,
     ];
     return styles.join(';');
+  }
+
+  private getTranslatedLineStyle(translatedLineData: TranslatedLineData):
+      string {
+    const translatedLine = translatedLineData.line;
+    if (!translatedLine.geometry) {
+      return '';
+    }
+
+    const lineBoundingBox = translatedLine.geometry.boundingBox;
+    // TODO(b/330183480): Currently, we are assuming that word
+    // coordinates are normalized. We should still implement
+    // rendering in case this assumption is ever violated.
+    if (lineBoundingBox.coordinateType !==
+        CenterRotatedBox_CoordinateType.kNormalized) {
+      return '';
+    }
+
+    const lineFontSizePixels = this.calculateFontSizePixels(translatedLineData);
+    const styles: string[] = [
+      `background-color: ${
+          this.getBackgroundColorForLine(translatedLine, lineFontSizePixels)}`,
+      `color: ${skColorToHexColor(translatedLine.textColor)}`,
+      `justify-content: ${this.getLineAlignment(translatedLineData.alignment)}`,
+      `font-size: ${lineFontSizePixels}px`,
+      `width: ${toPercent(lineBoundingBox.box.width)}`,
+      `height: ${toPercent(lineBoundingBox.box.height)}`,
+      `top: ${
+          toPercent(lineBoundingBox.box.y - (lineBoundingBox.box.height / 2))}`,
+      `left: ${
+          toPercent(lineBoundingBox.box.x - (lineBoundingBox.box.width / 2))}`,
+      `text-shadow: ${
+          this.getOutlineStyleForLine(translatedLine, lineFontSizePixels)}`,
+      `transform: rotate(${lineBoundingBox.rotation}rad)`,
+      `writing-mode: ${this.getWritingModeForLine(translatedLineData)}`,
+    ];
+    return styles.join(';');
+  }
+
+  private getBackgroundImageDataStyle(translatedLineData: TranslatedLineData):
+      string {
+    const translatedLine = translatedLineData.line;
+    if (!translatedLine.geometry) {
+      return '';
+    }
+
+    const lineBoundingBox = translatedLine.geometry.boundingBox;
+    // TODO(b/330183480): Currently, we are assuming that word
+    // coordinates are normalized. We should still implement
+    // rendering in case this assumption is ever violated.
+    if (lineBoundingBox.coordinateType !==
+        CenterRotatedBox_CoordinateType.kNormalized) {
+      return '';
+    }
+
+    const backgroundImageData = translatedLine.backgroundImageData;
+    if (!backgroundImageData) {
+      return '';
+    }
+
+    // Both background image padding values are relative to the line height.
+    const horizontalPadding =
+        backgroundImageData.horizontalPadding * lineBoundingBox.box.height;
+    const verticalPadding =
+        backgroundImageData.verticalPadding * lineBoundingBox.box.height;
+
+    const styles: string[] = [
+      `width: ${toPercent(lineBoundingBox.box.width + horizontalPadding)}`,
+      `height: ${toPercent(lineBoundingBox.box.height + verticalPadding)}`,
+      `top: ${
+          toPercent(
+              lineBoundingBox.box.y - (lineBoundingBox.box.height / 2) -
+              (0.5 * verticalPadding))}`,
+      `left: ${
+          toPercent(
+              lineBoundingBox.box.x - (lineBoundingBox.box.width / 2) -
+              (0.5 * horizontalPadding))}`,
+    ];
+    return styles.join(';');
+  }
+
+  private getOutlineStyleForLine(line: TranslatedLine, fontSize: number):
+      string {
+    if (!line.backgroundImageData) {
+      return 'none';
+    }
+    const outlineColor = skColorToRgba(line.backgroundPrimaryColor);
+    const outlineWidth = fontSize * 0.02;
+    return `-${outlineWidth}px ${outlineWidth}px 0 ${outlineColor},
+            ${outlineWidth}px ${outlineWidth}px 0 ${outlineColor},
+            ${outlineWidth}px -${outlineWidth}px 0 ${outlineColor},
+            -${outlineWidth}px -${outlineWidth}px 0 ${outlineColor}`;
+  }
+
+  private getBackgroundColorForLine(line: TranslatedLine, fontSize: number):
+      string {
+    // When background image data is present, we only want it to be opaque for
+    // very small text for accessibility reasons.
+    if (line.backgroundImageData && fontSize >= FONT_SIZE_TRANSPARENT_BOUND) {
+      return 'transparent';
+    }
+
+    // If background image data is not present, the background should be opaque.
+    // Below opaque bound, it should be fully opaque.
+    if (!line.backgroundImageData ||
+        (line.backgroundImageData && fontSize <= FONT_SIZE_OPAQUE_BOUND)) {
+      return skColorToRgba(line.backgroundPrimaryColor);
+    }
+
+    // Font sizes between the two values should iversely interpolate over 0-255
+    // for opacity.
+    const opacityRatio = (fontSize - FONT_SIZE_OPAQUE_BOUND) /
+        (FONT_SIZE_TRANSPARENT_BOUND - FONT_SIZE_OPAQUE_BOUND);
+    const clampedOpacity = Math.min(Math.max(opacityRatio, 0), 1);
+    return skColorToRgbaWithCustomAlpha(
+        line.backgroundPrimaryColor, clampedOpacity);
+  }
+
+  private isTranslatedLineVertical(line: TranslatedLineData): boolean {
+    const writingDirection =
+        this.renderedTranslateParagraphs[line.paragraphIndex].writingDirection;
+    return writingDirection === WritingDirection.kTopToBottom;
+  }
+
+  private getWritingModeForLine(line: TranslatedLineData): string {
+    if (this.isTranslatedLineVertical(line)) {
+      return 'vertical-lr';
+    }
+    return 'horizontal-tb';
+  }
+
+  private getLineAlignment(alignment: Alignment|null): string {
+    if (alignment === Alignment.kDefaultLeftAlgined) {
+      return 'left';
+    } else if (alignment === Alignment.kCenterAligned) {
+      return 'center';
+    } else if (alignment === Alignment.kRightAligned) {
+      return 'right';
+    }
+
+    return 'center';
+  }
+
+  private resetCanvasPixelRatioIfNeeded() {
+    const transform = this.context.getTransform();
+    if (transform.a !== window.devicePixelRatio ||
+        transform.d !== window.devicePixelRatio) {
+      this.context.setTransform(
+          window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+    }
+  }
+
+  private getBlobUrlFromImageData(imageData: BackgroundImageData): string {
+    const imageBytesBuffer = imageData.backgroundImage;
+    assert(imageBytesBuffer.invalidBuffer !== true);
+    let bytes: Uint8Array = new Uint8Array();
+    if (imageBytesBuffer.bytes !== undefined) {
+      bytes = new Uint8Array(imageBytesBuffer.bytes);
+    } else if (imageBytesBuffer.sharedMemory !== undefined) {
+      const {bufferHandle, size} = imageBytesBuffer.sharedMemory;
+      const {buffer} = bufferHandle.mapBuffer(0, size);
+      bytes = new Uint8Array(buffer);
+    } else {
+      return '';
+    }
+    // The image should always be a webp image.
+    const blob = new Blob([bytes], {type: 'image/webp'});
+    return URL.createObjectURL(blob);
   }
 
   /** @return The CSS styles string for the given highlighted line. */
@@ -645,12 +1139,47 @@ export class TextLayerElement extends PolymerElement {
     if (!topMostElement || !(topMostElement instanceof HTMLElement)) {
       return null;
     }
-    return this.$.wordsContainer.indexForElement(topMostElement);
+    const detectedWordIndex =
+        this.$.wordsContainer.indexForElement(topMostElement);
+    if (detectedWordIndex === null) {
+      return null;
+    }
+    return this.shouldRenderTranslateWords ?
+        this.detectedWordToTranslateIndex[detectedWordIndex] :
+        detectedWordIndex;
+  }
+
+  /**
+   *
+   * @returns Returns the index in renderedTranslateWords of the word at the
+   *     given point. Returns null if no word is at the given point.
+   */
+  private translatedWordIndexFromPoint(x: number, y: number): number|null {
+    if (!this.shouldRenderTranslateWords) {
+      return null;
+    }
+
+    const topMostElement = this.shadowRoot!.elementFromPoint(x, y);
+    if (!topMostElement || !(topMostElement instanceof HTMLElement)) {
+      return null;
+    }
+
+    const wordIndexString = topMostElement.dataset['wordIndex'];
+    if (!wordIndexString) {
+      return null;
+    }
+
+    return parseInt(wordIndexString) ?? null;
   }
 
   // Testing method to get the words on the page.
   getWordNodesForTesting() {
     return this.shadowRoot!.querySelectorAll('.word');
+  }
+
+  // Testing method to get the translated words on the page.
+  getTranslatedWordNodesForTesting() {
+    return this.shadowRoot!.querySelectorAll('.translated-word');
   }
 
   // Testing method to get the highlighted words on the page.

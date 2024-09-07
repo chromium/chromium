@@ -340,9 +340,7 @@ class FastMinTextContext {
   STACK_ALLOCATED();
 
  public:
-  LayoutUnit MinInlineSize() const {
-    return LayoutUnit::FromFloatCeil(min_inline_size_);
-  }
+  LayoutUnit MinInlineSize() const { return min_inline_size_; }
 
   LayoutUnit HyphenInlineSize(InlineItemResult& item_result) const {
     if (!hyphen_inline_size_) {
@@ -354,7 +352,7 @@ class FastMinTextContext {
     return *hyphen_inline_size_;
   }
 
-  void Add(float width) {
+  void Add(LayoutUnit width) {
     min_inline_size_ = std::max(width, min_inline_size_);
   }
 
@@ -364,10 +362,10 @@ class FastMinTextContext {
            unsigned end_offset,
            bool has_hyphen,
            InlineItemResult& item_result) {
-    float width = shape_result.CachedWidth(start_offset, end_offset);
+    LayoutUnit width = shape_result.CachedWidth(start_offset, end_offset);
     if (has_hyphen) [[unlikely]] {
       const LayoutUnit hyphen_inline_size = HyphenInlineSize(item_result);
-      width = (LayoutUnit::FromFloatCeil(width) + hyphen_inline_size).ToFloat();
+      width += hyphen_inline_size;
     }
     Add(width);
   }
@@ -394,8 +392,8 @@ class FastMinTextContext {
     LayoutUnit max_part_width;
     for (const wtf_size_t location : locations) {
       const unsigned part_start_offset = start_offset + location;
-      LayoutUnit part_width = LayoutUnit::FromFloatCeil(
-          shape_result.CachedWidth(part_start_offset, end_offset));
+      LayoutUnit part_width =
+          shape_result.CachedWidth(part_start_offset, end_offset);
       if (has_hyphen) {
         part_width += hyphen_inline_size;
       }
@@ -403,11 +401,11 @@ class FastMinTextContext {
       end_offset = part_start_offset;
       has_hyphen = true;
     }
-    Add(max_part_width.ToFloat());
+    Add(max_part_width);
   }
 
  private:
-  float min_inline_size_ = 0;
+  LayoutUnit min_inline_size_;
   mutable std::optional<LayoutUnit> hyphen_inline_size_;
 };
 
@@ -458,8 +456,6 @@ LineBreaker::LineBreaker(InlineNode node,
                             node.UseFirstLineStyle()),
       sticky_images_quirk_(mode != LineBreakerMode::kContent &&
                            node.IsStickyImagesQuirkForContentSize()),
-      use_faster_min_content_(
-          RuntimeEnabledFeatures::FasterMinContentEnabled()),
       items_data_(&node.ItemsData(use_first_line_style_)),
       end_item_index_(items_data_->items.size()),
       text_content_(
@@ -926,8 +922,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
   const HeapVector<InlineItem>& items = Items();
   // If `kMinContent`, the line will overflow. Avoid calling `HandleOverflow()`
   // for the performance.
-  if (use_faster_min_content_ && mode_ == LineBreakerMode::kMinContent)
-      [[unlikely]] {
+  if (mode_ == LineBreakerMode::kMinContent) [[unlikely]] {
     state_ = LineBreakState::kOverflow;
   } else {
     state_ = LineBreakState::kContinue;
@@ -1763,124 +1758,10 @@ bool LineBreaker::BreakTextAtPreviousBreakOpportunity(
 // The first word and the last word, "1" and "6" in the example above, are
 // handled in normal |HandleText()| because they may form a word with the
 // previous/next item.
-bool LineBreaker::HandleTextForFastMinContentOld(
-    InlineItemResult* item_result,
-    const InlineItem& item,
-    const ShapeResult& shape_result,
-    LineInfo* line_info) {
-  DCHECK_EQ(mode_, LineBreakerMode::kMinContent);
-  DCHECK(auto_wrap_);
-  DCHECK(item.Type() == InlineItem::kText ||
-         (item.Type() == InlineItem::kControl &&
-          Text()[item.StartOffset()] == kTabulationCharacter));
-  DCHECK(&shape_result);
-
-  // If this is the first part of the text, it may form a word with the previous
-  // item. Fallback to |HandleText()|.
-  unsigned start_offset = item_result->StartOffset();
-  DCHECK_LT(start_offset, item.EndOffset());
-  if (start_offset != line_info->StartOffset() &&
-      start_offset == item.StartOffset())
-    return false;
-  if (line_info->TextIndent()) [[unlikely]] {
-    // If this line has the `text-indent`, following lines will have different
-    // indentation. Compute this line as a separate line by falling back to
-    // |HandleText()|.
-    return false;
-  }
-  // If this is the last part of the text, it may form a word with the next
-  // item. Fallback to |HandleText()|.
-  if (fast_min_content_item_ == &item)
-    return false;
-
-  std::optional<LineBreakType> saved_line_break_type;
-  if (break_anywhere_if_overflow_ && !override_break_anywhere_) {
-    saved_line_break_type = break_iterator_.BreakType();
-    break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
-  }
-  const unsigned saved_start_offset = break_iterator_.StartOffset();
-
-  // Break the text at every break opportunity and measure each word.
-  DCHECK_EQ(shape_result.StartIndex(), item.StartOffset());
-  DCHECK_GE(start_offset, shape_result.StartIndex());
-  shape_result.EnsurePositionData();
-  FastMinTextContext context;
-  const String& text = Text();
-  const bool should_break_spaces = item.Style()->ShouldBreakSpaces();
-  unsigned last_end_offset = 0;
-  unsigned end_offset = start_offset + 1;
-  while (start_offset < item.EndOffset()) {
-    // TODO(crbug.com/332328872): `following()` scans back to the start of the
-    // string. Resetting the ICU `BreakIterator` is faster than the scanning.
-    break_iterator_.SetStartOffset(start_offset);
-    end_offset =
-        break_iterator_.NextBreakOpportunity(end_offset, item.EndOffset());
-
-    unsigned non_hangable_run_end = end_offset;
-    if (!should_break_spaces) {
-      while (non_hangable_run_end > start_offset &&
-             IsBreakableSpace(text[non_hangable_run_end - 1])) {
-        --non_hangable_run_end;
-      }
-    }
-
-    if (non_hangable_run_end >= item.EndOffset())
-      break;
-
-    // |word_len| may be zero if |start_offset| is at a breakable space.
-    CHECK_GE(non_hangable_run_end, start_offset);
-    if (wtf_size_t word_len = non_hangable_run_end - start_offset) {
-      // Ignore soft-hyphen opportunities if `hyphens: none`.
-      bool has_hyphen = text[non_hangable_run_end - 1] == kSoftHyphenCharacter;
-      if (hyphenation_) [[unlikely]] {
-        // When 'hyphens: auto', compute all hyphenation opportunities.
-        const StringView word(text, start_offset, word_len);
-        context.AddHyphenated(shape_result, start_offset, non_hangable_run_end,
-                              has_hyphen, *item_result, *hyphenation_, word);
-      } else {
-        context.Add(shape_result, start_offset, non_hangable_run_end,
-                    has_hyphen, *item_result);
-      }
-    }
-
-    last_end_offset = non_hangable_run_end;
-    start_offset = end_offset;
-    ++end_offset;
-  }
-
-  if (saved_line_break_type.has_value())
-    break_iterator_.SetBreakType(*saved_line_break_type);
-  break_iterator_.SetStartOffset(saved_start_offset);
-
-  // If there was only one break opportunity in this item, it may form a word
-  // with previous and/or next item. Fallback to |HandleText()|.
-  if (!last_end_offset)
-    return false;
-
-  // Create an InlineItemResult that has the max of widths of all words.
-  item_result->text_offset.end =
-      std::max(last_end_offset, item_result->text_offset.start + 1);
-  item_result->text_offset.AssertNotEmpty();
-  item_result->inline_size = context.MinInlineSize();
-  item_result->can_break_after = true;
-
-  trailing_whitespace_ = WhitespaceState::kUnknown;
-  position_ += item_result->inline_size;
-  state_ = LineBreakState::kTrailing;
-  fast_min_content_item_ = &item;
-  MoveToNextOf(*item_result);
-  return true;
-}
-
 bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
                                               const InlineItem& item,
                                               const ShapeResult& shape_result,
                                               LineInfo* line_info) {
-  if (!use_faster_min_content_) [[unlikely]] {
-    return HandleTextForFastMinContentOld(item_result, item, shape_result,
-                                          line_info);
-  }
-
   DCHECK_EQ(mode_, LineBreakerMode::kMinContent);
   DCHECK(auto_wrap_);
   DCHECK(item.Type() == InlineItem::kText ||
@@ -3445,9 +3326,7 @@ bool LineBreaker::IsMonolithicRuby(
   // We don't break rubies in text-wrap:balance and text-wrap:pretty
   // because the sum of broken ruby inline-size can be different from the
   // inline-size of a non-broken ruby.
-  TextWrap container_wrap = node_.Style().GetTextWrap();
-  if (container_wrap != TextWrap::kWrap &&
-      container_wrap != TextWrap::kNoWrap) {
+  if (!node_.Style().ShouldWrapLineGreedy()) {
     return true;
   }
 
@@ -4527,8 +4406,7 @@ void LineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
       if (break_anywhere_if_overflow_) [[unlikely]] {
         if (override_break_anywhere_) [[unlikely]] {
           line_break_type = LineBreakType::kBreakCharacter;
-        } else if (use_faster_min_content_ &&
-                   mode_ == LineBreakerMode::kMinContent) [[unlikely]] {
+        } else if (mode_ == LineBreakerMode::kMinContent) [[unlikely]] {
           override_break_anywhere_ = true;
           line_break_type = LineBreakType::kBreakCharacter;
         }

@@ -30,6 +30,8 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'issueLensObjectRequest',
       'issueTextSelectionRequest',
       'issueTranslateSelectionRequest',
+      'issueTranslateFullPageRequest',
+      'notifyOverlayInitialized',
       'copyText',
       'recordUkmAndTaskCompletionForLensOverlayInteraction',
     ]);
@@ -88,8 +90,25 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     this.methodCalled('issueTranslateSelectionRequest', query);
   }
 
+  issueTranslateFullPageRequest(
+      sourceLanguage: string, targetLanguage: string) {
+    this.methodCalled(
+        'issueTranslateFullPageRequest', sourceLanguage, targetLanguage);
+  }
+  notifyOverlayInitialized() {
+    this.methodCalled('notifyOverlayInitialized');
+  }
+
   copyText(text: string) {
     this.methodCalled('copyText', text);
+  }
+
+  copyImage(region: CenterRotatedBox) {
+    this.methodCalled('copyImage', region);
+  }
+
+  saveAsImage(region: CenterRotatedBox) {
+    this.methodCalled('saveAsImage', region);
   }
 
   recordUkmAndTaskCompletionForLensOverlayInteraction(userAction: UserAction) {

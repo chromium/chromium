@@ -4,10 +4,11 @@
 
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/search/ntp_features.h"
 #include "components/sync/service/sync_service.h"
@@ -52,21 +53,15 @@ bool IsCartModuleEnabled() {
 bool IsDriveModuleEnabled() {
   if (base::FeatureList::GetInstance()->IsFeatureOverridden(
           ntp_features::kNtpDriveModule.name)) {
-    const bool force_enabled =
-        base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule);
-    LogDriveModuleEnablement(force_enabled, force_enabled
-                                                ? "feature flag forced on"
-                                                : "feature flag forced off");
-    return force_enabled;
+    return IsFeatureForceEnabled(ntp_features::kNtpDriveModule);
   }
   const bool default_enabled = IsOsSupportedForDrive();
-  LogDriveModuleEnablement(default_enabled, default_enabled
-                                                ? "default feature flag value"
-                                                : "default feature flag value");
+  LogModuleEnablement(ntp_features::kNtpDriveModule, default_enabled,
+                      "default feature flag value");
   return default_enabled;
 }
 
-bool IsDriveModuleEnabledForProfile(Profile* profile) {
+bool IsDriveModuleEnabledForProfile(bool is_managed_profile, Profile* profile) {
   if (!IsDriveModuleEnabled()) {
     return false;
   }
@@ -75,12 +70,13 @@ bool IsDriveModuleEnabledForProfile(Profile* profile) {
   // module to be enabled.
   auto* sync_service = SyncServiceFactory::GetForProfile(profile);
   if (!sync_service || !sync_service->IsSyncFeatureEnabled()) {
-    LogDriveModuleEnablement(false, "no sync");
+    LogModuleEnablement(ntp_features::kNtpDriveModule, false, "no sync");
     return false;
   }
 
-  if (!NewTabPageUI::IsManagedProfile(profile)) {
-    LogDriveModuleEnablement(false, "account not managed");
+  if (!is_managed_profile) {
+    LogModuleEnablement(ntp_features::kNtpDriveModule, false,
+                        "account not managed");
     return false;
   }
   return true;
@@ -91,6 +87,54 @@ bool IsEnUSLocaleOnlyFeatureEnabled(const base::Feature& ntp_feature) {
     return base::FeatureList::IsEnabled(ntp_feature);
   }
   return IsInUS();
+}
+
+bool IsFeatureEnabled(const base::Feature& feature) {
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(feature.name)) {
+    return IsFeatureForceEnabled(feature);
+  }
+
+  bool is_default_enabled =
+      feature.default_state == base::FeatureState::FEATURE_ENABLED_BY_DEFAULT;
+  LogModuleEnablement(feature, is_default_enabled,
+                      "default feature flag value");
+  return is_default_enabled;
+}
+
+bool IsFeatureForceEnabled(const base::Feature& feature) {
+  const bool force_enabled = base::FeatureList::IsEnabled(feature);
+  LogModuleEnablement(
+      feature, force_enabled,
+      force_enabled ? "feature flag forced on" : "feature flag forced off");
+  return force_enabled;
+}
+
+bool IsGoogleCalendarModuleEnabled(bool is_managed_profile) {
+  if (!is_managed_profile) {
+    LogModuleEnablement(ntp_features::kNtpCalendarModule, false,
+                        "account not managed");
+
+    // Override if in test, which must be using a command line override and
+    // fake data.                           }
+    return !base::GetFieldTrialParamValueByFeature(
+                ntp_features::kNtpCalendarModule,
+                ntp_features::kNtpCalendarModuleDataParam)
+                .empty() &&
+           base::CommandLine::ForCurrentProcess()->HasSwitch(
+               switches::kSignedOutNtpModulesSwitch);
+  }
+
+  return IsFeatureEnabled(ntp_features::kNtpCalendarModule);
+}
+
+bool IsOutlookCalendarModuleEnabled(bool is_managed_profile) {
+  if (!is_managed_profile) {
+    LogModuleEnablement(ntp_features::kNtpOutlookCalendarModule, false,
+                        "account not managed");
+    return false;
+  }
+
+  return IsFeatureEnabled(ntp_features::kNtpOutlookCalendarModule);
 }
 
 std::string GetVariationsServiceCountryCode(
@@ -104,9 +148,34 @@ std::string GetVariationsServiceCountryCode(
                               : country_code;
 }
 
-void LogDriveModuleEnablement(bool enabled, const std::string& reason) {
+void LogModuleEnablement(const base::Feature& feature,
+                         bool enabled,
+                         const std::string& reason) {
   OPTIMIZATION_GUIDE_LOGGER(
       optimization_guide_common::mojom::LogSource::NTP_MODULE,
       OptimizationGuideLogger::GetInstance())
-      << "Drive module " << (enabled ? "enabled: " : "disabled: ") << reason;
+      << feature.name << (enabled ? " enabled: " : " disabled: ") << reason;
+}
+
+void LogModuleDismissed(const base::Feature& feature,
+                        bool dismissed,
+                        const std::string& remaining_hours) {
+  std::string log = base::StrCat({feature.name, " dismissal: "});
+  if (dismissed) {
+    base::StrAppend(&log, {remaining_hours, " hours remaining"});
+  } else {
+    base::StrAppend(&log, {" not dismissed"});
+  }
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::NTP_MODULE,
+      OptimizationGuideLogger::GetInstance())
+      << log;
+}
+
+void LogModuleError(const base::Feature& feature,
+                    const std::string& error_message) {
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::NTP_MODULE,
+      OptimizationGuideLogger::GetInstance())
+      << feature.name << " error: " << error_message;
 }

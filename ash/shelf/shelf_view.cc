@@ -1211,8 +1211,6 @@ void ShelfView::EndDrag(bool cancel,
     return;
   }
 
-  DCHECK(app_list_features::IsDragAndDropRefactorEnabled() ||
-         !drag_icon_proxy_);
   drag_icon_proxy_ = std::move(icon_proxy);
 
   views::View* drag_and_drop_view =
@@ -2843,10 +2841,7 @@ void ShelfView::ResetActiveMenuModelRequest() {
 
 views::View::DropCallback ShelfView::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  return app_list_features::IsDragAndDropRefactorEnabled()
-             ? base::BindOnce(&ShelfView::EndDragCallback,
-                              base::Unretained(this))
-             : base::DoNothing();
+  return base::BindOnce(&ShelfView::EndDragCallback, base::Unretained(this));
 }
 
 void ShelfView::EndDragCallback(
@@ -2862,17 +2857,11 @@ void ShelfView::EndDragCallback(
 bool ShelfView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    format_types->insert(GetAppItemFormatType());
-  }
+  format_types->insert(GetAppItemFormatType());
   return true;
 }
 
 bool ShelfView::CanDrop(const OSExchangeData& data) {
-  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
-    return true;
-  }
-
   auto app_info = GetAppInfoFromDropDataForAppType(data);
   if (!app_info || app_info->IsValid()) {
     return false;
@@ -2885,19 +2874,10 @@ bool ShelfView::CanDrop(const OSExchangeData& data) {
 }
 
 void ShelfView::OnDragExited() {
-  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
-    views::View::OnDragExited();
-    return;
-  }
   EndDrag(/*cancel=*/true, nullptr);
 }
 
 void ShelfView::OnDragEntered(const ui::DropTargetEvent& event) {
-  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
-    views::View::OnDragEntered(event);
-    return;
-  }
-
   auto app_info = GetAppInfoFromDropDataForAppType(event.data());
   if (!app_info || app_info->IsValid()) {
     return;
@@ -2915,12 +2895,10 @@ void ShelfView::OnDragEntered(const ui::DropTargetEvent& event) {
 }
 
 int ShelfView::OnDragUpdated(const ui::DropTargetEvent& event) {
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    gfx::Point drag_point_in_screen = event.location();
-    views::View::ConvertPointToScreen(this, &drag_point_in_screen);
-    Drag(drag_point_in_screen,
-         drag_view_ ? drag_view_->GetBoundsInScreen() : gfx::Rect());
-  }
+  gfx::Point drag_point_in_screen = event.location();
+  views::View::ConvertPointToScreen(this, &drag_point_in_screen);
+  Drag(drag_point_in_screen,
+       drag_view_ ? drag_view_->GetBoundsInScreen() : gfx::Rect());
   return ui::DragDropTypes::DRAG_MOVE;
 }
 

@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
@@ -26,10 +27,10 @@ TEST_F(ManualFillCredentialFormPasswordiOSTest, CreationHTTPURL) {
       [[ManualFillCredential alloc] initWithPasswordForm:passwordForm];
 
   EXPECT_TRUE(credential);
-  EXPECT_TRUE([username isEqualToString:credential.username]);
-  EXPECT_TRUE([password isEqualToString:credential.password]);
-  EXPECT_TRUE([@"example.com" isEqualToString:credential.siteName]);
-  EXPECT_TRUE([@"alpha.example.com" isEqualToString:credential.host]);
+  EXPECT_NSEQ(username, credential.username);
+  EXPECT_NSEQ(password, credential.password);
+  EXPECT_NSEQ(@"example.com", credential.siteName);
+  EXPECT_NSEQ(@"alpha.example.com", credential.host);
 }
 
 // Tests the creation of a credential from a password form.
@@ -46,10 +47,10 @@ TEST_F(ManualFillCredentialFormPasswordiOSTest, CreationHTTPSURL) {
       [[ManualFillCredential alloc] initWithPasswordForm:passwordForm];
 
   EXPECT_TRUE(credential);
-  EXPECT_TRUE([username isEqualToString:credential.username]);
-  EXPECT_TRUE([password isEqualToString:credential.password]);
-  EXPECT_TRUE([@"example.com" isEqualToString:credential.siteName]);
-  EXPECT_TRUE([@"alpha.example.com" isEqualToString:credential.host]);
+  EXPECT_NSEQ(username, credential.username);
+  EXPECT_NSEQ(password, credential.password);
+  EXPECT_NSEQ(@"example.com", credential.siteName);
+  EXPECT_NSEQ(@"alpha.example.com", credential.host);
 }
 
 // Tests the creation of a credential from a password form.
@@ -66,8 +67,8 @@ TEST_F(ManualFillCredentialFormPasswordiOSTest, CreationNoWWW) {
       [[ManualFillCredential alloc] initWithPasswordForm:passwordForm];
 
   EXPECT_TRUE(credential);
-  EXPECT_TRUE([username isEqualToString:credential.username]);
-  EXPECT_TRUE([password isEqualToString:credential.password]);
-  EXPECT_TRUE([@"example.com" isEqualToString:credential.siteName]);
-  EXPECT_TRUE([@"alpha.example.com" isEqualToString:credential.host]);
+  EXPECT_NSEQ(username, credential.username);
+  EXPECT_NSEQ(password, credential.password);
+  EXPECT_NSEQ(@"example.com", credential.siteName);
+  EXPECT_NSEQ(@"alpha.example.com", credential.host);
 }

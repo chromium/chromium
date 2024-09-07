@@ -7,6 +7,7 @@
 
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
@@ -89,6 +90,10 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
   // calls to the server are made.
   void CheckTurnLimit();
 
+  void RequestProviderWithQuestion(
+      std::unique_ptr<manta::SparkyContext> sparky_context,
+      MahiAnswerQuestionCallbackRepeating callback);
+
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();
 
@@ -108,6 +113,11 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
   chromeos::MahiResponseStatus latest_response_status_;
 
   MahiUiController ui_controller_;
+
+  // A timer is used to allow for a delay between when the actions are executed,
+  // and the additional call is made to the server to ensure that the actions
+  // have finished executing.
+  std::unique_ptr<base::OneShotTimer> timer_;
 
   base::WeakPtrFactory<SparkyManagerImpl> weak_ptr_factory_{this};
 };

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] navigator.identity.get() calling the API without user activation should reject with NotAllowedError.
+  promise_rejects_dom: function "function() { throw e }" threw object "TypeError: Failed to execute 'get' on 'CredentialsContainer': Digital identity API needs at least one provider." that is not a DOMException NotAllowedError: property "code" is equal to undefined, expected 0
+[FAIL] navigator.identity.get() consumes user activation.
+  assert_false: User activation should be consumed after navigator.identity.get(). expected false got true
+Harness: the test ran to completion.
+

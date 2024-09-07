@@ -348,9 +348,7 @@ bool CreateVisualElementsManifest(const base::FilePath& src_path,
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Returns a CommandLine to run if os_update_handler.exe should be run,
-// i.e.. a Windows update has been detected, absl::nullopt otherwise.
-// Use the Windows version update string set by Omaha on the command line
-// as the version update string to pass to os_update_handler.exe.
+// i.e. a Windows update has been detected; null otherwise.
 std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
     const base::FilePath& target_path,
     const std::wstring& installed_version,
@@ -359,6 +357,8 @@ std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
   if (args.size() != 1) {
     return std::nullopt;
   }
+  // Use the Windows version update string set by Omaha on the command line
+  // as the version update string to pass to os_update_handler.exe.
   base::CommandLine os_update_handler_cmd(
       target_path.Append(installed_version).Append(kOsUpdateHandlerExe));
   InstallUtil::AppendModeAndChannelSwitches(&os_update_handler_cmd);

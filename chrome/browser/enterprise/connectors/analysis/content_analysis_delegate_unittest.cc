@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 
 #include <algorithm>
@@ -1466,7 +1471,9 @@ class ContentAnalysisDelegateResultHandlingTest
                          FAILED_TO_GET_TOKEN ||
            result ==
                safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-           result == safe_browsing::BinaryUploadService::Result::UNKNOWN;
+           result == safe_browsing::BinaryUploadService::Result::UNKNOWN ||
+           result ==
+               safe_browsing::BinaryUploadService::Result::INCOMPLETE_RESPONSE;
   }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)

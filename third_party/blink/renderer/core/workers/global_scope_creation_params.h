@@ -87,7 +87,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       const SecurityOrigin* top_level_frame_security_origin = nullptr,
       net::StorageAccessApiStatus parent_storage_access_api_status =
           net::StorageAccessApiStatus::kNone,
-      bool require_cross_site_request_for_cookies = false);
+      bool require_cross_site_request_for_cookies = false,
+      scoped_refptr<SecurityOrigin> origin_to_use = nullptr);
   GlobalScopeCreationParams(const GlobalScopeCreationParams&) = delete;
   GlobalScopeCreationParams& operator=(const GlobalScopeCreationParams&) =
       delete;
@@ -147,6 +148,15 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // scripts need to be fetched as sub-resources of the Document, and a module
   // script loader uses Document's SecurityOrigin for security checks.
   scoped_refptr<const SecurityOrigin> starter_origin;
+
+  // The SecurityOrigin to be used by the worker, if it's pre-calculated
+  // already (e.g. passed down from the browser to the renderer). Only set
+  // for dedicated and shared workers. When PlzDedicatedWorker is enabled, the
+  // origin is calculated in the browser process and sent to the renderer. When
+  // PlzDedicatedWorker is disabled, the origin is calculated in the renderer
+  // and then passed to the browser process. This guarantees both the renderer
+  // and browser knows the exact origin used by the worker.
+  scoped_refptr<SecurityOrigin> origin_to_use;
 
   // Indicates if the Document creating a Worker/Worklet is a secure context.
   //

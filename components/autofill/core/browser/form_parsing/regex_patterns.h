@@ -73,9 +73,9 @@ class MatchPatternRef {
 // When adding a new value, it's require to add it to
 // `HeuristicSource` as well.
 enum class PatternSource : uint8_t {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   // Patterns whose stability is above suspicion.
   kLegacy,
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   kMaxValue = kLegacy
 #else
   // The patterns applied for most users.

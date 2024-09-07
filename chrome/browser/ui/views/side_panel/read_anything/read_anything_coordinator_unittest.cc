@@ -35,13 +35,6 @@
 
 using testing::_;
 
-class MockReadAnythingCoordinatorObserver
-    : public ReadAnythingCoordinator::Observer {
- public:
-  MOCK_METHOD(void, Activate, (bool active), (override));
-  MOCK_METHOD(void, OnActivePageDistillable, (bool distillable), (override));
-};
-
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
   ReadAnythingCoordinatorTest()
@@ -109,26 +102,12 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   // Wrapper methods around the ReadAnythingCoordinator. These do nothing more
   // than keep the below tests less verbose (simple pass-throughs).
 
-  void AddObserver(ReadAnythingCoordinator::Observer* observer) {
-    read_anything_coordinator_->AddObserver(observer);
-  }
-  void RemoveObserver(ReadAnythingCoordinator::Observer* observer) {
-    read_anything_coordinator_->RemoveObserver(observer);
-  }
   std::unique_ptr<views::View> CreateContainerView() {
-    return read_anything_coordinator_->CreateContainerView();
+    return std::make_unique<ReadAnythingSidePanelWebView>(browser()->profile());
   }
 
   void OnBrowserSetLastActive(Browser* browser) {
     read_anything_coordinator_->OnBrowserSetLastActive(browser);
-  }
-
-  void ActivePageDistillable() {
-    read_anything_coordinator_->ActivePageDistillable();
-  }
-
-  void ActivePageNotDistillable() {
-    read_anything_coordinator_->ActivePageNotDistillable();
   }
 
   void AddTabToBrowser(const GURL& tab_url) {
@@ -167,33 +146,12 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   raw_ptr<ReadAnythingCoordinator, DanglingUntriaged>
       read_anything_coordinator_ = nullptr;
 
-  MockReadAnythingCoordinatorObserver coordinator_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/40853217): Fix the memory leak on destruction observed on
 // these tests on asan mac.
 #if !BUILDFLAG(IS_MAC) || !defined(ADDRESS_SANITIZER)
-
-TEST_F(ReadAnythingCoordinatorTest, ContainerViewsAreUnique) {
-  auto view1 = CreateContainerView();
-  auto view2 = CreateContainerView();
-  EXPECT_NE(view1, view2);
-}
-
-TEST_F(ReadAnythingCoordinatorTest,
-       ActivateCalled_ShowAndHideReadAnythingEntry) {
-  AddObserver(&coordinator_observer_);
-  ASSERT_EQ(contextual_registries_.size(), 2u);
-  SidePanelEntry* entry = contextual_registries_[0]->GetEntryForKey(
-      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
-
-  EXPECT_CALL(coordinator_observer_, Activate(true)).Times(1);
-  entry->OnEntryShown();
-
-  EXPECT_CALL(coordinator_observer_, Activate(false)).Times(1);
-  entry->OnEntryHidden();
-}
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(ReadAnythingCoordinatorTest,
@@ -248,17 +206,6 @@ TEST_F(ReadAnythingCoordinatorTest,
   OnBrowserSetLastActive(browser);
 
   EXPECT_FALSE(side_panel_coordinator_->IsSidePanelShowing());
-}
-
-TEST_F(ReadAnythingCoordinatorTest, OnActivePageDistillableCalled) {
-  AddObserver(&coordinator_observer_);
-
-  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(true)).Times(1);
-  // Called once when calling ActivePageDistillable and once on destruction.
-  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(false)).Times(2);
-
-  ActivePageDistillable();
-  ActivePageNotDistillable();
 }
 
 TEST_F(ReadAnythingCoordinatorTest, WithWebUIFlagEnabled_ShowsWebUIToolbar) {

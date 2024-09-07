@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "third_party/blink/renderer/modules/xr/average_timer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -103,6 +104,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // Sends the frame data to the requesting sessions for calculating
   // diagnostics.
   void SendFrameData();
+  void OnRenderComplete();
 
   void OnProviderConnectionError(XRSession* session);
   void ProcessScheduledFrame(device::mojom::blink::XRFrameDataPtr frame_data,
@@ -177,6 +179,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   int num_frames_ = 0;
   int dropped_frames_ = 0;
+  AverageTimer frame_data_time_;
+  AverageTimer submit_frame_time_;
 
   base::TimeTicks last_frame_statistics_sent_time_;
   base::RepeatingTimer repeating_timer_;

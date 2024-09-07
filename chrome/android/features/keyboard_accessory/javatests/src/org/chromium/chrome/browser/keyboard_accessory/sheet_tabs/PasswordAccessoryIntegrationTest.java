@@ -82,7 +82,6 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/353952171")
     public void testPasswordSheetDisplaysProvidedItems() throws TimeoutException {
         preparePasswordBridge();
         ThreadUtils.runOnUiThreadBlocking(

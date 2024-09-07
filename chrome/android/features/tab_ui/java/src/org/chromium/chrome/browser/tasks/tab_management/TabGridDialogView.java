@@ -38,6 +38,7 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -360,7 +361,9 @@ public class TabGridDialogView extends FrameLayout {
             if (view == TabGridDialogView.this) {
                 continue;
             }
-            assert mAccessibilityImportanceMap.containsKey(view);
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+                assert mAccessibilityImportanceMap.containsKey(view);
+            }
             Integer importance = mAccessibilityImportanceMap.get(view);
             view.setImportantForAccessibility(
                     importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);

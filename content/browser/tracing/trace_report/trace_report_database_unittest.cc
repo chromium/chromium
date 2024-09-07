@@ -198,7 +198,7 @@ TEST_F(TraceReportDatabaseTest, DeleteTraceReportsOlderThan) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
 }
 
-TEST_F(TraceReportDatabaseTest, DeleteTraceContentOlderThan) {
+TEST_F(TraceReportDatabaseTest, DeleteOldTraceContent) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   const base::Time today = base::Time::Now();
@@ -219,7 +219,7 @@ TEST_F(TraceReportDatabaseTest, DeleteTraceContentOlderThan) {
 
   EXPECT_EQ(trace_report_.GetAllReports().size(), 8u);
 
-  ASSERT_TRUE(trace_report_.DeleteTraceContentOlderThan(base::Days(10)));
+  ASSERT_TRUE(trace_report_.DeleteOldTraceContent(5));
   auto received_reports = trace_report_.GetAllReports();
   EXPECT_EQ(received_reports.size(), 8u);
   for (const auto& report : received_reports) {

@@ -111,9 +111,18 @@ const CGFloat kSymbolToolbarPointSize = 24;
   auto loadImageBlock = ^UIImage* {
     return DefaultSymbolWithPointSize(kMenuSymbol, kSymbolToolbarPointSize);
   };
+  UIColor* locationBarBackgroundColor =
+      [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1];
 
+  auto loadIPHHighlightedImageBlock = ^UIImage* {
+    return SymbolWithPalette(
+        CustomSymbolWithPointSize(kEllipsisSquareFillSymbol,
+                                  kSymbolToolbarPointSize),
+        @[ [UIColor colorNamed:kGrey600Color], locationBarBackgroundColor ]);
+  };
   ToolbarButton* toolsMenuButton =
-      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock
+                       IPHHighlightedImageLoader:loadIPHHighlightedImageBlock];
 
   SetA11yLabelAndUiAutomationName(toolsMenuButton, IDS_IOS_TOOLBAR_SETTINGS,
                                   kToolbarToolsMenuButtonIdentifier);

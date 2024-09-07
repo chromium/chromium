@@ -322,11 +322,14 @@ class TabImpl implements Tab {
 
                     @Override
                     public void onViewDetachedFromWindow(View view) {
-                        if (mNativePageSmoothTransitionDelegate != null
-                                && isNativePage()
-                                && getNativePage().getView() == view) {
-                            mNativePageSmoothTransitionDelegate.cancel();
-                            mNativePageSmoothTransitionDelegate = null;
+                        if (isNativePage() && getNativePage().getView() == view) {
+                            if (mNativePageSmoothTransitionDelegate != null) {
+                                mNativePageSmoothTransitionDelegate.cancel();
+                                mNativePageSmoothTransitionDelegate = null;
+                            } else {
+                                // reset ntp view state.
+                                getView().setAlpha(1f);
+                            }
                         }
                         mIsViewAttachedToWindow = false;
                         updateInteractableState();
@@ -747,6 +750,7 @@ class TabImpl implements Tab {
                         referrer != null ? referrer.getPolicy() : 0,
                         params.getInitiatorOrigin(),
                         isOffTheRecord());
+        mIsLoading = false;
 
         // The only reason this should still be null is if we failed to allocate a byte buffer,
         // which probably means we are close to an OOM.
@@ -1311,9 +1315,15 @@ class TabImpl implements Tab {
         switch (getWebContents().getCurrentBackForwardTransitionStage()) {
             case AnimationStage.NONE:
                 // Native animator is destroy before animation is done.
+                // Non-null nativePageSmoothTransitionDelegate means the page is transiting to
+                // a native page; otherwise, it possibly means transiting from a native page to
+                // another page.
                 if (mNativePageSmoothTransitionDelegate != null) {
                     mNativePageSmoothTransitionDelegate.cancel();
                     mNativePageSmoothTransitionDelegate = null;
+                } else if (isNativePage()) {
+                    // This means the ntp is fully showing now. Reset back to 1f.
+                    getView().setAlpha(1f);
                 }
                 return;
             case AnimationStage.OTHER:
@@ -1324,6 +1334,9 @@ class TabImpl implements Tab {
                                 notifyContentChanged();
                             });
                     mNativePageSmoothTransitionDelegate = null;
+                } else if (isNativePage()) {
+                    // Do a hidden transition for NTP view.
+                    getView().setAlpha(0.f);
                 }
                 return;
             case AnimationStage.INVOKE_ANIMATION:
@@ -1854,6 +1867,8 @@ class TabImpl implements Tab {
         if (mNativePageSmoothTransitionDelegate != null) {
             mNativePageSmoothTransitionDelegate.cancel();
             mNativePageSmoothTransitionDelegate = null;
+        } else if (isNativePage() && getView() != null) {
+            getView().setAlpha(1.f);
         }
         NativePage previousNativePage = mNativePage;
         if (mNativePage != null) {
@@ -2064,6 +2079,11 @@ class TabImpl implements Tab {
     @Override
     public int getParentId() {
         return mParentId;
+    }
+
+    @Override
+    public void setParentId(int parentId) {
+        mParentId = parentId;
     }
 
     @Override

@@ -52,14 +52,21 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       kShowGoogleLensShortcut, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(omnibox::kShowGeminiIPH, true);
+
+  registry->RegisterBooleanPref(omnibox::kDismissedGeminiIph, false);
   registry->RegisterBooleanPref(
-      omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName, true);
-  registry->RegisterBooleanPref(omnibox::kShowHistoryEmbeddingsSettingsPromo,
-                                true);
-  registry->RegisterBooleanPref(omnibox::kShowHistoryScopePromo, true);
-  registry->RegisterBooleanPref(omnibox::kShowHistoryEmbeddingsScopePromo,
-                                true);
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName, false);
+  registry->RegisterBooleanPref(
+      omnibox::kDismissedHistoryEmbeddingsSettingsPromo, false);
+  registry->RegisterBooleanPref(omnibox::kDismissedHistoryScopePromo, false);
+  registry->RegisterBooleanPref(omnibox::kDismissedHistoryEmbeddingsScopePromo,
+                                false);
+
+  registry->RegisterIntegerPref(kShownCountGeminiIph, 0);
+  registry->RegisterIntegerPref(kShownCountFeaturedEnterpriseSiteSearchIph, 0);
+  registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsSettingsPromo, 0);
+  registry->RegisterIntegerPref(kShownCountHistoryScopePromo, 0);
+  registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsScopePromo, 0);
 }
 
 SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(

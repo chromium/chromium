@@ -14,7 +14,8 @@ const char kBasePath[] = "speech/speech_recognition_private/";
 namespace extensions {
 
 SpeechRecognitionPrivateBaseTest::SpeechRecognitionPrivateBaseTest()
-    : test_helper_(GetParam()) {}
+    : test_helper_(GetParam(), media::mojom::RecognizerClientType::kDictation) {
+}
 
 SpeechRecognitionPrivateBaseTest::~SpeechRecognitionPrivateBaseTest() = default;
 

@@ -18,6 +18,7 @@ static_library("privacy_hub") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/ash/hats",
     "//chrome/browser/profiles",
+    "//chromeos/ash/components/camera_presence_notifier",
     "//components/session_manager/core",
   ]
 
@@ -36,6 +37,7 @@ source_set("browser_tests") {
   sources = [ "privacy_hub_hats_trigger_browsertest.cc" ]
 
   deps = [
+    ":privacy_hub",
     "//base",
     "//chrome/browser/ash/hats",
     "//chrome/test:test_support",

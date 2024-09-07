@@ -5,6 +5,11 @@
 module ash.boca.mojom;
 
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Refer ///depot/google3/google/internal/chrome/cros/edu/schooltools/v1/
+// For detailed type definition.
+// TODO(b/356405813): Refactor documentation.
 
 // Represents the tab information within browser window.
 struct TabInfo {
@@ -16,25 +21,15 @@ struct TabInfo {
   string favicon;
 };
 
-// Represents user full name.
-struct Name {
-  string full_name;
-};
 
-// Represents user profile.
-struct UserProfile {
+// Represents user identity.
+struct Identity {
   // User id.
   string id;
   // User name.
-  Name name;
+  string name;
   // User email address.
-  string email_address;
-};
-
-// Represents a student.
-struct Student {
-  // User profile.
-  UserProfile profile;
+  string email;
 };
 
 // Represents a course.
@@ -55,6 +50,42 @@ struct Window {
   array<TabInfo> tab_list;
 };
 
+struct Config{
+  mojo_base.mojom.TimeDelta session_duration;
+  // Selected students to be joined for session.
+  array<Identity> students;
+  OnTaskConfig on_task_config;
+  CaptionConfig caption_config;
+};
+
+struct CaptionConfig {
+  // If caption is enabled.
+  bool caption_enabled;
+  // If the caption will be persisted to local only.
+  bool local_only;
+  // If transcription is enabled.
+  bool transcription_enabled;
+};
+
+enum NavigationType {
+  kUnknown = 0,
+  kOpen ,
+  kBlock,
+  kDomain,
+  kLimited,
+};
+
+struct ControlledTab {
+  TabInfo tab;
+  NavigationType navigation_type;
+};
+
+struct OnTaskConfig {
+  // If content will be display on students' device in lock mode.
+  bool is_locked;
+  array<ControlledTab> tabs;
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
@@ -66,7 +97,9 @@ interface PageHandler {
   // Requested by the Boca SWA to fetch a list of students for a given
   // course. Must be called on a course_id received from the most recent
   // ListCourses call.
-  ListStudents(string course_id) => (array<Student> students);
+  ListStudents(string course_id) => (array<Identity> students);
+  // Create a session with `config`.
+  CreateSession(Config config) => (bool success);
 };
 
 // Implemented by renderer process

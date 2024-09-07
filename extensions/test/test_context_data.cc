@@ -6,7 +6,7 @@
 
 namespace extensions {
 
-bool TestContextData::HasIsolatedContextCapability() const {
+bool TestContextData::HasControlledFrameCapability() const {
   return false;
 }
 

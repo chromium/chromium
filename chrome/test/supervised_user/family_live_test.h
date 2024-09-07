@@ -6,7 +6,6 @@
 #define CHROME_TEST_SUPERVISED_USER_FAMILY_LIVE_TEST_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 
@@ -41,12 +40,29 @@ const char* const kChildCredentialsSwitch =
 // The family is read from command line switch at kFamilyIdentifierSwitch.
 class FamilyLiveTest : public signin::test::LiveTest {
  public:
-  FamilyLiveTest();
+  // Determines which user will call the rpc.
+  enum class RpcMode : int {
+    // Rpc mode will mimic real life: there will be two browsers, one for a
+    // supervisor (typically, head of household or parent), and one for
+    // the supervised user (child).
+    kProd = 0,
+    // Rpc mode will take advantage of test backend impersonation feature, where
+    // the client is only using child account, and the
+    // server is impersonating the child.
+    kTestImpersonation = 1,
+  };
+
+  explicit FamilyLiveTest(RpcMode rpc_mode);
   // The provided family identifier will be used to select the test accounts.
   // Navigation will be allowed to extra hosts.
-  explicit FamilyLiveTest(const std::vector<std::string>& extra_enabled_hosts);
+  FamilyLiveTest(FamilyLiveTest::RpcMode rpc_mode,
+                 const std::vector<std::string>& extra_enabled_hosts);
 
   ~FamilyLiveTest() override;
+
+  // Turns on sync for eligible users depending on the ::rpc_mode_
+  // (see ::TurnOnSyncFor).
+  void TurnOnSync();
 
   // Turns on sync and waits for the sync subsystem to start. Manages the list
   // of open service tabs.
@@ -61,12 +77,17 @@ class FamilyLiveTest : public signin::test::LiveTest {
   // explicitly added to `extra_enabled_hosts`.
   GURL GetRoutedUrl(std::string_view url_spec) const;
 
+  // Members of the family.
   FamilyMember& head_of_household() const;
   FamilyMember& child() const;
 
+  // Family member that will issue rpc.
+  FamilyMember& rpc_issuer() const;
+
  private:
-  void SetFamilyMembers(const ::signin::test::TestAccount& head_of_household,
-                        const ::signin::test::TestAccount& child);
+  // Creates a FamilyMember entity using credentials from TestAccount.
+  void SetHeadOfHousehold(const signin::test::TestAccount& account);
+  void SetChild(const signin::test::TestAccount& account);
 
   // Extracts requested account from test_accounts.json file, which must exist.
   signin::test::TestAccount GetAccountFromFile(
@@ -76,28 +97,35 @@ class FamilyLiveTest : public signin::test::LiveTest {
   std::unique_ptr<FamilyMember> MakeSignedInBrowser(
       const signin::test::TestAccount& account);
 
+  // Empty, if rpc_mode_ is kImpersonation.
   std::unique_ptr<FamilyMember> head_of_household_;
+
+  // Subject of testing.
   std::unique_ptr<FamilyMember> child_;
 
   // List of additional hosts that will have host resolution enabled. Host
   // resolution is configured as part of test startup.
-  std::vector<std::string> extra_enabled_hosts_;
+  const std::vector<std::string> extra_enabled_hosts_;
+
+  const RpcMode rpc_mode_;
 };
+
+std::string ToString(FamilyLiveTest::RpcMode rpc_mode);
 
 // Fixture that combines InProcessBrowserTest with InteractiveBrowserTest,
 // adding Family test related utilities.
 class InteractiveFamilyLiveTest
     : public InteractiveBrowserTestT<FamilyLiveTest> {
  public:
-  InteractiveFamilyLiveTest();
-  explicit InteractiveFamilyLiveTest(
+  explicit InteractiveFamilyLiveTest(FamilyLiveTest::RpcMode rpc_mode);
+  InteractiveFamilyLiveTest(
+      FamilyLiveTest::RpcMode rpc_mode,
       const std::vector<std::string>& extra_enabled_hosts);
 
  protected:
   // After completion, supervised user settings are in `state`.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForStateSeeding(
       ui::test::StateIdentifier<BrowserState::Observer> id,
-      const FamilyMember& rpc_issuer,
       const FamilyMember& browser_user,
       const BrowserState& state);
 };

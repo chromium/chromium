@@ -7,10 +7,19 @@
 
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/strong_alias.h"
+#include "components/data_sharing/internal/protocol/group_data_db.pb.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/sqlite_proto/key_value_data.h"
+#include "components/sqlite_proto/key_value_table.h"
+#include "components/sqlite_proto/proto_table_manager.h"
+#include "sql/database.h"
 
 namespace data_sharing {
 
@@ -19,29 +28,50 @@ namespace data_sharing {
 using VersionToken = base::StrongAlias<class VersionTokenTag, std::string>;
 
 // In-memory cache and persistent storage for GroupData.
-// TODO(crbug.com/301390275): support storing data in SQLite DB.
 class GroupDataStore {
  public:
-  GroupDataStore();
+  enum class DBInitStatus {
+    kSuccess,
+    kFailure,
+    kNotLoaded,
+  };
+
+  using DBLoadedCallback = base::OnceCallback<void(DBInitStatus)>;
+
+  // Public methods must not be called until `db_loaded_callback` is invoked
+  // with kSuccess.
+  GroupDataStore(const base::FilePath& db_path,
+                 DBLoadedCallback db_loaded_callback);
   ~GroupDataStore();
 
   void StoreGroupData(const VersionToken& version_token,
                       const GroupData& group_data);
-  void DeleteGroupData(const GroupId& group_id);
+  void DeleteGroups(const std::vector<GroupId>& groups_ids);
 
   std::optional<VersionToken> GetGroupVersionToken(
       const GroupId& group_id) const;
   std::optional<GroupData> GetGroupData(const GroupId& group_id) const;
-  std::vector<GroupId> GetAllGroupsIds() const;
+  std::vector<GroupId> GetAllGroupIds() const;
 
  private:
-  using GroupIdToDataMap =
-      std::unordered_map<GroupId, GroupData, GroupId::Hasher>;
-  using GroupIdToVersionTokenMap =
-      std::unordered_map<GroupId, VersionToken, GroupId::Hasher>;
+  void OnDBReady(DBLoadedCallback db_loaded_callback, DBInitStatus init_status);
 
-  GroupIdToDataMap group_id_to_data_;
-  GroupIdToVersionTokenMap group_id_to_version_token_;
+  // The following fields hold objects to work with SQLite database. `db_`,
+  // `proto_table_manager_` are deleted on db sequence; `group_entity_data_` and
+  // `group_entity_table_` are deleted on the main thread, however only after
+  // deletion of the rest.
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+  std::unique_ptr<sql::Database> db_;
+  scoped_refptr<sqlite_proto::ProtoTableManager> proto_table_manager_;
+  // Entities are keyed by GroupID.
+  std::unique_ptr<sqlite_proto::KeyValueTable<data_sharing_pb::GroupEntity>>
+      group_entity_table_;
+  std::unique_ptr<sqlite_proto::KeyValueData<data_sharing_pb::GroupEntity>>
+      group_entity_data_;
+
+  DBInitStatus db_init_status_ = DBInitStatus::kNotLoaded;
+
+  base::WeakPtrFactory<GroupDataStore> weak_ptr_factory_{this};
 };
 
 }  // namespace data_sharing

@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_shared.css.js';
 
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
@@ -55,7 +55,7 @@ export class SettingsCollapseRadioButtonElement extends
 
       icon: {
         type: String,
-        value: null,
+        value: '',
       },
 
       /*

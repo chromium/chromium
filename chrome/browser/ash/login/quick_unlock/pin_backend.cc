@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -11,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
@@ -48,6 +51,13 @@ QuickUnlockStorage* GetPrefsBackend(const AccountId& account_id) {
 void PostResponse(PinBackend::BoolCallback result, bool value) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result), value));
+}
+
+void PostResponse(PinBackend::AvailabilityCallback result,
+                  bool enabled,
+                  cryptohome::PinLockAvailability available_at) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(result), enabled, available_at));
 }
 
 void PostResponse(AuthOperationCallback result,
@@ -328,11 +338,11 @@ void PinBackend::RemoveWithContext(const AccountId& account_id,
 
 void PinBackend::CanAuthenticate(const AccountId& account_id,
                                  Purpose purpose,
-                                 BoolCallback result) {
+                                 AvailabilityCallback result_callback) {
   if (resolving_backend_) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::CanAuthenticate, base::Unretained(this),
-                       account_id, purpose, std::move(result)));
+                       account_id, purpose, std::move(result_callback)));
     return;
   }
 
@@ -341,18 +351,20 @@ void PinBackend::CanAuthenticate(const AccountId& account_id,
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
       NOTREACHED_IN_MIGRATION() << "CanAuthenticate called with invalid user";
-      std::move(result).Run(false);
+      std::move(result_callback).Run(false, std::nullopt);
       return;
     }
     auto user_context = std::make_unique<UserContext>(*user);
     cryptohome_backend_->CanAuthenticate(std::move(user_context), purpose,
-                                         std::move(result));
+                                         std::move(result_callback));
   } else {
     QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-    PostResponse(std::move(result),
-                 storage && storage->HasStrongAuth() &&
-                     storage->pin_storage_prefs()->IsPinAuthenticationAvailable(
-                         purpose));
+    // pref based pin should be immediately available.
+    PostResponse(
+        std::move(result_callback),
+        storage && storage->HasStrongAuth() &&
+            storage->pin_storage_prefs()->IsPinAuthenticationAvailable(purpose),
+        std::nullopt);
   }
 }
 

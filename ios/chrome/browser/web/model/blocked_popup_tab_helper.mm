@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/infobars/model/confirm_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "net/base/apple/url_conversions.h"

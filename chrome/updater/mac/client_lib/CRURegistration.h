@@ -47,22 +47,22 @@ extern NSString* const CRUReturnCodeKey;
 
 typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
     /**
-     * CRURegistration couldn't read a stream (stdout or stderr) when running
+     * `CRURegistration` couldn't read a stream (stdout or stderr) when running
      * a subprocess. The POSIX error code for the error is available in the
-     * error's user data under CRUErrnoKey.
+     * error's user data under `CRUErrnoKey`.
      */
     CRURegistrationErrorTaskStreamUnreadable = 1,
 
     /**
-     * CRURegistration couldn't find the updater or the updater installer.
+     * `CRURegistration` couldn't find the updater or the updater installer.
      */
     CRURegistrationErrorHelperNotFound = 2,
 
     /**
-     * The updater component invoked by CRURegistration returned an error. Its
-     * error message is available in the error's user data under CRUStderrKey.
+     * The updater component invoked by `CRURegistration` returned an error. Its
+     * error message is available in the error's user data under `CRUStderrKey`.
      * Any partial output, usable for debugging purposes, is available under
-     * CRUStdoutKey.
+     * `CRUStdoutKey`.
      */
     CRURegistrationErrorTaskFailed = 3,
 
@@ -74,10 +74,23 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
      * Invalid arguments may also show up as `CRURegistrationErrorTaskFailed`,
      * if they are detected by the underlying helper binary instead of
      * `CRURegistration` itself. Whenever `CRURegistration` replies with this
-     * error, it also fails an NSAssert so the issue can be discovered
+     * error, it also fails an `NSAssert` so the issue can be discovered
      * in debug builds while the faulty call is still on the stack.
      */
     CRURegistrationErrorInvalidArgument = 4,
+
+    /**
+     * A macOS API failed in a way that implies that important parts of the
+     * filesystem are not usable for the requested operation, which
+     * `CRURegistration` was running in-process. The issue is something
+     * different from "could not find the updater".
+     *
+     * File system errors encountered while trying to find a helper to run a
+     * task out-of-process are reported as `CRURegistrationErrorHelperNotFound`.
+     * Errors encountered by such helpers are always reported as
+     * `CRURegistrationErrorTaskFailed` instead.
+     */
+    CRURegistrationErrorFilesystem = 5,
 };
 
 /**
@@ -149,7 +162,7 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
 - (instancetype)init NS_UNAVAILABLE;
 
 /**
- * Asynchronously register the app for updates, owned by the current user.
+ * Asynchronously registers the app for updates, owned by the current user.
  *
  * If the app is already registered for the current user, this updates the
  * registration.
@@ -166,7 +179,7 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
                   reply:(void (^_Nullable)(NSError* _Nullable))reply;
 
 /**
- * Asynchronously retrieve the tag for the registered app.
+ * Asynchronously retrieves the tag for the registered app.
  *
  * `reply` will be dispatched to the target queue when tag reading has completed
  * or failed. If the tag can be read successfully, it will be passed as the
@@ -181,6 +194,29 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
 - (void)fetchTagWithReply:(void (^)(NSString* _Nullable,
                                     NSError* _Nullable))reply;
 
+/**
+ * Asynchronously installs the updater, as the current user.
+ *
+ * `reply` will be dispatched to the target queue when installation has
+ * completed or failed. If the installation is skipped because there is already
+ * an updater present at the same or higher version, it is considered to have
+ * completed successfully.
+ *
+ * If installation succeeds (or is skipped), the `NSError*` argument to `reply`
+ * will be nil. If it fails, the argument will contain a descriptive error.
+ */
+- (void)installUpdaterWithReply:(void (^_Nullable)(NSError* _Nullable))reply;
+
+/**
+ * Asynchronously marks the current product active for the current user.
+ *
+ * This may run concurrently with other operations performed by CRURegistration
+ * and return out-of-order, although it will still run under, and reply on,
+ * the target queue. `reply` will be dispatched to the target queue when the
+ * "active" file for the provided app ID has been written (or the attempt to
+ * do so has failed).
+ */
+- (void)markActiveWithReply:(void (^_Nullable)(NSError* _Nullable))reply;
 @end
 
 NS_ASSUME_NONNULL_END

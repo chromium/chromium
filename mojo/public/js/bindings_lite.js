@@ -1160,7 +1160,8 @@ mojo.internal.deserializeMessageHeader = function(data) {
        headerSize != mojo.internal.kMessageV0HeaderSize) ||
       (headerVersion == 1 &&
        headerSize != mojo.internal.kMessageV1HeaderSize) ||
-      headerVersion > 2) {
+      (headerVersion >= 2 &&
+       headerSize < mojo.internal.kMessageV2HeaderSize)) {
     throw new Error('Received invalid message header');
   }
   return {
@@ -1722,6 +1723,54 @@ mojo.internal.Struct = function(
     },
     computeDimensions: function(value, nullable) {
       return mojo.internal.computeStructDimensions(structSpec, value);
+    },
+    arrayElementSize: nullable => 8,
+    isValidObjectKeyType: false,
+  };
+};
+
+/**
+ * Bridges typemapped types to mojo types. The adapter includes a function which
+ * will convert a mapped type to mojo type and vice versa.
+ * @export
+ */
+mojo.internal.TypemapAdapter = class {
+  constructor(toMojoTypeFn, toMappedTypeFn) {
+    this.toMojoTypeFn = toMojoTypeFn;
+    this.toMappedTypeFn = toMappedTypeFn;
+  }
+}
+
+/**
+ * @param {!Object} objectToBlessAsType
+ * @param {string} name
+ * @param {!mojo.internal.TypemapAdapter} typemapAdapter
+ * @param {!Array<!mojo.internal.StructFieldSpec>} fields
+ * @param {Array<!Array<number>>=} versionData
+ * @export
+ */
+mojo.internal.TypemappedStruct = function(
+    objectToBlessAsType, name, typemapAdapter, fields, versionData) {
+  const versions = versionData.map(v => ({version: v[0], packedSize: v[1]}));
+  const packedSize = versions[versions.length - 1].packedSize;
+  const structSpec = {name, packedSize, fields, versions};
+  objectToBlessAsType.$ = {
+    structSpec: structSpec,
+    encode: function(value, encoder, byteOffset, bitOffset, nullable) {
+      const mojoType = typemapAdapter.toMojoTypeFn(value);
+      encoder.encodeStruct(structSpec, byteOffset, mojoType);
+    },
+    encodeNull: function(encoder, byteOffset) {},
+    decode: function(decoder, byteOffset, bitOffset, nullable) {
+      const mojoType = decoder.decodeStruct(structSpec, byteOffset);
+      if (mojoType === null || mojoType === undefined) {
+        return mojoType;
+      }
+      return typemapAdapter.toMappedTypeFn(mojoType);
+    },
+    computeDimensions: function(value, nullable) {
+      const mojoType = typemapAdapter.toMojoTypeFn(value);
+      return mojo.internal.computeStructDimensions(structSpec, mojoType);
     },
     arrayElementSize: nullable => 8,
     isValidObjectKeyType: false,

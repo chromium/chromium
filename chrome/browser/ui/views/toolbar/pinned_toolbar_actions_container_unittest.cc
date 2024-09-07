@@ -33,6 +33,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 
 class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
@@ -130,17 +131,16 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     }
   }
 
-  std::unique_ptr<actions::ActionItem> CreateActionItem(
-      const actions::ActionId& id) {
-    return actions::ActionItem::Builder()
-        .SetText(u"Test Action")
-        .SetTooltipText(u"Test Action")
-        .SetActionId(id)
-        .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon))
-        .SetVisible(true)
-        .SetEnabled(true)
-        .SetInvokeActionCallback(base::DoNothing())
-        .Build();
+  void UpdateActionItem(const actions::ActionId& id) {
+    auto* action = actions::ActionManager::Get().FindAction(
+        id, browser_view()->browser()->browser_actions()->root_action_item());
+    action->SetText(u"Test Action");
+    action->SetTooltipText(u"Test Action");
+    action->SetImage(
+        ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon));
+    action->SetVisible(true);
+    action->SetEnabled(true);
+    action->SetInvokeActionCallback(base::DoNothing());
   }
 
   void UpdatePref(const std::vector<actions::ActionId>& updated_list) {
@@ -204,11 +204,8 @@ TEST_F(PinnedToolbarActionsContainerTest, ContainerMargins) {
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-
   // clang-format on
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  UpdateActionItem(actions::kActionCut);
 
   // Verify there are no pinned buttons.
   auto pinned_buttons = GetChildToolbarButtons();
@@ -240,10 +237,7 @@ TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {
 
 TEST_F(PinnedToolbarActionsContainerTest,
        UnpinnedToolbarButtonsPoppedOutWhileActive) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  UpdateActionItem(actions::kActionCut);
 
   // Verify there are no pinned buttons.
   auto toolbar_buttons = GetChildToolbarButtons();
@@ -269,10 +263,7 @@ TEST_F(PinnedToolbarActionsContainerTest,
 
 TEST_F(PinnedToolbarActionsContainerTest,
        StateChangesBetweenPinnedandUnpinnedWhileActive) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  UpdateActionItem(actions::kActionCut);
 
   // Verify there are no pinned buttons.
   auto toolbar_buttons = GetChildToolbarButtons();
@@ -299,11 +290,8 @@ TEST_F(PinnedToolbarActionsContainerTest,
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, PoppedOutButtonsAreAfterPinned) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCopy));
+  UpdateActionItem(actions::kActionCut);
+  UpdateActionItem(actions::kActionCopy);
 
   // Verify there are no pinned buttons.
   auto toolbar_buttons = GetChildToolbarButtons();
@@ -338,10 +326,7 @@ TEST_F(PinnedToolbarActionsContainerTest, PoppedOutButtonsAreAfterPinned) {
 #endif
 TEST_F(PinnedToolbarActionsContainerTest,
        MAYBE_DividerNotVisibleWhileButtonPoppedOut) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  UpdateActionItem(actions::kActionCut);
 
   // Verify there are no child views visible. Note the divider still exists but
   // should not be visible.
@@ -362,12 +347,29 @@ TEST_F(PinnedToolbarActionsContainerTest,
   ASSERT_FALSE(child_views[0]->GetVisible());
 }
 
-TEST_F(PinnedToolbarActionsContainerTest, MovingActionsUpdateOrderUsingDrag) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
+TEST_F(PinnedToolbarActionsContainerTest, AccessibleCheckedState) {
+  UpdateActionItem(actions::kActionCut);
+  model()->UpdatePinnedState(actions::kActionCut, true);
+  auto pinned_action_buttons = GetChildToolbarButtons();
 
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCopy));
+  ui::AXNodeData data;
+  pinned_action_buttons[0]->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  data = ui::AXNodeData();
+  pinned_action_buttons[0]->AddHighlight();
+  pinned_action_buttons[0]->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  data = ui::AXNodeData();
+  pinned_action_buttons[0]->ResetHighlight();
+  pinned_action_buttons[0]->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+}
+
+TEST_F(PinnedToolbarActionsContainerTest, MovingActionsUpdateOrderUsingDrag) {
+  UpdateActionItem(actions::kActionCut);
+  UpdateActionItem(actions::kActionCopy);
 
   // Verify there are no pinned buttons.
   auto toolbar_buttons = GetChildToolbarButtons();
@@ -404,11 +406,8 @@ TEST_F(PinnedToolbarActionsContainerTest, MovingActionsUpdateOrderUsingDrag) {
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, ContextMenuPinTest) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-
   // clang-format on
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  UpdateActionItem(actions::kActionCut);
 
   // Verify there are no pinned buttons.
   auto pinned_buttons = GetChildToolbarButtons();
@@ -441,11 +440,8 @@ TEST_F(PinnedToolbarActionsContainerTest, ContextMenuPinTest) {
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, StatusIndicatorTest) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-
   // clang-format on
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  UpdateActionItem(actions::kActionCut);
 
   // Verify there are no pinned buttons.
   auto pinned_buttons = GetChildToolbarButtons();
@@ -468,12 +464,9 @@ TEST_F(PinnedToolbarActionsContainerTest, StatusIndicatorTest) {
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, UpdatesFromSyncUpdateContainer) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCopy));
-  browser_action_item->AddChild(CreateActionItem(actions::kActionPaste));
+  UpdateActionItem(actions::kActionCut);
+  UpdateActionItem(actions::kActionCopy);
+  UpdateActionItem(actions::kActionPaste);
 
   // Verify there are no pinned buttons.
   auto toolbar_buttons = GetChildToolbarButtons();
@@ -514,42 +507,9 @@ TEST_F(PinnedToolbarActionsContainerTest, UpdatesFromSyncUpdateContainer) {
 
 TEST_F(PinnedToolbarActionsContainerTest,
        MovingActionsUpdateOrderUsingKeyboard) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-  auto cut_action =
-      actions::ActionItem::Builder()
-          .SetText(u"Test Action")
-          .SetTooltipText(u"Test Action")
-          .SetActionId(actions::kActionCut)
-          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon))
-          .SetVisible(true)
-          .SetEnabled(true)
-          .SetInvokeActionCallback(base::DoNothing())
-          .Build();
-  auto copy_action =
-      actions::ActionItem::Builder()
-          .SetText(u"Test Action")
-          .SetTooltipText(u"Test Action")
-          .SetActionId(actions::kActionCopy)
-          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon))
-          .SetVisible(true)
-          .SetEnabled(true)
-          .SetInvokeActionCallback(base::DoNothing())
-          .Build();
-  auto paste_action =
-      actions::ActionItem::Builder()
-          .SetText(u"Test Action")
-          .SetTooltipText(u"Test Action")
-          .SetActionId(actions::kActionPaste)
-          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon))
-          .SetVisible(true)
-          .SetEnabled(true)
-          .SetInvokeActionCallback(base::DoNothing())
-          .Build();
-
-  browser_action_item->AddChild(std::move(cut_action));
-  browser_action_item->AddChild(std::move(copy_action));
-  browser_action_item->AddChild(std::move(paste_action));
+  UpdateActionItem(actions::kActionCut);
+  UpdateActionItem(actions::kActionCopy);
+  UpdateActionItem(actions::kActionPaste);
 
   auto* model = PinnedToolbarActionsModel::Get(profile());
   ASSERT_TRUE(model);
@@ -608,9 +568,7 @@ TEST_F(PinnedToolbarActionsContainerTest,
 
 TEST_F(PinnedToolbarActionsContainerTest,
        ActionRemainsInToolbarWhenSetToBeEphemerallyVisible) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  UpdateActionItem(actions::kActionCut);
 
   // Verify there are no buttons.
   auto toolbar_buttons = GetChildToolbarButtons();
@@ -640,9 +598,7 @@ TEST_F(PinnedToolbarActionsContainerTest,
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, ActiveActionSkipsExecution) {
-  actions::ActionItem* browser_action_item =
-      browser_view()->browser()->browser_actions()->root_action_item();
-  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  UpdateActionItem(actions::kActionCut);
   container()->UpdateActionState(actions::kActionCut, true);
   auto toolbar_buttons = GetChildToolbarButtons();
   ASSERT_EQ(toolbar_buttons.size(), 1u);

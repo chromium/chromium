@@ -15,6 +15,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses {
+namespace {
+using affiliations::FacetURI;
+}
 
 FakePlusAddressService::FakePlusAddressService(
     PrefService* pref_service,
@@ -51,8 +54,13 @@ bool FakePlusAddressService::IsPlusAddress(
 void FakePlusAddressService::GetAffiliatedPlusProfiles(
     const url::Origin& origin,
     GetPlusProfilesCallback callback) {
-  std::move(callback).Run(std::vector<PlusProfile>{PlusProfile(
-      kFakeProfileId, kFacet, PlusAddress(kFakePlusAddress), is_confirmed_)});
+  if (should_return_no_affiliated_plus_profiles_) {
+    std::move(callback).Run({});
+  } else {
+    std::move(callback).Run(std::vector<PlusProfile>{
+        PlusProfile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
+                    PlusAddress(kFakePlusAddress), true)});
+  }
 }
 
 void FakePlusAddressService::ReservePlusAddress(
@@ -65,8 +73,8 @@ void FakePlusAddressService::ReservePlusAddress(
     return;
   }
   std::move(on_completed)
-      .Run(PlusProfile(kFakeProfileId, kFacet, PlusAddress(kFakePlusAddress),
-                       is_confirmed_));
+      .Run(PlusProfile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
+                       PlusAddress(kFakePlusAddress), is_confirmed_));
 }
 
 void FakePlusAddressService::ConfirmPlusAddress(
@@ -80,8 +88,8 @@ void FakePlusAddressService::ConfirmPlusAddress(
     return;
   }
   is_confirmed_ = true;
-  PlusProfile profile(kFakeProfileId, kFacet, std::move(plus_address),
-                      is_confirmed_);
+  PlusProfile profile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
+                      std::move(plus_address), is_confirmed_);
   if (on_confirmed_) {
     std::move(on_confirmed_).Run(profile);
     on_confirmed_.Reset();
@@ -99,8 +107,8 @@ void FakePlusAddressService::RefreshPlusAddress(
     return;
   }
   std::move(on_completed)
-      .Run(PlusProfile(kFakeProfileId, kFacet, PlusAddress(kFakePlusAddress),
-                       is_confirmed_));
+      .Run(PlusProfile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
+                       PlusAddress(kFakePlusAddress), is_confirmed_));
 }
 
 std::optional<std::string> FakePlusAddressService::GetPrimaryEmail() {

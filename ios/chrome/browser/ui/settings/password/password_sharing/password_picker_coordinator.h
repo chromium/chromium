@@ -20,12 +20,11 @@ struct CredentialUIEntry;
 @interface PasswordPickerCoordinator : ChromeCoordinator
 
 - (instancetype)
-    initWithBaseNavigationController:
-        (UINavigationController*)navigationController
-                             browser:(Browser*)browser
-                         credentials:(const std::vector<
-                                         password_manager::CredentialUIEntry>&)
-                                         credentials NS_DESIGNATED_INITIALIZER;
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                   credentials:
+                       (const std::vector<password_manager::CredentialUIEntry>&)
+                           credentials NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

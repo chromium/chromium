@@ -17,11 +17,13 @@ class Profile;
 
 namespace content {
 class WebUI;
-}
+}  // namespace content
 
 namespace web_app {
 class IwaSourceDevModeWithFileOp;
-}
+class ScopedTempWebBundleFile;
+class WebAppInternalsIwaInstallationBrowserTest;
+}  // namespace web_app
 
 // Handles API requests from chrome://web-app-internals page by implementing
 // mojom::WebAppInternalsHandler.
@@ -46,6 +48,12 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void InstallIsolatedWebAppFromDevProxy(
       const GURL& url,
       InstallIsolatedWebAppFromDevProxyCallback callback) override;
+  void ParseUpdateManifestFromUrl(
+      const GURL& update_manifest_url,
+      ParseUpdateManifestFromUrlCallback callback) override;
+  void InstallIsolatedWebAppFromBundleUrl(
+      mojom::InstallFromBundleUrlParamsPtr params,
+      InstallIsolatedWebAppFromBundleUrlCallback callback) override;
   void SelectFileAndInstallIsolatedWebAppFromDevBundle(
       SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback)
       override;
@@ -63,9 +71,23 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void UpdateDevProxyIsolatedWebApp(
       const webapps::AppId& app_id,
       UpdateDevProxyIsolatedWebAppCallback callback) override;
+  void RotateKey(
+      const std::string& web_bundle_id,
+      const std::optional<std::vector<uint8_t>>& public_key) override;
 
  private:
   class IsolatedWebAppDevBundleSelectListener;
+  friend class web_app::WebAppInternalsIwaInstallationBrowserTest;
+
+  void DownloadWebBundleToFile(
+      const GURL& web_bundle_url,
+      InstallIsolatedWebAppFromBundleUrlCallback callback,
+      web_app::ScopedTempWebBundleFile file);
+
+  void OnWebBundleDownloaded(
+      InstallIsolatedWebAppFromBundleUrlCallback callback,
+      web_app::ScopedTempWebBundleFile bundle,
+      int32_t result);
 
   void OnIsolatedWebAppDevModeBundleSelected(
       SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback,

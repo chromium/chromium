@@ -21,8 +21,6 @@ constexpr CGFloat kChevronLeadingOffset = 5;
 
 }  // namespace
 
-// TODO(crbug.com/335387869): Check if accessibility controls work as expected
-// since we're customizing UIControl.
 @implementation PopUpMenuControl {
   UILabel* _subtitleLabel;
   UILabel* _titleLabel;
@@ -48,7 +46,7 @@ constexpr CGFloat kChevronLeadingOffset = 5;
     _subtitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _subtitleLabel.adjustsFontForContentSizeCategory = YES;
-    _subtitleLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
+    _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _subtitleLabel.numberOfLines = 1;
     _subtitleLabel.accessibilityIdentifier = kQuickDeletePopUpButtonIdentifier;
     [self addSubview:_subtitleLabel];
@@ -101,6 +99,28 @@ constexpr CGFloat kChevronLeadingOffset = 5;
       [self.heightAnchor
           constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight],
     ]];
+
+    // The chevron should always be visible. The title should be the first to
+    // disappear. If there isn't enough space to show all views, then it should
+    // be the subtitle.
+    [_titleLabel setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                   forAxis:UILayoutConstraintAxisHorizontal];
+    [_titleLabel
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [_subtitleLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+    [_subtitleLabel
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [_chevronUpDown setContentHuggingPriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+    [_chevronUpDown
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
   }
   return self;
 }
@@ -146,6 +166,10 @@ constexpr CGFloat kChevronLeadingOffset = 5;
   [super contextMenuInteraction:interaction
         willEndForConfiguration:configuration
                        animator:animator];
+
+  // Refocus on the entire control, so the new selection gets read out.
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self);
 }
 
 // Override of `[menuAttachmentPointForConfiguration]`. Adjusts the menu's

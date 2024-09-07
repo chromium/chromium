@@ -808,6 +808,84 @@ suite('SiteList', function() {
     assertEquals(ContentSettingsTypes.GEOLOCATION, contentType);
   });
 
+  /**
+   * Creates test |SiteSettingsPref|s with 2 allowed and 2 blocked
+   * sites for the given ContentSettingsTypes.
+   */
+  function create2AllowAnd2BlockPrefs(type: ContentSettingsTypes) {
+    return createSiteSettingsPrefs([], [
+      createContentSettingTypeToValuePair(
+          type,
+          [
+            createRawSiteException('https://bar-allow.com:443'),
+            createRawSiteException('https://foo-allow.com:443'),
+            createRawSiteException('https://bar-block.com:443', {
+              setting: ContentSetting.BLOCK,
+            }),
+            createRawSiteException('https://foo-block.com:443', {
+              setting: ContentSetting.BLOCK,
+            }),
+          ]),
+    ]);
+  }
+
+  // Runs the system permission warning test for a given content type.
+  async function systemPermissionWarningTest(
+      category: ContentSettingsTypes, categoryName: string) {
+    setUpCategory(
+        category, ContentSetting.ALLOW, create2AllowAnd2BlockPrefs(category));
+    const contentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(category, contentType);
+    assertEquals(2, testElement.sites.length);
+
+    for (const disabled of [true, false]) {
+      const blockedPermissions = disabled ? [category] : [];
+      webUIListenerCallback('osGlobalPermissionChanged', blockedPermissions);
+
+      const warningElement =
+          testElement.$.category.querySelector<HTMLDivElement>(
+              '#systemPermissionDeclinedWarning');
+      assertTrue(!!warningElement);
+      const linkElement =
+          warningElement.querySelector('#openSystemSettingsLink');
+      if (!disabled) {
+        assertTrue(warningElement.hidden);
+        assertEquals(warningElement.textContent, '');
+        assertFalse(!!linkElement);
+        return;
+      }
+
+      assertFalse(warningElement.hidden);
+      const variant =
+          warningElement.innerHTML.includes('Chromium') ? 'Chromium' : 'Chrome';
+      assertEquals(
+          warningElement.textContent,
+          `To use your ${categoryName} on these sites,` +
+              ` give ${variant} access in system settings`);
+      assertTrue(!!linkElement);
+      assertEquals(linkElement.innerHTML, `system settings`);
+
+      linkElement.dispatchEvent(new MouseEvent('click'));
+      await browserProxy.whenCalled('openSystemPermissionSettings')
+          .then((contentType: string) => {
+            assertEquals(category, contentType);
+          });
+    }
+  }
+
+  test('System permission warning for camera', async function() {
+    await systemPermissionWarningTest(ContentSettingsTypes.CAMERA, 'camera');
+  });
+
+  test('System permission warning for microphone', async function() {
+    await systemPermissionWarningTest(ContentSettingsTypes.MIC, 'microphone');
+  });
+
+  test('System permission warning for location', async function() {
+    await systemPermissionWarningTest(
+        ContentSettingsTypes.GEOLOCATION, 'location');
+  });
+
   test('Empty list', async function() {
     setUpCategory(
         ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW,

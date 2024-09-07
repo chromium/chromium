@@ -361,58 +361,6 @@ TEST_F(ProfilePolicyConnectorTest, MachineLevelUserCloudPolicyForProfile) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Basic test for the Enterprise.TimeToFirstPolicyLoad.*" metrics.
-TEST_F(ProfilePolicyConnectorTest, InitializationDurationUma) {
-  constexpr base::TimeDelta kDelay = base::Seconds(1);
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId("foo@bar.com", "fake-gaia-id");
-
-  // Arrange.
-  base::HistogramTester histogram_tester;
-  user_manager::User* user = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, simulate user login as metric isn't reported otherwise.
-  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-  user = user_manager->AddUser(account_id);
-  user_manager->LoginUser(account_id);
-  user_manager::ScopedUserManager scoped_user_manager_enabler(
-      std::move(user_manager));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfilePolicyConnector connector;
-  connector.Init(user, &schema_registry_, cloud_policy_manager_.get(),
-                 cloud_policy_store_.get(),
-                 g_browser_process->browser_policy_connector(),
-                 /*force_immediate_load=*/false);
-
-  // Act. Simulate installation of policy after some delay.
-  task_environment_.FastForwardBy(kDelay);
-  auto policy = std::make_unique<enterprise_management::PolicyData>();
-  policy->set_state(enterprise_management::PolicyData::ACTIVE);
-  cloud_policy_store_->set_policy_data_for_testing(std::move(policy));
-  cloud_policy_store_->NotifyStoreLoaded();
-  // Wait until the store status gets propagated to trigger the initialization.
-  PolicyServiceInitializedWaiter(connector.policy_service(),
-                                 POLICY_DOMAIN_CHROME)
-      .Wait();
-
-  // Assert. Note the recorded delay is exactly `kDelay`, since we're using
-  // `MOCK_TIME` and we don't expect delayed tasks here.
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Enterprise.TimeToFirstPolicyLoad.Profile."),
-              SizeIs(1));
-  histogram_tester.ExpectUniqueTimeSample(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      "Enterprise.TimeToFirstPolicyLoad.Profile.Managed.Existing"
-#else
-      "Enterprise.TimeToFirstPolicyLoad.Profile.Managed"
-#endif
-      ,
-      kDelay, 1);
-
-  // Cleanup.
-  connector.Shutdown();
-}
-
 TEST_F(ProfilePolicyConnectorTest, LocalTestProviderUseAndRevert) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 

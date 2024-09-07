@@ -10,6 +10,7 @@ import {resizeAndCrop, shouldProcess} from './image_loader_util.js';
 import {ImageOrientation} from './image_orientation.js';
 import {cacheKey, type LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 import {PiexLoader} from './piex_loader.js';
+import type {PrivateApi} from './sw_od_messages.js';
 
 const ExtensionContentTypeMap = new Map<string, string>([
   ['gif', 'image/gif'],
@@ -19,6 +20,31 @@ const ExtensionContentTypeMap = new Map<string, string>([
   ['jpg', 'image/jpeg'],
   ['jpeg', 'image/jpeg'],
 ]);
+
+const adpRegExp = RegExp(
+    '^filesystem:chrome-extension://[a-z]+/external/arc-documents-provider/');
+
+/**
+ * Calls the imageLoaderPrivate API with the given message.
+ *
+ * @param msg The imageLoaderPrivate call arguments.
+ * @return A promise for the thumbnailDataUrl.
+ */
+function callImageLoaderPrivate(msg: PrivateApi): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    chrome.runtime.sendMessage(
+        null, msg, undefined, (thumbnailDataUrl: string) => {
+          if (chrome.runtime.lastError) {
+            console.warn(chrome.runtime.lastError.message);
+            reject(chrome.runtime.lastError);
+          } else if (thumbnailDataUrl) {
+            resolve(thumbnailDataUrl);
+          } else {
+            reject();
+          }
+        });
+  });
+}
 
 /**
  * Creates and starts downloading and then resizing of the image. Finally,
@@ -288,56 +314,54 @@ export class ImageRequestTask {
     }
 
     const onExternalThumbnail = (dataUrl: string) => {
-      if (chrome.runtime.lastError) {
-        console.warn(chrome.runtime.lastError.message);
-        onFailure();
-      } else if (dataUrl) {
-        this.image_.src = dataUrl;
-        this.contentType_ = ImageRequestTask.getDataUrlMimeType(dataUrl);
-      } else {
-        onFailure();
-      }
+      this.image_.src = dataUrl;
+      this.contentType_ = ImageRequestTask.getDataUrlMimeType(dataUrl);
     };
 
     // Load Drive source thumbnail.
     const drivefsUrlMatches = requestUrl.match(/^drivefs:(.*)/);
     if (drivefsUrlMatches) {
-      const url = drivefsUrlMatches[1];
-      const cropToSquare = !!this.request_.crop;
-      chrome.imageLoaderPrivate.getDriveThumbnail(
-          url || '',
-          cropToSquare,
-          onExternalThumbnail,
-      );
+      callImageLoaderPrivate({
+        apiMethod: 'getDriveThumbnail',
+        params: {
+          url: drivefsUrlMatches[1] || '',
+          cropToSquare: !!this.request_.crop,
+        },
+      })
+          .then(onExternalThumbnail)
+          .catch(onFailure);
       return;
     }
 
     // Load PDF source thumbnail.
     if (requestUrl.endsWith('.pdf')) {
       const {width, height} = this.targetThumbnailSize_();
-      chrome.imageLoaderPrivate.getPdfThumbnail(
-          requestUrl,
+      callImageLoaderPrivate({
+        apiMethod: 'getPdfThumbnail',
+        params: {
+          url: requestUrl,
           width,
           height,
-          onExternalThumbnail,
-      );
+        },
+      })
+          .then(onExternalThumbnail)
+          .catch(onFailure);
       return;
     }
 
-    // Load DocumentsProvider thumbnail, if supported.
-    const isDocumentsProviderRequest = !!requestUrl.match(
-        RegExp(
-            'filesystem:chrome-extension://[a-z]+/external/arc-documents-provider/.*',
-            ),
-    );
-    if (isDocumentsProviderRequest) {
+    // Load ARC DocumentsProvider thumbnail, if supported.
+    if (requestUrl.match(adpRegExp)) {
       const {width, height} = this.targetThumbnailSize_();
-      chrome.imageLoaderPrivate.getArcDocumentsProviderThumbnail(
-          requestUrl,
-          width,
-          height,
-          onExternalThumbnail,
-      );
+      callImageLoaderPrivate({
+        apiMethod: 'getArcDocumentsProviderThumbnail',
+        params: {
+          url: requestUrl,
+          widthHint: width,
+          heightHint: height,
+        },
+      })
+          .then(onExternalThumbnail)
+          .catch(onFailure);
       return;
     }
 

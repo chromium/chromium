@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -56,7 +57,7 @@ SendTabToSelfDevicePickerBubbleView::SendTabToSelfDevicePickerBubbleView(
                       web_contents)
                       ->AsWeakPtr()) {
   DCHECK(controller_);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }

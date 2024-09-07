@@ -405,7 +405,7 @@ ScrollBar::ScrollBar(Orientation orientation)
       repeater_(base::BindRepeating(&ScrollBar::TrackClicked,
                                     base::Unretained(this))) {
   set_context_menu_controller(this);
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kScrollBar);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kScrollBar);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

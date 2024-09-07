@@ -19,9 +19,9 @@ class CORE_EXPORT CSSRelativeColorValue : public CSSValue {
  public:
   CSSRelativeColorValue(const CSSValue& origin_color,
                         Color::ColorSpace color_interpolation_space,
+                        const CSSValue& channel0,
                         const CSSValue& channel1,
                         const CSSValue& channel2,
-                        const CSSValue& channel3,
                         const CSSValue* alpha);
 
   WTF::String CustomCSSText() const;
@@ -32,9 +32,9 @@ class CORE_EXPORT CSSRelativeColorValue : public CSSValue {
 
   const CSSValue& OriginColor() const;
   Color::ColorSpace ColorInterpolationSpace() const;
+  const CSSValue& Channel0() const;
   const CSSValue& Channel1() const;
   const CSSValue& Channel2() const;
-  const CSSValue& Channel3() const;
 
   // Alpha will be nullptr if it was not specified.
   const CSSValue* Alpha() const;
@@ -42,9 +42,9 @@ class CORE_EXPORT CSSRelativeColorValue : public CSSValue {
  private:
   Member<const CSSValue> origin_color_;
   const Color::ColorSpace color_interpolation_space_;
+  Member<const CSSValue> channel0_;
   Member<const CSSValue> channel1_;
   Member<const CSSValue> channel2_;
-  Member<const CSSValue> channel3_;
   Member<const CSSValue> alpha_;
 };
 

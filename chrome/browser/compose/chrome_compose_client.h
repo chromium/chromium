@@ -183,6 +183,10 @@ class ChromeComposeClient
   void ShowProactiveNudge(autofill::FormGlobalId form,
                           autofill::FieldGlobalId field) override;
 
+  // Returns the Compose optimization guide hints for the current URL.
+  // compose::ProactiveNudgeTracker implementation.
+  compose::ComposeHintMetadata GetComposeHintMetadata() override;
+
   ComposeEnabling& GetComposeEnabling();
 
   // Returns true when the dialog is showing and false otherwise.
@@ -252,6 +256,10 @@ class ChromeComposeClient
   // Set the exit reason for a session.
   void SetSessionCloseReason(compose::ComposeSessionCloseReason close_reason);
 
+  // Launch Hats with the active session
+  void LaunchHatsSurveyForActiveSession(
+      compose::ComposeSessionCloseReason close_reason);
+
   // Removes `active_compose_field_id_` from `sessions_` and resets
   // `active_compose_field_id_` and `active_compose_form_id_`
   void RemoveActiveSession();
@@ -266,6 +274,10 @@ class ChromeComposeClient
 
   // Returns nullptr if no such session exists.
   ComposeSession* GetSessionForActiveComposeField();
+
+  // Returns true if the active field has an existing session that is not
+  // expired.
+  bool ActiveFieldHasUnexpiredSession();
 
   // Checks if the page assessed language is supported by Compose.
   bool IsPageLanguageSupported();

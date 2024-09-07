@@ -8,12 +8,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "base/containers/span.h"
 #include "base/win/windows_types.h"
@@ -22,9 +20,6 @@ namespace sandbox {
 
 // Prefix for path used by NT calls.
 const wchar_t kNTPrefix[] = L"\\??\\";
-
-// List of handles mapped to their kernel object type name.
-using ProcessHandleMap = std::map<std::wstring, std::vector<HANDLE>>;
 
 // Basic implementation of a singleton which calls the destructor
 // when the exe is shutting down or the DLL is being unloaded.
@@ -81,13 +76,6 @@ DWORD GetLastErrorFromNtStatus(NTSTATUS status);
 // address space layout randomization. This uses the process' PEB to extract
 // the base address. This should only be called on new, suspended processes.
 void* GetProcessBaseAddress(HANDLE process);
-
-// Returns a map of handles open in the current process. The map is keyed by the
-// kernel object type name. If querying the handles fails an empty optional
-// value is returned. Note that unless all threads are suspended in the process
-// the valid handles could change between the return of the list and when you
-// use them.
-std::optional<ProcessHandleMap> GetCurrentProcessHandles();
 
 // Returns true if the string contains a NUL ('\0') character.
 bool ContainsNulCharacter(std::wstring_view str);

@@ -2305,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   std::unique_ptr<Profile> temp_profile = Profile::CreateProfile(
       profile_manager->user_data_dir().AppendASCII("profile"), nullptr,
-      Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+      Profile::CreateMode::kSynchronous);
   // Create a WebRequestAPI instance that we can control the lifetime of.
   auto api = std::make_unique<WebRequestAPI>(temp_profile.get());
   // Make sure we are proxying for |temp_profile|.

@@ -148,7 +148,7 @@ class OnDeviceModelAvailabilityObserver : public base::CheckedObserver {
   // This is not called automatically when the observer is added initially.
   // Consumers should call `OnDeviceModelServiceController::CanCreateSession` to
   // check the initial (or current) model availability state.
-  virtual void OnDeviceModelAvailablityChanged(
+  virtual void OnDeviceModelAvailabilityChanged(
       ModelBasedCapabilityKey feature,
       OnDeviceModelEligibilityReason reason) = 0;
 };
@@ -206,14 +206,17 @@ class OptimizationGuideModelExecutor {
     virtual void GetSizeInTokens(
         const std::string& text,
         OptimizationGuideModelSizeInTokenCallback callback) = 0;
+
+    // Return the sampling params for the current session.
+    virtual const SamplingParams GetSamplingParams() const = 0;
   };
 
   // Whether an on-device session can be created for `feature`. An optional
-  // `debug_reason` parameter can be provided for more detailed reasons for why
-  // an on-device session could not be created.
+  // `on_device_model_eligibility_reason` parameter can be provided for more
+  // detailed reasons for why an on-device session could not be created.
   virtual bool CanCreateOnDeviceSession(
       ModelBasedCapabilityKey feature,
-      raw_ptr<OnDeviceModelEligibilityReason> debug_reason) = 0;
+      OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) = 0;
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should

@@ -38,9 +38,9 @@ class IndexedDBControlWrapper {
 
   void BindIndexedDB(
       const storage::BucketLocator& bucket_locator,
+      const storage::BucketClientInfo& client_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
-      const base::UnguessableToken& client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
 
   // Returns the mojom interface to the `IndexedDBContextImpl`, creating the

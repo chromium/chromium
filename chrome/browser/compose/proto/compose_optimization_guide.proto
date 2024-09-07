@@ -25,4 +25,7 @@ enum ComposeHintDecision {
 // Guidance from the optimization guide for the compose feature on this URL.
 message ComposeHintMetadata {
   optional ComposeHintDecision decision = 1;
+
+  // Map of parameters for the proactive nudge segmentation model.
+  map<string, float> model_params = 2;
 }

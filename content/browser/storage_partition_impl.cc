@@ -40,6 +40,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/attribution_reporting/features.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
@@ -1153,10 +1154,6 @@ StoragePartitionImpl::~StoragePartitionImpl() {
     GetServiceWorkerContext()->Shutdown();
   }
 
-  if (GetPlatformNotificationContext()) {
-    GetPlatformNotificationContext()->Shutdown();
-  }
-
   if (GetBackgroundSyncContext()) {
     GetBackgroundSyncContext()->Shutdown();
   }
@@ -1191,6 +1188,10 @@ void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
     GetContentIndexContext()->Shutdown();
   }
 
+  if (GetPlatformNotificationContext()) {
+    GetPlatformNotificationContext()->Shutdown();
+  }
+
   if (keep_alive_url_loader_service_) {
     keep_alive_url_loader_service_->Shutdown();
   }
@@ -1216,6 +1217,27 @@ void StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext(
   // `NetworkService`, the network revocation nonces of `NetworkContext` will be
   // restored using this.
   network_revocation_nonces_.insert(std::begin(nonces), std::end(nonces));
+}
+
+void StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelay(
+    const std::vector<base::UnguessableToken>& nonces) {
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelayCallback,
+          weak_factory_.GetWeakPtr(), nonces),
+      clear_nonces_in_network_context_delay_);
+}
+
+void StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelayCallback(
+    const std::vector<base::UnguessableToken>& nonces) {
+  GetNetworkContext()->ClearNonces(nonces);
+
+  for (const auto& nonce : nonces) {
+    network_revocation_nonces_.erase(nonce);
+  }
+
+  clear_nonces_in_network_context_callback_for_testing_.Run();
 }
 
 void StoragePartitionImpl::RemoveKeepAliveHandleFromMap(
@@ -3169,6 +3191,13 @@ void StoragePartitionImpl::OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
   delete_stale_session_only_cookies_delay_ = delay;
 }
 
+void StoragePartitionImpl::SetClearNoncesInNetworkContextParamsForTesting(
+    const base::TimeDelta& delay,
+    base::RepeatingClosure callback) {
+  clear_nonces_in_network_context_delay_ = delay;
+  clear_nonces_in_network_context_callback_for_testing_ = callback;
+}
+
 base::WeakPtr<StoragePartitionImpl> StoragePartitionImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -3201,12 +3230,12 @@ StoragePartitionImpl::GetStorageServiceForTesting() {
 
 void StoragePartitionImpl::BindIndexedDB(
     const storage::BucketLocator& bucket_locator,
+    const storage::BucketClientInfo& client_info,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
-    const base::UnguessableToken& client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   indexed_db_control_wrapper_->BindIndexedDB(
-      bucket_locator, std::move(client_state_checker_remote), client_token,
+      bucket_locator, client_info, std::move(client_state_checker_remote),
       std::move(receiver));
 }
 

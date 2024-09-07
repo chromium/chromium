@@ -718,6 +718,14 @@ void AnimatingLayoutManager::LayoutImpl() {
 }
 
 void AnimatingLayoutManager::EndAnimation() {
+  // Make sure an opacity animation is in the correct state before clearing
+  // |fade_infos_|.
+  for (auto fade_info : fade_infos_) {
+    if (fade_info.fade_type != LayoutFadeType::kFadingOut &&
+        fade_info.child_view->layer()) {
+      fade_info.child_view->layer()->SetOpacity(1);
+    }
+  }
   fade_infos_.clear();
   hold_queued_actions_for_layout_ = true;
   if (std::exchange(is_animating_, false))

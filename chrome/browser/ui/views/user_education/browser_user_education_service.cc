@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -51,6 +52,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -59,6 +61,7 @@
 #include "components/saved_tab_groups/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
@@ -186,6 +189,10 @@ void MaybeRegisterChromeFeaturePromos(
   using user_education::FeaturePromoSpecification;
   using user_education::HelpBubbleArrow;
   using user_education::Metadata;
+  using AdditionalCondition = user_education::FeaturePromoSpecification::
+      AdditionalConditions::AdditionalCondition;
+  using AdditionalConditions =
+      user_education::FeaturePromoSpecification::AdditionalConditions;
 
   // This icon got updated, so select the 2023 Refresh version.
   // Note that the WebUI refresh state is not taken into account, so
@@ -345,6 +352,12 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)
+          // This provides backwards-compatibility with legacy conditions used
+          // before feature auto-configuration was enabled.
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kCustomizeChromeOpened,
+                  AdditionalConditions::Constraint::kAtMost, 0})))
           // See: crbug.com/1494923
           .OverrideFocusOnShow(false)));
 
@@ -373,6 +386,12 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetCustomActionIsDefault(false)
           .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)
+          // This provides backwards-compatibility with legacy conditions used
+          // before feature auto-configuration was enabled.
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kCustomizeChromeOpened,
+                  AdditionalConditions::Constraint::kAtMost, 0})))
           // See: crbug.com/1494923
           .OverrideFocusOnShow(false)
           .SetMetadata(119, "mickeyburks@chromium.org",
@@ -388,6 +407,12 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetInAnyContext(true)
+          // This provides backwards-compatibility with legacy conditions used
+          // before feature auto-configuration was enabled.
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kDesktopNTPModuleUsed,
+                  AdditionalConditions::Constraint::kAtMost, 0})))
           // See: crbug.com/1494923
           .OverrideFocusOnShow(false)
           .SetMetadata(122, "romanarora@chromium.org",
@@ -591,7 +616,7 @@ void MaybeRegisterChromeFeaturePromos(
               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN_REMINDER)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleIcon(&vector_icons::kCelebrationIcon)
-          .SetReshowPolicy(base::Days(14), /*max_show_count=*/std::nullopt)));
+          .SetReshowPolicy(base::Days(14), /*max_show_count=*/6)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // kIPHCookieControlsFeature:
@@ -763,6 +788,39 @@ void MaybeRegisterChromeFeaturePromos(
                          "triggered on startup when the saved tab groups are "
                          "defaulted to saved for the first time.")));
   }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // kIPHSupervisedUserProfileSigninFeature
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHSupervisedUserProfileSigninFeature,
+          kToolbarAvatarButtonElementId,
+          IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT, IDS_LEARN_MORE,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                // Open parental controls page.
+                ShowSingletonTab(
+                    browser,
+                    GURL(supervised_user::kManagedByParentUiMoreInfoUrl));
+                base::RecordAction(base::UserMetricsAction(
+                    "SupervisedUserProfileSignIn_IPHPromo_"
+                    "ParentalControlsPageOpened"));
+              }))
+          // TODO(b/351333491): Clarify if we need to mark and approve as a
+          // keyed promo, displaying the IPH once per key per device.
+          .SetBubbleIcon(&vector_icons::kFamilyLinkIcon)
+          .SetBubbleTitleText(IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetCustomActionIsDefault(false)
+          .SetMetadata(128, "anthie@google.com",
+                       "Triggered on signin-in a supervised user to "
+                       "a new profile or an existing local profile")));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
   // kIPHTabOrganizationSuccessFeature:
   registry.RegisterFeature(std::move(

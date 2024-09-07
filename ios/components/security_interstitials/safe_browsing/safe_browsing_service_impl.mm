@@ -53,7 +53,7 @@ void StartSafeBrowsingDBManagerInternal(
       safe_browsing::GetV4ProtocolConfig(client_name,
                                          /*disable_auto_update=*/false);
 
-  safe_browsing_db_manager->StartOnSBThread(shared_url_loader_factory, config);
+  safe_browsing_db_manager->StartOnUIThread(shared_url_loader_factory, config);
 }
 
 }  // namespace
@@ -88,13 +88,11 @@ void SafeBrowsingServiceImpl::Initialize(
       safe_browsing::ExtendedReportingLevelCallback(),
       safe_browsing::V4LocalDatabaseManager::RecordMigrationMetricsCallback());
 
-  io_thread_enabler_ =
-      base::MakeRefCounted<IOThreadEnabler>(safe_browsing_db_manager_);
+  io_thread_enabler_ = base::MakeRefCounted<IOThreadEnabler>();
 
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&IOThreadEnabler::Initialize, io_thread_enabler_,
-                     base::WrapRefCounted(this),
                      network_context_client_.BindNewPipeAndPassReceiver(),
                      safe_browsing_data_path));
 
@@ -146,10 +144,9 @@ void SafeBrowsingServiceImpl::ShutDown() {
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&IOThreadEnabler::ShutDown, io_thread_enabler_));
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) &&
-      enabled_) {
+  if (enabled_) {
     enabled_ = false;
-    safe_browsing_db_manager_->StopOnSBThread(true);
+    safe_browsing_db_manager_->StopOnUIThread(true);
   }
   network_context_client_.reset();
 }
@@ -349,35 +346,26 @@ void SafeBrowsingServiceImpl::SetUpURLLoaderFactory(
 void SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState() {
   bool enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled);
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    if (enabled_ == enabled) {
-      return;
-    }
+  if (enabled_ == enabled) {
+    return;
+  }
 
-    enabled_ = enabled;
-    if (enabled_) {
-      StartSafeBrowsingDBManagerInternal(safe_browsing_db_manager_,
-                                         shared_url_loader_factory_);
-    } else {
-      safe_browsing_db_manager_->StopOnSBThread(false);
-    }
+  enabled_ = enabled;
+  if (enabled_) {
+    StartSafeBrowsingDBManagerInternal(safe_browsing_db_manager_,
+                                       shared_url_loader_factory_);
   } else {
-    web::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&IOThreadEnabler::SetSafeBrowsingEnabled,
-                                  io_thread_enabler_, enabled));
+    safe_browsing_db_manager_->StopOnUIThread(false);
   }
 }
 
 #pragma mark - SafeBrowsingServiceImpl::IOThreadEnabler
 
-SafeBrowsingServiceImpl::IOThreadEnabler::IOThreadEnabler(
-    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager)
-    : safe_browsing_db_manager_(database_manager) {}
+SafeBrowsingServiceImpl::IOThreadEnabler::IOThreadEnabler() = default;
 
 SafeBrowsingServiceImpl::IOThreadEnabler::~IOThreadEnabler() = default;
 
 void SafeBrowsingServiceImpl::IOThreadEnabler::Initialize(
-    scoped_refptr<SafeBrowsingServiceImpl> safe_browsing_service,
     mojo::PendingReceiver<network::mojom::NetworkContext>
         network_context_receiver,
     const base::FilePath& safe_browsing_data_path) {
@@ -386,35 +374,12 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::Initialize(
   network_context_ = std::make_unique<network::NetworkContext>(
       /*network_service=*/nullptr, std::move(network_context_receiver),
       url_request_context_.get(), cors_exempt_header_list);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    SetUpURLLoaderFactory(safe_browsing_service);
-  }
 }
 
 void SafeBrowsingServiceImpl::IOThreadEnabler::ShutDown() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  shutting_down_ = true;
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    SetSafeBrowsingEnabled(false);
-  }
-  url_loader_factory_.reset();
   network_context_.reset();
-  shared_url_loader_factory_.reset();
   url_request_context_.reset();
-}
-
-void SafeBrowsingServiceImpl::IOThreadEnabler::SetSafeBrowsingEnabled(
-    bool enabled) {
-  DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  DCHECK(!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread));
-  if (enabled_ == enabled)
-    return;
-
-  enabled_ = enabled;
-  if (enabled_)
-    StartSafeBrowsingDBManager();
-  else
-    safe_browsing_db_manager_->StopOnSBThread(shutting_down_);
 }
 
 void SafeBrowsingServiceImpl::IOThreadEnabler::ClearAllCookies(
@@ -424,13 +389,6 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::ClearAllCookies(
   cookie_store->DeleteAllAsync(base::BindOnce(
       [](base::OnceClosure callback, uint32_t) { std::move(callback).Run(); },
       std::move(callback)));
-}
-
-void SafeBrowsingServiceImpl::IOThreadEnabler::StartSafeBrowsingDBManager() {
-  DCHECK_CURRENTLY_ON(web::WebThread::IO);
-
-  StartSafeBrowsingDBManagerInternal(safe_browsing_db_manager_,
-                                     shared_url_loader_factory_);
 }
 
 void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLRequestContext(
@@ -452,17 +410,4 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLRequestContext(
   builder.set_user_agent(
       web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE));
   url_request_context_ = builder.Build();
-}
-
-void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLLoaderFactory(
-    scoped_refptr<SafeBrowsingServiceImpl> safe_browsing_service) {
-  DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SafeBrowsingServiceImpl::SetUpURLLoaderFactory,
-                     safe_browsing_service,
-                     url_loader_factory_.BindNewPipeAndPassReceiver()));
-  shared_url_loader_factory_ =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          url_loader_factory_.get());
 }

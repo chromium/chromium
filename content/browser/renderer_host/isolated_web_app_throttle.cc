@@ -174,7 +174,7 @@ bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
   return GetContentClient()->browser()->HandleExternalProtocol(
       url,
       base::BindRepeating(
-          [](const int frame_tree_node_id) {
+          [](const FrameTreeNodeId frame_tree_node_id) {
             return WebContents::FromFrameTreeNodeId(frame_tree_node_id);
           },
           frame_tree_node->frame_tree_node_id()),

@@ -52,12 +52,12 @@ bool IsSharedStorageAllowedByPermissionsPolicy(
                  kEnabled;
 }
 
-int GetMainFrameIdFromRFH(RenderFrameHost* rfh) {
+FrameTreeNodeId GetMainFrameIdFromRFH(RenderFrameHost* rfh) {
   return static_cast<RenderFrameHostImpl*>(rfh->GetOutermostMainFrame())
       ->GetFrameTreeNodeId();
 }
 
-int GetMainFrameIdFromNavigationOrDocumentHandle(
+FrameTreeNodeId GetMainFrameIdFromNavigationOrDocumentHandle(
     NavigationOrDocumentHandle* navigation_or_document_handle) {
   if (auto* navigation_request =
           navigation_or_document_handle->GetNavigationRequest()) {
@@ -67,7 +67,7 @@ int GetMainFrameIdFromNavigationOrDocumentHandle(
   if (auto* rfh = navigation_or_document_handle->GetDocument()) {
     return GetMainFrameIdFromRFH(rfh);
   }
-  return FrameTreeNode::kFrameTreeNodeInvalidId;
+  return FrameTreeNodeId();
 }
 
 }  // namespace
@@ -240,7 +240,7 @@ void SharedStorageHeaderObserver::HeaderReceived(
                     std::make_move_iterator(operations.end()));
 
   std::vector<bool> header_results;
-  int main_frame_id = GetMainFrameIdFromNavigationOrDocumentHandle(
+  FrameTreeNodeId main_frame_id = GetMainFrameIdFromNavigationOrDocumentHandle(
       navigation_or_document_handle);
   while (!to_process.empty()) {
     network::mojom::SharedStorageOperationPtr operation =
@@ -255,7 +255,7 @@ void SharedStorageHeaderObserver::HeaderReceived(
 }
 
 bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
-                                         int main_frame_id,
+                                         FrameTreeNodeId main_frame_id,
                                          OperationPtr operation) {
   switch (operation->type) {
     case OperationType::kSet:
@@ -294,7 +294,7 @@ bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
 
 bool SharedStorageHeaderObserver::Set(
     const url::Origin& request_origin,
-    int main_frame_id,
+    FrameTreeNodeId main_frame_id,
     std::string key,
     std::string value,
     network::mojom::OptionalBool ignore_if_present) {
@@ -332,7 +332,7 @@ bool SharedStorageHeaderObserver::Set(
 }
 
 bool SharedStorageHeaderObserver::Append(const url::Origin& request_origin,
-                                         int main_frame_id,
+                                         FrameTreeNodeId main_frame_id,
                                          std::string key,
                                          std::string value) {
   std::u16string utf16_key;
@@ -362,7 +362,7 @@ bool SharedStorageHeaderObserver::Append(const url::Origin& request_origin,
 }
 
 bool SharedStorageHeaderObserver::Delete(const url::Origin& request_origin,
-                                         int main_frame_id,
+                                         FrameTreeNodeId main_frame_id,
                                          std::string key) {
   std::u16string utf16_key;
   if (!base::UTF8ToUTF16(key.c_str(), key.size(), &utf16_key) ||
@@ -388,7 +388,7 @@ bool SharedStorageHeaderObserver::Delete(const url::Origin& request_origin,
 }
 
 bool SharedStorageHeaderObserver::Clear(const url::Origin& request_origin,
-                                        int main_frame_id) {
+                                        FrameTreeNodeId main_frame_id) {
   NotifySharedStorageAccessed(AccessType::kHeaderClear, main_frame_id,
                               request_origin,
                               SharedStorageEventParams::CreateDefault());
@@ -527,7 +527,7 @@ bool SharedStorageHeaderObserver::IsSharedStorageAllowedBySiteSettings(
 
 void SharedStorageHeaderObserver::NotifySharedStorageAccessed(
     AccessType type,
-    int main_frame_id,
+    FrameTreeNodeId main_frame_id,
     const url::Origin& request_origin,
     const SharedStorageEventParams& params) {
   storage_partition_->GetSharedStorageWorkletHostManager()

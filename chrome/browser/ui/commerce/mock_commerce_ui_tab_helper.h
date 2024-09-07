@@ -58,7 +58,7 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
               GetPriceInsightsInfo,
               ());
   MOCK_METHOD(bool, ShouldExpandPageActionIcon, (PageActionIconType type));
-  MOCK_METHOD(PriceInsightsIconView::PriceInsightsIconLabelType,
+  MOCK_METHOD(PriceInsightsIconLabelType,
               GetPriceInsightsIconLabelTypeForPage,
               ());
   MOCK_METHOD(const std::vector<commerce::DiscountInfo>&, GetDiscounts, ());

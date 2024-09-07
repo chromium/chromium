@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -67,6 +68,7 @@ const char kModelExecutionMainToggleSettingState[] =
 const char kPreviousOptimizationTypesWithFilter[] =
     "optimization_guide.previous_optimization_types_with_filter";
 
+// TODO(b/354704993): Move this to the SettingsUiMetadata.
 // Pref that contains user opt-in state for different features.
 std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature) {
   switch (feature) {

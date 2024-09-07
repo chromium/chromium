@@ -70,6 +70,7 @@ _SUPPORTED_EMULATORS = {
     'android_32_google_apis_x64_foldable.textpb': 'x64',
     'android_33_google_apis_x64': 'x64',
     'android_34_google_apis_x64': 'x64',
+    'android_35_google_apis_x64': 'x64',
 }
 
 _GN_ARGS = [

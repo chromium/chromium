@@ -33,9 +33,10 @@ class Address : public FormGroup {
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& locale,
-                        FieldTypeSet* matching_types) const override;
+  void GetMatchingTypesWithProfileSources(
+      const std::u16string& text,
+      const std::string& locale,
+      FieldTypeSet* matching_types) const override;
 
   // Derives all missing tokens in the structured representation of the address
   // either parsing missing tokens from their assigned parent or by formatting

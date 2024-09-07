@@ -44,7 +44,7 @@ source_set("unit_tests") {
     ":java_script_console",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test/fakes",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

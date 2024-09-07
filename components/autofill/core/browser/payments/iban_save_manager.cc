@@ -156,10 +156,10 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
 
 bool IbanSaveManager::MatchesExistingLocalIban(
     const Iban& import_candidate) const {
-  return base::ranges::any_of(
-      payments_data_manager().GetLocalIbans(), [&](const Iban* iban) {
-        return iban->value() == import_candidate.value();
-      });
+  return std::ranges::any_of(payments_data_manager().GetLocalIbans(),
+                             [&](const Iban* iban) {
+                               return iban->value() == import_candidate.value();
+                             });
 }
 
 bool IbanSaveManager::MatchesExistingServerIban(

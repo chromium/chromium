@@ -16,6 +16,7 @@
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
@@ -54,7 +55,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // Constructor for window clients.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
                       bool is_parent_frame_secure,
-                      int frame_tree_node_id);
+                      FrameTreeNodeId frame_tree_node_id);
 
   // Constructor for worker clients.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
@@ -537,7 +538,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // The frame tree node ID that is set in the constructor and is reset in
   // CommitResponse().
-  int ongoing_navigation_frame_tree_node_id_;
+  FrameTreeNodeId ongoing_navigation_frame_tree_node_id_;
 
   // For all instances --------------------------------------------------------
 

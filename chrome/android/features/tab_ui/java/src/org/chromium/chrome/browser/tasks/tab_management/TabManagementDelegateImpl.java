@@ -60,10 +60,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull DataSharingTabManager dataSharingTabManager,
             TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
-            ViewGroup rootView,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager) {
         return new TabGroupUiCoordinator(
                 activity,
@@ -76,10 +74,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 dataSharingTabManager,
                 tabModelSelector,
                 tabContentManager,
-                rootView,
                 tabCreatorManager,
                 layoutStateProviderSupplier,
-                snackbarManager,
                 modalDialogManager);
     }
 

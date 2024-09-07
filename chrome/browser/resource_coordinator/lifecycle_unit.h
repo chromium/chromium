@@ -71,9 +71,13 @@ class LifecycleUnit {
   // title is available.
   virtual std::u16string GetTitle() const = 0;
 
-  // Returns the last time at which the LifecycleUnit was focused, or
+  // Returns the last time ticks at which the LifecycleUnit was focused, or
   // base::TimeTicks::Max() if the LifecycleUnit is currently focused.
-  virtual base::TimeTicks GetLastFocusedTime() const = 0;
+  virtual base::TimeTicks GetLastFocusedTimeTicks() const = 0;
+
+  // Returns the last time at which the LifecycleUnit was focused, or
+  // base::Time::Max() if the LifecycleUnit is currently focused.
+  virtual base::Time GetLastFocusedTime() const = 0;
 
   // Returns the current visibility of this LifecycleUnit.
   virtual content::Visibility GetVisibility() const = 0;

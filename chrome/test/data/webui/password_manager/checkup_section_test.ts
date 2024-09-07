@@ -28,6 +28,7 @@ class CheckupTestPluralStringProxy extends TestBrowserProxy implements
       'checkedPasswords',
       'checkingPasswords',
       'compromisedPasswords',
+      'compromisedPasswordsTitle',
       'reusedPasswords',
       'weakPasswords',
     ]);
@@ -343,5 +344,51 @@ suite('CheckupSectionTest', function() {
     // getPluralString() for 'checkedPasswords' is called 3 times with 0, 10
     // and 9.
     assertArrayEquals([0, 10, 9], pluralString.getArgs('checkedPasswords'));
+  });
+
+  test('Compromised section - subheader', async function() {
+    passwordManager.data.checkStatus =
+        makePasswordCheckStatus({state: PasswordCheckState.IDLE});
+
+    // 3 compromised, 0 reused, 4 weak credentials
+    passwordManager.data.insecureCredentials = [
+      makeInsecureCredential({
+        types: [
+          CompromiseType.PHISHED,
+          CompromiseType.LEAKED,
+          CompromiseType.WEAK,
+        ],
+      }),
+      makeInsecureCredential({
+        types: [
+          CompromiseType.PHISHED,
+          CompromiseType.WEAK,
+        ],
+      }),
+      makeInsecureCredential({
+        types: [
+          CompromiseType.LEAKED,
+          CompromiseType.WEAK,
+        ],
+      }),
+      makeInsecureCredential({types: [CompromiseType.WEAK]}),
+    ];
+
+    const section = document.createElement('checkup-section');
+    document.body.appendChild(section);
+
+    await passwordManager.whenCalled('getInsecureCredentials');
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+
+    // Expect a proper number of insecure credentials as a parameter to
+    // PluralStringProxy.
+    assertEquals(3, await pluralString.whenCalled('compromisedPasswords'));
+    assertEquals(3, await pluralString.whenCalled('compromisedPasswordsTitle'));
+    await flushTasks();
+
+    // Expect string returned by PluralStringProxy.
+    assertEquals('compromisedPasswords', section.$.compromisedRow.label);
+    assertEquals(
+        'compromisedPasswordsTitle', section.$.compromisedRow.subLabel);
   });
 });

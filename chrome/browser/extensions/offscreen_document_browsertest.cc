@@ -225,8 +225,9 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, APIAccessIsLimited) {
         R"("PlatformArch","PlatformNaclArch","PlatformOs",)"
         R"("RequestUpdateCheckStatus",)"
         // Methods and events.
-        R"("connect","getURL","id","onConnect","onConnectExternal",)"
-        R"("onMessage","onMessageExternal","sendMessage"])";
+        R"("connect","dynamicId","getURL","id","onConnect",)"
+        R"("onConnectExternal","onMessage","onMessageExternal",)"
+        R"("sendMessage"])";
     EXPECT_EQ(kExpectedProperties, EvalJs(contents, kScript));
   }
 }

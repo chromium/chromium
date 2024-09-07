@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/follow_menu_updater.h"
@@ -41,6 +40,7 @@
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -49,7 +49,7 @@
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -76,7 +76,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -1227,20 +1226,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   return result;
 }
 
-// Highlight the Settings destination with a promo badge if needed.
-- (void)maybeHighlightSettingsWithPromoBadge {
-  if (self.syncService &&
-      ShouldIndicateIdentityErrorInOverflowMenu(self.syncService)) {
-    return;
-  }
-
-  if (self.engagementTracker &&
-      ShouldTriggerDefaultBrowserHighlightFeature(self.engagementTracker)) {
-    self.settingsDestination.badge = BadgeTypePromo;
-    RecordDefaultBrowserBlueDotFirstDisplay();
-  }
-}
-
 - (DestinationRanking)baseDestinations {
   std::vector<overflow_menu::Destination> destinations = {
       overflow_menu::Destination::Bookmarks,
@@ -1789,8 +1774,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::Destination::Settings:
       if ([self shouldIndicateIdentityError]) {
         self.settingsDestination.badge = BadgeTypeError;
-      } else {
-        [self maybeHighlightSettingsWithPromoBadge];
+      } else if (self.hasSettingsBlueDot) {
+        self.settingsDestination.badge = BadgeTypePromo;
       }
       return self.settingsDestination;
     case overflow_menu::Destination::WhatsNew:
@@ -1861,6 +1846,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       self.settingsDestination.badge == BadgeTypePromo) {
     self.engagementTracker->NotifyEvent(
         feature_engagement::events::kBlueDotOverflowMenuCustomized);
+    [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
   }
 }
 
@@ -2187,7 +2173,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)startLensOverlay {
   RecordAction(UserMetricsAction("MobileMenuLensOverlay"));
   [self dismissMenu];
-  [self.lensOverlayHandler createAndShowLensUI:YES];
+  [self.lensOverlayHandler
+      createAndShowLensUI:YES
+               entrypoint:LensOverlayEntrypoint::kOverflowMenu];
 }
 
 #pragma mark - Destinations Handlers
@@ -2274,11 +2262,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Dismisses the menu and opens settings.
 - (void)openSettings {
-  if (self.settingsDestination.badge == BadgeTypePromo &&
-      self.engagementTracker) {
-    self.engagementTracker->NotifyEvent(
-        feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
-  }
   [self dismissMenu];
   profile_metrics::BrowserProfileType type =
       self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito

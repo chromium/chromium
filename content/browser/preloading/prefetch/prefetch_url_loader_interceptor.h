@@ -13,6 +13,7 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/cpp/resource_request.h"
 
@@ -30,7 +31,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
     : public NavigationLoaderInterceptor {
  public:
   PrefetchURLLoaderInterceptor(
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       std::optional<blink::DocumentToken> initiator_document_token,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           serving_page_metrics_container);
@@ -53,7 +54,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
       PrefetchCompleteCallbackForTesting callback);
 
  protected:
-  int GetFrameTreeNodeId() const { return frame_tree_node_id_; }
+  FrameTreeNodeId GetFrameTreeNodeId() const { return frame_tree_node_id_; }
 
  private:
   // Gets the `PrefetchContainer` (if any) to be used for
@@ -75,7 +76,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
 
   // The frame tree node |this| is associated with, used to retrieve
   // |PrefetchService|.
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
 
   // Corresponds to the ID of "navigable's active document" used for "finding a
   // matching prefetch record" in the spec. This is used as a part of

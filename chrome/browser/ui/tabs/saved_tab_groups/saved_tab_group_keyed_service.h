@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_controller.h"
@@ -14,6 +16,7 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/range/range.h"
@@ -21,15 +24,17 @@
 class Profile;
 class TabGroup;
 
+namespace tabs {
+class TabModel;
+}
+
 namespace syncer {
-
 class DeviceInfoTracker;
-
 }
 
 namespace tab_groups {
 
-class TabGroupServiceWrapper;
+class TabGroupSyncServiceProxy;
 
 // Serves to instantiate and own the SavedTabGroup infrastructure for the
 // browser.
@@ -45,12 +50,9 @@ class SavedTabGroupKeyedService : public KeyedService,
       delete;
   ~SavedTabGroupKeyedService() override;
 
-  // Whether the sync setting is on for saved tab groups.
-  bool AreSavedTabGroupsSynced();
-
-  SavedTabGroupModelListener* listener() { return &listener_; }
-  const SavedTabGroupModel* model() const { return &model_; }
-  SavedTabGroupModel* model() { return &model_; }
+  SavedTabGroupModelListener* listener() { return listener_.get(); }
+  const SavedTabGroupModel* model() const { return model_.get(); }
+  SavedTabGroupModel* model() { return model_.get(); }
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate();
   base::WeakPtr<syncer::DataTypeControllerDelegate>
@@ -91,7 +93,7 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Saves a restored group. This can be called prior to the saved tab
   // group model is loaded. These groups are saved when the model is loaded.
-  void SaveRestoredGroup(const tab_groups::TabGroupId& group_id);
+  void SaveRestoredGroup(SavedTabGroup group);
 
   void UpdateAttributions(
       const LocalTabGroupID& group_id,
@@ -117,6 +119,8 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   void OnTabGroupVisualsChanged(const base::Uuid& group_guid);
 
+  TabGroupSyncServiceProxy* proxy() { return service_proxy_.get(); }
+
  private:
   // Adds tabs to `tab_group` if `saved_group` was modified and has more tabs
   // than `tab_group` when a restore happens.
@@ -139,29 +143,30 @@ class SavedTabGroupKeyedService : public KeyedService,
       const SavedTabGroup* const saved_group,
       const gfx::Range& tab_range);
 
-  // Connects all SavedTabGroupTabs from a SavedTabGroup to their respective
-  // WebContents in the local TabGroup.
-  std::map<content::WebContents*, base::Uuid>
-  GetWebContentsToTabGuidMappingForSavedGroup(
+  // Given a `tab_range` which is indexes of tabs in the `tab_strip_model` that
+  // should be part of `saved_group` outputs a mapping of tab to guid. This
+  // method performs no checks to make sure that the tabs are the correct ones
+  // that should be connected.
+  std::map<tabs::TabModel*, base::Uuid> GetTabToGuidMappingForSavedGroup(
       const TabStripModel* const tab_strip_model,
       const SavedTabGroup* const saved_group,
       const gfx::Range& tab_range);
 
-  // Connects all SavedTabGroupTabs from a SavedTabGroup to their respective
-  // WebContents that will open.
-  std::map<content::WebContents*, base::Uuid>
-  GetWebContentsToTabGuidMappingForOpening(
+  // Opens a saved tab group into the tabstrip of the `browser` and returns a
+  // mapping of the tabs to the SavedTabGroupTab. This method does not check
+  // that the browser is accepting of groups so this must be done by callers.
+  // This method does not check that the saved group is already open so that
+  // must be done by callers. This method does not check if the saved_group is
+  // part of the model, this must be done by callers.
+  std::map<tabs::TabModel*, base::Uuid> OpenSavedTabGroupAndGetTabToGuidMapping(
       Browser* browser,
-      const SavedTabGroup* const saved_group,
-      const base::Uuid& saved_group_guid);
+      const SavedTabGroup* const saved_group);
 
-  // Helper function that adds the opened tabs obtained from calling
-  // `GetWebContentsToTabGuidMappingForOpening` into a new tab group in the
-  // TabStrip.
+  // Helper method that takes the list of tabs that were created specifically
+  // for the saved group, and then groups them in the tabstrip model.
   tab_groups::TabGroupId AddOpenedTabsToGroup(
       TabStripModel* const tab_strip_model_for_creation,
-      const std::map<content::WebContents*, base::Uuid>&
-          opened_web_contents_to_uuid,
+      const std::map<tabs::TabModel*, base::Uuid>& tab_guid_mapping,
       const SavedTabGroup& saved_group);
 
   // Returns a pointer to the TabStripModel which contains `local_group_id`.
@@ -191,33 +196,33 @@ class SavedTabGroupKeyedService : public KeyedService,
   // The profile used to instantiate the keyed service.
   raw_ptr<Profile> profile_ = nullptr;
 
-  // Represents sync backend. After migration, it will be a pointer to
-  // TabGroupSyncService.
-  std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
-
   // The current representation of this profiles saved tab groups.
-  SavedTabGroupModel model_;
+  std::unique_ptr<SavedTabGroupModel> model_;
+
+  // Proxy service which implements TabGroupSyncService. Forwards and translates
+  // TabGroupSyncService calls to SavedTabGroupKeyedService calls.
+  std::unique_ptr<TabGroupSyncServiceProxy> service_proxy_;
 
   // Listens to and observers all tabstrip models; updating the
   // SavedTabGroupModel when necessary.
-  SavedTabGroupModelListener listener_;
+  std::unique_ptr<SavedTabGroupModelListener> listener_;
 
   // Stores SavedTabGroup data to the disk and to sync if enabled.
-  TabGroupSyncBridgeMediator sync_bridge_mediator_;
+  std::unique_ptr<TabGroupSyncBridgeMediator> sync_bridge_mediator_;
+
+  // Helper class for logging metrics.
+  std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
 
   // Timer used to record periodic metrics about the state of the TabGroups
   // (saved and unsaved).
   base::RepeatingTimer metrics_timer_;
-
-  // Helper class for logging metrics.
-  std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
 
   // Keeps track of restored group to connect to model load.
   std::vector<std::pair<base::Uuid, tab_groups::TabGroupId>>
       restored_groups_to_connect_on_load_;
 
   // Keeps track of the groups to save on model load.
-  std::vector<tab_groups::TabGroupId> restored_groups_to_save_on_load_;
+  std::vector<SavedTabGroup> restored_groups_to_save_on_load_;
 };
 
 }  // namespace tab_groups

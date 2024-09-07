@@ -7,7 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
-#include "chrome/browser/ash/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 
 namespace arc {
 

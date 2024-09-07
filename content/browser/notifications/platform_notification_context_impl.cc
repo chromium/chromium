@@ -276,6 +276,8 @@ void PlatformNotificationContextImpl::Shutdown() {
   // |service_worker_context_| may be NULL in tests.
   if (service_worker_context_)
     service_worker_context_->RemoveObserver(this);
+
+  browser_context_ = nullptr;
 }
 
 void PlatformNotificationContextImpl::CreateService(

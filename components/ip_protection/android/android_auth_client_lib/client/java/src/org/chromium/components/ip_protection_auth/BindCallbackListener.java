@@ -16,14 +16,18 @@ final class BindCallbackListener implements IpProtectionAuthServiceCallback {
 
     @Override
     public void onResult(IpProtectionAuthClient client) {
-        assert mNativeListener != 0;
+        if (mNativeListener == 0) {
+            throw new IllegalStateException("callback already used");
+        }
         BindCallbackListenerJni.get().onResult(mNativeListener, client);
         mNativeListener = 0;
     }
 
     @Override
     public void onError(String error) {
-        assert mNativeListener != 0;
+        if (mNativeListener == 0) {
+            throw new IllegalStateException("callback already used");
+        }
         BindCallbackListenerJni.get().onError(mNativeListener, error);
         mNativeListener = 0;
     }

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -137,7 +138,7 @@ TEST(OutgoingStreamTest, WriteArrayBuffer) {
   auto* script_state = scope.GetScriptState();
   auto* writer =
       outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
-  auto* chunk = DOMArrayBuffer::Create("A", 1);
+  auto* chunk = DOMArrayBuffer::Create(base::byte_span_from_cstring("A"));
   ScriptPromiseUntyped result =
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);
@@ -157,7 +158,7 @@ TEST(OutgoingStreamTest, WriteArrayBufferView) {
   auto* script_state = scope.GetScriptState();
   auto* writer =
       outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
-  auto* buffer = DOMArrayBuffer::Create("*B", 2);
+  auto* buffer = DOMArrayBuffer::Create(base::byte_span_from_cstring("*B"));
   // Create a view into the buffer with offset 1, ie. "B".
   auto* chunk = DOMUint8Array::Create(buffer, 1, 1);
   ScriptPromiseUntyped result =
@@ -244,7 +245,7 @@ TEST(OutgoingStreamTest, WriteThenClose) {
   auto* script_state = scope.GetScriptState();
   auto* writer =
       outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
-  auto* chunk = DOMArrayBuffer::Create("D", 1);
+  auto* chunk = DOMArrayBuffer::Create(base::byte_span_from_cstring("D"));
   ScriptPromiseUntyped write_promise =
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);

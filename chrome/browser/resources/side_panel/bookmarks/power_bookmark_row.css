@@ -48,4 +48,10 @@ cr-expand-button {
   display: flex;
   flex-direction: row-reverse;
   --cr-section-vertical-padding: 0px;
+  margin-left: calc(var(--depth) * var(--margin-per-depth));
+}
+
+#bookmark {
+  margin-left: calc(var(--depth) * var(--margin-per-depth) +
+      var(--base-margin));
 }

@@ -6,6 +6,7 @@
 #define IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
@@ -14,7 +15,6 @@
 @protocol UnitConversionCommands;
 
 class Browser;
-class ChromeBrowserState;
 @class MainController;
 @class NewTabPageController;
 @class SceneController;

@@ -4,11 +4,14 @@
 
 component_files = [
   "audio-waveform.ts",
+  "cra/cra-accordion-item.ts",
+  "cra/cra-accordion.ts",
   "cra/cra-button.ts",
   "cra/cra-dialog.ts",
   "cra/cra-dropdown.ts",
   "cra/cra-feature-tour-dialog.ts",
   "cra/cra-icon-button.ts",
+  "cra/cra-icon-dropdown.ts",
   "cra/cra-icon.ts",
   "cra/cra-image.ts",
   "cra/cra-menu.ts",
@@ -20,7 +23,7 @@ component_files = [
   "genai-error.ts",
   "genai-feedback-buttons.ts",
   "genai-placeholder.ts",
-  "mic-selection-menu.ts",
+  "mic-selection-button.ts",
   "onboarding-dialog.ts",
   "recording-file-list.ts",
   "recording-file-list-item.ts",

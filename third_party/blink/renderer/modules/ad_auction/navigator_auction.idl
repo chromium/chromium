@@ -49,7 +49,8 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
   [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
   Promise<Ads> createAdRequest(AdRequestConfig config);
 
-  [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
+  // The implementation resolves with a DOMString instead of a URL object.
+  [RuntimeEnabled=Parakeet, CallWith=ScriptState, PromiseIDLTypeMismatch, Measure, RaisesException]
   Promise<URL> finalizeAd(Ads ads, AuctionAdConfig config);
 
   [RuntimeEnabled=FencedFrames, CallWith=ScriptState]

@@ -4,7 +4,24 @@
 
 module fingerprinting_protection_filter.mojom;
 
+import "components/subresource_filter/core/mojom/subresource_filter.mojom";
 import "mojo/public/mojom/base/file.mojom";
+
+// The browser host object that manages filtering for a conceptual page. Used
+// to inform the browser when a disallowed load occurs on a renderer and pass
+// aggregated metrics.
+interface FingerprintingProtectionHost {
+  // Called when the activation state for a Page is needed to decide whether to
+  // filter subresource loads in the renderer. Should only be called once per
+  // frame to avoid unnecessary IPCs.
+  CheckActivation() => (
+      subresource_filter.mojom.ActivationState activation_state);
+
+  // Called the first time a subresource load is disallowed for the most
+  // recently committed document load in a frame. It is used to trigger a UI
+  // prompt to inform the user and allow them to turn off filtering.
+  DidDisallowFirstSubresource();
+};
 
 // Receiver on the renderer for Fingerprinting Protection rulesets (such as
 // a ruleset dealer).

@@ -510,11 +510,11 @@ PP_Resource PPB_ImageData_Proxy::CreateProxyResource(
               ->GetReference();
         }
       }
+      break;
 #else
       // PlatformImageData shouldn't be created in untrusted code.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
 #endif
-      break;
     }
   }
 

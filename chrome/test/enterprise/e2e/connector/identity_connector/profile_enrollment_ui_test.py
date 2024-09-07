@@ -65,31 +65,35 @@ def main(argv):
     window.child_window(
         title="Continue", control_type="Button").click()  # Confirm the dialogue
     time.sleep(10)  # Wait for the completion of work profile enrollment
+    window.child_window(title="Confirm", control_type="Button").click()
+    time.sleep(5)
 
     # Obtain the workprofile's UI window
     workprofile = app.top_window()
 
     # Check user identity status in the profile menu
     if "demo" in FLAGS.account:
-      workprofile.child_window(title="Demo Test", control_type="Button").click()
+      workprofile.child_window(
+          title="Demo Test (Work)", control_type="Button").click()
       if workprofile.child_window(
           title=FLAGS.account, control_type="Text").exists():
         logging.info("Icebreaker work profile created")
 
     if "enterprise" in FLAGS.account:
       workprofile.child_window(
-          title="Enterprise Test", control_type="Button").click()
+          title="Enterprise Test (Work)", control_type="Button").click()
       if workprofile.child_window(
           title=FLAGS.account, control_type="Text").exists():
         logging.info("Dasherless work profile created")
 
     # Check chrome policy page to see the cloud policies
-    driver.switch_to.window(driver.window_handles[1])
+    driver.switch_to.window(driver.window_handles[0])
     driver.get('chrome://policy')
     driver.find_element(By.ID, 'reload-policies').click
-    # Give the page 2 seconds to render the legend
-    time.sleep(2)
-    status_box = driver.find_elements(By.CSS_SELECTOR, "status-box")[1]
+    # Give the page 5 seconds to render the legend
+    time.sleep(5)
+    status_box = driver.find_elements(By.CSS_SELECTOR, "status-box")[0]
+
     el = getElementFromShadowRoot(driver, status_box, ".status-box-fields")
 
     logging.info(el.find_element(By.CLASS_NAME, 'status-box-heading').text)

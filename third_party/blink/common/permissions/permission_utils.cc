@@ -72,6 +72,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "VR";
     case PermissionType::AR:
       return "AR";
+    case PermissionType::HAND_TRACKING:
+      return "HandTracking";
     case PermissionType::SMART_CARD:
       return "SmartCard";
     case PermissionType::STORAGE_ACCESS_GRANT:
@@ -98,6 +100,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "PointerLock";
     case PermissionType::AUTOMATIC_FULLSCREEN:
       return "AutomaticFullscreen";
+    case PermissionType::WEB_APP_INSTALLATION:
+      return "WebAppInstallation";
     case PermissionType::NUM:
       NOTREACHED_IN_MIGRATION();
       return std::string();
@@ -129,6 +133,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return mojom::PermissionsPolicyFeature::kIdleDetection;
     case PermissionType::WAKE_LOCK_SCREEN:
       return mojom::PermissionsPolicyFeature::kScreenWakeLock;
+    case PermissionType::HAND_TRACKING:
+      return mojom::PermissionsPolicyFeature::kWebXr;
     case PermissionType::VR:
       return mojom::PermissionsPolicyFeature::kWebXr;
     case PermissionType::AR:
@@ -153,6 +159,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return mojom::PermissionsPolicyFeature::kSpeakerSelection;
     case PermissionType::AUTOMATIC_FULLSCREEN:
       return mojom::PermissionsPolicyFeature::kFullscreen;
+    case PermissionType::WEB_APP_INSTALLATION:
+      return mojom::PermissionsPolicyFeature::kWebAppInstallation;
 
     case PermissionType::PERIODIC_BACKGROUND_SYNC:
     case PermissionType::DURABLE_STORAGE:
@@ -306,6 +314,8 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       // There is no PermissionType for fullscreen with user gesture.
       NOTIMPLEMENTED_LOG_ONCE();
       return std::nullopt;
+    case PermissionName::WEB_APP_INSTALLATION:
+      return PermissionType::WEB_APP_INSTALLATION;
     default:
       NOTREACHED_IN_MIGRATION();
       return std::nullopt;

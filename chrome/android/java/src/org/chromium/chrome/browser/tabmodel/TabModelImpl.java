@@ -259,6 +259,8 @@ public class TabModelImpl extends TabModelJniBridge {
             // TODO(crbug.com/40923859): Technically this should trigger NPEs downstream. Adding out
             // of an abundance of caution.
             assert tab != null : "Attempting to add a tab that is null to TabModel.";
+            assert !mTabIdToTabs.containsKey(tab.getId())
+                    : "Attempting to add a tab with a duplicate id=" + tab.getId();
 
             for (TabModelObserver obs : mObservers) obs.willAddTab(tab, type);
 

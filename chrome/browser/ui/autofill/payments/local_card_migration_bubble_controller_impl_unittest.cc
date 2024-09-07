@@ -29,7 +29,6 @@ using base::Bucket;
 using testing::ElementsAre;
 
 namespace autofill {
-
 namespace {
 
 class TestLocalCardMigrationBubbleControllerImpl
@@ -53,8 +52,6 @@ class TestLocalCardMigrationBubbleControllerImpl
     DidFinishNavigation(&navigation_handle);
   }
 };
-
-}  // namespace
 
 class LocalCardMigrationBubbleControllerImplTest
     : public BrowserWithTestWindowTest {
@@ -279,4 +276,5 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_Unknown) {
       autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN, 1);
 }
 
+}  // namespace
 }  // namespace autofill

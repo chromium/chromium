@@ -28,7 +28,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationTranslateFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature,
-    &kIPHAddToHomescreenMessageFeature,
     &kIPHAutoDarkOptOutFeature,
     &kIPHAutoDarkUserEducationMessageFeature,
     &kIPHAutoDarkUserEducationMessageOptInFeature,
@@ -91,6 +90,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsSurfaceFeature,
     &kIPHTabGroupsSurfaceOnHideFeature,
     &kIPHTabSwitcherButtonFeature,
+    &kIPHTabSwitcherButtonSwitchIncognitoFeature,
     &kIPHTabSwitcherFloatingActionButtonFeature,
     &kIPHTranslateMenuButtonFeature,
     &kIPHVideoTutorialNTPChromeIntroFeature,
@@ -159,6 +159,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSSavedTabGroupClosed,
     &kIPHiOSContextualPanelSampleModelFeature,
     &kIPHiOSContextualPanelPriceInsightsFeature,
+    &kIPHHomeCustomizationMenuFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -211,6 +212,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSideSearchAutoTriggeringFeature,
     &kIPHSideSearchPageActionLabelFeature,
     &kIPHSignoutWebInterceptFeature,
+    &kIPHSupervisedUserProfileSigninFeature,
     &kIPHTabGroupsSaveV2IntroFeature,
     &kIPHTabGroupsSaveV2CloseGroupFeature,
     &kIPHTabOrganizationSuccessFeature,

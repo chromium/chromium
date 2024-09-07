@@ -423,6 +423,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
  public:
   BirchLostMediaItem(const GURL& source_url,
                      const std::u16string& media_title,
+                     const std::optional<ui::ImageModel>& backup_icon,
                      const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchLostMediaItem(BirchLostMediaItem&&);
@@ -448,6 +449,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
 
   GURL source_url_;
   std::u16string media_title_;
+  std::optional<ui::ImageModel> backup_icon_;
   SecondaryIconType secondary_icon_type_;
   base::RepeatingClosure activation_callback_;
 };
@@ -497,6 +499,9 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   std::string ToString() const override;
   void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
+  void PerformAddonAction() override;
+  BirchAddonType GetAddonType() const override;
+  std::u16string GetAddonAccessibleName() const override;
 
  private:
   // TODO(yulunwu):Add coral data to `BirchCoralItem`

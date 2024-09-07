@@ -24,6 +24,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -31,7 +32,7 @@ namespace {
 
 // Delay to observe when dismissing the UI after showing the confirmation
 // indicator that the deletion has concluded.
-constexpr NSTimeInterval kDismissDelay = 1;
+constexpr base::TimeDelta kDismissDelay = base::Seconds(1);
 
 // Trash icon view size.
 constexpr CGFloat kTrashIconContainerViewSize = 64;
@@ -84,6 +85,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 @end
 
 @implementation QuickDeleteViewController
+
+- (void)focusOnBrowsingDataRow {
+  UIView* browsingDataRow = [_tableView
+      cellForRowAtIndexPath:[_dataSource indexPathForItemIdentifier:
+                                             @(ItemIdentifierBrowsingData)]];
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  browsingDataRow);
+}
 
 #pragma mark - UIViewController
 
@@ -338,24 +347,75 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)deletionInProgress {
-  self.view.userInteractionEnabled = NO;
+  self.primaryActionButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_IN_PROGRESS_NOTICE);
   self.isLoading = YES;
   self.isConfirmed = NO;
+
+  self.view.window.userInteractionEnabled = NO;
+  // Disable accessibility elements on entire window to avoid Voiceover focusing
+  // on new elements during the deletion or the animation.
+  self.view.window.accessibilityElementsHidden = YES;
 }
 
 - (void)deletionFinished {
+  // Allow the user to dismiss the bottom sheet, but still not interact with
+  // contents of the bottom sheet.
+  self.view.userInteractionEnabled = NO;
+  self.view.window.userInteractionEnabled = YES;
+  self.view.window.accessibilityElementsHidden = NO;
+
   self.isLoading = NO;
   self.isConfirmed = YES;
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
 
-  // Add an artificial delay for dimissing the UI, so the user is able to see
-  // the confirmation state.
-  [self performSelector:@selector(dismissQuickDelete)
-             withObject:nil
-             afterDelay:kDismissDelay];
+  // If Voiceover is enabled, inform users that their browsing data has been
+  // deleted. We should let the voiceover announcement finish before dismissing
+  // the UI programatically. We'll trigger the dismissal after the announcement
+  // is finished when UIAccessibilityAnnouncementDidFinishNotification is
+  // received. Users are still able to dismiss the UI manually before the
+  // announcement is finished by swipping down the bottom sheet.
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector
+           (handleUIAccessibilityAnnouncementDidFinishNotification:)
+               name:UIAccessibilityAnnouncementDidFinishNotification
+             object:nil];
+    UIAccessibilityPostNotification(
+        UIAccessibilityAnnouncementNotification,
+        l10n_util::GetNSString(
+            IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE));
+  } else {
+    // If voice over is not running, we'll add an artificial delay for dimissing
+    // the UI, so the user is able to see the confirmation state.
+    __weak __typeof(self) weakSelf = self;
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, kDismissDelay.InNanoseconds()),
+        dispatch_get_main_queue(), ^{
+          [weakSelf dismissQuickDelete];
+        });
+  }
 }
 
 #pragma mark - Private
+
+// Action handler that executes when a voiceover announcement ends.
+- (void)handleUIAccessibilityAnnouncementDidFinishNotification:
+    (NSNotification*)notification {
+  NSString* announcement = [[notification userInfo]
+      valueForKey:UIAccessibilityAnnouncementKeyStringValue];
+  if ([announcement
+          isEqualToString:
+              l10n_util::GetNSString(
+                  IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE)]) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:self
+                  name:UIAccessibilityAnnouncementDidFinishNotification
+                object:nil];
+    [self dismissQuickDelete];
+  }
+}
 
 // Triggers the dismission of the Quick Delete UI.
 - (void)dismissQuickDelete {

@@ -188,7 +188,7 @@ class MockMediaDevicesDispatcherHost final
     }
     if (request_audio_output) {
       wtf_size_t index = static_cast<wtf_size_t>(
-          blink::mojom::blink::MediaDeviceType::kMediaAudioOuput);
+          blink::mojom::blink::MediaDeviceType::kMediaAudioOutput);
       enumeration[index] = enumeration_[index];
     }
     std::move(callback).Run(std::move(enumeration),
@@ -307,9 +307,9 @@ class MockMediaDevicesDispatcherHost final
     listener()->OnDevicesChanged(MediaDeviceType::kMediaVideoInput,
                                  enumeration_[static_cast<wtf_size_t>(
                                      MediaDeviceType::kMediaVideoInput)]);
-    listener()->OnDevicesChanged(MediaDeviceType::kMediaAudioOuput,
+    listener()->OnDevicesChanged(MediaDeviceType::kMediaAudioOutput,
                                  enumeration_[static_cast<wtf_size_t>(
-                                     MediaDeviceType::kMediaAudioOuput)]);
+                                     MediaDeviceType::kMediaAudioOutput)]);
   }
 
   Vector<WebMediaDeviceInfo>& AudioInputDevices() {
@@ -322,7 +322,7 @@ class MockMediaDevicesDispatcherHost final
   }
   Vector<WebMediaDeviceInfo>& AudioOutputDevices() {
     return enumeration_[static_cast<wtf_size_t>(
-        MediaDeviceType::kMediaAudioOuput)];
+        MediaDeviceType::kMediaAudioOutput)];
   }
 
   const Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>&
@@ -355,7 +355,7 @@ String ToString(MediaDeviceType type) {
       return "audioinput";
     case blink::MediaDeviceType::kMediaVideoInput:
       return "videoinput";
-    case blink::MediaDeviceType::kMediaAudioOuput:
+    case blink::MediaDeviceType::kMediaAudioOutput:
       return "audiooutput";
     default:
       return String();

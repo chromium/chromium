@@ -29,7 +29,7 @@ class MockDMClient final : public DMClient {
   ~MockDMClient() override = default;
 
   MOCK_METHOD(void,
-              RegisterBrowser,
+              RegisterPolicyAgent,
               (scoped_refptr<EventLogger> event_logger,
                StatusCallback callback),
               (override));
@@ -89,7 +89,7 @@ TEST_F(EnterpriseCompanionServiceTest, Shutdown) {
 TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesSuccess) {
   std::unique_ptr<MockDMClient> mock_dm_client_ =
       std::make_unique<MockDMClient>();
-  EXPECT_CALL(*mock_dm_client_, RegisterBrowser)
+  EXPECT_CALL(*mock_dm_client_, RegisterPolicyAgent)
       .WillOnce([](scoped_refptr<EventLogger>, StatusCallback callback) {
         std::move(callback).Run(EnterpriseCompanionStatus::Success());
       });
@@ -114,7 +114,7 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesSuccess) {
 TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesRegistrationFail) {
   std::unique_ptr<MockDMClient> mock_dm_client_ =
       std::make_unique<MockDMClient>();
-  EXPECT_CALL(*mock_dm_client_, RegisterBrowser)
+  EXPECT_CALL(*mock_dm_client_, RegisterPolicyAgent)
       .WillOnce([](scoped_refptr<EventLogger>, StatusCallback callback) {
         std::move(callback).Run(
             EnterpriseCompanionStatus::FromDeviceManagementStatus(
@@ -139,7 +139,7 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesRegistrationFail) {
 TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesFail) {
   std::unique_ptr<MockDMClient> mock_dm_client_ =
       std::make_unique<MockDMClient>();
-  EXPECT_CALL(*mock_dm_client_, RegisterBrowser)
+  EXPECT_CALL(*mock_dm_client_, RegisterPolicyAgent)
       .WillOnce([](scoped_refptr<EventLogger>, StatusCallback callback) {
         std::move(callback).Run(EnterpriseCompanionStatus::Success());
       });

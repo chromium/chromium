@@ -37,7 +37,8 @@ import java.util.List;
 
 /**
  * Many tab actions can now cause deletion of tab groups. This class helps orchestrates flows where
- * we might want to warn the user that they're about to delete a tab group.
+ * we might want to warn the user that they're about to delete a tab group. This is currently only
+ * used for non-incognito tabs.
  */
 public class ActionConfirmationManager {
     private static final String TAB_GROUP_CONFIRMATION = "TabGroupConfirmation.";
@@ -79,18 +80,20 @@ public class ActionConfirmationManager {
     /**
      * @param profile The profile to access shared services with.
      * @param context Used to load android resources.
-     * @param tabGroupModelFilter Used to read tab data.
+     * @param regularTabGroupModelFilter Used to read tab data.
      * @param modalDialogManager Used to show dialogs.
      */
     public ActionConfirmationManager(
             Profile profile,
             Context context,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabGroupModelFilter regularTabGroupModelFilter,
             @NonNull ModalDialogManager modalDialogManager) {
         assert modalDialogManager != null;
         mProfile = profile;
         mContext = context;
-        mTabGroupModelFilter = tabGroupModelFilter;
+        assert regularTabGroupModelFilter == null
+                || !regularTabGroupModelFilter.isIncognitoBranded();
+        mTabGroupModelFilter = regularTabGroupModelFilter;
         mModalDialogManager = modalDialogManager;
     }
 
@@ -225,14 +228,13 @@ public class ActionConfirmationManager {
             @StringRes int actionRes,
             Callback<Integer> onResult) {
 
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        boolean syncingTabGroups =
-                syncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
-        IdentityServicesProvider identityServicesProvider = IdentityServicesProvider.get();
-        IdentityManager identityManager = identityServicesProvider.getIdentityManager(mProfile);
-        @Nullable
-        CoreAccountInfo coreAccountInfo =
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        boolean syncingTabGroups = false;
+        @Nullable SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        if (syncService != null) {
+            syncingTabGroups = syncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
+        }
+
+        @Nullable CoreAccountInfo coreAccountInfo = getCoreAccountInfo();
         final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver;
         if (syncingTabGroups && coreAccountInfo != null) {
@@ -266,6 +268,17 @@ public class ActionConfirmationManager {
                 actionRes,
                 /* supportStopShowing= */ true,
                 onDialogResult);
+    }
+
+    private @Nullable CoreAccountInfo getCoreAccountInfo() {
+        IdentityServicesProvider identityServicesProvider = IdentityServicesProvider.get();
+        @Nullable
+        IdentityManager identityManager = identityServicesProvider.getIdentityManager(mProfile);
+        if (identityManager != null) {
+            return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        } else {
+            return null;
+        }
     }
 
     private void processGroupNameAction(

@@ -56,6 +56,15 @@ BASE_FEATURE(kCertificateTransparencyAskBeforeEnabling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// Enables using network time for certificate verification. If enabled, network
+// time will be used to verify certificate validity, however certificates that
+// fail to validate with network time will fall back to the system time.
+// This has no effect if the network_time::kNetworkTimeServiceQuerying flag is
+// disabled, or the BrowserNetworkTimeQueriesEnabled policy is set to false.
+BASE_FEATURE(kCertVerificationNetworkTime,
+             "CertVerificationNetworkTime",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using the ClosedTabCache to instantly restore recently closed tabs
 // using the "Reopen Closed Tab" button.
 BASE_FEATURE(kClosedTabCache,
@@ -101,6 +110,12 @@ const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId{
     &kDevToolsFreestylerDogfood, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature{
     &kDevToolsFreestylerDogfood, "aida_temperature", /*default_value=*/0};
+const base::FeatureParam<DevToolsFreestylerUserTier>::Option devtools_freestyler_user_tier_options[] = {
+    {DevToolsFreestylerUserTier::kTesters, "TESTERS"},
+    {DevToolsFreestylerUserTier::kPublic, "PUBLIC"}};
+const base::FeatureParam<DevToolsFreestylerUserTier> kDevToolsFreestylerDogfoodUserTier{
+    &kDevToolsFreestylerDogfood, "user_tier", /*default_value=*/DevToolsFreestylerUserTier::kTesters,
+    &devtools_freestyler_user_tier_options};
 
 // Whether the DevTools resource explainer assistant is enabled.
 BASE_FEATURE(kDevToolsExplainThisResourceDogfood,
@@ -155,7 +170,7 @@ BASE_FEATURE(kRegisterAppBoundEncryptionProvider,
 // the default encryption provider.
 BASE_FEATURE(kUseAppBoundEncryptionProviderForEncryption,
              "UseAppBoundEncryptionProviderForEncryption",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables showing the email of the flex org admin that setup CBCM in the

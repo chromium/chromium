@@ -62,7 +62,7 @@ constexpr char kUmaRecordProcessedByServer[] =
 // the events, although minor duplication is allowed. This counter is inexact,
 // since it may be reset in rare cases uploader memory usage reaches its limit -
 // tracked by Browser.ERP.UploadMemoryUsagePercent metrics.
-constexpr char kEventsUploadCount[] = "Browser.ERP.EventsUploadCount";
+constexpr char kEventsUploadCount[] = "Browser.ERP.EventsUploadCountExp";
 
 // UMA that reflects cached events count: samples number of times a single event
 // is received and placed in cache. Per-event count is incremented every time an
@@ -72,7 +72,7 @@ constexpr char kEventsUploadCount[] = "Browser.ERP.EventsUploadCount";
 // number of re-uploads is allowed. This counter is inexact, since it may be
 // reset in rare cases uploader memory usage reaches its limit - tracked by
 // Browser.ERP.UploadMemoryUsagePercent metrics.
-constexpr char kCachedEventsCount[] = "Browser.ERP.CachedEventsCount";
+constexpr char kCachedEventsCount[] = "Browser.ERP.CachedEventsCountExp";
 
 // Returns `true` if HTTP response code indicates an irrecoverable error.
 bool IsIrrecoverableError(int response_code) {
@@ -236,10 +236,8 @@ void RemoveConfirmedEventsFromCache(UploadState* state) {
             state->upload_counters.find(state->cached_records.begin()->first);
         it != state->upload_counters.end()) {
       const auto event_upload_count = it->second;
-      base::UmaHistogramCustomCounts(kEventsUploadCount,
-                                     /*sample=*/event_upload_count,
-                                     /*min=*/1, /*exclusive_max=*/20,
-                                     /*buckets=*/20);
+      base::UmaHistogramCounts1M(kEventsUploadCount,
+                                 /*sample=*/event_upload_count);
       state->upload_counters.erase(it);
     }
     // Sample incoming counter.
@@ -247,10 +245,8 @@ void RemoveConfirmedEventsFromCache(UploadState* state) {
             state->cached_counters.find(state->cached_records.begin()->first);
         it != state->cached_counters.end()) {
       const auto event_cached_count = it->second;
-      base::UmaHistogramCustomCounts(kCachedEventsCount,
-                                     /*sample=*/event_cached_count,
-                                     /*min=*/1, /*exclusive_max=*/20,
-                                     /*buckets=*/20);
+      base::UmaHistogramCounts1M(kCachedEventsCount,
+                                 /*sample=*/event_cached_count);
       state->cached_counters.erase(it);
     }
     // Remove record from cache.

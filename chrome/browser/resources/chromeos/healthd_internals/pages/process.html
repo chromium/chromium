@@ -1,0 +1,123 @@
+<style include="healthd-internals-shared cr-shared-style md-select">
+  #pageHeader {
+    height: 20px;
+  }
+
+  #settingsContainer {
+    display: flex;
+    height: 60px;
+    width: 100%;
+    overflow-x: auto;
+    gap: 32px;
+    margin: 0 32px;
+    align-items: center;
+  }
+
+  .setting-with-label-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  label {
+    color: var(--cr-primary-text-color);
+  }
+
+  cr-input {
+    width: 250px;
+    --cr-input-error-display: none;
+  }
+
+  #tableContainer {
+    height: calc(95vh - 80px);
+    width: 100%;
+    overflow: auto;
+  }
+
+  table {
+    overflow: auto;
+    border-collapse: collapse;
+    margin: 0 auto 16px auto;
+    border: 1px solid var(--cr-primary-text-color);
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--cr-menu-background-color);
+  }
+
+  th, td {
+    color: var(--cr-primary-text-color);
+    border: 1px solid var(--cr-primary-text-color);
+    padding: 8px;
+    text-align: center;
+    max-width: 100px;
+    word-wrap: break-word;
+  }
+
+  .command-column {
+    text-align: left;
+    max-width: 600px;
+  }
+</style>
+
+
+<h1 id="pageHeader">Processes</h1>
+
+<div id="settingsContainer">
+  <div class="setting-with-label-container">
+    <label>Filter</label>
+    <cr-input type="text" value="{{filterQuery}}" placeholder="Enter query...">
+    </cr-input>
+  </div>
+  <div class="setting-with-label-container">
+    <label>Sort column</label>
+    <select id="sortColumnSelector" class="md-select"
+        on-change="onSortColumnChanged" value="[[sortColumn]]">
+      <template is="dom-repeat" items="[[displayedHeaders]]">
+        <option value="[[item.sortColumnId]]">[[item.title]]</option>
+      </template>
+    </select>
+  </div>
+  <div class="setting-with-label-container">
+    <label>Sort order</label>
+    <select id="sortOrderSelector" class="md-select"
+        on-change="onSortOrderChanged" value="[[sortOrder]]">
+      <option value="ascend">Ascend</option>
+      <option value="descend">Dscend</option>
+    </select>
+  </div>
+  <label>Last update: [[lastUpdateTime]]</label>
+</div>
+
+<div id="tableContainer"><table>
+  <thead>
+    <tr>
+      <template is="dom-repeat" items="[[displayedHeaders]]">
+        <th>[[item.title]]</th>
+      </template>
+    </tr>
+  </thead>
+  <tbody>
+    <template is="dom-repeat" items="[[displayedData]]">
+      <tr>
+        <td>[[item.processId]]</td>
+        <td>[[item.name]]</td>
+        <td>[[item.priority]]</td>
+        <td>[[item.nice]]</td>
+        <td>[[item.state]]</td>
+        <td>[[item.threadsNumber]]</td>
+        <td>[[item.userId]]</td>
+        <td>[[item.parentProcessId]]</td>
+        <td>[[item.processGroupId]]</td>
+        <td>[[item.residentMemoryKib]]</td>
+        <td>[[item.uptimeTicks]]</td>
+        <td>[[item.readSystemCallsCount]]</td>
+        <td>[[item.writeSystemCallsCount]]</td>
+        <td class="command-column">[[item.command]]</td>
+      </tr>
+    </template>
+  </tbody>
+</table></div>

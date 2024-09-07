@@ -154,8 +154,6 @@ target(link_target_type, "renderer") {
     "web_ui_extension.h",
     "web_ui_extension_data.cc",
     "web_ui_extension_data.h",
-    "webgraphics_shared_image_interface_provider_impl.cc",
-    "webgraphics_shared_image_interface_provider_impl.h",
     "webgraphicscontext3d_provider_impl.cc",
     "webgraphicscontext3d_provider_impl.h",
     "worker/dedicated_worker_host_factory_client.cc",

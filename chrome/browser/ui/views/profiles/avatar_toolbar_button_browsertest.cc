@@ -407,6 +407,11 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
     GetTestSyncService()->FireStateChanged();
   }
 
+  void SimulatePassphraseError() {
+    GetTestSyncService()->SetPassphraseRequired();
+    GetTestSyncService()->FireStateChanged();
+  }
+
  private:
   void SetTestingFactories(content::BrowserContext* context) {
     SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -1373,8 +1378,16 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
   EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
 }
 
+// TODO(crbug.com/360106845): Fix flaky test and re-enable.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SigninPausedFromWebSignoutThenRestartChrome \
+  DISABLED_SigninPausedFromWebSignoutThenRestartChrome
+#else
+#define MAYBE_SigninPausedFromWebSignoutThenRestartChrome \
+  SigninPausedFromWebSignoutThenRestartChrome
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
-                       SigninPausedFromWebSignoutThenRestartChrome) {
+                       MAYBE_SigninPausedFromWebSignoutThenRestartChrome) {
   // Needed because the current profile will be destroyed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
                              KeepAliveRestartOption::DISABLED);
@@ -1389,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
   CloseAllBrowsers();
   destruction_waiter.Wait();
 
-  // Load the profile again to open a new browser and check the butto state.
+  // Load the profile again to open a new browser and check the button state.
   Profile* loaded_profile = ProfileLoader().LoadFirstAndOnlyProfile();
   Browser* new_browser = CreateBrowser(loaded_profile);
   AvatarToolbarButton* new_avatar = GetAvatarToolbarButton(new_browser);
@@ -1524,6 +1537,33 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
 
   EXPECT_EQ(accessibility.GetCachedName(), profile_name);
   EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
+}
+
+class AvatarToolbarButtonWithImprovedSigninUIBrowserTest
+    : public AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kImprovedSigninUIOnDesktop};
+};
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithImprovedSigninUIBrowserTest,
+                       PassphraseErrorSignedIn) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  SigninWithImageAndClearGreeting(avatar, u"test@gmail.com");
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+  SimulatePassphraseError();
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithImprovedSigninUIBrowserTest,
+                       PassphraseErrorSyncing) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  EnableSyncWithImageAndClearGreeting(avatar, u"test@gmail.com");
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+  SimulatePassphraseError();
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

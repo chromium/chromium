@@ -93,7 +93,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. This enum should be kept in sync
   // with the BluetoothDeviceConnectErrorCode enum in
-  // src/tools/metrics/histograms/enums.xml.
+  // src/tools/metrics/histograms/metadata/bluetooth/enums.xml.
   enum ConnectErrorCode {
     ERROR_AUTH_CANCELED = 0,
     ERROR_AUTH_FAILED = 1,
@@ -114,6 +114,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
     ERROR_JNI_ENVIRONMENT = 16,
     ERROR_JNI_THREAD_ATTACH = 17,
     ERROR_WAKELOCK = 18,
+    ERROR_UNEXPECTED_STATE = 19,
+    ERROR_SOCKET = 20,
     NUM_CONNECT_ERROR_CODES,  // Keep as last enum.
   };
 

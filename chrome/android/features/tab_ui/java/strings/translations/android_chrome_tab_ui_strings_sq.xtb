@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> skeda të grupuara</translation>
 <translation id="1657719826150349398">Lëviz skedën poshtë</translation>
 <translation id="1713541401465507417">Mbyll të gjitha skedat dhe grupet</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> skedë e grupuar</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Shto te faqeshënuesit <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Shto te faqeshënuesit <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Krijuar pikërisht tani</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Mbyll pas 1 dite}other{Mbyll pas <ph name="DAY_COUNT_MANY" /> ditësh}}</translation>
 <translation id="4777866634702576038">Të fshihet grupi i skedave?</translation>
+<translation id="4783638485675352219">Ndaj titujt dhe URL-të e skedave të hapura nga kjo pajisje me sistemin operativ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> koment)}other{(<ph name="REVIEWS_COUNT_MANY" /> komente)}}</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4870911314065352661">Të mbyllen të gjitha skedat?</translation>

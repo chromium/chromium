@@ -57,6 +57,11 @@ static constexpr char kTestMountPoint[] = "testfs";
 // APIs.
 class FileSystemChooserBrowserTest : public ContentBrowserTest {
  public:
+  FileSystemChooserBrowserTest() {
+    scoped_features_.InitAndEnableFeature(
+        blink::features::kFileSystemAccessLocal);
+  }
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 #if BUILDFLAG(IS_WIN)
@@ -123,6 +128,9 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
   base::ScopedTempDir temp_dir_;
   // Must persist through TearDown().
   SelectFileDialogParams dialog_params_;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, CancelDialog) {

@@ -87,7 +87,7 @@ void PaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {}
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(
-    bool card_saved,
+    PaymentsRpcResult result,
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {}
 
@@ -98,7 +98,8 @@ void PaymentsAutofillClient::ShowVirtualCardEnrollDialog(
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {}
 
-void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
+void PaymentsAutofillClient::VirtualCardEnrollCompleted(
+    PaymentsRpcResult result) {}
 
 void PaymentsAutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {}
@@ -226,5 +227,18 @@ bool PaymentsAutofillClient::ShowTouchToFillIban(
 }
 
 void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
+
+#if !BUILDFLAG(IS_IOS)
+std::unique_ptr<webauthn::InternalAuthenticator>
+PaymentsAutofillClient::CreateCreditCardInternalAuthenticator(
+    AutofillDriver* driver) {
+  return nullptr;
+}
+#endif
+
+payments::MandatoryReauthManager*
+PaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  return nullptr;
+}
 
 }  // namespace autofill::payments

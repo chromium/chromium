@@ -17,6 +17,7 @@ static_library("lobster") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/top_chrome",
   ]
 
@@ -38,6 +39,7 @@ source_set("unit_tests") {
     "//ash/public/cpp:cpp",
     "//base",
     "//base/test:test_support",
+    "//chrome/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -59,6 +61,10 @@ mojom("lobster_mojom") {
         {
           mojom = "lobster.mojom.StatusCode"
           cpp = "::ash::LobsterErrorCode"
+        },
+        {
+          mojom = "lobster.mojom.FeedbackPreview"
+          cpp = "::ash::LobsterFeedbackPreview"
         },
       ]
 

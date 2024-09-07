@@ -24,15 +24,17 @@ source_set("menu") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/window_activities/model",
+    "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//net",
     "//ui/base",
@@ -43,7 +45,10 @@ source_set("menu") {
 source_set("tab_context_menu_delegate") {
   sources = [ "tab_context_menu_delegate.h" ]
 
-  deps = [ "//ios/chrome/browser/ui/sharing" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/sharing",
+  ]
 }
 
 source_set("unit_tests") {
@@ -64,8 +69,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/sessions/model:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

@@ -18,6 +18,9 @@ import androidx.preference.Preference;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -49,6 +52,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.webxr.WebXrAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -91,10 +95,13 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     /** Used to set an instance of {@link SnackbarManager} by the parent activity. */
-    public void setSnackbarManager(SnackbarManager manager) {
-        if (manager != null) {
-            mPrivacySandboxController = new PrivacySandboxSnackbarController(mContext, manager);
-        }
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        snackbarManagerSupplier.onAvailable(
+                (snackbarManager) -> {
+                    mPrivacySandboxController =
+                            new PrivacySandboxSnackbarController(mContext, snackbarManager);
+                });
     }
 
     @Override
@@ -149,8 +156,15 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                         .hasSwitch(ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
                 return ContentFeatureMap.isEnabled(ContentFeatures.FED_CM);
+            case SiteSettingsCategory.Type.HAND_TRACKING:
+                return PackageManagerUtils.hasSystemFeature(
+                                PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)
+                        && WebXrAndroidFeatureMap.isHandTrackingEnabled();
             case SiteSettingsCategory.Type.NFC:
                 return ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC);
+            case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
+                // Desktop Android always requests desktop sites, so hide the category.
+                return !BuildConfig.IS_DESKTOP_ANDROID;
             case SiteSettingsCategory.Type.ZOOM:
                 return ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
                         && ContentFeatureMap.isEnabled(
@@ -319,15 +333,15 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean shouldDisplayIpProtection() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_USER_BYPASS)
+                // This is copied from the `IsIpProtectionEnabled` check in the TPS API.
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)
                 && UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED);
     }
 
     @Override
     public boolean shouldDisplayFingerprintingProtection() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING)
-                && UserPrefs.get(mProfile).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED);
+        // Note: this is an interim check and will have to be updated for incognito FPP.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS);
     }
 
     @Override

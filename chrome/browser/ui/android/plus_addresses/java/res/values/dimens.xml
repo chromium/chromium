@@ -6,7 +6,9 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Proposed plus address background rounded cornders radiums. -->
+    <!-- Plus address creation bottom sheet. -->
+    <dimen name="plus_address_title_icon_size">36dp</dimen>
+    <dimen name="plus_address_list_item_small_margin">8dp</dimen>
     <dimen name="plus_address_rounded_corner_radius">4dp</dimen>
 
     <!-- All plus addresses bottom sheet. -->

@@ -67,6 +67,8 @@ export class CheckupDetailsSectionElement extends
     return {
       pageTitle_: String,
 
+      pageSubtitle_: String,
+
       insecurityType_: {
         type: String,
         observer: 'updateShownCredentials_',
@@ -104,6 +106,7 @@ export class CheckupDetailsSectionElement extends
   }
 
   private pageTitle_: string;
+  private pageSubtitle_: string;
   private insecurityType_: CheckupSubpage|undefined;
   private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
   private allInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
@@ -207,6 +210,14 @@ export class CheckupDetailsSectionElement extends
     this.pageTitle_ = await PluralStringProxyImpl.getInstance().getPluralString(
         this.insecurityType_.concat('Passwords'),
         this.shownInsecureCredentials_.length);
+    if (this.insecurityType_ === CheckupSubpage.COMPROMISED) {
+      this.pageSubtitle_ =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              `${this.insecurityType_}PasswordsTitle`,
+              this.shownInsecureCredentials_.length);
+    } else {
+      this.pageSubtitle_ = this.i18n(`${this.insecurityType_}PasswordsTitle`);
+    }
   }
 
   private getInsecurityType_(): chrome.passwordsPrivate.CompromiseType[] {
@@ -222,11 +233,6 @@ export class CheckupDetailsSectionElement extends
       case CheckupSubpage.WEAK:
         return [chrome.passwordsPrivate.CompromiseType.WEAK];
     }
-  }
-
-  private getSubTitle_() {
-    assert(this.insecurityType_);
-    return this.i18n(`${this.insecurityType_}PasswordsTitle`);
   }
 
   private getDescription_() {

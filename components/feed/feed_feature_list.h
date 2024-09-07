@@ -75,16 +75,6 @@ signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 // Feature that enables tracking the acknowledgement state for the info cards.
 BASE_DECLARE_FEATURE(kInfoCardAcknowledgementTracking);
 
-// When enabled, schedule a background refresh for a feed sometime after the
-// last user engagement with that feed.
-BASE_DECLARE_FEATURE(kFeedCloseRefresh);
-// On each qualifying user engagement, schedule a background refresh this many
-// minutes out.
-extern const base::FeatureParam<int> kFeedCloseRefreshDelayMinutes;
-// If true, schedule the refresh only when the user scrolls or interacts. If
-// false, schedule only when the feed surface is opened to content.
-extern const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction;
-
 // When enabled, no view cache is used.
 BASE_DECLARE_FEATURE(kFeedNoViewCache);
 

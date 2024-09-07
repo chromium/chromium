@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_client_impl.h"
 #import "ios/chrome/browser/search_engines/model/ui_thread_search_terms_data.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "rlz/buildflags/buildflags.h"
 

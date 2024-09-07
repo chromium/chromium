@@ -72,9 +72,9 @@ class ProfileObserver;
 // http://dev.chromium.org/developers/design-documents/profile-architecture
 class Profile : public content::BrowserContext {
  public:
-  enum CreateMode {
-    CREATE_MODE_SYNCHRONOUS,
-    CREATE_MODE_ASYNCHRONOUS
+  enum class CreateMode {
+    kSynchronous,
+    kAsynchronous,
   };
 
   // Defines an ID to distinguish different off-the-record profiles of a regular
@@ -193,10 +193,10 @@ class Profile : public content::BrowserContext {
   // time.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Create a new profile given a path. If |create_mode| is
-  // CREATE_MODE_ASYNCHRONOUS then the profile is initialized asynchronously.
-  // Can return null if |create_mode| is CREATE_MODE_SYNCHRONOUS and the
-  // creation of the profile directory fails.
+  // Create a new profile given a path. If `create_mode` is kAsynchronous then
+  // the profile is initialized asynchronously.
+  // Can return null if `create_mode` is kSynchronous and the creation of
+  // the profile directory fails.
   static std::unique_ptr<Profile> CreateProfile(const base::FilePath& path,
                                                 Delegate* delegate,
                                                 CreateMode create_mode);
@@ -570,6 +570,7 @@ class Profile : public content::BrowserContext {
 
 #if BUILDFLAG(IS_ANDROID)
   void InitJavaObject();
+  void NotifyJavaOnProfileWillBeDestroyed();
   void DestroyJavaObject();
 
   jni_zero::ScopedJavaGlobalRef<jobject> j_obj_;

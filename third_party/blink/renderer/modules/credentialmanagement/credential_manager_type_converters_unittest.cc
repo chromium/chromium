@@ -9,6 +9,8 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -436,9 +438,9 @@ TEST(CredentialManagerTypeConvertersTest,
 static blink::V8UnionArrayBufferOrArrayBufferView* arrayBufferOrView(
     const uint8_t* data,
     size_t size) {
-  blink::DOMArrayBuffer* dom_array = blink::DOMArrayBuffer::Create(data, size);
   return blink::MakeGarbageCollected<
-      blink::V8UnionArrayBufferOrArrayBufferView>(std::move(dom_array));
+      blink::V8UnionArrayBufferOrArrayBufferView>(
+      blink::DOMArrayBuffer::Create(UNSAFE_TODO(base::span(data, size))));
 }
 
 static Vector<uint8_t> vectorOf(const uint8_t* data, size_t size) {

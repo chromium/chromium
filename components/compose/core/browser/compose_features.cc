@@ -82,7 +82,7 @@ BASE_FEATURE(kComposeRequestLatencyTimeout,
 
 BASE_FEATURE(kComposeUiRefinement,
              "ComposeUiRefinement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableNudgeForUnspecifiedHint,
              "ComposeEnableNudgeForUnspecifiedHint",
@@ -91,4 +91,17 @@ BASE_FEATURE(kEnableNudgeForUnspecifiedHint,
 BASE_FEATURE(kEnableAdditionalTextMetrics,
              "EnableAdditionalTextMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHappinessTrackingSurveysForComposeAcceptance,
+             "HappinessTrackingSurveysForComposeAcceptance",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHappinessTrackingSurveysForComposeClose,
+             "HappinessTrackingSurveysForComposeClose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose,
+             "HappinessTrackingSurveysForComposeNudgeClose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace compose::features

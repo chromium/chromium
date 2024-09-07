@@ -23,13 +23,12 @@ class ASH_EXPORT PickerImageItemView : public PickerItemView {
   METADATA_HEADER(PickerImageItemView, PickerItemView)
 
  public:
-  PickerImageItemView(SelectItemCallback select_item_callback,
-                      std::unique_ptr<views::ImageView> image);
+  PickerImageItemView(std::unique_ptr<views::ImageView> image,
+                      std::u16string accessible_name,
+                      SelectItemCallback select_item_callback);
   PickerImageItemView(const PickerImageItemView&) = delete;
   PickerImageItemView& operator=(const PickerImageItemView&) = delete;
   ~PickerImageItemView() override;
-
-  void SetImageSizeFromWidth(int width);
 
  private:
   raw_ptr<views::ImageView> image_view_ = nullptr;

@@ -18,8 +18,8 @@
 #include "ui/views/widget/widget_utils.h"
 
 namespace autofill {
-
 namespace {
+
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Mock;
@@ -40,8 +40,6 @@ class MockDelegate : public PopupSearchBarView::Delegate {
               (const ui::KeyEvent& event),
               (override));
 };
-
-}  // namespace
 
 class PopupSearchBarViewTest : public ChromeViewsTestBase {
  public:
@@ -182,4 +180,6 @@ TEST_F(PopupSearchBarViewTest, ClearButton) {
   task_environment()->FastForwardBy(
       PopupSearchBarView::kInputChangeCallbackDelay);
 }
+
+}  // namespace
 }  // namespace autofill

@@ -345,16 +345,6 @@ DialogTurn ConvertDialogToStruct(proto::Turn* turn_proto) {
       }
     }
   }
-  // If the action list is not empty and it does not end with the all done
-  // action, then an action of all done set to true will be appended to the
-  // action list. This is to ensure that if this action was accidentally
-  // forgotten to be included, then an additional call to the server is not
-  // made. The all done field must be at the end of the actions list and set to
-  // false if an additional call is requested.
-  if (!dialog.actions.empty() &&
-      dialog.actions.back().type != ActionType::kAllDone) {
-    dialog.AppendAction(Action(true));
-  }
   return dialog;
 }
 

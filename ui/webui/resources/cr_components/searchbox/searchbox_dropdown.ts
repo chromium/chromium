@@ -12,9 +12,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RealboxBrowserProxy} from './searchbox_browser_proxy.js';
+import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import {getTemplate} from './searchbox_dropdown.html.js';
-import type {RealboxMatchElement} from './searchbox_match.js';
+import type {SearchboxMatchElement} from './searchbox_match.js';
 import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface} from './searchbox.mojom-webui.js';
 import {RenderType, SelectionLineState, SideType} from './searchbox.mojom-webui.js';
 import {decodeString16, renderTypeToClass, sideTypeToClass} from './utils.js';
@@ -25,17 +25,17 @@ const remainder = (lhs: number, rhs: number) => ((lhs % rhs) + rhs) % rhs;
 const CHAR_TYPED_TO_PAINT = 'Realbox.CharTypedToRepaintLatency.ToPaint';
 const RESULT_CHANGED_TO_PAINT = 'Realbox.ResultChangedToRepaintLatency.ToPaint';
 
-export interface RealboxDropdownElement {
+export interface SearchboxDropdownElement {
   $: {
     content: HTMLElement,
   };
 }
 
 // A dropdown element that contains autocomplete matches. Provides an API for
-// the embedder (i.e., <cr-realbox>) to change the selection.
-export class RealboxDropdownElement extends PolymerElement {
+// the embedder (i.e., <cr-searchbox>) to change the selection.
+export class SearchboxDropdownElement extends PolymerElement {
   static get is() {
-    return 'cr-realbox-dropdown';
+    return 'cr-searchbox-dropdown';
   }
 
   static get template() {
@@ -55,18 +55,6 @@ export class RealboxDropdownElement extends PolymerElement {
       canShowSecondarySide: {
         type: Boolean,
         value: false,
-      },
-
-      chromeRefreshHoverShape: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23HoverFillShape'),
-        reflectToAttribute: true,
-      },
-
-      expandedStateLayoutChromeRefresh: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateLayout'),
-        reflectToAttribute: true,
       },
 
       /**
@@ -142,21 +130,19 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   canShowSecondarySide: boolean;
-  chromeRefreshHoverShape: boolean;
-  expandedStateLayoutChromeRefresh: boolean;
   hadSecondarySide: boolean;
   hasSecondarySide: boolean;
   result: AutocompleteResult;
   selectedMatchIndex: number;
   private hiddenGroupIds_: number[];
-  private selectableMatchElements_: RealboxMatchElement[];
+  private selectableMatchElements_: SearchboxMatchElement[];
   private showSecondarySide_: boolean;
   private resizeObserver_: ResizeObserver|null = null;
   private pageHandler_: PageHandlerInterface;
 
   constructor() {
     super();
-    this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
+    this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
   }
 
   override connectedCallback() {
@@ -308,7 +294,7 @@ export class RealboxDropdownElement extends PolymerElement {
 
     // Update the list of selectable match elements.
     this.selectableMatchElements_ =
-        [...this.shadowRoot!.querySelectorAll('cr-realbox-match')];
+        [...this.shadowRoot!.querySelectorAll('cr-searchbox-match')];
   }
 
   //============================================================================
@@ -437,12 +423,8 @@ export class RealboxDropdownElement extends PolymerElement {
    * @returns Icon name for suggestion group show/hide toggle button.
    */
   private toggleButtonIconForGroup_(groupId: number): string {
-    if (loadTimeData.getBoolean('realboxCr23ExpandedStateIcons')) {
-      return this.groupIsHidden_(groupId) ? 'icon-arrow-drop-down-cr23' :
-                                            'icon-arrow-drop-up-cr23';
-    }
-    return this.groupIsHidden_(groupId) ? 'icon-expand-more' :
-                                          'icon-expand-less';
+    return this.groupIsHidden_(groupId) ? 'icon-arrow-drop-down-cr23' :
+                                          'icon-arrow-drop-up-cr23';
   }
 
   /**
@@ -475,8 +457,8 @@ export class RealboxDropdownElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-realbox-dropdown': RealboxDropdownElement;
+    'cr-searchbox-dropdown': SearchboxDropdownElement;
   }
 }
 
-customElements.define(RealboxDropdownElement.is, RealboxDropdownElement);
+customElements.define(SearchboxDropdownElement.is, SearchboxDropdownElement);

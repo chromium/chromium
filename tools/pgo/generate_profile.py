@@ -198,6 +198,7 @@ def run_benchmark(benchmark_args: list[str], args: OptionsNamespace):
         env['LLVM_PROFILE_FILE'] = f'{profraw_path}/default-%2m.profraw'
 
     cmd = ['vpython3', 'tools/perf/run_benchmark'] + benchmark_args + [
+        f'--chromium-output-directory={args.builddir}',
         '--assert-gpu-compositing',
         # Abort immediately when any story fails, since a failed story fails
         # to produce valid profdata. Fail fast and rely on repeats to get a

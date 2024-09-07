@@ -28,6 +28,10 @@ void CreatePermissionService(
     RenderFrameHost* rfh,
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver);
 
+// Calls RenderFrameHostImpl::DisableUnloadTimerForTesting for the given
+// RenderFrameHost.
+void DisableUnloadTimerForTesting(RenderFrameHost* rfh);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_RENDER_FRAME_HOST_TEST_SUPPORT_H_

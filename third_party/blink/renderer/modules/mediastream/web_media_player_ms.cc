@@ -25,6 +25,7 @@
 #include "cc/layers/video_layer.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
+#include "media/base/media_track.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
@@ -33,8 +34,6 @@
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_video_renderer.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -44,8 +43,10 @@
 #include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_local_frame_wrapper.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_renderer_factory.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_renderer.h"
 #include "third_party/blink/renderer/modules/mediastream/web_media_player_ms_compositor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
@@ -547,11 +548,10 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
       // is enabled by default to match blink logic.
       bool is_first_audio_track = true;
       for (auto component : audio_components) {
-        client_->AddAudioTrack(
-            blink::WebString::FromUTF8(component->Id().Utf8()),
-            blink::WebMediaPlayerClient::kAudioTrackKindMain,
-            blink::WebString::FromUTF8(component->GetSourceName().Utf8()),
-            /*language=*/"", is_first_audio_track);
+        client_->AddMediaTrack(media::MediaTrack::CreateAudioTrack(
+            component->Id().Utf8(), media::MediaTrack::AudioKind::kMain,
+            component->GetSourceName().Utf8(), /*language=*/"",
+            is_first_audio_track));
         is_first_audio_track = false;
       }
     }
@@ -572,11 +572,10 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
       // is enabled by default to match blink logic.
       bool is_first_video_track = true;
       for (auto component : video_components) {
-        client_->AddVideoTrack(
-            blink::WebString::FromUTF8(component->Id().Utf8()),
-            blink::WebMediaPlayerClient::kVideoTrackKindMain,
-            blink::WebString::FromUTF8(component->GetSourceName().Utf8()),
-            /*language=*/"", is_first_video_track);
+        client_->AddMediaTrack(media::MediaTrack::CreateVideoTrack(
+            component->Id().Utf8(), media::MediaTrack::VideoKind::kMain,
+            component->GetSourceName().Utf8(), /*language=*/"",
+            is_first_video_track));
         is_first_video_track = false;
       }
     }

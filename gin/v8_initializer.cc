@@ -283,12 +283,12 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     SetV8FlagsFormatted("--memory-reducer-gc-count=%i",
                         features::kV8MemoryReducerGCCount.Get());
   }
+  SetV8FlagsIfOverridden(features::kV8IncrementalMarkingStartUserVisible,
+                         "--incremental-marking-start-user-visible",
+                         "--no-incremental-marking-start-user-visible");
   SetV8FlagsIfOverridden(features::kV8IdleGcOnContextDisposal,
                          "--idle-gc-on-context-disposal",
                          "--no-idle-gc-on-context-disposal");
-  SetV8FlagsIfOverridden(features::kV8GCOptimizeSweepForMutator,
-                         "--cppheap-optimize-sweep-for-mutator",
-                         "--no-cppheap-optimize-sweep-for-mutator");
   SetV8FlagsIfOverridden(features::kV8MinorMS, "--minor-ms", "--no-minor-ms");
   if (base::FeatureList::IsEnabled(features::kV8ScavengerHigherCapacity)) {
     SetV8FlagsFormatted("--scavenger-max-new-space-capacity-mb=%i",

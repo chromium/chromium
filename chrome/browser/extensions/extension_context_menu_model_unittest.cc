@@ -18,7 +18,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/extensions/permissions_url_constants.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/context_menus.h"
@@ -1753,8 +1753,9 @@ TEST_F(ExtensionContextMenuModelTest, TestClickingPageAccessLearnMore) {
   content::NavigationController& controller = web_contents->GetController();
   content::RenderFrameHostTester::CommitPendingLoad(&controller);
 
-  EXPECT_EQ(GURL(chrome_extension_constants::kRuntimeHostPermissionsHelpURL),
-            web_contents->GetLastCommittedURL());
+  EXPECT_EQ(
+      GURL(extension_permissions_constants::kRuntimeHostPermissionsHelpURL),
+      web_contents->GetLastCommittedURL());
 }
 
 TEST_F(ExtensionContextMenuModelTest, HistogramTest_Basic) {
@@ -2334,8 +2335,9 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
   content::NavigationController& controller = web_contents->GetController();
   content::RenderFrameHostTester::CommitPendingLoad(&controller);
 
-  EXPECT_EQ(web_contents->GetLastCommittedURL(),
-            GURL(chrome_extension_constants::kExtensionsSitePermissionsURL));
+  EXPECT_EQ(
+      web_contents->GetLastCommittedURL(),
+      GURL(extension_permissions_constants::kExtensionsSitePermissionsURL));
 }
 
 class ExtensionContextMenuModelWithUserHostControlsAndPermittedSitesTest

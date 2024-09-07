@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Ed25519 Verification checks with small-order key of order - Test 0
+  assert_equals: Signature verification result. expected false but got true
+[FAIL] Ed25519 Verification checks with small-order key of order - Test 1
+  assert_equals: Signature verification result. expected false but got true
+[FAIL] Ed25519 Verification checks with small-order key of order - Test 2
+  assert_equals: Signature verification result. expected false but got true
+[FAIL] Ed25519 Verification checks with small-order key of order - Test 11
+  assert_equals: Signature verification result. expected false but got true
+[FAIL] Ed25519 Verification checks with small-order key of order - Test 12
+  assert_equals: Signature verification result. expected false but got true
+[FAIL] Ed25519 Verification checks with small-order key of order - Test 13
+  assert_equals: Signature verification result. expected false but got true
+Harness: the test ran to completion.
+

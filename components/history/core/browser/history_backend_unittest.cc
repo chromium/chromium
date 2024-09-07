@@ -4863,17 +4863,7 @@ TEST_F(HistoryBackendTest, AddSyncedVisitWritesIsKnownToSync) {
 }
 
 #if BUILDFLAG(IS_IOS)
-class HistoryBackendWithSyncSegmentsDataTest : public HistoryBackendTest {
- public:
-  HistoryBackendWithSyncSegmentsDataTest() {
-    override_features_.InitAndEnableFeature(history::kSyncSegmentsData);
-  }
-
- private:
-  base::test::ScopedFeatureList override_features_;
-};
-
-TEST_F(HistoryBackendWithSyncSegmentsDataTest,
+TEST_F(HistoryBackendTest,
        UpdateVisitReferrerOpenerIDs_DoesNotDoubleCountVisitInSegments) {
   backend_->SetCanAddForeignVisitsToSegments(true);
 
@@ -4941,7 +4931,7 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
   EXPECT_EQ(TotalNumVisitsForSegment(updated_visits[1].segment_id), 0);
 }
 
-TEST_F(HistoryBackendWithSyncSegmentsDataTest,
+TEST_F(HistoryBackendTest,
        UpdateSyncedVisit_DoesNotDoubleCountVisitInSegments) {
   backend_->SetCanAddForeignVisitsToSegments(true);
 
@@ -5010,7 +5000,7 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
   EXPECT_EQ(TotalNumVisitsForSegment(updated_visits[1].segment_id), 1);
 }
 
-TEST_F(HistoryBackendWithSyncSegmentsDataTest,
+TEST_F(HistoryBackendTest,
        AddSyncedVisit_AddsVisitWithValidOriginatorCacheGuidToSegments) {
   backend_->SetCanAddForeignVisitsToSegments(true);
 
@@ -5045,7 +5035,7 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
 }
 
 TEST_F(
-    HistoryBackendWithSyncSegmentsDataTest,
+    HistoryBackendTest,
     AddSyncedVisit_DoesNotAddVisitToSegmentsWithMissingForeignDeviceInformation) {
   backend_->SetCanAddForeignVisitsToSegments(true);
 
@@ -5083,7 +5073,7 @@ TEST_F(
 }
 
 TEST_F(
-    HistoryBackendWithSyncSegmentsDataTest,
+    HistoryBackendTest,
     AddSyncedVisit_DoesNotAddVisitToSegmentsWithInvalidLocalDeviceInformation) {
   backend_->SetCanAddForeignVisitsToSegments(true);
 
@@ -5120,7 +5110,7 @@ TEST_F(
   EXPECT_EQ(added_visit.segment_id, 0);
 }
 
-TEST_F(HistoryBackendWithSyncSegmentsDataTest,
+TEST_F(HistoryBackendTest,
        AddSyncedVisit_DoesNotAddVisitToSegmentsWithInvalidDeviceInformation) {
   backend_->SetCanAddForeignVisitsToSegments(true);
 

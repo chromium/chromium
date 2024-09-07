@@ -87,7 +87,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               test->service_worker_client_,
               destination,
               /*skip_service_worker=*/false,
-              /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
+              FrameTreeNodeId(),
               base::DoNothing())) {}
 
     void MaybeCreateLoader() {
@@ -207,7 +207,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
         helper_->context()
             ->service_worker_client_owner()
             .CreateServiceWorkerClientForWindow(is_parent_frame_secure,
-                                                /*frame_tree_node_id=*/1);
+                                                FrameTreeNodeId(1));
     service_worker_client_ = service_worker_client.AsWeakPtr();
     service_worker_clients_.push_back(std::move(service_worker_client));
   }
@@ -491,9 +491,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
           context()->AsWeakPtr(), service_worker_client_,
           network::mojom::RequestDestination::kDocument,
-          /*skip_service_worker=*/true,
-          /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
-          base::DoNothing()));
+          /*skip_service_worker=*/true, FrameTreeNodeId(), base::DoNothing()));
 
   // Conduct a main resource load.
   test_resources.MaybeCreateLoader();
@@ -534,9 +532,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
           context()->AsWeakPtr(), service_worker_client_,
           network::mojom::RequestDestination::kDocument,
-          /*skip_service_worker=*/false,
-          /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
-          base::DoNothing()));
+          /*skip_service_worker=*/false, FrameTreeNodeId(), base::DoNothing()));
 
   // Destroy the context and make a new one.
   DeleteAndStartOverWaiter delete_and_start_over_waiter(

@@ -42,6 +42,7 @@
 #include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -81,6 +82,7 @@ class Extensions3DUtil;
 class StaticBitmapImage;
 class WebGraphicsContext3DProvider;
 class WebGraphicsContext3DProviderWrapper;
+class WebGraphicsSharedImageInterfaceProvider;
 
 // Manages a rendering target (framebuffer + attachment) for a canvas.  Can
 // publish its rendering results to a cc::Layer for compositing.
@@ -344,10 +346,23 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   bool Initialize(const gfx::Size&, bool use_multisampling);
 
+  void SetSharedImageInterfaceProviderForBitmapTest(
+      std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider);
+
   struct RegisteredBitmap {
-    RegisteredBitmap(scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
-                     cc::SharedBitmapIdRegistration registration)
-        : bitmap(std::move(bitmap)), registration(std::move(registration)) {}
+    RegisteredBitmap(
+        scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
+        cc::SharedBitmapIdRegistration registration,
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
+        gpu::SyncToken sync_token,
+        base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider>
+            sii_provider)
+        : bitmap(std::move(bitmap)),
+          registration(std::move(registration)),
+          shared_image(std::move(shared_image)),
+          sync_token(std::move(sync_token)),
+          sii_provider(sii_provider) {}
+    RegisteredBitmap() = default;
 
     // Explicitly move-only.
     RegisteredBitmap(RegisteredBitmap&&) = default;
@@ -355,6 +370,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
     scoped_refptr<cc::CrossThreadSharedBitmap> bitmap;
     cc::SharedBitmapIdRegistration registration;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    gpu::SyncToken sync_token;
+    base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;
   };
   // Shared memory bitmaps that were released by the compositor and can be used
   // again by this DrawingBuffer.
@@ -407,11 +425,16 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 viz::SharedImageFormat,
                 SkAlphaType alpha_type,
                 GLenum texture_target,
-                GLuint texture_id,
                 bool is_overlay_candidate,
-                scoped_refptr<gpu::ClientSharedImage> shared_image);
+                scoped_refptr<gpu::ClientSharedImage> shared_image,
+                std::unique_ptr<gpu::SharedImageTexture> shared_image_texture);
     ColorBuffer(const ColorBuffer&) = delete;
     ColorBuffer& operator=(const ColorBuffer&) = delete;
+
+    GLuint texture_id() { return scoped_shared_image_access_->texture_id(); }
+    void BeginAccess(const gpu::SyncToken& sync_token, bool readonly);
+    gpu::SyncToken EndAccess();
+    void ForceCleanUp();
 
     // The thread on which the ColorBuffer is created and the DrawingBuffer is
     // bound to.
@@ -426,7 +449,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     const viz::SharedImageFormat format;
     const SkAlphaType alpha_type;
     GLenum texture_target;
-    const GLuint texture_id;
     const bool is_overlay_candidate;
 
     // The shared image used to send this buffer to the compositor.
@@ -442,13 +464,19 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
    private:
     friend class ThreadSafeRefCounted<ColorBuffer>;
     ~ColorBuffer();
+
+    std::unique_ptr<gpu::SharedImageTexture> shared_image_texture_;
+    std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
+        scoped_shared_image_access_;
   };
 
-  using CopyFunctionRef = base::FunctionRef<bool(const gpu::MailboxHolder&,
-                                                 viz::SharedImageFormat,
-                                                 SkAlphaType alpha_type,
-                                                 const gfx::Size&,
-                                                 const gfx::ColorSpace&)>;
+  using CopyFunctionRef = base::FunctionRef<std::optional<gpu::SyncToken>(
+      scoped_refptr<gpu::ClientSharedImage>,
+      const gpu::SyncToken&,
+      viz::SharedImageFormat,
+      SkAlphaType alpha_type,
+      const gfx::Size&,
+      const gfx::ColorSpace&)>;
   bool CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
                               bool dst_is_unpremul_gl,
                               SourceDrawingBuffer src_buffer,
@@ -590,6 +618,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Presents swap chain if swap chain is being used and contents have changed.
   void ResolveAndPresentSwapChainIfNeeded();
 
+  WebGraphicsSharedImageInterfaceProvider*
+  GetSharedImageInterfaceProviderForBitmap();
+
   // Weak, reset by beginDestruction.
   raw_ptr<Client> client_ = nullptr;
 
@@ -689,6 +720,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Mailboxes that were released by the compositor can be used again by this
   // DrawingBuffer.
   Deque<scoped_refptr<ColorBuffer>> recycled_color_buffer_queue_;
+  base::flat_set<scoped_refptr<ColorBuffer>> exported_color_buffers_;
 
   // In the case of OffscreenCanvas, we do not want to enable the
   // WebGLImageChromium flag, so we replace all the
@@ -702,6 +734,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   const gl::GpuPreference initial_gpu_;
   gl::GpuPreference current_active_gpu_;
+
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      shared_image_interface_provider_for_bitmap_test_;
 
   base::WeakPtrFactory<DrawingBuffer> weak_factory_;
 };

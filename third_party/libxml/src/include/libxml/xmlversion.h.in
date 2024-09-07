@@ -128,15 +128,6 @@
 #endif
 
 /**
- * LIBXML_FTP_ENABLED:
- *
- * Whether the FTP support is configured in
- */
-#if @WITH_FTP@
-#define LIBXML_FTP_ENABLED
-#endif
-
-/**
  * LIBXML_HTTP_ENABLED:
  *
  * Whether the HTTP support is configured in
@@ -206,15 +197,6 @@
  */
 #if @WITH_XPTR@
 #define LIBXML_XPTR_ENABLED
-#endif
-
-/**
- * LIBXML_XPTR_LOCS_ENABLED:
- *
- * Whether support for XPointer locations is configured in
- */
-#if @WITH_XPTR_LOCS@
-#define LIBXML_XPTR_LOCS_ENABLED
 #endif
 
 /**

@@ -1044,9 +1044,6 @@ TEST_F(FormStructureRationalizerTest, RationalizeCreditCardNumberOffsets_) {
 // rationalized into (`ADDRESS_HOME_BETWEEN_STREETS_1,
 // `ADDRESS_HOME_BETWEEN_STREETS_2`).
 TEST_F(FormStructureRationalizerTest, RationalizeAddressBetweenStreets) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableSupportForBetweenStreets};
   EXPECT_THAT(
       *BuildFormStructure(
           {

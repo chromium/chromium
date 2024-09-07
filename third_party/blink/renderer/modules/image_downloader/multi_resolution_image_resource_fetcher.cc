@@ -69,14 +69,14 @@ class MultiResolutionImageResourceFetcher::ClientImpl
     DCHECK(!completed_);
     response_ = response;
   }
-  void DidReceiveData(const char* data, int data_length) override {
+  void DidReceiveData(base::span<const char> data) override {
     // The WebAssociatedURLLoader will continue after a load failure.
     // For example, for an Access Control error.
     if (completed_)
       return;
-    DCHECK_GT(data_length, 0);
+    DCHECK_GT(data.size(), 0u);
 
-    data_.append(data, data_length);
+    data_.append(data.data(), data.size());
   }
   void DidFinishLoading() override {
     // The WebAssociatedURLLoader will continue after a load failure.

@@ -32,10 +32,17 @@ export interface ProductSelectionMenuElement {
   };
 }
 
+export enum SectionType {
+  NONE = 0,
+  SUGGESTED = 1,
+  RECENT = 2,
+}
+
 interface MenuSection {
   title: string;
   entries: UrlListEntry[];
   expanded: boolean;
+  sectionType: SectionType;
 }
 
 export class ProductSelectionMenuElement extends PolymerElement {
@@ -90,6 +97,7 @@ export class ProductSelectionMenuElement extends PolymerElement {
         title: loadTimeData.getString('suggestedTabs'),
         entries: suggestedTabs,
         expanded: true,
+        sectionType: SectionType.SUGGESTED,
       });
     }
     if (recentlyViewedTabs.length > 0) {
@@ -97,6 +105,7 @@ export class ProductSelectionMenuElement extends PolymerElement {
         title: loadTimeData.getString('recentlyViewedTabs'),
         entries: recentlyViewedTabs,
         expanded: true,
+        sectionType: SectionType.RECENT,
       });
     }
     // Notify elements that use the |sections| property of its new value.
@@ -136,6 +145,7 @@ export class ProductSelectionMenuElement extends PolymerElement {
       composed: true,
       detail: {
         url: e.model.item.url,
+        urlSection: (e.currentTarget as any).dataUrlSection || SectionType.NONE,
       },
     }));
   }

@@ -35,10 +35,6 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   VpxEncoder(const VpxEncoder&) = delete;
   VpxEncoder& operator=(const VpxEncoder&) = delete;
 
-  base::WeakPtr<Encoder> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
-
  private:
   // VideoTrackRecorder::Encoder implementation.
   void EncodeFrame(scoped_refptr<media::VideoFrame> frame,
@@ -96,7 +92,6 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   // The |media::VideoFrame::timestamp()| of the last encoded frame.  This is
   // used to predict the duration of the next frame.
   base::TimeDelta last_frame_timestamp_;
-  base::WeakPtrFactory<VpxEncoder> weak_factory_{this};
 };
 
 }  // namespace blink

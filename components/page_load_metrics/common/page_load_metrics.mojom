@@ -64,10 +64,6 @@ struct LargestContentfulPaintTiming {
   // TODO(crbug.com/40489779): Use an optional enum.
   bool image_request_priority_valid = false;
   network.mojom.RequestPriority image_request_priority_value;
-
-  bool is_loaded_from_memory_cache = false;
-
-  bool is_preloaded_with_early_hints = false;
 };
 
 // TimeDeltas below relative to navigation start.

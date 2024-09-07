@@ -44,6 +44,10 @@ namespace user_annotations {
 class UserAnnotationsWebContentsObserver;
 }  // namespace user_annotations
 
+namespace privacy_sandbox {
+class PrivacySandboxTabObserver;
+}  // namespace privacy_sandbox
+
 namespace tabs {
 
 class TabInterface;
@@ -109,8 +113,13 @@ class TabFeatures {
     return commerce_ui_tab_helper_.get();
   }
 
+  privacy_sandbox::PrivacySandboxTabObserver* privacy_sandbox_tab_observer() {
+    return privacy_sandbox_tab_observer_.get();
+  }
+
   // Called exactly once to initialize features.
-  void Init(TabInterface& tab, Profile* profile);
+  // Can be overridden in tests to initialize nothing.
+  virtual void Init(TabInterface& tab, Profile* profile);
 
  protected:
   TabFeatures();
@@ -165,6 +174,9 @@ class TabFeatures {
 
   // Responsible for commerce related features.
   std::unique_ptr<commerce::CommerceUiTabHelper> commerce_ui_tab_helper_;
+
+  std::unique_ptr<privacy_sandbox::PrivacySandboxTabObserver>
+      privacy_sandbox_tab_observer_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

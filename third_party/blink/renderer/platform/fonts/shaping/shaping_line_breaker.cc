@@ -39,10 +39,6 @@ inline LayoutUnit FlipRtl(LayoutUnit value, TextDirection direction) {
   return IsLtr(direction) ? value : -value;
 }
 
-inline float FlipRtl(float value, TextDirection direction) {
-  return IsLtr(direction) ? value : -value;
-}
-
 inline bool IsBreakableSpace(UChar ch) {
   return LazyLineBreakIterator::IsBreakableSpace(ch) ||
          Character::IsOtherSpaceSeparator(ch);
@@ -281,7 +277,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
       break_iterator_->BreakSpace() == BreakSpaceType::kAfterEverySpace;
 
   // The start position in the original shape results.
-  const float start_position =
+  const LayoutUnit start_position =
       result_->CachedPositionForOffset(start - range_start);
 
   // If the start offset is not at a safe-to-break boundary, the content between
@@ -291,14 +287,14 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   const EdgeOffset first_safe = FirstSafeOffset(start);
   DCHECK_GE(first_safe.offset, start);
   if (first_safe.offset != start) [[unlikely]] {
-    const float first_safe_position =
+    const LayoutUnit first_safe_position =
         result_->CachedPositionForOffset(first_safe.offset - range_start);
     line_start_result = Shape(
         start, first_safe.offset,
         {.is_line_start = true, .han_kerning_start = first_safe.han_kerning});
     // Adjust the available space to take the reshaping into account.
-    const LayoutUnit old_width = LayoutUnit::FromFloatCeil(
-        FlipRtl(first_safe_position - start_position, direction));
+    const LayoutUnit old_width =
+        FlipRtl(first_safe_position - start_position, direction);
     if (const LayoutUnit diff = old_width - line_start_result->SnappedWidth()) {
       available_space = std::max(available_space + diff, LayoutUnit());
     }
@@ -307,11 +303,9 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   // Find a candidate break opportunity by identifying the last offset before
   // exceeding the available space and the determine the closest valid break
   // preceding the candidate.
-  const float end_position =
+  const LayoutUnit end_position =
       start_position + FlipRtl(available_space, direction);
-  DCHECK_GE(FlipRtl(LayoutUnit::FromFloatCeil(end_position - start_position),
-                    direction),
-            LayoutUnit(0));
+  DCHECK_GE(FlipRtl(end_position - start_position, direction), LayoutUnit(0));
   unsigned candidate_break =
       result_->CachedOffsetForPosition(end_position) + range_start;
   if (candidate_break < range_end &&
@@ -333,9 +327,9 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
       last_safe = result_->CachedPreviousSafeToBreakOffset(candidate_break);
       line_end_result =
           Shape(last_safe, adjusted_candidate_break, {.han_kerning_end = true});
-      const float last_safe_position =
+      const LayoutUnit last_safe_position =
           result_->CachedPositionForOffset(last_safe - range_start);
-      const float width_to_last_safe =
+      const LayoutUnit width_to_last_safe =
           FlipRtl(last_safe_position - start_position, direction);
       if (width_to_last_safe + line_end_result->Width() <= available_space) {
         candidate_break = adjusted_candidate_break;
@@ -521,7 +515,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
       }
 
       // Check if this opportunity can fit after reshaping the line end.
-      float safe_position =
+      const LayoutUnit safe_position =
           result_->CachedPositionForOffset(last_safe - range_start);
       line_end_result = Shape(last_safe, break_opportunity.offset);
       if (line_end_result->Width() <=

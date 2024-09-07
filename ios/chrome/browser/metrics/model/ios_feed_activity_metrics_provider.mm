@@ -9,10 +9,10 @@
 #import "base/types/cxx23_to_underlying.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
-#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 
 namespace {
 
@@ -46,7 +46,7 @@ void IOSFeedActivityMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // Log the activity bucket of all loaded BrowserStates.
   for (ChromeBrowserState* browser_state :
-       GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates()) {
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     base::UmaHistogramEnumeration(
         kAllFeedsActivityBucketsByProviderHistogram,
         FeedActivityBucketForBrowserState(browser_state));

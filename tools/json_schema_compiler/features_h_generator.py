@@ -9,6 +9,7 @@ import cpp_util
 
 
 class HGenerator(object):
+
   def Generate(self, features, source_file, namespace):
     return _Generator(features, source_file, namespace).Generate()
 
@@ -16,6 +17,7 @@ class HGenerator(object):
 class _Generator(object):
   """A .cc generator for features.
   """
+
   def __init__(self, features, source_file, namespace):
     self._feature_defs = features
     self._source_file = source_file
@@ -27,10 +29,10 @@ class _Generator(object):
     """Generates a Code object for features.
     """
     c = Code()
-    (c.Append(cpp_util.CHROMIUM_LICENSE)
-      .Append()
+    (c.Append(cpp_util.CHROMIUM_LICENSE) \
+      .Append() \
       .Append(cpp_util.GENERATED_FEATURE_MESSAGE %
-              cpp_util.ToPosixPath(self._source_file))
+              cpp_util.ToPosixPath(self._source_file)) \
       .Append()
     )
 
@@ -39,31 +41,31 @@ class _Generator(object):
     output_file = os.path.splitext(self._namespace.source_file)[0] + '.h'
     ifndef_name = cpp_util.GenerateIfndefName(output_file)
 
-    (c.Append('#ifndef %s' % ifndef_name)
-      .Append('#define %s' % ifndef_name)
+    (c.Append('#ifndef %s' % ifndef_name) \
+      .Append('#define %s' % ifndef_name) \
       .Append()
     )
 
-    (c.Append('#include <map>')
-      .Append('#include <string>')
-      .Append()
-      .Concat(cpp_util.OpenNamespace(self._namespace))
+    (c.Append('#include <map>') \
+      .Append('#include <string>') \
+      .Append() \
+      .Concat(cpp_util.OpenNamespace(self._namespace)) \
       .Append()
     )
 
-    (c.Append('class %s {' % self._class_name)
-      .Append(' public:')
-      .Sblock()
-      .Concat(self._GeneratePublicBody())
-      .Eblock()
-      .Append(' private:')
-      .Sblock()
-      .Concat(self._GeneratePrivateBody())
-      .Eblock('};')
-      .Append()
+    (c.Append('class %s {' % self._class_name) \
+      .Append(' public:') \
+      .Sblock() \
+      .Concat(self._GeneratePublicBody()) \
+      .Eblock() \
+      .Append(' private:') \
+      .Sblock() \
+      .Concat(self._GeneratePrivateBody()) \
+      .Eblock('};') \
+      .Append() \
       .Cblock(cpp_util.CloseNamespace(self._namespace))
     )
-    (c.Append('#endif  // %s' % ifndef_name)
+    (c.Append('#endif  // %s' % ifndef_name) \
       .Append()
     )
     return c
@@ -71,14 +73,14 @@ class _Generator(object):
   def _GeneratePublicBody(self):
     c = Code()
 
-    (c.Append('%s();' % self._class_name)
-      .Append()
-      .Append('enum ID {')
-      .Concat(self._GenerateEnumConstants())
-      .Eblock('};')
-      .Append()
-      .Append('const char* ToString(ID id) const;')
-      .Append('ID FromString(const std::string& id) const;')
+    (c.Append('%s();' % self._class_name) \
+      .Append() \
+      .Append('enum ID {') \
+      .Concat(self._GenerateEnumConstants()) \
+      .Eblock('};') \
+      .Append() \
+      .Append('const char* ToString(ID id) const;') \
+      .Append('ID FromString(const std::string& id) const;') \
       .Append()
     )
     return c
@@ -90,7 +92,7 @@ class _Generator(object):
   def _GenerateEnumConstants(self):
     c = Code()
 
-    (c.Sblock()
+    (c.Sblock() \
       .Append('kUnknown,')
     )
     for feature in self._feature_defs:

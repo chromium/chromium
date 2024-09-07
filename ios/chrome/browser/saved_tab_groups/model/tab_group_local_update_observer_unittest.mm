@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
@@ -72,6 +72,14 @@ SavedTabGroup TestSavedGroup() {
                             {}, std::nullopt, base::Uuid::GenerateRandomV4(),
                             TabGroupId::GenerateNew());
   return saved_group;
+}
+
+MATCHER_P(TabTitleEq, title, "") {
+  return arg.title() == title;
+}
+
+MATCHER_P(TabURLEq, url, "") {
+  return arg.url() == url;
 }
 
 }  // namespace
@@ -195,7 +203,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateExistingTab) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _))
+                                        TabTitleEq(kNewTitle)))
       .Times(1);
   web_state->SetTitle(kNewTitle);
 }
@@ -212,7 +220,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTab) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _));
+                                        TabTitleEq(kNewTitle)));
   web_state->SetTitle(kNewTitle);
 }
 
@@ -229,7 +237,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTabSyncPaused) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _))
+                                        TabTitleEq(kNewTitle)))
       .Times(0);
   web_state->SetTitle(kNewTitle);
 }
@@ -250,7 +258,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateList) {
       ->AddBrowser(browser_same_browser_state_.get());
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _));
+                                        TabTitleEq(kNewTitle)));
   web_state->SetTitle(kNewTitle);
 }
 
@@ -273,7 +281,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateListInsert) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _));
+                                        TabTitleEq(kNewTitle)));
   web_state->SetTitle(kNewTitle);
 }
 
@@ -288,7 +296,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdate) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        _, GURL(kTestURL), _));
+                                        TabURLEq(GURL(kTestURL))));
   web_state->SetCurrentURL(GURL(kTestURL));
   SetUpNavigationContext(web_state);
   web_state->OnNavigationFinished(navigation_context_.get());
@@ -305,7 +313,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, ActivateRegularTab) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
   web_state_list->ActivateWebStateAt(0);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_service_, UpdateTab(_, _, _)).Times(0);
   EXPECT_CALL(*mock_service_, AddTab(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_service_, RemoveTab(_, _)).Times(0);
   EXPECT_CALL(*mock_service_, MoveTab(_, _, _)).Times(0);
@@ -325,9 +333,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdateSyncPaused) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
-  EXPECT_CALL(*mock_service_,
-              UpdateTab(tab_group_id, web_state_id.identifier(), _,
-                        GURL(kTestURL), std::make_optional(0ul)))
+  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
+                                        TabURLEq(GURL(kTestURL))))
       .Times(0);
   web_state->SetCurrentURL(GURL(kTestURL));
   SetUpNavigationContext(web_state);
@@ -771,6 +778,21 @@ TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroupAfterRemovingLastTtab) {
       .Times(0);
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id));
   web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+}
+
+// Tests that the service is correctly called when the active tab is updated.
+TEST_F(TabGroupLocalUpdateObserverTest, UpdateActiveTab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a b] c* d e f"));
+
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+  web::WebState* web_state_a = builder.GetWebStateForIdentifier('a');
+
+  EXPECT_CALL(*mock_service_,
+              OnTabSelected(group->tab_group_id(),
+                            web_state_a->GetUniqueIdentifier().identifier()));
+  web_state_list->ActivateWebStateAt(0);
 }
 
 }  // namespace tab_groups

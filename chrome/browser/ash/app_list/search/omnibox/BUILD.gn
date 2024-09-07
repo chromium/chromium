@@ -35,7 +35,6 @@ static_library("omnibox") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/ranking",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/chromeos/launcher_search:search_util",
     "//chrome/browser/favicon",

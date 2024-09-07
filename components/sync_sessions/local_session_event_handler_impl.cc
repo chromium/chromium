@@ -113,7 +113,8 @@ LocalSessionEventHandlerImpl::Delegate::~Delegate() = default;
 LocalSessionEventHandlerImpl::LocalSessionEventHandlerImpl(
     Delegate* delegate,
     SyncSessionsClient* sessions_client,
-    SyncedSessionTracker* session_tracker)
+    SyncedSessionTracker* session_tracker,
+    bool is_new_session)
     : delegate_(delegate),
       sessions_client_(sessions_client),
       session_tracker_(session_tracker) {
@@ -123,6 +124,10 @@ LocalSessionEventHandlerImpl::LocalSessionEventHandlerImpl(
 
   current_session_tag_ = session_tracker_->GetLocalSessionTag();
   DCHECK(!current_session_tag_.empty());
+
+  if (is_new_session) {
+    session_tracker_->SetLocalSessionStartTime(base::Time::Now());
+  }
 
   if (!IsSessionRestoreInProgress(sessions_client)) {
     OnSessionRestoreComplete();
@@ -419,11 +424,10 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
   specifics.set_pinned(
       window_delegate ? window_delegate->IsTabPinned(&tab_delegate) : false);
   specifics.set_extension_app_id(tab_delegate.GetExtensionAppId());
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    specifics.set_last_active_time_unix_epoch_millis(
-        (tab_delegate.GetLastActiveTime() - base::Time::UnixEpoch())
-            .InMilliseconds());
-  }
+  specifics.set_last_active_time_unix_epoch_millis(
+      (tab_delegate.GetLastActiveTime() - base::Time::UnixEpoch())
+          .InMilliseconds());
+
   const int current_index = tab_delegate.GetCurrentEntryIndex();
   const int min_index = std::max(0, current_index - kMaxSyncNavigationCount);
   const int max_index = std::min(current_index + kMaxSyncNavigationCount,

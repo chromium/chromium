@@ -451,7 +451,12 @@ void FilePathWatcherImpl::OnFilePathChanged(
     bool created,
     bool deleted) {
   DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
-  DUMP_WILL_BE_CHECK(!watches_.empty());
+
+  // Check to see if Cancel() has already been called.
+  if (watches_.empty()) {
+    return;
+  }
+
   DUMP_WILL_BE_CHECK(HasValidWatchVector());
 
   // Used below to avoid multiple recursive updates.

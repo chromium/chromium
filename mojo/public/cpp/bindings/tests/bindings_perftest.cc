@@ -173,8 +173,7 @@ class PingPongPaddle : public MessageReceiverWithResponderStatus {
   bool AcceptWithResponder(
       Message* message,
       std::unique_ptr<MessageReceiverWithStatus> responder) override {
-    NOTREACHED_IN_MIGRATION();
-    return true;
+    NOTREACHED();
   }
 
   base::TimeDelta Serve(uint32_t expected_count) {
@@ -248,8 +247,7 @@ class CounterReceiver : public MessageReceiverWithResponderStatus {
   bool AcceptWithResponder(
       Message* message,
       std::unique_ptr<MessageReceiverWithStatus> responder) override {
-    NOTREACHED_IN_MIGRATION();
-    return true;
+    NOTREACHED();
   }
 
   uint32_t counter() const { return counter_; }

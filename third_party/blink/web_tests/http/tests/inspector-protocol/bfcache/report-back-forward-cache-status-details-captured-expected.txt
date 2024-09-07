@@ -6,13 +6,18 @@ Test that back/forward navigations report the bfcache status
         [0] : {
             details : [
                 [0] : {
-                    columnNumber : 13
-                    lineNumber : 0
+                    columnNumber : 22
+                    lineNumber : 3
+                    url : https://devtools.test:8443/inspector-protocol/bfcache/resources/blocking-feature.js
+                }
+                [1] : {
+                    columnNumber : 22
+                    lineNumber : 3
                     url : https://devtools.test:8443/inspector-protocol/bfcache/resources/blocking-feature.js
                 }
             ]
-            reason : BroadcastChannel
-            type : PageSupportNeeded
+            reason : WebLocks
+            type : SupportPending
         }
     ]
     notRestoredExplanationsTree : {
@@ -22,13 +27,18 @@ Test that back/forward navigations report the bfcache status
             [0] : {
                 details : [
                     [0] : {
-                        columnNumber : 13
-                        lineNumber : 0
+                        columnNumber : 22
+                        lineNumber : 3
+                        url : https://devtools.test:8443/inspector-protocol/bfcache/resources/blocking-feature.js
+                    }
+                    [1] : {
+                        columnNumber : 22
+                        lineNumber : 3
                         url : https://devtools.test:8443/inspector-protocol/bfcache/resources/blocking-feature.js
                     }
                 ]
-                reason : BroadcastChannel
-                type : PageSupportNeeded
+                reason : WebLocks
+                type : SupportPending
             }
         ]
         url : https://devtools.test:8443/inspector-protocol/bfcache/resources/page-with-blocking-feature.html

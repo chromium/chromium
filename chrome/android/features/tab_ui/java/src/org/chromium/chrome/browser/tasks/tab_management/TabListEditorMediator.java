@@ -39,7 +39,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -204,10 +203,7 @@ class TabListEditorMediator
 
     /** {@link TabListEditorCoordinator.TabListEditorController} implementation. */
     @Override
-    public void show(
-            List<Tab> tabs,
-            int preSelectedTabCount,
-            @Nullable RecyclerViewPosition recyclerViewPosition) {
+    public void show(List<Tab> tabs, @Nullable RecyclerViewPosition recyclerViewPosition) {
         assert mNavigationProvider != null : "NavigationProvider must be set before calling #show";
         // Reparent the snackbarManager to use the selection editor layout to avoid layering issues.
         mSnackbarOverrideToken =
@@ -222,20 +218,7 @@ class TabListEditorMediator
         mVisibleTabs.addAll(tabs);
         mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
 
-        if (preSelectedTabCount > 0) {
-            assert preSelectedTabCount <= tabs.size();
-
-            Set<Integer> preSelectedTabIds = new HashSet<>();
-
-            for (int i = 0; i < preSelectedTabCount; i++) {
-                preSelectedTabIds.add(tabs.get(i).getId());
-            }
-
-            mSelectionDelegate.setSelectedItems(preSelectedTabIds);
-        }
-
-        mResetHandler.resetWithListOfTabs(
-                tabs, preSelectedTabCount, recyclerViewPosition, /* quickMode= */ false);
+        mResetHandler.resetWithListOfTabs(tabs, recyclerViewPosition, /* quickMode= */ false);
 
         mModel.set(TabListEditorProperties.IS_VISIBLE, true);
         mModel.set(
@@ -322,10 +305,7 @@ class TabListEditorMediator
         mTabListCoordinator.cleanupTabGridView();
         mVisibleTabs.clear();
         mResetHandler.resetWithListOfTabs(
-                null,
-                /* preSelectedCount= */ 0,
-                /* recyclerViewPosition= */ null,
-                /* quickMode= */ false);
+                null, /* recyclerViewPosition= */ null, /* quickMode= */ false);
         mModel.set(TabListEditorProperties.IS_VISIBLE, false);
         mResetHandler.postHiding();
         if (mLifecycleObserver != null) mLifecycleObserver.didHide();
@@ -367,10 +347,7 @@ class TabListEditorMediator
         }
         mSelectionDelegate.setSelectedItems(selectedTabIds);
         mResetHandler.resetWithListOfTabs(
-                mVisibleTabs,
-                mVisibleTabs.size(),
-                /* recyclerViewPosition= */ null,
-                /* quickMode= */ true);
+                mVisibleTabs, /* recyclerViewPosition= */ null, /* quickMode= */ true);
     }
 
     @Override
@@ -379,10 +356,7 @@ class TabListEditorMediator
         selectedTabIds.clear();
         mSelectionDelegate.setSelectedItems(selectedTabIds);
         mResetHandler.resetWithListOfTabs(
-                mVisibleTabs,
-                /* preSelectedCount= */ 0,
-                /* recyclerViewPosition= */ null,
-                /* quickMode= */ true);
+                mVisibleTabs, /* recyclerViewPosition= */ null, /* quickMode= */ true);
     }
 
     @Override

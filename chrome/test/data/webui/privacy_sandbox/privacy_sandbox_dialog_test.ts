@@ -466,6 +466,36 @@ suite('Combined', function() {
         browserProxy, PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
   });
+
+  test('privacyPolicy', async function() {
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
+    const consentStep = getActiveStep()!;
+    assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.CONSENT);
+
+    // The collapse section is opened.
+    const learnMore: HTMLElement = consentStep!.shadowRoot!.querySelector(
+        'privacy-sandbox-dialog-learn-more')!;
+    const collapseElement = learnMore!.shadowRoot!.querySelector('cr-collapse');
+    testClickButton('cr-expand-button', learnMore);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
+    assertTrue(collapseElement!.opened);
+
+    // After clicking the privacy policy link, the privacy policy page should be
+    // opened.
+    const privacyPolicyDiv =
+        learnMore!.querySelector<HTMLElement>('#privacyPolicyDiv');
+    const privacyPolicyLink =
+        privacyPolicyDiv!.querySelector<HTMLElement>('#privacyPolicyLink');
+    assertTrue(
+        !!privacyPolicyLink,
+        `the link isn\'t found, selector: ${privacyPolicyDiv}`);
+    privacyPolicyLink.click();
+
+    assertEquals(
+        getActiveStep()!.id, PrivacySandboxCombinedDialogStep.PRIVACYPOLICY);
+  });
 });
 
 suite('NoticeEEA', function() {

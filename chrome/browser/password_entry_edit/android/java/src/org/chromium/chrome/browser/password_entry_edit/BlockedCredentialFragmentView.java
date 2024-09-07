@@ -12,16 +12,25 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+
 /**
- * This class is responsible for rendering a fragment containing details about a site that
- * the user blocked from saving.
+ * This class is responsible for rendering a fragment containing details about a site that the user
+ * blocked from saving.
  */
 public class BlockedCredentialFragmentView extends CredentialEntryFragmentViewBase {
     private Runnable mDeleteDelegate;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        getActivity().setTitle(R.string.section_saved_passwords_exceptions);
+        mPageTitle.set(getString(R.string.section_saved_passwords_exceptions));
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

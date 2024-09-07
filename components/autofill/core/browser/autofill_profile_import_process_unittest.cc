@@ -26,13 +26,13 @@ namespace autofill {
 
 namespace {
 
-// Test that two AutofillProfiles have the same `source() and `Compare()` equal.
-// This is useful for testing profile migration, which changes a profile's
-// source and GUID (preventing the use of operator==).
-MATCHER(CompareWithSource, "") {
+// Test that two AutofillProfiles have the same `record_type() and `Compare()`
+// equal. This is useful for testing profile migration, which changes a
+// profile's record_type and GUID (preventing the use of operator==).
+MATCHER(CompareWithRecordType, "") {
   const AutofillProfile& a = std::get<0>(arg);
   const AutofillProfile& b = std::get<1>(arg);
-  return a.source() == b.source() && a.Compare(b) == 0;
+  return a.record_type() == b.record_type() && a.Compare(b) == 0;
 }
 
 class AutofillProfileImportProcessTest : public testing::Test {
@@ -275,7 +275,8 @@ TEST_F(AutofillProfileImportProcessTest,
 // profile is rejected as a duplicate.
 TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
   AutofillProfile account_profile = test::StandardProfile();
-  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   address_data_manager().AddProfile(account_profile);
 
   ProfileImportProcess import_data(
@@ -295,7 +296,8 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
 // rejected as a duplicate.
 TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
   AutofillProfile account_profile = test::StandardProfile();
-  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   address_data_manager().AddProfile(account_profile);
 
   ProfileImportProcess import_data(
@@ -312,11 +314,12 @@ TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
 }
 
 // Tests that importing a profile that is a superset of a kAccount profile
-// results in an update. The source of resulting profile remains kAccount.
+// results in an update. The record type of resulting profile remains kAccount.
 TEST_F(AutofillProfileImportProcessTest,
        ImportSupersetProfile_kAccount_PostStorage) {
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
-  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   address_data_manager().AddProfile(account_profile);
 
   ProfileImportProcess import_data(
@@ -330,7 +333,8 @@ TEST_F(AutofillProfileImportProcessTest,
   EXPECT_TRUE(import_data.ProfilesChanged());
   AutofillProfile expected_profile = test::StandardProfile();
   expected_profile.set_guid(account_profile.guid());
-  test_api(expected_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(expected_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
               testing::UnorderedElementsAre(expected_profile));
 }
@@ -338,7 +342,8 @@ TEST_F(AutofillProfileImportProcessTest,
 // Tests that an import can cause a silent update of a `kAccount` profile.
 TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
   AutofillProfile account_profile = test::UpdateableStandardProfile();
-  test_api(account_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   address_data_manager().AddProfile(account_profile);
 
   // The `observed_profile` is of type `kLocalOrSyncable`. This should not
@@ -355,7 +360,8 @@ TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
   // Expect that the existing profiles was updated to the standard profile,
   // while maintaining it's `kAccount` status.
   AutofillProfile expected_profile = test::StandardProfile();
-  test_api(expected_profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(expected_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   expected_profile.set_guid(account_profile.guid());
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
               testing::UnorderedElementsAre(expected_profile));
@@ -877,16 +883,16 @@ TEST_F(AutofillProfileImportProcessTest,
       testing::UnorderedElementsAre(mergeable_profile, updated_profile));
 }
 
-// Tests that for eligible users, new profiles are of source kAccount.
-TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
+// Tests that for eligible users, new profiles are of record type kAccount.
+TEST_F(AutofillProfileImportProcessTest, NewProfileRecordType) {
   // Ineligible user.
   {
     address_data_manager().SetIsEligibleForAddressAccountStorage(false);
     ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
                                      &address_data_manager(),
                                      /*allow_only_silent_updates=*/false);
-    EXPECT_EQ(import_data.import_candidate()->source(),
-              AutofillProfile::Source::kLocalOrSyncable);
+    EXPECT_EQ(import_data.import_candidate()->record_type(),
+              AutofillProfile::RecordType::kLocalOrSyncable);
   }
 
   // Eligible user.
@@ -895,8 +901,8 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
     ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
                                      &address_data_manager(),
                                      /*allow_only_silent_updates=*/false);
-    EXPECT_EQ(import_data.import_candidate()->source(),
-              AutofillProfile::Source::kAccount);
+    EXPECT_EQ(import_data.import_candidate()->record_type(),
+              AutofillProfile::RecordType::kAccount);
 
     // Profiles with an ineligible country are not stored in the account.
     AutofillProfile ineligible_profile = test::StandardProfile();
@@ -904,15 +910,15 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
     import_data = ProfileImportProcess(ineligible_profile, "en_US", url_,
                                        &address_data_manager(),
                                        /*allow_only_silent_updates=*/false);
-    EXPECT_EQ(import_data.import_candidate()->source(),
-              AutofillProfile::Source::kLocalOrSyncable);
+    EXPECT_EQ(import_data.import_candidate()->record_type(),
+              AutofillProfile::RecordType::kLocalOrSyncable);
   }
 }
 
 // Two `kLocalOrSyncable` profiles are stored. One of them is observed during
 // submission. Expected that this profile is offered for migration.
-// After accepting, expect that the profile's source has changed and that the
-// second profile is left unaltered.
+// After accepting, expect that the profile's record type has changed and that
+// the second profile is left unaltered.
 TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount) {
   const AutofillProfile profile_to_migrate = test::StandardProfile();
   const AutofillProfile other_profile = test::DifferentFromStandardProfile();
@@ -933,13 +939,13 @@ TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount) {
   EXPECT_THAT(
       ApplyImportAndGetProfiles(import_data),
       testing::UnorderedPointwise(
-          CompareWithSource(),
+          CompareWithRecordType(),
           {profile_to_migrate.ConvertToAccountProfile(), other_profile}));
 }
 
 // Test that the profile to migrate can be silently updated. Expect that after
-// accepting the migration, the stored profile has source `kAccount` and was
-// silently updated.
+// accepting the migration, the stored profile has record type `kAccount` and
+// was silently updated.
 TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount_SilentUpdate) {
   const AutofillProfile profile_to_migrate = test::UpdateableStandardProfile();
   const AutofillProfile observed_profile = test::StandardProfile();
@@ -960,10 +966,10 @@ TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount_SilentUpdate) {
 
   import_data.AcceptWithoutEdits();
   EXPECT_TRUE(import_data.ProfilesChanged());
-  EXPECT_THAT(
-      ApplyImportAndGetProfiles(import_data),
-      testing::UnorderedPointwise(
-          CompareWithSource(), {observed_profile.ConvertToAccountProfile()}));
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              testing::UnorderedPointwise(
+                  CompareWithRecordType(),
+                  {observed_profile.ConvertToAccountProfile()}));
 }
 
 // Even if a profile migration is rejected, silent updates are applied.
@@ -983,7 +989,7 @@ TEST_F(AutofillProfileImportProcessTest,
   EXPECT_TRUE(import_data.ProfilesChanged());
   EXPECT_THAT(
       ApplyImportAndGetProfiles(import_data),
-      testing::UnorderedPointwise(CompareWithSource(), {observed_profile}));
+      testing::UnorderedPointwise(CompareWithRecordType(), {observed_profile}));
 }
 
 // Expect that no migration is offered for ineligible users.

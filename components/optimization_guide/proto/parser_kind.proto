@@ -17,4 +17,6 @@ enum ParserKind {
   PARSER_KIND_SIMPLE = 1;
   // Model output is parsed as JSON then converted to the response proto.
   PARSER_KIND_JSON = 2;
+  // Model output is parsed as answers from an AQA model.
+  PARSER_KIND_AQA = 3;
 }

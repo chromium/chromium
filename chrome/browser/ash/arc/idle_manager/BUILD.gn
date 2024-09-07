@@ -29,6 +29,7 @@ static_library("idle_manager") {
     "//chrome/browser/ash/arc/vmm",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/patchpanel",
+    "//chromeos/ash/components/throttle",
     "//chromeos/dbus/power",
     "//ui/display/manager",
   ]
@@ -44,7 +45,7 @@ static_library("test_support") {
     "arc_throttle_test_observer.h",
   ]
 
-  deps = [ "//chrome/browser/ash" ]
+  deps = [ "//chromeos/ash/components/throttle" ]
 }
 
 source_set("unit_tests") {

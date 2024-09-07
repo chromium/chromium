@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("back_gesture") {
+  sources = [
+    "back_gesture_contextual_nudge_delegate.cc",
+    "back_gesture_contextual_nudge_delegate.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//content/public/browser",
+    "//ui/aura",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "back_gesture_browsertest.cc" ]
+
+  deps = [
+    "//ash:test_support",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//ui/aura",
+    "//ui/display",
+    "//ui/events:test_support",
+    "//ui/events/types:headers",
+  ]
+}

@@ -593,8 +593,7 @@ DOMDataView* NDEFRecord::data() const {
     DCHECK(payload_data_.empty());
     return nullptr;
   }
-  DOMArrayBuffer* dom_buffer =
-      DOMArrayBuffer::Create(payload_data_.data(), payload_data_.size());
+  DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(payload_data_);
   return DOMDataView::Create(dom_buffer, 0, payload_data_.size());
 }
 

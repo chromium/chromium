@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -367,8 +368,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString("orcaLearnMoreUrl",
-                         chrome::kOrcaSuggestionLearnMoreURL);
+  html_source->AddString("helpMeReadWriteLearnMoreUrl",
+                         chrome::kHelpMeReadWriteLearnMoreURL);
 
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
   html_source->AddBoolean("isMahiEnabled",

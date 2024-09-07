@@ -10,9 +10,14 @@
 @protocol AccountsMediatorDelegate <NSObject>
 
 // Called to remove identity.
-// TODO(crbug.com/349071402): The identity should not be removed directly, the
-// AccountsMediatorDelegate should show a confirmation action sheet.
-- (void)handleRemoveIdentity:(id<SystemIdentity>)identity;
+- (void)handleRemoveIdentity:(id<SystemIdentity>)identity
+                    itemView:(UIView*)itemView;
+
+// Called to show SigninCommand with operation to add account to device.
+- (void)showAddAccountToDevice;
+
+// Called to sign out.
+- (void)signOutWithItemView:(UIView*)itemView;
 
 @end
 

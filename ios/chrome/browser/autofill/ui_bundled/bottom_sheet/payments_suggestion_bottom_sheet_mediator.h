@@ -46,8 +46,10 @@ class WebStateList;
 - (void)logExitReason:(PaymentsSuggestionBottomSheetExitReason)exitReason;
 
 // Sends the information about which credit card from the bottom sheet was
-// selected by the user, which is expected to fill the relevant fields.
-- (void)didSelectCreditCard:(CreditCardData*)creditCardData;
+// selected by the user, which is expected to fill the relevant fields. `index`
+// represents the position of the selected card in the list of card suggestions.
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData
+                    atIndex:(NSInteger)index;
 
 @end
 

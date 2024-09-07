@@ -57,6 +57,14 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
     return false;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Tabs cannot be closed when the app is locked for OnTask. Only relevant for
+  // non-web browser scenarios.
+  if (browser_->IsLockedForOnTask()) {
+    return false;
+  }
+#endif
+
   return !is_attempting_to_close_browser_ ||
          is_calling_before_unload_handlers();
 }

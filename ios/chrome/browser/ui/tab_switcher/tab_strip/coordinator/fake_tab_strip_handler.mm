@@ -17,8 +17,9 @@
   _identifiersForTabGroupCreation = identifiers;
 }
 
-- (void)showTabStripGroupEditionForGroup:(const TabGroup*)tabGroup {
-  _groupForTabGroupEdition = tabGroup;
+- (void)showTabStripGroupEditionForGroup:
+    (base::WeakPtr<const TabGroup>)tabGroup {
+  _groupForTabGroupEdition = tabGroup.get();
 }
 
 - (void)hideTabStripGroupCreation {

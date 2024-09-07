@@ -384,14 +384,18 @@ AST_MATCHER_P2(clang::InitListExpr,
       field_decl = field_decls[i];
     }
 
-    clang::ast_matchers::internal::BoundNodesTreeBuilder field_matches(
-        *Builder);
-    if (field_decl_matcher.matches(*field_decl, Finder, &field_matches)) {
-      clang::ast_matchers::internal::BoundNodesTreeBuilder expr_matches(
-          field_matches);
-      if (init_expr_matcher.matches(*expr, Finder, &expr_matches)) {
-        result.addMatch(expr_matches);
-        is_matching = true;
+    // `field_decl` might be equal to `nullptr`. In the case, we should not
+    // run `field_decl_matcher`.
+    if (field_decl) {
+      clang::ast_matchers::internal::BoundNodesTreeBuilder field_matches(
+          *Builder);
+      if (field_decl_matcher.matches(*field_decl, Finder, &field_matches)) {
+        clang::ast_matchers::internal::BoundNodesTreeBuilder expr_matches(
+            field_matches);
+        if (init_expr_matcher.matches(*expr, Finder, &expr_matches)) {
+          result.addMatch(expr_matches);
+          is_matching = true;
+        }
       }
     }
   }

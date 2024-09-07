@@ -705,6 +705,7 @@ class BuildConfigGenerator extends DefaultTask {
         if (dependencyExtension == 'jar' && (
                 dependencyId.startsWith('io_grpc_') ||
                 dependencyId == 'com_google_firebase_firebase_encoders' ||
+                dependencyId == 'com_google_dagger_hilt_core' ||
                 dependencyId == 'com_google_guava_guava_android')) {
             sb.append('  # https://crbug.com/1412551\n')
             sb.append('  requires_android = true\n')
@@ -803,6 +804,9 @@ class BuildConfigGenerator extends DefaultTask {
                 // Target .aar file contains .so libraries that need to be extracted,
                 // and android_aar_prebuilt template will fail if it's not set explictly.
                 sb.append('  extract_native_libraries = true\n')
+                break
+            case 'com_google_auto_service_auto_service_annotations_java':
+                sb.append('  preferred_dep = true\n')
                 break
             case 'com_google_guava_guava':
             case 'com_google_guava_guava_android':

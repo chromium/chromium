@@ -82,6 +82,24 @@ em::Policy_PolicySource GetSource(const base::Value& policy) {
   return em::Policy_PolicySource_SOURCE_UNKNOWN;
 }
 
+void UpdateConflictedPolicy(em::Policy* policy_info,
+                            const base::Value& policy) {
+  policy_info->set_level(GetLevel(policy));
+  policy_info->set_scope(GetScope(policy));
+  policy_info->set_source(GetSource(policy));
+}
+
+void UpdateConflictedPolicies(const std::string conflict_key,
+                              em::Policy* policy_info,
+                              const base::Value::Dict& policy) {
+  if (!policy.contains(conflict_key)) {
+    return;
+  }
+  for (const auto& conflicted_policy : *policy.FindList(conflict_key)) {
+    UpdateConflictedPolicy(policy_info->add_conflicts(), conflicted_policy);
+  }
+}
+
 void UpdatePolicyInfo(em::Policy* policy_info,
                       const std::string& policy_name,
                       const base::Value& policy) {
@@ -111,6 +129,9 @@ void UpdatePolicyInfo(em::Policy* policy_info,
     policy_info->set_error(*error);
   else if (!deprecated_error.empty())
     policy_info->set_error(deprecated_error);
+
+  UpdateConflictedPolicies("conflicts", policy_info, policy.GetDict());
+  UpdateConflictedPolicies("superseded", policy_info, policy.GetDict());
 }
 
 }  // namespace

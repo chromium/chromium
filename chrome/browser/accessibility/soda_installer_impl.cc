@@ -46,9 +46,10 @@ base::FilePath SodaInstallerImpl::GetLanguagePath(
 }
 
 void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
-  if (never_download_soda_for_testing_)
+  if (soda_binary_installed_ || never_download_soda_for_testing_) {
     return;
-  soda_binary_installed_ = false;
+  }
+
   is_soda_downloading_ = true;
   component_updater::RegisterSodaComponent(
       g_browser_process->component_updater(), global_prefs,

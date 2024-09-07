@@ -15,6 +15,11 @@ IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrCheckbox) {
   RunTest("cr_elements/cr_checkbox_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, InfiniteList) {
+  RunTest("cr_elements/cr_infinite_list_test.js",
+          "runMochaSuite('InfiniteListFocusTest')");
+}
+
 // https://crbug.com/997943: Flaky on Mac
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CrInput DISABLED_CrInput
@@ -63,4 +68,8 @@ IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrTextarea) {
 
 IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrFocusRowMixin) {
   RunTest("cr_elements/cr_focus_row_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, FocusRowMixinLit) {
+  RunTest("cr_elements/focus_row_mixin_lit_test.js", "mocha.run()");
 }

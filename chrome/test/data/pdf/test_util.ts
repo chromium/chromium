@@ -7,12 +7,16 @@
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
-import type {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {BeforeUnloadProxyImpl} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {BeforeUnloadProxy, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// <if expr="enable_pdf_ink2">
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+// </if>
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 export class MockElement {
   dir: string = '';
@@ -197,26 +201,24 @@ export function createMockPdfPluginForTest(): MockPdfPluginElement {
       MockPdfPluginElement;
 }
 
-class TestBookmarksElement extends PolymerElement {
+class TestBookmarksElement extends CrLitElement {
   static get is() {
     return 'test-bookmarks';
   }
 
-  static get template() {
-    return html`
-      <template is="dom-repeat" items="[[bookmarks]]">
-        <viewer-bookmark bookmark="[[item]]" depth="0"></viewer-bookmark>
-      </template>
-    `;
+  override render() {
+    return this.bookmarks.map(
+        item => html`<viewer-bookmark .bookmark="${item}" depth="0">
+             </viewer-bookmark>`);
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      bookmarks: Array,
+      bookmarks: {type: Array},
     };
   }
 
-  bookmarks: Bookmark[];
+  bookmarks: Bookmark[] = [];
 }
 
 declare global {
@@ -326,13 +328,14 @@ export function getRequiredElement(parent: HTMLElement, query: string) {
  * Open the toolbar menu. Does nothing if the menu is already open.
  * @param toolbar The toolbar containing the menu to open.
  */
-export function openToolbarMenu(toolbar: ViewerToolbarElement) {
+export async function openToolbarMenu(toolbar: ViewerToolbarElement) {
   const menu = toolbar.$.menu;
   if (menu.open) {
     return;
   }
 
   getRequiredElement(toolbar, '#more').click();
+  await microtasksFinished();
   assert(menu.open);
 }
 
@@ -347,7 +350,7 @@ export function assertCheckboxMenuButton(
   // Check that the check mark visibility matches `checked`.
   chrome.test.assertEq(String(checked), button.getAttribute('aria-checked'));
   chrome.test.assertEq(
-      checked, isVisible(button.querySelector('.check-container iron-icon')));
+      checked, isVisible(button.querySelector('.check-container cr-icon')));
 }
 
 export async function ensureFullscreen(): Promise<void> {
@@ -386,5 +389,22 @@ export function finishInkStroke(controller: PluginController) {
 
   eventTarget.dispatchEvent(new CustomEvent(
       PluginControllerEventType.PLUGIN_MESSAGE, {detail: message}));
+}
+
+export class TestBeforeUnloadProxy extends TestBrowserProxy implements
+    BeforeUnloadProxy {
+  constructor() {
+    super(['preventDefault']);
+  }
+
+  preventDefault() {
+    this.methodCalled('preventDefault');
+  }
+}
+
+export function getNewTestBeforeUnloadProxy(): TestBeforeUnloadProxy {
+  const testProxy = new TestBeforeUnloadProxy();
+  BeforeUnloadProxyImpl.setInstance(testProxy);
+  return testProxy;
 }
 // </if>

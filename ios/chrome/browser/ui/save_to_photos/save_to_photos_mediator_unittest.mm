@@ -19,8 +19,8 @@
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
@@ -171,7 +171,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             browser_state_.get());
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_.get());
     return [[SaveToPhotosMediator alloc]
             initWithPhotosService:photos_service
                       prefService:pref_service
@@ -184,7 +184,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   // Sign-in with a fake account.
   void SignIn() {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
+        IdentityManagerFactory::GetForProfile(browser_state_.get()),
         base::SysNSStringToUTF8(fake_identity_.userEmail),
         signin::ConsentLevel::kSignin);
   }

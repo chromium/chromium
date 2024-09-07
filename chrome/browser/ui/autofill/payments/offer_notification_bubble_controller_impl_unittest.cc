@@ -20,8 +20,8 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
+
 class TestOfferNotificationBubbleControllerImpl
     : public OfferNotificationBubbleControllerImpl {
  public:
@@ -42,6 +42,8 @@ class TestOfferNotificationBubbleControllerImpl
 };
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class OfferNotificationBubbleControllerImplTest
     : public BrowserWithTestWindowTest {
@@ -218,4 +220,5 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 
   EXPECT_TRUE(controller()->ShouldIconExpand());
 }
+
 }  // namespace autofill

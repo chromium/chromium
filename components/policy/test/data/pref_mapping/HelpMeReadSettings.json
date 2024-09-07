@@ -1,0 +1,70 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users",
+        "policies": {},
+        "prefs": {
+          "settings.managed.help_me_read": {
+            "value": 1,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "HelpMeReadSettings": 0
+        },
+        "prefs": {
+          "settings.managed.help_me_read": {
+            "value": 0,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "HelpMeReadSettings": 1
+        },
+        "prefs": {
+          "settings.managed.help_me_read": {
+            "value": 1,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "HelpMeReadSettings": 2
+        },
+        "prefs": {
+          "settings.managed.help_me_read": {
+            "value": 2,
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users only on ChromeOS",
+        "policies": {},
+        "prefs": {
+          "settings.managed.help_me_read": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

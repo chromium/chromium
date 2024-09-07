@@ -57,28 +57,22 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
 
 bool ShouldPromote(const PickerSearchResult& result) {
   return std::visit(
-      base::Overloaded{[](const PickerSearchResult::ClipboardData& data) {
-                         return data.is_recent;
-                       },
-                       [](const PickerSearchResult::BrowsingHistoryData& data) {
-                         return data.best_match;
-                       },
-                       [](const PickerSearchResult::LocalFileData& data) {
-                         return data.best_match;
-                       },
-                       [](const PickerSearchResult::DriveFileData& data) {
-                         return data.best_match;
-                       },
-                       [](const auto& data) { return false; }},
-      result.data());
+      base::Overloaded{
+          [](const PickerClipboardResult& data) { return data.is_recent; },
+          [](const PickerBrowsingHistoryResult& data) {
+            return data.best_match;
+          },
+          [](const PickerLocalFileResult& data) { return data.best_match; },
+          [](const PickerDriveFileResult& data) { return data.best_match; },
+          [](const auto& data) { return false; }},
+      result);
 }
 
 std::vector<GURL> LinksFromSearchResults(
     base::span<const PickerSearchResult> results) {
   std::vector<GURL> links;
   for (const PickerSearchResult& link : results) {
-    auto* link_data =
-        std::get_if<PickerSearchResult::BrowsingHistoryData>(&link.data());
+    auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       continue;
     }
@@ -91,8 +85,7 @@ std::vector<std::string> DriveIdsFromSearchResults(
     base::span<const PickerSearchResult> results) {
   std::vector<std::string> drive_ids;
   for (const PickerSearchResult& file : results) {
-    auto* drive_data =
-        std::get_if<PickerSearchResult::DriveFileData>(&file.data());
+    auto* drive_data = std::get_if<PickerDriveFileResult>(&file);
     if (drive_data == nullptr) {
       continue;
     }
@@ -121,8 +114,7 @@ void DeduplicateDriveLinksFromIds(std::vector<PickerSearchResult>& links,
   CHECK(success);
 
   std::erase_if(links, [&matcher](const PickerSearchResult& link) {
-    auto* link_data =
-        std::get_if<PickerSearchResult::BrowsingHistoryData>(&link.data());
+    auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       return false;
     }
@@ -134,8 +126,7 @@ void DeduplicateDriveFilesFromLinks(std::vector<PickerSearchResult>& files,
                                     base::span<const GURL> links) {
   std::vector<base::MatcherStringPattern> patterns;
   for (size_t i = 0; i < files.size(); ++i) {
-    auto* drive_data =
-        std::get_if<PickerSearchResult::DriveFileData>(&files[i].data());
+    auto* drive_data = std::get_if<PickerDriveFileResult>(&files[i]);
     if (drive_data == nullptr) {
       continue;
     }

@@ -55,6 +55,12 @@ struct MessageHeaderV2 : MessageHeaderV1 {
 };
 static_assert(sizeof(MessageHeaderV2) == 48, "Bad sizeof(MessageHeaderV2)");
 
+struct MessageHeaderV3 : MessageHeaderV2 {
+  MessageHeaderV3();
+  int64_t creation_timeticks_us;
+};
+static_assert(sizeof(MessageHeaderV3) == 56, "Bad sizeof(MessageHeaderV3)");
+
 #pragma pack(pop)
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
@@ -78,7 +84,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 size_t ComputeSerializedMessageSize(uint32_t flags,
                                     size_t payload_size,
-                                    size_t payload_interface_id_count);
+                                    size_t payload_interface_id_count,
+                                    int64_t creation_timeticks_us);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 size_t EstimateSerializedMessageSize(uint32_t message_name,

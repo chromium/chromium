@@ -59,8 +59,7 @@ TEST(PushManagerTest, ValidSenderKey) {
   PushSubscriptionOptionsInit* options = PushSubscriptionOptionsInit::Create();
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-          DOMArrayBuffer::Create(kApplicationServerKey,
-                                 kApplicationServerKeyLength)));
+          DOMArrayBuffer::Create(kApplicationServerKey)));
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =
@@ -98,12 +97,11 @@ TEST(PushManagerTest, ValidBase64URLWithoutPaddingSenderKey) {
 
 TEST(PushManagerTest, InvalidSenderKeyLength) {
   test::TaskEnvironment task_environment;
-  uint8_t sender_key[kMaxKeyLength + 1];
-  memset(sender_key, 0, sizeof(sender_key));
+  uint8_t sender_key[kMaxKeyLength + 1] = {};
   PushSubscriptionOptionsInit* options = PushSubscriptionOptionsInit::Create();
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-          DOMArrayBuffer::Create(sender_key, kMaxKeyLength + 1)));
+          DOMArrayBuffer::Create(sender_key)));
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =

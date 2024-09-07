@@ -430,7 +430,7 @@ BinderStatusOr<Parcel> BinderRef::TransactImpl(transaction_code_t code,
       AParcel* in = parcel.release();
       AParcel* out;
       const auto status =
-          api.AIBinder_transact(binder_.get(), code, &in, &out, 0);
+          api.AIBinder_transact(binder_.get(), code, &in, &out, flags);
       if (status != STATUS_OK) {
         return unexpected(status);
       }

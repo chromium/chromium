@@ -9,11 +9,22 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class Profile;
 
@@ -26,27 +37,6 @@ class DownloadItem;
 }  // namespace download
 
 namespace enterprise_connectors {
-
-// Calculates the result for the request handler based on the upload result and
-// the analysis response.
-RequestHandlerResult CalculateRequestHandlerResult(
-    const AnalysisSettings& settings,
-    safe_browsing::BinaryUploadService::Result upload_result,
-    const ContentAnalysisResponse& response);
-
-// Determines if a request result should be used to allow a data use or to
-// block it.
-bool ResultShouldAllowDataUse(
-    const AnalysisSettings& settings,
-    safe_browsing::BinaryUploadService::Result upload_result);
-
-// Calculates the event result that is experienced by the user.
-// If data is allowed to be accessed immediately, the result will indicate that
-// the user was allowed to use the data independent of the scanning result.
-safe_browsing::EventResult CalculateEventResult(
-    const AnalysisSettings& settings,
-    bool allowed_by_scan_result,
-    bool should_warn);
 
 // User data to persist a save package's final callback allowing/denying
 // completion. This is used since the callback can be called either when
@@ -73,6 +63,13 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile);
 bool ShouldPromptReviewForDownload(Profile* profile,
                                    const download::DownloadItem* download_item);
 
+// Returns the email address of the unconsented account signed in to the profile
+// or an empty string if no account is signed in.  If either `profile` or
+// `identity_manager` is null then the empty string is returned.
+std::string GetProfileEmail(Profile* profile);
+std::string GetProfileEmail(signin::IdentityManager* identity_manager);
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 // Shows the review dialog after a user has clicked the "Review" button
 // corresponding to a download.
 void ShowDownloadReviewDialog(const std::u16string& filename,
@@ -81,6 +78,27 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
                               content::WebContents* web_contents,
                               base::OnceClosure keep_closure,
                               base::OnceClosure discard_closure);
+
+// Calculates the result for the request handler based on the upload result and
+// the analysis response.
+RequestHandlerResult CalculateRequestHandlerResult(
+    const AnalysisSettings& settings,
+    safe_browsing::BinaryUploadService::Result upload_result,
+    const ContentAnalysisResponse& response);
+
+// Determines if a request result should be used to allow a data use or to
+// block it.
+bool ResultShouldAllowDataUse(
+    const AnalysisSettings& settings,
+    safe_browsing::BinaryUploadService::Result upload_result);
+
+// Calculates the event result that is experienced by the user.
+// If data is allowed to be accessed immediately, the result will indicate that
+// the user was allowed to use the data independent of the scanning result.
+safe_browsing::EventResult CalculateEventResult(
+    const AnalysisSettings& settings,
+    bool allowed_by_scan_result,
+    bool should_warn);
 
 // Returns true if the request will use the scotty resumable upload
 // protocol for sending scans to the server.
@@ -107,11 +125,29 @@ bool LocalResultIsFailure(safe_browsing::BinaryUploadService::Result result);
 // fail-closed result, regardless of attempting a cloud-based or a local-based
 // content analysis.
 bool ResultIsFailClosed(safe_browsing::BinaryUploadService::Result result);
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the single main profile, or nullptr if none is found.
 Profile* GetMainProfileLacros();
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
+// Constants used to build the report of a data masking event.
+inline constexpr char kKeyDetectorId[] = "detectorId";
+inline constexpr char kKeyDisplayName[] = "displayName";
+inline constexpr char kKeyDetectorType[] = "detectorType";
+inline constexpr char kKeyMatchedDetectors[] = "matchedDetectors";
+
+// Helper function to report events for the
+// "chrome.enterprise.reportingPrivate.reportingDataMaskingEvent" extension
+// API. It does nothing if reporting is not available.
+void ReportDataMaskingEvent(
+    content::BrowserContext* browser_context,
+    extensions::api::enterprise_reporting_private::DataMaskingEvent
+        data_masking_event);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace enterprise_connectors
 

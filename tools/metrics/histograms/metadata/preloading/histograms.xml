@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.PrerenderBackNavigationEligibility.{PreloadingPredictor}"
-    enum="PrerenderBackNavigationEligibility" expires_after="2024-10-06">
+    enum="PrerenderBackNavigationEligibility" expires_after="2025-10-06">
   <owner>mcnee@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>

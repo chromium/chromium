@@ -156,6 +156,12 @@ BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              "ExperimentalContentSecurityPolicyFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow specifying subsets of "name", "picture", "email" in the fields API.
+// Requires FedCmAuthz to be enabled.
+BASE_FEATURE(kFedCmFlexibleFields,
+             "FedCmFlexibleFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables CORS checks on the ID assertion endpoint of the FedCM API.
 BASE_FEATURE(kFedCmIdAssertionCORS,
              "FedCmIdAssertionCORS",
@@ -486,7 +492,12 @@ BASE_FEATURE(kServiceWorkerAutoPreload,
 
 BASE_FEATURE(kServiceWorkerAvoidMainThreadForInitialization,
              "ServiceWorkerAvoidMainThreadForInitialization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // (crbug.com/1371756): When enabled, the static routing API starts
 // ServiceWorker when the routing result of a main resource request was network

@@ -36,19 +36,31 @@ class WebIdlSchemaTest(unittest.TestCase):
         getReturns(schema, 'returnsVoid'),
     )
     self.assertEqual(
-        {'name': 'returnsBoolean', 'type': 'boolean'},
+        {
+            'name': 'returnsBoolean',
+            'type': 'boolean'
+        },
         getReturns(schema, 'returnsBoolean'),
     )
     self.assertEqual(
-        {'name': 'returnsDouble', 'type': 'number'},
+        {
+            'name': 'returnsDouble',
+            'type': 'number'
+        },
         getReturns(schema, 'returnsDouble'),
     )
     self.assertEqual(
-        {'name': 'returnsLong', 'type': 'integer'},
+        {
+            'name': 'returnsLong',
+            'type': 'integer'
+        },
         getReturns(schema, 'returnsLong'),
     )
     self.assertEqual(
-        {'name': 'returnsDOMString', 'type': 'string'},
+        {
+            'name': 'returnsDOMString',
+            'type': 'string'
+        },
         getReturns(schema, 'returnsDOMString'),
     )
 
@@ -62,8 +74,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   def testMissingBrowserInterface(self):
     expected_error_regex = (
         '.* File\(test\/web_idl\/missing_browser_interface.idl\): Required'
-        ' partial Browser interface not found in schema\.'
-    )
+        ' partial Browser interface not found in schema\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -76,8 +87,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   def testMissingAttributeOnBrowser(self):
     expected_error_regex = (
         '.* Interface\(Browser\): The partial Browser interface should have'
-        ' exactly one attribute for the name the API will be exposed under\.'
-    )
+        ' exactly one attribute for the name the API will be exposed under\.')
     self.assertRaisesRegex(
         Exception,
         expected_error_regex,
@@ -90,8 +100,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   def testUnsupportedBasicType(self):
     expected_error_regex = (
         '.* PrimitiveType\(float\): Unsupported basic type found when'
-        ' processing type\.'
-    )
+        ' processing type\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -103,8 +112,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   # doesn't support yet throws an error.
   def testUnsupportedTypeClass(self):
     expected_error_regex = (
-        '.* Any\(\): Unsupported type class when processing type\.'
-    )
+        '.* Any\(\): Unsupported type class when processing type\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,

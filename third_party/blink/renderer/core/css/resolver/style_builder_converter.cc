@@ -114,7 +114,8 @@ Length ConvertGridTrackBreadth(const StyleResolverState& state,
   // Fractional unit.
   auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (primitive_value && primitive_value->IsFlex()) {
-    return Length::Flex(primitive_value->GetFloatValue());
+    return Length::Flex(primitive_value->ComputeValueInCanonicalUnit(
+        state.CssToLengthConversionData()));
   }
 
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
@@ -614,23 +615,25 @@ StyleBuilderConverter::ConvertFontVariationSettings(
 scoped_refptr<FontPalette> StyleBuilderConverter::ConvertFontPalette(
     StyleResolverState& state,
     const CSSValue& value) {
-  return StyleBuilderConverterBase::ConvertFontPalette(value);
+  return StyleBuilderConverterBase::ConvertFontPalette(
+      state.CssToLengthConversionData(), value);
 }
 
 scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertPaletteMix(
+    const CSSLengthResolver& length_resolver,
     const CSSValue& value) {
   DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
 
   auto* palette_mix_value = DynamicTo<cssvalue::CSSPaletteMixValue>(value);
   if (palette_mix_value) {
     scoped_refptr<FontPalette> palette1 =
-        ConvertFontPalette(palette_mix_value->Palette1());
+        ConvertFontPalette(length_resolver, palette_mix_value->Palette1());
     if (palette1 == nullptr) {
       // Use normal palette.
       palette1 = FontPalette::Create();
     }
     scoped_refptr<FontPalette> palette2 =
-        ConvertFontPalette(palette_mix_value->Palette2());
+        ConvertFontPalette(length_resolver, palette_mix_value->Palette2());
     if (palette2 == nullptr) {
       palette2 = FontPalette::Create();
     }
@@ -644,18 +647,22 @@ scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertPaletteMix(
     double normalized_percentage;
     if (cssvalue::CSSColorMixValue::NormalizePercentages(
             palette_mix_value->Percentage1(), palette_mix_value->Percentage2(),
-            normalized_percentage, alpha_multiplier)) {
+            normalized_percentage, alpha_multiplier, length_resolver)) {
       double percentage1 = kMiddleStatePercentage;
       double percentage2 = kMiddleStatePercentage;
       if (palette_mix_value->Percentage1() &&
           palette_mix_value->Percentage2()) {
-        percentage1 = palette_mix_value->Percentage1()->GetDoubleValue();
-        percentage2 = palette_mix_value->Percentage2()->GetDoubleValue();
+        percentage1 = palette_mix_value->Percentage1()->ComputePercentage(
+            length_resolver);
+        percentage2 = palette_mix_value->Percentage2()->ComputePercentage(
+            length_resolver);
       } else if (palette_mix_value->Percentage1()) {
-        percentage1 = palette_mix_value->Percentage1()->GetDoubleValue();
+        percentage1 = palette_mix_value->Percentage1()->ComputePercentage(
+            length_resolver);
         percentage2 = kFinalStatePercentage - percentage1;
       } else if (palette_mix_value->Percentage2()) {
-        percentage2 = palette_mix_value->Percentage2()->GetDoubleValue();
+        percentage2 = palette_mix_value->Percentage2()->ComputePercentage(
+            length_resolver);
         percentage1 = kFinalStatePercentage - percentage2;
       }
       return FontPalette::Mix(palette1, palette2, percentage1, percentage2,
@@ -667,6 +674,7 @@ scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertPaletteMix(
 }
 
 scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertFontPalette(
+    const CSSLengthResolver& length_resolver,
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
@@ -689,7 +697,7 @@ scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertFontPalette(
   }
 
   if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled()) {
-    return ConvertPaletteMix(value);
+    return ConvertPaletteMix(length_resolver, value);
   } else {
     return nullptr;
   }
@@ -1776,10 +1784,12 @@ float StyleBuilderConverter::ConvertZoom(const StyleResolverState& state,
   } else if (const auto* primitive_value =
                  DynamicTo<CSSPrimitiveValue>(value)) {
     if (primitive_value->IsPercentage()) {
-      float percent = primitive_value->GetFloatValue();
+      float percent =
+          primitive_value->ComputePercentage(state.CssToLengthConversionData());
       return percent ? (percent / 100.0f) : 1.0f;
     } else if (primitive_value->IsNumber()) {
-      float number = primitive_value->GetFloatValue();
+      float number =
+          primitive_value->ComputeNumber(state.CssToLengthConversionData());
       return number ? number : 1.0f;
     }
   }
@@ -2253,8 +2263,10 @@ ShadowData StyleBuilderConverter::ConvertShadow(
       black_text_link_colors.SetVisitedLinkColor(Color::kBlack);
       black_text_link_colors.SetActiveLinkColor(Color::kBlack);
 
-      color = ResolveColorValue(*shadow.color, black_text_link_colors,
+      color = ResolveColorValue(conversion_data, *shadow.color,
+                                black_text_link_colors,
                                 mojom::blink::ColorScheme::kLight, nullptr,
+                                /*is_in_web_app_scope=*/false,
                                 /*for_visited_link=*/false);
       if (!color.IsAbsoluteColor()) {
         color = StyleColor(Color::kBlack);
@@ -2386,10 +2398,12 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertViewTransitionClass(
   return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
 }
 
-StyleColor ResolveColorValue(const CSSValue& value,
+StyleColor ResolveColorValue(const CSSLengthResolver& length_resolver,
+                             const CSSValue& value,
                              const TextLinkColors& text_link_colors,
                              mojom::blink::ColorScheme used_color_scheme,
                              const ui::ColorProvider* color_provider,
+                             bool is_in_web_app_scope,
                              bool for_visited_link) {
   if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
     Color result_color = color_value->Value();
@@ -2406,8 +2420,8 @@ StyleColor ResolveColorValue(const CSSValue& value,
       return StyleColor(ResolveQuirkOrLinkOrFocusRingColor(
           value_id, text_link_colors, used_color_scheme, for_visited_link));
     }
-    Color color = StyleColor::ColorFromKeyword(value_id, used_color_scheme,
-                                               color_provider);
+    Color color = StyleColor::ColorFromKeyword(
+        value_id, used_color_scheme, color_provider, is_in_web_app_scope);
     // Preserve the identifier for system colors since this is needed by
     // 'forced colors mode'.
     if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
@@ -2418,11 +2432,13 @@ StyleColor ResolveColorValue(const CSSValue& value,
 
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
     const StyleColor style_color1 =
-        ResolveColorValue(color_mix_value->Color1(), text_link_colors,
-                          used_color_scheme, color_provider, for_visited_link);
+        ResolveColorValue(length_resolver, color_mix_value->Color1(),
+                          text_link_colors, used_color_scheme, color_provider,
+                          is_in_web_app_scope, for_visited_link);
     const StyleColor style_color2 =
-        ResolveColorValue(color_mix_value->Color2(), text_link_colors,
-                          used_color_scheme, color_provider, for_visited_link);
+        ResolveColorValue(length_resolver, color_mix_value->Color2(),
+                          text_link_colors, used_color_scheme, color_provider,
+                          is_in_web_app_scope, for_visited_link);
     // If neither color is "currentcolor" (or a color-mix function containing a
     // currentcolor) then color-mix functions can be resolved right now like
     // other colors. Otherwise we need to store an unresolved value on
@@ -2430,13 +2446,14 @@ StyleColor ResolveColorValue(const CSSValue& value,
     if (style_color1.IsAbsoluteColor() && style_color2.IsAbsoluteColor()) {
       const Color c1 = style_color1.Resolve(Color(), used_color_scheme);
       const Color c2 = style_color2.Resolve(Color(), used_color_scheme);
-      return StyleColor(color_mix_value->Mix(c1, c2));
+      return StyleColor(color_mix_value->Mix(c1, c2, length_resolver));
     }
     double alpha_multiplier = 0.0;
     double mix_amount = 0.0;
     // TODO(crbug.com/40238188): Not sure what is appropriate to return when
     // both mix amounts are zero.
-    color_mix_value->NormalizePercentages(mix_amount, alpha_multiplier);
+    color_mix_value->NormalizePercentages(mix_amount, alpha_multiplier,
+                                          length_resolver);
     return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
         color_mix_value->ColorInterpolationSpace(),
         color_mix_value->HueInterpolationMethod(), style_color1, style_color2,
@@ -2445,10 +2462,14 @@ StyleColor ResolveColorValue(const CSSValue& value,
 
   if (auto* relative_color_value =
           DynamicTo<cssvalue::CSSRelativeColorValue>(value)) {
-    // TODO(crbug.com/325309578): Convert unresolved relative color values.
-    return ResolveColorValue(relative_color_value->OriginColor(),
-                             text_link_colors, used_color_scheme,
-                             color_provider, for_visited_link);
+    const StyleColor origin_color =
+        ResolveColorValue(length_resolver, relative_color_value->OriginColor(),
+                          text_link_colors, used_color_scheme, color_provider,
+                          is_in_web_app_scope, for_visited_link);
+    return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedRelativeColor>(
+        origin_color, relative_color_value->ColorInterpolationSpace(),
+        relative_color_value->Channel0(), relative_color_value->Channel1(),
+        relative_color_value->Channel2(), relative_color_value->Alpha()));
   }
 
   auto& light_dark_pair = To<CSSLightDarkValuePair>(value);
@@ -2456,8 +2477,9 @@ StyleColor ResolveColorValue(const CSSValue& value,
       used_color_scheme == mojom::blink::ColorScheme::kLight
           ? light_dark_pair.First()
           : light_dark_pair.Second();
-  return ResolveColorValue(color_value, text_link_colors, used_color_scheme,
-                           color_provider, for_visited_link);
+  return ResolveColorValue(length_resolver, color_value, text_link_colors,
+                           used_color_scheme, color_provider,
+                           is_in_web_app_scope, for_visited_link);
 }
 
 StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
@@ -2465,10 +2487,11 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
                                                     bool for_visited_link) {
   mojom::blink::ColorScheme color_scheme =
       state.StyleBuilder().UsedColorScheme();
-  return ResolveColorValue(
-      value, state.GetDocument().GetTextLinkColors(), color_scheme,
-      state.GetDocument().GetColorProviderForPainting(color_scheme),
-      for_visited_link);
+  auto& document = state.GetDocument();
+  return ResolveColorValue(state.CssToLengthConversionData(), value,
+                           document.GetTextLinkColors(), color_scheme,
+                           document.GetColorProviderForPainting(color_scheme),
+                           document.IsInWebAppScope(), for_visited_link);
 }
 
 StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
@@ -2889,13 +2912,15 @@ scoped_refptr<BasicShape> StyleBuilderConverter::ConvertObjectViewBox(
 }
 
 static const CSSValue& ComputeColorValue(
+    const CSSLengthResolver& length_resolver,
     const CSSValue& color_value,
     const Document& document,
     mojom::blink::ColorScheme color_scheme) {
   const bool kNotForVisitedLink = false;
   const StyleColor style_color = ResolveColorValue(
-      color_value, document.GetTextLinkColors(), color_scheme,
-      document.GetColorProviderForPainting(color_scheme), kNotForVisitedLink);
+      length_resolver, color_value, document.GetTextLinkColors(), color_scheme,
+      document.GetColorProviderForPainting(color_scheme),
+      document.IsInWebAppScope(), kNotForVisitedLink);
   return *ComputedStyleUtils::ValueForColor(style_color);
 }
 
@@ -2984,7 +3009,8 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       return value;
     }
     if (StyleColor::IsColorKeyword(value_id)) {
-      return ComputeColorValue(*identifier_value, document, color_scheme);
+      return ComputeColorValue(css_to_length_conversion_data, *identifier_value,
+                               document, color_scheme);
     }
   }
 
@@ -3006,7 +3032,14 @@ static const CSSValue& ComputeRegisteredPropertyValue(
   }
 
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
-    return ComputeColorValue(*color_mix_value, document, color_scheme);
+    return ComputeColorValue(css_to_length_conversion_data, *color_mix_value,
+                             document, color_scheme);
+  }
+
+  if (auto* relative_color_value =
+          DynamicTo<cssvalue::CSSRelativeColorValue>(value)) {
+    return ComputeColorValue(css_to_length_conversion_data,
+                             *relative_color_value, document, color_scheme);
   }
 
   return value;

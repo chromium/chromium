@@ -5,13 +5,21 @@
 module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 
 // Opened file resources needed to define an adaptation.
 [Stable]
 struct AdaptationAssets {
+  // Model weights could be passed as an opened file or a file path.
+  // The backend type will decide which one should be used, or
+  // which one is preferred if both are passed. If both are unset,
+  // usually the operation should fail.
+  // APU backend: weights_path should be used.
+  // GPU backend: weights should be used.
   // TODO(b/313919363): This should also be a ReadOnlyFile.
   mojo_base.mojom.File? weights;
+  [MinVersion=1] mojo_base.mojom.FilePath? weights_path;
 };
 
 // Conveys the result of a language detection attempt on output text.
@@ -84,10 +92,39 @@ struct LoadAdaptationParams {
   AdaptationAssets assets;
 };
 
+// The set of tokens that can be added as part of an input.
+[Stable, Extensible]
+enum Token {
+  // Prefix for system text.
+  kSystem,
+  // Prefix for model text.
+  kModel,
+  // Prefix for user text.
+  kUser,
+  // End a system/model/user section.
+  [Default] kEnd,
+};
+
+[Stable]
+union InputPiece {
+  // A token which may have different internal representations depending on the
+  // loaded model.
+  Token token;
+  // Text to be provided as input.
+  string text;
+};
+
+[Stable]
+struct Input {
+  // A list of tokens and text that the model will use to construct the final
+  // input.
+  array<InputPiece> pieces;
+};
+
 // Options to control how the model handles input.
 [Stable]
 struct InputOptions {
-  // The text for this input.
+  // Deprecated, use input instead.
   string text;
 
   // The maximum number of tokens that should be processed. If not set, will
@@ -120,6 +157,9 @@ struct InputOptions {
   // `temperature` should be a value greater than 0.0. Values above 1.0 may give
   // poor results.
   float? temperature;
+
+  // The input for the model.
+  [MinVersion=1] Input? input;
 };
 
 // A session for a model that allows adding context and then executing an input

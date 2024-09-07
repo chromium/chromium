@@ -18,7 +18,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
@@ -28,13 +27,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
-#include "proto_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -88,9 +85,23 @@ constexpr std::string_view kSystemParameters("alt=proto");
 // Creates a request url for kids management api which is independent from the
 // current profile (doesn't take Profile* parameter). It also adds query
 // parameter that configures the remote endpoint to respond with a protocol
-// buffer message.
+// buffer message and a system parameter that is configurable per Request type.
 GURL CreateRequestUrl(const FetcherConfig& config,
                       const FetcherConfig::PathArgs& args) {
+  CHECK(!config.service_endpoint.Get().empty())
+      << "Service endpoint is required";
+
+  if (config.method == FetcherConfig::Method::kGet) {
+    std::string url =
+        base::StrCat({config.ServicePath(args), "?", kSystemParameters});
+    if (!config.system_param_suffix.empty()) {
+      url += base::StrCat({"&", config.system_param_suffix});
+    }
+    return GURL(config.service_endpoint.Get()).Resolve(url);
+  }
+
+  CHECK(config.system_param_suffix.empty())
+      << "System param suffix support for GET requests only.";
   return GURL(config.service_endpoint.Get())
       .Resolve(
           base::StrCat({config.ServicePath(args), "?", kSystemParameters}));
@@ -134,113 +145,6 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
 
 }  // namespace
 
-// Main constructor, referenced by the rest.
-ProtoFetcherStatus::ProtoFetcherStatus(
-    State state,
-    class GoogleServiceAuthError google_service_auth_error)
-    : state_(state), google_service_auth_error_(google_service_auth_error) {}
-ProtoFetcherStatus::~ProtoFetcherStatus() = default;
-
-ProtoFetcherStatus::ProtoFetcherStatus(State state) : state_(state) {
-  DCHECK_NE(state, State::GOOGLE_SERVICE_AUTH_ERROR);
-}
-ProtoFetcherStatus::ProtoFetcherStatus(
-    HttpStatusOrNetErrorType http_status_or_net_error)
-    : state_(State::HTTP_STATUS_OR_NET_ERROR),
-      http_status_or_net_error_(http_status_or_net_error) {}
-ProtoFetcherStatus::ProtoFetcherStatus(
-    class GoogleServiceAuthError google_service_auth_error)
-    : ProtoFetcherStatus(GOOGLE_SERVICE_AUTH_ERROR, google_service_auth_error) {
-}
-
-ProtoFetcherStatus::ProtoFetcherStatus(const ProtoFetcherStatus& other) =
-    default;
-ProtoFetcherStatus& ProtoFetcherStatus::operator=(
-    const ProtoFetcherStatus& other) = default;
-
-ProtoFetcherStatus ProtoFetcherStatus::Ok() {
-  return ProtoFetcherStatus(State::OK);
-}
-ProtoFetcherStatus ProtoFetcherStatus::GoogleServiceAuthError(
-    class GoogleServiceAuthError error) {
-  return ProtoFetcherStatus(error);
-}
-ProtoFetcherStatus ProtoFetcherStatus::HttpStatusOrNetError(
-    int http_status_or_net_error) {
-  return ProtoFetcherStatus(HttpStatusOrNetErrorType(http_status_or_net_error));
-}
-ProtoFetcherStatus ProtoFetcherStatus::InvalidResponse() {
-  return ProtoFetcherStatus(State::INVALID_RESPONSE);
-}
-ProtoFetcherStatus ProtoFetcherStatus::DataError() {
-  return ProtoFetcherStatus(State::DATA_ERROR);
-}
-
-bool ProtoFetcherStatus::IsOk() const {
-  return state_ == State::OK;
-}
-bool ProtoFetcherStatus::IsTransientError() const {
-  if (state_ == State::HTTP_STATUS_OR_NET_ERROR) {
-    return true;
-  }
-  if (state_ == State::GOOGLE_SERVICE_AUTH_ERROR) {
-    return google_service_auth_error_.IsTransientError();
-  }
-  return false;
-}
-bool ProtoFetcherStatus::IsPersistentError() const {
-  if (state_ == State::INVALID_RESPONSE) {
-    return true;
-  }
-  if (state_ == State::DATA_ERROR) {
-    return true;
-  }
-  if (state_ == State::GOOGLE_SERVICE_AUTH_ERROR) {
-    return google_service_auth_error_.IsPersistentError();
-  }
-  return false;
-}
-
-std::string ProtoFetcherStatus::ToString() const {
-  switch (state_) {
-    case ProtoFetcherStatus::OK:
-      return "ProtoFetcherStatus::OK";
-    case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
-      return base::StrCat({"ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR: ",
-                           google_service_auth_error().ToString()});
-    case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
-      return base::StringPrintf(
-          "ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR: %d",
-          http_status_or_net_error_.value());
-    case ProtoFetcherStatus::INVALID_RESPONSE:
-      return "ProtoFetcherStatus::INVALID_RESPONSE";
-    case ProtoFetcherStatus::DATA_ERROR:
-      return "ProtoFetcherStatus::DATA_ERROR";
-  }
-}
-
-ProtoFetcherStatus::State ProtoFetcherStatus::state() const {
-  return state_;
-}
-ProtoFetcherStatus::HttpStatusOrNetErrorType
-ProtoFetcherStatus::http_status_or_net_error() const {
-  return http_status_or_net_error_;
-}
-
-const GoogleServiceAuthError& ProtoFetcherStatus::google_service_auth_error()
-    const {
-  return google_service_auth_error_;
-}
-
-base::TimeDelta Stopwatch::Lap() {
-  base::TimeDelta lap = lap_timer_.Elapsed();
-  lap_timer_ = base::ElapsedTimer();
-  return lap;
-}
-base::TimeDelta Stopwatch::Elapsed() const {
-  return elapsed_timer_.Elapsed();
-}
-
 Metrics::Metrics(std::string_view basename) : basename_(basename) {}
 /* static */ std::optional<Metrics> Metrics::FromConfig(
     const FetcherConfig& config) {
@@ -257,26 +161,12 @@ void Metrics::RecordStatus(const ProtoFetcherStatus& status) const {
 
 void Metrics::RecordLatency() const {
   base::UmaHistogramTimes(GetFullHistogramName(MetricType::kLatency),
-                          stopwatch_.Elapsed());
-}
-
-void Metrics::RecordAccessTokenLatency(
-    GoogleServiceAuthError::State auth_error_state) {
-  base::UmaHistogramTimes(
-      GetFullHistogramName(MetricType::kAccessTokenLatency, auth_error_state),
-      stopwatch_.Lap());
-}
-
-void Metrics::RecordApiLatency(
-    ProtoFetcherStatus::HttpStatusOrNetErrorType http_status_or_net_error) {
-  base::UmaHistogramTimes(
-      GetFullHistogramName(MetricType::kApiLatency, http_status_or_net_error),
-      stopwatch_.Lap());
+                          elapsed_timer_.Elapsed());
 }
 
 void Metrics::RecordStatusLatency(const ProtoFetcherStatus& status) const {
   base::UmaHistogramTimes(GetFullHistogramName(MetricType::kLatency, status),
-                          stopwatch_.Elapsed());
+                          elapsed_timer_.Elapsed());
 }
 
 void Metrics::RecordAuthError(const GoogleServiceAuthError& auth_error) const {
@@ -301,10 +191,6 @@ std::string Metrics::GetMetricKey(MetricType metric_type) const {
       return "Latency";
     case MetricType::kHttpStatusOrNetError:
       return "HttpStatusOrNetError";
-    case MetricType::kAccessTokenLatency:
-      return "AccessTokenLatency";
-    case MetricType::kApiLatency:
-      return "ApiLatency";
     case MetricType::kAuthError:
       return "AuthError";
     case MetricType::kRetryCount:
@@ -345,15 +231,15 @@ std::string Metrics::GetFullHistogramName(
 
 std::string Metrics::ToMetricEnumLabel(const ProtoFetcherStatus& status) {
   switch (status.state()) {
-    case ProtoFetcherStatus::OK:
+    case ProtoFetcherStatus::State::OK:
       return "NoError";
-    case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+    case ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR:
       return "AuthError";
-    case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
+    case ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR:
       return "HttpStatusOrNetError";
-    case ProtoFetcherStatus::INVALID_RESPONSE:
+    case ProtoFetcherStatus::State::INVALID_RESPONSE:
       return "ParseError";
-    case ProtoFetcherStatus::DATA_ERROR:
+    case ProtoFetcherStatus::State::DATA_ERROR:
       return "DataError";
     default:
       NOTREACHED();
@@ -452,10 +338,6 @@ void AbstractProtoFetcher::OnAccessTokenFetchComplete(
     }
   }
 
-  if (IsMetricsRecordingEnabled()) {
-    metrics_->RecordAccessTokenLatency(GoogleServiceAuthError::State::NONE);
-  }
-
   simple_url_loader_ =
       InitializeSimpleUrlLoader(base::OptionalFromExpected(access_token),
                                 config_, args_, channel_, GetRequestPayload());
@@ -476,92 +358,14 @@ void AbstractProtoFetcher::OnSimpleUrlLoaderComplete(
     return;
   }
 
-  if (IsMetricsRecordingEnabled()) {
-    metrics_->RecordApiLatency(
-        ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_OK));
-  }
   OnResponse(std::move(response_body));
 }
 
 std::optional<std::string> AbstractProtoFetcher::GetRequestPayload() const {
   if (config_.method == FetcherConfig::Method::kGet) {
+    CHECK(payload_.empty());
     return std::nullopt;
   }
   return payload_;
 }
-
-StatusFetcher::StatusFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string_view payload,
-    const FetcherConfig& fetcher_config,
-    const FetcherConfig::PathArgs& args,
-    std::optional<version_info::Channel> channel,
-    Callback callback)
-    : AbstractProtoFetcher(identity_manager,
-                           url_loader_factory,
-                           payload,
-                           fetcher_config,
-                           args,
-                           channel),
-      callback_(std::move(callback)) {}
-StatusFetcher::~StatusFetcher() = default;
-
-void StatusFetcher::OnError(const ProtoFetcherStatus& status) {
-  OnStatus(status);
-}
-void StatusFetcher::OnResponse(std::unique_ptr<std::string> response_body) {
-  OnStatus(ProtoFetcherStatus::Ok());
-}
-void StatusFetcher::OnStatus(const ProtoFetcherStatus& status) {
-  RecordMetrics(status);
-  std::move(callback_).Run(status);
-}
-
-std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kidsmanagement::ClassifyUrlRequest& request,
-    const FetcherConfig& config,
-    version_info::Channel channel) {
-  return CreateFetcher<kidsmanagement::ClassifyUrlResponse>(
-      identity_manager, url_loader_factory, request, config, /*args=*/{},
-      channel);
-}
-
-std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    ListFamilyMembersFetcher::Callback callback,
-    const FetcherConfig& config) {
-  kidsmanagement::ListMembersRequest request;
-  // If there is no associated Family Group with the account return an empty
-  // response instead of NOT_FOUND.
-  request.set_allow_empty_family(true);
-  std::unique_ptr<ListFamilyMembersFetcher> fetcher =
-      CreateFetcher<kidsmanagement::ListMembersResponse>(
-          identity_manager, url_loader_factory, request, config);
-  fetcher->Start(std::move(callback));
-  return fetcher;
-}
-
-std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kidsmanagement::PermissionRequest& request,
-    const FetcherConfig& config) {
-  return CreateFetcher<kidsmanagement::CreatePermissionRequestResponse>(
-      identity_manager, url_loader_factory, request, config);
-}
-
-std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const Request& request,
-    const FetcherConfig& config) {
-  return CreateFetcher<Response>(identity_manager, url_loader_factory, request,
-                                 config, /*args=*/{},
-                                 version_info::Channel::UNKNOWN);
-}
-
 }  // namespace supervised_user

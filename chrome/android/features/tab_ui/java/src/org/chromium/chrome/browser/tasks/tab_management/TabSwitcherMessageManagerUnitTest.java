@@ -126,6 +126,7 @@ public class TabSwitcherMessageManagerUnitTest {
     private void onActivityReady(Activity activity) {
         FrameLayout container = new FrameLayout(activity);
         activity.setContentView(container);
+
         mMessageManager =
                 new TabSwitcherMessageManager(
                         activity,
@@ -196,6 +197,7 @@ public class TabSwitcherMessageManagerUnitTest {
         // Mock that mTab1 is the only tab in the current tab model and it will be closed.
         doReturn(1).when(mTabModel).getCount();
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, true);
+
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
                         TabProperties.UiType.MESSAGE, MessageService.MessageType.ALL);

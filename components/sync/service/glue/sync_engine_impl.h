@@ -81,8 +81,6 @@ class SyncEngineImpl : public SyncEngine,
                        std::unique_ptr<DataTypeActivationResponse>) override;
   void DisconnectDataType(DataType type) override;
   const SyncStatus& GetDetailedStatus() const override;
-  void GetTypesWithUnsyncedData(
-      base::OnceCallback<void(DataTypeSet)> cb) const override;
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
   void GetThrottledDataTypesForTest(

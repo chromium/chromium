@@ -371,6 +371,11 @@ bool DataTypeController::CalledOnValidThread() const {
   return sequence_checker_.CalledOnValidSequence();
 }
 
+void DataTypeController::ClearDelegateMap() {
+  delegate_ = nullptr;
+  delegate_map_.clear();
+}
+
 void DataTypeController::RecordStartFailure() const {
   DCHECK(CalledOnValidThread());
   UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeStartFailures2",

@@ -61,6 +61,10 @@ class WebappsIconUtils {
       scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
       base::OnceCallback<void(const SkBitmap&, bool)> callback);
 
+  // Generates a home screen icon for the web page at `page_url`. The icon is
+  // a single letter on a grey background.
+  static SkBitmap GenerateHomeScreenIconInBackground(const GURL& page_url);
+
   // Generate an adaptive icon for given maskable icon bitmap.
   static SkBitmap GenerateAdaptiveIconBitmap(const SkBitmap& icon);
 

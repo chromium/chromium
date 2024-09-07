@@ -277,6 +277,12 @@ WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
     case device::BluetoothDevice::ERROR_WAKELOCK:
       RecordConnectGATTOutcome(UMAConnectGATTOutcome::WAKELOCK);
       return blink::mojom::WebBluetoothResult::CONNECT_WAKELOCK;
+    case device::BluetoothDevice::ERROR_UNEXPECTED_STATE:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::UNEXPECTED_STATE);
+      return blink::mojom::WebBluetoothResult::CONNECT_UNEXPECTED_STATE;
+    case device::BluetoothDevice::ERROR_SOCKET:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::SOCKET_ERROR);
+      return blink::mojom::WebBluetoothResult::CONNECT_SOCKET_ERROR;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED_IN_MIGRATION();
       return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;
@@ -678,8 +684,10 @@ void WebBluetoothServiceImpl::DeviceAdvertisementReceived(
   result->uuids = std::move(uuids);
 
   auto& manufacturer_data = result->manufacturer_data;
-  manufacturer_data.insert(manufacturer_data_map.begin(),
-                           manufacturer_data_map.end());
+  for (const auto& entry : manufacturer_data_map) {
+    manufacturer_data.emplace(
+        blink::mojom::WebBluetoothCompany::New(entry.first), entry.second);
+  }
 
   auto& service_data = result->service_data;
   service_data.insert(service_data_map.begin(), service_data_map.end());

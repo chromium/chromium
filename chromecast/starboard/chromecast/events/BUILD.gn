@@ -1,0 +1,64 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+import("//chromecast/starboard/starboard.gni")
+import("//testing/test.gni")
+
+source_set("ui_event_source") {
+  sources = [
+    "ui_event_source.cc",
+    "ui_event_source.h",
+  ]
+  deps = [
+    "//ui/events",
+    "//ui/platform_window",
+  ]
+}
+
+source_set("dummy_ui_event_source") {
+  sources = [ "dummy_ui_event_source.cc" ]
+  deps = [
+    ":ui_event_source",
+
+    # This should not be necessary, but without it there's a compile error:
+    # fatal error: 'partition_alloc/pointers/raw_ptr_exclusion.h' file not found
+    "//base",
+  ]
+}
+
+if (!remove_starboard_headers) {
+  source_set("starboard_event_source") {
+    sources = [
+      "starboard_event_source.cc",
+      "starboard_event_source.h",
+    ]
+    deps = [
+      ":ui_event_source",
+      "//base",
+      "//chromecast/starboard/chromecast/starboard_adapter",
+      "//ui/events",
+      "//ui/events:dom_keycode_converter",
+      "//ui/platform_window",
+    ]
+  }
+
+  test("starboard_event_source_test") {
+    sources = [ "starboard_event_source_test.cc" ]
+    deps = [
+      ":starboard_event_source",
+      "//base/test:run_all_unittests",
+      "//base/test:test_support",
+      "//chromecast/starboard/chromecast/starboard_adapter",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/events",
+      "//ui/events:dom_keycode_converter",
+      "//ui/gfx:test_support",
+      "//ui/gfx/geometry",
+      "//ui/platform_window",
+    ]
+  }
+}

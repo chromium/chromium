@@ -268,10 +268,9 @@ constexpr std::optional<size_t> ComputeCborArrayOverheadLen(
 }
 
 // Computes the length in bytes of a TEE-based payload's plaintext CBOR
-// serialization. Safely returns an invalid `base::CheckedNumeric` if the
-// computation would overflow, or if `num_contributions` exceeds the maximum
-// value of uint32_t . See `AggregationServicePayload` for the format's
-// definition.
+// serialization. Returns `std::nullopt` if the computation would overflow or if
+// `num_contributions` exceeds the maximum value of `uint32_t`. See
+// `AggregatableReport::AggregationServicePayload` for the format's definition.
 constexpr std::optional<size_t> ComputeTeeBasedPayloadLengthInBytes(
     size_t num_contributions,
     std::optional<size_t> filtering_id_max_bytes) {
@@ -731,17 +730,20 @@ AggregatableReportRequest::CreateInternal(
     int failed_send_attempts) {
   if (!AggregatableReport::IsNumberOfProcessingUrlsValid(
           processing_urls.size(), payload_contents.aggregation_mode)) {
+    DVLOG(1) << "Invalid number of processing URLs";
     return std::nullopt;
   }
 
   if (!base::ranges::all_of(processing_urls,
                             network::IsUrlPotentiallyTrustworthy)) {
+    DVLOG(1) << "Not all processing URLs are potentially trustworthy";
     return std::nullopt;
   }
 
   if (!AggregatableReport::IsNumberOfHistogramContributionsValid(
           payload_contents.contributions.size(),
           payload_contents.aggregation_mode)) {
+    DVLOG(1) << "Invalid number of contributions";
     return std::nullopt;
   }
 
@@ -749,25 +751,31 @@ AggregatableReportRequest::CreateInternal(
           payload_contents.contributions,
           [](const blink::mojom::AggregatableReportHistogramContribution&
                  contribution) { return contribution.value < 0; })) {
+    DVLOG(1) << "At least one contribution was less than zero";
     return std::nullopt;
   }
 
   if (!shared_info.report_id.is_valid()) {
+    DVLOG(1) << "Invalid report ID";
     return std::nullopt;
   }
 
   if (debug_key.has_value() &&
       shared_info.debug_mode ==
           AggregatableReportSharedInfo::DebugMode::kDisabled) {
+    DVLOG(1) << "Debug key exists, but debug mode is disabled";
     return std::nullopt;
   }
 
   if (failed_send_attempts < 0) {
+    DVLOG(1) << "Failed send attempts are negative";
     return std::nullopt;
   }
 
   if (payload_contents.max_contributions_allowed <
       payload_contents.contributions.size()) {
+    DVLOG(1) << "Max contributions allowed is smaller than the number of "
+                "contributions";
     return std::nullopt;
   }
 
@@ -777,11 +785,13 @@ AggregatableReportRequest::CreateInternal(
         (*payload_contents.filtering_id_max_bytes <= 0 ||
          *payload_contents.filtering_id_max_bytes >
              AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes)) {
+      DVLOG(1) << "Value of filtering_id_max_bytes is out of range";
       return std::nullopt;
     }
 
     if (!FilteringIdsFitInMaxBytes(payload_contents.contributions,
                                    payload_contents.filtering_id_max_bytes)) {
+      DVLOG(1) << "Filtering ID does not fit in filtering_id_max_bytes";
       return std::nullopt;
     }
   } else {

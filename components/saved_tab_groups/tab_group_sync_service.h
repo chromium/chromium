@@ -46,27 +46,43 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   class Observer : public base::CheckedObserver {
    public:
     // The data from sync DataTypeStore has been loaded to memory.
-    virtual void OnInitialized() = 0;
+    virtual void OnInitialized() {}
+
+    // The service is about to be destroyed. Ensures observers have a chance to
+    // remove references before service destruction.
+    virtual void OnWillBeDestroyed() {}
 
     // A new tab group was added at the given |source|.
     virtual void OnTabGroupAdded(const SavedTabGroup& group,
-                                 TriggerSource source) = 0;
+                                 TriggerSource source) {}
 
     // An existing tab group was updated at the given |source|.
     // Called whenever there are an update to a tab group, which can be title,
     // color, position, pinned state, or update to any of its tabs.
     virtual void OnTabGroupUpdated(const SavedTabGroup& group,
-                                   TriggerSource source) = 0;
+                                   TriggerSource source) {}
 
     // The local tab group corresponding to the |local_id| was removed.
     virtual void OnTabGroupRemoved(const LocalTabGroupID& local_id,
-                                   TriggerSource source) = 0;
+                                   TriggerSource source) {}
 
     // Tab group corresponding to the |sync_id| was removed. Only used by the
     // revisit surface that needs to show both open and closed tab groups.
     // All other consumers should use the local ID variant of this method.
     virtual void OnTabGroupRemoved(const base::Uuid& sync_id,
-                                   TriggerSource source) = 0;
+                                   TriggerSource source) {}
+
+    // The local ID for a tab group was changed. This is usually fired when the
+    // group is opened, closed (not always), or (desktop only) restored from
+    // session restore. Not all the cases where the tab group is closed is
+    // covered.
+    virtual void OnTabGroupLocalIdChanged(
+        const base::Uuid& sync_id,
+        const std::optional<LocalTabGroupID>& local_id) {}
+
+    // (desktop only) The ordering of tab groups in the bookmarks bar UI has
+    // changed. Update the UI to reflect the new ordering.
+    virtual void OnTabGroupsReordered(TriggerSource source) {}
   };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -109,9 +125,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                       std::optional<size_t> position) = 0;
   virtual void UpdateTab(const LocalTabGroupID& group_id,
                          const LocalTabID& tab_id,
-                         const std::u16string& title,
-                         GURL url,
-                         std::optional<size_t> position) = 0;
+                         const SavedTabGroupTabBuilder& tab_builder) = 0;
   virtual void RemoveTab(const LocalTabGroupID& group_id,
                          const LocalTabID& tab_id) = 0;
   virtual void MoveTab(const LocalTabGroupID& group_id,
@@ -182,6 +196,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Add / remove observers.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // For testing only. This is needed to test the API calls received before
+  // service init as we need to explicitly un-initialize the service for these
+  // scenarios.
+  virtual void SetIsInitializedForTesting(bool initialized) {}
 };
 
 }  // namespace tab_groups

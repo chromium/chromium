@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
@@ -16,6 +17,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -26,6 +28,11 @@ namespace content {
 
 class FileSystemAccessDragDropBrowserTest : public ContentBrowserTest {
  public:
+  FileSystemAccessDragDropBrowserTest() {
+    scoped_features_.InitAndEnableFeature(
+        blink::features::kFileSystemAccessLocal);
+  }
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -68,6 +75,9 @@ class FileSystemAccessDragDropBrowserTest : public ContentBrowserTest {
 
  protected:
   base::ScopedTempDir temp_dir_;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessDragDropBrowserTest, DropFile) {

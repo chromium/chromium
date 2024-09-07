@@ -15,4 +15,4 @@ found in the LICENSE file.
     android:paddingStart="@dimen/keyboard_accessory_suggestion_padding"
     android:layout_marginEnd="@dimen/keyboard_accessory_bar_item_padding"
     android:textAlignment="center"
-    style="@style/FilledButton.Flat" />
+    style="@style/FilledButton" />

@@ -607,7 +607,7 @@ void XRSession::UpdateViews(Vector<device::mojom::blink::XRViewPtr> views) {
     for (wtf_size_t i = 0; i < views.size(); ++i) {
       if (create_views) {
         views_[i] = MakeGarbageCollected<XRViewData>(
-            std::move(views[i]), render_state_->depthNear(),
+            i, std::move(views[i]), render_state_->depthNear(),
             render_state_->depthFar(), *device_config_, enabled_feature_set_);
       } else {
         views_[i]->UpdateView(std::move(views[i]), render_state_->depthNear(),
@@ -815,6 +815,10 @@ void XRSession::ScheduleVideoFrameCallbacksExecution(
     ExecuteVfcCallback execute_vfc_callback) {
   vfc_execution_queue_.push_back(std::move(execute_vfc_callback));
   MaybeRequestFrame();
+}
+
+base::TimeDelta XRSession::TakeAnimationFrameTimerAverage() {
+  return page_animation_frame_timer_.TakeAverageMicroseconds();
 }
 
 void XRSession::ExecuteVideoFrameCallbacks(double timestamp) {
@@ -1511,6 +1515,22 @@ gfx::SizeF XRSession::RecommendedFramebufferSize() const {
   return gfx::SizeF(width * scale, height * scale);
 }
 
+gfx::SizeF XRSession::RecommendedArrayTextureSize() const {
+  float scale = RecommendedFramebufferScale();
+  float width = 0;
+  float height = 0;
+
+  // When using array textures the texture size should be determined by the
+  // maximum size required for any viewport.
+  for (const auto& view : views_) {
+    const auto& viewport = view->Viewport();
+    width = std::max<float>(width, viewport.width());
+    height = std::max<float>(height, viewport.height());
+  }
+
+  return gfx::SizeF(width * scale, height * scale);
+}
+
 gfx::Size XRSession::OutputCanvasSize() const {
   if (!render_state_->output_canvas()) {
     return gfx::Size();
@@ -2009,8 +2029,10 @@ void XRSession::OnFrame(
     // happen within these calls. resolving_frame_ will be true for the duration
     // of the callbacks.
     base::AutoReset<bool> resolving(&resolving_frame_, true);
+    page_animation_frame_timer_.StartTimer();
     ExecuteVideoFrameCallbacks(timestamp);
     callback_collection_->ExecuteCallbacks(this, timestamp, presentation_frame);
+    page_animation_frame_timer_.StopTimer();
 
     // The session might have ended in the middle of the frame. Only call
     // OnFrameEnd if it's still valid.
@@ -2093,7 +2115,7 @@ void XRSession::UpdateInlineView() {
   }
   if (views_.empty()) {
     views_.emplace_back(MakeGarbageCollected<XRViewData>(
-        device::mojom::blink::XREye::kNone,
+        /*index=*/0, device::mojom::blink::XREye::kNone,
         gfx::Rect(0, 0, output_width_, output_height_)));
   }
 

@@ -11,6 +11,7 @@ source_set("test") {
 
   deps = [
     "//ios/chrome/browser/settings/model/sync/utils",
+    "//ios/chrome/browser/shared/model/profile",
     "//testing/gmock",
     "//ui/base",
     "//ui/gfx",

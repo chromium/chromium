@@ -93,8 +93,14 @@ class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
   raw_ptr<base::DiscardableMemoryAllocator> discardable_memory_allocator_;
 };
 
+// TODO(crbug.com/362224383): This test was flaky on Windows ASan bots.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_LockDiscardableMemory DISABLED_LockDiscardableMemory
+#else
+#define MAYBE_LockDiscardableMemory LockDiscardableMemory
+#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       LockDiscardableMemory) {
+                       MAYBE_LockDiscardableMemory) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   std::unique_ptr<base::DiscardableMemory> memory =

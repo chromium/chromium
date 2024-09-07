@@ -190,6 +190,10 @@ void LoginOnUff() {
     config.features_enabled.push_back(
         password_manager::features::kIosDetectUsernameInUff);
   }
+  // The proactive password suggestion bottom sheet isn't tested here, it
+  // is tested in its own suite in password_suggestion_egtest.mm.
+  config.features_disabled.push_back(
+      password_manager::features::kIOSProactivePasswordGenerationBottomSheet);
   return config;
 }
 

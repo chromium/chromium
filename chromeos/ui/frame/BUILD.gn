@@ -70,6 +70,8 @@ source_set("frame") {
     "non_client_frame_view_base.h",
   ]
 
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
+
   deps = [
     "//base",
     "//chromeos/constants/",

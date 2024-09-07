@@ -108,7 +108,7 @@ import java.util.concurrent.TimeoutException;
 public class FirstRunIntegrationTest {
     private static final String TEST_URL = "https://test.com";
     private static final String FOO_URL = "https://foo.com";
-    private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(10);
+    private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(20);
     private static final String TEST_ENROLLMENT_TOKEN = "enrollment-token";
 
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -631,6 +631,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "issuetracker.google.com/360931705")
     public void testFirstRunSkippedSharedPreferenceRefresh() throws Exception {
         // Set that the first run was previous skipped by policy in shared preference, then
         // refreshing shared preference should cause its value to become false, since there's no
@@ -642,7 +643,8 @@ public class FirstRunIntegrationTest {
                         mContext, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         mContext.startActivity(intent);
         CustomTabActivity activity = waitForActivity(CustomTabActivity.class);
-        CriteriaHelper.pollUiThread(activity::didFinishNativeInitialization);
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Native init never completed", activity::didFinishNativeInitialization);
 
         // DeferredStartupHandler could not finish with CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL.
         // Use longer timeout here to avoid flakiness. See https://crbug.com/1157611.

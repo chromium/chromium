@@ -56,9 +56,9 @@ source_set("sharing_message") {
     "sharing_message_bridge.h",
     "sharing_message_bridge_impl.cc",
     "sharing_message_bridge_impl.h",
+    "sharing_message_data_type_controller.cc",
+    "sharing_message_data_type_controller.h",
     "sharing_message_handler.h",
-    "sharing_message_model_type_controller.cc",
-    "sharing_message_model_type_controller.h",
     "sharing_message_sender.cc",
     "sharing_message_sender.h",
     "sharing_metrics.cc",
@@ -78,6 +78,8 @@ source_set("sharing_message") {
   deps = [
     ":buildflags",
     "//base",
+    "//components/favicon/core",
+    "//components/favicon_base",
     "//components/gcm_driver",
     "//components/gcm_driver/crypto",
     "//components/gcm_driver/instance_id",
@@ -87,6 +89,7 @@ source_set("sharing_message") {
     "//components/sharing_message/proto",
     "//components/sharing_message/shared_clipboard",
     "//components/sharing_message/web_push",
+    "//components/strings",
     "//components/sync/model",
     "//components/sync/protocol",
     "//components/sync/service",
@@ -95,6 +98,7 @@ source_set("sharing_message") {
     "//components/version_info",
     "//net",
     "//third_party/re2",
+    "//ui/base",
   ]
 }
 
@@ -142,11 +146,14 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/favicon/core/test:test_support",
     "//components/gcm_driver:test_support",
     "//components/send_tab_to_self",
+    "//components/send_tab_to_self:test_support",
     "//components/sharing_message/ios_push",
     "//components/sharing_message/proto",
     "//components/sharing_message/web_push",
+    "//components/strings",
     "//components/sync:test_support",
     "//components/sync/model",
     "//components/sync_device_info",
@@ -155,5 +162,6 @@ source_set("unit_tests") {
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

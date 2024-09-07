@@ -65,6 +65,7 @@ namespace {
 using base::test::HasValue;
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::HasSubstr;
 using ::testing::NotNull;
 using ::testing::Optional;
 using ::testing::VariantWith;
@@ -441,11 +442,20 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
  protected:
-  void AddBundleSignedBy(
-      const web_package::WebBundleSigner::KeyPair& key_pair) {
+  void AddBundleSignedBy(const web_package::test::KeyPair& key_pair) {
     update_server_mixin_.AddBundle(
         IsolatedWebAppBuilder(
             ManifestBuilder().SetName("app-1.0.0").SetVersion("1.0.0"))
+            .AddHtml("/", R"(
+              <head>
+                <title>1.0.0</title>
+              </head>
+            )")
+            .AddHtml("/another_page.html", R"(
+              <head>
+                <title>another page</title>
+              </head>
+            )")
             .BuildBundle(web_bundle_id_, {key_pair}));
   }
 
@@ -510,6 +520,168 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                       /*integrity_block_data=*/
                       test::IntegrityBlockDataPublicKeysAre(
                           test::GetDefaultEcdsaP256KeyPair().public_key))));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
+                       AppStopsOpeningOnUpdateFailure) {
+  auto app_id =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
+          .app_id();
+
+  // Add a bundle with version 1.0.0 signed by the original key corresponding to
+  // `web_bundle_id_`.
+  AddBundleSignedBy(test::GetDefaultEd25519KeyPair());
+
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(web_bundle_id_)));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({app_id});
+
+  EXPECT_THAT(
+      GetIsolatedWebApp(app_id),
+      test::IwaIs(Eq("app-1.0.0"),
+                  test::IsolationDataIs(
+                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*controlled_frame_partitions=*/_,
+                      /*pending_update_info=*/Eq(std::nullopt),
+                      /*integrity_block_data=*/
+                      test::IntegrityBlockDataPublicKeysAre(
+                          test::GetDefaultEd25519KeyPair().public_key))));
+
+  // Open the app and ensure it loads the content properly. This will also cache
+  // a bundle reader.
+  {
+    auto* app_browser = LaunchWebAppBrowserAndWait(app_id);
+    content::WebContents* web_contents =
+        app_browser->tab_strip_model()->GetActiveWebContents();
+
+    content::TitleWatcher title_watcher(web_contents, u"1.0.0");
+    EXPECT_EQ(title_watcher.WaitAndGetTitle(), u"1.0.0");
+    app_browser->window()->Close();
+    ui_test_utils::WaitForBrowserToClose(app_browser);
+  }
+
+  // Key rotation should trigger an unsuccessful discovery in the update manager
+  // and clear the reader cache.
+  EXPECT_THAT(
+      test::InstallIwaKeyDistributionComponent(
+          base::Version("0.1.0"), test::GetDefaultEd25519WebBundleId().id(),
+          test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
+      HasValue());
+
+  // Now an attempt to open the app should display the "missing or damaged"
+  // page.
+  {
+    auto* app_browser = LaunchWebAppBrowserAndWait(app_id);
+    content::WebContents* web_contents =
+        app_browser->tab_strip_model()->GetActiveWebContents();
+
+    EXPECT_THAT(EvalJs(web_contents, "document.body.innerText").ExtractString(),
+                HasSubstr("This application is missing or damaged"));
+
+    app_browser->window()->Close();
+    ui_test_utils::WaitForBrowserToClose(app_browser);
+  }
+
+  // Apply a late update.
+  {
+    WebAppTestManifestUpdatedObserver manifest_updated_observer(
+        &provider().install_manager());
+    manifest_updated_observer.BeginListening({app_id});
+
+    // Add a bundle with version 1.0.0 signed by a rotated key.
+    AddBundleSignedBy(test::GetDefaultEcdsaP256KeyPair());
+    EXPECT_EQ(provider().iwa_update_manager().DiscoverUpdatesNow(), 1u);
+    manifest_updated_observer.Wait();
+  }
+
+  // The app should open as expected.
+  {
+    auto* app_browser = LaunchWebAppBrowserAndWait(app_id);
+    content::WebContents* web_contents =
+        app_browser->tab_strip_model()->GetActiveWebContents();
+
+    content::TitleWatcher title_watcher(web_contents, u"1.0.0");
+    EXPECT_EQ(title_watcher.WaitAndGetTitle(), u"1.0.0");
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
+                       DoesntAffectRunningApps) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
+  auto app_id = url_info.app_id();
+
+  // Add a bundle with version 1.0.0 signed by the original key corresponding to
+  // `web_bundle_id_`.
+  AddBundleSignedBy(test::GetDefaultEd25519KeyPair());
+
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(web_bundle_id_)));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({app_id});
+
+  EXPECT_THAT(
+      GetIsolatedWebApp(app_id),
+      test::IwaIs(Eq("app-1.0.0"),
+                  test::IsolationDataIs(
+                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*controlled_frame_partitions=*/_,
+                      /*pending_update_info=*/Eq(std::nullopt),
+                      /*integrity_block_data=*/
+                      test::IntegrityBlockDataPublicKeysAre(
+                          test::GetDefaultEd25519KeyPair().public_key))));
+
+  // Open the app and ensure it loads the content properly. This will also cache
+  // a bundle reader.
+  auto* app_browser = LaunchWebAppBrowserAndWait(app_id);
+  {
+    content::WebContents* web_contents =
+        app_browser->tab_strip_model()->GetActiveWebContents();
+
+    content::TitleWatcher title_watcher(web_contents, u"1.0.0");
+    EXPECT_EQ(title_watcher.WaitAndGetTitle(), u"1.0.0");
+  }
+
+  // Key rotation should trigger an unsuccessful discovery in the update manager
+  // and queue a cache clear request for this bundle reader.
+  EXPECT_THAT(
+      test::InstallIwaKeyDistributionComponent(
+          base::Version("0.1.0"), test::GetDefaultEd25519WebBundleId().id(),
+          test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
+      HasValue());
+
+  // The currently open app should not be affected.
+  {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        app_browser, url_info.origin().GetURL().Resolve("/another_page.html")));
+    content::WebContents* web_contents =
+        app_browser->tab_strip_model()->GetActiveWebContents();
+
+    content::TitleWatcher title_watcher(web_contents, u"another page");
+    EXPECT_EQ(title_watcher.WaitAndGetTitle(), u"another page");
+  }
+
+  // Close the browser.
+  app_browser->window()->Close();
+  ui_test_utils::WaitForBrowserToClose(app_browser);
+
+  // Now an attempt to open the app should display the "missing or damaged"
+  // page.
+  {
+    auto* new_app_browser = LaunchWebAppBrowserAndWait(app_id);
+    content::WebContents* web_contents =
+        new_app_browser->tab_strip_model()->GetActiveWebContents();
+
+    EXPECT_THAT(EvalJs(web_contents, "document.body.innerText").ExtractString(),
+                HasSubstr("This application is missing or damaged"));
+  }
 }
 
 }  // namespace

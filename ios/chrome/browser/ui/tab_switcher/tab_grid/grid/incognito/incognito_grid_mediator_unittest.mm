@@ -8,7 +8,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
@@ -55,7 +55,8 @@ TEST_F(IncognitoGridMediatorTest, CloseAllItemsCommand) {
 }
 
 // Checks that opening a new regular tab from the toolbar is done when allowed.
-TEST_F(IncognitoGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
+// TODO(crbug.com/361080595): Flaky on various bots.
+TEST_F(IncognitoGridMediatorTest, DISABLED_OpenNewTab_OpenIfAllowedByPolicy) {
   // Disconnect the existing mediator first as we will re-create it.
   [mediator_ disconnect];
 

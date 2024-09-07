@@ -4,14 +4,16 @@
 
 #import <memory>
 
+#import "base/i18n/time_formatting.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -21,6 +23,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
+#import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -94,6 +97,73 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
       grey_accessibilityLabel(bannerLabel), nil);
 }
 
+// Simulates typing text on the keyboard and avoid having the first character
+// typed uppercased. Will retype the first letter to make sure it is lowercased
+// when `retypeFirstLetter` is set to true which is the default value.
+//
+// TODO(crbug.com/40916974): This should be replaced by grey_typeText when
+// fixed.
+void TypeText(NSString* nsText, bool retypeFirstLetter = true) {
+  std::string text = base::SysNSStringToUTF8(nsText);
+  for (size_t i = 0; i < text.size(); ++i) {
+    // Type each character in the provided text.
+    NSString* letter = base::SysUTF8ToNSString(text.substr(i, 1));
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:letter flags:0];
+    if (i == 0 && retypeFirstLetter) {
+      // Undo and retype the first letter to not have it uppercased.
+      [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"z"
+                                              flags:UIKeyModifierCommand];
+      [ChromeEarlGrey simulatePhysicalKeyboardEvent:letter flags:0];
+    }
+  }
+}
+
+// Fills and submits the xframe credit card form that corresponds to
+// xframe_credit_card.html. Fill the form by typing on each field from the
+// keyboard since filling with a script doesn't allow capturing the form
+// values for saving.
+//
+// TODO(crbug.com/360712075): Figure out why filling the xframe credit card
+// form from a script doesn't allow capturing all the data for saving. The
+// value of the cardholder name field on the main frame is captured but not
+// the other fields that are in iframes.
+void FillAndSubmitXframeCreditCardForm() {
+  // Focus on the name credit card field.
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.getElementById('CCName').focus();"];
+  // Type the name and respect cases.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"J" flags:UIKeyModifierShift];
+  TypeText(@"ohn ", false);
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"S" flags:UIKeyModifierShift];
+  TypeText(@"mith", false);
+  // Wait some time to make sure typing is done.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
+
+  // Fill the credit card fields that are hosting in iframes.
+  // Set the year to fill as 4 years from now.
+  NSString* year_to_fill =
+      base::SysUTF8ToNSString(base::UnlocalizedTimeFormatWithPattern(
+          base::Time::Now() + base::Days(366 * 4), "yyyy"));
+  std::vector<std::tuple<NSString*, NSString*, NSString*>> typingInstructions =
+      {std::make_tuple(@"cc-number-frame", @"CCNo", @"5454545454545454"),
+       std::make_tuple(@"cc-exp-frame", @"CCExpiresMonth", @"12"),
+       std::make_tuple(@"cc-exp-frame", @"CCExpiresYear", year_to_fill),
+       std::make_tuple(@"cc-cvc", @"cvc", @"123")};
+  for (auto [frame_id, field_id, value] : typingInstructions) {
+    // Pop the keyboard by focusing the on the field to fill.
+    NSString* script = [NSString
+        stringWithFormat:@"document.getElementById('%@')."
+                         @"contentDocument.getElementById('%@').focus();",
+                         frame_id, field_id];
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+    // Type value with keyboard.
+    TypeText(value);
+    // Wait some time to make sure typing is done.
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
+  }
+  [ChromeEarlGrey tapWebStateElementWithID:@"cc-form-submit"];
+}
+
 }  // namespace
 
 @interface SaveCardInfobarEGTest : WebHttpServerChromeTestCase
@@ -109,6 +179,14 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
   if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
+  if ([self isRunningTest:@selector
+            (testOfferUpstream_FullData_PaymentsAccepts_Xframe)] ||
+      [self
+          isRunningTest:@selector(testUserData_LocalSave_UserAccepts_Xframe)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAcrossIframesIos);
+  }
+  // testUserData_LocalSave_UserAccepts_Xframe
   return config;
 }
 
@@ -303,6 +381,48 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
   ]
                                           timeout:kWaitForDownloadTimeout];
   [self fillAndSubmitForm];
+  GREYAssertTrue([AutofillAppInterface waitForEvents],
+                 @"Event was not triggered");
+
+  // Wait until the save card infobar becomes visible.
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
+
+  [AutofillAppInterface resetEventWaiterForEvents:@[
+    @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
+  ]
+                                          timeout:kWaitForDownloadTimeout];
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+  GREYAssertTrue([AutofillAppInterface waitForEvents],
+                 @"Event was not triggered");
+}
+
+// Test saving credit card upstream with a xframe credit card form.
+- (void)testOfferUpstream_FullData_PaymentsAccepts_Xframe {
+  // Serve ios http files.
+  net::test_server::RegisterDefaultHandlers(self.testServer);
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  // Load xframe credit card page.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/xframe_credit_card.html")];
+
+  // Set up the Google Payments server response so upload is deemed successful.
+  // Return success.
+  [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsSuccess
+                                 forRequest:kURLGetUploadDetailsRequest
+                              withErrorCode:net::HTTP_OK];
+
+  [AutofillAppInterface resetEventWaiterForEvents:@[
+    @(CreditCardSaveManagerObserverEvent::kOnDecideToRequestUploadSaveCalled),
+    @(CreditCardSaveManagerObserverEvent::
+          kOnReceivedGetUploadDetailsResponseCalled)
+  ]
+                                          timeout:kWaitForDownloadTimeout];
+
+  // Fill and submit form.
+  FillAndSubmitXframeCreditCardForm();
+
   GREYAssertTrue([AutofillAppInterface waitForEvents],
                  @"Event was not triggered");
 
@@ -547,6 +667,58 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
                                           timeout:kWaitForDownloadTimeout];
 
   [self fillAndSubmitForm];
+  GREYAssertTrue([AutofillAppInterface waitForEvents],
+                 @"Event was not triggered");
+
+  // Wait until the save card infobar becomes visible.
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
+
+  // Tap the save button.
+  [[EarlGrey selectElementWithMatcher:LocalSaveButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Wait until the save card infobar disappears.
+  GREYAssert(
+      [self waitForUIElementToDisappearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to disappear.");
+
+  // Ensure credit card is saved locally.
+  GREYAssertEqual(1U, [AutofillAppInterface localCreditCount],
+                  @"Credit card should have been saved.");
+}
+
+// Test saving credit card locally as fallback with a xframe credit card form.
+- (void)testUserData_LocalSave_UserAccepts_Xframe {
+  // Serve ios http files.
+  net::test_server::RegisterDefaultHandlers(self.testServer);
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  // Load xframe credit card page.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/xframe_credit_card.html")];
+
+  // Ensure there are no already saved credit cards at this point.
+  GREYAssertEqual(0U, [AutofillAppInterface localCreditCount],
+                  @"There should be no saved credit card.");
+
+  // Set up the Google Payments server response so the local save fallback is
+  // used. Return failure.
+  [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsFailure
+                                 forRequest:kURLGetUploadDetailsRequest
+                              withErrorCode:net::HTTP_OK];
+
+  [AutofillAppInterface resetEventWaiterForEvents:@[
+    @(CreditCardSaveManagerObserverEvent::kOnDecideToRequestUploadSaveCalled),
+    @(CreditCardSaveManagerObserverEvent::
+          kOnReceivedGetUploadDetailsResponseCalled),
+    @(CreditCardSaveManagerObserverEvent::kOnOfferLocalSaveCalled)
+  ]
+                                          timeout:kWaitForDownloadTimeout];
+
+  // Fill and submit form. Fill address form to allow local fallback.
+  [ChromeEarlGrey tapWebStateElementWithID:@"fill-address-btn"];
+  FillAndSubmitXframeCreditCardForm();
   GREYAssertTrue([AutofillAppInterface waitForEvents],
                  @"Event was not triggered");
 

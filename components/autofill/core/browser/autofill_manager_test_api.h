@@ -26,7 +26,15 @@ class AutofillManagerTestApi {
   void OnLoadedServerPredictions(
       std::string response,
       const std::vector<FormSignature>& queried_form_signatures) {
-    manager_->OnLoadedServerPredictions(response, queried_form_signatures);
+    OnLoadedServerPredictions(AutofillCrowdsourcingManager::QueryResponse{
+        response, queried_form_signatures});
+  }
+
+  void OnLoadedServerPredictions(
+      AutofillCrowdsourcingManager::QueryResponse response) {
+    manager_->NotifyObservers(
+        &AutofillManager::Observer::OnBeforeLoadedServerPredictions);
+    manager_->OnLoadedServerPredictions(std::move(response));
   }
 
   std::map<FormGlobalId, std::unique_ptr<FormStructure>>*

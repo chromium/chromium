@@ -70,9 +70,8 @@ CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
     case CSSSelector::PseudoType::kPseudoPlaceholder:
     case CSSSelector::PseudoType::kPseudoFileSelectorButton:
     case CSSSelector::PseudoType::kPseudoSelectFallbackButton:
-    case CSSSelector::PseudoType::kPseudoSelectFallbackButtonIcon:
     case CSSSelector::PseudoType::kPseudoSelectFallbackButtonText:
-    case CSSSelector::PseudoType::kPseudoSelectFallbackDatalist:
+    case CSSSelector::PseudoType::kPseudoPicker:
       return CSSSelector::RelationType::kUAShadow;
     case CSSSelector::PseudoType::kPseudoPart:
       return CSSSelector::RelationType::kShadowPart;
@@ -377,7 +376,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
           stream);  // Forwards until the end of the argument (i.e. to comma or
                     // EOB).
     }
-    if (stream.AtEnd()) {
+    if (stream.Peek().GetType() != kCommaToken) {
       break;
     }
     stream.ConsumeIncludingWhitespace();
@@ -911,62 +910,93 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
 namespace {
 PseudoId ParsePseudoElementLegacy(const String& selector_string,
                                   const Node* parent) {
-  CSSTokenizer tokenizer(selector_string);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(selector_string);
 
   int number_of_colons = 0;
-  while (!range.AtEnd() && range.Peek().GetType() == kColonToken) {
+  while (!stream.AtEnd() && stream.Peek().GetType() == kColonToken) {
     number_of_colons++;
-    range.Consume();
+    stream.Consume();
   }
 
   // TODO(crbug.com/1197620): allowing 0 or 1 preceding colons is not aligned
   // with specs.
-  if (!range.AtEnd() && number_of_colons <= 2 &&
-      (range.Peek().GetType() == kIdentToken ||
-       range.Peek().GetType() == kFunctionToken)) {
-    CSSParserToken selector_name_token = range.Consume();
+  if (stream.AtEnd() || number_of_colons > 2) {
+    return kPseudoIdNone;
+  }
+
+  if (stream.Peek().GetType() == kIdentToken) {
+    CSSParserToken selector_name_token = stream.Consume();
     PseudoId pseudo_id =
         CSSSelector::GetPseudoId(CSSSelectorParser::ParsePseudoType(
             selector_name_token.Value().ToAtomicString(),
-            selector_name_token.GetType() == kFunctionToken,
+            /*has_arguments=*/false,
             parent ? &parent->GetDocument() : nullptr));
 
-    if (PseudoElement::IsWebExposed(pseudo_id, parent) &&
-        ((PseudoElementHasArguments(pseudo_id) &&
-          range.Peek(0).GetType() == kIdentToken &&
-          range.Peek(1).GetType() == kRightParenthesisToken &&
-          range.Peek(2).GetType() == kEOFToken) ||
-         range.Peek().GetType() == kEOFToken)) {
+    if (stream.AtEnd() && PseudoElement::IsWebExposed(pseudo_id, parent)) {
       return pseudo_id;
+    } else {
+      return kPseudoIdNone;
     }
+  }
+
+  if (stream.Peek().GetType() == kFunctionToken) {
+    CSSParserToken selector_name_token = stream.Peek();
+    PseudoId pseudo_id =
+        CSSSelector::GetPseudoId(CSSSelectorParser::ParsePseudoType(
+            selector_name_token.Value().ToAtomicString(),
+            /*has_arguments=*/true, parent ? &parent->GetDocument() : nullptr));
+
+    if (!PseudoElementHasArguments(pseudo_id) ||
+        !PseudoElement::IsWebExposed(pseudo_id, parent)) {
+      return kPseudoIdNone;
+    }
+
+    {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      if (stream.Peek().GetType() != kIdentToken) {
+        return kPseudoIdNone;
+      }
+      stream.Consume();
+      if (!stream.AtEnd()) {
+        return kPseudoIdNone;
+      }
+    }
+    return stream.AtEnd() ? pseudo_id : kPseudoIdNone;
   }
 
   return kPseudoIdNone;
 }
 
 AtomicString ParsePseudoElementArgument(const String& selector_string) {
-  CSSTokenizer tokenizer(selector_string);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(selector_string);
 
   int number_of_colons = 0;
-  while (!range.AtEnd() && range.Peek().GetType() == kColonToken) {
+  while (!stream.AtEnd() && stream.Peek().GetType() == kColonToken) {
     number_of_colons++;
-    range.Consume();
+    stream.Consume();
   }
 
   // TODO(crbug.com/1197620): allowing 0 or 1 preceding colons is not aligned
   // with specs.
-  if (number_of_colons > 2 || range.Peek(0).GetType() != kFunctionToken ||
-      range.Peek(1).GetType() != kIdentToken ||
-      range.Peek(2).GetType() != kRightParenthesisToken ||
-      range.Peek(3).GetType() != kEOFToken) {
+  if (number_of_colons > 2 || stream.Peek().GetType() != kFunctionToken) {
     return g_null_atom;
   }
 
-  return range.Peek(1).Value().ToAtomicString();
+  AtomicString ret;
+  {
+    CSSParserTokenStream::BlockGuard guard(stream);
+    if (stream.Peek().GetType() != kIdentToken) {
+      return g_null_atom;
+    }
+    ret = stream.Consume().Value().ToAtomicString();
+    if (!stream.AtEnd()) {
+      return g_null_atom;
+    }
+  }
+  if (!stream.AtEnd()) {
+    return g_null_atom;
+  }
+  return ret;
 }
 }  // namespace
 
@@ -986,8 +1016,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
   // For old pseudos (before, after, first-letter, first-line), we
   // allow the legacy behavior of single-colon / no-colon.
   {
-    CSSTokenizer tokenizer(selector_string);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(selector_string);
     stream.EnsureLookAhead();
     int num_colons = 0;
     if (stream.Peek().GetType() == kColonToken) {
@@ -1002,7 +1031,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
     CSSParserToken selector_name_token = stream.Peek();
     if (selector_name_token.GetType() == kIdentToken) {
       stream.Consume();
-      if (!selector_name_token.Value().Is8Bit()) {
+      if (!selector_name_token.Value().ContainsOnlyASCIIOrEmpty()) {
         return kPseudoIdInvalid;
       }
       if (stream.Peek().GetType() != kEOFToken) {
@@ -1020,9 +1049,20 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
         return pseudo_id;
       }
 
-      // Keep current behavior for shadow pseudo-elements like ::placeholder.
-      if (GetImplicitShadowCombinatorForMatching(pseudo_type) ==
-              CSSSelector::kUAShadow &&
+      // For ::-webkit-* and ::-internal-* pseudo-elements, act like there's
+      // no pseudo-element provided and (at least for getComputedStyle, our
+      // most significant caller) use the element style instead.
+      // TODO(https://crbug.com/363015176): We should either do something
+      // correct or treat them as unsupported.
+      if ((pseudo_type == CSSSelector::PseudoType::kPseudoWebKitCustomElement ||
+           pseudo_type ==
+               CSSSelector::PseudoType::kPseudoBlinkInternalElement ||
+           (!RuntimeEnabledFeatures::
+                PseudoElementsCorrectInGetComputedStyleEnabled() &&
+            (pseudo_type == CSSSelector::PseudoType::kPseudoCue ||
+             pseudo_type == CSSSelector::PseudoType::kPseudoPlaceholder ||
+             pseudo_type ==
+                 CSSSelector::PseudoType::kPseudoFileSelectorButton))) &&
           num_colons == 2) {
         return kPseudoIdNone;
       }
@@ -1044,8 +1084,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
       /*style_sheet=*/nullptr, arena);
 
   ResetVectorAfterScope reset_vector(parser.output_);
-  CSSTokenizer tokenizer(selector_string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(selector_string);
   if (!parser.ConsumePseudo(stream)) {
     return kPseudoIdInvalid;
   }
@@ -1142,10 +1181,17 @@ bool IsPseudoClassValidAfterPseudoElement(
       return pseudo_class == CSSSelector::kPseudoWindowInactive;
     case CSSSelector::kPseudoPart:
     // TODO(crbug.com/1511354): Add tests for the PseudoSelect cases here
+    case CSSSelector::kPseudoPicker:
+      // TODO(crbug.com/1511354): This separate case is only here to support
+      // kPseudoPopoverOpen. As part of the part-like pseudo-elements feature,
+      // kPseudoPopoverOpen may be supported by kPseudoPart, in which case this
+      // case could be combined with kPseudoPart.
+      if (pseudo_class == CSSSelector::kPseudoPopoverOpen) {
+        return true;
+      }
+      [[fallthrough]];
     case CSSSelector::kPseudoSelectFallbackButton:
-    case CSSSelector::kPseudoSelectFallbackButtonIcon:
     case CSSSelector::kPseudoSelectFallbackButtonText:
-    case CSSSelector::kPseudoSelectFallbackDatalist:
       return IsUserActionPseudoClass(pseudo_class) ||
              pseudo_class == CSSSelector::kPseudoState ||
              pseudo_class == CSSSelector::kPseudoStateDeprecatedSyntax;
@@ -1201,12 +1247,16 @@ bool IsSimpleSelectorValidAfterPseudoElement(
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
     case CSSSelector::kPseudoNot:
-    case CSSSelector::kPseudoHas:
       // These pseudo-classes are themselves always valid.
       // CSSSelectorParser::restricting_pseudo_element_ ensures that invalid
       // nested selectors will be dropped if they are invalid according to
       // this function.
       return true;
+    case CSSSelector::kPseudoHas:
+      if (!RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled()) {
+        return true;
+      }
+      [[fallthrough]];
     default:
       break;
   }
@@ -1707,6 +1757,11 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
       output_.push_back(std::move(selector));
       return true;
     }
+    case CSSSelector::kPseudoPicker:
+      if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+        return false;
+      }
+      [[fallthrough]];
     case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoState: {
       CHECK(selector.GetPseudoType() != CSSSelector::kPseudoState ||
@@ -2408,7 +2463,7 @@ WebFeature FeatureForWebKitCustomPseudoElement(const AtomicString& name) {
 static void RecordUsageAndDeprecationsOneSelector(
     const CSSSelector* selector,
     const CSSParserContext* context) {
-  WebFeature feature = WebFeature::kNumberOfFeatures;
+  std::optional<WebFeature> feature;
   switch (selector->GetPseudoType()) {
     case CSSSelector::kPseudoAny:
       feature = WebFeature::kCSSSelectorPseudoAny;
@@ -2487,11 +2542,11 @@ static void RecordUsageAndDeprecationsOneSelector(
     default:
       break;
   }
-  if (feature != WebFeature::kNumberOfFeatures) {
-    if (Deprecation::IsDeprecated(feature)) {
-      context->CountDeprecation(feature);
+  if (feature.has_value()) {
+    if (Deprecation::IsDeprecated(*feature)) {
+      context->CountDeprecation(*feature);
     } else {
-      context->Count(feature);
+      context->Count(*feature);
     }
   }
   if (selector->Relation() == CSSSelector::kIndirectAdjacent) {

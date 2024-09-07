@@ -102,11 +102,14 @@ struct ScoredUrlRow {
 
 struct SearchResult {
   SearchResult();
-  SearchResult(const SearchResult&);
   SearchResult(SearchResult&&);
   ~SearchResult();
-  SearchResult& operator=(const SearchResult&);
   SearchResult& operator=(SearchResult&&);
+
+  // Explicit copy only, since the `answerer_result` contains a log entry.
+  // This should only be called if `answerer_result` is not populated with
+  // a log entry yet, for example after initial search and before answering.
+  SearchResult Clone();
 
   // Gets the answer text from within the `answerer_result`.
   const std::string& AnswerText() const;
@@ -186,7 +189,8 @@ class HistoryEmbeddingsService : public KeyedService,
   base::WeakPtr<HistoryEmbeddingsService> AsWeakPtr();
 
   // Submit quality logging data after user selects an item from search result.
-  void SendQualityLog(const SearchResult& result,
+  // Note, the `result` contains a log entry that will be consumed by this call.
+  void SendQualityLog(SearchResult& result,
                       optimization_guide::proto::UserFeedback user_feedback,
                       std::set<size_t> selections,
                       size_t num_entered_characters,
@@ -222,6 +226,7 @@ class HistoryEmbeddingsService : public KeyedService,
     std::vector<ScoredUrlRow> Search(
         base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
         size_t query_id,
+        SearchParams search_params,
         Embedding query_embedding,
         std::optional<base::Time> time_range_start,
         size_t count);
@@ -280,6 +285,7 @@ class HistoryEmbeddingsService : public KeyedService,
   // Invoked after the embedding for the original search query has been
   // computed.
   void OnQueryEmbeddingComputed(SearchResultCallback callback,
+                                SearchParams search_params,
                                 SearchResult result,
                                 std::vector<std::string> query_passages,
                                 std::vector<Embedding> query_embedding,
@@ -335,8 +341,10 @@ class HistoryEmbeddingsService : public KeyedService,
       base::Time time_before_database_access,
       std::optional<UrlPassagesEmbeddings> existing_url_data);
 
-  // Returns true if query should be filtered.
-  bool QueryIsFiltered(const std::string& raw_query) const;
+  // Returns true if query should be filtered. If false, then `search_params`
+  // will have its query_terms set.
+  bool QueryIsFiltered(const std::string& raw_query,
+                       SearchParams& search_params) const;
 
   raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
@@ -376,11 +384,8 @@ class HistoryEmbeddingsService : public KeyedService,
   // This will be null if the feature flag is disabled.
   base::SequenceBound<Storage> storage_;
 
-  // Single word terms with no spaces, checked exactly against query terms.
-  std::unordered_set<std::string> filter_terms_;
-
-  // Multi-word phrases with spaces, checked by finding substring in query.
-  std::vector<std::string> filter_phrases_;
+  // Hashes for phrases of one or two words to be filtered.
+  std::unordered_set<uint32_t> filter_hashes_;
 
   // Callback called when `ProcessAndStorePassages` completes. Needed for tests
   // as the blink dependency doesn't have a 'wait for pending requests to
@@ -409,6 +414,8 @@ enum class QueryFiltered {
   FILTERED_NOT_ASCII,
   FILTERED_PHRASE_MATCH,
   FILTERED_TERM_MATCH,
+  FILTERED_ONE_WORD_HASH_MATCH,
+  FILTERED_TWO_WORD_HASH_MATCH,
 
   // These enum values are logged in UMA. Do not reuse or skip any values.
   // The order doesn't need to be chronological, but keep identities stable.
@@ -439,6 +446,9 @@ enum class ExtractionCancelled {
 // Record UMA histogram with cancellation reason when extraction,
 // embedding, etc. is cancelled before completion and storage.
 void RecordExtractionCancelled(ExtractionCancelled reason);
+
+// Hash function used for query filtering.
+uint32_t HashString(std::string_view str);
 
 }  // namespace history_embeddings
 

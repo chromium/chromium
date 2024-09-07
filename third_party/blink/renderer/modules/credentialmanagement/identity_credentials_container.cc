@@ -46,11 +46,11 @@ ScriptPromise<IDLNullable<Credential>> IdentityCredentialsContainer::get(
           script_state, exception_state.GetContext());
 
   if (IsDigitalIdentityCredentialType(*options)) {
-    return DiscoverDigitalIdentityCredentialFromExternalSource(
+    DiscoverDigitalIdentityCredentialFromExternalSource(
         resolver, exception_state, *options);
+  } else {
+    resolver->Resolve(nullptr);
   }
-
-  resolver->Resolve(nullptr);
   return resolver->Promise();
 }
 
@@ -76,13 +76,6 @@ ScriptPromise<IDLNullable<Credential>> IdentityCredentialsContainer::create(
 
 ScriptPromise<IDLUndefined> IdentityCredentialsContainer::preventSilentAccess(
     ScriptState* script_state) {
-  return EmptyPromise();
-}
-
-ScriptPromise<IDLUndefined> IdentityCredentialsContainer::report(
-    ScriptState* script_state,
-    const CredentialReportOptions* options,
-    ExceptionState& exception_state) {
   return EmptyPromise();
 }
 

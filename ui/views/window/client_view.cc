@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -23,6 +24,7 @@ namespace views {
 ClientView::ClientView(Widget* widget, View* contents_view)
     : contents_view_(contents_view) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 }
 
 CloseRequestResult ClientView::OnWindowCloseRequested() {
@@ -61,10 +63,6 @@ gfx::Size ClientView::GetMinimumSize() const {
   // |contents_view_| is allowed to be NULL up until the point where this view
   // is attached to a Container.
   return contents_view_ ? contents_view_->GetMinimumSize() : gfx::Size();
-}
-
-void ClientView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kClient;
 }
 
 void ClientView::OnBoundsChanged(const gfx::Rect& previous_bounds) {

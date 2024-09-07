@@ -10,6 +10,7 @@
 #include "chrome/browser/password_manager/android/access_loss/jni_headers/PasswordAccessLossWarningBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "ui/android/window_android.h"
 
 PasswordAccessLossWarningBridgeImpl::PasswordAccessLossWarningBridgeImpl() =
     default;
@@ -34,9 +35,26 @@ bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
   return true;
 }
 
-void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet() {
+void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
+    PrefService* pref_service,
+    const gfx::NativeWindow window,
+    Profile* profile) {
+  if (profile == nullptr) {
+    return;
+  }
+  if (!window) {
+    return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   jni_zero::ScopedJavaLocalRef<jobject> java_bridge =
-      Java_PasswordAccessLossWarningBridge_create(env);
-  Java_PasswordAccessLossWarningBridge_show(env, java_bridge);
+      Java_PasswordAccessLossWarningBridge_create(env, window->GetJavaObject(),
+                                                  profile->GetJavaObject());
+  if (!java_bridge) {
+    return;
+  }
+  Java_PasswordAccessLossWarningBridge_show(
+      env, java_bridge,
+      static_cast<int>(
+          password_manager_android_util::GetPasswordAccessLossWarningType(
+              pref_service)));
 }

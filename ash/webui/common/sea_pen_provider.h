@@ -24,6 +24,16 @@ class SeaPenProvider {
   virtual bool IsEligibleForSeaPen() = 0;
 
   virtual bool IsEligibleForSeaPenTextInput() = 0;
+
+  // Managed users controlled by enterprise policy can see Sea Pen entry point
+  // which is Sea Pen tile in wallpaper subpage or the Image button in camera
+  // shelf for VC Background. However, only the users with the policy enabled
+  // can access and use the Sea Pen feature.
+  virtual bool IsManagedSeaPenEnabled() = 0;
+
+  // Determines if the current active profile is able to see the SeaPen
+  // Feedback.
+  virtual bool IsManagedSeaPenFeedbackEnabled() = 0;
 };
 
 }  // namespace ash::common

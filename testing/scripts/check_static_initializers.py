@@ -11,6 +11,14 @@ import sys
 
 import common
 
+CHROMIUM_ROOT = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+BUILD_DIR = os.path.join(CHROMIUM_ROOT, 'build')
+
+if BUILD_DIR not in sys.path:
+  sys.path.insert(0, BUILD_DIR)
+import gn_helpers
+
+
 # A list of filename regexes that are allowed to have static initializers.
 # If something adds a static initializer, revert it. We don't accept regressions
 # in static initializers.
@@ -42,6 +50,11 @@ _MAC_SI_FILE_ALLOWLIST = [
     'iostream\\.cpp',  # Used to setup std::cin/cout/cerr.
     '000100',  # Used to setup std::cin/cout/cerr
 ]
+
+# The minimum for Mac is:
+# _GLOBAL__I_000100
+# InitializeDefaultMallocZoneWithPartitionAlloc()
+FALLBACK_MIN_MAC_SI_COUNT = 2
 
 # Two static initializers are needed on Mac for libc++ to set up
 # std::cin/cout/cerr before main() runs. Only iostream.cpp needs to be counted
@@ -120,12 +133,14 @@ def main_mac(src_dir, hermetic_xcode_path, allow_coverage_initializer=False):
       stdout, si_count = get_mod_init_count(src_dir,
                                             chromium_framework_executable,
                                             hermetic_xcode_path)
-      min_si_count = allowed_si_count = FALLBACK_EXPECTED_MAC_SI_COUNT
+      min_si_count = FALLBACK_MIN_MAC_SI_COUNT
+      allowed_si_count = FALLBACK_EXPECTED_MAC_SI_COUNT
       if allow_coverage_initializer:
         allowed_si_count = COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT
       if si_count > allowed_si_count or si_count < min_si_count:
-        print('Expected %d static initializers in %s, but found %d' %
-              (allowed_si_count, chromium_framework_executable, si_count))
+        print('Expected [%d, %d] static initializers in %s, but found %d' %
+              (min_si_count, allowed_si_count, chromium_framework_executable,
+               si_count))
         print(stdout)
         ret = 1
   return ret
@@ -164,12 +179,13 @@ def main_linux(src_dir):
 
 
 def main_run(args):
-  if args.build_config_fs != 'Release':
+  with open(os.path.join(args.build_dir, 'args.gn')) as f:
+    gn_args = gn_helpers.FromGNArgs(f.read())
+  if gn_args.get('is_debug') or gn_args.get('is_official_build'):
     raise Exception('Only release builds are supported')
 
   src_dir = args.paths['checkout']
-  build_dir = os.path.join(src_dir, 'out', args.build_config_fs)
-  os.chdir(build_dir)
+  os.chdir(args.build_dir)
 
   if sys.platform.startswith('darwin'):
     # If the checkout uses the hermetic xcode binaries, then otool must be

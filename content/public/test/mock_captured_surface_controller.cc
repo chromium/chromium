@@ -57,4 +57,20 @@ void MockCapturedSurfaceController::SetZoomLevel(
   std::move(reply_callback).Run(set_zoom_level_result);
 }
 
+void MockCapturedSurfaceController::SetRequestPermissionResponse(
+    blink::mojom::CapturedSurfaceControlResult request_permission_result) {
+  request_permission_result_ = request_permission_result;
+}
+
+void MockCapturedSurfaceController::RequestPermission(
+    base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+        reply_callback) {
+  std::optional<blink::mojom::CapturedSurfaceControlResult>
+      request_permission_result;
+  std::swap(request_permission_result_, request_permission_result);
+
+  CHECK(request_permission_result);
+  std::move(reply_callback).Run(*request_permission_result);
+}
+
 }  // namespace content

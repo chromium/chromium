@@ -370,6 +370,11 @@ void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
       installed_scripts_manager_
           ? ModuleScriptCustomFetchType::kInstalledServiceWorker
           : ModuleScriptCustomFetchType::kWorkerConstructor;
+
+  // Count instantiation of a service worker using a module script as a proxy %
+  // of page loads use a service worker with a module script.
+  CountWebDXFeature(WebDXFeature::kJsModulesServiceWorkers);
+
   FetchModuleScript(module_url_record, outside_settings_object,
                     outside_resource_timing_notifier,
                     mojom::blink::RequestContextType::SERVICE_WORKER,
@@ -804,6 +809,7 @@ void ServiceWorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(payment_response_callbacks_);
   visitor->Trace(fetch_response_callbacks_);
   visitor->Trace(pending_preload_fetch_events_);
+  visitor->Trace(pending_streaming_upload_fetch_events_);
   visitor->Trace(controller_receivers_);
   visitor->Trace(remote_associated_interfaces_);
   visitor->Trace(associated_interfaces_receiver_);
@@ -998,6 +1004,7 @@ void ServiceWorkerGlobalScope::DidHandleExtendableMessageEvent(
 
 void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
     int fetch_event_id,
+    FetchEvent* fetch_event,
     const KURL& request_url,
     bool range_request,
     std::optional<network::DataElementChunkedDataPipe> request_body,
@@ -1023,7 +1030,14 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
 
   NoteRespondedToFetchEvent(request_url, range_request);
 
+  if (request_body) {
+    pending_streaming_upload_fetch_events_.insert(fetch_event_id, fetch_event);
+  }
+
   response_callback->OnFallback(std::move(request_body), std::move(timing));
+}
+void ServiceWorkerGlobalScope::OnStreamingUploadCompletion(int fetch_event_id) {
+  pending_streaming_upload_fetch_events_.erase(fetch_event_id);
 }
 
 void ServiceWorkerGlobalScope::RespondToFetchEvent(

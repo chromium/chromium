@@ -69,3 +69,16 @@ source_set("impl") {
     "//ui/webui",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "webui_contents_preload_manager_test_api.cc",
+    "webui_contents_preload_manager_test_api.h",
+  ]
+
+  deps = [
+    ":top_chrome",
+    "//url",
+  ]
+}

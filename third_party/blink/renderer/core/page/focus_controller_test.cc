@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -392,45 +395,73 @@ TEST_F(FocusControllerTest, ScrollMarkersAreFocusable) {
       "#scroller div::scroll-marker { content: ''; }"
       "#scroller div::scroll-marker:focus { opacity: 0.5; }"
       "</style>"
+      "<input id='pre-input' />"
       "<div id='scroller'>"
       "  <div></div>"
       "  <div></div>"
-      "</div>");
+      "  <div></div>"
+      "</div>"
+      "<input id='post-input' />");
   UpdateAllLifecyclePhasesForTest();
   Element* scroller = GetElementById("scroller");
+  Element* pre_input = GetElementById("pre-input");
+  Element* post_input = GetElementById("post-input");
+
+  auto* scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+  ASSERT_TRUE(scroll_marker_group);
+
   Element* first_scroll_marker =
       scroller->firstElementChild()->GetPseudoElement(kPseudoIdScrollMarker);
   ASSERT_TRUE(first_scroll_marker);
-  ASSERT_TRUE(first_scroll_marker->IsScrollMarkerPseudoElement());
 
   Element* second_scroll_marker =
-      scroller->lastElementChild()->GetPseudoElement(kPseudoIdScrollMarker);
+      scroller->firstElementChild()->nextElementSibling()->GetPseudoElement(
+          kPseudoIdScrollMarker);
   ASSERT_TRUE(second_scroll_marker);
-  ASSERT_TRUE(second_scroll_marker->IsScrollMarkerPseudoElement());
+
+  Element* last_scroll_marker =
+      scroller->lastElementChild()->GetPseudoElement(kPseudoIdScrollMarker);
+  ASSERT_TRUE(last_scroll_marker);
 
   EXPECT_EQ(first_scroll_marker,
             GetFocusController().FindFocusableElementAfter(
-                *scroller, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(second_scroll_marker,
+                *pre_input, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(post_input,
             GetFocusController().FindFocusableElementAfter(
                 *first_scroll_marker, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(nullptr,
-            GetFocusController().FindFocusableElementAfter(
-                *second_scroll_marker, mojom::blink::FocusType::kForward));
 
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(pre_input,
             GetFocusController().FindFocusableElementAfter(
                 *first_scroll_marker, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(first_scroll_marker,
+  EXPECT_EQ(last_scroll_marker,
             GetFocusController().FindFocusableElementAfter(
-                *second_scroll_marker, mojom::blink::FocusType::kBackward));
+                *post_input, mojom::blink::FocusType::kBackward));
 
-  first_scroll_marker->Focus();
+  second_scroll_marker->Focus();
+
+  second_scroll_marker->Focus();
   GetFocusController().SetActive(true);
   GetFocusController().SetFocused(true);
-  const auto* style = first_scroll_marker->GetComputedStyle();
-  EXPECT_TRUE(first_scroll_marker->IsFocused());
+  scroll_marker_group->SetSelected(
+      *To<ScrollMarkerPseudoElement>(second_scroll_marker));
+  const auto* style = second_scroll_marker->GetComputedStyle();
+  EXPECT_TRUE(second_scroll_marker->IsFocused());
   EXPECT_EQ(0.5, style->Opacity());
+
+  // Focusgroup restores last focused element.
+  EXPECT_EQ(second_scroll_marker,
+            GetFocusController().FindFocusableElementAfter(
+                *pre_input, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(second_scroll_marker,
+            GetFocusController().FindFocusableElementAfter(
+                *post_input, mojom::blink::FocusType::kBackward));
+  EXPECT_EQ(post_input,
+            GetFocusController().FindFocusableElementAfter(
+                *second_scroll_marker, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(pre_input,
+            GetFocusController().FindFocusableElementAfter(
+                *second_scroll_marker, mojom::blink::FocusType::kBackward));
 }
 
 }  // namespace blink

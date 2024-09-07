@@ -121,8 +121,9 @@ def run_script(argv, funcs):
       return json.load(f)
 
   parser = argparse.ArgumentParser()
-  # TODO(phajdan.jr): Make build-config-fs required after passing it in recipe.
-  parser.add_argument('--build-config-fs')
+  parser.add_argument('--build-dir',
+                      help='Absolute path to build-dir.',
+                      required=True)
   parser.add_argument('--paths', type=parse_json, default={})
   # Properties describe the environment of the build, and are the same per
   # script invocation.

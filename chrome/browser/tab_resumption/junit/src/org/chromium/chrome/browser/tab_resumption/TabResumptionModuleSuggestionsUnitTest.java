@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,6 +15,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -32,6 +35,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageSource;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -103,7 +107,15 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
     private static SuggestionEntry createSuggestionEntry(
             String source, GURL url, String title, long time, int id) {
         return new SuggestionEntry(
-                SuggestionEntryType.LOCAL_TAB, source, url, title, time, id, null, null);
+                SuggestionEntryType.LOCAL_TAB,
+                source,
+                url,
+                title,
+                time,
+                id,
+                null,
+                null,
+                /* needMatchLocalTab= */ false);
     }
 
     @Test
@@ -267,16 +279,16 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         ThumbnailProvider thumbnailProvider = Mockito.mock(ThumbnailProvider.class);
         doAnswer(
                         (InvocationOnMock invocation) -> {
-                            ((Callback<Bitmap>) invocation.getArguments()[2])
-                                    .onResult(expectedThumbnail);
+                            ((Callback<Drawable>) invocation.getArguments()[3])
+                                    .onResult(new BitmapDrawable(expectedThumbnail));
                             return null;
                         })
                 .when(thumbnailProvider)
                 .getTabThumbnailWithCallback(
                         /* tabId= */ anyInt(),
                         /* thumbnailSize= */ any(Size.class),
-                        /* finalCallback= */ any(Callback.class),
-                        /* isSelected= */ anyBoolean());
+                        /* isSelected= */ anyBoolean(),
+                        /* callback= */ any(Callback.class));
         RoundedIconGenerator roundedIconGenerator = Mockito.mock(RoundedIconGenerator.class);
         when(roundedIconGenerator.generateIconForUrl(urlWithoutFavicon))
                 .thenReturn(expectedFallbackIcon);
@@ -300,8 +312,8 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         urlImageProvider.getTabThumbnail(
                 /* tabId= */ 0,
                 /* thumbnailSize= */ new Size(32, 32),
-                /* tabThumbnailCallback= */ (Bitmap icon) -> {
-                    Assert.assertEquals(icon, expectedThumbnail);
+                /* tabThumbnailCallback= */ (Drawable icon) -> {
+                    Assert.assertEquals(((BitmapDrawable) icon).getBitmap(), expectedThumbnail);
                     ++mCallbackCounter;
                 });
         Assert.assertEquals(2, mCallbackCounter);
@@ -319,5 +331,47 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         assertNull(urlImageProvider.getImageServiceBridgeForTesting());
         assertNull(urlImageProvider.getLargeIconBridgeForTesting());
         assertTrue(urlImageProvider.isDestroyed());
+    }
+
+    @Test
+    public void testIsLocalTab() {
+        SuggestionEntry entry =
+                new SuggestionEntry(
+                        SuggestionEntryType.LOCAL_TAB,
+                        SOURCE_NAME_0,
+                        URL_0,
+                        TITLE_0,
+                        TIMESTAMP_0,
+                        ID_0,
+                        null,
+                        null,
+                        /* needMatchLocalTab= */ false);
+        assertTrue(entry.isLocalTab());
+
+        entry =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        SOURCE_NAME_0,
+                        URL_0,
+                        TITLE_0,
+                        TIMESTAMP_0,
+                        ID_0,
+                        null,
+                        null,
+                        /* needMatchLocalTab= */ false);
+        assertTrue(entry.isLocalTab());
+
+        SuggestionEntry invalidEntry =
+                new SuggestionEntry(
+                        SuggestionEntryType.LOCAL_TAB,
+                        SOURCE_NAME_0,
+                        URL_0,
+                        TITLE_0,
+                        TIMESTAMP_0,
+                        Tab.INVALID_TAB_ID,
+                        null,
+                        null,
+                        /* needMatchLocalTab= */ false);
+        assertFalse(invalidEntry.isLocalTab());
     }
 }

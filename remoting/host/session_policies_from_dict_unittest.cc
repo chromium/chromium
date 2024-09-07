@@ -59,6 +59,11 @@ base::Value::Dict GetPolicyDictWithMaxDurationMins(int mins) {
 }
 #endif
 
+base::Value::Dict GetPolicyDictWithClipboardSize(int clipboard_size) {
+  return GetFullSessionPolicyDict().Clone().Set(
+      policy::key::kRemoteAccessHostClipboardSizeBytes, clipboard_size);
+}
+
 }  // namespace
 
 TEST(SessionPoliciesFromDict, EmptyDict_CreatesEmptyPolicies) {
@@ -126,6 +131,20 @@ TEST(SessionPoliciesFromDict, InvalidHostUdpPortRange_ReturnsNullopt) {
   base::Value::Dict policy_dict = GetFullSessionPolicyDict().Clone().Set(
       policy::key::kRemoteAccessHostUdpPortRange, "456-123");
   EXPECT_EQ(SessionPoliciesFromDict(policy_dict), std::nullopt);
+}
+
+TEST(SessionPoliciesFromDict, NegativeClipboardSize_FieldIsNullopt) {
+  SessionPolicies expected_policies = kFullSessionPolicies;
+  expected_policies.clipboard_size_bytes.reset();
+  EXPECT_EQ(SessionPoliciesFromDict(GetPolicyDictWithClipboardSize(-1)),
+            expected_policies);
+}
+
+TEST(SessionPoliciesFromDict, ZeroClipboardSize_FieldIsZero) {
+  SessionPolicies expected_policies = kFullSessionPolicies;
+  expected_policies.clipboard_size_bytes = 0;
+  EXPECT_EQ(SessionPoliciesFromDict(GetPolicyDictWithClipboardSize(0)),
+            expected_policies);
 }
 
 }  // namespace remoting

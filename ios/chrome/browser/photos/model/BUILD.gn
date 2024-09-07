@@ -38,6 +38,7 @@ source_set("photos_service_factory") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/photos:photos_api",
   ]
@@ -55,8 +56,8 @@ source_set("photos_availability") {
     "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//url",
@@ -69,7 +70,7 @@ source_set("unit_tests") {
   deps = [
     ":photos_service_factory",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",
   ]
 }

@@ -442,10 +442,10 @@
 -keepclasseswithmembers,allowaccessmodification class ** {
   @**org.jni_zero.AccessedByNative <fields>;
 }
--keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification,allowoptimization class ** {
   @**org.jni_zero.CalledByNative <methods>;
 }
--keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification,allowoptimization class ** {
   @**org.jni_zero.CalledByNativeUnchecked <methods>;
 }
 
@@ -577,6 +577,12 @@
 
 -keepclassmembers class ** {
     @androidx.lifecycle.OnLifecycleEvent *;
+}
+
+# The deprecated `android.app.Fragment` creates `Fragment` instances using reflection.
+# See: b/338958225, b/341537875
+-keepclasseswithmembers,allowobfuscation public class androidx.lifecycle.ReportFragment {
+    public <init>();
 }
 
 # this rule is need to work properly when app is compiled with api 28, see b/142778206
@@ -1013,6 +1019,14 @@
 # Required to remove fields until b/274802355 is resolved.
 -assumevalues class !cr_allowunused,** {
   final org.chromium.base.ThreadUtils$ThreadChecker * return _NONNULL_;
+}
+
+# File: ../../third_party/android_deps/cipd/libs/com_google_dagger_dagger/dagger-2.52.jar:META-INF/com.android.tools/r8/r8.pro
+-identifiernamestring @dagger.internal.IdentifierNameString class ** {
+    static java.lang.String *;
+}
+-keepclassmembers,includedescriptorclasses,allowobfuscation,allowshrinking class * {
+   @dagger.internal.KeepFieldType <fields>;
 }
 
 # File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.4.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro

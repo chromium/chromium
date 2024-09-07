@@ -118,6 +118,10 @@ TEST_F(AppInstallNavigationThrottleTest, ExtractQueryParams) {
       QueryParams("web:identifier", AppInstallSurface::kAppInstallUriLauncher));
 
   EXPECT_EQ(
+      ExtractQueryParams("package_id=web:identifier&source=mallv2"),
+      QueryParams("web:identifier", AppInstallSurface::kAppInstallUriMallV2));
+
+  EXPECT_EQ(
       ExtractQueryParams("source=mall&package_id=web:identifier"),
       QueryParams("web:identifier", AppInstallSurface::kAppInstallUriMall));
 

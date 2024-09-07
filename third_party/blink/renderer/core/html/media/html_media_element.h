@@ -501,10 +501,8 @@ class CORE_EXPORT HTMLMediaElement
   bool AlwaysCreateUserAgentShadowRoot() const final { return true; }
   bool AreAuthorShadowsAllowed() const final { return false; }
 
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const final;
-  bool IsFocusable(UpdateBehavior update_behavior =
-                       UpdateBehavior::kStyleAndLayout) const final;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const final;
+  FocusableState IsFocusableState(UpdateBehavior update_behavior) const final;
   int DefaultTabIndex() const final;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
@@ -549,18 +547,10 @@ class CORE_EXPORT HTMLMediaElement
   int GetElementId() override { return GetDomNodeId(); }
 
   void SetCcLayer(cc::Layer*) final;
-  WebMediaPlayer::TrackId AddAudioTrack(const WebString&,
-                                        WebMediaPlayerClient::AudioTrackKind,
-                                        const WebString&,
-                                        const WebString&,
-                                        bool) final;
-  void RemoveAudioTrack(WebMediaPlayer::TrackId) final;
-  WebMediaPlayer::TrackId AddVideoTrack(const WebString&,
-                                        WebMediaPlayerClient::VideoTrackKind,
-                                        const WebString&,
-                                        const WebString&,
-                                        bool) final;
-  void RemoveVideoTrack(WebMediaPlayer::TrackId) final;
+
+  void AddMediaTrack(const media::MediaTrack&) final;
+  void RemoveMediaTrack(const media::MediaTrack&) final;
+
   void MediaSourceOpened(std::unique_ptr<WebMediaSource>) final;
   void RemotePlaybackCompatibilityChanged(const WebURL&,
                                           bool is_compatible) final;

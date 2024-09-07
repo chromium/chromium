@@ -62,7 +62,10 @@ class BinaryUploadService : public KeyedService {
     // being sent.
     TOO_MANY_REQUESTS = 9,
 
-    kMaxValue = TOO_MANY_REQUESTS,
+    // The server did not return all the results for the synchronous requests
+    INCOMPLETE_RESPONSE = 10,
+
+    kMaxValue = INCOMPLETE_RESPONSE,
   };
 
   static std::string ResultToString(Result result);

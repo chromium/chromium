@@ -5,9 +5,11 @@
 #import "ios/chrome/app/background_refresh/test_refresher.h"
 
 #import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 
 @implementation TestRefresher {
   __weak AppState* _appState;
@@ -16,7 +18,7 @@
 @synthesize identifier = _identifier;
 
 - (instancetype)initWithAppState:(AppState*)appState {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _identifier = @"TestRefresher";
     _appState = appState;
   }
@@ -29,48 +31,50 @@
   // TODO(crbug.com/354918403): If this provider is used outside of canary, it
   // *must* post the logging task (which reads from AppState) to the main
   // thread!
-  std::string stage;
+  InitStageDuringBackgroundRefreshActions stage =
+      InitStageDuringBackgroundRefreshActions::kUnknown;
   switch (_appState.initStage) {
     case InitStageStart:
-      stage = "InitStageStart";
+      stage = InitStageDuringBackgroundRefreshActions::kInitStageStart;
       break;
     case InitStageBrowserBasic:
-      stage = "InitStageBrowserBasic";
+      stage = InitStageDuringBackgroundRefreshActions::kInitStageBrowserBasic;
       break;
     case InitStageSafeMode:
-      stage = "InitStageSafeMode";
+      stage = InitStageDuringBackgroundRefreshActions::kInitStageSafeMode;
       break;
     case InitStageVariationsSeed:
-      stage = "InitStageVariationsSeed";
+      stage = InitStageDuringBackgroundRefreshActions::kInitStageVariationsSeed;
       break;
     case InitStageBrowserObjectsForBackgroundHandlers:
-      stage = "InitStageBrowserObjectsForBackgroundHandlers";
+      stage = InitStageDuringBackgroundRefreshActions::
+          kInitStageBrowserObjectsForBackgroundHandlers;
       break;
     case InitStageEnterprise:
-      stage = "InitStageEnterprise";
+      stage = InitStageDuringBackgroundRefreshActions::kInitStageEnterprise;
       break;
     case InitStageBrowserObjectsForUI:
-      stage = "InitStageBrowserObjectsForUI";
+      stage = InitStageDuringBackgroundRefreshActions::
+          kInitStageBrowserObjectsForUI;
       break;
     case InitStageNormalUI:
-      stage = "InitStageNormalUI";
+      stage = InitStageDuringBackgroundRefreshActions::kInitStageNormalUI;
       break;
     case InitStageFirstRun:
-      stage = "InitStageFirstRun";
+      stage = InitStageDuringBackgroundRefreshActions::kInitStageFirstRun;
       break;
     case InitStageChoiceScreen:
-      stage = "InitStageChoiceScreen";
+      stage = InitStageDuringBackgroundRefreshActions::kInitStageChoiceScreen;
       break;
     case InitStageFinal:
-      stage = "InitStageFinal";
+      stage = InitStageDuringBackgroundRefreshActions::kInitStageFinal;
       break;
     default:
-      stage = base::SysNSStringToUTF8([NSString
-          stringWithFormat:@"Unknown stage (%lu)",
-                           static_cast<unsigned long>(_appState.initStage)]);
+      stage = InitStageDuringBackgroundRefreshActions::kUnknown;
   };
 
-  LOG(ERROR) << "REFRESH: Handling App Refresh -- " << stage;
+  base::UmaHistogramEnumeration(kInitStageDuringBackgroundRefreshHistogram,
+                                stage);
 
   completion();
 }

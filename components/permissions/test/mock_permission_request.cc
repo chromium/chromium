@@ -70,12 +70,22 @@ MockPermissionRequest::~MockPermissionRequest() {
     RequestFinished();
 }
 
+void MockPermissionRequest::RegisterOnPermissionDecidedCallback(
+    base::OnceClosure callback) {
+  on_permission_decided_ = std::move(callback);
+}
+
 void MockPermissionRequest::PermissionDecided(ContentSetting result,
                                               bool is_one_time,
                                               bool is_final_decision) {
   granted_ = result == CONTENT_SETTING_ALLOW;
-  if (result == CONTENT_SETTING_DEFAULT)
+  if (result == CONTENT_SETTING_DEFAULT) {
     cancelled_ = true;
+  }
+
+  if (on_permission_decided_) {
+    std::move(on_permission_decided_).Run();
+  }
 }
 
 void MockPermissionRequest::MarkFinished() {

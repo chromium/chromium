@@ -756,7 +756,7 @@ const char* ServiceWorkerFetchDispatcher::FetchEventResultToSuffix(
 bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(
     const network::ResourceRequest& original_request,
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (destination_ != network::mojom::RequestDestination::kDocument &&
       destination_ != network::mojom::RequestDestination::kIframe &&
@@ -865,7 +865,7 @@ bool ServiceWorkerFetchDispatcher::IsEventDispatched() const {
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   // TODO(crbug.com/40260328): Require the caller to pass in a FrameTreeNode
   // directly, or figure out why it's OK for it to be null.
   // TODO(falken): Can `navigation_request` check be a DCHECK now that the

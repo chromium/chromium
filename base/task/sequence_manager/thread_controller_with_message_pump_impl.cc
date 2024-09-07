@@ -50,15 +50,6 @@ BASE_FEATURE(kAvoidScheduleWorkDuringNativeEventProcessing,
              "AvoidScheduleWorkDuringNativeEventProcessing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// If enabled, deactivate the high resolution timer immediately in DoWork(),
-// instead of waiting for next DoIdleWork.
-BASE_FEATURE(kUseLessHighResTimers,
-             "UseLessHighResTimers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-std::atomic_bool g_use_less_high_res_timers = true;
-#endif
-
 std::atomic_bool g_run_tasks_by_batches = false;
 std::atomic_bool g_avoid_schedule_calls_during_native_event_processing = false;
 
@@ -78,10 +69,6 @@ void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
   g_avoid_schedule_calls_during_native_event_processing.store(
       FeatureList::IsEnabled(kAvoidScheduleWorkDuringNativeEventProcessing),
       std::memory_order_relaxed);
-#if BUILDFLAG(IS_WIN)
-  g_use_less_high_res_timers.store(
-      FeatureList::IsEnabled(kUseLessHighResTimers), std::memory_order_relaxed);
-#endif
 }
 
 // static
@@ -333,8 +320,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 #if BUILDFLAG(IS_WIN)
   // We've been already in a wakeup here. Deactivate the high res timer of OS
   // immediately instead of waiting for next DoIdleWork().
-  if (g_use_less_high_res_timers.load(std::memory_order_relaxed) &&
-      main_thread_only().in_high_res_mode) {
+  if (main_thread_only().in_high_res_mode) {
     main_thread_only().in_high_res_mode = false;
     Time::ActivateHighResolutionTimer(false);
   }

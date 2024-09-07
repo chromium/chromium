@@ -63,6 +63,9 @@ enum ApplyUpdateResult {
   // There was a failure trying to map the file.
   MMAP_FAILURE = 12,
 
+  // The hash prefixes were not sorted when reading from dis.
+  READ_FAILURE_NOT_SORTED = 13,
+
   // Memory space for histograms is determined by the max.  ALWAYS
   // ADD NEW VALUES BEFORE THIS ONE.
   APPLY_UPDATE_RESULT_MAX
@@ -80,28 +83,34 @@ constexpr size_t kMaxStoreSizeBytes = 50 * 1000 * 1000;
 
 // Stores the list of sorted hash prefixes, by size.
 // For instance: {4: ["abcd", "bcde", "cdef", "gggg"], 5: ["fffff"]}
+// Maps will be stored a separate file for hash prefix lists of each
+// prefix size. These will be mapped into memory on initialization.
 class HashPrefixMap {
  public:
-  virtual ~HashPrefixMap() = default;
+  explicit HashPrefixMap(
+      const base::FilePath& store_path,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr,
+      size_t buffer_size = 1024 * 512);
+
+  virtual ~HashPrefixMap();
 
   // Clears the underlying map.
-  virtual void Clear() = 0;
+  void Clear();
 
   // Returns a read-only view of the data stored in this map.
-  virtual HashPrefixMapView view() const = 0;
+  HashPrefixMapView view() const;
 
   // Returns the prefix at `size`.
-  virtual HashPrefixesView at(PrefixSize size) const = 0;
+  HashPrefixesView at(PrefixSize size) const;
 
   // Appends |prefix| to the prefix list of size |size|.
-  virtual void Append(PrefixSize size, HashPrefixesView prefix) = 0;
+  void Append(PrefixSize size, HashPrefixesView prefix);
 
   // Reserves space for the prefix list of size |size|.
-  virtual void Reserve(PrefixSize size, size_t capacity) = 0;
+  virtual void Reserve(PrefixSize size, size_t capacity);
 
   // Reads the map from disk.
-  virtual ApplyUpdateResult ReadFromDisk(
-      const V4StoreFileFormat& file_format) = 0;
+  ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format);
 
   class WriteSession {
    public:
@@ -117,80 +126,23 @@ class HashPrefixMap {
   // that must be kept alive until `file_format` is committed to disk.
   // Implementations may lend some internal state to `file_format` so that it
   // can be written to disk with minimal overhead.
-  virtual std::unique_ptr<WriteSession> WriteToDisk(
-      V4StoreFileFormat* file_format) = 0;
+  std::unique_ptr<WriteSession> WriteToDisk(V4StoreFileFormat* file_format);
 
   // Returns true if the data in this map is valid and can be used.
-  virtual ApplyUpdateResult IsValid() const = 0;
+  ApplyUpdateResult IsValid() const;
 
   // Returns a hash prefix if it matches the prefixes stored in this map.
-  virtual HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash) = 0;
+  HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash);
 
   // Migrates the file format between the different types of HashPrefixMap.
   enum class MigrateResult { kUnknown, kSuccess, kFailure, kNotNeeded };
-  virtual MigrateResult MigrateFileFormat(const base::FilePath& store_path,
-                                          V4StoreFileFormat* file_format) = 0;
+  MigrateResult MigrateFileFormat(const base::FilePath& store_path,
+                                  V4StoreFileFormat* file_format);
 
   // Collects debug information about the prefixes in the map.
-  virtual void GetPrefixInfo(
-      google::protobuf::RepeatedPtrField<
-          DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
-          prefix_sets) = 0;
-};
-
-// An in-memory implementation of HashPrefixMap.
-class InMemoryHashPrefixMap : public HashPrefixMap {
- public:
-  InMemoryHashPrefixMap();
-  ~InMemoryHashPrefixMap() override;
-
-  // HashPrefixMap implementation:
-  void Clear() override;
-  HashPrefixMapView view() const override;
-  HashPrefixesView at(PrefixSize size) const override;
-  void Append(PrefixSize size, HashPrefixesView prefix) override;
-  void Reserve(PrefixSize size, size_t capacity) override;
-  ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
-  std::unique_ptr<WriteSession> WriteToDisk(
-      V4StoreFileFormat* file_format) override;
-  ApplyUpdateResult IsValid() const override;
-  HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash) override;
-  MigrateResult MigrateFileFormat(const base::FilePath& store_path,
-                                  V4StoreFileFormat* file_format) override;
   void GetPrefixInfo(google::protobuf::RepeatedPtrField<
                      DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
-                         prefix_sets) override;
-
- private:
-  std::unordered_map<PrefixSize, HashPrefixes> map_;
-};
-
-// A HashPrefixMap which will write separate files for hash prefix lists of each
-// prefix size. These will be mapped into memory on initialization.
-class MmapHashPrefixMap : public HashPrefixMap {
- public:
-  explicit MmapHashPrefixMap(
-      const base::FilePath& store_path,
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr,
-      size_t buffer_size = 1024 * 512);
-  ~MmapHashPrefixMap() override;
-
-  // HashPrefixMap implementation:
-  void Clear() override;
-  HashPrefixMapView view() const override;
-  HashPrefixesView at(PrefixSize size) const override;
-  void Append(PrefixSize size, HashPrefixesView prefix) override;
-  void Reserve(PrefixSize size, size_t capacity) override;
-  ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
-  std::unique_ptr<WriteSession> WriteToDisk(
-      V4StoreFileFormat* file_format) override;
-  ApplyUpdateResult IsValid() const override;
-  HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash) override;
-  MigrateResult MigrateFileFormat(const base::FilePath& store_path,
-                                  V4StoreFileFormat* file_format) override;
-  void GetPrefixInfo(google::protobuf::RepeatedPtrField<
-                     DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
-                         prefix_sets) override;
+                         prefix_sets);
 
   static base::FilePath GetPath(const base::FilePath& store_path,
                                 const std::string& extension);

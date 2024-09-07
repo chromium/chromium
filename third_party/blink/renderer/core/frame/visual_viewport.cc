@@ -94,7 +94,6 @@ OverscrollType ComputeOverscrollType() {
 VisualViewport::VisualViewport(Page& owner)
     : ScrollableArea(owner.GetAgentGroupScheduler().CompositorTaskRunner()),
       page_(&owner),
-      parent_property_tree_state_(PropertyTreeState::Uninitialized()),
       scale_(1),
       is_pinch_gesture_active_(false),
       browser_controls_adjustment_(0),
@@ -354,8 +353,8 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     }
   }
 
-  parent_property_tree_state_ =
-      PropertyTreeStateOrAlias(*transform_parent, *clip_parent, *effect_parent);
+  parent_property_tree_state_ = TraceablePropertyTreeStateOrAlias(
+      *transform_parent, *clip_parent, *effect_parent);
 
   if (change == PaintPropertyChangeType::kNodeAddedOrRemoved &&
       IsActiveViewport()) {
@@ -1184,7 +1183,7 @@ void VisualViewport::Paint(GraphicsContext& context) const {
 
   // TODO(crbug.com/1015625): Avoid scroll_layer_.
   if (scroll_layer_) {
-    auto state = parent_property_tree_state_;
+    PropertyTreeStateOrAlias state(parent_property_tree_state_);
     state.SetTransform(*scroll_translation_node_);
     DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client, "Inner Viewport Scroll Layer");
     RecordForeignLayer(context, *client,
@@ -1193,7 +1192,7 @@ void VisualViewport::Paint(GraphicsContext& context) const {
   }
 
   if (scrollbar_layer_horizontal_) {
-    auto state = parent_property_tree_state_;
+    PropertyTreeStateOrAlias state(parent_property_tree_state_);
     state.SetEffect(*horizontal_scrollbar_effect_node_);
     DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client,
                                       "Inner Viewport Horizontal Scrollbar");
@@ -1204,7 +1203,7 @@ void VisualViewport::Paint(GraphicsContext& context) const {
   }
 
   if (scrollbar_layer_vertical_) {
-    auto state = parent_property_tree_state_;
+    PropertyTreeStateOrAlias state(parent_property_tree_state_);
     state.SetEffect(*vertical_scrollbar_effect_node_);
     DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client,
                                       "Inner Viewport Vertical Scrollbar");

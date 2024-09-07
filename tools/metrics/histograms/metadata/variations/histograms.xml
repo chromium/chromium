@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FieldTriamParamsLogInvalidValue"
-    enum="VariationsLogInvalidValue" expires_after="2024-09-01">
+    enum="VariationsLogInvalidValue" expires_after="2025-09-01">
   <owner>thiabaud@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -196,17 +196,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Variations.HasFutureSeed" enum="BooleanFutureSeed"
-    expires_after="M117">
-  <owner>caitlinfischer@google.com</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Whether the client timestamp for the seed fetch time is after
-    base::Time::Now(). Emitted when determining whether the regular or safe seed
-    has expired. Remove this histogram in M118: crbug/1462376.
-  </summary>
-</histogram>
-
 <histogram name="Variations.Headers.DomainOwner" enum="VariationsHeadersOwner"
     expires_after="2024-04-01">
   <owner>caitlinfischer@google.com</owner>
@@ -233,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.HasLowEntropySourceValue"
-    enum="BooleanPresent" expires_after="2024-12-30">
+    enum="BooleanPresent" expires_after="2025-03-02">
   <owner>mpearson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -285,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.InvalidStudyReason"
-    enum="VariationsInvalidStudyReason" expires_after="2024-11-01">
+    enum="VariationsInvalidStudyReason" expires_after="2025-02-16">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -594,17 +583,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Variations.SeedFreshness.Future" units="days"
-    expires_after="2025-01-05">
-  <owner>caitlinfischer@google.com</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    The age, in days, of seeds whose client timestamps for the seed fetch time
-    are after base::Time::Now(). Emitted when determining whether the regular or
-    safe seed has expired. Remove this histogram in M118: crbug/1462376.
-  </summary>
-</histogram>
-
 <histogram name="Variations.SeedFreshnessDiff" units="minutes"
     expires_after="2025-03-03">
   <owner>dogancanemek@chromium.org</owner>
@@ -687,7 +665,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.StoreSeed.DataSize" units="KiB"
-    expires_after="2024-11-01">
+    expires_after="2025-02-23">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>

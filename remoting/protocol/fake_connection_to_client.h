@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/video_feedback_stub.h"
 #include "remoting/protocol/video_stream.h"
 #include "remoting/protocol/video_stub.h"
@@ -65,6 +66,7 @@ class FakeConnectionToClient : public ConnectionToClient {
   ~FakeConnectionToClient() override;
 
   void SetEventHandler(EventHandler* event_handler) override;
+  void ApplyNetworkSettings(const NetworkSettings& settings) override;
 
   std::unique_ptr<VideoStream> StartVideoStream(
       webrtc::ScreenId screen_id,
@@ -104,6 +106,7 @@ class FakeConnectionToClient : public ConnectionToClient {
 
   bool is_connected() { return is_connected_; }
   ErrorCode disconnect_error() { return disconnect_error_; }
+  const NetworkSettings& network_settings() const { return network_settings_; }
 
  private:
   // TODO(crbug.com/40115219): Remove the requirement that ConnectionToClient
@@ -127,6 +130,7 @@ class FakeConnectionToClient : public ConnectionToClient {
 
   bool is_connected_ = true;
   ErrorCode disconnect_error_ = ErrorCode::OK;
+  NetworkSettings network_settings_;
 };
 
 }  // namespace remoting::protocol

@@ -31,14 +31,15 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
 #include "base/feature_list.h"
-
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/language.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -142,38 +143,68 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   if (font_description.GenericFamily() == FontDescription::kSerifFamily)
     generic_family_name = "serif";
 
+  FontFallbackPriority fallback_priority_with_emoji_text = fallback_priority;
+
+  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
+      fallback_priority == FontFallbackPriority::kText &&
+      Character::IsEmoji(c)) {
+    fallback_priority_with_emoji_text = FontFallbackPriority::kEmojiText;
+  }
+
   AtomicString family_name = GetFamilyNameForCharacter(
-      fm.get(), c, font_description, generic_family_name, fallback_priority);
+      fm.get(), c, font_description, generic_family_name,
+      fallback_priority_with_emoji_text);
 
-  // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji and
-  // a) no system fallback was found or b) the system fallback font's PostScript
-  // name is "Noto Color Emoji" - then we override the system one with the newer
-  // one from GMS core if we have it and if it has glyph coverage. This should
-  // improves coverage for sequences such as WOMAN FEEDING BABY, which would
-  // otherwise get broken down into multiple individual emoji from the
-  // potentially older firmware emoji font.  Don't override it if a fallback
-  // font for emoji was returned but its PS name is not NotoColorEmoji as we
-  // would otherwise always override an OEMs emoji font.
+  auto skia_fallback_is_noto_color_emoji = [&]() {
+    const FontPlatformData* skia_fallback_result = GetFontPlatformData(
+        font_description, FontFaceCreationParams(family_name));
 
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji &&
+    // Determining the PostScript name is required as Skia on Android gives
+    // synthetic family names such as "91##fallback" to fallback fonts
+    // determined (Compare Skia's SkFontMgr_Android::addFamily). In order to
+    // identify if really the Emoji font was returned, compare by PostScript
+    // name rather than by family.
+    SkString fallback_postscript_name;
+    if (skia_fallback_result && skia_fallback_result->Typeface()) {
+      skia_fallback_result->Typeface()->getPostScriptName(
+          &fallback_postscript_name);
+    }
+    return fallback_postscript_name.equals(kNotoColorEmoji);
+  };
+
+  // On Android when we request font with specific emoji locale (i.e. "Zsym" or
+  // "Zsye"), Skia will first search for the font with the exact emoji locale,
+  // if it didn't succeed it will look at fonts with other emoji locales and
+  // only after look at the fonts without any emoji locale at all. The only font
+  // with "Zsym" locale on Android is "NotoSansSymbols-Regular-Subsetted2.ttf"
+  // font, but some text default emoji codepoints that are not present in this
+  // font, can be present in other monochromatic fonts without "Zsym" locale
+  // (for instance "NotoSansSymbols-Regular-Subsetted.ttf" is a font without
+  // emoji locales). So, if text presentation was requested for emoji character,
+  // but `GetFamilyNameForCharacter` returned colored font, we should try to get
+  // monochromatic font by searching for the font without emoji locales "Zsym"
+  // or "Zsye", see https://unicode.org/reports/tr51/#Emoji_Script.
+  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
+      IsTextPresentationEmoji(fallback_priority_with_emoji_text) &&
+      skia_fallback_is_noto_color_emoji()) {
+    family_name = GetFamilyNameForCharacter(fm.get(), c, font_description,
+                                            generic_family_name,
+                                            FontFallbackPriority::kText);
+  }
+
+  // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji or
+  // kEmojiEmojiWithVS and a) no system fallback was found or b) the system
+  // fallback font's PostScript name is "Noto Color Emoji" - then we override
+  // the system one with the newer one from GMS core if we have it and if it has
+  // glyph coverage. This should improves coverage for sequences such as WOMAN
+  // FEEDING BABY, which would otherwise get broken down into multiple
+  // individual emoji from the potentially older firmware emoji font.  Don't
+  // override it if a fallback font for emoji was returned but its PS name is
+  // not NotoColorEmoji as we would otherwise always override an OEMs emoji
+  // font.
+
+  if (IsEmojiPresentationEmoji(fallback_priority) &&
       base::FeatureList::IsEnabled(features::kGMSCoreEmoji)) {
-    auto skia_fallback_is_noto_color_emoji = [&]() {
-      const FontPlatformData* skia_fallback_result = GetFontPlatformData(
-          font_description, FontFaceCreationParams(family_name));
-
-      // Determining the PostScript name is required as Skia on Android gives
-      // synthetic family names such as "91##fallback" to fallback fonts
-      // determined (Compare Skia's SkFontMgr_Android::addFamily). In order to
-      // identify if really the Emoji font was returned, compare by PostScript
-      // name rather than by family.
-      SkString fallback_postscript_name;
-      if (skia_fallback_result && skia_fallback_result->Typeface()) {
-        skia_fallback_result->Typeface()->getPostScriptName(
-            &fallback_postscript_name);
-      }
-      return fallback_postscript_name.equals(kNotoColorEmoji);
-    };
-
     if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
       const FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,

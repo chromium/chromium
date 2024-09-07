@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "device/vr/android/local_texture.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -91,8 +92,6 @@ struct WebXrSharedBuffer {
   WebXrSharedBuffer();
   ~WebXrSharedBuffer();
 
-  uint32_t texture_target() const { return GL_TEXTURE_2D; }
-
   gfx::Size size = {0, 0};
 
   // This owns a single reference to an AHardwareBuffer object.
@@ -103,7 +102,7 @@ struct WebXrSharedBuffer {
   gpu::SyncToken sync_token;
 
   // Resources in the local GL context
-  uint32_t local_texture = 0;
+  LocalTexture local_texture;
   // This object keeps the image alive while processing a frame. That's
   // required because it owns underlying resources, and must still be
   // alive when the mailbox texture backed by this image is used.

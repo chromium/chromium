@@ -160,7 +160,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
  public:
   AccessibilityDetailedViewTest() {
     scoped_feature_list_.InitWithFeatures(
-        {media::kLiveCaption, ash::features::kOnDeviceSpeechRecognition,
+        {ash::features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityFaceGaze,
          ::features::kAccessibilityReducedAnimationsInKiosk},
         {});

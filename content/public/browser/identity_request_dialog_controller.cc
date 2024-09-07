@@ -31,14 +31,14 @@ IdentityProviderData::IdentityProviderData(
     const IdentityProviderMetadata& idp_metadata,
     const ClientMetadata& client_metadata,
     blink::mojom::RpContext rp_context,
-    bool request_permission,
+    const std::vector<IdentityRequestDialogDisclosureField>& disclosure_fields,
     bool has_login_status_mismatch)
     : idp_for_display{idp_for_display},
       accounts{accounts},
       idp_metadata{idp_metadata},
       client_metadata{client_metadata},
       rp_context(rp_context),
-      request_permission(request_permission),
+      disclosure_fields(disclosure_fields),
       has_login_status_mismatch(has_login_status_mismatch) {}
 
 IdentityProviderData::IdentityProviderData(const IdentityProviderData& other) =

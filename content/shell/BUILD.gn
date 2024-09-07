@@ -667,6 +667,7 @@ if (is_android) {
       ":network_process_bundle",
     ]
     bundle_deps = [
+      ":content_shell_framework+bundle",
       ":content_shell_framework_resources",
       "app/ios/resources",
     ]

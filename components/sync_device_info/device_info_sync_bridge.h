@@ -91,6 +91,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   bool IsSyncing() const override;
   const DeviceInfo* GetDeviceInfo(const std::string& client_id) const override;
   std::vector<const DeviceInfo*> GetAllDeviceInfo() const override;
+  std::vector<const DeviceInfo*> GetAllChromeDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   std::map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()

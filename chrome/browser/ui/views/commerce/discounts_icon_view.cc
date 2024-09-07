@@ -30,8 +30,7 @@ DiscountsIconView::DiscountsIconView(
                          page_action_icon_delegate,
                          "Discounts"),
       bubble_coordinator_(this) {
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT));
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kDiscountsChipElementId);
@@ -55,7 +54,8 @@ void DiscountsIconView::OnExecuting(
 
   commerce::metrics::DiscountsMetricCollector::
       RecordDiscountsPageActionIconClicked(
-          tab_helper->IsPageActionIconExpanded(PageActionIconType::kDiscounts));
+          tab_helper->IsPageActionIconExpanded(PageActionIconType::kDiscounts),
+          tab_helper->GetDiscounts());
 }
 
 const gfx::VectorIcon& DiscountsIconView::GetVectorIcon() const {
@@ -167,7 +167,8 @@ void DiscountsIconView::MaybeShowBubble(bool from_user) {
 
   commerce::metrics::DiscountsMetricCollector::RecordDiscountBubbleShown(
       should_auto_show,
-      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+      tab_helper->GetDiscounts());
 }
 
 BEGIN_METADATA(DiscountsIconView)

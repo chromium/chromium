@@ -72,7 +72,7 @@ bool AutofillSyncMetadataTable::CreateTablesIfNecessary() {
 bool AutofillSyncMetadataTable::MigrateToVersion(
     int version,
     bool* update_compatible_version) {
-  if (!db_->is_open()) {
+  if (!db()->is_open()) {
     return false;
   }
   return true;
@@ -99,7 +99,7 @@ bool AutofillSyncMetadataTable::GetAllSyncMetadata(
 
 bool AutofillSyncMetadataTable::DeleteAllSyncMetadata(
     syncer::DataType data_type) {
-  return DeleteWhereColumnEq(db_, kAutofillSyncMetadataTable, kModelType,
+  return DeleteWhereColumnEq(db(), kAutofillSyncMetadataTable, kModelType,
                              GetKeyValueForDataType(data_type));
 }
 
@@ -111,7 +111,7 @@ bool AutofillSyncMetadataTable::UpdateEntityMetadata(
       << "Data type " << data_type << " not supported for metadata";
 
   sql::Statement s;
-  InsertBuilder(db_, s, kAutofillSyncMetadataTable,
+  InsertBuilder(db(), s, kAutofillSyncMetadataTable,
                 {kModelType, kStorageKey, kValue},
                 /*or_replace=*/true);
   s.BindInt(0, GetKeyValueForDataType(data_type));
@@ -128,7 +128,7 @@ bool AutofillSyncMetadataTable::ClearEntityMetadata(
       << "Data type " << data_type << " not supported for metadata";
 
   sql::Statement s;
-  DeleteBuilder(db_, s, kAutofillSyncMetadataTable,
+  DeleteBuilder(db(), s, kAutofillSyncMetadataTable,
                 "model_type=? AND storage_key=?");
   s.BindInt(0, GetKeyValueForDataType(data_type));
   s.BindString(1, storage_key);
@@ -145,7 +145,7 @@ bool AutofillSyncMetadataTable::UpdateDataTypeState(
   // Hardcode the id to force a collision, ensuring that there remains only a
   // single entry.
   sql::Statement s;
-  InsertBuilder(db_, s, kAutofillDataTypeStateTable, {kModelType, kValue},
+  InsertBuilder(db(), s, kAutofillDataTypeStateTable, {kModelType, kValue},
                 /*or_replace=*/true);
   s.BindInt(0, GetKeyValueForDataType(data_type));
   s.BindString(1, data_type_state.SerializeAsString());
@@ -158,7 +158,7 @@ bool AutofillSyncMetadataTable::ClearDataTypeState(syncer::DataType data_type) {
       << "Data type " << data_type << " not supported for metadata";
 
   sql::Statement s;
-  DeleteBuilder(db_, s, kAutofillDataTypeStateTable, "model_type=?");
+  DeleteBuilder(db(), s, kAutofillDataTypeStateTable, "model_type=?");
   s.BindInt(0, GetKeyValueForDataType(data_type));
 
   return s.Run();
@@ -177,7 +177,7 @@ bool AutofillSyncMetadataTable::GetAllSyncEntityMetadata(
   DCHECK(metadata_batch);
 
   sql::Statement s;
-  SelectBuilder(db_, s, kAutofillSyncMetadataTable, {kStorageKey, kValue},
+  SelectBuilder(db(), s, kAutofillSyncMetadataTable, {kStorageKey, kValue},
                 "WHERE model_type=?");
   s.BindInt(0, GetKeyValueForDataType(data_type));
 
@@ -203,7 +203,7 @@ bool AutofillSyncMetadataTable::GetDataTypeState(
       << "Data type " << data_type << " not supported for metadata";
 
   sql::Statement s;
-  SelectBuilder(db_, s, kAutofillDataTypeStateTable, {kValue},
+  SelectBuilder(db(), s, kAutofillDataTypeStateTable, {kValue},
                 "WHERE model_type=?");
   s.BindInt(0, GetKeyValueForDataType(data_type));
 
@@ -216,7 +216,7 @@ bool AutofillSyncMetadataTable::GetDataTypeState(
 }
 
 bool AutofillSyncMetadataTable::InitAutofillSyncMetadataTable() {
-  return CreateTableIfNotExists(db_, kAutofillSyncMetadataTable,
+  return CreateTableIfNotExists(db(), kAutofillSyncMetadataTable,
                                 {{kModelType, "INTEGER NOT NULL"},
                                  {kStorageKey, "VARCHAR NOT NULL"},
                                  {kValue, "BLOB"}},
@@ -225,7 +225,7 @@ bool AutofillSyncMetadataTable::InitAutofillSyncMetadataTable() {
 
 bool AutofillSyncMetadataTable::InitDataTypeStateTable() {
   return CreateTableIfNotExists(
-      db_, kAutofillDataTypeStateTable,
+      db(), kAutofillDataTypeStateTable,
       {{kModelType, "INTEGER NOT NULL PRIMARY KEY"}, {kValue, "BLOB"}});
 }
 

@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
@@ -432,7 +432,7 @@ bool HasMachineLevelPolicies() {
   // Create the capability fetcher and start fetching capabilities.
   __weak __typeof(self) weakSelf = self;
   _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
-      initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
+      initWithIdentityManager:IdentityManagerFactory::GetForProfile(
                                   browserState)];
 
   [_capabilitiesFetcher

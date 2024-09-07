@@ -49,10 +49,3 @@
       on-close="onPowerwashDialogClose_">
   </os-settings-powerwash-dialog>
 </template>
-<template is="dom-if" if="[[isSanitizeAllowed_]]">
-  <template is="dom-if" if="[[showSanitizeDialog_]]" restamp>
-    <os-settings-sanitize-dialog
-        on-close="onSanitizeDialogClose_">
-    </os-settings-sanitize-dialog>
-  </template>
-</template>

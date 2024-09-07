@@ -94,14 +94,6 @@ BASE_FEATURE(kInfoCardAcknowledgementTracking,
              "InfoCardAcknowledgementTracking",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFeedCloseRefresh,
-             "FeedCloseRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kFeedCloseRefreshDelayMinutes{
-    &kFeedCloseRefresh, "delay_minutes", 30};
-const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction{
-    &kFeedCloseRefresh, "require_interaction", true};
-
 BASE_FEATURE(kFeedNoViewCache,
              "FeedNoViewCache",
              base::FEATURE_ENABLED_BY_DEFAULT);

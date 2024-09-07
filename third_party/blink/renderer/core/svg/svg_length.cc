@@ -19,11 +19,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
@@ -49,15 +44,19 @@ namespace {
 // Table of initial values for SVGLength properties. Indexed by the
 // SVGLength::Initial enumeration, hence these two need to be kept
 // synchronized.
-const struct {
+struct InitialLengthData {
   int8_t value;
   uint8_t unit;
-} g_initial_lengths_table[] = {
-    {0, CAST_UNIT(kUserUnits)},    {-10, CAST_UNIT(kPercentage)},
-    {0, CAST_UNIT(kPercentage)},   {50, CAST_UNIT(kPercentage)},
-    {100, CAST_UNIT(kPercentage)}, {120, CAST_UNIT(kPercentage)},
-    {3, CAST_UNIT(kUserUnits)},
 };
+const auto g_initial_lengths_table = std::to_array<InitialLengthData>({
+    {0, CAST_UNIT(kUserUnits)},
+    {-10, CAST_UNIT(kPercentage)},
+    {0, CAST_UNIT(kPercentage)},
+    {50, CAST_UNIT(kPercentage)},
+    {100, CAST_UNIT(kPercentage)},
+    {120, CAST_UNIT(kPercentage)},
+    {3, CAST_UNIT(kUserUnits)},
+});
 static_assert(static_cast<size_t>(SVGLength::Initial::kNumValues) ==
                   std::size(g_initial_lengths_table),
               "the enumeration is synchronized with the value table");

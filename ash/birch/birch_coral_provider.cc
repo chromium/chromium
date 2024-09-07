@@ -4,9 +4,20 @@
 
 #include "ash/birch/birch_coral_provider.h"
 
+#include "ash/birch/birch_model.h"
+#include "ash/public/cpp/coral_util.h"
+#include "ash/birch/birch_item.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "ash/shell.h"
+#include "base/command_line.h"
+
+namespace {
+bool HasValidClusterCount(size_t num_clusters) {
+  return num_clusters <= 2;
+}
+}  // namespace
 
 namespace ash {
 
@@ -16,6 +27,7 @@ BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
     Shell::Get()->tab_cluster_ui_controller()->AddObserver(this);
   }
 }
+
 BirchCoralProvider::~BirchCoralProvider() {
   if (features::IsTabClusterUIEnabled()) {
     Shell::Get()->tab_cluster_ui_controller()->RemoveObserver(this);
@@ -33,6 +45,13 @@ void BirchCoralProvider::OnTabItemUpdated(TabClusterUIItem* tab_item) {
 void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
 
 void BirchCoralProvider::RequestBirchDataFetch() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceBirchFakeCoral)) {
+    Shell::Get()->birch_model()->SetCoralItems(
+        {BirchCoralItem(u"CoralTitle", u"CoralText")});
+    return;
+  }
+
   // TODO(yulunwu) make appropriate data request, send data to backend.
   if (HasValidPostLoginData()) {
     HandlePostLoginDataRequest();
@@ -53,18 +72,27 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
 void BirchCoralProvider::HandleInSessionDataRequest() {
   // TODO(yulunwu, zxdan) add more tab metadata, app data,
   // and handle in-session use cases.
-  std::vector<coral_util::TabData> active_tab_data;
+  std::vector<coral_util::ContentItem> active_tab_app_data;
   for (const std::unique_ptr<TabClusterUIItem>& tab :
        Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
-    active_tab_data.emplace_back(
+    coral_util::ContentItem curr_tab =
         coral_util::TabData{.tab_title = tab->current_info().title,
-                            .source = tab->current_info().source});
+                            .source = tab->current_info().source};
+    active_tab_app_data.emplace_back(std::move(curr_tab));
   }
-  active_tab_data_ = std::move(active_tab_data);
+  request_.set_content(std::move(active_tab_app_data));
 }
 
-void BirchCoralProvider::HandleClusterData() {
+void BirchCoralProvider::HandleCoralResponse(
+    std::unique_ptr<coral_util::CoralResponse> response) {
   // TODO(yulunwu) update `birch_model_`
+  response_ = std::move(response);
+  CHECK(HasValidClusterCount(response_->clusters().size()));
+  std::vector<BirchCoralItem> items;
+  for (auto& cluster : response_->clusters()) {
+    items.emplace_back(cluster.title(), /*subtitle=*/std::u16string());
+  }
+  birch_model_->SetCoralItems(items);
 }
 
 }  // namespace ash

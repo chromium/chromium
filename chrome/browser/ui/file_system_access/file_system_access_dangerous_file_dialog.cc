@@ -6,16 +6,14 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
-
-#if defined(TOOLKIT_VIEWS)
-#include "components/constrained_window/constrained_window_views.h"
-#endif
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 namespace {
 
@@ -62,7 +60,7 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
           ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
               IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_DONT_SAVE)))
       .SetCloseActionCallback(std::move(cancel_callbacks.second))
-      .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL);
+      .OverrideDefaultButton(ui::mojom::DialogButton::kCancel);
   return dialog_builder.Build();
 }
 
@@ -75,15 +73,9 @@ void ShowFileSystemAccessDangerousFileDialog(
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback,
     content::WebContents* web_contents) {
-#if defined(TOOLKIT_VIEWS)
-  auto model = CreateFileSystemAccessDangerousFileDialog(web_contents, origin, path,
-                                                std::move(callback));
-  constrained_window::ShowWebModal(std::move(model), web_contents);
-#else
-  // Run callback as if the dialog was instantly cancelled.
-  std::move(callback).Run(
-      content::FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort);
-#endif
+  chrome::ShowTabModal(CreateFileSystemAccessDangerousFileDialog(
+                           web_contents, origin, path, std::move(callback)),
+                       web_contents);
 }
 
 std::unique_ptr<ui::DialogModel>

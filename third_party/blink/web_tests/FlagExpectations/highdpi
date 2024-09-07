@@ -438,3 +438,6 @@ crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearanc
 
 # Fails with a single-pixel offset when run with single-threaded compositing.
 crbug.com/1491883 [ Linux ] fast/forms/date/date-with-csp.html [ Failure ]  # Reftest image failure
+
+# ====== New tests from wpt-importer added here ======
+crbug.com/361611468 virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]

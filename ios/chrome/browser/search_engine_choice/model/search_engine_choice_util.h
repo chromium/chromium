@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-
-class ChromeBrowserState;
+#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Utilities for the search engine choice screen.
 

@@ -130,10 +130,11 @@ class ArcNetHostImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    ash::PatchPanelClient::Shutdown();
     helper_.reset();
+    ash::shill_clients::Shutdown();
     scoped_user_manager_.reset();
     ash::LoginState::Shutdown();
+    ash::PatchPanelClient::Shutdown();
   }
 
   ArcNetHostImpl* service() { return service_; }

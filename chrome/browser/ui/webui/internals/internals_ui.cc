@@ -25,7 +25,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/internals/lens/lens_internals_ui_message_handler.h"
 #include "chrome/browser/ui/webui/internals/notifications/notifications_internals_ui_message_handler.h"
-#include "chrome/browser/ui/webui/internals/query_tiles/query_tiles_internals_ui_message_handler.h"
 #else
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals_page_handler_impl.h"
@@ -87,10 +86,6 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
       IDR_NOTIFICATIONS_INTERNALS_NOTIFICATIONS_INTERNALS_HTML);
   web_ui->AddMessageHandler(
       std::make_unique<NotificationsInternalsUIMessageHandler>(profile_));
-
-  // chrome://internals/query-tiles
-  if (!profile_->IsOffTheRecord())
-    AddQueryTilesInternals(web_ui);
 #else
   source_->AddResourcePath("user-education",
                            IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
@@ -112,13 +107,6 @@ void InternalsUI::AddLensInternals(content::WebUI* web_ui) {
 
   web_ui->AddMessageHandler(
       std::make_unique<LensInternalsUIMessageHandler>(profile_));
-}
-
-void InternalsUI::AddQueryTilesInternals(content::WebUI* web_ui) {
-  source_->AddResourcePath(
-      "query-tiles", IDR_QUERY_TILES_INTERNALS_QUERY_TILES_INTERNALS_HTML);
-  web_ui->AddMessageHandler(
-      std::make_unique<QueryTilesInternalsUIMessageHandler>(profile_));
 }
 
 #else   // BUILDFLAG(IS_ANDROID)

@@ -43,6 +43,8 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     private MiniPlayerCoordinator mCoordinator;
     // Height of MiniPlayerLayout's background (without shadow).
     private int mLayoutHeightPx;
+    // Height of the mini player for the purposes of calculations for the bottom browser controls.
+    private int mBottomControlsLayerHeightPx;
     private boolean mIsAnimationStarted;
     private final BrowserControlsStateProvider.Observer mBrowserControlsStateObserver =
             new BrowserControlsStateProvider.Observer() {
@@ -135,6 +137,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
         // (1.5) Grow bottom controls once player height has been measured.
         if (heightPx > 0 && heightPx != mLayoutHeightPx) {
             mLayoutHeightPx = heightPx;
+            mBottomControlsLayerHeightPx = heightPx;
             mModel.set(Properties.HEIGHT, heightPx);
             growBottomControls();
         }
@@ -192,6 +195,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
      */
     private void onTransitionFinished(@VisibilityState int newState) {
         mModel.set(Properties.VISIBILITY, newState);
+        mBottomControlsStacker.requestLayerUpdate(false);
     }
 
     void onBackgroundColorUpdated(@ColorInt int backgroundColorArgb) {
@@ -282,7 +286,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     /** Get the height represent the layer in the bottom controls, without the yOffset. */
     @Override
     public int getHeight() {
-        return mLayoutHeightPx;
+        return mBottomControlsLayerHeightPx;
     }
 
     @Override
@@ -292,7 +296,16 @@ public class MiniPlayerMediator implements BottomControlsLayer {
 
     @Override
     public @LayerVisibility int getLayerVisibility() {
-        return isVisible() ? LayerVisibility.VISIBLE : LayerVisibility.HIDDEN;
+        @VisibilityState int currentVisibility = getVisibility();
+        if (currentVisibility == VisibilityState.VISIBLE) {
+            return LayerVisibility.VISIBLE;
+        } else if (currentVisibility == VisibilityState.SHOWING) {
+            return LayerVisibility.SHOWING;
+        } else if (currentVisibility == VisibilityState.HIDING) {
+            return LayerVisibility.HIDING;
+        } else {
+            return LayerVisibility.HIDDEN;
+        }
     }
 
     @Override

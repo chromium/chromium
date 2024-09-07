@@ -818,7 +818,7 @@ TEST(AudioBufferTest, AudioBufferMemoryPool) {
   b2 = nullptr;
 }
 
-// Test that the channels are aligned according the the pool parameter.
+// Test that the channels are aligned according to the pool parameter.
 TEST(AudioBufferTest, AudioBufferMemoryPoolAlignment) {
   const int kAlignment = 512;
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_6_1;
@@ -839,6 +839,23 @@ TEST(AudioBufferTest, AudioBufferMemoryPoolAlignment) {
 
   buffer.reset();
   EXPECT_EQ(1u, pool->GetPoolSizeForTesting());
+}
+
+// Test that the channels are aligned when buffers are not pooled.
+TEST(AudioBufferTest, AudioBufferAlignmentUnpooled) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_6_1;
+  const size_t kChannelCount = ChannelLayoutToChannelCount(kChannelLayout);
+
+  scoped_refptr<AudioBuffer> buffer =
+      AudioBuffer::CreateBuffer(kSampleFormatPlanarU8, kChannelLayout,
+                                kChannelCount, kSampleRate, kSampleRate);
+
+  ASSERT_EQ(kChannelCount, buffer->channel_data().size());
+  for (size_t i = 0; i < kChannelCount; i++) {
+    EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(buffer->channel_data()[i]) %
+                      AudioBus::kChannelAlignment)
+        << " channel: " << i;
+  }
 }
 
 // Planar allocations use a different path, so make sure pool is used.

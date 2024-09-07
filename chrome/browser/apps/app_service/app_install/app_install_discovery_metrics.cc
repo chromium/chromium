@@ -34,6 +34,8 @@ cros_events::AppInstallSurface ToCrosEventsAppInstallSurface(
       return cros_events::AppInstallSurface::APP_INSTALL_URI_SHOWOFF;
     case AppInstallSurface::kAppInstallUriMall:
       return cros_events::AppInstallSurface::APP_INSTALL_URI_MALL;
+    case AppInstallSurface::kAppInstallUriMallV2:
+      return cros_events::AppInstallSurface::APP_INSTALL_URI_MALL_V2;
     case AppInstallSurface::kAppInstallUriGetit:
       return cros_events::AppInstallSurface::APP_INSTALL_URI_GETIT;
     case AppInstallSurface::kAppInstallUriLauncher:

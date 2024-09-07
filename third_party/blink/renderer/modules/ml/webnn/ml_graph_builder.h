@@ -200,6 +200,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* neg(const MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
+  MLOperand* sign(const MLOperand* input,
+                  const MLOperatorOptions* options,
+                  ExceptionState& exception_state);
   MLOperand* sin(const MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
@@ -227,6 +230,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
+  MLOperand* dequantizeLinear(const MLOperand* input,
+                              const MLOperand* scale,
+                              const MLOperand* zeroPoint,
+                              const MLOperatorOptions* options,
+                              ExceptionState& exception_state);
+
   MLOperand* elu(const MLOperand* input,
                  const MLEluOptions* options,
                  ExceptionState& exception_state);
@@ -240,6 +249,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                     const MLOperand* indices,
                     const MLGatherOptions* options,
                     ExceptionState& exception_state);
+
+  MLOperand* gatherElements(const MLOperand* input,
+                            const MLOperand* indices,
+                            const MLGatherOptions* options,
+                            ExceptionState& exception_state);
 
   MLOperand* gelu(const MLOperand* input,
                   const MLOperatorOptions* options,
@@ -337,6 +351,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    const MLOperatorOptions* options,
                    ExceptionState& exception_state);
 
+  MLOperand* quantizeLinear(const MLOperand* input,
+                            const MLOperand* scale,
+                            const MLOperand* zeroPoint,
+                            const MLOperatorOptions* options,
+                            ExceptionState& exception_state);
+
   // Reduction operations
   MLOperand* reduceL1(const MLOperand* input,
                       const MLReduceOptions* options,
@@ -419,6 +439,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                             ExceptionState& exception_state);
 
   MLOperand* tanh(const MLOperand* input,
+                  const MLOperatorOptions* options,
+                  ExceptionState& exception_state);
+
+  MLOperand* tile(const MLOperand* input,
+                  const Vector<uint32_t>& repetitions,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 

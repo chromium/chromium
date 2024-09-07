@@ -72,7 +72,7 @@ found in the LICENSE file.
   <!-- Action buttons (OK, Cancel). -->
   <org.chromium.ui.widget.ButtonCompat
       android:id="@+id/accept_button"
-      style="@style/FilledButton.Flat"
+      style="@style/FilledButton"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/page_summary_feedback_sheet_item_margin"

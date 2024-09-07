@@ -58,4 +58,71 @@ public class TestSupportExtended extends TestSupport {
         verify(mModuleDelegate, times(expectOnDataFetchFailedCalls)).onDataFetchFailed(anyInt());
         verify(mModuleDelegate, times(expectRemoveModuleCalls)).removeModule(anyInt());
     }
+
+    protected SuggestionEntry createHistorySuggestion(boolean needMatchLocalTab) {
+        return new SuggestionEntry(
+                SuggestionEntryType.HISTORY,
+                "Source not to be shown",
+                JUnitTestGURLs.URL_1,
+                "Tab Title",
+                makeTimestamp(24 - 3, 0, 0),
+                Tab.INVALID_TAB_ID,
+                /* appId= */ null,
+                /* reasonToShowTab= */ null,
+                /* needMatchLocalTab= */ needMatchLocalTab);
+    }
+
+    protected SuggestionEntry createLocalSuggestion(int tabId) {
+        return new SuggestionEntry(
+                SuggestionEntryType.LOCAL_TAB,
+                /* sourceName= */ "",
+                JUnitTestGURLs.URL_1,
+                "Tab Title",
+                makeTimestamp(24 - 3, 0, 0),
+                tabId,
+                /* appId= */ null,
+                /* reasonToShowTab= */ null,
+                /* needMatchLocalTab= */ false);
+    }
+
+    protected SuggestionEntry createForeignSuggestion(boolean needMatchLocalTab) {
+        return new SuggestionEntry(
+                SuggestionEntryType.FOREIGN_TAB,
+                "Source not to be shown",
+                JUnitTestGURLs.URL_1,
+                "Tab Title",
+                makeTimestamp(24 - 3, 0, 0),
+                Tab.INVALID_TAB_ID,
+                /* appId= */ null,
+                /* reasonToShowTab= */ null,
+                /* needMatchLocalTab= */ needMatchLocalTab);
+    }
+
+    protected SuggestionEntry[] createTwoHistoryTiles(
+            GURL url1, GURL url2, boolean needMatchLocalTab1, boolean needMatchLocalTab2) {
+        SuggestionEntry[] entries = new SuggestionEntry[2];
+        entries[0] =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        "Device Source",
+                        url1,
+                        "Tab Title",
+                        makeTimestamp(24 - 3, 0, 0),
+                        Tab.INVALID_TAB_ID,
+                        /* appId= */ null,
+                        /* reasonToShowTab= */ null,
+                        /* needMatchLocalTab= */ needMatchLocalTab1);
+        entries[1] =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        "Device Source",
+                        url2,
+                        "Tab Title",
+                        makeTimestamp(24 - 3, 0, 0),
+                        Tab.INVALID_TAB_ID,
+                        /* appId= */ null,
+                        /* reasonToShowTab= */ null,
+                        /* needMatchLocalTab= */ needMatchLocalTab2);
+        return entries;
+    }
 }

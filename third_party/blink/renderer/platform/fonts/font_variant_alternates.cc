@@ -154,7 +154,7 @@ scoped_refptr<FontVariantAlternates> FontVariantAlternates::Resolve(
   }
 
   if (!styleset_.empty()) {
-    for (auto styleset_alias : styleset_) {
+    for (const AtomicString& styleset_alias : styleset_) {
       Vector<uint32_t> styleset_resolved = resolve_styleset(styleset_alias);
       if (!styleset_resolved.empty()) {
         for (auto styleset_entry : styleset_resolved) {
@@ -168,7 +168,7 @@ scoped_refptr<FontVariantAlternates> FontVariantAlternates::Resolve(
   }
 
   if (!character_variant_.empty()) {
-    for (auto character_variant_alias : character_variant_) {
+    for (const AtomicString& character_variant_alias : character_variant_) {
       Vector<uint32_t> character_variant_resolved =
           resolve_character_variant(character_variant_alias);
       if (!character_variant_resolved.empty() &&

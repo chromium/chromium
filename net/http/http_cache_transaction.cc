@@ -52,6 +52,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/http/http_cache.h"
 #include "net/http/http_cache_writers.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
@@ -90,10 +91,8 @@ bool NonErrorResponse(int status_code) {
 }
 
 bool IsOnBatteryPower() {
-  if (base::PowerMonitor::IsInitialized()) {
-    return base::PowerMonitor::IsOnBatteryPower();
-  }
-  return false;
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  return power_monitor->IsInitialized() && power_monitor->IsOnBatteryPower();
 }
 
 enum ExternallyConditionalizedType {
@@ -1087,8 +1086,18 @@ int HttpCache::Transaction::DoGetBackendComplete(int result) {
   mode_ = NONE;
   const bool should_pass_through = ShouldPassThrough();
 
-  if (!should_pass_through) {
-    cache_key_ = *cache_->GenerateCacheKeyForRequest(request_);
+  std::optional<std::string> cache_key =
+      HttpCache::GenerateCacheKeyForRequest(request_);
+
+  // If no cache key is generated from this request, treat that the same way we
+  // do other pass-through cases. This prevents resources whose origin is opaque
+  // from being cached. Blink's memory cache should take care of reusing
+  // resources within the current page load, but otherwise a resource with an
+  // opaque top-frame origin won’t be used again. Also, if the request does not
+  // have a top frame origin, bypass the cache otherwise resources from
+  // different pages could share a cached entry in such cases.
+  if (!should_pass_through && cache_key.has_value()) {
+    cache_key_ = *cache_key;
 
     // Requested cache access mode.
     if (effective_load_flags_ & LOAD_ONLY_FROM_CACHE) {
@@ -2044,7 +2053,9 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
       (!HttpCache::IsSplitCacheEnabled() ||
        request_->network_isolation_key.IsFullyPopulated())) {
     cache_->DoomMainEntryForUrl(request_->url, request_->network_isolation_key,
-                                request_->is_subframe_document_resource);
+                                request_->is_subframe_document_resource,
+                                request_->is_main_frame_navigation,
+                                request_->initiator);
   }
 
   if (new_response_->headers->response_code() ==
@@ -2672,16 +2683,6 @@ bool HttpCache::Transaction::ShouldPassThrough() {
   if (!cache_->disk_cache_.get()) {
     cacheable = false;
   } else if (effective_load_flags_ & LOAD_DISABLE_CACHE) {
-    cacheable = false;
-  }
-  // Prevent resources whose origin is opaque from being cached. Blink's memory
-  // cache should take care of reusing resources within the current page load,
-  // but otherwise a resource with an opaque top-frame origin won’t be used
-  // again. Also, if the request does not have a top frame origin, bypass the
-  // cache otherwise resources from different pages could share a cached entry
-  // in such cases.
-  else if (HttpCache::IsSplitCacheEnabled() &&
-           request_->network_isolation_key.IsTransient()) {
     cacheable = false;
   } else if (method_ == "GET" || method_ == "HEAD") {
   } else if (method_ == "POST" && request_->upload_data_stream &&

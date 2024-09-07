@@ -26,6 +26,12 @@ class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
 
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 
+  bool CanUseSpeakerLabelForCurrentProfile() override;
+
+  void RecordSpeakerLabelConsent(
+      const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent)
+      override;
+
   media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context) override;
 

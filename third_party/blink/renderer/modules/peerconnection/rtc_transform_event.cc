@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transform_event.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
@@ -12,12 +13,17 @@
 
 namespace blink {
 
-RTCTransformEvent::RTCTransformEvent(ScriptState* script_state,
-                                     CustomEventMessage data)
+RTCTransformEvent::RTCTransformEvent(
+    ScriptState* script_state,
+    CustomEventMessage data,
+    scoped_refptr<base::SequencedTaskRunner> transform_task_runner,
+    CrossThreadWeakHandle<RTCRtpScriptTransform> transform)
     : Event(event_type_names::kRtctransform, Bubbles::kNo, Cancelable::kNo),
-      transformer_(
-          MakeGarbageCollected<RTCRtpScriptTransformer>(script_state,
-                                                        std::move(data))) {}
+      transformer_(MakeGarbageCollected<RTCRtpScriptTransformer>(
+          script_state,
+          std::move(data),
+          transform_task_runner,
+          std::move(transform))) {}
 
 void RTCTransformEvent::Trace(Visitor* visitor) const {
   visitor->Trace(transformer_);

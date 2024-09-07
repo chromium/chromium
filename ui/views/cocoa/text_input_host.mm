@@ -145,13 +145,14 @@ void TextInputHost::BindReceiver(
 }
 
 ui::TextInputClient* TextInputHost::GetTextInputClient() const {
-  return text_input_client_;
+  return text_input_client_.get();
 }
 
 void TextInputHost::SetTextInputClient(
     ui::TextInputClient* new_text_input_client) {
-  if (pending_text_input_client_ == new_text_input_client)
+  if (pending_text_input_client_.get() == new_text_input_client) {
     return;
+  }
 
   // This method may cause the IME window to dismiss, which may cause it to
   // insert text (e.g. to replace marked text with "real" text). That should
@@ -160,7 +161,7 @@ void TextInputHost::SetTextInputClient(
   // invoke -[NSApp updateWindows], which also wants a reference to the _new_
   // -inputContext. So put the new inputContext in |pendingTextInputClient_| and
   // only use it for -inputContext.
-  ui::TextInputClient* old_text_input_client = text_input_client_;
+  ui::TextInputClient* old_text_input_client = text_input_client_.get();
 
   // Since dismissing an IME may insert text, a misbehaving IME or a
   // ui::TextInputClient that acts on InsertChar() to change focus a second time
@@ -168,18 +169,21 @@ void TextInputHost::SetTextInputClient(
   // still on the stack. Calling [NSApp updateWindows] recursively may upset
   // an IME. Since the rest of this method is only to decide whether to call
   // updateWindows, and we're already calling it, just bail out.
-  if (text_input_client_ != pending_text_input_client_) {
-    pending_text_input_client_ = new_text_input_client;
+  if (text_input_client_.get() != pending_text_input_client_.get()) {
+    pending_text_input_client_ =
+        new_text_input_client ? new_text_input_client->AsWeakPtr() : nullptr;
     return;
   }
 
   // Start by assuming no need to invoke -updateWindows.
-  text_input_client_ = new_text_input_client;
-  pending_text_input_client_ = new_text_input_client;
+  text_input_client_ =
+      new_text_input_client ? new_text_input_client->AsWeakPtr() : nullptr;
+  pending_text_input_client_ = text_input_client_;
 
   if (host_impl_->in_process_ns_window_bridge_ &&
       host_impl_->in_process_ns_window_bridge_->NeedsUpdateWindows()) {
-    text_input_client_ = old_text_input_client;
+    text_input_client_ =
+        old_text_input_client ? old_text_input_client->AsWeakPtr() : nullptr;
     [NSApp updateWindows];
     // Note: |pending_text_input_client_| (and therefore +[NSTextInputContext
     // currentInputContext] may have changed if called recursively.
@@ -331,15 +335,15 @@ bool TextInputHost::GetAttributedSubstringForRange(
     std::u16string* out_text,
     gfx::Range* out_actual_range) {
   *out_text = AttributedSubstringForRangeHelper(
-      text_input_client_, requested_range, out_actual_range);
+      text_input_client_.get(), requested_range, out_actual_range);
   return true;
 }
 
 bool TextInputHost::GetFirstRectForRange(const gfx::Range& requested_range,
                                          gfx::Rect* out_rect,
                                          gfx::Range* out_actual_range) {
-  *out_rect = GetFirstRectForRangeHelper(text_input_client_, requested_range,
-                                         out_actual_range);
+  *out_rect = GetFirstRectForRangeHelper(text_input_client_.get(),
+                                         requested_range, out_actual_range);
   return true;
 }
 

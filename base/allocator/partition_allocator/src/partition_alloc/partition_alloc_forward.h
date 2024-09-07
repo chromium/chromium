@@ -35,7 +35,6 @@ static_assert(kAlignment <= 16,
               "PartitionAlloc doesn't support a fundamental alignment larger "
               "than 16 bytes.");
 
-struct SlotSpanMetadata;
 class PA_LOCKABLE Lock;
 
 // This type trait verifies a type can be used as a pointer offset.
@@ -54,7 +53,10 @@ struct MaybeConst {
 };
 
 template <const MetadataKind kind, typename T>
-using MaybeConstT = MaybeConst<kind, T>::Type;
+using MaybeConstT = typename MaybeConst<kind, T>::Type;
+
+template <MetadataKind>
+struct SlotSpanMetadata;
 
 }  // namespace internal
 

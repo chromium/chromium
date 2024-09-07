@@ -197,7 +197,11 @@ void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
 
 void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
   if (result != MOJO_RESULT_OK) {
-    if (!received_all_data_) {
+    if (!received_all_data_ && result != MOJO_RESULT_FAILED_PRECONDITION) {
+      // Whatever caused a `MOJO_RESULT_FAILED_PRECONDITION` will also prevent
+      // `BlobDataHandle` from writing to the pipe, so we expect a call to
+      // `OnComplete()` soon with a more specific error that we will then pass
+      // to the client.
       base::UmaHistogramExactLinear(
           "Storage.Blob.FileReaderLoader.DataPipeNotReadableMojoError", result,
           MOJO_RESULT_SHOULD_WAIT + 1);

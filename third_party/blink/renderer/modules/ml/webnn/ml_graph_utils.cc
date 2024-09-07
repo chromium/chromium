@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <numeric>
-
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
+
+#include <numeric>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"

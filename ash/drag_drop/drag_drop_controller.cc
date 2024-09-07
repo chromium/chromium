@@ -127,6 +127,9 @@ DragDropController::~DragDropController() {
   if (cancel_animation_)
     cancel_animation_->End();
   drag_image_widget_.reset();
+  for (aura::client::DragDropClientObserver& observer : observers_) {
+    observer.OnDragDropClientDestroying();
+  }
 }
 
 bool DragDropController::IsDragDropCompleted() {

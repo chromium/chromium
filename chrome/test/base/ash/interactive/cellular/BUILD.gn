@@ -15,6 +15,7 @@ source_set("interactive_ui_tests") {
     "esim_interactive_uitest.cc",
     "esim_interactive_uitest_base.cc",
     "esim_interactive_uitest_base.h",
+    "esim_policy_interactive_uitest.cc",
     "esim_ui_elements_interactive_uitest.cc",
     "psim_ui_elements_interactive_uitest.cc",
     "rename_esim_profile_interactive_uitest.cc",
@@ -35,12 +36,14 @@ source_set("interactive_ui_tests") {
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/components/onc:test_support",
     "//chromeos/strings:strings_grit",
     "//content/test:test_support",
     "//dbus",
     "//ui/base:base",
     "//ui/base:test_support",
     "//ui/chromeos/strings:strings_grit",
+    "//ui/message_center",
     "//ui/views:test_support",
   ]
 }
@@ -58,9 +61,10 @@ source_set("test_support") {
   ]
 
   deps = [
+    "//chrome/test/base/ash/interactive/network:test_support",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",
-    "//chromeos/ash/components/network:network",
+    "//chromeos/ash/components/network",
     "//dbus",
     "//ui/base:test_support",
   ]

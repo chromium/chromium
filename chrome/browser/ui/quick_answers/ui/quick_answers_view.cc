@@ -28,11 +28,13 @@
 #include "chrome/browser/ui/views/editor_menu/utils/focus_search.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -151,10 +153,14 @@ const gfx::Insets GetButtonsViewInsets(Design design) {
   CHECK(false) << "Invalid design enum value provided";
 }
 
-const gfx::VectorIcon& GetVectorIcon(Intent intent) {
-  switch (intent) {
+const gfx::VectorIcon& GetVectorIcon(std::optional<Intent> intent) {
+  if (!intent) {
+    return omnibox::kAnswerDefaultIcon;
+  }
+
+  switch (intent.value()) {
     case Intent::kDefinition:
-      return omnibox::kAnswerDictionaryIcon;
+      return chromeos::kDictionaryIcon;
     case Intent::kTranslation:
       return omnibox::kAnswerTranslationIcon;
     case Intent::kUnitConversion:
@@ -164,7 +170,7 @@ const gfx::VectorIcon& GetVectorIcon(Intent intent) {
   CHECK(false) << "Invalid intent enum value specified";
 }
 
-ui::ImageModel GetIcon(Design design, Intent intent) {
+ui::ImageModel GetIcon(Design design, std::optional<Intent> intent) {
   switch (design) {
     case Design::kCurrent:
       return ui::ImageModel::FromVectorIcon(
@@ -173,9 +179,9 @@ ui::ImageModel GetIcon(Design design, Intent intent) {
       return ui::ImageModel::FromVectorIcon(
           GetVectorIcon(intent), ui::kColorSysOnSurface, kIconSizeDip);
     case Design::kMagicBoost:
-      // TODO(b/335701090): update this with Magic Boost spec icon.
-      return ui::ImageModel::FromVectorIcon(
-          vector_icons::kGoogleColorIcon, gfx::kPlaceholderColor, kIconSizeDip);
+      return ui::ImageModel::FromVectorIcon(chromeos::kInfoSparkIcon,
+                                            ui::ColorIds::kColorSysOnSurface,
+                                            kIconSizeDip);
   }
 
   CHECK(false) << "Invalid design enum value specified";
@@ -231,8 +237,15 @@ void SetNoResult(ResultView* result_view, std::string_view title) {
       l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_NO_RESULT_V2));
 }
 
-std::u16string GetIntentName(Intent intent) {
-  switch (intent) {
+std::u16string GetIntentName(std::optional<Intent> intent) {
+  if (!intent) {
+    // The original intent name is kept if the backend finds out that it cannot
+    // find an intent in a query. It means that `std::nullopt` case is shown
+    // only for Linux-ChromeOS.
+    return std::u16string();
+  }
+
+  switch (intent.value()) {
     case Intent::kDefinition:
       return l10n_util::GetStringUTF16(
           IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_DEFINITION);
@@ -258,7 +271,7 @@ int GetButtonsViewOcclusion(Design design) {
          GetButtonsViewInsets(design).right();
 }
 
-views::Builder<views::Label> GetRefreshUiHeader(Intent intent) {
+views::Builder<views::Label> GetRefreshUiHeader() {
   int line_height = GetCrosAnnotation1LineHeight();
   int vertical_padding = std::max(0, (20 - line_height) / 2);
 
@@ -274,7 +287,6 @@ views::Builder<views::Label> GetRefreshUiHeader(Intent intent) {
                   views::LayoutProvider::Get()->GetDistanceMetric(
                       views::DistanceMetric::DISTANCE_RELATED_CONTROL_VERTICAL),
               GetButtonsViewOcclusion(Design::kRefresh)))
-      .SetText(GetIntentName(intent))
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetProperty(
           views::kFlexBehaviorKey,
@@ -325,7 +337,6 @@ QuickAnswersView::QuickAnswersView(
       controller_(std::move(controller)),
       title_(params.title),
       design_(params.design),
-      intent_(params.intent),
       is_internal_(params.is_internal),
       focus_search_(std::make_unique<chromeos::editor_menu::FocusSearch>(
           this,
@@ -349,9 +360,7 @@ QuickAnswersView::QuickAnswersView(
           .SetAccessibleName(
               l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT))
           .SetLayoutManager(std::move(main_view_layout))
-          .AddChild(views::Builder<views::ImageView>()
-                        .SetProperty(views::kMarginsKey, GetIconInsets(design_))
-                        .SetImage(GetIcon(design_, intent_)))
+          .AddChild(views::Builder<views::ImageView>().CopyAddressTo(&icon_))
           .AddChild(
               views::Builder<views::FlexLayoutView>()
                   .SetInteriorMargin(kContentViewInsets)
@@ -361,8 +370,9 @@ QuickAnswersView::QuickAnswersView(
                                    views::MaximumFlexSizeRule::kPreferred,
                                    /*adjust_height_for_width=*/true))
                   .SetOrientation(views::LayoutOrientation::kVertical)
-                  .AddChild(GetRefreshUiHeader(intent_).SetVisible(
-                      design_ == Design::kRefresh))
+                  .AddChild(GetRefreshUiHeader()
+                                .SetVisible(design_ == Design::kRefresh)
+                                .CopyAddressTo(&refreshed_ui_header_))
                   .AddChild(GetMagicBoostHeader().SetVisible(
                       design_ == Design::kMagicBoost))
                   .AddChild(
@@ -448,6 +458,9 @@ QuickAnswersView::QuickAnswersView(
   set_suppress_default_focus_handling();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  UpdateAccessibleName();
+  UpdateIcon();
+  UpdateUiText();
 }
 
 QuickAnswersView::~QuickAnswersView() = default;
@@ -482,16 +495,30 @@ views::FocusTraversable* QuickAnswersView::GetPaneFocusTraversable() {
   return focus_search_.get();
 }
 
-void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // The view itself is not focused for retry-mode, so should not be announced
-  // by the screen reader.
-  if (retry_view_->GetVisible()) {
-    node_data->SetNameExplicitlyEmpty();
+void QuickAnswersView::UpdateUiText() {
+  if (design_ != Design::kRefresh) {
     return;
   }
 
-  node_data->SetName(
+  refreshed_ui_header_->SetText(GetIntentName(intent_));
+}
+
+void QuickAnswersView::UpdateAccessibleName() {
+  // The view itself is not focused for retry-mode, so should not be announced
+  // by the screen reader.
+  if (retry_view_->GetVisible()) {
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    return;
+  }
+
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
+}
+
+void QuickAnswersView::UpdateIcon() {
+  icon_->SetProperty(views::kMarginsKey, GetIconInsets(design_));
+  icon_->SetImage(GetIcon(design_, intent_));
 }
 
 gfx::Size QuickAnswersView::GetMaximumSize() const {
@@ -524,6 +551,7 @@ void QuickAnswersView::SwitchTo(views::View* view) {
 
   loading_view_->SetVisible(view == loading_view_);
   retry_view_->SetVisible(view == retry_view_);
+  UpdateAccessibleName();
   result_view_->SetVisible(view == result_view_);
 }
 
@@ -560,6 +588,17 @@ bool QuickAnswersView::HasFocusInside() {
   return Contains(focus_manager->GetFocusedView());
 }
 
+void QuickAnswersView::SetIntent(Intent intent) {
+  intent_ = intent;
+
+  UpdateUiText();
+  UpdateIcon();
+}
+
+std::optional<Intent> QuickAnswersView::GetIntent() const {
+  return intent_;
+}
+
 void QuickAnswersView::SetResult(const StructuredResult& structured_result) {
   // Check if the view (or any of its children) had focus before resetting the
   // view, so it can be restored for the updated view.
@@ -569,16 +608,21 @@ void QuickAnswersView::SetResult(const StructuredResult& structured_result) {
 
   switch (structured_result.GetResultType()) {
     case ResultType::kDefinitionResult:
+      SetIntent(Intent::kDefinition);
       SetResultTo(result_view_, structured_result.definition_result.get());
       break;
     case ResultType::kTranslationResult:
+      SetIntent(Intent::kTranslation);
       SetResultTo(result_view_, structured_result.translation_result.get(),
                   design_);
       break;
     case ResultType::kUnitConversionResult:
+      SetIntent(Intent::kUnitConversion);
       SetResultTo(result_view_, structured_result.unit_conversion_result.get());
       break;
     case ResultType::kNoResult:
+      // Do not set intent back to unknown (i.e., `kNoResult`). See the comment
+      // of `SetIntent` in the header file.
       SetNoResult(result_view_, title_);
       break;
   }
@@ -654,6 +698,7 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
 }
 
 BEGIN_METADATA(QuickAnswersView)
+ADD_READONLY_PROPERTY_METADATA(std::optional<Intent>, Intent)
 END_METADATA
 
 }  // namespace quick_answers

@@ -103,7 +103,7 @@
           </div>
           <cr-toggle id="mirrorDisplayToggle"
               checked="[[isMirrored(displays)]]"
-              on-click="onMirroredClick_"
+              on-change="onMirroredClick_"
               aria-label="[[getDisplayMirrorText_(displays)]]"
               deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
           </cr-toggle>
@@ -115,7 +115,7 @@
         <div class="secondary self-start">
           <cr-checkbox id="displayMirrorCheckbox"
               checked="[[isMirrored(displays)]]"
-              on-click="onMirroredClick_"
+              on-change="onMirroredClick_"
               aria-label="[[getDisplayMirrorText_(displays)]]"
               deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
             <div class="text-area">[[getDisplayMirrorText_(displays)]]</div>
@@ -371,6 +371,29 @@
       hidden$="[[!showTouchCalibrationSetting_(selectedDisplay)]]" embedded
       deep-link-focus-id$="[[Setting.kTouchscreenCalibration]]">
   </cr-link-row>
+
+
+  <template is="dom-if"
+      if="[[showExcludeInMirror_(unifiedDesktopMode_, displays,
+      selectedDisplay)]]" restamp>
+    <div id="excludeDisplayToggleRow"
+        class="settings-box indented hr two-line">
+      <div class="start text-area">
+        <div id="excludeDisplayInMirrorLabel" class="start">
+          $i18n{displayExcludeInMirrorModeLabel}
+        </div>
+        <div id="excludeDisplayInMirrorSublabel" class="secondary self-start"
+            aria-hidden="true">
+          $i18n{displayExcludeInMirrorModeSublabel}
+        </div>
+      </div>
+      <cr-toggle id="excludeDisplayToggle"
+          checked="[[shouldExcludeInMirror_(selectedDisplay)]]"
+          on-change="onExcludeInMirrorClick_"
+          aria-label="$i18n{displayExcludeInMirrorModeLabel}">
+      </cr-toggle>
+    </div>
+  </template>
 </div>
 
 <!-- Night Light Settings -->
@@ -378,3 +401,14 @@
 <settings-display-night-light prefs="{{prefs}}"
     is-internal-display="[[selectedDisplay.isInternal]]">
 </settings-display-night-light>
+
+<!-- Touchscreen Mapping Experience -->
+<template is="dom-if" if="[[showTouchRemappingExperience_()]]" restamp>
+  <div class="settings-box continuation start layout vertical">
+    <cr-link-row class="hr" id="touchMapping"
+      label="$i18n{displayTouchMappingTitle}"
+      sub-label="$i18n{displayTouchMappingText}"
+      on-click="onTouchMappingClick_" embedded>
+    </cr-link-row>
+  </div>
+</template>

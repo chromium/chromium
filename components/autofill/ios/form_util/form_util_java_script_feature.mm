@@ -53,11 +53,11 @@ void FormUtilJavaScriptFeature::SetAutofillAcrossIframes(web::WebFrame* frame,
                          base::Value::List().Append(enabled));
 }
 
-void FormUtilJavaScriptFeature::SetAutofillXHRSubmissionDetection(
+void FormUtilJavaScriptFeature::SetAutofillIsolatedContentWorld(
     web::WebFrame* frame,
     bool enabled) {
   CallJavaScriptFunction(
-      frame, "autofill_form_features.setAutofillXHRSubmissionDetection",
+      frame, "autofill_form_features.setAutofillIsolatedContentWorld",
       base::Value::List().Append(enabled));
 }
 

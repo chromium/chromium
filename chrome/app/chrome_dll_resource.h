@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef CHROME_APP_CHROME_DLL_RESOURCE_H_
+#define CHROME_APP_CHROME_DLL_RESOURCE_H_
+
 // clang-format off
 
 #define IDR_MAINFRAME                   101
@@ -33,7 +36,11 @@
 #define IDR_SXS                         126
 #define IDR_X004_DEV                    127
 #define IDR_X005_BETA                   128
+#define IDR_X006_HTML_DOC               129
+#define IDR_X007_PDF_DOC                130
 
 // clang-format on
 
 // Values around 1600 are used by installer/setup/build/
+
+#endif  // CHROME_APP_CHROME_DLL_RESOURCE_H_

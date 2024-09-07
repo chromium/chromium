@@ -88,7 +88,7 @@ enum class MessageIdentifier {
   SAFETY_TIP = 5,
   SAVE_ADDRESS_PROFILE = 6,
   MERCHANT_TRUST = 7,
-  ADD_TO_HOMESCREEN_IPH = 8,
+  // Removed: ADD_TO_HOMESCREEN_IPH = 8,
   SEND_TAB_TO_SELF = 9,
   READER_MODE = 10,
   CHROME_SURVEY = 11,
@@ -132,6 +132,7 @@ enum class MessageIdentifier {
   SAVE_CARD_FAILURE = 49,
   VIRTUAL_CARD_ENROLL_FAILURE = 50,
   PROMPT_HATS_QUICK_DELETE = 51,
+  PROMPT_HATS_SAFETY_HUB = 52,
   // Insert new values before this line.
   COUNT
 };

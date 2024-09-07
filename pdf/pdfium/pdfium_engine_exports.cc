@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "pdf/document_metadata.h"
@@ -63,8 +64,7 @@ class DataDocumentLoader : public DocumentLoader {
   // DocumentLoader:
   bool Init(std::unique_ptr<URLLoaderWrapper> loader,
             const std::string& url) override {
-    NOTREACHED_IN_MIGRATION() << "PDFiumDocument doesn't call this";
-    return false;
+    NOTREACHED() << "PDFiumDocument doesn't call this";
   }
   bool GetBlock(uint32_t position, uint32_t size, void* buf) const override {
     if (!IsDataAvailable(position, size)) {

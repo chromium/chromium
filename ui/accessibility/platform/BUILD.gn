@@ -76,6 +76,11 @@ component("platform") {
     "inspect/ax_tree_indexer.h",
   ]
 
+  deps = [
+    "//ui/strings:auto_image_annotation_strings",
+    "//ui/strings:ax_strings",
+  ]
+
   public_deps = [
     "//ui/accessibility:accessibility_internal",
     "//ui/accessibility:ax_base",
@@ -103,7 +108,7 @@ component("platform") {
       "automation/v8_handler_function_wrapper.h",
     ]
 
-    deps = [
+    deps += [
       "//base:i18n",
       "//components/crash/core/common:crash_key",
       "//gin",
@@ -118,6 +123,23 @@ component("platform") {
     ]
   }
 
+  # BrowserAccessibility was historically used only by AXNodes
+  # coming from blink and has a dependency on `cc/base/rtree.h`.
+  # If we want to support using BrowserAccessibility on platforms
+  # that cannot take this dependency (such as non-blink ios) we
+  # will need to refactor to use a different data structure.
+  # So don't build on non-blink ios for now.
+  if (!(is_ios && !use_blink)) {
+    sources += [
+      "browser_accessibility.cc",
+      "browser_accessibility.h",
+      "browser_accessibility_manager.cc",
+      "browser_accessibility_manager.h",
+      "one_shot_accessibility_tree_search.cc",
+      "one_shot_accessibility_tree_search.h",
+    ]
+  }
+
   if (is_fuchsia) {
     sources += [
       "fuchsia/accessibility_bridge_fuchsia.h",
@@ -127,12 +149,18 @@ component("platform") {
       "fuchsia/accessibility_bridge_fuchsia_registry.h",
       "fuchsia/ax_platform_node_fuchsia.cc",
       "fuchsia/ax_platform_node_fuchsia.h",
+      "fuchsia/browser_accessibility_fuchsia.cc",
+      "fuchsia/browser_accessibility_fuchsia.h",
+      "fuchsia/browser_accessibility_manager_fuchsia.cc",
+      "fuchsia/browser_accessibility_manager_fuchsia.h",
       "fuchsia/semantic_provider.h",
       "fuchsia/semantic_provider_impl.cc",
       "fuchsia/semantic_provider_impl.h",
       "inspect/ax_event_recorder_fuchsia.cc",
       "inspect/ax_event_recorder_fuchsia.h",
     ]
+
+    deps += [ "//third_party/fuchsia-sdk/sdk/pkg/inspect_component_cpp" ]
 
     public_deps += [
       "//base",
@@ -173,6 +201,12 @@ component("platform") {
         "ax_platform_relation_win.h",
         "ax_system_caret_win.cc",
         "ax_system_caret_win.h",
+        "browser_accessibility_com_win.cc",
+        "browser_accessibility_com_win.h",
+        "browser_accessibility_manager_win.cc",
+        "browser_accessibility_manager_win.h",
+        "browser_accessibility_win.cc",
+        "browser_accessibility_win.h",
         "iaccessible2/scoped_co_mem_array.h",
         "inspect/ax_call_statement_invoker_win.cc",
         "inspect/ax_call_statement_invoker_win.h",
@@ -220,6 +254,12 @@ component("platform") {
         "ax_private_webkit_constants_mac.mm",
         "ax_utils_mac.h",
         "ax_utils_mac.mm",
+        "browser_accessibility_cocoa.h",
+        "browser_accessibility_cocoa.mm",
+        "browser_accessibility_mac.h",
+        "browser_accessibility_mac.mm",
+        "browser_accessibility_manager_mac.h",
+        "browser_accessibility_manager_mac.mm",
         "inspect/ax_call_statement_invoker_mac.h",
         "inspect/ax_call_statement_invoker_mac.mm",
         "inspect/ax_element_wrapper_mac.h",
@@ -235,6 +275,8 @@ component("platform") {
         "inspect/ax_tree_indexer_mac.h",
       ]
 
+      deps += [ "//ui/accelerated_widget_mac" ]
+
       frameworks = [
         "Accessibility.framework",
         "AppKit.framework",
@@ -248,6 +290,10 @@ component("platform") {
         "ax_platform_node_ios.mm",
         "ax_platform_node_ui_kit_element.h",
         "ax_platform_node_ui_kit_element.mm",
+        "browser_accessibility_ios.h",
+        "browser_accessibility_ios.mm",
+        "browser_accessibility_manager_ios.h",
+        "browser_accessibility_manager_ios.mm",
       ]
 
       frameworks = [
@@ -266,6 +312,10 @@ component("platform") {
         "ax_platform_atk_hyperlink.h",
         "ax_platform_node_auralinux.cc",
         "ax_platform_node_auralinux.h",
+        "browser_accessibility_auralinux.cc",
+        "browser_accessibility_auralinux.h",
+        "browser_accessibility_manager_auralinux.cc",
+        "browser_accessibility_manager_auralinux.h",
         "inspect/ax_call_statement_invoker_auralinux.cc",
         "inspect/ax_call_statement_invoker_auralinux.h",
         "inspect/ax_event_recorder_auralinux.cc",

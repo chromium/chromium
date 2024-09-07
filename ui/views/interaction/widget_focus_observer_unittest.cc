@@ -57,8 +57,7 @@ TEST_F(WidgetFocusObserverTest, NoWidgets) {
 }
 
 TEST_F(WidgetFocusObserverTest, OneWidget) {
-  const auto widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter(widget.get());
   widget->Show();
   visible_waiter.Wait();
@@ -69,20 +68,17 @@ TEST_F(WidgetFocusObserverTest, OneWidget) {
 }
 
 TEST_F(WidgetFocusObserverTest, SeveralWidgets) {
-  const auto widget1 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget1 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter1(widget1.get());
   widget1->Show();
   visible_waiter1.Wait();
 
-  const auto widget2 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget2 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter2(widget1.get());
   widget2->Show();
   visible_waiter2.Wait();
 
-  const auto widget3 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget3 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter3(widget1.get());
   widget3->ShowInactive();
   visible_waiter3.Wait();
@@ -93,20 +89,17 @@ TEST_F(WidgetFocusObserverTest, SeveralWidgets) {
 }
 
 TEST_F(WidgetFocusObserverTest, AfterActivate) {
-  const auto widget1 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget1 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter1(widget1.get());
   widget1->Show();
   visible_waiter1.Wait();
 
-  const auto widget2 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget2 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter2(widget1.get());
   widget2->Show();
   visible_waiter2.Wait();
 
-  const auto widget3 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget3 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter3(widget1.get());
   widget3->ShowInactive();
   visible_waiter3.Wait();
@@ -120,8 +113,7 @@ TEST_F(WidgetFocusObserverTest, AfterActivate) {
 }
 
 TEST_F(WidgetFocusObserverTest, Bubble) {
-  const auto widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter(widget.get());
   widget->Show();
   visible_waiter.Wait();

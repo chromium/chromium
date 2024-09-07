@@ -133,11 +133,8 @@ NSString* const kDeferredInitializationBlocksComplete =
 - (void)handleSessionStart {
   self.appState.lastTimeInForeground = base::TimeTicks::Now();
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     IOSProfileSessionDurationsService* psdService =
         IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
             browserState);
@@ -157,11 +154,8 @@ NSString* const kDeferredInitializationBlocksComplete =
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
                              base::Milliseconds(1), base::Hours(24), 50);
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     IOSProfileSessionDurationsService* psdService =
         IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
             browserState);

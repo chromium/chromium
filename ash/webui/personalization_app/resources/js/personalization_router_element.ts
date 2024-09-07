@@ -11,7 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
+import {isManagedSeaPenEnabled, isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {SeaPenQueryParams} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
 import {maybeDoPageTransition} from 'chrome://resources/ash/common/sea_pen/transition.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -19,7 +19,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from '../personalization_app.mojom-webui.js';
 
-import {isAmbientModeAllowed, isManagedSeaPenEnabled} from './load_time_booleans.js';
+import {isAmbientModeAllowed} from './load_time_booleans.js';
 import {logAmbientAlbumsPathUMA, logPersonalizationPathUMA} from './personalization_metrics_logger.js';
 import {getTemplate} from './personalization_router_element.html.js';
 import {WallpaperObserver} from './wallpaper/wallpaper_observer.js';

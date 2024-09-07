@@ -19,14 +19,15 @@
 #include "base/types/expected_macros.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/graph_impl_dml.h"
+#include "services/webnn/dml/tensor_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::dml {
@@ -54,6 +55,10 @@ ContextProperties ContextImplDml::GetProperties(
     DML_FEATURE_LEVEL feature_level) {
   CHECK_GE(feature_level, DML_FEATURE_LEVEL_4_0);
 
+  static constexpr SupportedDataTypes kFloat16To32Ints8{
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kInt8, OperandDataType::kUint8};
+
   static constexpr SupportedDataTypes kFloat16To32Ints32{
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt32, OperandDataType::kUint32};
@@ -67,11 +72,6 @@ ContextProperties ContextImplDml::GetProperties(
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt8, OperandDataType::kInt32, OperandDataType::kInt64};
 
-  static constexpr SupportedDataTypes kFloat16To32Ints32To64{
-      OperandDataType::kFloat16, OperandDataType::kFloat32,
-      OperandDataType::kInt32,   OperandDataType::kUint32,
-      OperandDataType::kInt64,   OperandDataType::kUint64};
-
   static constexpr SupportedDataTypes kUint8To32{OperandDataType::kUint8,
                                                  OperandDataType::kUint32};
 
@@ -81,15 +81,32 @@ ContextProperties ContextImplDml::GetProperties(
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
-      /*input_operand_layout=*/InputOperandLayout::kNchw,
+      /*input_operand_layout=*/InputOperandLayout::kNchw, Resample2DAxes::kAny,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
 
        /*arg_min_max_input=*/SupportedDataTypes::All(),
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc#tensor-support
+       /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_cast_operator_desc#tensor-support
+       /*cast_input=*/SupportedDataTypes::All(),
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_clip_operator_desc#tensor-support
+       /*clamp_input=*/kFloat16To32Ints8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
        /*concat_inputs=*/kFloat16To32Ints8To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc#tensor-support
+       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
+
+       // DequantizeLinear is not implemented.
+       /*dequantize_linear_input=*/{},
+       /*dequantize_linear_scale=*/{},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_add_operator_desc#tensor-support
        /*add_input=*/kFloat16To32Ints32,
@@ -166,6 +183,9 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_recip_operator_desc#tensor-support
        /*reciprocal_input=*/DataTypeConstraint::kFloat16To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sign_operator_desc#tensor-support
+       /*sign_input=*/DataTypeConstraint::kFloat16To32Int8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sin_operator_desc#tensor-support
        /*sin_input=*/DataTypeConstraint::kFloat16To32,
 
@@ -178,19 +198,91 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_elu_operator_desc
        /*elu_input=*/DataTypeConstraint::kFloat16To32,
 
+       // Expand is emulated by identity.
+       /*expand_input=*/kFloat16To32Ints8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc#tensor-support
        /*gather_input=*/kFloat16To32Ints8To32,
        /*gather_indices=*/kGatherIndicesSupportedDataTypes,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_elements_operator_desc#tensor-support
+       /*gather_elements_input=*/kFloat16To32Ints8To32,
+       /*gather_elements_indices=*/kGatherIndicesSupportedDataTypes,
 
        // Gelu is emulated when the feature level is less than 5.1.
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gemm_operator_desc#tensor-support
+       /*gemm_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gru_operator_desc#tensor-support
+       /*gru_input=*/DataTypeConstraint::kFloat16To32,
+       /*gru_cell_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_hard_sigmoid_operator_desc
+       /*hard_sigmoid_input=*/DataTypeConstraint::kFloat16To32,
+
+       // HardSwish is emulated when the feature level is less than 6.2.
+       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_hard_swish_operator_desc
+       /*hard_swish_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_mean_variance_normalization1_operator_desc#tensor-support
+       /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_leaky_relu_operator_desc
        /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_linear_operator_desc#tensor-support
+       /*linear_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_lstm_operator_desc#tensor-support
+       /*lstm_input=*/DataTypeConstraint::kFloat16To32,
+       /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
+
+       // Matmul is emulated by gemm.
+       /*matmul_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_padding_operator_desc#tensor-support
+       /*pad_input=*/kFloat16To32Ints8To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_average_pooling_operator_desc
+       /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_lp_pooling_operator_desc
+       /*l2_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_max_pooling_operator_desc
+       /*max_pool2d_input=*/kFloat16To32Ints8,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_parameterized_relu_operator_desc#tensor-support
+       /*prelu_input=*/DataTypeConstraint::kFloat16To32,
+
+       // QuantizeLinear is not implemented.
+       /*quantize_linear_input=*/{},
+       /*quantize_linear_zero_point=*/{},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_reduce_operator_desc#tensor-support-according-to-function
+       /*reduce_l1_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_l2_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_log_sum_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_log_sum_exp_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_max_input=*/kFloat16To32Ints8To32,
+       /*reduce_mean_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_min_input=*/kFloat16To32Ints8To32,
+       /*reduce_product_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_sum_input=*/kFloat16To32Ints32,
+       /*reduce_sum_square_input=*/DataTypeConstraint::kFloat16To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_relu_operator_desc
        /*relu_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_resample_operator_desc#tensor-support
+       /*resample2d_input=*/DataTypeConstraint::kFloat16To32,
+
+       // Reshape is emulated by identity.
+       /*reshape_input=*/kFloat16To32Ints8To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_sigmoid_operator_desc#tensor-support
        /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
@@ -211,15 +303,36 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_split_operator_desc#tensor-support
        /*split_input=*/kFloat16To32Ints8To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_tanh_operator_desc#tensor-support
+       /*tanh_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_tile_operator_desc#tensor-support
+       /*tile_input=*/SupportedDataTypes::All(),
+
+       // Transpose is emulated by identity.
+       /*transpose_input=*/kFloat16To32Ints8To32,
+
+       // Triangular is emulated by DML_FILL_VALUE_CONSTANT_OPERATOR_DESC,
+       // DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC,
+       // DML_ELEMENT_WISE_BIT_AND_OPERATOR_DESC,
+       // DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC and DML_SLICE_OPERATOR_DESC
+       // when the feature level is less than 5.1, so the data type limit is set
+       // based on these ops.
+       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_diagonal_matrix1_operator_desc#tensor-support
+       /*triangular_input=*/kFloat16To32Ints32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_if_operator_desc
        /*where_condition=*/DataTypeConstraint::kUint8,
        /*where_value=*/kFloat16To32Ints8To32});
 
   if (feature_level >= DML_FEATURE_LEVEL_4_1) {
     properties.data_type_limits.concat_inputs = SupportedDataTypes::All();
-    properties.data_type_limits.add_input = kFloat16To32Ints32To64;
-    properties.data_type_limits.sub_input = kFloat16To32Ints32To64;
-    properties.data_type_limits.mul_input = kFloat16To32Ints32To64;
+    properties.data_type_limits.add_input =
+        DataTypeConstraint::kFloat16To32Ints32To64;
+    properties.data_type_limits.sub_input =
+        DataTypeConstraint::kFloat16To32Ints32To64;
+    properties.data_type_limits.mul_input =
+        DataTypeConstraint::kFloat16To32Ints32To64;
     properties.data_type_limits.equal_input = SupportedDataTypes::All();
     properties.data_type_limits.greater_input = SupportedDataTypes::All();
     properties.data_type_limits.greater_or_equal_input =
@@ -229,15 +342,35 @@ ContextProperties ContextImplDml::GetProperties(
         SupportedDataTypes::All();
     properties.data_type_limits.abs_input = kFloat16To32Int8To64;
     properties.data_type_limits.identity_input = SupportedDataTypes::All();
+    properties.data_type_limits.expand_input = SupportedDataTypes::All();
     properties.data_type_limits.gather_input = SupportedDataTypes::All();
+    properties.data_type_limits.gather_elements_input =
+        SupportedDataTypes::All();
+    properties.data_type_limits.reshape_input = SupportedDataTypes::All();
+    properties.data_type_limits.sign_input =
+        DataTypeConstraint::kFloat16To32Int8To64;
     properties.data_type_limits.slice_input = SupportedDataTypes::All();
     properties.data_type_limits.split_input = SupportedDataTypes::All();
+    properties.data_type_limits.transpose_input = SupportedDataTypes::All();
+    properties.data_type_limits.triangular_input =
+        DataTypeConstraint::kFloat16To32Ints32To64;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_0) {
+    properties.data_type_limits.clamp_input = SupportedDataTypes::All();
     properties.data_type_limits.max_input = SupportedDataTypes::All();
     properties.data_type_limits.min_input = SupportedDataTypes::All();
+    properties.data_type_limits.pad_input = SupportedDataTypes::All(),
+    properties.data_type_limits.reduce_l1_input =
+        DataTypeConstraint::kFloat16To32Ints32To64;
+    properties.data_type_limits.reduce_max_input = SupportedDataTypes::All();
+    properties.data_type_limits.reduce_min_input = SupportedDataTypes::All();
+    properties.data_type_limits.reduce_sum_input =
+        DataTypeConstraint::kFloat16To32Ints32To64;
+    properties.data_type_limits.reduce_sum_square_input =
+        DataTypeConstraint::kFloat16To32Ints32To64;
     properties.data_type_limits.where_value = SupportedDataTypes::All();
+    properties.data_type_limits.max_pool2d_input = SupportedDataTypes::All();
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_1) {
@@ -245,12 +378,19 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.sub_input = SupportedDataTypes::All();
     properties.data_type_limits.mul_input = SupportedDataTypes::All();
     properties.data_type_limits.div_input = kFloat16To32Ints8To32;
+    properties.data_type_limits.prelu_input =
+        DataTypeConstraint::kFloat16To32Int8To32;
     properties.data_type_limits.relu_input =
         DataTypeConstraint::kFloat16To32Int8To32;
+    properties.data_type_limits.triangular_input = SupportedDataTypes::All();
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_6_0) {
     properties.data_type_limits.div_input = SupportedDataTypes::All();
+  }
+
+  if (feature_level >= DML_FEATURE_LEVEL_6_2) {
+    properties.data_type_limits.resample2d_input = kFloat16To32Ints8;
   }
 
   return properties;
@@ -292,7 +432,7 @@ void ContextImplDml::CreateGraphImpl(
 }
 
 void ContextImplDml::CreateBufferImpl(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::BufferInfoPtr buffer_info,
     CreateBufferImplCallback callback) {
   // DML requires resources to be in multiple of 4 bytes.
@@ -316,12 +456,27 @@ void ContextImplDml::CreateBufferImpl(
   // CPU will directly read/write to this heap if the GPU isn't using it.
   ComPtr<ID3D12Resource> buffer;
   if (adapter_->IsUMA()) {
-    // TODO(crbug.com/40278771): consider introducing buffer usages for INPUT or
-    // OUTPUT since using upload-equivelent custom heaps everywhere could be
-    // inefficient.
-    hr = CreateCustomUploadBuffer(
-        adapter_->d3d12_device(), aligned_buffer_byte_size,
-        L"WebNN_Custom_Upload_Buffer_External", buffer);
+    // Create a buffer configured with memory properties based on
+    // usage.
+    if (buffer_info->usage.Has(MLTensorUsageFlags::kWriteTo)) {
+      // Upload buffer is used when the buffer mostly CPU writes but
+      // could also CPU read. A upload buffer provides less bandwidth for CPU
+      // reads in favor of GPU writes being optimal.
+      hr = CreateCustomUploadBuffer(
+          adapter_->d3d12_device(), aligned_buffer_byte_size,
+          L"WebNN_Custom_Upload_Buffer_External", buffer);
+    } else if (buffer_info->usage.Has(MLTensorUsageFlags::kReadFrom)) {
+      // Readback buffer is used when the buffer only requires CPU reads.
+      hr = CreateCustomReadbackBuffer(
+          adapter_->d3d12_device(), aligned_buffer_byte_size,
+          L"WebNN_Custom_Readback_Buffer_External", buffer);
+    } else {
+      // Default buffer is used when the buffer has no need for CPU access
+      // in favor of any GPU access being optimal.
+      hr = CreateDefaultBuffer(adapter_->d3d12_device(),
+                               aligned_buffer_byte_size,
+                               L"WebNN_Default_Buffer_External", buffer);
+    }
   } else {
     // Create a default buffer that can be accessed only by GPU.
     // The CPU must use a staging buffer to read/write to this buffer.
@@ -336,17 +491,17 @@ void ContextImplDml::CreateBufferImpl(
     return;
   }
 
-  // The receiver bound to WebNNBufferImpl.
+  // The receiver bound to WebNNTensorImpl.
   //
   // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
-  std::move(callback).Run(std::make_unique<BufferImplDml>(
+  std::move(callback).Run(std::make_unique<TensorImplDml>(
       std::move(receiver), std::move(buffer), this, std::move(buffer_info)));
 }
 
 void ContextImplDml::ReadBuffer(
-    BufferImplDml* src_buffer,
-    mojom::WebNNBuffer::ReadBufferCallback callback) {
+    TensorImplDml* src_buffer,
+    mojom::WebNNTensor::ReadBufferCallback callback) {
   const size_t src_buffer_size = src_buffer->PackedByteLength();
 
   HRESULT hr = S_OK;
@@ -402,7 +557,7 @@ void ContextImplDml::ReadBuffer(
 void ContextImplDml::OnReadbackComplete(
     ComPtr<ID3D12Resource> download_buffer,
     size_t read_byte_size,
-    mojom::WebNNBuffer::ReadBufferCallback callback,
+    mojom::WebNNTensor::ReadBufferCallback callback,
     HRESULT hr) {
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
@@ -432,7 +587,7 @@ void ContextImplDml::OnReadbackComplete(
       mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
 }
 
-void ContextImplDml::WriteBuffer(BufferImplDml* dst_buffer,
+void ContextImplDml::WriteBuffer(TensorImplDml* dst_buffer,
                                  mojo_base::BigBuffer src_buffer) {
   HRESULT hr = S_OK;
   ComPtr<ID3D12Resource> buffer_to_map = dst_buffer->buffer();

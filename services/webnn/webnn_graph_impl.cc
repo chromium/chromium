@@ -21,8 +21,8 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
-#include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_tensor_impl.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -52,8 +52,8 @@ bool ValidateInputsForComputation(
 
 // Return false if the named buffers for dispatch don't match the built
 // graph's expectation.
-bool ValidateWebNNBuffers(
-    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_buffers,
+bool ValidateWebNNTensors(
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_buffers,
     const base::flat_map<std::string, OperandDescriptor>&
         names_to_descriptors) {
   return base::ranges::equal(
@@ -68,11 +68,11 @@ bool ValidateWebNNBuffers(
 }
 
 // Return false if the same buffer was specified in inputs and outputs.
-bool ValidateWebNNBuffersUsage(
-    const base::flat_map<std::string, blink::WebNNBufferToken>& named_inputs,
-    const base::flat_map<std::string, blink::WebNNBufferToken>& named_outputs) {
+bool ValidateWebNNTensorsUsage(
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
   // Validate that output buffers are unique.
-  std::set<blink::WebNNBufferToken> output_buffers;
+  std::set<blink::WebNNTensorToken> output_buffers;
   for (const auto& named_output : named_outputs) {
     output_buffers.insert(named_output.second);
   }
@@ -148,52 +148,52 @@ void WebNNGraphImpl::Compute(
 }
 
 void WebNNGraphImpl::Dispatch(
-    const base::flat_map<std::string, blink::WebNNBufferToken>& named_inputs,
-    const base::flat_map<std::string, blink::WebNNBufferToken>& named_outputs) {
-  if (!ValidateWebNNBuffersUsage(named_inputs, named_outputs)) {
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
+  if (!ValidateWebNNTensorsUsage(named_inputs, named_outputs)) {
     mojo::ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
 
-  // Resolve the token of a input MLBuffer to the corresponding `WebNNBuffer`
+  // Resolve the token of a input MLTensor to the corresponding `WebNNTensor`
   // instance.
-  std::vector<std::pair<std::string_view, WebNNBufferImpl*>>
+  std::vector<std::pair<std::string_view, WebNNTensorImpl*>>
       name_to_input_buffers;
   name_to_input_buffers.reserve(named_inputs.size());
   for (const auto& [name, buffer_handle] : named_inputs) {
-    base::optional_ref<WebNNBufferImpl> input_buffer =
-        context_->GetWebNNBufferImpl(buffer_handle);
+    base::optional_ref<WebNNTensorImpl> input_buffer =
+        context_->GetWebNNTensorImpl(buffer_handle);
     if (!input_buffer.has_value()) {
       return;
     }
     name_to_input_buffers.emplace_back(name, input_buffer.as_ptr());
   }
-  base::flat_map<std::string_view, WebNNBufferImpl*> name_to_input_buffer_map(
+  base::flat_map<std::string_view, WebNNTensorImpl*> name_to_input_buffer_map(
       std::move(name_to_input_buffers));
-  if (!ValidateWebNNBuffers(
+  if (!ValidateWebNNTensors(
           name_to_input_buffer_map,
           compute_resource_info_.input_names_to_descriptors)) {
     mojo::ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
 
-  // Resolve the token of a output MLBuffer to the corresponding `WebNNBuffer`
+  // Resolve the token of a output MLTensor to the corresponding `WebNNTensor`
   // instance.
-  std::vector<std::pair<std::string_view, WebNNBufferImpl*>>
+  std::vector<std::pair<std::string_view, WebNNTensorImpl*>>
       name_to_output_buffers;
   name_to_output_buffers.reserve(named_outputs.size());
   for (const auto& [name, buffer_handle] : named_outputs) {
-    base::optional_ref<WebNNBufferImpl> output_buffer =
-        context_->GetWebNNBufferImpl(buffer_handle);
+    base::optional_ref<WebNNTensorImpl> output_buffer =
+        context_->GetWebNNTensorImpl(buffer_handle);
     if (!output_buffer.has_value()) {
       return;
     }
     name_to_output_buffers.emplace_back(name, output_buffer.as_ptr());
   }
 
-  base::flat_map<std::string_view, WebNNBufferImpl*> name_to_output_buffer_map(
+  base::flat_map<std::string_view, WebNNTensorImpl*> name_to_output_buffer_map(
       std::move(name_to_output_buffers));
-  if (!ValidateWebNNBuffers(
+  if (!ValidateWebNNTensors(
           name_to_output_buffer_map,
           compute_resource_info_.output_names_to_descriptors)) {
     mojo::ReportBadMessage(kBadMessageInvalidBuffer);

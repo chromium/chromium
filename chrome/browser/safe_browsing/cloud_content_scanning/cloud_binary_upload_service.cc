@@ -45,15 +45,6 @@ const char kSbEnterpriseUploadUrl[] =
 const char kSbConsumerUploadUrl[] =
     "https://safebrowsing.google.com/safebrowsing/uploads/consumer";
 
-constexpr int kInitialBackoffSeconds = 3;
-constexpr int kBackoffFactor = 2;
-constexpr int kMaxRetryAttempt = 2;
-
-bool* IgnoreFCMDelaysStorage() {
-  static bool ignore = false;
-  return &ignore;
-}
-
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
   if (is_app) {
     return net::DefineNetworkTrafficAnnotation(
@@ -315,41 +306,10 @@ void CloudBinaryUploadService::QueueForDeepScanning(
     UploadForDeepScanning(std::move(request));
 }
 
-void CloudBinaryUploadService::RemoveFCMRetryDelaysForTesting() {
-  *IgnoreFCMDelaysStorage() = true;
-}
-
-void CloudBinaryUploadService::RetryFCMConnection(
-    Request::Id request_id,
-    int retry_count,
-    base::TimeDelta next_backoff) {
-  if (!binary_fcm_service_ || !binary_fcm_service_->Connected()) {
-    if (retry_count >= kMaxRetryAttempt) {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&CloudBinaryUploadService::FinishIfActive,
-                         weakptr_factory_.GetWeakPtr(), request_id,
-                         Result::FAILED_TO_GET_TOKEN,
-                         enterprise_connectors::ContentAnalysisResponse()));
-    } else {
-      content::GetUIThreadTaskRunner({})->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&CloudBinaryUploadService::RetryFCMConnection,
-                         weakptr_factory_.GetWeakPtr(), request_id,
-                         retry_count + 1, next_backoff * kBackoffFactor),
-          next_backoff);
-    }
-    return;
-  }
-
-  OnFCMConnected(request_id);
-}
-
 void CloudBinaryUploadService::UploadForDeepScanning(
     std::unique_ptr<Request> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool is_auth_request = request->IsAuthRequest();
   Request* raw_request = request.get();
   Request::Id id = request_id_generator_.GenerateNextId();
   request->set_id(id);
@@ -360,29 +320,10 @@ void CloudBinaryUploadService::UploadForDeepScanning(
   std::string token = raw_request->SetRandomRequestToken();
   active_tokens_[id] = token;
 
-  if ((!binary_fcm_service_ || !binary_fcm_service_->Connected()) &&
-      !is_auth_request &&
-      raw_request->analysis_connector() !=
-          enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) {
-    base::TimeDelta first_backoff;
-    if (*IgnoreFCMDelaysStorage()) {
-      first_backoff = base::Seconds(0);
-    } else {
-      first_backoff = base::Seconds(kInitialBackoffSeconds);
-    }
-    content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&CloudBinaryUploadService::RetryFCMConnection,
-                       weakptr_factory_.GetWeakPtr(), id,
-                       /*retry_count*/ 0, first_backoff * kBackoffFactor),
-        first_backoff);
-    return;
-  }
-
-  OnFCMConnected(id);
+  MaybeConnectToFCM(id);
 }
 
-void CloudBinaryUploadService::OnFCMConnected(Request::Id request_id) {
+void CloudBinaryUploadService::MaybeConnectToFCM(Request::Id request_id) {
   Request* request = GetRequest(request_id);
   if (!request) {
     return;
@@ -397,6 +338,10 @@ void CloudBinaryUploadService::OnFCMConnected(Request::Id request_id) {
                        weakptr_factory_.GetWeakPtr(), request_id));
   } else if (request->analysis_connector() ==
              enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) {
+    MaybeGetAccessToken(request_id);
+  } else if (!binary_fcm_service_ || !binary_fcm_service_->Connected()) {
+    // If the `binary_fcm_service_` instance is not connected, proceeds to the
+    // next step.
     MaybeGetAccessToken(request_id);
   } else {
     binary_fcm_service_->SetCallbackForToken(
@@ -431,18 +376,15 @@ void CloudBinaryUploadService::OnGetInstanceID(Request::Id request_id,
     return;
   }
 
-  if (instance_id == BinaryFCMService::kInvalidId) {
-    FinishRequest(request, Result::FAILED_TO_GET_TOKEN,
-                  enterprise_connectors::ContentAnalysisResponse());
-    return;
+  if (instance_id != BinaryFCMService::kInvalidId) {
+    request->set_fcm_token(instance_id);
+    // Record FCM token fetching duration only if it is successful.
+    base::UmaHistogramCustomTimes(
+        "SafeBrowsingBinaryUploadRequest.TimeToGetFCMToken",
+        base::TimeTicks::Now() - start_times_[request_id],
+        base::Milliseconds(1), base::Minutes(6), 50);
   }
 
-  base::UmaHistogramCustomTimes(
-      "SafeBrowsingBinaryUploadRequest.TimeToGetFCMToken",
-      base::TimeTicks::Now() - start_times_[request_id], base::Milliseconds(1),
-      base::Minutes(6), 50);
-
-  request->set_fcm_token(instance_id);
   MaybeGetAccessToken(request_id);
 }
 
@@ -626,15 +568,10 @@ void CloudBinaryUploadService::MaybeFinishRequest(Request::Id request_id) {
     return;
   }
 
-  for (const std::string& tag : request->content_analysis_request().tags()) {
-    const auto& results = received_connector_results_[request_id];
-    if (base::ranges::none_of(results, [&tag](const auto& tag_and_result) {
-          return tag_and_result.first == tag;
-        })) {
-      VLOG(1) << "Request " << request->request_token() << " is waiting for <"
-              << tag << "> scanning to complete.";
-      return;
-    }
+  bool response_is_complete = ResponseIsComplete(request_id);
+  // Only wait for incomplete requests that have fcm token.
+  if (!response_is_complete && !request->fcm_notification_token().empty()) {
+    return;
   }
 
   // It's OK to move here since the map entry is about to be removed.
@@ -643,7 +580,12 @@ void CloudBinaryUploadService::MaybeFinishRequest(Request::Id request_id) {
   for (auto& tag_and_result : received_connector_results_[request_id]) {
     *response.add_results() = std::move(tag_and_result.second);
   }
-  FinishRequest(request, Result::SUCCESS, std::move(response));
+
+  // Set `result` to be unknown, if the request is terminated with incomplete
+  // response.
+  Result result =
+      response_is_complete ? Result::SUCCESS : Result::INCOMPLETE_RESPONSE;
+  FinishRequest(request, result, std::move(response));
 }
 
 void CloudBinaryUploadService::FinishIfActive(
@@ -808,6 +750,26 @@ void CloudBinaryUploadService::RecordRequestMetrics(
               enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
     }
   }
+}
+
+bool CloudBinaryUploadService::ResponseIsComplete(Request::Id request_id) {
+  Request* request = GetRequest(request_id);
+  if (!request) {
+    return false;
+  }
+
+  bool response_is_complete = true;
+  for (const std::string& tag : request->content_analysis_request().tags()) {
+    if (received_connector_results_[request_id].count(tag) == 0) {
+      response_is_complete = false;
+      if (!request->fcm_notification_token().empty()) {
+        VLOG(1) << "Request " << request->request_token() << " is waiting for <"
+                << tag << "> scanning to complete.";
+      }
+    }
+  }
+
+  return response_is_complete;
 }
 
 BinaryUploadService::Request* CloudBinaryUploadService::GetRequest(

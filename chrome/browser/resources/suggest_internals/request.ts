@@ -72,8 +72,37 @@ export class SuggestRequestElement extends PolymerElement {
     }
   }
 
+  private insertTextProtoLinks_(stringJSON: string): string {
+    // Create regex to match against strings of desired form
+    // Ex. "google:entityinfo" : "<base64 encoding>".
+    // Extract the type (groups or entity) and proto (base64 encoding).
+    const regexGroups =
+        /"(?<type>(?:google:entityinfo|google:groupsinfo|X-Client-Data))":\s"(?<proto>(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?)"/g;
+    // Replace base64 groupinfo or entityinfo encodings with links to
+    // textproto in protoshop and return final string.
+    return stringJSON.replace(
+        regexGroups, (_match, _p1, _p2, _offset, _string, groups) => {
+          let urlType = '';
+          switch (groups.type) {
+            case 'google:entityinfo':
+              urlType = 'gws.searchbox.chrome.EntityInfo';
+              break;
+            case 'google:groupsinfo':
+              urlType = 'gws.searchbox.chrome.GroupsInfo';
+              break;
+            case 'X-Client-Data':
+              urlType = 'webserver.gws.ClientDataHeader';
+          }
+          return `"${
+              groups
+                  .type}": <a target='_blank' href=https://protoshop.corp.google.com/embed?tabs=textproto&type=${
+              urlType}&protobytes=${groups.proto}>${groups.proto}</a>`;
+        });
+  }
+
   private getRequestDataHtml_(): TrustedHTML {
-    return sanitizeInnerHtml(this.requestDataJson_);
+    const htmlJSON = this.insertTextProtoLinks_(this.requestDataJson_);
+    return sanitizeInnerHtml(htmlJSON);
   }
 
   private getRequestPath_(): string {
@@ -87,7 +116,8 @@ export class SuggestRequestElement extends PolymerElement {
   }
 
   private getResponseHtml_(): TrustedHTML {
-    return sanitizeInnerHtml(this.responseJson_);
+    const htmlJSON = this.insertTextProtoLinks_(this.responseJson_);
+    return sanitizeInnerHtml(htmlJSON);
   }
 
   private getStatusIcon_(): string {
@@ -166,20 +196,6 @@ export class SuggestRequestElement extends PolymerElement {
       bubbles: true,
       composed: true,
       detail: this.responseJson_,
-    }));
-  }
-
-  private onViewRequestClick_() {
-    this.dispatchEvent(new CustomEvent('open-view-request-dialog', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private onViewResponseClick_() {
-    this.dispatchEvent(new CustomEvent('open-view-response-dialog', {
-      bubbles: true,
-      composed: true,
     }));
   }
 }

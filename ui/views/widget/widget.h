@@ -59,7 +59,7 @@ class ThemeProvider;
 }  // namespace ui
 
 namespace ui_devtools {
-class PageAgentViews;
+class BubbleLocking;
 }
 
 namespace views {
@@ -1288,7 +1288,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   friend class PaintAsActiveLockImpl;
   friend class TextfieldTest;
   friend class ViewAuraTest;
-  friend class ui_devtools::PageAgentViews;
+  friend class ui_devtools::BubbleLocking;
   friend void DisableActivationChangeHandlingForTests();
 
   // Sets/gets the type of disabling widget activation change handling.

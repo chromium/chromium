@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/content/browser/url_checker_on_sb.h"
+#include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -22,9 +22,9 @@ namespace safe_browsing {
 class BaseUIManager;
 
 // AsyncCheckTracker is responsible for:
-// * Manage the lifetime of any `UrlCheckerOnSB` that is not able to
+// * Manage the lifetime of any `UrlCheckerHolder` that is not able to
 // complete before BrowserUrlLoaderThrottle::WillProcessResponse is called.
-// * Trigger a warning based on the result from `UrlCheckerOnSB` if the
+// * Trigger a warning based on the result from `UrlCheckerHolder` if the
 // check is completed between BrowserUrlLoaderThrottle::WillProcessResponse and
 // WebContentsObserver::DidFinishNavigation. If the check is completed before
 // WillProcessResponse, SafeBrowsingNavigationThrottle will trigger the warning.
@@ -79,12 +79,12 @@ class AsyncCheckTracker
   ~AsyncCheckTracker() override;
 
   // Takes ownership of `checker`.
-  void TransferUrlChecker(std::unique_ptr<UrlCheckerOnSB> checker);
+  void TransferUrlChecker(std::unique_ptr<UrlCheckerHolder> checker);
 
-  // Called by `UrlCheckerOnSB` or `BrowserURLLoaderThrottle`, when the check
+  // Called by `UrlCheckerHolder` or `BrowserURLLoaderThrottle`, when the check
   // completes.
   void PendingCheckerCompleted(int64_t navigation_id,
-                               UrlCheckerOnSB::OnCompleteCheckResult result);
+                               UrlCheckerHolder::OnCompleteCheckResult result);
 
   // Returns whether navigation is pending.
   bool IsNavigationPending(int64_t navigation_id);
@@ -148,7 +148,7 @@ class AsyncCheckTracker
 
   // Pending Safe Browsing checkers on the current page, keyed by the
   // navigation_id.
-  base::flat_map<int64_t, std::unique_ptr<UrlCheckerOnSB>> pending_checkers_;
+  base::flat_map<int64_t, std::unique_ptr<UrlCheckerHolder>> pending_checkers_;
 
   // Set to true if interstitial should be shown after DidFinishNavigation is
   // called. Reset to false after interstitial is triggered.

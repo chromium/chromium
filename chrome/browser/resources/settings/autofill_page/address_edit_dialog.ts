@@ -27,7 +27,7 @@ import * as uiComponents from './address_edit_dialog_components.js';
 
 export interface SettingsAddressEditDialogElement {
   $: {
-    accountSourceNotice: HTMLElement,
+    accountRecordTypeNotice: HTMLElement,
     cancelButton: CrButtonElement,
     country: HTMLSelectElement,
     dialog: CrDialogElement,
@@ -38,8 +38,10 @@ export interface SettingsAddressEditDialogElement {
 type CountryEntry = chrome.autofillPrivate.CountryEntry;
 type AddressEntry = chrome.autofillPrivate.AddressEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
+type AddressComponent = chrome.autofillPrivate.AddressComponent;
+type AddressComponentRow = chrome.autofillPrivate.AddressComponentRow;
 type AddressComponents = chrome.autofillPrivate.AddressComponents;
-const AddressSource = chrome.autofillPrivate.AddressSource;
+const AddressRecordType = chrome.autofillPrivate.AddressRecordType;
 const FieldType = chrome.autofillPrivate.FieldType;
 const SettingsAddressEditDialogElementBase = I18nMixin(PolymerElement);
 
@@ -82,9 +84,9 @@ export class SettingsAddressEditDialogElement extends
         value: false,
       },
 
-      accountAddressSourceNotice_: {
+      accountAddressRecordTypeNotice_: {
         type: String,
-        computed: 'getAccountAddressSourceNotice_(address, accountInfo)',
+        computed: 'getAccountAddressRecordTypeNotice_(address, accountInfo)',
       },
     };
   }
@@ -121,7 +123,7 @@ export class SettingsAddressEditDialogElement extends
 
     const forAccountAddressProfile = !!this.address.guid &&
         this.address.metadata !== undefined &&
-        this.address.metadata.source === AddressSource.ACCOUNT;
+        this.address.metadata.recordType === AddressRecordType.ACCOUNT;
     this.countryInfo_.getCountryList(forAccountAddressProfile)
         .then(countryList => {
           this.countries_ = countryList;
@@ -172,40 +174,36 @@ export class SettingsAddressEditDialogElement extends
       // becomes the only type of addresses
       const skipValidation = !this.isAccountAddress_;
 
-      this.components_ = [];
-      for (const row of format.components) {
-        this.components_.push(row.row.map(
-            component => new uiComponents.AddressComponentUi(
-                this.addressFields_, this.originalAddressFields_,
-                component.field, component.fieldName,
-                component.isLongField ? 'long' : '',
-                component.field === FieldType.ADDRESS_HOME_STREET_ADDRESS,
-                skipValidation, component.isRequired)));
-      }
+      this.components_ = format.components.map(
+          (componentRow: AddressComponentRow, rowIndex: number) => {
+            return componentRow.row.map(
+                (component: AddressComponent, colIndex: number) =>
+                    new uiComponents.AddressComponentUi(
+                        this.addressFields_, this.originalAddressFields_,
+                        component.field, component.fieldName,
+                        this.notifyComponentValidity_.bind(
+                            this, rowIndex, colIndex),
+                        component.isLongField ? 'long' : '',
+                        component.field ===
+                            FieldType.ADDRESS_HOME_STREET_ADDRESS,
+                        skipValidation, component.isRequired));
+          });
 
       // Phone and email do not come in the address format as fields, but
       // should be editable and saveable in the resulting address.
+      const contactsRowIndex = this.components_.length;
       this.components_.push([
         new uiComponents.AddressComponentUi(
             this.addressFields_, this.originalAddressFields_,
             FieldType.PHONE_HOME_WHOLE_NUMBER, this.i18n('addressPhone'),
+            this.notifyComponentValidity_.bind(this, contactsRowIndex, 0),
             'last-row'),
         new uiComponents.AddressComponentUi(
             this.addressFields_, this.originalAddressFields_,
             FieldType.EMAIL_ADDRESS, this.i18n('addressEmail'),
+            this.notifyComponentValidity_.bind(this, contactsRowIndex, 1),
             'long last-row'),
       ]);
-
-      // Because of potentially added honorific field the resulting components
-      // structure my be different from the original format, that is why
-      // the onValueUpdateListener with row/col indices is updated after.
-      for (let rowIndex = 0; rowIndex < this.components_.length; ++rowIndex) {
-        const row = this.components_[rowIndex];
-        for (let colIndex = 0; colIndex < row.length; ++colIndex) {
-          this.components_[rowIndex][colIndex].onValueUpdateListener =
-              this.notifyComponentValidity_.bind(this, rowIndex, colIndex);
-        }
-      }
 
       // Flush dom before resize and savability updates.
       flush();
@@ -293,17 +291,17 @@ export class SettingsAddressEditDialogElement extends
   private isAddressStoredInAccount_(): boolean {
     if (this.address.guid) {
       return this.address.metadata !== undefined &&
-          this.address.metadata.source === AddressSource.ACCOUNT;
+          this.address.metadata.recordType === AddressRecordType.ACCOUNT;
     }
 
     return !!this.accountInfo?.isEligibleForAddressAccountStorage;
   }
 
-  private getAccountAddressSourceNotice_(): string|undefined {
+  private getAccountAddressRecordTypeNotice_(): string|undefined {
     if (this.accountInfo) {
       return this.i18n(
-          this.address.guid ? 'editAccountAddressSourceNotice' :
-                              'newAccountAddressSourceNotice',
+          this.address.guid ? 'editAccountAddressRecordTypeNotice' :
+                              'newAccountAddressRecordTypeNotice',
           this.accountInfo.email);
     }
 

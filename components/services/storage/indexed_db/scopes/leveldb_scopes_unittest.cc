@@ -99,7 +99,7 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   bool lock_grabbed = false;
   PartitionedLockHolder locks_receiver;
   lock_manager.AcquireLocks(
-      {CreateSimpleExclusiveLock()}, locks_receiver.AsWeakPtr(),
+      {CreateSimpleExclusiveLock()}, locks_receiver,
       base::BindLambdaForTesting([&]() { lock_grabbed = true; }));
 
   scopes.StartRecoveryAndCleanupTasks();

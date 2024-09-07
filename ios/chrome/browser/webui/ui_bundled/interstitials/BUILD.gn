@@ -20,7 +20,7 @@ source_set("interstitials") {
     "//components/security_interstitials/core:unsafe_resource",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/ssl/model",
     "//ios/components/security_interstitials",

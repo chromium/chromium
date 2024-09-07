@@ -28,6 +28,7 @@ constexpr std::string_view
     kDomainsRequiringParagraphConcatenationWhenInsertingText[] = {
         "notion",
         "medium",
+        "onedrive.live",
 };
 
 bool IsUrlAllowed(const GURL& url) {

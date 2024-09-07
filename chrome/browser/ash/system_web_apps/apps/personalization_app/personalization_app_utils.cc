@@ -176,14 +176,36 @@ bool IsEligibleForSeaPen(Profile* profile) {
   }
 }
 
+bool IsManagedSeaPenSettingsEnabled(const int settings) {
+  switch (static_cast<ManagedSeaPenSettings>(settings)) {
+    case ManagedSeaPenSettings::kAllowed:
+    case ManagedSeaPenSettings::kAllowedWithoutLogging:
+      return true;
+    case ManagedSeaPenSettings::kDisabled:
+    default:
+      return false;
+  }
+}
+
 bool IsManagedSeaPenWallpaperEnabled(Profile* profile) {
+  return IsManagedSeaPenSettingsEnabled(
+      profile->GetPrefs()->GetInteger(ash::prefs::kGenAIWallpaperSettings));
+}
+
+bool IsManagedSeaPenWallpaperFeedbackEnabled(Profile* profile) {
   return profile->GetPrefs()->GetInteger(ash::prefs::kGenAIWallpaperSettings) ==
-         1;
+         static_cast<int>(ManagedSeaPenSettings::kAllowed);
 }
 
 bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile) {
+  return IsManagedSeaPenSettingsEnabled(
+      profile->GetPrefs()->GetInteger(ash::prefs::kGenAIVcBackgroundSettings));
+}
+
+bool IsManagedSeaPenVcBackgroundFeedbackEnabled(Profile* profile) {
   return profile->GetPrefs()->GetInteger(
-             ash::prefs::kGenAIVcBackgroundSettings) == 1;
+             ash::prefs::kGenAIVcBackgroundSettings) ==
+         static_cast<int>(ManagedSeaPenSettings::kAllowed);
 }
 
 bool IsEligibleForSeaPenTextInput(Profile* profile) {

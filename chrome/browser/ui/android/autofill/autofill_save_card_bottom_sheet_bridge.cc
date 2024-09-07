@@ -72,11 +72,14 @@ AutofillSaveCardBottomSheetBridge::~AutofillSaveCardBottomSheetBridge() {
 void AutofillSaveCardBottomSheetBridge::RequestShowContent(
     const AutofillSaveCardUiInfo& ui_info,
     std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate) {
+  // Skip loading if additional fix flows are needed after save.
+  bool skip_loading = delegate->requires_fix_flow();
+
   JNIEnv* env = base::android::AttachCurrentThread();
   save_card_delegate_ = std::move(delegate);
   Java_AutofillSaveCardBottomSheetBridge_requestShowContent(
       env, java_autofill_save_card_bottom_sheet_bridge_,
-      ConvertUiInfoToJavaObject(env, ui_info));
+      ConvertUiInfoToJavaObject(env, ui_info), skip_loading);
 }
 
 void AutofillSaveCardBottomSheetBridge::Hide() {

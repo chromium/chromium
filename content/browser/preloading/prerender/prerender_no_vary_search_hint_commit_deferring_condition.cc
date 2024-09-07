@@ -25,7 +25,8 @@ namespace {
 
 // Returns the root prerender frame tree node associated with navigation_request
 // of ongoing prerender activation.
-FrameTreeNode* GetRootPrerenderFrameTreeNode(int prerender_frame_tree_node_id) {
+FrameTreeNode* GetRootPrerenderFrameTreeNode(
+    FrameTreeNodeId prerender_frame_tree_node_id) {
   FrameTreeNode* root =
       FrameTreeNode::GloballyFindByID(prerender_frame_tree_node_id);
   if (root) {
@@ -41,7 +42,7 @@ std::unique_ptr<CommitDeferringCondition>
 PrerenderNoVarySearchHintCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request,
     NavigationType navigation_type,
-    std::optional<int> candidate_prerender_frame_tree_node_id) {
+    std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
   // Don't create if No-Vary-Search support for prerender is not enabled.
   if (!base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch)) {
     return nullptr;
@@ -69,9 +70,15 @@ PrerenderNoVarySearchHintCommitDeferringCondition::MaybeCreate(
   if (prerender_host.were_headers_received()) {
     return nullptr;
   }
-  if (!prerender_host.no_vary_search_expected().has_value()) {
+
+  // Don't wait for the No-Vary-Search header if this navigation can match
+  // without the header
+  if (prerender_host.IsUrlMatch(navigation_request.GetURL())) {
     return nullptr;
   }
+
+  // Reach here only when the No-Vary-Search hint is specified.
+  CHECK(prerender_host.no_vary_search_expected().has_value());
 
   return base::WrapUnique(new PrerenderNoVarySearchHintCommitDeferringCondition(
       navigation_request, candidate_prerender_frame_tree_node_id.value()));
@@ -103,13 +110,12 @@ PrerenderNoVarySearchHintCommitDeferringCondition::
 PrerenderNoVarySearchHintCommitDeferringCondition::
     PrerenderNoVarySearchHintCommitDeferringCondition(
         NavigationRequest& navigation_request,
-        int candidate_prerender_frame_tree_node_id)
+        FrameTreeNodeId candidate_prerender_frame_tree_node_id)
     : CommitDeferringCondition(navigation_request),
       candidate_prerender_frame_tree_node_id_(
           candidate_prerender_frame_tree_node_id) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch));
-  CHECK_NE(candidate_prerender_frame_tree_node_id_,
-           RenderFrameHost::kNoFrameTreeNodeId);
+  CHECK(candidate_prerender_frame_tree_node_id_);
   FrameTreeNode* prerender_frame_tree_node =
       GetRootPrerenderFrameTreeNode(candidate_prerender_frame_tree_node_id_);
   // The prerender frame tree node is alive. This condition was also checked in
@@ -194,8 +200,10 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
   // associated prerender's headers.
   if (waiting_on_headers_) {
     waiting_on_headers_ = false;
+
+    // Determine the finished reason.
     using FinishedReason = PrerenderHost::WaitingForHeadersFinishedReason;
-    auto reason = FinishedReason::kNoVarySearchHeaderNotReceived;
+    std::optional<FinishedReason> reason;
     if (prerender_host.no_vary_search_parse_error().has_value()) {
       using ParseError = network::mojom::NoVarySearchParseError;
       switch (prerender_host.no_vary_search_parse_error().value()) {
@@ -205,8 +213,8 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
           break;
         case ParseError::kDefaultValue:
           // kDefaultValue indicates parsing is correct but led to default
-          // value. Treat this case as header received.
-          reason = FinishedReason::kNoVarySearchHeaderReceived;
+          // value.
+          reason = FinishedReason::kNoVarySearchHeaderReceivedButDefaultValue;
           break;
         case ParseError::kNotDictionary:
         case ParseError::kUnknownDictionaryKey:
@@ -218,9 +226,19 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
           break;
       }
     } else if (prerender_host.no_vary_search().has_value()) {
-      reason = FinishedReason::kNoVarySearchHeaderReceived;
+      std::optional<UrlMatchType> match_type =
+          prerender_host.IsUrlMatch(GetNavigationHandle().GetURL());
+      if (match_type.has_value()) {
+        CHECK_EQ(match_type.value(), UrlMatchType::kNoVarySearch)
+            << "PrerenderNoVarySearchHintCommitDeferringCondition should be "
+            << "created only for UrlMatchType::kNoVarySearch.";
+        reason = FinishedReason::kNoVarySearchHeaderReceivedAndMatched;
+      } else {
+        reason = FinishedReason::kNoVarySearchHeaderReceivedButNotMatched;
+      }
     }
-    prerender_host.OnWaitingForHeadersFinished(GetNavigationHandle(), reason);
+    CHECK(reason.has_value());
+    prerender_host.OnWaitingForHeadersFinished(GetNavigationHandle(), *reason);
   }
 
   // We don't need the timer anymore.

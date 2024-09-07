@@ -674,18 +674,19 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
 
   v8::ScriptOrigin origin = function->GetScriptOrigin();
 
-  // Opaque scripts don't report source locations.
+  ScriptTimingInfo::ScriptSourceLocation source_location{
+      .url =
+          ToCoreStringWithUndefinedOrNullCheck(isolate, origin.ResourceName())};
+
+  // Opaque scripts don't report character index/function name.
   if (origin.Options().IsOpaque()) {
-    return ScriptTimingInfo::ScriptSourceLocation();
+    return source_location;
   }
 
-  v8::Local<v8::Value> source_location = origin.ResourceName();
-
-  return ScriptTimingInfo::ScriptSourceLocation{
-      .url = ToCoreStringWithUndefinedOrNullCheck(isolate, source_location),
-      .function_name =
-          ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName()),
-      .char_position = function->GetScriptStartPosition()};
+  source_location.function_name =
+      ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName());
+  source_location.char_position = function->GetScriptStartPosition();
+  return source_location;
 }
 
 }  // namespace

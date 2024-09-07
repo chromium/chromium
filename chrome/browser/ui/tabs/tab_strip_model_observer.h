@@ -24,6 +24,10 @@ namespace content {
 class WebContents;
 }
 
+namespace tabs {
+class TabModel;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // TabStripModelChange / TabStripSelectionChange
@@ -386,7 +390,7 @@ class TabStripModelObserver {
   // Called when the tab at |index| is added to the group with id |group|.
   virtual void TabGroupedStateChanged(
       std::optional<tab_groups::TabGroupId> group,
-      content::WebContents* contents,
+      tabs::TabModel* tab,
       int index);
 
   // The TabStripModel now no longer has any tabs. The implementer may

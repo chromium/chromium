@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -46,11 +47,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 namespace {
@@ -151,8 +149,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 
   // Since preload setting is disabled, prerender shouldn't be triggered.
   base::RunLoop().RunUntilIdle();
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_TRUE(host_id.is_null());
 
   {
     // Navigate to a different URL other than the prerender_url to flush the
@@ -193,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   // successfully.
   registry_observer.WaitForTrigger(prerender_url);
   host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(host_id);
 
   {
     // Navigate to prerender_url.
@@ -447,8 +446,9 @@ class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
         GetSearchSuggestionUrl(search_terms, /*with_parameter=*/false);
     registry_observer.WaitForTrigger(prerendered_url);
 
-    int host_id = prerender_helper().GetHostForUrl(prerendered_url);
-    ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+    content::FrameTreeNodeId host_id =
+        prerender_helper().GetHostForUrl(prerendered_url);
+    ASSERT_TRUE(host_id);
     content::test::PrerenderHostObserver prerender_observer(
         *GetActiveWebContents(), host_id);
 

@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/border.h"
@@ -39,10 +40,10 @@ ShutdownConfirmationDialog::ShutdownConfirmationDialog(
   SetModalType(ui::mojom::ModalType::kSystem);
 
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRMATION_OK_BUTTON));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRMATION_CANCEL_BUTTON));
   SetAcceptCallback(std::move(on_accept_callback));
   SetCancelCallback(std::move(on_cancel_callback));

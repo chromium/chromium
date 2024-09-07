@@ -79,9 +79,9 @@ std::vector<uint8_t> CreateUnsignedBundle() {
 
 TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2BlockEd25519) {
   std::vector<uint8_t> unsigned_bundle = CreateUnsignedBundle();
-  std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
+  std::vector<uint8_t> signed_bundle = test::WebBundleSigner::SignBundle(
       unsigned_bundle,
-      WebBundleSigner::Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey));
+      test::Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey));
 
   std::vector<uint8_t> expected_signed_bundle =
       GetStringAsBytes(GetTestFileContents(base::FilePath(
@@ -92,9 +92,9 @@ TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2BlockEd25519) {
 
 TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2BlockEcdsaP256) {
   std::vector<uint8_t> unsigned_bundle = CreateUnsignedBundle();
-  std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
-      unsigned_bundle, WebBundleSigner::EcdsaP256KeyPair(kEcdsaP256PublicKey,
-                                                         kEcdsaP256PrivateKey));
+  std::vector<uint8_t> signed_bundle = test::WebBundleSigner::SignBundle(
+      unsigned_bundle,
+      test::EcdsaP256KeyPair(kEcdsaP256PublicKey, kEcdsaP256PrivateKey));
 
   std::vector<uint8_t> expected_signed_bundle =
       GetStringAsBytes(GetTestFileContents(base::FilePath(
@@ -105,11 +105,10 @@ TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2BlockEcdsaP256) {
 
 TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2BlockBothKeys) {
   std::vector<uint8_t> unsigned_bundle = CreateUnsignedBundle();
-  std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
+  std::vector<uint8_t> signed_bundle = test::WebBundleSigner::SignBundle(
       unsigned_bundle,
-      {WebBundleSigner::EcdsaP256KeyPair(kEcdsaP256PublicKey,
-                                         kEcdsaP256PrivateKey),
-       WebBundleSigner::Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey)});
+      {test::EcdsaP256KeyPair(kEcdsaP256PublicKey, kEcdsaP256PrivateKey),
+       test::Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey)});
 
   std::vector<uint8_t> expected_signed_bundle =
       GetStringAsBytes(GetTestFileContents(

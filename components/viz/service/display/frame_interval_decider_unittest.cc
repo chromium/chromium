@@ -250,7 +250,7 @@ TEST_F(FrameIntervalDeciderTest, NoMatchFixedIntervals) {
   fixed_interval_settings.supported_intervals.insert(base::Milliseconds(8));
   fixed_interval_settings.supported_intervals.insert(base::Milliseconds(16));
   fixed_interval_settings.default_interval = base::Milliseconds(16);
-  settings_.fixed_intervals = fixed_interval_settings;
+  settings_.interval_settings = fixed_interval_settings;
 
   InitializeDecider();
   FrameIntervalInputs inputs;

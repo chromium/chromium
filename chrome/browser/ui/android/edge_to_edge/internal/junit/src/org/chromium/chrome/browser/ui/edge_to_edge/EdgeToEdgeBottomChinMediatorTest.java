@@ -35,6 +35,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -49,6 +50,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private NavigationBarColorProvider mNavigationBarColorProvider;
     @Mock private BottomControlsStacker mBottomControlsStacker;
+    @Mock private FullscreenManager mFullscreenManager;
 
     private PropertyModel mModel;
     private EdgeToEdgeBottomChinMediator mMediator;
@@ -65,7 +67,8 @@ public class EdgeToEdgeBottomChinMediatorTest {
                         mLayoutManager,
                         mEdgeToEdgeController,
                         mNavigationBarColorProvider,
-                        mBottomControlsStacker);
+                        mBottomControlsStacker,
+                        mFullscreenManager);
     }
 
     @Test
@@ -229,6 +232,21 @@ public class EdgeToEdgeBottomChinMediatorTest {
         onToEdgeChange(60, /* isDrawingToEdge= */ false, /* isPageOptInToEdge= */ false);
         assertFalse(
                 "The chin should not be visible when not drawing to edge.", mModel.get(IS_VISIBLE));
+    }
+
+    @Test
+    public void testUpdateVisibility_Fullscreen() {
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertTrue("The chin should be visible.", mModel.get(IS_VISIBLE));
+
+        doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
+        mMediator.onEnterFullscreen(null, null);
+        assertFalse("The chin should not be visible when in fullscreen.", mModel.get(IS_VISIBLE));
+
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mMediator.onExitFullscreen(null);
+        assertTrue("The chin should become visible when exit fullscreen.", mModel.get(IS_VISIBLE));
     }
 
     @Test

@@ -33,6 +33,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/label.h"
@@ -210,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, JustificationTextarea) {
 
   // The OK button should be disabled if there is no text in the justification
   // area.
-  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   const size_t max_chars = dialog->GetMaxBypassJustificationLengthForTesting();
   const std::u16string valid_justification = GenerateText(max_chars);
@@ -220,19 +221,19 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, JustificationTextarea) {
   justification_area->InsertText(
       valid_justification,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   // The OK button should also be disabled if an extra char is added.
   justification_area->InsertText(
       GenerateText(1),
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   // Reset a valid justification by deleting the extra char to proceed the
   // warning.
   justification_area->DeleteRange(gfx::Range(max_chars, max_chars + 1));
 
-  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kSystem);
   // Proceed.
@@ -419,6 +420,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, AllErrorSections) {
       FilesPolicyDialog::BlockReason::kDlp,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectors};

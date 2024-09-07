@@ -30,6 +30,7 @@ enum class ClientDataRequestType {
 struct CONTENT_EXPORT ClientDataJsonParams {
   ClientDataJsonParams(ClientDataRequestType type,
                        url::Origin origin,
+                       url::Origin top_origin,
                        std::vector<uint8_t> challenge,
                        bool is_cross_origin_iframe = false);
   ClientDataJsonParams(ClientDataJsonParams&&);
@@ -38,13 +39,13 @@ struct CONTENT_EXPORT ClientDataJsonParams {
 
   ClientDataRequestType type;
   url::Origin origin;
+  url::Origin top_origin;
   std::vector<uint8_t> challenge;
   bool is_cross_origin_iframe = false;
 
   // The following fields are only set if `type` is `kPaymentGet`.
   blink::mojom::PaymentOptionsPtr payment_options = nullptr;
   std::string payment_rp;
-  std::string payment_top_origin;
 };
 
 // Builds the CollectedClientData[1] dictionary with the given values,

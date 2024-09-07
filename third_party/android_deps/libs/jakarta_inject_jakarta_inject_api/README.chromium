@@ -1,0 +1,15 @@
+Name: Jakarta Dependency Injection
+Short Name: jakarta.inject-api
+URL: https://github.com/eclipse-ee4j/injection-api
+Version: 2.0.1
+License: Apache Version 2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Jakarta Dependency Injection
+
+Local Modifications:
+No modifications.

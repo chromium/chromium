@@ -304,7 +304,7 @@ class AutofillDriver {
 
   // Query's the DOM for four digit combinations that could potentially be of a
   // card number.
-  virtual void GetFourDigitCombinationsFromDOM(
+  virtual void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) = 0;
 

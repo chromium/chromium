@@ -9,6 +9,8 @@ import android.os.Bundle;
 
 import androidx.preference.Preference;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.net.SecureDnsManagementMode;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsProviderPreference.State;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -20,8 +22,8 @@ import org.chromium.net.SecureDnsMode;
 import java.util.List;
 
 /**
- * Fragment to manage Secure DNS preference.  It consists of a toggle switch and,
- * if the switch is enabled, a SecureDnsControl.
+ * Fragment to manage Secure DNS preference. It consists of a toggle switch and, if the switch is
+ * enabled, a SecureDnsControl.
  */
 public class SecureDnsSettings extends ChromeBaseSettingsFragment {
     // Must match keys in secure_dns_settings.xml.
@@ -30,6 +32,7 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
 
     private ChromeSwitchPreference mSecureDnsSwitch;
     private SecureDnsProviderPreference mSecureDnsProviderPreference;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /**
      * @return A summary for use in the Preference that opens this fragment.
@@ -57,7 +60,7 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.settings_secure_dns_title);
+        mPageTitle.set(getString(R.string.settings_secure_dns_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.secure_dns_settings);
 
         // Set up preferences inside the activity.
@@ -111,6 +114,11 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
 
         // Update preference views and state.
         loadPreferenceState();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     /**

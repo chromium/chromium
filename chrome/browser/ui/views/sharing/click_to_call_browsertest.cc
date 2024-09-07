@@ -36,6 +36,7 @@
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -182,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
-  ui::MenuModel* sub_menu_model = nullptr;
+  raw_ptr<ui::MenuModel> sub_menu_model = nullptr;
   size_t device_id = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
                                              &sub_menu_model, &device_id));
@@ -215,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
-  ui::MenuModel* sub_menu_model = nullptr;
+  raw_ptr<ui::MenuModel> sub_menu_model = nullptr;
   size_t device_id = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
                                              &sub_menu_model, &device_id));
@@ -361,7 +362,8 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, CloseTabWithBubble) {
 
   // Click on the tel link to trigger the bubble view.
   web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.querySelector('a').click();", base::NullCallback());
+      u"document.querySelector('a').click();", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   // Wait until the bubble is visible.
   run_loop.Run();
 
@@ -390,7 +392,8 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
 
   // Click on the tel link to trigger the bubble view.
   web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.querySelector('a').click();", base::NullCallback());
+      u"document.querySelector('a').click();", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   // Wait until the bubble is visible.
   run_loop.Run();
 
@@ -460,7 +463,8 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, NavigateDifferentOrigin) {
 
   // Click on the tel link to trigger the bubble view.
   web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.querySelector('a').click();", base::NullCallback());
+      u"document.querySelector('a').click();", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   // Wait until the bubble is visible.
   run_loop.Run();
   EXPECT_NE(nullptr, click_to_call_icon->GetBubble());

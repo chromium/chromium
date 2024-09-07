@@ -242,7 +242,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void AddedToWidget() override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -316,6 +315,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
     raw_ptr<TrayBubbleView> tray_bubble_view_;
   };
+
+  void UpdateAccessibleIgnoredState();
 
   InitParams params_;
   raw_ptr<views::BoxLayout, DanglingUntriaged> layout_;

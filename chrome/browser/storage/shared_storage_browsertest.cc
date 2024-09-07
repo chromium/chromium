@@ -32,6 +32,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -73,10 +74,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -197,17 +196,17 @@ MakeFilter(std::vector<std::string> possible_last_messages) {
 }
 
 std::string GetSharedStorageDisabledErrorMessage() {
-  return base::StrCat({"a JavaScript error: \"Error: ",
+  return base::StrCat({"a JavaScript error: \"OperationError: ",
                        content::GetSharedStorageDisabledMessage()});
 }
 
 std::string GetSharedStorageSelectURLDisabledErrorMessage() {
-  return base::StrCat({"a JavaScript error: \"Error: ",
+  return base::StrCat({"a JavaScript error: \"OperationError: ",
                        content::GetSharedStorageSelectURLDisabledMessage()});
 }
 
 std::string GetSharedStorageAddModuleDisabledErrorMessage() {
-  return base::StrCat({"a JavaScript error: \"Error: ",
+  return base::StrCat({"a JavaScript error: \"OperationError: ",
                        content::GetSharedStorageAddModuleDisabledMessage()});
 }
 
@@ -744,7 +743,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   }
 
   std::string ExpectedSharedStorageDisabledMessage() {
-    return "Error: " + content::GetSharedStorageDisabledMessage();
+    return "OperationError: " + content::GetSharedStorageDisabledMessage();
   }
 
  protected:
@@ -2242,11 +2241,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", invalid_url));
 
   EXPECT_EQ(
-      base::StrCat(
-          {"a JavaScript error: \"Error: The module script url is invalid.\n",
-           "    at __const_std::string&_script__:1:24):\n",
-           "        {sharedStorage.worklet.addModule(\"", invalid_url, "\")\n",
-           "                               ^^^^^\n"}),
+      base::StrCat({"a JavaScript error: \"DataError: The module script url is "
+                    "invalid.\n",
+                    "    at __const_std::string&_script__:1:24):\n",
+                    "        {sharedStorage.worklet.addModule(\"", invalid_url,
+                    "\")\n", "                               ^^^^^\n"}),
       result.error);
 
   WaitForHistograms({kErrorTypeHistogram});
@@ -2266,7 +2265,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
   EXPECT_EQ(
-      base::StrCat({"a JavaScript error: \"Error: Failed to load ",
+      base::StrCat({"a JavaScript error: \"OperationError: Failed to load ",
                     script_url.spec(), " HTTP status = 404 Not Found.\"\n"}),
       result.error);
 
@@ -2287,8 +2286,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
   EXPECT_EQ(
-      base::StrCat({"a JavaScript error: \"Error: Unexpected redirect on ",
-                    script_url.spec(), ".\"\n"}),
+      base::StrCat(
+          {"a JavaScript error: \"OperationError: Unexpected redirect on ",
+           script_url.spec(), ".\"\n"}),
       result.error);
 
   WaitForHistograms({kErrorTypeHistogram});
@@ -4823,7 +4823,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeCrossOriginScriptDisabledBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
   EXPECT_EQ(
-      base::StrCat({"a JavaScript error: \"Error: Only same origin module ",
+      base::StrCat({"a JavaScript error: \"DataError: Only same origin module ",
                     "script is allowed.",
                     "\n    at __const_std::string&_script__:1:24):\n        ",
                     "{sharedStorage.worklet.addModule(\"",

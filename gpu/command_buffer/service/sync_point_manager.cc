@@ -293,22 +293,50 @@ void SyncPointClientState::ReleaseFenceSync(uint64_t release) {
   DCHECK(!destroyed_.IsSet())
       << "Attempting to release fence on destroyed client state.";
 
-  bool updated = EnsureFenceSyncReleased(release);
-  // Suppress unused variable error in release builds.
-  (void)updated;
-  DLOG_IF(ERROR, !updated) << "Client submitted fence releases out of order.";
+  EnsureFenceSyncReleased(release, ReleaseCause::kExplicitClientRelease);
 }
 
-bool SyncPointClientState::EnsureFenceSyncReleased(uint64_t release) {
+void SyncPointClientState::EnsureFenceSyncReleased(uint64_t release,
+                                                   ReleaseCause cause) {
   // Call callbacks without the lock to avoid possible deadlocks.
   std::vector<base::OnceClosure> callback_list;
   {
     base::AutoLock auto_lock(fence_sync_lock_);
 
+    // Check that in the ReleaseCause::kExplicitClientRelease case, the
+    // release count must be larger than previously-seen release count from the
+    // client.
+    //
+    // For the ReleaseCause::kTaskCompletionRelease case, we relax the check a
+    // little bit to allow the release count to be "no less than"
+    // previously-seen release count from the client. That is because currently
+    // for some clients consecutive tasks may specify the same task release
+    // number, if no new fence sync is inserted.
+    //
+    // Please also note that if forceful release has happened to resolve invalid
+    // waits, the current `fence_sync_release_` may be larger than `release`.
+    if ((cause == ReleaseCause::kExplicitClientRelease &&
+         release <= client_fence_sync_release_) ||
+        (cause == ReleaseCause::kTaskCompletionRelease &&
+         release < client_fence_sync_release_)) {
+      static constexpr char error_message[] =
+          "Client attempted to release a fence sync that has been released.";
+      if (!sync_point_manager_->suppress_fatal_log_for_testing()) {
+        LOG(DFATAL) << error_message;
+      } else {
+        LOG(ERROR) << error_message;
+      }
+    }
+
+    if (cause == ReleaseCause::kExplicitClientRelease ||
+        cause == ReleaseCause::kTaskCompletionRelease) {
+      client_fence_sync_release_ = release;
+    }
+
     if (release <= fence_sync_release_) {
       DCHECK(release_callback_queue_.empty() ||
              release_callback_queue_.top().release_count > release);
-      return false;
+      return;
     }
     fence_sync_release_ = release;
 
@@ -323,8 +351,6 @@ bool SyncPointClientState::EnsureFenceSyncReleased(uint64_t release) {
 
   for (base::OnceClosure& closure : callback_list)
     std::move(closure).Run();
-
-  return true;
 }
 
 void SyncPointClientState::EnsureWaitReleased(uint64_t release,
@@ -448,7 +474,8 @@ void SyncPointManager::DestroySyncPointClientState(
   }
 }
 
-bool SyncPointManager::EnsureFenceSyncReleased(const SyncToken& release) {
+void SyncPointManager::EnsureFenceSyncReleased(const SyncToken& release,
+                                               ReleaseCause cause) {
   scoped_refptr<SyncPointClientState> client_state;
   {
     base::AutoLock lock(lock_);
@@ -458,9 +485,8 @@ bool SyncPointManager::EnsureFenceSyncReleased(const SyncToken& release) {
   if (client_state) {
     // This must be called without holding `lock_`, because it may call release
     // callbacks which are not supposed to be called under `lock_`.
-    return client_state->EnsureFenceSyncReleased(release.release_count());
+    client_state->EnsureFenceSyncReleased(release.release_count(), cause);
   }
-  return false;
 }
 
 bool SyncPointManager::IsSyncTokenReleased(const SyncToken& sync_token) {

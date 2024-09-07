@@ -13,8 +13,10 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
+#import "components/segmentation_platform/embedder/input_delegate/shopping_service_input_delegate.h"
 #import "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
 #import "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 #import "components/segmentation_platform/embedder/model_provider_factory_impl.h"
@@ -25,15 +27,15 @@
 #import "components/segmentation_platform/public/config.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_config.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -50,6 +52,8 @@ const char kSegmentationDeviceSwitcherUserDataKey[] =
     "segmentation_device_switcher_data";
 const char kSegmentationTabRankDispatcherUserDataKey[] =
     "segmentation_tab_rank_dispatcher_data";
+const char kSegmentationHomeModulesCardRegistryDataKey[] =
+    "segmentation_home_modules_card_registry";
 
 std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
     std::vector<std::unique_ptr<Config>>& configs,
@@ -86,6 +90,16 @@ class SegmentationPlatformServiceSubscription
   base::CallbackListSubscription subscription_;
 };
 
+// Returns the ShoppingService for `weak_profile`.
+ShoppingService* GetShoppingService(base::WeakPtr<ProfileIOS> weak_profile) {
+  if (ProfileIOS* profile = weak_profile.get()) {
+    return commerce::ShoppingServiceFactory::GetForBrowserStateIfExists(
+        profile);
+  }
+
+  return nullptr;
+}
+
 std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
     web::BrowserState* context) {
   DCHECK(context);
@@ -94,26 +108,25 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
     return nullptr;
   }
 
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  DCHECK(chrome_browser_state);
-  const base::FilePath profile_path = chrome_browser_state->GetStatePath();
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  DCHECK(profile);
+  const base::FilePath profile_path = profile->GetStatePath();
   auto* optimization_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(chrome_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(profile);
 
-  auto* protodb_provider = chrome_browser_state->GetProtoDatabaseProvider();
+  auto* protodb_provider = profile->GetProtoDatabaseProvider();
   if (!protodb_provider) {
     return nullptr;
   }
   sync_sessions::SessionSyncService* session_sync_service =
-      SessionSyncServiceFactory::GetForBrowserState(chrome_browser_state);
+      SessionSyncServiceFactory::GetForBrowserState(profile);
   auto tab_fetcher = std::make_unique<TabFetcher>(session_sync_service);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->profile_id = params->profile_id =
       base::NumberToString(base::PersistentHash(profile_path.value()));
   params->history_service = ios::HistoryServiceFactory::GetForBrowserState(
-      chrome_browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+      profile, ServiceAccessType::IMPLICIT_ACCESS);
   base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
   if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUserVisibleTaskRunner)) {
     priority = base::TaskPriority::USER_VISIBLE;
@@ -126,11 +139,14 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->clock = base::DefaultClock::GetInstance();
 
   params->ukm_data_manager =
-      UkmDatabaseClientHolder::GetClientInstance(chrome_browser_state)
-          .GetUkmDataManager();
-  params->profile_prefs = chrome_browser_state->GetPrefs();
+      UkmDatabaseClientHolder::GetClientInstance(profile).GetUkmDataManager();
+  params->profile_prefs = profile->GetPrefs();
 
-  params->configs = GetSegmentationPlatformConfig();
+  auto home_modules_card_registry =
+      std::make_unique<home_modules::HomeModulesCardRegistry>(
+          profile->GetPrefs());
+  params->configs =
+      GetSegmentationPlatformConfig(home_modules_card_registry.get());
   params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
       optimization_guide, params->configs, params->task_runner);
   params->field_trial_register = std::make_unique<IOSFieldTrialRegisterImpl>();
@@ -138,10 +154,20 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   // Guaranteed to outlive the SegmentationPlatformService, which depends on the
   // DeviceInfoSynceService.
   params->device_info_tracker =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(chrome_browser_state)
+      DeviceInfoSyncServiceFactory::GetForBrowserState(profile)
           ->GetDeviceInfoTracker();
   params->input_delegate_holder = SetUpInputDelegates(
       params->configs, session_sync_service, tab_fetcher.get());
+
+  // Set up Shopping Service input delegate.
+  auto shopping_service_callback =
+      base::BindRepeating(&GetShoppingService, profile->AsWeakPtr());
+
+  params->input_delegate_holder->SetDelegate(
+      proto::CustomInput::FILL_FROM_SHOPPING_SERVICE,
+      std::make_unique<ShoppingServiceInputDelegate>(
+          shopping_service_callback));
+
   auto service =
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 
@@ -165,27 +191,28 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
       kSegmentationDeviceSwitcherUserDataKey,
       std::make_unique<DeviceSwitcherResultDispatcher>(
           service.get(),
-          DeviceInfoSyncServiceFactory::GetForBrowserState(chrome_browser_state)
+          DeviceInfoSyncServiceFactory::GetForBrowserState(profile)
               ->GetDeviceInfoTracker(),
-          chrome_browser_state->GetPrefs(), field_trial_register));
+          profile->GetPrefs(), field_trial_register));
   service->SetUserData(
       kSegmentationTabRankDispatcherUserDataKey,
       std::make_unique<TabRankDispatcher>(service.get(), session_sync_service,
                                           std::move(tab_fetcher)));
+  service->SetUserData(kSegmentationHomeModulesCardRegistryDataKey,
+                       std::move(home_modules_card_registry));
   return service;
 }
 
 }  // namespace
 
 // static
-SegmentationPlatformService*
-SegmentationPlatformServiceFactory::GetForBrowserState(
-    ChromeBrowserState* context) {
+SegmentationPlatformService* SegmentationPlatformServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature)) {
     return nullptr;
   }
-  return static_cast<SegmentationPlatformService*>(
-      GetInstance()->GetServiceForBrowserState(context, /*create=*/true));
+  return GetInstance()->GetServiceForProfileAs<SegmentationPlatformService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -196,9 +223,9 @@ SegmentationPlatformServiceFactory::GetInstance() {
 }
 
 SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SegmentationPlatformService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SegmentationPlatformService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
@@ -210,15 +237,28 @@ SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
 
 // static
 DeviceSwitcherResultDispatcher*
-SegmentationPlatformServiceFactory::GetDispatcherForBrowserState(
-    ChromeBrowserState* context) {
-  CHECK(!context->IsOffTheRecord());
-  SegmentationPlatformService* service = GetForBrowserState(context);
+SegmentationPlatformServiceFactory::GetDispatcherForProfile(
+    ProfileIOS* profile) {
+  CHECK(!profile->IsOffTheRecord());
+  SegmentationPlatformService* service = GetForProfile(profile);
   if (!service) {
     return nullptr;
   }
   return static_cast<segmentation_platform::DeviceSwitcherResultDispatcher*>(
       service->GetUserData(kSegmentationDeviceSwitcherUserDataKey));
+}
+
+// static
+home_modules::HomeModulesCardRegistry*
+SegmentationPlatformServiceFactory::GetHomeCardRegistryForBrowserState(
+    ChromeBrowserState* context) {
+  CHECK(!context->IsOffTheRecord());
+  SegmentationPlatformService* service = GetForProfile(context);
+  if (!service) {
+    return nullptr;
+  }
+  return static_cast<home_modules::HomeModulesCardRegistry*>(
+      service->GetUserData(kSegmentationHomeModulesCardRegistryDataKey));
 }
 
 // static
@@ -233,8 +273,9 @@ SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   return BuildSegmentationPlatformService(context);
 }
 
-bool SegmentationPlatformServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
+void SegmentationPlatformServiceFactory::RegisterBrowserStatePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  home_modules::HomeModulesCardRegistry::RegisterProfilePrefs(registry);
 }
 
 }  // namespace segmentation_platform

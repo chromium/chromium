@@ -362,11 +362,9 @@ bool HasLeftwardDirection(const Element& element) {
     return false;
   }
 
-  WritingMode writing_mode = style->GetWritingMode();
-  bool is_rtl = !style->IsLeftToRightDirection();
-  return (writing_mode == WritingMode::kHorizontalTb && is_rtl) ||
-         writing_mode == WritingMode::kVerticalRl ||
-         writing_mode == WritingMode::kSidewaysRl;
+  const auto writing_direction = style->GetWritingDirection();
+  return writing_direction.InlineEnd() == PhysicalDirection::kLeft ||
+         writing_direction.BlockEnd() == PhysicalDirection::kLeft;
 }
 
 bool HasUpwardDirection(const Element& element) {
@@ -375,12 +373,9 @@ bool HasUpwardDirection(const Element& element) {
     return false;
   }
 
-  WritingMode writing_mode = style->GetWritingMode();
-  bool is_rtl = !style->IsLeftToRightDirection();
-  return (is_rtl && (writing_mode == WritingMode::kVerticalRl ||
-                     writing_mode == WritingMode::kVerticalLr ||
-                     writing_mode == WritingMode::kSidewaysRl)) ||
-         (!is_rtl && writing_mode == WritingMode::kSidewaysLr);
+  const auto writing_direction = style->GetWritingDirection();
+  return writing_direction.InlineEnd() == PhysicalDirection::kUp ||
+         writing_direction.BlockEnd() == PhysicalDirection::kUp;
 }
 
 // TODO(meredithl): Automatically generate this method once the IDL compiler has
@@ -4683,14 +4678,68 @@ void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
   }
 }
 
-std::optional<TextDirection> Element::ResolveAutoDirectionality(
-    bool& is_deferred) const {
-  is_deferred = false;
+std::optional<TextDirection> Element::ResolveAutoDirectionality() const {
   if (const TextControlElement* text_element =
           HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(this)) {
     return BidiParagraph::BaseDirectionForStringOrLtr(text_element->Value());
   }
 
+  auto include_in_traversal = [](Element* element) -> bool {
+    // Skip bdi, script, style and textarea.
+    if (element->HasTagName(html_names::kBdiTag) ||
+        element->HasTagName(html_names::kScriptTag) ||
+        element->HasTagName(html_names::kStyleTag) ||
+        element->HasTagName(html_names::kTextareaTag) ||
+        element->ShadowPseudoId() ==
+            shadow_element_names::kPseudoInputPlaceholder) {
+      return false;
+    }
+
+    // Skip elements with valid dir attribute
+    if (element->IsHTMLElement()) {
+      AtomicString dir_attribute_value =
+          element->FastGetAttribute(html_names::kDirAttr);
+      if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // https://html.spec.whatwg.org/multipage/dom.html#contained-text-auto-directionality
+  auto contained_text_auto_directionality =
+      [&include_in_traversal](
+          const Element* subtree_root) -> std::optional<TextDirection> {
+    Node* node = NodeTraversal::FirstChild(*subtree_root);
+    while (node) {
+      if (auto* element = DynamicTo<Element>(node)) {
+        if (!include_in_traversal(element)) {
+          node = NodeTraversal::NextSkippingChildren(*node, subtree_root);
+          continue;
+        }
+      }
+
+      if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
+        if (ShadowRoot* root = slot->ContainingShadowRoot()) {
+          return root->host().CachedDirectionality();
+        }
+      }
+
+      if (node->IsTextNode()) {
+        if (const std::optional<TextDirection> text_direction =
+                BidiParagraph::BaseDirectionForString(
+                    node->textContent(true))) {
+          return *text_direction;
+        }
+      }
+
+      node = NodeTraversal::Next(*node, subtree_root);
+    }
+    return std::nullopt;
+  };
+
+  // Note that the one caller of this method is overridden by HTMLSlotElement
+  // in order to defer doing this until it is safe to do so.
   if (const HTMLSlotElement* slot_this =
           ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
     auto& assigned_nodes = slot_this->AssignedNodes();
@@ -4706,10 +4755,13 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality(
           }
         } else if (Element* slotted_element =
                        DynamicTo<Element>(slotted_node)) {
-          std::optional<TextDirection> slotted_child_result =
-              slotted_element->ResolveAutoDirectionality(is_deferred);
-          if (slotted_child_result) {
-            return slotted_child_result;
+          if (include_in_traversal(slotted_element) ||
+              !RuntimeEnabledFeatures::DirAutoFixSlotExclusionsEnabled()) {
+            std::optional<TextDirection> slotted_child_result =
+                contained_text_auto_directionality(slotted_element);
+            if (slotted_child_result) {
+              return slotted_child_result;
+            }
           }
         }
       }
@@ -4717,45 +4769,7 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality(
     }
   }
 
-  Node* node = NodeTraversal::FirstChild(*this);
-  while (node) {
-    // Skip bdi, script, style and text form controls.
-    auto* element = DynamicTo<Element>(node);
-    if (EqualIgnoringASCIICase(node->nodeName(), "bdi") ||
-        IsA<HTMLScriptElement>(*node) || IsA<HTMLStyleElement>(*node) ||
-        (element && element->IsTextControl()) ||
-        (element && element->ShadowPseudoId() ==
-                        shadow_element_names::kPseudoInputPlaceholder)) {
-      node = NodeTraversal::NextSkippingChildren(*node, this);
-      continue;
-    }
-
-    // Skip elements with valid dir attribute
-    if (element && element->IsHTMLElement()) {
-      AtomicString dir_attribute_value =
-          element->FastGetAttribute(html_names::kDirAttr);
-      if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
-        node = NodeTraversal::NextSkippingChildren(*node, this);
-        continue;
-      }
-    }
-
-    if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
-      if (ShadowRoot* root = slot->ContainingShadowRoot()) {
-        return root->host().CachedDirectionality();
-      }
-    }
-
-    if (node->IsTextNode()) {
-      if (const std::optional<TextDirection> text_direction =
-              BidiParagraph::BaseDirectionForString(node->textContent(true))) {
-        return *text_direction;
-      }
-    }
-
-    node = NodeTraversal::Next(*node, this);
-  }
-  return std::nullopt;
+  return contained_text_auto_directionality(this);
 }
 
 void Element::AdjustDirectionalityIfNeededAfterChildrenChanged(
@@ -5200,8 +5214,8 @@ bool Element::ShouldRecalcHighlightPseudoStyle(
   // different from that of the parent, we need to re-evaluate the units.
   if (highlight_parent &&
       highlight_parent->HasLogicalDirectionRelativeUnits() &&
-      blink::IsHorizontalWritingMode(originating_style.GetWritingMode()) !=
-          blink::IsHorizontalWritingMode(highlight_parent->GetWritingMode())) {
+      originating_style.IsHorizontalWritingMode() !=
+          highlight_parent->IsHorizontalWritingMode()) {
     return true;
   }
   // We do not need to return true for viewport unit dependencies because the
@@ -5634,6 +5648,10 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
                           shadow_root_init_dict->slotAssignment() == "manual")
                              ? SlotAssignmentMode::kManual
                              : SlotAssignmentMode::kNamed;
+  auto reference_target =
+      shadow_root_init_dict->hasReferenceTarget()
+          ? AtomicString(shadow_root_init_dict->referenceTarget())
+          : g_null_atom;
   CustomElementRegistry* registry = shadow_root_init_dict->hasRegistry()
                                         ? shadow_root_init_dict->registry()
                                         : nullptr;
@@ -5671,7 +5689,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
 
   ShadowRoot& shadow_root = AttachShadowRootInternal(
       mode, focus_delegation, slot_assignment, registry, serializable, clonable,
-      /*reference_target*/ g_null_atom);
+      reference_target);
 
   // Ensure that the returned shadow root is not marked as declarative so that
   // attachShadow() calls after the first one do not succeed for a shadow host
@@ -6616,6 +6634,9 @@ bool Element::CanBeKeyboardFocusableScroller(
   // However, some lifecycle stages don't allow update here so we use
   // UpdateBehavior to guard this behavior.
   switch (update_behavior) {
+    case UpdateBehavior::kAssertNoLayoutUpdates:
+      CHECK(!GetDocument().NeedsLayoutTreeUpdate());
+      [[fallthrough]];
     case UpdateBehavior::kStyleAndLayout:
       GetDocument().UpdateStyleAndLayoutForNode(this,
                                                 DocumentUpdateReason::kFocus);
@@ -6625,8 +6646,7 @@ bool Element::CanBeKeyboardFocusableScroller(
         return false;
       }
       break;
-    case UpdateBehavior::kNoneForIsFocused:
-    case UpdateBehavior::kNoneForClearingFocus:
+    case UpdateBehavior::kNoneForFocusManagement:
       DCHECK(!DisplayLockUtilities::IsDisplayLockedPreventingPaint(this));
       break;
   }
@@ -6642,9 +6662,8 @@ bool Element::CanBeKeyboardFocusableScroller(
 // were recomputed.
 bool Element::IsKeyboardFocusableScroller(
     UpdateBehavior update_behavior) const {
-  if (!CanBeKeyboardFocusableScroller(update_behavior)) {
-    return false;
-  }
+  DCHECK(
+      CanBeKeyboardFocusableScroller(UpdateBehavior::kAssertNoLayoutUpdates));
   // This condition is to avoid clearing the focus in the middle of a
   // keyboard focused scrolling event. If the scroller is currently focused,
   // then let it continue to be focused even if focusable children are added.
@@ -6664,34 +6683,76 @@ bool Element::IsKeyboardFocusableScroller(
 }
 
 bool Element::IsKeyboardFocusable(UpdateBehavior update_behavior) const {
-  if (!Element::IsFocusable(update_behavior)) {
+  FocusableState focusable_state = Element::IsFocusableState(update_behavior);
+  if (focusable_state == FocusableState::kNotFocusable) {
     return false;
   }
-  if (!HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) &&
-      CanBeKeyboardFocusableScroller(update_behavior)) {
+  // If the element has a tabindex, then that determines keyboard
+  // focusability.
+  if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly)) {
+    return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
+  }
+  // If the element is only potentially focusable because it *might* be a
+  // keyboard-focusable scroller, then check whether it actually is.
+  if (focusable_state == FocusableState::kKeyboardFocusableScroller) {
     return IsKeyboardFocusableScroller(update_behavior);
   }
-  return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
+  // Otherwise, if the element is focusable, then it should be keyboard-
+  // focusable.
+  DCHECK_EQ(focusable_state, FocusableState::kFocusable);
+  return true;
+}
+
+bool Element::IsMouseFocusable(UpdateBehavior update_behavior) const {
+  FocusableState focusable_state = Element::IsFocusableState(update_behavior);
+  if (focusable_state == FocusableState::kNotFocusable) {
+    return false;
+  }
+  // Any element with tabindex (regardless of its value) is mouse focusable.
+  if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly)) {
+    return true;
+  }
+  DCHECK_EQ(tabIndex(), DefaultTabIndex());
+  // If the element's default tabindex is >=0, it should be click focusable.
+  if (DefaultTabIndex() >= 0) {
+    return true;
+  }
+  // If the element is only potentially focusable because it might be a
+  // keyboard-focusable scroller, then it should not be mouse focusable.
+  if (focusable_state == FocusableState::kKeyboardFocusableScroller) {
+    return false;
+  }
+  DCHECK_EQ(focusable_state, FocusableState::kFocusable);
+  return true;
 }
 
 bool Element::IsFocusable(UpdateBehavior update_behavior) const {
-  return isConnected() && IsFocusableStyle(update_behavior) &&
-         SupportsFocus(update_behavior);
+  return IsFocusableState(update_behavior) != FocusableState::kNotFocusable;
 }
 
-bool Element::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState Element::IsFocusableState(UpdateBehavior update_behavior) const {
+  if (!isConnected() || !IsFocusableStyle(update_behavior)) {
+    return FocusableState::kNotFocusable;
+  }
+  return SupportsFocus(update_behavior);
+}
+
+FocusableState Element::SupportsFocus(UpdateBehavior update_behavior) const {
   // SupportsFocus must return true when the element is editable, or else
   // it won't be focusable. Furthermore, supportsFocus cannot just return true
   // always or else tabIndex() will change for all HTML elements.
   if (IsShadowHostWithDelegatesFocus()) {
-    return false;
+    return FocusableState::kNotFocusable;
   }
-
-  return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
-         IsRootEditableElementWithCounting(*this) ||
-         IsScrollMarkerPseudoElement() ||
-         CanBeKeyboardFocusableScroller(update_behavior) ||
-         SupportsSpatialNavigationFocus();
+  if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
+      IsRootEditableElementWithCounting(*this) ||
+      IsScrollMarkerPseudoElement() || SupportsSpatialNavigationFocus()) {
+    return FocusableState::kFocusable;
+  }
+  if (CanBeKeyboardFocusableScroller(update_behavior)) {
+    return FocusableState::kKeyboardFocusableScroller;
+  }
+  return FocusableState::kNotFocusable;
 }
 
 bool Element::IsAutofocusable() const {
@@ -7505,10 +7566,9 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
-           type == CSSSelector::kPseudoSelectFallbackButtonIcon ||
            type == CSSSelector::kPseudoSelectFallbackButton ||
            type == CSSSelector::kPseudoSelectFallbackButtonText ||
-           type == CSSSelector::kPseudoSelectFallbackDatalist)
+           id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }
 #endif
@@ -7564,8 +7624,8 @@ const ComputedStyle* Element::EnsureComputedStyle(
   StyleEngine::InEnsureComputedStyleScope ensure_scope(
       GetDocument().GetStyleEngine());
 
-  if (PseudoElement* element =
-          GetNestedPseudoElement(pseudo_element_specifier, pseudo_argument)) {
+  if (Element* element =
+          GetStyledPseudoElement(pseudo_element_specifier, pseudo_argument)) {
     return element->EnsureComputedStyle();
   }
 
@@ -8103,6 +8163,25 @@ void Element::DetachPseudoElement(PseudoId pseudo_id,
   }
 }
 
+const AtomicString& StringForPseudoId(PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdPlaceholder:
+      return shadow_element_names::kPseudoInputPlaceholder;
+    case kPseudoIdFileSelectorButton:
+      return shadow_element_names::kPseudoFileUploadButton;
+    case kPseudoIdDetailsContent:
+      return shadow_element_names::kIdDetailsContent;
+    case kPseudoIdSelectFallbackButton:
+      return shadow_element_names::kSelectFallbackButton;
+    case kPseudoIdSelectFallbackButtonText:
+      return shadow_element_names::kSelectFallbackButtonText;
+    case kPseudoIdPickerSelect:
+      return shadow_element_names::kPickerSelect;
+    default:
+      return g_null_atom;
+  }
+}
+
 PseudoElement* Element::GetPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
@@ -8112,11 +8191,31 @@ PseudoElement* Element::GetPseudoElement(
   return nullptr;
 }
 
-PseudoElement* Element::GetNestedPseudoElement(
+Element* Element::GetStyledPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
   if (!IsTransitionPseudoElement(pseudo_id)) {
-    return GetPseudoElement(pseudo_id, view_transition_name);
+    if (PseudoElement* result =
+            GetPseudoElement(pseudo_id, view_transition_name)) {
+      return result;
+    }
+    const AtomicString& pseudo_string = StringForPseudoId(pseudo_id);
+    if (pseudo_string != g_null_atom) {
+      // This is a pseudo-element that refers to an element in the UA shadow
+      // tree (such as a part-like pseudo-element).  Find it in the shadow
+      // tree.
+      if (ShadowRoot* root = GetShadowRoot()) {
+        if (root->IsUserAgent()) {
+          for (Element& el : ElementTraversal::DescendantsOf(*root)) {
+            if (el.ShadowPseudoId() == pseudo_string) {
+              return &el;
+            }
+          }
+        }
+      }
+    }
+
+    return nullptr;
   }
 
   // The transition pseudos can currently only exist on the document element.
@@ -8150,7 +8249,8 @@ PseudoElement* Element::GetNestedPseudoElement(
 }
 
 LayoutObject* Element::PseudoElementLayoutObject(PseudoId pseudo_id) const {
-  if (PseudoElement* element = GetPseudoElement(pseudo_id)) {
+  if (Element* element = GetStyledPseudoElement(
+          pseudo_id, /*view_transition_name*/ g_null_atom)) {
     return element->GetLayoutObject();
   }
   return nullptr;
@@ -8465,7 +8565,7 @@ String Element::GetURLAttribute(const QualifiedName& name) const {
 #endif
   KURL url = GetDocument().CompleteURL(
       StripLeadingAndTrailingHTMLSpaces(getAttribute(name)));
-  return url.IsValid() || !RuntimeEnabledFeatures::URLAttributeFixEnabled()
+  return url.IsValid()
              ? url
              : StripLeadingAndTrailingHTMLSpaces(getAttribute(name));
 }
@@ -8622,22 +8722,20 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
 ScriptValue Element::requestPointerLock(ScriptState* script_state,
                                         const PointerLockOptions* options,
                                         ExceptionState& exception_state) {
+  if (!GetDocument().GetPage()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+               script_state, MakeGarbageCollected<DOMException>(
+                                 DOMExceptionCode::kWrongDocumentError,
+                                 "PointerLock cannot be request when there "
+                                 "is no frame or that frame has no page."))
+        .AsScriptValue();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-  if (GetDocument().GetPage()) {
-    GetDocument().GetPage()->GetPointerLockController().RequestPointerLock(
-        resolver, this, exception_state, options);
-  } else {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kWrongDocumentError,
-        "PointerLock cannot be request when there "
-        "is no frame or that frame has no page.");
-  }
-
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state);
-  }
+  GetDocument().GetPage()->GetPointerLockController().RequestPointerLock(
+      resolver, this, options);
   return promise.AsScriptValue();
 }
 
@@ -9544,6 +9642,12 @@ void Element::MapLanguageAttributeToLocale(const AtomicString& value,
 void Element::LogAddElementIfIsolatedWorldAndInDocument(
     const char element[],
     const QualifiedName& attr1) {
+  // TODO(crbug.com/361461518): Investigate the root cause of execution context
+  // is unexpectedly null.
+  if (!GetDocument().GetExecutionContext()) {
+    return;
+  }
+
   if (!isConnected() ||
       !V8DOMActivityLogger::HasActivityLoggerInIsolatedWorlds()) {
     return;
@@ -10398,12 +10502,6 @@ Element* Element::ImplicitAnchorElement() const {
     if (Element* internal_anchor = html_element->internalImplicitAnchor()) {
       return internal_anchor;
     }
-    if (const auto* datalist = DynamicTo<HTMLDataListElement>(html_element)) {
-      if (auto* select = datalist->ParentSelect()) {
-        CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-        return select;
-      }
-    }
   }
   if (const PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {
@@ -10425,7 +10523,6 @@ Element* Element::ImplicitAnchorElement() const {
 
 void Element::setHTMLUnsafe(const String& html,
                             ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
                        ForceHtml::kForce, exception_state);
 }

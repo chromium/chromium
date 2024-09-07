@@ -32,8 +32,20 @@ const char kExplicitSigninMigrationHistogramName[] =
 
 namespace {
 
+const char kSigingPendingResolutionTimeBaseHistogram[] =
+    "Signin.SigninPending.ResolutionTime.";
+
+const char kSyncPausedResolutionTimeBaseHistogram[] =
+    "Signin.SyncPaused.ResolutionTime.";
+
+// Pref used to record the time from Signin Pending to the resolution of this
+// state.
 constexpr char kSigninPendingStartTimePref[] =
     "signin.signin_pending_start_time";
+
+// Pref used to record the time from Sync Paused to the resolution of this
+// state.
+constexpr char kSyncPausedStartTimePref[] = "signin.sync_paused_start_time";
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // This pref contains the web signin start time of the accounts that have signed
@@ -49,35 +61,41 @@ constexpr char kWebSigninAccountStartTimesPref[] =
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class SigninPendingResolution {
+enum class PendingResolutionSource {
   kReauth = 0,
   kSignout = 1,
 
   kMaxValue = kSignout,
 };
 
-void RecordSigninPendingResolution(SigninPendingResolution resolution,
-                                   base::Time signin_pending_start_time) {
-  base::UmaHistogramEnumeration("Signin.SigninPending.Resolution", resolution);
-
+void RecordPendingResolutionTime(const char* histogram_base_name,
+                                 PendingResolutionSource resolution,
+                                 base::Time start_time) {
   std::string_view resolution_string;
   switch (resolution) {
-    case SigninPendingResolution::kReauth:
+    case PendingResolutionSource::kReauth:
       resolution_string = "Reauth";
       break;
-    case SigninPendingResolution::kSignout:
+    case PendingResolutionSource::kSignout:
       resolution_string = "Signout";
       break;
   }
 
   std::string histogram_resolution_time_name =
-      base::StrCat({"Signin.SigninPending.ResolutionTime.", resolution_string});
+      base::StrCat({histogram_base_name, resolution_string});
 
-  base::TimeDelta time_in_signin_pending =
-      base::Time::Now() - signin_pending_start_time;
+  base::TimeDelta time_in_pending_state = base::Time::Now() - start_time;
   base::UmaHistogramCustomTimes(histogram_resolution_time_name,
-                                time_in_signin_pending, base::Seconds(0),
+                                time_in_pending_state, base::Seconds(0),
                                 base::Days(14), 50);
+}
+
+void RecordSigninPendingResolution(PendingResolutionSource resolution,
+                                   base::Time signin_pending_start_time) {
+  base::UmaHistogramEnumeration("Signin.SigninPending.Resolution", resolution);
+
+  RecordPendingResolutionTime(kSigingPendingResolutionTimeBaseHistogram,
+                              resolution, signin_pending_start_time);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -109,6 +127,25 @@ void MaybeRecordWebSigninToChromeSigninTimes(
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+// Returns whether the service was aware of any previous auth error, where a
+// pref should have been recorded. Also ignore refresh token sources from
+// `TokenService_LoadCredentials` because the state may not be fully initialized
+// yet.
+bool HasExistingAuthError(
+    bool auth_error_pref_recorded,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  return auth_error_pref_recorded &&
+         // When Loading credentials, it is possible that the client is
+         // not yet aware of an existing error (mainly if the error was
+         // generated externally; e.g a token expired and not by the
+         // client itself). The error not being persisted will not show an
+         // error, and therefore should not be considered as a reauth in
+         // this case.
+         token_operation_source !=
+             signin_metrics::SourceForRefreshTokenOperation::
+                 kTokenService_LoadCredentials;
+}
+
 }  // namespace
 
 SigninMetricsService::SigninMetricsService(
@@ -136,13 +173,14 @@ void SigninMetricsService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterDictionaryPref(kWebSigninAccountStartTimesPref);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  registry->RegisterTimePref(kSyncPausedStartTimePref, base::Time());
 }
 
 void SigninMetricsService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kNone:
-      return;
+      break;
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       std::optional<signin_metrics::AccessPoint> access_point =
@@ -163,16 +201,31 @@ void SigninMetricsService::OnPrimaryAccountChanged(
             event_details.GetCurrentState().primary_account.gaia);
       }
 
-      return;
+      break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       if (pref_service_->HasPrefPath(kSigninPendingStartTimePref)) {
         RecordSigninPendingResolution(
-            SigninPendingResolution::kSignout,
+            PendingResolutionSource::kSignout,
             pref_service_->GetTime(kSigninPendingStartTimePref));
         pref_service_->ClearPref(kSigninPendingStartTimePref);
       }
-      return;
+      break;
+  }
+
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      if (pref_service_->HasPrefPath(kSyncPausedStartTimePref)) {
+        RecordPendingResolutionTime(
+            kSyncPausedResolutionTimeBaseHistogram,
+            PendingResolutionSource::kSignout,
+            pref_service_->GetTime(kSyncPausedStartTimePref));
+        pref_service_->ClearPref(kSyncPausedStartTimePref);
+      }
+      break;
   }
 }
 
@@ -180,34 +233,87 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& core_account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled() ||
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  // Not recording information for Signed out users.
+  if (core_account_info != identity_manager_->GetPrimaryAccountInfo(
+                               signin::ConsentLevel::kSignin) ||
+      // TODO(crbug.com/41434401): `core_account_info` is not supposed to be
+      // empty but can potentially be. In that case we do not proceed with any
+      // metric recording. More info in the linked bug.
+      core_account_info.IsEmpty()) {
     return;
   }
 
-  if (core_account_info !=
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)) {
+  // Check the Sync case first, in order not to record for both Sync Paused and
+  // Signin Pending.
+  if (core_account_info ==
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)) {
+    HandleSyncErrors(error, token_operation_source);
     return;
   }
 
+  // Signin errors only exists with Explicit browser sign in -- SigninPending.
+  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    return;
+  }
+
+  HandleSigninErrors(error, token_operation_source);
+}
+
+void SigninMetricsService::HandleSyncErrors(
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  CHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // Detecting first error.
+  if (error.IsPersistentError()) {
+    if (!pref_service_->HasPrefPath(kSyncPausedStartTimePref)) {
+      pref_service_->SetTime(kSyncPausedStartTimePref, base::Time::Now());
+    }
+    return;
+  }
+
+  // Detecting if a sync error existed and is being resolved.
+  if (HasExistingAuthError(pref_service_->HasPrefPath(kSyncPausedStartTimePref),
+                           token_operation_source)) {
+    RecordPendingResolutionTime(
+        kSyncPausedResolutionTimeBaseHistogram,
+        PendingResolutionSource::kReauth,
+        pref_service_->GetTime(kSyncPausedStartTimePref));
+    pref_service_->ClearPref(kSyncPausedStartTimePref);
+  }
+}
+
+void SigninMetricsService::HandleSigninErrors(
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  CHECK(!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // Detecting first error.
   if (error.IsPersistentError()) {
     if (!pref_service_->HasPrefPath(kSigninPendingStartTimePref)) {
       pref_service_->SetTime(kSigninPendingStartTimePref, base::Time::Now());
     }
-  } else if (pref_service_->HasPrefPath(kSigninPendingStartTimePref)) {
+    return;
+  }
+
+  // Detecting if a signin error existed and is being resolved.
+  if (HasExistingAuthError(
+          pref_service_->HasPrefPath(kSigninPendingStartTimePref),
+          token_operation_source)) {
     RecordSigninPendingResolution(
-        SigninPendingResolution::kReauth,
+        PendingResolutionSource::kReauth,
         pref_service_->GetTime(kSigninPendingStartTimePref));
     pref_service_->ClearPref(kSigninPendingStartTimePref);
 
-    AccountInfo account_info =
-        identity_manager_->FindExtendedAccountInfo(core_account_info);
+    AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+        identity_manager_->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin));
     if (account_info.access_point !=
         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
-      // Only record `Started` from WEB_SIGNIN, since there is no way to know
-      // that a WebSignin resolution has started until it was completed. Other
-      // access points are client access points which can be tracked at the
-      // real started event.
+      // Only record `Started` from WEB_SIGNIN, since there is no way to
+      // know that a WebSignin resolution has started until it was
+      // completed. Other access points are client access points which can
+      // be tracked at the real started event.
       if (account_info.access_point ==
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
         base::UmaHistogramEnumeration(

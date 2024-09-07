@@ -13,9 +13,10 @@
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/bind_post_task.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 
 namespace webnn::coreml {
@@ -124,15 +125,13 @@ void RecursivelyWriteToMLMultiArray(
 
 }  // namespace
 
-void ReadFromMLMultiArray(MLMultiArray* multi_array,
-                          base::span<uint8_t> buffer) {
-  __block bool block_executing_synchronously = true;
-  [multi_array getBytesWithHandler:^(const void* bytes, NSInteger size) {
-    // TODO(crbug.com/333392274): Refactor this method to assume the handler may
-    // be invoked on some other thread. We should not assume that the block
-    // will always run synchronously.
-    CHECK(block_executing_synchronously);
+void ReadFromMLMultiArray(
+    MLMultiArray* multi_array,
+    base::OnceCallback<void(mojo_base::BigBuffer)> result_callback) {
+  __block auto wrapped_callback =
+      base::BindPostTaskToCurrentDefault(std::move(result_callback));
 
+  [multi_array getBytesWithHandler:^(const void* bytes, NSInteger size) {
     std::vector<uint32_t> shape = ToStdVector(multi_array.shape);
     std::vector<uint32_t> strides = ToStdVector(multi_array.strides);
     CHECK_EQ(shape.size(), strides.size());
@@ -141,24 +140,25 @@ void ReadFromMLMultiArray(MLMultiArray* multi_array,
     // points to at least `size` valid bytes.
     auto multi_array_data = UNSAFE_BUFFERS(base::span(
         static_cast<const uint8_t*>(bytes), base::checked_cast<size_t>(size)));
+
+    mojo_base::BigBuffer output_buffer(multi_array_data.size());
+
     RecursivelyReadFromMLMultiArray(multi_array_data,
                                     GetDataTypeByteSize(multi_array.dataType),
-                                    shape, strides, buffer);
-  }];
+                                    shape, strides, output_buffer);
 
-  block_executing_synchronously = false;
+    std::move(wrapped_callback).Run(std::move(output_buffer));
+  }];
 }
 
 void WriteToMLMultiArray(MLMultiArray* multi_array,
-                         base::span<const uint8_t> bytes_to_write) {
-  __block bool block_executing_synchronously = true;
+                         base::span<const uint8_t> bytes_to_write,
+                         base::OnceClosure done_closure) {
+  __block auto wrapped_closure =
+      base::BindPostTaskToCurrentDefault(std::move(done_closure));
+
   [multi_array getMutableBytesWithHandler:^(void* mutable_bytes, NSInteger size,
                                             NSArray<NSNumber*>* strides) {
-    // TODO(crbug.com/333392274): Refactor this method to assume the handler may
-    // be invoked on some other thread. We should not assume that the block
-    // will always run synchronously.
-    CHECK(block_executing_synchronously);
-
     std::vector<uint32_t> shape = ToStdVector(multi_array.shape);
     std::vector<uint32_t> std_strides = ToStdVector(strides);
     CHECK_EQ(shape.size(), std_strides.size());
@@ -171,8 +171,9 @@ void WriteToMLMultiArray(MLMultiArray* multi_array,
     RecursivelyWriteToMLMultiArray(
         bytes_to_write, GetDataTypeByteSize(multi_array.dataType), shape,
         std_strides, mutable_multi_array_data);
+
+    std::move(wrapped_closure).Run();
   }];
-  block_executing_synchronously = false;
 }
 
 }  // namespace webnn::coreml

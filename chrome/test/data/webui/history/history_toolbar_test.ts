@@ -22,6 +22,12 @@ suite('history-toolbar', function() {
   const TEST_HISTORY_RESULTS: [HistoryEntry] =
       [createHistoryEntry('2016-03-15', 'https://google.com')];
 
+  function createToolbar() {
+    const toolbar = document.createElement('history-toolbar');
+    document.body.appendChild(toolbar);
+    return toolbar;
+  }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testService = new TestBrowserService();
@@ -118,10 +124,10 @@ suite('history-toolbar', function() {
     await flushTasks();
     toolbar.selectedPage = 'history';
     assertEquals(
-        'history:embeddings', toolbar.$.mainToolbar.searchIconOverride);
+        'history-embeddings:search', toolbar.$.mainToolbar.searchIconOverride);
     toolbar.selectedPage = 'grouped';
     assertEquals(
-        'history:embeddings', toolbar.$.mainToolbar.searchIconOverride);
+        'history-embeddings:search', toolbar.$.mainToolbar.searchIconOverride);
 
     // Synced tabs page should have the default icon.
     toolbar.selectedPage = 'syncedTabs';
@@ -129,12 +135,6 @@ suite('history-toolbar', function() {
   });
 
   test('updates search input aria-description', async () => {
-    function createToolbar() {
-      const toolbar = document.createElement('history-toolbar');
-      document.body.appendChild(toolbar);
-      return toolbar;
-    }
-
     // Without history embeddings enabled, description should be empty.
     loadTimeData.overrideValues({enableHistoryEmbeddings: false});
     let toolbar = createToolbar();
@@ -159,5 +159,31 @@ suite('history-toolbar', function() {
     // Synced tabs page should have no description.
     toolbar.selectedPage = 'syncedTabs';
     assertEquals(undefined, toolbar.$.mainToolbar.searchInputAriaDescription);
+  });
+
+  test('updates search input prompt', async () => {
+    // Without history embeddings enabled, prompt should be default.
+    loadTimeData.overrideValues({
+      enableHistoryEmbeddings: false,
+      searchPrompt: 'Search history',
+    });
+    let toolbar = createToolbar();
+    await flushTasks();
+    toolbar.selectedPage = 'history';
+    assertEquals('Search history', toolbar.$.mainToolbar.searchPrompt);
+
+    // With history embeddings enabled, prompt should change.
+    loadTimeData.overrideValues({
+      enableHistoryEmbeddings: true,
+      historyEmbeddingsSearchPrompt: 'Describe your search',
+    });
+    toolbar = createToolbar();
+    await flushTasks();
+    toolbar.selectedPage = 'history';
+    assertEquals('Describe your search', toolbar.$.mainToolbar.searchPrompt);
+
+    // Synced tabs page should have the default prompt.
+    toolbar.selectedPage = 'syncedTabs';
+    assertEquals('Search history', toolbar.$.mainToolbar.searchPrompt);
   });
 });

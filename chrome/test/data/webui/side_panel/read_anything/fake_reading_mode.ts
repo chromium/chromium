@@ -40,6 +40,13 @@ export class FakeReadingMode {
   yellowTheme: number = 9;
   blueTheme: number = 10;
 
+  // Enum values for highlight granularity.
+  autoHighlighting: number = 0;
+  wordHighlighting: number = 1;
+  phraseHighlighting: number = 2;
+  sentenceHighlighting: number = 3;
+  noHighlighting: number = 4;
+
   // Whether the WebUI toolbar feature flag is enabled.
   isWebUIToolbarVisible: boolean = true;
 
@@ -66,7 +73,7 @@ export class FakeReadingMode {
 
   // Returns whether the reading highlight is currently on.
   isHighlightOn(): boolean {
-    return this.highlightGranularity === 0;
+    return this.highlightGranularity !== this.noHighlighting;
   }
 
   // Returns the stored user voice preference for the current language.
@@ -162,6 +169,10 @@ export class FakeReadingMode {
     this.fontSize = 0;
   }
 
+  onHighlightGranularityChanged(value: number) {
+    this.highlightGranularity = value;
+  }
+
   // Called when a user toggles a switch in the language menu
   onLanguagePrefChange(lang: string, enabled: boolean) {
     if(enabled) {
@@ -210,10 +221,11 @@ export class FakeReadingMode {
 
   // Called when the highlight granularity is changed via the webui toolbar.
   turnedHighlightOn() {
-    this.highlightGranularity = 0;
+    this.highlightGranularity = this.autoHighlighting;
   }
+
   turnedHighlightOff() {
-    this.highlightGranularity = 1;
+    this.highlightGranularity = this.noHighlighting;
   }
 
   // Returns the actual spacing value to use based on the given lineSpacing
@@ -366,4 +378,8 @@ export class FakeReadingMode {
   getDisplayNameForLocale(_locale: string, _displayLocale: string): string {
     return '';
   }
+
+  // Begins processing the speech segments on the current page to be used by
+  // Read Aloud.
+  preprocessTextForSpeech() {}
 }

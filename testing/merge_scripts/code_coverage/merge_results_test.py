@@ -78,7 +78,8 @@ class MergeProfilesTest(unittest.TestCase):
                       'llvm-profdata',
                       '.*',
                       sparse=False,
-                      merge_timeout=3600))
+                      merge_timeout=3600,
+                      weights={}))
 
   @mock.patch('builtins.open', new_callable=mock.mock_open())
   @mock.patch.object(merger, '_validate_and_convert_profraws')
@@ -106,8 +107,11 @@ class MergeProfilesTest(unittest.TestCase):
       with mock.patch.object(os, 'remove'):
         mock_walk.return_value = mock_input_dir_walk
         with mock.patch.object(subprocess, 'run') as mock_exec_cmd:
-          merger.merge_profiles('/b/some/path', 'output/dir/default.profdata',
-                                '.profraw', 'llvm-profdata')
+          merger.merge_profiles('/b/some/path',
+                                'output/dir/default.profdata',
+                                '.profraw',
+                                'llvm-profdata',
+                                show_profdata=False)
           self.assertEqual(
               mock.call([
                   'llvm-profdata',
@@ -150,7 +154,8 @@ class MergeProfilesTest(unittest.TestCase):
                                 'output/dir/default.profdata',
                                 '.profraw',
                                 'llvm-profdata',
-                                skip_validation=True)
+                                skip_validation=True,
+                                show_profdata=False)
           self.assertEqual(
               mock.call([
                   'llvm-profdata',
@@ -187,8 +192,11 @@ class MergeProfilesTest(unittest.TestCase):
     with mock.patch.object(os, 'walk') as mock_walk:
       mock_walk.return_value = mock_input_dir_walk
       with mock.patch.object(subprocess, 'check_call') as mock_exec_cmd:
-        merger.merge_profiles('/b/some/path', 'output/dir/default.profdata',
-                              '.profraw', 'llvm-profdata')
+        merger.merge_profiles('/b/some/path',
+                              'output/dir/default.profdata',
+                              '.profraw',
+                              'llvm-profdata',
+                              show_profdata=False)
         self.assertFalse(mock_exec_cmd.called)
 
   @mock.patch('builtins.open', new_callable=mock.mock_open())
@@ -205,8 +213,11 @@ class MergeProfilesTest(unittest.TestCase):
       with mock.patch.object(os, 'remove'):
         mock_walk.return_value = mock_input_dir_walk
         with mock.patch.object(subprocess, 'run') as mock_exec_cmd:
-          merger.merge_profiles('/b/some/path', 'output/dir/default.profdata',
-                                '.profdata', 'llvm-profdata')
+          merger.merge_profiles('/b/some/path',
+                                'output/dir/default.profdata',
+                                '.profdata',
+                                'llvm-profdata',
+                                show_profdata=False)
           self.assertEqual(
               mock.call([
                   'llvm-profdata',
@@ -254,9 +265,12 @@ class MergeProfilesTest(unittest.TestCase):
         mock_walk.return_value = mock_input_dir_walk
         with mock.patch.object(subprocess, 'run') as mock_exec_cmd:
           input_profdata_filename_pattern = r'.+_unittests\.profdata'
-          merger.merge_profiles('/b/some/path', 'output/dir/default.profdata',
-                                '.profdata', 'llvm-profdata',
-                                input_profdata_filename_pattern)
+          merger.merge_profiles('/b/some/path',
+                                'output/dir/default.profdata',
+                                '.profdata',
+                                'llvm-profdata',
+                                input_profdata_filename_pattern,
+                                show_profdata=False)
           self.assertEqual(
               mock.call([
                   'llvm-profdata',
@@ -276,6 +290,50 @@ class MergeProfilesTest(unittest.TestCase):
               '/b/some/path/base_unittests/base_unittests.profdata\n')
           context.__enter__().write.assert_any_call(
               '/b/some/path/url_unittests/url_unittests.profdata\n')
+
+    # The mock method should only apply when merging .profraw files.
+    self.assertFalse(mock_validate_and_convert_profraws.called)
+
+  @mock.patch('builtins.open', new_callable=mock.mock_open())
+  @mock.patch.object(merger, '_validate_and_convert_profraws')
+  def test_merge_profiles_with_weights(self, mock_validate_and_convert_profraws,
+                                       mock_file_open):
+    mock_input_dir_walk = [
+        ('/b/some/path', ['speedometer_benchmark', 'motionmark_benchmark'], []),
+        ('/b/some/path/speedometer_benchmark', [], ['foo.profdata']),
+        ('/b/some/path/motionmark_benchmark', [], ['foo.profdata']),
+    ]
+    with mock.patch.object(os, 'walk') as mock_walk:
+      with mock.patch.object(os, 'remove'):
+        mock_walk.return_value = mock_input_dir_walk
+        with mock.patch.object(subprocess, 'run') as mock_exec_cmd:
+          merger.merge_profiles(
+              '/b/some/path',
+              'output/dir/default.profdata',
+              '.profdata',
+              'llvm-profdata',
+              '.*',
+              show_profdata=False,
+              weights={'speedometer_benchmark/foo.profdata': '3'})
+          self.assertEqual(
+              mock.call([
+                  'llvm-profdata',
+                  'merge',
+                  '-o',
+                  'output/dir/default.profdata',
+                  '-f',
+                  'output/dir/input-profdata-files.txt',
+              ],
+                        capture_output=True,
+                        check=True,
+                        text=True,
+                        timeout=3600), mock_exec_cmd.call_args)
+          context = mock_file_open()
+          self.assertEqual(context.__enter__().write.call_count, 2)
+          context.__enter__().write.assert_any_call(
+              '3,/b/some/path/speedometer_benchmark/foo.profdata\n')
+          context.__enter__().write.assert_any_call(
+              '/b/some/path/motionmark_benchmark/foo.profdata\n')
 
     # The mock method should only apply when merging .profraw files.
     self.assertFalse(mock_validate_and_convert_profraws.called)

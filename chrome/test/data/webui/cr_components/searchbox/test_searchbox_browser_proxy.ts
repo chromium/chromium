@@ -104,7 +104,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   }
 }
 
-export class TestRealboxBrowserProxy {
+export class TestSearchboxBrowserProxy {
   callbackRouter: PageCallbackRouter;
   callbackRouterRemote: PageRemote;
   handler: FakePageHandler;

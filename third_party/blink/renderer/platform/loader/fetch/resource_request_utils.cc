@@ -10,10 +10,39 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
+namespace {
+
+ReportingDisposition CalculateReportingDisposition(
+    const FetchParameters& params) {
+  // No CSP reports are sent for:
+  //
+  // Speculative preload
+  // ===================
+  // This avoids sending 2 reports for a single resource (preload + real load).
+  // Moreover the speculative preload are 'speculative', it might not even be
+  // possible to issue a real request.
+  //
+  // Stale revalidations
+  // ===================
+  // Web browser should not send violation reports for stale revalidations. The
+  // initial request was allowed. In theory, the revalidation request should be
+  // allowed as well. However, some <meta> CSP header might have been added in
+  // the meantime. See https://crbug.com/1070117.
+  //
+  // Note: Ideally, stale revalidations should bypass every checks. In practise,
+  // they are run and block the request. Bypassing all security checks could be
+  // risky and probably doesn't really worth it. They are very rarely blocked.
+  return params.IsSpeculativePreload() || params.IsStaleRevalidation()
+             ? ReportingDisposition::kSuppressReporting
+             : ReportingDisposition::kReport;
+}
+
+}  // namespace
 
 // This function corresponds with step 2 substep 7 of
 // https://fetch.spec.whatwg.org/#main-fetch.
@@ -115,39 +144,19 @@ bool ShouldLoadIncremental(ResourceType type) {
 }
 
 std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
-    const ResourceType& resource_type,
+    ResourceType resource_type,
     const FetchClientSettingsObject& fetch_client_settings_object,
     FetchParameters& params,
     FetchContext& context,
     WebScopedVirtualTimePauser& virtual_time_pauser,
-    ResourceLoadPriorityCalculator compute_load_priority_callback,
-    ResourceRequestTraceCallback trace_callback,
+    ResourceRequestContext& resource_request_context,
     const KURL& bundle_url_for_uuid_resources) {
   ResourceRequest& resource_request = params.MutableResourceRequest();
   const ResourceLoaderOptions& options = params.Options();
-
-  // No CSP reports are sent for:
-  //
-  // Speculative preload
-  // ===================
-  // This avoids sending 2 reports for a single resource (preload + real load).
-  // Moreover the speculative preload are 'speculative', it might not even be
-  // possible to issue a real request.
-  //
-  // Stale revalidations
-  // ===================
-  // Web browser should not send violation reports for stale revalidations. The
-  // initial request was allowed. In theory, the revalidation request should be
-  // allowed as well. However, some <meta> CSP header might have been added in
-  // the meantime. See https://crbug.com/1070117.
-  //
-  // Note: Ideally, stale revalidations should bypass every checks. In practise,
-  // they are run and block the request. Bypassing all security checks could be
-  // risky and probably doesn't really worth it. They are very rarely blocked.
-  ReportingDisposition reporting_disposition =
-      params.IsSpeculativePreload() || params.IsStaleRevalidation()
-          ? ReportingDisposition::kSuppressReporting
-          : ReportingDisposition::kReport;
+  DCHECK(!RuntimeEnabledFeatures::
+             MinimimalResourceRequestPrepBeforeCacheLookupEnabled());
+  const ReportingDisposition reporting_disposition =
+      CalculateReportingDisposition(params);
 
   // Note that resource_request.GetRedirectInfo() may be non-null here since
   // e.g. ThreadableLoader may create a new Resource from a ResourceRequest that
@@ -176,8 +185,8 @@ std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
       redirect_status);
 
   // This may modify params.Url() (via the resource_request argument).
-  context.PopulateResourceRequest(resource_type, params.GetResourceWidth(),
-                                  resource_request, options);
+  context.UpgradeResourceRequestForLoader(
+      resource_type, params.GetResourceWidth(), resource_request, options);
   if (!params.Url().IsValid()) {
     return ResourceRequestBlockedReason::kOther;
   }
@@ -185,10 +194,9 @@ std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
   ResourceLoadPriority computed_load_priority = resource_request.Priority();
   // We should only compute the priority for ResourceRequests whose priority has
   // not already been set.
-  if (!resource_request.PriorityHasBeenSet() &&
-      compute_load_priority_callback) {
+  if (!resource_request.PriorityHasBeenSet()) {
     computed_load_priority =
-        std::move(compute_load_priority_callback).Run(params);
+        resource_request_context.ComputeLoadPriority(params);
   }
   CHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);
   resource_request.SetPriority(computed_load_priority);
@@ -233,11 +241,9 @@ std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
 
   context.AddAdditionalRequestHeaders(resource_request);
 
-  if (trace_callback) {
-    std::move(trace_callback).Run(resource_request);
-  }
+  resource_request_context.RecordTrace();
 
-  std::optional<ResourceRequestBlockedReason> blocked_reason =
+  const std::optional<ResourceRequestBlockedReason> blocked_reason =
       context.CanRequest(resource_type, resource_request,
                          MemoryCache::RemoveFragmentIdentifierIfNeeded(
                              bundle_url_for_uuid_resources.IsValid()
@@ -262,6 +268,169 @@ std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
                          virtual_time_pauser, resource_type);
 
   if (!params.Url().IsValid()) {
+    return ResourceRequestBlockedReason::kOther;
+  }
+
+  return blocked_reason;
+}
+
+void UpgradeResourceRequestForLoaderNew(
+    ResourceType resource_type,
+    FetchParameters& params,
+    FetchContext& context,
+    ResourceRequestContext& resource_request_context,
+    WebScopedVirtualTimePauser& virtual_time_pauser) {
+  DCHECK(RuntimeEnabledFeatures::
+             MinimimalResourceRequestPrepBeforeCacheLookupEnabled());
+  ResourceRequest& resource_request = params.MutableResourceRequest();
+  const ResourceLoaderOptions& options = params.Options();
+
+  resource_request.SetCanChangeUrl(false);
+
+  // Note that resource_request.GetRedirectInfo() may be non-null here since
+  // e.g. ThreadableLoader may create a new Resource from a ResourceRequest that
+  // originates from the ResourceRequest passed to the redirect handling
+  // callback.
+  context.UpgradeResourceRequestForLoader(
+      resource_type, params.GetResourceWidth(), resource_request, options);
+
+  DCHECK(params.Url().IsValid());
+  resource_request.SetPriorityIncremental(ShouldLoadIncremental(resource_type));
+  resource_request.SetRenderBlockingBehavior(
+      params.GetRenderBlockingBehavior());
+
+  if (resource_type == ResourceType::kLinkPrefetch) {
+    // Add the "Purpose: prefetch" header to requests for prefetch.
+    resource_request.SetPurposeHeader("prefetch");
+  } else if (context.IsPrerendering()) {
+    // Add the "Sec-Purpose: prefetch;prerender" header to requests issued from
+    // prerendered pages. Add "Purpose: prefetch" as well for compatibility
+    // concerns (See https://github.com/WICG/nav-speculation/issues/133).
+    resource_request.SetHttpHeaderField(http_names::kSecPurpose,
+                                        AtomicString("prefetch;prerender"));
+    resource_request.SetPurposeHeader("prefetch");
+  }
+
+  context.AddAdditionalRequestHeaders(resource_request);
+
+  resource_request_context.RecordTrace();
+
+  if (context.CalculateIfAdSubresource(resource_request,
+                                       std::nullopt /* alias_url */,
+                                       resource_type, options.initiator_info)) {
+    resource_request.SetIsAdResource();
+  }
+
+  // For initial requests, call PrepareRequest() here before revalidation
+  // policy is determined.
+  context.PrepareRequest(resource_request, params.MutableOptions(),
+                         virtual_time_pauser, resource_type);
+  DCHECK(params.Url().IsValid());
+
+  resource_request.SetCanChangeUrl(true);
+}
+
+std::optional<ResourceRequestBlockedReason>
+PrepareResourceRequestForCacheAccess(
+    ResourceType resource_type,
+    const FetchClientSettingsObject& fetch_client_settings_object,
+    const KURL& bundle_url_for_uuid_resources,
+    ResourceRequestContext& resource_request_context,
+    FetchContext& context,
+    FetchParameters& params) {
+  DCHECK(RuntimeEnabledFeatures::
+             MinimimalResourceRequestPrepBeforeCacheLookupEnabled());
+  ResourceRequest& resource_request = params.MutableResourceRequest();
+  const ResourceLoaderOptions& options = params.Options();
+  const ReportingDisposition reporting_disposition =
+      CalculateReportingDisposition(params);
+
+  // Note that resource_request.GetRedirectInfo() may be non-null here since
+  // e.g. ThreadableLoader may create a new Resource from a ResourceRequest that
+  // originates from the ResourceRequest passed to the redirect handling
+  // callback.
+
+  // Before modifying the request for CSP, evaluate report-only headers. This
+  // allows site owners to learn about requests that are being modified
+  // (e.g. mixed content that is being upgraded by upgrade-insecure-requests).
+  const std::optional<ResourceRequest::RedirectInfo>& redirect_info =
+      resource_request.GetRedirectInfo();
+  const KURL& url_before_redirects =
+      redirect_info ? redirect_info->original_url : params.Url();
+  const ResourceRequestHead::RedirectStatus redirect_status =
+      redirect_info ? ResourceRequestHead::RedirectStatus::kFollowedRedirect
+                    : ResourceRequestHead::RedirectStatus::kNoRedirect;
+  context.CheckCSPForRequest(
+      resource_request.GetRequestContext(),
+      resource_request.GetRequestDestination(),
+      MemoryCache::RemoveFragmentIdentifierIfNeeded(
+          bundle_url_for_uuid_resources.IsValid()
+              ? bundle_url_for_uuid_resources
+              : params.Url()),
+      options, reporting_disposition,
+      MemoryCache::RemoveFragmentIdentifierIfNeeded(url_before_redirects),
+      redirect_status);
+
+  context.PopulateResourceRequestBeforeCacheAccess(options, resource_request);
+  if (!resource_request.Url().IsValid()) {
+    return ResourceRequestBlockedReason::kOther;
+  }
+
+  ResourceLoadPriority computed_load_priority = resource_request.Priority();
+  // We should only compute the priority for ResourceRequests whose priority has
+  // not already been set.
+  if (!resource_request.PriorityHasBeenSet()) {
+    computed_load_priority =
+        resource_request_context.ComputeLoadPriority(params);
+  }
+  CHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);
+  resource_request.SetPriority(computed_load_priority);
+
+  if (resource_request.GetCacheMode() ==
+      mojom::blink::FetchCacheMode::kDefault) {
+    resource_request.SetCacheMode(context.ResourceRequestCachePolicy(
+        resource_request, resource_type, params.Defer()));
+  }
+
+  if (resource_request.GetRequestContext() ==
+      mojom::blink::RequestContextType::UNSPECIFIED) {
+    resource_request.SetRequestContext(ResourceFetcher::DetermineRequestContext(
+        resource_type, ResourceFetcher::kImageNotImageSet));
+    resource_request.SetRequestDestination(
+        ResourceFetcher::DetermineRequestDestination(resource_type));
+  }
+
+  // Indicate whether the network stack can return a stale resource. If a
+  // stale resource is returned a StaleRevalidation request will be scheduled.
+  // Explicitly disallow stale responses for fetchers that don't have SWR
+  // enabled (via origin trial), and non-GET requests.
+  resource_request.SetAllowStaleResponse(resource_request.HttpMethod() ==
+                                             http_names::kGET &&
+                                         !params.IsStaleRevalidation());
+
+  SetReferrer(resource_request, fetch_client_settings_object);
+
+  std::optional<ResourceRequestBlockedReason> blocked_reason =
+      context.CanRequest(resource_type, resource_request,
+                         MemoryCache::RemoveFragmentIdentifierIfNeeded(
+                             bundle_url_for_uuid_resources.IsValid()
+                                 ? bundle_url_for_uuid_resources
+                                 : params.Url()),
+                         options, reporting_disposition,
+                         resource_request.GetRedirectInfo());
+  if (context.CalculateIfAdSubresource(resource_request,
+                                       std::nullopt /* alias_url */,
+                                       resource_type, options.initiator_info)) {
+    resource_request.SetIsAdResource();
+  }
+  if (blocked_reason) {
+    return blocked_reason;
+  }
+  if (!resource_request.Url().IsValid()) {
+    return ResourceRequestBlockedReason::kOther;
+  }
+  context.WillSendRequest(resource_request);
+  if (!resource_request.Url().IsValid()) {
     return ResourceRequestBlockedReason::kOther;
   }
 

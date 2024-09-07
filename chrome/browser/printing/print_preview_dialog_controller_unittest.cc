@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_preview_test.h"
 #include "chrome/browser/printing/print_view_manager.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
+#include "chrome/test/base/dialog_test_browser_window.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -25,6 +27,8 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
 
 using content::WebContents;
@@ -422,6 +426,78 @@ TEST_F(PrintPreviewDialogControllerUnitTest, MultiplePreviewDialogsClose) {
       static_cast<content::MockRenderProcessHost*>(
           web_contents_2->GetPrimaryMainFrame()->GetProcess());
   rph->SimulateCrash();
+}
+
+class PrintPreviewDialogControllerDialogDelegateTest
+    : public PrintPreviewDialogControllerUnitTest {
+ public:
+  class DialogTestBrowserWindowWithMaxDialogSize
+      : public DialogTestBrowserWindow {
+   public:
+    explicit DialogTestBrowserWindowWithMaxDialogSize(
+        PrintPreviewDialogControllerDialogDelegateTest& owner)
+        : owner_(owner) {}
+    ~DialogTestBrowserWindowWithMaxDialogSize() override = default;
+
+    // DialogTestBrowserWindow:
+    gfx::Size GetMaximumDialogSize() override { return owner_->size(); }
+
+   private:
+    const raw_ref<PrintPreviewDialogControllerDialogDelegateTest> owner_;
+  };
+
+  PrintPreviewDialogControllerDialogDelegateTest() = default;
+  ~PrintPreviewDialogControllerDialogDelegateTest() override = default;
+
+  // PrintPreviewDialogControllerUnitTest:
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
+    return std::make_unique<DialogTestBrowserWindowWithMaxDialogSize>(*this);
+  }
+
+  std::unique_ptr<ui::WebDialogDelegate> CreateDelegateWithSize(
+      const gfx::Size& size) {
+    size_ = size;
+    chrome::NewTab(browser());
+    WebContents* initiator =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return PrintPreviewDialogController::
+        CreatePrintPreviewDialogDelegateForTesting(initiator);
+  }
+
+  const gfx::Size& size() const { return size_; }
+
+ private:
+  gfx::Size size_;
+};
+
+TEST_F(PrintPreviewDialogControllerDialogDelegateTest, GetDialogSizeMinSize) {
+  auto delegate = CreateDelegateWithSize({0, 0});
+  ASSERT_TRUE(delegate);
+
+  gfx::Size size;
+  delegate->GetDialogSize(&size);
+  EXPECT_EQ(750, size.width());
+  EXPECT_EQ(455, size.height());
+}
+
+TEST_F(PrintPreviewDialogControllerDialogDelegateTest, GetDialogSizeHD) {
+  auto delegate = CreateDelegateWithSize({1920, 1080});
+  ASSERT_TRUE(delegate);
+
+  gfx::Size size;
+  delegate->GetDialogSize(&size);
+  EXPECT_EQ(1309, size.width());
+  EXPECT_EQ(863, size.height());
+}
+
+TEST_F(PrintPreviewDialogControllerDialogDelegateTest, GetDialogSizeUWFHD) {
+  auto delegate = CreateDelegateWithSize({2560, 1080});
+  ASSERT_TRUE(delegate);
+
+  gfx::Size size;
+  delegate->GetDialogSize(&size);
+  EXPECT_EQ(1757, size.width());
+  EXPECT_EQ(1055, size.height());
 }
 
 }  // namespace printing

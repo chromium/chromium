@@ -4,13 +4,36 @@
 
 #import "ios/chrome/app/profile/profile_state.h"
 
+#import <optional>
+
 #import "base/test/task_environment.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/profile/test/test_profile_state_agent.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+@interface ObserverForProfileStateTest : NSObject <ProfileStateObserver>
+
+// Records the last ProfileInitStage that was recorded during the call to
+// profileState:didTransitionToInitStage:fromInitStage: method.
+@property(nonatomic, readonly) std::optional<ProfileInitStage> lastStage;
+
+@end
+
+@implementation ObserverForProfileStateTest
+
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextStage
+               fromInitStage:(ProfileInitStage)fromStage {
+  CHECK_EQ(base::to_underlying(fromStage) + 1, base::to_underlying(nextStage));
+  _lastStage = nextStage;
+}
+
+@end
 
 using ProfileStateTest = PlatformTest;
 
@@ -40,13 +63,14 @@ TEST_F(ProfileStateTest, browserState) {
 // Tests that initStage can be set and get correctly.
 TEST_F(ProfileStateTest, initStages) {
   ProfileState* state = [[ProfileState alloc] init];
-  state.initStage = ProfileInitStage::InitStageFinal;
-  for (ProfileInitStage stage = ProfileInitStage::InitStageLoadProfile;
-       stage < ProfileInitStage::InitStageFinal;
-       stage = static_cast<ProfileInitStage>(static_cast<int>(stage) + 1)) {
-    EXPECT_NE(state.initStage, stage);
-    state.initStage = stage;
-    EXPECT_EQ(state.initStage, stage);
+  state.initStage = ProfileInitStage::InitStageLoadProfile;
+  while (state.initStage != ProfileInitStage::InitStageFinal) {
+    const ProfileInitStage nextStage =
+        static_cast<ProfileInitStage>(base::to_underlying(state.initStage) + 1);
+
+    EXPECT_NE(state.initStage, nextStage);
+    state.initStage = nextStage;
+    EXPECT_EQ(state.initStage, nextStage);
   }
 }
 
@@ -67,4 +91,30 @@ TEST_F(ProfileStateTest, connectedAgents) {
   [state removeAgent:firstAgent];
   EXPECT_EQ(state.connectedAgents.count, 1u);
   EXPECT_EQ(firstAgent.profileState, nil);
+}
+
+// Tests that observers are correctly invoked when the ProfileInitStage changes
+// (and that they are called on registration if the current stage is not
+// InitStageLoadProfile).
+TEST_F(ProfileStateTest, observers) {
+  ProfileState* state = [[ProfileState alloc] init];
+
+  ObserverForProfileStateTest* observer1 =
+      [[ObserverForProfileStateTest alloc] init];
+  [state addObserver:observer1];
+
+  // The ProfileState is still in InitStageLoadProfile, so the observer must
+  // not have been notified yet.
+  EXPECT_EQ(observer1.lastStage, std::nullopt);
+
+  state.initStage = ProfileInitStage::InitStageProfileLoaded;
+  EXPECT_EQ(observer1.lastStage, ProfileInitStage::InitStageProfileLoaded);
+
+  ObserverForProfileStateTest* observer2 =
+      [[ObserverForProfileStateTest alloc] init];
+  [state addObserver:observer2];
+
+  // As the ProfileState was not InitStageLoadProfile, the observer must have
+  // been notified during -addObserver:
+  EXPECT_EQ(observer2.lastStage, ProfileInitStage::InitStageProfileLoaded);
 }

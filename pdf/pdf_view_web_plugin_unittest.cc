@@ -39,6 +39,7 @@
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "pdf/test/mock_web_associated_url_loader.h"
+#include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
@@ -536,6 +537,16 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
                                   cc::ExactPixelComparator()))
         << "Failure at device scale of " << device_scale << ", window rect of "
         << window_rect.ToString();
+  }
+
+  ui::Cursor TestSendInputEvent(const blink::WebInputEvent& event,
+                                blink::WebInputEventResult expected_result) {
+    ui::Cursor cursor;
+    EXPECT_EQ(
+        expected_result,
+        plugin_->HandleInputEvent(
+            blink::WebCoalescedInputEvent(event, ui::LatencyInfo()), &cursor));
+    return cursor;
   }
 
   // Provides the cc::PaintCanvas for painting.
@@ -1428,11 +1439,8 @@ TEST_F(PdfViewWebPluginTest, HandleInputEvent) {
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseDown);
   mouse_event.SetPositionInWidget(10.0f, 20.0f);
 
-  ui::Cursor dummy_cursor;
-  EXPECT_EQ(blink::WebInputEventResult::kHandledApplication,
-            plugin_->HandleInputEvent(
-                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-                &dummy_cursor));
+  TestSendInputEvent(mouse_event,
+                     blink::WebInputEventResult::kHandledApplication);
 }
 
 class PdfViewWebPluginImeTest : public PdfViewWebPluginTest {
@@ -2442,9 +2450,97 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
+ protected:
+  void SetUpWithTrivialInkStrokes() {
+    // Set up the engine so the plugin can draw strokes. The exact strokes do
+    // not matter.
+    EXPECT_CALL(*engine_ptr_, HandleInputEvent).Times(0);
+    ON_CALL(*engine_ptr_, GetPageContentsRect)
+        .WillByDefault([](int page_index) -> gfx::Rect {
+          return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/100, /*height=*/50);
+        });
+    ON_CALL(*engine_ptr_, GetThumbnailSize)
+        .WillByDefault(Return(gfx::Size(50, 25)));
+    ON_CALL(*engine_ptr_, IsPageVisible)
+        .WillByDefault([](int page_index) -> bool { return true; });
+
+    // Draw some trivial strokes.
+    plugin_->OnMessage(
+        CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+    TestSendInputEvent(
+        MouseEventBuilder().CreateLeftClickAtPosition({10, 10}).Build(),
+        blink::WebInputEventResult::kHandledApplication);
+    TestSendInputEvent(
+        MouseEventBuilder().CreateLeftMouseUpAtPosition({20, 20}).Build(),
+        blink::WebInputEventResult::kHandledApplication);
+  }
+
+  void SendThumbnail(std::string_view message_id, const gfx::Size& page_size) {
+    base::Value::Dict reply;
+    reply.Set("type", "getThumbnailReply");
+    reply.Set("messageId", message_id);
+    plugin_->SendThumbnailForTesting(
+        std::move(reply), /*page_index=*/0,
+        Thumbnail(page_size, /*device_pixel_ratio=*/1));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
 };
+
+TEST_F(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
+  SetUpWithTrivialInkStrokes();
+
+  EXPECT_CALL(*client_ptr_, PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getThumbnailReply",
+            "messageId": "foo",
+            "width": 216,
+            "height": 108,
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+
+        // Test `dict` contains the image data, but not the exact value.
+        const auto* blob = dict.FindBlob("imageData");
+        ASSERT_TRUE(blob);
+        EXPECT_FALSE(blob->empty());
+      })
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "updateInk2Thumbnail",
+            "pageNumber": 1,
+            "width": 216,
+            "height": 108,
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+
+        // Test `dict` contains the image data, but not the exact value.
+        const auto* blob = dict.FindBlob("imageData");
+        ASSERT_TRUE(blob);
+        EXPECT_FALSE(blob->empty());
+      });
+  SendThumbnail(/*message_id=*/"foo", /*page_size=*/{50, 25});
+}
+
+TEST_F(PdfViewWebPluginInkTest, SendThumbnailWithNoStrokes) {
+  EXPECT_CALL(*client_ptr_, PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getThumbnailReply",
+            "messageId": "foo",
+            "width": 216,
+            "height": 108,
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+
+        // Test `dict` contains the image data, but not the exact value.
+        const auto* blob = dict.FindBlob("imageData");
+        ASSERT_TRUE(blob);
+        EXPECT_FALSE(blob->empty());
+      });
+  SendThumbnail(/*message_id=*/"foo", /*page_size=*/{50, 25});
+}
 
 TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
   UpdatePluginGeometryWithoutWaiting(2.0f, {0, 0, 20, 20});
@@ -2461,26 +2557,50 @@ TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
 
   ui::Cursor cursor;
   EXPECT_EQ(ui::mojom::CursorType::kNull, cursor.type());
-  EXPECT_EQ(blink::WebInputEventResult::kNotHandled,
-            plugin_->HandleInputEvent(
-                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-                &cursor));
+  cursor =
+      TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
 
   plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
-  EXPECT_EQ(blink::WebInputEventResult::kNotHandled,
-            plugin_->HandleInputEvent(
-                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-                &cursor));
+  cursor =
+      TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
 
   plugin_->OnMessage(
       CreateSetAnnotationModeMessageForTesting(/*enable=*/false));
-  EXPECT_EQ(blink::WebInputEventResult::kNotHandled,
-            plugin_->HandleInputEvent(
-                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-                &cursor));
+  cursor =
+      TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
+}
+
+TEST_F(PdfViewWebPluginInkTest, UpdateThumbnail) {
+  SetUpWithTrivialInkStrokes();
+
+  EXPECT_CALL(*client_ptr_, PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "updateInk2Thumbnail",
+            "pageNumber": 1,
+            "width": 50,
+            "height": 25,
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+
+        // Test `dict` contains the image data, but not the exact value.
+        const auto* blob = dict.FindBlob("imageData");
+        ASSERT_TRUE(blob);
+        EXPECT_FALSE(blob->empty());
+      });
+
+  plugin_->UpdateThumbnail(/*page_index=*/0);
+}
+
+TEST_F(PdfViewWebPluginInkTest, UpdateThumbnailWithNoStrokes) {
+  ON_CALL(*engine_ptr_, GetThumbnailSize)
+      .WillByDefault(Return(gfx::Size(50, 25)));
+
+  EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
+  plugin_->UpdateThumbnail(/*page_index=*/0);
 }
 
 TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {

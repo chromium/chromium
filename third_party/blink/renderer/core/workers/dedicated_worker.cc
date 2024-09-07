@@ -307,12 +307,24 @@ void DedicatedWorker::Start() {
         blob_url_loader_factory.InitWithNewPipeAndPassReceiver());
   }
 
+  // Calculate the origin on the renderer side when PlzDedicatedWorker is not
+  // enabled, as the starting of the worker will not wait for the browser side
+  // host creation and origin calculation. This follows the existing logic at
+  // worker_global_scope.cc, so see the comments there for details.
+  if (script_request_url_.ProtocolIsData()) {
+    origin_ =
+        GetExecutionContext()->GetSecurityOrigin()->DeriveNewOpaqueOrigin();
+  } else {
+    origin_ = GetExecutionContext()->GetSecurityOrigin()->IsolatedCopy();
+  }
+
   if (GetExecutionContext()->GetSecurityOrigin()->IsLocal()) {
     // Local resources always have empty COEP, and Worker creation
     // from a blob URL in a local resource cannot work with
     // asynchronous OnHostCreated call, so we call it directly here.
     // See https://crbug.com/1101603#c8.
     factory_client_->CreateWorkerHostDeprecated(token_, script_request_url_,
+                                                WebSecurityOrigin(origin_),
                                                 base::DoNothing());
     OnHostCreated(std::move(blob_url_loader_factory),
                   network::CrossOriginEmbedderPolicy(), mojo::NullRemote());
@@ -320,7 +332,7 @@ void DedicatedWorker::Start() {
   }
 
   factory_client_->CreateWorkerHostDeprecated(
-      token_, script_request_url_,
+      token_, script_request_url_, WebSecurityOrigin(origin_),
       WTF::BindOnce(&DedicatedWorker::OnHostCreated, WrapWeakPersistent(this),
                     std::move(blob_url_loader_factory)));
 }
@@ -392,11 +404,13 @@ void DedicatedWorker::OnWorkerHostCreated(
     CrossVariantMojoRemote<mojom::blink::BrowserInterfaceBrokerInterfaceBase>
         browser_interface_broker,
     CrossVariantMojoRemote<mojom::blink::DedicatedWorkerHostInterfaceBase>
-        dedicated_worker_host) {
+        dedicated_worker_host,
+    const WebSecurityOrigin& origin) {
   TRACE_EVENT("blink.worker", "DedicatedWorker::OnWorkerHostCreated");
   DCHECK(!browser_interface_broker_);
   browser_interface_broker_ = std::move(browser_interface_broker);
   pending_dedicated_worker_host_ = std::move(dedicated_worker_host);
+  origin_ = blink::SecurityOrigin::CreateFromUrlOrigin(url::Origin(origin));
 }
 
 void DedicatedWorker::OnScriptLoadStarted(
@@ -657,7 +671,9 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       /*interface_registry=*/nullptr,
       std::move(agent_group_scheduler_compositor_task_runner),
       top_level_frame_security_origin,
-      execution_context->GetStorageAccessApiStatus());
+      execution_context->GetStorageAccessApiStatus(),
+      /*require_cross_site_request_for_cookies=*/false,
+      origin_ ? origin_->IsolatedCopy() : nullptr);
   params->dedicated_worker_start_time = start_time_;
   return params;
 }

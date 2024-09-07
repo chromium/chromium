@@ -180,7 +180,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
     bool layer_offset_or_state_changed,
     bool layer_effect_changed,
     Vector<PaintChunkInfo>& new_chunks_info) {
-  ChunkToLayerMapper mapper(layer_state_, layer_offset_);
+  ChunkToLayerMapper mapper(PropertyTreeState(layer_state_), layer_offset_);
   Vector<bool> old_chunks_matched;
   old_chunks_matched.resize(old_paint_chunks_info_.size());
   wtf_size_t old_index = 0;
@@ -226,7 +226,8 @@ void RasterInvalidator::GenerateRasterInvalidations(
         reason == PaintInvalidationReason::kNone &&
         new_chunk.is_moved_from_cached_subsequence &&
         !new_chunk.properties.Changed(
-            PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state_)) {
+            PaintPropertyChangeType::kChangedOnlySimpleValues,
+            PropertyTreeState(layer_state_))) {
       new_chunks_info.emplace_back(old_chunk_info, it);
     } else {
       mapper.SwitchToChunk(new_chunk);
@@ -238,10 +239,10 @@ void RasterInvalidator::GenerateRasterInvalidations(
           // even if the chunk's didn't.
           reason = PaintInvalidationReason::kPaintProperty;
         } else {
-          reason = ChunkPropertiesChanged(new_chunk, old_chunk, new_chunk_info,
-                                          old_chunk_info, layer_state_,
-                                          absolute_translation_tolerance,
-                                          other_transform_tolerance);
+          reason = ChunkPropertiesChanged(
+              new_chunk, old_chunk, new_chunk_info, old_chunk_info,
+              PropertyTreeState(layer_state_), absolute_translation_tolerance,
+              other_transform_tolerance);
         }
       }
 

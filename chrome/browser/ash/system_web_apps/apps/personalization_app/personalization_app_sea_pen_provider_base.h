@@ -61,6 +61,10 @@ class PersonalizationAppSeaPenProviderBase
 
   bool IsEligibleForSeaPenTextInput() override;
 
+  bool IsManagedSeaPenEnabled() override;
+
+  bool IsManagedSeaPenFeedbackEnabled() override;
+
   // ::ash::personalization_app::mojom::SeaPenProvider:
   void SetSeaPenObserver(
       mojo::PendingRemote<mojom::SeaPenObserver> observer) override;
@@ -104,6 +108,10 @@ class PersonalizationAppSeaPenProviderBase
       uint32_t id,
       bool preview_mode,
       SelectRecentSeaPenImageCallback callback) = 0;
+
+  virtual bool IsManagedSeaPenEnabledInternal() = 0;
+
+  virtual bool IsManagedSeaPenFeedbackEnabledInternal() = 0;
 
   virtual void GetRecentSeaPenImageIdsInternal(
       GetRecentSeaPenImageIdsCallback callback) = 0;

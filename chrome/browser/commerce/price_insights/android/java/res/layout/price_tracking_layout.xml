@@ -35,17 +35,20 @@ found in the LICENSE file.
         <TextView
             android:id="@+id/price_tracking_description"
             android:layout_width="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="@string/price_insights_content_price_tracking_description"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
     </LinearLayout>
 
     <!-- Price tracking button -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/price_tracking_button"
+        style="@style/FilledButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/price_insights_content_price_tracking_button_content_description"
         android:drawablePadding="@dimen/price_insights_price_tracking_button_drawable_padding"
         android:textAppearance="@style/TextAppearance.TextMediumThick"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/FilledButton.Flat"/>
+        android:paddingStart="@dimen/price_tracking_button_padding_start"
+        android:paddingEnd="@dimen/price_tracking_button_padding_end"/>
 </LinearLayout>

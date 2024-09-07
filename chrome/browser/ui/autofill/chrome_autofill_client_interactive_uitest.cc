@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -34,16 +35,32 @@
 #include "url/gurl.h"
 
 namespace autofill {
+
 namespace {
 
-class MockAutofillExternalDelegate : public AutofillExternalDelegate {
+using ::testing::Not;
+using ::testing::Optional;
+using ::testing::Return;
+
+class TestAutofillExternalDelegate : public AutofillExternalDelegate {
  public:
-  explicit MockAutofillExternalDelegate(
+  explicit TestAutofillExternalDelegate(
       BrowserAutofillManager* autofill_manager)
       : AutofillExternalDelegate(autofill_manager) {}
-  ~MockAutofillExternalDelegate() override = default;
+  ~TestAutofillExternalDelegate() override = default;
 
-  MOCK_METHOD(void, OnSuggestionsShown, (), (override));
+  void OnSuggestionsShown(base::span<const Suggestion>) override {
+    ++show_counter_;
+  }
+
+  FillingProduct GetMainFillingProduct() const override {
+    return FillingProduct::kAutocomplete;
+  }
+
+  int show_counter() const { return show_counter_; }
+
+ private:
+  int show_counter_ = 0;
 };
 
 // This test class is needed to make the constructor public.
@@ -66,6 +83,10 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("http://test.com")));
+
+    test_api(browser_autofill_manager())
+        .SetExternalDelegate(std::make_unique<TestAutofillExternalDelegate>(
+            &browser_autofill_manager()));
   }
 
   TestChromeAutofillClient* client() {
@@ -82,6 +103,37 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
 
   content::WebContents* web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  AutofillClient::SuggestionUiSessionId ShowSuggestions(
+      const gfx::RectF& bounds) {
+    return client()->ShowAutofillSuggestions(
+        ChromeAutofillClient::PopupOpenArgs(
+            bounds, base::i18n::TextDirection::LEFT_TO_RIGHT,
+            {Suggestion(u"test")},
+            AutofillSuggestionTriggerSource::kFormControlElementClicked,
+            /*form_control_ax_id=*/0, PopupAnchorType::kField),
+        test_api(browser_autofill_manager())
+            .external_delegate()
+            ->GetWeakPtrForTest());
+  }
+
+  // Waits until the suggestions have been at least once more since calling this
+  // function.
+  void WaitUntilSuggestionsHaveBeenShown(
+      const base::Location& location = FROM_HERE) {
+    EXPECT_TRUE(base::test::RunUntil([this, initial_count =
+                                                suggestion_show_counter()]() {
+      return suggestion_show_counter() > initial_count;
+    })) << location.ToString()
+        << ": Showing Autofill suggestions timed out.";
+  }
+
+  // Returns show many times the suggestions have been shown or updated.
+  int suggestion_show_counter() {
+    return static_cast<TestAutofillExternalDelegate*>(
+               test_api(browser_autofill_manager()).external_delegate())
+        ->show_counter();
   }
 
  private:
@@ -101,35 +153,51 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
   test_api(form).field(0).set_bounds(gfx::RectF(10, 10));
   client()->ShowAutofillFieldIphForManualFallbackFeature(form.fields()[0]);
 
-  auto delegate = std::make_unique<MockAutofillExternalDelegate>(
-      &browser_autofill_manager());
-
-  bool popup_shown = false;
-  EXPECT_CALL(*delegate, OnSuggestionsShown).WillOnce([&] {
-    popup_shown = true;
-  });
-
-  base::WeakPtr<AutofillExternalDelegate> weak_delegate =
-      delegate->GetWeakPtrForTest();
-  test_api(browser_autofill_manager()).SetExternalDelegate(std::move(delegate));
-
   // Set the bounds such that the Autofill Popup would overlap with the IPH (the
   // IPH is displayed right below `form.fields[0]`, whose bounds are set above).
-  ChromeAutofillClient::PopupOpenArgs open_args(
-      gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
-      {Suggestion(u"test")},
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*form_control_ax_id=*/0, PopupAnchorType::kField);
-  client()->ShowAutofillSuggestions(open_args, weak_delegate);
-
-  // Showing the Autofill Popup and hiding the IPH are asynchronous tasks.
-  EXPECT_TRUE(base::test::RunUntil([&]() { return popup_shown; }))
-      << "Showing the Autofill Popup timed out.";
+  ShowSuggestions(/*bounds=*/gfx::RectF(100, 100));
+  WaitUntilSuggestionsHaveBeenShown();
 
   EXPECT_FALSE(chrome::FindBrowserWithTab(web_contents())
                    ->window()
                    ->IsFeaturePromoActive(
                        feature_engagement::kIPHAutofillManualFallbackFeature));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest, SuggestionUiSessionId) {
+  // Before a popup is showing, no identifier is returned.
+  EXPECT_EQ(client()->GetSessionIdForCurrentAutofillSuggestions(),
+            std::nullopt);
+
+  // Showing suggestions leads (asynchronously) to showing a popup with the
+  // identifier returned by ShowAutofillSuggestions.
+  const AutofillClient::SuggestionUiSessionId first_id =
+      ShowSuggestions(gfx::RectF(50, 50));
+  WaitUntilSuggestionsHaveBeenShown();
+  EXPECT_THAT(client()->GetSessionIdForCurrentAutofillSuggestions(),
+              std::make_optional(first_id));
+
+  const AutofillClient::SuggestionUiSessionId second_id =
+      ShowSuggestions(gfx::RectF(60, 60));
+  EXPECT_NE(first_id, second_id);
+  // Since showing suggestions is asynchronous, the identifier returned by
+  // ShowAutofillSuggestions can be different from the one currently showing.
+  EXPECT_THAT(client()->GetSessionIdForCurrentAutofillSuggestions(),
+              Not(Optional(second_id)));
+  // But once the new popup has been shown, they will be the same.
+  WaitUntilSuggestionsHaveBeenShown();
+  EXPECT_THAT(client()->GetSessionIdForCurrentAutofillSuggestions(),
+              Optional(second_id));
+
+  // Updating the suggestions does not lead to a new identifier. Note that
+  // updating the suggestions is synchronous.
+  const int old_count = suggestion_show_counter();
+  client()->UpdateAutofillSuggestions(
+      {Suggestion(u"other text")}, FillingProduct::kAutocomplete,
+      AutofillSuggestionTriggerSource::kUnspecified);
+  EXPECT_GT(suggestion_show_counter(), old_count);
+  EXPECT_THAT(client()->GetSessionIdForCurrentAutofillSuggestions(),
+              Optional(second_id));
 }
 
 }  // namespace

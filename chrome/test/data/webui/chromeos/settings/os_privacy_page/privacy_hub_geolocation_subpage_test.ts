@@ -5,13 +5,14 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {PrivacyHubBrowserProxyImpl, SettingsPrivacyHubGeolocationSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, ControlledButtonElement, ControlledRadioButtonElement, CrDialogElement, CrLinkRowElement, CrTooltipIconElement, GeolocationAccessLevel, Router, routes, ScheduleType, setAppPermissionProviderForTesting, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, ControlledButtonElement, ControlledRadioButtonElement, CrDialogElement, CrLinkRowElement, CrTooltipIconElement, GeolocationAccessLevel, OpenWindowProxyImpl, Router, routes, ScheduleType, setAppPermissionProviderForTesting, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertLT, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
@@ -26,6 +27,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   let metrics: FakeMetricsPrivate;
   let privacyHubGeolocationSubpage: SettingsPrivacyHubGeolocationSubpage;
   let privacyHubBrowserProxy: TestPrivacyHubBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
 
   async function initPage() {
     privacyHubGeolocationSubpage =
@@ -81,6 +83,8 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     metrics = createFakeMetricsPrivate();
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION);
   });
@@ -88,6 +92,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   teardown(() => {
     privacyHubGeolocationSubpage.remove();
     Router.getInstance().resetRouteForTesting();
+    openWindowProxy.reset();
   });
 
   function histogram(): string {
@@ -676,6 +681,49 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
     await setGeolocationAccessLevelPref(GeolocationAccessLevel.ALLOWED);
     await checkServiceSection();
+  });
+
+  test('System services navigate to its settings page on click', async () => {
+    await initPage();
+    const systemServices =
+        getSystemServicesFromSubpage(privacyHubGeolocationSubpage);
+
+    // Check all 4 system services are listed.
+    assertEquals(4, systemServices.length);
+
+    // Check Timezone navigation.
+    const timezone = systemServices[0]!;
+    timezone.click();
+    await flushTasks();
+    assertEquals(
+        routes.DATETIME_TIMEZONE_SUBPAGE.path,
+        Router.getInstance().currentRoute.path);
+
+    // Check NightLight navigation.
+    const nightLight = systemServices[1]!;
+    nightLight.click();
+    await flushTasks();
+    assertEquals(routes.DISPLAY.path, Router.getInstance().currentRoute.path);
+
+
+    // Check DarkTheme navigation.
+    const darkTheme = systemServices[2]!;
+    darkTheme.click();
+    assertEquals(
+        loadTimeData.getString('personalizationAppUrl'),
+        await openWindowProxy.whenCalled('openUrl'));
+    await flushTasks();
+
+    // Reset promise resolvers to test again on LocalWeather.
+    openWindowProxy.reset();
+
+    // Check LocalWeather navigation.
+    const localWeather = systemServices[3]!;
+    localWeather.click();
+    assertEquals(
+        loadTimeData.getString('personalizationAppUrl') +
+            loadTimeData.getString('ambientSubpageRelativeUrl'),
+        await openWindowProxy.whenCalled('openUrl'));
   });
 
   test('Timezone update in system services section', async () => {

@@ -433,7 +433,6 @@ NavigationEntryImpl::NavigationEntryImpl(
       is_renderer_initiated_(is_renderer_initiated),
       should_clear_history_list_(false),
       can_load_local_resources_(false),
-      frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       has_user_gesture_(false),
       reload_type_(ReloadType::NONE),
       started_from_context_menu_(false),
@@ -534,7 +533,7 @@ void NavigationEntryImpl::SetAppTitle(const std::u16string& app_title) {
   app_title_ = app_title;
 }
 
-const std::u16string& NavigationEntryImpl::GetAppTitle() {
+const std::optional<std::u16string>& NavigationEntryImpl::GetAppTitle() {
   return app_title_;
 }
 
@@ -1029,7 +1028,7 @@ void NavigationEntryImpl::ResetForCommit(FrameNavigationEntry* frame_entry) {
   set_is_renderer_initiated(false);
 
   set_should_clear_history_list(false);
-  set_frame_tree_node_id(FrameTreeNode::kFrameTreeNodeInvalidId);
+  set_frame_tree_node_id(FrameTreeNodeId());
   set_reload_type(ReloadType::NONE);
 
   if (frame_entry) {

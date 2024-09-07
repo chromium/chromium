@@ -259,9 +259,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 #pragma mark - LegacyChromeTableViewController
 
 - (void)editButtonPressed {
-  // Share button should be hidden during editing.
-  _shareButton.hidden = YES;
-
   // If there are no passwords or passkeys, proceed with editing without
   // reauthentication.
   if (![self hasAtLeastOnePasswordOrPasskey]) {
@@ -997,6 +994,13 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   return YES;
 }
 
+- (void)updateUIForEditState {
+  [super updateUIForEditState];
+
+  // Share button should be hidden when editing.
+  _shareButton.hidden = self.tableView.editing;
+}
+
 #pragma mark - Private
 
 // Applies tint colour and resizes image.
@@ -1349,6 +1353,15 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Notifies the handler that the share button was pressed by the user.
 - (void)onShareButtonPressed {
   CHECK(self.handler);
+
+  // Replace `_shareButton` with a spinner.
+  UIActivityIndicatorView* spinner = GetMediumUIActivityIndicatorView();
+  [spinner startAnimating];
+  UIBarButtonItem* spinnerBarButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:spinner];
+  self.navigationItem.rightBarButtonItems =
+      @[ self.navigationItem.rightBarButtonItem, spinnerBarButtonItem ];
+
   [self.handler onShareButtonPressed];
 }
 
@@ -1695,10 +1708,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
   }
   [self.delegate didFinishEditingPasswordDetails];
-
-  // Share button is hidden during editing, make it visible again.
-  _shareButton.hidden = NO;
-
   [super editButtonPressed];
   [self reloadData];
 }
@@ -1713,8 +1722,16 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(dismissView)];
-  self.backButtonItem = cancelButton;
-  self.navigationItem.leftBarButtonItem = self.backButtonItem;
+  self.customLeftBarButtonItem = cancelButton;
+  self.navigationItem.leftBarButtonItem = self.customLeftBarButtonItem;
+}
+
+// TODO(crbug.com/322967526): Add timer to display the spinner for min amount of
+// time and possibly a completion to only proceed with sharing views after share
+// button is back.
+- (void)showShareButton {
+  self.navigationItem.rightBarButtonItems =
+      @[ self.navigationItem.rightBarButtonItem, _shareButton ];
 }
 
 @end

@@ -25,13 +25,6 @@ namespace shell {
 // TODO(crbug.com/40120884): Move relevant tests to components/browsertests so
 // there is common coverage of MediaBlocker across platforms.
 class CastMediaBlockerBrowserTest : public CastBrowserTest {
- public:
-  CastMediaBlockerBrowserTest() {}
-
-  CastMediaBlockerBrowserTest(const CastMediaBlockerBrowserTest&) = delete;
-  CastMediaBlockerBrowserTest& operator=(const CastMediaBlockerBrowserTest&) =
-      delete;
-
  protected:
   // CastBrowserTest implementation.
   void TearDownOnMainThread() override {
@@ -87,7 +80,9 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
   std::unique_ptr<CastMediaBlocker> blocker_;
 };
 
-IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest, Audio_BlockUnblock) {
+// TODO(b/341792190): Re-enable tests.
+IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest,
+                       DISABLED_Audio_BlockUnblock) {
   PlayMedia("audio", "bear-audio-10s-CBR-has-TOC.mp3");
 
   BlockAndTestPlayerState("audio", true);
@@ -95,7 +90,9 @@ IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest, Audio_BlockUnblock) {
 }
 
 #if !BUILDFLAG(IS_CAST_AUDIO_ONLY)
-IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest, Video_BlockUnblock) {
+// TODO(b/341792190): Re-enable tests.
+IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest,
+                       DISABLED_Video_BlockUnblock) {
   PlayMedia("video", "tulip2.webm");
 
   BlockAndTestPlayerState("video", true);

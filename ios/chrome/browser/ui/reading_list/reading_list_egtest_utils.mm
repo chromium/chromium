@@ -62,7 +62,7 @@ void AddURLToReadingListWithoutSnackbarDismiss(const GURL& URL) {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuAction:chrome_test_util::ButtonWithAccessibilityLabelId(
-                             IDS_IOS_SHARE_MENU_READING_LIST_ACTION)];
+                             IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)];
 }
 
 void AddURLToReadingListWithSnackbarDismiss(const GURL& URL, NSString* email) {

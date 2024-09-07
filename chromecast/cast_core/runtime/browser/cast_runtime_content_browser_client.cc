@@ -28,9 +28,13 @@ namespace {
 // up and tear down.
 class CoreCastService : public shell::CastServiceSimple {
  public:
-  CoreCastService(CastWebService* web_service,
-                  RuntimeServiceImpl& runtime_service)
-      : CastServiceSimple(web_service), runtime_service_(runtime_service) {}
+  CoreCastService(
+      CastWebService* web_service,
+      cast_receiver::ContentBrowserClientMixins& cast_browser_client_mixins_)
+      : CastServiceSimple(web_service),
+        runtime_service_(
+            std::make_unique<RuntimeServiceImpl>(cast_browser_client_mixins_,
+                                                 *web_service)) {}
 
   // CastServiceSimple overrides:
   void StartInternal() override {
@@ -41,8 +45,10 @@ class CoreCastService : public shell::CastServiceSimple {
 
   void StopInternal() override { runtime_service_->Stop(); }
 
+  void FinalizeInternal() override { runtime_service_.reset(); }
+
  private:
-  raw_ref<RuntimeServiceImpl> runtime_service_;
+  std::unique_ptr<RuntimeServiceImpl> runtime_service_;
 };
 
 }  // namespace
@@ -73,10 +79,9 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
     DisplaySettingsManager* display_settings_manager) {
   observer_.SetVideoPlaneController(video_plane_controller);
 
-  InitializeCoreComponents(web_service);
-
   // Unretained() is safe here because this instance will outlive CastService.
-  return std::make_unique<CoreCastService>(web_service, *runtime_service_);
+  return std::make_unique<CoreCastService>(web_service,
+                                           *cast_browser_client_mixins_);
 }
 
 std::unique_ptr<::media::CdmFactory>
@@ -120,7 +125,7 @@ CastRuntimeContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id) {
   return cast_browser_client_mixins_->CreateURLLoaderThrottles(
       std::move(wc_getter), frame_tree_node_id,
@@ -156,12 +161,6 @@ void CastRuntimeContentBrowserClient::Observer::OnStreamingResolutionChanged(
   if (video_plane_controller_) {
     video_plane_controller_->SetGeometryFromMediaType(size, transformation);
   }
-}
-
-void CastRuntimeContentBrowserClient::InitializeCoreComponents(
-    CastWebService* web_service) {
-  runtime_service_ = std::make_unique<RuntimeServiceImpl>(
-      *cast_browser_client_mixins_, *web_service);
 }
 
 }  // namespace chromecast

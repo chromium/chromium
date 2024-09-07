@@ -53,11 +53,12 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -72,7 +73,6 @@ import org.chromium.ui.base.WindowAndroid;
  * Tests the EdgeToEdgeController code. Ideally this would include {@link EdgeToEdgeController},
  * {@link EdgeToEdgeControllerFactory}, along with {@link EdgeToEdgeControllerImpl}
  */
-@DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         sdk = VERSION_CODES.R,
@@ -133,6 +133,7 @@ public class EdgeToEdgeControllerTest {
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutManager mLayoutManager;
+    @Mock private FullscreenManager mFullscreenManager;
 
     @Implements(EdgeToEdgeControllerFactory.class)
     static class ShadowEdgeToEdgeControllerFactory extends EdgeToEdgeControllerFactory {
@@ -179,7 +180,8 @@ public class EdgeToEdgeControllerTest {
                         mTabProvider,
                         mOsWrapper,
                         mBrowserControlsStateProvider,
-                        mLayoutManager);
+                        mLayoutManager,
+                        mFullscreenManager);
         assertNotNull(mEdgeToEdgeControllerImpl);
         verify(mOsWrapper, times(1)).setDecorFitsSystemWindows(any(), eq(false));
         verify(mOsWrapper, times(1))
@@ -202,27 +204,27 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void drawEdgeToEdge_ToEdgeAndToNormal() {
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowInsets= */ false);
+        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ false);
         assertToEdgeExpectations();
 
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowInsets= */ false);
+        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ false);
         assertToNormalExpectations();
     }
 
     @Test
     public void drawEdgeToEdge_UpdateWindowInsets_toNormal() {
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowInsets= */ false);
+        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ false);
         verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(BOTTOM_INSET));
 
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS_LANDSCAPE);
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowInsets= */ true);
+        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ true);
         verify(mOsWrapper)
                 .setPadding(
                         any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_INSET_LANDSCAPE));
 
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(IME_INSETS_KEYBOARD);
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowInsets= */ true);
+        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ true);
         verify(mOsWrapper)
                 .setPadding(
                         any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_KEYBOARD_INSET));
@@ -231,15 +233,15 @@ public class EdgeToEdgeControllerTest {
     @Test
     public void drawEdgeToEdge_UpdateWindowInsets_toEdge() {
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowInsets= */ false);
+        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ false);
         verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
 
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS_LANDSCAPE);
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowInsets= */ true);
+        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ true);
         verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(0));
 
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(IME_INSETS_KEYBOARD);
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowInsets= */ true);
+        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ true);
         verify(mOsWrapper)
                 .setPadding(
                         any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_KEYBOARD_INSET));
@@ -362,7 +364,8 @@ public class EdgeToEdgeControllerTest {
                                 mWindowAndroid,
                                 liveSupplier,
                                 mBrowserControlsStateProvider,
-                                mLayoutManager);
+                                mLayoutManager,
+                                mFullscreenManager);
         assertNotNull(liveController);
         liveController.setIsOptedIntoEdgeToEdgeForTesting(true);
         liveController.setIsDrawingToEdgeForTesting(true);
@@ -468,6 +471,18 @@ public class EdgeToEdgeControllerTest {
         doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         mEdgeToEdgeControllerImpl.onStartedShowing(LayoutType.BROWSING);
         assertToEdgeExpectations();
+    }
+
+    @Test
+    public void switchFullscreenMode_NoStatusBarNoNavBar() {
+        doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.onEnterFullscreen(mTab, new FullscreenOptions(false, false));
+
+        verify(mOsWrapper, atLeastOnce()).setPadding(any(), eq(0), eq(0), eq(0), eq(0));
+
+        mEdgeToEdgeControllerImpl.onExitFullscreen(mTab);
+        assertToNormalExpectations();
+        assertBottomInsetForSafeArea(0);
     }
 
     @Test

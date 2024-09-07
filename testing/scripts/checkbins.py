@@ -47,7 +47,7 @@ def main_run(args):
         '--verbose',
         '--json',
         tempfile_path,
-        os.path.join(args.paths['checkout'], 'out', args.build_config_fs),
+        args.build_dir,
     ])
 
     with open(tempfile_path) as f:

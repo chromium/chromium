@@ -64,11 +64,13 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -190,8 +192,9 @@ class FirstPartySchemeContentBrowserClient
   }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
-  CreateNonNetworkNavigationURLLoaderFactory(const std::string& scheme,
-                                             int frame_tree_node_id) override {
+  CreateNonNetworkNavigationURLLoaderFactory(
+      const std::string& scheme,
+      FrameTreeNodeId frame_tree_node_id) override {
     if (scheme == "trustme") {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> trustme_remote;
       trustme_factory_->Clone(trustme_remote.InitWithNewPipeAndPassReceiver());
@@ -368,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // dropped. In https://crbug.com/1154852, this causes future messages sent via
   // GetAssociatedLocalFrame to also be dropped.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"'foo'", base::NullCallback());
+      u"'foo'", base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
 
   // Navigating will create the RenderFrame.
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -423,25 +426,27 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoveFocusedFrame) {
   EXPECT_EQ("frame4", web_contents()->GetFocusedFrame()->GetFrameName());
   EXPECT_EQ("frame3",
             web_contents()->GetFocusedFrame()->GetParent()->GetFrameName());
-  EXPECT_NE(-1,
-            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
+  EXPECT_TRUE(
+      web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
 
   EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(), "detachframe(3)"));
   EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
-  EXPECT_EQ(-1,
-            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
+  EXPECT_TRUE(web_contents()
+                  ->GetPrimaryFrameTree()
+                  .focused_frame_tree_node_id_.is_null());
 
   EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(), "focusframe2()"));
   EXPECT_NE(nullptr, web_contents()->GetFocusedFrame());
   EXPECT_NE(web_contents()->GetPrimaryMainFrame(),
             web_contents()->GetFocusedFrame());
-  EXPECT_NE(-1,
-            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
+  EXPECT_TRUE(
+      web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
 
   EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(), "detachframe(2)"));
   EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
-  EXPECT_EQ(-1,
-            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
+  EXPECT_TRUE(web_contents()
+                  ->GetPrimaryFrameTree()
+                  .focused_frame_tree_node_id_.is_null());
 }
 
 // Test that a frame is visible/hidden depending on its WebContents visibility
@@ -665,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [](content::RenderFrameHostImpl* render_frame_host) {
         render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-            std::u16string(), base::NullCallback());
+            std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
       });
 
   // Force a process switch by going to a privileged page. The beforeunload
@@ -717,8 +722,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // should be a dialog. If there is no dialog, the call to Wait will hang.
   web_contents()
       ->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(std::u16string(),
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
   web_contents()->GetController().Reload(ReloadType::NORMAL, false);
   dialog_manager.Wait();
 
@@ -1050,6 +1055,121 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   EXPECT_EQ(expected_overrides,
             actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
+}
+
+// Tests that the frame's RuntimeFeatureStateDocumentData is in a valid
+// state when
+// * The frame has crashed
+// * It is reloaded
+// * The renderer attempts to apply a header OT token before the frame has been
+// finished committing. (While header OT tokens aren't supported by
+// RuntimeFeatureState, we still shouldn't crash if someone tries to use one.)
+//
+// Also tests that even if a dummy RuntimeFeatureStateDocumentData is created,
+// the NavigationRequest's RuntimeFeatureStateContext will overwrite it.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplWithTokensBrowserTest,
+    ReloadedCrashedFrameWithHeaderOriginTrialShouldHaveValidRuntimeFeatureStateDocumentData) {
+  // Generated with:
+  // tools/origin_trials/generate_token.py https://127.0.0.1:44440
+  // DisableThirdPartyStoragePartitioning2
+  // --expire-timestamp=2000000000
+  const char kValidFirstPartyTokenForEmptyUrl[] =
+      "A68fOEp2t0jAR/ewxM8TMwuZRCCCqT5+w/"
+      "lmt6pgABRYKg+"
+      "3Ix7S3pe5kqXLTdRgCKKQUeXdGL24tSeDb5cFbwUAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly8"
+      "xMjcuMC4wLjE6NDQ0NDAiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2V"
+      "QYXJ0aXRpb25pbmcyIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+
+  SetOriginTrialToken(kValidFirstPartyTokenForEmptyUrl);
+  EXPECT_TRUE(NavigateToURL(shell(), empty_page_url()));
+
+  // Crash the frame.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* rfh = web_contents->GetPrimaryMainFrame();
+  RenderProcessHost* process = rfh->GetProcess();
+  {
+    RenderProcessHostWatcher crash_observer(
+        process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    process->Shutdown(0);
+    crash_observer.Wait();
+  }
+  ASSERT_FALSE(rfh->IsRenderFrameLive());
+
+  // Create an observer that will set the state of
+  // DisableThirdPartyStoragePartitioning2 to true once the navigation begins to
+  // commit.
+  class ReadyToCommitObserver : public WebContentsObserver {
+   public:
+    explicit ReadyToCommitObserver(WebContentsImpl* web_contents)
+        : WebContentsObserver(web_contents) {}
+
+    // WebContentsObserver:
+    void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+      navigation_handle->GetMutableRuntimeFeatureStateContext()
+          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
+    }
+  };
+  ReadyToCommitObserver commit_observer(web_contents);
+
+  // Create a message delayer that will mock a header OT token being applied
+  // before the navigation finishes committing.
+  auto did_commit_callback =
+      base::BindLambdaForTesting([&](RenderFrameHost* rfh) {
+        // Create a test remote to initiate the IPC.
+        mojo::Remote<blink::mojom::OriginTrialStateHost>
+            origin_trial_state_host_remote;
+        OriginTrialStateHostImpl::Create(
+            web_contents->GetPrimaryMainFrame(),
+            origin_trial_state_host_remote.BindNewPipeAndPassReceiver());
+        ASSERT_TRUE(origin_trial_state_host_remote.is_connected());
+
+        auto overrides_with_tokens =
+            base::flat_map<blink::mojom::RuntimeFeature,
+                           blink::mojom::OriginTrialFeatureStatePtr>();
+        std::string raw_token(kValidFirstPartyTokenForEmptyUrl);
+        std::vector<std::string> raw_tokens_vector{raw_token};
+        overrides_with_tokens[blink::mojom::RuntimeFeature::
+                                  kDisableThirdPartyStoragePartitioning2] =
+            blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
+        origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
+            std::move(overrides_with_tokens));
+
+        origin_trial_state_host_remote.FlushForTesting();
+
+        RuntimeFeatureStateDocumentData* document_data =
+            RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+                web_contents->GetPrimaryMainFrame());
+
+        ASSERT_TRUE(document_data);
+        // Confirm that attempting to check if the feature is enabled doesn't
+        // result in a crash.
+        //
+        // The feature should still be disabled. This is because even though we
+        // sent an, otherwise, valid token we're unable to verify it against
+        // the expected url since the frame has a last committed origin of null
+        // at this point in time.
+        // Additionally, the RuntimeFeatureStateContext in the navigation
+        // request hasn't yet been saved into the DocumentData.
+        EXPECT_FALSE(document_data->runtime_feature_state_read_context()
+                         .IsDisableThirdPartyStoragePartitioning2Enabled());
+      });
+  CommitMessageDelayer commit_delayer(web_contents,
+                                      empty_page_url() /* deferred_url */,
+                                      std::move(did_commit_callback));
+  shell()->Reload();
+  commit_delayer.Wait();
+
+  RuntimeFeatureStateDocumentData* document_data =
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          web_contents->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(document_data);
+  // Now that the navigation has finished committing, the DocumentData should
+  // contain the "true" set by the observer.
+  EXPECT_TRUE(document_data->runtime_feature_state_read_context()
+                  .IsDisableThirdPartyStoragePartitioning2Enabled());
 }
 
 // Check that the RuntimeFeatureStateDocumentData is not altered when we receive
@@ -3321,8 +3441,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // without any dialog being seen.
   web_contents()
       ->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(std::u16string(),
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
   web_contents()->GetPrimaryMainFrame()->DispatchBeforeUnload(
       RenderFrameHostImpl::BeforeUnloadType::DISCARD, false);
   dialog_manager.Wait();
@@ -3352,13 +3472,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // without any dialog being seen.
   web_contents()
       ->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(std::u16string(),
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
 
   // Launch an alert javascript dialog. This pending dialog should block a
   // subsequent discarding before unload request.
   web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"setTimeout(function(){alert('hello');}, 10);", base::NullCallback());
+      u"setTimeout(function(){alert('hello');}, 10);", base::NullCallback(),
+      ISOLATED_WORLD_ID_GLOBAL);
   dialog_manager.Wait();
   EXPECT_EQ(0, dialog_manager.num_beforeunload_dialogs_seen());
   EXPECT_EQ(0, dialog_manager.num_beforeunload_fired_seen());
@@ -3696,10 +3817,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Call RequestAXSnapshotTree method. The browser process should not crash.
   auto params = mojom::SnapshotAccessibilityTreeParams::New();
-  rfh->RequestAXTreeSnapshot(
-      base::BindOnce(
-          [](const ui::AXTreeUpdate& snapshot) { NOTREACHED_IN_MIGRATION(); }),
-      std::move(params));
+  rfh->RequestAXTreeSnapshot(base::BindOnce([](ui::AXTreeUpdate& snapshot) {
+                               NOTREACHED_IN_MIGRATION();
+                             }),
+                             std::move(params));
 
   base::RunLoop().RunUntilIdle();
 
@@ -8338,7 +8459,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
   FrameTreeNode* expected_ftn = rfh_a->frame_tree_node();
 
   // Load a page in the prerender.
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerender_url);
   RenderFrameHostImpl* prerender_frame_host = static_cast<RenderFrameHostImpl*>(
       prerender_helper().GetPrerenderedMainFrameHost(host_id));
 
@@ -8359,7 +8480,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
 
   // Load a page in the prerender.
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerender_url);
   RenderFrameHostImpl* prerender_frame_host = static_cast<RenderFrameHostImpl*>(
       prerender_helper().GetPrerenderedMainFrameHost(host_id));
   EXPECT_TRUE(prerender_frame_host);

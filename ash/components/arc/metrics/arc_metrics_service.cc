@@ -711,9 +711,9 @@ void ArcMetricsService::ReportMemoryPressure(
   int metric_some;
   int metric_full;
 
-  auto stat = psi_parser_->ParseMetrics(psi_file_contents.data(),
-                                        psi_file_contents.size(), &metric_some,
-                                        &metric_full);
+  auto stat = psi_parser_->ParseMetrics(
+      base::as_string_view(base::span(psi_file_contents)), &metric_some,
+      &metric_full);
   psi_parser_->LogParseStatus(
       stat);  // Log success and failure, for histograms.
   if (stat != metrics::ParsePSIMemStatus::kSuccess)

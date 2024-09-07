@@ -43,6 +43,10 @@ enum class MigrationUploadError {
 // policy.
 bool LocalUserFilesAllowed();
 
+// If SkyVault migration is enabled, returns the `CloudProvider` to which local
+// files should be uploaded, and `kNotSpecified` otherwise.
+CloudProvider GetMigrationDestination();
+
 // Get the destination where downloads are saved.
 FileSaveDestination GetDownloadsDestination(Profile* profile);
 

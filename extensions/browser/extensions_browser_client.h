@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/bluetooth_chooser.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
@@ -121,6 +122,14 @@ class ExtensionsBrowserClient {
 
   /////////////////////////////////////////////////////////////////////////////
   // Virtual Methods
+
+  // Alerts the ExtensionsBrowserClient that the browser is shutting down,
+  // indicating that we should perform any teardown necessary before being
+  // destroyed (e.g. unsubscribing observers, or any other pre-emptive freeing
+  // of resources. Note that we may still receive calls from other shutting
+  // down objects after this call, so this should primarily be used for things
+  // that may need to be cleaned up before other parts of the browser).
+  virtual void StartTearDown();
 
   // Returns true if the embedder has started shutting down.
   virtual bool IsShuttingDown() = 0;
@@ -266,7 +275,7 @@ class ExtensionsBrowserClient {
   virtual mojo::PendingRemote<network::mojom::URLLoaderFactory>
   GetControlledFrameEmbedderURLLoader(
       const url::Origin& app_origin,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       content::BrowserContext* browser_context) = 0;
 
   // Creates a new ExtensionHostDelegate instance.
@@ -345,6 +354,11 @@ class ExtensionsBrowserClient {
   // Embedders can override this function to handle extension errors.
   virtual void ReportError(content::BrowserContext* context,
                            std::unique_ptr<ExtensionError> error);
+
+  // Creates a new instance of an ExtensionWebContentsObserver and attaches it
+  // to the given `web_contents`.
+  virtual void CreateExtensionWebContentsObserver(
+      content::WebContents* web_contents) = 0;
 
   // Returns the ExtensionWebContentsObserver for the given |web_contents|.
   virtual ExtensionWebContentsObserver* GetExtensionWebContentsObserver(

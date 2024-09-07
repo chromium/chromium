@@ -30,8 +30,9 @@ export function getHtml(this: TabSearchPageElement) {
   </div>
   <div id="divider"></div>
   <div ?hidden="${!this.filteredItems_.length}">
-    <infinite-list id="tabsList"
+    <selectable-lazy-list id="tabsList"
         max-height="${this.listMaxHeight_}"
+        item-size="${this.listItemSize_}"
         .items="${this.filteredItems_}"
         @selected-change="${this.onSelectedChanged_}"
         role="listbox"
@@ -85,7 +86,7 @@ export function getHtml(this: TabSearchPageElement) {
         return '';
       }
     }}
-    </infinite-list>
+    </selectable-lazy-list>
   </div>
   <div id="no-results" ?hidden="${this.filteredItems_.length}">
     $i18n{noResultsFound}

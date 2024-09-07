@@ -33,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
@@ -527,7 +528,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, BasicXHR) {
   // Flush the interface to make sure the frame host has received error
   // notification and the new URLLoaderFactoryBundle has been received by the
   // frame.
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   EXPECT_TRUE(CheckCanLoadHttp(shell(), "/title2.html"));
   EXPECT_EQ(last_request_relative_url(), "/title2.html");
@@ -642,7 +644,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, WindowOpenXHR) {
   // Flush the interface to make sure the frame host has received error
   // notification and the new URLLoaderFactoryBundle has been received by the
   // frame.
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   EXPECT_TRUE(CheckCanLoadHttpInWindowOpen("/title2.html"));
   EXPECT_EQ(last_request_relative_url(), "/title2.html");
@@ -693,7 +696,8 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest, WorkerFetch) {
   // Flush the interface to make sure the frame host has received error
   // notification and the new URLLoaderFactoryBundle has been received by the
   // frame.
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   EXPECT_TRUE(CheckCanWorkerFetch("worker1", "/title2.html"));
   EXPECT_EQ(last_request_relative_url(), "/title2.html");
@@ -720,7 +724,8 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest,
   // Flush the interface to make sure the frame host has received error
   // notification and the new URLLoaderFactoryBundle has been received by the
   // frame.
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   // Both workers should work after crash.
   EXPECT_TRUE(CheckCanWorkerFetch("worker1", "/title2.html"));
@@ -735,7 +740,8 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest,
   // Crash the NetworkService process again. "worker2" should still work.
   SimulateNetworkServiceCrash();
   partition->FlushNetworkInterfaceForTesting();
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   EXPECT_TRUE(CheckCanWorkerFetch("worker2", "/title2.html"));
   EXPECT_EQ(last_request_relative_url(), "/title2.html");

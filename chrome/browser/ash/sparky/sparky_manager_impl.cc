@@ -17,10 +17,14 @@
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -45,6 +49,7 @@ namespace {
 using chromeos::MahiResponseStatus;
 using crosapi::mojom::MahiContextMenuActionType;
 constexpr int kMaxConsecutiveTurns = 20;
+constexpr base::TimeDelta kWaitBeforeAdditionalCall = base::Seconds(2);
 
 ash::MahiBrowserDelegateAsh* GetMahiBrowserDelgateAsh() {
   auto* mahi_browser_delegate_ash = crosapi::CrosapiManager::Get()
@@ -62,7 +67,8 @@ SparkyManagerImpl::SparkyManagerImpl(Profile* profile,
     : profile_(profile),
       sparky_provider_(manta_service->CreateSparkyProvider(
           std::make_unique<SparkyDelegateImpl>(profile),
-          std::make_unique<sparky::SystemInfoDelegateImpl>())) {
+          std::make_unique<sparky::SystemInfoDelegateImpl>())),
+      timer_(std::make_unique<base::OneShotTimer>()) {
   CHECK(manta::features::IsMantaServiceEnabled());
 }
 
@@ -108,10 +114,7 @@ void SparkyManagerImpl::AnswerQuestionRepeating(
     sparky_context->page_url = current_page_info_->url.spec();
     sparky_context->files = sparky_provider_->GetFilesSummary();
 
-    sparky_provider_->QuestionAndAnswer(
-        std::move(sparky_context),
-        base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    RequestProviderWithQuestion(std::move(sparky_context), std::move(callback));
     return;
   }
 
@@ -208,6 +211,15 @@ void SparkyManagerImpl::OnGetPageContentForSummary(
   return;
 }
 
+void SparkyManagerImpl::RequestProviderWithQuestion(
+    std::unique_ptr<manta::SparkyContext> sparky_context,
+    MahiAnswerQuestionCallbackRepeating callback) {
+  sparky_provider_->QuestionAndAnswer(
+      std::move(sparky_context),
+      base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
+                     weak_ptr_factory_.GetWeakPtr(), callback));
+}
+
 void SparkyManagerImpl::OnSparkyProviderQAResponse(
     MahiAnswerQuestionCallbackRepeating callback,
     manta::MantaStatus status,
@@ -237,13 +249,16 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     CheckTurnLimit();
 
     // If the latest action is not the final action from the server, then an
-    // additional request is made to the server.
+    // additional request is made to the server. The last action must be of type
+    // kAllDone to prevent an additional call.
     if (!latest_turn->actions.empty() &&
-        !latest_turn->actions.back().all_done) {
-      sparky_provider_->QuestionAndAnswer(
-          std::move(sparky_context),
-          base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
-                         weak_ptr_factory_.GetWeakPtr(), callback));
+        (latest_turn->actions.back().type != manta::ActionType::kAllDone ||
+         !latest_turn->actions.back().all_done)) {
+      timer_->Start(
+          FROM_HERE, kWaitBeforeAdditionalCall,
+          base::BindOnce(&SparkyManagerImpl::RequestProviderWithQuestion,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(sparky_context), callback));
     }
 
   } else {
@@ -299,10 +314,7 @@ void SparkyManagerImpl::OnGetPageContentForQA(
   sparky_context->page_url = current_page_info_->url.spec();
   sparky_context->files = sparky_provider_->GetFilesSummary();
 
-  sparky_provider_->QuestionAndAnswer(
-      std::move(sparky_context),
-      base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  RequestProviderWithQuestion(std::move(sparky_context), std::move(callback));
 }
 
 // This function will never be called as Sparky uses a repeating callback to

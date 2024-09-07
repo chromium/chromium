@@ -30,8 +30,7 @@ syncer::EntityData EntityDataFromPlusProfile(const PlusProfile& profile) {
   sync_pb::PlusAddressSpecifics* specifics =
       entity_data.specifics.mutable_plus_address();
   specifics->set_profile_id(profile.profile_id.value());
-  specifics->set_facet(
-      absl::get<affiliations::FacetURI>(profile.facet).canonical_spec());
+  specifics->set_facet(profile.facet.canonical_spec());
   specifics->mutable_plus_email()->set_email_address(*profile.plus_address);
   // The name visible in chrome://sync-internals.
   entity_data.name = specifics->facet();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -10,14 +10,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
 constexpr int kStaticItemCount = 4;
@@ -175,6 +176,7 @@ class TabMenuBridgeTest : public ::testing::Test {
   std::unique_ptr<TabStripModel> model_;
   NSMenuItem* __strong menu_root_;
   NSMenu* __strong menu_;
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 TEST_F(TabMenuBridgeTest, CreatesBlankMenu) {

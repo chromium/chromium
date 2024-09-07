@@ -22,6 +22,7 @@
 @class JavaScriptExecutionResult;
 @protocol GREYAction;
 @protocol GREYMatcher;
+enum class TipsNotificationType;
 
 namespace chrome_test_util {
 
@@ -266,6 +267,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Adds typed URL into HistoryService.
 - (void)addHistoryServiceTypedURL:(const GURL&)URL;
+
+// Adds typed URL into HistoryService at timestamp `visitTimestamp`.
+- (void)addHistoryServiceTypedURL:(const GURL&)URL
+                   visitTimestamp:(base::Time)visitTimestamp;
 
 // Deletes typed URL from HistoryService.
 - (void)deleteHistoryServiceTypedURL:(const GURL&)URL;
@@ -965,6 +970,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Whether the first run sentinel exists.
 - (bool)hasFirstRunSentinel;
+
+#pragma mark - Notification Utilities
+
+- (void)requestTipsNotification:(TipsNotificationType)type;
 
 @end
 

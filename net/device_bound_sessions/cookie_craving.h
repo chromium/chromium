@@ -20,6 +20,10 @@ class CanonicalCookie;
 
 namespace net::device_bound_sessions {
 
+namespace proto {
+class CookieCraving;
+}
+
 // This class represents the need for a certain cookie to be present. It is not
 // a cookie itself, but rather represents a requirement which can be satisfied
 // by a real cookie (i.e. a CanonicalCookie). Each CookieCraving is specified by
@@ -102,7 +106,6 @@ class NET_EXPORT CookieCraving : public CookieBase {
   CookieCraving(CookieCraving&& other);
   CookieCraving& operator=(const CookieCraving& other);
   CookieCraving& operator=(CookieCraving&& other);
-
   ~CookieCraving() override;
 
   // Returns whether all CookieCraving fields are consistent, in canonical form,
@@ -119,6 +122,8 @@ class NET_EXPORT CookieCraving : public CookieBase {
 
   std::string DebugString() const;
 
+  bool IsEqualForTesting(const CookieCraving& other) const;
+
   // May return an invalid instance.
   static CookieCraving CreateUnsafeForTesting(
       std::string name,
@@ -131,6 +136,16 @@ class NET_EXPORT CookieCraving : public CookieBase {
       std::optional<CookiePartitionKey> partition_key,
       CookieSourceScheme source_scheme,
       int source_port);
+
+  // Returns a protobuf object. May only be called for
+  // a valid CookieCraving object.
+  proto::CookieCraving ToProto() const;
+
+  // Creates a CookieCraving object from a protobuf
+  // object. If the protobuf contents are invalid,
+  // a std::nullopt is returned.
+  static std::optional<CookieCraving> CreateFromProto(
+      const proto::CookieCraving& proto);
 
  private:
   CookieCraving();

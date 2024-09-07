@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -71,6 +71,22 @@ viz::BeginFrameAck CreateManualAckWithDamageAndPreferredFrameInterval(
       video_frame_provider ? video_frame_provider->GetPreferredRenderInterval()
                            : viz::BeginFrameArgs::MinInterval();
   return begin_frame_ack;
+}
+
+void RecordUmaPreSubmitBufferingDelay(bool is_media_stream,
+                                      base::TimeDelta delay) {
+  if (is_media_stream) {
+    base::UmaHistogramTimes("Media.VideoFrameSubmitter.Rtc.PreSubmitBuffering",
+                            delay);
+  } else {
+    base::UmaHistogramTimes(
+        "Media.VideoFrameSubmitter.Video.PreSubmitBuffering", delay);
+  }
+
+  // TODO(crbug.com/364352012): This will be removed once expired, kept for now
+  // due to internal dependencies.
+  base::UmaHistogramTimes("Media.VideoFrameSubmitter.PreSubmitBuffering",
+                          delay);
 }
 
 }  // namespace
@@ -274,6 +290,8 @@ void VideoFrameSubmitter::Initialize(cc::VideoFrameProvider* provider,
   DCHECK(!video_frame_provider_);
   video_frame_provider_ = provider;
   is_media_stream_ = is_media_stream;
+  roughness_reporter_->set_is_media_stream(is_media_stream_);
+
   task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   context_provider_callback_.Run(
       nullptr, base::BindOnce(&VideoFrameSubmitter::OnReceivedContextProvider,
@@ -933,8 +951,8 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
       pending_frames_[frame_token] = last_begin_frame_args_;
     }
 
-    UMA_HISTOGRAM_TIMES("Media.VideoFrameSubmitter.PreSubmitBuffering",
-                        base::TimeTicks::Now() - value);
+    RecordUmaPreSubmitBufferingDelay(is_media_stream_,
+                                     base::TimeTicks::Now() - value);
   } else {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
         "media", "VideoFrameSubmitter",

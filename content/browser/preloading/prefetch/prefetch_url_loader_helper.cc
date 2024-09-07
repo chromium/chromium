@@ -28,7 +28,8 @@ namespace content {
 namespace {
 
 PrefetchServingPageMetricsContainer*
-PrefetchServingPageMetricsContainerFromFrameTreeNodeId(int frame_tree_node_id) {
+PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
+    FrameTreeNodeId frame_tree_node_id) {
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (!frame_tree_node || !frame_tree_node->navigation_request()) {
@@ -49,7 +50,7 @@ void RecordCookieWaitTime(base::TimeDelta wait_time) {
 // serve.
 struct OnGotPrefetchToServeState {
   // Inputs.
-  const int frame_tree_node_id;
+  const FrameTreeNodeId frame_tree_node_id;
   const GURL tentative_url;
   base::OnceCallback<void(PrefetchContainer::Reader)> callback;
   PrefetchContainer::Reader reader;
@@ -315,7 +316,7 @@ void OnCookieCopyComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
 }  // namespace
 
 void OnGotPrefetchToServe(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& tentative_resource_request,
     base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback,
     PrefetchContainer::Reader reader) {

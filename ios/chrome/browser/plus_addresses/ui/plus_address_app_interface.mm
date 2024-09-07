@@ -5,25 +5,46 @@
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/plus_addresses/plus_address_service.h"
+#import "components/affiliations/core/browser/affiliation_utils.h"
+#import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+
+namespace {
+
+plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
+  ChromeBrowserState* browserState =
+      chrome_test_util::GetOriginalBrowserState();
+  return static_cast<plus_addresses::FakePlusAddressService*>(
+      PlusAddressServiceFactory::GetForProfile(browserState));
+}
+
+}  // namespace
 
 @implementation PlusAddressAppInterface
 
-+ (void)saveExamplePlusProfile:(NSString*)url {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForBrowserState(browserState);
++ (void)setShouldOfferPlusAddressCreation:(BOOL)shouldOfferPlusAddressCreation {
+  GetFakePlusAddressService()->set_should_offer_plus_address_creation(
+      shouldOfferPlusAddressCreation);
+}
 
-  plusAddressService->SavePlusProfile(plus_addresses::PlusProfile(
-      /*profile_id=*/"234", base::SysNSStringToUTF8(url),
-      plus_addresses::PlusAddress(plus_addresses::test::kFakePlusAddress),
-      /*is_confirmed=*/true));
++ (void)setShouldReturnNoAffiliatedPlusProfiles:
+    (BOOL)shouldReturnNoAffiliatedPlusProfiles {
+  GetFakePlusAddressService()->set_should_return_no_affiliated_plus_profiles(
+      shouldReturnNoAffiliatedPlusProfiles);
+}
+
++ (void)setPlusAddressFillingEnabled:(BOOL)plusAddressFillingEnabled {
+  GetFakePlusAddressService()->set_is_plus_address_filling_enabled(
+      plusAddressFillingEnabled);
+}
+
++ (void)addPlusAddressProfile {
+  GetFakePlusAddressService()->add_plus_profile(
+      plus_addresses::test::CreatePlusProfile());
 }
 
 @end

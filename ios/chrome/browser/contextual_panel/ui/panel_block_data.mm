@@ -12,7 +12,7 @@
 - (instancetype)initWithBlockType:(NSString*)blockType
                  cellRegistration:
                      (UICollectionViewCellRegistration*)cellRegistration {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _blockType = blockType;
     DCHECK([cellRegistration.cellClass
         isSubclassOfClass:[PanelItemCollectionViewCell class]]);

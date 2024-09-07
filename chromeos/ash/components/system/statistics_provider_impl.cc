@@ -203,8 +203,6 @@ std::string_view StatisticNameToMachineStatisticVariant(
           {kCheckEnrollmentKey, "CheckEnrollment"},
           {kShouldSendRlzPingKey, "ShouldSendRlzPing"},
           {kRlzEmbargoEndDateKey, "RlzEmbargoEndDate"},
-          {kEnterpriseManagementEmbargoEndDateKey,
-           "EnterpriseManagementEmbargoEndDate"},
           {kCustomizationIdKey, "CustomizationId"},
           {kDevSwitchBootKey, "DevswBoot"},
           {kDockMacAddressKey, "DockMac"},

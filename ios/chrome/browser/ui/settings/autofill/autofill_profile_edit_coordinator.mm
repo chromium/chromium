@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -106,15 +106,6 @@
   }
 
   CHECK(self.baseNavigationController);
-  // Add a "Cancel" button to the navigation bar if there's no other view
-  // controller in the navigation stack.
-  if (self.baseNavigationController.viewControllers.count == 0) {
-    SettingsNavigationController* settingsNavigationController =
-        base::apple::ObjCCastStrict<SettingsNavigationController>(
-            self.baseNavigationController);
-    self.viewController.navigationItem.leftBarButtonItem =
-        [settingsNavigationController cancelButton];
-  }
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }

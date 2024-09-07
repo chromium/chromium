@@ -92,11 +92,6 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   }
   capabilities += protocol::kRateLimitResizeRequests;
 
-  if (desktop_environment_options().enable_file_transfer()) {
-    capabilities += " ";
-    capabilities += protocol::kFileTransferCapability;
-  }
-
 #if BUILDFLAG(IS_WIN)
   capabilities += " ";
   capabilities += protocol::kSendAttentionSequenceAction;
@@ -107,12 +102,6 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += protocol::kLockWorkstationAction;
   }
 #endif  // BUILDFLAG(IS_WIN)
-
-  if (desktop_environment_options().enable_remote_open_url() &&
-      IsRemoteOpenUrlSupported()) {
-    capabilities += " ";
-    capabilities += protocol::kRemoteOpenUrlCapability;
-  }
 
   if (desktop_environment_options().enable_remote_webauthn()) {
     capabilities += " ";

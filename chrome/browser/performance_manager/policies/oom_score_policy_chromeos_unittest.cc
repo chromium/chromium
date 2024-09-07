@@ -65,7 +65,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScores) {
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node1->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   auto process_node2 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
@@ -76,7 +78,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScores) {
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node2->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node2.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   auto process_node3 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
@@ -87,7 +91,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScores) {
       CreateFrameNodeAutoId(process_node3.get(), page_node3.get());
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node3->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node3.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   policy()->HandlePageNodeEvents();
@@ -119,7 +125,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresWithPriority) {
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node1->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
   // Set page node 1 audible to raise its priority.
   page_node1->SetIsAudible(true);
@@ -132,7 +140,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresWithPriority) {
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node2->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node2.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   auto process_node3 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
@@ -143,7 +153,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresWithPriority) {
       CreateFrameNodeAutoId(process_node3.get(), page_node3.get());
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node3->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node3.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   policy()->HandlePageNodeEvents();
@@ -191,7 +203,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresSharedPid) {
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node1->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   auto process_node2 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
@@ -204,7 +218,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresSharedPid) {
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node2->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node2.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   auto process_node3 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
@@ -216,7 +232,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresSharedPid) {
       CreateFrameNodeAutoId(process_node3.get(), page_node3.get());
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node3->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node3.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   auto page_node4 = CreateNode<performance_manager::PageNodeImpl>();
@@ -224,7 +242,9 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresSharedPid) {
       CreateFrameNodeAutoId(process_node2.get(), page_node4.get());
   testing::MakePageNodeDiscardable(page_node4.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node4->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node4.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   policy()->HandlePageNodeEvents();

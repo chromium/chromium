@@ -1277,7 +1277,7 @@ if (!is_robolectric && enable_java_templates) {
       }
       srcjar_deps += [
         ":$_compile_resources_target_name",
-        "//build/android:build_config_for_testing_gen",
+        "//build/android:build_config_for_robolectric_srcjar",
       ]
       if (_generate_final_jni) {
         srcjar_deps += [ ":$_native_libraries_target_name" ] + _jni_srcjar_deps
@@ -1877,27 +1877,16 @@ if (!is_robolectric && enable_java_templates) {
   }
 
   # Creates org/chromium/build/BuildConfig.java
-  # This doesn't really belong in //build since it genates a file for //base.
-  # However, we don't currently have a better way to include this file in all
-  # apks that depend on //base:base_java.
-  #
-  # Variables:
-  #   use_final_fields: True to use final fields. When false, all other
-  #       variables must not be set.
-  #   min_sdk_version: Value for MIN_SDK_VERSION.
-  #   version_code: Value for VERSION_CODE.
-  #   bundles_supported: Whether or not this target can be treated as a bundle.
-  #   resources_version_variable:
-  #   is_incremental_install:
-  #   isolated_splits_enabled: Value for ISOLATED_SPLITS_ENABLED.
   template("generate_build_config_srcjar") {
     java_cpp_template(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "inputs",
+                                 ])
       sources = [ "//build/android/java/templates/BuildConfig.template" ]
       defines = []
 
-      # Set these even when !use_final_fields so that they have correct default
-      # values within robolectric_binary(), which ignores jar_excluded_patterns.
       if ((defined(invoker.assertions_implicitly_enabled) &&
            invoker.assertions_implicitly_enabled) || enable_java_asserts) {
         defines += [ "_ENABLE_ASSERTS" ]
@@ -1924,29 +1913,26 @@ if (!is_robolectric && enable_java_templates) {
         defines += [ "_IS_INCREMENTAL_INSTALL" ]
       }
 
-      if (invoker.use_final_fields) {
-        forward_variables_from(invoker,
-                               [
-                                 "deps",
-                                 "inputs",
-                               ])
-        defines += [ "USE_FINAL" ]
+      if (defined(invoker.min_sdk_version)) {
         defines += [ "_MIN_SDK_VERSION=${invoker.min_sdk_version}" ]
+      } else {
+        defines += [ "_MIN_SDK_VERSION=$default_min_sdk_version" ]
+      }
+      if (defined(invoker.version_code)) {
         defines += [ "_VERSION_CODE=${invoker.version_code}" ]
-        if (defined(invoker.resources_version_variable)) {
-          defines += [
-            "_RESOURCES_VERSION_VARIABLE=${invoker.resources_version_variable}",
-          ]
-        }
-        if (defined(invoker.apk_assets_suffixed_list)) {
-          defines += [
-            "_APK_ASSETS_SUFFIXED_LIST=${invoker.apk_assets_suffixed_list}",
-            "_APK_ASSETS_SUFFIX=${invoker.apk_assets_suffix}",
-          ]
-        }
-      } else if (is_cronet_build && !is_java_debug) {
-        # Cronet never uses use_final_fields=true, so make this a reasonable default.
-        defines += [ "_DISABLE_DEBUG_LOGS" ]
+      } else {
+        defines += [ "_VERSION_CODE=$android_default_version_code" ]
+      }
+      if (defined(invoker.resources_version_variable)) {
+        defines += [
+          "_RESOURCES_VERSION_VARIABLE=${invoker.resources_version_variable}",
+        ]
+      }
+      if (defined(invoker.apk_assets_suffixed_list)) {
+        defines += [
+          "_APK_ASSETS_SUFFIXED_LIST=${invoker.apk_assets_suffixed_list}",
+          "_APK_ASSETS_SUFFIX=${invoker.apk_assets_suffix}",
+        ]
       }
 
       _test_only = defined(testonly) && testonly
@@ -1954,12 +1940,15 @@ if (!is_robolectric && enable_java_templates) {
         defines += [ "_IS_FOR_TEST" ]
       }
 
-      if (!is_java_debug && !_test_only) {
+      if (!is_java_debug && (!_test_only || is_cronet_build)) {
         defines += [ "_DISABLE_DEBUG_LOGS" ]
       }
 
       if (is_cronet_build) {
         defines += [ "_IS_CRONET_BUILD" ]
+      }
+      if (is_desktop_android) {
+        defines += [ "_IS_DESKTOP_ANDROID" ]
       }
 
       if (defined(invoker.write_clang_profiling_data) &&
@@ -1967,8 +1956,9 @@ if (!is_robolectric && enable_java_templates) {
         defines += [ "_WRITE_CLANG_PROFILING_DATA" ]
       }
 
-      if (is_desktop_android) {
-        defines += [ "_IS_DESKTOP_ANDROID" ]
+      if (defined(invoker.disable_strict_mode_context) &&
+          invoker.disable_strict_mode_context) {
+        defines += [ "_DISABLE_STRICT_MODE_CONTEXT" ]
       }
     }
   }
@@ -2634,13 +2624,16 @@ if (!is_robolectric && enable_java_templates) {
     }
     if (_generate_buildconfig_java) {
       generate_build_config_srcjar("${_template_name}__build_config_srcjar") {
-        forward_variables_from(invoker, [ "isolated_splits_enabled" ])
+        forward_variables_from(invoker,
+                               [
+                                 "disable_strict_mode_context",
+                                 "isolated_splits_enabled",
+                               ])
         _bundles_supported = _is_bundle_module
         if (defined(invoker.bundles_supported)) {
           _bundles_supported = invoker.bundles_supported
         }
         bundles_supported = _bundles_supported
-        use_final_fields = true
         assertions_implicitly_enabled = _assertions_implicitly_enabled
         is_incremental_install = _incremental_apk
         version_code = _version_code
@@ -3292,6 +3285,7 @@ if (!is_robolectric && enable_java_templates) {
             "deps",
             "enable_lint",
             "enable_proguard_checks",
+            "disable_strict_mode_context",
             "enforce_resource_overlays_in_tests",
             "expected_android_manifest",
             "expected_android_manifest_base",
@@ -3440,6 +3434,7 @@ if (!is_robolectric && enable_java_templates) {
             "data",
             "data_deps",
             "deps",
+            "disable_strict_mode_context",
             "expected_android_manifest",
             "expected_android_manifest_base",
             "expected_android_manifest_library_version_offset",
@@ -3995,6 +3990,7 @@ if (!is_robolectric && enable_java_templates) {
       sources = invoker.sources
       depfile = "$target_gen_dir/$target_name.d"
       outputs = [ _srcjar_path ]
+      inputs = [ android_protoc_bin ]
       args = [
         "--depfile",
         rebase_path(depfile, root_build_dir),
@@ -4023,7 +4019,7 @@ if (!is_robolectric && enable_java_templates) {
           rebase_path(_plugin_path, root_build_dir),
         ]
         deps += [ _plugin_host_label ]
-        inputs = [ _plugin_path ]
+        inputs += [ _plugin_path ]
       }
 
       args += rebase_path(sources, root_build_dir)

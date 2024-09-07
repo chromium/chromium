@@ -252,6 +252,7 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand floor(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand log(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand neg(MLOperand x, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand sign(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand sin(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand tan(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand erf(MLOperand x, optional MLOperatorOptions options = {});
@@ -262,11 +263,15 @@ dictionary MLTriangularOptions : MLOperatorOptions {
 
   [RaisesException] MLOperand cast(MLOperand input, MLOperandDataType outputDataType, optional MLOperatorOptions options = {});
 
+  [RaisesException] MLOperand dequantizeLinear(MLOperand input, MLOperand scale, MLOperand zeroPoint, optional MLOperatorOptions options = {});
+
   [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
 
   [RaisesException] MLOperand expand(MLOperand input, sequence<[EnforceRange] unsigned long> newShape, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand gather(MLOperand input, MLOperand indices, optional MLGatherOptions options = {});
+
+  [RaisesException] MLOperand gatherElements(MLOperand input, MLOperand indices, optional MLGatherOptions options = {});
 
   [RaisesException] MLOperand gelu(MLOperand input, optional MLOperatorOptions options = {});
 
@@ -314,6 +319,8 @@ dictionary MLTriangularOptions : MLOperatorOptions {
 
   [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope, optional MLOperatorOptions options = {});
 
+  [RaisesException] MLOperand quantizeLinear(MLOperand input, MLOperand scale, MLOperand zeroPoint, optional MLOperatorOptions options = {});
+
   [RaisesException] MLOperand reduceL1(MLOperand input, optional MLReduceOptions options = {});
   [RaisesException] MLOperand reduceL2(MLOperand input, optional MLReduceOptions options = {});
   [RaisesException] MLOperand reduceLogSum(MLOperand input, optional MLReduceOptions options = {});
@@ -350,6 +357,9 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] sequence<MLOperand> split(MLOperand input, sequence<[EnforceRange] unsigned long> splits, optional MLSplitOptions options = {});
 
   [RaisesException] MLOperand tanh(MLOperand input, optional MLOperatorOptions options = {});
+
+  [RaisesException] MLOperand tile(
+      MLOperand input, sequence<[EnforceRange] unsigned long> repetitions, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand transpose(
       MLOperand input, optional MLTransposeOptions options = {});

@@ -17,13 +17,11 @@ select {
 
 /* Undo unwanted styles from select rules */
 select:not(:-internal-list-box) > button,
-select:not(:-internal-list-box) > datalist,
-select::select-fallback-datalist {
+select::picker(select) {
   white-space: normal;
 }
 
-select:not(:-internal-list-box) > datalist,
-select:not(:-internal-list-box)::select-fallback-datalist {
+select:not(:-internal-list-box)::picker(select) {
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
   overflow: auto;
@@ -36,105 +34,31 @@ select:not(:-internal-list-box)::select-fallback-datalist {
   inset: auto;
   min-inline-size: anchor-size(self-inline);
   min-block-size: 1lh;
-  inset-block-start: anchor(self-end);
-  inset-inline-start: anchor(self-start);
-  position-try:
-    -internal-selectlist-datalist-reverse-block,
-    -internal-selectlist-datalist-reverse-inline,
-    -internal-selectlist-datalist-reverse-both,
-    -internal-selectlist-datalist-default-fill,
-    -internal-selectlist-datalist-reverse-block-fill,
-    -internal-selectlist-datalist-reverse-inline-fill,
-    -internal-selectlist-datalist-reverse-both-fill;
+  /* Below and span-right, by default. */
+  position-area: block-end span-inline-end;
+  position-try-fallbacks:
+    /* First try above and span-right. */
+    block-start span-inline-end,
+    /* Then below but span-left. */
+    block-end span-inline-start,
+    /* Then above and span-left. */
+    block-start span-inline-start;
+  /* TODO(crbug.com/363205525) Add a fallback block that adds scrollbars, for
+     the case that none of the four options above fits in the viewport. */
 }
 
-/* TODO(crbug.com/40279608): Use automatic fallbacks */
-
-/* Fallbacks without vertical scrolling */
-@position-try -internal-select-fallback-datalist-reverse-block {
-  inset: auto;
-  /* Reverse block axis */
-  inset-block-end: anchor(self-start);
-  inset-inline-start: anchor(self-start);
-}
-@position-try -internal-select-fallback-datalist-reverse-inline {
-  inset: auto;
-  /* Reverse inline axis */
-  inset-block-start: anchor(self-end);
-  inset-inline-end: anchor(self-end);
-}
-@position-try -internal-select-fallback-datalist-reverse-both {
-  inset: auto;
-  /* Reverse both axes */
-  inset-block-end: anchor(self-start);
-  inset-inline-end: anchor(self-end);
-}
-
-/* Fallbacks with vertical scrolling */
-@position-try -internal-select-fallback-datalist-default-fill {
-  inset: auto;
-  inset-block-start: anchor(self-end);
-  inset-inline-start: anchor(self-start);
-  block-size: -webkit-fill-available;
-}
-@position-try -internal-select-fallback-datalist-reverse-block-fill {
-  inset: auto;
-  /* Reverse block axis */
-  inset-block-end: anchor(self-start);
-  inset-inline-start: anchor(self-start);
-  block-size: -webkit-fill-available;
-}
-@position-try -internal-select-fallback-datalist-reverse-inline-fill {
-  inset: auto;
-  /* Reverse inline axis */
-  inset-block-start: anchor(self-end);
-  inset-inline-end: anchor(self-end);
-  block-size: -webkit-fill-available;
-}
-@position-try -internal-select-fallback-datalist-reverse-both-fill {
-  inset: auto;
-  /* Reverse both axes */
-  inset-block-end: anchor(self-start);
-  inset-inline-end: anchor(self-end);
-  block-size: -webkit-fill-available;
-}
-
-/* This is a copy of the [popover] styles. It may be combined after
- * removing the StylableSelect flag. */
-select:not(:-internal-list-box) > datalist,
-select:not(:-internal-list-box)::select-fallback-datalist {
-  position: fixed;
-  width: fit-content;
-  height: fit-content;
-  color: CanvasText;
-}
-select:not(:-internal-list-box) > datalist:popover-open,
-select:not(:-internal-list-box)::select-fallback-datalist:popover-open {
-  overlay: auto !important;
-  /* This display:block is not part of the [popover] styles and needs to stay
-   * here even if we deduplicate it from other [popover] styles. */
-  display: block;
-}
-/* TODO make sure that this selector works despite nested pseudo-elements */
-select:not(:-internal-list-box) > datalist:-internal-popover-in-top-layer::backdrop,
-select:not(:-internal-list-box)::select-fallback-datalist:-internal-popover-in-top-layer::backdrop {
-  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
-  position: fixed;
-  inset: 0;
-  /* Specific to [popover]: */
-  pointer-events: none !important;
-  background-color: transparent;
-}
-
-select:not(:-internal-list-box):open > datalist {
-  /* This rule is needed in order to make appearance:auto selects with
-   * <option>s inside an author provided <datalist> still render the <option>s
-   * by default because the <datalist> will have display:none on it by default.
-   */
-  display: block;
-}
-select:-internal-list-box > datalist {
-  display: block;
+/* This rule is here to ensure that we can get a ComputedStyle for
+ * ::picker(select). Without this, the [popover] UA style would make it
+ * display:none, which would mean that we wouldn't get a ComputedStyle, which
+ * would mean that we can't detect the author opting in with
+ * appearance:base-select on this element. This element is hidden when it isn't
+ * popover open via LayoutFlexibleBox::IsChildAllowed. This also means that the
+ * author can't force it to become visible while it is popover closed by
+ * putting display:block on it, but hopefully that's OK.
+ * TODO(crbug.com/364348901): Remove this.
+ */
+select::picker(select) {
+  display: block !important;
 }
 
 select::select-fallback-button {
@@ -154,24 +78,14 @@ select::select-fallback-button {
   align-items: center;
   overflow-x: hidden;
   overflow-y: hidden;
-}
-
-select::select-fallback-button-icon {
-  opacity: 1;
-  outline: none;
-  margin-inline-start: 0.25em;
-  padding-block: 2px;
-  padding-inline: 3px;
-  block-size: 1.0em;
-  inline-size: 1.2em;
-  min-inline-size: 1.2em;
-  max-inline-size: 1.2em;
-  display: block;
-
-  color: light-dark(black, white);
-  stroke: currentColor;
-  stroke-width: 3;
-  stroke-linejoin: round;
+  /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
+   * https://github.com/openui/open-ui/issues/1026
+   * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
+  /* TODO(crbug.com/1511354): This might be able to be combined with the
+   * default select option rules at some point. This should be re-evaluted
+   * before StylableSelect is shipped. */
+  min-inline-size: 24px;
+  min-block-size: max(24px, 1.2em);
 }
 
 select::select-fallback-button-text {
@@ -224,7 +138,7 @@ select::-internal-select-autofill-preview[popover] {
 select::-internal-select-autofill-preview[popover]:popover-open {
   display: grid;
   align-items: center;
-  inset-area: center;
+  position-area: center;
   height: calc(anchor-size(height) - 2px);
   width: calc(anchor-size(width) - 2px);
   margin: 0;
@@ -236,4 +150,16 @@ select::-internal-select-autofill-preview-text {
   text-overflow: ellipsis;
   text-align: center;
   white-space: nowrap;
+}
+
+/* TODO(crbug.com/1511354): select::select-fallback-button::after can't be
+ * targeted with author styles but it should be and I don't know why. */
+select::select-fallback-button::after {
+  padding-inline-start: 0.5em;
+}
+select:open::select-fallback-button::after {
+  content: counter(fake-counter-name, disclosure-open);
+}
+select:not(:open)::select-fallback-button::after {
+  content: counter(fake-counter-name, disclosure-closed);
 }

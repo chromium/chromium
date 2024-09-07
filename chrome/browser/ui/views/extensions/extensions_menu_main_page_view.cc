@@ -535,9 +535,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
   ChromeLayoutProvider* const chrome_layout_provider =
       ChromeLayoutProvider::Get();
   const int vertical_spacing = chrome_layout_provider->GetDistanceMetric(
-      DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
-  const int horizontal_spacing = chrome_layout_provider->GetDistanceMetric(
-      DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
+      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
   // This value must be the same as the `HoverButton` vertical margin.
   const int hover_button_vertical_spacing =
       chrome_layout_provider->GetDistanceMetric(
@@ -553,59 +551,42 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
   views::Label* subheader_title;
 
   views::Builder<ExtensionsMenuMainPageView>(this)
+      // Last item is a hover button, so we need to account for the extra
+      // vertical spacing. We cannot add horizontal margins at this level
+      // because some views need to expand the full length (e.g settings
+      // button). Thus, each view needs to add the horizontal margins
+      // accordingly.
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical))
-      // TODO(crbug.com/40879945): Add margins after adding the menu
-      // items, to make sure all items are aligned.
+          views::BoxLayout::Orientation::kVertical,
+          gfx::Insets::TLBR(
+              dialog_insets.top(), 0,
+              dialog_insets.bottom() - hover_button_vertical_spacing, 0)))
       .AddChildren(
-          // Subheader section.
+          // Title.
+          views::Builder<views::Label>()
+              .CopyAddressTo(&subheader_title)
+              .SetText(l10n_util::GetStringUTF16(IDS_EXTENSIONS_MENU_TITLE))
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+              .SetTextStyle(views::style::STYLE_HEADLINE_4)
+              .SetEnabledColorId(kColorExtensionsMenuText)
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets::VH(0, dialog_insets.left())),
+          // Site settings.
           views::Builder<views::FlexLayoutView>()
-              .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-              // Add top dialog margins, since its the first element, and
-              // horizontal dialog margins. Bottom margin will be added by the
-              // next view (in general, vertical margins should be added by the
-              // bottom view).
-              .SetInteriorMargin(gfx::Insets::TLBR(dialog_insets.top(),
-                                                   dialog_insets.left(), 0,
-                                                   dialog_insets.right()))
-              .SetProperty(views::kBoxLayoutFlexKey,
-                           views::BoxLayoutFlexSpecification())
-              .SetVisible(true)
+              .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets::VH(0, dialog_insets.left()))
               .AddChildren(
-                  views::Builder<views::FlexLayoutView>()
-                      .SetOrientation(views::LayoutOrientation::kVertical)
-                      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+                  views::Builder<views::Label>()
+                      .CopyAddressTo(&site_settings_label_)
+                      .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
+                      .SetEnabledColorId(kColorExtensionsMenuText)
                       .SetProperty(views::kFlexBehaviorKey,
                                    stretch_specification)
-                      .AddChildren(
-                          views::Builder<views::Label>()
-                              .CopyAddressTo(&subheader_title)
-                              .SetText(l10n_util::GetStringUTF16(
-                                  IDS_EXTENSIONS_MENU_TITLE))
-                              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                              .SetTextContext(
-                                  views::style::CONTEXT_DIALOG_TITLE)
-                              .SetTextStyle(views::style::STYLE_HEADLINE_4)
-                              .SetEnabledColorId(kColorExtensionsMenuText),
-                          views::Builder<views::Label>()
-                              .CopyAddressTo(&subheader_subtitle_)
-                              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                              .SetTextContext(views::style::CONTEXT_LABEL)
-                              .SetTextStyle(views::style::STYLE_BODY_3)
-                              .SetEnabledColorId(
-                                  kColorExtensionsMenuSecondaryText)
-                              .SetAllowCharacterBreak(true)
-                              .SetMultiLine(true)
-                              .SetProperty(views::kFlexBehaviorKey,
-                                           stretch_specification)),
-                  // Toggle site settings button.
+                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                   views::Builder<views::ToggleButton>()
                       .CopyAddressTo(&site_settings_toggle_)
-                      .SetProperty(
-                          views::kMarginsKey,
-                          gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
-                      .SetAccessibleName(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ACCESSIBLE_NAME))
                       .SetCallback(base::BindRepeating(
                           [](views::ToggleButton* toggle_button,
                              base::RepeatingCallback<void(bool)> callback) {
@@ -617,13 +598,13 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                   OnSiteSettingsToggleButtonPressed,
                               base::Unretained(menu_handler))))),
           // Contents.
-          views::Builder<views::Separator>().SetProperty(
-              views::kMarginsKey, gfx::Insets::VH(vertical_spacing, 0)),
           views::Builder<views::ScrollView>()
               .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
               .SetDrawOverflowIndicator(false)
               .SetHorizontalScrollBarMode(
                   views::ScrollView::ScrollBarMode::kDisabled)
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets::VH(vertical_spacing, 0))
               .SetContents(
                   views::Builder<views::BoxLayoutView>()
                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -656,18 +637,13 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                   views::BoxLayout::Orientation::kVertical))),
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           // Webstore button.
-          views::Builder<HoverButton>(
-              std::make_unique<HoverButton>(
-                  base::BindRepeating(&chrome::ShowWebStore, browser_,
-                                      extension_urls::kExtensionsMenuUtmSource),
-                  ui::ImageModel::FromVectorIcon(
-                      vector_icons::kGoogleChromeWebstoreIcon),
-                  l10n_util::GetStringUTF16(
-                      IDS_EXTENSIONS_MENU_MAIN_PAGE_DISCOVER_EXTENSIONS)))
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets::TLBR(dialog_insets.top() -
-                                                 hover_button_vertical_spacing,
-                                             0, 0, 0)),
+          views::Builder<HoverButton>(std::make_unique<HoverButton>(
+              base::BindRepeating(&chrome::ShowWebStore, browser_,
+                                  extension_urls::kExtensionsMenuUtmSource),
+              ui::ImageModel::FromVectorIcon(
+                  vector_icons::kGoogleChromeWebstoreIcon),
+              l10n_util::GetStringUTF16(
+                  IDS_EXTENSIONS_MENU_MAIN_PAGE_DISCOVER_EXTENSIONS))),
 #endif
           // Settings button.
           views::Builder<HoverButton>(
@@ -682,13 +658,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                       browser_),
                   ui::ImageModel::FromVectorIcon(
                       vector_icons::kSettingsChromeRefreshIcon),
-                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
-              // Add bottom dialog margins since it's the last element.
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets::TLBR(0, 0,
-                                             dialog_insets.bottom() -
-                                                 hover_button_vertical_spacing,
-                                             0)))
+                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS))))
       .BuildChildren();
 
   // By default, the button's accessible description is set to the button's
@@ -697,12 +667,15 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
   // accessible name.
   site_settings_toggle_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  site_settings_toggle_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ACCESSIBLE_NAME));
 
-  // Align the site setting toggle vertically with the subheader title by
+  // Align the site setting toggle vertically with the site settings label by
   // getting the label height after construction.
   site_settings_toggle_->SetPreferredSize(
       gfx::Size(site_settings_toggle_->GetPreferredSize().width(),
-                subheader_title->GetLineHeight()));
+                site_settings_label_->GetLineHeight()));
 }
 
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
@@ -734,12 +707,15 @@ void ExtensionsMenuMainPageView::RemoveMenuItem(
   menu_items_->RemoveChildViewT(item);
 }
 
-void ExtensionsMenuMainPageView::UpdateSubheader(
+void ExtensionsMenuMainPageView::UpdateSiteSettings(
     const std::u16string& current_site,
     bool is_site_settings_toggle_visible,
     bool is_site_settings_toggle_on) {
-  subheader_subtitle_->SetText(current_site);
-
+  // TODO(crbug.com/40879945): Text should be different when site is restricted,
+  // since site settings toggle cannot be selected. This means we no longer need
+  // MessageSectionState::kRestrictedAccess.
+  site_settings_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL, current_site));
   site_settings_toggle_->SetVisible(is_site_settings_toggle_visible);
   site_settings_toggle_->SetIsOn(is_site_settings_toggle_on);
   site_settings_toggle_->SetTooltipText(
@@ -786,8 +762,8 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
 }
 
 const std::u16string&
-ExtensionsMenuMainPageView::GetSubheaderSubtitleTextForTesting() const {
-  return subheader_subtitle_->GetText();
+ExtensionsMenuMainPageView::GetSiteSettingLabelForTesting() const {
+  return site_settings_label_->GetText();
 }
 
 views::View* ExtensionsMenuMainPageView::GetTextContainerForTesting() {

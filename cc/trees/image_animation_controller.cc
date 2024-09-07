@@ -77,6 +77,10 @@ void ImageAnimationController::UnregisterAnimationDriver(
     registered_animations_.erase(paint_image_id);
 }
 
+bool ImageAnimationController::IsRegistered(PaintImage::Id paint_image_id) {
+  return animation_state_map_.contains(paint_image_id);
+}
+
 const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
     const viz::BeginFrameArgs& args) {
   TRACE_EVENT1("cc", "ImageAnimationController::AnimateImagesForSyncTree",

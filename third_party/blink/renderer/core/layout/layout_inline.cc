@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -300,7 +299,10 @@ PhysicalRect LayoutInline::LocalCaretRect(
     }
   }
 
-  return PhysicalRect(logical_caret_rect.ToLayoutRect());
+  return PhysicalRect(logical_caret_rect.offset.inline_offset,
+                      logical_caret_rect.offset.block_offset,
+                      logical_caret_rect.size.inline_size,
+                      logical_caret_rect.size.block_size);
 }
 
 void LayoutInline::AddChild(LayoutObject* new_child,
@@ -624,7 +626,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     // TODO(crbug.com/965976): We should fix the root cause of the missed
     // layout.
     if (NeedsLayout()) [[unlikely]] {
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
       return false;
     }
 

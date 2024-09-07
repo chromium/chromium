@@ -26,6 +26,19 @@ enum class SignatureValidationType {
 // Returns whether `process` has a valid code signature that fulfills
 // `requirement`.
 OSStatus ProcessIsSignedAndFulfillsRequirement(
+    audit_token_t process,
+    SecRequirementRef requirement,
+    SignatureValidationType validation_type =
+        SignatureValidationType::DynamicAndStatic,
+    std::string_view info_plist_xml = {});
+
+// Returns whether `process` has a valid code signature that fulfills
+// `requirement`.
+//
+// NOTE: Prefer the version of this function that takes an `audit_token_t`.
+// Process IDs do not uniquely identify a process so it is impossible to make
+// trust decisions based on them.
+OSStatus ProcessIsSignedAndFulfillsRequirement(
     pid_t process,
     SecRequirementRef requirement,
     SignatureValidationType validation_type =

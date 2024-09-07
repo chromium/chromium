@@ -378,11 +378,8 @@ void AndroidStreamReaderURLLoader::SetCookies() {
   const std::string_view kSetCookieHeader("Set-Cookie");
 
   if (response_head_->headers->HasHeader(kSetCookieHeader)) {
-    base::Time response_date;
-    std::optional<base::Time> server_time = std::nullopt;
-    if (response_head_->headers->GetDateValue(&response_date)) {
-      server_time = std::make_optional(response_date);
-    }
+    std::optional<base::Time> server_time =
+        response_head_->headers->GetDateValue();
 
     std::string cookie_string;
     size_t iter = 0;

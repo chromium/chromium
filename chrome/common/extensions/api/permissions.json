@@ -148,12 +148,12 @@
               "documentId": {
                 "type": "string",
                 "optional": true,
-                "description": "The id of a document where site access requests can be shown. Must be the top-level document within a tab. If provided, the request is shown on the tab of the specified document and is removed when the document navigates to a new origin. This or `tabId` must be specified."
+                "description": "The id of a document where site access requests can be shown. Must be the top-level document within a tab. If provided, the request is shown on the tab of the specified document and is removed when the document navigates to a new origin. Adding a new request will override any existent request for `tabId`. This or `tabId` must be specified."
               },
               "tabId": {
                 "type": "number",
                 "optional": true,
-                "description": "The id of the tab where site access requests can be shown. If provided, the request is shown on the specified tab and is removed when the tab navigates to a new origin. This or `documentId` must be specified."
+                "description": "The id of the tab where site access requests can be shown. If provided, the request is shown on the specified tab and is removed when the tab navigates to a new origin. Adding a new request will override an existent request for `documentId`. This or `documentId` must be specified."
               }
             }
           }

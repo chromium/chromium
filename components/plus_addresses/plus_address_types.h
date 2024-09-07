@@ -17,7 +17,6 @@
 #include "base/types/strong_alias.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
@@ -44,14 +43,8 @@ struct PreallocatedPlusAddress final {
 };
 
 struct PlusProfile {
-  // When `syncer::kSyncPlusAddress` is enabled, the facet is stored as a
-  // `FacetURI`. Before sync support, the facet represents an eTLD+1, stored as
-  // a string.
-  // TODO(b/322147254): Remove variant when sync support is launched.
-  using facet_t = absl::variant<std::string, affiliations::FacetURI>;
-
   PlusProfile(std::optional<std::string> profile_id,
-              facet_t facet,
+              affiliations::FacetURI facet,
               PlusAddress plus_address,
               bool is_confirmed);
   PlusProfile(const PlusProfile&);
@@ -67,7 +60,7 @@ struct PlusProfile {
   std::optional<std::string> profile_id;
 
   // The domain facet to which the plus address is bound.
-  facet_t facet;
+  affiliations::FacetURI facet;
 
   // The plus address.
   PlusAddress plus_address;
@@ -105,7 +98,7 @@ class PlusAddressRequestError {
       PlusAddressRequestErrorType error_type)
       : error_type_(error_type) {}
 
-  static PlusAddressRequestError AsNetworkError(
+  static constexpr PlusAddressRequestError AsNetworkError(
       std::optional<int> response_code) {
     PlusAddressRequestError result(PlusAddressRequestErrorType::kNetworkError);
     result.http_response_code_ = response_code;
@@ -151,18 +144,10 @@ class PlusAddressDataChange {
 // Only used by Autofill.
 using autofill::PlusAddressCallback;
 
-using PlusAddressMap = std::map<std::string, PlusAddress>;
-
 // Holds either a PlusProfile or an error that prevented us from getting it.
 using PlusProfileOrError = base::expected<PlusProfile, PlusAddressRequestError>;
 using PlusAddressRequestCallback =
     base::OnceCallback<void(const PlusProfileOrError&)>;
-
-// Holds either a PlusAddressMap or an error that prevented us from getting it.
-using PlusAddressMapOrError =
-    base::expected<PlusAddressMap, PlusAddressRequestError>;
-using PlusAddressMapRequestCallback =
-    base::OnceCallback<void(const PlusAddressMapOrError&)>;
 
 // Defined for use in metrics and to share code for certain network-requests.
 enum class PlusAddressNetworkRequestType {

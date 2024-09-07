@@ -56,9 +56,6 @@
       <cr-icon-button class="icon-copy-content" title="copy to clipboard"
           on-click="onCopyRequestClick_">
       </cr-icon-button>
-      <cr-icon-button class="icon-visibility" title="view content"
-          on-click="onViewRequestClick_">
-      </cr-icon-button>
     </div>
   </div>
   <div class="cr-row" hidden$="[[!responseJson_]]">
@@ -67,9 +64,6 @@
     <div class="actions">
       <cr-icon-button class="icon-copy-content" title="copy to clipboard"
           on-click="onCopyResponseClick_">
-      </cr-icon-button>
-      <cr-icon-button class="icon-visibility" title="view content"
-          on-click="onViewResponseClick_">
       </cr-icon-button>
       <cr-icon-button iron-icon="suggest:lock" title="hardcode response"
           on-click="onHardcodeResponseClick_">

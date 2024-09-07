@@ -218,12 +218,11 @@ void WindowsEventRouter::OnWindowControllerAdded(
 
   base::Value::List args;
   // Since we don't populate tab info here, the context type doesn't matter.
-  constexpr ExtensionTabUtil::PopulateTabBehavior populate_behavior =
-      ExtensionTabUtil::kDontPopulateTabs;
+  constexpr WindowController::PopulateTabBehavior populate_behavior =
+      WindowController::kDontPopulateTabs;
   constexpr mojom::ContextType context_type = mojom::ContextType::kUnspecified;
-  args.Append(ExtensionTabUtil::CreateWindowValueForExtension(
-      *window_controller->GetBrowser(), nullptr, populate_behavior,
-      context_type));
+  args.Append(window_controller->CreateWindowValueForExtension(
+      nullptr, populate_behavior, context_type));
   DispatchEvent(events::WINDOWS_ON_CREATED, windows::OnCreated::kEventName,
                 window_controller, std::move(args));
 }
@@ -257,8 +256,8 @@ void WindowsEventRouter::OnWindowBoundsChanged(
 
   base::Value::List args;
   // Since we don't populate tab info here, the context type doesn't matter.
-  constexpr ExtensionTabUtil::PopulateTabBehavior populate_behavior =
-      ExtensionTabUtil::kDontPopulateTabs;
+  constexpr WindowController::PopulateTabBehavior populate_behavior =
+      WindowController::kDontPopulateTabs;
   constexpr mojom::ContextType context_type = mojom::ContextType::kUnspecified;
   args.Append(ExtensionTabUtil::CreateWindowValueForExtension(
       *window_controller->GetBrowser(), nullptr, populate_behavior,

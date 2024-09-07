@@ -8,6 +8,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/common/credit_card_network_identifiers.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
@@ -42,16 +43,16 @@ TEST_F(ManualFillCreditCardFormAutofilliOSTest, CreationUnobfuscated) {
                                                   icon:nil];
 
   EXPECT_TRUE(manualFillCard);
-  EXPECT_TRUE([GUID isEqualToString:manualFillCard.GUID]);
-  EXPECT_TRUE([@"Visa" isEqualToString:manualFillCard.network]);
-  EXPECT_TRUE([bankName isEqualToString:manualFillCard.bankName]);
-  EXPECT_TRUE([@"4321432143211234" isEqualToString:manualFillCard.number]);
+  EXPECT_NSEQ(GUID, manualFillCard.GUID);
+  EXPECT_NSEQ(@"Visa", manualFillCard.network);
+  EXPECT_NSEQ(bankName, manualFillCard.bankName);
+  EXPECT_NSEQ(@"4321432143211234", manualFillCard.number);
   EXPECT_TRUE([manualFillCard.obfuscatedNumber containsString:@"1234"]);
   EXPECT_FALSE([manualFillCard.obfuscatedNumber containsString:@"4321"]);
-  EXPECT_TRUE([cardHolder isEqualToString:manualFillCard.cardHolder]);
+  EXPECT_NSEQ(cardHolder, manualFillCard.cardHolder);
   // Test month and padding of months.
-  EXPECT_TRUE([@"01" isEqualToString:manualFillCard.expirationMonth]);
-  EXPECT_TRUE([expirationYear isEqualToString:manualFillCard.expirationYear]);
+  EXPECT_NSEQ(@"01", manualFillCard.expirationMonth);
+  EXPECT_NSEQ(expirationYear, manualFillCard.expirationYear);
 }
 
 // Tests the creation of an obfuscated credit card from an
@@ -84,16 +85,16 @@ TEST_F(ManualFillCreditCardFormAutofilliOSTest, CreationObfuscated) {
                                                   icon:nil];
 
   EXPECT_TRUE(manualFillCard);
-  EXPECT_TRUE([GUID isEqualToString:manualFillCard.GUID]);
-  EXPECT_TRUE([@"Visa" isEqualToString:manualFillCard.network]);
-  EXPECT_TRUE([bankName isEqualToString:manualFillCard.bankName]);
+  EXPECT_NSEQ(GUID, manualFillCard.GUID);
+  EXPECT_NSEQ(@"Visa", manualFillCard.network);
+  EXPECT_NSEQ(bankName, manualFillCard.bankName);
   EXPECT_FALSE(manualFillCard.number);
   EXPECT_TRUE([manualFillCard.obfuscatedNumber containsString:@"1234"]);
   EXPECT_FALSE([manualFillCard.obfuscatedNumber containsString:@"4321"]);
-  EXPECT_TRUE([cardHolder isEqualToString:manualFillCard.cardHolder]);
+  EXPECT_NSEQ(cardHolder, manualFillCard.cardHolder);
   // Test month and padding of months.
-  EXPECT_TRUE([@"01" isEqualToString:manualFillCard.expirationMonth]);
-  EXPECT_TRUE([expirationYear isEqualToString:manualFillCard.expirationYear]);
+  EXPECT_NSEQ(@"01", manualFillCard.expirationMonth);
+  EXPECT_NSEQ(expirationYear, manualFillCard.expirationYear);
 }
 
 // Tests that a local card's canFillDirectly is true

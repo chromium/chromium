@@ -920,4 +920,35 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
 }
 
+// Regression test for crbug.com/361639416.
+// Tests that the child views (text fragments) are still alive after layout.
+TEST_F(StyledLabelTest, OldChildViewsAreAliveAfterLayout) {
+  class ViewDestroyObserser : public ViewObserver {
+   public:
+    MOCK_METHOD(void, OnViewIsDeleting, (View*), (override));
+  };
+
+  ViewDestroyObserser view_destroy_observer;
+
+  const std::string text("This is a test block of text.");
+  StyledLabel* styled = InitStyledLabel(text);
+
+  styled->AddStyleRange(
+      gfx::Range(0, 1),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
+
+  EXPECT_EQ(styled->GetFirstLinkForTesting(), nullptr);
+  styled->SetBounds(0, 0, 1000, 1000);
+  test::RunScheduledLayout(styled);
+
+  views::View* link = styled->GetFirstLinkForTesting();
+  EXPECT_NE(link, nullptr);
+  link->AddObserver(&view_destroy_observer);
+  EXPECT_CALL(view_destroy_observer, OnViewIsDeleting(testing::_)).Times(0);
+  styled->SetBounds(0, 0, 10, 1000);
+  test::RunScheduledLayout(styled);
+
+  link->RemoveObserver(&view_destroy_observer);
+}
+
 }  // namespace views

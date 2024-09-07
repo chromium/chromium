@@ -41,7 +41,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -62,19 +62,20 @@ CreditCardBenefitBase::BenefitId get_benefit_id(
 }
 
 class PaymentsAutofillTableTest : public testing::Test {
+ public:
+  PaymentsAutofillTableTest()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
+
  protected:
   void SetUp() override {
-    OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
     table_ = std::make_unique<PaymentsAutofillTable>();
     db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
-    ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
+    ASSERT_EQ(sql::INIT_OK, db_->Init(file_, &encryptor_));
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   // Get date_modifed `column` of `table_name` with specific `instrument_id` or
   // `guid`.
@@ -98,6 +99,7 @@ class PaymentsAutofillTableTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const os_crypt_async::Encryptor encryptor_;
   std::unique_ptr<PaymentsAutofillTable> table_;
   std::unique_ptr<WebDatabase> db_;
 };
@@ -341,6 +343,9 @@ TEST_F(PaymentsAutofillTableTest, CreditCardCvc) {
   // Get the credit card, cvc should match.
   std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
   EXPECT_EQ(card.cvc(), db_card->cvc());
+  // Some precision is lost when converting to time_t and back.
+  EXPECT_EQ(arbitrary_time.ToTimeT(),
+            db_card->cvc_modification_date().ToTimeT());
 
   // Verify last_updated_timestamp in local_stored_cvc table is set correctly.
   EXPECT_EQ(GetDateModified("local_stored_cvc", "last_updated_timestamp",
@@ -373,6 +378,8 @@ TEST_F(PaymentsAutofillTableTest, CreditCardCvc) {
   db_card = table_->GetCreditCard(card.guid());
   // CVC should be updated to new CVC.
   EXPECT_EQ(u"234", db_card->cvc());
+  EXPECT_EQ(much_later_time.ToTimeT(),
+            db_card->cvc_modification_date().ToTimeT());
   // local_stored_cvc table timestamp should be updated.
   EXPECT_EQ(GetDateModified("local_stored_cvc", "last_updated_timestamp",
                             card.guid()),
@@ -695,178 +702,11 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCardOriginOnly) {
   EXPECT_FALSE(s_updated.Step());
 }
 
-TEST_F(PaymentsAutofillTableTest, RemoveAutofillDataModifiedBetween) {
-  // Populate the credit_cards tables.
-  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
-      "INSERT INTO credit_cards (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000006', 17);"
-      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
-      "last_updated_timestamp) "
-      "VALUES('00000000-0000-0000-0000-000000000006', '', 17);"
-      "INSERT INTO credit_cards (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000007', 27);"
-      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
-      "last_updated_timestamp) "
-      "VALUES('00000000-0000-0000-0000-000000000007', '', 27);"
-      "INSERT INTO credit_cards (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000008', 37);"
-      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
-      "last_updated_timestamp) "
-      "VALUES('00000000-0000-0000-0000-000000000008', '', 37);"
-      "INSERT INTO credit_cards (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000009', 47);"
-      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
-      "last_updated_timestamp) "
-      "VALUES('00000000-0000-0000-0000-000000000009', '', 47);"
-      "INSERT INTO credit_cards (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000010', 57);"
-      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
-      "last_updated_timestamp) "
-      "VALUES('00000000-0000-0000-0000-000000000010', '', 57);"
-      "INSERT INTO credit_cards (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000011', 67);"
-      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
-      "last_updated_timestamp) "
-      "VALUES('00000000-0000-0000-0000-000000000011', '', 67);"));
-
-  // Remove all entries modified in the bounded time range [17,41).
-  std::vector<std::unique_ptr<CreditCard>> credit_cards;
-  table_->RemoveAutofillDataModifiedBetween(Time::FromTimeT(17),
-                                            Time::FromTimeT(41), &credit_cards);
-
-  // Three cards should have been removed.
-  ASSERT_EQ(3UL, credit_cards.size());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000006", credit_cards[0]->guid());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000007", credit_cards[1]->guid());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000008", credit_cards[2]->guid());
-
-  // Make sure the expected cards are still present.
-  sql::Statement s_credit_cards_bounded(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "SELECT date_modified FROM credit_cards ORDER BY guid"));
-  ASSERT_TRUE(s_credit_cards_bounded.is_valid());
-  ASSERT_TRUE(s_credit_cards_bounded.Step());
-  EXPECT_EQ(47, s_credit_cards_bounded.ColumnInt64(0));
-  ASSERT_TRUE(s_credit_cards_bounded.Step());
-  EXPECT_EQ(57, s_credit_cards_bounded.ColumnInt64(0));
-  ASSERT_TRUE(s_credit_cards_bounded.Step());
-  EXPECT_EQ(67, s_credit_cards_bounded.ColumnInt64(0));
-  EXPECT_FALSE(s_credit_cards_bounded.Step());
-
-  // Make sure the expected card cvcs are still present.
-  sql::Statement s_cvc_bounded(db_->GetSQLConnection()->GetUniqueStatement(
-      "SELECT last_updated_timestamp FROM local_stored_cvc ORDER BY guid"));
-  ASSERT_TRUE(s_cvc_bounded.is_valid());
-  ASSERT_TRUE(s_cvc_bounded.Step());
-  EXPECT_EQ(47, s_cvc_bounded.ColumnInt64(0));
-  ASSERT_TRUE(s_cvc_bounded.Step());
-  EXPECT_EQ(57, s_cvc_bounded.ColumnInt64(0));
-  ASSERT_TRUE(s_cvc_bounded.Step());
-  EXPECT_EQ(67, s_cvc_bounded.ColumnInt64(0));
-  EXPECT_FALSE(s_cvc_bounded.Step());
-
-  // Remove all entries modified on or after time 51 (unbounded range).
-  table_->RemoveAutofillDataModifiedBetween(Time::FromTimeT(51), Time(),
-                                            &credit_cards);
-
-  // Two cards should have been removed.
-  ASSERT_EQ(2UL, credit_cards.size());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000010", credit_cards[0]->guid());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000011", credit_cards[1]->guid());
-
-  // Make sure the remaining card is the expected one.
-  sql::Statement s_credit_cards_unbounded(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "SELECT date_modified FROM credit_cards"));
-  ASSERT_TRUE(s_credit_cards_unbounded.is_valid());
-  ASSERT_TRUE(s_credit_cards_unbounded.Step());
-  EXPECT_EQ(47, s_credit_cards_unbounded.ColumnInt64(0));
-  EXPECT_FALSE(s_credit_cards_unbounded.Step());
-
-  // Make sure the remaining card cvc is the expected one.
-  sql::Statement s_cvc_unbounded(db_->GetSQLConnection()->GetUniqueStatement(
-      "SELECT last_updated_timestamp FROM local_stored_cvc"));
-  ASSERT_TRUE(s_cvc_unbounded.is_valid());
-  ASSERT_TRUE(s_cvc_unbounded.Step());
-  EXPECT_EQ(47, s_cvc_unbounded.ColumnInt64(0));
-  EXPECT_FALSE(s_cvc_unbounded.Step());
-
-  // Remove all remaining entries.
-  table_->RemoveAutofillDataModifiedBetween(Time(), Time(), &credit_cards);
-
-  // One credit card should have been deleted.
-  ASSERT_EQ(1UL, credit_cards.size());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000009", credit_cards[0]->guid());
-
-  // There should be no cards left.
-  sql::Statement s_credit_cards_empty(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "SELECT date_modified FROM credit_cards"));
-  ASSERT_TRUE(s_credit_cards_empty.is_valid());
-  EXPECT_FALSE(s_credit_cards_empty.Step());
-
-  // There should be no card cvcs left.
-  sql::Statement s_cvc_empty(db_->GetSQLConnection()->GetUniqueStatement(
-      "SELECT last_updated_timestamp FROM local_stored_cvc"));
-  ASSERT_TRUE(s_cvc_empty.is_valid());
-  EXPECT_FALSE(s_cvc_empty.Step());
-}
-
-TEST_F(PaymentsAutofillTableTest, RemoveOriginURLsModifiedBetween) {
-  // Populate the credit_cards table.
-  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
-      "INSERT INTO credit_cards (guid, origin, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000003', '', 17);"
-      "INSERT INTO credit_cards (guid, origin, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000004', "
-      "       'https://www.example.com/', 27);"
-      "INSERT INTO credit_cards (guid, origin, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000005', 'Chrome settings', "
-      "       37);"));
-
-  // Remove all origin URLs set in the bounded time range [21,27).
-  table_->RemoveOriginURLsModifiedBetween(Time::FromTimeT(21),
-                                          Time::FromTimeT(27));
-  sql::Statement s_credit_cards_bounded(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "SELECT date_modified, origin FROM credit_cards"));
-  ASSERT_TRUE(s_credit_cards_bounded.is_valid());
-  ASSERT_TRUE(s_credit_cards_bounded.Step());
-  EXPECT_EQ(17, s_credit_cards_bounded.ColumnInt64(0));
-  EXPECT_EQ(std::string(), s_credit_cards_bounded.ColumnString(1));
-  ASSERT_TRUE(s_credit_cards_bounded.Step());
-  EXPECT_EQ(27, s_credit_cards_bounded.ColumnInt64(0));
-  EXPECT_EQ("https://www.example.com/", s_credit_cards_bounded.ColumnString(1));
-  ASSERT_TRUE(s_credit_cards_bounded.Step());
-  EXPECT_EQ(37, s_credit_cards_bounded.ColumnInt64(0));
-  EXPECT_EQ(kSettingsOrigin, s_credit_cards_bounded.ColumnString(1));
-
-  // Remove all origin URLS.
-  table_->RemoveOriginURLsModifiedBetween(Time(), Time());
-  sql::Statement s_credit_cards_all(db_->GetSQLConnection()->GetUniqueStatement(
-      "SELECT date_modified, origin FROM credit_cards"));
-  ASSERT_TRUE(s_credit_cards_all.is_valid());
-  ASSERT_TRUE(s_credit_cards_all.Step());
-  EXPECT_EQ(17, s_credit_cards_all.ColumnInt64(0));
-  EXPECT_EQ(std::string(), s_credit_cards_all.ColumnString(1));
-  ASSERT_TRUE(s_credit_cards_all.Step());
-  EXPECT_EQ(27, s_credit_cards_all.ColumnInt64(0));
-  EXPECT_EQ(std::string(), s_credit_cards_all.ColumnString(1));
-  ASSERT_TRUE(s_credit_cards_all.Step());
-  EXPECT_EQ(37, s_credit_cards_all.ColumnInt64(0));
-  EXPECT_EQ(kSettingsOrigin, s_credit_cards_all.ColumnString(1));
-}
-
 TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
   for (bool is_cvc_storage_flag_enabled : {true, false}) {
-    base::test::ScopedFeatureList features;
-    if (is_cvc_storage_flag_enabled) {
-      features.InitAndEnableFeature(
-          features::kAutofillEnableCvcStorageAndFilling);
-    } else {
-      features.InitAndDisableFeature(
-          features::kAutofillEnableCvcStorageAndFilling);
-    }
+    base::test::ScopedFeatureList feature;
+    feature.InitWithFeatureState(features::kAutofillEnableCvcStorageAndFilling,
+                                 is_cvc_storage_flag_enabled);
 
     std::vector<CreditCard> inputs;
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
@@ -903,6 +743,8 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     inputs[1].set_product_terms_url(GURL("https://www.example_term.com"));
     inputs[1].set_cvc(u"111");
 
+    // The CVC modification dates are set to `now` during insertion.
+    const time_t now = base::Time::Now().ToTimeT();
     test::SetServerCreditCards(table_.get(), inputs);
 
     std::vector<std::unique_ptr<CreditCard>> outputs;
@@ -927,7 +769,9 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
       // clear the same from the input entries to allow the comparison between
       // input and output.
       EXPECT_TRUE(outputs[0]->cvc().empty());
+      EXPECT_TRUE(outputs[0]->cvc_modification_date().is_null());
       EXPECT_TRUE(outputs[1]->cvc().empty());
+      EXPECT_TRUE(outputs[1]->cvc_modification_date().is_null());
 
       inputs[0].clear_cvc();
       inputs[1].clear_cvc();
@@ -967,7 +811,9 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
 
     if (is_cvc_storage_flag_enabled) {
       EXPECT_EQ(inputs[0].cvc(), outputs[0]->cvc());
+      EXPECT_EQ(now, outputs[0]->cvc_modification_date().ToTimeT());
       EXPECT_EQ(inputs[1].cvc(), outputs[1]->cvc());
+      EXPECT_EQ(now, outputs[1]->cvc_modification_date().ToTimeT());
     }
   }
 }
@@ -1620,12 +1466,12 @@ TEST_F(PaymentsAutofillTableTest, GetMaskedBankAccounts) {
       "VALUES(200, 'bank_name_2', 'account_number_suffix_2', 3, 'nickname_2', "
       "'http://display-icon-url2.com');"));
 
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts_from_db;
+  std::vector<BankAccount> bank_accounts_from_db;
   table_->GetMaskedBankAccounts(bank_accounts_from_db);
 
   EXPECT_EQ(2u, bank_accounts_from_db.size());
 
-  BankAccount bank_account_from_db_1 = *bank_accounts_from_db.at(0).get();
+  BankAccount bank_account_from_db_1 = bank_accounts_from_db.at(0);
   EXPECT_EQ(100, bank_account_from_db_1.payment_instrument().instrument_id());
   EXPECT_EQ(u"bank_name", bank_account_from_db_1.bank_name());
   EXPECT_EQ(u"account_number_suffix",
@@ -1637,7 +1483,7 @@ TEST_F(PaymentsAutofillTableTest, GetMaskedBankAccounts) {
   EXPECT_EQ(GURL("http://display-icon-url.com"),
             bank_account_from_db_1.payment_instrument().display_icon_url());
 
-  BankAccount bank_account_from_db_2 = *bank_accounts_from_db.at(1).get();
+  BankAccount bank_account_from_db_2 = bank_accounts_from_db.at(1);
   EXPECT_EQ(200, bank_account_from_db_2.payment_instrument().instrument_id());
   EXPECT_EQ(u"bank_name_2", bank_account_from_db_2.bank_name());
   EXPECT_EQ(u"account_number_suffix_2",
@@ -1664,14 +1510,14 @@ TEST_F(PaymentsAutofillTableTest,
       "VALUES(200, 'bank_name_2', 'account_number_suffix_2', 3, 'nickname_2', "
       "'http://display-icon-url2.com');"));
 
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts_from_db;
+  std::vector<BankAccount> bank_accounts_from_db;
   table_->GetMaskedBankAccounts(bank_accounts_from_db);
 
   // Expect only one bank account since the other one has an invalid bank
   // account type.
   EXPECT_EQ(1u, bank_accounts_from_db.size());
   // Verify that the returned bank account maps to the second row in the table.
-  BankAccount bank_account_from_db = *bank_accounts_from_db.at(0).get();
+  BankAccount bank_account_from_db = bank_accounts_from_db.at(0);
   EXPECT_EQ(200, bank_account_from_db.payment_instrument().instrument_id());
 }
 
@@ -1687,7 +1533,7 @@ TEST_F(PaymentsAutofillTableTest, SetMaskedBankAccounts) {
       "'http://display-icon-url2.com');"));
 
   // Verify that GetMaskedBankAccounts returns 2 bank accounts.
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts_from_db;
+  std::vector<BankAccount> bank_accounts_from_db;
   table_->GetMaskedBankAccounts(bank_accounts_from_db);
   EXPECT_EQ(2u, bank_accounts_from_db.size());
 
@@ -1703,7 +1549,7 @@ TEST_F(PaymentsAutofillTableTest, SetMaskedBankAccounts) {
 
   // Verify that the instrument id of the returned bank account matches the one
   // that was stored.
-  BankAccount bank_account_from_db = *bank_accounts_from_db.at(0).get();
+  BankAccount bank_account_from_db = bank_accounts_from_db.at(0);
   EXPECT_EQ(8000, bank_account_from_db.payment_instrument().instrument_id());
 }
 

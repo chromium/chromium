@@ -47,17 +47,16 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.modules.cablev2_authenticator.Cablev2AuthenticatorModule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.webauthn.Fido2ApiCall;
-import org.chromium.device.DeviceFeatureList;
-import org.chromium.device.DeviceFeatureMap;
 
 /**
  * Provides a UI that attempts to install the caBLEv2 Authenticator module. If already installed, or
  * successfully installed, it replaces itself in the back-stack with the authenticator UI.
  *
- * This code lives in the base module, i.e. is _not_ part of the dynamically-loaded module.
+ * <p>This code lives in the base module, i.e. is _not_ part of the dynamically-loaded module.
  *
- * This does not use {@link ModuleInstallUi} because it needs to integrate into the Fragment-based
- * settings UI, while {@link ModuleInstallUi} assumes that the UI does in a {@link Tab}.
+ * <p>This does not use {@link ModuleInstallUi} because it needs to integrate into the
+ * Fragment-based settings UI, while {@link ModuleInstallUi} assumes that the UI does in a {@link
+ * Tab}.
  */
 public class CableAuthenticatorModuleProvider extends Fragment implements OnClickListener {
     // TAG is subject to a 20 character limit.
@@ -259,11 +258,6 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         if (!km.isDeviceSecure()) {
             return false;
-        }
-
-        if (DeviceFeatureMap.isEnabled(
-                DeviceFeatureList.WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS)) {
-            return true;
         }
 
         return NotificationManagerCompat.from(context).areNotificationsEnabled();

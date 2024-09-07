@@ -35,6 +35,12 @@ COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const char kForceSearchEngineChoiceScreen[] =
     "force-search-engine-choice-screen";
 
+// Enables the new guest mode experience for the search engine choice dialog.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kSearchEngineChoiceGuestExperience,
+             "SearchEngineChoiceGuestExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the search engine choice screen. Feature parameters below can
 // affect the actual triggering logic.
 // The default feature state is split by platform to ease potential merges
@@ -52,15 +58,6 @@ BASE_FEATURE(kSearchEngineChoiceAttribution,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_FEATURE(kSearchEnginesSortingCleanup,
-             "kSearchEnginesSortingCleanup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-const base::FeatureParam<bool> kSearchEngineChoiceTriggerWithForceEeaCountry{
-    &kSearchEngineChoiceTrigger, /*name=*/"with_force_eea_country", false};
-
 // Use an explicit "NO_REPROMPT" value as default to avoid reprompting users
 // who saw the choice screen in M121.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
@@ -68,12 +65,6 @@ const base::FeatureParam<std::string> kSearchEngineChoiceTriggerRepromptParams{
     &kSearchEngineChoiceTrigger,
     /*name=*/"reprompt",
     /*default_value=*/kSearchEngineChoiceNoRepromptString};
-
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-const base::FeatureParam<bool> kSearchEngineChoiceTriggerSkipFor3p{
-    &kSearchEngineChoiceTrigger,
-    /*name=*/"skip_for_3p",
-    /*default_value=*/true};
 
 #if BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

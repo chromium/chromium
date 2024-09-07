@@ -19,11 +19,13 @@
 namespace content {
 
 namespace {
+// TODO(yuzus): Make a way to use a non sticky dummy feature.
 constexpr auto* kBlockingPagePath =
     "/back_forward_cache/page_with_blocking_feature.html";
 constexpr auto* kBlockingReasonString = "webxrdevice";
 constexpr auto kBlockingReasonEnum =
     blink::scheduler::WebSchedulerTrackedFeature::kWebXR;
+constexpr auto* kBlockingScript = "navigator.xr.isSessionSupported('inline');";
 }  // namespace
 
 // `BackForwardCacheMetricsTestMatcher` provides common matchers and

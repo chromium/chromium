@@ -515,4 +515,51 @@ TEST_F(RTCDataChannelTest, SendPreventsTransfers) {
   }
 }
 
+TEST_F(RTCDataChannelTest, NoSendAfterClose) {
+  V8TestingScope scope;
+
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  auto* channel = MakeGarbageCollected<RTCDataChannel>(
+      scope.GetExecutionContext(), webrtc_channel);
+  channel->close();
+
+  {
+    SCOPED_TRACE("RTCDataChannel::send(const string&)");
+    String message(std::string(100, 'A').c_str());
+    DummyExceptionStateForTesting exception_state;
+    channel->send(message, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+
+  {
+    SCOPED_TRACE("RTCDataChannel::send(DOMArrayBuffer*)");
+    DOMArrayBuffer* buffer = DOMArrayBuffer::Create(10, 4);
+    DummyExceptionStateForTesting exception_state;
+    channel->send(buffer, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+
+  {
+    SCOPED_TRACE("RTCDataChannel::send(NotShared<DOMArrayBufferView>)");
+    DOMArrayBuffer* buffer = DOMArrayBuffer::Create(10, 4);
+    DummyExceptionStateForTesting exception_state;
+    channel->send(
+        NotShared<DOMArrayBufferView>(DOMDataView::Create(buffer, 0, 10)),
+        exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+
+  {
+    SCOPED_TRACE("RTCDataChannel::send(Blob*)");
+    const char kHelloWorld[] = "Hello world!";
+    Blob* blob = Blob::Create(
+        base::as_bytes(base::span_with_nul_from_cstring(kHelloWorld)),
+        "text/plain");
+    DummyExceptionStateForTesting exception_state;
+    channel->send(blob, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+}
+
 }  // namespace blink

@@ -12,7 +12,8 @@ namespace blink {
 InterpolationValue CSSAngleInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+      0, CSSPrimitiveValue::UnitType::kDegrees));
 }
 
 InterpolationValue CSSAngleInterpolationType::MaybeConvertValue(

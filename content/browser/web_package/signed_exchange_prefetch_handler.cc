@@ -23,7 +23,7 @@
 namespace content {
 
 SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& resource_request,
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,

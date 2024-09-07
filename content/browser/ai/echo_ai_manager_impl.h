@@ -5,17 +5,21 @@
 #ifndef CONTENT_BROWSER_AI_ECHO_AI_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_AI_ECHO_AI_MANAGER_IMPL_H_
 
+#include <variant>
+
 #include "base/no_destructor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-forward.h"
 
 namespace content {
 
 // The implementation of `blink::mojom::AIManager` that creates session which
-// only echoes back the prompt text used for testing.
+// only echoes back the prompt text used for testing, and all the parameters
+// will be set using the default value.
 class EchoAIManagerImpl : public blink::mojom::AIManager {
  public:
   using ReceiverContext =
@@ -45,17 +49,19 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       const std::optional<std::string>& system_prompt,
       CreateTextSessionCallback callback) override;
 
+  void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
+
+  void CreateSummarizer(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
+      blink::mojom::AISummarizerCreateOptionsPtr options) override;
+
   void GetTextModelInfo(GetTextModelInfoCallback callback) override;
   void CreateWriter(
-      const std::optional<std::string>& shared_context,
-      mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client)
-      override;
+      mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
+      blink::mojom::AIWriterCreateOptionsPtr options) override;
   void CreateRewriter(
-      const std::optional<std::string>& shared_context,
-      blink::mojom::AIRewriterTone tone,
-      blink::mojom::AIRewriterLength length,
-      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client)
-      override;
+      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
+      blink::mojom::AIRewriterCreateOptionsPtr options) override;
 
   mojo::ReceiverSet<blink::mojom::AIManager, ReceiverContext> receivers_;
 };

@@ -77,10 +77,28 @@ class ToggleHotspotInteractiveUITest : public InteractiveAshTest {
     SetTetheringReadinessCheckSuccessResult(shill::kTetheringReadinessReady);
   }
 
+  // Shill updates the tethering state to Idle if no clients are connected
+  // within 5 minutes. We are simulating that scenario here by skipping the
+  // 5 minute timer and setting the status property to Idle.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  SimulateHotspotTimeout() {
+    return Steps(Do([&]() {
+      ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
+          shill::kTetheringStatusProperty,
+          base::Value(base::Value::Dict()
+                          .Set(shill::kTetheringStatusStateProperty,
+                               shill::kTetheringStateIdle)
+                          .Set(shill::kTetheringStatusIdleReasonProperty,
+                               shill::kTetheringIdleReasonInactive)));
+      base::RunLoop().RunUntilIdle();
+    }));
+  }
+
   void LockScreen() { SessionManagerClient::Get()->RequestLockScreen(); }
 
  private:
-  const ShillServiceInfo shill_service_info_ = ShillServiceInfo(/*id=*/0);
+  const ShillServiceInfo shill_service_info_ =
+      ShillServiceInfo(/*id=*/0, shill::kTypeCellular);
 };
 
 IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,
@@ -304,6 +322,67 @@ IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest, AbortEnablingHotspot) {
 
       Log("Wait for the hotspot state to be disabled"),
 
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kDisabled),
+      WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
+                         false),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest, AutoDisableHotspot) {
+  SetTetheringReadinessCheckSuccessResult(shill::kTetheringReadinessReady);
+  AddCellularService();
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateTetheringEnableResult(FakeShillSimulatedResult::kSuccess,
+                                         shill::kTetheringEnableResultSuccess);
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Navigating to the internet page"),
+
+      NavigateSettingsToInternetPage(kOSSettingsId),
+
+      Log("Waiting for hotspot summary item and toggle to exist and enabled"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::hotspot::HotspotSummaryItem()),
+      WaitForElementEnabled(kOSSettingsId, settings::hotspot::HotspotToggle()),
+
+      Log("Make sure hotspot is initially disabled"),
+
+      ObserveState(kHotspotStateService,
+                   std::make_unique<HotspotStateObserver>()),
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kDisabled),
+      WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
+                         false),
+
+      Log("Waiting for hotspot toggle to be enabled then click it"),
+
+      ClickElement(kOSSettingsId, settings::hotspot::HotspotToggle()),
+
+      Log("Wait for the hotspot state to be enabled"),
+
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kEnabled),
+      WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
+                         true),
+
+      Log("Setting tethering state to idle in Shill to simulate auto disable "
+          "scenario"),
+
+      SimulateHotspotTimeout(),
+
+      Log("Waiting for the hotspot auto-disable notification to be shown"),
+
+      WaitForShow(kCellularHotspotAutoDisableNotificationElementId),
       WaitForState(kHotspotStateService,
                    hotspot_config::mojom::HotspotState::kDisabled),
       WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),

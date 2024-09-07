@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/webui/ui_bundled/interstitials/interstitial_ui.h"
 
 #import <Foundation/Foundation.h>
+
 #import <memory>
 #import <utility>
 
@@ -12,7 +13,7 @@
 #import "base/memory/ref_counted_memory.h"
 #import "base/time/time.h"
 #import "components/grit/dev_ui_components_resources.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/webui/ui_bundled/interstitials/interstitial_ui_constants.h"
 #import "ios/chrome/browser/webui/ui_bundled/interstitials/interstitial_ui_util.h"

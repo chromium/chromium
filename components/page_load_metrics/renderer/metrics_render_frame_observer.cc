@@ -835,14 +835,6 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
               .InSecondsF(),
           start);
     }
-
-    timing->paint_timing->largest_contentful_paint
-        ->is_loaded_from_memory_cache =
-        largest_contentful_paint_details.is_loaded_from_memory_cache;
-
-    timing->paint_timing->largest_contentful_paint
-        ->is_preloaded_with_early_hints =
-        largest_contentful_paint_details.is_preloaded_with_early_hints;
   }
   if (largest_contentful_paint_details.text_paint_size > 0) {
     // LargestTextPaint and LargestTextPaintSize should be available at the

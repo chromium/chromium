@@ -26,6 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
@@ -66,10 +67,17 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
+import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -83,9 +91,15 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -96,6 +110,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
 @Batch(Batch.PER_CLASS)
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public final class SafetyHubTest {
     private static final PermissionsData PERMISSIONS_DATA_1 =
             PermissionsData.create(
@@ -155,11 +170,15 @@ public final class SafetyHubTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
     private FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
             new FakeUnusedSitePermissionsBridge();
 
     private FakeNotificationPermissionReviewBridge mNotificationPermissionReviewBridge =
             new FakeNotificationPermissionReviewBridge();
+
+    private Profile mProfile;
 
     private void executeWhileCapturingIntents(Runnable func) {
         Intents.init();
@@ -189,6 +208,7 @@ public final class SafetyHubTest {
                 mNotificationPermissionReviewBridge);
 
         mActivityTestRule.startMainActivityOnBlankPage();
+        mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
     }
 
     @Test
@@ -265,15 +285,14 @@ public final class SafetyHubTest {
                         .getActivity()
                         .getResources()
                         .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 2, 2);
-        scrollToPreference(withText(permissionsTitle));
+        scrollToExpandedPreference(permissionsTitle);
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
-        // Module should be collapsed initially since it's in an info state.
-        verifyButtonsNextToTextVisibility(permissionsTitle, false);
-        expandPreferenceWithText(permissionsTitle);
+        // Module should be expanded initially since it's in an info state and there are no other
+        // warning states.
+        verifyButtonsNextToTextVisibility(permissionsTitle, true);
 
         // Open the permissions subpage.
-        scrollToExpandedPreference(permissionsTitle);
         clickOnSecondaryButtonNextToText(permissionsTitle);
 
         // Verify that 2 sites are displayed.
@@ -435,15 +454,14 @@ public final class SafetyHubTest {
                         .getResources()
                         .getQuantityString(
                                 R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
-        scrollToPreference(withText(notificationsTitle));
+        scrollToExpandedPreference(notificationsTitle);
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
-        // Module should be collapsed initially since it's in an info state.
-        verifyButtonsNextToTextVisibility(notificationsTitle, false);
-        expandPreferenceWithText(notificationsTitle);
+        // Module should be expanded initially since it's in an info state and there are no other
+        // warning states.
+        verifyButtonsNextToTextVisibility(notificationsTitle, true);
 
         // Open the notifications subpage.
-        scrollToExpandedPreference(notificationsTitle);
         clickOnSecondaryButtonNextToText(notificationsTitle);
 
         // Verify that 2 sites are displayed.
@@ -484,14 +502,14 @@ public final class SafetyHubTest {
                         .getQuantityString(
                                 R.plurals.safety_hub_notifications_review_warning_title, 1, 1);
         scrollToPreference(withText(notificationsTitle));
+        scrollToExpandedPreference(notificationsTitle);
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
-        // Module should be collapsed initially since it's in an info state.
-        verifyButtonsNextToTextVisibility(notificationsTitle, false);
-        expandPreferenceWithText(notificationsTitle);
+        // Module should be expanded initially since it's in an info state and there are no other
+        // warning states.
+        verifyButtonsNextToTextVisibility(notificationsTitle, true);
 
         // Open the notifications subpage.
-        scrollToExpandedPreference(notificationsTitle);
         clickOnSecondaryButtonNextToText(notificationsTitle);
 
         // Check that the button is enabled.
@@ -642,6 +660,69 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @RequiresRestart
+    public void testMultiplePreferenceExpand() {
+        // Set a module with an unmanaged warning state.
+        int compromisedPasswordsCount = 5;
+        addCredentialToAccountStore();
+        setCompromisedPasswordsCount(compromisedPasswordsCount);
+
+        // Set a module with info state.
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {
+                    NOTIFICATION_PERMISSIONS_1, NOTIFICATION_PERMISSIONS_2
+                });
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify only the unmanaged warning state module should be expanded by default.
+        String passwordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_check_passwords_compromised_exist,
+                                compromisedPasswordsCount,
+                                compromisedPasswordsCount);
+        scrollToExpandedPreference(passwordsTitle);
+        verifyButtonsNextToTextVisibility(passwordsTitle, true);
+
+        // Verify other modules are collapsed.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+
+        String notificationsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
+        scrollToPreference(withText(notificationsTitle));
+        verifyButtonsNextToTextVisibility(notificationsTitle, false);
+
+        // Fix the warning state
+        setCompromisedPasswordsCount(0);
+        mSafetyHubFragmentTestRule.recreateActivity();
+        safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        passwordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_no_compromised_passwords_title);
+        scrollToPreference(withText(passwordsTitle));
+        verifyButtonsNextToTextVisibility(passwordsTitle, false);
+
+        // Verify info modules are now expanded.
+        scrollToExpandedPreference(safeBrowsingTitle);
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        scrollToExpandedPreference(notificationsTitle);
+        verifyButtonsNextToTextVisibility(notificationsTitle, true);
+    }
+
+    @Test
+    @MediumTest
     @Feature({"SafetyHubPermissions"})
     public void testPermissionsModule_ClearList() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
@@ -662,16 +743,15 @@ public final class SafetyHubTest {
                         .getActivity()
                         .getResources()
                         .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 2, 2);
-        scrollToPreference(withText(permissionsTitle));
+        scrollToExpandedPreference(permissionsTitle);
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
-        // Module should be collapsed initially since it's in an info state.
-        verifyButtonsNextToTextVisibility(permissionsTitle, false);
-        expandPreferenceWithText(permissionsTitle);
+        // Module should be expanded initially since it's in an info state and there are no other
+        // warning states.
+        verifyButtonsNextToTextVisibility(permissionsTitle, true);
 
         // Click on the Got it button and verify the permissions module has changed to a safe
         // state.
-        scrollToExpandedPreference(permissionsTitle);
         clickOnPrimaryButtonNextToText(permissionsTitle);
         onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
                 .check(matches(isDisplayed()));
@@ -748,16 +828,15 @@ public final class SafetyHubTest {
                         .getQuantityString(
                                 R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
 
-        scrollToPreference(withText(notificationsTitle));
+        scrollToExpandedPreference(notificationsTitle);
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
-        // Module should be collapsed initially since it's in a info state.
-        verifyButtonsNextToTextVisibility(notificationsTitle, false);
-        expandPreferenceWithText(notificationsTitle);
+        // Module should be expanded initially since it's in an info state and there are no other
+        // warning states.
+        verifyButtonsNextToTextVisibility(notificationsTitle, true);
 
         // Click on the reset all button and verify the notification module has changed to a
         // safe state.
-        scrollToExpandedPreference(notificationsTitle);
         clickOnPrimaryButtonNextToText(notificationsTitle);
         onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
                 .check(matches(isDisplayed()));
@@ -987,7 +1066,7 @@ public final class SafetyHubTest {
                 () -> {
                     Tab tab = cta.getActivityTab();
                     Criteria.checkThat(tab, Matchers.notNullValue());
-                    Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(expectedUrl));
+                    Criteria.checkThat(tab.getUrl().getSpec(), is(expectedUrl));
                 });
     }
 
@@ -1060,6 +1139,36 @@ public final class SafetyHubTest {
 
     private void scrollToLastPosition() {
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+    }
+
+    private void setCompromisedPasswordsCount(int count) {
+        // TODO(crbug.com/324562205): Add more integration tests for password module.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).setInteger(Pref.BREACHED_CREDENTIALS_COUNT, count);
+                });
+    }
+
+    private void addCredentialToAccountStore() {
+        // Set up an account with at least one password in the account store.
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
+
+        PasswordStoreBridge passwordStoreBridge =
+                ThreadUtils.runOnUiThreadBlocking(() -> new PasswordStoreBridge(mProfile));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    passwordStoreBridge.insertPasswordCredentialInAccountStore(
+                            new PasswordStoreCredential(
+                                    new GURL("https://site2.com"), "user2", "pwd2"));
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "The account store should've had one password",
+                            passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore(),
+                            is(1));
+                });
     }
 
     private void setSafeBrowsingState(@SafeBrowsingState int state) {

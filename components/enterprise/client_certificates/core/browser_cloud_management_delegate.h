@@ -14,10 +14,6 @@
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "net/http/http_response_headers.h"
 
-namespace policy {
-class BrowserDMTokenStorage;
-}  // namespace policy
-
 namespace enterprise_attestation {
 
 class DMServerClient;
@@ -27,7 +23,6 @@ class DMServerClient;
 class BrowserCloudManagementDelegate : public CloudManagementDelegate {
  public:
   BrowserCloudManagementDelegate(
-      policy::BrowserDMTokenStorage* dm_token_storage,
       std::unique_ptr<DMServerClient> dmserver_client);
 
   ~BrowserCloudManagementDelegate() override;
@@ -39,7 +34,6 @@ class BrowserCloudManagementDelegate : public CloudManagementDelegate {
       policy::DMServerJobConfiguration::Callback callback) override;
 
  private:
-  raw_ptr<policy::BrowserDMTokenStorage> dm_token_storage_;
   std::unique_ptr<DMServerClient> dm_server_client_;
 };
 

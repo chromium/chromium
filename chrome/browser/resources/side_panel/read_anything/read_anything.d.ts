@@ -56,6 +56,11 @@ declare namespace chrome {
     let darkTheme: number;
     let yellowTheme: number;
     let blueTheme: number;
+    let autoHighlighting: number;
+    let wordHighlighting: number;
+    let phraseHighlighting: number;
+    let sentenceHighlighting: number;
+    let noHighlighting: number;
 
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
@@ -67,6 +72,9 @@ declare namespace chrome {
     let isLanguagePackDownloadingEnabled: boolean;
 
     let isAutomaticWordHighlightingEnabled: boolean;
+
+    // Whether the phrase highlighting feature flag is enabled.
+    let isPhraseHighlightingEnabled: boolean;
 
     // Indicates if this page is a Google doc.
     let isGoogleDocs: boolean;
@@ -187,6 +195,9 @@ declare namespace chrome {
     // Called when the voice used for speech is changed via the webui toolbar.
     function onVoiceChange(voice: string, lang: string): void;
 
+    // Called when the highlight granularity is changed via the webui toolbar.
+    function onHighlightGranularityChanged(value: number): void;
+
     // Called when a language is enabled/disabled for Read Aloud
     // via the webui language menu.
     function onLanguagePrefChange(lang: string, enabled: boolean): void;
@@ -250,6 +261,9 @@ declare namespace chrome {
     // Called when the Read Anything panel is scrolled all the way down.
     function onScrolledToBottom(): void;
 
+    // Whether the Google Docs load more button is visible.
+    let isDocsLoadMoreButtonVisible: boolean;
+
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
     ////////////////////////////////////////////////////////////////
@@ -296,10 +310,6 @@ declare namespace chrome {
     // for the given node. nodeId should be a node returned by getCurrentText.
     // Returns -1 if the node is invalid.
     function getCurrentTextStartIndex(nodeId: number): number;
-
-    // The starting index for a granularity-based highlight of the given node.
-    function getHighlightStartIndex(nodeId: number, boundaryIndex: number):
-        number;
 
     // Gets the ending text index for the current Read Aloud text segment
     // for the given node. nodeId should be a node returned by getCurrentText or
@@ -374,16 +384,17 @@ declare namespace chrome {
     // Log speech errors.
     function logSpeechError(errorCode: string): void;
 
-    // Returns the node id associated with the index within the given text
-    // segment.
+    // Returns a list of node ids and ranges (start and length) associated with
+    // the index within the given text segment. The intended use is for
+    // highlighting the ranges. Note that a highlight can span over multiple
+    // nodes in certain cases.
+    //
     // For example, for a segment of text composed of two nodes:
     // Node 1: "Hello, this is a "
     // Node 2: "segment of text."
-    // An index of "20" will return the node id associated with node 2.
-    function getNodeIdForCurrentSegmentIndex(index: number): number;
-
-    // The highlight length of the next word starting at the given index within
-    // the current segment.
-    function getNextWordHighlightLength(index: number): number;
+    // An index of "20" will return the node id associated with node 2, a start
+    // index of 0, and a length of 8 (covering the word "segment ").
+    function getHighlightForCurrentSegmentIndex(index: number):
+        Array<{nodeId: number, start: number, length: number}>;
   }
 }

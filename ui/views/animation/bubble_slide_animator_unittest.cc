@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -39,7 +40,7 @@ class TestBubbleView : public BubbleDialogDelegateView {
                                  BubbleBorder::TOP_LEFT,
                                  BubbleBorder::DIALOG_SHADOW,
                                  true) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     SetLayoutManager(std::make_unique<FillLayout>());
     AddChildView(std::make_unique<View>())->SetPreferredSize(kTestViewSize);
   }

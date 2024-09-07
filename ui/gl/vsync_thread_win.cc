@@ -177,8 +177,8 @@ VSyncThreadWin::VSyncThreadWin(Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device)
       vsync_provider_(gfx::kNullAcceleratedWidget),
       dxgi_adapter_(GetAdapter(dxgi_device.Get())),
       original_adapter_luid_(GetLuid(dxgi_adapter_.Get())) {
-  is_suspended_ =
-      base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(this);
+  is_suspended_ = base::PowerMonitor::GetInstance()
+                      ->AddPowerSuspendObserverAndReturnSuspendedState(this);
   vsync_thread_.StartWithOptions(
       base::Thread::Options(base::ThreadType::kDisplayCritical));
 }

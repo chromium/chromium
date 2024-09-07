@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -51,6 +52,24 @@ bool LocalUserFilesAllowed() {
   }
   return g_browser_process->local_state()->GetBoolean(
       prefs::kLocalUserFilesAllowed);
+}
+
+CloudProvider GetMigrationDestination() {
+  if (!base::FeatureList::IsEnabled(features::kSkyVault) ||
+      !base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
+    return CloudProvider::kNotSpecified;
+  }
+
+  const std::string destination = g_browser_process->local_state()->GetString(
+      prefs::kLocalUserFilesMigrationDestination);
+
+  if (destination == download_dir_util::kLocationGoogleDrive) {
+    return CloudProvider::kGoogleDrive;
+  }
+  if (destination == download_dir_util::kLocationOneDrive) {
+    return CloudProvider::kOneDrive;
+  }
+  return CloudProvider::kNotSpecified;
 }
 
 FileSaveDestination GetDownloadsDestination(Profile* profile) {

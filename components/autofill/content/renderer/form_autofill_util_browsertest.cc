@@ -479,12 +479,10 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
     LoadHTML(test_case.html);
     WebFormControlElement form_target =
         GetFormControlElementById(GetDocument(), "target");
-    if (test_case.expected_label.empty()) {
-      EXPECT_EQ(InferLabelForElementForTesting(form_target), std::nullopt);
-    } else {
-      EXPECT_THAT(InferLabelForElementForTesting(form_target),
-                  Optional(Pair(test_case.expected_label, _)));
-    }
+    std::vector<FormFieldData> fields(1);
+    InferLabelForElementsForTesting(
+        std::to_array<WebFormControlElement>({form_target}), fields);
+    EXPECT_EQ(fields.front().label(), test_case.expected_label);
   }
 }
 
@@ -493,7 +491,6 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     const char* html;
     const FormFieldData::LabelSource label_source;
   };
-  const char16_t kLabelSourceExpectedLabel[] = u"label";
   static const AutofillFieldLabelSourceCase test_cases[] = {
       {"<div><div>label</div><div><input id='target'/></div></div>",
        FormFieldData::LabelSource::kDivTable},
@@ -527,9 +524,10 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     LoadHTML(test_case.html);
     WebFormControlElement form_target =
         GetFormControlElementById(GetDocument(), "target");
-    EXPECT_THAT(
-        InferLabelForElementForTesting(form_target),
-        Optional(Pair(kLabelSourceExpectedLabel, test_case.label_source)));
+    std::vector<FormFieldData> fields(1);
+    InferLabelForElementsForTesting(
+        std::to_array<WebFormControlElement>({form_target}), fields);
+    EXPECT_EQ(fields.front().label_source(), test_case.label_source);
   }
 }
 
@@ -1418,7 +1416,7 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
 
   WebDocument doc = GetDocument();
   std::vector<WebFormControlElement> unowned_form_fields =
-      form_util::GetOwnedFormControls(doc, WebFormElement());
+      form_util::GetOwnedFormControlsForTesting(doc, WebFormElement());
 
   // Both `<select>` and `<selectlist>` contain <button> elements in their
   // Shadow DOM.
@@ -1576,8 +1574,8 @@ INSTANTIATE_TEST_SUITE_P(
 
       // Check that we have 32 distinct test cases.
       DCHECK_EQ(cases.size(), 32u);
-      DCHECK(base::ranges::all_of(cases, [&](const auto& case1) {
-        return base::ranges::all_of(cases, [&](const auto& case2) {
+      DCHECK(std::ranges::all_of(cases, [&](const auto& case1) {
+        return std::ranges::all_of(cases, [&](const auto& case2) {
           return &case1 == &case2 || case1.html != case2.html;
         });
       }));
@@ -2151,8 +2149,8 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDom) {
   EXPECT_EQ(GetOwningForm(t1), f);
   EXPECT_EQ(GetOwningForm(t2), f);
   EXPECT_EQ(GetOwningForm(t3), f_unowned);
-  EXPECT_THAT(GetOwnedFormControls(doc, f), ElementsAre(t1, t2));
-  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), ElementsAre(t3));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f), ElementsAre(t1, t2));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f_unowned), ElementsAre(t3));
 }
 
 // Tests that explicit association overrules DOM ancestry when determining the
@@ -2200,9 +2198,10 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDomWithExplicitAssociation) {
   EXPECT_EQ(GetOwningForm(t6), f1);
   EXPECT_EQ(GetOwningForm(t7), f2);
   EXPECT_EQ(GetOwningForm(t8), f_unowned);
-  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1, t4, t6));
-  EXPECT_THAT(GetOwnedFormControls(doc, f2), ElementsAre(t2, t3, t7));
-  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), ElementsAre(t5, t8));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f1), ElementsAre(t1, t4, t6));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f2), ElementsAre(t2, t3, t7));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f_unowned),
+              ElementsAre(t5, t8));
 }
 
 // Tests that input elements in shadow DOM whose closest ancestor is in the
@@ -2242,8 +2241,8 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithoutFormInShadowDom) {
   EXPECT_EQ(GetOwningForm(t1), f1);
   EXPECT_EQ(GetOwningForm(t2), f1);
   EXPECT_EQ(GetOwningForm(t3), f_unowned);
-  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1, t2));
-  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), ElementsAre(t3));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f1), ElementsAre(t1, t2));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f_unowned), ElementsAre(t3));
 }
 
 // Tests that the owning form of a form control element is the furthest
@@ -2288,9 +2287,9 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithFormInShadowDom) {
   EXPECT_EQ(GetOwningForm(t1), f1);
   EXPECT_EQ(GetOwningForm(t2), f1);
   EXPECT_EQ(GetOwningForm(t3), f3);
-  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1, t2));
-  EXPECT_THAT(GetOwnedFormControls(doc, f3), ElementsAre(t3));
-  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), IsEmpty());
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f1), ElementsAre(t1, t2));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f3), ElementsAre(t3));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f_unowned), IsEmpty());
 }
 
 // Tests that the owning form is returned correctly even if there are multiple
@@ -2339,8 +2338,9 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(GetOwningForm(t3), f1);
   EXPECT_EQ(GetOwningForm(t4), f1);
   EXPECT_EQ(GetOwningForm(t5), f1);
-  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1, t2, t3, t4, t5));
-  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), IsEmpty());
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f1),
+              ElementsAre(t1, t2, t3, t4, t5));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f_unowned), IsEmpty());
 }
 
 // Tests that the owning form is computed correctly for form control elements
@@ -2398,10 +2398,10 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(GetOwningForm(t5), f1);
   EXPECT_EQ(GetOwningForm(t6), f1);
   EXPECT_EQ(GetOwningForm(t7), f4);
-  EXPECT_THAT(GetOwnedFormControls(doc, f1),
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f1),
               ElementsAre(t1, t2, t3, t4, t5, t6));
-  EXPECT_THAT(GetOwnedFormControls(doc, f4), ElementsAre(t7));
-  EXPECT_THAT(GetOwnedFormControls(doc, f_unowned), IsEmpty());
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f4), ElementsAre(t7));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f_unowned), IsEmpty());
 }
 
 // Tests that the owning form is computed correctly for nested forms.
@@ -2429,8 +2429,33 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormWithNestedFormsInLightDom) {
   WebFormElement f1 = GetFormElementById(doc, "f1");
   WebFormControlElement t1 = GetFormControlElementById(doc, "t1");
 
-  EXPECT_THAT(GetOwnedFormControls(doc, f1), ElementsAre(t1));
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f1), ElementsAre(t1));
   EXPECT_EQ(GetOwningForm(t1), f1);
+}
+
+// Tests that GetOwnedFormControls() doesn't return disconnected elements.
+TEST_F(FormAutofillUtilsTest, GetOwnedFormControlsRequiresConnectedness) {
+  LoadHTML(R"(
+    <html>
+      <body>
+        <form id=f>
+          <input id=t>
+        </form>
+      </body>
+    </html>)");
+  WebDocument doc = GetDocument();
+  WebFormElement f = GetFormElementById(doc, "f");
+  WebFormControlElement t = GetFormControlElementById(doc, "t");
+  EXPECT_THAT(f.GetFormControlElements(), ElementsAre(t));  // nocheck
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f), ElementsAre(t));
+
+  ExecuteJavaScriptForTests(R"(
+    document.getElementById('f').remove();
+  )");
+  // Blink still gives us the disconnected element, but in Autofill we don't
+  // want it.
+  EXPECT_THAT(f.GetFormControlElements(), ElementsAre(t));  // nocheck
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f), IsEmpty());
 }
 
 }  // namespace

@@ -306,7 +306,7 @@ void ContentProtectionManager::OnDisplaySecurityQueried(
                          connection_mask == DISPLAY_CONNECTION_TYPE_INTERNAL);
 
     for (Observer& observer : observers_)
-      observer.OnDisplaySecurityChanged(display_id, secure);
+      observer.OnDisplaySecurityMaybeChanged(display_id, secure);
   }
 
   if (status != Task::Status::KILLED)

@@ -95,15 +95,16 @@ generate_grd("build_grdp") {
 
 ts_library("library") {
   visibility = [
-    # TODO(crbug.com/40943652): The WebUI team is in the process of establishing
-    # Lit as the preferred WebUI framework, moving away from Polymer for Desktop
-    # (aka non-CrOS) surfaces. Please consult with //ui/webui/PLATFORM_OWNERS or
-    # g/chrome-webui before adding any new non-trivial Polymer UIs (excluding
-    # CrOS-only UIs), to consider the possibility of using Lit instead (See
-    # //third_party/lit/v3_0:build_ts).
+    # Lit has officially being declared as the preferred framework (over
+    # Polymer) for new Desktop WebUI code, see [1] and [2]
     #
-    # Note that Lit will be required for any new WebUI development soon
-    # (targeting end of Q2 2024).
+    # [1] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Lit
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Polymer
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md
+
+    # Use Lit instead of Polymer (see //third_party/lit/v3_0:build_ts). Consult
+    # with //ui/webui/PLATFORM_OWNERS or g/chrome-webui if you think there is a
+    # strong reason to use Polymer.
 
     "//chrome/browser/resources/access_code_cast:build_ts",
     "//chrome/browser/resources/app_service_internals:build_ts",
@@ -118,6 +119,7 @@ ts_library("library") {
     "//chrome/browser/resources/internals/user_education:build_ts",
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/lens/overlay/search_bubble:build_ts",
+    "//chrome/browser/resources/lens/shared:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
     "//chrome/browser/resources/omnibox_popup:build_ts",
     "//chrome/browser/resources/on_device_internals:build_ts",
@@ -125,7 +127,6 @@ ts_library("library") {
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/print_preview:build_ts",
     "//chrome/browser/resources/privacy_sandbox:build_ts",
-    "//chrome/browser/resources/search_engine_choice:build_ts",
     "//chrome/browser/resources/settings:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
@@ -135,7 +136,6 @@ ts_library("library") {
     "//chrome/browser/resources/signin:build_ts",
     "//chrome/browser/resources/suggest_internals:build_ts",
     "//chrome/browser/resources/support_tool:build_ts",
-    "//chrome/test/data/pdf:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//chrome/test/data/webui/bookmarks:build_ts",
     "//chrome/test/data/webui/cr_components:build_ts",
@@ -159,7 +159,6 @@ ts_library("library") {
     "//ui/webui/resources/cr_components/certificate_manager:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
-    "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_components/history_embeddings:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
@@ -250,11 +249,13 @@ ts_library("library") {
     "components-chromium/polymer/lib/utils/flattened-nodes-observer.d.ts",
     "components-chromium/polymer/lib/utils/flush.d.ts",
     "components-chromium/polymer/lib/utils/gestures.d.ts",
+    "components-chromium/polymer/lib/utils/hide-template-controls.d.ts",
     "components-chromium/polymer/lib/utils/html-tag.d.ts",
     "components-chromium/polymer/lib/utils/mixin.d.ts",
     "components-chromium/polymer/lib/utils/path.d.ts",
     "components-chromium/polymer/lib/utils/render-status.d.ts",
     "components-chromium/polymer/lib/utils/resolve-url.d.ts",
+    "components-chromium/polymer/lib/utils/scope-subtree.d.ts",
     "components-chromium/polymer/lib/utils/settings.d.ts",
     "components-chromium/polymer/lib/utils/style-gather.d.ts",
     "components-chromium/polymer/lib/utils/telemetry.d.ts",

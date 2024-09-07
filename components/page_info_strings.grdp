@@ -388,6 +388,9 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_FILE_SYSTEM_WRITE_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the file system permission is in the ask state and the site can prompt the user to ask if they allow the site to edit files and folders on your device.">
       Can ask to edit files and folders on your device
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_HAND_TRACKING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the hand tracking permission is in the ask state and the site can prompt the user to ask if they want to allow the site to track their hands.">
+      Can ask to track your hands
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_HID_DEVICES_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the HID permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to HID devices.">
       Can ask to connect to HID devices
     </message>
@@ -798,21 +801,42 @@
   </message>
 
   <!-- History strings -->
-  <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">
-    History
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
-    Last visited today
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
-    Last visited yesterday
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
-    Last visited <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
-    Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
-  </message>
+  <if expr="is_ios">
+    <then>
+      <message name="IDS_PAGE_INFO_HISTORY" desc="Title of the Last Visited row in Page Info on iOS. The button opens history page for the site.">
+        Last Visited
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited today.">
+        Today
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited yesterday.">
+        Yesterday
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited NUM_DAYS days ago.">
+        <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited on a particular date.">
+        <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
+      </message>
+    </then>
+    <else>
+      <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">
+        History
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
+        Last visited today
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
+        Last visited yesterday
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
+        Last visited <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
+        Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
+      </message>
+    </else>
+  </if>
 
   <!-- Enterprise interstitial strings -->
   <message name="IDS_PAGE_INFO_ENTERPRISE_WARN_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the website has been flagged by your admin to show a warning">

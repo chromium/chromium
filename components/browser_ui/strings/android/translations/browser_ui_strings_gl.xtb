@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1192844206376121885">Ao realizar esta acción, eliminaranse todos os datos e as cookies que almacenase <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Seguinte</translation>
+<translation id="1240190568154816272">Consellos de Chrome</translation>
 <translation id="1242008676835033345">Cookie inserida en <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Deter</translation>
 <translation id="1289742167380433257">Para gardar os teus datos, Google optimizou as imaxes desta páxina.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Preguntar antes de permitir que os sitios se conecten a un dispositivo (recomendado)</translation>
 <translation id="1779089405699405702">Descodificador de imaxes</translation>
 <translation id="1785415724048343560">Recoméndase para gozar da mellor experiencia</translation>
+<translation id="1799920918471566157">Consellos de Chrome</translation>
 <translation id="1818308510395330587">Para permitir que <ph name="APP_NAME" /> utilice a realidade aumentada, tamén debes activar a cámara en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">O acceso á localización está desactivado neste dispositivo. Actívao na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Deter</translation>
@@ -147,6 +149,7 @@
 <translation id="3448554387819310837">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar a cámara. Cando esta opción está desactivada, os sitios non poden utilizar a cámara.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome volverá bloquear as cookies mañá}other{Faltan # días para que Chrome volva bloquear as cookies}}</translation>
 <translation id="3521663503435878242">Sitios do dominio <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Non permitir que os sitios fagan un seguimento das mans</translation>
 <translation id="3536227077203206203">Permítese esta vez</translation>
 <translation id="3538390592868664640">Impide que os sitios creen un mapa 3D do que te rodea e fagan un seguimento da posición da cámara</translation>
 <translation id="3544058026430919413">Unha empresa pode definir un grupo de sitios que poden usar as cookies para compartir a túa actividade no grupo. Esta opción está desactivada no modo de incógnito.</translation>
@@ -157,6 +160,7 @@
 <translation id="3600792891314830896">Silencia sitios que reproducen son</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3628308229821498208">Buscas suxeridas</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio no grupo de sitios de <ph name="RWS_OWNER" /> pode ver a túa actividade no grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios no grupo de sitios de <ph name="RWS_OWNER" /> poden ver a túa actividade no grupo}}</translation>
 <translation id="3697164069658504920">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos USB. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos USB.</translation>
 <translation id="3707034683772193706">Calquera sitio que visites poderá gardar unha pequena cantidade de información con Chrome, basicamente, para confirmar que non es un bot</translation>
 <translation id="3721953990244350188">Pecha o cadro e mostra a seguinte acción dispoñible</translation>
@@ -218,6 +222,7 @@
 <translation id="4644713492825682049">Eliminar e restablecer</translation>
 <translation id="4645575059429386691">Xestionado por teus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
+<translation id="4676059169848868271">Para permitir que <ph name="APP_NAME" /> use o seguimento das mans, tamén tes que activar a opción correspondente na <ph name="BEGIN_LINK" />configuración do sistema<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
 <translation id="4755971844837804407">Cando esta opción está activada, os sitios poden mostrarche todo tipo de anuncios. Cando esta opción está desactivada, os sitios non poden mostrarche anuncios enganosos nin intrusivos.</translation>
 <translation id="4779083564647765204">Zoom</translation>
@@ -236,6 +241,7 @@
 <translation id="4996978546172906250">Compartir a través de</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5007392906805964215">Revisar</translation>
+<translation id="5014182796621173645">Accediches <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permite aos sitios acceder aos teus sensores de movemento (recomendado)</translation>
 <translation id="5050380848339752099">Neste sitio estase a piques de compartir información cunha aplicación fóra do modo de incógnito.</translation>
@@ -245,6 +251,7 @@
 <translation id="5091663350197390230">Cando esta opción está activada, os sitios poden utilizar JavaScript. Cando esta opción está desactivada, os sitios non poden utilizar JavaScript.</translation>
 <translation id="5099358668261120049">Ao realizar esta acción, eliminaranse os datos e as cookies que almacenase <ph name="ORIGIN" /> ou a súa aplicación na túa pantalla de inicio.</translation>
 <translation id="5100237604440890931">Vista contraída (fai clic para ampliala).</translation>
+<translation id="5116239826668864748">Podes utilizar Chrome cando toques as ligazóns en mensaxes, en documentos e noutras aplicacións</translation>
 <translation id="5123685120097942451">Pestana do modo de incógnito</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baixada de prezo nas pestanas que teñas abertas}other{Baixadas de prezo nas pestanas que teñas abertas}}</translation>
 <translation id="5186036860380548585">Opción dispoñible preto da parte superior da pantalla</translation>
@@ -276,6 +283,7 @@
 <translation id="5553374991681107062">Máis recentes</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqueado</translation>
+<translation id="5632485077360054581">Ver como facelo</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5668404140385795438">Anular a solicitude dun sitio web para evitar ampliar a imaxe</translation>
 <translation id="5677928146339483299">Bloqueada</translation>
@@ -286,6 +294,7 @@
 <translation id="5706552988683188916">Esta acción eliminará as cookies e outros datos dos sitios de <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">As cookies de terceiros bloquéanse no modo de incógnito</translation>
 <translation id="5740126560802162366">Os sitios poden gardar datos no teu dispositivo</translation>
+<translation id="5750869797196646528">Seguimento das mans</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> (bloqueado)</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5844448279347999754">Cando esta opción está activada, os sitios non poden pedirche permiso para acceder ao texto e ás imaxes do portapapeis. Cando esta opción está desactivada, os sitios non poden acceder ao texto nin ás imaxes do portapapeis.</translation>
@@ -347,12 +356,15 @@
 <translation id="656065428026159829">Ver máis</translation>
 <translation id="6561560012278703671">Utilizar mensaxaría máis silenciosa (impide que as notificacións te interrompan)</translation>
 <translation id="6593061639179217415">Sitio para ordenadores</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitio de <ph name="RWS_OWNER" />}other{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitios de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contido protexido</translation>
 <translation id="662080504995468778">Quedar</translation>
 <translation id="6653342741369270081">Toca o botón Atrás para saír da pantalla completa.</translation>
+<translation id="6683865262523156564">Este sitio está nun grupo que pode ver a túa actividade. O grupo está definido por <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Descargas activas</translation>
+<translation id="6709432001666529933">Preguntar antes de permitir que os sitios fagan un seguimento das mans (opción recomendada)</translation>
 <translation id="6722828510648505498">Bloquea as solicitudes de inicio de sesión dos servizos de identidade.</translation>
 <translation id="6746124502594467657">Mover cara abaixo</translation>
 <translation id="6749077623962119521">Queres restablecer os permisos?</translation>
@@ -360,6 +372,7 @@
 <translation id="6787751205395685251">Selecciona unha opción para <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6818926723028410516">Selecciona elementos</translation>
+<translation id="6838525730752203626">Usa Chrome de forma predeterminada</translation>
 <translation id="6840760312327750441">Para agrupar varias pestanas, mantén premida unha delas e despois arrástraa ata outra.</translation>
 <translation id="6864395892908308021">Este dispositivo non pode ler NFC</translation>
 <translation id="6870169401250095575">Ocultar tarxeta Comprobación de seguranza</translation>
@@ -411,6 +424,7 @@
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">O marabilloso mago de Oz</translation>
 <translation id="7684642910516280563">Non permite que un sitio use cookies de terceiros</translation>
+<translation id="7688240020069572972">Ocultar tarxeta de consellos de Chrome</translation>
 <translation id="7719367874908701697">Zoom na páxina</translation>
 <translation id="7759147511335618829">Controlar/Reprogramar disp. MIDI</translation>
 <translation id="7781829728241885113">Onte</translation>
@@ -476,6 +490,7 @@
 <translation id="8609465669617005112">Mover cara arriba</translation>
 <translation id="8617611086246832542">Cando esta opción está activada, móstrase a vista para ordenadores dos sitios web. Cando esta opción está desactivada, móstrase a vista para dispositivos móbiles dos sitios web.</translation>
 <translation id="8649036394979866943">Chrome evita que a maioría dos sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas. Vai á configuración para <ph name="BEGIN_LINK" />xestionar as proteccións contra o seguimento<ph name="END_LINK" />.</translation>
+<translation id="8676316391139423634">Cando esta opción está activada, os sitios poden pedir permiso para seguir as túas mans. Se está desactivada, os sitios non poderán facer ese seguimento.</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
 <translation id="8681886425883659911">Bloquéanse anuncios nos sitios que conteñen anuncios enganosos ou intrusivos</translation>
 <translation id="868929229000858085">Busca nos teus contactos</translation>

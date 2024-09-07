@@ -122,7 +122,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/ash/browser_data_migration_error_dialog.h"
+#include "chrome/browser/ui/ash/browser_data_migration/browser_data_migration_error_dialog.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
@@ -191,6 +191,10 @@ bool CanOpenFile(Browser* browser) {
     return local_state->GetBoolean(prefs::kAllowFileSelectionDialogs);
 
   return true;
+}
+
+void InvokeAction(actions::ActionId id, actions::ActionItem* scope) {
+  actions::ActionManager::Get().FindAction(id, scope)->InvokeAction();
 }
 
 }  // namespace
@@ -703,9 +707,16 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
     // Clipboard commands
     case IDC_CUT:
+      InvokeAction(actions::kActionCut,
+                   browser_->GetActions()->root_action_item());
+      break;
     case IDC_COPY:
+      InvokeAction(actions::kActionCopy,
+                   browser_->GetActions()->root_action_item());
+      break;
     case IDC_PASTE:
-      CutCopyPaste(browser_, id);
+      InvokeAction(actions::kActionPaste,
+                   browser_->GetActions()->root_action_item());
       break;
 
     // Find-in-page
@@ -1627,9 +1638,8 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   UpdateCommandAndActionEnabled(IDC_SHOW_TRANSLATE, kActionShowTranslate,
                                 can_translate);
 
-  bool is_isolated_app = current_web_contents->GetPrimaryMainFrame()
-                             ->GetWebExposedIsolationLevel() ==
-                         WebExposedIsolationLevel::kIsolatedApplication;
+  bool is_isolated_app = browser_->app_controller() &&
+                         browser_->app_controller()->IsIsolatedWebApp();
   bool is_pinned_home_tab = web_app::IsPinnedHomeTab(
       browser_->tab_strip_model(), browser_->tab_strip_model()->active_index());
   command_updater_.UpdateCommandEnabled(
@@ -1983,6 +1993,13 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
 actions::ActionItem* BrowserCommandController::FindAction(
     actions::ActionId action_id) {
   BrowserActions* browser_actions = browser_->browser_actions();
+
+  // If there is no root action item then ActionManager falls back to the
+  // root_action_parent_ which might contain actions from other browser windows.
+  if (!browser_actions->root_action_item()) {
+    return nullptr;
+  }
+
   return actions::ActionManager::Get().FindAction(
       action_id, browser_actions->root_action_item());
 }

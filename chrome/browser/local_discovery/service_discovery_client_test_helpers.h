@@ -57,6 +57,21 @@ class MockServiceWatcher : public ServiceWatcher {
   UpdatedCallback updated_callback_;
 };
 
+class MockServiceResolver : public ServiceResolver {
+ public:
+  explicit MockServiceResolver(
+      ServiceResolver::ResolveCompleteCallback callback);
+  ~MockServiceResolver() override;
+
+  MOCK_METHOD(void, StartResolving, ());
+  MOCK_METHOD(std::string, GetName, (), (const));
+
+  void SimulateResolveComplete(RequestStatus, const ServiceDescription&);
+
+ private:
+  ServiceResolver::ResolveCompleteCallback resolve_complete_callback_;
+};
+
 class MockServiceDiscoveryDeviceListerDelegate
     : public ServiceDiscoveryDeviceLister::Delegate {
  public:

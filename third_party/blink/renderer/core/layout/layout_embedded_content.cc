@@ -310,9 +310,10 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
   if (!frame_owner)
     return;
 
-  if (old_style && new_style.UsedColorScheme() != old_style->UsedColorScheme())
+  if (old_style &&
+      new_style.UsedColorScheme() != old_style->UsedColorScheme()) {
     frame_owner->SetColorScheme(new_style.UsedColorScheme());
-
+  }
   if (!old_style || new_style.EffectiveZoom() != old_style->EffectiveZoom()) {
     PropagateZoomFactor(new_style.EffectiveZoom());
   }

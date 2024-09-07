@@ -78,9 +78,11 @@ class AutofillKeyboardAccessoryControllerImpl
   FillingProduct GetMainFillingProduct() const override;
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
       const override;
-  void Show(std::vector<Suggestion> suggestions,
+  void Show(UiSessionId ui_session_id,
+            std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
+  std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
@@ -114,6 +116,9 @@ class AutofillKeyboardAccessoryControllerImpl
 
   // Hides the view and asynchronously deletes itself.
   void HideViewAndDie();
+
+  // Uniquely identifies the UI the controller is showing.
+  UiSessionId ui_session_id_;
 
   base::WeakPtr<AutofillSuggestionDelegate> delegate_;
   base::WeakPtr<content::WebContents> web_contents_;

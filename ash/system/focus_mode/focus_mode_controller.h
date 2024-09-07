@@ -207,6 +207,7 @@ class ASH_EXPORT FocusModeController
   }
 
   void RequestTasksUpdateForTesting();
+  bool TasksProviderHasCachedTasksForTesting() const;
 
   media_session::mojom::MediaSessionInfoPtr GetSystemMediaSessionInfo();
   void SetSystemMediaSessionInfoForTesting(

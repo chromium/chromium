@@ -51,14 +51,14 @@ void WallClockTimer::OnResume() {
 
 void WallClockTimer::AddObserver() {
   if (!observer_added_) {
-    PowerMonitor::AddPowerSuspendObserver(this);
+    PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
     observer_added_ = true;
   }
 }
 
 void WallClockTimer::RemoveObserver() {
   if (observer_added_) {
-    PowerMonitor::RemovePowerSuspendObserver(this);
+    PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
     observer_added_ = false;
   }
 }

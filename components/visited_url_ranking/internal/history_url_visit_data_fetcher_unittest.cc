@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -34,7 +35,9 @@ history::AnnotatedVisit SampleAnnotatedVisit(
     float visibility_score,
     const std::string& originator_cache_guid,
     const std::optional<std::string> app_id = std::nullopt,
-    const base::Time visit_time = base::Time::Now()) {
+    const base::Time visit_time = base::Time::Now(),
+    const base::TimeDelta visit_duration = base::Minutes(1),
+    history::VisitID referring_visit_id = history::kInvalidVisitID) {
   history::AnnotatedVisit annotated_visit;
   history::URLRow url_row;
   url_row.set_url(url);
@@ -48,6 +51,8 @@ history::AnnotatedVisit SampleAnnotatedVisit(
   annotated_visit.context_annotations = std::move(context_annotations);
   history::VisitRow visit_row;
   visit_row.visit_id = visit_id;
+  visit_row.visit_duration = visit_duration;
+  visit_row.referring_visit = referring_visit_id;
   visit_row.visit_time = visit_time;
   visit_row.is_known_to_sync = true;
   visit_row.originator_cache_guid = originator_cache_guid;
@@ -171,7 +176,7 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
   }
 
   std::vector<history::AnnotatedVisit> GetSampleAnnotatedVisitsForScenario(
-      HistoryScenario scenario) {
+      const HistoryScenario& scenario) {
     std::vector<history::AnnotatedVisit> annotated_visits;
     for (size_t i = 0; i < scenario.timestamps.size(); i++) {
       annotated_visits.emplace_back(SampleAnnotatedVisit(
@@ -249,6 +254,8 @@ TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
 
 TEST_F(HistoryURLVisitDataFetcherTest,
        FetchURLVisitData_SomeDefaultVisibilyScores) {
+  base::HistogramTester histogram_tester;
+
   const float kSampleVisibilityScore = 0.75f;
   std::vector<history::AnnotatedVisit> annotated_visits;
   annotated_visits.emplace_back(SampleAnnotatedVisit(
@@ -269,6 +276,50 @@ TEST_F(HistoryURLVisitDataFetcherTest,
                       .visibility_score,
                   kSampleVisibilityScore);
   EXPECT_EQ(history->visit_count, 2u);
+
+  histogram_tester.ExpectUniqueSample(
+      "VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits."
+      "InOutPercentage",
+      100, 1);
+}
+
+TEST_F(HistoryURLVisitDataFetcherTest,
+       FetchURLVisitData_RemoveZeroDurationVisitURLs) {
+  base::HistogramTester histogram_tester;
+
+  std::vector<history::AnnotatedVisit> annotated_visits;
+  annotated_visits.emplace_back(
+      SampleAnnotatedVisit(1, GURL("http://gmail.com/"),
+                           /*visibility_score=*/1.0,
+                           /*originator_cache_guid=*/"",
+                           /*app_id=*/std::nullopt, base::Time::Now(),
+                           /*visit_duration=*/base::Milliseconds(0)));
+  annotated_visits.emplace_back(SampleAnnotatedVisit(
+      2, GURL("https://gmail.com/"), /*visibility_score=*/1.0f,
+      /*originator_cache_guid=*/"", /*app_id=*/std::nullopt, base::Time::Now(),
+      /*visit_duration=*/base::Milliseconds(0),
+      /*referring_visit_id=*/1));
+  annotated_visits.emplace_back(SampleAnnotatedVisit(
+      3, GURL("https://mail.google.com/mail/u/0/"), /*visibility_score=*/1.0f,
+      /*originator_cache_guid=*/"", /*app_id=*/std::nullopt, base::Time::Now(),
+      /*visit_duration=*/base::Milliseconds(0),
+      /*referring_visit_id=*/2));
+  annotated_visits.emplace_back(SampleAnnotatedVisit(
+      4, GURL("https://mail.google.com/mail/u/0/#inbox"),
+      /*visibility_score=*/1.0f,
+      /*originator_cache_guid=*/"", /*app_id=*/std::nullopt, base::Time::Now(),
+      /*visit_duration=*/base::Minutes(1),
+      /*referring_visit_id=*/3));
+  SetHistoryServiceExpectations(std::move(annotated_visits));
+
+  auto result = FetchAndGetResult(GetSampleFetchOptions());
+  EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
+  EXPECT_EQ(result.data.size(), 1u);
+
+  histogram_tester.ExpectUniqueSample(
+      "VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits."
+      "InOutPercentage",
+      25, 1);
 }
 
 class HistoryURLVisitDataFetcherSourcesTest

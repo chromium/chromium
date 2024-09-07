@@ -28,12 +28,16 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
 
     private final CheckableImageView mExpandArrowView;
     private LinearLayout mDropdownContainer;
+    private @SurfaceType int mSurfaceType;
 
     public PrivacySandboxDialogNoticeEEA(
-            Context context, PrivacySandboxBridge privacySandboxBridge) {
+            Context context,
+            PrivacySandboxBridge privacySandboxBridge,
+            @SurfaceType int surfaceType) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
 
         mPrivacySandboxBridge = privacySandboxBridge;
+        mSurfaceType = surfaceType;
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_eea, null);
         setContentView(mContentView);
@@ -78,7 +82,7 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
 
     @Override
     public void show() {
-        mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_SHOWN);
+        mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_SHOWN, mSurfaceType);
         super.show();
     }
 
@@ -87,15 +91,18 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.NOTICE_ACKNOWLEDGE, mSurfaceType);
             dismiss();
         } else if (id == R.id.settings_button) {
-            mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.NOTICE_OPEN_SETTINGS, mSurfaceType);
             dismiss();
             PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                     getContext(), PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
         } else if (id == R.id.more_button) {
-            mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_BUTTON_CLICKED);
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.NOTICE_MORE_BUTTON_CLICKED, mSurfaceType);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
                 mScrollView.post(
                         () -> {
@@ -111,12 +118,14 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
             }
         } else if (id == R.id.dropdown_element) {
             if (isDropdownExpanded()) {
-                mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_CLOSED);
+                mPrivacySandboxBridge.promptActionOccurred(
+                        PromptAction.NOTICE_MORE_INFO_CLOSED, mSurfaceType);
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
-                mPrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_OPENED);
+                mPrivacySandboxBridge.promptActionOccurred(
+                        PromptAction.NOTICE_MORE_INFO_OPENED, mSurfaceType);
                 LayoutInflater.from(getContext())
                         .inflate(R.layout.privacy_sandbox_notice_eea_dropdown, mDropdownContainer);
 

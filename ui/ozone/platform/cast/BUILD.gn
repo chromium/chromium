@@ -36,9 +36,6 @@ source_set("cast") {
     defines += [ "IS_STARBOARD" ]
   }
 
-  # For EGL header included in surface_factory_cast.cc (needs EGL types).
-  configs += [ "//third_party/khronos:khronos_headers" ]
-
   # For loading EGL functions using dlsym in surface_factory_cast.cc because we
   # do not want to statically link against EGL library.
   libs = [ "dl" ]
@@ -48,6 +45,7 @@ source_set("cast") {
     "//chromecast:chromecast_buildflags",
     "//chromecast/base:base",
     "//chromecast/graphics:libcast_graphics_1.0",
+    "//third_party/angle:includes",
     "//ui/base/cursor",
     "//ui/base/ime",
     "//ui/events/ozone",

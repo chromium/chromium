@@ -17,6 +17,7 @@
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "ash/login/ui/pin_status_message_view.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/style/pill_button.h"
@@ -24,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -90,17 +92,30 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     size_t autosubmit_pin_length = 0;
     // Only present when the TPM is locked.
     std::optional<base::TimeDelta> time_until_tpm_unlock = std::nullopt;
+    // Only present when the PIN is soft locked. If not present, it means the
+    // PIN is enabled or disabled permanently.
+    cryptohome::PinLockAvailability pin_available_at = std::nullopt;
   };
 
   // Possible states that the input fields (PasswordView & PinInputView)
   // might be in. This is determined by the current authentication methods
   // that a user has.
   enum class InputFieldMode {
-    NONE,              // Not showing any input field.
-    PASSWORD_ONLY,     // No PIN set. Password only field.
-    PIN_AND_PASSWORD,  // PIN set, but auto-submit feature disabled.
-    PIN_WITH_TOGGLE,   // PIN field for auto submit.
-    PWD_WITH_TOGGLE    // PWD field when auto submit enabled.
+    kNone,                        // Not showing any input field.
+    kPasswordOnly,                // Password only field, no PIN set.
+    kPinOnlyAutosubmitOn,         // PIN only field, auto-submit feature
+                                  // enabled, no password set.
+    kPinOnlyAutosubmitOff,        // PIN only field, auto-submit feature
+                                  // disabled, no password set.
+    kPasswordWithToggle,          // Password field with toggle to switch to PIN
+                                  // field.
+    kPinWithToggleAutosubmitOn,   // PIN field with toggle, auto-submit
+                                  // feature enabled.
+    kPinWithToggleAutosubmitOff,  // PIN field with toggle, auto-submit feature
+                                  // disabled.
+    // TODO(b/357606198): Separate password and PIN field.
+    kPasswordAndPin,  // Both password and PIN are set, PIN auto-submit feature
+                      // disabled.
   };
 
   // TestApi is used for tests to get internal implementation details.
@@ -122,11 +137,13 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     LoginAuthFactorsView* auth_factors_view() const;
     AuthFactorModel* fingerprint_auth_factor_model() const;
     AuthFactorModel* smart_lock_auth_factor_model() const;
+    PinStatusMessageView* pin_status_message_view() const;
     bool HasAuthMethod(AuthMethods auth_method) const;
     const std::u16string& GetDisabledAuthMessageContent() const;
     void SetFingerprintState(FingerprintState state) const;
     void SetSmartLockState(SmartLockState state) const;
     void ShowDialog();
+    const std::u16string& GetPinStatusMessageContent() const;
 
    private:
     const raw_ptr<LoginAuthUserView, DanglingUntriaged> view_;
@@ -156,6 +173,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     // factor wants to hide the password and pin.
     base::RepeatingCallback<void(bool)>
         on_auth_factor_is_hiding_password_changed;
+    // Called when the pin becomes available after being soft-locked due to
+    // multiple wrong pin attempts.
+    PinStatusMessageView::OnPinUnlock on_pin_unlock;
   };
 
   LoginAuthUserView(const LoginUserInfo& user, const Callbacks& callbacks);
@@ -270,6 +290,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // bool has_tap = HasAuthMethod(AUTH_PASSWORD).
   bool HasAuthMethod(AuthMethods auth_method) const;
 
+  // Whether the authentication attempt should use the user's password only.
+  bool ShouldAuthenticateWithPassword() const;
+
   // Whether the authentication attempt should use the user's PIN.
   bool ShouldAuthenticateWithPin() const;
 
@@ -316,7 +339,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   AuthMethodsMetadata auth_metadata_ = AuthMethodsMetadata();
 
   // Controls which input field is currently being shown.
-  InputFieldMode input_field_mode_ = InputFieldMode::NONE;
+  InputFieldMode input_field_mode_ = InputFieldMode::kNone;
 
   raw_ptr<LoginUserView> user_view_ = nullptr;
   raw_ptr<LoginPasswordView> password_view_ = nullptr;
@@ -330,6 +353,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   raw_ptr<SmartLockAuthFactorModel> smart_lock_auth_factor_model_ = nullptr;
   raw_ptr<ChallengeResponseView> challenge_response_view_ = nullptr;
   raw_ptr<LockedTpmMessageView> locked_tpm_message_view_ = nullptr;
+  raw_ptr<PinStatusMessageView> pin_status_message_view_ = nullptr;
 
   // Padding below the user view. Grows when there isn't an input field
   // or smart card login.
@@ -350,6 +374,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   const LoginUserView::OnTap on_tap_;
   const LoginUserView::OnRemoveWarningShown on_remove_warning_shown_;
   const LoginUserView::OnRemove on_remove_;
+  const PinStatusMessageView::OnPinUnlock on_pin_unlock_;
 
   // UI state that was stored before setting new authentication methods.
   // Generated by `CaptureStateForAnimationPreLayout` and consumed by

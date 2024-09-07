@@ -67,7 +67,8 @@ ExecutionContext* GetExecutionContext(ScriptState* script_state) {
 }  // namespace
 
 // static
-ScriptPromiseUntyped InternalsComputePressure::createVirtualPressureSource(
+ScriptPromise<IDLUndefined>
+InternalsComputePressure::createVirtualPressureSource(
     ScriptState* script_state,
     Internals&,
     V8PressureSource source,
@@ -109,10 +110,10 @@ ScriptPromiseUntyped InternalsComputePressure::createVirtualPressureSource(
 }
 
 // static
-ScriptPromiseUntyped InternalsComputePressure::removeVirtualPressureSource(
-    ScriptState* script_state,
-    Internals&,
-    V8PressureSource source) {
+ScriptPromise<IDLUndefined>
+InternalsComputePressure::removeVirtualPressureSource(ScriptState* script_state,
+                                                      Internals&,
+                                                      V8PressureSource source) {
   auto* execution_context = GetExecutionContext(script_state);
   mojo::Remote<test::mojom::blink::WebPressureManagerAutomation>
       web_pressure_manager_automation;
@@ -138,11 +139,11 @@ ScriptPromiseUntyped InternalsComputePressure::removeVirtualPressureSource(
 }
 
 // static
-ScriptPromiseUntyped InternalsComputePressure::updateVirtualPressureSource(
-    ScriptState* script_state,
-    Internals&,
-    V8PressureSource source,
-    V8PressureState state) {
+ScriptPromise<IDLUndefined>
+InternalsComputePressure::updateVirtualPressureSource(ScriptState* script_state,
+                                                      Internals&,
+                                                      V8PressureSource source,
+                                                      V8PressureState state) {
   auto* execution_context = GetExecutionContext(script_state);
   mojo::Remote<test::mojom::blink::WebPressureManagerAutomation>
       web_pressure_manager_automation;

@@ -76,8 +76,11 @@ bool WaitForUpdaterExit() {
   const std::set<base::FilePath::StringType> process_names =
       GetTestProcessNames();
   return WaitFor(
-      [&process_names] {
-        return base::ranges::none_of(process_names, IsProcessRunning);
+      [&] {
+        return base::ranges::none_of(process_names,
+                                     [](const auto& process_name) {
+                                       return IsProcessRunning(process_name);
+                                     });
       },
       [] { VLOG(0) << "Still waiting for updater to exit..."; });
 }
@@ -191,10 +194,12 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
   EXPECT_FALSE(base::PathIsWritable(*path));
 }
 
-void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
+base::FilePath GetRealUpdaterLowerVersionPath() {
   base::FilePath exe_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-  base::FilePath old_updater_path = exe_path.AppendASCII("old_updater");
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath old_updater_path =
+      exe_path.Append(FILE_PATH_LITERAL("old_updater"));
+
 #if BUILDFLAG(CHROMIUM_BRANDING)
   old_updater_path = old_updater_path.AppendASCII("chromium_linux64");
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -203,15 +208,8 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.AppendASCII("cipd");
 #endif
-  old_updater_path = old_updater_path.AppendASCII(
+  return old_updater_path.AppendASCII(
       base::StrCat({kExecutableName, kExecutableSuffix}));
-
-  base::CommandLine command_line(old_updater_path);
-  command_line.AppendSwitch(kInstallSwitch);
-  LOG(ERROR) << "Command " << command_line.GetCommandLineString();
-  int exit_code = -1;
-  Run(scope, command_line, &exit_code);
-  ASSERT_EQ(exit_code, 0);
 }
 
 void SetupFakeLegacyUpdater(UpdaterScope scope) {

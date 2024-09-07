@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Tagad ir pieejami ekskluzīvi <ph name="PRODUCT_NAME" /> līdzekļi</translation>
 <translation id="1022628058306505708">Zemes plūsma</translation>
 <translation id="1026212596705997935">Īsinājumtaustiņš tiek izmantots darbībai “<ph name="CONFLICT_ACCEL_NAME" />”. Nospiediet jaunu īsinājumtaustiņu. Lai aizstātu esošo īsinājumtaustiņu, vēlreiz nospiediet šo īsinājumtaustiņu.</translation>
+<translation id="1030856839388844477">Atiestatīt datu lietojumu</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (pavedienu skaits: <ph name="THREAD_COUNT" />; <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pieejama jauna funkcija. Lai uzzinātu vairāk, nospiediet augšupvērsto bultiņu.</translation>
 <translation id="1049663189809099096">pasteļdzeltenā</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Vājš signāls</translation>
 <translation id="1300115153046603471">APN veids ir “noklusējums” un “<ph name="ATTACH" />”.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Pārveidojums</translation>
 <translation id="1304014921944666344">Izveides datums</translation>
 <translation id="1308754910631152188">Notiek atjaunināšana (pabeigti: <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minūtes</translation>
@@ -74,8 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ietilpināt skenēšanas apgabalā</translation>
 <translation id="1343442362630695901">sālsezers</translation>
+<translation id="1348657754632799065">Ierakstīšanas josla</translation>
 <translation id="1367951781824006909">Izvēlēties failu</translation>
 <translation id="1371650399987522809">Atsauksmes par Google MI nodrošinātām fona tapetēm</translation>
+<translation id="1374385338586507108">Definīcija</translation>
+<translation id="1383876407941801731">Meklēt</translation>
 <translation id="1387854245479784695">Visu kodolu apkopojums</translation>
 <translation id="1393206549145430405">pils</translation>
 <translation id="1394661041439318933">Futrāļa akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -95,6 +100,7 @@
 <translation id="1449035143498573192">Atvērt Google meklēšanā</translation>
 <translation id="1451536289672181509">Ierīce ir tastatūra.</translation>
 <translation id="1452939186874918380">lietussargi</translation>
+<translation id="145402479967797468">Atskaņošanas vadīklas</translation>
 <translation id="1459693405370120464">Laikapstākļi</translation>
 <translation id="1463084054301832672">kotedža</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
@@ -260,6 +266,7 @@
 <translation id="2212733584906323460">Nosaukumu atrisināšana</translation>
 <translation id="2215920961700443347">Nav piekļuves internetam. Izveidojiet savienojumu ar internetu un mēģiniet vēlreiz.</translation>
 <translation id="2217935453350629363">Pašreizējais ātrums</translation>
+<translation id="221994303562837085">Apturēt ierakstīšanu</translation>
 <translation id="2224337661447660594">Nav interneta savienojuma</translation>
 <translation id="222447520299472966">Jāatlasa vismaz viens mākslas galerijas albums</translation>
 <translation id="2230005943220647148">Celsija skala</translation>
@@ -267,6 +274,7 @@
 <translation id="2230624078793142213">Izveidot vēl</translation>
 <translation id="2236746079896696523">Tastatūras fona apgaismojuma slēdzis</translation>
 <translation id="2240366984605217732">Izkārtojuma slēdzis</translation>
+<translation id="2242381852034179222">Šo funkciju pārvalda jūsu administratori.</translation>
 <translation id="2244834438220057800">zaļa</translation>
 <translation id="225692081236532131">Aktivizācijas statuss</translation>
 <translation id="2267285889943769271">Pievienot ekrānuzņēmumu</translation>
@@ -310,6 +318,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> — <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opāls</translation>
 <translation id="2505327257735685095">Atsvaidzināt pašreizējo fona tapetes attēlu</translation>
+<translation id="2507491234071975894">Skaļrunis</translation>
 <translation id="2512979179176933762">rādīt logus</translation>
 <translation id="2513396635448525189">Pieteikšanās attēls</translation>
 <translation id="2521835766824839541">iepriekšējais ieraksts</translation>
@@ -320,6 +329,7 @@
 <translation id="2533048460510040082">Ieteiktais palīdzības saturs</translation>
 <translation id="2536159006530886390">Nevar izveidot savienojumu ar internetu.</translation>
 <translation id="2538719227433767804">un vēl <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Audio ierakstu saraksts</translation>
 <translation id="2561093647892030937">citroni</translation>
 <translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
 <translation id="2575552334616524665">Varat ieslēgt šo funkciju sadaļā Iestatījumi vai izvēlnē <ph name="THREE_DOTS_MENU_ICON" />.</translation>
@@ -351,6 +361,7 @@
 <translation id="2715723665057727940">upe</translation>
 <translation id="2717139507051041123">Atspējot tumšo krāsu režīmu</translation>
 <translation id="2728460467788544679">Drukāšanas vēstures notīrīšana</translation>
+<translation id="2731700343119398978">Lūdzu, uzgaidiet...</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2744221223678373668">Koplietojamie</translation>
 <translation id="2751739896257479635">EAP 2. fāzes autentificēšana</translation>
@@ -365,6 +376,7 @@
 <translation id="2855718259207180827">vilna</translation>
 <translation id="2859243502336719778">Svarīgs atjauninājums</translation>
 <translation id="2860473693272905224">Novietojiet vēl vienu lapu uz skenera.</translation>
+<translation id="286265581261662583">Noklikšķiniet ar peles labo pogu vai nospiediet un turiet, lai iegūtu definīcijas, tulkojumus vai konvertētu vērtības citās mērvienībās.</translation>
 <translation id="2872961005593481000">Izslēgt</translation>
 <translation id="2873483161362553159">Navigācija pārlūkā</translation>
 <translation id="2874939134665556319">Iepriekšējais ieraksts</translation>
@@ -405,6 +417,7 @@
 <translation id="3140130301071865159">sniegs</translation>
 <translation id="3146655726035122603">Tikai šeit: <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilie dati</translation>
+<translation id="3156511682997763015">Patīt uz priekšu par 10 sekundēm</translation>
 <translation id="3156846309055100599">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana…</translation>
 <translation id="315738237743207937">Konstatēta caurlaides lapa</translation>
 <translation id="3160172848211257835">Sūtīt <ph name="BEGIN_LINK1" />sistēmas un lietotņu informāciju<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />rādītājus<ph name="END_LINK2" /></translation>
@@ -434,6 +447,7 @@
 <translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
 <translation id="3305294846493618482">vēl</translation>
 <translation id="3310640316857623290">DNS latentums ievērojami pārsniedz pieļaujamo slieksni</translation>
+<translation id="3321030238473337787">Atskaņošanas ātrums</translation>
 <translation id="3328783797891415197">Tiek veikta pārbaude</translation>
 <translation id="3340011300870565703">Labās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">Iestatījumi</translation>
@@ -462,7 +476,6 @@
 <translation id="346423161771747987">Strāvas patēriņš</translation>
 <translation id="346539236881580388">Uzņemt vēlreiz</translation>
 <translation id="3484914941826596830">Kamēr notiek aparātprogrammatūras atjaunināšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Atjaunināšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
-<translation id="3485555238092220889">pieejamības darbība</translation>
 <translation id="3486220673238053218">definīcija</translation>
 <translation id="3487866404496702283">Atsauksmes par funkciju “mahi”</translation>
 <translation id="3488065109653206955">Daļēji aktivizēts</translation>
@@ -511,6 +524,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (atsauksmju skaits: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nav izveidots savienojums</translation>
 <translation id="3749289110408117711">Faila nosaukums</translation>
+<translation id="3767737419527918477">Meklēt ierakstu failus</translation>
 <translation id="3771294271822695279">Video faili</translation>
 <translation id="3780740315729837296">Piešķiriet tastatūras taustiņu.</translation>
 <translation id="3784455785234192852">Bloķēt</translation>
@@ -671,6 +685,7 @@
 <translation id="4562494484721939086">Nav pakalpojuma</translation>
 <translation id="4570558255126759859">Vai lejupielādēt Gemini modeli, lai apkopotu ierakstus?</translation>
 <translation id="4573777384450697571">Neizdevās — beidzies sertifikāta derīguma termiņš</translation>
+<translation id="4575450106703099687">pieejamības opcijas</translation>
 <translation id="458794348635939462">Neizdevās atrisināt visu saimniekdatoru nosaukumus</translation>
 <translation id="4593212453765072419">Nepieciešama starpniekservera autentifikācija</translation>
 <translation id="4594021849294327751">Izveidot transkripciju</translation>
@@ -793,6 +808,7 @@
 <translation id="5223226274641517059">Ierakstīšanas laikā tiks rādītas tiešas transkripcijas. Varat jebkurā brīdī izslēgt šo funkciju sadaļā Iestatījumi.</translation>
 <translation id="5226879510707344687">Transkripcijas eksportēšana</translation>
 <translation id="5227902338748591677">Tumšā motīva grafiks</translation>
+<translation id="5229104491259541281">Vaicājuma “<ph name="QUERY" />” konvertēšana</translation>
 <translation id="5229344016299762883">Iziet no pilnekrāna režīma</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> automātisku palaišanu katru reizi, kad piesakāties.}=2{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> un vēl 1 lietotnes automātisku palaišanu katru reizi, kad piesakāties.}zero{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> un vēl # lietotņu automātisku palaišanu katru reizi, kad piesakāties.}one{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> un vēl # lietotnes automātisku palaišanu katru reizi, kad piesakāties.}other{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> un vēl # lietotņu automātisku palaišanu katru reizi, kad piesakāties.}}</translation>
@@ -883,7 +899,9 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />. no <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Rediģēšanas poga darbībai <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Atjaunināt ierīci “<ph name="DEVICE_NAME" />”</translation>
+<translation id="5736820754189340309">Datu lietojums ir atiestatīts.</translation>
 <translation id="574392208103952083">Vidējs</translation>
+<translation id="5744175046705638478">Vaicājuma “<ph name="QUERY" />” tulkošana</translation>
 <translation id="5757187557809630523">nākamais ieraksts</translation>
 <translation id="5760715441271661976">Portāla statuss</translation>
 <translation id="5763838252932650682">Lietotnes <ph name="APP_NAME" /> restartēšana un atjaunināšana</translation>
@@ -892,6 +910,7 @@
 <translation id="57838592816432529">Izslēgt skaņu</translation>
 <translation id="5784136236926853061">Liels HTTP latentums</translation>
 <translation id="5790391387506209808">lazurīts</translation>
+<translation id="5810692306010756935">Pāriešana uz patērētāja kontu</translation>
 <translation id="5816802250591013230">Nav piešķirts neviens īsinājumtaustiņš</translation>
 <translation id="5826644637650799838">Par mākslu</translation>
 <translation id="5832805196449965646">Pievienot personu</translation>
@@ -930,6 +949,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Vairs nerādīt</translation>
 <translation id="5975130252842127517">koraļļu sārtā</translation>
+<translation id="5982621672636444458">Kārtošanas iespējas</translation>
 <translation id="5984145644188835034">Noklusējuma fona tapete</translation>
 <translation id="5996832681196460718">zīds</translation>
 <translation id="6017514345406065928">Zaļa</translation>
@@ -946,7 +966,6 @@
 <translation id="6058625436358447366">Lai pabeigtu, ievadiet savu iepriekšējo un jauno paroli</translation>
 <translation id="6061772781719867950">Nesekmīgi HTTP pieprasījumi</translation>
 <translation id="6073292342939316679">samazināt tastatūras spilgtumu</translation>
-<translation id="6073451960410192870">Pārtraukt ierakstīšanu</translation>
 <translation id="6075872808778243331">(Android) HTTP latentums</translation>
 <translation id="6078323886959318429">Pievienot saīsni</translation>
 <translation id="6091080061796993741">dzeltena</translation>
@@ -986,6 +1005,7 @@
 <translation id="6275224645089671689">Labais bulttaustiņš</translation>
 <translation id="6278428485366576908">Motīvs</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Vaicājuma “<ph name="QUERY" />” definēšana</translation>
 <translation id="6283581480003247988">zila un violeta</translation>
 <translation id="6284632978374966585">Ieslēgt tumšo motīvu</translation>
 <translation id="6285260286443238386">Ieraksta eksportēšana</translation>
@@ -1104,6 +1124,7 @@
 <translation id="6798678288485555829">Navigācija tekstā</translation>
 <translation id="680983167891198932">Atslēga</translation>
 <translation id="6816797338148849397">Ir pieejama informācija, kas saistīta ar jūsu atlasīto saturu. Lai piekļūtu informācijai, nospiediet augšupvērsto bultiņu.</translation>
+<translation id="6831043979455480757">Tulkot</translation>
 <translation id="6853312040151791195">Izlādes ātrums</translation>
 <translation id="6862416241246624313">Atsauksme ir iesniegta</translation>
 <translation id="6866732840889595464">margrietiņa</translation>
@@ -1313,6 +1334,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Pakalpojumu sniedzēja veids</translation>
 <translation id="7882501334836096755">Publiskā atslēga</translation>
+<translation id="7889966925761734854">Meklēšana</translation>
 <translation id="78957024357676568">pa kreisi</translation>
 <translation id="7897043345768902965">gājēju celiņš</translation>
 <translation id="7902285181767404769">Izslēdziet paziņojumu skaņu ierakstīšanas laikā.</translation>
@@ -1350,6 +1372,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8082366717211101304">Nevar atrast DNS no Android lietotnēm</translation>
 <translation id="8082644724189923105">tastatūras zona</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
+<translation id="8088963492174775412">Nospiediet, lai sāktu ierakstīšanu</translation>
 <translation id="8094062939584182041">Atļaut Google nosūtīt jums e-pasta ziņojumu par šo problēmu</translation>
 <translation id="8104083085214006426">Jūs izmantojat atvērtu un nedrošu tīklu</translation>
 <translation id="811820734797650957">(Android) Vārteju var ehotestēt</translation>
@@ -1547,6 +1570,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="9087578468327036362">Ziņot par šo vaicājumu</translation>
 <translation id="9088306295921699330">Pašreizējais lietojums</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Plašāka informācija par atiestatīšanas datumu</translation>
 <translation id="9100765901046053179">Papildu iestatījumi</translation>
 <translation id="910415269708673980">Atsvaidziniet <ph name="PRINCIPAL_NAME" /> biļeti</translation>
 <translation id="9106415115617144481">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana</translation>

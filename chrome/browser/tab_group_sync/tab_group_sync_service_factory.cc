@@ -14,6 +14,7 @@
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/empty_tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
@@ -28,11 +29,11 @@
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/saved_tab_groups/empty_tab_group_sync_delegate.h"
-#else
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
 
 namespace tab_groups {
 namespace {
@@ -72,7 +73,6 @@ TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
 TabGroupSyncService* TabGroupSyncServiceFactory::GetForProfile(
     Profile* profile) {
   CHECK(profile);
-  CHECK(!profile->IsOffTheRecord());
   return static_cast<TabGroupSyncService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
@@ -111,8 +111,12 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<TabGroupSyncDelegate> delegate;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-  delegate =
-      std::make_unique<TabGroupSyncDelegateDesktop>(service.get(), profile);
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    delegate =
+        std::make_unique<TabGroupSyncDelegateDesktop>(service.get(), profile);
+  } else {
+    delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
+  }
 #else
   delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||

@@ -24,6 +24,7 @@
 #include "net/base/proxy_string_util.h"
 #include "net/base/session_usage.h"
 #include "net/base/url_util.h"
+#include "net/http/alternative_service.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
@@ -843,8 +844,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
   // Create an alternative job if alternative service is set up for this domain.
   // This is applicable even if the connection will be made via a proxy.
-    alternative_service_info_ = GetAlternativeServiceInfoFor(
-        http_request_info_url_, request_info_, delegate_, stream_type_);
+  alternative_service_info_ = GetAlternativeServiceInfoFor(
+      http_request_info_url_, request_info_, delegate_, stream_type_);
 
   quic::ParsedQuicVersion quic_version = quic::ParsedQuicVersion::Unsupported();
   if (alternative_service_info_.protocol() == kProtoQUIC) {
@@ -863,8 +864,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
   // - proxied connections perform DNS on the proxy, so they can't get supported
   //   ALPNs from DNS
   const bool dns_alpn_h3_job_enabled =
-      !HttpStreamFactory::Job::OriginToForceQuicOn(
-          *session_->context().quic_context->params(), destination) &&
+      !session_->ShouldForceQuic(destination, proxy_info_, is_websocket_) &&
       enable_alternative_services_ &&
       session_->params().use_dns_https_svcb_alpn &&
       base::EqualsCaseInsensitiveASCII(origin_url_.scheme(),
@@ -1511,7 +1511,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool(
 
   if (is_preconnect_) {
     int rv = session_->http_stream_pool()->Preconnect(
-        stream_key, num_streams_, quic_version,
+        stream_key, num_streams_, alternative_service_info_, quic_version,
         base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                        ptr_factory_.GetWeakPtr()));
     if (rv != ERR_IO_PENDING) {
@@ -1523,9 +1523,10 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool(
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&JobController::CallOnSwitchesToHttpStreamPool,
-                                ptr_factory_.GetWeakPtr(),
-                                std::move(stream_key), quic_version));
+      FROM_HERE,
+      base::BindOnce(&JobController::CallOnSwitchesToHttpStreamPool,
+                     ptr_factory_.GetWeakPtr(), std::move(stream_key),
+                     alternative_service_info_, quic_version));
 }
 
 void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
@@ -1536,12 +1537,14 @@ void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
 
 void HttpStreamFactory::JobController::CallOnSwitchesToHttpStreamPool(
     HttpStreamKey stream_key,
+    AlternativeServiceInfo alternative_service_info,
     quic::ParsedQuicVersion quic_version) {
   CHECK(request_);
   CHECK(delegate_);
 
   // `request_` and `delegate_` will be reset later.
-  delegate_->OnSwitchesToHttpStreamPool(std::move(stream_key), quic_version);
+  delegate_->OnSwitchesToHttpStreamPool(
+      std::move(stream_key), std::move(alternative_service_info), quic_version);
 }
 
 }  // namespace net

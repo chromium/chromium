@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
   void Render(WebXrPresentationState* webxr, GLuint framebuffer);
 
  private:
-  void DoRuntimeInitialization() override;
+  void DoRuntimeInitialization(int texture_target) override;
   void UpdateDistortionMesh();
 
   // Display size is the size of the actual display in pixels, and is needed for
@@ -59,6 +59,8 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
   // directly if possible.
   CardboardEyeTextureDescription left_eye_description_;
   CardboardEyeTextureDescription right_eye_description_;
+
+  uint32_t eye_texture_target_ = 0;
   internal::ScopedCardboardObject<CardboardDistortionRenderer*> renderer_;
   internal::ScopedCardboardObject<CardboardLensDistortion*> lens_distortion_;
 

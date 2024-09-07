@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">Đã nhóm <ph name="TABS_COUNT_MANY" /> thẻ</translation>
 <translation id="1657719826150349398">Chuyển thẻ xuống dưới</translation>
 <translation id="1713541401465507417">Đóng mọi thẻ và nhóm</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Tìm hiểu thêm<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Đã nhóm <ph name="TABS_COUNT_ONE" /> thẻ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Đánh dấu <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đánh dấu <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Vừa tạo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Sẽ đóng sau 1 ngày}other{Sẽ đóng sau <ph name="DAY_COUNT_MANY" /> ngày}}</translation>
 <translation id="4777866634702576038">Bạn muốn xoá nhóm thẻ?</translation>
+<translation id="4783638485675352219">Chia sẻ tiêu đề và URL của các thẻ đang mở trên thiết bị này với hệ điều hành</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> bài đánh giá)}other{(<ph name="REVIEWS_COUNT_MANY" /> bài đánh giá)}}</translation>
 <translation id="4850886885716139402">Xem</translation>
 <translation id="4870911314065352661">Đóng tất cả các thẻ?</translation>

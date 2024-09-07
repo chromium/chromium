@@ -12,8 +12,19 @@
 // app or test code.
 @interface PlusAddressAppInterface : NSObject
 
-// Saves an example plus profile.
-+ (void)saveExamplePlusProfile:(NSString*)url;
+// Setter to enable plus address creation in `FakePlusAddressService` in tests.
++ (void)setShouldOfferPlusAddressCreation:(BOOL)shouldOfferPlusAddressCreation;
+
+// Setter to return no affiliated plus profiles in call to
+// `FakePlusAddressService::GetAffiliatedPlusProfiles`.
++ (void)setShouldReturnNoAffiliatedPlusProfiles:
+    (BOOL)shouldReturnNoAffiliatedPlusProfiles;
+
+// Setter to enable plus address filling in `FakePlusAddressService` in tests.
++ (void)setPlusAddressFillingEnabled:(BOOL)plusAddressFillingEnabled;
+
+// Adds a plus address profile in `FakePlusAddressService`.
++ (void)addPlusAddressProfile;
 
 @end
 

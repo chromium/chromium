@@ -43,7 +43,7 @@ void LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart status) {
 ReduceAcceptLanguageThrottle::ReduceAcceptLanguageThrottle(
     ReduceAcceptLanguageControllerDelegate& accept_language_delegate,
     OriginTrialsControllerDelegate* origin_trials_delegate,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : accept_language_delegate_(accept_language_delegate),
       origin_trials_delegate_(origin_trials_delegate),
       frame_tree_node_id_(frame_tree_node_id) {

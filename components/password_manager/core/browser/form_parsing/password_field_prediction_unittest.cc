@@ -17,31 +17,22 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::ACCOUNT_CREATION_PASSWORD;
 using autofill::AutofillType;
 using autofill::CalculateFieldSignatureForField;
 using autofill::CalculateFormSignature;
-using autofill::CONFIRMATION_PASSWORD;
-using autofill::CREDIT_CARD_NUMBER;
-using autofill::CREDIT_CARD_VERIFICATION_CODE;
-using autofill::EMAIL_ADDRESS;
 using autofill::FieldGlobalId;
 using autofill::FieldType;
 using autofill::FormControlType;
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::NEW_PASSWORD;
-using autofill::NO_SERVER_DATA;
-using autofill::PASSWORD;
-using autofill::SINGLE_USERNAME;
-using autofill::UNKNOWN_TYPE;
-using autofill::USERNAME;
-using autofill::USERNAME_AND_EMAIL_ADDRESS;
 using base::ASCIIToUTF16;
+
+using enum autofill::FieldType;
 
 using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
     FieldSuggestion::FieldPrediction;
@@ -230,7 +221,11 @@ TEST(FormPredictionsTest, DeriveFromFieldType) {
        CredentialFieldType::kNewPassword},
       {"Confirmation password", CONFIRMATION_PASSWORD,
        CredentialFieldType::kConfirmationPassword},
-  };
+      {"Credit card number", CREDIT_CARD_NUMBER,
+       CredentialFieldType::kNonCredential},
+      {"Not password", NOT_PASSWORD, CredentialFieldType::kNonCredential},
+      {"Not username", NOT_USERNAME, CredentialFieldType::kNonCredential},
+      {"OTP", ONE_TIME_CODE, CredentialFieldType::kNonCredential}};
 
   for (const TestCase& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
@@ -268,6 +263,34 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
 
   EXPECT_EQ(ConvertToFormPredictions(driver_id, form, autofill_predictions),
             expected_result);
+}
+
+// Tests that new single username server prediction with enabled feature is
+// considered as single username.
+// TODO: crbug/40925827 - Move the test under
+// `FormPredictionsTest.DeriveFromFieldType` once the feature is enabled by
+// default.
+TEST(FormPredictionsTest, SingleUsernameWithIntermediateValues_EnabledFeature) {
+  base::test::ScopedFeatureList feature_list(
+      /*enable_feature=*/features::
+          kUsernameFirstFlowWithIntermediateValuesPredictions);
+  EXPECT_EQ(
+      DeriveFromFieldType(autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES),
+      CredentialFieldType::kSingleUsername);
+}
+
+// Tests that new single username server prediction with disabled feature is not
+// considered as credential field.
+// TODO: crbug/40925827 - Delete the test once the feature is enabled by
+// default.
+TEST(FormPredictionsTest,
+     SingleUsernameWithIntermediateValues_DisabledFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kUsernameFirstFlowWithIntermediateValuesPredictions);
+  EXPECT_EQ(
+      DeriveFromFieldType(autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES),
+      CredentialFieldType::kNone);
 }
 
 }  // namespace

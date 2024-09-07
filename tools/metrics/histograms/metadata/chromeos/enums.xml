@@ -1214,10 +1214,11 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="KeyPermissionsManagerMigrationStatus">
-  <int value="0" label="kStarted"/>
-  <int value="1" label="kSucceeded"/>
-  <int value="2" label="kFailed"/>
-  <int value="3" label="kNecessary"/>
+  <int value="0" label="Started"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="Necessary"/>
+  <int value="4" label="FailedToUpdatePermissions"/>
 </enum>
 
 <enum name="KeyUsageCategory">
@@ -1387,6 +1388,14 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="Submit Question Button"/>
   <int value="3" label="Condensed Menu Button"/>
   <int value="4" label="Settings Button"/>
+</enum>
+
+<enum name="MahiProviderCreationStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Manta Service Disabled"/>
+  <int value="2" label="Profile Unavailable"/>
+  <int value="3" label="Manta Service Is Null"/>
+  <int value="4" label="Manta Service Failed To Create"/>
 </enum>
 
 <enum name="MahiResponseStatus">

@@ -120,7 +120,6 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
     }
 
     void clear() {
-        // TODO(jinsukkim): Do the cleanup when the last base activity is destroyed.
         ApplicationStatus.unregisterTaskVisibilityListener(this);
         mObservers.clear();
         sInstance = null;

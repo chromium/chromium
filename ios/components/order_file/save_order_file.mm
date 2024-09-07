@@ -66,7 +66,7 @@ BOOL CRWDedupAndSaveOrderFile(NSString* fileName,
   NSMutableSet<NSString*>* storedFunctionCalls = [[NSMutableSet alloc] init];
   NSEnumerator<NSString*>* enumerator = [functions reverseObjectEnumerator];
   NSString* functionName;
-  while (functionName = [enumerator nextObject]) {
+  while ((functionName = [enumerator nextObject])) {
     if (uniqueFunctionCalls.count % 1000 == 0) {
       // Print once every 1000 times to save some time while de-queuing.
       LOG(WARNING) << "Reordering and deduping functions: "

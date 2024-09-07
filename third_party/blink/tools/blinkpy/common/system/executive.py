@@ -276,6 +276,13 @@ class Executive:
             # It's impossible for callers to avoid race conditions with process shutdown.
             pass
 
+    def terminate(self, pid):
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            # Silently ignore when the pid doesn't exist.
+            pass
+
     # Error handlers do not need to be static methods once all callers are
     # updated to use an Executive object.
 

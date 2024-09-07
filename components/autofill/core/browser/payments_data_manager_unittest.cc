@@ -39,7 +39,8 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager_test_api.h"
-#include "components/autofill/core/browser/personal_data_manager_test_base.h"
+#include "components/autofill/core/browser/payments_data_manager_test_base.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -66,7 +67,6 @@
 #endif
 
 namespace autofill {
-
 namespace {
 
 using testing::Pointee;
@@ -110,15 +110,14 @@ class MockPaymentsDataManagerObserver : public PaymentsDataManager::Observer {
   MOCK_METHOD(void, OnPaymentsDataChanged, (), (override));
 };
 
-}  // anonymous namespace
-
-class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
+class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
  protected:
   PaymentsDataManagerHelper() = default;
 
   void ResetPaymentsDataManager(bool use_sync_transport_mode = false) {
     payments_data_manager_.reset();
-    MakePrimaryAccountAvailable(use_sync_transport_mode);
+    MakePrimaryAccountAvailable(use_sync_transport_mode, identity_test_env_,
+                                sync_service_);
     payments_data_manager_ = std::make_unique<PaymentsDataManager>(
         profile_database_service_, account_database_service_,
         /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,
@@ -615,6 +614,49 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
       base::Uuid::GenerateRandomV4().AsLowercaseString());
   test_api(payments_data_manager()).AddServerCreditCard(duplicate_server_card);
   ExpectSameElements(cards, payments_data_manager().GetCreditCards());
+}
+
+// Adds two local cards and one server cards with different modification dates.
+// - `local_card1`'s modification date doesn't fall in the removal range, but
+//   its CVC does. Expect that the CVC is cleared.
+// - `local_card2`'s and `server_card`'s modification dates fall in the removal
+//   range. Expect that only the local card is removed.
+TEST_F(PaymentsDataManagerTest, RemoveLocalDataModifiedBetween) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+  CreditCard local_card1 = test::GetCreditCard();
+  // PaymentsAutofillTable sets modification dates when adding/updating.
+  payments_data_manager().AddCreditCard(local_card1);
+  WaitForOnPaymentsDataChanged();
+
+  CreditCard local_card2 = test::GetCreditCard2();
+  test_clock.Advance(base::Minutes(2));
+  payments_data_manager().AddCreditCard(local_card2);
+  WaitForOnPaymentsDataChanged();
+
+  payments_data_manager().UpdateLocalCvc(local_card1.guid(), u"234");
+  WaitForOnPaymentsDataChanged();
+
+  CreditCard server_card = test::GetMaskedServerCard();
+  test_clock.Advance(base::Minutes(3));
+  test_api(payments_data_manager()).AddServerCreditCard(server_card);
+  WaitForOnPaymentsDataChanged();
+
+  payments_data_manager().RemoveLocalDataModifiedBetween(
+      kArbitraryTime + base::Minutes(1), kArbitraryTime + base::Minutes(10));
+  WaitForOnPaymentsDataChanged();
+  local_card1.clear_cvc();
+  EXPECT_THAT(payments_data_manager().GetLocalCreditCards(),
+              testing::UnorderedElementsAre(Pointee(local_card1)));
+  // TODO(crbug.com/40276087): `CreditCard::operator==()` compares GUIDs even
+  // for server cards, which change after every load from the database.
+  std::vector<CreditCard*> server_cards =
+      payments_data_manager().GetServerCreditCards();
+  ASSERT_EQ(server_cards.size(), 1u);
+  EXPECT_EQ(server_cards[0]->Compare(server_card), 0);
 }
 
 TEST_F(PaymentsDataManagerTest, RecordUseOfCard) {
@@ -1353,19 +1395,11 @@ TEST_F(PaymentsDataManagerTest, LogStoredCreditCardMetrics) {
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount", 1);
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount.Local", 1);
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount.Server", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardCount.Server.Masked", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.StoredCreditCardCount.Server.Unmasked", 1);
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount", 4, 1);
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount.Local", 2,
                                      1);
   histogram_tester.ExpectBucketCount("Autofill.StoredCreditCardCount.Server", 2,
                                      1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardCount.Server.Masked", 2, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.StoredCreditCardCount.Server.Unmasked", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata", 1);
   histogram_tester.ExpectBucketCount(
@@ -1899,7 +1933,7 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_ExpOff) {
   BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
   ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
       {bank_account1, bank_account2}));
-  std::vector<BankAccount> bank_accounts =
+  base::span<const BankAccount> bank_accounts =
       payments_data_manager().GetMaskedBankAccounts();
   // Since the PaymentsDataManager was initialized before adding the masked
   // bank accounts to the WebDatabase, we expect GetMaskedBankAccounts to return
@@ -1949,7 +1983,7 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
   // Since the PaymentsDataManager was initialized before adding the masked
   // bank accounts to the WebDatabase, we expect GetMaskedBankAccounts to return
   // an empty list.
-  std::vector<BankAccount> bank_accounts =
+  base::span<const BankAccount> bank_accounts =
       payments_data_manager().GetMaskedBankAccounts();
   EXPECT_EQ(0u, bank_accounts.size());
 
@@ -3076,4 +3110,5 @@ TEST_F(PaymentsDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   EXPECT_TRUE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 }
 
+}  // namespace
 }  // namespace autofill

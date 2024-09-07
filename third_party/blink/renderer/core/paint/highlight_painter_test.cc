@@ -59,9 +59,10 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
         selection = &*maybe_selection;
     }
 
-    GraphicsContext graphics_context{RootPaintController()};
-    PaintInfo paint_info{graphics_context, cull_rect, PaintPhase::kForeground,
-                         /*descendant_painting_blocked=*/false};
+    PaintController controller;
+    GraphicsContext graphics_context(controller);
+    PaintInfo paint_info(graphics_context, cull_rect, PaintPhase::kForeground,
+                         /*descendant_painting_blocked=*/false);
     TextPaintStyle text_style =
         TextPainter::TextPaintingStyle(GetDocument(), style, paint_info);
     if (selection) {

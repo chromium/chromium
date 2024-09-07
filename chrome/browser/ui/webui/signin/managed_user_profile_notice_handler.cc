@@ -142,7 +142,9 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
 
 ManagedUserProfileNoticeHandler::~ManagedUserProfileNoticeHandler() {
   BrowserList::RemoveObserver(this);
-  HandleCancel(base::Value::List());
+  if (!canceling_) {
+    HandleCancel(base::Value::List());
+  }
 }
 
 void ManagedUserProfileNoticeHandler::RegisterMessages() {
@@ -259,13 +261,20 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
 
 void ManagedUserProfileNoticeHandler::HandleCancel(
     const base::Value::List& args) {
+  canceling_ = true;
+  // Move the `done_callback_` here to avoid it being potentially destroyed
+  // by `process_user_choice_with_confirmation_callback_` since it may destroy
+  // `this`.
+  if (IsJavascriptAllowed()) {
+    DisallowJavascript();
+  }
+  auto done_callback = std::move(done_callback_);
   if (process_user_choice_with_confirmation_callback_) {
     std::move(process_user_choice_with_confirmation_callback_)
         .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
   }
-  if (done_callback_) {
-    DisallowJavascript();
-    std::move(done_callback_).Run();
+  if (done_callback) {
+    std::move(done_callback).Run();
   }
 }
 

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,10 +25,19 @@ namespace content {
 class WebUI;
 }
 
-class WhatsNewHandler;
 class BrowserCommandHandler;
 class PrefRegistrySimple;
 class Profile;
+class WhatsNewHandler;
+class WhatsNewUI;
+
+class WhatsNewUIConfig : public content::DefaultWebUIConfig<WhatsNewUI> {
+ public:
+  WhatsNewUIConfig();
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // The Web UI controller for the chrome://whats-new page.
 class WhatsNewUI : public ui::MojoWebUIController,

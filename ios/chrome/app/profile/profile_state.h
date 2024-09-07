@@ -8,9 +8,11 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 @protocol ProfileStateAgent;
+@protocol ProfileStateObserver;
+@class SceneState;
 
 // Represents the state for a single Profile and responds to the state
 // changes and system events.
@@ -33,6 +35,20 @@ class ChromeBrowserState;
 
 // Removes an agent.
 - (void)removeAgent:(id<ProfileStateAgent>)agent;
+
+// Adds an observer to this profile state. The observers will be notified about
+// profile state changes per ProfileStateObserver protocol. The observer will be
+// *immediately* notified about the latest profile init stage transition before
+// this method returns, if any such transitions happened, by calling
+// profileState:didTransitionToInitStage:fromInitStage:, .
+- (void)addObserver:(id<ProfileStateObserver>)observer;
+
+// Removes the observer. It's safe to call this at any time, including from
+// ProfileStateObserver callbacks.
+- (void)removeObserver:(id<ProfileStateObserver>)observer;
+
+// Informs the profile the given `sceneState` connected.
+- (void)sceneStateConnected:(SceneState*)sceneState;
 
 @end
 

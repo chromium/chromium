@@ -37,7 +37,9 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.m
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.LargeTest;
@@ -60,6 +62,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -215,6 +218,58 @@ public class TabGroupUiTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testRenderStrip_toggleNotificationBubble() throws IOException {
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        AtomicReference<ViewGroup> controlsReference = new AtomicReference<>();
+        TabUiTestHelper.addBlankTabs(cta, false, 1);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Select the 2nd tab in group.
+        clickFirstCardFromTabSwitcher(cta);
+        clickNthTabInDialog(cta, 1);
+
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.tab_list_recycler_view),
+                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isCompletelyDisplayed()));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    RecyclerView stripRecyclerView =
+                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
+
+                    ImageView notificationView =
+                            stripRecyclerView.findViewById(R.id.tab_strip_notification_bubble);
+                    notificationView.setVisibility(View.VISIBLE);
+                    controlsReference.set(bottomToolbar);
+                });
+        mRenderTestRule.render(
+                controlsReference.get(), "bottom_controls_tab_strip_notification_bubble_on");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    RecyclerView stripRecyclerView =
+                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
+
+                    ImageView notificationView =
+                            stripRecyclerView.findViewById(R.id.tab_strip_notification_bubble);
+                    notificationView.setVisibility(View.GONE);
+                    controlsReference.set(bottomToolbar);
+                });
+        mRenderTestRule.render(
+                controlsReference.get(), "bottom_controls_tab_strip_notification_bubble_off");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
     public void testRenderStrip_AddTab() throws IOException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
@@ -243,7 +298,7 @@ public class TabGroupUiTest {
                 });
         onView(
                         allOf(
-                                withId(R.id.toolbar_right_button),
+                                withId(R.id.toolbar_new_tab_button),
                                 withParent(withId(R.id.main_content)),
                                 withEffectiveVisibility(VISIBLE)))
                 .perform(click());
@@ -302,6 +357,7 @@ public class TabGroupUiTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/363049835")
     public void testVisibilityChangeWithOmnibox() throws Exception {
 
         // Create a tab group with 2 tabs.

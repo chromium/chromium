@@ -10,13 +10,14 @@ source_set("translate_internals") {
     "translate_internals_ui.mm",
   ]
   deps = [
+    "//base",
     "//components/language/ios/browser",
     "//components/translate/core/common",
     "//components/translate/translate_internals",
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/translate/model",

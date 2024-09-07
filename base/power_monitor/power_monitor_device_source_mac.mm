@@ -20,11 +20,11 @@
 namespace base {
 
 PowerThermalObserver::DeviceThermalState
-PowerMonitorDeviceSource::GetCurrentThermalState() {
+PowerMonitorDeviceSource::GetCurrentThermalState() const {
   return thermal_state_observer_->GetCurrentThermalState();
 }
 
-int PowerMonitorDeviceSource::GetInitialSpeedLimit() {
+int PowerMonitorDeviceSource::GetInitialSpeedLimit() const {
   return thermal_state_observer_->GetCurrentSpeedLimit();
 }
 
@@ -39,8 +39,17 @@ void PowerMonitorDeviceSource::GetBatteryState() {
 
 void PowerMonitorDeviceSource::OnBatteryStateReceived(
     const std::optional<BatteryLevelProvider::BatteryState>& battery_state) {
-  is_on_battery_ =
-      battery_state.has_value() && !battery_state->is_external_power_connected;
+  if (battery_state.has_value()) {
+    if (battery_state->is_external_power_connected) {
+      battery_power_status_ =
+          PowerStateObserver::BatteryPowerStatus::kExternalPower;
+    } else {
+      battery_power_status_ =
+          PowerStateObserver::BatteryPowerStatus::kBatteryPower;
+    }
+  } else {
+    battery_power_status_ = PowerStateObserver::BatteryPowerStatus::kUnknown;
+  }
   PowerMonitorSource::ProcessPowerEvent(PowerMonitorSource::POWER_STATE_EVENT);
 }
 
@@ -58,8 +67,8 @@ void PowerMonitorDeviceSource::PlatformInit() {
       kCFRunLoopCommonModes);
 
   battery_level_provider_ = BatteryLevelProvider::Create();
-  // Get the initial state for `is_on_battery_` and register for all future
-  // power-source-change events.
+  // Get the initial battery power status and register for all
+  // future power-source-change events.
   GetBatteryState();
   // base::Unretained is safe because `this` owns `power_source_event_source_`,
   // which exclusively owns the callback.
@@ -86,8 +95,9 @@ void PowerMonitorDeviceSource::PlatformDestroy() {
   power_manager_port_ = IO_OBJECT_NULL;
 }
 
-bool PowerMonitorDeviceSource::IsOnBatteryPower() {
-  return is_on_battery_;
+PowerStateObserver::BatteryPowerStatus
+PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
+  return battery_power_status_;
 }
 
 void PowerMonitorDeviceSource::SystemPowerEventCallback(

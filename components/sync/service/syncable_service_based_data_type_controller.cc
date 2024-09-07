@@ -149,6 +149,11 @@ SyncableServiceBasedDataTypeController::SyncableServiceBasedDataTypeController(
 }
 
 SyncableServiceBasedDataTypeController::
-    ~SyncableServiceBasedDataTypeController() = default;
+    ~SyncableServiceBasedDataTypeController() {
+  // The constructor passed a forwarding controller delegate referencing
+  // `delegate_` to the base class. They are stored by the base class and need
+  // to be destroyed before `delegate_` to avoid dangling pointers.
+  ClearDelegateMap();
+}
 
 }  // namespace syncer

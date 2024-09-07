@@ -66,7 +66,6 @@ using testing::Property;
 using testing::ResultOf;
 
 namespace autofill {
-
 namespace {
 
 constexpr char kNameFull[] = "Barack Obama";
@@ -209,7 +208,6 @@ auto HasValue(std::string_view value) {
   return Property(&FormFieldData::value, base::ASCIIToUTF16(value));
 }
 
-}  // namespace
 
 // Test fixture for all tests of AutofillAcrossIframes. A particular goal is to
 // test that AutofillDriverRouter and FormForest handle the race conditions that
@@ -219,8 +217,6 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    // Prevent the Keychain from coming up on Mac.
-    test::DisableSystemServices(browser()->profile()->GetPrefs());
 
     // Set up the HTTPS (!) server (embedded_test_server() is an HTTP server).
     // Every hostname is handled by that server.
@@ -251,7 +247,6 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
     // Make sure to close any showing popups prior to tearing down the UI.
     main_autofill_manager().client().HideAutofillSuggestions(
         SuggestionHidingReason::kTabGone);
-    test::ReenableSystemServices();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -1046,4 +1041,5 @@ IN_PROC_BROWSER_TEST_F(
       /*num_fields=*/3 * 4));
 }
 
+}  // namespace
 }  // namespace autofill

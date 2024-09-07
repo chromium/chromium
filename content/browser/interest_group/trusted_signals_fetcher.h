@@ -14,16 +14,21 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_request.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
+
+struct BiddingAndAuctionServerKey;
 
 // Single-use network fetcher for versions 2+ of the key-value server API.
 // It takes a list compression groups and partitions, and asynchronously returns
@@ -125,15 +130,10 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // A map of compression group ids to results, in the case of success.
   using CompressionGroupResultMap = std::map<int, CompressionGroupResult>;
 
-  // The result type in the case of an error. Errors don't have a TTL.
-  struct CONTENT_EXPORT ErrorInfo {
-    std::string error_msg;
-  };
-
   // The result of a fetch. Either the entire fetch succeeds or it fails with a
   // single error.
   using SignalsFetchResult =
-      base::expected<CompressionGroupResultMap, ErrorInfo>;
+      base::expected<CompressionGroupResultMap, std::string>;
 
   using Callback = base::OnceCallback<void(SignalsFetchResult)>;
 
@@ -150,6 +150,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   virtual void FetchBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& trusted_bidding_signals_url,
+      const BiddingAndAuctionServerKey& bidding_and_auction_key,
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
 
@@ -158,26 +159,62 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   virtual void FetchScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& trusted_scoring_signals_url,
+      const BiddingAndAuctionServerKey& bidding_and_auction_key,
       const std::map<int, std::vector<ScoringPartition>>& compression_groups,
       Callback callback);
 
  private:
-  // Create a SimpleURLLoader and starts a request. Once the request body has
-  // been created, everything else (including response body parsing) is
-  // identical for bidding and scoring signals, as only the data inside
-  // compression groups is different for bidding and scoring signals, and that
-  // layer is not parsed by this class.
-  void StartRequest(network::mojom::URLLoaderFactory* url_loader_factory,
-                    const GURL& trusted_signals_url,
-                    std::string request_body,
-                    Callback callback);
+  // Encrypts `plaintext_body` using `bidding_and_auction_key`, and then creates
+  // a SimpleURLLoader and starts a request. Once the request body has been
+  // created, everything else (including response body parsing) is identical for
+  // bidding and scoring signals, as only the data inside compression groups is
+  // different for bidding and scoring signals, and that layer is not parsed by
+  // this class.
+  void EncryptRequestBodyAndStart(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      const GURL& trusted_signals_url,
+      const BiddingAndAuctionServerKey& bidding_and_auction_key,
+      std::string plaintext_request_body,
+      Callback callback);
 
   void OnRequestComplete(std::unique_ptr<std::string> response_body);
+
+  void OnCborParsed(data_decoder::DataDecoder::ValueOrError value_or_error);
+
+  // Attempts to parse the base::Value result from having the DataDecoder parse
+  // the CBOR contents of the fetch.
+  SignalsFetchResult ParseDataDecoderResult(
+      data_decoder::DataDecoder::ValueOrError value_or_error);
+
+  // Attempts to parse a single compression group object.
+  // `compression_group_value` should be a value from the `compressionGroups`
+  // array of the parsed CBOR value. On success, returns a
+  // CompressionGroupResult and sets `compression_group_id` to the ID from the
+  // passed in value. On failure, leaves `compression_group_id` alone, and
+  // returns a string.
+  base::expected<CompressionGroupResult, std::string> ParseCompressionGroup(
+      const base::Value& compression_group_value,
+      int& compression_group_id);
+
+  // Returns a string error message, prefixing the passed in message with the
+  // URL.
+  std::string CreateError(const std::string& error_message);
 
   // The URL being fetched. Cached for using in error strings.
   GURL trusted_signals_url_;
   Callback callback_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+
+  // Context needed to decrypt the response. Initialized while encrypting the
+  // request body.
+  std::unique_ptr<quiche::ObliviousHttpRequest::Context> ohttp_context_;
+
+  // Compression scheme used by all compression groups. Populated when reading
+  // the response.
+  auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme_ =
+      auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone;
+
+  base::WeakPtrFactory<TrustedSignalsFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace content

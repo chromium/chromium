@@ -7,14 +7,14 @@
 
 #include <string>
 
-#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 
 namespace content::private_aggregation {
 
-std::string GetReportingPath(PrivateAggregationBudgetKey::Api api,
+std::string GetReportingPath(PrivateAggregationCallerApi api,
                              bool is_immediate_debug_report);
 
-std::string GetApiIdentifier(PrivateAggregationBudgetKey::Api api);
+std::string GetApiIdentifier(PrivateAggregationCallerApi api);
 
 }  // namespace content::private_aggregation
 

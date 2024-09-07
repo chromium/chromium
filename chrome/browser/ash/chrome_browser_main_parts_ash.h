@@ -67,7 +67,6 @@ class CameraGeneralSurveyHandler;
 class ChromeAuthParts;
 class CrosUsbDetector;
 class DebugdNotificationHandler;
-class DemoModeResourcesRemover;
 class EventRewriterDelegateImpl;
 class FastTransitionObserver;
 class FwupdDownloadClientImpl;
@@ -243,8 +242,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<power::auto_screen_brightness::Controller>
       auto_screen_brightness_controller_;
-
-  std::unique_ptr<DemoModeResourcesRemover> demo_mode_resources_remover_;
 
   std::unique_ptr<AshUsbDetector> ash_usb_detector_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;

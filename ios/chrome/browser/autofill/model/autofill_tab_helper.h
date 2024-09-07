@@ -5,16 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_TAB_HELPER_H_
 
-#include <memory>
+#import <memory>
 
 #import "base/memory/raw_ptr.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @class AutofillAgent;
 @protocol AutofillCommands;
-class ChromeBrowserState;
 @protocol FormSuggestionProvider;
 @class UIViewController;
 

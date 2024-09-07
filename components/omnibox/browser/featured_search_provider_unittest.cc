@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -45,7 +46,7 @@ namespace {
 constexpr char16_t kBookmarksKeyword[] = u"@bookmarks";
 constexpr char16_t kHistoryKeyword[] = u"@history";
 constexpr char16_t kTabsKeyword[] = u"@tabs";
-constexpr char16_t kAskGoogleKeyword[] = u"@gemini";
+constexpr char16_t kGeminiKeyword[] = u"@gemini";
 
 constexpr char16_t kFeaturedKeyword1[] = u"@featured1";
 constexpr char16_t kFeaturedKeyword2[] = u"@featured2";
@@ -56,8 +57,8 @@ const char* const kBookmarksUrl =
 const char* const kHistoryUrl =
     TemplateURLStarterPackData::history.destination_url;
 const char* const kTabsUrl = TemplateURLStarterPackData::tabs.destination_url;
-const char* const kAskGoogleUrl =
-    TemplateURLStarterPackData::AskGoogle.destination_url;
+const char* const kGeminiUrl =
+    TemplateURLStarterPackData::Gemini.destination_url;
 
 constexpr char kFeaturedUrl1[] = "https://featured1.com/q={searchTerms}";
 constexpr char kFeaturedUrl2[] = "https://featured2.com/q={searchTerms}";
@@ -127,6 +128,19 @@ class FeaturedSearchProviderTest : public testing::Test {
       }
     } else {
       EXPECT_EQ(matches.size(), expected_iphs.size());
+    }
+  }
+
+  void RunAndVerifyIphTypes(const AutocompleteInput& input,
+                            const std::vector<IphType> expected_iph_types) {
+    provider_->Start(input, false);
+    EXPECT_TRUE(provider_->done());
+    ACMatches matches = provider_->matches();
+    if (matches.size() == expected_iph_types.size()) {
+      for (size_t j = 0; j < expected_iph_types.size(); ++j)
+        EXPECT_EQ(matches[j].iph_type, expected_iph_types[j]);
+    } else {
+      EXPECT_EQ(matches.size(), expected_iph_types.size());
     }
   }
 
@@ -246,7 +260,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
       {u"gemi", {}},
 
       // Typing '@' should give all the starter pack suggestions.
-      {u"@", {kBookmarksUrl, kAskGoogleUrl, kHistoryUrl, kTabsUrl}},
+      {u"@", {kBookmarksUrl, kGeminiUrl, kHistoryUrl, kTabsUrl}},
 
       // Typing a portion of "@bookmarks" should give the bookmarks suggestion.
       {std::u16string(kBookmarksKeyword, 0, 3), {kBookmarksUrl}},
@@ -261,8 +275,8 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
       {kTabsKeyword, {kTabsUrl}},
 
       // Typing a portion of "@gemini" should give the default urls.
-      {std::u16string(kAskGoogleKeyword, 0, 3), {kAskGoogleUrl}},
-      {kAskGoogleKeyword, {kAskGoogleUrl}},
+      {std::u16string(kGeminiKeyword, 0, 3), {kGeminiUrl}},
+      {kGeminiKeyword, {kGeminiUrl}},
   };
 
   RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
@@ -289,8 +303,8 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
     return x.relevance > y.relevance;
   });
 
-  std::string expected_match_order[] = {kAskGoogleUrl, kBookmarksUrl,
-                                        kHistoryUrl, kTabsUrl};
+  std::string expected_match_order[] = {kGeminiUrl, kBookmarksUrl, kHistoryUrl,
+                                        kTabsUrl};
   for (size_t i = 0; i < matches.size(); i++) {
     EXPECT_EQ(matches[i].destination_url, GURL(expected_match_order[i]));
   }
@@ -323,8 +337,8 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
       // alphabetical order). Re-ordering by relevance will be made
       // later on.
       {u"@",
-       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3,
-        kAskGoogleUrl, kHistoryUrl, kTabsUrl}},
+       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3, kGeminiUrl,
+        kHistoryUrl, kTabsUrl}},
 
       // Typing a portion of "@featured" should give the featured engine
       // suggestions.
@@ -362,7 +376,7 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
   AddStarterPackEntriesToTemplateUrlService();
   TestData typing_scheme_cases[] = {
       // Typing '@' should give all the starter pack suggestions, and no IPH.
-      {u"@", {kBookmarksUrl, kAskGoogleUrl, kHistoryUrl, kTabsUrl}}};
+      {u"@", {kBookmarksUrl, kGeminiUrl, kHistoryUrl, kTabsUrl}}};
   RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
 }
 
@@ -378,7 +392,7 @@ TEST_F(FeaturedSearchProviderTest,
 
   // Run the provider, there should be one match corresponding to IPH for
   // Starter Pack.
-  EXPECT_TRUE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_FALSE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
   provider_->Start(input, false);
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
@@ -390,7 +404,7 @@ TEST_F(FeaturedSearchProviderTest,
   provider_->DeleteMatch(matches[0]);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 0u);
-  EXPECT_FALSE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_TRUE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
 
   // Run the provider again, IPH match should not be provided.
   provider_->Start(input, false);
@@ -433,8 +447,8 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestFeaturedSearchIPHSuggestion) {
   TestData typing_scheme_cases[] = {
       // Typing '@' should give all the starter pack suggestions, and no IPH.
       {u"@",
-       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3,
-        kAskGoogleUrl, kHistoryUrl, kTabsUrl}}};
+       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3, kGeminiUrl,
+        kHistoryUrl, kTabsUrl}}};
   RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
 }
 
@@ -459,8 +473,8 @@ TEST_F(FeaturedSearchProviderTest,
   // Run the provider, there should be one match corresponding to IPH for
   // featured Enterprise search.
   PrefService* prefs = client_->GetPrefs();
-  EXPECT_TRUE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
+  EXPECT_FALSE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
   provider_->Start(input, false);
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
@@ -472,8 +486,8 @@ TEST_F(FeaturedSearchProviderTest,
   provider_->DeleteMatch(matches[0]);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 0u);
-  EXPECT_FALSE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
+  EXPECT_TRUE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
 
   // Run the provider again, IPH match should not be provided.
   provider_->Start(input, false);
@@ -506,9 +520,9 @@ TEST_F(FeaturedSearchProviderTest,
   // Run the provider, there should be one match corresponding to IPH for
   // featured Enterprise search.
   PrefService* prefs = client_->GetPrefs();
-  EXPECT_TRUE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
-  EXPECT_TRUE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_FALSE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
+  EXPECT_FALSE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
   provider_->Start(input, false);
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
@@ -520,13 +534,13 @@ TEST_F(FeaturedSearchProviderTest,
   provider_->DeleteMatch(matches[0]);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 0u);
-  EXPECT_FALSE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
-  EXPECT_TRUE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_TRUE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
+  EXPECT_FALSE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
 
   // Run the provider again, there should be one match corresponding to IPH for
   // Starter Pack.
-  EXPECT_TRUE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_FALSE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
   provider_->Start(input, false);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
@@ -538,9 +552,9 @@ TEST_F(FeaturedSearchProviderTest,
   provider_->DeleteMatch(matches[0]);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 0u);
-  EXPECT_FALSE(
-      prefs->GetBoolean(omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName));
-  EXPECT_FALSE(prefs->GetBoolean(omnibox::kShowGeminiIPH));
+  EXPECT_TRUE(prefs->GetBoolean(
+      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName));
+  EXPECT_TRUE(prefs->GetBoolean(omnibox::kDismissedGeminiIph));
 
   // Run the provider again, IPH match should not be provided.
   provider_->Start(input, false);
@@ -679,5 +693,64 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
   {
     SCOPED_TRACE("");
     RunAndVerifyIph(scope_input, {});
+  }
+}
+
+TEST_F(FeaturedSearchProviderTest, IphShownLimit) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{omnibox::kStarterPackIPH, {}},
+       {history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kOmniboxScoped.name, "true"}}}},
+      {});
+  AddStarterPackEntriesToTemplateUrlService();
+  AutocompleteInput input;
+  input.set_focus_type(metrics::INTERACTION_FOCUS);
+
+  auto test = [&](const AutocompleteInput& input,
+                  const std::vector<IphType> expected_iph_types) {
+    RunAndVerifyIphTypes(input, expected_iph_types);
+    // Notify the provider which matches were shown.
+    AutocompleteResult result;
+    result.AppendMatches(provider_->matches());
+    provider_->RegisterDisplayedMatches(result);
+  };
+
+  // Show up to 3 IPHs per session.
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kGemini});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kGemini});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kGemini});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {});
+  }
+
+  // Start a new session, should see an IPH 3 more times. But not the same IPH
+  // as before, since it already consumed its limit.
+  provider_ = new FeaturedSearchProvider(client_.get());
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kHistoryScopePromo});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kHistoryScopePromo});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {IphType::kHistoryScopePromo});
+  }
+  {
+    SCOPED_TRACE("");
+    test(input, {});
   }
 }

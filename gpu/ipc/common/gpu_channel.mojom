@@ -487,7 +487,6 @@ union DeferredSharedImageRequest {
   UpdateSharedImageParams update_shared_image;
 
   // See CopyToGpuMemoryBufferParams.
-  [EnableIf=is_win]
   CopyToGpuMemoryBufferParams copy_to_gpu_memory_buffer;
 
   // Destroys the shared image identified by this Mailbox.
@@ -621,10 +620,9 @@ struct AddReferenceToSharedImageParams {
 };
 
 // Updates the contents of the GpuMemoryBuffer associated with the shared image.
-// Necessary on platforms like Windows where renderer cannot create native GMBs.
-// The command performs synchronization with the GPU so the copy is complete
-// after the command runs.
-[EnableIf=is_win]
+// Necessary on platforms like Windows and Linux where renderer cannot create
+// native GMBs. The command performs synchronization with the GPU so the copy is
+// complete after the command runs.
 struct CopyToGpuMemoryBufferParams {
   // The mailbox identifying the shared image which should update its GMB.
   Mailbox mailbox;

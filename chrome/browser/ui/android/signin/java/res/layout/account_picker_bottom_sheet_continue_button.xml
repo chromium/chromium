@@ -8,7 +8,7 @@ found in the LICENSE file.
 <org.chromium.ui.widget.ButtonCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/account_picker_continue_as_button"
-    style="@style/FilledButton.Flat"
+    style="@style/FilledButton"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="24dp"

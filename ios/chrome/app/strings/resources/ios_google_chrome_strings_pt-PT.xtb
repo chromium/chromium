@@ -1,26 +1,18 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
-<translation id="1021782183249308751">Prima sem soltar o ícone do Chrome e clique em "Editar ecrã principal"</translation>
 <translation id="1066101356081285416">O Chrome vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. O número de acompanhamento da embalagem e o nome do Website vão ser enviados para a Google para oferecer esta funcionalidade e melhorar as funcionalidades do Google Shopping para todos. Pode atualizar esta opção em qualquer altura nas <ph name="BEGIN_LINK" />Definições de acompanhamento de encomendas<ph name="END_LINK" />.</translation>
-<translation id="1085696779717592361">Use o Chrome por predefinição</translation>
 <translation id="1143896152279775643">A palavra-passe será guardada no Gestor de palavras-passe da Google para <ph name="EMAIL" />.</translation>
-<translation id="1177414119866731261">Abra o menu do Chrome</translation>
 <translation id="1180362651362502943">Continue a usar os dados do Chrome na sua Conta Google.</translation>
 <translation id="1200396280085622191">Use o Chrome sempre que tocar em links em mensagens e noutras apps.</translation>
 <translation id="1229222343402087523">Pesquise ${searchPhrase} no Chrome</translation>
 <translation id="1237769345474105984">Do Chrome</translation>
+<translation id="1240190568154816272">Sugestões do Chrome</translation>
 <translation id="124228879633599436">O Chrome está desatualizado. Atualize-o para manter a sua segurança.</translation>
-<translation id="1282031177488366470">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="1333745675627230582">Jogar Chrome Dino</translation>
 <translation id="1352919863522755794">O Gestor de Palavras-passe da Google não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
-<translation id="1380565463006545725">Aproveite o poder do Shopping do Chrome</translation>
-<translation id="139623527619433858">Use o Chrome para iPad por predefinição</translation>
 <translation id="1407843355326180937">Inicie sessão neste site e no Chrome para obter os seus marcadores e muito mais em todos os seus dispositivos.</translation>
-<translation id="1436059927646026729">Abrir separador mais recente no Chrome</translation>
-<translation id="1449241544691504574">Adicione marcadores ao Chrome</translation>
 <translation id="1462727070346936664">Inicie sessão para tirar o máximo partido do Chrome.</translation>
-<translation id="1491435845014430217">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chrome".</translation>
 <translation id="1493827051843127077">Defina o Chrome como a predefinição para sincronizar os separadores, as palavras-chave e as informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">O Chrome não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="1516692594929310090">Abre a grelha de separadores do Chrome.</translation>
@@ -34,25 +26,18 @@ Aspetos a considerar:
 
   • Se sincronizar o histórico com a sua Conta Google, as métricas também podem incluir informações acerca dos URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Tem a segurança mais avançada do Chrome contra Websites prejudiciais</translation>
-<translation id="1615715390546812898">Pesquise com a voz no Chrome.</translation>
-<translation id="1657395063736185342">Pesquise imagens no Chrome</translation>
 <translation id="1670609221633730681">Sugestão do Chrome: escolha a posição da barra de endereço</translation>
-<translation id="1675955119303651351">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.
-        Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
-<translation id="1682483655351012182">Sincronizar os dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Adiciona os URLs introduzidos aos marcadores no Chrome.</translation>
-<translation id="1799920918471566157">Sugestões do Chrome</translation>
 <translation id="1830634592642484976">Esta morada está atualmente guardada no Chrome. Para a usar nos produtos da rede Google, guarde-a na sua Conta Google <ph name="USER_EMAIL" />.</translation>
-<translation id="1910975740091000991">Chrome para iOS</translation>
-<translation id="1917288746637765175">Use o Chrome por predefinição para receber facilmente estatísticas de preço</translation>
 <translation id="1917964099031477364">Esta conta e quaisquer dados não guardados serão removidos do Chrome e de outras apps Google neste dispositivo.</translation>
+<translation id="1919130412786645364">Permitir o início de sessão no Chrome</translation>
 <translation id="1965935827552890526">Termine o que estava a fazer na outra janela do Chrome aberta.</translation>
+<translation id="1984705450038014246">Sincronizar dados do Chrome</translation>
 <translation id="1987779152850321833">Conclua as ações sugeridas abaixo para tirar o máximo partido do Chrome.</translation>
 <translation id="2056123005618757196">Faça mais com um Google Chrome simples, seguro e mais rápido do que nunca.</translation>
 <translation id="2120238739383482109">Abre os marcadores do Chrome.</translation>
 <translation id="2147651015520127414">O Chrome confirmou que <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
-<translation id="2155145621546387786">Partilhar o Chrome</translation>
 <translation id="2199719347983604670">Dados da Sincronização do Chrome</translation>
 <translation id="2213327331203157297">Para desativar o modo de bloqueio no Chrome, desative-o no seu iPhone.</translation>
 <translation id="2242467532204595597">Use o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
@@ -60,7 +45,6 @@ Aspetos a considerar:
 <translation id="2339201583852607431">A palavra-passe será guardada na sua Conta Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">O Chrome partilha a sua localização com os sites que permite.</translation>
 <translation id="2347208864470321755">Se esta funcionalidade estiver ativada, o Chrome oferecer-se-á para traduzir páginas escritas noutros idiomas com o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="2414068465746584414">Nas Definições do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chrome"</translation>
 <translation id="2423077901494354337">Agora, vai tirar o máximo partido do Chrome no seu dispositivo.</translation>
 <translation id="2427791862912929107">O Chrome inclui funcionalidades que ajudam a gerir os seus dados de Internet e a velocidade com que as páginas Web são carregadas.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
@@ -74,56 +58,43 @@ Aspetos a considerar:
 <translation id="2671426118752779020">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe da Google noutras apps no seu iPhone.</translation>
 <translation id="2689064829982324496">Para terminar sessão na sua Conta Google em todos os Websites, <ph name="BEGIN_LINK" />termine sessão no Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">O Chrome não conseguiu verificar se existem atualizações. Tente mais tarde.</translation>
-<translation id="2702250627063295552">Adicione o item da Lista de leitura ao Chrome</translation>
 <translation id="2703746758996815929">Para receber sugestões úteis do Chrome, ative as notificações nas definições do iOS.</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão atualmente desativadas nas Definições do dispositivo.</translation>
-<translation id="2750626042242931740">Pode atualizar as suas seleções em qualquer altura nas definições do Chrome.</translation>
+<translation id="2754428955276778271">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.
+
+Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="2767464022270041271">Não existem palavras-passe guardadas. O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando as guardar.</translation>
-<translation id="2869959624320573933">Inicie sessão no Chrome</translation>
 <translation id="2876628302275096482">Saiba <ph name="BEGIN_LINK" />como o Chrome mantém os seus dados privados<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Abra as definições do Chrome.</translation>
+<translation id="292371311537977079">Definições do Chrome</translation>
+<translation id="2923827943290349720">Bloquear os separadores de navegação anónima quando fecha o Chrome</translation>
+<translation id="2940565985148833945">Sugestão do Chrome: pesquise com o Lens</translation>
 <translation id="2957447865124070833">Selecione <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chrome serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
 <translation id="309672519329227863">Aceda às suas palavras-passe do Chrome e muito mais noutras apps.</translation>
-<translation id="3146109040683991651">Definir o Chrome como o navegador predefinido</translation>
 <translation id="3167189358072330585">A sua conta não funciona no Google Chrome. Contacte o gestor do domínio ou utilize uma Conta Google normal para iniciar sessão.</translation>
-<translation id="3173834708294760622">Página do Google Chrome</translation>
 <translation id="322254490661677575">Para usar e guardar dados do Chrome na sua Conta Google, introduza a frase de acesso.</translation>
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
-<translation id="3340938510625667914">Ações do Chrome</translation>
-<translation id="3345341804167540816">Usar o Chrome em todas as plataformas</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minuto}other{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minutos}}</translation>
-<translation id="3399930248910934354">Abrir definições do Chrome</translation>
-<translation id="344736123700721678">Aceda ao Chrome mais rapidamente a partir da dock do ecrã principal</translation>
+<translation id="3371064404604898522">Definir o Chrome como o navegador predefinido</translation>
 <translation id="3472587960215700950">O Chrome usa o Google Maps para lhe dar direções e informações locais sobre moradas detetadas.</translation>
 <translation id="3503014945441706099">Obtenha também a Navegação segura melhorada para este perfil do Chrome</translation>
 <translation id="3522659714780527202">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, ative a sincronização.</translation>
 <translation id="364480321352456989">O Chrome está desatualizado.</translation>
 <translation id="3646736009628185125">De momento, o membro da sua família não pode receber palavras-passe. Peça-lhe para atualizar o Chrome e sincronizar as respetivas palavras-passe. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Isto significa que o Chrome irá pedir sempre o site para dispositivos móveis.</translation>
-<translation id="3720541637541300822">Bloquear os separadores de navegação anónima quando fecha o Chrome</translation>
 <translation id="3740397331642243698">Abre os URLs introduzidos no Google Chrome na Navegação anónima.</translation>
 <translation id="3741995255368156336">Abre a Lista de leitura do Chrome.</translation>
-<translation id="3744018071945602754">Faça a gestão das palavras-passe no Chrome</translation>
 <translation id="3827545470516145620">Vai obter a proteção de segurança padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode utilizar a câmara neste momento</translation>
 <translation id="3863841106411295595">Adiciona os URLs introduzidos à sua Lista de leitura no Chrome.</translation>
-<translation id="387280738075653372">Transfira o Chrome aqui.</translation>
 <translation id="3901001113120561395">Tire o máximo partido do Chrome.</translation>
 <translation id="3913386780052199712">Sessão iniciada no Chrome</translation>
-<translation id="3967382818307165056">Faça a gestão dos métodos de pagamento no Chrome</translation>
 <translation id="3984746313391923992">A sua entidade requer que se mantenha sem sessão iniciada no Chrome.</translation>
 <translation id="3988789688219830639">O Google Chrome não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="4064699917955374540">Para usar e guardar dados do Chrome na sua Conta Google, valide a sua identidade.</translation>
-<translation id="4066411101507716142">Aceda ao Chrome mais rapidamente a partir da Dock do ecrã principal do iPad.</translation>
-<translation id="4067858366537947361">Abra um separador anónimo no Chrome</translation>
-<translation id="4093042601582616698">Tornar o Chrome o navegador predefinido?</translation>
 <translation id="417201473131094001">Opção não suportada no Chrome Canary.</translation>
 <translation id="424864128008805179">Quer terminar sessão no Chrome?</translation>
-<translation id="4251174643044751591">Abre a página Definição dos métodos de pagamento no Chrome.</translation>
-<translation id="4286914711740227883">Elimine os dados de navegação no Chrome</translation>
-<translation id="430839890088895017">Sugestão do Chrome: mova o Chrome para a Dock</translation>
-<translation id="4453284704333523777">Faça a gestão das definições do Chrome</translation>
+<translation id="447252321002412580">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="4523886039239821078">Alguns suplementos provocam falhas no sistema do Chrome. Desinstale:</translation>
 <translation id="4633328489441962921">O Chrome não consegue verificar se existem atualizações.</translation>
 <translation id="4636900170638246267">Inicie sessão neste site e no Chrome.</translation>
@@ -131,27 +102,22 @@ Aspetos a considerar:
 <translation id="4761869838909035636">Executar verificação de segurança do Chrome</translation>
 <translation id="4798859546468762093">Para usar a personalização e outras funcionalidades, inclua o Chrome nas <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para ajudar a melhorar a app, o Chrome envia dados de utilização e falhas de sistema para a Google. <ph name="BEGIN_LINK" />Faça a gestão<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.
-
-        Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
+<translation id="4830799082179398588">Tornar o Chrome o navegador predefinido?</translation>
 <translation id="484033449593719797">Opção não suportada no Chrome Beta.</translation>
 <translation id="4840404732697892756">O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{O Chrome pode ajudar a acompanhar esta embalagem na página Novo separador.}other{O Chrome pode ajudar a acompanhar estas embalagens na página Novo separador.}}</translation>
 <translation id="4903674399067644695">Este cartão mostra sugestões sobre como tirar o máximo partido do Chrome.</translation>
-<translation id="4919069428879420545">Elimine os dados de navegação no Chrome.</translation>
 <translation id="49200511069271369">A sua organização, <ph name="DOMAIN" />, gere a conta na qual está a iniciar sessão e a forma como o Chrome pode ser usado. O seu administrador pode configurar ou restringir determinadas funcionalidades.</translation>
 <translation id="4925322001044117929">Use o Chrome no iPad por predefinição</translation>
 <translation id="498985224078955265">Para enviar este separador para outro dispositivo, inicie sessão no Chrome em ambos os dispositivos.</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>
-<translation id="5108659628347594808">Melhore o Chrome</translation>
 <translation id="5112925986883715005">Veja a Lista de leitura do Chrome</translation>
 <translation id="5119391094379141756">Selecione o Chrome</translation>
-<translation id="5156818928311866442">Abre a definição do Chrome para definir o Chrome como o navegador predefinido.</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chrome.</translation>
 <translation id="5184329579814168207">Abrir no Chrome</translation>
 <translation id="5190139289262548459">A sua organização, <ph name="DOMAIN" />, gere a conta na qual tem sessão iniciada e como o Chrome é usado.</translation>
-<translation id="5256908199795498284">O Chrome vai detetar números de acompanhamento de encomendas nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. Os seus dados vão ser partilhados com a Google para oferecer esta funcionalidade e melhorar o Shopping para todos.</translation>
-<translation id="5278862365980079760">Bloqueie os seus separadores de navegação anónima quando sai do Chrome ou muda para uma app diferente.</translation>
+<translation id="5310957470610282541">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.
+Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
 <translation id="5395376160638294582">Certifique-se de que pode sempre usar os dados do Chrome na sua Conta Google</translation>
 <translation id="5439191312780166229">Envia-lhe avisos sobre sites perigosos, mesmo aqueles que a Google desconhecia, ao analisar mais dados de sites do que a Proteção padrão. Pode optar por ignorar os avisos do Chrome.</translation>
@@ -169,14 +135,14 @@ Aspetos a considerar:
 <translation id="5661521615548540542">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
 <translation id="5690398455483874150">{count,plural, =1{A mostrar 1 janela do Chrome agora}other{A mostrar {count} janelas do Chrome agora}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5709557627224531708">Definir o Chrome como o navegador predefinido</translation>
 <translation id="571296537125272375">Está offline. O Chrome não consegue verificar se existem atualizações.</translation>
 <translation id="5716154293141027663">Abra o Chrome sempre que tocar em links noutras apps</translation>
-<translation id="5733084997078800044">Sugestão do Chrome</translation>
 <translation id="5808435672482059465">Ver Histórico do Chrome</translation>
-<translation id="589695154992054845">Abre o Gestor de Palavras-passe no Chrome.</translation>
+<translation id="5833027901704861726">Alguns dos seus dados do Chrome ainda não foram guardados na conta <ph name="EMAIL" />.
+Experimente aguardar alguns minutos antes de mudar de conta. Se mudar de conta agora, estes dados vão ser eliminados.</translation>
 <translation id="5998675059699164418">A sua organização requer que inicie sessão para utilizar o Chrome.</translation>
-<translation id="6054613632208573261">Utilize o Chrome por predefinição</translation>
-<translation id="6063091872902370735">Permitir o início de sessão no Chrome</translation>
+<translation id="6022659036123304283">Personalize o Google Chrome</translation>
 <translation id="6110625574506755980">Algumas funcionalidades do Chrome vão deixar de estar disponíveis.</translation>
 <translation id="6132149203299792222">Inicie sessão com a sua Conta Google para sincronizar as palavras-passe, os marcadores e muito mais.</translation>
 <translation id="6145223986912084844">chrome</translation>
@@ -187,7 +153,6 @@ Aspetos a considerar:
 <translation id="630693926528731525">A sua palavra-passe não foi partilhada. Verifique a ligação à Internet e certifique-se de que tem sessão iniciada no Chrome. Em seguida, tente novamente.</translation>
 <translation id="6348855835728304880">Aceda às suas palavras-passe do Chrome e muito mais noutras apps neste dispositivo.</translation>
 <translation id="6373751563207403289">A verificação de segurança protege contra violações de dados, Websites inseguros e muito mais. Receba alertas sobre quaisquer problemas de privacidade ou segurança detetados pelo Chrome.</translation>
-<translation id="6374691158439235563">Conclua a configuração do Chrome</translation>
 <translation id="6389317667633680932">Explore novas funcionalidades que ajudam a tirar o máximo partido do Chrome.</translation>
 <translation id="6412673304250309937">Verifica os URLs com listas de sites inseguros armazenados no Chrome. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
 <translation id="6427126399757991875">A sua entidade está a configurar o Chrome…</translation>
@@ -199,22 +164,18 @@ Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usa
 <translation id="6634107063912726160">Quando terminar sessão, o Chrome não irá sincronizar quaisquer dados novos com a sua Conta Google. Os dados anteriormente sincronizados mantêm-se na conta.</translation>
 <translation id="6646696210740573446">Envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Google</translation>
 <translation id="6648150602980899529">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chrome. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chrome elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
-<translation id="6683891932310469419">Abre a página Histórico do Chrome.</translation>
+<translation id="6684809838922667136">Melhore o Chrome</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minuto. Os dados guardados apenas neste dispositivo enquanto tinha sessão iniciada vão ser eliminados. Isto pode incluir o histórico e as palavras-passe.}other{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minutos. Os dados guardados apenas neste dispositivo enquanto tinha sessão iniciada vão ser eliminados. Isto pode incluir o histórico e as palavras-passe.}}</translation>
 <translation id="6709398533399187136">A sua palavra-passe foi exposta numa violação de dados. O Gestor de palavras-passe da Google recomenda que a altere agora.</translation>
 <translation id="6820553595690137150">A encriptação da frase de acesso não inclui métodos de pagamento nem moradas.
 
 Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
-<translation id="6851982868877411675">Abra as Definições do Chrome no iOS, toque em "App de navegador predefinida" e selecione o Chrome.</translation>
+<translation id="6838525730752203626">Use o Chrome por predefinição</translation>
 <translation id="686691656039982452">Pode <ph name="BEGIN_LINK" />gerir que dados do Chrome são guardados<ph name="END_LINK" /> na sua Conta Google.
 
 Para ver mais definições que usam dados para melhorar a sua experiência do Chrome, aceda aos <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
-<translation id="6916015246697034114">Pesquise com a voz no Chrome</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
-<translation id="6979238427560462592">Um feed personalizado criado para si pela Google. Incluindo notícias, desporto e meteorologia.</translation>
-<translation id="7004159181872656283">Pesquise imagens no Chrome.</translation>
 <translation id="7056826488869329999">Abre e executa a verificação de segurança no Chrome.</translation>
-<translation id="7059914902409643750">Personalize o Chrome</translation>
 <translation id="7124339256045485976">Mantenha o Chrome atualizado.</translation>
 <translation id="7161390184744336561">O Google Chrome está desatualizado.</translation>
 <translation id="7165736900384873061">Começar a utilizar o leitor de QR do Google Chrome</translation>
@@ -225,26 +186,21 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="72119412072970160">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe da Google noutras apps no seu iPad.</translation>
 <translation id="722167379782941918">O Chrome recomenda a Proteção melhorada</translation>
 <translation id="723787869754590019">Use o Chrome para o preenchimento automático</translation>
-<translation id="7254380941803999489">Defina o Chrome como o navegador predefinido</translation>
 <translation id="7261678641327190792">O Chrome não consegue verificar as suas palavras-passe.</translation>
 <translation id="7272930098487145294">Para guardar imagens, toque em Definições para permitir que o Chrome as adicione às suas fotos.</translation>
 <translation id="7275945473750112644">A sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, pelo que os seus dados do Chrome serão limpos deste dispositivo</translation>
 <translation id="7284245284340063465">Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7299681342915173313">Agora, pode usar o Chrome sempre que tocar em links de emails, documentos e outras apps.</translation>
-<translation id="7304491752269485262">Vista expandida do preenchimento automático do Chrome</translation>
 <translation id="7344094882820374540">Usufrua da segurança mais avançada do Chrome contra sites perigosos</translation>
 <translation id="7349129508108954623">Permita que o Chrome use o Google Maps para lhe dar direções e informações locais sobre moradas detetadas.</translation>
 <translation id="7394108421562933108">Maps no Chrome</translation>
 <translation id="7400722733683201933">Acerca do Google Chrome</translation>
 <translation id="7466693328838535498">Na caixa Widgets de Pesquisa, introduza "Chrome"</translation>
-<translation id="746684838091935575">3. Selecione o Chrome.</translation>
+<translation id="7477056987201678345">A eliminar os dados do Chrome…</translation>
 <translation id="7492574581995589075">A sua organização desativou a capacidade de usar e guardar dados do Chrome na sua Conta Google. Os novos marcadores, palavras-passe e muito mais são guardados apenas neste dispositivo.</translation>
 <translation id="7581063337314642333">Visite a grelha de separadores no Chrome</translation>
 <translation id="7642373780953416937">Receba alertas sobre quaisquer problemas de privacidade ou segurança detetados automaticamente pelo Chrome.</translation>
 <translation id="7662994914830945754">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, inicie sessão e ative a sincronização.</translation>
-<translation id="7669869107155339016">Aceda às definições do Chrome.</translation>
-<translation id="7683540977001394271">Aceda ao Chrome mais rapidamente a partir da Dock do ecrã principal do iPhone.</translation>
-<translation id="769104993356536261">Use as ações do Chrome no iOS</translation>
 <translation id="7693590760643069321">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="7698568245838009292">O Chrome quer aceder à câmara</translation>
 <translation id="7780154209050837198">Para tirar o máximo partido do Chrome, inicie sessão no mesmo com a sua Conta Google.</translation>
@@ -252,8 +208,8 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="7792140019572081272">O Chrome mantém os seus dados confidenciais seguros com o Face ID.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="7897703007638178753">Veja os separadores recentes do Chrome</translation>
-<translation id="7933491483529363150">Abra o separador mais recente no Chrome.</translation>
 <translation id="7948283758957877064">Novidades do Chrome</translation>
+<translation id="8000174216052461231">Sugestão do Chrome: usufrua da segurança mais avançada do Chrome</translation>
 <translation id="8006014511203279255">Use o Chrome sempre que tocar em links em mensagens ou noutras apps.</translation>
 <translation id="8022947259858476807">Utilize o Chrome por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
 <translation id="804638182476029347">Permita que as notificações do Chrome recebam alertas de descida do preço</translation>
@@ -263,53 +219,39 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="8136856065410661948">Isto vai ser usado para criar eventos no seu Calendário Apple a partir do Chrome e Google Lens.</translation>
 <translation id="8154120522323162874">Continue a configurar o seu navegador para tirar o máximo partido do Chrome.</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome.</translation>
-<translation id="8174679664544842874">Abre um novo separador no Chrome.</translation>
-<translation id="8213758103105806860">Veja os marcadores do Chrome</translation>
+<translation id="8248887045858762645">Sugestão do Chrome</translation>
 <translation id="8317674518145175158">Os métodos de pagamento e as moradas não são encriptados. O histórico de navegação do Chrome não é sincronizado.
 
 Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
-<translation id="8328903609881776074">Abre um novo separador anónimo do Chrome.</translation>
 <translation id="8357607116237445042">Escolha se quer limpar os seus dados do Chrome deste dispositivo ou mantê-los</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8387459386171870978">Continuar a usar o Chrome</translation>
 <translation id="840168496893712993">Alguns suplementos provocam falhas no sistema do Chrome. Tente desinstalá-los.</translation>
 <translation id="8413795581997394485">Protege contra sites, transferências e extensões identificados como perigosos. Quando visita um site, o Chrome envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site fizer algo suspeito, são também enviados URLs completos e fragmentos de conteúdo da página.</translation>
-<translation id="8414886616817913619">A sua organização requer que inicie sessão para utilizar o Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">Continue a usar os dados do Chrome na sua Conta Google</translation>
 <translation id="8459495907675268833">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados. A sua Conta Google pode ter outras formas do histórico de navegação, como pesquisas e atividade de outros serviços Google, em history.google.com.</translation>
 <translation id="8491300088149538575">Com sessão iniciada como <ph name="EMAIL" />.
 
 Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
-<translation id="850555388806794946">Para definir o Chrome como o navegador predefinido:
-  1. Abra as Definições
-  2. Toque em App de navegador predefinida
-  3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544583291890527417">Alertas sobre quaisquer problemas de privacidade ou segurança detetados pelo Chrome.</translation>
 <translation id="8558480467877843976">Agora, pode usar o Chrome sempre que navegar ou tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="8603022514504485810">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente amanhã ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Tire o máximo partido do Chrome</translation>
-<translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
-<translation id="8760668027640688122">Abra um novo separador no Chrome</translation>
 <translation id="8765470054473112089">Quando escreve na barra de endereço ou caixa de pesquisa, o Chrome envia o que escreve para o motor de pesquisa predefinido de forma a obter melhores sugestões. Esta opção está desativada na Navegação anónima.</translation>
 <translation id="8772179140489533211">Mostra pedidos para iniciar sessão no Chrome.</translation>
 <translation id="8788269841521769222">Não terá de memorizar esta palavra-passe. Será guardada no Gestor de palavras-passe da Google de <ph name="EMAIL" /></translation>
-<translation id="878917453316810648">Sugestão do Chrome: use o Chrome por predefinição</translation>
-<translation id="8808828119384186784">Definições do Chrome</translation>
+<translation id="880967149107462122">Aceda às definições do Chrome</translation>
 <translation id="8850736900032787670">Para receber conteúdo personalizado com base nos seus interesses, inicie sessão no Chrome.</translation>
 <translation id="8855781063981781621">Para desativar o modo de bloqueio no Chrome, desative-o no seu iPad.</translation>
 <translation id="8857676124663337448">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente amanhã.</translation>
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
 <translation id="8874688701962049679">Sugestões para tirar o máximo partido do Chrome.</translation>
-<translation id="8891935667620843985">Pode abrir links no Chrome automaticamente ao torná-lo a sua app de navegador predefinida.</translation>
 <translation id="8897749957032330183">As palavras-passe são guardadas no Gestor de Palavras-passe da Google neste dispositivo.</translation>
-<translation id="8949681853939555434">Defina o Chrome como o navegador predefinido</translation>
 <translation id="9068336935206019333">Abrir na Navegação anónima do Chrome</translation>
-<translation id="9071207983537882274">Abre as definições no Chrome.</translation>
-<translation id="9112744793181547300">Quer definir o Chrome como a predefinição?</translation>
 <translation id="9122931302567044771">Isto significa que o Chrome irá pedir sempre o site para computador.</translation>
 <translation id="9181628561061032322">Abre os separadores recentes do Chrome.</translation>
 <translation id="9194404253580584015">Um feed personalizado criado para si pela Google.</translation>
-<translation id="953008885340860025">Sessão terminada no Chrome</translation>
 <translation id="97300214378190234">Use o Chrome sempre que tocar em links noutras apps.</translation>
+<translation id="998677222109959694">Faça a gestão das definições do Chrome</translation>
 </translationbundle>

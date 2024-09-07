@@ -9,6 +9,7 @@
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
+#include "base/files/file_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,6 +40,13 @@ class MockLobsterClient : public LobsterClient {
               (uint32_t seed,
                const std::string& query,
                InflateCandidateCallback),
+              (override));
+  MOCK_METHOD(bool,
+              SubmitFeedback,
+              (const std::string& query,
+               const std::string& model_input,
+               const std::string& description,
+               const std::string& image_bytes),
               (override));
 };
 
@@ -122,72 +130,37 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesReturnsUnknownError) {
             LobsterError(LobsterErrorCode::kUnknown, "unknown error"));
 }
 
-TEST_F(LobsterSessionImplTest, CanNotDownloadACandidateBeforeAnyRequest) {
-  auto lobster_client = std::make_unique<MockLobsterClient>();
+TEST_F(LobsterSessionImplTest, CanNotDownloadACandidateIfItIsNotCached) {
+  LobsterCandidateStore store;
+  store.Cache({.id = 0,
+               .image_bytes = "a1b2c3",
+               .seed = 20,
+               .query = "a nice raspberry"});
+  store.Cache({.id = 1,
+               .image_bytes = "d4e5f6",
+               .seed = 21,
+               .query = "a nice raspberry"});
 
-  ON_CALL(*lobster_client, InflateCandidate(1, testing::_, testing::_))
-      .WillByDefault([](uint32_t seed, std::string_view query,
-                        InflateCandidateCallback done_callback) {
-        std::vector<LobsterImageCandidate> inflated_candidates = {
-            LobsterImageCandidate(1, "a1b2c3", 30, "a nice raspberry")};
-        std::move(done_callback).Run(inflated_candidates);
-      });
-
-  LobsterSessionImpl session(std::move(lobster_client));
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store);
 
   base::test::TestFuture<bool> future;
-  session.DownloadCandidate(/*id=*/1, future.GetCallback());
+  session.DownloadCandidate(/*id=*/2, base::FilePath("dummy_path"),
+                            future.GetCallback());
 
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(LobsterSessionImplTest,
-       CanNotDownloadACandidateIfNotAvailableInPastRequest) {
+TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfItIsInCache) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
-
-  ON_CALL(*lobster_client,
-          RequestCandidates("a nice strawberry", 2, testing::_))
-      .WillByDefault([](std::string_view query, int num_candidates,
-                        RequestCandidatesCallback done_callback) {
-        std::vector<LobsterImageCandidate> image_candidates = {
-            LobsterImageCandidate(/*id=*/0, /*image_bytes=*/"a1b2c3",
-                                  /*seed=*/20,
-                                  /*query=*/"a nice strawberry"),
-            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"d4e5f6",
-                                  /*seed=*/21,
-                                  /*query=*/"a nice strawberry")};
-        std::move(done_callback).Run(std::move(image_candidates));
-      });
-
-  LobsterSessionImpl session(std::move(lobster_client));
-  session.RequestCandidates("a nice strawberry", 2,
-                            base::BindOnce([](const LobsterResult&) {}));
-  RunUntilIdle();
-
-  base::test::TestFuture<bool> future;
-
-  session.DownloadCandidate(/*id=*/3, future.GetCallback());
-
-  EXPECT_FALSE(future.Get());
-}
-
-TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfIdAvailableInPastRequest) {
-  auto lobster_client = std::make_unique<MockLobsterClient>();
-
-  ON_CALL(*lobster_client,
-          RequestCandidates("a nice strawberry", 2, testing::_))
-      .WillByDefault([](std::string_view query, int num_candidates,
-                        RequestCandidatesCallback done_callback) {
-        std::vector<LobsterImageCandidate> image_candidates = {
-            LobsterImageCandidate(/*id=*/0, /*image_bytes=*/"a1b2c3",
-                                  /*seed=*/20,
-                                  /*query=*/"a nice strawberry"),
-            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"d4e5f6",
-                                  /*seed=*/21,
-                                  /*query=*/"a nice strawberry")};
-
-        std::move(done_callback).Run(std::move(image_candidates));
-      });
+  LobsterCandidateStore store;
+  store.Cache({.id = 0,
+               .image_bytes = "a1b2c3",
+               .seed = 20,
+               .query = "a nice strawberry"});
+  store.Cache({.id = 1,
+               .image_bytes = "d4e5f6",
+               .seed = 21,
+               .query = "a nice strawberry"});
 
   ON_CALL(*lobster_client,
           InflateCandidate(/*seed=*/21, testing::_, testing::_))
@@ -200,16 +173,146 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfIdAvailableInPastRequest) {
         std::move(done_callback).Run(std::move(inflated_candidates));
       });
 
-  LobsterSessionImpl session(std::move(lobster_client));
+  LobsterSessionImpl session(std::move(lobster_client), store);
   session.RequestCandidates("a nice strawberry", 2,
                             base::BindOnce([](const LobsterResult&) {}));
   RunUntilIdle();
 
   base::test::TestFuture<bool> future;
 
-  session.DownloadCandidate(/*id=*/1, future.GetCallback());
+  session.DownloadCandidate(/*id=*/1, base::FilePath("dummy_path"),
+                            future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+}
+
+TEST_F(LobsterSessionImplTest,
+       CanNotPreviewFeedbackForACandidateIfItIsNotCached) {
+  LobsterCandidateStore store;
+  store.Cache({.id = 0,
+               .image_bytes = "a1b2c3",
+               .seed = 20,
+               .query = "a nice raspberry"});
+  store.Cache({.id = 1,
+               .image_bytes = "d4e5f6",
+               .seed = 21,
+               .query = "a nice raspberry"});
+
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store);
+  base::test::TestFuture<const LobsterFeedbackPreviewResponse&> future;
+
+  session.PreviewFeedback(/*id=*/2, future.GetCallback());
+
+  EXPECT_EQ(future.Get().error(), "No candidate found.");
+}
+
+TEST_F(LobsterSessionImplTest, CanPreviewFeedbackForACandidateIfItIsInCache) {
+  LobsterCandidateStore store;
+  store.Cache({.id = 0,
+               .image_bytes = "a1b2c3",
+               .seed = 20,
+               .query = "a nice raspberry"});
+  store.Cache({.id = 1,
+               .image_bytes = "d4e5f6",
+               .seed = 21,
+               .query = "a nice raspberry"});
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store);
+  base::test::TestFuture<const LobsterFeedbackPreviewResponse&> future;
+
+  session.PreviewFeedback(/*id=*/1, future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->preview_image_bytes, "d4e5f6");
+  std::map<std::string, std::string> expected_feedback_preview_fields = {
+      {"model_version", "dummy_version"}, {"model_input", "a nice raspberry"}};
+  EXPECT_EQ(future.Get()->fields, expected_feedback_preview_fields);
+}
+
+TEST_F(LobsterSessionImplTest,
+       CanNotSubmitFeedbackForACandiateIfItIsNotCached) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  LobsterCandidateStore store;
+  store.Cache({.id = 0,
+               .image_bytes = "a1b2c3",
+               .seed = 20,
+               .query = "a nice raspberry"});
+  store.Cache({.id = 1,
+               .image_bytes = "d4e5f6",
+               .seed = 21,
+               .query = "a nice raspberry"});
+
+  ON_CALL(*lobster_client, SubmitFeedback(/*query=*/"a nice raspberry",
+                                          /*model_input=*/"dummy_version",
+                                          /*description=*/"Awesome raspberry",
+                                          /*image_bytes=*/"a1b2c3"))
+      .WillByDefault(testing::Return(true));
+
+  ON_CALL(*lobster_client, SubmitFeedback(/*query=*/"a nice raspberry",
+                                          /*model_input=*/"dummy_version",
+                                          /*description=*/"Awesome raspberry",
+                                          /*image_bytes=*/"d4e5f6"))
+      .WillByDefault(testing::Return(true));
+
+  LobsterSessionImpl session(std::move(lobster_client), store);
+  EXPECT_FALSE(session.SubmitFeedback(/*candidate_id*/ 2,
+                                      /*description=*/"Awesome raspberry"));
+}
+
+TEST_F(LobsterSessionImplTest,
+       CanNotSubmitFeedbackForACandiateIfSubmissionFails) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  LobsterCandidateStore store;
+  store.Cache({.id = 0,
+               .image_bytes = "a1b2c3",
+               .seed = 20,
+               .query = "a nice raspberry"});
+  store.Cache({.id = 1,
+               .image_bytes = "d4e5f6",
+               .seed = 21,
+               .query = "a nice raspberry"});
+
+  ON_CALL(*lobster_client, SubmitFeedback(/*query=*/"a nice raspberry",
+                                          /*model_input=*/"dummy_version",
+                                          /*description=*/"Awesome raspberry",
+                                          /*image_bytes=*/"a1b2c3"))
+      .WillByDefault(testing::Return(false));
+
+  LobsterSessionImpl session(std::move(lobster_client), store);
+  EXPECT_FALSE(session.SubmitFeedback(/*candidate_id*/ 0,
+                                      /*description=*/"Awesome raspberry"));
+}
+
+TEST_F(LobsterSessionImplTest, CanSubmitFeedbackForACandiateIfItIsInCache) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  LobsterCandidateStore store;
+  store.Cache({.id = 0,
+               .image_bytes = "a1b2c3",
+               .seed = 20,
+               .query = "a nice raspberry"});
+  store.Cache({.id = 1,
+               .image_bytes = "d4e5f6",
+               .seed = 21,
+               .query = "a nice raspberry"});
+
+  EXPECT_CALL(*lobster_client,
+              SubmitFeedback(/*query=*/"a nice raspberry",
+                             /*model_input=*/"dummy_version",
+                             /*description=*/"Awesome raspberry",
+                             /*image_bytes=*/"a1b2c3"))
+      .WillOnce(testing::Return(true));
+
+  EXPECT_CALL(*lobster_client,
+              SubmitFeedback(/*query=*/"a nice raspberry",
+                             /*model_input=*/"dummy_version",
+                             /*description=*/"Awesome raspberry",
+                             /*image_bytes=*/"d4e5f6"))
+      .WillOnce(testing::Return(true));
+
+  LobsterSessionImpl session(std::move(lobster_client), store);
+  EXPECT_TRUE(session.SubmitFeedback(/*candidate_id*/ 0,
+                                     /*description=*/"Awesome raspberry"));
+  EXPECT_TRUE(session.SubmitFeedback(/*candidate_id*/ 1,
+                                     /*description=*/"Awesome raspberry"));
 }
 
 }  // namespace

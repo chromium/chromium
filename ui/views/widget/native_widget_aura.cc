@@ -1387,14 +1387,15 @@ NativeWidgetPrivate* NativeWidgetPrivate::GetNativeWidgetForNativeWindow(
 NativeWidgetPrivate* NativeWidgetPrivate::GetTopLevelNativeWidget(
     gfx::NativeView native_view) {
   aura::Window* window = native_view;
-  NativeWidgetPrivate* top_level_native_widget = nullptr;
   while (window) {
     NativeWidgetPrivate* native_widget = GetNativeWidgetForNativeView(window);
-    if (native_widget)
-      top_level_native_widget = native_widget;
+    Widget* widget = native_widget ? native_widget->GetWidget() : nullptr;
+    if (widget && widget->is_top_level()) {
+      return native_widget;
+    }
     window = window->parent();
   }
-  return top_level_native_widget;
+  return nullptr;
 }
 
 // static

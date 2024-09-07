@@ -397,7 +397,14 @@ void ChannelBinder::SetPeerReceiver(base::android::BinderRef receiver) {
     return;
   }
 
-  peer_ = Receiver::Proxy(std::move(receiver));
+  auto proxy = Receiver::Proxy::Adopt(std::move(receiver));
+  if (!proxy) {
+    // Class association may fail if the remote process is already dead.
+    peer_ = Disconnected{};
+    return;
+  }
+
+  peer_ = std::move(proxy);
   const base::AutoReset<bool> writing_scope(&is_writing_, true);
   if (!FlushOutgoingMessages().has_value()) {
     reject_writes_ = true;

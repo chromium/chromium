@@ -28,7 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
  * this temporary class and instead move
  * chrome/android/java/src/org/chromium/chrome/browser/feedback/ScreenshotTask.java.
  */
-@JNINamespace("chrome::android")
+@JNINamespace("android")
 public final class EditorScreenshotTask implements EditorScreenshotSource {
     private final Activity mActivity;
     private final BottomSheetController mBottomSheetController;

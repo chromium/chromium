@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
-#include "ui/views/view.h"
-
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 namespace content {
 class WebContents;
@@ -80,11 +79,10 @@ class ExtensionsMenuMainPageView : public views::View {
   // Returns the menu items.
   std::vector<ExtensionMenuItemView*> GetMenuItems() const;
 
-  // Updates the subheader with the given parameters. Does not update the menu
-  // items (menu item updates are handled directly in such view).
-  void UpdateSubheader(const std::u16string& current_site,
-                       bool is_site_settings_toggle_visible,
-                       bool is_site_settings_toggle_on);
+  // Updates the site settings views with the given parameters.
+  void UpdateSiteSettings(const std::u16string& current_site,
+                          bool is_site_settings_toggle_visible,
+                          bool is_site_settings_toggle_on);
 
   // Updates the message section given `state` and `has_enterprise_extensions`.
   void UpdateMessageSection(MessageSectionState state,
@@ -109,7 +107,7 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
-  const std::u16string& GetSubheaderSubtitleTextForTesting() const;
+  const std::u16string& GetSiteSettingLabelForTesting() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }
@@ -127,20 +125,16 @@ class ExtensionsMenuMainPageView : public views::View {
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsMenuHandler> menu_handler_;
 
-  // Subheader section.
-  raw_ptr<views::Label> subheader_subtitle_;
+  // Site settings views.
+  raw_ptr<views::Label> site_settings_label_;
   raw_ptr<views::ToggleButton> site_settings_toggle_;
 
-  // Message section.
+  // Contents views.
   raw_ptr<MessageSection> message_section_;
-
-  // Menu items section.
   // The view containing the menu items. This is separated for easy insertion
   // and iteration of menu items. The children are guaranteed to only be
   // ExtensionMenuItemViews.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::View* menu_items_ = nullptr;
+  raw_ptr<views::View> menu_items_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuMainPageView, views::View)

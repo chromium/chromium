@@ -5,20 +5,21 @@
 #include <cstdint>
 #include <initializer_list>
 #include <optional>
-#include <string_view>
-#include <unordered_map>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
-#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/compression/test_compression_module.h"
@@ -27,7 +28,6 @@
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_queue.h"
-#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -51,25 +51,11 @@ class TestUploadClient : public UploaderInterface {
   // Whenever a record is uploaded and includes last record digest, this map
   // should have that digest already recorded. Only the first record in a
   // generation is uploaded without last record digest.
-  struct LastRecordDigest {
-    struct Hash {
-      size_t operator()(
-          const std::pair<int64_t /*generation id */,
-                          int64_t /*sequencing id*/>& v) const noexcept {
-        const auto& [generation_id, sequencing_id] = v;
-        static constexpr std::hash<int64_t> generation_hasher;
-        static constexpr std::hash<int64_t> sequencing_hasher;
-        return generation_hasher(generation_id) ^
-               sequencing_hasher(sequencing_id);
-      }
-    };
-    using Map = std::unordered_map<
-        std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
-        std::optional<std::string /*digest*/>,
-        Hash>;
-  };
+  using LastRecordDigestMap = base::flat_map<
+      std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
+      std::optional<std::string /*digest*/>>;
 
-  explicit TestUploadClient(LastRecordDigest::Map* last_record_digest_map)
+  explicit TestUploadClient(LastRecordDigestMap* last_record_digest_map)
       : last_record_digest_map_(last_record_digest_map) {
     DETACH_FROM_SEQUENCE(test_uploader_checker_);
   }
@@ -141,13 +127,16 @@ class TestUploadClient : public UploaderInterface {
 
   std::optional<int64_t> generation_id_
       GUARDED_BY_CONTEXT(test_uploader_checker_);
-  const raw_ptr<TestUploadClient::LastRecordDigest::Map> last_record_digest_map_
+  const raw_ptr<LastRecordDigestMap> last_record_digest_map_
       GUARDED_BY_CONTEXT(test_uploader_checker_);
 };
 
 class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
  public:
   void SetUp() override {
+    // Enable compression.
+    scoped_feature_list_.InitAndEnableFeature(kCompressReportingPipeline);
+
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     options_.set_directory(base::FilePath(location_.GetPath()));
   }
@@ -156,43 +145,27 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
 
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {
     ASSERT_FALSE(storage_queue_) << "StorageQueue already assigned";
-    auto test_encryption_module =
+    test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
+    test_compression_module_ =
+        base::MakeRefCounted<test::TestCompressionModule>();
     test::TestEvent<Status> key_update_event;
-    test_encryption_module->UpdateAsymmetricKey("DUMMY KEY", 0,
-                                                key_update_event.cb());
+    test_encryption_module_->UpdateAsymmetricKey("DUMMY KEY", 0,
+                                                 key_update_event.cb());
     ASSERT_OK(key_update_event.result());
-    test::TestEvent<Status> initialized_event;
-    storage_queue_ = StorageQueue::Create(
-        "GENERATION_GUID", options,
+    test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>>
+        storage_queue_create_event;
+    StorageQueue::Create(
+        options,
         base::BindRepeating(&StorageQueueStressTest::AsyncStartTestUploader,
                             base::Unretained(this)),
-        base::BindRepeating(
-            [](scoped_refptr<StorageQueue> queue,
-               base::OnceCallback<void(std::queue<scoped_refptr<StorageQueue>>)>
-                   result_cb) {
-              // Returns empty candidates queue - no degradation allowed.
-              std::move(result_cb).Run({});
-            }),
-        base::DoNothing(),  // disable.
-        base::BindRepeating(
-            [](GenerationGuid generation_guid, base::OnceClosure done_cb) {
-              // Finished disconnect.
-              std::move(done_cb).Run();
-            }),
-        test_encryption_module,
-        base::MakeRefCounted<test::TestCompressionModule>());
-    storage_queue_->Init(
-        /*init_retry_cb=*/base::BindRepeating(
-            [](Status init_status,
-               size_t retry_count) -> StatusOr<base::TimeDelta> {
-              // Do not allow initialization retries.
-              return base::unexpected(std::move(init_status));
-            }),
-        initialized_event.cb());
-    const auto initialized_result = initialized_event.result();
-    ASSERT_OK(initialized_result)
-        << "Failed to initialize StorageQueue, error=" << initialized_result;
+        test_encryption_module_, test_compression_module_,
+        storage_queue_create_event.cb());
+    StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
+        storage_queue_create_event.result();
+    ASSERT_OK(storage_queue_result) << "Failed to create StorageQueue, error="
+                                    << storage_queue_result.error();
+    storage_queue_ = std::move(storage_queue_result.value());
   }
 
   void ResetTestStorageQueue() {
@@ -251,16 +224,20 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir location_;
   StorageOptions options_;
+  scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
+  scoped_refptr<test::TestCompressionModule> test_compression_module_;
   scoped_refptr<StorageQueue> storage_queue_;
 
   // Test-wide global mapping of <generation id, sequencing id> to record
   // digest. Serves all TestUploadClients created by test fixture.
-  TestUploadClient::LastRecordDigest::Map last_record_digest_map_;
+  TestUploadClient::LastRecordDigestMap last_record_digest_map_;
 };
 
-TEST_P(StorageQueueStressTest, WriteIntoStorageQueueReopenWriteMoreAndUpload) {
+TEST_P(StorageQueueStressTest,
+       WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   for (size_t iStart = 0; iStart < kTotalQueueStarts; ++iStart) {
     test::TestCallbackWaiter write_waiter;
     base::RepeatingCallback<void(Status)> cb = base::BindRepeating(
@@ -315,7 +292,7 @@ TEST_P(StorageQueueStressTest, WriteIntoStorageQueueReopenWriteMoreAndUpload) {
 INSTANTIATE_TEST_SUITE_P(
     VaryingFileSize,
     StorageQueueStressTest,
-    testing::Values(1 * 1024uLL, 2 * 1024uLL, 3 * 1024uLL, 4 * 1024uLL));
+    testing::Values(1 * 1024LL, 2 * 1024LL, 3 * 1024LL, 4 * 1024LL));
 
 }  // namespace
 }  // namespace reporting

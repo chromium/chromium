@@ -1,6 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 
 #include "base/test/metrics/histogram_tester.h"
@@ -26,7 +27,6 @@
 #include "url/gurl.h"
 
 namespace autofill {
-
 namespace {
 
 using test::CreateTestCreditCardFormData;
@@ -150,7 +150,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const AutofillTriggerDetails& trigger_details));
   MOCK_METHOD(void,
               DidShowSuggestions,
-              (base::span<const SuggestionType> shown_suggestions_types,
+              (DenseSet<SuggestionType> shown_suggestion_types,
                const FormData& form,
                const FormFieldData& field),
               (override));
@@ -159,8 +159,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               GetAutofillField,
               (const FormData& form, const FormFieldData& field));
 };
-
-}  // namespace
 
 class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
  public:
@@ -1183,4 +1181,5 @@ TEST_F(TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 }
 
+}  // namespace
 }  // namespace autofill

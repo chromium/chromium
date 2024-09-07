@@ -31,6 +31,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/util.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -48,12 +49,14 @@
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -63,13 +66,14 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -100,7 +104,6 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
@@ -344,7 +347,7 @@ struct EnhancedSafeBrowsingActivePromoData
         self,
         ios::TemplateURLServiceFactory::GetForBrowserState(_browserState)));
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(_browserState);
+        IdentityManagerFactory::GetForProfile(_browserState);
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
     // It is expected that `identityManager` should never be nil except in
@@ -597,11 +600,11 @@ struct EnhancedSafeBrowsingActivePromoData
     _showMemoryDebugToolsItem = [self showMemoryDebugSwitchItem];
     [model addItem:_showMemoryDebugToolsItem
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
-  }
 
-  if (experimental_flags::DisplaySwitchProfile().has_value()) {
-    [model addItem:[self switchProfileItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+    if (experimental_flags::DisplaySwitchProfile().has_value()) {
+      [model addItem:[self switchProfileItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+    }
   }
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -1401,6 +1404,9 @@ struct EnhancedSafeBrowsingActivePromoData
         if (tracker) {
           tracker->NotifyEvent(
               feature_engagement::events::kBlueDotPromoSettingsDismissed);
+          id<PopupMenuCommands> popupMenuHandler = HandlerForProtocol(
+              _browser->GetCommandDispatcher(), PopupMenuCommands);
+          [popupMenuHandler updateToolsMenuBlueDotVisibility];
         }
         [self reloadData];
       }
@@ -2046,6 +2052,21 @@ struct EnhancedSafeBrowsingActivePromoData
   }
 }
 
+// Updates the state of the Safety Check notifications button based on whether
+// the user has Safety Check notifications enabled.
+- (void)updateSafetyCheckNotificationsButtonState {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  // Safety Check notifications are controlled by app-wide notification
+  // settings, not profile-specific ones. No Gaia ID is required below in
+  // `GetMobileNotificationPermissionStatusForClient()`.
+  BOOL enabled = push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kSafetyCheck, "");
+
+  [_safetyCheckCoordinator updateNotificationsButton:enabled];
+}
+
 // Updates the string indicating the push notification state.
 - (void)updateNotificationsDetailText {
   if (!_notificationsItem) {
@@ -2092,7 +2113,9 @@ struct EnhancedSafeBrowsingActivePromoData
   return base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
          (IsPriceNotificationsEnabled() ||
           IsContentNotificationEnabled(_browserState) ||
-          IsIOSTipsNotificationsEnabled());
+          IsIOSTipsNotificationsEnabled() ||
+          base::FeatureList::IsEnabled(
+              send_tab_to_self::kSendTabToSelfIOSPushNotifications));
 }
 
 // Records that the user has reached the impression limit for the enhanced safe
@@ -2645,6 +2668,11 @@ struct EnhancedSafeBrowsingActivePromoData
 - (void)notificationsSettingsDidChangeForClient:
     (PushNotificationClientId)clientID {
   [self updateNotificationsDetailText];
+
+  if (IsSafetyCheckNotificationsEnabled() &&
+      clientID == PushNotificationClientId::kSafetyCheck) {
+    [self updateSafetyCheckNotificationsButtonState];
+  }
 }
 
 #pragma mark - DownloadsSettingsCoordinatorDelegate

@@ -747,8 +747,10 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   }
 }
 
-// Handles the selection of a suggestion.
-- (void)handleSuggestion:(FormSuggestion*)formSuggestion {
+// Handles the selection of a suggestion. `index` indicates the position of the
+// suggestion among the available suggestions.
+- (void)handleSuggestion:(FormSuggestion*)formSuggestion
+                 atIndex:(NSInteger)index {
   if (self.currentProvider.type == SuggestionProviderTypePassword) {
     default_browser::NotifyPasswordAutofillSuggestionUsed(
         self.engagementTracker);
@@ -758,7 +760,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
         notifyAutofillSuggestionWithIPHSelectedFor:formSuggestion
                                                        .featureForIPH];
   }
-  [self.currentProvider didSelectSuggestion:formSuggestion];
+  [self.currentProvider didSelectSuggestion:formSuggestion atIndex:index];
 }
 
 #pragma mark - Boolean Observer
@@ -771,14 +773,15 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 #pragma mark - FormSuggestionClient
 
-- (void)didSelectSuggestion:(FormSuggestion*)formSuggestion {
+- (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
+                    atIndex:(NSInteger)index {
   [self logReauthenticationEvent:ReauthenticationEvent::kAttempt
                             type:formSuggestion.type];
 
   if (!formSuggestion.requiresReauth) {
     [self logReauthenticationEvent:ReauthenticationEvent::kSuccess
                               type:formSuggestion.type];
-    [self handleSuggestion:formSuggestion];
+    [self handleSuggestion:formSuggestion atIndex:index];
     return;
   }
   if ([self.reauthenticationModule canAttemptReauth]) {
@@ -787,7 +790,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
       if (result != ReauthenticationResult::kFailure) {
         [self logReauthenticationEvent:ReauthenticationEvent::kSuccess
                                   type:formSuggestion.type];
-        [self handleSuggestion:formSuggestion];
+        [self handleSuggestion:formSuggestion atIndex:index];
       } else {
         [self logReauthenticationEvent:ReauthenticationEvent::kFailure
                                   type:formSuggestion.type];
@@ -801,14 +804,15 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   } else {
     [self logReauthenticationEvent:ReauthenticationEvent::kMissingPasscode
                               type:formSuggestion.type];
-    [self handleSuggestion:formSuggestion];
+    [self handleSuggestion:formSuggestion atIndex:index];
   }
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
+                    atIndex:(NSInteger)index
                      params:(const autofill::FormActivityParams&)params {
   CHECK(_lastSeenParams == params);
-  [self didSelectSuggestion:formSuggestion];
+  [self didSelectSuggestion:formSuggestion atIndex:index];
 }
 
 #pragma mark - PasswordCounterObserver

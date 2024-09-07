@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "components/device_event_log/device_event_log.h"
 #include "ui/aura/window.h"
 
@@ -44,6 +45,14 @@ class PasskeyInSessionAuthProviderImpl : public PasskeyInSessionAuthProvider {
       aura::Window* window,
       const std::string& rp_id,
       base::OnceCallback<void(bool)> result_callback) override {
+    if (ash::features::IsWebAuthNAuthDialogMergeEnabled()) {
+      auto webauthn_auth_request = std::make_unique<ash::WebAuthNAuthRequest>(
+          rp_id, std::move(result_callback));
+      ash::ActiveSessionAuthController::Get()->ShowAuthDialog(
+          std::move(webauthn_auth_request));
+      return;
+    }
+
     ash::Shell::Get()->webauthn_dialog_controller()->ShowAuthenticationDialog(
         window, rp_id, std::move(result_callback));
   }

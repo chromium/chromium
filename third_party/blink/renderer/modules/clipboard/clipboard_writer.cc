@@ -13,7 +13,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -175,9 +174,7 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
                          html_data->ByteLength());
     const KURL& url = local_frame->GetDocument()->Url();
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
-    ParseFromStringOptions* options = ParseFromStringOptions::Create();
-    const Document* doc =
-        dom_parser->parseFromString(html_string, "text/html", options);
+    const Document* doc = dom_parser->parseFromString(html_string, "text/html");
     DCHECK(doc);
     String serialized_html = CreateMarkup(doc, kIncludeNode, kResolveAllURLs);
     Write(serialized_html, url);
@@ -214,9 +211,8 @@ class ClipboardSvgWriter final : public ClipboardWriter {
     }
 
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
-    ParseFromStringOptions* options = ParseFromStringOptions::Create();
     const Document* doc =
-        dom_parser->parseFromString(svg_string, "image/svg+xml", options);
+        dom_parser->parseFromString(svg_string, "image/svg+xml");
     Write(CreateMarkup(doc, kIncludeNode, kResolveAllURLs));
   }
 
@@ -296,8 +292,7 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
     return MakeGarbageCollected<ClipboardHtmlWriter>(system_clipboard, promise);
   }
 
-  if (mime_type == kMimeTypeImageSvg &&
-      RuntimeEnabledFeatures::ClipboardSvgEnabled()) {
+  if (mime_type == kMimeTypeImageSvg) {
     return MakeGarbageCollected<ClipboardSvgWriter>(system_clipboard, promise);
   }
 

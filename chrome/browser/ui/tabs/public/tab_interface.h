@@ -113,7 +113,19 @@ class TabInterface {
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 
   // Returns the feature controllers scoped to this tab.
+  // TabFeatures that depend on other TabFeatures should not use this method.
+  // Instead they should use use dependency injection to pass dependencies at
+  // construction or initialization. This method exists for three reasons:
+  //   (1) BrowserWindowFeatures often depend on state of TabFeatures for the
+  //   active tab, which can change. BrowserWindowFeatures need a way to
+  //   dynamically fetch TabFeatures.
+  //   (2) To expose TabFeatures for tests.
+  //   (3) It is not possible to perform dependency injection for legacy code
+  //   that is conceptually a TabFeature and needs access to other TabFeatures.
   virtual tabs::TabFeatures* GetTabFeatures() = 0;
+
+  // An identifier that is guaranteed to be unique.
+  virtual uint32_t GetTabHandle() = 0;
 };
 
 }  // namespace tabs

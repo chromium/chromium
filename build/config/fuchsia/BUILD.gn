@@ -30,48 +30,23 @@ group("deployment_resources") {
     "//build/util/lib/",
     "//third_party/fuchsia-sdk/sdk/.build-id/",
     "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx-meta.json",
-
-    # The following folder contains standalone binaries running as ffx plugins.
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx_tools/",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolizer",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolizer-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/zbi",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/zbi-meta.json",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/",
   ]
 
   if (fuchsia_additional_boot_images == []) {
     data += [ "${boot_image_root}" ]
-  }
-
-  foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
-    data += [ "${fuchsia_additional_boot_image}/" ]
-  }
-
-  if (test_isolate_uses_emulator) {
-    if (test_host_cpu == "x64") {
-      data += [
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal-meta.json",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/qemu_internal",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/qemu_internal-meta.json",
-      ]
-    } else if (test_host_cpu == "arm64") {
-      data += [
-        "//third_party/qemu-${host_os}-${test_host_cpu}/",
-
-        # TODO(crbug.com/42050489): remove when ffx has native support
-        # for starting emulator on arm64 host.
-        "//third_party/fuchsia-sdk/sdk/tools/x64/qemu_internal-meta.json",
-      ]
+  } else {
+    # We never need to use both qemu images and device images.
+    foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
+      data += [ "${fuchsia_additional_boot_image}/" ]
     }
+  }
+
+  if (test_isolate_uses_emulator && test_host_cpu == "arm64") {
+    data += [
+      "//third_party/qemu-${host_os}-${test_host_cpu}/",
+      "//third_party/edk2/",
+    ]
   }
 }
 

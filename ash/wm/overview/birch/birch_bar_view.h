@@ -87,6 +87,12 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   static std::unique_ptr<views::Widget> CreateBirchBarWidget(
       aura::Window* root_window);
 
+  // TODO(http://b/361326120): Temporary getter for the chips before the menu
+  // ownership is defined.
+  const std::vector<raw_ptr<BirchChipButtonBase>>& chips() const {
+    return chips_;
+  }
+
   void SetState(State state);
 
   // Clears the items cached in the `BirchChipButtons`.
@@ -112,6 +118,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // Removes the chip of `removed_item` and attaches a new chip with
   // `attached_item` if it's not null.
   void RemoveChip(BirchItem* removed_item, BirchItem* attached_item = nullptr);
+
+  // Re-initializes the chip corresponding to the given `item`.
+  void UpdateChip(BirchItem* item);
 
   // Gets the maximum height of the bar with full chips.
   int GetMaximumHeight() const;

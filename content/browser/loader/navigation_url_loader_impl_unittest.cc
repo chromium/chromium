@@ -260,7 +260,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
         network::mojom::RequestDestination::kDocument;
     url::Origin origin = url::Origin::Create(url);
 
-    uint32_t frame_tree_node_id =
+    FrameTreeNodeId frame_tree_node_id =
         web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
     bool is_primary_main_frame = is_main_frame;

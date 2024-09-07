@@ -202,6 +202,30 @@ struct Conv2d {
   string label;
 };
 
+// Represents an elementwise operator to scale a low precision integer
+// (typically uint8 with a zero-point bias) to floating point:
+//   output = (input - zeroPoint) * scale.
+// This saves space in models and memory during GPU upload/computation.
+struct DequantizeLinear {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The scale operand (referenced by the scale_operand_id) must be distinct
+  // from the input operand (referenced by the input_operand_id), and the
+  // scale shape must be broadcastable to the input shape.
+  uint64 scale_operand_id;
+  // The zero_point operand (referenced by the zero_point_operand_id) must
+  // be distinct from the input operand (referenced by the input_operand_id)
+  // and the scale operand (referenced by the scale_operand_id). The data
+  // type of zero_point shape must be the same as the input.
+  uint64 zero_point_operand_id;
+  // The output operand (referenced by output_operand_id) must be distinct
+  // from the input operand (referenced by input_operand_id). The data type
+  // of the output is the same as the scale.
+  uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Represents an element-wise binary operation, mathematically equivalent to:
 // <output_operand> = <lhs_operand> <operation_kind> <rhs_operand>;
 // The shapes of left-hand side (lhs) operand and right-hand side (rhs) operand
@@ -249,6 +273,7 @@ struct ElementWiseUnary {
     kFloor,
     kLog,
     kNeg,
+    kSign,
     kSin,
     kTan,
     kLogicalNot,
@@ -516,10 +541,40 @@ struct Elu {
 //
 // Need to finalize out-of-bounds indices sanitization behavior, tracked by spec
 // issue: https://github.com/webmachinelearning/webnn/issues/486
-//
-// TODO(crbug.com/329134204): Add conformance test cases for gather's
-// out-of-bounds access.
 struct Gather {
+  // The input operand (referenced by input_operand_id) and the indices operand
+  // (referenced by indices_operand_id) must be distinct from the output
+  // operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 indices_operand_id;
+  uint64 output_operand_id;
+
+  // The axis dimension of the input tensor to gather on.
+  uint32 axis = 0;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
+// Represents an operation of gathering elements from the axis dimension of
+// the input tensor indexed by the indices tensor following the equation below:
+//
+// output[dIndex0, ..., dIndexN] =
+//  input[dIndex0, ..., indices[dIndex0, ..., dIndexN], ..., dIndexN]
+//                       ^ This is dAxis, indicated by `axis` parameter.
+//
+// For example, given an input = [[ 0,  1,  2],
+//                                [10, 11, 12],
+//                                [20, 21, 22]] with shape (3, 3),
+// an indices = [[1, 0],
+//               [2, 1],
+//               [0, 2]] with shape (3, 2),
+// and axis = 1,
+// the output should be [[ 1,  0],
+//                       [12, 11],
+//                       [20, 22]] with shape (3, 2).
+//
+// `GatherElements` has the same out-of-bounds `indices` issue as `Gather`.
+struct GatherElements {
   // The input operand (referenced by input_operand_id) and the indices operand
   // (referenced by indices_operand_id) must be distinct from the output
   // operand (referenced by output_operand_id).
@@ -849,6 +904,30 @@ struct Prelu {
   string label;
 };
 
+// Represents an element-wise operator to quantize floating point down to a
+// low precision integer (typically uint8 with a zero-point bias):
+//  output = clamp(roundToNearestEvens(input / scale) + zeroPoint, 0, 255).
+struct QuantizeLinear {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The scale operand (referenced by the scale_operand_id) must be distinct
+  // from the input operand (referenced by the input_operand_id), and the
+  // scale shape must be broadcastable to the input shape. The data type of
+  // scale must be the same as input.
+  uint64 scale_operand_id;
+  // The zero_point operand (referenced by the zero_point_operand_id) must
+  // be distinct from the input operand (referenced by the input_operand_id)
+  // and the scale operand (referenced by the scale_operand_id). The
+  // zero_point shape must be broadcastable to the input shape.
+  uint64 zero_point_operand_id;
+  // The output operand (referenced by output_operand_id) must be distinct
+  // from the input operand (referenced by input_operand_id). The data type
+  // of output is the same as the zero_point.
+  uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Corresponds to `MLOperand relu(MLOperand x)` that compute the rectified
 // linear function of the input tensor.
 struct Relu {
@@ -966,6 +1045,21 @@ struct Tanh {
   string label;
 };
 
+// Represents the tile operation that repeats a tensor the given number of
+// times along each axis.
+struct Tile {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The id of output operand.
+  uint64 output_operand_id;
+  // Each value corresponds to a dimension of the input tensor (in order) and
+  // represents the number of tiled copies to make for that dimension. Values
+  // must be greater than 0.
+  array<uint32> repetitions;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Represents the transpose operation that permutes the dimensions of the
 // input tensor following the given permutation.
 struct Transpose {
@@ -1060,11 +1154,13 @@ union Operation {
   Clamp clamp;
   Concat concat;
   Conv2d conv2d;
+  DequantizeLinear dequantize_linear;
   ElementWiseBinary element_wise_binary;
   Elu elu;
   ElementWiseUnary element_wise_unary;
   Expand expand;
   Gather gather;
+  GatherElements gather_elements;
   Gelu gelu;
   Gemm gemm;
   Gru gru;
@@ -1081,6 +1177,7 @@ union Operation {
   Pad pad;
   Pool2d pool2d;
   Prelu prelu;
+  QuantizeLinear quantize_linear;
   Reduce reduce;
   Relu relu;
   Resample2d resample2d;
@@ -1092,6 +1189,7 @@ union Operation {
   Softsign softsign;
   Split split;
   Tanh tanh;
+  Tile tile;
   Transpose transpose;
   Triangular triangular;
   Where where;
@@ -1135,9 +1233,9 @@ interface WebNNGraph {
 
   // Called by the renderer process to carry out the computational workload of
   // the compiled graph. The key of map is the name of input/output to identify
-  // the tensor in the graph, the value is the MLBuffer containing the tensor
+  // the tensor in the graph, the value is the MLTensor containing the tensor
   // data.
   // TODO(crbug.com/331351967): remove Compute().
-  Dispatch(map<string, blink.mojom.WebNNBufferToken> named_inputs,
-    map<string, blink.mojom.WebNNBufferToken> named_outputs);
+  Dispatch(map<string, blink.mojom.WebNNTensorToken> named_inputs,
+           map<string, blink.mojom.WebNNTensorToken> named_outputs);
 };

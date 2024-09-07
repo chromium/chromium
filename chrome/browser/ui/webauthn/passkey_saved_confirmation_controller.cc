@@ -27,10 +27,6 @@ std::u16string PasskeySavedConfirmationController::GetTitle() const {
           : IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE);
 }
 
-std::u16string PasskeySavedConfirmationController::GetUsername() const {
-  return delegate_->GetRecentlySavedPasskeyUsername();
-}
-
 void PasskeySavedConfirmationController::OnGooglePasswordManagerLinkClicked() {
   dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
   if (delegate_) {

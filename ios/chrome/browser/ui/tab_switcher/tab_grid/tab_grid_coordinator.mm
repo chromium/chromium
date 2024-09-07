@@ -45,8 +45,8 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
@@ -364,6 +364,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [_incognitoGridCoordinator stopChildCoordinators];
   [_regularGridCoordinator stopChildCoordinators];
+  if (IsTabGroupSyncEnabled()) {
+    [_tabGroupsPanelCoordinator stopChildCoordinators];
+  }
 
   [self dismissPopovers];
 
@@ -498,6 +501,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [_incognitoGridCoordinator showTabGroupForTabGridOpening:tabGroup];
     }
   }
+
+  // Notify the Tab Groups panel (if any).
+  [_tabGroupsPanelCoordinator prepareForAppearance];
 
   // Record when the tab switcher is presented.
   self.tabGridEnterTime = base::TimeTicks::Now();
@@ -779,7 +785,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   ChromeBrowserState* browser_state = self.regularBrowser->GetBrowserState();
   _mediator = [[TabGridMediator alloc]
-       initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
+       initWithIdentityManager:IdentityManagerFactory::GetForProfile(
                                    browser_state)
                    prefService:browser_state->GetPrefs()
       featureEngagementTracker:feature_engagement::TrackerFactory::
@@ -874,7 +880,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.incognitoTabsMediator = _incognitoGridCoordinator.incognitoGridMediator;
   [self.incognitoTabsMediator
       initializeSupervisedUserCapabilitiesObserver:
-          IdentityManagerFactory::GetForBrowserState(browser_state)];
+          IdentityManagerFactory::GetForProfile(browser_state)];
 
   baseViewController.incognitoGridHandler =
       _incognitoGridCoordinator.gridHandler;
@@ -926,7 +932,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     sync_sessions::SessionSyncService* syncService =
         SessionSyncServiceFactory::GetForBrowserState(regularBrowserState);
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(regularBrowserState);
+        IdentityManagerFactory::GetForProfile(regularBrowserState);
     sessions::TabRestoreService* restoreService =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
             regularBrowserState);
@@ -1473,7 +1479,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 }
 
-- (void)editTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+- (void)editTabGroup:(base::WeakPtr<const TabGroup>)group
+           incognito:(BOOL)incognito {
+  if (!group) {
+    return;
+  }
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to edit a tab group outside the Tab Groups "
          "experiment.";
@@ -1484,7 +1494,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   } else {
     coordinator = _regularGridCoordinator;
   }
-  [coordinator showTabGroupEditionForGroup:group];
+  [coordinator showTabGroupEditionForGroup:group.get()];
 }
 
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
@@ -1497,7 +1507,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator closeItemWithID:identifier];
 }
 
-- (void)deleteTabGroup:(const TabGroup*)group
+- (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
              incognito:(BOOL)incognito
             sourceView:(UIView*)sourceView {
   CHECK(IsTabGroupInGridEnabled())
@@ -1512,7 +1522,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator deleteTabGroup:group sourceView:sourceView];
 }
 
-- (void)closeTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+- (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group
+            incognito:(BOOL)incognito {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to close a tab group outside the Tab Groups "
          "experiment.";
@@ -1524,7 +1535,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator closeTabGroup:group];
 }
 
-- (void)ungroupTabGroup:(const TabGroup*)group
+- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
               incognito:(BOOL)incognito
              sourceView:(UIView*)sourceView {
   CHECK(IsTabGroupInGridEnabled())

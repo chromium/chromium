@@ -310,6 +310,7 @@ class ScopedDbErrorHandler {
 
   ~ScopedDbErrorHandler() { db_->reset_error_callback(); }
 
+  // Error codes are defined in the sql::SqliteResultCode enum.
   void reset_error_code() { sqlite_error_code_ = 0; }
   int get_error_code() const { return sqlite_error_code_; }
 
@@ -1024,9 +1025,11 @@ void RecordShouldDeleteUndecryptablePasswordsMetric(
 }
 
 bool ShouldDeleteUndecryptablePasswords(
-    base::RepeatingClosure clearing_undecryptable_passwords,
+    LoginDatabase::OnUndecryptablePasswordsRemoved
+        clearing_undecryptable_passwords,
     bool is_user_data_dir_policy_set,
-    bool is_enabled_by_policy) {
+    bool is_enabled_by_policy,
+    IsAccountStore is_account_store) {
 #if BUILDFLAG(IS_LINUX)
   std::string user_data_dir_string;
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
@@ -1087,7 +1090,7 @@ bool ShouldDeleteUndecryptablePasswords(
   // Needed in order to maintain kClearUndecryptablePasswords experiment groups
   // population.
   if (clearing_undecryptable_passwords) {
-    clearing_undecryptable_passwords.Run();
+    clearing_undecryptable_passwords.Run(is_account_store);
   }
   return base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
 }
@@ -1112,7 +1115,7 @@ LoginDatabase::LoginDatabase(const base::FilePath& db_path,
 LoginDatabase::~LoginDatabase() = default;
 
 bool LoginDatabase::Init(
-    base::RepeatingClosure on_undecryptable_passwords_removed,
+    OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed,
     std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   TRACE_EVENT0("passwords", "LoginDatabase::Init");
   on_undecryptable_passwords_removed_ =
@@ -1596,8 +1599,18 @@ bool LoginDatabase::RemoveLogin(const PasswordForm& form,
   s.BindString16(2, form.username_value);
   s.BindString16(3, form.password_element);
   s.BindString(4, form.signon_realm);
+  ScopedDbErrorHandler db_error_handler(&db_);
 
-  if (!s.Run() || db_.GetLastChangeCount() == 0) {
+  if (!s.Run()) {
+    std::string_view suffix_for_store =
+        is_account_store_.value() ? ".AccountStore" : ".ProfileStore";
+    sql::UmaHistogramSqliteResult(
+        base::StrCat(
+            {kPasswordManager, suffix_for_store, ".RemoveLoginDBError"}),
+        db_error_handler.get_error_code());
+    return false;
+  }
+  if (db_.GetLastChangeCount() == 0) {
     return false;
   }
   if (changes) {
@@ -2382,7 +2395,8 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   if (failed) {
     if (ShouldDeleteUndecryptablePasswords(
             on_undecryptable_passwords_removed_, is_user_data_dir_policy_set_,
-            is_deleting_undecryptable_logins_enabled_by_policy_.value())) {
+            is_deleting_undecryptable_logins_enabled_by_policy_.value(),
+            is_account_store_)) {
       DatabaseCleanupResult result = DeleteUndecryptableLogins();
       if (result == DatabaseCleanupResult::kSuccess) {
         were_undecryptable_logins_deleted_ = true;

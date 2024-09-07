@@ -443,7 +443,7 @@ PepperPluginInstanceImpl::ExternalDocumentLoader::~ExternalDocumentLoader() {}
 void PepperPluginInstanceImpl::ExternalDocumentLoader::ReplayReceivedData(
     WebAssociatedURLLoaderClient* document_loader) {
   for (auto it = data_.begin(); it != data_.end(); ++it) {
-    document_loader->DidReceiveData(it->c_str(), it->length());
+    document_loader->DidReceiveData(*it);
   }
   if (finished_loading_) {
     document_loader->DidFinishLoading();
@@ -454,9 +454,8 @@ void PepperPluginInstanceImpl::ExternalDocumentLoader::ReplayReceivedData(
 }
 
 void PepperPluginInstanceImpl::ExternalDocumentLoader::DidReceiveData(
-    const char* data,
-    int data_length) {
-  data_.push_back(std::string(data, data_length));
+    base::span<const char> data) {
+  data_.push_back(std::string(data.data(), data.size()));
 }
 
 void PepperPluginInstanceImpl::ExternalDocumentLoader::DidFinishLoading() {

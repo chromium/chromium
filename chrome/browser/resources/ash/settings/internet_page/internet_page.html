@@ -169,6 +169,13 @@
           slot="subpage-title-extra"
           device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
       </settings-internet-subpage-menu>
+      <template is="dom-if" if="[[isDeviceUpdating_]]" restamp>
+        <div class="settings-box first">
+          <div id="flashingSubtitle" class="settings-box-text">
+            $i18n{internetDeviceFlashing}
+          </div>
+        </div>
+      </template>
       <template is="dom-if"
           if="[[isProviderLocked_]]" restamp>
         <!-- Carrier locked network. -->

@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/native_theme/native_theme.h"
@@ -75,7 +76,8 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
       auxiliary_button_(nullptr),
       confirm_available_(false),
       accepted_(false) {
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetAcceptButtonText());
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller_->GetAcceptButtonText());
   SetAcceptCallback(base::BindOnce(
       [](MediaGalleriesDialogViews* dialog) { dialog->accepted_ = true; },
       base::Unretained(this)));
@@ -245,8 +247,8 @@ views::View* MediaGalleriesDialogViews::GetContentsView() {
 }
 
 bool MediaGalleriesDialogViews::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  return button != ui::DIALOG_BUTTON_OK || confirm_available_;
+    ui::mojom::DialogButton button) const {
+  return button != ui::mojom::DialogButton::kOk || confirm_available_;
 }
 
 void MediaGalleriesDialogViews::ShowContextMenuForViewImpl(

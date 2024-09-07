@@ -513,9 +513,7 @@ suite('shortcutCustomizationAppTest', function() {
         'shortcut. To replace the existing shortcut, press this shortcut ' +
         'again.';
     assertEquals(
-        expected_error_message,
-        editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
-            .textContent!.trim());
+        expected_error_message, editElement.getStatusMessageForTesting());
 
     // Press a different shortcut, this time with another error state.
     const fakeResult2: AcceleratorResultData = {
@@ -538,9 +536,7 @@ suite('shortcutCustomizationAppTest', function() {
     const expected_error_message2 =
         'Shortcut is being used for "TestConflictName". Press a new shortcut.';
     assertEquals(
-        expected_error_message2,
-        editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
-            .textContent!.trim());
+        expected_error_message2, editElement.getStatusMessageForTesting());
     assertTrue(editElement.hasError);
     // Since this was a failure, expect that latest recorded action is the same.
     assertEquals(
@@ -1026,7 +1022,7 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
 
     restoreDialog = getDialog('#restoreDialog');
-    assertFalse(!!restoreDialog);
+    assertFalse(isVisible(restoreDialog));
   });
 
   test('RestoreAllButtonShownWithFlag', async () => {

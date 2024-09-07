@@ -22,8 +22,9 @@ source_set("model") {
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/price_insights/resources",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/web/public",
     "//ui/base",
   ]
 }
@@ -44,7 +45,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/model:public",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/web/public/test",
@@ -63,6 +64,6 @@ source_set("feature") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
     "//ios/chrome/browser/commerce/model:shopping_service",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }

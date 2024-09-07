@@ -101,8 +101,11 @@ export class PeerConnectionUpdateTable {
       if (candidateParts && candidateParts[7]) { // show candidate type.
         type += ', type: ' + candidateParts[7];
       }
-      if (parts[3]) { // relayProtocol, if present.
+      if (parts[3]) { // url, if present.
         type += ', ' + parts[3];
+      }
+      if (parts[4]) { // relayProtocol, if present.
+        type += ', ' + parts[4];
       }
       type += ')';
     } else if (

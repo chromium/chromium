@@ -339,7 +339,8 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
                 &AccessibilityServiceClientTest::CreateTestAccessibilityService,
                 base::Unretained(this)));
     sr_test_helper_ = std::make_unique<SpeechRecognitionTestHelper>(
-        speech::SpeechRecognitionType::kNetwork);
+        speech::SpeechRecognitionType::kNetwork,
+        media::mojom::RecognizerClientType::kDictation);
     sr_test_helper_->SetUp(browser()->profile());
   }
 

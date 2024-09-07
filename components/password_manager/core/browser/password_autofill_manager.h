@@ -58,13 +58,15 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // AutofillSuggestionDelegate implementation.
   absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
       override;
-  void OnSuggestionsShown() override;
+  void OnSuggestionsShown(
+      base::span<const autofill::Suggestion> suggestions) override;
   void OnSuggestionsHidden() override;
   void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
   void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
-                           const SuggestionPosition& position) override;
+                           const SuggestionMetadata& metadata) override;
   void DidPerformButtonActionForSuggestion(
-      const autofill::Suggestion&) override;
+      const autofill::Suggestion&,
+      const autofill::SuggestionButtonAction&) override;
   bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;

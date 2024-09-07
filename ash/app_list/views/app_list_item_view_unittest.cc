@@ -63,8 +63,7 @@ class ProgressIndicatorWaiter {
 
 }  // namespace
 
-class AppListItemViewTest : public AshTestBase,
-                            public testing::WithParamInterface<bool> {
+class AppListItemViewTest : public AshTestBase {
  public:
   AppListItemViewTest() = default;
   ~AppListItemViewTest() override = default;
@@ -72,8 +71,7 @@ class AppListItemViewTest : public AshTestBase,
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
-        {{app_list_features::kDragAndDropRefactor, IsUsingDragDropController()},
-         {features::kPromiseIcons, true}});
+        {{features::kPromiseIcons, true}});
 
     AshTestBase::SetUp();
 
@@ -122,26 +120,15 @@ class AppListItemViewTest : public AshTestBase,
   void SetAppListItemViewForTest(AppListItemView* view) { drag_view_ = view; }
 
   void MaybeCheckDragStartedOnControllerCount(int count) {
-    if (IsUsingDragDropController()) {
-      EXPECT_EQ(count, drag_started_on_controller_);
-    }
+    EXPECT_EQ(count, drag_started_on_controller_);
   }
-
-  bool IsUsingDragDropController() { return GetParam(); }
 
   int drag_started_on_controller_ = 0;
   raw_ptr<AppListItemView, DanglingUntriaged> drag_view_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-INSTANTIATE_TEST_SUITE_P(All, AppListItemViewTest, testing::Bool());
 
-using AppListItemViewTestWithDragDropController = AppListItemViewTest;
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppListItemViewTestWithDragDropController,
-                         testing::Values(true));
-
-TEST_P(AppListItemViewTest, NewInstallDot) {
+TEST_F(AppListItemViewTest, NewInstallDot) {
   AppListItem* item = CreateAppListItem("Google Buzz");
   ASSERT_FALSE(item->is_new_install());
 
@@ -168,7 +155,7 @@ TEST_P(AppListItemViewTest, NewInstallDot) {
                 IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION));
 }
 
-TEST_P(AppListItemViewTest, LabelInsetWithNewInstallDot) {
+TEST_F(AppListItemViewTest, LabelInsetWithNewInstallDot) {
   AppListItem* long_item = CreateAppListItem("Very very very very long name");
   long_item->SetIsNewInstall(true);
   AppListItem* short_item = CreateAppListItem("Short");
@@ -192,7 +179,7 @@ TEST_P(AppListItemViewTest, LabelInsetWithNewInstallDot) {
             short_item_view->title()->bounds());
 }
 
-TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeTimerFires) {
+TEST_F(AppListItemViewTest, AppItemReleaseTouchBeforeTimerFires) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -217,7 +204,7 @@ TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeTimerFires) {
   MaybeCheckDragStartedOnControllerCount(0);
 }
 
-TEST_P(AppListItemViewTest, AppItemDragStateChange) {
+TEST_F(AppListItemViewTest, AppItemDragStateChange) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -238,18 +225,13 @@ TEST_P(AppListItemViewTest, AppItemDragStateChange) {
 
   generator->MoveTouchBy(10, 10);
 
-  if (!IsUsingDragDropController()) {
-    EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kStarted);
-    generator->ReleaseTouch();
-  }
-
   EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
   EXPECT_FALSE(view->FireTouchDragTimerForTest());
   EXPECT_FALSE(IsIconScaled(view));
   MaybeCheckDragStartedOnControllerCount(1);
 }
 
-TEST_P(AppListItemViewTest, AppItemDragStateAfterLongPress) {
+TEST_F(AppListItemViewTest, AppItemDragStateAfterLongPress) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -281,18 +263,13 @@ TEST_P(AppListItemViewTest, AppItemDragStateAfterLongPress) {
   generator->MoveTouchBy(5, 5);
   generator->MoveTouchBy(5, 5);
 
-  if (!IsUsingDragDropController()) {
-    EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kStarted);
-    generator->ReleaseTouch();
-  }
-
   EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
   EXPECT_FALSE(view->FireTouchDragTimerForTest());
   EXPECT_FALSE(IsIconScaled(view));
   MaybeCheckDragStartedOnControllerCount(1);
 }
 
-TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStart) {
+TEST_F(AppListItemViewTest, AppItemReleaseTouchBeforeDragStart) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -317,7 +294,7 @@ TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStart) {
   MaybeCheckDragStartedOnControllerCount(0);
 }
 
-TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStartWithLongPress) {
+TEST_F(AppListItemViewTest, AppItemReleaseTouchBeforeDragStartWithLongPress) {
   CreateAppListItem("TestItem");
 
   auto* helper = GetAppListTestHelper();
@@ -349,8 +326,7 @@ TEST_P(AppListItemViewTest, AppItemReleaseTouchBeforeDragStartWithLongPress) {
   MaybeCheckDragStartedOnControllerCount(0);
 }
 
-TEST_P(AppListItemViewTestWithDragDropController,
-       TouchDragAppRemovedDoesNotCrash) {
+TEST_F(AppListItemViewTest, TouchDragAppRemovedDoesNotCrash) {
   CreateAppListItem("TestItem 1");
   CreateAppListItem("TestItem 2");
 
@@ -391,8 +367,7 @@ TEST_P(AppListItemViewTestWithDragDropController,
   MaybeCheckDragStartedOnControllerCount(1);
 }
 
-TEST_P(AppListItemViewTestWithDragDropController,
-       AppListFolderLabelShowsAfterMouseClick) {
+TEST_F(AppListItemViewTest, AppListFolderLabelShowsAfterMouseClick) {
   CreateFolderItem(2);
 
   auto* helper = GetAppListTestHelper();
@@ -421,8 +396,7 @@ TEST_P(AppListItemViewTestWithDragDropController,
   EXPECT_TRUE(view->title()->GetVisible());
 }
 
-TEST_P(AppListItemViewTestWithDragDropController,
-       AppItemDragStateResetsAfterDrag) {
+TEST_F(AppListItemViewTest, AppItemDragStateResetsAfterDrag) {
   CreateAppListItem("TestItem 1");
 
   auto* helper = GetAppListTestHelper();
@@ -464,7 +438,7 @@ TEST_P(AppListItemViewTestWithDragDropController,
   MaybeCheckDragStartedOnControllerCount(1);
 }
 
-TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
+TEST_F(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
   AppListItem* item = CreatePromiseAppListItem("TestItem 1");
 
   auto* helper = GetAppListTestHelper();
@@ -506,7 +480,7 @@ TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
   // No crash.
 }
 
-TEST_P(AppListItemViewTest, AccessibleDescription) {
+TEST_F(AppListItemViewTest, AccessibleDescription) {
   AppListItem* item = CreatePromiseAppListItem("TestItem 1");
 
   auto* helper = GetAppListTestHelper();
@@ -533,7 +507,7 @@ TEST_P(AppListItemViewTest, AccessibleDescription) {
   EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(), u"");
 }
 
-TEST_P(AppListItemViewTest, FolderItemAccessibleDescription) {
+TEST_F(AppListItemViewTest, FolderItemAccessibleDescription) {
   AppListItem* item = CreateFolderItem(2);
 
   auto* helper = GetAppListTestHelper();
@@ -549,7 +523,7 @@ TEST_P(AppListItemViewTest, FolderItemAccessibleDescription) {
                 IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION, 2));
 }
 
-TEST_P(AppListItemViewTest, UpdateProgressOnPromiseIcon) {
+TEST_F(AppListItemViewTest, UpdateProgressOnPromiseIcon) {
   AppListItem* item = CreatePromiseAppListItem("TestItem 1");
 
   auto* helper = GetAppListTestHelper();

@@ -12,6 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -20,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
+#include "base/uuid.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
@@ -42,6 +45,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/content_extraction/inner_text.mojom.h"
+#include "third_party/farmhash/src/src/farmhash.h"
 #include "url/gurl.h"
 
 namespace history_embeddings {
@@ -54,6 +58,10 @@ void RecordQueryFiltered(QueryFiltered status) {
 void RecordExtractionCancelled(ExtractionCancelled reason) {
   base::UmaHistogramEnumeration("History.Embeddings.ExtractionCancelled",
                                 reason, ExtractionCancelled::ENUM_COUNT);
+}
+
+uint32_t HashString(std::string_view str) {
+  return util::Fingerprint32(str);
 }
 
 void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
@@ -199,11 +207,22 @@ std::vector<size_t> ScoredUrlRow::GetBestScoreIndices(
 ////////////////////////////////////////////////////////////////////////////////
 
 SearchResult::SearchResult() = default;
-SearchResult::SearchResult(const SearchResult&) = default;
 SearchResult::SearchResult(SearchResult&&) = default;
 SearchResult::~SearchResult() = default;
-SearchResult& SearchResult::operator=(const SearchResult&) = default;
 SearchResult& SearchResult::operator=(SearchResult&&) = default;
+
+SearchResult SearchResult::Clone() {
+  // Cannot copy `answerer_result`; it should not have substance.
+  CHECK(!answerer_result.log_entry);
+
+  SearchResult clone;
+  clone.session_id = session_id;
+  clone.query = query;
+  clone.time_range_start = time_range_start;
+  clone.count = count;
+  clone.scored_url_rows = scored_url_rows;
+  return clone;
+}
 
 const std::string& SearchResult::AnswerText() const {
   return answerer_result.answer.text();
@@ -254,13 +273,13 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       history_service_->history_dir());
   history_service_observation_.Observe(history_service_);
 
-  for (std::string& term_or_phrase : base::SplitString(
-           kFilterTerms.Get(), ",", base::WhitespaceHandling::TRIM_WHITESPACE,
+  std::string filter_hashes_param = kFilterHashes.Get();
+  for (std::string_view& hash_string : base::SplitStringPiece(
+           filter_hashes_param, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
            base::SplitResult::SPLIT_WANT_NONEMPTY)) {
-    if (term_or_phrase.find(' ') != std::string::npos) {
-      filter_phrases_.push_back(base::ToLowerASCII(term_or_phrase));
-    } else {
-      filter_terms_.insert(base::ToLowerASCII(term_or_phrase));
+    uint32_t hash;
+    if (base::StringToUint(hash_string, &hash)) {
+      filter_hashes_.insert(hash);
     }
   }
 
@@ -384,20 +403,29 @@ void HistoryEmbeddingsService::Search(
   result.query = query;
   result.time_range_start = time_range_start;
   result.count = count;
-  if (QueryIsFiltered(query)) {
+
+  SearchParams search_params;
+  if (QueryIsFiltered(query, search_params)) {
     result.count = 0;
-    callback.Run(result);
+    callback.Run(std::move(result));
     return;
   }
+  search_params.word_match_minimum_embedding_score =
+      kWordMatchMinEmbeddingScore.Get();
+  search_params.word_match_score_boost_factor =
+      kWordMatchScoreBoostFactor.Get();
+  search_params.word_match_limit = kWordMatchLimit.Get();
+
   embedder_->ComputePassagesEmbeddings(
       PassageKind::QUERY, {std::move(query)},
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(result)));
+                     std::move(search_params), std::move(result)));
 }
 
 void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     SearchResultCallback callback,
+    SearchParams search_params,
     SearchResult result,
     std::vector<std::string> query_passages,
     std::vector<Embedding> query_embeddings,
@@ -421,8 +449,8 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
   query_id_++;
   storage_.AsyncCall(&Storage::Search)
       .WithArgs(query_id_weak_ptr_factory_.GetWeakPtr(), query_id_.load(),
-                std::move(query_embeddings.front()), result.time_range_start,
-                result.count)
+                std::move(search_params), std::move(query_embeddings.front()),
+                result.time_range_start, result.count)
       .Then(base::BindOnce(&HistoryEmbeddingsService::OnSearchCompleted,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                            std::move(result)));
@@ -433,7 +461,7 @@ base::WeakPtr<HistoryEmbeddingsService> HistoryEmbeddingsService::AsWeakPtr() {
 }
 
 void HistoryEmbeddingsService::SendQualityLog(
-    const SearchResult& result,
+    SearchResult& result,
     optimization_guide::proto::UserFeedback user_feedback,
     std::set<size_t> selections,
     size_t num_entered_characters,
@@ -443,81 +471,105 @@ void HistoryEmbeddingsService::SendQualityLog(
     return;
   }
 
-  // Prepare log entry and record a histogram for whether it's prepared.
-  QualityLogEntry log_entry = PrepareQualityLogEntry();
-  base::UmaHistogramBoolean("History.Embeddings.Quality.LogEntryPrepared",
-                            !!log_entry);
-  if (!log_entry) {
-    return;
+  // V1 HistoryQueryLoggingData:
+  {
+    // Prepare log entry and record a histogram for whether it's prepared.
+    QualityLogEntry log_entry = PrepareQualityLogEntry();
+    base::UmaHistogramBoolean("History.Embeddings.Quality.LogEntryPrepared",
+                              !!log_entry);
+    if (!log_entry) {
+      return;
+    }
+
+    optimization_guide::proto::LogAiDataRequest* request =
+        log_entry->log_ai_data_request();
+    if (!request) {
+      return;
+    }
+
+    request->mutable_model_execution_info()->set_execution_id(base::StrCat({
+        "history-search-embeddings:",
+        base::Uuid::GenerateRandomV4().AsLowercaseString(),
+    }));
+
+    optimization_guide::proto::HistoryQueryQuality* query_quality =
+        optimization_guide::HistoryQueryFeatureTypeMap::GetLoggingData(*request)
+            ->mutable_quality();
+    if (!query_quality) {
+      return;
+    }
+
+    // Fill the quality proto with data.
+    size_t num_days =
+        result.time_range_start.has_value()
+            ? (base::Time::Now() - result.time_range_start.value()).InDays() + 1
+            : 0;
+    query_quality->set_session_id(result.session_id);
+    query_quality->set_user_feedback(user_feedback);
+    query_quality->set_embedding_model_version(
+        embedder_metadata_.value().model_version);
+    query_quality->set_query(result.query);
+    query_quality->set_num_days(num_days);
+    query_quality->set_num_entered_characters(num_entered_characters);
+
+    // For now, only two UI surfaces are planned, but if more are implemented
+    // then we can take the `UiSurface` directly as a parameter.
+    query_quality->set_ui_surface(
+        from_omnibox_history_scope
+            ? optimization_guide::proto::UiSurface::
+                  UI_SURFACE_OMNIBOX_HISTORY_SCOPE
+            : optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
+
+    for (size_t row_index = 0; row_index < result.scored_url_rows.size();
+         ++row_index) {
+      const ScoredUrlRow& scored_url_row = result.scored_url_rows[row_index];
+      optimization_guide::proto::DocumentShown* document_shown =
+          query_quality->add_top_documents_shown();
+      document_shown->set_url(scored_url_row.row.url().spec());
+      document_shown->set_was_clicked(selections.contains(row_index));
+
+      // Log the top passages that may be used as context for the Answerer.
+      for (size_t passage_index : scored_url_row.GetBestScoreIndices(
+               0, kContextPassagesMinimumWordCount.Get())) {
+        optimization_guide::proto::PassageData* passage_data =
+            document_shown->add_passages();
+        passage_data->set_text(
+            scored_url_row.passages_embeddings.url_passages.passages.passages(
+                passage_index));
+        passage_data->set_score(scored_url_row.scores[passage_index]);
+        const std::vector<float>& embedding =
+            scored_url_row.passages_embeddings.url_embeddings
+                .embeddings[passage_index]
+                .GetData();
+        passage_data->mutable_embedding()
+            ->mutable_floats()
+            ->mutable_values()
+            ->Add(embedding.begin(), embedding.end());
+      }
+    }
+
+    // The data is sent when `log_entry` destructs.
+    // `ModelQualityLogEntry::Drop(std::move(log_entry))` would be required to
+    // avoid logging if `log_entry` escapes the service, but it only exists
+    // within this method so we log proactively by destructing it here.
   }
 
-  optimization_guide::proto::LogAiDataRequest* request =
-      log_entry->log_ai_data_request();
-  if (!request) {
-    return;
-  }
-  optimization_guide::proto::HistoryQueryQuality* quality_proto =
-      optimization_guide::HistoryQueryFeatureTypeMap::GetLoggingData(*request)
-          ->mutable_quality();
-  if (!quality_proto) {
-    return;
-  }
-
-  // Fill the quality proto with data.
-  size_t num_days =
-      result.time_range_start.has_value()
-          ? (base::Time::Now() - result.time_range_start.value()).InDays() + 1
-          : 0;
-  quality_proto->set_session_id(result.session_id);
-  quality_proto->set_user_feedback(user_feedback);
-  quality_proto->set_embedding_model_version(
-      embedder_metadata_.value().model_version);
-  quality_proto->set_query(result.query);
-  quality_proto->set_num_days(num_days);
-  quality_proto->set_num_entered_characters(num_entered_characters);
-
-  // For now, only two UI surfaces are planned, but if more are implemented
-  // then we can take the `UiSurface` directly as a parameter.
-  quality_proto->set_ui_surface(
-      from_omnibox_history_scope
-          ? optimization_guide::proto::UiSurface::
-                UI_SURFACE_OMNIBOX_HISTORY_SCOPE
-          : optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
-
-  for (size_t row_index = 0; row_index < result.scored_url_rows.size();
-       ++row_index) {
-    const ScoredUrlRow& scored_url_row = result.scored_url_rows[row_index];
-    optimization_guide::proto::DocumentShown* document_shown =
-        quality_proto->add_top_documents_shown();
-    document_shown->set_url(scored_url_row.row.url().spec());
-    document_shown->set_was_clicked(selections.contains(row_index));
-
-    // Log the top passages that may be used as context for the Answerer.
-    for (size_t passage_index : scored_url_row.GetBestScoreIndices(
-             0, kContextPassagesMinimumWordCount.Get())) {
-      optimization_guide::proto::PassageData* passage_data =
-          document_shown->add_passages();
-      passage_data->set_text(
-          scored_url_row.passages_embeddings.url_passages.passages.passages(
-              passage_index));
-      passage_data->set_score(scored_url_row.scores[passage_index]);
-      const std::vector<float>& embedding =
-          scored_url_row.passages_embeddings.url_embeddings
-              .embeddings[passage_index]
-              .GetData();
-      passage_data->mutable_embedding()
-          ->mutable_floats()
-          ->mutable_values()
-          ->Add(embedding.begin(), embedding.end());
+  // V2 HistoryAnswerLoggingData:
+  if (kSendQualityLogV2.Get()) {
+    // Take the entry out from the SearchResult so that it will log on
+    // destruction at the end of this block.
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+        std::move(result.answerer_result.log_entry);
+    if (log_entry) {
+      optimization_guide::proto::HistoryAnswerQuality* answer_quality =
+          log_entry
+              ->quality_data<optimization_guide::HistoryAnswerFeatureTypeMap>();
+      if (answer_quality) {
+        answer_quality->set_session_id(result.session_id);
+        answer_quality->set_url(result.answerer_result.url);
+      }
     }
   }
-
-  // The data is sent when `log_entry` destructs. There may eventually
-  // be an option to `ModelQualityLogEntry::Drop(std::move(log_entry))`
-  // in the event that log data should not be sent, but it isn't ready yet.
-  // See b/334993555 for details on that; it may be useful if in the
-  // future we decide to let the `log_entry` escape the service. For now,
-  // it doesn't, and logging is only done proactively by destructing here.
 }
 
 void HistoryEmbeddingsService::Shutdown() {
@@ -566,12 +618,13 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
 std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
     base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
     size_t query_id,
+    SearchParams search_params,
     Embedding query_embedding,
     std::optional<base::Time> time_range_start,
     size_t count) {
   base::ElapsedTimer timer;
   SearchInfo search_info = sql_database.FindNearest(
-      time_range_start, count, query_embedding,
+      time_range_start, count, search_params, query_embedding,
       base::BindRepeating(
           [](base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
              size_t query_id) {
@@ -619,8 +672,6 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
     for (size_t i = 0; i < n; i++) {
       SearchInfo discard_recount;
       scored_url_row.scores.push_back(query_embedding.ScoreWith(
-          discard_recount,
-          scored_url_row.passages_embeddings.url_passages.passages.passages(i),
           scored_url_row.passages_embeddings.url_embeddings.embeddings[i]));
     }
   }
@@ -903,7 +954,7 @@ void HistoryEmbeddingsService::OnPassageVisibilityCalculated(
 void HistoryEmbeddingsService::OnPrimarySearchResultReady(
     SearchResultCallback callback,
     SearchResult result) {
-  callback.Run(result);
+  callback.Run(result.Clone());
   if (answerer_) {
     Answerer::Context context(result.session_id);
     for (const ScoredUrlRow& scored_url_row : result.scored_url_rows) {
@@ -999,32 +1050,47 @@ void HistoryEmbeddingsService::RetrievePassagesWithUrlData(
 }
 
 bool HistoryEmbeddingsService::QueryIsFiltered(
-    const std::string& raw_query) const {
+    const std::string& raw_query,
+    SearchParams& search_params) const {
   if (!base::IsStringASCII(raw_query)) {
     RecordQueryFiltered(QueryFiltered::FILTERED_NOT_ASCII);
     return true;
   }
   std::string query = base::ToLowerASCII(raw_query);
-  if (std::any_of(filter_phrases_.begin(), filter_phrases_.end(),
-                  [&](const std::string& phrase) {
-                    return query.find(phrase) != std::string::npos;
-                  })) {
-    RecordQueryFiltered(QueryFiltered::FILTERED_PHRASE_MATCH);
+  std::vector<std::string_view> query_terms = base::SplitStringPiece(
+      query, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  for (std::string_view& query_term : query_terms) {
+    query_term = base::TrimString(
+        query_term,
+        ".?!,:;-()[]{}<>\"'/\\*&#~@^|%$`+=", base::TrimPositions::TRIM_ALL);
+  }
+  // Erase any query terms that were trimmed to empty so they don't disrupt
+  // the two term pairing logic below.
+  std::erase(query_terms, "");
+  if (std::ranges::any_of(query_terms, [this](std::string_view query_term) {
+        uint32_t hash = HashString(query_term);
+        return filter_hashes_.contains(hash);
+      })) {
+    RecordQueryFiltered(QueryFiltered::FILTERED_ONE_WORD_HASH_MATCH);
     return true;
   }
-  std::vector<std::string> query_terms =
-      base::SplitString(query, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
-                        base::SplitResult::SPLIT_WANT_NONEMPTY);
-  if (std::any_of(query_terms.begin(), query_terms.end(),
-                  [&](const std::string& query_term) {
-                    return filter_terms_.contains(std::string(base::TrimString(
-                        query_term, ".?!,:;-()[]{}<>\"'/\\*&#~@^|%$`+=",
-                        base::TrimPositions::TRIM_ALL)));
-                  })) {
-    RecordQueryFiltered(QueryFiltered::FILTERED_TERM_MATCH);
-    return true;
+  for (size_t i = 1; i < query_terms.size(); i++) {
+    std::string two_terms =
+        base::StrCat({query_terms[i - 1], " ", query_terms[i]});
+    uint32_t hash = HashString(two_terms);
+    if (filter_hashes_.contains(hash)) {
+      RecordQueryFiltered(QueryFiltered::FILTERED_TWO_WORD_HASH_MATCH);
+      return true;
+    }
   }
   RecordQueryFiltered(QueryFiltered::NOT_FILTERED);
+  size_t min_term_length = kWordMatchMinTermLength.Get();
+  for (std::string_view view : query_terms) {
+    if (query_terms.size() >= min_term_length) {
+      search_params.query_terms.emplace_back(view);
+    }
+  }
   return false;
 }
 

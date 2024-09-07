@@ -590,6 +590,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "enterprise_companion",
+    args = {
+        "enable_enterprise_companion": True,
+    },
+)
+
+gn_args.config(
     name = "extended_tracing",
     args = {
         "extended_tracing_enabled": True,
@@ -959,6 +966,11 @@ gn_args.config(
     name = "no_secondary_abi",
     args = {
         "skip_secondary_abi_for_cq": True,
+        # A chromium build with "skip_secondary_abi_for_cq" enabled in a
+        # checkout that has src-internal fails if enable_chrome_android_internal
+        # is not set to false.
+        # TODO(crbug.com/361540497): Can remove this when the build is fixed.
+        "enable_chrome_android_internal": False,
     },
 )
 
@@ -1054,6 +1066,13 @@ gn_args.config(
     name = "perfetto_zlib",
     args = {
         "enable_perfetto_zlib": True,
+    },
+)
+
+gn_args.config(
+    name = "pgo_phase_0",
+    args = {
+        "chrome_pgo_phase": 0,
     },
 )
 
@@ -1372,13 +1391,6 @@ gn_args.config(
     name = "webview_google",
     args = {
         "system_webview_package_name": "com.google.android.webview",
-    },
-)
-
-gn_args.config(
-    name = "webview_instrumentation_tests_multi_process_only",
-    args = {
-        "webview_instrumentation_tests_process_mode": "multiple",
     },
 )
 

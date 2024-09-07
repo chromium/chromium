@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<style>
+div {
+  width: 300px;
+  height: 30px;
+  overflow: scroll;
+}
+#t1::-webkit-scrollbar { max-width: -webkit-fill-available; }
+#t2::-webkit-scrollbar { max-width: max-content; }
+#t3::-webkit-scrollbar { max-width: min-content; }
+#t4::-webkit-scrollbar { max-width: fit-content; }
+#t5::-webkit-scrollbar { max-width: stretch; }
+#t6::-webkit-scrollbar { max-width: auto; }
+</style>
+<div id="t1">This test passes if it does not crash.</div>
+<div id="t2">This test passes if it does not crash.</div>
+<div id="t3">This test passes if it does not crash.</div>
+<div id="t4">This test passes if it does not crash.</div>
+<div id="t5">This test passes if it does not crash.</div>
+<div id="t6">This test passes if it does not crash.</div>
+<script>
+    if (window.testRunner)
+        testRunner.dumpAsText();
+</script>

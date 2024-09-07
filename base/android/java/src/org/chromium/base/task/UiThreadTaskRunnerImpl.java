@@ -8,19 +8,14 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ThreadUtils;
 
-/** SingleThreadTaskRunner for UI thread. */
+/** TaskRunner for UI thread. */
 @JNINamespace("base")
-public class UiThreadTaskRunnerImpl extends TaskRunnerImpl implements SingleThreadTaskRunner {
+public class UiThreadTaskRunnerImpl extends TaskRunnerImpl implements SequencedTaskRunner {
     /**
      * @param traits The TaskTraits associated with this TaskRunner.
      */
     public UiThreadTaskRunnerImpl(@TaskTraits int traits) {
         super(traits, "UiThreadTaskRunner", TaskRunnerType.SINGLE_THREAD);
-    }
-
-    @Override
-    public boolean belongsToCurrentThread() {
-        return ThreadUtils.runningOnUiThread();
     }
 
     @Override

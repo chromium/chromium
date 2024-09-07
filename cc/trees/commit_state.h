@@ -28,6 +28,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/paint/paint_image.h"
 #include "cc/resources/ui_resource_request.h"
+#include "cc/trees/begin_main_frame_trace_id.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
 #include "cc/trees/render_frame_metadata.h"
@@ -124,7 +125,7 @@ struct CC_EXPORT CommitState {
   bool new_local_surface_id_request = false;
   bool next_commit_forces_recalculate_raster_scales = false;
   bool next_commit_forces_redraw = false;
-  uint64_t trace_id = 0;
+  BeginMainFrameTraceId trace_id{0};
   EventMetrics::List event_metrics;
 
   // Latency information for work done in ProxyMain::BeginMainFrame. The

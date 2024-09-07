@@ -11,6 +11,7 @@ option optimize_for = LITE_RUNTIME;
 
 package safe_browsing;
 
+import "components/enterprise/common/proto/connectors.proto";
 import "components/safe_browsing/core/common/proto/csd.proto";
 
 message RTLookupRequest {
@@ -45,6 +46,11 @@ message RTLookupRequest {
   // DM token for managed device.
   // For more information on DM tokens, see go/cbe-dmtoken
   optional string browser_dm_token = 12;
+
+  // This field contains additional information about the browser and device or
+  // profile, this information is used for security event reporting.
+  // Only populated for Enterprise Protego requests.
+  optional enterprise_connectors.ClientMetadata client_reporting_metadata = 14;
 
   // Email of the signed-in user that triggered the request, if available.
   // Only populated for enterprise requests.

@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("login") {
+  sources = [
+    "login_screen_client_impl.cc",
+    "login_screen_client_impl.h",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//components/user_manager",
+  ]
+
+  deps = [
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/child_accounts/parent_access_code",
+    "//chrome/common",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/settings",
+    "//components/session_manager/core",
+    "//ui/base/ime/ash",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "test_login_screen.cc",
+    "test_login_screen.h",
+    "test_login_screen_model.cc",
+    "test_login_screen_model.h",
+  ]
+
+  public_deps = [ "//ash/public/cpp" ]
+}

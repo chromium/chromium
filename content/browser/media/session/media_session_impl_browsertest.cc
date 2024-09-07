@@ -3511,7 +3511,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplPrerenderingBrowserTest,
   // Prerender the next page.
   auto prerender_url =
       embedded_test_server()->GetURL("example.com", "/title2.html");
-  int host_id = prerender_helper_.AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);
   EXPECT_NE(prerender_rfh, nullptr);

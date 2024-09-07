@@ -346,7 +346,7 @@ TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
   std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   std::string model_str = GetFlatBufferString(0);
   base::MappedReadOnlyRegion mapped_region =

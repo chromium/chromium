@@ -87,10 +87,11 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
       const CSSIdentifierValue& color_identifier =
           To<CSSIdentifierValue>(override_pair.Second());
       // The value won't be a system color according to parsing, so we can pass
-      // a fixed color scheme and color provider here.
-      return StyleColor::ColorFromKeyword(color_identifier.GetValueID(),
-                                          mojom::blink::ColorScheme::kLight,
-                                          /*color_provider=*/nullptr);
+      // a fixed color scheme, color provider and `false` to indicate that we
+      // are not within a WebApp context.
+      return StyleColor::ColorFromKeyword(
+          color_identifier.GetValueID(), mojom::blink::ColorScheme::kLight,
+          /*color_provider=*/nullptr, /*is_in_web_app_scope=*/false);
     }
     const cssvalue::CSSColor& css_color =
         To<cssvalue::CSSColor>(override_pair.Second());

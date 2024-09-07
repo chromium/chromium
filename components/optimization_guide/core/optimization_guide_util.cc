@@ -77,11 +77,16 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "TextSafety";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API:
       return "PromptApi";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SUMMARIZE:
+      return "Summarize";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
       return "HistorySearch";
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS:
       return "FormsPredictions";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_FORMS_ANNOTATIONS:
+      return "FormsAnnotations";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

@@ -11,13 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/cross_device/logging/logging.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-
-#include "components/cross_device/logging/logging.h"
 
 using message_center::MessageCenter;
 using message_center::Notification;
@@ -44,6 +44,8 @@ const char kFastPairAssociateAccountNotificationId[] =
     "cros_fast_pair_associate_account_notification_id";
 const char kFastPairDiscoverySubsequentNotificationId[] =
     "cros_fast_pair_discovery_subsequent_notification_id";
+const char kFastPairDisplayPasskeyNotificationId[] =
+    "cros_fast_pair_display_passkey_notification_id";
 
 // Values outside of the range (e.g. -1) will show an infinite loading
 // progress bar.
@@ -477,6 +479,20 @@ void FastPairNotificationController::ShowAssociateAccount(
           weak_ptr_factory_.GetWeakPtr(), notification_delegate));
 
   message_center_->AddNotification(std::move(associate_account_notification));
+}
+
+void FastPairNotificationController::ShowPasskey(
+    const std::u16string& device_name,
+    uint32_t passkey) {
+  std::unique_ptr<message_center::Notification> passkey_notification =
+      CreateNotification(kFastPairDisplayPasskeyNotificationId,
+                         message_center::SystemNotificationWarningLevel::NORMAL,
+                         message_center_);
+  passkey_notification->set_message(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_DISPLAY_PASSKEY, device_name,
+      base::UTF8ToUTF16(base::StringPrintf("%06i", passkey))));
+
+  message_center_->AddNotification(std::move(passkey_notification));
 }
 
 void FastPairNotificationController::RemoveNotifications() {

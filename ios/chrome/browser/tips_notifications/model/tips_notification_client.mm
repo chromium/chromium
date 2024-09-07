@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -128,18 +127,18 @@ TipsNotificationClient::TipsNotificationClient()
 
 TipsNotificationClient::~TipsNotificationClient() = default;
 
-void TipsNotificationClient::HandleNotificationInteraction(
+bool TipsNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsTipsNotification(response.notification.request)) {
-    return;
+    return false;
   }
 
   interacted_type_ = ParseTipsNotificationType(response.notification.request);
   if (!interacted_type_.has_value()) {
     base::UmaHistogramEnumeration("IOS.Notifications.Tips.Interaction",
                                   TipsNotificationType::kError);
-    return;
+    return false;
   }
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.Interaction",
                                 interacted_type_.value());
@@ -149,23 +148,30 @@ void TipsNotificationClient::HandleNotificationInteraction(
   if (IsSceneLevelForegroundActive()) {
     CheckAndMaybeRequestNotification(base::DoNothing());
   }
+  return true;
 }
 
 void TipsNotificationClient::HandleNotificationInteraction(
     TipsNotificationType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  CHECK(browser);
   id<ApplicationCommands> application_handler =
-      HandlerForProtocol(Dispatcher(), ApplicationCommands);
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   [application_handler
       prepareToPresentModal:
           base::CallbackToBlock(
               base::BindOnce(&TipsNotificationClient::ShowUIForNotificationType,
-                             weak_ptr_factory_.GetWeakPtr(), type))];
+                             weak_ptr_factory_.GetWeakPtr(), type, browser))];
 }
 
-UIBackgroundFetchResult TipsNotificationClient::HandleNotificationReception(
-    NSDictionary<NSString*, id>* notification) {
+std::optional<UIBackgroundFetchResult>
+TipsNotificationClient::HandleNotificationReception(
+    NSDictionary<NSString*, id>* userInfo) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (![userInfo objectForKey:kTipsNotificationId]) {
+    return std::nullopt;
+  }
   return UIBackgroundFetchResultNoData;
 }
 
@@ -287,6 +293,13 @@ void TipsNotificationClient::MaybeRequestNotification(
   std::move(completion).Run();
 }
 
+void TipsNotificationClient::ClearAllRequestedNotifications() {
+  [UNUserNotificationCenter.currentNotificationCenter
+      removePendingNotificationRequestsWithIdentifiers:@[
+        kTipsNotificationId
+      ]];
+}
+
 void TipsNotificationClient::RequestNotification(TipsNotificationType type,
                                                  base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -328,6 +341,8 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
       return ShouldSendDocking();
     case TipsNotificationType::kOmniboxPosition:
       return ShouldSendOmniboxPosition();
+    case TipsNotificationType::kLens:
+    case TipsNotificationType::kEnhancedSafeBrowsing:
     case TipsNotificationType::kError:
       NOTREACHED();
   }
@@ -410,42 +425,42 @@ bool TipsNotificationClient::IsSceneLevelForegroundActive() {
   return GetSceneLevelForegroundActiveBrowser() != nullptr;
 }
 
-CommandDispatcher* TipsNotificationClient::Dispatcher() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetSceneLevelForegroundActiveBrowser()->GetCommandDispatcher();
-}
-
 void TipsNotificationClient::ShowUIForNotificationType(
-    TipsNotificationType type) {
+    TipsNotificationType type,
+    Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (type) {
     case TipsNotificationType::kDefaultBrowser:
-      ShowDefaultBrowserPromo();
+      ShowDefaultBrowserPromo(browser);
       break;
     case TipsNotificationType::kWhatsNew:
-      ShowWhatsNew();
+      ShowWhatsNew(browser);
       break;
     case TipsNotificationType::kSignin:
-      ShowSignin();
+      ShowSignin(browser);
       break;
     case TipsNotificationType::kSetUpListContinuation:
-      ShowSetUpListContinuation();
+      ShowSetUpListContinuation(browser);
       break;
     case TipsNotificationType::kDocking:
-      ShowDocking();
+      ShowDocking(browser);
       break;
     case TipsNotificationType::kOmniboxPosition:
-      ShowOmniboxPosition();
+      ShowOmniboxPosition(browser);
       break;
+    case TipsNotificationType::kLens:
+      ShowLensPromo(browser);
+      break;
+    case TipsNotificationType::kEnhancedSafeBrowsing:
     case TipsNotificationType::kError:
       NOTREACHED();
   }
 }
 
-void TipsNotificationClient::ShowDefaultBrowserPromo() {
+void TipsNotificationClient::ShowDefaultBrowserPromo(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   id<SettingsCommands> settings_handler =
-      HandlerForProtocol(Dispatcher(), SettingsCommands);
+      HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
   [settings_handler
       showDefaultBrowserSettingsFromViewController:nil
                                       sourceForUMA:
@@ -453,14 +468,14 @@ void TipsNotificationClient::ShowDefaultBrowserPromo() {
                                               kTipsNotification];
 }
 
-void TipsNotificationClient::ShowWhatsNew() {
+void TipsNotificationClient::ShowWhatsNew(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(Dispatcher(), WhatsNewCommands) showWhatsNew];
+  [HandlerForProtocol(browser->GetCommandDispatcher(), WhatsNewCommands)
+      showWhatsNew];
 }
 
-void TipsNotificationClient::ShowSignin() {
+void TipsNotificationClient::ShowSignin(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Browser* browser = GetSceneLevelForegroundActiveBrowser();
   // If there are 0 identities, kInstantSignin requires less taps.
   ChromeBrowserState* browser_state = browser->GetBrowserState();
   AuthenticationOperation operation =
@@ -477,24 +492,32 @@ void TipsNotificationClient::ShowSignin() {
                             PROMO_ACTION_NO_SIGNIN_PROMO
                callback:nil];
 
-  [HandlerForProtocol(Dispatcher(), SigninPresenter) showSignin:command];
+  [HandlerForProtocol(browser->GetCommandDispatcher(), SigninPresenter)
+      showSignin:command];
 }
 
-void TipsNotificationClient::ShowSetUpListContinuation() {
+void TipsNotificationClient::ShowSetUpListContinuation(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(Dispatcher(), ContentSuggestionsCommands)
-      showSetUpListSeeMoreMenu];
+  [HandlerForProtocol(browser->GetCommandDispatcher(),
+                      ContentSuggestionsCommands) showSetUpListSeeMoreMenu];
 }
 
-void TipsNotificationClient::ShowDocking() {
+void TipsNotificationClient::ShowDocking(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(Dispatcher(), DockingPromoCommands) showDockingPromo:YES];
+  [HandlerForProtocol(browser->GetCommandDispatcher(), DockingPromoCommands)
+      showDockingPromo:YES];
 }
 
-void TipsNotificationClient::ShowOmniboxPosition() {
+void TipsNotificationClient::ShowOmniboxPosition(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(Dispatcher(), BrowserCoordinatorCommands)
-      showOmniboxPositionChoice];
+  [HandlerForProtocol(browser->GetCommandDispatcher(),
+                      BrowserCoordinatorCommands) showOmniboxPositionChoice];
+}
+
+void TipsNotificationClient::ShowLensPromo(Browser* browser) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [HandlerForProtocol(browser->GetCommandDispatcher(),
+                      BrowserCoordinatorCommands) showLensPromo];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(
@@ -586,6 +609,7 @@ void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool newpermitted_ = IsPermitted();
   if (permitted_ != newpermitted_ && IsSceneLevelForegroundActive()) {
+    ClearAllRequestedNotifications();
     CheckAndMaybeRequestNotification(base::DoNothing());
   }
 }

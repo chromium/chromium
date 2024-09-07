@@ -61,7 +61,7 @@ std::string TreeToStringHelper(const AXNode* node, int indent, bool verbose) {
   return std::accumulate(
       node->children().cbegin(), node->children().cend(),
       std::string(2 * indent, ' ') + node->data().ToString(verbose) + "\n",
-      [indent, verbose](const std::string& str, const ui::AXNode* child) {
+      [indent, verbose](const std::string& str, const AXNode* child) {
         return str + TreeToStringHelper(child, indent + 1, verbose);
       });
 }
@@ -386,7 +386,7 @@ struct AXTreeUpdateState {
     DCHECK_EQ(AXTreePendingStructureStatus::kComputing, pending_update_status)
         << "This method should only be called while computing pending changes, "
            "before updates are made to the tree.";
-    static base::NoDestructor<ui::AXNodeData> empty_data;
+    static base::NoDestructor<AXNodeData> empty_data;
     PendingStructureChanges* data = GetPendingStructureChanges(node_id);
     return (data && data->last_known_data) ? *data->last_known_data
                                            : *empty_data;
@@ -831,8 +831,9 @@ const AXTreeData& AXTree::data() const {
 }
 
 AXNode* AXTree::GetFromId(AXNodeID id) const {
-  if (id == ui::kInvalidAXNodeID)
+  if (id == kInvalidAXNodeID) {
     return nullptr;
+  }
   auto iter = id_map_.find(id);
   return iter != id_map_.end() ? iter->second.get() : nullptr;
 }
@@ -885,7 +886,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     // bad state.
     if (bounds.IsEmpty() && !GetTreeUpdateInProgressState() &&
         allow_recursion) {
-      for (ui::AXNode* child : node->children()) {
+      for (AXNode* child : node->children()) {
         gfx::RectF child_bounds = RelativeToTreeBoundsInternal(
             child, gfx::RectF(), /*offscreen=*/nullptr, clip_bounds,
             skip_container_offset,
@@ -996,7 +997,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     }
 
     if (ancestor && allow_recursion) {
-      bool ignore_offscreen;
+      bool ignore_offscreen = false;
       ancestor_bounds = RelativeToTreeBoundsInternal(
           ancestor, gfx::RectF(), &ignore_offscreen, clip_bounds,
           skip_container_offset,
@@ -1248,7 +1249,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         // If the tree doesn't exists any more because the root has just been
         // replaced, there is nothing more to clear.
         if (root_) {
-          for (ui::AXNode* child : cleared_node->children()) {
+          for (AXNode* child : cleared_node->children()) {
             DestroySubtree(child, &update_state);
           }
           std::vector<raw_ptr<AXNode, VectorExperimental>> children;
@@ -1272,7 +1273,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     if (!root_) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kNoRoot);
-      RecordError(update_state, "Tree has no root.");
+      RecordError(update_state, "Tree has no root.", true);
       return false;
     }
 
@@ -1951,7 +1952,7 @@ void AXTree::RecursivelyNotifyNodeDeletedForTreeTeardown(AXNode* node) {
 
   for (AXTreeObserver& observer : observers_)
     observer.OnNodeDeleted(this, node->id());
-  for (ui::AXNode* child : node->children()) {
+  for (AXNode* child : node->children()) {
     RecursivelyNotifyNodeDeletedForTreeTeardown(child);
   }
 }
@@ -2286,7 +2287,7 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   DCHECK(!update_state || update_state->GetPendingDestroyNodeCount(id) > 0);
 
   // Clear out any reverse relations.
-  static base::NoDestructor<ui::AXNodeData> empty_data;
+  static base::NoDestructor<AXNodeData> empty_data;
   UpdateReverseRelations(node, *empty_data);
 
   auto iter = id_map_.find(id);
@@ -2295,7 +2296,7 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   id_map_.erase(iter);
   node = nullptr;
 
-  for (ui::AXNode* child : node_to_delete->children()) {
+  for (AXNode* child : node_to_delete->children()) {
     DestroyNodeAndSubtree(child, update_state);
   }
   if (update_state) {

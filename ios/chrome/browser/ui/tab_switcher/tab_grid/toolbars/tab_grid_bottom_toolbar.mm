@@ -39,7 +39,6 @@
   UIBarButtonItem* _shareButton;
   BOOL _undoActive;
   BOOL _scrolledToEdge;
-  UIView* _scrolledToBottomBackgroundView;
   UIView* _scrolledBackgroundView;
   // Configures the responder following the receiver in the responder chain.
   UIResponder* _followingNextResponder;
@@ -49,6 +48,7 @@
   self = [super initWithFrame:frame];
   if (self) {
     [self setupViews];
+    [self updateLayout];
   }
   return self;
 }
@@ -138,6 +138,10 @@
   _doneButton.enabled = enabled;
 }
 
+- (void)setDoneButtonHidden:(BOOL)hidden {
+  _doneButton.hidden = hidden;
+}
+
 - (void)setCloseAllButtonEnabled:(BOOL)enabled {
   _closeAllOrUndoButton.enabled = enabled;
 }
@@ -225,6 +229,10 @@
 
 - (void)setEditButtonEnabled:(BOOL)enabled {
   _editButton.enabled = enabled;
+}
+
+- (void)setEditButtonHidden:(BOOL)hidden {
+  _editButton.hidden = hidden;
 }
 
 #pragma mark - Private
@@ -437,13 +445,6 @@
       self, _scrolledBackgroundView,
       LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
 
-  // Background when the content is scrolled to the top.
-  _scrolledToBottomBackgroundView = CreateTabGridScrolledToEdgeBackground();
-  _scrolledToBottomBackgroundView.translatesAutoresizingMaskIntoConstraints =
-      NO;
-  [self addSubview:_scrolledToBottomBackgroundView];
-  AddSameConstraints(_scrolledBackgroundView, _scrolledToBottomBackgroundView);
-
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.
   [_toolbar setBackgroundImage:[[UIImage alloc] init]
@@ -453,8 +454,6 @@
 
 // Updates the visibility of the backgrounds based on the state of the TabGrid.
 - (void)updateBackgroundVisibility {
-  _scrolledToBottomBackgroundView.hidden =
-      [self isShowingFloatingButton] || !_scrolledToEdge;
   _scrolledBackgroundView.hidden =
       [self isShowingFloatingButton] || _scrolledToEdge;
 }

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -52,9 +53,9 @@ float ComputeArea(const PhysicalRect& rect) {
 
 bool HasEnoughVisibleAreaRemaining(float occluded_area,
                                    const PhysicalRect& video_element_rect,
-                                   float visibility_threshold) {
-  return occluded_area / ComputeArea(video_element_rect) <
-         (1 - visibility_threshold);
+                                   const int visibility_threshold) {
+  return ComputeArea(video_element_rect) - occluded_area >=
+         visibility_threshold;
 }
 
 float ComputeOccludingArea(const Vector<SkIRect>& occluding_rects,
@@ -261,7 +262,7 @@ void RecordVideoOcclusionState(
     const HTMLVideoElement& video_element,
     const MediaVideoVisibilityTracker::OcclusionState& occlusion_state,
     bool has_sufficiently_visible_video,
-    float visibility_threshold) {
+    const int visibility_threshold) {
   std::ostringstream occluding_rects_stream;
   const auto& occluding_rects = occlusion_state.occluding_rects;
 
@@ -302,7 +303,7 @@ void RecordVideoOcclusionState(
   const String occlusion_state_string = String::Format(
       "has sufficiently visible video: {%s}, occluded area: {%.2f}, occluding "
       "rects: {%s}, intersection rect: {%s}, video element rect: {%s}, "
-      "visibility threshold: {%.2f}",
+      "visibility threshold: {%d}",
       has_sufficiently_visible_video ? "True" : "False",
       occlusion_state.occluded_area, occluding_rects_stream.str().c_str(),
       intersection_rect_string.Ascii().c_str(),
@@ -316,7 +317,7 @@ void RecordVideoOcclusionState(
 
 MediaVideoVisibilityTracker::MediaVideoVisibilityTracker(
     HTMLVideoElement& video,
-    float visibility_threshold,
+    const int visibility_threshold,
     ReportVisibilityCb report_visibility_cb,
     base::TimeDelta hit_test_interval)
     : video_element_(video),
@@ -324,7 +325,7 @@ MediaVideoVisibilityTracker::MediaVideoVisibilityTracker(
       report_visibility_cb_(std::move(report_visibility_cb)),
       hit_test_interval_(hit_test_interval) {
   DCHECK(report_visibility_cb_);
-  DCHECK(visibility_threshold_ > 0.0 && visibility_threshold_ <= 1.0)
+  DCHECK_GT(visibility_threshold_, 0)
       << "Invalid threshold: " << visibility_threshold_;
   DCHECK_GE(hit_test_interval_, kMinimumAllowedHitTestInterval);
 }
@@ -475,9 +476,9 @@ MediaVideoVisibilityTracker::GetClientIdsSet(
   LocalFrameView::InvalidationDisallowedScope invalidation_disallowed(
       *document_view);
 
-  const auto* paint_artifact = document_view->GetPaintArtifact();
+  const auto& paint_artifact = document_view->GetPaintArtifact();
   const DisplayItemList& display_item_list =
-      paint_artifact->GetDisplayItemList();
+      paint_artifact.GetDisplayItemList();
   if (display_item_list.IsEmpty()) {
     return {};
   }
@@ -636,16 +637,12 @@ bool MediaVideoVisibilityTracker::ComputeVisibility() {
   occlusion_state_.occluded_area =
       ComputeOccludingArea(occlusion_state_.occluding_rects,
                            ComputeArea(occlusion_state_.video_element_rect));
-
-  LayoutBox* box = To<LayoutBox>(VideoElement().GetLayoutObject());
-  PhysicalRect bounds(box->PhysicalBorderBoxRect());
-  auto intersection_ratio =
-      ComputeArea(occlusion_state_.intersection_rect) / ComputeArea(bounds);
+  auto intersection_area = ComputeArea(occlusion_state_.intersection_rect);
 
   auto* layout = VideoElement().GetLayoutObject();
   // Return early if the area of the video that intersects with the view is
   // below |visibility_threshold_|.
-  if (!layout || intersection_ratio < visibility_threshold_) {
+  if (!layout || intersection_area < visibility_threshold_) {
     return false;
   }
 
@@ -669,22 +666,36 @@ void MediaVideoVisibilityTracker::ComputeAreaOccludedByViewport(
   DCHECK(VideoElement().GetLayoutObject());
 
   LayoutBox* box = To<LayoutBox>(VideoElement().GetLayoutObject());
-  gfx::RectF bounds(box->AbsoluteBoundingBoxRectF());
+  gfx::Rect bounds(box->AbsoluteBoundingBoxRect());
+
+  gfx::Rect content_bounds;
+  if (auto* layout_video =
+          DynamicTo<LayoutVideo>(VideoElement().GetLayoutObject())) {
+    PhysicalRect content_rect = layout_video->ReplacedContentRect();
+    content_bounds = VideoElement().GetDocument().View()->FrameToViewport(
+        ToEnclosingRect(layout_video->LocalToAbsoluteRect(content_rect)));
+    content_bounds.Intersect(bounds);
+  }
+
+  // Fallback to using the video element bounds, if the computed
+  // `content_bounds` is empty.
+  if (content_bounds.IsEmpty()) {
+    content_bounds = bounds;
+  }
 
   gfx::Rect viewport_in_root_frame = ToEnclosingRect(
       local_frame_view.GetFrame().GetPage()->GetVisualViewport().VisibleRect());
-  gfx::RectF absolute_viewport(
+  gfx::Rect absolute_viewport(
       local_frame_view.ConvertFromRootFrame(viewport_in_root_frame));
-  occlusion_state_.intersection_rect = PhysicalRect::FastAndLossyFromRectF(
-      IntersectRects(absolute_viewport, bounds));
+  occlusion_state_.intersection_rect =
+      PhysicalRect(IntersectRects(absolute_viewport, content_bounds));
 
-  occlusion_state_.video_element_rect =
-      PhysicalRect::FastAndLossyFromRectF(bounds);
+  occlusion_state_.video_element_rect = PhysicalRect(content_bounds);
 
   // Compute the VideoElement area that is occluded by the viewport, if any.
   SkRegion region;
-  region.setRect(gfx::RectToSkIRect(gfx::ToRoundedRect(bounds)));
-  if (region.op(gfx::RectToSkIRect(gfx::ToRoundedRect(absolute_viewport)),
+  region.setRect(gfx::RectToSkIRect(content_bounds));
+  if (region.op(gfx::RectToSkIRect(absolute_viewport),
                 SkRegion::kDifference_Op)) {
     for (SkRegion::Iterator it(region); !it.done(); it.next()) {
       auto occluding_rect = it.rect();
@@ -698,6 +709,7 @@ void MediaVideoVisibilityTracker::MaybeComputeVisibility(
     ShouldReportVisibility should_report_visibility) {
   if (!tracker_attached_to_document_ ||
       !tracker_attached_to_document_->GetFrame()->View() ||
+      !tracker_attached_to_document_->GetFrame()->IsOutermostMainFrame() ||
       !VideoElement().GetLayoutObject()) {
     if (request_visibility_callback_) {
       RecordVideoOcclusionState(VideoElement(), occlusion_state_, false,

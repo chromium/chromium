@@ -941,25 +941,6 @@ void MediaStreamTrackImpl::PropagateTrackEnded() {
   is_iterating_registered_media_streams_ = false;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void MediaStreamTrackImpl::SendWheel(
-    double relative_x,
-    double relative_y,
-    int wheel_delta_x,
-    int wheel_delta_y,
-    base::OnceCallback<void(DOMException*)> callback) {
-  std::move(callback).Run(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Unsupported."));
-}
-
-void MediaStreamTrackImpl::SetZoomLevel(
-    int zoom_level,
-    base::OnceCallback<void(DOMException*)> callback) {
-  std::move(callback).Run(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Unsupported."));
-}
-#endif
-
 bool MediaStreamTrackImpl::HasPendingActivity() const {
   // If 'ended' listeners exist and the object hasn't yet reached
   // that state, keep the object alive.

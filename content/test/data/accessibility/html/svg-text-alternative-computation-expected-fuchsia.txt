@@ -2,9 +2,9 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++UNKNOWN hidden
-++++++++STATIC_TEXT hidden label='Link (from aria-labelledby)'
+++++++++STATIC_TEXT hidden
 ++++++UNKNOWN hidden
-++++++++STATIC_TEXT hidden label='Circle (from aria-labelledby)'
+++++++++STATIC_TEXT hidden
 ++++++UNKNOWN
 ++++++++LINK focusable label='Link (from aria-labelledby)' actions='{DEFAULT}' secondary_label='Link (from title)'
 ++++++UNKNOWN
@@ -28,7 +28,7 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN label='Rectangle Symbol (From symbol's title)'
 ++++++++UNKNOWN label='Rectangle Symbol (From symbol's title)'
 ++++++UNKNOWN hidden
-++++++++STATIC_TEXT hidden label='Link (from aria-describedby)'
+++++++++STATIC_TEXT hidden
 ++++++UNKNOWN
 ++++++++LINK focusable label='Link (from title)' actions='{DEFAULT}' secondary_label='Link (from aria-describedby)'
 ++++++UNKNOWN

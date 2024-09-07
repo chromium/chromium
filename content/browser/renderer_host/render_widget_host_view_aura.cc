@@ -27,11 +27,11 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "components/input/cursor_manager.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/stylus_handwriting/win/features.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/gpu/compositor_util.h"
@@ -60,6 +60,7 @@
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/cursor_client_observer.h"
@@ -108,10 +109,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/time/time.h"
-#include "content/browser/accessibility/browser_accessibility_manager_win.h"
-#include "content/browser/accessibility/browser_accessibility_win.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/browser_accessibility_manager_win.h"
+#include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/ime/virtual_keyboard_controller_observer.h"
 #include "ui/base/ime/win/tsf_input_scope.h"
@@ -121,7 +122,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-#include "content/browser/accessibility/browser_accessibility_auralinux.h"
+#include "ui/accessibility/platform/browser_accessibility_auralinux.h"
 #include "ui/base/ime/linux/text_edit_command_auralinux.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/linux/linux_ui.h"
@@ -133,6 +134,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 using gfx::RectToSkIRect;
@@ -473,14 +478,14 @@ gfx::NativeViewAccessible RenderWidgetHostViewAura::GetNativeViewAccessible() {
   if (!window_host)
     return static_cast<gfx::NativeViewAccessible>(NULL);
 
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       host()->GetOrCreateRootBrowserAccessibilityManager();
   if (manager)
     return ToBrowserAccessibilityWin(manager->GetBrowserAccessibilityRoot())
         ->GetCOM();
 
 #elif BUILDFLAG(IS_LINUX)
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       host()->GetOrCreateRootBrowserAccessibilityManager();
   if (manager && manager->GetBrowserAccessibilityRoot())
     return manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
@@ -1360,9 +1365,12 @@ void RenderWidgetHostViewAura::SetCompositionText(
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return;
 
+  // Historically we haven't supported selection range with composition string
+  // due to prior bugs. Introducing support for it can reveal issues as seen
+  // with Korean IME in Windows for instance. See crbug.com/363266897
   text_input_manager_->GetActiveWidget()->ImeSetComposition(
       composition.text, composition.ime_text_spans, gfx::Range::InvalidRange(),
-      composition.selection.start(), composition.selection.end());
+      composition.selection.end(), composition.selection.end());
 
   has_composition_text_ = !composition.text.empty();
 }
@@ -1898,7 +1906,7 @@ void RenderWidgetHostViewAura::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
     const std::u16string& active_composition_text,
     bool is_composition_committed) {
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       host()->GetRootBrowserAccessibilityManager();
   if (manager) {
     ui::AXPlatformNodeWin* focus_node = static_cast<ui::AXPlatformNodeWin*>(
@@ -1947,6 +1955,22 @@ void RenderWidgetHostViewAura::NotifyOnFrameFocusChanged() {
 void RenderWidgetHostViewAura::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(crbug.com/348590032) If per-window scaling is enabled, the display
+  // scale comparison below is not applicable as the WindowTreeHost uses the
+  // accurate per-window scale value and the display uses a scale factor value
+  // that is inferred from the logical size which is prone to rounding errors,
+  // in which case this will never match and end up suppressing visual
+  // properties synchronization after the display configuration changes. So
+  // process display metrics change as usual skipping such checks. Also see
+  // RenderWidgetHostViewBase::UpdateScreenInfo().
+  if (ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_per_window_scaling) {
+    ProcessDisplayMetricsChanged();
+    return;
+  }
+#endif  // BUILDFLAG(IS_OZONE)
   display::Screen* screen = display::Screen::GetScreen();
   if (display.id() != screen->GetDisplayNearestWindow(window_).id())
     return;
@@ -2165,6 +2189,71 @@ void RenderWidgetHostViewAura::FocusedNodeChanged(
 #endif
 }
 
+bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/355578906): Check whether Windows Text Services Framework
+  // Shell Handwriting API is available or supported by the OS.
+  // return stylus_handwriting::win::IsStylusHandwritingWinEnabled();
+  return false;
+#else   // BUILDFLAG(IS_WIN)
+  return false;
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+void RenderWidgetHostViewAura::OnStartStylusWriting() {
+  // TODO(crbug.com/355578906): Call Windows Text Services Framework Shell
+  // Handwriting API. Will call ITfHandwriting::RequestHandwritingForPointer to
+  // display ink, then ITfHandwritingRequest::SetInputEvaluation to confirm
+  // intent. RequestHandwritingForPointer is an asynchronous request, however
+  // this method will be called after GestureScrollBegin, so intent can be
+  // confirmed immediately. After intent is confirmed, the API will request that
+  // focus is updated by calling ITfHandwritingSink::FocusHandwritingTarget.
+  //
+  // To handle ITfHandwritingSink::FocusHandwritingTarget, the browser will
+  // request that focus be updated in the renderer based on the RECT from
+  // ITfFocusHandwritingTargetArgs::GetPointerTargetInfo, which will be handled
+  // via mojom::blink::FrameWidget::OnStartStylusWriting. Focus will only be set
+  // on content eligible for handwriting. If focus cannot be set on content
+  // eligible for handwriting with the RECT provided by GetPointerTargetInfo,
+  // then focus will fallback to the eligible element that was initially tapped.
+}
+
+void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
+    const gfx::Rect& focused_edit_bounds,
+    const gfx::Rect& caret_bounds) {
+  // TODO(crbug.com/355578906): Update Windows Text Services Framework (TSF)
+  // focus, stash relevant character bounds from the renderer, and notify the
+  // TSF Shell Handwriting API that focus is set.
+  //
+  // There are 3 vital steps that need to be performed during this callback:
+  // 1. TSF focus must be updated to reflect focus changes in the renderer, such
+  //    that ITfThreadMgr::GetFocus returns the correct ITfDocumentMgr.
+  // 2. Character bounding boxes from the renderer must be made available for
+  //    ITextStoreACP::GetTextExt and ITextStoreACP::GetACPFromPoint to enable
+  //    gesture recognition.
+  // 3. The earlier FocusHandwritingTarget must be responded to by calling
+  //    ITfFocusHandwritingTargetArgs::SetResponse.
+  //
+  // `SetResponse` must be called last in this sequence, signaling the Shell
+  // Handwriting API may begin committing edits or collect character bounds
+  // for evaluating gesture recognition using TSF/IME APIs.
+  // Failure to update TSF focus before calling `SetResponse` will result in
+  // either ink disappearing without making any modifications, or modifications
+  // being committed to the wrong editable text region.
+  // Failure to prepare character bounds in proximity of the location which was
+  // requested by FocusHandwritingTarget before calling `SetResponse` may result
+  // in the inability of Shell Handwriting to perform gestures (selection,
+  // scratch out, split/join word, new-line) and may result in text being
+  // inserted instead.
+}
+
+void RenderWidgetHostViewAura::OnEditElementFocusClearedForStylusWriting() {
+  // TODO(crbug.com/355578906): Notify Windows Text Services Framework (TSF)
+  // Shell Handwriting API [1] to cancel the inking session, causing ink to
+  // disappear without making any modifications.
+  // [1] `ITfFocusHandwritingTargetArgs::SetResponse(TF_NO_HANDWRITING_TARGET)`
+}
+
 void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {
   event_handler_->OnScrollEvent(event);
 }
@@ -2229,7 +2318,7 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
       input_method->SetFocusedTextInputClient(this);
     }
 
-    BrowserAccessibilityManager* manager =
+    ui::BrowserAccessibilityManager* manager =
         host()->GetRootBrowserAccessibilityManager();
     if (manager)
       manager->OnWindowFocused();
@@ -2255,7 +2344,7 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
   if (overscroll_controller_)
     overscroll_controller_->Cancel();
 
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       host()->GetRootBrowserAccessibilityManager();
   if (manager)
     manager->OnWindowBlurred();

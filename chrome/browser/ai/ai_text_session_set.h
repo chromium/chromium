@@ -5,22 +5,26 @@
 #ifndef CHROME_BROWSER_AI_AI_TEXT_SESSION_SET_H_
 #define CHROME_BROWSER_AI_AI_TEXT_SESSION_SET_H_
 
+#include <variant>
+
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_text_session.h"
 #include "content/public/browser/document_user_data.h"
 
-// When binding the receiver, we need to pass the `RenderFrameHost` for
-// document, because we need to wrap the `AITextSession` in a
-// `DocumentUserData` to ensure that it gets properly destroyed when the
-// navigation happens and the RenderFrame is reused (until RenderDocument is
-// launched).
-// We cannot just pass it as `SupportsUserData` because `RenderFrameHost` is
-// not an implementation of `SupportsUserData`.
-
 // The data structure that supports adding and removing `AITextSession`.
 class AITextSessionSet {
  public:
+  // This alias represents the browser-side host of the context that interacts
+  // with the `AITextSession`. It can be a `RenderFrameHost` if it's from a
+  // document, or a `SupportsUserData` if it's from a worker.
+  // When binding the receiver of `blink::mojom::AIManager`, we need to pass the
+  // `RenderFrameHost` for document, because we need to wrap the `AITextSession`
+  // in a `DocumentUserData` to ensure that it gets properly destroyed when the
+  // navigation happens and the RenderFrame is reused (until RenderDocument is
+  // launched).
+  // We cannot just pass it as `SupportsUserData` because `RenderFrameHost` is
+  // not an implementation of `SupportsUserData`.
   using ReceiverContext =
       std::variant<content::RenderFrameHost*, base::SupportsUserData*>;
 

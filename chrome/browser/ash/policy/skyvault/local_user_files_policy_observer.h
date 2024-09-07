@@ -9,13 +9,14 @@
 
 namespace policy::local_user_files {
 
-// LocalUserFilesAllowed policy observer interface.
+// LocalUserFilesAllowed and LocalUserFilesMigrationDestination policies
+// observer interface.
 class LocalUserFilesPolicyObserver {
  public:
   LocalUserFilesPolicyObserver();
   virtual ~LocalUserFilesPolicyObserver();
 
-  // Called when the value of the LocalUserFilesEnabled policy changes.
+  // Called when the value of the observed policy changes.
   virtual void OnLocalUserFilesPolicyChanged() {}
 
  private:

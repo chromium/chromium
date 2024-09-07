@@ -14,6 +14,7 @@
 #import "components/plus_addresses/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_text_cell.h"
@@ -37,13 +38,6 @@
 #import "url/gurl.h"
 
 namespace manual_fill {
-
-NSString* const kPasswordDoneButtonAccessibilityIdentifier =
-    @"kManualFillPasswordDoneButtonAccessibilityIdentifier";
-NSString* const kPasswordSearchBarAccessibilityIdentifier =
-    @"kManualFillPasswordSearchBarAccessibilityIdentifier";
-NSString* const kPasswordTableViewAccessibilityIdentifier =
-    @"kManualFillPasswordTableViewAccessibilityIdentifier";
 
 enum ManualFallbackItemType : NSInteger {
   kHeader = kItemTypeEnumZero,
@@ -213,6 +207,10 @@ enum ManualFallbackItemType : NSInteger {
     (NSArray<ManualFillPlusAddressItem*>*)plusAddresses {
   _plusAddresses = (NSArray<TableViewItem*>*)plusAddresses;
   [self presentItems];
+}
+
+- (void)presentPlusAddressActions:(NSArray<ManualFillActionItem*>*)actions {
+  [self presentPlusAddressActionItems:actions];
 }
 
 #pragma mark - Private

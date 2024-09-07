@@ -5,9 +5,6 @@
 #ifndef REMOTING_PROTOCOL_CHROMIUM_PORT_ALLOCATOR_FACTORY_H_
 #define REMOTING_PROTOCOL_CHROMIUM_PORT_ALLOCATOR_FACTORY_H_
 
-#include <memory>
-#include <set>
-
 #include "base/memory/scoped_refptr.h"
 #include "remoting/protocol/port_allocator_factory.h"
 
@@ -24,7 +21,7 @@ class ChromiumPortAllocatorFactory : public PortAllocatorFactory {
   ~ChromiumPortAllocatorFactory() override;
 
   // PortAllocatorFactory interface.
-  std::unique_ptr<cricket::PortAllocator> CreatePortAllocator(
+  CreatePortAllocatorResult CreatePortAllocator(
       scoped_refptr<TransportContext> transport_context,
       base::WeakPtr<SessionOptionsProvider> session_options_provider) override;
 };

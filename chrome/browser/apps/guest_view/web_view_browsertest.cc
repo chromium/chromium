@@ -2357,8 +2357,7 @@ class WebViewSafeBrowsingTest : public WebViewTest {
       content::BrowserMainParts* browser_main_parts) override {
     fake_safe_browsing_database_manager_ =
         base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>(
-            content::GetUIThreadTaskRunner({}),
-            content::GetIOThreadTaskRunner({}));
+            content::GetUIThreadTaskRunner({}));
     safe_browsing_factory_->SetTestDatabaseManager(
         fake_safe_browsing_database_manager_.get());
     safe_browsing::SafeBrowsingService::RegisterFactory(
@@ -4131,19 +4130,14 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestLoadDataAPI) {
 
   auto* security_policy = content::ChildProcessSecurityPolicy::GetInstance();
   url::Origin base_origin =
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()
-          ? url::Origin::Create(
-                embedded_test_server()->GetURL("localhost", "/"))
-          : url::Origin::Create(GURL("http://localhost"));
+      url::Origin::Create(embedded_test_server()->GetURL("localhost", "/"));
   EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
       guest_main_frame->GetProcess()->GetID(), base_origin));
 
   // Ensure the process doesn't have access to some other origin. This
   // verifies that site isolation is enforced.
   url::Origin another_origin =
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()
-          ? url::Origin::Create(embedded_test_server()->GetURL("foo.com", "/"))
-          : url::Origin::Create(GURL("http://foo.com"));
+      url::Origin::Create(embedded_test_server()->GetURL("foo.com", "/"));
   EXPECT_FALSE(security_policy->CanAccessDataForOrigin(
       guest_main_frame->GetProcess()->GetID(), another_origin));
 }

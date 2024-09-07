@@ -198,6 +198,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -7936,9 +7937,7 @@ class TestSameDocumentWithImageWebFrameClient
   ~TestSameDocumentWithImageWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void WillSendRequest(WebURLRequest& request,
-                       ForRedirect for_redirect,
-                       const blink::WebURL& /*upstream_url*/) override {
+  void FinalizeRequest(WebURLRequest& request) override {
     if (request.GetRequestContext() ==
         mojom::blink::RequestContextType::IMAGE) {
       num_of_image_requests_++;
@@ -8170,6 +8169,32 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
       /*has_ua_visual_transition,=*/false,
       /*soft_navigation_heuristics_task_id=*/std::nullopt);
   EXPECT_EQ(kWebBackForwardCommit, client.LastCommitType());
+}
+
+TEST_F(WebFrameTest, SameDocumentHistoryNavigationPropagatesSequenceNumber) {
+  RegisterMockedHttpURLLoad("push_state_empty.html");
+  frame_test_helpers::TestWebFrameClient client;
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view_impl = web_view_helper.InitializeAndLoad(
+      base_url_ + "push_state_empty.html", &client);
+  auto* local_frame = To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  Persistent<HistoryItem> item =
+      local_frame->Loader().GetDocumentLoader()->GetHistoryItem();
+  RunPendingTasks();
+
+  local_frame->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
+      item->Url(), WebFrameLoadType::kBackForward, item.Get(),
+      ClientRedirectPolicy::kNotClientRedirect,
+      false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,
+      /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent,
+      /*is_browser_initiated=*/true,
+      /*has_ua_visual_transition,=*/false,
+      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+
+  EXPECT_EQ(item->ItemSequenceNumber(),
+            web_view_helper.GetLayerTreeHost()
+                ->primary_main_frame_item_sequence_number_for_testing());
 }
 
 // Tests that a navigation in a frame with a non-blank initial URL will create
@@ -9308,6 +9333,7 @@ class WebFrameSwapTest : public WebFrameTest {
  protected:
   WebFrameSwapTest() {
     RegisterMockedHttpURLLoad("frame-a-b-c.html");
+    RegisterMockedHttpURLLoad("named-frame-a-b-c.html");
     RegisterMockedHttpURLLoad("subframe-a.html");
     RegisterMockedHttpURLLoad("subframe-b.html");
     RegisterMockedHttpURLLoad("subframe-c.html");
@@ -9346,6 +9372,17 @@ TEST_F(WebFrameSwapTest, SwapMainFrame) {
   EXPECT_EQ("hello", content);
 }
 
+class DidClearWindowObjectCounter
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  void DidClearWindowObject() override { ++count_; }
+
+  int Count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
 TEST_F(WebFrameSwapTest, SwapMainFrameLocalToLocal) {
   // Start with a WebView with a local main frame.
   Frame* original_page_main_frame = WebFrame::ToCoreFrame(*MainFrame());
@@ -9356,8 +9393,9 @@ TEST_F(WebFrameSwapTest, SwapMainFrameLocalToLocal) {
   // local frame, to do a local swap with the previous WebView.
   frame_test_helpers::WebViewHelper new_view_helper;
   new_view_helper.InitializePlaceholderRemote();
-  WebLocalFrame* provisional_frame =
-      new_view_helper.CreateProvisional(*new_view_helper.RemoteMainFrame());
+  DidClearWindowObjectCounter counter_client;
+  WebLocalFrameImpl* provisional_frame = new_view_helper.CreateProvisional(
+      *new_view_helper.RemoteMainFrame(), &counter_client);
   new_view_helper.GetWebView()->GetPage()->SetPreviousMainFrameForLocalSwap(
       DynamicTo<LocalFrame>(original_page_main_frame));
   EXPECT_NE(web_view_helper_.GetWebView(), new_view_helper.GetWebView());
@@ -9368,7 +9406,27 @@ TEST_F(WebFrameSwapTest, SwapMainFrameLocalToLocal) {
   // Page's main LocalFrame, replacing it with a placeholder RemoteFrame. After
   // that, the placeholder RemoteFrame in the new Page will be swapped out, and
   // the new main LocalFrame will be swapped in.
-  To<LocalFrame>(WebFrame::ToCoreFrame(*provisional_frame))->SwapIn();
+  auto params = std::make_unique<WebNavigationParams>();
+  params->url = url_test_helpers::ToKURL("about:blank");
+  // `CommitNavigation` will swap in the local frame to replace the remote
+  // frame.
+  provisional_frame->CommitNavigation(std::move(params), nullptr);
+
+  // Android WebView's Java Object bridge is sensitive to exactly when and how
+  // often `DidClearWindowObject()` is called. Though this is a fairly indirect
+  // signal, it's still better than no signal at all.
+  EXPECT_EQ(1, counter_client.Count());
+
+  // Make sure the WindowProxy itself is not initialized, since the original
+  // frame never ran script and was never scripted.
+  LocalFrame* const frame = new_view_helper.LocalMainFrame()->GetFrame();
+  v8::Isolate* const isolate = ToIsolate(frame);
+  // Technically not needed for this test, but if something is broken, it fails
+  // more gracefully with a HandleScope.
+  v8::HandleScope scope(ToIsolate(frame));
+  v8::Local<v8::Context> context =
+      ToV8ContextMaybeEmpty(frame, DOMWrapperWorld::MainWorld(isolate));
+  EXPECT_TRUE(context.IsEmpty());
 
   // The new WebView's main frame is now set to a new main LocalFrame.
   EXPECT_EQ(WebFrame::ToCoreFrame(*provisional_frame),
@@ -9381,6 +9439,8 @@ TEST_F(WebFrameSwapTest, SwapMainFrameLocalToLocal) {
   EXPECT_TRUE(original_page_main_frame->IsDetached());
   EXPECT_TRUE(
       web_view_helper_.GetWebView()->GetPage()->MainFrame()->IsRemoteFrame());
+
+  new_view_helper.Reset();
 }
 
 TEST_F(WebFrameSwapTest, DetachProvisionalLocalFrameAndPlaceholderRemoteFrame) {
@@ -10152,6 +10212,10 @@ TEST_F(WebFrameSwapTest, NavigateRemoteFrameViaLocation) {
 }
 
 TEST_F(WebFrameSwapTest, WindowOpenOnRemoteFrame) {
+  // This test needs explicitly named iframes due to the open() call below.
+  frame_test_helpers::LoadFrame(MainFrame(),
+                                base_url_ + "named-frame-a-b-c.html");
+
   RemoteFrameHostInterceptor interceptor;
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   frame_test_helpers::SwapRemoteFrame(MainFrame()->FirstChild(), remote_frame,
@@ -12012,9 +12076,7 @@ class TestResourcePriorityWebFrameClient
   ~TestResourcePriorityWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void WillSendRequest(WebURLRequest& request,
-                       ForRedirect for_redirect,
-                       const blink::WebURL& upstream_url) override {
+  void FinalizeRequest(WebURLRequest& request) override {
     ExpectedRequest* expected_request = expected_requests_.at(request.Url());
     DCHECK(expected_request);
     EXPECT_EQ(expected_request->priority, request.GetPriority());

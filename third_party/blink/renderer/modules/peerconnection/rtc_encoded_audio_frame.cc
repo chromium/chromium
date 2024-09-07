@@ -6,11 +6,15 @@
 
 #include <utility>
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
@@ -102,12 +106,23 @@ RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface>
         webrtc_audio_frame)
+    : RTCEncodedAudioFrame(std::move(webrtc_audio_frame),
+                           base::UnguessableToken::Null(),
+                           0) {}
+
+RTCEncodedAudioFrame::RTCEncodedAudioFrame(
+    std::unique_ptr<webrtc::TransformableAudioFrameInterface>
+        webrtc_audio_frame,
+    base::UnguessableToken owner_id,
+    int64_t counter)
     : delegate_(base::MakeRefCounted<RTCEncodedAudioFrameDelegate>(
           std::move(webrtc_audio_frame),
           webrtc_audio_frame ? webrtc_audio_frame->GetContributingSources()
                              : Vector<uint32_t>(),
           webrtc_audio_frame ? webrtc_audio_frame->SequenceNumber()
-                             : std::nullopt)) {}
+                             : std::nullopt)),
+      owner_id_(owner_id),
+      counter_(counter) {}
 
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     scoped_refptr<RTCEncodedAudioFrameDelegate> delegate)
@@ -117,9 +132,9 @@ uint32_t RTCEncodedAudioFrame::timestamp() const {
   return delegate_->RtpTimestamp();
 }
 
-DOMArrayBuffer* RTCEncodedAudioFrame::data() const {
+DOMArrayBuffer* RTCEncodedAudioFrame::data(ExecutionContext* context) const {
   if (!frame_data_) {
-    frame_data_ = delegate_->CreateDataBuffer();
+    frame_data_ = delegate_->CreateDataBuffer(context->GetIsolate());
   }
   return frame_data_.Get();
 }
@@ -170,18 +185,25 @@ void RTCEncodedAudioFrame::setMetadata(RTCEncodedAudioFrameMetadata* metadata,
   }
 }
 
-void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
+void RTCEncodedAudioFrame::setData(ExecutionContext*, DOMArrayBuffer* data) {
   frame_data_ = data;
 }
 
-String RTCEncodedAudioFrame::toString() const {
+String RTCEncodedAudioFrame::toString(ExecutionContext* context) const {
   StringBuilder sb;
   sb.Append("RTCEncodedAudioFrame{rtpTimestamp: ");
   sb.AppendNumber(delegate_->RtpTimestamp());
   sb.Append(", size: ");
-  sb.AppendNumber(data() ? data()->ByteLength() : 0);
+  sb.AppendNumber(data(context) ? data(context)->ByteLength() : 0);
   sb.Append("}");
   return sb.ToString();
+}
+
+base::UnguessableToken RTCEncodedAudioFrame::OwnerId() {
+  return owner_id_;
+}
+int64_t RTCEncodedAudioFrame::Counter() {
+  return counter_;
 }
 
 void RTCEncodedAudioFrame::SyncDelegate() const {
@@ -195,9 +217,21 @@ scoped_refptr<RTCEncodedAudioFrameDelegate> RTCEncodedAudioFrame::Delegate()
 }
 
 std::unique_ptr<webrtc::TransformableAudioFrameInterface>
-RTCEncodedAudioFrame::PassWebRtcFrame() {
+RTCEncodedAudioFrame::PassWebRtcFrame(v8::Isolate* isolate,
+                                      bool detach_frame_data) {
   SyncDelegate();
-  return delegate_->PassWebRtcFrame();
+  auto transformable_audio_frame = delegate_->PassWebRtcFrame();
+  // Detach the `frame_data_` ArrayBuffer if it's been created, as described in
+  // the transfer on step 5 of the encoded transform spec write steps
+  // (https://www.w3.org/TR/webrtc-encoded-transform/#stream-processing)
+  if (detach_frame_data && frame_data_ && !frame_data_->IsDetached()) {
+    CHECK(isolate);
+    ArrayBufferContents contents_to_drop;
+    NonThrowableExceptionState exception_state;
+    CHECK(frame_data_->Transfer(isolate, v8::Local<v8::Value>(),
+                                contents_to_drop, exception_state));
+  }
+  return transformable_audio_frame;
 }
 
 void RTCEncodedAudioFrame::Trace(Visitor* visitor) const {

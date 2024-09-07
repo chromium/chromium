@@ -12,6 +12,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
@@ -22,10 +26,6 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
-#include "services/network/ip_protection/ip_protection_data_types.h"
-#include "services/network/ip_protection/ip_protection_geo_utils.h"
-#include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
-#include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
 
@@ -35,33 +35,11 @@ namespace {
 
 using ip_protection::MaskedDomainListManager;
 
-// An enumeration of the `chain_id` values supplied in the GetProxyInfo RPC
-// response, for use with `UmaHistogramEnumeration`. These values are persisted
-// to logs. Entries should not be renumbered and numeric values should never be
-// reused.
-enum class IpProtectionProxyChainId {
-  kUnknown = 0,
-  kChain1 = 1,
-  kChain2 = 2,
-  kChain3 = 3,
-  kMaxValue = kChain3,
-};
-
-IpProtectionProxyChainId ChainIdToEnum(int chain_id) {
-  static_assert(net::ProxyChain::kMaxIpProtectionChainId ==
-                    static_cast<int>(IpProtectionProxyChainId::kMaxValue),
-                "maximum `chain_id` must match between `net::ProxyChain` and "
-                "`network::IpProtectionProxyChainId`");
-  CHECK(chain_id >= static_cast<int>(IpProtectionProxyChainId::kUnknown) &&
-        chain_id <= static_cast<int>(IpProtectionProxyChainId::kMaxValue));
-  return static_cast<IpProtectionProxyChainId>(chain_id);
-}
-
 }  // namespace
 
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
     MaskedDomainListManager* masked_domain_list_manager,
-    std::unique_ptr<IpProtectionConfigCache> ipp_config_cache,
+    std::unique_ptr<ip_protection::IpProtectionConfigCache> ipp_config_cache,
     bool is_ip_protection_enabled)
     : masked_domain_list_manager_(masked_domain_list_manager),
       ipp_config_cache_(std::move(ipp_config_cache)),
@@ -110,12 +88,7 @@ void IpProtectionProxyDelegate::OnResolveProxy(
     // - `is_ip_protection_enabled_` is `false` (in other words, the user has
     //   disabled IP Protection via user settings).
     // - `kIpPrivacyDirectOnly` is `true`.
-    const ProtectionEligibility eligibility =
-        CheckEligibility(url, network_anonymization_key);
-    base::UmaHistogramEnumeration(
-        "NetworkService.IpProtection.RequestIsEligibleForProtection",
-        eligibility);
-    if (eligibility != ProtectionEligibility::kEligible) {
+    if (!CheckEligibility(url, network_anonymization_key)) {
       return;
     }
     result->set_is_mdl_match(true);
@@ -134,9 +107,6 @@ void IpProtectionProxyDelegate::OnResolveProxy(
       return;
     }
     const bool available = CheckAvailability(url, network_anonymization_key);
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection.ProtectionIsAvailableForRequest",
-        available);
     if (!available) {
       return;
     }
@@ -185,10 +155,12 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   return;
 }
 
-IpProtectionProxyDelegate::ProtectionEligibility
-IpProtectionProxyDelegate::CheckEligibility(
+bool IpProtectionProxyDelegate::CheckEligibility(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key) const {
+  ip_protection::ProtectionEligibility eligibility;
+  bool eligible;
+
   auto dvlog = [&](std::string message) {
     std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
@@ -199,14 +171,21 @@ IpProtectionProxyDelegate::CheckEligibility(
   };
   if (!masked_domain_list_manager_->IsPopulated()) {
     dvlog("proxy allow list not populated");
-    return ProtectionEligibility::kUnknown;
-  }
-  if (!masked_domain_list_manager_->Matches(url, network_anonymization_key)) {
+    eligibility = ip_protection::ProtectionEligibility::kUnknown;
+    eligible = false;
+  } else if (!masked_domain_list_manager_->Matches(url,
+                                                   network_anonymization_key)) {
     dvlog("proxy allow list did not match");
-    return ProtectionEligibility::kIneligible;
+    eligibility = ip_protection::ProtectionEligibility::kIneligible;
+    eligible = false;
+  } else {
+    dvlog("proxy allow list matched");
+    eligibility = ip_protection::ProtectionEligibility::kEligible;
+    eligible = true;
   }
-  dvlog("proxy allow list matched");
-  return ProtectionEligibility::kEligible;
+
+  ip_protection::Telemetry().RequestIsEligibleForProtection(eligibility);
+  return eligible;
 }
 
 bool IpProtectionProxyDelegate::CheckAvailability(
@@ -222,13 +201,10 @@ bool IpProtectionProxyDelegate::CheckAvailability(
   };
   const bool auth_tokens_are_available =
       ipp_config_cache_->AreAuthTokensAvailable();
-  base::UmaHistogramBoolean(
-      "NetworkService.IpProtection.AreAuthTokensAvailable",
-      auth_tokens_are_available);
   const bool proxy_list_is_available =
       ipp_config_cache_->IsProxyListAvailable();
-  base::UmaHistogramBoolean("NetworkService.IpProtection.IsProxyListAvailable",
-                            proxy_list_is_available);
+  ip_protection::Telemetry().ProtectionIsAvailableForRequest(
+      auth_tokens_are_available, proxy_list_is_available);
   if (!auth_tokens_are_available) {
     dvlog("no auth token available from cache");
     return false;
@@ -279,9 +255,8 @@ void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
   if (bad_chain.is_for_ip_protection()) {
-    base::UmaHistogramEnumeration(
-        "NetworkService.IpProtection.ProxyChainFallback",
-        ChainIdToEnum(bad_chain.ip_protection_chain_id()));
+    ip_protection::Telemetry().ProxyChainFallback(
+        bad_chain.ip_protection_chain_id());
     ipp_config_cache_->RequestRefreshProxyList();
   }
 }
@@ -294,7 +269,7 @@ net::Error IpProtectionProxyDelegate::OnBeforeTunnelRequest(
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
   };
   if (proxy_chain.is_for_ip_protection()) {
-    std::optional<BlindSignedAuthToken> token =
+    std::optional<ip_protection::BlindSignedAuthToken> token =
         ipp_config_cache_->GetAuthToken(chain_index);
     if (token) {
       vlog("adding auth token");
@@ -332,12 +307,11 @@ void IpProtectionProxyDelegate::SetProxyResolutionService(
 
 void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
     VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  auto* ipp_token_cache_manager_impl =
-      static_cast<IpProtectionTokenCacheManagerImpl*>(
-          ipp_config_cache_
-              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  IpProtectionProxyLayer::kProxyA));
-  CHECK(ipp_token_cache_manager_impl);
+  auto* ipp_token_manager_impl =
+      static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
+          ipp_config_cache_->GetIpProtectionTokenManagerForTesting(  // IN-TEST
+              ip_protection::ProxyLayer::kProxyA));
+  CHECK(ipp_token_manager_impl);
 
   // If active cache management is enabled (the default), disable it and do a
   // one-time reset of the state. Since the browser process will be driving this
@@ -345,8 +319,8 @@ void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
   // `ipp_config_cache_` (for instance, if the browser process sends less
   // than the requested number of tokens, the network service won't immediately
   // request more).
-  if (ipp_token_cache_manager_impl->IsCacheManagementEnabledForTesting()) {
-    ipp_token_cache_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
+  if (ipp_token_manager_impl->IsCacheManagementEnabledForTesting()) {
+    ipp_token_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
         base::BindOnce(
             [](base::WeakPtr<IpProtectionProxyDelegate> weak_ptr,
                VerifyIpProtectionConfigGetterForTestingCallback callback) {
@@ -375,19 +349,18 @@ void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
   // If there is a cooldown in effect, then don't send any tokens and instead
   // send back the try again after time.
   base::Time try_auth_tokens_after =
-      ipp_token_cache_manager_impl
+      ipp_token_manager_impl
           ->try_get_auth_tokens_after_for_testing();  // IN-TEST
   if (!try_auth_tokens_after.is_null()) {
     std::move(callback).Run(std::nullopt, try_auth_tokens_after);
     return;
   }
 
-  ipp_token_cache_manager_impl
-      ->SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
-          base::BindOnce(&IpProtectionProxyDelegate::
-                             OnIpProtectionConfigAvailableForTesting,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
-  ipp_token_cache_manager_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
+  ipp_token_manager_impl->SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
+      base::BindOnce(
+          &IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+  ipp_token_manager_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
 }
 
 void IpProtectionProxyDelegate::SetIpProtectionEnabled(bool enabled) {
@@ -414,30 +387,29 @@ void IpProtectionProxyDelegate::IsIpProtectionEnabledForTesting(
 
 void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
     VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  auto* ipp_token_cache_manager_impl =
-      static_cast<IpProtectionTokenCacheManagerImpl*>(
+  auto* ipp_token_manager_impl =
+      static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
+          ipp_config_cache_->GetIpProtectionTokenManagerForTesting(  // IN-TEST
+              ip_protection::ProxyLayer::kProxyA));
+  auto* ipp_proxy_config_manager_impl =
+      static_cast<ip_protection::IpProtectionProxyConfigManagerImpl*>(
           ipp_config_cache_
-              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  IpProtectionProxyLayer::kProxyA));
-  auto* ipp_proxy_list_manager_impl =
-      static_cast<IpProtectionProxyListManagerImpl*>(
-          ipp_config_cache_
-              ->GetIpProtectionProxyListManagerForTesting());  // IN-TEST
-  CHECK(ipp_proxy_list_manager_impl);
-  ipp_proxy_list_manager_impl->SetProxyListForTesting(  // IN-TEST
+              ->GetIpProtectionProxyConfigManagerForTesting());  // IN-TEST
+  CHECK(ipp_proxy_config_manager_impl);
+  ipp_proxy_config_manager_impl->SetProxyListForTesting(  // IN-TEST
       std::vector{net::ProxyChain::ForIpProtection(
           std::vector{net::ProxyServer::FromSchemeHostAndPort(
               net::ProxyServer::SCHEME_HTTPS, "proxy-a", std::nullopt)})},
-      network::GetGeoHintFromGeoIdForTesting(
-          ipp_token_cache_manager_impl->CurrentGeo()));
-  std::optional<BlindSignedAuthToken> result =
+      ip_protection::GetGeoHintFromGeoIdForTesting(
+          ipp_token_manager_impl->CurrentGeo()));
+  std::optional<ip_protection::BlindSignedAuthToken> result =
       ipp_config_cache_->GetAuthToken(0);  // kProxyA.
   if (result.has_value()) {
     std::move(callback).Run(std::move(result.value()), std::nullopt);
     return;
   }
   base::Time try_auth_tokens_after =
-      ipp_token_cache_manager_impl
+      ipp_token_manager_impl
           ->try_get_auth_tokens_after_for_testing();  // IN-TEST
   std::move(callback).Run(std::nullopt, try_auth_tokens_after);
 }

@@ -422,7 +422,7 @@ enum AXRole {
 
   AX_ROLE_FOOTER = 85;
 
-  AX_ROLE_FOOTERASNONLANDMARK = 86;
+  AX_ROLE_SECTIONFOOTER = 86;
 
   AX_ROLE_FORM = 87;
 
@@ -440,7 +440,7 @@ enum AXRole {
 
   AX_ROLE_HEADER = 94;
 
-  AX_ROLE_HEADERASNONLANDMARK = 95;
+  AX_ROLE_SECTIONHEADER = 95;
 
   AX_ROLE_HEADING = 96;
 
@@ -886,7 +886,7 @@ enum AXIntAttribute {
 
   AX_IA_DROPEFFECTDEPRECATED = 59;
 
-  AX_IA_DOMNODEID = 60;
+  AX_IA_DOMNODEIDDEPRECATED = 60;
 
   AX_IA_ISPOPUP = 61;
 
@@ -1079,6 +1079,17 @@ enum FormControlType {
   FORM_CONTROL_TYPE_SELECT_LIST = 14;
 
   FORM_CONTROL_TYPE_TEXT_AREA = 15;
+}
+
+// Whether or not status of the model's output is a success (i.e "is good") or
+// is a failure (i.e "is bad").
+// Next ID: 3
+enum FinalModelStatus {
+  FINAL_MODEL_STATUS_UNSPECIFIED = 0;
+
+  FINAL_MODEL_STATUS_SUCCESS = 1;
+
+  FINAL_MODEL_STATUS_FAILURE = 2;
 }
 
 // Next ID: 3

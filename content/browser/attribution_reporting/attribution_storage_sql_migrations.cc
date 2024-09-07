@@ -689,6 +689,12 @@ bool To63(sql::Database& db) {
   return true;
 }
 
+bool To64(sql::Database& db) {
+  static constexpr char kScopesDataColumnSql[] =
+      "ALTER TABLE sources ADD attribution_scopes_data BLOB";
+  return db.Execute(kScopesDataColumnSql);
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
@@ -712,14 +718,15 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 59, &To60) &&
             MaybeMigrate(db, meta_table, 60, &To61) &&
             MaybeMigrate(db, meta_table, 61, &To62) &&
-            MaybeMigrate(db, meta_table, 62, &To63);
+            MaybeMigrate(db, meta_table, 62, &To63) &&
+            MaybeMigrate(db, meta_table, 63, &To64);
   if (!ok) {
     return false;
   }
 
   DeleteCorruptedReports(storage);
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 63,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 64,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

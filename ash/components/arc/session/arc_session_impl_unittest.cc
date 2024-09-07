@@ -16,6 +16,7 @@
 #include "ash/components/arc/session/arc_client_adapter.h"
 #include "ash/components/arc/session/arc_start_params.h"
 #include "ash/components/arc/session/arc_upgrade_params.h"
+#include "ash/components/arc/session/mojo_invitation_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_arc_bridge_host.h"
 #include "ash/constants/ash_switches.h"
@@ -199,7 +200,8 @@ class FakeDelegate : public ArcSessionImpl::Delegate {
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
-            success_ ? std::make_unique<FakeArcBridgeHost>() : nullptr));
+            success_ ? std::make_unique<FakeArcBridgeHost>() : nullptr,
+            success_ ? std::make_unique<MojoInvitationManager>() : nullptr));
   }
 
   bool success_ = true;

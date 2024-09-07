@@ -10,7 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,7 +19,8 @@ using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
 
 class TokenServiceTableTest : public testing::Test {
  public:
-  TokenServiceTableTest() = default;
+  TokenServiceTableTest()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
 
   TokenServiceTableTest(const TokenServiceTableTest&) = delete;
   TokenServiceTableTest& operator=(const TokenServiceTableTest&) = delete;
@@ -28,20 +29,18 @@ class TokenServiceTableTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
     table_ = std::make_unique<TokenServiceTable>();
     db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
-    ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
+    ASSERT_EQ(sql::INIT_OK, db_->Init(file_, &encryptor_));
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   base::FilePath file_;
   base::ScopedTempDir temp_dir_;
+  const os_crypt_async::Encryptor encryptor_;
   std::unique_ptr<TokenServiceTable> table_;
   std::unique_ptr<WebDatabase> db_;
 };

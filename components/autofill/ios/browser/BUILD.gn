@@ -109,6 +109,7 @@ optimize_ts("suggestion_controller_js") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "autofill_driver_ios_factory_test_api.h",
     "autofill_driver_ios_test_api.h",
     "credit_card_save_manager_test_observer_bridge.h",
     "credit_card_save_manager_test_observer_bridge.mm",
@@ -148,17 +149,17 @@ source_set("unit_tests") {
     ":util",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:features",
     "//components/autofill/core/common:test_support",
+    "//components/autofill/core/common/mojom:mojo_types_shared_cpp_sources",
     "//components/autofill/ios/common",
-    "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:test_support",
-    "//components/leveldb_proto:leveldb_proto",
-    "//components/prefs",
     "//components/prefs:test_support",
     "//ios/testing:embedded_test_server_support",
     "//ios/web/public",

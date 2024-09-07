@@ -35,10 +35,13 @@ class FixedRectCropAction(BaseCropAction):
 
   The rectangle is first scaled based on the device pixel ratio.
   """
-  # We're not sure if this is actually a fixed value or not, but it's 10 pixels
-  # wide on the only device we've had issues with so far (Pixel 4), so assume
-  # 10 pixels until we find evidence supporting something else.
-  SCROLLBAR_WIDTH = 10
+  # The value needed varies depending on device type, likely due to resolution:
+  #   * Pixel 4: 10
+  #   * Samsung A23: 11
+  #   * Samsung S23: 12
+  # Use the largest value for simplicity instead of attempting to change it
+  # dynamically.
+  SCROLLBAR_WIDTH = 12
 
   def __init__(self, x1: int, y1: int, x2: Optional[int], y2: Optional[int]):
     """

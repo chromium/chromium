@@ -18,6 +18,12 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+const char kListMembersRequestPath[] =
+    "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
+    "mine/members?alt=proto&allow_empty_family=true";
+}
+
 class ListFamilyMembersServiceTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -33,17 +39,13 @@ class ListFamilyMembersServiceTest : public ::testing::Test {
  protected:
   void SimulateErrorResponseForPendingRequest() {
     test_url_loader_factory_.SimulateResponseForPendingRequest(
-        "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
-        "mine/members?alt=proto",
-        /*content=*/"", net::HTTP_BAD_REQUEST);
+        kListMembersRequestPath, /*content=*/"", net::HTTP_BAD_REQUEST);
   }
 
   void SimulateEmptyResponseForPendingRequest() {
     kidsmanagement::ListMembersResponse response;
     test_url_loader_factory_.SimulateResponseForPendingRequest(
-        "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
-        "mine/members?alt=proto",
-        response.SerializeAsString());
+        kListMembersRequestPath, response.SerializeAsString());
   }
 
   void SimulateResponseForPendingRequest(std::string_view username) {
@@ -51,9 +53,7 @@ class ListFamilyMembersServiceTest : public ::testing::Test {
     supervised_user::SetFamilyMemberAttributesForTesting(
         response.add_members(), kidsmanagement::HEAD_OF_HOUSEHOLD, username);
     test_url_loader_factory_.SimulateResponseForPendingRequest(
-        "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
-        "mine/members?alt=proto",
-        response.SerializeAsString());
+        kListMembersRequestPath, response.SerializeAsString());
   }
 
   // Must be first attribute, see base::test::TaskEnvironment docs.

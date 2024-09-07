@@ -344,6 +344,10 @@ void DesktopCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
                           weak_factory_.GetWeakPtr()));
 }
 
+void DesktopCloudPolicyStore::ResetPolicyKey() {
+  persisted_policy_key_.clear();
+}
+
 void DesktopCloudPolicyStore::OnPolicyToStoreValidated(
     UserCloudPolicyValidator* validator) {
   validation_result_ = validator->GetValidationResult();

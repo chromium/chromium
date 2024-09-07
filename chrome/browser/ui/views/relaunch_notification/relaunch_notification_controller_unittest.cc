@@ -33,7 +33,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ui/ash/system_tray_client_impl.h"
+#include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/display/manager/display_configurator.h"
@@ -196,7 +196,7 @@ class RelaunchNotificationControllerTest : public ::testing::Test {
     // Unittests failed when the system is on battery. This class is using a
     // mock power monitor source `power_monitor_source_` to ensure no real
     // power state or power notifications are delivered to the unittests.
-    EXPECT_FALSE(base::PowerMonitor::IsOnBatteryPower());
+    EXPECT_FALSE(base::PowerMonitor::GetInstance()->IsOnBatteryPower());
   }
 
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }

@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
@@ -37,16 +37,14 @@
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
   NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+  const std::vector<ChromeBrowserState*> loadedProfiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
   if (!self.migratingTracker) {
     self.migratingTracker =
-        [NSMutableSet setWithCapacity:loadedBrowserStates.size()];
+        [NSMutableSet setWithCapacity:loadedProfiles.size()];
   }
 
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState : loadedProfiles) {
     NSString* browserStatePathString =
         [NSString stringWithCString:browserState->GetStatePath()
                                         .BaseName()

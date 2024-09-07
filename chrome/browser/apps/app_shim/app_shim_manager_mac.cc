@@ -136,16 +136,17 @@ CreateAppShimRequirement() {
   return apps::RequirementFromString(app_shim_requirement_string.get());
 }
 
-// Returns whether |app_shim_pid|'s code signature is trusted:
+// Returns whether |app_shim_audit_token|'s code signature is trusted:
 // - True if the framework bundle is unsigned (there's nothing to verify).
-// - True if |app_shim_pid| satisfies the constructed designated requirement
-// tailored for the app shim based on the framework bundle's requirement.
-// - False otherwise (|app_shim_pid| does not satisfy the constructed designated
-// requirement).
+// - True if |app_shim_audit_token| satisfies the constructed designated
+// requirement tailored for the app shim based on the framework bundle's
+// requirement.
+// - False otherwise (|app_shim_audit_token| does not satisfy the constructed
+// designated requirement).
 //
 // This is used prior to macOS 11.7 where it is not possible to ad-hoc code sign
 // the app shim at runtime.
-bool IsAcceptablyCodeSignedLegacy(pid_t app_shim_pid) {
+bool IsAcceptablyCodeSignedLegacy(audit_token_t app_shim_audit_token) {
   static base::NoDestructor<
       base::expected<base::apple::ScopedCFTypeRef<SecRequirementRef>,
                      apps::MissingRequirementReason>>
@@ -168,7 +169,7 @@ bool IsAcceptablyCodeSignedLegacy(pid_t app_shim_pid) {
   }
 
   OSStatus status = apps::ProcessIsSignedAndFulfillsRequirement(
-      app_shim_pid, app_shim_requirement->value().get());
+      app_shim_audit_token, app_shim_requirement->value().get());
   if (status != errSecSuccess) {
     if (status == errSecCSReqFailed &&
         AppShimRegistry::Get()->HasSavedAnyCdHashes()) {
@@ -219,16 +220,18 @@ bool VerifyCodeDirectoryHash(
                       base::checked_cast<size_t>(CFDataGetLength(cd_hash))));
 }
 
-// Returns whether |app_shim_pid|'s code signature is trusted. Since an ad-hoc
-// code signature is used on macOS 11.7 and above, the verification consists of:
+// Returns whether |app_shim_audit_token|'s code signature is trusted. Since an
+// ad-hoc code signature is used on macOS 11.7 and above, the verification
+// consists of:
 //  - verifying the signature is valid.
 //  - verifying the code directory hash in the signature matches the value
 //    stored for this app at signing time.
-bool IsAcceptablyAdHocCodeSigned(pid_t app_shim_pid) {
-  base::apple::ScopedCFTypeRef<CFNumberRef> app_shim_pid_cf(
-      CFNumberCreate(nullptr, kCFNumberIntType, &app_shim_pid));
-  const void* app_shim_attribute_keys[] = {kSecGuestAttributePid};
-  const void* app_shim_attribute_values[] = {app_shim_pid_cf.get()};
+bool IsAcceptablyAdHocCodeSigned(audit_token_t app_shim_audit_token) {
+  base::apple::ScopedCFTypeRef<CFDataRef> audit_token_cf(CFDataCreate(
+      nullptr, reinterpret_cast<const UInt8*>(&app_shim_audit_token),
+      sizeof(audit_token_t)));
+  const void* app_shim_attribute_keys[] = {kSecGuestAttributeAudit};
+  const void* app_shim_attribute_values[] = {audit_token_cf.get()};
   base::apple::ScopedCFTypeRef<CFDictionaryRef> app_shim_attributes(
       CFDictionaryCreate(
           nullptr, app_shim_attribute_keys, app_shim_attribute_values,
@@ -1147,7 +1150,7 @@ void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
   // If the connecting shim process doesn't have an acceptable code
   // signature, reject the connection and re-launch the shim. The internal
   // re-launch will likely fail, whereupon the shim will be recreated.
-  if (!IsAcceptablyCodeSigned(bootstrap->GetAppShimPid())) {
+  if (!IsAcceptablyCodeSigned(bootstrap->GetAppShimAuditToken())) {
     LOG(ERROR) << "The attaching app shim's code signature is invalid.";
     bootstrap->OnFailedToConnectToHost(
         chrome::mojom::AppShimLaunchResult::kFailedValidation);
@@ -1308,16 +1311,16 @@ void RecordSignatureValidationResult(SignatureValidationResult result) {
   base::UmaHistogramEnumeration(kAppShimSignatureValidationResult, result);
 }
 
-bool AppShimManager::IsAcceptablyCodeSigned(pid_t pid) const {
+bool AppShimManager::IsAcceptablyCodeSigned(audit_token_t audit_token) const {
   static const bool requires_adhoc_signature =
       web_app::UseAdHocSigningForWebAppShims();
 
-  if (requires_adhoc_signature && IsAcceptablyAdHocCodeSigned(pid)) {
+  if (requires_adhoc_signature && IsAcceptablyAdHocCodeSigned(audit_token)) {
     RecordSignatureValidationResult(SignatureValidationResult::kSuccessAdHoc);
     return true;
   }
 
-  if (IsAcceptablyCodeSignedLegacy(pid)) {
+  if (IsAcceptablyCodeSignedLegacy(audit_token)) {
     if (requires_adhoc_signature) {
       RecordSignatureValidationResult(
           SignatureValidationResult::kExpectedAdHocGotLegacy);

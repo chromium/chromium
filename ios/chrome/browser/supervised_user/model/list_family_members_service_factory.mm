@@ -4,18 +4,18 @@
 
 #import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 
+#import "base/check_deref.h"
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/supervised_user/core/browser/list_family_members_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 // static
 supervised_user::ListFamilyMembersService*
-ListFamilyMembersServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<supervised_user::ListFamilyMembersService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+ListFamilyMembersServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<supervised_user::ListFamilyMembersService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -26,22 +26,15 @@ ListFamilyMembersServiceFactory::GetInstance() {
 }
 
 ListFamilyMembersServiceFactory::ListFamilyMembersServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ListFamilyMembersService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("ListFamilyMembersService") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
 ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-
-  PrefService* user_prefs = browser_state->GetPrefs();
-  CHECK(user_prefs);
-
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<supervised_user::ListFamilyMembersService>(
-      IdentityManagerFactory::GetForBrowserState(browser_state),
-      browser_state->GetSharedURLLoaderFactory(), *user_prefs);
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetSharedURLLoaderFactory(), CHECK_DEREF(profile->GetPrefs()));
 }

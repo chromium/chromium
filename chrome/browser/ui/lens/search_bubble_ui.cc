@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/search_bubble_page_handler.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
@@ -20,6 +21,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lens_search_bubble_resources.h"
 #include "chrome/grit/lens_search_bubble_resources_map.h"
+#include "chrome/grit/lens_shared_resources.h"
+#include "chrome/grit/lens_shared_resources_map.h"
 #include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -45,10 +48,17 @@ SearchBubbleUI::SearchBubbleUI(content::WebUI* web_ui)
   // Add required resources for the searchbox.
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("reportMetrics", false);
-  source->AddString("realboxDefaultIcon",
+  source->AddString("searchboxDefaultIcon",
                     "//resources/cr_components/searchbox/icons/google_g.svg");
   source->AddLocalizedString("searchBoxHint",
                              IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT);
+  source->AddBoolean(
+      "darkMode",
+      lens::LensOverlayShouldUseDarkMode(
+          ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))));
+  source->AddBoolean("isLensSearchbox", true);
+  source->AddResourcePaths(
+      base::make_span(kLensSharedResources, kLensSharedResourcesSize));
 }
 
 SearchBubbleUI::~SearchBubbleUI() = default;

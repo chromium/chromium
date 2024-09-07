@@ -319,8 +319,8 @@ component("base") {
       "cocoa/command_dispatcher.mm",
       "cocoa/constrained_window/constrained_window_animation.h",
       "cocoa/constrained_window/constrained_window_animation.mm",
-      "cocoa/cursor_accessibility_scale_factor_observer.h",
-      "cocoa/cursor_accessibility_scale_factor_observer.mm",
+      "cocoa/cursor_accessibility_scale_factor.h",
+      "cocoa/cursor_accessibility_scale_factor.mm",
       "cocoa/cursor_utils.h",
       "cocoa/cursor_utils.mm",
       "cocoa/defaults_utils.h",
@@ -502,6 +502,7 @@ component("base") {
     "//base",
     "//skia",
     "//third_party/abseil-cpp:absl",
+    "//ui/base/mojom:ui_base_types",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]

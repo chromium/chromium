@@ -11,7 +11,7 @@ FAIL a.href should be s:www.mydomain.com/path/?%. Was file:///S:/www.mydomain.co
 Set search containing '#'
 PASS a.href is 'https://www.mydomain.com/path/?value%23key#hash'
 Set search to a malformed URL
-PASS a.href is 'bad:/|/url?value=key'
+FAIL a.href should be bad:/|/url?value=key. Was bad:/%7C/url?value=key.
 Set search to null
 PASS a.href is 'https://www.mydomain.com/path/?null'
 Set search to empty string

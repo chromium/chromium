@@ -63,10 +63,7 @@ class ApplicationContextImpl : public ApplicationContext {
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   const std::string& GetApplicationLocale() override;
   const std::string& GetApplicationCountry() override;
-  // TODO(crbug.com/358299872): After all usage has changed to
-  // GetProfileManager(), remove this method.
-  ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
-  ChromeBrowserStateManager* GetProfileManager() override;
+  ProfileManagerIOS* GetProfileManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* GetMetricsService() override;
@@ -89,8 +86,8 @@ class ApplicationContextImpl : public ApplicationContext {
   AccountProfileMapper* GetAccountProfileMapper() override;
   IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
-  UpgradeCenter* GetUpgradeCenter() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
+  AdditionalFeaturesController* GetAdditionalFeaturesController() override;
 
  private:
   // Represents the possible application states the app can be in.
@@ -129,11 +126,11 @@ class ApplicationContextImpl : public ApplicationContext {
   // service, the policy connector must live outside the keyed services.
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
 
-  // Must be destroyed after `chrome_browser_state_manager_` as some of the
-  // KeyedService register themselves as NetworkConnectionObserver and need
-  // to unregister themselves before NetworkConnectionTracker destruction. Must
-  // also be destroyed after `gcm_driver_` and `metrics_services_manager_` since
-  // these own objects that register themselves as NetworkConnectionObservers.
+  // Must be destroyed after `profile_manager_` as some of the KeyedService
+  // register themselves as NetworkConnectionObserver and need to unregister
+  // themselves before NetworkConnectionTracker destruction. Must also be
+  // destroyed after `gcm_driver_` and `metrics_services_manager_` since these
+  // own objects that register themselves as NetworkConnectionObservers.
   std::unique_ptr<network::NetworkChangeManager> network_change_manager_;
   std::unique_ptr<network::NetworkConnectionTracker>
       network_connection_tracker_;
@@ -149,7 +146,7 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 
-  std::unique_ptr<ChromeBrowserStateManager> chrome_browser_state_manager_;
+  std::unique_ptr<ProfileManagerIOS> profile_manager_;
   std::string application_locale_;
   std::string application_country_;
 
@@ -167,7 +164,7 @@ class ApplicationContextImpl : public ApplicationContext {
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
-  __strong UpgradeCenter* upgrade_center_ = nil;
+  std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_MODEL_APPLICATION_CONTEXT_IMPL_H_

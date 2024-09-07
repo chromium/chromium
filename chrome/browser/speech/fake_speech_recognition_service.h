@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_SPEECH_FAKE_SPEECH_RECOGNITION_SERVICE_H_
 #define CHROME_BROWSER_SPEECH_FAKE_SPEECH_RECOGNITION_SERVICE_H_
 
+#include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
+#include "chrome/browser/speech/fake_speech_recognizer.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
@@ -18,17 +22,23 @@
 
 namespace speech {
 
-// A fake SpeechRecognitionService. This can only be used by one client at a
-// time. This class also acts as the AudioSourceFetcher receiver and
-// SpeechRecognitionRecognizer receiver to allow tests to inspect whether
-// methods have been called properly.
+// A fake SpeechRecognitionService. This service works by creating
+// FakeSpeechRecognizers as self owned receivers.  If a test wants to assert
+// against the state of a particular session then the fixture will need to
+// implement the observer interface and add itself.  When the recognizer is
+// bound the fixture can then grab a reference to the recognizer and assert
+// against it. Fixtures may also want to confirm that they have the correct
+// recognizer by checking the recognition type in the options struct.
 class FakeSpeechRecognitionService
     : public SpeechRecognitionService,
       public media::mojom::SpeechRecognitionContext,
-      public media::mojom::SpeechRecognitionRecognizer,
-      public media::mojom::AudioSourceSpeechRecognitionContext,
-      public media::mojom::AudioSourceFetcher {
+      public media::mojom::AudioSourceSpeechRecognitionContext {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnRecognizerBound(FakeSpeechRecognizer* bound_recognizer) = 0;
+  };
+
   FakeSpeechRecognitionService();
   FakeSpeechRecognitionService(const FakeSpeechRecognitionService&) = delete;
   FakeSpeechRecognitionService& operator=(const SpeechRecognitionService&) =
@@ -70,71 +80,32 @@ class FakeSpeechRecognitionService
       media::mojom::SpeechRecognitionOptionsPtr options,
       BindRecognizerCallback callback) override;
 
-  // media::mojom::AudioSourceFetcher:
-  void Start(
-      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
-      const std::string& device_id,
-      const ::media::AudioParameters& audio_parameters) override;
-  void Stop() override;
-
-  // media::mojom::SpeechRecognitionRecognizer:
-  void SendAudioToSpeechRecognitionService(
-      media::mojom::AudioDataS16Ptr buffer) override;
-  void OnLanguageChanged(const std::string& language) override {}
-  void OnMaskOffensiveWordsChanged(bool mask_offensive_words) override {}
-  void MarkDone() override;
-
-  // Methods for testing plumbing to SpeechRecognitionRecognizerClient.
-  void SendSpeechRecognitionResult(
-      const media::SpeechRecognitionResult& result);
-  void SendSpeechRecognitionError();
-
-  void WaitForRecognitionStarted();
-
-  // Whether AudioSourceFetcher is capturing audio.
-  bool is_capturing_audio() { return capturing_audio_; }
-
-  // Whether SendAudioToSpeechRecognitionService has been called.
-  bool has_received_audio() { return has_received_audio_; }
-
-  std::string device_id() { return device_id_; }
-
-  const std::optional<::media::AudioParameters>& audio_parameters() {
-    return audio_parameters_;
-  }
-
   void set_multichannel_supported(bool is_multichannel_supported) {
     is_multichannel_supported_ = is_multichannel_supported;
   }
 
+  void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
+
+  void RemoveObsever(Observer* obs) { observers_.RemoveObserver(obs); }
+
  private:
   void OnRecognizerClientDisconnected();
-
   void OnSpeechRecognitionRecognitionEventCallback(bool success);
+
+  std::unique_ptr<FakeSpeechRecognizer> GetNextRecognizerAndBindItsRemote(
+      mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+          client,
+      media::mojom::SpeechRecognitionOptionsPtr options);
 
   // Whether multichannel audio is supported.
   bool is_multichannel_supported_ = false;
-  // Whether the AudioSourceFetcher has been started.
-  bool capturing_audio_ = false;
-  // Whether any audio has been sent to the SpeechRecognitionRecognizer.
-  bool has_received_audio_ = false;
-  // The device ID used to capture audio.
-  std::string device_id_;
-  // The audio parameters used to capture audio.
-  std::optional<::media::AudioParameters> audio_parameters_;
-
-  base::OnceClosure recognition_started_closure_;
-
-  mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient>
-      recognizer_client_remote_;
 
   mojo::ReceiverSet<media::mojom::AudioSourceSpeechRecognitionContext>
       audio_source_speech_recognition_contexts_;
   mojo::ReceiverSet<media::mojom::SpeechRecognitionContext>
       speech_recognition_contexts_;
-  mojo::Receiver<media::mojom::SpeechRecognitionRecognizer>
-      recognizer_receiver_{this};
-  mojo::Receiver<media::mojom::AudioSourceFetcher> fetcher_receiver_{this};
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace speech

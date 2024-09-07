@@ -22,9 +22,12 @@ import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference;
@@ -47,7 +50,10 @@ import java.util.Locale;
 
 /** Fragment to manage settings for tracking protection. */
 public class TrackingProtectionSettings extends PreferenceFragmentCompat
-        implements CustomDividerFragment, OnPreferenceClickListener, SiteAddedCallback {
+        implements CustomDividerFragment,
+                OnPreferenceClickListener,
+                SiteAddedCallback,
+                SettingsPage {
     // Must match keys in tracking_protection_preferences.xml.
     private static final String OFFBOARDING_NOTICE = "offboarding_notice";
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
@@ -75,10 +81,12 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
 
     private CustomTabIntentHelper mCustomTabIntentHelper;
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tracking_protection_preferences);
-        getActivity().setTitle(R.string.privacy_sandbox_tracking_protection_title);
+        mPageTitle.set(getString(R.string.privacy_sandbox_tracking_protection_title));
 
         // Format the Learn More link in the second bullet point.
         TextMessagePreference bulletTwo = (TextMessagePreference) findPreference(PREF_BULLET_TWO);
@@ -193,6 +201,11 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                                                 .website_settings_third_party_cookies_page_add_allow_exception_description),
                                 cookiesCategory,
                                 this));
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

@@ -10,8 +10,8 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -72,7 +72,7 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
 
     ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -97,7 +97,7 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   base::HistogramTester histogram_tester_;
   id mock_push_notification_util_ = nil;
 };
@@ -135,6 +135,10 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
 
   EXPECT_THAT(histogram_tester().GetAllSamples(
                   kSafetyCheckNotifClientStatusByProviderHistogram),
+              ::testing::ElementsAre());
+
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kSendTabNotifClientStatusByProviderHistogram),
               ::testing::ElementsAre());
 }
 
@@ -174,6 +178,10 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
   EXPECT_THAT(histogram_tester().GetAllSamples(
                   kSafetyCheckNotifClientStatusByProviderHistogram),
               ::testing::ElementsAre(base::Bucket(0, 1)));
+
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kSendTabNotifClientStatusByProviderHistogram),
+              ::testing::ElementsAre());
 }
 
 // Tests that ProvideCurrentSessionData(...) records the status of the
@@ -214,4 +222,8 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
   EXPECT_THAT(histogram_tester().GetAllSamples(
                   kSafetyCheckNotifClientStatusByProviderHistogram),
               ::testing::ElementsAre(base::Bucket(0, 3)));
+
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kSendTabNotifClientStatusByProviderHistogram),
+              ::testing::ElementsAre(base::Bucket(0, 1)));
 }

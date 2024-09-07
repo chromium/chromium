@@ -793,18 +793,43 @@ void AutofillAgent::AccessibilityModeChanged(const ui::AXMode& mode) {
 void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
                                          bool known_success,
                                          mojom::SubmissionSource source) {
-  if (base::FeatureList::IsEnabled(
+  DenseSet<mojom::SubmissionSource>& sources =
+      submitted_forms_[form_data.renderer_id()];
+  if (!sources.insert(source).second) {
+    // A single submission source should not lead to multiple submission signals
+    // for a single form.
+    return;
+  }
+  // Autofill ignores DOM_MUTATION_AFTER_AUTOFILL on non-WebView platforms and
+  // so this source shouldn't shadow other submissions. On WebView, no duplicate
+  // filtering is required since the provider is reset on successful submission.
+  const bool autofill_duplicate_submission =
+      sources.size() -
+          sources.contains(
+              mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL) >
+      1;
+  // Password manager doesn't consider FORM_SUBMISSION as a sufficient condition
+  // for "successful" submission, therefore this should also not shadow other
+  // submissions.
+  const bool password_duplicate_submission =
+      sources.size() -
+          sources.contains(mojom::SubmissionSource::FORM_SUBMISSION) >
+      1;
+  if (!password_duplicate_submission &&
+      base::FeatureList::IsEnabled(
           features::kAutofillUnifyAndFixFormTracking)) {
     password_autofill_agent_->FireHostSubmitEvent(form_data.renderer_id(),
                                                   source);
   }
-  // We don't want to fire duplicate submission event.
-  if (!submitted_forms_.insert(form_data.renderer_id()).second) {
-    return;
+  if (!autofill_duplicate_submission) {
+    base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
+    if (auto* autofill_driver = unsafe_autofill_driver()) {
+      autofill_driver->FormSubmitted(form_data, known_success, source);
+    }
   }
-  base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
-  if (auto* autofill_driver = unsafe_autofill_driver()) {
-    autofill_driver->FormSubmitted(form_data, known_success, source);
+  // Bound the size of `submitted_forms_` to avoid possible memory leaks.
+  if (submitted_forms_.size() > 200) {
+    submitted_forms_.erase(--submitted_forms_.end());
   }
 }
 
@@ -996,7 +1021,13 @@ void AutofillAgent::ApplyFieldsAction(
     };
     if (auto it = base::ranges::find_if(fields, host_form_is_connected);
         it != fields.end()) {
-      UpdateLastInteractedElement(it->host_form_id);
+      base::FeatureList::IsEnabled(
+          features::kAutofillUnifyAndFixFormTracking) &&
+              base::FeatureList::IsEnabled(
+                  features::kAutofillAcceptDomMutationAfterAutofillSubmission)
+          ? TrackAutofilledElement(
+                form_util::GetFormControlByRendererId(it->renderer_id))
+          : UpdateLastInteractedElement(it->host_form_id);
     } else if (!base::FeatureList::IsEnabled(
                    features::kAutofillUnifyAndFixFormTracking)) {
       UpdateLastInteractedElement(FormRendererId());
@@ -1009,13 +1040,16 @@ void AutofillAgent::ApplyFieldsAction(
           // list could have been removed from the DOM. Updating inside this
           // conditional ensures submission is always tracked with an element
           // currently connected to the DOM.
-          UpdateLastInteractedElement(
-              form_util::GetFieldRendererId(control_element));
+          base::FeatureList::IsEnabled(
+              features::kAutofillAcceptDomMutationAfterAutofillSubmission)
+              ? TrackAutofilledElement(control_element)
+              : UpdateLastInteractedElement(
+                    form_util::GetFieldRendererId(control_element));
         }
       }
     }
 
-    formless_elements_were_autofilled_ |= base::ranges::any_of(
+    formless_elements_were_autofilled_ |= std::ranges::any_of(
         filled_fields, [](const std::pair<FieldRef, WebAutofillState>& field) {
           WebFormControlElement element = field.first.GetField();
           return element && !form_util::GetOwningForm(element);
@@ -1970,7 +2004,20 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
         password_autofill_agent_->FireHostSubmitEvent(
             FormRendererId(),
             mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
+        if (std::optional<FormData> form_data = GetSubmittedForm();
+            form_data &&
+            base::FeatureList::IsEnabled(
+                features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
+          FireHostSubmitEvents(
+              *form_data, /*known_success=*/true,
+              mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
+        }
       }
+      // `BrowserAutofillManager` ignores submissions with
+      // DOM_MUTATION_AFTER_AUTOFILL as a source, therefore we early return in
+      // this case as to not call `AutofillAgent::ResetLastInteractedElements()`
+      // which could cause us to miss a submission that BAM actually cares
+      // about.
       return;
     // This event occurs only when either this frame or a same process parent
     // frame of it gets detached.
@@ -2053,7 +2100,7 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
       document, last_interacted_form().GetForm(), field_data_manager(),
       GetCallTimerState(kGetSubmittedForm));
   return !form || (user_edited_unowned_form &&
-                   base::ranges::none_of(form->fields(), has_been_user_edited))
+                   std::ranges::none_of(form->fields(), has_been_user_edited))
              ? provisionally_saved_form()
              : form;
 }

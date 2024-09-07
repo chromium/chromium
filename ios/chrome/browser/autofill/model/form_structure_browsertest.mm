@@ -40,8 +40,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -202,8 +202,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {
-          // TODO(crbug.com/40160818) Remove once launched.
-          features::kAutofillEnableDependentLocalityParsing,
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
           features::kAutofillPageLanguageDetection,
@@ -212,8 +210,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillInferCountryCallingCode,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
-          // TODO(crbug.com/40279279): Clean up when launched.
-          features::kAutofillDefaultToCityAndNumber,
       },
       // Disabled
       {
@@ -381,10 +377,12 @@ const auto& GetFailingTestNames() {
 // to GetFailingTestNames(), directly above, instead of renaming the test to
 // DISABLED_DataDrivenHeuristics.
 TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
     GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                     "parsing patterns";
   }
+#endif
   bool is_expected_to_pass =
       !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetIOSOutputDirectory(),

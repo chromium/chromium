@@ -93,8 +93,16 @@ struct Config {
   // Uses segmentation platform to predict nudge utility.
   bool proactive_nudge_segmentation = true;
 
-  // How long to wait to show the proactive nudge.
-  base::TimeDelta proactive_nudge_delay = base::Seconds(1);
+  // How long to wait to show the proactive nudge after focus. A non-positive
+  // value disables the focus nudge.
+  base::TimeDelta proactive_nudge_focus_delay = base::Seconds(0);
+  // How long to wait to show the proactive nudge after valid text input. A
+  // non-positive value disables the after input nudge.
+  base::TimeDelta proactive_nudge_text_settled_delay = base::Seconds(1);
+
+  // How many text change events to wait for before showing the after text input
+  // nudge.
+  int proactive_nudge_text_change_count = 10;
 
   // Whether the nudge on selection should be enabled.
   bool selection_nudge_enabled = false;
@@ -104,6 +112,9 @@ struct Config {
 
   // How long to wait to show the selection nudge.
   base::TimeDelta selection_nudge_delay = base::Milliseconds(500);
+
+  // Whether the selection nudge can be shown more than once per focus.
+  bool selection_nudge_once_per_focus = false;
 
   // If true, nudge at most once per field per navigation. If false, at most
   // once per field per focus.
@@ -138,6 +149,11 @@ struct Config {
       "bd", "ca", "gh", "in", "ke", "my", "ng", "ph",
       "pk", "sg", "tz", "ug", "us", "zm", "zw",
   };
+
+  // The threshold for the lifetime of a Compose session. A session whose
+  // lifetime has exceeded this threshold will be replaced with a new session
+  // the next time there is an attempt to resume it.
+  base::TimeDelta session_max_allowed_lifetime = base::Minutes(30);
 
   Config();
   Config(const Config& other);

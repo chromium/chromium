@@ -52,7 +52,7 @@ cr-button {
   margin-inline-end: 0;
 }
 
-cr-button iron-icon {
+cr-button cr-icon {
   --iron-icon-fill-color: currentColor;
   margin-inline-start: 8px;
 }

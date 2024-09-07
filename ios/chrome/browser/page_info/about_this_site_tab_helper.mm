@@ -7,7 +7,6 @@
 #import "components/optimization_guide/core/optimization_guide_decider.h"
 #import "components/optimization_guide/core/optimization_metadata.h"
 #import "components/optimization_guide/proto/hints.pb.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"

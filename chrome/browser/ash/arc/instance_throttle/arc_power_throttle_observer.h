@@ -8,7 +8,7 @@
 #include "ash/components/arc/power/arc_power_bridge.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 
 namespace arc {
 

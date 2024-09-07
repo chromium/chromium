@@ -236,7 +236,7 @@ void PepperWebPluginImpl::DidReceiveResponse(
   instance_->HandleDocumentLoad(response);
 }
 
-void PepperWebPluginImpl::DidReceiveData(const char* data, size_t data_length) {
+void PepperWebPluginImpl::DidReceiveData(base::span<const char> data) {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.
   if (!instance_)
@@ -244,7 +244,7 @@ void PepperWebPluginImpl::DidReceiveData(const char* data, size_t data_length) {
   blink::WebAssociatedURLLoaderClient* document_loader =
       instance_->document_loader();
   if (document_loader)
-    document_loader->DidReceiveData(data, data_length);
+    document_loader->DidReceiveData(data);
 }
 
 void PepperWebPluginImpl::DidFinishLoading() {

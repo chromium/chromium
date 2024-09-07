@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.angle builder group."""
 
-load("//lib/builders.star", "gardener_rotations", "os", "siso")
+load("//lib/builders.star", "cpu", "gardener_rotations", "os", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/ci.star", "ci")
@@ -85,7 +85,8 @@ ci.gpu.linux_builder(
 )
 
 ci.thin_tester(
-    name = "android-angle-chromium-arm64-nexus5x",
+    name = "android-angle-chromium-arm64-pixel2",
+    description_html = "Running Angle chromium tests on Pixel 2",
     triggered_by = ["android-angle-chromium-arm64-builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -109,7 +110,7 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Android|Nexus5X|Chromium",
+        category = "Android|Pixel2|Chromium",
         short_name = "arm64",
     ),
     contact_team_email = "angle-team@google.com",
@@ -285,6 +286,8 @@ ci.gpu.mac_builder(
             "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Builder|Chromium",
         short_name = "x64",
@@ -393,9 +396,7 @@ ci.gpu.mac_builder(
         short_name = "x64",
     ),
     contact_team_email = "angle-team@google.com",
-    # TODO(crbug.com/40269985): Change to xcode_default once the machines
-    # are upgraded to MacOS13
-    xcode = xcode.x14main,
+    xcode = xcode.xcode_default,
 )
 
 ci.thin_tester(

@@ -44,11 +44,11 @@ const char* OperationToString(InstallerState::Operation operation) {
   return "";
 }
 
-// Returns the path returned by `base::GetSecureSystemTemp` if available.
-// Otherwise, retrieves the SYSTEM version of TEMP. We do this instead of
-// GetTempPath so that both elevated and SYSTEM runs share the same directory.
+// Returns `SystemTemp` if available. Otherwise, retrieves the SYSTEM version of
+// TEMP. We do this instead of GetTempPath so that both elevated and SYSTEM runs
+// share the same directory.
 bool GetSystemTemp(base::FilePath* temp) {
-  if (base::GetSecureSystemTemp(temp)) {
+  if (base::PathService::Get(base::DIR_SYSTEM_TEMP, temp)) {
     return true;
   }
 

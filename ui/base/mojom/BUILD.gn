@@ -37,10 +37,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "ui.mojom.DialogButton"
-          cpp = "::ui::DialogButton"
-        },
-        {
           mojom = "ui.mojom.MenuSourceType"
           cpp = "::ui::MenuSourceType"
         },
@@ -70,4 +66,9 @@ mojom("mojom") {
 
   # Generate legacy bindings for Blink.
   generate_legacy_js_bindings = true
+}
+
+# TODO(crbug.com/359910414): Move back DialogButton enum to ui_base_types.mojom.
+mojom("ui_base_types") {
+  sources = [ "dialog_button.mojom" ]
 }

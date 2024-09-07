@@ -47,6 +47,7 @@ class ComposeTextUsageLogger
 
     std::u16string initial_text;
     std::u16string final_text;
+    int64_t previous_text_length = 0;
     bool is_autofill_field_type = false;
     // Is it either a textarea or a contenteditable.
     bool is_long_field = false;

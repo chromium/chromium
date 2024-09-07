@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -42,9 +43,9 @@ class DialogExample::Delegate : public virtual DialogType {
  public:
   explicit Delegate(DialogExample* parent) : parent_(parent) {
     DialogDelegate::SetButtons(parent_->GetDialogButtons());
-    DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_OK,
+    DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kOk,
                                    parent_->ok_button_label_->GetText());
-    DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+    DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kCancel,
                                    parent_->cancel_button_label_->GetText());
     DialogDelegate::SetCloseCallback(base::BindRepeating(
         &DialogExample::OnCloseCallback, base::Unretained(parent_)));
@@ -266,9 +267,9 @@ ui::mojom::ModalType DialogExample::GetModalType() const {
 int DialogExample::GetDialogButtons() const {
   int buttons = 0;
   if (has_ok_button_->GetChecked())
-    buttons |= ui::DIALOG_BUTTON_OK;
+    buttons |= static_cast<int>(ui::mojom::DialogButton::kOk);
   if (has_cancel_button_->GetChecked())
-    buttons |= ui::DIALOG_BUTTON_CANCEL;
+    buttons |= static_cast<int>(ui::mojom::DialogButton::kCancel);
   return buttons;
 }
 

@@ -104,11 +104,8 @@ class BucketManagerHostTest : public testing::Test {
     void BindCacheStorageForBucket(
         const storage::BucketInfo& bucket,
         mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {}
-    GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override {
-      return GlobalRenderFrameHostId();
-    }
-    base::UnguessableToken GetDevToolsToken() const override {
-      return base::UnguessableToken::Null();
+    storage::BucketClientInfo GetBucketClientInfo() const override {
+      return storage::BucketClientInfo{};
     }
 
     void GetSandboxedFileSystemForBucket(

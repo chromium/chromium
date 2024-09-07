@@ -56,13 +56,16 @@ using sync_pb::DeviceInfoSpecifics;
 using sync_pb::EntitySpecifics;
 using testing::_;
 using testing::AllOf;
+using testing::Contains;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::Matcher;
 using testing::NiceMock;
+using testing::Not;
 using testing::NotNull;
 using testing::Pair;
+using testing::Pointee;
 using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
@@ -156,6 +159,10 @@ Matcher<std::unique_ptr<EntityData>> HasSpecifics(
   return testing::Pointee(testing::Field(&EntityData::specifics, m));
 }
 
+MATCHER_P(HasCacheGuid, cache_guid, "") {
+  return arg.guid() == cache_guid;
+}
+
 MATCHER(HasLastUpdatedAboutNow, "") {
   const sync_pb::DeviceInfoSpecifics& specifics = arg.device_info();
   const base::Time now = base::Time::Now();
@@ -206,6 +213,10 @@ std::string SyncUserAgentForSuffix(int suffix) {
 
 std::string ChromeVersionForSuffix(int suffix) {
   return base::StringPrintf("chrome version %d", suffix);
+}
+
+std::string GooglePlayServicesVersionForSuffix(int suffix) {
+  return base::StringPrintf("apk version %d", suffix);
 }
 
 std::string SigninScopedDeviceIdForSuffix(int suffix) {
@@ -324,6 +335,19 @@ DeviceInfoSpecifics CreateSpecifics(
         GetSpecificsFieldNumberFromDataType(type));
   }
 
+  return specifics;
+}
+
+DeviceInfoSpecifics CreateGooglePlayServicesSpecifics(int suffix) {
+  DeviceInfoSpecifics specifics;
+  specifics.set_cache_guid(CacheGuidForSuffix(suffix));
+  specifics.set_client_name(ClientNameForSuffix(suffix));
+  specifics.set_device_type(sync_pb::SyncEnums::TYPE_PHONE);
+  specifics.set_os_type(sync_pb::SyncEnums::OS_TYPE_ANDROID);
+  specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  specifics.mutable_google_play_services_version_info()->set_apk_version_name(
+      GooglePlayServicesVersionForSuffix(suffix));
   return specifics;
 }
 
@@ -1212,13 +1236,17 @@ TEST_F(DeviceInfoSyncBridgeTest,
             bridge()->CountActiveDevicesByType());
   ASSERT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(1)), NotNull());
 
-  // If the Chrome version is not present, it should not be exposed as device.
-  sync_pb::DeviceInfoSpecifics specifics2 = CreateSpecifics(2);
-  specifics2.clear_chrome_version();
+  // If the Chrome version is not present, it should not be exposed as Chrome
+  // device.
+  sync_pb::DeviceInfoSpecifics specifics2 =
+      CreateGooglePlayServicesSpecifics(2);
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         EntityAddList({specifics2}));
   ASSERT_THAT(GetAllData(), SizeIs(3));
-  EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
+  EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(3));
+  EXPECT_THAT(bridge()->GetAllChromeDeviceInfo(), SizeIs(2));
+  EXPECT_THAT(bridge()->GetAllChromeDeviceInfo(),
+              Not(Contains(Pointee(HasCacheGuid(CacheGuidForSuffix(2))))));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
             bridge()->CountActiveDevicesByType());
   EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(2)), IsNull());
@@ -1231,7 +1259,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         EntityAddList({specifics3}));
   ASSERT_THAT(GetAllData(), SizeIs(4));
-  EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(3));
+  EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(4));
+  EXPECT_THAT(bridge()->GetAllChromeDeviceInfo(), SizeIs(3));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 3}}),
             bridge()->CountActiveDevicesByType());
   EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(3)), NotNull());

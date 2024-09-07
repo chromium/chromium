@@ -32,6 +32,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -132,7 +133,7 @@ class FramebustBlockBrowserTest
     child->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(base::StringPrintf("window.top.location = '%s';",
                                               redirect_url.spec().c_str())),
-        base::NullCallback());
+        base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
     block_waiter.Run();
 
     return base::Contains(GetFramebustTabHelper()->blocked_urls(),
@@ -313,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   child->ExecuteJavaScriptForTests(
       base::ASCIIToUTF16(base::StringPrintf("window.top.location = '%s';",
                                             redirect_url.spec().c_str())),
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   observer.Wait();
   EXPECT_TRUE(GetFramebustTabHelper()->blocked_urls().empty());
 }
@@ -345,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   child->ExecuteJavaScriptForTests(
       base::ASCIIToUTF16(base::StringPrintf("window.top.location = '%s';",
                                             redirect_url.spec().c_str())),
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   observer.Wait();
   EXPECT_TRUE(GetFramebustTabHelper()->blocked_urls().empty());
 }

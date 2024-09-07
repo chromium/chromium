@@ -11,6 +11,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "components/component_updater/pref_names.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
+#include "components/optimization_guide/core/feature_registry/settings_ui_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -208,9 +210,11 @@ bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
 
 bool ModelExecutionFeaturesController::
     ShouldFeatureBeCurrentlyAllowedForLogging(
-        UserVisibleFeatureKey feature) const {
+        const MqlsFeatureMetadata* metadata) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!ShouldFeatureBeCurrentlyEnabledForUser(feature)) {
+  std::optional<UserVisibleFeatureKey> feature_key =
+      metadata->user_visible_feature_key();
+  if (feature_key && !ShouldFeatureBeCurrentlyEnabledForUser(*feature_key)) {
     return false;
   }
 
@@ -223,7 +227,8 @@ bool ModelExecutionFeaturesController::
     return true;
   }
 
-  return GetEnterprisePolicyValue(feature) ==
+  return metadata->enterprise_policy().GetValue(
+             browser_context_profile_service_) ==
          model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow;
 }
 
@@ -256,7 +261,11 @@ ModelExecutionFeaturesController::GetCurrentUserValidityResult(
     }
   }
 
-  if (GetEnterprisePolicyValue(feature) ==
+  const SettingsUiMetadata* metadata =
+      SettingsUiRegistry::GetInstance().GetFeature(feature);
+  CHECK(metadata);
+  if (metadata->enterprise_policy().GetValue(
+          browser_context_profile_service_) ==
       model_execution::prefs::ModelExecutionEnterprisePolicyValue::kDisable) {
     return ModelExecutionFeaturesController::UserValidityResult::
         kInvalidEnterprisePolicy;
@@ -351,17 +360,6 @@ bool ModelExecutionFeaturesController::IsSettingVisible(
              : SettingsVisibilityResult::kNotVisibleFieldTrialDisabled;
   metrics_recorder.SetResult(feature, visibility_result);
   return result;
-}
-
-model_execution::prefs::ModelExecutionEnterprisePolicyValue
-ModelExecutionFeaturesController::GetEnterprisePolicyValue(
-    UserVisibleFeatureKey feature) const {
-  const char* enterprise_policy_pref =
-      model_execution::prefs::GetEnterprisePolicyPrefName(feature);
-  CHECK(enterprise_policy_pref);
-  return static_cast<
-      model_execution::prefs::ModelExecutionEnterprisePolicyValue>(
-      browser_context_profile_service_->GetInteger(enterprise_policy_pref));
 }
 
 void ModelExecutionFeaturesController::AddObserver(
@@ -545,14 +543,17 @@ void ModelExecutionFeaturesController::InitializePrefListener() {
                               OnMainToggleSettingStatePrefChanged,
                           base::Unretained(this)));
 
+  SettingsUiRegistry& registry = SettingsUiRegistry::GetInstance();
   for (auto feature : kAllUserVisibleFeatureKeys) {
     pref_change_registrar_.Add(
         optimization_guide::prefs::GetSettingEnabledPrefName(feature),
         base::BindRepeating(
             &ModelExecutionFeaturesController::OnFeatureSettingPrefChanged,
             base::Unretained(this), feature));
+    const SettingsUiMetadata* metadata = registry.GetFeature(feature);
+    CHECK(metadata);
     pref_change_registrar_.Add(
-        model_execution::prefs::GetEnterprisePolicyPrefName(feature),
+        metadata->enterprise_policy().name(),
         base::BindRepeating(&ModelExecutionFeaturesController::
                                 OnFeatureEnterprisePolicyPrefChanged,
                             base::Unretained(this), feature));

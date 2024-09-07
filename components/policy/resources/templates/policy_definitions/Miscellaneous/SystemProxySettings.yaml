@@ -16,7 +16,6 @@ features:
   per_profile: false
 owners:
 - acostinas@google.com
-- pmarko@chromium.org
 schema:
   properties:
     policy_credentials_auth_schemes:

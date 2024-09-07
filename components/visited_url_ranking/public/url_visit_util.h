@@ -65,6 +65,10 @@ const URLVisitAggregate::Tab* GetTabIfExists(
 const history::AnnotatedVisit* GetHistoryEntryVisitIfExists(
     const URLVisitAggregate& url_visit_aggregate);
 
+// Returns the highest priority decorator for a `URLVisitAggregate`.
+const Decoration& GetMostRelevantDecoration(
+    const URLVisitAggregate& url_visit_aggregate);
+
 }  // namespace visited_url_ranking
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_UTIL_H_

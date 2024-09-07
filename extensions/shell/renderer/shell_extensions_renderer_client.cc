@@ -16,11 +16,6 @@ ShellExtensionsRendererClient::ShellExtensionsRendererClient() = default;
 
 ShellExtensionsRendererClient::~ShellExtensionsRendererClient() = default;
 
-void ShellExtensionsRendererClient::RenderThreadStarted() {
-  CreateDispatcher();
-  dispatcher()->OnRenderThreadStarted(content::RenderThread::Get());
-}
-
 bool ShellExtensionsRendererClient::IsIncognitoProcess() const {
   // app_shell doesn't support off-the-record contexts.
   return false;

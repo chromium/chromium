@@ -39,147 +39,7 @@
 
 namespace {
 
-// Returns an OldLaunchMode value if one can be determined with low overhead, or
-// kToBeDecided if a call to GetOldLaunchModeSlow is required.
-OldLaunchMode GetOldLaunchModeFast();
-
-// Returns an OldLaunchMode value; may require a bit of extra work. This will be
-// called on a background thread outside of the critical startup path.
-OldLaunchMode GetOldLaunchModeSlow();
-
 #if BUILDFLAG(IS_WIN)
-// Returns the path to the shortcut from which Chrome was launched, or null if
-// not launched via a shortcut.
-std::optional<const wchar_t*> GetShortcutPath() {
-  STARTUPINFOW si = {sizeof(si)};
-  GetStartupInfoW(&si);
-  if (!(si.dwFlags & STARTF_TITLEISLINKNAME))
-    return std::nullopt;
-  return std::optional<const wchar_t*>(si.lpTitle);
-}
-
-OldLaunchMode GetOldLaunchModeFast() {
-  auto shortcut_path = GetShortcutPath();
-  if (!shortcut_path)
-    return OldLaunchMode::kOther;
-  if (!shortcut_path.value())
-    return OldLaunchMode::kShortcutNoName;
-  return OldLaunchMode::kToBeDecided;
-}
-
-OldLaunchMode GetOldLaunchModeSlow() {
-  auto shortcut_path = GetShortcutPath();
-  DCHECK(shortcut_path);
-  DCHECK(shortcut_path.value());
-
-  const std::u16string shortcut(
-      base::i18n::ToLower(base::WideToUTF16(shortcut_path.value())));
-
-  // The windows quick launch path is not localized.
-  if (shortcut.find(u"\\quick launch\\") != std::u16string_view::npos) {
-    return OldLaunchMode::kShortcutTaskbar;
-  }
-
-  // Check the common shortcut locations.
-  static constexpr struct {
-    int path_key;
-    OldLaunchMode launch_mode;
-  } kPathKeysAndModes[] = {
-      {base::DIR_COMMON_START_MENU, OldLaunchMode::kShortcutStartMenu},
-      {base::DIR_START_MENU, OldLaunchMode::kShortcutStartMenu},
-      {base::DIR_COMMON_DESKTOP, OldLaunchMode::kShortcutDesktop},
-      {base::DIR_USER_DESKTOP, OldLaunchMode::kShortcutDesktop},
-  };
-  base::FilePath candidate;
-  for (const auto& item : kPathKeysAndModes) {
-    if (base::PathService::Get(item.path_key, &candidate) &&
-        base::StartsWith(shortcut,
-                         base::i18n::ToLower(candidate.AsUTF16Unsafe()),
-                         base::CompareCase::SENSITIVE)) {
-      return item.launch_mode;
-    }
-  }
-
-  return OldLaunchMode::kShortcutUnknown;
-}
-#elif BUILDFLAG(IS_MAC)  // BUILDFLAG(IS_WIN)
-OldLaunchMode GetOldLaunchModeFast() {
-  DiskImageStatus dmg_launch_status =
-      IsAppRunningFromReadOnlyDiskImage(nullptr);
-  dock::ChromeInDockStatus dock_launch_status = dock::ChromeIsInTheDock();
-
-  if (dock_launch_status == dock::ChromeInDockFailure &&
-      dmg_launch_status == DiskImageStatusFailure)
-    return OldLaunchMode::kMacDockDMGStatusError;
-
-  if (dock_launch_status == dock::ChromeInDockFailure)
-    return OldLaunchMode::kMacDockStatusError;
-
-  if (dmg_launch_status == DiskImageStatusFailure)
-    return OldLaunchMode::kMacDMGStatusError;
-
-  bool dmg_launch = dmg_launch_status == DiskImageStatusTrue;
-  bool dock_launch = dock_launch_status == dock::ChromeInDockTrue;
-
-  if (dmg_launch && dock_launch)
-    return OldLaunchMode::kMacDockedDMGLaunch;
-
-  if (dmg_launch)
-    return OldLaunchMode::kMacUndockedDMGLaunch;
-
-  if (dock_launch)
-    return OldLaunchMode::kMacDockedDiskLaunch;
-
-  return OldLaunchMode::kMacUndockedDiskLaunch;
-}
-
-OldLaunchMode GetOldLaunchModeSlow() {
-  NOTREACHED_IN_MIGRATION();
-  return OldLaunchMode::kToBeDecided;
-}
-#else                    // BUILDFLAG(IS_WIN)
-OldLaunchMode GetOldLaunchModeFast() {
-  return OldLaunchMode::kOtherOS;
-}
-
-OldLaunchMode GetOldLaunchModeSlow() {
-  NOTREACHED_IN_MIGRATION();
-  return OldLaunchMode::kOtherOS;
-}
-#endif                   // BUILDFLAG(IS_WIN)
-
-void RecordOldLaunchMode(OldLaunchMode mode) {
-  base::UmaHistogramEnumeration("Launch.Modes", mode);
-#if BUILDFLAG(IS_WIN)
-  if (mode == OldLaunchMode::kShortcutTaskbar) {
-    std::optional<bool> installer_pinned = GetInstallerPinnedChromeToTaskbar();
-    if (installer_pinned.has_value()) {
-      base::UmaHistogramBoolean("Windows.Launch.TaskbarInstallerPinned",
-                                installer_pinned.value());
-    }
-  }
-#endif  // BUILDFLAG(IS_WIN)
-}
-
-// Log in a histogram the frequency of launching by the different methods. See
-// LaunchMode enum for the actual values of the buckets.
-void RecordOldLaunchModeHistogram(OldLaunchMode mode) {
-  if (mode == OldLaunchMode::kToBeDecided &&
-      (mode = GetOldLaunchModeFast()) == OldLaunchMode::kToBeDecided) {
-    // The mode couldn't be determined with a fast path. Perform a more
-    // expensive evaluation out of the critical startup path.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&RecordOldLaunchMode, GetOldLaunchModeSlow()));
-  } else {
-    RecordOldLaunchMode(mode);
-  }
-}
-
-#if BUILDFLAG(IS_WIN)
-
 enum class ArgType { kFile, kProtocol, kInvalid };
 
 // Returns the dir enum defined in base/base_paths_win.h that corresponds to the
@@ -245,18 +105,6 @@ std::optional<std::wstring> GetShortcutPath(
 #endif  // BUIDFLAG(IS_WIN)
 }  // namespace
 
-OldLaunchModeRecorder::OldLaunchModeRecorder() = default;
-
-OldLaunchModeRecorder::~OldLaunchModeRecorder() {
-  if (mode_.has_value())
-    RecordOldLaunchModeHistogram(mode_.value());
-}
-
-void OldLaunchModeRecorder::SetLaunchMode(OldLaunchMode mode) {
-  if (!mode_.has_value())
-    mode_ = mode;
-}
-
 // new LaunchMode implementation below.
 
 namespace {
@@ -268,13 +116,6 @@ void RecordLaunchMode(const base::CommandLine command_line,
   }
   base::UmaHistogramEnumeration("Launch.Mode2", mode.value());
 #if BUILDFLAG(IS_WIN)
-  if (mode == LaunchMode::kShortcutTaskbar) {
-    std::optional<bool> installer_pinned = GetInstallerPinnedChromeToTaskbar();
-    if (installer_pinned.has_value()) {
-      base::UmaHistogramBoolean("Windows.Launch.TaskbarInstallerPinned",
-                                installer_pinned.value());
-    }
-  }
   base::UmaHistogramBoolean(
       "BrowserSwitcher.ChromeLaunch.IsFromBrowserSwitcher",
       command_line.HasSwitch(switches::kFromBrowserSwitcher));

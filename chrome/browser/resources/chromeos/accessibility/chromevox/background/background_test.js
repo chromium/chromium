@@ -4156,9 +4156,16 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'CustomTabList', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'OpenKeyboardShortcuts', async function() {
-  const mockFeedback = this.createMockFeedback();
-  mockFeedback.call(doCmd('openKeyboardShortcuts'))
-      .expectSpeech('Search shortcuts')
-      .replay();
-});
+// TODO(crbug.com/361584737): Test is flaky on Linux Chromium OS ASan LSan.
+GEN('#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)');
+GEN('#define MAYBE_OpenKeyboardShortcuts DISABLED_OpenKeyboardShortcuts');
+GEN('#else');
+GEN('#define MAYBE_OpenKeyboardShortcuts OpenKeyboardShortcuts');
+GEN('#endif');
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'MAYBE_OpenKeyboardShortcuts', async function() {
+      const mockFeedback = this.createMockFeedback();
+      mockFeedback.call(doCmd('openKeyboardShortcuts'))
+          .expectSpeech('Search shortcuts')
+          .replay();
+    });

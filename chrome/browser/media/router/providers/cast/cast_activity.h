@@ -18,6 +18,7 @@
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
@@ -32,9 +33,9 @@ class AppActivity;
 class MirroringActivity;
 class CastSessionTracker;
 
-using OnSourceChangedCallback =
-    base::RepeatingCallback<void(int old_frame_tree_node_id,
-                                 int frame_tree_node_id)>;
+using OnSourceChangedCallback = base::RepeatingCallback<void(
+    content::FrameTreeNodeId old_frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id)>;
 
 class CastActivityFactoryForTest {
  public:
@@ -71,7 +72,7 @@ class CastActivity {
   virtual mojom::RoutePresentationConnectionPtr AddClient(
       const CastMediaSource& source,
       const url::Origin& origin,
-      int frame_tree_node_id);
+      content::FrameTreeNodeId frame_tree_node_id);
 
   virtual void RemoveClient(const std::string& client_id);
 

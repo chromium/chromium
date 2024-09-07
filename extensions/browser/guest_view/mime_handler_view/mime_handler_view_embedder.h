@@ -41,9 +41,10 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
  public:
   // Returns the instance associated with an ongoing navigation in a frame
   // identified by |frame_tree_node_id| if it exists.
-  static MimeHandlerViewEmbedder* Get(int32_t frame_tree_node_id);
+  static MimeHandlerViewEmbedder* Get(
+      content::FrameTreeNodeId frame_tree_node_id);
 
-  static void Create(int32_t frame_tree_node_id,
+  static void Create(content::FrameTreeNodeId frame_tree_node_id,
                      const GURL& resource_url,
                      const std::string& stream_id,
                      const std::string& internal_id);
@@ -54,7 +55,7 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
@@ -67,7 +68,7 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
   void OnFrameSandboxed();
 
  private:
-  MimeHandlerViewEmbedder(int32_t frame_tree_node_id,
+  MimeHandlerViewEmbedder(content::FrameTreeNodeId frame_tree_node_id,
                           const GURL& resource_url,
                           const std::string& stream_id,
                           const std::string& internal_id);
@@ -83,7 +84,7 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
   mojom::MimeHandlerViewContainerManager* GetContainerManager();
 
   // The ID for the embedder frame of MimeHandlerViewGuest.
-  const int32_t frame_tree_node_id_;
+  const content::FrameTreeNodeId frame_tree_node_id_;
   const GURL resource_url_;
   const std::string stream_id_;
   const std::string internal_id_;

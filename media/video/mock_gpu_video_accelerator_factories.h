@@ -105,7 +105,7 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
  private:
   base::Lock lock_;
-  OutputFormat video_frame_output_format_ = OutputFormat::I420;
+  OutputFormat video_frame_output_format_ = OutputFormat::YV12;
 
   bool fail_to_allocate_gpu_memory_buffer_ = false;
 

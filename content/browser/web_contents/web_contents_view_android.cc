@@ -518,12 +518,13 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
         break;
       }
 
-      std::vector<std::string> filenames;
-      AppendJavaStringArrayToStringVector(env, event.GetJavaFilenames(),
-                                          &filenames);
-      for (const auto& filename : filenames) {
+      std::vector<std::vector<std::string>> filenames;
+      base::android::Java2dStringArrayTo2dStringVector(
+          env, event.GetJavaFilenames(), &filenames);
+      for (const auto& info : filenames) {
+        CHECK_EQ(info.size(), 2u);
         drop_data->filenames.push_back(
-            ui::FileInfo(base::FilePath(filename), base::FilePath()));
+            ui::FileInfo(base::FilePath(info[0]), base::FilePath(info[1])));
       }
       if (!event.GetJavaText().is_null()) {
         drop_data->text = ConvertJavaStringToUTF16(env, event.GetJavaText());

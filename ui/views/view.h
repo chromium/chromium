@@ -609,7 +609,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Return the preferred height for a specific width. It is a helper function
   // of GetPreferredSize(SizeBounds(w, SizeBound())).height().
-  virtual int GetHeightForWidth(int w) const;
+  int GetHeightForWidth(int w) const;
 
   // Returns a bound on the available space for a child view, for example, in
   // case the child view wants to play an animation that would cause it to
@@ -1713,22 +1713,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     // Coordinates of the mouse press.
     gfx::Point start_pt;
   };
-
-  // Accessibility -------------------------------------------------------------
-
-  // Convenience function to set common accessibility properties during view
-  // construction/initialization. It should only be used to define property
-  // values as part of the creation of this view; not to provide property-
-  // change updates. This function will only modify properties for which a value
-  // has been explicitly set.
-  void SetAccessibilityProperties(
-      std::optional<ax::mojom::Role> role = std::nullopt,
-      std::optional<std::u16string> name = std::nullopt,
-      std::optional<std::u16string> description = std::nullopt,
-      std::optional<std::u16string> role_description = std::nullopt,
-      std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
-      std::optional<ax::mojom::DescriptionFrom> description_from =
-          std::nullopt);
 
   // Size and disposition ------------------------------------------------------
 

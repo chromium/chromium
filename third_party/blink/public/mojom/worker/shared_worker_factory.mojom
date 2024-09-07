@@ -20,6 +20,7 @@ import "third_party/blink/public/mojom/worker/shared_worker_host.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker_info.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
 import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
+import "url/mojom/origin.mojom";
 
 // The name of the InterfaceProviderSpec in service manifests used by the
 // frame tree to expose shared-worker-specific interfaces between renderer and
@@ -48,6 +49,12 @@ interface SharedWorkerFactory {
       // (see blink::SecurityOrigin::CanAccessSharedWorkers())
       // https://html.spec.whatwg.org/C/#concept-sharedworkerglobalscope-constructor-origin
       blink.mojom.StorageKey constructor_key,
+
+      // `origin` is the origin that will be used by the worker on the renderer
+      // side. It might differ from the origin that is used on the browser side
+      // when `script_url` is a data: URL, due to the linked bug.
+      // TODO(crbug.com/40051700): Remove the mismatch cases.
+      url.mojom.Origin origin,
 
       // Whether the page where `new SharedWorker()` is called is a secure
       // context or not. Note that this may be false even if

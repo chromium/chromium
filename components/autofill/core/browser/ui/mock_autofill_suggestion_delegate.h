@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -23,7 +24,10 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
               GetDriver,
               (),
               (override));
-  MOCK_METHOD(void, OnSuggestionsShown, (), (override));
+  MOCK_METHOD(void,
+              OnSuggestionsShown,
+              (base::span<const Suggestion>),
+              (override));
   MOCK_METHOD(void, OnSuggestionsHidden, (), (override));
   MOCK_METHOD(void,
               DidSelectSuggestion,
@@ -32,11 +36,11 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion& suggestion,
-               const AutofillSuggestionDelegate::SuggestionPosition& position),
+               const AutofillSuggestionDelegate::SuggestionMetadata& metadata),
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,
-              (const Suggestion&),
+              (const Suggestion&, const SuggestionButtonAction&),
               (override));
   MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));

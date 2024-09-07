@@ -255,20 +255,6 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         path_type, file_path, kBindingContext.process_id(),
         token_remote.InitWithNewPipeAndPassReceiver());
 
-    if (base::FeatureList::IsEnabled(
-            features::kFileSystemAccessDragAndDropCheckBlocklist)) {
-      EXPECT_CALL(
-          permission_context_,
-          ConfirmSensitiveEntryAccess_(
-              kTestStorageKey.origin(),
-              FileSystemAccessPermissionContext::PathType::kLocal, file_path,
-              FileSystemAccessPermissionContext::HandleType::kFile,
-              FileSystemAccessPermissionContext::UserAction::kDragAndDrop,
-              kFrameId, testing::_))
-          .WillOnce(RunOnceCallback<6>(FileSystemAccessPermissionContext::
-                                           SensitiveEntryResult::kAllowed));
-    }
-
     // Expect permission requests when the token is sent to be redeemed.
     EXPECT_CALL(
         permission_context_,
@@ -1390,14 +1376,15 @@ TEST_F(FileSystemAccessManagerImplTest,
 }
 
 TEST_F(FileSystemAccessManagerImplTest,
-       GetEntryFromDataTransferToken_File_SensitivePath) {
+       GetEntryFromDataTransferToken_File_NoSensitiveAccessCheck) {
   if (!base::FeatureList::IsEnabled(
           features::kFileSystemAccessDragAndDropCheckBlocklist)) {
     return;
   }
 
   base::FilePath file_path = dir_.GetPath().AppendASCII("mr_file");
-  ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
+  const std::string file_contents = "Deleted code is debugged code.";
+  ASSERT_TRUE(base::WriteFile(file_path, file_contents));
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
       token_remote;
@@ -1406,27 +1393,44 @@ TEST_F(FileSystemAccessManagerImplTest,
       kBindingContext.process_id(),
       token_remote.InitWithNewPipeAndPassReceiver());
 
-  EXPECT_CALL(
-      permission_context_,
-      ConfirmSensitiveEntryAccess_(
-          kTestStorageKey.origin(),
-          FileSystemAccessPermissionContext::PathType::kLocal, file_path,
-          FileSystemAccessPermissionContext::HandleType::kFile,
-          FileSystemAccessPermissionContext::UserAction::kDragAndDrop, kFrameId,
-          testing::_))
-      .WillOnce(RunOnceCallback<6>(
-          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(testing::_, testing::_, testing::_,
+                                           testing::_, testing::_, testing::_,
+                                           testing::_))
+      .Times(0);
 
-  // Attempt to resolve `token_remote` should abort.
+  // Expect permission requests when the token is sent to be redeemed.
+  EXPECT_CALL(permission_context_,
+              GetReadPermissionGrant(
+                  kTestStorageKey.origin(), file_path, HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kDragAndDrop))
+      .WillOnce(testing::Return(allow_grant_));
+
+  EXPECT_CALL(permission_context_,
+              GetWritePermissionGrant(
+                  kTestStorageKey.origin(), file_path, HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kDragAndDrop))
+      .WillOnce(testing::Return(allow_grant_));
+
+  // Attempt to resolve `token_remote` and store the resulting
+  // FileSystemAccessFileHandle in `file_remote`.
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                          blink::mojom::FileSystemAccessEntryPtr>
       get_entry_future;
   manager_remote_->GetEntryFromDataTransferToken(
       std::move(token_remote), get_entry_future.GetCallback());
   DCHECK_EQ(get_entry_future.Get<0>()->status,
-            blink::mojom::FileSystemAccessStatus::kOperationAborted);
+            blink::mojom::FileSystemAccessStatus::kOk);
   auto file_system_access_entry = std::get<1>(get_entry_future.Take());
-  EXPECT_TRUE(file_system_access_entry.is_null());
+
+  EXPECT_FALSE(file_system_access_entry.is_null());
+  ASSERT_TRUE(file_system_access_entry->entry_handle->is_file());
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_handle(
+      std::move(file_system_access_entry->entry_handle->get_file()));
+
+  // Check to see if the resulting FileSystemAccessFileHandle can read the
+  // contents of the file at `file_path`.
+  EXPECT_EQ(ReadStringFromFileRemote(std::move(file_handle)), file_contents);
 }
 
 TEST_F(FileSystemAccessManagerImplTest,

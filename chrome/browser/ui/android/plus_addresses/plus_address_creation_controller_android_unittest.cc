@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
@@ -30,31 +31,36 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using ::testing::Return;
 
-constexpr char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
+constexpr std::string_view kPlusAddressModalEventHistogram =
+    "PlusAddresses.Modal.Events";
+constexpr std::string_view kPlusAddressModalWithNoticeEventHistogram =
+    "PlusAddresses.ModalWithNotice.Events";
+
 constexpr base::TimeDelta kDuration = base::Milliseconds(3600);
 
 std::string FormatModalDurationMetrics(
-    metrics::PlusAddressModalCompletionStatus status) {
+    metrics::PlusAddressModalCompletionStatus status,
+    bool notice_shown) {
   return base::ReplaceStringPlaceholders(
-      "PlusAddresses.Modal.$1.ShownDuration",
+      notice_shown ? "PlusAddresses.ModalWithNotice.$1.ShownDuration"
+                   : "PlusAddresses.Modal.$1.ShownDuration",
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
 
 std::string FormatRefreshHistogramNameFor(
-    metrics::PlusAddressModalCompletionStatus status) {
+    metrics::PlusAddressModalCompletionStatus status,
+    bool notice_shown) {
   return base::ReplaceStringPlaceholders(
-      "PlusAddresses.Modal.$1.Refreshes",
+      notice_shown ? "PlusAddresses.ModalWithNotice.$1.Refreshes"
+                   : "PlusAddresses.Modal.$1.Refreshes",
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
-
-}  // namespace
 
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
@@ -145,11 +151,13 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
           base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/false),
       kDuration, 1);
   histogram_tester_.ExpectUniqueSample(
       FormatRefreshHistogramNameFor(
-          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/false),
       0, 1);
 }
 
@@ -202,6 +210,22 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
   FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          kPlusAddressModalWithNoticeEventHistogram),
+      BucketsAre(
+          base::Bucket(metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 1)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/true),
+      kDuration, 1);
+  histogram_tester_.ExpectUniqueSample(
+      FormatRefreshHistogramNameFor(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/true),
+      0, 1);
 }
 
 // Tests that the notice is shown if the  `kPlusAddressUserOnboardingEnabled`,
@@ -228,6 +252,22 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
   FastForwardBy(kDuration);
   controller->OnCanceled();
   EXPECT_FALSE(future.IsReady());
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          kPlusAddressModalWithNoticeEventHistogram),
+      BucketsAre(
+          base::Bucket(metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalCanceled, 1)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          metrics::PlusAddressModalCompletionStatus::kModalCanceled,
+          /*notice_shown=*/true),
+      kDuration, 1);
+  histogram_tester_.ExpectUniqueSample(
+      FormatRefreshHistogramNameFor(
+          metrics::PlusAddressModalCompletionStatus::kModalCanceled,
+          /*notice_shown=*/true),
+      0, 1);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
@@ -254,11 +294,13 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
           base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/false),
       kDuration, 1);
   histogram_tester_.ExpectUniqueSample(
       FormatRefreshHistogramNameFor(
-          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/false),
       1, 1);
 }
 
@@ -295,11 +337,13 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
           base::Bucket(metrics::PlusAddressModalEvent::kModalCanceled, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError),
+          metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError,
+          /*notice_shown=*/false),
       kDuration, 1);
   histogram_tester_.ExpectUniqueSample(
       FormatRefreshHistogramNameFor(
-          metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError),
+          metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError,
+          /*notice_shown=*/false),
       0, 1);
 }
 
@@ -331,11 +375,13 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
           base::Bucket(metrics::PlusAddressModalEvent::kModalCanceled, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError),
+          metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError,
+          /*notice_shown=*/false),
       kDuration, 1);
   histogram_tester_.ExpectUniqueSample(
       FormatRefreshHistogramNameFor(
-          metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError),
+          metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError,
+          /*notice_shown=*/false),
       0, 1);
 }
 
@@ -384,11 +430,13 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
           base::Bucket(metrics::PlusAddressModalEvent::kModalCanceled, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          metrics::PlusAddressModalCompletionStatus::kModalCanceled),
+          metrics::PlusAddressModalCompletionStatus::kModalCanceled,
+          /*notice_shown=*/false),
       kDuration, 1);
   histogram_tester_.ExpectUniqueSample(
       FormatRefreshHistogramNameFor(
-          metrics::PlusAddressModalCompletionStatus::kModalCanceled),
+          metrics::PlusAddressModalCompletionStatus::kModalCanceled,
+          /*notice_shown=*/false),
       0, 1);
 }
 
@@ -428,11 +476,13 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
           base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/false),
       kDuration, 1);
   histogram_tester_.ExpectUniqueSample(
       FormatRefreshHistogramNameFor(
-          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/false),
       0, 1);
 }
 // With the feature disabled, the `KeyedService` is not present; ensure this is
@@ -472,4 +522,5 @@ TEST_F(PlusAddressCreationControllerAndroidDisabledTest, ConfirmedNullService) {
   EXPECT_FALSE(future.IsReady());
 }
 
+}  // namespace
 }  // namespace plus_addresses

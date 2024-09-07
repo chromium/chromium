@@ -5,12 +5,12 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac highsierra mojave catalina bigsur monterey ventura sonoma
+#         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
-#             android-sm-a235m android-sm-s911u1
+#             android-sm-a235m android-sm-s911u1 android-moto-g-power-5g---2023
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -34,6 +34,7 @@
 #             apple-angle-metal-renderer:-apple-m2
 #         arm
 #         google google-0xffff google-0xc0de
+#         imagination
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
@@ -294,6 +295,16 @@ crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_half_f
 crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_WEBGL_color_buffer_float [ Skip ]
 crbug.com/1372155 [ android android-sm-a135m arm ] WebglExtension_WEBGL_draw_buffers [ Skip ]
 
+# Extensions not available on Motorola Moto G Power 5Gs
+crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] WebglExtension_EXT_sRGB [ Skip ]
+crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
+crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] WebglExtension_OES_texture_float_linear [ Skip ]
+crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] WebglExtension_OES_texture_half_float_linear [ Skip ]
+crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
+crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] conformance/extensions/oes-texture-float.html [ Skip ]
+crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/extensions/webgl-compressed-texture-pvrtc.html [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -356,9 +367,6 @@ crbug.com/610951 [ android android-nexus-5x ] conformance/uniforms/uniform-sampl
 # Skip test that breaks subsequent tests.
 crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
-# SwiftShader is disabled on Mac M1
-crbug.com/1378476 [ mac mac-arm64 angle-swiftshader ] conformance/rendering/gl-drawelements.html [ Skip ]
-
 # Old hardware + use of validating decoder. Can be removed once the validating
 # decoder has been unshipped on Mac.
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]
@@ -399,32 +407,6 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 
-# Android Graphite/Dawn/Vulkan video isn't implemented yet.
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/misc/image-decoder-to-texture.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/misc/texture-corner-case-videos.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/misc/texture-npot-video.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/misc/texture-upload-size.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/misc/video-rotation.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
-
 # Crashes fuchsia on qemu
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-linear.html [ Skip ]
 
@@ -458,7 +440,7 @@ crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-comp
 crbug.com/1175371 [ angle-opengles chromeos mesa_ge_21.0 passthrough target-cpu-64 ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough renderer-skia-gl ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengles display-server-wayland linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ mac angle-metal ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/1175371 [ amd-0x7340 angle-metal graphite-disabled mac-x86_64 no-clang-coverage release sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
@@ -567,7 +549,7 @@ crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-arr
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/354627705 [ angle-metal intel-0x3e9b mac ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
+crbug.com/354627705 [ angle-metal intel-0x3e9b mac no-clang-coverage release ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
 
 ## Mac Retina NVidia failures / flakes ##
@@ -617,8 +599,6 @@ crbug.com/1470376 [ android-oreo ] conformance/glsl/bugs/vector-matrix-construct
 # flaky (2018-09-10) that it had to be upgraded to Fail.
 crbug.com/951628 [ android android-nexus-5x no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
-# Timing out on this device for unknown reasons.
-crbug.com/1122644 [ android android-nexus-5x angle-opengles passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 
 # Fails on android oreo
 crbug.com/1470373 [ android-oreo android-nexus-5x passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
@@ -632,10 +612,12 @@ crbug.com/40236526 [ android android-shield-android-tv no-passthrough ] conforma
 ## Pixel 2 ##
 
 crbug.com/40236526 [ android android-pixel-2 no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/361604321 [ android android-pixel-2 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
+crbug.com/40167870 [ android android-pixel-2 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 
 ## Pixel 4 ##
 
-crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
+crbug.com/40167870 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1175226 [ android android-pixel-4 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/335857349 [ android android-pixel-4 no-passthrough ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
@@ -658,8 +640,6 @@ crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
-crbug.com/1495573 [ android-14 android-pixel-6 arm graphite-disabled passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-half-float-with-image.html [ RetryOnFailure ]
-crbug.com/1495573 [ android-pixel-6 arm graphite-disabled passthrough renderer-skia-vulkan ] conformance/extensions/oes-vertex-array-object.html [ RetryOnFailure ]
 
 ## Misc failures ##
 
@@ -697,7 +677,26 @@ crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan
 crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+
+## Moto G Power 5G failures ##
+
+crbug.com/332583995 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
+crbug.com/332583995 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/glsl/bugs/unary-minus-operator-float-bug.html [ Failure ]
+crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
+crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/faceforward/faceforward_001_to_006.html [ Failure ]
+crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/functions/functions_065_to_072.html [ Failure ]
+crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/functions/functions_081_to_088.html [ Failure ]
+crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/struct/struct_009_to_016.html [ Failure ]
+crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/struct/struct_033_to_040.html [ Failure ]
+crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/struct/struct_049_to_056.html [ Failure ]
+crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/gl-teximage.html [ Failure ]
+crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/texture-size-cube-maps.html [ Failure ]
+crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/texture-size.html [ Failure ]
+crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
+crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
+crbug.com/332587536 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/332587536 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
+crbug.com/361782093 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/more/functions/copyTexSubImage2DBadArgs.html [ Failure ]
 
 ############
 # ChromeOS #

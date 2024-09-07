@@ -22,7 +22,7 @@
     --cr-input-underline-display: none;
     --cr-textarea-autogrow-max-height: 3.5lh;
     color: var(--cros-sys-on_secondary_container);
-    font: var(--cros-display-4-font);
+    font: var(--cros-display-6-font);
     font-weight: 400;
     margin-top: 28px;
     text-align: start;
@@ -64,6 +64,7 @@
         rows=1
         has-max-height
         autogrow
+        disabled="[[thumbnailsLoading_]]"
         placeholder="[[i18n('seaPenFreeformInputPlaceholder')]]"
         maxlength="[[maxTextLength_]]"
         spellcheck="false"

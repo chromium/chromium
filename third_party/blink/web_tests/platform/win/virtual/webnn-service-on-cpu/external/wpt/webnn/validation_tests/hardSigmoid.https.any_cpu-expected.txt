@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] [hardSigmoid] Test building with options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'hardSigmoid' on 'MLGraphBuilder': Unsupported data type float16 for argument input, must be one of [float32]."
+Harness: the test ran to completion.
+

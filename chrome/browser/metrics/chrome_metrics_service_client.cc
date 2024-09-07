@@ -49,7 +49,6 @@
 #include "chrome/browser/metrics/desktop_platform_features_metrics_provider.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_metrics_provider.h"
-#include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 #include "chrome/browser/metrics/https_engagement_metrics_provider.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
@@ -205,6 +204,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 #include "chrome/browser/signin/chrome_signin_and_sync_status_metrics_provider.h"
 #include "components/metrics/content/accessibility_metrics_provider.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -849,9 +849,6 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<FamilyLinkUserMetricsProvider>());
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<LacrosMetricsProvider>());
@@ -927,6 +924,10 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   // ChromeOS uses ChromeOSMetricsProvider for accessibility metrics provider.
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::AccessibilityMetricsProvider>());
+  // ChromeOS uses ChromeOSFamilyLinkUserMetricsProvider to categorize the user
+  // based on Family Link user type.
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<FamilyLinkUserMetricsProvider>());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   metrics_service_->RegisterMetricsProvider(

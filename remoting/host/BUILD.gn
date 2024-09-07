@@ -885,6 +885,7 @@ source_set("unit_tests") {
     "//components/named_mojo_ipc_server",
     "//components/named_mojo_ipc_server:test_support",
     "//net:test_support",
+    "//remoting/base:session_policies",
     "//remoting/codec:encoder",
     "//remoting/host/base",
     "//remoting/host/file_transfer:unit_tests",

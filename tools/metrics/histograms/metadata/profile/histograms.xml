@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.DeleteProfileContext" enum="ProfileDeleteContext"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Incognito.MovedToBackgroundAfterDuration"
-    units="minutes" expires_after="2024-12-15">
+    units="minutes" expires_after="2025-02-16">
   <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -283,29 +283,6 @@ chromium-metrics-reviews@google.com.
     a given name to display. We expect that it's very rare, if we have a
     non-trivial number of these without a given name, we will have to redesign
     the experience to nicely accomodate for it.
-  </summary>
-</histogram>
-
-<histogram name="Profile.LacrosPrimaryProfileFirstRunEntryPoint"
-    enum="FirstRunEntryPoint" expires_after="M130">
-  <owner>dgn@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records the entry point that triggered the lacros first run for the primary
-    profile being shown. This is recorded when the first run is shown. If the
-    FRE is skipped, this is never recorded. If the FRE is exited early and needs
-    to be shown again, or if the user re-triggers the FRE while it is already
-    shown, there would be more than one record for that install.
-  </summary>
-</histogram>
-
-<histogram name="Profile.LacrosPrimaryProfileFirstRunOutcome"
-    enum="ProfileSignedInFlowOutcome" expires_after="M130">
-  <owner>dgn@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records the outcome of the lacros first run for the primary profile (also in
-    the case it gets skipped silently).
   </summary>
 </histogram>
 
@@ -427,6 +404,20 @@ chromium-metrics-reviews@google.com.
 
     This counts the total number of profiles on the user's device, regardless of
     whether they've been used recently.
+  </summary>
+</histogram>
+
+<histogram name="Profile.NumberOfProfilesAtProfileInit" units="profiles"
+    expires_after="2025-02-02">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the count of profiles every time a new profile is initialized,
+    including the newly initialized profile. Only recorded for on-disk profiles
+    (Incognito and Guest are excluded, for example).
+
+    The total histogram count can be used to estimate how many profiles were
+    initialized in total.
   </summary>
 </histogram>
 
@@ -724,9 +715,6 @@ chromium-metrics-reviews@google.com.
     (relevant only on Lacros where we support showing the FRE more than once),
     or if the user re-triggers the FRE while it is already shown, there would be
     more than one record for that install.
-
-    Note: Profile.LacrosPrimaryProfileFirstRunEntryPoint on Lacros records the
-    same data.
   </summary>
 </histogram>
 
@@ -858,7 +846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.FirstPaint" units="ms"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>alexilin@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

@@ -12,8 +12,6 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/web_contents.h"
@@ -32,6 +30,8 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
@@ -69,7 +69,7 @@ std::string AccessibilityHitTestingBrowserTest::TestPassToString::operator()(
   return sanitized_name;
 }
 
-BrowserAccessibilityManager*
+ui::BrowserAccessibilityManager*
 AccessibilityHitTestingBrowserTest::GetRootBrowserAccessibilityManager() {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -127,11 +127,12 @@ gfx::Point AccessibilityHitTestingBrowserTest::CSSToPhysicalPixelPoint(
   return physical_pixel_point;
 }
 
-BrowserAccessibility*
+ui::BrowserAccessibility*
 AccessibilityHitTestingBrowserTest::HitTestAndWaitForResultWithEvent(
     const gfx::Point& point,
     ax::mojom::Event event_to_fire) {
-  BrowserAccessibilityManager* manager = GetRootBrowserAccessibilityManager();
+  ui::BrowserAccessibilityManager* manager =
+      GetRootBrowserAccessibilityManager();
 
   AccessibilityNotificationWaiter event_waiter(
       shell()->web_contents(), ui::kAXModeComplete, event_to_fire);
@@ -143,23 +144,25 @@ AccessibilityHitTestingBrowserTest::HitTestAndWaitForResultWithEvent(
                                             event_to_fire, 0, {});
   EXPECT_TRUE(event_waiter.WaitForNotification());
 
-  BrowserAccessibilityManager* target_manager =
+  ui::BrowserAccessibilityManager* target_manager =
       event_waiter.event_browser_accessibility_manager();
   int event_target_id = event_waiter.event_target_id();
-  BrowserAccessibility* hit_node = target_manager->GetFromID(event_target_id);
+  ui::BrowserAccessibility* hit_node =
+      target_manager->GetFromID(event_target_id);
   return hit_node;
 }
 
-BrowserAccessibility*
+ui::BrowserAccessibility*
 AccessibilityHitTestingBrowserTest::HitTestAndWaitForResult(
     const gfx::Point& point) {
   return HitTestAndWaitForResultWithEvent(point, ax::mojom::Event::kHover);
 }
 
-BrowserAccessibility*
+ui::BrowserAccessibility*
 AccessibilityHitTestingBrowserTest::AsyncHitTestAndWaitForCallback(
     const gfx::Point& point) {
-  BrowserAccessibilityManager* manager = GetRootBrowserAccessibilityManager();
+  ui::BrowserAccessibilityManager* manager =
+      GetRootBrowserAccessibilityManager();
 
   gfx::Point target_point = CSSToFramePoint(point);
   base::RunLoop run_loop;
@@ -177,13 +180,13 @@ AccessibilityHitTestingBrowserTest::AsyncHitTestAndWaitForCallback(
       base::BindLambdaForTesting(callback));
   run_loop.Run();
 
-  BrowserAccessibility* hit_node =
-      static_cast<BrowserAccessibilityManager*>(hit_manager)
+  ui::BrowserAccessibility* hit_node =
+      static_cast<ui::BrowserAccessibilityManager*>(hit_manager)
           ->GetFromID(hit_node_id);
   return hit_node;
 }
 
-BrowserAccessibility*
+ui::BrowserAccessibility*
 AccessibilityHitTestingBrowserTest::CallCachingAsyncHitTest(
     const gfx::Point& page_point) {
   gfx::Point screen_point = CSSToPhysicalPixelPoint(page_point);
@@ -194,17 +197,18 @@ AccessibilityHitTestingBrowserTest::CallCachingAsyncHitTest(
   AccessibilityNotificationWaiter hover_waiter(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kHover);
 
-  BrowserAccessibility* result =
+  ui::BrowserAccessibility* result =
       GetRootBrowserAccessibilityManager()->CachingAsyncHitTest(screen_point);
 
   EXPECT_TRUE(hover_waiter.WaitForNotification());
   return result;
 }
 
-BrowserAccessibility* AccessibilityHitTestingBrowserTest::CallNearestLeafNode(
+ui::BrowserAccessibility*
+AccessibilityHitTestingBrowserTest::CallNearestLeafNode(
     const gfx::Point& page_point) {
   gfx::Point screen_point = CSSToPhysicalPixelPoint(page_point);
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetRootBrowserAccessibilityManager();
 
@@ -222,7 +226,7 @@ BrowserAccessibility* AccessibilityHitTestingBrowserTest::CallNearestLeafNode(
   }
   EXPECT_TRUE(hover_waiter.WaitForNotification());
   if (platform_node) {
-    return BrowserAccessibility::FromAXPlatformNodeDelegate(
+    return ui::BrowserAccessibility::FromAXPlatformNodeDelegate(
         platform_node->GetDelegate());
   }
   return nullptr;
@@ -355,8 +359,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   // Test a hit on a rect in the main frame.
   {
     gfx::Point rect_2_point(49, 20);
-    BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_2_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_2_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rect2");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_2_point, expected_node, hit_node);
   }
@@ -364,8 +368,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   // Test a hit on a rect in the iframe.
   {
     gfx::Point rect_b_point(79, 79);
-    BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_b_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_b_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rectB");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_b_point, expected_node, hit_node);
   }
@@ -396,8 +400,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
   // Test a hit on a rect in the main frame.
   {
     gfx::Point rect_2_point(49, 20);
-    BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_2_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_2_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rect2");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_2_point, expected_node, hit_node);
 
@@ -409,8 +413,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
   // Test a hit on a rect in the iframe.
   {
     gfx::Point rect_b_point(79, 79);
-    BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_b_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_b_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rectB");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_b_point, expected_node, hit_node);
 
@@ -501,7 +505,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 
   gfx::Point out_of_bounds_point(-1, -1);
 
-  BrowserAccessibility* hit_node = HitTestAndWaitForResult(out_of_bounds_point);
+  ui::BrowserAccessibility* hit_node =
+      HitTestAndWaitForResult(out_of_bounds_point);
   ASSERT_TRUE(hit_node != nullptr);
   ASSERT_EQ(ax::mojom::Role::kRootWebArea, hit_node->GetRole());
 
@@ -549,8 +554,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingCrossProcessBrowserTest,
   // Before scrolling.
   {
     gfx::Point rect_b_point(79, 79);
-    BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_b_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_b_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rectB");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_b_point, expected_node, hit_node);
 
@@ -570,8 +575,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingCrossProcessBrowserTest,
   // After scrolling.
   {
     gfx::Point rect_g_point(79, 89);
-    BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_g_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_g_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rectG");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_g_point, expected_node, hit_node);
 
@@ -609,8 +614,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   {
     // First call should land on the wrong element.
     gfx::Point rect_2_point(49, 20);
-    BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_2_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_2_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rect2");
     EXPECT_NE(expected_node->GetName(), hit_node->GetName());
 
@@ -623,8 +628,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   {
     // First call should land on the wrong element.
     gfx::Point rect_b_point(79, 79);
-    BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_b_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_b_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rectB");
     EXPECT_NE(expected_node->GetName(), hit_node->GetName());
 
@@ -664,8 +669,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   // Test a hit on a rect in the main frame.
   {
     gfx::Point rect_2_point(49, 20);
-    BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_2_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_2_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rect2");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_2_point, expected_node, hit_node);
   }
@@ -673,8 +678,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   // Test a hit on a rect in the iframe.
   {
     gfx::Point rect_b_point(79, 79);
-    BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_b_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_b_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rectB");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_b_point, expected_node, hit_node);
   }
@@ -710,8 +715,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   // Test a hit on a rect in the main frame.
   {
     gfx::Point rect_2_point(49, 20);
-    BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_2_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_2_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rect2");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_2_point, expected_node, hit_node);
 
@@ -723,8 +728,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   // Test a hit on a rect in the iframe.
   {
     gfx::Point rect_b_point(79, 79);
-    BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_b_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = HitTestAndWaitForResult(rect_b_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rectB");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_b_point, expected_node, hit_node);
 
@@ -767,8 +772,8 @@ IN_PROC_BROWSER_TEST_P(
   {
     // First call should land on the wrong element.
     gfx::Point rect_2_point(49, 20);
-    BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_2_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_2_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rect2");
     EXPECT_NE(expected_node->GetName(), hit_node->GetName());
 
@@ -781,8 +786,8 @@ IN_PROC_BROWSER_TEST_P(
   {
     // First call should land on the wrong element.
     gfx::Point rect_b_point(79, 79);
-    BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_b_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallCachingAsyncHitTest(rect_b_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kGenericContainer, "rectB");
     EXPECT_NE(expected_node->GetName(), hit_node->GetName());
 
@@ -817,8 +822,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   // Test a hit on text in the main frame.
   {
     gfx::Point rect_2_point(70, 20);
-    BrowserAccessibility* hit_node = CallNearestLeafNode(rect_2_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallNearestLeafNode(rect_2_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kStaticText, "2");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_2_point, expected_node, hit_node);
   }
@@ -826,8 +831,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   // Test a hit on text in the iframe.
   {
     gfx::Point rect_b_point(100, 100);
-    BrowserAccessibility* hit_node = CallNearestLeafNode(rect_b_point);
-    BrowserAccessibility* expected_node =
+    ui::BrowserAccessibility* hit_node = CallNearestLeafNode(rect_b_point);
+    ui::BrowserAccessibility* expected_node =
         FindNode(ax::mojom::Role::kStaticText, "B");
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_b_point, expected_node, hit_node);
   }

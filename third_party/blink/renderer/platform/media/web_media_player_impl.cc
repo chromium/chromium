@@ -1625,20 +1625,18 @@ void WebMediaPlayerImpl::AddAudioTrack(const std::string& id,
                                        const std::string& label,
                                        const std::string& language,
                                        bool is_first_track) {
-  client_->AddAudioTrack(WebString::FromUTF8(id),
-                         WebMediaPlayerClient::kAudioTrackKindMain,
-                         WebString::FromUTF8(label),
-                         WebString::FromUTF8(language), is_first_track);
+  client_->AddMediaTrack(media::MediaTrack::CreateAudioTrack(
+      id, media::MediaTrack::AudioKind::kMain, label, language,
+      is_first_track));
 }
 
 void WebMediaPlayerImpl::AddVideoTrack(const std::string& id,
                                        const std::string& label,
                                        const std::string& language,
                                        bool is_first_track) {
-  client_->AddVideoTrack(WebString::FromUTF8(id),
-                         WebMediaPlayerClient::kVideoTrackKindMain,
-                         WebString::FromUTF8(label),
-                         WebString::FromUTF8(language), is_first_track);
+  client_->AddMediaTrack(media::MediaTrack::CreateVideoTrack(
+      id, media::MediaTrack::VideoKind::kMain, label, language,
+      is_first_track));
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 

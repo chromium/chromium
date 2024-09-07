@@ -55,7 +55,7 @@ class CORE_EXPORT InlineItemSegment {
   unsigned EndOffset() const { return end_offset_; }
 
   // Pack/unpack utility functions to store in bit fields.
-  static constexpr unsigned kSegmentDataBits = 11;
+  static constexpr unsigned kSegmentDataBits = 12;
 
   static unsigned PackSegmentData(const RunSegmenter::RunSegmenterRange& range);
   static RunSegmenter::RunSegmenterRange

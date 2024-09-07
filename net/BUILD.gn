@@ -138,6 +138,11 @@ buildflag_header("cronet_buildflags") {
   flags = [ "CRONET_BUILD=$is_cronet_build" ]
 }
 
+proto_library("device_bound_sessions_storage_proto") {
+  proto_in_dir = "//"
+  sources = [ "device_bound_sessions/proto/storage.proto" ]
+}
+
 component("net") {
   sources = [
     "base/address_family.cc",
@@ -633,12 +638,16 @@ component("net") {
     "http/http_stream_parser.h",
     "http/http_stream_pool.cc",
     "http/http_stream_pool.h",
+    "http/http_stream_pool_attempt_manager.cc",
+    "http/http_stream_pool_attempt_manager.h",
     "http/http_stream_pool_group.cc",
     "http/http_stream_pool_group.h",
     "http/http_stream_pool_handle.cc",
     "http/http_stream_pool_handle.h",
     "http/http_stream_pool_job.cc",
     "http/http_stream_pool_job.h",
+    "http/http_stream_pool_job_controller.cc",
+    "http/http_stream_pool_job_controller.h",
     "http/http_stream_pool_quic_task.cc",
     "http/http_stream_pool_quic_task.h",
     "http/http_stream_request.cc",
@@ -1080,6 +1089,7 @@ component("net") {
     ":net_deps",
     "//build:chromeos_buildflags",
     "//components/miracle_parameter/common",
+    "//components/network_time/time_tracker",
     "//net/http:transport_security_state_generated_files",
   ]
 
@@ -1151,6 +1161,8 @@ component("net") {
     sources += [
       "device_bound_sessions/cookie_craving.cc",
       "device_bound_sessions/cookie_craving.h",
+      "device_bound_sessions/jwk_utils.cc",
+      "device_bound_sessions/jwk_utils.h",
       "device_bound_sessions/registration_fetcher.cc",
       "device_bound_sessions/registration_fetcher.h",
       "device_bound_sessions/registration_fetcher_param.cc",
@@ -1172,7 +1184,11 @@ component("net") {
       "device_bound_sessions/unexportable_key_service_factory.cc",
       "device_bound_sessions/unexportable_key_service_factory.h",
     ]
-    deps += [ "//components/unexportable_keys:unexportable_keys" ]
+
+    deps += [
+      ":device_bound_sessions_storage_proto",
+      "//components/unexportable_keys:unexportable_keys",
+    ]
   }
 
   if (is_android) {
@@ -1566,6 +1582,19 @@ component("net") {
 
   if (enable_websockets) {
     sources += [
+      "server/http_connection.cc",
+      "server/http_connection.h",
+      "server/http_server.cc",
+      "server/http_server.h",
+      "server/http_server_request_info.cc",
+      "server/http_server_request_info.h",
+      "server/http_server_response_info.cc",
+      "server/http_server_response_info.h",
+      "server/web_socket.cc",
+      "server/web_socket.h",
+      "server/web_socket_encoder.cc",
+      "server/web_socket_encoder.h",
+      "server/web_socket_parse_result.h",
       "websockets/websocket_basic_handshake_stream.cc",
       "websockets/websocket_basic_handshake_stream.h",
       "websockets/websocket_basic_stream.cc",
@@ -1772,11 +1801,11 @@ source_set("net_public_deps") {
   public_deps = [
     ":buildflags",
     ":net_nqe_proto",
-    ":uri_template",
     "//base",
     "//crypto",
     "//net/third_party/quiche",
     "//net/third_party/quiche:net_quic_test_tools_proto",
+    "//net/third_party/uri_template",
     "//net/traffic_annotation",
     "//third_party/boringssl",
     "//url",
@@ -1785,19 +1814,6 @@ source_set("net_public_deps") {
   if (chrome_root_store_supported) {
     public_deps += [ "//net/cert:root_store_proto_lite" ]
   }
-}
-
-component("uri_template") {
-  sources = [
-    "third_party/uri_template/uri_template.cc",
-    "third_party/uri_template/uri_template.h",
-  ]
-  visibility = [
-    ":net_public_deps",
-    "//net/third_party/quiche",
-  ]
-  defines = [ "IS_URI_TEMPLATE_IMPL" ]
-  public_deps = [ "//base" ]
 }
 
 grit("net_resources") {
@@ -1842,6 +1858,7 @@ component("extras") {
   deps = [
     ":net",
     "//base",
+    "//crypto",
     "//sql:sql",
   ]
   public_deps = [ ":shared_dictionary_info" ]
@@ -2046,6 +2063,7 @@ static_library("test_support") {
     "test/quic_simple_test_server.h",
     "test/revocation_builder.cc",
     "test/revocation_builder.h",
+    "test/scoped_mutually_exclusive_feature_list.h",
     "test/ssl_test_util.cc",
     "test/ssl_test_util.h",
     "test/test_certificate_data.h",
@@ -2694,8 +2712,8 @@ test("net_unittests") {
     "http/http_stream_factory_unittest.cc",
     "http/http_stream_key_unittest.cc",
     "http/http_stream_parser_unittest.cc",
+    "http/http_stream_pool_attempt_manager_unittest.cc",
     "http/http_stream_pool_group_unittest.cc",
-    "http/http_stream_pool_job_unittest.cc",
     "http/http_stream_request_unittest.cc",
     "http/http_transaction_test_util_unittest.cc",
     "http/http_util_unittest.cc",
@@ -2845,7 +2863,6 @@ test("net_unittests") {
     "test/embedded_test_server/http_request_unittest.cc",
     "test/embedded_test_server/http_response_unittest.cc",
     "test/run_all_unittests.cc",
-    "third_party/uri_template/uri_template_test.cc",
     "tools/content_decoder_tool/content_decoder_tool.cc",
     "tools/content_decoder_tool/content_decoder_tool.h",
     "tools/content_decoder_tool/content_decoder_tool_unittest.cc",
@@ -2947,6 +2964,7 @@ test("net_unittests") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
+    "//components/network_time/time_tracker",
     "//crypto",
     "//crypto:test_support",
     "//net/base/registry_controlled_domains",
@@ -2956,6 +2974,7 @@ test("net_unittests") {
     "//net/http:transport_security_state_unittest_data",
     "//net/http:transport_security_state_unittest_data_default",
     "//net/third_party/quiche:quiche_tests",
+    "//net/third_party/uri_template:uri_template_tests",
     "//net/tools/huffman_trie:huffman_trie_generator_sources",
     "//testing/gmock",
     "//testing/gtest",
@@ -2983,7 +3002,12 @@ test("net_unittests") {
   }
 
   if (enable_websockets) {
-    deps += [ "//net/server:tests" ]
+    sources += [
+      "server/http_connection_unittest.cc",
+      "server/http_server_response_info_unittest.cc",
+      "server/http_server_unittest.cc",
+      "server/web_socket_encoder_unittest.cc",
+    ]
   }
 
   if (is_posix) {
@@ -3287,6 +3311,7 @@ test("net_unittests") {
   if (enable_device_bound_sessions) {
     sources += [
       "device_bound_sessions/cookie_craving_unittest.cc",
+      "device_bound_sessions/jwk_utils_unittest.cc",
       "device_bound_sessions/registration_fetcher_param_unittest.cc",
       "device_bound_sessions/registration_fetcher_unittest.cc",
       "device_bound_sessions/session_binding_utils_unittest.cc",
@@ -3298,7 +3323,10 @@ test("net_unittests") {
       "device_bound_sessions/test_util.h",
       "device_bound_sessions/unexportable_key_service_factory_unittest.cc",
     ]
-    deps += [ "//components/unexportable_keys:unexportable_keys" ]
+    deps += [
+      ":device_bound_sessions_storage_proto",
+      "//components/unexportable_keys:unexportable_keys",
+    ]
   }
 }
 
@@ -3381,6 +3409,20 @@ if (use_fuzzing_engine) {
       "data/fuzzer_dictionaries",
     ]
     allow_circular_includes_from = [ "//net/dns:fuzzer_test_support" ]
+  }
+}
+
+if (enable_websockets && use_fuzzing_engine) {
+  fuzzer_test("net_http_server_fuzzer") {
+    sources = [ "//net/server/http_server_fuzzer.cc" ]
+    deps = [
+      "//base",
+      "//net",
+      "//net:net_fuzzer_test_support",
+      "//net:test_support",
+    ]
+    dict = "//net/data/fuzzer_dictionaries/net_http_server_fuzzer.dict"
+    seed_corpus = "//net/data/fuzzer_data/http_server_requests/"
   }
 }
 
@@ -3721,7 +3763,6 @@ if (use_fuzzing_engine) {
     public_deps = [
       ":net_fuzzer_test_support",
       "//net",
-      "//net/server:http_server",
     ]
   }
 
@@ -3956,16 +3997,6 @@ fuzzer_test("net_quic_session_pool_fuzzer") {
     "//net",
     "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
   ]
-}
-
-fuzzer_test("net_uri_template_fuzzer") {
-  sources = [ "third_party/uri_template/uri_template_fuzzer.cc" ]
-  deps = [
-    ":net_fuzzer_test_support",
-    "//base",
-    "//net",
-  ]
-  dict = "data/fuzzer_dictionaries/net_uri_template_fuzzer.dict"
 }
 
 if (is_linux || is_chromeos) {

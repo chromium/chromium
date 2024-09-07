@@ -28,7 +28,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
@@ -159,8 +158,6 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
   base::FilePath test_data_dir_;
 };
 
-}  // namespace
-
 TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForm) {
   SimulateRetrieveModelFromServer();
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
@@ -202,4 +199,5 @@ TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForms) {
               testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
 }
 
+}  // namespace
 }  // namespace autofill

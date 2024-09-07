@@ -7,9 +7,17 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
+#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_view_controller.h"
+#import "ios/chrome/browser/first_run/ui_bundled/tos/tos_coordinator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/uma/uma_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -22,14 +30,6 @@
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_view_controller.h"
-#import "ios/chrome/browser/first_run/ui_bundled/tos/tos_coordinator.h"
-#import "ios/chrome/browser/first_run/ui_bundled/uma/uma_coordinator.h"
 
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
                                        SigninScreenViewControllerDelegate,
@@ -108,8 +108,7 @@
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
   PrefService* localPrefService = GetApplicationContext()->GetLocalState();
   PrefService* prefService = browserState->GetPrefs();
   syncer::SyncService* syncService =

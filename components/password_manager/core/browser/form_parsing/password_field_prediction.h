@@ -24,7 +24,8 @@ enum class CredentialFieldType {
   kSingleUsername,
   kCurrentPassword,
   kNewPassword,
-  kConfirmationPassword
+  kConfirmationPassword,
+  kNonCredential
 };
 
 // Transforms the general field type to the information useful for password

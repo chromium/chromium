@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -60,8 +61,9 @@ LoginBubbleDialogView::~LoginBubbleDialogView() = default;
 void LoginBubbleDialogView::ContentsChanged(
     Textfield* sender,
     const std::u16string& new_contents) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, !username_->GetText().empty() &&
-                                             !password_->GetText().empty());
+  SetButtonEnabled(
+      ui::mojom::DialogButton::kOk,
+      !username_->GetText().empty() && !password_->GetText().empty());
   DialogModelChanged();
 }
 
@@ -70,7 +72,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
     BubbleBorder::Arrow anchor_position,
     OnSubmitCallback accept_callback)
     : BubbleDialogDelegateView(anchor_view, anchor_position) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
 
   const auto on_submit = [](const LoginBubbleDialogView* bubble_view,
                             OnSubmitCallback accept_callback) {
@@ -82,7 +84,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
                                    std::move(accept_callback)));
 
   SetTitle(l10n_util::GetStringUTF16(IDS_LOGIN_TITLE_LABEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_LOGIN_OK_BUTTON_LABEL));
 
   const LayoutProvider* provider = LayoutProvider::Get();

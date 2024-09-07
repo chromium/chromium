@@ -478,6 +478,10 @@ class FrameSchedulerDelegateWithUkmSourceId : public FrameScheduler::Delegate {
     return base::UnguessableToken::Null();
   }
 
+  DocumentResourceCoordinator* GetDocumentResourceCoordinator() override {
+    return nullptr;
+  }
+
  private:
   ukm::SourceId source_id_;
 };

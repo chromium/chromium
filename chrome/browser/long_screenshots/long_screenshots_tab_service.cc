@@ -134,7 +134,7 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
 
 void LongScreenshotsTabService::CaptureTabInternal(
     int tab_id,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     content::GlobalRenderFrameHostId frame_routing_id,
     int clip_x,
     int clip_y,

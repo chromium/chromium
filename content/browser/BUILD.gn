@@ -82,6 +82,7 @@ source_set("browser") {
     "//base:base_static",
     "//base:clang_profiling_buildflags",
     "//base/tracing/protos:chrome_track_event_resources",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
@@ -204,7 +205,6 @@ source_set("browser") {
     "//mojo/public/js:resources",
     "//net",
     "//net:extras",
-    "//net/server:http_server",
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/audio",
@@ -273,6 +273,7 @@ source_set("browser") {
     "//third_party/inspector_protocol:crdtp",
     "//third_party/libyuv",
     "//third_party/re2",
+    "//third_party/snappy",
     "//third_party/sqlite",
     "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/zlib",
@@ -394,14 +395,8 @@ source_set("browser") {
     "about_url_loader_factory.h",
     "accessibility/accessibility_tree_formatter_blink.cc",
     "accessibility/accessibility_tree_formatter_blink.h",
-    "accessibility/browser_accessibility.cc",
-    "accessibility/browser_accessibility.h",
-    "accessibility/browser_accessibility_manager.cc",
-    "accessibility/browser_accessibility_manager.h",
     "accessibility/browser_accessibility_state_impl.cc",
     "accessibility/browser_accessibility_state_impl.h",
-    "accessibility/one_shot_accessibility_tree_search.cc",
-    "accessibility/one_shot_accessibility_tree_search.h",
     "accessibility/render_accessibility_host.cc",
     "accessibility/render_accessibility_host.h",
     "accessibility/scoped_mode_collection.cc",
@@ -445,6 +440,8 @@ source_set("browser") {
     "ai/echo_ai_manager_impl.h",
     "ai/echo_ai_rewriter.cc",
     "ai/echo_ai_rewriter.h",
+    "ai/echo_ai_summarizer.cc",
+    "ai/echo_ai_summarizer.h",
     "ai/echo_ai_text_session.cc",
     "ai/echo_ai_text_session.h",
     "ai/echo_ai_writer.cc",
@@ -827,6 +824,8 @@ source_set("browser") {
     "devtools/devtools_manager.h",
     "devtools/devtools_pipe_handler.cc",
     "devtools/devtools_pipe_handler.h",
+    "devtools/devtools_preload_storage.cc",
+    "devtools/devtools_preload_storage.h",
     "devtools/devtools_renderer_channel.cc",
     "devtools/devtools_renderer_channel.h",
     "devtools/devtools_session.cc",
@@ -1155,7 +1154,6 @@ source_set("browser") {
     "interest_group/auction_nonce_manager.h",
     "interest_group/auction_process_manager.cc",
     "interest_group/auction_process_manager.h",
-    "interest_group/auction_result.h",
     "interest_group/auction_runner.cc",
     "interest_group/auction_runner.h",
     "interest_group/auction_shared_storage_host.cc",
@@ -1175,6 +1173,8 @@ source_set("browser") {
     "interest_group/debuggable_auction_worklet_tracker.cc",
     "interest_group/debuggable_auction_worklet_tracker.h",
     "interest_group/devtools_enums.h",
+    "interest_group/for_debugging_only_report_util.cc",
+    "interest_group/for_debugging_only_report_util.h",
     "interest_group/header_direct_from_seller_signals.cc",
     "interest_group/header_direct_from_seller_signals.h",
     "interest_group/interest_group_auction.cc",
@@ -1603,6 +1603,7 @@ source_set("browser") {
     "private_aggregation/private_aggregation_budget_storage.h",
     "private_aggregation/private_aggregation_budgeter.cc",
     "private_aggregation/private_aggregation_budgeter.h",
+    "private_aggregation/private_aggregation_caller_api.h",
     "private_aggregation/private_aggregation_features.cc",
     "private_aggregation/private_aggregation_features.h",
     "private_aggregation/private_aggregation_host.cc",
@@ -1623,6 +1624,7 @@ source_set("browser") {
     "process_internals/process_internals_ui.h",
     "process_lock.cc",
     "process_lock.h",
+    "process_reuse_policy.h",
     "process_visibility_util.cc",
     "push_messaging/push_messaging_context.cc",
     "push_messaging/push_messaging_context.h",
@@ -2460,7 +2462,10 @@ source_set("browser") {
   }
 
   if (is_win) {
-    deps += [ "//components/services/font_data:lib" ]
+    deps += [
+      "//components/services/font_data:lib",
+      "//components/stylus_handwriting/win:win",
+    ]
   }
 
   if (allow_oop_video_decoder) {
@@ -2545,10 +2550,6 @@ source_set("browser") {
     sources += [
       "accessibility/accessibility_tree_formatter_fuchsia.cc",
       "accessibility/accessibility_tree_formatter_fuchsia.h",
-      "accessibility/browser_accessibility_fuchsia.cc",
-      "accessibility/browser_accessibility_fuchsia.h",
-      "accessibility/browser_accessibility_manager_fuchsia.cc",
-      "accessibility/browser_accessibility_manager_fuchsia.h",
       "child_process_launcher_helper_fuchsia.cc",
       "file_system_access/file_path_watcher/file_path_watcher_stub.cc",  # See
                                                                          # crbug.com/42050618
@@ -2622,12 +2623,6 @@ source_set("browser") {
       "../app_shim_remote_cocoa/web_drag_source_mac.mm",
       "../app_shim_remote_cocoa/web_menu_runner_mac.h",
       "../app_shim_remote_cocoa/web_menu_runner_mac.mm",
-      "accessibility/browser_accessibility_cocoa.h",
-      "accessibility/browser_accessibility_cocoa.mm",
-      "accessibility/browser_accessibility_mac.h",
-      "accessibility/browser_accessibility_mac.mm",
-      "accessibility/browser_accessibility_manager_mac.h",
-      "accessibility/browser_accessibility_manager_mac.mm",
       "accessibility/browser_accessibility_state_impl_mac.mm",
       "child_process_launcher_helper_mac.cc",
       "cocoa/system_hotkey_helper_mac.h",
@@ -2704,10 +2699,6 @@ source_set("browser") {
     ]
   } else if (is_ios) {
     sources += [
-      "accessibility/browser_accessibility_ios.h",
-      "accessibility/browser_accessibility_ios.mm",
-      "accessibility/browser_accessibility_manager_ios.h",
-      "accessibility/browser_accessibility_manager_ios.mm",
       "child_process_launcher_helper_ios.mm",
       "date_time_chooser/ios/date_time_chooser_coordinator.h",
       "date_time_chooser/ios/date_time_chooser_coordinator.mm",
@@ -2855,13 +2846,7 @@ source_set("browser") {
 
   if (is_win) {
     sources += [
-      "accessibility/browser_accessibility_com_win.cc",
-      "accessibility/browser_accessibility_com_win.h",
-      "accessibility/browser_accessibility_manager_win.cc",
-      "accessibility/browser_accessibility_manager_win.h",
       "accessibility/browser_accessibility_state_impl_win.cc",
-      "accessibility/browser_accessibility_win.cc",
-      "accessibility/browser_accessibility_win.h",
       "child_process_launcher_helper_win.cc",
       "device_posture/device_posture_platform_provider_win.cc",
       "device_posture/device_posture_platform_provider_win.h",
@@ -3061,13 +3046,6 @@ source_set("browser") {
   }
 
   if (use_atk) {
-    sources += [
-      "accessibility/browser_accessibility_auralinux.cc",
-      "accessibility/browser_accessibility_auralinux.h",
-      "accessibility/browser_accessibility_manager_auralinux.cc",
-      "accessibility/browser_accessibility_manager_auralinux.h",
-    ]
-
     configs += [
       "//build/config/linux/atk",
       "//build/config/linux/atspi2",

@@ -124,11 +124,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   AXPlatformNodeBase* GetPlatformTextFieldAncestor() const;
 
   using AXPlatformNodeChildIterator =
-      ui::AXNode::ChildIteratorBase<AXPlatformNodeBase,
-                                    &AXPlatformNodeBase::GetNextSibling,
-                                    &AXPlatformNodeBase::GetPreviousSibling,
-                                    &AXPlatformNodeBase::GetFirstChild,
-                                    &AXPlatformNodeBase::GetLastChild>;
+      AXNode::ChildIteratorBase<AXPlatformNodeBase,
+                                &AXPlatformNodeBase::GetNextSibling,
+                                &AXPlatformNodeBase::GetPreviousSibling,
+                                &AXPlatformNodeBase::GetFirstChild,
+                                &AXPlatformNodeBase::GetLastChild>;
   AXPlatformNodeChildIterator AXPlatformNodeChildrenBegin() const;
   AXPlatformNodeChildIterator AXPlatformNodeChildrenEnd() const;
 
@@ -345,6 +345,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // e.g. aria-label and HTML title, is not returned.
   std::u16string GetTextContentUTF16() const;
 
+  // https://crbug.com/40889544 - to be removed once we gather some info on
+  // the reason for the macOS exception being thrown.
+  std::u16string GetTextContentUTF16WithInvisibles() const;
+
   // Returns the value of a control such as a text field, a slider, a <select>
   // element, a date picker or an ARIA combo box. In order to minimize
   // cross-process communication between the renderer and the browser, may
@@ -401,7 +405,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // input node. Due to perf concerns, this should only be called on leaf nodes.
   int NearestTextIndexToPoint(gfx::Point point);
 
-  ui::TextAttributeList ComputeTextAttributes() const;
+  TextAttributeList ComputeTextAttributes() const;
 
   // Get the number of items selected. It checks kMultiselectable and uses
   // GetSelectedItems to get the selected number.

@@ -61,6 +61,8 @@ build_webui_tests("build") {
 
   if (enable_pdf_ink2) {
     files += [
+      "ink2_before_unload_stroke_test.ts",
+      "ink2_before_unload_undo_test.ts",
       "ink2_save_test.ts",
       "ink2_side_panel_test.ts",
       "ink2_test.ts",
@@ -91,7 +93,7 @@ build_webui_tests("build") {
   ts_deps = [
     "../webui:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }

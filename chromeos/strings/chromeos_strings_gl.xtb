@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Xa están dispoñibles os recursos exclusivos de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1026212596705997935">Este atallo está usándose para <ph name="CONFLICT_ACCEL_NAME" />. Preme outro novo. Para substituír o atallo orixinal, preme estoutro de novo.</translation>
+<translation id="1030856839388844477">Restablecer uso de datos</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
 <translation id="1049663189809099096">amarela pastel</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Sinal feble</translation>
 <translation id="1300115153046603471">O APN é de tipo predeterminado e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Converter</translation>
 <translation id="1304014921944666344">Data de creación</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" /> % completado)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
@@ -74,8 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Axustar á zona de escaneamento</translation>
 <translation id="1343442362630695901">lago de auga salgada</translation>
+<translation id="1348657754632799065">Barra de gravación</translation>
 <translation id="1367951781824006909">Selecciona un ficheiro</translation>
 <translation id="1371650399987522809">Comentarios sobre os fondos de pantalla coa tecnoloxía da IA de Google</translation>
+<translation id="1374385338586507108">Definir</translation>
+<translation id="1383876407941801731">Buscar</translation>
 <translation id="1387854245479784695">Esta é a suma de todos os núcleos</translation>
 <translation id="1393206549145430405">castelo</translation>
 <translation id="1394661041439318933">Nivel de batería do estoxo do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -95,6 +100,7 @@
 <translation id="1449035143498573192">Abrir na Busca de Google</translation>
 <translation id="1451536289672181509">O dispositivo é un teclado.</translation>
 <translation id="1452939186874918380">paraugas</translation>
+<translation id="145402479967797468">Controis de reprodución</translation>
 <translation id="1459693405370120464">O tempo</translation>
 <translation id="1463084054301832672">casa de campo</translation>
 <translation id="1468664791493211953">Ofertas</translation>
@@ -260,6 +266,7 @@
 <translation id="2212733584906323460">Resolución de nomes</translation>
 <translation id="2215920961700443347">Non hai conexión a Internet. Conéctate a Internet e téntao de novo.</translation>
 <translation id="2217935453350629363">Velocidade actual</translation>
+<translation id="221994303562837085">Deter gravación</translation>
 <translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="222447520299472966">Debes seleccionar polo menos un álbum da galería de arte</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -267,6 +274,7 @@
 <translation id="2230624078793142213">Crear máis</translation>
 <translation id="2236746079896696523">Interruptor da retroiluminación do teclado</translation>
 <translation id="2240366984605217732">Alternar entre deseños</translation>
+<translation id="2242381852034179222">As persoas administradoras xestionan esta función</translation>
 <translation id="2244834438220057800">verde</translation>
 <translation id="225692081236532131">Estado de activación</translation>
 <translation id="2267285889943769271">Engadir captura de pantalla</translation>
@@ -310,6 +318,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ópalo</translation>
 <translation id="2505327257735685095">Actualizar imaxe de fondo de pantalla actual</translation>
+<translation id="2507491234071975894">Altofalante</translation>
 <translation id="2512979179176933762">mostrar as ventás</translation>
 <translation id="2513396635448525189">Imaxe de inicio de sesión</translation>
 <translation id="2521835766824839541">pista anterior</translation>
@@ -320,6 +329,7 @@
 <translation id="2533048460510040082">Contido de axuda suxerido</translation>
 <translation id="2536159006530886390">Non foi posible conectarse a Internet.</translation>
 <translation id="2538719227433767804">E <ph name="NUM_HIDDEN_OPTIONS" /> máis</translation>
+<translation id="2560876255701405320">Lista de gravacións de audio</translation>
 <translation id="2561093647892030937">limóns</translation>
 <translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />…</translation>
 <translation id="2575552334616524665">Podes activar esta opción en Configuración ou no menú <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -351,6 +361,7 @@
 <translation id="2715723665057727940">río</translation>
 <translation id="2717139507051041123">Activar modo de cores escuras</translation>
 <translation id="2728460467788544679">Borrar todo o historial de impresións</translation>
+<translation id="2731700343119398978">Agarda...</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2744221223678373668">Compartidas</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 de EAP</translation>
@@ -365,6 +376,7 @@
 <translation id="2855718259207180827">la</translation>
 <translation id="2859243502336719778">Actualización esencial</translation>
 <translation id="2860473693272905224">Coloca outra páxina no escáner</translation>
+<translation id="286265581261662583">Fai clic co botón dereito ou mantén premido o texto para facer conversións entre unidades ou obter definicións e traducións</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="2873483161362553159">Navegación no navegador</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -405,6 +417,7 @@
 <translation id="3140130301071865159">neve</translation>
 <translation id="3146655726035122603">Exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Datos móbiles</translation>
+<translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3156846309055100599">Escaneando páxina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Detectouse un portal cativo</translation>
 <translation id="3160172848211257835">Enviar <ph name="BEGIN_LINK1" />información do sistema e da aplicación<ph name="END_LINK1" />, así como <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
@@ -434,6 +447,7 @@
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
 <translation id="3305294846493618482">máis</translation>
 <translation id="3310640316857623290">A latencia do DNS supera considerablemente o límite permitido</translation>
+<translation id="3321030238473337787">Velocidade de reprodución</translation>
 <translation id="3328783797891415197">Proba en curso</translation>
 <translation id="3340011300870565703">Nivel de batería do auricular dereito do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">configuración</translation>
@@ -462,7 +476,6 @@
 <translation id="346423161771747987">Actual</translation>
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3484914941826596830">Mentres se actualiza o firmware, non desenchufes este dispositivo externo nin apagues o ordenador. Podes minimizar esta ventá. Esta actualización pode tardar uns minutos en completarse e é posible que o dispositivo externo non funcione durante o proceso.</translation>
-<translation id="3485555238092220889">acción de accesibilidade</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3487866404496702283">Comentarios sobre a función mahi</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
@@ -511,6 +524,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensións)</translation>
 <translation id="3748026146096797577">Non conectado</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
+<translation id="3767737419527918477">Buscar ficheiros de gravación</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="3780740315729837296">Asigna unha tecla do teclado</translation>
 <translation id="3784455785234192852">Bloquear</translation>
@@ -671,6 +685,7 @@
 <translation id="4562494484721939086">Sen servizo</translation>
 <translation id="4570558255126759859">Queres descargar o modelo de Gemini para resumir as gravacións?</translation>
 <translation id="4573777384450697571">Erro: Certificado caducado</translation>
+<translation id="4575450106703099687">opcións de accesibilidade</translation>
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4594021849294327751">Crear transcrición</translation>
@@ -793,6 +808,7 @@
 <translation id="5223226274641517059">As transcricións instantáneas mostraranse mentres esteas gravando. Podes desactivar esta opción cando queiras en Configuración.</translation>
 <translation id="5226879510707344687">Exportar transcrición</translation>
 <translation id="5227902338748591677">Tema escuro programado</translation>
+<translation id="5229104491259541281">Converter <ph name="QUERY" /></translation>
 <translation id="5229344016299762883">Saír da pantalla completa</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{A persoa administradora configurou <ph name="APP_NAME" /> para que arranque automaticamente cando inicies sesión.}=2{A persoa administradora configurou <ph name="APP_NAME" /> e 1 aplicación máis para que arranquen automaticamente cando inicies sesión.}other{A persoa administradora configurou <ph name="APP_NAME" /> e # aplicacións máis para que arranquen automaticamente cando inicies sesión.}}</translation>
@@ -883,7 +899,9 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Botón para editar de <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Uso de datos restablecido</translation>
 <translation id="574392208103952083">Medio</translation>
+<translation id="5744175046705638478">Traducir "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">pista seguinte</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
 <translation id="5763838252932650682">Reiniciando e actualizando <ph name="APP_NAME" /></translation>
@@ -892,6 +910,7 @@
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
 <translation id="5790391387506209808">lapislázuli</translation>
+<translation id="5810692306010756935">Graduación</translation>
 <translation id="5816802250591013230">Non hai ningún atallo asignado</translation>
 <translation id="5826644637650799838">Acerca da imaxe</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
@@ -930,6 +949,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Non mostrar outra vez</translation>
 <translation id="5975130252842127517">coral</translation>
+<translation id="5982621672636444458">Opcións de ordenación</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
 <translation id="5996832681196460718">seda</translation>
 <translation id="6017514345406065928">Verde</translation>
@@ -946,7 +966,6 @@
 <translation id="6058625436358447366">Para finalizar, introduce o teu antigo contrasinal e o novo</translation>
 <translation id="6061772781719867950">Produciuse un erro coas solicitudes HTTPS</translation>
 <translation id="6073292342939316679">reducir o brillo do teclado</translation>
-<translation id="6073451960410192870">Deter gravación</translation>
 <translation id="6075872808778243331">(Android) latencia de HTTP</translation>
 <translation id="6078323886959318429">Engadir atallo</translation>
 <translation id="6091080061796993741">amarela</translation>
@@ -986,6 +1005,7 @@
 <translation id="6275224645089671689">Frecha dereita</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Definir "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">azuis e violetas</translation>
 <translation id="6284632978374966585">Poñer tema escuro</translation>
 <translation id="6285260286443238386">Exportar gravación</translation>
@@ -1104,6 +1124,7 @@
 <translation id="6798678288485555829">Navegación polo texto</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hai dispoñible información sobre a túa selección. Utilizar frecha arriba para acceder.</translation>
+<translation id="6831043979455480757">Traducir</translation>
 <translation id="6853312040151791195">Taxa de descarga</translation>
 <translation id="6862416241246624313">Comentarios enviados</translation>
 <translation id="6866732840889595464">margarida</translation>
@@ -1317,6 +1338,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
+<translation id="7889966925761734854">Buscar</translation>
 <translation id="78957024357676568">esquerda</translation>
 <translation id="7897043345768902965">vía peonil</translation>
 <translation id="7902285181767404769">Silencia as notificacións durante as gravacións</translation>
@@ -1354,6 +1376,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións para Android</translation>
 <translation id="8082644724189923105">zona do teclado</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
+<translation id="8088963492174775412">Preme para gravar</translation>
 <translation id="8094062939584182041">Permitir que Google che envíe correos electrónicos sobre este tema</translation>
 <translation id="8104083085214006426">Estás usando unha rede aberta e non segura</translation>
 <translation id="811820734797650957">(Android) pódeselle facer ping á pasarela</translation>
@@ -1551,6 +1574,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="9087578468327036362">Informar desta consulta</translation>
 <translation id="9088306295921699330">En uso</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Máis información sobre a data de restablecemento</translation>
 <translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>

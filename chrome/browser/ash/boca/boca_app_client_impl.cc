@@ -9,7 +9,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace ash {
+namespace ash::boca {
 BocaAppClientImpl::BocaAppClientImpl() = default;
 
 BocaAppClientImpl::~BocaAppClientImpl() = default;
@@ -24,4 +24,4 @@ BocaAppClientImpl::GetURLLoaderFactory() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   return profile->GetURLLoaderFactory();
 }
-}  // namespace ash
+}  // namespace ash::boca

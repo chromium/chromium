@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol SystemIdentity;
 namespace web {
 class WebState;
 }
@@ -21,6 +22,9 @@ class WebState;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Set the selected identity.
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
 
 @end
 

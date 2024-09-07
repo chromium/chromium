@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
@@ -13,7 +14,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash::smb_client {
 
@@ -44,6 +47,30 @@ SmbServiceFactory* SmbServiceFactory::GetInstance() {
   return instance.get();
 }
 
+bool SmbServiceFactory::IsSmbServiceCrated(void* context) {
+  return IsServiceCreated(context);
+}
+
+void SmbServiceFactory::OnUserSessionStartUpTaskCompleted() {
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+
+  content::BrowserContext* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user);
+  if (browser_context) {
+    // This will create SmbService if it doesn't exist yet.
+    Get(browser_context);
+  }
+}
+
+void SmbServiceFactory::StartObservingSessionManager() {
+  auto* session_manager = session_manager::SessionManager::Get();
+  CHECK(session_manager);
+
+  CHECK(!session_manager->IsUserSessionStartUpTaskCompleted());
+  session_manager_observation_.Observe(session_manager);
+}
+
 SmbServiceFactory::SmbServiceFactory()
     : ProfileKeyedServiceFactory(
           /*name=*/"SmbService",
@@ -64,7 +91,8 @@ SmbServiceFactory::SmbServiceFactory()
 SmbServiceFactory::~SmbServiceFactory() = default;
 
 bool SmbServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  return true;
+  return !base::FeatureList::IsEnabled(
+      features::kSmbServiceIsCreatedOnUserSessionStartUpTaskCompleted);
 }
 
 std::unique_ptr<KeyedService>
@@ -76,8 +104,9 @@ SmbServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* const profile = Profile::FromBrowserContext(context);
   bool service_should_run =
       IsAllowedByPolicy(profile) && DoesProfileHaveUser(profile);
-  if (!service_should_run)
+  if (!service_should_run) {
     return nullptr;
+  }
   return std::make_unique<SmbService>(
       profile, std::make_unique<base::DefaultTickClock>());
 }

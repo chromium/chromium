@@ -39,6 +39,10 @@ EnumTraits<network::mojom::CookieExemptionReason,
       return network::mojom::CookieExemptionReason::k3PCDMetadata;
     case net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial:
       return network::mojom::CookieExemptionReason::k3PCDDeprecationTrial;
+    case net::CookieInclusionStatus::ExemptionReason::
+        kTopLevel3PCDDeprecationTrial:
+      return network::mojom::CookieExemptionReason::
+          kTopLevel3PCDDeprecationTrial;
     case net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics:
       return network::mojom::CookieExemptionReason::k3PCDHeuristics;
     case net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy:
@@ -47,8 +51,6 @@ EnumTraits<network::mojom::CookieExemptionReason,
       return network::mojom::CookieExemptionReason::kStorageAccess;
     case net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess:
       return network::mojom::CookieExemptionReason::kTopLevelStorageAccess;
-    case net::CookieInclusionStatus::ExemptionReason::kCorsOptIn:
-      return network::mojom::CookieExemptionReason::kCorsOptIn;
     case net::CookieInclusionStatus::ExemptionReason::kScheme:
       return network::mojom::CookieExemptionReason::kScheme;
   }
@@ -72,6 +74,10 @@ bool EnumTraits<network::mojom::CookieExemptionReason,
       *output =
           net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial;
       return true;
+    case network::mojom::CookieExemptionReason::kTopLevel3PCDDeprecationTrial:
+      *output = net::CookieInclusionStatus::ExemptionReason::
+          kTopLevel3PCDDeprecationTrial;
+      return true;
     case network::mojom::CookieExemptionReason::k3PCDHeuristics:
       *output = net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
       return true;
@@ -84,9 +90,6 @@ bool EnumTraits<network::mojom::CookieExemptionReason,
     case network::mojom::CookieExemptionReason::kTopLevelStorageAccess:
       *output =
           net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess;
-      return true;
-    case network::mojom::CookieExemptionReason::kCorsOptIn:
-      *output = net::CookieInclusionStatus::ExemptionReason::kCorsOptIn;
       return true;
     case network::mojom::CookieExemptionReason::kScheme:
       *output = net::CookieInclusionStatus::ExemptionReason::kScheme;

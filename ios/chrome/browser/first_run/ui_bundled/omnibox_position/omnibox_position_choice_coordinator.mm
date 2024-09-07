@@ -6,15 +6,15 @@
 
 #import "base/time/time.h"
 #import "base/timer/elapsed_timer.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_mediator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_view_controller.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 @interface OmniboxPositionChoiceCoordinator () <
     PromoStyleViewControllerDelegate>
@@ -36,7 +36,7 @@
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     _mediator.deviceSwitcherResultDispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(self.browser->GetBrowserState());
+            GetDispatcherForProfile(self.browser->GetProfile());
   }
 
   _viewController = [[OmniboxPositionChoiceViewController alloc] init];

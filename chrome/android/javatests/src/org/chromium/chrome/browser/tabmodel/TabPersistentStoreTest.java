@@ -19,6 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.ActivityState;
@@ -102,7 +103,7 @@ import java.util.stream.Collectors;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
-@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
 public class TabPersistentStoreTest {
     // Test activity type that does not restore tab on cold restart.
     // Any type other than ActivityType.TABBED works.
@@ -148,6 +149,7 @@ public class TabPersistentStoreTest {
         final MockTabPersistentStoreObserver mTabPersistentStoreObserver;
         private final TabModelOrderController mTabModelOrderController;
         // Required to ensure TabContentManager is not null.
+        @Mock // Annotation required to disable R8 optimization of the class.
         private final TabContentManager mMockTabContentManager;
 
         public TestTabModelSelector(Context context) throws Exception {

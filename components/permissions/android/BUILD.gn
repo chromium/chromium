@@ -57,6 +57,7 @@ android_resources("java_resources") {
     "res/drawable/gm_filled_cardboard_24.xml",
     "res/drawable/gm_filled_content_paste_24.xml",
     "res/drawable/gm_filled_devices_24.xml",
+    "res/drawable/gm_filled_hand_gesture_24.xml",
     "res/drawable/gm_filled_location_on_24.xml",
     "res/drawable/gm_filled_mic_24.xml",
     "res/drawable/gm_filled_nfc_24.xml",

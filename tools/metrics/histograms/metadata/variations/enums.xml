@@ -34,11 +34,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Missing clean exit beacon key"/>
 </enum>
 
-<enum name="BooleanFutureSeed">
-  <int value="0" label="Seed fetched before Time::Now()"/>
-  <int value="1" label="Seed fetched after Time::Now()"/>
-</enum>
-
 <enum name="JsonDeserializationError">
   <summary>
     Captures errors codes that can be given by

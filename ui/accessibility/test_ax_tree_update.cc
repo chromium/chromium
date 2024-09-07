@@ -334,9 +334,9 @@ TestAXTreeUpdate::TestAXTreeUpdate(const std::string& tree_structure) {
 
   DCHECK(node_data_vector.size() >= 1);
 
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   tree_data.focused_tree_id = tree_data.tree_id;
-  tree_data.parent_tree_id = ui::AXTreeIDUnknown();
+  tree_data.parent_tree_id = AXTreeIDUnknown();
   tree_data = tree_data;
   has_tree_data = true;
   root_id = node_data_vector[0].id;

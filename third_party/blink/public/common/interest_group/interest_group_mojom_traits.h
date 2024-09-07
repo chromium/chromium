@@ -100,6 +100,12 @@ struct BLINK_COMMON_EXPORT
         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds);
   }
 
+  static bool omit_user_bidding_signals(
+      const blink::AuctionServerRequestFlags& capabilities) {
+    return capabilities.Has(
+        blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals);
+  }
+
   static bool Read(blink::mojom::AuctionServerRequestFlagsDataView data,
                    blink::AuctionServerRequestFlags* out);
 };

@@ -219,8 +219,8 @@ class SiteSettingsHandler
   // Clear web storage data and cookies for a site group.
   void HandleClearSiteGroupDataAndCookies(const base::Value::List& args);
 
-  // Gets warning strings for content types that are blocked at the OS level.
-  void HandleGetOSGlobalPermissionStatus(const base::Value::List& args);
+  // Gets the list of content types that are blocked at the OS level.
+  void HandleGetSystemDeniedPermissions(const base::Value::List& args);
 
   // Attempts to open the the OS permission settings.
   void HandleOpenSystemPermissionSettings(const base::Value::List& args);
@@ -302,8 +302,8 @@ class SiteSettingsHandler
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();
 
-  // Fetches the OS global permission status.
-  base::Value GetOSGlobalPermissionStatus();
+  // Returns the list of permissions blocked at the system level.
+  base::Value GetSystemDeniedPermissions();
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 

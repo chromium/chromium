@@ -12,11 +12,8 @@
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
-#include "base/notreached.h"
+#include "ash/wm/overview/birch/birch_bar_util.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "components/prefs/pref_service.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -34,60 +31,20 @@ constexpr gfx::Size kShowSuggestionsItemSize(304, 32);
 
 using CommandId = BirchBarContextMenuModel::CommandId;
 
-namespace {
-
-// Creates a switch button to control showing/hiding the birch bar.
-std::unique_ptr<Switch> CreateShowSuggestionSwitch() {
-  auto switch_button =
-      std::make_unique<Switch>(base::BindRepeating([]() {
-        auto* birch_bar_controller = BirchBarController::Get();
-        CHECK(birch_bar_controller);
-
-        // Note that the menu should be dismissed before changing the show
-        // suggestions pref which map destroy the chips.
-        views::MenuController::GetActiveInstance()->Cancel(
-            views::MenuController::ExitType::kAll);
-
-        birch_bar_controller->SetShowBirchSuggestions(
-            /*show=*/!birch_bar_controller->GetShowBirchSuggestions());
-      }));
-  switch_button->SetIsOn(BirchBarController::Get()->GetShowBirchSuggestions());
-  return switch_button;
-}
-
-// Get suggestion type from the given command Id.
-BirchSuggestionType CommandIdToSuggestionType(int command_id) {
-  switch (command_id) {
-    case base::to_underlying(CommandId::kCalendarSuggestions):
-      return BirchSuggestionType::kCalendar;
-    case base::to_underlying(CommandId::kWeatherSuggestions):
-      return BirchSuggestionType::kWeather;
-    case base::to_underlying(CommandId::kDriveSuggestions):
-      return BirchSuggestionType::kDrive;
-    case base::to_underlying(CommandId::kChromeTabSuggestions):
-      return BirchSuggestionType::kChromeTab;
-    case base::to_underlying(CommandId::kMediaSuggestions):
-      return BirchSuggestionType::kMedia;
-    default:
-      break;
-  }
-  NOTREACHED() << "No matching suggestion type for command Id: " << command_id;
-}
-
-}  // namespace
-
 BirchBarMenuModelAdapter::BirchBarMenuModelAdapter(
     std::unique_ptr<ui::SimpleMenuModel> birch_menu_model,
     views::Widget* widget_owner,
     ui::MenuSourceType source_type,
     base::OnceClosure on_menu_closed_callback,
-    bool is_tablet_mode)
+    bool is_tablet_mode,
+    bool for_chip_menu)
     : AppMenuModelAdapter(std::string(),
                           std::move(birch_menu_model),
                           widget_owner,
                           source_type,
                           std::move(on_menu_closed_callback),
-                          is_tablet_mode) {}
+                          is_tablet_mode),
+      for_chip_menu_(for_chip_menu) {}
 
 BirchBarMenuModelAdapter::~BirchBarMenuModelAdapter() = default;
 
@@ -139,16 +96,27 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       // and the switch button right aligned.
       switch_container->SetFlexForView(spacer, 1);
 
-      auto* switch_button =
-          switch_container->AddChildView(CreateShowSuggestionSwitch());
+      auto switch_button = std::make_unique<Switch>(base::BindRepeating(
+          [](bool from_chip) {
+            auto* birch_bar_controller = BirchBarController::Get();
+            CHECK(birch_bar_controller);
+            birch_bar_controller->ExecuteMenuCommand(
+                base::to_underlying(CommandId::kShowSuggestions), from_chip);
+          },
+          for_chip_menu_));
+      switch_button->SetIsOn(
+          BirchBarController::Get()->GetShowBirchSuggestions());
       switch_button->GetViewAccessibility().SetName(label);
+
+      switch_container->AddChildView(std::move(switch_button));
       return item_view;
     }
     case base::to_underlying(CommandId::kWeatherSuggestions):
     case base::to_underlying(CommandId::kCalendarSuggestions):
     case base::to_underlying(CommandId::kDriveSuggestions):
     case base::to_underlying(CommandId::kChromeTabSuggestions):
-    case base::to_underlying(CommandId::kMediaSuggestions): {
+    case base::to_underlying(CommandId::kMediaSuggestions):
+    case base::to_underlying(CommandId::kCoralSuggestions): {
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
       // Note that we cannot directly added a checkbox, since `MenuItemView`
       // will align the newly added children to the right side of its label. We
@@ -169,30 +137,18 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       auto* checkbox = item_view->AddChildView(std::make_unique<Checkbox>(
           /*button_width=*/0,
           base::BindRepeating(
-              [](int command_id, bool close_menu) {
-                // To avoid UAF, dismiss the menu before changing the pref which
-                // would destroy current chips.
-                if (close_menu) {
-                  views::MenuController::GetActiveInstance()->Cancel(
-                      views::MenuController::ExitType::kAll);
-                }
-
-                auto* birch_bar_controller = BirchBarController::Get();
-                const BirchSuggestionType suggestion_type =
-                    CommandIdToSuggestionType(command_id);
-                const bool current_show_status =
-                    birch_bar_controller->GetShowSuggestionType(
-                        suggestion_type);
-                birch_bar_controller->SetShowSuggestionType(
-                    suggestion_type, !current_show_status);
+              [](int command_id, bool from_chip) {
+                BirchBarController::Get()->ExecuteMenuCommand(command_id,
+                                                              from_chip);
               },
-              command_id, close_menu_on_customizing_suggestions_),
+              command_id, for_chip_menu_),
           label, gfx::Insets::VH(0, menu_item_padding), menu_item_padding));
       bool enabled = item_view->GetEnabled();
       checkbox->SetEnabled(enabled);
-      checkbox->SetSelected(enabled &&
-                            BirchBarController::Get()->GetShowSuggestionType(
-                                CommandIdToSuggestionType(command_id)));
+      checkbox->SetSelected(
+          enabled &&
+          BirchBarController::Get()->GetShowSuggestionType(
+              birch_bar_util::CommandIdToSuggestionType(command_id)));
       checkbox->set_delegate(this);
       checkbox->GetViewAccessibility().SetName(label);
       checkbox->SetLabelFontList(font_list);

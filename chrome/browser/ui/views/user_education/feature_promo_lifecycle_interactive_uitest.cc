@@ -7,6 +7,7 @@
 #include <sstream>
 #include <utility>
 
+#include "build/build_config.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -37,6 +38,7 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_modifiers.h"
@@ -187,7 +189,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
         PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
         WaitForHide(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-        FlushEvents(), CheckBrowser(base::BindOnce([](Browser* browser) {
+        CheckBrowser(base::BindOnce([](Browser* browser) {
           auto* const promo = GetPromoController(browser)->current_promo_.get();
           return !promo || (!promo->is_promo_active() && !promo->help_bubble());
         })));
@@ -496,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                }),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      FlushEvents(),
+
       CheckMessageActionHistogram(
           kFeaturePromoLifecycleTestPromo,
           FeaturePromoClosedReason::kAbortedByBubbleDestroyed));
@@ -540,13 +542,17 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
   FeaturePromoLifecycleAppUiTest() = default;
   ~FeaturePromoLifecycleAppUiTest() override = default;
 
-  static constexpr char kApp1Url[] = "http://example.org/";
-  static constexpr char kApp2Url[] = "http://foo.com/";
+  static constexpr char kApp1Host[] = "example.org";
+  static constexpr char kApp2Host[] = "foo.com";
+  static constexpr char kAppPath[] = "/web_apps/no_manifest.html";
 
   void SetUpOnMainThread() override {
     FeaturePromoLifecycleUiTest::SetUpOnMainThread();
-    app1_id_ = InstallPWA(GURL(kApp1Url));
-    app2_id_ = InstallPWA(GURL(kApp2Url));
+    CHECK(embedded_test_server()->Start());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    app1_id_ = InstallPWA(embedded_test_server()->GetURL(kApp1Host, kAppPath));
+    app2_id_ = InstallPWA(embedded_test_server()->GetURL(kApp2Host, kAppPath));
+    EXPECT_NE(app1_id_, app2_id_);
   }
 
   auto CheckShownForApp() {
@@ -592,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
       app_browser->window()->GetElementContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),
       MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_}), DismissIPH(),
-      FlushEvents(),
+
       MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_},
                      FeaturePromoResult::kPermanentlyDismissed));
 }
@@ -612,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForTwoApps) {
   RunTestSequenceInContext(
       app_browser->window()->GetElementContext(),
       MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_}),
-      WaitForShow(kToolbarAppMenuButtonElementId), DismissIPH(), FlushEvents(),
+      WaitForShow(kToolbarAppMenuButtonElementId), DismissIPH(),
       InContext(
           app_browser2->window()->GetElementContext(),
           Steps(WaitForShow(kToolbarAppMenuButtonElementId),
@@ -692,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest, ShowCriticalPromo) {
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                        CannotRepeatDismissedPromo) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
-                  FlushEvents(),
+
                   MaybeShowPromo(kFeaturePromoLifecycleTestPromo,
                                  FeaturePromoResult::kPermanentlyDismissed));
 }
@@ -754,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                   MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
                   CheckDismissed(true, &kFeaturePromoLifecycleTestPromo),
                   CheckDismissed(false, &kFeaturePromoLifecycleTestPromo3),
-                  FlushEvents(),
+
                   CheckMessageActionHistogram(
                       kFeaturePromoLifecycleTestPromo3,
                       FeaturePromoClosedReason::kOverrideForPrecedence));
@@ -766,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                   MaybeShowPromo(kFeaturePromoLifecycleTestAlert), DismissIPH(),
                   CheckDismissed(true, &kFeaturePromoLifecycleTestAlert),
                   CheckDismissed(false, &kFeaturePromoLifecycleTestPromo3),
-                  FlushEvents(),
+
                   CheckMessageActionHistogram(
                       kFeaturePromoLifecycleTestPromo3,
                       FeaturePromoClosedReason::kOverrideForPrecedence));

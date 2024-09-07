@@ -9,8 +9,7 @@ shared_library("GL_starboard") {
     "egl_starboard.h",
     "gles2_starboard.h",
   ]
-  configs += [ "//third_party/khronos:khronos_headers" ]
-  deps = []
+  deps = [ "//third_party/angle:includes" ]
 
   # TODO(b/333131992): remove this, using the real impls instead of dummies.
   if (remove_starboard_headers) {

@@ -196,20 +196,16 @@ void AutoPictureInPictureTabHelper::MaybeStartOrStopObservingTabStrip() {
 }
 
 bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
-    HasSufficientlyVisibleVideo has_sufficiently_visible_video) const {
-  // The tab must either have playback or be using camera/microphone to autopip.
-  if (!MeetsVideoPlaybackConditions(has_sufficiently_visible_video) &&
-      !IsUsingCameraOrMicrophone()) {
+    HasSufficientlyVisibleVideo has_sufficiently_visible_video) {
+  // Don't try to autopip if picture-in-picture is currently disabled.
+  if (PictureInPictureWindowManager::GetInstance()
+          ->IsPictureInPictureDisabled()) {
     return false;
   }
 
-  // The user may block autopip via a content setting. Also, if we're in an
-  // incognito window, then we should treat "ask" as "block".
-  ContentSetting setting = GetCurrentContentSetting();
-  if (setting == CONTENT_SETTING_BLOCK ||
-      (setting == CONTENT_SETTING_ASK &&
-       Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-           ->IsIncognitoProfile())) {
+  // The tab must either have playback or be using camera/microphone to autopip.
+  if (!MeetsVideoPlaybackConditions(has_sufficiently_visible_video) &&
+      !IsUsingCameraOrMicrophone()) {
     return false;
   }
 
@@ -226,6 +222,23 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
 
   // Do not autopip if the tab is already in PiP.
   if (is_in_picture_in_picture_) {
+    return false;
+  }
+
+  // The user may block autopip via a content setting. Also, if we're in an
+  // incognito window, then we should treat "ask" as "block". This should be the
+  // final check before triggering autopip since it will record metrics about
+  // why autopip has been blocked.
+  ContentSetting setting = GetCurrentContentSetting();
+  if (setting == CONTENT_SETTING_BLOCK) {
+    EnsureAutoPipSettingHelper();
+    auto_pip_setting_helper_->OnAutoPipBlockedByPermission();
+    return false;
+  } else if (setting == CONTENT_SETTING_ASK &&
+             Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+                 ->IsIncognitoProfile()) {
+    EnsureAutoPipSettingHelper();
+    auto_pip_setting_helper_->OnAutoPipBlockedByIncognito();
     return false;
   }
 
@@ -289,6 +302,13 @@ void AutoPictureInPictureTabHelper::GetVideoVisibility(
   EnterAutoPictureInPicture();
 }
 
+void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {
+  if (!auto_pip_setting_helper_) {
+    auto_pip_setting_helper_ = AutoPipSettingHelper::CreateForWebContents(
+        web_contents(), host_content_settings_map_, auto_blocker_);
+  }
+}
+
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {
   return is_in_auto_picture_in_picture_;
 }
@@ -317,10 +337,7 @@ AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
 
   // If we don't have a setting helper associated with this session (site) yet,
   // then create one.
-  if (!auto_pip_setting_helper_) {
-    auto_pip_setting_helper_ = AutoPipSettingHelper::CreateForWebContents(
-        web_contents(), host_content_settings_map_, auto_blocker_);
-  }
+  EnsureAutoPipSettingHelper();
 
   return auto_pip_setting_helper_->CreateOverlayViewIfNeeded(
       std::move(close_pip_cb), browser_view_overridden_bounds, anchor_view,

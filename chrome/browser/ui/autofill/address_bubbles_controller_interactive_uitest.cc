@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveWithEdit) {
                  /*screenshot_name=*/"edit_popup",
                  /*baseline_cl=*/"4535916"),
       PressButton(views::DialogClientView::kCancelButtonElementId),
-      WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents(),
+      WaitForHide(EditAddressProfileView::kTopViewId),
 
       WaitForShow(SaveAddressProfileView::kTopViewId),
       PressButton(views::DialogClientView::kOkButtonElementId),
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveInEdit) {
 
       WaitForShow(EditAddressProfileView::kTopViewId),
       PressButton(views::DialogClientView::kOkButtonElementId),
-      WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents(),
+      WaitForHide(EditAddressProfileView::kTopViewId),
 
       EnsureClosedWithDecision(
           AutofillClient::AddressPromptUserDecision::kEditAccepted));
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(UpdateAddressProfileTest, UpdateThroughEdit) {
                  /*screenshot_name=*/"edit_popup",
                  /*baseline_cl=*/"4535916"),
       PressButton(views::DialogClientView::kCancelButtonElementId),
-      WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents(),
+      WaitForHide(EditAddressProfileView::kTopViewId),
 
       WaitForShow(UpdateAddressProfileView::kTopViewId),
       PressButton(views::DialogClientView::kOkButtonElementId),
@@ -199,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(UpdateAddressProfileTest, UpdateThroughEdit) {
 
 class UpdateAccountAddressProfileTest : public UpdateAddressProfileTest {
   void TriggerBubble() override {
-    test_api(original_profile_).set_source(AutofillProfile::Source::kAccount);
+    test_api(original_profile_)
+        .set_record_type(AutofillProfile::RecordType::kAccount);
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), &original_profile_,
         /*options=*/{},
@@ -223,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(UpdateAccountAddressProfileTest, UpdateThroughEdit) {
                  /*screenshot_name=*/"edit_popup",
                  /*baseline_cl=*/"4535916"),
       PressButton(views::DialogClientView::kCancelButtonElementId),
-      WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents(),
+      WaitForHide(EditAddressProfileView::kTopViewId),
 
       WaitForShow(UpdateAddressProfileView::kTopViewId),
       PressButton(views::DialogClientView::kOkButtonElementId),
@@ -265,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(MigrateToProfileAddressProfileTest, SaveWithEdit) {
                  /*screenshot_name=*/"edit_popup",
                  /*baseline_cl=*/"4535916"),
       PressButton(views::DialogClientView::kCancelButtonElementId),
-      WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents(),
+      WaitForHide(EditAddressProfileView::kTopViewId),
 
       WaitForShow(SaveAddressProfileView::kTopViewId),
       PressButton(views::DialogClientView::kOkButtonElementId),
@@ -298,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(AddNewAddressProfileTest, EditorCancel) {
                   WaitForShow(EditAddressProfileView::kTopViewId),
                   PressButton(views::DialogClientView::kCancelButtonElementId),
                   WaitForHide(EditAddressProfileView::kTopViewId),
-                  FlushEvents(),
+
                   WaitForShow(AddNewAddressBubbleView::kTopViewId));
 }
 
@@ -317,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(AddNewAddressProfileTest, AddAddressAccept) {
                  /*screenshot_name=*/"edit_popup",
                  /*baseline_cl=*/"5358737"),
       PressButton(views::DialogClientView::kOkButtonElementId),
-      WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents(),
+      WaitForHide(EditAddressProfileView::kTopViewId),
 
       EnsureClosedWithDecision(
           AutofillClient::AddressPromptUserDecision::kEditAccepted));

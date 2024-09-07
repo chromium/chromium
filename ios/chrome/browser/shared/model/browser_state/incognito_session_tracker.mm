@@ -167,11 +167,9 @@ void IncognitoSessionTracker::Observer::OnBrowserListShutdown(
   browser_list_observation_.Reset();
 }
 
-IncognitoSessionTracker::IncognitoSessionTracker(
-    ChromeBrowserStateManager* manager) {
-  // ChromeBrowserStateManager invoke OnChromeBrowserStateLoaded(...) for
-  // all ChromeBrowserState already loaded, so there is no need to maually
-  // iterate over them.
+IncognitoSessionTracker::IncognitoSessionTracker(ProfileManagerIOS* manager) {
+  // ProfileManagerIOS invoke OnProfileLoaded(...) for all Profiles already
+  // loaded, so there is no need to manually iterate over them.
   scoped_manager_observation_.Observe(manager);
 }
 
@@ -188,36 +186,33 @@ base::CallbackListSubscription IncognitoSessionTracker::RegisterCallback(
   return callbacks_.Add(std::move(callback));
 }
 
-void IncognitoSessionTracker::OnChromeBrowserStateManagerDestroyed(
-    ChromeBrowserStateManager* manager) {
+void IncognitoSessionTracker::OnProfileManagerDestroyed(
+    ProfileManagerIOS* manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scoped_manager_observation_.Reset();
 }
 
-void IncognitoSessionTracker::OnChromeBrowserStateCreated(
-    ChromeBrowserStateManager* manager,
-    ChromeBrowserState* browser_state) {
+void IncognitoSessionTracker::OnProfileCreated(ProfileManagerIOS* manager,
+                                               ChromeBrowserState* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The ChromeBrowserState is still not fully loaded, so the KeyedService
-  // cannot be accessed (and it may be destroyed before the load complete).
-  // Wait until the end of the initialisation before tracking its session.
+  // The Profile is still not fully loaded, so the KeyedService cannot be
+  // accessed (and it may be destroyed before the load complete). Wait until the
+  // end of the initialisation before tracking its session.
 }
 
-void IncognitoSessionTracker::OnChromeBrowserStateLoaded(
-    ChromeBrowserStateManager* manager,
-    ChromeBrowserState* browser_state) {
+void IncognitoSessionTracker::OnProfileLoaded(ProfileManagerIOS* manager,
+                                              ChromeBrowserState* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The ChromeBrowserState is fully loaded, we can access its BrowserList
-  // and register an Observer. The use of `base::Unretained(this)` is safe
-  // as the `IncognitoSessionTracker` owns the `Observer` and the closure
-  // cannot outlive `this`.
+  // The Profile is fully loaded, we can access its BrowserList and register an
+  // Observer. The use of `base::Unretained(this)` is safe as the
+  // `IncognitoSessionTracker` owns the `Observer` and the closure cannot
+  // outlive `this`.
   auto [_, inserted] = observers_.insert(std::make_pair(
-      browser_state,
-      std::make_unique<Observer>(
-          BrowserListFactory::GetForBrowserState(browser_state),
-          base::BindRepeating(
-              &IncognitoSessionTracker::OnIncognitoSessionStateChanged,
-              base::Unretained(this)))));
+      profile, std::make_unique<Observer>(
+                   BrowserListFactory::GetForBrowserState(profile),
+                   base::BindRepeating(
+                       &IncognitoSessionTracker::OnIncognitoSessionStateChanged,
+                       base::Unretained(this)))));
 
   DCHECK(inserted);
 }

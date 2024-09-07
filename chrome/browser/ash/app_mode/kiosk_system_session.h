@@ -41,6 +41,8 @@ class KioskSystemSession {
 
   void OnGuestAdded(content::WebContents* guest_web_contents);
 
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
   bool is_shutting_down() const;
 
   Browser* GetSettingsBrowserForTesting();

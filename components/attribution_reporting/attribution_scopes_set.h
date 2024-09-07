@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionScopesSet {
   using Scopes = base::flat_set<std::string>;
 
   static base::expected<AttributionScopesSet, mojom::SourceRegistrationError>
-  FromJSON(base::Value::Dict&, std::optional<uint32_t> attribution_scope_limit);
+  FromJSON(base::Value::Dict&, uint32_t attribution_scope_limit);
 
   static base::expected<AttributionScopesSet, mojom::TriggerRegistrationError>
   FromJSON(base::Value::Dict&);
@@ -42,7 +42,13 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionScopesSet {
 
   const Scopes& scopes() const { return scopes_; }
 
-  void Serialize(base::Value::Dict&) const;
+  Scopes TakeScopes() && { return std::move(scopes_); }
+
+  void SerializeForSource(base::Value::Dict&) const;
+
+  void SerializeForTrigger(base::Value::Dict&) const;
+
+  bool HasIntersection(const AttributionScopesSet& other_scopes) const;
 
   bool IsValidForSource(uint32_t scope_limit) const;
 

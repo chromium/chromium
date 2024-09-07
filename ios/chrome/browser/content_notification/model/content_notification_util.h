@@ -7,7 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
 class PrefService;
 
 // True if any type of content notification is enabled with user visible UI.

@@ -1,0 +1,122 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("commerce") {
+  sources = [
+    "commerce_page_action_controller.h",
+    "commerce_prompt.h",
+    "commerce_ui_tab_helper.h",
+    "discounts_page_action_controller.h",
+    "price_tracking_page_action_controller.h",
+    "product_specifications_entry_point_controller.h",
+    "product_specifications_page_action_controller.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/cart:mojo_bindings",
+    "//chrome/browser/commerce",
+    "//chrome/browser/ui/page_action:icon_type",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core/compare",
+    "//components/commerce/core/product_specifications",
+    "//components/commerce/core/subscriptions",
+    "//components/feature_engagement/public",
+    "//components/image_fetcher/core",
+    "//components/prefs",
+    "//content/public/browser",
+    "//ui/gfx",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "commerce_page_action_controller.cc",
+    "commerce_ui_tab_helper.cc",
+    "discounts_page_action_controller.cc",
+    "price_tracking_page_action_controller.cc",
+    "product_specifications_entry_point_controller.cc",
+    "product_specifications_page_action_controller.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":commerce",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/common:constants",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:feature_utils",
+    "//components/commerce/core:metrics",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:utils",
+    "//components/vector_icons",
+    "//services/metrics/public/cpp:gen_ukm_builders",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_commerce_ui_tab_helper.cc",
+    "mock_commerce_ui_tab_helper.h",
+  ]
+
+  deps = [
+    ":commerce",
+    "//base",
+    "//chrome/browser/ui/tabs",
+    "//skia:skia_core_public_headers",
+    "//testing/gmock",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "commerce_ui_tab_helper_unittest.cc",
+    "discounts_page_action_controller_unittest.cc",
+    "price_tracking_page_action_controller_unittest.cc",
+    "product_specifications_page_action_controller_unittest.cc",
+  ]
+  deps = [
+    ":commerce",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/commerce/core:account_checker_test_support",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/feature_engagement/test:test_support",
+    "//components/image_fetcher/core:test_support",
+    "//components/image_fetcher/core:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "product_specifications_entry_point_controller_browsertest.cc" ]
+  deps = [
+    ":commerce",
+    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/test:test_support",
+    "//components/commerce/core:account_checker_test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/commerce/core:utils",
+  ]
+}

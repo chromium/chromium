@@ -44,6 +44,16 @@ class StorageFrontend : public BrowserContextKeyedAPI {
     std::optional<std::string> error;
   };
 
+  struct GetKeysResult {
+    GetKeysResult();
+    GetKeysResult(const GetKeysResult&) = delete;
+    GetKeysResult(GetKeysResult&& other);
+    ~GetKeysResult();
+
+    ResultStatus status;
+    std::optional<base::Value::List> data;
+  };
+
   struct GetResult {
     GetResult();
     GetResult(const GetResult&) = delete;
@@ -94,6 +104,12 @@ class StorageFrontend : public BrowserContextKeyedAPI {
                  StorageAreaNamespace storage_area,
                  std::optional<std::vector<std::string>> keys,
                  base::OnceCallback<void(GetResult)> callback);
+
+  // For a given `extension` and `storage_area`, retrieves a list of keys and
+  // fires `callback` with the result.
+  void GetKeys(scoped_refptr<const Extension> extension,
+               StorageAreaNamespace storage_area,
+               base::OnceCallback<void(GetKeysResult)> callback);
 
   // For a given `extension` and `storage_area`, determines the number of bytes
   // in use and fires `callback` with the result. If `keys` is specified, the
@@ -152,6 +168,11 @@ class StorageFrontend : public BrowserContextKeyedAPI {
                   content::BrowserContext* context);
 
   void Init(scoped_refptr<value_store::ValueStoreFactory> storage_factory);
+
+  // Should be called on the UI thread after a read has been performed in
+  // `storage_area`. Fires `callback` with the keys from `get_result`.
+  void OnReadKeysFinished(base::OnceCallback<void(GetKeysResult)> callback,
+                          GetResult get_result);
 
   // Should be called on the UI thread after a read has been performed in
   // `storage_area`. Fires `callback` with the `result` from the read

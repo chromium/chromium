@@ -51,4 +51,52 @@ ConnectorsServiceBase::GetAppliedRealTimeUrlCheck() const {
       GetPrefs()->GetInteger(kEnterpriseRealTimeUrlCheckMode));
 }
 
+bool ConnectorsServiceBase::IsConnectorEnabled(
+    ReportingConnector connector) const {
+  if (!ConnectorsEnabled()) {
+    return false;
+  }
+
+  return GetConnectorsManagerBase()->IsReportingConnectorEnabled(connector);
+}
+
+std::vector<std::string>
+ConnectorsServiceBase::GetReportingServiceProviderNames(
+    ReportingConnector connector) {
+  if (!ConnectorsEnabled()) {
+    return {};
+  }
+
+  if (!GetDmToken(ConnectorScopePref(connector)).has_value()) {
+    return {};
+  }
+
+  return GetConnectorsManagerBase()->GetReportingServiceProviderNames(
+      connector);
+}
+
+std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings(
+    ReportingConnector connector) {
+  if (!ConnectorsEnabled()) {
+    return std::nullopt;
+  }
+
+  std::optional<ReportingSettings> settings =
+      GetConnectorsManagerBase()->GetReportingSettings(connector);
+  if (!settings.has_value()) {
+    return std::nullopt;
+  }
+
+  std::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
+  if (!dm_token.has_value()) {
+    return std::nullopt;
+  }
+
+  settings.value().dm_token = dm_token.value().value;
+  settings.value().per_profile =
+      dm_token.value().scope == policy::POLICY_SCOPE_USER;
+
+  return settings;
+}
+
 }  // namespace enterprise_connectors

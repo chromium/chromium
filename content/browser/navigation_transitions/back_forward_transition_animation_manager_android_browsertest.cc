@@ -17,6 +17,7 @@
 #include "cc/slim/layer_tree_impl.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/browser_context_impl.h"
@@ -32,6 +33,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
@@ -150,6 +152,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       ui::BackGestureEventSwipeEdge initiating_edge,
       NavigationEntryImpl* destination_entry,
+      const SkBitmap& embedder_bitmap,
       BackForwardTransitionAnimationManagerAndroid* animation_manager)
       : BackForwardTransitionAnimator(web_contents_view_android,
                                       controller,
@@ -157,6 +160,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
                                       nav_type,
                                       initiating_edge,
                                       destination_entry,
+                                      embedder_bitmap,
                                       animation_manager),
         wcva_(web_contents_view_android) {}
 
@@ -231,7 +235,12 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   }
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (did_finish_navigation_callback_) {
-      std::move(did_finish_navigation_callback_).Run();
+      auto* request = static_cast<NavigationRequest*>(navigation_handle);
+      std::move(did_finish_navigation_callback_)
+          .Run(request->GetRenderFrameHost()
+                   ->GetView()
+                   ->host()
+                   ->IsContentRenderingTimeoutRunning());
     }
     BackForwardTransitionAnimator::DidFinishNavigation(navigation_handle);
   }
@@ -287,7 +296,8 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     CHECK(!post_ready_to_commit_callback_);
     post_ready_to_commit_callback_ = std::move(callback);
   }
-  void set_did_finish_navigation_callback(base::OnceClosure callback) {
+  void set_did_finish_navigation_callback(
+      base::OnceCallback<void(bool)> callback) {
     CHECK(!did_finish_navigation_callback_);
     did_finish_navigation_callback_ = std::move(callback);
   }
@@ -327,13 +337,16 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   base::OnceClosure waited_for_renderer_new_frame_;
   base::OnceClosure next_on_animate_callback_;
   base::OnceClosure post_ready_to_commit_callback_;
-  base::OnceClosure did_finish_navigation_callback_;
+  // The return value indicates if the paint-holding timer is running on the new
+  // RenderWidgetHost when the animated history navigation commits.
+  base::OnceCallback<void(bool)> did_finish_navigation_callback_;
   base::OnceCallback<void(State)> on_impl_destroyed_;
 };
 
 class FactoryForTesting : public BackForwardTransitionAnimator::Factory {
  public:
-  FactoryForTesting() = default;
+  explicit FactoryForTesting(const SkBitmap& override_bitmap)
+      : override_bitmap_(override_bitmap) {}
   ~FactoryForTesting() override = default;
 
   std::unique_ptr<BackForwardTransitionAnimator> Create(
@@ -343,12 +356,18 @@ class FactoryForTesting : public BackForwardTransitionAnimator::Factory {
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       ui::BackGestureEventSwipeEdge initiating_edge,
       NavigationEntryImpl* destination_entry,
+      SkBitmap embedder_content,
       BackForwardTransitionAnimationManagerAndroid* animation_manager)
       override {
     return std::make_unique<AnimatorForTesting>(
         web_contents_view_android, controller, gesture, nav_type,
-        initiating_edge, destination_entry, animation_manager);
+        initiating_edge, destination_entry,
+        override_bitmap_.empty() ? embedder_content : override_bitmap_,
+        animation_manager);
   }
+
+ private:
+  SkBitmap override_bitmap_;
 };
 }  // namespace
 
@@ -419,8 +438,10 @@ class BackForwardTransitionAnimationManagerBrowserTest
     WaitForCopyableViewInWebContents(web_contents());
 
     GetAnimationManager()->set_animator_factory_for_testing(
-        std::make_unique<FactoryForTesting>());
+        std::make_unique<FactoryForTesting>(EmbedderBitmap()));
   }
+
+  virtual SkBitmap EmbedderBitmap() { return SkBitmap(); }
 
   gfx::Size GetViewportSize() {
     return web_contents()->GetNativeView()->GetPhysicalBackingSize();
@@ -475,6 +496,13 @@ class BackForwardTransitionAnimationManagerBrowserTest
     return GetAnimator()->clone_layer_for_testing();
   }
 
+  cc::slim::Layer* GetEmbedderLayer() {
+    if (!GetAnimator()) {
+      return nullptr;
+    }
+    return GetAnimator()->embedder_live_content_clone_for_testing();
+  }
+
   cc::slim::Layer* GetLivePageLayer() {
     return GetAnimationManager()
         ->web_contents_view_android()
@@ -486,6 +514,21 @@ class BackForwardTransitionAnimationManagerBrowserTest
       return nullptr;
     }
     return GetAnimator()->progress_bar_for_testing()->GetLayer().get();
+  }
+
+  const cc::slim::Layer* GetRRectLayer() {
+    if (!GetAnimator()) {
+      return nullptr;
+    }
+    return GetAnimator()->rrect_layer_for_testing();
+  }
+
+  const cc::slim::Layer* GetFaviconLayer() {
+    if (!GetRRectLayer()) {
+      return nullptr;
+    }
+    EXPECT_EQ(GetRRectLayer()->children().size(), 1u);
+    return GetRRectLayer()->children().at(0).get();
   }
 
   // Prints known children of the given layer, in increasing z-order.
@@ -507,6 +550,12 @@ class BackForwardTransitionAnimationManagerBrowserTest
         layer_name = "OldSurfaceClone";
       } else if (child.get() == GetProgressBarLayer()) {
         layer_name = "ProgressBar";
+      } else if (child.get() == GetEmbedderLayer()) {
+        layer_name = "EmbedderContentLayer";
+      } else if (child.get() == GetRRectLayer()) {
+        layer_name = "RRect";
+      } else if (child.get() == GetFaviconLayer()) {
+        layer_name = "Favicon";
       }
 
       if (!layer_name.empty()) {
@@ -516,7 +565,8 @@ class BackForwardTransitionAnimationManagerBrowserTest
         list_non_empty = true;
 
         output << layer_name;
-        if (child.get() == GetScreenshotLayer()) {
+        if (child.get() == GetScreenshotLayer() ||
+            child.get() == GetRRectLayer()) {
           output << ChildrenInOrder(*child.get());
         }
       }
@@ -1280,9 +1330,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 }
 
 // If the destination has no screenshot, we will compose a fallback screenshot
-// for transition.
+// for transition. The destination page has no favicon so we don't draw
+// the rounded rectangle.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       DestinationHasNoScreenshot) {
+                       DestinationHasNoScreenshot_NoFavicon) {
   std::optional<int> index =
       web_contents()->GetController().GetIndexForGoBack();
   ASSERT_TRUE(index);
@@ -1296,16 +1347,103 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
                                           SwipeEdge::LEFT, NavType::kBackward);
 
-  // live page layer with screenshot underneath.
+  // live page layer with screenshot underneath. No rrect.
   ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  auto* fallback_screenshot = GetScreenshotLayer();
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.2));
   auto expected_bg_color = web_contents()
                                ->GetDelegate()
                                ->GetBackForwardTransitionFallbackUXConfig()
                                .background_color;
-  ASSERT_EQ(fallback_screenshot->background_color(), expected_bg_color);
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.5));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.8));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  TestFrameNavigationObserver back_navigation(web_contents());
+
+  // Trigger and complete the back navigation.
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(destroyed.Wait());
+  back_navigation.Wait();
+
+  ASSERT_EQ(back_navigation.last_committed_url(), RedURL());
+  ASSERT_FALSE(web_contents()->GetController().GetActiveEntry()->GetUserData(
+      NavigationEntryScreenshot::kUserDataKey));
+}
+
+// If the destination has no screenshot, we will compose a fallback screenshot
+// for transition. The destination page has a favicon so we  draw
+// the rounded rectangle, and the rrect embeds the favicon.
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       DestinationHasNoScreenshot_HasFavicon) {
+  SkBitmap stub_favicon;
+  stub_favicon.allocN32Pixels(20, 20);
+  stub_favicon.eraseColor(SkColors::kMagenta);
+  stub_favicon.setImmutable();
+  std::optional<int> index =
+      web_contents()->GetController().GetIndexForGoBack();
+  ASSERT_TRUE(index);
+  NavigationEntryImpl* red_entry =
+      web_contents()->GetController().GetEntryAtIndex(*index);
+  ASSERT_TRUE(web_contents()
+                  ->GetController()
+                  .GetNavigationEntryScreenshotCache()
+                  ->RemoveScreenshot(red_entry));
+  red_entry->navigation_transition_data().set_favicon(stub_favicon);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+
+  // live page layer with screenshot underneath, and the rounded rectangle is
+  // above the scrim.
+  ASSERT_EQ("[Screenshot[Scrim,RRect[Favicon]],LivePage]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.2));
+  auto expected_bg_color = web_contents()
+                               ->GetDelegate()
+                               ->GetBackForwardTransitionFallbackUXConfig()
+                               .background_color;
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 0.f,
+                                         kFloatTolerance));
+  // Opacity value isn't propagated into the subtree.
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.5));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 0.7f,
+                                         kFloatTolerance));
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.8));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(), expected_bg_color);
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetRRectLayer()->opacity(), 0.02f,
+                                         kFloatTolerance));
+  EXPECT_TRUE(base::IsApproximatelyEqual(GetFaviconLayer()->opacity(), 1.f,
+                                         kFloatTolerance));
 
   TestFrameNavigationObserver back_navigation(web_contents());
 
@@ -1966,7 +2104,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     metadata.primary_main_frame_item_sequence_number =
         GetItemSequenceNumberForNavigation(back_to_red.GetNavigationHandle());
     GetAnimator()->set_did_finish_navigation_callback(
-        base::BindLambdaForTesting([&]() {
+        base::BindLambdaForTesting([&](bool) {
           new_widget_host->render_frame_metadata_provider()
               ->SetLastRenderFrameMetadataForTest(std::move(metadata));
           GetAnimator()->OnRenderFrameMetadataChangedAfterActivation(
@@ -1997,7 +2135,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
-  TestFuture<void> did_finish_navigation;
+  TestFuture<bool> did_finish_navigation;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
   GetAnimator()->set_did_finish_navigation_callback(
       did_finish_navigation.GetCallback());
@@ -2042,7 +2180,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
-  TestFuture<void> did_finish_navigation;
+  TestFuture<bool> did_finish_navigation;
   TestFuture<void> did_cross_fade;
   TestFuture<void> did_invoke;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
@@ -2242,8 +2380,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                                           SwipeEdge::LEFT, NavType::kBackward);
   ASSERT_TRUE(GetAnimator());
 
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.5));
+  EXPECT_EQ(GetScreenshotLayer()->background_color(),
+            web_contents()
+                ->GetDelegate()
+                ->GetBackForwardTransitionFallbackUXConfig()
+                .background_color);
+  EXPECT_FALSE(GetRRectLayer());
+  EXPECT_FALSE(GetFaviconLayer());
 
   const auto& children =
       static_cast<WebContentsViewAndroid*>(web_contents()->GetView())
@@ -2412,7 +2556,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
-  TestFuture<void> did_finish_nav;
+  TestFuture<bool> did_finish_nav;
   TestFuture<void> did_cross_fade;
   TestFuture<void> did_cancel;
   TestFuture<void> did_invoke;
@@ -2454,7 +2598,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
-  TestFuture<void> did_finish_nav;
+  TestFuture<bool> did_finish_nav;
   TestFuture<void> did_cancel;
   TestFuture<void> did_invoke;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
@@ -2610,6 +2754,39 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntryIndex(), 2);
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       HasUaVisualTransitionSameDocument) {
+  GURL url1 = embedded_test_server()->GetURL(
+      "a.com", "/has-ua-visual-transition.html#frag1");
+  GURL url2 = embedded_test_server()->GetURL(
+      "a.com", "/has-ua-visual-transition.html#frag2");
+  NavigationHandleCommitObserver navigation_0(web_contents(), url1);
+  NavigationHandleCommitObserver navigation_1(web_contents(), url2);
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  // The NavigationEntry changes on a same-document navigation.
+  EXPECT_NE(web_contents()->GetController().GetLastCommittedEntry(), entry);
+  EXPECT_FALSE(
+      EvalJs(web_contents(), "hasUAVisualTransitionValue").ExtractBool());
+
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+  EXPECT_TRUE(navigation_1.was_same_document());
+
+  TestNavigationManager manager(web_contents(), url1);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureInvoked();
+
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+  ASSERT_TRUE(
+      EvalJs(web_contents(), "hasUAVisualTransitionValue").ExtractBool());
+}
+
 // Test the case where script commits a same-document navigation in beforeunload
 // while the cancel animation is playing.
 IN_PROC_BROWSER_TEST_F(
@@ -2649,7 +2826,7 @@ class FailBeginNavigationImpl : public ContentBrowserTestContentBrowserClient {
   ~FailBeginNavigationImpl() override = default;
 
   // `ContentBrowserTestContentBrowserClient`:
-  bool ShouldOverrideUrlLoading(int frame_tree_node_id,
+  bool ShouldOverrideUrlLoading(FrameTreeNodeId frame_tree_node_id,
                                 bool browser_initiated,
                                 const GURL& gurl,
                                 const std::string& request_method,
@@ -2757,7 +2934,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
         GetItemSequenceNumberForNavigation(
             back_nav_to_red.GetNavigationHandle());
     GetAnimator()->set_did_finish_navigation_callback(
-        base::BindLambdaForTesting([&]() {
+        base::BindLambdaForTesting([&](bool) {
           new_widget_host->render_frame_metadata_provider()
               ->SetLastRenderFrameMetadataForTest(std::move(metadata));
           GetAnimator()->OnRenderFrameMetadataChangedAfterActivation(
@@ -3274,7 +3451,7 @@ class BackForwardTransitionAnimationManagerBrowserTestSameDocument
         num_request_before_nav + 1);
 
     GetAnimationManager()->set_animator_factory_for_testing(
-        std::make_unique<FactoryForTesting>());
+        std::make_unique<FactoryForTesting>(EmbedderBitmap()));
   }
 };
 
@@ -3942,6 +4119,219 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
   ASSERT_FALSE(iframe_back_to_red.was_committed());
+}
+
+namespace {
+class BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding() {
+    scoped_feature_list_.Reset();
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {blink::features::kBackForwardTransitions, {}},
+        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
+         {}},
+        {features::kRenderDocument,
+         {{kRenderDocumentLevelParameterName,
+           GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames)}}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{});
+  }
+  ~BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding() override =
+      default;
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding,
+    PaintHoldingDisabledOnTransition) {
+  // Disable BFCache. Since RenderDocument is fully enabled (in the test
+  // harness), the cross-doc navigation will have paint holding enabled.
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<bool> is_paint_holding_timer_running_when_nav_finishes;
+  TestFuture<void> invoke_played;
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_did_finish_navigation_callback(
+      is_paint_holding_timer_running_when_nav_finishes.GetCallback());
+  GetAnimator()->set_on_invoke_animation_displayed(invoke_played.GetCallback());
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
+  ASSERT_TRUE(is_paint_holding_timer_running_when_nav_finishes.Wait());
+  EXPECT_FALSE(is_paint_holding_timer_running_when_nav_finishes.Get());
+  ASSERT_TRUE(invoke_played.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+}
+
+// Test that the timer to dismiss the screenshot is properly started, if the
+// renderer never submits a new frame post-navigation.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding,
+    ScreenshotDismissalTimer) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<void> invoke_played;
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_invoke_animation_displayed(invoke_played.GetCallback());
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_intercept_render_frame_metadata_changed(true);
+
+  TestFrameNavigationObserver back_nav_to_red(web_contents());
+  GetAnimationManager()->OnGestureInvoked();
+  back_nav_to_red.Wait();
+  ASSERT_EQ(back_nav_to_red.last_committed_url(), RedURL());
+  ASSERT_TRUE(back_nav_to_red.last_navigation_succeeded());
+  ASSERT_TRUE(invoke_played.Wait());
+
+  ASSERT_TRUE(
+      GetAnimator()->dismiss_screenshot_timer_for_testing()->IsRunning());
+  ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+  EXPECT_TRUE(base::IsApproximatelyEqual(
+      GetAnimator()->scrim_layer_for_testing()->background_color().fA, 0.f,
+      kFloatTolerance));
+  GetAnimator()->dismiss_screenshot_timer_for_testing()->FireNow();
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+}
+
+// Test that the timer to dismiss the screenshot is stopped once the renderer
+// submits a new frame.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding,
+    ScreenshotDismissalTimerStopped) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<void> invoke_played;
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_invoke_animation_displayed(invoke_played.GetCallback());
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_intercept_render_frame_metadata_changed(true);
+
+  TestFrameNavigationObserver back_nav_to_red(web_contents());
+  GetAnimationManager()->OnGestureInvoked();
+  back_nav_to_red.Wait();
+  ASSERT_EQ(back_nav_to_red.last_committed_url(), RedURL());
+  ASSERT_TRUE(back_nav_to_red.last_navigation_succeeded());
+  ASSERT_TRUE(invoke_played.Wait());
+
+  ASSERT_TRUE(
+      GetAnimator()->dismiss_screenshot_timer_for_testing()->IsRunning());
+  ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+  EXPECT_TRUE(base::IsApproximatelyEqual(
+      GetAnimator()->scrim_layer_for_testing()->background_color().fA, 0.f,
+      kFloatTolerance));
+
+  cc::RenderFrameMetadata metadata;
+  metadata.primary_main_frame_item_sequence_number =
+      GetAnimator()->primary_main_frame_navigation_entry_item_sequence_number();
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->render_frame_metadata_provider()
+      ->SetLastRenderFrameMetadataForTest(metadata);
+
+  GetAnimator()->set_intercept_render_frame_metadata_changed(false);
+  GetAnimator()->OnRenderFrameMetadataChangedAfterActivation(base::TimeTicks());
+
+  EXPECT_FALSE(
+      GetAnimator()->dismiss_screenshot_timer_for_testing()->IsRunning());
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+}
+
+namespace {
+
+class BackForwardTransitionAnimationManagerBrowserTestEmbedderLiveContent
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  SkBitmap EmbedderBitmap() override {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(10, 10, true);
+    bitmap.eraseColor(SkColors::kRed);
+    bitmap.setImmutable();
+    return bitmap;
+  }
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestEmbedderLiveContent,
+    Cancel_EmbedderScreenshot) {
+  TestFuture<void> did_cancel;
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
+  GetAnimationManager()->OnGestureCancelled();
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  ASSERT_TRUE(did_cancel.Wait());
+  EXPECT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestEmbedderLiveContent,
+    Invoke_EmbedderScreenshot) {
+  TestFuture<void> did_invoke;
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimator()->set_intercept_render_frame_metadata_changed(true);
+  GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
+  GetAnimationManager()->OnGestureInvoked();
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  ASSERT_TRUE(did_invoke.Wait());
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimator()->set_intercept_render_frame_metadata_changed(false);
+  base::TimeTicks now = base::TimeTicks();
+  GetAnimator()->OnRenderFrameMetadataChangedAfterActivation(now);
+
+  TestFuture<AnimatorForTesting::State> did_finish;
+  GetAnimator()->set_on_impl_destroyed(did_finish.GetCallback());
+  EXPECT_EQ(did_finish.Get(), AnimatorForTesting::State::kAnimationFinished);
+  EXPECT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 }
 
 }  // namespace content

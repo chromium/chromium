@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
@@ -328,15 +329,13 @@ Resource* PPB_Instance_Proxy::GetSingletonResource(PP_Instance instance,
       break;
 #else
     case BROWSER_FONT_SINGLETON_ID:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 #endif  // !BUILDFLAG(IS_NACL)
   }
 
   if (!new_singleton.get()) {
     // Getting here implies that a constructor is missing in the above switch.
-    NOTREACHED_IN_MIGRATION();
-    return NULL;
+    NOTREACHED();
   }
 
   data->singleton_resources[id] = new_singleton;
@@ -640,10 +639,8 @@ void PPB_Instance_Proxy::OnHostMsgExecuteScript(
   if (enter.failed())
     return;
 
-  if (dispatcher()->IsPlugin())
-    NOTREACHED_IN_MIGRATION();
-  else
-    static_cast<HostDispatcher*>(dispatcher())->set_allow_plugin_reentrancy();
+  CHECK(!dispatcher()->IsPlugin());
+  static_cast<HostDispatcher*>(dispatcher())->set_allow_plugin_reentrancy();
 
   result.Return(dispatcher(), enter.functions()->ExecuteScript(
       instance,
@@ -863,10 +860,7 @@ void PPB_Instance_Proxy::OnPluginMsgMouseLockComplete(PP_Instance instance,
       GetInstanceData(instance);
   if (!data)
     return;  // Instance was probably deleted.
-  if (!TrackedCallback::IsPending(data->mouse_lock_callback)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
+  CHECK(TrackedCallback::IsPending(data->mouse_lock_callback));
   data->mouse_lock_callback->Run(result);
 }
 

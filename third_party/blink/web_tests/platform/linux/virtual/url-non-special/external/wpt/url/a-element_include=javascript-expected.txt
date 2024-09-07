@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that embedded 0x0A is stripped
-  assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
-Harness: the test ran to completion.
-

@@ -151,7 +151,7 @@ class AssertPageLoadMetricsObserver final
   // RenderFrameHost and FrameTreeNode deletion
   void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override;
-  void OnSubFrameDeleted(int frame_tree_node_id) override;
+  void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
 
   // The method below are not well investigated.
   //
@@ -223,7 +223,9 @@ class AssertPageLoadMetricsObserver final
   void OnCustomUserTimingMarkObserved(
       const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
           timings) override {}
-  void OnAdAuctionComplete() override {}
+  void OnAdAuctionComplete(bool is_server_auction,
+                           bool is_on_device_auction,
+                           content::AuctionResult result) override {}
 
   // Reference implementations duplicated from PageLoadMetricsObserver
   ObservePolicy ShouldObserveMimeTypeByDefault(

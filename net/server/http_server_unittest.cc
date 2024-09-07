@@ -341,7 +341,8 @@ std::string EncodeFrame(std::string message,
     WebSocketMaskingKey masking_key = GenerateWebSocketMaskingKey();
     WriteWebSocketFrameHeader(header, &masking_key,
                               base::as_writable_byte_span(frame_header));
-    MaskWebSocketFramePayload(masking_key, 0, &message[0], message.size());
+    MaskWebSocketFramePayload(masking_key, 0,
+                              base::as_writable_byte_span(message));
   } else {
     WriteWebSocketFrameHeader(header, nullptr,
                               base::as_writable_byte_span(frame_header));

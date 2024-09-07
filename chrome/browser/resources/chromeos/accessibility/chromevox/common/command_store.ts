@@ -77,13 +77,10 @@ export class CommandStore {
 
   /**
    * @param command The command to query.
-   * @return Whether or not this command is denied in the OOBE.
+   * @return Whether this command is denied in signed out contexts.
    */
   static denySignedOut(command: Command): boolean {
-    if (!COMMAND_DATA[command]) {
-      return false;
-    }
-    return Boolean(COMMAND_DATA[command].denySignedOut);
+    return Boolean(COMMAND_DATA[command]?.denySignedOut);
   }
 
   static getKeyBindings(): KeyBinding[] {
@@ -927,6 +924,7 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
   },
   [Command.SHOW_OPTIONS_PAGE]: {
     category: CommandCategory.HELP_COMMANDS,
+    denySignedOut: true,
     msgId: 'show_options_page',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.O]}},
   },
@@ -950,14 +948,14 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
     msgId: 'show_tts_settings',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.S]}},
   },
+  [Command.SPEAK_TABLE_LOCATION]: {
+    category: CommandCategory.TABLES,
+    msgId: 'speak_table_location',
+  },
   [Command.SPEAK_TIME_AND_DATE]: {
     category: CommandCategory.INFORMATION,
     msgId: 'speak_time_and_date',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.D]}},
-  },
-  [Command.SPEAK_TABLE_LOCATION]: {
-    category: CommandCategory.TABLES,
-    msgId: 'speak_table_location',
   },
   [Command.START_HISTORY_RECORDING]: {category: CommandCategory.NO_CATEGORY},
   [Command.STOP_HISTORY_RECORDING]: {category: CommandCategory.NO_CATEGORY},

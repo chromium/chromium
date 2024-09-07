@@ -1,0 +1,237 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=/signin_shared.css.js
+ * #import=/signin_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=signin-shared
+ * #css_wrapper_metadata_end */
+
+#viewManager,
+#customizeDialog,
+#selectAvatarDialog {
+  height: 100%;
+}
+
+.profile-customization-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#header {
+  background-color: var(--header-background-color);
+  height: 124px;
+  margin-bottom: 16px;
+}
+
+.in-dialog-design #header {
+  background: center 18px no-repeat
+      url(./images/profile_customization_illustration.svg);
+  height: 170px;
+}
+
+#avatarContainer {
+  --avatar-border: 2px;
+  --avatar-size: 60px;
+  height: var(--avatar-size);
+  left: calc(50% - var(--avatar-size)/2);
+  position: absolute;
+  top: 30px;
+  width: var(--avatar-size);
+}
+
+.in-dialog-design #avatarContainer {
+  --avatar-size: 76px;
+  top: 91px;
+}
+
+#avatar {
+  /** The user avatar may be transparent, add a background */
+  background-color: var(--md-background-color);
+  border: var(--avatar-border) solid var(--md-background-color);
+  border-radius: 50%;
+  height: 100%;
+  left: calc(-1 * var(--avatar-border));
+  position: absolute;
+  top: calc(-1 * var(--avatar-border));
+  width: 100%;
+}
+
+.avatar-badge {
+  --badge-icon-size: 15px;
+  --badge-offset: -4px;
+  --badge-width: 20px;
+  background-color: var(--signin-work-badge-background-color);
+  border: 2px solid var(--header-background-color);
+  border-radius: 50%;
+  bottom: var(--badge-offset);
+  height: var(--badge-width);
+  inset-inline-end: var(--badge-offset);
+  position: absolute;
+  width: var(--badge-width);
+}
+
+.in-dialog-design .avatar-badge {
+  --badge-icon-size: 16px;
+  --badge-width: 26px;
+  border: 1px solid var(--google-grey-300);
+  bottom: 0;
+}
+
+.avatar-badge > cr-icon {
+  bottom: 0;
+  color: var(--signin-work-badge-foreground-color);
+  height: var(--badge-icon-size);
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: var(--badge-icon-size);
+}
+
+.avatar-badge > cr-icon-button {
+  --cr-icon-button-icon-size: var(--badge-icon-size);
+  --cr-icon-button-size: var(--badge-width);
+  margin: auto;
+}
+
+#body {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  line-height: 20px;
+  margin: 0 16px;
+  text-align: center;
+}
+
+#title {
+  color: var(--cr-primary-text-color);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  margin: 0 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#nameInput {
+  --cr-form-field-label-font-size: 11px;
+  --cr-input-placeholder-color: rgba(var(--google-grey-900-rgb), .5);
+  --cr-input-padding-bottom: 8px;
+  --cr-input-padding-top: 8px;
+  flex-grow: 1;
+  height: 32px;
+  margin: 16px auto;
+  width: 148px;
+}
+
+#pickThemeContainer {
+  flex-grow: 1;
+  margin: 16px auto;
+}
+
+.in-dialog-design #pickThemeContainer {
+  margin: 4px auto 26px auto;
+}
+
+cr-theme-color-picker {
+  --cr-theme-color-padding: 6px;
+  --cr-theme-color-picker-column-width: 50px;
+  --cr-theme-color-picker-grid-gap: 7px;
+  --cr-theme-color-picker-grid-padding: 0;
+}
+
+.action-container {
+  padding: 0 16px 16px;
+}
+
+cr-button {
+  font-size: 12px;
+  min-width: 111px;
+}
+
+.in-dialog-design #title {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.in-dialog-design #nameInput {
+  width: 320px;
+}
+
+.in-dialog-design .action-container {
+  column-gap: 12px;
+  padding: 0 24px 24px;
+}
+
+.in-dialog-design #doneButton {
+  min-width: 119px;
+}
+
+.in-dialog-design #skipButton {
+  min-width: 76px;
+}
+
+#selectAvatarWrapper {
+  height: 428px;
+  margin: 0 14px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+cr-profile-avatar-selector {
+  --avatar-size: 72px;
+  --avatar-spacing: 18px;
+  height: fit-content;
+  padding-bottom: 12px;
+  padding-inline-start: 16px;
+  padding-top: 12px;
+}
+
+.select-avatar-header {
+  display: flex;
+  height: 22px;
+  justify-content: flex-start;
+  padding: 13px 16px 17px;
+}
+
+.select-avatar-title {
+  font-size: 15px;
+  line-height: 22px;
+  margin: auto 0;
+}
+
+#selectAvatarBackButton {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 22px;
+  margin-inline-end: 20px;
+  margin-inline-start: 2px;
+}
+
+#selectAvatarDialog .action-container {
+  padding: 22px 24px;
+}
+
+#selectAvatarConfirmButton {
+  min-width: 119px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .in-dialog-design .avatar-badge {
+    border: 1px solid var(--google-grey-500);
+  }
+
+  .in-dialog-design #header {
+    background-image:
+        url(./images/profile_customization_illustration_dark.svg);
+  }
+
+  #nameInput {
+    --cr-input-placeholder-color: rgba(var(--google-grey-200-rgb), .5);
+  }
+}

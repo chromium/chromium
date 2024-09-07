@@ -7,6 +7,7 @@ import {BrowserProxy} from '//resources/cr_components/color_change_listener/brow
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -94,43 +95,40 @@ suite('ReadAloud_UpdateContentSelection', () => {
     document.body.appendChild(app);
     document.onselectionchange = () => {};
     chrome.readingMode.setContentForTesting(axTree, []);
+    return microtasksFinished();
   });
 
-  suite('Before speech started', () => {
-    test('inner html of container matches expected html', () => {
-      assertFalse(app.speechPlayingState.isSpeechActive);
-      assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
-      // isSpeechTreeInitialized is set in updateContent
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
-      // The expected HTML before any highlights are added.
-      const expected = '<div><p>World</p><p>Friend!</p></div>';
-      const innerHTML = app.$.container.innerHTML;
-      assertEquals(expected, innerHTML);
-    });
+  test('inner html of container matches expected html', () => {
+    assertFalse(app.speechPlayingState.isSpeechActive);
+    assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
+    // isSpeechTreeInitialized is set in updateContent
+    assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+    // The expected HTML before any highlights are added.
+    const expected = '<div><p>World</p><p>Friend!</p></div>';
+    const innerHTML = app.$.container.innerHTML;
+    assertEquals(expected, innerHTML);
+  });
 
-    test('selection in reading mode panel correct', () => {
-      // Calling shadowRoot.getSelection directly is not supported in TS tests,
-      // so use a helper to get the selection from the app instead.
-      const selection = document.getSelection()!;
-      assertTrue(selection != null);
-      assertEquals('World', selection.anchorNode!.textContent);
-      assertEquals('Friend', selection.focusNode!.textContent);
-      assertEquals(1, selection.anchorOffset);
-      assertEquals(2, selection.focusOffset);
-    });
+  test('selection in reading mode panel correct', () => {
+    const selection = app.getSelection();
+    assertTrue(!!selection);
+    assertEquals('World', selection.anchorNode!.textContent);
+    assertEquals('Friend', selection.focusNode!.textContent);
+    assertEquals(1, selection.anchorOffset);
+    assertEquals(2, selection.focusOffset);
+  });
 
-    test('conbtainer class correct', () => {
-      assertEquals(
-          app.$.container.className,
-          'user-select-disabled-when-speech-active-false');
-      assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
-    });
+  test('container class correct', () => {
+    assertEquals(
+        app.$.container.className,
+        'user-select-disabled-when-speech-active-false');
+    assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
   });
 
   suite('While Read Aloud playing', () => {
-    setup(async () => {
+    setup(() => {
       app.playSpeech();
-      await waitForPlayFromSelection();
+      return waitForPlayFromSelection();
     });
 
     test('inner html of container matches expected html', () => {
@@ -149,7 +147,8 @@ suite('ReadAloud_UpdateContentSelection', () => {
     });
 
     test('selection in reading mode panel cleared', () => {
-      const selection = document.getSelection()!;
+      const selection = app.getSelection();
+      assertTrue(!!selection);
       assertEquals('', selection.toString());
     });
 
@@ -183,7 +182,8 @@ suite('ReadAloud_UpdateContentSelection', () => {
     });
 
     test('selection in reading mode panel cleared', () => {
-      const selection = document.getSelection()!;
+      const selection = app.getSelection();
+      assertTrue(!!selection);
       assertEquals('', selection.toString());
     });
 

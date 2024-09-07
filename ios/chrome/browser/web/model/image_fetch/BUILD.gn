@@ -48,7 +48,7 @@ source_set("unit_tests") {
     ":image_fetch_js",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public/js_messaging:js_messaging",
     "//ios/web/public/test",

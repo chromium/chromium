@@ -26,18 +26,6 @@ extern const wchar_t kMediaPlayerRegPath[];
 extern const wchar_t kOsUpdateHandlerExe[];
 #endif
 
-// The range of error values among the installer, Courgette, BSDiff and
-// Zucchini overlap. These offset values disambiguate between different sets
-// of errors by shifting the values up with the specified offset.
-const int kCourgetteErrorOffset = 300;
-const int kBsdiffErrorOffset = 600;
-const int kZucchiniErrorOffset = 900;
-
-// Arguments to --patch switch
-extern const char kCourgette[];
-extern const char kBsdiff[];
-extern const char kZucchini[];
-
 namespace switches {
 
 extern const char kCleanupForDowngradeOperation[];

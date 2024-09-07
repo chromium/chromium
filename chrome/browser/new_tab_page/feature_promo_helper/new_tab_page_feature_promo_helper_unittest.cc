@@ -4,7 +4,11 @@
 
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -34,6 +38,11 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
         static_cast<testing::NiceMock<feature_engagement::test::MockTracker>*>(
             feature_engagement::TrackerFactory::GetForBrowserContext(
                 tab_->GetBrowserContext()));
+
+    MaybeRegisterChromeFeaturePromos(
+        UserEducationServiceFactory::GetForBrowserContext(
+            tab_->GetBrowserContext())
+            ->feature_promo_registry());
   }
 
   NewTabPageFeaturePromoHelper* helper() { return helper_.get(); }
@@ -86,13 +95,18 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
   }
 };
 
+// In CFT mode, there are often no User Ed controllers, so usage events are not
+// routed to the tracker.
+#if !BUILDFLAG(CHROME_FOR_TESTING)
 TEST_F(NewTabPageFeaturePromoHelperTest, RecordFeatureUsage_CustomizeChrome) {
   EXPECT_CALL(*mock_tracker(),
-              NotifyEvent(feature_engagement::events::kCustomizeChromeOpened))
+              NotifyUsedEvent(testing::Ref(
+                  feature_engagement::kIPHDesktopCustomizeChromeFeature)))
       .Times(1);
-  helper()->RecordFeatureUsage(
-      feature_engagement::events::kCustomizeChromeOpened, tab());
+  helper()->RecordPromoFeatureUsage(
+      feature_engagement::kIPHDesktopCustomizeChromeFeature, tab());
 }
+#endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 
 TEST_F(NewTabPageFeaturePromoHelperTest,
        MaybeShowFeaturePromo_CustomizeChrome) {

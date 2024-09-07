@@ -21,7 +21,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
-#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -1459,7 +1459,7 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
   // TODO(crbug.com/330744610): Allow filtering ID byte size to be set.
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
-      PrivateAggregationBudgetKey::Api::kSharedStorage,
+      PrivateAggregationCallerApi::kSharedStorage,
       private_aggregation_config->context_id, std::move(timeout),
       private_aggregation_config->aggregation_coordinator_origin,
       private_aggregation_config->filtering_id_max_bytes,

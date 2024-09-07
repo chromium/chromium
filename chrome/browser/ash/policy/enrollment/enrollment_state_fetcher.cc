@@ -33,9 +33,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
-#include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
-#include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
@@ -129,10 +126,6 @@ struct DeterminationContext {
   // Must be set before sequence starts.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
 
-  // Interface for retrieving synchronized clock time.
-  // Must be set before sequence starts.
-  raw_ptr<ash::SystemClockClient> system_clock_client;
-
   // Used to retrieve device state keys.
   // Must be set before sequence starts.
   raw_ptr<ServerBackedStateKeysBroker> state_key_broker;
@@ -170,35 +163,6 @@ void StorePsmError(PrefService* local_state) {
                           em::DeviceRegisterRequest::PSM_RESULT_ERROR);
 }
 
-// Class to synchronize the system clock.
-//
-// This is a step in enrollment state fetch (see Sequence class below).
-class SystemClock {
-  static constexpr base::TimeDelta kSystemClockSyncWaitTimeout =
-      base::Seconds(45);
-
- public:
-  SystemClock() = default;
-  SystemClock(const SystemClock&) = delete;
-  SystemClock& operator=(const SystemClock&) = delete;
-
-  // This will attempt to synchronize the system clock within up to
-  // `kSystemClockSyncWaitTimeout`.
-  // It will report success (`true`) or failure (`false`) via the
-  // `completion_callback`.
-  void Sync(ash::SystemClockClient* system_clock_client,
-            base::OnceCallback<void(bool)> completion_callback) {
-    system_clock_sync_observation_ =
-        ash::SystemClockSyncObservation::WaitForSystemClockSync(
-            system_clock_client, kSystemClockSyncWaitTimeout,
-            std::move(completion_callback));
-  }
-
-  // Utility for waiting until the system clock has been synchronized.
-  std::unique_ptr<ash::SystemClockSyncObservation>
-      system_clock_sync_observation_;
-};
-
 // Class to check device ownership.
 //
 // This is a step in enrollment state fetch (see Sequence class below).
@@ -217,30 +181,6 @@ class Ownership {
     // TODO(b/278056625): Skip state fetch when install attributes are locked.
     device_settings_service->GetOwnershipStatusAsync(
         std::move(completion_callback));
-  }
-};
-
-// Class to check whether embargo date has passed.
-//
-// Must be used only after system clock has been synchronized.
-// This is a step in enrollment state fetch (see Sequence class below).
-class EmbargoDate {
- public:
-  EmbargoDate() = default;
-  EmbargoDate(const EmbargoDate&) = delete;
-  EmbargoDate& operator=(const EmbargoDate&) = delete;
-
-  bool Passed(DeterminationContext& context) {
-    const ash::system::FactoryPingEmbargoState embargo_state =
-        ash::system::GetEnterpriseManagementPingEmbargoState(
-            context.statistics_provider);
-    if (embargo_state == ash::system::FactoryPingEmbargoState::kNotPassed) {
-      LOG(WARNING) << "Embargo date not passed";
-      return false;
-    }
-    // When embargo date is missing, malformed or invalid, we assume it has
-    // passed and proceed with the enrollment.
-    return true;
   }
 };
 
@@ -882,7 +822,6 @@ class EnrollmentStateFetcherImpl : public EnrollmentStateFetcher {
       RlweClientFactory rlwe_client_factory,
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      ash::SystemClockClient* system_clock_client,
       ServerBackedStateKeysBroker* state_key_broker,
       ash::DeviceSettingsService* device_settings_service,
       ash::OobeConfiguration* oobe_configuration) {
@@ -891,7 +830,6 @@ class EnrollmentStateFetcherImpl : public EnrollmentStateFetcher {
     DCHECK(rlwe_client_factory);
     DCHECK(device_management_service);
     DCHECK(url_loader_factory);
-    DCHECK(system_clock_client);
     DCHECK(state_key_broker);
     DCHECK(device_settings_service);
     DCHECK(oobe_configuration);
@@ -901,8 +839,7 @@ class EnrollmentStateFetcherImpl : public EnrollmentStateFetcher {
         DeterminationContext{std::move(rlwe_client_factory),
                              ash::system::StatisticsProvider::GetInstance(),
                              device_management_service, url_loader_factory,
-                             system_clock_client, state_key_broker,
-                             device_settings_service,
+                             state_key_broker, device_settings_service,
                              GetEnrollmentToken(oobe_configuration)});
   }
 
@@ -956,33 +893,12 @@ class EnrollmentStateFetcherImpl::Sequence {
     }
 
     step_started_ = base::TimeTicks::Now();
-    system_clock_.Sync(context_.system_clock_client,
-                       base::BindOnce(&Sequence::OnSystemClockSynced,
-                                      weak_factory_.GetWeakPtr()));
-  }
-
- private:
-  void OnSystemClockSynced(bool synchronized) {
-    ReportStepDurationAndResetTimer(kUMASuffixSystemClockSync);
-    base::UmaHistogramBoolean(kUMAStateDeterminationSystemClockSynchronized,
-                              synchronized);
-    if (!synchronized) {
-      LOG(ERROR) << "System clock failed to synchronize";
-      return ReportResult(
-          base::unexpected(AutoEnrollmentSystemClockSyncError{}));
-    }
-
-    const bool passed = embargo_date_.Passed(context_);
-    base::UmaHistogramBoolean(kUMAStateDeterminationEmbargoDatePassed, passed);
-    if (!passed) {
-      return ReportResult(AutoEnrollmentResult::kNoEnrollment);
-    }
-
     ownership_.Check(context_.device_settings_service,
                      base::BindOnce(&Sequence::OnOwnershipChecked,
                                     weak_factory_.GetWeakPtr()));
   }
 
+ private:
   void OnOwnershipChecked(ash::DeviceSettingsService::OwnershipStatus status) {
     ReportStepDurationAndResetTimer(kUMASuffixOwnershipCheck);
     base::UmaHistogramEnumeration(kUMAStateDeterminationOwnershipStatus,
@@ -1147,9 +1063,7 @@ class EnrollmentStateFetcherImpl::Sequence {
   raw_ptr<PrefService> local_state_ = nullptr;
 
   DeviceIdentifiers device_identifiers_;
-  SystemClock system_clock_;
   Ownership ownership_;
-  EmbargoDate embargo_date_;
   StateKeys state_keys_;
   RlweOprf oprf_;
   RlweQuery query_;
@@ -1172,14 +1086,13 @@ std::unique_ptr<EnrollmentStateFetcher> EnrollmentStateFetcher::Create(
     RlweClientFactory rlwe_client_factory,
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    ash::SystemClockClient* system_clock_client,
     ServerBackedStateKeysBroker* state_key_broker,
     ash::DeviceSettingsService* device_settings_service,
     ash::OobeConfiguration* oobe_configuration) {
   return std::make_unique<EnrollmentStateFetcherImpl>(
       std::move(report_result), local_state, rlwe_client_factory,
-      device_management_service, url_loader_factory, system_clock_client,
-      state_key_broker, device_settings_service, oobe_configuration);
+      device_management_service, url_loader_factory, state_key_broker,
+      device_settings_service, oobe_configuration);
 }
 
 // static

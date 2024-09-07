@@ -35,10 +35,6 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
                            GetTopicsState);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            TopicsToggleChanged);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
-                           AdTopicsCardShownForUserInConsentCountry);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerPrivacyGuideAdTopicsTest,
-                           AdTopicsCardNotShownForUserNotInConsentCountry);
 
   void HandleSetFledgeJoiningAllowed(const base::Value::List& args);
   void HandleGetFledgeState(const base::Value::List& args);
@@ -47,10 +43,19 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
   void HandleTopicsToggleChanged(const base::Value::List& args);
   void HandleGetFirstLevelTopics(const base::Value::List& args);
   void HandleGetChildTopicsCurrentlyAssigned(const base::Value::List& args);
-  void HandleShouldShowAdTopicsCard(const base::Value::List& args);
+  // Determines if the Ad Topics card in the Privacy Guide should be displayed.
+  // This requires the PrivacySandboxPrivacyGuideAdTopics feature to be enabled
+  // AND the user to be located in a Privacy Sandbox Consent Country.
+  void HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
+      const base::Value::List& args);
+  // Determines if the V2 Ad Privacy sub-label should be shown on the completion
+  // card of the Privacy Guide. This decision is based on the status of the
+  // PrivacySandboxPrivacyGuideAdTopics feature.
+  void HandlePrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel(
+      const base::Value::List& args);
 
   virtual PrivacySandboxCountries* GetPrivacySandboxCountries();
-  PrivacySandboxService* GetPrivacySandboxService();
+  virtual PrivacySandboxService* GetPrivacySandboxService();
 
   void OnFledgeJoiningSitesRecieved(const std::string& callback_id,
                                     std::vector<std::string> joining_sites);

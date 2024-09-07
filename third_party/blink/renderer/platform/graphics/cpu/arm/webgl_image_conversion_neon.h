@@ -33,6 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CPU_ARM_WEBGL_IMAGE_CONVERSION_NEON_H_
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 
 #if defined(CPU_ARM_NEON)
 

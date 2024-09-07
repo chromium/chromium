@@ -28,7 +28,6 @@ android_library("java") {
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",
-    "//chrome/browser/ui/android/page_insights:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/widget/android:java",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
@@ -67,7 +66,6 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
   ]
   deps = [
-    "//chrome/browser/ui/android/page_insights:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
@@ -100,7 +98,6 @@ robolectric_library("junit") {
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/google_bottom_bar:proto_java",
-    "//chrome/browser/ui/android/page_insights:java",
     "//components/browser_ui/widget/android:java",
     "//components/search_engines/android:java",
     "//third_party/android_deps:guava_android_java",

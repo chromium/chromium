@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.util.Size;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +31,10 @@ import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImag
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -67,7 +67,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final TabGridDialogMediator mMediator;
     private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
-    private final ViewGroup mRootView;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final Activity mActivity;
@@ -102,12 +101,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @Nullable TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator,
             TabGroupTitleEditor tabGroupTitleEditor,
-            ViewGroup rootView,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             boolean isDataSharingAndroidEnabled =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID);
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
 
             mActivity = activity;
             mComponentName =
@@ -129,7 +127,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                     TabGridDialogProperties.COLOR_ICON_CLICK_LISTENER,
                                     getColorIconClickListener())
                             .build();
-            mRootView = rootView;
 
             mDialogView = containerView.findViewById(R.id.dialog_parent_view);
             if (mDialogView == null) {
@@ -152,11 +149,19 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mBottomSheetController = bottomSheetController;
 
             if (isDataSharingAndroidEnabled) {
+                DataSharingService dataSharingService =
+                        DataSharingServiceFactory.getForProfile(
+                                mCurrentTabModelFilterSupplier
+                                        .get()
+                                        .getTabModel()
+                                        .getProfile()
+                                        .getOriginalProfile());
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
                                 activity,
                                 SharedImageTilesType.CLICKABLE,
-                                SharedImageTilesColor.DYNAMIC);
+                                SharedImageTilesColor.DYNAMIC,
+                                dataSharingService);
             }
 
             Runnable showColorPickerPopupRunnable =
@@ -176,7 +181,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             animationSourceViewProvider,
                             mSnackbarManager,
                             mSharedImageTilesCoordinator,
-                            bottomSheetController,
                             dataSharingTabManager,
                             mComponentName,
                             showColorPickerPopupRunnable,
@@ -193,11 +197,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mBrowserControlsStateProvider,
                             mModalDialogManager,
                             currentTabModelFilterSupplier,
-                            (tabId, thumbnailSize, callback, isSelected) -> {
-                                tabContentManager.getTabThumbnailWithCallback(
-                                        tabId, thumbnailSize, callback);
-                            },
+                            new TabContentManagerThumbnailProvider(tabContentManager),
                             /* actionOnRelatedTabs= */ false,
+                            actionConfirmationManager,
                             gridCardOnClickListenerProvider,
                             mMediator.getTabGridDialogHandler(),
                             TabProperties.TabActionState.CLOSABLE,
@@ -207,6 +209,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* attachToParent= */ false,
                             mComponentName,
                             /* onModelTokenChange= */ null,
+                            /* hasEmptyView= */ false,
+                            /* emptyImageResId= */ Resources.ID_NULL,
+                            /* emptyHeadingStringResId= */ Resources.ID_NULL,
+                            /* emptySubheadingStringResId= */ Resources.ID_NULL,
+                            /* onTabGroupCreation= */ null,
                             /* allowDragAndDrop= */ true);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
@@ -236,13 +243,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             if (isDataSharingAndroidEnabled) {
                 FrameLayout imageTilesContainer =
                         toolbarView.findViewById(R.id.image_tiles_container);
-                View imageTilesView = mSharedImageTilesCoordinator.getView();
-                var layoutParams =
-                        new FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.WRAP_CONTENT,
-                                FrameLayout.LayoutParams.WRAP_CONTENT,
-                                Gravity.CENTER);
-                imageTilesContainer.addView(imageTilesView, layoutParams);
+                TabUiUtils.attachSharedImageTilesCoordinatorToFrameLayout(
+                        mSharedImageTilesCoordinator, imageTilesContainer);
             }
 
             mModelChangeProcessor =
@@ -270,18 +272,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     @NonNull
     RecyclerViewPosition getRecyclerViewPosition() {
         return mTabListCoordinator.getRecyclerViewPosition();
-    }
-
-    private void showAvatars(List<String> emails) {
-        mSharedImageTilesCoordinator.updateTilesCount(emails.size());
-        Profile profile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
-        DataSharingUIDelegate uiDelegate = DataSharingServiceFactory.getUIDelegate(profile);
-        uiDelegate.showAvatars(
-                mSharedImageTilesCoordinator.getContext(),
-                mSharedImageTilesCoordinator.getAllIconViews(),
-                emails,
-                /* success= */ null,
-                /* config= */ null);
     }
 
     private @Nullable TabListEditorController getTabListEditorController() {

@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -105,10 +106,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Record event to the Feature Engagement framework. Event will be stored and
   // could be used for targeting.
-  // TODO: b/342283711 - Refactor this into two functions with
-  // `RecordSurfaceUiEvent` and `RecordEventAppOpened`.
-  void RecordEventForTargeting(growth::CampaignEvent event,
-                               const std::string& id);
+  // If `trigger campaigns` is true, it will try to trigger the campaign if the
+  // campaign is selected.
+  // For example, `RecordEvent("hover_on_hotseat", true)` will record an event
+  // in the Feature Engagement framework and try to trigger campaigns by this
+  // event.
+  void RecordEvent(const std::string& event, bool trigger_campaigns = false);
 
   void SetOobeCompleteTimeForTesting(base::Time time);
   void SetTrackerInitializedForTesting();
@@ -145,8 +148,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // incomplete, i.e. missing id.
   void RegisterTrialForCampaign(const Campaign* campaign) const;
 
-  void RecordEvent(const std::string& event);
-
   raw_ptr<CampaignsManagerClient> client_ = nullptr;
 
   // True if campaigns are loaded.
@@ -157,6 +158,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   CampaignsPerSlot campaigns_;
   // Campaigns matcher for selecting campaigns based on criteria.
   CampaignsMatcher matcher_;
+
+  CampaignsLogger logger_;
 
   // Maps action type to the action.
   ActionMap actions_map_;

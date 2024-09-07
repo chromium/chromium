@@ -1024,6 +1024,8 @@ bool CopyAuctionServerRequestFlagsFromIdlToMojo(
       output.auction_server_request_flags->omit_ads = true;
     } else if (flag == "include-full-ads") {
       output.auction_server_request_flags->include_full_ads = true;
+    } else if (flag == "omit-user-bidding-signals") {
+      output.auction_server_request_flags->omit_user_bidding_signals = true;
     }
   }
   return true;
@@ -1428,6 +1430,34 @@ bool CopyMaxTrustedScoringSignalsURLLengthFromIdlToMojo(
   output.auction_ad_config_non_shared_params
       ->max_trusted_scoring_signals_url_length =
       input.maxTrustedScoringSignalsURLLength();
+  return true;
+}
+
+// TODO(crbug.com/352420077):
+// 1. Add an allow list for `trustedBiddingSignalsCoordinator`, and return an
+// error or warning if the given coordinator is not in the list.
+// 2. Test input with invalid https origin in web platform tests.
+bool CopyTrustedScoringSignalsCoordinatorFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasTrustedScoringSignalsCoordinator()) {
+    return true;
+  }
+
+  scoped_refptr<const SecurityOrigin> trustedScoringSignalsCoordinator =
+      ParseOrigin(input.trustedScoringSignalsCoordinator());
+  if (!trustedScoringSignalsCoordinator) {
+    exception_state.ThrowTypeError(
+        ErrorInvalidAuctionConfig(input, "trustedScoringSignalsCoordinator",
+                                  input.trustedScoringSignalsCoordinator(),
+                                  "must be a valid https origin."));
+    return false;
+  }
+
+  output.auction_ad_config_non_shared_params
+      ->trusted_scoring_signals_coordinator =
+      std::move(trustedScoringSignalsCoordinator);
   return true;
 }
 
@@ -2519,6 +2549,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyTrustedScoringSignalsFromIdlToMojo(context, exception_state, config,
                                               *mojo_config) ||
       !CopyMaxTrustedScoringSignalsURLLengthFromIdlToMojo(
+          exception_state, config, *mojo_config) ||
+      !CopyTrustedScoringSignalsCoordinatorFromIdlToMojo(
           exception_state, config, *mojo_config) ||
       !CopyInterestGroupBuyersFromIdlToMojo(exception_state, config,
                                             *mojo_config) ||
@@ -4454,8 +4486,7 @@ void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
   }
 
   AdAuctionData* result = AdAuctionData::Create();
-  auto not_shared =
-      NotShared<DOMUint8Array>(DOMUint8Array::Create(data.data(), data.size()));
+  auto not_shared = NotShared<DOMUint8Array>(DOMUint8Array::Create(data));
   result->setRequest(std::move(not_shared));
   std::string request_id_str;
   if (request_id) {

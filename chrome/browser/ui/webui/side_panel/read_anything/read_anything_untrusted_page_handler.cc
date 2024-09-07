@@ -59,7 +59,9 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "components/pdf/common/pdf_util.h"
+#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -255,10 +257,9 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
-  auto* tab = chrome::FindLastActive()->GetActiveTabInterface();
-  CHECK(tab);
-  side_panel_controller_ =
-      tab->GetTabFeatures()->read_anything_side_panel_controller();
+  side_panel_controller_ = ReadAnythingSidePanelControllerGlue::FromWebContents(
+                               web_ui_->GetWebContents())
+                               ->controller();
   side_panel_controller_->AddPageHandlerAsObserver(weak_factory_.GetWeakPtr());
 
   PrefService* prefs = profile_->GetPrefs();
@@ -330,7 +331,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   // This causes AXTreeSerializer to reset and send accessibility events of
   // the AXTree when it is re-serialized.
   main_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
-      weak_factory_.GetSafeRef(), tab->GetContents(), kReadAnythingAXMode);
+      weak_factory_.GetSafeRef(), side_panel_controller_->tab()->GetContents(),
+      kReadAnythingAXMode);
   SetUpPdfObserver();
   OnActiveAXTreeIDChanged();
 
@@ -344,7 +346,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   translate_observation_.Reset();
-  web_snapshotter_.reset();
+  web_screenshotter_.reset();
   main_observer_.reset();
   pdf_observer_.reset();
   LogTextStyle();
@@ -613,7 +615,7 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
   }
 }
 
-void ReadAnythingUntrustedPageHandler::OnSnapshotRequested() {
+void ReadAnythingUntrustedPageHandler::OnScreenshotRequested() {
   if (!features::IsDataCollectionModeForScreen2xEnabled()) {
     return;
   }
@@ -622,11 +624,11 @@ void ReadAnythingUntrustedPageHandler::OnSnapshotRequested() {
     return;
   }
 
-  if (!web_snapshotter_) {
-    web_snapshotter_ = std::make_unique<ReadAnythingSnapshotter>();
+  if (!web_screenshotter_) {
+    web_screenshotter_ = std::make_unique<ReadAnythingScreenshotter>();
   }
-  VLOG(2) << "Requesting a snapshot for the main web contents";
-  web_snapshotter_->RequestSnapshot(main_observer_->web_contents());
+  VLOG(2) << "Requesting a screenshot for the main web contents";
+  web_screenshotter_->RequestScreenshot(main_observer_->web_contents());
 }
 
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
@@ -636,7 +638,7 @@ void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// ReadAnythingCoordinator::Observer:
+// ReadAnythingSidePanelController::Observer:
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingUntrustedPageHandler::Activate(bool active) {
@@ -663,36 +665,41 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
 #if BUILDFLAG(ENABLE_PDF)
   pdf_observer_.reset();
   content::WebContents* main_contents = main_observer_->web_contents();
-  // TODO(crbug.com/339864546): Make it compatible with OOPIF PDF Viewer.
-  std::vector<content::WebContents*> inner_contents =
-      main_contents ? main_contents->GetInnerWebContents()
-                    : std::vector<content::WebContents*>();
-  // Check if this is a pdf.
-  if (inner_contents.size() == 1 &&
-      IsPdfExtensionOrigin(
-          inner_contents[0]->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
-        weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
-    if (features::IsPdfOcrEnabled()) {
-      screen_ai::PdfOcrControllerFactory::GetForProfile(profile_)->Activate();
+  // TODO(crbug.com/340272378): When removing this feature flag, delete
+  // `pdf_observer_` and integrate ReadAnythingWebContentsObserver with
+  // ReadAnythingUntrustedPageHandler.
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    std::vector<content::WebContents*> inner_contents =
+        main_contents ? main_contents->GetInnerWebContents()
+                      : std::vector<content::WebContents*>();
+    // Check if this is a pdf.
+    if (inner_contents.size() == 1 &&
+        IsPdfExtensionOrigin(inner_contents[0]
+                                 ->GetPrimaryMainFrame()
+                                 ->GetLastCommittedOrigin())) {
+      pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
+          weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
     }
+  }
+  if (features::IsPdfOcrEnabled()) {
+    screen_ai::PdfOcrControllerFactory::GetForProfile(profile_)->Activate();
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 }
 
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
-  bool is_pdf = !!pdf_observer_;
   if (!active_) {
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
-                                   is_pdf);
+                                   /*is_pdf=*/false);
     return;
   }
 
-  content::WebContents* contents =
-      is_pdf ? pdf_observer_->web_contents() : main_observer_->web_contents();
+  content::WebContents* contents = !!pdf_observer_
+                                       ? pdf_observer_->web_contents()
+                                       : main_observer_->web_contents();
   if (!contents) {
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
-                                   is_pdf);
+                                   /*is_pdf=*/false);
     return;
   }
 
@@ -721,6 +728,10 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
     }
   }
 
+#if BUILDFLAG(ENABLE_PDF)
+  bool is_pdf = chrome_pdf::features::IsOopifPdfEnabled()
+                    ? !!pdf::PdfViewerStreamManager::FromWebContents(contents)
+                    : !!pdf_observer_;
   if (is_pdf) {
     // What happens if there are multiple such `rfhs`?
     contents->ForEachRenderFrameHost([this](content::RenderFrameHost* rfh) {
@@ -732,15 +743,9 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
     });
     return;
   }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
-  if (!rfh) {
-    // THis case doesn't seem possible.
-    page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
-                                   /*is_pdf=*/false);
-    return;
-  }
-
   page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(), rfh->GetPageUkmSourceId(),
                                  /*is_pdf=*/false);
 }

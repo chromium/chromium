@@ -163,8 +163,6 @@ public class SignOutCoordinator {
                 assert !profile.isChild() : "Child accounts can only revoke sync consent";
                 return;
             case SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS:
-                assert !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
                 assert profile.isChild() : "Regular accounts can't just revoke sync consent";
                 return;
             default:

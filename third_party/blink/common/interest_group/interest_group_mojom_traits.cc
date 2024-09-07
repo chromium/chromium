@@ -51,6 +51,9 @@ bool StructTraits<blink::mojom::AuctionServerRequestFlagsDataView,
   if (data.include_full_ads()) {
     out->Put(blink::AuctionServerRequestFlagsEnum::kIncludeFullAds);
   }
+  if (data.omit_user_bidding_signals()) {
+    out->Put(blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals);
+  }
   return true;
 }
 

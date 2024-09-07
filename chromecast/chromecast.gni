@@ -18,10 +18,6 @@ declare_args() {
   is_cast_desktop_build =
       target_os == "linux" && (target_cpu == "x86" || target_cpu == "x64") &&
       enable_cast_receiver
-
-  # chromecast_branding is used to include or exclude Google-branded components.
-  # Set it to "public" for a Chromium build.
-  chromecast_branding = "public"
 }
 
 declare_args() {
@@ -81,11 +77,6 @@ declare_args() {
   # Set to true to disable secure flac/opus support in EME, when using
   # cast CMA media backend and supporting Widevine or Playready.
   disable_secure_flac_and_opus_decoding = false
-
-  # Set to true to enable mixing in CastAudioManager. Only needed on devices
-  # that do not have a mixer in the CMA backend.
-  enable_cast_audio_manager_mixer =
-      chromecast_branding == "google" && !is_cast_audio_only && !is_android
 
   # Set to true to enable video capture service for video input and output.
   enable_video_capture_service = false
@@ -154,20 +145,8 @@ declare_args() {
   enable_starboard_media = false
 }
 
-declare_args() {
-  # Use Playready CDMs for internal non-desktop builds.
-  enable_playready = !is_cast_desktop_build && chromecast_branding != "public"
-}
-
-# This is the release version, which takes the form <major>.<minor>. Internal
-# builds will read the value from an internal file containing this value as a
-# string. Public builds, lacking this file, will set a dummy value.
-if (chromecast_branding == "public") {
-  cast_build_release = "eng." + getenv("USER")
-} else {
-  cast_build_release =
-      read_file("//chromecast/internal/build/cast_build_release", "trim string")
-}
+# This is the release version, which takes the form <major>.<minor>.
+cast_build_release = "eng." + getenv("USER")
 
 # All locales supported by Cast builds. This provides a single point of
 # reference for all GN files referencing a locales list.

@@ -17,6 +17,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
@@ -42,7 +43,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -244,6 +245,15 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   [self.observers appState:self didTransitionFromInitStage:previousInitStage];
 }
 
+- (void)setMainProfile:(ProfileState*)mainProfile {
+  _mainProfile = mainProfile;
+  for (SceneState* scene in self.connectedScenes) {
+    // TODO(crbug.com/324417250): Select the correct profile state for the
+    // `sceneState` and if not available create it.
+    [_mainProfile sceneStateConnected:scene];
+  }
+}
+
 - (BOOL)portraitOnly {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return NO;
@@ -290,11 +300,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
     return;
   }
 
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
         ->OnApplicationWillEnterBackground();
   }
@@ -373,11 +380,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   }
 
   _applicationInBackground = NO;
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+  for (ChromeBrowserState* chromeBrowserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     AuthenticationServiceFactory::GetForBrowserState(chromeBrowserState)
         ->OnApplicationWillEnterForeground();
 
@@ -403,7 +407,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
                              connectedScenes:self.connectedScenes];
   [memoryHelper resetForegroundMemoryWarningCount];
 
-  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+  for (ChromeBrowserState* chromeBrowserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForBrowserState(
             chromeBrowserState);
@@ -497,11 +502,8 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   [self.startupInformation setIsColdStart:NO];
 
   // Record session metrics.
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+  for (ChromeBrowserState* browserState :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     SessionMetrics::FromBrowserState(browserState)
         ->RecordAndClearSessionMetrics(
             MetricsToRecordFlags::kActivatedTabCount);
@@ -528,7 +530,7 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   }
 }
 
-- (void)removeObserver:(id<SceneStateObserver>)observer {
+- (void)removeObserver:(id<AppStateObserver>)observer {
   [self.observers removeObserver:observer];
 }
 
@@ -648,7 +650,16 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
   // (app) InitStage are fully decoupled.
   if (initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
-    self.mainProfile.initStage = ProfileInitStageFromAppInitStage(initStage);
+    ProfileInitStage currStage = self.mainProfile.initStage;
+    ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
+    while (currStage != nextStage) {
+      // The ProfileInitStage enum has more values than InitStage, so move over
+      // all stage that have no representation in InitStage to avoid failing
+      // CHECK in -[ProfileState setInitStage:].
+      currStage =
+          static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
+      self.mainProfile.initStage = currStage;
+    }
   }
   self.isIncrementingInitStage = NO;
 
@@ -731,6 +742,10 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
 
   [self.observers appState:self sceneConnected:sceneState];
   crash_keys::SetConnectedScenesCount([self connectedScenes].count);
+
+  // TODO(crbug.com/324417250): Select the correct profile state for the
+  // `sceneState` and if not available create it.
+  [self.mainProfile sceneStateConnected:sceneState];
 }
 
 #pragma mark - Voice Over lifecycle

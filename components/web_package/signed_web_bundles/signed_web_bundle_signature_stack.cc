@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/overloaded.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -90,6 +91,21 @@ bool SignedWebBundleSignatureStack::operator==(
 bool SignedWebBundleSignatureStack::operator!=(
     const SignedWebBundleSignatureStack& other) const {
   return !operator==(other);
+}
+
+std::vector<PublicKey> SignedWebBundleSignatureStack::public_keys() const {
+  std::vector<PublicKey> public_keys;
+  for (const auto& signature : entries()) {
+    absl::visit(
+        base::Overloaded{[&](const auto& signature_info) {
+                           public_keys.push_back(signature_info.public_key());
+                         },
+                         [](const SignedWebBundleSignatureInfoUnknown&) {
+                           // Unknown signatures cannot provide a public key.
+                         }},
+        signature.signature_info());
+  }
+  return public_keys;
 }
 
 }  // namespace web_package

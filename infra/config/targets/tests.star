@@ -316,6 +316,21 @@ targets.tests.isolated_script_test(
     binary = "blink_wpt_tests",
 )
 
+targets.tests.isolated_script_test(
+    name = "brfetch_headless_shell_wpt_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    args = [
+        "--flag-specific=background-resource-fetch",
+        "--skipped=always",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+    ],
+    binary = "headless_shell_wpt",
+)
+
 targets.tests.gtest_test(
     name = "browser_tests",
 )
@@ -529,7 +544,7 @@ targets.tests.isolated_script_test(
         "has_native_resultdb_integration",
     ],
     args = [
-        "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter",
+        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
     ],
 )
 
@@ -545,6 +560,26 @@ targets.tests.isolated_script_test(
     name = "headless_shell_wpt_tests",
     mixins = [
         "has_native_resultdb_integration",
+    ],
+    args = [
+        "--test-type",
+        "testharness",
+        "reftest",
+        "crashtest",
+        "print-reftest",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+    ],
+    binary = "headless_shell_wpt",
+)
+
+targets.tests.isolated_script_test(
+    name = "headless_shell_wpt_tests_include_all",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -702,15 +737,19 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
-    name = "context_lost_validating_tests",
+    name = "context_lost_passthrough_graphite_tests",
     telemetry_test_name = "context_lost",
     mixins = [
         "has_native_resultdb_integration",
     ],
 )
 
-targets.tests.gtest_test(
-    name = "courgette_unittests",
+targets.tests.gpu_telemetry_test(
+    name = "context_lost_validating_tests",
+    telemetry_test_name = "context_lost",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
 )
 
 targets.tests.gtest_test(
@@ -805,6 +844,10 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "elevation_service_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "enterprise_companion_integration_tests",
 )
 
 targets.tests.gtest_test(
@@ -1153,6 +1196,27 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    # graphite_enabled_headless_shell_wpt_tests provides coverage for
+    # running web platform tests with Skia Graphite.
+    name = "graphite_enabled_headless_shell_wpt_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    args = [
+        "--flag-specific=enable-skia-graphite",
+        "--skipped=always",
+        # Since there are random timeouts, we have to increase the timeout
+        # threshold for now.
+        # TODO(crbug.com/41490824): Remove this once we resolve the timeouts.
+        "--timeout-multiplier=2",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+    ],
+    binary = "headless_shell_wpt",
+)
+
+targets.tests.isolated_script_test(
     name = "grit_python_unittests",
 )
 
@@ -1208,6 +1272,21 @@ targets.tests.isolated_script_test(
         "--num-retries=3",
     ],
     binary = "blink_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "high_dpi_headless_shell_wpt_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    args = [
+        "--flag-specific=highdpi",
+        "--skipped=always",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+    ],
+    binary = "headless_shell_wpt",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -1562,6 +1641,20 @@ targets.tests.isolated_script_test(
     binary = "blink_wpt_tests",
 )
 
+targets.tests.isolated_script_test(
+    name = "not_site_per_process_headless_shell_wpt_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    args = [
+        "--flag-specific=disable-site-isolation-trials",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+    ],
+    binary = "headless_shell_wpt",
+)
+
 targets.tests.gtest_test(
     name = "notification_helper_unittests",
 )
@@ -1576,6 +1669,10 @@ targets.tests.isolated_script_test(
 
 targets.tests.isolated_script_test(
     name = "ondevice_stability_tests_light",
+)
+
+targets.tests.isolated_script_test(
+    name = "chrome_ai_wpt_tests",
 )
 
 targets.tests.gtest_test(

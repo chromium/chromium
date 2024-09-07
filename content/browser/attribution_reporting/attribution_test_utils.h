@@ -38,6 +38,7 @@
 namespace attribution_reporting {
 class AggregatableValues;
 class AggregationKeys;
+class AttributionScopesData;
 class TriggerSpecs;
 }  // namespace attribution_reporting
 
@@ -129,6 +130,9 @@ class SourceBuilder {
 
   SourceBuilder& SetDestinationLimitPriority(int64_t priority);
 
+  SourceBuilder& SetAttributionScopesData(
+      attribution_reporting::AttributionScopesData);
+
   StorableSource Build() const;
 
   StoredSource BuildStored() const;
@@ -215,6 +219,9 @@ class TriggerBuilder {
   TriggerBuilder& SetAggregatableDebugReportingConfig(
       attribution_reporting::AggregatableDebugReportingConfig);
 
+  TriggerBuilder& SetAttributionScopes(
+      attribution_reporting::AttributionScopesSet);
+
   TriggerBuilder& SetAggregatableFilteringIdMaxBytes(
       attribution_reporting::AggregatableFilteringIdsMaxBytes);
 
@@ -245,6 +252,7 @@ class TriggerBuilder {
       aggregatable_filtering_id_max_bytes_;
   attribution_reporting::AggregatableDebugReportingConfig
       aggregatable_debug_reporting_config_;
+  attribution_reporting::AttributionScopesSet attribution_scopes_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -395,6 +403,16 @@ MATCHER_P(SourceRegistrationIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.registration(), result_listener);
 }
 
+MATCHER_P(RegistrationAttributionScopesDataIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.registration().attribution_scopes_data,
+                            result_listener);
+}
+
+MATCHER_P(RegistrationSourceEventIdIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.registration().source_event_id,
+                            result_listener);
+}
+
 MATCHER_P(SourceEventIdIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.source_event_id(), result_listener);
 }
@@ -443,6 +461,16 @@ MATCHER_P(AggregationKeysAre, matcher, "") {
 MATCHER_P(RemainingAggregatableAttributionBudgetIs, matcher, "") {
   return ExplainMatchResult(matcher,
                             arg.remaining_aggregatable_attribution_budget(),
+                            result_listener);
+}
+
+MATCHER_P(AttributionScopesDataIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.attribution_scopes_data(),
+                            result_listener);
+}
+
+MATCHER_P(AttributionScopesSetIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg->attribution_scopes_set(),
                             result_listener);
 }
 

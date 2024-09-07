@@ -35,6 +35,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -133,7 +134,6 @@
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/frame_overlay.h"
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
-#include "third_party/blink/renderer/core/frame/frame_serializer_delegate_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
@@ -451,7 +451,7 @@ void LocalFrame::CreateView(const gfx::Size& viewport_size,
   if (is_local_root) {
     frame_view = MakeGarbageCollected<LocalFrameView>(*this, viewport_size);
 
-    // The layout size is set by WebViewImpl to support @viewport
+    // The layout size is set by WebViewImpl to support meta viewport
     frame_view->SetLayoutSizeFixedToFrameSize(false);
   } else {
     frame_view = MakeGarbageCollected<LocalFrameView>(*this);
@@ -928,7 +928,10 @@ bool LocalFrame::ShouldClose() {
 
 bool LocalFrame::DetachChildren() {
   DCHECK(GetDocument());
-  ChildFrameDisconnector(*GetDocument()).Disconnect();
+  ChildFrameDisconnector(
+      *GetDocument(),
+      ChildFrameDisconnector::DisconnectReason::kDisconnectParent)
+      .Disconnect();
   return !!Client();
 }
 
@@ -2771,6 +2774,10 @@ void LocalFrame::MainFrameFirstMeaningfulPaint() {
   // compile hints with new data.
   constexpr bool kIsFinalData = false;
   v8_local_compile_hints_producer_->GenerateData(kIsFinalData);
+}
+
+DocumentResourceCoordinator* LocalFrame::GetDocumentResourceCoordinator() {
+  return CHECK_DEREF(GetDocument()).GetResourceCoordinator();
 }
 
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {

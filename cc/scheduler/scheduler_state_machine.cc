@@ -440,8 +440,12 @@ bool SchedulerStateMachine::ShouldUpdateDisplayTree() const {
 
 bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // There is nothing to activate.
-  if (!has_pending_tree_)
+  if (!has_pending_tree_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating sync tree due to no pending tree",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
+  }
 
   // We should not activate a second tree before drawing the first one.
   // Even if we need to force activation of the pending tree, we should abort
@@ -450,6 +454,9 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // may lead to bad scheduling.
   if (!settings_.using_synchronous_renderer_compositor &&
       active_tree_needs_first_draw_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating before drawing active first",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
   }
 
@@ -459,19 +466,33 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   //
   // Note that paint worklets continue to paint when the page is not visible, so
   // any abort will eventually happen when they complete.
-  if (processing_paint_worklets_for_pending_tree_)
+  if (processing_paint_worklets_for_pending_tree_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating due to processing paint worklets",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
+  }
 
   if (ShouldAbortCurrentFrame())
     return true;
 
   // Delay pending tree activation until animation worklets have completed
   // their asynchronous updates to pick up initial values.
-  if (processing_animation_worklets_for_pending_tree_)
+  if (processing_animation_worklets_for_pending_tree_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating due to processing animation worklets",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
+  }
 
   // At this point, only activate if we are ready to activate.
-  return pending_tree_is_ready_for_activation_;
+  if (!pending_tree_is_ready_for_activation_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating because pending tree not ready",
+                         TRACE_EVENT_SCOPE_THREAD);
+    return false;
+  }
+  return true;
 }
 
 bool SchedulerStateMachine::ShouldNotifyBeginMainFrameNotExpectedUntil() const {
@@ -864,8 +885,6 @@ void SchedulerStateMachine::WillPerformImplSideInvalidationInternal() {
 
   needs_impl_side_invalidation_ = false;
   has_pending_tree_ = true;
-  activate_reasons_.PutAll(impl_side_invalidation_reasons_);
-  impl_side_invalidation_reasons_.Clear();
   did_perform_impl_side_invalidation_ = true;
   pending_tree_needs_first_draw_on_activation_ =
       next_invalidation_needs_first_draw_on_activation_;
@@ -976,7 +995,6 @@ void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
 
     // We have a new pending tree.
     has_pending_tree_ = true;
-    activate_reasons_.Put(RedrawReason::kUntracked);
     pending_tree_needs_first_draw_on_activation_ = true;
     pending_tree_is_ready_for_activation_ = false;
     if (!active_tree_needs_first_draw_ ||
@@ -1026,8 +1044,6 @@ void SchedulerStateMachine::WillActivate() {
     did_update_display_tree_ = false;
   } else {
     needs_redraw_ = true;
-    redraw_reasons_.PutAll(activate_reasons_);
-    activate_reasons_.Clear();
     active_tree_needs_first_draw_ =
         pending_tree_needs_first_draw_on_activation_;
     pending_tree_needs_first_draw_on_activation_ = false;
@@ -1076,15 +1092,10 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
       }
       break;
     case DrawResult::kAbortedDrainingPipeline:
-      consecutive_checkerboard_animations_ = 0;
-      consecutive_cant_draw_count_ = 0;
-      forced_redraw_state_ = ForcedRedrawOnTimeoutState::IDLE;
-      break;
     case DrawResult::kSuccess:
       consecutive_checkerboard_animations_ = 0;
       consecutive_cant_draw_count_ = 0;
       forced_redraw_state_ = ForcedRedrawOnTimeoutState::IDLE;
-      redraw_reasons_.Clear();
       break;
     case DrawResult::kAbortedCheckerboardAnimations:
       DCHECK(!did_submit_in_last_frame_);
@@ -1133,12 +1144,10 @@ void SchedulerStateMachine::DidDraw(DrawResult draw_result) {
 }
 
 void SchedulerStateMachine::SetNeedsImplSideInvalidation(
-    bool needs_first_draw_on_activation,
-    RedrawReason reason) {
+    bool needs_first_draw_on_activation) {
   needs_impl_side_invalidation_ = true;
   next_invalidation_needs_first_draw_on_activation_ |=
       needs_first_draw_on_activation;
-  impl_side_invalidation_reasons_.Put(reason);
 }
 
 void SchedulerStateMachine::SetMainThreadWantsBeginMainFrameNotExpectedMessages(
@@ -1562,13 +1571,8 @@ void SchedulerStateMachine::SetSkipDraw(bool skip_draw) {
   skip_draw_ = skip_draw;
 }
 
-void SchedulerStateMachine::SetNeedsRedraw(RedrawReason reason) {
+void SchedulerStateMachine::SetNeedsRedraw() {
   needs_redraw_ = true;
-  redraw_reasons_.Put(reason);
-}
-
-RedrawReasonSet SchedulerStateMachine::GetRedrawReasons() const {
-  return redraw_reasons_;
 }
 
 void SchedulerStateMachine::SetNeedsUpdateDisplayTree() {

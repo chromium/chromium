@@ -121,8 +121,7 @@
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
-#include "chrome/browser/ui/ash/system_tray_client_impl.h"
-#include "chrome/browser/ui/startup/launch_mode_recorder.h"
+#include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -2026,7 +2025,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
 
 void UserSessionManager::ProcessAppModeSwitches() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool in_app_mode = chrome::IsRunningInForcedAppMode();
+  bool in_app_mode = IsRunningInForcedAppMode();
 
   // Are we in kiosk app mode?
   if (in_app_mode) {
@@ -2048,7 +2047,7 @@ void UserSessionManager::RestoreAuthSessionImpl(
     Profile* profile,
     bool restore_from_auth_cookies) {
   CHECK(authenticator_.get() || !restore_from_auth_cookies);
-  if (chrome::IsRunningInForcedAppMode() ||
+  if (IsRunningInForcedAppMode() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableGaiaServices)) {
     return;
@@ -2463,7 +2462,6 @@ void UserSessionManager::LaunchBrowser(Profile* profile) {
   browser_creator.LaunchBrowser(
       *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
       chrome::startup::IsProcessStartup::kYes, first_run,
-      std::make_unique<OldLaunchModeRecorder>(),
       /*restore_tabbed_browser=*/true);
   if (!has_recorded_first_web_contents_metrics_) {
     has_recorded_first_web_contents_metrics_ = true;

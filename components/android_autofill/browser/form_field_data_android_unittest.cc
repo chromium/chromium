@@ -16,7 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 FormFieldData CreateTestField() {
@@ -28,8 +27,6 @@ FormFieldData CreateTestField() {
   f.set_check_status(FormFieldData::CheckStatus::kChecked);
   return f;
 }
-
-}  // namespace
 
 class FormFieldDataAndroidTest : public ::testing::Test {
  public:
@@ -218,4 +215,5 @@ TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs_Labels) {
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 }
 
+}  // namespace
 }  // namespace autofill

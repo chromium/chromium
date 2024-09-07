@@ -170,7 +170,8 @@ InterpolationValue CreateValue(const StyleRay& ray,
                                double zoom) {
   auto* list = MakeGarbageCollected<InterpolableList>(kRayComponentIndexCount);
   list->Set(kRayAngleIndex,
-            MakeGarbageCollected<InterpolableNumber>(ray.Angle()));
+            MakeGarbageCollected<InterpolableNumber>(
+                ray.Angle(), CSSPrimitiveValue::UnitType::kDegrees));
   list->Set(kRayCenterXIndex, ConvertCoordinate(ray.CenterX(), property, zoom));
   list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), property, zoom));
   list->Set(kRayHasExplicitCenterIndex,
@@ -181,7 +182,8 @@ InterpolationValue CreateValue(const StyleRay& ray,
 
 InterpolationValue CreateNeutralValue(const RayMode& mode) {
   auto* list = MakeGarbageCollected<InterpolableList>(kRayComponentIndexCount);
-  list->Set(kRayAngleIndex, MakeGarbageCollected<InterpolableNumber>(0));
+  list->Set(kRayAngleIndex, MakeGarbageCollected<InterpolableNumber>(
+                                0, CSSPrimitiveValue::UnitType::kDegrees));
   list->Set(kRayCenterXIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kRayCenterYIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kRayHasExplicitCenterIndex,

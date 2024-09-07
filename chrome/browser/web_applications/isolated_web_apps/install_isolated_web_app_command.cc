@@ -50,9 +50,11 @@
 namespace web_app {
 
 InstallIsolatedWebAppCommandSuccess::InstallIsolatedWebAppCommandSuccess(
+    IsolatedWebAppUrlInfo url_info,
     base::Version installed_version,
     IsolatedWebAppStorageLocation location)
-    : installed_version(std::move(installed_version)),
+    : url_info(std::move(url_info)),
+      installed_version(std::move(installed_version)),
       location(std::move(location)) {}
 
 InstallIsolatedWebAppCommandSuccess::~InstallIsolatedWebAppCommandSuccess() =
@@ -322,9 +324,10 @@ void InstallIsolatedWebAppCommand::ReportSuccess() {
   web_app::UmaLogExpectedStatus<InstallIwaError>("WebApp.Isolated.Install",
                                                  base::ok());
 
-  CompleteAndSelfDestruct(CommandResult::kSuccess,
-                          InstallIsolatedWebAppCommandSuccess(
-                              *actual_version_, std::move(location)));
+  CompleteAndSelfDestruct(
+      CommandResult::kSuccess,
+      InstallIsolatedWebAppCommandSuccess(url_info_, *actual_version_,
+                                          std::move(location)));
 }
 
 Profile& InstallIsolatedWebAppCommand::profile() {

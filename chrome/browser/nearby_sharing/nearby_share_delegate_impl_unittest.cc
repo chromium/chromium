@@ -17,7 +17,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
-#include "chrome/browser/ui/ash/test_session_controller.h"
+#include "chrome/browser/ui/ash/session/test_session_controller.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,6 +93,7 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
         .WillRepeatedly(ReturnPointee(&service_observer_bound_));
 
     delegate_.SetNearbyShareServiceForTest(&nearby_share_service_);
+    delegate_.SetNearbyShareSettingsForTest(settings_.get());
 
     std::unique_ptr<MockSettingsOpener> settings_opener =
         std::make_unique<MockSettingsOpener>();
@@ -236,6 +237,18 @@ TEST_F(NearbyShareDelegateImplTest,
 
   // Returns empty string when feature is disabled or on unofficial build.
   EXPECT_EQ(delegate_.GetPlaceholderFeatureName(), u"");
+}
+
+TEST_F(NearbyShareDelegateImplTest, SetVisibility) {
+  settings()->SetEnabled(true);
+  EXPECT_EQ(settings()->GetVisibility(),
+            ::nearby_share::mojom::Visibility::kYourDevices);
+  delegate_.SetVisibility(::nearby_share::mojom::Visibility::kAllContacts);
+  EXPECT_CALL(controller_, VisibilityChanged(
+                               ::nearby_share::mojom::Visibility::kAllContacts))
+      .Times(0);
+  EXPECT_EQ(settings()->GetVisibility(),
+            ::nearby_share::mojom::Visibility::kAllContacts);
 }
 #else   // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(NearbyShareDelegateImplTest, GetIconFlagEnabledUnofficialBuild) {

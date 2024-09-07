@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ADDRESSES_AUTOFILL_PROFILE_SYNC_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace syncer {
@@ -29,7 +30,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromAutofillProfile(
 
 // Converts the given autofill profile |specifics| into an equivalent
 // AutofillProfile. Returns nullptr if |specifics| is invalid.
-std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
+std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
     const sync_pb::AutofillProfileSpecifics& specifics);
 
 // Returns the storage key for given |entry|, to be used for storing in the

@@ -88,9 +88,7 @@ MediaItemUIView::MediaItemUIView(
 #if BUILDFLAG(IS_CHROMEOS)
   // The updated UI requires media color theme to be set while the toolbar
   // media button does not provide it.
-  use_updated_ui_ =
-      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI) &&
-      media_color_theme.has_value();
+  use_updated_ui_ = media_color_theme.has_value();
 #endif
 
   // Pressing callback for the updated quick settings media view will be handled

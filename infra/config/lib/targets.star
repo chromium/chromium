@@ -277,6 +277,7 @@ def _skylab(
         cros_build_target = "",
         use_lkgm = False,
         cros_model = None,
+        cros_cbx = False,
         autotest_name = None,
         bucket = None,
         dut_pool = None,
@@ -297,6 +298,8 @@ def _skylab(
         use_lkgm: If True, use a ChromeOS image version derived from
             chromeos/CHROMEOS_LKGM file.
         cros_model: Optional ChromeOS DUT model.
+        cros_cbx: Whether to require a CBX DUT for given cros_board. For a
+             board, not all models are CBX-capable.
         autotest_name: The name of the autotest to be executed in
             Skylab.
         bucket: Optional Google Storage bucket where the specified
@@ -319,6 +322,7 @@ def _skylab(
         cros_img = cros_img,
         use_lkgm = use_lkgm,
         cros_model = cros_model,
+        cros_cbx = cros_cbx,
         autotest_name = autotest_name,
         bucket = bucket,
         dut_pool = dut_pool,
@@ -575,9 +579,20 @@ def _legacy_basic_suite(*, name, tests):
     basic_suite_key = _targets_nodes.LEGACY_BASIC_SUITE.add(name)
     graph.add_edge(keys.project(), basic_suite_key)
 
-    bundle_key = _targets_common.create_bundle(
+    def _per_test_modification(test_config):
+        mixins = args.listify(_mixin(**(test_config.mixin_values or {})), test_config.mixins)
+        return _targets_common.per_test_modification(
+            mixins = mixins,
+            remove_mixins = test_config.remove_mixins,
+        )
+
+    _targets_common.create_bundle(
         name = name,
         targets = tests.keys(),
+        per_test_modifications = {
+            t: _per_test_modification(config)
+            for t, config in tests.items()
+        },
     )
 
     for t, config in tests.items():
@@ -594,16 +609,9 @@ def _legacy_basic_suite(*, name, tests):
         graph.add_edge(basic_suite_key, config_key)
         graph.add_edge(config_key, _targets_nodes.LEGACY_TEST.key(t))
 
-        modification_key = _targets_nodes.PER_TEST_MODIFICATION.add(name, t)
-        graph.add_edge(bundle_key, modification_key)
-
-        basic_config_mixin = _mixin(**(config.mixin_values or {}))
-        graph.add_edge(modification_key, _targets_nodes.MIXIN.key(basic_config_mixin))
-
         for m in mixins:
             mixin_key = _targets_nodes.MIXIN.key(m)
             graph.add_edge(config_key, mixin_key)
-            graph.add_edge(modification_key, mixin_key)
         for r in remove_mixins:
             _targets_nodes.LEGACY_BASIC_SUITE_REMOVE_MIXIN.link(config_key, _targets_nodes.MIXIN.key(r))
 
@@ -750,6 +758,7 @@ targets = struct(
 
     # Functions for declaring bundles
     bundle = _bundle,
+    per_test_modification = _targets_common.per_test_modification,
     builder_defaults = _targets_common.builder_defaults,
     settings = _targets_common.settings,
     settings_defaults = _targets_common.settings_defaults,

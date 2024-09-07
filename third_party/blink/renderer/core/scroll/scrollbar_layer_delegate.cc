@@ -186,18 +186,7 @@ gfx::Rect ScrollbarLayerDelegate::NinePatchTrackAndButtonsAperture() const {
 }
 
 bool ScrollbarLayerDelegate::ShouldPaint() const {
-  // TODO(crbug.com/860499): Remove this condition, it should not occur.
-  // Layers may exist and be painted for a |scrollbar_| that has had its
-  // ScrollableArea detached. This seems weird because if the area is detached
-  // the layer should be destroyed but here we are. https://crbug.com/860499.
-  if (!scrollbar_->GetScrollableArea())
-    return false;
-  // When the frame is throttled, the scrollbar will not be painted because
-  // the frame has not had its lifecycle updated. Thus the actual value of
-  // HasTickmarks can't be known and may change once the frame is unthrottled.
-  if (scrollbar_->GetScrollableArea()->IsThrottled())
-    return false;
-  return true;
+  return scrollbar_->ShouldPaint();
 }
 
 bool ScrollbarLayerDelegate::HasTickmarks() const {

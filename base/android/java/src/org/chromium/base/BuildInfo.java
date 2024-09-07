@@ -24,6 +24,7 @@ import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JniType;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.NativeLibraries;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -192,6 +193,20 @@ public class BuildInfo {
         } else {
             return pi.versionCode;
         }
+    }
+
+    /**
+     * @return CPU architecture name, see "arch:" in:
+     *     https://chromium.googlesource.com/chromium/src.git/+/master/docs/updater/protocol_3_1.md
+     */
+    public static String getArch() {
+        boolean is64Bit = Process.is64Bit();
+        if (NativeLibraries.sCpuFamily == NativeLibraries.CPU_FAMILY_ARM) {
+            return is64Bit ? "arm64" : "arm";
+        } else if (NativeLibraries.sCpuFamily == NativeLibraries.CPU_FAMILY_X86) {
+            return is64Bit ? "x86_64" : "x86";
+        }
+        return "";
     }
 
     /**

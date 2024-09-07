@@ -163,6 +163,64 @@ std::string GetTransportName(BluetoothTransport transport) {
   }
 }
 
+bool IsUserError(std::optional<ConnectionFailureReason> failure_reason) {
+  if (!failure_reason.has_value()) {
+    return false;
+  }
+
+  switch (failure_reason.value()) {
+    case ConnectionFailureReason::kNotFound:
+      return true;
+    case ConnectionFailureReason::kAuthCanceled:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthRejected:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnknownError:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthFailed:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthTimeout:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnknownConnectionError:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnsupportedDevice:
+      [[fallthrough]];
+    case ConnectionFailureReason::kNotConnectable:
+      [[fallthrough]];
+    case ConnectionFailureReason::kSystemError:
+      [[fallthrough]];
+    case ConnectionFailureReason::kFailed:
+      [[fallthrough]];
+    case ConnectionFailureReason::kInprogress:
+      [[fallthrough]];
+    case ConnectionFailureReason::kBluetoothDisabled:
+      [[fallthrough]];
+    case ConnectionFailureReason::kDeviceNotReady:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAlreadyConnected:
+      [[fallthrough]];
+    case ConnectionFailureReason::kDeviceAlreadyExists:
+      [[fallthrough]];
+    case ConnectionFailureReason::kInvalidArgs:
+      [[fallthrough]];
+    case ConnectionFailureReason::kNonAuthTimeout:
+      [[fallthrough]];
+    case ConnectionFailureReason::kNoMemory:
+      [[fallthrough]];
+    case ConnectionFailureReason::kJniEnvironment:
+      [[fallthrough]];
+    case ConnectionFailureReason::kJniThreadAttach:
+      [[fallthrough]];
+    case ConnectionFailureReason::kWakelock:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnexpectedState:
+      [[fallthrough]];
+    case ConnectionFailureReason::kSocketError:
+      return false;
+  }
+  NOTREACHED_IN_MIGRATION();
+}
+
 void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
                                const std::string& transport_name) {
   switch (failure_reason) {
@@ -209,6 +267,10 @@ void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
     case ConnectionFailureReason::kJniThreadAttach:
       [[fallthrough]];
     case ConnectionFailureReason::kWakelock:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnexpectedState:
+      [[fallthrough]];
+    case ConnectionFailureReason::kSocketError:
       const std::string result_histogram_name_prefix =
           "Bluetooth.ChromeOS.Pairing.Result";
       base::UmaHistogramEnumeration(
@@ -224,13 +286,17 @@ void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsPolyDevice(const device::BluetoothDevice* device) {
+bool IsNonPhonePolyDevice(const device::BluetoothDevice* device) {
   // OUI portions of Bluetooth addresses for devices manufactured by Poly. See
-  // https://standards-oui.ieee.org/.
-  constexpr auto kPolyOuis = base::MakeFixedFlatSet<std::string_view>(
-      {"64:16:7F", "48:25:67", "00:04:F2"});
+  // https://standards-oui.ieee.org/. This also includes acquisitions by Poly,
+  // namely ViaVideo and PictureTel.
+  // Actually there are still others belonging in this category, but they are
+  // truly phones, e.g. Voyant and Spectralink, so we omit those here.
+  constexpr auto kNonPhonePolyOuis = base::MakeFixedFlatSet<std::string_view>(
+      {"64:16:7F", "48:25:67", "00:04:F2", "00:E0:DB", "00:10:1A"});
 
-  return base::Contains(kPolyOuis, device->GetOuiPortionOfBluetoothAddress());
+  return base::Contains(kNonPhonePolyOuis,
+                        device->GetOuiPortionOfBluetoothAddress());
 }
 #endif
 
@@ -303,6 +369,10 @@ ConnectionFailureReason GetConnectionFailureReason(
       return device::ConnectionFailureReason::kJniThreadAttach;
     case device::BluetoothDevice::ConnectErrorCode::ERROR_WAKELOCK:
       return device::ConnectionFailureReason::kWakelock;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNEXPECTED_STATE:
+      return device::ConnectionFailureReason::kUnexpectedState;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET:
+      return device::ConnectionFailureReason::kSocketError;
     case device::BluetoothDevice::ConnectErrorCode::NUM_CONNECT_ERROR_CODES:
       NOTREACHED();
   }
@@ -336,7 +406,7 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
   // Never filter out Poly devices; this requires a special case since these
   // devices often identify themselves as phones, which are disallowed below.
   // See b/228118615.
-  if (IsPolyDevice(device)) {
+  if (IsNonPhonePolyDevice(device)) {
     return false;
   }
 #endif
@@ -433,10 +503,16 @@ void RecordPairingResult(std::optional<ConnectionFailureReason> failure_reason,
   bool success = !failure_reason.has_value();
   std::string result_histogram_name_prefix =
       "Bluetooth.ChromeOS.Pairing.Result";
+  std::string result_histogram_user_errors_filtered_name =
+      result_histogram_name_prefix + "." + "UserErrorsFiltered";
 
   base::UmaHistogramBoolean(result_histogram_name_prefix, success);
   base::UmaHistogramBoolean(result_histogram_name_prefix + "." + transport_name,
                             success);
+  if (!IsUserError(failure_reason)) {
+    base::UmaHistogramBoolean(result_histogram_user_errors_filtered_name,
+                              success);
+  }
 
   std::string duration_histogram_name_prefix =
       "Bluetooth.ChromeOS.Pairing.Duration";

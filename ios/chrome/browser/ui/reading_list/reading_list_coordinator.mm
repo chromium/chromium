@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -148,7 +148,7 @@
   _applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   _authService = AuthenticationServiceFactory::GetForBrowserState(browserState);
-  _identityManager = IdentityManagerFactory::GetForBrowserState(browserState);
+  _identityManager = IdentityManagerFactory::GetForProfile(browserState);
   _prefService = browserState->GetPrefs();
 
   // Create the table.

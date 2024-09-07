@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties;
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -29,6 +31,27 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * instruments.
  */
 public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPaymentsSequenceView {
+    private static class FacilitatedPaymentsHorizontalDividerItemDecoration
+            extends FacilitatedPaymentsItemDividerBase {
+        FacilitatedPaymentsHorizontalDividerItemDecoration(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected boolean shouldSkipItemType(@ItemType int type) {
+            return type != ItemType.BANK_ACCOUNT;
+        }
+
+        @Override
+        protected boolean containsContinueButton(RecyclerView parent) {
+            int itemCount = parent.getAdapter().getItemCount();
+            // The button will be above the footer if it's present.
+            return itemCount > 1
+                    && parent.getAdapter().getItemViewType(itemCount - 2)
+                            == ItemType.CONTINUE_BUTTON;
+        }
+    }
+
     private RecyclerView mView;
 
     @Override
@@ -53,6 +76,8 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
                             RecyclerView.State state,
                             AccessibilityNodeInfoCompat info) {}
                 });
+        mView.addItemDecoration(
+                new FacilitatedPaymentsHorizontalDividerItemDecoration(mView.getContext()));
     }
 
     @Override

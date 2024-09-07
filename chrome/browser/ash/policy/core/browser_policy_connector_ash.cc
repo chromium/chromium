@@ -29,14 +29,19 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
-#include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/external_data/device_policy_cloud_external_data_manager.h"
+#include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_print_servers_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_printers_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
+#include "chrome/browser/ash/policy/external_data/handlers/preconfigured_desk_templates_external_data_handler.h"
+#include "chrome/browser/ash/policy/external_data/handlers/print_servers_external_data_handler.h"
+#include "chrome/browser/ash/policy/external_data/handlers/printers_external_data_handler.h"
+#include "chrome/browser/ash/policy/external_data/handlers/user_avatar_image_external_data_handler.h"
+#include "chrome/browser/ash/policy/external_data/handlers/wallpaper_image_external_data_handler.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/bluetooth_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
@@ -75,7 +80,6 @@
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
-#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
@@ -356,10 +360,6 @@ void BrowserPolicyConnectorAsh::Init(
 
   device_dlc_predownload_list_policy_handler_ =
       DeviceDlcPredownloadListPolicyHandler::Create();
-
-  device_restriction_schedule_controller_ =
-      std::make_unique<DeviceRestrictionScheduleController>(
-          CHECK_DEREF(local_state));
 }
 
 void BrowserPolicyConnectorAsh::OnBrowserStarted() {
@@ -393,7 +393,6 @@ void BrowserPolicyConnectorAsh::PreShutdown() {
 }
 
 void BrowserPolicyConnectorAsh::Shutdown() {
-  device_restriction_schedule_controller_.reset();
   device_cert_provisioning_scheduler_.reset();
   system_proxy_handler_.reset();
 
@@ -589,6 +588,60 @@ void BrowserPolicyConnectorAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kDevicePolicyRefreshRate,
       CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
+}
+
+void BrowserPolicyConnectorAsh::OnUserManagerCreated(
+    user_manager::UserManager* user_manager) {
+  auto* cros_settings = ash::CrosSettings::Get();
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings, device_local_account_policy_service_.get(),
+          policy::key::kUserAvatarImage, user_manager,
+          std::make_unique<policy::UserAvatarImageExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings, device_local_account_policy_service_.get(),
+          policy::key::kWallpaperImage, user_manager,
+          std::make_unique<policy::WallpaperImageExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings, device_local_account_policy_service_.get(),
+          policy::key::kPrintersBulkConfiguration, user_manager,
+          std::make_unique<policy::PrintersExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings, device_local_account_policy_service_.get(),
+          policy::key::kExternalPrintServers, user_manager,
+          std::make_unique<policy::PrintServersExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings, device_local_account_policy_service_.get(),
+          policy::key::kCrostiniAnsiblePlaybook, user_manager,
+          std::make_unique<
+              policy::CrostiniAnsiblePlaybookExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings, device_local_account_policy_service_.get(),
+          policy::key::kPreconfiguredDeskTemplates, user_manager,
+          std::make_unique<
+              policy::PreconfiguredDeskTemplatesExternalDataHandler>()));
+  for (auto& observer : cloud_external_data_policy_observers_) {
+    observer->Init();
+  }
+
+  if (device_cloud_policy_manager_) {
+    device_cloud_policy_manager_->OnUserManagerCreated(user_manager);
+  }
+}
+
+void BrowserPolicyConnectorAsh::OnUserManagerShutdown() {
+  cloud_external_data_policy_observers_.clear();
+}
+
+void BrowserPolicyConnectorAsh::OnUserManagerWillBeDestroyed() {
+  if (device_cloud_policy_manager_) {
+    device_cloud_policy_manager_->OnUserManagerWillBeDestroyed();
+  }
 }
 
 void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerConnected() {

@@ -116,7 +116,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 @implementation NonModalDefaultBrowserPromoSchedulerSceneAgent
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _overlayObserver = std::make_unique<OverlayPresenterObserverBridge>(self);

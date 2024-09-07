@@ -63,7 +63,7 @@ export function isEnabled(state: chrome.developerPrivate.ExtensionState):
     case chrome.developerPrivate.ExtensionState.ENABLED:
     case chrome.developerPrivate.ExtensionState.TERMINATED:
       return true;
-    case chrome.developerPrivate.ExtensionState.BLACKLISTED:
+    case chrome.developerPrivate.ExtensionState.BLOCKLISTED:
     case chrome.developerPrivate.ExtensionState.DISABLED:
       return false;
     default:
@@ -94,8 +94,8 @@ export function userCanChangeEnablement(
   if (item.dependentExtensions.length > 0) {
     return false;
   }
-  // Blacklisted can't be enabled, either.
-  if (item.state === chrome.developerPrivate.ExtensionState.BLACKLISTED) {
+  // Blocklisted can't be enabled, either.
+  if (item.state === chrome.developerPrivate.ExtensionState.BLOCKLISTED) {
     return false;
   }
 

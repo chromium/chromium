@@ -41,6 +41,8 @@ component("image_decoders") {
     "segment_reader.h",
     "segment_stream.cc",
     "segment_stream.h",
+    "skia/skia_image_decoder_base.cc",
+    "skia/skia_image_decoder_base.h",
     "webp/webp_image_decoder.cc",
     "webp/webp_image_decoder.h",
   ]

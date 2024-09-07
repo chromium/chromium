@@ -1,35 +1,13 @@
 This is a testharness.js-based test.
-Found 158 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test that embedded 0x0A is stripped
   assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
-[FAIL] Parsing: <non-special://test:@test/x> against <about:blank>
-  assert_equals: href expected "non-special://test@test/x" but got "non-special://test:@test/x"
-[FAIL] Parsing: <non-special://:@test/x> against <about:blank>
-  assert_equals: href expected "non-special://test/x" but got "non-special://:@test/x"
-[FAIL] Parsing: <non-special://f:999999/c> against <http://example.org/foo/bar>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <foo://> against <http://example.org/foo/bar>
-  assert_equals: pathname expected "" but got "//"
-[FAIL] Parsing: <foo://///////> against <http://example.org/foo/bar>
-  assert_equals: pathname expected "///////" but got "/////////"
-[FAIL] Parsing: <foo://///////bar.com/> against <http://example.org/foo/bar>
-  assert_equals: pathname expected "///////bar.com/" but got "/////////bar.com/"
-[FAIL] Parsing: <foo:////://///> against <http://example.org/foo/bar>
-  assert_equals: pathname expected "//://///" but got "////://///"
-[FAIL] Parsing: <ssh://example.com/foo/bar.git> against <http://example.org/>
-  assert_equals: host expected "example.com" but got ""
 [FAIL] Parsing: <http://example.com/foo/%2e%2> against <about:blank>
   assert_equals: href expected "http://example.com/foo/%2e%2" but got "http://example.com/foo/.%2"
 [FAIL] Parsing: <http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar> against <about:blank>
   assert_equals: href expected "http://example.com/%2e.bar" but got "http://example.com/..bar"
 [FAIL] Parsing: <http://www/foo%2Ehtml> against <about:blank>
   assert_equals: href expected "http://www/foo%2Ehtml" but got "http://www/foo.html"
-[FAIL] Parsing: <httpa://foo:80/> against <about:blank>
-  assert_equals: host expected "foo:80" but got ""
-[FAIL] Parsing: <gopher://foo:70/> against <about:blank>
-  assert_equals: host expected "foo:70" but got ""
-[FAIL] Parsing: <gopher://foo:443/> against <about:blank>
-  assert_equals: host expected "foo:443" but got ""
 [FAIL] Parsing: <http://example example.com> against <http://other.com/>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://GOO 　goo.com> against <http://other.com/>
@@ -50,269 +28,49 @@ Found 158 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://%ef%bc%85%ef%bc%94%ef%bc%91.com> against <http://other.com/>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://faß.ExAmPlE/> against <about:blank>
-  assert_equals: host expected "fa%C3%9F.ExAmPlE" but got ""
 [FAIL] Parsing: <http://192.168.0.1 hello> against <http://other.com/>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <https://x x:12> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <h://.> against <about:blank>
-  assert_equals: host expected "." but got ""
 [FAIL] Parsing: <http://[::%31]> against <http://other.com/>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://%5B::1]> against <http://other.com/>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <notspecial://host/?'> against <about:blank>
   assert_equals: href expected "notspecial://host/?'" but got "notspecial://host/?%27"
-[FAIL] Parsing: <i> against <sc://ho/pa>
-  assert_equals: host expected "ho" but got ""
-[FAIL] Parsing: <i> against <sc:///pa/pa>
-  assert_equals: pathname expected "/pa/i" but got "///pa/i"
-[FAIL] Parsing: <../i> against <sc://ho/pa>
-  assert_equals: host expected "ho" but got ""
-[FAIL] Parsing: <../i> against <sc:///pa/pa>
-  assert_equals: href expected "sc:///i" but got "sc:///pa/i"
-[FAIL] Parsing: </i> against <sc://ho/pa>
-  assert_equals: host expected "ho" but got ""
-[FAIL] Parsing: </i> against <sc:///pa/pa>
-  assert_equals: href expected "sc:///i" but got "sc:///pa/i"
-[FAIL] Parsing: <?i> against <sc://ho/pa>
-  assert_equals: host expected "ho" but got ""
-[FAIL] Parsing: <?i> against <sc:///pa/pa>
-  assert_equals: pathname expected "/pa/pa" but got "///pa/pa"
-[FAIL] Parsing: <#i> against <sc://ho/pa>
-  assert_equals: host expected "ho" but got ""
-[FAIL] Parsing: <#i> against <sc:///pa/pa>
-  assert_equals: pathname expected "/pa/pa" but got "///pa/pa"
-[FAIL] Parsing: <about:/../> against <about:blank>
-  assert_equals: href expected "about:/" but got "about:/../"
-[FAIL] Parsing: <data:/../> against <about:blank>
-  assert_equals: href expected "data:/" but got "data:/../"
-[FAIL] Parsing: <sc://ñ.test/> against <about:blank>
-  assert_equals: host expected "%C3%B1.test" but got ""
-[FAIL] Parsing: <sc://%/> against <about:blank>
-  assert_equals: host expected "%" but got ""
-[FAIL] Parsing: <sc://@/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://te@s:t@/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://:/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://:12/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <x> against <sc://ñ>
-  assert_equals: href expected "sc://%C3%B1/x" but got "x"
-[FAIL] Parsing: <sc://a\0b/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://a b/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://a<b> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://a>b> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://a[b/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://a\\b/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://a]b/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://a^b> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://a|b/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <foo://ho	st/> against <about:blank>
-  assert_equals: host expected "host" but got ""
-[FAIL] Parsing: <foo://ho\nst/> against <about:blank>
-  assert_equals: host expected "host" but got ""
-[FAIL] Parsing: <foo://ho\rst/> against <about:blank>
-  assert_equals: host expected "host" but got ""
 [FAIL] Parsing: <http://a b/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://ho%20st/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank>
   assert_equals: href expected "http://!\\"$&'()*+,-.;=_`{}~/" but got "http://!\\"$&'()%2A+,-.;=_`{}~/"
-[FAIL] Parsing: <sc://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
-  assert_equals: host expected "%01%02%03%04%05%06%07%08%0B%0C%0E%0F%10%11%12%13%14%15%16%17%18%19%1A%1B%1C%1D%1E%1F%7F!\\"$%&'()*+,-.;=_`{}~" but got ""
-[FAIL] Parsing: <asdf://%43|/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <asdf://%43%7C/> against <about:blank>
-  assert_equals: host expected "%43%7C" but got ""
-[FAIL] Parsing: <sc://ñ> against <about:blank>
-  assert_equals: host expected "%C3%B1" but got ""
-[FAIL] Parsing: <sc://ñ?x> against <about:blank>
-  assert_equals: host expected "%C3%B1" but got ""
-[FAIL] Parsing: <sc://ñ#x> against <about:blank>
-  assert_equals: host expected "%C3%B1" but got ""
-[FAIL] Parsing: <#x> against <sc://ñ>
-  assert_equals: href expected "sc://%C3%B1#x" but got "#x"
-[FAIL] Parsing: <?x> against <sc://ñ>
-  assert_equals: href expected "sc://%C3%B1?x" but got "?x"
-[FAIL] Parsing: <sc://?> against <about:blank>
-  assert_equals: pathname expected "" but got "//"
-[FAIL] Parsing: <sc://#> against <about:blank>
-  assert_equals: pathname expected "" but got "//"
-[FAIL] Parsing: <///> against <sc://x/>
-  assert_equals: href expected "sc:///" but got "///"
-[FAIL] Parsing: <////> against <sc://x/>
-  assert_equals: href expected "sc:////" but got "////"
-[FAIL] Parsing: <////x/> against <sc://x/>
-  assert_equals: href expected "sc:////x/" but got "sc://x/"
-[FAIL] Parsing: <tftp://foobar.com/someconfig;mode=netascii> against <about:blank>
-  assert_equals: host expected "foobar.com" but got ""
-[FAIL] Parsing: <telnet://user:pass@foobar.com:23/> against <about:blank>
-  assert_equals: username expected "user" but got ""
-[FAIL] Parsing: <ut2004://10.10.10.10:7777/Index.ut2> against <about:blank>
-  assert_equals: host expected "10.10.10.10:7777" but got ""
-[FAIL] Parsing: <redis://foo:bar@somehost:6379/0?baz=bam&qux=baz> against <about:blank>
-  assert_equals: username expected "foo" but got ""
-[FAIL] Parsing: <rsync://foo@host:911/sup> against <about:blank>
-  assert_equals: username expected "foo" but got ""
-[FAIL] Parsing: <git://github.com/foo/bar.git> against <about:blank>
-  assert_equals: host expected "github.com" but got ""
-[FAIL] Parsing: <irc://myserver.com:6999/channel?passwd> against <about:blank>
-  assert_equals: host expected "myserver.com:6999" but got ""
-[FAIL] Parsing: <dns://fw.example.org:9999/foo.bar.org?type=TXT> against <about:blank>
-  assert_equals: host expected "fw.example.org:9999" but got ""
-[FAIL] Parsing: <ldap://localhost:389/ou=People,o=JNDITutorial> against <about:blank>
-  assert_equals: host expected "localhost:389" but got ""
-[FAIL] Parsing: <git+https://github.com/foo/bar> against <about:blank>
-  assert_equals: host expected "github.com" but got ""
-[FAIL] Parsing: <non-spec:/.//> against <about:blank>
-  assert_equals: pathname expected "//" but got "/.//"
-[FAIL] Parsing: <non-spec:/..//> against <about:blank>
-  assert_equals: href expected "non-spec:/.//" but got "non-spec:/..//"
-[FAIL] Parsing: <non-spec:/a/..//> against <about:blank>
-  assert_equals: href expected "non-spec:/.//" but got "non-spec:/a/..//"
-[FAIL] Parsing: <non-spec:/.//path> against <about:blank>
-  assert_equals: pathname expected "//path" but got "/.//path"
-[FAIL] Parsing: <non-spec:/..//path> against <about:blank>
-  assert_equals: href expected "non-spec:/.//path" but got "non-spec:/..//path"
-[FAIL] Parsing: <non-spec:/a/..//path> against <about:blank>
-  assert_equals: href expected "non-spec:/.//path" but got "non-spec:/a/..//path"
-[FAIL] Parsing: </.//path> against <non-spec:/p>
-  assert_equals: href expected "non-spec:/.//path" but got "non-spec://path"
-[FAIL] Parsing: </..//path> against <non-spec:/p>
-  assert_equals: href expected "non-spec:/.//path" but got "non-spec://path"
-[FAIL] Parsing: <..//path> against <non-spec:/p>
-  assert_equals: href expected "non-spec:/.//path" but got "non-spec://path"
-[FAIL] Parsing: <a/..//path> against <non-spec:/p>
-  assert_equals: href expected "non-spec:/.//path" but got "non-spec://path"
-[FAIL] Parsing: <> against <non-spec:/..//p>
-  assert_equals: href expected "non-spec:/.//p" but got "non-spec:/..//p"
-[FAIL] Parsing: <path> against <non-spec:/..//p>
-  assert_equals: href expected "non-spec:/.//path" but got "non-spec:/..//path"
-[FAIL] Parsing: <../path> against <non-spec:/.//p>
-  assert_equals: href expected "non-spec:/path" but got "non-spec:/./path"
-[FAIL] Parsing: <non-special://%E2%80%A0/> against <about:blank>
-  assert_equals: host expected "%E2%80%A0" but got ""
-[FAIL] Parsing: <non-special://H%4fSt/path> against <about:blank>
-  assert_equals: host expected "H%4fSt" but got ""
-[FAIL] Parsing: <non-special://[1:2:0:0:5:0:0:0]/> against <about:blank>
-  assert_equals: href expected "non-special://[1:2:0:0:5::]/" but got "non-special://[1:2:0:0:5:0:0:0]/"
-[FAIL] Parsing: <non-special://[1:2:0:0:0:0:0:3]/> against <about:blank>
-  assert_equals: href expected "non-special://[1:2::3]/" but got "non-special://[1:2:0:0:0:0:0:3]/"
-[FAIL] Parsing: <non-special://[1:2::3]:80/> against <about:blank>
-  assert_equals: host expected "[1:2::3]:80" but got ""
-[FAIL] Parsing: <non-special://[:80/> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <test-a-colon-slash-slash.html> against <a://>
-  assert_equals: href expected "a:///test-a-colon-slash-slash.html" but got "test-a-colon-slash-slash.html"
-[FAIL] Parsing: <test-a-colon-slash-slash-b.html> against <a://b>
-  assert_equals: href expected "a://b/test-a-colon-slash-slash-b.html" but got "test-a-colon-slash-slash-b.html"
-[FAIL] Parsing: <non-spec://example.org/test?a#b\0c> against <about:blank>
-  assert_equals: host expected "example.org" but got ""
 [FAIL] Parsing: <foo:// !"$%&'()*+,-.;<=>@[\\]^_`{|}~@host/> against <about:blank>
-  assert_equals: href expected "foo://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo:// !\\"$%&'()*+,-.;<=>@[\\\\]^_`{|}~@host/"
+  assert_equals: href expected "foo://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://%20!%22$%&%27()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/"
 [FAIL] Parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:blank>
   assert_equals: href expected "wss://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/" but got "wss://%20!%22$%&%27()*+,-.%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/"
 [FAIL] Parsing: <foo://joe: !"$%&'()*+,-.:;<=>@[\\]^_`{|}~@host/> against <about:blank>
-  assert_equals: href expected "foo://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://joe: !\\"$%&'()*+,-.:;<=>@[\\\\]^_`{|}~@host/"
+  assert_equals: href expected "foo://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://joe:%20!%22$%&%27()*+,-.%3A%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/"
 [FAIL] Parsing: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> against <about:blank>
   assert_equals: href expected "wss://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/" but got "wss://joe:%20!%22$%&%27()*+,-.%3A%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/"
-[FAIL] Parsing: <foo://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
-  assert_equals: host expected "!\\"$%&'()*+,-.;=_`{}~" but got ""
 [FAIL] Parsing: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank>
   assert_equals: href expected "wss://!\\"$&'()*+,-.;=_`{}~/" but got "wss://!\\"$&'()%2A+,-.;=_`{}~/"
 [FAIL] Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> against <about:blank>
-  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]^_%60%7B|%7D~" but got "foo://host/ !\\"$%&'()*+,-./:;<=>@[\\\\]^_`{|}~"
+  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]^_%60%7B|%7D~" but got "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B%7C%7D~"
 [FAIL] Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> against <about:blank>
   assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
 [FAIL] Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\\]^_`{|}~> against <about:blank>
   assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~"
-[FAIL] Parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~> against <about:blank>
-  assert_equals: host expected "host" but got ""
-[FAIL] Parsing: <abc:rootless> against <abc://host/path>
-  assert_equals: href expected "abc:rootless" but got "abc://host/rootless"
-[FAIL] Parsing: <abc:rootless> against <abc:/path>
-  assert_equals: href expected "abc:rootless" but got "abc:/rootless"
-[FAIL] Parsing: <abc:/rooted> against <abc://host/path>
-  assert_equals: href expected "abc:/rooted" but got "abc://host/rooted"
 [FAIL] Parsing: <https://xn--/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <data://example.com:8080/pathname?search#hash> against <about:blank>
-  assert_equals: host expected "example.com:8080" but got ""
-[FAIL] Parsing: <data:///test> against <about:blank>
-  assert_equals: pathname expected "/test" but got "///test"
-[FAIL] Parsing: <data://test/a/../b> against <about:blank>
-  assert_equals: href expected "data://test/b" but got "data://test/a/../b"
-[FAIL] Parsing: <data://:443> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <data://test:test> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <data://[:1]> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <intent://example.com:8080/pathname?search#hash> against <about:blank>
-  assert_equals: host expected "example.com:8080" but got ""
-[FAIL] Parsing: <intent:///test> against <about:blank>
-  assert_equals: pathname expected "/test" but got "///test"
-[FAIL] Parsing: <intent://test/a/../b> against <about:blank>
-  assert_equals: href expected "intent://test/b" but got "intent://test/a/../b"
-[FAIL] Parsing: <intent://:443> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <intent://test:test> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <intent://[:1]> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <urn://example.com:8080/pathname?search#hash> against <about:blank>
-  assert_equals: host expected "example.com:8080" but got ""
-[FAIL] Parsing: <urn:///test> against <about:blank>
-  assert_equals: pathname expected "/test" but got "///test"
-[FAIL] Parsing: <urn://test/a/../b> against <about:blank>
-  assert_equals: href expected "urn://test/b" but got "urn://test/a/../b"
-[FAIL] Parsing: <urn://:443> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <urn://test:test> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <urn://[:1]> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <turn://example.com:8080/pathname?search#hash> against <about:blank>
-  assert_equals: host expected "example.com:8080" but got ""
-[FAIL] Parsing: <turn:///test> against <about:blank>
-  assert_equals: pathname expected "/test" but got "///test"
-[FAIL] Parsing: <turn://test/a/../b> against <about:blank>
-  assert_equals: href expected "turn://test/b" but got "turn://test/a/../b"
-[FAIL] Parsing: <turn://:443> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <turn://test:test> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <turn://[:1]> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <stun://example.com:8080/pathname?search#hash> against <about:blank>
-  assert_equals: host expected "example.com:8080" but got ""
-[FAIL] Parsing: <stun:///test> against <about:blank>
-  assert_equals: pathname expected "/test" but got "///test"
-[FAIL] Parsing: <stun://test/a/../b> against <about:blank>
-  assert_equals: href expected "stun://test/b" but got "stun://test/a/../b"
-[FAIL] Parsing: <stun://:443> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <stun://test:test> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <stun://[:1]> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <w://x:0> against <about:blank>
+[FAIL] Parsing: <android://x:0/a> against <about:blank>
   assert_equals: host expected "x:0" but got ""
-[FAIL] Parsing: <west://x:0> against <about:blank>
+[FAIL] Parsing: <drivefs://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chromeos-steam://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <steam://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <materialized-view://x:0/a> against <about:blank>
   assert_equals: host expected "x:0" but got ""
 [FAIL] Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank>
   assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff?U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff"

@@ -251,6 +251,7 @@ source_set("policy_specific_browser_tests") {
       "//chrome/browser/ash/login/lock:test_support",
       "//chrome/browser/ash/login/saml:test_support",
       "//chrome/browser/ash/net",
+      "//chrome/browser/ash/note_taking",
       "//components/session_manager/core",
       "//components/user_manager",
     ]
@@ -406,7 +407,6 @@ source_set("browser_tests") {
       "//ash/components/arc:prefs",
       "//ash/components/arc/session:session",
       "//chrome/browser/apps/app_service/app_icon",
-      "//chrome/browser/ash",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/arc/session",
       "//chrome/browser/ash/crostini:test_support",
@@ -415,6 +415,7 @@ source_set("browser_tests") {
       "//chrome/browser/ash/login/users/avatar",
       "//chrome/browser/ash/login/users/avatar:test_support",
       "//chrome/browser/ash/login/users/default_user_image",
+      "//chrome/browser/ash/note_taking",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/system_web_apps/apps/personalization_app",
@@ -537,7 +538,6 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash",
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/settings",
       "//chrome/browser/ash/settings:test_support",

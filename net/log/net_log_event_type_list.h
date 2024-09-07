@@ -1381,57 +1381,89 @@ EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
 // The following parameters are attached:
 //   {
 //      "stream_key": <The HttpStreamKey of the group>,
+//      "force_quic": <True when QUIC is forced for the group>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 
-// Emitted when a group is requested a stream. The event parameters are:
+// Emitted when a group starts a stream. The event parameters are:
 //   {
 //     "priority": <The priority of the erquest>,
 //     "allowed_bad_certs": <The list of allowed bad certs>,
 //     "enable_ip_based_pooling": <True when the request enables IP based
 //                                 pooling>,
+//     "quic_version": <The QUIC version to attempt>,
 //     "source_dependency": <The source identifier of the request>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_REQUEST_STREAM)
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_START_JOB)
 
 // Emitted when a group is requested a preconnect. The event parameter is:
 //   {
-//      "num_streams": <The number of streams requested>
+//      "num_streams": <The number of streams requested>,
+//      "quic_version": <The QUIC version to attempt>
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_PRECONNECT)
 
-// Records on the caller's NetLog to indicate that an HttpStreamPool::Group is
-// servicing the request.
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_REQUEST_BOUND)
+// Records on the caller's NetLog to indicate that an HttpStreamPool::Group
+// starts a Job.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_BOUND)
 
-// Emitted when an HttpStreamPool::Job is created. Used to add a reference to
-// HttpStreamPool::Group's net log.
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_CREATED)
+// Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
+// reference to HttpStreamPool::Group's net log.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED)
 
-// Emitted when an HttpStreamPool::Job is destroyed. Used to add a reference to
-// HttpStreamPool::Group's net log.
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_DESTROYED)
+// Emitted when an HttpStreamPool::AttemptManager is destroyed. Used to add a
+// reference to HttpStreamPool::Group's net log.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED)
 
-// Marks the start/end of a HttpStreamPool::Job.
+// Marks the start/end of a HttpStreamPool::AttemptManager.
 // For the BEGIN event, the event parameters are:
 //   {
 //     "stream_attempt_delay": <The stream attempt delay in milliseconds>,
 //     "source_dependency": <The source identifier of the parent group>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 
-// Emitted when an HttpStreamPool::Job started a StreamAttempt.
-EVENT_TYPE(HTTP_STREAM_POOL_JOB_ATTEMPT_START)
+// Emitted when an HttpStreamPool::AttemptManager started a StreamAttempt.
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
 
-// Emitted when an HttpStreamPool::Job received completion from a StreamAttempt.
-EVENT_TYPE(HTTP_STREAM_POOL_JOB_ATTEMPT_END)
+// Emitted when an HttpStreamPool::AttemptManager received completion from a
+// StreamAttempt.
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
 
-// Emitted when the stream attempt delay has passed on an HttpStreamPool::Job.
-// The event parameter is:
+// Emitted when the stream attempt delay has passed on an
+// HttpStreamPool::AttemptManager. The event parameter is:
 //   {
 //     "stream_attempt_delay": <The stream attempt delay in milliseconds>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_JOB_STREAM_ATTEMPT_DELAY_PASSED)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_STREAM_ATTEMPT_DELAY_PASSED)
+
+// Records on an HttpStreamPool::AttemptManager's NetLog to indicate that an
+// HttpStreamPool::QuicTask is bound to the AttemptManager.
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
+
+// Marks the start/end of a HttpStreamPool::QuicTask.
+// For the BEGIN event, the event parameters are:
+//   {
+//     "quic_version": <The known QUIC version>,
+//     "source_dependency": <The source identifier of the parent AttemptManager>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_TASK_ALIVE)
+
+// Emitted when an HttpStreamPool::QuicTask started a QuicSessionAttempt.
+// The event parameters are:
+//   {
+//     "quic_version": <The QUIC version of the attempt>,
+//     "ip_endpoint": <The IPEndPoint to connect>,
+//     "metadata": <ConnectionEndpointMetadata of the attempt>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_ATTEMPT_START)
+
+// Emitted when an HttpStreamPool::QuicTask received completion from a
+// QuicSessionAttempt. The event parameter is:
+//   {
+//      "net_error": <Net error code integer>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_ATTEMPT_END)
 
 // ------------------------------------------------------------------------
 // HttpNetworkTransaction

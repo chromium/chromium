@@ -15,6 +15,10 @@ include_rules = [
   "+extensions/common/mojom/event_dispatcher.mojom-forward.h",
   "+extensions/common/mojom/extra_response_data.mojom.h",
   "+extensions/common/value_counter.h",
+
+  # extension_id.h doesn't know anything about the extensions system, so it
+  # should be fine to include.
+  "+extensions/common/extension_id.h",
 ]
 
 specific_include_rules = {

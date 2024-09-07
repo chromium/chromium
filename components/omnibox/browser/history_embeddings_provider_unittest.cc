@@ -90,15 +90,16 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
     testing::Test::SetUp();
 
     CHECK(history_dir_.CreateUniqueTempDir());
-    history_service_ =
-        history::CreateHistoryService(history_dir_.GetPath(), true);
-    history_embeddings_service_ = std::make_unique<
-        testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>>(
-        history_service_.get());
-
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
-    client_->set_history_embeddings_service(history_embeddings_service_.get());
-
+    client_->set_history_service(
+        history::CreateHistoryService(history_dir_.GetPath(), true));
+    client_->set_history_embeddings_service(
+        std::make_unique<testing::NiceMock<
+            history_embeddings::MockHistoryEmbeddingsService>>(
+            client_->GetHistoryService()));
+    history_embeddings_service_ = static_cast<
+        testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>*>(
+        client_->GetHistoryEmbeddingsService());
     history_embeddings_provider_ =
         new FakeHistoryEmbeddingsProvider(client_.get(), this);
 
@@ -128,11 +129,9 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
 
   base::ScopedTempDir history_dir_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<history::HistoryService> history_service_;
-  std::unique_ptr<
-      testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>>
-      history_embeddings_service_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
+  raw_ptr<testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>>
+      history_embeddings_service_;
   scoped_refptr<FakeHistoryEmbeddingsProvider> history_embeddings_provider_;
   // Callbacks created when `Search()` is called. Running a callback with
   // `string` will simulate `Search()` responding with 1 result with title
@@ -312,8 +311,12 @@ TEST_F(HistoryEmbeddingsProviderTest, Stop) {
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, DeleteMatch) {
-  history_embeddings_provider_->DeleteMatch({});
-  // `DeleteMatch()` is not implemented yet. Just expect it to not crash.
+  AutocompleteMatch match(history_embeddings_provider_.get(), 1000, true,
+                          AutocompleteMatchType::HISTORY_EMBEDDINGS);
+  match.destination_url = GURL{"https://en.wikipedia.org/wiki/Matenadaran"};
+  history_embeddings_provider_->matches_.push_back(match);
+  history_embeddings_provider_->DeleteMatch(match);
+  EXPECT_TRUE(history_embeddings_provider_->matches_.empty());
 }
 
 TEST_F(HistoryEmbeddingsProviderTest,
@@ -324,13 +327,14 @@ TEST_F(HistoryEmbeddingsProviderTest,
   };
   history_embeddings_provider_->done_ = false;
   history_embeddings_provider_->last_search_input_ = u"query";
-  history_embeddings_provider_->OnReceivedSearchResult(u"query", result);
+  history_embeddings_provider_->OnReceivedSearchResult(u"query",
+                                                       std::move(result));
 
   ASSERT_EQ(history_embeddings_provider_->matches_.size(), 1u);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].provider.get(),
             history_embeddings_provider_.get());
   EXPECT_EQ(history_embeddings_provider_->matches_[0].relevance, 500);
-  EXPECT_EQ(history_embeddings_provider_->matches_[0].deletable, false);
+  EXPECT_EQ(history_embeddings_provider_->matches_[0].deletable, true);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].type,
             AutocompleteMatchType::HISTORY_EMBEDDINGS);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].destination_url.spec(),
@@ -361,13 +365,14 @@ TEST_F(HistoryEmbeddingsProviderTest,
   };
   history_embeddings_provider_->done_ = false;
   history_embeddings_provider_->last_search_input_ = u"query";
-  history_embeddings_provider_->OnReceivedSearchResult(u"query", result);
+  history_embeddings_provider_->OnReceivedSearchResult(u"query",
+                                                       std::move(result));
 
   ASSERT_EQ(history_embeddings_provider_->matches_.size(), 1u);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].provider.get(),
             history_embeddings_provider_.get());
   EXPECT_EQ(history_embeddings_provider_->matches_[0].relevance, 500);
-  EXPECT_EQ(history_embeddings_provider_->matches_[0].deletable, false);
+  EXPECT_EQ(history_embeddings_provider_->matches_[0].deletable, true);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].type,
             AutocompleteMatchType::HISTORY_EMBEDDINGS);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].destination_url.spec(),

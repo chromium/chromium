@@ -44,7 +44,8 @@
           "builder": "Cast Android (dbg)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-x64-cast/targets"
     }
   },
   "$build/flakiness": {

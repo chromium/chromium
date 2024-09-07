@@ -6,6 +6,38 @@ declare_args() {
 
 import(gn_configs_path)
 
+# Allows gn_configs_path above to explicitly override the following parameters.
+
+# The target API level for this repository. Embedders should override this value
+# to specify the API level the packages produced from this repository should be
+# targeting, e.g. in their top-level //.gn file or gn_configs.gni.
+# Fuchsia-sdk decides the supported api-levels.
+if (!defined(fuchsia_target_api_level)) {
+  fuchsia_target_api_level = 22
+}
+
+# The SDK manifest file. This is useful to include as a dependency for some
+# targets in order to cause a rebuild when the version of the SDK is changed.
+if (!defined(fuchsia_sdk_manifest_file)) {
+  fuchsia_sdk_manifest_file = "${fuchsia_sdk}/meta/manifest.json"
+}
+
+# fuchsia_tool_dir is used to specify the directory in the SDK to locate tools
+# for the host cpu architecture. If the host_cpu is not recognized, then tool
+# dir defaults to x64.
+if (!defined(fuchsia_tool_dir)) {
+  fuchsia_tool_dir = "${fuchsia_sdk}/tools/${host_cpu}"
+}
+
+# ID uniquely identifying the Fuchsia IDK build. This is exposed as a property
+# so it can be used to locate images and packages on GCS and as a marker to
+# indicate the "version" of the IDK.
+# Defaults to the id found in the manifest.json file of the SDK.
+if (!defined(fuchsia_sdk_id)) {
+  _meta = read_file(fuchsia_sdk_manifest_file, "json")
+  fuchsia_sdk_id = _meta.id
+}
+
 if (!defined(fuchsia_arch_root)) {
   if (current_cpu != "") {
     # According to

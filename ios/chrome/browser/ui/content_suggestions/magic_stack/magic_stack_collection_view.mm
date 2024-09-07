@@ -9,6 +9,7 @@
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/numerics/safe_conversions.h"
+#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -19,7 +20,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_layout_configurator.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/placeholder_config.h"
-#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 
 namespace {
 
@@ -47,6 +47,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   UICollectionViewCellRegistration* _editButtonRegistration;
   // The most recently selected MagicStack module's page index.
   NSUInteger _magicStackPage;
+  BOOL _hasSeenEphemeralCard;
 }
 
 - (void)loadView {
@@ -91,11 +92,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   }
 }
 
+- (void)reset {
+  [self populateWithPlaceholders];
+}
+
 #pragma mark - MagicStackConsumer
 
 - (void)populateItems:(NSArray<MagicStackModule*>*)items {
   if ([items count] > 0) {
-    LogTopModuleImpressionForType(items[0].type);
+    MagicStackModule* card = items[0];
+    LogTopModuleImpressionForType(card.type);
+    if ([self isCardEphemeral:card]) {
+      _hasSeenEphemeralCard = YES;
+      [self.audience logEphemeralCardVisibility:card.type];
+    }
   }
 
   for (NSUInteger index = 0; index < [items count]; index++) {
@@ -108,6 +118,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 - (void)insertItem:(MagicStackModule*)item atIndex:(NSUInteger)index {
   if (index == 0) {
     LogTopModuleImpressionForType(item.type);
+    if ([self isCardEphemeral:item]) {
+      _hasSeenEphemeralCard = YES;
+      [self.audience logEphemeralCardVisibility:item.type];
+    }
   }
   [item.delegate magicStackModule:item wasDisplayedAtIndex:index];
 
@@ -356,6 +370,12 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
                                kMaxModuleHistogramIndex);
   }
   _magicStackPage = closestPage;
+  NSArray<MagicStackModule*>* items =
+      [self.diffableDataSource.snapshot itemIdentifiers];
+  if ([items count] > 0 && !_hasSeenEphemeralCard &&
+      [self isCardEphemeral:items[_magicStackPage]]) {
+    [self.audience logEphemeralCardVisibility:items[_magicStackPage].type];
+  }
   return _magicStackPage * (moduleWidth + kMagicStackSpacing) -
          [self peekOffsetForMagicStackPage:_magicStackPage];
 }
@@ -398,6 +418,27 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
       0, _collectionView.contentSize.width - _collectionView.bounds.size.width);
   offset.x = MIN(offset.x, maxOffset);
   _collectionView.contentOffset = offset;
+}
+
+- (BOOL)isCardEphemeral:(MagicStackModule*)card {
+  switch (card.type) {
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      return YES;
+    case ContentSuggestionsModuleType::kMostVisited:
+    case ContentSuggestionsModuleType::kShortcuts:
+    case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kTabResumption:
+    case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kSetUpListSync:
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+    case ContentSuggestionsModuleType::kSetUpListAllSet:
+    case ContentSuggestionsModuleType::kPlaceholder:
+    case ContentSuggestionsModuleType::kInvalid:
+      return NO;
+  }
 }
 
 @end

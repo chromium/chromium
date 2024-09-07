@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Zayıf sinyal</translation>
 <translation id="1300115153046603471">APN, varsayılan ve <ph name="ATTACH" /> türünde.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Dönüştür</translation>
 <translation id="1304014921944666344">Oluşturulma tarihi</translation>
 <translation id="1308754910631152188">Güncelleniyor (%<ph name="PERCENTAGE_VALUE" /> tamamlandı)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> dakika</translation>
@@ -75,8 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tarama alanına sığdır</translation>
 <translation id="1343442362630695901">tuz gölü</translation>
+<translation id="1348657754632799065">Kayıt çubuğu</translation>
 <translation id="1367951781824006909">Dosya seç</translation>
 <translation id="1371650399987522809">Google Yapay Zeka destekli duvar kağıdı ile ilgili geri bildirim</translation>
+<translation id="1374385338586507108">Tanımla</translation>
+<translation id="1383876407941801731">Ara</translation>
 <translation id="1387854245479784695">Bu değer tüm çekirdeklerin toplamıdır</translation>
 <translation id="1393206549145430405">kale</translation>
 <translation id="1394661041439318933">Cihazın kılıf pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
@@ -96,6 +100,7 @@
 <translation id="1449035143498573192">Google Arama'da açın</translation>
 <translation id="1451536289672181509">Cihazın türü klavye.</translation>
 <translation id="1452939186874918380">şemsiyeler</translation>
+<translation id="145402479967797468">Oynatma kontrolleri</translation>
 <translation id="1459693405370120464">Hava durumu</translation>
 <translation id="1463084054301832672">kulübe</translation>
 <translation id="1468664791493211953">Teklifler</translation>
@@ -261,6 +266,7 @@
 <translation id="2212733584906323460">Ad Çözümlemesi</translation>
 <translation id="2215920961700443347">İnternet yok. İnternete bağlanıp tekrar deneyin.</translation>
 <translation id="2217935453350629363">Şu anki hız</translation>
+<translation id="221994303562837085">Kaydı durdur</translation>
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="222447520299472966">En az bir Sanat galerisi albümü seçilmelidir</translation>
 <translation id="2230005943220647148">Santigrat</translation>
@@ -268,6 +274,7 @@
 <translation id="2230624078793142213">Daha fazla oluşturun</translation>
 <translation id="2236746079896696523">Klavye arka ışığını açma/kapatma</translation>
 <translation id="2240366984605217732">Düzeni değiştir</translation>
+<translation id="2242381852034179222">Bu özellik, yöneticiniz tarafından belirleniyor</translation>
 <translation id="2244834438220057800">yeşil</translation>
 <translation id="225692081236532131">Etkinleştirme durumu</translation>
 <translation id="2267285889943769271">Ekran görüntüsü ekle</translation>
@@ -311,6 +318,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
 <translation id="2505327257735685095">Mevcut duvar kağıdı resmini yenile</translation>
+<translation id="2507491234071975894">Hoparlör</translation>
 <translation id="2512979179176933762">pencereleri göster</translation>
 <translation id="2513396635448525189">Giriş resmi</translation>
 <translation id="2521835766824839541">önceki parça</translation>
@@ -321,6 +329,7 @@
 <translation id="2533048460510040082">Önerilen yardım içeriği</translation>
 <translation id="2536159006530886390">İnternete bağlanamıyor.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> tane daha</translation>
+<translation id="2560876255701405320">Ses kayıtlarının listesi</translation>
 <translation id="2561093647892030937">limonlar</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> adlı test çalıştırılıyor...</translation>
 <translation id="2575552334616524665">Bu özelliği Ayarlar'dan veya <ph name="THREE_DOTS_MENU_ICON" /> menüsünden açabilirsiniz</translation>
@@ -352,6 +361,7 @@
 <translation id="2715723665057727940">nehir</translation>
 <translation id="2717139507051041123">Koyu renk modunu etkinleştir</translation>
 <translation id="2728460467788544679">Tüm yazdırma geçmişini temizleyin</translation>
+<translation id="2731700343119398978">Lütfen bekleyin...</translation>
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2744221223678373668">Paylaşıldı</translation>
 <translation id="2751739896257479635">EAP Aşama 2 kimlik doğrulaması</translation>
@@ -366,6 +376,7 @@
 <translation id="2855718259207180827">yün</translation>
 <translation id="2859243502336719778">Kritik güncelleme</translation>
 <translation id="2860473693272905224">Tarayıcıya başka bir sayfa yerleştirin</translation>
+<translation id="286265581261662583">Tanımlar, çeviriler veya birim dönüştürme işlemlerini görmek için sağ tıklayın ya da basılı tutun</translation>
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="2873483161362553159">Tarayıcıda gezinme</translation>
 <translation id="2874939134665556319">Önceki parça</translation>
@@ -406,6 +417,7 @@
 <translation id="3140130301071865159">kar</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> cihazlara özel</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
+<translation id="3156511682997763015">10 saniye ileri git</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. sayfa taranıyor...</translation>
 <translation id="315738237743207937">Giriş portalı algılandı</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Sistem ve uygulama bilgileri<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />metrikleri<ph name="END_LINK2" /> gönder</translation>
@@ -435,6 +447,7 @@
 <translation id="3303855915957856445">Arama sonucu bulunamadı</translation>
 <translation id="3305294846493618482">daha fazla</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
+<translation id="3321030238473337787">Oynatma hızı</translation>
 <translation id="3328783797891415197">Test çalışıyor</translation>
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="3340978935015468852">ayarlar</translation>
@@ -463,7 +476,6 @@
 <translation id="346423161771747987">Mevcut güç tüketimi</translation>
 <translation id="346539236881580388">Tekrar çek</translation>
 <translation id="3484914941826596830">Donanım yazılımı güncellenirken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
-<translation id="3485555238092220889">erişilebilirlik işlemi</translation>
 <translation id="3486220673238053218">tanım</translation>
 <translation id="3487866404496702283">Mahi özelliği ile ilgili geri bildirim</translation>
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
@@ -512,6 +524,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> yorum)</translation>
 <translation id="3748026146096797577">Bağlı Değil</translation>
 <translation id="3749289110408117711">Dosya adı</translation>
+<translation id="3767737419527918477">Kayıt dosyalarını ara</translation>
 <translation id="3771294271822695279">Video Dosyaları</translation>
 <translation id="3780740315729837296">Klavye tuşu atayın</translation>
 <translation id="3784455785234192852">Kilitle</translation>
@@ -672,6 +685,7 @@
 <translation id="4562494484721939086">Hizmet yok</translation>
 <translation id="4570558255126759859">Kayıtları özetlemek için Gemini modeli indirilsin mi?</translation>
 <translation id="4573777384450697571">Başarısız - Sertifikanın Süresi Doldu</translation>
+<translation id="4575450106703099687">erişilebilirlik seçenekleri</translation>
 <translation id="458794348635939462">Tüm ana makineler çözümlenemedi</translation>
 <translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4594021849294327751">Transkript oluştur</translation>
@@ -794,6 +808,7 @@
 <translation id="5223226274641517059">Kayıt sırasında canlı transkriptler gösterilir. Bu özelliği dilediğiniz zaman Ayarlar'dan kapatabilirsiniz.</translation>
 <translation id="5226879510707344687">Transkripti dışa aktarın</translation>
 <translation id="5227902338748591677">Koyu tema programı</translation>
+<translation id="5229104491259541281">"<ph name="QUERY" />" birimini dönüştür</translation>
 <translation id="5229344016299762883">Tam ekran modundan çık</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Yöneticiniz "<ph name="APP_NAME" />" uygulamasını her giriş yaptığınızda otomatik olarak başlatılacak şekilde ayarladı.}=2{Yöneticiniz "<ph name="APP_NAME" />" ve 1 diğer uygulamayı her giriş yaptığınızda otomatik olarak başlatılacak şekilde ayarladı.}other{Yöneticiniz "<ph name="APP_NAME" />" ve # diğer uygulamayı her giriş yaptığınızda otomatik olarak başlatılacak şekilde ayarladı.}}</translation>
@@ -884,7 +899,9 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> için düzenle düğmesi.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazı güncelle</translation>
+<translation id="5736820754189340309">Veri kullanımı sıfırlandı</translation>
 <translation id="574392208103952083">Orta</translation>
+<translation id="5744175046705638478">"<ph name="QUERY" />" ifadesini çevir</translation>
 <translation id="5757187557809630523">sonraki parça</translation>
 <translation id="5760715441271661976">Portal Durumu</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> yeniden başlatılıyor ve güncelleniyor</translation>
@@ -893,6 +910,7 @@
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5784136236926853061">Yüksek HTTP gecikmesi</translation>
 <translation id="5790391387506209808">laciverttaş</translation>
+<translation id="5810692306010756935">Mezuniyet</translation>
 <translation id="5816802250591013230">Kısayol atanmadı</translation>
 <translation id="5826644637650799838">Eser hakkında</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
@@ -931,6 +949,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Bir daha gösterme</translation>
 <translation id="5975130252842127517">mercan</translation>
+<translation id="5982621672636444458">Sıralama seçenekleri</translation>
 <translation id="5984145644188835034">Varsayılan Duvar Kağıdı</translation>
 <translation id="5996832681196460718">ipek</translation>
 <translation id="6017514345406065928">Yeşil</translation>
@@ -947,7 +966,6 @@
 <translation id="6058625436358447366">Bitirmek için eski ve yeni şifrenizi girin</translation>
 <translation id="6061772781719867950">Başarısız HTTP istekleri</translation>
 <translation id="6073292342939316679">klavye parlaklığını azalt</translation>
-<translation id="6073451960410192870">Kaydı durdur</translation>
 <translation id="6075872808778243331">(Android) HTTP Gecikmesi</translation>
 <translation id="6078323886959318429">Kısayol ekle</translation>
 <translation id="6091080061796993741">sarı</translation>
@@ -987,6 +1005,7 @@
 <translation id="6275224645089671689">Sağ ok</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">"<ph name="QUERY" />" ifadesini tanımla</translation>
 <translation id="6283581480003247988">mavi ve mor</translation>
 <translation id="6284632978374966585">Koyu temayı aç</translation>
 <translation id="6285260286443238386">Kaydı dışa aktarın</translation>
@@ -1105,6 +1124,7 @@
 <translation id="6798678288485555829">Metinde gezinme</translation>
 <translation id="680983167891198932">Anahtar</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
+<translation id="6831043979455480757">Çevir</translation>
 <translation id="6853312040151791195">Şarjın boşalma hızı</translation>
 <translation id="6862416241246624313">Geri bildirim gönderildi</translation>
 <translation id="6866732840889595464">papatya</translation>
@@ -1318,6 +1338,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Sağlayıcı türü</translation>
 <translation id="7882501334836096755">Ortak anahtar</translation>
+<translation id="7889966925761734854">Ara</translation>
 <translation id="78957024357676568">sol</translation>
 <translation id="7897043345768902965">yaya yolu</translation>
 <translation id="7902285181767404769">Kayıt sırasında bildirimlerin sesini kapatın</translation>
@@ -1355,6 +1376,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8082366717211101304">Android uygulamalarından DNS çözümlenemiyor</translation>
 <translation id="8082644724189923105">klavye bölgesi</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
+<translation id="8088963492174775412">Kaydetmek için basın</translation>
 <translation id="8094062939584182041">Google'ın bu sorunla ilgili olarak size e-posta göndermesine izin verin</translation>
 <translation id="8104083085214006426">Açık ve güvenli olmayan bir ağ kullanıyorsunuz</translation>
 <translation id="811820734797650957">(Android) Ağ geçidi pinglenebilir</translation>
@@ -1591,7 +1613,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="966787709310836684">menü</translation>
 <translation id="979450713603643090">Açık pembe</translation>
 <translation id="982713511914535780">Deşarj testini çalıştır</translation>
-<translation id="98515147261107953">Yatay</translation>
+<translation id="98515147261107953">Manzara</translation>
 <translation id="987264212798334818">Genel</translation>
 <translation id="995062385528875723">Aksanlı harfler, Latin alfabesinde olmayan karakterler veya semboller kullanılamaz</translation>
 </translationbundle>

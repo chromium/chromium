@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1192844206376121885">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
+<translation id="1240190568154816272">Petua Chrome</translation>
 <translation id="1242008676835033345">Dibenamkan pada <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1289742167380433257">Untuk menjimatkan data anda, imej halaman ini telah dioptimumkan oleh Google.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Tanya sebelum membenarkan tapak menyambung ke peranti (disyorkan)</translation>
 <translation id="1779089405699405702">Penyahkod imej</translation>
 <translation id="1785415724048343560">Disyorkan untuk pengalaman terbaik</translation>
+<translation id="1799920918471566157">Petua Chrome</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Akses lokasi dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
@@ -147,6 +149,7 @@
 <translation id="3448554387819310837">Apabila dihidupkan, laman dapat meminta untuk menggunakan kamera anda. Apabila dimatikan, laman tidak dapat menggunakan kamera anda.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome akan menyekat kuki lagi esok}other{# hari sehingga Chrome menyekat kuki lagi}}</translation>
 <translation id="3521663503435878242">Laman di bawah <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Jangan benarkan laman menjejaki tangan anda</translation>
 <translation id="3536227077203206203">Dibenarkan pada masa ini</translation>
 <translation id="3538390592868664640">Sekat tapak daripada membuat peta 3D bagi persekitaran anda atau menjejaki kedudukan kamera</translation>
 <translation id="3544058026430919413">Syarikat boleh menentukan kumpulan laman yang boleh menggunakan kuki untuk berkongsi aktiviti anda dalam kumpulan. Tetapan ini dimatikan dalam Inkognito.</translation>
@@ -157,6 +160,7 @@
 <translation id="3600792891314830896">Redam tapak yang memainkan bunyi</translation>
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3628308229821498208">Carian cadangan</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}other{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}}</translation>
 <translation id="3697164069658504920">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti USB. Apabila dimatikan, laman tidak dapat menggunakan peranti USB.</translation>
 <translation id="3707034683772193706">Laman yang anda lawati boleh menyimpan sedikit maklumat dengan Chrome, terutamanya untuk mengesahkan bahawa anda bukan bot</translation>
 <translation id="3721953990244350188">Ketepikan dan tunjukkan tindakan seterusnya yang tersedia</translation>
@@ -218,6 +222,7 @@
 <translation id="4644713492825682049">Padam &amp; tetapkan semula</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
+<translation id="4676059169848868271">Untuk membenarkan <ph name="APP_NAME" /> menggunakan penjejakan tangan, hidupkan penjejakan tangan dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Penderia gerakan atau cahaya</translation>
 <translation id="4755971844837804407">Apabila dihidupkan, laman dapat memaparkan sebarang iklan kepada anda. Apabila dimatikan, laman tidak dapat memaparkan iklan yang mengganggu atau mengelirukan.</translation>
 <translation id="4779083564647765204">Zum</translation>
@@ -236,6 +241,7 @@
 <translation id="4996978546172906250">Kongsi melalui</translation>
 <translation id="5001526427543320409">Kuki pihak ketiga</translation>
 <translation id="5007392906805964215">Semak</translation>
+<translation id="5014182796621173645">Anda melawati <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5048398596102334565">Benarkan tapak mengakses penderia gerakan (disyorkan)</translation>
 <translation id="5050380848339752099">Laman ini akan berkongsi maklumat dengan apl di luar mod Inkognito.</translation>
@@ -245,6 +251,7 @@
 <translation id="5091663350197390230">Apabila dihidupkan, laman dapat menggunakan JavaScript. Apabila dimatikan, laman tidak dapat menggunakan JavaScript.</translation>
 <translation id="5099358668261120049">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN" /> atau oleh apl pada Skrin utama anda.</translation>
 <translation id="5100237604440890931">Diruntuhkan - klik untuk mengembangkan.</translation>
+<translation id="5116239826668864748">Anda boleh menggunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain</translation>
 <translation id="5123685120097942451">Tab Inkognito</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Penurunan harga pada tab terbuka anda}other{Penurunan harga pada tab terbuka anda}}</translation>
 <translation id="5186036860380548585">Pilihan tersedia berhampiran bahagian atas skrin</translation>
@@ -276,6 +283,7 @@
 <translation id="5553374991681107062">Terbaharu</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> disekat</translation>
+<translation id="5632485077360054581">Tunjukkan caranya</translation>
 <translation id="5649053991847567735">Muat turun automatik</translation>
 <translation id="5668404140385795438">Mengatasi permintaan laman web untuk menghalang zum masuk</translation>
 <translation id="5677928146339483299">Disekat</translation>
@@ -286,6 +294,7 @@
 <translation id="5706552988683188916">Tindakan ini memadamkan kuki dan data laman lain untuk <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kuki pihak ketiga disekat dalam mod Inkognito</translation>
 <translation id="5740126560802162366">Laman boleh menyimpan data pada peranti anda</translation>
+<translation id="5750869797196646528">Penjejakan tangan</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> disekat</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5844448279347999754">Apabila dihidupkan, laman dapat meminta untuk melihat teks dan imej yang disimpan pada papan keratan anda. Apabila dimatikan, laman tidak dapat melihat teks atau imej pada papan keratan anda.</translation>
@@ -347,12 +356,15 @@
 <translation id="656065428026159829">Lihat lagi</translation>
 <translation id="6561560012278703671">Gunakan pemesejan yang lebih senyap (menyekat gesaan pemberitahuan daripada mengganggu anda)</translation>
 <translation id="6593061639179217415">Tapak desktop</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Kuki dibenarkan untuk <ph name="RWS_MEMBERS_COUNT" /> laman <ph name="RWS_OWNER" />}other{Kuki dibenarkan untuk <ph name="RWS_MEMBERS_COUNT" /> laman <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Kandungan yang dilindungi</translation>
 <translation id="662080504995468778">Kekal di sini</translation>
 <translation id="6653342741369270081">Tekan butang kembali untuk keluar daripada skrin penuh.</translation>
+<translation id="6683865262523156564">Laman ini berada dalam kumpulan yang boleh melihat aktiviti anda. Kumpulan tersebut ditakrifkan oleh <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Muat turun aktif</translation>
+<translation id="6709432001666529933">Tanya sebelum membenarkan laman menjejaki tangan anda (disyorkan)</translation>
 <translation id="6722828510648505498">Sekat gesaan log masuk daripada perkhidmatan identiti.</translation>
 <translation id="6746124502594467657">Alihkan ke bawah</translation>
 <translation id="6749077623962119521">Tetapkan semula kebenaran?</translation>
@@ -360,6 +372,7 @@
 <translation id="6787751205395685251">Pilih pilihan untuk <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6818926723028410516">Pilih item</translation>
+<translation id="6838525730752203626">Gunakan Chrome secara lalai</translation>
 <translation id="6840760312327750441">Untuk menghimpunkan tab, sentuh &amp; tahan tab. Kemudian, seret tab itu ke tab lain.</translation>
 <translation id="6864395892908308021">Peranti ini tidak dapat membaca NFC</translation>
 <translation id="6870169401250095575">Sembunyikan kad Pemeriksaan Keselamatan</translation>
@@ -411,6 +424,7 @@
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7667547420449112975">Ahli Sihir Oz yang Menakjubkan</translation>
 <translation id="7684642910516280563">Jangan benarkan laman menggunakan kuki pihak ketiga</translation>
+<translation id="7688240020069572972">Sembunyikan kad petua Chrome</translation>
 <translation id="7719367874908701697">Zum halaman</translation>
 <translation id="7759147511335618829">Kawalan &amp; pengaturcaraan semula peranti MIDI</translation>
 <translation id="7781829728241885113">Semalam</translation>
@@ -476,6 +490,7 @@
 <translation id="8609465669617005112">Alihkan ke atas</translation>
 <translation id="8617611086246832542">Apabila dihidupkan, paparan desktop laman web akan dipaparkan. Apabila dimatikan, paparan mudah alih laman web akan dipaparkan.</translation>
 <translation id="8649036394979866943">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus perlindungan penjejakan anda<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Apabila pilihan ini dihidupkan, laman boleh meminta untuk menjejaki tangan anda. Apabila pilihan ini dimatikan, laman tidak boleh menjejaki tangan anda.</translation>
 <translation id="8676374126336081632">Kosongkan input</translation>
 <translation id="8681886425883659911">Iklan disekat di laman yang diketahui memaparkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="868929229000858085">Cari dalam kenalan anda</translation>

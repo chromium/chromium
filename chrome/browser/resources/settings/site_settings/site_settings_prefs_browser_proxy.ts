@@ -15,20 +15,17 @@ import type {ChooserType,ContentSetting,ContentSettingsTypes,SiteSettingSource} 
 
 /**
  * The handler will send a policy source that is similar, but not exactly the
- * same as a ControlledBy value. If the ContentSettingProvider is omitted it
+ * same as a ControlledBy value. If the DefaultSettingSource is omitted it
  * should be treated as 'default'.
+ * Should be kept in sync with values returned by C++ function
+ * `ProviderToDefaultSettingSourceString`.
  */
-export enum ContentSettingProvider {
+export enum DefaultSettingSource {
   POLICY = 'policy',
   SUPERVISED_USER = 'supervised_user',
   EXTENSION = 'extension',
-  INSTALLED_WEBAPP_PROVIDER = 'installed_webapp_provider',
-  NOTIFICATION_ANDROID = 'notification_android',
-  EPHEMERAL = 'ephemeral',
   PREFERENCE = 'preference',
   DEFAULT = 'default',
-  TESTS = 'tests',
-  TESTS_OTHER = 'tests_other'
 }
 
 /**
@@ -172,19 +169,7 @@ export interface ChooserException {
 
 export interface DefaultContentSetting {
   setting: ContentSetting;
-  source: ContentSettingProvider;
-}
-
-/**
- * The primary cookie setting states that are possible. Must be kept in sync
- * with the C++ enum of the same name in
- * chrome/browser/content_settings/generated_cookie_prefs.h
- */
-export enum CookiePrimarySetting {
-  ALLOW_ALL = 0,
-  BLOCK_THIRD_PARTY_INCOGNITO = 1,
-  BLOCK_THIRD_PARTY = 2,
-  BLOCK_ALL = 3,
+  source: DefaultSettingSource;
 }
 
 export interface MediaPickerEntry {
@@ -508,7 +493,7 @@ export interface SiteSettingsPrefsBrowserProxy {
    * Gets the warning messages for the permissions types blocked at the OS
    * level.
    */
-  getOsGlobalPermissionStatus(): Promise<Record<ContentSettingsTypes, string>>;
+  getSystemDeniedPermissions(): Promise<ContentSettingsTypes[]>;
 
   /**
    * Attempts to open a system setting page that allows to modify the system
@@ -689,8 +674,8 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     return sendWithPromise('getNumCookiesString', numCookies);
   }
 
-  getOsGlobalPermissionStatus() {
-    return sendWithPromise('getOsGlobalPermissionStatus');
+  getSystemDeniedPermissions() {
+    return sendWithPromise('getSystemDeniedPermissions');
   }
 
   openSystemPermissionSettings(contentType: string) {

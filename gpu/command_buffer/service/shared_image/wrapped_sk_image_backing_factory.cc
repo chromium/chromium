@@ -22,8 +22,8 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextureCompressionType.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace gpu {
 namespace {
@@ -49,7 +49,7 @@ SharedImageUsageSet GetSupportedUsage(const SharedContextState* context_state) {
       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
       SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE;
 
-  if (context_state->gr_context_type() == GrContextType::kGraphiteDawn) {
+  if (context_state->IsGraphiteDawn()) {
     switch (context_state->dawn_context_provider()->backend_type()) {
       case wgpu::BackendType::D3D12:
       case wgpu::BackendType::Vulkan:
@@ -67,7 +67,7 @@ bool GraphiteSupportsCompressedTextures(
 #if BUILDFLAG(SKIA_USE_DAWN)
   // TODO(b/281151641): Query graphite instead of dawn to see if compressed
   // textures are supported.
-  if (context_state->gr_context_type() == GrContextType::kGraphiteDawn) {
+  if (context_state->IsGraphiteDawn()) {
     return context_state->dawn_context_provider()->SupportsFeature(
         wgpu::FeatureName::TextureCompressionETC2);
   }

@@ -26,17 +26,70 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/app_access_notifier.h"
+#include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chromeos/ash/components/camera_presence_notifier/camera_presence_notifier.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::privacy_hub_util {
 
 namespace {
+
+PrefService* ActivePrefService() {
+  auto* session_controller =
+      CHECK_DEREF(ash::Shell::Get()).session_controller();
+  return CHECK_DEREF(session_controller).GetActivePrefService();
+}
+
+ScopedUserPermissionPrefForTest::AccessLevel GetCurrentAccessLevel(
+    ContentType type) {
+  if (type == ContentType::MEDIASTREAM_CAMERA) {
+    const bool allowed =
+        CHECK_DEREF(ActivePrefService()).GetBoolean(prefs::kUserCameraAllowed);
+    return allowed ? ScopedUserPermissionPrefForTest::AccessLevel::kAllowed
+                   : ScopedUserPermissionPrefForTest::AccessLevel::kDisallowed;
+  }
+  if (type == ContentType::MEDIASTREAM_MIC) {
+    const bool allowed = CHECK_DEREF(ActivePrefService())
+                             .GetBoolean(prefs::kUserMicrophoneAllowed);
+    return allowed ? ScopedUserPermissionPrefForTest::AccessLevel::kAllowed
+                   : ScopedUserPermissionPrefForTest::AccessLevel::kDisallowed;
+  }
+  CHECK(type == ContentType::GEOLOCATION);
+  return static_cast<ScopedUserPermissionPrefForTest::AccessLevel>(
+      CHECK_DEREF(ActivePrefService())
+          .GetInteger(prefs::kUserGeolocationAccessLevel));
+}
+
+void SetCurrentAccessLevel(
+    ContentType type,
+    ScopedUserPermissionPrefForTest::AccessLevel access_level) {
+  if (type == ContentType::MEDIASTREAM_CAMERA) {
+    CHECK(access_level !=
+          ScopedUserPermissionPrefForTest::AccessLevel::kOnlyAllowedForSystem);
+    CHECK_DEREF(ActivePrefService())
+        .SetBoolean(prefs::kUserCameraAllowed,
+                    access_level ==
+                        ScopedUserPermissionPrefForTest::AccessLevel::kAllowed);
+    return;
+  }
+  if (type == ContentType::MEDIASTREAM_MIC) {
+    CHECK(access_level !=
+          ScopedUserPermissionPrefForTest::AccessLevel::kOnlyAllowedForSystem);
+    CHECK_DEREF(ActivePrefService())
+        .SetBoolean(prefs::kUserMicrophoneAllowed,
+                    access_level ==
+                        ScopedUserPermissionPrefForTest::AccessLevel::kAllowed);
+    return;
+  }
+  CHECK(type == ContentType::GEOLOCATION);
+  CHECK_DEREF(ActivePrefService())
+      .SetInteger(prefs::kUserGeolocationAccessLevel,
+                  static_cast<int>(access_level));
+}
 
 class ContentBlockObservationImpl : public ContentBlockObservation,
                                     public SessionObserver {
@@ -276,7 +329,7 @@ bool ContentBlocked(ContentType type) {
     }
     case ContentType::GEOLOCATION: {
       if (!features::IsCrosPrivacyHubLocationEnabled()) {
-        return true;
+        return false;  // content not blocked as geo blocking not supported.
       }
       auto* const controller = GeolocationPrivacySwitchController::Get();
       CHECK(controller);
@@ -313,7 +366,7 @@ std::unique_ptr<ContentBlockObservation> CreateObservationForBlockedContent(
   return observation;
 }
 
-void OpenSystemSettings(Profile* profile, ContentType type) {
+void OpenSystemSettings(ContentType type) {
   const char* settings_path = "";
   switch (type) {
     case ContentType::MEDIASTREAM_CAMERA: {
@@ -337,8 +390,27 @@ void OpenSystemSettings(Profile* profile, ContentType type) {
     }
   }
 
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
-                                                               settings_path);
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      ProfileManager::GetPrimaryUserProfile(), settings_path);
+}
+
+ScopedUserPermissionPrefForTest::ScopedUserPermissionPrefForTest(
+    ContentType type,
+    ScopedUserPermissionPrefForTest::AccessLevel access_level)
+    : content_type_(type), previous_access_level_(GetCurrentAccessLevel(type)) {
+  // Only Geolocation, camera and mic are supported.
+  CHECK((ContentType::GEOLOCATION == type) ||
+        (ContentType::MEDIASTREAM_CAMERA == type) ||
+        (ContentType::MEDIASTREAM_MIC == type));
+  if (ContentType::GEOLOCATION != type) {
+    CHECK(access_level !=
+          ScopedUserPermissionPrefForTest::AccessLevel::kOnlyAllowedForSystem);
+  }
+  SetCurrentAccessLevel(type, access_level);
+}
+
+ScopedUserPermissionPrefForTest::~ScopedUserPermissionPrefForTest() {
+  SetCurrentAccessLevel(content_type_, previous_access_level_);
 }
 
 }  // namespace ash::privacy_hub_util

@@ -442,6 +442,11 @@ struct BLINK_COMMON_EXPORT
     return params.max_trusted_scoring_signals_url_length;
   }
 
+  static const std::optional<url::Origin>& trusted_scoring_signals_coordinator(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.trusted_scoring_signals_coordinator;
+  }
+
   static bool Read(blink::mojom::AuctionAdConfigNonSharedParamsDataView data,
                    blink::AuctionConfig::NonSharedParams* out);
 };

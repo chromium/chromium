@@ -48,6 +48,8 @@
 #include "chrome/browser/tpcd/heuristics/redirect_heuristic_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
+#include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -91,19 +93,17 @@
 #include "services/network/test/trust_token_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "device/fido/virtual_fido_device_factory.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using base::Bucket;
 using content::CookieAccessDetails;
@@ -120,27 +120,7 @@ using AttributionData = std::set<content::AttributionDataModel::DataKey>;
 
 namespace {
 
-using StorageType =
-    content_settings::mojom::ContentSettingsManager::StorageType;
-
-inline const std::string StorageTypeTestName(const StorageType& type) {
-  switch (type) {
-    case StorageType::DATABASE:
-      return "Database";
-    case StorageType::LOCAL_STORAGE:
-      return "LocalStorage";
-    case StorageType::SESSION_STORAGE:
-      return "SessionStorage";
-    case StorageType::FILE_SYSTEM:
-      return "FileSystem";
-    case StorageType::INDEXED_DB:
-      return "IndexedDB";
-    case StorageType::CACHE:
-      return "Cache";
-    case StorageType::WEB_LOCKS:
-      return "WebLocks";
-  }
-}
+using blink::mojom::StorageTypeAccessed;
 
 // Returns a simplified URL representation for ease of comparison in tests.
 // Just host+path.
@@ -189,8 +169,7 @@ std::vector<url::Origin> GetOrigins(const AttributionData& data) {
 // Keeps a log of DidStartNavigation, OnCookiesAccessed, and DidFinishNavigation
 // executions.
 class WCOCallbackLogger
-    : public content_settings::PageSpecificContentSettings::SiteDataObserver,
-      public content::WebContentsObserver,
+    : public content::WebContentsObserver,
       public content::WebContentsUserData<WCOCallbackLogger>,
       public content::SharedWorkerService::Observer,
       public content::DedicatedWorkerService::Observer {
@@ -211,6 +190,9 @@ class WCOCallbackLogger
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override;
+  void NotifyStorageAccessed(content::RenderFrameHost* render_frame_host,
+                             StorageTypeAccessed storage_type,
+                             bool blocked) override;
   void OnServiceWorkerAccessed(
       content::RenderFrameHost* render_frame_host,
       const GURL& scope,
@@ -223,12 +205,6 @@ class WCOCallbackLogger
   void WebAuthnAssertionRequestSucceeded(
       content::RenderFrameHost* render_frame_host) override;
   // End WebContentsObserver overrides.
-
-  // Start SiteDataObserver overrides:
-  void OnSiteDataAccessed(
-      const content_settings::AccessDetails& access_details) override;
-  void OnStatefulBounceDetected() override;
-  // End SiteDataObserver overrides.
 
   // Start SharedWorkerService.Observer overrides:
   void OnClientAdded(
@@ -266,9 +242,7 @@ class WCOCallbackLogger
 };
 
 WCOCallbackLogger::WCOCallbackLogger(content::WebContents* web_contents)
-    : content_settings::PageSpecificContentSettings::SiteDataObserver(
-          web_contents),
-      content::WebContentsObserver(web_contents),
+    : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<WCOCallbackLogger>(*web_contents) {}
 
 void WCOCallbackLogger::DidStartNavigation(
@@ -370,57 +344,14 @@ void WCOCallbackLogger::WebAuthnAssertionRequestSucceeded(
       FormatURL(render_frame_host->GetLastCommittedURL()).c_str()));
 }
 
-inline std::string SiteDataTypeToString(
-    const content_settings::SiteDataType& type) {
-  switch (type) {
-    case content_settings::SiteDataType::kUnknown:
-      return "Unknown";
-    case content_settings::SiteDataType::kStorage:
-      return "Storage";
-    case content_settings::SiteDataType::kCookies:
-      return "Cookies";
-    case content_settings::SiteDataType::kServiceWorker:
-      return "ServiceWorker";
-    case content_settings::SiteDataType::kSharedWorker:
-      return "SharedWorker";
-    case content_settings::SiteDataType::kInterestGroup:
-      return "InterestGroup";
-    case content_settings::SiteDataType::kTopic:
-      return "Topics";
-    case content_settings::SiteDataType::kTrustToken:
-      return "TrustToken";
-  }
-}
-
-inline std::string AccessTypeToString(content_settings::AccessType type) {
-  switch (type) {
-    case content_settings::AccessType::kUnknown:
-      return "Unknown";
-    case content_settings::AccessType::kRead:
-      return "Read";
-    case content_settings::AccessType::kWrite:
-      return "Write";
-  }
-}
-
-void WCOCallbackLogger::OnSiteDataAccessed(
-    const content_settings::AccessDetails& access_details) {
-  // Avoids logging notification from the PSCS that are due to cookie accesses,
-  // in order not to impact the other cookie access notification logs from the
-  // `WebContentsObserver`.
-  if (access_details.site_data_type ==
-      content_settings::SiteDataType::kCookies) {
-    return;
-  }
-
+void WCOCallbackLogger::NotifyStorageAccessed(
+    content::RenderFrameHost* render_frame_host,
+    StorageTypeAccessed storage_type,
+    bool blocked) {
   log_.push_back(base::StringPrintf(
-      "OnSiteDataAccessed(AccessDetails, %s: %s: %s)",
-      SiteDataTypeToString(access_details.site_data_type).c_str(),
-      AccessTypeToString(access_details.access_type).c_str(),
-      FormatURL(access_details.url).c_str()));
+      "NotifyStorageAccessed(%s: %s)", base::ToString(storage_type).c_str(),
+      FormatURL(render_frame_host->GetLastCommittedURL()).c_str()));
 }
-
-void WCOCallbackLogger::OnStatefulBounceDetected() {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WCOCallbackLogger);
 
@@ -508,11 +439,13 @@ class DIPSBounceDetectorBrowserTest
   }
 
   [[nodiscard]] bool AccessStorage(content::RenderFrameHost* frame,
-                                   const StorageType& type) {
+                                   StorageTypeAccessed type) {
+    // We drop the first character of ToString(type) because it's just the
+    // constant-indicating 'k'.
     return content::ExecJs(
         frame,
         base::StringPrintf(kStorageAccessScript,
-                           StorageTypeTestName(type).c_str()),
+                           base::ToString(type).substr(1).c_str()),
         content::EXECUTE_SCRIPT_NO_USER_GESTURE,
         /*world_id=*/1);
   }
@@ -1003,7 +936,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL prerendering_url =
       embedded_test_server()->GetURL("a.test", "/title2.html");
-  const int host_id = prerender_test_helper()->AddPrerender(prerendering_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   content::test::PrerenderHostObserver observer(*GetActiveWebContents(),
                                                 host_id);
@@ -1045,7 +979,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       embedded_test_server()->GetURL("a.test", "/set_cookie_header.html");
   URLCookieAccessObserver observer(GetActiveWebContents(), prerendering_url,
                                    CookieOperation::kChange);
-  const int host_id = prerender_test_helper()->AddPrerender(prerendering_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   observer.Wait();
 
@@ -1093,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       embedded_test_server()->GetURL("b.test", "/title1.html")));
 
   EXPECT_TRUE(AccessStorage(GetActiveWebContents()->GetPrimaryMainFrame(),
-                            StorageType::LOCAL_STORAGE));
+                            StorageTypeAccessed::kLocalStorage));
 
   // Navigate without a click (considered a client-redirect) to c.test.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
@@ -2225,7 +2160,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceTrackingDevToolsIssueTest,
 
 class DIPSSiteDataAccessDetectorTest
     : public DIPSBounceDetectorBrowserTest,
-      public testing::WithParamInterface<StorageType> {
+      public testing::WithParamInterface<StorageTypeAccessed> {
  public:
   DIPSSiteDataAccessDetectorTest(const DIPSSiteDataAccessDetectorTest&) =
       delete;
@@ -2267,11 +2202,11 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
   EXPECT_THAT(
       logger->log(),
-      testing::ContainerEq(std::vector<std::string>({
-          "DidStartNavigation(a.test/title1.html)",
-          "DidFinishNavigation(a.test/title1.html)",
-          "OnSiteDataAccessed(AccessDetails, Storage: Unknown: a.test/)",
-      })));
+      testing::ContainerEq(std::vector<std::string>(
+          {"DidStartNavigation(a.test/title1.html)",
+           "DidFinishNavigation(a.test/title1.html)",
+           base::StringPrintf("NotifyStorageAccessed(%s: a.test/title1.html)",
+                              base::ToString(GetParam()).c_str())})));
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
@@ -2366,10 +2301,10 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
 IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
                        DiscardPrerenderedPageCookieClientAccess) {
-  // Prerendering pages do not have access to `StorageType::FILE_SYSTEM` until
-  // activation (AKA becoming the primary page, whose test case is already
+  // Prerendering pages do not have access to `StorageTypeAccessed::kFileSystem`
+  // until activation (AKA becoming the primary page, whose test case is already
   // covered).
-  if (GetParam() == StorageType::FILE_SYSTEM) {
+  if (GetParam() == StorageTypeAccessed::kFileSystem) {
     GTEST_SKIP();
   }
 
@@ -2382,7 +2317,8 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
       content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL prerendering_url = TestServer()->GetURL("a.test", "/title2.html");
-  const int host_id = prerender_test_helper()->AddPrerender(prerendering_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   content::test::PrerenderHostObserver observer(*GetActiveWebContents(),
                                                 host_id);
@@ -2411,15 +2347,15 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
 // WeLocks accesses aren't monitored by the `PageSpecificContentSettings` as
 // they are not persistent.
-// TODO(crbug.com/40269763): Remove `StorageType::FILE_SYSTEM` once deprecation
-// is complete.
+// TODO(crbug.com/40269763): Remove `StorageTypeAccessed::kFileSystem` once
+// deprecation is complete.
 INSTANTIATE_TEST_SUITE_P(All,
                          DIPSSiteDataAccessDetectorTest,
-                         ::testing::Values(StorageType::LOCAL_STORAGE,
-                                           StorageType::SESSION_STORAGE,
-                                           StorageType::CACHE,
-                                           StorageType::FILE_SYSTEM,
-                                           StorageType::INDEXED_DB));
+                         ::testing::Values(StorageTypeAccessed::kLocalStorage,
+                                           StorageTypeAccessed::kSessionStorage,
+                                           StorageTypeAccessed::kCacheStorage,
+                                           StorageTypeAccessed::kFileSystem,
+                                           StorageTypeAccessed::kIndexedDB));
 
 // WebAuthn tests do not work on Android because there is no current way to
 // install a virtual authenticator.

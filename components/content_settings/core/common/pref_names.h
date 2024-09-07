@@ -22,11 +22,6 @@ inline constexpr char kCookieControlsMode[] = "profile.cookie_controls_mode";
 inline constexpr char kContentSettingsVersion[] =
     "profile.content_settings.pref_version";
 
-// Integer that specifies the index of the tab the user was on when they
-// last visited the content settings window.
-inline constexpr char kContentSettingsWindowLastTabIndex[] =
-    "content_settings_window.last_tab_index";
-
 // Preferences that are exclusively used to store managed values for default
 // content settings.
 inline constexpr char kManagedDefaultAdsSetting[] =

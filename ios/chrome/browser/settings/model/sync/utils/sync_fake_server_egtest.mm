@@ -12,6 +12,7 @@
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -145,19 +146,12 @@ void ClearRelevantData() {
   if ([self isRunningTest:@selector
             (testManagedAccountClearsDataForSignedInPeriod)]) {
     config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
-  }
-  if ([self isRunningTest:@selector(testMigrateSyncToSignin_ManagedAccount)]) {
-    // Disable `kClearDeviceDataOnSignOutForManagedUsers` because the feature
-    // shows a different dialog.
-    config.features_disabled.push_back(
-        kClearDeviceDataOnSignOutForManagedUsers);
+    config.features_disabled.push_back(kIdentityDiscAccountMenu);
   }
   if ([self isRunningTest:@selector
-            (testSyncCheckDifferentCacheGuid_SignOutAndSignIn)]) {
-    config.features_disabled.push_back(syncer::kSyncAccountKeyedTransportPrefs);
-  } else if ([self isRunningTest:@selector
-                   (testSyncCheckSameCacheGuid_SignOutAndSignIn)]) {
-    config.features_enabled.push_back(syncer::kSyncAccountKeyedTransportPrefs);
+            (testManagedAccountClearsDataAndTabsForSignedInPeriod)]) {
+    config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
+    config.features_enabled.push_back(kIdentityDiscAccountMenu);
   }
 
   return config;
@@ -260,34 +254,8 @@ void ClearRelevantData() {
                                    inStorage:BookmarkStorageType::kAccount];
 }
 
-// Tests that the local cache guid changes when the user signs out and then
-// signs back in with the same account.
-// Note that for this test, kSyncAccountKeyedTransportPrefs is DISabled.
-- (void)testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
-  // Sign in a fake identity, and store the initial sync guid.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-  std::string original_guid = [ChromeEarlGrey syncCacheGUID];
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
-
-  // Sign the user back in, and verify the guid has changed.
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-  GREYAssertTrue(
-      [ChromeEarlGrey syncCacheGUID] != original_guid,
-      @"guid didn't change after user signed out and signed back in");
-}
-
 // Tests that the local cache guid is reused when the user signs out and then
 // signs back in with the same account.
-// Note that for this test, kSyncAccountKeyedTransportPrefs is ENabled.
 - (void)testSyncCheckSameCacheGuid_SignOutAndSignIn {
   // Sign in a fake identity, and store the initial sync guid.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -935,7 +903,7 @@ void ClearRelevantData() {
   // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
              enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
-            disabledFeatures:{kClearDeviceDataOnSignOutForManagedUsers}];
+            disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
                                 syncTimeout:kSyncOperationTimeout];
@@ -1015,7 +983,7 @@ void ClearRelevantData() {
   const GURL preSigninURL = self.testServer->GetURL("/console.html");
   const GURL firstSigninURL = self.testServer->GetURL("/pony.html");
   const GURL secondSigninURL = self.testServer->GetURL("/destination.html");
-  const GURL thirdSigninURL = self.testServer->GetURL("/echo.html");
+  const GURL thirdSigninURL = self.testServer->GetURL("/links.html");
 
   // Clear browsing history before and after the test to avoid conflicting with
   // other tests.
@@ -1024,15 +992,20 @@ void ClearRelevantData() {
     [ChromeEarlGrey clearBrowsingHistory];
   }];
 
-  // Save a password to the local store and visit a URL before sign-in. Also
-  // make sure any pending prefs and history changes are written to disk.
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
+                  @"History was unexpectedly not empty");
+
+  // Save a password to the local store and visit a URL before sign-in.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password1", @"user1", @"https://example.com");
   [ChromeEarlGrey loadURL:preSigninURL];
-  [ChromeEarlGrey commitPendingUserPrefsWrite];
-  [BookmarkEarlGrey commitPendingWrite];
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
                   @"History was unexpectedly empty");
+
+  // Still before signing in, open a second tab.
+  [ChromeEarlGrey openNewTab];
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+                  @"Tabs left behind from previous test?!");
 
   // Sign in a managed (aka enterprise) account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
@@ -1047,12 +1020,8 @@ void ClearRelevantData() {
   [ChromeEarlGrey loadURL:firstSigninURL];
   [ChromeEarlGrey loadURL:secondSigninURL];
   [ChromeEarlGrey loadURL:thirdSigninURL];
-  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 3,
-                  @"History was unexpectedly empty");
-
-  // Also make sure any pending prefs and history changes are written to disk.
-  [ChromeEarlGrey commitPendingUserPrefsWrite];
-  [BookmarkEarlGrey commitPendingWrite];
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 4,
+                  @"History did not contain the expected entries");
 
   // Open settings and tap "Sign Out".
   [ChromeEarlGreyUI openSettingsMenu];
@@ -1092,9 +1061,107 @@ void ClearRelevantData() {
 
   // Only two history entries remain after browsing history is cleared: the one
   // from before sign-in and the active URL.
+  // Do one more navigation to ensure everything's in a settled state, bringing
+  // the total count to 3.
   [ChromeEarlGrey loadURL:secondSigninURL];
-  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 2,
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 3,
+                  @"History did not contain the expected entries");
+
+  // Both tabs should still be there.
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+                  @"Tab was unexpectedly closed");
+}
+
+- (void)testManagedAccountClearsDataAndTabsForSignedInPeriod {
+  const GURL preSigninURL = self.testServer->GetURL("/console.html");
+  const GURL firstSigninURL = self.testServer->GetURL("/pony.html");
+  const GURL secondSigninURL = self.testServer->GetURL("/destination.html");
+  const GURL thirdSigninURL = self.testServer->GetURL("/links.html");
+
+  // Clear browsing history before and after the test to avoid conflicting with
+  // other tests.
+  [ChromeEarlGrey clearBrowsingHistory];
+  [self setTearDownHandler:^{
+    [ChromeEarlGrey clearBrowsingHistory];
+  }];
+
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
+                  @"History was unexpectedly not empty");
+
+  // Save a password to the local store and visit a URL before sign-in.
+  password_manager_test_utils::SavePasswordFormToProfileStore(
+      @"password1", @"user1", @"https://example.com");
+  [ChromeEarlGrey loadURL:preSigninURL];
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
                   @"History was unexpectedly empty");
+
+  // Still before signing in, open a second tab.
+  [ChromeEarlGrey openNewTab];
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+                  @"Tabs left behind from previous test?!");
+
+  // Sign in a managed (aka enterprise) account.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Save another password to the local store after sign-in.
+  password_manager_test_utils::SavePasswordFormToProfileStore(
+      @"password2", @"user2", @"https://example.com");
+
+  // Navigate to a few URLs (in the second tab). This also marks the tab as
+  // "used since signin".
+  [ChromeEarlGrey loadURL:firstSigninURL];
+  [ChromeEarlGrey loadURL:secondSigninURL];
+  [ChromeEarlGrey loadURL:thirdSigninURL];
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 4,
+                  @"History did not contain the expected entries");
+
+  // Open settings and tap "Sign Out".
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_accessibilityLabel(l10n_util::GetNSString(
+                      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
+      onElementWithMatcher:grey_accessibilityID(
+                               kManageSyncTableViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Confirm "Sign Out" when alert dialog that data will be cleared is shown.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+      performAction:grey_tap()];
+
+  // Wait until the user is signed out. Use a longer timeout to give time for
+  // data to be cleared.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::SettingsDoneButton()
+                                  timeout:base::test::ios::
+                                              kWaitForClearBrowsingDataTimeout];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
+
+  // Only the password saved before sign-in should be remaining.
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Only the password saved BEFORE sign-in should be in the profile store");
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should NOT be in the account store");
+
+  // Only one history entry should remain after browsing history is cleared: the
+  // one from before sign-in.
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
+                  @"History did not contain the expected entries");
+
+  // The original tab (not used since signing in) should still be there. The
+  // second tab, where we navigated while signed in, should have been closed.
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 1,
+                  @"Tab wasn't closed as expected");
 }
 
 - (void)testMigrateSyncToSignin_Undo {

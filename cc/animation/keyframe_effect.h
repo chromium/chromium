@@ -37,7 +37,7 @@ struct PropertyAnimationState;
 // element id for this animation so that the compositor animation system
 // recognize it. We do not use ElementId because it's an invalid element id.
 inline constexpr ElementId kReservedElementIdForPaintWorklet(
-    std::numeric_limits<ElementId::InternalValue>::max());
+    std::numeric_limits<ElementId::InternalValue>::max() - 1);
 
 // A KeyframeEffect owns a group of KeyframeModels for a single target
 // (identified by an ElementId). It is responsible for managing the

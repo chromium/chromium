@@ -26,7 +26,7 @@ namespace autofill {
 // {
 //   "profiles" : [
 //     {
-//       "source" : "localOrSyncable",
+//       "record_type" : "localOrSyncable",
 //       "initial_creator_id" : 123,
 //       "field-type" : "value",
 //       ...
@@ -41,18 +41,15 @@ namespace autofill {
 //     }
 //   ]
 // }
-// The "source" is optional and can either be "account" or "localOrSyncable".
-// This corresponds to the AutofillProfile::Source of the resulting profile. It
-// default to "localOrSyncable".
-// The "initial_creator_id" is an optional int value which sets the profile's
-// property of the same name.
-// The "nickname" in credit cards optional as well.
-// "field-type" corresponds to FieldTypes like "NAME_FULL". For profiles
-// and credit cards, only field types valid for AutofillProfile or CreditCard
-// are accepted.
-// All profiles and credit cards specified in the file are imported. They
-// replace any existing data.
-// The profiles are expected to be fully structured.
+// The "record_type" is optional and can either be "account" or
+// "localOrSyncable". This corresponds to the AutofillProfile::RecordType of the
+// resulting profile. It default to "localOrSyncable". The "initial_creator_id"
+// is an optional int value which sets the profile's property of the same name.
+// The "nickname" in credit cards optional as well. "field-type" corresponds to
+// FieldTypes like "NAME_FULL". For profiles and credit cards, only field types
+// valid for AutofillProfile or CreditCard are accepted. All profiles and credit
+// cards specified in the file are imported. They replace any existing data. The
+// profiles are expected to be fully structured.
 // TODO(crbug.com/40255599): remove `profiles` from flags' name.
 constexpr char kManualFileImportForTestingFlag[] =
     "autofill-profiles-for-manual-testing";

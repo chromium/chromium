@@ -54,15 +54,15 @@ std::optional<FeatureConfig> CreateNewUserGestureInProductHelpConfig(
     const char* action_event,
     const char* trigger_event,
     const char* used_event,
-    const char* dismiss_button_tap_event,
-    const int total_max_occurrences = 2) {
+    const char* dismiss_button_tap_event) {
   // Maximum storage days for iOS gesture IPHs in days. Note that they only
   // triggered for users who installed Chrome on iOS in the last specific number
   // of days, so this could be used as the maximum storage period of respective
   // events.
+  const int kTotalMaxOccurrences = 2;
   const uint32_t kMaxStorageDays = 61;
-  // The IPH only shows once a week, and honors `total_max_occurrences`.
-  int kDaysBetweenOccurrences = 7;
+  // The IPH only shows once a week, and honors `kTotalMaxOccurrences`.
+  const int kDaysBetweenOccurrences = 7;
 
   std::optional<FeatureConfig> config = FeatureConfig();
   config->valid = true;
@@ -71,12 +71,12 @@ std::optional<FeatureConfig> CreateNewUserGestureInProductHelpConfig(
   // The user hasn't done the action suggested by the IPH.
   config->used = EventConfig(used_event, Comparator(EQUAL, 0), kMaxStorageDays,
                              kMaxStorageDays);
-  // The IPH shows at most once per 7 days.
+  // The IPH shows at most once per `kDaysBetweenOccurrences`.
   config->trigger =
       EventConfig(trigger_event, Comparator(EQUAL, 0), kDaysBetweenOccurrences,
                   kDaysBetweenOccurrences);
   config->event_configs.insert(
-      EventConfig(trigger_event, Comparator(LESS_THAN, total_max_occurrences),
+      EventConfig(trigger_event, Comparator(LESS_THAN, kTotalMaxOccurrences),
                   kMaxStorageDays, kMaxStorageDays));
   // The IPH only shows when user performs the action that should trigger the
   // IPH at least twice since the last time the IPH shows, or since installation
@@ -459,54 +459,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->used =
         EventConfig("companion_side_panel_region_search_button_clicked",
                     Comparator(EQUAL, 0), 360, 360);
-    return config;
-  }
-
-  if (kIPHDesktopCustomizeChromeFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    // Used to increase the usage of Customize Chrome for users who have opened
-    // it 0 times in the last 360 days.
-    config->used =
-        EventConfig("customize_chrome_opened", Comparator(EQUAL, 0), 360, 360);
-    // Triggered when IPH hasn't been shown in the past day.
-    config->trigger = EventConfig("iph_customize_chrome_triggered",
-                                  Comparator(EQUAL, 0), 1, 360);
-    config->snooze_params.max_limit = 4;
-    return config;
-  }
-
-  if (kIPHDesktopCustomizeChromeRefreshFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    // Show IPH regardless of customize_chrome usage
-    config->used =
-        EventConfig("customize_chrome_opened", Comparator(ANY, 0), 360, 360);
-    // Triggered when IPH has been shown less than twice this year.
-    config->trigger = EventConfig("iph_customize_chrome_refresh_triggered",
-                                  Comparator(LESS_THAN, 2), 360, 360);
-    config->snooze_params.max_limit = 4;
-    return config;
-  }
-
-  if (kIPHDesktopNewTabPageModulesCustomizeFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::ALL;
-    // Show the promo max once every 10 years if the user hasn't interacted with
-    // the modules within the last year.
-    config->trigger = EventConfig("iph_desktop_new_tab_page_modules_triggered",
-                                  Comparator(EQUAL, 0), 3600, 3600);
-    config->used = EventConfig(events::kDesktopNTPModuleUsed,
-                               Comparator(EQUAL, 0), 360, 360);
-    config->snooze_params.max_limit = 5;
     return config;
   }
 
@@ -938,22 +890,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 10), 7, 360));
     return config;
   }
-  if (kIPHAddToHomescreenMessageFeature.name == feature->name) {
-    // A config that allows the Add to homescreen message IPH to be shown:
-    // * Once per 15 days
-    // * Up to 2 times but only if unused in the last 15 days.
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    config->trigger = EventConfig("add_to_homescreen_message_iph_trigger",
-                                  Comparator(LESS_THAN, 2), 90, 90);
-    config->used = EventConfig("add_to_homescreen_dialog_shown",
-                               Comparator(EQUAL, 0), 90, 90);
-    config->event_configs.insert(EventConfig(
-        "add_to_homescreen_message_iph_trigger", Comparator(EQUAL, 0), 15, 90));
-    return config;
-  }
 
   // A generic feature that always returns true.
   if (kIPHGenericAlwaysTriggerHelpUiFeature.name == feature->name) {
@@ -1130,6 +1066,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
   if (kIPHTabSwitcherButtonFeature.name == feature->name) {
+    // Adjusted to be less spammy for users that may know what the tab switcher
+    // is. Show after 14 days of Chrome being installed, once every 90 days,
+    // unless the user has used the tab switcher button in the last year.
+    // Hopefully a year will be long enough that infrequent users of a given
+    // Chrome channel should almost never see it.
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
@@ -1137,6 +1078,19 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->trigger =
         EventConfig("tab_switcher_iph_triggered", Comparator(EQUAL, 0), 90, 90);
     config->used = EventConfig("tab_switcher_button_clicked",
+                               Comparator(EQUAL, 0), 360, 360);
+    config->snooze_params.snooze_interval = 7;
+    config->snooze_params.max_limit = 3;
+    return config;
+  }
+  if (kIPHTabSwitcherButtonSwitchIncognitoFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("tab_switcher_switch_incognito_iph_triggered",
+                                  Comparator(EQUAL, 0), 90, 90);
+    config->used = EventConfig("tab_switcher_button_long_clicked",
                                Comparator(EQUAL, 0), 14, 90);
     config->snooze_params.snooze_interval = 7;
     config->snooze_params.max_limit = 3;
@@ -1941,8 +1895,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->trigger = EventConfig("blue_dot_promo_overflow_menu_shown",
                                   Comparator(ANY, 0), 360, 360);
-    // Stop showing blue dot promo if settings was tapped at least 3 times.
-    config->used = EventConfig("blue_dot_promo_overflow_menu_dismissed",
+    // Stop showing blue dot promo if overflow menu opened while blue dot was
+    // showing at least 3 times.
+    config->used = EventConfig("blue_dot_promo_overflow_menu_opened",
                                Comparator(LESS_THAN, 3), 360, 360);
     // Stop showing blue dot promo if default browser settings was opened at
     // least once.
@@ -1966,9 +1921,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     // Continue checking deprecated settings badge conditions to not show blue
     // dot at all if user would not have qualified for settings badge.
+    // TODO(crbug.com/362504599): Remove in July 2025.
     config->event_configs.insert(
         EventConfig("blue_dot_promo_settings_shown_new_session",
                     Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360));
+    // TODO(crbug.com/362504058): Remove in Sept 2025.
+    config->event_configs.insert(
+        EventConfig("blue_dot_promo_overflow_menu_dismissed",
+                    Comparator(LESS_THAN, 3), 360, 360));
 
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
@@ -2184,8 +2144,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         /*trigger_event=*/"swipe_back_forward_trigger", /*used_event=*/
         feature_engagement::events::kIOSSwipeBackForwardUsed,
         /*dismiss_button_tap_event=*/
-        feature_engagement::events::kIOSSwipeBackForwardIPHDismissButtonTapped,
-        /*total_max_occurrences=*/1);
+        feature_engagement::events::kIOSSwipeBackForwardIPHDismissButtonTapped);
   }
 
   if (kIPHiOSSwipeToolbarToChangeTabFeature.name == feature->name) {
@@ -2287,6 +2246,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 10), 90, 360);
     config->used = EventConfig("plus_address_create_suggestion_feature_used",
                                Comparator(LESS_THAN, 2), 90, 360);
+    return config;
+  }
+
+  if (kIPHHomeCustomizationMenuFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("home_customization_menu_iph_triggered",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->used =
+        EventConfig(feature_engagement::events::kHomeCustomizationMenuUsed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
     return config;
   }
 #endif  // BUILDFLAG(IS_IOS)

@@ -415,8 +415,10 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   }
 
   base::trace_event::MemoryAllocatorDump* partitions_dump = nullptr;
-  base::trace_event::MemoryAllocatorDump* elud_dump = nullptr;
-  ExtremeLUDStats elud_stats;
+  base::trace_event::MemoryAllocatorDump* elud_dump_for_small_objects = nullptr;
+  ExtremeLUDStats elud_stats_for_small_objects;
+  base::trace_event::MemoryAllocatorDump* elud_dump_for_large_objects = nullptr;
+  ExtremeLUDStats elud_stats_for_large_objects;
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   partitions_dump = pmd->CreateAllocatorDump("malloc/partitions");
   pmd->AddOwnershipEdge(inner_dump->guid(), partitions_dump->guid());
@@ -424,16 +426,25 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   auto& extreme_lud_get_stats_callback = GetExtremeLUDGetStatsCallback();
   if (!extreme_lud_get_stats_callback.is_null()) {
     // The Extreme LUD is enabled.
-    elud_dump = pmd->CreateAllocatorDump("malloc/extreme_lud");
-    elud_stats = extreme_lud_get_stats_callback.Run();
-    ReportPartitionAllocLightweightQuarantineStats(elud_dump,
-                                                   elud_stats.lq_stats);
+    elud_dump_for_small_objects =
+        pmd->CreateAllocatorDump("malloc/extreme_lud/small_objects");
+    elud_dump_for_large_objects =
+        pmd->CreateAllocatorDump("malloc/extreme_lud/large_objects");
+    const auto elud_stats_set = extreme_lud_get_stats_callback.Run();
+    elud_stats_for_small_objects = elud_stats_set.for_small_objects;
+    elud_stats_for_large_objects = elud_stats_set.for_large_objects;
+    ReportPartitionAllocLightweightQuarantineStats(
+        elud_dump_for_small_objects, elud_stats_for_small_objects.lq_stats);
+    ReportPartitionAllocLightweightQuarantineStats(
+        elud_dump_for_large_objects, elud_stats_for_large_objects.lq_stats);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  ReportPerMinuteStats(syscall_count, cumulative_brp_quarantined_size,
-                       cumulative_brp_quarantined_count, elud_stats, outer_dump,
-                       partitions_dump, elud_dump);
+  ReportPerMinuteStats(
+      syscall_count, cumulative_brp_quarantined_size,
+      cumulative_brp_quarantined_count, elud_stats_for_small_objects,
+      elud_stats_for_large_objects, outer_dump, partitions_dump,
+      elud_dump_for_small_objects, elud_dump_for_large_objects);
 
   return true;
 }
@@ -442,10 +453,12 @@ void MallocDumpProvider::ReportPerMinuteStats(
     uint64_t syscall_count,
     size_t cumulative_brp_quarantined_bytes,
     size_t cumulative_brp_quarantined_count,
-    const ExtremeLUDStats& elud_stats,
+    const ExtremeLUDStats& elud_stats_for_small_objects,
+    const ExtremeLUDStats& elud_stats_for_large_objects,
     MemoryAllocatorDump* malloc_dump,
     MemoryAllocatorDump* partition_alloc_dump,
-    MemoryAllocatorDump* elud_dump) {
+    MemoryAllocatorDump* elud_dump_for_small_objects,
+    MemoryAllocatorDump* elud_dump_for_large_objects) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   uint64_t new_syscalls = syscall_count - last_syscall_count_;
   size_t new_brp_quarantined_bytes =
@@ -470,13 +483,19 @@ void MallocDumpProvider::ReportPerMinuteStats(
                                     MemoryAllocatorDump::kNameObjectCount,
                                     brp_quarantined_count_per_minute);
   }
-  if (elud_dump) {
+
+  auto report_elud_per_minute_stats = [time_since_last_dump,
+                                       seconds_since_last_dump](
+                                          const ExtremeLUDStats& elud_stats,
+                                          CumulativeEludStats&
+                                              last_cumulative_elud_stats,
+                                          MemoryAllocatorDump* elud_dump) {
     size_t bytes = elud_stats.lq_stats.cumulative_size_in_bytes -
-                   last_cumulative_elud_quarantined_bytes_;
+                   last_cumulative_elud_stats.quarantined_bytes;
     size_t count = elud_stats.lq_stats.cumulative_count -
-                   last_cumulative_elud_quarantined_count_;
+                   last_cumulative_elud_stats.quarantined_count;
     size_t miss_count = elud_stats.lq_stats.quarantine_miss_count -
-                        last_cumulative_elud_miss_count_;
+                        last_cumulative_elud_stats.miss_count;
     elud_dump->AddScalar("bytes_per_minute", MemoryAllocatorDump::kUnitsBytes,
                          60ull * bytes / seconds_since_last_dump);
     elud_dump->AddScalar("count_per_minute",
@@ -509,12 +528,22 @@ void MallocDumpProvider::ReportPerMinuteStats(
           static_cast<uint64_t>(time_since_last_dump.InMilliseconds()) *
               elud_stats.capacity_in_bytes / bytes);
     }
-    last_cumulative_elud_quarantined_bytes_ =
+    last_cumulative_elud_stats.quarantined_bytes =
         elud_stats.lq_stats.cumulative_size_in_bytes;
-    last_cumulative_elud_quarantined_count_ =
+    last_cumulative_elud_stats.quarantined_count =
         elud_stats.lq_stats.cumulative_count;
-    last_cumulative_elud_miss_count_ =
+    last_cumulative_elud_stats.miss_count =
         elud_stats.lq_stats.quarantine_miss_count;
+  };
+  if (elud_dump_for_small_objects) {
+    report_elud_per_minute_stats(elud_stats_for_small_objects,
+                                 last_cumulative_elud_stats_for_small_objects_,
+                                 elud_dump_for_small_objects);
+  }
+  if (elud_dump_for_large_objects) {
+    report_elud_per_minute_stats(elud_stats_for_large_objects,
+                                 last_cumulative_elud_stats_for_large_objects_,
+                                 elud_dump_for_large_objects);
   }
 
   last_memory_dump_time_ = base::TimeTicks::Now();

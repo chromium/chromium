@@ -263,25 +263,7 @@ ScopedInitFeature::ScopedInitFeature(const base::Feature& feature,
 ScopedInitDIPSFeature::ScopedInitDIPSFeature(
     bool enable,
     const base::FieldTrialParams& params)
-    // DIPSServiceFactory and DIPSCleanupServiceFactory are singletons, and we
-    // want to create them *before* constructing `init_feature_`, so that they
-    // are initialized using the default value of features::kDIPS. We only want
-    // `init_feature_` to affect CreateProfileSelections(). We do this
-    // concisely by using the comma operator in the arguments to
-    // `init_feature_` to call DIPSServiceFactory::GetInstance() and
-    // DIPSCleanupServiceFactory::GetInstance() while ignoring their return
-    // values.
-    : init_feature_((DIPSServiceFactory::GetInstance(),
-                     DIPSCleanupServiceFactory::GetInstance(),
-                     features::kDIPS),
-                    enable,
-                    params),
-      override_profile_selections_for_dips_service_(
-          DIPSServiceFactory::GetInstance(),
-          DIPSServiceFactory::CreateProfileSelections()),
-      override_profile_selections_for_dips_cleanup_service_(
-          DIPSCleanupServiceFactory::GetInstance(),
-          DIPSCleanupServiceFactory::CreateProfileSelections()) {}
+    : init_feature_(features::kDIPS, enable, params) {}
 
 OpenedWindowObserver::OpenedWindowObserver(
     content::WebContents* web_contents,

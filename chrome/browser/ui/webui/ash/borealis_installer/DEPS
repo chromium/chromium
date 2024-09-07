@@ -1,0 +1,21 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/webui/ash/borealis_installer",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ash/borealis",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/views/borealis",
+  "+chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h",
+  "+chrome/browser/ui/webui/webui_util.h",
+  "+chrome/common",
+  "+chrome/grit",
+]

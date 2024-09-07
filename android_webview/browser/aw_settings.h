@@ -74,7 +74,9 @@ class AwSettings : public content::WebContentsObserver {
   // on feature flags and trial config
   static RequestedWithHeaderMode GetDefaultRequestedWithHeaderMode();
 
-  AwSettings(JNIEnv* env, jobject obj, content::WebContents* web_contents);
+  AwSettings(JNIEnv* env,
+             const jni_zero::JavaRef<jobject>& obj,
+             content::WebContents* web_contents);
   ~AwSettings() override;
 
   bool GetAllowFileAccessFromFileURLs();
@@ -85,6 +87,9 @@ class AwSettings : public content::WebContentsObserver {
   AttributionBehavior GetAttributionBehavior();
   bool IsPrerender2Allowed();
   bool IsBackForwardCacheEnabled();
+  bool initial_page_scale_is_non_default() {
+    return initial_page_scale_is_non_default_;
+  }
 
   // Called from Java. Methods with "Locked" suffix require that the settings
   // access lock is held during their execution.
@@ -191,6 +196,16 @@ class AwSettings : public content::WebContentsObserver {
       SpeculativeLoadingAllowedFlags::SPECULATIVE_LOADING_DISABLED};
   bool bfcache_enabled_in_java_settings_{false};
   bool geolocation_enabled_{false};
+
+  // Whether the settings that would affect the initial page scale is set to a
+  // non-default value or not. This includes directly changing the initial page
+  // scale and also setting the "load with overview mode" setting. This is
+  // temporarily needed to prevent same-site RenderFrameHost swaps due to
+  // RenderDocument, because these settings are not carried over immediately
+  // during the swap, causing the initial page scale to not be used.
+  // TODO(https://crbug.com/40615943): Remove this once we carry over the
+  // initial page scale correctly.
+  bool initial_page_scale_is_non_default_ = false;
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 

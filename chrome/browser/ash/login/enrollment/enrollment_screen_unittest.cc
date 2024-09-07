@@ -8,11 +8,13 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
@@ -46,6 +48,7 @@ constexpr char kTestDeviceId[] = "test_device_id";
 constexpr char kTestUserEmail[] = "user@test.org";
 constexpr char kTestUserGaiaId[] = "test_user_gaia_id";
 constexpr char kTestUserPassword[] = "test_password";
+constexpr char kTestRefreshToken[] = "test_refresh_token";
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -241,11 +244,14 @@ class EnrollmentScreenBaseTest : public testing::Test {
     EXPECT_CALL(mock_view_, SetEnterpriseDomainInfo(kTestDomain, _));
   }
 
-  void ExpectClearAuth() {
-    EXPECT_CALL(mock_enrollment_launcher_, ClearAuth(_))
+  void ExpectClearAuth(bool expect_oauth2_tokens_revoked = true) {
+    EXPECT_CALL(mock_enrollment_launcher_,
+                ClearAuth(_, expect_oauth2_tokens_revoked))
         .Times(AnyNumber())
         .WillRepeatedly(
-            [](base::OnceClosure callback) { std::move(callback).Run(); });
+            [](base::OnceClosure callback, bool revoke_oauth2_tokens) {
+              std::move(callback).Run();
+            });
   }
 
   void ExpectEnrollmentConfig(policy::EnrollmentConfig::Mode mode,
@@ -477,6 +483,92 @@ INSTANTIATE_TEST_SUITE_P(
                       policy::EnrollmentConfig::MODE_RECOVERY,
                       policy::EnrollmentConfig::MODE_INITIAL_SERVER_FORCED));
 
+// Signin artifacts and the refresh token can be optionally preserved in the
+// wizard context to be used later on, outside the EnrollmentScreen, in order to
+// skip the second sign in screen.
+class EnrollmentAddUserTest : public EnrollmentScreenBaseTest {
+ public:
+  EnrollmentAddUserTest() {
+    feature_list_.InitAndEnableFeature(features::kOobeAddUserDuringEnrollment);
+  }
+
+ protected:
+  void ExpectGetRefreshToken() {
+    EXPECT_CALL(mock_enrollment_launcher(), GetOAuth2RefreshToken)
+        .WillOnce(::testing::Return(kTestRefreshToken));
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This test makes sure that data is properly stored, and that
+// the token is not revoked when enrollment is successful.
+TEST_F(EnrollmentAddUserTest,
+       ShouldSaveUserContextAndNotRevokeTokensOnSuccess) {
+  policy::EnrollmentConfig config;
+  config.mode = policy::EnrollmentConfig::MODE_MANUAL;
+  config.auth_mechanism = policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+
+  ExpectShowViewWithLogin();
+  ExpectManualEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+  ExpectSuccessScreen();
+  ExpectGetRefreshToken();
+  ExpectClearAuth(/*expect_oauth2_tokens_revoked=*/false);
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  UserContext* user_context = wizard_context().user_context.get();
+  EXPECT_TRUE(user_context);
+  EXPECT_EQ(user_context->GetAccountId().GetUserEmail(), kTestUserEmail);
+  EXPECT_EQ(user_context->GetGaiaID(), kTestUserGaiaId);
+  EXPECT_TRUE(user_context->GetPassword());
+  EXPECT_EQ(user_context->GetPassword().value(),
+            PasswordInput(kTestUserPassword));
+  EXPECT_EQ(user_context->GetRefreshToken(), kTestRefreshToken);
+}
+
+// Make sure that the data is not stored and the tokens are revoked in case
+// the enrollment failed.
+TEST_F(EnrollmentAddUserTest,
+       ShouldNotSaveUserContextAndShouldRevokeTokensOnEnrollmentFailed) {
+  policy::EnrollmentConfig config;
+  config.mode = policy::EnrollmentConfig::MODE_MANUAL;
+  config.auth_mechanism = policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+
+  ExpectShowViewWithLogin();
+  ExpectManualEnrollmentAndReportFailure();
+  ExpectErrorScreen();
+  ExpectClearAuth(/*expect_oauth2_tokens_revoked=*/true);
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  UserContext* user_context = wizard_context().user_context.get();
+  EXPECT_FALSE(user_context);
+}
+
+// Make sure that the data is not stored and the tokens are revoked in case
+// the enrollment is canceled.
+TEST_F(EnrollmentAddUserTest,
+       ShouldNotSaveUserContextAndShouldRevokeTokensOnEnrollmentCanceled) {
+  policy::EnrollmentConfig config;
+  config.mode = policy::EnrollmentConfig::MODE_MANUAL;
+  config.auth_mechanism = policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+
+  ExpectShowViewWithLogin();
+  ExpectClearAuth(/*expect_oauth2_tokens_revoked=*/true);
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  UserCancel();
+
+  UserContext* user_context = wizard_context().user_context.get();
+  EXPECT_FALSE(user_context);
+}
+
 class EnrollmentScreenAttestationFlowTest
     : public EnrollmentScreenBaseTest,
       public ::testing::WithParamInterface<policy::EnrollmentConfig::Mode> {
@@ -572,6 +664,32 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldRetryEnrollmentOnUserAction) {
   EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
   EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
+}
+
+// The add user flow is expected to only affect the manual enrollment.
+// Whenever the enrollment is not manual the tokens should be revoked
+// and no data should be saved wihin the wizard context.
+TEST_P(EnrollmentScreenAttestationFlowTest,
+       ShouldNotPreserveUserContextAndShouldRevokeTokens) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOobeAddUserDuringEnrollment);
+
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+
+  ExpectAttestationBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+  if (!IsRollbackFlow()) {
+    ExpectSuccessScreen();
+  }
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  UserContext* user_context = wizard_context().user_context.get();
+  EXPECT_FALSE(user_context);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_cell.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -58,7 +58,7 @@ class PriceInsightsModulatorTest : public PlatformTest {
             }));
 
     TestChromeBrowserState* test_chrome_browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(test_chrome_browser_state);
     base_view_controller_ = [[FakeUIViewController alloc] init];
     std::unique_ptr<web::FakeNavigationManager> navigation_manager =
@@ -95,7 +95,7 @@ class PriceInsightsModulatorTest : public PlatformTest {
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::TaskEnvironment task_environment_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   web::FakeWebState* web_state_ptr_;
@@ -233,4 +233,57 @@ TEST_F(PriceInsightsModulatorTest, TestPriceInsightsItemDataFromConfig) {
   EXPECT_EQ(true, item.isPriceTracked);
   EXPECT_EQ(GURL(kTestUrl), item.productURL);
   EXPECT_EQ(kClusterId, item.clusterId);
+}
+
+// Tests that PriceInsightsItem displays a valid title when
+// product_cluster_title is empty.
+TEST_F(PriceInsightsModulatorTest, TestPriceInsightsItemTitle) {
+  base::RunLoop run_loop;
+
+  commerce::ProductInfo info;
+  info.title = kTestTitle;
+  info.product_cluster_title = "";
+  info.product_cluster_id = kClusterId;
+  info.currency_code = kCurrency;
+  info.country_code = kCountry;
+
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  // Fetch data from the model.
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_ptr_,
+      base::BindOnce(&PriceInsightsModulatorTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  PriceInsightsModulator* modulator = [[PriceInsightsModulator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+               itemConfiguration:config->weak_ptr_factory.GetWeakPtr()];
+
+  // Start the modulator.
+  [modulator start];
+
+  UICollectionView* collection_view = [[UICollectionView alloc]
+             initWithFrame:CGRectZero
+      collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
+  PriceInsightsCell* cell = static_cast<PriceInsightsCell*>([collection_view
+      dequeueConfiguredReusableCellWithRegistration:modulator.panelBlockData
+                                                        .cellRegistration
+                                       forIndexPath:[NSIndexPath
+                                                        indexPathForRow:0
+                                                              inSection:0]
+                                               item:@"id"]);
+  PriceInsightsItem* item = cell.priceInsightsItem;
+
+  EXPECT_EQ(kTestTitle, base::SysNSStringToUTF8(item.title));
 }

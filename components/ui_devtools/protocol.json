@@ -889,18 +889,6 @@
                     "description": "Enables domain notifications."
                 },
                 {
-                    "name": "reload",
-                    "parameters": [
-                        {
-                            "name":"ignoreCache",
-                            "type": "boolean",
-                             "optional": true,
-                            "description": "If true, browser cache is ignored (as if the user pressed Shift+refresh)."
-                        }
-                    ],
-                    "description": "Called on Ctrl+R with |ignoreCache|=false, which is used to toggle debug bounds rectangles and Ctrl+Shift+R with |ignoreCache|=true, which is used to toggle bubble locking."
-                },
-                {
                     "name": "getResourceTree",
                     "description": "Called when UI DevTools first loads. Used to populate sources panel.",
                     "returns": [

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -22,7 +24,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
-import org.chromium.ui.test.util.UiDisableIf;
 
 /**
  * Test suite for Geo-Location functionality.
@@ -90,7 +91,7 @@ public class GeolocationTest {
     @Test
     @MediumTest
     @Feature({"Location"})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/353912604
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/362792693")
     public void testGeolocationWatchDialog() throws Exception {
         runTest("initiate_watchPosition()", 2, true, true);
     }

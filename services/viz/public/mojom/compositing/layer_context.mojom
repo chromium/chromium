@@ -7,6 +7,7 @@ module viz.mojom;
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/layer.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+import "services/viz/public/mojom/compositing/tiling.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -51,14 +52,22 @@ struct LayerTreeUpdate {
   int32 outer_clip;
   int32 outer_scroll;
 
-  // Changes to the root layer since last update, if any.
-  Layer? root_layer;
-
-  // Any other layers added or modified since the last update.
+  // Properties of layers added or modified since the last update. Note that the
+  // ordering of this array is arbitrary and not relevant to the tree's layer
+  // list order. If any layers were added, removed, or otherwise reordered in
+  // the client's layer list, `layer_order` will convey the full new layer list
+  // ordering.
   array<Layer> layers;
 
-  // IDs of any layers removed since the last update.
-  array<int32> removed_layers;
+  // The full list of layer IDs in the tree, in layer-list order. If null, the
+  // layer list has not changed since the last update. For any ID present in
+  // this list, the display tree must already contain a layer with that ID, or
+  // there must be such a layer described in `layers` above.
+  array<int32>? layer_order;
+
+  // Miscellaneous transform tree properties, if changed since last update. Does
+  // not include changes to individual nodes in the tree.
+  TransformTreeUpdate? transform_tree_update;
 
   // Nodes added or modified on any property tree since the last update.
   array<TransformNode> transform_nodes;
@@ -71,6 +80,9 @@ struct LayerTreeUpdate {
   uint32 num_clip_nodes;
   uint32 num_effect_nodes;
   uint32 num_scroll_nodes;
+
+  // Tiling updates for any PictureLayers in the tree.
+  array<Tiling> tilings;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
@@ -81,6 +93,9 @@ interface LayerContext {
 
   // Flushes pending updates from the client to the service-side display tree.
   UpdateDisplayTree(LayerTreeUpdate update);
+
+  // Updates one or more tiles in a specific tiling.
+  UpdateDisplayTiling(Tiling tiling);
 };
 
 // Provides feedback from a GPU-side LayerTreeHostImpl to its corresponding

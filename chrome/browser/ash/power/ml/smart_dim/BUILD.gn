@@ -82,8 +82,6 @@ if (is_chromeos_device) {
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser:browser_process",
-      "//chrome/browser/ash/crosapi",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/power/ml",
       "//chrome/common",
       "//chrome/test:ash_integration_test_support",

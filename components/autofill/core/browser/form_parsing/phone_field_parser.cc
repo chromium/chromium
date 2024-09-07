@@ -319,22 +319,15 @@ void PhoneFieldParser::AddClassifications(
     AddClassification(parsed_phone_fields_[FIELD_PHONE], field_number_type,
                       kBasePhoneParserScore, field_candidates);
   } else {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillDefaultToCityAndNumber)) {
-      const AutofillField* field = parsed_phone_fields_[FIELD_PHONE];
-      if (field->label().find(u"+") != std::u16string::npos ||
-          field->placeholder().find(u"+") != std::u16string::npos ||
-          field->aria_description().find(u"+") != std::u16string::npos) {
-        AddClassification(field, PHONE_HOME_WHOLE_NUMBER, kBasePhoneParserScore,
-                          field_candidates);
-      } else {
-        AddClassification(field, PHONE_HOME_CITY_AND_NUMBER,
-                          kBasePhoneParserScore, field_candidates);
-      }
-    } else {
-      AddClassification(parsed_phone_fields_[FIELD_PHONE],
-                        PHONE_HOME_WHOLE_NUMBER, kBasePhoneParserScore,
+    const AutofillField* field = parsed_phone_fields_[FIELD_PHONE];
+    if (field->label().find(u"+") != std::u16string::npos ||
+        field->placeholder().find(u"+") != std::u16string::npos ||
+        field->aria_description().find(u"+") != std::u16string::npos) {
+      AddClassification(field, PHONE_HOME_WHOLE_NUMBER, kBasePhoneParserScore,
                         field_candidates);
+    } else {
+      AddClassification(field, PHONE_HOME_CITY_AND_NUMBER,
+                        kBasePhoneParserScore, field_candidates);
     }
   }
 

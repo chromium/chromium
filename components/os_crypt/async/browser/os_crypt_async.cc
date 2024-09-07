@@ -86,10 +86,13 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
     for (const auto& [key_name, key_value] : key_ring_) {
       // Check for overlapping names. Two providers called TEST and TEST2 are
       // likely incorrectly named, since TEST might try to decrypt TEST2's data.
-      DCHECK(!std::equal(key_name.begin(), key_name.end(), tag.begin()))
-          << "Tags must not overlap.";
-      DCHECK(!std::equal(tag.begin(), tag.end(), key_name.begin()))
-          << "Tags must not overlap.";
+      if (tag.size() > key_name.size()) {
+        DCHECK(!std::equal(key_name.begin(), key_name.end(), tag.begin()))
+            << "Tags must not overlap.";
+      } else {
+        DCHECK(!std::equal(tag.begin(), tag.end(), key_name.begin()))
+            << "Tags must not overlap.";
+      }
     }
 #endif  // DCHECK_IS_ON()
     key->is_os_crypt_sync_compatible_ =

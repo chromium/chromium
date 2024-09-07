@@ -8,13 +8,13 @@ rootWebArea
 ++++++list
 ++++++++listItem listStyle=circle
 ++++++++++listMarker name='%E2%97%A6 '
-++++++++++++staticText ignored name='%E2%97%A6 '
+++++++++++++staticText ignored
 ++++++++++staticText name='circle'
 ++++++++++++inlineTextBox name='circle'
 ++++++list
 ++++++++listItem listStyle=disc
 ++++++++++listMarker name='%E2%80%A2 '
-++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++staticText ignored
 ++++++++++staticText name='disc'
 ++++++++++++inlineTextBox name='disc'
 ++++++list
@@ -26,37 +26,37 @@ rootWebArea
 ++++++list
 ++++++++listItem listStyle=square
 ++++++++++listMarker name='%E2%96%A0 '
-++++++++++++staticText ignored name='%E2%96%A0 '
+++++++++++++staticText ignored
 ++++++++++staticText name='square'
 ++++++++++++inlineTextBox name='square'
 ++++++list
 ++++++++listItem listStyle=numeric
 ++++++++++listMarker name='1. '
-++++++++++++staticText ignored name='1. '
+++++++++++++staticText ignored
 ++++++++++staticText name='decimal'
 ++++++++++++inlineTextBox name='decimal'
 ++++++list
 ++++++++listItem listStyle=other
 ++++++++++listMarker name='I. '
-++++++++++++staticText ignored name='I. '
+++++++++++++staticText ignored
 ++++++++++staticText name='upper-roman'
 ++++++++++++inlineTextBox name='upper-roman'
 ++++++list
 ++++++++listItem listStyle=other
 ++++++++++listMarker name='%D4%B1. '
-++++++++++++staticText ignored name='%D4%B1. '
+++++++++++++staticText ignored
 ++++++++++staticText name='armenian'
 ++++++++++++inlineTextBox name='armenian'
 ++++++list
 ++++++++listItem listStyle=other
 ++++++++++listMarker name='a. '
-++++++++++++staticText ignored name='a. '
+++++++++++++staticText ignored
 ++++++++++staticText name='lower-alpha'
 ++++++++++++inlineTextBox name='lower-alpha'
 ++++++list
 ++++++++listItem listStyle=other
 ++++++++++listMarker name='foo'
-++++++++++++staticText ignored name='foo'
+++++++++++++staticText ignored
 ++++++++++staticText name=''foo''
 ++++++++++++inlineTextBox name=''foo''
 ++++++list
@@ -65,14 +65,14 @@ rootWebArea
 ++++++++++++inlineTextBox name='content: none'
 ++++++list
 ++++++++listItem listStyle=other
-++++++++++listMarker
-++++++++++++staticText ignored name='bar'
+++++++++++listMarker name='bar'
+++++++++++++staticText ignored
 ++++++++++staticText name='content: 'bar''
 ++++++++++++inlineTextBox name='content: 'bar''
 ++++++list
 ++++++++listItem listStyle=image
-++++++++++listMarker
-++++++++++++staticText ignored name='baz'
+++++++++++listMarker name='baz'
+++++++++++++staticText ignored
 ++++++++++staticText name='content: 'baz''
 ++++++++++++inlineTextBox name='content: 'baz''
 ++++++list
@@ -84,14 +84,14 @@ rootWebArea
 ++++++list
 ++++++++listItem listStyle=other
 ++++++++++listMarker
-++++++++++++staticText ignored name='0'
+++++++++++++staticText ignored
 ++++++++++staticText name='content: counter(c)'
 ++++++++++++inlineTextBox name='content: counter(c)'
 ++++++list
 ++++++++listItem
 ++++++++++listMarker
-++++++++++++staticText ignored name='foo'
+++++++++++++staticText ignored
 ++++++++++++image
-++++++++++++staticText ignored name='0'
+++++++++++++staticText ignored
 ++++++++++staticText name='content: 'foo' url('bullet.png') counter(c)'
 ++++++++++++inlineTextBox name='content: 'foo' url('bullet.png') counter(c)'

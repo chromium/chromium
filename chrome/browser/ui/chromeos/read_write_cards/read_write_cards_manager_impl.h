@@ -84,6 +84,10 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
       const content::ContextMenuParams& params,
       const editor_menu::EditorContext& editor_context);
 
+  // `chromeos::ReadWriteCardsUiController` MUST be destructed after
+  // `QuickAnswersUiController`, which is owned by `QuickAnswersControllerImpl`.
+  // A destructor of `QuickAnswersUiController` accesses
+  // `ReadWriteCardsUiController`.
   chromeos::ReadWriteCardsUiController ui_controller_;
 
   std::unique_ptr<QuickAnswersControllerImpl> quick_answers_controller_;

@@ -173,7 +173,6 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
         "randomized_trigger_rate":0.2,
         "report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",
         "scheduled_report_time":"3600",
-        "source_debug_key":"7",
         "source_event_id":"100",
         "source_type":"navigation",
         "trigger_data":"5"
@@ -186,7 +185,6 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
         "source_event_id":"100",
         "source_type":"navigation",
         "trigger_data":"5",
-        "trigger_debug_key":"7"
       })json")},
       {7, 8, base::test::ParseJsonDict(R"json({
         "attribution_destination":"https://conversion.test",

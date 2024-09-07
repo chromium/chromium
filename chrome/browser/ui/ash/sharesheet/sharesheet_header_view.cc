@@ -261,12 +261,9 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kGenericContainer,
-      /*name=*/std::u16string(),
-      /*description=*/std::nullopt,
-      /*role_description=*/std::nullopt,
-      ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+  GetViewAccessibility().SetName(
+      std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 
   const bool has_files = !intent_->files.empty();
   // The image view is initialised first to ensure its left most placement.

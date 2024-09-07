@@ -40,7 +40,7 @@ class MockTickProvider : public MetronomeSource::TickProvider {
 class MetronomeSourceTest : public ::testing::Test {
  public:
   MetronomeSourceTest() {
-    auto tick_provider = std::make_unique<MockTickProvider>();
+    auto tick_provider = base::MakeRefCounted<MockTickProvider>();
     tick_provider_ptr_ = tick_provider.get();
     source_ = std::make_unique<MetronomeSource>(std::move(tick_provider));
   }

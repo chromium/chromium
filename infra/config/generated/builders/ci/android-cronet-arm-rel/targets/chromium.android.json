@@ -1,0 +1,48 @@
+{
+  "android-cronet-arm-rel": {
+    "additional_compile_targets": [
+      "cronet_package"
+    ],
+    "isolated_scripts": [
+      {
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "cronet_sizes",
+        "resultdb": {
+          "enable": true,
+          "result_file": "${ISOLATED_OUTDIR}/sizes/test_results.json",
+          "result_format": "single"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_sizes",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
+      },
+      {
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_cronet_sample_apk",
+        "resultdb": {
+          "enable": true,
+          "result_format": "single"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "resource_sizes_cronet_sample_apk",
+        "test_id_prefix": "ninja://components/cronet/android:resource_sizes_cronet_sample_apk/"
+      }
+    ]
+  }
+}

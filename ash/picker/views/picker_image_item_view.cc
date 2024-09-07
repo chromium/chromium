@@ -22,26 +22,20 @@ constexpr int kPickerImageItemCornerRadius = 8;
 }  // namespace
 
 PickerImageItemView::PickerImageItemView(
-    SelectItemCallback select_item_callback,
-    std::unique_ptr<views::ImageView> image)
+    std::unique_ptr<views::ImageView> image,
+    std::u16string accessible_name,
+    SelectItemCallback select_item_callback)
     : PickerItemView(std::move(select_item_callback),
                      FocusIndicatorStyle::kFocusRingWithInsetGap) {
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kPickerImageItemCornerRadius);
+  GetViewAccessibility().SetName(std::move(accessible_name));
 
   image_view_ = AddChildView(std::move(image));
   image_view_->SetCanProcessEventsWithinSubtree(false);
-
-  // TODO: b/316936418 - Get accessible name for image contents.
-  GetViewAccessibility().SetName(u"image contents");
 }
 
 PickerImageItemView::~PickerImageItemView() = default;
-
-void PickerImageItemView::SetImageSizeFromWidth(int width) {
-  image_view_->SetImageSize(
-      gfx::Size(width, image_view_->GetHeightForWidth(width)));
-}
 
 BEGIN_METADATA(PickerImageItemView)
 END_METADATA

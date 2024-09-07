@@ -352,6 +352,8 @@ try_.builder(
             "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
@@ -480,6 +482,7 @@ try_.builder(
     name = "mac_upload_clang_arm",
     executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
+    cpu = cpu.ARM64,
     execution_timeout = 8 * time.hour,
 )
 
@@ -512,6 +515,7 @@ ios_builder(
         "ci/ios-asan",
     ],
     gn_args = "ci/ios-asan",
+    cpu = cpu.ARM64,
 )
 
 ios_builder(
@@ -694,7 +698,7 @@ ios_builder(
     mirrors = ["ci/ios17-sdk-simulator"],
     gn_args = "ci/ios17-sdk-simulator",
     cpu = cpu.ARM64,
-    xcode = xcode.x15betabots,
+    xcode = xcode.x16_1betabots,
 )
 
 ios_builder(

@@ -2,15 +2,9 @@
 # Instead:
 # 1. Modify //infra/config/targets/basic_suites.star, //infra/config/targets/compound_suites.star and/or //infra/config/targets/matrix_compound_suites.star
 # 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-pyl-files.py
 
 {
   'basic_suites': {
-
-    'android_ar_gtests': {
-      'monochrome_public_test_ar_apk': {},
-      'vr_android_unittests': {},
-    },
 
     'android_ci_only_fieldtrial_webview_tests': {
       'webview_trichrome_64_cts_tests_no_field_trial': {
@@ -138,6 +132,38 @@
       },
     },
 
+    'android_rel_isolated_scripts': {
+      'android_blink_wpt_tests': {
+        'test': 'chrome_public_wpt',
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 4,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+        'experiment_percentage': 100,
+      },
+      'private_code_failure_test': {},
+      'webview_blink_wpt_tests': {
+        'test': 'trichrome_webview_wpt_64',
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 4,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+        'experiment_percentage': 100,
+      },
+    },
+
     'android_smoke_tests': {
       'chrome_public_smoke_test': {},
     },
@@ -254,18 +280,6 @@
       'wm_unittests': {},
     },
 
-    'bfcache_android_specific_gtests': {
-      'bf_cache_android_browsertests': {
-        'test': 'android_browsertests',
-        'args': [
-          '--disable-features=BackForwardCache',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
     'bfcache_generic_gtests': {
       'bf_cache_content_browsertests': {
         'test': 'content_browsertests',
@@ -317,20 +331,26 @@
       },
     },
 
-    'cast_junit_tests': {
-      'cast_base_junit_tests': {
+    'chrome_ai_wpt_tests_suite': {
+      'chrome_ai_wpt_tests': {
+        'results_handler': 'layout tests',
         'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
+          'has_native_resultdb_integration',
+          'blink_tests_write_run_histories',
         ],
-      },
-      'cast_shell_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
+        'mac_args': [
+          '--driver-name',
+          'Google Chrome',
         ],
+        'swarming': {
+          'shards': 1,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
       },
     },
 
@@ -448,7 +468,6 @@
         ],
         'remove_mixins': [
           'bullhead',
-          'marshmallow',
           'oreo_fleet',
           'pie_fleet',
           'walleye',
@@ -529,22 +548,6 @@
         ],
         'swarming': {
           'shards': 10,
-          'io_timeout': 3600,
-          'idempotent': False,
-        },
-      },
-    },
-
-    'chromeos_browser_cq_medium_tast_tests': {
-      'cq_medium_tast_tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--tast-retries=1',
-        ],
-        'swarming': {
-          'shards': 5,
           'io_timeout': 3600,
           'idempotent': False,
         },
@@ -1119,7 +1122,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1133,7 +1135,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1147,7 +1148,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1161,7 +1161,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1175,7 +1174,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1189,7 +1187,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1203,7 +1200,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1217,7 +1213,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1231,7 +1226,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1245,7 +1239,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1259,7 +1252,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1273,7 +1265,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1287,7 +1278,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1301,7 +1291,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1315,7 +1304,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1329,7 +1317,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1343,7 +1330,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1357,7 +1343,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1371,7 +1356,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1385,7 +1369,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1399,7 +1382,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1413,7 +1395,6 @@
         ],
         'remove_mixins': [
           'emulator-4-cores',
-          'nougat-x86-emulator',
           'oreo-x86-emulator',
           'walleye',
           'pie_fleet',
@@ -1517,6 +1498,31 @@
         },
         'experiment_percentage': 100,
       },
+      'brfetch_headless_shell_wpt_tests': {
+        'test': 'headless_shell_wpt',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'blink_tests_write_run_histories',
+        ],
+        'args': [
+          '--flag-specific=background-resource-fetch',
+          '--skipped=always',
+          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+        ],
+        'ci_only': True,
+        'swarming': {
+          'shards': 1,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+        'experiment_percentage': 100,
+      },
     },
 
     'chromium_web_tests_graphite_isolated_scripts': {
@@ -1558,6 +1564,30 @@
         ],
         'swarming': {
           'shards': 7,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+      'graphite_enabled_headless_shell_wpt_tests': {
+        'test': 'headless_shell_wpt',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'blink_tests_write_run_histories',
+        ],
+        'args': [
+          '--flag-specific=enable-skia-graphite',
+          '--skipped=always',
+          '--timeout-multiplier=2',
+          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+        ],
+        'swarming': {
+          'shards': 1,
         },
         'merge': {
           'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -1613,6 +1643,29 @@
           ],
         },
       },
+      'high_dpi_headless_shell_wpt_tests': {
+        'test': 'headless_shell_wpt',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'blink_tests_write_run_histories',
+        ],
+        'args': [
+          '--flag-specific=highdpi',
+          '--skipped=always',
+          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
     },
 
     'chromium_webkit_isolated_scripts': {
@@ -1660,7 +1713,32 @@
           'has_native_resultdb_integration',
         ],
         'args': [
-          '--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+      'headless_shell_wpt_tests': {
+        'test': 'headless_shell_wpt',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--test-type',
+          'testharness',
+          'reftest',
+          'crashtest',
+          'print-reftest',
+          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
         ],
         'swarming': {
           'shards': 1,
@@ -1811,50 +1889,6 @@
       },
     },
 
-    'cronet_resource_sizes': {
-      'resource_sizes_cronet_sample_apk': {
-        'swarming': {
-          'dimensions': {
-            'os': 'Ubuntu-22.04',
-            'cpu': 'x86-64',
-          },
-        },
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-        },
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
-        },
-      },
-    },
-
-    'cronet_sizes_suite': {
-      'cronet_sizes': {
-        'remove_mixins': [
-          'bullhead',
-          'marshmallow',
-          'oreo_fleet',
-          'pie_fleet',
-          'walleye',
-        ],
-        'swarming': {
-          'dimensions': {
-            'os': 'Ubuntu-22.04',
-            'cpu': 'x86-64',
-          },
-        },
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-        },
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
-          'result_file': '${ISOLATED_OUTDIR}/sizes/test_results.json',
-        },
-      },
-    },
-
     'desktop_chromium_isolated_scripts': {
       'blink_python_tests': {
         'resultdb': {
@@ -1905,7 +1939,7 @@
           'has_native_resultdb_integration',
         ],
         'args': [
-          '--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
         ],
         'swarming': {
           'shards': 1,
@@ -1932,6 +1966,31 @@
       'grit_python_unittests': {
         'resultdb': {
           'enable': True,
+        },
+      },
+      'headless_shell_wpt_tests': {
+        'test': 'headless_shell_wpt',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--test-type',
+          'testharness',
+          'reftest',
+          'crashtest',
+          'print-reftest',
+          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
         },
       },
       'telemetry_gpu_unittests': {
@@ -2068,6 +2127,11 @@
     },
 
     'enterprise_companion_gtests_linux': {
+      'enterprise_companion_integration_tests': {
+        'mixins': [
+          'updater-default-pool',
+        ],
+      },
       'enterprise_companion_tests': {
         'mixins': [
           'updater-default-pool',
@@ -2076,6 +2140,11 @@
     },
 
     'enterprise_companion_gtests_mac': {
+      'enterprise_companion_integration_tests': {
+        'mixins': [
+          'updater-mac-pool',
+        ],
+      },
       'enterprise_companion_tests': {
         'mixins': [
           'updater-mac-pool',
@@ -2084,6 +2153,12 @@
     },
 
     'enterprise_companion_gtests_win': {
+      'enterprise_companion_integration_tests': {
+        'mixins': [
+          'integrity_high',
+          'updater-default-pool',
+        ],
+      },
       'enterprise_companion_tests': {
         'mixins': [
           'integrity_high',
@@ -2189,7 +2264,6 @@
         },
       },
       'content_unittests': {},
-      'courgette_unittests': {},
       'crypto_unittests': {},
       'display_unittests': {},
       'events_unittests': {},
@@ -2673,7 +2747,13 @@
           'webgpu_telemetry_cts',
         ],
         'args': [
-          '--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures',
+          '--extra-browser-args=--enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles',
+        ],
+        'android_args': [
+          '--extra-browser-args=--use-angle=gles-egl',
+        ],
+        'linux_args': [
+          '--extra-browser-args=--use-angle=gl',
         ],
         'swarming': {
           'shards': 14,
@@ -3206,6 +3286,17 @@
     },
 
     'gpu_passthrough_graphite_telemetry_tests': {
+      'context_lost_passthrough_graphite_tests': {
+        'telemetry_test_name': 'context_lost',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
+        ],
+        'args': [
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite',
+        ],
+        'ci_only': True,
+      },
       'expected_color_pixel_passthrough_graphite_test': {
         'telemetry_test_name': 'expected_color',
         'mixins': [
@@ -3870,11 +3961,14 @@
     },
 
     'headless_shell_wpt_tests_isolated_scripts': {
-      'headless_shell_wpt_tests': {
+      'headless_shell_wpt_tests_include_all': {
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
         ],
         'swarming': {
           'shards': 10,
@@ -4145,18 +4239,6 @@
       },
     },
 
-    'lacros_skylab_tests': {
-      'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && ("dep:lacros_stable" || "dep:lacros") && !informational)',
-        'test_level_retries': 2,
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'timeout_sec': 10800,
-        'shards': 2,
-      },
-    },
-
     'leak_detection_isolated_scripts': {
       'memory.leak_detection': {
         'test': 'performance_test_suite',
@@ -4186,19 +4268,6 @@
     'linux_cfm_gtests': {
       'chromeos_unittests': {},
       'unit_tests': {},
-    },
-
-    'linux_chromeos_browser_tests_require_lacros': {
-      'browser_tests_require_lacros': {
-        'test': 'browser_tests',
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter',
-          '--lacros-chrome-path=lacros_clang_x64/test_lacros_chrome',
-        ],
-        'swarming': {
-          'shards': 8,
-        },
-      },
     },
 
     'linux_chromeos_lacros_gtests': {
@@ -4254,28 +4323,6 @@
       'sandbox_linux_unittests': {},
     },
 
-    'linux_lacros_chrome_browsertests_non_version_skew': {
-      'lacros_chrome_browsertests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
-    'linux_lacros_chrome_browsertests_version_skew': {
-      'lacros_chrome_browsertests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
     'linux_lacros_chrome_gtests': {
       'browser_tests': {
         'swarming': {
@@ -4292,21 +4339,6 @@
           'shards': 6,
         },
       },
-    },
-
-    'linux_lacros_chrome_interactive_ui_tests_version_skew': {
-      'interactive_ui_tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-      },
-    },
-
-    'linux_lacros_specific_gtests': {
-      'ozone_unittests': {},
     },
 
     'linux_specific_chromium_isolated_scripts': {
@@ -4344,6 +4376,28 @@
         ],
         'swarming': {
           'shards': 10,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+      'not_site_per_process_headless_shell_wpt_tests': {
+        'test': 'headless_shell_wpt',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'blink_tests_write_run_histories',
+        ],
+        'args': [
+          '--flag-specific=disable-site-isolation-trials',
+          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+        ],
+        'swarming': {
+          'shards': 1,
         },
         'merge': {
           'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -4469,7 +4523,6 @@
       'monochrome_public_apk_checker': {
         'remove_mixins': [
           'bullhead',
-          'marshmallow',
           'oreo_fleet',
           'pie_fleet',
           'walleye',
@@ -4848,6 +4901,7 @@
 
     'rust_common_gtests': {
       'base_unittests': {},
+      'gfx_unittests': {},
       'mojo_rust_integration_unittests': {},
       'mojo_rust_unittests': {},
       'rust_gtest_interop_unittests': {},
@@ -5342,6 +5396,36 @@
           ],
         },
       },
+      'headless_shell_wpt_tests': {
+        'test': 'headless_shell_wpt',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--test-type',
+          'testharness',
+          'reftest',
+          'crashtest',
+          'print-reftest',
+          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+          '-t',
+          'Release',
+          'external/wpt/webrtc',
+          'external/wpt/webrtc-encoded-transform',
+          'external/wpt/webrtc-extensions',
+          'external/wpt/webrtc-priority',
+          'external/wpt/webrtc-stats',
+          'external/wpt/webrtc-svc',
+        ],
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
     },
 
     'webview_64_cts_tests_gtest': {
@@ -5354,19 +5438,6 @@
         ],
         'swarming': {
           'shards': 2,
-        },
-      },
-    },
-
-    'webview_bot_instrumentation_test_apk_bfcache_mutations_gtest': {
-      'webview_instrumentation_test_apk_bfcache_mutations': {
-        'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--use-apk-under-test-flags-file',
-          '--enable-features=WebViewBackForwardCache',
-        ],
-        'swarming': {
-          'shards': 12,
         },
       },
     },
@@ -5410,23 +5481,6 @@
 
     'webview_bot_unittests_gtest': {
       'android_webview_unittests': {},
-    },
-
-    'webview_cts_tests_bfcache_mutations_gtest': {
-      'webview_cts_tests_bfcache_mutations': {
-        'test': 'webview_cts_tests',
-        'mixins': [
-          'webview_cts_archive',
-        ],
-        'args': [
-          '--use-apk-under-test-flags-file',
-          '--enable-features=WebViewBackForwardCache',
-          '--store-tombstones',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
     },
 
     'webview_cts_tests_gtest': {
@@ -5550,7 +5604,6 @@
 
     'win_specific_chromium_gtests': {
       'chrome_elf_unittests': {},
-      'courgette_unittests': {},
       'delayloads_unittests': {},
       'elevation_service_unittests': {},
       'gcp_unittests': {},
@@ -5649,7 +5702,6 @@
             '--verbose',
           ],
         },
-        'experiment_percentage': 100,
       },
     },
 
@@ -5666,18 +5718,11 @@
             '--verbose',
           ],
         },
-        'experiment_percentage': 100,
       },
     },
   },
 
   'compound_suites': {
-
-    'android_10_rel_gtests': [
-      'android_ar_gtests',
-      'android_trichrome_smoke_tests',
-      'vr_android_specific_chromium_tests',
-    ],
 
     'android_12_dbg_emulator_gtests': [
       'android_trichrome_smoke_tests',
@@ -5686,18 +5731,6 @@
     'android_cronet_clang_coverage_gtests': [
       'cronet_clang_coverage_additional_gtests',
       'cronet_gtests',
-    ],
-
-    'android_marshmallow_gtests': [
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',
-      'chrome_public_tests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'linux_flavor_specific_chromium_gtests',
-      'vr_android_specific_chromium_tests',
-      'vr_platform_specific_chromium_gtests',
-      'webview_instrumentation_test_apk_single_process_mode_gtests',
     ],
 
     'android_oreo_emulator_gtests': [
@@ -5749,13 +5782,6 @@
       'webview_ui_instrumentation_tests',
     ],
 
-    'bfcache_android_gtests': [
-      'bfcache_android_specific_gtests',
-      'bfcache_generic_gtests',
-      'webview_bot_instrumentation_test_apk_bfcache_mutations_gtest',
-      'webview_cts_tests_bfcache_mutations_gtest',
-    ],
-
     'bfcache_linux_gtests': [
       'bfcache_generic_gtests',
       'bfcache_linux_specific_gtests',
@@ -5766,33 +5792,10 @@
       'chrome_private_code_test_isolated_scripts',
     ],
 
-    'chromeos_device_no_gtests': [
-      'chromeos_browser_all_tast_tests',
-      'chromeos_browser_criticalstaging_tast_tests',
-      'chromeos_browser_disabled_tast_tests',
-      'chromeos_browser_integration_tests',
-    ],
-
     'chromeos_vm_gtests': [
       'chromeos_integration_tests_suite',
       'chromeos_system_friendly_gtests',
       'chromeos_vaapi_fakelib_gtests',
-    ],
-
-    'chromeos_vm_gtests_and_tast': [
-      'chromeos_browser_all_tast_tests',
-      'chromeos_browser_criticalstaging_tast_tests',
-      'chromeos_browser_disabled_tast_tests',
-      'chromeos_browser_integration_tests',
-      'chromeos_integration_tests_suite',
-      'chromeos_system_friendly_gtests',
-      'chromeos_vaapi_fakelib_gtests',
-    ],
-
-    'chromeos_vm_preuprev_tast': [
-      'chromeos_browser_cq_medium_tast_tests',
-      'chromeos_device_only_gtests',
-      'chromeos_integration_tests_suite',
     ],
 
     'chromeos_vm_tast': [
@@ -6032,15 +6035,6 @@
       'win_specific_isolated_scripts',
     ],
 
-    'cronet_dbg_isolated_scripts': [
-      'cronet_sizes_suite',
-    ],
-
-    'cronet_rel_isolated_scripts': [
-      'cronet_resource_sizes',
-      'cronet_sizes_suite',
-    ],
-
     'devtools_gtests': [
       'blink_unittests_suite',
       'devtools_browser_tests_suite',
@@ -6117,6 +6111,11 @@
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
+    ],
+
+    'gpu_dawn_android_compat_telemetry_tests': [
+      'gpu_dawn_webgpu_compat_cts',
+      'gpu_dawn_webgpu_cts',
     ],
 
     'gpu_dawn_android_isolated_scripts': [
@@ -6463,14 +6462,13 @@
       'chrome_sizes_suite',
     ],
 
-    'linux_chromeos_specific_and_lacros_dependent_gtests': [
+    'linux_chromeos_rel_cq': [
       'ash_pixel_gtests',
       'aura_gtests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_chromeos_only',
       'chromium_gtests_for_win_and_linux_only',
-      'linux_chromeos_browser_tests_require_lacros',
       'linux_chromeos_lacros_gtests',
       'linux_chromeos_specific_gtests',
       'linux_flavor_specific_chromium_gtests',
@@ -6751,24 +6749,6 @@
     },
 
     'chromeos_ctp_preuprev_tests': {
-      'chromeos_chrome_cq_medium_tast_tests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_device_only_gtests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_integration_tests_suite': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-    },
-
-    'chromeos_ctp_preuprev_tests_extended': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
           'shards-30',
@@ -7241,8 +7221,8 @@
     'ios17_beta_simulator_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_crash_xcuitests': {
@@ -7250,8 +7230,8 @@
           'xcodebuild_sim_runner',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_eg2_cq_tests': {
@@ -7260,8 +7240,8 @@
           'record_failed_tests',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_eg2_tests': {
@@ -7270,15 +7250,15 @@
           'record_failed_tests',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_SE_3RD_GEN_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
+          'SIM_IPHONE_SE_3RD_GEN_18_1',
         ],
       },
     },
@@ -7286,8 +7266,8 @@
     'ios17_sdk_simulator_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_eg2_cq_tests': {
@@ -7295,8 +7275,8 @@
           'xcodebuild_sim_runner',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_eg2_tests': {
@@ -7304,15 +7284,15 @@
           'xcodebuild_sim_runner',
         ],
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
         ],
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_SE_3RD_GEN_17_5',
+          'SIM_IPAD_AIR_5TH_GEN_18_1',
+          'SIM_IPHONE_14_18_1',
+          'SIM_IPHONE_SE_3RD_GEN_18_1',
         ],
       },
     },
@@ -7714,57 +7694,6 @@
       },
     },
 
-    'lacros_skylab_tests_amd64_generic_rel_gtest': {
-      'chromeos_integration_tests_suite': {
-        'mixins': [
-          'ci_only',
-        ],
-        'variants': [
-          'CROS_VOLTEER_PUBLIC_LKGM',
-        ],
-      },
-    },
-
-    'lacros_skylab_tests_amd64_generic_rel_tast': {
-      'lacros_skylab_tests': {
-        'mixins': [
-          'ci_only',
-        ],
-        'variants': [
-          'CROS_VOLTEER_PUBLIC_LKGM',
-        ],
-      },
-    },
-
-    'linux_lacros_gtests': {
-      'aura_gtests': {},
-      'chromium_gtests': {},
-      'chromium_gtests_for_devices_with_graphical_output': {},
-      'chromium_gtests_for_linux_and_chromeos_only': {},
-      'chromium_gtests_for_win_and_linux_only': {},
-      'linux_chromeos_lacros_gtests': {},
-      'linux_flavor_specific_chromium_gtests': {},
-      'linux_lacros_chrome_browsertests_non_version_skew': {},
-      'linux_lacros_chrome_browsertests_version_skew': {
-        'variants': [
-          'LACROS_VERSION_SKEW_BETA',
-          'LACROS_VERSION_SKEW_CANARY',
-          'LACROS_VERSION_SKEW_DEV',
-          'LACROS_VERSION_SKEW_STABLE',
-        ],
-      },
-      'linux_lacros_chrome_interactive_ui_tests_version_skew': {
-        'variants': [
-          'LACROS_VERSION_SKEW_BETA',
-          'LACROS_VERSION_SKEW_CANARY',
-          'LACROS_VERSION_SKEW_DEV',
-          'LACROS_VERSION_SKEW_STABLE',
-        ],
-      },
-      'linux_lacros_specific_gtests': {},
-      'non_android_chromium_gtests': {},
-    },
-
     'linux_optional_gpu_tests_rel_gpu_telemetry_tests': {
       'gpu_common_and_optional_telemetry_tests': {
         'variants': [
@@ -7879,13 +7808,6 @@
       'optimization_guide_nogpu_gtests': {},
     },
 
-    'optimization_guide_desktop_script_tests': {
-      'model_validation_tests_light_suite': {},
-      'model_validation_tests_suite': {},
-      'ondevice_quality_tests_suite': {},
-      'ondevice_stability_tests_suite': {},
-    },
-
     'optimization_guide_linux_gtests': {
       'optimization_guide_gpu_gtests': {
         'variants': [
@@ -7923,6 +7845,21 @@
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
+    },
+
+    'optimization_guide_mac_script_tests': {
+      'chrome_ai_wpt_tests_suite': {},
+      'model_validation_tests_light_suite': {},
+      'model_validation_tests_suite': {},
+      'ondevice_quality_tests_suite': {},
+      'ondevice_stability_tests_suite': {},
+    },
+
+    'optimization_guide_win_arm64_script_tests': {
+      'model_validation_tests_light_suite': {},
+      'model_validation_tests_suite': {},
+      'ondevice_quality_tests_suite': {},
+      'ondevice_stability_tests_suite': {},
     },
 
     'optimization_guide_win_gtests': {

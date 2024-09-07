@@ -13,6 +13,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -42,7 +43,7 @@ constexpr int kDialogTitleMarginEndDp = 0;
 
 ToastDialogView::ToastDialogView(const std::u16string& app_name,
                                  base::OnceClosure dismissed_callback) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCloseCallback(std::move(dismissed_callback));
   SetModalType(ui::mojom::ModalType::kNone);
   SetShowCloseButton(true);

@@ -201,10 +201,6 @@ void LabelSliderButton::OnSelectedChanged() {
   UpdateLabelColor();
 }
 
-int LabelSliderButton::GetHeightForWidth(int w) const {
-  return kLabelButtonHeight;
-}
-
 gfx::Size LabelSliderButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   gfx::Insets insets = GetInsets();

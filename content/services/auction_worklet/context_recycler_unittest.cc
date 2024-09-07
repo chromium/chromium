@@ -253,8 +253,17 @@ class ContextRecyclerTest : public testing::Test {
       // Exclude no ads.
       base::RepeatingCallback<bool(const std::string&)> ad_callback =
           base::BindRepeating([](const std::string&) { return false; });
+      // Exclude no reporting ids.
+      base::RepeatingCallback<bool(const std::string&,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>)>
+          reporting_id_set_callback = base::BindRepeating(
+              [](const std::string&, base::optional_ref<const std::string>,
+                 base::optional_ref<const std::string>,
+                 base::optional_ref<const std::string>) { return false; });
       ASSERT_TRUE(context_recycler.interest_group_lazy_filler()->FillInObject(
-          arg, ad_callback, ad_callback));
+          arg, ad_callback, ad_callback, reporting_id_set_callback));
       ASSERT_TRUE(
           context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(
               arg));
@@ -282,8 +291,18 @@ class ContextRecyclerTest : public testing::Test {
         // its lifetime doesn't unexpectedly matter.
         base::RepeatingCallback<bool(const std::string&)> ad_callback =
             base::BindRepeating([](const std::string&) { return false; });
+        // Use a new, short-lived callback that excludes no reporting id sets,
+        // to make sure its lifetime doesn't unexpectedly matter.
+        base::RepeatingCallback<bool(const std::string&,
+                                     base::optional_ref<const std::string>,
+                                     base::optional_ref<const std::string>,
+                                     base::optional_ref<const std::string>)>
+            reporting_id_set_callback = base::BindRepeating(
+                [](const std::string&, base::optional_ref<const std::string>,
+                   base::optional_ref<const std::string>,
+                   base::optional_ref<const std::string>) { return false; });
         ASSERT_TRUE(context_recycler.interest_group_lazy_filler()->FillInObject(
-            arg, ad_callback, ad_callback));
+            arg, ad_callback, ad_callback, reporting_id_set_callback));
       }
       if (bs_params) {
         ASSERT_TRUE(context_recycler.bidding_browser_signals_lazy_filler()
@@ -860,7 +879,10 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
 // Exercise SetBidBindings, and make sure they reset properly.
 TEST_F(ContextRecyclerTest, SetBidBindings) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(blink::features::kFledgeMultiBid);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::kFledgeMultiBid,
+                            blink::features::kFledgeAuctionDealSupport},
+      /*disabled_features=*/{});
 
   const char kScript[] = R"(
     function test(bid) {
@@ -883,6 +905,34 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
   base::RepeatingCallback<bool(const std::string&)> ignore_arg_return_false =
       base::BindRepeating([](const std::string& ignored) { return false; });
 
+  base::RepeatingCallback<bool(const std::string&,
+                               base::optional_ref<const std::string>,
+                               base::optional_ref<const std::string>,
+                               base::optional_ref<const std::string>)>
+      matches_selectable1 = base::BindRepeating(
+          [](const std::string& ad_render_url,
+             base::optional_ref<const std::string> buyer_reporting_id,
+             base::optional_ref<const std::string>
+                 buyer_and_seller_reporting_id,
+             base::optional_ref<const std::string>
+                 selectable_buyer_and_seller_reporting_id) {
+            return ad_render_url == "https://example2.test/ad2" &&
+                   buyer_reporting_id.has_value() &&
+                   *buyer_reporting_id == "buyer1" &&
+                   buyer_and_seller_reporting_id.has_value() &&
+                   *buyer_and_seller_reporting_id == "common1" &&
+                   selectable_buyer_and_seller_reporting_id.has_value() &&
+                   *selectable_buyer_and_seller_reporting_id == "selectable1";
+          });
+  base::RepeatingCallback<bool(const std::string&,
+                               base::optional_ref<const std::string>,
+                               base::optional_ref<const std::string>,
+                               base::optional_ref<const std::string>)>
+      ignore_args_return_false = base::BindRepeating(
+          [](const std::string&, base::optional_ref<const std::string>,
+             base::optional_ref<const std::string>,
+             base::optional_ref<const std::string>) { return false; });
+
   {
     mojom::BidderWorkletNonSharedParamsPtr params =
         mojom::BidderWorkletNonSharedParams::New();
@@ -896,7 +946,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
@@ -934,7 +985,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
@@ -976,7 +1028,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(100));
 
@@ -1018,7 +1071,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(200));
 
@@ -1074,7 +1128,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(200));
 
@@ -1117,7 +1172,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/matches_ad1,
-        /*is_component_ad_excluded=*/matches_ad1);
+        /*is_component_ad_excluded=*/matches_ad1,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
@@ -1151,7 +1207,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/matches_ad1,
-        /*is_component_ad_excluded=*/matches_ad1);
+        /*is_component_ad_excluded=*/matches_ad1,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
@@ -1187,7 +1244,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         blink::AdCurrency::From("USD"),
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/matches_ad1,
-        /*is_component_ad_excluded=*/matches_ad1);
+        /*is_component_ad_excluded=*/matches_ad1,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
     bid_dict.Set("render", std::string("https://example2.test/ad2"));
@@ -1225,7 +1283,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         blink::AdCurrency::From("CAD"),
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/matches_ad1,
-        /*is_component_ad_excluded=*/matches_ad1);
+        /*is_component_ad_excluded=*/matches_ad1,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
     bid_dict.Set("render", std::string("https://example2.test/ad2"));
@@ -1261,7 +1320,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         blink::AdCurrency::From("CAD"),
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/matches_ad1,
-        /*is_component_ad_excluded=*/matches_ad1);
+        /*is_component_ad_excluded=*/matches_ad1,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
     bid_dict.Set("render", std::string("https://example2.test/ad2"));
@@ -1285,6 +1345,204 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
   }
 
   {
+    // Check that all reporting id fields - buyer, buyer_and_seller, and
+    // selected_buyer_and_seller - are set on the bid and
+    // `BidWithWorkletOnlyMetadata`.
+    mojom::BidderWorkletNonSharedParamsPtr params =
+        mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
+    params->ads.emplace();
+    params->ads.value().emplace_back(
+        GURL("https://example2.test/ad2"), /*metadata=*/std::nullopt,
+        /*size_group=*/std::nullopt, /*buyer_reporting_id=*/"buyer1",
+        /*buyer_and_seller_reporting_id=*/"common1",
+        /*selectable_buyer_and_seller_reporting_ids=*/
+        std::vector<std::string>({"selectable1", "selectable2"}),
+        /*ad_render_id=*/std::nullopt,
+        /*allowed_reporting_origins=*/std::nullopt);
+
+    context_recycler.set_bid_bindings()->ReInitialize(
+        base::TimeTicks::Now(),
+        /*has_top_level_seller_origin=*/false, params.get(),
+        /*per_buyer_currency=*/std::nullopt,
+        /*multi_bid_limit=*/5,
+        /*is_ad_excluded=*/ignore_arg_return_false,
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
+
+    task_environment_.FastForwardBy(base::Milliseconds(500));
+
+    gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    bid_dict.Set("render", std::string("https://example2.test/ad2"));
+    bid_dict.Set("bid", 10.0);
+    bid_dict.Set("selectedBuyerAndSellerReportingId",
+                 std::string("selectable1"));
+
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), bid_dict));
+
+    EXPECT_THAT(error_msgs, ElementsAre());
+    ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bids());
+    auto bids = context_recycler.set_bid_bindings()->TakeBids();
+    ASSERT_EQ(1u, bids.size());
+    EXPECT_EQ("https://example2.test/ad2", bids[0].bid->ad_descriptor.url);
+    EXPECT_EQ(10.0, bids[0].bid->bid);
+    EXPECT_EQ(base::Milliseconds(500), bids[0].bid->bid_duration);
+
+    ASSERT_TRUE(bids[0].buyer_reporting_id.has_value());
+    EXPECT_EQ("buyer1", *bids[0].buyer_reporting_id);
+    ASSERT_TRUE(bids[0].buyer_and_seller_reporting_id.has_value());
+    EXPECT_EQ("common1", *bids[0].buyer_and_seller_reporting_id);
+    ASSERT_TRUE(
+        bids[0].bid->selected_buyer_and_seller_reporting_id.has_value());
+    EXPECT_EQ("selectable1",
+              *bids[0].bid->selected_buyer_and_seller_reporting_id);
+  }
+
+  {
+    // Fail when `selectedBuyerAndSellerReportingId` is not one of the elements
+    // from the IG.ad's `selectableBuyerAndSellerReportingIds`.
+    mojom::BidderWorkletNonSharedParamsPtr params =
+        mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
+    params->ads.emplace();
+    params->ads.value().emplace_back(
+        GURL("https://example2.test/ad2"), /*metadata=*/std::nullopt,
+        /*size_group=*/std::nullopt, /*buyer_reporting_id=*/"buyer1",
+        /*buyer_and_seller_reporting_id=*/"common1",
+        /*selectable_buyer_and_seller_reporting_ids=*/
+        std::vector<std::string>({"selectable1", "selectable2"}),
+        /*ad_render_id=*/std::nullopt,
+        /*allowed_reporting_origins=*/std::nullopt);
+
+    context_recycler.set_bid_bindings()->ReInitialize(
+        base::TimeTicks::Now(),
+        /*has_top_level_seller_origin=*/false, params.get(),
+        /*per_buyer_currency=*/std::nullopt,
+        /*multi_bid_limit=*/5,
+        /*is_ad_excluded=*/ignore_arg_return_false,
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
+
+    task_environment_.FastForwardBy(base::Milliseconds(500));
+
+    gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    bid_dict.Set("render", std::string("https://example2.test/ad2"));
+    bid_dict.Set("bid", 10.0);
+    bid_dict.Set("selectedBuyerAndSellerReportingId",
+                 std::string("selectable3"));
+
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), bid_dict));
+
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.test/script.js:3 Uncaught "
+                            "TypeError: Invalid selected buyer and seller "
+                            "reporting id."));
+    auto bid_info = context_recycler.set_bid_bindings()->TakeBids();
+    EXPECT_EQ(0u, bid_info.size());
+  }
+
+  {
+    // use reporting id set filter function - reporting ids permitted.
+    mojom::BidderWorkletNonSharedParamsPtr params =
+        mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
+    params->ads.emplace();
+    params->ads.value().emplace_back(
+        GURL("https://example2.test/ad2"), /*metadata=*/std::nullopt,
+        /*size_group=*/std::nullopt, /*buyer_reporting_id=*/"buyer1",
+        /*buyer_and_seller_reporting_id=*/"common1",
+        /*selectable_buyer_and_seller_reporting_ids=*/
+        std::vector<std::string>({"selectable1", "selectable2"}),
+        /*ad_render_id=*/std::nullopt,
+        /*allowed_reporting_origins=*/std::nullopt);
+
+    context_recycler.set_bid_bindings()->ReInitialize(
+        base::TimeTicks::Now(),
+        /*has_top_level_seller_origin=*/false, params.get(),
+        /*per_buyer_currency=*/std::nullopt,
+        /*multi_bid_limit=*/5,
+        /*is_ad_excluded=*/ignore_arg_return_false,
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/matches_selectable1);
+
+    task_environment_.FastForwardBy(base::Milliseconds(500));
+
+    gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    bid_dict.Set("render", std::string("https://example2.test/ad2"));
+    bid_dict.Set("bid", 10.0);
+    bid_dict.Set("selectedBuyerAndSellerReportingId",
+                 std::string("selectable2"));
+
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), bid_dict));
+
+    EXPECT_THAT(error_msgs, ElementsAre());
+    ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bids());
+    auto bids = context_recycler.set_bid_bindings()->TakeBids();
+    ASSERT_EQ(1u, bids.size());
+    EXPECT_EQ("https://example2.test/ad2", bids[0].bid->ad_descriptor.url);
+    EXPECT_EQ(10.0, bids[0].bid->bid);
+    EXPECT_EQ(base::Milliseconds(500), bids[0].bid->bid_duration);
+
+    ASSERT_TRUE(bids[0].buyer_reporting_id.has_value());
+    EXPECT_EQ("buyer1", *bids[0].buyer_reporting_id);
+    ASSERT_TRUE(bids[0].buyer_and_seller_reporting_id.has_value());
+    EXPECT_EQ("common1", *bids[0].buyer_and_seller_reporting_id);
+    ASSERT_TRUE(
+        bids[0].bid->selected_buyer_and_seller_reporting_id.has_value());
+    EXPECT_EQ("selectable2",
+              *bids[0].bid->selected_buyer_and_seller_reporting_id);
+  }
+
+  {
+    // use reporting id set filter function - reporting ids permitted.
+    mojom::BidderWorkletNonSharedParamsPtr params =
+        mojom::BidderWorkletNonSharedParams::New();
+    ContextRecyclerScope scope(context_recycler);
+    params->ads.emplace();
+    params->ads.value().emplace_back(
+        GURL("https://example2.test/ad2"), /*metadata=*/std::nullopt,
+        /*size_group=*/std::nullopt, /*buyer_reporting_id=*/"buyer1",
+        /*buyer_and_seller_reporting_id=*/"common1",
+        /*selectable_buyer_and_seller_reporting_ids=*/
+        std::vector<std::string>({"selectable1", "selectable2"}),
+        /*ad_render_id=*/std::nullopt,
+        /*allowed_reporting_origins=*/std::nullopt);
+
+    context_recycler.set_bid_bindings()->ReInitialize(
+        base::TimeTicks::Now(),
+        /*has_top_level_seller_origin=*/false, params.get(),
+        /*per_buyer_currency=*/std::nullopt,
+        /*multi_bid_limit=*/5,
+        /*is_ad_excluded=*/ignore_arg_return_false,
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/matches_selectable1);
+
+    task_environment_.FastForwardBy(base::Milliseconds(500));
+
+    gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    bid_dict.Set("render", std::string("https://example2.test/ad2"));
+    bid_dict.Set("bid", 10.0);
+    bid_dict.Set("selectedBuyerAndSellerReportingId",
+                 std::string("selectable1"));
+
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), bid_dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.test/script.js:3 Uncaught "
+                            "TypeError: Invalid selected buyer and seller "
+                            "reporting id."));
+    auto bid_info = context_recycler.set_bid_bindings()->TakeBids();
+    EXPECT_EQ(0u, bid_info.size());
+  }
+
+  {
     // Successful multiple bids.
     v8::Isolate* isolate = helper_->isolate();
     mojom::BidderWorkletNonSharedParamsPtr params =
@@ -1302,7 +1560,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     v8::LocalVector<v8::Value> bids(isolate);
 
@@ -1347,7 +1606,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/2,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     v8::LocalVector<v8::Value> bids(isolate);
 
@@ -1394,7 +1654,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     v8::LocalVector<v8::Value> bids(isolate);
 
@@ -1442,7 +1703,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     v8::LocalVector<v8::Value> bids(isolate);
 
@@ -1484,7 +1746,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*per_buyer_currency=*/std::nullopt,
         /*multi_bid_limit=*/5,
         /*is_ad_excluded=*/ignore_arg_return_false,
-        /*is_component_ad_excluded=*/ignore_arg_return_false);
+        /*is_component_ad_excluded=*/ignore_arg_return_false,
+        /*is_reporting_id_set_excluded=*/ignore_args_return_false);
 
     v8::LocalVector<v8::Value> bids(isolate);
     std::vector<std::string> error_msgs;
@@ -1695,6 +1958,179 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller3) {
       "\"renderUrl\":\"https://ad-component.test/2\"}],"
       "\"prevWins\":null,"
       "\"prevWinsMs\":null}");
+}
+
+TEST_F(ContextRecyclerTest, InterestGroupLazyFillerUsesReportingIdSetFilter) {
+  mojom::BidderWorkletNonSharedParamsPtr ig_params =
+      mojom::BidderWorkletNonSharedParams::New();
+  ig_params->ads.emplace();
+  ig_params->ads.value().emplace_back(
+      GURL("https://example2.test/ad2"), /*metadata=*/std::nullopt,
+      /*size_group=*/std::nullopt, /*buyer_reporting_id=*/"buyer1",
+      /*buyer_and_seller_reporting_id=*/"common1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>(
+          {"selectable1", "selectable2", "selectable3", "selectable4"}),
+      /*ad_render_id=*/std::nullopt,
+      /*allowed_reporting_origins=*/std::nullopt);
+
+  const GURL kBiddingSignalsWasmHelperUrl("https://example.test/wasm_helper");
+  const GURL kTrustedBiddingSignalsUrl("https://example.test/trusted_signals");
+
+  const char kScript[] = R"(
+    function test(obj) {
+      return JSON.stringify(obj);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddInterestGroupLazyFiller();
+    context_recycler.interest_group_lazy_filler()->ReInitialize(
+        &bidding_logic_url_, &kBiddingSignalsWasmHelperUrl,
+        &kTrustedBiddingSignalsUrl, ig_params.get());
+
+    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
+    // Exclude no ads.
+    base::RepeatingCallback<bool(const std::string&)> ad_callback =
+        base::BindRepeating([](const std::string&) { return false; });
+
+    // Exclude selectable1 and selectable3.
+    base::RepeatingCallback<bool(const std::string&,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>)>
+        reporting_id_set_callback = base::BindRepeating(
+            [](const std::string& ad_render_url,
+               base::optional_ref<const std::string> buyer_reporting_id,
+               base::optional_ref<const std::string>
+                   buyer_and_seller_reporting_id,
+               base::optional_ref<const std::string>
+                   selectable_buyer_and_seller_reporting_id) {
+              return ad_render_url == "https://example2.test/ad2" &&
+                     buyer_reporting_id.has_value() &&
+                     *buyer_reporting_id == "buyer1" &&
+                     buyer_and_seller_reporting_id.has_value() &&
+                     *buyer_and_seller_reporting_id == "common1" &&
+                     selectable_buyer_and_seller_reporting_id.has_value() &&
+                     (*selectable_buyer_and_seller_reporting_id ==
+                          "selectable1" ||
+                      *selectable_buyer_and_seller_reporting_id ==
+                          "selectable3");
+            });
+
+    ASSERT_TRUE(context_recycler.interest_group_lazy_filler()->FillInObject(
+        arg, ad_callback, ad_callback, reporting_id_set_callback));
+
+    std::vector<std::string> error_msgs;
+    v8::MaybeLocal<v8::Value> maybe_result =
+        Run(scope, script, "test", error_msgs, arg);
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    v8::Local<v8::Value> result;
+    ASSERT_TRUE(maybe_result.ToLocal(&result));
+    std::string str_result;
+    ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &str_result));
+
+    // Note that this includes only `selectableBuyerAndSellerReportingIds`
+    // "selectable2" and "selectable4" because the other two were excluded.
+    std::string_view expected_result =
+        "{\"biddingLogicURL\":\"https://example.test/script.js\","
+        "\"biddingLogicUrl\":\"https://example.test/script.js\","
+        "\"biddingWasmHelperURL\":\"https://example.test/wasm_helper\","
+        "\"biddingWasmHelperUrl\":\"https://example.test/wasm_helper\","
+        "\"trustedBiddingSignalsURL\":\"https://example.test/trusted_signals\","
+        "\"trustedBiddingSignalsUrl\":\"https://example.test/trusted_signals\","
+        "\"useBiddingSignalsPrioritization\":false,"
+        "\"ads\":[{\"renderURL\":\"https://example2.test/ad2\","
+        "\"renderUrl\":\"https://example2.test/ad2\","
+        "\"buyerReportingId\":\"buyer1\","
+        "\"buyerAndSellerReportingId\":\"common1\","
+        "\"selectableBuyerAndSellerReportingIds\":"
+        "[\"selectable2\",\"selectable4\"]}]}";
+    EXPECT_EQ(expected_result, str_result);
+  }
+}
+
+TEST_F(ContextRecyclerTest,
+       InterestGroupLazyFillerDoesNotSetReportingIdsWithoutSelected) {
+  mojom::BidderWorkletNonSharedParamsPtr ig_params =
+      mojom::BidderWorkletNonSharedParams::New();
+  ig_params->ads.emplace();
+  ig_params->ads.value().emplace_back(
+      GURL("https://example2.test/ad2"), /*metadata=*/std::nullopt,
+      /*size_group=*/std::nullopt, /*buyer_reporting_id=*/"buyer1",
+      /*buyer_and_seller_reporting_id=*/"common1",
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+      /*ad_render_id=*/std::nullopt,
+      /*allowed_reporting_origins=*/std::nullopt);
+
+  const GURL kBiddingSignalsWasmHelperUrl("https://example.test/wasm_helper");
+  const GURL kTrustedBiddingSignalsUrl("https://example.test/trusted_signals");
+
+  const char kScript[] = R"(
+    function test(obj) {
+      return JSON.stringify(obj);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddInterestGroupLazyFiller();
+    context_recycler.interest_group_lazy_filler()->ReInitialize(
+        &bidding_logic_url_, &kBiddingSignalsWasmHelperUrl,
+        &kTrustedBiddingSignalsUrl, ig_params.get());
+
+    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
+    // Exclude no ads.
+    base::RepeatingCallback<bool(const std::string&)> ad_callback =
+        base::BindRepeating([](const std::string&) { return false; });
+
+    // Exclude no reporting ids.
+    base::RepeatingCallback<bool(const std::string&,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>)>
+        reporting_id_set_callback = base::BindRepeating(
+            [](const std::string&, base::optional_ref<const std::string>,
+               base::optional_ref<const std::string>,
+               base::optional_ref<const std::string>) { return false; });
+
+    ASSERT_TRUE(context_recycler.interest_group_lazy_filler()->FillInObject(
+        arg, ad_callback, ad_callback, reporting_id_set_callback));
+
+    std::vector<std::string> error_msgs;
+    v8::MaybeLocal<v8::Value> maybe_result =
+        Run(scope, script, "test", error_msgs, arg);
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    v8::Local<v8::Value> result;
+    ASSERT_TRUE(maybe_result.ToLocal(&result));
+    std::string str_result;
+    ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &str_result));
+
+    // Note that this includes only `selectableBuyerAndSellerReportingIds`
+    // "selectable2" and "selectable4" because the other two were excluded.
+    std::string_view expected_result =
+        "{\"biddingLogicURL\":\"https://example.test/script.js\","
+        "\"biddingLogicUrl\":\"https://example.test/script.js\","
+        "\"biddingWasmHelperURL\":\"https://example.test/wasm_helper\","
+        "\"biddingWasmHelperUrl\":\"https://example.test/wasm_helper\","
+        "\"trustedBiddingSignalsURL\":\"https://example.test/trusted_signals\","
+        "\"trustedBiddingSignalsUrl\":\"https://example.test/trusted_signals\","
+        "\"useBiddingSignalsPrioritization\":false,"
+        "\"ads\":[{\"renderURL\":\"https://example2.test/ad2\","
+        "\"renderUrl\":\"https://example2.test/ad2\"}]}";
+    EXPECT_EQ(expected_result, str_result);
+  }
 }
 
 TEST_F(ContextRecyclerTest, SharedStorageMethods) {
@@ -2586,7 +3022,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   // Basic test
@@ -3038,7 +3475,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   // Debug mode enabled with no debug key
@@ -3299,11 +3737,13 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
  public:
   ContextRecyclerPrivateAggregationExtensionsEnabledTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kPrivateAggregationApi,
-                               {{"fledge_extensions_enabled", "true"}}},
-                              {blink::features::
-                                   kPrivateAggregationApiFilteringIds,
-                               {}}},
+        /*enabled_features=*/
+        {{blink::features::kPrivateAggregationApi,
+          {{"fledge_extensions_enabled", "true"}}},
+         {blink::features::kPrivateAggregationApiFilteringIds, {}},
+         {blink::features::
+              kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
+          {}}},
         /*disabled_features=*/{});
   }
 
@@ -3385,6 +3825,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
       args.value += 1;
       privateAggregation.contributeToHistogramOnEvent('reserved.always', args);
       args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent('reserved.once', args);
+      args.value += 1;
       // Arbitrary unreserved event type.
       privateAggregation.contributeToHistogramOnEvent('click', args);
     }
@@ -3425,7 +3867,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   // Basic test
@@ -3444,7 +3887,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     auto pa_requests = context_recycler.private_aggregation_bindings()
                            ->TakePrivateAggregationRequests();
 
-    ASSERT_EQ(pa_requests.size(), 4u);
+    ASSERT_EQ(pa_requests.size(), 5u);
     EXPECT_EQ(
         pa_requests[0],
         CreateForEventRequest(
@@ -3465,8 +3908,15 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             /*event_type=*/
             Reserved(
                 auction_worklet::mojom::ReservedEventType::kReservedAlways)));
-    EXPECT_EQ(pa_requests[3],
-              CreateForEventRequest(/*bucket=*/123, /*value=*/48,
+    EXPECT_EQ(
+        pa_requests[3],
+        CreateForEventRequest(
+            /*bucket=*/123, /*value=*/48,
+            /*event_type=*/
+            Reserved(
+                auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+    EXPECT_EQ(pa_requests[4],
+              CreateForEventRequest(/*bucket=*/123, /*value=*/49,
                                     /*event_type=*/NonReserved("click")));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -3488,7 +3938,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.test/script.js:40 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:42 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent(): at "
                     "least 2 argument(s) are required."));
 
@@ -3509,7 +3959,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.test/script.js:44 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:46 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent(): at "
                     "least 2 argument(s) are required."));
 
@@ -3531,7 +3981,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.test/script.js:51 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:53 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent() "
                     "'contribution' argument: Value passed as dictionary is "
                     "neither object, null, nor undefined."));
@@ -4461,6 +4911,113 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
   }
 }
 
+class ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest
+    : public ContextRecyclerPrivateAggregationExtensionsEnabledTest {
+ public:
+  ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::
+            kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest,
+       PrivateAggregationForEventBindings) {
+  // Test with more recent additions not on.
+  // For now, this includes `reserved.once`.
+
+  const char kScript[] = R"(
+    function testDifferentEventTypes(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', args);
+      // Add 1 to value, to let reserved.loss request gets different
+      // contribution from reserved.win request.
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent('reserved.loss', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent('reserved.once', args);
+      args.value += 1;
+      // Arbitrary unreserved event type.
+      privateAggregation.contributeToHistogramOnEvent('click', args);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  for (bool allow_reserved_once : {false, true}) {
+    ContextRecycler context_recycler(helper_.get());
+    {
+      ContextRecyclerScope scope(context_recycler);  // Initialize context
+      context_recycler.AddPrivateAggregationBindings(
+          /*private_aggregation_permissions_policy_allowed=*/true,
+          /*reserved_once_allowed=*/allow_reserved_once);
+    }
+
+    // Basic test
+    {
+      ContextRecyclerScope scope(context_recycler);
+      std::vector<std::string> error_msgs;
+
+      gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+      dict.Set("bucket", std::string("123"));
+      dict.Set("value", 45);
+
+      Run(scope, script, "testDifferentEventTypes", error_msgs,
+          gin::ConvertToV8(helper_->isolate(), dict));
+      // No warning about reserved.once even if we're in context where it's
+      // not permitted, since the flag for it is on, so it doesn't exist as far
+      // as our behavior is concerned.
+      EXPECT_THAT(error_msgs, ElementsAre());
+
+      auto pa_requests = context_recycler.private_aggregation_bindings()
+                             ->TakePrivateAggregationRequests();
+
+      ASSERT_EQ(pa_requests.size(), 4u);
+      EXPECT_EQ(
+          pa_requests[0],
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/45,
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedWin)));
+      EXPECT_EQ(
+          pa_requests[1],
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/46,
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedLoss)));
+      EXPECT_EQ(
+          pa_requests[2],
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/47,
+              /*event_type=*/
+              Reserved(
+                  auction_worklet::mojom::ReservedEventType::kReservedAlways)));
+
+      // No reserved.once event here!
+
+      EXPECT_EQ(pa_requests[3],
+                CreateForEventRequest(/*bucket=*/123, /*value=*/49,
+                                      /*event_type=*/NonReserved("click")));
+
+      EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                      ->TakePrivateAggregationRequests()
+                      .empty());
+    }
+  }
+}
+
 class ContextRecyclerPrivateAggregationDisabledTest
     : public ContextRecyclerTest {
  public:
@@ -4494,7 +5051,8 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   {
@@ -4515,6 +5073,54 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
     ASSERT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
                     .empty());
+  }
+}
+
+// Exercise `reportContributionsForEvent()` with 'reserved.once' disabled.
+TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
+       PrivateAggregationForEventBindingsReservedOnceOff) {
+  const char kScript[] = R"(
+    function testReservedOnce(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.contributeToHistogramOnEvent('reserved.once', args);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddPrivateAggregationBindings(
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/false);
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testReservedOnce", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogramOnEvent() "
+                    "reserved.once is not available in reporting methods."));
+
+    auto pa_requests = context_recycler.private_aggregation_bindings()
+                           ->TakePrivateAggregationRequests();
+
+    EXPECT_EQ(pa_requests.size(), 0u);
   }
 }
 
@@ -4552,7 +5158,8 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   {
@@ -4615,7 +5222,8 @@ TEST_F(ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   {
@@ -4680,7 +5288,8 @@ TEST_F(ContextRecyclerPrivateAggregationOnlyFilteringIdsDisabledTest,
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
   }
 
   const auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest =

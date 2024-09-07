@@ -97,6 +97,6 @@ found in the LICENSE file.
                 android:layout_marginStart="30dp"
                 android:layout_toEndOf="@id/secondary_button"
                 android:visibility="gone"
-                style="@style/FilledButton.Flat"/>
+                style="@style/FilledButton"/>
     </RelativeLayout>
 </LinearLayout>

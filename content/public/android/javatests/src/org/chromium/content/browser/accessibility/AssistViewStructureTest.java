@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -283,6 +284,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_SNAPSHOT_STRESS_TESTS)
+    @DisabledTest(message = "crbug.com/362208929")
     public void testMaxNodesLimit_ignoredDuringStressTests() throws Throwable {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

@@ -122,9 +122,7 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
     mojom::CompositorFrameSinkClient* client,
     FrameSinkManagerImpl* frame_sink_manager,
     const FrameSinkId& frame_sink_id,
-    bool is_root,
-    std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-        rir_client)
+    bool is_root)
     : client_(client),
       frame_sink_manager_(frame_sink_manager),
       surface_manager_(frame_sink_manager->surface_manager()),
@@ -136,16 +134,6 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
           features::kBlitRequestsForViewTransition)) {
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
-
-  if (rir_client.has_value()) {
-    DCHECK(rir_client->is_valid());
-    DCHECK(input::TransferInputToViz() && !is_root);
-    render_input_router_.emplace(
-        /* host= */ nullptr,
-        /* fling_scheduler */ nullptr,
-        /* delegate= */ nullptr,
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-  }
 }
 
 CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
@@ -483,6 +471,12 @@ void CompositorFrameSinkSupport::ReturnResources(
   if (resources.empty())
     return;
 
+  if (layer_context_) {
+    // Resource management is delegated to LayerContext when it's in use.
+    layer_context_->ReturnResources(std::move(resources));
+    return;
+  }
+
   // When features::OnBeginFrameAcks is disabled we attempt to return resources
   // in DidReceiveCompositorFrameAck. However if there are no pending frames
   // then we don't expect that signal soon. In which case we return the
@@ -612,10 +606,6 @@ void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
     return;
   }
   frame_sink_type_ = type;
-  // `render_input_router_` shouldn't have been initialized for non-layer tree
-  // frame sinks.
-  DCHECK(!render_input_router_.has_value() ||
-         type == mojom::CompositorFrameSinkType::kLayerTree);
 
   if (frame_sink_manager_->frame_counter()) {
     frame_sink_manager_->frame_counter()->SetFrameSinkType(frame_sink_id_,
@@ -674,6 +664,7 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_DID_NOT_PRODUCE_FRAME);
         frame_sink_id_.WriteIntoTrace(ctx.Wrap(data->set_frame_sink_id()));
+        data->set_display_trace_id(ack.trace_id);
       });
   DCHECK(ack.frame_id.IsSequenceValid());
 
@@ -795,6 +786,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_RECEIVE_COMPOSITOR_FRAME);
         frame_sink_id_.WriteIntoTrace(ctx.Wrap(data->set_frame_sink_id()));
+        data->set_display_trace_id(frame.metadata.begin_frame_ack.trace_id);
       });
 
   DCHECK(local_surface_id.is_valid());
@@ -1174,6 +1166,17 @@ void CompositorFrameSinkSupport::UpdateDisplayRootReference(
 }
 
 void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
+  int64_t trace_id = ComputeTraceId();
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(trace_id), [trace_id](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_ISSUE_BEGIN_FRAME);
+        data->set_display_trace_id(trace_id);
+      });
+
   if (compositor_frame_callback_) {
     callback_received_begin_frame_ = true;
     UpdateNeedsBeginFramesInternal();
@@ -1208,16 +1211,7 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     if (!last_activated_surface_id_.is_valid())
       adjusted_args.animate_only = false;
 
-    adjusted_args.trace_id = ComputeTraceId();
-    TRACE_EVENT(
-        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-        perfetto::Flow::Global((adjusted_args.trace_id)),
-        [&](perfetto::EventContext ctx) {
-          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-          auto* data = event->set_chrome_graphics_pipeline();
-          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                             StepName::STEP_ISSUE_BEGIN_FRAME);
-        });
+    adjusted_args.trace_id = trace_id;
     adjusted_args.frames_throttled_since_last = frames_throttled_since_last_;
     frames_throttled_since_last_ = 0;
 

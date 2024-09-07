@@ -46,7 +46,9 @@ using content::WebContentsDelegate;
 
 namespace web_contents_delegate_android {
 
-WebContentsDelegateAndroid::WebContentsDelegateAndroid(JNIEnv* env, jobject obj)
+WebContentsDelegateAndroid::WebContentsDelegateAndroid(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : weak_java_delegate_(env, obj) {}
 
 WebContentsDelegateAndroid::~WebContentsDelegateAndroid() {}
@@ -474,6 +476,24 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
     return true;
   }
   return false;
+}
+
+SkBitmap WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return SkBitmap();
+  }
+  ScopedJavaLocalRef<jobject> bitmap =
+      Java_WebContentsDelegateAndroid_maybeCopyContentAreaAsBitmapSync(env,
+                                                                       obj);
+  if (bitmap.is_null()) {
+    return SkBitmap();
+  }
+  gfx::JavaBitmap java_bitmap_lock(bitmap);
+  SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+  skbitmap.setImmutable();
+  return skbitmap;
 }
 
 void WebContentsDelegateAndroid::DidBackForwardTransitionAnimationChange() {

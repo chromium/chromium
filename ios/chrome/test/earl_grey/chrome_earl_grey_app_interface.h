@@ -15,6 +15,7 @@
 #import "third_party/metrics_proto/user_demographics.pb.h"
 
 @class ElementSelector;
+enum class TipsNotificationType;
 
 @interface JavaScriptExecutionResult : NSObject
 @property(readonly, nonatomic) BOOL success;
@@ -422,6 +423,10 @@
 // Adds typed URL into HistoryService.
 + (void)addHistoryServiceTypedURL:(NSString*)URL;
 
+// Adds typed URL into HistoryService at timestamp `visitTimestamp`.
++ (void)addHistoryServiceTypedURL:(NSString*)URL
+                   visitTimestamp:(base::Time)visitTimestamp;
+
 // Deletes typed URL from HistoryService.
 + (void)deleteHistoryServiceTypedURL:(NSString*)URL;
 
@@ -726,6 +731,10 @@
 
 // Whether the first run sentinel exists.
 + (bool)hasFirstRunSentinel;
+
+#pragma mark - Notification Utilities
+
++ (void)requestTipsNotification:(TipsNotificationType)type;
 
 @end
 

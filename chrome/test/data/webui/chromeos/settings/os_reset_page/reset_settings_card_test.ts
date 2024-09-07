@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsResetBrowserProxyImpl, OsSettingsPowerwashDialogElement, OsSettingsSanitizeDialogElement, ResetSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
+import {OsResetBrowserProxyImpl, OsSettingsPowerwashDialogElement, ResetSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, LifetimeBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
@@ -76,13 +76,6 @@ suite('<reset-settings-card>', () => {
         'os-settings-powerwash-dialog');
     assertTrue(!!powerwashDialog);
     return powerwashDialog;
-  }
-
-  function getSanitizeDialog(): OsSettingsSanitizeDialogElement {
-    const sanitizeDialog = resetSettingsCard.shadowRoot!.querySelector(
-        'os-settings-sanitize-dialog');
-    assertTrue(!!sanitizeDialog);
-    return sanitizeDialog;
   }
 
   async function testOpenClosePowerwashDialog(
@@ -274,9 +267,7 @@ suite('<reset-settings-card>', () => {
       const sanitizeButton = getSanitizeButton();
       assertTrue(!!sanitizeButton);
       sanitizeButton.click();
-      await flushTasks();
-      const dialog = getSanitizeDialog();
-      assertTrue(!!dialog);
+      await resetPageBrowserProxy.whenCalled('onShowSanitizeDialog');
     });
   } else {
     test('The sanitizeButton does not show.', () => {

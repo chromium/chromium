@@ -135,8 +135,6 @@ struct CreditCardFormOptions {
   bool is_google_host = false;
 };
 
-}  // anonymous namespace
-
 class MockPaymentsDataManager : public TestPaymentsDataManager {
  public:
   using TestPaymentsDataManager::TestPaymentsDataManager;
@@ -178,7 +176,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(
       void,
       CreditCardUploadCompleted,
-      (bool card_saved,
+      (payments::PaymentsAutofillClient::PaymentsRpcResult result,
        std::optional<PaymentsAutofillClient::OnConfirmationClosedCallback>
            on_confirmation_closed_callback),
       (override));
@@ -269,6 +267,10 @@ class MockVirtualCardEnrollmentManager
       (override));
 };
 
+}  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
+
 class CreditCardSaveManagerTest : public testing::Test {
  public:
   void SetUp() override {
@@ -331,7 +333,8 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   void UserHasAcceptedCardUpload(
-      AutofillClient::UserProvidedCardDetails user_provided_card_details) {
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnUploadSave(
         SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
   }
@@ -341,7 +344,8 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   void UserHasAcceptedCvcUpload(
-      AutofillClient::UserProvidedCardDetails user_provided_card_details) {
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnCvcUploadSave(
         SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
   }
@@ -5320,6 +5324,29 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_EQ(1, credit_card_save_strike_database.GetStrikes("1111"));
 }
 
+// Tests that one strike is added when upload times out on client-side and
+// bubble is shown.
+TEST_F(CreditCardSaveManagerTest,
+       UploadCreditCard_NumStrikesLoggedOnUploadClientSideTimeout) {
+  payments::PaymentsNetworkInterface::UploadCardResponseDetails
+      upload_card_response_details;
+  payments_network_interface().SetUploadCardResponseDetailsForUploadCard(
+      upload_card_response_details);
+  TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
+      TestCreditCardSaveStrikeDatabase(&strike_database());
+  EXPECT_EQ(0, credit_card_save_strike_database.GetStrikes("1111"));
+
+  // If upload timed out on the client side and the bubble was shown, strike
+  // count should increase by 1.
+  credit_card_save_manager_->set_show_save_prompt(true);
+  credit_card_save_manager_->set_upload_request_card_number(
+      u"4111111111111111");
+  credit_card_save_manager_->OnDidUploadCard(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout,
+      upload_card_response_details);
+  EXPECT_EQ(1, credit_card_save_strike_database.GetStrikes("1111"));
+}
+
 // Make sure that the PersonalDataManager gets notified when the user accepts
 // an upload offer.
 TEST_F(CreditCardSaveManagerTest, OnUserDidAcceptUpload_NotifiesPDM) {
@@ -6086,8 +6113,9 @@ TEST_P(CreditCardSaveManagerWithLoadingAndConfirmation,
 
   EXPECT_CALL(payments_client(),
               CreditCardUploadCompleted(
-                  true, A<std::optional<payments::PaymentsAutofillClient::
-                                            OnConfirmationClosedCallback>>()));
+                  payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  A<std::optional<payments::PaymentsAutofillClient::
+                                      OnConfirmationClosedCallback>>()));
 
   // If loading and confirmation is enabled, `InitVirtualCardEnroll` is passed
   // as a closure to save card bubble controller that executes it after bubble
@@ -6164,8 +6192,9 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
 
   EXPECT_CALL(payments_client(),
               CreditCardUploadCompleted(
-                  true, A<std::optional<payments::PaymentsAutofillClient::
-                                            OnConfirmationClosedCallback>>()));
+                  payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                  A<std::optional<payments::PaymentsAutofillClient::
+                                      OnConfirmationClosedCallback>>()));
 
   if (IsVirtualCardEnrollmentEnabled() &&
       GetEnrollmentState() ==

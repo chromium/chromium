@@ -54,7 +54,9 @@ using content::WebContents;
 
 namespace android_webview {
 
-AwWebContentsDelegate::AwWebContentsDelegate(JNIEnv* env, jobject obj)
+AwWebContentsDelegate::AwWebContentsDelegate(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : WebContentsDelegateAndroid(env, obj), is_fullscreen_(false) {}
 
 AwWebContentsDelegate::~AwWebContentsDelegate() = default;
@@ -149,7 +151,7 @@ void AwWebContentsDelegate::RunFileChooser(
       params.use_media_capture);
 }
 
-void AwWebContentsDelegate::AddNewContents(
+WebContents* AwWebContentsDelegate::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -195,6 +197,7 @@ void AwWebContentsDelegate::AddNewContents(
   if (was_blocked) {
     *was_blocked = !create_popup;
   }
+  return nullptr;
 }
 
 void AwWebContentsDelegate::NavigationStateChanged(

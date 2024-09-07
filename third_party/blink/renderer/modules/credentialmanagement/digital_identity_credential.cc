@@ -55,27 +55,28 @@ void AbortRequest(ScriptState* script_state) {
   CredentialManagerProxy::From(script_state)->DigitalIdentityRequest()->Abort();
 }
 
-String ValidateAndStringifyObject(v8::Isolate* isolate,
-                                  const ScriptValue& input,
-                                  ExceptionState& exception_state) {
+String ValidateAndStringifyObject(
+    ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
+    const ScriptValue& input) {
   v8::Local<v8::String> value;
   if (input.IsEmpty() || !input.V8Value()->IsObject() ||
-      !v8::JSON::Stringify(isolate->GetCurrentContext(),
+      !v8::JSON::Stringify(resolver->GetScriptState()->GetContext(),
                            input.V8Value().As<v8::Object>())
            .ToLocal(&value)) {
-    exception_state.ThrowTypeError(
+    resolver->RejectWithTypeError(
         "IdentityRequestProvider request objects should either by strings or "
         "JSON-Serializable objects.");
     return String();
   }
 
-  String output = ToBlinkString<String>(isolate, value, kDoNotExternalize);
+  String output = ToBlinkString<String>(
+      resolver->GetScriptState()->GetIsolate(), value, kDoNotExternalize);
 
   // Implementation defined constant controlling the allowed JSON length.
   static constexpr size_t kMaxJSONStringLength = 1024 * 1024;
 
   if (output.length() > kMaxJSONStringLength) {
-    exception_state.ThrowTypeError(
+    resolver->RejectWithTypeError(
         String::Format("JSON serialization of IdentityRequestProvider request "
                        "objects should be no longer than %zu characters",
                        kMaxJSONStringLength));
@@ -134,8 +135,7 @@ bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
   return options.hasDigital();
 }
 
-ScriptPromise<IDLNullable<Credential>>
-DiscoverDigitalIdentityCredentialFromExternalSource(
+void DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     ExceptionState& exception_state,
     const CredentialRequestOptions& options) {
@@ -145,7 +145,7 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
 
   if (!CheckGenericSecurityRequirementsForCredentialsContainerRequest(
           resolver)) {
-    return resolver->Promise();
+    return;
   }
 
   if (!resolver->GetExecutionContext()->IsFeatureEnabled(
@@ -155,7 +155,7 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
         "The 'digital-credentials-get' feature is not enabled in this "
         "document. Permissions Policy may be used to delegate digital "
         "credential API capabilities to cross-origin child frames."));
-    return resolver->Promise();
+    return;
   }
 
   size_t num_providers = options.digital()->hasProviders()
@@ -165,7 +165,7 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
   if (num_providers == 0) {
     resolver->RejectWithTypeError(
         "Digital identity API needs at least one provider.");
-    return resolver->Promise();
+    return;
   }
 
   // TODO(https://crbug.com/1416939): make sure the Digital Credentials
@@ -174,7 +174,7 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     resolver->RejectWithTypeError(
         "Digital identity API currently does not support multiple "
         "providers.");
-    return resolver->Promise();
+    return;
   }
 
   auto provider = options.digital()->providers()[0];
@@ -185,13 +185,10 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     stringified_request = request_object_or_string->GetAsString();
   } else {
     stringified_request = ValidateAndStringifyObject(
-        resolver->GetExecutionContext()->GetIsolate(),
-        request_object_or_string->GetAsObject(), exception_state);
-  }
-
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state);
-    return resolver->Promise();
+        resolver, request_object_or_string->GetAsObject());
+    if (stringified_request.IsNull()) {
+      return;
+    }
   }
 
   UseCounter::Count(resolver->GetExecutionContext(),
@@ -199,9 +196,9 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
 
   auto* signal = options.getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "Request has been aborted"));
-    return resolver->Promise();
+    resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                     "Request has been aborted");
+    return;
   }
 
   ScriptState* script_state = resolver->GetScriptState();
@@ -224,7 +221,6 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
       std::move(digital_credential_provider),
       WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
                     std::move(scoped_abort_state), provider->protocol()));
-  return resolver->Promise();
 }
 
 }  // namespace blink

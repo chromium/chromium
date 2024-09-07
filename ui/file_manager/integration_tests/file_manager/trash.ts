@@ -345,34 +345,49 @@ export async function trashRestoreFromTrashShortcut() {
 export async function trashEmptyTrash() {
   const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+  const fileNameSelector = '#file-list [file-name="hello.txt"]';
+  const emptyTrashButtonSelector =
+      ['trash-banner', 'cr-button[command="#empty-trash"]'];
 
   // Select hello.txt.
-  await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="hello.txt"]');
+  await remoteCall.waitAndClickElement(appId, fileNameSelector);
 
   // Delete item and wait for it to be removed (no dialog).
   await remoteCall.clickTrashButton(appId);
-  await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="hello.txt"]');
+  await remoteCall.waitForElementLost(appId, fileNameSelector);
 
   // Navigate to /Trash and ensure the file is shown.
   const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/Trash');
-  await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="hello.txt"]');
-  // Fire focus event for #empty-trash command to reset canExecute.
-  await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#file-list [file-name="hello.txt"]', 'focus']);
+  await remoteCall.waitForElement(appId, fileNameSelector);
+  // SimulateUiClick ensures that the focus gets updated, which resets
+  // canExecute.
+  await remoteCall.simulateUiClick(appId, fileNameSelector);
 
-  // Empty trash and confirm delete (dialog shown).
+  // Click the empty trash button. SimulateUiClick ensures that the focus is set
+  // to the empty trash button before bringing up the confirmation dialog.
+  await remoteCall.waitForElement(appId, emptyTrashButtonSelector);
+  await remoteCall.simulateUiClick(appId, emptyTrashButtonSelector);
+  // Cancel delete.
   await remoteCall.waitAndClickElement(
-      appId, ['trash-banner', 'cr-button[command="#empty-trash"]']);
+      appId, '.files-confirm-dialog .cr-dialog-cancel');
+  // Wait for the dialog to be hidden.
+  await remoteCall.waitForElementLost(appId, '.cr-dialog-container.shown');
+  // Check: the file is still present.
+  await remoteCall.waitForElement(appId, fileNameSelector);
+  // Empty trash and confirm delete (dialog shown).
+  await remoteCall.waitForElement(appId, emptyTrashButtonSelector);
+  await remoteCall.simulateUiClick(appId, emptyTrashButtonSelector);
+  // Wait for the dialog to be shown again.
+  await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+  // Confirm the permanent deletion.
   await remoteCall.waitAndClickElement(
       appId, '.files-confirm-dialog .cr-dialog-ok');
+  // Wait for the dialog to be hidden.
+  await remoteCall.waitForElementLost(appId, '.cr-dialog-container.shown');
 
   // Wait for completion of file deletion.
-  await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="hello.txt"]');
+  await remoteCall.waitForElementLost(appId, fileNameSelector);
 }
 
 /**

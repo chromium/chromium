@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -48,15 +48,11 @@ class ContainerQueryParserTest : public PageTestBase {
   // E.g. https://drafts.csswg.org/css-contain-3/#typedef-style-query
   String ParseFeatureQuery(String feature_query) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    auto [tokens, raw_offsets] =
-        CSSTokenizer(feature_query).TokenizeToEOFWithOffsets();
-    CSSParserTokenRange range(tokens);
-    CSSParserTokenOffsets offsets(tokens, std::move(raw_offsets),
-                                  feature_query);
+    CSSParserTokenStream stream(feature_query);
     const MediaQueryExpNode* node =
-        ContainerQueryParser(*context).ConsumeFeatureQuery(range, offsets,
+        ContainerQueryParser(*context).ConsumeFeatureQuery(stream,
                                                            TestFeatureSet());
-    if (!node || !range.AtEnd()) {
+    if (!node || !stream.AtEnd()) {
       return g_null_atom;
     }
     return node->Serialize();

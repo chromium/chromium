@@ -248,8 +248,7 @@ bool CanAddForeignVisitToSegments(
     const std::string& local_device_originator_cache_guid,
     const SyncDeviceInfoMap& sync_device_info) {
 #if BUILDFLAG(IS_IOS)
-  if (!history::IsSyncSegmentsDataEnabled() ||
-      foreign_visit.originator_cache_guid.empty() ||
+  if (foreign_visit.originator_cache_guid.empty() ||
       !foreign_visit.consider_for_ntp_most_visited) {
     return false;
   }

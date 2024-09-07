@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 
 #include "base/check.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,14 +35,14 @@
 // static
 SelectedKeywordView::KeywordLabelNames
 SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
-                                          TemplateURLService* service) {
+                                          const TemplateURLService* service) {
   KeywordLabelNames names;
   if (service) {
     bool is_extension_keyword = false;
-    bool is_ask_google_keyword = false;
+    bool is_gemini_keyword = false;
     names.short_name = service->GetKeywordShortName(
-        keyword, &is_extension_keyword, &is_ask_google_keyword);
-    if (is_ask_google_keyword) {
+        keyword, &is_extension_keyword, &is_gemini_keyword);
+    if (is_gemini_keyword) {
       names.full_name = l10n_util::GetStringFUTF16(
           IDS_OMNIBOX_SELECTED_KEYWORD_CHAT_TEXT, names.short_name);
     } else if (is_extension_keyword) {
@@ -54,10 +57,9 @@ SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
 
 SelectedKeywordView::SelectedKeywordView(
     IconLabelBubbleView::Delegate* delegate,
-    TemplateURLService* template_url_service,
+    Profile* profile,
     const gfx::FontList& font_list)
-    : IconLabelBubbleView(font_list, delegate),
-      template_url_service_(template_url_service) {
+    : IconLabelBubbleView(font_list, delegate), profile_(profile) {
   full_label_.SetFontList(font_list);
   full_label_.SetVisible(false);
   partial_label_.SetFontList(font_list);
@@ -73,12 +75,8 @@ SelectedKeywordView::SelectedKeywordView(
   // make more sense to only set `FocusBehavior` when this view will be shown.
   // For now, Eliminate the paint check failure.
   if (GetViewAccessibility().GetCachedName().empty()) {
-    GetViewAccessibility().SetProperties(
-        /*role*/ std::nullopt,
-        /*name*/ std::u16string(),
-        /*description*/ std::nullopt,
-        /*role_description*/ std::nullopt,
-        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
 }
 
@@ -94,15 +92,16 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
   // Use the search icon for most keywords. Use special icons for '@gemini' and
   // @history'.
   const TemplateURL* template_url =
-      template_url_service_->GetTemplateURLForKeyword(keyword_);
+      TemplateURLServiceFactory::GetForProfile(profile_)
+          ->GetTemplateURLForKeyword(keyword_);
 
   auto* vector_icon = &vector_icons::kSearchIcon;
-  if (template_url && template_url->starter_pack_id() ==
-                          TemplateURLStarterPackData::kAskGoogle) {
+  if (template_url &&
+      template_url->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
     vector_icon = &omnibox::kSparkIcon;
-  } else if (base::FeatureList::IsEnabled(
-                 history_embeddings::kHistoryEmbeddings) &&
-             template_url &&
+  } else if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
+                 profile_) &&
+             history_embeddings::kOmniboxScoped.Get() && template_url &&
              template_url->starter_pack_id() ==
                  TemplateURLStarterPackData::kHistory) {
     vector_icon = &omnibox::kSearchSparkIcon;
@@ -143,13 +142,16 @@ void SelectedKeywordView::SetKeyword(const std::u16string& keyword) {
     return;
   keyword_ = keyword;
   OnPropertyChanged(&keyword_, views::kPropertyEffectsNone);
+
+  const auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
   // TODO(pkasting): Arguably, much of the code below would be better as
   // property change handlers in file-scope subclasses of Label etc.
-  if (keyword.empty() || !template_url_service_)
+  if (keyword.empty() || !template_url_service) {
     return;
+  }
 
-  KeywordLabelNames names =
-      GetKeywordLabelNames(keyword, template_url_service_);
+  KeywordLabelNames names = GetKeywordLabelNames(keyword, template_url_service);
   full_label_.SetText(names.full_name);
   partial_label_.SetText(names.short_name);
 

@@ -90,9 +90,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
     return connections_;
   }
 
-  // TODO(dmurph): Remove this method and have transactions be directly
-  // scheduled using the lock manager.
-
   enum class RunTasksResult { kDone, kError, kCanBeDestroyed };
   std::tuple<RunTasksResult, leveldb::Status> RunTasks();
   void RegisterAndScheduleTransaction(IndexedDBTransaction* transaction);
@@ -355,7 +352,8 @@ class CONTENT_EXPORT IndexedDBDatabase {
       std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
       mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker,
-      base::UnguessableToken client_token);
+      base::UnguessableToken client_token,
+      int scheduling_priority);
 
   // Ack that one of the connections notified with a "versionchange" event did
   // not promptly close. Therefore a "blocked" event should be fired at the

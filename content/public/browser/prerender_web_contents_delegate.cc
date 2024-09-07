@@ -17,7 +17,7 @@ WebContents* PrerenderWebContentsDelegate::OpenURLFromTab(
   NOTREACHED();
 }
 
-void PrerenderWebContentsDelegate::AddNewContents(
+WebContents* PrerenderWebContentsDelegate::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,

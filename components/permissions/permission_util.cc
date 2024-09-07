@@ -167,6 +167,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::AR:
       *out = PermissionType::AR;
       break;
+    case ContentSettingsType::HAND_TRACKING:
+      *out = PermissionType::HAND_TRACKING;
+      break;
     case ContentSettingsType::SMART_CARD_DATA:
       *out = PermissionType::SMART_CARD;
       break;
@@ -208,6 +211,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
       break;
     case ContentSettingsType::AUTOMATIC_FULLSCREEN:
       *out = PermissionType::AUTOMATIC_FULLSCREEN;
+      break;
+    case ContentSettingsType::WEB_APP_INSTALLATION:
+      *out = PermissionType::WEB_APP_INSTALLATION;
       break;
     default:
       return false;
@@ -329,6 +335,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::WAKE_LOCK_SYSTEM;
     case PermissionType::NFC:
       return ContentSettingsType::NFC;
+    case PermissionType::HAND_TRACKING:
+      return ContentSettingsType::HAND_TRACKING;
     case PermissionType::VR:
       return ContentSettingsType::VR;
     case PermissionType::AR:
@@ -359,6 +367,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::POINTER_LOCK;
     case PermissionType::AUTOMATIC_FULLSCREEN:
       return ContentSettingsType::AUTOMATIC_FULLSCREEN;
+    case PermissionType::WEB_APP_INSTALLATION:
+      return ContentSettingsType::WEB_APP_INSTALLATION;
     case PermissionType::NUM:
       break;
   }

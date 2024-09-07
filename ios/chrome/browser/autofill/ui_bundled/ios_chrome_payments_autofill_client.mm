@@ -21,6 +21,7 @@
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
+#import "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #import "components/autofill/core/browser/payments/otp_unmask_result.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -115,9 +116,10 @@ void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
 }
 
 void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
-    bool card_saved,
+    PaymentsRpcResult result,
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
+  const bool card_saved = result == PaymentsRpcResult::kSuccess;
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
     autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
@@ -134,6 +136,14 @@ void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
     // failed, the save card infobar should not be re-shown, so the infobar is
     // removed here to remove the associated omnibox icon.
     client_->RemoveAutofillSaveCardInfoBar();
+
+    // Here, `PaymentsRpcResult::kClientSideTimeout` indicates that the card
+    // upload request is taking longer to finish. After the save card infobar
+    // has been removed, no need to show an error dialog in this case since the
+    // request may succeed on the server side.
+    if (result == PaymentsRpcResult::kClientSideTimeout) {
+      return;
+    }
     autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
         /*is_shown=*/true, /*is_card_uploaded=*/false);
     AutofillErrorDialogContext error_context;
@@ -183,18 +193,19 @@ void IOSChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
 }
 
 void IOSChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
-    bool is_vcn_enrolled) {
+    PaymentsRpcResult result) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
     return;
   }
   if (virtual_card_enroll_ui_model_) {
     virtual_card_enroll_ui_model_->SetEnrollmentProgress(
-        is_vcn_enrolled
+        result == PaymentsRpcResult::kSuccess
             ? VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled
             : VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
   }
-  if (!is_vcn_enrolled) {
+  if (result != PaymentsRpcResult::kSuccess &&
+      result != PaymentsRpcResult::kClientSideTimeout) {
     AutofillErrorDialogContext autofill_error_dialog_context;
     autofill_error_dialog_context.type =
         AutofillErrorDialogType::kVirtualCardEnrollmentTemporaryError;
@@ -288,6 +299,7 @@ void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
     case PaymentsRpcResult::kTryAgainFailure:
     case PaymentsRpcResult::kPermanentFailure:
     case PaymentsRpcResult::kNetworkError:
+    case PaymentsRpcResult::kClientSideTimeout:
       // Do nothing
       break;
     case PaymentsRpcResult::kNone:
@@ -371,6 +383,15 @@ void IOSChromePaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
       url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
       /*is_renderer_initiated=*/false));
+}
+
+payments::MandatoryReauthManager*
+IOSChromePaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  if (!payments_reauth_manager_) {
+    payments_reauth_manager_ =
+        std::make_unique<payments::MandatoryReauthManager>(&client_.get());
+  }
+  return payments_reauth_manager_.get();
 }
 
 }  // namespace autofill::payments

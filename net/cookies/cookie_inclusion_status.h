@@ -278,15 +278,13 @@ class NET_EXPORT CookieInclusionStatus {
     k3PCDMetadata = 2,
     // For 3PCD 1P and 3P deprecation trial.
     k3PCDDeprecationTrial = 3,
+    kTopLevel3PCDDeprecationTrial = 4,
     // For 3PCD heuristics.
-    k3PCDHeuristics = 4,
+    k3PCDHeuristics = 5,
     // For Enterprise Policy : CookieAllowedForUrls and BlockThirdPartyCookies.
-    kEnterprisePolicy = 5,
-    kStorageAccess = 6,
-    kTopLevelStorageAccess = 7,
-    // For CorsException in the ABA contexts, which the inner iframe is
-    // same-site with the top-level site but has cross-site ancestor(s).
-    kCorsOptIn = 8,
+    kEnterprisePolicy = 6,
+    kStorageAccess = 7,
+    kTopLevelStorageAccess = 8,
     // Allowed by the scheme.
     kScheme = 9,
 

@@ -472,7 +472,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
       request_->SetIdempotency(IDEMPOTENT);
       std::unique_ptr<UploadElementReader> reader =
           std::make_unique<UploadBytesElementReader>(
-              query_->io_buffer()->data(), query_->io_buffer()->size());
+              query_->io_buffer()->span());
       request_->set_upload(
           ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
       extra_request_headers.SetHeader(HttpRequestHeaders::kContentType,

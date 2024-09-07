@@ -72,7 +72,6 @@ class ASH_EXPORT BrightnessControllerChromeos
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
-  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
   // PowerManagerClient::Observer:
   void ScreenBrightnessChanged(
@@ -117,9 +116,6 @@ class ASH_EXPORT BrightnessControllerChromeos
 
   // True if device has an ambient light sensor.
   bool has_sensor_ = false;
-
-  // Used to re-enable ambient light sensor if source is not from settings app.
-  std::optional<base::Time> ambient_light_sensor_disabled_timestamp_;
 
   // This PrefChangeRegistrar is used to check when the synced profile pref for
   // the ambient light sensor value has finished syncing.

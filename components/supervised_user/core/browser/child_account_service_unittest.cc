@@ -24,9 +24,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
-#include "components/supervised_user/core/browser/permission_request_creator.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -43,14 +41,6 @@ const char kEmail[] = "me@example.com";
 }  // namespace
 
 namespace supervised_user {
-
-class MockPermissionRequestCreator : public PermissionRequestCreator {
- public:
-  // PermissionRequestCreator implementation.
-  bool IsEnabled() const override { return true; }
-  void CreateURLAccessRequest(const GURL& url_requested,
-                              SuccessCallback callback) override {}
-};
 
 class ChildAccountServiceTest : public ::testing::Test {
  public:
@@ -78,37 +68,21 @@ class ChildAccountServiceTest : public ::testing::Test {
     // Set the user to be supervised.
     supervised_user::EnableParentalControls(GetUserPerferences());
 
-    supervised_user_service_ = std::make_unique<SupervisedUserService>(
-        identity_test_environment_->identity_manager(),
-        test_url_loader_factory_.GetSafeWeakWrapper(), syncable_pref_service_,
-        settings_service_, &sync_service_,
-        std::make_unique<FakeURLFilterDelegate>(),
-        std::make_unique<FakePlatformDelegate>(),
-        /*can_show_first_time_interstitial_banner=*/false);
-
     list_family_members_service_ = std::make_unique<ListFamilyMembersService>(
         identity_test_environment_->identity_manager(),
         weak_wrapped_subresource_loader_factory, syncable_pref_service_);
 
     child_account_service_ = std::make_unique<ChildAccountService>(
-        syncable_pref_service_, *supervised_user_service_.get(),
-        identity_test_environment_->identity_manager(),
+        syncable_pref_service_, identity_test_environment_->identity_manager(),
         weak_wrapped_subresource_loader_factory,
-        permission_creator_callback_.Get(),
         /*check_user_child_status_callback=*/base::DoNothing(),
         *list_family_members_service_.get());
 
-    ON_CALL(permission_creator_callback_, Run()).WillByDefault([=]() {
-      return std::make_unique<MockPermissionRequestCreator>();
-    });
-
     child_account_service_->Init();
-    supervised_user_service_->Init();
   }
 
   void TearDown() override {
     settings_service_.Shutdown();
-    supervised_user_service_->Shutdown();
     child_account_service_->Shutdown();
   }
 
@@ -141,13 +115,8 @@ class ChildAccountServiceTest : public ::testing::Test {
 
   std::unique_ptr<TestSigninClient> test_signin_client_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
-  std::unique_ptr<SupervisedUserService> supervised_user_service_;
   std::unique_ptr<ListFamilyMembersService> list_family_members_service_;
   std::unique_ptr<ChildAccountService> child_account_service_;
-
-  base::MockRepeatingCallback<
-      std::unique_ptr<supervised_user::PermissionRequestCreator>()>
-      permission_creator_callback_;
 };
 
 TEST_F(ChildAccountServiceTest, GetGoogleAuthStateNotAuthenticated) {
@@ -208,18 +177,6 @@ TEST_F(ChildAccountServiceTest, GetGoogleAuthStateNotAuthenticatedNotSignedIn) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(supervised_user::ChildAccountService::AuthState::NOT_AUTHENTICATED,
             child_account_service_->GetGoogleAuthState());
-}
-
-TEST_F(ChildAccountServiceTest, CreatePermissionCreatorOnSetActive) {
-  // Checks that we don't regress on the bug b/289347521.
-  // Toggling observed preference `kSupervisedUserId` triggers CAS::SetActive.
-
-  // De-activate the Child Account service.
-  supervised_user::DisableParentalControls(GetUserPerferences());
-
-  // Re-activate the Child Account service.
-  EXPECT_CALL(permission_creator_callback_, Run()).Times(1);
-  supervised_user::EnableParentalControls(GetUserPerferences());
 }
 
 // Tests that SafeSearch is correctly enforced for a supervised profile.

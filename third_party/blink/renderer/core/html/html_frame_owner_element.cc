@@ -171,7 +171,9 @@ void HTMLFrameOwnerElement::PluginDisposeSuspendScope::
 HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
                                              Document& document)
     : HTMLElement(tag_name, document),
-      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)) {
+      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)),
+      preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight) {
+  SetHasCustomStyleCallbacks();
   document.IncrementImmediateChildFrameCreationCount();
 }
 
@@ -448,6 +450,7 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
   properties->allow_payment_request = AllowPaymentRequest();
   properties->is_display_none = IsDisplayNone();
   properties->color_scheme = GetColorScheme();
+  properties->preferred_color_scheme = GetPreferredColorScheme();
 
   GetDocument()
       .GetFrame()
@@ -526,9 +529,9 @@ void HTMLFrameOwnerElement::SetEmbeddedContentView(
   if (doc && doc->GetFrame()) {
     bool will_be_display_none = !embedded_content_view;
     if (IsDisplayNone() != will_be_display_none) {
-      doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
-                                          ScrollbarMode(), will_be_display_none,
-                                          GetColorScheme());
+      doc->WillChangeFrameOwnerProperties(
+          MarginWidth(), MarginHeight(), ScrollbarMode(), will_be_display_none,
+          GetColorScheme(), GetPreferredColorScheme());
     }
   }
 
@@ -802,9 +805,29 @@ void HTMLFrameOwnerElement::SetColorScheme(
     mojom::blink::ColorScheme color_scheme) {
   Document* doc = contentDocument();
   if (doc && doc->GetFrame()) {
-    doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
-                                        ScrollbarMode(), IsDisplayNone(),
-                                        color_scheme);
+    doc->WillChangeFrameOwnerProperties(
+        MarginWidth(), MarginHeight(), ScrollbarMode(), IsDisplayNone(),
+        color_scheme, GetPreferredColorScheme());
+  }
+  FrameOwnerPropertiesChanged();
+}
+
+mojom::blink::PreferredColorScheme
+HTMLFrameOwnerElement::GetPreferredColorScheme() const {
+  return preferred_color_scheme_;
+}
+
+void HTMLFrameOwnerElement::SetPreferredColorScheme(
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
+  if (preferred_color_scheme_ == preferred_color_scheme) {
+    return;
+  }
+  preferred_color_scheme_ = preferred_color_scheme;
+  Document* doc = contentDocument();
+  if (doc && doc->GetFrame()) {
+    doc->WillChangeFrameOwnerProperties(
+        MarginWidth(), MarginHeight(), ScrollbarMode(), IsDisplayNone(),
+        GetColorScheme(), preferred_color_scheme);
   }
   FrameOwnerPropertiesChanged();
 }
@@ -842,6 +865,14 @@ ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
     container_policy.push_back(allowlist);
   }
   return container_policy;
+}
+
+void HTMLFrameOwnerElement::DidRecalcStyle(
+    const StyleRecalcChange style_recalc_change) {
+  HTMLElement::DidRecalcStyle(style_recalc_change);
+  SetPreferredColorScheme(
+      GetDocument().GetStyleEngine().ResolveColorSchemeForEmbedding(
+          GetComputedStyle()));
 }
 
 }  // namespace blink

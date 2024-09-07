@@ -80,7 +80,7 @@ constexpr char kStorageAccessScript[] = R"(
       });
     }
 
-    function accessCache() {
+    function accessCacheStorage() {
       return caches.open("cache")
       .then((cache) => cache.put("/foo", new Response("bar")))
       .then(() => true)
@@ -252,8 +252,7 @@ class ScopedInitFeature {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Enables/disables the DIPS Feature and updates the ProfileSelections of
-// DIPSServiceFactory and DIPSCleanupServiceFactory to match.
+// Enables/disables the DIPS Feature.
 class ScopedInitDIPSFeature {
  public:
   explicit ScopedInitDIPSFeature(bool enable,
@@ -261,10 +260,6 @@ class ScopedInitDIPSFeature {
 
  private:
   ScopedInitFeature init_feature_;
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      override_profile_selections_for_dips_service_;
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      override_profile_selections_for_dips_cleanup_service_;
 };
 
 // Waits for a window to open.

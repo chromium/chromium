@@ -2501,6 +2501,43 @@ const CSSValue* Marker::CSSValueFromComputedStyleInternal(
   return nullptr;
 }
 
+bool MasonryTrack::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const auto& shorthand = shorthandForProperty(CSSPropertyID::kMasonryTrack);
+  DCHECK_EQ(shorthand.length(), 2u);
+
+  CSSValue *start_value = nullptr, *end_value = nullptr;
+  if (!css_parsing_utils::ConsumeGridItemPositionShorthand(
+          important, stream, context, start_value, end_value)) {
+    return false;
+  }
+
+  css_parsing_utils::AddProperty(
+      shorthand.properties()[0]->PropertyID(), CSSPropertyID::kMasonryTrack,
+      *start_value, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      shorthand.properties()[1]->PropertyID(), CSSPropertyID::kMasonryTrack,
+      *end_value, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  return true;
+}
+
+const CSSValue* MasonryTrack::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValuesForGridLineShorthand(
+      masonryTrackShorthand(), style, layout_object, allow_visited_style,
+      value_phase);
+}
+
 bool Offset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
@@ -3484,6 +3521,36 @@ const CSSValue* TextDecoration::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+bool TextWrap::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
+      textWrapShorthand(), important, context, stream, properties);
+}
+
+const CSSValue* TextWrap::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const TextWrapMode mode = style.GetTextWrapMode();
+  const TextWrapStyle wrap_style = style.GetTextWrapStyle();
+  if (wrap_style == ComputedStyleInitialValues::InitialTextWrapStyle()) {
+    return CSSIdentifierValue::Create(mode);
+  }
+  if (mode == ComputedStyleInitialValues::InitialTextWrapMode()) {
+    return CSSIdentifierValue::Create(wrap_style);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*CSSIdentifierValue::Create(mode));
+  list->Append(*CSSIdentifierValue::Create(wrap_style));
+  return list;
+}
+
 namespace {
 
 CSSValue* ConsumeTransitionValue(CSSPropertyID property,
@@ -4107,8 +4174,8 @@ bool WhiteSpace::ParseShorthand(
           important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
           properties);
       AddProperty(
-          CSSPropertyID::kTextWrap, CSSPropertyID::kWhiteSpace,
-          *CSSIdentifierValue::Create(ToTextWrap(whitespace)), important,
+          CSSPropertyID::kTextWrapMode, CSSPropertyID::kWhiteSpace,
+          *CSSIdentifierValue::Create(ToTextWrapMode(whitespace)), important,
           css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
       return true;
     }
@@ -4140,8 +4207,8 @@ const CSSValue* WhiteSpace::CSSValueFromComputedStyleInternal(
   if (collapse != ComputedStyleInitialValues::InitialWhiteSpaceCollapse()) {
     list->Append(*CSSIdentifierValue::Create(collapse));
   }
-  const TextWrap wrap = style.GetTextWrap();
-  if (wrap != ComputedStyleInitialValues::InitialTextWrap()) {
+  const TextWrapMode wrap = style.GetTextWrapMode();
+  if (wrap != ComputedStyleInitialValues::InitialTextWrapMode()) {
     list->Append(*CSSIdentifierValue::Create(wrap));
   }
   // When all longhands are initial values, it should be `normal`, covered by

@@ -4,6 +4,7 @@
 
 import './shared_style.css.js';
 import './strings.m.js';
+import 'chrome://resources/cr_components/history_embeddings/icons.html.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 
@@ -57,6 +58,11 @@ export class HistoryToolbarElement extends PolymerElement {
         computed: 'computeSearchInputAriaDescriptionOverride_(selectedPage)',
       },
 
+      searchPrompt_: {
+        type: String,
+        computed: 'computeSearchPrompt_(selectedPage)',
+      },
+
       // The most recent term entered in the search field. Updated incrementally
       // as the user types.
       searchTerm: {
@@ -94,6 +100,7 @@ export class HistoryToolbarElement extends PolymerElement {
   count: number = 0;
   private searchIconOverride_?: string;
   private searchInputAriaDescription_?: string;
+  private searchPrompt_: string;
   searchTerm: string;
   selectedPage: string;
   spinnerActive: boolean;
@@ -154,7 +161,7 @@ export class HistoryToolbarElement extends PolymerElement {
   private computeSearchIconOverride_(): string|undefined {
     if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
         TABBED_PAGES.includes(this.selectedPage)) {
-      return 'history:embeddings';
+      return 'history-embeddings:search';
     }
 
     return undefined;
@@ -167,6 +174,15 @@ export class HistoryToolbarElement extends PolymerElement {
     }
 
     return undefined;
+  }
+
+  private computeSearchPrompt_(): string {
+    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
+        TABBED_PAGES.includes(this.selectedPage)) {
+      return loadTimeData.getString('historyEmbeddingsSearchPrompt');
+    }
+
+    return loadTimeData.getString('searchPrompt');
   }
 }
 

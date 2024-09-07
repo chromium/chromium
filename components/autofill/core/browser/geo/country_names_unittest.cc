@@ -22,8 +22,6 @@ class TestCountryNames : public CountryNames {
   ~TestCountryNames() = default;
 };
 
-}  // namespace
-
 // Test mapping of localized country names to country codes.
 TEST(CountryNamesTest, GetCountryCode_BasicMapping) {
   TestCountryNames en_us_names("en_US");
@@ -98,4 +96,5 @@ TEST(CountryNamesTest, EmptyCountryNameHasEmptyCountryCode) {
   EXPECT_TRUE(country_code.empty()) << country_code;
 }
 
+}  // namespace
 }  // namespace autofill

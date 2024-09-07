@@ -4,7 +4,7 @@
 
 source_set("cells") {
   sources = [
-    "autofill_address_profile_source.h",
+    "autofill_address_profile_record_type.h",
     "autofill_card_item.h",
     "autofill_card_item.mm",
     "autofill_profile_item.h",

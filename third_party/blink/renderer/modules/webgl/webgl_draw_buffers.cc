@@ -23,11 +23,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgl/webgl_draw_buffers.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -59,39 +54,42 @@ void WebGLDrawBuffers::drawBuffersWEBGL(const Vector<GLenum>& buffers) {
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost())
     return;
-  GLsizei n = buffers.size();
-  const GLenum* bufs = buffers.data();
+  const GLsizei buffer_count = buffers.size();
   if (!scoped.Context()->framebuffer_binding_) {
-    if (n != 1) {
+    if (buffer_count != 1) {
       scoped.Context()->SynthesizeGLError(GL_INVALID_OPERATION,
                                           "drawBuffersWEBGL",
                                           "must provide exactly one buffer");
       return;
     }
-    if (bufs[0] != GL_BACK && bufs[0] != GL_NONE) {
+
+    GLenum buffer = buffers.front();
+    if (buffer != GL_BACK && buffer != GL_NONE) {
       scoped.Context()->SynthesizeGLError(GL_INVALID_OPERATION,
                                           "drawBuffersWEBGL", "BACK or NONE");
       return;
     }
     // Because the backbuffer is simulated on all current WebKit ports, we need
     // to change BACK to COLOR_ATTACHMENT0.
-    GLenum value = (bufs[0] == GL_BACK) ? GL_COLOR_ATTACHMENT0 : GL_NONE;
+    GLenum value = buffer == GL_BACK ? GL_COLOR_ATTACHMENT0 : GL_NONE;
     scoped.Context()->ContextGL()->DrawBuffersEXT(1, &value);
-    scoped.Context()->SetBackDrawBuffer(bufs[0]);
+    scoped.Context()->SetBackDrawBuffer(buffer);
   } else {
-    if (n > scoped.Context()->MaxDrawBuffers()) {
+    if (buffer_count > scoped.Context()->MaxDrawBuffers()) {
       scoped.Context()->SynthesizeGLError(GL_INVALID_VALUE, "drawBuffersWEBGL",
                                           "more than max draw buffers");
       return;
     }
-    for (GLsizei i = 0; i < n; ++i) {
-      if (bufs[i] != GL_NONE &&
-          bufs[i] != static_cast<GLenum>(GL_COLOR_ATTACHMENT0_EXT + i)) {
+    GLsizei index = 0;
+    for (const GLenum& buffer : buffers) {
+      if (buffer != GL_NONE &&
+          buffer != static_cast<GLenum>(GL_COLOR_ATTACHMENT0_EXT + index)) {
         scoped.Context()->SynthesizeGLError(GL_INVALID_OPERATION,
                                             "drawBuffersWEBGL",
                                             "COLOR_ATTACHMENTi_EXT or NONE");
         return;
       }
+      ++index;
     }
     scoped.Context()->framebuffer_binding_->DrawBuffers(buffers);
   }

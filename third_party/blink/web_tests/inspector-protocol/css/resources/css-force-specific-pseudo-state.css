@@ -1,0 +1,66 @@
+div {
+  --enabled-applied: 'false';
+  --disabled-applied: 'false';
+  --valid-applied: 'false';
+  --invalid-applied: 'false';
+  --required-applied: 'false';
+  --user-invalid-applied: 'false';
+  --user-valid-applied: 'false';
+  --optional-applied: 'false';
+  --read-only-applied: 'false';
+  --read-write-applied: 'false';
+  --in-range-applied: 'false';
+  --out-of-range-applied: 'false';
+  --checked-applied: 'false';
+  --indeterminate-applied: 'false';
+  --placeholder-shown-applied: 'false';
+  --autofill-applied: 'false';
+}
+div:enabled {
+  --enabled-applied: 'true';
+}
+div:disabled {
+  --disabled-applied: 'true';
+}
+div:valid {
+  --valid-applied: 'true';
+}
+div:invalid {
+  --invalid-applied: 'true';
+}
+div:user-valid {
+  --user-valid-applied: 'true';
+}
+div:user-invalid {
+  --user-invalid-applied: 'true';
+}
+div:required {
+  --required-applied: 'true';
+}
+div:optional {
+  --optional-applied: 'true';
+}
+div:read-only {
+  --read-only-applied: 'true';
+}
+div:read-write {
+  --read-write-applied: 'true';
+}
+div:in-range {
+  --in-range-applied: 'true';
+}
+div:out-of-range {
+  --out-of-range-applied: 'true';
+}
+div:checked {
+  --checked-applied: 'true';
+}
+div:indeterminate {
+  --indeterminate-applied: 'true';
+}
+div:placeholder-shown {
+  --placeholder-shown-applied: 'true';
+}
+div:autofill {
+  --autofill-applied: 'true';
+}

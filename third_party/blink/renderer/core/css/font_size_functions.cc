@@ -271,18 +271,12 @@ std::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
     return std::nullopt;
   }
 
-  double aspect_value =
+  float aspect_value =
       AspectValue(*font_data, size_adjust.GetMetric(), computed_size);
   if (!aspect_value) {
     return std::nullopt;
   }
-
-  double adjusted_size = (size_adjust.Value() / aspect_value) * computed_size;
-  // Depending on font configurations, the retrieved aspect_value may slightly
-  // differ, causing a few pixels' variation from the expected result.
-  // We correct this by rounding the adjusted size to five decimal places.
-  // See https://crbug.com/346773492
-  return static_cast<float>(std::round(adjusted_size * 100000) / 100000.f);
+  return (size_adjust.Value() / aspect_value) * computed_size;
 }
 
 }  // namespace blink

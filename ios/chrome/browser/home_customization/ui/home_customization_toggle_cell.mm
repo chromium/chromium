@@ -175,6 +175,8 @@ const CGFloat kNavigationIconImageViewWidth = 16;
 
 - (void)configureCellWithType:(CustomizationToggleType)type
                       enabled:(BOOL)enabled {
+  [self prepareForReuse];
+
   _type = type;
 
   _title.text = [HomeCustomizationHelper titleForToggleType:type];
@@ -218,8 +220,6 @@ const CGFloat kNavigationIconImageViewWidth = 16;
 - (void)toggleModuleVisibility:(UISwitch*)sender {
   BOOL isEnabling = sender.isOn;
   [self.mutator toggleModuleVisibilityForType:_type enabled:isEnabling];
-
-  [self updateNavigationIconForSwitchEnabled:isEnabling];
 }
 
 // Navigates to the customization submenu for the cell's type.
@@ -236,6 +236,9 @@ const CGFloat kNavigationIconImageViewWidth = 16;
       [HomeCustomizationHelper doesTypeHaveSubmenu:_type] && enabled;
   _navigationImageView.hidden = !shouldShowNavigationIcon;
   _navigationSeparator.hidden = !shouldShowNavigationIcon;
+  _title.accessibilityTraits |= shouldShowNavigationIcon
+                                    ? UIAccessibilityTraitButton
+                                    : UIAccessibilityTraitNone;
 
   // Enable/disable the navigation on tap.
   [_tapRecognizer setEnabled:enabled];

@@ -170,6 +170,9 @@ class PageNode : public TypedNode<PageNode> {
   // holding an IndexedDB lock.
   virtual bool IsHoldingIndexedDBLock() const = 0;
 
+  // Returns whether at least one frame on this page currently uses WebRTC.
+  virtual bool UsesWebRTC() const = 0;
+
   // Returns the navigation ID associated with the last committed navigation
   // event for the main frame of this page.
   // See PageNodeObserver::OnMainFrameNavigationCommitted.
@@ -310,6 +313,9 @@ class PageNodeObserver : public base::CheckedObserver {
   virtual void OnPageIsHoldingIndexedDBLockChanged(
       const PageNode* page_node) = 0;
 
+  // Invoked when the UsesWebRTC property changes.
+  virtual void OnPageUsesWebRTCChanged(const PageNode* page_node) = 0;
+
   // Invoked when the MainFrameUrl property changes.
   virtual void OnMainFrameUrlChanged(const PageNode* page_node) = 0;
 
@@ -375,6 +381,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override {}
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override {
   }
+  void OnPageUsesWebRTCChanged(const PageNode* page_node) override {}
   void OnMainFrameUrlChanged(const PageNode* page_node) override {}
   void OnMainFrameDocumentChanged(const PageNode* page_node) override {}
   void OnHadFormInteractionChanged(const PageNode* page_node) override {}

@@ -83,47 +83,46 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       kColorNewTabPageButtonBackgroundHovered};
   mixer[kColorNewTabPageWallpaperSearchButtonForeground] = {
       ui::kColorSysOnPrimary};
-  if (base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming) ||
-      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
+  if (base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming)) {
     // Steady state theme colors.
-    mixer[kColorRealboxBackground] = {kColorToolbarBackgroundSubtleEmphasis};
-    mixer[kColorRealboxBackgroundHovered] = {
+    mixer[kColorSearchboxBackground] = {kColorToolbarBackgroundSubtleEmphasis};
+    mixer[kColorSearchboxBackgroundHovered] = {
         kColorToolbarBackgroundSubtleEmphasisHovered};
-    mixer[kColorRealboxPlaceholder] = {kColorOmniboxTextDimmed};
-    mixer[kColorRealboxSearchIconBackground] = {kColorOmniboxResultsIcon};
-    mixer[kColorRealboxLensVoiceIconBackground] = {ui::kColorSysPrimary};
-    mixer[kColorRealboxSelectionBackground] = {
+    mixer[kColorSearchboxPlaceholder] = {kColorOmniboxTextDimmed};
+    mixer[kColorSearchboxSearchIconBackground] = {kColorOmniboxResultsIcon};
+    mixer[kColorSearchboxLensVoiceIconBackground] = {ui::kColorSysPrimary};
+    mixer[kColorSearchboxSelectionBackground] = {
         kColorOmniboxSelectionBackground};
-    mixer[kColorRealboxSelectionForeground] = {
+    mixer[kColorSearchboxSelectionForeground] = {
         kColorOmniboxSelectionForeground};
 
     // Expanded state theme colors.
-    mixer[kColorRealboxAnswerIconBackground] = {
+    mixer[kColorSearchboxAnswerIconBackground] = {
         kColorOmniboxAnswerIconGM3Background};
-    mixer[kColorRealboxAnswerIconForeground] = {
+    mixer[kColorSearchboxAnswerIconForeground] = {
         kColorOmniboxAnswerIconGM3Foreground};
-    mixer[kColorRealboxForeground] = {kColorOmniboxText};
-    mixer[kColorRealboxResultsActionChip] = {ui::kColorSysTonalOutline};
-    mixer[kColorRealboxResultsActionChipIcon] = {ui::kColorSysPrimary};
-    mixer[kColorRealboxResultsActionChipFocusOutline] = {
+    mixer[kColorSearchboxForeground] = {kColorOmniboxText};
+    mixer[kColorSearchboxResultsActionChip] = {ui::kColorSysTonalOutline};
+    mixer[kColorSearchboxResultsActionChipIcon] = {ui::kColorSysPrimary};
+    mixer[kColorSearchboxResultsActionChipFocusOutline] = {
         ui::kColorSysStateFocusRing};
-    mixer[kColorRealboxResultsBackgroundHovered] = {
+    mixer[kColorSearchboxResultsBackgroundHovered] = {
         kColorOmniboxResultsBackgroundHovered};
-    mixer[kColorRealboxResultsButtonHover] = {
+    mixer[kColorSearchboxResultsButtonHover] = {
         kColorOmniboxResultsButtonInkDropRowHovered};
-    mixer[kColorRealboxResultsDimSelected] = {
+    mixer[kColorSearchboxResultsDimSelected] = {
         kColorOmniboxResultsTextDimmedSelected};
-    mixer[kColorRealboxResultsFocusIndicator] = {
+    mixer[kColorSearchboxResultsFocusIndicator] = {
         kColorOmniboxResultsFocusIndicator};
-    mixer[kColorRealboxResultsForeground] = {kColorOmniboxText};
-    mixer[kColorRealboxResultsForegroundDimmed] = {kColorOmniboxTextDimmed};
-    mixer[kColorRealboxResultsIcon] = {kColorOmniboxResultsIcon};
-    mixer[kColorRealboxResultsIconSelected] = {kColorOmniboxResultsIcon};
-    mixer[kColorRealboxResultsIconFocusedOutline] = {
+    mixer[kColorSearchboxResultsForeground] = {kColorOmniboxText};
+    mixer[kColorSearchboxResultsForegroundDimmed] = {kColorOmniboxTextDimmed};
+    mixer[kColorSearchboxResultsIcon] = {kColorOmniboxResultsIcon};
+    mixer[kColorSearchboxResultsIconSelected] = {kColorOmniboxResultsIcon};
+    mixer[kColorSearchboxResultsIconFocusedOutline] = {
         kColorOmniboxResultsButtonIconSelected};
-    mixer[kColorRealboxResultsUrl] = {kColorOmniboxResultsUrl};
-    mixer[kColorRealboxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
-    mixer[kColorRealboxShadow] =
+    mixer[kColorSearchboxResultsUrl] = {kColorOmniboxResultsUrl};
+    mixer[kColorSearchboxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
+    mixer[kColorSearchboxShadow] =
         ui::SetAlpha(gfx::kGoogleGrey900,
                      (dark_mode ? /* % opacity */ 0.32 : 0.1) * SK_AlphaOPAQUE);
 
@@ -131,10 +130,10 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
     // mode will match the omnibox or not.
     if (dark_mode &&
         !ntp_features::kNtpRealboxCr23ExpandedStateBgMatchesOmnibox.Get()) {
-      mixer[kColorRealboxResultsBackground] = {
+      mixer[kColorSearchboxResultsBackground] = {
           kColorToolbarBackgroundSubtleEmphasis};
     } else {
-      mixer[kColorRealboxResultsBackground] = {kColorOmniboxResultsBackground};
+      mixer[kColorSearchboxResultsBackground] = {kColorOmniboxResultsBackground};
     }
   }
 }

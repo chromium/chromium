@@ -315,25 +315,6 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
 
   {
     HitReport hp(base_hp);
-    hp.threat_type = SB_THREAT_TYPE_URL_BINARY_MALWARE;
-    hp.threat_source = ThreatSource::REMOTE;
-    hp.extended_reporting_level = SBER_LEVEL_OFF;
-    hp.is_metrics_reporting_active = true;
-    hp.is_subresource = false;
-    hp.is_enhanced_protection = true;
-    EXPECT_EQ(
-        "https://safebrowsing.google.com/safebrowsing/report?client=unittest&"
-        "appver=1.0&pver=4.0" +
-            key_param_ +
-            "&ext=0&enh=1&evts=binurlhit&"
-            "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
-            "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
-            "url.com%2F&evtb=0&src=rem&m=1",
-        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
-  }
-
-  {
-    HitReport hp(base_hp);
     hp.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     hp.threat_source = ThreatSource::LOCAL_PVER4;
     hp.extended_reporting_level = SBER_LEVEL_OFF;
@@ -348,27 +329,6 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=l4&m=0",
-        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
-  }
-
-  // Same as above, but add population_id
-  {
-    HitReport hp(base_hp);
-    hp.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
-    hp.threat_source = ThreatSource::LOCAL_PVER4;
-    hp.extended_reporting_level = SBER_LEVEL_OFF;
-    hp.is_metrics_reporting_active = false;
-    hp.is_subresource = false;
-    hp.population_id = "foo bar";
-    hp.is_enhanced_protection = true;
-    EXPECT_EQ(
-        "https://safebrowsing.google.com/safebrowsing/report?client=unittest&"
-        "appver=1.0&pver=4.0" +
-            key_param_ +
-            "&ext=0&enh=1&evts=phishcsdhit&"
-            "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
-            "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
-            "url.com%2F&evtb=0&src=l4&m=0&up=foo+bar",
         ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 

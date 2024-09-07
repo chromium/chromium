@@ -17,54 +17,33 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 #import "ios/chrome/common/channel_info.h"
 
-namespace {
-
-// Returns the `IOSChromePasswordCheckManager` for the last used browser state.
-
-// TODO(crbug.com/349805178): When multi-profile support is added to
-// Safety Check and Password Check views, refactor to iterate over all
-// profiles and aggregate results.
-scoped_refptr<IOSChromePasswordCheckManager>
-GetPasswordCheckManagerForLastUsedBrowserState() {
-  ChromeBrowserState* last_used_browser_state =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLastUsedBrowserStateDeprecatedDoNotUse();
-
-  return IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-      last_used_browser_state);
-}
-
-}  // namespace
-
 IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
     PrefService* pref_service,
     PrefService* local_pref_service,
-    const scoped_refptr<base::SequencedTaskRunner> task_runner)
+    scoped_refptr<IOSChromePasswordCheckManager> password_check_manager,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : pref_service_(pref_service),
       local_pref_service_(local_pref_service),
+      password_check_manager_(password_check_manager),
       task_runner_(task_runner) {
   CHECK(pref_service_);
   CHECK(local_pref_service_);
+  CHECK(password_check_manager_);
   CHECK(task_runner_);
 
-  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager =
-      GetPasswordCheckManagerForLastUsedBrowserState();
-
-  password_check_manager->AddObserver(this);
+  password_check_manager_->AddObserver(this);
 
   if (IsOmahaServiceRefactorEnabled()) {
     OmahaService::AddObserver(this);
@@ -132,10 +111,11 @@ void IOSChromeSafetyCheckManager::Shutdown() {
   pref_service_ = nullptr;
   local_pref_service_ = nullptr;
 
-  // Confirm that `IOSChromeSafetyCheckManager` is not observing any other
-  // services, particularly `IOSChromePasswordCheckManager` and `OmahaService`.
-  // This ensures safe destruction of `IOSChromeSafetyCheckManager`.
-  CHECK(!IOSChromePasswordCheckManager::Observer::IsInObserverList());
+  if (password_check_manager_) {
+    password_check_manager_->RemoveObserver(this);
+    password_check_manager_ = nullptr;
+  }
+
   if (IsOmahaServiceRefactorEnabled()) {
     CHECK(!OmahaServiceObserver::IsInObserverList());
   }
@@ -227,10 +207,7 @@ void IOSChromeSafetyCheckManager::StartPasswordCheck() {
 
   previous_insecure_password_counts_ = insecure_password_counts_;
 
-  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager =
-      GetPasswordCheckManagerForLastUsedBrowserState();
-
-  password_check_manager->StartPasswordCheck(
+  password_check_manager_->StartPasswordCheck(
       password_manager::LeakDetectionInitiator::kIosProactivePasswordCheckup);
 
   // NOTE: There's no need to explicitly set `password_check_state_` to
@@ -254,10 +231,7 @@ void IOSChromeSafetyCheckManager::StopPasswordCheck() {
 
   ignore_password_check_changes_ = true;
 
-  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager =
-      GetPasswordCheckManagerForLastUsedBrowserState();
-
-  password_check_manager->StopPasswordCheck();
+  password_check_manager_->StopPasswordCheck();
 }
 
 void IOSChromeSafetyCheckManager::StartUpdateChromeCheck() {
@@ -308,7 +282,9 @@ void IOSChromeSafetyCheckManager::InsecureCredentialsChanged() {
 
 void IOSChromeSafetyCheckManager::ManagerWillShutdown(
     IOSChromePasswordCheckManager* password_check_manager) {
-  password_check_manager->RemoveObserver(this);
+  CHECK_EQ(password_check_manager, password_check_manager_);
+  password_check_manager_->RemoveObserver(this);
+  password_check_manager_ = nullptr;
 }
 
 void IOSChromeSafetyCheckManager::UpgradeRecommendedDetailsChanged(
@@ -361,11 +337,7 @@ const GURL& IOSChromeSafetyCheckManager::GetChromeAppUpgradeUrl() const {
 std::vector<password_manager::CredentialUIEntry>
 IOSChromeSafetyCheckManager::GetInsecureCredentials() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager =
-      GetPasswordCheckManagerForLastUsedBrowserState();
-
-  return password_check_manager->GetInsecureCredentials();
+  return password_check_manager_->GetInsecureCredentials();
 }
 
 base::Time IOSChromeSafetyCheckManager::GetLastSafetyCheckRunTime() const {
@@ -410,11 +382,8 @@ void IOSChromeSafetyCheckManager::ConvertAndSetPasswordCheckState(
     SetUpdateChromeCheckState(UpdateChromeSafetyCheckState::kNetError);
   }
 
-  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager =
-      GetPasswordCheckManagerForLastUsedBrowserState();
-
   const std::vector<password_manager::CredentialUIEntry> insecure_credentials =
-      password_check_manager->GetInsecureCredentials();
+      password_check_manager_->GetInsecureCredentials();
 
   password_manager::InsecurePasswordCounts counts =
       password_manager::CountInsecurePasswordsPerInsecureType(
@@ -432,10 +401,7 @@ void IOSChromeSafetyCheckManager::ConvertAndSetPasswordCheckState(
 void IOSChromeSafetyCheckManager::RefreshOutdatedPasswordCheckState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager =
-      GetPasswordCheckManagerForLastUsedBrowserState();
-
-  PasswordCheckState state = password_check_manager->GetPasswordCheckState();
+  PasswordCheckState state = password_check_manager_->GetPasswordCheckState();
 
   // If the Password check reports the device is offline, propogate this
   // information to the Update Chrome check.
@@ -444,7 +410,7 @@ void IOSChromeSafetyCheckManager::RefreshOutdatedPasswordCheckState() {
   }
 
   const std::vector<password_manager::CredentialUIEntry> insecure_credentials =
-      password_check_manager->GetInsecureCredentials();
+      password_check_manager_->GetInsecureCredentials();
 
   password_manager::InsecurePasswordCounts counts =
       password_manager::CountInsecurePasswordsPerInsecureType(
@@ -490,7 +456,8 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
                            NameForSafetyCheckState(state));
 
   for (auto& observer : observers_) {
-    observer.PasswordCheckStateChanged(password_check_state_);
+    observer.PasswordCheckStateChanged(password_check_state_,
+                                       insecure_password_counts_);
   }
 
   RefreshSafetyCheckRunningState();
@@ -708,12 +675,6 @@ void IOSChromeSafetyCheckManager::RemoveObserver(
 void IOSChromeSafetyCheckManager::StartOmahaCheckForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StartOmahaCheck();
-}
-
-void IOSChromeSafetyCheckManager::HandleOmahaResponseForTesting(
-    UpgradeRecommendedDetails details) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HandleOmahaResponse(details);
 }
 
 RunningSafetyCheckState

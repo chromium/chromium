@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -70,7 +70,7 @@ class AccountMenuMediatorTest : public PlatformTest {
             browser_state_.get());
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     identity_manager_ =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_.get());
 
     AddPrimaryIdentity();
     AddSecondaryIdentity();
@@ -82,7 +82,8 @@ class AccountMenuMediatorTest : public PlatformTest {
           initWithSyncService:SyncService()
         accountManagerService:account_manager_service_
                   authService:authentication_service_
-              identityManager:identity_manager_];
+              identityManager:identity_manager_
+                        prefs:browser_state_->GetPrefs()];
     mediator_.delegate = delegate_;
     mediator_.consumer = consumer_;
   }

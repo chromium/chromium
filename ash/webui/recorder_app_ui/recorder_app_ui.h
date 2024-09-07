@@ -18,6 +18,7 @@
 #include "components/soda/soda_installer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
@@ -109,6 +110,12 @@ class RecorderAppUI
                         const base::flat_map<std::string, std::string>& fields,
                         FormatModelInputCallback callback) override;
 
+  void ValidateSafetyResult(
+      on_device_model::mojom::SafetyFeature safety_feature,
+      const std::string& text,
+      on_device_model::mojom::SafetyInfoPtr safety_info,
+      ValidateSafetyResultCallback callback) override;
+
   void AddModelMonitor(
       const base::Uuid& model_id,
       ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
@@ -134,6 +141,14 @@ class RecorderAppUI
       AddQuietModeMonitorCallback callback) override;
 
   void SetQuietMode(bool quiet_mode) override;
+
+  void CanUseSpeakerLabelForCurrentProfile(
+      CanUseSpeakerLabelForCurrentProfileCallback callback) override;
+
+  void RecordSpeakerLabelConsent(
+      bool consent_given,
+      const std::vector<std::string>& consent_description_names,
+      const std::string& consent_confirmation_name) override;
 
   // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;

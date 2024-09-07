@@ -339,7 +339,7 @@ class SignedExchangeHandlerTest
         std::make_unique<blink::WebPackageRequestMatcher>(
             net::HttpRequestHeaders(), std::string() /* accept_langs */),
         nullptr /* devtools_proxy */, nullptr /* reporter */,
-        FrameTreeNode::kFrameTreeNodeInvalidId);
+        FrameTreeNodeId());
   }
 
   void WaitForHeader() {

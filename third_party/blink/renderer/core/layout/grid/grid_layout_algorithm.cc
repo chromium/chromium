@@ -231,6 +231,14 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
         To<GridBreakTokenData>(GetBreakToken()->TokenData());
     grid_sizing_tree = grid_data->grid_sizing_tree.CopyForFragmentation();
     intrinsic_block_size = grid_data->intrinsic_block_size;
+
+    if (Style().BoxDecorationBreak() == EBoxDecorationBreak::kClone &&
+        !GetBreakToken()->IsAtBlockEnd()) {
+      // In the cloning box decorations model, the intrinsic block-size of a
+      // node effectively grows by the size of the box decorations each time it
+      // fragments.
+      intrinsic_block_size += BorderScrollbarPadding().BlockSum();
+    }
   } else {
     grid_sizing_tree = node.ChildLayoutBlockedByDisplayLock()
                            ? BuildGridSizingTreeIgnoringChildren()
@@ -239,8 +247,8 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   }
 
   Vector<EBreakBetween> row_break_between;
-  LayoutUnit previously_consumed_grid_block_size;
-  LayoutUnit consumed_grid_block_size;
+  LayoutUnit previous_offset_in_stitched_container;
+  LayoutUnit offset_in_stitched_container;
   Vector<GridItemPlacementData> grid_items_placement_data;
   Vector<LayoutUnit> row_offset_adjustments;
 
@@ -253,8 +261,8 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
       const auto* grid_data =
           To<GridBreakTokenData>(GetBreakToken()->TokenData());
 
-      previously_consumed_grid_block_size = consumed_grid_block_size =
-          grid_data->consumed_grid_block_size;
+      previous_offset_in_stitched_container = offset_in_stitched_container =
+          grid_data->offset_in_stitched_container;
       grid_items_placement_data = grid_data->grid_items_placement_data;
       row_offset_adjustments = grid_data->row_offset_adjustments;
       row_break_between = grid_data->row_break_between;
@@ -269,7 +277,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
     PlaceGridItemsForFragmentation(
         grid_sizing_tree, row_break_between, &grid_items_placement_data,
         &row_offset_adjustments, &intrinsic_block_size,
-        &consumed_grid_block_size);
+        &offset_in_stitched_container);
   } else {
     PlaceGridItems(grid_sizing_tree, &row_break_between);
   }
@@ -305,16 +313,15 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
     // |FinishFragmentation| uses |BoxFragmentBuilder::IntrinsicBlockSize| to
     // determine the final size of this fragment.
     container_builder_.SetIntrinsicBlockSize(
-        consumed_grid_block_size - previously_consumed_grid_block_size +
-        border_padding.block_end);
+        offset_in_stitched_container - previous_offset_in_stitched_container +
+        BorderScrollbarPadding().block_end);
   } else {
     container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   }
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    auto status =
-        FinishFragmentation(border_padding.block_end, &container_builder_);
+    auto status = FinishFragmentation(&container_builder_);
     if (status == BreakStatus::kDisableFragmentation) {
       return container_builder_.Abort(LayoutResult::kDisableFragmentation);
     }
@@ -346,7 +353,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<GridBreakTokenData>(
             container_builder_.GetBreakTokenData(), std::move(grid_sizing_tree),
-            intrinsic_block_size, consumed_grid_block_size,
+            intrinsic_block_size, offset_in_stitched_container,
             grid_items_placement_data, row_offset_adjustments,
             row_break_between, oof_children));
   }
@@ -1437,14 +1444,14 @@ wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitions(
 
       std::optional<LayoutUnit> fixed_min_track_breadth;
       if (track_size.HasFixedMinTrackBreadth()) {
-        fixed_min_track_breadth =
-            MinimumValueForLength(track_size.MinTrackBreadth(), available_size);
+        fixed_min_track_breadth.emplace(MinimumValueForLength(
+            track_size.MinTrackBreadth(), available_size));
       }
 
       std::optional<LayoutUnit> fixed_max_track_breadth;
       if (track_size.HasFixedMaxTrackBreadth()) {
-        fixed_max_track_breadth =
-            MinimumValueForLength(track_size.MaxTrackBreadth(), available_size);
+        fixed_max_track_breadth.emplace(MinimumValueForLength(
+            track_size.MaxTrackBreadth(), available_size));
       }
 
       LayoutUnit track_contribution;
@@ -3647,9 +3654,9 @@ void GridLayoutAlgorithm::PlaceGridItems(
     // Determine the relative offset here (instead of in the builder). This is
     // safe as grid *also* has special inflow-bounds logic (otherwise this
     // wouldn't work).
-    std::optional<LogicalOffset> relative_offset = LogicalOffset();
+    LogicalOffset relative_offset = LogicalOffset();
     if (item_style.GetPosition() == EPosition::kRelative) {
-      *relative_offset += ComputeRelativeOffsetForBoxFragment(
+      relative_offset += ComputeRelativeOffsetForBoxFragment(
           physical_fragment, container_writing_direction,
           containing_grid_area.size);
     }
@@ -3659,7 +3666,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
     // Don't add these to the builder.
     if (out_grid_items_placement_data) {
       out_grid_items_placement_data->emplace_back(
-          containing_grid_area.offset, *relative_offset,
+          containing_grid_area.offset, relative_offset,
           result->HasDescendantThatDependsOnPercentageBlockSize());
     } else {
       container_builder_.AddResult(*result, containing_grid_area.offset,
@@ -3717,9 +3724,9 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     Vector<GridItemPlacementData>* grid_items_placement_data,
     Vector<LayoutUnit>* row_offset_adjustments,
     LayoutUnit* intrinsic_block_size,
-    LayoutUnit* consumed_grid_block_size) {
+    LayoutUnit* offset_in_stitched_container) {
   DCHECK(grid_items_placement_data && row_offset_adjustments &&
-         intrinsic_block_size && consumed_grid_block_size);
+         intrinsic_block_size && offset_in_stitched_container);
 
   // TODO(ikilpatrick): Update |SetHasSeenAllChildren| and early exit if true.
   const auto& constraint_space = GetConstraintSpace();
@@ -3759,9 +3766,11 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     DCHECK_EQ(container_writing_direction.GetWritingMode(),
               item_style.GetWritingMode());
 
-    // Only allow growth on "auto" block-size items, (a fixed block-size item
-    // can't grow).
-    if (!item_style.LogicalHeight().HasAutoOrContentOrIntrinsic()) {
+    // Only allow growth on "auto" block-size items, unless box decorations are
+    // to be cloned. Even a fixed block-size item can grow if box decorations
+    // are cloned (as long as box-sizing is content-box).
+    if (!item_style.LogicalHeight().HasAutoOrContentOrIntrinsic() &&
+        item_style.BoxDecorationBreak() != EBoxDecorationBreak::kClone) {
       return false;
     }
 
@@ -3801,6 +3810,16 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   };
 
   LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
+  LayoutUnit cloned_block_start_decoration;
+  if (fragmentainer_space != kIndefiniteSize) {
+    // Cloned block-start box decorations take up space at the beginning of a
+    // fragmentainer, and are baked into fragmentainer_space, but this is not
+    // part of the content progress.
+    cloned_block_start_decoration =
+        ClonedBlockStartDecoration(container_builder_);
+    fragmentainer_space -= cloned_block_start_decoration;
+  }
+
   base::span<const Member<const BreakToken>> child_break_tokens;
   if (GetBreakToken()) {
     child_break_tokens = GetBreakToken()->ChildBreakTokens();
@@ -3833,10 +3852,18 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           break_token = To<BlockBreakToken>((child_break_token_it++)->Get());
       }
 
-      const LayoutUnit child_block_offset =
-          IsBreakInside(break_token) ? LayoutUnit()
-                                     : item_placement_data.offset.block_offset -
-                                           *consumed_grid_block_size;
+      LayoutUnit child_block_offset;
+      if (IsBreakInside(break_token)) {
+        child_block_offset = BorderScrollbarPadding().block_start;
+      } else {
+        // Include any cloned block-start box decorations. The item offset
+        // offset is in the imaginary stitched container that we would have had
+        // had we not been fragmented, and now we want actual layout offsets for
+        // the current fragment.
+        child_block_offset = item_placement_data.offset.block_offset -
+                             *offset_in_stitched_container +
+                             cloned_block_start_decoration;
+      }
       LayoutUnit fragmentainer_block_offset =
           FragmentainerOffsetForChildren() + child_block_offset;
       const bool min_block_size_should_encompass_intrinsic_size =
@@ -3856,7 +3883,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         // row.
         const auto* grid_data =
             To<GridBreakTokenData>(GetBreakToken()->TokenData());
-        unavailable_block_size = grid_data->consumed_grid_block_size -
+        unavailable_block_size = grid_data->offset_in_stitched_container -
                                  (item_placement_data.offset.block_offset +
                                   break_token->ConsumedBlockSize());
       }
@@ -3878,7 +3905,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       const auto item_row_set_index = grid_item.SetIndices(kForRows).begin;
       grid_area.offset.block_offset +=
           (*row_offset_adjustments)[item_row_set_index] -
-          *consumed_grid_block_size;
+          *offset_in_stitched_container;
 
       // Check to see if this child should be placed within this fragmentainer.
       // We base this calculation on the grid-area rather than the offset.
@@ -3967,7 +3994,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
               // Only consider rows within this fragmentainer.
               LayoutUnit offset = layout_data.Rows().GetSetOffset(index) +
                                   (*row_offset_adjustments)[index] -
-                                  *consumed_grid_block_size;
+                                  *offset_in_stitched_container;
               if (offset <= LayoutUnit())
                 break;
 
@@ -4070,7 +4097,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         (*row_offset_adjustments)[breakpoint_row_set_index];
 
     const LayoutUnit fragment_relative_row_offset =
-        row_offset - *consumed_grid_block_size;
+        row_offset - *offset_in_stitched_container;
 
     // We may be within the initial column-balancing pass (where we have an
     // indefinite fragmentainer size). If we have a forced break, re-run
@@ -4115,7 +4142,9 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     // that hasn't been accounted for. We want this to contribute to the
     // grid container fragment size, and it is also needed to shift any
     // breakpoints all the way into the next fragmentainer.
-    fragmentainer_space = std::max(fragmentainer_space, max_item_block_end);
+    fragmentainer_space =
+        std::max(fragmentainer_space,
+                 max_item_block_end - cloned_block_start_decoration);
   }
 
   if (has_subsequent_children)
@@ -4135,7 +4164,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     container_builder_.SetLastBaseline(*last_baseline);
 
   if (fragmentainer_space != kIndefiniteSize) {
-    *consumed_grid_block_size += fragmentainer_space;
+    *offset_in_stitched_container += fragmentainer_space;
   }
 }
 
@@ -4178,9 +4207,10 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
     // item, pick up the static-position from the grid-area.
     if ((is_absolute_container && position == EPosition::kAbsolute) ||
         (is_fixed_container && position == EPosition::kFixed)) {
-      containing_block_rect = ComputeOutOfFlowItemContainingRect(
+      containing_block_rect.emplace(ComputeOutOfFlowItemContainingRect(
           placement_data, layout_data, container_style,
-          container_builder_.Borders(), total_fragment_size, &out_of_flow_item);
+          container_builder_.Borders(), total_fragment_size,
+          &out_of_flow_item));
     }
 
     auto child_offset = containing_block_rect

@@ -2007,6 +2007,18 @@ NavigationRequest::NavigationRequest(
       ad_auction_headers_eligible_ = true;
       headers.SetHeader(kAdAuctionRequestHeaderKey, "?1");
     }
+
+    // Partitioned popins are special modal popups that are partitioned as
+    // though they were an iframe embedded in the opener. All main-frame
+    // navigations and redirects must set a request header to notify the loaded
+    // site they are in a partitioned popin and not a standard popup.
+    // See https://explainers-by-googlers.github.io/partitioned-popins/
+    if (frame_tree_node->IsOutermostMainFrame() &&
+        frame_tree_node->current_frame_host()
+            ->delegate()
+            ->PartitionedPopinOpener()) {
+      headers.SetHeader("Sec-Popin-Context", "partitioned");
+    }
   }
 
   begin_params_->headers = headers.ToString();
@@ -2441,10 +2453,9 @@ void NavigationRequest::BeginNavigation() {
 bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
   // Find an available prerendered page for this request. If it's found, this
   // request may activate it instead of loading a page via network.
-  int candidate_prerender_frame_tree_node_id =
+  FrameTreeNodeId candidate_prerender_frame_tree_node_id =
       GetPrerenderHostRegistry().FindPotentialHostToActivate(*this);
-  if (candidate_prerender_frame_tree_node_id ==
-      RenderFrameHost::kNoFrameTreeNodeId) {
+  if (candidate_prerender_frame_tree_node_id.is_null()) {
     return false;
   }
 
@@ -2472,7 +2483,7 @@ bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
 
 void NavigationRequest::OnPrerenderingActivationChecksComplete(
     CommitDeferringCondition::NavigationType navigation_type,
-    std::optional<int> candidate_prerender_frame_tree_node_id) {
+    std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
   TRACE_EVENT_WITH_FLOW0(
       "navigation", "NavigationRequest::OnPrerenderingActivationChecksComplete",
       TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
@@ -2488,14 +2499,13 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
   // Attempt to reserve the potential PrerenderHost.
   //
   // If it has been requested to cancel prerendered page activation during
-  // CommitDeferringConditions, ReserveHostToActivate() returns
-  // kNoFrameTreeNodeId, and then NavigationRequest continues as regular
+  // CommitDeferringConditions, ReserveHostToActivate() returns an invalid
+  // FrameTreeNodeId, and then NavigationRequest continues as regular
   // navigation.
   prerender_frame_tree_node_id_ =
       GetPrerenderHostRegistry().ReserveHostToActivate(
           *this, candidate_prerender_frame_tree_node_id.value());
-  if (prerender_frame_tree_node_id_.value() ==
-      RenderFrameHost::kNoFrameTreeNodeId) {
+  if (prerender_frame_tree_node_id_.value().is_null()) {
     // If we ran commit deferring conditions for a potential pre-render which
     // eventually wasn't activated, abort the ViewTransition. The state was
     // cached assuming this navigation will be same-origin which might not be
@@ -3163,7 +3173,7 @@ void NavigationRequest::ResetStateForSiteInstanceChange() {
   // attacker-controlled state from the original entry.
 
   // Reset bindings (e.g., since error pages for WebUI URLs don't get them).
-  bindings_ = FrameNavigationEntry::kInvalidBindings;
+  bindings_.reset();
 
   // Reset any existing PageState with a non-empty, clean PageState, so that old
   // attacker-controlled state is not pulled into the new process.
@@ -5866,7 +5876,7 @@ void NavigationRequest::RunCommitDeferringConditions() {
 
 void NavigationRequest::OnCommitDeferringConditionChecksComplete(
     CommitDeferringCondition::NavigationType navigation_type,
-    std::optional<int> candidate_prerender_frame_tree_node_id) {
+    std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
   switch (navigation_type) {
     case CommitDeferringCondition::NavigationType::kPrerenderedPageActivation:
       OnPrerenderingActivationChecksComplete(
@@ -8217,8 +8227,8 @@ NavigationRequest::GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(
       network::mojom::WebSandboxFlags::kOrigin;
   if (use_opaque_origin) {
     origin_and_debug_info =
-        std::make_pair(origin_and_debug_info.first.DeriveNewOpaqueOrigin(),
-                       origin_and_debug_info.second + ", sandbox_flags");
+        std::pair(origin_and_debug_info.first.DeriveNewOpaqueOrigin(),
+                  origin_and_debug_info.second + ", sandbox_flags");
   }
 
   return origin_and_debug_info;
@@ -8682,7 +8692,7 @@ bool NavigationRequest::IsInPrerenderedMainFrame() const {
 
 bool NavigationRequest::IsPrerenderedPageActivation() const {
   CHECK(prerender_frame_tree_node_id_.has_value());
-  return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
+  return !prerender_frame_tree_node_id_.value().is_null();
 }
 
 bool NavigationRequest::IsInFencedFrameTree() const {
@@ -8693,7 +8703,7 @@ FrameType NavigationRequest::GetNavigatingFrameType() const {
   return frame_tree_node()->GetFrameType();
 }
 
-int NavigationRequest::GetFrameTreeNodeId() {
+FrameTreeNodeId NavigationRequest::GetFrameTreeNodeId() {
   return frame_tree_node()->frame_tree_node_id();
 }
 
@@ -10316,7 +10326,7 @@ void NavigationRequest::MaybeAssignInvalidPrerenderFrameTreeNodeId() {
     // This navigation won't activate a prerendered page. Otherwise,
     // `prerender_frame_tree_node_id_` should have already been set before this
     // in OnPrerenderingActivationChecksComplete().
-    prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+    prerender_frame_tree_node_id_ = FrameTreeNodeId();
   }
 }
 
@@ -10595,8 +10605,7 @@ void NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   // the past, make sure we're not granting it different bindings than it
   // had before. If so, note it and don't give it any bindings, to avoid a
   // potential privilege escalation.
-  if (bindings() != FrameNavigationEntry::kInvalidBindings &&
-      bindings() != web_ui_->GetBindings()) {
+  if (bindings().has_value() && bindings().value() != web_ui_->GetBindings()) {
     RecordAction(base::UserMetricsAction("ProcessSwapBindingsMismatch_RVHM"));
     base::WeakPtr<NavigationRequest> self = GetWeakPtr();
     // Reset `controller` first before resetting `web_ui_`, since the controller
@@ -10739,6 +10748,24 @@ NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
           frame_tree_node()->current_frame_host()->GetLastCommittedOrigin(),
           "about_srcdoc, no-parent");
     }
+  }
+
+  if (GetURL().SchemeIsBlob()) {
+    // Blob URLs either have the origin embedded within the URL, or have a
+    // URL -> origin mapping for it saved in the BlobURLRegistry.
+    std::optional<int> target_rph_id;
+    if (HasRenderFrameHost() && GetRenderFrameHost()->GetProcess()) {
+      target_rph_id = GetRenderFrameHost()->GetProcess()->GetID();
+    }
+    return std::make_pair(
+        static_cast<StoragePartitionImpl*>(
+            GetStoragePartitionWithCurrentSiteInfo())
+            ->GetBlobUrlRegistry()
+            ->GetOriginForNavigation(
+                GetURL(),
+                common_params().initiator_origin.value_or(url::Origin()),
+                target_rph_id),
+        "blob");
   }
 
   // In cases not covered above, URLLoaderFactory should be associated with the

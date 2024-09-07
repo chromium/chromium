@@ -47,13 +47,10 @@ per-file ...fuchsia*=file://build/fuchsia/OWNERS
 # For Mac-specific changes:
 per-file ..._mac.*=ellyjones@chromium.org
 per-file ..._mac.*=mark@chromium.org
-per-file ..._mac.*=rsesek@chromium.org
 per-file ..._mac_*=ellyjones@chromium.org
 per-file ..._mac_*=mark@chromium.org
-per-file ..._mac_*=rsesek@chromium.org
 per-file ....mm=ellyjones@chromium.org
 per-file ....mm=mark@chromium.org
-per-file ....mm=rsesek@chromium.org
 
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

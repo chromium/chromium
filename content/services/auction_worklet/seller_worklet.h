@@ -136,6 +136,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const std::optional<blink::AdCurrency>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_buyer_and_seller_reporting_id,
       const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
       const std::optional<blink::AdSize>& browser_signal_render_size,
@@ -197,6 +201,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     std::optional<blink::AdCurrency> component_expect_bid_currency;
     url::Origin browser_signal_interest_group_owner;
     GURL browser_signal_render_url;
+    std::optional<std::string>
+        browser_signal_selected_buyer_and_seller_reporting_id;
+    std::optional<std::string> browser_signal_buyer_and_seller_reporting_id;
     // While these are URLs, it's more convenient to store these as strings
     // rather than GURLs, both for creating a v8 array from, and for sharing
     // ScoringSignals code with BidderWorklets.
@@ -373,6 +380,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         const std::optional<blink::AdCurrency>& component_expect_bid_currency,
         const url::Origin& browser_signal_interest_group_owner,
         const GURL& browser_signal_render_url,
+        const std::optional<std::string>&
+            browser_signal_selected_buyer_and_seller_reporting_id,
+        const std::optional<std::string>&
+            browser_signal_buyer_and_seller_reporting_id,
         const std::vector<std::string>& browser_signal_ad_components,
         uint32_t browser_signal_bidding_duration_msecs,
         const std::optional<blink::AdSize>& browser_signal_render_size,

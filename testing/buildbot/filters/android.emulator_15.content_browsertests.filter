@@ -8,3 +8,7 @@
 
 # crbug.com/343335591
 -FormControlsBrowserTest.Button
+
+# crbug.com/365150687
+-IndexedDBBrowserTest.BlobsCountAgainstQuota
+

@@ -25,6 +25,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/content_relationship_verification/digital_asset_links_handler.h"
 #include "components/js_injection/browser/js_communication_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -340,6 +341,14 @@ class AwContents : public FindHelper::Listener,
 
   void SetDipScaleInternal(float dip_scale);
 
+  // Callback for RequestStorageAccess to continue once the app_domain_list has
+  // been loaded.
+  void RequestStorageAccessWithAppDomainList(
+      const url::Origin& top_level_origin,
+      base::TimeTicks time_requested,
+      PermissionCallback callback,
+      const std::vector<std::string>& app_domain_list);
+
   JavaObjectWeakGlobalRef java_ref_;
   BrowserViewRenderer browser_view_renderer_;  // Must outlive |web_contents_|.
   std::unique_ptr<content::WebContents> web_contents_;
@@ -368,6 +377,8 @@ class AwContents : public FindHelper::Listener,
   std::list<OriginCallback> pending_geolocation_prompts_;
 
   base::TimeDelta preferred_frame_interval_;
+
+  base::WeakPtrFactory<AwContents> weak_ptr_factory_{this};
 };
 
 }  // namespace android_webview

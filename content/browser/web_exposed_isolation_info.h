@@ -25,11 +25,13 @@ namespace content {
 //     This is computed purely by examining Cross-Origin-Opener-Policy and
 //     Cross-Origin-Embedder-Policy headers on a given response.
 //
-// 3.  Isolated Application contexts, whose requirements are still being
-//     fleshed out.
-//
-// TODO(mkwst): Improve the description of the Isolated Application context as
-// we work out what it is: https://crbug.com/1206150.
+// 3.  Isolated Application contexts, which correspond to Isolated Contexts as
+//     defined in:
+//     https://wicg.github.io/isolated-web-apps/isolated-contexts.html
+//     These contexts have higher isolation and integrity requirements than
+//     cross-origin isolation. The embedder is responsible for deciding whether
+//     a particular cross-origin isolated environment can qualify for this
+//     isolation level.
 class CONTENT_EXPORT WebExposedIsolationInfo {
  public:
   static WebExposedIsolationInfo CreateNonIsolated();
@@ -70,11 +72,8 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   // Returns `true` for contexts created via `CreateIsolatedApplication()`, and
   // `false` for those created via `CreateNonIsolated()` or `CreatedIsolated()`.
   //
-  // This corresponds to "application isolation", which is not yet defined, but
-  // will certainly include a superset of "cross-origin isolation"'s
-  // requirements.
-  //
-  // TODO(crbug.com/40180791): Define and specify these restrictions.
+  // This corresponds to "isolated contexts" as defined here:
+  // https://wicg.github.io/isolated-web-apps/isolated-contexts.html
   bool is_isolated_application() const {
     return origin_.has_value() && isolated_application_;
   }

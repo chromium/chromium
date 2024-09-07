@@ -18,7 +18,6 @@
 #include "ash/components/arc/mojom/boot_phase_monitor.mojom.h"
 #include "ash/components/arc/mojom/camera.mojom.h"
 #include "ash/components/arc/mojom/chrome_feature_flags.mojom.h"
-#include "ash/components/arc/mojom/clipboard.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
 #include "ash/components/arc/mojom/digital_goods.mojom.h"
@@ -175,12 +174,6 @@ void ArcBridgeHostImpl::OnChromeFeatureFlagsInstanceReady(
         chrome_feature_flags_remote) {
   OnInstanceReady(arc_bridge_service_->chrome_feature_flags(),
                   std::move(chrome_feature_flags_remote));
-}
-
-void ArcBridgeHostImpl::OnClipboardInstanceReady(
-    mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) {
-  OnInstanceReady(arc_bridge_service_->clipboard(),
-                  std::move(clipboard_remote));
 }
 
 void ArcBridgeHostImpl::OnCompatibilityModeInstanceReady(

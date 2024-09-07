@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/models/list_model.h"
@@ -133,14 +134,20 @@ struct ASH_EXPORT PlaybackData {
   PlaybackData(const PlaybackState state,
                const std::string& title,
                const GURL& url,
-               std::optional<int> media_start,
-               std::optional<int> media_end,
+               const base::flat_set<std::pair<int, int>>& media_segments,
                bool initial_playback);
   PlaybackData(const PlaybackData&);
   PlaybackData& operator=(const PlaybackData&);
   ~PlaybackData();
 
   std::string ToString() const;
+
+  // Returns true if this can aggregate with the new playback data.
+  bool CanAggregateWithNewData(const PlaybackData& new_data) const;
+
+  // Aggregates with the new playback data instance. It's useful for
+  // `reports.playback` request retries and rate limiting.
+  void AggregateWithNewData(const PlaybackData& new_data);
 
   // Playback state.
   PlaybackState state;
@@ -151,13 +158,10 @@ struct ASH_EXPORT PlaybackData {
   // Track media url.
   GURL url;
 
-  // Start time in second of the period that the playback event covers. Value is
-  // null when `initial_playback` is true.
-  std::optional<int> media_start;
-
-  // End time in second of the period that the playback event covers. Value is
-  // null when `initial_playback` is true.
-  std::optional<int> media_end;
+  // Set of integer pairs in the form of {start, end}. It indicates time
+  // segments of the period that the playback event covers. Integer values are
+  // in seconds.
+  base::flat_set<std::pair<int, int>> media_segments;
 
   // Indicate if it's the initial playback, i.e. first playback after loading.
   bool initial_playback;

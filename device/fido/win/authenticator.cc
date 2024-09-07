@@ -90,7 +90,6 @@ void FilterFoundCredentials(
 
 // static
 void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
-    bool is_off_the_record,
     WinWebAuthnApi* api,
     base::OnceCallback<void(bool is_available)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -98,19 +97,16 @@ void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
-          [](bool is_off_the_record, WinWebAuthnApi* api) {
+          [](WinWebAuthnApi* api) {
             BOOL result;
             if (!api || !api->IsAvailable()) {
-              return false;
-            }
-            if (is_off_the_record && api->Version() < WEBAUTHN_API_VERSION_4) {
               return false;
             }
             return api->IsUserVerifyingPlatformAuthenticatorAvailable(
                        &result) == S_OK &&
                    result == TRUE;
           },
-          is_off_the_record, api),
+          api),
       std::move(callback));
 }
 

@@ -484,7 +484,7 @@ TEST_P(PrivacyHubNotificationForScreenCaptureWithMicrophone, Test) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     PrivacyHubNotificationForScreenCaptureWithMicrophone,
-    testing::Combine(testing::Values(false),
+    testing::Combine(testing::Values(false, true),
                      testing::Values(NotificationType::MICROPHONE)));
 
 }  // namespace ash

@@ -99,6 +99,9 @@ constexpr base::TimeDelta kContainerSlideDuration = base::Milliseconds(120);
 // modes.
 constexpr base::TimeDelta kToggleModeScaleDuration = base::Milliseconds(150);
 
+constexpr base::TimeDelta kOcclusionTrackerPauseTimeout =
+    base::Milliseconds(300);
+
 // Builds the item view for window cycling for the given `window` with the
 // correct parent. If the given `window` is a free-form window, the direct
 // parent will be `mirror_container`. For `window` that belongs to a snap group,
@@ -149,7 +152,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   // the fade in but we also create windows here which may occlude other
   // windows.
   Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
-      /*timeout*/ base::Seconds(2));
+      kOcclusionTrackerPauseTimeout);
 
   // The layer for `this` is responsible for showing background blur and fade
   // and clip animations.

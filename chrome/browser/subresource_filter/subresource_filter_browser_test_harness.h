@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -28,12 +29,6 @@
 #include "content/public/test/prerender_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 namespace proto = url_pattern_index::proto;
 
@@ -84,7 +79,42 @@ MATCHER(HasActivationLevelEnabled, "") {
   return arg.activation_level == mojom::ActivationLevel::kEnabled;
 }
 
-class SubresourceFilterBrowserTest : public PlatformBrowserTest {
+// Class for shared test harness functionality to be used for both safe browsing
+// and fingerprinting protection browser tests.
+class SubresourceFilterSharedBrowserTest : public PlatformBrowserTest {
+ public:
+  SubresourceFilterSharedBrowserTest();
+
+  SubresourceFilterSharedBrowserTest(
+      const SubresourceFilterSharedBrowserTest&) = delete;
+  SubresourceFilterSharedBrowserTest& operator=(
+      const SubresourceFilterSharedBrowserTest&) = delete;
+
+  ~SubresourceFilterSharedBrowserTest() override;
+
+ protected:
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override;
+
+  GURL GetTestUrl(const std::string& relative_url) const;
+
+  content::WebContents* web_contents();
+
+  content::RenderFrameHost* FindFrameByName(const std::string& name);
+
+  bool WasParsedScriptElementLoaded(content::RenderFrameHost* rfh);
+
+  void ExpectParsedScriptElementLoadedStatusInFrames(
+      const std::vector<const char*>& frame_names,
+      const std::vector<bool>& expect_loaded);
+
+  void ExpectFramesIncludedInLayout(const std::vector<const char*>& frame_names,
+                                    const std::vector<bool>& expect_displayed);
+
+  void NavigateFrame(const char* frame_name, const GURL& url);
+};
+
+class SubresourceFilterBrowserTest : public SubresourceFilterSharedBrowserTest {
  public:
   SubresourceFilterBrowserTest();
 
@@ -141,8 +171,6 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
 
   virtual std::unique_ptr<TestSafeBrowsingDatabaseHelper> CreateTestDatabase();
 
-  GURL GetTestUrl(const std::string& relative_url) const;
-
   void ConfigureAsPhishingURL(const GURL& url);
 
   void ConfigureAsSubresourceFilterOnlyURL(const GURL& url);
@@ -150,8 +178,6 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
   void ConfigureURLWithWarning(
       const GURL& url,
       std::vector<safe_browsing::SubresourceFilterType> filter_types);
-
-  content::WebContents* web_contents();
 
   SubresourceFilterContentSettingsManager* settings_manager() const {
     return profile_context_->settings_manager();
@@ -161,24 +187,11 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
     return profile_context_->ads_intervention_manager();
   }
 
-  content::RenderFrameHost* FindFrameByName(const std::string& name);
-
-  bool WasParsedScriptElementLoaded(content::RenderFrameHost* rfh);
-
-  void ExpectParsedScriptElementLoadedStatusInFrames(
-      const std::vector<const char*>& frame_names,
-      const std::vector<bool>& expect_loaded);
-
-  void ExpectFramesIncludedInLayout(const std::vector<const char*>& frame_names,
-                                    const std::vector<bool>& expect_displayed);
-
   bool IsDynamicScriptElementLoaded(content::RenderFrameHost* rfh);
 
   void InsertDynamicFrameWithScript();
 
   void NavigateFromRendererSide(const GURL& url);
-
-  void NavigateFrame(const char* frame_name, const GURL& url);
 
   void SetRulesetToDisallowURLsWithPathSuffix(const std::string& suffix);
 

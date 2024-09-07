@@ -70,6 +70,7 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
@@ -203,14 +204,8 @@ SyncTest::SyncTest(TestType test_type)
         {switches::kSyncFilterOutInactiveDevicesForSingleClient,
          {{switches::kSyncActiveDeviceMargin.name, "-2d"}}});
   }
-  std::vector<base::test::FeatureRef> disabled_features;
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/329426609): Re-enable the feature after fixing the flakes.
-  disabled_features.push_back(switches::kSeedAccountsRevamp);
-#endif
-  if (!enabled_features.empty() || !disabled_features.empty()) {
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+  if (!enabled_features.empty()) {
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -297,17 +292,6 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
           switches::kBypassAccountAlreadyUsedByAnotherProfileCheck)) {
     cl->AppendSwitch(switches::kBypassAccountAlreadyUsedByAnotherProfileCheck);
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (cl->HasSwitch(syncer::kSyncServiceURL)) {
-    // TODO(crbug.com/40787402): setup real SecurityDomainService if
-    // server_type_ == EXTERNAL_LIVE_SERVER.
-    // Effectively disables interaction with SecurityDomainService for E2E
-    // tests.
-    cl->AppendSwitchASCII(trusted_vault::kTrustedVaultServiceURLSwitch,
-                          "broken_url");
-  }
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cl->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
@@ -752,9 +736,11 @@ void SyncTest::TearDownOnMainThread() {
         // On Android, however, browser process is not shutdown after test run.
         // As a result, these backend tasks could keep running and cause timeout
         // error during test shutdown.
-        // To fix this issue, we explicitly call SyncServiceImpl::StopAndClear
-        // to cancel any ongoing sync engine's backend tasks.
-        GetSyncService(index)->StopAndClear();
+        // To fix this issue, we explicitly mimic a dashboard reset to cancel
+        // any ongoing sync engine's backend tasks.
+        GetSyncService(index)->OnActionableProtocolError(
+            {.error_type = syncer::NOT_MY_BIRTHDAY,
+             .action = syncer::DISABLE_SYNC_ON_CLIENT});
       }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1127,10 +1113,12 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kSyncEnableContactInfoDataTypeInTransportMode)) {
     allowed_types.Put(syncer::CONTACT_INFO);
   }
-  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
-    allowed_types.Put(syncer::PLUS_ADDRESS);
+
+  allowed_types.Put(syncer::PLUS_ADDRESS);
+  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
     allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
   }
+
   if (base::FeatureList::IsEnabled(
           syncer::kSyncEnableWalletMetadataInTransportMode)) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);

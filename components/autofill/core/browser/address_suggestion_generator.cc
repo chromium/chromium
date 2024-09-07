@@ -578,10 +578,10 @@ std::u16string GetGranularFillingLabels(SuggestionType suggestion_type) {
 // NAME_FULL or PHONE_HOME_NUMBER) that usually does not allow users to easily
 // identify their address.
 bool ShouldAddAddressLine1ToSuggestionLabels(FieldType trigger_field_type) {
-  static constexpr std::array kAddressRecognizingFields = {
+  static constexpr DenseSet kAddressRecognizingFields = {
       ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_STREET_ADDRESS};
   return GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kAddress &&
-         !base::Contains(kAddressRecognizingFields, trigger_field_type);
+         !kAddressRecognizingFields.contains(trigger_field_type);
 }
 
 // Returns the minimum number of fields that should be returned by
@@ -838,13 +838,13 @@ DeduplicatedProfilesForSuggestions(
         break;
       }
       // The profiles are identical and only one should be included.
-      // Prefer `kAccount` profiles over `kLocalOrSyncable` ones. In case the
-      // profiles have the same source, prefer the earlier one (since the
-      // profiles are pre-sorted by their relevance).
+      // Prefer account profiles over local ones. In case the profiles are of
+      // the same type, prefer the earlier one (since the profiles are
+      // pre-sorted by their relevance).
       const bool prefer_a_over_b =
-          profile_a->source() == profile_b->source()
+          profile_a->IsAccountProfile() == profile_b->IsAccountProfile()
               ? a < b
-              : profile_a->source() == AutofillProfile::Source::kAccount;
+              : profile_a->IsAccountProfile();
       if (!prefer_a_over_b) {
         include = false;
         break;
@@ -1186,7 +1186,10 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
         suggestions.back().icon = Suggestion::Icon::kAccount;
       }
     }
-    if (profile && profile->source() == AutofillProfile::Source::kAccount &&
+    // This is intentionally not using `profile->IsAccountProfile()` because the
+    // IPH should only be shown for non-H/W profiles.
+    if (profile &&
+        profile->record_type() == AutofillProfile::RecordType::kAccount &&
         profile->initial_creator_id() !=
             AutofillProfile::kInitialCreatorOrModifierChrome) {
       suggestions.back().feature_for_iph =

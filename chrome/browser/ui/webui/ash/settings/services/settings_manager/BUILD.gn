@@ -27,6 +27,7 @@ static_library("settings_manager") {
 
   deps = [
     "//ash/public/cpp",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/eche_app",

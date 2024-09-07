@@ -197,10 +197,6 @@
 #include "ui/linux/display_server_utils.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#include "base/message_loop/message_pump_libevent.h"
-#endif
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/policy_path_parser.h"
@@ -1216,12 +1212,7 @@ void ChromeMainDelegate::SetupTracing() {
   // sampler profiler because it can support java frames which is essential for
   // the main thread.
   base::RepeatingCallback tracing_factory =
-#if BUILDFLAG(IS_ANDROID)
-      base::BindRepeating(&CreateCoreUnwindersFactory,
-                          /*is_java_name_hashing_enabled=*/false);
-#else
       base::BindRepeating(&CreateCoreUnwindersFactory);
-#endif  // BUILDFLAG(IS_ANDROID)
   tracing::TracingSamplerProfiler::UnwinderType unwinder_type =
       tracing::TracingSamplerProfiler::UnwinderType::kCustomAndroid;
 #if BUILDFLAG(IS_ANDROID)
@@ -1600,13 +1591,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
 
   // Register component_updater PathProvider after DIR_USER_DATA overridden by
   // command line flags. Maybe move the chrome PathProvider down here also?
-  int alt_preinstalled_components_dir =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      ash::DIR_PREINSTALLED_COMPONENTS;
-#else
-      chrome::DIR_INTERNAL_PLUGINS;
-#endif
-
   int updated_components_dir =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR);
@@ -1615,7 +1599,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #endif
 
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
-                                          alt_preinstalled_components_dir,
+                                          chrome::DIR_INTERNAL_PLUGINS,
                                           updated_components_dir);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)

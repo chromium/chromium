@@ -41,6 +41,7 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -183,9 +184,12 @@ void ExecuteScript(content::RenderFrameHost* host, const std::string& script) {
   if (host->GetLifecycleState() !=
       content::RenderFrameHost::LifecycleState::kPrerendering) {
     host->ExecuteJavaScriptWithUserGestureForTests(
-        script16, base::NullCallback());  // IN-TEST
+        script16, base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);  // IN-TEST
   } else {
-    host->ExecuteJavaScriptForTests(script16, base::NullCallback());  // IN-TEST
+    host->ExecuteJavaScriptForTests(
+        script16, base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);  // IN-TEST
   }
 }
 
@@ -464,12 +468,7 @@ class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
  public:
   WebViewData(WebContentsInteractionTestUtil* owner, views::WebView* web_view)
       : owner_(owner), web_view_(web_view) {}
-  ~WebViewData() override {
-    EXPECT_FALSE(minimum_size_data_)
-        << "Minimum size " << minimum_size_data_->webview_size.ToString()
-        << " never reached; event never sent: "
-        << minimum_size_data_->event_type;
-  }
+  ~WebViewData() override = default;
 
   // Separate init is required from construction so that the util object that
   // owns this object can store a pointer before any calls back to the util
@@ -504,27 +503,6 @@ class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
                 web_view_)) {
       OnElementShown(element);
     }
-  }
-
-  void SendEventOnMinimumSize(const gfx::Size& minimum_webview_size,
-                              ui::CustomElementEventType event_type,
-                              const DeepQuery& element_to_check,
-                              const gfx::Size& minimum_element_size) {
-    CHECK(!minimum_size_data_)
-        << "Already have a pending minimum webview size with event "
-        << minimum_size_data_->event_type;
-    CHECK(!minimum_webview_size.IsEmpty());
-    CHECK(element_to_check.empty() || !minimum_element_size.IsEmpty());
-
-    minimum_size_data_ = std::make_unique<MinimumSizeData>();
-    minimum_size_data_->webview_size = minimum_webview_size;
-    minimum_size_data_->event_type = event_type;
-    minimum_size_data_->element = element_to_check;
-    minimum_size_data_->element_size = minimum_element_size;
-
-    // If the WebView already meets the minimum size, queue the event now.
-    if (Contains(minimum_webview_size, web_view_->size()))
-      QueueMinimumSizeEvent();
   }
 
   ui::ElementContext context() const { return context_; }
@@ -574,13 +552,6 @@ class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
     owner_->DiscardCurrentElement();
   }
 
-  void OnViewBoundsChanged(views::View* observed_view) override {
-    if (!minimum_size_data_)
-      return;
-    if (Contains(minimum_size_data_->webview_size, observed_view->size()))
-      QueueMinimumSizeEvent();
-  }
-
   void OnWebContentsAttached(views::WebView* observed_view) {
     CHECK_EQ(web_view_.get(), observed_view);
     content::WebContents* const to_observe =
@@ -593,22 +564,6 @@ class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
     owner_->MaybeCreateElement();
   }
 
-  void QueueMinimumSizeEvent() {
-    if (!owner_->current_element_)
-      return;
-
-    // This clears the current data, allowing us to queue another minimum size
-    // event.
-    std::unique_ptr<MinimumSizeData> data = std::move(minimum_size_data_);
-
-    // The final step is to poke the WebView to determine when the target
-    // element (or page, if one has not been specified) has actually been
-    // rendered at a nonzero size.
-    owner_->SendEventOnElementMinimumSize(data->event_type, data->element,
-                                          data->element_size,
-                                          /* must_already_exist =*/false);
-  }
-
   static bool Contains(const gfx::Size& bounds, const gfx::Size& size) {
     return bounds.height() <= size.height() && bounds.width() <= size.width();
   }
@@ -619,7 +574,6 @@ class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
   ui::ElementContext context_;
   ui::ElementTracker::Subscription shown_subscription_;
   ui::ElementTracker::Subscription hidden_subscription_;
-  std::unique_ptr<MinimumSizeData> minimum_size_data_;
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
       this};
   base::CallbackListSubscription web_contents_attached_subscription_;
@@ -827,28 +781,6 @@ void WebContentsInteractionTestUtil::Execute(const std::string& function) {
   ExecuteJsLocal(web_contents(), function);
 }
 
-void WebContentsInteractionTestUtil::SendEventOnElementMinimumSize(
-    ui::CustomElementEventType event_type,
-    const DeepQuery& where,
-    const gfx::Size& minimum_size,
-    bool must_already_exist) {
-  DCHECK(!minimum_size.IsEmpty());
-  StateChange change;
-  change.event = event_type;
-  change.type = must_already_exist ? StateChange::Type::kConditionTrue
-                                   : StateChange::Type::kExistsAndConditionTrue;
-  change.where = where;
-  change.test_function =
-      base::StringPrintf(R"(
-        el => {
-          const rect = el.getBoundingClientRect();
-          return rect.width >= %i && rect.height >= %i;
-        }
-      )",
-                         minimum_size.width(), minimum_size.height());
-  SendEventOnStateChange(change);
-}
-
 void WebContentsInteractionTestUtil::SendEventOnStateChange(
     const StateChange& configuration) {
   CHECK(current_element_);
@@ -950,17 +882,6 @@ gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
 gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
     const std::string& where) {
   return GetElementBoundsInScreen(DeepQuery{where});
-}
-
-void WebContentsInteractionTestUtil::SendEventOnWebViewMinimumSize(
-    const gfx::Size& minimum_webview_size,
-    ui::CustomElementEventType event_type,
-    const DeepQuery& element_to_check,
-    const gfx::Size& minimum_element_size) {
-  CHECK(web_view_data_)
-      << "Only supported for util objects created with ForNonTabWebView()";
-  web_view_data_->SendEventOnMinimumSize(
-      minimum_webview_size, event_type, element_to_check, minimum_element_size);
 }
 
 void WebContentsInteractionTestUtil::DidStopLoading() {

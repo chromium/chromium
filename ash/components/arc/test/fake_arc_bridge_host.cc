@@ -15,7 +15,6 @@
 #include "ash/components/arc/mojom/bluetooth.mojom.h"
 #include "ash/components/arc/mojom/boot_phase_monitor.mojom.h"
 #include "ash/components/arc/mojom/camera.mojom.h"
-#include "ash/components/arc/mojom/clipboard.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
 #include "ash/components/arc/mojom/disk_space.mojom.h"
@@ -108,9 +107,6 @@ void FakeArcBridgeHost::OnCameraInstanceReady(
 void FakeArcBridgeHost::OnChromeFeatureFlagsInstanceReady(
     mojo::PendingRemote<mojom::ChromeFeatureFlagsInstance>
         chrome_feature_flags_remote) {}
-
-void FakeArcBridgeHost::OnClipboardInstanceReady(
-    mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) {}
 
 void FakeArcBridgeHost::OnCompatibilityModeInstanceReady(
     mojo::PendingRemote<mojom::CompatibilityModeInstance>

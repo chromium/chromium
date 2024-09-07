@@ -23,19 +23,20 @@ namespace net {
 class HttpStreamKey;
 class QuicSessionKey;
 
-// Handles QUIC session attempts for HttpStreamPool::Job. Owned by a Job.
+// Handles QUIC session attempts for HttpStreamPool::AttemptManager. Owned by an
+// AttemptManager.
 class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
  public:
-  // `job` must outlive `this`.
-  QuicTask(Job* job, quic::ParsedQuicVersion quic_version);
+  // `manager` must outlive `this`.
+  QuicTask(AttemptManager* manager, quic::ParsedQuicVersion quic_version);
 
   QuicTask(const QuicTask&) = delete;
   QuicTask& operator=(const QuicTask&) = delete;
 
   ~QuicTask() override;
 
-  // Attempts QUIC session(s). Looks up available QUIC endpoints from `job_`'s
-  // service endpoints results and `quic_version_`.
+  // Attempts QUIC session(s). Looks up available QUIC endpoints from
+  // `manager_`'s service endpoints results and `quic_version_`.
   void MaybeAttempt();
 
   // QuicSessionAttempt::Delegate implementation.
@@ -63,9 +64,10 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
 
   void OnSessionAttemptComplete(int rv);
 
-  const raw_ptr<Job> job_;
+  const raw_ptr<AttemptManager> manager_;
   const QuicSessionAliasKey quic_session_alias_key_;
   const quic::ParsedQuicVersion quic_version_;
+  const NetLogWithSource net_log_;
 
   // TODO(crbug.com/346835898): Support multiple attempts.
   std::unique_ptr<QuicSessionAttempt> session_attempt_;

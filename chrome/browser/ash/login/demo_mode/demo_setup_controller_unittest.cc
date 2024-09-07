@@ -178,8 +178,24 @@ TEST_F(DemoSetupControllerTest, OnlineSuccess) {
   EXPECT_TRUE(
       helper_.WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
   EXPECT_EQ("", GetDeviceRequisition());
-  // No DemoMode.Setup.Error metrics should be recorded on success.
-  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 0);
+
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
+
+  // Both components were successfully loaded on the initial attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
 }
 
 TEST_F(DemoSetupControllerTest, OnlineErrorDefault) {
@@ -213,6 +229,19 @@ TEST_F(DemoSetupControllerTest, OnlineErrorDefault) {
       "DemoMode.Setup.Error",
       DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable, 1);
   histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
+
+  // The error occurred at the enrollment step. In the previous component
+  // loading step, both components were still successfully loaded on the initial
+  // attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
 }
 
 TEST_F(DemoSetupControllerTest, OnlineErrorPowerwashRequired) {
@@ -246,6 +275,19 @@ TEST_F(DemoSetupControllerTest, OnlineErrorPowerwashRequired) {
       "DemoMode.Setup.Error",
       DemoSetupController::DemoSetupError::ErrorCode::kAlreadyLocked, 1);
   histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
+
+  // The error occurred at the enrollment step. In the previous component
+  // loading step, both components were still successfully loaded on the initial
+  // attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
 }
 
 TEST_F(DemoSetupControllerTest, OnlineComponentError) {
@@ -313,6 +355,19 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
       DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable, 1);
   histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 
+  // The error occurred at the enrollment step. In the previous component
+  // loading step, both components were still successfully loaded on the initial
+  // attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
+
   helper_.Reset();
   Mock::VerifyAndClearExpectations(&mock_enrollment_launcher_);
 
@@ -332,12 +387,32 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
       helper_.WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
   EXPECT_EQ("", GetDeviceRequisition());
 
-  // There should be no more error reported, other than the one from the first
-  // try.
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success. There should have been two counts because of two tries.
   histogram_tester_.ExpectBucketCount(
       "DemoMode.Setup.Error",
       DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable, 1);
-  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 2);
+
+  // On retry, both components were successfully loaded again regardless that
+  // they were successfully loaded before.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
 }
 
 TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {

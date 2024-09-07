@@ -30,6 +30,7 @@ static_library("about") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/settings/search",

@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -359,6 +358,21 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdSpellingError;
     case kPseudoGrammarError:
       return kPseudoIdGrammarError;
+    case kPseudoPlaceholder:
+      return kPseudoIdPlaceholder;
+    case kPseudoFileSelectorButton:
+      return kPseudoIdFileSelectorButton;
+    case kPseudoDetailsContent:
+      return kPseudoIdDetailsContent;
+    case kPseudoSelectFallbackButton:
+      return kPseudoIdSelectFallbackButton;
+    case kPseudoSelectFallbackButtonText:
+      return kPseudoIdSelectFallbackButtonText;
+    case kPseudoPicker:
+      // NOTE: When we support more than one argument to ::picker() we will
+      // need to refactor something here (possibly the callers of this method)
+      // to account for this.
+      return kPseudoIdPickerSelect;
     case kPseudoViewTransition:
       return kPseudoIdViewTransition;
     case kPseudoViewTransitionGroup:
@@ -386,7 +400,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDefined:
-    case kPseudoDetailsContent:
     case kPseudoDialogInTopLayer:
     case kPseudoDir:
     case kPseudoDisabled:
@@ -395,7 +408,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoEmpty:
     case kPseudoEnabled:
     case kPseudoEnd:
-    case kPseudoFileSelectorButton:
     case kPseudoFirstChild:
     case kPseudoFirstOfType:
     case kPseudoFirstPage:
@@ -445,7 +457,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoPaused:
     case kPseudoPermissionGranted:
     case kPseudoPictureInPicture:
-    case kPseudoPlaceholder:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
     case kPseudoPopoverInTopLayer:
@@ -457,10 +468,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoRightPage:
     case kPseudoRoot:
     case kPseudoScope:
-    case kPseudoSelectFallbackButton:
-    case kPseudoSelectFallbackButtonIcon:
-    case kPseudoSelectFallbackButtonText:
-    case kPseudoSelectFallbackDatalist:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoSlotted:
@@ -615,11 +622,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
     {"search-text", CSSSelector::kPseudoSearchText},
     {"select-fallback-button", CSSSelector::kPseudoSelectFallbackButton},
-    {"select-fallback-button-icon",
-     CSSSelector::kPseudoSelectFallbackButtonIcon},
     {"select-fallback-button-text",
      CSSSelector::kPseudoSelectFallbackButtonText},
-    {"select-fallback-datalist", CSSSelector::kPseudoSelectFallbackDatalist},
     {"selection", CSSSelector::kPseudoSelection},
     {"single-button", CSSSelector::kPseudoSingleButton},
     {"spelling-error", CSSSelector::kPseudoSpellingError},
@@ -654,6 +658,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-last-of-type", CSSSelector::kPseudoNthLastOfType},
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
+    {"picker", CSSSelector::kPseudoPicker},
     {"slotted", CSSSelector::kPseudoSlotted},
     {"state", CSSSelector::kPseudoState},
     {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
@@ -742,9 +747,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   }
 
   if ((match->type == CSSSelector::kPseudoSelectFallbackButton ||
-       match->type == CSSSelector::kPseudoSelectFallbackButtonIcon ||
        match->type == CSSSelector::kPseudoSelectFallbackButtonText ||
-       match->type == CSSSelector::kPseudoSelectFallbackDatalist) &&
+       match->type == CSSSelector::kPseudoPicker) &&
       !RuntimeEnabledFeatures::StylableSelectEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
@@ -847,9 +851,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollNextButton:
     case kPseudoScrollPrevButton:
     case kPseudoSelectFallbackButton:
-    case kPseudoSelectFallbackButtonIcon:
     case kPseudoSelectFallbackButtonText:
-    case kPseudoSelectFallbackDatalist:
+    case kPseudoPicker:
     case kPseudoSelection:
     case kPseudoWebKitCustomElement:
     case kPseudoSlotted:
@@ -1019,6 +1022,12 @@ void CSSSelector::SetTrue() {
   SetMatch(kPseudoClass);
   SetPseudoType(kPseudoTrue);
   bits_.set<IsImplicitlyAddedField>(true);
+}
+
+void CSSSelector::SetWhere(CSSSelectorList* selector_list) {
+  SetMatch(kPseudoClass);
+  SetPseudoType(kPseudoWhere);
+  SetSelectorList(selector_list);
 }
 
 static void SerializeIdentifierOrAny(const AtomicString& identifier,
@@ -1536,9 +1545,8 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoFileSelectorButton ||
           GetPseudoType() == kPseudoBackdrop ||
           GetPseudoType() == kPseudoSelectFallbackButton ||
-          GetPseudoType() == kPseudoSelectFallbackButtonIcon ||
           GetPseudoType() == kPseudoSelectFallbackButtonText ||
-          GetPseudoType() == kPseudoSelectFallbackDatalist);
+          GetPseudoType() == kPseudoPicker);
 }
 
 bool CSSSelector::IsAllowedAfterPart() const {
@@ -1546,31 +1554,202 @@ bool CSSSelector::IsAllowedAfterPart() const {
       Match() != CSSSelector::kPseudoClass) {
     return false;
   }
-  // Everything that makes sense should work following ::part. This list
-  // restricts it to what has been tested.
   switch (GetPseudoType()) {
+    // Pseudo-elements
+    //
+    // All pseudo-elements other than ::part() should be allowed after
+    // ::part().
     case kPseudoBefore:
     case kPseudoAfter:
-    case kPseudoAutofill:
-    case kPseudoAutofillPreviewed:
-    case kPseudoAutofillSelected:
     case kPseudoPlaceholder:
     case kPseudoFileSelectorButton:
     case kPseudoFirstLine:
     case kPseudoFirstLetter:
     case kPseudoSelectFallbackButton:
-    case kPseudoSelectFallbackButtonIcon:
     case kPseudoSelectFallbackButtonText:
-    case kPseudoSelectFallbackDatalist:
+    case kPseudoPicker:
     case kPseudoSelection:
     case kPseudoSearchText:
     case kPseudoTargetText:
     case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
+      return true;
+
+    case kPseudoBackdrop:
+    case kPseudoCue:
+    case kPseudoMarker:
+    case kPseudoResizer:
+    case kPseudoScrollbar:
+    case kPseudoScrollbarButton:
+    case kPseudoScrollbarCorner:
+    case kPseudoScrollbarThumb:
+    case kPseudoScrollbarTrack:
+    case kPseudoScrollbarTrackPiece:
+    case kPseudoScrollMarker:
+    case kPseudoScrollMarkerGroup:
+    case kPseudoScrollNextButton:
+    case kPseudoScrollPrevButton:
+    case kPseudoWebKitCustomElement:
+    case kPseudoBlinkInternalElement:
+    case kPseudoDetailsContent:
+    case kPseudoViewTransition:
+    case kPseudoViewTransitionGroup:
+    case kPseudoViewTransitionImagePair:
+    case kPseudoViewTransitionNew:
+    case kPseudoViewTransitionOld:
+      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+
+    // It's possible that we should support ::slotted() after ::part().
+    // (WebKit accepts it at parse time but it doesn't appear to work;
+    // Gecko doesn't accept it.)  However, making it work isn't trivial.
+    // https://github.com/w3c/csswg-drafts/issues/10807
+    case kPseudoSlotted:
+      return false;
+
+    case kPseudoPart:
+      return false;
+
+    // Pseudo-classes
+    //
+    // TODO(https://crbug.com/40623497): Eventually all non-structural
+    // pseudo-classes should be allowed, and structural pseudo-classes should
+    // be forbidden.
+    case kPseudoAutofill:
+    case kPseudoAutofillPreviewed:
+    case kPseudoAutofillSelected:
     case kPseudoWebKitAutofill:
       return true;
-    default:
+
+    case kPseudoActive:
+    case kPseudoActiveViewTransition:
+    case kPseudoActiveViewTransitionType:
+    case kPseudoAnyLink:
+    case kPseudoChecked:
+    case kPseudoDefault:
+    case kPseudoDialogInTopLayer:
+    case kPseudoDisabled:
+    case kPseudoDrag:
+    case kPseudoEnabled:
+    case kPseudoFocus:
+    case kPseudoFocusVisible:
+    case kPseudoFocusWithin:
+    case kPseudoFullPageMedia:
+    case kPseudoHover:
+    case kPseudoIndeterminate:
+    case kPseudoInvalid:
+    case kPseudoLang:
+    case kPseudoLink:
+    case kPseudoModal:
+    case kPseudoOptional:
+    case kPseudoPermissionGranted:
+    case kPseudoPlaceholderShown:
+    case kPseudoReadOnly:
+    case kPseudoReadWrite:
+    case kPseudoRequired:
+    case kPseudoSelectorFragmentAnchor:
+    case kPseudoState:
+    case kPseudoStateDeprecatedSyntax:
+    case kPseudoTarget:
+    case kPseudoUserInvalid:
+    case kPseudoUserValid:
+    case kPseudoValid:
+    case kPseudoVisited:
+    case kPseudoWebkitAnyLink:
+    case kPseudoWindowInactive:
+    case kPseudoFullScreen:
+    case kPseudoFullScreenAncestor:
+    case kPseudoFullscreen:
+    case kPseudoInRange:
+    case kPseudoOutOfRange:
+    case kPseudoPaused:
+    case kPseudoPictureInPicture:
+    case kPseudoPlaying:
+    case kPseudoXrOverlay:
+    case kPseudoClosed:
+    case kPseudoDefined:
+    case kPseudoDir:
+    case kPseudoFutureCue:
+    case kPseudoIsHtml:
+    case kPseudoListBox:
+    case kPseudoMultiSelectFocus:
+    case kPseudoOpen:
+    case kPseudoPastCue:
+    case kPseudoPopoverInTopLayer:
+    case kPseudoPopoverOpen:
+    case kPseudoRelativeAnchor:
+    case kPseudoSpatialNavigationFocus:
+    case kPseudoVideoPersistent:
+    case kPseudoVideoPersistentAncestor:
+      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+
+    // IsSimpleSelectorValidAfterPseudoElement allows these selectors after
+    // ::part() regardless of what we do here.  However, since they are in
+    // fact allowed, tell the truth here.
+    case kPseudoIs:
+    case kPseudoNot:
+    case kPseudoWhere:
+      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+
+    // :-webkit-any() should in theory be allowed too like :is() and :where(),
+    // but it's a legacy feature so just leave it disallowed.
+    case kPseudoAny:
+      return false;
+
+    // TODO(https://crbug.com/40623497): Figure out what to do with this.
+    case kPseudoParent:
+      return false;
+
+    // These are supported only after ::webkit-scrollbar, which *maybe* makes
+    // them structural?  Leave them unsupported for now
+    case kPseudoHorizontal:
+    case kPseudoVertical:
+    case kPseudoDecrement:
+    case kPseudoIncrement:
+    case kPseudoStart:
+    case kPseudoEnd:
+    case kPseudoDoubleButton:
+    case kPseudoSingleButton:
+    case kPseudoNoButton:
+    case kPseudoCornerPresent:
+    // Likewise, this matches only after ::search-text.
+    case kPseudoCurrent:
+      return false;
+
+    // These are supported only on @page, so not allowed after ::part().
+    case kPseudoFirstPage:
+    case kPseudoLeftPage:
+    case kPseudoRightPage:
+      return false;
+
+    // These are structural pseudo-classes, which should not be allowed.
+    case kPseudoEmpty:
+    case kPseudoFirstChild:
+    case kPseudoFirstOfType:
+    case kPseudoLastChild:
+    case kPseudoLastOfType:
+    case kPseudoNthChild:
+    case kPseudoNthLastChild:
+    case kPseudoNthLastOfType:
+    case kPseudoNthOfType:
+    case kPseudoOnlyChild:
+    case kPseudoOnlyOfType:
+    case kPseudoRoot:
+      return false;
+
+    // These are other pseudo-classes that match based on tree information
+    // rather than local element information, which should not be allowed.
+    case kPseudoHas:
+    case kPseudoHasDatalist:
+    case kPseudoHost:
+    case kPseudoHostContext:
+    case kPseudoHostHasNonAutoAppearance:
+    case kPseudoScope:
+      return false;
+
+    case kPseudoTrue:
+    case kPseudoUnparsed:
+    case kPseudoUnknown:
       return false;
   }
 }
@@ -1611,6 +1790,8 @@ static bool ForAnyInComplexSelector(const Functor& functor,
 }
 
 bool CSSSelector::FollowsPart() const {
+  // TODO(dbaron): When we support part-like pseudo-elements, this will need
+  // to loop rather than just check one selector.
   const CSSSelector* previous = NextSimpleSelector();
   if (!previous) {
     return false;

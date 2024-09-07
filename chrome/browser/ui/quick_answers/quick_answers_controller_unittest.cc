@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
+#include "chrome/browser/ui/quick_answers/test/mock_quick_answers_client.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/magic_boost/test/fake_magic_boost_state.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
@@ -54,10 +59,22 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
 
     QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
-    controller()->SetClient(std::make_unique<quick_answers::QuickAnswersClient>(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_),
-        controller()->GetQuickAnswersDelegate()));
+    controller()->SetClient(
+        std::make_unique<quick_answers::MockQuickAnswersClient>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_),
+            controller()->GetQuickAnswersDelegate()));
+    mock_quick_answers_client_ =
+        static_cast<quick_answers::MockQuickAnswersClient*>(
+            controller()->GetClient());
+  }
+
+  void TearDown() override {
+    // `MockQuickAnswersClient` is owned by the controller. Reset the pointer to
+    // avoid a dangling pointer.
+    mock_quick_answers_client_ = nullptr;
+
+    ChromeQuickAnswersTestBase::TearDown();
   }
 
   QuickAnswersControllerImpl* controller() {
@@ -69,8 +86,9 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
   void ShowView(bool set_visibility = true) {
     // To show the quick answers view, its visibility must be set to 'pending'
     // first.
-    if (set_visibility)
+    if (set_visibility) {
       controller()->OnContextMenuShown(GetProfile());
+    }
 
     // Set up a companion menu before creating the QuickAnswersView.
     CreateAndShowBasicMenu();
@@ -121,6 +139,10 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
   QuickAnswersUiController* ui_controller() {
     return controller()->quick_answers_ui_controller();
   }
+
+ protected:
+  raw_ptr<quick_answers::MockQuickAnswersClient> mock_quick_answers_client_ =
+      nullptr;
 
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -209,7 +231,10 @@ TEST_F(QuickAnswersControllerTest, NoUserConsentView) {
   // Note that `kMahi` is associated with the Magic Boost feature.
   // `chromeos::features::IsMagicBoostEnabled()` is only accessible from Ash
   // build. This test code is currently only included by Ash build.
-  base::test::ScopedFeatureList scoped_feature_list_(chromeos::features::kMahi);
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+      {});
 
   chromeos::test::FakeMagicBoostState fake_magic_boost_state;
   fake_magic_boost_state.AsyncWriteConsentStatus(
@@ -336,4 +361,40 @@ TEST_F(QuickAnswersControllerTest, PartialNullptrResultReceived) {
                 ->GetResultViewForTesting()
                 ->GetSecondLineText())
       << "Expect that no result UI is shown";
+}
+
+TEST_F(QuickAnswersControllerTest, IntentTypeConversion) {
+  QuickAnswersState::Get()->set_use_text_annotator_for_testing();
+
+  ON_CALL(*mock_quick_answers_client_, SendRequestForPreprocessing)
+      .WillByDefault(
+          [this](
+              const quick_answers::QuickAnswersRequest& quick_answers_request) {
+            quick_answers::QuickAnswersRequest processed_request =
+                quick_answers_request;
+            processed_request.preprocessed_output.query =
+                "Define " + quick_answers_request.selected_text;
+            processed_request.preprocessed_output.intent_info.intent_type =
+                quick_answers::IntentType::kDictionary;
+            controller()->OnRequestPreprocessFinished(processed_request);
+          });
+
+  AcceptConsent();
+  ShowView();
+
+  EXPECT_EQ(ui_controller()->quick_answers_view()->GetIntent(),
+            quick_answers::Intent::kDefinition)
+      << "Quick Answers view's intent should be set to kDefinition because of "
+         "the intent type from pre-process result";
+}
+
+// This is testing the case text annotator is not used, i.e., no intent is set
+// from pre-process. On prod, text annotator is always used. This is the case
+// for Linux-ChromeOS.
+TEST_F(QuickAnswersControllerTest, IntentTypeUnknown) {
+  AcceptConsent();
+  ShowView();
+
+  EXPECT_EQ(ui_controller()->quick_answers_view()->GetIntent(), std::nullopt)
+      << "Intent is expected to be set std::nullopt, i.e. kUnknown";
 }

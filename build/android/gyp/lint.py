@@ -24,6 +24,7 @@ _LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/main/build/andr
 # These checks are not useful for chromium.
 _DISABLED_ALWAYS = [
     "AppCompatResource",  # Lint does not correctly detect our appcompat lib.
+    "AppLinkUrlError",  # As a browser, we have intent filters without a host.
     "Assert",  # R8 --force-enable-assertions is used to enable java asserts.
     "InflateParams",  # Null is ok when inflating views for dialogs.
     "InlinedApi",  # Constants are copied so they are always available.
@@ -216,7 +217,7 @@ def _RunLint(custom_lint_jar_path,
     lint_xmx = '4G'
   else:
     creating_baseline = False
-    lint_xmx = '2G'
+    lint_xmx = '3G'
 
   # Lint requires this directory to exist and be cleared.
   # See b/324598620

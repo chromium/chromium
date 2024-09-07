@@ -26,10 +26,6 @@ class PrefService;
 class SupervisedUserServiceObserver;
 class SupervisedUserServiceFactory;
 
-namespace base {
-class Version;
-}  // namespace base
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -44,16 +40,8 @@ class SupervisedUserSettingsService;
 // This class handles all the information related to a given supervised profile
 // (e.g. the default URL filtering behavior, or manual allowlist/denylist
 // overrides).
-class SupervisedUserService : public KeyedService,
-                              public SupervisedUserURLFilter::Observer {
+class SupervisedUserService : public KeyedService {
  public:
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-    // Allows the delegate to handle the (de)activation in a custom way.
-    virtual void SetActive(bool active) = 0;
-  };
-
   // Delegate encapsulating platform-specific logic that is invoked from SUS.
   class PlatformDelegate {
    public:
@@ -84,17 +72,10 @@ class SupervisedUserService : public KeyedService,
   // Initializes this object.
   void Init();
 
-  void SetDelegate(Delegate* delegate);
-
   // Returns the URL filter for filtering navigations and classifying sites in
   // the history view. Both this method and the returned filter may only be used
   // on the UI thread.
   supervised_user::SupervisedUserURLFilter* GetURLFilter() const;
-
-  // Get the string used to identify an extension install or update request.
-  // Public for testing.
-  static std::string GetExtensionRequestId(const std::string& extension_id,
-                                           const base::Version& version);
 
   // Returns the email address of the custodian.
   std::string GetCustodianEmailAddress() const;
@@ -131,9 +112,6 @@ class SupervisedUserService : public KeyedService,
 
   // ProfileKeyedService override:
   void Shutdown() override;
-
-  // SupervisedUserURLFilter::Observer implementation:
-  void OnSiteListUpdated() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool signout_required_after_supervision_enabled() {
@@ -227,8 +205,6 @@ class SupervisedUserService : public KeyedService,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   bool active_ = false;
-
-  raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 

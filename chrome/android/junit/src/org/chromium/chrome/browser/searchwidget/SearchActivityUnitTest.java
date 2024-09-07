@@ -403,10 +403,10 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                mDataProvider.getPageClassification(true, true));
+                mDataProvider.getPageClassification(true));
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                mDataProvider.getPageClassification(false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
@@ -423,10 +423,10 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                mDataProvider.getPageClassification(true, true));
+                mDataProvider.getPageClassification(true));
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                mDataProvider.getPageClassification(false));
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
@@ -442,11 +442,9 @@ public class SearchActivityUnitTest {
         }
 
         assertEquals(
-                PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, true));
+                PageClassification.OTHER_ON_CCT_VALUE, mDataProvider.getPageClassification(true));
         assertEquals(
-                PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE, mDataProvider.getPageClassification(false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
 
@@ -466,10 +464,10 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, true));
+                mDataProvider.getPageClassification(true));
         assertEquals(
                 PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                mDataProvider.getPageClassification(false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
@@ -581,7 +579,7 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                mDataProvider.getPageClassification(false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -596,7 +594,7 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                mDataProvider.getPageClassification(false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -611,7 +609,7 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                mDataProvider.getPageClassification(false));
     }
 
     @Test
@@ -624,8 +622,7 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE, mDataProvider.getPageClassification(false));
     }
 
     @Test
@@ -638,8 +635,7 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE, mDataProvider.getPageClassification(false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -653,8 +649,7 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE, mDataProvider.getPageClassification(false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -668,8 +663,7 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE, mDataProvider.getPageClassification(false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -683,8 +677,7 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE, mDataProvider.getPageClassification(false));
     }
 
     @Test

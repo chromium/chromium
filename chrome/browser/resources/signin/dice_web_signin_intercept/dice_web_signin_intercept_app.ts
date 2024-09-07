@@ -3,26 +3,27 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import './signin_shared.css.js';
-import './signin_vars.css.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './dice_web_signin_intercept_app.html.js';
+import {getCss} from './dice_web_signin_intercept_app.css.js';
+import {getHtml} from './dice_web_signin_intercept_app.html.js';
 import type {DiceWebSigninInterceptBrowserProxy, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
 import {DiceWebSigninInterceptBrowserProxyImpl} from './dice_web_signin_intercept_browser_proxy.js';
 
-const DiceWebSigninInterceptAppElementBase = WebUiListenerMixin(PolymerElement);
+const DiceWebSigninInterceptAppElementBase =
+    WebUiListenerMixinLit(CrLitElement);
 
 export interface DiceWebSigninInterceptAppElement {
   $: {
+    interceptDialog: HTMLElement,
     cancelButton: CrButtonElement,
     acceptButton: CrButtonElement,
   };
@@ -34,26 +35,37 @@ export class DiceWebSigninInterceptAppElement extends
     return 'dice-web-signin-intercept-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      interceptionParameters_: {
-        type: Object,
-        value: null,
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      acceptButtonClicked_: {
-        type: Boolean,
-        value: false,
-      },
+  static override get properties() {
+    return {
+      interceptionParameters_: {type: Object},
+      acceptButtonClicked_: {type: Boolean},
     };
   }
 
-  private interceptionParameters_: InterceptionParameters;
-  private acceptButtonClicked_: boolean;
+  protected interceptionParameters_: InterceptionParameters = {
+    headerText: '',
+    bodyTitle: '',
+    bodyText: '',
+    confirmButtonLabel: '',
+    cancelButtonLabel: '',
+    managedDisclaimerText: '',
+    headerTextColor: '',
+    interceptedProfileColor: '',
+    primaryProfileColor: '',
+    interceptedAccount: {pictureUrl: '', avatarBadge: ''},
+    primaryAccount: {pictureUrl: '', avatarBadge: ''},
+    useV2Design: false,
+    showManagedDisclaimer: false,
+  };
+  protected acceptButtonClicked_: boolean = false;
   private diceWebSigninInterceptBrowserProxy_:
       DiceWebSigninInterceptBrowserProxy =
           DiceWebSigninInterceptBrowserProxyImpl.getInstance();
@@ -68,22 +80,19 @@ export class DiceWebSigninInterceptAppElement extends
         parameters => this.onPageLoaded_(parameters));
   }
 
-  private onPageLoaded_(parameters: InterceptionParameters) {
+  private async onPageLoaded_(parameters: InterceptionParameters) {
     this.handleParametersChanged_(parameters);
-    afterNextRender(this, () => {
-      const height =
-          this.shadowRoot!.querySelector<HTMLElement>(
-                              '#interceptDialog')!.offsetHeight;
-      this.diceWebSigninInterceptBrowserProxy_.initializedWithHeight(height);
-    });
+    await this.updateComplete;
+    const height = this.$.interceptDialog.offsetHeight;
+    this.diceWebSigninInterceptBrowserProxy_.initializedWithHeight(height);
   }
 
-  private onAccept_() {
+  protected onAccept_() {
     this.acceptButtonClicked_ = true;
     this.diceWebSigninInterceptBrowserProxy_.accept();
   }
 
-  private onCancel_() {
+  protected onCancel_() {
     this.diceWebSigninInterceptBrowserProxy_.cancel();
   }
 
@@ -95,11 +104,9 @@ export class DiceWebSigninInterceptAppElement extends
     this.style.setProperty(
         '--primary-profile-color', parameters.primaryProfileColor);
     this.style.setProperty('--header-text-color', parameters.headerTextColor);
-    this.notifyPath('interceptionParameters_.interceptedAccount.avatarBadge');
-    this.notifyPath('interceptionParameters_.primaryAccount.avatarBadge');
   }
 
-  private sanitizeInnerHtml_(text: string): TrustedHTML {
+  protected sanitizeInnerHtml_(text: string): TrustedHTML {
     return sanitizeInnerHtml(text);
   }
 }

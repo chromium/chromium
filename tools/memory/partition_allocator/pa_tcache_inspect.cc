@@ -48,8 +48,10 @@ namespace partition_alloc::tools {
 
 using ::base::PlatformThreadId;
 using partition_alloc::internal::BucketIndexLookup;
+using partition_alloc::internal::MetadataKind;
 using partition_alloc::internal::PartitionBucket;
-using partition_alloc::internal::SlotSpanMetadata;
+template <MetadataKind kind>
+using SlotSpanMetadata = partition_alloc::internal::SlotSpanMetadata<kind>;
 
 namespace {
 
@@ -164,9 +166,10 @@ class PartitionRootInspector {
     PartitionBucket bucket;
     std::vector<size_t> freelist_sizes;
     // Flattened versions of the lists.
-    std::vector<SlotSpanMetadata> active_slot_spans;
-    std::vector<SlotSpanMetadata> empty_slot_spans;
-    std::vector<SlotSpanMetadata> decommitted_slot_spans;
+    std::vector<SlotSpanMetadata<MetadataKind::kReadOnly>> active_slot_spans;
+    std::vector<SlotSpanMetadata<MetadataKind::kReadOnly>> empty_slot_spans;
+    std::vector<SlotSpanMetadata<MetadataKind::kReadOnly>>
+        decommitted_slot_spans;
   };
 
   PartitionRootInspector(uintptr_t root_addr, pid_t pid)
@@ -259,15 +262,16 @@ void PartitionRootInspector::Update() {
 
 namespace {
 
-bool CopySlotSpanList(std::vector<SlotSpanMetadata>& list,
-                      uintptr_t head_address,
-                      RemoteProcessMemoryReader& reader) {
-  std::optional<RawBuffer<SlotSpanMetadata>> metadata;
+bool CopySlotSpanList(
+    std::vector<SlotSpanMetadata<MetadataKind::kReadOnly>>& list,
+    uintptr_t head_address,
+    RemoteProcessMemoryReader& reader) {
+  std::optional<RawBuffer<SlotSpanMetadata<MetadataKind::kReadOnly>>> metadata;
   for (uintptr_t slot_span_address = head_address; slot_span_address;
        slot_span_address =
            reinterpret_cast<uintptr_t>(metadata->get()->next_slot_span)) {
-    metadata = RawBuffer<SlotSpanMetadata>::ReadFromProcessMemory(
-        reader, slot_span_address);
+    metadata = RawBuffer<SlotSpanMetadata<MetadataKind::kReadOnly>>::
+        ReadFromProcessMemory(reader, slot_span_address);
     if (!metadata.has_value())
       return false;
     list.push_back(*metadata->get());
@@ -483,7 +487,8 @@ void DisplayRootData(PartitionRootInspector& root_inspector,
 }
 
 base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
-  auto slot_span_to_value = [](const SlotSpanMetadata& slot_span,
+  auto slot_span_to_value = [](const SlotSpanMetadata<MetadataKind::kReadOnly>&
+                                   slot_span,
                                size_t slots_per_span) {
     base::Value::Dict result;
 

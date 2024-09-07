@@ -1,5 +1,4 @@
-ABC
-DEF
+ABC DEF
 GHI
 JKL
 1.0

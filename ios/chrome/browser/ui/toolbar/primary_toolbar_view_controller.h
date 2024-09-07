@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 
 @protocol PrimaryToolbarViewControllerDelegate;
+@class TabGroupIndicatorView;
 @class ViewRevealingVerticalPanHandler;
 
 // ViewController for the primary toobar part of the adaptive toolbar. The one
@@ -27,6 +28,9 @@
 
 // Pan gesture handler for the toolbar.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
+
+// Sets the tabgroupIndicatorView.
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view;
 
 @end
 

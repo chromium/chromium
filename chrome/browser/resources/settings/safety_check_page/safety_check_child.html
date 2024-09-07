@@ -9,6 +9,7 @@
     padding-inline-end: 0;
   }
 
+  cr-icon,
   iron-icon {
     display: flex;
     flex-shrink: 0;
@@ -57,14 +58,14 @@
       aria-label="[[buttonAriaLabel]]" no-search>
     [[buttonLabel]]
     <template is="dom-if" if="[[showButtonIcon_(buttonIcon)]]">
-      <iron-icon class="button-icon icon-blue" icon="[[buttonIcon]]" slot="suffix-icon">
-      </iron-icon>
+      <cr-icon class="button-icon icon-blue" icon="[[buttonIcon]]" slot="suffix-icon">
+      </cr-icon>
     </template>
   </cr-button>
 </template>
 <template is="dom-if" if="[[showManagedIcon_(managedIcon)]]">
-  <iron-icon id="managedIcon" icon="[[managedIcon]]" aria-hidden="true">
-  </iron-icon>
+  <cr-icon id="managedIcon" icon="[[managedIcon]]" aria-hidden="true">
+  </cr-icon>
 </template>
 <template is="dom-if" if="[[rowClickable]]">
   <cr-icon-button id="rowClickableIndicator"

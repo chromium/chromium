@@ -24,6 +24,7 @@
 #include "components/webrtc/net_address_utils.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/logging.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/port_allocator_factory.h"
@@ -95,9 +96,8 @@ base::TimeDelta data_channel_state_polling_interval =
 const char kDisableAuthenticationSwitchName[] = "disable-authentication";
 #endif
 
-bool IsValidSessionDescriptionType(const std::string& type) {
-  return type == webrtc::SessionDescriptionInterface::kOffer ||
-         type == webrtc::SessionDescriptionInterface::kAnswer;
+bool IsValidSessionDescriptionType(webrtc::SdpType type) {
+  return type == webrtc::SdpType::kOffer || type == webrtc::SdpType::kAnswer;
 }
 
 void UpdateCodecParameters(SdpMessage* sdp_message, bool incoming) {
@@ -419,13 +419,16 @@ WebrtcTransport::WebrtcTransport(
     : transport_context_(transport_context),
       event_handler_(event_handler),
       handshake_hmac_(crypto::HMAC::SHA256) {
-  std::unique_ptr<cricket::PortAllocator> port_allocator =
+  auto create_port_allocator_result =
       transport_context_->port_allocator_factory()->CreatePortAllocator(
           transport_context_, weak_factory_.GetWeakPtr());
 
+  apply_network_settings_ =
+      std::move(create_port_allocator_result.apply_network_settings);
   peer_connection_wrapper_ = std::make_unique<PeerConnectionWrapper>(
       worker_thread, std::move(video_encoder_factory),
-      std::move(port_allocator), weak_factory_.GetWeakPtr());
+      std::move(create_port_allocator_result.allocator),
+      weak_factory_.GetWeakPtr());
 
   StartRtcEventLogging();
 }
@@ -471,6 +474,11 @@ std::unique_ptr<MessagePipe> WebrtcTransport::CreateOutgoingChannel(
     event_data_channel_ = data_channel;
   }
   return std::make_unique<WebrtcDataStreamAdapter>(data_channel);
+}
+
+void WebrtcTransport::ApplyNetworkSettings(
+    const NetworkSettings& network_settings) {
+  std::move(apply_network_settings_).Run(network_settings);
 }
 
 void WebrtcTransport::Start(
@@ -520,9 +528,13 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
       return false;
     }
 
-    std::string type = session_description->Attr(QName(std::string(), "type"));
+    std::string type_string =
+        session_description->Attr(QName(std::string(), "type"));
+    std::optional<webrtc::SdpType> maybe_type =
+        webrtc::SdpTypeFromString(type_string);
     std::string raw_sdp = session_description->BodyText();
-    if (!IsValidSessionDescriptionType(type) || raw_sdp.empty()) {
+    if (!maybe_type.has_value() ||
+        !IsValidSessionDescriptionType(*maybe_type) || raw_sdp.empty()) {
       LOG(ERROR) << "Incorrect session description format.";
       return false;
     }
@@ -534,7 +546,8 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     std::string signature;
     if (!base::Base64Decode(signature_base64, &signature) ||
         !handshake_hmac_.Verify(
-            type + " " + sdp_message.NormalizedForSignature(), signature)) {
+            type_string + " " + sdp_message.NormalizedForSignature(),
+            signature)) {
       LOG(WARNING) << "Received session-description with invalid signature.";
       bool ignore_error = false;
 #if !defined(NDEBUG)
@@ -552,7 +565,7 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     webrtc::SdpParseError error;
     std::unique_ptr<webrtc::SessionDescriptionInterface>
         webrtc_session_description(webrtc::CreateSessionDescription(
-            type, sdp_message.ToString(), &error));
+            *maybe_type, sdp_message.ToString(), &error));
     if (!webrtc_session_description) {
       LOG(ERROR) << "Failed to parse the session description: "
                  << error.description << " line: " << error.line;
@@ -562,10 +575,10 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     {
       ScopedAllowThreadJoinForWebRtcTransport allow_wait;
       peer_connection()->SetRemoteDescription(
-          SetSessionDescriptionObserver::Create(base::BindOnce(
-              &WebrtcTransport::OnRemoteDescriptionSet,
-              weak_factory_.GetWeakPtr(),
-              type == webrtc::SessionDescriptionInterface::kOffer)),
+          SetSessionDescriptionObserver::Create(
+              base::BindOnce(&WebrtcTransport::OnRemoteDescriptionSet,
+                             weak_factory_.GetWeakPtr(),
+                             *maybe_type == webrtc::SdpType::kOffer)),
           webrtc_session_description.release());
     }
 
@@ -792,8 +805,8 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   }
   description_sdp = sdp_message.ToString();
   webrtc::SdpParseError parse_error;
-  description.reset(webrtc::CreateSessionDescription(
-      description->type(), description_sdp, &parse_error));
+  description = webrtc::CreateSessionDescription(description->GetType(),
+                                                 description_sdp, &parse_error);
   if (!description) {
     LOG(ERROR) << "Failed to parse the session description: "
                << parse_error.description << " line: " << parse_error.line;
@@ -868,15 +881,27 @@ void WebrtcTransport::OnRemoteDescriptionSet(bool send_answer,
 
   // Create and send answer on the server.
   if (send_answer) {
-    const webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
-    peer_connection()->CreateAnswer(
-        CreateSessionDescriptionObserver::Create(
-            base::BindOnce(&WebrtcTransport::OnLocalSessionDescriptionCreated,
-                           weak_factory_.GetWeakPtr())),
-        options);
+    if (!apply_network_settings_) {
+      SendAnswer();
+    } else {
+      HOST_LOG << "SendAnswer is delayed until network settings are applied.";
+      apply_network_settings_ =
+          std::move(apply_network_settings_)
+              .Then(base::BindOnce(&WebrtcTransport::SendAnswer,
+                                   weak_factory_.GetWeakPtr()));
+    }
   }
 
   AddPendingCandidatesIfPossible();
+}
+
+void WebrtcTransport::SendAnswer() {
+  const webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
+  peer_connection()->CreateAnswer(
+      CreateSessionDescriptionObserver::Create(
+          base::BindOnce(&WebrtcTransport::OnLocalSessionDescriptionCreated,
+                         weak_factory_.GetWeakPtr())),
+      options);
 }
 
 void WebrtcTransport::OnCloseAfterDisconnectTimeout() {
@@ -884,8 +909,12 @@ void WebrtcTransport::OnCloseAfterDisconnectTimeout() {
                << ". Client may be offline.";
   // Close() fails DCHECKs if the data channels are not in the kClosing or
   // kClosed state.
-  control_data_channel_->Close();
-  event_data_channel_->Close();
+  if (control_data_channel_) {
+    control_data_channel_->Close();
+  }
+  if (event_data_channel_) {
+    event_data_channel_->Close();
+  }
   Close(ErrorCode::PEER_IS_OFFLINE);
 }
 
@@ -1154,9 +1183,18 @@ void WebrtcTransport::RequestNegotiation() {
 
   if (!negotiation_pending_) {
     negotiation_pending_ = true;
+    auto send_offer_cb =
+        base::BindOnce(&WebrtcTransport::SendOffer, weak_factory_.GetWeakPtr());
+
+    if (apply_network_settings_) {
+      HOST_LOG << "SendOffer is delayed until network settings are applied.";
+      apply_network_settings_ =
+          std::move(apply_network_settings_).Then(std::move(send_offer_cb));
+      return;
+    }
+
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&WebrtcTransport::SendOffer,
-                                  weak_factory_.GetWeakPtr()));
+        FROM_HERE, std::move(send_offer_cb));
   }
 }
 

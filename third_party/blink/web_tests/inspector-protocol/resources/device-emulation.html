@@ -105,7 +105,7 @@ function dumpViewportSegments() {
 
 function dumpViewportSegmentsForWindow(window_object) {
     let output = [];
-    let segments = window_object.visualViewport.segments;
+    let segments = window_object.viewport.segments;
     output.push(segments ? segments.length : 0);
     if (segments) {
       segments.forEach((segment) => {

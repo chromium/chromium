@@ -9,7 +9,6 @@ include_rules = [
   "+chromecast/app/grit/chromecast_settings.h",
   "+chromecast/app/resources/grit/shell_resources.h",
   "+chromecast/external_mojo",
-  "+chromecast/internal/shell/browser",
   "+chromecast/media",
   "+chromecast/metrics",
   "+chromecast/mojo",

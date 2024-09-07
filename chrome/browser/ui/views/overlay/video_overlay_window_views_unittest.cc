@@ -16,6 +16,7 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/ui/views/overlay/back_to_tab_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/minimize_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
@@ -93,7 +94,7 @@ class TestVideoPictureInPictureWindowController
   void Show() override {}
   void FocusInitiator() override {}
   MOCK_METHOD(void, Close, (bool));
-  void CloseAndFocusInitiator() override {}
+  MOCK_METHOD(void, CloseAndFocusInitiator, ());
   MOCK_METHOD(void, OnWindowDestroyed, (bool));
   content::VideoOverlayWindow* GetWindowForTesting() override {
     return nullptr;
@@ -732,17 +733,17 @@ TEST_F(VideoOverlayWindowViewsTest, IsTrackedByTheOcclusionObserver) {
   EXPECT_EQ(0u, tracker->GetPictureInPictureWidgetsForTesting().size());
 }
 
-class VideoOverlayWindowViewsWithMinimizeButtonTest
+class VideoOverlayWindowViewsWith2024UITest
     : public VideoOverlayWindowViewsTest {
  public:
   void SetUp() override {
-    AddEnabledFeature(media::kVideoPictureInPictureMinimizeButton);
+    AddEnabledFeature(media::kVideoPictureInPictureControlsUpdate2024);
     VideoOverlayWindowViewsTest::SetUp();
   }
 };
 
-TEST_F(VideoOverlayWindowViewsWithMinimizeButtonTest,
-       MinimizeButtonClosesWIthoutPausing) {
+TEST_F(VideoOverlayWindowViewsWith2024UITest,
+       MinimizeButtonClosesWithoutPausing) {
   views::test::ButtonTestApi minimize_button_clicker(
       overlay_window().minimize_button_for_testing());
   ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
@@ -755,5 +756,22 @@ TEST_F(VideoOverlayWindowViewsWithMinimizeButtonTest,
       ->set_window_controller_for_testing(&pip_window_controller());
   EXPECT_CALL(pip_window_controller(), Close(false));
   minimize_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, ShowsBackToTabImageButton) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  OverlayWindowBackToTabButton* back_to_tab_image_button =
+      overlay_window().back_to_tab_button_for_testing();
+  ASSERT_NE(nullptr, back_to_tab_image_button);
+  EXPECT_TRUE(back_to_tab_image_button->IsDrawn());
+  views::test::ButtonTestApi button_clicker(back_to_tab_image_button);
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(&pip_window_controller());
+  EXPECT_CALL(pip_window_controller(), CloseAndFocusInitiator());
+  button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }

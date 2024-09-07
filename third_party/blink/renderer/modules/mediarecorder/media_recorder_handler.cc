@@ -928,6 +928,13 @@ void MediaRecorderHandler::OnEncodedAudio(
   }
 }
 
+void MediaRecorderHandler::OnAudioEncodingError(
+    media::EncoderStatus error_status) {
+  DCHECK(IsMainThread());
+  recorder_->OnError(DOMExceptionCode::kEncodingError,
+                     String(media::EncoderStatusCodeToString(error_status)));
+}
+
 std::unique_ptr<media::VideoEncoderMetricsProvider>
 MediaRecorderHandler::CreateVideoEncoderMetricsProvider() {
   DCHECK(IsMainThread());

@@ -433,6 +433,8 @@ LayoutUnit LogicalAnchorQuery::EvaluateSize(
                      IsHorizontalWritingMode(self_writing_mode)
                  ? anchor.block_size
                  : anchor.inline_size;
+    case CSSAnchorSizeValue::kImplicit:
+      break;
   }
   NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
@@ -513,14 +515,16 @@ bool AnchorEvaluatorImpl::AllowAnchor() const {
     case Mode::kBottom:
       return true;
     case Mode::kNone:
-    case Mode::kSize:
+    case Mode::kWidth:
+    case Mode::kHeight:
       return false;
   }
 }
 
 bool AnchorEvaluatorImpl::AllowAnchorSize() const {
   switch (GetMode()) {
-    case Mode::kSize:
+    case Mode::kWidth:
+    case Mode::kHeight:
       return true;
     case Mode::kNone:
     case Mode::kLeft:
@@ -607,6 +611,13 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     return std::nullopt;
   }
 
+  if (anchor_size_value == CSSAnchorSizeValue::kImplicit) {
+    if (GetMode() == Mode::kWidth) {
+      anchor_size_value = CSSAnchorSizeValue::kWidth;
+    } else {
+      anchor_size_value = CSSAnchorSizeValue::kHeight;
+    }
+  }
   const LogicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier, position_anchor);
   if (!anchor_reference) {

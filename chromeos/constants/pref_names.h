@@ -46,6 +46,11 @@ inline constexpr char kCaptivePortalSignin[] = "captive_portal_signin";
 inline constexpr char kDeviceRestrictionSchedule[] =
     "device_restriction_schedule";
 
+// A boolean pref that signals whether a post-logout notification should be
+// shown on the login screen after entering the restriction schedule.
+inline constexpr char kDeviceRestrictionScheduleShowPostLogoutNotification[] =
+    "device_restriction_schedule_show_post_logout_notification";
+
 }  // namespace chromeos::prefs
 
 #endif  // CHROMEOS_CONSTANTS_PREF_NAMES_H_

@@ -21,6 +21,9 @@
 // Navigates to an external URL for a given `type`.
 - (void)navigateToLinkForType:(CustomizationLinkType)type;
 
+// Dismisses the top page of the menu stack.
+- (void)dismissMenuPage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_MUTATOR_H_

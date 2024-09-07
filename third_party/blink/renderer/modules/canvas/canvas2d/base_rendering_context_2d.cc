@@ -359,9 +359,9 @@ void BaseRenderingContext2D::restore(ExceptionState& exception_state) {
   ValidateStateStack();
 }
 
-void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
-                                        const BeginLayerOptions* options,
-                                        ExceptionState& exception_state) {
+void BaseRenderingContext2D::beginLayerImpl(ScriptState* script_state,
+                                            const BeginLayerOptions* options,
+                                            ExceptionState* exception_state) {
   if (isContextLost()) [[unlikely]] {
     return;
   }
@@ -381,28 +381,31 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   ValidateStateStack();
 
   sk_sp<PaintFilter> filter;
-  if (const V8CanvasFilterInput* filter_input = CHECK_DEREF(options).filter();
-      filter_input != nullptr) {
-    AddLayerFilterUserCount(filter_input);
+  if (options != nullptr) {
+    CHECK(exception_state != nullptr);
+    if (const V8CanvasFilterInput* filter_input = options->filter();
+        filter_input != nullptr) {
+      AddLayerFilterUserCount(filter_input);
 
-    HTMLCanvasElement* canvas_for_filter = HostAsHTMLCanvasElement();
-    FilterOperations filter_operations = CanvasFilter::CreateFilterOperations(
-        *filter_input, AccessFont(canvas_for_filter), canvas_for_filter,
-        CHECK_DEREF(ExecutionContext::From(script_state)), exception_state);
-    if (exception_state.HadException()) {
-      return;
+      HTMLCanvasElement* canvas_for_filter = HostAsHTMLCanvasElement();
+      FilterOperations filter_operations = CanvasFilter::CreateFilterOperations(
+          *filter_input, AccessFont(canvas_for_filter), canvas_for_filter,
+          CHECK_DEREF(ExecutionContext::From(script_state)), *exception_state);
+      if (exception_state->HadException()) {
+        return;
+      }
+
+      const gfx::SizeF canvas_viewport(Width(), Height());
+      FilterEffectBuilder filter_effect_builder(
+          gfx::RectF(canvas_viewport), canvas_viewport,
+          1.0f,  // Deliberately ignore zoom on the canvas element.
+          Color::kBlack, mojom::blink::ColorScheme::kLight);
+
+      filter = paint_filter_builder::Build(
+          filter_effect_builder.BuildFilterEffect(std::move(filter_operations),
+                                                  !OriginClean()),
+          kInterpolationSpaceSRGB);
     }
-
-    const gfx::SizeF canvas_viewport(Width(), Height());
-    FilterEffectBuilder filter_effect_builder(
-        gfx::RectF(canvas_viewport), canvas_viewport,
-        1.0f,  // Deliberately ignore zoom on the canvas element.
-        Color::kBlack, mojom::blink::ColorScheme::kLight);
-
-    filter = paint_filter_builder::Build(
-        filter_effect_builder.BuildFilterEffect(std::move(filter_operations),
-                                                !OriginClean()),
-        kInterpolationSpaceSRGB);
   }
 
   if (layer_count_ == 0) {
@@ -436,6 +439,8 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   DCHECK(!layer_state.ShouldDrawShadows());
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");
+  setFilter(script_state,
+            MakeGarbageCollected<V8UnionCanvasFilterOrString>("none"));
 }
 
 void BaseRenderingContext2D::AddLayerFilterUserCount(
@@ -473,11 +478,21 @@ class ScopedResetCtm {
   std::optional<SkM44> ctm_to_restore_;
 };
 
+namespace {
+sk_sp<PaintFilter> CombineFilters(sk_sp<PaintFilter> first,
+                                  sk_sp<PaintFilter> second) {
+  if (second) {
+    return sk_make_sp<ComposePaintFilter>(std::move(first), std::move(second));
+  }
+  return first;
+}
+}  // namespace
+
 CanvasRenderingContext2DState::SaveType
 BaseRenderingContext2D::SaveLayerForState(
     const CanvasRenderingContext2DState& state,
-    sk_sp<PaintFilter> filter,
-    cc::PaintCanvas& canvas) const {
+    sk_sp<PaintFilter> layer_filter,
+    cc::PaintCanvas& canvas) {
   if (!IsTransformInvertible()) {
     canvas.saveLayerAlphaf(1.0f);
     return CanvasRenderingContext2DState::SaveType::kBeginEndLayerOneSave;
@@ -485,6 +500,7 @@ BaseRenderingContext2D::SaveLayerForState(
 
   const int initial_save_count = canvas.getSaveCount();
   bool needs_compositing = state.GlobalComposite() != SkBlendMode::kSrcOver;
+  sk_sp<PaintFilter> context_filter = StateGetFilter();
 
   // The "copy" globalCompositeOperation replaces everything that was in the
   // canvas. We therefore have to clear the canvas before proceeding. Since the
@@ -496,17 +512,23 @@ BaseRenderingContext2D::SaveLayerForState(
   // Global states must be applied on the result of the layer's filter, so the
   // filter has to go in a nested layer.
   //
-  // For alpha + (shadows or compositing), we must use two nested layers. The
-  // inner one applies the alpha and the outer one applies the shadow and/or
-  // compositing. This is needed to to get a transparent foreground, as the
-  // alpha would otherwise be applied to the result of foreground+background.
+  // For globalAlpha + (shadows or compositing), we must use two nested layers.
+  // The inner one applies the alpha and the outer one applies the shadow and/or
+  // compositing. This is needed to get a transparent foreground, as the alpha
+  // would otherwise be applied to the result of foreground+background.
   if (state.GlobalComposite() == SkBlendMode::kSrc) {
     canvas.clear(HasAlpha() ? SkColors::kTransparent : SkColors::kBlack);
+    if (context_filter) {
+      ScopedResetCtm scoped_reset_ctm(state, canvas);
+      cc::PaintFlags flags;
+      flags.setImageFilter(std::move(context_filter));
+      canvas.saveLayer(flags);
+    }
     needs_compositing = false;
   } else if (bool should_draw_shadow = state.ShouldDrawShadows(),
              needs_composited_draw = BlendModeRequiresCompositedDraw(state);
-             should_draw_shadow || needs_composited_draw) {
-    if (should_draw_shadow && needs_composited_draw) {
+             context_filter || should_draw_shadow || needs_composited_draw) {
+    if (should_draw_shadow && (context_filter || needs_composited_draw)) {
       ScopedResetCtm scoped_reset_ctm(state, canvas);
       // According to the WHATWG spec, the shadow and foreground need to be
       // composited independently to the canvas, one after the other
@@ -518,14 +540,25 @@ BaseRenderingContext2D::SaveLayerForState(
       // foreground.
       cc::PaintFlags flags;
       flags.setBlendMode(state.GlobalComposite());
-      sk_sp<PaintFilter> foreground_filter;  // nullptr means no filter.
+      sk_sp<PaintFilter> shadow_filter =
+          CombineFilters(state.ShadowOnlyImageFilter(), context_filter);
       canvas.saveLayerFilters(
-          std::array{state.ShadowOnlyImageFilter(), foreground_filter}, flags);
+          std::array{
+              std::move(shadow_filter),   // Shadow.
+              std::move(context_filter),  // Foreground.
+          },
+          flags);
     } else if (should_draw_shadow) {
       ScopedResetCtm scoped_reset_ctm(state, canvas);
       cc::PaintFlags flags;
       flags.setImageFilter(state.ShadowAndForegroundImageFilter());
       flags.setBlendMode(state.GlobalComposite());
+      canvas.saveLayer(flags);
+    } else if (context_filter) {
+      ScopedResetCtm scoped_reset_ctm(state, canvas);
+      cc::PaintFlags flags;
+      flags.setBlendMode(state.GlobalComposite());
+      flags.setImageFilter(std::move(context_filter));
       canvas.saveLayer(flags);
     } else {
       cc::PaintFlags flags;
@@ -535,10 +568,10 @@ BaseRenderingContext2D::SaveLayerForState(
     needs_compositing = false;
   }
 
-  if (filter || needs_compositing) {
+  if (layer_filter || needs_compositing) {
     cc::PaintFlags flags;
     flags.setAlphaf(static_cast<float>(state.GlobalAlpha()));
-    flags.setImageFilter(filter);
+    flags.setImageFilter(layer_filter);
     if (needs_compositing) {
       flags.setBlendMode(state.GlobalComposite());
     }
@@ -922,8 +955,9 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
 ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     const String& color_string,
     Color& color) const {
-  const ColorParseResult parse_result = ParseCanvasColorString(
-      color_string, color_scheme_, color, GetColorProvider());
+  const ColorParseResult parse_result =
+      ParseCanvasColorString(color_string, color_scheme_, color,
+                             GetColorProvider(), IsInWebAppScope());
   if (parse_result == ColorParseResult::kCurrentColor) {
     color = GetCurrentColor();
   }
@@ -938,8 +972,10 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     const TextLinkColors& text_link_colors =
         window ? window->document()->GetTextLinkColors()
                : kDefaultTextLinkColors;
+    // TODO(40946458): Don't use default length resolver here!
     const StyleColor style_color = ResolveColorValue(
-        *color_mix_value, text_link_colors, color_scheme_, GetColorProvider());
+        CSSToLengthConversionData(), *color_mix_value, text_link_colors,
+        color_scheme_, GetColorProvider(), IsInWebAppScope());
     color = style_color.Resolve(GetCurrentColor(), color_scheme_);
     return ColorParseResult::kColor;
   }
@@ -952,6 +988,13 @@ const ui::ColorProvider* BaseRenderingContext2D::GetColorProvider() const {
   }
 
   return nullptr;
+}
+
+bool BaseRenderingContext2D::IsInWebAppScope() const {
+  if (HTMLCanvasElement* canvas = HostAsHTMLCanvasElement()) {
+    return canvas->GetDocument().IsInWebAppScope();
+  }
+  return false;
 }
 
 v8::Local<v8::Value> BaseRenderingContext2D::fillStyle(

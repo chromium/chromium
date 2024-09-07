@@ -38,6 +38,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -872,6 +873,35 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
                 u"Websites including pages you've visited and open pages");
 }
 
+// Verify that kCheckedState is updated in cache for checkboxmenuitemview
+TEST_P(SearchResultImageViewTest, AccessibleCheckedState) {
+  GetAppListTestHelper()->ShowAppList();
+  auto* app_list_client = GetAppListTestHelper()->app_list_client();
+
+  app_list_client->set_available_categories_for_test(
+      {AppListSearchControlCategory::kApps});
+
+  // Press a character key to open the search.
+  PressAndReleaseKey(ui::VKEY_A);
+  GetSearchBoxView()->GetWidget()->LayoutRootViewIfNecessary();
+  views::ImageButton* filter_button = GetSearchBoxView()->filter_button();
+  LeftClickOn(filter_button);
+
+  ui::AXNodeData data;
+  auto* checkbox_menu_item_view =
+      GetSearchBoxView()->GetFilterMenuItemByCategory(
+          AppListSearchControlCategory::kApps);
+  checkbox_menu_item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  // Execute command to disable category.
+  LeftClickOn(checkbox_menu_item_view);
+
+  data = ui::AXNodeData();
+  checkbox_menu_item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+}
+
 // Tests that key traversal correctly cycles between the list of results and
 // search box buttons.
 TEST_P(SearchResultImageViewTest, ResultSelectionCycle) {
@@ -1662,7 +1692,6 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultA11y) {
 TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
-
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
 
@@ -1684,27 +1713,41 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
   EXPECT_FALSE(result_containers[0]->GetVisible());
   EXPECT_TRUE(search_view->GetVisible());
 
+  // Finish search results update.
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(1500));
+
   ui::AXNodeData data;
   search_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kListBox);
   EXPECT_EQ("Displaying 0 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+
   // Create a single search result and and verify A11yNodeData.
   SetUpSearchResults(results, 1, 1, 100, true, SearchResult::Category::kApps);
   for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
+
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(1500));
+
+  data = ui::AXNodeData();
   search_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 1 result for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
-  // Create new search results and and and verify A11yNodeData.
+  // Create new search results and verify A11yNodeData.
   SetUpSearchResults(results, 2, kDefaultSearchItems - 1, 100, true,
                      SearchResult::Category::kApps);
   for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
-  ui::AXNodeData data2;
+
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(1500));
+
+  data = ui::AXNodeData();
   search_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 3 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));

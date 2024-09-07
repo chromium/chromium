@@ -149,7 +149,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   auto* me = metadata.add_metadata_entries();
   me->set_primary_pattern_spec(primary_pattern_spec);
   me->set_secondary_pattern_spec(secondary_pattern_spec);
-  me->set_source(Parser::kSourceTest);
+  me->set_source(tpcd::metadata::Parser::kSourceTest);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -175,7 +175,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   auto* me = metadata.add_metadata_entries();
   me->set_primary_pattern_spec(primary_pattern_spec);
   me->set_secondary_pattern_spec(secondary_pattern_spec);
-  me->set_source(Parser::kSourceTest);
+  me->set_source(tpcd::metadata::Parser::kSourceTest);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -254,9 +254,9 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_FiresCallback) {
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
   tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
-                                              secondary_pattern_spec,
-                                              Parser::kSourceCriticalSector);
+  tpcd::metadata::helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec, secondary_pattern_spec,
+      tpcd::metadata::Parser::kSourceCriticalSector);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -291,9 +291,9 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
   tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
-                                              secondary_pattern_spec,
-                                              Parser::kSourceCriticalSector);
+  tpcd::metadata::helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec, secondary_pattern_spec,
+      tpcd::metadata::Parser::kSourceCriticalSector);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());

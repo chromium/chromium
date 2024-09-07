@@ -35,8 +35,9 @@
     initWithPresentedViewController:(UIViewController*)presentedViewController
            presentingViewController:(UIViewController*)presentingViewController
                         windowFrame:(CGRect)windowFrame {
-  if (self = [super initWithPresentedViewController:presentedViewController
-                           presentingViewController:presentingViewController]) {
+  if ((self =
+           [super initWithPresentedViewController:presentedViewController
+                         presentingViewController:presentingViewController])) {
     _windowFrame = windowFrame;
   }
   return self;

@@ -85,13 +85,12 @@ class IsolatedWebAppUpdateDiscoveryTask {
       base::expected<UpdateManifest, UpdateManifestFetcher::Error>
           fetch_result);
 
-  void GetDownloadPath(UpdateManifest::VersionEntry version_entry);
+  void CreateTempFile(UpdateManifest::VersionEntry version_entry);
 
-  void OnGetDownloadPath(UpdateManifest::VersionEntry version_entry,
-                         std::optional<base::FilePath> download_path);
+  void OnTempFileCreated(UpdateManifest::VersionEntry version_entry,
+                         ScopedTempWebBundleFile bundle);
 
-  void OnWebBundleDownloaded(const base::FilePath& download_path,
-                             const base::Version& expected_version,
+  void OnWebBundleDownloaded(const base::Version& expected_version,
                              int32_t net_error);
 
   void OnUpdateDryRunDone(
@@ -107,6 +106,8 @@ class IsolatedWebAppUpdateDiscoveryTask {
   raw_ref<WebAppCommandScheduler> command_scheduler_;
   raw_ref<WebAppRegistrar> registrar_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  ScopedTempWebBundleFile bundle_;
 
   std::unique_ptr<UpdateManifestFetcher> update_manifest_fetcher_;
   std::unique_ptr<IsolatedWebAppDownloader> bundle_downloader_;

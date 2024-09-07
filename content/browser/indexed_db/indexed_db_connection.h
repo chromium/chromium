@@ -56,7 +56,8 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
                       std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
                       mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
                           client_state_checker,
-                      base::UnguessableToken client_token);
+                      base::UnguessableToken client_token,
+                      int scheduling_priority);
 
   IndexedDBConnection(const IndexedDBConnection&) = delete;
   IndexedDBConnection& operator=(const IndexedDBConnection&) = delete;
@@ -84,6 +85,7 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   // determine whether the mojo connection is inactive, which is synonymous with
   // whether `this` is being destroyed.
   bool is_shutting_down() const { return is_shutting_down_; }
+  int32_t id() const { return id_; }
 
   IndexedDBTransaction* CreateVersionChangeTransaction(
       int64_t id,
@@ -105,6 +107,15 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   void AbortTransactionAndTearDownOnError(IndexedDBTransaction* transaction,
                                           const IndexedDBDatabaseError& error);
   void CloseAndReportForceClose();
+
+  int scheduling_priority() const { return scheduling_priority_; }
+
+  // Returns true if `this_one` should skip ahead of `other` when being added to
+  // the lock manager/scheduler. Two lock requests (which can be associated with
+  // transactions or new connection requests) will never be reordered if they
+  // come from the same client (window/worker context).
+  static bool HasHigherPriorityThan(const PartitionedLockHolder* this_one,
+                                    const PartitionedLockHolder& other);
 
  private:
   friend class IndexedDBTransactionTest;
@@ -187,6 +198,7 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
                    const std::u16string& new_name) override;
   void Abort(int64_t transaction_id) override;
   void DidBecomeInactive() override;
+  void UpdatePriority(int new_priority) override;
 
   // It is an error to call either of these after `IsConnected()`
   // is no longer true.
@@ -239,14 +251,19 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   mojo::RemoteSet<storage::mojom::IndexedDBClientKeepActive>
       client_keep_active_remotes_;
 
-  // Uniquely identifies the RFH that owns the other side of this connection,
-  // i.e. the "client" of `client_state_checker_`. Since multiple
+  // Uniquely identifies the document or worker that owns the other side of this
+  // connection, i.e. the "client" of `client_state_checker_`. Since multiple
   // transactions/connections associated with a single client should never cause
   // that client to be ineligible for BFCache, this token is used to avoid
   // unnecessary calls to `DisallowInactiveClient()`.
   base::UnguessableToken client_token_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // The priority for transactions made on this connection. This corresponds to
+  // the renderer's scheduler throttling state. See `HasHigherPriorityThan()`
+  // for prioritization logic.
+  int scheduling_priority_;
 
   bool is_shutting_down_ = false;
 

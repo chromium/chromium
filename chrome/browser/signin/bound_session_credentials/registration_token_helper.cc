@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/session_binding_utils.h"
@@ -19,11 +20,6 @@
 #include "crypto/signature_verifier.h"
 
 namespace {
-
-// A server will provide a list of acceptable algorithms in the future.
-constexpr crypto::SignatureVerifier::SignatureAlgorithm
-    kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256,
-                               crypto::SignatureVerifier::RSA_PKCS1_SHA256};
 
 // New session registration doesn't block the user and can be done with a delay.
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
@@ -47,9 +43,9 @@ RegistrationTokenHelper::Result::~Result() = default;
 
 RegistrationTokenHelper::RegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    const std::vector<uint8_t>& wrapped_binding_key_to_reuse)
+    KeyInitParam key_init_param)
     : unexportable_key_service_(unexportable_key_service),
-      wrapped_binding_key_to_reuse_(wrapped_binding_key_to_reuse) {}
+      key_init_param_(std::move(key_init_param)) {}
 
 RegistrationTokenHelper::~RegistrationTokenHelper() = default;
 
@@ -86,15 +82,22 @@ void RegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
     return;
   }
 
-  if (!wrapped_binding_key_to_reuse_.empty()) {
-    key_loader_ =
-        unexportable_keys::UnexportableKeyLoader::CreateFromWrappedKey(
-            unexportable_key_service_.get(), wrapped_binding_key_to_reuse_,
-            kTaskPriority);
-  } else {
-    key_loader_ = unexportable_keys::UnexportableKeyLoader::CreateWithNewKey(
-        unexportable_key_service_.get(), kAcceptableAlgorithms, kTaskPriority);
-  }
+  std::visit(
+      base::Overloaded{
+          [&](const std::vector<uint8_t>& wrapped_binding_key_to_reuse) {
+            key_loader_ =
+                unexportable_keys::UnexportableKeyLoader::CreateFromWrappedKey(
+                    unexportable_key_service_.get(),
+                    wrapped_binding_key_to_reuse, kTaskPriority);
+          },
+          [&](const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
+                  acceptable_algorithms) {
+            key_loader_ =
+                unexportable_keys::UnexportableKeyLoader::CreateWithNewKey(
+                    unexportable_key_service_.get(), acceptable_algorithms,
+                    kTaskPriority);
+          }},
+      key_init_param_);
 }
 
 void RegistrationTokenHelper::SignHeaderAndPayload(

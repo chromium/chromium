@@ -51,8 +51,7 @@ void NetworkProxyResource::OnPluginMsgGetProxyForURLReply(
     // The callback should not have already been run. If this resource is
     // deleted, LastPluginRefWasReleased in PluginResource should abort the
     // callback and should not run this callback.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   if (params.result() == PP_OK) {
     *proxy_string_out_param = (new StringVar(proxy_string))->GetPPVar();

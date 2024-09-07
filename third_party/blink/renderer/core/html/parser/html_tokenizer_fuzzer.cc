@@ -11,11 +11,13 @@
 
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/fuzzed_data_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 int FuzzTokenizer(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
+  test::TaskEnvironment task_environment;
   FuzzedDataProvider fuzzed_data_provider(data, size);
 
   // Use the first byte of fuzz data to randomize the tokenizer options.

@@ -38,6 +38,7 @@
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
@@ -71,6 +72,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -526,8 +528,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLSubframe) {
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
   ASSERT_EQ(3UL, root->child_count());
-  int frame_tree_node_id = root->child_at(0)->frame_tree_node_id();
-  EXPECT_NE(-1, frame_tree_node_id);
+  FrameTreeNodeId frame_tree_node_id = root->child_at(0)->frame_tree_node_id();
+  EXPECT_TRUE(frame_tree_node_id);
 
   // Navigate with the subframe's FrameTreeNode ID.
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -553,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLNonExistentSubframe) {
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // Take a FrameTreeNodeID that doesn't represent any frames.
-  int frame_tree_node_id = 100;
+  FrameTreeNodeId frame_tree_node_id = FrameTreeNodeId(100);
   ASSERT_FALSE(FrameTreeNode::GloballyFindByID(frame_tree_node_id));
 
   // Navigate with the invalid FrameTreeNode ID.
@@ -1744,19 +1746,21 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
     return fullscreen_options_;
   }
 
-  void AddNewContents(WebContents* source,
-                      std::unique_ptr<WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override {
+  WebContents* AddNewContents(
+      WebContents* source,
+      std::unique_ptr<WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override {
     popups_.push_back(std::move(new_contents));
 
     if (waiting_for_ == kNewContents) {
       waiting_for_ = kNothing;
       run_loop_->Quit();
     }
+    return nullptr;
   }
 
   // JavaScriptDialogManager
@@ -2914,7 +2918,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // gesture to allow dialogs.
   wc->GetPrimaryMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
   wc->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string(), base::NullCallback());
+      std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
   script = "window.onbeforeunload=function(e){ return 'x' };";
   EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.WillWaitForDialog();
@@ -6067,7 +6071,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderBrowserTest,
 
   // Prerender a page that has a MIME type, text/plain.
   const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
-  int host_id = prerender_helper().AddPrerender(prerendering_url);
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerendering_url);
 
   // Check MIME type for each page.
   EXPECT_EQ("text/html",
@@ -6079,6 +6083,43 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderBrowserTest,
 
   // WebContents API should return the MIME type of the primary page.
   EXPECT_EQ("text/html", shell()->web_contents()->GetContentsMimeType());
+}
+
+class WebContentsPrerenderWithDiscardBrowserTest
+    : public WebContentsPrerenderBrowserTest {
+ public:
+  WebContentsPrerenderWithDiscardBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kWebContentsDiscard);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsPrerenderWithDiscardBrowserTest,
+                       DiscardCancelsPrerendering) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Prerender a page.
+  const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
+  const FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerendering_url);
+  PrerenderHostRegistry* registry =
+      static_cast<WebContentsImpl*>(web_contents())->GetPrerenderHostRegistry();
+  EXPECT_TRUE(registry->FindNonReservedHostById(host_id));
+
+  // Discard the tab, this should immediately clear all prerender frame trees.
+  testing::NiceMock<MockWebContentsObserver> observer(web_contents());
+  EXPECT_CALL(observer, AboutToBeDiscarded(web_contents())).Times(1);
+  EXPECT_CALL(observer, WasDiscarded()).Times(1);
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+  web_contents()->Discard();
+  EXPECT_TRUE(web_contents()->WasDiscarded());
+  EXPECT_FALSE(registry->FindNonReservedHostById(host_id));
 }
 
 class WebContentsFencedFrameBrowserTest : public WebContentsImplBrowserTest {

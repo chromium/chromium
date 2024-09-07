@@ -14,12 +14,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/compute_attributes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -150,7 +150,7 @@ std::string IntAttrToString(const ui::AXNode& node,
     case ax::mojom::IntAttribute::kAriaCellRowSpan:
     case ax::mojom::IntAttribute::kAriaRowCount:
     case ax::mojom::IntAttribute::kColorValue:
-    case ax::mojom::IntAttribute::kDOMNodeId:
+    case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
     case ax::mojom::IntAttribute::kDropeffectDeprecated:
     case ax::mojom::IntAttribute::kErrormessageIdDeprecated:
     case ax::mojom::IntAttribute::kHierarchicalLevel:
@@ -253,8 +253,8 @@ base::Value::Dict AccessibilityTreeFormatterBlink::BuildTree(
     return base::Value::Dict();
   }
 
-  BrowserAccessibility* root_internal =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
+  ui::BrowserAccessibility* root_internal =
+      ui::BrowserAccessibility::FromAXPlatformNodeDelegate(root);
   base::Value::Dict dict;
   RecursiveBuildTree(*root_internal, &dict);
   return dict;
@@ -278,7 +278,8 @@ base::Value::Dict AccessibilityTreeFormatterBlink::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   CHECK(node);
   base::Value::Dict dict;
-  AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
+  AddProperties(*ui::BrowserAccessibility::FromAXPlatformNodeDelegate(node),
+                &dict);
   return dict;
 }
 
@@ -292,7 +293,7 @@ std::string AccessibilityTreeFormatterBlink::DumpInternalAccessibilityTree(
 }
 
 void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
-    const BrowserAccessibility& node,
+    const ui::BrowserAccessibility& node,
     base::Value::Dict* dict) const {
   if (!ShouldDumpNode(node))
     return;
@@ -325,7 +326,7 @@ void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
 }
 
 void AccessibilityTreeFormatterBlink::AddProperties(
-    const BrowserAccessibility& node,
+    const ui::BrowserAccessibility& node,
     base::Value::Dict* dict) const {
   int id = node.GetId();
   dict->Set("id", id);
@@ -424,7 +425,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
       base::Value::List value_list;
       for (const int& value : values) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
-          BrowserAccessibility* target = node.manager()->GetFromID(value);
+          ui::BrowserAccessibility* target = node.manager()->GetFromID(value);
           if (target)
             value_list.Append(ui::ToString(target->GetRole()));
           else

@@ -40,6 +40,10 @@ const SkColor kExitLabelColor = SkColorSetARGB(255, 138, 138, 138);
 constexpr int kExitLabelWidth = 300;
 constexpr int kExitLabelHeight = 20;
 
+const SkColor kSkipLabelColor = SkColorSetARGB(255, 138, 138, 138);
+constexpr int kSkipLabelWidth = 500;
+constexpr int kSkipLabelHeight = 30;
+
 const SkColor kTapHereLabelColor = SK_ColorWHITE;
 
 constexpr int kHintBoxWidth = 298;
@@ -484,26 +488,28 @@ END_METADATA
 // static
 views::UniqueWidgetPtr TouchCalibratorView::Create(
     const display::Display& target_display,
-    bool is_primary_view) {
+    bool is_primary_view,
+    bool is_for_touchscreen_mapping) {
   aura::Window* root = Shell::GetRootWindowForDisplayId(target_display.id());
   views::UniqueWidgetPtr widget(
       std::make_unique<views::Widget>(GetWidgetParams(root)));
-  widget->SetContentsView(base::WrapUnique(
-      new TouchCalibratorView(target_display, is_primary_view)));
+  widget->SetContentsView(base::WrapUnique(new TouchCalibratorView(
+      target_display, is_primary_view, is_for_touchscreen_mapping)));
   widget->SetBounds(target_display.bounds());
   widget->Show();
   return widget;
 }
 
 TouchCalibratorView::TouchCalibratorView(const display::Display& target_display,
-                                         bool is_primary_view)
+                                         bool is_primary_view,
+                                         bool is_for_touchscreen_mapping)
     : views::AnimationDelegateViews(this),
       display_(target_display),
       is_primary_view_(is_primary_view),
       animator_(std::make_unique<gfx::LinearAnimation>(kFadeDuration,
                                                        kAnimationFrameRate,
                                                        this)) {
-  InitViewContents();
+  InitViewContents(is_for_touchscreen_mapping);
   AdvanceToNextState();
 }
 
@@ -512,7 +518,7 @@ TouchCalibratorView::~TouchCalibratorView() {
   animator_->End();
 }
 
-void TouchCalibratorView::InitViewContents() {
+void TouchCalibratorView::InitViewContents(bool is_for_touchscreen_mapping) {
   // Initialize the background rect.
   background_rect_ =
       gfx::RectF(0, 0, display_.bounds().width(), display_.bounds().height());
@@ -520,14 +526,27 @@ void TouchCalibratorView::InitViewContents() {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   // Initialize exit label that informs the user how to exit the touch
   // calibration setup.
-  exit_label_ = AddChildView(std::make_unique<views::Label>(
-      rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL),
-      views::Label::CustomFont{rb.GetFontListWithDelta(8)}));
-  exit_label_->SetBounds((display_.bounds().width() - kExitLabelWidth) / 2,
-                         display_.bounds().height() * 3.f / 4, kExitLabelWidth,
-                         kExitLabelHeight);
+  if (!is_for_touchscreen_mapping) {
+    exit_label_ = AddChildView(std::make_unique<views::Label>(
+        rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL),
+        views::Label::CustomFont{rb.GetFontListWithDelta(8)}));
+    exit_label_->SetBounds((display_.bounds().width() - kExitLabelWidth) / 2,
+                           display_.bounds().height() * 3.f / 4,
+                           kExitLabelWidth, kExitLabelHeight);
+    exit_label_->SetEnabledColor(kExitLabelColor);
+  } else {
+    exit_label_ = AddChildView(std::make_unique<views::Label>(
+        rb.GetLocalizedString(
+            is_primary_view_
+                ? IDS_DISPLAY_TOUCH_CALIBRATION_PRIMARY_SKIP_LABEL
+                : IDS_DISPLAY_TOUCH_CALIBRATION_SECONDARY_SKIP_LABEL),
+        views::Label::CustomFont{rb.GetFontListWithDelta(8)}));
+    exit_label_->SetBounds((display_.bounds().width() - kSkipLabelWidth) / 2,
+                           display_.bounds().height() * 3.f / 4,
+                           kSkipLabelWidth, kSkipLabelHeight);
+    exit_label_->SetEnabledColor(kSkipLabelColor);
+  }
   exit_label_->SetAutoColorReadabilityEnabled(false);
-  exit_label_->SetEnabledColor(kExitLabelColor);
   exit_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   exit_label_->SetSubpixelRenderingEnabled(false);
   exit_label_->SetVisible(false);

@@ -14,6 +14,7 @@ import time
 
 from argparse import ArgumentParser
 from typing import Iterable, List, Optional, Tuple
+from dataclasses import dataclass
 
 from compatible_utils import get_ssh_prefix, get_host_arch
 
@@ -140,13 +141,13 @@ def _get_daemon_status():
     """
     status = json.loads(
         run_ffx_command(cmd=('daemon', 'socket'),
-                        check=True,
                         capture_output=True,
                         json_out=True).stdout.strip())
     return status.get('pid', {}).get('status', {'NotRunning': True})
 
 
-def _is_daemon_running():
+def is_daemon_running() -> bool:
+    """Returns if the daemon is running."""
     return 'Running' in _get_daemon_status()
 
 
@@ -167,7 +168,7 @@ def _wait_for_daemon(start=True, timeout_seconds=100):
     sleep_period_seconds = 5
     attempts = int(timeout_seconds / sleep_period_seconds)
     for i in range(attempts):
-        if _is_daemon_running() == start:
+        if is_daemon_running() == start:
             return
         if i != attempts:
             logging.info('Waiting for daemon to %s...', wanted_status)
@@ -189,7 +190,7 @@ def start_ffx_daemon():
     should be used with caution unless it's really needed to "restart" the
     daemon by explicitly calling stop daemon first.
     """
-    assert not _is_daemon_running(), "Call stop_ffx_daemon first."
+    assert not is_daemon_running(), "Call stop_ffx_daemon first."
     run_ffx_command(cmd=('doctor', '--restart-daemon'), check=False)
     _wait_for_daemon(start=True)
 
@@ -337,11 +338,19 @@ def get_component_uri(package: str) -> str:
     return f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'
 
 
+def ssh_run(cmd: List[str],
+            target_id: Optional[str],
+            check=True,
+            **kwargs) -> subprocess.CompletedProcess:
+    """Runs a command on the |target_id| via ssh."""
+    ssh_prefix = get_ssh_prefix(get_ssh_address(target_id))
+    return subprocess.run(ssh_prefix + ['--'] + cmd, check=check, **kwargs)
+
+
 def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
     """Ensure that all |packages| are installed on a device."""
 
-    ssh_prefix = get_ssh_prefix(get_ssh_address(target_id))
-    subprocess.run(ssh_prefix + ['--', 'pkgctl', 'gc'], check=False)
+    ssh_run(['pkgctl', 'gc'], target_id, check=False)
 
     def _retry_command(cmd: List[str],
                        retries: int = 2,
@@ -350,9 +359,9 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
 
         for i in range(retries):
             if i == retries - 1:
-                proc = subprocess.run(cmd, **kwargs, check=True)
+                proc = ssh_run(cmd, **kwargs, check=True)
                 return proc
-            proc = subprocess.run(cmd, **kwargs, check=False)
+            proc = ssh_run(cmd, **kwargs, check=False)
             if proc.returncode == 0:
                 return proc
             time.sleep(3)
@@ -360,10 +369,10 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
 
     for package in packages:
         resolve_cmd = [
-            '--', 'pkgctl', 'resolve',
+            'pkgctl', 'resolve',
             'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)
         ]
-        _retry_command(ssh_prefix + resolve_cmd)
+        _retry_command(resolve_cmd, target_id=target_id)
 
 
 def get_ssh_address(target_id: Optional[str]) -> str:
@@ -435,12 +444,22 @@ def wait_for_sigterm(extra_msg: str = '') -> None:
         logging.info('SIGTERM received; %s', extra_msg)
 
 
-def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
-    """Retrieves installed OS version frm device.
+@dataclass
+class BuildInfo:
+    """A structure replica of the output of build section in `ffx target show`.
+    """
+    version: Optional[str] = None
+    product: Optional[str] = None
+    board: Optional[str] = None
+    commit: Optional[str] = None
+
+
+def get_build_info(target: Optional[str] = None) -> Optional[BuildInfo]:
+    """Retrieves build info from the device.
 
     Returns:
-        Tuple of strings, containing {product, version number), or a pair of
-        empty strings to indicate an error.
+        A BuildInfo struct, or None if anything goes wrong.
+        Any field in BuildInfo can be None to indicate the missing of the field.
     """
     info_cmd = run_ffx_command(cmd=('--machine', 'json', 'target', 'show'),
                                target_id=target,
@@ -450,16 +469,28 @@ def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
     # unknown system info.
     if info_cmd.returncode != 0:
         logging.error('ffx target show returns %d', info_cmd.returncode)
-        return ('', '')
+        return None
     try:
         info_json = json.loads(info_cmd.stdout.strip())
     except json.decoder.JSONDecodeError as error:
         logging.error('Unexpected json string: %s, exception: %s',
                       info_cmd.stdout, error)
-        return ('', '')
+        return None
     if isinstance(info_json, dict) and 'build' in info_json and isinstance(
             info_json['build'], dict):
-        # Use default empty string to avoid returning None.
-        return (info_json['build'].get('product', ''),
-                info_json['build'].get('version', ''))
-    return ('', '')
+        return BuildInfo(**info_json['build'])
+    return None
+
+
+def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
+    """Retrieves installed OS version from the device.
+
+    Returns:
+        Tuple of strings, containing {product, version number), or a pair of
+        empty strings to indicate an error.
+    """
+    build_info = get_build_info(target)
+    if not build_info:
+        return ('', '')
+
+    return (build_info.product or '', build_info.version or '')

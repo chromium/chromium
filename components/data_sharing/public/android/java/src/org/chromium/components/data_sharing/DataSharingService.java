@@ -53,6 +53,27 @@ public interface DataSharingService {
         }
     }
 
+    /**
+     * Result that contains preview of shared data and an outcome of the action that was requested.
+     */
+    class SharedDataPreviewOrFailureOutcome {
+        /**
+         * The preview data requested.
+         *
+         * <p>Can be null if the action failed. Please check `actionFailure` for more info.
+         */
+        public final SharedDataPreview sharedDataPreview;
+
+        /** Result of the action, UNKNOWN if the action was successful. */
+        public final @PeopleGroupActionFailure int actionFailure;
+
+        public SharedDataPreviewOrFailureOutcome(
+                SharedDataPreview sharedDataPreview, @PeopleGroupActionFailure int actionFailure) {
+            this.sharedDataPreview = sharedDataPreview;
+            this.actionFailure = actionFailure;
+        }
+    }
+
     /** Result that contains a groupToken and an status of the action that was requested. */
     public static class ParseURLResult {
         /**
@@ -210,4 +231,18 @@ public interface DataSharingService {
      * @param callback Return a created group data on success.
      */
     void ensureGroupVisibility(String groupId, Callback<GroupDataOrFailureOutcome> callback);
+
+    /**
+     * Gets a preview of the shared entities.
+     *
+     * @param groupToken The group token that contains the group Id and the access token.
+     * @param callback Return preview of shared entities on success.
+     */
+    void getSharedEntitiesPreview(
+            GroupToken groupToken, Callback<SharedDataPreviewOrFailureOutcome> callback);
+
+    /**
+     * @return The current instance of {@link DataSharingUIDelegate}.
+     */
+    DataSharingUIDelegate getUIDelegate();
 }

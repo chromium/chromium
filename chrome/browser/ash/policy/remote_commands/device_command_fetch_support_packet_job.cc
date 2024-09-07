@@ -350,13 +350,13 @@ void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
                                    .GetSigninBrowserContext())
                          : ProfileManager::GetActiveUserProfile();
   // Initialize SupportToolHandler with the requested details.
-  support_tool_handler_ =
-      GetSupportToolHandler(support_packet_details_.issue_case_id,
-                            // Leave the email address empty since data
-                            // collection is triggered by the admin remotely.
-                            /*email_address=*/std::string(),
-                            support_packet_details_.issue_description, profile,
-                            support_packet_details_.requested_data_collectors);
+  support_tool_handler_ = GetSupportToolHandler(
+      support_packet_details_.issue_case_id,
+      // Leave the email address empty since data
+      // collection is triggered by the admin remotely.
+      /*email_address=*/std::string(),
+      support_packet_details_.issue_description, std::nullopt, profile,
+      support_packet_details_.requested_data_collectors);
 
   // Start data collection.
   support_tool_handler_->CollectSupportData(

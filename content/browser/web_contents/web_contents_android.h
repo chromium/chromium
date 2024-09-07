@@ -271,7 +271,7 @@ class CONTENT_EXPORT WebContentsAndroid {
       const base::android::JavaRef<jobject>& view_structure_root,
       const base::android::JavaRef<jobject>& view_structure_builder,
       const base::android::JavaRef<jobject>& callback,
-      const ui::AXTreeUpdate& result);
+      ui::AXTreeUpdate& result);
 
   raw_ptr<WebContentsImpl> web_contents_;
 

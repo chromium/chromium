@@ -172,6 +172,7 @@ struct CORE_EXPORT PaintInfo {
   bool DescendantPaintingBlocked() const {
     return descendant_painting_blocked_;
   }
+  void SetDescendantPaintingBlocked() { descendant_painting_blocked_ = true; }
 
   GraphicsContext& context;
   PaintPhase phase;
@@ -196,8 +197,6 @@ struct CORE_EXPORT PaintInfo {
 
   bool is_painting_background_in_contents_space = false;
   bool skips_background_ = false;
-
-  // Used by display-locking.
   bool descendant_painting_blocked_ = false;
 };
 

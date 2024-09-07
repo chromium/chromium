@@ -122,6 +122,15 @@ void LocationProviderManager::StopProvider() {
   platform_location_provider_.reset();
   custom_location_provider_.reset();
   is_running_ = false;
+
+  // Disable any fallback mechanisms by resetting `provider_manager_mode_ ` when
+  // stopping the provider. This allows new location requests to attempt using
+  // the preferred provider (configured by Finch or Chrome flags). Currently
+  // implemented only for macOS; add other platforms here if they support
+  // fallback.
+#if BUILDFLAG(IS_MAC)
+  provider_manager_mode_ = features::kLocationProviderManagerParam.Get();
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void LocationProviderManager::RegisterProvider(LocationProvider& provider) {
@@ -184,9 +193,24 @@ void LocationProviderManager::OnLocationUpdate(
 
   switch (provider_manager_mode_) {
     case kHybridPlatform:
-    // TODO(crbug.com/346842084): kHybridPlatform mode currently behaves the
-    // same as kPlatformOnly. fallback mechanism will not be added until
-    // platform provider is fully evaluated.
+      platform_location_provider_result_ = new_result.Clone();
+      // Currently, the fallback mechanism only triggers on macOS when Wi-Fi is
+      // disabled (either before or during position watching).
+      if (new_result->is_error() &&
+          new_result->get_error()->error_code ==
+              device::mojom::GeopositionErrorCode::kWifiDisabled) {
+        provider_manager_mode_ = kHybridFallbackNetwork;
+        platform_location_provider_->StopProvider();
+        platform_location_provider_.reset();
+        network_location_provider_ =
+            NewNetworkLocationProvider(url_loader_factory_, api_key_);
+        RegisterProvider(*network_location_provider_.get());
+        network_location_provider_->StartProvider(enable_high_accuracy_);
+        // Skip location update and wait for the network location provider to
+        // provide an update.
+        return;
+      }
+      break;
     case kPlatformOnly:
       platform_location_provider_result_ = new_result.Clone();
       break;

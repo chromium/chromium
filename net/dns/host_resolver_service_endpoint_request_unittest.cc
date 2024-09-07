@@ -37,6 +37,7 @@
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 
 using net::test::IsError;
@@ -134,6 +135,12 @@ class Requester : public ServiceEndpointRequest::Delegate {
     run_loop.Run();
   }
 
+  void WaitForOnUpdated() {
+    base::RunLoop run_loop;
+    SetOnUpdatedCallback(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   ServiceEndpointRequest* request() const { return request_.get(); }
 
   std::optional<int> finished_result() const { return finished_result_; }
@@ -206,8 +213,20 @@ class HostResolverServiceEndpointRequestTest
     proc_->AddRule(std::string(), ADDRESS_FAMILY_UNSPECIFIED, "192.0.2.1");
   }
 
+  void set_globally_reachable_check_is_async(bool is_async) {
+    globally_reachable_check_is_async_ = is_async;
+  }
+
+  void set_ipv6_reachable(bool reachable) { ipv6_reachable_ = reachable; }
+
   void SetDnsRules(MockDnsClientRuleList rules) {
-    CreateResolver();
+    CreateResolverWithOptionsAndParams(
+        DefaultOptions(),
+        HostResolverSystemTask::Params(proc_,
+                                       /*max_retry_attempts=*/1),
+        ipv6_reachable_,
+        /*is_async=*/globally_reachable_check_is_async_,
+        /*ipv4_reachable=*/true);
     UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
   }
 
@@ -217,6 +236,15 @@ class HostResolverServiceEndpointRequestTest
                MockDnsClientRule::ResultType::kNoDomain, /*delay=*/false);
     AddDnsRule(&rules, host, dns_protocol::kTypeAAAA,
                MockDnsClientRule::ResultType::kNoDomain, /*delay=*/false);
+    SetDnsRules(std::move(rules));
+  }
+
+  void UseTimedOutDnsRules(const std::string& host) {
+    MockDnsClientRuleList rules;
+    AddDnsRule(&rules, host, dns_protocol::kTypeA,
+               MockDnsClientRule::ResultType::kTimeout, /*delay=*/false);
+    AddDnsRule(&rules, host, dns_protocol::kTypeAAAA,
+               MockDnsClientRule::ResultType::kTimeout, /*delay=*/false);
     SetDnsRules(std::move(rules));
   }
 
@@ -287,6 +315,9 @@ class HostResolverServiceEndpointRequestTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  bool ipv6_reachable_ = true;
+  bool globally_reachable_check_is_async_ = false;
 };
 
 TEST_F(HostResolverServiceEndpointRequestTest, NameNotResolved) {
@@ -302,6 +333,40 @@ TEST_F(HostResolverServiceEndpointRequestTest, NameNotResolved) {
               ResolveErrorInfo(ERR_NAME_NOT_RESOLVED));
 }
 
+TEST_F(HostResolverServiceEndpointRequestTest, TimedOut) {
+  UseTimedOutDnsRules("timeout");
+  set_allow_fallback_to_systemtask(false);
+
+  proc_->SignalMultiple(1u);
+  Requester requester = CreateRequester("https://timeout");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(),
+              Optional(IsError(ERR_NAME_NOT_RESOLVED)));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo().error,
+              IsError(ERR_DNS_TIMED_OUT));
+}
+
+// Tests that a request returns valid endpoints and DNS aliases after DnsTasks
+// are aborted.
+TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTask) {
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  proc_->SignalMultiple(1u);
+  Requester requester = CreateRequester("https://4slow_ok");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  requester.WaitForOnUpdated();
+
+  // Simulate the case when the preference or policy has disabled the insecure
+  // DNS client causing AbortInsecureDnsTasks.
+  resolver_->SetInsecureDnsClientEnabled(
+      /*enabled=*/false, /*additional_dns_types_enabled=*/false);
+  ASSERT_TRUE(requester.request()->GetEndpointResults().empty());
+  ASSERT_TRUE(requester.request()->GetDnsAliasResults().empty());
+}
+
 TEST_F(HostResolverServiceEndpointRequestTest, Ok) {
   UseNonDelayedDnsRules("ok");
 
@@ -314,6 +379,38 @@ TEST_F(HostResolverServiceEndpointRequestTest, Ok) {
               ElementsAre(ExpectServiceEndpoint(
                   ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
                   ElementsAre(MakeIPEndPoint("::1", 443)))));
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest,
+       Ipv6GloballyReachableCheckAsyncOk) {
+  set_globally_reachable_check_is_async(true);
+  UseNonDelayedDnsRules("ok");
+
+  Requester requester = CreateRequester("https://ok");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  requester.WaitForFinished();
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  ElementsAre(MakeIPEndPoint("::1", 443)))));
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest, Ipv6GloballyReachableCheckFail) {
+  set_ipv6_reachable(false);
+  set_globally_reachable_check_is_async(true);
+  UseNonDelayedDnsRules("ok");
+
+  Requester requester = CreateRequester("https://ok");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  requester.WaitForFinished();
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)))));
+  EXPECT_FALSE(GetLastIpv6ProbeResult());
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, ResolveLocally) {
@@ -357,6 +454,19 @@ TEST_F(HostResolverServiceEndpointRequestTest, ResolveLocally) {
                     ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
                     ElementsAre(MakeIPEndPoint("::1", 443)))));
   }
+}
+
+// Test that a local only request fails due to a blocked reachability check.
+TEST_F(HostResolverServiceEndpointRequestTest,
+       Ipv6GloballyReachableCheckAsyncLocalOnly) {
+  set_globally_reachable_check_is_async(true);
+  UseNonDelayedDnsRules("ok");
+
+  ResolveHostParameters parameters;
+  parameters.source = HostResolverSource::LOCAL_ONLY;
+  Requester requester = CreateRequester("https://ok", std::move(parameters));
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_NAME_NOT_RESOLVED));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, EndpointsAreSorted) {
@@ -561,7 +671,10 @@ TEST_F(HostResolverServiceEndpointRequestTest, DestroyResolverWhileUpdating) {
       base::BindLambdaForTesting([&]() { DestroyResolver(); }));
 
   RunUntilIdle();
-  EXPECT_THAT(*requester.finished_result(), IsError(ERR_DNS_REQUEST_CANCELLED));
+  EXPECT_THAT(requester.finished_result(),
+              Optional(IsError(ERR_NAME_NOT_RESOLVED)));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo().error,
+              IsError(ERR_DNS_REQUEST_CANCELLED));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, DestroyResolverWhileFinishing) {
@@ -576,6 +689,24 @@ TEST_F(HostResolverServiceEndpointRequestTest, DestroyResolverWhileFinishing) {
 
   RunUntilIdle();
   EXPECT_THAT(*requester.finished_result(), IsOk());
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest,
+       EndpointsCryptoReadySystemTaskOnly) {
+  proc_->AddRuleForAllFamilies("a.test", "192.0.2.1");
+  ResolveHostParameters parameters;
+  parameters.source = HostResolverSource::SYSTEM;
+  Requester requester =
+      CreateRequester("https://a.test", std::move(parameters));
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  // Should not crash when calling EndpointsCryptoReady().
+  ASSERT_FALSE(requester.request()->EndpointsCryptoReady());
+
+  proc_->SignalMultiple(1u);
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(), Optional(IsOk()));
+  ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, MultipleRequestsOk) {
@@ -875,9 +1006,10 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   // didn't get notified, but the non-legacy request got notified via the
   // update callback.
   ASSERT_FALSE(legacy_requester.complete_result().has_value());
-  EXPECT_THAT(*requester.finished_result(), IsError(ERR_DNS_REQUEST_CANCELLED));
-  EXPECT_THAT(requester.request()->GetResolveErrorInfo(),
-              ResolveErrorInfo(ERR_DNS_REQUEST_CANCELLED));
+  EXPECT_THAT(requester.finished_result(),
+              Optional(IsError(ERR_NAME_NOT_RESOLVED)));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo().error,
+              IsError(ERR_DNS_REQUEST_CANCELLED));
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest,

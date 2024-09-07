@@ -112,6 +112,8 @@ PLATFORM_EXPORT std::optional<base::Time> ParseDate(const String&);
 //   are trimmed.
 PLATFORM_EXPORT AtomicString ExtractMIMETypeFromMediaType(const AtomicString&);
 
+PLATFORM_EXPORT AtomicString MinimizedMIMEType(const AtomicString&);
+
 PLATFORM_EXPORT CacheControlHeader
 ParseCacheControlDirectives(const AtomicString& cache_control_header,
                             const AtomicString& pragma_header);

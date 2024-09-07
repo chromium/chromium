@@ -231,7 +231,6 @@ WeakLinkNode::list_
 base::Location::program_counter_
 base::MessagePump::Delegate::ScopedDoWorkItem::outer_
 base::MessagePumpEpoll::RunState::delegate
-base::MessagePumpLibevent::RunState::delegate
 base::internal::SequenceLocalStorageMap::ValueDestructorPair::destructor_
 base::internal::SequenceLocalStorageMap::ValueDestructorPair::value_
 base::internal::TaskDestructionDetector::timer_
@@ -362,7 +361,6 @@ base::CheckedContiguousIterator::current_
 base::CheckedContiguousIterator::end_
 base::internal::flat_tree::KeyValueCompare::comp_
 base::MadvFreeDiscardableMemoryPosix::data_
-base::i18n::IcuMergeableDataFile::lacros_data_
 base::internal::UnexpectedDeducer::lambda_
 (anonymous namespace)::CouponDataStruct::description
 (anonymous namespace)::CouponDataStruct::coupon_code
@@ -526,7 +524,7 @@ gpu::SharedImageRepresentation::ScopedAccessBase::representation_
 gpu::SharedImageRepresentation::manager_
 gpu::SharedImageRepresentation::backing_
 gpu::SharedImageRepresentation::tracker_
-gpu::SchedulerDfs::Sequence::scheduler_
+gpu::Scheduler::Sequence::scheduler_
 # crrev.com/c/5647253
 gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 

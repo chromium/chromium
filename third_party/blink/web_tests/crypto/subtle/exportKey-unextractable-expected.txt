@@ -2,9 +2,9 @@ Tests that an unextractable key cannot be exported.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-error is: InvalidAccessError: key is not extractable
-error is: InvalidAccessError: key is not extractable
-error is: InvalidAccessError: key is not extractable
+error is: InvalidAccessError: Failed to execute 'exportKey' on 'SubtleCrypto': key is not extractable
+error is: InvalidAccessError: Failed to execute 'exportKey' on 'SubtleCrypto': key is not extractable
+error is: InvalidAccessError: Failed to execute 'exportKey' on 'SubtleCrypto': key is not extractable
 PASS successfullyParsed is true
 
 TEST COMPLETE

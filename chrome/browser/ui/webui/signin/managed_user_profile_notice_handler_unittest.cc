@@ -90,6 +90,8 @@ class ManagedUserProfileNoticeHandlerTestBase
     message_handler_->RegisterMessages();
   }
 
+  void DeleteHandler() { message_handler_.reset(); }
+
   void TearDown() override {
     BrowserWithTestWindowTest::TearDown();
     message_handler_.reset();
@@ -466,5 +468,27 @@ TEST_F(
             IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_SEPARATION,
             u"example.com", u"alice@intercepted.com", u"intercepted.com"));
   }
+}
+class ManagedUserProfileNoticeHandleCancelTest
+    : public ManagedUserProfileNoticeHandlerTestBase {};
+
+// Tests how `HandleCancel` processes the arguments and the handler's state to
+// notify the registered callback.
+TEST_F(ManagedUserProfileNoticeHandleCancelTest, HandleCancelNoUseAfterFree) {
+  base::MockCallback<signin::SigninChoiceCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      /*profile_creation_required_by_policy=*/true,
+      /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
+      mock_done_callback.Get());
+
+  EXPECT_CALL(mock_process_user_choice_callback,
+              Run(signin::SIGNIN_CHOICE_CANCEL))
+      .WillOnce([&]() { DeleteHandler(); });
+  EXPECT_CALL(mock_done_callback, Run());
+  web_ui()->HandleReceivedMessage("cancel", base::Value::List());
+  EXPECT_EQ(handler(), nullptr);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

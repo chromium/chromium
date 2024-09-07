@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -30,20 +31,21 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   ItemTypeAccount = kItemTypeEnumZero,
   // Remove account item.
   ItemTypeRemoveAccount,
+  // Add account item.
+  ItemTypeAddAccount,
+  // Sign out item.
+  ItemTypeSignOut,
 };
 
 }  // namespace
 
 @interface AccountsTableViewController () {
-  // Whether to close the view after adding an account.
-  BOOL _closeSettingsOnAddAccount;
-
-  // ApplicationCommands handler.
-  id<ApplicationCommands> _applicationHandler;
-
   // Enable lookup of item corresponding to a given IdentityViewItem GAIA ID
   // string.
   NSDictionary<NSString*, TableViewItem*>* _identityMap;
+
+  // If YES, offers the sign-out button on the UI.
+  BOOL _offerSignout;
 }
 
 @end
@@ -52,14 +54,10 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
 @synthesize modelIdentityDataSource;
 
-- (instancetype)initWithCloseSettingsOnAddAccount:
-                    (BOOL)closeSettingsOnAddAccount
-                       applicationCommandsHandler:
-                           (id<ApplicationCommands>)applicationCommandsHandler {
+- (instancetype)initWithOfferSignout:(BOOL)offerSignout {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
-    _applicationHandler = applicationCommandsHandler;
+    _offerSignout = offerSignout;
   }
 
   return self;
@@ -77,7 +75,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 #pragma mark - SettingsRootTableViewController
 
 - (void)loadModel {
-  self.title = l10n_util::GetNSString(IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST);
+  self.title = l10n_util::GetNSString(IDS_IOS_DEVICE_ACCOUNTS_MANAGEMENT);
 
   [super loadModel];
 
@@ -112,6 +110,17 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
     [model addItem:removeAccountItem toSectionWithIdentifier:sectionNumber];
     [mutableIdentityMap setObject:accountItem forKey:identityViewItem.gaiaID];
   }
+
+  TableViewItem* addAccountItem = [self addAccountItem];
+  [model addSectionWithIdentifier:nextSection];
+  [model addItem:addAccountItem toSectionWithIdentifier:nextSection++];
+
+  if (_offerSignout) {
+    TableViewItem* signOutItem = [self signOutItem];
+    [model addSectionWithIdentifier:nextSection];
+    [model addItem:signOutItem toSectionWithIdentifier:nextSection++];
+  }
+
   _identityMap = mutableIdentityMap;
 }
 
@@ -139,6 +148,29 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeRemoveAccount];
   item.text = l10n_util::GetNSString(IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE);
+  item.accessibilityIdentifier =
+      [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
+          stringByAppendingString:identityViewItem.accessibilityIdentifier];
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  return item;
+}
+
+- (TableViewItem*)addAccountItem {
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeAddAccount];
+  item.text =
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON);
+  item.accessibilityIdentifier = kSettingsAccountsTableViewAddAccountCellId;
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  return item;
+}
+
+- (TableViewItem*)signOutItem {
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeSignOut];
+  item.text =
+      l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
+  item.accessibilityIdentifier = kSettingsAccountsTableViewSignoutCellId;
   item.textColor = [UIColor colorNamed:kBlueColor];
   return item;
 }
@@ -154,14 +186,33 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   switch (itemType) {
     case ItemTypeAccount:
       return;
-    case ItemTypeRemoveAccount:
+    case ItemTypeRemoveAccount: {
       NSIndexPath* accountItemIndexPath =
           [NSIndexPath indexPathForRow:0 inSection:indexPath.section];
       TableViewAccountItem* accountItem =
           base::apple::ObjCCastStrict<TableViewAccountItem>(
               [self.tableViewModel itemAtIndexPath:accountItemIndexPath]);
-      [self.mutator requestRemoveIdentityWithGaiaID:
-                        [self gaiaIDWithAccountItem:accountItem]];
+      UIView* itemView =
+          [[tableView cellForRowAtIndexPath:indexPath] contentView];
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountsTableView_AccountDetail_RemoveAccount"));
+      [self.mutator
+          requestRemoveIdentityWithGaiaID:[self
+                                              gaiaIDWithAccountItem:accountItem]
+                                 itemView:itemView];
+      break;
+    }
+    case ItemTypeAddAccount:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountsTableView_AddAccount"));
+      [self.mutator requestAddIdentityToDevice];
+      break;
+    case ItemTypeSignOut:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountsTableView_SignOut"));
+      UIView* itemView =
+          [[tableView cellForRowAtIndexPath:indexPath] contentView];
+      [self.mutator requestSignOutWithItemView:itemView];
       break;
   }
 
@@ -196,7 +247,9 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 }
 
 - (void)popView {
-  // TODO (crbug.com/349071402): implement popView on sign-out.
+  // No need to implement this here as the coordinator is handling this. Once
+  // LegacyAccountsTableViewController is deleted, this method can be remove
+  // from AccountsConsumer
 }
 
 #pragma mark - AccountsConsumer
@@ -208,6 +261,24 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
     }
   }
   return nil;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  base::RecordAction(
+      base::UserMetricsAction("IOSAccountsSettingsCloseWithSwipe"));
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileAccountsSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileAccountsSettingsBack"));
 }
 
 @end

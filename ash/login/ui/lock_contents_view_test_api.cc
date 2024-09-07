@@ -9,7 +9,6 @@
 #include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
-#include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/lock_screen_media_view.h"
 #include "ash/login/ui/login_big_user_view.h"
 #include "ash/login/ui/login_error_bubble.h"
@@ -57,11 +56,6 @@ AccountId LockContentsViewTestApi::focused_user() const {
 
 ScrollableUsersListView* LockContentsViewTestApi::users_list() const {
   return view_->users_list_;
-}
-
-LockScreenMediaControlsView* LockContentsViewTestApi::media_controls_view()
-    const {
-  return view_->media_controls_view_;
 }
 
 LockScreenMediaView* LockContentsViewTestApi::media_view() const {

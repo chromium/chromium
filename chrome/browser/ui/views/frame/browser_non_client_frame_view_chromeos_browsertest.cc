@@ -13,12 +13,17 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -1737,10 +1742,19 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
   }
 
   const webapps::AppId app_id = WaitForAppInstall();
-  auto* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
+
+  // Trigger the launch but do not wait for the web contents to load.
+  content::WebContents* web_contents =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->BrowserAppLauncher()
+          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+              app_id, apps::LaunchContainer::kLaunchContainerWindow,
+              WindowOpenDisposition::CURRENT_TAB,
+              apps::LaunchSource::kFromTest));
+  ASSERT_TRUE(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   auto* contents_web_view =
       BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
-  auto* web_contents = contents_web_view->GetWebContents();
 
   // Verify background color is immediately resolved from the app controller
   // despite the fact that the web contents background color hasn't loaded

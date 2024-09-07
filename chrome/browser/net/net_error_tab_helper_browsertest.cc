@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/net/net_error_tab_helper.h"
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
-#include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -160,10 +161,8 @@ IN_PROC_BROWSER_TEST_F(
   prerender_helper().AddPrerenderAsync(error_page_url);
   prerender_helper().AddPrerenderAsync(prerender_url);
   registry_observer.WaitForTrigger(prerender_url);
-  EXPECT_EQ(RenderFrameHost::kNoFrameTreeNodeId,
-            prerender_helper().GetHostForUrl(error_page_url));
-  EXPECT_NE(RenderFrameHost::kNoFrameTreeNodeId,
-            prerender_helper().GetHostForUrl(prerender_url));
+  EXPECT_FALSE(prerender_helper().GetHostForUrl(error_page_url));
+  EXPECT_TRUE(prerender_helper().GetHostForUrl(prerender_url));
   EXPECT_FALSE(pending_probe_status_count());
 }
 
@@ -186,8 +185,9 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithPrerenderingTest,
   prerender_helper().AddPrerenderAsync(prerender_url);
   registry_observer.WaitForTrigger(prerender_url);
 
-  int_fast64_t host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_NE(RenderFrameHost::kNoFrameTreeNodeId, host_id);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_TRUE(host_id);
   test::PrerenderHostObserver host_observer(*GetWebContents(), host_id);
 
   // PrerenderHost is destroyed by net::ERR_NAME_NOT_RESOLVED and it stops
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithPrerenderingTest,
 
   // The prerender host should be destroyed.
   host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_EQ(RenderFrameHost::kNoFrameTreeNodeId, host_id);
+  EXPECT_FALSE(host_id);
 }
 
 class NetErrorTabHelperWithFencedFrameTest : public NetErrorTabHelperTest {

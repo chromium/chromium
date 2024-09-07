@@ -30,6 +30,8 @@
 
 namespace content {
 
+struct BiddingAndAuctionServerKey;
+
 // Handles caching (not yet implemented) and dispatching of trusted bidding and
 // scoring signals requests. Only handles requests to Trusted Execution
 // Environments (TEEs), i.e., versions 2+ of the protocol, so does not handle
@@ -98,6 +100,19 @@ namespace content {
 class CONTENT_EXPORT TrustedSignalsCacheImpl
     : public auction_worklet::mojom::TrustedSignalsCache {
  public:
+  enum class SignalsType {
+    kBidding,
+    kScoring,
+  };
+
+  // Callback to retrieve a BiddingAndAuctionServerKey for a given coordinator.
+  // The `callback` parameter may be invoked synchronously or asynchronously,
+  // and may fail.
+  using GetCoordinatorKeyCallback = base::RepeatingCallback<void(
+      std::optional<url::Origin> coordinator,
+      base::OnceCallback<void(
+          base::expected<BiddingAndAuctionServerKey, std::string>)> callback)>;
+
   // As long as a Handle is alive, any Mojo
   // auction_worklet::mojom::TrustedSignalsCache created by invoking
   // CreateMojoPipe() can retrieve the response associated with the
@@ -144,16 +159,21 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
         base::UnguessableToken::Create()};
   };
 
-  explicit TrustedSignalsCacheImpl(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  TrustedSignalsCacheImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      GetCoordinatorKeyCallback get_coordinator_key_callback);
   ~TrustedSignalsCacheImpl() override;
 
   TrustedSignalsCacheImpl(const TrustedSignalsCacheImpl&) = delete;
   TrustedSignalsCacheImpl& operator=(const TrustedSignalsCacheImpl&) = delete;
 
-  // Creates a TrustedSignalsCache pipe for a bidder script process.
+  // Creates a TrustedSignalsCache pipe for a bidder script process. It may only
+  // be used for `signals_type` fetches for `script_origin`, where `origin` is
+  // origin of the script that will receive those signals (i.e., the seller
+  // origin or InterestGroup origin, depending on whether these are scoring or
+  // bidding signals).
   mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
-  CreateMojoPipe();
+  CreateMojoPipe(SignalsType signals_type, const url::Origin& script_origin);
 
   // Requests bidding signals for the specified interest group. Return value is
   // a Handle which must be kept alive until the response to the request is no
@@ -171,6 +191,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       blink::mojom::InterestGroup_ExecutionMode execution_mode,
       const url::Origin& joining_origin,
       const GURL& trusted_signals_url,
+      const url::Origin& coordinator,
       base::optional_ref<const std::vector<std::string>>
           trusted_bidding_signals_keys,
       base::Value::Dict additional_params,
@@ -199,6 +220,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       const url::Origin& main_frame_origin,
       const url::Origin& seller,
       const GURL& trusted_signals_url,
+      const url::Origin& coordinator,
       const url::Origin& interest_group_owner,
       const url::Origin& joining_origin,
       const GURL& render_url,
@@ -213,9 +235,14 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
           client) override;
 
  private:
-  enum class SignalsType {
-    kBidding,
-    kScoring,
+  // Each receiver pipe in `receiver_set_` is restricted to only receive
+  // scoring/bidding signals for the specific script origin identified by this
+  // struct.
+  struct ReceiverRestrictions {
+    bool operator==(const ReceiverRestrictions& other) const;
+
+    SignalsType signals_type;
+    url::Origin script_origin;
   };
 
   // Key used for live or pending requests to a trusted server. Two request with
@@ -242,7 +269,8 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     FetchKey(const url::Origin& main_frame_origin,
              SignalsType signals_type,
              const url::Origin& script_origin,
-             const GURL& trusted_signals_url);
+             const GURL& trusted_signals_url,
+             const url::Origin& coordinator);
     FetchKey(const FetchKey&);
     FetchKey(FetchKey&&);
 
@@ -265,6 +293,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     url::Origin main_frame_origin;
 
     GURL trusted_signals_url;
+    url::Origin coordinator;
   };
 
   // A pending or live network request. May be for bidding signals or scoring
@@ -315,6 +344,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     BiddingCacheKey(const url::Origin& interest_group_owner,
                     std::optional<std::string> interest_group_name,
                     const GURL& trusted_signals_url,
+                    const url::Origin& coordinator,
                     const url::Origin& main_frame_origin,
                     const url::Origin& joining_origin,
                     base::Value::Dict additional_params);
@@ -369,6 +399,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
 
     ScoringCacheKey(const url::Origin& seller,
                     const GURL& trusted_signals_url,
+                    const url::Origin& coordinator,
                     const url::Origin& main_frame_origin,
                     const url::Origin& interest_group_owner,
                     const url::Origin& joining_origin,
@@ -425,12 +456,23 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       base::optional_ref<const url::Origin>
           interest_group_owner_if_scoring_signals);
 
-  // Starts the corresponding queued network fetch.
-  void StartFetch(FetchMap::iterator fetch_it);
+  // Starts retrieving the coordinator key for the specified fetch. Will invoke
+  // StartFetch() on complete, which may happen synchronously.
+  void GetCoordinatorKey(FetchMap::iterator fetch_it);
+
+  // If the key was successfully fetched, starts the corresponding Fetch.
+  void OnCoordinatorKeyReceived(
+      FetchMap::iterator fetch_it,
+      base::expected<BiddingAndAuctionServerKey, std::string>
+          bidding_and_auction_server_key);
 
   // Called by StartFetch() to request bidding/scoring signals.
-  void StartBiddingSignalsFetch(FetchMap::iterator fetch_it);
-  void StartScoringSignalsFetch(FetchMap::iterator fetch_it);
+  void StartBiddingSignalsFetch(
+      FetchMap::iterator fetch_it,
+      const BiddingAndAuctionServerKey& bidding_and_auction_key);
+  void StartScoringSignalsFetch(
+      FetchMap::iterator fetch_it,
+      const BiddingAndAuctionServerKey& bidding_and_auction_key);
 
   void OnFetchComplete(
       FetchMap::iterator fetch_it,
@@ -469,9 +511,12 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // Virtual for testing.
   virtual std::unique_ptr<TrustedSignalsFetcher> CreateFetcher();
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const GetCoordinatorKeyCallback get_coordinator_key_callback_;
 
-  mojo::ReceiverSet<auction_worklet::mojom::TrustedSignalsCache> receiver_set_;
+  mojo::ReceiverSet<auction_worklet::mojom::TrustedSignalsCache,
+                    ReceiverRestrictions>
+      receiver_set_;
 
   // Multimap of live and pending fetches. Fetches are removed on completion and
   // cancellation. When data is requested from the cache, if data needs to be

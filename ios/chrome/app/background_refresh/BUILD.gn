@@ -16,6 +16,7 @@ source_set("background_refresh") {
     "test_refresher.mm",
   ]
   deps = [
+    ":metrics",
     "//base",
     "//components/metrics",
     "//ios/chrome/app:constants",
@@ -29,6 +30,14 @@ source_set("background_refresh") {
     "BackgroundTasks.framework",
     "UserNotifications.framework",
   ]
+}
+
+source_set("metrics") {
+  sources = [
+    "background_refresh_metrics.h",
+    "background_refresh_metrics.mm",
+  ]
+  deps = []
 }
 
 source_set("unit_tests") {

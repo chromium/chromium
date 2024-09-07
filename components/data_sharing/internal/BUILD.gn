@@ -30,15 +30,21 @@ static_library("internal") {
     "group_data_proto_utils.h",
     "group_data_store.cc",
     "group_data_store.h",
+    "preview_server_proxy.cc",
+    "preview_server_proxy.h",
   ]
 
   deps = [
+    "//components/data_sharing/internal/protocol",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/signin/public/identity_manager",
+    "//components/sqlite_proto",
     "//components/sync/base:base",
     "//components/sync/model:model",
     "//components/sync/protocol:protocol",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
+    "//sql",
   ]
 
   public_deps = [
@@ -81,6 +87,7 @@ source_set("unit_tests") {
     "fake_data_sharing_sdk_delegate.h",
     "group_data_proto_utils_unittest.cc",
     "group_data_store_unittest.cc",
+    "preview_server_proxy_unittest.cc",
   ]
 
   if (is_android) {
@@ -95,10 +102,12 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/endpoint_fetcher",
     "//components/endpoint_fetcher:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//net/traffic_annotation:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",

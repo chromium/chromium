@@ -32,8 +32,7 @@ MandatoryReauthIconView::MandatoryReauthIconView(
                          icon_label_bubble_delegate,
                          delegate,
                          "MandatoryReauth") {
-  GetViewAccessibility().SetProperties(
-      /*role=*/std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP));
 }
 

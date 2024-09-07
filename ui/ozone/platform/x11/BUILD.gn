@@ -57,6 +57,7 @@ source_set("x11") {
     "//gpu/vulkan:buildflags",
     "//net",
     "//skia",
+    "//third_party/angle:includes",
     "//ui/base:base",
     "//ui/base:buildflags",
     "//ui/base:data_exchange",
@@ -120,8 +121,6 @@ source_set("x11") {
   if (use_xkbcommon) {
     configs += [ "//ui/events/ozone/layout:xkbcommon" ]
   }
-
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
 
   if (use_atk) {
     sources += [

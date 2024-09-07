@@ -161,11 +161,8 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                     }
 
                     @Override
-                    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
-                        @BrowserControlsState int constraints = getConstraints();
-                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                                && isInteractable
-                                && !isStateForced(constraints)) {
+                    public void onShown(Tab tab, @TabHidingType int type) {
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
                             updateEnabledState();
                         }
                     }
@@ -240,19 +237,16 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
     private void generateOffsetTags(
             @BrowserControlsState int current, @BrowserControlsState int constraints) {
-        OffsetTag newTopControlsOffsetTag = mTopControlsOffsetTag;
-        if (!mTab.isUserInteractable()) {
+        if (mTab.isHidden()) {
             return;
         }
 
         boolean isNewStateForced = isStateForced(constraints);
-        if (wasPreviousStateForced() && !isNewStateForced) {
-            newTopControlsOffsetTag = OffsetTag.createRandom();
-        } else if (!wasPreviousStateForced() && isNewStateForced) {
-            newTopControlsOffsetTag = null;
+        if (mTopControlsOffsetTag == null && !isNewStateForced) {
+            updateOffsetTags(OffsetTag.createRandom(), constraints);
+        } else if (mTopControlsOffsetTag != null && isNewStateForced) {
+            updateOffsetTags(null, constraints);
         }
-
-        updateOffsetTags(newTopControlsOffsetTag, constraints);
     }
 
     /**

@@ -6,7 +6,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementPermissionItemElement, MediaDevicesProxy} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, CrButtonElement, GeolocationAccessLevel, LocalizedLinkElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, AppManagementToggleRowElement, CrButtonElement, GeolocationAccessLevel, LocalizedLinkElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {App, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
@@ -411,5 +411,18 @@ suite('AppManagementPermissionItemTest', function() {
                   'permissionAllowedTextWithTurnOnMicrophoneAccessButton'),
               getPermissionDescriptionString());
         });
+
+
+    test('App Management Toggle Row with aria description', async () => {
+      const ariaDescription =
+          permissionItem.shadowRoot!
+              .querySelector<AppManagementToggleRowElement>(
+                  '#toggle-row')!.ariaDescription!.toString();
+      const expectedAriaDescription = loadTimeData.getString(
+          'appManagementPermissionItemClickTogglePermission');
+
+      assertEquals(expectedAriaDescription, ariaDescription);
+    });
+
   });
 });

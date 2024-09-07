@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -22,7 +21,8 @@ namespace autofill {
 using InfoBarMetric = AutofillMetrics::InfoBarMetric;
 using SaveCardOfferUserDecision =
     payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
-using UserProvidedCardDetails = AutofillClient::UserProvidedCardDetails;
+using UserProvidedCardDetails =
+    payments::PaymentsAutofillClient::UserProvidedCardDetails;
 using autofill_metrics::SaveCreditCardPromptResult;
 using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;
 
@@ -117,6 +117,25 @@ testing::Matcher<UploadCallbackArgs> EqualToUploadCallbackArgs(
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AutofillSaveCardDelegateTest, testing::Bool());
+
+TEST_P(AutofillSaveCardDelegateTest, RequiresFixFlowWithNameFix) {
+  autofill::AutofillSaveCardDelegate delegate =
+      CreateDelegate(payments::PaymentsAutofillClient::SaveCreditCardOptions{}
+                         .with_should_request_name_from_user(true));
+  EXPECT_TRUE(delegate.requires_fix_flow());
+}
+
+TEST_P(AutofillSaveCardDelegateTest, RequiresFixFlowWithExpirationDateFix) {
+  autofill::AutofillSaveCardDelegate delegate =
+      CreateDelegate(payments::PaymentsAutofillClient::SaveCreditCardOptions{}
+                         .with_should_request_expiration_date_from_user(true));
+  EXPECT_TRUE(delegate.requires_fix_flow());
+}
+
+TEST_P(AutofillSaveCardDelegateTest, RequiresFixFlowWithNoFix) {
+  autofill::AutofillSaveCardDelegate delegate = CreateDelegate();
+  EXPECT_FALSE(delegate.requires_fix_flow());
+}
 
 TEST_P(AutofillSaveCardDelegateTest,
        OnUiAcceptedWithCallbackArgumentRunsCallback) {

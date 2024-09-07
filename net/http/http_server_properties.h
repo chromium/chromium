@@ -28,6 +28,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/http/alternative_service.h"
 #include "net/http/broken_alternative_services.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_bandwidth.h"
@@ -204,6 +205,7 @@ class NET_EXPORT HttpServerProperties
     // NetworkAnonymizationKey is used instead of |network_anonymization_key|.
     QuicServerInfoMapKey(
         const quic::QuicServerId& server_id,
+        PrivacyMode privacy_mode,
         const NetworkAnonymizationKey& network_anonymization_key,
         bool use_network_anonymization_key);
     ~QuicServerInfoMapKey();
@@ -214,6 +216,7 @@ class NET_EXPORT HttpServerProperties
     bool operator==(const QuicServerInfoMapKey& other) const;
 
     quic::QuicServerId server_id;
+    PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
     NetworkAnonymizationKey network_anonymization_key;
   };
 
@@ -408,6 +411,7 @@ class NET_EXPORT HttpServerProperties
   // context of |network_anonymization_key|.
   void SetQuicServerInfo(
       const quic::QuicServerId& server_id,
+      PrivacyMode privacy_mode,
       const NetworkAnonymizationKey& network_anonymization_key,
       const std::string& server_info);
 
@@ -415,6 +419,7 @@ class NET_EXPORT HttpServerProperties
   // context of |network_anonymization_key|.
   const std::string* GetQuicServerInfo(
       const quic::QuicServerId& server_id,
+      PrivacyMode privacy_mode,
       const NetworkAnonymizationKey& network_anonymization_key);
 
   // Returns all persistent QuicServerInfo objects.
@@ -555,6 +560,7 @@ class NET_EXPORT HttpServerProperties
       const NetworkAnonymizationKey& network_anonymization_key) const;
   QuicServerInfoMapKey CreateQuicServerInfoKey(
       const quic::QuicServerId& server_id,
+      PrivacyMode privacy_mode,
       const NetworkAnonymizationKey& network_anonymization_key) const;
 
   // Return the iterator for |server| in the context of

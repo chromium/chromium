@@ -598,9 +598,6 @@ const char kSSLVersionTLSv12[] = "tls1.2";
 // TLS 1.3 mode for |kSSLVersionMax| and |kSSLVersionMin| switches.
 const char kSSLVersionTLSv13[] = "tls1.3";
 
-// Use the thread pool for stack profiler.
-const char kStackProfilerUseThreadPool[] = "stack-profiler-thread-pool";
-
 // Starts the browser maximized, regardless of any previous settings.
 const char kStartMaximized[] = "start-maximized";
 

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_JIT_ALLOCATOR_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_JIT_ALLOCATOR_H_
 
-#include <string_view>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
@@ -29,8 +29,11 @@ class PlusAddressJitAllocator : public PlusAddressAllocator {
   void AllocatePlusAddress(const url::Origin& origin,
                            AllocationMode mode,
                            PlusAddressRequestCallback callback) override;
+  std::optional<PlusProfile> AllocatePlusAddressSynchronously(
+      const url::Origin& origin,
+      AllocationMode mode) override;
   bool IsRefreshingSupported(const url::Origin& origin) const override;
-  void RemoveAllocatedPlusAddress(std::string_view plus_address) override;
+  void RemoveAllocatedPlusAddress(const PlusAddress& plus_address) override;
 
  private:
   // Checks the `profile_or_error` response before passing it on to `callback`.

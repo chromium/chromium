@@ -54,6 +54,7 @@ bool H265ToAnnexBBitstreamConverter::ParseConfiguration(
   if (!hevc_config->Parse(configuration_record, configuration_record_size))
     return false;
 
+  nal_unit_length_field_width_ = hevc_config->lengthSizeMinusOne + 1;
   configuration_processed_ = true;
   return true;
 }
@@ -88,20 +89,16 @@ uint32_t H265ToAnnexBBitstreamConverter::CalculateNeededOutputBufferSize(
   if (hevc_config)
     output_size += GetConfigSize(*hevc_config);
 
-  uint8_t nal_unit_length_field_width = hevc_config->lengthSizeMinusOne + 1;
-  CHECK(nal_unit_length_field_width == 1 || nal_unit_length_field_width == 2 ||
-        nal_unit_length_field_width == 4);
-
   // Then add the needed size for the actual packet
   while (data_left > 0) {
-    if (data_left < nal_unit_length_field_width) {
+    if (data_left < nal_unit_length_field_width_) {
       return 0;  // Error: not enough data for correct conversion.
     }
 
     // Read the next NAL unit length from the input buffer
     uint8_t size_of_len_field;
     uint32_t nal_unit_length;
-    for (nal_unit_length = 0, size_of_len_field = nal_unit_length_field_width;
+    for (nal_unit_length = 0, size_of_len_field = nal_unit_length_field_width_;
          size_of_len_field > 0; input++, size_of_len_field--, data_left--) {
       nal_unit_length <<= 8;
       nal_unit_length |= *input;
@@ -168,10 +165,6 @@ bool H265ToAnnexBBitstreamConverter::ConvertNalUnitStreamToByteStream(
     return false;  // Error: invalid input
   }
 
-  uint8_t nal_unit_length_field_width = hevc_config->lengthSizeMinusOne + 1;
-  CHECK(nal_unit_length_field_width == 1 || nal_unit_length_field_width == 2 ||
-        nal_unit_length_field_width == 4);
-
   // Do the actual conversion for the actual input packet
   int nal_unit_count = 0;
   while (data_left > 0) {
@@ -180,7 +173,7 @@ bool H265ToAnnexBBitstreamConverter::ConvertNalUnitStreamToByteStream(
 
     // Read the next NAL unit length from the input buffer by scanning
     // the input stream with the specific length field width
-    for (nal_unit_length = 0, i = nal_unit_length_field_width;
+    for (nal_unit_length = 0, i = nal_unit_length_field_width_;
          i > 0 && data_left > 0; inscan++, i--, data_left--) {
       nal_unit_length <<= 8;
       nal_unit_length |= *inscan;

@@ -393,6 +393,11 @@ void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
   }
 }
 
+void Mediator::OnDisplayPasskey(std::u16string device_name, uint32_t passkey) {
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Device=" << device_name;
+  ui_broker_->ShowPasskey(device_name, passkey);
+}
+
 void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
   auto it = discovery_notification_block_list_.find(
       std::make_pair(device->metadata_id(), device->protocol()));

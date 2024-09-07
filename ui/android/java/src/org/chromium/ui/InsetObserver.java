@@ -236,6 +236,14 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         return mLastSeenRawWindowInset;
     }
 
+    /**
+     * Return the current safe area rect tracked by this InsetObserver. The Rect will be returned as
+     * original being cached with pixel sizes, so it's not recommended to modify this rect.
+     */
+    public Rect getCurrentSafeArea() {
+        return mCurrentSafeArea;
+    }
+
     public WindowInsetsAnimationCompat.Callback getInsetAnimationProxyCallbackForTesting() {
         return mWindowInsetsAnimationProxyCallback;
     }

@@ -36,7 +36,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #endif
 
 namespace gpu {
@@ -269,8 +268,7 @@ GpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
 #endif
 #if BUILDFLAG(IS_ANDROID)
     case gfx::ANDROID_HARDWARE_BUFFER:
-      return GpuMemoryBufferImplAndroidHardwareBuffer::CreateFromHandle(
-          std::move(handle), size, format, usage, std::move(callback));
+      return nullptr;
 #endif
     default:
       // TODO(dcheng): Remove default case (https://crbug.com/676224).

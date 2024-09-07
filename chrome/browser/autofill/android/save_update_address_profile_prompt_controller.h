@@ -48,7 +48,7 @@ class SaveUpdateAddressProfilePromptController {
   void DisplayPrompt();
 
   std::u16string GetTitle();
-  std::u16string GetSourceNotice(signin::IdentityManager* profile);
+  std::u16string GetRecordTypeNotice(signin::IdentityManager* profile);
   std::u16string GetPositiveButtonText();
   std::u16string GetNegativeButtonText();
   // For save prompt:

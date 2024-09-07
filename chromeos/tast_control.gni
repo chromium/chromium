@@ -35,9 +35,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1282372
   "security.NetworkListenersARC",
 
-  # https://crbug.com/1309331
-  "policy.CookiesAllowedForUrls",
-
   # https://crbug.com/1307940
   "policy.URLCheck.blocklist",
 
@@ -52,10 +49,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/241122961
   "policy.BlockThirdPartyCookies",
-
-  # https://crbug.com/1368859
-  "arc.Drivefs",
-  "arc.Drivefs.vm",
 
   # b/287525851
   "arc.AudioValidity.playback",
@@ -96,9 +89,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/346793249, b/330290054
   "videoconferencing.OpenCLCacher",
 
-  # b/347713587, b/347111366
-  "crostini.TaskManager.bookworm_stable",
-
   # b/352753237, Pnacl and terminal.SSH failing only on brya, blocking LKGM
   "nacl.Pnacl@brya",
   "terminal.SSH@brya",
@@ -114,8 +104,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardEmojiSuggestion.incognito_lacros",
   "inputs.PhysicalKeyboardEmojiSuggestion.lacros",
 
-  # b/355351792, tests failing on jacuzzi.
+  # b/355351792, b/352703668: tests failing on jacuzzi and trogdor.
   "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
+  "security.SELinuxFilesDataDir.arcvm_user@trogdor",
 
   # b/358087592, re-enable once the test is updated to handle the new
   # PWA change.
@@ -135,6 +126,12 @@ tast_disabled_tests_from_chrome_all = [
   "shimlessrma.SelectComponentsNoneNextCancel.critical@brya",
   "shimlessrma.WelcomeNextCancel.critical@brya",
   "shimlessrma.WelcomeCancel.critical@brya",
+
+  # b/362288747, test is failing on brya.
+  "a11y.LiveCaption.fieldtrial_testing_config_off@brya",
+
+  # b/362457684: test is failing on betty, blocking LKGM.
+  "cryptohome.UssMigrationChallengeCredential.rsassa_all@betty",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]

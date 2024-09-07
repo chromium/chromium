@@ -1,0 +1,58 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//services/device/public/cpp/geolocation/buildflags.gni")
+
+source_set("system") {
+  public = [
+    "media_authorization_wrapper_mac.h",
+    "platform_handle.h",
+    "system_permission_settings.h",
+  ]
+
+  sources = [ "system_permission_settings.cc" ]
+
+  public_deps = [
+    "//base",
+    "//components/content_settings/core/common",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/profiles",
+    "//services/device/public/cpp/geolocation:geolocation",
+  ]
+
+  if (is_mac) {
+    public += [ "system_media_capture_permissions_mac.h" ]
+
+    sources += [
+      "system_media_capture_permissions_mac.h",
+      "system_media_capture_permissions_mac.mm",
+      "system_permission_settings_mac.cc",
+    ]
+    deps += [ "//chrome//browser/web_applications" ]
+  } else if (is_chromeos_ash) {
+    sources += [ "system_permission_settings_chromeos.cc" ]
+    deps += [
+      "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/ash/privacy_hub:privacy_hub",
+      "//chrome/browser/web_applications:web_applications",
+    ]
+  } else if (is_win) {
+    sources += [ "system_permission_settings_win.cc" ]
+    deps += [ "//chrome/browser:browser_public_dependencies" ]
+  } else {
+    sources += [ "system_permission_settings_default.cc" ]
+  }
+
+  if (os_level_geolocation_permission_supported) {
+    sources += [
+      "geolocation_observation.cc",
+      "geolocation_observation.h",
+    ]
+  }
+}

@@ -30,16 +30,13 @@ using sessions_helper::CheckInitialState;
 using sessions_helper::CloseTab;
 using sessions_helper::DeleteForeignSession;
 using sessions_helper::ForeignSessionsMatchChecker;
-using sessions_helper::GetLocalWindows;
 using sessions_helper::GetSessionData;
 using sessions_helper::NavigateTab;
 using sessions_helper::OpenMultipleTabs;
 using sessions_helper::OpenTab;
 using sessions_helper::OpenTabAtIndex;
 using sessions_helper::ScopedWindowMap;
-using sessions_helper::SessionWindowMap;
 using sessions_helper::SyncedSessionVector;
-using sessions_helper::WindowsMatch;
 using testing::IsEmpty;
 
 class TwoClientSessionsSyncTest : public SyncTest {

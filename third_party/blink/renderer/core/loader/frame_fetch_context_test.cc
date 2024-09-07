@@ -114,6 +114,9 @@ class DummyFrameOwner final : public GarbageCollected<DummyFrameOwner>,
   mojom::blink::ColorScheme GetColorScheme() const override {
     return mojom::blink::ColorScheme::kLight;
   }
+  mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override {
+    return mojom::blink::PreferredColorScheme::kLight;
+  }
   bool ShouldLazyLoadChildren() const override { return false; }
 
  private:
@@ -1561,7 +1564,7 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
 
   dummy_page_holder = nullptr;
 
-  GetFetchContext()->PopulateResourceRequest(
+  GetFetchContext()->UpgradeResourceRequestForLoader(
       ResourceType::kRaw, std::nullopt /* resource_width */, request, options);
   // Should not crash.
 }
@@ -1685,7 +1688,7 @@ class FrameFetchContextDisableReduceAcceptLanguageTest
     if (is_detached)
       dummy_page_holder = nullptr;
 
-    GetFetchContext()->PopulateResourceRequest(
+    GetFetchContext()->UpgradeResourceRequestForLoader(
         ResourceType::kRaw, std::nullopt /* resource_width */, request,
         options);
   }

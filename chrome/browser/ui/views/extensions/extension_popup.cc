@@ -18,6 +18,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/border.h"
@@ -250,7 +251,7 @@ ExtensionPopup::ExtensionPopup(
       shown_callback_(std::move(callback)),
       deferred_close_weak_ptr_factory_(this) {
   g_last_popup_for_testing = this;
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_use_round_corners(false);
 
   set_margins(gfx::Insets());

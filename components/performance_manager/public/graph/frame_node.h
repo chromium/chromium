@@ -164,7 +164,7 @@ class FrameNode : public TypedNode<FrameNode> {
   virtual const std::optional<url::Origin>& GetOrigin() const = 0;
 
   // Returns true if this frame is current (is part of a content::FrameTree).
-  // See FrameNodeObserver::OnIsCurrentChanged.
+  // See FrameNodeObserver::OnCurrentFrameChanged.
   virtual bool IsCurrent() const = 0;
 
   // Returns the current priority of the frame, and the reason for the frame
@@ -186,6 +186,9 @@ class FrameNode : public TypedNode<FrameNode> {
   // Returns true if this frame holds at least one IndexedDB lock. An IndexedDB
   // lock is held by an active transaction or an active DB open request.
   virtual bool IsHoldingIndexedDBLock() const = 0;
+
+  // Returns true if this frame currently uses WebRTC.
+  virtual bool UsesWebRTC() const = 0;
 
   // Returns the child workers of this frame. These are either dedicated workers
   // or shared workers created by this frame, or a service worker that handles
@@ -266,8 +269,10 @@ class FrameNodeObserver : public base::CheckedObserver {
 
   // Notifications of property changes.
 
-  // Invoked when the IsCurrent property changes.
-  virtual void OnIsCurrentChanged(const FrameNode* frame_node) = 0;
+  // Invoked when the current frame changes. Both arguments can be nullptr.
+  virtual void OnCurrentFrameChanged(
+      const FrameNode* previous_frame_node,
+      const FrameNode* current_current_frame) = 0;
 
   // Invoked when the NetworkAlmostIdle property changes.
   virtual void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) = 0;
@@ -310,6 +315,9 @@ class FrameNodeObserver : public base::CheckedObserver {
   // both events but changes to e.g. a `<div>` with the `contenteditable`
   // property will only trigger `OnHadUserEditsChanged()`.
   virtual void OnHadUserEditsChanged(const FrameNode* frame_node) = 0;
+
+  // Called when the frame starts or stops using WebRTC.
+  virtual void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) = 0;
 
   // Invoked when the IsAudible property changes.
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) = 0;
@@ -357,7 +365,8 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   // FrameNodeObserver implementation:
   void OnFrameNodeAdded(const FrameNode* frame_node) override {}
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override {}
-  void OnIsCurrentChanged(const FrameNode* frame_node) override {}
+  void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
+                             const FrameNode* current_frame_node) override {}
   void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) override {}
   void OnFrameLifecycleStateChanged(const FrameNode* frame_node) override {}
   void OnURLChanged(const FrameNode* frame_node,
@@ -375,6 +384,7 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnHadUserActivationChanged(const FrameNode* frame_node) override {}
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
   void OnHadUserEditsChanged(const FrameNode* frame_node) override {}
+  void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
   void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override {}
   void OnViewportIntersectionStateChanged(

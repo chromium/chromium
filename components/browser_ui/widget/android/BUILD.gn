@@ -318,6 +318,7 @@ android_library("unit_device_javatests") {
   resources_package = "org.chromium.components.browser_ui.widget.test"
 
   sources = [
+    "java/src/org/chromium/components/browser_ui/widget/CheckBoxWithDescriptionRenderTest.java",
     "java/src/org/chromium/components/browser_ui/widget/CheckBoxWithDescriptionTest.java",
     "java/src/org/chromium/components/browser_ui/widget/DualControlLayoutTest.java",
     "java/src/org/chromium/components/browser_ui/widget/MoreProgressButtonTest.java",
@@ -384,6 +385,7 @@ android_resources("java_test_resources") {
     "test/java/res/drawable/test_ic_vintage_filter.xml",
     "test/java/res/drawable/test_illustration.xml",
     "test/java/res/drawable/test_logo_avatar_anonymous.xml",
+    "test/java/res/layout/checkbox_with_description_render_test.xml",
     "test/java/res/layout/dual_control_test_layout.xml",
     "test/java/res/layout/radio_button_render_test.xml",
     "test/java/res/layout/radio_button_with_description_and_aux_button_test.xml",

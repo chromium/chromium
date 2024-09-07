@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -105,6 +106,9 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
 
   void OnTimeout() { product_specifications_button()->OnTimeout(); }
 
+ protected:
+  base::UserActionTester user_action_tester_;
+
  private:
   base::CallbackListSubscription dependency_manager_subscription_;
   base::test::ScopedFeatureList feature_list_;
@@ -141,6 +145,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, DelaysShow) {
   ASSERT_FALSE(product_specifications_button()
                    ->expansion_animation_for_testing()
                    ->IsShowing());
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.ProactiveChipShown"));
 
   EXPECT_CALL(*controller(), ShouldExecuteEntryPointShow()).Times(1);
   SetLockedExpansionModeForTesting(LockedExpansionMode::kNone);
@@ -148,6 +154,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, DelaysShow) {
   ASSERT_TRUE(product_specifications_button()
                   ->expansion_animation_for_testing()
                   ->IsShowing());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.ProactiveChipShown"));
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
@@ -185,6 +193,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
   EXPECT_TRUE(product_specifications_button()
                   ->expansion_animation_for_testing()
                   ->IsClosing());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.ProactiveChipDismissed"));
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
@@ -205,6 +215,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
   ASSERT_TRUE(product_specifications_button()
                   ->expansion_animation_for_testing()
                   ->IsClosing());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.ProactiveChipIgnored"));
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
@@ -261,6 +273,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, ClickButton) {
   ASSERT_TRUE(product_specifications_button()
                   ->expansion_animation_for_testing()
                   ->IsClosing());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.ProactiveChipClicked"));
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,

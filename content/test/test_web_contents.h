@@ -104,6 +104,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void TestDidReceiveMouseDownEvent() override;
   void TestDidFinishLoad(const GURL& url) override;
   void TestDidFailLoadWithError(const GURL& url, int error_code) override;
+  void TestDidFirstVisuallyNonEmptyPaint() override;
 
   // True if a cross-site navigation is pending.
   bool CrossProcessNavigationPending();
@@ -157,7 +158,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   TestRenderFrameHost* GetSpeculativePrimaryMainFrame();
 
-  int AddPrerender(const GURL& url) override;
+  FrameTreeNodeId AddPrerender(const GURL& url) override;
   TestRenderFrameHost* AddPrerenderAndCommitNavigation(
       const GURL& url) override;
   std::unique_ptr<NavigationSimulator> AddPrerenderAndStartNavigation(

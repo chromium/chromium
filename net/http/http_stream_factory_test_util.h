@@ -91,8 +91,9 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
 
   MOCK_METHOD0(OnQuicBroken, void());
 
-  MOCK_METHOD2(OnSwitchesToHttpStreamPool,
+  MOCK_METHOD3(OnSwitchesToHttpStreamPool,
                void(HttpStreamKey stream_key,
+                    const AlternativeServiceInfo& alternative_service_info,
                     quic::ParsedQuicVersion quic_version));
 };
 

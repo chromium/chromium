@@ -66,4 +66,11 @@ public class MagicStackBridgeTest {
         verify(mNatives).dismissSafeBrowsingModule(mProfile);
         verify(mObserver, times(0)).activeModuleDismissed();
     }
+
+    @Test
+    public void testDismissCompromisedPasswordsModule() {
+        mBridge.dismissCompromisedPasswordsModule();
+        verify(mNatives).dismissCompromisedPasswordsModule(mProfile);
+        verify(mObserver, times(0)).activeModuleDismissed();
+    }
 }

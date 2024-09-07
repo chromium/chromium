@@ -18,6 +18,8 @@ import androidx.core.view.ViewCompat;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -31,10 +33,16 @@ public class CredentialEditFragmentView extends CredentialEntryFragmentViewBase 
     private TextInputLayout mPasswordInputLayout;
     private TextInputEditText mPasswordField;
     private ButtonCompat mDoneButton;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {
-        getActivity().setTitle(R.string.password_entry_viewer_edit_stored_password_action_title);
+        mPageTitle.set(getString(R.string.password_entry_viewer_edit_stored_password_action_title));
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

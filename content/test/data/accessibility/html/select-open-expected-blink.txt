@@ -1,0 +1,13 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect collapsed focusable name='Animal collapsed' value='Eggplant' setSize=3 posInSet=1 haspopup=menu
+++++++++menuListPopup invisible setSize=3 ispopup=auto
+++++++++++menuListOption focusable name='Eggplant' setSize=3 posInSet=1 selected=true
+++++++++++menuListOption focusable invisible name='Broccolini' setSize=3 posInSet=2 selected=false
+++++++++++menuListOption focusable invisible name='Rutabaga' setSize=3 posInSet=3 selected=false
+++++++comboBoxSelect expanded focusable name='Fruit expanded' value='Mango' setSize=3 posInSet=2 haspopup=menu
+++++++++menuListPopup activedescendantId=menuListOption setSize=3 ispopup=auto
+++++++++++menuListOption focusable name='Orange' setSize=3 posInSet=1 selected=false
+++++++++++menuListOption focusable name='Mango' setSize=3 posInSet=2 selected=true
+++++++++++menuListOption focusable name='Star fruit' setSize=3 posInSet=3 selected=false

@@ -253,7 +253,6 @@ export class ToolbarController {
     // Update visibility of the delete and move to trash buttons.
     this.deleteButton_.hidden =
         (selection.totalCount === 0 ||
-         !this.directoryModel_.canDeleteEntries() ||
          selection.hasReadOnlyEntry() ||
          selection.entries.some(
              entry => isNonModifiable(this.volumeManager_, entry)));

@@ -107,22 +107,6 @@ std::string FamilyRoleToString(kidsmanagement::FamilyRole role) {
   }
 }
 
-std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason) {
-  switch (reason) {
-    case FilteringBehaviorReason::DEFAULT:
-      return "Default";
-    case FilteringBehaviorReason::ASYNC_CHECKER:
-      return "AsyncChecker";
-    case FilteringBehaviorReason::MANUAL:
-      return "Manual";
-    case FilteringBehaviorReason::ALLOWLIST:
-      return "Allowlist";
-    case FilteringBehaviorReason::NOT_SIGNED_IN:
-      return "NotSignedIn";
-  }
-  return "Unknown";
-}
-
 GURL NormalizeUrl(const GURL& url) {
   GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid()) {

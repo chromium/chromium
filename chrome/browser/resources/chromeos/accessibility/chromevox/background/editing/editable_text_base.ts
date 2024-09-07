@@ -137,19 +137,6 @@ export class ChromeVoxEditableTextBase {
   }
 
   /**
-   * @param evt The new text changed event to test.
-   * @return True if the event, when compared to the previous text, should
-   *     trigger description.
-   */
-  shouldDescribeChange(evt: TextChangeEvent): boolean {
-    if (evt.value === this.value && evt.start === this.start &&
-        evt.end === this.end) {
-      return false;
-    }
-    return true;
-  }
-
-  /**
    * Speak text, but if it's a single character, describe the character.
    * @param str The string to speak.
    * @param triggeredByUser True if the speech was triggered by a user action.

@@ -28,8 +28,7 @@ namespace {
 MessageHandler* GetMessageHandler(Dispatcher* dispatcher,
                                   PP_Instance instance) {
   if (!dispatcher || !dispatcher->IsPlugin()) {
-    NOTREACHED_IN_MIGRATION();
-    return NULL;
+    NOTREACHED();
   }
   PluginDispatcher* plugin_dispatcher =
       static_cast<PluginDispatcher*>(dispatcher);
@@ -42,8 +41,7 @@ MessageHandler* GetMessageHandler(Dispatcher* dispatcher,
 
 void ResetMessageHandler(Dispatcher* dispatcher, PP_Instance instance) {
   if (!dispatcher || !dispatcher->IsPlugin()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   PluginDispatcher* plugin_dispatcher =
       static_cast<PluginDispatcher*>(dispatcher);

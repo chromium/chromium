@@ -6,9 +6,9 @@
 #define SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_
 
 #include "base/memory/weak_ptr.h"
-#include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_tensor_impl.h"
 
 namespace webnn::coreml {
 
@@ -42,7 +42,7 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
       CreateGraphImplCallback callback) override;
 
   void CreateBufferImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::BufferInfoPtr buffer_info,
       CreateBufferImplCallback callback) override;
 

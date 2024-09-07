@@ -142,7 +142,7 @@ class MahiWebContentsManager {
                      content::WebContents* web_contents,
                      const base::Time& start_time,
                      GetContentCallback callback,
-                     const ui::AXTreeUpdate& snapshot);
+                     ui::AXTreeUpdate& snapshot);
 
   void OnFinishDistillableCheck(const base::UnguessableToken& page_id,
                                 bool is_distillable);

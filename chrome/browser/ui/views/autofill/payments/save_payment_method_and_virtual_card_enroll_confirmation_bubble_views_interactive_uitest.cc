@@ -8,9 +8,9 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
-#include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -20,6 +20,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/widget_test.h"
@@ -123,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                 .GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(BubbleView()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
   EXPECT_TRUE(IconView()->GetVisible());
 
   HideBubble(views::Widget::ClosedReason::kLostFocus);
@@ -162,9 +164,10 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                 .GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_OK);
+  EXPECT_EQ(BubbleView()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kOk));
   EXPECT_EQ(
-      BubbleView()->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
+      BubbleView()->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
   EXPECT_EQ(
@@ -226,7 +229,11 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
   }
 
   void ShowBubble(bool is_vcn_enrolled) {
-    GetController()->ShowConfirmationBubbleView(is_vcn_enrolled);
+    GetController()->ShowConfirmationBubbleView(
+        is_vcn_enrolled
+            ? payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess
+            : payments::PaymentsAutofillClient::PaymentsRpcResult::
+                  kPermanentFailure);
   }
 
  private:
@@ -272,7 +279,8 @@ IN_PROC_BROWSER_TEST_F(
           .GetCachedName(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(BubbleView()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
   EXPECT_TRUE(IconView()->GetVisible());
 
   GetController()->HideIconAndBubble();
@@ -324,9 +332,10 @@ IN_PROC_BROWSER_TEST_F(
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_DESCRIPTION_TEXT,
           card.NetworkAndLastFourDigits()));
-  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_OK);
+  EXPECT_EQ(BubbleView()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kOk));
   EXPECT_EQ(
-      BubbleView()->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
+      BubbleView()->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
   EXPECT_EQ(

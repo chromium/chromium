@@ -22,6 +22,7 @@
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(IS_ANDROID)
@@ -184,8 +185,8 @@ TEST_F(CastAudioManagerTest, CanMakeStream) {
 TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   const ::media::AudioParameters kAC3AudioParams(
       ::media::AudioParameters::AUDIO_BITSTREAM_AC3,
-      ::media::CHANNEL_LAYOUT_5_1, ::media::AudioParameters::kAudioCDSampleRate,
-      256);
+      ::media::ChannelLayoutConfig::FromLayout<::media::CHANNEL_LAYOUT_5_1>(),
+      ::media::AudioParameters::kAudioCDSampleRate, 256);
   ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
       kAC3AudioParams, "", ::media::AudioManager::LogCallback());
   EXPECT_TRUE(stream);
@@ -207,8 +208,8 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
 TEST_F(CastAudioManagerTest, CanMakeDTSStream) {
   const ::media::AudioParameters kDTSAudioParams(
       ::media::AudioParameters::AUDIO_BITSTREAM_DTS,
-      ::media::CHANNEL_LAYOUT_5_1, ::media::AudioParameters::kAudioCDSampleRate,
-      256);
+      ::media::ChannelLayoutConfig::FromLayout<::media::CHANNEL_LAYOUT_5_1>,
+      ::media::AudioParameters::kAudioCDSampleRate, 256);
   ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
       kDTSAudioParams, "", ::media::AudioManager::LogCallback());
   EXPECT_TRUE(stream);

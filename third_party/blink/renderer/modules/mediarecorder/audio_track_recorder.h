@@ -63,6 +63,10 @@ class MODULES_EXPORT AudioTrackRecorder
         std::optional<media::AudioEncoder::CodecDescription> codec_description,
         base::TimeTicks capture_time) = 0;
 
+    // Called when an error occurs during encoding. Once it is called, there
+    // is no more calling of `OnEncodedAudio()`.
+    virtual void OnAudioEncodingError(media::EncoderStatus error_status) = 0;
+
     // Called when a track's ready state changes.
     virtual void OnSourceReadyStateChanged() = 0;
   };
@@ -72,6 +76,8 @@ class MODULES_EXPORT AudioTrackRecorder
       std::string encoded_data,
       std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks capture_time)>;
+
+  using OnEncodedAudioErrorCB = media::EncoderStatus::Callback;
 
   static CodecId GetPreferredCodecId(MediaTrackContainerType container_type);
 
@@ -110,6 +116,7 @@ class MODULES_EXPORT AudioTrackRecorder
       CodecId codec,
       scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
       OnEncodedAudioCB on_encoded_audio_cb,
+      OnEncodedAudioErrorCB on_encoded_audio_error_cb,
       uint32_t bits_per_second,
       BitrateMode bitrate_mode);
 

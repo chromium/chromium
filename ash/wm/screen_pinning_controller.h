@@ -41,6 +41,13 @@ class ASH_EXPORT ScreenPinningController
 
   ~ScreenPinningController() override;
 
+  // Set the `allow_window_stacking_with_pinned_window_` to allow window to
+  // stack on top of pinned window. This is only used for OnTask locked session
+  // where we still want to surface some popups on top of the pinned window.
+  void SetAllowWindowStackingWithPinnedWindow(bool val) {
+    allow_window_stacking_with_pinned_window_ = val;
+  }
+
   // Sets a pinned window. It is not allowed to call this when there already
   // is a pinned window.
   void SetPinnedWindow(aura::Window* pinned_window);
@@ -113,6 +120,11 @@ class ASH_EXPORT ScreenPinningController
 
   // Set true only when restacking done by this controller.
   bool in_restacking_ = false;
+
+  // Set true to allow windows to stack on top of the pinned window. This is
+  // only used for OnTask locked session where we still want to surface some
+  // popups on top of the pinned window.
+  bool allow_window_stacking_with_pinned_window_ = false;
 
   // Window observers to translate events for the window to this controller.
   std::unique_ptr<PinnedContainerWindowObserver>

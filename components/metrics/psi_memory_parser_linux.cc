@@ -139,19 +139,6 @@ ParsePSIMemStatus PSIMemoryParser::ParseMetrics(std::string_view content,
   return ParsePSIMemStatus::kSuccess;
 }
 
-ParsePSIMemStatus PSIMemoryParser::ParseMetrics(const uint8_t* content,
-                                                uint32_t len,
-                                                int* metric_some,
-                                                int* metric_full) {
-  // The cast below is admittedly sneaky, but inherently safe because
-  // we are translating a const pointer into another const pointer,
-  // and the data sizes of the pointed object are the same.
-  const char* string_content = reinterpret_cast<const char*>(content);
-
-  return ParseMetrics(std::string_view(string_content, len), metric_some,
-                      metric_full);
-}
-
 namespace internal {
 
 bool FindMiddleString(std::string_view content,

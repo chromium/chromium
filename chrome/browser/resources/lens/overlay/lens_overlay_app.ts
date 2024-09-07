@@ -15,8 +15,6 @@ import {assert} from '//resources/js/assert.js';
 import {skColorToHexColor} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
-import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -58,8 +56,10 @@ export class LensOverlayAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      screenshotDataUri: String,
-      isImageRendered: Boolean,
+      isImageRendered: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       initialFlashAnimationHasEnded: {
         type: Boolean,
         reflectToAttribute: true,
@@ -88,8 +88,6 @@ export class LensOverlayAppElement extends PolymerElement {
     };
   }
 
-  // The data URI of the screenshot passed from C++.
-  private screenshotDataUri: string = '';
   // Whether the image has finished rendering.
   private isImageRendered: boolean = false;
   // Whether the initial flash animation has ended on the selection overlay.
@@ -109,6 +107,10 @@ export class LensOverlayAppElement extends PolymerElement {
   private listenerIds: number[];
   private invocationTime: number = loadTimeData.getValue('invocationTime');
 
+  // The ID returned by requestAnimationFrame for the updateCursorPosition
+  // function.
+  private updateCursorPositionRequestId?: number;
+
   constructor() {
     super();
 
@@ -123,8 +125,6 @@ export class LensOverlayAppElement extends PolymerElement {
 
     const callbackRouter = this.browserProxy.callbackRouter;
     this.listenerIds = [
-      callbackRouter.screenshotDataReceived.addListener(
-          this.screenshotDataReceived.bind(this)),
       callbackRouter.themeReceived.addListener(this.themeReceived.bind(this)),
       callbackRouter.notifyResultsPanelOpened.addListener(
           this.onNotifyResultsPanelOpened.bind(this)),
@@ -239,56 +239,6 @@ export class LensOverlayAppElement extends PolymerElement {
     this.theme = theme;
   }
 
-  private async screenshotDataReceived(screenshotData:
-                                           BitmapMappedFromTrustedProcess) {
-    const data: BigBuffer = screenshotData.pixelData;
-
-    // TODO(b/334185985): This occurs when the browser failed to allocate the
-    // memory for the pixels. Handle this case.
-    if (data.invalidBuffer) {
-      return;
-    }
-
-    // Pull the pixel data into a Uint8ClampedArray.
-    let pixelData: Uint8ClampedArray;
-    if (Array.isArray(data.bytes)) {
-      pixelData = new Uint8ClampedArray(data.bytes);
-    } else {
-      // If the buffer is not invalid or an array, it must be shared memory.
-      assert(data.sharedMemory);
-      const sharedMemory = data.sharedMemory;
-      const {buffer, result} =
-          sharedMemory.bufferHandle.mapBuffer(0, sharedMemory.size);
-      assert(result === Mojo.RESULT_OK);
-      pixelData = new Uint8ClampedArray(buffer);
-    }
-
-    const imageWidth = screenshotData.imageInfo.width;
-    const imageHeight = screenshotData.imageInfo.height;
-
-    // Put our screenshot into ImageData object so it can be rendered in a
-    // Canvas.
-    const imageData = new ImageData(pixelData, imageWidth, imageHeight);
-    const imageBitmap = await createImageBitmap(imageData);
-
-    // Create a canvas that we can use to render the screenshot.
-    const canvas = document.createElement('canvas');
-    canvas.width = imageWidth;
-    canvas.height = imageHeight;
-    const ctx = canvas.getContext('bitmaprenderer')!;
-
-    // Put the screenshot in the ctx to render.
-    ctx.transferFromImageBitmap(imageBitmap);
-
-    // Generate a blob that we can use across the app.
-    // TODO(b/352622136): Blob generation is slow. We should render directly in
-    // a JS canvas before converting to blob.
-    canvas.toBlob((blob) => {
-      assert(blob);
-      this.screenshotDataUri = URL.createObjectURL(blob!);
-    }, 'image/jpeg', 90);
-  }
-
   private handleSelectionOverlayClicked() {
     this.$.cursorTooltip.setPauseTooltipChanges(true);
   }
@@ -324,17 +274,25 @@ export class LensOverlayAppElement extends PolymerElement {
     this.$.copyToast.hide();
   }
 
-  private getSelectionOverlayClass(screenshotDataUri: string): string {
-    if (!screenshotDataUri || !screenshotDataUri.length) {
-      return 'hidden';
-    } else {
-      return '';
-    }
-  }
+
 
   private updateCursorPosition(event: PointerEvent) {
-    this.$.cursorTooltip.style.transform =
-        `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+    // Cancel the previous animation frame to prevent the code from running more
+    // than once a frame.
+    if (this.updateCursorPositionRequestId) {
+      cancelAnimationFrame(this.updateCursorPositionRequestId);
+    }
+
+    // Exit early if the tooltip is not visible.
+    if (!this.$.cursorTooltip.isTooltipVisible()) {
+      return;
+    }
+
+    this.updateCursorPositionRequestId = requestAnimationFrame(() => {
+      this.$.cursorTooltip.style.transform =
+          `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      this.updateCursorPositionRequestId = undefined;
+    });
   }
 
   private skColorToHex_(skColor: SkColor): string {

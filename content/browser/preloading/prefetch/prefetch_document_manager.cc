@@ -137,36 +137,34 @@ void PrefetchDocumentManager::ProcessCandidates(
   // candidate for it. Note: A matching candidate is not necessarily the
   // candidate that originally triggered the prefetch, but is any prefetch
   // candidate that has the same URL.
-  if (PrefetchNewLimitsEnabled()) {
-    std::vector<GURL> urls_from_candidates;
-    urls_from_candidates.reserve(candidates.size());
-    for (const auto& candidate_ptr : candidates) {
-      if (candidate_ptr->action == blink::mojom::SpeculationAction::kPrefetch) {
-        urls_from_candidates.push_back(candidate_ptr->url);
-      }
+  std::vector<GURL> urls_from_candidates;
+  urls_from_candidates.reserve(candidates.size());
+  for (const auto& candidate_ptr : candidates) {
+    if (candidate_ptr->action == blink::mojom::SpeculationAction::kPrefetch) {
+      urls_from_candidates.push_back(candidate_ptr->url);
     }
-    base::flat_set<GURL> url_set(std::move(urls_from_candidates));
-    std::vector<base::WeakPtr<PrefetchContainer>> prefetches_to_evict;
-    for (const auto& [url, prefetch] : all_prefetches_) {
-      if (prefetch && !base::Contains(url_set, url)) {
-        prefetches_to_evict.push_back(prefetch);
-      }
+  }
+  base::flat_set<GURL> url_set(std::move(urls_from_candidates));
+  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_to_evict;
+  for (const auto& [url, prefetch] : all_prefetches_) {
+    if (prefetch && !base::Contains(url_set, url)) {
+      prefetches_to_evict.push_back(prefetch);
     }
-    for (const auto& prefetch : prefetches_to_evict) {
-      all_prefetches_.erase(prefetch->GetURL());
-      switch (prefetch->GetLoadState()) {
-        case PrefetchContainer::LoadState::kNotStarted:
-        case PrefetchContainer::LoadState::kEligible:
-        case PrefetchContainer::LoadState::kFailedIneligible:
-        case PrefetchContainer::LoadState::kFailedHeldback:
-          break;
-        case PrefetchContainer::LoadState::kStarted:
-          prefetch->SetPrefetchStatus(
-              PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);
-          break;
-      }
-      GetPrefetchService()->ResetPrefetch(prefetch);
+  }
+  for (const auto& prefetch : prefetches_to_evict) {
+    all_prefetches_.erase(prefetch->GetURL());
+    switch (prefetch->GetLoadState()) {
+      case PrefetchContainer::LoadState::kNotStarted:
+      case PrefetchContainer::LoadState::kEligible:
+      case PrefetchContainer::LoadState::kFailedIneligible:
+      case PrefetchContainer::LoadState::kFailedHeldback:
+        break;
+      case PrefetchContainer::LoadState::kStarted:
+        prefetch->SetPrefetchStatus(
+            PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);
+        break;
     }
+    GetPrefetchService()->ResetPrefetch(prefetch);
   }
 
   auto should_process_entry =
@@ -224,7 +222,7 @@ void PrefetchDocumentManager::PrefetchAheadOfPrerender(
   PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
               /*planned_max_preloading_type=*/PreloadingType::kPrerender,
               referrer, no_vary_search_expected,
-              // TODO(https://crbug.com/342537094): Emit CDP events for prefetch
+              // TODO(crbug.com/342537094): Emit CDP events for prefetch
               // ahead of prerender.
               /*devtools_observer=*/nullptr);
 }
@@ -343,7 +341,6 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
-    case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
     case PrefetchStatus::
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
     case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
@@ -395,19 +392,14 @@ PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
           Visibility::VISIBLE) {
     return std::make_tuple(false, nullptr);
   }
-  if (!PrefetchNewLimitsEnabled()) {
-    return std::make_tuple(true, nullptr);
-  }
-  DCHECK(PrefetchNewLimitsEnabled());
   if (prefetch->GetPrefetchType().GetEagerness() ==
       blink::mojom::SpeculationEagerness::kEager) {
-    return std::make_tuple(
-        completed_eager_prefetches_.size() <
-            MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits(),
-        nullptr);
+    return std::make_tuple(completed_eager_prefetches_.size() <
+                               MaxNumberOfEagerPrefetchesPerPage(),
+                           nullptr);
   } else {
     if (completed_non_eager_prefetches_.size() <
-        MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits()) {
+        MaxNumberOfNonEagerPrefetchesPerPage()) {
       return std::make_tuple(true, nullptr);
     }
     // We are at capacity, and now need to evict the oldest non-eager prefetch
@@ -430,18 +422,16 @@ void PrefetchDocumentManager::SetPrefetchDestructionCallback(
 void PrefetchDocumentManager::PrefetchWillBeDestroyed(
     PrefetchContainer* prefetch) {
   prefetch_destruction_callback_.Run(prefetch->GetURL());
-  if (PrefetchNewLimitsEnabled()) {
-    std::vector<base::WeakPtr<PrefetchContainer>>& completed_prefetches =
-        prefetch->GetPrefetchType().GetEagerness() ==
-                blink::mojom::SpeculationEagerness::kEager
-            ? completed_eager_prefetches_
-            : completed_non_eager_prefetches_;
-    auto it = base::ranges::find(
-        completed_prefetches, prefetch->GetPrefetchContainerKey(),
-        [&](const auto& p) { return p->GetPrefetchContainerKey(); });
-    if (it != completed_prefetches.end()) {
-      completed_prefetches.erase(it);
-    }
+
+  std::vector<base::WeakPtr<PrefetchContainer>>& completed_prefetches =
+      prefetch->GetPrefetchType().GetEagerness() ==
+              blink::mojom::SpeculationEagerness::kEager
+          ? completed_eager_prefetches_
+          : completed_non_eager_prefetches_;
+  auto it = base::ranges::find(completed_prefetches, prefetch->key(),
+                               [&](const auto& p) { return p->key(); });
+  if (it != completed_prefetches.end()) {
+    completed_prefetches.erase(it);
   }
 }
 

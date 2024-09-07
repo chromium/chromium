@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CAPABILITY_AVAILABILITY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CAPABILITY_AVAILABILITY_H_
 
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 
 namespace blink {
 
@@ -24,6 +27,11 @@ enum class AICapabilityAvailability {
 
 V8AICapabilityAvailability AICapabilityAvailabilityToV8(
     AICapabilityAvailability availability);
+
+AICapabilityAvailability HandleModelAvailabilityCheckResult(
+    ExecutionContext* execution_context,
+    AIMetrics::AISessionType session_type,
+    mojom::blink::ModelAvailabilityCheckResult result);
 
 }  // namespace blink
 

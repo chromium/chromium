@@ -63,6 +63,9 @@ constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
 // Query parameter for the request id.
 inline constexpr char kRequestIdParameterKey[] = "vsrid";
 
+// Query parameter for the visual input type.
+inline constexpr char kVisualInputTypeParameterKey[] = "vit";
+
 // The encoded search context for the test page and title.
 constexpr char kTestEncodedSearchContext[] =
     "ChdodHRwczovL3d3dy5nb29nbGUuY29tLxIKUGFnZSBUaXRsZQ";
@@ -266,34 +269,30 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), 0);
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*pdf_bytes=*/{}, 0);
 
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
   ASSERT_TRUE(full_image_response_future.IsReady());
-  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
-                .request_id()
-                .sequence_id(),
+
+  // Check initial fetch objects request is correct.
+  auto sent_object_request = query_controller.sent_objects_request_;
+  ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .width(),
-            100);
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .height(),
-            100);
-  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
+  ASSERT_EQ(sent_object_request.request_context()
                 .client_context()
                 .locale_context()
                 .language(),
             kLocale);
-  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
+  ASSERT_EQ(sent_object_request.request_context()
                 .client_context()
                 .locale_context()
                 .region(),
             kRegion);
-  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
+  ASSERT_EQ(sent_object_request.request_context()
                 .client_context()
                 .locale_context()
                 .time_zone(),
@@ -332,7 +331,8 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), 0);
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*pdf_bytes=*/{}, 0);
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -345,64 +345,51 @@ TEST_F(LensOverlayQueryControllerTest,
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
-  std::string actual_start_time;
+  std::string unused_start_time;
   bool has_start_time =
       net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &actual_start_time);
+                                 kStartTimeQueryParam, &unused_start_time);
 
   ASSERT_TRUE(full_image_response_future.IsReady());
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .width(),
-            100);
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .height(),
-            100);
+
+  // Check the initial fetch objects request.
+  auto sent_object_request = query_controller.sent_objects_request_;
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::REGION_SEARCH);
   ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
             kTestSuggestSignals);
-  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
-                .request_id()
-                .sequence_id(),
+  ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
-  ASSERT_EQ(query_controller.sent_interaction_request_.request_context()
-                .request_id()
-                .sequence_id(),
-            2);
+
+  // Verify the interaction request.
+  auto sent_interaction_request = query_controller.sent_interaction_request_;
   ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .type(),
-      lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
-  ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .selection_metadata()
-          .region()
-          .region()
-          .center_x(),
-      30);
-  ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .selection_metadata()
-          .region()
-          .region()
-          .center_y(),
-      40);
-  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
-                .zoomed_crop()
-                .crop()
+      sent_interaction_request.request_context().request_id().sequence_id(), 2);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
+            lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .selection_metadata()
+                .region()
+                .region()
                 .center_x(),
             30);
-  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
-                .zoomed_crop()
-                .crop()
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .selection_metadata()
+                .region()
+                .region()
                 .center_y(),
             40);
-  ASSERT_FALSE(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .has_query_metadata());
+  ASSERT_EQ(
+      sent_interaction_request.image_crop().zoomed_crop().crop().center_x(),
+      30);
+  ASSERT_EQ(
+      sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
+      40);
+  ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
+                   .has_query_metadata());
   ASSERT_TRUE(has_start_time);
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
@@ -437,7 +424,8 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.StartQueryFlow(
       viewport_bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), 0);
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*pdf_bytes=*/{}, 0);
   task_environment_.RunUntilIdle();
 
   SkBitmap region_bitmap = CreateNonEmptyBitmap(100, 100);
@@ -452,78 +440,59 @@ TEST_F(LensOverlayQueryControllerTest,
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
-  std::string actual_start_time;
+  std::string unused_start_time;
   bool has_start_time =
       net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &actual_start_time);
+                                 kStartTimeQueryParam, &unused_start_time);
 
   ASSERT_TRUE(full_image_response_future.IsReady());
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .width(),
-            1000);
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .height(),
-            1000);
+
+  // Check initial fetch objects request is correct.
+  auto sent_object_request = query_controller.sent_objects_request_;
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 1000);
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 1000);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::REGION_SEARCH);
   ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
             kTestSuggestSignals);
-  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
-                .request_id()
-                .sequence_id(),
+  ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
-  ASSERT_EQ(query_controller.sent_interaction_request_.request_context()
-                .request_id()
-                .sequence_id(),
-            2);
+
+  // Verify the interaction request.
+  auto sent_interaction_request = query_controller.sent_interaction_request_;
   ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .type(),
-      lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
-  ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .selection_metadata()
-          .region()
-          .region()
-          .center_x(),
-      50);
-  ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .selection_metadata()
-          .region()
-          .region()
-          .center_y(),
-      50);
-  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
-                .zoomed_crop()
-                .crop()
+      sent_interaction_request.request_context().request_id().sequence_id(), 2);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
+            lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .selection_metadata()
+                .region()
+                .region()
                 .center_x(),
             50);
-  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
-                .zoomed_crop()
-                .crop()
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .selection_metadata()
+                .region()
+                .region()
                 .center_y(),
             50);
-  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
-                .zoomed_crop()
-                .crop()
-                .center_y(),
-            50);
-  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
-                .zoomed_crop()
-                .crop()
-                .center_y(),
-            50);
+  ASSERT_EQ(
+      sent_interaction_request.image_crop().zoomed_crop().crop().center_x(),
+      50);
+  ASSERT_EQ(
+      sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
+      50);
+  ASSERT_EQ(
+      sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
+      50);
+  ASSERT_EQ(
+      sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
+      50);
   ASSERT_EQ(GetExpectedJpegBytesForBitmap(region_bitmap),
-            query_controller.sent_interaction_request_.image_crop()
-                .image()
-                .image_content());
-  ASSERT_FALSE(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .has_query_metadata());
+            sent_interaction_request.image_crop().image().image_content());
+  ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
+                   .has_query_metadata());
   ASSERT_TRUE(has_start_time);
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
@@ -558,7 +527,8 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), 0);
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*pdf_bytes=*/{}, 0);
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -571,67 +541,54 @@ TEST_F(LensOverlayQueryControllerTest,
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
-  std::string actual_start_time;
+  std::string unused_start_time;
   bool has_start_time =
       net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &actual_start_time);
+                                 kStartTimeQueryParam, &unused_start_time);
 
   ASSERT_TRUE(full_image_response_future.IsReady());
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .width(),
-            100);
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .height(),
-            100);
+
+  // Check initial fetch objects request is correct.
+  auto sent_object_request = query_controller.sent_objects_request_;
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::MULTIMODAL_SEARCH);
   ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
             kTestSuggestSignals);
-  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
-                .request_id()
-                .sequence_id(),
+  ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
-  ASSERT_EQ(query_controller.sent_interaction_request_.request_context()
-                .request_id()
-                .sequence_id(),
-            2);
+
+  // Verify the interaction request.
+  auto sent_interaction_request = query_controller.sent_interaction_request_;
   ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .type(),
-      lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
-  ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .selection_metadata()
-          .region()
-          .region()
-          .center_x(),
-      30);
-  ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .selection_metadata()
-          .region()
-          .region()
-          .center_y(),
-      40);
-  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
-                .zoomed_crop()
-                .crop()
+      sent_interaction_request.request_context().request_id().sequence_id(), 2);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
+            lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .selection_metadata()
+                .region()
+                .region()
                 .center_x(),
             30);
-  ASSERT_EQ(query_controller.sent_interaction_request_.image_crop()
-                .zoomed_crop()
-                .crop()
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .selection_metadata()
+                .region()
+                .region()
                 .center_y(),
             40);
   ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .query_metadata()
-          .text_query()
-          .query(),
-      kTestQueryText);
+      sent_interaction_request.image_crop().zoomed_crop().crop().center_x(),
+      30);
+  ASSERT_EQ(
+      sent_interaction_request.image_crop().zoomed_crop().crop().center_y(),
+      40);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .query_metadata()
+                .text_query()
+                .query(),
+            kTestQueryText);
   ASSERT_TRUE(has_start_time);
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
@@ -665,7 +622,8 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), 0);
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*pdf_bytes=*/{}, 0);
   task_environment_.RunUntilIdle();
 
   query_controller.SendTextOnlyQuery("", TextOnlyQueryType::kLensTextSelection,
@@ -678,10 +636,10 @@ TEST_F(LensOverlayQueryControllerTest,
                              kSearchContextParamKey,
                              &actual_encoded_search_context);
 
-  std::string actual_start_time;
+  std::string unused_start_time;
   bool has_start_time =
       net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &actual_start_time);
+                                 kStartTimeQueryParam, &unused_start_time);
 
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_TRUE(url_response_future.IsReady());
@@ -691,6 +649,86 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(actual_encoded_search_context, kTestEncodedSearchContext);
   ASSERT_TRUE(has_start_time);
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 0);
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       FetchTextOnlyInteractionWithPdf_ReturnsResponse) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+      interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      profile()->GetVariationsClient(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false);
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
+  query_controller.fake_interaction_response_.set_encoded_response(
+      kTestSuggestSignals);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  std::vector<uint8_t> fake_pdf_bytes({1, 2, 3, 4});
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_pdf_bytes, 0);
+  task_environment_.RunUntilIdle();
+  query_controller.SendTextOnlyQuery(kTestQueryText,
+                                     TextOnlyQueryType::kLensTextSelection,
+                                     additional_search_query_params);
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+
+  ASSERT_TRUE(full_image_response_future.IsReady());
+
+  // Check initial fetch objects request is correct.
+  auto sent_object_request = query_controller.sent_objects_request_;
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
+  ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
+  ASSERT_FALSE(sent_object_request.payload().content_data().empty());
+  ASSERT_EQ(sent_object_request.payload().content_type(), "application/pdf");
+
+  // Check interaction request is correct.
+  auto sent_interaction_request = query_controller.sent_interaction_request_;
+  ASSERT_TRUE(interaction_data_response_future.IsReady());
+  ASSERT_EQ(
+      sent_interaction_request.request_context().request_id().sequence_id(), 2);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
+            lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .query_metadata()
+                .text_query()
+                .query(),
+            kTestQueryText);
+  ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
+                   .has_selection_metadata());
+
+  // Check search URL is correct.
+  ASSERT_TRUE(url_response_future.IsReady());
+  std::string unused_start_time;
+  bool has_start_time =
+      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
+                                 kStartTimeQueryParam, &unused_start_time);
+  std::string visual_input_type;
+  bool has_visual_input_type = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
+      &visual_input_type);
+  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+            lens::UNKNOWN_SELECTION_TYPE);
+  ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_visual_input_type);
+  ASSERT_EQ(visual_input_type, "video");
+  ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
+  ASSERT_TRUE(url_response_future.Get().has_url());
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -726,7 +764,8 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), 0);
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*pdf_bytes=*/{}, 0);
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -783,7 +822,8 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), 0);
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*pdf_bytes=*/{}, 0);
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());

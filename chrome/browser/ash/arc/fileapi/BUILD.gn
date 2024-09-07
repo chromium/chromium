@@ -67,10 +67,15 @@ static_library("fileapi") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/virtual_file_provider",
     "//content/public/browser",
     "//extensions/browser/api/file_handlers",
@@ -85,7 +90,10 @@ static_library("fileapi") {
     "//chrome/browser/apps/app_preload_service/proto",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/fileapi" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+  ]
 }
 
 source_set("unit_tests") {
@@ -116,7 +124,12 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/file_system_provider:test_support",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os/public",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/dbus/virtual_file_provider",
     "//components/keyed_service/core",
     "//content/test:test_support",

@@ -37,10 +37,8 @@ static_library("app_service") {
     "//chrome/browser/apps/app_service/app_icon:util",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/plugin_vm",
@@ -60,10 +58,7 @@ static_library("app_service") {
     "//ui/views",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/app_list",
-    "//chrome/browser/ash/app_list/search",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list" ]
 }
 
 source_set("unit_tests") {
@@ -83,11 +78,12 @@ source_set("unit_tests") {
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/internal_app",
     "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/borealis/testing:test_support",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/guest_os",

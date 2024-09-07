@@ -5,11 +5,66 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TEST_PROFILE_MANAGER_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TEST_PROFILE_MANAGER_IOS_H_
 
-// This is a forwarding header to ease the name transition of ChromeBrowserState
-// and related classes to ProfileIOS. This header will become the header for
-// TestProfileManagerIOS when TestChromeBrowserStateManager is renamed. Until
-// then it just forward-includes that class's header.
+#include <map>
+#include <memory>
 
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#include "base/observer_list.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+
+// ProfileManagerIOS implementation for tests.
+//
+// Register itself with the TestApplicationContext on creation. Requires
+// the ApplicationContext's local State to be created before this object.
+class TestProfileManagerIOS : public ProfileManagerIOS {
+ public:
+  TestProfileManagerIOS();
+
+  TestProfileManagerIOS(const TestProfileManagerIOS&) = delete;
+  TestProfileManagerIOS& operator=(const TestProfileManagerIOS&) = delete;
+
+  ~TestProfileManagerIOS() override;
+
+  // ProfileManagerIOS:
+  void AddObserver(ProfileManagerObserverIOS* observer) override;
+  void RemoveObserver(ProfileManagerObserverIOS* observer) override;
+  void LoadProfiles() override;
+  ProfileIOS* GetLastUsedProfileDeprecatedDoNotUse() override;
+  ProfileIOS* GetProfileWithName(std::string_view name) override;
+  std::vector<ProfileIOS*> GetLoadedProfiles() override;
+  bool LoadProfileAsync(std::string_view name,
+                        ProfileLoadedCallback initialized_callback,
+                        ProfileLoadedCallback created_callback) override;
+  bool CreateProfileAsync(std::string_view name,
+                          ProfileLoadedCallback initialized_callback,
+                          ProfileLoadedCallback created_callback) override;
+  ProfileIOS* LoadProfile(std::string_view name) override;
+  ProfileIOS* CreateProfile(std::string_view name) override;
+  ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
+
+  // Builds and adds a TestProfileIOS using `builder`. Asserts that no Profile
+  // share the same name. Returns a pointer to the new object.
+  TestProfileIOS* AddProfileWithBuilder(TestProfileIOS::Builder builder);
+
+ private:
+  // The ProfileAttributesStorageIOS owned by this instance.
+  ProfileAttributesStorageIOS profile_attributes_storage_;
+
+  // The path in which the Profiles' data are stored.
+  const base::FilePath profile_data_dir_;
+
+  // The name of the last used Profile (i.e. the first registered).
+  std::string last_used_profile_name_;
+
+  // Mapping of name to TestProfileIOS instances.
+  std::map<std::string, std::unique_ptr<TestProfileIOS>, std::less<>>
+      profiles_map_;
+
+  // The list of registered observers.
+  base::ObserverList<ProfileManagerObserverIOS, true> observers_;
+};
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TEST_PROFILE_MANAGER_IOS_H_

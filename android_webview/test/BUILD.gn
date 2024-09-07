@@ -571,7 +571,6 @@ test("android_webview_unittests") {
     "//android_webview/browser/metrics",
     "//android_webview/common",
     "//android_webview/nonembedded",
-    "//base/test:proto_test_support",
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/component_updater",
@@ -582,6 +581,7 @@ test("android_webview_unittests") {
     "//components/flags_ui:flags_ui",
     "//components/ip_protection:browser",
     "//components/ip_protection:ip_protection",
+    "//components/ip_protection:unit_tests",
     "//components/metrics",
     "//components/metrics:component_metrics",
     "//components/metrics:content",
@@ -610,16 +610,10 @@ test("android_webview_unittests") {
     "//ui/gl:test_support",
   ]
 
-  data_deps = [
-    "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
-  ]
-
-  data = [
-    "data/",
-    "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
-  ]
+  data = [ "data/" ]
 
   sources = [
+    "../browser/aw_app_defined_websites_unittest.cc",
     "../browser/aw_browser_context_unittest.cc",
     "../browser/aw_client_hints_controller_delegate_unittest.cc",
     "../browser/aw_contents_client_bridge_unittest.cc",
@@ -627,7 +621,6 @@ test("android_webview_unittests") {
     "../browser/aw_feature_entries_unittest.cc",
     "../browser/aw_field_trials_unittest.cc",
     "../browser/aw_form_database_service_unittest.cc",
-    "../browser/aw_ip_protection_config_provider_unittest.cc",
     "../browser/aw_media_url_interceptor_unittest.cc",
     "../browser/aw_pac_processor_unittest.cc",
     "../browser/aw_permission_manager_unittest.cc",
@@ -640,6 +633,7 @@ test("android_webview_unittests") {
     "../browser/gfx/test/invalidate_test.cc",
     "../browser/gfx/test/rendering_test.cc",
     "../browser/gfx/test/rendering_test.h",
+    "../browser/ip_protection/aw_ip_protection_core_host_unittest.cc",
     "../browser/lifecycle/aw_contents_lifecycle_notifier_unittest.cc",
     "../browser/metrics/android_metrics_provider_unittest.cc",
     "../browser/metrics/aw_component_metrics_provider_delegate_unittests.cc",
@@ -656,7 +650,6 @@ test("android_webview_unittests") {
     "../browser/state_serializer_unittest.cc",
     "../browser/tracing/aw_background_tracing_metrics_provider_unittest.cc",
     "../browser/tracing/aw_tracing_delegate_unittest.cc",
-    "../browser/tracing/background_tracing_field_trial_unittest.cc",
     "../lib/webview_tests.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_shim_unittest.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_unittest.cc",

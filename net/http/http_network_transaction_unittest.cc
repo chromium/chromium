@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -37,6 +38,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -89,6 +91,8 @@
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_test_util.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -756,6 +760,30 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
  private:
   ClientSocketPool::GroupId last_group_id_;
   bool socket_requested_ = false;
+};
+
+class CaptureKeyHttpStreamPoolDelegate : public HttpStreamPool::TestDelegate {
+ public:
+  CaptureKeyHttpStreamPoolDelegate() = default;
+
+  CaptureKeyHttpStreamPoolDelegate(const CaptureKeyHttpStreamPoolDelegate&) =
+      delete;
+  CaptureKeyHttpStreamPoolDelegate& operator=(
+      const CaptureKeyHttpStreamPoolDelegate&) = delete;
+
+  ~CaptureKeyHttpStreamPoolDelegate() override = default;
+
+  void OnRequestStream(const HttpStreamKey& key) override { last_key_ = key; }
+
+  std::optional<int> OnPreconnect(const HttpStreamKey& stream_key,
+                                  size_t num_streams) override {
+    return std::nullopt;
+  }
+
+  const HttpStreamKey& last_key() const { return last_key_; }
+
+ private:
+  HttpStreamKey last_key_;
 };
 
 //-----------------------------------------------------------------------------
@@ -1648,8 +1676,8 @@ TEST_P(HttpNetworkTransactionTest, ReuseConnection) {
 
 TEST_P(HttpNetworkTransactionTest, Ignores100) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -2232,7 +2260,19 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
   // Wait for the preconnect to complete.
   // TODO(davidben): Some way to wait for an idle socket count might be handy.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, GetIdleSocketCountInTransportSocketPool(session.get()));
+  if (use_spdy && base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // When the HappyEyeballsV3 feature is enabled, we immediately create a SPDY
+    // session, but it becomes unavailable after getting an error.
+    EXPECT_EQ(0, GetIdleSocketCountInTransportSocketPool(session.get()));
+    SpdySessionKey spdy_sesion_key(
+        HostPortPair::FromURL(request.url), PRIVACY_MODE_DISABLED,
+        ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
+    EXPECT_FALSE(HasSpdySession(session->spdy_session_pool(), spdy_sesion_key));
+  } else {
+    EXPECT_EQ(1, GetIdleSocketCountInTransportSocketPool(session.get()));
+  }
 
   // Make the request.
   TestCompletionCallback callback;
@@ -13080,8 +13120,8 @@ TEST_P(HttpNetworkTransactionTest, RecycleSocketAfterZeroContentLength) {
 
 TEST_P(HttpNetworkTransactionTest, ResendRequestOnWriteBodyError) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request[2];
@@ -15474,6 +15514,7 @@ struct GroupIdTest {
   std::string proxy_chain;
   std::string url;
   ClientSocketPool::GroupId expected_group_id;
+  HttpStreamKey expected_http_stream_key;
   bool ssl;
 };
 
@@ -15508,9 +15549,29 @@ int GroupIdTransactionHelper(const std::string& url,
   return trans.Start(&request, callback.callback(), NetLogWithSource());
 }
 
+int HttpStreamKeyTransactionHelper(std::string_view url,
+                                   HttpNetworkSession* session) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL(url);
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session);
+
+  TestCompletionCallback callback;
+
+  // Unlike GroupIdTransactionHelper(), we complete the request because
+  // HttpStreamKey is only set after the transaction switched to the
+  // HttpStreamPool.
+  int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+  CHECK_EQ(rv, ERR_IO_PENDING);
+  return callback.WaitForResult();
+}
+
 }  // namespace
 
-TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
+TEST_P(HttpNetworkTransactionTest, GroupIdOrHttpStreamKeyForDirectConnections) {
   const GroupIdTest tests[] = {
       {
           "",  // unused
@@ -15519,6 +15580,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(
+              url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+              NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+              /*disable_cert_network_fetches=*/false),
           false,
       },
       {
@@ -15528,6 +15594,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpScheme, "[2001:1418:13:1::25]", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(
+              url::SchemeHostPort(url::kHttpScheme, "[2001:1418:13:1::25]", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+              NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+              /*disable_cert_network_fetches=*/false),
           false,
       },
 
@@ -15539,6 +15610,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(
+              url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
+              PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+              NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+              /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15549,6 +15625,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(url::SchemeHostPort(url::kHttpsScheme,
+                                            "[2001:1418:13:1::25]", 443),
+                        PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                        /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15559,6 +15640,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(url::SchemeHostPort(url::kHttpsScheme,
+                                            "host.with.alternate", 443),
+                        PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                        /*disable_cert_network_fetches=*/false),
           true,
       },
   };
@@ -15571,20 +15657,44 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
         SetupSessionForGroupIdTests(&session_deps_));
 
     HttpNetworkSessionPeer peer(session.get());
-    auto transport_conn_pool =
-        std::make_unique<CaptureGroupIdTransportSocketPool>(
-            &dummy_connect_job_params_);
-    auto* transport_conn_pool_ptr = transport_conn_pool.get();
-    auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
-                                     std::move(transport_conn_pool));
-    peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
-    EXPECT_EQ(ERR_IO_PENDING,
-              GroupIdTransactionHelper(test.url, session.get()));
-    EXPECT_EQ(test.expected_group_id,
-              transport_conn_pool_ptr->last_group_id_received());
-    EXPECT_TRUE(transport_conn_pool_ptr->socket_requested());
+    if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      // The result doesn't matter, so just fail the connections (one for
+      // origin, anothor for an alternative service).
+      StaticSocketDataProvider data;
+      data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_FAILED));
+      session_deps_.socket_factory->AddSocketDataProvider(&data);
+      StaticSocketDataProvider alt_data;
+      alt_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_FAILED));
+      session_deps_.socket_factory->AddSocketDataProvider(&alt_data);
+
+      auto http_pool_delegate =
+          std::make_unique<CaptureKeyHttpStreamPoolDelegate>();
+      CaptureKeyHttpStreamPoolDelegate* http_pool_delegate_ptr =
+          http_pool_delegate.get();
+      session->http_stream_pool()->SetDelegateForTesting(
+          std::move(http_pool_delegate));
+
+      EXPECT_EQ(ERR_FAILED,
+                HttpStreamKeyTransactionHelper(test.url, session.get()));
+      EXPECT_EQ(test.expected_http_stream_key,
+                http_pool_delegate_ptr->last_key());
+    } else {
+      auto transport_conn_pool =
+          std::make_unique<CaptureGroupIdTransportSocketPool>(
+              &dummy_connect_job_params_);
+      auto* transport_conn_pool_ptr = transport_conn_pool.get();
+      auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
+      mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
+                                       std::move(transport_conn_pool));
+      peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+
+      EXPECT_EQ(ERR_IO_PENDING,
+                GroupIdTransactionHelper(test.url, session.get()));
+      EXPECT_EQ(test.expected_group_id,
+                transport_conn_pool_ptr->last_group_id_received());
+      EXPECT_TRUE(transport_conn_pool_ptr->socket_requested());
+    }
   }
 }
 
@@ -15597,6 +15707,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           false,
       },
 
@@ -15608,6 +15719,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
 
@@ -15619,6 +15731,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
   };
@@ -15657,6 +15770,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           false,
       },
       {
@@ -15666,6 +15780,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           false,
       },
 
@@ -15677,6 +15792,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
       {
@@ -15686,6 +15802,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
 
@@ -15697,6 +15814,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
   };
@@ -18828,12 +18946,14 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   // Use a TCP Socket Pool with only one connection per group. This is used
   // to validate that the TCP socket is not released to the pool between
   // each round of multi-round authentication.
+  constexpr size_t kMaxSocketsPerPool = 50u;
+  constexpr size_t kMaxSocketsPerGroup = 1u;
   HttpNetworkSessionPeer session_peer(session.get());
   CommonConnectJobParams common_connect_job_params(
       session->CreateCommonConnectJobParams());
   auto transport_pool = std::make_unique<TransportClientSocketPool>(
-      50,  // Max sockets for pool
-      1,   // Max sockets per group
+      kMaxSocketsPerPool,   // Max sockets for pool
+      kMaxSocketsPerGroup,  // Max sockets per group
       /*unused_idle_socket_timeout=*/base::Seconds(10), ProxyChain::Direct(),
       /*is_for_websockets=*/false, &common_connect_job_params);
   auto* transport_pool_ptr = transport_pool.get();
@@ -18841,6 +18961,13 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
                                    std::move(transport_pool));
   session_peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    session->http_stream_pool()->set_max_stream_sockets_per_group_for_testing(
+        kMaxSocketsPerGroup);
+    session->http_stream_pool()->set_max_stream_sockets_per_pool_for_testing(
+        kMaxSocketsPerPool);
+  }
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
@@ -18898,6 +19025,17 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
       url::SchemeHostPort(url::kHttpScheme, "www.example.com", 80),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
       SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
+  const HttpStreamKey kHttpStreamKey(GroupIdToHttpStreamKey(kSocketGroup));
+
+  auto IdleSocketCountInGroup = [&] {
+    if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      return session->http_stream_pool()
+          ->GetOrCreateGroupForTesting(kHttpStreamKey)
+          .IdleStreamSocketCount();
+    } else {
+      return transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup);
+    }
+  };
 
   // First round of authentication.
   auth_handler_ptr->SetGenerateExpectation(false, OK);
@@ -18909,7 +19047,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_TRUE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
             auth_handler_ptr->state());
 
@@ -18935,7 +19073,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
             auth_handler_ptr->state());
 
@@ -18949,7 +19087,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
             auth_handler_ptr->state());
 
@@ -18963,7 +19101,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
 
   // In WAIT_FOR_CHALLENGE, although in reality the auth handler is done. A real
   // auth handler should transition to a DONE state in concert with the remote
@@ -18984,7 +19122,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   EXPECT_EQ(0, rv);
   // There are still 0 idle sockets, since the trans_compete transaction
   // will be handed it immediately after trans releases it to the group.
-  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, IdleSocketCountInGroup());
 
   // The competing request can now finish. Wait for the headers and then
   // read the body.
@@ -18999,7 +19137,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   EXPECT_EQ(0, rv);
 
   // Finally, the socket is released to the group.
-  EXPECT_EQ(1u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(1u, IdleSocketCountInGroup());
 }
 
 // This tests the case that a request is issued via http instead of spdy after
@@ -21984,6 +22122,12 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   session_deps_.host_resolver->rules()->AddRule("www.a.com", "10.0.0.1");
   session_deps_.host_resolver->rules()->AddRule("www.b.com", "10.0.0.2");
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    session->http_stream_pool()->set_max_stream_sockets_per_group_for_testing(
+        1u);
+    session->http_stream_pool()->set_max_stream_sockets_per_pool_for_testing(
+        1u);
+  }
 
   SSLSocketDataProvider ssl1(ASYNC, OK);
   ssl1.next_proto = kProtoHTTP2;
@@ -22523,8 +22667,8 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
 
 TEST_P(HttpNetworkTransactionTest, PostReadsErrorResponseAfterReset) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -22631,8 +22775,8 @@ TEST_P(HttpNetworkTransactionTest,
   trans1.reset();
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request2;
@@ -22665,8 +22809,8 @@ TEST_P(HttpNetworkTransactionTest,
 TEST_P(HttpNetworkTransactionTest,
        PostReadsErrorResponseAfterResetPartialBodySent) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -22777,8 +22921,8 @@ TEST_P(HttpNetworkTransactionTest, ChunkedPostReadsErrorResponseAfterReset) {
 
 TEST_P(HttpNetworkTransactionTest, PostReadsErrorResponseAfterResetAnd100) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -22830,8 +22974,8 @@ TEST_P(HttpNetworkTransactionTest, PostReadsErrorResponseAfterResetAnd100) {
 
 TEST_P(HttpNetworkTransactionTest, PostIgnoresNonErrorResponseAfterReset) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -22872,8 +23016,8 @@ TEST_P(HttpNetworkTransactionTest, PostIgnoresNonErrorResponseAfterReset) {
 TEST_P(HttpNetworkTransactionTest,
        PostIgnoresNonErrorResponseAfterResetAnd100) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -22915,8 +23059,8 @@ TEST_P(HttpNetworkTransactionTest,
 
 TEST_P(HttpNetworkTransactionTest, PostIgnoresHttp09ResponseAfterReset) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -22955,8 +23099,8 @@ TEST_P(HttpNetworkTransactionTest, PostIgnoresHttp09ResponseAfterReset) {
 
 TEST_P(HttpNetworkTransactionTest, PostIgnoresPartial400HeadersAfterReset) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -23295,8 +23439,8 @@ TEST_P(HttpNetworkTransactionTest, WebSocketNotSentOverQuicProxy) {
 
 TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesPost) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -23339,8 +23483,8 @@ TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesPost) {
 
 TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesPost100Continue) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(
-      std::make_unique<UploadBytesElementReader>("foo", 3));
+  element_readers.push_back(std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -26635,6 +26779,8 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
     request.network_isolation_key = network_isolation_key_for_request;
     request.network_anonymization_key = network_anonymization_key_for_request;
 
+    // Run until idle to ensure that preconnects complete.
+    RunUntilIdle();
     EXPECT_EQ(2, GetIdleSocketCountInTransportSocketPool(session.get()));
 
     // Make the request.

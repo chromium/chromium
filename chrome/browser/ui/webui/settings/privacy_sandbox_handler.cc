@@ -82,8 +82,16 @@ void PrivacySandboxHandler::RegisterMessages() {
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "privacySandboxPrivacyGuideShouldShowAdTopicsCard",
-      base::BindRepeating(&PrivacySandboxHandler::HandleShouldShowAdTopicsCard,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &PrivacySandboxHandler::
+              HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel",
+      base::BindRepeating(
+          &PrivacySandboxHandler::
+              HandlePrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel,
+          base::Unretained(this)));
 }
 
 void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
@@ -196,14 +204,24 @@ void PrivacySandboxHandler::HandleGetChildTopicsCurrentlyAssigned(
                             std::move(child_topics_currently_assigned_list));
 }
 
-void PrivacySandboxHandler::HandleShouldShowAdTopicsCard(
-    const base::Value::List& args) {
+void PrivacySandboxHandler::
+    HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
+        const base::Value::List& args) {
   AllowJavascript();
   bool should_show_ad_topics_card =
       GetPrivacySandboxCountries()->IsConsentCountry() &&
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
   ResolveJavascriptCallback(args[0], should_show_ad_topics_card);
+}
+
+void PrivacySandboxHandler::
+    HandlePrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel(
+        const base::Value::List& args) {
+  AllowJavascript();
+  ResolveJavascriptCallback(
+      args[0], base::FeatureList::IsEnabled(
+                   privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics));
 }
 
 PrivacySandboxCountries* PrivacySandboxHandler::GetPrivacySandboxCountries() {

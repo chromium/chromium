@@ -29,6 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,13 +55,16 @@ const char kTestLocale[] = "lt";
 const char kTestHistogramName[] =
     "Feedback.HappinessTrackingSurvey.TestHistogramName";
 
+const uint64_t kTestUkmHatsId = 0xbaadf00d;
+
 }  // namespace
 
 class MockHatsNextWebDialog : public HatsNextWebDialog {
  public:
   MockHatsNextWebDialog(Browser* browser,
                         const std::string& trigger_id,
-                        const std::optional<std::string>& histogram_name,
+                        const std::optional<std::string>& hats_histogram_name,
+                        const std::optional<uint64_t> hats_survey_ukm_id,
                         const GURL& hats_survey_url,
                         const base::TimeDelta& timeout,
                         base::OnceClosure success_callback,
@@ -69,7 +73,8 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
                         const SurveyStringData& product_specific_string_data)
       : HatsNextWebDialog(browser,
                           trigger_id,
-                          histogram_name,
+                          hats_histogram_name,
+                          hats_survey_ukm_id,
                           hats_survey_url,
                           timeout,
                           std::move(success_callback),
@@ -146,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   ScopedBrowserLocale browser_locale(kTestLocale);
 
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), kHatsNextSurveyTriggerIDTesting, std::nullopt,
+      browser(), kHatsNextSurveyTriggerIDTesting, std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(),
       kHatsNextTestSurveyProductSpecificBitsData,
@@ -206,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), kHatsNextSurveyTriggerIDTesting, kTestHistogramName,
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(),
       kHatsNextTestSurveyProductSpecificBitsData,
       kHatsNextTestSurveyProductSpecificStringData);
@@ -264,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
 
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), "close_for_testing", std::nullopt,
+      browser(), "close_for_testing", std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(), {}, {});
 
@@ -291,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoadedThenClosed) {
 
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), kHatsNextSurveyTriggerIDTesting, std::nullopt,
+      browser(), kHatsNextSurveyTriggerIDTesting, std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(),
       kHatsNextTestSurveyProductSpecificBitsData,
@@ -315,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyTimeout) {
 
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), "invalid_test", std::nullopt,
+      browser(), "invalid_test", std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/non_existent.html"),
       base::Milliseconds(1), GetSuccessClosure(), GetFailureClosure(), {}, {});
 
@@ -335,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, UnknownURLFragment) {
   // closed.
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), "invalid_url_fragment_for_testing", std::nullopt,
+      browser(), "invalid_url_fragment_for_testing", std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(), {}, {});
 
@@ -349,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "open_new_web_contents_for_testing", std::nullopt,
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
   // The mock hats dialog will push a close state after it has attempted to
@@ -374,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 
   auto* dialog = new MockHatsNextWebDialog(
       devtools_browser, "open_new_web_contents_for_testing", std::nullopt,
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
   // The mock hats dialog will push a close state after it has attempted to
@@ -393,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), "resize_for_testing", std::nullopt,
+      browser(), "resize_for_testing", std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
@@ -412,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
 
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), "resize_to_large_for_testing", std::nullopt,
+      browser(), "resize_to_large_for_testing", std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
@@ -433,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), kHatsNextSurveyTriggerIDTesting, std::nullopt,
+      browser(), kHatsNextSurveyTriggerIDTesting, std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(),
       kHatsNextTestSurveyProductSpecificBitsData,
@@ -457,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyCompleted) {
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "on_survey_state_update_received", kTestHistogramName,
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
   dialog->OnSurveyCompleted();
@@ -470,12 +475,12 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyCompleted) {
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
-                       SurveyQuestionAnsweredInvalidQuestion) {
+                       SurveyQuestionAnsweredInvalidQuestionHistograms) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "on_survey_state_update_received", kTestHistogramName,
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
   dialog->OnSurveyQuestionAnswered("answer-a-2");
@@ -488,12 +493,12 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
-                       SurveyQuestionAnsweredFirstQuestion) {
+                       SurveyQuestionAnsweredFirstQuestionHistograms) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "on_survey_state_update_received", kTestHistogramName,
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
   dialog->OnSurveyQuestionAnswered("answer-1-2");
@@ -503,12 +508,12 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
-                       SurveyQuestionAnsweredSingleSelectQuestion) {
+                       SurveyQuestionAnsweredSingleSelectQuestionHistograms) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "on_survey_state_update_received", kTestHistogramName,
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
   dialog->OnSurveyQuestionAnswered("answer-2-4");
@@ -518,12 +523,12 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
-                       SurveyQuestionAnsweredMultipleSelectQuestion) {
+                       SurveyQuestionAnsweredMultipleSelectQuestionHistograms) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "on_survey_state_update_received", kTestHistogramName,
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
   dialog->OnSurveyQuestionAnswered("answer-3-2,4,5");
@@ -535,12 +540,12 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
-                       SurveyQuestionAnsweredMultipleQuestions) {
+                       SurveyQuestionAnsweredMultipleQuestionsHistograms) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "on_survey_state_update_received", kTestHistogramName,
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
   dialog->OnSurveyQuestionAnswered("answer-1-2");
@@ -563,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NoHistogramName) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), "on_survey_state_update_received", "",
+      browser(), "on_survey_state_update_received", "", std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
@@ -580,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ExcludedHistogram) {
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "on_survey_state_update_received", "HistogramName",
-      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
 
   dialog->OnSurveyQuestionAnswered("answer-1-2");
@@ -589,4 +594,43 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ExcludedHistogram) {
   dialog->OnSurveyCompleted();
 
   EXPECT_THAT(dialog->GetHistogramSamples(), testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
+                       SurveyQuestionAnsweredMultipleQuestions) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto* dialog = new MockHatsNextWebDialog(
+      browser(), "on_survey_state_update_received", kTestHistogramName,
+      kTestUkmHatsId,
+      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      base::Seconds(100), base::DoNothing(), base::DoNothing(), {}, {});
+
+  dialog->OnSurveyQuestionAnswered("answer-1-2");
+  dialog->OnSurveyQuestionAnswered("answer-2-3");
+  dialog->OnSurveyQuestionAnswered("answer-3-4,5");
+  dialog->OnSurveyCompleted();
+  dialog->OnSurveyClosed();
+
+  std::vector<base::Bucket> expected = {
+      {HatsNextWebDialog::SurveyHistogramEnumeration::
+           kSurveyCompletedEnumeration,
+       1},
+      {dialog->GetHistogramBucket(1, 2), 1},
+      {dialog->GetHistogramBucket(2, 3), 1},
+      {dialog->GetHistogramBucket(3, 4), 1},
+      {dialog->GetHistogramBucket(3, 5), 1}};
+  EXPECT_THAT(dialog->GetHistogramSamples(), expected);
+
+  auto entries = ukm_recorder.GetEntries(
+      "Feedback.HappinessTrackingSurvey",
+      {"SurveyId", "SurveyCompleted", "SurveyAnswerToQuestion1",
+       "SurveyAnswerToQuestion2", "SurveyAnswerToQuestion3"});
+  EXPECT_THAT(entries.size(), 1);
+  EXPECT_THAT(entries.at(0).metrics.at("SurveyId"), kTestUkmHatsId);
+  EXPECT_THAT(entries.at(0).metrics.at("SurveyCompleted"), true);
+  EXPECT_THAT(entries.at(0).metrics.at("SurveyAnswerToQuestion1"), 0b10);
+  EXPECT_THAT(entries.at(0).metrics.at("SurveyAnswerToQuestion2"), 0b100);
+  EXPECT_THAT(entries.at(0).metrics.at("SurveyAnswerToQuestion3"), 0b11000);
 }

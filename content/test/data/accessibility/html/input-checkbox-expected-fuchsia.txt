@@ -3,16 +3,16 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++UNKNOWN hidden
 ++++++++CHECK_BOX focusable label='Checkbox0' actions='{DEFAULT}' checked_state='UNCHECKED'
-++++++++STATIC_TEXT hidden label='Checkbox0'
+++++++++STATIC_TEXT hidden
 ++++++UNKNOWN hidden
 ++++++++CHECK_BOX focusable label='Checkbox1' actions='{DEFAULT}' checked_state='CHECKED'
-++++++++STATIC_TEXT hidden label='Checkbox1'
+++++++++STATIC_TEXT hidden
 ++++++UNKNOWN hidden
 ++++++++CHECK_BOX focusable label='Checkbox2' actions='{DEFAULT}' checked_state='UNCHECKED'
-++++++++STATIC_TEXT hidden label='Checkbox2'
+++++++++STATIC_TEXT hidden
 ++++++UNKNOWN hidden
 ++++++++CHECK_BOX focusable label='Checkbox3' actions='{DEFAULT}' checked_state='UNCHECKED'
-++++++++STATIC_TEXT hidden label='Checkbox3'
+++++++++STATIC_TEXT hidden
 ++++++UNKNOWN hidden
 ++++++++CHECK_BOX focusable label='Checkbox4' actions='{DEFAULT}' checked_state='MIXED'
-++++++++STATIC_TEXT hidden label='Checkbox4'
+++++++++STATIC_TEXT hidden

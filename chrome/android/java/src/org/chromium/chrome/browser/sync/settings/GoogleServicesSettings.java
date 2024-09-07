@@ -15,6 +15,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
@@ -99,11 +102,12 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
     private @Nullable Preference mContextualSearch;
     private Preference mPriceNotificationSection;
     private Preference mUsageStatsReporting;
-    private SnackbarManager mSnackbarManager;
+    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.prefs_google_services);
+        mPageTitle.set(getString(R.string.prefs_google_services));
         setHasOptionsMenu(true);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getActivity());
@@ -179,6 +183,11 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         SyncServiceFactory.getForProfile(getProfile()).removeSyncStateChangedListener(this);
@@ -241,7 +250,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                     getProfile(),
                     getChildFragmentManager(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                    mSnackbarManager,
+                    mSnackbarManagerSupplier.get(),
                     SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN,
                     /* showConfirmDialog= */ true,
                     () -> {
@@ -268,8 +277,9 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         return true;
     }
 
-    public void setSnackbarManager(SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     // SyncStateChangedListener overrides.

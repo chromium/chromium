@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -43,9 +43,7 @@ bool UrlContainsDiscountUtmTag(const GURL& url) {
 }
 
 ParcelTrackingStatus GetParcelTrackingStatusTestData() {
-  if (!base::FeatureList::IsEnabled(kParcelTrackingTestData)) {
-    NOTREACHED();
-  }
+  CHECK(base::FeatureList::IsEnabled(kParcelTrackingTestData));
 
   const std::string param = base::GetFieldTrialParamValueByFeature(
       kParcelTrackingTestData, kParcelTrackingTestDataParam);

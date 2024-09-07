@@ -596,39 +596,6 @@ TEST_F(ShellTest, NoWindowTabFocus) {
   EXPECT_TRUE(status_area_widget->GetNativeView()->HasFocus());
 }
 
-class ShellPickerIncorrectKeyTest : public AshTestBase {
- public:
-  ShellPickerIncorrectKeyTest() {
-    feature_list_.InitWithFeatures({features::kPicker},
-                                   {features::kPickerDogfood});
-
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(switches::kPickerFeatureKey, "hello");
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ShellPickerIncorrectKeyTest, NoPickerControllerIfFeatureKeyIsWrong) {
-  EXPECT_FALSE(Shell::Get()->picker_controller());
-}
-
-class ShellPickerDogfoodTest : public AshTestBase {
- public:
-  ShellPickerDogfoodTest() {
-    feature_list_.InitWithFeatures(
-        {features::kPicker, features::kPickerDogfood}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ShellPickerDogfoodTest, PickerControllerExistsIfDogfooding) {
-  EXPECT_TRUE(Shell::Get()->picker_controller());
-}
-
 // This verifies WindowObservers are removed when a window is destroyed after
 // the Shell is destroyed. This scenario (aura::Windows being deleted after the
 // Shell) occurs if someone is holding a reference to an unparented Window, as

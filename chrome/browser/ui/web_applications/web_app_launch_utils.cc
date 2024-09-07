@@ -466,30 +466,9 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            as_pinned_home_tab);
 }
 
-void SetWebContentsActingAsApp(content::WebContents* contents,
-                               const webapps::AppId& app_id) {
-  auto* helper = WebAppTabHelper::FromWebContents(contents);
-  helper->SetAppId(app_id);
-  helper->set_acting_as_app(true);
-}
-
 void SetWebContentsIsPinnedHomeTab(content::WebContents* contents) {
   auto* helper = WebAppTabHelper::FromWebContents(contents);
   helper->set_is_pinned_home_tab(true);
-}
-
-void SetAppPrefsForWebContents(content::WebContents* web_contents) {
-  web_contents->GetMutableRendererPrefs()->can_accept_load_drops = false;
-  web_contents->SyncRendererPrefs();
-
-  web_contents->NotifyPreferencesChanged();
-}
-
-void ClearAppPrefsForWebContents(content::WebContents* web_contents) {
-  web_contents->GetMutableRendererPrefs()->can_accept_load_drops = true;
-  web_contents->SyncRendererPrefs();
-
-  web_contents->NotifyPreferencesChanged();
 }
 
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
@@ -556,7 +535,7 @@ Browser::CreateParams CreateParamsForApp(const webapps::AppId& app_id,
                 app_name, trusted_source, window_bounds, profile, user_gesture)
           : Browser::CreateParams::CreateForApp(
                 app_name, trusted_source, window_bounds, profile, user_gesture);
-  params.initial_show_state = chrome::IsRunningInForcedAppMode()
+  params.initial_show_state = IsRunningInForcedAppMode()
                                   ? ui::SHOW_STATE_FULLSCREEN
                                   : ui::SHOW_STATE_DEFAULT;
   return params;
@@ -577,45 +556,15 @@ Browser* CreateWebAppWindowMaybeWithHomeTab(
 
 Browser* CreateWebAppWindowFromNavigationParams(
     const webapps::AppId& app_id,
-    const NavigateParams& navigate_params) {
+    const NavigateParams& navigate_params,
+    bool should_create_app_popup = false) {
   Browser::CreateParams app_browser_params = CreateParamsForApp(
-      app_id, /*is_popup=*/false, /*trusted_source=*/true,
+      app_id, should_create_app_popup, /*trusted_source=*/true,
       navigate_params.window_features.bounds,
       navigate_params.initiating_profile, navigate_params.user_gesture);
   Browser* created_browser =
       CreateWebAppWindowMaybeWithHomeTab(app_id, app_browser_params);
   return created_browser;
-}
-
-// If the `contents` is not a nullptr, will enqueue the given url in the launch
-// params for this web contents. Does not check if the url is within scope of
-// the app.
-// TODO(crbug.com/359605935): Move this logic to occur later after/in
-// CreateTargetContents in browser_navigator.cc, to ensure `contents` isn't a
-// nullptr.
-void MaybeEnqueueLaunchParams(content::WebContents* contents,
-                              const webapps::AppId& app_id,
-                              const GURL& url,
-                              bool wait_for_navigation_to_complete) {
-  if (!contents) {
-    return;
-  }
-  WebAppLaunchParams launch_params;
-  launch_params.started_new_navigation = wait_for_navigation_to_complete;
-  launch_params.app_id = app_id;
-  launch_params.target_url = url;
-  WebAppTabHelper::FromWebContents(contents)->EnsureLaunchQueue().Enqueue(
-      std::move(launch_params));
-}
-
-content::WebContents* NavigateWebApplicationWindow(
-    Browser* browser,
-    const std::string& app_id,
-    const GURL& url,
-    WindowOpenDisposition disposition) {
-  NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  nav_params.disposition = disposition;
-  return NavigateWebAppUsingParams(app_id, nav_params);
 }
 
 content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
@@ -691,11 +640,6 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
 
   content::WebContents* const web_contents =
       nav_params.navigated_or_inserted_contents;
-
-  if (web_contents) {
-    SetWebContentsActingAsApp(web_contents, app_id);
-    SetAppPrefsForWebContents(web_contents);
-  }
 
   return web_contents;
 }
@@ -887,6 +831,10 @@ void LaunchWebApp(apps::AppLaunchParams params,
     debug_value.Set("error", error_str);
     DVLOG(1) << error_str;
   }
+
+  debug_value.Set("web_contents", base::ToString(web_contents));
+  debug_value.Set("browser", base::ToString(browser));
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
@@ -895,9 +843,9 @@ void LaunchWebApp(apps::AppLaunchParams params,
                      container, base::Value(std::move(debug_value))));
 }
 
-std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
-    Profile* profile,
+std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
     const NavigateParams& params) {
+  Profile* profile = params.initiating_profile;
   if (params.open_pwa_window_if_possible) {
     std::optional<webapps::AppId> app_id =
         web_app::FindInstalledAppWithUrlInScope(profile, params.url,
@@ -910,7 +858,8 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
       // This isn't a supported way to launch isolated apps, so we can cancel
       // the navigation, but if we want to support it in the future we'll need
       // to block until `WebAppRegistrar` is loaded.
-      return std::pair(/*browser=*/nullptr, -1);
+      return std::tuple(/*browser=*/nullptr, -1,
+                        /*enqueue_launch_params=*/false);
     }
     if (app_id) {
       // Reuse the existing browser for in-app same window navigations.
@@ -919,7 +868,8 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
           web_app::AppBrowserController::IsForWebApp(params.browser, *app_id);
       if (navigating_same_app) {
         if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-          return std::pair(params.browser, -1);
+          return std::tuple(params.browser, -1,
+                            /*enqueue_launch_params=*/false);
         }
 
         // If the browser window does not yet have any tabs, and we are
@@ -930,7 +880,8 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
         bool browser_has_no_tabs =
             params.browser && params.browser->tab_strip_model()->empty();
         if (navigating_new_tab && browser_has_no_tabs) {
-          return std::pair(params.browser, -1);
+          return std::tuple(params.browser, -1,
+                            /*enqueue_launch_params=*/false);
         }
       }
 
@@ -954,14 +905,14 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
                 params.window_features.bounds, profile, params.user_gesture);
         browser_params.initial_origin_specified = GetOriginSpecified(params);
         Browser* browser = Browser::Create(browser_params);
-        return std::pair(browser, -1);
+        return std::tuple(browser, -1, /*enqueue_launch_params=*/false);
       }
     }
   }
 
   // Below here handles the states outlined in
   // https://bit.ly/pwa-navigation-capturing
-  if (!apps::features::IsLinkCapturingReimplementationEnabled() ||
+  if (!apps::features::IsNavigationCapturingReimplEnabled() ||
       params.started_from_context_menu) {
     return std::nullopt;
   }
@@ -994,8 +945,9 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
   if (IsAuxiliaryBrowsingContext(params)) {
     if (current_browser_app_id.has_value()) {
       Browser* app_window = CreateWebAppWindowFromNavigationParams(
-          *current_browser_app_id, params);
-      return std::pair(app_window, -1);
+          *current_browser_app_id, params,
+          params.disposition == WindowOpenDisposition::NEW_POPUP);
+      return std::tuple(app_window, -1, /*enqueue_launch_params=*/false);
     }
     return std::nullopt;
   }
@@ -1009,14 +961,7 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
           OpensInStandaloneExperience(*controlling_app_id)) {
         Browser* app_window =
             CreateWebAppWindowFromNavigationParams(*controlling_app_id, params);
-
-        // TODO(crbug.com/359605935): Move this logic to occur later after/in
-        // CreateTargetContents in browser_navigator.cc, to ensure `contents`
-        // isn't a nullptr.
-        MaybeEnqueueLaunchParams(params.contents_to_insert.get(),
-                                 *controlling_app_id, params.url,
-                                 /*wait_for_navigation_to_complete=*/true);
-        return std::pair(app_window, -1);
+        return std::tuple(app_window, -1, /*enqueue_launch_params=*/true);
       }
 
       const webapps::AppId& current_app_id = *current_browser_app_id;
@@ -1029,19 +974,11 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
         if (!params.browser->app_controller()->ShouldHideNewTabButton()) {
           // Apps that support tabbed mode can open a new tab in the current app
           // browser itself.
-          return std::pair(params.browser, -1);
-        } else {
+          return std::tuple(params.browser, -1, /*enqueue_launch_params=*/true);
+        }
           Browser* app_window =
               CreateWebAppWindowFromNavigationParams(current_app_id, params);
-
-          // TODO(crbug.com/359605935): Move this logic to occur later after/in
-          // CreateTargetContents in browser_navigator.cc, to ensure `contents`
-          // isn't a nullptr.
-          MaybeEnqueueLaunchParams(params.contents_to_insert.get(),
-                                   current_app_id, params.url,
-                                   /*wait_for_navigation_to_complete=*/true);
-          return std::pair(app_window, -1);
-        }
+          return std::tuple(app_window, -1, /*enqueue_launch_params=*/true);
       }
     }
     return std::nullopt;
@@ -1085,15 +1022,15 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
         content::WebContents* contents =
             existing_browser_and_tab->first->tab_strip_model()
                 ->GetWebContentsAt(existing_browser_and_tab->second);
+        CHECK(contents);
         contents->Focus();
 
-        // TODO(crbug.com/359605935): Move this logic to occur later after/in
-        // CreateTargetContents in browser_navigator.cc, to ensure `contents`
-        // isn't a nullptr.
+        // Enqueue launch params instantly instead of using the `Navigate()`
+        // call as no navigation happens, and `Navigate()` early exits.
         MaybeEnqueueLaunchParams(contents, app_id, params.url,
                                  /*wait_for_navigation_to_complete=*/false);
-
-        return std::pair(nullptr, -1);
+        return std::tuple(/*browser=*/nullptr, -1,
+                          /*enqueue_launch_params=*/false);
       }
 
       // Fallback to creating a new instance.
@@ -1103,16 +1040,9 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
     // Navigate existing.
     if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
       if (existing_browser_and_tab) {
-        content::WebContents* contents =
-            existing_browser_and_tab->first->tab_strip_model()
-                ->GetWebContentsAt(existing_browser_and_tab->second);
-
-        // TODO(crbug.com/359605935): Move this logic to occur later after/in
-        // CreateTargetContents in browser_navigator.cc, to ensure `contents`
-        // isn't a nullptr.
-        MaybeEnqueueLaunchParams(contents, app_id, params.url,
-                                 /*wait_for_navigation_to_complete=*/true);
-        return existing_browser_and_tab;
+        return std::tuple(existing_browser_and_tab->first,
+                          existing_browser_and_tab->second,
+                          /*enqueue_launch_params=*/true);
       }
       client_mode = LaunchHandler::ClientMode::kNavigateNew;
     }
@@ -1131,17 +1061,21 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
     } else {
       app_window = CreateWebAppWindowFromNavigationParams(app_id, params);
     }
-
-    // TODO(crbug.com/359605935): Move this logic to occur later after/in
-    // CreateTargetContents in browser_navigator.cc, to ensure `contents`
-    // isn't a nullptr.
-    MaybeEnqueueLaunchParams(params.contents_to_insert.get(), app_id,
-                             params.url,
-                             /*wait_for_navigation_to_complete=*/true);
-
-    return std::pair(app_window, -1);
+    return std::tuple(app_window, -1, /*enqueue_launch_params=*/true);
   }
   return std::nullopt;
+}
+
+void MaybeEnqueueLaunchParams(content::WebContents* contents,
+                              const webapps::AppId& app_id,
+                              const GURL& url,
+                              bool wait_for_navigation_to_complete) {
+  WebAppLaunchParams launch_params;
+  launch_params.started_new_navigation = wait_for_navigation_to_complete;
+  launch_params.app_id = app_id;
+  launch_params.target_url = url;
+  WebAppTabHelper::FromWebContents(contents)->EnsureLaunchQueue().Enqueue(
+      std::move(launch_params));
 }
 
 }  // namespace web_app

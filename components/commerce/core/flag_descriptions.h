@@ -42,8 +42,8 @@ extern const char kParcelTrackingTestDataDescription[];
 extern const char kPriceInsightsName[];
 extern const char kPriceInsightsDescription[];
 
-extern const char kDiscountOnShoppyPageName[];
-extern const char kDiscountOnShoppyPageDescription[];
+extern const char kDiscountOnNavigationName[];
+extern const char kDiscountOnNavigationDescription[];
 
 #if BUILDFLAG(IS_IOS)
 extern const char kPriceInsightsIosName[];

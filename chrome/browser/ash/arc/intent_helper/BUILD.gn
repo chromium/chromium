@@ -18,7 +18,10 @@ static_library("intent_helper") {
     "custom_tab_session_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
 
   deps = [
     "//ash",
@@ -64,7 +67,6 @@ source_set("unit_tests") {
     "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
@@ -99,7 +101,6 @@ source_set("browser_tests") {
     ":intent_helper",
     "//ash/components/arc:arc_test_support",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/profiles:profile",

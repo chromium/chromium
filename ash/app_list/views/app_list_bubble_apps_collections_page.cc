@@ -347,24 +347,6 @@ bool AppListBubbleAppsCollectionsPage::IsSelectedView(
   return view == selected_view_;
 }
 
-bool AppListBubbleAppsCollectionsPage::InitiateDrag(
-    AppListItemView* view,
-    const gfx::Point& location,
-    const gfx::Point& root_location,
-    base::OnceClosure drag_start_callback,
-    base::OnceClosure drag_end_callback) {
-  return false;
-}
-
-void AppListBubbleAppsCollectionsPage::
-    StartDragAndDropHostDragAfterLongPress() {}
-
-bool AppListBubbleAppsCollectionsPage::UpdateDragFromItem(
-    bool is_touch,
-    const ui::LocatedEvent& event) {
-  return false;
-}
-
 void AppListBubbleAppsCollectionsPage::EndDrag(bool cancel) {}
 
 void AppListBubbleAppsCollectionsPage::OnAppListItemViewActivated(

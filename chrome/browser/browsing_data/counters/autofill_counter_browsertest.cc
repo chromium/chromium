@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -20,14 +21,19 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -39,7 +45,7 @@ namespace {
 
 class AutofillCounterTest : public InProcessBrowserTest {
  public:
-  AutofillCounterTest() {}
+  AutofillCounterTest() = default;
 
   AutofillCounterTest(const AutofillCounterTest&) = delete;
   AutofillCounterTest& operator=(const AutofillCounterTest&) = delete;
@@ -47,6 +53,9 @@ class AutofillCounterTest : public InProcessBrowserTest {
   ~AutofillCounterTest() override {}
 
   void SetUpOnMainThread() override {
+    personal_data_manager_ =
+        autofill::PersonalDataManagerFactory::GetForBrowserContext(
+            browser()->profile());
     web_data_service_ = WebDataServiceFactory::GetAutofillWebDataForProfile(
         browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
 
@@ -55,8 +64,9 @@ class AutofillCounterTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    // Release our ref to let browser tear down of services complete in the same
-    // order as usual.
+    // Release our refs to let browser tear down of services complete in the
+    // same order as usual.
+    personal_data_manager_ = nullptr;
     web_data_service_ = nullptr;
   }
 
@@ -95,11 +105,14 @@ class AutofillCounterTest : public InProcessBrowserTest {
     autofill::test::SetCreditCardInfo(&card, nullptr, card_number, exp_month,
                                       exp_year, billing_address_id);
     credit_card_ids_.push_back(card.guid());
-    web_data_service_->AddCreditCard(card);
+    personal_data_manager_->payments_data_manager().AddCreditCard(card);
+    autofill::PersonalDataChangedWaiter(*personal_data_manager_).Wait();
   }
 
   void RemoveLastCreditCard() {
-    web_data_service_->RemoveCreditCard(credit_card_ids_.back());
+    personal_data_manager_->payments_data_manager().RemoveByGUID(
+        credit_card_ids_.back());
+    autofill::PersonalDataChangedWaiter(*personal_data_manager_).Wait();
     credit_card_ids_.pop_back();
   }
 
@@ -117,21 +130,26 @@ class AutofillCounterTest : public InProcessBrowserTest {
     profile.SetInfo(autofill::NAME_LAST, base::ASCIIToUTF16(surname), "en-US");
     profile.SetInfo(autofill::ADDRESS_HOME_LINE1, base::ASCIIToUTF16(address),
                     "en-US");
-    web_data_service_->AddAutofillProfile(profile);
+    personal_data_manager_->address_data_manager().AddProfile(profile);
+    autofill::PersonalDataChangedWaiter(*personal_data_manager_).Wait();
   }
 
   void RemoveLastAddress() {
-    web_data_service_->RemoveAutofillProfile(
-        address_ids_.back(),
-        autofill::AutofillProfile::Source::kLocalOrSyncable);
+    personal_data_manager_->address_data_manager().RemoveProfile(
+        address_ids_.back());
+    autofill::PersonalDataChangedWaiter(*personal_data_manager_).Wait();
     address_ids_.pop_back();
   }
 
   // Other autofill utils ------------------------------------------------------
 
   void ClearCreditCardsAndAddresses() {
-    web_data_service_->RemoveAutofillDataModifiedBetween(
-        base::Time(), base::Time::Max());
+    while (!credit_card_ids_.empty()) {
+      RemoveLastCreditCard();
+    }
+    while (!address_ids_.empty()) {
+      RemoveLastAddress();
+    }
   }
 
   // Other utils ---------------------------------------------------------------
@@ -144,6 +162,10 @@ class AutofillCounterTest : public InProcessBrowserTest {
   void SetDeletionPeriodPref(browsing_data::TimePeriod period) {
     browser()->profile()->GetPrefs()->SetInteger(
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
+  }
+
+  autofill::PersonalDataManager* GetPersonalDataManager() {
+    return personal_data_manager_;
   }
 
   scoped_refptr<autofill::AutofillWebDataService> GetWebDataService() {
@@ -197,6 +219,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
   std::vector<std::string> credit_card_ids_;
   std::vector<std::string> address_ids_;
 
+  raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   scoped_refptr<autofill::AutofillWebDataService> web_data_service_;
 
   bool finished_;
@@ -208,7 +231,8 @@ class AutofillCounterTest : public InProcessBrowserTest {
 // Tests that we count the correct number of autocomplete suggestions.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
+                                         GetWebDataService(), nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,
@@ -246,7 +270,8 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
 // Tests that we count the correct number of credit cards.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
+                                         GetWebDataService(), nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,
@@ -284,7 +309,8 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
 // Tests that we count the correct number of addresses.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Addresses) {
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
+                                         GetWebDataService(), nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,
@@ -336,7 +362,8 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
   AddAddress("John", "Smith", "Side Street 47");
 
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
+                                         GetWebDataService(), nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,
@@ -385,7 +412,8 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
                     {kTime3, 1, 1, 0}};
 
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
+                                         GetWebDataService(), nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,

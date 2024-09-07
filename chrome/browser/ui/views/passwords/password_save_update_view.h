@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -60,7 +61,7 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
 
   // PasswordBubbleViewBase:
   views::View* GetInitiallyFocusedView() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   ui::ImageModel GetWindowIcon() override;
 
   // View:

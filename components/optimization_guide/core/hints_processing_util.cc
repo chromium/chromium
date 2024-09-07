@@ -77,8 +77,6 @@ std::string GetStringNameForOptimizationType(
       return "PriceInsights";
     case proto::OptimizationType::V8_COMPILE_HINTS:
       return "V8CompileHints";
-    case proto::OptimizationType::PAGE_INSIGHTS:
-      return "PageInsights";
     case proto::OptimizationType::SHOPPING_PAGE_TYPES:
       return "ShoppingPageTypes";
     case proto::OptimizationType::SHOPPING_DISCOUNTS:
@@ -137,6 +135,12 @@ std::string GetStringNameForOptimizationType(
       return "AutofillAblationSitesList6";
     case proto::OptimizationType::AMOUNT_EXTRACTION_ALLOWLIST:
       return "AmountExtractionAllowlist";
+    case proto::OptimizationType::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST:
+      return "AutofillPredictionImprovementsAllowlist";
+    case proto::OptimizationType::AMOUNT_EXTRACTION_ALLOWLIST_AFFIRM:
+      return "AmountExtractionAllowlistAffirm";
+    case proto::OptimizationType::AMOUNT_EXTRACTION_ALLOWLIST_ZIP:
+      return "AmountExtractionAllowlistZip";
   }
 
   // The returned string is used to record histograms for the optimization type.

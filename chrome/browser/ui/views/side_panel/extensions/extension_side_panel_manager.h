@@ -74,6 +74,9 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
   // SidePanelRegistryObserver implementation.
   void OnRegistryDestroying(SidePanelRegistry* registry) override;
 
+  // Called when the tab is about to be discarded.
+  void WillDiscard();
+
   // ProfileObserver implementation.
   // OTR profiles for a browser window can be destroyed before the browser's
   // UserData, so the profile may need to be reset to prevent a dangling

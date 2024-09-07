@@ -60,16 +60,6 @@ class ShellPermissionManager : public PermissionControllerDelegate {
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& overridden_origin) override;
-  SubscriptionId SubscribeToPermissionStatusChange(
-      blink::PermissionType permission,
-      RenderProcessHost* render_process_host,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool should_include_device_status,
-      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
-      override;
-  void UnsubscribeFromPermissionStatusChange(
-      SubscriptionId subscription_id) override;
 };
 
 }  // namespace content

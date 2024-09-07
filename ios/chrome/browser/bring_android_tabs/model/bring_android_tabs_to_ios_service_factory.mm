@@ -11,8 +11,8 @@
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -73,7 +73,7 @@ BringAndroidTabsToIOSServiceFactory::BuildServiceInstanceFor(
       browser_state ? browser_state->GetPrefs() : nullptr;
   return std::make_unique<BringAndroidTabsToIOSService>(
       segmentation_platform::SegmentationPlatformServiceFactory::
-          GetDispatcherForBrowserState(browser_state),
+          GetDispatcherForProfile(browser_state),
       SyncServiceFactory::GetForBrowserState(browser_state),
       SessionSyncServiceFactory::GetForBrowserState(browser_state),
       browser_state_prefs);

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
@@ -13,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/path_service.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -67,19 +65,6 @@ const char DemoComponents::kDemoModeResourcesComponentName[] =
     "demo-mode-resources";
 
 const char DemoComponents::kDemoModeAppComponentName[] = "demo-mode-app";
-
-// static
-const char DemoComponents::kOfflineDemoModeResourcesComponentName[] =
-    "offline-demo-mode-resources";
-
-// static
-base::FilePath DemoComponents::GetPreInstalledPath() {
-  base::FilePath preinstalled_components_root;
-  base::PathService::Get(DIR_PREINSTALLED_COMPONENTS,
-                         &preinstalled_components_root);
-  return preinstalled_components_root.AppendASCII("cros-components")
-      .AppendASCII(kOfflineDemoModeResourcesComponentName);
-}
 
 DemoComponents::DemoComponents(DemoSession::DemoModeConfig config)
     : config_(config) {

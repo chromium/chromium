@@ -97,9 +97,9 @@ MigrationNotificationManager::~MigrationNotificationManager() {
 
 void MigrationNotificationManager::ShowMigrationInfoDialog(
     CloudProvider provider,
-    base::TimeDelta migration_delay,
+    base::Time migration_start_time,
     base::OnceClosure migration_callback) {
-  LocalFilesMigrationDialog::Show(provider, migration_delay,
+  LocalFilesMigrationDialog::Show(provider, migration_start_time,
                                   std::move(migration_callback));
 }
 

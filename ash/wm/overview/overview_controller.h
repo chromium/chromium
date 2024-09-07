@@ -13,6 +13,7 @@
 #include "ash/wm/overview/overview_delegate.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/overview/overview_session_metrics_recorder.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_window_occlusion_calculator.h"
 #include "ash/wm/raster_scale/raster_scale_controller.h"
@@ -167,7 +168,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   }
 
  private:
-
   // Toggle overview mode. Depending on |type| the enter/exit animation will
   // look different.
   void ToggleOverview(
@@ -188,8 +188,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   void MaybePauseOcclusionTracker();
   void MaybeUnpauseOcclusionTracker(base::TimeDelta delay);
   void ResetPauser();
-
-  bool IsDeskBarOpen() const;
 
   // Collection of DelayedAnimationObserver objects that own widgets that may be
   // still animating after overview mode ends. If shell needs to shut down while
@@ -256,10 +254,7 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // all windows as visible immediately.
   bool windows_have_snapshot_ = false;
 
-  // For metrics purposes only. When entering overview, records whether the
-  // desk bar was shown immediately in the first frame (as opposed to after
-  // the animation completes or not at all).
-  bool desk_bar_shown_immediately_ = false;
+  std::optional<OverviewSessionMetricsRecorder> session_metrics_recorder_;
 
   OverviewWindowOcclusionCalculator overview_window_occlusion_calculator_;
 

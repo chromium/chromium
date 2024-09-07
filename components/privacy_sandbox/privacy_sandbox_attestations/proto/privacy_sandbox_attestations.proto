@@ -16,6 +16,7 @@ enum PrivacySandboxAttestationsGatedAPIProto {
   PRIVATE_AGGREGATION = 3;
   ATTRIBUTION_REPORTING = 4;
   SHARED_STORAGE = 5;
+  LOCAL_UNPARTITIONED_DATA_ACCESS = 6;
 }
 
 message PrivacySandboxAttestationsProto {

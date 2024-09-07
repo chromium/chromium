@@ -164,7 +164,7 @@ class BrowserAutofillManager : public AutofillManager {
                             const FormFieldData& trigger_field);
   // Virtual for testing
   virtual void DidShowSuggestions(
-      base::span<const SuggestionType> shown_suggestions_types,
+      DenseSet<SuggestionType> shown_suggestion_types,
       const FormData& form,
       const FormFieldData& field);
 
@@ -185,6 +185,20 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       const CreditCard& credit_card,
       const AutofillTriggerDetails& trigger_details);
+
+  /////////////////
+  // DO NOT USE! //
+  /////////////////
+  // See `FormFiller::FillOrPreviewFormExperimental()`.
+  // TODO(crbug.com/40227071): Clean up the API.
+  virtual void FillOrPreviewFormExperimental(
+      mojom::ActionPersistence action_persistence,
+      FillingProduct filling_product,
+      const FieldTypeSet& field_types_to_fill,
+      const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill);
 
   // Remove the credit card or Autofill profile that matches |backend_id|
   // from the database. Returns true if deletion is allowed.
@@ -394,6 +408,70 @@ class BrowserAutofillManager : public AutofillManager {
  private:
   friend class BrowserAutofillManagerTestApi;
 
+  // Utilities for logging form events. The loggers emit metrics during their
+  // destruction, effectively when the BrowserAutofillManager is reset or
+  // destroyed.
+  struct MetricsState {
+    explicit MetricsState(BrowserAutofillManager* owner);
+    ~MetricsState();
+
+    // The address and credit card event loggers are used to emit key and funnel
+    // metrics.
+    autofill_metrics::AddressFormEventLogger address_form_event_logger;
+    autofill_metrics::CreditCardFormEventLogger credit_card_form_event_logger;
+
+    // The autocomplete unrecognized fallback logger is used to collect metrics
+    // around the manual fallback for autocomplete=unrecognized fields.
+    // Since no metrics for autocomplete=unrecognized fields are emitted through
+    // the `address_form_event_logger`, a separate logger specifically for
+    // autocomplete=unrecognized fields is used.
+    autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger
+        autocomplete_unrecognized_fallback_logger;
+
+    // The manual fallback logger is used to collect metrics
+    // around Autofill being triggered on unclassified fields or fields that are
+    // classified differently from the target `FillingProduct` (address or
+    // payments).
+    autofill_metrics::ManualFallbackEventLogger manual_fallback_logger;
+
+    // The (masked) CreditCard last selected by the user.
+    CreditCard last_selected_card;
+
+    // Have we logged whether Autofill is enabled for this page load?
+    bool has_logged_autofill_enabled = false;
+    // Has the user manually edited at least one form field among the
+    // autofillable ones?
+    bool user_did_type = false;
+
+    // TODO(crbug.com/354043809): Move out of BAM.
+    // Does |this| have any parsed forms?
+    bool has_parsed_forms = false;
+    // Is there a field with autocomplete="one-time-code" observed?
+    bool has_observed_one_time_code_field = false;
+    // Is there a field with phone number collection observed?
+    bool has_observed_phone_number_field = false;
+
+    // Should be set at the beginning of the interaction and re-used
+    // throughout the context of this manager.
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics =
+        AutofillMetrics::PaymentsSigninState::kUnknown;
+
+    // When the user first interacted with a potentially fillable form on this
+    // page.
+    base::TimeTicks initial_interaction_timestamp;
+
+    // When the form was submitted.
+    base::TimeTicks form_submitted_timestamp;
+  };
+
+  // Triggers the possible import of submitted data at submission time.
+  void MaybeImportFromSubmittedForm(const FormData& form,
+                                    const FormStructure* const form_structure);
+
+  // Emits all metrics that should be recorded at submission time.
+  void LogSubmissionMetrics(const FormStructure* submitted_form,
+                            const base::TimeTicks& form_submitted_timestamp);
+
   // When `AuthenticateThenFillCreditCardForm()` fetches a credit card, this
   // gets called once the fetching has finished. If successful, the
   // `credit_card` is filled.
@@ -410,6 +488,12 @@ class BrowserAutofillManager : public AutofillManager {
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload
   // or personal data.
+  // Note that the function returns nullptr in incognito mode. Consequently, in
+  // incognito mode Autofill doesn't:
+  // - Import
+  // - Vote
+  // - Collect any key metrics
+  // - Collect profile token quality observations
   std::unique_ptr<FormStructure> ValidateSubmittedForm(const FormData& form);
 
   // Method called after the values present on submitted fields were associated
@@ -621,62 +705,6 @@ class BrowserAutofillManager : public AutofillManager {
           client().GetAutocompleteHistoryManager(),
           client().GetPaymentsAutofillClient()->GetIbanManager(),
           client().GetPaymentsAutofillClient()->GetMerchantPromoCodeManager());
-
-  // Utilities for logging form events. The loggers emit metrics during their
-  // destruction, effectively when the BrowserAutofillManager is reset or
-  // destroyed.
-  struct MetricsState {
-    explicit MetricsState(BrowserAutofillManager* owner);
-    ~MetricsState();
-
-    // The address and credit card event loggers are used to emit key and funnel
-    // metrics.
-    autofill_metrics::AddressFormEventLogger address_form_event_logger;
-    autofill_metrics::CreditCardFormEventLogger credit_card_form_event_logger;
-
-    // The autocomplete unrecognized fallback logger is used to collect metrics
-    // around the manual fallback for autocomplete=unrecognized fields.
-    // Since no metrics for autocomplete=unrecognized fields are emitted through
-    // the `address_form_event_logger`, a separate logger specifically for
-    // autocomplete=unrecognized fields is used.
-    autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger
-        autocomplete_unrecognized_fallback_logger;
-
-    // The manual fallback logger is used to collect metrics
-    // around Autofill being triggered on unclassified fields or fields that are
-    // classified differently from the target `FillingProduct` (address or
-    // payments).
-    autofill_metrics::ManualFallbackEventLogger manual_fallback_logger;
-
-    // The (masked) CreditCard last selected by the user.
-    CreditCard last_selected_card;
-
-    // Have we logged whether Autofill is enabled for this page load?
-    bool has_logged_autofill_enabled = false;
-    // Has the user manually edited at least one form field among the
-    // autofillable ones?
-    bool user_did_type = false;
-
-    // TODO(crbug.com/354043809): Move out of BAM.
-    // Does |this| have any parsed forms?
-    bool has_parsed_forms = false;
-    // Is there a field with autocomplete="one-time-code" observed?
-    bool has_observed_one_time_code_field = false;
-    // Is there a field with phone number collection observed?
-    bool has_observed_phone_number_field = false;
-
-    // Should be set at the beginning of the interaction and re-used
-    // throughout the context of this manager.
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics =
-        AutofillMetrics::PaymentsSigninState::kUnknown;
-
-    // When the user first interacted with a potentially fillable form on this
-    // page.
-    base::TimeTicks initial_interaction_timestamp;
-
-    // When the form was submitted.
-    base::TimeTicks form_submitted_timestamp;
-  };
 
   // This is always non-nullopt except very briefly during Reset().
   std::optional<MetricsState> metrics_ = std::make_optional<MetricsState>(this);

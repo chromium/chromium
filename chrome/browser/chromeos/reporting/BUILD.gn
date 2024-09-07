@@ -1,0 +1,109 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("reporting") {
+  sources = [
+    "local_state_reporting_settings.cc",
+    "local_state_reporting_settings.h",
+    "metric_default_utils.cc",
+    "metric_default_utils.h",
+    "metric_reporting_manager_delegate_base.cc",
+    "metric_reporting_manager_delegate_base.h",
+    "metric_reporting_prefs.cc",
+    "metric_reporting_prefs.h",
+    "usage_telemetry_periodic_collector_base.cc",
+    "usage_telemetry_periodic_collector_base.h",
+    "user_reporting_settings.cc",
+    "user_reporting_settings.h",
+  ]
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "device_reporting_settings_lacros.cc",
+      "device_reporting_settings_lacros.h",
+      "metric_reporting_manager_lacros.cc",
+      "metric_reporting_manager_lacros.h",
+      "metric_reporting_manager_lacros_factory.cc",
+      "metric_reporting_manager_lacros_factory.h",
+      "metric_reporting_manager_lacros_shutdown_notifier_factory.cc",
+      "metric_reporting_manager_lacros_shutdown_notifier_factory.h",
+    ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/reporting/client:report_queue_configuration",
+    "//components/reporting/client:report_queue_factory",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:rate_limiter_interface",
+    "//components/reporting/util:rate_limiter_slide_window",
+    "//url",
+  ]
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chrome/browser/chromeos/reporting/network",
+      "//chromeos/lacros",
+      "//components/keyed_service/content",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "local_state_reporting_settings_unittest.cc",
+    "metric_reporting_prefs_unittest.cc",
+    "usage_telemetry_periodic_collector_base_unittest.cc",
+    "user_reporting_settings_unittest.cc",
+  ]
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "device_reporting_settings_lacros_unittest.cc",
+      "metric_reporting_manager_lacros_factory_unittest.cc",
+      "metric_reporting_manager_lacros_shutdown_notifier_factory_unittest.cc",
+      "metric_reporting_manager_lacros_unittest.cc",
+    ]
+  }
+
+  deps = [
+    ":reporting",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/common",
+    "//components/reporting/metrics/fakes:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//components/reporting/client:report_queue_configuration",
+      "//components/reporting/metrics:metrics_data_collection",
+      "//components/reporting/util:rate_limiter_interface",
+      "//components/reporting/util:rate_limiter_slide_window",
+    ]
+  }
+}

@@ -180,14 +180,6 @@ public class NativePostTaskTest {
         testRunningTasksInSequence(taskQueue);
     }
 
-    @Test
-    @MediumTest
-    public void testCreateSingleThreadSequencedTaskRunner() {
-        startNativeScheduler();
-        TaskRunner taskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
-        testRunningTasksInSequence(taskQueue);
-    }
-
     private void performSequencedTestSchedulerMigration(
             TaskRunner taskQueue, List<Integer> orderListImmediate, List<Integer> orderListDelayed)
             throws Exception {
@@ -242,19 +234,6 @@ public class NativePostTaskTest {
         List<Integer> orderListImmediate = new ArrayList<>();
         List<Integer> orderListDelayed = new ArrayList<>();
         TaskRunner taskQueue = PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING);
-        performSequencedTestSchedulerMigration(taskQueue, orderListImmediate, orderListDelayed);
-
-        assertThat(orderListImmediate, contains(1, 2, 3, 4));
-        assertThat(orderListDelayed, contains(1, 2, 3));
-    }
-
-    @Test
-    @MediumTest
-    @RequiresRestart
-    public void testCreateSingleThreadSequencedTaskRunnerMigrationToNative() throws Exception {
-        List<Integer> orderListImmediate = new ArrayList<>();
-        List<Integer> orderListDelayed = new ArrayList<>();
-        TaskRunner taskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
         performSequencedTestSchedulerMigration(taskQueue, orderListImmediate, orderListDelayed);
 
         assertThat(orderListImmediate, contains(1, 2, 3, 4));

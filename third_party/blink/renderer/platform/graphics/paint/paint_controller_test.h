@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CONTROLLER_TEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CONTROLLER_TEST_H_
 
+#include "base/auto_reset.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,16 +21,19 @@ namespace blink {
 
 class GraphicsContext;
 
-class PaintControllerCycleScopeForTest : public PaintControllerCycleScope {
+class PaintControllerForTest : public PaintController {
  public:
-  explicit PaintControllerCycleScopeForTest(PaintController& controller)
-      : PaintControllerCycleScope(controller, /*record_debug_info*/ true) {}
+  explicit PaintControllerForTest()
+      : PaintController(/*record_debug_info=*/true) {}
+  explicit PaintControllerForTest(
+      PaintControllerPersistentData& persistent_data)
+      : PaintController(/*record_debug_info=*/true, &persistent_data) {}
 };
 
-class CommitCycleScope : public PaintControllerCycleScopeForTest {
+class AutoCommitPaintController : public PaintControllerForTest {
  public:
-  using PaintControllerCycleScopeForTest::PaintControllerCycleScopeForTest;
-  ~CommitCycleScope() { controller_.CommitNewDisplayItems(); }
+  using PaintControllerForTest::PaintControllerForTest;
+  ~AutoCommitPaintController() { CommitNewDisplayItems(); }
 };
 
 class PaintControllerTestBase : public testing::Test {
@@ -68,13 +72,11 @@ class PaintControllerTestBase : public testing::Test {
       : root_paint_property_client_(
             MakeGarbageCollected<FakeDisplayItemClient>("root")),
         root_paint_chunk_id_(root_paint_property_client_->Id(),
-                             DisplayItem::kUninitializedType),
-        paint_controller_(MakeGarbageCollected<PaintController>()) {}
+                             DisplayItem::kUninitializedType) {}
 
   void SetUp() override { GTEST_FLAG_SET(death_test_style, "threadsafe"); }
 
-  void InitRootChunk() { InitRootChunk(GetPaintController()); }
-  void InitRootChunk(PaintController& paint_controller) {
+  void InitRootChunk(PaintController& paint_controller) const {
     paint_controller.UpdateCurrentPaintChunkProperties(
         root_paint_chunk_id_, *root_paint_property_client_,
         DefaultPaintChunkProperties());
@@ -83,32 +85,46 @@ class PaintControllerTestBase : public testing::Test {
     return root_paint_chunk_id_;
   }
 
-  PaintController& GetPaintController() { return *paint_controller_; }
-
-  wtf_size_t NumCachedNewItems() const {
-    return paint_controller_->num_cached_new_items_;
+  PaintControllerPersistentData& GetPersistentData() {
+    CHECK(persistent_data_);
+    return *persistent_data_;
   }
-  wtf_size_t NumCachedNewSubsequences() const {
-    return paint_controller_->num_cached_new_subsequences_;
+
+  static const PaintArtifact& GetNewPaintArtifact(
+      const PaintController& controller) {
+    // This can only be called before CommitNewDisplayItems().
+    DCHECK(controller.new_paint_artifact_);
+    return *controller.new_paint_artifact_;
+  }
+
+  static wtf_size_t NumCachedNewItems(const PaintController& controller) {
+    return controller.num_cached_new_items_;
+  }
+  static wtf_size_t NumCachedNewSubsequences(
+      const PaintController& controller) {
+    return controller.num_cached_new_subsequences_;
   }
 #if DCHECK_IS_ON()
-  wtf_size_t NumIndexedItems() const {
-    return paint_controller_->num_indexed_items_;
+  static wtf_size_t NumIndexedItems(const PaintController& controller) {
+    return controller.num_indexed_items_;
   }
-  wtf_size_t NumSequentialMatches() const {
-    return paint_controller_->num_sequential_matches_;
+  static wtf_size_t NumSequentialMatches(const PaintController& controller) {
+    return controller.num_sequential_matches_;
   }
-  wtf_size_t NumOutOfOrderMatches() const {
-    return paint_controller_->num_out_of_order_matches_;
+  static wtf_size_t NumOutOfOrderMatches(const PaintController& controller) {
+    return controller.num_out_of_order_matches_;
   }
 #endif
 
-  void InvalidateAll() { paint_controller_->InvalidateAllForTesting(); }
+  void InvalidateAll() { persistent_data_->InvalidateAllForTesting(); }
 
-  using SubsequenceMarkers = PaintController::SubsequenceMarkers;
   const SubsequenceMarkers* GetSubsequenceMarkers(
       const DisplayItemClient& client) {
-    return paint_controller_->GetSubsequenceMarkers(client.Id());
+    return persistent_data_->GetSubsequenceMarkers(client.Id());
+  }
+
+  bool ClientCacheIsValid(const DisplayItemClient& client) const {
+    return persistent_data_->ClientCacheIsValid(client);
   }
 
   static bool ClientCacheIsValid(const PaintController& paint_controller,
@@ -116,14 +132,11 @@ class PaintControllerTestBase : public testing::Test {
     return paint_controller.ClientCacheIsValid(client);
   }
 
-  bool ClientCacheIsValid(const DisplayItemClient& client) const {
-    return ClientCacheIsValid(*paint_controller_, client);
-  }
-
  private:
   Persistent<FakeDisplayItemClient> root_paint_property_client_;
   PaintChunk::Id root_paint_chunk_id_;
-  Persistent<PaintController> paint_controller_;
+  Persistent<PaintControllerPersistentData> persistent_data_ =
+      MakeGarbageCollected<PaintControllerPersistentData>();
 };
 
 // Matcher for checking display item list. Sample usage:

@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -58,8 +59,8 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
                              views::DISTANCE_BUTTON_HORIZONTAL_PADDING)));
 
   if (show_signin_button) {
-    SetButtons(ui::DIALOG_BUTTON_OK);
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
                    l10n_util::GetStringUTF16(
                        IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
     // base::Unretained() is safe here because this outlives the button.
@@ -69,7 +70,7 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
     return;
   }
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   auto* link_view = AddChildView(
       BuildManageAccountDevicesLinkView(/*show_link=*/false, controller_));
   link_view->SetProperty(

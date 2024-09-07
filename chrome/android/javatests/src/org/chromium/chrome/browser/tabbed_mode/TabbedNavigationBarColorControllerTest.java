@@ -84,8 +84,8 @@ public class TabbedNavigationBarColorControllerTest {
     @SmallTest
     public void testToggleOverview() {
         assertEquals(
-                "Navigation bar should be colorSurface before entering overview mode.",
-                mRegularNavigationColor,
+                "Navigation bar should match the tab background before entering overview mode.",
+                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
 
         LayoutTestUtils.startShowingAndWaitForLayout(
@@ -100,8 +100,8 @@ public class TabbedNavigationBarColorControllerTest {
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
 
         assertEquals(
-                "Navigation bar should be colorSurface after exiting overview mode.",
-                mRegularNavigationColor,
+                "Navigation bar should match the tab background after exiting overview mode.",
+                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
     }
 
@@ -109,8 +109,8 @@ public class TabbedNavigationBarColorControllerTest {
     @SmallTest
     public void testToggleIncognito() {
         assertEquals(
-                "Navigation bar should be colorSurface on normal tabs.",
-                mRegularNavigationColor,
+                "Navigation bar should match the tab background on normal tabs.",
+                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
 
         ChromeTabUtils.newTabFromMenu(
@@ -131,8 +131,9 @@ public class TabbedNavigationBarColorControllerTest {
                 true);
 
         assertEquals(
-                "Navigation bar should be colorSurface after switching back to normal tab.",
-                mRegularNavigationColor,
+                "Navigation bar should match the tab background after switching back to normal"
+                        + " tab.",
+                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
     }
 
@@ -171,7 +172,10 @@ public class TabbedNavigationBarColorControllerTest {
     @Test
     @MediumTest
     public void testSetNavigationBarScrimFraction() {
-        assertEquals(mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should match the tab background on normal tabs.",
+                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
+                mWindow.getNavigationBarColor());
 
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         View rootView = activity.findViewById(R.id.tab_switcher_view_holder_stub);
@@ -191,11 +195,14 @@ public class TabbedNavigationBarColorControllerTest {
 
         double regularBrightness = ColorUtils.calculateLuminance(mRegularNavigationColor);
         @ColorInt int withScrim = mWindow.getNavigationBarColor();
-        assertNotEquals(mRegularNavigationColor, withScrim);
+        assertNotEquals(
+                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(), withScrim);
         assertTrue(regularBrightness > ColorUtils.calculateLuminance(withScrim));
 
         ThreadUtils.runOnUiThreadBlocking(() -> scrimCoordinator.hideScrim(false, 0));
-        assertEquals(mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
+                mWindow.getNavigationBarColor());
     }
 
     private void enterFullscreen(FullscreenToggleObserver observer, WebContents webContents)

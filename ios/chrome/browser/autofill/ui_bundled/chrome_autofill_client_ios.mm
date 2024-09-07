@@ -84,7 +84,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       browser_state_(browser_state),
       web_state_(web_state),
       bridge_(bridge),
-      identity_manager_(IdentityManagerFactory::GetForBrowserState(
+      identity_manager_(IdentityManagerFactory::GetForProfile(
           browser_state->GetOriginalChromeBrowserState())),
       infobar_manager_(infobar_manager),
       // TODO(crbug.com/40612524): Replace the closure with a callback to the
@@ -243,15 +243,6 @@ void ChromeAutofillClientIOS::ShowAutofillSettings(
   NOTREACHED_IN_MIGRATION();
 }
 
-payments::MandatoryReauthManager*
-ChromeAutofillClientIOS::GetOrCreatePaymentsMandatoryReauthManager() {
-  if (!payments_reauth_manager_) {
-    payments_reauth_manager_ =
-        std::make_unique<payments::MandatoryReauthManager>(this);
-  }
-  return payments_reauth_manager_.get();
-}
-
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
@@ -305,14 +296,16 @@ void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED();
 }
 
-void ChromeAutofillClientIOS::ShowAutofillSuggestions(
+AutofillClient::SuggestionUiSessionId
+ChromeAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   [bridge_ showAutofillPopup:open_args.suggestions suggestionDelegate:delegate];
+  return SuggestionUiSessionId();
 }
 
 AutofillPlusAddressDelegate* ChromeAutofillClientIOS::GetPlusAddressDelegate() {
-  return PlusAddressServiceFactory::GetForBrowserState(browser_state_);
+  return PlusAddressServiceFactory::GetForProfile(browser_state_);
 }
 
 void ChromeAutofillClientIOS::OfferPlusAddressCreation(
@@ -329,13 +322,6 @@ void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
 }
 
 void ChromeAutofillClientIOS::PinAutofillSuggestions() {
-  NOTIMPLEMENTED();
-}
-
-void ChromeAutofillClientIOS::UpdatePopup(
-    const std::vector<Suggestion>& suggestions,
-    FillingProduct main_filling_product,
-    AutofillSuggestionTriggerSource trigger_source) {
   NOTIMPLEMENTED();
 }
 

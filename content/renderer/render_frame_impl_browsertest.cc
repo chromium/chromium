@@ -501,10 +501,13 @@ TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
   for (const auto& test_case : kTestCases) {
     WebURLRequest request;
     request.SetUrl(GURL(test_case.original));
-    GetMainRenderFrame()->WillSendRequest(
-        request, blink::WebLocalFrameClient::ForRedirect(false),
-        /*upstream_url=*/GURL());
-    EXPECT_EQ(test_case.transformed, request.Url().GetString().Utf8());
+    std::optional<blink::WebURL> updated =
+        GetMainRenderFrame()->WillSendRequest(
+            request.Url(), request.RequestorOrigin(), request.SiteForCookies(),
+            blink::WebLocalFrameClient::ForRedirect(false), blink::WebURL());
+    EXPECT_EQ(test_case.transformed, updated.has_value()
+                                         ? updated->GetString().Utf8()
+                                         : request.Url().GetString().Utf8());
   }
 }
 
@@ -1429,10 +1432,10 @@ class RenderFrameImplMojoJsTest : public RenderViewTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies enabling MojoJS bindings via allowing the
-// BINDINGS_POLICY_MOJO_WEB_UI binding.
+// Verifies enabling MojoJS bindings.
 TEST_F(RenderFrameImplMojoJsTest, AllowMojoWebUIBindings) {
-  GetMainRenderFrame()->AllowBindings(BINDINGS_POLICY_MOJO_WEB_UI);
+  GetMainRenderFrame()->AllowBindings(
+      BindingsPolicySet({BindingsPolicyValue::kMojoWebUi}).ToEnumBitmask());
   LoadHTML(kSimpleScriptHtml);
 
   // Expect no crash and MojoJs bindings are enabled in the context.
@@ -1468,9 +1471,10 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnabledBindingsTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
-        GetMainRenderFrame()->enabled_bindings_ |= BINDINGS_POLICY_MOJO_WEB_UI;
+        GetMainRenderFrame()->enabled_bindings_.Put(
+            BindingsPolicyValue::kMojoWebUi);
 
         LoadHTML(kSimpleScriptHtml);
       },
@@ -1484,7 +1488,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnableMojoJsBindingsTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         GetMainRenderFrame()->enable_mojo_js_bindings_ = true;
 
@@ -1500,7 +1504,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, MojoJsInterfaceBrokerTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         GetMainRenderFrame()->mojo_js_interface_broker_ =
             TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote();
@@ -1518,8 +1522,8 @@ TEST_F(RenderFrameImplMojoJsDeathTest,
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(ContextFeatureSettingsEnableMojoJsTampered(),
-                    "Check failed: \\*mojo_js_allowed_");
+  EXPECT_CHECK_DEATH_WITH(ContextFeatureSettingsEnableMojoJsTampered(),
+                          "Check failed: \\*mojo_js_allowed_");
 }
 #endif  //  BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 

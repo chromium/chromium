@@ -56,10 +56,9 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config) {
 
 }  // namespace
 
-CheckForUpdatesTask::CheckForUpdatesTask(
-    scoped_refptr<Configurator> config,
-    UpdaterScope scope,
-    base::OnceCallback<void(UpdateService::Callback)> update_checker)
+CheckForUpdatesTask::CheckForUpdatesTask(scoped_refptr<Configurator> config,
+                                         UpdaterScope scope,
+                                         UpdateChecker update_checker)
     : config_(config),
       update_checker_(std::move(update_checker)),
       update_client_(update_client::UpdateClientFactory(config_)) {}

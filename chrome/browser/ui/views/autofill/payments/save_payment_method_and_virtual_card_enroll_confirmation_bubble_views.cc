@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -27,11 +28,12 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
       controller_hide_callback_(std::move(controller_hide_callback)),
       ui_params_(std::move(ui_params)) {
   if (ui_params_.is_success) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     SetShowCloseButton(true);
   } else {
-    SetButtons(ui::DIALOG_BUTTON_OK);
-    SetButtonLabel(ui::DIALOG_BUTTON_OK, ui_params_.failure_ok_button_text);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
+                   ui_params_.failure_ok_button_text);
   }
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));

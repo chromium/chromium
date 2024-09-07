@@ -32,6 +32,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -252,7 +253,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
                                std::move(url_loader_factory),
                                rp_for_display),
       rp_context_(rp_context) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(kBubbleWidth);
   set_margins(idp_title.has_value()
                   ? gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0)
@@ -306,13 +307,13 @@ void AccountSelectionBubbleView::InitDialogWidget() {
 }
 
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+    const std::vector<content::IdentityProviderData>& idp_data_list,
     bool show_back_button,
     bool is_choose_an_account) {
   // If there are multiple IDPs, then the content::IdentityProviderMetadata
   // passed will be unused since there will be no `header_icon_view_`.
   // Therefore, it is fine to pass the first one into UpdateHeader().
-  DCHECK(idp_display_data_list.size() == 1u || !header_icon_view_);
+  DCHECK(idp_data_list.size() == 1u || !header_icon_view_);
   DCHECK(!is_choose_an_account || show_back_button);
   std::u16string title =
       is_choose_an_account
@@ -320,15 +321,15 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
                                        rp_for_display_)
           : webid::GetTitle(
                 rp_for_display_,
-                idp_display_data_list.size() > 1u
+                idp_data_list.size() > 1u
                     ? std::nullopt
                     : std::make_optional<std::u16string>(
-                          idp_display_data_list[0].idp_etld_plus_one),
+                          base::UTF8ToUTF16(idp_data_list[0].idp_for_display)),
                 rp_context_);
-  UpdateHeader(idp_display_data_list[0].idp_metadata, title, show_back_button);
+  UpdateHeader(idp_data_list[0].idp_metadata, title, show_back_button);
 
   RemoveNonHeaderChildViews();
-  AddSeparatorAndMultipleAccountChooser(idp_display_data_list);
+  AddSeparatorAndMultipleAccountChooser(idp_data_list);
 
   if (!has_sheet_) {
     has_sheet_ = true;
@@ -341,7 +342,7 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
 
 void AccountSelectionBubbleView::ShowVerifyingSheet(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_display_data,
+    const content::IdentityProviderData& idp_display_data,
     const std::u16string& title) {
   UpdateHeader(idp_display_data.idp_metadata, title,
                /*show_back_button=*/false);
@@ -373,10 +374,11 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_display_data,
+    const content::IdentityProviderData& idp_display_data,
     bool show_back_button) {
   std::u16string title = webid::GetTitle(
-      rp_for_display_, idp_display_data.idp_etld_plus_one, rp_context_);
+      rp_for_display_, base::UTF8ToUTF16(idp_display_data.idp_for_display),
+      rp_context_);
   UpdateHeader(idp_display_data.idp_metadata, title, show_back_button);
 
   RemoveNonHeaderChildViews();
@@ -527,14 +529,14 @@ void AccountSelectionBubbleView::ShowLoadingDialog() {
 
 void AccountSelectionBubbleView::ShowRequestPermissionDialog(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_display_data) {
+    const content::IdentityProviderData& idp_display_data) {
   NOTREACHED_IN_MIGRATION()
       << "ShowRequestPermissionDialog is only implemented for "
          "AccountSelectionModalView";
 }
 
 void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
-    const std::vector<IdentityProviderDisplayData>& idp_data_list) {
+    const std::vector<content::IdentityProviderData>& idp_data_list) {
   // We currently only invoke this method in the multi IDP case.
   DCHECK(idp_data_list.size() > 1u);
   // Since there are multiple IDPs, then the content::IdentityProviderMetadata
@@ -703,7 +705,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateSingleAccountChooser(
-    const IdentityProviderDisplayData& idp_display_data,
+    const content::IdentityProviderData& idp_display_data,
     const content::IdentityRequestAccount& account) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -733,7 +735,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // Do not add disclosure text if this is a sign in or if we were requested
   // to skip it.
   if (account.login_state == Account::LoginState::kSignIn ||
-      !idp_display_data.request_permission) {
+      idp_display_data.disclosure_fields.empty()) {
     return row;
   }
 
@@ -743,7 +745,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
 }
 
 void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
+    const std::vector<content::IdentityProviderData>& idp_data_list) {
   // We use a separate scroller for accounts vs for mismatches. This allows us
   // to show accounts at the top while still always showing mismatches in the UI
   // before any scrolling occurs.
@@ -754,14 +756,14 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
       account_scroll_view->SetContents(std::make_unique<views::View>());
   accounts_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  bool is_multi_idp = idp_display_data_list.size() > 1u;
+  bool is_multi_idp = idp_data_list.size() > 1u;
   // Add returning accounts first and then other accounts.
   int position = 0;
-  AddSignInAccounts(idp_display_data_list, accounts_content, position);
-  AddAccounts(idp_display_data_list, accounts_content,
-              Account::LoginState::kSignUp, position);
+  AddSignInAccounts(idp_data_list, accounts_content, position);
+  AddAccounts(idp_data_list, accounts_content, Account::LoginState::kSignUp,
+              position);
   size_t num_account_rows = 0;
-  for (const auto& idp_display_data : idp_display_data_list) {
+  for (const auto& idp_display_data : idp_data_list) {
     num_account_rows += idp_display_data.accounts.size();
     const content::IdentityProviderMetadata& idp_metadata =
         idp_display_data.idp_metadata;
@@ -809,11 +811,12 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
 
   // Add mismatch rows.
   size_t num_mismatch_rows = 0;
-  for (const auto& idp_display_data : idp_display_data_list) {
+  for (const auto& idp_display_data : idp_data_list) {
     if (idp_display_data.has_login_status_mismatch) {
       DCHECK(idp_display_data.accounts.empty());
-      mismatch_content->AddChildView(CreateIdpLoginRow(
-          idp_display_data.idp_etld_plus_one, idp_display_data.idp_metadata));
+      mismatch_content->AddChildView(
+          CreateIdpLoginRow(base::UTF8ToUTF16(idp_display_data.idp_for_display),
+                            idp_display_data.idp_metadata));
       num_mismatch_rows += 1;
     }
   }
@@ -844,11 +847,12 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  if (starts_with_scroller) {
-    container->AddChildView(std::make_unique<views::Separator>());
-  } else {
-    AddChildView(std::make_unique<views::Separator>());
+  auto separator = std::make_unique<views::Separator>();
+  if (!starts_with_scroller) {
+    separator->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0, kTopBottomPadding, 0)));
   }
+  container->AddChildView(std::move(separator));
   container->AddChildView(std::move(account_scroll_view));
   // If there are both accounts and mismatches, add a separator.
   if (num_account_rows > 0 && num_mismatch_rows > 0) {
@@ -859,12 +863,12 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
 }
 
 void AccountSelectionBubbleView::AddAccounts(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+    const std::vector<content::IdentityProviderData>& idp_data_list,
     views::View* accounts_content,
     Account::LoginState login_state,
     int& out_position) {
-  bool is_multi_idp = idp_display_data_list.size() > 1u;
-  for (const auto& idp_display_data : idp_display_data_list) {
+  bool is_multi_idp = idp_data_list.size() > 1u;
+  for (const auto& idp_display_data : idp_data_list) {
     for (const auto& account : idp_display_data.accounts) {
       if (account.login_state == login_state) {
         accounts_content->AddChildView(CreateAccountRow(
@@ -876,14 +880,14 @@ void AccountSelectionBubbleView::AddAccounts(
 }
 
 void AccountSelectionBubbleView::AddSignInAccounts(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+    const std::vector<content::IdentityProviderData>& idp_data_list,
     views::View* accounts_content,
     int& out_position) {
-  bool is_multi_idp = idp_display_data_list.size() > 1u;
+  bool is_multi_idp = idp_data_list.size() > 1u;
   if (!is_multi_idp) {
     // Optimization for single IDP case: no need to re-sort accounts.
-    AddAccounts(idp_display_data_list, accounts_content,
-                Account::LoginState::kSignIn, out_position);
+    AddAccounts(idp_data_list, accounts_content, Account::LoginState::kSignIn,
+                out_position);
     return;
   }
 
@@ -893,9 +897,9 @@ void AccountSelectionBubbleView::AddSignInAccounts(
   // we avoid copying accounts and IDP data by storing pointers. It would be
   // incorrect to copy them as otherwise they would be destroyed at the end of
   // this method call since CreateAccountRow() does not take ownership.
-  std::vector<std::pair<const Account*, const IdentityProviderDisplayData*>>
+  std::vector<std::pair<const Account*, const content::IdentityProviderData*>>
       sorted_accounts;
-  for (const auto& idp_display_data : idp_display_data_list) {
+  for (const auto& idp_display_data : idp_data_list) {
     for (const auto& account : idp_display_data.accounts) {
       if (account.login_state == Account::LoginState::kSignIn) {
         sorted_accounts.emplace_back(&account, &idp_display_data);
@@ -948,16 +952,16 @@ void AccountSelectionBubbleView::AddSignInAccounts(
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateSingleReturningAccountChooser(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
+    const std::vector<content::IdentityProviderData>& idp_data_list) {
   std::vector<std::u16string> mismatch_idps;
   std::vector<std::u16string> non_mismatch_idps;
   const content::IdentityRequestAccount* returning_account = nullptr;
-  const IdentityProviderDisplayData* returning_idp = nullptr;
-  for (const auto& idp : idp_display_data_list) {
+  const content::IdentityProviderData* returning_idp = nullptr;
+  for (const auto& idp : idp_data_list) {
     if (idp.has_login_status_mismatch) {
-      mismatch_idps.push_back(idp.idp_etld_plus_one);
+      mismatch_idps.push_back(base::UTF8ToUTF16(idp.idp_for_display));
     } else {
-      non_mismatch_idps.push_back(idp.idp_etld_plus_one);
+      non_mismatch_idps.push_back(base::UTF8ToUTF16(idp.idp_for_display));
     }
     if (returning_account) {
       continue;

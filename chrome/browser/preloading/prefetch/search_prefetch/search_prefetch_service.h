@@ -118,9 +118,6 @@ enum class SearchPrefetchServingReason {
 class SearchPrefetchService : public KeyedService,
                               public TemplateURLServiceObserver {
  public:
-#if BUILDFLAG(IS_ANDROID)
-  void SetIsTest();
-#endif
 
   struct SearchPrefetchServingReasonRecorder;
   explicit SearchPrefetchService(Profile* profile);

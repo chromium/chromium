@@ -8,13 +8,8 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 
-namespace gfx {
-class Point;
-}  // namespace gfx
-
 namespace ui {
 class Event;
-class LocatedEvent;
 }  // namespace ui
 
 namespace ash {
@@ -34,29 +29,7 @@ class ASH_EXPORT AppListItemViewGridDelegate {
   virtual void ClearSelectedView() = 0;
   virtual bool IsSelectedView(const AppListItemView* view) const = 0;
 
-  // Registers `view` as a dragged item with the apps grid. Called when the
-  // user presses the mouse, or starts touch interaction with the view (both
-  // of which may transition into a drag operation).
-  // `location` - The pointer location in the view's bounds.
-  // `root_location` - The pointer location in the root window coordinates.
-  // `drag_start_callback` - Callback that gets called when the mouse/touch
-  //     interaction transitions into a drag (i.e. when the "drag" item starts
-  //     moving.
-  //  `drag_end_callback` - Callback that gets called when drag interaction
-  //     ends.
-  //  Returns whether `view` has been registered as a dragged view. Callbacks
-  //  should be ignored if the method returns false. If the method returns
-  //  true, it's expected to eventually run `drag_end_callback`.
-  virtual bool InitiateDrag(AppListItemView* view,
-                            const gfx::Point& location,
-                            const gfx::Point& root_location,
-                            base::OnceClosure drag_start_callback,
-                            base::OnceClosure drag_end_callback) = 0;
-  virtual void StartDragAndDropHostDragAfterLongPress() = 0;
-  // Called from AppListItemView when it receives a drag event. Returns true
-  // if the drag is still happening.
-  virtual bool UpdateDragFromItem(bool is_touch,
-                                  const ui::LocatedEvent& event) = 0;
+  // Provides a callback to interrupt an ongoing drag operation.
   virtual void EndDrag(bool cancel) = 0;
 
   // Provided as a callback for AppListItemView to notify of activation via

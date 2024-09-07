@@ -8,8 +8,8 @@
 #include <unordered_set>
 #include <utility>
 
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 namespace ui {
 
@@ -43,7 +43,7 @@ class BrowserAccessibilityAndroid;
 class WebContentsAccessibilityAndroid;
 
 class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
-    : public BrowserAccessibilityManager {
+    : public ui::BrowserAccessibilityManager {
  public:
   // Creates the platform-specific BrowserAccessibilityManager.
   static BrowserAccessibilityManager* Create(
@@ -102,25 +102,25 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   void FireFocusEvent(ui::AXNode* node) override;
 
   // BrowserAccessibilityManager overrides.
-  BrowserAccessibility* GetFocus() const override;
+  ui::BrowserAccessibility* GetFocus() const override;
   void SendLocationChangeEvents(
       const std::vector<ui::AXLocationChanges>& changes) override;
   ui::AXNode* RetargetForEvents(ui::AXNode* node,
                                 RetargetEventType type) const override;
   void FireBlinkEvent(ax::mojom::Event event_type,
-                      BrowserAccessibility* node,
+                      ui::BrowserAccessibility* node,
                       int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           const ui::AXNode* node) override;
 
   void FireAriaNotificationEvent(
-      BrowserAccessibility* node,
+      ui::BrowserAccessibility* node,
       const std::string& announcement,
       const std::string& notification_id,
       ax::mojom::AriaNotificationInterrupt interrupt_property,
       ax::mojom::AriaNotificationPriority priority_property) override;
 
-  void FireLocationChanged(BrowserAccessibility* node);
+  void FireLocationChanged(ui::BrowserAccessibility* node);
 
   // Helper functions to compute the next start and end index when moving
   // forwards or backwards by character, word, or line. This part is
@@ -147,7 +147,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   std::vector<std::string> GetMetadataForTree() const;
 
  protected:
-  std::unique_ptr<BrowserAccessibility> CreateBrowserAccessibility(
+  std::unique_ptr<ui::BrowserAccessibility> CreateBrowserAccessibility(
       ui::AXNode* node) override;
 
  private:
@@ -163,10 +163,10 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   // This gives BrowserAccessibilityManager::Create access to the class
   // constructor.
-  friend class BrowserAccessibilityManager;
+  friend class ui::BrowserAccessibilityManager;
 
   // Handle a hover event from the renderer process.
-  void HandleHoverEvent(BrowserAccessibility* node);
+  void HandleHoverEvent(ui::BrowserAccessibility* node);
 
   // A weak reference to WebContentsAccessibility for reaching Java layer.
   // Only the root manager has the reference. Should be accessed through

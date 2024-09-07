@@ -52,6 +52,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
@@ -62,6 +63,8 @@
 namespace ash {
 
 namespace {
+
+constexpr auto kViewportMargins = gfx::Insets::VH(8, 0);
 
 // Margins between containers in the detailed view if the container is connected
 // to the container above it.
@@ -317,6 +320,9 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
   CreateTitleRow(IDS_ASH_STATUS_TRAY_FOCUS_MODE);
   CreateScrollableList();
+  // Margins for the scroll viewport to make the focus ring not clipped. See
+  // b/360178403.
+  scroller()->SetPreferredViewportMargins(kViewportMargins);
 
   CreateToggleView();
 
@@ -330,10 +336,10 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
 
   const base::flat_set<focus_mode_util::SoundType>& sound_sections =
       focus_mode_controller->focus_mode_sounds_controller()->sound_sections();
-  views::View* sound_view =
+  focus_mode_sounds_view_ =
       scroll_content()->AddChildView(std::make_unique<FocusModeSoundsView>(
           sound_sections, is_network_connected));
-  sound_view->SetID(ViewId::kSoundView);
+  focus_mode_sounds_view_->SetID(ViewId::kSoundView);
 
   const bool in_focus_session = focus_mode_controller->in_focus_session();
 
@@ -578,7 +584,7 @@ void FocusModeDetailedView::CreateTimerView() {
   timer_view_header->SetText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_SUBHEADER));
   timer_view_header->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+      gfx::HorizontalAlignment::ALIGN_LEFT);
   timer_view_header->SetBorder(
       views::CreateEmptyBorder(kTimerViewHeaderInsets));
   timer_view_header->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
@@ -652,8 +658,7 @@ void FocusModeDetailedView::CreateTimerView() {
       std::make_unique<views::Label>(l10n_util::GetPluralStringFUTF16(
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_MINUTES_LABEL,
           controller->session_duration().InMinutes())));
-  minutes_label_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  minutes_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosDisplay6Regular,
                                         *minutes_label_);
   timer_setting_view_->SetFlexForView(end_time_container, 1);
@@ -666,8 +671,7 @@ void FocusModeDetailedView::CreateTimerView() {
 
   end_time_label_ =
       end_time_container->AddChildView(std::make_unique<views::Label>());
-  end_time_label_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  end_time_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *end_time_label_);
   end_time_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
@@ -718,7 +722,11 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
 }
 
 void FocusModeDetailedView::HandleTextfieldActivationChange() {
-  if (!timer_textfield_->IsActive() && timer_textfield_->HasFocus()) {
+  if (timer_textfield_->IsActive()) {
+    return;
+  }
+
+  if (timer_textfield_->HasFocus()) {
     auto* focus_manager = timer_textfield_->GetWidget()->GetFocusManager();
     focus_manager->ClearFocus();
     focus_manager->SetStoredFocusView(nullptr);
@@ -727,14 +735,14 @@ void FocusModeDetailedView::HandleTextfieldActivationChange() {
     // timer_textfield_ after the bug resolved. The reason for calling it can be
     // found from the description of the bug.
     timer_textfield_->UpdateBackground();
-
-    // Once we clear the focus for the `timer_textfield_`, we need to call the
-    // function below manually to update the UI according to the latest session
-    // duration, since the `OnViewBlurred` for the textfield controller doesn't
-    // automatically call it to avoid the bug b/315358227.
-    SetInactiveSessionDuration(base::Minutes(
-        focus_mode_util::GetTimerTextfieldInputInMinutes(timer_textfield_)));
   }
+
+  // Once we clear the focus for the `timer_textfield_`, we need to call the
+  // function below manually to update the UI according to the latest session
+  // duration, since the `OnViewBlurred` for the textfield controller doesn't
+  // automatically call it to avoid the bug b/315358227.
+  SetInactiveSessionDuration(base::Minutes(
+      focus_mode_util::GetTimerTextfieldInputInMinutes(timer_textfield_)));
 }
 
 void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {
@@ -753,8 +761,7 @@ void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {
       task_view_container_->AddChildView(std::make_unique<views::Label>());
   task_view_header->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER));
-  task_view_header->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  task_view_header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   task_view_header->SetBorder(views::CreateEmptyBorder(kTaskViewHeaderInsets));
   task_view_header->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
@@ -768,8 +775,12 @@ void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {
 void FocusModeDetailedView::OnTaskViewAnimate(const int shift_height) {
   std::vector<views::View*> animatable_views;
 
-  // Currently, we only have the `do_not_disturb_view_` below the task view
-  // container. We only need to insert a new added view into this map in future.
+  // Add the views that show up below the tasks view container into
+  // `animatable_views`.
+  if (focus_mode_sounds_view_->GetVisible()) {
+    animatable_views.push_back(focus_mode_sounds_view_);
+  }
+
   if (do_not_disturb_view_->GetVisible()) {
     animatable_views.push_back(do_not_disturb_view_);
   }

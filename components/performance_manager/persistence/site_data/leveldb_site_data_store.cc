@@ -389,9 +389,6 @@ LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabaseImpl() {
   // Report the on disk size of the database if it already exists.
   if (base::DirectoryExists(db_path_)) {
     opening_type = OpeningType::kExistingDb;
-    int64_t db_ondisk_size_in_bytes = base::ComputeDirectorySize(db_path_);
-    base::UmaHistogramMemoryKB("PerformanceManager.SiteDB.OnDiskSize",
-                               db_ondisk_size_in_bytes / 1024);
   }
 
   leveldb_env::Options options;

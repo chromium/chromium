@@ -34,7 +34,6 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
@@ -133,7 +132,7 @@ class WaylandClipboardTestBase : public WaylandTest {
   // wl::TestSelection{Source,Offer} use ThreadPool task runners to read/write
   // selection data, so the pool must be explicitly flushed as well.
   void WaitForClipboardTasks() {
-    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+    WaylandTestBase::SyncDisplay();
     base::ThreadPoolInstance::Get()->FlushForTesting();
     base::RunLoop().RunUntilIdle();
   }
@@ -223,7 +222,7 @@ class WaylandClipboardTest : public WaylandClipboardTestBase {
     // calls, otherwise tests, such as ReadFromClipboard, would crash.
     ASSERT_EQ(WhichBufferToUse() == ClipboardBuffer::kSelection,
               !!clipboard_->GetClipboard(ClipboardBuffer::kSelection));
-    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+    WaylandTestBase::SyncDisplay();
 
     offered_data_.clear();
   }
@@ -313,7 +312,7 @@ TEST_P(WaylandClipboardTest, DISABLED_WriteToClipboard) {
 
     // 1. Offer sample text as selection data.
     OfferData(WhichBufferToUse(), kSampleClipboardText, {kMimeTypeTextUtf8});
-    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+    WaylandTestBase::SyncDisplay();
 
     // 2. Emulate an external client requesting to read the offered data and
     // make sure the appropriate string gets delivered.

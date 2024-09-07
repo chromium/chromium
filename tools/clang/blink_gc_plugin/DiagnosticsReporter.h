@@ -93,6 +93,12 @@ class DiagnosticsReporter {
   void OptionalNewExprUsedWithGC(const clang::Expr* expr,
                                  const clang::CXXRecordDecl* optional,
                                  const clang::CXXRecordDecl* gc_type);
+  void OptionalDeclUsedWithMember(const clang::Decl* decl,
+                                  const clang::CXXRecordDecl* optional,
+                                  const clang::CXXRecordDecl* member);
+  void OptionalNewExprUsedWithMember(const clang::Expr* expr,
+                                     const clang::CXXRecordDecl* optional,
+                                     const clang::CXXRecordDecl* member);
   void RawPtrOrRefDeclUsedWithGC(const clang::Decl* decl,
                                  const clang::CXXRecordDecl* optional,
                                  const clang::CXXRecordDecl* gc_type);
@@ -199,6 +205,8 @@ class DiagnosticsReporter {
   unsigned diag_unique_ptr_used_with_gc_;
   unsigned diag_optional_decl_used_with_gc_;
   unsigned diag_optional_new_expr_used_with_gc_;
+  unsigned diag_optional_decl_used_with_member_;
+  unsigned diag_optional_new_expr_used_with_member_;
   unsigned diag_raw_ptr_or_ref_decl_used_with_gc_;
   unsigned diag_raw_ptr_or_ref_new_expr_used_with_gc_;
   unsigned diag_variant_used_with_gc_;

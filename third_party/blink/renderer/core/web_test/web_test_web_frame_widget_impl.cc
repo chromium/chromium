@@ -15,6 +15,7 @@
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
@@ -203,6 +204,10 @@ void WebTestWebFrameWidgetImpl::Reset() {
 
     SetMainFrameOverlayColor(SK_ColorTRANSPARENT);
     SetTextZoomFactor(1);
+    LocalRootImpl()
+        ->GetFrame()
+        ->GetEventHandler()
+        .ResetLastMousePositionForWebTest();
   }
 }
 

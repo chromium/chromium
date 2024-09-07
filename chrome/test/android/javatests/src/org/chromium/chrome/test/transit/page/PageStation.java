@@ -155,7 +155,7 @@ public class PageStation extends Station {
     protected Supplier<Tab> mSelectedTabSupplier;
     protected Supplier<Tab> mPageLoadedSupplier;
 
-    /** Use {@link #newPageStationBuilder()} or the PageStation's subclass |newBuilder()|. */
+    /** Use the PageStation's subclass |newBuilder()|. */
     protected <T extends PageStation> PageStation(Builder<T> builder) {
         // incognito is optional and defaults to false
         mIncognito = builder.mIncognito == null ? false : builder.mIncognito;
@@ -189,16 +189,6 @@ public class PageStation extends Station {
                 addInitialFacility(facility);
             }
         }
-    }
-
-    /**
-     * Get a new Builder for the base PageStation class.
-     *
-     * <p>If you're building a subclass, get a new Builder from DerivedPageStation#newBuilder()
-     * instead.
-     */
-    public static Builder<PageStation> newPageStationBuilder() {
-        return new Builder<>(PageStation::new);
     }
 
     @Override
@@ -338,11 +328,6 @@ public class PageStation extends Station {
     }
 
     /** Loads a |url| in the same tab and waits to transition. */
-    public PageStation loadPageProgrammatically(String url) {
-        return loadPageProgrammatically(url, PageStation.newPageStationBuilder());
-    }
-
-    /** Loads a |url| in the same tab and waits to transition. */
     public <T extends PageStation> T loadPageProgrammatically(String url, Builder<T> builder) {
         builder.initFrom(this);
         if (builder.mExpectedUrlSubstring == null) {
@@ -360,6 +345,10 @@ public class PageStation extends Station {
         Transition.TransitionOptions options =
                 Transition.newOptions().withTimeout(10000).withPossiblyAlreadyFulfilled().build();
         return travelToSync(destination, options, () -> ThreadUtils.runOnUiThread(r));
+    }
+
+    public WebPageStation loadAboutBlank() {
+        return loadPageProgrammatically("about:blank", WebPageStation.newBuilder());
     }
 
     /**

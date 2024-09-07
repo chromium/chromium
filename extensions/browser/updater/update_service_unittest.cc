@@ -479,8 +479,10 @@ class UpdateServiceTest : public ExtensionsTest {
         base::BindOnce(
             [](bool* done, const update_client::CrxInstaller::Result& result) {
               *done = true;
-              EXPECT_EQ(0, result.error);
-              EXPECT_EQ(0, result.extended_error);
+              EXPECT_EQ(result.result.category_,
+                        update_client::ErrorCategory::kNone);
+              EXPECT_EQ(result.result.code_, 0);
+              EXPECT_EQ(result.result.extra_, 0);
             },
             &done));
 

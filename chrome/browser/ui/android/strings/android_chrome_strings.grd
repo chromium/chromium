@@ -213,8 +213,16 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_BASICS" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
         Basics
       </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message name="IDS_PREFS_SECTION_BROWSER_SETTINGS" translateable="false" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
+        Browser settings
+      </message>
       <message name="IDS_PREFS_SECTION_ADVANCED" desc='Title of "Advanced" section of preferences. [CHAR_LIMIT=32]'>
         Advanced
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message name="IDS_PREFS_SECTION_CHROME" translateable="false" desc='Title of "Chrome" section of preferences. [CHAR_LIMIT=32]'>
+        Chrome
       </message>
 
       <!-- Notification channels -->
@@ -475,15 +483,24 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         You can choose your search engine
       </message>
 
-      <!-- Search engine choice screen. TODO(b/280753530): replace with final versions -->
-      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_TITLE" desc="" translateable="false">
-        *Title*
+      <!-- Blocking choice dialog strings. TODO(b/355054464): replace with final versions -->
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_TITLE" desc="" translateable="false">
+        To continue, update your Android settings
       </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_SUBTITLE" desc="" translateable="false">
-        *Subtitle*
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_MESSAGE" desc="" translateable="false">
+        Based on a law in your region, your need to finish selecting your device\u2019s default apps
       </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_PRIMARY_ACTION" desc="" translateable="false">
-        *Primary Action*
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_BUTTON" desc="" translateable="false">
+        Next
+      </message>
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_TITLE" desc="" translateable="false">
+        You're all set!
+      </message>
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_MESSAGE" desc="" translateable="false">
+        If you have selected another browser it will be downloaded in the background
+      </message>
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_BUTTON" desc="" translateable="false">
+        Got it
       </message>
 
       <!-- Autofill and Payments preferences -->
@@ -575,12 +592,24 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Turn off
       </message>
       <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message name="IDS_PREFS_SECTION_AUTOFILL" translateable="false" desc="Title for the Passwords and Autofill preferences. [CHAR_LIMIT=32]">
+        Passwords and Autofill
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
       <message translateable="false" name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
         Autofill Options
       </message>
       <!-- TODO(crbug.com/40898980): Use finalized string.-->
       <message translateable="false" name="IDS_AUTOFILL_OPTIONS_CONFIRM_RESTART" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
         Restart now
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        Relaunch Chrome to apply the setting
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        Your tabs will reopen after relaunching.
       </message>
       <!-- TODO(crbug.com/40898980): Use finalized string.-->
       <message translateable="false" name="IDS_AUTOFILL_OPTIONS_UNDO_TOGGLE_CHANGE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
@@ -591,8 +620,16 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Disabled by the administrator of this device
       </message>
       <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Chrome." formatter_data="android_java">
-        Disabled because a different password manager must be set up in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph> to use this setting.
+      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_DISABLED" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Chrome." formatter_data="android_java">
+        Disabled because a different autofill service must be set up in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph> to use this setting.
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_READY" desc="Explanation that third-party autofill in Chrome will defer to the 3P password manager as selected in Android settings." formatter_data="android_java">
+        Ready to use the autofill service that is configured in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_IN_INCOGNITO" desc="Explanation that a 3P password manager may prompt to save passwords in incognito." formatter_data="android_java">
+        Note: When using “other providers”, the browser informs the configured AutofillService about sites and fields visited in incognito.\nThe AutofillService uses this information to autofill your data and may store data in the process. Autofill data saved in incognito mode is stored even after incognito mode ends and available outside incognito mode.
       </message>
       <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog where the user confirms their intention to delete their saved CVCs.">
         Delete saved security codes?
@@ -829,6 +866,33 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORDS_NOT_SECURE_FILLING_DETAILS" desc="The message of the dialog which is shown when the user attempts to enter obfuscated text to a regular text field.">
         To protect your privacy, Chrome will not autofill your password in this field.
       </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_NO_GMS_CORE_TITLE" desc="The title of the password access loss warning sheet when there is no GMS Core." formatter_data="android_java">
+        Google Password Manager will stop working on this device
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_NO_GMS_CORE_TEXT" desc="The text of the password access loss warning sheet when there is no GMS Core." formatter_data="android_java">
+        Passwords will stop working soon because Google Play services isn’t available. You can make a copy of your saved passwords before they stop working. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_NO_GMS_CORE_BUTTON_TEXT" desc="The button text of the password access loss warning sheet when there is no GMS Core." formatter_data="android_java">
+        Export passwords
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_MANUAL_MIGRATION_TITLE" desc="The title of the password access loss warning sheet when the automatic password migration failed." formatter_data="android_java">
+        Fix problem with saved passwords
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_MANUAL_MIGRATION_TEXT" desc="The text of the password access loss warning sheet when the automatic password migration failed." formatter_data="android_java">
+        Some passwords on this device will stop working soon. You can move these passwords to Google Password Manager.
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_MANUAL_MIGRATION_BUTTON_TEXT" desc="The button text of the password access loss warning sheet when the automatic password migration failed." formatter_data="android_java">
+        Help me fix this
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_TITLE" desc="The title of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
+        Update Google Play services
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_TEXT" desc="The text of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
+        Passwords may stop working soon on this device. To keep using your passwords, update Google Play services. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_BUTTON_TEXT" desc="The button text of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
+        Update
+      </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_TITLE" desc="The title of the password migration warning sheet.">
         We’re changing how passwords are saved on this device
       </message>
@@ -928,11 +992,26 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_ACCESS_LOSS_EXPORT_DIALOG_TITLE" desc="The title of the modal dialog proposing the user to export their passwords from Chrome and remove them from Chrome's database (to later import them in Google Play Services).">
         First, export and delete the passwords from Chrome
       </message>
+      <message name="IDS_ACCESS_LOSS_EXPORT_DIALOG_TITLE_NO_GMS" desc="The title of the modal dialog proposing the user to export their passwords from Chrome and remove them from Chrome's database.">
+        Export and delete the passwords
+      </message>
       <message name="IDS_ACCESS_LOSS_EXPORT_DIALOG_MESSAGE" desc="The message of the modal dialog proposing the user to export their passwords from Chrome and remove them from Chrome's database (to later import them in Google Play Services).">
         Your passwords will be downloaded as a CSV file. They will be visible to anyone who can access the file, including apps. Exported passwords will be deleted from Chrome.
       </message>
       <message name="IDS_ACCESS_LOSS_EXPORT_DIALOG_POSITIVE_BUTTON_TEXT" desc="The text on the button, confirming the user's agreement to export passwords and remove them from Chrome's database.">
         Export and delete
+      </message>
+      <message name="IDS_ACCESS_LOSS_IMPORT_DIALOG_TITLE" desc="The title of the dialog instructing the user to import passwords into Google Password Manager.">
+        Next, import the passwords
+      </message>
+      <message name="IDS_ACCESS_LOSS_IMPORT_DIALOG_DESC" desc="The message of the dialog instructing the user to import passwords into Google Password Manager.">
+        Open Google Password Manager and go to settings. Select “Import“ and add the CSV file that contains your exported passwords.
+      </message>
+      <message name="IDS_ACCESS_LOSS_IMPORT_DIALOG_POSITIVE_BUTTON_TEXT" desc="The positive button text in the dialog instructing the user to import passwords into Google Password Manager.">
+        Take me there
+      </message>
+      <message name="IDS_ACCESS_LOSS_PREF_DESC" desc="The subtitle of the Google Password Manager item in Chrome main settings. Displayed only if the UPM is not functioning properly.">
+        Some passwords will stop working soon
       </message>
 
       <!-- Lock Screen Fragment -->
@@ -989,6 +1068,10 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
 
       <!-- Privacy and security preferences -->
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
+      <message name="IDS_PREFS_PRIVACY_SECURITY_SECTION" translateable="false" desc="Title for the Privacy and Security section. [CHAR_LIMIT=32]">
+        Privacy and security
+      </message>
       <message name="IDS_PREFS_PRIVACY_SECURITY" desc="Title for the Privacy and Security preferences. [CHAR_LIMIT=32]">
         Privacy and security
       </message>
@@ -1111,12 +1194,6 @@ For example, some websites may respond to this request by showing you ads that a
 
       <!-- Privacy Sandbox v4 - Topics Page -->
       <!-- Where possible, these strings have been unified on Desktop & Android in privacy_sandox_strings.grdp. The strings here either only appear on one platform, or have platform specific requirements, e.g. the format of placeholders, and so cannot be unified. For the latter case, they have corresponding _CANONICAL representations used when consent is recorded on either platform, and so they must stay in sync -->
-      <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_SUB_PAGE_TITLE" desc="A page title. Topics that the user blocked appear on this page.">
-        Topics you blocked
-      </message>
-      <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" desc="A description that appear beneath the 'Your topics' label. * 'You can block': There is a 'Block' button (or an X on mobile) that appears next to each topic in the list. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
-        You can block topics you don't want shared with sites. Chrome also auto-deletes your topics older than 4 weeks. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" desc="Paragraph 3 of 3 on the Learn more about ad topics page. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
         Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics you don’t want Chrome to share with sites. Learn more about <ph name="BEGIN_LINK">&lt;link&gt;</ph>managing your ad privacy in Chrome.<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
@@ -1125,9 +1202,6 @@ For example, some websites may respond to this request by showing you ads that a
       </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC_SNACKBAR" desc="A confirmation that appears after a user blocks a topic. This page is only applicable if the user has the Ad topics setting turned on. If they do, Chrome estimates the user's topics of interests and then sites can ask for topics to help personalize ads. If a user dosn't like a specific topic, they can block it.">
         Blocked topic
-      </message>
-      <message name="IDS_SETTINGS_TOPICS_PAGE_ADD_TOPIC_SNACKBAR" desc="A confirmation that appears after a user un-blocks a topic. This page is only applicable if the user has the Ad topics setting turned on. If they do, Chrome estimates the user's topics of interests and then sites can ask for topics to help personalize ads. If a user dosn't like a specific topic, they can block it. **** The user can also unblock a topic, the language is important, because 'unblocking' doesn't bring the topic back to the list of active topics. It simply adds a topic back to the list of potential topics that Chrome might estimate at a later time as the user continues browsing.">
-        Added topic back to potential topics
       </message>
 
       <!-- Privacy Sandbox v4 - Fledge Page -->
@@ -1520,6 +1594,9 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_PRIVACY_GUIDE_PRIVACY_SANDBOX_DESCRIPTION" desc="Description for the Privacy Sandbox item on the final page of the privacy guide">
         Chrome gives you more control over the ads you see and limits what sites can learn about you when they show you personalized ads.
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_PRIVACY_SANDBOX_DESCRIPTION_AD_TOPICS" desc="Description for the Privacy Sandbox item on the final page of the privacy guide - This text is used when the ad topics card is added.">
+        Manage your ad topics and other settings to limit what sites can learn about you to show you personalized ads
       </message>
       <message name="IDS_PRIVACY_GUIDE_WEB_APP_ACTIVITY_HEADING" desc="Title for the Web and App Activity item on the final page of the privacy guide">
         Web &amp; App Activity
@@ -2875,6 +2952,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           =1 {1 download pending}
           other {# downloads pending}}
       </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_MULTIPLE_DOWNLOAD_BLOCKED" desc="Download message label describing that one or more downloads are blocked due to corporate policy">
+        {FILE_COUNT, plural,
+          =1 {Blocked by your organization}
+          other {# were blocked by your organization}}
+      </message>
 
       <message name="IDS_INCOGNITO_DOWNLOAD_MESSAGE_TITLE" desc="Download title displayed in a prompt message when the user downloads a file in Incognito mode.">
         Download file?
@@ -3098,15 +3180,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_OPEN" desc="The label of the button which upon click would open the site user was trying to install as PWA. ">
         Go back to site
-      </message>
-      <message name="IDS_IPH_MESSAGE_ADD_TO_HOME_SCREEN_TITLE" desc="The title of in-product-help message encouraging users to add a commonly visited webpage to the home screen.">
-        Add to Home screen
-      </message>
-      <message name="IDS_IPH_MESSAGE_ADD_TO_HOME_SCREEN_DESCRIPTION" desc="The description of in-product-help message encouraging users to add a commonly visited webpage to the home screen.">
-        Get to this site quicker next time
-      </message>
-      <message name="IDS_IPH_MESSAGE_ADD_TO_HOME_SCREEN_ACTION" desc="The Add button in the in-product help message encouraging users to add a commonly visited webpage to the home screen.">
-        Add
       </message>
       <message name="IDS_IPH_MESSAGE_SHARED_HIGHLIGHTING_TITLE" desc="The title of in-product-help message encouraging users to create highlights.">
         Create a highlighted link like this one?
@@ -4028,10 +4101,19 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         <ph name="TAB_COUNT">%1$s<ex>6</ex></ph> tabs
       </message>
       <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITH_TITLE" desc="Text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that had a user specified group title. TITLE_OF_GROUP is the user specified title of the group.">
-        Tab group - <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph>
+        <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph>
       </message>
       <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE" desc="Text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that does not have a user specified title. TAB_COUNT is the total number of tabs closed in the group.">
-        Tab group - <ph name="TAB_COUNT">%1$s<ex>5</ex></ph> tabs
+        {TAB_COUNT, plural,
+          =1 {<ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> tab}
+          other {<ph name="TAB_COUNT_MANY">%1$s<ex>5</ex></ph> tabs}
+        }
+      </message>
+      <message name="IDS_RECENT_TABS_GROUP_CLOSURE_DOMAIN_TEXT" desc="Description text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together. TAB_COUNT is the total number of tabs closed in the group. URL_LIST is the list of tab urls in the group.">
+        {TAB_COUNT, plural,
+          =1 {<ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> tab - <ph name="URL_LIST">%2$s<ex>example.com</ex></ph>}
+          other {<ph name="TAB_COUNT_MANY">%1$s<ex>5</ex></ph> tabs - <ph name="URL_LIST">%2$s<ex>example.com</ex></ph>}
+        }
       </message>
       <message name="IDS_RECENT_TABS_BULK_CLOSURE_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently closed row item that represents multiple tabs/groups closed together. TAB_COUNT is the total number of tabs closed in the action including grouped tabs.">
         Restore <ph name="TAB_COUNT">%1$s<ex>6</ex></ph> tabs as new background tabs.
@@ -4039,8 +4121,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITH_TITLE_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that had a user specified group title. TITLE_OF_GROUP is the user specified title of the group.">
         Restore tab group <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> as a new background tab group.
       </message>
+      <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITH_TITLE_WITH_COLOR_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that had a user specified group title, and has a group color. TITLE_OF_GROUP is the user specified title of the group.">
+        Restore tab group <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph>, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>, as a new background tab group.
+      </message>
       <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that did not have a user specified title. TAB_COUNT is the total number of tabs closed in the group.">
-        Restore tab group of <ph name="TAB_COUNT">%1$s<ex>5</ex></ph> tabs as a new background tab group.
+        {TAB_COUNT, plural,
+          =1 {Restore tab group of <ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> tab as a new background tab group.}
+          other {Restore tab group of <ph name="TAB_COUNT_MANY">%1$s<ex>5</ex></ph> tabs as a new background tab group.}
+        }
+      </message>
+      <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE_WITH_COLOR_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that did not have a user specified title, and has a group color. TAB_COUNT is the total number of tabs closed in the group.">
+        {TAB_COUNT, plural,
+          =1 {Restore tab group of <ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> tab, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>, as a new background tab group.}
+          other {Restore tab group of <ph name="TAB_COUNT_MANY">%1$s<ex>5</ex></ph> tabs, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>, as a new background tab group.}
+        }
       </message>
       <message name="IDS_WEB_FEED_AWARENESS" desc="Educating the user about the web feed.">
         Explore content to follow
@@ -4100,6 +4194,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_READ_ALOUD" desc="Title name for the read aloud option in the preference.">
         Listen to this page
+      </message>
+      <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_PAGE_SUMMARY" desc="Title name for the page_summary option in the preference.">
+        Page summary
       </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_BASED_ON_YOUR_USAGE" desc="Title name for the based on your usage option in the preference.">
         Based on your usage
@@ -4214,9 +4311,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_FIND_IN_PAGE" desc="Menu item allowing users to find text within the current page. [CHAR_LIMIT=27]">
         Find in page
       </message>
-      <message name="IDS_MENU_PAGE_INSIGHTS" desc="Menu item showing Page Insights hub. [CHAR_LIMIT=27]">
-        View Page Insights
-      </message>
       <message name="IDS_MENU_FOLLOW" desc="Menu item allowing users to follow the current website. [CHAR_LIMIT=27]">
         Follow
       </message>
@@ -4259,7 +4353,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Close all tabs
       </message>
       <message name="IDS_MENU_CLOSE_ALL_INCOGNITO_TABS" desc="Menu item for closing all open Incognito tabs. [CHAR_LIMIT=27]">
-        Close Incognito tabs
+        Close all Incognito tabs
       </message>
       <message name="IDS_MENU_SELECT_TABS" desc="Menu item for bulk editing tabs. [CHAR_LIMIT=27]">
         Select tabs
@@ -4458,6 +4552,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string that describes the price tracking button to track or untrack a product.">
         Tap to track or untrack a product.
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_ERROR_MESSAGE" desc="Error message when user is tracking or untracking a product encountered an error.">
+        Something went wrong
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKED_SUCCESS_NOTIFICATION_ENABLED_MESSAGE" desc="Confirmation message when user track a product successfully with notification enabled.">
+        You'll get notified if the price drops on any site
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKED_SUCCESS_NOTIFICATION_DISABLED_MESSAGE" desc="Confirmation message when user track a product successfully with notification disabled.">
+        Bookmark saved
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_UNTRACKED_SUCCESS_MESSAGE" desc="Confirmation message when user untrack a product successfully.">
+        Alerts for this product have been turned off
       </message>
       <message name="IDS_PRICE_INSIGHTS_TITLE" desc="The title for the price insights button.">
         Price insights
@@ -4731,6 +4837,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_INCOGNITO_BADGE" desc="Content description for the badge indicating that the user is in Incognito mode.">
         Incognito mode
       </message>
+      <message name="IDS_INCOGNITO_BADGE" desc="Text appearing in the incognito badge on toolbar indicating that the user is in Incognito mode.">
+        Incognito
+      </message>
 
       <message name="IDS_TABSWITCHER_NO_TABS_EMPTY_STATE" desc="Text appearing on an empty tab switcher that indicates that tabs opened will appear here.">
         You’ll find your tabs here
@@ -4827,9 +4936,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_MOST_VISITED_LIST" desc="Category name of the most visited sites. Announced as: 'amazon.com, 1 of 10 in list Most Visited Sites, 10 items.'">
         Most visited sites
-      </message>
-      <message name="IDS_ACCESSIBILITY_OMNIBOX_QUERY_TILES_LIST" desc="Category name of the most visited sites. Announced as: 'News, 1 of 10 in list Query Tiles, 10 items.'">
-        Query tiles
       </message>
 
       <message name="IDS_ACCESSIBILITY_SHARE_SELECTED_ITEMS" desc="Content description for the button to share selected items. [ICU Syntax]">
@@ -5037,35 +5143,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_FEED_CARD_MENU_CLOSED" desc="Accessibility string read when the feed card menu bottom sheet is closed.">
         Feed card menu is closed
-      </message>
-
-      <!-- PageInsights Hub -->
-      <message name="IDS_PAGE_INSIGHTS_SHEET_DESCRIPTION" desc="The content description of the page insights sheet.">
-        Page insights bottom sheet
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_SHEET_OPENED_FULL" desc="Accessibility string read when the page insights sheet is opened at full height. The sheet will occupy up to the full screen.">
-        Page insights bottom sheet is opened
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_SHEET_CLOSED" desc="Accessibility string read when the page insights sheet is closed.">
-        Page insights bottom sheet is closed
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_HUB_TITLE_TEXT" desc="The title of Page Insights Sheet.">
-        Page Insights
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_BACK_BUTTON_DESCRIPTION" desc="The content description of back button in page insights sheet.">
-        Page insights back button
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_LOADING_INDICATOR_DESCRIPTION" desc="The loading indicator for Page Insights Hub while the related content is being fetched from server.">
-        Page insights Loading Indicator
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_HUB_PRIVACY_NOTICE" desc="Text that displays privacy notice for page insights hub">
-        Your activity in Page Insights is saved in your Google Account. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn how to manage this<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_HUB_MY_ACTIVITY_LOGO" desc="Logo of privacy notice for page insights hub">
-	Logo of privacy notice for page insights hub which redirects to my activity page.
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_HUB_PRIVACY_NOTICE_CLOSE" desc="Close button for closing privacy notice of page insights hub">
-	Close button to close privacy notice of page insights hub.
       </message>
 
       <!-- GoogleBottomBar -->
@@ -5468,6 +5545,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_IPH_ANDROID_TAB_DECLUTTER_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text for the android tab declutter feature.">
         To open tabs and visit different pages at the same time, tap the open tabs button
+      </message>
+      <message name="IDS_IPH_TAB_SWITCHER_SWITCH_INTO_INCOGNITO_TEXT" desc="The in-product-help message to long press the tab switcher button to switch to incognito.">
+        Touch and hold to switch to Incognito
+      </message>
+      <message name="IDS_IPH_TAB_SWITCHER_SWITCH_INTO_INCOGNITO_ACCESSIBILITY_TEXT" desc="The in-product-help message to long press the tab switcher button to switch to incognito.">
+        Double tap and hold to switch to Incognito
+      </message>
+      <message name="IDS_IPH_TAB_SWITCHER_SWITCH_OUT_OF_INCOGNITO_TEXT" desc="The in-product-help message to long press the tab switcher button to switch to incognito.">
+        Touch and hold to switch out of Incognito
+      </message>
+      <message name="IDS_IPH_TAB_SWITCHER_SWITCH_OUT_OF_INCOGNITO_ACCESSIBILITY_TEXT" desc="The in-product-help message to long press the tab switcher button to switch to incognito.">
+        Double tap and hold to switch out of Incognito
       </message>
       <message name="IDS_IPH_TRANSLATE_MENU_BUTTON_TEXT" desc="The in-product-help message after a successful navigation prompting user to translate current page.">
         Translate this page to any language
@@ -6633,6 +6722,21 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_DATA_SHARING_INVITATION_DIALOG_ACCEPT" desc="The positive button text of the dialog shown when a user has received a tab group invitation.">
         Accept
+      </message>
+      <message name="IDS_DATA_SHARING_INVITATION_FAILURE_TITLE" desc="The title of the dialog shown when a share invitation link fails">
+        The invite link couldn’t be opened
+      </message>
+      <message name="IDS_DATA_SHARING_INVITATION_FAILURE_DESCRIPTION" desc="The body text the dialog shown when a share invitation link fails">
+        You can contact the sender to ask for a new link.
+      </message>
+      <message name="IDS_DATA_SHARING_INVITATION_FAILURE_BUTTON" desc="The positive button text of the dialog shown when a share invitation link fails.">
+        Got it
+      </message>
+      <message name="IDS_DATA_SHARING_GENERIC_FAILURE_TITLE" desc="The title of the dialog shown when some share backend call fails, for example when leaving a group.">
+        Something went wrong
+      </message>
+      <message name="IDS_DATA_SHARING_GENERIC_FAILURE_DESCRIPTION" desc="The body text the dialog shown when some share backend call fails, for example when leaving a group.">
+        There was an error. Try again.
       </message>
 
       <!-- Interstitial shown prior to making digital identity request to wallet -->

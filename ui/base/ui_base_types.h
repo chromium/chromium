@@ -51,14 +51,6 @@ struct WindowTiledEdges {
   }
 };
 
-// Dialog button identifiers used to specify which buttons to show the user.
-enum DialogButton {
-  DIALOG_BUTTON_NONE = 0,
-  DIALOG_BUTTON_OK = 1,
-  DIALOG_BUTTON_CANCEL = 2,
-  DIALOG_BUTTON_LAST = DIALOG_BUTTON_CANCEL,
-};
-
 // MdTextButtons have various button styles that can change the button's
 // relative prominence/priority. The relative priority (least to greatest) is
 // as follows:

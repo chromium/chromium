@@ -4,14 +4,14 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrA11yAnnouncerElement, CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrA11yAnnouncerElement, CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, GeolocationAccessLevel, NightLightScheduleType, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeSystemDisplay} from '../fake_system_display.js';
 
@@ -457,6 +457,28 @@ suite('<settings-display>', () => {
       }
     });
 
+    test('mirror mode with keyboard', () => {
+      // Mock user toggling mirror mode setting with keyboard.
+      const mirrorDisplayControl =
+          displayPage.shadowRoot!.querySelector<HTMLElement>(
+              isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
+                                          '#displayMirrorCheckbox');
+      assertTrue(!!mirrorDisplayControl);
+
+      mirrorDisplayControl.focus();
+      mirrorDisplayControl.dispatchEvent(new Event('change', {bubbles: true}));
+
+      // Verify histogram count for mirror mode setting.
+      assertEquals(
+          1,
+          displayHistogram.get(
+              displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
+      assertEquals(
+          1,
+          displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
+              /*mirror_mode_status=*/ true));
+    });
+
     test('unified mode', () => {
       // Mock user toggling unified mode setting.
       const displayUnifiedDesktopToggle =
@@ -852,6 +874,83 @@ suite('<settings-display>', () => {
         });
   });
 
+  test('Exclude display not supported without flag', async () => {
+    await initPage();
+
+    addDisplay(1);
+    addDisplay(2);
+    addDisplay(3);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    assertEquals(3, displayPage.displays.length);
+
+    // Exclude Display is not supported without flag.
+    const excludeDisplayToggleRow =
+        displayPage.shadowRoot!.querySelector('#excludeDisplayToggleRow');
+    assertFalse(isVisible(excludeDisplayToggleRow));
+  });
+
+  test('Exclude display support with flag', async () => {
+    loadTimeData.overrideValues({excludeDisplayInMirrorModeEnabled: true});
+    await initPage();
+
+    addDisplay(1);
+    addDisplay(2);
+    addDisplay(3);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await Promise.all([
+      fakeSystemDisplay.getInfoCalled.promise,
+      fakeSystemDisplay.getLayoutCalled.promise,
+    ]);
+    assertEquals(3, displayPage.displays.length);
+    assertEquals(0, displayPage.mirroringDestinationIds.length);
+
+    // Exclude Display is not supported without flag.
+    const excludeDisplayToggleRow =
+        displayPage.shadowRoot!.querySelector('#excludeDisplayToggleRow');
+    assertTrue(isVisible(excludeDisplayToggleRow));
+
+    // Exclude the current selected display.
+    const excludeDisplayToggle =
+        displayPage.shadowRoot!.querySelector<CrToggleElement>(
+            '#excludeDisplayToggle');
+    assertTrue(!!excludeDisplayToggle);
+    excludeDisplayToggle.click();
+    flush();
+
+    assertTrue(!!excludeDisplayToggle);
+    assertTrue(excludeDisplayToggle.checked);
+
+    // Sanity check that we are not in mirror mode.
+    assertTrue(displayPage.showMirror(false, displayPage.displays));
+    assertFalse(displayPage.isMirrored(displayPage.displays));
+    // Mirror the displays.
+    const mirrorDisplayControl = strictQuery(
+        isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
+                                    '#displayMirrorCheckbox',
+        displayPage.shadowRoot, HTMLElement);
+    assertTrue(!!mirrorDisplayControl);
+    mirrorDisplayControl.click();
+    flush();
+
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await Promise.all([
+      fakeSystemDisplay.getInfoCalled.promise,
+      fakeSystemDisplay.getLayoutCalled.promise,
+      new Promise(function(resolve) {
+        setTimeout(resolve);
+      }),
+    ]);
+
+    assertTrue(displayPage.isMirrored(displayPage.displays));
+    // There should be 2 displays in the list.
+    assertEquals(2, displayPage.displays.length);
+    // There should only be 1 display in mirroring
+    // destination.
+    assertEquals(1, displayPage.mirroringDestinationIds.length);
+  });
+
   test('Unified desktop not supported in tablet mode', async () => {
     await initPage();
 
@@ -909,6 +1008,52 @@ suite('<settings-display>', () => {
     // // Night Light is on, so temperature is visible.
     assertFalse(temperature.hidden);
     assertFalse(schedule.hidden);
+  });
+
+  test('night light displays geolocation warning', async () => {
+    await initPage();
+
+    // Check consumer flow.
+    let newPrefs = getFakePrefs();
+    newPrefs.ash.user.geolocation_access_level.value =
+        GeolocationAccessLevel.DISALLOWED;
+    newPrefs.ash.night_light.schedule_type.value =
+        NightLightScheduleType.SUNSET_TO_SUNRISE;
+    displayPage.prefs = newPrefs;
+    flush();
+
+    let displayNightLight = strictQuery(
+        'settings-display-night-light', displayPage.shadowRoot, HTMLElement);
+    assert(displayNightLight);
+
+    let warningText = strictQuery(
+        'settings-privacy-hub-geolocation-warning-text',
+        displayNightLight.shadowRoot, HTMLElement);
+    assert(warningText);
+    assertTrue(warningText.getAttribute('warning-text-with-anchor')!.includes(
+        '<a href="#">'));
+
+    // Check managed flow, when Geolocation pref is enforced.
+    newPrefs = getFakePrefs();
+    newPrefs.ash.user.geolocation_access_level.value =
+        GeolocationAccessLevel.DISALLOWED;
+    newPrefs.ash.user.geolocation_access_level.enforcement =
+        chrome.settingsPrivate.Enforcement.ENFORCED;
+    newPrefs.ash.night_light.schedule_type.value =
+        NightLightScheduleType.SUNSET_TO_SUNRISE;
+    displayPage.prefs = newPrefs;
+    flush();
+
+    displayNightLight = strictQuery(
+        'settings-display-night-light', displayPage.shadowRoot, HTMLElement);
+    assert(displayNightLight);
+
+    warningText = strictQuery(
+        'settings-privacy-hub-geolocation-warning-text',
+        displayNightLight.shadowRoot, HTMLElement);
+    assert(warningText);
+    assertFalse(warningText.getAttribute('warning-text-with-anchor')!.includes(
+        '<a href="#">'));
   });
 
   test('Display Performance', async () => {
@@ -1053,7 +1198,7 @@ suite('<settings-display>', () => {
 
         const initialBrightness = 22.2;
         displaySettingsProvider.setBrightnessPercentForTesting(
-            initialBrightness);
+            initialBrightness, /*triggeredByAls=*/ false);
         await flushTasks();
 
         // Before changing the screen brightness, the slider value should be
@@ -1067,7 +1212,7 @@ suite('<settings-display>', () => {
         // Change the screen brightness.
         let adjustedBrightness = 99.0;
         displaySettingsProvider.setBrightnessPercentForTesting(
-            adjustedBrightness);
+            adjustedBrightness, /*triggeredByAls=*/ false);
         await flushTasks();
 
         // The slider should update to the new brightness.
@@ -1076,11 +1221,22 @@ suite('<settings-display>', () => {
         // Change the screen brightness again.
         adjustedBrightness = 5.5;
         displaySettingsProvider.setBrightnessPercentForTesting(
-            adjustedBrightness);
+            adjustedBrightness, /*triggeredByAls=*/ false);
         await flushTasks();
 
         // The slider should update to the new brightness.
         assertEquals(displayBrightnessSlider.value, adjustedBrightness);
+
+        // Change the brightness to 5.5 again, but this time, it is triggered by
+        // ambient light sensor.
+        const minVisiblePercent = 10;
+        adjustedBrightness = 5.5;
+        displaySettingsProvider.setBrightnessPercentForTesting(
+            adjustedBrightness, /*triggeredByAls=*/ true);
+        await flushTasks();
+
+        // The slider should update to the minVisiblePercent
+        assertEquals(displayBrightnessSlider.value, minVisiblePercent);
       });
 
   test(

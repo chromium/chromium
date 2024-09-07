@@ -103,6 +103,7 @@ inline constexpr uint32_t kPlaneCtmId = 5002;
 inline constexpr uint32_t kRotationPropId = 5003;
 inline constexpr uint32_t kColorEncodingPropId = 5004;
 inline constexpr uint32_t kColorRangePropId = 5005;
+inline constexpr uint32_t kSizeHintsPropId = 5006;
 
 // Blob IDs:
 inline constexpr uint32_t kBaseBlobId = 6000;
@@ -183,6 +184,8 @@ class FakeDrmDevice : public DrmDevice {
   ScopedDrmPropertyBlob CreateInFormatsBlob(
       const std::vector<uint32_t>& supported_formats,
       const std::vector<drm_format_modifier>& supported_format_modifiers);
+  ScopedDrmPropertyBlob CreateSizeHintsBlob(
+      const std::vector<gfx::Size>& sizes);
   int get_set_crtc_call_count() const { return set_crtc_call_count_; }
   int get_add_framebuffer_call_count() const {
     return add_framebuffer_call_count_;

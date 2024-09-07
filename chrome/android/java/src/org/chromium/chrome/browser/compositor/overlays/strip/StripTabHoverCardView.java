@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Size;
@@ -258,8 +259,8 @@ public class StripTabHoverCardView extends FrameLayout {
                     // View is not visible any more.
                     if (!mIsShowing) return;
                     if (thumbnail != null) {
-                        TabUtils.setBitmapAndUpdateImageMatrix(
-                                mThumbnailView, thumbnail, thumbnailSize);
+                        TabUtils.setDrawableAndUpdateImageMatrix(
+                                mThumbnailView, new BitmapDrawable(thumbnail), thumbnailSize);
                     } else {
                         // Always use the unselected tab version of the thumbnail placeholder.
                         mThumbnailView.updateThumbnailPlaceholder(

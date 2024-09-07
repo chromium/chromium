@@ -1,21 +1,15 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
-<meta name="variant" content="?input=valid_cookie&source">
 <meta name="variant" content="?input=valid_cookie">
-<meta name="variant" content="?input=missing_cookie&source">
+<meta name="variant" content="?input=valid_cookie&source_only">
+<meta name="variant" content="?input=valid_cookie&trigger_only">
 <meta name="variant" content="?input=missing_cookie">
-<meta name="variant" content="?input=cookie_without_secure&source">
 <meta name="variant" content="?input=cookie_without_secure">
-<meta name="variant" content="?input=cookie_without_httponly&source">
 <meta name="variant" content="?input=cookie_without_httponly">
-<meta name="variant" content="?input=cookie_without_samesite&source">
 <meta name="variant" content="?input=cookie_without_samesite">
-<meta name="variant" content="?input=cookie_with_narrow_path&source">
 <meta name="variant" content="?input=cookie_with_narrow_path">
-<meta name="variant" content="?input=field_with_wrong_type&source">
 <meta name="variant" content="?input=field_with_wrong_type">
-<meta name="variant" content="?input=field_with_invalid_format&source">
 <meta name="variant" content="?input=field_with_invalid_format">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -27,19 +21,20 @@ attribution_reporting_promise_test(async t => {
   const inputJSON =
       await fetch(`resources/debug_key/${input}.json`)
                 .then((response) => response.json());
-  const forSource = searchParams.get('source') !== null;
+  const forSourceOnly = searchParams.get('source_only') !== null;
+  const forTriggerOnly = searchParams.get('trigger_only') !== null;
 
   registerAttributionSrcByImg(createRedirectChain([
     {
       cookie: inputJSON.cookie,
       source: {
-        debug_key: forSource ? inputJSON.debug_key : undefined,
+        debug_key: forTriggerOnly ? undefined : inputJSON.debug_key,
         destination: 'https://{{host}}',
       },
     },
     {
       trigger: {
-        debug_key: forSource ? undefined : inputJSON.debug_key,
+        debug_key: forSourceOnly ? undefined : inputJSON.debug_key,
         event_trigger_data: [{}],
       },
     },
@@ -49,18 +44,12 @@ attribution_reporting_promise_test(async t => {
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
 
-  let keyUnderTest = 'trigger_debug_key';
-  let otherKey = 'source_debug_key';
-  if (forSource) {
-    [keyUnderTest, otherKey] = [otherKey, keyUnderTest];
-  }
-
-  if (inputJSON.key_expected) {
-    assert_equals(report[keyUnderTest], inputJSON.debug_key);
+  if (forSourceOnly || forTriggerOnly || !inputJSON.key_expected) {
+    assert_not_own_property(report, 'source_debug_key');
+    assert_not_own_property(report, 'trigger_debug_key');
   } else {
-    assert_not_own_property(report, keyUnderTest);
+    assert_equals(report['source_debug_key'], inputJSON.debug_key);
+    assert_equals(report['trigger_debug_key'], inputJSON.debug_key);
   }
-
-  assert_not_own_property(report, otherKey);
 }, 'Debug keys');
 </script>

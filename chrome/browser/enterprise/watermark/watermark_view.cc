@@ -55,11 +55,8 @@ void WatermarkView::SetString(const std::string& text) {
 
     // `block_height_` is going to be the max required height for a single line
     // times the number of line.
-    int w = kWatermarkBlockWidth;
-    gfx::Canvas::SizeStringInt(utf16_text, WatermarkFontList(), &w,
-                               &block_height_, kTextSize,
-                               gfx::Canvas::NO_ELLIPSIS);
-    block_height_ *= text_fill_->GetNumLines();
+    block_height_ = GetWatermarkBlockHeight(
+        utf16_text, text_fill_->GetNumLines(), kWatermarkBlockWidth, kTextSize);
   }
 
   // Invalidate the state of the view.
@@ -70,7 +67,7 @@ void WatermarkView::OnPaint(gfx::Canvas* canvas) {
   // Trying to render an empty string in Skia will fail. A string is required
   // to create the command buffer for the renderer.
   DrawWatermark(canvas, text_fill_.get(), text_outline_.get(), block_height_,
-                background_color_, GetContentsBounds(), kWatermarkBlockWidth);
+                GetContentsBounds(), kWatermarkBlockWidth);
 }
 
 void WatermarkView::SetBackgroundColor(SkColor background_color) {

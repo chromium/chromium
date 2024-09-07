@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -25,15 +26,11 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler_private.h"
 #include "pdf/buildflags.h"
+#include "pdf/pdf_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_PDF_INK2)
-#include "base/feature_list.h"
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 namespace pdf_extension_util {
 
@@ -60,6 +57,10 @@ void AddCommonStrings(base::Value::Dict* dict) {
     dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));
 
   dict->Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
+  dict->Set("pdfCr23Enabled",
+            base::FeatureList::IsEnabled(chrome_pdf::features::kPdfCr23)
+                ? "pdfCr23Enabled"
+                : "");
   dict->Set("pdfOopifEnabled",
             chrome_pdf::features::IsOopifPdfEnabled() ? "pdfOopifEnabled" : "");
 }

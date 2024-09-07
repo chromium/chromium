@@ -22,11 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(SessionType) -->
+
 <variants name="SessionType">
+  <variant name="Assistant" summary="AI assistant session"/>
   <variant name="Rewriter" summary="AI rewriter session"/>
-  <variant name="Text" summary="AI text session"/>
+  <variant name="Summarizer" summary="AI summarizer session"/>
   <variant name="Writer" summary="AI writer session"/>
 </variants>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AISessionType) -->
 
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
     expires_after="2025-02-10">
@@ -70,6 +75,30 @@ chromium-metrics-reviews@google.com.
     each time when the stream completes or encounters errors.
   </summary>
   <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Translation.LoadTranslateKitErrorCode"
+    enum="WinGetLastError" expires_after="2025-03-01">
+  <owner>mych@google.com</owner>
+  <owner>fergal@google.com</owner>
+  <summary>
+    Records the error code of a failed attempt to load the TranslateKit binary
+    for on-device translation. It may happen when browser tries to initialize
+    the OnDeviceTranslationService. This is only logged on Windows. See
+    on_device_translation::TranslateKitClient for more details.
+  </summary>
+</histogram>
+
+<histogram name="AI.Translation.LoadTranslateKitResult"
+    enum="LoadTranslateKitResult" expires_after="2025-03-01">
+  <owner>mych@google.com</owner>
+  <owner>fergal@google.com</owner>
+  <summary>
+    Records the result of an attempt to load the TranslateKit binary for
+    on-device translation. It is logged when browser tries to initialize the
+    OnDeviceTranslationService. See on_device_translation::TranslateKitClient
+    for more details.
+  </summary>
 </histogram>
 
 <histogram name="AI.{SessionType}.APIUsage" enum="AIAPI"

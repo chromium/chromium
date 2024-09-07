@@ -72,6 +72,14 @@ class SigninMetricsService : public KeyedService,
       const CoreAccountId& account_id) override;
 
  private:
+  // Helper handling functions for error analysis for different sign in states.
+  void HandleSyncErrors(
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source);
+  void HandleSigninErrors(
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source);
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void RecordExplicitSigninMigrationStatus();
   void MaybeRecordWebSigninToChromeSigninMetrics(

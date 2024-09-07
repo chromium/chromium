@@ -74,14 +74,14 @@ import * as Application from 'devtools/panels/application/application.js';
 
       Application.ResourcesPanel.ResourcesPanel.instance().showDOMStorage(storage);
       view = Application.ResourcesPanel.ResourcesPanel.instance().domStorageView;
-      TestRunner.addSniffer(view, 'showDOMStorageItems', viewUpdated);
+      TestRunner.addSniffer(view.grid, 'showItems', viewUpdated);
     },
 
     function addItemTest(next) {
       var indicesToAdd = [1, 2, 3, 4, 5, 6];
 
       function itemAdded() {
-        dumpDataGrid(view.dataGrid.rootNode());
+        dumpDataGrid(view.dataGridForTesting.rootNode());
         addItem();
       }
 
@@ -105,7 +105,7 @@ import * as Application from 'devtools/panels/application/application.js';
       var indicesToRemove = [1, 3, 5];
 
       function itemRemoved() {
-        dumpDataGrid(view.dataGrid.rootNode());
+        dumpDataGrid(view.dataGridForTesting.rootNode());
         removeItem();
       }
 
@@ -133,14 +133,14 @@ import * as Application from 'devtools/panels/application/application.js';
       TestRunner.evaluateInPage(command);
 
       function itemUpdated() {
-        dumpDataGrid(view.dataGrid.rootNode());
+        dumpDataGrid(view.dataGridForTesting.rootNode());
         next();
       }
     },
 
     function clearTest(next) {
       function itemsCleared() {
-        dumpDataGrid(view.dataGrid.rootNode());
+        dumpDataGrid(view.dataGridForTesting.rootNode());
         next();
       }
 

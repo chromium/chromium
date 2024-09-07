@@ -471,4 +471,25 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nDisabledTest,
   ASSERT_TRUE(promo_card);
   promo_card->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Write faster and with more confidence");
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nEnabledTest,
+                       EditorMenuPromoCardViewAccessibleProperties) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+                                   /*consent_status_settled=*/false));
+  auto* promo_card =
+      views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView());
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(promo_card);
+  promo_card->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE));
 }

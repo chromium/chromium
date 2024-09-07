@@ -1362,7 +1362,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
                                         : kPseudoIdViewTransitionOld;
     DCHECK(document_->documentElement());
     if (auto* pseudo_element =
-            document_->documentElement()->GetNestedPseudoElement(
+            document_->documentElement()->GetStyledPseudoElement(
                 live_content_element, entry.key)) {
       // A pseudo element of type |tansition*content| must be created using
       // ViewTransitionContentElement.

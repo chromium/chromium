@@ -21,9 +21,22 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCardSuggestion;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ITEM_COLLECTION_INFO;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MINOR_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.NON_TRANSFORMING_IBAN_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
@@ -31,6 +44,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -64,6 +78,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -100,7 +115,7 @@ public class TouchToFillPaymentMethodViewTest {
                     "• • • • 1111",
                     0,
                     "visa");
-    private static final CreditCard MASTER_CARD =
+    private static final CreditCard MASTERCARD =
             createLocalCreditCard("MasterCard", "5555555555554444", "8", "2050");
     private static final CreditCard VIRTUAL_CARD =
             createVirtualCreditCard(
@@ -123,12 +138,54 @@ public class TouchToFillPaymentMethodViewTest {
                     "• • • • 1111",
                     0,
                     "visa");
-
+    private static final AutofillSuggestion VISA_SUGGESTION =
+            createCreditCardSuggestion(
+                    VISA.getCardNameForAutofillDisplay(),
+                    VISA.getObfuscatedLastFourDigits(),
+                    VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
+                    /* applyDeactivatedStyle= */ false);
+    private static final AutofillSuggestion NICKNAMED_VISA_SUGGESTION =
+            createCreditCardSuggestion(
+                    NICKNAMED_VISA.getCardNameForAutofillDisplay(),
+                    NICKNAMED_VISA.getObfuscatedLastFourDigits(),
+                    NICKNAMED_VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
+                    /* applyDeactivatedStyle= */ false);
+    private static final AutofillSuggestion MASTERCARD_SUGGESTION =
+            createCreditCardSuggestion(
+                    MASTERCARD.getName(),
+                    MASTERCARD.getNumber(),
+                    MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
+                    /* applyDeactivatedStyle= */ false);
+    private static final AutofillSuggestion VIRTUAL_CARD_SUGGESTION =
+            createCreditCardSuggestion(
+                    VIRTUAL_CARD.getCardNameForAutofillDisplay(),
+                    VIRTUAL_CARD.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "Virtual card",
+                    /* applyDeactivatedStyle= */ false);
+    private static final AutofillSuggestion NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION =
+            createCreditCardSuggestion(
+                    VIRTUAL_CARD.getCardNameForAutofillDisplay(),
+                    VIRTUAL_CARD.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "Merchant doesn't accept this virtual card",
+                    /* applyDeactivatedStyle= */ true);
+    private static final AutofillSuggestion LONG_CARD_NAME_CARD_SUGGESTION =
+            createCreditCardSuggestion(
+                    LONG_CARD_NAME_CARD.getCardNameForAutofillDisplay(),
+                    LONG_CARD_NAME_CARD.getObfuscatedLastFourDigits(),
+                    LONG_CARD_NAME_CARD.getFormattedExpirationDate(
+                            ContextUtils.getApplicationContext()),
+                    /* applyDeactivatedStyle= */ false);
     private static final Iban LOCAL_IBAN =
             Iban.createLocal(
                     /* guid= */ "000000111111",
                     /* label= */ "CH56 **** **** **** *800 9",
                     /* nickname= */ "My brother's IBAN",
+                    /* value= */ "CH5604835012345678009");
+    private static final Iban LOCAL_IBAN_NO_NICKNAME =
+            Iban.createLocal(
+                    /* guid= */ "000000111111",
+                    /* label= */ "CH56 **** **** **** *800 9",
+                    /* nickname= */ "",
                     /* value= */ "CH5604835012345678009");
 
     @Rule
@@ -183,7 +240,8 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(VISA, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
                 });
         // After setting the visibility to true, the view should exist and be visible.
         runOnUiThreadBlocking(() -> mTouchToFillPaymentMethodModel.set(VISIBLE, true));
@@ -206,45 +264,52 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(VISA, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(MASTER_CARD, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    MASTERCARD,
+                                                    MASTERCARD_SUGGESTION,
+                                                    mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(VIRTUAL_CARD, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    VIRTUAL_CARD,
+                                                    VIRTUAL_CARD_SUGGESTION,
+                                                    mItemCollectionInfo)));
                 });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        assertThat(getCreditCards().getChildCount(), is(3));
+        assertThat(getCreditCardSuggestions().getChildCount(), is(3));
 
-        assertThat(getCreditCardNameAt(0).getText(), is(VISA.getCardNameForAutofillDisplay()));
-        assertThat(getCreditCardNumberAt(0).getText(), is(VISA.getObfuscatedLastFourDigits()));
+        assertThat(getSuggestionMainTextAt(0).getText(), is(VISA_SUGGESTION.getLabel()));
+        assertThat(getSuggestionMinorTextAt(0).getText(), is(VISA_SUGGESTION.getSecondaryLabel()));
         assertThat(
-                getCreditCardExpirationAt(0).getText(),
+                getSuggestionLabelAt(0).getText(),
                 is(VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext())));
 
+        assertThat(getSuggestionMainTextAt(1).getText(), is(MASTERCARD_SUGGESTION.getLabel()));
         assertThat(
-                getCreditCardNameAt(1).getText(), is(MASTER_CARD.getCardNameForAutofillDisplay()));
+                getSuggestionMinorTextAt(1).getText(),
+                is(MASTERCARD_SUGGESTION.getSecondaryLabel()));
         assertThat(
-                getCreditCardNumberAt(1).getText(), is(MASTER_CARD.getObfuscatedLastFourDigits()));
-        assertThat(
-                getCreditCardExpirationAt(1).getText(),
-                is(MASTER_CARD.getFormattedExpirationDate(ContextUtils.getApplicationContext())));
+                getSuggestionLabelAt(1).getText(),
+                is(MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext())));
 
+        assertThat(getSuggestionMainTextAt(2).getText(), is(VIRTUAL_CARD_SUGGESTION.getLabel()));
         assertThat(
-                getCreditCardNameAt(2).getText(), is(VIRTUAL_CARD.getCardNameForAutofillDisplay()));
-        assertThat(
-                getCreditCardNumberAt(2).getText(), is(VIRTUAL_CARD.getObfuscatedLastFourDigits()));
-        assertThat(getCreditCardExpirationAt(2).getText(), is(getVirtualCardLabel()));
+                getSuggestionMinorTextAt(2).getText(),
+                is(VIRTUAL_CARD_SUGGESTION.getSecondaryLabel()));
+        assertThat(getSuggestionLabelAt(2).getText(), is(VIRTUAL_CARD_SUGGESTION.getSublabel()));
     }
 
     @Test
@@ -263,7 +328,8 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(VISA, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -288,7 +354,8 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(VISA, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -313,7 +380,8 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(VISA, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -337,16 +405,16 @@ public class TouchToFillPaymentMethodViewTest {
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
-    public void testCreditCardViewProcessesClicksThroughObscuredSurfaces() {
+    public void testCreditCardSuggestionViewProcessesClicksThroughObscuredSurfaces() {
         Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     PropertyModel cardModel =
-                            createCardModel(
+                            createCardSuggestionModel(
                                     NICKNAMED_VISA,
+                                    NICKNAMED_VISA_SUGGESTION,
                                     mItemCollectionInfo,
-                                    actionCallback,
-                                    /* isAcceptable= */ true);
+                                    actionCallback);
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(new ListItem(CREDIT_CARD, cardModel));
@@ -357,7 +425,7 @@ public class TouchToFillPaymentMethodViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        onView(withText(NICKNAMED_VISA.getCardNameForAutofillDisplay()))
+        onView(withText(NICKNAMED_VISA_SUGGESTION.getLabel()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         waitForEvent(actionCallback).run();
     }
@@ -370,11 +438,11 @@ public class TouchToFillPaymentMethodViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     PropertyModel cardModel =
-                            createCardModel(
+                            createCardSuggestionModel(
                                     NICKNAMED_VISA,
+                                    NICKNAMED_VISA_SUGGESTION,
                                     mItemCollectionInfo,
-                                    actionCallback,
-                                    /* isAcceptable= */ true);
+                                    actionCallback);
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(new ListItem(CREDIT_CARD, cardModel));
@@ -398,15 +466,15 @@ public class TouchToFillPaymentMethodViewTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
-    public void testCreditCardViewFiltersClicks() {
+    public void testCreditCardSuggestionViewFiltersClicks() {
         runOnUiThreadBlocking(
                 () -> {
                     PropertyModel cardModel =
-                            createCardModel(
+                            createCardSuggestionModel(
                                     NICKNAMED_VISA,
+                                    NICKNAMED_VISA_SUGGESTION,
                                     mItemCollectionInfo,
-                                    /* actionCallback= */ () -> fail(),
-                                    /* isAcceptable= */ true);
+                                    /* actionCallback= */ () -> fail());
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(new ListItem(CREDIT_CARD, cardModel));
@@ -418,27 +486,29 @@ public class TouchToFillPaymentMethodViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         // Make sure touch events are ignored if something is drawn on top the the bottom sheet.
-        onView(withText(NICKNAMED_VISA.getCardNameForAutofillDisplay()))
+        onView(withText(NICKNAMED_VISA_SUGGESTION.getLabel()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        onView(withText(NICKNAMED_VISA.getCardNameForAutofillDisplay()))
+        onView(withText(NICKNAMED_VISA_SUGGESTION.getLabel()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
         onView(
                         withText(
                                 mActivityTestRule
                                         .getActivity()
-                                        .getString(R.string.autofill_payment_method_continue_button)))
+                                        .getString(
+                                                R.string.autofill_payment_method_continue_button)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         onView(
                         withText(
                                 mActivityTestRule
                                         .getActivity()
-                                        .getString(R.string.autofill_payment_method_continue_button)))
+                                        .getString(
+                                                R.string.autofill_payment_method_continue_button)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
     }
 
     @Test
     @MediumTest
-    public void testCardNameContentLabelForNicknamedCardContainsANetworkName() {
+    public void testMainTextShowsNetworkForNicknamedCard() {
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -446,19 +516,22 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(NICKNAMED_VISA, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    NICKNAMED_VISA,
+                                                    NICKNAMED_VISA_SUGGESTION,
+                                                    mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView cardName =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.card_name);
-        assertTrue(cardName.getContentDescription().toString().equals("Best Card visa"));
+        TextView mainText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.main_text);
+        assertTrue(mainText.getContentDescription().toString().equals("Best Card visa"));
     }
 
     @Test
     @MediumTest
-    public void testCardNameContentDescriptionIsNotSetForCardWithNoNickname() {
+    public void testMainTextDescriptionIsNotSetForNonNicknamedCard() {
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -466,19 +539,20 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(VISA, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView cardName =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.card_name);
-        assertEquals(cardName.getContentDescription(), null);
+        TextView mainText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.main_text);
+        assertEquals(mainText.getContentDescription(), null);
     }
 
     @Test
     @MediumTest
-    public void testDescriptionLineContentDescriptionOfCreditCard() {
+    public void testDescriptionLineContentDescriptionOfCreditCardSuggestion() {
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -486,46 +560,18 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(
-                                                    VISA, new FillableItemCollectionInfo(1, 1))));
-                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
-                });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-
-        TextView descriptionLine =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.description_line_2);
-        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
-        descriptionLine.onInitializeAccessibilityNodeInfo(info);
-        assertEquals(
-                descriptionLine
-                        .getContext()
-                        .getString(
-                                R.string.autofill_payment_method_a11y_item_collection_info,
-                                descriptionLine.getText(),
-                                1,
-                                1),
-                info.getContentDescription());
-    }
-
-    @Test
-    @MediumTest
-    public void testDescriptionLineContentDescriptionOfVirtualCard() {
-        runOnUiThreadBlocking(
-                () -> {
-                    mTouchToFillPaymentMethodModel
-                            .get(SHEET_ITEMS)
-                            .add(
-                                    new ListItem(
-                                            CREDIT_CARD,
-                                            createCardModel(
-                                                    VIRTUAL_CARD,
+                                            createCardSuggestionModel(
+                                                    VISA,
+                                                    VISA_SUGGESTION,
                                                     new FillableItemCollectionInfo(1, 1))));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         TextView descriptionLine =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.description_line_2);
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.description_line_2);
         AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
         descriptionLine.onInitializeAccessibilityNodeInfo(info);
         assertEquals(
@@ -541,8 +587,7 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/333128685")
-    public void testCardNameTooLong_cardNameTruncated_lastFourDigitsAlwaysShown() {
+    public void testDescriptionLineContentDescriptionOfVirtualCardSuggestion() {
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -550,21 +595,92 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
-                                            createCardModel(
-                                                    LONG_CARD_NAME_CARD, mItemCollectionInfo)));
+                                            createCardSuggestionModel(
+                                                    VIRTUAL_CARD,
+                                                    VIRTUAL_CARD_SUGGESTION,
+                                                    new FillableItemCollectionInfo(1, 1))));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView cardName =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.card_name);
-        TextView cardNumber =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.card_number);
-        assertTrue(
-                cardName.getLayout().getEllipsisCount(cardName.getLayout().getLineCount() - 1) > 0);
+        TextView descriptionLine =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.description_line_2);
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        descriptionLine.onInitializeAccessibilityNodeInfo(info);
+        assertEquals(
+                descriptionLine
+                        .getContext()
+                        .getString(
+                                R.string.autofill_payment_method_a11y_item_collection_info,
+                                descriptionLine.getText(),
+                                1,
+                                1),
+                info.getContentDescription());
+    }
+
+    @Test
+    @MediumTest
+    public void testNonAcceptableVirtualCardSuggestion() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            CREDIT_CARD,
+                                            createCardSuggestionModel(
+                                                    VIRTUAL_CARD,
+                                                    NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION,
+                                                    new FillableItemCollectionInfo(1, 1),
+                                                    () -> {})));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ImageView icon = mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.favicon);
+        assertThat(icon.getAlpha(), is(0.38f));
+        assertThat(getCreditCardSuggestions().getChildAt(0).isEnabled(), is(false));
         assertThat(
-                cardNumber.getLayout().getText().toString(),
-                is(LONG_CARD_NAME_CARD.getObfuscatedLastFourDigits()));
+                getSuggestionMainTextAt(0).getText(),
+                is(NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION.getLabel()));
+        assertThat(
+                getSuggestionMinorTextAt(0).getText(),
+                is(NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION.getSecondaryLabel()));
+        assertThat(
+                getSuggestionLabelAt(0).getText(),
+                is(NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION.getSublabel()));
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "crbug.com/333128685")
+    public void testMainTextTruncatesLongCardNameWithLastFourDigitsAlwaysShown() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            CREDIT_CARD,
+                                            createCardSuggestionModel(
+                                                    LONG_CARD_NAME_CARD,
+                                                    LONG_CARD_NAME_CARD_SUGGESTION,
+                                                    mItemCollectionInfo)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView mainText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.main_text);
+        TextView minorText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.minor_text);
+        assertTrue(
+                mainText.getLayout().getEllipsisCount(mainText.getLayout().getLineCount() - 1) > 0);
+        assertThat(
+                minorText.getLayout().getText().toString(),
+                is(LONG_CARD_NAME_CARD_SUGGESTION.getSecondaryLabel()));
     }
 
     @Test
@@ -644,19 +760,21 @@ public class TouchToFillPaymentMethodViewTest {
                         withText(
                                 mActivityTestRule
                                         .getActivity()
-                                        .getString(R.string.autofill_payment_method_continue_button)))
+                                        .getString(
+                                                R.string.autofill_payment_method_continue_button)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         onView(
                         withText(
                                 mActivityTestRule
                                         .getActivity()
-                                        .getString(R.string.autofill_payment_method_continue_button)))
+                                        .getString(
+                                                R.string.autofill_payment_method_continue_button)))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
     }
 
     @Test
     @MediumTest
-    public void testIbanValueAndNicknameForIban() {
+    public void testIbanTouchToFillItem_displayPrimaryAndSecondaryText() {
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -666,106 +784,79 @@ public class TouchToFillPaymentMethodViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView ibanValue =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_value);
-        assertThat(ibanValue.getLayout().getText().toString(), is(LOCAL_IBAN.getLabel()));
-        TextView ibanNickname =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_nickname);
-        assertThat(ibanNickname.getLayout().getText().toString(), is(LOCAL_IBAN.getNickname()));
+        TextView ibanPrimaryText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_primary);
+        assertThat(ibanPrimaryText.getLayout().getText().toString(), is(LOCAL_IBAN.getNickname()));
+        TextView ibanSecondaryText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_secondary);
+        assertThat(ibanSecondaryText.getLayout().getText().toString(), is(LOCAL_IBAN.getLabel()));
     }
 
     @Test
     @MediumTest
-    public void testNonAcceptableVirtualCardSuggestion() {
+    public void testIbanTouchToFillItem_displayPrimaryTextOnly() {
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
-                            .add(
-                                    new ListItem(
-                                            CREDIT_CARD,
-                                            createCardModel(
-                                                    VIRTUAL_CARD,
-                                                    new FillableItemCollectionInfo(1, 1),
-                                                    () -> {},
-                                                    /* isAcceptable= */ false)));
+                            .add(new ListItem(IBAN, createIbanModel(LOCAL_IBAN_NO_NICKNAME)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        ImageView icon = mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.favicon);
-        assertThat(icon.getAlpha(), is(0.38f));
-        assertThat(getCreditCards().getChildAt(0).isEnabled(), is(false));
+        TextView ibanPrimaryText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_primary);
+        assertThat(ibanPrimaryText.getLayout().getText().toString(), is(LOCAL_IBAN.getLabel()));
+        TextView ibanSecondaryText =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.iban_secondary);
+        assertThat(ibanSecondaryText.getVisibility(), is(View.GONE));
     }
 
-    private RecyclerView getCreditCards() {
+    private RecyclerView getCreditCardSuggestions() {
         return mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.sheet_item_list);
     }
 
-    private TextView getCreditCardNameAt(int index) {
-        return getCreditCards().getChildAt(index).findViewById(R.id.card_name);
+    private TextView getSuggestionMainTextAt(int index) {
+        return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.main_text);
     }
 
-    private TextView getCreditCardNumberAt(int index) {
-        return getCreditCards().getChildAt(index).findViewById(R.id.card_number);
+    private TextView getSuggestionMinorTextAt(int index) {
+        return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.minor_text);
     }
 
-    private TextView getCreditCardExpirationAt(int index) {
-        return getCreditCards().getChildAt(index).findViewById(R.id.description_line_2);
+    private TextView getSuggestionLabelAt(int index) {
+        return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.description_line_2);
     }
 
     private @SheetState int getBottomSheetState() {
         return mBottomSheetController.getSheetState();
     }
 
-    private static PropertyModel createCardModel(
-            CreditCard card, FillableItemCollectionInfo collectionInfo) {
-        return createCardModel(card, collectionInfo, () -> {}, /* isAcceptable= */ true);
+    private static PropertyModel createCardSuggestionModel(
+            CreditCard card,
+            AutofillSuggestion suggestion,
+            FillableItemCollectionInfo collectionInfo) {
+        return createCardSuggestionModel(card, suggestion, collectionInfo, () -> {});
     }
 
-    private static PropertyModel createCardModel(
+    private static PropertyModel createCardSuggestionModel(
             CreditCard card,
+            AutofillSuggestion suggestion,
             FillableItemCollectionInfo collectionInfo,
-            Runnable actionCallback,
-            boolean isAcceptable) {
-        PropertyModel.Builder creditCardModelBuilder =
-                new PropertyModel.Builder(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties
-                                        .NON_TRANSFORMING_CREDIT_CARD_KEYS)
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NAME,
-                                card.getCardNameForAutofillDisplay())
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NUMBER,
-                                card.getObfuscatedLastFourDigits())
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties
-                                        .ITEM_COLLECTION_INFO,
-                                collectionInfo)
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties
-                                        .ON_CREDIT_CARD_CLICK_ACTION,
-                                actionCallback)
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties
-                                        .IS_ACCEPTABLE,
-                                isAcceptable);
+            Runnable actionCallback) {
+        PropertyModel.Builder creditCardSuggestionModelBuilder =
+                new PropertyModel.Builder(NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
+                        .with(MAIN_TEXT, suggestion.getLabel())
+                        .with(MINOR_TEXT, suggestion.getSecondaryLabel())
+                        .with(FIRST_LINE_LABEL, suggestion.getSublabel())
+                        .with(ITEM_COLLECTION_INFO, collectionInfo)
+                        .with(ON_CREDIT_CARD_CLICK_ACTION, actionCallback)
+                        .with(APPLY_DEACTIVATED_STYLE, suggestion.applyDeactivatedStyle());
         if (!card.getBasicCardIssuerNetwork()
                 .equals(card.getCardNameForAutofillDisplay().toLowerCase())) {
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardProperties.NETWORK_NAME,
-                    card.getBasicCardIssuerNetwork());
+            creditCardSuggestionModelBuilder.with(NETWORK_NAME, card.getBasicCardIssuerNetwork());
         }
-        if (card.getIsVirtual()) {
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardProperties.VIRTUAL_CARD_LABEL,
-                    getVirtualCardLabel());
-        } else {
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_EXPIRATION,
-                    card.getFormattedExpirationDate(ContextUtils.getApplicationContext()));
-        }
-        return creditCardModelBuilder.build();
+        return creditCardSuggestionModelBuilder.build();
     }
 
     private static PropertyModel createIbanModel(Iban iban) {
@@ -774,24 +865,11 @@ public class TouchToFillPaymentMethodViewTest {
 
     private static PropertyModel createIbanModel(Iban iban, Runnable actionCallback) {
         PropertyModel.Builder ibanModelBuilder =
-                new PropertyModel.Builder(
-                                TouchToFillPaymentMethodProperties.IbanProperties
-                                        .NON_TRANSFORMING_IBAN_KEYS)
-                        .with(
-                                TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE,
-                                iban.getLabel())
-                        .with(
-                                TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME,
-                                iban.getNickname())
-                        .with(
-                                TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION,
-                                actionCallback);
+                new PropertyModel.Builder(NON_TRANSFORMING_IBAN_KEYS)
+                        .with(IBAN_VALUE, iban.getLabel())
+                        .with(IBAN_NICKNAME, iban.getNickname())
+                        .with(ON_IBAN_CLICK_ACTION, actionCallback);
         return ibanModelBuilder.build();
-    }
-
-    private static String getVirtualCardLabel() {
-        return ContextUtils.getApplicationContext()
-                .getString(R.string.autofill_virtual_card_number_switch_label);
     }
 
     private static <T> T waitForEvent(T mock) {

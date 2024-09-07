@@ -158,11 +158,11 @@ enum class ColorParseResult {
 
 // Parses the canvas color string and returns the result. If the result is
 // `kParsedColor`, `parsed_color` is set appropriately.
-ColorParseResult ParseCanvasColorString(
-    const String& color_string,
-    mojom::blink::ColorScheme color_scheme,
-    Color& parsed_color,
-    const ui::ColorProvider* color_provider);
+ColorParseResult ParseCanvasColorString(const String& color_string,
+                                        mojom::blink::ColorScheme color_scheme,
+                                        Color& parsed_color,
+                                        const ui::ColorProvider* color_provider,
+                                        bool is_in_web_app_scope);
 
 // Parses the canvas color string, returning true on success. If `color_string`
 // indicates the current color should be used, `parsed_color` is set to black.

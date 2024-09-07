@@ -14,8 +14,8 @@ import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NavigationPredictor} from './omnibox.mojom-webui.js';
-import {RealboxBrowserProxy} from './searchbox_browser_proxy.js';
-import type {RealboxIconElement} from './searchbox_icon.js';
+import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
+import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getTemplate} from './searchbox_match.html.js';
 import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from './searchbox.mojom-webui.js';
 import {SelectionLineState} from './searchbox.mojom-webui.js';
@@ -44,9 +44,9 @@ type ActionEvent = CustomEvent<{
 }>;
 
 
-export interface RealboxMatchElement {
+export interface SearchboxMatchElement {
   $: {
-    icon: RealboxIconElement,
+    icon: SearchboxIconElement,
     contents: HTMLElement,
     description: HTMLElement,
     remove: HTMLElement,
@@ -56,9 +56,9 @@ export interface RealboxMatchElement {
 }
 
 // Displays an autocomplete match.
-export class RealboxMatchElement extends PolymerElement {
+export class SearchboxMatchElement extends PolymerElement {
   static get is() {
-    return 'cr-realbox-match';
+    return 'cr-searchbox-match';
   }
 
   static get template() {
@@ -78,21 +78,9 @@ export class RealboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      expandedStateIconsChromeRefresh: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateLayout'),
-      },
-
       hasAction: {
         type: Boolean,
         computed: `computeHasAction_(match.actions)`,
-        reflectToAttribute: true,
-      },
-
-      /** Whether action chip will have an outset focus ring. */
-      hasOutsetActionFocusRing: {
-        type: Boolean,
-        computed: `computeHasOutsetActionFocusRing_(hasAction)`,
         reflectToAttribute: true,
       },
 
@@ -135,12 +123,6 @@ export class RealboxMatchElement extends PolymerElement {
         value: -1,
       },
 
-      realboxConsistentRowHeight: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23ConsistentRowHeight'),
-        reflectToAttribute: true,
-      },
-
       renderType: {
         type: String,
         reflectToAttribute: true,
@@ -156,6 +138,12 @@ export class RealboxMatchElement extends PolymerElement {
       //========================================================================
       // Private properties
       //========================================================================
+
+      isLensSearchbox_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isLensSearchbox'),
+        reflectToAttribute: true,
+      },
 
       /** Rendered match contents based on autocomplete provided styling. */
       contentsHtml_: {
@@ -195,13 +183,11 @@ export class RealboxMatchElement extends PolymerElement {
   }
 
   override ariaLabel: string;
-  expandedStateIconsChromeRefresh: boolean;
   hasAction: boolean;
-  hasOutsetActionFocusRing: boolean;
   hasImage: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
-  realboxConsistentRowHeight: boolean;
+  searchboxConsistentRowHeight: boolean;
   sideType: SideType;
   private actionIsVisible_: boolean;
   private contentsHtml_: TrustedHTML;
@@ -215,7 +201,7 @@ export class RealboxMatchElement extends PolymerElement {
 
   constructor() {
     super();
-    this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
+    this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
   }
 
   override ready() {
@@ -326,7 +312,7 @@ export class RealboxMatchElement extends PolymerElement {
     // a prefix of the former. Thus `match.answer.firstLine` can be rendered
     // using the markup in `match.contentsClass` which contains positions in
     // `match.contents` and the markup to be applied to those positions.
-    // See //chrome/browser/ui/webui/realbox/realbox_handler.cc
+    // See //chrome/browser/ui/webui/searchbox/searchbox_handler.cc
     const matchContents =
         match.answer ? match.answer.firstLine : match.contents;
     return match.swapContentsAndDescription ?
@@ -363,10 +349,6 @@ export class RealboxMatchElement extends PolymerElement {
     return this.match?.actions?.length > 0;
   }
 
-  private computeHasOutsetActionFocusRing_() {
-    return this.expandedStateIconsChromeRefresh && this.hasAction;
-  }
-
   private computeTailSuggestPrefix_(): string {
     if (!this.match || !this.match.tailSuggestCommonPrefix) {
       return '';
@@ -401,7 +383,7 @@ export class RealboxMatchElement extends PolymerElement {
 
   private computeSeparatorText_(): string {
     return this.match && decodeString16(this.match.description) ?
-        loadTimeData.getString('realboxSeparator') :
+        loadTimeData.getString('searchboxSeparator') :
         '';
   }
 
@@ -465,7 +447,7 @@ export class RealboxMatchElement extends PolymerElement {
         selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion &&
             selection.line === this.matchIndex);
 
-    [...this.shadowRoot!.querySelectorAll('cr-realbox-action')].forEach(
+    [...this.shadowRoot!.querySelectorAll('cr-searchbox-action')].forEach(
         (action, index) => {
           action.classList.toggle(
               'selected',
@@ -478,8 +460,8 @@ export class RealboxMatchElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-realbox-match': RealboxMatchElement;
+    'cr-searchbox-match': SearchboxMatchElement;
   }
 }
 
-customElements.define(RealboxMatchElement.is, RealboxMatchElement);
+customElements.define(SearchboxMatchElement.is, SearchboxMatchElement);

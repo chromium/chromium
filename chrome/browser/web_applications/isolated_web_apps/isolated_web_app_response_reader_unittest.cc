@@ -55,7 +55,7 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
                         "Hello World");
     auto unsigned_bundle = builder.CreateBundle();
 
-    auto signed_bundle = web_package::WebBundleSigner::SignBundle(
+    auto signed_bundle = web_package::test::WebBundleSigner::SignBundle(
         unsigned_bundle, test::GetDefaultEd25519KeyPair());
 
     base::FilePath web_bundle_path;

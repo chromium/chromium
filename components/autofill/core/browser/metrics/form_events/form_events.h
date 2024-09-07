@@ -24,23 +24,31 @@ enum FormEvent {
   // A server suggestion was used to fill the form.
   // When dealing with credit cards, this means a full server card was used
   // to fill.
-  FORM_EVENT_SERVER_SUGGESTION_FILLED = 4,
+  //
+  // Deprecated as full server cards are no longer offered as suggestions.
+  // FORM_EVENT_SERVER_SUGGESTION_FILLED = 4,
   // A masked server card suggestion was used to fill the form.
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED = 5,
-  // A suggestion was used to fill the form. The origin type (local or server
-  // or masked server card) of the first selected within a page load will
-  // determine which of the following will be fired. VIRTUAL_CARD is also an
-  // option later in the enum list.
+  // A suggestion was used to fill the form. The origin type (local or masked
+  // server card) of the first selected within a page load will determine which
+  // of the following will be fired. VIRTUAL_CARD is also an option later in the
+  // enum list.
+  //
+  // Full server cards are no longer offered as suggestions so the corresponding
+  // enum entry is deprecated.
   FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE = 6,
-  FORM_EVENT_SERVER_SUGGESTION_FILLED_ONCE = 7,
+  // FORM_EVENT_SERVER_SUGGESTION_FILLED_ONCE = 7,
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE = 8,
   // A form was submitted. Depending on the user filling a local, server,
   // masked server card, no suggestion, or virtual card (later in the enum
   // list), one of the following will be triggered. Only one of the following
   // four or virtual card will be triggered per page load.
+  //
+  // Full server cards are no longer offered as suggestions so the corresponding
+  // enum entry is deprecated.
   FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE = 9,
   FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE = 10,
-  FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE = 11,
+  // FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE = 11,
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE = 12,
   // DEPRECATED IN M123, DO NOT USE. Use value 87 instead!
   // A masked server card suggestion was selected to fill the form.
@@ -53,9 +61,12 @@ enum FormEvent {
   // logged. Depending on the user filling a local, server, masked server card,
   // no suggestion, or virtual card (later in the enum list), one of the
   // following will be triggered, at most once per page load.
+  //
+  // Full server cards are no longer offered as suggestions so the corresponding
+  // enum entry is deprecated.
   FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE = 15,
   FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE = 16,
-  FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE = 17,
+  // FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE = 17,
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE = 18,
   // A dropdown with suggestions was shown and a form was submitted after
   // that.
@@ -317,6 +328,11 @@ enum FormEvent {
   // benefit. Logged once per page load.
   FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE =
       107,
+
+  // A local card suggestion was selected to fill the form.
+  FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED = 108,
+  // Same as above but only triggered once per page load.
+  FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE = 109,
 
   NUM_FORM_EVENTS,
 };

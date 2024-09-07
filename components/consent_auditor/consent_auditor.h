@@ -28,8 +28,9 @@ enum class Feature {
   GOOGLE_LOCATION_SERVICE = 3,
   // CHROME_UNIFIED_CONSENT = 4, (deprecated, not used)
   ASSISTANT_ACTIVITY_CONTROL = 5,
+  RECORDER_SPEAKER_LABEL = 6,
 
-  FEATURE_LAST = ASSISTANT_ACTIVITY_CONTROL
+  FEATURE_LAST = RECORDER_SPEAKER_LABEL,
 };
 
 // Whether a consent is given or not given.
@@ -79,6 +80,13 @@ class ConsentAuditor : public KeyedService {
   virtual void RecordAssistantActivityControlConsent(
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AssistantActivityControlConsent&
+          consent) = 0;
+
+  // Records the Recorder app speaker label |consent| for the signed-in GAIA
+  // account with the ID |accounts_id| (as defined in Account Info).
+  virtual void RecordRecorderSpeakerLabelConsent(
+      const CoreAccountId& account_id,
+      const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent&
           consent) = 0;
 
   // Records the |consent| to download and use passwords from the signed-in GAIA

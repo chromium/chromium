@@ -53,7 +53,8 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -2080,6 +2081,13 @@ void BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged() {
 }
 
 void BookmarkBarView::OnTabGroupsVisibilityPrefChanged() {
+  // Incognito browsers also get triggered if the associated regular profile
+  // browser is triggered. Early return because incognito has no
+  // `saved_tab_group_bar_`.
+  if (!chrome::IsSavedTabGroupsEnabled(browser_->profile())) {
+    return;
+  }
+
   DCHECK(saved_tab_group_bar_);
   // Only perform layout if required.
   bool visible = chrome::ShouldShowTabGroupsInBookmarkBar(browser_->profile());
@@ -2211,14 +2219,14 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
   }
 
   // Check whether to show the synced, or unsyned version of the promo.
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
-  if (!wrapper_service) {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+  if (!tab_group_service) {
     return;
   }
 
   // In order for IPH's for V2 to show up, there must be at least 1 group.
-  if (wrapper_service->GetAllGroups().empty()) {
+  if (tab_group_service->GetAllGroups().empty()) {
     return;
   }
 
@@ -2232,7 +2240,8 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
   // substitutions, add them in.
 
   // If tabs groups are syncing...
-  if (wrapper_service->AreSavedTabGroupsSyncedForProfile(browser_->profile())) {
+  if (tab_groups::SavedTabGroupUtils::AreSavedTabGroupsSyncedForProfile(
+          browser()->profile())) {
     // Anchor the IPH to the bookmarks bar if the everything button is visible.
     // Otherwise, anchor to the AppMenu.
     if (everything_button_is_visible) {

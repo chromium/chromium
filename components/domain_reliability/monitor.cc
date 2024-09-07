@@ -19,13 +19,12 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "components/domain_reliability/baked_in_configs.h"
-#include "components/domain_reliability/features.h"
 #include "components/domain_reliability/google_configs.h"
 #include "components/domain_reliability/quic_error_mapping.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_anonymization_key.h"
+#include "net/http/http_cache.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
@@ -190,8 +189,7 @@ DomainReliabilityMonitor::RequestInfo::RequestInfo(
     const net::URLRequest& request,
     int net_error)
     : url(request.url()),
-      network_anonymization_key(
-          request.isolation_info().network_anonymization_key()),
+      isolation_info(request.isolation_info()),
       net_error(net_error),
       response_info(request.response_info()),
       // This ignores cookie blocking by the NetworkDelegate, but probably
@@ -273,10 +271,16 @@ void DomainReliabilityMonitor::OnRequestLegComplete(
   beacon_template.elapsed = time_->NowTicks() - beacon_template.start_time;
   beacon_template.was_proxied = request.response_info.WasFetchedViaProxy();
   beacon_template.url = request.url;
-  if (base::FeatureList::IsEnabled(
-          features::kPartitionDomainReliabilityByNetworkIsolationKey)) {
-    beacon_template.network_anonymization_key =
-        request.network_anonymization_key;
+  if (net::HttpCache::IsSplitCacheEnabled() &&
+      !request.isolation_info.IsEmpty()) {
+    // Set the IsolationInfo for the upload request to reflect that it isn't a
+    // navigation, and since the requests will not be sent with credentials we
+    // can use an empty `net::SiteForCookies()`.
+    auto upload_isolation_info = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther,
+        *request.isolation_info.top_frame_origin(),
+        *request.isolation_info.frame_origin(), net::SiteForCookies());
+    beacon_template.isolation_info = upload_isolation_info;
   }
   beacon_template.upload_depth = request.upload_depth;
   beacon_template.details = request.details;

@@ -73,6 +73,10 @@ constexpr int kAutocompleteGhostTextContainerWeight = kSearchBoxPreferredWidth;
 constexpr int kAutocompleteGhostTextWeight = 1;
 constexpr int kAutocompleteGhostTextCategoryWeight = kSearchBoxPreferredWidth;
 
+// The space between the sunfish button and the assistant button at the edge of
+// the search field.
+constexpr int kEdgeButtonSpacing = 5;
+
 constexpr SkColor kSearchTextColor = SkColorSetRGB(0x33, 0x33, 0x33);
 
 // The duration for the button fade out animation.
@@ -486,20 +490,37 @@ views::ImageButton* SearchBoxViewBase::CreateCloseButton(
   return close_button_;
 }
 
+void SearchBoxViewBase::CreateEndButtonContainer() {
+  CHECK(!end_button_container_);
+
+  // `end_button_container_` is used to align the assistant button to the
+  // end of the `search_box_button_container_`.
+  end_button_container_ = search_box_button_container_->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  end_button_container_->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  end_button_container_->SetBetweenChildSpacing(kEdgeButtonSpacing);
+  end_button_container_->SetPaintToLayer();
+  end_button_container_->layer()->SetFillsBoundsOpaquely(false);
+  end_button_container_->SetVisible(false);
+}
+
+views::ImageButton* SearchBoxViewBase::CreateSunfishButton(
+    const base::RepeatingClosure& button_callback) {
+  CHECK(end_button_container_);
+  CHECK(!sunfish_button_);
+
+  sunfish_button_ = end_button_container_->AddChildView(
+      std::make_unique<SearchBoxImageButton>(button_callback));
+  return sunfish_button_;
+}
+
 views::ImageButton* SearchBoxViewBase::CreateAssistantButton(
     const base::RepeatingClosure& button_callback) {
-  // `assistant_button_container_` is used to align the assistant button to the
-  // end of the `search_box_button_container_`.
-  assistant_button_container_ = search_box_button_container_->AddChildView(
-      std::make_unique<views::BoxLayoutView>());
-  assistant_button_container_->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
-  assistant_button_container_->SetPaintToLayer();
-  assistant_button_container_->layer()->SetFillsBoundsOpaquely(false);
-  assistant_button_container_->SetVisible(false);
+  CHECK(end_button_container_);
+  CHECK(!assistant_button_);
 
-  DCHECK(!assistant_button_);
-  assistant_button_ = assistant_button_container_->AddChildView(
+  assistant_button_ = end_button_container_->AddChildView(
       std::make_unique<SearchBoxImageButton>(button_callback));
   return assistant_button_;
 }
@@ -529,23 +550,27 @@ gfx::Rect SearchBoxViewBase::GetViewBoundsForSearchBoxContentsBounds(
 }
 
 views::ImageButton* SearchBoxViewBase::assistant_button() {
-  return views::AsViewClass<views::ImageButton>(assistant_button_);
+  return assistant_button_;
 }
 
-views::View* SearchBoxViewBase::assistant_button_container() {
-  return views::AsViewClass<views::View>(assistant_button_container_);
+views::ImageButton* SearchBoxViewBase::sunfish_button() {
+  return sunfish_button_;
+}
+
+views::View* SearchBoxViewBase::edge_button_container() {
+  return end_button_container_;
 }
 
 views::ImageButton* SearchBoxViewBase::close_button() {
-  return views::AsViewClass<views::ImageButton>(close_button_);
+  return close_button_;
 }
 
 views::ImageButton* SearchBoxViewBase::filter_button() {
-  return views::AsViewClass<views::ImageButton>(filter_button_);
+  return filter_button_;
 }
 
 views::View* SearchBoxViewBase::filter_and_close_button_container() {
-  return views::AsViewClass<views::View>(filter_and_close_button_container_);
+  return filter_and_close_button_container_;
 }
 
 views::ImageView* SearchBoxViewBase::search_icon() {
@@ -749,13 +774,14 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
     MaybeFadeContainerOut(filter_and_close_button_container_);
   }
 
-  if (assistant_button_) {
-    const bool should_show_assistant_button =
-        show_assistant_button_ && !should_show_close_button;
-    if (should_show_assistant_button) {
-      MaybeFadeContainerIn(assistant_button_container_);
+  if (assistant_button_ || sunfish_button_) {
+    const bool should_show_edge_buttons =
+        (show_assistant_button_ || show_sunfish_button_) &&
+        !should_show_close_button;
+    if (should_show_edge_buttons) {
+      MaybeFadeContainerIn(end_button_container_);
     } else {
-      MaybeFadeContainerOut(assistant_button_container_);
+      MaybeFadeContainerOut(end_button_container_);
     }
   }
 
@@ -840,6 +866,14 @@ void SearchBoxViewBase::SetSearchIconImage(gfx::ImageSkia image) {
 void SearchBoxViewBase::SetShowAssistantButton(bool show) {
   DCHECK(assistant_button_);
   show_assistant_button_ = show;
+  assistant_button_->SetVisible(show);
+  UpdateButtonsVisibility();
+}
+
+void SearchBoxViewBase::SetShowSunfishButton(bool show) {
+  DCHECK(features::IsSunfishFeatureEnabled() && sunfish_button_);
+  show_sunfish_button_ = show;
+  sunfish_button_->SetVisible(show);
   UpdateButtonsVisibility();
 }
 

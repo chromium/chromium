@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Exclusive <ph name="PRODUCT_NAME" /> assets now available</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1026212596705997935">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Press a new shortcut. To replace the existing shortcut, press this shortcut again.</translation>
+<translation id="1030856839388844477">Reset data usage</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">New feature available; use the up arrow key to learn more.</translation>
 <translation id="1049663189809099096">pastel yellow</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Weak signal</translation>
 <translation id="1300115153046603471">APN is type default and <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Convert</translation>
 <translation id="1304014921944666344">Date created</translation>
 <translation id="1308754910631152188">Updating (<ph name="PERCENTAGE_VALUE" />% complete)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
@@ -74,8 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Fit to scan area</translation>
 <translation id="1343442362630695901">salt lake</translation>
+<translation id="1348657754632799065">Recording bar</translation>
 <translation id="1367951781824006909">Choose a file</translation>
 <translation id="1371650399987522809">Feedback for wallpaper powered by Google AI</translation>
+<translation id="1374385338586507108">Define</translation>
+<translation id="1383876407941801731">Search</translation>
 <translation id="1387854245479784695">This is an aggregation of all cores</translation>
 <translation id="1393206549145430405">castle</translation>
 <translation id="1394661041439318933">Device has <ph name="BATTERY_PERCENTAGE" />% case battery.</translation>
@@ -95,6 +100,7 @@
 <translation id="1449035143498573192">Open in Google Search</translation>
 <translation id="1451536289672181509">Device is a keyboard.</translation>
 <translation id="1452939186874918380">umbrellas</translation>
+<translation id="145402479967797468">Playback controls</translation>
 <translation id="1459693405370120464">Weather</translation>
 <translation id="1463084054301832672">cottage</translation>
 <translation id="1468664791493211953">Offers</translation>
@@ -260,6 +266,7 @@
 <translation id="2212733584906323460">Name resolution</translation>
 <translation id="2215920961700443347">No Internet. Connect to the Internet and try again.</translation>
 <translation id="2217935453350629363">Current speed</translation>
+<translation id="221994303562837085">Stop recording</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -267,6 +274,7 @@
 <translation id="2230624078793142213">Create more</translation>
 <translation id="2236746079896696523">Keyboard backlight toggle</translation>
 <translation id="2240366984605217732">Layout switch</translation>
+<translation id="2242381852034179222">This feature is managed by your administrators</translation>
 <translation id="2244834438220057800">green</translation>
 <translation id="225692081236532131">Activation status</translation>
 <translation id="2267285889943769271">Add screenshot</translation>
@@ -310,6 +318,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
 <translation id="2505327257735685095">Refresh the current wallpaper image</translation>
+<translation id="2507491234071975894">Speaker</translation>
 <translation id="2512979179176933762">show windows</translation>
 <translation id="2513396635448525189">Login image</translation>
 <translation id="2521835766824839541">previous track</translation>
@@ -320,6 +329,7 @@
 <translation id="2533048460510040082">Suggested help content</translation>
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> more</translation>
+<translation id="2560876255701405320">List of audio recordings</translation>
 <translation id="2561093647892030937">lemons</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2575552334616524665">You can turn this on in Settings or the <ph name="THREE_DOTS_MENU_ICON" /> menu</translation>
@@ -351,6 +361,7 @@
 <translation id="2715723665057727940">river</translation>
 <translation id="2717139507051041123">Enable dark colour mode</translation>
 <translation id="2728460467788544679">Clear all print history</translation>
+<translation id="2731700343119398978">Please wait…</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Shared</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
@@ -365,6 +376,7 @@
 <translation id="2855718259207180827">wool</translation>
 <translation id="2859243502336719778">Critical update</translation>
 <translation id="2860473693272905224">Place another page on the scanner</translation>
+<translation id="286265581261662583">Right-click or press and hold to get definitions, translations or unit conversions</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2873483161362553159">Browser navigation</translation>
 <translation id="2874939134665556319">Previous track</translation>
@@ -405,6 +417,7 @@
 <translation id="3140130301071865159">snow</translation>
 <translation id="3146655726035122603">Exclusive to <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile data</translation>
+<translation id="3156511682997763015">Forward 10 seconds</translation>
 <translation id="3156846309055100599">Scanning page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Captive portal detected</translation>
 <translation id="3160172848211257835">Send <ph name="BEGIN_LINK1" />system and app info<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
@@ -434,6 +447,7 @@
 <translation id="3303855915957856445">No search results found</translation>
 <translation id="3305294846493618482">more</translation>
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
+<translation id="3321030238473337787">Playback speed</translation>
 <translation id="3328783797891415197">Test running</translation>
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
 <translation id="3340978935015468852">settings</translation>
@@ -462,7 +476,6 @@
 <translation id="346423161771747987">Current</translation>
 <translation id="346539236881580388">Retake</translation>
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
-<translation id="3485555238092220889">accessibility action</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3487866404496702283">Feedback for mahi feature</translation>
 <translation id="3488065109653206955">Partially activated</translation>
@@ -511,6 +524,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Not Connected</translation>
 <translation id="3749289110408117711">File name</translation>
+<translation id="3767737419527918477">Search recording files</translation>
 <translation id="3771294271822695279">Video Files</translation>
 <translation id="3780740315729837296">Assign a keyboard key</translation>
 <translation id="3784455785234192852">Lock</translation>
@@ -671,6 +685,7 @@
 <translation id="4562494484721939086">No service</translation>
 <translation id="4570558255126759859">Download Gemini model to summarise recordings?</translation>
 <translation id="4573777384450697571">Failed – Certificate expired</translation>
+<translation id="4575450106703099687">accessibility options</translation>
 <translation id="458794348635939462">Failed to resolve all hosts</translation>
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4594021849294327751">Create transcript</translation>
@@ -793,6 +808,7 @@
 <translation id="5223226274641517059">Live transcripts will be shown while you're recording. You can turn this off at any time in Settings.</translation>
 <translation id="5226879510707344687">Export transcript</translation>
 <translation id="5227902338748591677">Dark theme schedule</translation>
+<translation id="5229104491259541281">Convert '<ph name="QUERY" />'</translation>
 <translation id="5229344016299762883">Exit full</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Your administrator has set up ‘<ph name="APP_NAME" />’ to start automatically every time you log in.}=2{Your administrator has set up ‘<ph name="APP_NAME" />’ and one other app to start automatically every time you log in.}other{Your administrator has set up ‘<ph name="APP_NAME" />’ and # other apps to start automatically every time you log in.}}</translation>
@@ -883,7 +899,9 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Edit button for <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Data usage has been reset</translation>
 <translation id="574392208103952083">Medium</translation>
+<translation id="5744175046705638478">Translate '<ph name="QUERY" />'</translation>
 <translation id="5757187557809630523">next track</translation>
 <translation id="5760715441271661976">Portal state</translation>
 <translation id="5763838252932650682">Restarting and updating <ph name="APP_NAME" /></translation>
@@ -892,6 +910,7 @@
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
 <translation id="5790391387506209808">lapis luzuli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">No shortcut assigned</translation>
 <translation id="5826644637650799838">About the art</translation>
 <translation id="5832805196449965646">Add Person</translation>
@@ -930,6 +949,7 @@
 <translation id="5972388717451707488">Update engine</translation>
 <translation id="5972801171078377748">Don't show again</translation>
 <translation id="5975130252842127517">coral</translation>
+<translation id="5982621672636444458">Sort options</translation>
 <translation id="5984145644188835034">Default wallpaper</translation>
 <translation id="5996832681196460718">silk</translation>
 <translation id="6017514345406065928">Green</translation>
@@ -946,7 +966,6 @@
 <translation id="6058625436358447366">To finish, enter your old and new passwords</translation>
 <translation id="6061772781719867950">Failed HTTP requests</translation>
 <translation id="6073292342939316679">keyboard brightness down</translation>
-<translation id="6073451960410192870">Stop recording</translation>
 <translation id="6075872808778243331">(Android) HTTP Latency</translation>
 <translation id="6078323886959318429">Add shortcut</translation>
 <translation id="6091080061796993741">yellow</translation>
@@ -986,6 +1005,7 @@
 <translation id="6275224645089671689">Right arrow</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Define '<ph name="QUERY" />'</translation>
 <translation id="6283581480003247988">blue and purple</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
 <translation id="6285260286443238386">Export recording</translation>
@@ -1104,6 +1124,7 @@
 <translation id="6798678288485555829">Text navigation</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6853312040151791195">Discharging rate</translation>
 <translation id="6862416241246624313">Feedback submitted</translation>
 <translation id="6866732840889595464">daisy</translation>
@@ -1317,6 +1338,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provider type</translation>
 <translation id="7882501334836096755">Public key</translation>
+<translation id="7889966925761734854">Seek</translation>
 <translation id="78957024357676568">left</translation>
 <translation id="7897043345768902965">walkway</translation>
 <translation id="7902285181767404769">Silence notifications while recording</translation>
@@ -1354,6 +1376,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8082366717211101304">Can't resolve DNS from Android apps</translation>
 <translation id="8082644724189923105">keyboard zone</translation>
 <translation id="808894953321890993">Change password</translation>
+<translation id="8088963492174775412">Press to record</translation>
 <translation id="8094062939584182041">Allow Google to email you about this issue</translation>
 <translation id="8104083085214006426">You are using an open and unsecure network</translation>
 <translation id="811820734797650957">(Android) Gateway can be pinged</translation>
@@ -1551,6 +1574,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
 <translation id="9095775724867566971">PluginVm</translation>
+<translation id="909856219855259344">More info on reset date</translation>
 <translation id="9100765901046053179">Advanced settings</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>

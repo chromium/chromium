@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictionRoundsPerHour" units="units"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.NumberOfEvictedBucketsPerRound" units="units"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Number of evicted buckets per round.</summary>
@@ -332,17 +332,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.StorageKeyNonceCount" units="buckets"
-    expires_after="2024-09-22">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Number of buckets in the QuotaDatabase buckets table with nonce in the
-    StorageKey to inform better eviction logic. Logged hourly. These will
-    typically be used by anonymous iframes, fenced frames, etc.
-  </summary>
-</histogram>
-
 <histogram name="Quota.TimeSpentToAEvictionRound" units="units"
     expires_after="2025-05-19">
   <owner>ayui@chromium.org</owner>
@@ -372,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TotalDiskSpaceIsZero" enum="BooleanVolumeZero"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

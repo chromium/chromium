@@ -126,7 +126,8 @@ class LocalSessionEventHandlerImplTest : public testing::Test {
 
   void InitHandler() {
     handler_ = std::make_unique<LocalSessionEventHandlerImpl>(
-        &mock_delegate_, &mock_sync_sessions_client_, &session_tracker_);
+        &mock_delegate_, &mock_sync_sessions_client_, &session_tracker_,
+        /*is_new_session=*/true);
     window_getter_.router()->StartRoutingTo(handler_.get());
   }
 

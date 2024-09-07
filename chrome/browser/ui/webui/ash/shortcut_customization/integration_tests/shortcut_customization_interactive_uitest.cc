@@ -219,7 +219,7 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
 
   auto SendShortcutAccelerator(ui::Accelerator accel) {
     CHECK(webcontents_id_);
-    return Steps(SendAccelerator(webcontents_id_, accel), FlushEvents());
+    return Steps(SendAccelerator(webcontents_id_, accel));
   }
 
   auto AddKeyboard(bool is_external) {
@@ -265,8 +265,7 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
               /*subsystem=*/"input", /*devnode=*/std::nullopt,
               /*devtype=*/std::nullopt, std::move(sysfs_attributes),
               std::move(sysfs_properties));
-        }),
-        FlushEvents());
+        }));
   }
 
   auto WaitForShortcutToContainNumAcceleartors(const DeepQuery& query,

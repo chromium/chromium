@@ -69,13 +69,15 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
   // AutofillSuggestionDelegate:
   absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
       override;
-  void OnSuggestionsShown() override;
+  void OnSuggestionsShown(
+      base::span<const autofill::Suggestion> suggestions) override;
   void OnSuggestionsHidden() override;
   void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
   void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
-                           const SuggestionPosition& position) override;
+                           const SuggestionMetadata& metadata) override;
   void DidPerformButtonActionForSuggestion(
-      const autofill::Suggestion& suggestion) override;
+      const autofill::Suggestion&,
+      const autofill::SuggestionButtonAction&) override;
   bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;
@@ -119,6 +121,21 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
                                   bool auth_succeeded);
   // Cancels an ongoing biometric re-authentication.
   void CancelBiometricReauthIfOngoing();
+
+  // For credentials not originated from the current domain (defined by
+  // `payload.is_cross_domain`), this method makes sure that the `on_allowed`
+  // callback is called only after receiving user's explicit consent (through
+  // a bubble dialog).
+  // For non cross domain usages the `on_allowed` is called immediately.
+  void EnsureCrossDomainPasswordUsageGetsConsent(
+      const autofill::Suggestion::PasswordSuggestionDetails& payload,
+      base::OnceClosure on_allowed);
+
+  // Returns whether `field_id_` represents a username or password field in
+  // `password_form_`. This only considers the username and password fields
+  // stored in the `PasswordForm` object.
+  bool IsTriggerFieldRelevantInPasswordForm(
+      const PasswordForm* password_form) const;
 
   const PasswordSuggestionGenerator suggestion_generator_;
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;

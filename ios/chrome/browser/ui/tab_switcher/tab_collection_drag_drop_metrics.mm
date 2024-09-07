@@ -12,6 +12,8 @@ extern const char kUmaGridViewDragDropTabsEvent[] =
     "IOS.TabSwitcher.DragDropTabs";
 extern const char kUmaGridViewDragDropGroupsEvent[] =
     "IOS.TabSwitcher.DragDropGroups";
+extern const char kUmaGridViewDragDropMultiSelectEvent[] =
+    "IOS.TabSwitcher.DragDropMultiSelect";
 extern const char kUmaPinnedViewDragDropTabsEvent[] =
     "IOS.TabSwitcher.PinnedTabs.DragDropTabs";
 

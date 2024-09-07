@@ -95,6 +95,9 @@ interface PageHandler {
   // Get the tracing list of scenarios for local tracing.
   GetAllPresetScenarios() => (array<Scenario> config);
 
+  // Get the tracing list of scenarios for field tracing.
+  GetAllFieldScenarios() => (array<Scenario> config);
+
   // Get enabled tracing scenarios hashes for local tracing.
   GetEnabledScenarios() => (array<string> config);
 

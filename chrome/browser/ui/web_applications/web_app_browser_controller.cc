@@ -498,9 +498,10 @@ GURL WebAppBrowserController::GetAppNewTabUrl() const {
 
 bool WebAppBrowserController::ShouldHideNewTabButton() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Show new tab button for Terminal System App.
+  // Configure new tab button visibility for system apps based on their delegate
+  // implementation.
   if (system_app() && system_app()->ShouldHaveTabStrip()) {
-    return false;
+    return system_app()->ShouldHideNewTabButton();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -631,16 +632,19 @@ std::u16string WebAppBrowserController::GetTitle() const {
       provider_->registrar_unsafe().GetAppShortName(app_id()));
 
   // If app title is set, then use that with the app name as the title.
-  std::u16string app_title;
+  std::optional<std::u16string> app_title;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   if (web_contents) {
     app_title = web_contents->GetAppTitle();
   }
 
-  if (!app_title.empty()) {
-    return l10n_util::GetStringFUTF16(IDS_WEB_APP_WITH_APP_TITLE, app_name,
-                                      app_title);
+  // If the app title is empty, then use the app name.
+  if (app_title.has_value()) {
+    return app_title.value().empty()
+               ? app_name
+               : l10n_util::GetStringFUTF16(IDS_WEB_APP_WITH_APP_TITLE,
+                                            app_name, app_title.value());
   }
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
@@ -702,22 +706,18 @@ void WebAppBrowserController::SetManifestUpdateAppliedCallbackForTesting(
 
 void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
-  SetAppPrefsForWebContents(contents);
 
-  // If a `WebContents` is inserted into an app browser (e.g. after
-  // installation), it is "appy". Note that if and when it's moved back into a
-  // tabbed browser window (e.g. via "Open in Chrome" menu item), it is still
-  // considered "appy".
-  WebAppTabHelper::FromWebContents(contents)->set_acting_as_app(true);
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
+  tab_helper->SetIsInAppWindow(true);
 
   if (AppUsesTabbed() && IsUrlInHomeTabScope(contents->GetLastCommittedURL())) {
-    WebAppTabHelper::FromWebContents(contents)->set_is_pinned_home_tab(true);
+    tab_helper->set_is_pinned_home_tab(true);
   }
 }
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
-  ClearAppPrefsForWebContents(contents);
+  WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(false);
 }
 
 const WebAppRegistrar& WebAppBrowserController::registrar() const {

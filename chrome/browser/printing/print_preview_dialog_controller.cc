@@ -218,6 +218,13 @@ void PrintPreviewDialogController::PrintPreview(
   }
 }
 
+// static
+std::unique_ptr<ui::WebDialogDelegate>
+PrintPreviewDialogController::CreatePrintPreviewDialogDelegateForTesting(
+    WebContents* initiator) {
+  return std::make_unique<PrintPreviewDialogDelegate>(initiator);
+}
+
 WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialogForTesting(
     WebContents* initiator) {
   mojom::RequestPrintPreviewParams params;

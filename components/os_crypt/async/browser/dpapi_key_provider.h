@@ -31,9 +31,10 @@ class DPAPIKeyProvider : public KeyProvider {
   ~DPAPIKeyProvider() override;
 
  private:
-  friend class DPAPIKeyProviderTest;
+  friend class DPAPIKeyProviderTestBase;
   FRIEND_TEST_ALL_PREFIXES(DPAPIKeyProviderTest, OSCryptNotInit);
   FRIEND_TEST_ALL_PREFIXES(DPAPIKeyProviderTest, OSCryptBadKeyHeader);
+  FRIEND_TEST_ALL_PREFIXES(DPAPIKeyProviderTestBase, NoOSCrypt);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

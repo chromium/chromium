@@ -36,10 +36,12 @@ class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
   GURL GetUpdateManifestUrl(
       const web_package::SignedWebBundleId& web_bundle_id) const;
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Generates a policy entry that can be appended to
   // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
   base::Value::Dict CreateForceInstallPolicyEntry(
       const web_package::SignedWebBundleId& web_bundle_id) const;
+#endif
 
   // Adds a bundle to the update server and starts tracking it in the
   // corresponding update manifest.

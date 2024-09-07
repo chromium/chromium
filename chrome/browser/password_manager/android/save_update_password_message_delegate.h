@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
@@ -55,7 +56,8 @@ class SaveUpdatePasswordMessageDelegate
           Profile*,
           password_manager::metrics_util::PasswordMigrationWarningTriggers)>
           password_migration_warning_bridge_callback,
-      std::unique_ptr<DeviceLockBridge> device_lock_bridge);
+      std::unique_ptr<DeviceLockBridge> device_lock_bridge,
+      std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_bridge);
 
   // Displays a "Save password" message for current |web_contents| and
   // |form_to_save|.
@@ -166,6 +168,7 @@ class SaveUpdatePasswordMessageDelegate
       create_migration_warning_callback_;
 
   std::unique_ptr<DeviceLockBridge> device_lock_bridge_;
+  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_bridge_;
 
   void SavePassword();
   void SavePasswordAfterDeviceLockUi(bool is_device_lock_set);

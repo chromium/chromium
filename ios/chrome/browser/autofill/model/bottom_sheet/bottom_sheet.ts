@@ -64,8 +64,6 @@ function showBottomSheet_(hasUserGesture: boolean): void {
   // TODO(crbug.com/40261693): convert these "gCrWeb.fill" and "gCrWeb.form"
   // calls to import and call the functions directly once the conversion to
   // TypeScript is done.
-  gCrWeb.fill.setUniqueIDIfNeeded(field);
-  gCrWeb.fill.setUniqueIDIfNeeded(form);
 
   const msg = {
     'frameID': gCrWeb.message.getFrameId(),

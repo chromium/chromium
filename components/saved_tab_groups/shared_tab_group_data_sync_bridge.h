@@ -18,6 +18,7 @@
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 class PrefService;
 
@@ -27,6 +28,7 @@ class MetadataChangeList;
 }  // namespace syncer
 
 namespace sync_pb {
+class EntitySpecifics;
 class SharedTabGroupDataSpecifics;
 }  // namespace sync_pb
 
@@ -70,16 +72,25 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   bool SupportsGetClientTag() const override;
   bool SupportsGetStorageKey() const override;
   bool SupportsIncrementalUpdates() const override;
+  bool SupportsUniquePositions() const override;
+  sync_pb::UniquePosition GetUniquePosition(
+      const sync_pb::EntitySpecifics& specifics) const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
+  // Process creation of a new shared group. The added group must be shared.
   void SavedTabGroupAddedLocally(const base::Uuid& guid);
+
+  // Process update to the existing group. The group must be shared.
   void SavedTabGroupUpdatedLocally(const base::Uuid& group_guid,
                                    const std::optional<base::Uuid>& tab_guid);
+
+  // Process shared group deletion, the removed group must be shared.
   void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group);
+
   // TODO(crbug.com/319521964): implement the following methods.
   // void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid);
   // void SavedTabGroupReorderedLocally();
@@ -139,13 +150,24 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Process local tab changes (add, remove, update), excluding changing tab's
   // position.
-  void ProcessTabLocalUpdate(const SavedTabGroup& group,
+  void ProcessTabLocalChange(const SavedTabGroup& group,
                              const base::Uuid& tab_id,
                              syncer::DataTypeStore::WriteBatch* write_batch);
 
   // Removes the specifics pointed to by `guid` from the `store_`.
   void RemoveEntitySpecifics(const base::Uuid& guid,
                              syncer::DataTypeStore::WriteBatch* write_batch);
+
+  // Returns unique position for the given tab in the `group`. `tab_index` must
+  // be valid.
+  sync_pb::UniquePosition CalculateUniquePosition(const SavedTabGroup& group,
+                                                  size_t tab_index) const;
+
+  // Calculates the position to insert a remote tab with the given unique
+  // position. Always returns a valid value regardless input validness.
+  size_t PositionToInsertRemoteTab(
+      const sync_pb::UniquePosition& remote_unique_position,
+      const SavedTabGroup& group) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

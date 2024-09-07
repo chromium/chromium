@@ -418,7 +418,7 @@ content::WebContents* WebDialogView::OpenURLFromTab(
       source, params, std::move(split_navigation_handle_callback.second));
 }
 
-void WebDialogView::AddNewContents(
+content::WebContents* WebDialogView::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -429,6 +429,7 @@ void WebDialogView::AddNewContents(
   WebDialogWebContentsDelegate::AddNewContents(
       source, std::move(new_contents), target_url, disposition, window_features,
       user_gesture, was_blocked);
+  return nullptr;
 }
 
 void WebDialogView::LoadingStateChanged(content::WebContents* source,

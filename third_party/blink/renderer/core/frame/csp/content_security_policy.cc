@@ -232,7 +232,9 @@ static WebFeature GetUseCounterType(ContentSecurityPolicyType type) {
       return WebFeature::kContentSecurityPolicyReportOnly;
   }
   NOTREACHED_IN_MIGRATION();
-  return WebFeature::kNumberOfFeatures;
+  // Use kPageVisits here which is not a valid use counter, as this is never
+  // supposed to be reached.
+  return WebFeature::kPageVisits;
 }
 
 ContentSecurityPolicy::ContentSecurityPolicy()

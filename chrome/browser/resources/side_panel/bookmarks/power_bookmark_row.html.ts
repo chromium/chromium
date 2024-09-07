@@ -23,7 +23,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
     @click="${this.onRowClicked_}"
     @auxclick="${this.onRowClicked_}"
     @contextmenu="${this.onContextMenu_}"
-    ?forceHover="${this.getBookmarkForceHover_(this.bookmark)}">
+    .forceHover="${this.getBookmarkForceHover_(this.bookmark)}">
 
   ${this.hasCheckbox ? html`
     <cr-checkbox id="checkbox" slot="prefix"
@@ -56,8 +56,8 @@ export function getHtml(this: PowerBookmarkRowElement) {
       </div>
     </sp-list-item-badge>
   ` : ''}
-    <cr-icon-button slot="suffix" .ironIcon="${this.trailingIcon}"
-        ?hidden="${!this.trailingIcon}" @click="${this.onTrailingIconClicked_}"
+    <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
+        @click="${this.onTrailingIconClicked_}"
         .title="${this.trailingIconTooltip}"
         .ariaLabel="${this.getBookmarkMenuA11yLabel_(url, title!)}">
     </cr-icon-button>
@@ -78,24 +78,29 @@ if (this.shouldExpand_()) {
     @expanded-changed=${this.onExpandedChanged_}>
   ${urlListItem}
 </cr-expand-button>
-${this.toggleExpand ? html`
-  ${children!.map((item: chrome.bookmarks.BookmarkTreeNode)=> html`
-    <power-bookmark-row
-        id="bookmark-${item.id}"
-        .bookmark="${item}"
-        .compact="${this.compact}"
-        trailingIcon="cr:more-vert"
-        trailingIconTooltip="$i18n{tooltipMore}"
-        .hasCheckbox="${this.hasCheckbox}"
-        .renamingId="${this.renamingId}"
-        .imageUrls="${this.imageUrls}"
-        .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
-        .bookmarksService="${this.bookmarksService}"
-        .contextMenuBookmark="${this.contextMenuBookmark}">
-    </power-bookmark-row>
-  `)}`: ''
+  ${this.toggleExpand ? html`
+    ${children!.map((item: chrome.bookmarks.BookmarkTreeNode)=> html`
+      <power-bookmark-row
+          id="bookmark-${item.id}"
+          .bookmark="${item}"
+          .compact="${this.compact}"
+          .depth="${this.depth + 1}"
+          trailingIconTooltip="$i18n{tooltipMore}"
+          .hasCheckbox="${this.hasCheckbox}"
+          .renamingId="${this.renamingId}"
+          .imageUrls="${this.imageUrls}"
+          .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
+          .bookmarksService="${this.bookmarksService}"
+          .contextMenuBookmark="${this.contextMenuBookmark}">
+      </power-bookmark-row>
+    `)}`: ''
   }`;
 } else {
-    return urlListItem;
+    return html`
+    ${this.compact && this.bookmarksTreeViewEnabled ? html`
+      <div id="bookmark">
+        ${urlListItem}
+      </div>` : urlListItem
+    }`;
   }
 }

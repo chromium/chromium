@@ -87,37 +87,12 @@ void DesktopEnvironmentOptions::set_terminate_upon_input(bool enabled) {
   terminate_upon_input_ = enabled;
 }
 
-bool DesktopEnvironmentOptions::enable_file_transfer() const {
-  return enable_file_transfer_;
-}
-
-void DesktopEnvironmentOptions::set_enable_file_transfer(bool enabled) {
-  enable_file_transfer_ = enabled;
-}
-
-bool DesktopEnvironmentOptions::enable_remote_open_url() const {
-  return enable_remote_open_url_;
-}
-
-void DesktopEnvironmentOptions::set_enable_remote_open_url(bool enabled) {
-  enable_remote_open_url_ = enabled;
-}
-
 bool DesktopEnvironmentOptions::enable_remote_webauthn() const {
   return enable_remote_webauthn_;
 }
 
 void DesktopEnvironmentOptions::set_enable_remote_webauthn(bool enabled) {
   enable_remote_webauthn_ = enabled;
-}
-
-const std::optional<size_t>& DesktopEnvironmentOptions::clipboard_size() const {
-  return clipboard_size_;
-}
-
-void DesktopEnvironmentOptions::set_clipboard_size(
-    std::optional<size_t> clipboard_size) {
-  clipboard_size_ = std::move(clipboard_size);
 }
 
 bool DesktopEnvironmentOptions::capture_video_on_dedicated_thread() const {

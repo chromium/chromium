@@ -48,13 +48,6 @@
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/preconfigured_desk_templates_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/print_servers_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/printers_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/user_avatar_image_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/wallpaper_image_external_data_handler.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
@@ -62,16 +55,10 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -189,9 +176,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
   }
 
   DeviceSettingsService::Get()->AddObserver(this);
-  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
-    profile_manager_observation_.Observe(profile_manager);
-  }
 
   // Since we're in ctor postpone any actions till this is fully created.
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
@@ -236,47 +220,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
   if (GetMinimumVersionPolicyHandler()) {
     GetMinimumVersionPolicyHandler()->AddObserver(this);
   }
-
-  // TODO(b/278643115): Move this out from ChromeUserManagerImpl.
-  policy::DeviceLocalAccountPolicyService* device_local_account_policy_service =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetDeviceLocalAccountPolicyService();
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kUserAvatarImage, this,
-          std::make_unique<policy::UserAvatarImageExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kWallpaperImage, this,
-          std::make_unique<policy::WallpaperImageExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kPrintersBulkConfiguration, this,
-          std::make_unique<policy::PrintersExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kExternalPrintServers, this,
-          std::make_unique<policy::PrintServersExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kCrostiniAnsiblePlaybook, this,
-          std::make_unique<
-              policy::CrostiniAnsiblePlaybookExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kPreconfiguredDeskTemplates, this,
-          std::make_unique<
-              policy::PreconfiguredDeskTemplatesExternalDataHandler>()));
-  for (auto& observer : cloud_external_data_policy_observers_) {
-    observer->Init();
-  }
 }
 
 void ChromeUserManagerImpl::UpdateOwnerId() {
@@ -310,12 +253,6 @@ void ChromeUserManagerImpl::Shutdown() {
   if (device_local_account_policy_service_) {
     device_local_account_policy_service_->RemoveObserver(this);
   }
-
-  cloud_external_data_policy_observers_.clear();
-}
-
-void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
-  cloud_external_data_policy_observers_.clear();
 }
 
 void ChromeUserManagerImpl::OwnershipStatusChanged() {
@@ -377,22 +314,17 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
 
   // Remove ephemeral regular users (except the owner) when on the login screen.
   if (!IsUserLoggedIn()) {
-    ScopedListPrefUpdate prefs_users_update(GetLocalState(),
-                                            prefs::kRegularUsersPref);
     // Take snapshot because DeleteUser called in the loop will update it.
     std::vector<raw_ptr<user_manager::User, VectorExperimental>> users = users_;
     for (user_manager::User* user : users) {
       const AccountId account_id = user->GetAccountId();
       if (user->HasGaiaAccount() && account_id != GetOwnerAccountId() &&
           IsEphemeralAccountId(account_id)) {
-        user_manager::UserManager::Get()->NotifyUserToBeRemoved(account_id);
-        RemoveNonCryptohomeData(account_id);
-        DeleteUser(user);
-        user_manager::UserManager::Get()->NotifyUserRemoved(
+        RemoveUserFromListImpl(
             account_id,
-            user_manager::UserRemovalReason::DEVICE_EPHEMERAL_USERS_ENABLED);
-
-        prefs_users_update->EraseValue(base::Value(account_id.GetUserEmail()));
+            /*reason=*/
+            user_manager::UserRemovalReason::DEVICE_EPHEMERAL_USERS_ENABLED,
+            /*trigger_cryptohome_removal=*/false);
         changed = true;
       }
     }
@@ -572,65 +504,6 @@ void ChromeUserManagerImpl::UpdatePublicAccountDisplayName(
 
 void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {
   NotifyUsersSignInConstraintsChanged();
-}
-
-void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
-  // Find a User instance from directory path, and annotate the AccountId.
-  // Hereafter, we can use AnnotatedAccountId::Get() to find the User.
-  if (ash::IsUserBrowserContext(profile)) {
-    auto logged_in_users = GetLoggedInUsers();
-    auto it = base::ranges::find(
-        logged_in_users,
-        ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile),
-        [](const user_manager::User* user) { return user->username_hash(); });
-    if (it == logged_in_users.end()) {
-      // User may not be found for now on testing.
-      // TODO(crbug.com/40225390): fix tests to annotate AccountId properly.
-      CHECK_IS_TEST();
-    } else {
-      const user_manager::User* user = *it;
-      // A |User| instance should always exist for a profile which is not the
-      // initial, the sign-in or the lock screen app profile.
-      CHECK(session_manager::SessionManager::Get()->HasSessionForAccountId(
-          user->GetAccountId()))
-          << "Attempting to construct the profile before starting the user "
-             "session";
-      ash::AnnotatedAccountId::Set(profile, user->GetAccountId(),
-                                   /*for_test=*/false);
-    }
-  }
-}
-
-void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
-  // TODO(crbug.com/40225390): Use ash::AnnotatedAccountId::Get(), when
-  // it gets fully ready for tests.
-  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && OnUserProfileCreated(user->GetAccountId(), profile->GetPrefs())) {
-    // Add observer for graceful shutdown of User on Profile destruction.
-    auto observation =
-        std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(
-            this);
-    observation->Observe(profile);
-    profile_observations_.push_back(std::move(observation));
-  }
-
-  ProcessPendingUserSwitchId();
-}
-
-void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
-  CHECK(std::erase_if(profile_observations_, [profile](auto& observation) {
-    return observation->IsObservingSource(profile);
-  }));
-  // TODO(crbug.com/40225390): User ash::AnnotatedAccountId::Get(), when it gets
-  // fully ready for tests.
-  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user) {
-    OnUserProfileWillBeDestroyed(user->GetAccountId());
-  }
-}
-
-void ChromeUserManagerImpl::OnProfileManagerDestroying() {
-  profile_manager_observation_.Reset();
 }
 
 }  // namespace ash

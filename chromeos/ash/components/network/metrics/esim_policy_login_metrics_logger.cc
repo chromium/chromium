@@ -13,14 +13,13 @@ namespace ash {
 namespace {
 
 // Checks whether the current logged in user type is an owner or regular.
-bool IsLoggedInUserOwnerOrRegular() {
+bool IsLoggedInUserRegular() {
   if (!LoginState::IsInitialized())
     return false;
 
   LoginState::LoggedInUserType user_type =
       LoginState::Get()->GetLoggedInUserType();
-  return user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER ||
-         user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR;
+  return user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR;
 }
 
 void LogBlockNonManagedCellularHistogram(bool allow_only_managed_cellular) {
@@ -86,8 +85,9 @@ void ESimPolicyLoginMetricsLogger::Init(
 }
 
 void ESimPolicyLoginMetricsLogger::LoggedInStateChanged() {
-  if (!IsLoggedInUserOwnerOrRegular())
+  if (!IsLoggedInUserRegular()) {
     return;
+  }
 
   is_metrics_logged_ = false;
   if (is_cellular_available_)
@@ -101,8 +101,9 @@ void ESimPolicyLoginMetricsLogger::LogESimPolicyStatusAtLogin() {
   // Only collect the metrics on cellular capable device.
   is_cellular_available_ = !device_list.empty();
   if (!is_cellular_available_ || is_metrics_logged_ ||
-      !IsLoggedInUserOwnerOrRegular() || !is_enterprise_managed_)
+      !IsLoggedInUserRegular() || !is_enterprise_managed_) {
     return;
+  }
 
   LogBlockNonManagedCellularHistogram(managed_network_configuration_handler_
                                           ->AllowOnlyPolicyCellularNetworks());

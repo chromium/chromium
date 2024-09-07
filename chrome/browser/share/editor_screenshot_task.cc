@@ -22,7 +22,6 @@ using base::android::ScopedJavaLocalRef;
 using jni_zero::AttachCurrentThread;
 using ui::WindowAndroid;
 
-namespace chrome {
 namespace android {
 
 /**
@@ -59,4 +58,3 @@ void JNI_EditorScreenshotTask_GrabWindowSnapshotAsync(
 }
 
 }  // namespace android
-}  // namespace chrome

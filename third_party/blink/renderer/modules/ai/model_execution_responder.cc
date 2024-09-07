@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 
+#include <optional>
+
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -35,12 +38,14 @@ class Responder final : public GarbageCollected<Responder>,
  public:
   Responder(ScriptState* script_state,
             AbortSignal* signal,
-            AIMetrics::AISessionType session_type)
+            AIMetrics::AISessionType session_type,
+            base::OnceCallback<void(std::optional<uint64_t>)> complete_callback)
       : resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
             script_state)),
         receiver_(this, ExecutionContext::From(script_state)),
         abort_signal_(signal),
-        session_type_(session_type) {
+        session_type_(session_type),
+        complete_callback_(std::move(complete_callback)) {
     SetContextLifecycleNotifier(ExecutionContext::From(script_state));
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
@@ -70,7 +75,8 @@ class Responder final : public GarbageCollected<Responder>,
 
   // `mojom::blink::ModelStreamingResponder` implementation.
   void OnResponse(mojom::blink::ModelStreamingResponseStatus status,
-                  const String& text) override {
+                  const String& text,
+                  std::optional<uint64_t> tokens) override {
     base::UmaHistogramEnumeration(
         AIMetrics::GetAISessionResponseStatusMetricName(session_type_), status);
     response_callback_count_++;
@@ -80,6 +86,9 @@ class Responder final : public GarbageCollected<Responder>,
       // or rejected.
       if (status == mojom::blink::ModelStreamingResponseStatus::kComplete) {
         resolver_->Resolve(response_);
+        if (complete_callback_) {
+          std::move(complete_callback_).Run(tokens);
+        }
       } else {
         resolver_->Reject(
             ConvertModelStreamingResponseErrorToDOMException(status));
@@ -130,6 +139,10 @@ class Responder final : public GarbageCollected<Responder>,
   Member<AbortSignal> abort_signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
   const AIMetrics::AISessionType session_type_;
+  // The callback will be invoked once when the responder receive the first
+  // `kComplete`.
+  base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+      complete_callback_;
 };
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
@@ -139,14 +152,17 @@ class StreamingResponder final
     : public UnderlyingSourceBase,
       public blink::mojom::blink::ModelStreamingResponder {
  public:
-  StreamingResponder(ScriptState* script_state,
-                     AbortSignal* signal,
-                     AIMetrics::AISessionType session_type)
+  StreamingResponder(
+      ScriptState* script_state,
+      AbortSignal* signal,
+      AIMetrics::AISessionType session_type,
+      base::OnceCallback<void(std::optional<uint64_t>)> complete_callback)
       : UnderlyingSourceBase(script_state),
         script_state_(script_state),
         receiver_(this, ExecutionContext::From(script_state)),
         abort_signal_(signal),
-        session_type_(session_type) {
+        session_type_(session_type),
+        complete_callback_(std::move(complete_callback)) {
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
       abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
@@ -193,7 +209,8 @@ class StreamingResponder final
 
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
   void OnResponse(ModelStreamingResponseStatus status,
-                  const String& text) override {
+                  const String& text,
+                  std::optional<uint64_t> tokens) override {
     base::UmaHistogramEnumeration(
         AIMetrics::GetAISessionResponseStatusMetricName(session_type_), status);
 
@@ -204,6 +221,9 @@ class StreamingResponder final
       // ReadableStream should be closed.
       if (status == ModelStreamingResponseStatus::kComplete) {
         Controller()->Close();
+        if (tokens.has_value() && complete_callback_) {
+          std::move(complete_callback_).Run(tokens.value());
+        }
       } else {
         Controller()->Error(
             ConvertModelStreamingResponseErrorToDOMException(status));
@@ -251,6 +271,10 @@ class StreamingResponder final
   Member<AbortSignal> abort_signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
   const AIMetrics::AISessionType session_type_;
+  // The callback will be invoked once when the responder receive the first
+  // `kComplete`.
+  base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+      complete_callback_;
 };
 
 }  // namespace
@@ -261,9 +285,11 @@ CreateModelExecutionResponder(
     ScriptState* script_state,
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    AIMetrics::AISessionType session_type) {
-  Responder* responder =
-      MakeGarbageCollected<Responder>(script_state, signal, session_type);
+    AIMetrics::AISessionType session_type,
+    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+        complete_callback) {
+  Responder* responder = MakeGarbageCollected<Responder>(
+      script_state, signal, session_type, std::move(complete_callback));
   return std::make_tuple(responder->GetPromise(),
                          responder->BindNewPipeAndPassRemote(task_runner));
 }
@@ -274,10 +300,12 @@ CreateModelExecutionStreamingResponder(
     ScriptState* script_state,
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    AIMetrics::AISessionType session_type) {
+    AIMetrics::AISessionType session_type,
+    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+        complete_callback) {
   StreamingResponder* streaming_responder =
-      MakeGarbageCollected<StreamingResponder>(script_state, signal,
-                                               session_type);
+      MakeGarbageCollected<StreamingResponder>(
+          script_state, signal, session_type, std::move(complete_callback));
   return std::make_tuple(
       streaming_responder->CreateReadableStream(),
       streaming_responder->BindNewPipeAndPassRemote(task_runner));

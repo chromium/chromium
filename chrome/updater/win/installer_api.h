@@ -24,7 +24,7 @@ enum class UpdaterScope;
 //
 // `InstallerProgress` (DWORD) - a percentage value [0-100].
 //
-// `InstallerResult` (DWORD) - specifies the result type and how to determine
+// `InstallerApiResult` (DWORD) - specifies the result type and how to determine
 // success or failure. Allowable values are:
 //
 //   0 - Reports success regardless of the exit code or `InstallerError`.
@@ -50,8 +50,8 @@ enum class UpdaterScope;
 //   it is available.
 //
 // `InstallerError` (DWORD) - specifies the error (or success) value. Overrides
-// the exit code unless `InstallerResult` indicates that the exit code must be
-// used (case 4).
+// the exit code unless `InstallerApiResult` indicates that the exit code must
+// be used (case 4).
 //
 // `InstallerExtraCode1` (DWORD) - additional information set by the installer.
 //
@@ -70,8 +70,8 @@ enum class UpdaterScope;
 // short company name specified in branding.gni (e.g. "GOOGLE").
 
 template <>
-struct EnumTraits<InstallerResult> {
-  using R = InstallerResult;
+struct EnumTraits<InstallerApiResult> {
+  using R = InstallerApiResult;
   static constexpr R first_elem = R::kSuccess;
   static constexpr R last_elem = R::kExitCode;
 };
@@ -84,7 +84,7 @@ struct InstallerOutcome {
   InstallerOutcome(const InstallerOutcome&);
   ~InstallerOutcome();
 
-  std::optional<InstallerResult> installer_result;
+  std::optional<InstallerApiResult> installer_result;
   std::optional<int> installer_error;
   std::optional<int> installer_extracode1;
   std::optional<std::string> installer_text;

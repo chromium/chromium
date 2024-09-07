@@ -256,9 +256,6 @@ class GLES2_UTILS_EXPORT GLES2Util {
                                         uint32_t* rt_padded_row_size,
                                         uint32_t* rt_padding);
 
-  static const EnumToString* const enum_to_string_table_;
-  static const size_t enum_to_string_table_len_;
-
   int num_compressed_texture_formats_;
   int num_shader_binary_formats_;
 };

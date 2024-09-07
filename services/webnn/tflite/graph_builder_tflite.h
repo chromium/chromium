@@ -335,6 +335,8 @@ class GraphBuilderTflite final {
 
   // A helper function for serializing WebNN gru and lstm operations.
   template <typename RecurrentNetworkType>
+    requires(std::is_same_v<RecurrentNetworkType, mojom::Gru> ||
+             std::is_same_v<RecurrentNetworkType, mojom::Lstm>)
   base::expected<OperatorOffset, std::string> SerializeRecurrentNetwork(
       const RecurrentNetworkType& recurrent_network);
 

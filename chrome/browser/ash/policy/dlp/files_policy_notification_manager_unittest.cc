@@ -831,6 +831,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         FilesPolicyDialog::BlockReason::kDlp,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult,
+        FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
         FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,

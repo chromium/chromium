@@ -165,6 +165,21 @@ void RecordWebSocketFallbackResult(int result,
                                        connection_info));
 }
 
+const std::string_view NegotiatedProtocolToHistogramSuffix(
+    const HttpResponseInfo& response) {
+  NextProto next_proto = NextProtoFromString(response.alpn_negotiated_protocol);
+  switch (next_proto) {
+    case kProtoHTTP11:
+      return "H1";
+    case kProtoHTTP2:
+      return "H2";
+    case kProtoQUIC:
+      return "H3";
+    case kProtoUnknown:
+      return "Unknown";
+  }
+}
+
 }  // namespace
 
 const int HttpNetworkTransaction::kDrainBodyBufferSize;
@@ -761,6 +776,7 @@ void HttpNetworkTransaction::OnQuicBroken() {
 
 void HttpNetworkTransaction::OnSwitchesToHttpStreamPool(
     HttpStreamKey stream_key,
+    const AlternativeServiceInfo& alternative_service_info,
     quic::ParsedQuicVersion quic_version) {
   CHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
   CHECK(stream_request_);
@@ -769,7 +785,8 @@ void HttpNetworkTransaction::OnSwitchesToHttpStreamPool(
   stream_request_ = session_->http_stream_pool()->RequestStream(
       this, stream_key, priority_,
       /*allowed_bad_certs=*/observed_bad_certs_, enable_ip_based_pooling_,
-      enable_alternative_services_, quic_version, net_log_);
+      enable_alternative_services_, alternative_service_info, quic_version,
+      net_log_);
   CHECK(!stream_request_->completed());
   // No IO completion yet.
 }
@@ -975,11 +992,35 @@ int HttpNetworkTransaction::DoInitStream() {
   DCHECK(stream_.get());
   next_state_ = STATE_INIT_STREAM_COMPLETE;
 
-  return stream_->InitializeStream(can_send_early_data_, priority_, net_log_,
-                                   io_callback_);
+  base::TimeTicks now = base::TimeTicks::Now();
+  int rv = stream_->InitializeStream(can_send_early_data_, priority_, net_log_,
+                                     io_callback_);
+
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  bool blocked = rv == ERR_IO_PENDING;
+  if (blocked) {
+    blocked_initialize_stream_start_time_ = now;
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat({"Net.NetworkTransaction.InitializeStreamBlocked",
+                    IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                    NegotiatedProtocolToHistogramSuffix(response_)}),
+      blocked);
+  return rv;
 }
 
 int HttpNetworkTransaction::DoInitStreamComplete(int result) {
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  if (!blocked_initialize_stream_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.NetworkTransaction.InitializeStreamBlockTime",
+                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                      NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::TimeTicks::Now() - blocked_initialize_stream_start_time_);
+  }
+
   if (result != OK) {
     if (result < 0)
       result = HandleIOError(result);
@@ -1067,13 +1108,33 @@ int HttpNetworkTransaction::DoGenerateProxyAuthToken() {
         target, AuthURL(target), request_->network_anonymization_key,
         session_->http_auth_cache(), session_->http_auth_handler_factory(),
         session_->host_resolver());
-  return auth_controllers_[target]->MaybeGenerateAuthToken(request_,
-                                                           io_callback_,
-                                                           net_log_);
+  int rv = auth_controllers_[target]->MaybeGenerateAuthToken(
+      request_, io_callback_, net_log_);
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  const bool blocked = rv == ERR_IO_PENDING;
+  if (blocked) {
+    blocked_generate_proxy_auth_token_start_time_ = base::TimeTicks::Now();
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat({"Net.NetworkTransaction.GenerateProxyAuthTokenBlocked",
+                    IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                    NegotiatedProtocolToHistogramSuffix(response_)}),
+      blocked);
+  return rv;
 }
 
 int HttpNetworkTransaction::DoGenerateProxyAuthTokenComplete(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  if (!blocked_generate_proxy_auth_token_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.NetworkTransaction.GenerateProxyAuthTokenBlockTime",
+                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                      NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::TimeTicks::Now() - blocked_generate_proxy_auth_token_start_time_);
+  }
   if (rv == OK)
     next_state_ = STATE_GENERATE_SERVER_AUTH_TOKEN;
   return rv;
@@ -1092,13 +1153,34 @@ int HttpNetworkTransaction::DoGenerateServerAuthToken() {
   }
   if (!ShouldApplyServerAuth())
     return OK;
-  return auth_controllers_[target]->MaybeGenerateAuthToken(request_,
-                                                           io_callback_,
-                                                           net_log_);
+  int rv = auth_controllers_[target]->MaybeGenerateAuthToken(
+      request_, io_callback_, net_log_);
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  const bool blocked = rv == ERR_IO_PENDING;
+  if (blocked) {
+    blocked_generate_server_auth_token_start_time_ = base::TimeTicks::Now();
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat({"Net.NetworkTransaction.GenerateServerAuthTokenBlocked",
+                    IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                    NegotiatedProtocolToHistogramSuffix(response_)}),
+      blocked);
+  return rv;
 }
 
 int HttpNetworkTransaction::DoGenerateServerAuthTokenComplete(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  if (!blocked_generate_server_auth_token_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.NetworkTransaction.GenerateServerAuthTokenBlockTime",
+                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                      NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::TimeTicks::Now() -
+            blocked_generate_server_auth_token_start_time_);
+  }
   if (rv == OK)
     next_state_ = STATE_INIT_REQUEST_BODY;
   return rv;
@@ -1244,15 +1326,9 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     DCHECK(stream_.get());
     DCHECK(IsSecureRequest());
-    // Unclear if this is needed. Copied behavior from an earlier version of
-    // Chrome.
-    //
-    // TODO(https://crbug.com/332234173): Assuming this isn't hit, replace with
-    // a CHECK.
-    if (!response_.cert_request_info) {
-      DUMP_WILL_BE_NOTREACHED();
-      response_.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
-    }
+    // Should only reach this code when there's a certificate request.
+    CHECK(response_.cert_request_info);
+
     total_received_bytes_ += stream_->GetTotalReceivedBytes();
     total_sent_bytes_ += stream_->GetTotalSentBytes();
     stream_->Close(true);

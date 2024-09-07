@@ -185,7 +185,7 @@ class PictureLayerImplTest : public TestLayerTreeHostBase {
       float page_scale_factor) {
     SetupDrawProperties(layer, ideal_contents_scale, device_scale_factor,
                         page_scale_factor);
-    layer->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+    layer->UpdateTiles();
   }
 
   void SetupDrawPropertiesAndUpdateTiles(FakePictureLayerImpl* layer,
@@ -1668,7 +1668,7 @@ TEST_F(LegacySWPictureLayerImplTest, FarScrolledQuadsShifted) {
   active_layer()->SetContentsOpaque(true);
   active_layer()->draw_properties().visible_layer_rect =
       gfx::Rect(0, 5000, 1000, 1000);
-  active_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->UpdateTiles();
 
   auto* high_res_tiling = active_layer()->HighResTiling();
   ASSERT_TRUE(high_res_tiling);
@@ -1743,7 +1743,7 @@ TEST_F(LegacySWPictureLayerImplTest, FarScrolledSolidColorQuadsShifted) {
   active_layer()->SetContentsOpaque(true);
   active_layer()->draw_properties().visible_layer_rect =
       gfx::Rect(0, 9000, 1000, 1000);
-  active_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->UpdateTiles();
 
   auto* high_res_tiling = active_layer()->HighResTiling();
   ASSERT_TRUE(high_res_tiling);
@@ -1874,7 +1874,7 @@ TEST_F(NoLowResPictureLayerImplTest, MarkRequiredOffscreenTiles) {
       pending_layer()->viewport_rect_for_tile_priority_in_content_space());
 
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
 
   int num_visible = 0;
   int num_offscreen = 0;
@@ -1924,7 +1924,7 @@ TEST_F(NoLowResPictureLayerImplTest,
   // external_viewport_for_tile_priority.
   pending_layer()->draw_properties().visible_layer_rect = visible_layer_rect;
   host_impl()->AdvanceToNextFrame(base::Milliseconds(200));
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
 
   // Intersect the two rects. Any tile outside should not be required for
   // activation.
@@ -2368,8 +2368,7 @@ TEST_F(LegacySWPictureLayerImplTest, NothingRequiredIfActiveMissingTiles) {
   // where the recordings are so far away that no tiles are created.
   gfx::Rect visible_rect(0, 3000, 1000, 1000);
   active_layer()->HighResTiling()->ComputeTilePriorityRects(
-      visible_rect, visible_rect, visible_rect, visible_rect, 1, Occlusion(),
-      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      visible_rect, visible_rect, visible_rect, visible_rect, 1, Occlusion());
   EXPECT_EQ(active_layer()->HighResTiling()->AllTilesForTesting().size(), 0u);
 
   // Since the active layer has no tiles at all, the pending layer doesn't
@@ -2502,9 +2501,8 @@ TEST_F(LegacySWPictureLayerImplTest, ShareTilesOnNextFrame) {
   EXPECT_TRUE(pending_tiling->TileAt(1, 1));
 
   // Drop the tiles on the active tree and recreate them.
-  active_layer()->tilings()->UpdateTilePriorities(
-      gfx::Rect(), 1.f, 1.0, Occlusion(), true,
-      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->tilings()->UpdateTilePriorities(gfx::Rect(), 1.f, 1.0,
+                                                  Occlusion(), true);
   EXPECT_TRUE(active_tiling->AllTilesForTesting().empty());
   active_tiling->CreateAllTilesForTesting();
 
@@ -2675,7 +2673,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   ActivateTree();
   active_layer()->AddLastAppendQuadsTilingForTesting(
       active_layer()->tilings()->FindTilingWithScaleKey(1.0f));
-  active_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->UpdateTiles();
 
   EXPECT_EQ(1.f, active_layer()->MinimumContentsScale());
 
@@ -2728,9 +2726,20 @@ TEST_F(PictureLayerImplTest, RequiredTilesWithGpuRasterization) {
 
   active_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
 
-  // High res tiling should have 128 tiles (4x16 tile grid, plus another
-  // factor of 2 for half-width tiles).
-  EXPECT_EQ(128u, active_layer()->HighResTiling()->AllTilesForTesting().size());
+  EXPECT_EQ(ALLOW_PREPAINT_ONLY,
+            host_impl()->global_tile_state().memory_limit_policy);
+  if (!features::IsCCSlimmingEnabled()) {
+    // High res tiling should have 128 tiles (4x16 tile grid, plus another
+    // factor of 2 for half-width tiles).
+    EXPECT_EQ(128u,
+              active_layer()->HighResTiling()->AllTilesForTesting().size());
+  } else {
+    // Due to optimization in PictureLayerTiling::ComputeTilePriorityRects(),
+    // since the memory limit policy is ALLOW_PREPAINT_ONLY, |live_tiles_rect|
+    // does not include |eventually_rect|.
+    EXPECT_EQ(15u,
+              active_layer()->HighResTiling()->AllTilesForTesting().size());
+  }
 
   // Visible viewport should be covered by 8 tiles (4 high, half-width.
   // No other tiles should be required for activation.
@@ -3174,21 +3183,21 @@ TEST_F(LegacySWPictureLayerImplTest, ViewportSizeChangeDuringAnimation) {
   // minimum 500x500 as the viewport is empty for now).
   SetMaximumAnimationToScreenScale(pending_layer(), maximum_animation_scale,
                                    affected_by_invalid_scale);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   EXPECT_EQ(pending_layer()->HighResTiling()->contents_scale_key(), 5.f);
 
   // Setting viewport rect smaller than the minimum won't change raster scale.
   host_impl()->pending_tree()->SetDeviceViewportRect(gfx::Rect(400, 400));
   SetMaximumAnimationToScreenScale(pending_layer(), maximum_animation_scale,
                                    affected_by_invalid_scale);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   EXPECT_EQ(pending_layer()->HighResTiling()->contents_scale_key(), 5.f);
 
   // For a larger viewport size, the clamped scale is also larger.
   host_impl()->pending_tree()->SetDeviceViewportRect(gfx::Rect(1000, 200));
   SetMaximumAnimationToScreenScale(pending_layer(), maximum_animation_scale,
                                    affected_by_invalid_scale);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   EXPECT_EQ(pending_layer()->HighResTiling()->contents_scale_key(), 10.f);
 }
 
@@ -3442,7 +3451,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
 
   pending_layer()->draw_properties().visible_layer_rect =
       gfx::Rect(1100, 1100, 500, 500);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
 
   unique_tiles.clear();
   high_res_tile_count = 0u;
@@ -3472,7 +3481,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
 
   pending_layer()->draw_properties().visible_layer_rect =
       gfx::Rect(0, 0, 500, 500);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
 
   std::vector<Tile*> high_res_tiles =
       pending_layer()->HighResTiling()->AllTilesForTesting();
@@ -4139,8 +4148,7 @@ TEST_F(NoLowResPictureLayerImplTest, NothingRequiredIfActiveMissingTiles) {
   // where the recordings are so far away that no tiles are created.
   gfx::Rect visible_rect(0, 3000, 1000, 1000);
   active_layer()->HighResTiling()->ComputeTilePriorityRects(
-      visible_rect, visible_rect, visible_rect, visible_rect, 1, Occlusion(),
-      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      visible_rect, visible_rect, visible_rect, visible_rect, 1, Occlusion());
   EXPECT_EQ(active_layer()->HighResTiling()->AllTilesForTesting().size(), 0u);
 
   // Since the active layer has no tiles at all, the pending layer doesn't
@@ -5410,7 +5418,7 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextInvalidatesPendingTree) {
   // LCD text is disallowed before SetContentsOpaque(true).
   EXPECT_FALSE(pending_layer()->can_use_lcd_text());
   pending_layer()->SetContentsOpaque(true);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
 
   EXPECT_TRUE(pending_layer()->can_use_lcd_text());
   EXPECT_TRUE(pending_layer()->HighResTiling()->has_tiles());
@@ -5420,7 +5428,7 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextInvalidatesPendingTree) {
     EXPECT_TRUE(tile->can_use_lcd_text());
 
   pending_layer()->SetContentsOpaque(false);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
 
   EXPECT_FALSE(pending_layer()->can_use_lcd_text());
   EXPECT_TRUE(pending_layer()->HighResTiling()->has_tiles());
@@ -5455,7 +5463,7 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTree) {
   // LCD text is disallowed before SetContentsOpaque(true).
   EXPECT_FALSE(pending_layer()->can_use_lcd_text());
   pending_layer()->SetContentsOpaque(true);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   EXPECT_TRUE(pending_layer()->can_use_lcd_text());
   EXPECT_TRUE(pending_layer()->HighResTiling()->can_use_lcd_text());
   ActivateTree();
@@ -5474,7 +5482,7 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTree) {
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), page_scale, 1.0f,
                                     page_scale);
   pending_layer()->SetContentsOpaque(false);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   EXPECT_FALSE(pending_layer()->can_use_lcd_text());
   EXPECT_FALSE(pending_layer()->HighResTiling()->can_use_lcd_text());
   ActivateTree();
@@ -5497,7 +5505,7 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTreeWith2dScale) {
   // LCD text is disallowed before SetContentsOpaque(true).
   EXPECT_FALSE(pending_layer()->can_use_lcd_text());
   pending_layer()->SetContentsOpaque(true);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   EXPECT_TRUE(pending_layer()->can_use_lcd_text());
   EXPECT_TRUE(pending_layer()->HighResTiling()->can_use_lcd_text());
   ActivateTree();
@@ -5516,7 +5524,7 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTreeWith2dScale) {
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), ideal_scale, 1.0f,
                                     page_scale);
   pending_layer()->SetContentsOpaque(false);
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   EXPECT_FALSE(pending_layer()->can_use_lcd_text());
   EXPECT_FALSE(pending_layer()->HighResTiling()->can_use_lcd_text());
   ActivateTree();
@@ -6146,7 +6154,7 @@ TEST_F(LegacySWPictureLayerImplTest,
       translate1);
   pending_layer()->draw_properties().target_space_transform =
       pending_layer()->draw_properties().screen_space_transform;
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   ASSERT_EQ(1u, pending_layer()->tilings()->num_tilings());
   {
     PictureLayerTiling* tiling = pending_layer()->tilings()->tiling_at(0);
@@ -6166,7 +6174,7 @@ TEST_F(LegacySWPictureLayerImplTest,
       translate2);
   pending_layer()->draw_properties().target_space_transform =
       pending_layer()->draw_properties().screen_space_transform;
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   ASSERT_EQ(1u, pending_layer()->tilings()->num_tilings());
   {
     PictureLayerTiling* tiling = pending_layer()->tilings()->tiling_at(0);
@@ -6184,7 +6192,7 @@ TEST_F(LegacySWPictureLayerImplTest,
       translate2);
   pending_layer()->draw_properties().target_space_transform =
       pending_layer()->draw_properties().screen_space_transform;
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   ASSERT_EQ(1u, pending_layer()->tilings()->num_tilings());
   {
     PictureLayerTiling* tiling = pending_layer()->tilings()->tiling_at(0);
@@ -6212,7 +6220,7 @@ TEST_F(LegacySWPictureLayerImplTest,
       translate1);
   active_layer()->draw_properties().target_space_transform =
       active_layer()->draw_properties().screen_space_transform;
-  active_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->UpdateTiles();
   ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
   {
     PictureLayerTiling* tiling =
@@ -6232,7 +6240,7 @@ TEST_F(LegacySWPictureLayerImplTest,
       translate2);
   pending_layer()->draw_properties().target_space_transform =
       pending_layer()->draw_properties().screen_space_transform;
-  pending_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_layer()->UpdateTiles();
   ASSERT_EQ(1u, pending_layer()->tilings()->num_tilings());
   {
     PictureLayerTiling* tiling = pending_layer()->tilings()->tiling_at(0);
@@ -6458,7 +6466,7 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingsUsesScaleOne) {
   active_layer()->SetSafeOpaqueBackgroundColor(SkColors::kWhite);
   active_layer()->draw_properties().visible_layer_rect =
       gfx::Rect(0, 0, 1000, 1000);
-  active_layer()->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->UpdateTiles();
 
   ASSERT_EQ(0u, active_layer()->tilings()->num_tilings());
   ASSERT_FALSE(active_layer()->HighResTiling());

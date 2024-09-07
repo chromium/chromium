@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_ACCOUNT_PASSWORD_STORE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_ACCOUNT_PASSWORD_STORE_FACTORY_H_
 
-#include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 enum class ServiceAccessType;
 
 namespace password_manager {

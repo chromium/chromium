@@ -775,8 +775,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
   RunTestCase("ManagePrintersMetrics_HasNoDestinations");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
-                       ElementsDisplayedWithShowManagePrintersFalse) {
+IN_PROC_BROWSER_TEST_F(
+    PrintPreviewDestinationDialogCrosTest,
+    PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse) {
   RunTestCase("PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse");
 }
 
@@ -838,9 +839,11 @@ class PrintPreviewPreviewAreaTest : public PrintPreviewBrowserTest {
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, StateChanges) {
   RunTestCase("StateChanges");
 }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest,
@@ -1058,23 +1061,13 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
-                       PrinterIconMapsToPrinterStatus_FlagOff) {
-  RunTestCase("PrinterIconMapsToPrinterStatus_FlagOff");
+                       PrinterIconMapsToPrinterStatus) {
+  RunTestCase("PrinterIconMapsToPrinterStatus");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
-                       PrinterIconMapsToPrinterStatus_FlagOn) {
-  RunTestCase("PrinterIconMapsToPrinterStatus_FlagOn");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
-                       PrinterConnectionStatusClass_FlagOff) {
-  RunTestCase("PrinterConnectionStatusClass_FlagOff");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
-                       PrinterConnectionStatusClass_FlagOn) {
-  RunTestCase("PrinterConnectionStatusClass_FlagOn");
+                       PrinterConnectionStatusClass) {
+  RunTestCase("PrinterConnectionStatusClass");
 }
 #endif
 
@@ -1110,6 +1103,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryName) {
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryOption) {
   RunTestCase("QueryOption");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryJapaneseCharacters) {
+  RunTestCase("QueryJapaneseCharacters");
 }
 
 class PrintPreviewDestinationListTest : public PrintPreviewBrowserTest {
@@ -1215,13 +1212,8 @@ class PrintPreviewPrinterStatusTest : public PrintPreviewBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
-                       PrinterStatusUpdatesColor_FlagOff) {
-  RunTestCase("PrinterStatusUpdatesColor_FlagOff");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
-                       PrinterStatusUpdatesColor_FlagOn) {
-  RunTestCase("PrinterStatusUpdatesColor_FlagOn");
+                       PrinterStatusUpdatesColor) {
+  RunTestCase("PrinterStatusUpdatesColor");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, SendStatusRequestOnce) {
@@ -1241,12 +1233,8 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
   RunTestCase("SuccessfulPrinterStatusAfterRetry");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, StatusTextClass_FlagOff) {
-  RunTestCase("StatusTextClass_FlagOff");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, StatusTextClass_FlagOn) {
-  RunTestCase("StatusTextClass_FlagOn");
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, StatusTextClass) {
+  RunTestCase("StatusTextClass");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,

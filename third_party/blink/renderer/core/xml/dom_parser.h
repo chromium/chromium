@@ -32,7 +32,6 @@ class String;
 namespace blink {
 
 class Document;
-class ParseFromStringOptions;
 class LocalDOMWindow;
 class ScriptState;
 
@@ -46,9 +45,7 @@ class CORE_EXPORT DOMParser final : public ScriptWrappable {
 
   explicit DOMParser(ScriptState*);
 
-  Document* parseFromString(const WTF::String&,
-                            const WTF::String& type,
-                            const ParseFromStringOptions* options);
+  Document* parseFromString(const WTF::String&, const WTF::String& type);
 
   void Trace(Visitor*) const override;
 

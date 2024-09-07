@@ -296,6 +296,7 @@ void ClientResourceProvider::PrepareSendToParentInternal(
     std::move(verify_sync_tokens).Run(&unverified_sync_tokens);
   }
 
+  list->reserve(list->size() + imports.size());
   for (ImportedResource* imported : imports) {
     list->push_back(imported->resource);
     imported->exported_count++;

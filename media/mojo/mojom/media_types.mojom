@@ -156,6 +156,18 @@ enum SVCInterLayerPredMode {
   kOnKeyPic
 };
 
+// This defines a mojo transport format for media::VideoAspectRatio.
+// See media/base/video_aspect_ratio.h for description.
+struct VideoAspectRatio {
+  enum Type {
+    kDisplay,
+    kPixel,
+  };
+
+  Type type;
+  double value;
+};
+
 // This defines a mojo transport format for media::VideoColorSpace.
 // See media/base/video_color_space.h for description.
 struct VideoColorSpace {
@@ -208,6 +220,7 @@ struct VideoDecoderConfig {
   gfx.mojom.Size coded_size;
   gfx.mojom.Rect visible_rect;
   gfx.mojom.Size natural_size;
+  VideoAspectRatio aspect_ratio;
   array<uint8> extra_data;
   EncryptionScheme encryption_scheme;
   VideoColorSpace color_space_info;
@@ -468,8 +481,7 @@ struct MailboxVideoFrameData {
 
 // This defines video frame data stored in texture shared images.
 struct SharedImageVideoFrameData {
-  // Size should be no greater than media::VideoFrame::kMaxPlanes.
-  array<gpu.mojom.ExportedSharedImage> shared_images;
+  gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
   uint32 texture_target;
   // |ycbcr_data| is present on Android (and sometimes Fuchsia) when the

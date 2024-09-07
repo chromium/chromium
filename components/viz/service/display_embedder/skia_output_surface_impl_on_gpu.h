@@ -40,8 +40,8 @@
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
@@ -63,7 +63,6 @@ class Presenter;
 }  // namespace gl
 
 namespace gpu {
-class DawnContextProvider;
 class DisplayCompositorMemoryAndTaskControllerOnGpu;
 class SharedImageRepresentationFactory;
 class SharedImageFactory;
@@ -357,17 +356,6 @@ class SkiaOutputSurfaceImplOnGpu
     return gpu_preferences_.gr_context_type == gpu::GrContextType::kGL;
   }
 
-  bool is_using_graphite_dawn() const {
-    return !!dawn_context_provider_ && gpu_preferences_.gr_context_type ==
-                                           gpu::GrContextType::kGraphiteDawn;
-  }
-
-  bool is_using_graphite_metal() const {
-    return !!context_state_->metal_context_provider() &&
-           gpu_preferences_.gr_context_type ==
-               gpu::GrContextType::kGraphiteMetal;
-  }
-
   // Helper for `CopyOutput()` method, handles the RGBA format.
   void CopyOutputRGBA(SkSurface* surface,
                       copy_output::RenderPassGeometry geometry,
@@ -501,7 +489,6 @@ class SkiaOutputSurfaceImplOnGpu
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
   const raw_ptr<VulkanContextProvider> vulkan_context_provider_;
-  const raw_ptr<gpu::DawnContextProvider> dawn_context_provider_;
   const RendererSettings renderer_settings_;
 
   // Should only be run on the client thread with PostTaskToClientThread().

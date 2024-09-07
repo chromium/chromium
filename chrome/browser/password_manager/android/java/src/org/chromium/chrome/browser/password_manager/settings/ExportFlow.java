@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
 import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.logPasswordsExportResult;
 
@@ -18,15 +19,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
+import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;
@@ -242,12 +243,12 @@ public class ExportFlow implements ExportFlowInterface {
         passwordsFile.deleteOnExit();
 
         try {
-            mExportFileUri = ContentUriUtils.getContentUriFromFile(passwordsFile);
+            mExportFileUri = FileProviderUtils.getContentUriFromFile(passwordsFile);
         } catch (IllegalArgumentException e) {
             showExportErrorAndAbort(
                     R.string.password_settings_export_tips,
                     e.getMessage(),
-                    R.string.try_again,
+                    getPositiveButtonLabelId(),
                     HistogramExportResult.WRITE_FAILED);
             return;
         }
@@ -322,7 +323,7 @@ public class ExportFlow implements ExportFlowInterface {
                             showExportErrorAndAbort(
                                     R.string.password_settings_export_tips,
                                     errorMessage,
-                                    R.string.try_again,
+                                    getPositiveButtonLabelId(),
                                     HistogramExportResult.WRITE_FAILED);
                         });
     }
@@ -335,12 +336,22 @@ public class ExportFlow implements ExportFlowInterface {
     }
 
     /**
-     * Continues with the password export flow after the user successfully reauthenticated.
-     * Current state of export flow: the user tapped the menu item for export and passed
-     * reauthentication. The next steps are: confirming the export, waiting for exported data (if
-     * needed) and choosing a consumer app for the data.
+     * Continues with the password export flow after the user successfully reauthenticated. Current
+     * state of export flow: the user tapped the menu item for export and passed reauthentication.
+     * The next steps are: confirming the export, waiting for exported data (if needed) and choosing
+     * a consumer app for the data.
      */
     private void exportAfterReauth() {
+        // Don't show the export warning here in the access loss exporting flow because it's
+        // slightly different from others:
+        // - The dialog proposing to export is shown before the start of export flow.
+        // - Exporting should be immediately started after reauthentication.
+        if (ChromeFeatureList.isEnabled(
+                UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            onExportConfirmed();
+            return;
+        }
+
         assert mExportWarningDialogFragment == null;
         mExportWarningDialogFragment = new ExportWarningDialogFragment();
         mExportWarningDialogFragment.setExportWarningHandler(
@@ -354,18 +365,7 @@ public class ExportFlow implements ExportFlowInterface {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == AlertDialog.BUTTON_POSITIVE) {
                             mConfirmed = true;
-                            RecordHistogram.recordEnumeratedHistogram(
-                                    getExportEventHistogramName(),
-                                    PasswordExportEvent.EXPORT_CONFIRMED,
-                                    PasswordExportEvent.COUNT);
-                            mExportState = ExportState.CONFIRMED;
-                            // If the error dialog has been waiting, display it now, otherwise
-                            // continue the export flow.
-                            if (mErrorDialogParams != null) {
-                                showExportErrorDialogFragment();
-                            } else {
-                                tryExporting();
-                            }
+                            onExportConfirmed();
                         }
                     }
 
@@ -399,14 +399,29 @@ public class ExportFlow implements ExportFlowInterface {
         mExportWarningDialogFragment.show(mDelegate.getFragmentManager(), null);
     }
 
+    private void onExportConfirmed() {
+        RecordHistogram.recordEnumeratedHistogram(
+                getExportEventHistogramName(),
+                PasswordExportEvent.EXPORT_CONFIRMED,
+                PasswordExportEvent.COUNT);
+        mExportState = ExportState.CONFIRMED;
+        // If the error dialog has been waiting (e. g. because password serialization failed while
+        // the user was authenticating), display it now, otherwise continue the export flow.
+        if (mErrorDialogParams != null) {
+            showExportErrorDialogFragment();
+        } else {
+            tryExporting();
+        }
+    }
+
     /**
      * Starts the exporting intent if both blocking events are completed: serializing and the
-     * confirmation flow.
-     * At this point, the user the user has tapped the menu item for export and passed
+     * confirmation flow. At this point, the user has tapped the menu item for export and passed
      * reauthentication. Upon calling this method, the user has either also confirmed the export, or
      * the exported data have been prepared. The method is called twice, once for each of those
      * events. The next step after both the export is confirmed and the data is ready is to offer
-     * the user an intent chooser for sharing the exported passwords.
+     * the user an intent chooser for sharing the exported passwords or a create document intent if
+     * UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING feature is on.
      */
     private void tryExporting() {
         if (mExportState != ExportState.CONFIRMED) return;
@@ -436,10 +451,11 @@ public class ExportFlow implements ExportFlowInterface {
 
     /**
      * Call this to abort the export UI flow and display an error description to the user.
+     *
      * @param descriptionId The resource ID of a string with a brief explanation of the error.
      * @param detailedDescription An optional string with more technical details about the error.
      * @param positiveButtonLabelId The resource ID of the label of the positive button in the error
-     * dialog.
+     *     dialog.
      */
     @VisibleForTesting
     void showExportErrorAndAbort(
@@ -448,6 +464,7 @@ public class ExportFlow implements ExportFlowInterface {
             int positiveButtonLabelId,
             @HistogramExportResult int histogramExportResult) {
         assert mErrorDialogParams == null;
+        mDelegate.onExportFlowFailed();
         mProgressBarManager.hide(
                 () -> {
                     showExportErrorAndAbortImmediately(
@@ -514,10 +531,18 @@ public class ExportFlow implements ExportFlowInterface {
                                 mDelegate.getActivity().startActivity(intent);
                             } else if (positiveButtonLabelId == R.string.try_again) {
                                 mExportState = ExportState.REQUESTED;
+                                // If `mExportFileUri` is null, it means that serialization has
+                                // failed. Need to restart it too.
+                                if (mExportFileUri == null) {
+                                    mPasswordSerializationStarted = false;
+                                    serializePasswords();
+                                }
                                 exportAfterReauth();
                             }
                         } else if (which == AlertDialog.BUTTON_NEGATIVE) {
                             // Re-enable exporting, the current one was just cancelled.
+                            mDelegate.onExportFlowCanceled();
+                            mProgressBarManager.hide(() -> {});
                             mExportState = ExportState.INACTIVE;
                             mExportFileUri = null;
                         }
@@ -534,12 +559,14 @@ public class ExportFlow implements ExportFlowInterface {
         assert mExportState == ExportState.CONFIRMED;
         mExportState = ExportState.INACTIVE;
 
-        if (mExportFileUri.equals(Uri.EMPTY)) return;
+        if (mExportFileUri != null && mExportFileUri.equals(Uri.EMPTY)) return;
 
         // With UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING feature on, offer to save the
         // exported passwords on disk. Otherwise offer to share the passwords with a chosen Android
         // app.
-        if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
+        if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
+                || ChromeFeatureList.isEnabled(
+                        UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
             runCreateFileOnDiskIntent();
         } else {
             runSharePasswordsIntent();
@@ -562,7 +589,7 @@ public class ExportFlow implements ExportFlowInterface {
             showExportErrorAndAbort(
                     R.string.password_settings_export_no_app,
                     e.getMessage(),
-                    R.string.try_again,
+                    getPositiveButtonLabelId(),
                     HistogramExportResult.NO_CONSUMER);
         }
     }
@@ -593,6 +620,14 @@ public class ExportFlow implements ExportFlowInterface {
 
     @Override
     public void savePasswordsToDownloads(Uri passwordsFile) {
+        if (passwordsFile == null) {
+            showExportErrorAndAbort(
+                    R.string.password_settings_export_tips,
+                    "Could not create file.",
+                    getPositiveButtonLabelId(),
+                    HistogramExportResult.WRITE_FAILED);
+            return;
+        }
         new AsyncTask<String>() {
             @Override
             protected String doInBackground() {
@@ -612,7 +647,7 @@ public class ExportFlow implements ExportFlowInterface {
                                 showExportErrorAndAbort(
                                         R.string.password_settings_export_tips,
                                         exceptionMessage,
-                                        R.string.try_again,
+                                        getPositiveButtonLabelId(),
                                         HistogramExportResult.WRITE_FAILED);
                             } else {
                                 mDelegate.onExportFlowSucceeded();
@@ -681,5 +716,21 @@ public class ExportFlow implements ExportFlowInterface {
      */
     public static boolean providesPasswordExport() {
         return ReauthenticationManager.isReauthenticationApiAvailable();
+    }
+
+    private int getPositiveButtonLabelId() {
+        // Don't allow to try restarting the export flow from password access loss warning. The
+        // reason: it won't be able to create the file for saving passwords on disk because the
+        // dialog, which owns the export flow would be dismissed. There is a workaround: clicking on
+        // Google Password Manager will propose to restart the export flow.
+        // TODO (crbug.com/364530583): returning 0 here means there should be only one "Close"
+        // button in the dialog. Make error dialog configurable instead of passing a 0 resource into
+        // it.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList
+                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            return 0;
+        }
+        return R.string.try_again;
     }
 }

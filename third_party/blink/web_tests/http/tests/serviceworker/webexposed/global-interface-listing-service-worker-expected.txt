@@ -1,13 +1,35 @@
 [INTERFACES]
 interface AI
     attribute @@toStringTag
+    getter assistant
     getter rewriter
     getter summarizer
     getter writer
-    method canCreateTextSession
     method constructor
-    method createTextSession
-    method textModelInfo
+interface AIAssistant
+    attribute @@toStringTag
+    getter maxTokens
+    getter temperature
+    getter tokensLeft
+    getter tokensSoFar
+    getter topK
+    method clone
+    method constructor
+    method destroy
+    method prompt
+    method promptStreaming
+interface AIAssistantCapabilities
+    attribute @@toStringTag
+    getter available
+    getter defaultTemperature
+    getter defaultTopK
+    getter maxTopK
+    method constructor
+interface AIAssistantFactory
+    attribute @@toStringTag
+    method capabilities
+    method constructor
+    method create
 interface AIRewriter
     attribute @@toStringTag
     getter length
@@ -23,6 +45,10 @@ interface AIRewriterFactory
     method create
 interface AISummarizer
     attribute @@toStringTag
+    getter format
+    getter length
+    getter sharedContext
+    getter type
     method constructor
     method destroy
     method summarize
@@ -31,18 +57,15 @@ interface AISummarizerCapabilities
     attribute @@toStringTag
     getter available
     method constructor
+    method supportsFormat
+    method supportsInputLanguage
+    method supportsLength
+    method supportsType
 interface AISummarizerFactory
     attribute @@toStringTag
     method capabilities
     method constructor
     method create
-interface AITextSession
-    attribute @@toStringTag
-    method clone
-    method constructor
-    method destroy
-    method prompt
-    method promptStreaming
 interface AIWriter
     attribute @@toStringTag
     getter sharedContext
@@ -1335,6 +1358,7 @@ interface NotificationEvent : ExtendableEvent
 interface Observable
     static method from
     attribute @@toStringTag
+    method catch
     method constructor
     method drop
     method every
@@ -1346,6 +1370,7 @@ interface Observable
     method inspect
     method last
     method map
+    method reduce
     method some
     method subscribe
     method switchMap

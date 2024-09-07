@@ -11,7 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 
-class ChromeSecurityStateClientTest : public PlatformBrowserTest {
+class ChromeSecurityStateClientTest : public AndroidBrowserTest {
  public:
   ChromeSecurityStateClientTest() = default;
   ~ChromeSecurityStateClientTest() override = default;

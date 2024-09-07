@@ -10,13 +10,6 @@
 #import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/infobars/model/infobar_ios.h"
-#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/model/infobar_type.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator.h"
@@ -24,6 +17,13 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 
 @interface AutofillEditProfileBottomSheetCoordinator () <
     AutofillCountrySelectionTableViewControllerDelegate,

@@ -19,10 +19,13 @@ import androidx.core.view.MenuItemCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.BuildConfig;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 import java.util.ArrayList;
@@ -30,11 +33,11 @@ import java.util.Collection;
 import java.util.Locale;
 
 /**
- * Shows a particular chosen object (e.g. a USB device) and the list of sites that have been
- * granted access to it by the user.
+ * Shows a particular chosen object (e.g. a USB device) and the list of sites that have been granted
+ * access to it by the user.
  */
 public class ChosenObjectSettings extends BaseSiteSettingsFragment
-        implements CustomDividerFragment {
+        implements SettingsPage, CustomDividerFragment {
     public static final String EXTRA_OBJECT_INFOS = "org.chromium.chrome.preferences.object_infos";
     public static final String EXTRA_SITES = "org.chromium.chrome.preferences.site_set";
     public static final String EXTRA_CATEGORY =
@@ -50,6 +53,8 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
     private SearchView mSearchView;
     // If not blank, represents a substring to use to search for site names.
     private String mSearch = "";
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -70,11 +75,16 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
         checkObjectConsistency();
         mSites = (ArrayList<Website>) getArguments().getSerializable(EXTRA_SITES);
         String title = getArguments().getString(SingleCategorySettings.EXTRA_TITLE);
-        if (title != null) getActivity().setTitle(title);
+        if (title != null) mPageTitle.set(title);
 
         setHasOptionsMenu(true);
 
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

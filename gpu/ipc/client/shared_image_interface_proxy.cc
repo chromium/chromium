@@ -220,7 +220,6 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   return mailbox;
 }
 
-#if BUILDFLAG(IS_WIN)
 void SharedImageInterfaceProxy::CopyToGpuMemoryBuffer(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {
@@ -236,6 +235,7 @@ void SharedImageInterfaceProxy::CopyToGpuMemoryBuffer(
   }
 }
 
+#if BUILDFLAG(IS_WIN)
 void SharedImageInterfaceProxy::CopyToGpuMemoryBufferAsync(
     const SyncToken& sync_token,
     const Mailbox& mailbox,

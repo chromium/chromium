@@ -78,9 +78,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -135,7 +135,8 @@ const char kUKMFieldTrialSuffix[] = "UKM";
 IOSChromeMetricsServiceClient::IOSChromeMetricsServiceClient(
     metrics::MetricsStateManager* state_manager,
     variations::SyntheticTrialRegistry* synthetic_trial_registry)
-    : metrics_state_manager_(state_manager),
+    : UkmConsentStateObserver(ukm::NoInitialUkmConsentState),
+      metrics_state_manager_(state_manager),
       synthetic_trial_registry_(synthetic_trial_registry),
       stability_metrics_provider_(nullptr) {
   RegisterForNotifications();
@@ -281,9 +282,7 @@ void IOSChromeMetricsServiceClient::Initialize() {
         std::make_unique<metrics::DemographicMetricsProvider>(
             std::make_unique<metrics::DemographicsClient>(),
             metrics::MetricsLogUploader::MetricServiceType::UKM));
-    // As this is startup, there the UKM previous state is the same as the
-    // present state.
-    OnUkmAllowedStateChanged(/* must_purge */ false, GetUkmConsentState());
+
     RegisterUKMProviders();
   }
 }
@@ -435,13 +434,9 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
     base::debug::DumpWithoutCrashing();
   }
 
-  std::vector<ChromeBrowserState*> loaded_browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-
   int open_tabs_count = 0;
-  for (ChromeBrowserState* browser_state : loaded_browser_states) {
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     // Iterate through regular Browser and OTR Browser to find the corresponding
     // tab.
     BrowserList* browser_list =
@@ -470,22 +465,21 @@ void IOSChromeMetricsServiceClient::RegisterForNotifications() {
               &IOSChromeMetricsServiceClient::OnURLOpenedFromOmnibox,
               base::Unretained(this)));
 
-  // ChromeBrowserStateManager invoke OnChromeBrowserStateLoaded(...) for
-  // all ChromeBrowserState already loaded, so there is no need to maually
-  // iterate over them.
-  browser_state_manager_observation_.Observe(
-      GetApplicationContext()->GetChromeBrowserStateManager());
+  // ProfileManagerIOS invoke OnProfileLoaded(...) for all Profiles already
+  // loaded, so there is no need to manually iterate over them.
+  profile_manager_observation_.Observe(
+      GetApplicationContext()->GetProfileManager());
 }
 
-bool IOSChromeMetricsServiceClient::RegisterForBrowserStateEvents(
-    ChromeBrowserState* browser_state) {
+bool IOSChromeMetricsServiceClient::RegisterForProfileEvents(
+    ChromeBrowserState* profile) {
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+          profile, ServiceAccessType::IMPLICIT_ACCESS);
   ObserveServiceForDeletions(history_service);
   syncer::SyncService* sync =
-      SyncServiceFactory::GetInstance()->GetForBrowserState(browser_state);
-  StartObserving(sync, browser_state->GetPrefs());
+      SyncServiceFactory::GetInstance()->GetForBrowserState(profile);
+  StartObserving(sync, profile->GetPrefs());
   return (history_service != nullptr && sync != nullptr);
 }
 
@@ -553,22 +547,22 @@ void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
   UpdateRunningServices();
 }
 
-void IOSChromeMetricsServiceClient::OnChromeBrowserStateManagerDestroyed(
-    ChromeBrowserStateManager* manager) {
-  browser_state_manager_observation_.Reset();
+void IOSChromeMetricsServiceClient::OnProfileManagerDestroyed(
+    ProfileManagerIOS* manager) {
+  profile_manager_observation_.Reset();
 }
 
-void IOSChromeMetricsServiceClient::OnChromeBrowserStateCreated(
-    ChromeBrowserStateManager* manager,
-    ChromeBrowserState* browser_state) {
-  // Nothing to do, the ChromeBrowserState is not fully loaded, and it is
-  // not possible to access the KeyedService yet.
+void IOSChromeMetricsServiceClient::OnProfileCreated(
+    ProfileManagerIOS* manager,
+    ChromeBrowserState* profile) {
+  // Nothing to do, the Profile is not fully loaded, and it is not possible to
+  // access the KeyedService yet.
 }
 
-void IOSChromeMetricsServiceClient::OnChromeBrowserStateLoaded(
-    ChromeBrowserStateManager* manager,
-    ChromeBrowserState* browser_state) {
-  if (!RegisterForBrowserStateEvents(browser_state)) {
+void IOSChromeMetricsServiceClient::OnProfileLoaded(
+    ProfileManagerIOS* manager,
+    ChromeBrowserState* profile) {
+  if (!RegisterForProfileEvents(profile)) {
     notification_listeners_active_ = false;
   }
 }

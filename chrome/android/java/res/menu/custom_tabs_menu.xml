@@ -47,10 +47,6 @@ found in the LICENSE file.
         <item android:id="@+id/open_history_menu_id"
             android:title="@string/chrome_history"
             android:orderInCategory="2" />
-        <item android:id="@+id/page_insights_id"
-            android:title="@string/menu_page_insights"
-            android:visible="false"
-            android:orderInCategory="2" />
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:orderInCategory="2" />
@@ -58,12 +54,6 @@ found in the LICENSE file.
             android:title="@string/menu_reader_mode_prefs"
             android:icon="@drawable/reader_mode_prefs_icon"
             android:visible="false"
-            android:orderInCategory="2" />
-        <item android:id="@+id/add_to_homescreen_id"
-            android:title="@string/menu_add_to_homescreen"
-            android:orderInCategory="2" />
-        <item android:id="@+id/install_webapp_id"
-            android:title="@string/menu_install_webapp"
             android:orderInCategory="2" />
         <item android:id="@+id/universal_install"
             android:title="@string/menu_add_to_homescreen"

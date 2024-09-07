@@ -12,19 +12,23 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/utils.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
@@ -66,6 +70,9 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 @property(nonatomic, readonly)
     feature_engagement::Tracker* featureEngagementTracker;
 
+// Whether overflow menu button has a blue dot.
+@property(nonatomic, assign) BOOL hasBlueDot;
+
 @end
 
 @implementation PopupMenuHelpCoordinator {
@@ -80,7 +87,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
     if (!browser->GetBrowserState()->IsOffTheRecord()) {
       _deviceSwitcherResultDispatcher =
           segmentation_platform::SegmentationPlatformServiceFactory::
-              GetDispatcherForBrowserState(browser->GetBrowserState());
+              GetDispatcherForProfile(browser->GetProfile());
     }
   }
   return self;
@@ -133,6 +140,10 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   }
   // Only try to show customization IPH if history IPH was not shown.
   [self showCustomizationIPHInMenu:menu];
+}
+
+- (BOOL)hasBlueDotForOverflowMenu {
+  return self.hasBlueDot;
 }
 
 #pragma mark - Private
@@ -222,6 +233,26 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
       actionForActionType:overflow_menu::ActionType::EditActions];
 }
 
+// Returns whether blue dot should be shown.
+- (BOOL)shouldShowBlueDot {
+  // As sync error takes precendence on blue dot for settings destination in the
+  // overflow menu. In that case don't show blue dot as the full path from
+  // toolbar to default browser settings cannot be highlighted.
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+  if (syncService && ShouldIndicateIdentityErrorInOverflowMenu(syncService)) {
+    return NO;
+  }
+
+  if (self.featureEngagementTracker &&
+      ShouldTriggerDefaultBrowserHighlightFeature(
+          self.featureEngagementTracker)) {
+    RecordDefaultBrowserBlueDotFirstDisplay();
+    return YES;
+  }
+  return NO;
+}
+
 #pragma mark - Popup Menu Button Bubble/IPH methods
 
 - (BubbleViewControllerPresenter*)newPopupMenuBubblePresenter {
@@ -269,7 +300,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   self.popupMenuBubblePresenter = nil;
 }
 
-- (void)prepareToShowPopupMenuBubble {
+- (void)prepareToShowPopupMenuIPHs {
   // There must be a feature engagment tracker to show a bubble.
   if (!self.featureEngagementTracker) {
     return;
@@ -284,7 +315,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
           if (!success) {
             return;
           }
-          [weakSelf prepareToShowPopupMenuBubble];
+          [weakSelf showPopupMenuIPHs];
         }));
     return;
   }
@@ -294,11 +325,16 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                                  kPromoDisplayDelayForTests.InNanoseconds()),
                    dispatch_get_main_queue(), ^{
-                     [weakSelf showPopupMenuBubbleIfNecessary];
+                     [weakSelf showPopupMenuIPHs];
                    });
   } else {
-    [self showPopupMenuBubbleIfNecessary];
+    [self showPopupMenuIPHs];
   }
+}
+
+- (void)showPopupMenuIPHs {
+  [self showPopupMenuBubbleIfNecessary];
+  [self updateBlueDotVisibility];
 }
 
 - (void)showPopupMenuBubbleIfNecessary {
@@ -338,6 +374,22 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
                   anchorPoint:anchorPoint
               anchorViewFrame:anchorFrame];
   [self.UIUpdater updateUIForOverflowMenuIPHDisplayed];
+}
+
+- (void)updateBlueDotVisibility {
+  BOOL hasBlueDot = YES;
+
+  // Don't show blue dot if already showing another IPH.
+  if (self.popupMenuBubblePresenter) {
+    hasBlueDot = NO;
+  }
+
+  if (![self shouldShowBlueDot]) {
+    hasBlueDot = NO;
+  }
+
+  [self.UIUpdater setOverflowMenuBlueDot:hasBlueDot];
+  self.hasBlueDot = hasBlueDot;
 }
 
 #pragma mark - Overflow Menu Bubble methods
@@ -434,7 +486,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   if (level <= SceneActivationLevelBackground) {
     self.inSessionWithHistoryMenuItemIPH = NO;
   } else if (level >= SceneActivationLevelForegroundActive) {
-    [self prepareToShowPopupMenuBubble];
+    [self prepareToShowPopupMenuIPHs];
   }
 }
 

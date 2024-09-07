@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_form_database_service.h"
 
+#include "android_webview/browser/aw_browser_process.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -38,12 +39,11 @@ AwFormDatabaseService::AwFormDatabaseService(const base::FilePath path)
       has_form_data_completion_(
           base::WaitableEvent::ResetPolicy::AUTOMATIC,
           base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  auto db_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  web_database_ = new WebDatabaseService(path.Append(kWebDataFilename),
-                                         content::GetUIThreadTaskRunner({}),
-                                         db_task_runner);
+  web_database_ = new WebDatabaseService(
+      path.Append(kWebDataFilename), content::GetUIThreadTaskRunner({}),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
   web_database_->AddTable(std::make_unique<autofill::AutocompleteTable>());
   // WebView shouldn't depend on non-Autocomplete tables. However,
   // `AwFormDatabaseService::ClearFormData()` also clear Autofill-related data.
@@ -51,10 +51,11 @@ AwFormDatabaseService::AwFormDatabaseService(const base::FilePath path)
   // Once crbug.com/1501199 is resolved, all tables can be removed.
   web_database_->AddTable(std::make_unique<autofill::AddressAutofillTable>());
   web_database_->AddTable(std::make_unique<autofill::PaymentsAutofillTable>());
-  web_database_->LoadDatabase();
+  web_database_->LoadDatabase(
+      AwBrowserProcess::GetInstance()->GetOSCryptAsync());
 
   autofill_data_ = new autofill::AutofillWebDataService(
-      web_database_, content::GetUIThreadTaskRunner({}), db_task_runner);
+      web_database_, content::GetUIThreadTaskRunner({}));
   autofill_data_->Init(base::BindOnce(&DatabaseErrorCallback));
 }
 
@@ -78,7 +79,6 @@ void AwFormDatabaseService::ClearFormData() {
   base::Time begin;
   base::Time end = base::Time::Max();
   autofill_data_->RemoveFormElementsAddedBetween(begin, end);
-  autofill_data_->RemoveAutofillDataModifiedBetween(begin, end);
 }
 
 bool AwFormDatabaseService::HasFormData() {

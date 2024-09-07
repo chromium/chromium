@@ -117,6 +117,47 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, OpenerTrackingWorks) {
 
 namespace {
 
+class WebRTCUsageChangeWaiter : public PageNode::ObserverDefaultImpl {
+ public:
+  WebRTCUsageChangeWaiter() = default;
+
+  void WaitForWebRTCUsageChange() { run_loop_.Run(); }
+
+  // PageNodeObserver:
+  void OnPageUsesWebRTCChanged(const PageNode* page_node) override {
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
+// Integration test for WebRTC usage tracking on PageNode and FrameNode.
+IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, UsesWebRTC) {
+  WebRTCUsageChangeWaiter waiter;
+  RunInGraph([&](Graph* graph) { graph->AddPageNodeObserver(&waiter); });
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/webrtc_basic.html"));
+  content::ShellAddedObserver shell_added_observer;
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  auto* contents = shell()->web_contents();
+  auto page = PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
+
+  waiter.WaitForWebRTCUsageChange();
+
+  RunInGraph([&](Graph* graph) {
+    EXPECT_TRUE(page->UsesWebRTC());
+    EXPECT_TRUE(page->GetMainFrameNode()->UsesWebRTC());
+
+    graph->RemovePageNodeObserver(&waiter);
+  });
+}
+
+namespace {
+
 MATCHER_P(IsOpaqueDerivedFrom,
           base_origin,
           "is opaque derived from " + base_origin.GetDebugString()) {

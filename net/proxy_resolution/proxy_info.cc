@@ -8,6 +8,13 @@
 
 namespace net {
 
+// static
+ProxyInfo ProxyInfo::Direct() {
+  ProxyInfo proxy_info;
+  proxy_info.UseDirect();
+  return proxy_info;
+}
+
 ProxyInfo::ProxyInfo() = default;
 
 ProxyInfo::ProxyInfo(const ProxyInfo& other) = default;

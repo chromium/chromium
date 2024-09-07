@@ -107,6 +107,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   bool IsMousePositionUnknown() const {
     return mouse_event_manager_->IsMousePositionUnknown();
   }
+  void ResetLastMousePositionForWebTest();
   void ClearMouseEventManager() const { mouse_event_manager_->Clear(); }
 
   WebInputEventResult UpdateDragAndDrop(const WebMouseEvent&, DataTransfer*);

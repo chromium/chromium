@@ -15,6 +15,8 @@
 - (void)updateUIForOverflowMenuIPHDisplayed;
 // Updates the UI for the dismissal of an in-product help.
 - (void)updateUIForIPHDismissed;
+// Adds or removes blue dot to overflow menu button.
+- (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_PUBLIC_POPUP_MENU_UI_UPDATING_H_

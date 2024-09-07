@@ -460,6 +460,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_GENERATE_COMPOSITOR_FRAME);
+        data->set_display_trace_id(args.trace_id);
       });
 
   for (auto& resource_request :

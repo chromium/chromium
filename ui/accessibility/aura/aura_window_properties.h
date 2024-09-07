@@ -13,9 +13,9 @@
 
 namespace ui {
 
-// Value is a serialized |ui::AXTreeID| because code in //ui/aura/mus needs
+// Value is a serialized |AXTreeID| because code in //ui/aura/mus needs
 // to serialize the window property, but //ui/aura cannot depend on
-// //ui/accessibility and hence cannot know about the type ui::AXTreeID.
+// //ui/accessibility and hence cannot know about the type AXTreeID.
 // (Note: it would probably be better if this was a base::UnguessableToken
 // instead of a std::string.)
 AX_EXPORT extern const aura::WindowProperty<std::string*>* const kChildAXTreeID;

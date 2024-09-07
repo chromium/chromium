@@ -81,10 +81,6 @@ bool HasValidStartUrl(const blink::mojom::Manifest& manifest,
   CHECK((!manifest.start_url.is_valid() && !manifest.id.is_valid() &&
          !manifest.has_valid_specified_start_url) ||
         (manifest.start_url.is_valid() && manifest.id.is_valid()));
-  bool valid_manifest_start_url =
-      base::FeatureList::IsEnabled(features::kUniversalInstallDefaultUrl)
-          ? manifest.start_url.is_valid()
-          : manifest.has_valid_specified_start_url;
   switch (criteria) {
     case InstallableCriteria::kValidManifestIgnoreDisplay:
     case InstallableCriteria::kValidManifestWithIcons:
@@ -92,9 +88,11 @@ bool HasValidStartUrl(const blink::mojom::Manifest& manifest,
     case InstallableCriteria::kDoNotCheck:
       return true;
     case InstallableCriteria::kImplicitManifestFieldsHTML:
-      return valid_manifest_start_url || metadata.application_url.is_valid();
+      return manifest.start_url.is_valid() ||
+             metadata.application_url.is_valid();
     case InstallableCriteria::kNoManifestAtRootScope:
-      return valid_manifest_start_url || metadata.application_url.is_valid() ||
+      return manifest.start_url.is_valid() ||
+             metadata.application_url.is_valid() ||
              site_url.GetWithoutFilename().path().length() <= 1;
   }
 }

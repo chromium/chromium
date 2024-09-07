@@ -56,6 +56,7 @@ interface UntrustedPageHandlerFactory {
 // Used as identifiers for the Read Anything theme options.
 // Next value: 5
 [Extensible, Stable, Uuid="03f38cfc-a34f-460a-a0a7-faf711f11a64"]
+// LINT.IfChange(Colors)
 enum Colors {
   [Default]kDefault = 0,
   kLight = 1,
@@ -63,30 +64,44 @@ enum Colors {
   kYellow = 3,
   [MinVersion=1] kBlue = 4,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingColor)
 
 [Extensible, Stable, Uuid="2B5C793A-D81E-4C76-8CDF-695C7E0A30E2",
  RenamedFrom="read_anything.mojom.Spacing"]
+// LINT.IfChange(LetterSpacing)
 enum LetterSpacing {
   kTightDeprecated = 0,
   [Default]kStandard = 1,
   kWide = 2,
   kVeryWide = 3,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingLetterSpacing)
 
 [Extensible, Stable, Uuid="49212e28-ae8a-4244-94df-0cbb7fcdf5bc",
  RenamedFrom="read_anything.mojom.Spacing"]
+// LINT.IfChange(LineSpacing)
 enum LineSpacing {
   kTightDeprecated = 0,
   kStandard = 1,
   [Default]kLoose = 2,
   kVeryLoose = 3,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingLineSpacing)
 
 [Extensible, Stable, Uuid="b8c27619-fe28-44a6-bb89-f4eda846b0f8"]
 // Granularity used for highlighting text as it's spoken.
 enum HighlightGranularity {
+  // Automatically selects highlighting granularity based on voice speed.
   [Default]kOn = 0,
+  // Turns off all highlighting.
   kOff = 1,
+  // Attempt to select a particular granularity, regardless of voice speed.
+  // Note that if the TTS engine doesn't support word callbacks, we'll fall back
+  // to sentence granularity, and if phrases aren't supported, we fall back to
+  // auto.
+  [MinVersion=1] kWord = 2,
+  [MinVersion=1] kPhrase = 3,
+  [MinVersion=1] kSentence = 4
 };
 
 // Browser-side handler for requests from untrusted WebUI page.
@@ -179,8 +194,8 @@ interface UntrustedPageHandler {
   // Informs the browser to collapse the selection made in the WebUI.
   OnCollapseSelection();
 
-  // Requests the browser to take a snapshot of the active web contents.
-  OnSnapshotRequested();
+  // Requests the browser to take a screenshot of the active web contents.
+  OnScreenshotRequested();
 
   // Informs the browser controller that the side page was scrolled to the end.
   // The browser controller responds by scrolling the main page to show the

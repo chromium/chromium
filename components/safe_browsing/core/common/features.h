@@ -72,11 +72,6 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // DLP endpoint based on ChromeDataRegionSetting policy.
 BASE_DECLARE_FEATURE(kDlpRegionalizedEndpoints);
 
-// Sends download report without explicit user decision. This can be either the
-// download is automatically discarded 1 hour after the warning is shown, or
-// the profile is closed while the warning is still showing.
-BASE_DECLARE_FEATURE(kDownloadReportWithoutUserDecision);
-
 // The kill switch for download tailored warnings. The main control is on the
 // server-side.
 BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
@@ -189,16 +184,19 @@ extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 // replace the downloads url.
 BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
 
+// If enabled, hash databases will compute an "offset map" that allows
+// prefix lookups to quickly narrow the search to a subrange of the
+// database. This will tradeoff memory for lookup time.
+BASE_DECLARE_FEATURE(kHashDatabaseOffsetMap);
+extern const base::FeatureParam<int> kHashDatabaseOffsetMapBytesPerOffset;
+
+// If enabled, fetching lists from Safe Browsing and performing checks on those
+// lists uses the v5 APIs instead of the v4 Update API. There is no change to
+// how often the checks are triggered (they are still not in real time).
+BASE_DECLARE_FEATURE(kLocalListsUseSBv5);
+
 // Enable logging of the account enhanced protection setting in Protego pings.
 BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
-
-// If enabled, the Safe Browsing database will be stored in a separate file and
-// mapped into memory.
-BASE_DECLARE_FEATURE(kMmapSafeBrowsingDatabase);
-
-// Whether hash prefix lookups are done on a background thread when
-// kMmapSafeBrowsingDatabase is enabled.
-extern const base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync;
 
 // Controls whether custom messages from admin are shown for warn and block
 // enterprise interstitials.
@@ -212,17 +210,6 @@ BASE_DECLARE_FEATURE(kRippleForEnhancedProtection);
 // navigation can be committed before real-time Safe Browsing check is
 // completed.
 BASE_DECLARE_FEATURE(kSafeBrowsingAsyncRealTimeCheck);
-
-#if BUILDFLAG(IS_ANDROID)
-// Whether to call the new API on startup to reduce latency.
-BASE_DECLARE_FEATURE(kSafeBrowsingCallNewGmsApiOnStartup);
-
-// Use new GMSCore API for hash database check on browser URLs.
-BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
-#endif
-
-// Run Safe Browsing code on UI thread.
-BASE_DECLARE_FEATURE(kSafeBrowsingOnUIThread);
 
 // Enable adding copy/paste navigation to the referrer chain.
 BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);

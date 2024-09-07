@@ -36,7 +36,10 @@ namespace device_sync {
 namespace {
 
 // The GCM registration id from a successful registration.
-const char kGCMRegistrationId[] = "new gcm registration id";
+const char kGCMRegistrationId[] = "aValid:gcm-Registration";
+
+// A deprecated V3 GCM registration (which should prompt re-registration)
+const char kDeprecatedGCMRegistrationId[] = "invalid-gcm-Registration";
 
 // The user's persistent public key identifying the local device.
 const char kUserPublicKey[] = "user public key";
@@ -365,6 +368,7 @@ TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest, ForceEnrollment) {
   enrollment_manager_.ForceEnrollmentNow(
       cryptauth::INVOCATION_REASON_SERVER_INITIATED,
       std::nullopt /* session_id */);
+  ASSERT_FALSE(gcm_manager_.registration_in_progress());
 
   auto completion_callback =
       FireSchedulerForEnrollment(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
@@ -373,6 +377,46 @@ TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest, ForceEnrollment) {
   EXPECT_CALL(*this, OnEnrollmentFinishedProxy(true));
   std::move(completion_callback).Run(true);
   EXPECT_EQ(clock_.Now(), enrollment_manager_.GetLastEnrollmentTime());
+}
+
+TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest,
+       ForceEnrollmentDeprecatedRegistrationId) {
+  // Simulate a situation where the user has an existing V3 GCM
+  // registration and is now syncing for the first time post-migration.
+  gcm_manager_.set_registration_id(kDeprecatedGCMRegistrationId);
+  enrollment_manager_.Start();
+  EXPECT_TRUE(enrollment_manager_.IsEnrollmentValid());
+
+  // Trigger a sync request.
+  EXPECT_CALL(*this, OnEnrollmentStartedProxy());
+  ON_CALL(*sync_scheduler(), GetStrategy())
+      .WillByDefault(Return(SyncScheduler::Strategy::PERIODIC_REFRESH));
+  auto sync_request = std::make_unique<SyncScheduler::SyncRequest>(
+      enrollment_manager_.GetSyncScheduler());
+  static_cast<SyncScheduler::Delegate*>(&enrollment_manager_)
+      ->OnSyncRequested(std::move(sync_request));
+
+  // Unlike in the above test case, a deprecated GCM Registration Id
+  // should prompt a new GCM registration with a valid Id.
+  CryptAuthEnroller::EnrollmentFinishedCallback enrollment_callback;
+  EXPECT_CALL(*next_cryptauth_enroller(),
+              Enroll(public_key_, private_key_, _,
+                     cryptauth::INVOCATION_REASON_PERIODIC, _))
+      .WillOnce(MoveArg<4>(&enrollment_callback));
+  ASSERT_TRUE(gcm_manager_.registration_in_progress());
+  gcm_manager_.CompleteRegistration(kGCMRegistrationId);
+
+  // Complete CryptAuth enrollment.
+  ASSERT_FALSE(enrollment_callback.is_null());
+  clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(kLaterTimeNow));
+  EXPECT_CALL(*this, OnEnrollmentFinishedProxy(true));
+  std::move(enrollment_callback).Run(true);
+  EXPECT_EQ(clock_.Now(), enrollment_manager_.GetLastEnrollmentTime());
+  EXPECT_TRUE(enrollment_manager_.IsEnrollmentValid());
+
+  // Check that CryptAuthEnrollmentManager returns the expected key-pair.
+  EXPECT_EQ(public_key_, enrollment_manager_.GetUserPublicKey());
+  EXPECT_EQ(private_key_, enrollment_manager_.GetUserPrivateKey());
 }
 
 TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest,

@@ -1282,7 +1282,7 @@ MediaSourceHandleImpl* MediaSource::handle() {
     // origin of the worker's execution context for use later in a window thread
     // media element's attachment to the MediaSource leveraging existing URL
     // security checks and logging for legacy MSE object URLs.
-    SecurityOrigin* origin = GetExecutionContext()->GetMutableSecurityOrigin();
+    const SecurityOrigin* origin = GetExecutionContext()->GetSecurityOrigin();
     String internal_blob_url = BlobURL::CreatePublicURL(origin).GetString();
     DCHECK(!internal_blob_url.empty());
     worker_media_source_handle_ = MakeGarbageCollected<MediaSourceHandleImpl>(

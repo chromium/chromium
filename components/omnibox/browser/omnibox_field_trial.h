@@ -525,6 +525,11 @@ struct MLConfig {
   // Equivalent to omnibox::kLogUrlScoringSignals.
   bool log_url_scoring_signals{false};
 
+  // If true, enables history scoring signal annotator for populating history
+  // scoring signals associated with Search suggestions. These signals will be
+  // empty for Search suggestions otherwise.
+  bool enable_history_scoring_signals_annotator_for_searches{false};
+
   // If true, enables scoring signal annotators for populating additional
   // Omnibox URL scoring signals for logging or ML scoring.
   bool enable_scoring_signals_annotators{false};
@@ -716,27 +721,6 @@ std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
-// Inspire Me ->
-
-// Specify number of additional Related and Trending queries appended to the
-// suggestion list, when the Inspire Me feature is enabled.
-
-constexpr base::FeatureParam<int> kQueryTilesCacheMaxAge(
-    &omnibox::kQueryTilesInZPSOnNTP,
-    "QueryTilesMaxCacheAgeHours",
-    8);
-
-constexpr base::FeatureParam<bool> kQueryTilesShowAboveTrends(
-    &omnibox::kQueryTilesInZPSOnNTP,
-    "QueryTilesShowAboveTrends",
-    true);
-
-constexpr base::FeatureParam<bool> kQueryTilesShowAsCarousel(
-    &omnibox::kQueryTilesInZPSOnNTP,
-    "QueryTilesShowAsCarousel",
-    false);
-// <- Inspire Me
-// ---------------------------------------------------------
 // Actions In Suggest ->
 //
 // When set to true, permits Entity suggestion with associated Actions to be
@@ -802,10 +786,6 @@ extern const base::FeatureParam<std::string> kGeminiUrlOverride;
 
 // Whether the expansion pack for the site search starter pack is enabled.
 bool IsStarterPackExpansionEnabled();
-
-// The max number of times, per session, the IPH row can be shown. Set to
-// INT_MAX for unlimited.
-extern const base::FeatureParam<int> kStarterPackIPHPerSessionLimit;
 
 // When true, enables an informational IPH message at the bottom of the Omnibox
 // directing users to certain starter pack engines.

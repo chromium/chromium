@@ -14,7 +14,6 @@ static_library("preferences") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ash",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/language_preferences",
     "//chromeos/crosapi/mojom",
@@ -41,7 +40,7 @@ static_library("preferences") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/system",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/pciguard",

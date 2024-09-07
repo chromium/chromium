@@ -17,6 +17,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -53,13 +55,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else  // BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_controller.h"
@@ -606,10 +605,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   WaitUntilStatusChangesTo(
       GetCanonicalSearchURL(expected_prefetch_url),
       {SearchPrefetchStatus::kCanBeServed, SearchPrefetchStatus::kComplete});
-#if BUILDFLAG(IS_ANDROID)
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchParameterExistence", true, 1);
-#endif
   std::string search_query_2 = "prer";
   ChangeAutocompleteResult(search_query_2, prerender_query,
                            PrerenderHint::kEnabled, PrefetchHint::kEnabled);
@@ -619,11 +614,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   registry_observer.WaitForTrigger(expected_prerender_url);
   prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
                                                     expected_prerender_url);
-#if BUILDFLAG(IS_ANDROID)
-  // Generate the url when upgrading a prefetch attempt to a prerender attempt.
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchParameterExistence", true, 2);
-#endif
 
   // No prerender requests went through network, so there should be only one
   // request and it is with the prefetch flag attached.
@@ -1348,6 +1338,12 @@ IN_PROC_BROWSER_TEST_F(HTTPCacheSearchPreloadUnifiedBrowserTest,
             GetActiveWebContents()->GetLastCommittedURL());
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url_1));
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url_1));
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.CacheAliasFallbackReason",
+      CacheAliasSearchPrefetchURLLoader::FallbackReason::kNoFallback, 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.CacheAliasElapsedTimeToFallback", 0);
 }
 
 // Tests the started prerender is destroyed after prefetch request expired.
@@ -1516,8 +1512,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // 4. Fail the prerender.
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
-  int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(expected_prerender_url);
+  ASSERT_TRUE(host_id);
   prerender_helper().CancelPrerenderedPage(host_id);
   prerender_observer.WaitForDestroyed();
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
@@ -1682,7 +1679,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(prefetch_status.value(), SearchPrefetchStatus::kComplete);
 
   // 3. Cancel the prerenders
-  int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(expected_prerender_url);
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), host_id);
   // Ensure kCompleted is recorded.
@@ -1940,7 +1938,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // The suggestion service should hint `expected_prefetch_url`, and
   // prerendering for this url should start.
   registry_observer.WaitForTrigger(expected_prerender_url);
-  int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(expected_prerender_url);
 
   // Ensure prerender has started to read response body.
   ASSERT_TRUE(prerender_navigation_manager.WaitForResponse());
@@ -2114,7 +2113,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   // 3. Turns to another prediction.
   {
-    int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+    content::FrameTreeNodeId host_id =
+        prerender_helper().GetHostForUrl(expected_prerender_url);
     content::test::PrerenderHostObserver prerender_observer(
         *GetActiveWebContents(), host_id);
     ChangeAutocompleteResult("pref", "prefetch", PrerenderHint::kEnabled,

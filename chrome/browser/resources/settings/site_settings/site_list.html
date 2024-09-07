@@ -14,7 +14,16 @@
           $i18n{add}
         </cr-button>
       </div>
-
+      <div hidden$="[[!showHeaderWarning_(
+              sites.*,systemPermissionWarningKey_)]]"
+          id="systemPermissionDeclinedWarning"
+          class="list-frame">
+        <div class="list-item secondary">
+          <div inner-h-t-m-l="[[getSystemPermissionWarning_(
+                  systemPermissionWarningKey_)]]">
+          </div>
+        </div>
+      </div>
       <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" id="allow"
             on-click="onAllowClick_" hidden$="[[!showAllowAction_]]">

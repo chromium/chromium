@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
@@ -49,11 +50,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorTablet;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
@@ -77,6 +80,8 @@ public final class ToolbarTabletUnitTest {
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
     @Mock private ToolbarColorObserver mToolbarColorObserver;
+    @Mock private ToolbarDataProvider mToolbarDataProvider;
+    @Mock private NewTabPageDelegate mNewTabPageDelegate;
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -147,10 +152,50 @@ public final class ToolbarTabletUnitTest {
                 mToolbarTabletLayout.getChildAt(3));
     }
 
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TABLET_TOOLBAR_REORDERING
-    })
+    public void testButtonPositionIncognito() {
+        mToolbarTablet.onFinishInflate();
+        mToolbarTablet.initialize(
+                mToolbarDataProvider,
+                null,
+                mMenuButtonCoordinator,
+                mTabSwitcherButtonCoordinator,
+                null,
+                () -> false,
+                null,
+                null,
+                null);
+        when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
+        when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
+        mToolbarTablet.onTabOrModelChanged();
+
+        assertEquals(
+                "Home button position is not as expected",
+                mHomeButton,
+                mToolbarTabletLayout.getChildAt(0));
+        assertEquals(
+                "Back button position is not as expected",
+                mBackButton,
+                mToolbarTabletLayout.getChildAt(1));
+        assertEquals(
+                "Forward button position is not as expected",
+                mForwardButton,
+                mToolbarTabletLayout.getChildAt(2));
+        assertEquals(
+                "Reloading button position is not as expected",
+                mReloadingButton,
+                mToolbarTabletLayout.getChildAt(3));
+        View incognitoIndicator = mToolbarTabletLayout.findViewById(R.id.incognito_indicator);
+        assertNotNull("Incognito indicator is not inflated", incognitoIndicator);
+        assertEquals(
+                "Incognito indicator visibility is not as expected.",
+                View.VISIBLE,
+                incognitoIndicator.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TABLET_TOOLBAR_REORDERING})
     public void testButtonPosition_TSR() {
         mToolbarTablet.onFinishInflate();
         assertEquals(
@@ -216,6 +261,40 @@ public final class ToolbarTabletUnitTest {
                     View.VISIBLE,
                     btn.getVisibility());
         }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    public void onMeasureIncognito_flipIncognitoVisibility() {
+        mToolbarTablet.onFinishInflate();
+        mToolbarTablet.initialize(
+                mToolbarDataProvider,
+                null,
+                mMenuButtonCoordinator,
+                mTabSwitcherButtonCoordinator,
+                null,
+                () -> false,
+                null,
+                null,
+                null);
+        when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
+        when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
+        mToolbarTablet.onTabOrModelChanged();
+        View incognitoIndicator = mToolbarTablet.findViewById(R.id.incognito_indicator);
+        assertNotNull(incognitoIndicator);
+        // Measure with wide width - indicator visible
+        mToolbarTablet.measure(700, 300);
+        assertEquals(
+                "Incognito indicator visibility is not as expected.",
+                View.VISIBLE,
+                incognitoIndicator.getVisibility());
+
+        // Measure with smaller width - indicator invisible
+        mToolbarTablet.measure(300, 300);
+        assertEquals(
+                "Incognito indicator visibility is not as expected.",
+                View.GONE,
+                incognitoIndicator.getVisibility());
     }
 
     @Test

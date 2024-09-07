@@ -4,6 +4,7 @@
 
 #include "ppapi/proxy/ppp_input_event_proxy.h"
 
+#include "base/check.h"
 #include "build/build_config.h"
 #include "ppapi/c/ppp_input_event.h"
 #include "ppapi/proxy/host_dispatcher.h"
@@ -24,16 +25,10 @@ namespace {
 #if !BUILDFLAG(IS_NACL)
 PP_Bool HandleInputEvent(PP_Instance instance, PP_Resource input_event) {
   EnterResourceNoLock<PPB_InputEvent_API> enter(input_event, false);
-  if (enter.failed()) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_FALSE;
-  }
+  CHECK(!enter.failed());
   const InputEventData& data = enter.object()->GetInputEventData();
   HostDispatcher* dispatcher = HostDispatcher::GetForInstance(instance);
-  if (!dispatcher) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_FALSE;
-  }
+  CHECK(dispatcher);
 
   // Need to send different messages depending on whether filtering is needed.
   PP_Bool result = PP_FALSE;

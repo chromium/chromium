@@ -76,8 +76,7 @@ std::u16string WebUI::GetJavascriptCall(std::string_view function_name,
 }
 
 WebUIImpl::WebUIImpl(WebContents* web_contents)
-    : bindings_(BINDINGS_POLICY_WEB_UI),
-      requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
+    : requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
       web_contents_(web_contents),
       web_contents_observer_(
           std::make_unique<WebUIMainFrameObserver>(this, web_contents_)) {
@@ -186,11 +185,11 @@ void WebUIImpl::OverrideTitle(const std::u16string& title) {
   overridden_title_ = title;
 }
 
-int WebUIImpl::GetBindings() {
+BindingsPolicySet WebUIImpl::GetBindings() {
   return bindings_;
 }
 
-void WebUIImpl::SetBindings(int bindings) {
+void WebUIImpl::SetBindings(BindingsPolicySet bindings) {
   bindings_ = bindings;
 }
 
@@ -225,13 +224,6 @@ bool WebUIImpl::CanCallJavascript() {
           // It's possible to load about:blank in a Web UI renderer.
           // See http://crbug.com/42547
           frame_host_->GetLastCommittedURL().spec() == url::kAboutBlankURL);
-}
-
-void WebUIImpl::CallJavascriptFunctionUnsafe(std::string_view function_name) {
-  DCHECK(base::IsStringASCII(function_name));
-  std::u16string javascript =
-      base::ASCIIToUTF16(base::StrCat({function_name, "();"}));
-  ExecuteJavascript(javascript);
 }
 
 void WebUIImpl::CallJavascriptFunctionUnsafe(

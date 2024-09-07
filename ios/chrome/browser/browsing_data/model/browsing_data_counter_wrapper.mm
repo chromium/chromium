@@ -18,6 +18,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/model/cache_counter.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
@@ -27,7 +28,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
@@ -63,6 +64,7 @@ CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
 
   if (pref_name == browsing_data::prefs::kDeleteFormData) {
     return std::make_unique<browsing_data::AutofillCounter>(
+        autofill::PersonalDataManagerFactory::GetForBrowserState(browser_state),
         ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
             browser_state, ServiceAccessType::EXPLICIT_ACCESS),
         SyncServiceFactory::GetForBrowserState(browser_state));

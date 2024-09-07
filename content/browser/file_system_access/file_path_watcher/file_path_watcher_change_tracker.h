@@ -37,7 +37,10 @@ class FilePathWatcherChangeTracker {
   void MayHaveMissedChanges();
 
   // Gets the ChangeInfo's to report since the last call to `PopChanges`.
-  std::vector<ChangeInfo> PopChanges();
+  //
+  // Passing `next_change_soon` as true indicates another change will be added
+  // soon so we don't need to finish coalescing events yet.
+  std::vector<ChangeInfo> PopChanges(bool next_change_soon);
 
  private:
   enum class ExistenceStatus {

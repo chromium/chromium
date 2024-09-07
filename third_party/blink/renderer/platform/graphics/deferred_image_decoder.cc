@@ -349,13 +349,6 @@ void DeferredImageDecoder::ActivateLazyDecoding() {
 }
 
 void DeferredImageDecoder::ActivateLazyGainmapDecoding() {
-  // Gate this behind a feature flag.
-  static bool feature_enabled =
-      base::FeatureList::IsEnabled(blink::features::kGainmapHdrImages);
-  if (!feature_enabled) {
-    return;
-  }
-
   // Early-out if we have excluded the possibility that this image has a
   // gainmap, or if we have already created the gainmap frame generator.
   if (!might_have_gainmap_ || gainmap_) {

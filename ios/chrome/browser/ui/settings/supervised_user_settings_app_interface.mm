@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
@@ -152,7 +152,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   mocked_creator->SetEnabled();
 
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForBrowserState(
+      SupervisedUserServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   CHECK(service);
   service->remote_web_approvals_manager().ClearApprovalRequestsCreators();
@@ -222,11 +222,11 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   ChromeBrowserState* browser_state = ChromeBrowserState::FromBrowserState(
       chrome_test_util::GetOriginalBrowserState());
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   CHECK(identity_manager);
 
   supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserState(browser_state);
+      SupervisedUserServiceFactory::GetForProfile(browser_state);
 
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
       std::make_unique<supervised_user::KidsChromeManagementURLCheckerClient>(

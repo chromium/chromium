@@ -26,7 +26,8 @@
 namespace content {
 namespace {
 
-BrowserContext* BrowserContextFromFrameTreeNodeId(int frame_tree_node_id) {
+BrowserContext* BrowserContextFromFrameTreeNodeId(
+    FrameTreeNodeId frame_tree_node_id) {
   WebContents* web_content =
       WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   if (!web_content)
@@ -55,7 +56,7 @@ void PrefetchURLLoaderInterceptor::SetPrefetchCompleteCallbackForTesting(
 }
 
 PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     std::optional<blink::DocumentToken> initiator_document_token,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container)
@@ -84,19 +85,24 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
       PrefetchContainer* prefetch_container =
           redirect_reader_.GetPrefetchContainer();
       CHECK(prefetch_container);
-      // Note: This method can only be called once per PrefetchContainer (we
-      // have a CHECK in the method). This is guaranteed to be the first time
-      // we call this method for |prefetch_container|, as the other callsite
-      // (in PrefetchService::ReturnPrefetchToServe) would have prevented the
-      // prefetch from being used to serve the navigation (making this
-      // unreachable as |redirect_reader_| would never have been set to
-      // |prefetch_container|). This will also never be called for
-      // |prefetch_container| again as we don't use it to serve any subsequent
-      // redirect hops for this navigation (we unset |redirect_reader_| below),
-      // and |PrefetchService::CollectPotentiallyMatchingPrefetchContainers|
-      // ignores any prefetches with the status kPrefetchNotUsedCookiesChanged
-      // (which is set in |PrefetchContainer::OnCookiesChanged|).
-      prefetch_container->OnCookiesChanged();
+      if (UseNewWaitLoop()) {
+        prefetch_container->OnDetectedCookiesChange2();
+      } else {
+        // Note: This method can only be called once per PrefetchContainer (we
+        // have a CHECK in the method). This is guaranteed to be the first time
+        // we call this method for |prefetch_container|, as the other callsite
+        // (in PrefetchService::ReturnPrefetchToServe) would have prevented the
+        // prefetch from being used to serve the navigation (making this
+        // unreachable as |redirect_reader_| would never have been set to
+        // |prefetch_container|). This will also never be called for
+        // |prefetch_container| again as we don't use it to serve any subsequent
+        // redirect hops for this navigation (we unset |redirect_reader_|
+        // below), and
+        // |PrefetchService::CollectPotentiallyMatchingPrefetchContainers|
+        // ignores any prefetches with the status kPrefetchNotUsedCookiesChanged
+        // (which is set in |PrefetchContainer::OnDetectedCookiesChange|).
+        prefetch_container->OnDetectedCookiesChange();
+      }
     } else {
       OnGotPrefetchToServe(
           frame_tree_node_id_, tentative_resource_request,
@@ -170,13 +176,22 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     CHECK(!serving_page_metrics_container_);
   }
 
-  prefetch_match_resolver.SetOnPrefetchToServeReadyCallback(base::BindOnce(
-      &OnGotPrefetchToServe, frame_tree_node_id_, tentative_resource_request,
-      std::move(get_prefetch_callback)));
-  prefetch_service->GetPrefetchToServe(
-      PrefetchContainer::Key(initiator_document_token_,
-                             tentative_resource_request.url),
-      serving_page_metrics_container_, prefetch_match_resolver);
+  auto callback = base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
+                                 tentative_resource_request,
+                                 std::move(get_prefetch_callback));
+  auto key = PrefetchContainer::Key(initiator_document_token_,
+                                    tentative_resource_request.url);
+  if (UseNewWaitLoop()) {
+    PrefetchMatchResolver2::FindPrefetch(std::move(key), *prefetch_service,
+                                         serving_page_metrics_container_,
+                                         std::move(callback));
+  } else {
+    prefetch_match_resolver.SetOnPrefetchToServeReadyCallback(
+        std::move(callback));
+    prefetch_service->GetPrefetchToServe(std::move(key),
+                                         serving_page_metrics_container_,
+                                         prefetch_match_resolver);
+  }
 }
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(

@@ -26,9 +26,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterWin
 
   base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
 
-  std::string EvaluateScript(
-      const AXTreeSelector& selector,
-      const ui::AXInspectScenario& scenario) const override;
+  std::string EvaluateScript(const AXTreeSelector& selector,
+                             const AXInspectScenario& scenario) const override;
   std::string EvaluateScript(
       AXPlatformNodeDelegate* root,
       const std::vector<AXScriptInstruction>& instructions,

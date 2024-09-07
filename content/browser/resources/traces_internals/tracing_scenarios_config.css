@@ -16,6 +16,10 @@
   color: var(--cr-primary-text-color);
 }
 
+:host h2 {
+  color: var(--cr-primary-text-color);
+}
+
 :host h3 {
   color: var(--cr-secondary-text-color);
 }

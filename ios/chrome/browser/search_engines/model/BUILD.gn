@@ -46,6 +46,7 @@ source_set("model") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common",
@@ -102,7 +103,8 @@ source_set("unit_tests") {
     "//components/search_engines:test_support",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/common/app_group",
     "//ios/web",
@@ -122,6 +124,7 @@ source_set("template_url_service_factory") {
   deps = [
     "//base",
     "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 

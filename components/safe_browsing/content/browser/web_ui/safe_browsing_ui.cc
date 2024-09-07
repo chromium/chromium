@@ -1427,9 +1427,6 @@ std::string SerializeHitReport(const HitReport& hit_report) {
     case ThreatSource::LOCAL_PVER4:
       threat_source = "LOCAL_PVER4";
       break;
-    case ThreatSource::REMOTE:
-      threat_source = "REMOTE";
-      break;
     case ThreatSource::CLIENT_SIDE_DETECTION:
       threat_source = "CLIENT_SIDE_DETECTION";
       break;

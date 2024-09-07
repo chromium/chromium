@@ -5,11 +5,11 @@ UNKNOWN focusable has_input_focus
 ++++++++LIST list_size=2
 ++++++++++LIST_ELEMENT list_element_index=1
 ++++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 '
-++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++++++STATIC_TEXT hidden
 ++++++++++++STATIC_TEXT label='Hello'
 ++++++++++++++UNKNOWN label='Hello'
 ++++++++++LIST_ELEMENT list_element_index=2
 ++++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 '
-++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++++++STATIC_TEXT hidden
 ++++++++++++STATIC_TEXT label='Bye'
 ++++++++++++++UNKNOWN label='Bye'

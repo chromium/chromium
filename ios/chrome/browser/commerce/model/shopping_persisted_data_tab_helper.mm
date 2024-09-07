@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -88,7 +88,7 @@ ShoppingPersistedDataTabHelper::GetPriceDrop() {
       IsPriceDropStale(price_drop_->timestamp)) {
     ResetPriceDrop();
     OptimizationGuideService* optimization_guide_service =
-        OptimizationGuideServiceFactory::GetForBrowserState(
+        OptimizationGuideServiceFactory::GetForProfile(
             ChromeBrowserState::FromBrowserState(
                 web_state_->GetBrowserState()));
     if (!optimization_guide_service) {
@@ -131,7 +131,7 @@ ShoppingPersistedDataTabHelper::ShoppingPersistedDataTabHelper(
   web_state_->AddObserver(this);
 
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
 
   if (!optimization_guide_service) {
@@ -184,7 +184,7 @@ void ShoppingPersistedDataTabHelper::DidFinishNavigation(
 
   ResetPriceDrop();
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
   if (!optimization_guide_service) {
     return;

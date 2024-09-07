@@ -36,9 +36,6 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kDynamicSearchUpdateAnimation);
 // Enables Play Store search in the launcher.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kLauncherPlayStoreSearch);
 
-// Enables app list drag and drop refactor to use views drag and drop APIs.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kDragAndDropRefactor);
-
 // Enables the Launcher Apps Collection UI in ChromeOS - a modular view with
 // different categories filled with predefined apps.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kAppsCollections);
@@ -67,7 +64,6 @@ ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
 ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
 ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
 ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();
-ASH_PUBLIC_EXPORT bool IsDragAndDropRefactorEnabled();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabled();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabledCounterfactually();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabledWithModifiedOrder();

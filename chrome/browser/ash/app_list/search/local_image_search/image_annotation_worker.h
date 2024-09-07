@@ -72,26 +72,32 @@ class ImageAnnotationWorker {
  private:
   void OnFileChange(const base::FilePath& path, bool error);
 
-  // Processes the next item from the `files_to_process_` queue.
-  void ProcessNextItem();
+  // Processes the items from the `files_to_process_` queue. Do it in a
+  // non-recursive way as recursion can lead to one stack frame per file and
+  // result in chrome crash if there a long list of non-image files in the
+  // queue.
+  void ProcessItems();
 
-  // Processes the next item from the `files_to_process_` queue if the
-  // `file_path` matches the head of the queue.
+  // This function should be called from the image processing callbacks, and
+  // item processing has stopped at this time. Restarts the item processing from
+  // the `files_to_process_` queue if the `file_path` matches the head of the
+  // queue.
   // If `timeout_timer_` has started, sets `use_timer` to true and it will also
-  // stop it if the `file_path` matches the head of the queue.
-  // Image processing callback can return after `timeout_timer_` gets timeout,
-  // which starts a new sequence. It results in multiple sequences executing on
-  // a single queue with certain files get skipped and certain files are
-  // computed multiple times. Thus, we should check if the callback is still
-  // up-to-date before we process the next item.
+  // stop it if the `file_path` matches the head of the queue. Image processing
+  // callback can return after `timeout_timer_` gets timeout, which starts a new
+  // sequence. It results in multiple sequences executing on a single queue with
+  // certain files get skipped and certain files are computed multiple times.
+  // Thus, we should check if the callback is still up-to-date before we restart
+  // the item processing.
   void MaybeProcessNextItem(const base::FilePath& file_path,
                             bool use_timer = false);
 
   // Processes the next directory from the `files_to_process_` queue.
   void ProcessNextDirectory();
 
-  // Processes the next image from the `files_to_process_` queue.
-  void ProcessNextImage();
+  // Processes the next image from the `files_to_process_` queue. Return true if
+  // the image needs to be decoded, and return false otherwise.
+  bool ProcessNextImage();
 
   // Remove all the files from a deleted directory.
   void RemoveOldDirectory();
@@ -117,7 +123,7 @@ class ImageAnnotationWorker {
   void OnPerformOcr(ImageInfo image_info,
                     screen_ai::mojom::VisualAnnotationPtr visual_annotation);
 
-  void OnImageProcessTimeout();
+  void OnImageProcessTimeout(const base::FilePath& file_path);
 
   std::unique_ptr<base::FilePathWatcher> file_watcher_;
   base::FilePath root_path_;

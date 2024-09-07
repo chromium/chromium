@@ -26,6 +26,8 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/debug_types.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -361,7 +363,7 @@ class StorageHandler::SharedStorageObserver
   void OnSharedStorageAccessed(
       const base::Time& access_time,
       AccessType type,
-      int main_frame_id,
+      FrameTreeNodeId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1487,8 +1489,8 @@ void StorageHandler::ResetSharedStorageBudget(
 
 namespace {
 
-std::string GetFrameTokenFromFrameTreeNodeId(int frame_id) {
-  if (frame_id == FrameTreeNode::kFrameTreeNodeInvalidId) {
+std::string GetFrameTokenFromFrameTreeNodeId(FrameTreeNodeId frame_id) {
+  if (frame_id.is_null()) {
     return std::string();
   }
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_id);
@@ -1504,7 +1506,7 @@ void StorageHandler::NotifySharedStorageAccessed(
     const base::Time& access_time,
     SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType
         type,
-    int main_frame_id,
+    FrameTreeNodeId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1800,9 +1802,15 @@ ToSourceRegistrationResult(StoreSourceResult result) {
     case StoreSourceResult::kExceedsMaxChannelCapacity:
       return Storage::AttributionReportingSourceRegistrationResultEnum::
           ExceedsMaxChannelCapacity;
+    case StoreSourceResult::kExceedsMaxScopesChannelCapacity:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          ExceedsMaxScopesChannelCapacity;
     case StoreSourceResult::kExceedsMaxTriggerStateCardinality:
       return Storage::AttributionReportingSourceRegistrationResultEnum::
           ExceedsMaxTriggerStateCardinality;
+    case StoreSourceResult::kExceedsMaxEventStatesLimit:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          ExceedsMaxEventStatesLimit;
     case StoreSourceResult::kDestinationPerDayReportingLimitReached:
       return Storage::AttributionReportingSourceRegistrationResultEnum::
           DestinationPerDayReportingLimitReached;
@@ -2229,6 +2237,22 @@ void StorageHandler::OnSourceHandled(
     out_source->SetDebugKey(base::NumberToString(*registration.debug_key));
   }
 
+  if (const std::optional<attribution_reporting::AttributionScopesData>&
+          attribution_scopes_data = registration.attribution_scopes_data) {
+    out_source->SetScopesData(
+        Storage::AttributionScopesData::Create()
+            .SetValues(std::make_unique<Array<String>>(
+                attribution_scopes_data->attribution_scopes_set()
+                    .scopes()
+                    .begin(),
+                attribution_scopes_data->attribution_scopes_set()
+                    .scopes()
+                    .end()))
+            .SetLimit(attribution_scopes_data->attribution_scope_limit())
+            .SetMaxEventStates(attribution_scopes_data->max_event_states())
+            .Build());
+  }
+
   frontend_->AttributionReportingSourceRegistered(
       std::move(out_source), ToSourceRegistrationResult(result));
 }
@@ -2261,6 +2285,9 @@ void StorageHandler::OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
               ToAggregatableDebugReportingConfig(
                   /*budget=*/std::nullopt,
                   registration.aggregatable_debug_reporting_config))
+          .SetScopes(std::make_unique<Array<String>>(
+              registration.attribution_scopes.scopes().begin(),
+              registration.attribution_scopes.scopes().end()))
           .Build();
 
   if (registration.debug_key.has_value()) {

@@ -568,9 +568,8 @@ void ServiceWorkerContextWrapper::
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (const auto& kv : running_service_workers_) {
-    int64_t version_id = kv.first;
     for (auto& observer : core_sync_observer_list_->observers) {
-      observer.OnStopped(version_id, kv.second.scope);
+      observer.OnStopped(/*version_id=*/kv.first, /*worker_info=*/kv.second);
     }
   }
 }
@@ -583,10 +582,8 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context_core_) {
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
   blink::mojom::ServiceWorkerRegistrationOptions options_to_pass(
@@ -654,9 +651,8 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediatelyImpl(
 
   if (!context_core_) {
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       blink::ServiceWorkerStatusCode::kErrorFailed));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
   context()->UnregisterServiceWorker(net::SimplifyUrlForRequest(scope), key,
@@ -1101,6 +1097,14 @@ ServiceWorkerContextWrapper::GetRemoteAssociatedInterfaces(
   // checking it first.
   auto& version = *context()->GetLiveVersion(service_worker_version_id);
   return *version.associated_interface_provider();
+}
+
+std::optional<ServiceWorkerRunningInfo>
+ServiceWorkerContextWrapper::GetRunningServiceWorkerInfo(int64_t version_id) {
+  const auto search = running_service_workers_.find(version_id);
+  return search != running_service_workers_.end()
+             ? std::make_optional<ServiceWorkerRunningInfo>(search->second)
+             : std::nullopt;
 }
 
 scoped_refptr<ServiceWorkerRegistration>

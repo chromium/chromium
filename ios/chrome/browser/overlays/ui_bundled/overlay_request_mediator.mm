@@ -21,7 +21,7 @@
 @implementation OverlayRequestMediator
 
 - (instancetype)initWithRequest:(OverlayRequest*)request {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _request = request;
     _request->GetCallbackManager()->AddCompletionCallback(
         [self requestCompletionCallback]);

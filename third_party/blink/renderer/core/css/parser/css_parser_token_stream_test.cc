@@ -12,32 +12,44 @@ namespace blink {
 
 namespace {
 
+String GetUntilEndOfBlock(CSSParserTokenStream& stream) {
+  StringBuilder sb;
+  while (!stream.AtEnd()) {
+    stream.Consume().Serialize(sb);
+  }
+  return sb.ReleaseString();
+}
+
+String SerializeTokens(const Vector<CSSParserToken, 32>& tokens) {
+  StringBuilder sb;
+  for (const CSSParserToken& token : tokens) {
+    token.Serialize(sb);
+  }
+  return sb.ReleaseString();
+}
+
 TEST(CSSParserTokenStreamTest, EmptyStream) {
-  CSSTokenizer tokenizer(String(""));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String(""));
   EXPECT_TRUE(stream.Consume().IsEOF());
   EXPECT_TRUE(stream.Peek().IsEOF());
   EXPECT_TRUE(stream.AtEnd());
 }
 
 TEST(CSSParserTokenStreamTest, PeekThenConsume) {
-  CSSTokenizer tokenizer(String("A"));  // kIdent
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("A"));  // kIdent
   EXPECT_EQ(kIdentToken, stream.Peek().GetType());
   EXPECT_EQ(kIdentToken, stream.Consume().GetType());
   EXPECT_TRUE(stream.AtEnd());
 }
 
 TEST(CSSParserTokenStreamTest, ConsumeThenPeek) {
-  CSSTokenizer tokenizer(String("A"));  // kIdent
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("A"));  // kIdent
   EXPECT_EQ(kIdentToken, stream.Consume().GetType());
   EXPECT_TRUE(stream.AtEnd());
 }
 
 TEST(CSSParserTokenStreamTest, ConsumeMultipleTokens) {
-  CSSTokenizer tokenizer(String("A 1"));  // kIdent kWhitespace kNumber
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("A 1"));  // kIdent kWhitespace kNumber
   EXPECT_EQ(kIdentToken, stream.Consume().GetType());
   EXPECT_EQ(kWhitespaceToken, stream.Consume().GetType());
   EXPECT_EQ(kNumberToken, stream.Consume().GetType());
@@ -45,8 +57,7 @@ TEST(CSSParserTokenStreamTest, ConsumeMultipleTokens) {
 }
 
 TEST(CSSParserTokenStreamTest, UncheckedPeekAndConsumeAfterPeek) {
-  CSSTokenizer tokenizer(String("A"));  // kIdent
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("A"));  // kIdent
   EXPECT_EQ(kIdentToken, stream.Peek().GetType());
   EXPECT_EQ(kIdentToken, stream.UncheckedPeek().GetType());
   EXPECT_EQ(kIdentToken, stream.UncheckedConsume().GetType());
@@ -54,73 +65,29 @@ TEST(CSSParserTokenStreamTest, UncheckedPeekAndConsumeAfterPeek) {
 }
 
 TEST(CSSParserTokenStreamTest, UncheckedPeekAndConsumeAfterAtEnd) {
-  CSSTokenizer tokenizer(String("A"));  // kIdent
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("A"));  // kIdent
   EXPECT_FALSE(stream.AtEnd());
   EXPECT_EQ(kIdentToken, stream.UncheckedPeek().GetType());
   EXPECT_EQ(kIdentToken, stream.UncheckedConsume().GetType());
   EXPECT_TRUE(stream.AtEnd());
 }
 
-TEST(CSSParserTokenStreamTest, UncheckedConsumeComponentValue) {
-  CSSTokenizer tokenizer(String("A{1}{2{3}}B"));
-  CSSParserTokenStream stream(tokenizer);
-
-  EXPECT_EQ(kIdentToken, stream.Peek().GetType());
-  stream.UncheckedConsumeComponentValue();
-  EXPECT_EQ(kLeftBraceToken, stream.Peek().GetType());
-  stream.UncheckedConsumeComponentValue();
-  EXPECT_EQ(kLeftBraceToken, stream.Peek().GetType());
-  stream.UncheckedConsumeComponentValue();
-  EXPECT_EQ(kIdentToken, stream.Peek().GetType());
-  stream.UncheckedConsumeComponentValue();
-
-  EXPECT_TRUE(stream.AtEnd());
-}
-
 TEST(CSSParserTokenStreamTest, ConsumeWhitespace) {
-  CSSTokenizer tokenizer(String(" \t\n"));  // kWhitespace
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String(" \t\n"));  // kWhitespace
 
   EXPECT_EQ(kWhitespaceToken, stream.Consume().GetType());
   EXPECT_TRUE(stream.AtEnd());
 }
 
 TEST(CSSParserTokenStreamTest, ConsumeIncludingWhitespace) {
-  CSSTokenizer tokenizer(String("A \t\n"));  // kIdent kWhitespace
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("A \t\n"));  // kIdent kWhitespace
 
   EXPECT_EQ(kIdentToken, stream.ConsumeIncludingWhitespace().GetType());
   EXPECT_TRUE(stream.AtEnd());
 }
 
-TEST(CSSParserTokenStreamTest, RangesDoNotGetInvalidatedWhenConsuming) {
-  StringBuilder s;
-  s.Append("1 ");
-  for (int i = 0; i < 100; i++) {
-    s.Append("A ");
-  }
-
-  CSSTokenizer tokenizer(s.ToString());
-  CSSParserTokenStream stream(tokenizer);
-
-  // Consume a single token range.
-  auto range = stream.ConsumeUntilPeekedTypeIs<kIdentToken>();
-
-  EXPECT_EQ(kNumberToken, range.Peek().GetType());
-
-  // Consume remaining tokens to try to invalidate the range.
-  while (!stream.AtEnd()) {
-    stream.ConsumeIncludingWhitespace();
-  }
-
-  EXPECT_EQ(kNumberToken, range.ConsumeIncludingWhitespace().GetType());
-  EXPECT_TRUE(range.AtEnd());
-}
-
 TEST(CSSParserTokenStreamTest, BlockErrorRecoveryConsumesRestOfBlock) {
-  CSSTokenizer tokenizer(String("{B }1"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("{B }1"));
 
   {
     CSSParserTokenStream::BlockGuard guard(stream);
@@ -132,8 +99,7 @@ TEST(CSSParserTokenStreamTest, BlockErrorRecoveryConsumesRestOfBlock) {
 }
 
 TEST(CSSParserTokenStreamTest, BlockErrorRecoveryOnSuccess) {
-  CSSTokenizer tokenizer(String("{B }1"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("{B }1"));
 
   {
     CSSParserTokenStream::BlockGuard guard(stream);
@@ -145,22 +111,8 @@ TEST(CSSParserTokenStreamTest, BlockErrorRecoveryOnSuccess) {
   EXPECT_EQ(kNumberToken, stream.Consume().GetType());
 }
 
-TEST(CSSParserTokenStreamTest, BlockErrorRecoveryConsumeComponentValue) {
-  CSSTokenizer tokenizer(String("{{B} C}1"));
-  CSSParserTokenStream stream(tokenizer);
-
-  {
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.EnsureLookAhead();
-    stream.UncheckedConsumeComponentValue();
-  }  // calls destructor
-
-  EXPECT_EQ(kNumberToken, stream.Consume().GetType());
-}
-
 TEST(CSSParserTokenStreamTest, OffsetAfterPeek) {
-  CSSTokenizer tokenizer(String("ABC"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("ABC"));
 
   EXPECT_EQ(0U, stream.Offset());
   EXPECT_EQ(kIdentToken, stream.Peek().GetType());
@@ -168,8 +120,7 @@ TEST(CSSParserTokenStreamTest, OffsetAfterPeek) {
 }
 
 TEST(CSSParserTokenStreamTest, OffsetAfterConsumes) {
-  CSSTokenizer tokenizer(String("ABC 1 {23 }"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("ABC 1 {23 }"));
 
   EXPECT_EQ(0U, stream.Offset());
   EXPECT_EQ(kIdentToken, stream.Consume().GetType());
@@ -178,14 +129,10 @@ TEST(CSSParserTokenStreamTest, OffsetAfterConsumes) {
   EXPECT_EQ(4U, stream.Offset());
   EXPECT_EQ(kNumberToken, stream.ConsumeIncludingWhitespace().GetType());
   EXPECT_EQ(6U, stream.Offset());
-  stream.EnsureLookAhead();
-  stream.UncheckedConsumeComponentValue();
-  EXPECT_EQ(11U, stream.Offset());
 }
 
 TEST(CSSParserTokenStreamTest, LookAheadOffset) {
-  CSSTokenizer tokenizer(String("ABC/* *//* */1"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("ABC/* *//* */1"));
 
   stream.EnsureLookAhead();
   EXPECT_EQ(0U, stream.Offset());
@@ -197,9 +144,8 @@ TEST(CSSParserTokenStreamTest, LookAheadOffset) {
   EXPECT_EQ(13U, stream.LookAheadOffset());
 }
 
-TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffset) {
-  CSSTokenizer tokenizer(String("a b c;d e f"));
-  CSSParserTokenStream stream(tokenizer);
+TEST(CSSParserTokenStreamTest, SkipUntilPeekedTypeOffset) {
+  CSSParserTokenStream stream(String("a b c;d e f"));
 
   // a
   EXPECT_EQ(kIdentToken, stream.Peek().GetType());
@@ -215,9 +161,8 @@ TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffset) {
   EXPECT_EQ(5u, stream.Offset());
 }
 
-TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffsetEndOfFile) {
-  CSSTokenizer tokenizer(String("a b c"));
-  CSSParserTokenStream stream(tokenizer);
+TEST(CSSParserTokenStreamTest, SkipUntilPeekedTypeOffsetEndOfFile) {
+  CSSParserTokenStream stream(String("a b c"));
 
   // a
   EXPECT_EQ(kIdentToken, stream.Peek().GetType());
@@ -233,9 +178,8 @@ TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffsetEndOfFile) {
   EXPECT_EQ(5u, stream.Offset());
 }
 
-TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffsetEndOfBlock) {
-  CSSTokenizer tokenizer(String("a { a b c } d ;"));
-  CSSParserTokenStream stream(tokenizer);
+TEST(CSSParserTokenStreamTest, SkipUntilPeekedTypeOffsetEndOfBlock) {
+  CSSParserTokenStream stream(String("a { a b c } d ;"));
 
   // a
   EXPECT_EQ(0u, stream.Offset());
@@ -269,149 +213,19 @@ TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffsetEndOfBlock) {
   EXPECT_EQ(11u, stream.Offset());
 }
 
-TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeIsEmpty) {
-  CSSTokenizer tokenizer(String("{23 }"));
-  CSSParserTokenStream stream(tokenizer);
+TEST(CSSParserTokenStreamTest, SkipUntilPeekedTypeIsEmpty) {
+  CSSParserTokenStream stream(String("{23 }"));
 
-  auto range = stream.ConsumeUntilPeekedTypeIs<>();
+  stream.SkipUntilPeekedTypeIs<>();
   EXPECT_TRUE(stream.AtEnd());
-
-  EXPECT_EQ(kLeftBraceToken, range.Consume().GetType());
-  EXPECT_EQ(kNumberToken, range.Consume().GetType());
-  EXPECT_EQ(kWhitespaceToken, range.Consume().GetType());
-  EXPECT_EQ(kRightBraceToken, range.Consume().GetType());
-  EXPECT_TRUE(range.AtEnd());
-}
-
-TEST(CSSParserTokenStreamTest, ConsumeComponentValueEOF) {
-  CSSTokenizer tokenizer(String(""));
-  CSSParserTokenStream stream(tokenizer);
-
-  CSSParserTokenRange range = stream.ConsumeComponentValue();
-  EXPECT_TRUE(range.AtEnd());
-  EXPECT_TRUE(stream.AtEnd());
-}
-
-TEST(CSSParserTokenStreamTest, ConsumeComponentValueToken) {
-  CSSTokenizer tokenizer(String("foo"));
-  CSSParserTokenStream stream(tokenizer);
-
-  CSSParserTokenRange range = stream.ConsumeComponentValue();
-  EXPECT_TRUE(stream.AtEnd());
-  EXPECT_EQ(kIdentToken, range.Consume().GetType());
-  EXPECT_TRUE(range.AtEnd());
-}
-
-TEST(CSSParserTokenStreamTest, ConsumeComponentValueWhitespace) {
-  CSSTokenizer tokenizer(String(" foo"));
-  CSSParserTokenStream stream(tokenizer);
-
-  CSSParserTokenRange range = stream.ConsumeComponentValue();
-  EXPECT_FALSE(stream.AtEnd());
-  EXPECT_EQ(kWhitespaceToken, range.Consume().GetType());
-  EXPECT_TRUE(range.AtEnd());
-
-  EXPECT_EQ(kIdentToken, stream.Consume().GetType());
-  EXPECT_TRUE(stream.AtEnd());
-}
-
-TEST(CSSParserTokenStreamTest, ConsumeComponentValueTrailingWhitespace) {
-  CSSTokenizer tokenizer(String("foo "));
-  CSSParserTokenStream stream(tokenizer);
-
-  CSSParserTokenRange range = stream.ConsumeComponentValue();
-  EXPECT_FALSE(stream.AtEnd());
-  EXPECT_EQ(kIdentToken, range.Consume().GetType());
-  EXPECT_TRUE(range.AtEnd());
-
-  EXPECT_EQ(kWhitespaceToken, stream.Consume().GetType());
-  EXPECT_TRUE(stream.AtEnd());
-}
-
-TEST(CSSParserTokenStreamTest, ConsumeComponentValueBlock) {
-  CSSTokenizer tokenizer(String("{ foo }"));
-  CSSParserTokenStream stream(tokenizer);
-
-  CSSParserTokenRange range = stream.ConsumeComponentValue();
-  EXPECT_TRUE(stream.AtEnd());
-
-  EXPECT_EQ(kLeftBraceToken, range.Consume().GetType());
-  EXPECT_EQ(kWhitespaceToken, range.Consume().GetType());
-  EXPECT_EQ(kIdentToken, range.Consume().GetType());
-  EXPECT_EQ(kWhitespaceToken, range.Consume().GetType());
-  EXPECT_EQ(kRightBraceToken, range.Consume().GetType());
-  EXPECT_TRUE(range.AtEnd());
-}
-
-TEST(CSSParserTokenStreamTest, ConsumeComponentValueMultiBlock) {
-  CSSTokenizer tokenizer(String("{} []"));
-  CSSParserTokenStream stream(tokenizer);
-
-  CSSParserTokenRange range = stream.ConsumeComponentValue();
-  EXPECT_FALSE(stream.AtEnd());
-
-  EXPECT_EQ(kLeftBraceToken, range.Consume().GetType());
-  EXPECT_EQ(kRightBraceToken, range.Consume().GetType());
-  EXPECT_TRUE(range.AtEnd());
-
-  EXPECT_EQ(kWhitespaceToken, stream.Consume().GetType());
-  ASSERT_EQ(kLeftBracketToken, stream.Peek().GetType());
-  { CSSParserTokenStream::BlockGuard guard(stream); }
-  EXPECT_TRUE(stream.AtEnd());
-}
-
-TEST(CSSParserTokenStreamTest, ConsumeComponentValueFunction) {
-  CSSTokenizer tokenizer(String(": foo(42) ;"));
-  CSSParserTokenStream stream(tokenizer);
-
-  {
-    CSSParserTokenRange range = stream.ConsumeComponentValue();
-    EXPECT_FALSE(stream.AtEnd());
-    EXPECT_EQ(kColonToken, range.Consume().GetType());
-    EXPECT_TRUE(range.AtEnd());
-  }
-
-  {
-    CSSParserTokenRange range = stream.ConsumeComponentValue();
-    EXPECT_FALSE(stream.AtEnd());
-    EXPECT_EQ(kWhitespaceToken, range.Consume().GetType());
-    EXPECT_TRUE(range.AtEnd());
-  }
-
-  {
-    CSSParserTokenRange range = stream.ConsumeComponentValue();
-    EXPECT_FALSE(stream.AtEnd());
-    EXPECT_EQ(kFunctionToken, range.Consume().GetType());
-    EXPECT_EQ(kNumberToken, range.Consume().GetType());
-    EXPECT_EQ(kRightParenthesisToken, range.Consume().GetType());
-    EXPECT_TRUE(range.AtEnd());
-  }
-
-  {
-    CSSParserTokenRange range = stream.ConsumeComponentValue();
-    EXPECT_FALSE(stream.AtEnd());
-    EXPECT_EQ(kWhitespaceToken, range.Consume().GetType());
-    EXPECT_TRUE(range.AtEnd());
-  }
-
-  {
-    CSSParserTokenRange range = stream.ConsumeComponentValue();
-    EXPECT_TRUE(stream.AtEnd());
-    EXPECT_EQ(kSemicolonToken, range.Consume().GetType());
-    EXPECT_TRUE(range.AtEnd());
-  }
 }
 
 TEST(CSSParserTokenStreamTest, Boundary) {
-  CSSTokenizer tokenizer(String("foo:red;bar:blue;asdf"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("foo:red;bar:blue;asdf"));
 
   {
     CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
-    CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
-    EXPECT_EQ("foo", range.Consume().Value());
-    EXPECT_EQ(kColonToken, range.Consume().GetType());
-    EXPECT_EQ("red", range.Consume().Value());
+    stream.SkipUntilPeekedTypeIs<>();
     EXPECT_TRUE(stream.AtEnd());
   }
 
@@ -420,10 +234,7 @@ TEST(CSSParserTokenStreamTest, Boundary) {
 
   {
     CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
-    CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
-    EXPECT_EQ("bar", range.Consume().Value());
-    EXPECT_EQ(kColonToken, range.Consume().GetType());
-    EXPECT_EQ("blue", range.Consume().Value());
+    stream.SkipUntilPeekedTypeIs<>();
     EXPECT_TRUE(stream.AtEnd());
   }
 
@@ -435,8 +246,7 @@ TEST(CSSParserTokenStreamTest, Boundary) {
 }
 
 TEST(CSSParserTokenStreamTest, MultipleBoundaries) {
-  CSSTokenizer tokenizer(String("a:b,c;d:,;e"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("a:b,c;d:,;e"));
 
   {
     CSSParserTokenStream::Boundary boundary_semicolon(stream, kSemicolonToken);
@@ -446,46 +256,33 @@ TEST(CSSParserTokenStreamTest, MultipleBoundaries) {
 
       {
         CSSParserTokenStream::Boundary boundary_colon(stream, kColonToken);
-        CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
-        EXPECT_EQ("a", range.Consume().Value());
-        EXPECT_TRUE(range.AtEnd());
+        stream.SkipUntilPeekedTypeIs<>();
         EXPECT_TRUE(stream.AtEnd());
       }
 
       EXPECT_FALSE(stream.AtEnd());
       EXPECT_EQ(kColonToken, stream.Consume().GetType());
 
-      CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
-      EXPECT_EQ("b", range.Consume().Value());
-      EXPECT_TRUE(range.AtEnd());
+      stream.SkipUntilPeekedTypeIs<>();
       EXPECT_TRUE(stream.AtEnd());
     }
 
     EXPECT_FALSE(stream.AtEnd());
     EXPECT_EQ(kCommaToken, stream.Consume().GetType());
 
-    CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
-    EXPECT_EQ("c", range.Consume().Value());
-    EXPECT_TRUE(range.AtEnd());
+    stream.SkipUntilPeekedTypeIs<>();
     EXPECT_TRUE(stream.AtEnd());
   }
 
   EXPECT_FALSE(stream.AtEnd());
   EXPECT_EQ(kSemicolonToken, stream.Consume().GetType());
 
-  CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
+  stream.SkipUntilPeekedTypeIs<>();
   EXPECT_TRUE(stream.AtEnd());
-
-  EXPECT_EQ("d", range.Consume().Value());
-  EXPECT_EQ(kColonToken, range.Consume().GetType());
-  EXPECT_EQ(kCommaToken, range.Consume().GetType());
-  EXPECT_EQ(kSemicolonToken, range.Consume().GetType());
-  EXPECT_EQ("e", range.Consume().Value());
 }
 
 TEST(CSSParserTokenStreamTest, IneffectiveBoundary) {
-  CSSTokenizer tokenizer(String("a:b|"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("a:b|"));
 
   {
     CSSParserTokenStream::Boundary boundary_colon(stream, kColonToken);
@@ -496,9 +293,7 @@ TEST(CSSParserTokenStreamTest, IneffectiveBoundary) {
       CSSParserTokenStream::Boundary boundary_semicolon(stream,
                                                         kSemicolonToken);
 
-      CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
-      EXPECT_EQ("a", range.Consume().Value());
-      EXPECT_TRUE(range.AtEnd());
+      stream.SkipUntilPeekedTypeIs<>();
 
       EXPECT_EQ(kColonToken, stream.Peek().GetType());
       EXPECT_TRUE(stream.AtEnd());
@@ -511,8 +306,7 @@ TEST(CSSParserTokenStreamTest, IneffectiveBoundary) {
 }
 
 TEST(CSSParserTokenStreamTest, BoundaryBlockGuard) {
-  CSSTokenizer tokenizer(String("a[b;c]d;e"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("a[b;c]d;e"));
 
   {
     CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
@@ -520,21 +314,17 @@ TEST(CSSParserTokenStreamTest, BoundaryBlockGuard) {
 
     {
       CSSParserTokenStream::BlockGuard guard(stream);
-      // Consume rest of block.
-      CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
       // The boundary does not apply within blocks.
-      EXPECT_EQ("b;c", range.Serialize());
+      EXPECT_EQ("b;c", GetUntilEndOfBlock(stream));
     }
 
     // However, now the boundary should apply.
-    CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
-    EXPECT_EQ("d", range.Serialize());
+    EXPECT_EQ("d", GetUntilEndOfBlock(stream));
   }
 }
 
 TEST(CSSParserTokenStreamTest, BoundaryRestoringBlockGuard) {
-  CSSTokenizer tokenizer(String("a[b;c]d;e"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("a[b;c]d;e"));
 
   {
     CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
@@ -543,22 +333,18 @@ TEST(CSSParserTokenStreamTest, BoundaryRestoringBlockGuard) {
     {
       stream.EnsureLookAhead();
       CSSParserTokenStream::RestoringBlockGuard guard(stream);
-      // Consume rest of block.
-      CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
       // The boundary does not apply within blocks.
-      EXPECT_EQ("b;c", range.Serialize());
+      EXPECT_EQ("b;c", GetUntilEndOfBlock(stream));
       EXPECT_TRUE(guard.Release());
     }
 
     // However, now the boundary should apply.
-    CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
-    EXPECT_EQ("d", range.Serialize());
+    EXPECT_EQ("d", GetUntilEndOfBlock(stream));
   }
 }
 
 TEST(CSSParserTokenStreamTest, SavePointRestoreWithoutLookahead) {
-  CSSTokenizer tokenizer(String("a b c"));
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(String("a b c"));
   stream.EnsureLookAhead();
 
   {
@@ -786,19 +572,16 @@ TEST_P(RestartTest, All) {
   Vector<CSSParserToken, 32> ref_tokens = TokenizeAll(ref);
 
   String input(param.input);
-  CSSTokenizer tokenizer(input);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(input);
 
   auto [restart_target, restart_offset] = ParseRestart(String(param.restart));
   Vector<CSSParserToken, 32> actual_tokens;
   TokenizeInto(stream, restart_target, restart_offset, actual_tokens);
 
   SCOPED_TRACE(testing::Message()
-               << "Expected (serialized): "
-               << CSSParserTokenRange(ref_tokens).Serialize());
+               << "Expected (serialized): " << SerializeTokens(ref_tokens));
   SCOPED_TRACE(testing::Message()
-               << "Actual (serialized): "
-               << CSSParserTokenRange(actual_tokens).Serialize());
+               << "Actual (serialized): " << SerializeTokens(actual_tokens));
 
   SCOPED_TRACE(param.ref);
   SCOPED_TRACE(param.restart);
@@ -822,8 +605,7 @@ TEST_P(BoundaryRestartTest, All) {
   Vector<CSSParserToken, 32> ref_tokens = TokenizeAll(ref);
 
   String input(param.input);
-  CSSTokenizer tokenizer(input);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(input);
 
   CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
 
@@ -832,11 +614,9 @@ TEST_P(BoundaryRestartTest, All) {
   TokenizeInto(stream, restart_target, restart_offset, actual_tokens);
 
   SCOPED_TRACE(testing::Message()
-               << "Expected (serialized): "
-               << CSSParserTokenRange(ref_tokens).Serialize());
+               << "Expected (serialized): " << SerializeTokens(ref_tokens));
   SCOPED_TRACE(testing::Message()
-               << "Actual (serialized): "
-               << CSSParserTokenRange(actual_tokens).Serialize());
+               << "Actual (serialized): " << SerializeTokens(actual_tokens));
 
   SCOPED_TRACE(param.ref);
   SCOPED_TRACE(param.restart);
@@ -862,19 +642,16 @@ TEST_P(NullRestartTest, All) {
 
   for (wtf_size_t restart_offset = 0; restart_offset <= input.length();
        ++restart_offset) {
-    CSSTokenizer tokenizer(input);
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(input);
 
     Vector<CSSParserToken, 32> actual_tokens;
     TokenizeInto(stream, /* restart_target */ restart_offset, restart_offset,
                  actual_tokens);
 
     SCOPED_TRACE(testing::Message()
-                 << "Expected (serialized): "
-                 << CSSParserTokenRange(ref_tokens).Serialize());
+                 << "Expected (serialized): " << SerializeTokens(ref_tokens));
     SCOPED_TRACE(testing::Message()
-                 << "Actual (serialized): "
-                 << CSSParserTokenRange(actual_tokens).Serialize());
+                 << "Actual (serialized): " << SerializeTokens(actual_tokens));
 
     SCOPED_TRACE(param.input);
     SCOPED_TRACE(testing::Message() << "restart_offset:" << restart_offset);
@@ -887,8 +664,7 @@ class TestStream {
   STACK_ALLOCATED();
 
  public:
-  explicit TestStream(String input)
-      : input_(input), tokenizer_(input_), stream_(tokenizer_) {
+  explicit TestStream(String input) : input_(input), stream_(input) {
     stream_.EnsureLookAhead();
   }
 
@@ -919,7 +695,6 @@ class TestStream {
   friend class TestBlockGuard;
   friend class TestBoundary;
   String input_;
-  CSSTokenizer tokenizer_;
   CSSParserTokenStream stream_;
 };
 
@@ -1138,6 +913,23 @@ TEST_F(RestoringBlockGuardTest, NestedRelease) {
     EXPECT_TRUE(outer_guard.Release());
   }
   EXPECT_TRUE(stream.ConsumeTokens(" h i"));
+}
+
+TEST_F(RestoringBlockGuardTest, ReleaseImmediate) {
+  TestStream stream("a b (c d) e");
+  EXPECT_TRUE(stream.ConsumeTokens("a b "));
+
+  stream.EnsureLookahead();
+  TestRestoringBlockGuard guard(stream);
+  EXPECT_FALSE(guard.Release());
+  EXPECT_TRUE(stream.ConsumeTokens("c d"));
+  EXPECT_TRUE(guard.Release());
+  // The above Release() call should consume the block-end,
+  // even if RestoringBlockGuard hasn't gone out of scope.
+
+  EXPECT_EQ(kWhitespaceToken, stream.Peek().GetType());
+  EXPECT_TRUE(stream.ConsumeTokens(" e"));
+  EXPECT_TRUE(stream.Peek().IsEOF());
 }
 
 TEST_F(RestoringBlockGuardTest, BlockStack) {

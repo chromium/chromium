@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/invalidation_factory.h"
@@ -246,7 +247,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
         g_browser_process->profile_manager()->user_data_dir();
     profile_ = Profile::CreateProfile(
         dest_path.Append(FILE_PATH_LITERAL("New Profile 1")), nullptr,
-        Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+        Profile::CreateMode::kSynchronous);
     Profile* profile = profile_.get();
 #else
     Profile* profile = chrome_test_utils::GetProfile(this);

@@ -312,8 +312,18 @@ void HTMLPermissionElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
-void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
-  Element::AttachLayoutTree(context);
+Node::InsertionNotificationRequest HTMLPermissionElement::InsertedInto(
+    ContainerNode& insertion_point) {
+  HTMLElement::InsertedInto(insertion_point);
+  return kInsertionShouldCallDidNotifySubtreeInsertions;
+}
+
+void HTMLPermissionElement::DidNotifySubtreeInsertionsToDocument() {
+  // We want to dispatch a validation change event with
+  // `kRecentlyInsertedIntoDOM` reason to indicate that the element should be
+  // temporarily disabled for a short period. In `InsertedInto()`, we can't
+  // dispatch synchronous events, instead, we do it in
+  // `DidNotifySubtreeInsertionsToDocument()`.
   if (permission_descriptors_.empty()) {
     return;
   }
@@ -346,7 +356,7 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
       return;
     }
   }
-  DisableClickingTemporarily(DisableReason::kRecentlyAttachedToLayoutTree,
+  DisableClickingTemporarily(DisableReason::kRecentlyInsertedIntoDOM,
                              kDefaultDisableTimeout);
   if (embedded_permission_control_receiver_.is_bound()) {
     return;
@@ -360,8 +370,8 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
   GetDocument().View()->RegisterForLifecycleNotifications(this);
 }
 
-void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
-  Element::DetachLayoutTree(performing_reattach);
+void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
+  HTMLElement::RemovedFrom(insertion_point);
   embedded_permission_control_receiver_.reset();
   // We also need to remove all permission observer receivers from the set, to
   // effectively stop listening the permission status change events.
@@ -388,9 +398,10 @@ void HTMLPermissionElement::Focus(const FocusParams& params) {
   HTMLElement::Focus(params);
 }
 
-bool HTMLPermissionElement::SupportsFocus(UpdateBehavior) const {
+FocusableState HTMLPermissionElement::SupportsFocus(UpdateBehavior) const {
   // The permission element is only focusable if it has a valid type.
-  return !permission_descriptors_.empty();
+  return permission_descriptors_.empty() ? FocusableState::kNotFocusable
+                                         : FocusableState::kFocusable;
 }
 
 int HTMLPermissionElement::DefaultTabIndex() const {
@@ -424,8 +435,8 @@ HTMLPermissionElement::ParsePermissionDescriptorsForTesting(
 // static
 String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
   switch (reason) {
-    case DisableReason::kRecentlyAttachedToLayoutTree:
-      return "being recently attached to layout tree";
+    case DisableReason::kRecentlyInsertedIntoDOM:
+      return "being recently inserted into DOM";
     case DisableReason::kIntersectionRecentlyFullyVisible:
       return "being recently fully visible";
     case DisableReason::kIntersectionWithViewportChanged:
@@ -446,8 +457,8 @@ HTMLPermissionElement::UserInteractionDeniedReason
 HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
     DisableReason reason) {
   switch (reason) {
-    case DisableReason::kRecentlyAttachedToLayoutTree:
-      return UserInteractionDeniedReason::kRecentlyAttachedToLayoutTree;
+    case DisableReason::kRecentlyInsertedIntoDOM:
+      return UserInteractionDeniedReason::kRecentlyInsertedIntoDOM;
     case DisableReason::kIntersectionRecentlyFullyVisible:
       return UserInteractionDeniedReason::kIntersectionRecentlyFullyVisible;
     case DisableReason::kIntersectionWithViewportChanged:
@@ -469,8 +480,8 @@ HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
 AtomicString HTMLPermissionElement::DisableReasonToInvalidReasonString(
     DisableReason reason) {
   switch (reason) {
-    case DisableReason::kRecentlyAttachedToLayoutTree:
-      return AtomicString("recently_attached");
+    case DisableReason::kRecentlyInsertedIntoDOM:
+      return AtomicString("recently_inserted_into_dom");
     case DisableReason::kIntersectionRecentlyFullyVisible:
       return AtomicString("intersection_visible");
     case DisableReason::kIntersectionWithViewportChanged:
@@ -1097,7 +1108,7 @@ void HTMLPermissionElement::OnIntersectionChanged(
   switch (intersection_visibility_) {
     case IntersectionVisibility::kFullyVisible: {
       std::optional<base::TimeDelta> interval =
-          GetRecentlyAttachedTimeoutRemaining();
+          GetRecentlyInsertedIntoDOMTimeoutRemaining();
       DisableClickingTemporarily(
           DisableReason::kIntersectionRecentlyFullyVisible,
           interval ? interval.value() : kDefaultDisableTimeout);
@@ -1323,10 +1334,10 @@ gfx::Rect HTMLPermissionElement::ComputeIntersectionRectWithViewport(
 }
 
 std::optional<base::TimeDelta>
-HTMLPermissionElement::GetRecentlyAttachedTimeoutRemaining() const {
+HTMLPermissionElement::GetRecentlyInsertedIntoDOMTimeoutRemaining() const {
   base::TimeTicks now = base::TimeTicks::Now();
-  auto it = clicking_disabled_reasons_.find(
-      DisableReason::kRecentlyAttachedToLayoutTree);
+  auto it =
+      clicking_disabled_reasons_.find(DisableReason::kRecentlyInsertedIntoDOM);
   if (it == clicking_disabled_reasons_.end()) {
     return std::nullopt;
   }

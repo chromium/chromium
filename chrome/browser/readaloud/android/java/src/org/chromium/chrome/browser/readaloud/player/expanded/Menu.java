@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -29,12 +33,60 @@ public class Menu extends LinearLayout {
     private Callback<Integer> mRadioTrueHandler;
     private Callback<Integer> mPlayButtonClickHandler;
 
+    private MaxHeightScrollView mScrollView;
+    private Runnable mAfterInflatingRunnable;
+
     public Menu(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         mItemIdToIndex = new HashMap<>();
         mFirstItemIndex = -1;
         mLastItemIndex = -1;
+    }
+
+    @Override
+    public void onFinishInflate() {
+        super.onFinishInflate();
+        mScrollView = (MaxHeightScrollView) findViewById(R.id.items_scroll_view);
+        if (mAfterInflatingRunnable != null) {
+            mAfterInflatingRunnable.run();
+            mAfterInflatingRunnable = null;
+        }
+    }
+
+    /**
+     * Do some work after the layout has been inflated.
+     *
+     * @param runnable Callback to run in onFinishInflate(), or immediately if onFinishInflate()
+     *     already ran.
+     */
+    public void afterInflating(Runnable runnable) {
+        if (mScrollView == null) {
+            mAfterInflatingRunnable = runnable;
+        } else {
+            runnable.run();
+        }
+    }
+
+    public void setTitle(int titleStringId) {
+        final var titleView = (TextView) findViewById(R.id.readaloud_menu_title);
+        if (titleView != null) {
+            titleView.setText(mContext.getResources().getString(titleStringId));
+        }
+    }
+
+    public void setContentDescription(int descriptionStringId) {
+        setContentDescription(mContext.getResources().getString(descriptionStringId));
+    }
+
+    public void setBackPressHandler(Runnable backPressHandler) {
+        final var back = (ImageView) findViewById(R.id.readaloud_menu_back);
+        if (back != null) {
+            back.setOnClickListener(
+                    (view) -> {
+                        backPressHandler.run();
+                    });
+        }
     }
 
     public MenuItem addItem(
@@ -66,6 +118,11 @@ public class Menu extends LinearLayout {
             return null;
         }
         return (MenuItem) mItemsContainer.getChildAt(mItemIdToIndex.get(itemId));
+    }
+
+    @Nullable
+    public ScrollView getScrollView() {
+        return mScrollView;
     }
 
     void clearItems() {
@@ -111,5 +168,19 @@ public class Menu extends LinearLayout {
         if (mRadioTrueHandler != null) {
             mRadioTrueHandler.onResult(itemId);
         }
+    }
+
+    void onOrientationChange(int orientation) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mScrollView.setMaxHeight(
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.scroll_view_height_portrait));
+
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mScrollView.setMaxHeight(
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.scroll_view_height_landscape));
+        }
+        mScrollView.invalidate();
     }
 }

@@ -76,6 +76,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kConcat;
     case mojom::Operation::Tag::kConv2d:
       return ops::kConv2d;
+    case mojom::Operation::Tag::kDequantizeLinear:
+      return ops::kDequantizeLinear;
     case mojom::Operation::Tag::kElementWiseBinary:
       return "element-wise binary";
     case mojom::Operation::Tag::kElu:
@@ -86,6 +88,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kExpand;
     case mojom::Operation::Tag::kGather:
       return ops::kGather;
+    case mojom::Operation::Tag::kGatherElements:
+      return ops::kGatherElements;
     case mojom::Operation::Tag::kGelu:
       return ops::kGelu;
     case mojom::Operation::Tag::kGemm:
@@ -118,6 +122,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "pool2d";
     case mojom::Operation::Tag::kPrelu:
       return ops::kPrelu;
+    case mojom::Operation::Tag::kQuantizeLinear:
+      return ops::kQuantizeLinear;
     case mojom::Operation::Tag::kReduce:
       return "reduce";
     case mojom::Operation::Tag::kRelu:
@@ -140,6 +146,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kSplit;
     case mojom::Operation::Tag::kTanh:
       return ops::kTanh;
+    case mojom::Operation::Tag::kTile:
+      return ops::kTile;
     case mojom::Operation::Tag::kTranspose:
       return ops::kTranspose;
     case mojom::Operation::Tag::kTriangular:
@@ -147,7 +155,6 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
     case mojom::Operation::Tag::kWhere:
       return ops::kWhere;
   }
-  NOTREACHED();
 }
 
 std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
@@ -157,7 +164,6 @@ std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
     case mojom::ArgMinMax::Kind::kMax:
       return ops::kArgMax;
   }
-  NOTREACHED();
 }
 
 std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
@@ -205,6 +211,8 @@ std::string OpKindToString(mojom::ElementWiseUnary::Kind kind) {
       return ops::kLog;
     case mojom::ElementWiseUnary::Kind::kNeg:
       return ops::kNeg;
+    case mojom::ElementWiseUnary::Kind::kSign:
+      return ops::kSign;
     case mojom::ElementWiseUnary::Kind::kSin:
       return ops::kSin;
     case mojom::ElementWiseUnary::Kind::kTan:

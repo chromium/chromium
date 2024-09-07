@@ -32,7 +32,7 @@ class Context;
 
 namespace gpu {
 
-class DawnSharedState;
+class DawnSharedContext;
 
 class GPU_GLES2_EXPORT DawnContextProvider {
  public:
@@ -71,7 +71,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
       std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
 
   bool InitializeGraphiteContext(
-      const GpuDriverBugWorkarounds& gpu_driver_workarounds);
+      const skgpu::graphite::ContextOptions& context_options);
 
   skgpu::graphite::Context* GetGraphiteContext() const {
     return graphite_context_.get();
@@ -87,9 +87,9 @@ class GPU_GLES2_EXPORT DawnContextProvider {
 
  private:
   explicit DawnContextProvider(
-      scoped_refptr<DawnSharedState> dawn_shared_state);
+      scoped_refptr<DawnSharedContext> dawn_shared_context);
 
-  scoped_refptr<DawnSharedState> dawn_shared_state_;
+  scoped_refptr<DawnSharedContext> dawn_shared_context_;
   std::unique_ptr<skgpu::graphite::Context> graphite_context_;
 };
 

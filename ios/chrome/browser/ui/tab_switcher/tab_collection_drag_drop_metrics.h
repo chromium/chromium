@@ -14,6 +14,7 @@ extern NSString* const kUmaTabStripViewDragDropTabsEvent;
 extern NSString* const kUmaTabStripViewDragDropGroupsEvent;
 extern const char kUmaGridViewDragDropTabsEvent[];
 extern const char kUmaGridViewDragDropGroupsEvent[];
+extern const char kUmaGridViewDragDropMultiSelectEvent[];
 extern const char kUmaPinnedViewDragDropTabsEvent[];
 
 // Key of UMA DragOrigin histograms.

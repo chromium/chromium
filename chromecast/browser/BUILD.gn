@@ -16,17 +16,11 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-buildflag_header("browser_buildflags") {
-  header = "browser_buildflags.h"
-  flags = [ "ENABLE_CAST_AUDIO_MANAGER_MIXER=$enable_cast_audio_manager_mixer" ]
-}
-
 group("prefs") {
-  public_deps = [ ":prefs_base" ]
-
-  if (chromecast_branding == "public") {
-    public_deps += [ ":prefs_simple" ]
-  }
+  public_deps = [
+    ":prefs_base",
+    ":prefs_simple",
+  ]
 }
 
 cast_source_set("prefs_base") {
@@ -208,7 +202,6 @@ cast_source_set("browser") {
   ]
 
   deps = [
-    ":browser_buildflags",
     ":named_message_port_connector_cast",
     ":web_preferences",
     "//base",
@@ -388,15 +381,6 @@ cast_source_set("browser") {
   }
 
   configs += [ "//media/audio:platform_config" ]
-
-  if (chromecast_branding != "public") {
-    deps += [
-      "//chromecast/internal/shell/browser:cast_content_browser_internal_manifest_overlay",
-      "//chromecast/internal/shell/browser:cast_content_packaged_services_internal_manifest_overlay",
-    ]
-
-    defines = [ "USE_INTERNAL_OVERLAY_MANIFESTS=1" ]
-  }
 }
 
 cast_source_set("display_configurator") {
@@ -429,17 +413,6 @@ cast_source_set("simple_main_parts") {
   sources = [ "cast_browser_main_parts_simple.cc" ]
 
   public_deps = [ ":browser" ]
-}
-
-cast_source_set("simple_client") {
-  sources = [ "cast_content_browser_client_simple.cc" ]
-
-  public_deps = [ ":browser" ]
-
-  deps = [
-    "//base",
-    "//chromecast/common:cors_exempt_headers",
-  ]
 }
 
 cast_source_set("base_types") {
@@ -530,6 +503,7 @@ cast_source_set("test_support") {
   deps = [
     "//base",
     "//chromecast/base",
+    "//chromecast/cast_core:cast_core_switches",
     "//components/prefs:test_support",
     "//content/public/browser",
     "//content/public/common",
@@ -635,21 +609,4 @@ if (is_android) {
   java_cpp_enum("java_enums") {
     sources = [ "visibility_types.h" ]
   }
-}
-
-# Could be used in the internal build if the internal implementation won't be
-# included, for example, some unit tests.
-cast_source_set("simple_browser") {
-  sources = [
-    "cast_browser_main_parts_simple.cc",
-    "cast_content_browser_client_simple.cc",
-    "pref_service_helper_simple.cc",
-  ]
-
-  deps = [
-    ":browser",
-    ":prefs",
-    "//chromecast/base:default_create_sys_info",
-    "//chromecast/common:cors_exempt_headers",
-  ]
 }

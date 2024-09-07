@@ -93,23 +93,6 @@ void ValidateRequestForPut(const Request* request,
   DCHECK(!request->HasBody());
 }
 
-void ValidateResponseForPut(const Response* response,
-                            ExceptionState& exception_state) {
-  if (VaryHeaderContainsAsterisk(response)) {
-    exception_state.ThrowTypeError("Vary header contains *");
-    return;
-  }
-  if (response->GetResponse()->Status() == 206) {
-    exception_state.ThrowTypeError(
-        "Partial response (status code 206) is unsupported");
-    return;
-  }
-  if (response->IsBodyLocked() || response->IsBodyUsed()) {
-    exception_state.ThrowTypeError("Response body is already used");
-    return;
-  }
-}
-
 enum class CodeCachePolicy {
   // Use the default policy.  Currently that policy generates full code cache
   // when a script is stored during service worker install.
@@ -248,8 +231,13 @@ class Cache::BarrierCallbackForPutResponse final
     Stop();
   }
 
-  void OnError(ExceptionState& exception_state) {
-    resolver_->Reject(exception_state);
+  void OnError(v8::Local<v8::Value> value) {
+    resolver_->Reject(value);
+    Stop();
+  }
+
+  void OnError(const String& message) {
+    resolver_->RejectWithTypeError(message);
     Stop();
   }
 
@@ -313,14 +301,21 @@ class Cache::ResponseBodyLoader final
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
     if (require_ok_response_ && !response->ok()) {
-      exception_state.ThrowTypeError("Request failed");
-      barrier_callback_->OnError(exception_state);
+      barrier_callback_->OnError("Request failed");
       return;
     }
 
-    ValidateResponseForPut(response, exception_state);
-    if (exception_state.HadException()) {
-      barrier_callback_->OnError(exception_state);
+    if (VaryHeaderContainsAsterisk(response)) {
+      barrier_callback_->OnError("Vary header contains *");
+      return;
+    }
+    if (response->GetResponse()->Status() == 206) {
+      barrier_callback_->OnError(
+          "Partial response (status code 206) is unsupported");
+      return;
+    }
+    if (response->IsBodyLocked() || response->IsBodyUsed()) {
+      barrier_callback_->OnError("Response body is already used");
       return;
     }
 
@@ -444,11 +439,11 @@ class Cache::BarrierCallbackForPutComplete final
             WrapPersistent(cache_.Get()))));
   }
 
-  void OnError(ExceptionState& exception_state) {
+  void OnError(v8::Local<v8::Value> exception) {
     if (!StillActive())
       return;
     completed_ = true;
-    resolver_->Reject(exception_state);
+    resolver_->Reject(exception);
   }
 
   void OnError(const String& error_message) {
@@ -554,10 +549,12 @@ class Cache::FetchHandler final : public ScriptFunction::Callable {
     // Resolve handler, so try to process a Response.
     Response* response = NativeValueTraits<Response>::NativeValue(
         script_state->GetIsolate(), value.V8Value(), exception_state);
-    if (exception_state.HadException())
-      barrier_callback_->OnError(exception_state);
-    else
+    if (exception_state.HadException()) {
+      barrier_callback_->OnError(exception_state.GetException());
+      exception_state.ClearException();
+    } else {
       response_loader_->OnResponse(response, exception_state);
+    }
 
     return rtn;
   }

@@ -8,10 +8,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -24,16 +24,11 @@ namespace autofill {
 //
 // Note: The database stores time in seconds, UTC.
 // -----------------------------------------------------------------------------
-// contact_info         This table contains Autofill profile data synced from a
-//                      remote source.
-//
-//                      It has all the same fields as the local_addresses table,
-//                      below.
-// -----------------------------------------------------------------------------
-// local_addresses      This table contains kLocalOrSyncable Autofill profiles.
-//                      It has the same layout as the contact_info table.
+// addresses            This table contains Autofill profile metadata.
 //
 //   guid               A guid string to uniquely identify the profile.
+//   record_type        The AutofillProfile::RecordType of the profile, encoded
+//                      by the enum's underlying integer.
 //   use_count          The number of times this profile has been used to fill a
 //                      form.
 //   use_date           The last (use_date), second last (use_date2) and third
@@ -53,18 +48,11 @@ namespace autofill {
 //                      modification of the profile.
 //                      Represented as an integer. See AutofillProfile.
 // -----------------------------------------------------------------------------
-// contact_info_type_tokens
-//                      Contains the values for all relevant FieldTyps of a
-//                      contact_info entry. At most one entry per (guid, type)
+// address_type_tokens  Contains the values for all relevant FieldTypes of an
+//                      addresses entry. At most one entry per (guid, type)
 //                      pair exists.
 //
-//                      It has all the same fields as the
-//                      local_addresses_type_tokens table, below.
-// -----------------------------------------------------------------------------
-// local_addresses_type_tokens
-//                      Like contact_info_type_tokens, but for local_addresses.
-//
-//  guid                The guid of the corresponding profile in contact_info.
+//  guid                The guid of the corresponding profile in addresses.
 //  type                The FieldType, represented by its integer value in
 //                      the FieldType enum.
 //  value               The string value of the type.
@@ -101,40 +89,23 @@ class AddressAutofillTable : public WebDatabaseTable {
   // Updates the database values for the specified profile.  Multi-value aware.
   bool UpdateAutofillProfile(const AutofillProfile& profile);
 
-  // Removes the Autofill profile with the given `guid`. `profile_source`
-  // indicates where the profile was synced from and thus whether it is stored
-  // in `kAutofillProfilesTable` or `kContactInfoTable`.
-  bool RemoveAutofillProfile(const std::string& guid,
-                             AutofillProfile::Source profile_source);
+  // Removes the Autofill profile with the given `guid`. `record_type`
+  // indicates where the profile was synced from.
+  bool RemoveAutofillProfile(const std::string& guid);
 
-  // Removes all profiles from the given `profile_source`.
-  bool RemoveAllAutofillProfiles(AutofillProfile::Source profile_source);
+  // Removes all profiles from the given `record_type`.
+  bool RemoveAllAutofillProfiles(AutofillProfile::RecordType record_type);
 
-  // Retrieves a profile with guid `guid` from `kAutofillProfilesTable` or
-  // `kContactInfoTable`.
-  std::unique_ptr<AutofillProfile> GetAutofillProfile(
-      const std::string& guid,
-      AutofillProfile::Source profile_source) const;
+  // Retrieves a profile with guid `guid`.
+  std::optional<AutofillProfile> GetAutofillProfile(
+      const std::string& guid) const;
 
   // Retrieves profiles in the database. They are returned in unspecified order.
-  // The `profile_source` specifies if profiles from the legacy or the remote
-  // backend should be retrieved.
+  // The `record_type` specifies if profiles from the legacy or the remote
+  // backend should be retrieved. If nullopt, all profiles are returned.
   bool GetAutofillProfiles(
-      AutofillProfile::Source profile_source,
-      std::vector<std::unique_ptr<AutofillProfile>>& profiles) const;
-
-  // Removes rows from local_addresses tables if they were created on or after
-  // `delete_begin` and strictly before `delete_end`. Returns the list of
-  // of deleted profiles in `profiles`. Return value is true if all rows were
-  // successfully removed. Returns false on database error. In that case, the
-  // output vector state is undefined, and may be partially filled.
-  // TODO(crbug.com/40151750): This function is solely used to remove browsing
-  // data. Once explicit save dialogs are fully launched, it can be removed. For
-  // this reason profiles in the `contact_info` table are not considered.
-  bool RemoveAutofillDataModifiedBetween(
-      base::Time delete_begin,
-      base::Time delete_end,
-      std::vector<std::unique_ptr<AutofillProfile>>& profiles);
+      std::optional<AutofillProfile::RecordType> record_type,
+      std::vector<AutofillProfile>& profiles) const;
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
@@ -156,17 +127,18 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion117AddProfileObservationColumn();
   bool MigrateToVersion121DropServerAddressTables();
   bool MigrateToVersion132AddAdditionalLastUseDateColumns();
+  bool MigrateToVersion134UnifyLocalAndAccountAddressStorage();
 
  private:
   // Reads profiles from the deprecated autofill_profiles table.
-  std::unique_ptr<AutofillProfile> GetAutofillProfileFromLegacyTable(
+  std::optional<AutofillProfile> GetAutofillProfileFromLegacyTable(
       const std::string& guid) const;
   bool GetAutofillProfilesFromLegacyTable(
-      std::vector<std::unique_ptr<AutofillProfile>>& profiles) const;
+      std::vector<AutofillProfile>& profiles) const;
 
   bool InitLegacyProfileAddressesTable();
-  bool InitProfileMetadataTable(AutofillProfile::Source source);
-  bool InitProfileTypeTokensTable(AutofillProfile::Source source);
+  bool InitAddressesTable();
+  bool InitAddressTypeTokensTable();
 };
 
 }  // namespace autofill

@@ -7,11 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/files/file_path.h"
+#import "base/functional/callback_forward.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 namespace web {
 class WebStateID;
 }

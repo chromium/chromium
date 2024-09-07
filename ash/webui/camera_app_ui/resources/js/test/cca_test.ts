@@ -30,7 +30,6 @@ import {
 } from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
 import {Facing, Mode, Resolution} from '../type.js';
-import * as untrustedScripts from '../untrusted_scripts.js';
 import {FpsObserver, sleep} from '../util.js';
 import {
   getInstanceForTest as getDocumentReview,
@@ -626,22 +625,6 @@ export class CCATest {
       }
       state.addObserver(stateKey, onChange);
     });
-  }
-
-  /**
-   * Sets measurement protocol's URL.
-   */
-  static async setMeasurementProtocolUrl(url: string): Promise<void> {
-    const helper = await untrustedScripts.getGaHelper();
-    return helper.setMeasurementProtocolUrl(url);
-  }
-
-  /**
-   * Enables GA4 metrics.
-   */
-  static async enableGa4Metrics(): Promise<void> {
-    const helper = await untrustedScripts.getGaHelper();
-    return helper.setGa4Enabled(true);
   }
 
   /**

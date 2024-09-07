@@ -55,24 +55,28 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
                              PageNode::LoadingState previous_state) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
-  // Holds information about a PageNode to load by this policy.
-  struct PageNodeAndNotificationPermission {
-    PageNodeAndNotificationPermission(base::WeakPtr<PageNode> page_node,
-                                      bool has_notification_permission);
-    PageNodeAndNotificationPermission(
-        const PageNodeAndNotificationPermission&
-            page_node_and_notification_permission);
-    ~PageNodeAndNotificationPermission();
+  // Holds data about a PageNode being added to this policy.
+  struct PageNodeData {
+    explicit PageNodeData(
+        base::WeakPtr<PageNode> page_node,
+        GURL main_frame_url = GURL(),
+        blink::mojom::PermissionStatus notification_permission_status =
+            blink::mojom::PermissionStatus::ASK);
+    PageNodeData(PageNodeData&& other);
+    PageNodeData& operator=(PageNodeData&& other);
+    PageNodeData(const PageNodeData& other);
+    PageNodeData& operator=(const PageNodeData& other);
+    ~PageNodeData();
 
     base::WeakPtr<PageNode> page_node;
-    bool has_notification_permission;
+    GURL main_frame_url;
+    blink::mojom::PermissionStatus notification_permission_status;
   };
 
   // Schedules the PageNodes in |page_node_and_permission_vector| to be loaded
   // when appropriate.
   void ScheduleLoadForRestoredTabs(
-      std::vector<PageNodeAndNotificationPermission>
-          page_node_and_permission_vector);
+      std::vector<PageNodeData> page_node_and_permission_vector);
 
   void SetMockLoaderForTesting(std::unique_ptr<mechanism::PageLoader> loader);
   void SetMaxSimultaneousLoadsForTesting(size_t loading_slots);
@@ -85,11 +89,9 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
  private:
   friend class ::performance_manager::BackgroundTabLoadingBrowserTest;
 
-  // Holds a handful of data about a tab which is used to prioritize it during
-  // session restore.
+  // Holds data about a PageNode waiting to be loaded by this policy.
   struct PageNodeToLoadData {
-    explicit PageNodeToLoadData(PageNode* page_node,
-                                bool has_notification_permission);
+    explicit PageNodeToLoadData(PageNode* page_node);
     PageNodeToLoadData(const PageNodeToLoadData&) = delete;
     ~PageNodeToLoadData();
     PageNodeToLoadData& operator=(const PageNodeToLoadData&) = delete;
@@ -99,9 +101,6 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
 
     // A higher value here means the tab has higher priority for restoring.
     std::optional<float> score;
-
-    // Whether the tab has the notification permission.
-    const bool has_notification_permission;
 
     // Whether the tab updates its title or favicon when backgrounded.
     // Initialized to nullopt and set asynchronously with the proper value from

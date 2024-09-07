@@ -24,7 +24,7 @@ import './sea_pen_zero_state_svg_element.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QUERY, Query, SeaPenImageId} from './constants.js';
-import {isLacrosEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
+import {isLacrosEnabled, isManagedSeaPenFeedbackEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
 import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenThumbnail} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
@@ -151,6 +151,13 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         },
       },
 
+      isManagedSeaPenFeedbackEnabled_: {
+        type: Boolean,
+        value() {
+          return isManagedSeaPenFeedbackEnabled();
+        },
+      },
+
       showHistory_: {
         type: Boolean,
         computed:
@@ -244,6 +251,11 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private shouldShowImagesHeading_(
       isSeaPenTextInputEnabled: boolean, templateId: SeaPenTemplateId|Query) {
     return !isSeaPenTextInputEnabled || templateId !== QUERY;
+  }
+
+  private shouldShowThumbnailFeedback_(
+      isManagedSeaPenFeedbackEnabled: boolean, thumbnailsLoading: boolean) {
+    return isManagedSeaPenFeedbackEnabled && !thumbnailsLoading;
   }
 
   private getPlaceholders_(x: number) {

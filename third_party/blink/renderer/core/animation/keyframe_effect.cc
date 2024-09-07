@@ -183,7 +183,7 @@ KeyframeEffect* KeyframeEffect::Create(
       PseudoId pseudo_id = CSSSelectorParser::ParsePseudoElement(
           pseudo, element, pseudo_argument);
       effect->effect_target_ =
-          element->GetNestedPseudoElement(pseudo_id, pseudo_argument);
+          element->GetStyledPseudoElement(pseudo_id, pseudo_argument);
     }
   }
   return effect;

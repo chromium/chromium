@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './safety_hub_card.js';
 import './safety_hub_module.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -38,7 +39,7 @@ export interface SettingsSafetyHubPageElement {
 }
 
 const SettingsSafetyHubPageElementBase = RouteObserverMixin(
-    RelaunchMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+    RelaunchMixin(PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 export class SettingsSafetyHubPageElement extends
     SettingsSafetyHubPageElementBase {
@@ -116,6 +117,7 @@ export class SettingsSafetyHubPageElement extends
   static get observers() {
     return [
       'onAllModulesLoaded_(passwordCardData_, versionCardData_, safeBrowsingCardData_, hasDataForUnusedPermissions_, hasDataForNotificationPermissions_, hasDataForExtensions_)',
+      'onSafeBrowsingPrefChanged_(prefs.generated.safe_browsing)',
     ];
   }
 
@@ -173,7 +175,7 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private initializeCards_() {
-    // TODO(crbug.com/40267370): Add listeners for cards.
+    // TODO(crbug.com/40267370): Add a listener for the Password card.
     this.browserProxy_.getPasswordCardData().then((data: CardInfo) => {
       this.passwordCardData_ = data;
     });
@@ -182,6 +184,10 @@ export class SettingsSafetyHubPageElement extends
       this.safeBrowsingCardData_ = data;
     });
 
+    this.addWebUiListener(
+        SafetyHubEvent.CHROME_VERSION_MAYBE_CHANGED, (data: CardInfo) => {
+          this.versionCardData_ = data;
+        });
     this.browserProxy_.getVersionCardData().then((data: CardInfo) => {
       this.versionCardData_ = data;
     });
@@ -296,6 +302,12 @@ export class SettingsSafetyHubPageElement extends
     if (this.isEnterOrSpaceClicked_(e)) {
       this.onVersionClick_();
     }
+  }
+
+  private onSafeBrowsingPrefChanged_() {
+    this.browserProxy_.getSafeBrowsingCardData().then((data: CardInfo) => {
+      this.safeBrowsingCardData_ = data;
+    });
   }
 
   private onSafeBrowsingClick_() {

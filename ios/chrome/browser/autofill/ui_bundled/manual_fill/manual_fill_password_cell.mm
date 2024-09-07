@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -20,8 +23,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
-
-NSString* const kMaskedPasswordTitle = @"••••••••";
 
 namespace {
 
@@ -66,12 +67,16 @@ CGFloat GetFaviconSize() {
 @end
 
 @implementation ManualFillCredentialItem {
+  // The 0-based index at which the password is in the list of passwords to
+  // show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
 
-  // If `YES`, the user should be asked to re-authenticate before autofilling
-  // the entire form.
-  BOOL _shouldReauthToAutofill;
+  // If `YES`, the cell represented by this item is displayed in the all
+  // password list.
+  BOOL _fromAllPasswordsContext;
 }
 
 - (instancetype)initWithCredential:(ManualFillCredential*)credential
@@ -80,9 +85,10 @@ CGFloat GetFaviconSize() {
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                        menuActions:(NSArray<UIAction*>*)menuActions
+                         cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
-            shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
+           fromAllPasswordsContext:(BOOL)fromAllPasswordsContext {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _credential = credential;
@@ -90,9 +96,10 @@ CGFloat GetFaviconSize() {
     _isConnectedToNextItem = isConnectedToNextItem;
     _contentInjector = contentInjector;
     _menuActions = menuActions;
+    _cellIndex = cellIndex;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
     _showAutofillFormButton = showAutofillFormButton;
-    _shouldReauthToAutofill = shouldReauthToAutofill;
+    _fromAllPasswordsContext = fromAllPasswordsContext;
     self.cellClass = [ManualFillPasswordCell class];
   }
   return self;
@@ -106,9 +113,10 @@ CGFloat GetFaviconSize() {
             isConnectedToNextCell:self.isConnectedToNextItem
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
+                        cellIndex:_cellIndex
       cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel
            showAutofillFormButton:_showAutofillFormButton
-           shouldReauthToAutofill:_shouldReauthToAutofill];
+          fromAllPasswordsContext:_fromAllPasswordsContext];
 }
 
 - (const GURL&)faviconURL {
@@ -178,9 +186,12 @@ static const CGFloat kOffsetForConnectedCell = 16;
 @end
 
 @implementation ManualFillPasswordCell {
-  // If `YES`, the user should be asked to re-authenticate before autofilling
-  // the entire form.
-  BOOL _shouldReauthToAutofill;
+  // The 0-based index at which the password is in the list of passwords to
+  // show.
+  NSInteger _cellIndex;
+
+  // If `YES`, the cell is displayed in the all password list.
+  BOOL _fromAllPasswordsContext;
 }
 
 #pragma mark - Public
@@ -215,10 +226,12 @@ static const CGFloat kOffsetForConnectedCell = 16;
           isConnectedToNextCell:(BOOL)isConnectedToNextCell
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
-         shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
-  _shouldReauthToAutofill = shouldReauthToAutofill;
+        fromAllPasswordsContext:(BOOL)fromAllPasswordsContext {
+  _cellIndex = cellIndex;
+  _fromAllPasswordsContext = fromAllPasswordsContext;
 
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
@@ -290,7 +303,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
 
   // Password chip button.
   if (credential.password.length) {
-    [self.passwordButton setTitle:kMaskedPasswordTitle
+    [self.passwordButton setTitle:manual_fill::kMaskedPasswordButtonText
                          forState:UIControlStateNormal];
     self.passwordButton.accessibilityLabel = l10n_util::GetNSString(
         IsKeyboardAccessoryUpgradeEnabled()
@@ -440,8 +453,20 @@ static const CGFloat kOffsetForConnectedCell = 16;
 // Called when the "Autofill Form" button is tapped. Fills the current form with
 // the credential' data.
 - (void)onAutofillFormButtonTapped {
+  std::string histogram =
+      "Autofill.UserAcceptedSuggestionAtIndex.Password.ManualFallback";
+  if (_fromAllPasswordsContext) {
+    histogram = base::StrCat({histogram, ".AllPasswords"});
+    base::RecordAction(base::UserMetricsAction(
+        "ManualFallback_AllPasswords_SuggestionAccepted"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("ManualFallback_Password_SuggestionAccepted"));
+  }
+  base::UmaHistogramSparse(histogram, _cellIndex);
+
   [self.contentInjector autofillFormWithCredential:self.credential
-                                      shouldReauth:_shouldReauthToAutofill];
+                                      shouldReauth:!_fromAllPasswordsContext];
 }
 
 // Configure the favicon with the given `attributes`.

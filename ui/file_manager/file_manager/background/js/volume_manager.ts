@@ -28,6 +28,14 @@ const TIMEOUT = 15 * 60 * 1000;
 const TIMEOUT_STR_REQUEST_FILE_SYSTEM = 'timeout(requestFileSystem)';
 
 /**
+ * A list of RequestType
+ */
+enum RequestType {
+  MOUNT = 'mount',
+  UNMOUNT = 'unmount',
+}
+
+/**
  * Logs a warning message if the given error is not in
  * VolumeError.
  *
@@ -393,7 +401,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
 
     switch (eventType) {
       case 'mount': {
-        const requestKey = this.makeRequestKey_('mount', sourcePath);
+        const requestKey = this.makeRequestKey_(RequestType.MOUNT, sourcePath);
 
         switch (volumeError) {
           case VolumeError.SUCCESS:
@@ -446,7 +454,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
       }
 
       case 'unmount': {
-        const requestKey = this.makeRequestKey_('unmount', volumeId);
+        const requestKey = this.makeRequestKey_(RequestType.UNMOUNT, volumeId);
         const volumeInfoIndex = this.volumeInfoList.findIndex(volumeId);
         const volumeInfo = volumeInfoIndex !== -1 ?
             this.volumeInfoList.item(volumeInfoIndex) :
@@ -480,12 +488,12 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
 
   /**
    * Creates string to match mount events with requests.
-   * @param requestType 'mount' | 'unmount'. TODO(hidehiko): Replace by enum.
+   * @param requestType 'mount' | 'unmount'.
    * @param argument Argument describing the request, eg. source file
    *     path of the archive to be mounted, or a volumeId for unmounting.
    * @return Key for |this.requests_|.
    */
-  private makeRequestKey_(requestType: string, argument: string): string {
+  private makeRequestKey_(requestType: RequestType, argument: string): string {
     return requestType + ':' + argument;
   }
 
@@ -498,7 +506,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     const path: string =
         await promisify(chrome.fileManagerPrivate.addMount, fileUrl, password);
     console.debug(`Mounting '${path}'`);
-    const key = this.makeRequestKey_('mount', path);
+    const key = this.makeRequestKey_(RequestType.MOUNT, path);
     return this.startRequest_(key);
   }
 
@@ -519,7 +527,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
    */
   async unmount({volumeId}: VolumeInfo): Promise<void> {
     console.debug(`Unmounting '${volumeId}'`);
-    const key = this.makeRequestKey_('unmount', volumeId);
+    const key = this.makeRequestKey_(RequestType.UNMOUNT, volumeId);
     const request = this.startRequest_(key);
     await promisify(chrome.fileManagerPrivate.removeMount, volumeId);
     await request;

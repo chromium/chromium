@@ -15,6 +15,7 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/app_mode",
+  "+chrome/browser/ash/image_downloader",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/ownership",
   "+chrome/browser/ash/policy/core",
@@ -33,7 +34,6 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
-  "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_select_file_policy.h",

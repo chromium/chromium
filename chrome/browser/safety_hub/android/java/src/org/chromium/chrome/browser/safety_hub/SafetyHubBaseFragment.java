@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -22,7 +23,7 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 
 public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
-    private SnackbarManager mSnackbarManager;
+    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -32,8 +33,9 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
         getListView().setItemAnimator(null);
     }
 
-    public void setSnackbarManager(SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     protected void showSnackbar(
@@ -41,8 +43,8 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
             int identifier,
             SnackbarManager.SnackbarController controller,
             Object actionData) {
-        if (mSnackbarManager != null) {
-            showSnackbar(mSnackbarManager, text, identifier, controller, actionData);
+        if (mSnackbarManagerSupplier.hasValue()) {
+            showSnackbar(mSnackbarManagerSupplier.get(), text, identifier, controller, actionData);
         }
     }
 

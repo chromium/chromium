@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/common/features.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/common/content_features.h"
@@ -52,29 +53,6 @@ bool PrefetchAllowAllDomainsForExtendedPreloading() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kPrefetchUseContentRefactor,
       "allow_all_domains_for_extended_preloading", true);
-}
-
-size_t PrefetchServiceMaximumNumberOfConcurrentPrefetches() {
-  // kPrefetchNewLimits requires prefetches to be sequential.
-  if (PrefetchNewLimitsEnabled()) {
-    return 1;
-  }
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kPrefetchUseContentRefactor, "max_concurrent_prefetches", 1);
-}
-
-std::optional<int> PrefetchServiceMaximumNumberOfPrefetchesPerPage() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "isolated-prerender-unlimited-prefetches")) {
-    return std::nullopt;
-  }
-
-  int max = base::GetFieldTrialParamByFeatureAsInt(
-      features::kPrefetchUseContentRefactor, "max_srp_prefetches", 5);
-  if (max < 0) {
-    return std::nullopt;
-  }
-  return max;
 }
 
 bool PrefetchServiceSendDecoyRequestForIneligblePrefetch(
@@ -251,19 +229,15 @@ std::string GetPrefetchEagernessHistogramSuffix(
   }
 }
 
-bool PrefetchNewLimitsEnabled() {
-  return base::FeatureList::IsEnabled(::features::kPrefetchNewLimits);
-}
-
-size_t MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits() {
-  int max = base::GetFieldTrialParamByFeatureAsInt(
-      ::features::kPrefetchNewLimits, "max_eager_prefetches", 50);
+size_t MaxNumberOfEagerPrefetchesPerPage() {
+  int max = base::GetFieldTrialParamByFeatureAsInt(features::kPrefetchNewLimits,
+                                                   "max_eager_prefetches", 50);
   return std::max(0, max);
 }
 
-size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits() {
+size_t MaxNumberOfNonEagerPrefetchesPerPage() {
   int max = base::GetFieldTrialParamByFeatureAsInt(
-      ::features::kPrefetchNewLimits, "max_non_eager_prefetches", 2);
+      features::kPrefetchNewLimits, "max_non_eager_prefetches", 2);
   return std::max(0, max);
 }
 
@@ -274,6 +248,12 @@ bool PrefetchNIKScopeEnabled() {
 bool PrefetchBrowserInitiatedTriggersEnabled() {
   return base::FeatureList::IsEnabled(
       features::kPrefetchBrowserInitiatedTriggers);
+}
+
+bool UseNewWaitLoop() {
+  return base::FeatureList::IsEnabled(features::kPrefetchNewWaitLoop) ||
+         base::FeatureList::IsEnabled(
+             features::kPrerender2FallbackPrefetchSpecRules);
 }
 
 }  // namespace content

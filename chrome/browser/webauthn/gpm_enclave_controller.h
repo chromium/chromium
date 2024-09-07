@@ -56,6 +56,7 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
  public:
   static constexpr base::TimeDelta kDownloadAccountStateTimeout =
       base::Seconds(1);
+  struct ICloudMember;
   struct DownloadedAccountState;
   enum class EnclaveUserVerificationMethod;
 
@@ -129,6 +130,7 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
 
   // Called when the account state has finished downloading.
   void OnAccountStateDownloaded(
+      std::string gaia_id,
       std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result);
@@ -145,13 +147,17 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // Called when the local device has been added to the security domain.
   void OnDeviceAdded(bool success);
 
+  // Initiates recovery from an iCloud keychain recovery key or MagicArch
+  // depending on availability.
+  void RecoverSecurityDomain();
+
 #if BUILDFLAG(IS_MAC)
   // Enrolls an iCloud keychain recovery factor if available and needed.
   void MaybeAddICloudRecoveryKey();
 
   // Called when Chrome has retrieved the iCloud recovery keys present in the
   // current device.
-  void OnLocalICloudRecoveryKeysRetrieved(
+  void OnICloudKeysRetrievedForEnrollment(
       std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
           local_icloud_keys);
 
@@ -159,6 +165,12 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // which case we skip to the next step.
   void EnrollICloudRecoveryKey(
       std::unique_ptr<device::enclave::ICloudRecoveryKey> key);
+
+  // Called when Chrome has retrieved the iCloud recovery keys present in the
+  // current device.
+  void OnICloudKeysRetrievedForRecovery(
+      std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+          local_icloud_keys);
 #endif  // BUILDFLAG(IS_MAC)
 
   // Called when the enclave enrollment is complete.
@@ -261,9 +273,13 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // domain service.
   std::optional<trusted_vault::GpmPinMetadata> pin_metadata_;
 
-  // The list of iCloud recovery key public keys known to the security domain
+  // The list of iCloud recovery key members known to the security domain
   // service.
-  std::vector<std::vector<uint8_t>> security_domain_icloud_recovery_keys_;
+  std::vector<ICloudMember> security_domain_icloud_recovery_keys_;
+
+  // |recovered_with_icloud_keychain_| is true if this controller performed a
+  // successful recovery from iCloud keychain. This is reset on OnKeysStored().
+  bool recovered_with_icloud_keychain_ = false;
 
   // The pending request to fetch the state of the trusted vault.
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
@@ -305,6 +321,9 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
 
   // Whether the user confirmed GPM PIN creation in the flow.
   bool gpm_pin_creation_confirmed_ = false;
+
+  // The gaia id of the user at the time the account state was downloaded.
+  std::string user_gaia_id_;
 
   const raw_ptr<base::Clock> clock_;
 

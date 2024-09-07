@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -31,8 +30,6 @@ namespace viz {
 namespace mojom {
 class GpuService;
 }
-
-VIZ_HOST_EXPORT BASE_DECLARE_FEATURE(kCreateSharedMemoryGMBsViaGpuService);
 
 // This GpuMemoryBufferManager implementation is for [de]allocating GPU memory
 // from the GPU process over the mojom.GpuService api. Parts of this class,
@@ -76,9 +73,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // on requests. Must be called from UI thread.
   void Shutdown();
 
-  bool IsNativeGpuMemoryBufferConfiguration(gfx::BufferFormat format,
-                                            gfx::BufferUsage usage) const;
-
   // Overridden from gpu::GpuMemoryBufferManager:
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
@@ -98,16 +92,10 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
- protected:
-  void SetNativeConfigurations(
-      gpu::GpuMemoryBufferConfigurationSet native_configurations);
-
  private:
   friend class HostGpuMemoryBufferManagerTest;
   FRIEND_TEST_ALL_PREFIXES(HostGpuMemoryBufferManagerTest,
                            AllocationRequestsForDestroyedClient);
-  FRIEND_TEST_ALL_PREFIXES(HostGpuMemoryBufferManagerTest,
-                           RequestsForNonNativeGMBsHandledInBrowser);
   FRIEND_TEST_ALL_PREFIXES(HostGpuMemoryBufferManagerTest,
                            AllocationRequestFromDeadGpuService);
 
@@ -153,9 +141,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
                                   gfx::GpuMemoryBufferId id,
                                   gfx::GpuMemoryBufferHandle handle);
 
-  bool CreateBufferUsesGpuService(gfx::BufferFormat format,
-                                  gfx::BufferUsage usage);
-
   GpuServiceProvider gpu_service_provider_;
   raw_ptr<mojom::GpuService> gpu_service_ = nullptr;
 
@@ -175,9 +160,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
 
   scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
-
-  gpu::GpuMemoryBufferConfigurationSet native_configurations_;
-  base::AtomicFlag native_configurations_initialized_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<HostGpuMemoryBufferManager> weak_ptr_;

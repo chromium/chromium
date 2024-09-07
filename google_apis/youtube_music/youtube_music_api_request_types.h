@@ -80,6 +80,20 @@ struct ReportPlaybackRequestPayload {
   };
 
   struct Params {
+    Params(const bool initial_report,
+           const std::string& playback_reporting_token,
+           const base::Time client_current_time,
+           const base::TimeDelta playback_start_offset,
+           const base::TimeDelta media_time_current,
+           const ConnectionType connection_type,
+           const PlaybackState playback_state,
+           const std::vector<WatchTimeSegment>& watch_time_segments);
+    Params(const Params&);
+    Params& operator=(const Params&);
+    ~Params();
+
+    bool initial_report;
+
     std::string playback_reporting_token;
 
     base::Time client_current_time;
@@ -92,7 +106,7 @@ struct ReportPlaybackRequestPayload {
 
     PlaybackState playback_state;
 
-    std::optional<WatchTimeSegment> watch_time_segment;
+    std::vector<WatchTimeSegment> watch_time_segments;
   };
 
   explicit ReportPlaybackRequestPayload(const Params& params);

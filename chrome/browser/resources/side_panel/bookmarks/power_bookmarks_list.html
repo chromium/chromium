@@ -252,7 +252,7 @@
         back-button-title="$i18n{tooltipBack}"
         back-button-aria-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBackClicked_"
-        hide-back-button="[[!activeFolderPath_.length]]"
+        hide-back-button="[[shouldHideBackButton_(activeFolderPath_.*)]]"
         disable-back-button="[[disableBackButton_(
             activeFolderPath_.*, editing_)]]">
       <h1 slot="heading">[[getActiveFolderLabel_(activeFolderPath_.*)]]</h1>
@@ -339,8 +339,9 @@
               items="[[bookmarks]]" scroll-target="bookmarks">
             <template>
               <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-                  compact="[[compact_]]" trailing-icon="cr:more-vert"
+                  compact="[[compact_]]"
                   search-query="[[searchQuery_]]"
+                  updated-element-ids="[[updatedElementIds_]]"
                   trailing-icon-tooltip="$i18n{tooltipMore}"
                   has-checkbox="[[editing_]]"
                   renaming-id="[[renamingId_]]"
@@ -349,7 +350,8 @@
                   on-trailing-icon-clicked="onShowContextMenuClicked_"
                   on-checkbox-change="onRowSelectedChange_"
                   on-input-change="onRename_"
-                  on-power-bookmark-toggle="notifyBookmarksListResize_"
+                  on-list-item-size-changed="notifyBookmarksListResize_"
+                  on-power-bookmark-toggle="onRowToggled_"
                   tabindex$="[[tabIndex]]"
                   image-urls="[[imageUrls_]]"
                   shopping-collection-folder-id=

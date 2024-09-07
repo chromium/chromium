@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 
+#include <optional>
+
 #include "base/base64url.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -73,6 +75,10 @@ constexpr char kOAuthConsumerName[] = "LensOverlayQueryController";
 constexpr char kStartTimeQueryParameter[] = "qsubts";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
+constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
+// TODO(b/362997636): Video is temporary for prototyping. Needs to change once
+// the server is ready.
+constexpr char kPdfVisualInputTypeQueryParameterValue[] = "video";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("lens_overlay", R"(
@@ -218,20 +224,28 @@ void LensOverlayQueryController::StartQueryFlow(
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+    base::span<const uint8_t> pdf_bytes,
     float ui_scale_factor) {
   original_screenshot_ = screenshot;
   page_url_ = page_url;
   page_title_ = page_title;
   significant_region_boxes_ = std::move(significant_region_boxes);
+  pdf_bytes_ = pdf_bytes;
   ui_scale_factor_ = ui_scale_factor;
   gen204_id_ = base::RandUint64();
+
+  // Reset translation languages in case they were set in a previous request.
+  translate_options_.reset();
 
   PrepareAndFetchFullImageRequest();
 }
 
 void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
-  DCHECK(query_controller_state_ !=
-         QueryControllerState::kAwaitingFullImageResponse);
+  // There can be multiple full image requests that are called. For example,
+  // when translate mode is enabled after opening the overlay or when turning
+  // translate mode back off after enabling. Reset if there is one pending.
+  latest_full_image_sequence_id_ = -1;
+  full_image_endpoint_fetcher_.reset();
   query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
 
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
@@ -256,6 +270,9 @@ void LensOverlayQueryController::OnImageDataReady(
     ref_counted_logs->client_logs().set_paella_id(gen204_id_);
   }
 
+  resized_bitmap_size_ = gfx::Size(image_data.image_metadata().width(),
+                                   image_data.image_metadata().height());
+
   AddSignificantRegions(image_data, std::move(significant_region_boxes_));
   FetchFullImageRequest(request_id_generator_->GetNextRequestId(), image_data,
                         ref_counted_logs->client_logs());
@@ -275,6 +292,20 @@ LensOverlayQueryController::CreateClientContext() {
   context.mutable_locale_context()->set_region(
       icu::Locale(g_browser_process->GetApplicationLocale().c_str())
           .getCountry());
+
+  // Add the appropriate context filters. If source and target languages have
+  // been set, this should add translate.
+  if (translate_options_.has_value()) {
+    context.mutable_client_filters()->clear_filter();
+    lens::AppliedFilter* translate_filter =
+        context.mutable_client_filters()->add_filter();
+    translate_filter->set_filter_type(lens::TRANSLATE);
+    translate_filter->mutable_translate()->set_source_language(
+        translate_options_->source_language);
+    translate_filter->mutable_translate()->set_target_language(
+        translate_options_->target_language);
+  }
+
   std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
   icu::UnicodeString time_zone_id, time_zone_canonical_id;
   zone->getID(time_zone_id);
@@ -331,8 +362,19 @@ void LensOverlayQueryController::FetchFullImageRequest(
       request_context);
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
 
+  // The PDF bytes are optional, so if they were included in the StartQueryFlow,
+  // included them in the request.
+  if (!pdf_bytes_.empty()) {
+    lens::Payload payload;
+    payload.mutable_content_data()->assign(pdf_bytes_.begin(),
+                                           pdf_bytes_.end());
+    payload.set_content_type("application/pdf");
+    request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
+  }
+
   int64_t query_start_time_ms =
       base::Time::Now().InMillisecondsSinceUnixEpoch();
+  latest_full_image_sequence_id_ = request_id->sequence_id();
 
   // Fetch the request.
   CreateAndFetchEndpointFetcher(
@@ -341,12 +383,20 @@ void LensOverlayQueryController::FetchFullImageRequest(
           &LensOverlayQueryController::OnFullImageEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&LensOverlayQueryController::FullImageFetchResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr(), query_start_time_ms));
+                     weak_ptr_factory_.GetWeakPtr(), query_start_time_ms,
+                     latest_full_image_sequence_id_));
 }
 
 void LensOverlayQueryController::FullImageFetchResponseHandler(
     int64_t query_start_time_ms,
+    int request_sequence_id,
     std::unique_ptr<EndpointResponse> response) {
+  // If this request sequence ID does not match the latest sent then we should
+  // ignore the response.
+  if (request_sequence_id != latest_full_image_sequence_id_) {
+    return;
+  }
+
   DCHECK_EQ(query_controller_state_,
             QueryControllerState::kAwaitingFullImageResponse);
 
@@ -396,12 +446,12 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          full_image_callback_,
-          lens::CreateObjectsMojomArrayFromServerResponse(server_response),
-          lens::CreateTextMojomFromServerResponse(server_response),
-          /*is_error=*/false));
+      FROM_HERE, base::BindOnce(full_image_callback_,
+                                lens::CreateObjectsMojomArrayFromServerResponse(
+                                    server_response),
+                                lens::CreateTextMojomFromServerResponse(
+                                    server_response, resized_bitmap_size_),
+                                /*is_error=*/false));
 }
 
 void LensOverlayQueryController::SendLatencyGen204IfEnabled(
@@ -417,6 +467,8 @@ void LensOverlayQueryController::SendLatencyGen204IfEnabled(
                               ->search_terms_data()
                               .GoogleBaseURLValue())
                          .Resolve(query);
+    fetch_url =
+        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = fetch_url;
     latency_gen204_loader_ = network::SimpleURLLoader::Create(
@@ -461,6 +513,8 @@ void LensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
                               ->search_terms_data()
                               .GoogleBaseURLValue())
                          .Resolve(query);
+    fetch_url =
+        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = fetch_url;
     task_completion_gen204_loader_ = network::SimpleURLLoader::Create(
@@ -499,9 +553,21 @@ void LensOverlayQueryController::EndQuery() {
   access_token_fetcher_.reset();
   page_url_.reset();
   page_title_.reset();
+  translate_options_.reset();
   cluster_info_.reset();
   encoding_task_tracker_->TryCancelAll();
   query_controller_state_ = QueryControllerState::kOff;
+}
+
+void LensOverlayQueryController::SendFullPageTranslateQuery(
+    const std::string& source_language,
+    const std::string& target_language) {
+  translate_options_ = TranslateOptions(source_language, target_language);
+
+  // Send a normal full image request. The parameters to make it a translate
+  // request will be set when the actual request is sent based on the instance
+  // variables.
+  PrepareAndFetchFullImageRequest();
 }
 
 void LensOverlayQueryController::SendRegionSearch(
@@ -523,8 +589,7 @@ void LensOverlayQueryController::SendMultimodalRequest(
   if (base::TrimWhitespaceASCII(query_text, base::TRIM_ALL).empty()) {
     return;
   }
-  SendInteraction(/*region=*/std::move(region),
-                  /*query_text=*/std::make_optional<std::string>(query_text),
+  SendInteraction(/*region=*/std::move(region), query_text,
                   /*object_id=*/std::nullopt, multimodal_selection_type,
                   additional_search_query_params, region_bytes);
 }
@@ -535,6 +600,21 @@ void LensOverlayQueryController::SendTextOnlyQuery(
     std::map<std::string, std::string> additional_search_query_params) {
   // Increment the request counter to cancel previously issued fetches.
   request_counter_++;
+
+  // If PDF bytes exist on a text only query, contextualize the query via a Lens
+  // request, instead of going straight through GWS.
+  if (!pdf_bytes_.empty()) {
+    // Include the vit to get contextualized results.
+    additional_search_query_params.insert(
+        {kVisualInputTypeQueryParameterKey,
+         kPdfVisualInputTypeQueryParameterValue});
+
+    // TODO(b/362816047): Send the correct selection type once it is ready.
+    SendInteraction(/*region=*/nullptr, query_text,
+                    /*object_id=*/std::nullopt, lens::UNKNOWN_SELECTION_TYPE,
+                    additional_search_query_params, std::nullopt);
+    return;
+  }
 
   // Add the start time to the query params now, so that any additional
   // client processing time is included.
@@ -699,6 +779,15 @@ LensOverlayQueryController::CreateInteractionRequest(
     interaction_request_metadata.mutable_selection_metadata()
         ->mutable_object()
         ->set_object_id(*object_id);
+  } else if (query_text.has_value()) {
+    // If there is only `query_text`, this is a contextual flow.
+    // TOOD(b/362816047): Send correct LensOverlayInteractionRequestMetadata,
+    // once the server is ready for it.
+    interaction_request_metadata.set_type(
+        lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
+    interaction_request_metadata.mutable_query_metadata()
+        ->mutable_text_query()
+        ->set_query(*query_text);
   } else {
     // There should be a region or an object id in the request.
     NOTREACHED_IN_MIGRATION();

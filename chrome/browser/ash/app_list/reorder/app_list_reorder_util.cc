@@ -7,7 +7,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/i18n/string_compare.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/ash/app_icon_color_cache.h"
+#include "chrome/browser/ui/ash/app_icon_color_cache/app_icon_color_cache.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {

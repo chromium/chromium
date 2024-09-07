@@ -611,6 +611,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Returns whether TransferSizeUpdated IPC should be sent.
   bool ShouldSendTransferSizeUpdated() const;
 
+  // Records metrics about GET requests.
+  void RecordRequestMetrics();
+
   raw_ptr<net::URLRequestContext> url_request_context_;
 
   raw_ptr<mojom::NetworkContextClient> network_context_client_;
@@ -672,6 +675,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   bool enable_reporting_raw_headers_ = false;
   bool seen_raw_request_headers_ = false;
+  // Used for metrics.
+  size_t raw_request_line_size_ = 0;
+  size_t raw_request_headers_size_ = 0;
   scoped_refptr<const net::HttpResponseHeaders> raw_response_headers_;
 
   std::unique_ptr<UploadProgressTracker> upload_progress_tracker_;
@@ -797,10 +803,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Indicates |url_request_| is fetch upload request and that has streaming
   // body.
   const bool has_fetch_streaming_upload_body_;
-
-  // Indicates whether fetch upload streaming is allowed/rejected over H/1.
-  // Even if this is false but there is a QUIC/H2 stream, the upload is allowed.
-  const bool allow_http1_for_streaming_upload_;
 
   bool emitted_devtools_raw_request_ = false;
   bool emitted_devtools_raw_response_ = false;

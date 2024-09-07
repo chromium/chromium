@@ -39,13 +39,6 @@ static constexpr char kTestMountPoint[] = "testfs";
 
 class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
  public:
-  FileSystemAccessLockManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kFileSystemAccessBFCache,
-         blink::features::kFileSystemAccessLockingScheme},
-        {});
-  }
-
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
@@ -479,7 +472,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheExclusive) {
   EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
 
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   auto active_context = kBindingContext;
 
   base::FilePath path = dir_.GetPath().AppendASCII("foo");
@@ -539,7 +532,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheShared) {
   EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
 
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   auto active_context = kBindingContext;
 
   base::FilePath path = dir_.GetPath().AppendASCII("foo");
@@ -616,7 +609,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeChildThenParent) {
   EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
 
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   auto active_context = kBindingContext;
 
   base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
@@ -678,7 +671,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeParentThenChild) {
   EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
 
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   auto active_context = kBindingContext;
 
   base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
@@ -755,7 +748,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictPendingLockRoot) {
   EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
 
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   auto active_context = kBindingContext;
 
   base::FilePath path = dir_.GetPath().AppendASCII("foo");
@@ -817,7 +810,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictDescendantPendingLockRoot) {
   EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
 
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   auto active_context = kBindingContext;
 
   base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
@@ -883,7 +876,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictAncestorPendingLockRoot) {
   EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
 
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   auto active_context = kBindingContext;
 
   base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
@@ -955,7 +948,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
 
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   auto active_context = kBindingContext;
 
   base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
@@ -1042,7 +1035,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
 
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   auto active_context = kBindingContext;
 
   base::FilePath path = dir_.GetPath().AppendASCII("foo");
@@ -1090,7 +1083,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
   auto active_context = kBindingContext;
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
       RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
 
@@ -1120,7 +1113,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
   auto active_context = kBindingContext;
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
       RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
 
@@ -1157,7 +1150,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictPendingChild) {
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
   auto active_context = kBindingContext;
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
       RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
 
@@ -1190,7 +1183,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictAncestorOfPendingTree) {
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
   auto active_context = kBindingContext;
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
       RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
 
@@ -1226,7 +1219,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
   auto active_context = kBindingContext;
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
       RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
 
@@ -1268,7 +1261,7 @@ TEST_F(FileSystemAccessLockManagerTest,
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
   auto active_context = kBindingContext;
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
       RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
 
@@ -1308,7 +1301,7 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictPendingTree) {
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
   auto active_context = kBindingContext;
   auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
   rfh->SetLifecycleState(
       RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
 

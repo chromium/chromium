@@ -489,10 +489,6 @@ std::string SyncManagerImpl::bag_of_chips() {
   return cycle_context_->bag_of_chips();
 }
 
-DataTypeSet SyncManagerImpl::GetTypesWithUnsyncedData() {
-  return data_type_registry_->GetTypesWithUnsyncedData();
-}
-
 bool SyncManagerImpl::HasUnsyncedItemsForTest() {
   return data_type_registry_->HasUnsyncedItems();
 }

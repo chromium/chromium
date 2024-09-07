@@ -11,18 +11,34 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "components/sessions/core/session_id.h"
+#include "url/gurl.h"
 
-namespace ash {
+namespace ash::boca {
+
+namespace {
+
+// Delay in seconds before we attempt to add a tab.
+constexpr int kRetryAddTabTime = 3;
+
+}  // namespace
 
 OnTaskSessionManager::OnTaskSessionManager(
     std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager)
-    : system_web_app_manager_(std::move(system_web_app_manager)) {}
+    : system_web_app_manager_(std::move(system_web_app_manager)),
+      system_web_app_launch_helper_(
+          std::make_unique<OnTaskSessionManager::SystemWebAppLaunchHelper>(
+              system_web_app_manager_.get())) {}
 
 OnTaskSessionManager::~OnTaskSessionManager() = default;
 
-void OnTaskSessionManager::OnSessionStarted(const std::string& session_id) {
+void OnTaskSessionManager::OnSessionStarted(
+    const std::string& session_id,
+    const ::boca::UserIdentity& producer) {
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
@@ -33,13 +49,10 @@ void OnTaskSessionManager::OnSessionStarted(const std::string& session_id) {
     // TODO (b/354007279): Look out for and break from loop should window close
     // fail more than once.
     system_web_app_manager_->CloseSystemWebAppWindow(window_id);
-    OnSessionStarted(session_id);
+    OnSessionStarted(session_id, producer);
     return;
   }
-
-  system_web_app_manager_->LaunchSystemWebAppAsync(
-      base::BindOnce(&OnTaskSessionManager::OnBocaSWALaunched,
-                     weak_ptr_factory_.GetWeakPtr()));
+  system_web_app_launch_helper_->LaunchBocaSWA();
 }
 
 void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
@@ -50,7 +63,50 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
   }
 }
 
-void OnTaskSessionManager::OnBocaSWALaunched(bool success) {
+void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
+  for (const ::boca::ContentConfig& content_config : bundle.content_configs()) {
+    CHECK(content_config.has_url());
+    const GURL url(content_config.url());
+    system_web_app_launch_helper_->AddTab(url);
+  }
+}
+
+OnTaskSessionManager::SystemWebAppLaunchHelper::SystemWebAppLaunchHelper(
+    OnTaskSystemWebAppManager* system_web_app_manager)
+    : system_web_app_manager_(system_web_app_manager) {}
+
+OnTaskSessionManager::SystemWebAppLaunchHelper::~SystemWebAppLaunchHelper() =
+    default;
+
+void OnTaskSessionManager::SystemWebAppLaunchHelper::LaunchBocaSWA() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  launch_in_progress_ = true;
+  system_web_app_manager_->LaunchSystemWebAppAsync(
+      base::BindOnce(&SystemWebAppLaunchHelper::OnBocaSWALaunched,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OnTaskSessionManager::SystemWebAppLaunchHelper::AddTab(GURL url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (launch_in_progress_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SystemWebAppLaunchHelper::AddTab,
+                       weak_ptr_factory_.GetWeakPtr(), url),
+        base::Seconds(kRetryAddTabTime));
+    return;
+  }
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      window_id.is_valid()) {
+    system_web_app_manager_->CreateBackgroundTabWithUrl(window_id, url);
+  }
+}
+
+void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  launch_in_progress_ = false;
   if (!success) {
     // TODO(b/354007279): Enforce appropriate retries.
     return;
@@ -61,11 +117,12 @@ void OnTaskSessionManager::OnBocaSWALaunched(bool success) {
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
+    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id);
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
         /*pinned=*/true, window_id);
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
-        /*pinned-*/ false, window_id);
+        /*pinned=*/false, window_id);
   }
 }
 
-}  // namespace ash
+}  // namespace ash::boca

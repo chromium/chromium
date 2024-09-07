@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 
-namespace ash {
+namespace ash::boca {
 
 namespace {
 
@@ -21,6 +21,10 @@ BocaAppClient* BocaAppClient::Get() {
   return g_instance;
 }
 
+bool BocaAppClient::HasInstance() {
+  return g_instance;
+}
+
 BocaAppClient::BocaAppClient() {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
@@ -31,20 +35,29 @@ BocaAppClient::~BocaAppClient() {
   g_instance = nullptr;
 }
 
-void BocaAppClient::Observer::OnBundleUpdated(const boca::Bundle& bundle) {}
-
-void BocaAppClient::Observer::OnProducerCaptionConfigUpdated(
-    const boca::CaptionsConfig& config) {}
-
-void BocaAppClient::Observer::OnConsumerCaptionConfigUpdated(
-    const boca::CaptionsConfig& config) {}
-
-void BocaAppClient::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
+void BocaAppClient::AddSessionManager(BocaSessionManager* session_manager) {
+  // Session manager is created as profile service upon signin, so we can always
+  // guarantee the active profile identity matches the session manager identity.
+  auto* identity_manager = GetIdentityManager();
+  CHECK(identity_manager);
+  identity_manager->AddObserver(this);
+  auto [it, was_inserted] =
+      session_manager_map_.emplace(identity_manager, session_manager);
+  CHECK(it->second == session_manager);
 }
 
-void BocaAppClient::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
+BocaSessionManager* BocaAppClient::GetSessionManager() {
+  auto it = session_manager_map_.find(GetIdentityManager());
+  CHECK(it != session_manager_map_.end());
+  return it->second;
 }
 
-}  // namespace ash
+void BocaAppClient::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  // Remove observer here as boca_app_client detroys pretty-late(post
+  // profile destroy).
+  identity_manager->RemoveObserver(this);
+  session_manager_map_.erase(identity_manager);
+}
+
+}  // namespace ash::boca

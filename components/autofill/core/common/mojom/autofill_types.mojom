@@ -166,7 +166,10 @@ enum SubmissionSource {
   // Normal form submission (i.e. user presses the submit button and no
   // JavaScript is involved). Observed via RenderFrameObserver::WillSubmitForm.
   FORM_SUBMISSION = 5,
-  // The form or field was hidden or removed after autofilling it.
+  // The form or field was hidden or removed after autofilling it. Autofill
+  // ignores such submissions on non-WebView because mutations of the form can
+  // happen for other reasons than submission. PWM however considers this a
+  // valid source since mutations of password forms are more rare.
   DOM_MUTATION_AFTER_AUTOFILL = 6,
 };
 
@@ -637,4 +640,10 @@ enum AutofillSuggestionTriggerSource {
   kPasswordManagerProcessedFocusedField,
   // Prediction improvements was invoked.
   kPredictionImprovements,
+  // An update to the suggestions is triggered, e.g. because a user decided
+  // to refresh a plus address suggestion or because a network request for a
+  // plus address suggestion terminated and its result needs to be shown.
+  // This value is not allowed to be sent from the renderer to the browser since
+  // it disables some of the click-jacking protections in the browser.
+  kPlusAddressUpdatedInBrowserProcess
 };

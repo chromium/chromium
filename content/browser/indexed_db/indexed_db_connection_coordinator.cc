@@ -45,6 +45,7 @@
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
+#include "content/browser/indexed_db/indexed_db_lock_request_data.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
@@ -138,9 +139,11 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
         {{GetDatabaseLockId(db_->metadata().name),
           PartitionedLockManager::LockType::kExclusive}};
     state_ = RequestState::kPendingLocks;
-    db_->lock_manager().AcquireLocks(std::move(lock_requests),
-                                     lock_receiver_.weak_factory.GetWeakPtr(),
-                                     std::move(next_step));
+
+    db_->lock_manager().AcquireLocks(
+        std::move(lock_requests), lock_receiver_, std::move(next_step),
+        base::BindRepeating(&IndexedDBConnection::HasHigherPriorityThan,
+                            &lock_receiver_));
   }
 
   RequestState state_ = RequestState::kNotStarted;
@@ -169,6 +172,15 @@ class IndexedDBConnectionCoordinator::OpenRequest
       : ConnectionRequest(bucket_context, db, connection_coordinator),
         pending_(std::move(pending_connection)) {
     db_->metadata_.was_cold_open = pending_->was_cold_open;
+
+    // Note that the `scheduling_priority` on this lock receiver isn't very
+    // important because locks are only acquired when upgrading the version, and
+    // that requires that all other connections be closed. So there shouldn't be
+    // a queue of outstanding lock requests to contend with.
+    lock_receiver_.SetUserData(
+        IndexedDBLockRequestData::kKey,
+        std::make_unique<IndexedDBLockRequestData>(pending_->client_token,
+                                                   /*scheduling_priority=*/0));
   }
 
   OpenRequest(const OpenRequest&) = delete;
@@ -238,7 +250,8 @@ class IndexedDBConnectionCoordinator::OpenRequest
       pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(pending_->database_callbacks),
                                 std::move(pending_->client_state_checker),
-                                pending_->client_token),
+                                pending_->client_token,
+                                pending_->scheduling_priority),
           db_->metadata_);
       bucket_context_handle_.Release();
       state_ = RequestState::kDone;
@@ -251,7 +264,8 @@ class IndexedDBConnectionCoordinator::OpenRequest
       pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(pending_->database_callbacks),
                                 std::move(pending_->client_state_checker),
-                                pending_->client_token),
+                                pending_->client_token,
+                                pending_->scheduling_priority),
           db_->metadata_);
       state_ = RequestState::kDone;
       bucket_context_handle_.Release();
@@ -331,7 +345,8 @@ class IndexedDBConnectionCoordinator::OpenRequest
     DCHECK(!lock_receiver_.locks.empty());
     connection_ = db_->CreateConnection(
         std::move(pending_->database_callbacks),
-        std::move(pending_->client_state_checker), pending_->client_token);
+        std::move(pending_->client_state_checker), pending_->client_token,
+        pending_->scheduling_priority);
     bucket_context_handle_.Release();
     DCHECK(!connection_ptr_for_close_comparision_);
     connection_ptr_for_close_comparision_ = connection_.get();

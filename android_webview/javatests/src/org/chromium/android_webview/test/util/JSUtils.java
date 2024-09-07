@@ -77,7 +77,7 @@ public class JSUtils {
             throws Exception {
         instrumentation.runOnMainSync(
                 () ->
-                        onEvaluateJavaScriptResultHelper.evaluateJavaScriptForTests(
+                        onEvaluateJavaScriptResultHelper.evaluateJavaScript(
                                 awContents.getWebContents(), code));
         onEvaluateJavaScriptResultHelper.waitUntilHasValue();
         Assert.assertTrue(

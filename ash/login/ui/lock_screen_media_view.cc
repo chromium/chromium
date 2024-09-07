@@ -79,8 +79,8 @@ LockScreenMediaView::LockScreenMediaView(
       hide_media_view_callback_(hide_media_view_callback) {
   // Observe power events and if created in power suspended state, post
   // OnSuspend() call to run after LockContentsView is initialized.
-  if (base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(
-          this)) {
+  if (base::PowerMonitor::GetInstance()
+          ->AddPowerSuspendObserverAndReturnSuspendedState(this)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&LockScreenMediaView::OnSuspend,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -137,7 +137,7 @@ LockScreenMediaView::LockScreenMediaView(
 }
 
 LockScreenMediaView::~LockScreenMediaView() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

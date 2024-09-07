@@ -12,15 +12,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-
-import java.util.List;
 
 /** Helper for closing all tabs via {@link CloseAllTabsDialog}. */
 public class CloseAllTabsHelper {
@@ -63,12 +58,6 @@ public class CloseAllTabsHelper {
             TabModelSelector tabModelSelector,
             boolean isIncognitoOnly) {
 
-        // TODO(crbug.com/346777141): Remove the custom animation logic once we are sure we don't
-        // need it.
-        boolean useCustomAnimation = false;
-        boolean useQuickDeleteAnimation =
-                ChromeFeatureList.sGtsCloseTabAnimationCloseAllQuickDeleteAnimation.getValue();
-
         HubState hubState = getHubState(hubManagerSupplier);
         boolean isRegularHubPane = hubState.currentPaneId == PaneId.TAB_SWITCHER;
         boolean isIncognitoHubPane = hubState.currentPaneId == PaneId.INCOGNITO_TAB_SWITCHER;
@@ -77,22 +66,13 @@ public class CloseAllTabsHelper {
         boolean canShowAnimation = hubState.isVisible && isPaneAndCloseCombinationValid;
 
         Runnable onAnimationFinished = () -> closeAllTabs(tabModelSelector, isIncognitoOnly);
-        if (canShowAnimation && (useCustomAnimation || useQuickDeleteAnimation)) {
+        if (canShowAnimation && ChromeFeatureList.sGtsCloseTabAnimation.isEnabled()) {
             TabSwitcher tabSwitcher =
                     isIncognitoHubPane
                             ? incognitoTabSwitcherSupplier.get()
                             : regularTabSwitcherSupplier.get();
             assert tabSwitcher != null;
-
-            if (useCustomAnimation) {
-                tabSwitcher.showCloseAllTabsAnimation(onAnimationFinished);
-            } else if (useQuickDeleteAnimation) {
-                TabModel tabModel = tabModelSelector.getModel(isIncognitoHubPane);
-                List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabModel);
-                tabSwitcher.showQuickDeleteAnimation(onAnimationFinished, tabs);
-            } else {
-                assert false : "Not reached";
-            }
+            tabSwitcher.showCloseAllTabsAnimation(onAnimationFinished);
         } else {
             onAnimationFinished.run();
         }

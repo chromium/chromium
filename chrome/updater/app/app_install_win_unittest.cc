@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <windows.h>
+
+#include <shlobj.h>
+
 #include <string>
 #include <vector>
 
@@ -9,7 +13,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/updater/app/app_install_win_internal.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "components/update_client/update_client_errors.h"
@@ -52,6 +58,29 @@ INSTANTIATE_TEST_SUITE_P(
          0,
          CompletionCodes::COMPLETION_CODE_ERROR,
          base::WideToUTF16(GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE)),
+         {}},
+        {UpdateService::UpdateState::State::kNotStarted,
+         UpdateService::ErrorCategory::kNone,
+         kErrorWrongUser,
+         CompletionCodes::COMPLETION_CODE_ERROR,
+         base::WideToUTF16(GetLocalizedString(
+             ::IsUserAnAdmin() ? IDS_WRONG_USER_DEELEVATION_REQUIRED_ERROR_BASE
+                               : IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR_BASE)),
+         {}},
+        {UpdateService::UpdateState::State::kNotStarted,
+         UpdateService::ErrorCategory::kNone,
+         kErrorFailedToLockSetupMutex,
+         CompletionCodes::COMPLETION_CODE_ERROR,
+         base::WideToUTF16(
+             GetLocalizedString(IDS_UNABLE_TO_GET_SETUP_LOCK_BASE)),
+         {}},
+        {UpdateService::UpdateState::State::kNotStarted,
+         UpdateService::ErrorCategory::kNone,
+         kErrorFailedToLockPrefsMutex,
+         CompletionCodes::COMPLETION_CODE_ERROR,
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_STARTUP_ERROR_BASE,
+             GetTextForSystemError(kErrorFailedToLockPrefsMutex))),
          {}},
     }));
 

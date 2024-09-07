@@ -53,6 +53,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -315,7 +316,8 @@ class LockDebugView::DebugDataDispatcherTransformer
           .SetUserPinLength(debug_user->account_id, 0);
     }
     debug_dispatcher_.SetPinEnabledForUser(debug_user->account_id,
-                                           debug_user->enable_pin);
+                                           debug_user->enable_pin,
+                                           /*available_at*/ std::nullopt);
   }
 
   void ToggleDarkLigntModeForUserIndex(size_t user_index) {
@@ -421,7 +423,7 @@ class LockDebugView::DebugDataDispatcherTransformer
       return;
     }
     auto delegate = std::make_unique<views::DialogDelegate>();
-    delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
+    delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     delegate->SetModalType(ui::mojom::ModalType::kSystem);
     delegate->SetOwnedByWidget(true);
     delegate->SetCloseCallback(
@@ -647,13 +649,15 @@ class LockDebugView::DebugDataDispatcherTransformer
       }
     }
   }
-  void OnPinEnabledForUserChanged(const AccountId& user,
-                                  bool enabled) override {
+  void OnPinEnabledForUserChanged(
+      const AccountId& user,
+      bool enabled,
+      cryptohome::PinLockAvailability available_at) override {
     // Forward notification only if the user is currently being shown.
     for (auto& debug_user : debug_users_) {
       if (debug_user.account_id == user) {
         debug_user.enable_pin = enabled;
-        debug_dispatcher_.SetPinEnabledForUser(user, enabled);
+        debug_dispatcher_.SetPinEnabledForUser(user, enabled, available_at);
         break;
       }
     }
@@ -1111,7 +1115,7 @@ void LockDebugView::AuthInputRowView() {
     return;
   }
   auto delegate = std::make_unique<views::DialogDelegate>();
-  delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
   delegate->SetOwnedByWidget(true);
   delegate->SetCloseCallback(base::BindOnce(

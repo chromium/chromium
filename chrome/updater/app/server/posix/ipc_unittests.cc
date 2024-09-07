@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
@@ -109,7 +108,8 @@ class UpdaterIPCTestCase : public testing::Test {
     EXPECT_EQ(lhs.installer_cmd_line, rhs.installer_cmd_line);
   }
 
-  static UpdateService::StateChangeCallback ExpectUpdateStatesCallback() {
+  static base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+  ExpectUpdateStatesCallback() {
     std::vector<UpdateService::UpdateState> states = GetExampleUpdateStates();
     // For the convenience of using `back` and `pop_back` below.
     base::ranges::reverse(states);
@@ -123,7 +123,8 @@ class UpdaterIPCTestCase : public testing::Test {
         base::OwnedRef(states));
   }
 
-  static UpdateService::Callback ExpectResultCallback(base::RunLoop& run_loop) {
+  static base::OnceCallback<void(UpdateService::Result)> ExpectResultCallback(
+      base::RunLoop& run_loop) {
     return base::BindOnce([](UpdateService::Result result) {
              EXPECT_EQ(result, UpdateService::Result::kInstallFailed);
            })
@@ -189,8 +190,8 @@ class UpdaterIPCTestCase : public testing::Test {
                 (const std::string& app_id,
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
-                 StateChangeCallback state_update,
-                 Callback callback),
+                 base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void,
                 Update,
@@ -198,12 +199,13 @@ class UpdaterIPCTestCase : public testing::Test {
                  const std::string& install_data_index,
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
-                 StateChangeCallback state_update,
-                 Callback callback),
+                 base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void,
                 UpdateAll,
-                (StateChangeCallback state_update, Callback callback),
+                (base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void,
                 Install,
@@ -211,8 +213,8 @@ class UpdaterIPCTestCase : public testing::Test {
                  const std::string& client_install_data,
                  const std::string& install_data_index,
                  Priority priority,
-                 StateChangeCallback state_update,
-                 Callback callback),
+                 base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
     MOCK_METHOD(void, CancelInstalls, (const std::string& app_id), (override));
     MOCK_METHOD(void,
@@ -222,8 +224,8 @@ class UpdaterIPCTestCase : public testing::Test {
                  const std::string& install_args,
                  const std::string& install_data,
                  const std::string& install_settings,
-                 StateChangeCallback state_update,
-                 Callback callback),
+                 base::RepeatingCallback<void(const UpdateState&)> state_update,
+                 base::OnceCallback<void(Result)> callback),
                 (override));
 
    protected:
@@ -287,22 +289,25 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
       .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
 
   EXPECT_CALL(*mock_service, UpdateAll)
-      .WillOnce([](UpdateService::StateChangeCallback state_change_callback,
-                   UpdateService::Callback callback) {
-        for (const UpdateService::UpdateState& state :
-             GetExampleUpdateStates()) {
-          state_change_callback.Run(state);
-        }
-        std::move(callback).Run(UpdateService::Result::kInstallFailed);
-      });
+      .WillOnce(
+          [](base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+                 state_change_callback,
+             base::OnceCallback<void(UpdateService::Result)> callback) {
+            for (const UpdateService::UpdateState& state :
+                 GetExampleUpdateStates()) {
+              state_change_callback.Run(state);
+            }
+            std::move(callback).Run(UpdateService::Result::kInstallFailed);
+          });
 
   EXPECT_CALL(*mock_service, Update)
       .WillOnce(
           [](const std::string& app_id, const std::string& install_data_index,
              UpdateService::Priority priority,
              UpdateService::PolicySameVersionUpdate policy_same_version_update,
-             UpdateService::StateChangeCallback state_change_callback,
-             UpdateService::Callback callback) {
+             base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+                 state_change_callback,
+             base::OnceCallback<void(UpdateService::Result)> callback) {
             EXPECT_EQ(app_id, "ex1");
             EXPECT_EQ(install_data_index, "install_data_index");
             EXPECT_EQ(priority, UpdateService::Priority::kBackground);
@@ -317,22 +322,23 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
           });
 
   EXPECT_CALL(*mock_service, Install)
-      .WillOnce([](const RegistrationRequest&,
-                   const std::string& client_install_data,
-                   const std::string& install_data_index,
-                   UpdateService::Priority priority,
-                   UpdateService::StateChangeCallback state_change_callback,
-                   UpdateService::Callback callback) {
-        EXPECT_EQ(client_install_data, "client_install_data");
-        EXPECT_EQ(install_data_index, "install_data_index");
-        EXPECT_EQ(priority, UpdateService::Priority::kForeground);
+      .WillOnce(
+          [](const RegistrationRequest&, const std::string& client_install_data,
+             const std::string& install_data_index,
+             UpdateService::Priority priority,
+             base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+                 state_change_callback,
+             base::OnceCallback<void(UpdateService::Result)> callback) {
+            EXPECT_EQ(client_install_data, "client_install_data");
+            EXPECT_EQ(install_data_index, "install_data_index");
+            EXPECT_EQ(priority, UpdateService::Priority::kForeground);
 
-        for (const UpdateService::UpdateState& state :
-             GetExampleUpdateStates()) {
-          state_change_callback.Run(state);
-        }
-        std::move(callback).Run(UpdateService::Result::kInstallFailed);
-      });
+            for (const UpdateService::UpdateState& state :
+                 GetExampleUpdateStates()) {
+              state_change_callback.Run(state);
+            }
+            std::move(callback).Run(UpdateService::Result::kInstallFailed);
+          });
 
   EXPECT_CALL(*mock_service, CancelInstalls)
       .WillOnce([](const std::string& app_id) { EXPECT_EQ(app_id, "ex1"); });
@@ -342,8 +348,9 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
           [](const std::string& app_id, const base::FilePath& installer_path,
              const std::string& install_args, const std::string& install_data,
              const std::string& install_settings,
-             UpdateService::StateChangeCallback state_change_callback,
-             UpdateService::Callback callback) {
+             base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+                 state_change_callback,
+             base::OnceCallback<void(UpdateService::Result)> callback) {
             EXPECT_EQ(app_id, "ex1");
             EXPECT_EQ(installer_path, base::FilePath("/path/to/installer"));
             EXPECT_EQ(install_args, "install_args");

@@ -285,9 +285,6 @@ class InteractiveTestApi {
                                                 std::string_view name,
                                                 C&& find_callback);
 
-  // DEPRECATED. Under async Kombucha, this is a no-op.
-  [[nodiscard]] static MultiStep FlushEvents();
-
   // Adds an observed state with identifier `id` in the current context. Use
   // `WaitForState()` to wait for state changes. This is a useful way to wait
   // for an asynchronous state that isn't a UI element.

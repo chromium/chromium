@@ -28,23 +28,24 @@ bool IsPostalAddressForm(const FormStructure& form);
 
 // kAccount profiles are synced from an external source and have potentially
 // originated from outside of Autofill. In order to determine the added value
-// for Autofill, the `AutofillProfile::Source` is further resolved in some
+// for Autofill, the `AutofillProfile::RecordType` is further resolved in some
 // metrics.
-enum class AutofillProfileSourceCategory {
+enum class AutofillProfileRecordTypeCategory {
   kLocalOrSyncable = 0,
   kAccountChrome = 1,
   kAccountNonChrome = 2,
   kMaxValue = kAccountNonChrome
 };
 
-// Maps the `profile` to its category, depending on the profile's `source()`
-// and `initial_creator()`.
-AutofillProfileSourceCategory GetCategoryOfProfile(
+// Maps the `profile` to its category, depending on the profile's
+// `record_type()` and `initial_creator()`.
+AutofillProfileRecordTypeCategory GetCategoryOfProfile(
     const AutofillProfile& profile);
 
 // Converts the `category` to the histogram-suffix used for resolving some
 // metrics by category.
-const char* GetProfileCategorySuffix(AutofillProfileSourceCategory category);
+const char* GetProfileCategorySuffix(
+    AutofillProfileRecordTypeCategory category);
 
 // These values are persisted to UMA logs. Entries should not be renumbered
 // and numeric values should never be reused. This is the subset of field

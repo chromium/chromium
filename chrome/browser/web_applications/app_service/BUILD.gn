@@ -54,8 +54,7 @@ source_set("app_service") {
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/apps/almanac_api_client",
-      "//chrome/browser/ash",
-      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/login/demo_mode",
@@ -108,6 +107,10 @@ source_set("unit_tests") {
     "//content/public/common",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/system" ]
+  }
 
   if (is_chromeos_lacros) {
     deps += [

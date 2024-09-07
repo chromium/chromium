@@ -409,6 +409,8 @@ class SellerWorkletTest : public testing::Test {
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_selected_buyer_and_seller_reporting_id_,
+        browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -506,6 +508,8 @@ class SellerWorkletTest : public testing::Test {
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_selected_buyer_and_seller_reporting_id_,
+        browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -858,10 +862,10 @@ class SellerWorkletTest : public testing::Test {
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
   std::optional<blink::AdCurrency> component_expect_bid_currency_;
   url::Origin browser_signal_interest_group_owner_;
-  std::optional<std::string> browser_signal_buyer_and_seller_reporting_id_;
+  GURL browser_signal_render_url_;
   std::optional<std::string>
       browser_signal_selected_buyer_and_seller_reporting_id_;
-  GURL browser_signal_render_url_;
+  std::optional<std::string> browser_signal_buyer_and_seller_reporting_id_;
   std::vector<GURL> browser_signal_ad_components_;
   uint32_t browser_signal_bidding_duration_msecs_;
   std::optional<blink::AdSize> browser_signal_render_size_;
@@ -1544,6 +1548,23 @@ TEST_F(SellerWorkletTest, ScoreAdMedata) {
   // If adMetadata is invalid, score should be 0.
   ad_metadata_ = "{invalid_json";
   RunScoreAdWithReturnValueExpectingResult("1", 0);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdSelectedBuyerAndSellerReportingId) {
+  browser_signal_selected_buyer_and_seller_reporting_id_ = "foo";
+
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.selectedBuyerAndSellerReportingId === "foo" ? 3 : 0)",
+      3);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdBuyerAndSellerReportingIdPresentWithSelected) {
+  browser_signal_selected_buyer_and_seller_reporting_id_ = "foo";
+  browser_signal_buyer_and_seller_reporting_id_ = "boo";
+  RunScoreAdWithReturnValueExpectingResult(
+      R"((browserSignals.selectedBuyerAndSellerReportingId === "foo" &&
+      browserSignals.buyerAndSellerReportingId === "boo") ? 3 : 0 )",
+      3);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdTopWindowOrigin) {
@@ -3101,9 +3122,6 @@ TEST_F(SellerWorkletTest, ReportResultBuyerAndSellerReportingId) {
 }
 
 TEST_F(SellerWorkletTest, ReportResultSelectedBuyerAndSellerReportingId) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgeAuctionDealSupport);
   browser_signal_selected_buyer_and_seller_reporting_id_ = "selectable_id1";
 
   RunReportResultCreatedScriptExpectingResult(
@@ -3953,6 +3971,8 @@ TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
           direct_from_seller_auction_signals_header_ad_slot_,
           browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
+          browser_signal_selected_buyer_and_seller_reporting_id_,
+          browser_signal_buyer_and_seller_reporting_id_,
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
           browser_signal_render_size_,
           browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -4053,6 +4073,8 @@ TEST_F(SellerWorkletTest,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_selected_buyer_and_seller_reporting_id_,
+        browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -4155,6 +4177,8 @@ TEST_F(
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_selected_buyer_and_seller_reporting_id_,
+        browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -4265,6 +4289,8 @@ TEST_F(
             browser_signals_other_seller_.Clone(),
             component_expect_bid_currency_,
             browser_signal_interest_group_owner_, browser_signal_render_url_,
+            browser_signal_selected_buyer_and_seller_reporting_id_,
+            browser_signal_buyer_and_seller_reporting_id_,
             browser_signal_ad_components_,
             browser_signal_bidding_duration_msecs_, browser_signal_render_size_,
             browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -4379,6 +4405,8 @@ TEST_F(SellerWorkletTwoThreadsTest,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_selected_buyer_and_seller_reporting_id_,
+        browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -4439,6 +4467,8 @@ TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_selected_buyer_and_seller_reporting_id_,
+        browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -4483,6 +4513,8 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_selected_buyer_and_seller_reporting_id_,
+      browser_signal_buyer_and_seller_reporting_id_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
       browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -5507,6 +5539,8 @@ TEST_F(SellerWorkletTest, Cancelation) {
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_selected_buyer_and_seller_reporting_id_,
+      browser_signal_buyer_and_seller_reporting_id_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
       browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -5570,6 +5604,8 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_selected_buyer_and_seller_reporting_id_,
+      browser_signal_buyer_and_seller_reporting_id_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
       browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
@@ -6384,6 +6420,8 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
         direct_from_seller_auction_signals_header_ad_slot_,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_selected_buyer_and_seller_reporting_id_,
+        browser_signal_buyer_and_seller_reporting_id_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,

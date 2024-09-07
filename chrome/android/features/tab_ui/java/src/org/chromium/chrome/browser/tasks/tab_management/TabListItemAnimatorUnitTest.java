@@ -54,7 +54,7 @@ public class TabListItemAnimatorUnitTest {
 
     @Before
     public void setUp() {
-        mItemAnimator = spy(new TabListItemAnimator(/* rearrangeUseStandardEasing= */ true));
+        mItemAnimator = spy(new TabListItemAnimator(/* removeEmphasizedAccelerate= */ true));
     }
 
     private static void emptyBind(PropertyModel model, View view, PropertyKey key) {}

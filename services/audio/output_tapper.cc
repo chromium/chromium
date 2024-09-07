@@ -15,27 +15,6 @@
 
 namespace audio {
 
-class OutputTapper::UmaLogger {
- public:
-  UmaLogger(const std::string& device_id)
-      : is_default_(media::AudioDeviceDescription::IsDefaultDevice(device_id)),
-        start_(base::TimeTicks::Now()) {}
-
-  UmaLogger(const UmaLogger&) = delete;
-  UmaLogger& operator=(const UmaLogger&) = delete;
-
-  ~UmaLogger() {
-    base::UmaHistogramLongTimes(
-        base::StrCat({"Media.Audio.OutputDeviceListener.Duration.",
-                      ((is_default_) ? "Default" : "NonDefault")}),
-        base::TimeTicks::Now() - start_);
-  }
-
- private:
-  const bool is_default_;
-  base::TimeTicks start_;
-};
-
 OutputTapper::OutputTapper(DeviceOutputListener* device_output_listener,
                            ReferenceOutput::Listener* listener,
                            LogCallback log_callback)
@@ -81,13 +60,11 @@ void OutputTapper::Stop() {
   device_output_listener_->StopListening(listener_);
   log_callback_.Run("OutputTapper: stop listening");
   active_ = false;
-  uma_logger_.reset();
 }
 
 void OutputTapper::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(active_);
-  uma_logger_ = std::make_unique<UmaLogger>(output_device_id_);
   log_callback_.Run(base::StrCat(
       {"OutputTapper: listening to output device: ", output_device_id_}));
   device_output_listener_->StartListening(listener_, output_device_id_);

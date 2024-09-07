@@ -102,10 +102,10 @@ void ApplicationClient::OnWebContentsCreated(
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 ApplicationClient::CreateURLLoaderThrottles(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     CorsExemptHeaderCallback is_cors_exempt_header_cb) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
+  if (frame_tree_node_id.is_null()) {
     return throttles;
   }
 

@@ -1769,15 +1769,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="12" label="Sources - Snippets"/>
 </enum>
 
-<enum name="DevToolsSourcesSidebarTab">
-  <int value="0" label="Other sidebar pane"/>
-  <int value="1" label="Sources - Page"/>
-  <int value="2" label="Sources - Workspace"/>
-  <int value="3" label="Sources - Overrides"/>
-  <int value="4" label="Sources - Content Scripts"/>
-  <int value="5" label="Sources - Snippets"/>
-</enum>
-
 <enum name="DevToolsStyleTextCopied">
   <int value="1" label="Declaration from changed line"/>
   <int value="2" label="All changes from Styles pane"/>

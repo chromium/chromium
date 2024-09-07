@@ -47,7 +47,7 @@ PowerMonitorDeviceSourceLinux::~PowerMonitorDeviceSourceLinux() {
     ShutdownBus();
 }
 
-bool PowerMonitorDeviceSourceLinux::IsOnBatteryPower() {
+bool PowerMonitorDeviceSourceLinux::IsOnBatteryPower() const {
   // TODO(crbug.com/40836663): Use org.freedesktop.UPower to check for
   // OnBattery. One possibility is to connect to the DeviceService's
   // BatteryMonitor.

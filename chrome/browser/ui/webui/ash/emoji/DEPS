@@ -1,0 +1,25 @@
+include_rules = [
+  "+ash/ash_element_identifiers.h",
+
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/webui/ash/emoji",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/manta",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/views/bubble",
+  "+chrome/browser/ui/webui/sanitized_image_source.h",
+  "+chrome/browser/ui/webui/top_chrome",
+  "+chrome/browser/ui/webui/webui_load_timer.h",
+  "+chrome/browser/ui/webui/webui_util.h",
+  "+chrome/common",
+  "+chrome/grit",
+  "+chrome/test/base",
+]

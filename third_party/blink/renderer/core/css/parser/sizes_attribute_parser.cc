@@ -24,20 +24,15 @@ SizesAttributeParser::SizesAttributeParser(
   DCHECK(media_values_->Width().has_value());
   DCHECK(media_values_->Height().has_value());
 
-  CSSTokenizer tokenizer(attribute);
-  auto [tokens, offsets] = tokenizer.TokenizeToEOFWithOffsets();
-  is_valid_ =
-      Parse(CSSParserTokenRange(tokens),
-            CSSParserTokenOffsets(tokens, std::move(offsets), attribute));
+  CSSParserTokenStream stream(attribute);
+  is_valid_ = Parse(stream);
 }
 
-bool SizesAttributeParser::Parse(CSSParserTokenRange range,
-                                 const CSSParserTokenOffsets& offsets) {
-  // Split on a comma token and parse the result tokens as (media-condition,
-  // length) pairs
-  while (!range.AtEnd()) {
-    if (RuntimeEnabledFeatures::AutoSizeLazyLoadedImagesEnabled() &&
-        css_parsing_utils::AtIdent(range.Peek(), "auto")) {
+bool SizesAttributeParser::Parse(CSSParserTokenStream& stream) {
+  while (!stream.AtEnd()) {
+    stream.ConsumeWhitespace();
+
+    if (css_parsing_utils::AtIdent(stream.Peek(), "auto")) {
       // Spec: "For better backwards-compatibility with legacy user
       // agents that don't support the auto keyword, fallback sizes
       // can be specified if desired."
@@ -46,43 +41,50 @@ bool SizesAttributeParser::Parse(CSSParserTokenRange range,
       return true;
     }
 
-    const CSSParserToken* media_condition_start = &range.Peek();
-    // The length is the last component value before the comma which isn't
-    // whitespace or a comment
-    const CSSParserToken* length_token_start = &range.Peek();
-    const CSSParserToken* length_token_end = &range.Peek();
-    while (!range.AtEnd() && range.Peek().GetType() != kCommaToken) {
-      length_token_start = &range.Peek();
-      range.ConsumeComponentValue();
-      length_token_end = &range.Peek();
-      range.ConsumeWhitespace();
-    }
-    range.Consume();
-
-    float length;
-    if (!CalculateLengthInPixels(
-            range.MakeSubRange(length_token_start, length_token_end), length)) {
-      continue;
-    }
-
-    MediaQuerySet* media_condition = MediaQueryParser::ParseMediaCondition(
-        range.MakeSubRange(media_condition_start, length_token_start), offsets,
-        execution_context_);
+    CSSParserTokenStream::State savepoint = stream.Save();
+    MediaQuerySet* media_condition =
+        MediaQueryParser::ParseMediaCondition(stream, execution_context_);
     if (!media_condition || !MediaConditionMatches(*media_condition)) {
-      continue;
+      // If we failed to parse a media condition, most likely there
+      // simply wasn't any and we won't have moved in the stream.
+      // However, there are certain edge cases where we _thought_
+      // we would have parsed a media condition but it was actually
+      // meant as a size; in particular, a calc() expression would
+      // count as <general-enclosed> and thus be parsed as a media
+      // condition, then promptly fail, whereas we should really
+      // parse it as a size. Thus, we need to rewind in this case.
+      // If it really were a valid but failing media condition,
+      // this rewinding is harmless; we'd try parsing the media
+      // condition as a size and then fail (if nothing else, because
+      // the comma is not immediately after it).
+      stream.EnsureLookAhead();
+      stream.Restore(savepoint);
     }
 
-    size_ = length;
-    size_was_set_ = true;
-    return true;
+    if (stream.Peek().GetType() != kCommaToken) {
+      float length;
+      if (CalculateLengthInPixels(stream, length)) {
+        stream.ConsumeWhitespace();
+        if (stream.AtEnd() || stream.Peek().GetType() == kCommaToken) {
+          size_ = length;
+          size_was_set_ = true;
+          return true;
+        }
+      }
+    }
+
+    stream.SkipUntilPeekedTypeIs<kCommaToken>();
+    if (!stream.AtEnd()) {
+      stream.Consume();
+    }
   }
 
   return false;
 }
 
-bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
+bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenStream& stream,
                                                    float& result) {
-  const CSSParserToken& start_token = range.Peek();
+  const CSSParserToken& start_token = stream.Peek();
   CSSParserTokenType type = start_token.GetType();
   if (type == kDimensionToken) {
     double length;
@@ -94,10 +96,11 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
                                       start_token.GetUnitType(), length)) &&
         (length >= 0)) {
       result = ClampTo<float>(length);
+      stream.Consume();
       return true;
     }
   } else if (type == kFunctionToken) {
-    SizesMathFunctionParser calc_parser(range, media_values_);
+    SizesMathFunctionParser calc_parser(stream, media_values_);
     if (!calc_parser.IsValid()) {
       return false;
     }
@@ -105,6 +108,7 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
     result = calc_parser.Result();
     return true;
   } else if (type == kNumberToken && !start_token.NumericValue()) {
+    stream.Consume();
     result = 0;
     return true;
   }

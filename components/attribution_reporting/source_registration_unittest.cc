@@ -100,6 +100,7 @@ TEST(SourceRegistrationTest, Parse) {
                     mojom::TriggerDataMatching::kModulus),
               Field(&SourceRegistration::aggregatable_debug_reporting_config,
                     SourceAggregatableDebugReportingConfig()),
+              Field(&SourceRegistration::attribution_scopes_data, std::nullopt),
               Field(&SourceRegistration::destination_limit_priority, 0))),
       },
       {
@@ -755,10 +756,12 @@ TEST(SourceRegistrationTest, ParseAttributionScopesConfig) {
       {
           "valid",
           R"json({
-            "attribution_scope_limit": 1,
-            "max_event_states": 1,
-            "attribution_scopes": ["1"],
-            "destination": "https://d.example"
+            "destination": "https://d.example",
+            "attribution_scopes": {
+              "limit": 1,
+              "max_event_states": 1,
+              "values": ["1"]
+            }
           })json",
           ValueIs(Field(
               &SourceRegistration::attribution_scopes_data,
@@ -769,9 +772,11 @@ TEST(SourceRegistrationTest, ParseAttributionScopesConfig) {
       {
           "invalid",
           R"json({
-            "max_event_states": 1,
-            "attribution_scopes": ["1"],
-            "destination": "https://d.example"
+              "destination": "https://d.example",
+            "attribution_scopes": {
+              "max_event_states": 1,
+              "values": ["1"]
+            }
           })json",
           ErrorIs(SourceRegistrationError::kAttributionScopeLimitRequired),
       },

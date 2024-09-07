@@ -77,7 +77,6 @@ class SyncManagerImpl
   std::string cache_guid() override;
   std::string birthday() override;
   std::string bag_of_chips() override;
-  DataTypeSet GetTypesWithUnsyncedData() override;
   bool HasUnsyncedItemsForTest() override;
   SyncEncryptionHandler* GetEncryptionHandler() override;
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()

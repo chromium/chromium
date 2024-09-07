@@ -114,8 +114,6 @@ class Lock {
     // Evict on contention is only enabled when both FSA Locking Scheme and
     // BFCache are enabled.
     bool evict_on_contention =
-        base::FeatureList::IsEnabled(
-            blink::features::kFileSystemAccessLockingScheme) &&
         base::FeatureList::IsEnabled(features::kFileSystemAccessBFCache);
 
     // Start eviction if we can. Otherwise, we can not take this lock since it

@@ -63,12 +63,7 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
       std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report)
       override;
 
-  // TODO(crbug.com/40677290): dedup the two methods below, they both get a
-  // SharedURLLoaderFactory on the UI thread now.
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
-
-  scoped_refptr<network::SharedURLLoaderFactory>
-  GetURLLoaderFactoryOnSBThread();
 
  protected:
   ~AwSafeBrowsingUIManager() override;
@@ -81,19 +76,9 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
       bool forward_extension_event,
       std::optional<base::TimeTicks> blocked_page_shown_timestamp) override;
 
-  // Called on the UI thread to create a URLLoaderFactory interface ptr for
-  // the SB thread.
-  void CreateURLLoaderFactoryForSB(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver);
-
   // This is what owns the URLRequestContext inside the network service. This is
   // used by SimpleURLLoader for Safe Browsing requests.
   std::unique_ptr<safe_browsing::SafeBrowsingNetworkContext> network_context_;
-
-  // A SharedURLLoaderFactory and its interfaceptr used on the SB thread.
-  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_on_sb_;
-  scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
-      shared_url_loader_factory_on_sb_;
 };
 
 }  // namespace android_webview

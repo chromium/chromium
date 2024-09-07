@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -45,6 +44,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -92,7 +92,6 @@ public class HistorySyncTest {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActivityTestRule.launchActivity(null);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
-        when(mHistorySyncDelegateMock.isLargeScreen()).thenReturn(false);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
     }
 
@@ -165,6 +164,8 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+        verify(mHistorySyncDelegateMock)
+                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
         verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
     }
@@ -190,6 +191,8 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncDelegateMock)
+                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
@@ -216,6 +219,8 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+        verify(mHistorySyncDelegateMock)
+                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
     }
 
@@ -240,6 +245,8 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncDelegateMock)
+                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
@@ -627,6 +634,8 @@ public class HistorySyncTest {
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.maybeRecreateView());
                 });
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_title), isDisplayed()));
+        // Use the illustration to check the history sync view's appearance, since it's visible
+        // in portrait mode and landscape mode, even on a small screen.
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_illustration), isDisplayed()));
     }
 }

@@ -8,16 +8,26 @@
 #include "base/files/file.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/sentencepiece/src/src/sentencepiece_model.pb.h"
 
 namespace {
+// Records duration and trace event for embeddings generation.
 void RecordEmbeddingsDurationMetrics(
     bool is_passive,
+    base::TimeTicks start_time,
     base::TimeDelta elapsed_time,
     std::optional<base::TimeDelta> elapsed_thread_time) {
+  const auto trace_track =
+      perfetto::Track(base::trace_event::GetNextGlobalTraceId());
+
   if (is_passive) {
+    TRACE_EVENT_BEGIN("loading", "PassageEmbeddingsGeneration", trace_track,
+                      start_time);
     if (elapsed_thread_time.has_value()) {
       base::UmaHistogramMediumTimes(
           "History.Embeddings.Embedder."
@@ -28,6 +38,8 @@ void RecordEmbeddingsDurationMetrics(
         "History.Embeddings.Embedder.PassageEmbeddingsGenerationDuration",
         elapsed_time);
   } else {
+    TRACE_EVENT_BEGIN("loading", "QueryEmbeddingsGeneration", trace_track,
+                      start_time);
     if (elapsed_thread_time.has_value()) {
       base::UmaHistogramMediumTimes(
           "History.Embeddings.Embedder.QueryEmbeddingsGenerationThreadDuration",
@@ -37,6 +49,8 @@ void RecordEmbeddingsDurationMetrics(
         "History.Embeddings.Embedder.QueryEmbeddingsGenerationDuration",
         elapsed_time);
   }
+
+  TRACE_EVENT_END("loading", trace_track, start_time + elapsed_time);
 }
 }  // namespace
 
@@ -233,9 +247,17 @@ void PassageEmbedder::GenerateEmbeddings(
     base::UmaHistogramBoolean("History.Embeddings.Embedder.InputTruncated",
                               tokenized.size() > embeddings_input_window_size_);
     tokenized.resize(embeddings_input_window_size_);
+    base::TimeDelta tokenize_elapsed = tokenize_timer.Elapsed();
     base::UmaHistogramMediumTimes(
-        "History.Embeddings.Embedder.TokenizationDuration",
-        tokenize_timer.Elapsed());
+        "History.Embeddings.Embedder.TokenizationDuration", tokenize_elapsed);
+
+    const auto tokenize_start_time = tokenize_timer.start_time();
+    const auto trace_track =
+        perfetto::Track(base::trace_event::GetNextGlobalTraceId());
+    TRACE_EVENT_BEGIN("loading", "PassageTokenization", trace_track,
+                      tokenize_start_time);
+    TRACE_EVENT_END("loading", trace_track,
+                    tokenize_start_time + tokenize_elapsed);
 
     base::ElapsedThreadTimer execute_thread_timer;
     base::ElapsedTimer execute_timer;
@@ -249,7 +271,8 @@ void PassageEmbedder::GenerateEmbeddings(
     }
 
     RecordEmbeddingsDurationMetrics(
-        priority == mojom::PassagePriority::kPassive, execute_timer.Elapsed(),
+        priority == mojom::PassagePriority::kPassive,
+        execute_timer.start_time(), execute_timer.Elapsed(),
         execute_thread_timer.is_supported()
             ? std::optional<base::TimeDelta>(execute_thread_timer.Elapsed())
             : std::nullopt);

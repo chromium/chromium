@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -28,7 +29,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleChunkedBuffer {
   WebBundleChunkedBuffer& operator=(const WebBundleChunkedBuffer&) = delete;
 
   // Append the bytes as a Chunk.
-  void Append(const uint8_t* data, size_t num_bytes);
+  void Append(base::span<const uint8_t> data);
 
   // Returns the available length of bytes after |offset|. If it is larger than
   // |max_length| returns |max_length|,
@@ -39,7 +40,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleChunkedBuffer {
   bool ContainsAll(uint64_t offset, uint64_t length) const;
 
   // Read the data to |out|. Returns the total length of the read bytes.
-  uint64_t ReadData(uint64_t offset, uint64_t max_length, uint8_t* out) const;
+  [[nodiscard]] uint64_t ReadData(uint64_t offset,
+                                  base::span<uint8_t> out) const;
 
   // Creates a DataSource to read the data using a DataPipeProducer. If there
   // is no data to read, returns nullptr.
@@ -69,7 +71,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleChunkedBuffer {
 
     uint64_t start_pos() const;
     uint64_t end_pos() const;
-    uint64_t size() const;
+    size_t size() const;
     const uint8_t* data() const;
 
    private:

@@ -12,13 +12,13 @@ import type {LensOverlayAppElement} from 'chrome-untrusted://lens/lens_overlay_a
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks, waitBeforeNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {createObject} from '../utils/object_utils.js';
 import {simulateStartDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
+import {createLine, createParagraph, createText, createWord, dispatchTranslateStateEvent} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -58,7 +58,7 @@ suite('OverlayCursor', () => {
 
     lensOverlayElement = document.createElement('lens-overlay-app');
     document.body.appendChild(lensOverlayElement);
-    await waitBeforeNextRender(lensOverlayElement);
+    await waitAfterNextRender(lensOverlayElement);
 
     selectionOverlayElement = lensOverlayElement.$.selectionOverlay;
     cursorTooltip = lensOverlayElement.$.cursorTooltip;
@@ -73,7 +73,7 @@ suite('OverlayCursor', () => {
     // viewport.
     selectionOverlayElement.$.selectionOverlay.style.width = '100%';
     selectionOverlayElement.$.selectionOverlay.style.height = '100%';
-    await waitBeforeNextRender(lensOverlayElement);
+    await waitAfterNextRender(lensOverlayElement);
 
     await addWords();
     await addObjects();
@@ -130,19 +130,19 @@ suite('OverlayCursor', () => {
     };
     el.dispatchEvent(new PointerEvent('pointerenter'));
     el.dispatchEvent(new PointerEvent('pointermove', moveDetails));
-    return flushTasks();
+    return waitAfterNextRender(lensOverlayElement);
   }
 
   async function simulateUnhover(el: Element) {
     el.dispatchEvent(new PointerEvent('pointerleave'));
-    return flushTasks();
+    return waitAfterNextRender(lensOverlayElement);
   }
 
   async function simulateEnterViewport() {
     const appContainerEl =
         lensOverlayElement.shadowRoot!.querySelector('.app-container')!;
     simulateHover(appContainerEl);
-    return flushTasks();
+    return waitAfterNextRender(lensOverlayElement);
   }
 
   test('Text', async () => {
@@ -171,6 +171,25 @@ suite('OverlayCursor', () => {
     assertEquals('unset', document.body.style.cursor);
     assertEquals(
         'url("lens.svg")',
+        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
+
+    // Now enable translate mode.
+    dispatchTranslateStateEvent(
+        selectionOverlayElement.$.textSelectionLayer, true, 'es');
+
+    // Hover over the selection overlay.
+    await simulateHover(selectionOverlayElement.$.selectionOverlay);
+
+    // Verify the cursor tooltip is the text string, despite the cursor not
+    // hovering over text.
+    assertTrue(isRendered(tooltipEl));
+    assertStringContains(tooltipEl.innerHTML, 'Select text');
+
+    // Verify the cursor changed to text and the cursor image changed to text
+    // icon.
+    assertEquals('text', document.body.style.cursor);
+    assertEquals(
+        'url("text.svg")',
         selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
   });
 
@@ -214,8 +233,8 @@ suite('OverlayCursor', () => {
 
     // Start a drag that goes outside the overlay boundaries.
     const boundingRect = selectionOverlayElement.getBoundingClientRect();
-    simulateStartDrag(
-        selectionOverlayElement, {x: 0, y: 0},
+    await simulateStartDrag(
+        selectionOverlayElement, {x: 10, y: 10},
         {x: boundingRect.right + 2000, y: boundingRect.bottom + 2000});
 
     // Verify the cursor tooltip is still object string.

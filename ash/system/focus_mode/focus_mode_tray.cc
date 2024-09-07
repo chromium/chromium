@@ -406,6 +406,7 @@ void FocusModeTray::OnAnimationEnded() {
 void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
   UpdateProgressRing();
   show_progress_ring_after_animation_ = false;
+  progress_ring_update_threshold_ = 0.0;
 
   auto* focus_mode_controller = FocusModeController::Get();
   auto current_session = focus_mode_controller->current_session();
@@ -433,7 +434,18 @@ void FocusModeTray::OnTimerTick(
   image_view_->SetTooltipText(GetAccessibleTrayName(
       session_snapshot_.value(),
       FocusModeController::Get()->congratulatory_index()));
-  UpdateProgressRing();
+
+  // We only paint the progress ring if it has reached the next threshold of
+  // progress. This is to try and decrease power usage of Focus mode when the
+  // user is idling and there are no required paints in the display.
+  if (session_snapshot_->progress >= progress_ring_update_threshold_) {
+    UpdateProgressRing();
+    // Change the next progress step into a percentage threshold.
+    progress_ring_update_threshold_ =
+        (double)focus_mode_util::GetNextProgressStep(
+            session_snapshot_->progress) /
+        focus_mode_util::kProgressIndicatorSteps;
+  }
   MaybeUpdateCountdownViewUI(session_snapshot);
 }
 
@@ -444,6 +456,7 @@ void FocusModeTray::OnActiveSessionDurationChanged(
       session_snapshot_.value(),
       FocusModeController::Get()->congratulatory_index()));
   UpdateProgressRing();
+  progress_ring_update_threshold_ = 0.0;
   MaybeUpdateCountdownViewUI(session_snapshot);
 }
 
@@ -582,7 +595,7 @@ void FocusModeTray::MaybeUpdateCountdownViewUI(
 void FocusModeTray::MaybeUpdateEndingMomentViewUI(
     const FocusModeSession::Snapshot& session_snapshot) {
   if (ending_moment_view_ && ending_moment_view_->GetVisible()) {
-    ending_moment_view_->SetExtendButtonEnabled(
+    ending_moment_view_->ShowEndingMomentContents(
         FocusModeController::CanExtendSessionDuration(session_snapshot));
   }
 }
@@ -591,8 +604,9 @@ void FocusModeTray::HandleCompleteTaskButton() {
   // The user clicked on the task complete button. Notify the model. UI updates
   // happen in the model events.
   if (!selected_task_.has_value()) {
-    // If there is no selected id, just clear the UI.
-    OnClearTask();
+    // If there is no selected id, `OnClearTask()` should have been triggered
+    // already either by `OnTaskCompleted()` or `OnSelectedTaskChanged()`, so
+    // we can just return.
     return;
   }
 
@@ -601,6 +615,10 @@ void FocusModeTray::HandleCompleteTaskButton() {
 }
 
 void FocusModeTray::OnClearTask() {
+  if (!selected_task_.has_value()) {
+    return;
+  }
+
   selected_task_.reset();
   if (!task_item_view_) {
     return;
@@ -617,7 +635,7 @@ void FocusModeTray::OnClearTask() {
 }
 
 void FocusModeTray::OnBubbleResizeAnimationStarted() {
-  if (bubble_) {
+  if (bubble_ && task_item_view_) {
     auto* ptr = task_item_view_.get();
     task_item_view_ = nullptr;
     bubble_view_container_->RemoveChildViewT(ptr);
@@ -631,7 +649,9 @@ void FocusModeTray::OnBubbleResizeAnimationEnded() {
 }
 
 void FocusModeTray::AnimateBubbleResize() {
-  if (!bubble_) {
+  // If there is no `task_item_view_` or it has already been cleared, we should
+  // skip the animation.
+  if (!bubble_ || !task_item_view_) {
     return;
   }
 

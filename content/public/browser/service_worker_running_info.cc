@@ -21,6 +21,8 @@ ServiceWorkerRunningInfo::ServiceWorkerRunningInfo(
       version_status(version_status) {}
 
 ServiceWorkerRunningInfo::ServiceWorkerRunningInfo(
+    const ServiceWorkerRunningInfo& other) = default;
+ServiceWorkerRunningInfo::ServiceWorkerRunningInfo(
     ServiceWorkerRunningInfo&& other) noexcept = default;
 ServiceWorkerRunningInfo& ServiceWorkerRunningInfo::operator=(
     ServiceWorkerRunningInfo&& other) noexcept = default;

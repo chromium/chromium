@@ -30,8 +30,9 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#import "components/supervised_user/core/browser/proto_fetcher.h"
+#import "components/supervised_user/core/browser/proto_fetcher_status.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/url_formatter/url_formatter.h"
 #import "components/version_info/version_info.h"
@@ -48,7 +49,6 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
-#import "ios/chrome/browser/browser_state_metrics/model/browser_state_activity_scene_agent.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
@@ -77,6 +77,7 @@
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
@@ -103,9 +104,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -154,7 +155,6 @@
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 #import "ios/chrome/browser/ui/promos_manager/utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
@@ -366,8 +366,7 @@ void OnListFamilyMembersResponse(
   std::map<WebStateList*, int> _tabCountBeforeBatchOperation;
 
   // Fetches the Family Link member role asynchronously from KidsManagement API.
-  std::unique_ptr<
-      supervised_user::ProtoFetcher<kidsmanagement::ListMembersResponse>>
+  std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _family_members_fetcher;
 }
 
@@ -1017,11 +1016,11 @@ void OnListFamilyMembersResponse(
       self.sceneState.appState.mainProfile.browserState;
 
   GetApplicationContext()
-      ->GetChromeBrowserStateManager()
-      ->GetBrowserStateInfoCache()
-      ->SetBrowserStateForSceneID(
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
+      ->SetProfileNameForSceneID(
           base::SysNSStringToUTF8(sceneState.sceneSessionID),
-          browserState->GetBrowserStateName());
+          browserState->GetProfileName());
 
   self.browserViewWrangler =
       [[BrowserViewWrangler alloc] initWithBrowserState:browserState
@@ -1042,7 +1041,6 @@ void OnListFamilyMembersResponse(
   [sceneState addAgent:defaultBrowserAgent];
   [sceneState
       addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
-  [sceneState addAgent:[[BrowserStateActivitySceneAgent alloc] init]];
 
   // Add scene agents that require CommandDispatcher.
   CommandDispatcher* mainCommandDispatcher =
@@ -1436,7 +1434,6 @@ void OnListFamilyMembersResponse(
   if (!signin::ShouldPresentUserSigninUpgrade(
           self.sceneState.browserProviderInterface.mainBrowserProvider.browser
               ->GetBrowserState(),
-          GetApplicationContext()->GetLocalState(),
           version_info::GetVersion())) {
     return NO;
   }
@@ -1670,8 +1667,7 @@ using UserFeedbackDataCallback =
   }
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.mainInterface.browserState);
+      IdentityManagerFactory::GetForProfile(self.mainInterface.browserState);
   CoreAccountInfo primary_account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
@@ -3520,6 +3516,10 @@ using UserFeedbackDataCallback =
   // If the Incognito interstitial is active, stop it.
   [self.incognitoInterstitialCoordinator stop];
   self.incognitoInterstitialCoordinator = nil;
+
+  // If History is active, stop it.
+  [self.historyCoordinator stop];
+  self.historyCoordinator = nil;
 
   __weak __typeof(self) weakSelf = self;
   BOOL resetSigninState = self.signinCoordinator != nil;

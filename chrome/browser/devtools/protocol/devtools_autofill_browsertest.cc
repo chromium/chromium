@@ -36,7 +36,6 @@ using testing::Not;
 using testing::ResultOf;
 
 namespace autofill {
-
 namespace {
 
 // Asserts that a filled field sent to devtools has `attribute` set with
@@ -94,8 +93,6 @@ std::string GetProfileInfoFromAddressField(const AutofillProfile profile,
           *address_field.GetDict().FindStringByDottedPath("name")),
       "en-US"));
 }
-
-}  // namespace
 
 // Adds waiting capabilities to BrowserAutofillManager.
 class TestAutofillManager : public autofill::BrowserAutofillManager {
@@ -721,4 +718,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
       filled_fields_by_autofill_b, &profile_b);
   WaitForNotification("Autofill.addressFormFilled", /*allow_existing=*/true);
 }
+
+}  // namespace
 }  // namespace autofill

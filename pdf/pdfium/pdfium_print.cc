@@ -332,9 +332,9 @@ void PDFiumPrint::FitContentsToPrintableArea(FPDF_DOCUMENT doc,
 }
 
 std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
-  ScopedFPDFDocument output_doc = CreatePrintPdf(page_numbers, print_params);
+  ScopedFPDFDocument output_doc = CreatePrintPdf(page_indices, print_params);
   if (print_params.rasterize_pdf) {
     output_doc =
         CreateRasterPdf(std::move(output_doc), print_params.printer_dpi);
@@ -345,14 +345,14 @@ std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
 }
 
 ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
   ScopedFPDFDocument output_doc(FPDF_CreateNewDocument());
   DCHECK(output_doc);
   FPDF_CopyViewerPreferences(output_doc.get(), engine_->doc());
 
   if (!FPDF_ImportPagesByIndex(output_doc.get(), engine_->doc(),
-                               page_numbers.data(), page_numbers.size(),
+                               page_indices.data(), page_indices.size(),
                                /*index=*/0)) {
     return nullptr;
   }

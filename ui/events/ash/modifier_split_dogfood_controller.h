@@ -25,6 +25,9 @@ class ModifierSplitDogfoodController
 
   bool IsEnabled() const { return modifier_split_enabled_; }
 
+  void ForceEnableFeature();
+
+  // user_manager::UserManager::Observer:
   void OnUserLoggedIn(const user_manager::User& user) override;
 
  private:

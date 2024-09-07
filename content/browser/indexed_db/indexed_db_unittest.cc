@@ -46,9 +46,9 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -177,7 +177,7 @@ struct TestDatabaseConnection {
         open_callbacks->CreateInterfacePtrAndBind(),
         connection_callbacks->CreateInterfacePtrAndBind(), db_name, version,
         version_change_transaction.BindNewEndpointAndPassReceiver(task_runner),
-        upgrade_txn_id);
+        upgrade_txn_id, /*priority=*/0);
     // ForcedClose is called on shutdown and depending on ordering and timing
     // may or may not happen, which is fine.
     EXPECT_CALL(*connection_callbacks, ForcedClose())
@@ -417,8 +417,8 @@ class IndexedDBTest
           checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-    context()->BindIndexedDBImpl(std::move(checker_remote),
-                                 base::UnguessableToken(), std::move(receiver),
+    context()->BindIndexedDBImpl(storage::BucketClientInfo{},
+                                 std::move(checker_remote), std::move(receiver),
                                  bucket_info);
   }
 
@@ -466,7 +466,7 @@ class IndexedDBTest
                           database_callbacks.CreateInterfacePtrAndBind(),
                           u"opendb", /*version=*/0,
                           transaction_remote.BindNewEndpointAndPassReceiver(),
-                          /*host_transaction_id=*/0);
+                          /*host_transaction_id=*/0, /*priority=*/0);
     run_loop.Run();
     EXPECT_TRUE(base::DirectoryExists(test_path));
 
@@ -1688,7 +1688,7 @@ TEST_P(IndexedDBTest, CloseWithReceiversActive) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
   bucket_context_handle->AddReceiver(
-      std::move(checker_remote), /*client_token=*/{},
+      storage::BucketClientInfo{}, std::move(checker_remote),
       factory_remote.BindNewPipeAndPassReceiver());
 
   // The bucket context and the backing store should exist.
@@ -1724,7 +1724,7 @@ TEST_P(IndexedDBTest, CloseWithReceiversInactive) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
   bucket_context_handle->AddReceiver(
-      std::move(checker_remote), /*client_token=*/{},
+      storage::BucketClientInfo{}, std::move(checker_remote),
       factory_remote.BindNewPipeAndPassReceiver());
 
   // The bucket context and the backing store should exist.
@@ -2055,7 +2055,7 @@ TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
                        database_callbacks.CreateInterfacePtrAndBind(), u"db",
                        /*version=*/1,
                        transaction_remote.BindNewEndpointAndPassReceiver(),
-                       /*transaction_id=*/1);
+                       /*transaction_id=*/1, /*priority=*/0);
   run_loop.Run();
 
   ASSERT_TRUE(context_->BucketContextExists(bucket_locator.id));
@@ -2113,7 +2113,7 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
                          database_callbacks.CreateInterfacePtrAndBind(), u"db",
                          /*version=*/0,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
-                         /*transaction_id=*/1);
+                         /*transaction_id=*/1, /*priority=*/0);
     run_loop.Run();
   }
 
@@ -2177,7 +2177,7 @@ TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
                        database_callbacks.CreateInterfacePtrAndBind(), u"db",
                        /*version=*/0,
                        transaction_remote.BindNewEndpointAndPassReceiver(),
-                       /*transaction_id=*/1);
+                       /*transaction_id=*/1, /*priority=*/0);
   run_loop.Run();
   // GetDatabaseInfo didn't create the factory, so it shouldn't close it.
   {
@@ -2225,7 +2225,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDiskFull) {
                        database_callbacks.CreateInterfacePtrAndBind(), u"db",
                        /*version=*/1,
                        transaction_remote.BindNewEndpointAndPassReceiver(),
-                       /*transaction_id=*/1);
+                       /*transaction_id=*/1, /*priority=*/0);
   run_loop.Run();
 
   // A disk full error results in an error reported to the quota system.
@@ -2266,7 +2266,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
                          database_callbacks.CreateInterfacePtrAndBind(),
                          db_name, db_version,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
-                         /*transaction_id=*/1);
+                         /*transaction_id=*/1, /*priority=*/0);
     run_loop.Run();
   }
 
@@ -2283,7 +2283,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
                          database_callbacks.CreateInterfacePtrAndBind(),
                          db_name, db_version,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
-                         /*transaction_id=*/2);
+                         /*transaction_id=*/2, /*priority=*/0);
     run_loop.Run();
     IndexedDBBucketContext* bucket_context =
         GetBucketContext(bucket_locator.id);
@@ -2326,7 +2326,7 @@ TEST_P(IndexedDBTest, DataLoss) {
                          database_callbacks.CreateInterfacePtrAndBind(),
                          db_name, /*version=*/1,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
-                         /*transaction_id=*/1);
+                         /*transaction_id=*/1, /*priority=*/0);
     run_loop.Run();
 
     // This step is necessary to make sure the backing store is closed so that
@@ -2360,7 +2360,7 @@ TEST_P(IndexedDBTest, DataLoss) {
                          database_callbacks.CreateInterfacePtrAndBind(),
                          db_name, /*version=*/1,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
-                         /*transaction_id=*/2);
+                         /*transaction_id=*/2, /*priority=*/0);
     run_loop.Run();
   }
 }

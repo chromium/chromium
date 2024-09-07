@@ -5,13 +5,16 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -29,7 +32,6 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_item_identifier.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
-#import "ios/chrome/browser/ui/settings/notifications/tips_notifications_alert_presenter.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -44,9 +46,14 @@
 // Items for the Tips Notifications settings.
 @property(nonatomic, strong, readonly)
     TableViewSwitchItem* tipsNotificationsItem;
+// Items for the Safety Check Notifications settings.
+@property(nonatomic, strong, readonly) TableViewSwitchItem* safetyCheckItem;
 // Item for the Tips Notifications footer.
 @property(nonatomic, strong)
     TableViewLinkHeaderFooterItem* tipsNotificationsFooterItem;
+// Items for the Send Tab settings.
+@property(nonatomic, strong, readonly)
+    TableViewSwitchItem* sendTabNotificationsItem;
 // Pref Service object.
 @property(nonatomic, assign) PrefService* prefService;
 
@@ -55,19 +62,26 @@
 @implementation NotificationsMediator {
   // Identity object that contains the user's account details.
   std::string _gaiaID;
+  // Used to refresh Send Tab notifications enabled status in DeviceInfo.
+  syncer::DeviceInfoSyncService* _deviceInfoSyncService;
 }
 
 @synthesize priceTrackingItem = _priceTrackingItem;
 @synthesize contentNotificationsItem = _contentNotificationsItem;
 @synthesize tipsNotificationsItem = _tipsNotificationsItem;
+@synthesize safetyCheckItem = _safetyCheckItem;
+@synthesize sendTabNotificationsItem = _sendTabNotificationsItem;
 
 - (instancetype)initWithPrefService:(PrefService*)prefs
-                             gaiaID:(const std::string&)gaiaID {
+                             gaiaID:(const std::string&)gaiaID
+              deviceInfoSyncService:
+                  (syncer::DeviceInfoSyncService*)deviceInfoSyncService {
   self = [super init];
   if (self) {
     DCHECK(prefs);
     _prefService = prefs;
     _gaiaID = gaiaID;
+    _deviceInfoSyncService = deviceInfoSyncService;
   }
 
   return self;
@@ -88,7 +102,6 @@
 
 - (TableViewItem*)priceTrackingItem {
   if (!_priceTrackingItem) {
-    if (IsIOSTipsNotificationsEnabled()) {
       _priceTrackingItem = [self
                detailItemWithType:NotificationsItemIdentifier::
                                       ItemIdentifierPriceTracking
@@ -100,19 +113,6 @@
                     l10n_util::GetNSString(
                         IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_MESSAGE)
           accessibilityIdentifier:kSettingsNotificationsPriceTrackingCellId];
-    } else {
-      _priceTrackingItem = [self
-               detailItemWithType:NotificationsItemIdentifier::
-                                      ItemIdentifierPriceTracking
-                             text:
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACKING_TITLE)
-                       detailText:nil
-                           symbol:CustomSettingsRootSymbol(kDownTrendSymbol)
-                       symbolTint:UIColor.whiteColor
-            symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
-          accessibilityIdentifier:kSettingsNotificationsPriceTrackingCellId];
-    }
     [self updateDetailTextForItem:_priceTrackingItem
                     withClientIDs:{PushNotificationClientId::kCommerce}];
   }
@@ -121,7 +121,6 @@
 
 - (TableViewItem*)contentNotificationsItem {
   if (!_contentNotificationsItem) {
-    if (IsIOSTipsNotificationsEnabled()) {
       _contentNotificationsItem = [self
                detailItemWithType:NotificationsItemIdentifier::
                                       ItemIdentifierContent
@@ -133,19 +132,6 @@
                     l10n_util::GetNSString(
                         IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_FOOTER_TEXT)
           accessibilityIdentifier:kSettingsNotificationsContentCellId];
-    } else {
-      _contentNotificationsItem = [self
-               detailItemWithType:NotificationsItemIdentifier::
-                                      ItemIdentifierContent
-                             text:
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE)
-                       detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kNewspaperSFSymbol)
-                       symbolTint:UIColor.whiteColor
-            symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
-          accessibilityIdentifier:kSettingsNotificationsContentCellId];
-    }
     [self updateDetailTextForItem:_contentNotificationsItem
                     withClientIDs:{PushNotificationClientId::kContent,
                                    PushNotificationClientId::kSports}];
@@ -179,6 +165,28 @@
   return _tipsNotificationsItem;
 }
 
+- (TableViewSwitchItem*)safetyCheckItem {
+  if (!_safetyCheckItem) {
+    _safetyCheckItem = [self
+             switchItemWithType:NotificationsItemIdentifier::
+                                    ItemIdentifierSafetyCheck
+                           text:l10n_util::GetNSString(
+                                    IDS_IOS_SAFETY_CHECK_TITLE)
+                     detailText:
+                         l10n_util::GetNSString(
+                             IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_ALERTS_ON_ISSUES)
+                         symbol:nil
+                     symbolTint:nil
+          symbolBackgroundColor:nil
+              symbolBorderWidth:1
+        accessibilityIdentifier:kSettingsNotificationsContentCellId];
+    _safetyCheckItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kSafetyCheck, _gaiaID);
+  }
+  return _safetyCheckItem;
+}
+
 - (TableViewLinkHeaderFooterItem*)tipsNotificationsFooterItem {
   if (!_tipsNotificationsFooterItem) {
     _tipsNotificationsFooterItem = [[TableViewLinkHeaderFooterItem alloc]
@@ -191,6 +199,29 @@
   return _tipsNotificationsFooterItem;
 }
 
+- (TableViewSwitchItem*)sendTabNotificationsItem {
+  if (!_sendTabNotificationsItem) {
+    _sendTabNotificationsItem = [self
+             switchItemWithType:NotificationsItemIdentifier::
+                                    ItemIdentifierSendTab
+                           text:
+                               l10n_util::GetNSString(
+                                   IDS_IOS_SEND_TAB_TO_SELF_NOTIFICATION_SETTINGS_TITLE)
+                     detailText:
+                         l10n_util::GetNSString(
+                             IDS_IOS_SEND_TAB_TO_SELF_NOTIFICATION_SETTINGS_BODY)
+                         symbol:nil
+                     symbolTint:nil
+          symbolBackgroundColor:nil
+              symbolBorderWidth:1
+        accessibilityIdentifier:kSettingsNotificationsContentCellId];
+    _sendTabNotificationsItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kSendTab, _gaiaID);
+  }
+  return _sendTabNotificationsItem;
+}
+
 - (void)setConsumer:(id<NotificationsConsumer>)consumer {
   if (_consumer == consumer) {
     return;
@@ -201,6 +232,13 @@
   if (IsIOSTipsNotificationsEnabled()) {
     [_consumer setTipsNotificationsItem:self.tipsNotificationsItem];
     [_consumer setTipsNotificationsFooterItem:self.tipsNotificationsFooterItem];
+  }
+  if (IsSafetyCheckNotificationsEnabled()) {
+    [_consumer setSafetyCheckItem:self.safetyCheckItem];
+  }
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    [_consumer setSendTabNotificationsItem:self.sendTabNotificationsItem];
   }
 }
 
@@ -242,16 +280,7 @@
       [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = text;
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
-  if (IsIOSTipsNotificationsEnabled()) {
     switchItem.detailText = detailText;
-  } else {
-    switchItem.iconImage = symbol;
-    switchItem.iconTintColor = tint;
-    switchItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
-    switchItem.iconBackgroundColor = backgroundColor;
-    switchItem.iconBorderWidth = borderWidth;
-  }
-
   return switchItem;
 }
 
@@ -295,17 +324,10 @@
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   }
 
-  if (IsIOSTipsNotificationsEnabled()) {
     TableViewMultiDetailTextItem* detailItem =
         base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
     detailItem.trailingDetailText = detailText;
     [self.consumer reconfigureCellsForItems:@[ detailItem ]];
-  } else {
-    TableViewDetailIconItem* iconItem =
-        base::apple::ObjCCastStrict<TableViewDetailIconItem>(item);
-    iconItem.detailText = detailText;
-    [self.consumer reconfigureCellsForItems:@[ iconItem ]];
-  }
 }
 
 #pragma mark - NotificationsViewControllerDelegate
@@ -314,14 +336,41 @@
   NotificationsItemIdentifier itemIdentifier =
       static_cast<NotificationsItemIdentifier>(item.type);
   switch (itemIdentifier) {
+    case ItemIdentifierSafetyCheck: {
+      if (value) {
+        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                            {PushNotificationClientId::kSafetyCheck}];
+      } else {
+        [self disablePreferenceFor:PushNotificationClientId::kSafetyCheck];
+        self.safetyCheckItem.on = push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kSafetyCheck, _gaiaID);
+      }
+      break;
+    }
     case ItemIdentifierTips: {
       if (value) {
-        [self.presenter presentTipsNotificationPermissionAlert];
+        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                            {PushNotificationClientId::kTips}];
       } else {
         [self disablePreferenceFor:PushNotificationClientId::kTips];
         self.tipsNotificationsItem.on = push_notification_settings::
             GetMobileNotificationPermissionStatusForClient(
                 PushNotificationClientId::kTips, _gaiaID);
+      }
+      break;
+    }
+    case ItemIdentifierSendTab: {
+      if (value) {
+        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                            std::vector{PushNotificationClientId::kSendTab}];
+      } else {
+        [self disablePreferenceFor:PushNotificationClientId::kSendTab];
+        self.sendTabNotificationsItem.on = push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kSendTab, _gaiaID);
+        // Refresh enabled status in DeviceInfo.
+        _deviceInfoSyncService->RefreshLocalDeviceInfo();
       }
       break;
     }
@@ -343,6 +392,8 @@
       [self.handler showContent];
       break;
     case ItemIdentifierTips:
+    case ItemIdentifierSafetyCheck:
+    case ItemIdentifierSendTab:
       break;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -374,9 +425,19 @@
       [self.consumer reconfigureCellsForItems:@[ self.tipsNotificationsItem ]];
       break;
     }
+    case PushNotificationClientId::kSendTab: {
+      self.sendTabNotificationsItem.on = push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kSendTab, _gaiaID);
+      [self.consumer
+          reconfigureCellsForItems:@[ self.sendTabNotificationsItem ]];
+      break;
+    }
     case PushNotificationClientId::kSafetyCheck:
-      // TODO(crbug.com/347975024): Integrate Safety Check Notifications with
-      // notifications settings UI.
+      self.safetyCheckItem.on = push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kSafetyCheck, _gaiaID);
+      [self.consumer reconfigureCellsForItems:@[ self.safetyCheckItem ]];
       break;
   }
 }
@@ -396,8 +457,11 @@
   switch (clientId) {
     case PushNotificationClientId::kTips:
       return _tipsNotificationsItem;
-    case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kSafetyCheck:
+      return _safetyCheckItem;
+    case PushNotificationClientId::kSendTab:
+      return _sendTabNotificationsItem;
+    case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
       // Not a switch.

@@ -296,6 +296,10 @@ const std::string& Spake2Authenticator::GetAuthKey() const {
   return auth_key_;
 }
 
+const SessionPolicies* Spake2Authenticator::GetSessionPolicies() const {
+  return nullptr;
+}
+
 std::unique_ptr<ChannelAuthenticator>
 Spake2Authenticator::CreateChannelAuthenticator() const {
   DCHECK_EQ(state(), ACCEPTED);

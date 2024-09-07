@@ -219,6 +219,7 @@ PASS childWindow.styleMedia.type is ''
 PASS childWindow.toolbar.visible is false
 PASS childWindow.trustedTypes.defaultPolicy is null
 PASS childWindow.trustedTypes.onbeforecreatepolicy is null
+PASS childWindow.viewport.segments is null
 PASS childWindow.visualViewport.height is 0
 PASS childWindow.visualViewport.offsetLeft is 0
 PASS childWindow.visualViewport.offsetTop is 0

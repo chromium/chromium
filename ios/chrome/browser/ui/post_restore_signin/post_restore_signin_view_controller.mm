@@ -45,7 +45,7 @@
 #pragma mark - Initialization
 
 - (instancetype)initWithAccountInfo:(AccountInfo)accountInfo {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _accountInfo = accountInfo;
     if (_accountInfo.has_value()) {
       _userEmail = base::SysUTF8ToNSString(_accountInfo->email);

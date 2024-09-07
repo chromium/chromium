@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/autoclick/autoclick_drag_event_rewriter.h"
+
 #include <memory>
 
-#include "ash/accessibility/autoclick/autoclick_drag_event_rewriter.h"
+#include "ash/accessibility/test_event_recorder.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
@@ -40,29 +42,6 @@ class CopyingSink : public ui::EventSink {
 
 }  // anonymous namespace
 
-class EventRecorder : public ui::EventRewriter {
- public:
-  EventRecorder() = default;
-
-  EventRecorder(const EventRecorder&) = delete;
-  EventRecorder& operator=(const EventRecorder&) = delete;
-
-  ~EventRecorder() override = default;
-
-  // ui::EventRewriter:
-  ui::EventDispatchDetails RewriteEvent(
-      const ui::Event& event,
-      const Continuation continuation) override {
-    recorded_event_count_++;
-    last_recorded_event_type_ = event.type();
-    return SendEvent(continuation, &event);
-  }
-
-  // Count of events sent to the rewriter.
-  size_t recorded_event_count_ = 0;
-  ui::EventType last_recorded_event_type_ = ui::EventType::kUnknown;
-};
-
 class AutoclickDragEventRewriterTest : public AshTestBase {
  public:
   AutoclickDragEventRewriterTest() = default;
@@ -97,7 +76,7 @@ class AutoclickDragEventRewriterTest : public AshTestBase {
   raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   // Records events delivered to the next event rewriter after
   // AutoclickDragEventRewriter.
-  EventRecorder event_recorder_;
+  TestEventRecorder event_recorder_;
 
   AutoclickDragEventRewriter drag_event_rewriter_;
 };
@@ -106,54 +85,54 @@ TEST_F(AutoclickDragEventRewriterTest, EventsNotConsumedWhenDisabled) {
   drag_event_rewriter_.SetEnabled(false);
   // Events are not consume.
   generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(1U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(1U, event_recorder_.recorded_event_count());
   generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(2U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(2U, event_recorder_.recorded_event_count());
   generator_->PressLeftButton();
-  EXPECT_EQ(3U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(3U, event_recorder_.recorded_event_count());
   EXPECT_EQ(ui::EventType::kMousePressed,
-            event_recorder_.last_recorded_event_type_);
+            event_recorder_.last_recorded_event_type());
   generator_->MoveMouseTo(gfx::Point(200, 200), 1);
-  EXPECT_EQ(4U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(4U, event_recorder_.recorded_event_count());
   EXPECT_EQ(ui::EventType::kMouseDragged,
-            event_recorder_.last_recorded_event_type_);
+            event_recorder_.last_recorded_event_type());
   generator_->ReleaseLeftButton();
-  EXPECT_EQ(5U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(5U, event_recorder_.recorded_event_count());
   EXPECT_EQ(ui::EventType::kMouseReleased,
-            event_recorder_.last_recorded_event_type_);
+            event_recorder_.last_recorded_event_type());
 
   // Move events are not consumed either.
   generator_->MoveMouseTo(gfx::Point(100, 100), 1);
-  EXPECT_EQ(6U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(6U, event_recorder_.recorded_event_count());
   EXPECT_EQ(ui::EventType::kMouseMoved,
-            event_recorder_.last_recorded_event_type_);
+            event_recorder_.last_recorded_event_type());
 }
 
 TEST_F(AutoclickDragEventRewriterTest, OnlyMouseMoveEventsConsumedWhenEnabled) {
   drag_event_rewriter_.SetEnabled(true);
   // Most events are still not consumed.
   generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(1U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(1U, event_recorder_.recorded_event_count());
   generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(2U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(2U, event_recorder_.recorded_event_count());
   generator_->PressLeftButton();
-  EXPECT_EQ(3U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(3U, event_recorder_.recorded_event_count());
   EXPECT_EQ(ui::EventType::kMousePressed,
-            event_recorder_.last_recorded_event_type_);
+            event_recorder_.last_recorded_event_type());
   generator_->MoveMouseTo(gfx::Point(200, 200), 1);
-  EXPECT_EQ(4U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(4U, event_recorder_.recorded_event_count());
   EXPECT_EQ(ui::EventType::kMouseDragged,
-            event_recorder_.last_recorded_event_type_);
+            event_recorder_.last_recorded_event_type());
   generator_->ReleaseLeftButton();
-  EXPECT_EQ(5U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(5U, event_recorder_.recorded_event_count());
   EXPECT_EQ(ui::EventType::kMouseReleased,
-            event_recorder_.last_recorded_event_type_);
+            event_recorder_.last_recorded_event_type());
 
   // Mouse move events are consumed and changed into drag events.
   generator_->MoveMouseTo(gfx::Point(100, 100), 1);
-  EXPECT_EQ(5U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(5U, event_recorder_.recorded_event_count());
   generator_->MoveMouseTo(gfx::Point(150, 150), 1);
-  EXPECT_EQ(5U, event_recorder_.recorded_event_count_);
+  EXPECT_EQ(5U, event_recorder_.recorded_event_count());
 }
 
 TEST_F(AutoclickDragEventRewriterTest, RewritesMouseMovesToDrags) {

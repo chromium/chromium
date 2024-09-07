@@ -14,7 +14,7 @@
 namespace views {
 
 ResizeArea::ResizeArea(ResizeAreaDelegate* delegate) : delegate_(delegate) {
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kSplitter);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSplitter);
 }
 
 ResizeArea::~ResizeArea() = default;

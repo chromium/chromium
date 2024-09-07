@@ -22,12 +22,147 @@ import {getTemplate} from './perks_discovery.html.js';
 export const PerksDiscoveryElementBase = OobeDialogHostMixin(
     LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement))));
 
-const GENERATE_WEB_VIEW_CSS = (backgroundColor: string) => {
+const GENERATE_WEB_VIEW_CSS = () => {
   return {
     code: `svg {
+          width: 100%;
+          height: 100%;
           background-color: ` +
-        backgroundColor + `;
-        }`,
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-app_base_shaded') +
+        `;
+          --cros-sys-illo-color1 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-color1') +
+        `;
+          --cros-sys-illo-color1-1 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-color1-1') +
+        `;
+          --cros-sys-illo-color1-2 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-color1-2') +
+        `;
+          --cros-sys-illo-color2 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-color2') +
+        `;
+          --cros-sys-illo-color3 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-color3') +
+        `;
+          --cros-sys-illo-color4 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-color4') +
+        `;
+          --cros-sys-illo-color5 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-color5') +
+        `;
+          --cros-sys-illo-color6 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-color6') +
+        `;
+          --cros-sys-illo-base :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-base') +
+        `;
+          --cros-sys-illo-secondary :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-secondary') +
+        `;
+          --cros-sys-illo-on_primary_container :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-on_primary_container') +
+        `;
+          --cros-sys-illo-card-color1:` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-color1') +
+        `;
+          --cros-sys-illo-card-color2 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-color2') +
+        `;
+          --cros-sys-illo-card-color3 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-color3') +
+        `;
+          --cros-sys-illo-card-color4 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-color4') +
+        `;
+          --cros-sys-illo-card-color5 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-color5') +
+        `;
+          --cros-sys-illo-card-on_color1 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-on_color1') +
+        `;
+          --cros-sys-illo-card-on_color2 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-on_color2') +
+        `;
+          --cros-sys-illo-card-on_color3 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-on_color3') +
+        `;
+          --cros-sys-illo-card-on_color4 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-on_color4') +
+        `;
+          --cros-sys-illo-card-on_color5 :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-card-on_color5') +
+        `;
+          --cros-sys-app_base_shaded :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-app_base_shaded') +
+        `;
+          --cros-sys-app_base :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-app_base') +
+        `;
+          --cros-sys-base_elevated :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-base_elevated') +
+        `;
+          --cros-sys-illo-analog :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-analog') +
+        `;
+          --cros-sys-illo-muted :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-muted') +
+        `;
+          --cros-sys-illo-complement :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-complement') +
+        `;
+          --cros-sys-illo-on_gradient :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-on_gradient') +
+        `;
+          --cros-sys-illo-analog_variant :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-analog_variant') +
+        `;
+          --cros-sys-illo-muted_variant :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-muted_variant') +
+        `;
+          --cros-sys-illo-complement_variant :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-complement_variant') +
+        `;
+          --cros-sys-illo-on_gradient_variant :` +
+        getComputedStyle(document.body)
+            .getPropertyValue('--cros-sys-illo-on_gradient_variant') +
+        `;
+          --cros-sys-primary: ` +
+        getComputedStyle(document.body).getPropertyValue('--cros-sys-primary') +
+        `;
+    }`,
   };
 };
 
@@ -204,6 +339,7 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
                 this.perksList[index].illustrationWidth;
             iconWebview.style['height'] =
                 this.perksList[index].illustrationHeight;
+            this.injectCss(iconWebview);
           });
     }
   }
@@ -217,11 +353,8 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
         this.shadowRoot?.querySelectorAll<chrome.webviewTag.WebView>(
             '.perk-icon');
     if (iconWebviews) {
-      const BackgroundColor =
-          getComputedStyle(document.body)
-              .getPropertyValue('--cros-sys-app_base_shaded');
       for (const iconWebview of iconWebviews) {
-        this.injectCss(iconWebview, BackgroundColor);
+        this.injectCss(iconWebview);
       }
     }
   }
@@ -229,10 +362,9 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   /**
    * Injects CSS into a webview after its content has loaded.
    */
-  private injectCss(
-      webview: chrome.webviewTag.WebView, backgroundColor: string) {
+  private injectCss(webview: chrome.webviewTag.WebView) {
     webview.addEventListener('contentload', () => {
-      webview.insertCSS(GENERATE_WEB_VIEW_CSS(backgroundColor), () => {
+      webview.insertCSS(GENERATE_WEB_VIEW_CSS(), () => {
         if (chrome.runtime.lastError) {
           console.warn(
               'Failed to insertCSS: ' + chrome.runtime.lastError.message);

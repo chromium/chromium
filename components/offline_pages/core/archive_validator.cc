@@ -56,8 +56,9 @@ std::pair<int64_t, std::string> ArchiveValidator::GetSizeAndComputeDigest(
 #if BUILDFLAG(IS_ANDROID)
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return std::make_pair(0LL, std::string());
+  }
 
   ArchiveValidator archive_validator;
 
@@ -83,10 +84,12 @@ bool ArchiveValidator::ValidateFile(const base::FilePath& file_path,
                                     int64_t expected_file_size,
                                     const std::string& expected_digest) {
   int64_t actual_file_size;
-  if (!base::GetFileSize(file_path, &actual_file_size))
+  if (!base::GetFileSize(file_path, &actual_file_size)) {
     return false;
-  if (expected_file_size != actual_file_size)
+  }
+  if (expected_file_size != actual_file_size) {
     return false;
+  }
 
   std::string actual_digest = ComputeDigest(file_path);
   return expected_digest == actual_digest;

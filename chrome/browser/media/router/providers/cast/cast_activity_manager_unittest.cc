@@ -66,8 +66,10 @@ constexpr int kChannelId = 42;
 constexpr int kChannelId2 = 43;
 constexpr char kClientId[] = "theClientId";
 constexpr char kOrigin[] = "https://google.com";
-constexpr int kFrameTreeNodeId = 123;
-constexpr int kFrameTreeNodeId2 = 234;
+constexpr content::FrameTreeNodeId kFrameTreeNodeId =
+    content::FrameTreeNodeId(123);
+constexpr content::FrameTreeNodeId kFrameTreeNodeId2 =
+    content::FrameTreeNodeId(234);
 constexpr char kAppId1[] = "ABCDEFGH";
 constexpr char kAppId2[] = "BBBBBBBB";
 constexpr char kAppParams[] = R"(
@@ -466,9 +468,9 @@ class CastActivityManagerTest : public testing::Test,
   // move `route_id_to_move` to `frame_id_after`, and that results in the
   // termination of `route_id_to_terminate`.
   void UpdateRouteSourceTabInRoutesMap(
-      int frame_id_before,
+      content::FrameTreeNodeId frame_id_before,
       const MediaRoute::Id& route_id_to_move,
-      int frame_id_after,
+      content::FrameTreeNodeId frame_id_after,
       const MediaRoute::Id& route_id_to_terminate) {
     EXPECT_EQ(2u, manager_->GetRoutes().size());
 

@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.junit.Assert.assertTrue;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 
+import androidx.browser.auth.AuthTabIntent;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -20,9 +25,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory.CustomTabNavigationDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -66,6 +73,8 @@ public class CustomTabExternalNavigationTest {
 
     private static final String TWA_PACKAGE_NAME = "com.foo.bar";
     private static final String TEST_PATH = "/chrome/test/data/android/google.html";
+    private static final String CUSTOM_SCHEME = "myscheme";
+    private static final String REDIRECT_URL = "myscheme://auth?token=secret";
     private CustomTabNavigationDelegate mNavigationDelegate;
     private EmbeddedTestServer mTestServer;
     private ExternalNavigationHandler mUrlHandler;
@@ -74,17 +83,28 @@ public class CustomTabExternalNavigationTest {
     public void setUp() throws Exception {
         mCustomTabActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mTestServer = mCustomTabActivityTestRule.getTestServer();
+    }
 
+    private void setUpTwa() throws TimeoutException {
         launchTwa(TWA_PACKAGE_NAME, mTestServer.getURL(TEST_PATH));
+        finishSetUp();
+    }
+
+    private void setUpAuthTab() throws TimeoutException {
+        launchAuthTab(mTestServer.getURL(TEST_PATH));
+        finishSetUp();
+    }
+
+    private void finishSetUp() {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
         TabDelegateFactory delegateFactory = TabTestUtils.getDelegateFactory(tab);
-        Assert.assertTrue(delegateFactory instanceof CustomTabDelegateFactory);
+        assertTrue(delegateFactory instanceof CustomTabDelegateFactory);
         CustomTabDelegateFactory customTabDelegateFactory =
                 ((CustomTabDelegateFactory) delegateFactory);
         mUrlHandler =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> customTabDelegateFactory.createExternalNavigationHandler(tab));
-        Assert.assertTrue(
+        assertTrue(
                 customTabDelegateFactory.getExternalNavigationDelegate()
                         instanceof CustomTabNavigationDelegate);
         mNavigationDelegate =
@@ -99,16 +119,18 @@ public class CustomTabExternalNavigationTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
     }
 
-    /**
-     * For urls with special schemes and hosts, and there is exactly one activity having a matching
-     * intent filter, the framework will make that activity the default handler of the special url.
-     * This test tests whether chrome is able to start the default external handler.
-     */
-    @Test
-    @SmallTest
-    public void testExternalActivityStartedForDefaultUrl() {
+    private void launchAuthTab(String url) throws TimeoutException {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url)
+                        .putExtra(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, true)
+                        .putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, CUSTOM_SCHEME);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+    }
+
+    private OverrideUrlLoadingResult getOverrideUrlLoadingResult(String url) {
         ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
-        final GURL testUrl = new GURL("customtab://customtabtest/intent");
+        final GURL testUrl = new GURL(url);
         RedirectHandler redirectHandler = RedirectHandler.create();
         redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);
         ExternalNavigationParams params =
@@ -117,9 +139,35 @@ public class CustomTabExternalNavigationTest {
                         .setIsRendererInitiated(true)
                         .setRedirectHandler(redirectHandler)
                         .build();
-        OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
+        return mUrlHandler.shouldOverrideUrlLoading(params);
+    }
+
+    /**
+     * For urls with special schemes and hosts, and there is exactly one activity having a matching
+     * intent filter, the framework will make that activity the default handler of the special url.
+     * This test tests whether chrome is able to start the default external handler.
+     */
+    @Test
+    @SmallTest
+    public void testExternalActivityStartedForDefaultUrl() throws TimeoutException {
+        setUpTwa();
+        OverrideUrlLoadingResult result =
+                getOverrideUrlLoadingResult("customtab://customtabtest/intent");
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result.getResultType());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
+    public void testAuthTabShouldReturnAsActivityResult() throws TimeoutException {
+        setUpAuthTab();
+        OverrideUrlLoadingResult result = getOverrideUrlLoadingResult(REDIRECT_URL);
+
+        // AuthTab does not launch an external intent for a custom scheme URL, but passes
+        // the result back to the calling app and closes itself.
+        Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
+        Assert.assertTrue(mCustomTabActivityTestRule.getActivity().isFinishing());
     }
 
     /**
@@ -133,7 +181,8 @@ public class CustomTabExternalNavigationTest {
             sdk_is_greater_than = VERSION_CODES.O_MR1,
             sdk_is_less_than = VERSION_CODES.Q,
             message = "crbug.com/1188920")
-    public void testIntentPickerNotShownForNormalUrl() {
+    public void testIntentPickerNotShownForNormalUrl() throws TimeoutException {
+        setUpTwa();
         final GURL testUrl = new GURL("http://customtabtest.com");
         RedirectHandler redirectHandler = RedirectHandler.create();
         redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);
@@ -157,6 +206,7 @@ public class CustomTabExternalNavigationTest {
     @Test
     @SmallTest
     public void testShouldDisableExternalIntentRequestsForUrl() throws TimeoutException {
+        setUpTwa();
         GURL insideVerifiedOriginUrl =
                 new GURL(mTestServer.getURL("/chrome/test/data/android/simple.html"));
         GURL outsideVerifiedOriginUrl = new GURL("https://example.com/test.html");
@@ -165,7 +215,7 @@ public class CustomTabExternalNavigationTest {
                 mCustomTabActivityTestRule.getActivity());
         Assert.assertEquals(VerificationStatus.SUCCESS, getCurrentPageVerifierStatus());
 
-        Assert.assertTrue(
+        assertTrue(
                 mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(
                         insideVerifiedOriginUrl));
         Assert.assertFalse(

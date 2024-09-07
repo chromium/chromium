@@ -68,11 +68,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 63;
+  static constexpr int kCurrentVersionNumber = 64;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 63;
+  static constexpr int kCompatibleVersionNumber = 64;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -166,7 +166,8 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceInvalidTriggerSpecs = 29,
     kSourceDedupKeyQueryFailed = 30,
     kSourceInvalidRandomizedResponseRate = 31,
-    kMaxValue = kSourceInvalidRandomizedResponseRate,
+    kSourceInvalidAttributionScopesData = 32,
+    kMaxValue = kSourceInvalidAttributionScopesData,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionCorruptReportStatus)
 
@@ -193,6 +194,12 @@ class CONTENT_EXPORT AttributionStorageSql {
       double randomized_response_rate,
       StoredSource::AttributionLogic attribution_logic,
       base::Time aggregatable_report_window_time);
+
+  [[nodiscard]] bool UpdateOrRemoveSourcesWithIncompatibleScopeFields(
+      const StorableSource&,
+      base::Time source_time);
+  [[nodiscard]] bool RemoveSourcesWithOutdatedScopes(const StorableSource&,
+                                                     base::Time source_time);
 
   CreateReportResult MaybeCreateAndStoreReport(AttributionTrigger);
   std::vector<AttributionReport> GetAttributionReports(
@@ -429,6 +436,13 @@ class CONTENT_EXPORT AttributionStorageSql {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool DeleteEventLevelReportsTriggeredLaterThanForSources(
+      const std::vector<StoredSource::Id>&,
+      base::Time source_time) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool RemoveScopesDataForSource(StoredSource::Id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.

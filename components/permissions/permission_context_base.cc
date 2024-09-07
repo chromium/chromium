@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -316,20 +317,30 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Some GuestViews are loaded in a separate StoragePartition. Given that
-  // permissions are scoped to a BrowserContext, not a StoragePartition, we may
-  // have a situation where a user has granted a permission to an origin in a
-  // tab and then visits the same origin in a guest. This would lead to
-  // inappropriate sharing of the permission with the guest. To mitigate this,
-  // we drop permission requests from guests for cases where it's not possible
-  // for the guest to have been granted the permission. Note that sharing of
-  // permissions that the guest could legitimately be granted is still possible.
-  // TODO(crbug.com/40068594): Scope granted permissions to a StoragePartition.
-  if (base::FeatureList::IsEnabled(
-          features::kMitigateUnpartitionedWebviewPermissions)) {
-    guest_view::GuestViewBase* guest =
-        guest_view::GuestViewBase::FromRenderFrameHost(render_frame_host);
-    if (guest && !guest->IsPermissionRequestable(content_settings_type_)) {
+  guest_view::GuestViewBase* guest =
+      guest_view::GuestViewBase::FromRenderFrameHost(render_frame_host);
+  if (guest) {
+    // Content inside GuestView instances may have different permission
+    // behavior.
+    std::optional<content::PermissionResult> maybe_result =
+        guest->OverridePermissionResult(content_settings_type_);
+    if (maybe_result.has_value()) {
+      return maybe_result.value();
+    }
+    // Some GuestViews are loaded in a separate StoragePartition. Given that
+    // permissions are scoped to a BrowserContext, not a StoragePartition, we
+    // may have a situation where a user has granted a permission to an origin
+    // in a tab and then visits the same origin in a guest. This would lead to
+    // inappropriate sharing of the permission with the guest. To mitigate this,
+    // we drop permission requests from guests for cases where it's not possible
+    // for the guest to have been granted the permission. Note that sharing of
+    // permissions that the guest could legitimately be granted is still
+    // possible.
+    // TODO(crbug.com/40068594): Scope granted permissions to a
+    // StoragePartition.
+    if (base::FeatureList::IsEnabled(
+            features::kMitigateUnpartitionedWebviewPermissions) &&
+        !guest->IsPermissionRequestable(content_settings_type_)) {
       return content::PermissionResult(
           PermissionStatus::DENIED,
           content::PermissionStatusSource::UNSPECIFIED);

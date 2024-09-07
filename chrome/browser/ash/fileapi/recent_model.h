@@ -127,10 +127,7 @@ class RecentModel : public KeyedService {
     // The type of files accepted, e.g., images, documents, etc.
     FileType file_type;
 
-    bool operator==(const SearchCriteria& other) const {
-      return query == other.query && now_delta == other.now_delta &&
-             file_type == other.file_type;
-    }
+    bool operator==(const SearchCriteria& other) const = default;
   };
 
   using GetRecentFilesCallback =

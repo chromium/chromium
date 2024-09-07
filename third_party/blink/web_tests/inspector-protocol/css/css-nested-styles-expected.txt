@@ -30,13 +30,14 @@ nesting selectors: & #nested,#parent
 #parent {
   #nested {
     width: 41px;
+    
 
     #deep-nested {
-    height: 42px;
+      height: 42px;
     }
 
-    #deep-nested {
-    display: grid;
+    .cls1, #deep-nested, .cls2 {
+      display: grid;
     }
   }
 }

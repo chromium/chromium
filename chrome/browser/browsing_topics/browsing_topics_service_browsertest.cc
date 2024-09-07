@@ -1115,7 +1115,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   GURL prerender_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
 
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
 
   content::RenderFrameHost* prerender_host =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);

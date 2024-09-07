@@ -52,7 +52,7 @@ unsigned int GetFullFrameDepth(content::RenderFrameHost* rfh) {
 
 }  // namespace
 
-FrameTreeData::FrameTreeData(FrameTreeNodeId root_frame_tree_node_id,
+FrameTreeData::FrameTreeData(content::FrameTreeNodeId root_frame_tree_node_id,
                              int heavy_ad_network_threshold_noise)
     : root_frame_tree_node_id_(root_frame_tree_node_id),
       frame_size_(gfx::Size()),

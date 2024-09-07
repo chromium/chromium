@@ -62,31 +62,6 @@ ForceAllowedToBeDefault::ForceAllowedToBeDefault() {
 }
 
 // static
-BASE_FEATURE(LimitKeywordModeSuggestions::kLimitKeywordModeSuggestions,
-             "OmniboxLimitKeywordModeSuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-LimitKeywordModeSuggestions::LimitKeywordModeSuggestions() {
-  enabled = base::FeatureList::IsEnabled(kLimitKeywordModeSuggestions);
-
-  limit_document_suggestions =
-      base::FeatureParam<bool>(&kLimitKeywordModeSuggestions,
-                               "LimitDocumentSuggestions", true)
-          .Get();
-  limit_history_cluster_suggestions =
-      base::FeatureParam<bool>(&kLimitKeywordModeSuggestions,
-                               "LimitHistoryClusterSuggestions", true)
-          .Get();
-  limit_dse_suggestions =
-      base::FeatureParam<bool>(&kLimitKeywordModeSuggestions,
-                               "LimitDSESuggestions", true)
-          .Get();
-  limit_on_device_head_suggestions =
-      base::FeatureParam<bool>(&kLimitKeywordModeSuggestions,
-                               "LimitOnDeviceHeadSuggestions", true)
-          .Get();
-}
-
-// static
 BASE_FEATURE(RealboxContextualAndTrendingSuggestions::
                  kRealboxContextualAndTrendingSuggestions,
              "NTPRealboxContextualAndTrendingSuggestions",
@@ -147,7 +122,7 @@ ShortcutBoosting::ShortcutBoosting() {
 // static
 BASE_FEATURE(SuggestionAnswerMigration::kOmniboxSuggestionAnswerMigration,
              "OmniboxSuggestionAnswerMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 SuggestionAnswerMigration::SuggestionAnswerMigration() {
   enabled = base::FeatureList::IsEnabled(kOmniboxSuggestionAnswerMigration);
 }

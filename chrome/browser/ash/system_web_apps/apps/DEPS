@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/assistant",
   "+chrome/browser/ash/borealis",
-  "+chrome/browser/ash/camera_presence_notifier.h",
   # TODO(b/342514059): Allow help app to depend on child_accounts without
   # depending on chrome.
   "+chrome/browser/ash/child_accounts",
@@ -56,6 +55,7 @@ include_rules = [
   "+chrome/browser/ash/wallpaper_handlers",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/upload_office_to_cloud",
+  "+chrome/browser/consent_auditor/consent_auditor_factory.h",
   "+chrome/browser/devtools",
   "+chrome/browser/error_reporting",
   "+chrome/browser/extensions/component_loader.h",
@@ -75,6 +75,7 @@ include_rules = [
   # TODO(b/338516458): Allow ash to use ScreenAI without depending on //chrome.
   "+chrome/browser/screen_ai/public",
   "+chrome/browser/search_engines/template_url_service_factory.h",
+  "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_finder.h",

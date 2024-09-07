@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/passwords/model/credentials_cleaner_runner_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 using affiliations::AffiliationService;
 using password_manager::AffiliatedMatchHelper;
@@ -92,10 +92,10 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
   password_store->Init(browser_state->GetPrefs(),
                        std::move(affiliated_match_helper));
 
-  password_manager::RemoveUselessCredentials(
+  password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForBrowserState(browser_state),
-      password_store, browser_state->GetPrefs(), base::Minutes(1),
-      base::NullCallback());
+      password_store, password_manager::kAccountStore,
+      browser_state->GetPrefs(), base::Minutes(1), base::NullCallback());
 
   std::unique_ptr<password_manager::PasswordAffiliationSourceAdapter>
       password_affiliation_adapter = std::make_unique<

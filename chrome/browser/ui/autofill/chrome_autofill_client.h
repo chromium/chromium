@@ -22,8 +22,8 @@
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
-#include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -47,10 +47,6 @@ namespace autofill {
 class AutofillOptimizationGuide;
 class FormFieldData;
 enum class SuggestionType;
-
-namespace payments {
-class MandatoryReauthManager;
-}  // namespace payments
 
 // Chrome implementation of AutofillClient.
 //
@@ -120,11 +116,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   GeoIpCountryCode GetVariationConfigCountryCode() const override;
   profile_metrics::BrowserProfileType GetProfileType() const override;
   FastCheckoutClient* GetFastCheckoutClient() override;
-  std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
-  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
-      override;
   void ShowEditAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileSavePromptCallback on_user_decision_callback) override;
@@ -136,7 +128,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const AutofillProfile* original_profile,
       bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) override;
-  void ShowAutofillSuggestions(
+  SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
   void UpdateAutofillDataListValues(
@@ -144,9 +136,12 @@ class ChromeAutofillClient : public ContentAutofillClient,
   base::span<const Suggestion> GetAutofillSuggestions() const override;
   void PinAutofillSuggestions() override;
   std::optional<PopupScreenLocation> GetPopupScreenLocation() const override;
-  void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   FillingProduct main_filling_product,
-                   AutofillSuggestionTriggerSource trigger_source) override;
+  std::optional<SuggestionUiSessionId>
+  GetSessionIdForCurrentAutofillSuggestions() const override;
+  void UpdateAutofillSuggestions(
+      const std::vector<Suggestion>& suggestions,
+      FillingProduct main_filling_product,
+      AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,
@@ -206,6 +201,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   Profile* GetProfile() const;
   bool SupportsConsentlessExecution(const url::Origin& origin);
   void ShowAutofillSuggestionsImpl(
+      SuggestionUiSessionId session_id,
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
   base::WeakPtr<ChromeAutofillClient> GetWeakPtr();
@@ -216,8 +212,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // Therefore, do not access the members directly.
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
-  std::unique_ptr<payments::MandatoryReauthManager>
-      payments_mandatory_reauth_manager_;
 
   payments::ChromePaymentsAutofillClient payments_autofill_client_{this};
 

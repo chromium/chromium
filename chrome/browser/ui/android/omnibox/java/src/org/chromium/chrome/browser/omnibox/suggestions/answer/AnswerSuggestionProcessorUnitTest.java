@@ -563,4 +563,11 @@ public class AnswerSuggestionProcessorUnitTest {
     public void getViewTypeId_forFullTestCoverage() {
         Assert.assertEquals(OmniboxSuggestionUiType.ANSWER_SUGGESTION, mProcessor.getViewTypeId());
     }
+
+    @Test
+    public void fallbackIcon_noType() {
+        var suggestionWithNoAnswerType =
+                createAnswerSuggestion(null, "test", 1, "test", 1, JUnitTestGURLs.BLUE_1.getSpec());
+        mProcessor.getFallbackIcon(suggestionWithNoAnswerType.mSuggestion);
+    }
 }

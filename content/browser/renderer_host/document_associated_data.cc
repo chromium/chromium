@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/document_associated_data.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/containers/map_util.h"
 #include "base/no_destructor.h"
@@ -48,17 +50,14 @@ DocumentAssociatedData::DocumentAssociatedData(
   }
 }
 
-void DocumentAssociatedData::RemoveAllServices() {
-  while (!services_.empty()) {
-    // DocumentServiceBase unregisters itself at destruction time.
-    services_.back()->WillBeDestroyed(
-        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
-    services_.back()->ResetAndDeleteThis();
-  }
-}
-
 DocumentAssociatedData::~DocumentAssociatedData() {
-  RemoveAllServices();
+  decltype(services_) services;
+  std::swap(services_, services);
+  for (auto& service : services) {
+    service->WillBeDestroyed(
+        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
+    service->ResetAndDeleteThisInternal({});
+  }
 
   // Explicitly clear all user data here, so that the other fields of
   // DocumentAssociatedData are still valid while user data is being destroyed.
@@ -81,6 +80,18 @@ DocumentAssociatedData::~DocumentAssociatedData() {
 void DocumentAssociatedData::set_navigation_or_document_handle(
     scoped_refptr<NavigationOrDocumentHandle> handle) {
   navigation_or_document_handle_ = std::move(handle);
+}
+
+void DocumentAssociatedData::AddService(
+    internal::DocumentServiceBase* service,
+    base::PassKey<internal::DocumentServiceBase>) {
+  services_.push_back(service);
+}
+
+void DocumentAssociatedData::RemoveService(
+    internal::DocumentServiceBase* service,
+    base::PassKey<internal::DocumentServiceBase>) {
+  std::erase(services_, service);
 }
 
 }  // namespace content

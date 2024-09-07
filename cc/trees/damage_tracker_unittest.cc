@@ -39,15 +39,18 @@ class TestLayerImpl : public LayerImpl {
   }
 
   void AddDamageRect(const gfx::Rect& damage_rect);
+  void SetDamageReasons(DamageReasonSet reasons);
 
   // LayerImpl overrides.
   gfx::Rect GetDamageRect() const override;
+  DamageReasonSet GetDamageReasons() const override;
   void ResetChangeTracking() override;
 
  private:
   TestLayerImpl(LayerTreeImpl* tree_impl, int id);
 
   gfx::Rect damage_rect_;
+  DamageReasonSet damage_reasons_;
 };
 
 TestLayerImpl::TestLayerImpl(LayerTreeImpl* tree_impl, int id)
@@ -57,8 +60,16 @@ void TestLayerImpl::AddDamageRect(const gfx::Rect& damage_rect) {
   damage_rect_.Union(damage_rect);
 }
 
+void TestLayerImpl::SetDamageReasons(DamageReasonSet reasons) {
+  damage_reasons_ = reasons;
+}
+
 gfx::Rect TestLayerImpl::GetDamageRect() const {
   return damage_rect_;
+}
+
+DamageReasonSet TestLayerImpl::GetDamageReasons() const {
+  return damage_reasons_;
 }
 
 void TestLayerImpl::ResetChangeTracking() {
@@ -480,6 +491,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForLayerDamageRects) {
   // to the surface.
   ClearDamageForAllSurfaces(root);
   child->AddDamageRect(gfx::Rect(10, 11, 12, 13));
+  child->SetDamageReasons({DamageReason::kAnimatedImage});
   EmulateDrawingOneFrame(root);
 
   // Damage position on the surface should be: position of layer damage_rect
@@ -488,20 +500,26 @@ TEST_F(DamageTrackerTest, VerifyDamageForLayerDamageRects) {
   EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
       &root_damage_rect));
   EXPECT_EQ(true, root_damage_rect.Contains(gfx::Rect(110, 111, 12, 13)));
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kAnimatedImage});
 
   // CASE 2: The same layer damage rect twice in a row still produces the same
   // damage.
   ClearDamageForAllSurfaces(root);
   child->AddDamageRect(gfx::Rect(10, 11, 12, 13));
+  child->SetDamageReasons({DamageReason::kScrollbarFadeOutAnimation});
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
       &root_damage_rect));
   EXPECT_EQ(true, root_damage_rect.Contains(gfx::Rect(110, 111, 12, 13)));
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kScrollbarFadeOutAnimation});
 
   // CASE 3: Adding a different layer damage rect should cause damage on the
   // new damaged region, but no additional exposed old region.
   ClearDamageForAllSurfaces(root);
   child->AddDamageRect(gfx::Rect(20, 25, 1, 2));
+  child->SetDamageReasons({DamageReason::kAnimatedImage});
   EmulateDrawingOneFrame(root);
 
   // Damage position on the surface should be: position of layer damage_rect
@@ -509,12 +527,16 @@ TEST_F(DamageTrackerTest, VerifyDamageForLayerDamageRects) {
   EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
       &root_damage_rect));
   EXPECT_EQ(true, root_damage_rect.Contains(gfx::Rect(120, 125, 1, 2)));
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kAnimatedImage});
 
   // CASE 4: Adding multiple layer damage rects should cause a unified
   // damage on root damage rect.
   ClearDamageForAllSurfaces(root);
   child->AddDamageRect(gfx::Rect(20, 25, 1, 2));
   child->AddDamageRect(gfx::Rect(10, 15, 3, 4));
+  child->SetDamageReasons(
+      {DamageReason::kAnimatedImage, DamageReason::kUntracked});
   EmulateDrawingOneFrame(root);
 
   // Damage position on the surface should be: position of layer damage_rect
@@ -526,6 +548,9 @@ TEST_F(DamageTrackerTest, VerifyDamageForLayerDamageRects) {
   EXPECT_TRUE(GetRenderSurface(root)
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            (DamageReasonSet{DamageReason::kAnimatedImage,
+                             DamageReason::kUntracked}));
 }
 
 TEST_F(DamageTrackerTest, VerifyDamageForLayerUpdateAndDamageRects) {
@@ -537,6 +562,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForLayerUpdateAndDamageRects) {
   ClearDamageForAllSurfaces(root);
   child->AddDamageRect(gfx::Rect(5, 6, 12, 13));
   child->UnionUpdateRect(gfx::Rect(15, 16, 14, 10));
+  child->SetDamageReasons({DamageReason::kAnimatedImage});
   EmulateDrawingOneFrame(root);
 
   // Damage position on the surface should be: position of unified layer
@@ -546,22 +572,28 @@ TEST_F(DamageTrackerTest, VerifyDamageForLayerUpdateAndDamageRects) {
   EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
       &root_damage_rect));
   EXPECT_EQ(true, root_damage_rect.Contains(gfx::Rect(105, 106, 24, 20)));
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kAnimatedImage});
 
   // CASE 2: The same layer damage rect and update rect twice in a row still
   // produces the same damage.
   ClearDamageForAllSurfaces(root);
   child->AddDamageRect(gfx::Rect(10, 11, 12, 13));
   child->UnionUpdateRect(gfx::Rect(10, 11, 14, 15));
+  child->SetDamageReasons({DamageReason::kAnimatedImage});
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
       &root_damage_rect));
   EXPECT_EQ(true, root_damage_rect.Contains(gfx::Rect(110, 111, 14, 15)));
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kAnimatedImage});
 
   // CASE 3: Adding a different layer damage rect and update rect should cause
   // damage on the new damaged region, but no additional exposed old region.
   ClearDamageForAllSurfaces(root);
   child->AddDamageRect(gfx::Rect(20, 25, 2, 3));
   child->UnionUpdateRect(gfx::Rect(5, 10, 7, 8));
+  child->SetDamageReasons({DamageReason::kAnimatedImage});
   EmulateDrawingOneFrame(root);
 
   // Damage position on the surface should be: position of unified layer damage
@@ -572,11 +604,13 @@ TEST_F(DamageTrackerTest, VerifyDamageForLayerUpdateAndDamageRects) {
   EXPECT_TRUE(GetRenderSurface(root)
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kAnimatedImage});
 }
 
 TEST_F(DamageTrackerTest, VerifyDamageForPropertyChanges) {
   LayerImpl* root = CreateAndSetUpTestTreeWithOneSurface();
-  LayerImpl* child = child_layers_[0];
+  TestLayerImpl* child = child_layers_[0];
 
   // CASE 1: The layer's property changed flag takes priority over update rect.
   //
@@ -585,9 +619,12 @@ TEST_F(DamageTrackerTest, VerifyDamageForPropertyChanges) {
   ClearDamageForAllSurfaces(root);
   child->UnionUpdateRect(gfx::Rect(10, 11, 12, 13));
   root->layer_tree_impl()->SetOpacityMutated(child->element_id(), 0.5f);
+  child->SetDamageReasons({DamageReason::kAnimatedImage});
   EmulateDrawingOneFrame(root);
 
   ASSERT_EQ(2, GetRenderSurface(root)->num_contributors());
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kAnimatedImage});
 
   // Damage should be the entire child layer in target_surface space.
   gfx::Rect expected_rect = gfx::Rect(100, 100, 30, 30);
@@ -613,6 +650,8 @@ TEST_F(DamageTrackerTest, VerifyDamageForPropertyChanges) {
   EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
       &root_damage_rect));
   EXPECT_TRUE(root_damage_rect.IsEmpty());
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{});
 
   // Then, test the actual layer movement.
   ClearDamageForAllSurfaces(root);
@@ -623,6 +662,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForPropertyChanges) {
   translation.Translate(100.f, 130.f);
   root->layer_tree_impl()->SetTransformMutated(child->element_id(),
                                                translation);
+  child->SetDamageReasons({DamageReason::kAnimatedImage});
   EmulateDrawingOneFrame(root);
 
   // Expect damage to be the combination of the previous one and the new one.
@@ -639,6 +679,10 @@ TEST_F(DamageTrackerTest, VerifyDamageForPropertyChanges) {
   EXPECT_TRUE(GetRenderSurface(child)
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
+  // SurfacePropertyChanged causes an extra kUntracked to be added. Verify
+  // kAnimatedImage is not dropped.
+  EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageReasons().Has(
+      DamageReason::kAnimatedImage));
 }
 
 TEST_F(DamageTrackerTest,

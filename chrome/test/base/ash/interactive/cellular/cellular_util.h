@@ -46,7 +46,7 @@ class SimInfo {
   // matching the properties of this class.
   void Disconnect() const;
 
-  const std::string& guid() const { return name_; }
+  const std::string& guid() const { return guid_; }
   const std::string& profile_path() const { return profile_path_; }
   const std::string& iccid() const { return iccid_; }
   const std::string& name() const { return name_; }

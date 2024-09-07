@@ -35,6 +35,10 @@ constexpr char kWebSigninAccountStartTimesPrefForTesting[] =
 constexpr char kSigninPendingStartTimePrefForTesting[] =
     "signin.signin_pending_start_time";
 
+// Equivalent to private pref content: `kSyncPausedStartTimePref`.
+constexpr char kSyncPausedStartTimePrefForTesting[] =
+    "signin.sync_paused_start_time";
+
 const signin_metrics::AccessPoint kDefaultTestAccessPoint =
     signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
 
@@ -113,7 +117,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
         account.account_id);
   }
 
-  void ResolveSigninPending(Resolution resolution) {
+  void ResolveAuthErrorState(Resolution resolution) {
     CoreAccountInfo core_account_info =
         identity_manager()->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin);
@@ -123,7 +127,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
     switch (resolution) {
       case Resolution::kReauth:
         identity_test_environment_.SetRefreshTokenForPrimaryAccount();
-        return;
+        break;
       case Resolution::kWebSignin: {
         AccountInfo account_info =
             identity_manager()->FindExtendedAccountInfo(core_account_info);
@@ -131,11 +135,11 @@ class SigninMetricsServiceTest : public ::testing::Test {
             signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
         identity_test_environment_.UpdateAccountInfoForAccount(account_info);
         identity_test_environment_.SetRefreshTokenForPrimaryAccount();
-        return;
+        break;
       }
       case Resolution::kSignout:
         Signout();
-        return;
+        break;
     }
   }
 
@@ -164,11 +168,37 @@ class SigninMetricsServiceTest : public ::testing::Test {
                .contains(account_id.ToString());
   }
 
+  void TriggerSyncPaused() {
+    ASSERT_TRUE(
+        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+    identity_test_environment_.SetInvalidRefreshTokenForPrimaryAccount();
+  }
+
+  // When loading credentials, simulates that the client is not aware of any
+  // error. The error may have occurred while the client was off or the error
+  // was not persisted.
+  void TriggerLoadingCredentialsWithNoError() {
+    CoreAccountInfo core_account_info =
+        identity_manager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin);
+    ASSERT_FALSE(core_account_info.IsEmpty());
+
+    identity_test_environment_.OnErrorStateOfRefreshTokenUpdatedForAccount(
+        core_account_info, GoogleServiceAuthError::AuthErrorNone(),
+        signin_metrics::SourceForRefreshTokenOperation::
+            kTokenService_LoadCredentials);
+  }
+
   PrefService& pref_service() { return pref_service_; }
 
   signin::ActivePrimaryAccountsMetricsRecorder*
   active_primary_accounts_metrics_recorder() {
     return active_primary_accounts_metrics_recorder_.get();
+  }
+
+  signin::IdentityTestEnvironment& GetIdentityTestEnvironment() {
+    return identity_test_environment_;
   }
 
  private:
@@ -198,10 +228,10 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionReauth) {
 
   TriggerSigninPending();
 
-  ResolveSigninPending(Resolution::kReauth);
+  ResolveAuthErrorState(Resolution::kReauth);
 
   histogram_tester.ExpectUniqueSample("Signin.SigninPending.Resolution",
-                                      /*SigninPendingResolution::kReauth*/ 0,
+                                      /*PendingResolutionSource::kReauth*/ 0,
                                       1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Reauth", 1);
@@ -213,6 +243,9 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionReauth) {
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.ResolutionSourceCompleted", kDefaultTestAccessPoint,
       1);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -225,13 +258,16 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionSignout) {
 
   TriggerSigninPending();
 
-  ResolveSigninPending(Resolution::kSignout);
+  ResolveAuthErrorState(Resolution::kSignout);
 
   histogram_tester.ExpectUniqueSample("Signin.SigninPending.Resolution",
-                                      /*SigninPendingResolution::kSignout*/ 1,
+                                      /*PendingResolutionSource::kSignout*/ 1,
                                       1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Signout", 1);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
 }
 
 TEST_F(SigninMetricsServiceTest, SigninPendingResolutionAfterRestart) {
@@ -247,14 +283,64 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionAfterRestart) {
   DestroySigninMetricsService();
   CreateSigninMetricsService();
 
-  ResolveSigninPending(Resolution::kSignout);
+  ResolveAuthErrorState(Resolution::kSignout);
 
   // Histograms should still be recorded.
   histogram_tester.ExpectUniqueSample("Signin.SigninPending.Resolution",
-                                      /*SigninPendingResolution::kSignout*/ 1,
+                                      /*PendingResolutionSource::kSignout*/ 1,
                                       1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Signout", 1);
+}
+
+TEST_F(SigninMetricsServiceTest, SigninPendingWithLoadingCredentials) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  Signin(email);
+
+  TriggerSigninPending();
+
+  ASSERT_TRUE(
+      pref_service().HasPrefPath(kSigninPendingStartTimePrefForTesting));
+  base::Time signin_pending_start_time =
+      pref_service().GetTime(kSigninPendingStartTimePrefForTesting);
+
+  // This simulates restarting the client, where the error may not necessarily
+  // be stored properly.
+  TriggerLoadingCredentialsWithNoError();
+
+  // Error time still exists and is not modified.
+  ASSERT_TRUE(
+      pref_service().HasPrefPath(kSigninPendingStartTimePrefForTesting));
+  EXPECT_EQ(signin_pending_start_time,
+            pref_service().GetTime(kSigninPendingStartTimePrefForTesting));
+
+  // Reauth should not be recorded, even though we were in SyncPaused state.
+  histogram_tester.ExpectTotalCount(
+      "Signin.SigninPending.ResolutionTime.Reauth", 0);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
+
+  // In practice after a while, the client will notify the actual correct error
+  // when attempting to use the token.
+  TriggerSigninPending();
+
+  // Make sure the initial error time is not modified.
+  ASSERT_TRUE(
+      pref_service().HasPrefPath(kSigninPendingStartTimePrefForTesting));
+  EXPECT_EQ(signin_pending_start_time,
+            pref_service().GetTime(kSigninPendingStartTimePrefForTesting));
+
+  // And still no values are recorded.
+  histogram_tester.ExpectTotalCount(
+      "Signin.SigninPending.ResolutionTime.Reauth", 0);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
 }
 
 TEST_F(SigninMetricsServiceTest, ReceivingNewTokenWhileNotInError) {
@@ -267,7 +353,7 @@ TEST_F(SigninMetricsServiceTest, ReceivingNewTokenWhileNotInError) {
   // Receiving new token or resolving a pending state while not in error should
   // not record or store anything.
   TriggerPrimaryAccountRefreshToken("new_token_value");
-  ResolveSigninPending(Resolution::kReauth);
+  ResolveAuthErrorState(Resolution::kReauth);
 
   EXPECT_FALSE(
       pref_service().HasPrefPath(kSigninPendingStartTimePrefForTesting));
@@ -448,7 +534,7 @@ TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
 
   Signin("test@gmail.com");
   TriggerSigninPending();
-  ResolveSigninPending(Resolution::kWebSignin);
+  ResolveAuthErrorState(Resolution::kWebSignin);
 
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.ResolutionSourceStarted",
@@ -571,4 +657,110 @@ TEST_F(SigninMetricsServiceTest, UpdatesAccountLastActiveTimeOnSignin) {
                 ->GetLastActiveTimeForAccount(gaia_id)
                 .value_or(base::Time()),
             before_signin);
+}
+
+TEST_F(SigninMetricsServiceTest, SyncPausedResolutionTimeReauth) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  Signin(email);
+  EnableSync(email);
+
+  TriggerSyncPaused();
+
+  ResolveAuthErrorState(Resolution::kReauth);
+
+  histogram_tester.ExpectTotalCount("Signin.SyncPaused.ResolutionTime.Reauth",
+                                    1);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(SigninMetricsServiceTest, SyncPausedResolutionTimeSignout) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  Signin(email);
+  EnableSync(email);
+
+  TriggerSyncPaused();
+
+  ResolveAuthErrorState(Resolution::kSignout);
+
+  histogram_tester.ExpectTotalCount("Signin.SyncPaused.ResolutionTime.Signout",
+                                    1);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+TEST_F(SigninMetricsServiceTest, SyncPausedWithLoadingCredentials) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  Signin(email);
+  EnableSync(email);
+
+  TriggerSyncPaused();
+
+  ASSERT_TRUE(pref_service().HasPrefPath(kSyncPausedStartTimePrefForTesting));
+  base::Time sync_paused_start_time =
+      pref_service().GetTime(kSyncPausedStartTimePrefForTesting);
+
+  // This simulates restarting the client, where the error may not necessarily
+  // be stored properly.
+  TriggerLoadingCredentialsWithNoError();
+
+  // Error time still exists and is not modified.
+  ASSERT_TRUE(pref_service().HasPrefPath(kSyncPausedStartTimePrefForTesting));
+  EXPECT_EQ(sync_paused_start_time,
+            pref_service().GetTime(kSyncPausedStartTimePrefForTesting));
+
+  // Reauth should not be recorded, even though we are in SyncPaused state.
+  histogram_tester.ExpectTotalCount("Signin.SyncPaused.ResolutionTime.Reauth",
+                                    0);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+
+  // Make sure the initial error time is not modified.
+  ASSERT_TRUE(pref_service().HasPrefPath(kSyncPausedStartTimePrefForTesting));
+  EXPECT_EQ(sync_paused_start_time,
+            pref_service().GetTime(kSyncPausedStartTimePrefForTesting));
+
+  // And still no values are recorded.
+  histogram_tester.ExpectTotalCount("Signin.SyncPaused.ResolutionTime.Reauth",
+                                    0);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+}
+
+// Regression test for: crbug.com/363401501.
+TEST_F(SigninMetricsServiceTest, ErrorNotificationEmptyAccount) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  ASSERT_FALSE(
+      GetIdentityTestEnvironment().identity_manager()->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin));
+
+  GetIdentityTestEnvironment().OnErrorStateOfRefreshTokenUpdatedForAccount(
+      CoreAccountInfo(), GoogleServiceAuthError::AuthErrorNone(),
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
 }

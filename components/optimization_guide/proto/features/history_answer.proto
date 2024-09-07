@@ -53,9 +53,14 @@ message Passage {
 }
 
 // History AQA answer response.
-// Next ID: 2
+// Next ID: 3
 message HistoryAnswerResponse {
+  // Answer contained in the response.
   Answer answer = 1;
+
+  // Whether the request contained an unanswerable question. If true, the
+  // `answer` field will be invalid.
+  bool is_unanswerable = 2;
 }
 
 // AQA answer.

@@ -4,7 +4,6 @@
 
 import '//resources/cr_elements/cr_shared_style.css.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -14,9 +13,9 @@ import {decodeString16} from './utils.js';
 
 // Displays an action associated with AutocompleteMatch (i.e. Clear
 // Browsing History, etc.)
-class RealboxActionElement extends PolymerElement {
+class SearchboxActionElement extends PolymerElement {
   static get is() {
-    return 'cr-realbox-action';
+    return 'cr-searchbox-action';
   }
 
   static get template() {
@@ -111,15 +110,7 @@ class RealboxActionElement extends PolymerElement {
   }
 
   private onActionMouseDown_(e: Event) {
-    if (loadTimeData.getBoolean('realboxCr23ExpandedStateLayout')) {
-      e.preventDefault();  // Prevents default browser action (focus).
-    }
-  }
-
-  private showCr23ActionIcon_(): boolean {
-    // Action icons are webkit-mask-image when chrome refresh expanded state
-    // layout is enabled.
-    return loadTimeData.getBoolean('realboxCr23ExpandedStateLayout');
+    e.preventDefault();  // Prevents default browser action (focus).
   }
 
   //============================================================================
@@ -148,4 +139,4 @@ class RealboxActionElement extends PolymerElement {
   }
 }
 
-customElements.define(RealboxActionElement.is, RealboxActionElement);
+customElements.define(SearchboxActionElement.is, SearchboxActionElement);

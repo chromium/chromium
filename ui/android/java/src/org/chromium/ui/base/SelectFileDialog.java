@@ -34,6 +34,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -796,7 +797,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         public Uri doInBackground() {
             try {
                 Context context = ContextUtils.getApplicationContext();
-                return ContentUriUtils.getContentUriFromFile(getFileForImageCapture(context));
+                return FileProviderUtils.getContentUriFromFile(getFileForImageCapture(context));
             } catch (IOException e) {
                 Log.e(TAG, "Cannot retrieve content uri from file", e);
                 return null;

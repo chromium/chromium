@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
@@ -38,7 +39,9 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -129,9 +132,7 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
 DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
 
 RedirectChainDetector::RedirectChainDetector(content::WebContents* web_contents)
-    : content_settings::PageSpecificContentSettings::SiteDataObserver(
-          web_contents),
-      content::WebContentsObserver(web_contents),
+    : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<RedirectChainDetector>(*web_contents),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
@@ -540,9 +541,38 @@ UrlAndSourceId RedirectChainDetector::GetLastCommittedURL() const {
           ->GetPageUkmSourceId());
 }
 
+namespace dips {
+void Populate3PcExceptions(content::BrowserContext* browser_context,
+                           content::WebContents* web_contents,
+                           const GURL& initial_url,
+                           const GURL& final_url,
+                           base::span<DIPSRedirectInfoPtr> redirects) {
+  const blink::StorageKey initial_url_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(initial_url));
+  const blink::StorageKey final_url_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(final_url));
+  // TODO: crbug.com/40883201 - When we move to //content, we will call
+  // content::GetContentClientForTesting()->browser() instead of instantiating
+  // ChromeContentBrowserClient ourselves.
+  ChromeContentBrowserClient cbc;
+  for (DIPSRedirectInfoPtr& redirect : redirects) {
+    redirect->has_3pc_exception =
+        cbc.IsFullCookieAccessAllowed(browser_context, web_contents,
+                                      redirect->url.url, initial_url_key) ||
+        cbc.IsFullCookieAccessAllowed(browser_context, web_contents,
+                                      redirect->url.url, final_url_key);
+  }
+}
+}  // namespace dips
+
 void RedirectChainDetector::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain) {
+  // We have to set `has_3pc_exception` on each redirect before passing them to
+  // the DIPSService, because calculating it depends on the WebContents.
+  dips::Populate3PcExceptions(web_contents()->GetBrowserContext(),
+                              web_contents(), chain->initial_url.url,
+                              chain->final_url.url, redirects);
   delayed_handler_.HandleRedirectChain(std::move(redirects), std::move(chain));
 }
 
@@ -575,6 +605,8 @@ void DIPSWebContentsObserver::IncrementPageSpecificBounceCount(
     return;
   }
 
+  // TODO: crbug.com/343631048 - move this out of DIPSWebContentsObserver into a
+  // DIPSService::Observer.
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
       web_contents()->GetPrimaryPage());
   pscs->IncrementStatefulBounceCount();
@@ -679,27 +711,17 @@ void DIPSBounceDetector::DidStartNavigation(
               .has_value());
 }
 
-void RedirectChainDetector::OnSiteDataAccessed(
-    const content_settings::AccessDetails& access_details) {
-  // NOTE: The current implementation is only acting on all site data types
-  // collapsed under `content_settings::SiteDataType::kStorage` with the
-  // exception of WebLocks (not monitored by the
-  // `content_settings::PageSpecificContentSettings`) as it's not persistent.
-  if (access_details.site_data_type !=
-      content_settings::SiteDataType::kStorage) {
+void RedirectChainDetector::NotifyStorageAccessed(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::StorageTypeAccessed storage_type,
+    bool blocked) {
+  if (!render_frame_host->GetPage().IsPrimary() || blocked) {
     return;
   }
 
-  if (!access_details.is_from_primary_page ||
-      access_details.blocked_by_policy) {
-    return;
-  }
-
-  detector_.OnClientSiteDataAccessed(
-      access_details.url, ToCookieOperation(access_details.access_type));
+  detector_.OnClientSiteDataAccessed(render_frame_host->GetLastCommittedURL(),
+                                     CookieOperation::kChange);
 }
-
-void RedirectChainDetector::OnStatefulBounceDetected() {}
 
 void RedirectChainDetector::PrimaryPageChanged(content::Page& page) {
   PrimaryPageMarker::CreateForPage(page);

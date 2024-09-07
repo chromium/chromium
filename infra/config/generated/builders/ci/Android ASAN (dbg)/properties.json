@@ -50,7 +50,8 @@
           "builder": "android-asan-compile-dbg",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android ASAN (dbg)/targets"
     }
   },
   "$build/reclient": {

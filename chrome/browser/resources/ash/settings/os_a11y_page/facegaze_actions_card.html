@@ -12,6 +12,10 @@
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
   }
+
+  .settings-box .action-row {
+    align-items: flex-start;
+  }
 </style>
 
 <template is="dom-if" if="[[showAddActionDialog_]]" restamp>
@@ -38,9 +42,12 @@
   </settings-toggle-button>
   <dom-repeat items="[[commandPairs_]]">
     <template>
-      <div class="settings-box first">
-        <div class="start settings-box-text" aria-hidden="true">
-          <span>[[getActionDisplayText_(item.action)]]</span>
+      <div class="settings-box">
+        <div class="start settings-box-text two-line single-column action-row">
+          <div>[[getActionDisplayText_(item.action)]]</div>
+          <template is="dom-if" if="[[getSubLabel_(item.action)]]">
+            <div class="secondary">[[getSubLabel_(item.action)]]</div>
+          </template>
         </div>
         <template is="dom-if" if="[[item.gesture]]" restamp>
           <cros-chip
@@ -48,6 +55,8 @@
               label="[[getGestureDisplayText_(item.gesture)]]"
               on-click="onConfigureGestureButtonClick_"
               disabled="[[disableConfigureControls_]]">
+            <iron-icon icon="[[getGestureIconName_(item.gesture)]]" slot="icon">
+            </iron-icon>
           </cros-chip>
         </template>
         <template is="dom-if" if="[[!item.gesture]]" restamp>

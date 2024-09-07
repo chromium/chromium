@@ -378,6 +378,33 @@ Parents:
   * created when a bundle specifies `per_test_modifications`
   * traversed when generating targets spec files for builders that have their targets defined in starlark
 
+### targets|remove-mixin
+
+A mixin to remove from a test included in a bundle.
+
+Variable reference: `_targets_nodes.REMOVE_MIXIN`
+
+Created by
+
+* `targets.legacy_basic_suite`
+  * created when the config for a test specifies `remove_mixins`
+* `targets.bundle`
+  * created when `per_test_modifications` contains values that are `targets.per_test_modification` instances that specify `remove_mixins`
+
+Children
+
+* [targets|mixin](#Node-type-information-targets_mixin) (1)
+  * created when a test specifies a mixin in `remove_mixins`
+  * created when `per_test_modifications` contains values that are `targets.per_test_modification` instances that specify `remove_mixins`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
+Parents
+
+* [targets|per-test-modification](#targets_per_test_modification) (1)
+  * created when a test specifies a mixin in `remove_mixins`
+  * created when `per_test_modifications` contains values that are `targets.per_test_modification` instances that specify `remove_mixins`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
 ### project
 
 A global node that can be used to register other nodes for generators to operate on

@@ -41,9 +41,14 @@ extern NSString* const kTableViewRowHighlightColor;
 extern NSString* const kTertiaryBackgroundColor;
 extern NSString* const kUpdatedTertiaryBackgroundColor;
 extern NSString* const kTextPrimaryColor;
+// Primary text color when the background color is inverted.
+extern NSString* const kInvertedTextPrimaryColor;
 extern NSString* const kTextSecondaryColor;
+// Secondary text color when the background color is inverted.
+extern NSString* const kInvertedTextSecondaryColor;
 extern NSString* const kTextTertiaryColor;
 extern NSString* const kTextQuaternaryColor;
+extern NSString* const kTextLightTertiaryDarkPrimaryColor;
 extern NSString* const kTextfieldBackgroundColor;
 extern NSString* const kTextfieldFocusedBackgroundColor;
 extern NSString* const kTextfieldHighlightBackgroundColor;

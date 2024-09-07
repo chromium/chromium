@@ -45,8 +45,11 @@ specific_include_rules = {
   ],
 
   "eg_tests_hook\.mm": [
+   "+components/saved_tab_groups/fake_tab_group_sync_service.h",
+   "+components/saved_tab_groups/tab_group_sync_coordinator_impl.h",
    "+components/signin/internal/identity_manager",
    "+components/password_manager/ios",
    "+components/password_manager/core/browser/sharing/fake_recipients_fetcher.h",
+   "+components/plus_addresses/fake_plus_address_service.h"
   ],
 }

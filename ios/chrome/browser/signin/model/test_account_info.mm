@@ -97,7 +97,7 @@ NSString* const kCoderUserCapabilityKey = @"CapabilityKey";
                     userGivenName:(NSString*)userGivenName
                      capabilities:
                          (NSDictionary<NSString*, NSNumber*>*)capabilities {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _userEmail = userEmail;
     if (gaiaID.length > 0) {
       _gaiaID = gaiaID;

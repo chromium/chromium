@@ -4,55 +4,53 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MetricsBrowserProxyImpl, ReadAnythingLogger, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {ColorMenu} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {getItemsInMenu, stubAnimationFrame, suppressInnocuousErrors} from './common.js';
+import {emitEventWithTarget, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('ColorMenu', () => {
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
-  let toolbar: ReadAnythingToolbarElement;
+  let colorMenu: ColorMenu;
+  let metrics: TestMetricsBrowserProxy;
 
   setup(() => {
     suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    toolbar = document.createElement('read-anything-toolbar');
-    document.body.appendChild(toolbar);
+
+    metrics = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metrics);
+    ReadAnythingLogger.setInstance(new ReadAnythingLogger());
+
+    colorMenu = document.createElement('color-menu');
+    document.body.appendChild(colorMenu);
     flush();
   });
 
-  test('is dropdown menu', () => {
-    stubAnimationFrame();
-    const menuButton =
-        toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#color');
+  test('theme change', async () => {
+    const theme1 = chrome.readingMode.blueTheme;
+    emitEventWithTarget(
+        colorMenu.$.menu, ToolbarEvent.THEME, {detail: {data: theme1}});
+    assertEquals(theme1, chrome.readingMode.colorTheme);
 
-    menuButton!.click();
-    flush();
+    const theme2 = chrome.readingMode.defaultTheme;
+    emitEventWithTarget(
+        colorMenu.$.menu, ToolbarEvent.THEME, {detail: {data: theme2}});
+    assertEquals(theme2, chrome.readingMode.colorTheme);
 
-    assertTrue(toolbar.$.colorMenu.get().open);
-  });
+    const theme3 = chrome.readingMode.darkTheme;
+    emitEventWithTarget(
+        colorMenu.$.menu, ToolbarEvent.THEME, {detail: {data: theme3}});
+    assertEquals(theme3, chrome.readingMode.colorTheme);
 
-  test('option click propagates change', () => {
-    const colorMenuOptions = getItemsInMenu(toolbar.$.colorMenu);
-    let colorsEmitted = 0;
-    document.addEventListener(ToolbarEvent.THEME, () => colorsEmitted++);
-
-    let previousPropagatedColor = -1;
-    colorMenuOptions.forEach(option => {
-      option.click();
-      assertGT(chrome.readingMode.colorTheme, previousPropagatedColor);
-      previousPropagatedColor = chrome.readingMode.colorTheme;
-    });
-    assertEquals(colorMenuOptions.length, colorsEmitted);
+    assertEquals(
+        ReadAnythingSettingsChange.THEME_CHANGE,
+        await metrics.whenCalled('recordTextSettingsChange'));
+    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
   });
 });

@@ -245,6 +245,9 @@ void LogCreditCardUploadConfirmationViewResultMetric(
     SaveCardPromptResult metric,
     bool is_card_uploaded);
 
+void LogGetCardUploadDetailsRequestLatencyMetric(base::TimeDelta duration,
+                                                 bool is_successful);
+
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,

@@ -51,7 +51,7 @@ class PinnedActionToolbarButton : public ToolbarButton,
   }
   void SetActionEngaged(bool action_engaged);
   void UpdateIcon() override;
-  bool ShouldShowEphemerallyInToolbar() { return should_show_in_toolbar_; }
+  bool ShouldShowEphemerallyInToolbar();
   bool IsIconVisible() { return is_icon_visible_; }
   bool IsPinned() { return pinned_; }
 
@@ -64,11 +64,11 @@ class PinnedActionToolbarButton : public ToolbarButton,
   // ToolbarButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   void UpdatePinnedStateForContextMenu();
   void UpdateStatusIndicator();
@@ -80,6 +80,7 @@ class PinnedActionToolbarButton : public ToolbarButton,
   // ui::SimpleMenuModel::Delegate:
   bool IsItemForCommandIdDynamic(int command_id) const override;
   std::u16string GetLabelForCommandId(int command_id) const override;
+  ui::ImageModel GetIconForCommandId(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdEnabled(int command_id) const override;
 
@@ -104,6 +105,10 @@ class PinnedActionToolbarButton : public ToolbarButton,
   // Set when the action is currently showing an associated bubble.
   bool is_action_showing_bubble_ = false;
   bool skip_execution_ = false;
+
+  // Set when something is currently anchored to the button (bubble dialog,
+  // context menu, etc.)
+  bool has_anchor_ = false;
 
   // Set when a button should be shown in the toolbar regardless of whether it
   // is pinned or active. This is used in cases like when the recent download

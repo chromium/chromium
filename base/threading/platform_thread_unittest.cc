@@ -251,10 +251,9 @@ TEST(PlatformThreadTest, FunctionTimesTen) {
 namespace {
 
 constexpr ThreadType kAllThreadTypes[] = {
-    ThreadType::kRealtimeAudio,     ThreadType::kDisplayCritical,
-    ThreadType::kCompositing,       ThreadType::kDefault,
-    ThreadType::kResourceEfficient, ThreadType::kUtility,
-    ThreadType::kBackground};
+    ThreadType::kRealtimeAudio, ThreadType::kDisplayCritical,
+    ThreadType::kDefault,       ThreadType::kResourceEfficient,
+    ThreadType::kUtility,       ThreadType::kBackground};
 
 class ThreadTypeTestThread : public FunctionTestThread {
  public:
@@ -340,72 +339,6 @@ void TestPriorityResultingFromThreadType(ThreadType thread_type,
   ASSERT_FALSE(thread.IsRunning());
 }
 
-ThreadPriorityForTest GetCurrentThreadPriorityIfStartWithThreadType(
-    ThreadType thread_type,
-    MessagePumpType message_pump_type) {
-  Thread::Options options;
-  options.thread_type = thread_type;
-  options.message_pump_type = message_pump_type;
-
-  Thread thread("GetCurrentThreadPriorityIfStartWithThreadType");
-  thread.StartWithOptions(std::move(options));
-  thread.WaitUntilThreadStarted();
-
-  ThreadPriorityForTest priority;
-  thread.task_runner()->PostTask(
-      FROM_HERE, BindOnce(
-                     [](ThreadPriorityForTest* priority) {
-                       *priority =
-                           PlatformThread::GetCurrentThreadPriorityForTest();
-                     },
-                     &priority));
-  thread.Stop();
-
-  return priority;
-}
-
-ThreadPriorityForTest GetCurrentThreadPriorityIfSetThreadTypeLater(
-    ThreadType thread_type,
-    MessagePumpType message_pump_type) {
-  Thread::Options options;
-  options.message_pump_type = message_pump_type;
-
-  Thread thread("GetCurrentThreadPriorityIfSetThreadTypeLater");
-  thread.StartWithOptions(std::move(options));
-  thread.WaitUntilThreadStarted();
-
-  ThreadPriorityForTest priority;
-  thread.task_runner()->PostTask(
-      FROM_HERE,
-      BindOnce(
-          [](ThreadType thread_type, ThreadPriorityForTest* priority) {
-            PlatformThread::SetCurrentThreadType(thread_type);
-            *priority = PlatformThread::GetCurrentThreadPriorityForTest();
-          },
-          thread_type, &priority));
-  thread.Stop();
-
-  return priority;
-}
-
-void TestPriorityResultingFromThreadType(ThreadType thread_type,
-                                         MessagePumpType message_pump_type,
-                                         ThreadPriorityForTest priority) {
-  testing::Message message;
-  message << "thread_type: " << static_cast<int>(thread_type)
-          << ", message_pump_type: " << static_cast<int>(message_pump_type);
-  SCOPED_TRACE(message);
-
-  if (PlatformThread::CanChangeThreadType(ThreadType::kDefault, thread_type)) {
-    EXPECT_EQ(GetCurrentThreadPriorityIfStartWithThreadType(thread_type,
-                                                            message_pump_type),
-              priority);
-    EXPECT_EQ(GetCurrentThreadPriorityIfSetThreadTypeLater(thread_type,
-                                                           message_pump_type),
-              priority);
-  }
-}
-
 }  // namespace
 
 // Test changing a created thread's type.
@@ -451,11 +384,7 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
       ThreadType::kBackground, ThreadType::kResourceEfficient));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                    ThreadType::kDefault));
-  EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
-                                                   ThreadType::kCompositing));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kDefault,
-                                                   ThreadType::kBackground));
-  EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kCompositing,
                                                    ThreadType::kBackground));
 #else
   EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
@@ -467,12 +396,7 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
   EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                 ThreadType::kDefault),
             kCanIncreasePriority);
-  EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
-                                                ThreadType::kCompositing),
-            kCanIncreasePriority);
   EXPECT_TRUE(PlatformThread::CanChangeThreadType(ThreadType::kDefault,
-                                                  ThreadType::kBackground));
-  EXPECT_TRUE(PlatformThread::CanChangeThreadType(ThreadType::kCompositing,
                                                   ThreadType::kBackground));
 #endif
   EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
@@ -514,27 +438,6 @@ TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
 
   TestPriorityResultingFromThreadType(ThreadType::kDefault,
                                       ThreadPriorityForTest::kNormal);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_APPLE)
-  TestPriorityResultingFromThreadType(ThreadType::kCompositing,
-                                      ThreadPriorityForTest::kDisplay);
-  TestPriorityResultingFromThreadType(ThreadType::kCompositing,
-                                      MessagePumpType::UI,
-                                      ThreadPriorityForTest::kDisplay);
-  TestPriorityResultingFromThreadType(ThreadType::kCompositing,
-                                      MessagePumpType::IO,
-                                      ThreadPriorityForTest::kDisplay);
-#else  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
-  TestPriorityResultingFromThreadType(ThreadType::kCompositing,
-                                      ThreadPriorityForTest::kNormal);
-  TestPriorityResultingFromThreadType(ThreadType::kCompositing,
-                                      MessagePumpType::UI,
-                                      ThreadPriorityForTest::kNormal);
-  TestPriorityResultingFromThreadType(ThreadType::kCompositing,
-                                      MessagePumpType::IO,
-                                      ThreadPriorityForTest::kNormal);
-#endif
   TestPriorityResultingFromThreadType(ThreadType::kDisplayCritical,
                                       ThreadPriorityForTest::kDisplay);
   TestPriorityResultingFromThreadType(ThreadType::kRealtimeAudio,

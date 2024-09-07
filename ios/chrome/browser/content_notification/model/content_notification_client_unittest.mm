@@ -19,9 +19,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -36,9 +36,8 @@
 class ContentNotificationClientTest : public PlatformTest {
  protected:
   ContentNotificationClientTest() {
-    ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
-            TestChromeBrowserState::Builder());
+    ChromeBrowserState* browser_state = profile_manager_.AddProfileWithBuilder(
+        TestChromeBrowserState::Builder());
     BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])
@@ -82,7 +81,7 @@ class ContentNotificationClientTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<ContentNotificationClient> client_;
@@ -96,7 +95,7 @@ class ContentNotificationClientTest : public PlatformTest {
 // Tests that HandleNotificationReception does nothing and returns "NoData".
 TEST_F(ContentNotificationClientTest, HandleNotificationReception) {
   EXPECT_EQ(client_->HandleNotificationReception(CreatePayload(NO)),
-            UIBackgroundFetchResultNoData);
+            std::nullopt);
 }
 
 // Tests the appropriate secondary actions are registered.

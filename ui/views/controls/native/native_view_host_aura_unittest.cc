@@ -126,9 +126,8 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
   void CreateHost() {
     CreateTopLevel();
     CreateTestingHost();
-    child_.reset(CreateChildForHost(toplevel()->GetNativeView(),
-                                    toplevel()->client_view(), new View,
-                                    host()));
+    child_ = CreateChildForHost(toplevel()->GetNativeView(),
+                                toplevel()->client_view(), new View, host());
   }
 
   // test::NativeViewHostTestBase:

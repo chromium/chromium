@@ -47,7 +47,8 @@
           "builder": "android_compile_x64_dbg",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android x64 Builder All Targets (dbg)/targets"
     }
   },
   "$build/reclient": {

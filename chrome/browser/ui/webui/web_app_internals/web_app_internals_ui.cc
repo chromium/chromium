@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/web_app_internals_resources.h"
 #include "chrome/grit/web_app_internals_resources_map.h"
@@ -42,6 +43,10 @@ WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
   internals->UseStringsJs();
   internals->AddBoolean("isIwaDevModeEnabled",
                         web_app::IsIwaDevModeEnabled(profile));
+  internals->AddBoolean(
+      "isIwaKeyDistributionDevModeEnabled",
+      web_app::IsIwaDevModeEnabled(profile) &&
+          base::FeatureList::IsEnabled(web_app::kIwaKeyDistributionDevMode));
 #if BUILDFLAG(IS_CHROMEOS)
   internals->AddBoolean("isIwaPolicyInstallEnabled", true);
 #else

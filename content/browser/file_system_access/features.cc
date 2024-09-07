@@ -11,19 +11,19 @@ namespace content::features {
 
 // When enabled, pages in the BFCache can be evicted when they hold
 // FileSystemAccessLockManager Locks that are contentious with the Locks of an
-// active page. blink::features::kFileSystemAccessLockingScheme must be enabled
-// as well for this to have any effect.
+// active page.
 BASE_FEATURE(kFileSystemAccessBFCache,
              "FileSystemAccessBFCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/40061211): Remove this flag eventually.
-// When enabled, drag-and-dropped files and directories will be checked against
-// the File System Access blocklist. This feature was disabled since it broke
-// some applications.
+//
+// When enabled, drag-and-dropped directories will be checked against the File
+// System Access blocklist. This feature was disabled since it broke some
+// applications.
 BASE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist,
              "FileSystemAccessDragAndDropCheckBlocklist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/40896420): Remove this flag eventually.
 // TODO(b/354661640): Temporarily disable this flag while investigating CrOS

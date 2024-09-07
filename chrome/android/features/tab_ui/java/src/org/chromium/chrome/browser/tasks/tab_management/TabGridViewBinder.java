@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,11 +27,14 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.IphProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
@@ -38,11 +44,11 @@ import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /**
- * {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab grid.
- * This class supports both full and partial updates to the {@link TabGridViewHolder}.
+ * {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab grid. This class
+ * supports both full and partial updates to the {@link TabGridViewHolder}.
  */
 class TabGridViewBinder {
-    private static TabListMediator.ThumbnailFetcher sThumbnailFetcherForTesting;
+    private static ThumbnailFetcher sThumbnailFetcherForTesting;
     private static final String SHOPPING_METRICS_IDENTIFIER = "EnterTabSwitcher";
 
     /**
@@ -127,9 +133,10 @@ class TabGridViewBinder {
             final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
             view.setMinimumHeight(cardSize.getHeight());
             view.setMinimumWidth(cardSize.getWidth());
-            view.getLayoutParams().height = cardSize.getHeight();
-            view.getLayoutParams().width = cardSize.getWidth();
-            view.setLayoutParams(view.getLayoutParams());
+            var layoutParams = view.getLayoutParams();
+            layoutParams.height = cardSize.getHeight();
+            layoutParams.width = cardSize.getWidth();
+            view.setLayoutParams(layoutParams);
             updateThumbnail(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
@@ -151,38 +158,15 @@ class TabGridViewBinder {
         if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
         } else if (TabProperties.IPH_PROVIDER == propertyKey) {
-            TabListMediator.IphProvider provider = model.get(TabProperties.IPH_PROVIDER);
+            IphProvider provider = model.get(TabProperties.IPH_PROVIDER);
             if (provider != null) provider.showIPH(view.fastFindViewById(R.id.tab_thumbnail));
         } else if (TabProperties.CARD_ANIMATION_STATUS == propertyKey) {
             ((TabGridView) view)
                     .scaleTabGridCardView(model.get(TabProperties.CARD_ANIMATION_STATUS));
-        } else if (TabProperties.IS_INCOGNITO == propertyKey) {
-            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
-            boolean isSelected = model.get(TabProperties.IS_SELECTED);
-            updateColor(view, isIncognito, isSelected);
-            updateColorForActionButton(view, isIncognito, isSelected);
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
         } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
-            fetchPriceDrop(
-                    model,
-                    (priceDrop) -> {
-                        PriceCardView priceCardView =
-                                (PriceCardView) view.fastFindViewById(R.id.price_info_box_outer);
-                        if (priceDrop == null) {
-                            priceCardView.setVisibility(View.GONE);
-                            return;
-                        }
-                        priceCardView.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
-                        priceCardView.setVisibility(View.VISIBLE);
-                        priceCardView.setContentDescription(
-                                view.getResources()
-                                        .getString(
-                                                R.string.accessibility_tab_price_card,
-                                                priceDrop.previousPrice,
-                                                priceDrop.price));
-                    },
-                    true);
+            fetchPriceDrop(model, (priceDrop) -> onPriceDropFetched(view, model, priceDrop), true);
         } else if (TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP == propertyKey) {
             if (model.get(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP)) {
                 PriceCardView priceCardView =
@@ -220,6 +204,8 @@ class TabGridViewBinder {
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
+        } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
+            updateTabCardLabel(view, model.get(TabProperties.TAB_CARD_LABEL_DATA));
         }
     }
 
@@ -236,25 +222,19 @@ class TabGridViewBinder {
             ((TabGridView) view)
                     .setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
             ((TabGridView) view).setItem(tabId);
-        } else if (TabProperties.IS_INCOGNITO == propertyKey) {
-            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
-            boolean isSelected = model.get(TabProperties.IS_SELECTED);
-            updateColor(view, isIncognito, isSelected);
-            updateColorForSelectionToggleButton(view, isIncognito, isSelected);
         } else if (TabProperties.TAB_ACTION_STATE == propertyKey) {
-            updateColor(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
             updateColorForSelectionToggleButton(
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
+        } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
+            // Ignore this data for tab card labels in selectable mode.
+            updateTabCardLabel(view, /* tabCardLabelData= */ null);
         }
     }
 
     static void setNullableClickListener(
-            @Nullable TabListMediator.TabActionListener listener,
+            @Nullable TabActionListener listener,
             @NonNull View view,
             @NonNull PropertyModel propertyModel) {
         if (listener == null) {
@@ -268,7 +248,7 @@ class TabGridViewBinder {
     }
 
     static void setNullableLongClickListener(
-            @Nullable TabListMediator.TabActionListener listener,
+            @Nullable TabActionListener listener,
             @NonNull View view,
             @NonNull PropertyModel propertyModel) {
         if (listener == null) {
@@ -305,6 +285,55 @@ class TabGridViewBinder {
                         });
     }
 
+    private static void onPriceDropFetched(
+            ViewLookupCachingFrameLayout rootView,
+            PropertyModel model,
+            @Nullable ShoppingPersistedTabData.PriceDrop priceDrop) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+            // TODO(crbug.com/361169665): Do activity updates or price drops take priority. Assume
+            // activity updates win for now.
+            if (model.get(TabProperties.TAB_CARD_LABEL_DATA) != null) return;
+
+            if (priceDrop == null) {
+                updateTabCardLabel(rootView, null);
+                return;
+            }
+
+            TextResolver contentDescriptionResolver =
+                    (context) -> {
+                        return context.getResources()
+                                .getString(
+                                        R.string.accessibility_tab_price_card,
+                                        priceDrop.previousPrice,
+                                        priceDrop.price);
+                    };
+            PriceDropTextResolver priceDropResolver =
+                    new PriceDropTextResolver(priceDrop.price, priceDrop.previousPrice);
+            TabCardLabelData labelData =
+                    new TabCardLabelData(
+                            TabCardLabelType.PRICE_DROP,
+                            priceDropResolver,
+                            /* asyncImageFactory= */ null,
+                            contentDescriptionResolver);
+            updateTabCardLabel(rootView, labelData);
+        } else {
+            PriceCardView priceCardView =
+                    (PriceCardView) rootView.fastFindViewById(R.id.price_info_box_outer);
+            if (priceDrop == null) {
+                priceCardView.setVisibility(View.GONE);
+                return;
+            }
+            priceCardView.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
+            priceCardView.setVisibility(View.VISIBLE);
+            priceCardView.setContentDescription(
+                    rootView.getResources()
+                            .getString(
+                                    R.string.accessibility_tab_price_card,
+                                    priceDrop.previousPrice,
+                                    priceDrop.price));
+        }
+    }
+
     private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
         TabThumbnailView thumbnail = (TabThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
 
@@ -312,7 +341,7 @@ class TabGridViewBinder {
         final boolean isSelected = model.get(TabProperties.IS_SELECTED);
         thumbnail.updateThumbnailPlaceholder(model.get(TabProperties.IS_INCOGNITO), isSelected);
 
-        final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
+        final ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
         if (fetcher == null || cardSize == null) {
             thumbnail.setImageDrawable(null);
@@ -322,31 +351,22 @@ class TabGridViewBinder {
         // TODO(crbug.com/40882123): Consider unsetting the bitmap early to allow memory reuse if
         // needed.
         final Size thumbnailSize = TabUtils.deriveThumbnailSize(cardSize, view.getContext());
-        Callback<Bitmap> callback =
+        // This callback will be made cancelable inside ThumbnailFetcher so only the latest fetch
+        // request will return. When the fetcher is replaced any outbound requests are first
+        // canceled inside TabListMediator so it is not necessary to do any sort of validation that
+        // the callback matches the current thumbnail fetcher and grid card size.
+        Callback<Drawable> callback =
                 result -> {
-                    final boolean isMostRecentRequest =
-                            fetcher == model.get(TabProperties.THUMBNAIL_FETCHER)
-                                    && cardSize.equals(model.get(TabProperties.GRID_CARD_SIZE));
                     if (result != null) {
-                        // TODO(crbug.com/40882123): look into cancelling if there are multiple
-                        // in-flight
-                        // requests. Ensure only the most recently requested bitmap is used.
-                        if (!isMostRecentRequest) {
-                            result.recycle();
-                            return;
-                        }
-                        // Adjust bitmap to thumbnail.
-                        TabUtils.setBitmapAndUpdateImageMatrix(thumbnail, result, thumbnailSize);
-                    } else if (isMostRecentRequest) {
-                        // If the most recent request is a null bitmap ensure a placeholder is
-                        // visible.
+                        TabUtils.setDrawableAndUpdateImageMatrix(thumbnail, result, thumbnailSize);
+                    } else {
                         thumbnail.setImageDrawable(null);
                     }
                 };
         if (sThumbnailFetcherForTesting != null) {
-            sThumbnailFetcherForTesting.fetch(callback, thumbnailSize, isSelected);
+            sThumbnailFetcherForTesting.fetch(thumbnailSize, isSelected, callback);
         } else {
-            fetcher.fetch(callback, thumbnailSize, isSelected);
+            fetcher.fetch(thumbnailSize, isSelected, callback);
         }
     }
 
@@ -431,33 +451,52 @@ class TabGridViewBinder {
 
     private static void updateColorForSelectionToggleButton(
             ViewLookupCachingFrameLayout rootView, boolean isIncognito, boolean isSelected) {
-        final int defaultLevel =
-                rootView.getResources().getInteger(R.integer.list_item_level_default);
-        final int selectedLevel =
-                rootView.getResources().getInteger(R.integer.list_item_level_selected);
-
         ImageView actionButton = (ImageView) rootView.fastFindViewById(R.id.action_button);
-        actionButton.getBackground().setLevel(isSelected ? selectedLevel : defaultLevel);
+
+        Context context = rootView.getContext();
+        Resources res = rootView.getResources();
+        actionButton.getBackground().setLevel(getCheckmarkLevel(res, isSelected));
         DrawableCompat.setTintList(
                 actionButton.getBackground().mutate(),
                 TabUiThemeProvider.getToggleActionButtonBackgroundTintList(
-                        rootView.getContext(), isIncognito, isSelected));
+                        context, isIncognito, isSelected));
 
         // The check should be invisible if not selected.
-        actionButton.getDrawable().setAlpha(isSelected ? 255 : 0);
+        Drawable drawable = actionButton.getDrawable();
+        drawable.setAlpha(isSelected ? 255 : 0);
         ImageViewCompat.setImageTintList(
                 actionButton,
                 isSelected
                         ? TabUiThemeProvider.getToggleActionButtonCheckedDrawableTintList(
-                                rootView.getContext(), isIncognito)
+                                context, isIncognito)
                         : null);
 
         if (isSelected) {
-            ((AnimatedVectorDrawableCompat) actionButton.getDrawable()).start();
+            ((AnimatedVectorDrawableCompat) drawable).start();
         }
     }
 
-    static void setThumbnailFeatureForTesting(TabListMediator.ThumbnailFetcher fetcher) {
+    private static void updateTabCardLabel(
+            ViewLookupCachingFrameLayout rootView, @Nullable TabCardLabelData tabCardLabelData) {
+        @Nullable ViewStub stub = (ViewStub) rootView.fastFindViewById(R.id.tab_card_label_stub);
+        TabCardLabelView labelView;
+        if (stub != null) {
+            if (tabCardLabelData == null) return;
+
+            labelView = (TabCardLabelView) stub.inflate();
+        } else {
+            labelView = (TabCardLabelView) rootView.fastFindViewById(R.id.tab_card_label);
+        }
+        labelView.setData(tabCardLabelData);
+    }
+
+    private static int getCheckmarkLevel(Resources res, boolean isSelected) {
+        return isSelected
+                ? res.getInteger(R.integer.list_item_level_selected)
+                : res.getInteger(R.integer.list_item_level_default);
+    }
+
+    static void setThumbnailFeatureForTesting(ThumbnailFetcher fetcher) {
         sThumbnailFetcherForTesting = fetcher;
         ResettersForTesting.register(() -> sThumbnailFetcherForTesting = null);
     }

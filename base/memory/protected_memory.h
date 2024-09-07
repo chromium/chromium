@@ -33,15 +33,18 @@
 // Instances of `base::ProtectedMemory` use constant initialization. To allow
 // protection of objects which do not provide constant initialization or would
 // require a global constructor, `base::ProtectedMemory` provides lazy
-// initialization through `ProtectedMemoryInitializer`. Explicit initialization
-// through `ProtectedMemoryInitializer` is mandatory, even for objects that
-// provide constant initialization. This is because on some platforms, the
-// memory section doesn't start as readonly and needs to be initialized that way
-// at runtime. The requirement for explicit initialization gives an opportunity
-// to perform this initialization and ensures that in the unlikely event that
-// the value is modified before the memory is initialized to read-only, it will
-// be forced back to a known, safe, initial state before it ever used. If data
-// is accessed without initialization a CHECK triggers.
+// initialization through `ProtectedMemoryInitializer`. Additionally, on
+// platforms where it is not possible to have the protected memory section start
+// as read-only, the very first call to ProtectedMemoryInitializer will
+// initialize the memory section to read-only. Explicit initialization through
+// `ProtectedMemoryInitializer` is mandatory, even for objects that provide
+// constant initialization. This ensures that in the unlikely event that the
+// value is modified before the memory is initialized to read-only, it will be
+// forced back to a known, safe, initial state before it ever used. If data is
+// accessed without initialization a CHECK triggers. This CHECK is not expected
+// to provided security guarantees, but to help catch programming errors.
+//
+// TODO(crbug.com/356428974): Improve protection offered by Protected Memory.
 //
 // `base::ProtectedMemory` requires T to be trivially destructible. T having
 // a non-trivial constructor indicates that is holds data which can not be
@@ -50,7 +53,7 @@
 // EXAMPLE:
 //
 //  struct Items { void* item1; };
-//  static DEFINE_PROTECTED_DATA base::ProtectedMemory<Items, false> items;
+//  static DEFINE_PROTECTED_DATA base::ProtectedMemory<Items> items;
 //  void InitializeItems() {
 //    // Explicitly set items read-write before writing to it.
 //    auto writer = base::AutoWritableMemory(items);
@@ -60,7 +63,7 @@
 //  }
 //
 //  using FnPtr = void (*)(void);
-//  DEFINE_PROTECTED_DATA base::ProtectedMemory<FnPtr, true> fnPtr;
+//  DEFINE_PROTECTED_DATA base::ProtectedMemory<FnPtr> fnPtr;
 //  FnPtr ResolveFnPtr(void) {
 //    // `ProtectedMemoryInitializer` is a helper class for creating a static
 //    // initializer for a ProtectedMemory variable. It implicitly sets the
@@ -79,9 +82,11 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/page_size.h"
 #include "base/memory/protected_memory_buildflags.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
@@ -114,8 +119,55 @@ __declspec(selectany) char __stop_protected_memory;
 
 #define DECLARE_PROTECTED_DATA constinit
 #define DEFINE_PROTECTED_DATA constinit __declspec(allocate("prot$mem"))
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+// This value is used to align the writers variable. That variable needs to be
+// aligned to ensure that the protected memory section starts on a page
+// boundary.
+#if (PA_BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)) || \
+    (PA_BUILDFLAG(IS_LINUX) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64))
+// arm64 supports 4kb, 16kb, and 64kb pages. Set to the largest of 64kb as that
+// will guarantee the section is page aligned regardless of the choice.
+inline constexpr int kProtectedMemoryAlignment = 65536;
+#elif PA_BUILDFLAG(PA_ARCH_CPU_PPC64) || defined(ARCH_CPU_PPC64)
+// Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
+// sizes. Set to the largest of 64kb as that will guarantee the section is page
+// aligned regardless of the choice.
+inline constexpr int kProtectedMemoryAlignment = 65536;
+#elif defined(_MIPS_ARCH_LOONGSON) || PA_BUILDFLAG(PA_ARCH_CPU_LOONGARCH64) || \
+    defined(ARCH_CPU_LOONGARCH64)
+// 16kb page size
+inline constexpr int kProtectedMemoryAlignment = 16384;
 #else
-#error "Protected Memory is currently only supported on Windows."
+// 4kb page size
+inline constexpr int kProtectedMemoryAlignment = 4096;
+#endif
+
+__asm__(".section protected_memory, \"a\"\n\t");
+__asm__(".section protected_memory_buffer, \"a\"\n\t");
+
+// Explicitly mark these variables hidden so the symbols are local to the
+// currently built component. Otherwise they are created with global (external)
+// linkage and component builds would break because a single pair of these
+// symbols would override the rest.
+__attribute__((visibility("hidden"))) extern char __start_protected_memory;
+__attribute__((visibility("hidden"))) extern char __stop_protected_memory;
+
+#define DECLARE_PROTECTED_DATA constinit
+#define DEFINE_PROTECTED_DATA \
+  constinit __attribute__((section("protected_memory")))
+#elif BUILDFLAG(IS_MAC)
+// The segment the section is in is defined with a linker flag in
+// build/config/mac/BUILD.gn
+#define DECLARE_PROTECTED_DATA constinit
+#define DEFINE_PROTECTED_DATA \
+  constinit __attribute__((section("PROTECTED_MEMORY, protected_memory")))
+
+extern char __start_protected_memory __asm(
+    "section$start$PROTECTED_MEMORY$protected_memory");
+extern char __stop_protected_memory __asm(
+    "section$end$PROTECTED_MEMORY$protected_memory");
+#else
+#error "Protected Memory is not supported on this platform."
 #endif
 
 #else
@@ -215,7 +267,7 @@ class ProtectedMemory {
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 namespace internal {
 // Checks that the byte at `ptr` is read-only.
-BASE_EXPORT bool IsMemoryReadOnly(const void* ptr);
+BASE_EXPORT void CheckMemoryReadOnly(const void* ptr);
 
 // Abstract out platform-specific methods to get the beginning and end of the
 // PROTECTED_MEMORY_SECTION. ProtectedMemoryEnd returns a pointer to the byte
@@ -240,8 +292,8 @@ class BASE_EXPORT AutoWritableMemoryBase {
   }
 
   template <typename T>
-  static bool IsObjectReadOnly(const T& object) {
-    return internal::IsMemoryReadOnly(std::addressof(object));
+  static void CheckObjectReadOnly(const T& object) {
+    internal::CheckMemoryReadOnly(std::addressof(object));
   }
 
   template <typename T>
@@ -254,6 +306,14 @@ class BASE_EXPORT AutoWritableMemoryBase {
   static bool SetProtectedSectionReadOnly() {
     return SetMemoryReadOnly(internal::kProtectedMemoryStart,
                              internal::kProtectedMemoryEnd);
+  }
+
+  static bool IsSectionStartPageAligned() {
+    const uintptr_t protected_memory_start =
+        reinterpret_cast<uintptr_t>(internal::kProtectedMemoryStart);
+    const uintptr_t page_start =
+        bits::AlignDown(protected_memory_start, GetPageSize());
+    return page_start == protected_memory_start;
   }
 
   // When linking, each DSO will have its own protected section. We can't keep
@@ -279,8 +339,40 @@ class BASE_EXPORT AutoWritableMemoryBase {
     // where an attacker could overwrite it with a large value and invoke code
     // that constructs and destructs an AutoWritableMemory. After such a call
     // protected memory would still be set writable because writers > 0.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+    // On Linux, the protected memory section is not automatically page aligned.
+    // This means that attempts to reset the protected memory region to readonly
+    // will set some of the preceding section that is on the same page readonly
+    // as well. By forcing the writers to be aligned on a multiple of the page
+    // size, we can ensure the protected memory section starts on a page
+    // boundary, preventing this issue.
+    constinit __attribute__((section("protected_memory"),
+                             aligned(kProtectedMemoryAlignment)))
+#else
     DEFINE_PROTECTED_DATA
+#endif
     static inline size_t writers GUARDED_BY(writers_lock()) = 0;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+    // On Linux, there is no guarantee the section following the protected
+    // memory section is page aligned. This can result in attempts to change
+    // the access permissions of the end of the protected memory section
+    // overflowing to the next section. To ensure this doesn't happen, a buffer
+    // section called protected_memory_buffer is created. Since the very first
+    // variable declared after writers is put in this section, it will be
+    // created as the next section after the protected memory section (since
+    // sections are created in the order they are declared in the source file).
+    // By explicitly setting the alignment of the variable to a multiple of the
+    // page size, we can ensure this buffer section starts on a page boundary.
+    // This guarantees that altering the access permissions of the end of the
+    // protected memory section will not affect the next section. The variable
+    // protected_memory_section_buffer serves no purpose other than to ensure
+    // protected_memory_buffer section is created.
+    constinit
+        __attribute__((section("protected_memory_buffer"),
+                       aligned(kProtectedMemoryAlignment))) static inline bool
+            protected_memory_section_buffer = false;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 
     // Synchronizes access to the writers variable and the simultaneous actions
     // that need to happen alongside writers changes, e.g. setting the protected
@@ -299,6 +391,36 @@ class BASE_EXPORT AutoWritableMemoryBase {
   static bool SetMemoryReadOnly(void* start, void* end);
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 };
+
+#if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
+// This class acts as a static initializer that initializes the protected memory
+// region to read only. It will be engaged the first time a protected memory
+// object is statically initialized.
+class BASE_EXPORT AutoWritableMemoryInitializer
+    : public AutoWritableMemoryBase {
+ public:
+#if BUILDFLAG(IS_WIN)
+  AutoWritableMemoryInitializer() { CHECK(IsSectionStartPageAligned()); }
+#else
+  AutoWritableMemoryInitializer() LOCKS_EXCLUDED(WriterData::writers_lock()) {
+    CHECK(IsSectionStartPageAligned());
+    // This doesn't need to be run on Windows, because the linker can pre-set
+    // the memory to read-only.
+    AutoLock auto_lock(WriterData::writers_lock());
+    // Reset the writers variable to 0 to ensure that the attacker didn't set
+    // the variable to something large before the section was read-only.
+    WriterData::writers = 0;
+    CHECK(SetProtectedSectionReadOnly());
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+    // Set the protected_memory_section_buffer to true to ensure the buffer
+    // section is created. If a variable is declared but not used the memory
+    // section won't be created.
+    WriterData::protected_memory_section_buffer = true;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+  }
+#endif  // BUILDFLAG(IS_WIN)
+};
+#endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 
 // A class that sets a given ProtectedMemory variable writable while the
 // AutoWritableMemory is in scope. This class implements the logic for setting
@@ -326,11 +448,11 @@ class AutoWritableMemory : public AutoWritableMemoryBase {
     CHECK(IsObjectInProtectedSection(WriterData::writers));
 
     {
-      base::AutoLock auto_lock(WriterData::writers_lock());
+      AutoLock auto_lock(WriterData::writers_lock());
 
       if (WriterData::writers == 0) {
-        CHECK(IsObjectReadOnly(protected_memory_->data_));
-        CHECK(IsObjectReadOnly(WriterData::writers));
+        CheckObjectReadOnly(protected_memory_->data_);
+        CheckObjectReadOnly(WriterData::writers);
         CHECK(SetObjectReadWrite(WriterData::writers));
       }
 
@@ -347,17 +469,17 @@ class AutoWritableMemory : public AutoWritableMemoryBase {
 #endif
   {
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
-    base::AutoLock auto_lock(WriterData::writers_lock());
+    AutoLock auto_lock(WriterData::writers_lock());
     CHECK_GT(WriterData::writers, 0u);
     --WriterData::writers;
 
     if (WriterData::writers == 0) {
       // Lock the whole section of protected memory and set _all_ instances of
-      // base::ProtectedMemory to non-writeable.
+      // ProtectedMemory to non-writeable.
       CHECK(SetProtectedSectionReadOnly());
-      CHECK(IsObjectReadOnly(
-          *static_cast<const char*>(internal::kProtectedMemoryStart)));
-      CHECK(IsObjectReadOnly(WriterData::writers));
+      CheckObjectReadOnly(
+          *static_cast<const char*>(internal::kProtectedMemoryStart));
+      CheckObjectReadOnly(WriterData::writers);
     }
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
   }
@@ -385,6 +507,7 @@ class ProtectedMemoryInitializer {
   template <typename T, typename... U>
   explicit ProtectedMemoryInitializer(ProtectedMemory<T>& protected_memory,
                                       U&&... args) {
+    InitializeAutoWritableMemory();
     AutoWritableMemory writer(protected_memory);
     writer.emplace(std::forward<U>(args)...);
   }
@@ -393,6 +516,15 @@ class ProtectedMemoryInitializer {
   ProtectedMemoryInitializer(const ProtectedMemoryInitializer&) = delete;
   ProtectedMemoryInitializer& operator=(const ProtectedMemoryInitializer&) =
       delete;
+
+ private:
+  void InitializeAutoWritableMemory() {
+#if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
+    static AutoWritableMemoryInitializer memory_initializer;
+#else
+    // No-op if protected memory is not enabled.
+#endif
+  }
 };
 
 }  // namespace base

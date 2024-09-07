@@ -32,6 +32,7 @@
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "ash/system/input_device_settings/modifier_split_bypass_checker.h"
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
@@ -40,6 +41,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/hash/sha1.h"
@@ -672,6 +674,12 @@ void InputDeviceSettingsControllerImpl::Init() {
   CHECK(input_method::InputMethodManager::Get());
   input_method::InputMethodManager::Get()->AddObserver(this);
 
+  if (features::IsModifierSplitEnabled() &&
+      base::FeatureList::IsEnabled(features::kModifierSplitDeviceEnabled)) {
+    modifier_split_bypass_checker_ =
+        std::make_unique<ModifierSplitBypassChecker>();
+  }
+
   if (features::IsWelcomeExperienceEnabled()) {
     message_center::MessageCenter::Get()->AddObserver(this);
     device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
@@ -957,11 +965,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   }
 
   if (!features::IsWelcomeExperienceEnabled()) {
-    pref_service->ClearPref(prefs::kMiceWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kGraphicsTabletsWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kKeyboardsWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kTouchpadsWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kPointingSticksWelcomeNotificationSeen);
+    pref_service->ClearPref(prefs::kWelcomeExperienceNotificationSeen);
     if (local_state_) {
       local_state_->ClearPref(prefs::kDeviceImagesDictPref);
     }
@@ -1134,6 +1138,16 @@ void InputDeviceSettingsControllerImpl::ShowFirstTimeConnectedNotifications() {
   }
 }
 
+void InputDeviceSettingsControllerImpl::
+    ForceKeyboardSettingRefreshWhenFeatureEnabled() {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &InputDeviceSettingsControllerImpl::RefreshMetaAndModifierKeys,
+          weak_ptr_factory_.GetWeakPtr()));
+  ScheduleDeviceSettingsRefresh();
+}
+
 void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
   if (settings_refresh_pending_) {
     return;
@@ -1145,8 +1159,9 @@ void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
       Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
     sequenced_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&InputDeviceSettingsControllerImpl::RefreshModifierKeys,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(
+            &InputDeviceSettingsControllerImpl::RefreshMetaAndModifierKeys,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   settings_refresh_pending_ = true;
@@ -2936,8 +2951,10 @@ void InputDeviceSettingsControllerImpl::DeviceBatteryChanged(
   RefreshBatteryInfoForConnectedDevices();
 }
 
-void InputDeviceSettingsControllerImpl::RefreshModifierKeys() {
+void InputDeviceSettingsControllerImpl::RefreshMetaAndModifierKeys() {
   for (auto& [_, keyboard] : keyboards_) {
+    keyboard->meta_key =
+        Shell::Get()->keyboard_capability()->GetMetaKey(keyboard->id);
     keyboard->modifier_keys =
         Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard->id);
   }

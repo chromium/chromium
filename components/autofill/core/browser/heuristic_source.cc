@@ -29,7 +29,11 @@ HeuristicSource GetActiveHeuristicSource() {
 DenseSet<HeuristicSource> GetNonActiveHeuristicSources() {
   DenseSet<HeuristicSource> non_active_sources;
   switch (GetActiveHeuristicSource()) {
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+    // On non Chrome-branded builds, no alternative `PatternSource`s exist.
+    case HeuristicSource::kLegacy:
+      break;
+#else
     // If a `PatternSource` is the active `HeuristicSource`, compute shadow
     // predictions against the `PatternSource` of the prior rollout stage.
     case HeuristicSource::kDefault:
@@ -38,19 +42,12 @@ DenseSet<HeuristicSource> GetNonActiveHeuristicSources() {
     case HeuristicSource::kExperimental:
       break;
 #endif
-    // On non Chrome-branded builds, no alternative `PatternSource`s exist.
-    case HeuristicSource::kLegacy:
-      break;
-    // If ML is active, compare against the `PatternSource`-based predictions
-    // that would otherwise be active.
+    // If ML is active in a build with internal patterns, compare against the
+    // default predictions.
     case HeuristicSource::kMachineLearning:
-      non_active_sources.insert(
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-          HeuristicSource::kDefault
-#else
-          HeuristicSource::kLegacy
+      non_active_sources.insert(HeuristicSource::kDefault);
 #endif
-      );
       break;
   }
   // If ML is enabled but inactive, compute shadow predictions for it.
@@ -64,9 +61,10 @@ DenseSet<HeuristicSource> GetNonActiveHeuristicSources() {
 std::optional<PatternSource> HeuristicSourceToPatternSource(
     HeuristicSource source) {
   switch (source) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     case HeuristicSource::kLegacy:
       return PatternSource::kLegacy;
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+#else
     case HeuristicSource::kDefault:
       return PatternSource::kDefault;
     case HeuristicSource::kExperimental:
@@ -80,9 +78,10 @@ std::optional<PatternSource> HeuristicSourceToPatternSource(
 
 HeuristicSource PatternSourceToHeuristicSource(PatternSource source) {
   switch (source) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     case PatternSource::kLegacy:
       return HeuristicSource::kLegacy;
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+#else
     case PatternSource::kDefault:
       return HeuristicSource::kDefault;
     case PatternSource::kExperimental:

@@ -49,6 +49,8 @@ dictionary AuctionAdConfig {
   [ImplementedAs=trustedScoringSignalsUrlDeprecated]
   USVString trustedScoringSignalsUrl;
   long maxTrustedScoringSignalsURLLength;
+  [RuntimeEnabled=FledgeTrustedSignalsKVv2Support]
+  USVString trustedScoringSignalsCoordinator;
   sequence<USVString> interestGroupBuyers;
   Promise<any> auctionSignals;
   Promise<any> sellerSignals;

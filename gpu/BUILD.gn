@@ -370,7 +370,7 @@ test("gl_tests") {
       "command_buffer/service/shared_image/d3d_image_backing_factory_unittest.cc",
       "command_buffer/service/shared_image/dcomp_image_backing_factory_unittest.cc",
     ]
-  } else if (is_linux || is_chromeos) {
+  } else if (is_linux) {
     # Simply loading the Vulkan driver leaks crbug.com/1134681
     # CFI error in third_party/vulkan_memory_allocator crbug.com/1139916
     if (enable_vulkan && !is_lsan && !is_cfi) {
@@ -429,6 +429,7 @@ test("gpu_unittests") {
     "command_buffer/client/raster_implementation_unittest.cc",
     "command_buffer/client/raster_implementation_unittest_autogen.h",
     "command_buffer/client/ring_buffer_test.cc",
+    "command_buffer/client/shared_image_pool_unittest.cc",
     "command_buffer/client/transfer_buffer_cmd_copy_helpers_unittest.cc",
     "command_buffer/client/transfer_buffer_unittest.cc",
     "command_buffer/client/vertex_array_object_manager_unittest.cc",
@@ -487,7 +488,6 @@ test("gpu_unittests") {
     "command_buffer/service/raster_decoder_unittest_context_lost.cc",
     "command_buffer/service/renderbuffer_manager_unittest.cc",
     "command_buffer/service/retaining_one_shot_timer_holder_unittest.cc",
-    "command_buffer/service/scheduler_dfs_unittest.cc",
     "command_buffer/service/scheduler_unittest.cc",
     "command_buffer/service/service_discardable_manager_unittest.cc",
     "command_buffer/service/service_transfer_cache_unittest.cc",
@@ -584,12 +584,6 @@ test("gpu_unittests") {
     ]
   }
 
-  if (is_android) {
-    sources += [
-      "ipc/common/gpu_memory_buffer_impl_android_hardware_buffer_unittest.cc",
-    ]
-  }
-
   if (is_linux || is_chromeos || is_android) {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
   }
@@ -663,7 +657,7 @@ test("gpu_unittests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
     "//third_party/re2",
     "//ui/gfx",
     "//ui/gfx:test_support",
@@ -738,7 +732,7 @@ test("gpu_perftests") {
   data_deps = [
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   # This target should not require the Chrome executable to run.
@@ -932,10 +926,7 @@ if (is_linux || is_chromeos) {
 test("gpu_benchmark") {
   sources = [ "command_buffer/tests/gl_helper_benchmark.cc" ]
 
-  configs += [
-    "//build/config:precompiled_headers",
-    "//third_party/khronos:khronos_headers",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   if (!is_debug && (is_win || is_android)) {
     configs -= [ "//build/config/compiler:default_optimization" ]
@@ -955,8 +946,7 @@ test("gpu_benchmark") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//ui/gfx",
   ]
-
-  data_deps = [ "//third_party/mesa_headers" ]
 }

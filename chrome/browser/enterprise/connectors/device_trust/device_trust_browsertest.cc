@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
@@ -30,7 +31,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_test_environment_win.h"
 #include "chrome/browser/enterprise/connectors/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -226,8 +226,12 @@ class DeviceTrustDelayedManagementBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
+#if BUILDFLAG(IS_MAC)
+            kDTCKeyRotationUploadedBySharedAPIEnabled,
+#endif  // BUILDFLAG(IS_MAC)
+            kDTCKeyUploadedBySharedAPIEnabled,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-          ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
+            ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         },
         /*disabled_features=*/{});
@@ -383,7 +387,12 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyUploadFailedBrowserTest,
 class DeviceTrustKeyRotationBrowserTest : public DeviceTrustDesktopBrowserTest {
  protected:
   DeviceTrustKeyRotationBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(kDTCKeyRotationEnabled, true);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            kDTCKeyUploadedBySharedAPIEnabled,
+        },
+        /*disabled_features=*/{kDTCKeyRotationEnabled});
   }
 };
 
@@ -467,8 +476,16 @@ class DeviceTrustBrowserTestWithConsent
                 .is_inline_policy_enabled = testing::get<4>(GetParam()),
             }),
         })) {
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_signals::features::kDeviceSignalsConsentDialog, true);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            enterprise_signals::features::kDeviceSignalsConsentDialog,
+            kDTCKeyUploadedBySharedAPIEnabled,
+#if BUILDFLAG(IS_MAC)
+            kDTCKeyRotationUploadedBySharedAPIEnabled,
+#endif  // BUILDFLAG(IS_MAC)
+        },
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {

@@ -460,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerForPrerenderingTest,
   // the prerendering.
   reset_is_on_zoom_changed_called();
 
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
 

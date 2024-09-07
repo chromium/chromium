@@ -6,14 +6,10 @@
 
 #include <stdint.h>
 
-#include <optional>
-
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
@@ -38,98 +34,78 @@ TEST(AttributionScopesSetTest, ParseSource) {
     ::testing::Matcher<
         base::expected<AttributionScopesSet, SourceRegistrationError>>
         matches;
-    std::optional<uint32_t> scope_limit = 20u;
+    uint32_t scope_limit = 20u;
   } kTestCases[] = {
       {
           "empty",
           R"json({})json",
-          ErrorIs(SourceRegistrationError::kAttributionScopesInvalid),
-      },
-      {
-          "empty_null_limit",
-          R"json({})json",
-          ValueIs(Property(&AttributionScopesSet::scopes, IsEmpty())),
-          /*scope_limit=*/std::nullopt,
+          ErrorIs(SourceRegistrationError::kAttributionScopesListInvalid),
       },
       {
           "scopes_list_wrong_type",
-          R"json({"attribution_scopes": 0})json",
-          ErrorIs(SourceRegistrationError::kAttributionScopesInvalid),
+          R"json({"values": 0})json",
+          ErrorIs(SourceRegistrationError::kAttributionScopesListInvalid),
       },
       {
           "basic_scopes",
-          R"json({"attribution_scopes": ["1"]})json",
+          R"json({"values": ["1"]})json",
           ValueIs(Property(&AttributionScopesSet::scopes,
                            UnorderedElementsAre("1"))),
       },
       {
-          "basic_scopes_null_limit",
-          R"json({"attribution_scopes": ["1"]})json",
-          ErrorIs(SourceRegistrationError::kAttributionScopeLimitRequired),
-          /*scope_limit=*/std::nullopt,
-      },
-      {
           "scopes_list_empty",
-          R"json({"attribution_scopes": []})json",
-          ErrorIs(SourceRegistrationError::kAttributionScopesInvalid),
-      },
-      {
-          "scopes_list_empty_null_limit",
-          R"json({"attribution_scopes": []})json",
-          ValueIs(Property(&AttributionScopesSet::scopes, IsEmpty())),
-          /*scope_limit=*/std::nullopt,
+          R"json({"values": []})json",
+          ErrorIs(SourceRegistrationError::kAttributionScopesListInvalid),
       },
       {
           "scope_in_list_wrong_type",
-          R"json({"attribution_scopes": [1]})json",
-          ErrorIs(SourceRegistrationError::kAttributionScopesValueInvalid),
+          R"json({"values": [1]})json",
+          ErrorIs(SourceRegistrationError::kAttributionScopesListValueInvalid),
       },
       {
           "multiple_scopes",
-          R"json({"attribution_scopes": ["1", "2", "3"]})json",
+          R"json({"values": ["1", "2", "3"]})json",
           ValueIs(Property(&AttributionScopesSet::scopes,
                            UnorderedElementsAre("1", "2", "3"))),
       },
       {
           "too_many_scopes",
           R"json({
-            "attribution_scopes": [
+            "values": [
               "1", "2", "3", "4", "5"
             ]
           })json",
-          ErrorIs(SourceRegistrationError::kAttributionScopesInvalid),
+          ErrorIs(SourceRegistrationError::kAttributionScopesListInvalid),
           /*scope_limit=*/4,
       },
       {
           "too_many_scopes_default_limit",
           R"json({
-            "attribution_scopes": [
+            "values": [
               "01", "02", "03", "04", "05",
               "06", "07", "08", "09", "10",
               "11", "12", "13", "14", "15",
               "16", "17", "18", "19", "20", "21"
             ]
           })json",
-          ErrorIs(SourceRegistrationError::kAttributionScopesInvalid),
+          ErrorIs(SourceRegistrationError::kAttributionScopesListInvalid),
           /*scope_limit=*/25,
       },
       {
           "duplicate_scopes_condensed",
-          R"json({"attribution_scopes": ["1", "1"]})json",
+          R"json({"values": ["1", "1"]})json",
           ValueIs(Property(&AttributionScopesSet::scopes,
                            UnorderedElementsAre("1"))),
       },
       {
           "scopes_value_length_too_long",
-          R"json({"attribution_scopes": [
+          R"json({"values": [
             "This string exceeds 50 characters to pass the limit"
           ]})json",
-          ErrorIs(SourceRegistrationError::kAttributionScopesValueInvalid),
+          ErrorIs(SourceRegistrationError::kAttributionScopesListValueInvalid),
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionScopes);
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
     base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
@@ -212,8 +188,6 @@ TEST(AttributionScopesSetTest, ParseTrigger) {
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionScopes);
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
     base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
@@ -221,7 +195,29 @@ TEST(AttributionScopesSetTest, ParseTrigger) {
   }
 }
 
-TEST(AttributionScopesSetTest, ToJson) {
+TEST(AttributionScopesSetTest, ToJsonSource) {
+  const struct {
+    AttributionScopesSet input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          AttributionScopesSet(),
+          R"json({})json",
+      },
+      {
+          AttributionScopesSet({"foo", "bar"}),
+          R"json({"values": ["bar", "foo"]})json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::Value::Dict actual;
+    test_case.input.SerializeForSource(actual);
+    EXPECT_THAT(actual, base::test::IsJson(test_case.expected_json));
+  }
+}
+
+TEST(AttributionScopesSetTest, ToJsonTrigger) {
   const struct {
     AttributionScopesSet input;
     const char* expected_json;
@@ -236,12 +232,30 @@ TEST(AttributionScopesSetTest, ToJson) {
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionScopes);
   for (const auto& test_case : kTestCases) {
     base::Value::Dict actual;
-    test_case.input.Serialize(actual);
+    test_case.input.SerializeForTrigger(actual);
     EXPECT_THAT(actual, base::test::IsJson(test_case.expected_json));
+  }
+}
+
+TEST(AttributionScopesSetTest, HasIntersection) {
+  const struct {
+    AttributionScopesSet set_1;
+    AttributionScopesSet set_2;
+    bool expected;
+  } kTestCases[] = {
+      {AttributionScopesSet(), AttributionScopesSet(), false},
+      {AttributionScopesSet({"a"}), AttributionScopesSet(), false},
+      {AttributionScopesSet({"a"}), AttributionScopesSet({"a"}), true},
+      {AttributionScopesSet({"a", "c"}), AttributionScopesSet({"b", "c"}),
+       true},
+      {AttributionScopesSet({"a"}), AttributionScopesSet({"b"}), false}};
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.set_1.HasIntersection(test_case.set_2),
+                test_case.expected);
+    EXPECT_THAT(test_case.set_2.HasIntersection(test_case.set_1),
+                test_case.expected);
   }
 }
 

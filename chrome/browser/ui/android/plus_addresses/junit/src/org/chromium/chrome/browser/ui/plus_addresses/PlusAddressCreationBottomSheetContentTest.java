@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,7 +21,6 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,11 +35,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -51,22 +51,37 @@ import java.util.concurrent.TimeoutException;
         shadows = {ShadowView.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class PlusAddressCreationBottomSheetContentTest {
-    private static final String MODAL_TITLE = "lorem ipsum title";
-    private static final String MODAL_PLUS_ADDRESS_DESCRIPTION = "lorem ipsum description";
-    private static final String MODAL_PLUS_ADDRESS_NOTICE =
-            "lorem ipsum description <link>test link</link>";
-    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
-    private static final String MODAL_OK = "ok";
-    private static final String MODAL_CANCEL = "ok";
+    private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "lorem ipsum description <link>test link</link>",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "cancel",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
+    private static final PlusAddressCreationNormalStateInfo INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
-    private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
     private static final String MODAL_FORMATTED_ERROR_MESSAGE = "error! test link";
-    private static final GURL LEARN_MORE_URL = new GURL("learn.more.com");
-    private static final GURL ERROR_URL = new GURL("bug.com");
     private static final boolean REFRESH_SUPPORTED = true;
+    private static final PlusAddressCreationErrorStateInfo RESERVE_ERROR_STATE =
+            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PlusAddressCreationDelegate mDelegate;
+    @Mock private BottomSheetController mBottomSheetController;
 
     private Activity mActivity;
     private PlusAddressCreationBottomSheetContent mBottomSheetContent;
@@ -80,15 +95,8 @@ public class PlusAddressCreationBottomSheetContentTest {
         mBottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
                         mActivity,
-                        MODAL_TITLE,
-                        MODAL_PLUS_ADDRESS_DESCRIPTION,
-                        MODAL_PLUS_ADDRESS_NOTICE,
-                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                        MODAL_OK,
-                        MODAL_CANCEL,
-                        MODAL_ERROR_MESSAGE,
-                        LEARN_MORE_URL,
-                        ERROR_URL,
+                        mBottomSheetController,
+                        FIRST_TIME_USAGE_INFO,
                         REFRESH_SUPPORTED);
         mBottomSheetContent.setDelegate(mDelegate);
     }
@@ -107,17 +115,16 @@ public class PlusAddressCreationBottomSheetContentTest {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
 
-        Assert.assertEquals(modalTitleView.getText().toString(), MODAL_TITLE);
-        Assert.assertEquals(
-                modalDescriptionView.getText().toString(), MODAL_PLUS_ADDRESS_DESCRIPTION);
-        Assert.assertEquals(
+        assertEquals(modalTitleView.getText().toString(), INFO.getTitle());
+        assertEquals(modalDescriptionView.getText().toString(), INFO.getDescription());
+        assertEquals(
                 modalPlusAddressPlaceholderView.getText().toString(),
-                MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER);
-        Assert.assertEquals(modalConfirmButton.getText().toString(), MODAL_OK);
+                FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
+        assertEquals(modalConfirmButton.getText().toString(), INFO.getConfirmText());
 
         // Validate updates to the bottomsheet.
         mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
-        Assert.assertEquals(
+        assertEquals(
                 modalPlusAddressPlaceholderView.getText().toString(), MODAL_PROPOSED_PLUS_ADDRESS);
     }
 
@@ -126,10 +133,10 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testRefreshButton_RefreshSupported() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        Assert.assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
 
         mBottomSheetContent.hideRefreshButton();
-        Assert.assertEquals(refreshIcon.getVisibility(), View.GONE);
+        assertEquals(refreshIcon.getVisibility(), View.GONE);
     }
 
     @Test
@@ -138,19 +145,12 @@ public class PlusAddressCreationBottomSheetContentTest {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
                         mActivity,
-                        MODAL_TITLE,
-                        MODAL_PLUS_ADDRESS_DESCRIPTION,
-                        MODAL_PLUS_ADDRESS_NOTICE,
-                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                        MODAL_OK,
-                        MODAL_CANCEL,
-                        MODAL_ERROR_MESSAGE,
-                        LEARN_MORE_URL,
-                        ERROR_URL,
+                        mBottomSheetController,
+                        FIRST_TIME_USAGE_INFO,
                         /* refreshSupported= */ false);
         ImageView refreshIcon =
                 bottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        Assert.assertEquals(refreshIcon.getVisibility(), View.GONE);
+        assertEquals(refreshIcon.getVisibility(), View.GONE);
     }
 
     @Test
@@ -162,8 +162,8 @@ public class PlusAddressCreationBottomSheetContentTest {
                         .findViewById(R.id.plus_address_first_time_use_notice);
         Button cancelButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
-        Assert.assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(cancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
+        assertEquals(cancelButton.getVisibility(), View.VISIBLE);
 
         cancelButton.callOnClick();
         verify(mDelegate).onCanceled();
@@ -174,25 +174,15 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testSecondTimeUsage() {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        mActivity,
-                        MODAL_TITLE,
-                        MODAL_PLUS_ADDRESS_DESCRIPTION,
-                        /* plusAddressNotice= */ null,
-                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                        MODAL_OK,
-                        MODAL_CANCEL,
-                        MODAL_ERROR_MESSAGE,
-                        LEARN_MORE_URL,
-                        ERROR_URL,
-                        /* refreshSupported= */ false);
+                        mActivity, mBottomSheetController, INFO, /* refreshSupported= */ false);
         TextView firstTimeNotice =
                 bottomSheetContent
                         .getContentView()
                         .findViewById(R.id.plus_address_first_time_use_notice);
         Button cancelButton =
                 bottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
-        Assert.assertEquals(firstTimeNotice.getVisibility(), View.GONE);
-        Assert.assertEquals(cancelButton.getVisibility(), View.GONE);
+        assertEquals(firstTimeNotice.getVisibility(), View.GONE);
+        assertEquals(cancelButton.getVisibility(), View.GONE);
     }
 
     @Test
@@ -200,7 +190,7 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testRefreshButton_NotClickableUntilPlusAddressIsSet() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        Assert.assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
         refreshIcon.callOnClick();
         verifyNoInteractions(mDelegate);
     }
@@ -210,7 +200,7 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testRefreshButton_ClickableAfterPlusAddressIsSet() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        Assert.assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
         mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
 
         refreshIcon.callOnClick();
@@ -222,7 +212,7 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testRefreshButton_OnlyOneClickIsHandledPerRefresh() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        Assert.assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
         mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
 
         refreshIcon.callOnClick();
@@ -235,7 +225,7 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testRefreshButton_RefreshSeveralTimes() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        Assert.assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
         mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
 
         refreshIcon.callOnClick();
@@ -250,10 +240,10 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testRefreshButton_HideRefreshButton() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        Assert.assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
 
         mBottomSheetContent.hideRefreshButton();
-        Assert.assertEquals(refreshIcon.getVisibility(), View.GONE);
+        assertEquals(refreshIcon.getVisibility(), View.GONE);
     }
 
     @Test
@@ -262,56 +252,79 @@ public class PlusAddressCreationBottomSheetContentTest {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
 
-        Assert.assertFalse(modalConfirmButton.isEnabled());
+        assertFalse(modalConfirmButton.isEnabled());
         // Update the bottomsheet to show the plus address.
         mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
-        Assert.assertTrue(modalConfirmButton.isEnabled());
+        assertTrue(modalConfirmButton.isEnabled());
 
         // Updating it while the button is enabled doesn't have an effect.
         mBottomSheetContent.setProposedPlusAddress("other@plus.plus");
-        Assert.assertTrue(modalConfirmButton.isEnabled());
+        assertTrue(modalConfirmButton.isEnabled());
     }
 
     @Test
     @SmallTest
-    public void testConfirmButton_disabledIfConfirmRequestFails() {
+    public void testLegacyErrorHandling_confirmDisabledIfConfirmRequestFails() {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
         // Set the plus address to enable the Confirm button.
         mBottomSheetContent.setProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
-        Assert.assertTrue(modalConfirmButton.isEnabled());
+        assertTrue(modalConfirmButton.isEnabled());
 
         // Assume a Confirm request was made and failed.
-        mBottomSheetContent.showError();
-        Assert.assertFalse(modalConfirmButton.isEnabled());
+        mBottomSheetContent.showError(/* errorStateInfo= */ null);
+        assertFalse(modalConfirmButton.isEnabled());
     }
 
     @Test
     @SmallTest
-    public void testShowError_displaysErrorMessage() {
+    public void testLegacyErrorHandling_displaysErrorMessage() {
         TextView modalPlusAddressPlaceholderView =
                 mBottomSheetContent.getContentView().findViewById(R.id.proposed_plus_address);
-        Assert.assertEquals(
+        assertEquals(
                 modalPlusAddressPlaceholderView.getText().toString(),
-                MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER);
-        Assert.assertEquals(modalPlusAddressPlaceholderView.getVisibility(), View.VISIBLE);
+                FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
+        assertEquals(modalPlusAddressPlaceholderView.getVisibility(), View.VISIBLE);
 
         TextViewWithClickableSpans plusAddressErrorReportView =
                 mBottomSheetContent
                         .getContentView()
                         .findViewById(R.id.plus_address_modal_error_report);
-        Assert.assertEquals(plusAddressErrorReportView.getVisibility(), View.GONE);
+        assertEquals(plusAddressErrorReportView.getVisibility(), View.GONE);
 
-        mBottomSheetContent.showError();
-        Assert.assertEquals(
+        mBottomSheetContent.showError(/* errorStateInfo= */ null);
+        assertEquals(
                 mBottomSheetContent
                         .getContentView()
                         .findViewById(R.id.proposed_plus_address_container)
                         .getVisibility(),
                 View.GONE);
-        Assert.assertEquals(plusAddressErrorReportView.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(
+        assertEquals(plusAddressErrorReportView.getVisibility(), View.VISIBLE);
+        assertEquals(
                 plusAddressErrorReportView.getText().toString(), MODAL_FORMATTED_ERROR_MESSAGE);
+    }
+
+    @Test
+    @SmallTest
+    public void testReserveError() {
+        View contentView = mBottomSheetContent.getContentView();
+
+        mBottomSheetContent.showError(RESERVE_ERROR_STATE);
+        assertEquals(
+                contentView.findViewById(R.id.plus_address_content).getVisibility(), View.GONE);
+        assertEquals(
+                contentView.findViewById(R.id.plus_address_error_container).getVisibility(),
+                View.VISIBLE);
+
+        TextView title = contentView.findViewById(R.id.plus_address_error_title);
+        TextView description = contentView.findViewById(R.id.plus_address_error_description);
+        Button okButton = contentView.findViewById(R.id.plus_address_error_ok_button);
+        Button cancelButton = contentView.findViewById(R.id.plus_address_error_cancel_button);
+
+        assertEquals(title.getText(), RESERVE_ERROR_STATE.getTitle());
+        assertEquals(description.getText(), RESERVE_ERROR_STATE.getDescription());
+        assertEquals(okButton.getText(), RESERVE_ERROR_STATE.getOkText());
+        assertEquals(cancelButton.getText(), RESERVE_ERROR_STATE.getCancelText());
     }
 
     @Test
@@ -322,10 +335,10 @@ public class PlusAddressCreationBottomSheetContentTest {
                         .getContentView()
                         .findViewById(R.id.plus_address_modal_error_report);
         ClickableSpan[] spans = errorReportInstruction.getClickableSpans();
-        Assert.assertEquals(spans.length, 1);
+        assertEquals(spans.length, 1);
         spans[0].onClick(errorReportInstruction);
 
-        verify(mDelegate).openUrl(ERROR_URL);
+        verify(mDelegate).openUrl(INFO.getErrorReportUrl());
     }
 
     @Test
@@ -336,26 +349,14 @@ public class PlusAddressCreationBottomSheetContentTest {
                         .getContentView()
                         .findViewById(R.id.plus_address_first_time_use_notice);
         ClickableSpan[] spans = learnMoreInstruction.getClickableSpans();
-        Assert.assertEquals(spans.length, 1);
+        assertEquals(spans.length, 1);
         spans[0].onClick(learnMoreInstruction);
 
-        verify(mDelegate).openUrl(LEARN_MORE_URL);
+        verify(mDelegate).openUrl(INFO.getLearnMoreUrl());
     }
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
-    public void testOnConfirmButtonClicked_callsDelegateOnConfirmRequested() {
-        Button modalConfirmButton =
-                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
-        modalConfirmButton.callOnClick();
-
-        verify(mDelegate).onConfirmRequested();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
     public void testOnConfirmButtonClicked_setsRefreshIconToDisabledColor() {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
@@ -363,7 +364,7 @@ public class PlusAddressCreationBottomSheetContentTest {
 
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        Assert.assertFalse(refreshIcon.isEnabled());
+        assertFalse(refreshIcon.isEnabled());
 
         verify(mDelegate).onConfirmRequested();
 
@@ -375,7 +376,6 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
     public void testOnConfirmButtonClicked_showsLoadingIndicator() throws TimeoutException {
         LoadingView loadingView =
                 mBottomSheetContent
@@ -384,44 +384,45 @@ public class PlusAddressCreationBottomSheetContentTest {
 
         // Before clicking confirm, there is no loading indicator, but both
         // a confirmation and a cancel button.
-        Assert.assertEquals(loadingView.getVisibility(), View.GONE);
+        assertEquals(loadingView.getVisibility(), View.GONE);
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
         Button modalCancelButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
-        Assert.assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
+        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
 
         // Show the loading indicator and hide the buttons once we click the confirm button.
         modalConfirmButton.callOnClick();
-        Assert.assertEquals(modalConfirmButton.getVisibility(), View.GONE);
-        Assert.assertEquals(modalCancelButton.getVisibility(), View.GONE);
-        Assert.assertEquals(loadingView.getVisibility(), View.VISIBLE);
+        verify(mDelegate).onConfirmRequested();
+        assertEquals(modalConfirmButton.getVisibility(), View.GONE);
+        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        assertEquals(loadingView.getVisibility(), View.VISIBLE);
 
         // Hide the loading indicator and resurface the buttons if we show an error.
-        mBottomSheetContent.showError();
+        mBottomSheetContent.showError(/* errorStateInfo= */ null);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        Assert.assertEquals(loadingView.getVisibility(), View.GONE);
-        Assert.assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(loadingView.getVisibility(), View.GONE);
+        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
+        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
     }
 
     @Test
     @SmallTest
     public void testBottomSheetOverriddenAttributes() {
-        Assert.assertEquals(mBottomSheetContent.getToolbarView(), null);
-        Assert.assertEquals(mBottomSheetContent.getPriority(), ContentPriority.HIGH);
-        Assert.assertEquals(mBottomSheetContent.swipeToDismissEnabled(), true);
-        Assert.assertEquals(mBottomSheetContent.getPeekHeight(), HeightMode.DISABLED);
-        Assert.assertEquals(mBottomSheetContent.getHalfHeightRatio(), HeightMode.DISABLED, 0.1);
-        Assert.assertEquals(mBottomSheetContent.getFullHeightRatio(), HeightMode.WRAP_CONTENT, 0.1);
-        Assert.assertEquals(
+        assertEquals(mBottomSheetContent.getToolbarView(), null);
+        assertEquals(mBottomSheetContent.getPriority(), ContentPriority.HIGH);
+        assertEquals(mBottomSheetContent.swipeToDismissEnabled(), true);
+        assertEquals(mBottomSheetContent.getPeekHeight(), HeightMode.DISABLED);
+        assertEquals(mBottomSheetContent.getHalfHeightRatio(), HeightMode.DISABLED, 0.1);
+        assertEquals(mBottomSheetContent.getFullHeightRatio(), HeightMode.WRAP_CONTENT, 0.1);
+        assertEquals(
                 mBottomSheetContent.getSheetContentDescriptionStringId(),
                 R.string.plus_address_bottom_sheet_content_description);
-        Assert.assertEquals(
+        assertEquals(
                 mBottomSheetContent.getSheetFullHeightAccessibilityStringId(),
                 R.string.plus_address_bottom_sheet_content_description);
-        Assert.assertEquals(
+        assertEquals(
                 mBottomSheetContent.getSheetClosedAccessibilityStringId(),
                 R.string.plus_address_bottom_sheet_content_description);
     }

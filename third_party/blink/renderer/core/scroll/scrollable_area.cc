@@ -156,16 +156,6 @@ void ScrollableArea::ClearScrollableArea() {
     fade_overlay_scrollbars_timer_->Value().Stop();
 }
 
-const ui::ColorProvider* ScrollableArea::GetColorProvider(
-    mojom::blink::ColorScheme color_scheme) const {
-  return GetLayoutBox()->GetDocument().GetColorProviderForPainting(
-      color_scheme);
-}
-
-bool ScrollableArea::InForcedColorsMode() const {
-  return GetLayoutBox()->GetDocument().InForcedColorsMode();
-}
-
 MacScrollbarAnimator* ScrollableArea::GetMacScrollbarAnimator() const {
 #if BUILDFLAG(IS_MAC)
   if (!mac_scrollbar_animator_) {
@@ -1069,10 +1059,8 @@ void ScrollableArea::SetScrollbarsHiddenIfOverlayInternal(bool hidden) {
 void ScrollableArea::FadeOverlayScrollbarsTimerFired(TimerBase*) {
   // Scrollbars can become composited in the time it takes the timer set in
   // ShowNonMacOverlayScrollbars to be fired.
-  if (RuntimeEnabledFeatures::
-          InterruptComposedScrollbarDisappearanceEnabled() &&
-      (RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
-       UsesCompositedScrolling())) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
+      UsesCompositedScrolling()) {
     return;
   }
   SetScrollbarsHiddenIfOverlay(true);

@@ -11,6 +11,9 @@
 /// Update the UI for omnibox according to omnibox focus state.
 - (void)setOmniboxFocused:(BOOL)isFocused;
 
+/// Updates the back button availability.
+- (void)setCanGoBack:(BOOL)canGoBack;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_TOOLBAR_CONSUMER_H_

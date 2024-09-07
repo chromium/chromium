@@ -315,6 +315,7 @@
     {
       name: "AISummarizationAPI",
       status: "test",
+      origin_trial_feature_name: "AISummarizationAPI",
       base_feature: "EnableAISummarizationAPI",
     },
     {
@@ -452,12 +453,6 @@
       name: "AutoPictureInPictureVideoHeuristics",
       status: "experimental",
     },
-    {
-      // If enabled, lazy loaded images can be auto sized if the sizes
-      // attribute is missing or set to auto.
-      name: "AutoSizeLazyLoadedImages",
-      status: "stable",
-    },
     // When enabled, enforces new interoperable semantics for 3D transforms.
     // See crbug.com/1008483.
     {
@@ -512,11 +507,17 @@
       status: "stable",
     },
     {
-      // There are two different code changes guarded by this feature. Both
-      // are about triggering a beforeunload cancel dialog and need adoption
-      // from developers.
-      // 1. If event.preventDefault() is called, prompt cancel dialog.
-      // 2. If event.returnValue is the empty string, do not prompt cancel dialog.
+      // TODO(crbug.com/40586353) There are two different code changes guarded
+      // by this feature, both related to triggering a beforeunload cancel
+      // dialog.
+      //  1. If event.preventDefault() is called, prompt cancel dialog.
+      //  2. If event.returnValue is the empty string, do not prompt cancel
+      //     dialog.
+      // This flag was shipped to stable in M117, but there is an enterprise
+      // policy that allows this flag to be force-diabled. As a result, this
+      // flag should not be removed until at least M132.
+      // The enterprise policy has an extended expiration date of M130:
+      // https://groups.google.com/a/chromium.org/g/chromium-enterprise/c/52qHFoQF_mw/m/gw7e6qPlAAAJ
       name: "BeforeunloadEventCancelByPreventDefault",
       status: "stable",
       public: true,
@@ -569,7 +570,7 @@
       // Full support for box-decoration-break, including block fragmentation,
       // not just -webkit-box-decoration-break with inlines at line breaks.
       name: "BoxDecorationBreak",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/41485013
@@ -600,6 +601,10 @@
       status: "test",
       base_feature: "EnableBuiltInAIAPI",
       base_feature_status: "enabled",
+      // A origin trial is feature is required for the build to success.
+      // The feature reuses the AISummarizationAPI. Any other origin trial
+      // features in the `implied_by` list will enable this feature as well.
+      origin_trial_feature_name: "AISummarizationAPI",
       copied_from_base_feature_if: "overridden",
       implied_by: ["AIPromptAPI", "AIRewriterAPI", "AISummarizationAPI", "AIWriterAPI"]
     },
@@ -637,9 +642,22 @@
       name: "Canvas2dLayers",
     },
     {
+      name: "Canvas2dLayersWithOptions",
+      status: "experimental",
+      depends_on: ["Canvas2dLayers"],
+    },
+    {
       name: "Canvas2dMesh",
       origin_trial_feature_name: "Canvas2dMesh",
+      origin_trial_allows_third_party: true,
       status: "test",
+    },
+    {
+      // This is a kill switch for shaping directly in TextMetrics when
+      // ctx.measureText() is called. Disabled after speedometer regression:
+      // https://crbug.com/362784008.
+      name: "Canvas2dTextMetricsShaping",
+      status: "experimental",
     },
     {
       name: "CanvasFloatingPoint",
@@ -711,16 +729,7 @@
       status: "experimental",
     },
     {
-      name: "ClipboardSvg",
-      status: "stable",
-    },
-    {
       name: "ClipPathRejectEmptyPaths",
-      status: "stable",
-    },
-    {
-      // https://html.spec.whatwg.org/multipage/interaction.html#close-requests-and-close-watchers
-      name: "CloseWatcher",
       status: "stable",
     },
     {
@@ -767,8 +776,6 @@
     {
       name: "CompressionDictionaryTransport",
       base_feature: "none",
-      origin_trial_feature_name: "CompressionDictionaryTransportV3",
-      origin_trial_allows_third_party: true,
       public: true,
     },
     {
@@ -871,6 +878,13 @@
       status: "experimental",
     },
     {
+      // Support for <string> syntax in @property
+      // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
+      name: "CSSAtPropertyStringSyntax",
+      status: "experimental",
+
+    },
+    {
       // Whether <image> values are allowed as counter style <symbol>
       name: "CSSAtRuleCounterStyleImageSymbols",
     },
@@ -914,10 +928,6 @@
     },
     {
       name: "CSSComputedStyleFullPseudoElementParser",
-      status: "stable",
-    },
-    {
-      name: "CSSContentMultiArgAltText",
       status: "stable",
     },
     {
@@ -979,7 +989,7 @@
       // Spec change to search for container query and container units up the
       // flat tree instead of the shadow-including ancestors.
       name: "CSSFlatTreeContainer",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSFontSizeAdjust",
@@ -1029,6 +1039,11 @@
       status: "experimental",
     },
     {
+      // https://github.com/w3c/csswg-drafts/issues/10435
+      name: "CSSLineClampWebkitBoxBlockification",
+      status: "stable",
+    },
+    {
       name: "CSSLogicalOverflow",
       status: "test",
     },
@@ -1044,6 +1059,10 @@
       name: "CSSMixins",
     },
     {
+      name: "CSSNestedDeclarations",
+      status: "stable",
+    },
+    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
     },
@@ -1051,6 +1070,10 @@
       // Ignore the stylesheet encoding when parsing URLs, always using UTF-8.
       // See crbug.com/1485525.
       name: "CSSParserIgnoreCharsetForURLs",
+    },
+    {
+      name: "CSSPartAllowsMoreSelectorsAfter",
+      status: "experimental",
     },
     {
       // The `inset-area` CSS property has been renamed to `position-area`. This
@@ -1152,17 +1175,17 @@
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
       name: "CSSScrollSnapChangeEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchanging
       name: "CSSScrollSnapChangingEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
       name: "CSSScrollSnapEvents",
-      status: "experimental",
+      status: "stable",
       implied_by: ["CSSScrollSnapChangeEvent", "CSSScrollSnapChangingEvent"],
     },
     {
@@ -1263,11 +1286,6 @@
       // No status as this will be controlled by the matching Chromium feature.
     },
     {
-      // https://html.spec.whatwg.org/#dom-customelementregistry-getname
-      name: "CustomElementsGetName",
-      status: "stable",
-    },
-    {
       name: "Database",
       public: true,
       status: "experimental",
@@ -1361,17 +1379,17 @@
       },
     },
     {
+      // Shipping in M130.  Flag should be removed after M130 has been
+      // shipping to stable for a few weeks.
+      name: "DirAutoFixSlotExclusions",
+      status: "stable",
+    },
+    {
       name: "DirectSockets",
       public: true,
       status: "experimental",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
-    },
-    {
-      // Shipping in M121.  Flag should be removed after M121 has been
-      // shipping to stable for a few weeks.
-      name: "DirnameMoreInputTypes",
-      status: "stable",
     },
     {
       // Disables anti-aliasing for the Ahem font. Anti-aliasing this font breaks a
@@ -1467,14 +1485,6 @@
       public: true,
     },
     {
-      // Makes document's fallback base URL use about:blank instead of the base
-      // URL of whatever execution context created it in order to match the
-      // HTML spec and the behavior already shipped in all other browsers. This
-      // behavior is reflected by document.baseURI.
-      name: "DocumentBaseURIFix",
-      status: "stable",
-    },
-    {
       name: "DocumentCookie",
     },
     {
@@ -1534,7 +1544,6 @@
       origin_trial_feature_name: "DocumentPolicyIncludeJSCallStacksInCrashReports",
       status: "experimental",
       base_feature_status: "enabled",
-      browser_process_read_access: true,
       copied_from_base_feature_if: "overridden",
     },
     {
@@ -1558,12 +1567,11 @@
     {
       name: "DocumentWrite",
     },
-    // When enabled, this allows users of DOMParser to do:
-    // (new DOMParser()).parseFromString(...,{includeShadowRoots:true}).
-    // This is being deprecated and removed: crbug.com/329330085.
-    // The fieldtrial_testing_config currently disables this feature for tests.
+    // When this flag is enabled, a workaround for https://crbug.com/356158097
+    // is removed.
     {
-      name: "DOMParserIncludeShadowRoots",
+      name: "DOMExceptionV8CaptureStackTraceDisableWorkaround",
+      status: "experimental"
     },
     // Controls whether DOMParser.parseFromString() attempts to use the
     // html fast path parser. This flag is to be used as a killswitch in case
@@ -1579,11 +1587,6 @@
     },
     {
       name: "DOMPartsAPIMinimal",
-    },
-    {
-      // Shipping in M121, so should be safe to remove in M126.
-      name: "DontFireDblclickOnDisabledFormControls",
-      status: "stable",
     },
     {
       // Drop the entire URL as plaintext in plaintext only editable position.
@@ -1604,7 +1607,7 @@
     },
     {
       name: "DynamicScrollCullRectExpansion",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ElementCapture",
@@ -1612,9 +1615,20 @@
       status: {"Android": "", "default": "experimental"},
     },
     {
-      // This is the "old" version of getInnerHTML() used for declarative shadow
-      // DOM, and this version is deprecated. The replacement is called
-      // `getHTML()` and it shipped in M125.
+      // TODO(crbug.fom/41492947) This is the "old" version of getInnerHTML()
+      // used for declarative shadow DOM, and this version is deprecated and
+      // currently being removed via Finch. The removal rollout plan is:
+      //   1. (July 29) Disable at 50% of Canary/Dev in M129.
+      //   2. (August 19) Disable at 50% of Canary/Dev/Beta, M129.
+      //   3. (September 16) Disable at 1% of Stable M129.
+      //   4. (September 23) Disable at 2% of Stable M129.
+      //   5. (September 30) Disable at 5% of Stable M129.
+      //   5.5. (September 30) Disable in code, M131, assuming no issues so far.
+      //   6. (October 7) Disable at 10% of Stable M129.
+      //   7. (October 14) Disable at 50% of Stable M129-M130 (Oct 15 stable release).
+      //   8. (October 21) Full disable via Finch, M129-130.
+      // In the meantime, replacement API is called `getHTML()` and that
+      // shipped in M125.
       name: "ElementGetInnerHTML",
       status: "stable",
     },
@@ -1703,14 +1717,9 @@
       status: "experimental",
     },
     {
-      // crbug.com/333630754
-      name: "FasterMinContent",
-      status: "stable",
-    },
-    {
       name: "FastNonCompositedScrollHitTest",
       depends_on: ["HitTestOpaqueness", "RasterInducingScroll"],
-      status: "test",
+      status: "stable",
     },
     // Kill switch.
     {
@@ -1976,7 +1985,8 @@
       // experiment that enters trials after it got created; this makes it easy
       // to polyfill by only checking older things, and makes it serve its
       // purpose of modularly advertising new things.
-      implied_by: ["FledgePermitCrossOriginTrustedSignals",
+      implied_by: ["FledgeAuctionDealSupport",
+                   "FledgePermitCrossOriginTrustedSignals",
                    "FledgeRealTimeReporting"],
       base_feature: "none",
     },
@@ -1984,7 +1994,8 @@
       name: "FledgeFeatureDetection",
       // FledgeFeatureDetection should be on if any of the features it aims
       // to help detect is on.
-      implied_by: ["FledgeCustomMaxAuctionAdComponents",
+      implied_by: ["FledgeAuctionDealSupport",
+                   "FledgeCustomMaxAuctionAdComponents",
                    "FledgeDeprecatedRenderURLReplacements",
                    "FledgePermitCrossOriginTrustedSignals",
                    "FledgeRealTimeReporting",
@@ -2035,12 +2046,6 @@
       status: "stable",
     },
     {
-      // Kill switch for crbug.com/1420810 fix
-      // TODO(xiaochengh): Remove after M122.
-      name: "FlushParserBeforeCreatingCustomElements",
-      status: "stable",
-    },
-    {
       name: "Focusgroup",
       status: "experimental",
       base_feature: "none",
@@ -2087,7 +2092,7 @@
     },
     {
       name: "FontVariantEmoji",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "FontVariationSequences",
@@ -2120,10 +2125,6 @@
       status: {"ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable"},
     },
     {
-      name: "FormattedText",
-      status: "experimental",
-    },
-    {
       // TODO(crbug.com/1419161): Remove this feature after M113 has been stable
       // for a few weeks or more. This is a kill switch that, when enabled, goes
       // back to the old behavior, which was to restore the state for <input>
@@ -2134,11 +2135,6 @@
       // TODO(crbug.com/1432009) Allow form controls with vertical writing mode
       // to have direction affect the flow of the control.
       name: "FormControlsVerticalWritingModeDirectionSupport",
-      status: "stable",
-    },
-    {
-      // Bug fix for crbug.com/1429585
-      name: "FormStateRestoreCallbackCallWithState",
       status: "stable",
     },
     {
@@ -2223,7 +2219,7 @@
     },
     {
       name: "HitTestOpaqueness",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "HrefTranslate",
@@ -2281,24 +2277,12 @@
       status: "experimental",
     },
     {
-      name: "HTMLSearchElement",
-      status: "stable",
-    },
-    {
       name: "HTMLSelectElementShowPicker",
       status: "stable",
     },
     {
       name: "HTMLSelectListElement",
       status: "experimental",
-    },
-    {
-      // http://crbug.com/1478969
-      // https://github.com/whatwg/html/pull/9538
-      // https://chromestatus.com/feature/6560361081995264
-      // Enabled by default in M123, should be safe to remove in M127
-      name: "HTMLUnsafeMethods",
-      status: "stable",
     },
     {
       // According to spec, text transforms should not affect the content
@@ -2327,23 +2311,13 @@
       status: "stable"
     },
     {
-      // ImprovedXMLErrors tweaks the way that we emit XML parsing errors in
-      // some cases in order to comply with upstream changes to libxml.
-      // Shipping in M123, so should be safe to remove in M126.
-      name: "ImprovedXMLErrors",
-      status: "stable",
-    },
-    {
       name: "IncomingCallNotifications",
     },
     {
        // When enabled, every traversable mainframe same-doc navigation will
        // increment the `viz::LocalSurfaceId` from the impl thread.
       name: "IncrementLocalSurfaceIdForMainframeSameDocNavigation",
-    },
-    {
-      name: "InertDisplayTransition",
-      status: "stable",
+      status: {"Android": "stable"},
     },
     {
       name: "InertElementNonEditable",
@@ -2385,14 +2359,6 @@
       status: {"Android": "test", "iOS": "test", "default": "stable"},
     },
     {
-      // If enabled, the input stepDown(n) and stepUp(n) methods will check
-      // that the current value is valid before applying step 10 of their
-      // specified algorithms.
-      // This flag can be removed in M128 assuming no issues.
-      name: "InputStepCurrentValueValidation",
-      status: "stable",
-    },
-    {
       name: "InputTypeSupportInsertLink",
       status: "stable",
     },
@@ -2415,12 +2381,11 @@
       base_feature: "none",
     },
     {
-      name: "InteroperablePrivateAttribution",
-      status: "experimental",
+      name: "InstallOnDeviceSpeechRecognition",
     },
     {
-      name: "InterruptComposedScrollbarDisappearance",
-      status: "stable",
+      name: "InteroperablePrivateAttribution",
+      status: "experimental",
     },
     {
       // If enabled, IntersectionObserverScrollMargin will be parsed.
@@ -2429,7 +2394,7 @@
     },
     {
       name: "IntersectionOptimization",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "InvertedColors",
@@ -2464,8 +2429,10 @@
     },
     {
       // TODO(crbug.com/40113891): This feature allows scrollers to be
-      // keyboard focusable by default. Enabled in M127, this should stay as a
-      // flag until the Deprecation Trial ends (expect at least 132).
+      // keyboard focusable by default. This was enabled by default in M130,
+      // but this flag should not be removed until the origin trial and
+      // enterprise policies have both expired. See the
+      // KeyboardFocusableScrollersOptOut flag.
       name: "KeyboardFocusableScrollers",
       status: "stable",
       public: true,
@@ -2477,9 +2444,9 @@
       // keyboard focusable by default.
       name: "KeyboardFocusableScrollersOptOut",
       origin_trial_feature_name: "KeyboardFocusableScrollersOptOut",
-      // This is not a deprecation feature, but we need this type to set the
-      // origin trial. This feature will allow sites to have time to adjust to
-      // the breaking change by opting out.
+      // This is not a feature that is being deprecated, but the origin trial
+      // *is* being used to allow sites to opt back out of the feature launch.
+      // So we're marking it as a "deprecation" trial.
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
       origin_trial_allows_third_party: true,
@@ -2505,10 +2472,6 @@
       status: "experimental",
     },
     {
-      name: "LastSuccessfulPositionOption",
-      status: "stable",
-    },
-    {
       name: "LayoutFlexNewRowAlgorithmV3",
       status: "test",
     },
@@ -2516,13 +2479,13 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
+      name: "LayoutJustifySelfForBlocks",
+      status: "stable",
+    },
+    {
       name: "LayoutNGShapeCache",
       status: "test",
       base_feature: "LayoutNGShapeCache",
-    },
-    {
-      name: "LayoutSegmentationFastPathForObjectReplacement",
-      status: "stable",
     },
     {
       name: "LazyInitializeMediaControls",
@@ -2547,12 +2510,6 @@
     {
       name: "LCPAnimatedImagesWebExposed",
       status: "test",
-    },
-    {
-      name: "LCPMouseoverHeuristics",
-    },
-    {
-      name: "LCPMultipleUpdatesPerElement",
     },
     {
       name: "LegacyWindowsDWriteFontFallback",
@@ -2743,13 +2700,18 @@
       // If enabled, meter elements will render with a fallback style when
       // appearance is set to none.
       name: "MeterAppearanceNoneFallbackStyle",
-      status: "experimental",
+      status: "stable",
     },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
     {
       name: "MiddleClickAutoscroll",
       status: "test",
+    },
+    // Killswitch. Remove after 1 or 2 stable releases.
+    {
+      name: "MinimimalResourceRequestPrepBeforeCacheLookup",
+      status: "stable",
     },
     {
       name: "MobileLayoutTheme",
@@ -2798,14 +2760,14 @@
       status: "test",
     },
     {
+      // https://chromestatus.com/feature/6270155647352832
       name: "MultiSmoothScrollIntoView",
-      status: "experimental",
+      status: "stable",
     },
     // crbug.com/1446498: This feature is being used for the deprecation of
     // Mutation Events.
     {
       name: "MutationEvents",
-      status: "stable",
       origin_trial_feature_name: "MutationEvents",
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
@@ -2859,13 +2821,6 @@
         "default": "experimental",
       },
       base_feature: "none",
-    },
-    {
-      // This is a killswitch for the changed behavior of
-      // CompositorFilterOperations::MapRect() for crbug.com/329235801.
-      // Can be removed in M127 if things are stable.
-      name: "NewFilterMapRect",
-      status: "stable",
     },
     {
       // This is a killswitch for the behavior of Element::GetFocusableArea
@@ -3127,6 +3082,10 @@
       status: "stable",
     },
     {
+      name: "PaintHighlightsForFirstLetter",
+      status: "stable",
+    },
+    {
       name: "PaintHoldingForIframes",
       status: "stable",
     },
@@ -3254,7 +3213,13 @@
     // See https://crbug.com/353538500
     {
       name: "PointerEventTargetsInEventLists",
-      status: "experimental",
+      status: "stable",
+    },
+    // This is a killswitch for the behavior of <dialog popover autofocus>,
+    // which landed in M130 and can be removed in M132.
+    {
+      name: "PopoverDialogNewFocusBehavior",
+      status: "stable",
     },
     {
       name: "PositionOutsideTabSpanCheckSiblingNode",
@@ -3318,12 +3283,6 @@
       // When enabled, styling for the content within heading will be
       // preserved after merge.
       name: "PreserveFollowingBlockStylesDuringBlockMerge",
-      status: "stable",
-    },
-    {
-      // When enabled, gives the option to pretty-print JSON documents to
-      // cleanly format the JSON and make it readable.
-      name:"PrettyPrintJSONDocument",
       status: "stable",
     },
     {
@@ -3410,6 +3369,12 @@
       is_protected_feature: "true",
     },
     {
+      // Fix for ::cue, ::file-selector-button, and ::placeholder pseudo
+      // elements in getComputedStyle().
+      name: "PseudoElementsCorrectInGetComputedStyle",
+      status: "stable",
+    },
+    {
       // Allowing pseudo elements to have focus.
       name: "PseudoElementsFocusable",
       status: "experimental",
@@ -3440,10 +3405,6 @@
     },
     {
       name: "ReadableStreamAsyncIterable",
-      status: "stable",
-    },
-    {
-      name: "RecollectInlinesReserveCapacity",
       status: "stable",
     },
     // If enabled, the Accept-Language header will be reduced.
@@ -3502,18 +3463,17 @@
         "default": "experimental"},
     },
     {
+      // See https://issues.chromium.org/40805258
+      name: "RemoveCollapsedPlaceholder",
+      status: "stable",
+    },
+    {
       name: "RemoveDanglingMarkupInTarget",
       status: "stable",
     },
     {
       name: "RemoveDataUrlInSvgUse",
       status: "stable",
-    },
-    {
-      name: "RemoveMobileViewportDoubleTap",
-      public: true,
-      status: "stable",
-      base_feature: "none",
     },
     // Remove a node if it's selected fully even though it has children. See
     // https://crbug.com/331074432
@@ -3554,6 +3514,10 @@
       }
     },
     {
+      name: "ResetInputTypeToNoneBeforeCharacterInput",
+      status: "stable",
+    },
+    {
       name: "ResourceTimingContentType",
       status: "experimental",
     },
@@ -3566,6 +3530,10 @@
       public: true,
       status: "experimental",
       base_feature: "none",
+    },
+    {
+      name: "ReuseShapeResultsByFonts",
+      status: "stable",
     },
     {
       // New behavior when line breaker rewinds floats. crbug.com/1499290
@@ -3615,13 +3583,6 @@
       name: "RTCRtpEncodingParametersCodec",
       status: "stable",
     },
-    // Enables the use of |RTCRtpTransceiver::getHeaderExtensionsToNegotiate|,
-    // |RTCRtpTransceiver::setHeaderExtensionsToNegotiate|, and
-    // |RTCRtpTransceiver::getNegotiatedHeaderExtensions|.
-    {
-      name: "RTCRtpHeaderExtensionControl",
-      status: "stable",
-    },
     {
       name: "RTCRtpScriptTransform",
       status: "experimental",
@@ -3643,11 +3604,6 @@
       status: "stable",
     },
     {
-      // crbug.com/336592423
-      name: "RubyAnnotationSpaceFix",
-      status: "stable",
-    },
-    {
       // crbug.com/324111880
       name: "RubyLineBreakable",
       status: "stable",
@@ -3664,20 +3620,12 @@
       status: "stable",
     },
     {
-      // Runs a microtask checkpoint before creating custom elements in
-      // XMLDocumentParser. Should be safe to remove after M125
-      name: "RunMicrotaskBeforeXmlCustomElement",
-      status: "stable",
-    },
-    {
       name: "SanitizerAPI",
       status: "experimental",
     },
     {
       name: "SchedulerYield",
-      origin_trial_feature_name: "SchedulerYield",
-      origin_trial_allows_third_party: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
@@ -3783,6 +3731,13 @@
       status: "experimental",
     },
     {
+      // selection.isCollapsed should return false if anchor and focus nodes
+      // are different, including in shadow tree.
+      // https://crbug.com/40400558
+      name: "SelectionIsCollapsedShadowDOMSupport",
+      status: "experimental",
+    },
+    {
       // Maintain author-defined ::selection highlight colors, even if they
       // match the text color.
       name: "SelectionRespectsColors",
@@ -3801,6 +3756,14 @@
       // https://github.com/whatwg/html/issues/10310
       name: "SelectParserRelaxation",
       status: "experimental",
+    },
+    {
+      // This flag is a performance optimization which reorganizes some code
+      // for handling <select>'s popup in order to avoid expensive calls to
+      // InternalPopupMenu::UpdateFromElement. Added in M130, should be safe to
+      // remove in M133.
+      name: "SelectPopupLessUpdates",
+      status: "stable",
     },
     {
       // If enabled, the type to search in a select element will ignore accents.
@@ -3858,7 +3821,12 @@
       status: "test",
     },
     {
-      // crbug.com/359616076 and crbug.com/360158400
+      // crbug.com/360716751
+      name: "ShapeOutsideClippedImageFix",
+      status: "stable",
+    },
+    {
+      // crbug.com/359616076, crbug.com/360158400, and crbug.com/360903551.
       name: "ShapeOutsideWritingModeFix",
       status: "stable",
     },
@@ -3910,13 +3878,6 @@
       // Android does not yet support SharedWorker. crbug.com/154571
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
-    },
-    {
-      // Makes select.showPicker() and input.showPicker() consume user
-      // activation in order to prevent abuse. Shipping in M127, should be safe
-      // to remove in M131.
-      name: "ShowPickerConsumeUserActivation",
-      status: "stable"
     },
     {
       // crbug.com/40501131
@@ -4050,6 +4011,11 @@
       status: "experimental",
     },
     {
+      name: "StorageAccessHeader",
+      origin_trial_feature_name: "StorageAccessHeader",
+      status: "experimental"
+    },
+    {
       name: "StorageBuckets",
       status: "stable",
     },
@@ -4063,6 +4029,10 @@
       // Gates the `locks()` method on a storage bucket.
       name: "StorageBucketsLocks",
       status: "experimental",
+    },
+    {
+      name: "StricterCellWidthContentSizeQuirk",
+      status: "stable",
     },
     {
       name: "StrictMimeTypesForWorkers",
@@ -4123,7 +4093,7 @@
       // is shipped with Chrome or when system emoji fonts will have
       // cmap format 14 subtable.
       name: "SystemFallbackEmojiVSSupport",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "SystemWakeLock",
@@ -4181,22 +4151,6 @@
       status: "stable",
     },
     {
-      // crbug.com/331680200
-      name: "TextAlignJustifyBidiIsolate",
-      status: "stable",
-    },
-    {
-      // This is a kill switch for the fix to crbug.com/333940413. It landed
-      // in M126, and can be removed if all is well by M128.
-      name: "TextAreaChildrenChangedStillValidates",
-      status: "stable",
-    },
-    {
-      // crbug.com/1008951
-      name: "TextDecoratingBox",
-      status: "stable",
-    },
-    {
       name: "TextDetector",
       status: "experimental",
     },
@@ -4219,6 +4173,10 @@
     {
       name: "TextFragmentTapOpensContextMenu",
       status: {"Android": "stable"},
+    },
+    {
+      name: "TextInputNotAlwaysDirAuto",
+      status: "stable",
     },
     {
       name: "TextMetricsBaselines",
@@ -4314,7 +4272,7 @@
     },
     {
       name: "TransferableRTCDataChannel",
-      status: "experimental",
+      status: "stable",
     },
     // This is conditionally set if the platform supports translation.
     {
@@ -4349,7 +4307,7 @@
       // preventDefault(), instead of waiting for the browser to send
       // touchscrollstarted.
       name: "UnblockTouchMoveEarlier",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "UnclosedFormControlIsInvalid",
@@ -4384,32 +4342,8 @@
       depends_on: ["WebUSB"],
     },
     {
-      // This flag makes IDL reflected attributes with the "URL" IDL attribute
-      // return the original string of the attribute when a complete URL can't
-      // be created instead of an empty string.
-      name: "URLAttributeFix",
-      status: "stable",
-    },
-    {
-      name: "URLParse",
-      status: "stable",
-    },
-    {
       name: "URLPatternCompareComponent",
       status: "experimental",
-    },
-    {
-      name: "URLPatternHasRegExpGroups",
-      status: "stable",
-    },
-    {
-      // Kill switch for the regexp flag update from "u" to "v".
-      name: "URLPatternRegexpUnicodeSetsMode",
-      status: "stable",
-    },
-    {
-      name: "URLPatternWildcardMoreOften",
-      status: "stable",
     },
     {
       name: "URLSearchParamsHasAndDeleteMultipleArgs",
@@ -4421,12 +4355,6 @@
         "ChromeOS_Ash": "stable",
         "ChromeOS_Lacros": "stable",
       },
-    },
-    {
-      // Makes root scrollbars follow the preferred color scheme by default.
-      // https://chromestatus.com/feature/5089486318075904
-      name: "UsedColorSchemeRootScrollbars",
-      status: "stable",
     },
     {
       name: "UserActivationSameOriginVisibility",
@@ -4520,10 +4448,6 @@
       status: "stable",
     },
     {
-      name: "VttCueDisplayRuby",
-      status: "stable",
-    },
-    {
       // The "WakeLock" feature was originally implied_by "ScreenWakeLock" and
       // "SystemWakeLock". The former was removed after being promoted to
       // stable, but we need to keep this feature around for code and IDLs that
@@ -4540,6 +4464,10 @@
     },
     {
       name: "WebAnimationsSVG",
+      status: "experimental",
+    },
+    {
+      name: "WebAppInstallation",
       status: "experimental",
     },
     {
@@ -4609,8 +4537,7 @@
     {
       name: "WebAssemblyJSStringBuiltins",
       origin_trial_feature_name: "WebAssemblyJSStringBuiltins",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     // WebAuth is disabled on Android versions prior to N (7.0) due to lack of
     // supporting APIs, see runtime_features.cc.
@@ -4627,6 +4554,15 @@
     // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-attestationformats
     {
       name: "WebAuthenticationAttestationFormats",
+      status: "experimental",
+      origin_trial_feature_name: "WebAuthnAttestationFormats",
+      origin_trial_os: ["android"],
+      origin_trial_allows_third_party: true,
+    },
+    // Enables the PublicKeyCredential.getClientCapabilities() static method.
+    // https://w3c.github.io/webauthn/#sctn-getClientCapabilities
+    {
+      name: "WebAuthenticationClientCapabilities",
       status: "experimental",
     },
     // Methods for deserializing WebAuthn requests from JSON/serializing
@@ -4830,10 +4766,6 @@
       base_feature: "none",
     },
     {
-      name: "WebSocketHTTPURL",
-      status: "stable",
-    },
-    {
       name: "WebSocketStream",
       status: "stable",
     },
@@ -4955,10 +4887,6 @@
       public: true,
       status: "experimental",
     },
-    {
-      name: "WGIGamepadTriggerRumble",
-      status: "stable",
-    },
     // If enabled, window.default[Ss]tatus will be supported. This is disabled
     // by default, and is here to allow this behavior to be re-enabled via Finch
     // in case of problems. This flag should be removed by Q1 2023, assuming
@@ -4966,23 +4894,10 @@
     {
       name: "WindowDefaultStatus",
     },
-    {
-      // Allows browser-providers writing suggestions to be turned on/off
-      // through the attribute.
-      // https://chromestatus.com/feature/5153375153029120
-      name: "WritingSuggestions",
-      status: "stable",
-    },
     // Flag guard for change to XML parser to merge adjacent CDATA sections.
     // See https://crrev.com/c/4790343.
     {
       name: "XMLParserMergeAdjacentCDataSections",
-      status: "stable",
-    },
-    // Flag to guard fix for https://crbug.com/331970402.  Should be removed
-    // after M125 is stable.
-    {
-      name: "XPathLangUseAsciiCase",
       status: "stable",
     },
     {

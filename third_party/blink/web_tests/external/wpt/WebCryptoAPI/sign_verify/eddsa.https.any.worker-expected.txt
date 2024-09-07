@@ -25,17 +25,5 @@ This is a testharness.js-based test.
   assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
 [FAIL] Sign and verify using generated Ed448 keys.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
-[FAIL] Ed25519 Verification checks with small-order key of order - Test 0
-  assert_equals: Signature verification result. expected false but got true
-[FAIL] Ed25519 Verification checks with small-order key of order - Test 1
-  assert_equals: Signature verification result. expected false but got true
-[FAIL] Ed25519 Verification checks with small-order key of order - Test 2
-  assert_equals: Signature verification result. expected false but got true
-[FAIL] Ed25519 Verification checks with small-order key of order - Test 11
-  assert_equals: Signature verification result. expected false but got true
-[FAIL] Ed25519 Verification checks with small-order key of order - Test 12
-  assert_equals: Signature verification result. expected false but got true
-[FAIL] Ed25519 Verification checks with small-order key of order - Test 13
-  assert_equals: Signature verification result. expected false but got true
 Harness: the test ran to completion.
 

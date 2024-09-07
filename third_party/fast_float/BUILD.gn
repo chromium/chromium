@@ -52,13 +52,14 @@ if (build_with_chromium) {
     configs += [ "//build/config/compiler:no_chromium_code" ]
   }
 
-  test("fast_float_long_test") {
-    testonly = true
-    sources = [ "src/tests/long_test.cpp" ]
-    deps = [ ":fast_float" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-  }
+  # Disabled because it uses exceptions.
+  # test("fast_float_long_test") {
+  #   testonly = true
+  #   sources = [ "src/tests/long_test.cpp" ]
+  #   deps = [ ":fast_float" ]
+  #   configs -= [ "//build/config/compiler:chromium_code" ]
+  #   configs += [ "//build/config/compiler:no_chromium_code" ]
+  # }
 
   test("fast_float_powersoffive_hardround_test") {
     testonly = true
@@ -68,13 +69,14 @@ if (build_with_chromium) {
     configs += [ "//build/config/compiler:no_chromium_code" ]
   }
 
-  test("fast_float_string_test") {
-    testonly = true
-    sources = [ "src/tests/string_test.cpp" ]
-    deps = [ ":fast_float" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-  }
+  # Disabled because it uses exceptions.
+  # test("fast_float_string_test") {
+  #   testonly = true
+  #   sources = [ "src/tests/string_test.cpp" ]
+  #   deps = [ ":fast_float" ]
+  #   configs -= [ "//build/config/compiler:chromium_code" ]
+  #   configs += [ "//build/config/compiler:no_chromium_code" ]
+  # }
 
   test("fast_float_fast_int_test") {
     testonly = true
@@ -92,11 +94,12 @@ if (build_with_chromium) {
     configs += [ "//build/config/compiler:no_chromium_code" ]
   }
 
-  test("fast_float_fixedwidthtest") {
-    testonly = true
-    sources = [ "src/tests/fixedwidthtest.cpp" ]
-    deps = [ ":fast_float" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-  }
+  # Unused for now, befcause it uses a C++23 header.
+  # test("fast_float_fixedwidthtest") {
+  #   testonly = true
+  #   sources = [ "src/tests/fixedwidthtest.cpp" ]
+  #   deps = [ ":fast_float" ]
+  #   configs -= [ "//build/config/compiler:chromium_code" ]
+  #   configs += [ "//build/config/compiler:no_chromium_code" ]
+  # }
 }

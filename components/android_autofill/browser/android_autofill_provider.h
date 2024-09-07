@@ -258,7 +258,8 @@ class AndroidAutofillProvider : public AutofillProvider,
   // Returns true if CredMan *may* be shown for the given field. It only returns
   // false if the sheet was already shown or prefetching concluded and indicated
   // that no passkeys are available.
-  bool IntendsToShowCredMan(content::RenderFrameHost* rfh) const;
+  bool IntendsToShowCredMan(const FormFieldData& field,
+                            content::RenderFrameHost* rfh) const;
 
   // Returns true if a passkey request is pending  or succeeded for the given
   // `rfh` and the CredMan UI should be shown when the given `field` is focused.

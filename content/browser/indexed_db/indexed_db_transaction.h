@@ -97,14 +97,19 @@ class CONTENT_EXPORT IndexedDBTransaction
       storage::mojom::DisallowInactiveClientReason reason);
 
   // Returns true if the given transaction wants to hold any locks that
-  // other transactions *from other clients* are waiting for.
-  bool IsTransactionBlockingOtherClients() const;
+  // other transactions *from other clients* are waiting for. If
+  // `consider_priority` is true, then this routine ignores other clients
+  // that are equal or lower priority than this one, provided that this isn't
+  // the highest priority (0).
+  bool IsTransactionBlockingOtherClients(bool consider_priority = false) const;
 
   // Returns the locks required for this transaction to start. NB: this is only
   // relevant to readonly and readwrite transactions. Lock requests for version
   // change transactions are created by the `IndexedDBConnectionCoordinator`.
   std::vector<PartitionedLockManager::PartitionedLockRequest>
   BuildLockRequests() const;
+
+  void OnSchedulingPriorityUpdated(int new_priority);
 
   blink::mojom::IDBTransactionMode mode() const { return mode_; }
   const std::set<int64_t>& scope() const { return object_store_ids_; }
@@ -186,6 +191,7 @@ class CONTENT_EXPORT IndexedDBTransaction
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTestMode, TaskFails);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTest, Timeout);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTest, TimeoutPreemptive);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTest, TimeoutWithPriorities);
 
   // blink::mojom::IDBTransaction:
   void CreateObjectStore(int64_t object_store_id,

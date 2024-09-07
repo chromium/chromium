@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -56,13 +57,9 @@ void RecordDeleteAndStartOverResult(DeleteAndStartOverResult result) {
       "ServiceWorker.Storage.DeleteAndStartOverResult", result);
 }
 
-BASE_FEATURE(kServiceWorkerStorageSuppressPostTask,
-             "ServiceWorkerStorageSuppressPostTask",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsServiceWorkerStorageSuppressPostTaskEnabled() {
   static const bool enabled = base::FeatureList::IsEnabled(
-      storage::kServiceWorkerStorageSuppressPostTask);
+      blink::features::kServiceWorkerStorageSuppressPostTask);
   return enabled;
 }
 

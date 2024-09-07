@@ -87,9 +87,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // mojom::IndexedDBControl implementation:
   void BindIndexedDB(
       const storage::BucketLocator& bucket_locator,
+      const storage::BucketClientInfo& client_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
-      const base::UnguessableToken& client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void ForceClose(storage::BucketId bucket_id,
                   storage::mojom::ForceCloseReason reason,
@@ -98,10 +98,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
                               StartMetadataRecordingCallback callback) override;
   void StopMetadataRecording(storage::BucketId bucket_id,
                              StopMetadataRecordingCallback callback) override;
-  void GetDevToolsTokenForClient(
-      storage::BucketId bucket_id,
-      const base::UnguessableToken& client_token,
-      GetDevToolsTokenForClientCallback callback) override;
+
   void DownloadBucketData(storage::BucketId bucket_id,
                           DownloadBucketDataCallback callback) override;
   void GetAllBucketsDetails(GetAllBucketsDetailsCallback callback) override;
@@ -185,9 +182,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   // mojom::IndexedDBControl internal implementation:
   void BindIndexedDBImpl(
+      const storage::BucketClientInfo& client_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
-      const base::UnguessableToken& client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
   void ForceCloseImpl(

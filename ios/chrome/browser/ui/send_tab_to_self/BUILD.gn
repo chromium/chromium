@@ -16,7 +16,7 @@ source_set("send_tab_to_self") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",

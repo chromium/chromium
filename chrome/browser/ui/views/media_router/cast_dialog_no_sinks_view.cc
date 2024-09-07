@@ -100,13 +100,27 @@ CastDialogNoSinksView::CastDialogNoSinksView(Profile* profile,
     size_t offset;
     std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
         IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK);
-    permission_rejected_label_ =
-        AddChildView(std::make_unique<views::StyledLabel>());
-    permission_rejected_label_->SetText(l10n_util::GetStringFUTF16(
+    std::u16string label_text = l10n_util::GetStringFUTF16(
         IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
-        settings_text_for_link, &offset));
-    permission_rejected_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+        settings_text_for_link, &offset);
 
+    // TODO(crbug.com/359973625): Remove this empty container once
+    // AXPlatformNodeCocoa::AXBoundsForRange is implemented.
+    auto* accessibility_container =
+        AddChildView(std::make_unique<views::View>());
+    accessibility_container->SetLayoutManager(
+        std::make_unique<views::BoxLayout>());
+    accessibility_container->GetViewAccessibility().SetRole(
+        ax::mojom::Role::kGroup);
+    accessibility_container->GetViewAccessibility().SetName(
+        label_text, ax::mojom::NameFrom::kRelatedElement);
+    accessibility_container->SetFocusBehavior(
+        views::View::FocusBehavior::ACCESSIBLE_ONLY);
+
+    permission_rejected_label_ = accessibility_container->AddChildView(
+        std::make_unique<views::StyledLabel>());
+    permission_rejected_label_->SetText(label_text);
+    permission_rejected_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 #if BUILDFLAG(IS_MAC)
     base::RepeatingClosure open_settings_cb = base::BindRepeating([]() {
       // TODO(crbug.com/358725038): Open the Local Network sub-pane in system

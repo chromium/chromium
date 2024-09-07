@@ -72,10 +72,16 @@ def generate_matching_pattern_equals(name_to_lang_to_id_to_patternrefs,
 # id_to_name_to_lang_to_patterns is a
 # map from pattern source IDs to a
 #   map from pattern names to a
-#     map from language codes to a
-#       list of patterns,
+#     map from language codes to
+#       either a
+#         list of patterns
+#       or a
+#         map of feature names to a
+#           list of patterns
 # where the pattern source IDs are consecutive natural numbers identifying the
 # input JSON files.
+# As a first step, any innermost maps of feature names to list of patterns are
+# flattened to a list of patterns.
 #
 # The constants are:
 #
@@ -142,22 +148,35 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   def json_to_cpp_form_control_types(enum_values):
     return json_to_cpp_dense_set(enum_values, 'FormControlType')
 
+  # Feature annotations are a tuple of (feature name, state). This function
+  # maps them to the corresponding C++ OptionalRegexFeatureWithState.
+  def feature_annotation_to_cpp_state(feature_annotation):
+    if len(feature_annotation) == 0:
+      return 'OptionalRegexFeatureWithState()'
+    assert len(feature_annotation) == 2
+    feature = "RegexFeature::k" + feature_annotation[0]
+    enabled = python_bool_to_cpp(feature_annotation[1])
+    return f'OptionalRegexFeatureWithState{{{feature}, {enabled}}}'
+
   # Maps a JSON object representing a pattern to a C++ MatchingPattern
   # expression.
   def json_to_cpp_pattern(json):
     positive_pattern = json_to_cpp_u16string_literal(json['positive_pattern'])
     negative_pattern = json_to_cpp_u16string_literal(json['negative_pattern'])
-    positive_score = json['positive_score']
+    # In the JSON files, every pattern is annotated with a 'positive_score'.
+    # Since this is currently not used by the C++ logic, it is omitted to save
+    # some binary size.
     match_field_attributes = json_to_cpp_match_field_attributes(
         json['match_field_attributes'])
     form_control_types = json_to_cpp_form_control_types(
         json['form_control_types'])
+    feature = feature_annotation_to_cpp_state(json.get('feature', ()))
     return f'MatchingPattern{{\n' \
            f'  .positive_pattern = {positive_pattern},\n' \
            f'  .negative_pattern = {negative_pattern},\n' \
-           f'  .positive_score = {positive_score},\n' \
            f'  .match_field_attributes = {match_field_attributes},\n' \
            f'  .form_control_types = {form_control_types},\n' \
+           f'  .feature = {feature},\n' \
            f'}}'
 
   # Name of the auxiliary C++ constant.
@@ -174,6 +193,24 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
     for name, lang_to_patterns in name_to_lang_to_patterns.items():
       if '' in lang_to_patterns:
         raise Exception('JSON format error: language is ""')
+
+    # Flatten the feature flag layer by annotating patterns with a tuple of
+    # their associated feature name and the desired feature state.
+    for lang_to_patterns in name_to_lang_to_patterns.values():
+      # Copy lang_to_patterns to modify the original map while iterating.
+      for lang, patterns_or_map in lang_to_patterns.copy().items():
+        if isinstance(patterns_or_map, list):
+          continue
+        assert isinstance(patterns_or_map, dict)
+        feature_name = list(filter(len, patterns_or_map.keys()))
+        # If feature annotations are used, there needs to be exactly one feature
+        # name and at most one default arm.
+        assert len(feature_name) == 1 and len(patterns_or_map) <= 2
+        for feature, patterns in patterns_or_map.items():
+          for pattern in patterns:
+            pattern['feature'] = (feature_name[0], feature == feature_name[0])
+        lang_to_patterns[lang] = [pattern for patterns in
+          patterns_or_map.values() for pattern in patterns]
 
     # Remember each pattern's language.
     #

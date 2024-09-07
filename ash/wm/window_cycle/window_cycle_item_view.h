@@ -64,7 +64,7 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
 
 // Container view used to host multiple `WindowCycleItemView`s and be the focus
 // target for window groups while tabbing in window cycle view.
-class GroupContainerCycleView : public WindowMiniViewBase {
+class ASH_EXPORT GroupContainerCycleView : public WindowMiniViewBase {
   METADATA_HEADER(GroupContainerCycleView, WindowMiniViewBase)
 
  public:

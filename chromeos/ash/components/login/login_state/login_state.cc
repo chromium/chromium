@@ -27,12 +27,7 @@ bool AlwaysLoggedInByDefault() {
 }
 
 LoginState::LoggedInUserType GetLoggedInUserTypeFromUser(
-    const user_manager::User& active_user,
-    bool is_current_user_owner) {
-  if (is_current_user_owner) {
-    return LoginState::LOGGED_IN_USER_OWNER;
-  }
-
+    const user_manager::User& active_user) {
   switch (active_user.GetType()) {
     case user_manager::UserType::kRegular:
       return LoginState::LOGGED_IN_USER_REGULAR;
@@ -137,7 +132,6 @@ bool LoginState::UserHasNetworkProfile() const {
 
 bool LoginState::IsUserAuthenticated() const {
   return logged_in_user_type_ == LOGGED_IN_USER_REGULAR ||
-         logged_in_user_type_ == LOGGED_IN_USER_OWNER ||
          logged_in_user_type_ == LOGGED_IN_USER_CHILD;
 }
 
@@ -164,14 +158,12 @@ void LoginState::OnUserManagerWillBeDestroyed(
   observation_.Reset();
 }
 
-void LoginState::OnLoginStateUpdated(const user_manager::User* active_user,
-                                     bool is_current_user_owner) {
+void LoginState::OnLoginStateUpdated(const user_manager::User* active_user) {
   LoginState::LoggedInState logged_in_state = LOGGED_IN_NONE;
   LoginState::LoggedInUserType logged_in_user_type = LOGGED_IN_USER_NONE;
   if (active_user) {
     logged_in_state = LOGGED_IN_ACTIVE;
-    logged_in_user_type =
-        GetLoggedInUserTypeFromUser(*active_user, is_current_user_owner);
+    logged_in_user_type = GetLoggedInUserTypeFromUser(*active_user);
   }
   SetLoggedInState(logged_in_state, logged_in_user_type);
 }

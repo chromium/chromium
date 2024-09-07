@@ -31,19 +31,23 @@ namespace updater::test {
 
 extern const char kChromeAppId[];
 
-// Returns true if a process based on the named executable is running.
-bool IsProcessRunning(const base::FilePath::StringType& executable_name);
+// Returns true if a process based on the named executable and optional filter
+// is running.
+bool IsProcessRunning(const base::FilePath::StringType& executable_name,
+                      const base::ProcessFilter* filter = nullptr);
 
-// Returns true is all processes based on the named executable have exited.
-// Otherwise, it returns false if the time delta has expired.
+// Returns true if all processes based on the named executable and optional
+// filter have exited. Otherwise, returns false if the time delta has expired.
 bool WaitForProcessesToExit(const base::FilePath::StringType& executable_name,
-                            base::TimeDelta wait);
+                            base::TimeDelta wait,
+                            const base::ProcessFilter* filter = nullptr);
 
 // Terminates all the processes on the current machine that were launched
-// from the given executable name, ending them with the given exit code.
-// Returns true if all processes were able to be killed off.
+// from the given executable name and optional filter, ending them with the
+// given exit code. Returns true if all processes were able to be killed off.
 bool KillProcesses(const base::FilePath::StringType& executable_name,
-                   int exit_code);
+                   int exit_code,
+                   const base::ProcessFilter* filter = nullptr);
 
 // A policy service with default values.
 scoped_refptr<PolicyService> CreateTestPolicyService();
@@ -89,12 +93,15 @@ base::FilePath StartProcmonLogging();
 void StopProcmonLogging(const base::FilePath& pml_file);
 #endif
 
-// Returns a list of processes matching `executable_name`.
+// Returns a list of processes matching `executable_name` and optional `filter`.
 const base::ProcessIterator::ProcessEntries FindProcesses(
-    const base::FilePath::StringType& executable_name);
+    const base::FilePath::StringType& executable_name,
+    const base::ProcessFilter* filter = nullptr);
 
-// Returns a formatted string of processes matching `executable_name`.
-std::string PrintProcesses(const base::FilePath::StringType& executable_name);
+// Returns a formatted string of processes matching `executable_name` and
+// optional `filter`.
+std::string PrintProcesses(const base::FilePath::StringType& executable_name,
+                           const base::ProcessFilter* filter = nullptr);
 
 // Waits for a given `predicate` to become true. Invokes `still_waiting`
 // periodically to provide a indication of progress. Returns true if the

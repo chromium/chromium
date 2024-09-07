@@ -33,7 +33,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
@@ -1340,9 +1340,9 @@ void IOSurfaceImageBacking::WaitForANGLECommandsToBeScheduled() {
 }
 
 void IOSurfaceImageBacking::ClearEGLDisplaysWithPendingCommands(
-    gl::GLDisplayEGL* display_to_exclude) {
-  if (std::move(egl_displays_pending_flush_).contains(display_to_exclude)) {
-    egl_displays_pending_flush_.insert(display_to_exclude);
+    gl::GLDisplayEGL* display_to_keep) {
+  if (std::move(egl_displays_pending_flush_).contains(display_to_keep)) {
+    egl_displays_pending_flush_.insert(display_to_keep);
   }
 }
 
@@ -1465,8 +1465,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   CHECK(context_state);
-  CHECK(context_state->graphite_context());
-  if (context_state->gr_context_type() == GrContextType::kGraphiteDawn) {
+  if (context_state->IsGraphiteDawn()) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     auto device = context_state->dawn_context_provider()->GetDevice();
     auto backend_type = context_state->dawn_context_provider()->backend_type();
@@ -1486,7 +1485,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     NOTREACHED();
 #endif
   } else {
-    CHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteMetal);
+    CHECK(context_state->IsGraphiteMetal());
 #if BUILDFLAG(SKIA_USE_METAL)
     std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures;
     mtl_textures.reserve(format().NumberOfPlanes());
@@ -1624,7 +1623,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
   // Note that we don't need to call WaitForANGLECommandsToBeScheduled for other
   // EGLDisplays because it is already done when the previous GL context is made
   // uncurrent. We can simply remove the other EGLDisplays from the list.
-  ClearEGLDisplaysWithPendingCommands(/*display_to_exclude=*/display);
+  ClearEGLDisplaysWithPendingCommands(/*display_to_keep=*/display);
 
   if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     // If this image could potentially be shared with another Metal device,
@@ -1718,15 +1717,7 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   CHECK(display);
   CHECK_EQ(display->GetDisplay(), egl_state->egl_display_);
 
-  // Only enqueue shared events if we might ever use this backing on another
-  // Metal device e.g. with WebGPU or Graphite.
-  const bool has_webgpu_usage =
-      usage() &
-      (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-       SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-       SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE);
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
-      (has_webgpu_usage || gr_context_type_ != GrContextType::kGL)) {
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     id<MTLSharedEvent> shared_event = nil;
     uint64_t signal_value = 0;
     if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
@@ -1757,8 +1748,16 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   // serialized with respect to reads (so that the end of a write always
   // triggers a release and copy). By design, IOSurfaceImageBackingFactory
   // enforces this property for this use case.
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
-      num_ongoing_read_accesses_ == 0) {
+  const bool is_swangle =
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
+
+  // We also need to ReleaseTexImage for Graphite to ensure that any shared
+  // events enqueued are signaled in the flush inside ReleaseTexImage.
+  const bool needs_release_tex_image =
+      (is_swangle || gr_context_type_ != GrContextType::kGL) &&
+      num_ongoing_read_accesses_ == 0;
+
+  if (needs_release_tex_image) {
     CHECK_EQ(static_cast<int>(egl_state->gl_textures_.size()),
              format().NumberOfPlanes());
     CHECK_EQ(static_cast<int>(egl_state->egl_surfaces_.size()),

@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Styles applied to ::part(...):disabled
-  assert_equals: expected "rgb(0, 255, 0)" but got "rgb(255, 0, 0)"
-[FAIL] Styles applied via grouped selector including matched ::part(...):disabled
-  assert_equals: expected "rgb(0, 255, 0)" but got "rgba(16, 16, 16, 0.3)"
-[FAIL] Styles applied via grouped selector including unmatched ::part(...):disabled
-  assert_equals: expected "monospace" but got "Times"
-Harness: the test ran to completion.
-

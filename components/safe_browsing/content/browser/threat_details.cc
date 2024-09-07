@@ -131,9 +131,10 @@ void ClearHttpsResource(ClientSafeBrowsingReportRequest::Resource* resource) {
       *orig_resource.mutable_response()->mutable_remote_ip());
 }
 
-std::string GetElementKey(const int frame_tree_node_id,
-                          const int element_node_id) {
-  return base::StringPrintf("%d-%d", frame_tree_node_id, element_node_id);
+std::string GetElementKey(const content::FrameTreeNodeId frame_tree_node_id,
+                          const content::FrameTreeNodeId element_node_id) {
+  return base::StringPrintf("%d-%d", frame_tree_node_id.value(),
+                            element_node_id.value());
 }
 
 void TrimElements(const std::set<int> target_ids,
@@ -433,10 +434,10 @@ ClientSafeBrowsingReportRequest::Resource* ThreatDetails::AddUrl(
 }
 
 void ThreatDetails::AddDomElement(
-    const int frame_tree_node_id,
-    const int element_node_id,
+    const content::FrameTreeNodeId frame_tree_node_id,
+    const content::FrameTreeNodeId element_node_id,
     const std::string& tagname,
-    const int parent_element_node_id,
+    const content::FrameTreeNodeId parent_element_node_id,
     const std::vector<mojom::AttributeNameValuePtr> attributes,
     const std::string& inner_html,
     const ClientSafeBrowsingReportRequest::Resource* resource) {
@@ -474,7 +475,7 @@ void ThreatDetails::AddDomElement(
   // Next we try to lookup the parent of the current element and add ourselves
   // as a child of it.
   HTMLElement* parent_element = nullptr;
-  if (parent_element_node_id == 0) {
+  if (parent_element_node_id.is_null()) {
     // No parent indicates that this element is at the top of the current frame.
     // Remember that this is a top-level element of the frame with the
     // current |frame_tree_node_id|. If this element is inside an iframe, a
@@ -599,20 +600,20 @@ void ThreatDetails::OnReceivedThreatDOMDetails(
 
   // Lookup the FrameTreeNode ID of any child frames in the list of DOM nodes.
   const int sender_process_id = sender_rfh->GetProcess()->GetID();
-  const int sender_frame_tree_node_id = sender_rfh->GetFrameTreeNodeId();
+  const content::FrameTreeNodeId sender_frame_tree_node_id =
+      sender_rfh->GetFrameTreeNodeId();
   KeyToFrameTreeIdMap child_frame_tree_map;
   for (const mojom::ThreatDOMDetailsNodePtr& node : params) {
     if (!node->child_frame_token) {
       continue;
     }
 
-    const std::string cur_element_key =
-        GetElementKey(sender_frame_tree_node_id, node->node_id);
-    int child_frame_tree_node_id =
+    const std::string cur_element_key = GetElementKey(
+        sender_frame_tree_node_id, content::FrameTreeNodeId(node->node_id));
+    content::FrameTreeNodeId child_frame_tree_node_id =
         content::RenderFrameHost::GetFrameTreeNodeIdForFrameToken(
             sender_process_id, node->child_frame_token.value());
-    if (child_frame_tree_node_id !=
-        content::RenderFrameHost::kNoFrameTreeNodeId) {
+    if (child_frame_tree_node_id) {
       child_frame_tree_map[cur_element_key] = child_frame_tree_node_id;
     }
   }
@@ -622,7 +623,7 @@ void ThreatDetails::OnReceivedThreatDOMDetails(
 }
 
 void ThreatDetails::AddDOMDetails(
-    const int frame_tree_node_id,
+    const content::FrameTreeNodeId frame_tree_node_id,
     std::vector<mojom::ThreatDOMDetailsNodePtr> params,
     const KeyToFrameTreeIdMap& child_frame_tree_map) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -661,9 +662,10 @@ void ThreatDetails::AddDOMDetails(
     }
     // Check for a tag_name to avoid adding the summary node to the DOM.
     if (!node.tag_name.empty()) {
-      AddDomElement(frame_tree_node_id, node.node_id, node.tag_name,
-                    node.parent_node_id, std::move(node.attributes),
-                    node.inner_html, resource);
+      AddDomElement(frame_tree_node_id, content::FrameTreeNodeId(node.node_id),
+                    node.tag_name,
+                    content::FrameTreeNodeId(node.parent_node_id),
+                    std::move(node.attributes), node.inner_html, resource);
     }
   }
 }
@@ -690,7 +692,7 @@ void ThreatDetails::FinishCollection(
     const std::string& element_key = element_pair.first;
     HTMLElement* element = element_pair.second.get();
     if (base::Contains(iframe_key_to_frame_tree_id_map_, element_key)) {
-      int frame_tree_id_of_iframe_renderer =
+      content::FrameTreeNodeId frame_tree_id_of_iframe_renderer =
           iframe_key_to_frame_tree_id_map_[element_key];
       const std::unordered_set<int>& child_ids =
           frame_tree_id_to_children_map_[frame_tree_id_of_iframe_renderer];
@@ -773,13 +775,6 @@ void ThreatDetails::OnCacheCollectionReady() {
     report_->set_repeat_visit(num_visits_ > 0);
   }
   report_->set_complete(cache_result_);
-
-  report_->mutable_client_properties()->set_url_api_type(
-      client_report_utils::GetUrlApiTypeForThreatSource(
-          resource_.threat_source));
-
-  report_->mutable_client_properties()->set_is_async_check(
-      resource_.is_async_check);
 
   // Fill the referrer chain if applicable.
   if (ShouldFillReferrerChain()) {

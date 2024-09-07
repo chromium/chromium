@@ -23,6 +23,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -113,8 +114,8 @@ void OfferNotificationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
 
 void OfferNotificationBubbleViews::InitWithCardLinkedOfferContent() {
   // Card-linked offers have a positive CTA button:
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
 
   // Create bubble content:
   views::FlexLayout* layout =
@@ -131,7 +132,7 @@ void OfferNotificationBubbleViews::InitWithCardLinkedOfferContent() {
 
 void OfferNotificationBubbleViews::InitWithGPayPromoCodeOfferContent() {
   // Promo code offers have no CTA buttons:
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // Create bubble content:
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());

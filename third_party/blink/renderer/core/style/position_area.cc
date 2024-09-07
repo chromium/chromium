@@ -289,19 +289,25 @@ std::optional<AnchorQuery> PositionArea::UsedRight() const {
   }
 }
 
-std::pair<ItemPosition, ItemPosition> PositionArea::AlignJustifySelfFromPhysical(
+std::pair<StyleSelfAlignmentData, StyleSelfAlignmentData>
+PositionArea::AlignJustifySelfFromPhysical(
     WritingDirectionMode container_writing_direction) const {
-  ItemPosition align = ItemPosition::kStart;
-  ItemPosition align_reverse = ItemPosition::kEnd;
-  ItemPosition justify = ItemPosition::kStart;
-  ItemPosition justify_reverse = ItemPosition::kEnd;
+  StyleSelfAlignmentData align(ItemPosition::kStart,
+                               OverflowAlignment::kDefault);
+  StyleSelfAlignmentData align_reverse(ItemPosition::kEnd,
+                                       OverflowAlignment::kDefault);
+  StyleSelfAlignmentData justify(ItemPosition::kStart,
+                                 OverflowAlignment::kDefault);
+  StyleSelfAlignmentData justify_reverse(ItemPosition::kEnd,
+                                         OverflowAlignment::kDefault);
 
   if ((FirstStart() == PositionAreaRegion::kTop &&
        FirstEnd() == PositionAreaRegion::kBottom) ||
       (FirstStart() == PositionAreaRegion::kCenter &&
        FirstEnd() == PositionAreaRegion::kCenter)) {
     // 'center' or 'all' should align with anchor center.
-    align = align_reverse = ItemPosition::kAnchorCenter;
+    align = align_reverse = {ItemPosition::kAnchorCenter,
+                             OverflowAlignment::kDefault};
   } else {
     // 'top' and 'top center' aligns with end, 'bottom' and 'center bottom' with
     // start.
@@ -314,7 +320,8 @@ std::pair<ItemPosition, ItemPosition> PositionArea::AlignJustifySelfFromPhysical
       (SecondStart() == PositionAreaRegion::kCenter &&
        SecondEnd() == PositionAreaRegion::kCenter)) {
     // 'center' or 'all' should align with anchor center.
-    justify = justify_reverse = ItemPosition::kAnchorCenter;
+    justify = justify_reverse = {ItemPosition::kAnchorCenter,
+                                 OverflowAlignment::kDefault};
   } else {
     // 'left' and 'left center' aligns with end, 'right' and 'center right' with
     // start.
@@ -325,8 +332,7 @@ std::pair<ItemPosition, ItemPosition> PositionArea::AlignJustifySelfFromPhysical
 
   PhysicalToLogical converter(container_writing_direction, align,
                               justify_reverse, align_reverse, justify);
-  return std::make_pair<ItemPosition, ItemPosition>(converter.BlockStart(),
-                                                    converter.InlineStart());
+  return {converter.BlockStart(), converter.InlineStart()};
 }
 
 AnchorQuery PositionArea::AnchorTop() {

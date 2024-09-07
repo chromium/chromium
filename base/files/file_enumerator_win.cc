@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -125,9 +126,7 @@ FileEnumerator::~FileEnumerator() {
 
 FileEnumerator::FileInfo FileEnumerator::GetInfo() const {
   DCHECK(!(file_type_ & FileType::NAMES_ONLY));
-  if (!has_find_data_) {
-    NOTREACHED();
-  }
+  CHECK(has_find_data_);
   FileInfo ret;
   memcpy(&ret.find_data_, &find_data_, sizeof(find_data_));
   return ret;

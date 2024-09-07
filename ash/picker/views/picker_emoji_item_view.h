@@ -23,8 +23,11 @@ class ASH_EXPORT PickerEmojiItemView : public PickerItemView {
   METADATA_HEADER(PickerEmojiItemView, PickerItemView)
 
  public:
-  PickerEmojiItemView(SelectItemCallback select_item_callback,
-                      const std::u16string& emoji);
+  enum class Style { kEmoji, kEmoticon, kSymbol };
+
+  PickerEmojiItemView(Style style,
+                      SelectItemCallback select_item_callback,
+                      const std::u16string& text);
   PickerEmojiItemView(const PickerEmojiItemView&) = delete;
   PickerEmojiItemView& operator=(const PickerEmojiItemView&) = delete;
   ~PickerEmojiItemView() override;
@@ -32,7 +35,7 @@ class ASH_EXPORT PickerEmojiItemView : public PickerItemView {
   std::u16string_view GetTextForTesting() const;
 
  private:
-  raw_ptr<views::Label> emoji_label_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 }  // namespace ash

@@ -401,6 +401,14 @@ QuicEndpoint::QuicEndpoint(quic::ParsedQuicVersion quic_version,
 
 QuicEndpoint::~QuicEndpoint() = default;
 
+base::Value::Dict QuicEndpoint::ToValue() const {
+  base::Value::Dict dict;
+  dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
+  dict.Set("ip_endpoint", ip_endpoint.ToString());
+  dict.Set("metadata", metadata.ToValue());
+  return dict;
+}
+
 QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
     std::unique_ptr<quic::ProofVerifier> proof_verifier,
     std::unique_ptr<quic::QuicClientSessionCache> session_cache,
@@ -415,9 +423,12 @@ QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
                           base::Unretained(this)));
   if (quic_session_pool_->ssl_config_service_->GetSSLContextConfig()
           .PostQuantumKeyAgreementEnabled()) {
-    config_.set_preferred_groups({SSL_GROUP_X25519_KYBER768_DRAFT00,
-                                  SSL_GROUP_X25519, SSL_GROUP_SECP256R1,
-                                  SSL_GROUP_SECP384R1});
+    uint16_t postquantum_group =
+        base::FeatureList::IsEnabled(features::kUseMLKEM)
+            ? SSL_GROUP_X25519_MLKEM768
+            : SSL_GROUP_X25519_KYBER768_DRAFT00;
+    config_.set_preferred_groups({postquantum_group, SSL_GROUP_X25519,
+                                  SSL_GROUP_SECP256R1, SSL_GROUP_SECP384R1});
   }
 }
 QuicSessionPool::QuicCryptoClientConfigOwner::~QuicCryptoClientConfigOwner() {
@@ -1628,8 +1639,8 @@ bool QuicSessionPool::CreateSessionHelper(
   std::unique_ptr<QuicServerInfo> server_info;
   if (params_.max_server_configs_stored_in_properties > 0) {
     server_info = std::make_unique<PropertiesBasedQuicServerInfo>(
-        server_id, key.session_key().network_anonymization_key(),
-        http_server_properties_);
+        server_id, key.session_key().privacy_mode(),
+        key.session_key().network_anonymization_key(), http_server_properties_);
   }
   std::unique_ptr<CryptoClientConfigHandle> crypto_config_handle =
       CreateCryptoConfigHandle(key.session_key().network_anonymization_key());

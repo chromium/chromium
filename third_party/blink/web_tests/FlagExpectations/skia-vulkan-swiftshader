@@ -2,10 +2,6 @@
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
-# Flaky tests.
-crbug.com/1229016 fast/canvas/canvas-composite-video.html [ Failure Pass ]
-crbug.com/1229002 fast/canvas/canvas-composite-video-shadow.html [ Failure Pass ]
-
 # One portion of the image is offset.
 crbug.com/1002522 fast/canvas/canvas-toDataURL-webp.html [ Skip ]
 

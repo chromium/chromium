@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +23,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/local_session_policies_provider.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
@@ -119,14 +122,14 @@ class ClientSession : public protocol::HostStub,
 
   // |event_handler| and |desktop_environment_factory| must outlive |this|.
   // All |HostExtension|s in |extensions| must outlive |this|.
-  ClientSession(EventHandler* event_handler,
-                std::unique_ptr<protocol::ConnectionToClient> connection,
-                DesktopEnvironmentFactory* desktop_environment_factory,
-                const DesktopEnvironmentOptions& desktop_environment_options,
-                const base::TimeDelta& max_duration,
-                scoped_refptr<protocol::PairingRegistry> pairing_registry,
-                const std::vector<raw_ptr<HostExtension, VectorExperimental>>&
-                    extensions);
+  ClientSession(
+      EventHandler* event_handler,
+      std::unique_ptr<protocol::ConnectionToClient> connection,
+      DesktopEnvironmentFactory* desktop_environment_factory,
+      const DesktopEnvironmentOptions& desktop_environment_options,
+      scoped_refptr<protocol::PairingRegistry> pairing_registry,
+      const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
+      const LocalSessionPoliciesProvider* local_session_policies_provider);
 
   ClientSession(const ClientSession&) = delete;
   ClientSession& operator=(const ClientSession&) = delete;
@@ -153,7 +156,8 @@ class ClientSession : public protocol::HostStub,
 
   // protocol::ConnectionToClient::EventHandler interface.
   void OnConnectionAuthenticating() override;
-  void OnConnectionAuthenticated() override;
+  void OnConnectionAuthenticated(
+      const SessionPolicies* session_policies) override;
   void CreateMediaStreams() override;
   void OnConnectionChannelsConnected() override;
   void OnConnectionClosed(protocol::ErrorCode error) override;
@@ -224,7 +228,13 @@ class ClientSession : public protocol::HostStub,
   // Public for tests.
   void UpdateMouseClampingFilterOffset();
 
+  const SessionPolicies& effective_policies_for_tests() const {
+    return effective_policies_;
+  }
+
  private:
+  void OnLocalSessionPoliciesChanged(const SessionPolicies& new_policies);
+
   // Creates a proxy for sending clipboard events to the client.
   std::unique_ptr<protocol::ClipboardStub> CreateClipboardProxy();
 
@@ -332,10 +342,6 @@ class ClientSession : public protocol::HostStub,
   // it.
   base::WeakPtrFactory<protocol::ClipboardStub> client_clipboard_factory_;
 
-  // The maximum duration of this session.
-  // There is no maximum if this value is <= 0.
-  base::TimeDelta max_duration_;
-
   // A timer that triggers a disconnect when the maximum session duration
   // is reached.
   base::OneShotTimer max_duration_timer_;
@@ -436,15 +442,20 @@ class ClientSession : public protocol::HostStub,
 
   std::unique_ptr<ActiveDisplayMonitor> active_display_monitor_;
 
+  SessionPolicies effective_policies_;
+
+  raw_ptr<const LocalSessionPoliciesProvider> local_session_policies_provider_;
+
+  // If `effective_policies` does not come from local session policies, the
+  // subscription will be null and OnLocalSessionPoliciesChanged() will never
+  // be called.
+  base::CallbackListSubscription local_session_policy_update_subscription_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to disable callbacks to |this| once DisconnectSession() has been
   // called.
-  base::WeakPtrFactory<ClientSessionControl>
-      client_session_control_weak_factory_{this};
-
-  base::WeakPtrFactory<ClientSessionEvents> client_session_events_weak_factory_{
-      this};
+  base::WeakPtrFactory<ClientSession> weak_factory_{this};
 };
 
 }  // namespace remoting

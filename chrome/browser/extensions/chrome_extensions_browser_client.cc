@@ -25,12 +25,11 @@
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
-#include "chrome/browser/extensions/api/favicon/favicon_util.h"
 #include "chrome/browser/extensions/api/preference/cookie_controls_mode_transformer.h"
 #include "chrome/browser/extensions/api/preference/network_prediction_transformer.h"
 #include "chrome/browser/extensions/api/preference/privacy_sandbox_transformer.h"
 #include "chrome/browser/extensions/api/preference/protected_content_enabled_transformer.h"
-#include "chrome/browser/extensions/api/proxy/proxy_api.h"
+#include "chrome/browser/extensions/api/proxy/proxy_pref_transformer.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
@@ -47,6 +46,7 @@
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/favicon/favicon_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/pref_mapping.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
@@ -106,6 +106,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "ipc/ipc_message.h"
 #include "url/gurl.h"
@@ -214,7 +215,8 @@ bool RegisterTransformers() {
 
 }  // namespace
 
-ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient() {
+ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient()
+    : event_router_forwarder_(base::MakeRefCounted<EventRouterForwarder>()) {
   AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
   AddAPIProvider(std::make_unique<ChromeExtensionsBrowserAPIProvider>());
   // This ensures transformers are only registered once. This is required
@@ -432,7 +434,7 @@ ChromeExtensionsBrowserClient::GetProcessManagerDelegate() const {
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ChromeExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
     const url::Origin& app_origin,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     content::BrowserContext* browser_context) {
   return web_app::IsolatedWebAppURLLoaderFactory::CreateForFrame(
       browser_context, app_origin, frame_tree_node_id);
@@ -513,12 +515,12 @@ bool ChromeExtensionsBrowserClient::IsScreensaverInDemoMode(
 }
 
 bool ChromeExtensionsBrowserClient::IsRunningInForcedAppMode() {
-  return chrome::IsRunningInForcedAppMode();
+  return ::IsRunningInForcedAppMode();
 }
 
 bool ChromeExtensionsBrowserClient::IsAppModeForcedForApp(
     const ExtensionId& extension_id) {
-  return chrome::IsRunningInForcedAppModeForApp(extension_id);
+  return IsRunningInForcedAppModeForApp(extension_id);
 }
 
 bool ChromeExtensionsBrowserClient::IsLoggedInAsPublicAccount() {
@@ -560,9 +562,9 @@ void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
     const std::string& event_name,
     base::Value::List args,
     bool dispatch_to_off_the_record_profiles) {
-  g_browser_process->extension_event_router_forwarder()
-      ->BroadcastEventToRenderers(histogram_value, event_name, std::move(args),
-                                  GURL(), dispatch_to_off_the_record_profiles);
+  event_router_forwarder_->BroadcastEventToRenderers(
+      histogram_value, event_name, std::move(args),
+      dispatch_to_off_the_record_profiles);
 }
 
 ExtensionCache* ChromeExtensionsBrowserClient::GetExtensionCache() {
@@ -588,6 +590,11 @@ bool ChromeExtensionsBrowserClient::IsMinBrowserVersionSupported(
   base::Version browser_min_version(min_version);
   return !browser_version.IsValid() || !browser_min_version.IsValid() ||
          browser_min_version.CompareTo(browser_version) <= 0;
+}
+
+void ChromeExtensionsBrowserClient::CreateExtensionWebContentsObserver(
+    content::WebContents* web_contents) {
+  ChromeExtensionWebContentsObserver::CreateForWebContents(web_contents);
 }
 
 ExtensionWebContentsObserver*
@@ -645,11 +652,13 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
     case mojom::ViewType::kBackgroundContents:
     case mojom::ViewType::kExtensionGuest:
     case mojom::ViewType::kTabContents:
+    case mojom::ViewType::kDeveloperTools:
       // Those types are tracked by other tags:
       // BACKGROUND_CONTENTS --> task_manager::BackgroundContentsTag.
       // GUEST --> ChromeGuestViewManagerDelegate.
       // PANEL --> task_manager::PanelTag.
       // TAB_CONTENTS --> task_manager::TabContentsTag.
+      // DEVELOPER_TOOLS --> task_manager::DevToolsTag.
       // These tags are created and attached to the web_contents in other
       // locations, and they must be ignored here.
       return;

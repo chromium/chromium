@@ -75,8 +75,8 @@ class PlusAddressCreationControllerDesktop
   // Records the time between `modal_shown_time_` and now as modal shown
   // duration and the number of refresh attempts. Resets both
   // `modal_shown_time_` and `reserve_response_count_`.
-  void RecordModalShownOutcome(
-      metrics::PlusAddressModalCompletionStatus status);
+  void RecordModalShownOutcome(metrics::PlusAddressModalCompletionStatus status,
+                               bool was_notice_shown);
 
   // This is set on `OfferCreation`.
   std::optional<base::TimeTicks> modal_shown_time_;

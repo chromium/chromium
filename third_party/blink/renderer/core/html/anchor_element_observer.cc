@@ -18,7 +18,7 @@ class AnchorIdTargetObserver : public IdTargetObserver {
                          AnchorElementObserver* anchor_element_observer)
       : IdTargetObserver(anchor_element_observer->GetSourceElement()
                              .GetTreeScope()
-                             .GetIdTargetObserverRegistry(),
+                             .EnsureIdTargetObserverRegistry(),
                          id),
         anchor_element_observer_(anchor_element_observer) {}
 

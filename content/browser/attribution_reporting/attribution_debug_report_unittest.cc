@@ -423,6 +423,19 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
             }])json",
       },
       {
+          .result = StoreSourceResult::ExceedsMaxEventStatesLimit(3),
+          .debug_key = std::nullopt,
+          .expected_report_body = R"json([{
+              "body": {
+                "attribution_destination": "https://conversion.test",
+                "limit": "3",
+                "source_event_id": "123",
+                "source_site": "https://impression.test"
+              },
+              "type": "source-max-event-states-limit"
+            }])json",
+      },
+      {
           .result =
               StoreSourceResult::DestinationPerDayReportingLimitReached(100),
           .expected_report_body = R"json([{

@@ -8,17 +8,21 @@
 
 #include "base/functional/bind.h"
 #include "base/numerics/ranges.h"
+#include "base/scoped_observation.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace ash {
 namespace {
 
-// Decodes a single animation frame.
+// Decodes a single animation frame from image.
 class SingleFrameImageDecoder
     : public AnimatedRoundedImageView::AnimationDecoder {
  public:
@@ -41,6 +45,44 @@ class SingleFrameImageDecoder
   gfx::ImageSkia image_;
 };
 
+// Decodes a single animation frame from image model.
+class SingleFrameImageModelDecoder
+    : public AnimatedRoundedImageView::AnimationDecoder,
+      public views::ViewObserver {
+ public:
+  explicit SingleFrameImageModelDecoder(const ui::ImageModel& image_model,
+                                        AnimatedRoundedImageView* view)
+      : image_model_(image_model), view_(view) {
+    CHECK(view_);
+    view_observer_.Observe(view);
+  }
+
+  SingleFrameImageModelDecoder(const SingleFrameImageModelDecoder&) = delete;
+  SingleFrameImageModelDecoder& operator=(const SingleFrameImageModelDecoder&) =
+      delete;
+
+  ~SingleFrameImageModelDecoder() override { view_ = nullptr; }
+
+  AnimationFrames Decode(float image_scale) override {
+    const ui::ColorProvider* color_provider = view_->GetColorProvider();
+    CHECK(color_provider);
+    AnimationFrame frame;
+    frame.image = image_model_.Rasterize(color_provider);
+    return {frame};
+  }
+
+ private:
+  void OnViewThemeChanged(views::View* observed_view) override {
+    CHECK_EQ(observed_view, view_);
+    view_->InvalidateFrames();
+    view_->SchedulePaint();
+  }
+
+  ui::ImageModel image_model_;
+  raw_ptr<AnimatedRoundedImageView> view_ = nullptr;
+  base::ScopedObservation<views::View, ViewObserver> view_observer_{this};
+};
+
 }  // namespace
 
 AnimatedRoundedImageView::AnimationDecoder::~AnimationDecoder() = default;
@@ -57,13 +99,20 @@ void AnimatedRoundedImageView::SetAnimationDecoder(
   decoder_ = std::move(decoder);
   playback_ = playback;
   // Force a new decode and repaint.
-  frames_scale_ = NAN;
+  InvalidateFrames();
   SchedulePaint();
 }
 
 void AnimatedRoundedImageView::SetImage(const gfx::ImageSkia& image) {
   SetAnimationDecoder(std::make_unique<SingleFrameImageDecoder>(image),
                       Playback::kFirstFrameOnly);
+}
+
+void AnimatedRoundedImageView::SetImageModel(
+    const ui::ImageModel& image_model) {
+  auto decoder =
+      std::make_unique<SingleFrameImageModelDecoder>(image_model, this);
+  SetAnimationDecoder(std::move(decoder), Playback::kFirstFrameOnly);
 }
 
 void AnimatedRoundedImageView::SetAnimationPlayback(Playback playback) {
@@ -107,11 +156,24 @@ void AnimatedRoundedImageView::OnPaint(gfx::Canvas* canvas) {
                           image_bounds.y(), path, flags);
 }
 
+void AnimatedRoundedImageView::InvalidateFrames() {
+  frames_scale_ = NAN;
+  frames_.clear();
+}
+
 void AnimatedRoundedImageView::StartOrStopAnimation() {
   // If animation is disabled or if there are less than 2 frames, show a static
   // image.
   if (playback_ == Playback::kFirstFrameOnly || frames_.size() < 2) {
     active_frame_ = 0;
+    update_frame_timer_.Stop();
+    SchedulePaint();
+    return;
+  }
+
+  if (playback_ == Playback::kLastFrameOnly) {
+    CHECK(!frames_.empty());
+    active_frame_ = frames_.size() - 1;
     update_frame_timer_.Stop();
     SchedulePaint();
     return;
@@ -123,7 +185,11 @@ void AnimatedRoundedImageView::StartOrStopAnimation() {
 }
 
 void AnimatedRoundedImageView::UpdateAnimationFrame() {
-  DCHECK(!frames_.empty());
+  if (frames_.empty()) {
+    // The frames_ was invalidated, awaiting the next OnPaint to regenerate the
+    // frames_.
+    return;
+  }
 
   // Note: |active_frame_| may be invalid.
   active_frame_ = (active_frame_ + 1) % frames_.size();

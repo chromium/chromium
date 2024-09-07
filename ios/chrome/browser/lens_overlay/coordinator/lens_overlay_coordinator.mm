@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
@@ -12,36 +14,69 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+namespace {
 
-@interface LensOverlayCoordinator () <LensOverlayCommands,
-                                      UISheetPresentationControllerDelegate,
-                                      LensOverlayResultConsumer,
-                                      LensResultPageWebStateDelegate>
+LensEntrypoint LensEntrypointFromOverlayEntrypoint(
+    LensOverlayEntrypoint overlayEntrypoint) {
+  switch (overlayEntrypoint) {
+    case LensOverlayEntrypoint::kLocationBar:
+      return LensEntrypoint::LensOverlayLocationBar;
+    case LensOverlayEntrypoint::kOverflowMenu:
+      return LensEntrypoint::LensOverlayOverflowMenu;
+  }
+}
+
+const CGFloat kSelectionOffsetPadding = 50.0f;
+
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+const CGFloat kMenuSymbolSize = 18;
+#endif
+
+}  // namespace
+
+@interface LensOverlayCoordinator () <
+    LensOverlayCommands,
+    UISheetPresentationControllerDelegate,
+    LensOverlayResultConsumer,
+    LensResultPageWebStateDelegate,
+    LensOverlayBottomSheetPresentationDelegate,
+    LensOverlayConsentViewControllerDelegate>
+
 @end
 
 @implementation LensOverlayCoordinator {
@@ -49,9 +84,6 @@
   /// Hosts all of lens UI: contains the selection UI, presents the results UI
   /// modally.
   LensOverlayContainerViewController* _containerViewController;
-
-  /// Selection view controller.
-  UIViewController<ChromeLensOverlay>* _selectionViewController;
 
   /// The mediator for lens overlay.
   LensOverlayMediator* _mediator;
@@ -66,15 +98,32 @@
 
   /// Coordinator of the omnibox.
   OmniboxCoordinator* _omniboxCoordinator;
+
+  LensOverlayConsentViewController* _consentViewController;
+
+  UIViewController<ChromeLensOverlay>* _selectionViewController;
+
+  // View that blocks user interaction with selection UI when the consent view
+  // controller is displayed. Note that selection UI isn't started, so it won't
+  // accept many interactions, but we do this to be extra safe.
+  UIView* _selectionInteractionBlockingView;
+}
+
+#pragma mark - public
+
+- (UIViewController*)viewController {
+  return _containerViewController;
 }
 
 #pragma mark - Helpers
 
 // Returns whether the UI was created succesfully.
-- (BOOL)createUIWithSnapshot:(UIImage*)snapshot {
+- (BOOL)createUIWithSnapshot:(UIImage*)snapshot
+                  entrypoint:(LensOverlayEntrypoint)entrypoint {
   [self createContainerViewController];
 
-  [self createSelectionViewControllerWithSnapshot:snapshot];
+  [self createSelectionViewControllerWithSnapshot:snapshot
+                                       entrypoint:entrypoint];
   if (!_selectionViewController) {
     return NO;
   }
@@ -84,20 +133,30 @@
   // Wire up consumers and delegates
   _containerViewController.selectionViewController = _selectionViewController;
   [_selectionViewController setLensOverlayDelegate:_mediator];
+  _mediator.lensHandler = _selectionViewController;
   _mediator.commandsHandler = self;
 
-  [_selectionViewController start];
-
+  if ([self termsOfServiceAccepted]) {
+    [_selectionViewController start];
+  }
   return YES;
 }
 
-- (void)createSelectionViewControllerWithSnapshot:(UIImage*)snapshot {
+- (void)createSelectionViewControllerWithSnapshot:(UIImage*)snapshot
+                                       entrypoint:
+                                           (LensOverlayEntrypoint)entrypoint {
   if (_selectionViewController) {
     return;
   }
-  LensConfiguration* config = [self createLensConfiguration];
-  _selectionViewController =
-      ios::provider::NewChromeLensOverlay(snapshot, config);
+  LensConfiguration* config =
+      [self createLensConfigurationForEntrypoint:entrypoint];
+  NSArray<UIAction*>* additionalMenuItems = @[
+    [self openUserActivityAction],
+    [self learnMoreAction],
+  ];
+
+  _selectionViewController = ios::provider::NewChromeLensOverlay(
+      snapshot, config, additionalMenuItems);
 }
 
 - (void)createContainerViewController {
@@ -123,8 +182,11 @@
   _mediator.resultConsumer = self;
 }
 
-- (UIViewController*)viewController {
-  return _containerViewController;
+- (BOOL)createConsentViewController {
+  _consentViewController = [[LensOverlayConsentViewController alloc] init];
+  _consentViewController.delegate = self;
+
+  return YES;
 }
 
 #pragma mark - ChromeCoordinator
@@ -162,7 +224,8 @@
 
 #pragma mark - LensOverlayCommands
 
-- (void)createAndShowLensUI:(BOOL)animated {
+- (void)createAndShowLensUI:(BOOL)animated
+                 entrypoint:(LensOverlayEntrypoint)entrypoint {
   if ([self isUICreated]) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
@@ -177,13 +240,24 @@
   _associatedTabHelper->SetLensOverlayCommandsHandler(self);
   _associatedTabHelper->SetLensOverlayShown(true);
 
-  UIImage* snapshot = [self captureSnapshot];
-  BOOL success = [self createUIWithSnapshot:snapshot];
-  if (success) {
-    [self showLensUI:animated];
-  } else {
-    [self destroyLensUI:NO];
-  }
+  __weak __typeof(self) weakSelf = self;
+  [self captureSnapshotWithCompletion:^(UIImage* snapshot) {
+    __typeof(self) strongSelf = weakSelf;
+    if (!weakSelf) {
+      return;
+    }
+    if (snapshot == nil) {
+      return;
+    }
+
+    BOOL success = [strongSelf createUIWithSnapshot:snapshot
+                                         entrypoint:entrypoint];
+    if (success) {
+      [strongSelf showLensUI:animated];
+    } else {
+      [strongSelf destroyLensUI:NO];
+    }
+  }];
 }
 
 - (void)showLensUI:(BOOL)animated {
@@ -191,9 +265,30 @@
     return;
   }
 
-  [self.baseViewController presentViewController:_containerViewController
-                                        animated:animated
-                                      completion:nil];
+  __weak __typeof(self) weakSelf = self;
+  [self.baseViewController
+      presentViewController:_containerViewController
+                   animated:animated
+                 completion:^{
+                   [weakSelf onContainerViewControllerPresented];
+                 }];
+}
+
+- (void)onContainerViewControllerPresented {
+  BOOL shouldShowConsentFlow = !self.termsOfServiceAccepted;
+  if (shouldShowConsentFlow) {
+    if (self.isResultsBottomSheetOpen) {
+      [self stopResultPage];
+    }
+    [self presentConsentFlow];
+  } else if (self.isResultsBottomSheetOpen) {
+    [self showResultsBottomSheet];
+  }
+}
+
+- (void)presentConsentFlow {
+  [self createConsentViewController];
+  [self showConsentViewController];
 }
 
 - (void)hideLensUI:(BOOL)animated {
@@ -215,13 +310,19 @@
     _associatedTabHelper = nil;
   }
 
+  // Taking the screenshot triggered fullscreen mode. Ensure it's reverted in
+  // the cleanup process. Exiting fullscreen has to happen on destruction to
+  // ensure a smooth transition back to the content.
+  __weak __typeof(self) weakSelf = self;
   if (_containerViewController.presentingViewController) {
+    [self exitFullscreenAnimated:YES];
     [_containerViewController.presentingViewController
         dismissViewControllerAnimated:animated
                            completion:^{
-                             [self destroyViewControllersAndMediators];
+                             [weakSelf destroyViewControllersAndMediators];
                            }];
   } else {
+    [self exitFullscreenAnimated:NO];
     [self destroyViewControllersAndMediators];
   }
 }
@@ -230,21 +331,72 @@
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
-  return presentationController !=
-         _resultViewController.sheetPresentationController;
+  UIViewController* presentedViewController =
+      presentationController.presentedViewController;
+
+  if (presentedViewController == _consentViewController) {
+    // Don't let the consent view controller dismiss without user opting in or
+    // out.
+    return NO;
+  }
+
+  CHECK_EQ(presentedViewController, _resultViewController);
+  // Only allow swiping down to dismiss when not at the largest detent.
+  UISheetPresentationController* sheet =
+      base::apple::ObjCCastStrict<UISheetPresentationController>(
+          presentationController);
+  return (![sheet.selectedDetentIdentifier
+      isEqualToString:UISheetPresentationControllerDetent.largeDetent
+                          .identifier]);
+}
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  UIViewController* presentedViewController =
+      presentationController.presentedViewController;
+
+  if (presentedViewController == _resultViewController) {
+    [self stopResultPage];
+    return;
+  }
+}
+
+- (void)adjustSelectionOcclusionInsets {
+  if (!_resultViewController) {
+    return;
+  }
+
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+  UIViewController* presentedViewController = sheet.presentedViewController;
+  // Pad the offset by a small ammount to avoid having the bottom edge of the
+  // selection overlapped over the sheet.
+  CGFloat sheetHeight = presentedViewController.view.frame.size.height;
+  CGFloat offsetNeeded = sheetHeight + kSelectionOffsetPadding;
+
+  [_selectionViewController
+      setOcclusionInsets:UIEdgeInsetsMake(0, 0, offsetNeeded, 0)
+              reposition:YES
+                animated:YES];
 }
 
 #pragma mark - LensOverlayResultConsumer
 
 // This coordinator acts as a proxy consumer to the result consumer to implement
 // lazy initialization of the result UI.
-// Upon any call, the results UI is created and set as consumer, then the call
-// is repeated.
 - (void)loadResultsURL:(GURL)url {
   DCHECK(!_resultMediator);
 
   [self startResultPage];
   [_resultMediator loadResultsURL:url];
+}
+
+- (void)handleSearchRequestStarted {
+  [_resultMediator handleSearchRequestStarted];
+}
+
+- (void)handleSearchRequestErrored {
+  [_resultMediator handleSearchRequestErrored];
 }
 
 #pragma mark - LensResultPageWebStateDelegate
@@ -257,19 +409,68 @@
   _mediator.webState = webState;
 }
 
+#pragma mark - LensOverlayConsentViewControllerDelegate
+
+- (void)consentViewController:(LensOverlayConsentViewController*)viewController
+    didFinishWithTermsAccepted:(BOOL)accepted {
+  self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
+      prefs::kLensOverlayConditionsAccepted, accepted);
+
+  if (accepted) {
+    // consentViewController is still presented, so the strong reference can be
+    // removed here.
+    _consentViewController = nil;
+
+    __weak __typeof(self) weakSelf = self;
+    [_containerViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [weakSelf handleConsentViewControllerDismissed];
+                           }];
+  } else {
+    [self destroyLensUI:YES];
+  }
+}
+
+#pragma mark - LensOverlayBottomSheetPresentationDelegate
+
+- (void)requestMaximizeBottomSheet {
+  CHECK(_containerViewController.presentedViewController ==
+        _resultViewController);
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+
+  [sheet animateChanges:^{
+    sheet.selectedDetentIdentifier =
+        [UISheetPresentationControllerDetent largeDetent].identifier;
+  }];
+}
+
+- (void)requestMinimizeBottomSheet {
+  CHECK(_containerViewController.presentedViewController ==
+        _resultViewController);
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+
+  [sheet animateChanges:^{
+    sheet.selectedDetentIdentifier =
+        [UISheetPresentationControllerDetent mediumDetent].identifier;
+  }];
+}
+
 #pragma mark - private
 
 // Lens needs to have visibility into the user's identity and whether the search
 // should be incognito or not.
-- (LensConfiguration*)createLensConfiguration {
+- (LensConfiguration*)createLensConfigurationForEntrypoint:
+    (LensOverlayEntrypoint)entrypoint {
   Browser* browser = self.browser;
   LensConfiguration* configuration = [[LensConfiguration alloc] init];
   BOOL isIncognito = browser->GetBrowserState()->IsOffTheRecord();
   configuration.isIncognito = isIncognito;
   configuration.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
-  // TODO(crbug.com/359115242): Use proper entrypoint for Lens Overlay.
-  configuration.entrypoint = LensEntrypoint::NewTabPage;
+  configuration.entrypoint = LensEntrypointFromOverlayEntrypoint(entrypoint);
 
   if (!isIncognito) {
     AuthenticationService* authenticationService =
@@ -281,6 +482,11 @@
   }
 
   return configuration;
+}
+
+- (BOOL)termsOfServiceAccepted {
+  return self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+      prefs::kLensOverlayConditionsAccepted);
 }
 
 - (void)startResultPage {
@@ -298,6 +504,7 @@
   _resultMediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   _resultMediator.webStateDelegate = self;
+  _resultMediator.presentationDelegate = self;
   _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
@@ -305,26 +512,7 @@
   _resultMediator.consumer = _resultViewController;
   _resultMediator.webViewContainer = _resultViewController.webViewContainer;
 
-  UISheetPresentationController* sheet =
-      _resultViewController.sheetPresentationController;
-  sheet.delegate = self;
-  sheet.prefersEdgeAttachedInCompactHeight = YES;
-  sheet.largestUndimmedDetentIdentifier =
-      [UISheetPresentationControllerDetent largeDetent].identifier;
-  sheet.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
-  sheet.prefersGrabberVisible = YES;
-
-  // TODO(crbug.com/359124093): Temporary workaround as
-  // `presentViewController:` loads the view asynchronously on the main thread.
-  // `_resultViewController` needs to first be loaded to avoid crashing by
-  // calling `setEditView:`.
-  [_resultViewController loadViewIfNeeded];
-  [_containerViewController presentViewController:_resultViewController
-                                         animated:YES
-                                       completion:nil];
+  [self showResultsBottomSheet];
 
   // TODO(crbug.com/355179986): Implement omnibox navigation with
   // omnibox_delegate.
@@ -341,6 +529,7 @@
 
   // TODO(crbug.com/355179721): Add omnibox focus delegate.
   _omniboxCoordinator.presenterDelegate = _resultViewController;
+  _omniboxCoordinator.isSearchOnlyUI = YES;
   [_omniboxCoordinator start];
 
   [_omniboxCoordinator.managedViewController
@@ -355,11 +544,28 @@
 
   _mediator.omniboxCoordinator = _omniboxCoordinator;
   _mediator.toolbarConsumer = _resultViewController;
-  _resultViewController.omniboxMutator = _mediator;
+  _resultViewController.toolbarMutator = _mediator;
   _omniboxCoordinator.focusDelegate = _mediator;
 }
 
+- (void)exitFullscreenAnimated:(BOOL)animated {
+  Browser* browser = self.browser;
+  if (!browser) {
+    return;
+  }
+
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(browser);
+
+  if (animated) {
+    fullscreenController->ExitFullscreen();
+  } else {
+    fullscreenController->ExitFullscreenWithoutAnimation();
+  }
+}
+
 - (void)stopResultPage {
+  [_selectionViewController removeSelectionWithClearText:YES];
   [_resultViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -375,6 +581,10 @@
   return _containerViewController != nil;
 }
 
+- (BOOL)isResultsBottomSheetOpen {
+  return _resultViewController != nil;
+}
+
 // Disconnect and destroy all of the owned view controllers.
 - (void)destroyViewControllersAndMediators {
   [self stopResultPage];
@@ -382,6 +592,7 @@
   [_mediator disconnect];
   _selectionViewController = nil;
   _mediator = nil;
+  _consentViewController = nil;
 }
 
 // The tab helper for the active web state.
@@ -401,24 +612,64 @@
   return tabHelper;
 }
 
+- (UIAction*)openURLAction:(GURL)URL {
+  BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:self.browser
+             scenario:kMenuScenarioHistogramHistoryEntry];
+  UIAction* action = [actionFactory actionToOpenInNewTabWithURL:URL
+                                                     completion:nil];
+  return action;
+}
+
+- (UIAction*)openUserActivityAction {
+  UIAction* action = [self openURLAction:GURL(kMyActivityURL)];
+  action.title = l10n_util::GetNSString(IDS_IOS_MY_ACTIVITY_TITLE);
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  action.image = MakeSymbolMonochrome(
+      CustomSymbolWithPointSize(kGoogleIconSymbol, kMenuSymbolSize));
+#else
+  action.image = nil;
+#endif
+  return action;
+}
+
+- (UIAction*)learnMoreAction {
+  UIAction* action = [self openURLAction:GURL(kLearnMoreLensURL)];
+  action.title = l10n_util::GetNSString(IDS_IOS_LENS_LEARN_MORE);
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  action.image = MakeSymbolMonochrome(
+      DefaultSymbolWithPointSize(kInfoCircleSymbol, kMenuSymbolSize));
+#else
+  action.image = nil;
+#endif
+  return action;
+}
+
 // Captures a screenshot of the active web state.
-- (UIImage*)captureSnapshot {
-  if (!self.browser) {
-    return nil;
+- (void)captureSnapshotWithCompletion:(void (^)(UIImage*))completion {
+  Browser* browser = self.browser;
+  if (!browser) {
+    completion(nil);
+    return;
   }
 
   web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
+      browser->GetWebStateList()->GetActiveWebState();
 
   if (!activeWebState) {
-    return nil;
+    completion(nil);
+    return;
   }
 
-  SnapshotTabHelper* snapshotTabHelper =
-      SnapshotTabHelper::FromWebState(activeWebState);
-  CHECK(snapshotTabHelper, kLensOverlayNotFatalUntil);
+  CHECK(_associatedTabHelper, kLensOverlayNotFatalUntil);
 
-  return snapshotTabHelper->GenerateSnapshotWithoutOverlays();
+  _associatedTabHelper->SetSnapshotController(
+      std::make_unique<LensOverlaySnapshotController>(
+          SnapshotTabHelper::FromWebState(activeWebState),
+          FullscreenController::FromBrowser(browser),
+          base::SequencedTaskRunner::GetCurrentDefault()));
+
+  _associatedTabHelper->CaptureFullscreenSnapshot(base::BindOnce(completion));
 }
 
 - (void)lowMemoryWarningReceived {
@@ -432,6 +683,65 @@
 
 - (BOOL)isLensOverlayVisible {
   return self.baseViewController.presentedViewController != nil;
+}
+
+- (void)showConsentViewController {
+  // Block user interaction with the lens UI
+  UIView* containerView = _containerViewController.view;
+  UIView* blocker = [[UIView alloc] init];
+  blocker.backgroundColor = UIColor.clearColor;
+  blocker.userInteractionEnabled = YES;
+  [containerView addSubview:blocker];
+
+  blocker.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(containerView, blocker);
+  _selectionInteractionBlockingView = blocker;
+
+  // Configure sheet presentation
+  UISheetPresentationController* sheet =
+      _consentViewController.sheetPresentationController;
+  sheet.delegate = self;
+  sheet.prefersEdgeAttachedInCompactHeight = YES;
+  sheet.largestUndimmedDetentIdentifier =
+      [UISheetPresentationControllerDetent largeDetent].identifier;
+  sheet.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
+  sheet.prefersGrabberVisible = YES;
+
+  [_containerViewController presentViewController:_consentViewController
+                                         animated:YES
+                                       completion:nil];
+}
+
+// Called after consent dialog was dismissed and TOS accepted.
+- (void)handleConsentViewControllerDismissed {
+  CHECK([self termsOfServiceAccepted]);
+  [_selectionInteractionBlockingView removeFromSuperview];
+  [_selectionViewController start];
+}
+
+- (void)showResultsBottomSheet {
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+  sheet.delegate = self;
+  sheet.prefersEdgeAttachedInCompactHeight = YES;
+  sheet.largestUndimmedDetentIdentifier =
+      [UISheetPresentationControllerDetent largeDetent].identifier;
+  sheet.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
+  sheet.prefersGrabberVisible = YES;
+
+  __weak __typeof(self) weakSelf = self;
+  [_containerViewController
+      presentViewController:_resultViewController
+                   animated:YES
+                 completion:^{
+                   [weakSelf adjustSelectionOcclusionInsets];
+                 }];
 }
 
 @end

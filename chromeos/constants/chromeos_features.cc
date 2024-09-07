@@ -21,7 +21,7 @@ BASE_FEATURE(kApnPolicies, "ApnPolicies", base::FEATURE_DISABLED_BY_DEFAULT);
 // percentage.
 BASE_FEATURE(kBatteryBadgeIcon,
              "BatteryBadgeIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables more filtering out of phones from the Bluetooth UI.
 BASE_FEATURE(kBluetoothPhoneFilter,
@@ -166,6 +166,17 @@ BASE_FEATURE(kKioskHeartbeatsViaERP,
 
 // Controls enabling / disabling the mahi feature.
 BASE_FEATURE(kMahi, "Mahi", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls enabling / disabling the mahi feature from the feature management
+// module.
+BASE_FEATURE(kFeatureManagementMahi,
+             "FeatureManagementMahi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether mahi sends url when making request to the server.
+BASE_FEATURE(kMahiSendingUrl,
+             "MahiSendingUrl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls enabling / disabling the sparky feature.
@@ -448,8 +459,18 @@ bool IsMahiEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsMahiEnabled();
 #else
-  return base::FeatureList::IsEnabled(kMahi) ||
+  return (base::FeatureList::IsEnabled(kMahi) &&
+          base::FeatureList::IsEnabled(kFeatureManagementMahi)) ||
          base::FeatureList::IsEnabled(kSparky);
+#endif
+}
+
+// Mahi requests are composed & sent from ash.
+bool IsMahiSendingUrl() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(kMahiSendingUrl);
+#else
+  return false;
 #endif
 }
 
@@ -500,6 +521,10 @@ bool ShouldDisableChromeComposeOnChromeOS() {
   return base::FeatureList::IsEnabled(kFeatureManagementDisableChromeCompose) ||
          IsOrcaEnabled();
 #endif
+}
+
+bool IsQuickAnswersMaterialNextUIEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersMaterialNextUI);
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {

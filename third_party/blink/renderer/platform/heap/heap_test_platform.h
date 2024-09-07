@@ -54,7 +54,8 @@ class HeapTestingPlatformAdapter final : public v8::Platform {
     return platform_->NumberOfWorkerThreads();
   }
   std::shared_ptr<v8::TaskRunner> GetForegroundTaskRunner(
-      v8::Isolate* isolate) final {
+      v8::Isolate* isolate,
+      v8::TaskPriority priority) final {
     // Provides task runner that allows for incremental tasks even in detached
     // mode.
     return task_runner_;

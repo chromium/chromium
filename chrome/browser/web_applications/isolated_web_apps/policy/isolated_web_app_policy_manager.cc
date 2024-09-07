@@ -81,6 +81,53 @@ constexpr int kIsolatedWebAppForceInstallMaxRetryTreshold = 2;
 constexpr base::TimeDelta kIsolatedWebAppForceInstallEmergencyDelay =
     base::Hours(5);
 
+constexpr auto kUpdateManifestFetchTrafficAnnotation =
+    net::DefinePartialNetworkTrafficAnnotation("iwa_policy_update_manifest",
+                                               "iwa_update_manifest_fetcher",
+                                               R"(
+  semantics {
+    sender: "Isolated Web App Policy Manager"
+    description:
+      "Downloads the update manifest of an Isolated Web App that is provided "
+      "in an enterprise policy by the administrator. The update manifest "
+      "contains at least the list of the available versions of the IWA "
+      "and the URL to the Signed Web Bundles that correspond to each version."
+    trigger:
+      "Installation/update of a IWA from the enterprise policy requires "
+      "fetching of a IWA Update Manifest"
+  }
+  policy {
+    setting: "This feature cannot be disabled in settings."
+    chrome_policy {
+      IsolatedWebAppInstallForceList {
+        IsolatedWebAppInstallForceList: ""
+      }
+    }
+  })");
+
+constexpr auto kWebBundleDownloadTrafficAnnotation =
+    net::DefinePartialNetworkTrafficAnnotation("iwa_policy_signed_web_bundle",
+                                               "iwa_bundle_downloader",
+                                               R"(
+  semantics {
+    sender: "Isolated Web App Policy Manager"
+    description:
+      "Downloads the Signed Web Bundle of an Isolated Web App (IWA) from the "
+      "URL read from an Update Manifest that is provided in an enterprise "
+      "policy by the administrator. The Signed Web Bundle contains code and "
+      "other resources of the IWA."
+    trigger:
+      "An Isolated Web App is installed from an enterprise policy."
+  }
+  policy {
+    setting: "This feature cannot be disabled in settings."
+    chrome_policy {
+      IsolatedWebAppInstallForceList {
+        IsolatedWebAppInstallForceList: ""
+      }
+    }
+  })");
+
 std::vector<IsolatedWebAppExternalInstallOptions> ParseIwaPolicyValues(
     const base::Value::List& iwa_policy_values) {
   std::vector<IsolatedWebAppExternalInstallOptions> iwa_install_options;
@@ -98,29 +145,6 @@ std::vector<IsolatedWebAppExternalInstallOptions> ParseIwaPolicyValues(
   }
 
   return iwa_install_options;
-}
-
-base::flat_map<web_package::SignedWebBundleId,
-               std::reference_wrapper<const WebApp>>
-GetInstalledIwas(const WebAppRegistrar& registrar) {
-  base::flat_map<web_package::SignedWebBundleId,
-                 std::reference_wrapper<const WebApp>>
-      installed_iwas;
-  for (const WebApp& web_app : registrar.GetApps()) {
-    if (!web_app.isolation_data().has_value()) {
-      continue;
-    }
-    auto url_info = IsolatedWebAppUrlInfo::Create(web_app.start_url());
-    if (!url_info.has_value()) {
-      LOG(ERROR) << "Unable to calculate IsolatedWebAppUrlInfo from "
-                 << web_app.start_url();
-      continue;
-    }
-
-    installed_iwas.try_emplace(url_info->web_bundle_id(), std::ref(web_app));
-  }
-
-  return installed_iwas;
 }
 
 // Add the install source to the already installed app.
@@ -211,16 +235,7 @@ IwaInstaller::IwaInstaller(
       log_(log),
       callback_(std::move(callback)) {}
 
-IwaInstaller::~IwaInstaller() {
-  // Deleting the file must happen on a thread that allows blocking.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          [](std::unique_ptr<base::ScopedTempFile> file) {
-            // `file` is deleted here.
-          },
-          std::move(file_)));
-}
+IwaInstaller::~IwaInstaller() = default;
 
 void IwaInstaller::Start() {
   if (chromeos::IsManagedGuestSession() &&
@@ -241,30 +256,20 @@ void IwaInstaller::Start() {
 
 void IwaInstaller::CreateTempFile(base::OnceClosure next_step_callback) {
   log_->Append(base::Value("creating temp file"));
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce([]() -> std::unique_ptr<base::ScopedTempFile> {
-        auto file = std::make_unique<base::ScopedTempFile>();
-        if (!file->Create()) {
-          return nullptr;
-        }
-        return file;
-      }),
-      base::BindOnce(&IwaInstaller::OnTempFileCreated,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(next_step_callback)));
+  ScopedTempWebBundleFile::Create(base::BindOnce(
+      &IwaInstaller::OnTempFileCreated, weak_factory_.GetWeakPtr(),
+      std::move(next_step_callback)));
 }
 
-void IwaInstaller::OnTempFileCreated(
-    base::OnceClosure next_step_callback,
-    std::unique_ptr<base::ScopedTempFile> maybe_file) {
-  if (!maybe_file) {
+void IwaInstaller::OnTempFileCreated(base::OnceClosure next_step_callback,
+                                     ScopedTempWebBundleFile bundle) {
+  if (!bundle) {
     Finish(Result(Result::Type::kErrorCantCreateTempFile));
     return;
   }
-  file_ = std::move(maybe_file);
+  bundle_ = std::move(bundle);
   log_->Append(
-      base::Value(u"created temp file: " + file_->path().LossyDisplayName()));
+      base::Value(u"created temp file: " + bundle_.path().LossyDisplayName()));
   std::move(next_step_callback).Run();
 }
 
@@ -273,33 +278,10 @@ void IwaInstaller::DownloadUpdateManifest(
   log_->Append(base::Value(
       "Downloading Update Manifest from " +
       install_options_.update_manifest_url().possibly_invalid_spec()));
-  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
-      net::DefinePartialNetworkTrafficAnnotation("iwa_policy_update_manifest",
-                                                 "iwa_update_manifest_fetcher",
-                                                 R"(
-    semantics {
-      sender: "Isolated Web App Policy Manager"
-      description:
-        "Downloads the update manifest of an Isolated Web App that is provided "
-        "in an enterprise policy by the administrator. The update manifest "
-        "contains at least the list of the available versions of the IWA "
-        "and the URL to the Signed Web Bundles that correspond to each version."
-      trigger:
-        "Installation/update of a IWA from the enterprise policy requires "
-        "fetching of a IWA Update Manifest"
-    }
-    policy {
-      setting: "This feature cannot be disabled in settings."
-      chrome_policy {
-        IsolatedWebAppInstallForceList {
-          IsolatedWebAppInstallForceList: ""
-        }
-      }
-    })");
 
   update_manifest_fetcher_ = std::make_unique<UpdateManifestFetcher>(
       install_options_.update_manifest_url(),
-      std::move(partial_traffic_annotation), url_loader_factory_);
+      kUpdateManifestFetchTrafficAnnotation, url_loader_factory_);
   update_manifest_fetcher_->FetchUpdateManifest(base::BindOnce(
       &IwaInstaller::OnUpdateManifestParsed, weak_factory_.GetWeakPtr(),
       std::move(next_step_callback)));
@@ -346,32 +328,10 @@ void IwaInstaller::DownloadWebBundle(
     base::Version expected_version) {
   log_->Append(base::Value("Downloading Web Bundle from " +
                            web_bundle_url.possibly_invalid_spec()));
-  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
-      net::DefinePartialNetworkTrafficAnnotation("iwa_policy_signed_web_bundle",
-                                                 "iwa_bundle_downloader",
-                                                 R"(
-    semantics {
-      sender: "Isolated Web App Policy Manager"
-      description:
-        "Downloads the Signed Web Bundle of an Isolated Web App (IWA) from the "
-        "URL read from an Update Manifest that is provided in an enterprise "
-        "policy by the administrator. The Signed Web Bundle contains code and "
-        "other resources of the IWA."
-      trigger:
-        "An Isolated Web App is installed from an enterprise policy."
-    }
-    policy {
-      setting: "This feature cannot be disabled in settings."
-      chrome_policy {
-        IsolatedWebAppInstallForceList {
-          IsolatedWebAppInstallForceList: ""
-        }
-      }
-    })");
 
   bundle_downloader_ = IsolatedWebAppDownloader::CreateAndStartDownloading(
-      std::move(web_bundle_url), file_->path(),
-      std::move(partial_traffic_annotation), url_loader_factory_,
+      std::move(web_bundle_url), bundle_.path(),
+      kWebBundleDownloadTrafficAnnotation, url_loader_factory_,
       base::BindOnce(&IwaInstaller::OnWebBundleDownloaded,
                      // If `this` is deleted, `bundle_downloader_` is deleted
                      // as well, and thus the callback will never run.
@@ -405,7 +365,7 @@ void IwaInstaller::RunInstallCommand(base::Version expected_version) {
 
   install_command_wrapper_->Install(
       IsolatedWebAppInstallSource::FromExternalPolicy(
-          IwaSourceBundleProdModeWithFileOp(file_->path(),
+          IwaSourceBundleProdModeWithFileOp(bundle_.path(),
                                             IwaSourceBundleProdFileOp::kMove)),
       url_info, std::move(expected_version),
       base::BindOnce(&IwaInstaller::OnIwaInstalled,

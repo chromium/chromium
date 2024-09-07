@@ -102,15 +102,14 @@ bool HiddenInputType::ShouldRespectHeightAndWidthAttributes() {
 }
 
 bool HiddenInputType::IsAutoDirectionalityFormAssociated() const {
-  return RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled();
+  return true;
 }
 
 void HiddenInputType::ValueAttributeChanged() {
   UpdateView();
   // Hidden input need to adjust directionality explicitly since it has no
   // descendant to propagate dir from.
-  if (RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled() &&
-      GetElement().HasDirectionAuto()) {
+  if (GetElement().HasDirectionAuto()) {
     GetElement().UpdateAncestorWithDirAuto(
         Element::UpdateAncestorTraversal::IncludeSelf);
   }

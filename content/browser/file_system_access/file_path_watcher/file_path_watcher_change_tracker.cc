@@ -149,8 +149,9 @@ void FilePathWatcherChangeTracker::MayHaveMissedChanges() {
 }
 
 std::vector<FilePathWatcher::ChangeInfo>
-FilePathWatcherChangeTracker::PopChanges() {
-  if (target_status_ == ExistenceStatus::kMayHaveMovedIntoPlace) {
+FilePathWatcherChangeTracker::PopChanges(bool next_change_soon) {
+  if (!next_change_soon &&
+      target_status_ == ExistenceStatus::kMayHaveMovedIntoPlace) {
     // Decide whether the target moved into place or not.
     ExistenceStatus status =
         GetFilePathType(target_path_) == FilePathWatcher::FilePathType::kUnknown

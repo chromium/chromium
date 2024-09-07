@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
@@ -35,13 +36,10 @@ using Vcn3dsFlowEvent = autofill_metrics::Vcn3dsFlowEvent;
 
 gfx::Rect GetPopupSizeForVcn3ds() {
   // The first two arguments do not matter as position gets overridden by
-  // the tab modal pop-up code. The 600x400 size of the pop-up is derived
-  // from the Mastercard and Visa 3DS developer guides.
-  //
-  // Mastercard:
-  // https://developer.mastercard.com/consent-management/documentation/tutorials/consents-tutorial/handling-3ds-auth/.
-  // Visa: https://developer.visa.com/pages/visa-3d-secure.
-  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/400);
+  // the tab modal pop-up code. The 600x640 size of the pop-up was decided as
+  // the ideal size for user experience. This decision largely factored in how
+  // to minimize scrolling while maintaining a presentable pop-up.
+  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/640);
 }
 
 }  // namespace
@@ -194,7 +192,7 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
         base::TimeTicks::Now() - vcn_3ds_popup_shown_timestamp_.value(),
         /*success=*/true);
     client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
-        AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
+        AutofillProgressDialogType::k3dsFetchVcnProgressDialog,
         base::BindOnce(&DesktopPaymentsWindowManager::
                            OnVcn3dsAuthenticationProgressDialogCancelled,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -269,7 +267,7 @@ void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
             ->user_consent_already_given);
     client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
-            /*is_permanent_error=*/true));
+            /*is_permanent_error=*/false));
   }
 
   autofill_metrics::LogVcn3dsFlowEvent(

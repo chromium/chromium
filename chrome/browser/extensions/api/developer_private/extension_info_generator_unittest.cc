@@ -923,7 +923,77 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
   EXPECT_TRUE(debugger_info->permissions.can_access_site_data);
 }
 
-TEST_F(ExtensionInfoGeneratorUnitTest, RevokedOptionalPermissionsInfoTest) {
+// Tests that the granted optional API permissions, when revoked, are not
+// removed from the generated extension info.
+TEST_F(ExtensionInfoGeneratorUnitTest,
+       RevokedOptionalNonHostPermissionsInfoTest) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("test")
+          .SetManifestVersion(3)
+          .AddOptionalAPIPermission("notifications")
+          .Build();
+  service()->AddExtension(extension.get());
+  PermissionsUpdater updater(profile());
+  updater.InitializePermissions(extension.get());
+  updater.GrantActivePermissions(extension.get());
+
+  APIPermissionSet apis;
+  apis.insert(extensions::mojom::APIPermissionID::kNotifications);
+  PermissionSet delta(apis.Clone(), ManifestPermissionSet(), URLPatternSet(),
+                      URLPatternSet());
+
+  std::unique_ptr<const PermissionSet> active_permissions;
+  {
+    // Grant the optional API permissions
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
+    updater.GrantOptionalPermissions(*extension, delta, base::DoNothing());
+    waiter.WaitForExtensionPermissionsUpdate();
+    // Make sure the extension's active permissions reflect the change.
+    active_permissions = PermissionSet::CreateUnion(
+        extension->permissions_data()->active_permissions(), delta);
+    ASSERT_EQ(*active_permissions,
+              extension->permissions_data()->active_permissions());
+  }
+
+  {
+    // Revoking the optional permissions should remove the granted API
+    // permission from the active set.
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
+    updater.RevokeOptionalPermissions(
+        *extension, delta, PermissionsUpdater::REMOVE_SOFT, base::DoNothing());
+    waiter.WaitForExtensionPermissionsUpdate();
+    // Make sure the extension's active permissions reflect the change.
+    active_permissions =
+        PermissionSet::CreateDifference(*active_permissions, delta);
+    ASSERT_EQ(*active_permissions,
+              extension->permissions_data()->active_permissions());
+  }
+
+  // Generate the permissions info.
+  std::unique_ptr<api::developer_private::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  PermissionMessages messages;
+  for (const PermissionMessage& message :
+       extension->permissions_data()->GetPermissionMessages()) {
+    if (!message.permissions().ContainsID(
+            extensions::mojom::APIPermissionID::kHostReadWrite)) {
+      messages.push_back(message);
+    }
+  }
+
+  // The permissions info should still show the set of granted API permissions
+  // which should include the notifications permission.
+  EXPECT_EQ(messages.size(), info->permissions.simple_permissions.size() - 1);
+  EXPECT_TRUE(base::ranges::any_of(
+      info->permissions.simple_permissions,
+      [](api::developer_private::Permission& permission) {
+        return permission.message == "Display notifications";
+      }));
+}
+
+// Tests tha the granted optional host permissions, when revoked, are not
+// removed from the generated extension info.
+TEST_F(ExtensionInfoGeneratorUnitTest, RevokedOptionalHostPermissionsInfoTest) {
   // Load the test extension.
   base::Value::Dict manifest =
       base::Value::Dict()
@@ -1041,13 +1111,13 @@ TEST_F(ExtensionInfoGeneratorUnitTest, Blocklisted) {
   info2 = GetInfoFromList(info_list, id2);
   ASSERT_NE(nullptr, info1);
   ASSERT_NE(nullptr, info2);
-  EXPECT_EQ(developer::ExtensionState::kBlacklisted, info1->state);
+  EXPECT_EQ(developer::ExtensionState::kBlocklisted, info1->state);
   EXPECT_EQ(developer::ExtensionState::kEnabled, info2->state);
 
   // Verify getExtensionInfo() returns data on blocklisted extensions.
   auto info3 = GenerateExtensionInfo(id1);
   ASSERT_NE(nullptr, info3);
-  EXPECT_EQ(developer::ExtensionState::kBlacklisted, info3->state);
+  EXPECT_EQ(developer::ExtensionState::kBlocklisted, info3->state);
 }
 
 // Test generating extension action commands properly.

@@ -17,11 +17,16 @@ class BrowserContext;
 }
 
 namespace segmentation_platform {
+namespace home_modules {
+class HomeModulesCardRegistry;
+}
+
 struct Config;
 
 // Returns a Config created from the finch feature params.
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
-    content::BrowserContext* context);
+    content::BrowserContext* context,
+    home_modules::HomeModulesCardRegistry* home_modules_card_registry);
 
 // Finds a list of configs from experiments and appends to `out_configs`.
 // Public for testing.

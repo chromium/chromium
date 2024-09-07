@@ -17,7 +17,7 @@
 @implementation TabListFromAndroidTableViewItem
 
 - (instancetype)initWithType:(NSInteger)type {
-  if (self = [super initWithType:type]) {
+  if ((self = [super initWithType:type])) {
     self.cellClass = [TabListFromAndroidTableViewCell class];
   }
   return self;
@@ -78,7 +78,7 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
-  if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+  if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
     _faviconView = [[FaviconView alloc] init];
     _titleLabel = [[UILabel alloc] init];
     _URLLabel = [[UILabel alloc] init];

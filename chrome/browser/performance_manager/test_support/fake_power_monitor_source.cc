@@ -6,7 +6,7 @@
 
 namespace performance_manager {
 
-bool FakePowerMonitorSource::IsOnBatteryPower() {
+bool FakePowerMonitorSource::IsOnBatteryPower() const {
   return on_battery_power_;
 }
 

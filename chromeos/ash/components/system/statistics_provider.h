@@ -31,11 +31,6 @@ inline constexpr char kShouldSendRlzPingValueTrue[] = "1";
 // allowed to be sent. It is in the format of "yyyy-mm-dd".
 inline constexpr char kRlzEmbargoEndDateKey[] = "rlz_embargo_end_date";
 
-// The key present in VPD that indicates the date after which enterprise
-// management pings are allowed to be sent. It is in the format of "yyyy-mm-dd".
-inline constexpr char kEnterpriseManagementEmbargoEndDateKey[] =
-    "enterprise_management_embargo_end_date";
-
 // Customization ID key.
 inline constexpr char kCustomizationIdKey[] = "customization_id";
 

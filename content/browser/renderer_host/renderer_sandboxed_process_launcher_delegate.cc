@@ -90,11 +90,6 @@ RendererSandboxedProcessLauncherDelegateWin::
   }
 }
 
-bool RendererSandboxedProcessLauncherDelegateWin::AllowWindowsFontsDir() {
-  return is_pdf_renderer_ &&
-         !GetContentClient()->browser()->IsPdfFontProxyEnabled();
-}
-
 std::string RendererSandboxedProcessLauncherDelegateWin::GetSandboxTag() {
   if (is_pdf_renderer_) {
     // All pdf renderers are jitless so only need one tag for these.

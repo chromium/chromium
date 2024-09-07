@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -62,7 +66,7 @@ public class TabUiUtils {
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         boolean isIncognito = filter.isIncognitoBranded();
 
-        if (hideTabGroups || isIncognito || !isSyncEnabled) {
+        if (hideTabGroups || isIncognito || !isSyncEnabled || actionConfirmationManager == null) {
             filter.closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(hideTabGroups).build());
             Callback.runNullSafe(didCloseCallback, true);
         } else {
@@ -113,7 +117,7 @@ public class TabUiUtils {
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
 
-        if (isIncognito || !isSyncEnabled) {
+        if (isIncognito || !isSyncEnabled || actionConfirmationManager == null) {
             for (Tab tab : tabs) {
                 filter.moveTabOutOfGroup(tab.getId());
             }
@@ -147,13 +151,16 @@ public class TabUiUtils {
      * @param filter The {@link TabGroupModelFilter} to act on.
      * @param rootId The root id of the interacting tab group.
      * @param newGroupColor The new group color being assigned to the tab group.
+     * @return Whether the tab group color is updated.
      */
-    public static void updateTabGroupColor(
+    public static boolean updateTabGroupColor(
             TabGroupModelFilter filter, int rootId, @TabGroupColorId int newGroupColor) {
         int curGroupColor = filter.getTabGroupColor(rootId);
         if (curGroupColor != newGroupColor) {
             filter.setTabGroupColor(rootId, newGroupColor);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -162,17 +169,17 @@ public class TabUiUtils {
      * @param filter The {@link TabGroupModelFilter} to act on.
      * @param rootId The root id of the interacting tab group.
      * @param newGroupTitle The new group title being assigned to the tab group.
+     * @return Whether the tab group title is updated.
      */
-    public static void updateTabGroupTitle(
+    public static boolean updateTabGroupTitle(
             TabGroupModelFilter filter, int rootId, String newGroupTitle) {
-        if (newGroupTitle == null || newGroupTitle.isEmpty()) {
-            filter.deleteTabGroupTitle(rootId);
-            return;
-        }
+        assert newGroupTitle != null && !newGroupTitle.isEmpty();
         String curGroupTitle = filter.getTabGroupTitle(rootId);
         if (!newGroupTitle.equals(curGroupTitle)) {
             filter.setTabGroupTitle(rootId, newGroupTitle);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -203,7 +210,7 @@ public class TabUiUtils {
             TabGroupModelFilter filter,
             ActionConfirmationManager actionConfirmationManager,
             int tabId) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID);
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
         TabModel tabModel = filter.getTabModel();
         Profile profile = tabModel.getProfile();
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -213,6 +220,8 @@ public class TabUiUtils {
         SavedTabGroup savedTabGroup =
                 TabGroupSyncUtils.getSavedTabGroupFromTabId(tabId, tabModel, tabGroupSyncService);
         if (savedTabGroup == null || TextUtils.isEmpty(savedTabGroup.collaborationId)) return;
+
+        assert actionConfirmationManager != null;
 
         actionConfirmationManager.processDeleteSharedGroupAttempt(
                 savedTabGroup.title,
@@ -234,7 +243,7 @@ public class TabUiUtils {
             TabGroupModelFilter filter,
             ActionConfirmationManager actionConfirmationManager,
             int tabId) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID);
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
         TabModel tabModel = filter.getTabModel();
         Profile profile = tabModel.getProfile();
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -250,6 +259,8 @@ public class TabUiUtils {
         CoreAccountInfo account = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (account == null) return;
 
+        assert actionConfirmationManager != null;
+
         actionConfirmationManager.processLeaveGroupAttempt(
                 savedTabGroup.title,
                 (@ConfirmationResult Integer result) -> {
@@ -258,5 +269,22 @@ public class TabUiUtils {
                                 savedTabGroup.collaborationId, account.getEmail(), null);
                     }
                 });
+    }
+
+    /**
+     * Attaches an {@link SharedImageTilesCoordinator} to a {@link FrameLayout}.
+     *
+     * @param sharedImageTilesCoordinator The {@link SharedImageTilesCoordinator} to attach.
+     * @param container The {@link FrameLayout} to attach to.
+     */
+    public static void attachSharedImageTilesCoordinatorToFrameLayout(
+            SharedImageTilesCoordinator sharedImageTilesCoordinator, FrameLayout container) {
+        View imageTilesView = sharedImageTilesCoordinator.getView();
+        var layoutParams =
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        Gravity.CENTER);
+        container.addView(imageTilesView, layoutParams);
     }
 }

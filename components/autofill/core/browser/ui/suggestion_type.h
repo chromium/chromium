@@ -94,7 +94,9 @@ enum class SuggestionType {
 
   // Plus address suggestions.
   kCreateNewPlusAddress = 39,
+  kCreateNewPlusAddressInline = 52,
   kFillExistingPlusAddress = 40,
+  kPlusAddressError = 57,
 
   // Promotion suggestions.
   kMerchantPromoCodeEntry = 41,
@@ -123,7 +125,18 @@ enum class SuggestionType {
   // suggestions with country names as main text mean.
   kDevtoolsTestAddressByCountry = 51,
 
-  kMaxValue = 51
+  // Trigger for retrieving prediction improvements. Part of the footer.
+  kRetrievePredictionImprovements = 53,
+  // Loading indicator shown while retrieving prediction improvements.
+  kPredictionImprovementsLoadingState = 54,
+  // Fill prediction improvements.
+  kFillPredictionImprovements = 55,
+
+  // Suggestion that provides users the possibility to give feedback about
+  // predictions improvements.
+  kPredictionImprovementsFeedback = 56,
+
+  kMaxValue = kPlusAddressError
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

@@ -135,7 +135,7 @@ class PLATFORM_EXPORT ShapeResultView final
   bool IsLtr() const { return blink::IsLtr(Direction()); }
   bool IsRtl() const { return blink::IsRtl(Direction()); }
   bool HasVerticalOffsets() const { return has_vertical_offsets_; }
-  void FallbackFonts(HeapHashSet<Member<const SimpleFontData>>* fallback) const;
+  HeapHashSet<Member<const SimpleFontData>> UsedFonts() const;
 
   unsigned PreviousSafeToBreakOffset(unsigned index) const;
 

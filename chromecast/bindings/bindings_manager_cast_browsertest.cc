@@ -26,6 +26,7 @@
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
 #include "chromecast/browser/cast_web_contents_observer.h"
+#include "chromecast/browser/test/cast_browser_test.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -125,25 +126,8 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
 // =============================================================================
 // Test class
 // =============================================================================
-class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
- public:
-  BindingsManagerCastBrowserTest(const BindingsManagerCastBrowserTest&) =
-      delete;
-  BindingsManagerCastBrowserTest& operator=(
-      const BindingsManagerCastBrowserTest&) = delete;
-
+class BindingsManagerCastBrowserTest : public shell::CastBrowserTest {
  protected:
-  BindingsManagerCastBrowserTest() = default;
-  ~BindingsManagerCastBrowserTest() override = default;
-
-  void SetUp() final {
-    SetUpCommandLine(base::CommandLine::ForCurrentProcess());
-    BrowserTestBase::SetUp();
-  }
-  void SetUpCommandLine(base::CommandLine* command_line) final {
-    command_line->AppendSwitchASCII(switches::kTestType, "browser");
-  }
-
   void PreRunTestOnMainThread() override {
     // Pump startup related events.
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -10,6 +10,7 @@
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -242,70 +243,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   GURL url = https_server().GetURL("a.com", "/title1.html");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   ExpectHistogramIncreasedBy(0);
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessIgnoredCrossSitePreflightError) {
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
-
-  ASSERT_EQ(true, content::EvalJs(
-                      web_contents(),
-                      content::JsReplace(
-                          "fetch($1).then(response => response.ok)",
-                          https_server().GetURL("b.com", "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
-  CheckCounter(
-      WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
-               1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsBrowserTest,
-    PrivateNetworkAccessIgnoredCrossOriginSameSitePreflightError) {
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
-
-  ASSERT_EQ(true, content::EvalJs(web_contents(),
-                                  content::JsReplace(
-                                      "fetch($1).then(response => response.ok)",
-                                      https_server().GetURL("subdomain.a.com",
-                                                            "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
-  CheckCounter(
-      WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
-               0);
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessSameOriginNoIgnoredPreflightError) {
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
-
-  ASSERT_EQ(true, content::EvalJs(
-                      web_contents(),
-                      content::JsReplace(
-                          "fetch($1).then(response => response.ok)",
-                          https_server().GetURL("a.com", "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 0);
-  CheckCounter(
-      WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 0);
-  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
-               0);
 }
 
 // This test verifies that when a secure context served from the public address
@@ -1836,11 +1773,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     CheckCounter(test.property_access_from_other_page, 0);
     const auto& entries =
         test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(
-        entries.size(),
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage
-            ? 2u
-            : 1u);
+    ASSERT_EQ(entries.size(), 1u);
     const auto& entry = entries.back();
     test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
                                          (int)test.access_type);
@@ -2123,11 +2056,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     CheckCounter(test.property_access_from_other_page, 1);
     const auto& entries =
         test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(
-        entries.size(),
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage
-            ? 2u
-            : 1u);
+    ASSERT_EQ(entries.size(), 1u);
     const auto& entry = entries.back();
     test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
                                          (int)test.access_type);
@@ -2153,12 +2082,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        WindowProxyAccessFromOtherPartitionedPopin) {
   GURL url = https_server().GetURL("a.com", "/empty.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  content::WebContents* same_origin_popin = OpenPopup(url, /*is_popin=*/true);
-
-  GURL cross_origin_url = https_server().GetURL("b.test", "/empty.html");
-  content::WebContents* cross_origin_popin =
-      OpenPopup(cross_origin_url, /*is_popin=*/true);
 
   struct TestCase {
     const char* name;
@@ -2245,27 +2168,35 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
           blink::mojom::WindowProxyAccessType::kTop,
       }};
 
+  // Check that a same-origin access does not register use counters.
+  content::WebContents* same_origin_popin = OpenPopup(url, /*is_popin=*/true);
   for (auto test : cases) {
     SCOPED_TRACE(test.name);
     std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
         std::make_unique<ukm::TestAutoSetUkmRecorder>();
-
-    // Check that a same-origin access does not register use counters.
     EXPECT_TRUE(content::ExecJs(same_origin_popin, test.property));
     CheckCounter(test.property_access, 0);
     CheckCounter(test.property_access_from_other_page, 0);
+    const auto& entries =
+        test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
+    ASSERT_EQ(entries.size(), 0u);
+  }
 
-    // Check that a cross-origin access register use counters.
+  // Check that a cross-origin access register use counters.
+  BrowserWindow::FindBrowserWindowWithWebContents(same_origin_popin)->Close();
+  GURL cross_origin_url = https_server().GetURL("b.test", "/empty.html");
+  content::WebContents* cross_origin_popin =
+      OpenPopup(cross_origin_url, /*is_popin=*/true);
+  for (auto test : cases) {
+    SCOPED_TRACE(test.name);
+    std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
+        std::make_unique<ukm::TestAutoSetUkmRecorder>();
     EXPECT_TRUE(content::ExecJs(cross_origin_popin, test.property));
     CheckCounter(test.property_access, 1);
     CheckCounter(test.property_access_from_other_page, 1);
     const auto& entries =
         test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(
-        entries.size(),
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage
-            ? 2u
-            : 1u);
+    ASSERT_EQ(entries.size(), 1u);
     const auto& entry = entries.back();
     test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
                                          (int)test.access_type);
@@ -2283,7 +2214,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     test_ukm_recorder->ExpectEntryMetric(entry, "RemoteUserActivationState",
                                          1 /*HasBeenActive*/);
     test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
-                                         3 /*CrossKey*/);
+                                         1 /*SameTopSiteCrossOrigin*/);
   }
 }
 

@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -105,6 +106,7 @@ class PaginationState;
 class PaintArtifact;
 class PaintArtifactCompositor;
 class PaintController;
+class PaintControllerPersistentData;
 class PaintLayer;
 class PaintLayerScrollableArea;
 class PaintTimingDetector;
@@ -476,6 +478,8 @@ class CORE_EXPORT LocalFrameView final
     return is_tracking_raster_invalidations_;
   }
 
+  using ScrollableAreaMap =
+      HeapHashMap<CompositorElementId, Member<PaintLayerScrollableArea>>;
   using ScrollableAreaSet = HeapHashSet<Member<PaintLayerScrollableArea>>;
   void AddScrollAnchoringScrollableArea(PaintLayerScrollableArea*);
   void RemoveScrollAnchoringScrollableArea(PaintLayerScrollableArea*);
@@ -491,7 +495,7 @@ class CORE_EXPORT LocalFrameView final
 
   void AddUserScrollableArea(PaintLayerScrollableArea*);
   void RemoveUserScrollableArea(PaintLayerScrollableArea*);
-  const ScrollableAreaSet* UserScrollableAreas() const {
+  const ScrollableAreaMap* UserScrollableAreas() const {
     return user_scrollable_areas_.Get();
   }
 
@@ -572,7 +576,7 @@ class CORE_EXPORT LocalFrameView final
   gfx::Rect FrameToDocument(const gfx::Rect&) const;
   PhysicalRect FrameToDocument(const PhysicalRect&) const;
 
-  void PrintPage(GraphicsContext&, wtf_size_t page_number, const CullRect&);
+  void PrintPage(GraphicsContext&, wtf_size_t page_index, const CullRect&);
 
   // Normally a LocalFrameView synchronously paints during full lifecycle
   // updates, into the local frame root's PaintController. However, in some
@@ -604,7 +608,7 @@ class CORE_EXPORT LocalFrameView final
 
   // Get the PaintArtifact that was cached during the last paint lifecycle
   // update.
-  const PaintArtifact* GetPaintArtifact() const;
+  const PaintArtifact& GetPaintArtifact() const;
 
   void Show() override;
   void Hide() override;
@@ -787,8 +791,8 @@ class CORE_EXPORT LocalFrameView final
 
   void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
 
-  PaintController& GetPaintControllerForTesting() {
-    return EnsurePaintController();
+  PaintControllerPersistentData& GetPaintControllerPersistentDataForTesting() {
+    return EnsurePaintControllerPersistentData();
   }
 
   bool PaintDebugInfoEnabled() const { return paint_debug_info_enabled_; }
@@ -899,7 +903,7 @@ class CORE_EXPORT LocalFrameView final
   friend class DisallowThrottlingScope;
   friend class ForceThrottlingScope;
 
-  PaintController& EnsurePaintController();
+  PaintControllerPersistentData& EnsurePaintControllerPersistentData();
 
   // A paint preview is a copy of the visual contents of a webpage recorded as
   // a set of SkPictures. This sends an IPC to the browser to trigger a
@@ -948,7 +952,7 @@ class CORE_EXPORT LocalFrameView final
   void PerformLayout();
   void PerformPostLayoutTasks(bool view_size_changed);
 
-  bool PaintTree(PaintBenchmarkMode);
+  void PaintTree(PaintBenchmarkMode, std::optional<PaintController>&);
   void PushPaintArtifactToCompositor(bool repainted);
   void CreatePaintTimelineEvents();
 
@@ -1094,7 +1098,7 @@ class CORE_EXPORT LocalFrameView final
   Member<ScrollableAreaSet> scroll_anchoring_scrollable_areas_;
   Member<ScrollableAreaSet> animating_scrollable_areas_;
   // Scrollable areas which are user-scrollable, whether they overflow or not.
-  Member<ScrollableAreaSet> user_scrollable_areas_;
+  Member<ScrollableAreaMap> user_scrollable_areas_;
   BoxModelObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 
@@ -1172,7 +1176,7 @@ class CORE_EXPORT LocalFrameView final
   // Used by |PaintTree()| to collect the updated |PaintArtifact| which will be
   // passed to the compositor. It caches display items and subsequences across
   // frame updates and repaints.
-  Member<PaintController> paint_controller_;
+  Member<PaintControllerPersistentData> paint_controller_persistent_data_;
   Member<PaintArtifactCompositor> paint_artifact_compositor_;
 
   MainThreadScrollingReasons main_thread_scrolling_reasons_;

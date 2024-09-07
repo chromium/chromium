@@ -43,6 +43,7 @@ namespace autofill {
 //   TestAutofillManagerInjector<MockAutofillManager> injector(web_state());
 //   NavigateToURL(...);
 template <typename T>
+  requires(std::derived_from<T, AutofillManager>)
 class TestAutofillManagerInjector : public AutofillDriverIOSFactory::Observer {
  public:
   explicit TestAutofillManagerInjector(web::WebState* web_state)

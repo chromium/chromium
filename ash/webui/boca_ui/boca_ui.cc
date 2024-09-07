@@ -15,6 +15,7 @@
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -25,7 +26,7 @@
 #include "ui/webui/untrusted_web_ui_controller.h"
 #include "ui/webui/webui_allowlist.h"
 
-namespace ash {
+namespace ash::boca {
 
 namespace {
 content::WebUIDataSource* CreateAndAddHostDataSource(
@@ -42,6 +43,12 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
       kChromeosBocaAppBundleResources, kChromeosBocaAppBundleResourcesSize));
   return source;
 }
+
+void PopulateLoadTimeData(content::WebUIDataSource* source) {
+  source->AddBoolean("isProducer", ash::boca_util::IsProducer());
+  source->AddBoolean("isConsumer", ash::boca_util::IsConsumer());
+}
+
 }  // namespace
 
 BocaUI::BocaUI(content::WebUI* web_ui)
@@ -85,6 +92,8 @@ BocaUI::BocaUI(content::WebUI* web_ui)
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
+  PopulateLoadTimeData(host_source);
+  host_source->UseStringsJs();
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
@@ -113,9 +122,11 @@ void BocaUI::Create(
     mojo::PendingReceiver<boca::mojom::PageHandler> page_handler,
     mojo::PendingRemote<boca::mojom::Page> page) {
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
-      this, std::move(page_handler), std::move(page), web_ui_);
+      this, std::move(page_handler), std::move(page), web_ui_,
+      std::make_unique<ClassroomPageHandlerImpl>(),
+      std::make_unique<SessionClientImpl>());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)
 
-}  // namespace ash
+}  // namespace ash::boca

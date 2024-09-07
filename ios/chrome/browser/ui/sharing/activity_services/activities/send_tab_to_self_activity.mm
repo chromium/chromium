@@ -32,7 +32,7 @@ NSString* const kSendTabToSelfActivityType =
 
 - (instancetype)initWithData:(ShareToData*)data
                      handler:(id<BrowserCoordinatorCommands>)handler {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _data = data;
     _handler = handler;
   }

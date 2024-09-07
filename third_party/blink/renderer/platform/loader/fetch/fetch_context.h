@@ -153,10 +153,23 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return ResourceRequestBlockedReason::kOther;
   }
 
-  // Populates the ResourceRequest using the given values and information
-  // stored in the FetchContext implementation. Used by ResourceFetcher to
-  // prepare a ResourceRequest instance at the start of resource loading.
-  virtual void PopulateResourceRequest(
+  // Populates the ResourceRequest with enough information for a cache lookup.
+  // If the resource requires a load, then UpgradeResourceRequestForLoader() is
+  // called.
+  virtual void PopulateResourceRequestBeforeCacheAccess(
+      const ResourceLoaderOptions& options,
+      ResourceRequest& request) {}
+
+  // Called after csp checks to potentially override the URL of the request.
+  virtual void WillSendRequest(ResourceRequest& request) {}
+
+  // Called if a resource request needs to be loaded (vs served from the cache).
+  // This adds additional information to the ResourceRequest needed for
+  // loading. This is called after PopulateResourceRequestBeforeCacheAccess().
+  // This function may be called in some circumstances when still served from
+  // the cache. For example, if the right probes are present, then this is
+  // always called.
+  virtual void UpgradeResourceRequestForLoader(
       ResourceType,
       const std::optional<float> resource_width,
       ResourceRequest&,

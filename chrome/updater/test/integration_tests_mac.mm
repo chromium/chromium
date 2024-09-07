@@ -278,10 +278,12 @@ bool WaitForUpdaterExit() {
       [] { VLOG(0) << "Still waiting for updater to exit..."; });
 }
 
-void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
+base::FilePath GetRealUpdaterLowerVersionPath() {
   base::FilePath exe_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-  base::FilePath old_updater_path = exe_path.Append("old_updater");
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath old_updater_path =
+      exe_path.Append(FILE_PATH_LITERAL("old_updater"));
+
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
   old_updater_path = old_updater_path.Append("chromium_mac_arm64");
@@ -294,15 +296,10 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("cipd");
 #endif
-  base::CommandLine command_line(
-      old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
-          .Append("Contents")
-          .Append("MacOS")
-          .Append(PRODUCT_FULLNAME_STRING "_test"));
-  command_line.AppendSwitch(kInstallSwitch);
-  int exit_code = -1;
-  Run(scope, command_line, &exit_code);
-  ASSERT_EQ(exit_code, 0);
+  return old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
+      .Append("Contents")
+      .Append("MacOS")
+      .Append(PRODUCT_FULLNAME_STRING "_test");
 }
 
 void SetupFakeLegacyUpdater(UpdaterScope scope) {
@@ -619,9 +616,12 @@ void ExpectCRURegistrationFindsKSAdmin(UpdaterScope scope) {
     ADD_FAILURE() << "test issue - no impl provided";
     return false;
   }
-  NSString* ns_xc_path = base::apple::FilePathToNSString(xc_path);
+  NSString* ns_xc_path = @"NOT PROVIDED FOR THIS TEST";
+  if (!xc_path.empty()) {
+    ns_xc_path = base::apple::FilePathToNSString(xc_path);
+  }
   if (!ns_xc_path) {
-    ADD_FAILURE() << "test issue - xc_path was not valid";
+    ADD_FAILURE() << "test issue - xc_path could not be converted to NSString";
     return false;
   }
   CRURegistration* registration =
@@ -717,6 +717,58 @@ void ExpectCRURegistrationCannotRegister(const std::string& app_id,
 
     EXPECT_TRUE(got_error);
   }
+}
+
+void ExpectCRURegistrationMarksActive(const std::string& app_id) {
+  @autoreleasepool {
+    __block NSError* got_error = nil;
+
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, {},
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration markActiveWithReply:^(NSError* error) {
+            got_error = error;
+            dispatch_semaphore_signal(semaphore);
+          }];
+        }));
+
+    EXPECT_FALSE(got_error) << base::SysNSStringToUTF8([got_error description]);
+  }
+}
+
+std::optional<base::FilePath> GetRegistrationTestAppPath() {
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
+    return std::nullopt;
+  }
+  const base::FilePath test_app_path =
+      exe_path.AppendASCII("registration_test_app_bundle.app/Contents/MacOS/"
+                           "registration_test_app_bundle");
+  if (test_app_path.empty() || !base::PathExists(test_app_path)) {
+    return std::nullopt;
+  }
+  return test_app_path;
+}
+
+void ExpectRegistrationTestAppSuccess(const std::string& arg) {
+  std::optional<base::FilePath> test_app_path = GetRegistrationTestAppPath();
+  ASSERT_TRUE(test_app_path);
+  base::CommandLine command_line(*test_app_path);
+  command_line.AppendArg(arg);
+
+  ExpectCliResult(command_line, false, {}, 0);
+}
+
+void ExpectRegistrationTestAppUserUpdaterInstallSuccess() {
+  ExpectRegistrationTestAppSuccess("--install");
+}
+
+void ExpectRegistrationTestAppRegisterSuccess() {
+  ExpectRegistrationTestAppSuccess("--register");
+}
+
+void ExpectRegistrationTestAppInstallAndRegisterSuccess() {
+  ExpectRegistrationTestAppSuccess("--install_and_register");
 }
 
 }  // namespace updater::test

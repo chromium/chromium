@@ -327,11 +327,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateNewProfileSynchronous) {
   MockProfileDelegate delegate;
   EXPECT_CALL(delegate, OnProfileCreationFinished(
                             testing::NotNull(),
-                            Profile::CREATE_MODE_SYNCHRONOUS, true, true));
+                            Profile::CreateMode::kSynchronous, true, true));
 
   {
     std::unique_ptr<Profile> profile(CreateProfile(
-        temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_SYNCHRONOUS));
+        temp_dir.GetPath(), &delegate, Profile::CreateMode::kSynchronous));
     CheckChromeVersion(profile.get(), true);
 
     // Creating a profile causes an implicit connection attempt to a Mojo
@@ -361,11 +361,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateOldProfileSynchronous) {
   MockProfileDelegate delegate;
   EXPECT_CALL(delegate, OnProfileCreationFinished(
                             testing::NotNull(),
-                            Profile::CREATE_MODE_SYNCHRONOUS, true, false));
+                            Profile::CreateMode::kSynchronous, true, false));
 
   {
     std::unique_ptr<Profile> profile(CreateProfile(
-        temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_SYNCHRONOUS));
+        temp_dir.GetPath(), &delegate, Profile::CreateMode::kSynchronous));
     CheckChromeVersion(profile.get(), false);
 
     // Creating a profile causes an implicit connection attempt to a Mojo
@@ -395,11 +395,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateNewProfileAsynchronous) {
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnProfileCreationFinished(
                             testing::NotNull(),
-                            Profile::CREATE_MODE_ASYNCHRONOUS, true, true))
+                            Profile::CreateMode::kAsynchronous, true, true))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   std::unique_ptr<Profile> profile(CreateProfile(
-      temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
+      temp_dir.GetPath(), &delegate, Profile::CreateMode::kAsynchronous));
 
   // Wait for the profile to be created.
   run_loop.Run();
@@ -428,11 +428,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateOldProfileAsynchronous) {
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnProfileCreationFinished(
                             testing::NotNull(),
-                            Profile::CREATE_MODE_ASYNCHRONOUS, true, false))
+                            Profile::CreateMode::kAsynchronous, true, false))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   std::unique_ptr<Profile> profile(CreateProfile(
-      temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
+      temp_dir.GetPath(), &delegate, Profile::CreateMode::kAsynchronous));
 
   // Wait for the profile to be created.
   run_loop.Run();
@@ -459,11 +459,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_ProfileReadmeCreated) {
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnProfileCreationFinished(
                             testing::NotNull(),
-                            Profile::CREATE_MODE_ASYNCHRONOUS, true, true))
+                            Profile::CreateMode::kAsynchronous, true, true))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   std::unique_ptr<Profile> profile(CreateProfile(
-      temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
+      temp_dir.GetPath(), &delegate, Profile::CreateMode::kAsynchronous));
 
   // Wait for the profile to be created.
   run_loop.Run();
@@ -782,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
 
   MockProfileDelegate delegate;
   std::unique_ptr<Profile> regular_profile(CreateProfile(
-      temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_SYNCHRONOUS));
+      temp_dir.GetPath(), &delegate, Profile::CreateMode::kSynchronous));
 
   // Creating a profile causes an implicit connection attempt to a Mojo
   // service, which occurs as part of a new task. Before deleting |profile|,
@@ -1091,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     base::FilePath profile_path = temp_dir.GetPath().Append("1Default");
     std::unique_ptr<Profile> profile(
         CreateProfile(profile_path, /* delegate= */ nullptr,
-                      Profile::CREATE_MODE_SYNCHRONOUS));
+                      Profile::CreateMode::kSynchronous));
 
     EXPECT_FALSE(profile->IsMainProfile());
 
@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
         temp_dir.GetPath().Append(chrome::kInitialProfile);
     std::unique_ptr<Profile> profile(
         CreateProfile(profile_path, /* delegate= */ nullptr,
-                      Profile::CREATE_MODE_SYNCHRONOUS));
+                      Profile::CreateMode::kSynchronous));
 
     crosapi::mojom::BrowserInitParamsPtr init_params =
         crosapi::mojom::BrowserInitParams::New();
@@ -1144,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
         temp_dir.GetPath().Append(chrome::kInitialProfile);
     std::unique_ptr<Profile> profile(
         CreateProfile(profile_path, /* delegate= */ nullptr,
-                      Profile::CREATE_MODE_SYNCHRONOUS));
+                      Profile::CreateMode::kSynchronous));
 
     crosapi::mojom::BrowserInitParamsPtr init_params =
         crosapi::mojom::BrowserInitParams::New();

@@ -5,8 +5,8 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=./pdf_shared_lit.css.js
- * #include=pdf-shared-lit
+ * #import=./pdf_shared.css.js
+ * #include=pdf-shared
  * #css_wrapper_metadata_end */
 
 :host {
@@ -44,18 +44,33 @@
   box-shadow: 0 0 0 8px var(--focus-border-color);
 }
 
-canvas {
-  display: block;
+#canvas-container {
   opacity: 0.5;
+  position: relative;
 }
 
-:host([is-active]) canvas {
+:host([is-active]) #canvas-container {
   opacity: 1;
 }
 
-:host([is-active]) canvas:hover,
-canvas:hover {
+:host([is-active]) #canvas-container:hover,
+#canvas-container:hover {
   opacity: 0.7;
+}
+
+<if expr="enable_pdf_ink2">
+#ink2-canvas {
+  position: absolute;
+  z-index: 1;
+}
+</if>
+
+#pdf-canvas {
+  z-index: 0;
+}
+
+canvas {
+  display: block;
 }
 
 #pageNumber {

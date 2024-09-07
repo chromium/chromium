@@ -13,6 +13,8 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
@@ -70,6 +72,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // The injected Contextual Panel entrypoint view;
 @property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 
+// The injected placeholder view;
+@property(nonatomic, strong) UIView* placeholderView;
+
 // The view that displays current location when the omnibox is not focused.
 @property(nonatomic, strong) LocationBarSteadyView* locationBarSteadyView;
 
@@ -120,6 +125,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     (UIView*)contextualPanelEntrypointView {
   DCHECK(!self.contextualPanelEntrypointView);
   _contextualPanelEntrypointView = contextualPanelEntrypointView;
+}
+
+- (void)setPlaceholderView:(UIView*)placeholderView {
+  CHECK(IsLensOverlayAvailable());
+  CHECK(!self.placeholderView);
+  _placeholderView = placeholderView;
 }
 
 - (void)switchToEditing:(BOOL)editing {
@@ -174,6 +185,15 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 }
 
+- (id<ContextualPanelEntrypointVisibilityDelegate>)
+    contextualEntrypointVisibilityDelegate {
+  return self.locationBarSteadyView.contextualEntrypointVisibilityDelegate;
+}
+
+- (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate {
+  return self.locationBarSteadyView.badgeViewVisibilityDelegate;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -184,12 +204,16 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   // `contextualPanelEntrypointView` should be CHECK()'ed. Until fully launched,
   // the entrypoint view might be nil if the flag is disabled.
   if (self.contextualPanelEntrypointView) {
-    self.locationBarSteadyView.contextualPanelEntrypointView =
-        self.contextualPanelEntrypointView;
+    [self.locationBarSteadyView
+        setContextualPanelEntrypointView:self.contextualPanelEntrypointView];
   }
 
   DCHECK(self.badgeView) << "The badge view must be set at this point";
-  self.locationBarSteadyView.badgeView = self.badgeView;
+  [self.locationBarSteadyView setBadgeView:self.badgeView];
+
+  if (IsLensOverlayAvailable()) {
+    [self.locationBarSteadyView setPlaceholderView:self.placeholderView];
+  }
 
   [_locationBarSteadyView.locationButton
              addTarget:self
@@ -242,6 +266,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   CGFloat alphaValue = fmax((progress - 0.85) / 0.15, 0);
   CGFloat scaleValue = 0.79 + 0.21 * progress;
   self.locationBarSteadyView.trailingButton.alpha = alphaValue;
+  self.locationBarSteadyView.badgesContainerView.placeholderView.alpha =
+      alphaValue;
   BOOL badgeViewShouldCollapse = progress <= kFullscreenProgressThreshold;
   [self.locationBarSteadyView
       setFullScreenCollapsedMode:badgeViewShouldCollapse];
@@ -348,13 +374,11 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 }
 
 - (void)hideSteadyViewBadgeAndEntrypointViews {
-  [self.locationBarSteadyView displayBadgeView:NO animated:NO];
-  [self.delegate displayContextualPanelEntrypointView:NO];
+  self.locationBarSteadyView.badgesContainerView.hidden = YES;
 }
 
 - (void)showSteadyViewBadgeAndEntrypointViews {
-  [self.locationBarSteadyView displayBadgeView:YES animated:NO];
-  [self.delegate displayContextualPanelEntrypointView:YES];
+  self.locationBarSteadyView.badgesContainerView.hidden = NO;
 }
 
 - (void)setEditViewFaded:(BOOL)hidden {

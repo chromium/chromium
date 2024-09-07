@@ -6,8 +6,8 @@
 </style>
 <template is="dom-if" if="[[!shouldShowCompletionInfo_]]">
   <div class="header-with-icon">
-    <iron-icon role="img" icon="cr:info-outline" class="header-icon">
-    </iron-icon>
+    <cr-icon role="img" icon="cr:info-outline" class="header-icon">
+    </cr-icon>
     <cr-expand-button class="header-group-wrapper" no-hover
         expanded="{{unusedSitePermissionsReviewListExpanded_}}">
       <h2>[[headerString_]]</h2>
@@ -43,7 +43,7 @@
 </template>
 <template is="dom-if" if="[[shouldShowCompletionInfo_]]">
   <div class="header-with-icon">
-    <iron-icon role="img" icon="cr:check"></iron-icon>
+    <cr-icon role="img" icon="cr:check"></cr-icon>
     <div class="header-group-wrapper">
       $i18n{safetyCheckUnusedSitePermissionsDoneLabel}
     </div>

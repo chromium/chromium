@@ -10,10 +10,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingUIDelegate;
 
 /** This factory creates DataSharingService for the given {@link Profile}. */
 public final class DataSharingServiceFactory {
@@ -46,23 +44,6 @@ public final class DataSharingServiceFactory {
     public static void setForTesting(@Nullable DataSharingService testService) {
         sDataSharingServiceForTesting = testService;
         ResettersForTesting.register(() -> sDataSharingServiceForTesting = null);
-    }
-
-    /**
-     * A factory method to create or retrieve a {@link DataSharingUIDelegate} object for a given
-     * profile. TODO(b/339685767): Deprecate this function.
-     *
-     * @return The {@link DataSharingUIDelegate} for the given profile.
-     */
-    public static DataSharingUIDelegate getUIDelegate(Profile profile) {
-        UserDataHost host = getForProfile(profile).getUserDataHost();
-        DataSharingUIDelegateImpl uiDelegateImpl =
-                host.getUserData(DataSharingUIDelegateImpl.class);
-        if (uiDelegateImpl == null) {
-            return host.setUserData(
-                    DataSharingUIDelegateImpl.class, new DataSharingUIDelegateImpl(profile));
-        }
-        return uiDelegateImpl;
     }
 
     @NativeMethods

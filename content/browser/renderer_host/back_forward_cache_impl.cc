@@ -976,8 +976,7 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
   // that are based on MPArch are allowed to be stored. To determine if this
   // is an inner WebContents we check the inner frame tree's type to see if
   // it is `kPrimary`.
-  if (rfh->frame_tree()->delegate()->GetOuterDelegateFrameTreeNodeId() !=
-          FrameTreeNode::kFrameTreeNodeInvalidId &&
+  if (rfh->frame_tree()->delegate()->GetOuterDelegateFrameTreeNodeId() &&
       rfh->frame_tree()->is_primary()) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
   }

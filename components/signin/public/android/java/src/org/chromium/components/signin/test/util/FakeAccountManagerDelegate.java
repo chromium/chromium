@@ -5,12 +5,10 @@
 package org.chromium.components.signin.test.util;
 
 import android.accounts.Account;
-import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -18,16 +16,14 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.AccountManagerDelegateException;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * The FakeAccountManagerDelegate is intended for testing components that use AccountManagerFacade.
@@ -44,10 +40,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         return "gaia-id-" + email.replace("@", "_at_");
     }
 
-    private final Object mLock = new Object();
-
-    @GuardedBy("mLock")
-    private final Set<AccountHolder> mAccounts = new LinkedHashSet<>();
+    private final Set<AccountHolder> mAccounts = Collections.synchronizedSet(new LinkedHashSet<>());
 
     private AccountsChangeObserver mObserver;
 
@@ -69,27 +62,21 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
 
     @Override
     public Account[] getAccountsSynchronous() throws AccountManagerDelegateException {
-        ArrayList<Account> result = new ArrayList<>();
-        synchronized (mLock) {
-            for (AccountHolder ah : mAccounts) {
-                result.add(ah.getAccount());
-            }
+        synchronized (mAccounts) {
+            return mAccounts.stream().map((ah) -> ah.getAccount()).toArray(Account[]::new);
         }
-        return result.toArray(new Account[0]);
     }
 
     /** Adds an AccountHolder. */
     public void addAccount(AccountInfo accountInfo) {
-        synchronized (mLock) {
-            boolean added = mAccounts.add(new AccountHolder(accountInfo));
-            assert added : "Account already added";
-        }
+        boolean added = mAccounts.add(new AccountHolder(accountInfo));
+        assert added : "Account already added";
         callOnCoreAccountInfoChanged();
     }
 
     /** Removes an AccountHolder. */
     public void removeAccount(CoreAccountId accountId) {
-        synchronized (mLock) {
+        synchronized (mAccounts) {
             @Nullable AccountHolder accountHolder = tryGetAccountHolder(accountId);
             if (accountHolder == null || !mAccounts.remove(accountHolder)) {
                 throw new IllegalArgumentException(
@@ -113,12 +100,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
                     AuthException.NONTRANSIENT,
                     "Cannot get auth token for unknown account '" + account + "'");
         }
-        synchronized (mLock) {
-            if (accountHolder.getAuthToken(scope) == null) {
-                accountHolder.updateAuthToken(scope, UUID.randomUUID().toString());
-            }
-        }
-        return accountHolder.getAuthToken(scope);
+        return accountHolder.getAccessTokenOrGenerateNew(scope);
     }
 
     @Override
@@ -126,21 +108,13 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         if (authToken == null) {
             throw new IllegalArgumentException("AuthToken can not be null");
         }
-        synchronized (mLock) {
+        synchronized (mAccounts) {
             for (AccountHolder ah : mAccounts) {
-                if (ah.removeAuthToken(authToken)) {
+                if (ah.removeAccessToken(authToken)) {
                     break;
                 }
             }
         }
-    }
-
-    @Override
-    public AuthenticatorDescription[] getAuthenticatorTypes() {
-        AuthenticatorDescription googleAuthenticator =
-                new AuthenticatorDescription(AccountUtils.GOOGLE_ACCOUNT_TYPE, "p1", 0, 0, 0, 0);
-
-        return new AuthenticatorDescription[] {googleAuthenticator};
     }
 
     @Override
@@ -175,7 +149,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
 
     // TODO(crbug.com/40274844): Remove this method after migrating the interface to CoreAccountId.
     private @Nullable AccountHolder tryGetAccountHolder(String accountEmail) {
-        synchronized (mLock) {
+        synchronized (mAccounts) {
             return mAccounts.stream()
                     .filter(
                             accountHolder ->
@@ -186,7 +160,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     private @Nullable AccountHolder tryGetAccountHolder(CoreAccountId accountId) {
-        synchronized (mLock) {
+        synchronized (mAccounts) {
             return mAccounts.stream()
                     .filter(
                             accountHolder ->

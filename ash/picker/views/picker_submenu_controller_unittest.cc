@@ -23,9 +23,9 @@ namespace {
 
 using PickerSubmenuControllerTest = AshTestBase;
 
-std::vector<std::unique_ptr<PickerItemView>> CreateSingleItem(
+std::vector<std::unique_ptr<PickerListItemView>> CreateSingleItem(
     base::RepeatingClosure callback) {
-  std::vector<std::unique_ptr<PickerItemView>> items;
+  std::vector<std::unique_ptr<PickerListItemView>> items;
   items.push_back(std::make_unique<PickerListItemView>(std::move(callback)));
   return items;
 }
@@ -174,7 +174,7 @@ TEST_F(PickerSubmenuControllerTest, TriggersCallbackWhenClickingOnItem) {
   auto anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
   base::test::TestFuture<void> select_item_future;
-  std::vector<std::unique_ptr<PickerItemView>> items =
+  std::vector<std::unique_ptr<PickerListItemView>> items =
       CreateSingleItem(select_item_future.GetRepeatingCallback());
   auto* top_item_ptr = items.front().get();
   controller.Show(anchor_widget->GetContentsView(), std::move(items));

@@ -8,17 +8,19 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/wm/system_panel_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 class AshWebView;
+class SunfishSearchBoxView;
 
 // Container for the search results view and other UI such as the search box,
 // close button, etc.
-class ASH_EXPORT SearchResultsPanel : public views::View {
-  METADATA_HEADER(SearchResultsPanel, views::View)
+class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
+  METADATA_HEADER(SearchResultsPanel, SystemPanelView)
 
  public:
   SearchResultsPanel();
@@ -26,13 +28,16 @@ class ASH_EXPORT SearchResultsPanel : public views::View {
   SearchResultsPanel& operator=(const SearchResultsPanel&) = delete;
   ~SearchResultsPanel() override;
 
-  // Currently only used in tests.
-  static std::unique_ptr<views::Widget> CreateWidget();
+  static std::unique_ptr<views::Widget> CreateWidget(aura::Window* const root);
 
   AshWebView* search_results_view() const { return search_results_view_; }
 
+  // Sets the search box image thumbnail.
+  void SetSearchBoxImage(const gfx::ImageSkia& image);
+
  private:
   // Owned by the views hierarchy.
+  raw_ptr<SunfishSearchBoxView> search_box_view_;
   raw_ptr<AshWebView> search_results_view_;
 };
 

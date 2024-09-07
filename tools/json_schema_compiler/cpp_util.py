@@ -1,7 +1,6 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Utilies and constants specific to Chromium C++ code.
 """
 
@@ -12,11 +11,9 @@ import os
 import posixpath
 import re
 
-CHROMIUM_LICENSE = (
-"""// Copyright %d The Chromium Authors
+CHROMIUM_LICENSE = ("""// Copyright %d The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.""" % datetime.now().year
-)
+// found in the LICENSE file.""" % datetime.now().year)
 GENERATED_FILE_MESSAGE = """// GENERATED FROM THE API DEFINITION IN
 //   %s
 // by tools/json_schema_compiler.
@@ -32,6 +29,7 @@ GENERATED_FEATURE_MESSAGE = """// GENERATED FROM THE FEATURE DEFINITIONS IN
 // by tools/json_schema_compiler.
 // DO NOT EDIT.
 """
+
 
 def Classname(s):
   """Translates a namespace name or function name into something more
@@ -56,6 +54,7 @@ def Classname(s):
     result = '_' + result
   return result
 
+
 def GetAsFundamentalValue(type_, src):
   """Returns the C++ code for retrieving a fundamental type from a
   Value into a variable.
@@ -68,9 +67,9 @@ def GetAsFundamentalValue(type_, src):
     s = '%s.GetIfDouble()'
   elif type_.property_type == PropertyType.INTEGER:
     s = '%s.GetIfInt()'
-  elif (type_.property_type == PropertyType.STRING or
-      (type_.property_type == PropertyType.FUNCTION and
-           type_.is_serializable_function)):
+  elif (type_.property_type == PropertyType.STRING
+        or (type_.property_type == PropertyType.FUNCTION
+            and type_.is_serializable_function)):
     s = '%s.GetIfString()'
   else:
     raise ValueError('Type %s is not a fundamental value' % type_.name)
@@ -104,43 +103,49 @@ def GetValueType(type_):
 
   raise ValueError('Invalid type: %s' % type_.name)
 
+
 def ShouldUseStdOptional(type_):
   """Called to validate whether or not an optional value should be represented
   with std::optional. This function is a temporary utility, while optional
   fields are gradually migrated away from using std::unique_ptr.
   """
 
-  if type_.property_type in (PropertyType.ANY,
-                             PropertyType.ARRAY,
-                             PropertyType.BINARY,
-                             PropertyType.BOOLEAN,
-                             PropertyType.CHOICES,
-                             PropertyType.DOUBLE,
-                             PropertyType.FUNCTION,
-                             PropertyType.INTEGER,
-                             PropertyType.OBJECT,
-                             PropertyType.STRING):
+  if type_.property_type in (
+      PropertyType.ANY,
+      PropertyType.ARRAY,
+      PropertyType.BINARY,
+      PropertyType.BOOLEAN,
+      PropertyType.CHOICES,
+      PropertyType.DOUBLE,
+      PropertyType.FUNCTION,
+      PropertyType.INTEGER,
+      PropertyType.OBJECT,
+      PropertyType.STRING,
+  ):
     return True
 
   return False
+
 
 def GetParameterDeclaration(param, type_):
   """Gets a parameter declaration of a given model.Property and its C++
   type.
   """
-  if param.type_.property_type in (PropertyType.ANY,
-                                   PropertyType.ARRAY,
-                                   PropertyType.BINARY,
-                                   PropertyType.CHOICES,
-                                   PropertyType.OBJECT,
-                                   PropertyType.REF,
-                                   PropertyType.STRING):
+  if param.type_.property_type in (
+      PropertyType.ANY,
+      PropertyType.ARRAY,
+      PropertyType.BINARY,
+      PropertyType.CHOICES,
+      PropertyType.OBJECT,
+      PropertyType.REF,
+      PropertyType.STRING,
+  ):
     arg = 'const %(type)s& %(name)s'
   else:
     arg = '%(type)s %(name)s'
   return arg % {
-    'type': type_,
-    'name': param.unix_name,
+      'type': type_,
+      'name': param.unix_name,
   }
 
 
@@ -150,10 +155,10 @@ def GenerateIfndefName(file_path):
 
   e.g chrome/extensions/gen/file.h becomes CHROME_EXTENSIONS_GEN_FILE_H__.
   """
-  return (('%s__' % file_path).upper()
-      .replace('\\', '_')
-      .replace('/', '_')
-      .replace('-', '_')
+  return (('%s__' % file_path).upper() \
+      .replace('\\', '_') \
+      .replace('/', '_') \
+      .replace('-', '_') \
       .replace('.', '_'))
 
 
@@ -180,7 +185,7 @@ def FeatureNameToConstantName(feature_name):
   """Returns a kName for a feature's name.
   """
   return ('k' + ''.join(word[0].upper() + word[1:]
-      for word in feature_name.replace('.', ' ').split()))
+                        for word in feature_name.replace('.', ' ').split()))
 
 
 def UnixNameToConstantName(unix_name):
@@ -189,12 +194,14 @@ def UnixNameToConstantName(unix_name):
   """
   return ('k' + ''.join(word.capitalize() for word in unix_name.split('_')))
 
+
 def IsUnixName(s):
   # type (str) -> bool
   """Returns true if |s| is of the type unix_name i.e. only has lower cased
   characters and underscores with at least one underscore.
   """
   return all(x.islower() or x == '_' for x in s) and '_' in s
+
 
 def ToPosixPath(path):
   """Returns |path| with separator converted to POSIX style.
@@ -220,7 +227,7 @@ def GetCppNamespace(pattern, namespace):
   # For some reason Windows builds escape the % characters, so unescape them.
   # This means that %% can never appear legitimately within a pattern, but
   # that's ok. It should never happen.
-  cpp_namespace = pattern.replace('%%', '%') % { 'namespace': namespace }
+  cpp_namespace = pattern.replace('%%', '%') % {'namespace': namespace}
   assert '%' not in cpp_namespace, \
          ('Did not manage to fully substitute namespace "%s" into pattern "%s"'
            % (namespace, pattern))

@@ -16,9 +16,10 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -32,9 +33,25 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+// Returns the gaia id used for `browser_state`.
+NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
+  const ProfileAttributesIOS attributes =
+      GetApplicationContext()
+          ->GetProfileManager()
+          ->GetProfileAttributesStorage()
+          ->GetAttributesForProfileWithName(browser_state->GetProfileName());
+
+  return base::SysUTF8ToNSString(attributes.GetGaiaId());
+}
+
+}  // namespace
 
 @interface PriceNotificationsViewCoordinator ()
 
@@ -66,13 +83,7 @@
     prefService->SetBoolean(prefs::kPriceNotificationsHasBeenShown, true);
   }
 
-  BrowserStateInfoCache* infoCache = GetApplicationContext()
-                                         ->GetChromeBrowserStateManager()
-                                         ->GetBrowserStateInfoCache();
-  const size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithName(
-      self.browser->GetBrowserState()->GetBrowserStateName());
-  NSString* gaiaID = base::SysUTF8ToNSString(
-      infoCache->GetGAIAIdOfBrowserStateAtIndex(browserStateIndex));
+  NSString* gaiaID = GetGaiaIdForBrowserState(self.browser->GetBrowserState());
   PushNotificationService* pushNotificationService =
       GetApplicationContext()->GetPushNotificationService();
   commerce::ShoppingService* shoppingService =
@@ -90,7 +101,7 @@
       initWithShoppingService:shoppingService
                 bookmarkModel:bookmarkModel
                  imageFetcher:std::move(imageFetcher)
-                     webState:webState
+                     webState:webState->GetWeakPtr()
       pushNotificationService:pushNotificationService];
   self.mediator.consumer = self.tableViewController;
   self.mediator.presenter = self;

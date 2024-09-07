@@ -19,12 +19,12 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextureCompressionType.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
@@ -126,11 +126,16 @@ GrContextOptions GetDefaultGrContextOptions() {
 
 skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
     const GpuDriverBugWorkarounds& workarounds) {
-  skgpu::graphite::ContextOptions options;
+  // Use the default resource cache limits used for Ganesh which is 96 MB for
+  // the resource cache and 8 MB for the glyph cache. These same values also get
+  // used for the GPU main and Viz compositor recorders later and the resource
+  // caches are not shared so don't use the large default value of 256 MB.
   size_t max_resource_cache_bytes;
   size_t glyph_cache_max_texture_bytes;
   DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
                                             &glyph_cache_max_texture_bytes);
+  skgpu::graphite::ContextOptions options;
+  options.fGpuBudgetInBytes = max_resource_cache_bytes;
   options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
 
   // msaa_is_slow_2 excludes new Intel >= Gen 11 GPUs. We're unconditionally
@@ -147,6 +152,12 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
   // created so use of this option is safe. Once Recordings are replayed or
   // are played out of sequence this option should no longer be used.
   options.fDisableCachedGlyphUploads = true;
+
+  // Always emit labels in Skia. For Dawn, we have a toggle that controls
+  // whether labels are emitted to the underlying backend, which is currently
+  // only enabled on Windows or DCHECK builds on other platforms. For Metal,
+  // the labels are only emitted under the SK_ENABLE_MTL_DEBUG_INFO define.
+  options.fSetBackendLabels = true;
 
   return options;
 }

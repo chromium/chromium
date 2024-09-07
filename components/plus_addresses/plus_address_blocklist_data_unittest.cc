@@ -11,9 +11,9 @@
 
 namespace plus_addresses {
 namespace {
+
 constexpr char kUmaKeyResponseParsingResult[] =
     "PlusAddresses.Blocklist.ParsingResult";
-}
 
 class PlusAddressBlocklistDataTest : public testing::Test {
  public:
@@ -62,4 +62,5 @@ TEST_F(PlusAddressBlocklistDataTest, ParsingSuccessful) {
       PlusAddressBlocklistDataParsingResult::kSuccess, 2u);
 }
 
+}  // namespace
 }  // namespace plus_addresses

@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.text.TextUtils;
@@ -59,6 +60,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -70,8 +72,9 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -97,6 +100,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+import org.chromium.ui.widget.RectProvider;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -120,7 +124,7 @@ public class StripLayoutHelperTest {
     @Mock private View mToolbarContainerView;
     @Mock private StripTabHoverCardView mTabHoverCardView;
     @Mock private Profile mProfile;
-    @Mock private CompositorOnClickHandler mClickHandler;
+    @Mock private StripLayoutViewOnClickHandler mClickHandler;
     @Mock private TabDragSource mTabDragSource;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LayerTitleCache mLayerTitleCache;
@@ -165,6 +169,7 @@ public class StripLayoutHelperTest {
     private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
     private static final float EPSILON = 0.001f;
+    private final Supplier<Rect> mWindowRectSupplier = () -> new Rect(1, 1, 1000, 100);
 
     /** Reset the environment before each test. */
     @Before
@@ -763,6 +768,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testUpdateDividers_WithTabSelected() {
         // Setup with 5 tabs. Select tab 2.
         initializeTest(false, false, 2);
@@ -1236,13 +1242,20 @@ public class StripLayoutHelperTest {
         // Setup
         initializeTest(false, false, 2);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab tab = spy(tabs[0]);
         TintedCompositorButton closeButton =
-                new TintedCompositorButton(mContext, 24.f, 24.f, mClickHandler);
+                new TintedCompositorButton(
+                        mContext,
+                        ButtonType.TAB_CLOSE,
+                        tab,
+                        24.f,
+                        24.f,
+                        mClickHandler,
+                        R.drawable.btn_tab_close_normal);
         closeButton.setOpacity(1.f);
         int x = (int) closeButton.getDrawX();
         int y = (int) closeButton.getDrawY();
         StripLayoutHelper stripLayoutHelper = spy(mStripLayoutHelper);
-        StripLayoutTab tab = spy(tabs[0]);
         when(stripLayoutHelper.getTabAtPosition(x)).thenReturn(tab);
         stripLayoutHelper.setTabAtPositionForTesting(tab);
         tab.setCloseButtonForTesting(closeButton);
@@ -1269,7 +1282,14 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 2);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         TintedCompositorButton closeButton =
-                new TintedCompositorButton(mContext, 24.f, 24.f, mClickHandler);
+                new TintedCompositorButton(
+                        mContext,
+                        ButtonType.TAB_CLOSE,
+                        tabs[0],
+                        24.f,
+                        24.f,
+                        mClickHandler,
+                        R.drawable.btn_tab_close_normal);
         closeButton.setOpacity(1.f);
         int x = (int) closeButton.getDrawX();
         int y = (int) closeButton.getDrawY();
@@ -1289,8 +1309,8 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testScrollOffset_OnResume_StartOnLeft_SelectedRightmostTab() {
-        // Arrange: Initialize tabs with last tab selected and MSB visible (long fade).
-        initializeTest(false, true, true, 9, 10);
+        // Arrange: Initialize tabs with tenth tab selected and MSB visible (long fade).
+        initializeTest(false, true, true, 9, 12);
         mStripLayoutHelper.setIsFirstLayoutPassForTesting(false);
 
         // Set screen width to 800dp and scroll selected tab to view.
@@ -1308,8 +1328,8 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testScrollOffset_OnResume_StartOnLeft_NoModelSelBtn_SelectedRightmostTab() {
-        // Arrange: Initialize tabs with last tab selected and MSB not visible (medium fade).
-        initializeTest(false, false, true, 9, 10);
+        // Arrange: Initialize tabs with tenth tab selected and MSB not visible (medium fade).
+        initializeTest(false, false, true, 9, 12);
         mStripLayoutHelper.setIsFirstLayoutPassForTesting(false);
 
         // Set screen width to 800dp and scroll selected tab to view.
@@ -1588,43 +1608,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testScrollDuration() {
-        initializeTest(false, true, 3);
-
-        // Act: Set scroll offset greater than -960.
-        mStripLayoutHelper.setScrollOffsetForTesting(-800);
-
-        // Assert: Scroll duration is 250.
-        assertEquals(mStripLayoutHelper.getScrollDurationForTesting(), 250);
-    }
-
-    @Test
-    public void testScrollDuration_Medium() {
-        initializeTest(false, true, false, 3, 22);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-
-        // Act: Set scroll offset between -960 and -1920.
-        mStripLayoutHelper.setScrollOffsetForTesting(-1000);
-
-        // Assert: Scroll duration is 350.
-        assertEquals(mStripLayoutHelper.getScrollDurationForTesting(), 350);
-    }
-
-    @Test
-    public void testScrollDuration_Large() {
-        initializeTest(false, true, false, 3, 34);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-
-        // Act: Set scroll offset less than -1920
-        mStripLayoutHelper.setScrollOffsetForTesting(-2000);
-
-        // Assert: Scroll duration is 450.
-        assertEquals(mStripLayoutHelper.getScrollDurationForTesting(), 450);
-    }
-
-    @Test
     public void testOnDown_OnNewTabButton() {
         // Initialize.
         initializeTest(false, false, true, 0, 5);
@@ -1827,8 +1810,19 @@ public class StripLayoutHelperTest {
         // Long press on group title
         mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
 
+        ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
+                ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab group context menu is showing.
-        verify(mTabGroupContextMenuCoordinator).showMenu(any(), anyInt());
+        verify(mTabGroupContextMenuCoordinator)
+                .showMenu(rectProviderArgumentCaptor.capture(), anyInt());
+        // Verify anchorView coordinates.
+        StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
+        assertTrue(view instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle titleView = (StripLayoutGroupTitle) view;
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
+        Rect expectedRect = new Rect();
+        titleView.getDrawBoundsOnScreen(expectedRect, mWindowRectSupplier);
+        assertEquals("Anchor view for menu is positioned incorrectly", expectedRect, actualRect);
     }
 
     @Test
@@ -1947,6 +1941,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupMargins_TabToLeft() {
         // Mock 1 tab to the left of a tab group with 3 tabs.
         initializeTest(false, false, true, 0, 4);
@@ -1968,6 +1963,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupMargins_TabToRight() {
         // Mock 1 tab to the right of a tab group with 3 tabs.
         initializeTest(false, false, true, 0, 4);
@@ -1989,6 +1985,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupMargins_BetweenGroups() {
         // Mock a tab group with 2 tabs to the left of a tab group with 3 tabs.
         initializeTest(false, false, true, 0, 5);
@@ -2012,6 +2009,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupMargins_BetweenGroups_RTL() {
         // Mock a tab group with 2 tabs to the right of a tab group with 3 tabs.
         initializeTest(true, false, true, 0, 5);
@@ -2035,6 +2033,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupMargins_StartReorder_Animated() {
         // Mock 1 tab to the left of a tab group with 3 tabs.
         initializeTest(false, false, false, 0, 4);
@@ -2066,6 +2065,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupMargins_StopReorder_Animated() {
         // Mock 1 tab to the left of a tab group with 3 tabs.
         initializeTest(false, false, false, 0, 4);
@@ -2148,6 +2148,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupMargins_ScrollOnReorder() {
         // Mock 6 tabs to the right of 2 tab groups with 2 tabs each.
         initializeTest(false, false, true, 0, 10);
@@ -2179,6 +2180,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabGroupMargins_ScrollOnReorder_Animated() {
         // Mock 6 tabs to the right of 2 tab groups with 2 tabs each.
         initializeTest(false, false, false, 0, 10);
@@ -2340,6 +2342,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testReorder_SetSelectedTabGroupContainersVisible() {
         // Mock 5 tabs. Group the first two tabs.
         initializeTest(false, false, true, 2, 5);
@@ -2496,6 +2499,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testReorder_DragOutOfGroup_StartOfStrip() {
         // Mock a tab group with 3 tabs with 2 tabs to the right.
         initializeTest(false, false, true, 0, 5);
@@ -2542,6 +2546,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testReorder_DragPastGroup() {
         // Mock a tab group with 3 tabs with 1 tab to the left and 1 tab to the right.
         initializeTest(false, false, true, 0, 5);
@@ -2570,6 +2575,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testReorder_MergeToGroup() {
         // Mock 5 tabs. Group the first two tabs.
         initializeTest(false, false, true, 0, 5);
@@ -4038,6 +4044,7 @@ public class StripLayoutHelperTest {
                         mManagerHost,
                         mUpdateHost,
                         mRenderHost,
+                        mWindowRectSupplier,
                         incognito,
                         mModelSelectorBtn,
                         mTabDragSource,
@@ -4162,6 +4169,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testDrag_clearState() {
         // Initialize with 10 tabs.
         int selectedIndex = 5;
@@ -4598,7 +4606,7 @@ public class StripLayoutHelperTest {
 
         // Fake a click on the group indicator.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+        mStripLayoutHelper.onClick(TIMESTAMP, views[0]);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
         verify(mTabGroupModelFilter).setTabGroupCollapsed(0, true);
@@ -4625,7 +4633,7 @@ public class StripLayoutHelperTest {
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
         when(mTabGroupModelFilter.getTabGroupCollapsed(0)).thenReturn(true);
-        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+        mStripLayoutHelper.onClick(TIMESTAMP, views[0]);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
         verify(mTabGroupModelFilter).setTabGroupCollapsed(0, false);

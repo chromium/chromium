@@ -15,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -32,6 +31,8 @@
 class SaveCardOfferObserver;
 
 namespace autofill {
+
+class AutofillClient;
 
 // Time in sec to wait before showing virtual card enrollment if save card
 // confirmation prompt is still visible.
@@ -288,14 +289,14 @@ class CreditCardSaveManager {
   //   Logs a strike against the current card to deter future offers to save.
   void OnUserDidDecideOnUploadSave(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
 
   // Called once the user makes a decision with respect to the server CVC
   // offer-to-save prompt.
   void OnUserDidDecideOnCvcUploadSave(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -314,7 +315,7 @@ class CreditCardSaveManager {
   // Helper function that calls SendUploadCardRequest by setting
   // UserProvidedCardDetails.
   void OnUserDidAcceptUploadHelper(
-      const AutofillClient::UserProvidedCardDetails&
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
 
   // Saves risk data in |uploading_risk_data_| and calls SendUploadCardRequest

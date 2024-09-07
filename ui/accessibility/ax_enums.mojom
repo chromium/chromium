@@ -216,7 +216,7 @@ enum Role {
   kFigcaption = 83,
   kFigure = 84,
   kFooter = 85,
-  kFooterAsNonLandmark = 86,
+  kSectionFooter = 86, // Previously kFooterAsNonLandmark.
   kForm = 87,
   kGenericContainer = 88,
   // --------------------------------------------------------------
@@ -231,7 +231,7 @@ enum Role {
   [MinVersion=7] kGridCell = 212,
   kGroup = 93,
   kHeader = 94,
-  kHeaderAsNonLandmark = 95,
+  kSectionHeader = 95, // Previously kHeaderAsNonLandmark.
   kHeading = 96,
   kIframe = 97,
   kIframePresentational = 98,
@@ -772,11 +772,8 @@ enum IntAttribute {
   // Note: aria-dropeffect is deprecated in WAI-ARIA 1.1.
   kDropeffectDeprecated = 59,
 
-  // The DOMNodeID from Blink. Currently only populated when using
-  // the accessibility tree for PDF exporting. Warning, this is totally
-  // unrelated to the accessibility node ID, or the ID attribute for an
-  // HTML element - it's an ID used to uniquely identify nodes in Blink.
-  kDOMNodeId = 60,
+  // Deprecated, use AXNodeData.id (see ui/accessibility/ax_node_id_forward.h).
+  kDOMNodeIdDeprecated = 60,
 
   // Indicates whether the element is a popover ("popup") and if so, what type.
   [MinVersion=1] kIsPopup = 61,
@@ -1300,6 +1297,9 @@ enum NameFrom {
   // text fields.
   kContents,
 
+  // The name comes from CSS alt text.
+  kCssAltText,
+
   // The name of this text field comes from its placeholder.
   kPlaceholder,
 
@@ -1442,7 +1442,7 @@ enum TreeOrder {
   kAfter,
 };
 
-// For internal use by ui::AXTreeID / ax::mojom::AXTreeID.
+// For internal use by AXTreeID / ax::mojom::AXTreeID.
 enum AXTreeIDType {
   kUnknown,  // The Tree ID is unknown.
   kToken,    // Every other tree ID must have a valid unguessable token.

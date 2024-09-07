@@ -17,6 +17,8 @@ include_rules = [
   "-content/public/android",
   "+content/public/android/java/src/org/chromium/content_public",
   "+content/public/browser",
+  "+device/vr/buildflags/buildflags.h",
+  "+device/vr/public/cpp",
   "+net/cert",
   "+ui/android",
   "+ui/base/l10n/l10n_util.h",

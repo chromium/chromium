@@ -23,7 +23,6 @@ namespace {
 using ::testing::Return;
 
 constexpr char kUIDismissalReasonMetric[] = "PasswordManager.UIDismissalReason";
-constexpr char16_t kUsername[] = u"username";
 
 }  // namespace
 
@@ -41,8 +40,6 @@ class PasskeySavedConfirmationControllerTest : public ::testing::Test {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     mock_delegate_ =
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
-    ON_CALL(*mock_delegate_, GetRecentlySavedPasskeyUsername)
-        .WillByDefault(Return(kUsername));
     ON_CALL(*mock_delegate_, GpmPinCreatedDuringRecentPasskeyCreation)
         .WillByDefault(Return(false));
   }
@@ -84,7 +81,6 @@ TEST_F(PasskeySavedConfirmationControllerTest, ContentWithoutPinCreation) {
   CreateController();
   EXPECT_EQ(controller()->GetTitle(),
             l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE));
-  EXPECT_EQ(controller()->GetUsername(), kUsername);
 }
 
 TEST_F(PasskeySavedConfirmationControllerTest, ContentWithPinCreation) {
@@ -94,7 +90,6 @@ TEST_F(PasskeySavedConfirmationControllerTest, ContentWithPinCreation) {
   EXPECT_EQ(controller()->GetTitle(),
             l10n_util::GetStringUTF16(
                 IDS_WEBAUTHN_GPM_PASSKEY_SAVED_PIN_CREATED_TITLE));
-  EXPECT_EQ(controller()->GetUsername(), kUsername);
 }
 
 TEST_F(PasskeySavedConfirmationControllerTest,

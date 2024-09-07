@@ -105,9 +105,9 @@ void CameraDeviceContext::SubmitCapturedVideoCaptureBuffer(
       std::move(metadata));
 }
 
-void CameraDeviceContext::SubmitCapturedImage(
+void CameraDeviceContext::SubmitCapturedGpuMemoryBuffer(
     ClientType client_type,
-    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    gfx::GpuMemoryBuffer* buffer,
     const VideoCaptureFormat& frame_format,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp) {
@@ -117,9 +117,9 @@ void CameraDeviceContext::SubmitCapturedImage(
     return;
   }
 
-  client->second->OnIncomingCapturedImage(
-      std::move(shared_image), frame_format, GetCameraFrameRotation(),
-      reference_time, timestamp, std::nullopt);
+  client->second->OnIncomingCapturedGfxBuffer(
+      buffer, frame_format, GetCameraFrameRotation(), reference_time, timestamp,
+      std::nullopt);
 }
 
 void CameraDeviceContext::SetSensorOrientation(int sensor_orientation) {

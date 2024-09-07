@@ -72,6 +72,9 @@ class WaylandTestBase {
                         no_nested_runloops);
   }
 
+  // Convenience wrapper function for WaylandConnectionTestApi::SyncDisplay.
+  void SyncDisplay();
+
  protected:
   // Disables client-server sync during the teardown.  Used by tests that
   // intentionally spoil the client-server communication.

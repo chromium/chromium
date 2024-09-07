@@ -17,8 +17,8 @@ enum SyncEnums_DeviceType : int;
 
 namespace syncer {
 
-// Interface for tracking synced DeviceInfo. This excludes sync-ing clients that
-// are not chromium-based.
+// Interface for tracking synced DeviceInfo. Note that this includes sync-ing
+// clients that are not chromium-based.
 class DeviceInfoTracker {
  public:
   virtual ~DeviceInfoTracker() {}
@@ -62,6 +62,8 @@ class DeviceInfoTracker {
   // returned pointers are meant to be short-lived (i.e. use only within the
   // ongoing task) and may be dangling otherwise.
   virtual std::vector<const DeviceInfo*> GetAllDeviceInfo() const = 0;
+  // Same as above but returns only DeviceInfo for Chrome clients.
+  virtual std::vector<const DeviceInfo*> GetAllChromeDeviceInfo() const = 0;
   // Registers an observer to be called on syncing any updated DeviceInfo.
   virtual void AddObserver(Observer* observer) = 0;
   // Unregisters an observer.

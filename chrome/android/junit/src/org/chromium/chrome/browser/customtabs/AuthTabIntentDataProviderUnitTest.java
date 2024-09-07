@@ -40,6 +40,7 @@ public class AuthTabIntentDataProviderUnitTest {
 
     private static final String PACKAGE = "com.example.package.app";
     private static final String URL = "https://www.google.com";
+    private static final String SCHEME = "myscheme";
 
     private Activity mActivity;
     private Intent mIntent;
@@ -51,6 +52,7 @@ public class AuthTabIntentDataProviderUnitTest {
         mIntent = new Intent(Intent.ACTION_VIEW);
         mIntent.setData(Uri.parse(URL));
         mIntent.putExtra(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, true);
+        mIntent.putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, SCHEME);
         mIntent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, PACKAGE);
         Bundle bundle = new Bundle();
         bundle.putBinder(CustomTabsIntent.EXTRA_SESSION, null);
@@ -87,5 +89,6 @@ public class AuthTabIntentDataProviderUnitTest {
         assertEquals("Intent doesn't match expectation.", mIntent, mIntentDataProvider.getIntent());
         assertEquals("Wrong package name", PACKAGE, mIntentDataProvider.getClientPackageName());
         assertEquals("Wrong URL", URL, mIntentDataProvider.getUrlToLoad());
+        assertEquals("Wrong redirect scheme.", SCHEME, mIntentDataProvider.getAuthRedirectScheme());
     }
 }

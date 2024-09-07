@@ -137,8 +137,10 @@ DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int64_t, IsBigInt64Array, IDLLongLong);
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint64_t,
                                   IsBigUint64Array,
                                   IDLUnsignedLongLong);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(float, IsFloat32Array, IDLFloat);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(double, IsFloat64Array, IDLDouble);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(float, IsFloat32Array, IDLUnrestrictedFloat);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(double,
+                                  IsFloat64Array,
+                                  IDLUnrestrictedDouble);
 
 template <>
 struct TypedArrayElementTraits<uint8_t> {

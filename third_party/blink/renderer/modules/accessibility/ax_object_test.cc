@@ -920,11 +920,12 @@ TEST_F(AccessibilityTest, NextOnLine) {
     <div><span id="span1">a</span><span>b</span></div>
   )HTML");
   const AXObject* span1 = GetAXObjectByElementId("span1");
+  ScopedFreezeAXCache freeze(GetAXObjectCache());
   ASSERT_NE(nullptr, span1);
 
   const AXObject* next = span1->NextOnLine();
   ASSERT_NE(nullptr, next);
-  EXPECT_EQ("b", next->GetNode()->textContent());
+  EXPECT_EQ("b", next->GetClosestNode()->textContent());
 }
 
 TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
@@ -938,6 +939,7 @@ TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
     </div>
   )HTML");
   const AXObject* this_object = GetAXObjectByElementId("this");
+  ScopedFreezeAXCache freeze(GetAXObjectCache());
   ASSERT_NE(nullptr, this_object);
 
   const AXObject* next = this_object->NextOnLine();
@@ -946,7 +948,7 @@ TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
 
   next = next->NextOnLine();
   ASSERT_NE(nullptr, next);
-  EXPECT_EQ(" broken.", next->GetNode()->textContent());
+  EXPECT_EQ(" broken.", next->GetClosestNode()->textContent());
 
   AXObject* prev = next->PreviousOnLine();
   ASSERT_NE(nullptr, prev);
@@ -954,7 +956,7 @@ TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
 
   prev = prev->PreviousOnLine();
   ASSERT_NE(nullptr, prev);
-  EXPECT_EQ("this line ", prev->GetNode()->textContent());
+  EXPECT_EQ("this line ", prev->GetClosestNode()->textContent());
 }
 
 TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
@@ -967,17 +969,18 @@ TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
     </div>
   )HTML");
   const AXObject* span1 = GetAXObjectByElementId("span1");
+  ScopedFreezeAXCache freeze(GetAXObjectCache());
   ASSERT_NE(nullptr, span1);
   EXPECT_EQ("go ", span1->GetNode()->textContent());
 
   const AXObject* next = span1->NextOnLine();
   ASSERT_NE(nullptr, next);
-  EXPECT_EQ("blue", next->GetNode()->textContent());
+  EXPECT_EQ("blue", next->GetClosestNode()->textContent());
 
   // Now we go backwards.
 
   const AXObject* previous = next->PreviousOnLine();
-  EXPECT_EQ("go ", previous->GetNode()->textContent());
+  EXPECT_EQ("go ", previous->GetClosestNode()->textContent());
 }
 
 TEST_F(AccessibilityTest, NextOnLineAriaHidden) {
@@ -991,15 +994,16 @@ TEST_F(AccessibilityTest, NextOnLineAriaHidden) {
     </div>
   )HTML");
   const AXObject* this_object = GetAXObjectByElementId("this");
+  ScopedFreezeAXCache freeze(GetAXObjectCache());
   ASSERT_NE(nullptr, this_object);
 
   const AXObject* next = this_object->NextOnLine();
   ASSERT_NE(nullptr, next);
-  EXPECT_EQ(" broken.", next->GetNode()->textContent());
+  EXPECT_EQ(" broken.", next->GetClosestNode()->textContent());
 
   const AXObject* prev = next->PreviousOnLine();
   ASSERT_NE(nullptr, prev);
-  EXPECT_EQ("this line ", prev->GetNode()->textContent());
+  EXPECT_EQ("this line ", prev->GetClosestNode()->textContent());
 }
 
 TEST_F(AccessibilityTest, TableRowAndCellIsLineBreakingObject) {
@@ -1659,6 +1663,27 @@ TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
       GetAXObjectByElementId("span-hidden-inert")->CanSetFocusAttribute());
   ASSERT_FALSE(
       GetAXObjectByElementId("a-hidden-inert")->CanSetFocusAttribute());
+}
+
+TEST_F(AccessibilityTest, ScrollerFocusability) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=scroller style="overflow:scroll;height:50px;">
+      <div id=content style="height:1000px"></div>
+    </div>
+  )HTML");
+  auto* scroller = GetAXObjectByElementId("scroller");
+  auto* scroller_node = scroller->GetNode();
+  EXPECT_TRUE(scroller_node);
+  ASSERT_FALSE(scroller_node->IsFocused());
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::blink::Action::kDoDefault;
+  const ui::AXTreeID div_child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  action_data.target_node_id = scroller->AXObjectID();
+  action_data.child_tree_id = div_child_tree_id;
+  scroller->PerformAction(action_data);
+
+  ASSERT_TRUE(scroller_node->IsFocused());
 }
 
 TEST_F(AccessibilityTest, CanComputeAsNaturalParent) {

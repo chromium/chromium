@@ -59,14 +59,14 @@ export class DeleteRecordingDialog extends ReactiveLitElement {
 
   override render(): RenderResult {
     const classes = {
-      currnet: this.current,
+      current: this.current,
     };
 
     const headline = this.current ? i18n.recordDeleteDialogCurrentHeader :
                                     i18n.recordDeleteDialogHeader;
     const description = this.current ?
       nothing :
-      html` <div slot="content">${i18n.recordDeleteDialogDescription}</div> `;
+      html`<div slot="content">${i18n.recordDeleteDialogDescription}</div>`;
 
     return html`<cra-dialog ${ref(this.dialog)} class=${classMap(classes)}>
       <div slot="headline">${headline}</div>

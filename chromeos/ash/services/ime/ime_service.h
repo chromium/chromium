@@ -109,6 +109,7 @@ class ImeService : public mojom::ImeService,
                                 const std::string& url_str,
                                 const base::FilePath& file);
   const MojoSystemThunks* GetMojoSystemThunks() override;
+  const MojoSystemThunks2* GetMojoSystemThunks2() override;
 
   // To be called before attempting to initialise a new backend connection, to
   // ensure there is one and only one such connection at any point in time.

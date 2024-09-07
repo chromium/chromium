@@ -10,17 +10,18 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "ash/wm/system_panel_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/layout/flex_layout_view.h"
 
 namespace ui {
 class LocatedEvent;
 }
 
 namespace views {
+class FlexLayoutView;
 class Textfield;
 }  // namespace views
 
@@ -35,20 +36,16 @@ enum class VisibilityState;
 
 // The code for Mahi main panel view. This view is placed within
 // `MahiPanelWidget`.
-class ASH_EXPORT MahiPanelView : public views::View,
+class ASH_EXPORT MahiPanelView : public SystemPanelView,
                                  public views::TextfieldController,
                                  public MahiUiController::Delegate {
-  METADATA_HEADER(MahiPanelView, views::View)
+  METADATA_HEADER(MahiPanelView, SystemPanelView)
 
  public:
   explicit MahiPanelView(MahiUiController* ui_controller);
   MahiPanelView(const MahiPanelView&) = delete;
   MahiPanelView& operator=(const MahiPanelView&) = delete;
   ~MahiPanelView() override;
-
-  // views::View:
-  void OnMouseEvent(ui::MouseEvent* event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Shows the pop in animation for the panel.
   void AnimatePopIn(const gfx::Rect& start_bounds);

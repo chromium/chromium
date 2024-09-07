@@ -10,53 +10,6 @@ option optimize_for = LITE_RUNTIME;
 
 package autofill;
 
-import "password_requirements.proto";
-
-// NOT USED ANYMORE. Please use `AutofillPageQueryRequest` in api_v1.proto
-// instead.
-// Next available id: 15
-message AutofillQueryContents {
-  reserved 11;  // Reserved for server use.
-  required string client_version = 1;
-  repeated group Form = 2 {
-    required fixed64 signature = 3;
-    optional AutofillRandomizedFormMetadata form_metadata = 12;
-    repeated group Field = 4 {
-      required fixed32 signature = 5;
-      optional string name = 8;
-      optional string type = 9;  // Control type.
-      optional AutofillRandomizedFieldMetadata field_metadata = 13;
-    }
-  }
-  repeated int64 experiments = 14;
-}
-
-// Response from Autofill query on the legacy API that gives field suggestions
-// for forms of a page in a flattened representation. The fields are returned in
-// the exact same order as filled in the request.
-// Next available id: 10
-message AutofillQueryResponseContents {
-  optional bool upload_required = 1 [deprecated = true];
-  repeated group Field = 2 {
-    required fixed32 overall_type_prediction = 3;
-    // Detailed list of all possible predictions (including
-    // |overall_type_prediction| as the first item).
-    message FieldPrediction {
-      // The predicted field type.
-      optional fixed32 type = 1;
-
-      // True if the serverside classification believes that the field
-      // may be pre-filled with a placeholder in the value attribute.
-      optional bool may_use_prefilled_placeholder = 2;
-    }
-    repeated FieldPrediction predictions = 7;
-
-    // For fields of type NEW_PASSWORD and ACCOUNT_CREATION_PASSWORD, this may
-    // specify requirements for the generation of passwords.
-    optional PasswordRequirementsSpec password_requirements = 9;
-  }
-}
-
 // This message contains a randomized encoding of a string, where each bit
 // in the encoded string is randomly sent as either the true value seen by
 // the client, or random noise. The mapping of specific bits in the encoded
@@ -225,7 +178,7 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 48
+// Next available id: 49
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -245,7 +198,7 @@ message AutofillUploadContents {
   required string data_present = 4;
 
   // List of the fields in the form and their types.
-  repeated group Field = 5 {
+  message Field {
     // Field identification inside the current form.
     required fixed32 signature = 6;
 
@@ -382,6 +335,7 @@ message AutofillUploadContents {
     // wasn't changed. Not set if the field didn't have a pre-filled value.
     optional bool initial_value_changed = 47;
   }
+  repeated Field field_data = 48;
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;
 
@@ -515,6 +469,9 @@ message AutofillUploadContents {
   optional fixed64 last_address_form_submitted = 43;
   optional fixed64 second_last_address_form_submitted = 44;
   optional fixed64 last_credit_card_form_submitted = 45;
+
+  reserved 5;
+  reserved "Field";
 }
 
 // This proto contains information about the validity of each field in an

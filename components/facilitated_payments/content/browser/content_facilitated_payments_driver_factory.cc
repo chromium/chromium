@@ -94,7 +94,8 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishLoad(
       !render_frame_host->IsActive()) {
     return;
   }
-  if (base::FeatureList::IsEnabled(kEnablePixDetectionOnDomContentLoaded)) {
+  if (base::FeatureList::IsEnabled(kEnablePixDetectionOnDomContentLoaded) ||
+      !base::FeatureList::IsEnabled(kEnablePixDetection)) {
     return;
   }
   auto& driver = GetOrCreateForFrame(render_frame_host);

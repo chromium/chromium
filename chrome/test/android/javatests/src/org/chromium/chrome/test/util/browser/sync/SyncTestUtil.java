@@ -176,6 +176,30 @@ public final class SyncTestUtil {
                                                 UserSelectableType.TABS)));
     }
 
+    /** Returns whether bookmarks and reading list are active. */
+    public static boolean isBookmarksAndReadingListEnabled() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        getSyncServiceForLastUsedProfile()
+                                .getSelectedTypes()
+                                .containsAll(
+                                        Set.of(
+                                                UserSelectableType.BOOKMARKS,
+                                                UserSelectableType.READING_LIST)));
+    }
+
+    /** Waits for bookmarks and reading list to be active. */
+    public static void waitForBookmarksAndReadingListEnabled() {
+        CriteriaHelper.pollUiThread(
+                () ->
+                        getSyncServiceForLastUsedProfile()
+                                .getSelectedTypes()
+                                .containsAll(
+                                        Set.of(
+                                                UserSelectableType.BOOKMARKS,
+                                                UserSelectableType.READING_LIST)));
+    }
+
     /** Triggers a sync cycle. */
     public static void triggerSync() {
         ThreadUtils.runOnUiThreadBlocking(

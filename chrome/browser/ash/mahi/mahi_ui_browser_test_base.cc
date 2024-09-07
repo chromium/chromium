@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/manta/mahi_provider.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_service_callbacks.h"
@@ -52,7 +53,8 @@ class MockMahiProvider : public manta::MahiProvider {
             /*identity_manager=*/nullptr,
             manta::ProviderParams()) {
     ON_CALL(*this, Summarize)
-        .WillByDefault([](const std::string& input,
+        .WillByDefault([](const std::string& input, const std::string&,
+                          const std::optional<std::string>&,
                           manta::MantaGenericCallback done_callback) {
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
@@ -66,7 +68,8 @@ class MockMahiProvider : public manta::MahiProvider {
 
     ON_CALL(*this, QuestionAndAnswer)
         .WillByDefault(
-            [](const std::string& content,
+            [](const std::string& content, const std::string&,
+               const std::optional<std::string>&,
                const std::vector<manta::MahiProvider::MahiQAPair> QAHistory,
                const std::string& question,
                manta::MantaGenericCallback done_callback) {
@@ -84,11 +87,16 @@ class MockMahiProvider : public manta::MahiProvider {
   // manta::MahiProvider:
   MOCK_METHOD(void,
               Summarize,
-              (const std::string&, manta::MantaGenericCallback),
+              (const std::string&,
+               const std::string&,
+               const std::optional<std::string>&,
+               manta::MantaGenericCallback),
               (override));
   MOCK_METHOD(void,
               QuestionAndAnswer,
               (const std::string&,
+               const std::string&,
+               const std::optional<std::string>&,
                const std::vector<manta::MahiProvider::MahiQAPair>,
                const std::string&,
                manta::MantaGenericCallback),
@@ -130,13 +138,15 @@ std::unique_ptr<KeyedService> CreateMockMantaService(
 }  // namespace
 
 MahiUiBrowserTestBase::MahiUiBrowserTestBase() {
-  feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+  feature_list_.InitWithFeatures(
+      {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+      {});
 }
 
 MahiUiBrowserTestBase::~MahiUiBrowserTestBase() = default;
 
 void MahiUiBrowserTestBase::SetUpCommandLine(base::CommandLine* command_line) {
-  command_line->AppendSwitch(switches::kMahiRestrictionsOverride);
+  command_line->AppendSwitch(chromeos::switches::kMahiRestrictionsOverride);
 
   InProcessBrowserTest::SetUpCommandLine(command_line);
 }

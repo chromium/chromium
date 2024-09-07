@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -505,6 +506,49 @@ IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
     ASSERT_TRUE(extension_v2);
     EXPECT_TRUE(catcher.GetNextResult());
   }
+}
+
+// Tests that when the last active tab in the window belongs to the extension
+// with an uninstall URL, uninstalling the extension does not close the current
+// browser. Regression test for crbug.com/362452856
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
+                       OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab) {
+  ExtensionTestMessageListener ready_listener("ready");
+  // Load an extension that has set an uninstall url.
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.AppendASCII("runtime")
+                        .AppendASCII("uninstall_url")
+                        .AppendASCII("sets_uninstall_url"));
+  EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(extension.get());
+  extension_service()->AddExtension(extension.get());
+  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));
+  TabStripModel* tabs = browser()->tab_strip_model();
+
+  ASSERT_EQ(1, tabs->count());
+  ASSERT_EQ("about:blank", GetActiveUrl(browser()));
+
+  // Navigate to an extension page.
+  const GURL extension_page_url = extension->GetResourceURL("page.html");
+  content::RenderFrameHost* new_host =
+      ui_test_utils::NavigateToURL(browser(), extension_page_url);
+  ASSERT_TRUE(new_host);
+
+  EXPECT_EQ(1, tabs->count());
+  EXPECT_EQ(extension_page_url.spec(), GetActiveUrl(browser()));
+
+  // Uninstall the extension and expect its uninstall url to open in a new tab.
+  extension_service()->UninstallExtension(
+      extension->id(), UNINSTALL_REASON_USER_INITIATED, nullptr);
+  content::WaitForLoadStop(tabs->GetActiveWebContents());
+  EXPECT_EQ(2, tabs->count());
+
+  // The current tab should be pointing to the uninstall url of the extension.
+  EXPECT_EQ(kUninstallUrl, GetActiveUrl(browser()));
+
+  // The tab at index 0 should now be overwritten with the default NTP.
+  EXPECT_EQ(chrome::kChromeUINewTabURL,
+            tabs->GetWebContentsAt(0)->GetLastCommittedURL().spec());
 }
 
 // Tests that when a blocklisted extension with a set uninstall url is

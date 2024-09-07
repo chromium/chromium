@@ -60,6 +60,8 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
             l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_CHROME_BROWSER));
     AddItem(base::to_underlying(CommandId::kMediaSuggestions),
             l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_MEDIA));
+    // TODO(yulunwu) Replace with product name.
+    AddItem(base::to_underlying(CommandId::kCoralSuggestions), u"Coral");
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
     AddItemWithIcon(base::to_underlying(CommandId::kReset),
                     l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_RESET),

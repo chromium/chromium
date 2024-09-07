@@ -1334,7 +1334,7 @@ void DeskBarViewBase::HandleDragEvent(DeskMiniView* mini_view,
       ContinueDragDesk(mini_view, location);
       break;
     default:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED();
   }
 }
 

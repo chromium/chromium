@@ -223,6 +223,64 @@ PrimaryAccountManager::PrimaryAccountManager(
         base::BindRepeating(&PrimaryAccountManager::OnSigninAllowedPrefChanged,
                             base::Unretained(this)));
   }
+
+  // Prepare prefs before loading them.
+  PrepareToLoadPrefs();
+
+  PrefService* prefs = client_->GetPrefs();
+  std::string pref_account_id =
+      prefs->GetString(prefs::kGoogleServicesAccountId);
+  bool pref_consented_to_sync =
+      prefs->GetBoolean(prefs::kGoogleServicesConsentedToSync);
+  LogPrimaryAccountPrefsOnInitialize(pref_account_id, pref_consented_to_sync);
+
+  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                      /*commit_on_destroy=*/false);
+  if (pref_account_id.empty()) {
+    SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
+                              scoped_pref_commit);
+  } else {
+    auto [account_info, account_info_state] =
+        GetOrRestorePrimaryAccountInfoOnInitialize(pref_account_id,
+                                                   pref_consented_to_sync);
+    base::UmaHistogramEnumeration(
+        "Signin.PAMInitialize.PrimaryAccountInfoState", account_info_state);
+
+    if (pref_consented_to_sync && !account_info.IsEmpty()) {
+      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true,
+                                scoped_pref_commit);
+
+      // Ensure that the last syncing account data is consistent with the
+      // primary account. The last signed-in account data is written inside
+      // SetPrimaryAccountInternal().
+      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
+                                   account_info.gaia);
+      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
+                                   account_info.email);
+    } else if (ShouldSigninAllowedPrefAffectPrimaryAccount(
+                   pref_consented_to_sync)) {
+      SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
+                                scoped_pref_commit);
+    } else {
+      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
+                                scoped_pref_commit);
+    }
+  }
+
+  // PrimaryAccountManager is initialized once the primary account and consent
+  // level are loaded.
+  CHECK(primary_account_.has_value());
+
+  // Instrument metrics to know what fraction of users without a primary
+  // account previously did have one, with sync enabled.
+  RecordHadPreviousSyncAccount();
+
+  // It is important to only load credentials after starting to observe the
+  // token service.
+  token_service_observation_.Observe(token_service_);
+  token_service_->LoadCredentials(
+      GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 PrimaryAccountManager::~PrimaryAccountManager() = default;
@@ -368,69 +426,6 @@ PrimaryAccountManager::GetOrRestorePrimaryAccountInfoOnInitialize(
         InitializeAccountInfoState::
             kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled);
   }
-}
-
-void PrimaryAccountManager::Initialize() {
-  // Should never call Initialize() twice.
-  CHECK(!primary_account_.has_value());
-
-  // Prepare prefs before loading them.
-  PrepareToLoadPrefs();
-
-  PrefService* prefs = client_->GetPrefs();
-  std::string pref_account_id =
-      prefs->GetString(prefs::kGoogleServicesAccountId);
-  bool pref_consented_to_sync =
-      prefs->GetBoolean(prefs::kGoogleServicesConsentedToSync);
-  LogPrimaryAccountPrefsOnInitialize(pref_account_id, pref_consented_to_sync);
-
-  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
-                                      /*commit_on_destroy=*/false);
-  if (pref_account_id.empty()) {
-    SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
-                              scoped_pref_commit);
-  } else {
-    auto [account_info, account_info_state] =
-        GetOrRestorePrimaryAccountInfoOnInitialize(pref_account_id,
-                                                   pref_consented_to_sync);
-    base::UmaHistogramEnumeration(
-        "Signin.PAMInitialize.PrimaryAccountInfoState", account_info_state);
-
-    if (pref_consented_to_sync && !account_info.IsEmpty()) {
-      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true,
-                                scoped_pref_commit);
-
-      // Ensure that the last syncing account data is consistent with the
-      // primary account. The last signed-in account data is written inside
-      // SetPrimaryAccountInternal().
-      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                                   account_info.gaia);
-      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
-                                   account_info.email);
-    } else if (ShouldSigninAllowedPrefAffectPrimaryAccount(
-                   pref_consented_to_sync)) {
-      SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
-                                scoped_pref_commit);
-    } else {
-      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
-                                scoped_pref_commit);
-    }
-  }
-
-  // PrimaryAccountManager is initialized once the primary account and consent
-  // level are loaded.
-  CHECK(primary_account_.has_value());
-
-  // Instrument metrics to know what fraction of users without a primary
-  // account previously did have one, with sync enabled.
-  RecordHadPreviousSyncAccount();
-
-  // It is important to only load credentials after starting to observe the
-  // token service.
-  token_service_observation_.Observe(token_service_);
-  token_service_->LoadCredentials(
-      GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 const PrimaryAccountManager::PrimaryAccount&

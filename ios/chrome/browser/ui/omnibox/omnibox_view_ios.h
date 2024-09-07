@@ -7,26 +7,26 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
-#include <optional>
+#import <memory>
+#import <optional>
 
 #import "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/location_bar_model.h"
-#include "components/omnibox/browser/omnibox_view.h"
-#include "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
+#import "components/omnibox/browser/location_bar_model.h"
+#import "components/omnibox/browser/omnibox_view.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
 
-class ChromeBrowserState;
 class GURL;
 class OmniboxClient;
 struct AutocompleteMatch;
-@protocol OmniboxAdditionalTextConsumer;
 @class OmniboxTextFieldIOS;
 @protocol OmniboxCommands;
 @protocol ToolbarCommands;
 @protocol OmniboxFocusDelegate;
+@protocol OmniboxViewConsumer;
 
 // iOS implementation of OmniBoxView.  Wraps a UITextField and
 // interfaces with the rest of the autocomplete system.
@@ -42,7 +42,7 @@ class OmniboxViewIOS : public OmniboxView,
                  id<OmniboxCommands> omnibox_focuser,
                  id<OmniboxFocusDelegate> focus_delegate,
                  id<ToolbarCommands> toolbar_commands_handler,
-                 id<OmniboxAdditionalTextConsumer> additional_text_consumer);
+                 id<OmniboxViewConsumer> consumer);
 
   ~OmniboxViewIOS() override;
 
@@ -84,6 +84,9 @@ class OmniboxViewIOS : public OmniboxView,
       size_t selected_line,
       base::TimeTicks match_selection_timestamp,
       std::optional<AutocompleteMatch> optional_match);
+
+  /// Sets the image used in image search.
+  void SetThumbnailImage(UIImage* image);
 
   // OmniboxView implementation.
   std::u16string GetText() const override;
@@ -137,6 +140,7 @@ class OmniboxViewIOS : public OmniboxView,
   void OnDeleteBackward() override;
   void OnAcceptAutocomplete() override;
   void OnRemoveAdditionalText() override;
+  void RemoveThumbnail() override;
 
   // OmniboxTextAcceptDelegate methods
   void OnAccept() override;
@@ -180,6 +184,11 @@ class OmniboxViewIOS : public OmniboxView,
   void SetEmphasis(bool emphasize, const gfx::Range& range) override {}
   void UpdateSchemeStyle(const gfx::Range& scheme_range) override {}
 
+  /// Accepts thumbnail edits and update the client.
+  void AcceptThumbnailEdits();
+  /// Discards edits and restore the thumbnail.
+  void RevertThumbnailEdits();
+
   OmniboxTextFieldIOS* field_;
 
   // Focuser, used to transition the location bar to focused/defocused state as
@@ -193,13 +202,18 @@ class OmniboxViewIOS : public OmniboxView,
   // Handler for ToolbarCommands.
   __weak id<ToolbarCommands> toolbar_commands_handler_;
 
-  // Consumer of additional text.
-  __weak id<OmniboxAdditionalTextConsumer> additional_text_consumer_;
+  // Consumer for this class.
+  __weak id<OmniboxViewConsumer> consumer_;
 
   State state_before_change_;
   NSString* marked_text_before_change_;
   NSRange current_selection_;
   NSRange old_selection_;
+
+  // Thumbnail image before any edit from the omnibox.
+  UIImage* thumbnail_image_before_edit_;
+  // Whether the thumbnail image was removed during omnibox edit.
+  BOOL thumbnail_deleted_;
 
   // TODO(rohitrao): This is a monster hack, needed because closing the popup
   // ends up inadvertently triggering a new round of autocomplete.  Fix the

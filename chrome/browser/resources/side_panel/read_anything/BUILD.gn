@@ -19,6 +19,11 @@ build_webui("build") {
     "language_menu.ts",
     "read_anything_toolbar.ts",
     "voice_selection_menu.ts",
+    "menus/simple_action_menu.ts",
+    "menus/color_menu.ts",
+    "menus/highlight_menu.ts",
+    "menus/line_spacing_menu.ts",
+    "menus/letter_spacing_menu.ts",
   ]
   non_web_component_files = [
     "read_anything.ts",
@@ -27,10 +32,13 @@ build_webui("build") {
     "read_anything_logger.ts",
     "voice_language_util.ts",
     "app_style_updater.ts",
+    "menus/menu_util.ts",
   ]
   css_files = [
+    "app.css",
     "language_menu.css",
     "voice_selection_menu.css",
+    "read_anything_toolbar.css",
   ]
   icons_html_files = [ "icons.html" ]
   html_to_wrapper_template = "detect"

@@ -9,6 +9,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -19,13 +21,14 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -33,29 +36,43 @@ import androidx.annotation.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
@@ -68,7 +85,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
-import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -80,6 +101,7 @@ import java.util.List;
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument", "unchecked"})
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupUiMediatorUnitTest {
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
@@ -91,33 +113,46 @@ public class TabGroupUiMediatorUnitTest {
     private static final int TAB1_ROOT_ID = TAB1_ID;
     private static final int TAB2_ROOT_ID = TAB2_ID;
     private static final int TAB3_ROOT_ID = TAB2_ID;
-    private static final int PRIMARY_BACKGROUND_COLOR = Color.WHITE;
-    private static final int INCOGNITO_BACKGROUND_COLOR = Color.GRAY;
+    private static final String COLLABORATION_ID1 = "A";
+    private static final String GROUP_TITLE = "My Group";
+    private static final Token TAB2_GROUP_ID = new Token(1L, 2L);
 
-    @Mock BottomControlsCoordinator.BottomControlsVisibilityController mVisibilityController;
-    @Mock TabGroupUiMediator.ResetHandler mResetHandler;
-    @Mock TabModelSelectorImpl mTabModelSelector;
-    @Mock TabContentManager mTabContentManager;
-    @Mock TabCreatorManager mTabCreatorManager;
-    @Mock TabCreator mTabCreator;
-    @Mock LayoutStateProvider mLayoutManager;
-    @Mock IncognitoStateProvider mIncognitoStateProvider;
-    @Mock TabModel mTabModel;
-    @Mock View mView;
-    @Mock TabModelFilterProvider mTabModelFilterProvider;
-    @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock TabGridDialogMediator.DialogController mTabGridDialogController;
-    @Mock Context mContext;
-    @Mock ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
-    @Mock private Resources mResources;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Profile mProfile;
+    @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
+
+    @Mock
+    private BottomControlsCoordinator.BottomControlsVisibilityController mVisibilityController;
+
+    @Mock private TabGroupUiMediator.ResetHandler mResetHandler;
+    @Mock private TabModelSelectorImpl mTabModelSelector;
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private TabCreator mTabCreator;
+    @Mock private LayoutStateProvider mLayoutManager;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private TabModel mTabModel;
+    @Mock private View mView;
+    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGridDialogMediator.DialogController mTabGridDialogController;
+    @Mock private ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
     @Captor private ArgumentCaptor<Callback<TabModel>> mTabModelSupplierObserverCaptor;
-    @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverArgumentCaptor;
-    @Captor ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
-    @Captor ArgumentCaptor<IncognitoStateObserver> mIncognitoStateObserverArgumentCaptor;
-    @Captor ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverArgumentCaptor;
-    @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
-    @Captor ArgumentCaptor<Callback<Boolean>> mOmniboxFocusObserverCaptor;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverArgumentCaptor;
+    @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
+    @Captor private ArgumentCaptor<IncognitoStateObserver> mIncognitoStateObserverArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverArgumentCaptor;
+
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mOmniboxFocusObserverCaptor;
 
     private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
@@ -126,6 +161,9 @@ public class TabGroupUiMediatorUnitTest {
     private final ObservableSupplierImpl<Boolean> mTabGridDialogShowingOrAnimationSupplier =
             new ObservableSupplierImpl<>();
 
+    private Context mContext;
+    private int mPrimaryBackgroundColor;
+    private int mIncognitoBackgroundColor;
     private Tab mTab1;
     private Tab mTab2;
     private Tab mTab3;
@@ -204,17 +242,12 @@ public class TabGroupUiMediatorUnitTest {
                         mIncognitoStateProvider,
                         mDialogControllerSupplier,
                         mOmniboxFocusStateSupplier,
-                        PRIMARY_BACKGROUND_COLOR,
-                        INCOGNITO_BACKGROUND_COLOR);
+                        mSharedImageTilesCoordinator);
 
         if (currentTab == null) {
             verifyNeverReset();
             return;
         }
-
-        // Verify strip button content description setup.
-        verify(mContext).getString(R.string.accessibility_bottom_tab_strip_expand_tab_sheet);
-        verify(mContext).getString(R.string.bottom_tab_grid_new_tab);
 
         verify(mTabModelSupplier).addObserver(mTabModelSupplierObserverCaptor.capture());
 
@@ -227,26 +260,45 @@ public class TabGroupUiMediatorUnitTest {
         }
     }
 
+    private void setupSyncedGroup(boolean isShared) {
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.title = GROUP_TITLE;
+        savedTabGroup.collaborationId = isShared ? COLLABORATION_ID1 : null;
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
+    }
+
+    /**
+     * After setUp(), tabModel has 3 tabs in the following order: mTab1, mTab2 and mTab3. If
+     * TabGroup is enabled, mTab2 and mTab3 are in a group. Each test must call
+     * initAndAssertProperties(selectedTab) first, with selectedTab being the currently selected tab
+     * when the TabGroupUiMediator is created.
+     */
     @Before
     public void setUp() {
-        // After setUp(), tabModel has 3 tabs in the following order: mTab1, mTab2 and mTab3. If
-        // TabGroup is enabled, mTab2 and mTab3 are in a group. Each test must call
-        // initAndAssertProperties(selectedTab) first, with selectedTab being the currently selected
-        // tab when the TabGroupUiMediator is created.
-        MockitoAnnotations.initMocks(this);
+        mContext = spy(RuntimeEnvironment.application);
+        Resources resources = spy(mContext.getResources());
+        when(resources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(1);
+        when(mContext.getResources()).thenReturn(resources);
+        mPrimaryBackgroundColor = SemanticColorUtils.getDialogBgColor(mContext);
+        mIncognitoBackgroundColor = mContext.getColor(R.color.dialog_bg_color_dark_baseline);
 
-        when(mContext.getResources()).thenReturn(mResources);
-        when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
-                .thenReturn(1);
+        mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        DataSharingServiceFactory.setForTesting(mDataSharingService);
 
         // Set up Tabs
         mTab1 = prepareTab(TAB1_ID, TAB1_ROOT_ID);
         mTab2 = prepareTab(TAB2_ID, TAB2_ROOT_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB2_GROUP_ID);
         mTab3 = prepareTab(TAB3_ID, TAB3_ROOT_ID);
+        when(mTab3.getTabGroupId()).thenReturn(TAB2_GROUP_ID);
         mTabGroup1 = new ArrayList<>(Arrays.asList(mTab1));
         mTabGroup2 = new ArrayList<>(Arrays.asList(mTab2, mTab3));
 
         // Setup TabModel.
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         doReturn(mTabModel).when(mTabModel).getComprehensiveModel();
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         doReturn(false).when(mTabModel).isIncognito();
@@ -256,6 +308,9 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(mTab1).when(mTabModel).getTabAt(0);
         doReturn(mTab2).when(mTabModel).getTabAt(1);
         doReturn(mTab3).when(mTabModel).getTabAt(2);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(mTab3);
         doReturn(POSITION1).when(mTabModel).indexOf(mTab1);
         doReturn(POSITION2).when(mTabModel).indexOf(mTab2);
         doReturn(POSITION3).when(mTabModel).indexOf(mTab3);
@@ -341,11 +396,11 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void onClickLeftButton_TabGroup() {
+    public void onClickShowGroupDialogButton_TabGroup() {
         initAndAssertProperties(mTab2);
 
         View.OnClickListener listener =
-                mModel.get(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER);
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER);
         assertThat(listener, instanceOf(View.OnClickListener.class));
 
         listener.onClick(mView);
@@ -355,13 +410,13 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void onClickLeftButton_TabGroup_ShowingOrAnimation() {
+    public void onClickShowGroupDialogButton_TabGroup_ShowingOrAnimation() {
         initAndAssertProperties(mTab2);
         mDialogControllerSupplier.get();
         mTabGridDialogShowingOrAnimationSupplier.set(true);
 
         View.OnClickListener listener =
-                mModel.get(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER);
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER);
         assertThat(listener, instanceOf(View.OnClickListener.class));
 
         listener.onClick(mView);
@@ -374,11 +429,11 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void onClickRightButton_TabGroup() {
+    public void onClickNewTabButton_TabGroup() {
         initAndAssertProperties(mTab1);
 
         View.OnClickListener listener =
-                mModel.get(TabGroupUiProperties.RIGHT_BUTTON_ON_CLICK_LISTENER);
+                mModel.get(TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER);
         assertThat(listener, instanceOf(View.OnClickListener.class));
 
         listener.onClick(mView);
@@ -978,7 +1033,7 @@ public class TabGroupUiMediatorUnitTest {
     public void switchTabModel_UiVisible_TabGroup() {
         initAndAssertProperties(mTab1);
         assertThat(mTabGroupUiMediator.getIsShowingOverViewModeForTesting(), equalTo(false));
-        TabModel incognitoTabModel = prepareIncognitoTabModel();
+        prepareIncognitoTabModel();
 
         // Mock that tab2 is selected after tab model switch, and tab2 is in a group.
         doReturn(TAB2_ID).when(mTabModelSelector).getCurrentTabId();
@@ -991,7 +1046,7 @@ public class TabGroupUiMediatorUnitTest {
     public void switchTabModel_UiNotVisible_TabGroup() {
         initAndAssertProperties(mTab1);
         assertThat(mTabGroupUiMediator.getIsShowingOverViewModeForTesting(), equalTo(false));
-        TabModel incognitoTabModel = prepareIncognitoTabModel();
+        prepareIncognitoTabModel();
 
         // Mock that tab1 is selected after tab model switch, and tab1 is a single tab.
         doReturn(TAB1_ID).when(mTabModelSelector).getCurrentTabId();
@@ -999,8 +1054,6 @@ public class TabGroupUiMediatorUnitTest {
 
         verifyResetStrip(false, null);
     }
-
-    /*********************** Class common tests *************************/
 
     @Test
     public void incognitoChange() {
@@ -1012,45 +1065,34 @@ public class TabGroupUiMediatorUnitTest {
         assertThat(mModel.get(TabGroupUiProperties.IS_INCOGNITO), equalTo(true));
         assertThat(
                 mModel.get(TabGroupUiProperties.BACKGROUND_COLOR),
-                equalTo(INCOGNITO_BACKGROUND_COLOR));
+                equalTo(mIncognitoBackgroundColor));
         mVisibilityControllerInOrder
                 .verify(mVisibilityController)
-                .setBottomControlsColor(INCOGNITO_BACKGROUND_COLOR);
+                .setBottomControlsColor(mIncognitoBackgroundColor);
 
         mIncognitoStateObserverArgumentCaptor.getValue().onIncognitoStateChanged(false);
 
         assertThat(mModel.get(TabGroupUiProperties.IS_INCOGNITO), equalTo(false));
         assertThat(
                 mModel.get(TabGroupUiProperties.BACKGROUND_COLOR),
-                equalTo(PRIMARY_BACKGROUND_COLOR));
+                equalTo(mPrimaryBackgroundColor));
         mVisibilityControllerInOrder
                 .verify(mVisibilityController)
-                .setBottomControlsColor(PRIMARY_BACKGROUND_COLOR);
+                .setBottomControlsColor(mPrimaryBackgroundColor);
     }
 
     @Test
-    public void testSetLeftButtonDrawable() {
-        initAndAssertProperties(mTab3);
-        int drawableId = 321;
-
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_DRAWABLE_ID, 0);
-
-        mTabGroupUiMediator.setupLeftButtonDrawable(drawableId);
-
-        assertThat(mModel.get(TabGroupUiProperties.LEFT_BUTTON_DRAWABLE_ID), equalTo(drawableId));
-    }
-
-    @Test
-    public void testSetLeftButtonOnClickListener() {
+    public void testSetShowGroupDialogButtonOnClickListener() {
         initAndAssertProperties(mTab3);
         View.OnClickListener listener = v -> {};
 
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER, null);
+        mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER, null);
 
-        mTabGroupUiMediator.setupLeftButtonOnClickListener(listener);
+        mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER, listener);
 
         assertThat(
-                mModel.get(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER), equalTo(listener));
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER),
+                equalTo(listener));
     }
 
     @Test
@@ -1079,5 +1121,41 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(TAB2_ID).when(mTabModelSelector).getCurrentTabId();
         mOmniboxFocusObserverCaptor.getValue().onResult(false);
         verifyResetStrip(true, mTabGroup2);
+    }
+
+    @Test
+    public void testImageTiles_NoGroup() {
+        reset(mSharedImageTilesCoordinator);
+        setupSyncedGroup(/* isShared= */ true);
+
+        initAndAssertProperties(mTab1);
+
+        assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
+        assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
+        verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
+    }
+
+    @Test
+    public void testImageTiles_CollaborationId() {
+        reset(mSharedImageTilesCoordinator);
+        setupSyncedGroup(/* isShared= */ true);
+
+        initAndAssertProperties(mTab2);
+
+        assertFalse(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
+        assertTrue(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
+        verify(mSharedImageTilesCoordinator).updateCollaborationId(COLLABORATION_ID1);
+    }
+
+    @Test
+    public void testImageTiles_NoCollaborationId() {
+        reset(mSharedImageTilesCoordinator);
+        setupSyncedGroup(/* isShared= */ false);
+
+        initAndAssertProperties(mTab2);
+
+        assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
+        assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
+        verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
     }
 }

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_METRICS_FACILITATED_PAYMENTS_METRICS_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_METRICS_FACILITATED_PAYMENTS_METRICS_H_
 
+#include "base/types/expected.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace base {
@@ -40,8 +41,20 @@ enum class TriggerSource {
   kMaxValue = kCopyEvent
 };
 
+// Log the result and latency for validating a payment code using
+// `data_decoder::DataDecoder`.
+void LogPaymentCodeValidationResultAndLatency(
+    base::expected<bool, std::string> result,
+    base::TimeDelta duration);
+
 // Log the result of whether the facilitated payments is available or not.
 void LogIsApiAvailableResult(bool result, base::TimeDelta duration);
+
+// Logs the result and latency for fetching the risk data. If the risk data was
+// fetched successfully, `was_successful` is true. The call took `duration` to
+// complete.
+void LogLoadRiskDataResultAndLatency(bool was_successful,
+                                     base::TimeDelta duration);
 
 // Log the result of the GetClientToken call made to api client.
 void LogGetClientTokenResult(bool result, base::TimeDelta duration);

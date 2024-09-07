@@ -200,7 +200,6 @@ bool CanRouteMedia(Browser* browser);
 // from the app menu. That will need to be changed if this is to be invoked from
 // elsewhere.
 void RouteMediaInvokedFromAppMenu(Browser* browser);
-void CutCopyPaste(Browser* browser, int command_id);
 void Find(Browser* browser);
 void FindNext(Browser* browser);
 void FindPrevious(Browser* browser);

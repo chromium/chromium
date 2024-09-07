@@ -379,8 +379,8 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
               kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes)) {
     // If a single option contained the phone country code, return that.
     if (first_match != field_options.end() &&
-        base::ranges::none_of(first_match + 1, field_options.end(),
-                              value_or_content_matches)) {
+        std::ranges::none_of(first_match + 1, field_options.end(),
+                             value_or_content_matches)) {
       return first_match->value;
     }
 

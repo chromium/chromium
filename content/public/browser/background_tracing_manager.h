@@ -136,11 +136,6 @@ class BackgroundTracingManager {
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) = 0;
 
-  // Returns the list of preset scenario hashes and names that were saved,
-  // whether or not enabled.
-  virtual std::vector<std::pair<std::string, std::string>>
-  GetAllPresetScenarios() const = 0;
-
   // Enables a list of preset scenarios identified by their hashes. This
   // disables all previously enabled scenarios and aborts the current background
   // tracing session if any. Since InitializeFieldScenarios() above fails if
@@ -148,10 +143,6 @@ class BackgroundTracingManager {
   // this.
   virtual bool SetEnabledScenarios(
       std::vector<std::string> enabled_preset_scenario_hashes) = 0;
-
-  // Returns the list of scenario hashes that are currently enabled. These are
-  // either all preset scenarios or all field scenarios.
-  virtual std::vector<std::string> GetEnabledScenarios() const = 0;
 
   virtual bool HasActiveScenario() = 0;
 

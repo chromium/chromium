@@ -20,11 +20,9 @@ static_library("kcer") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/kcer/nssdb_migration",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/chromeos/kcer",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
@@ -41,11 +39,7 @@ static_library("kcer") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/kcer/nssdb_migration",
-
-    # TODO(crbug.com/351347146): Remove the dependency on crosapi from Kcer and
-    # then these lines.
     "//chrome/browser/ash/platform_keys:platform_keys",
-    "//chrome/browser/ash/crosapi",
   ]
 }
 
@@ -54,7 +48,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "kcer_factory_no_nss_ash_browsertest.cc" ]
+  sources = [
+    "kcer_factory_ash_no_nss_browsertest.cc",
+    "kcer_factory_ash_nss_browsertest.cc",
+  ]
 
   deps = [
     ":kcer",
@@ -62,17 +59,16 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/saml:test_support",
     "//chrome/browser/ash/login/users:test_support",
-    "//chrome/browser/chromeos/kcer",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/components/kcer",
     "//components/user_manager",
     "//content/test:test_support",
+    "//crypto:test_support",
     "//testing/gtest",
   ]
 }

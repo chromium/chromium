@@ -2536,14 +2536,14 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest, CancelOnAuthRequested) {
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetWebContents());
   registry_observer.WaitForTrigger(kPrerenderingUrl);
-  int host_id = prerender_helper().GetHostForUrl(kPrerenderingUrl);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(kPrerenderingUrl);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(prerender_helper().GetHostForUrl(kPrerenderingUrl),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(prerender_helper().GetHostForUrl(kPrerenderingUrl).is_null());
 
   // No authentication request has been prompted to the user.
   EXPECT_EQ(0, browser_client_->auth_needed_count);
@@ -2559,7 +2559,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
 
   // Start prerendering `kPrerenderingUrl`.
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
-  int host_id = prerender_helper().AddPrerender(kPrerenderingUrl);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(kPrerenderingUrl);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   prerender_helper().WaitForPrerenderLoadCompletion(kPrerenderingUrl);
@@ -2575,8 +2576,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(prerender_helper().GetHostForUrl(kPrerenderingUrl),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(prerender_helper().GetHostForUrl(kPrerenderingUrl).is_null());
 
   // No authentication request has been prompted to the user.
   EXPECT_EQ(0, browser_client_->auth_needed_count);
@@ -2594,13 +2594,13 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
 
   // Start prerendering `kPrerenderingUrl`.
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
-  int host_id = prerender_helper().AddPrerender(kPrerenderingUrl);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(kPrerenderingUrl);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   prerender_helper().WaitForPrerenderLoadCompletion(kPrerenderingUrl);
 
-  ASSERT_NE(prerender_helper().GetHostForUrl(kPrerenderingUrl),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_helper().GetHostForUrl(kPrerenderingUrl));
 
   // Fetch a subresrouce.
   std::string fetch_subresource_script = R"(
@@ -2613,8 +2613,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(prerender_helper().GetHostForUrl(kPrerenderingUrl),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(prerender_helper().GetHostForUrl(kPrerenderingUrl).is_null());
 
   // No authentication request has been prompted to the user.
   EXPECT_EQ(0, browser_client_->auth_needed_count);

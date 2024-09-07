@@ -12,20 +12,13 @@ import("//build/config/android/rules.gni")
 # These templates are for test only
 testonly = true
 
-declare_args() {
-  # Run webview instrumentation tests only in the specified process mode(s), and
-  # only run those configurated to be runnable in such mode(s). Accepted values
-  # are "single", "multiple" or "both" (run in both single and multiple modes).
-  # For each test, "OnlyRunIn" annotation defines which mode it can run in.
-  webview_instrumentation_tests_process_mode = "both"
-}
-
 # Build the webview_instrumentation_apk with extra dependencies.
 # Args:
 #   deps: extra dependencies to add - platform-specific libraries.
 #   apk_name: Desired apk name.
 template("base_webview_instrumentation_apk") {
   android_apk(target_name) {
+    target_sdk_version = 34
     apk_name = invoker.apk_name
     deps = [
              "//android_webview:android_webview_java",
@@ -196,22 +189,5 @@ template("base_webview_instrumentation_test_apk") {
       "//net/android:net_test_support_apk",
     ]
     srcjar_deps = [ "//android_webview/test:webview_instrumentation_test_jni" ]
-
-    extra_args = []
-    if (defined(invoker.extra_args)) {
-      extra_args += invoker.extra_args
-    }
-    if (webview_instrumentation_tests_process_mode == "single" ||
-        webview_instrumentation_tests_process_mode == "multiple") {
-      extra_args += [
-        "--webview-process-mode=$webview_instrumentation_tests_process_mode",
-      ]
-    } else if (webview_instrumentation_tests_process_mode == "both") {
-      # The default is to run both modes if `--webview-process-mode` is not set.
-    } else {
-      assert(
-          false,
-          "Invalid webview_instrumentation_tests_process_mode value. Choose one of (single|multiple|both).")
-    }
   }
 }

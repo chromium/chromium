@@ -1454,8 +1454,6 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   layer->SetContentsOpaqueForText(inputs.contents_opaque_for_text);
   layer->SetShouldCheckBackfaceVisibility(should_check_backface_visibility());
 
-  layer->UpdateScrollable();
-
   // The property trees must be safe to access because they will be used below
   // to call |SetScrollOffsetClobberActiveValue|.
   DCHECK(layer->layer_tree_impl()->lifecycle().AllowsPropertyTreeAccess());

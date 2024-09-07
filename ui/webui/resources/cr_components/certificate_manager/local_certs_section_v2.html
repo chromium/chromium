@@ -1,0 +1,66 @@
+<style include="cr-page-host-style cr-shared-style certificate-manager-style-v2">
+  #importOsCerts {
+    margin-inline-start: auto;
+  }
+
+  .enterprise-icon {
+    padding-inline-start: 5px;
+  }
+</style>
+
+<div class="cr-centered-card-container">
+  <h2 class="page-title">[[i18n('certificateManagerV2LocalCerts')]]</h2>
+  [[i18n("certificateManagerV2LocalCertsDescription")]]
+
+  <!-- TODO(crbug.com/40928765): Allow user modifications of trust settings
+    here when allowed by enterprise.  -->
+  <h3 class="section-title">[[i18n("certificateManagerV2Platform")]]</h3>
+  <div class="card">
+    <div class="cr-row">
+      <div class="cr-padded-text">
+        <div>
+          [[i18n("certificateManagerV2PlatformCertsToggleLabel")]]
+        </div>
+        <div id="numSystemCerts" class="cr-secondary-text">
+          [[numSystemCertsString_]]
+        </div>
+      </div>
+      <cr-toggle id="importOsCerts"
+          aria-label="Toggle operating system certificate imports"
+          checked="[[importOsCertsEnabled_]]" disabled>
+      </cr-toggle>
+
+      <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
+          class="enterprise-icon" hidden$="[[!importOsCertsEnabledManaged_]]">
+      </cr-icon>
+    </div>
+
+    <cr-link-row id="viewOsImportedCerts" class="hr"
+        label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
+        on-click="onPlatformCertsLinkRowClick_"
+        hidden$="[[!showViewOsCertsLinkRow_]]">
+    </cr-link-row>
+    <if expr="is_win or is_macosx">
+      <cr-link-row external id="manageOsImportedCerts" class="hr"
+          label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
+          on-click="onManageCertsExternal_"
+          button-aria-description="[[i18n('certificateManagerV2PlatformCertsManageLinkAriaDescription')]]"
+          hidden$="[[!importOsCertsEnabled_]]">
+      </cr-link-row>
+    </if>
+  </div>
+
+  <template is="dom-if" if="[[showCustomSection_(certManagementMetadata_)]]">
+    <div id="customCertsSection">
+      <h3 class="section-title">[[i18n("certificateManagerV2CustomCertsTitle")]]</h3>
+      <cr-link-row id="adminCertsInstalledLinkRow"
+          start-icon="cr:domain"
+          class="card"
+          label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
+          sub-label="[[numPolicyCertsString_]]"
+          on-click="onAdminCertsInstalledLinkRowClick_">
+     </cr-link-row>
+    </div>
+  </template>
+</div>
+

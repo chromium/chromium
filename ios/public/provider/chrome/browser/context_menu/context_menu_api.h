@@ -75,6 +75,9 @@ std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
     ukm::SourceId source_id,
     const base::FilePath& model_path);
 
+// Returns the context menu title with styling.
+NSString* StyledContextMenuStringForString(NSString* string);
+
 }  // namespace provider
 }  // namespace ios
 

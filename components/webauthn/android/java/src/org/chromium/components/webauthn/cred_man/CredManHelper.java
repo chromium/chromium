@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.OutcomeReceiver;
 import android.os.SystemClock;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -42,14 +43,9 @@ import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
-import org.chromium.content_public.browser.ClientDataJson;
-import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class CredManHelper {
     // These two values are formed differently because they come from the
@@ -65,7 +61,6 @@ public class CredManHelper {
 
     private Callback<Integer> mErrorCallback;
     private Barrier mBarrier;
-    private boolean mIsCrossOrigin;
     private boolean mPlayServicesAvailable;
     private boolean mRequestPasswords;
     private final AuthenticationContextProvider mAuthenticationContextProvider;
@@ -94,28 +89,13 @@ public class CredManHelper {
     public int startMakeRequest(
             PublicKeyCredentialCreationOptions options,
             String originString,
-            boolean isCrossOrigin,
-            byte[] maybeClientDataHash,
+            @Nullable byte[] clientDataJson,
+            @Nullable byte[] clientDataHash,
             MakeCredentialResponseCallback makeCallback,
             Callback<Integer> errorCallback) {
-        mIsCrossOrigin = isCrossOrigin;
+        mClientDataJson = clientDataJson;
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().createOptionsToJson(options.serialize());
-        final byte[] clientDataHash =
-                maybeClientDataHash != null
-                        ? maybeClientDataHash
-                        : buildClientDataJsonAndComputeHash(
-                                ClientDataRequestType.WEB_AUTHN_CREATE,
-                                originString,
-                                options.challenge,
-                                mIsCrossOrigin,
-                                options.relyingParty.id,
-                                /* topOrigin= */ null);
-        if (clientDataHash == null) {
-            mMetricsHelper.recordCredManCreateRequestHistogram(
-                    CredManCreateRequestEnum.COULD_NOT_SEND_REQUEST);
-            return AuthenticatorStatus.NOT_ALLOWED_ERROR;
-        }
 
         OutcomeReceiver<CreateCredentialResponse, CreateCredentialException> receiver =
                 new OutcomeReceiver<>() {
@@ -179,7 +159,9 @@ public class CredManHelper {
                                     CredManCreateRequestEnum.FAILURE);
                             return;
                         }
-                        response.info.clientDataJson = mClientDataJson;
+                        if (mClientDataJson != null) {
+                            response.info.clientDataJson = mClientDataJson;
+                        }
                         response.echoCredProps = options.credProps;
                         makeCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS, response);
                         mMetricsHelper.recordCredManCreateRequestHistogram(
@@ -207,15 +189,14 @@ public class CredManHelper {
     public void startPrefetchRequest(
             PublicKeyCredentialRequestOptions options,
             String originString,
-            boolean isCrossOrigin,
-            byte[] maybeClientDataHash,
+            @Nullable byte[] clientDataJson,
+            @Nullable byte[] clientDataHash,
             GetAssertionResponseCallback getCallback,
             Callback<Integer> errorCallback,
             Barrier barrier,
             boolean ignoreGpm) {
         long startTimeMs = SystemClock.elapsedRealtime();
         mErrorCallback = errorCallback;
-        mIsCrossOrigin = isCrossOrigin;
         mBarrier = barrier;
 
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
@@ -275,8 +256,8 @@ public class CredManHelper {
                                                         startGetRequest(
                                                                 options,
                                                                 originString,
-                                                                isCrossOrigin,
-                                                                maybeClientDataHash,
+                                                                clientDataJson,
+                                                                clientDataHash,
                                                                 getCallback,
                                                                 errorCallback,
                                                                 ignoreGpm);
@@ -297,7 +278,7 @@ public class CredManHelper {
                 buildGetCredentialRequest(
                         options,
                         originString,
-                        maybeClientDataHash,
+                        clientDataHash,
                         /* requestPasswords= */ false,
                         /* preferImmediatelyAvailable= */ false,
                         /* ignoreGpm= */ ignoreGpm);
@@ -326,13 +307,13 @@ public class CredManHelper {
     public int startGetRequest(
             PublicKeyCredentialRequestOptions options,
             String originString,
-            boolean isCrossOrigin,
-            byte[] maybeClientDataHash,
+            @Nullable byte[] clientDataJson,
+            byte[] clientDataHash,
             GetAssertionResponseCallback getCallback,
             Callback<Integer> errorCallback,
             boolean ignoreGpm) {
         mErrorCallback = errorCallback;
-        mIsCrossOrigin = isCrossOrigin;
+        mClientDataJson = clientDataJson;
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
 
         // The Android 14 APIs have to be called via reflection until Chromium
@@ -455,7 +436,9 @@ public class CredManHelper {
                             mErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
                             return;
                         }
-                        response.info.clientDataJson = mClientDataJson;
+                        if (mClientDataJson != null) {
+                            response.info.clientDataJson = mClientDataJson;
+                        }
                         response.extensions.echoAppidExtension = options.extensions.appid != null;
                         mConditionalUiState =
                                 options.isConditional
@@ -485,7 +468,7 @@ public class CredManHelper {
                 buildGetCredentialRequest(
                         options,
                         originString,
-                        maybeClientDataHash,
+                        clientDataHash,
                         mRequestPasswords,
                         shouldPreferImmediatelyAvailable(options),
                         ignoreGpm);
@@ -544,36 +527,6 @@ public class CredManHelper {
         return false;
     }
 
-    private byte[] buildClientDataJsonAndComputeHash(
-            @ClientDataRequestType int clientDataRequestType,
-            String callerOrigin,
-            byte[] challenge,
-            boolean isCrossOrigin,
-            String relyingPartyId,
-            Origin topOrigin) {
-        String clientDataJson =
-                ClientDataJson.buildClientDataJson(
-                        clientDataRequestType,
-                        callerOrigin,
-                        challenge,
-                        isCrossOrigin,
-                        /* paymentOptions= */ null,
-                        relyingPartyId,
-                        topOrigin);
-        if (clientDataJson == null) {
-            return null;
-        }
-        mClientDataJson = clientDataJson.getBytes();
-        MessageDigest messageDigest;
-        try {
-            messageDigest = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
-        messageDigest.update(mClientDataJson);
-        return messageDigest.digest();
-    }
-
     private void notifyBrowserOnCredManClosed(boolean success) {
         if (mBridgeProvider.getBridge() == null) return;
         mBridgeProvider
@@ -586,8 +539,7 @@ public class CredManHelper {
      *
      * @param options The WebAuthn get() call.
      * @param originString The origin that made the WebAuthn request.
-     * @param maybeClientDataHash Either null, to have the ClientDataJSON built by this function and
-     *     populated in `mClientDataJson`, or else an explicit ClientDataJSON hash.
+     * @param clientDataHash The hash of the ClientDataJSON to be passed to the CredMan API.
      * @param requestPasswords True if password credentials should also be requested.
      * @param preferImmediatelyAvailable True to make the eventual request fail with a
      *     `NO_CREDENTIAL` error if there are no credentials found.
@@ -597,26 +549,12 @@ public class CredManHelper {
     private GetCredentialRequest buildGetCredentialRequest(
             PublicKeyCredentialRequestOptions options,
             String originString,
-            byte[] maybeClientDataHash,
+            byte[] clientDataHash,
             boolean requestPasswords,
             boolean preferImmediatelyAvailable,
             boolean ignoreGpm) {
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
-        final byte[] clientDataHash =
-                maybeClientDataHash != null
-                        ? maybeClientDataHash
-                        : buildClientDataJsonAndComputeHash(
-                                ClientDataRequestType.WEB_AUTHN_GET,
-                                originString,
-                                options.challenge,
-                                mIsCrossOrigin,
-                                options.relyingPartyId,
-                                /* topOrigin= */ null);
-        if (clientDataHash == null) {
-            Log.e(TAG, "ClientDataJson generation failed.");
-            return null;
-        }
 
         boolean hasAllowCredentials =
                 options.allowCredentials != null && options.allowCredentials.length != 0;

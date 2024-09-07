@@ -306,4 +306,21 @@ Encryptor Encryptor::Clone(Option option) const {
   return Encryptor(std::move(keyring), provider_for_encryption);
 }
 
+bool Encryptor::IsEncryptionAvailable() const {
+  if (!provider_for_encryption_.empty() &&
+      keys_.contains(provider_for_encryption_)) {
+    return true;
+  }
+
+  return OSCrypt::IsEncryptionAvailable();
+}
+
+bool Encryptor::IsDecryptionAvailable() const {
+  if (!keys_.empty()) {
+    return true;
+  }
+
+  return OSCrypt::IsEncryptionAvailable();
+}
+
 }  // namespace os_crypt_async

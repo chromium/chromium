@@ -210,7 +210,6 @@ FrameTree::FrameTree(
                  navigator_delegate,
                  navigation_controller_delegate),
       type_(type),
-      focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       load_progress_(0.0),
       root_(*this,
             nullptr,
@@ -258,7 +257,7 @@ void FrameTree::MakeSpeculativeRVHCurrent() {
   speculative_render_view_host_.reset();
 }
 
-FrameTreeNode* FrameTree::FindByID(int frame_tree_node_id) {
+FrameTreeNode* FrameTree::FindByID(FrameTreeNodeId frame_tree_node_id) {
   for (FrameTreeNode* node : Nodes()) {
     if (node->frame_tree_node_id() == frame_tree_node_id)
       return node;
@@ -734,7 +733,34 @@ void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,
   TRACE_EVENT_INSTANT("navigation", "FrameTree::RegisterRenderViewHost",
                       ChromeTrackEvent::kRenderViewHost, *rvh);
   CHECK(!rvh->is_speculative());
-  CHECK(!base::Contains(render_view_host_map_, id));
+  if (base::Contains(render_view_host_map_, id)) {
+    // TODO(https://crbug.com/354382462): Remove crash keys once investigation
+    // is done.
+    static auto* const is_registered_key = base::debug::AllocateCrashKeyString(
+        "is_registered", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        is_registered_key,
+        rvh->is_registered_with_frame_tree() ? "true" : "false");
+    static auto* const renderer_view_created_key =
+        base::debug::AllocateCrashKeyString("renderer_view_created",
+                                            base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        renderer_view_created_key,
+        rvh->renderer_view_created() ? "true" : "false");
+    static auto* const main_frame_routing_id_key =
+        base::debug::AllocateCrashKeyString("rvh_main_routing_id",
+                                            base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        main_frame_routing_id_key,
+        base::NumberToString(rvh->main_frame_routing_id()));
+    static auto* const root_routing_id_key =
+        base::debug::AllocateCrashKeyString("root_routing_id",
+                                            base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        root_routing_id_key,
+        base::NumberToString(root()->current_frame_host()->GetRoutingID()));
+    CHECK(false);
+  }
   render_view_host_map_[id] = rvh;
   rvh->set_is_registered_with_frame_tree(true);
 }
@@ -753,7 +779,7 @@ void FrameTree::UnregisterRenderViewHost(RenderViewHostMapId id,
 
 void FrameTree::FrameUnloading(FrameTreeNode* frame) {
   if (frame->frame_tree_node_id() == focused_frame_tree_node_id_)
-    focused_frame_tree_node_id_ = FrameTreeNode::kFrameTreeNodeInvalidId;
+    focused_frame_tree_node_id_ = FrameTreeNodeId();
 
   // Ensure frames that are about to be deleted aren't visible from the other
   // processes anymore.
@@ -762,7 +788,7 @@ void FrameTree::FrameUnloading(FrameTreeNode* frame) {
 
 void FrameTree::FrameRemoved(FrameTreeNode* frame) {
   if (frame->frame_tree_node_id() == focused_frame_tree_node_id_)
-    focused_frame_tree_node_id_ = FrameTreeNode::kFrameTreeNodeInvalidId;
+    focused_frame_tree_node_id_ = FrameTreeNodeId();
 }
 
 double FrameTree::GetLoadProgress() {
@@ -1030,6 +1056,14 @@ void FrameTree::FocusOuterFrameTrees() {
     }
     frame_tree_to_focus = &outer_node->frame_tree();
   }
+}
+
+void FrameTree::Discard() {
+  root()->set_was_discarded();
+  root()->current_frame_host()->DiscardFrame();
+  NavigationControllerImpl& navigation_controller = controller();
+  navigation_controller.SetNeedsReload();
+  navigation_controller.GetBackForwardCache().Flush();
 }
 
 }  // namespace content

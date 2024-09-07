@@ -16,9 +16,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.gsa.GSAState.GOOGLE_APP_CLASS_NAME;
-import static org.chromium.chrome.browser.gsa.GSAState.PACKAGE_NAME;
-import static org.chromium.chrome.browser.gsa.GSAState.VOICE_SEARCH_INTENT_ACTION;
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_CLASS_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_PACKAGE_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.VOICE_SEARCH_INTENT_ACTION;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarActionsHandler.EXTRA_IS_LAUNCHED_FROM_CHROME_SEARCH_ENTRYPOINT;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_CLICKED_HISTOGRAM;
@@ -255,7 +255,7 @@ public class GoogleBottomBarActionsHandlerTest {
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         PIH_BASIC,
-                        context.getDrawable(R.drawable.page_insights_icon),
+                        context.getDrawable(R.drawable.bottom_bar_page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),
                         pendingIntent);
@@ -279,7 +279,7 @@ public class GoogleBottomBarActionsHandlerTest {
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         PIH_BASIC,
-                        context.getDrawable(R.drawable.page_insights_icon),
+                        context.getDrawable(R.drawable.bottom_bar_page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),
                         /* pendingIntent= */ null);
@@ -382,7 +382,7 @@ public class GoogleBottomBarActionsHandlerTest {
                         /* description= */ "Description",
                         /* pendingIntent= */ null);
         Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         View.OnClickListener clickListener =
@@ -391,7 +391,7 @@ public class GoogleBottomBarActionsHandlerTest {
 
         Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(SearchManager.INTENT_ACTION_GLOBAL_SEARCH, startedIntent.getAction());
-        assertEquals(PACKAGE_NAME, startedIntent.getPackage());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getPackage());
         assertTrue(
                 startedIntent
                         .getExtras()
@@ -466,7 +466,7 @@ public class GoogleBottomBarActionsHandlerTest {
                         /* pendingIntent= */ null);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_INFO);
-        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+        intent.setClassName(GSA_PACKAGE_NAME, GSA_CLASS_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         View.OnClickListener clickListener =
@@ -477,8 +477,8 @@ public class GoogleBottomBarActionsHandlerTest {
         assertEquals(Intent.ACTION_MAIN, startedIntent.getAction());
         assertEquals(1, startedIntent.getCategories().size());
         assertTrue(startedIntent.getCategories().contains(Intent.CATEGORY_INFO));
-        assertEquals(PACKAGE_NAME, startedIntent.getComponent().getPackageName());
-        assertEquals(GOOGLE_APP_CLASS_NAME, startedIntent.getComponent().getShortClassName());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getComponent().getPackageName());
+        assertEquals(GSA_CLASS_NAME, startedIntent.getComponent().getShortClassName());
         assertTrue(
                 startedIntent
                         .getExtras()
@@ -528,7 +528,7 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_INFO);
-        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+        intent.setClassName(GSA_PACKAGE_NAME, GSA_CLASS_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         mGoogleBottomBarActionsHandler.onSearchboxHomeTap();
@@ -537,8 +537,8 @@ public class GoogleBottomBarActionsHandlerTest {
         assertEquals(Intent.ACTION_MAIN, startedIntent.getAction());
         assertEquals(1, startedIntent.getCategories().size());
         assertTrue(startedIntent.getCategories().contains(Intent.CATEGORY_INFO));
-        assertEquals(PACKAGE_NAME, startedIntent.getComponent().getPackageName());
-        assertEquals(GOOGLE_APP_CLASS_NAME, startedIntent.getComponent().getShortClassName());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getComponent().getPackageName());
+        assertEquals(GSA_CLASS_NAME, startedIntent.getComponent().getShortClassName());
         assertTrue(
                 startedIntent
                         .getExtras()
@@ -560,14 +560,14 @@ public class GoogleBottomBarActionsHandlerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
         Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         mGoogleBottomBarActionsHandler.onSearchboxHintTextTap();
 
         Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(SearchManager.INTENT_ACTION_GLOBAL_SEARCH, startedIntent.getAction());
-        assertEquals(PACKAGE_NAME, startedIntent.getPackage());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getPackage());
         assertTrue(
                 startedIntent
                         .getExtras()
@@ -590,14 +590,14 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM,
                         GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
         Intent intent = new Intent(VOICE_SEARCH_INTENT_ACTION);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         mGoogleBottomBarActionsHandler.onSearchboxMicTap();
 
         Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(VOICE_SEARCH_INTENT_ACTION, startedIntent.getAction());
-        assertEquals(PACKAGE_NAME, startedIntent.getPackage());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getPackage());
         assertTrue(
                 startedIntent
                         .getExtras()

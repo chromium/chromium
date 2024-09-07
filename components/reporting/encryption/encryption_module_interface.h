@@ -23,10 +23,6 @@ namespace reporting {
 // Disabled only for testing/stress purposes.
 BASE_DECLARE_FEATURE(kEncryptedReportingFeature);
 
-inline constexpr base::FilePath::CharType kEncryptionKeyFilePrefix[] =
-    FILE_PATH_LITERAL("EncryptionKey.");
-inline constexpr int32_t kEncryptionKeyMaxFileSize = 256;
-
 class EncryptionModuleInterface
     : public base::RefCountedThreadSafe<EncryptionModuleInterface> {
  public:

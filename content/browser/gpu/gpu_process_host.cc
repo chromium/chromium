@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <list>
 #include <memory>
 #include <utility>
@@ -256,6 +257,7 @@ static const char* const kSwitchNames[] = {
     switches::kUseRedistributableDirectML,
 #endif  // BUILDFLAG(IS_WIN)
     switches::kEnableANGLEFeatures,
+    switches::kDelegatedInkRenderer,
     switches::kDisableANGLEFeatures,
     switches::kDisableBreakpad,
     switches::kDisableGpuRasterization,
@@ -347,7 +349,7 @@ enum GPUProcessLifetimeEvent {
 
 // Indexed by GpuProcessKind. There is one of each kind maximum. This array may
 // only be accessed from the UI thread.
-GpuProcessHost* g_gpu_process_hosts[GPU_PROCESS_KIND_COUNT];
+std::array<GpuProcessHost*, GPU_PROCESS_KIND_COUNT> g_gpu_process_hosts;
 
 static void RunCallbackOnUI(
     GpuProcessKind kind,
@@ -913,7 +915,7 @@ bool GpuProcessHost::Init() {
     // WGL needs to create its own window and pump messages on it.
     options.message_pump_type = base::MessagePumpType::UI;
 #endif
-    options.thread_type = base::ThreadType::kCompositing;
+    options.thread_type = base::ThreadType::kDisplayCritical;
     in_process_gpu_thread_->StartWithOptions(std::move(options));
   } else if (!LaunchGpuProcess()) {
     return false;

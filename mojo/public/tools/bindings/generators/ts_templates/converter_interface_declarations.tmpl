@@ -1,0 +1,48 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+{%- for struct in typemapped_structs %}
+import type {
+  {{struct.name}}MojoType
+{%-   if not loop.last -%},{% endif %}
+} from './{{module_filename}}';
+{%- endfor %}
+
+{% for path, types in converter_imports.items()|sort -%}
+import type {
+{%- for type in types|sort %}
+  {{type}}
+{%- if not loop.last -%},{% endif -%}
+{%- endfor %}
+} from '{{path}}';
+{% endfor %}
+
+{%- for struct in typemapped_structs %}
+
+export class {{struct.name}}DataView {
+  private readonly mojoType: {{struct.name}}MojoType;
+
+  constructor(mojoType: {{struct.name}}MojoType) {
+    this.mojoType = mojoType;
+  }
+{%-    for packed_field in struct.packed.packed_fields %}
+{%-      set f = packed_field.field %}
+
+  {{f.name}}(): {{f.kind|ts_type_maybe_nullable}} {
+    return this.mojoType.{{f.name}};
+  }
+{%-   endfor %}
+}
+
+export interface {{struct.name}}TypeMapper<T> {
+  // Encoding:
+  {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
+    {%- set f = packed_field.field %}
+  {{f.name}}(mappedTyped: T): {{f.kind|ts_type_maybe_nullable}};
+  {%- endfor %}
+
+  // Decoding:
+  convert(dataView: {{struct.name}}DataView): T;
+}
+
+{% endfor -%}

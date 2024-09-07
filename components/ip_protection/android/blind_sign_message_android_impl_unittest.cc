@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -35,6 +36,13 @@ using ClientCreated =
     ::ip_protection::android::IpProtectionAuthClientInterface::ClientCreated;
 using MockClientFactory = StrictMock<
     ::testing::MockFunction<BlindSignMessageAndroidImpl::ClientFactory>>;
+
+const char kClientCreationHistogram[] =
+    "NetworkService.IpProtection.AndroidAuthClient.CreationTime";
+const char kGetInitialDataHistogram[] =
+    "NetworkService.IpProtection.AndroidAuthClient.GetInitialDataTime";
+const char kAuthAndSignHistogram[] =
+    "NetworkService.IpProtection.AndroidAuthClient.AuthAndSignTime";
 
 // These example protos aren't realistic, but they are not equal to a
 // default-initialized value. The details are arbitrary.
@@ -107,6 +115,7 @@ class BlindSignMessageAndroidImplTest : public testing::Test {
   }
 
   MockClientFactory client_factory;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<BlindSignMessageAndroidImpl> fetcher_;
 
  private:
@@ -132,6 +141,8 @@ TEST_F(BlindSignMessageAndroidImplTest,
 
   ASSERT_FALSE(result_future.Get().ok());
   EXPECT_EQ(result_future.Get().status().code(), absl::StatusCode::kInternal);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kGetInitialDataHistogram, 0);
 }
 
 TEST_F(BlindSignMessageAndroidImplTest,
@@ -167,6 +178,9 @@ TEST_F(BlindSignMessageAndroidImplTest,
 
   ASSERT_TRUE(result_future.Get().ok());
   EXPECT_EQ(result_future.Get()->status_code(), absl::StatusCode::kOk);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kGetInitialDataHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kAuthAndSignHistogram, 0);
 }
 
 TEST_F(BlindSignMessageAndroidImplTest,
@@ -200,6 +214,9 @@ TEST_F(BlindSignMessageAndroidImplTest,
 
   ASSERT_TRUE(result_future.Get().ok());
   EXPECT_EQ(result_future.Get()->status_code(), absl::StatusCode::kOk);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kGetInitialDataHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kAuthAndSignHistogram, 1);
 }
 
 TEST_F(BlindSignMessageAndroidImplTest, DoRequestHandlesPersistentError) {
@@ -266,6 +283,9 @@ TEST_F(BlindSignMessageAndroidImplTest, DoRequestHandlesPersistentError) {
   ASSERT_FALSE(auth_and_sign_result.ok());
   EXPECT_EQ(auth_and_sign_result.status().code(),
             absl::StatusCode::kFailedPrecondition);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kGetInitialDataHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kAuthAndSignHistogram, 0);
 }
 
 TEST_F(BlindSignMessageAndroidImplTest, DoRequestHandlesTransientError) {
@@ -332,6 +352,9 @@ TEST_F(BlindSignMessageAndroidImplTest, DoRequestHandlesTransientError) {
   ASSERT_FALSE(auth_and_sign_result.ok());
   EXPECT_EQ(auth_and_sign_result.status().code(),
             absl::StatusCode::kUnavailable);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kGetInitialDataHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kAuthAndSignHistogram, 0);
 }
 
 TEST_F(BlindSignMessageAndroidImplTest, DoRequestHandlesOtherErrors) {
@@ -408,6 +431,9 @@ TEST_F(BlindSignMessageAndroidImplTest, DoRequestHandlesOtherErrors) {
             absl::StatusCode::kInternal);
   // The auth client should have been torn down again.
   EXPECT_EQ(fetcher_->GetIpProtectionAuthClientForTesting(), nullptr);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 2);
+  histogram_tester_.ExpectTotalCount(kGetInitialDataHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kAuthAndSignHistogram, 0);
 }
 
 TEST_F(BlindSignMessageAndroidImplTest,
@@ -451,6 +477,7 @@ TEST_F(BlindSignMessageAndroidImplTest,
                       ExampleAuthAndSignRequestString(),
                       std::move(auth_and_sign_callback));
   EXPECT_THAT(fetcher_->GetPendingRequestsForTesting(), SizeIs(2));
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 0);
   // The creation callback should be waiting to be run.
   // Set up the mock and complete the creation, which will release the queue.
   ASSERT_TRUE(create_callback.has_value());
@@ -484,6 +511,9 @@ TEST_F(BlindSignMessageAndroidImplTest,
             absl::StatusCode::kOk);
   EXPECT_EQ(auth_and_sign_result_future.Get()->status_code(),
             absl::StatusCode::kOk);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kGetInitialDataHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kAuthAndSignHistogram, 1);
 }
 
 TEST_F(BlindSignMessageAndroidImplTest,
@@ -543,6 +573,9 @@ TEST_F(BlindSignMessageAndroidImplTest,
             absl::StatusCode::kInternal);
   EXPECT_EQ(auth_and_sign_result_future.Get().status().code(),
             absl::StatusCode::kInternal);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kGetInitialDataHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kAuthAndSignHistogram, 0);
 }
 
 TEST_F(BlindSignMessageAndroidImplTest,
@@ -582,6 +615,7 @@ TEST_F(BlindSignMessageAndroidImplTest,
   EXPECT_EQ(get_initial_data_result_future.Get().status().code(),
             absl::StatusCode::kInternal);
   EXPECT_EQ(fetcher_->GetIpProtectionAuthClientForTesting(), nullptr);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 1);
 
   // The auth client should have been torn down due to the error.
   EXPECT_EQ(fetcher_->GetIpProtectionAuthClientForTesting(), nullptr);
@@ -619,6 +653,9 @@ TEST_F(BlindSignMessageAndroidImplTest,
   EXPECT_EQ(get_initial_data_2_result_future.Get()->status_code(),
             absl::StatusCode::kOk);
   EXPECT_NE(fetcher_->GetIpProtectionAuthClientForTesting(), nullptr);
+  histogram_tester_.ExpectTotalCount(kClientCreationHistogram, 2);
+  histogram_tester_.ExpectTotalCount(kGetInitialDataHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kAuthAndSignHistogram, 0);
 }
 
 }  // namespace

@@ -584,29 +584,26 @@ GPUComputePipeline* GPUDevice::createComputePipeline(
 
 ScriptPromise<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
     ScriptState* script_state,
-    const GPURenderPipelineDescriptor* descriptor) {
+    const GPURenderPipelineDescriptor* descriptor,
+    ExceptionState& exception_state) {
+  OwnedRenderPipelineDescriptor dawn_desc_info;
+  ConvertToDawnType(script_state->GetIsolate(), this, descriptor,
+                    &dawn_desc_info, exception_state);
+  if (exception_state.HadException()) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<GPURenderPipeline>>(
-          script_state);
+          script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
+  auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
+      WTF::BindOnce(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
+                    WrapPersistent(this), descriptor->label())));
 
-  v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "GPUDevice", "createRenderPipelineAsync");
-  OwnedRenderPipelineDescriptor dawn_desc_info;
-  ConvertToDawnType(isolate, this, descriptor, &dawn_desc_info,
-                    exception_state);
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state);
-  } else {
-    auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-        WTF::BindOnce(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
-                      WrapPersistent(this), descriptor->label())));
-
-    GetHandle().CreateRenderPipelineAsync(
-        &dawn_desc_info.dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
-        callback->UnboundCallback(), callback->AsUserdata());
-  }
+  GetHandle().CreateRenderPipelineAsync(
+      &dawn_desc_info.dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
+      callback->UnboundCallback(), callback->AsUserdata());
 
   // WebGPU guarantees that promises are resolved in finite time so we need to
   // ensure commands are flushed.

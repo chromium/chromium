@@ -86,6 +86,7 @@ class SingleScrollbarAnimationControllerThinningTest
     scrollbar_layer_->SetOffsetToTransformParent(gfx::Vector2dF(90, 0));
     CreateEffectNode(scrollbar_layer_).has_potential_opacity_animation = true;
 
+    host_impl()->active_tree()->UpdateAllScrollbarGeometriesForTesting();
     UpdateActiveTreeDrawProperties();
 
     scrollbar_controller_ = SingleScrollbarAnimationControllerThinning::Create(
@@ -479,7 +480,8 @@ TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
        MouseOverHiddenBar) {
   // Scrollbars opacity value is 1.f on these tests start up. Set it 0 to
   // simulate a hidden scrollbar
-  scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(0.f);
+  scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(
+      0.f, /*fade_out_animation=*/false);
   EXPECT_FLOAT_EQ(0.f, scrollbar_layer_->Opacity());
 
   // Move mouse on top of scrollbar.

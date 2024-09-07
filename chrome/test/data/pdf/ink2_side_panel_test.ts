@@ -48,6 +48,75 @@ function assertAnnotationBrush(expectedBrush: AnnotationBrush) {
 }
 
 /**
+ * Tests that the correct brush icons are displayed, depending on what brush
+ * is selected. The brush type matching `selectedBrushType` should have a filled
+ * icon.
+ * @param selectedBrushType The expected selected brush type that should
+ * have a filled icon.
+ */
+function assertBrushIcons(selectedBrushType: AnnotationBrushType) {
+  const eraserIcon = sidePanel.$.eraser.getAttribute('iron-icon');
+  assert(eraserIcon);
+  chrome.test.assertEq(
+      selectedBrushType === AnnotationBrushType.ERASER ? 'pdf:ink-eraser-fill' :
+                                                         'pdf:ink-eraser',
+      eraserIcon);
+
+  const highlighterIcon = sidePanel.$.highlighter.getAttribute('iron-icon');
+  assert(highlighterIcon);
+  chrome.test.assertEq(
+      selectedBrushType === AnnotationBrushType.HIGHLIGHTER ?
+          'pdf:ink-highlighter-fill' :
+          'pdf:ink-highlighter',
+      highlighterIcon);
+
+  const penIcon = sidePanel.$.pen.getAttribute('iron-icon');
+  assert(penIcon);
+  chrome.test.assertEq(
+      selectedBrushType === AnnotationBrushType.PEN ? 'pdf:ink-pen-fill' :
+                                                      'pdf:ink-pen',
+      penIcon);
+}
+
+/**
+ * Tests that the brushes have correct values for the selected attribute. The
+ * brush type matching `selectedBrushType` should be selected.
+ * @param selectedBrushType The expected selected brush type.
+ */
+function assertSelectedBrush(selectedBrushType: AnnotationBrushType) {
+  const eraserSelected = sidePanel.$.eraser.dataset['selected'];
+  assert(eraserSelected);
+  chrome.test.assertEq(
+      selectedBrushType === AnnotationBrushType.ERASER ? 'true' : 'false',
+      eraserSelected);
+
+  const highlighterSelected = sidePanel.$.highlighter.dataset['selected'];
+  assert(highlighterSelected);
+  chrome.test.assertEq(
+      selectedBrushType === AnnotationBrushType.HIGHLIGHTER ? 'true' : 'false',
+      highlighterSelected);
+
+  const penSelected = sidePanel.$.pen.dataset['selected'];
+  assert(penSelected);
+  chrome.test.assertEq(
+      selectedBrushType === AnnotationBrushType.PEN ? 'true' : 'false',
+      penSelected);
+}
+
+/**
+ * Tests that the size options have corrected values for the selected attribute.
+ * The size button with index `buttonIndex` should be selected.
+ * @param buttonIndex The expected selected size button.
+ */
+function assertSelectedSize(buttonIndex: number) {
+  const sizeButtons = getSizeButtons();
+  for (let i = 0; i < sizeButtons.length; ++i) {
+    const buttonSelected = sizeButtons[i].dataset['selected'];
+    chrome.test.assertEq(i === buttonIndex ? 'true' : 'false', buttonSelected);
+  }
+}
+
+/**
  * Helper to get a non-empty list of brush size buttons.
  * @returns A list of exactly 5 size buttons.
  */
@@ -80,6 +149,9 @@ chrome.test.runTests([
       color: {r: 0, g: 0, b: 0},
       size: 3,
     });
+    assertBrushIcons(AnnotationBrushType.PEN);
+    assertSelectedBrush(AnnotationBrushType.PEN);
+    assertSelectedSize(/*buttonIndex=*/ 2);
 
     // Change the pen size.
     const sizeButtons = getSizeButtons();
@@ -91,6 +163,7 @@ chrome.test.runTests([
       color: {r: 0, g: 0, b: 0},
       size: 1,
     });
+    assertSelectedSize(/*buttonIndex=*/ 0);
 
     // Change the pen color.
     // Pens should have 20 color options.
@@ -119,6 +192,9 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 3,
     });
+    assertBrushIcons(AnnotationBrushType.ERASER);
+    assertSelectedBrush(AnnotationBrushType.ERASER);
+    assertSelectedSize(/*buttonIndex=*/ 2);
 
     // Change the eraser size.
     const sizeButtons = getSizeButtons();
@@ -129,6 +205,7 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 2,
     });
+    assertSelectedSize(/*buttonIndex=*/ 1);
 
     // There shouldn't be any color buttons.
     const colorButtons = getColorButtons();
@@ -147,6 +224,9 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 8,
     });
+    assertBrushIcons(AnnotationBrushType.HIGHLIGHTER);
+    assertSelectedBrush(AnnotationBrushType.HIGHLIGHTER);
+    assertSelectedSize(/*buttonIndex=*/ 2);
 
     // Change the highlighter size.
     const sizeButtons = getSizeButtons();
@@ -158,6 +238,7 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 16,
     });
+    assertSelectedSize(/*buttonIndex=*/ 4);
 
     // Change the highlighter color.
     // Highlighters should have 10 color options.
@@ -188,6 +269,9 @@ chrome.test.runTests([
       color: {r: 253, g: 214, b: 99},
       size: 1,
     });
+    assertBrushIcons(AnnotationBrushType.PEN);
+    assertSelectedBrush(AnnotationBrushType.PEN);
+    assertSelectedSize(/*buttonIndex=*/ 0);
 
     // Switch back to eraser. It should have the previous size.
     sidePanel.$.eraser.click();
@@ -197,6 +281,9 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 2,
     });
+    assertBrushIcons(AnnotationBrushType.ERASER);
+    assertSelectedBrush(AnnotationBrushType.ERASER);
+    assertSelectedSize(/*buttonIndex=*/ 1);
 
     // Switch back to highlighter. It should have the previous color and size.
     sidePanel.$.highlighter.click();
@@ -207,6 +294,9 @@ chrome.test.runTests([
       color: {r: 52, g: 168, b: 83},
       size: 16,
     });
+    assertBrushIcons(AnnotationBrushType.HIGHLIGHTER);
+    assertSelectedBrush(AnnotationBrushType.HIGHLIGHTER);
+    assertSelectedSize(/*buttonIndex=*/ 4);
     chrome.test.succeed();
   },
 ]);

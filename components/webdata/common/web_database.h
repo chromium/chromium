@@ -9,11 +9,16 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/webdata/common/web_database_table.h"
 #include "components/webdata/common/webdata_export.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
+
+namespace os_crypt_async {
+class Encryptor;
+}
 
 // This class manages a SQLite database that stores various web page meta data.
 class WEBDATA_EXPORT WebDatabase {
@@ -28,7 +33,7 @@ class WEBDATA_EXPORT WebDatabase {
   // Note: when changing the current version number, corresponding changes must
   // happen in the unit tests, and new migration test added to
   // `WebDatabaseMigrationTest`.
-  static constexpr int kCurrentVersionNumber = 132;
+  static constexpr int kCurrentVersionNumber = 134;
 
   // To support users who are upgrading from older versions of Chrome, we enable
   // migrating from any database version newer than `kDeprecatedVersionNumber`.
@@ -82,7 +87,10 @@ class WEBDATA_EXPORT WebDatabase {
   // Before calling this method, you must call AddTable for any
   // WebDatabaseTable objects that are supposed to participate in
   // managing the database.
-  sql::InitStatus Init(const base::FilePath& db_name);
+  //
+  // `encryptor` must not be null except in test code.
+  sql::InitStatus Init(const base::FilePath& db_name,
+                       const os_crypt_async::Encryptor* encryptor = nullptr);
 
   // Transactions management
   void BeginTransaction();
@@ -116,8 +124,7 @@ class WEBDATA_EXPORT WebDatabase {
 
   // Map of all the different tables that have been added to this
   // object. Non-owning.
-  typedef std::map<WebDatabaseTable::TypeKey, WebDatabaseTable*> TableMap;
-  TableMap tables_;
+  std::map<WebDatabaseTable::TypeKey, raw_ptr<WebDatabaseTable>> tables_;
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_H_

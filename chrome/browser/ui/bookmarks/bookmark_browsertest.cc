@@ -838,7 +838,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkPrerenderBrowsertest,
 
   // Load a prerender page and prerendering should not notify to
   // URLStarredChanged listener.
-  const int host_id = prerender_test_helper().AddPrerender(bookmark_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper().AddPrerender(bookmark_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());

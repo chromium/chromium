@@ -32,39 +32,12 @@ namespace blink {
 
 namespace {
 
-enum class FormDataType {
-  // Has only data elements.
-  kSimple,
-  // Can have data, file, and blob elements (no data pipes).
-  kComplex,
-  // Can have data and data pipe elements (no files and blobs).
-  kDataPipeAndDataOnly
-};
-
-FormDataType GetType(const EncodedFormData* form_data) {
-  FormDataType type = FormDataType::kSimple;
-  for (const auto& element : form_data->Elements()) {
-    switch (element.type_) {
-      case FormDataElement::kData:
-        break;
-      case FormDataElement::kEncodedFile:
-      case FormDataElement::kEncodedBlob:
-        DCHECK_NE(type, FormDataType::kDataPipeAndDataOnly);
-        type = FormDataType::kComplex;
-        break;
-      case FormDataElement::kDataPipe:
-        DCHECK_NE(type, FormDataType::kComplex);
-        type = FormDataType::kDataPipeAndDataOnly;
-        break;
-    }
-  }
-  return type;
-}
-
-class SimpleFormDataBytesConsumer : public BytesConsumer {
+class DataOnlyBytesConsumer : public BytesConsumer {
  public:
-  explicit SimpleFormDataBytesConsumer(scoped_refptr<EncodedFormData> form_data)
-      : form_data_(std::move(form_data)) {}
+  explicit DataOnlyBytesConsumer(scoped_refptr<EncodedFormData> form_data)
+      : form_data_(std::move(form_data)) {
+    CHECK_EQ(EncodedFormData::FormDataType::kDataOnly, form_data_->GetType());
+  }
 
   // BytesConsumer implementation
   Result BeginRead(const char** buffer, size_t* available) override {
@@ -125,7 +98,7 @@ class SimpleFormDataBytesConsumer : public BytesConsumer {
     NOTREACHED_IN_MIGRATION();
     return Error();
   }
-  String DebugName() const override { return "SimpleFormDataBytesConsumer"; }
+  String DebugName() const override { return "DataOnlyBytesConsumer"; }
 
  private:
   // Either one of |form_data_| and |flatten_form_data_| is usable at a time.
@@ -135,11 +108,13 @@ class SimpleFormDataBytesConsumer : public BytesConsumer {
   PublicState state_ = PublicState::kReadableOrWaiting;
 };
 
-class DataPipeAndDataBytesConsumer final : public BytesConsumer {
+class DataAndDataPipeBytesConsumer final : public BytesConsumer {
  public:
-  DataPipeAndDataBytesConsumer(ExecutionContext* execution_context,
+  DataAndDataPipeBytesConsumer(ExecutionContext* execution_context,
                                EncodedFormData* form_data)
       : execution_context_(execution_context) {
+    CHECK_EQ(EncodedFormData::FormDataType::kDataAndDataPipe,
+             form_data->GetType());
     // Make a copy in case |form_data| will mutate while we read it. Copy()
     // works fine; we don't need to DeepCopy() the data and data pipe getter:
     // data is just a Vector<char> and data pipe getter can be shared.
@@ -167,8 +142,8 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
       if (!simple_consumer_) {
         scoped_refptr<EncodedFormData> simple_data =
             EncodedFormData::Create(iter_->data_);
-        simple_consumer_ = MakeGarbageCollected<SimpleFormDataBytesConsumer>(
-            std::move(simple_data));
+        simple_consumer_ =
+            MakeGarbageCollected<DataOnlyBytesConsumer>(std::move(simple_data));
         if (client_)
           simple_consumer_->SetClient(client_);
       }
@@ -204,7 +179,7 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
 
         data_pipe_getter->Read(
             std::move(pipe_producer_handle),
-            WTF::BindOnce(&DataPipeAndDataBytesConsumer::DataPipeGetterCallback,
+            WTF::BindOnce(&DataAndDataPipeBytesConsumer::DataPipeGetterCallback,
                           WrapWeakPersistent(this)));
         DataPipeBytesConsumer::CompletionNotifier* completion_notifier =
             nullptr;
@@ -317,7 +292,7 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
     return error_;
   }
 
-  String DebugName() const override { return "DataPipeAndDataBytesConsumer"; }
+  String DebugName() const override { return "DataAndDataPipeBytesConsumer"; }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(execution_context_);
@@ -389,17 +364,20 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
   Vector<FormDataElement>::iterator iter_;
   Error error_;
   Member<BytesConsumer::Client> client_;
-  Member<SimpleFormDataBytesConsumer> simple_consumer_;
+  Member<DataOnlyBytesConsumer> simple_consumer_;
   Member<DataPipeBytesConsumer> data_pipe_consumer_;
   Member<DataPipeBytesConsumer::CompletionNotifier> completion_notifier_;
 };
 
-class ComplexFormDataBytesConsumer final : public BytesConsumer {
+class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
  public:
-  ComplexFormDataBytesConsumer(ExecutionContext* execution_context,
-                               scoped_refptr<EncodedFormData> form_data,
-                               BytesConsumer* consumer_for_testing)
+  DataAndEncodedFileOrBlobBytesConsumer(
+      ExecutionContext* execution_context,
+      scoped_refptr<EncodedFormData> form_data,
+      BytesConsumer* consumer_for_testing)
       : form_data_(std::move(form_data)) {
+    CHECK_EQ(EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob,
+             form_data_->GetType());
     if (consumer_for_testing) {
       blob_bytes_consumer_ = consumer_for_testing;
       return;
@@ -489,7 +467,9 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
     return blob_bytes_consumer_->GetPublicState();
   }
   Error GetError() const override { return blob_bytes_consumer_->GetError(); }
-  String DebugName() const override { return "ComplexFormDataBytesConsumer"; }
+  String DebugName() const override {
+    return "DataAndEncodedFileOrBlobBytesConsumer";
+  }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(blob_bytes_consumer_);
@@ -504,9 +484,8 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
 }  // namespace
 
 FormDataBytesConsumer::FormDataBytesConsumer(const String& string)
-    : impl_(MakeGarbageCollected<SimpleFormDataBytesConsumer>(
-          EncodedFormData::Create(
-              UTF8Encoding().Encode(string, WTF::kNoUnencodables)))) {}
+    : impl_(MakeGarbageCollected<DataOnlyBytesConsumer>(EncodedFormData::Create(
+          UTF8Encoding().Encode(string, WTF::kNoUnencodables)))) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBuffer* buffer)
     : FormDataBytesConsumer(
@@ -519,11 +498,11 @@ FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBufferView* view)
           base::checked_cast<wtf_size_t>(view->byteLength())) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(SegmentedBuffer&& buffer)
-    : impl_(MakeGarbageCollected<SimpleFormDataBytesConsumer>(
+    : impl_(MakeGarbageCollected<DataOnlyBytesConsumer>(
           EncodedFormData::Create(std::move(buffer)))) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(const void* data, wtf_size_t size)
-    : impl_(MakeGarbageCollected<SimpleFormDataBytesConsumer>(
+    : impl_(MakeGarbageCollected<DataOnlyBytesConsumer>(
           EncodedFormData::Create(data, size))) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(
@@ -545,16 +524,17 @@ BytesConsumer* FormDataBytesConsumer::GetImpl(
     scoped_refptr<EncodedFormData> form_data,
     BytesConsumer* consumer_for_testing) {
   DCHECK(form_data);
-  switch (GetType(form_data.get())) {
-    case FormDataType::kSimple:
-      return MakeGarbageCollected<SimpleFormDataBytesConsumer>(
-          std::move(form_data));
-    case FormDataType::kComplex:
-      return MakeGarbageCollected<ComplexFormDataBytesConsumer>(
+  switch (form_data->GetType()) {
+    case EncodedFormData::FormDataType::kDataOnly:
+      return MakeGarbageCollected<DataOnlyBytesConsumer>(std::move(form_data));
+    case EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob:
+      return MakeGarbageCollected<DataAndEncodedFileOrBlobBytesConsumer>(
           execution_context, std::move(form_data), consumer_for_testing);
-    case FormDataType::kDataPipeAndDataOnly:
-      return MakeGarbageCollected<DataPipeAndDataBytesConsumer>(
+    case EncodedFormData::FormDataType::kDataAndDataPipe:
+      return MakeGarbageCollected<DataAndDataPipeBytesConsumer>(
           execution_context, form_data.get());
+    case EncodedFormData::FormDataType::kInvalid:
+      NOTREACHED();
   }
   return nullptr;
 }

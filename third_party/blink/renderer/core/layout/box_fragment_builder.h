@@ -74,12 +74,16 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
     border_padding_ =
         initial_fragment_geometry.border + initial_fragment_geometry.padding;
-    border_scrollbar_padding_ =
-        initial_fragment_geometry.border + initial_fragment_geometry.scrollbar;
-    // Padding doesn't take up layout space in fieldset containers (that's done
-    // inside the anonymous child wrapper).
-    if (!node_ || !node_.IsFieldsetContainer()) {
-      border_scrollbar_padding_ += initial_fragment_geometry.padding;
+
+    // Box decorations don't take up layout space in table rows / sections.
+    if (!node_ || (!node_.IsTableSection() && !node_.IsTableRow())) {
+      border_scrollbar_padding_ = initial_fragment_geometry.border +
+                                  initial_fragment_geometry.scrollbar;
+      // Padding doesn't take up layout space in fieldset containers (that's
+      // done inside the anonymous child wrapper).
+      if (!node_ || !node_.IsFieldsetContainer()) {
+        border_scrollbar_padding_ += initial_fragment_geometry.padding;
+      }
     }
     original_border_scrollbar_padding_block_start_ =
         border_scrollbar_padding_.block_start;
@@ -230,6 +234,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void ClearBorderScrollbarPaddingBlockStart() {
     border_scrollbar_padding_.block_start = LayoutUnit();
   }
+  void ClearBorderScrollbarPaddingBlockEnd() {
+    border_scrollbar_padding_.block_end = LayoutUnit();
+  }
   void UpdateBorderPaddingForClonedBoxDecorations();
 
   // The child available-size is subtly different from the content-box size of
@@ -333,6 +340,13 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   }
   void SetShouldCloneBoxEndDecorations(bool b) {
     should_clone_box_end_decorations_ = b;
+  }
+
+  void SetShouldPreventBreakBeforeBlockEndDecorations(bool b) {
+    should_prevent_break_before_block_end_decorations_ = b;
+  }
+  bool ShouldPreventBreakBeforeBlockEndDecorations() const {
+    return should_prevent_break_before_block_end_decorations_;
   }
 
   void SetIsMonolithic(bool b) { is_monolithic_ = b; }
@@ -707,6 +721,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   bool is_monolithic_ = true;
   bool is_first_for_node_ = true;
   bool should_clone_box_end_decorations_ = false;
+  bool should_prevent_break_before_block_end_decorations_ = false;
   bool did_break_self_ = false;
   bool has_inflow_child_break_inside_ = false;
   bool has_forced_break_ = false;

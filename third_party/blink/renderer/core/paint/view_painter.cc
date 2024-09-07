@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
@@ -342,6 +343,13 @@ void ViewPainter::PaintRootElementGroup(
     } else {
       background_image_offset = -root_object->FirstFragment().PaintOffset();
     }
+
+    if (box_fragment_.GetBoxType() == PhysicalFragment::kPageContainer) {
+      // Background image origin is at the border box edge. A page container
+      // fragment covers the entire page box. Add the offset to the page border
+      // box fragment, to get past the margins.
+      background_image_offset -= GetPageBorderBoxLink(box_fragment_).offset;
+    }
   }
 
   bool should_clear_canvas =
@@ -422,11 +430,10 @@ void ViewPainter::PaintRootElementGroup(
     context.FillRect(paint_rect, Color(), auto_dark_mode, SkBlendMode::kClear);
   }
 
-  BoxBackgroundPaintContext bg_paint_context(layout_view,
+  BoxBackgroundPaintContext bg_paint_context(layout_view, &box_fragment_,
                                              background_image_offset);
   BoxModelObjectPainter box_model_painter(layout_view);
   for (const auto* fill_layer : base::Reversed(reversed_paint_list)) {
-    DCHECK(fill_layer->Clip() == EFillBox::kBorder);
     box_model_painter.PaintFillLayer(paint_info, Color(), *fill_layer,
                                      PhysicalRect(paint_rect),
                                      kBackgroundBleedNone, bg_paint_context);

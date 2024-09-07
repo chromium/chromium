@@ -75,6 +75,12 @@ class CORE_EXPORT CSSParser {
                                    MutableCSSPropertyValueSet*,
                                    const String&);
 
+  static StyleRuleBase* ParseNestedDeclarationsRule(
+      const CSSParserContext*,
+      CSSNestingType,
+      StyleRule* parent_rule_for_nesting,
+      StringView);
+
   static MutableCSSPropertyValueSet::SetResult ParseValue(
       MutableCSSPropertyValueSet*,
       CSSPropertyID unresolved_property,
@@ -132,7 +138,8 @@ class CORE_EXPORT CSSParser {
   static bool ParseSystemColor(Color&,
                                const String&,
                                mojom::blink::ColorScheme color_scheme,
-                               const ui::ColorProvider* color_provider);
+                               const ui::ColorProvider* color_provider,
+                               bool is_in_web_app_scope);
 
   static void ParseSheetForInspector(const CSSParserContext*,
                                      StyleSheetContents*,

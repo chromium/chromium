@@ -16,6 +16,7 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "net/cookies/canonical_cookie.h"
@@ -67,9 +68,10 @@ enum class PrefetchRedirectNetworkContextTransition {
 // needed.
 class CONTENT_EXPORT PrefetchService {
  public:
-  static PrefetchService* GetFromFrameTreeNodeId(int frame_tree_node_id);
+  static PrefetchService* GetFromFrameTreeNodeId(
+      FrameTreeNodeId frame_tree_node_id);
   static void SetFromFrameTreeNodeIdForTesting(
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       std::unique_ptr<PrefetchService> prefetch_service);
 
   // |browser_context| must outlive this instance. In general this should always
@@ -148,6 +150,14 @@ class CONTENT_EXPORT PrefetchService {
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
   GetAllForUrlWithoutRefAndQueryForTesting(
       const PrefetchContainer::Key& key) const;
+
+  // Helper function for |GetPrefetchToServe|, which collects
+  // |PrefetchContainer|s that are potentially matching. Corresponds to 3.4. of
+  // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
+  std::vector<PrefetchContainer*> CollectPotentiallyMatchingPrefetchContainers(
+      const PrefetchContainer::Key& key,
+      base::WeakPtr<PrefetchServingPageMetricsContainer>
+          serving_page_metrics_container);
 
   base::WeakPtr<PrefetchService> GetWeakPtr();
 
@@ -342,14 +352,6 @@ class CONTENT_EXPORT PrefetchService {
       base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
       PrefetchContainer& prefetch_container);
 
-  // Helper function for |GetPrefetchToServe|, which collects
-  // |PrefetchContainer|s that are potentially matching. Corresponds to 3.4. of
-  // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
-  std::vector<PrefetchContainer*> CollectPotentiallyMatchingPrefetchContainers(
-      const PrefetchContainer::Key& key,
-      base::WeakPtr<PrefetchServingPageMetricsContainer>
-          serving_page_metrics_container);
-
   // Helper function for |GetPrefetchToServe| which handles a
   // |prefetch_container| that could potentially be served to the navigation.
   HandlePrefetchContainerResult HandlePrefetchContainerToServe(
@@ -382,8 +384,8 @@ class CONTENT_EXPORT PrefetchService {
   // not started yet.
   std::vector<base::WeakPtr<PrefetchContainer>> prefetch_queue_;
 
-  // The set of prefetches with in progress requests.
-  std::set<PrefetchContainer::Key> active_prefetches_;
+  // Current prefetch with an in-progress request (if any).
+  std::optional<PrefetchContainer::Key> active_prefetch_;
 
   // Prefetches owned by |this|. Once the network request for a prefetch is
   // started, |this| takes ownership of the prefetch so the response can be used

@@ -9,7 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
-import {ContentSettingProvider} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {DefaultSettingSource} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {getTemplate} from './anti_abuse_page.html.js';
 
@@ -97,18 +97,18 @@ export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
         ContentSettingsTypes.ANTI_ABUSE);
 
     if (defaultValue.source !== undefined &&
-        defaultValue.source !== ContentSettingProvider.PREFERENCE) {
+        defaultValue.source !== DefaultSettingSource.PREFERENCE) {
       this.set(
           'pref_.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
       let controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
       switch (defaultValue.source) {
-        case ContentSettingProvider.POLICY:
+        case DefaultSettingSource.POLICY:
           controlledBy = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
           break;
-        case ContentSettingProvider.SUPERVISED_USER:
+        case DefaultSettingSource.SUPERVISED_USER:
           controlledBy = chrome.settingsPrivate.ControlledBy.PARENT;
           break;
-        case ContentSettingProvider.EXTENSION:
+        case DefaultSettingSource.EXTENSION:
           controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
           break;
       }

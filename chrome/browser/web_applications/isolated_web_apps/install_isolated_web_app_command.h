@@ -49,12 +49,14 @@ enum class WebAppUrlLoaderResult;
 namespace web_app {
 
 struct InstallIsolatedWebAppCommandSuccess {
-  InstallIsolatedWebAppCommandSuccess(base::Version installed_version,
+  InstallIsolatedWebAppCommandSuccess(IsolatedWebAppUrlInfo url_info,
+                                      base::Version installed_version,
                                       IsolatedWebAppStorageLocation location);
   InstallIsolatedWebAppCommandSuccess(
       const InstallIsolatedWebAppCommandSuccess& other);
   ~InstallIsolatedWebAppCommandSuccess();
 
+  IsolatedWebAppUrlInfo url_info;
   base::Version installed_version;
   IsolatedWebAppStorageLocation location;
 };

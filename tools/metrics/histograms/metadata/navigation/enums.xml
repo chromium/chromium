@@ -26,6 +26,27 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AnimationAbortReason">
+  <int value="0" label="Render Widget Host Destroyed"/>
+  <int value="1" label="Main Commit On Subframe Transition"/>
+  <int value="2" label="New Commit In Primary Main Frame"/>
+  <int value="3" label="Cross Origin Redirect"/>
+  <int value="4" label="New Commit While Displaying Invoke Animation"/>
+  <int value="5" label="New Commit While Displaying Canceled Animation"/>
+  <int value="6" label="New Commit While Waiting For New Renderer To Draw"/>
+  <int value="7"
+      label="New Commit While Waiting For Content For Navigation Entry Shown"/>
+  <int value="8" label="New Commit While Displaying Cross Fade Animation"/>
+  <int value="9" label="New Commit While Waiting For Before Unload Response"/>
+  <int value="10" label="Multiple Navigation Requests Created"/>
+  <int value="11" label="Navigation Entry Deleted Before Commit"/>
+  <int value="12" label="Post Navigation First Frame Timeout"/>
+  <int value="13" label="Chained Back"/>
+  <int value="14" label="Detached From Window"/>
+  <int value="15" label="Root Window Visibility Changed"/>
+  <int value="16" label="Compositor Detached"/>
+</enum>
+
 <enum name="AutomaticBeaconOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="No transient user activation"/>
@@ -1748,12 +1769,15 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PrerenderWaitingForHeadersFinishedReason) -->
 
 <enum name="PrerenderWaitingForHeadersFinishedReason">
-  <int value="0" label="NoVarySearchHeaderReceived"/>
+  <int value="0" label="NoVarySearchHeaderReceived (deprecated)"/>
   <int value="1" label="NoVarySearchHeaderNotReceived"/>
   <int value="2" label="NoVarySearchHeaderParseFailed"/>
   <int value="3" label="HostDestroyed"/>
   <int value="4" label="TimeoutElapsed"/>
   <int value="5" label="MaybeNavigationCancelled"/>
+  <int value="6" label="NoVarySearchHeaderReceivedAndMatched"/>
+  <int value="7" label="NoVarySearchHeaderReceivedButNotMatched"/>
+  <int value="8" label="NoVarySearchHeaderReceivedButDefaultValue"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:WaitingForHeadersFinishedReason) -->

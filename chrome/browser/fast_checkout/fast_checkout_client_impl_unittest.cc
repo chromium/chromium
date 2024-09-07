@@ -127,8 +127,6 @@ std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
   return personal_data_manager;
 }
 
-}  // namespace
-
 class MockFastCheckoutController : public FastCheckoutController {
  public:
   MockFastCheckoutController() : FastCheckoutController() {}
@@ -252,6 +250,10 @@ class MockFastCheckoutAccessibilityService
 
   MOCK_METHOD(void, Announce, (const std::u16string&), (override));
 };
+
+}  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 // TODO(crbug.com/348576043) : Tests are failing on android-arm64-tests builder.
 class DISABLED_FastCheckoutClientImplTest

@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">See sait ei saa teilt luba küsida</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Küsige abi<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Lülitage Bluetooth sisse<ph name="END_LINK" />, et sidumine lubada</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> vajab teie käeliigutuste jälgimiseks luba.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Hankige abi<ph name="END_LINK" />, kuni seadmeid otsitakse …</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> vajab selle saidi puhul luba, et teie mikrofonile juurde pääseda.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> soovib otsida läheduses olevaid Bluetooth-seadmeid. Leiti järgmised seadmed:</translation>

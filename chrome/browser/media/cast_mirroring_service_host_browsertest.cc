@@ -272,7 +272,7 @@ class CastMirroringServiceHostBrowserTest
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
-    int web_contents_source_tab_id =
+    content::FrameTreeNodeId web_contents_source_tab_id =
         web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
     ASSERT_NE(host_->GetTabSourceId(), web_contents_source_tab_id);

@@ -240,6 +240,22 @@ enum ForcePseudoClassFlags {
   kPseudoFocusWithin = 1 << 4,
   kPseudoFocusVisible = 1 << 5,
   kPseudoTarget = 1 << 6,
+  kPseudoEnabled = 1 << 7,
+  kPseudoDisabled = 1 << 8,
+  kPseudoValid = 1 << 9,
+  kPseudoInvalid = 1 << 10,
+  kPseudoUserValid = 1 << 11,
+  kPseudoUserInvalid = 1 << 12,
+  kPseudoRequired = 1 << 13,
+  kPseudoOptional = 1 << 14,
+  kPseudoReadOnly = 1 << 15,
+  kPseudoReadWrite = 1 << 16,
+  kPseudoInRange = 1 << 17,
+  kPseudoOutOfRange = 1 << 18,
+  kPseudoChecked = 1 << 19,
+  kPseudoIndeterminate = 1 << 20,
+  kPseudoPlaceholderShown = 1 << 21,
+  kPseudoAutofill = 1 << 22,
 };
 
 static unsigned ComputePseudoClassMask(
@@ -250,28 +266,78 @@ static unsigned ComputePseudoClassMask(
   DEFINE_STATIC_LOCAL(String, focusVisible, ("focus-visible"));
   DEFINE_STATIC_LOCAL(String, focusWithin, ("focus-within"));
   DEFINE_STATIC_LOCAL(String, target, ("target"));
+  // Specific pseudo states
+  DEFINE_STATIC_LOCAL(String, enabled, ("enabled"));
+  DEFINE_STATIC_LOCAL(String, disabled, ("disabled"));
+  DEFINE_STATIC_LOCAL(String, valid, ("valid"));
+  DEFINE_STATIC_LOCAL(String, invalid, ("invalid"));
+  DEFINE_STATIC_LOCAL(String, userValid, ("user-valid"));
+  DEFINE_STATIC_LOCAL(String, userInvalid, ("user-invalid"));
+  DEFINE_STATIC_LOCAL(String, required, ("required"));
+  DEFINE_STATIC_LOCAL(String, optional, ("optional"));
+  DEFINE_STATIC_LOCAL(String, readOnly, ("read-only"));
+  DEFINE_STATIC_LOCAL(String, readWrite, ("read-write"));
+  DEFINE_STATIC_LOCAL(String, inRange, ("in-range"));
+  DEFINE_STATIC_LOCAL(String, outOfRange, ("out-of-range"));
   DEFINE_STATIC_LOCAL(String, visited, ("visited"));
+  DEFINE_STATIC_LOCAL(String, checked, ("checked"));
+  DEFINE_STATIC_LOCAL(String, indeterminate, ("indeterminate"));
+  DEFINE_STATIC_LOCAL(String, placeholderShown, ("placeholder-shown"));
+  DEFINE_STATIC_LOCAL(String, autofill, ("autofill"));
+
   if (!pseudo_class_array || pseudo_class_array->empty())
     return kPseudoNone;
 
   unsigned result = kPseudoNone;
   for (const String& pseudo_class : *pseudo_class_array) {
-    if (pseudo_class == active)
+    if (pseudo_class == active) {
       result |= kPseudoActive;
-    else if (pseudo_class == hover)
+    } else if (pseudo_class == hover) {
       result |= kPseudoHover;
-    else if (pseudo_class == focus)
+    } else if (pseudo_class == focus) {
       result |= kPseudoFocus;
-    else if (pseudo_class == focusVisible)
+    } else if (pseudo_class == focusVisible) {
       result |= kPseudoFocusVisible;
-    else if (pseudo_class == focusWithin)
+    } else if (pseudo_class == focusWithin) {
       result |= kPseudoFocusWithin;
-    else if (pseudo_class == target)
+    } else if (pseudo_class == target) {
       result |= kPseudoTarget;
-    else if (pseudo_class == visited)
+    } else if (pseudo_class == enabled) {
+      result |= kPseudoEnabled;
+    } else if (pseudo_class == disabled) {
+      result |= kPseudoDisabled;
+    } else if (pseudo_class == valid) {
+      result |= kPseudoValid;
+    } else if (pseudo_class == invalid) {
+      result |= kPseudoInvalid;
+    } else if (pseudo_class == userValid) {
+      result |= kPseudoUserValid;
+    } else if (pseudo_class == userInvalid) {
+      result |= kPseudoUserInvalid;
+    } else if (pseudo_class == required) {
+      result |= kPseudoRequired;
+    } else if (pseudo_class == optional) {
+      result |= kPseudoOptional;
+    } else if (pseudo_class == readOnly) {
+      result |= kPseudoReadOnly;
+    } else if (pseudo_class == readWrite) {
+      result |= kPseudoReadWrite;
+    } else if (pseudo_class == inRange) {
+      result |= kPseudoInRange;
+    } else if (pseudo_class == outOfRange) {
+      result |= kPseudoOutOfRange;
+    } else if (pseudo_class == visited) {
       result |= kPseudoVisited;
+    } else if (pseudo_class == checked) {
+      result |= kPseudoChecked;
+    } else if (pseudo_class == indeterminate) {
+      result |= kPseudoIndeterminate;
+    } else if (pseudo_class == placeholderShown) {
+      result |= kPseudoPlaceholderShown;
+    } else if (pseudo_class == autofill) {
+      result |= kPseudoAutofill;
+    }
   }
-
   return result;
 }
 
@@ -928,8 +994,56 @@ void InspectorCSSAgent::ForcePseudoState(Element* element,
     case CSSSelector::kPseudoTarget:
       force = forced_pseudo_state & kPseudoTarget;
       break;
+    case CSSSelector::kPseudoEnabled:
+      force = forced_pseudo_state & kPseudoEnabled;
+      break;
+    case CSSSelector::kPseudoDisabled:
+      force = forced_pseudo_state & kPseudoDisabled;
+      break;
+    case CSSSelector::kPseudoValid:
+      force = forced_pseudo_state & kPseudoValid;
+      break;
+    case CSSSelector::kPseudoInvalid:
+      force = forced_pseudo_state & kPseudoInvalid;
+      break;
+    case CSSSelector::kPseudoUserValid:
+      force = forced_pseudo_state & kPseudoUserValid;
+      break;
+    case CSSSelector::kPseudoUserInvalid:
+      force = forced_pseudo_state & kPseudoUserInvalid;
+      break;
+    case CSSSelector::kPseudoRequired:
+      force = forced_pseudo_state & kPseudoRequired;
+      break;
+    case CSSSelector::kPseudoOptional:
+      force = forced_pseudo_state & kPseudoOptional;
+      break;
+    case CSSSelector::kPseudoReadOnly:
+      force = forced_pseudo_state & kPseudoReadOnly;
+      break;
+    case CSSSelector::kPseudoReadWrite:
+      force = forced_pseudo_state & kPseudoReadWrite;
+      break;
+    case CSSSelector::kPseudoInRange:
+      force = forced_pseudo_state & kPseudoInRange;
+      break;
+    case CSSSelector::kPseudoOutOfRange:
+      force = forced_pseudo_state & kPseudoOutOfRange;
+      break;
     case CSSSelector::kPseudoVisited:
       force = forced_pseudo_state & kPseudoVisited;
+      break;
+    case CSSSelector::kPseudoChecked:
+      force = forced_pseudo_state & kPseudoChecked;
+      break;
+    case CSSSelector::kPseudoIndeterminate:
+      force = forced_pseudo_state & kPseudoIndeterminate;
+      break;
+    case CSSSelector::kPseudoPlaceholderShown:
+      force = forced_pseudo_state & kPseudoPlaceholderShown;
+      break;
+    case CSSSelector::kPseudoAutofill:
+      force = forced_pseudo_state & kPseudoAutofill;
       break;
     default:
       break;
@@ -2347,6 +2461,7 @@ protocol::Response InspectorCSSAgent::forcePseudoState(
   unsigned current_forced_pseudo_state =
       it == node_id_to_forced_pseudo_state_.end() ? 0 : it->value;
   bool need_style_recalc = forced_pseudo_state != current_forced_pseudo_state;
+
   if (!need_style_recalc)
     return protocol::Response::Success();
 

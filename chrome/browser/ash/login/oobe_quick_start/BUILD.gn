@@ -57,6 +57,7 @@ source_set("unit_tests") {
 
   deps = [
     ":oobe_quick_start",
+    ":oobe_quick_start_pref_names",
     "connectivity:test_support",
     "connectivity:unit_tests",
     "//base",

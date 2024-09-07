@@ -60,6 +60,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
+#include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
@@ -240,6 +241,9 @@ void RecordDownloadBlocklistState(download::DownloadItem* item) {
 void CleanupAppVerificationTimestamps(download::DownloadItem* item) {
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
+  if (!profile || !profile->GetPrefs()) {
+    return;
+  }
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               prefs::kDownloadAppVerificationPromptTimestamps);
   update->EraseIf([](const base::Value& timestamp) {
@@ -258,6 +262,9 @@ bool HasSeenTooManyAppVerificationPrompts(download::DownloadItem* item) {
   constexpr size_t kMaxImpressions = 3;
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
   return profile->GetPrefs()
              ->GetList(prefs::kDownloadAppVerificationPromptTimestamps)
              .size() >= kMaxImpressions;
@@ -266,6 +273,9 @@ bool HasSeenTooManyAppVerificationPrompts(download::DownloadItem* item) {
 void LogAppVerificationPromptToPrefs(download::DownloadItem* item) {
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
+  if (!profile || !profile->GetPrefs()) {
+    return;
+  }
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               prefs::kDownloadAppVerificationPromptTimestamps);
   update->Append(base::TimeToValue(base::Time::Now()));
@@ -308,16 +318,25 @@ static void JNI_DownloadController_CancelDownload(JNIEnv* env,
   }
 }
 
-static void JNI_DownloadController_DownloadUrl(JNIEnv* env,
-                                               std::string& url,
-                                               Profile* profile) {
+static void JNI_DownloadController_DownloadUrl(
+    JNIEnv* env,
+    std::string& url,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  DownloadManager* download_manager = profile->GetDownloadManager();
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return;
+  }
+
+  DownloadManager* download_manager =
+      web_contents->GetBrowserContext()->GetDownloadManager();
   if (download_manager) {
-    auto dl_params = std::make_unique<download::DownloadUrlParameters>(
-        GURL(url),
-        TRAFFIC_ANNOTATION_WITHOUT_PROTO("Download via toolbar menu"));
+    std::unique_ptr<download::DownloadUrlParameters> dl_params =
+        content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+            web_contents, GURL(url),
+            TRAFFIC_ANNOTATION_WITHOUT_PROTO("Download via toolbar menu"));
     dl_params->set_content_initiated(false);
     dl_params->set_download_source(download::DownloadSource::TOOLBAR_MENU);
     download_manager->DownloadUrl(std::move(dl_params));
@@ -608,8 +627,10 @@ void DownloadController::OnDownloadComplete(download::DownloadItem* item) {
   // Call onDownloadCompleted
   TabAndroid* tab = nullptr;
   if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline)) {
+    // Primary page of the WebContents have changed when showing the native
+    // page, need to call GetOriginalWebContents() instead.
     content::WebContents* web_contents =
-        content::DownloadItemUtils::GetWebContents(item);
+        content::DownloadItemUtils::GetOriginalWebContents(item);
     if (web_contents) {
       tab = TabAndroid::FromWebContents(web_contents);
     }

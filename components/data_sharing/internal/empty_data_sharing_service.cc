@@ -82,4 +82,17 @@ void EmptyDataSharingService::EnsureGroupVisibility(
     const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
 
+void EmptyDataSharingService::GetSharedEntitiesPreview(
+    const GroupToken& group_token,
+    base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
+        callback) {}
+
+DataSharingUIDelegate* EmptyDataSharingService::GetUIDelegate() {
+  return nullptr;
+}
+
+DataSharingService::ServiceStatus EmptyDataSharingService::GetServiceStatus() {
+  return DataSharingService::ServiceStatus();
+}
+
 }  // namespace data_sharing

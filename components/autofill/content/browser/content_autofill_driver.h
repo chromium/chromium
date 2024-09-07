@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_H_
 
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
@@ -181,7 +183,9 @@ class ContentAutofillDriver : public AutofillDriver,
   //     (1a) Broadcast events are sent to many AutofillAgents.
   //     (1b) Routed events are sent to a single AutofillAgent, which may
   //          be not this driver's AutofillAgent.
-  //     (1c) Unrouted events are sent to this driver's AutofillAgent.
+  //     (1c) Main-frame events are sent to the driver's main frame's
+  //          AutofillAgent.
+  //     (1d) Unrouted events are sent to this driver's AutofillAgent.
   // (2) Renderer -> browser (mojom::AutofillDriver):
   //     These events are triggered by an AutofillAgent and are passed to one or
   //     multiple AutofillManagers. They fall into two groups:
@@ -229,13 +233,15 @@ class ContentAutofillDriver : public AutofillDriver,
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
       override;
 
-  // Group (1c): browser -> renderer events, unrouted (see comment above).
+  // Group (1c): browser -> renderer events, directed to to this driver's main
+  // driver (see comment above).
   // autofill::AutofillDriver:
-  // TODO(crbug.com/40209327): This event is currently not routed, but it looks
-  // like it should be breadcast to all renderers.
-  void GetFourDigitCombinationsFromDOM(
+  void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
+
+  // Group (1d): browser -> renderer events, unrouted (see comment above).
+  // autofill::AutofillDriver:
   void TriggerFormExtractionInDriverFrame(
       AutofillDriverRouterAndFormForestPassKey pass_key) override;
 

@@ -72,19 +72,22 @@
 <template is="dom-if" if="[[showingInput_]]">
   <cr-input id="input" class="stroked" value="[[subtitle]]"
     on-keydown="onInputKeyDown_"
-    on-blur="onInputBlur_">
+    on-blur="onInputBlur_"
+    aria-label="$i18n{tableNameInputA11yLabel}">
   </cr-input>
   <div class="spacer"></div>
 </template>
 <template is="dom-if" if="[[!showingInput_]]">
   <div class="title-text" id="subtitle" hidden="[[!subtitle]]"
-      on-click="onRenaming_">
+      on-click="onRenaming_" on-keydown="onSubtitleKeyDown_" role="textbox"
+      tabindex="0">
     [[subtitle]]
   </div>
 </template>
 <cr-icon-button id="menuButton" class="icon-more-vert" on-click="showMenu_"
     disabled="[[menuButtonDisabled]]"
-    hidden="[[!subtitle]]">
+    hidden="[[!subtitle]]"
+    aria-label="$i18n{tableMenuA11yLabel}">
 </cr-icon-button>
 
 <header-menu id="menu" on-close="onCloseMenu_" on-rename-click="onRenaming_">

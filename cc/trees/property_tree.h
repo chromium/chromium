@@ -231,6 +231,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 
   void SetRootScaleAndTransform(float device_scale_factor,
                                 const gfx::Transform& device_transform);
+  void set_device_transform_scale_factor(float device_transform_scale_factor) {
+    device_transform_scale_factor_ = device_transform_scale_factor;
+  }
   float device_transform_scale_factor() const {
     return device_transform_scale_factor_;
   }
@@ -244,6 +247,25 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   const std::vector<int>& nodes_affected_by_outer_viewport_bounds_delta()
       const {
     return nodes_affected_by_outer_viewport_bounds_delta_;
+  }
+  void set_nodes_affected_by_outer_viewport_bounds_delta(
+      std::vector<int> nodes) {
+    nodes_affected_by_outer_viewport_bounds_delta_ = std::move(nodes);
+  }
+
+  const std::vector<StickyPositionNodeData>& sticky_position_data() const {
+    return sticky_position_data_;
+  }
+  std::vector<StickyPositionNodeData>& sticky_position_data() {
+    return sticky_position_data_;
+  }
+
+  const std::vector<AnchorPositionScrollData>& anchor_position_scroll_data()
+      const {
+    return anchor_position_scroll_data_;
+  }
+  std::vector<AnchorPositionScrollData>& anchor_position_scroll_data() {
+    return anchor_position_scroll_data_;
   }
 
   const gfx::Transform& FromScreen(int node_id) const;
@@ -338,7 +360,7 @@ struct CC_EXPORT AnchorPositionScrollData {
   bool needs_scroll_adjustment_in_y = false;
 };
 
-struct StickyPositionNodeData {
+struct CC_EXPORT StickyPositionNodeData {
   int scroll_ancestor;
   StickyPositionConstraint constraints;
 
@@ -360,6 +382,8 @@ struct StickyPositionNodeData {
       : scroll_ancestor(kInvalidPropertyNodeId),
         nearest_node_shifting_sticky_box(kInvalidPropertyNodeId),
         nearest_node_shifting_containing_block(kInvalidPropertyNodeId) {}
+
+  bool operator==(const StickyPositionNodeData&) const;
 };
 
 class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
@@ -722,9 +746,11 @@ struct PropertyTreesCachedData {
   ~PropertyTreesCachedData();
 };
 
-struct PropertyTreesChangeState {
+struct CC_EXPORT PropertyTreesChangeState {
   PropertyTreesChangeState();
   ~PropertyTreesChangeState();
+  PropertyTreesChangeState(PropertyTreesChangeState&&);
+  PropertyTreesChangeState& operator=(PropertyTreesChangeState&&);
   bool changed = false;
   bool needs_rebuild = false;
   bool full_tree_damaged = false;

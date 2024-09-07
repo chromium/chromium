@@ -223,6 +223,8 @@ chromium-metrics-reviews@google.com.
       summary="encourages users to turn on high efficiency mode"/>
   <variant name="IPH_HistorySearch"
       summary="Prompting users to try history search powered by AI."/>
+  <variant name="IPH_HomeCustomizationMenu"
+      summary="Home customization menu entrypoint on the NTP"/>
   <variant name="IPH_IdentityDisc" summary="Identity Disc"/>
   <variant name="IPH_IncognitoWindow" summary="incognito window"/>
   <variant name="IPH_InstanceSwitcher" summary="instance switcher"/>
@@ -521,6 +523,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_SignoutWebIntercept"
       summary="A message shown after the user signs out of a Google service
                on the web explaining that it does not sign them out of Chrome"/>
+  <variant name="IPH_SupervisedUserProfileSignin"
+      summary="IPH mesagage shown on supervised user's signininforming them
+               about the applied parental controls."/>
   <variant name="IPH_TabAudioMuting" summary="muting tab audio"/>
   <variant name="IPH_TabGroupsDragAndDrop"
       summary="educating user to drop one tab on another tab to create group"/>
@@ -545,6 +550,8 @@ chromium-metrics-reviews@google.com.
       summary="tab organization success"/>
   <variant name="IPH_TabSearch" summary="tab search discovery"/>
   <variant name="IPH_TabSwitcherButton" summary="tab switcher button"/>
+  <variant name="IPH_TabSwitcherButtonSwitchIncognito"
+      summary="Switch to incognito via tab switcher button"/>
   <variant name="IPH_TabSwitcherFloatingActionButton"
       summary="tab switcher floating action button"/>
   <variant name="IPH_ToolbarManagementButton"
@@ -745,7 +752,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 </histogram>
 
 <histogram name="UserEducation.RotatingPromoIndex.{IPHFeature}" units="Index"
-    expires_after="2025-01-01">
+    expires_after="2025-03-02">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

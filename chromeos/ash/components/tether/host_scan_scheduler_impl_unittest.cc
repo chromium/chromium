@@ -54,7 +54,7 @@ class HostScanSchedulerImplTest : public testing::Test {
  protected:
   void SetUp() override {
     helper_ = std::make_unique<NetworkStateTestHelper>(
-        true /* use_default_devices_and_services */);
+        /*use_default_devices_and_services=*/true);
 
     histogram_tester_ = std::make_unique<base::HistogramTester>();
 

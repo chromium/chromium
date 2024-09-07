@@ -417,7 +417,7 @@ std::optional<std::string_view> DataPack::GetStringPiece(
 base::RefCountedStaticMemory* DataPack::GetStaticMemory(
     uint16_t resource_id) const {
   if (auto piece = GetStringPiece(resource_id); piece.has_value()) {
-    return new base::RefCountedStaticMemory(piece->data(), piece->length());
+    return new base::RefCountedStaticMemory(base::as_byte_span(*piece));
   }
   return nullptr;
 }

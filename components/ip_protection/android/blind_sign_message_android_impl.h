@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_message_interface.h"
@@ -105,6 +106,7 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
   void ProcessPendingRequests();
 
   void OnCreateIpProtectionAuthClientComplete(
+      base::TimeTicks start_time,
       base::expected<std::unique_ptr<IpProtectionAuthClientInterface>,
                      std::string> ip_protection_auth_client);
 
@@ -113,6 +115,7 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
       base::WeakPtr<IpProtectionAuthClientInterface>
           requesting_ip_protection_auth_client,
       quiche::BlindSignMessageCallback callback,
+      base::TimeTicks start_time,
       base::expected<ResponseType, ip_protection::android::AuthRequestError>
           response);
 

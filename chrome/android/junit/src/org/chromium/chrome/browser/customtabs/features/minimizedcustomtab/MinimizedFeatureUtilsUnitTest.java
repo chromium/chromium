@@ -6,16 +6,16 @@ package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ActivityType.CUSTOM_TAB;
-import static org.chromium.chrome.browser.flags.ActivityType.TRUSTED_WEB_ACTIVITY;
 import static org.chromium.chrome.browser.flags.ActivityType.WEBAPP;
-import static org.chromium.chrome.browser.flags.ActivityType.WEB_APK;
 
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
@@ -35,6 +35,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils.MinimizedFeatureAvailability;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtilsUnitTest.ShadowSysUtils;
@@ -67,6 +68,7 @@ public class MinimizedFeatureUtilsUnitTest {
     @Mock private PackageManager mPackageManager;
     @Mock private AppOpsManager mAppOpsManager;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock private Intent mIntent;
 
     private final ApplicationInfo mApplicationInfo = new ApplicationInfo();
 
@@ -133,17 +135,24 @@ public class MinimizedFeatureUtilsUnitTest {
     }
 
     @Test
-    public void testIsWebApp() {
+    public void testShouldEnableMinimizedCustomTabs() {
+        // True for regular Custom Tabs
+        when(mIntentDataProvider.getIntent()).thenReturn(mIntent);
+        when(mIntent.getIntExtra(eq(IntentHandler.EXTRA_FEDCM_ID), anyInt())).thenReturn(-1);
         when(mIntentDataProvider.getActivityType()).thenReturn(CUSTOM_TAB);
-        assertFalse(MinimizedFeatureUtils.isWebApp(mIntentDataProvider));
-
-        when(mIntentDataProvider.getActivityType()).thenReturn(TRUSTED_WEB_ACTIVITY);
-        assertTrue(MinimizedFeatureUtils.isWebApp(mIntentDataProvider));
-
+        assertTrue(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+        // False for Webapps
         when(mIntentDataProvider.getActivityType()).thenReturn(WEBAPP);
-        assertTrue(MinimizedFeatureUtils.isWebApp(mIntentDataProvider));
-
-        when(mIntentDataProvider.getActivityType()).thenReturn(WEB_APK);
-        assertTrue(MinimizedFeatureUtils.isWebApp(mIntentDataProvider));
+        assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+        // False for FedCM
+        when(mIntentDataProvider.getActivityType()).thenReturn(CUSTOM_TAB);
+        when(mIntentDataProvider.isTrustedIntent()).thenReturn(true);
+        when(mIntent.getIntExtra(eq(IntentHandler.EXTRA_FEDCM_ID), anyInt())).thenReturn(100);
+        assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
+        // False for AuthTab
+        when(mIntent.getIntExtra(eq(IntentHandler.EXTRA_FEDCM_ID), anyInt())).thenReturn(-1);
+        when(mIntentDataProvider.isTrustedIntent()).thenReturn(false);
+        when(mIntentDataProvider.isAuthTab()).thenReturn(true);
+        assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
     }
 }

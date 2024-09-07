@@ -38,7 +38,7 @@ class AXTreeSnapshotWaiter {
 
   const ui::AXTreeUpdate& snapshot() const { return snapshot_; }
 
-  void ReceiveSnapshot(const ui::AXTreeUpdate& snapshot) {
+  void ReceiveSnapshot(ui::AXTreeUpdate& snapshot) {
     snapshot_ = snapshot;
     loop_runner_->Quit();
   }
@@ -588,8 +588,9 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {
     EXPECT_NE(ax::mojom::Role::kUnknown, node_data.role);
     EXPECT_NE(0, node_data.id);
 
-    if (node_data.GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId) != 0)
+    if (node_data.GetDOMNodeId()) {
       dom_node_id_count++;
+    }
 
     // We don't need bounding boxes to make a tagged PDF. Ensure those are
     // uninitialized.

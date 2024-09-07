@@ -521,6 +521,7 @@ static_library("test_support") {
     "//ipc",
     "//media/mojo/clients",
     "//media/mojo/mojom",
+    "//mojo/public/cpp/test_support:test_utils",
     "//services/media_session/public/cpp/test:test_support",
     "//services/media_session/public/mojom",
     "//third_party/abseil-cpp:absl",
@@ -579,7 +580,6 @@ static_library("test_support") {
     "//media/capture/mojom:image_capture",
     "//media/mojo/mojom:web_speech_recognition",
     "//mojo/core/embedder",
-    "//mojo/public/cpp/test_support:test_utils",
     "//net:quic_test_tools",
     "//net:simple_quic_tools",
     "//net:test_support",
@@ -1163,6 +1163,27 @@ if (is_chromeos_ash) {
   }
 }
 
+# Test cross target mojo typemapping.
+mojom("web_ui_ts_test_other_mojo_bindings") {
+  testonly = true
+  sources = [ "data/web_ui_ts_test_other_types.test-mojom" ]
+  webui_module_path = "/content/test/data"
+
+  ts_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content.mojom.MappedDict"
+          ts = "MappedDictType"
+          ts_import = "./web_ui_mojo_ts_test_other_mapped_types.js"
+          converter = "MappedDictConverter"
+          import = "web_ui_mojo_ts_test_converters.js"
+        },
+      ]
+    },
+  ]
+}
+
 mojom("web_ui_ts_test_mojo_bindings") {
   testonly = true
   sources = [
@@ -1171,6 +1192,35 @@ mojom("web_ui_ts_test_mojo_bindings") {
   ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/content/test/data"
+
+  deps = [ ":web_ui_ts_test_other_mojo_bindings" ]
+
+  ts_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content.mojom.SimpleMappedType"
+          ts = "string"
+          converter = "SimpleTypeConverter"
+          import = "web_ui_mojo_ts_test_converters.js"
+        },
+        {
+          mojom = "content.mojom.NestedMappedType"
+          ts = "TestNode"
+          ts_import = "./web_ui_mojo_ts_test_mapped_types.js"
+          converter = "NestedTypeConverter"
+          import = "web_ui_mojo_ts_test_converters.js"
+        },
+        {
+          mojom = "content.mojom.StringDict"
+          ts = "StringDictType"
+          ts_import = "./web_ui_mojo_ts_test_mapped_types.js"
+          converter = "StringDictConverter"
+          import = "web_ui_mojo_ts_test_converters.js"
+        },
+      ]
+    },
+  ]
 }
 
 preprocess_if_expr("preprocess_mojo_webui_test") {
@@ -1178,6 +1228,9 @@ preprocess_if_expr("preprocess_mojo_webui_test") {
   out_folder = "$target_gen_dir/data"
   in_files = [
     "web_ui_mojo_ts_test.ts",
+    "web_ui_mojo_ts_test_converters.ts",
+    "web_ui_mojo_ts_test_mapped_types.ts",
+    "web_ui_mojo_ts_test_other_mapped_types.ts",
     "web_ui_managed_interface_test.ts",
   ]
 }
@@ -1187,7 +1240,13 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
   out_dir = "$target_gen_dir/data/tsc"
   in_files = [
     "web_ui_mojo_ts_test.ts",
+    "web_ui_mojo_ts_test_converters.ts",
+    "web_ui_mojo_ts_test_mapped_types.ts",
+    "web_ui_mojo_ts_test_other_mapped_types.ts",
+    "web_ui_ts_test.test-mojom-converters.ts",
     "web_ui_ts_test.test-mojom-webui.ts",
+    "web_ui_ts_test_other_types.test-mojom-converters.ts",
+    "web_ui_ts_test_other_types.test-mojom-webui.ts",
     "web_ui_ts_test_types.test-mojom-webui.ts",
     "web_ui_managed_interface_test.ts",
     "web_ui_managed_interface_test.test-mojom-webui.ts",
@@ -1197,6 +1256,7 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
     ":preprocess_mojo_webui_test",
     ":web_ui_managed_interface_tests_bindings_ts__generator",
     ":web_ui_ts_test_mojo_bindings_ts__generator",
+    ":web_ui_ts_test_other_mojo_bindings_ts__generator",
   ]
 }
 
@@ -1424,14 +1484,20 @@ test("content_browsertests") {
     "../browser/file_system/file_system_url_drag_drop_browsertest.cc",
     "../browser/file_system/file_system_url_loader_factory_browsertest.cc",
     "../browser/file_system/fileapi_browsertest.cc",
+    "../browser/file_system_access/file_system_access_clipboard_browsertest.cc",
+    "../browser/file_system_access/file_system_access_drag_drop_browsertest.cc",
+    "../browser/file_system_access/file_system_access_file_handle_impl_browsertest.cc",
     "../browser/file_system_access/file_system_access_file_modification_host_impl_browsertest.cc",
+    "../browser/file_system_access/file_system_access_file_writer_impl_browsertest.cc",
     "../browser/file_system_access/file_system_access_observer_browsertest.cc",
+    "../browser/file_system_access/file_system_chooser_browsertest.cc",
     "../browser/find_request_manager_browsertest.cc",
     "../browser/first_party_sets/first_party_sets_handler_impl_browsertest.cc",
     "../browser/first_party_sets/test/first_party_sets_initialization_browsertest.cc",
     "../browser/font_access/font_access_manager_browsertest.cc",
     "../browser/font_unique_name_lookup/font_unique_name_browsertest.cc",
     "../browser/form_controls_browsertest.cc",
+    "../browser/framebusting_browsertest.cc",
     "../browser/generic_sensor/generic_sensor_browsertest.cc",
     "../browser/gpu/gpu_ipc_browsertests.cc",
     "../browser/gpu/in_process_gpu_thread_browsertests.cc",
@@ -1549,6 +1615,7 @@ test("content_browsertests") {
     "../browser/renderer_host/input/wheel_event_listener_browsertest.cc",
     "../browser/renderer_host/input/wheel_scroll_latching_browsertest.cc",
     "../browser/renderer_host/isolated_web_app_throttle_browsertest.cc",
+    "../browser/renderer_host/jit_policy_browsertest.cc",
     "../browser/renderer_host/media/video_capture_browsertest.cc",
     "../browser/renderer_host/navigation_controller_history_intervention_browsertest.cc",
     "../browser/renderer_host/navigation_controller_impl_browsertest.cc",
@@ -1769,6 +1836,7 @@ test("content_browsertests") {
     "//content/browser/attribution_reporting:mojo_bindings",
     "//content/browser/attribution_reporting:registration_result_mojom",
     "//content/browser/background_sync:background_sync_proto",
+    "//content/browser/tracing/trace_report:mojo_bindings",
     "//content/child:for_content_tests",
     "//content/gpu",
     "//content/public/browser",
@@ -1841,6 +1909,7 @@ test("content_browsertests") {
     "//ui/accessibility:test_support",
     "//ui/base:test_support",
     "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_test_support",
     "//ui/base/cursor",
     "//ui/base/ime",
     "//ui/base/ime/init",
@@ -1863,6 +1932,10 @@ test("content_browsertests") {
     "//ui/snapshot",
     "//ui/webui:test_support",
   ]
+
+  if (!(is_chromeos_ash && target_cpu == "arm64" && current_cpu == "arm")) {
+    deps += [ "//components/variations" ]
+  }
 
   data_deps = [
     "//content/shell:pak",
@@ -2104,11 +2177,6 @@ test("content_browsertests") {
       "../browser/direct_sockets/direct_sockets_open_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_tcp_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_udp_browsertest.cc",
-      "../browser/file_system_access/file_system_access_clipboard_browsertest.cc",
-      "../browser/file_system_access/file_system_access_drag_drop_browsertest.cc",
-      "../browser/file_system_access/file_system_access_file_handle_impl_browsertest.cc",
-      "../browser/file_system_access/file_system_access_file_writer_impl_browsertest.cc",
-      "../browser/file_system_access/file_system_chooser_browsertest.cc",
       "../browser/font_preferences_browsertest.cc",
       "../browser/renderer_host/clipboard_host_impl_browsertest.cc",
       "../browser/serial/serial_browsertest.cc",
@@ -2122,7 +2190,6 @@ test("content_browsertests") {
       "//components/soda:utils",
       "//content/public/browser:proto",
       "//media/mojo/mojom:web_speech_recognition",
-      "//ui/base/clipboard:clipboard_test_support",
     ]
 
     if (enable_compute_pressure) {
@@ -2165,7 +2232,6 @@ test("content_browsertests") {
     sources += [
       "../app_shim_remote_cocoa/window_occlusion_browsertest_mac.mm",
       "../browser/accessibility/ax_tree_formatter_mac_browsertest.mm",
-      "../browser/accessibility/browser_accessibility_cocoa_browsertest.mm",
       "../browser/accessibility/hit_testing_mac_browsertest.mm",
       "../browser/gpu/browser_child_process_backgrounded_bridge_browsertest.mm",
       "../browser/keyboard_lock_browsertest_mac.mm",
@@ -2225,10 +2291,7 @@ test("content_browsertests") {
       "//mojo/public/cpp/platform",
       "//mojo/public/mojom/base",
     ]
-    data_deps += [
-      "//content/shell:content_shell",
-      "//mojo/core:shared_library",
-    ]
+    data_deps += [ "//content/shell:content_shell" ]
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
@@ -2473,7 +2536,6 @@ test("content_unittests") {
     "../browser/file_system_access/file_system_access_handle_base_unittest.cc",
     "../browser/file_system_access/file_system_access_lock_manager_unittest.cc",
     "../browser/file_system_access/file_system_access_manager_impl_unittest.cc",
-    "../browser/file_system_access/file_system_access_observer_observation_unittest.cc",
     "../browser/file_system_access/file_system_access_safe_move_helper_unittest.cc",
     "../browser/file_system_access/file_system_access_watch_scope_unittest.cc",
     "../browser/file_system_access/file_system_access_watcher_manager_unittest.cc",
@@ -2874,7 +2936,6 @@ test("content_unittests") {
 
   if (is_mac) {
     sources += [
-      "../browser/accessibility/browser_accessibility_mac_unittest.mm",
       "../browser/child_process_task_port_provider_mac_unittest.cc",
       "../browser/cocoa/system_hotkey_map_unittest.mm",
       "../browser/media/capture/screen_capture_kit_fullscreen_module_unittest.mm",
@@ -2898,20 +2959,8 @@ test("content_unittests") {
     ]
   }
 
-  if (use_atk) {
-    sources += [
-      "../browser/accessibility/browser_accessibility_auralinux_unittest.cc",
-      "../browser/accessibility/browser_accessibility_manager_auralinux_unittest.cc",
-    ]
-    configs += [ "//build/config/linux/atk" ]
-  }
-
   if (is_fuchsia) {
-    sources += [
-      "../browser/accessibility/browser_accessibility_fuchsia_unittest.cc",
-      "../browser/accessibility/browser_accessibility_manager_fuchsia_unittest.cc",
-      "../browser/renderer_host/media/fuchsia_media_codec_provider_impl_unittest.cc",
-    ]
+    sources += [ "../browser/renderer_host/media/fuchsia_media_codec_provider_impl_unittest.cc" ]
 
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/fonts.shard.test-cml",
@@ -2968,6 +3017,10 @@ test("content_unittests") {
         [ "../browser/media/web_app_system_media_controls_manager_unittest.cc" ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "../browser/file_system_access/file_system_access_observer_observation_unittest.cc" ]
+  }
+
   if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
     data = [
       "$root_out_dir/content_shell.pak",
@@ -3000,6 +3053,7 @@ test("content_unittests") {
     "//base/allocator:buildflags",
     "//base/test:proto_test_support",
     "//base/test:test_support",
+    "//build:android_buildflags",
     "//build:buildflag_header_h",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
@@ -3270,8 +3324,6 @@ test("content_unittests") {
   }
   if (is_win) {
     sources += [
-      "../browser/accessibility/browser_accessibility_manager_win_unittest.cc",
-      "../browser/accessibility/browser_accessibility_win_unittest.cc",
       "../browser/device_posture/device_posture_registry_watcher_win_unittest.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.h",

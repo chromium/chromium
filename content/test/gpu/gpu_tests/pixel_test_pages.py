@@ -67,7 +67,6 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       url: str,
       name: str,
       *args,
-      test_rect: Optional[List[int]] = None,
       crop_action: Optional[ca.BaseCropAction] = None,
       browser_args: Optional[BrowserArgType] = None,
       restart_browser_after_test: bool = False,
@@ -84,14 +83,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
     is_video_test = 'video' in name.lower()
     super().__init__(name, refresh_after_finish=is_video_test, *args, **kwargs)
     self.url = url
-    # TODO(crbug.com/349510532): Remove this automatic conversion once all
-    # tests explicitly provide a crop action.
-    if crop_action is None:
-      assert test_rect
-      self.crop_action = ca.FixedRectCropAction(test_rect[0], test_rect[1],
-                                                test_rect[2], test_rect[3])
-    else:
-      self.crop_action = crop_action
+    self.crop_action = crop_action
     self.browser_args = browser_args
     # Whether the browser should be forcibly restarted after the test
     # runs. The browser is always restarted after running tests with
@@ -122,6 +114,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       requires_fullscreen_os_screenshot_func = lambda: False
     self.RequiresFullScreenOSScreenshot = requires_fullscreen_os_screenshot_func
 
+# pytype: disable=signature-mismatch
 
 class TestActionCrashGpuProcess(sghitb.TestAction):
   """Runs JavaScript to crash the GPU process once."""
@@ -251,7 +244,7 @@ class TestActionRunLowToHighPowerTest(sghitb.TestAction):
     is_dual_gpu = test_instance.IsDualGPUMacLaptop()
     sghitb.EvalInTestIframe(tab_data.tab,
                             'initialize(%s)' % json.dumps(is_dual_gpu))
-
+# pytype: enable=signature-mismatch
 
 def GetMediaStreamTestBrowserArgs(media_stream_source_relpath: str
                                   ) -> List[str]:
@@ -984,22 +977,24 @@ class PixelTestPages():
   def SwiftShaderPages(base_name: str) -> List[PixelTestPage]:
     browser_args = [cba.DISABLE_GPU]
     suffix = '_SwiftShader'
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 350, 350))
     return [
         PixelTestPage('pixel_canvas2d.html',
                       base_name + '_Canvas2DRedBox' + suffix,
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=browser_args),
         PixelTestPage('pixel_css3d.html',
                       base_name + '_CSS3DBlueBox' + suffix,
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=browser_args),
         PixelTestPage('pixel_webgl_aa_alpha.html',
                       base_name + '_WebGLGreenTriangle_AA_Alpha' + suffix,
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=standard_crop,
                       browser_args=browser_args),
         PixelTestPage('pixel_repeated_webgl_to_2d.html',
                       base_name + '_RepeatedWebGLTo2D' + suffix,
-                      test_rect=[0, 0, 256, 256],
+                      crop_action=standard_crop,
                       browser_args=browser_args),
     ]
 
@@ -1008,19 +1003,19 @@ class PixelTestPages():
   def NoGpuProcessPages(base_name: str) -> List[PixelTestPage]:
     browser_args = [cba.DISABLE_GPU, cba.DISABLE_SOFTWARE_RASTERIZER]
     suffix = '_NoGpuProcess'
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 350, 350))
     return [
-        PixelTestPage(
-            'pixel_canvas2d.html',
-            base_name + '_Canvas2DRedBox' + suffix,
-            test_rect=[0, 0, 300, 300],
-            browser_args=browser_args,
-            gpu_process_disabled=True),
-        PixelTestPage(
-            'pixel_css3d.html',
-            base_name + '_CSS3DBlueBox' + suffix,
-            test_rect=[0, 0, 300, 300],
-            browser_args=browser_args,
-            gpu_process_disabled=True),
+        PixelTestPage('pixel_canvas2d.html',
+                      base_name + '_Canvas2DRedBox' + suffix,
+                      crop_action=standard_crop,
+                      browser_args=browser_args,
+                      gpu_process_disabled=True),
+        PixelTestPage('pixel_css3d.html',
+                      base_name + '_CSS3DBlueBox' + suffix,
+                      crop_action=standard_crop,
+                      browser_args=browser_args,
+                      gpu_process_disabled=True),
     ]
 
   # Pages that should be run with various macOS specific command line
@@ -1523,47 +1518,42 @@ class PixelTestPages():
     match_algo = VERY_PERMISSIVE_SOBEL_ALGO
     # Use shorter timeout since the tests are not supposed to be long.
     timeout = 150
-    test_rect = [0, 0, 200, 200]
-    grace_period_end = date(2022, 10, 20)
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 250, 200))
 
     return [
         PixelTestPage('pixel_video_from_canvas_2d.html',
                       base_name + '_VideoStreamFrom2DCanvas',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=[],
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
         PixelTestPage('pixel_video_from_canvas_2d_alpha.html',
                       base_name + '_VideoStreamFrom2DAlphaCanvas',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=[],
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
         PixelTestPage('pixel_video_from_canvas_webgl2_alpha.html',
                       base_name + '_VideoStreamFromWebGLAlphaCanvas',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=[],
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
                       base_name + '_VideoStreamFromWebGLCanvas',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=[],
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
 
         # Safeguard against repeating crbug.com/1337101
         PixelTestPage(
             'pixel_video_from_canvas_2d_alpha.html',
             base_name + '_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster',
-            test_rect=test_rect,
+            crop_action=standard_crop,
             browser_args=['--disable-features=CanvasOopRasterization'],
             matching_algorithm=match_algo,
-            grace_period_end=grace_period_end,
             timeout=timeout),
 
         # Safeguard against repeating crbug.com/1371308
@@ -1571,67 +1561,49 @@ class PixelTestPages():
             'pixel_video_from_canvas_2d.html',
             base_name +
             '_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture',
-            test_rect=test_rect,
+            crop_action=standard_crop,
             browser_args=[
                 '--disable-features=GpuMemoryBufferReadbackFromTexture'
             ],
             matching_algorithm=match_algo,
-            grace_period_end=grace_period_end,
             timeout=timeout),
 
         # Test OneCopyCanvasCapture
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
                       base_name + '_VideoStreamFromWebGLCanvas_OneCopy',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=['--enable-features=OneCopyCanvasCapture'],
                       other_args={'one_copy': True},
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
         # TwoCopyCanvasCapture
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
                       base_name +
                       '_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=['--disable-features=OneCopyCanvasCapture'],
                       other_args={
                           'one_copy': False,
                           'accelerated_two_copy': True
                       },
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
     ]
 
   @staticmethod
   def HdrTestPages(base_name: str) -> List[PixelTestPage]:
-    return [
-        PixelTestPage(
-            'pixel_canvas2d.html',
-            base_name + '_Canvas2DRedBoxScrgbLinear',
-            test_rect=[0, 0, 300, 300],
-            browser_args=['--force-color-profile=scrgb-linear']),
-        PixelTestPage(
-            'pixel_canvas2d.html',
-            base_name + '_Canvas2DRedBoxHdr10',
-            test_rect=[0, 0, 300, 300],
-            browser_args=['--force-color-profile=hdr10']),
-    ]
+    standard_crop = ca.NonWhiteContentCropAction(
+        ca.FixedRectCropAction(0, 0, 300, 300))
 
-  # TODO(crbug.com/337737554): Move this to trace_test_pages.py
-  # Check that the root swap chain claims to be opaque. A root swap chain with a
-  # premultiplied alpha mode has a large negative battery impact (even if all
-  # the pixels are opaque).
-  @staticmethod
-  def RootSwapChainPages(base_name: str) -> List[PixelTestPage]:
     return [
-        PixelTestPage('wait_for_compositing.html',
-                      base_name + '_IsOpaque',
-                      test_rect=[0, 0, 0, 0],
-                      crop_action=ca.NoOpCropAction(),
-                      other_args={
-                          'has_alpha': False,
-                      }),
+        PixelTestPage('pixel_canvas2d.html',
+                      base_name + '_Canvas2DRedBoxScrgbLinear',
+                      crop_action=standard_crop,
+                      browser_args=['--force-color-profile=scrgb-linear']),
+        PixelTestPage('pixel_canvas2d.html',
+                      base_name + '_Canvas2DRedBoxHdr10',
+                      crop_action=standard_crop,
+                      browser_args=['--force-color-profile=hdr10']),
     ]
 
   # This should only be used with the cast_streaming suite.
@@ -1641,21 +1613,6 @@ class PixelTestPages():
         PixelTestPage(
             'receiver.html',
             base_name + '_VP8_1Frame',
-            test_rect=[0, 0, 0, 0],
             crop_action=ca.NoOpCropAction(),
         ),
-    ]
-
-  # Check what MediaFoundationD3D11VideoCapture works
-  @staticmethod
-  def MediaFoundationD3D11VideoCapturePages(
-      base_name: str) -> List[PixelTestPage]:
-    return [
-        PixelTestPage('media_foundation_d3d11_video_capture.html',
-                      base_name + '_MediaFoundationD3D11VideoCapture',
-                      test_rect=[0, 0, 300, 300],
-                      browser_args=[
-                          '--use-fake-ui-for-media-stream',
-                          '--enable-features=MediaFoundationD3D11VideoCapture'
-                      ]),
     ]

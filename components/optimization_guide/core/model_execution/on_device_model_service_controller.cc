@@ -324,13 +324,19 @@ void OnDeviceModelServiceController::SetLanguageDetectionModel(
     language_detection_model_path_.reset();
     return;
   }
-
+  base_model_remote_.reset();  // The remote's assets are outdated.
   language_detection_model_path_ = model_info->GetModelFilePath();
 }
 
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
-  safety_model_info_ = SafetyModelInfo::Load(model_info);
+  auto new_info = SafetyModelInfo::Load(model_info);
+  if (!new_info) {
+    safety_model_info_.reset();
+    return;
+  }
+  base_model_remote_.reset();  // The remote's assets are outdated.
+  safety_model_info_ = std::move(new_info);
 }
 
 on_device_model::ModelAssetPaths
@@ -556,7 +562,7 @@ void OnDeviceModelServiceController::NotifyModelAvailabilityChange(
   }
   auto can_create_session = CanCreateSession(feature);
   for (auto& observer : entry_it->second) {
-    observer.OnDeviceModelAvailablityChanged(feature, can_create_session);
+    observer.OnDeviceModelAvailabilityChanged(feature, can_create_session);
   }
 }
 

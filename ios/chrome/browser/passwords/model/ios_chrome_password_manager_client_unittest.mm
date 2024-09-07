@@ -8,8 +8,8 @@
 
 #import <memory>
 
-#import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
+#import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -17,7 +17,7 @@
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"

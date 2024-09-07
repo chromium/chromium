@@ -27,7 +27,7 @@ specific_include_rules = {
   # TODO(crbug.com/359199652): FeedActivityBucket should be usable by both
   # the model and the UI, so should be in ios/chrome/browser/ntp/shared.
   "ios_feed_activity_metrics_provider.*\.mm": [
-    "+ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h",
+    "+ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h",
   ],
 
   "metrics_app_interface\.mm": [
@@ -35,7 +35,7 @@ specific_include_rules = {
   ],
   "ios_feed_enabled_metrics_provider.mm": [
     "+components/feed/core/shared_prefs/pref_names.h",
-    "+ios/chrome/browser/ui/ntp/new_tab_page_feature.h",
+    "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   ],
   "ios_feed_enabled_metrics_provider_unittest.mm": [
     "+components/feed/core/shared_prefs/pref_names.h",

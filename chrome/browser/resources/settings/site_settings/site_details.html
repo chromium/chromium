@@ -60,18 +60,18 @@
         [[i18n('siteSettingsSiteClearStorageConfirmationNew', pageTitle)]]
         <div class="detail-list">
           <div class="detail">
-            <iron-icon icon="all-sites:logout" aria-hidden="true"
-                role="presentation"></iron-icon>
+            <cr-icon icon="all-sites:logout" aria-hidden="true"
+                role="presentation"></cr-icon>
             $i18n{siteSettingsSiteClearStorageSignOut}
           </div>
           <div class="detail">
-            <iron-icon icon="all-sites:offline" aria-hidden="true"
-                role="presentation"></iron-icon>
+            <cr-icon icon="all-sites:offline" aria-hidden="true"
+                role="presentation"></cr-icon>
             $i18n{siteSettingsSiteDeleteStorageOfflineData}
           </div>
           <div class="detail" id="adPersonalization">
-            <iron-icon icon="all-sites:tag" aria-hidden="true"
-                role="presentation"></iron-icon>
+            <cr-icon icon="all-sites:tag" aria-hidden="true"
+                role="presentation"></cr-icon>
             $i18n{siteSettingsRemoveSiteAdPersonalization}
           </div>
         </div>
@@ -248,7 +248,7 @@
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.JAVASCRIPT_JIT]]"
-          icon="settings:lock-outline"
+          icon="privacy:v8"
           label="$i18n{siteSettingsJavascriptJit}">
       </site-details-permission>
       <site-details-permission
@@ -262,6 +262,12 @@
       <site-details-permission category="[[contentSettingsTypesEnum_.VR]]"
           icon="privacy:cardboard" label="$i18n{siteSettingsVr}">
       </site-details-permission>
+      <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
+        <site-details-permission
+            category="[[contentSettingsTypesEnum_.HAND_TRACKING]]"
+            icon="privacy:hand-gesture" label="$i18n{siteSettingsHandTracking}">
+        </site-details-permission>
+      </template>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
           icon="settings:devices"

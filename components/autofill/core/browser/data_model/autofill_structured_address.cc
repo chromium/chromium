@@ -61,11 +61,9 @@ FloorNode::FloorNode(SubcomponentsList children)
 FloorNode::~FloorNode() = default;
 
 ApartmentNode::ApartmentNode(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForApartmentNumbers,
-          ADDRESS_HOME_APT_NUM,
-          std::move(children),
-          MergeMode::kDefault) {}
+    : AddressComponent(ADDRESS_HOME_APT_NUM,
+                       std::move(children),
+                       MergeMode::kDefault) {}
 
 ApartmentNode::~ApartmentNode() = default;
 
@@ -314,76 +312,60 @@ SortingCodeNode::SortingCodeNode(SubcomponentsList children)
 SortingCodeNode::~SortingCodeNode() = default;
 
 LandmarkNode::LandmarkNode(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForLandmark,
-          ADDRESS_HOME_LANDMARK,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_LANDMARK,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 LandmarkNode::~LandmarkNode() = default;
 
 BetweenStreetsNode::BetweenStreetsNode(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForBetweenStreets,
-          ADDRESS_HOME_BETWEEN_STREETS,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 BetweenStreetsNode::~BetweenStreetsNode() = default;
 
 BetweenStreets1Node::BetweenStreets1Node(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForBetweenStreets,
-          ADDRESS_HOME_BETWEEN_STREETS_1,
-          std::move(children),
-          MergeMode::kDefault) {}
+    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS_1,
+                       std::move(children),
+                       MergeMode::kDefault) {}
 
 BetweenStreets1Node::~BetweenStreets1Node() = default;
 
 BetweenStreets2Node::BetweenStreets2Node(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForBetweenStreets,
-          ADDRESS_HOME_BETWEEN_STREETS_2,
-          std::move(children),
-          MergeMode::kDefault) {}
+    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS_2,
+                       std::move(children),
+                       MergeMode::kDefault) {}
 
 BetweenStreets2Node::~BetweenStreets2Node() = default;
 
 AdminLevel2Node::AdminLevel2Node(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForAdminLevel2,
-          ADDRESS_HOME_ADMIN_LEVEL2,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_ADMIN_LEVEL2,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 AdminLevel2Node::~AdminLevel2Node() = default;
 
 AddressOverflowNode::AddressOverflowNode(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForAddressOverflow,
-          ADDRESS_HOME_OVERFLOW,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_OVERFLOW,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 AddressOverflowNode::~AddressOverflowNode() = default;
 
 AddressOverflowAndLandmarkNode::AddressOverflowAndLandmarkNode(
     SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-          ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 AddressOverflowAndLandmarkNode::~AddressOverflowAndLandmarkNode() = default;
 
 BetweenStreetsOrLandmarkNode::BetweenStreetsOrLandmarkNode(
     SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 BetweenStreetsOrLandmarkNode::~BetweenStreetsOrLandmarkNode() = default;
 

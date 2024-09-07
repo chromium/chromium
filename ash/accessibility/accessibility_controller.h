@@ -62,6 +62,7 @@ enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
 enum class DictationNotificationType;
 class DisableTrackpadEventRewriter;
+class FilterKeysEventRewriter;
 class FlashScreenController;
 class FloatingAccessibilityController;
 class PointScanController;
@@ -354,6 +355,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void SetAccessibilityEventRewriter(
       AccessibilityEventRewriter* accessibility_event_rewriter);
   void SetDisableTrackpadEventRewriter(DisableTrackpadEventRewriter* rewriter);
+  void SetFilterKeysEventRewriter(FilterKeysEventRewriter* rewriter);
   bool IsPointScanEnabled();
 
   bool IsVirtualKeyboardSettingVisibleInTray();
@@ -620,6 +622,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   // Test helpers:
   AccessibilityEventRewriter* GetAccessibilityEventRewriterForTest();
   DisableTrackpadEventRewriter* GetDisableTrackpadEventRewriterForTest();
+  FilterKeysEventRewriter* GetFilterKeysEventRewriterForTest();
   SwitchAccessMenuBubbleController* GetSwitchAccessBubbleControllerForTest() {
     return switch_access_bubble_controller_.get();
   }
@@ -673,8 +676,16 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     return select_to_speak_event_handler_.get();
   }
 
+  FlashScreenController* GetFlashScreenControllerForTesting() const {
+    return flash_screen_controller_.get();
+  }
+
   void SetVirtualKeyboardVisibleCallbackForTesting(
       base::RepeatingCallback<void()> callback);
+
+  // Scrolls at the target location in the specified direction.
+  void ScrollAtPoint(const gfx::Point& target,
+                     AccessibilityScrollDirection direction);
 
  private:
   // Populate |features_| with the feature of the correct type.
@@ -710,6 +721,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void UpdateCursorColorFromPrefs(bool notify);
   void UpdateFaceGazeFromPrefs();
   void UpdateFlashNotificationsFromPrefs();
+  void UpdateDisableTrackpadFromPrefs();
   void UpdateColorCorrectionFromPrefs();
   void UpdateCaretBlinkIntervalFromPrefs() const;
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
@@ -773,6 +785,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   raw_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_ = nullptr;
   raw_ptr<DisableTrackpadEventRewriter> disable_trackpad_event_rewriter_ =
       nullptr;
+  raw_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter_ = nullptr;
   // Used in tests to disable the dialog shown when Auto Click is turned on.
   bool no_auto_click_confirmation_dialog_for_testing_ = false;
   bool no_switch_access_disable_confirmation_dialog_for_testing_ = false;

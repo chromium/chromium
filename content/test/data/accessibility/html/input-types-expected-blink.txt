@@ -11,7 +11,7 @@ rootWebArea
 ++++++++++inlineTextBox name='Button: '
 ++++++++button name='Button:'
 ++++++labelText ignored
-++++++++staticText ignored name='Checkbox: '
+++++++++staticText ignored
 ++++++++checkBox name='Checkbox:' checkedState=false
 ++++++labelText
 ++++++++staticText name='Color: '
@@ -39,7 +39,7 @@ rootWebArea
 ++++++++++++++++spinButton name='Year Date:' placeholder='yyyy' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++++staticText name='yyyy'
 ++++++++++++++++++++inlineTextBox name='yyyy'
-++++++++++++popUpButton description='Show date picker' name='Show date picker' descriptionFrom=title
+++++++++++++popUpButton name='Show date picker' nameFrom=title
 ++++++labelText
 ++++++++staticText name='Datetime: '
 ++++++++++inlineTextBox name='Datetime: '
@@ -65,8 +65,8 @@ rootWebArea
 ++++++++++++++++spinButton name='Year Datetime-local:' placeholder='yyyy' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++++staticText name='yyyy'
 ++++++++++++++++++++inlineTextBox name='yyyy'
-++++++++++++++++staticText name=' '
-++++++++++++++++++inlineTextBox name=' '
+++++++++++++++++staticText name=', '
+++++++++++++++++++inlineTextBox name=', '
 ++++++++++++++++spinButton name='Hours Datetime-local:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
 ++++++++++++++++++staticText name='--'
 ++++++++++++++++++++inlineTextBox name='--'
@@ -80,7 +80,7 @@ rootWebArea
 ++++++++++++++++spinButton name='AM/PM Datetime-local:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++++++++staticText name='--'
 ++++++++++++++++++++inlineTextBox name='--'
-++++++++++++popUpButton description='Show local date and time picker' name='Show local date and time picker' descriptionFrom=title
+++++++++++++popUpButton name='Show local date and time picker' nameFrom=title
 ++++++labelText
 ++++++++staticText name='Email: '
 ++++++++++inlineTextBox name='Email: '
@@ -125,7 +125,7 @@ rootWebArea
 ++++++++++++++++spinButton name='Year Month:' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++++staticText name='----'
 ++++++++++++++++++++inlineTextBox name='----'
-++++++++++++popUpButton description='Show month picker' name='Show month picker' descriptionFrom=title
+++++++++++++popUpButton name='Show month picker' nameFrom=title
 ++++++labelText
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
@@ -140,9 +140,9 @@ rootWebArea
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer editable
 ++++++++++++genericContainer ignored invisible
-++++++++++++++staticText ignored invisible name='Strong password'
+++++++++++++++staticText ignored invisible
 ++++++labelText ignored
-++++++++staticText ignored name='Radio: '
+++++++++staticText ignored
 ++++++++radioButton name='Radio:' checkedState=false
 ++++++labelText
 ++++++++staticText name='Range: '
@@ -196,7 +196,7 @@ rootWebArea
 ++++++++++++++++spinButton name='AM/PM Time:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++++++++staticText name='--'
 ++++++++++++++++++++inlineTextBox name='--'
-++++++++++++popUpButton description='Show time picker' name='Show time picker' descriptionFrom=title
+++++++++++++popUpButton name='Show time picker' nameFrom=title
 ++++++labelText
 ++++++++staticText name='Url: '
 ++++++++++inlineTextBox name='Url: '
@@ -219,4 +219,4 @@ rootWebArea
 ++++++++++++++++spinButton name='Year Week:' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++++staticText name='----'
 ++++++++++++++++++++inlineTextBox name='----'
-++++++++++++popUpButton description='Show week picker' name='Show week picker' descriptionFrom=title
+++++++++++++popUpButton name='Show week picker' nameFrom=title

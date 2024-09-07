@@ -12,6 +12,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 
 /** Incognito tab switcher pane station. */
 public class IncognitoTabSwitcherStation extends TabSwitcherStation {
@@ -41,5 +42,18 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
         elements.declareView(SELECTED_INCOGNITO_TOGGLE_TAB_BUTTON);
+    }
+
+    /** Open a new tab using the New Tab action button. */
+    public IncognitoNewTabPageStation openNewTab() {
+        recheckActiveConditions();
+
+        IncognitoNewTabPageStation page =
+                IncognitoNewTabPageStation.newBuilder()
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
+                        .build();
+
+        return travelToSync(page, getNewTabButtonViewSpec()::click);
     }
 }

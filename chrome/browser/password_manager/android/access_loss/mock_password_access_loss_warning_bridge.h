@@ -22,7 +22,10 @@ class MockPasswordAccessLossWarningBridge
               ShouldShowAccessLossNoticeSheet,
               (PrefService*),
               (override));
-  MOCK_METHOD(void, MaybeShowAccessLossNoticeSheet, (), (override));
+  MOCK_METHOD(void,
+              MaybeShowAccessLossNoticeSheet,
+              (PrefService*, const gfx::NativeWindow, Profile*),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_MOCK_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_H_

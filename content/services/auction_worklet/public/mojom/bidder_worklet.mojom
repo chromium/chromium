@@ -125,6 +125,10 @@ struct BidderWorkletBid {
   // Render URL of the bid, plus sizing information.
   blink.mojom.AdDescriptor ad_descriptor;
 
+  // The selected reporting id from the interest group's ad's
+  // `selectableBuyerAndSellerReportingIds` array.
+  string? selected_buyer_and_seller_reporting_id;
+
   // Ad components associated with bid, if any. These allow a single ad to be
   // composed of multiple smaller ads. The `ad_descriptor` contains the main
   // URL, and is responsible for laying out these ads URLs in its subframes.

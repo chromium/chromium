@@ -311,8 +311,9 @@ const char kEnableCaretBrowsing[] = "enable-caret-browsing";
 //
 // At present this turns on:
 //   net::features::kSameSiteDefaultChecksMethodRigorously
-//   net::features::kSchemefulSameSite
 //   net::features::kCookieSameSiteConsidersRedirectChain
+//   net::features::kEnablePortBoundCookies
+//   net::features::kEnableSchemeBoundCookies
 const char kEnableExperimentalCookieFeatures[] =
     "enable-experimental-cookie-features";
 
@@ -525,10 +526,6 @@ const char kMessageLoopTypeUi[] = "message-loop-type-ui";
 // Set the default result for MockCertVerifier. This only works in test code.
 const char kMockCertVerifierDefaultResultForTesting[] =
     "mock-cert-verifier-default-result-for-testing";
-
-// Initializes Mojo Core from a shared library at the specified path, rather
-// than using the version of Mojo Core embedded within the Content executable.
-const char kMojoCoreLibraryPath[] = "mojo-core-library-path";
 
 // Use a Mojo-based LocalStorage implementation.
 const char kMojoLocalStorage[]              = "mojo-local-storage";

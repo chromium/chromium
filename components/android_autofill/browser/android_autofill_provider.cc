@@ -107,6 +107,14 @@ WebAuthnCredManDelegate* GetCredManDelegate(AutofillManager* manager) {
   return GetCredManDelegate(GetRenderFrameHost(manager));
 }
 
+bool AllowCredManOnField(const FormFieldData& field) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillVirtualViewStructureAndroid)) {
+    return false;
+  }
+  return field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
+}
+
 constexpr base::TimeDelta kWasBottomSheetShownFlipTimeout =
     base::Milliseconds(50);
 
@@ -442,6 +450,16 @@ void AndroidAutofillProvider::OnFormSubmitted(AndroidAutofillManager* manager,
     return;
   }
 
+  if (FormStructure* form_structure =
+          manager_->FindCachedFormById(form.global_id());
+      source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL &&
+      (!form_structure ||
+       !base::FeatureList::IsEnabled(
+           features::kAutofillAcceptDomMutationAfterAutofillSubmission) ||
+       !ParseToPasswordForm(*form_structure))) {
+    return;
+  }
+
   if (known_success || source == SubmissionSource::FORM_SUBMISSION ||
       base::FeatureList::IsEnabled(
           features::kAndroidAutofillDirectFormSubmission)) {
@@ -586,7 +604,11 @@ bool AndroidAutofillProvider::IntendsToShowBottomSheet(
     FormGlobalId form,
     FieldGlobalId field,
     const FormData& form_data) const {
-  return IntendsToShowCredMan(GetRenderFrameHost(&manager)) ||
+  const FormFieldData* found_field = form_data.FindFieldByGlobalId(field);
+  const bool intends_to_show_credman =
+      found_field &&
+      IntendsToShowCredMan(*found_field, GetRenderFrameHost(&manager));
+  return intends_to_show_credman ||
          (ArePrefillRequestsSupported() && !has_used_cached_form_ &&
           cached_data_ && cached_data_->cached_form &&
           form == cached_data_->cached_form->form().global_id());
@@ -612,35 +634,25 @@ void AndroidAutofillProvider::SetBottomSheetShownOff() {
 }
 
 bool AndroidAutofillProvider::IntendsToShowCredMan(
+    const FormFieldData& field,
     content::RenderFrameHost* rfh) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillVirtualViewStructureAndroid)) {
-    return false;
-  }
-  const WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh);
-  if (!delegate ||
-      delegate->HasPasskeys() == WebAuthnCredManDelegate::State::kNoPasskeys) {
-    return false;  // Requests finished with empty passkey list.
-  }
-  // Don't show more than once per page.
-  return credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
+  return AllowCredManOnField(field) &&
+         // Needs delegate to trigger CredMan:
+         GetCredManDelegate(rfh) &&
+         // Don't show more than once per page:
+         credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
 }
 
 bool AndroidAutofillProvider::ShouldShowCredManForField(
     const FormFieldData& field,
     content::RenderFrameHost* rfh) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillVirtualViewStructureAndroid)) {
+  if (!AllowCredManOnField(field)) {
     return false;
   }
-  if (!field.parsed_autocomplete() || !field.parsed_autocomplete()->webauthn) {
-    return false;  // Only trigger conditional requests if a site prefers it.
-  }
-  // TODO: crbug.com/332471454 - Trigger Chrome no-passkey sheet?
   WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh);
   if (!delegate ||
-      delegate->HasPasskeys() != WebAuthnCredManDelegate::State::kHasPasskeys) {
-    return false;  // Requests either not finished or has empty passkey list.
+      delegate->HasPasskeys() == WebAuthnCredManDelegate::State::kNotReady) {
+    return false;  // Requests not finished.
   }
   return credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
 }
@@ -708,10 +720,7 @@ void AndroidAutofillProvider::Reset() {
   was_shown_bottom_sheet_timer_.Stop();
   was_bottom_sheet_just_shown_ = false;
 
-  if (base::FeatureList::IsEnabled(
-          features::kAndroidAutofillCancelSessionOnNavigation)) {
-    CancelSession();
-  }
+  CancelSession();
 
   // Resets the Java instance and hides the datalist popup if there is one.
   bridge_->Reset();
@@ -736,9 +745,7 @@ SessionId AndroidAutofillProvider::CreateSessionId() {
 
 bool AndroidAutofillProvider::ArePrefillRequestsSupported() const {
   return base::android::BuildInfo::GetInstance()->sdk_int() >=
-             kMinimumSdkVersionForPrefillRequests &&
-         base::FeatureList::IsEnabled(
-             features::kAndroidAutofillPrefillRequestsForLoginForms);
+         kMinimumSdkVersionForPrefillRequests;
 }
 
 void AndroidAutofillProvider::MaybeSendPrefillRequest(

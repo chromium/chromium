@@ -45,7 +45,7 @@ bool {{class_name}}::Validate(
     return true;
 {%-     endif %}
 {%-     set field_expr = "object->" ~ packed_field.field.name %}
-{{validation_macros.validate_field(packed_field.field, loop.index, field_expr, struct.name, true)}}
+{{validation_macros.validate_field(packed_field.field, loop.index, field_expr, true)}}
 {%-   endif %}
 {%- endfor %}
 

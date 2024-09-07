@@ -64,7 +64,6 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                           PlusAddressRequestCallback on_completed) override;
   void PreallocatePlusAddresses(
       PreallocatePlusAddressesCallback callback) override;
-  void GetAllPlusAddresses(PlusAddressMapRequestCallback on_completed) override;
   void Reset() override;
 
  private:
@@ -89,8 +88,6 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                                   const PlusAddress& plus_address,
                                   PlusAddressRequestCallback on_completed,
                                   std::optional<std::string> auth_token);
-  void GetAllPlusAddressesInternal(PlusAddressMapRequestCallback on_completed,
-                                   std::optional<std::string> auth_token);
   void PreallocatePlusAddressesInternal(
       PreallocatePlusAddressesCallback callback,
       std::optional<std::string> auth_token);
@@ -108,10 +105,6 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                                base::TimeTicks request_start,
                                PreallocatePlusAddressesCallback on_completed,
                                std::unique_ptr<std::string> response);
-
-  void OnGetAllPlusAddressesComplete(base::TimeTicks request_start,
-                                     PlusAddressMapRequestCallback on_completed,
-                                     std::unique_ptr<std::string> response);
 
   // Runs callback and any pending_callbacks_ blocked on the token.
   void OnTokenFetched(TokenReadyCallback callback,
@@ -143,10 +136,6 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
 
   // Loaders used for Create, Reserve, and Preallocate calls.
   UrlLoaderList loaders_;
-
-  // A loader used infrequently for calls to GetAllPlusAddresses which keeps
-  // the PlusAddressService synced with the remote server.
-  std::unique_ptr<network::SimpleURLLoader> loader_for_sync_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

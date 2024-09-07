@@ -28,7 +28,7 @@
 - (instancetype)initWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity
                    accountManagerService:
                        (ChromeAccountManagerService*)accountManagerService {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     DCHECK(accountManagerService);
     _accountManagerService = accountManagerService;
     _accountManagerServiceObserver =

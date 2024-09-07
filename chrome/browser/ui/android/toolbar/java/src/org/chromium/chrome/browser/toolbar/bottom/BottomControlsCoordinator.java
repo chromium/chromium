@@ -17,6 +17,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -88,6 +89,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
             LayoutManager layoutManager,
             ResourceManager resourceManager,
             BottomControlsStacker controlsStacker,
+            BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ScrollingBottomViewResourceFrameLayout root,
@@ -119,6 +121,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         windowAndroid,
                         model,
                         controlsStacker,
+                        browserControlsVisibilityDelegate,
                         fullscreenManager,
                         tabObscuringHandler,
                         bottomControlsHeightRes,

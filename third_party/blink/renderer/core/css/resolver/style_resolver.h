@@ -49,7 +49,6 @@ class CSSValue;
 class Document;
 class Element;
 class Font;
-class FontDescription;
 class Interpolation;
 class MatchResult;
 class PageMarginsStyle;
@@ -129,14 +128,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   const ComputedStyle* StyleForText(Text*);
   const ComputedStyle* StyleForViewport();
-  const ComputedStyle* StyleForFormattedText(
-      bool is_text_run,
-      const ComputedStyle& parent_style,
-      const CSSPropertyValueSet* css_property_value_set);
-  const ComputedStyle* StyleForFormattedText(
-      bool is_text_run,
-      const FontDescription& default_font,
-      const CSSPropertyValueSet* css_property_value_set);
   // Returns `ComputedStyle` for rendering initial letter text.
   // `initial_letter_box_style` should have non-normal `initial-letter`
   // property.
@@ -396,10 +387,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   Member<Document> document_;
   Member<StyleRuleUsageTracker> tracker_;
 
-  // This is a dummy/disconnected element that we use for FormattedText
-  // style computations; see `EnsureElementForFormattedText`.
-  Member<Element> formatted_text_element_;
-
   // See SetCountComputedStyleBytes().
   bool count_computed_style_bytes_ = false;
   size_t computed_style_bytes_used_ = 0;
@@ -409,13 +396,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   friend class StyleResolverTest;
   FRIEND_TEST_ALL_PREFIXES(StyleResolverTest, TreeScopedReferences);
-
-  Element& EnsureElementForFormattedText();
-  const ComputedStyle* StyleForFormattedText(
-      bool is_text_run,
-      const FontDescription* default_font,
-      const ComputedStyle* parent_style,
-      const CSSPropertyValueSet* css_property_value_set);
 };
 
 }  // namespace blink

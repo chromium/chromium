@@ -202,7 +202,7 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
   void LoginOwner() {
     CreateUserSessions(1);
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
-                                        LoginState::LOGGED_IN_USER_OWNER);
+                                        LoginState::LOGGED_IN_USER_REGULAR);
   }
 
   void AddScheduledRestoreWindows(

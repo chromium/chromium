@@ -25,6 +25,7 @@ BrowserFrameBoundsChangeAnimation::~BrowserFrameBoundsChangeAnimation() =
     default;
 
 void BrowserFrameBoundsChangeAnimation::AnimateToState(double state) {
-  frame_->SetBounds(
-      gfx::Tween::RectValueBetween(state, initial_bounds_, new_bounds_));
+  frame_->SetBounds(gfx::Tween::RectValueBetween(
+      gfx::Tween::CalculateValue(gfx::Tween::EASE_IN_OUT_EMPHASIZED, state),
+      initial_bounds_, new_bounds_));
 }

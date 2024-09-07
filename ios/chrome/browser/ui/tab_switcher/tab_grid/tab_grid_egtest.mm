@@ -1307,10 +1307,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:1];
 
-  // Open tab grid in both window.
+  // Open tab grid in both windows.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [ChromeEarlGreyUI openTabGrid];
-
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -1355,6 +1354,79 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
 }
 
+// Tests dragging all tab grid items to another window.
+- (void)testDragAndDropAllItemsToOtherWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
+  }
+
+  // Setup first window with tab 1 and 2.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:0];
+
+  // Open second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Setup second window with tabs 3 and 4.
+  [ChromeEarlGrey loadURL:_URL3 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:1];
+
+  [ChromeEarlGrey openNewTabInWindowWithNumber:1];
+  [ChromeEarlGrey loadURL:_URL4 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse4
+                             inWindowWithNumber:1];
+
+  [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:1];
+
+  // Open tab grid in both windows.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [ChromeEarlGreyUI openTabGrid];
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridEditSelectAllButton()]
+      performAction:grey_tap()];
+
+  // DnD first tab of left window to left edge of first tab in second window.
+  // Note: move to left half of the destination tile, to avoid unwanted
+  // scrolling that would happen closer to the left edge.
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0,
+                                            IdentifierForCellAtIndex(0), 1,
+                                            CGVectorMake(0.5, 0.5)),
+             @"Failed to DND cell on cell");
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForMainTabCount:4 inWindowWithNumber:1];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+}
+
 // Tests dragging incognito tab grid item between windows.
 // TODO(crbug.com/40839724): Re-enable this test.
 - (void)FLAKY_testDragAndDropIncognitoBetweenWindows {
@@ -1377,10 +1449,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
 
-  // Open tab grid in both window.
+  // Open tab grid in both windows.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [ChromeEarlGreyUI openTabGrid];
-
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [ChromeEarlGreyUI openTabGrid];
 

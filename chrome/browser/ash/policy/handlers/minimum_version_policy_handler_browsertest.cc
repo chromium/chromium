@@ -195,7 +195,7 @@ class MinimumVersionPolicyTest : public MinimumVersionPolicyTestBase {
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(nullptr /*profile*/);
     network_state_test_helper_ = std::make_unique<ash::NetworkStateTestHelper>(
-        false /*use_default_devices_and_services*/);
+        /*use_default_devices_and_services=*/false);
     network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
     tray_test_api_ = ash::SystemTrayTestApi::Create();
   }

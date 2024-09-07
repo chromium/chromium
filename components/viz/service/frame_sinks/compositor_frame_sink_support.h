@@ -17,7 +17,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/input/render_input_router.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -81,13 +80,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // us to have one outstanding undrawn frame under normal operation.
   static constexpr uint32_t kUndrawnFrameLimit = 3;
 
-  CompositorFrameSinkSupport(
-      mojom::CompositorFrameSinkClient* client,
-      FrameSinkManagerImpl* frame_sink_manager,
-      const FrameSinkId& frame_sink_id,
-      bool is_root,
-      std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-          rir_client = std::nullopt);
+  CompositorFrameSinkSupport(mojom::CompositorFrameSinkClient* client,
+                             FrameSinkManagerImpl* frame_sink_manager,
+                             const FrameSinkId& frame_sink_id,
+                             bool is_root);
 
   CompositorFrameSinkSupport(const CompositorFrameSinkSupport&) = delete;
   CompositorFrameSinkSupport& operator=(const CompositorFrameSinkSupport&) =
@@ -579,11 +575,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // submitted compositor frames directly to `this`.
   std::unique_ptr<LayerContextImpl> layer_context_;
   bool layer_context_wants_begin_frames_ = false;
-
-  // RenderInputRouter is created only when `kInputOnViz` (Android-only) flag is
-  // enabled and only for non-root layer tree frame sinks, i.e. the layer tree
-  // frame sinks requested by renderers.
-  std::optional<input::RenderInputRouter> render_input_router_;
 
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_{this};
 };

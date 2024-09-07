@@ -3,11 +3,11 @@ Test exporting an AES key.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 Importing a JWK key...
-error is: TypeError: Invalid keyFormat argument
-error is: TypeError: Invalid keyFormat argument
-error is: TypeError: Invalid keyFormat argument
-error is: TypeError: Invalid keyFormat argument
-error is: TypeError: Invalid keyFormat argument
+error is: TypeError: Failed to execute 'exportKey' on 'SubtleCrypto': Invalid keyFormat argument
+error is: TypeError: Failed to execute 'exportKey' on 'SubtleCrypto': Invalid keyFormat argument
+error is: TypeError: Failed to execute 'exportKey' on 'SubtleCrypto': Invalid keyFormat argument
+error is: TypeError: Failed to execute 'exportKey' on 'SubtleCrypto': Invalid keyFormat argument
+error is: TypeError: Failed to execute 'exportKey' on 'SubtleCrypto': Invalid keyFormat argument
 Exporting the key as raw data...
 PASS bytesToHexString(new Uint8Array(exportedData)) is '6a18e49feff7f3b7e09ec89b7f6deab2f6a18e49feff7f3b7e09ec89b7f6deab'
 Exporting the key as JWK...
@@ -21,10 +21,10 @@ PASS exportedJWK.key_ops is ['sign', 'verify']
 Importing a key that's not extractable...
 
 Trying to export as raw...
-error is: InvalidAccessError: key is not extractable
+error is: InvalidAccessError: Failed to execute 'exportKey' on 'SubtleCrypto': key is not extractable
 PASS Rejected, as expected
 Trying to export as jwk...
-error is: InvalidAccessError: key is not extractable
+error is: InvalidAccessError: Failed to execute 'exportKey' on 'SubtleCrypto': key is not extractable
 PASS Rejected, as expected
 PASS successfullyParsed is true
 

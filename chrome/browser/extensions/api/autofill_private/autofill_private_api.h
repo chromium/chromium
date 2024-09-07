@@ -384,6 +384,24 @@ class AutofillPrivateSetAutofillSyncToggleEnabledFunction
   ResponseAction Run() override;
 };
 
+class AutofillPrivateGetUserAnnotationsEntriesFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateGetUserAnnotationsEntriesFunction() = default;
+  AutofillPrivateGetUserAnnotationsEntriesFunction(
+      const AutofillPrivateGetUserAnnotationsEntriesFunction&) = delete;
+  AutofillPrivateGetUserAnnotationsEntriesFunction& operator=(
+      const AutofillPrivateGetUserAnnotationsEntriesFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getUserAnnotationsEntries",
+                             AUTOFILLPRIVATE_GETUSERANNOTATIONSENTRIES)
+
+ protected:
+  ~AutofillPrivateGetUserAnnotationsEntriesFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

@@ -139,8 +139,9 @@ void RelaunchForUpdate() {
 }
 
 bool UpdatePending() {
-  if (!ash::DBusThreadManager::IsInitialized())
+  if (!ash::DBusThreadManager::IsInitialized()) {
     return false;
+  }
 
   return GetUpdateEngineClient()->GetLastStatus().current_operation() ==
          update_engine::UPDATED_NEED_REBOOT;
@@ -186,12 +187,14 @@ void StopSession() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Only call this function once.
   static bool notified = false;
-  if (notified)
+  if (notified) {
     return;
+  }
   notified = true;
 
-  if (chromeos::PowerPolicyController::IsInitialized())
+  if (chromeos::PowerPolicyController::IsInitialized()) {
     chromeos::PowerPolicyController::Get()->NotifyChromeIsExiting();
+  }
 
   if (chrome::UpdatePending()) {
     chrome::RelaunchForUpdate();

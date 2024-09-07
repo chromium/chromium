@@ -96,7 +96,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (instancetype)init {
   PinnedTabsLayout* layout = [[PinnedTabsLayout alloc] init];
-  if (self = [super initWithCollectionViewLayout:layout]) {
+  if ((self = [super initWithCollectionViewLayout:layout])) {
   }
   return self;
 }
@@ -481,7 +481,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
-  [self.dragDropHandler dragWillBeginForTabSwitcherItem:_draggedItem];
   _dragEndAtNewIndex = NO;
   _localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabsEvent,
@@ -503,7 +502,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabsEvent, dragEvent);
 
-  [self.dragDropHandler dragSessionDidEnd];
   [self.delegate pinnedViewControllerDragSessionDidEnd:self];
   [self dragSessionEnabled:NO];
 }

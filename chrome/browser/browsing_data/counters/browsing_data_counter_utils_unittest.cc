@@ -12,13 +12,23 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
+#include "chrome/browser/browsing_data/counters/site_data_counter.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -308,6 +318,224 @@ TEST_F(BrowsingDataCounterUtilsTest, TabsCounterResult) {
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
+ public:
+  enum class SigninState {
+    kSignedOut,
+    kAccountAware,
+    kImplicitSignin,  // Legacy Dice automatic signin.
+    kExplicitSignin,
+    kSigninPending,
+    kSyncing,
+    kSyncPaused
+  };
+
+  struct TestCase {
+    SigninState signin_state = SigninState::kSignedOut;
+    bool expects_exception_text = false;
+  };
+
+  void SetSignedOutState(syncer::TestSyncService* test_sync_service) {
+    test_sync_service->SetSignedOut();
+  }
+
+  void SetAccountAwareState(signin::IdentityTestEnvironment* identity_test_env,
+                            syncer::TestSyncService* test_sync_service) {
+    identity_test_env->MakeAccountAvailable("user@gmail.com");
+    test_sync_service->SetSignedOut();
+    ASSERT_FALSE(identity_test_env->identity_manager()->HasPrimaryAccount(
+        signin::ConsentLevel::kSignin));
+    ASSERT_EQ(1u, identity_test_env->identity_manager()
+                      ->GetAccountsWithRefreshTokens()
+                      .size());
+  }
+
+  CoreAccountInfo SetSignedInState(
+      signin::ConsentLevel consent_level,
+      signin::IdentityTestEnvironment* identity_test_env,
+      syncer::TestSyncService* test_sync_service,
+      PrefService* prefs,
+      bool explicit_signin) {
+    CoreAccountInfo account_info =
+        identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
+                                                       consent_level);
+    test_sync_service->SetSignedIn(consent_level, account_info);
+    prefs->SetBoolean(prefs::kExplicitBrowserSignin, explicit_signin);
+    return account_info;
+  }
+
+  void SetSigninPendingState(signin::IdentityTestEnvironment* identity_test_env,
+                             syncer::TestSyncService* test_sync_service,
+                             PrefService* prefs) {
+    CoreAccountInfo account_info =
+        SetSignedInState(signin::ConsentLevel::kSignin, identity_test_env,
+                         test_sync_service, prefs,
+                         /*explicit_signin=*/true);
+    identity_test_env->UpdatePersistentErrorOfRefreshTokenForAccount(
+        account_info.account_id,
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER));
+    ASSERT_TRUE(
+        identity_test_env->identity_manager()
+            ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
+            .IsPersistentError());
+  }
+
+  void SetSyncPausedState(signin::IdentityTestEnvironment* identity_test_env,
+                          syncer::TestSyncService* test_sync_service,
+                          PrefService* prefs) {
+    CoreAccountInfo account_info =
+        SetSignedInState(signin::ConsentLevel::kSync, identity_test_env,
+                         test_sync_service, prefs,
+                         /*explicit_signin=*/true);
+    identity_test_env->UpdatePersistentErrorOfRefreshTokenForAccount(
+        account_info.account_id,
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER));
+    ASSERT_TRUE(
+        identity_test_env->identity_manager()
+            ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
+            .IsPersistentError());
+  }
+
+  void VerifyTestCase(const TestCase& test_case) {
+    SCOPED_TRACE(base::StringPrintf("Test params: %d signin_state.",
+                                    static_cast<int>(test_case.signin_state)));
+    // Setup the signin state.
+    std::unique_ptr<TestingProfile> testing_profile =
+        IdentityTestEnvironmentProfileAdaptor::
+            CreateProfileForIdentityTestEnvironment();
+    auto identity_test_env_adaptor =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            testing_profile.get());
+    signin::IdentityTestEnvironment* identity_test_env =
+        identity_test_env_adaptor->identity_test_env();
+    syncer::TestSyncService* test_sync_service =
+        SyncServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+            testing_profile.get(), base::BindOnce([](content::BrowserContext*) {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
+
+    switch (test_case.signin_state) {
+      case SigninState::kSignedOut:
+        SetSignedOutState(test_sync_service);
+        break;
+      case SigninState::kAccountAware:
+        SetAccountAwareState(identity_test_env, test_sync_service);
+        break;
+      case SigninState::kExplicitSignin:
+        SetSignedInState(signin::ConsentLevel::kSignin, identity_test_env,
+                         test_sync_service, testing_profile->GetPrefs(),
+                         /*explicit_signin=*/true);
+        break;
+      case SigninState::kImplicitSignin:
+        SetSignedInState(signin::ConsentLevel::kSignin, identity_test_env,
+                         test_sync_service, testing_profile->GetPrefs(),
+                         /*explicit_signin=*/false);
+        break;
+      case SigninState::kSigninPending:
+        SetSigninPendingState(identity_test_env, test_sync_service,
+                              testing_profile->GetPrefs());
+        break;
+      case SigninState::kSyncing:
+        SetSignedInState(signin::ConsentLevel::kSync, identity_test_env,
+                         test_sync_service, testing_profile->GetPrefs(),
+                         /*explicit_signin=*/true);
+        break;
+      case SigninState::kSyncPaused:
+        SetSyncPausedState(identity_test_env, test_sync_service,
+                           testing_profile->GetPrefs());
+        break;
+    }
+
+    // Run the test case.
+    SiteDataCounter counter(testing_profile.get());
+    counter.Init(testing_profile->GetPrefs(),
+                 browsing_data::ClearBrowsingDataTab::ADVANCED,
+                 browsing_data::BrowsingDataCounter::ResultCallback());
+
+    browsing_data::BrowsingDataCounter::FinishedResult result0(&counter, 0);
+    EXPECT_EQ(GetChromeCounterTextFromResult(&result0, testing_profile.get()),
+              u"None");
+
+    browsing_data::BrowsingDataCounter::FinishedResult result1(&counter, 1);
+    browsing_data::BrowsingDataCounter::FinishedResult result42(&counter, 42);
+    std::u16string output1 =
+        GetChromeCounterTextFromResult(&result1, testing_profile.get());
+    std::u16string output42 =
+        GetChromeCounterTextFromResult(&result42, testing_profile.get());
+    if (test_case.expects_exception_text) {
+      EXPECT_EQ(output1,
+                u"From 1 site (you'll stay signed in to your Google Account)");
+      EXPECT_EQ(
+          output42,
+          u"From 42 sites (you'll stay signed in to your Google Account)");
+    } else {
+      EXPECT_EQ(output1, u"From 1 site ");
+      EXPECT_EQ(output42, u"From 42 sites ");
+    }
+  }
+};
+
+TEST_F(CookieBrowsingDataCounterUtilsTest,
+       CookieCounterResultExplicitSigninDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      switches::kExplicitBrowserSigninUIOnDesktop);
+  // This test assumes that the strings are served exactly as defined,
+  // i.e. that the locale is set to the default "en".
+  ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
+
+  // Test the output for various forms of cookie results. Some signin states do
+  // not exist when explicit signin is off.
+  const struct TestCase kTestCases[] = {
+      {.signin_state = SigninState::kSignedOut,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kImplicitSignin,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kSyncing, .expects_exception_text = true},
+      {.signin_state = SigninState::kSyncPaused,
+       .expects_exception_text = false},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    VerifyTestCase(test_case);
+  }
+}
+
+TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
+  scoped_feature_list_.InitAndEnableFeature(
+      switches::kExplicitBrowserSigninUIOnDesktop);
+  // This test assumes that the strings are served exactly as defined,
+  // i.e. that the locale is set to the default "en".
+  ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
+
+  // Test the output for various forms of cookie results.
+  const struct TestCase kTestCases[] = {
+      {.signin_state = SigninState::kSignedOut,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kAccountAware,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kImplicitSignin,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kExplicitSignin,
+       .expects_exception_text = true},
+      {.signin_state = SigninState::kSigninPending,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kSyncing, .expects_exception_text = true},
+      {.signin_state = SigninState::kSyncPaused,
+       .expects_exception_text = false},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    VerifyTestCase(test_case);
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace browsing_data_counter_utils

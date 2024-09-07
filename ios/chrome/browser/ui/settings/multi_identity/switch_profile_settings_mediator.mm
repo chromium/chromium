@@ -20,7 +20,7 @@
   // Update the last used browserState so that the newly created scene is linked
   // to the selected browserState (and not to the old one).
   GetApplicationContext()->GetLocalState()->SetString(
-      prefs::kBrowserStateLastUsed, base::SysNSStringToUTF8(browserStateName));
+      prefs::kLastUsedProfile, base::SysNSStringToUTF8(browserStateName));
 
   // Open the selected profile in a new window.
   if (@available(iOS 17, *)) {

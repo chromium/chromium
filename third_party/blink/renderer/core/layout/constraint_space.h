@@ -794,6 +794,10 @@ class CORE_EXPORT ConstraintSpace final {
     return HasRareData() ? rare_data_->GetLineClampData() : LineClampData();
   }
 
+  LayoutUnit LineClampEndPadding() const {
+    return HasRareData() ? rare_data_->LineClampEndPadding() : LayoutUnit();
+  }
+
   MarginStrut LineClampEndMarginStrut() const {
     return HasRareData() ? rare_data_->LineClampEndMarginStrut()
                          : MarginStrut();
@@ -1195,6 +1199,16 @@ class CORE_EXPORT ConstraintSpace final {
       EnsureBlockData()->line_clamp_data = value;
     }
 
+    LayoutUnit LineClampEndPadding() const {
+      return GetDataUnionType() == DataUnionType::kBlockData
+                 ? block_data_.line_clamp_end_padding
+                 : LayoutUnit();
+    }
+
+    void SetLineClampEndPadding(LayoutUnit value) {
+      EnsureBlockData()->line_clamp_end_padding = value;
+    }
+
     MarginStrut LineClampEndMarginStrut() const {
       return GetDataUnionType() == DataUnionType::kBlockData
                  ? block_data_.line_clamp_end_margin_strut
@@ -1396,6 +1410,7 @@ class CORE_EXPORT ConstraintSpace final {
       std::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
       LineClampData line_clamp_data;
+      LayoutUnit line_clamp_end_padding;
       MarginStrut line_clamp_end_margin_strut;
     };
 

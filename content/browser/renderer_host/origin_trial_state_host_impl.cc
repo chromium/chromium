@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom.h"
 
 namespace content {
@@ -102,15 +103,26 @@ void OriginTrialStateHostImpl::ApplyFeatureDiffForOriginTrial(
   // Apply the diff changes to the mutable RuntimeFeatureStateReadContext.
   // TODO(crbug.com/347186599): CAVEAT EMPTOR - there are corner cases where
   // RuntimeFeatureStateDocumentData::GetForCurrentDocument() returned a nullptr
-  // when it shouldn't have. To prevent CHECK failures, we have switched to
-  // GetOrCreateForCurrentDocument(), but this does not resolve the original
+  // when it shouldn't have. To prevent CHECK failures, we will create a new
+  // RuntimeFeatureStateDocumentData, but this does not resolve the original
   // corner case where the DocumentData is incorrectly created/deleted.
   // This issue should be revisited to avoid silently dropping any feature
   // overrides that are stored in the RFSDocumentData, in these corner cases
   // when the data has become a nullptr.
   RuntimeFeatureStateDocumentData* document_data =
-      RuntimeFeatureStateDocumentData::GetOrCreateForCurrentDocument(
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           &render_frame_host());
+  if (!document_data) {
+    // We can't use
+    // RuntimeFeatureStateDocumentData::GetOrCreateForCurrentDocument() because
+    // that creates an empty RuntimeFeatureStateReadContext which will hit some
+    // internal CHECKs if used because all its member fields are empty. Passing
+    // in a RuntimeFeatureStateContext() will initialize those member fields.
+    RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+        &render_frame_host(), blink::RuntimeFeatureStateContext());
+    document_data = RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+        &render_frame_host());
+  }
   CHECK(document_data);
   document_data
       ->GetMutableRuntimeFeatureStateReadContext(

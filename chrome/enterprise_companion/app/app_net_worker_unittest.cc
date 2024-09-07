@@ -42,15 +42,15 @@ class AppNetWorkerTest : public ::testing::Test {
 
 TEST_F(AppNetWorkerTest, ServicesNetworkRequests) {
   net::EmbeddedTestServer test_server;
-  test_server.RegisterRequestHandler(
-      base::BindRepeating([](const net::test_server::HttpRequest& request) {
+  test_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
         auto http_response =
             std::make_unique<net::test_server::BasicHttpResponse>();
         http_response->set_code(net::HTTP_OK);
         http_response->set_content("hello");
         http_response->set_content_type("text/plain");
-        return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
-            std::move(http_response));
+        return http_response;
       }));
   ASSERT_TRUE(test_server.Start());
 

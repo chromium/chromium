@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">‫<ph name="TABS_COUNT_MANY" /> برگه گروه‌بندی شد</translation>
 <translation id="1657719826150349398">انتقال برگه به پایین</translation>
 <translation id="1713541401465507417">بستن همه برگه‌ها و گروه‌ها</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">‫<ph name="TABS_COUNT_ONE" /> برگه گروه‌بندی شد</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{نشانک‌گذاری <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
@@ -59,7 +60,7 @@
 <translation id="3547352561153509682">با این کار، گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
 <translation id="3613492231657284463">پنهان کردن کادر گفتگوی برگه‌های غیرفعال</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
-<translation id="374923079891132274">تصویر کوچک پیش‌نمایش برگ هم‌رسانی.</translation>
+<translation id="374923079891132274">ریزعکس پیش‌نمایش برگ هم‌رسانی.</translation>
 <translation id="381219490185664296">گروه‌بندی برگه‌ها لغو شود؟</translation>
 <translation id="3882834874697329510">اعلان‌ها را در «تنظیمات» روشن کنید تا اگر قیمت کمتری در برگه‌ای باز وجود داشت هشدار دریافت کنید.</translation>
 <translation id="3940195383040445971">پیگیری قیمت در برگه‌ها</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">همین الآن ایجاد شد</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{بسته شدن پس‌از ۱ روز}one{بسته شدن پس‌از <ph name="DAY_COUNT_MANY" /> روز}other{بسته شدن پس‌از <ph name="DAY_COUNT_MANY" /> روز}}</translation>
 <translation id="4777866634702576038">گروه برگه حذف شود؟</translation>
+<translation id="4783638485675352219">عنوان‌ها و نشانی‌های وب برگه‌های باز این دستگاه با سیستم‌عامل هم‌رسانی شود</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> مرور)}one{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}other{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}}</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="4870911314065352661">همه برگه‌ها بسته شود؟</translation>

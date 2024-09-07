@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
 
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
@@ -23,10 +24,10 @@ TEST_F(ManualFillCredentialiOSTest, Creation) {
                                                 host:host
                                                  URL:URL];
   EXPECT_TRUE(credential);
-  EXPECT_TRUE([username isEqualToString:credential.username]);
-  EXPECT_TRUE([password isEqualToString:credential.password]);
-  EXPECT_TRUE([siteName isEqualToString:credential.siteName]);
-  EXPECT_TRUE([host isEqualToString:credential.host]);
+  EXPECT_NSEQ(username, credential.username);
+  EXPECT_NSEQ(password, credential.password);
+  EXPECT_NSEQ(siteName, credential.siteName);
+  EXPECT_NSEQ(host, credential.host);
   EXPECT_EQ(URL, credential.URL);
 }
 

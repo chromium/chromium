@@ -55,12 +55,12 @@ class MemorySaverInteractiveTestMixin : public MemorySaverBrowserTestMixin<T> {
   // tab and waits for it to reload
   auto DiscardAndReloadTab(int tab_index,
                            const ui::ElementIdentifier& contents_id) {
-    return T::Steps(T::FlushEvents(),
-                    // This has to be done on a fresh message loop to prevent
-                    // a tab being discarded while it is notifying its observers
-                    TryDiscardTab(tab_index), T::WaitForHide(contents_id),
-                    T::SelectTab(kTabStripElementId, tab_index),
-                    T::WaitForShow(contents_id));
+    return T::Steps(  // This has to be done on a fresh message loop to prevent
+                      // a tab being discarded while it is notifying its
+                      // observers
+        TryDiscardTab(tab_index), T::WaitForHide(contents_id),
+        T::SelectTab(kTabStripElementId, tab_index),
+        T::WaitForShow(contents_id));
   }
 };
 

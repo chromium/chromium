@@ -39,6 +39,7 @@ const char kServiceSandboxWithJit[] = "service_with_jit";
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 const char kScreenAISandbox[] = "screen_ai";
 #endif
+const char kVideoEffectsSandbox[] = "video_effects";
 const char kSpeechRecognitionSandbox[] = "speech_recognition";
 const char kVideoCaptureSandbox[] = "video_capture";
 

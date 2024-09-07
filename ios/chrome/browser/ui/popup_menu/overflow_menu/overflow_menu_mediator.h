@@ -140,6 +140,9 @@ class WebStateList;
 // The TabBasedIPHBrowserAgent to handle tab based in-product help bubbles.
 @property(nonatomic, assign) TabBasedIPHBrowserAgent* tabBasedIPHBrowserAgent;
 
+// If settings destination has a blue dot.
+@property(nonatomic, assign) bool hasSettingsBlueDot;
+
 // Disconnect the mediator.
 - (void)disconnect;
 

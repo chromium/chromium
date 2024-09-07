@@ -14,6 +14,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -37,10 +39,12 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_topics_page_manage_topics_heading);
+        mPageTitle.set(getString(R.string.settings_topics_page_manage_topics_heading));
         SettingsUtils.addPreferencesFromResource(this, R.xml.topics_manage_preference);
 
         mTopicsCategory = findPreference(MANAGE_TOPICS_PREFERENCE);
@@ -56,6 +60,11 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
         populateTopics();
         RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.PageOpened");
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     /**

@@ -342,7 +342,7 @@ bool PendingLayer::Merge(const PendingLayer& guest,
                          LCDTextPreference lcd_text_preference,
                          IsCompositedScrollFunction is_composited_scroll) {
   gfx::RectF merged_bounds;
-  PropertyTreeState merged_state = PropertyTreeState::Uninitialized();
+  PropertyTreeState merged_state(PropertyTreeState::kUninitialized);
   gfx::RectF merged_rect_known_to_be_opaque;
   bool merged_text_known_to_be_on_opaque_background = false;
   wtf_size_t merged_solid_color_chunk_index = kNotFound;
@@ -358,7 +358,9 @@ bool PendingLayer::Merge(const PendingLayer& guest,
 
   chunks_.Merge(guest.Chunks());
   bounds_ = merged_bounds;
-  property_tree_state_ = merged_state;
+  if (property_tree_state_ != merged_state) {
+    property_tree_state_ = merged_state;
+  }
   draws_content_ |= guest.draws_content_;
   rect_known_to_be_opaque_ = merged_rect_known_to_be_opaque;
   text_known_to_be_on_opaque_background_ =
@@ -446,7 +448,8 @@ bool PendingLayer::PropertyTreeStateChanged(
 
 bool PendingLayer::MightOverlap(const PendingLayer& other) const {
   return GeometryMapper::MightOverlapForCompositing(
-      bounds_, property_tree_state_, other.bounds_, other.property_tree_state_);
+      bounds_, GetPropertyTreeState(), other.bounds_,
+      other.GetPropertyTreeState());
 }
 
 // Walk the pending layer list and build up a table of transform nodes that

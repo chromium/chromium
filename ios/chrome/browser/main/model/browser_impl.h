@@ -5,16 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_IMPL_H_
 #define IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_IMPL_H_
 
-#include <CoreFoundation/CoreFoundation.h>
+#import <CoreFoundation/CoreFoundation.h>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
-#include "ios/chrome/browser/shared/model/browser/browser.h"
-#include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
+#import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-class ChromeBrowserState;
 @class SceneState;
 
 // BrowserImpl is the concrete implementation of the Browser interface.

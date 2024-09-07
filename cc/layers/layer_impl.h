@@ -34,6 +34,7 @@
 #include "cc/mojom/layer_type.mojom.h"
 #include "cc/paint/element_id.h"
 #include "cc/tiles/tile_priority.h"
+#include "cc/trees/damage_reason.h"
 #include "cc/trees/target_property.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
@@ -257,11 +258,6 @@ class CC_EXPORT LayerImpl {
   // initial scroll
   gfx::Vector2dF ScrollBy(const gfx::Vector2dF& scroll);
 
-  // Called during a commit or activation, after the property trees are pushed.
-  // It detects changes of scrollable status and scroll container size in the
-  // scroll property, and invalidate scrollbar geometries etc. for the changes.
-  void UpdateScrollable();
-
   // Some properties on the LayerImpl are rarely set, and so are bundled
   // under a single unique_ptr.
   struct CC_EXPORT RareProperties {
@@ -349,6 +345,12 @@ class CC_EXPORT LayerImpl {
   // as appropriate.
   virtual gfx::Rect GetDamageRect() const;
 
+  // Damage tracker will consider layer damaged if `LayerPropertyChanged` is
+  // true, or update_rect() or GetDamageRect() are non-empty. This method
+  // returns damage reasons for any and all of these cases. The default
+  // implementation adds kUntracked for all of these cases.
+  virtual DamageReasonSet GetDamageReasons() const;
+
   // This includes |layer_property_changed_not_from_property_trees_| and
   // property_trees changes.
   bool LayerPropertyChanged() const;
@@ -399,12 +401,14 @@ class CC_EXPORT LayerImpl {
 
   virtual size_t GPUMemoryUsageInBytes() const;
 
-  // Mark a layer on pending tree that needs to push its properties to the
-  // active tree. These properties should not be changed during pending tree
-  // lifetime, and only changed by being pushed from the main thread. There are
-  // three cases where this function needs to be called: when main thread layer
-  // has properties that need to be pushed, when a new LayerImpl is created
-  // on pending tree when syncing layers from main thread, or when we recompute
+  // Mark a pending tree layer that needs to push its properties to the active
+  // tree, or an active tree layer that needs to push its properties to the
+  // display tree (only applicable when using a LayerContext). These properties
+  // should not be changed during tree lifetime, and only changed by being
+  // pushed to the target tree. For pending tree layers there are three cases
+  // where this function needs to be called: when the main thread layer has
+  // properties that need to be pushed, when a new LayerImpl is created on the
+  // pending tree while syncing layers from main thread, or when we recompute
   // visible layer properties on the pending tree.
   void SetNeedsPushProperties();
 
@@ -463,9 +467,6 @@ class CC_EXPORT LayerImpl {
   void NoteLayerPropertyChangedFromPropertyTrees();
 
   ElementListType GetElementTypeForAnimation() const;
-
-  void set_needs_show_scrollbars(bool yes) { needs_show_scrollbars_ = yes; }
-  bool needs_show_scrollbars() { return needs_show_scrollbars_; }
 
   void set_raster_even_if_not_drawn(bool yes) {
     raster_even_if_not_drawn_ = yes;
@@ -529,18 +530,6 @@ class CC_EXPORT LayerImpl {
 
   gfx::Vector2dF offset_to_transform_parent_;
 
-  // These fields are copies of |container_bounds|, |bounds| and |scrollable|
-  // fields in the associated ScrollNode, and are updated in UpdateScrollable().
-  // The copy is for change detection only.
-  // TODO(wangxianzhu): Actually we only need scroll_container_bounds_ in
-  // pre-CompositeAfterPaint where the scroll node is associated with the
-  // scrolling contents layer, and only need scroll_contents_bounds_ in
-  // CompositeAfterPaint where the scroll node is associated with the scroll
-  // container layer. Remove scroll_container_bounds_ when we launch CAP.
-  gfx::Size scroll_container_bounds_;
-  gfx::Size scroll_contents_bounds_;
-  bool scrollable_ : 1 = false;
-
   // Tracks if drawing-related properties have changed since last redraw.
   // TODO(wutao): We want to distinquish the sources of change so that we can
   // reuse the cache of render pass. For example, we can reuse the cache when
@@ -602,12 +591,6 @@ class CC_EXPORT LayerImpl {
   mutable std::unique_ptr<Region> all_touch_action_regions_;
 
   bool needs_push_properties_ : 1 = false;
-
-  // The needs_show_scrollbars_ bit tracks a pending request to show the overlay
-  // scrollbars. It's set by UpdateScrollable() on the scroll layer (not the
-  // scrollbar layers) and consumed by LayerTreeImpl::PushPropertiesTo() and
-  // LayerTreeImpl::HandleScrollbarShowRequests().
-  bool needs_show_scrollbars_ : 1 = false;
 
   // This is set for layers that have a property because of which they are not
   // drawn (singular transforms), but they can become visible soon (the property

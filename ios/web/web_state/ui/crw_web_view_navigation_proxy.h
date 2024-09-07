@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol CRWWebViewNavigationProxy
 
 @property(nullable, nonatomic, readonly, copy) NSURL* URL;
+@property(nullable, nonatomic, readonly, copy) NSString* title;
 @property(nonatomic, readonly, strong) WKBackForwardList* backForwardList;
 
 @end

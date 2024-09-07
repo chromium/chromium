@@ -118,6 +118,13 @@ declare_args() {
 
   # Rust gtest interop.
   enable_rust_gtest_interop = enable_rust
+
+  # WIP attempt to replace `libpng` with Rust `png` crate.
+  #
+  # TODO(https://crbug.com/360375227): Remove the `enable_all_rust_features`
+  # condition below (only true on Rust bots) once/if ready to start A/B
+  # experiments.
+  enable_rust_png = enable_rust && enable_all_rust_features
 }
 
 # Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust

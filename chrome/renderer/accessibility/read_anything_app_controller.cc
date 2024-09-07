@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
+#include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -590,10 +591,16 @@ void ReadAnythingAppController::Distill() {
   // specific URL. The caller monitors for a dump of the distilled proto written
   // to a local file. Distill should only be called once the page is finished
   // loading, so we have the proto representing the entire webpage.
-  if (features::IsDataCollectionModeForScreen2xEnabled() &&
-      (!model_.PageFinishedLoadingForDataCollection() ||
-       !model_.ScreenAIServiceReadyForDataColletion())) {
-    return;
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    if (!model_.PageFinishedLoadingForDataCollection() ||
+        !model_.ScreenAIServiceReadyForDataColletion()) {
+      return;
+    }
+    // Request a screenshot of the active page when no more distillations are
+    // required. Send a screenshot request to its browser controller using
+    // `PaintPreview` to take a whole-page screenshot of the active web
+    // contents.
+    page_handler_->OnScreenshotRequested();
   }
 
   model_.set_requires_distillation(false);
@@ -699,16 +706,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   model_.UnserializePendingUpdates(tree_id);
   if (model_.requires_distillation()) {
     Distill();
-  } else {
-    // Request a screenshot of the active page when no more distillations are
-    // required.
-    if (features::IsDataCollectionModeForScreen2xEnabled() &&
-        model_.PageFinishedLoadingForDataCollection()) {
-      // Send a snapshot request to its browser controller using `PaintPreview`
-      // to take a whole-page snapshot of the active web contents.
-      page_handler_->OnSnapshotRequested();
-      model_.SetPageFinishedLoadingForDataCollection(false);
-    }
   }
 }
 
@@ -821,6 +818,15 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
       .SetProperty("yellowTheme", &ReadAnythingAppController::YellowTheme)
       .SetProperty("blueTheme", &ReadAnythingAppController::BlueTheme)
+      .SetProperty("autoHighlighting",
+                   &ReadAnythingAppController::AutoHighlighting)
+      .SetProperty("wordHighlighting",
+                   &ReadAnythingAppController::WordHighlighting)
+      .SetProperty("phraseHighlighting",
+                   &ReadAnythingAppController::PhraseHighlighting)
+      .SetProperty("sentenceHighlighting",
+                   &ReadAnythingAppController::SentenceHighlighting)
+      .SetProperty("noHighlighting", &ReadAnythingAppController::NoHighlighting)
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
@@ -839,6 +845,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::RequiresDistillation)
       .SetProperty("defaultLanguageForSpeech",
                    &ReadAnythingAppController::GetDefaultLanguageCodeForSpeech)
+      .SetProperty("isPhraseHighlightingEnabled",
+                   &ReadAnythingAppController::IsPhraseHighlightingEnabled)
       .SetMethod("isHighlightOn", &ReadAnythingAppController::IsHighlightOn)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getDataFontCss", &ReadAnythingAppController::GetDataFontCss)
@@ -881,6 +889,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::TurnedHighlightOn)
       .SetMethod("turnedHighlightOff",
                  &ReadAnythingAppController::TurnedHighlightOff)
+      .SetMethod("onHighlightGranularityChanged",
+                 &ReadAnythingAppController::OnHighlightGranularityChanged)
       .SetMethod("getLineSpacingValue",
                  &ReadAnythingAppController::GetLineSpacingValue)
       .SetMethod("getLetterSpacingValue",
@@ -902,8 +912,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::ResetGranularityIndex)
       .SetMethod("getCurrentTextStartIndex",
                  &ReadAnythingAppController::GetCurrentTextStartIndex)
-      .SetMethod("getHighlightStartIndex",
-                 &ReadAnythingAppController::GetHighlightStartIndex)
       .SetMethod("getCurrentTextEndIndex",
                  &ReadAnythingAppController::GetCurrentTextEndIndex)
       .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
@@ -929,14 +937,14 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
                  &ReadAnythingAppController::SendInstallVoicePackRequest)
-      .SetMethod("getNodeIdForCurrentSegmentIndex",
-                 &ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex)
-      .SetMethod("getNextWordHighlightLength",
-                 &ReadAnythingAppController::GetNextWordHighlightLength)
+      .SetMethod("getHighlightForCurrentSegmentIndex",
+                 &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex)
       .SetMethod("getValidatedFontName",
                  &ReadAnythingAppController::GetValidatedFontName)
       .SetMethod("onScrolledToBottom",
-                 &ReadAnythingAppController::OnScrolledToBottom);
+                 &ReadAnythingAppController::OnScrolledToBottom)
+      .SetProperty("isDocsLoadMoreButtonVisible",
+                   &ReadAnythingAppController::IsDocsLoadMoreButtonVisible);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -979,6 +987,10 @@ bool ReadAnythingAppController::ImagesEnabled() const {
 
 bool ReadAnythingAppController::ImagesFeatureEnabled() const {
   return features::IsReadAnythingImagesViaAlgorithmEnabled();
+}
+
+bool ReadAnythingAppController::IsPhraseHighlightingEnabled() const {
+  return features::IsReadAnythingReadAloudPhraseHighlightingEnabled();
 }
 
 int ReadAnythingAppController::LetterSpacing() const {
@@ -1072,6 +1084,27 @@ int ReadAnythingAppController::BlueTheme() const {
 
 bool ReadAnythingAppController::IsHighlightOn() {
   return read_aloud_model_.IsHighlightOn();
+}
+
+int ReadAnythingAppController::AutoHighlighting() const {
+  return static_cast<int>(read_anything::mojom::HighlightGranularity::kOn);
+}
+
+int ReadAnythingAppController::WordHighlighting() const {
+  return static_cast<int>(read_anything::mojom::HighlightGranularity::kWord);
+}
+
+int ReadAnythingAppController::PhraseHighlighting() const {
+  return static_cast<int>(read_anything::mojom::HighlightGranularity::kPhrase);
+}
+
+int ReadAnythingAppController::SentenceHighlighting() const {
+  return static_cast<int>(
+      read_anything::mojom::HighlightGranularity::kSentence);
+}
+
+int ReadAnythingAppController::NoHighlighting() const {
+  return static_cast<int>(read_anything::mojom::HighlightGranularity::kOff);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -1535,6 +1568,13 @@ void ReadAnythingAppController::TurnedHighlightOff() {
   read_aloud_model_.set_highlight_granularity((int)granularity);
 }
 
+void ReadAnythingAppController::OnHighlightGranularityChanged(
+    const int granularity) {
+  page_handler_->OnHighlightGranularityChanged(
+      static_cast<read_anything::mojom::HighlightGranularity>(granularity));
+  read_aloud_model_.set_highlight_granularity(granularity);
+}
+
 double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {
   if (line_spacing >
       static_cast<int>(read_anything::mojom::LineSpacing::kMaxValue)) {
@@ -1655,11 +1695,6 @@ int ReadAnythingAppController::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
   return read_aloud_model_.GetCurrentTextStartIndex(node_id);
 }
 
-int ReadAnythingAppController::GetHighlightStartIndex(ui::AXNodeID node_id,
-                                                      int boundary_index) {
-  return read_aloud_model_.GetHighlightStartIndex(node_id, boundary_index);
-}
-
 int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
   return read_aloud_model_.GetCurrentTextEndIndex(node_id);
 }
@@ -1771,13 +1806,30 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
   return word_ends;
 }
 
-ui::AXNodeID ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex(
-    int index) {
-  return read_aloud_model_.GetNodeIdForCurrentSegmentIndex(index);
-}
+v8::Local<v8::Value>
+ReadAnythingAppController::GetHighlightForCurrentSegmentIndex(int index) {
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  auto context = isolate->GetCurrentContext();
 
-int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
-  return read_aloud_model_.GetNextWordHighlightLength(index);
+  std::vector<ReadAloudTextSegment> nodes =
+      read_aloud_model_.GetHighlightForCurrentSegmentIndex(index);
+
+  v8::Local<v8::Array> highlight_array = v8::Array::New(isolate, nodes.size());
+  for (int i = 0; i < (int)nodes.size(); i++) {
+    v8::Local<v8::Object> obj = v8::Object::New(isolate);
+    auto checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "nodeId").ToLocalChecked(),
+        v8::Number::New(isolate, nodes[i].id));
+    checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "start").ToLocalChecked(),
+        v8::Number::New(isolate, nodes[i].text_start));
+    checked = obj->DefineOwnProperty(
+        context, v8::String::NewFromUtf8(isolate, "length").ToLocalChecked(),
+        v8::Number::New(isolate, (nodes[i].text_end - nodes[i].text_start)));
+    checked = highlight_array->Set(isolate->GetCurrentContext(), i, obj);
+  }
+  return highlight_array;
 }
 
 void ReadAnythingAppController::IncrementMetricCount(
@@ -1792,4 +1844,9 @@ void ReadAnythingAppController::OnScrolledToBottom() {
     page_handler_->ScrollToTargetNode(model_.active_tree_id(),
                                       *model_.display_node_ids().rbegin());
   }
+}
+
+bool ReadAnythingAppController::IsDocsLoadMoreButtonVisible() const {
+  return (features::IsReadAnythingDocsLoadMoreButtonEnabled() &&
+          IsGoogleDocs());
 }

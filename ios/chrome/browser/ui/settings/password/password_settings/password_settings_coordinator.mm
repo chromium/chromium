@@ -11,14 +11,17 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_saved_passwords_presenter_factory.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -39,6 +42,7 @@
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -159,9 +163,14 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
   _reauthModule = password_manager::BuildReauthenticationModule();
 
-  _savedPasswordsPresenter.reset(
-      IOSChromeSavedPasswordsPresenterFactory::GetForBrowserState(
-          browserState));
+  _savedPasswordsPresenter =
+      std::make_unique<password_manager::SavedPasswordsPresenter>(
+          IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
+          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+              browserState, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+              browserState, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSPasskeyModelFactory::GetForBrowserState(browserState));
 
   _mediator = [[PasswordSettingsMediator alloc]
          initWithReauthenticationModule:_reauthModule
@@ -169,8 +178,8 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
       bulkMovePasswordsToAccountHandler:self
                           exportHandler:self
                             prefService:browserState->GetPrefs()
-                        identityManager:IdentityManagerFactory::
-                                            GetForBrowserState(browserState)
+                        identityManager:IdentityManagerFactory::GetForProfile(
+                                            browserState)
                             syncService:SyncServiceFactory::GetForBrowserState(
                                             browserState)];
 

@@ -381,9 +381,13 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
     const PrivateAggregationPhaseKey& agg_phase_key,
     const PrivateAggregationKey& agg_key,
     BiddingAndAuctionResponse& output) {
-  std::optional<auction_worklet::mojom::EventTypePtr> event_type =
-      auction_worklet::ParsePrivateAggregationEventType(event_type_str);
-  if (!event_type.has_value()) {
+  auction_worklet::mojom::EventTypePtr event_type =
+      auction_worklet::ParsePrivateAggregationEventType(
+          event_type_str,
+          base::FeatureList::IsEnabled(
+              blink::features::
+                  kPrivateAggregationApiProtectedAudienceAdditionalExtensions));
+  if (!event_type) {
     // Don't throw an error if an invalid reserved event type is provided, to
     // provide forward compatibility with new reserved event types added
     // later.
@@ -441,7 +445,7 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
               // TODO(qingxinwu): consider allowing this to be set
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
-      if ((*event_type)->is_reserved()) {
+      if (event_type->is_reserved()) {
         output.server_filtered_pagg_requests_reserved[agg_key].emplace_back(
             std::move(request));
       } else {

@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/origin.h"
@@ -36,7 +37,7 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
 
   SignedExchangeRequestHandler(
       uint32_t url_loader_options,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const base::UnguessableToken& devtools_navigation_token,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
@@ -76,7 +77,7 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
   std::unique_ptr<SignedExchangeLoader> signed_exchange_loader_;
 
   const uint32_t url_loader_options_;
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
   const base::UnguessableToken devtools_navigation_token_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

@@ -326,14 +326,6 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
     return;
   }
 
-  if (fenced_frame_properties->is_ad_component() &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM120FeaturesPart2)) {
-    // The ability to leave interest group from an ad component is not supported
-    // before M120.
-    return;
-  }
-
   const blink::FencedFrame::AdAuctionData& auction_data =
       fenced_frame_properties->ad_auction_data()->GetValueIgnoringVisibility();
 
@@ -456,23 +448,12 @@ void AdAuctionServiceImpl::RunAdAuction(
   // Try to preconnect to owner and bidding signals origins if this is an
   // on-device auction.
   if (base::FeatureList::IsEnabled(features::kFledgeUsePreconnectCache) &&
-      !config.server_response.has_value() &&
-      config.non_shared_params.interest_group_buyers.has_value()) {
-    for (const auto& buyer : *config.non_shared_params.interest_group_buyers) {
-      std::optional<url::Origin> signals_origin;
-      if (GetInterestGroupManager().GetCachedOwnerAndSignalsOrigins(
-              buyer, signals_origin)) {
-        net::NetworkAnonymizationKey network_anonymization_key =
-            net::NetworkAnonymizationKey::CreateSameSite(
-                net::SchemefulSite(buyer));
-        PreconnectSocket(buyer.GetURL(), network_anonymization_key);
-        if (signals_origin) {
-          // We preconnect to the signals origin and not the full signals URL so
-          // that we do not need to store the full URL in memory. Preconnecting
-          // to the origin will be roughly equivalent to preconnecting to the
-          // full URL.
-          PreconnectSocket(signals_origin->GetURL(), network_anonymization_key);
-        }
+      !config.server_response.has_value()) {
+    PreconnectToBuyerOrigins(config);
+    for (const blink::AuctionConfig& component_config :
+         config.non_shared_params.component_auctions) {
+      if (!component_config.server_response.has_value()) {
+        PreconnectToBuyerOrigins(component_config);
       }
     }
   }
@@ -895,7 +876,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     std::optional<blink::AdDescriptor> ad_descriptor,
     std::vector<blink::AdDescriptor> ad_component_descriptors,
     std::vector<std::string> errors,
-    std::unique_ptr<InterestGroupAuctionReporter> reporter) {
+    std::unique_ptr<InterestGroupAuctionReporter> reporter,
+    bool contained_server_auction,
+    bool contained_on_device_auction,
+    AuctionResult result) {
   // Remove `auction` from `auctions_` but temporarily keep it alive - on
   // success, it owns a AuctionWorkletManager::WorkletHandle for the top-level
   // auction, which `reporter` can reuse once started. Fine to delete after
@@ -930,10 +914,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   if (!ad_descriptor) {
     DCHECK(!reporter);
 
-    if (!aborted_by_script) {
-      GetContentClient()->browser()->OnAuctionComplete(&render_frame_host(),
-                                                       std::nullopt);
-    }
+    GetContentClient()->browser()->OnAuctionComplete(
+        &render_frame_host(), /*winner_data_key=*/std::nullopt,
+        contained_server_auction, contained_on_device_auction, result);
 
     std::move(callback).Run(aborted_by_script, /*config=*/std::nullopt);
     if (auction_result_metrics) {
@@ -961,7 +944,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
           reporter->winning_bid_info()
               .storage_interest_group->interest_group.owner,
           reporter->winning_bid_info().storage_interest_group->joining_origin,
-      });
+      },
+      contained_server_auction, contained_on_device_auction, result);
 
   content::AdAuctionData ad_auction_data{winning_group_key->owner,
                                          winning_group_key->name};
@@ -1263,6 +1247,30 @@ AdAuctionPageData* AdAuctionServiceImpl::GetAdAuctionPageData() {
 
   return PageUserData<AdAuctionPageData>::GetOrCreateForPage(
       render_frame_host().GetPage());
+}
+
+void AdAuctionServiceImpl::PreconnectToBuyerOrigins(
+    const blink::AuctionConfig& config) {
+  if (!config.non_shared_params.interest_group_buyers) {
+    return;
+  }
+  for (const auto& buyer : *config.non_shared_params.interest_group_buyers) {
+    std::optional<url::Origin> signals_origin;
+    if (GetInterestGroupManager().GetCachedOwnerAndSignalsOrigins(
+            buyer, signals_origin)) {
+      net::NetworkAnonymizationKey network_anonymization_key =
+          net::NetworkAnonymizationKey::CreateSameSite(
+              net::SchemefulSite(buyer));
+      PreconnectSocket(buyer.GetURL(), network_anonymization_key);
+      if (signals_origin) {
+        // We preconnect to the signals origin and not the full signals URL so
+        // that we do not need to store the full URL in memory. Preconnecting
+        // to the origin will be roughly equivalent to preconnecting to the
+        // full URL.
+        PreconnectSocket(signals_origin->GetURL(), network_anonymization_key);
+      }
+    }
+  }
 }
 
 }  // namespace content

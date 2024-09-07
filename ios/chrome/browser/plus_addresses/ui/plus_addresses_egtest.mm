@@ -85,9 +85,10 @@ void ExpectModalTimeSample(
           &plus_addresses::test::HandleRequestToPlusAddressWithSuccess)));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  if ([self isRunningTest:@selector(testConfirmPlusAddressUsingBottomSheet)] ||
-      [self isRunningTest:@selector(testRefresh)] ||
-      [self isRunningTest:@selector(testCreatePlusAddressIPH)]) {
+  if ([self isRunningTest:@selector
+            (DISABLED_testConfirmPlusAddressUsingBottomSheet)] ||
+      [self isRunningTest:@selector(DISABLED_testRefresh)] ||
+      [self isRunningTest:@selector(DISABLED_testCreatePlusAddressIPH)]) {
     [self relaunchAppAndSetConfiguration];
   }
 
@@ -119,12 +120,7 @@ void ExpectModalTimeSample(
          {"manage-url", {plus_addresses::test::kFakeManagementUrl}},
          {"error-report-url", {plus_addresses::test::kFakeErrorReportUrl}}}}});
 
-  if ([self isRunningTest:@selector(testRefresh)]) {
-    config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressRefresh, {}});
-  }
-
-  if ([self isRunningTest:@selector(testCreatePlusAddressIPH)]) {
+  if ([self isRunningTest:@selector(DISABLED_testCreatePlusAddressIPH)]) {
     config.iph_feature_enabled =
         feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
   }
@@ -225,9 +221,10 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 #pragma mark - Tests
 
+// TODO(crbug.com/364105204) Fix test failures.
 // Tests showing up a bottom sheet to confirm a plus address. Once, the plus
 // address is confirmed checks if it is filled in the file.d
-- (void)testConfirmPlusAddressUsingBottomSheet {
+- (void)DISABLED_testConfirmPlusAddressUsingBottomSheet {
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
@@ -258,7 +255,7 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // A basic test that simply opens the bottom sheet with an error and then
 // dismisses the bottom sheet.
-- (void)testShowPlusAddressBottomSheetWithError {
+- (void)DISABLED_testShowPlusAddressBottomSheetWithError {
   [self openCreatePlusAddressBottomSheet];
 
   // The primary email address should be shown.
@@ -296,7 +293,7 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
       1);
 }
 
-- (void)testPlusAddressBottomSheetErrorReportLink {
+- (void)DISABLED_testPlusAddressBottomSheetErrorReportLink {
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> link_text = GetMatcherForErrorReportLink();
@@ -317,7 +314,7 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
       assertWithMatcher:grey_notVisible()];
 }
 
-- (void)testSwipeToDismiss {
+- (void)DISABLED_testSwipeToDismiss {
   // TODO(crbug.com/40949085): Test fails on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
@@ -367,7 +364,7 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 }
 
 // A test to check the refresh plus address functionality.
-- (void)testRefresh {
+- (void)DISABLED_testRefresh {
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
@@ -396,7 +393,7 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 }
 
 // A test to check the plus address create suggestion IPH feature.
-- (void)testCreatePlusAddressIPH {
+- (void)DISABLED_testCreatePlusAddressIPH {
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];

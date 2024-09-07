@@ -28,6 +28,7 @@ include_rules = [
   "+components/webauthn",
   "+components/webdata/common",
   "+crypto",
+  "+device/fido/features.h",
   "+google_apis",
   "+grit",
   "+mojo/public/cpp/bindings",

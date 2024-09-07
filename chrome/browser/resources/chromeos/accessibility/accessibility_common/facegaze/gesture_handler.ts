@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 
 import {CustomCallbackMacro} from '/common/action_fulfillment/macros/custom_callback_macro.js';
-import {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
+import {KeyCombination, KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
 import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {MouseClickLeftDoubleMacro, MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
 import {AsyncUtil} from '/common/async_util.js';
+import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {FacialGesture} from './facial_gestures.js';
 import {GestureDetector} from './gesture_detector.js';
+import {MouseScrollMacro} from './macros/mouse_scroll_macro.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
 import {MouseController} from './mouse_controller.js';
 
@@ -23,10 +25,9 @@ import StateType = chrome.automation.StateType;
 type AutomationNode = chrome.automation.AutomationNode;
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
-/**
- * Handles converting facial gestures to Macros.
- */
+/** Handles converting facial gestures to Macros. */
 export class GestureHandler {
+  private gesturesToKeyCombos_: Map<FacialGesture, KeyCombination> = new Map();
   private gestureToMacroName_: Map<FacialGesture, MacroName> = new Map();
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
   private gestureLastRecognized_: Map<FacialGesture, number> = new Map();
@@ -79,8 +80,7 @@ export class GestureHandler {
             // Update the whole map from this preference.
             this.gestureToMacroName_.clear();
             if (Object.entries(pref.value).length === 0) {
-              // TODO(b:322510392): Remove this hard-coded mapping after
-              // settings page lands when users can pick their own mappings.
+              // TODO(b:361389043): Update this to default behavior.
               pref.value[FacialGesture.JAW_OPEN] = MacroName.MOUSE_CLICK_LEFT;
               pref.value[FacialGesture.BROW_INNER_UP] =
                   MacroName.MOUSE_CLICK_RIGHT;
@@ -108,6 +108,17 @@ export class GestureHandler {
             for (const [gesture, confidence] of Object.entries(pref.value)) {
               this.gestureToConfidence_.set(
                   gesture as FacialGesture, Number(confidence) / 100.);
+            }
+          }
+          break;
+        case GestureHandler.GESTURE_TO_KEY_COMBO_PREF:
+          if (pref.value) {
+            for (const [gesture, keyCombinationAsString] of Object.entries(
+                     pref.value)) {
+              const keyCombination =
+                  JSON.parse(keyCombinationAsString as string);
+              this.gesturesToKeyCombos_.set(
+                  gesture as FacialGesture, keyCombination);
             }
           }
           break;
@@ -157,7 +168,7 @@ export class GestureHandler {
     // Construct macros from all the macro names.
     const result: Macro[] = [];
     for (const [macroName, gesture] of macroNames) {
-      const macro = this.macroFromName_(macroName);
+      const macro = this.macroFromName_(macroName, gesture);
       if (macro) {
         if (macro instanceof MouseClickMacro) {
           // Don't add mouse click macros if we are in the middle of long click.
@@ -207,7 +218,8 @@ export class GestureHandler {
     return macrosForLater;
   }
 
-  private macroFromName_(name: MacroName): Macro|undefined {
+  private macroFromName_(name: MacroName, gesture: FacialGesture): Macro
+      |undefined {
     if (this.paused_ && name !== MacroName.TOGGLE_FACEGAZE) {
       return;
     }
@@ -230,13 +242,21 @@ export class GestureHandler {
       case MacroName.RESET_CURSOR:
         return new ResetCursorMacro(this.mouseController_);
       case MacroName.KEY_PRESS_SPACE:
+        return new KeyPressMacro(name, {key: KeyCode.SPACE});
       case MacroName.KEY_PRESS_DOWN:
+        return new KeyPressMacro(name, {key: KeyCode.DOWN});
       case MacroName.KEY_PRESS_LEFT:
+        return new KeyPressMacro(name, {key: KeyCode.LEFT});
       case MacroName.KEY_PRESS_RIGHT:
+        return new KeyPressMacro(name, {key: KeyCode.RIGHT});
       case MacroName.KEY_PRESS_UP:
+        return new KeyPressMacro(name, {key: KeyCode.UP});
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
+        // The MEDIA_LAUNCH_APP1 key is bound to the kToggleOverview accelerator
+        // action in accelerators.cc.
+        return new KeyPressMacro(name, {key: KeyCode.MEDIA_LAUNCH_APP1});
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
-        return new KeyPressMacro(name);
+        return new KeyPressMacro(name, {key: KeyCode.MEDIA_PLAY_PAUSE});
       case MacroName.OPEN_FACEGAZE_SETTINGS:
         return new CustomCallbackMacro(MacroName.OPEN_FACEGAZE_SETTINGS, () => {
           chrome.accessibilityPrivate.openSettingsSubpage(
@@ -247,6 +267,8 @@ export class GestureHandler {
           this.mouseController_.togglePaused();
           this.togglePaused();
         });
+      case MacroName.TOGGLE_SCROLL_MODE:
+        return new MouseScrollMacro(this.mouseController_);
       case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
         return new CustomCallbackMacro(
             MacroName.TOGGLE_VIRTUAL_KEYBOARD, async () => {
@@ -267,6 +289,14 @@ export class GestureHandler {
               chrome.accessibilityPrivate.setVirtualKeyboardVisible(
                   !currentlyVisible);
             });
+      case MacroName.CUSTOM_KEY_COMBINATION:
+        const keyCombination = this.gesturesToKeyCombos_.get(gesture);
+        if (!keyCombination) {
+          throw new Error(
+              `Expected a custom key combination for gesture: ${gesture}`);
+        }
+
+        return new KeyPressMacro(name, keyCombination);
       default:
         return;
     }
@@ -280,6 +310,9 @@ export namespace GestureHandler {
   /** Minimum repeat rate of a gesture. */
   // TODO(b:322511275): Move to a pref in settings.
   export const DEFAULT_REPEAT_DELAY_MS = 500;
+
+  export const GESTURE_TO_KEY_COMBO_PREF =
+      'settings.a11y.face_gaze.gestures_to_key_combos';
 
   /**
    * Pref name of preference mapping facegaze gestures to macro action names.

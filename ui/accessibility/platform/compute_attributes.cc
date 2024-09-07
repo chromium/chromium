@@ -14,9 +14,8 @@
 namespace ui {
 namespace {
 
-std::optional<int32_t> GetCellAttribute(
-    const ui::AXPlatformNodeDelegate* delegate,
-    ax::mojom::IntAttribute attribute) {
+std::optional<int32_t> GetCellAttribute(const AXPlatformNodeDelegate* delegate,
+                                        ax::mojom::IntAttribute attribute) {
   switch (attribute) {
     case ax::mojom::IntAttribute::kAriaCellColumnIndex:
       return delegate->GetTableCellAriaColIndex();
@@ -35,18 +34,16 @@ std::optional<int32_t> GetCellAttribute(
   }
 }
 
-std::optional<int32_t> GetRowAttribute(
-    const ui::AXPlatformNodeDelegate* delegate,
-    ax::mojom::IntAttribute attribute) {
+std::optional<int32_t> GetRowAttribute(const AXPlatformNodeDelegate* delegate,
+                                       ax::mojom::IntAttribute attribute) {
   if (attribute == ax::mojom::IntAttribute::kTableRowIndex) {
     return delegate->GetTableRowRowIndex();
   }
   return std::nullopt;
 }
 
-std::optional<int32_t> GetTableAttribute(
-    const ui::AXPlatformNodeDelegate* delegate,
-    ax::mojom::IntAttribute attribute) {
+std::optional<int32_t> GetTableAttribute(const AXPlatformNodeDelegate* delegate,
+                                         ax::mojom::IntAttribute attribute) {
   switch (attribute) {
     case ax::mojom::IntAttribute::kTableColumnCount:
       return delegate->GetTableColCount();
@@ -62,7 +59,7 @@ std::optional<int32_t> GetTableAttribute(
 }
 
 std::optional<int> GetOrderedSetItemAttribute(
-    const ui::AXPlatformNodeDelegate* delegate,
+    const AXPlatformNodeDelegate* delegate,
     ax::mojom::IntAttribute attribute) {
   switch (attribute) {
     case ax::mojom::IntAttribute::kPosInSet:
@@ -75,7 +72,7 @@ std::optional<int> GetOrderedSetItemAttribute(
 }
 
 std::optional<int> GetOrderedSetAttribute(
-    const ui::AXPlatformNodeDelegate* delegate,
+    const AXPlatformNodeDelegate* delegate,
     ax::mojom::IntAttribute attribute) {
   switch (attribute) {
     case ax::mojom::IntAttribute::kSetSize:
@@ -85,7 +82,7 @@ std::optional<int> GetOrderedSetAttribute(
   }
 }
 
-std::optional<int32_t> GetFromData(const ui::AXPlatformNodeDelegate* delegate,
+std::optional<int32_t> GetFromData(const AXPlatformNodeDelegate* delegate,
                                    ax::mojom::IntAttribute attribute) {
   int32_t value;
   if (delegate->GetIntAttribute(attribute, &value)) {
@@ -96,9 +93,8 @@ std::optional<int32_t> GetFromData(const ui::AXPlatformNodeDelegate* delegate,
 
 }  // namespace
 
-std::optional<int32_t> ComputeAttribute(
-    const ui::AXPlatformNodeDelegate* delegate,
-    ax::mojom::IntAttribute attribute) {
+std::optional<int32_t> ComputeAttribute(const AXPlatformNodeDelegate* delegate,
+                                        ax::mojom::IntAttribute attribute) {
   std::optional<int32_t> maybe_value = std::nullopt;
 
   // Color-related attributes.

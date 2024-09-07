@@ -302,6 +302,8 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
   }
 #endif
   auto capabilities = context_provider_->ContextCapabilities();
+  const auto& shared_image_capabilities =
+      context_provider_->SharedImageInterface()->GetCapabilities();
   const size_t bit_depth = media::BitDepth(pixel_format);
   if (bit_depth > 8) {
     if (capabilities.image_ycbcr_p010 && bit_depth == 10) {
@@ -317,7 +319,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     if (rendering_color_space_.IsHDR()) {
       return OutputFormat::UNDEFINED;
     }
-#endif
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_WIN)
     // TODO(mcasas): enable Win https://crbug.com/803451.
@@ -330,7 +332,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
         return OutputFormat::XB30;
       }
     }
-#endif
+#endif  // !BUILDFLAG(IS_WIN)
     if (capabilities.texture_rg) {
       return OutputFormat::YV12;
     }
@@ -349,31 +351,24 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
   // Hardware support for NV12 GMBs is expected to be present on all supported
   // Fuchsia devices.
   CHECK(capabilities.image_ycbcr_420v);
-  CHECK(!capabilities.image_ycbcr_420v_disabled_for_video_frames);
-  return OutputFormat::NV12_SINGLE_GMB;
+  CHECK(shared_image_capabilities.supports_native_nv12_mappable_shared_images);
+  return OutputFormat::NV12;
 #else
+
   if (capabilities.image_ycbcr_420v &&
-      !capabilities.image_ycbcr_420v_disabled_for_video_frames) {
-    return OutputFormat::NV12_SINGLE_GMB;
+      shared_image_capabilities.supports_native_nv12_mappable_shared_images) {
+    return OutputFormat::NV12;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          features::kGateNV12GMBVideoFramesOnHWSupport)) {
-    return OutputFormat::UNDEFINED;
-  }
-#endif
-
+  // For ChromeOS, if above hardware support for NV12 is not present then
+  // fallback to pixel upload.
+#if !BUILDFLAG(IS_CHROMEOS)
   if (capabilities.texture_rg) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/40283225): NV12_DUAL_GMB is used on ChromeOS only if above
-    // feature is disabled. Remove this codepath once above feature is launched.
-    return OutputFormat::NV12_DUAL_GMB;
-#else
-    // Use NV12_SINGLE_GMB for Mac, Windows, Linux and CastOS platforms.
-    return OutputFormat::NV12_SINGLE_GMB;
-#endif
+    // Use NV12 for Mac, Windows, Linux and CastOS platforms.
+    return OutputFormat::NV12;
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   return OutputFormat::UNDEFINED;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }

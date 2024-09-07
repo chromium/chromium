@@ -23,13 +23,16 @@ inline constexpr const char kMinPrioritySql[] =
 // source_id column, which prevents reuse upon row deletion.
 inline constexpr const char kGetMatchingSourcesSql[] =
     "SELECT I.priority,I.source_id,I.num_attributions>0 OR "
-    "I.num_aggregatable_attribution_reports>0 "
+    "I.num_aggregatable_attribution_reports>0,"
+    "I.attribution_scopes_data,I.source_time "
     "FROM sources I "
-    "JOIN source_destinations D "
-    "ON D.source_id=I.source_id AND D.destination_site=? "
     "WHERE I.reporting_origin=? "
     "AND(I.event_level_active=1 OR I.aggregatable_active=1)"
-    "AND I.expiry_time>?";
+    "AND I.expiry_time>? "
+    "AND I.source_id IN("
+    "SELECT source_id FROM source_destinations D "
+    "WHERE D.destination_site IN(?,?,?)"
+    ")";
 
 inline constexpr const char kSelectExpiredSourcesSql[] =
     "SELECT source_id FROM sources "
@@ -124,6 +127,7 @@ inline constexpr const char kSetReportTimeSql[] =
   prefix "remaining_aggregatable_debug_budget," \
   prefix "aggregatable_source,"                \
   prefix "filter_data,"                        \
+  prefix "attribution_scopes_data,"            \
   prefix "event_level_active,"                 \
   prefix "aggregatable_active,"                \
   prefix "read_only_source_data"
@@ -167,7 +171,7 @@ inline constexpr const char kUpdateFailedReportSql[] =
 static_assert(static_cast<int>(
                   attribution_reporting::mojom::ReportType::kEventLevel) == 0,
               "update `report_type=0` clause below");
-inline constexpr const char kDeleteEventLevelReportsForDestinationLimitSql[] =
+inline constexpr const char kDeletePendingEventLevelReportsForSourceSql[] =
   "DELETE FROM reports "
   "WHERE report_type=0 AND source_id=? AND trigger_time>=? "
   "RETURNING report_id";

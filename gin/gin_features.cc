@@ -243,12 +243,12 @@ BASE_FEATURE(kV8UseOriginalMessageForStackTrace,
              ("V8UseOriginalMessageForStackTrace"),
              kFeatureDefaultStateControlledByV8);
 
-BASE_FEATURE(kV8IdleGcOnContextDisposal,
-             ("V8IdleGcOnContextDisposal"),
+BASE_FEATURE(kV8IncrementalMarkingStartUserVisible,
+             ("V8IncrementalMarkingStartUserVisible"),
              kFeatureDefaultStateControlledByV8);
 
-BASE_FEATURE(kV8GCOptimizeSweepForMutator,
-             ("V8GCOptimizeSweepForMutator"),
+BASE_FEATURE(kV8IdleGcOnContextDisposal,
+             ("V8IdleGcOnContextDisposal"),
              kFeatureDefaultStateControlledByV8);
 
 // Elide redundant TDZ hole checks in bytecode. This only sets the V8 flag when

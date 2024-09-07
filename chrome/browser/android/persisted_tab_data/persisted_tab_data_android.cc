@@ -17,7 +17,7 @@
 
 namespace {
 
-std::string GetCachedCallbackKey(TabAndroid* tab_android,
+std::string GetCachedCallbackKey(const TabAndroid* tab_android,
                                  const void* user_data_key) {
   const char* data_id =
       PersistedTabDataConfigAndroid::Get(user_data_key, tab_android->profile())
@@ -26,6 +26,13 @@ std::string GetCachedCallbackKey(TabAndroid* tab_android,
 }
 
 }  // namespace
+
+struct PersistedTabDataAndroidDeferredRequest {
+  base::WeakPtr<TabAndroid> tab_android;
+  raw_ptr<const void> user_data_key;
+  PersistedTabDataAndroid::SupplierCallback supplier_callback;
+  PersistedTabDataAndroid::FromCallback from_callback;
+};
 
 PersistedTabDataAndroid::PersistedTabDataAndroid(TabAndroid* tab_android,
                                                  const void* user_data_key)
@@ -52,13 +59,12 @@ void PersistedTabDataAndroid::From(base::WeakPtr<TabAndroid> tab_android,
   }
 
   if (!deferred_startup_complete_) {
-    std::unique_ptr<DeferredRequest> deferred_request =
-        std::make_unique<DeferredRequest>();
-    deferred_request->tab_android = tab_android;
-    deferred_request->user_data_key = user_data_key;
-    deferred_request->supplier_callback = std::move(supplier_callback);
-    deferred_request->from_callback = std::move(from_callback);
-    GetDeferredRequests()->push_back(std::move(deferred_request));
+    GetDeferredRequests().push_back({
+        .tab_android = std::move(tab_android),
+        .user_data_key = user_data_key,
+        .supplier_callback = std::move(supplier_callback),
+        .from_callback = std::move(from_callback),
+    });
     return;
   }
 
@@ -74,20 +80,12 @@ void PersistedTabDataAndroid::From(base::WeakPtr<TabAndroid> tab_android,
             user_data_key, tab_android->profile());
     std::string cached_callback_key =
         GetCachedCallbackKey(tab_android.get(), user_data_key);
-    if (PersistedTabDataAndroid::GetCachedCallbackMap()->contains(
-            cached_callback_key)) {
-      std::vector<FromCallback>& callbacks =
-          PersistedTabDataAndroid::GetCachedCallbackMap()
-              ->find(cached_callback_key)
-              ->second;
-      callbacks.push_back(std::move(from_callback));
+    std::vector<FromCallback>& callbacks =
+        PersistedTabDataAndroid::GetCachedCallbackMap()[cached_callback_key];
+    callbacks.push_back(std::move(from_callback));
+    // A restore is already in-flight, so just wait for it to complete.
+    if (callbacks.size() > 1) {
       return;
-    } else {
-      PersistedTabDataAndroid::GetCachedCallbackMap()->emplace(
-          cached_callback_key, std::vector<FromCallback>());
-      PersistedTabDataAndroid::GetCachedCallbackMap()
-          ->find(cached_callback_key)
-          ->second.push_back(std::move(from_callback));
     }
 
     persisted_tab_data_config_android->persisted_tab_data_storage_android()
@@ -99,12 +97,14 @@ void PersistedTabDataAndroid::From(base::WeakPtr<TabAndroid> tab_android,
                    SupplierCallback supplier_callback,
                    const void* user_data_key,
                    const std::vector<uint8_t>& data) {
+                  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
                   if (!tab_android) {
                     return;
                   }
 
-                  tab_android->SetUserData(user_data_key,
-                                           std::move(supplier_callback).Run());
+                  tab_android->SetUserData(
+                      user_data_key,
+                      std::move(supplier_callback).Run(tab_android.get()));
                   PersistedTabDataAndroid* persisted_tab_data_android =
                       static_cast<PersistedTabDataAndroid*>(
                           tab_android->GetUserData(user_data_key));
@@ -114,32 +114,11 @@ void PersistedTabDataAndroid::From(base::WeakPtr<TabAndroid> tab_android,
                     // restarts.
                     persisted_tab_data_android->Save();
                   } else {
-                    // Deserialize PersistedTabData found in storage.
-                    content::GetIOThreadTaskRunner({})
-                        ->PostTaskAndReplyWithResult(
-                            FROM_HERE,
-                            base::BindOnce(
-                                [](PersistedTabDataAndroid*
-                                       persisted_tab_data_android,
-                                   const std::vector<uint8_t>& data) {
-                                  DCHECK_CURRENTLY_ON(
-                                      content::BrowserThread::IO);
-                                  persisted_tab_data_android->Deserialize(data);
-                                  return persisted_tab_data_android;
-                                },
-                                persisted_tab_data_android, data),
-                            base::BindOnce(
-                                &PersistedTabDataAndroid::RunCallbackOnUIThread,
-                                tab_android, user_data_key));
-                    return;
+                    persisted_tab_data_android->Deserialize(data);
                   }
-                  content::GetUIThreadTaskRunner({})->PostTask(
-                      FROM_HERE,
-                      base::BindOnce(
-                          &PersistedTabDataAndroid::RunCallbackOnUIThread,
-                          tab_android, user_data_key,
-                          base::UnsafeDanglingUntriaged(
-                              persisted_tab_data_android)));
+
+                  persisted_tab_data_android->RunCallbackOnUIThread(
+                      tab_android.get(), user_data_key);
                 },
                 tab_android->GetWeakPtr(), std::move(supplier_callback),
                 user_data_key));
@@ -175,15 +154,15 @@ void PersistedTabDataAndroid::OnTabClose(TabAndroid* tab_android) {
 
 void PersistedTabDataAndroid::OnDeferredStartup() {
   deferred_startup_complete_ = true;
-  std::deque<std::unique_ptr<PersistedTabDataAndroid::DeferredRequest>>*
+  base::circular_deque<PersistedTabDataAndroidDeferredRequest>&
       deferred_requests = GetDeferredRequests();
-  if (deferred_requests->empty()) {
+  if (deferred_requests.empty()) {
     return;
   }
-  std::unique_ptr<PersistedTabDataAndroid::DeferredRequest> deferred_request =
-      std::move(deferred_requests->front());
-  deferred_requests->pop_front();
-  if (!deferred_request->tab_android) {
+  PersistedTabDataAndroidDeferredRequest deferred_request =
+      std::move(deferred_requests.front());
+  deferred_requests.pop_front();
+  if (!deferred_request.tab_android) {
     // Recursively clear rest of the DeferredRequest queue.
     PersistedTabDataAndroid::OnDeferredStartup();
     return;
@@ -191,8 +170,8 @@ void PersistedTabDataAndroid::OnDeferredStartup() {
   // Process deferred requests one at a time (to minimize risk of
   // resource over-utilization which could lead to jank).
   PersistedTabDataAndroid::From(
-      deferred_request->tab_android, deferred_request->user_data_key,
-      std::move(deferred_request->supplier_callback),
+      deferred_request.tab_android, deferred_request.user_data_key,
+      std::move(deferred_request.supplier_callback),
       base::BindOnce(
           [](FromCallback from_callback,
              PersistedTabDataAndroid* persisted_tab_data_android) {
@@ -203,7 +182,7 @@ void PersistedTabDataAndroid::OnDeferredStartup() {
             // Recursive call to clear rest of queue (if it's non-empty).
             PersistedTabDataAndroid::OnDeferredStartup();
           },
-          std::move(deferred_request->from_callback)));
+          std::move(deferred_request.from_callback)));
 }
 
 void PersistedTabDataAndroid::ExistsForTesting(
@@ -226,43 +205,35 @@ void PersistedTabDataAndroid::ExistsForTesting(
                     std::move(exists_callback)));
 }
 
-std::map<std::string, std::vector<PersistedTabDataAndroid::FromCallback>>*
+std::map<std::string, std::vector<PersistedTabDataAndroid::FromCallback>>&
 PersistedTabDataAndroid::GetCachedCallbackMap() {
   static base::NoDestructor<
       std::map<std::string, std::vector<PersistedTabDataAndroid::FromCallback>>>
       cached_callback_map;
-  return cached_callback_map.get();
+  return *cached_callback_map;
 }
 
 void PersistedTabDataAndroid::RunCallbackOnUIThread(
-    base::WeakPtr<TabAndroid> tab_android,
-    const void* user_data_key,
-    PersistedTabDataAndroid* persisted_tab_data_android) {
+    const TabAndroid* tab_android,
+    const void* user_data_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!tab_android) {
-    return;
-  }
-
+  CHECK(tab_android);
   std::string cached_callback_key =
-      GetCachedCallbackKey(tab_android.get(), user_data_key);
-  for (auto& callback : PersistedTabDataAndroid::GetCachedCallbackMap()
-                            ->find(cached_callback_key)
-                            ->second) {
-    std::move(callback).Run(persisted_tab_data_android);
+      GetCachedCallbackKey(tab_android, user_data_key);
+  auto node_handle = PersistedTabDataAndroid::GetCachedCallbackMap().extract(
+      cached_callback_key);
+  CHECK(node_handle);
+  for (auto& callback : node_handle.mapped()) {
+    std::move(callback).Run(this);
   }
-  PersistedTabDataAndroid::GetCachedCallbackMap()->erase(cached_callback_key);
 }
 
-PersistedTabDataAndroid::DeferredRequest::DeferredRequest() = default;
-
-PersistedTabDataAndroid::DeferredRequest::~DeferredRequest() = default;
-
-std::deque<std::unique_ptr<PersistedTabDataAndroid::DeferredRequest>>*
+base::circular_deque<PersistedTabDataAndroidDeferredRequest>&
 PersistedTabDataAndroid::GetDeferredRequests() {
   static base::NoDestructor<
-      std::deque<std::unique_ptr<PersistedTabDataAndroid::DeferredRequest>>>
+      base::circular_deque<PersistedTabDataAndroidDeferredRequest>>
       deferred_requests;
-  return deferred_requests.get();
+  return *deferred_requests;
 }
 
 bool PersistedTabDataAndroid::deferred_startup_complete_ = false;

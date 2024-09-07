@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] Test pool2d with default options.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Test pool2d with windowDimensions
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'averagePool2d' on 'MLGraphBuilder': Unsupported data type float16 for argument input, must be one of [float32]."
+[FAIL] Test pool2d with padding.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Test pool2d with strides.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'averagePool2d' on 'MLGraphBuilder': Unsupported data type float16 for argument input, must be one of [float32]."
+[FAIL] Test pool2d with strides and padding.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Test pool2d with strides and asymmetric padding.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Test pool2d with strides, padding and roundingType="floor".
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Test pool2d with strides, padding and roundingType="ceil".
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'averagePool2d' on 'MLGraphBuilder': Unsupported data type float16 for argument input, must be one of [float32]."
+[FAIL] Test pool2d with explicit outputSizes ignored roundingType
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Test pool2d with strides, padding and outputSizes=[3, 3].
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Test pool2d with strides, padding and outputSizes=[4, 4].
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Test pool2d with layout="nchw".
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] Test pool2d with layout="nhwc".
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'averagePool2d' on 'MLGraphBuilder': Unsupported data type float16 for argument input, must be one of [float32]."
+[FAIL] [maxPool2d] Test maxPool2d with data type int32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'maxPool2d' on 'MLGraphBuilder': Unsupported data type int32 for argument input, must be one of [float32]."
+[FAIL] [maxPool2d] Test maxPool2d with data type uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'maxPool2d' on 'MLGraphBuilder': Unsupported data type uint32 for argument input, must be one of [float32]."
+[FAIL] [maxPool2d] Test maxPool2d with data type int8
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'maxPool2d' on 'MLGraphBuilder': Unsupported data type int8 for argument input, must be one of [float32]."
+[FAIL] [maxPool2d] Test maxPool2d with data type uint8
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'maxPool2d' on 'MLGraphBuilder': Unsupported data type uint8 for argument input, must be one of [float32]."
+Harness: the test ran to completion.
+

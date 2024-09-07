@@ -1,0 +1,57 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+assert(is_chromeos, "This API is only supported on ChromeOS.")
+
+source_set("document_scan") {
+  sources = [
+    "document_scan_api.cc",
+    "document_scan_api.h",
+    "document_scan_api_handler.cc",
+    "document_scan_api_handler.h",
+    "document_scan_type_converters.cc",
+    "document_scan_type_converters.h",
+    "scanner_discovery_runner.cc",
+    "scanner_discovery_runner.h",
+    "start_scan_runner.cc",
+    "start_scan_runner.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//ui/gfx",
+  ]
+
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//ui/views",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/crosapi" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}

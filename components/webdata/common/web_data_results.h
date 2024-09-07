@@ -30,8 +30,7 @@ typedef enum {
   AUTOFILL_VALUE_RESULT,         // WDResult<std::vector<AutofillEntry>>
   AUTOFILL_CLEANUP_RESULT,       // WDResult<size_t>
   AUTOFILL_CHANGES,              // WDResult<std::vector<AutofillChange>>
-  AUTOFILL_PROFILES_RESULT,      // WDResult<std::vector<
-                                 //     std::unique_ptr<AutofillProfile>>>
+  AUTOFILL_PROFILES_RESULT,      // WDResult<std::vector<AutofillProfile>>
   AUTOFILL_CLOUDTOKEN_RESULT,    // WDResult<std::vector<std::unique_ptr<
                                  //     CreditCardCloudTokenData>>>
   AUTOFILL_CREDITCARDS_RESULT,   // WDResult<std::vector<
@@ -42,12 +41,11 @@ typedef enum {
                                  //     PaymentsCustomerData>>
   AUTOFILL_OFFER_DATA,           // WDResult<std::vector<std::unique_ptr<
                                  //     AutofillOfferData>>>
-  AUTOFILL_VIRTUAL_CARD_USAGE_DATA,  // WDResult<std::vector<std::unique_ptr<
-                                     //     VirtualCardUsageData>>>
+  AUTOFILL_VIRTUAL_CARD_USAGE_DATA,  // WDResult<std::vector<
+                                     //     VirtualCardUsageData>>
   CREDIT_CARD_BENEFIT_RESULT,        // WDResult<std::vector<std::unique_ptr<
                                      //     CreditCardBenefit>>>
-  MASKED_BANK_ACCOUNTS_RESULT,       // WDResult<std::vector<std::unique_ptr<
-                                     // BankAccount>>>
+  MASKED_BANK_ACCOUNTS_RESULT,       // WDResult<std::vector<BankAccount>>
 #if BUILDFLAG(USE_BLINK)         //
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
                                  //     mojom::WebAppManifestSectionPtr>>

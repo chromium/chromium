@@ -36,9 +36,10 @@ bool operator==(const PasswordAndMetadata& lhs,
          lhs.uses_account_store == rhs.uses_account_store;
 }
 
+namespace {
+
 const std::vector<const char*> kOptions = {"Option1", "Option2", "Option3",
                                            "Option4"};
-namespace {
 
 void CreateTestFieldDataPredictions(const std::string& signature,
                                     FormFieldDataPredictions* field_predict) {
@@ -144,8 +145,6 @@ void CheckEqualPasswordSuggestionRequest(
             actual.show_webauthn_credentials);
   EXPECT_EQ(expected.bounds, actual.bounds);
 }
-
-}  // namespace
 
 class AutofillTypeTraitsTestImpl : public testing::Test,
                                    public mojom::TypeTraitsTest {
@@ -524,4 +523,5 @@ TEST(AutofillTypesMojomTraitsTest, AutocompleteParsingResult) {
   EXPECT_EQ(original, copy);
 }
 
+}  // namespace
 }  // namespace autofill

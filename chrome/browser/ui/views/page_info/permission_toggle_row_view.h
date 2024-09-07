@@ -57,9 +57,11 @@ class PermissionToggleRowView : public views::View {
     return row_view_->GetTitleForTesting();
   }
 
-  const std::u16string& GetRowSubTitleForTesting() const {
-    return state_label_->GetText();
+  std::u16string GetRowSubTitleForTesting() const {
+    return state_label_ != nullptr ? state_label_->GetText() : u"";
   }
+
+  views::ToggleButton* toggle_button_for_testing() { return toggle_button_; }
 
   bool GetToggleButtonStateForTesting() const;
 

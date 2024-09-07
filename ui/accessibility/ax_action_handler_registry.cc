@@ -39,8 +39,7 @@ void AXActionHandlerRegistry::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void AXActionHandlerRegistry::PerformAction(
-    const ui::AXActionData& action_data) {
+void AXActionHandlerRegistry::PerformAction(const AXActionData& action_data) {
   for (AXActionHandlerObserver& observer : observers_) {
     observer.PerformAction(action_data);
   }
@@ -61,7 +60,7 @@ AXTreeID AXActionHandlerRegistry::GetAXTreeID(
   if (it != frame_to_ax_tree_id_map_.end())
     return it->second;
 
-  return ui::AXTreeIDUnknown();
+  return AXTreeIDUnknown();
 }
 
 AXTreeID AXActionHandlerRegistry::GetOrCreateAXTreeID(
@@ -83,7 +82,7 @@ AXActionHandlerBase* AXActionHandlerRegistry::GetActionHandler(
   return it->second;
 }
 
-void AXActionHandlerRegistry::SetAXTreeID(const ui::AXTreeID& id,
+void AXActionHandlerRegistry::SetAXTreeID(const AXTreeID& id,
                                           AXActionHandlerBase* action_handler) {
   DCHECK(id_to_action_handler_.find(id) == id_to_action_handler_.end());
   id_to_action_handler_[id] = action_handler;

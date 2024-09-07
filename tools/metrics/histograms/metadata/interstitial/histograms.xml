@@ -57,10 +57,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".from_client_side_detection"
       summary="Interstitial for a resource classified as unsafe by the client
                side detection."/>
-  <variant name=".from_device"
-      summary="Interstitial for a resource classified as unsafe by the Safe
-               Browsing database via either
-               {Local,Remote}SafeBrowsingDatabaseManager."/>
   <variant name=".from_device_v4"
       summary="Interstitial for a resource classified as unsafe by the Safe
                Browsing database version 4 via either

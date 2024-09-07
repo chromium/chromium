@@ -83,6 +83,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sharing_message/model:sharing_message_bridge_factory",
@@ -125,9 +126,10 @@ source_set("device_info_sync_service_factory") {
     "//components/sync/invalidations",
     "//components/sync/model",
     "//components/sync_device_info",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
@@ -147,7 +149,7 @@ source_set("sync_invalidations_service_factory") {
     "//components/sync/invalidations",
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/gcm/model/instance_id",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
@@ -161,6 +163,7 @@ source_set("data_type_store_service_factory") {
     "//components/keyed_service/ios",
     "//components/sync",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
@@ -177,7 +180,7 @@ source_set("sync_error_browser_agent") {
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
@@ -203,7 +206,6 @@ source_set("test_support") {
     "//components/keyed_service/ios",
     "//components/sync",
     "//components/sync:test_support",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
     "//ui/base",
@@ -232,7 +234,7 @@ source_set("unit_tests") {
     "//components/sync",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",

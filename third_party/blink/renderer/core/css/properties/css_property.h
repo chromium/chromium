@@ -106,12 +106,6 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
   bool IsValidForMarker() const { return flags_ & kValidForMarker; }
-  bool IsValidForFormattedText() const {
-    return flags_ & kValidForFormattedText;
-  }
-  bool IsValidForFormattedTextRun() const {
-    return flags_ & kValidForFormattedTextRun;
-  }
   bool IsValidForKeyframe() const { return flags_ & kValidForKeyframe; }
   bool IsValidForPositionTry() const { return flags_ & kValidForPositionTry; }
   bool IsSurrogate() const { return flags_ & kSurrogate; }
@@ -250,29 +244,24 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kSupportsIncrementalStyle = 1 << 23,
     // See idempotent in css_properties.json5.
     kIdempotent = 1 << 24,
-    // Set if the css property can apply to the experiemental canvas
-    // formatted text API to render multiline text in canvas.
-    // https://github.com/WICG/canvas-formatted-text
-    kValidForFormattedText = 1 << 25,
-    kValidForFormattedTextRun = 1 << 26,
     // See overlapping in css_properties.json5.
-    kOverlapping = 1 << 27,
+    kOverlapping = 1 << 25,
     // See legacy_overlapping in css_properties.json5.
-    kLegacyOverlapping = 1 << 28,
+    kLegacyOverlapping = 1 << 26,
     // See valid_for_keyframes in css_properties.json5
-    kValidForKeyframe = 1 << 29,
+    kValidForKeyframe = 1 << 27,
     // See valid_for_position_try in css_properties.json5
-    kValidForPositionTry = 1 << 30,
+    kValidForPositionTry = 1 << 28,
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
-    kValidForHighlight = 1ull << 31,
+    kValidForHighlight = 1ull << 29,
     // See accepts_numeric_literal in css_properties.json5.
-    kAcceptsNumericLiteral = 1ull << 32,
+    kAcceptsNumericLiteral = 1ull << 30,
     // See valid_for_permission_element in css_properties.json5
-    kValidForPermissionElement = 1ull << 33,
+    kValidForPermissionElement = 1ull << 31,
     // See valid_for_limited_page_context in css_properties.json5
-    kValidForLimitedPageContext = 1ull << 34,
+    kValidForLimitedPageContext = 1ull << 32,
     // See valid_for_page_context in css_properties.json5
-    kValidForPageContext = 1ull << 35,
+    kValidForPageContext = 1ull << 33,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

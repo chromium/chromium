@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
   "+ios/chrome/browser/ui/authentication",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
-  "+ios/chrome/browser/ui/ntp/new_tab_page_feature.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h",
   "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h",
   "+ios/chrome/browser/ui/scoped_ui_blocker",

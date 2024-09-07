@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -167,12 +167,12 @@ BrowserLiveTabContext::GetSavedTabGroupIdForGroup(
   }
 
   Profile* profile = browser_->profile();
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(profile);
-  CHECK(wrapper_service.get());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+  CHECK(tab_group_service);
 
   const std::optional<tab_groups::SavedTabGroup> saved_group =
-      wrapper_service->GetGroup(group);
+      tab_group_service->GetGroup(group);
 
   return saved_group ? std::make_optional(saved_group->saved_guid())
                      : std::nullopt;
@@ -206,9 +206,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     int tab_index,
     bool select,
     sessions::tab_restore::Type original_session_type) {
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
-  CHECK(wrapper_service.get());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+  CHECK(tab_group_service);
 
   SessionStorageNamespace* storage_namespace =
       tab.platform_data
@@ -226,7 +226,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       group_id.has_value() && !saved_group_id.has_value();
   const bool group_deleted_from_model =
       group_id.has_value() && saved_group_id.has_value() &&
-      !wrapper_service->GetGroup(saved_group_id.value()).has_value();
+      !tab_group_service->GetGroup(saved_group_id.value()).has_value();
   if (is_normal_tab || is_grouped_tab_unsaved || group_deleted_from_model) {
     // This is either a normal tab or tab in an unsaved group.
     web_contents = chrome::AddRestoredTab(
@@ -241,38 +241,29 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
           group_id.value(), tab.group_visual_data.value());
 
       // Save the group if it was not saved.
-      if (!wrapper_service->GetGroup(group_id.value()).has_value() &&
+      if (!tab_group_service->GetGroup(group_id.value()).has_value() &&
           tab_groups::IsTabGroupsSaveV2Enabled()) {
-        tab_groups::SavedTabGroup saved_tab_group(
-            tab.group_visual_data->title(), tab.group_visual_data->color(), {},
-            std::nullopt, std::nullopt, tab.group.value());
-        saved_tab_group.AddTabLocally(
-            tab_groups::SavedTabGroupUtils::
-                CreateSavedTabGroupTabFromWebContents(
-                    web_contents, saved_tab_group.saved_guid()));
-
-        const base::Uuid saved_group_guid = saved_tab_group.saved_guid();
-        wrapper_service->AddGroup(std::move(saved_tab_group));
-        wrapper_service->ConnectLocalTabGroup(saved_group_guid,
-                                              tab.group.value());
+        tab_group_service->AddGroup(
+            tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+                tab.group.value()));
       }
     }
   } else {
-    CHECK(wrapper_service->GetGroup(saved_group_id.value()).has_value());
+    CHECK(tab_group_service->GetGroup(saved_group_id.value()).has_value());
 
     const std::optional<tab_groups::SavedTabGroup> saved_group =
-        wrapper_service->GetGroup(saved_group_id.value());
+        tab_group_service->GetGroup(saved_group_id.value());
     group_id = saved_group->local_group_id();
 
     if (!group_id.has_value()) {
       // Open the group in this browser if it is closed.
-      wrapper_service->OpenTabGroup(
+      tab_group_service->OpenTabGroup(
           saved_group_id.value(),
           std::make_unique<tab_groups::TabGroupActionContextDesktop>(
               browser_, tab_groups::OpeningSource::kOpenedFromTabRestore));
 
       group_id =
-          wrapper_service->GetGroup(saved_group_id.value())->local_group_id();
+          tab_group_service->GetGroup(saved_group_id.value())->local_group_id();
     } else {
       Browser* source_browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(

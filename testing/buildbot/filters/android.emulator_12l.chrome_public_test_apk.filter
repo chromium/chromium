@@ -127,7 +127,6 @@
 -org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
 
 # crbug.com/1513565
--org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog
 -org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationPlumbingAllowedDialog
 -org.chromium.chrome.browser.permissions.MediaTest.testCombinedPermissionsPlumbingDialog
 -org.chromium.chrome.browser.permissions.MediaTest.testMicrophoneMediaPermissionsPlumbingDialog

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/devtools/devtools_io_context.h"
+
+#include <array>
 
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -68,9 +65,12 @@ void DevToolsIOContext::DiscardAllStreams() {
 
 // static
 bool DevToolsIOContext::IsTextMimeType(const std::string& mime_type) {
-  static const char* kTextMIMETypePrefixes[] = {
-      "text/", "application/x-javascript", "application/json",
-      "application/xml"};
+  static const auto kTextMIMETypePrefixes = std::to_array({
+      "text/",
+      "application/x-javascript",
+      "application/json",
+      "application/xml",
+  });
   for (size_t i = 0; i < std::size(kTextMIMETypePrefixes); ++i) {
     if (base::StartsWith(mime_type, kTextMIMETypePrefixes[i],
                          base::CompareCase::INSENSITIVE_ASCII))

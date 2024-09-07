@@ -11,9 +11,30 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
+
+namespace {
+
+// Creates a saved tab group with a given `title` and the orange group color.
+// The group has one tab.
+tab_groups::SavedTabGroup CreateGroup(std::u16string title) {
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+  std::vector<tab_groups::SavedTabGroupTab> saved_tabs;
+  tab_groups::SavedTabGroupTab saved_tab(GURL("https://google.com"), u"Google",
+                                         saved_tab_group_id,
+                                         /*position=*/0);
+  saved_tabs.push_back(saved_tab);
+
+  tab_groups::SavedTabGroup saved_group(
+      title, tab_groups::TabGroupColorId::kOrange, saved_tabs,
+      /*position=*/std::nullopt, saved_tab_group_id);
+  return saved_group;
+}
+
+}  // namespace
 
 namespace tab_groups {
 
@@ -23,18 +44,42 @@ FakeTabGroupSyncService::~FakeTabGroupSyncService() = default;
 
 void FakeTabGroupSyncService::AddGroup(SavedTabGroup group) {
   groups_.push_back(group);
+
+  for (auto& observer : observers_) {
+    observer.OnTabGroupAdded(group, TriggerSource::LOCAL);
+  }
 }
 
 void FakeTabGroupSyncService::RemoveGroup(const LocalTabGroupID& local_id) {
-  std::erase_if(groups_, [local_id](SavedTabGroup& group) {
-    return group.local_group_id() == local_id;
-  });
+  std::optional<int> index = GetIndexOf(local_id);
+  if (!index.has_value()) {
+    return;
+  }
+  const base::Uuid& sync_id = groups_[index.value()].saved_guid();
+  groups_.erase(groups_.begin() + index.value());
+
+  // Call 2 types of observer methods with the saved group id and the local
+  // id.
+  for (auto& observer : observers_) {
+    observer.OnTabGroupRemoved(sync_id, TriggerSource::LOCAL);
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnTabGroupRemoved(local_id, TriggerSource::LOCAL);
+  }
 }
 
 void FakeTabGroupSyncService::RemoveGroup(const base::Uuid& sync_id) {
-  std::erase_if(groups_, [sync_id](SavedTabGroup& group) {
-    return group.saved_guid() == sync_id;
-  });
+  int erased_group_count =
+      std::erase_if(groups_, [sync_id](SavedTabGroup& group) {
+        return group.saved_guid() == sync_id;
+      });
+
+  if (erased_group_count > 0) {
+    for (auto& observer : observers_) {
+      observer.OnTabGroupRemoved(sync_id, TriggerSource::LOCAL);
+    }
+  }
 }
 
 void FakeTabGroupSyncService::UpdateVisualData(
@@ -47,6 +92,8 @@ void FakeTabGroupSyncService::UpdateVisualData(
   SavedTabGroup& group = groups_[index.value()];
   group.SetColor(visual_data->color());
   group.SetTitle(visual_data->title());
+
+  NotifyObserversOfTabGroupUpdated(group);
 }
 
 void FakeTabGroupSyncService::UpdateGroupPosition(
@@ -64,6 +111,8 @@ void FakeTabGroupSyncService::UpdateGroupPosition(
   if (new_index) {
     group.SetPosition(new_index.value());
   }
+
+  NotifyObserversOfTabGroupUpdated(group);
 }
 
 void FakeTabGroupSyncService::AddTab(const LocalTabGroupID& group_id,
@@ -78,13 +127,14 @@ void FakeTabGroupSyncService::AddTab(const LocalTabGroupID& group_id,
   SavedTabGroup& group = groups_[index.value()];
   SavedTabGroupTab tab(url, title, group.saved_guid(), position);
   group.AddTabLocally(tab);
+
+  NotifyObserversOfTabGroupUpdated(group);
 }
 
-void FakeTabGroupSyncService::UpdateTab(const LocalTabGroupID& group_id,
-                                        const LocalTabID& tab_id,
-                                        const std::u16string& title,
-                                        GURL url,
-                                        std::optional<size_t> position) {
+void FakeTabGroupSyncService::UpdateTab(
+    const LocalTabGroupID& group_id,
+    const LocalTabID& tab_id,
+    const SavedTabGroupTabBuilder& tab_builder) {
   std::optional<int> index = GetIndexOf(group_id);
   if (!index.has_value()) {
     return;
@@ -92,12 +142,13 @@ void FakeTabGroupSyncService::UpdateTab(const LocalTabGroupID& group_id,
   SavedTabGroup& group = groups_[index.value()];
   for (const auto& tab : group.saved_tabs()) {
     if (tab.local_tab_id() == tab_id) {
-      SavedTabGroupTab updated_tab(url, title, group.saved_guid(), position,
-                                   tab.saved_tab_guid(), tab_id);
+      SavedTabGroupTab updated_tab = tab_builder.Build(tab);
       group.UpdateTab(updated_tab);
       return;
     }
   }
+
+  NotifyObserversOfTabGroupUpdated(group);
 }
 
 void FakeTabGroupSyncService::RemoveTab(const LocalTabGroupID& group_id,
@@ -111,6 +162,8 @@ void FakeTabGroupSyncService::RemoveTab(const LocalTabGroupID& group_id,
   std::erase_if(tabs, [tab_id](const SavedTabGroupTab& tab) {
     return tab.local_tab_id() == tab_id;
   });
+
+  NotifyObserversOfTabGroupUpdated(group);
 }
 
 void FakeTabGroupSyncService::MoveTab(const LocalTabGroupID& group_id,
@@ -127,6 +180,8 @@ void FakeTabGroupSyncService::MoveTab(const LocalTabGroupID& group_id,
       return;
     }
   }
+
+  NotifyObserversOfTabGroupUpdated(group);
 }
 
 void FakeTabGroupSyncService::OnTabSelected(const LocalTabGroupID& group_id,
@@ -256,10 +311,42 @@ FakeTabGroupSyncService::CreateScopedLocalObserverPauser() {
 
 void FakeTabGroupSyncService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
+
+  // Notify the observer here since there is no data loaded remotely in this
+  // fake TabGroupSyncService.
+  observer->OnInitialized();
 }
 
 void FakeTabGroupSyncService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void FakeTabGroupSyncService::SetCoordinator(
+    std::unique_ptr<TabGroupSyncCoordinator> coordinator) {
+  CHECK(!coordinator_);
+  coordinator_ = std::move(coordinator);
+  if (IsTabGroupSyncCoordinatorEnabled()) {
+    AddObserver(coordinator_.get());
+  }
+}
+
+void FakeTabGroupSyncService::PrepareFakeSavedTabGroups() {
+  AddGroup(CreateGroup(u"1RemoteGroup"));
+  AddGroup(CreateGroup(u"2RemoteGroup"));
+  AddGroup(CreateGroup(u"3RemoteGroup"));
+}
+
+void FakeTabGroupSyncService::RemoveGroupAtIndex(unsigned int index) {
+  CHECK(index < groups_.size());
+  if (groups_[index].local_group_id().has_value()) {
+    RemoveGroup(groups_[index].local_group_id().value());
+  } else {
+    RemoveGroup(groups_[index].saved_guid());
+  }
+}
+
+void FakeTabGroupSyncService::ClearGroups() {
+  groups_.clear();
 }
 
 std::optional<int> FakeTabGroupSyncService::GetIndexOf(const base::Uuid& guid) {
@@ -281,6 +368,13 @@ std::optional<int> FakeTabGroupSyncService::GetIndexOf(
   }
 
   return std::nullopt;
+}
+
+void FakeTabGroupSyncService::NotifyObserversOfTabGroupUpdated(
+    SavedTabGroup& group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupUpdated(group, TriggerSource::LOCAL);
+  }
 }
 
 }  // namespace tab_groups

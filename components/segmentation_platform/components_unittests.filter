@@ -2,6 +2,7 @@
 *BackgroundRecorderTest.*
 *CachedResultProviderTest.*
 *CachedResultWriterTest.*
+*CardSelectionSignalsTest.*
 *ClientResultPrefsTest.*
 *ComposePromotionTest.*
 *ConfigParserTest.*
@@ -16,6 +17,7 @@
 *DeviceTierSegmentTest.*
 *DummyModelProviderFactoryImplTest.*
 *DummySegmentationPlatformServiceTest.*
+*EphemeralHomeModuleBackendTest.*
 *FailedUkmDatabaseTest.*
 *FeatureAggregatorImplTest.*
 *FeatureListQueryProcessorNoDbCacheTest.*
@@ -25,6 +27,7 @@
 *FrequentFeatureUserModelTest.*
 *HistogramSignalHandlerTest.*
 *HistoryDelegateImplTest.*
+*HomeModulesCardRegistryTest.*
 *InputContextAndroidTest.*
 *IntentionalUserModelTest.*
 *IosModuleRankerTest.*

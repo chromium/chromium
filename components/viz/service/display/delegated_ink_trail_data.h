@@ -14,11 +14,11 @@
 #include "components/viz/common/delegated_ink_prediction_configuration.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/base/prediction/prediction_metrics_handler.h"
+#include "ui/gfx/delegated_ink_point.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace gfx {
 class DelegatedInkMetadata;
-class DelegatedInkPoint;
 }  // namespace gfx
 
 namespace ui {
@@ -38,10 +38,16 @@ class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
                      gfx::DelegatedInkMetadata* metadata);
   void Reset();
   bool ContainsMatchingPoint(gfx::DelegatedInkMetadata* metadata) const;
+  gfx::DelegatedInkPoint GetMatchingPoint(
+      gfx::DelegatedInkMetadata* metadata) const;
   void ErasePointsOlderThanMetadata(gfx::DelegatedInkMetadata* metadata);
   void UpdateMetrics(gfx::DelegatedInkMetadata* metadata);
 
-  const std::map<base::TimeTicks, gfx::PointF>& GetPoints() const {
+  std::map<base::TimeTicks, gfx::DelegatedInkPoint>& GetPoints() {
+    return points_;
+  }
+
+  const std::map<base::TimeTicks, gfx::DelegatedInkPoint>& GetPoints() const {
     return points_;
   }
 
@@ -68,7 +74,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
 
   // The points that arrived from the browser process and will be used to draw
   // the delegated ink trail.
-  std::map<base::TimeTicks, gfx::PointF> points_;
+  std::map<base::TimeTicks, gfx::DelegatedInkPoint> points_;
 
   // The pointer id associated with these points.
   int32_t pointer_id_;

@@ -45,6 +45,7 @@
 #include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
+#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
@@ -1092,7 +1093,14 @@ void OverviewGrid::RemoveAllItemsForSavedDeskLaunch() {
       item->RestoreWindow(/*reset_transform=*/true, /*animate=*/false);
     }
   }
-  item_list_.clear();
+  // Destroying OverviewItemBase can call back into `this` and try to use
+  // `item_list_`; since the standard provides no guarantees about the
+  // internal state of a vector being cleared, swap it with an empty vector on
+  // the stack so that the destroyed items consistently see an empty vector.
+  {
+    decltype(item_list_) item_list;
+    item_list_.swap(item_list);
+  }
   num_incognito_windows_ = 0;
   num_unsupported_windows_ = 0;
   EnableSaveDeskButtonContainer();
@@ -2334,10 +2342,12 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
                               /*ignored_items=*/{}, animate);
 
   if (informed_restore_widget_) {
-    InformedRestoreContentsView* contents_view =
-        views::AsViewClass<InformedRestoreContentsView>(
-            informed_restore_widget_->GetContentsView());
+    auto* contents_view = views::AsViewClass<InformedRestoreContentsView>(
+        informed_restore_widget_->GetContentsView());
     CHECK(contents_view);
+    contents_view->UpdatePrimaryContainerPreferredWidth(
+        root_window_, /*is_landscape=*/std::nullopt);
+
     gfx::Rect pine_bounds = GetGridEffectiveBounds();
     pine_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
     informed_restore_widget_->SetBounds(pine_bounds);
@@ -2355,8 +2365,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // overview grid changes, i.e. switches between active desks and/or the
   // saved desk grid. This will be needed when we make it so that switching
   // desks keeps us in overview mode.
-  if (!saved_desk_util::ShouldShowSavedDesksOptions() ||
-      features::IsSavedDeskUiRevampEnabled()) {
+  if (!saved_desk_util::ShouldShowSavedDesksOptions()) {
     return;
   }
 
@@ -2382,6 +2391,24 @@ void OverviewGrid::UpdateSaveDeskButtons() {
 
   const bool visibility_changed =
       target_visible != IsSaveDeskButtonContainerVisible();
+
+  // If the saved desk options (either the buttons or the menu options) are
+  // viable to be shown, then we want to record a histogram for holdback
+  // purposes.
+  if (target_visible && visibility_changed) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
+      base::UmaHistogramBoolean(kShowSavedDeskButtonsRevampEnabledHistogramName,
+                                true);
+    } else {
+      base::UmaHistogramBoolean(
+          kShowSavedDeskButtonsRevampDisabledHistogramName, true);
+    }
+  }
+
+  // If the UI revamp is enabled, we return as the buttons will not be shown.
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    return;
+  }
 
   // Adds or removes the widget from the accessibility focus order when exiting
   // the scope. Skip the update if the widget's visibility hasn't changed.

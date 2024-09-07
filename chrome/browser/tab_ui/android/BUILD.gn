@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_ui/OnTabSelectingListener.java",
     "java/src/org/chromium/chrome/browser/tab_ui/RecyclerViewPosition.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabContentManagerThumbnailProvider.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabGridIphDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProvider.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcher.java",

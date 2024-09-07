@@ -50,8 +50,7 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
     table_observer_ = std::make_unique<MockTableViewObserver>();
     auto controller = std::make_unique<FakeBluetoothChooserController>();
     controller_ = controller.get();
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     content_view_ =
         widget_->SetContentsView(std::make_unique<DeviceChooserContentView>(
             table_observer_.get(), std::move(controller)));

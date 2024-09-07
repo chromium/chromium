@@ -37,5 +37,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_registry_update.h",
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/common/chrome_paths.h",
+  "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]

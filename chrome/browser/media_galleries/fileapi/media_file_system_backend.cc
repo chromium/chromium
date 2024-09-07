@@ -124,7 +124,7 @@ void AttemptAutoMountOnUIThread(
 }
 
 content::WebContents* GetWebContentsFromFrameTreeNodeID(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
 }
@@ -204,8 +204,9 @@ bool MediaFileSystemBackend::AttemptAutoMountForURLRequest(
                         base::CompareCase::SENSITIVE))
     return false;
 
-  content::WebContents::Getter web_contents_getter = base::BindRepeating(
-      &GetWebContentsFromFrameTreeNodeID, request_info.content_id);
+  content::WebContents::Getter web_contents_getter =
+      base::BindRepeating(&GetWebContentsFromFrameTreeNodeID,
+                          content::FrameTreeNodeId(request_info.content_id));
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

@@ -227,11 +227,6 @@ bool StructTraits<
   out->shared_dictionary_writer_enabled =
       data.shared_dictionary_writer_enabled();
   out->required_ip_address_space = data.required_ip_address_space();
-#if BUILDFLAG(IS_ANDROID)
-  if (!data.ReadCreatedLocation(&out->created_location)) {
-    return false;
-  }
-#endif
   return true;
 }
 

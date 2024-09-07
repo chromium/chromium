@@ -12,7 +12,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/user_annotations/user_annotations_service.h"
+#include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,10 +25,8 @@ std::unique_ptr<KeyedService> CreateOptimizationGuideKeyedService(
 
 std::unique_ptr<KeyedService> CreateUserAnnotationsServiceFactory(
     content::BrowserContext* context) {
-  return std::make_unique<user_annotations::UserAnnotationsService>();
+  return std::make_unique<user_annotations::TestUserAnnotationsService>();
 }
-
-}  // namespace
 
 class ChromeAutofillPredictionImprovementsClientTest
     : public ChromeRenderViewHostTestHarness {
@@ -61,3 +59,5 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetAXTree) {
   EXPECT_CALL(callback, Run);
   client()->GetAXTree(callback.Get());
 }
+
+}  // namespace

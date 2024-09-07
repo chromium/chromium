@@ -13,6 +13,8 @@
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "content/public/browser/auction_result.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/net_errors.h"
@@ -52,7 +54,7 @@ struct ExtraRequestCompleteInfo {
   ExtraRequestCompleteInfo(
       const url::SchemeHostPort& final_url,
       const net::IPEndPoint& remote_endpoint,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       bool was_cached,
       int64_t raw_body_bytes,
       int64_t original_network_content_length,
@@ -75,7 +77,7 @@ struct ExtraRequestCompleteInfo {
   const net::IPEndPoint remote_endpoint;
 
   // The frame tree node id that initiated the request.
-  const int frame_tree_node_id;
+  const content::FrameTreeNodeId frame_tree_node_id;
 
   // True if the resource was loaded from cache.
   const bool was_cached;
@@ -162,8 +164,6 @@ class PageLoadMetricsObserverInterface {
     STOP_OBSERVING,
     FORWARD_OBSERVING,  // Deprecated. See the detailed comments above.
   };
-
-  using FrameTreeNodeId = int;
 
   PageLoadMetricsObserverInterface();
   virtual ~PageLoadMetricsObserverInterface();
@@ -566,7 +566,8 @@ class PageLoadMetricsObserverInterface {
   // to observe deletion of node, OnSubFrameDeleted is more relevant.
   virtual void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) = 0;
-  virtual void OnSubFrameDeleted(int frame_tree_node_id) = 0;
+  virtual void OnSubFrameDeleted(
+      content::FrameTreeNodeId frame_tree_node_id) = 0;
 
   // Called when a cookie is read for a resource request or by document.cookie.
   virtual void OnCookiesRead(
@@ -627,7 +628,9 @@ class PageLoadMetricsObserverInterface {
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) = 0;
 
   // Called when a Fledge auction completes.
-  virtual void OnAdAuctionComplete() = 0;
+  virtual void OnAdAuctionComplete(bool is_server_auction,
+                                   bool is_on_device_auction,
+                                   content::AuctionResult result) = 0;
 
  private:
   base::WeakPtrFactory<PageLoadMetricsObserverInterface> weak_factory_{this};

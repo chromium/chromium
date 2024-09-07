@@ -17,6 +17,7 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
@@ -30,10 +31,10 @@ ConfirmBubbleViews::ConfirmBubbleViews(
     std::unique_ptr<ConfirmBubbleModel> model)
     : model_(std::move(model)) {
   SetModalType(ui::mojom::ModalType::kWindow);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 model_->GetButtonLabel(ui::DIALOG_BUTTON_OK));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 model_->GetButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 model_->GetButtonLabel(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 model_->GetButtonLabel(ui::mojom::DialogButton::kCancel));
   SetAcceptCallback(base::BindOnce(&ConfirmBubbleModel::Accept,
                                    base::Unretained(model_.get())));
   SetCancelCallback(base::BindOnce(&ConfirmBubbleModel::Cancel,

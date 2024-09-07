@@ -29,6 +29,17 @@
         "description": "The collection of user-specified settings relating to an extension's action."
       },
       {
+        "id": "UserSettingsChange",
+        "type": "object",
+        "properties": {
+          "isOnToolbar": {
+            "type": "boolean",
+            "description": "Whether the extension's action icon is visible on browser windows' top-level toolbar (i.e., whether the extension has been 'pinned' by the user).",
+            "optional": true
+          }
+        }
+      },
+      {
         "id": "OpenPopupOptions",
         "type": "object",
         "properties": {
@@ -391,6 +402,14 @@
       "parameters": [{
         "name": "tab",
         "$ref": "tabs.Tab"
+      }]
+    }, {
+      "name": "onUserSettingsChanged",
+      "type": "function",
+      "description": "Fired when user-specified settings relating to an extension's action change.",
+      "parameters": [{
+        "name": "change",
+        "$ref": "UserSettingsChange"
       }]
     }]
   }

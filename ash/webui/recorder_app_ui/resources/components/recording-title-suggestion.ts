@@ -25,7 +25,11 @@ import {
   ReactiveLitElement,
   ScopedAsyncComputed,
 } from '../core/reactive/lit.js';
-import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
+import {
+  assertExhaustive,
+  assertExists,
+  assertInstanceof,
+} from '../core/utils/assert.js';
 
 import {GenaiResultType} from './genai-error.js';
 
@@ -99,9 +103,15 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       --background-color: var(--cros-sys-app_base_shaded);
 
       bottom: -8px;
+
+      /*
+       * TODO: b/361221415 - Remove the old properties when stable Chrome
+       * supports new one.
+       */
       inset-area: top span-left;
       position: absolute;
       position-anchor: --footer;
+      position-area: top span-left;
       z-index: 1;
 
       &::part(bottom-left-corner) {
@@ -116,6 +126,17 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
 
   suggestedTitles: ScopedAsyncComputed<ModelResponse<string[]>|null>|null =
     null;
+
+  get firstSuggestedTitleForTest(): Chip {
+    return assertExists(this.shadowRoot?.querySelector('.suggestion'));
+  }
+
+  nthSuggestedTitleForTest(index: number): Chip {
+    const allSuggestions = assertExists(
+      this.shadowRoot?.querySelectorAll('.suggestion'),
+    );
+    return assertInstanceof(allSuggestions[index], Chip);
+  }
 
   private onCloseClick() {
     this.dispatchEvent(new Event('close'));
@@ -191,6 +212,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
           size="small"
           shape="circle"
           @click=${this.onCloseClick}
+          aria-label=${i18n.closeDialogButtonTooltip}
         >
           <cra-icon slot="icon" name="close"></cra-icon>
         </cra-icon-button>

@@ -1,22 +1,4 @@
-<style include="cr-icons md-select">
-  cr-icon {
-    --icon-size: 20px;
-    height: var(--icon-size);
-    margin: 0px 8px 0px 4px;
-    width: var(--icon-size);
-  }
-
-  cr-icon-button {
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 24px;
-    color: var(--color-sys-on-surface-subtle);
-    margin: 0 4px;
-  }
-
-  cr-icon-button.active {
-    background-color: var(--cr-active-background-color);
-  }
-
+<style include="cr-icons md-select read-anything-toolbar">
   #play-pause {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-fill-color: var(--color-sys-primary);
@@ -49,13 +31,6 @@
     margin: 0px 2px;
   }
 
-  .dropdown-item {
-    align-items: center;
-    font-size: 13px;
-    min-width: 180px;
-    padding-left: 20px;
-  }
-
   #font-size-decrease {
     margin-left: 12px;
   }
@@ -67,10 +42,6 @@
   .text-button {
     border: none;
     font-size: 13px;
-  }
-
-  .check-mark {
-    margin: 0;
   }
 
   .check-mark-hidden-true {
@@ -197,7 +168,8 @@
     </voice-selection-menu>
     <cr-icon-button class="toolbar-button" id="highlight" tabindex="-1"
         iron-icon="read-anything:highlight-on"
-        title="$i18n{turnHighlightOff}"
+        title="[[getHighlightButtonLabel_()]]"
+        aria-label="[[getHighlightButtonLabel_()]]"
         on-click="onHighlightClick_">
     </cr-icon-button>
   </template>
@@ -244,7 +216,7 @@
     </cr-icon-button>
   </template>
 
-  <template is="dom-repeat" items="[[textStyleOptions_]]" initial-count="3">
+  <template is="dom-repeat" items="[[textStyleOptions_]]" initial-count="5">
     <cr-icon-button class="toolbar-button text-style-button" id="[[item.id]]"
         tabindex="-1"
         aria-label="[[item.ariaLabel]]"
@@ -298,6 +270,9 @@
       </cr-action-menu>
     </template>
   </cr-lazy-render>
+  <highlight-menu
+    id="highlightMenu" settings-prefs="[[settingsPrefs]]">
+  </highlight-menu>
   <cr-lazy-render id="fontSizeMenu">
     <template>
       <cr-action-menu on-keydown="onFontSizeMenuKeyDown_"
@@ -324,64 +299,15 @@
       </cr-action-menu>
     </template>
   </cr-lazy-render>
-  <cr-lazy-render id="colorMenu">
-    <template>
-      <cr-action-menu accessibility-label="$i18n{themeTitle}"
-          role-description="$i18n{menu}">
-        <template is="dom-repeat" items="[[colorOptions_]]" index-as="index"
-            initial-count="5">
-          <button class="dropdown-item" on-click="onColorClick_">
-            <cr-icon class$="button-image check-mark
-                check-mark-hidden-[[isColorItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"
-                aria-label="$i18n{selected}">
-            </cr-icon>
-            <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
-            [[item.title]]
-          </button>
-        </template>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
-  <cr-lazy-render id="lineSpacingMenu">
-    <template>
-      <cr-action-menu accessibility-label="$i18n{lineSpacingTitle}"
-          role-description="$i18n{menu}">
-        <template is="dom-repeat" items="[[lineSpacingOptions_]]"
-            index-as="index"
-            initial-count="3">
-          <button class="dropdown-item" on-click="onLineSpacingClick_">
-            <cr-icon class$="button-image check-mark
-                check-mark-hidden-[[isLineSpacingItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"
-                aria-label="$i18n{selected}">
-            </cr-icon>
-            <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
-            [[item.title]]
-          </button>
-        </template>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
-  <cr-lazy-render id="letterSpacingMenu">
-    <template>
-      <cr-action-menu accessibility-label="$i18n{letterSpacingTitle}"
-          role-description="$i18n{menu}">
-        <template is="dom-repeat" items="[[letterSpacingOptions_]]"
-            index-as="index"
-            initial-count="3">
-          <button class="dropdown-item" on-click="onLetterSpacingClick_">
-            <cr-icon class$="button-image check-mark
-                check-mark-hidden-[[isLetterSpacingItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"
-                aria-label="$i18n{selected}"></cr-icon>
-            <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
-            [[item.title]]
-          </button>
-        </template>
-      </cr-action-menu>
-    </template>
-  </cr-lazy-render>
+  <color-menu
+      id="colorMenu" settings-prefs="[[settingsPrefs]]">
+  </color-menu>
+  <line-spacing-menu
+      id="lineSpacingMenu" settings-prefs="[[settingsPrefs]]">
+  </line-spacing-menu>
+  <letter-spacing-menu
+      id="letterSpacingMenu" settings-prefs="[[settingsPrefs]]">
+  </letter-spacing-menu>
   <cr-lazy-render id="fontMenu">
     <template>
       <cr-action-menu accessibility-label="$i18n{fontNameTitle}"

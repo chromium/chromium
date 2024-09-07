@@ -64,9 +64,6 @@ class CookieControlsController final
   // Called when the entry point for cookie controls was animated.
   void OnEntryPointAnimated();
 
-  // Returns whether first-party cookies are blocked.
-  bool FirstPartyCookiesBlocked();
-
   // Returns whether any ACT features should be shown.
   bool ShowActFeatures();
 

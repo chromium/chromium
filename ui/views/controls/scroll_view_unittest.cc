@@ -125,12 +125,30 @@ class FixedView : public View {
 
   ~FixedView() override = default;
 
+  std::optional<bool> did_show_tooltip_in_viewport() const {
+    return did_show_tooltip_in_viewport_;
+  }
+
   void Layout(PassKey) override {
     gfx::Size pref = GetPreferredSize({});
     SetBounds(x(), y(), pref.width(), pref.height());
   }
 
+  void UpdateTooltipForFocus() override {
+    View::UpdateTooltipForFocus();
+
+    // To verify `UpdateTooltipForFocus()` is called after the view scrolled, we
+    // can set `did_show_tooltip_in_viewport_` as true only when this view is in
+    // the visible rect.
+    did_show_tooltip_in_viewport_ = !GetVisibleBounds().IsEmpty();
+  }
+
   void SetFocus() { Focus(); }
+
+ private:
+  // True if this view is in the viewport of its parent scroll view to show the
+  // tooltip.
+  std::optional<bool> did_show_tooltip_in_viewport_;
 };
 
 BEGIN_METADATA(FixedView)
@@ -714,6 +732,30 @@ TEST_F(ScrollViewTest, ScrollBars) {
   EXPECT_EQ(kTopPadding, bounds.y());
   EXPECT_EQ(100 - kBottomPadding - HorizontalScrollBarHeight(),
             bounds.bottom());
+}
+
+// Tests that after scrolling the child (which was gained the focus) into the
+// viewport of the scroll view, the tooltip should be shown up.
+TEST_F(WidgetScrollViewTest, ScrollChildToVisibleOnFocusWithTooltip) {
+  // Create a scroll view and its contents view.
+  auto contents_ptr = std::make_unique<CustomView>();
+  contents_ptr->SetPreferredSize(gfx::Size(100, 200));
+  auto* contents = contents_ptr.get();
+  AddScrollViewWithContents(std::move(contents_ptr));
+
+  // Create a child view into the contents view, and set it position outside of
+  // the visible rect.
+  auto child = std::make_unique<FixedView>();
+  child->SetPreferredSize(gfx::Size(10, 10));
+  child->SetPosition(gfx::Point(50, 110));
+  auto* child_ptr = contents->AddChildView(std::move(child));
+
+  // Bring a focus to this child view which should scroll it into the visible
+  // rect of the scroll view.
+  child_ptr->SetFocus();
+
+  ASSERT_TRUE(child_ptr->did_show_tooltip_in_viewport().has_value());
+  EXPECT_TRUE(child_ptr->did_show_tooltip_in_viewport().value());
 }
 
 // Assertions around adding a header.

@@ -15,7 +15,7 @@
 
 namespace net {
 
-class HttpServerResponseInfo {
+class NET_EXPORT HttpServerResponseInfo {
  public:
   // Creates a 200 OK HttpServerResponseInfo.
   HttpServerResponseInfo();

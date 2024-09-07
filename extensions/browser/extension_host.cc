@@ -520,7 +520,7 @@ content::JavaScriptDialogManager* ExtensionHost::GetJavaScriptDialogManager(
   return delegate_->GetJavaScriptDialogManager();
 }
 
-void ExtensionHost::AddNewContents(
+content::WebContents* ExtensionHost::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -546,13 +546,15 @@ void ExtensionHost::AddNewContents(
         delegate->AddNewContents(associated_contents, std::move(new_contents),
                                  target_url, disposition, window_features,
                                  user_gesture, was_blocked);
-        return;
+        return nullptr;
       }
     }
   }
 
   delegate_->CreateTab(std::move(new_contents), extension_id_, disposition,
                        window_features, user_gesture);
+
+  return nullptr;
 }
 
 void ExtensionHost::RenderFrameCreated(content::RenderFrameHost* frame_host) {

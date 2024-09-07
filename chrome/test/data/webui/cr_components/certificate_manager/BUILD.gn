@@ -29,6 +29,7 @@ build_webui_tests("build") {
       "certificate_password_dialog_test.ts",
       "certificate_subpage_v2_test.ts",
       "navigation_v2_test.ts",
+      "local_certs_section_v2_test.ts",
     ]
   }
 

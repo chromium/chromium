@@ -46,6 +46,38 @@ declare global {
 
       export const onConnectNative: PortEvent;
 
+      export enum ContextType {
+        TAB = 'TAB',
+        POPUP = 'POPUP',
+        BACKGROUND = 'BACKGROUND',
+        OFFSCREEN_DOCUMENT = 'OFFSCREEN_DOCUMENT',
+        SIDE_PANEL = 'SIDE_PANEL',
+      }
+
+      export interface ExtensionContext {
+        contextType: ContextType;
+        contextId: string;
+        tabId: number;
+        windowId: number;
+        documentId?: string;
+        frameId: number;
+        documentUrl?: string;
+        documentOrigin?: string;
+        incognito: boolean;
+      }
+
+      export interface ContextFilter {
+        contextTypes?: ContextType[];
+        contextIds?: string[];
+        tabIds?: number[];
+        windowIds?: number[];
+        documentIds?: string[];
+        frameIds?: number[];
+        documentUrls?: string[];
+        documentOrigins?: string[];
+        incognito?: boolean;
+      }
+
       export function getURL(path: string): string;
 
       export function reload(): void;
@@ -71,6 +103,13 @@ declare global {
             includeTlsChannelId?: boolean,
           },
           callback?: (response?: any) => void): void;
+
+      export function getContexts(filter: ContextFilter):
+          Promise<ExtensionContext[]>;
+
+      export const onMessage: ChromeEvent<
+          (message: any|undefined, sender: MessageSender,
+           sendResponse: () => void) => boolean>;
     }
   }
 }

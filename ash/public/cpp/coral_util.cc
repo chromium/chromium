@@ -10,4 +10,12 @@ CoralRequest::CoralRequest() = default;
 
 CoralRequest::~CoralRequest() = default;
 
+CoralCluster::CoralCluster() = default;
+
+CoralCluster::~CoralCluster() = default;
+
+CoralResponse::CoralResponse() = default;
+
+CoralResponse::~CoralResponse() = default;
+
 }  // namespace ash::coral_util

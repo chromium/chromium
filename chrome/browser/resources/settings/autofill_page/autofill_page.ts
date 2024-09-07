@@ -74,12 +74,6 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      isPlusAddressAutofillLevelSettingEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('plusAddressEnabled') &&
-            !loadTimeData.getBoolean('plusAddressSettingInAddressSection'),
-      },
-
       plusAddressIcon_: {
         type: String,
         value() {
@@ -89,6 +83,14 @@ export class SettingsAutofillPageElement extends
           // <if expr="not _google_chrome">
           return 'settings:email';
           // </if>
+        },
+      },
+
+      autofillPredictionImprovementsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'autofillPredictionImprovementsEnabled');
         },
       },
     };
@@ -123,6 +125,13 @@ export class SettingsAutofillPageElement extends
   private onPlusAddressClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('plusAddressManagementUrl'));
+  }
+
+  /**
+   * Shows the prediction improvements settings sub page.
+   */
+  private onAutofillPredictionImprovementsClick_() {
+    Router.getInstance().navigateTo(routes.AUTOFILL_PREDICTION_IMPROVEMENTS);
   }
 
   /**

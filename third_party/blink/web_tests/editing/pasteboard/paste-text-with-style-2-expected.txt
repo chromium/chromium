@@ -16,4 +16,3 @@ After copy-paste:
 |       <font>
 |         color="red"
 |         "hello world<#selection-caret>"
-| <br>

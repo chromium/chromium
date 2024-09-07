@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
-import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportDialogFragment;
+import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportFlowCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -63,6 +63,10 @@ public class PasswordManagerHelper {
     // this argument should be part of the ManagePasswordsReferrer enum, which contains
     // all points of entry to the passwords settings.
     public static final String MANAGE_PASSWORDS_REFERRER = "manage-passwords-referrer";
+
+    // Launch argument for the main settings. If set to to true, the passwords
+    // export flow starts immediately.
+    public static final String START_PASSWORDS_EXPORT = "start-passwords-export";
 
     // Indicates the operation that was requested from the {@link PasswordCheckupClientHelper}.
     @IntDef({
@@ -169,13 +173,19 @@ public class PasswordManagerHelper {
 
         @PasswordAccessLossWarningType int warningType = getAccessLossWarningType(prefService);
         if (warningType != PasswordAccessLossWarningType.NONE) {
+            // Always start export flow from Chrome main settings. If this is already being called
+            // from main settings, then launch export flow right away.
+            Runnable startExportFlow =
+                    referrer == ManagePasswordsReferrer.CHROME_SETTINGS
+                            ? () -> launchExportFlow(context, modalDialogManagerSupplier)
+                            : () -> showMainSettingsAndStartExport(context);
             new PasswordAccessLossDialogSettingsCoordinator()
                     .showPasswordAccessLossDialog(
                             context,
                             modalDialogManagerSupplier.get(),
                             warningType,
                             PasswordManagerHelper::launchGmsUpdate,
-                            this::launchExportFlow);
+                            startExportFlow);
             return;
         }
 
@@ -230,6 +240,15 @@ public class PasswordManagerHelper {
                 SettingsLauncherFactory.createSettingsLauncher()
                         .createSettingsActivityIntent(
                                 context, SettingsFragment.PASSWORDS, fragmentArgs));
+    }
+
+    public static void showMainSettingsAndStartExport(Context context) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putBoolean(START_PASSWORDS_EXPORT, true);
+        context.startActivity(
+                SettingsLauncherFactory.createSettingsLauncher()
+                        .createSettingsActivityIntent(
+                                context, SettingsFragment.MAIN, fragmentArgs));
     }
 
     /**
@@ -445,17 +464,17 @@ public class PasswordManagerHelper {
         }
     }
 
-    private void launchExportFlow(Context context) {
+    public void launchExportFlow(
+            Context context, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
         assert activity != null : "Context is expected to be a fragment activity";
 
-        PasswordAccessLossExportDialogFragment fragment =
-                new PasswordAccessLossExportDialogFragment();
-        fragment.show(activity.getSupportFragmentManager(), null);
+        new PasswordAccessLossExportFlowCoordinator(activity, mProfile, modalDialogManagerSupplier)
+                .startExportFlow();
     }
 
     @VisibleForTesting
-    void launchTheCredentialManager(
+    public void launchTheCredentialManager(
             @ManagePasswordsReferrer int referrer,
             SyncService syncService,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
@@ -776,7 +795,8 @@ public class PasswordManagerHelper {
         }
     }
 
-    public @PasswordAccessLossWarningType int getAccessLossWarningType(PrefService prefService) {
+    public static @PasswordAccessLossWarningType int getAccessLossWarningType(
+            PrefService prefService) {
         // TODO(crbug.com/323149739): Enable this feature flag in SafetyCheckMediatorTest and
         // PasswordManagerHelperTest in all tests before launch.
         if (!ChromeFeatureList.isEnabled(

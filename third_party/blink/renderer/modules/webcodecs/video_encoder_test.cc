@@ -119,10 +119,8 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
                            int width,
                            int height,
                            int timestamp) {
-  std::vector<uint8_t> data;
-  data.resize(width * height * 4);
-  NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(
-      reinterpret_cast<const unsigned char*>(data.data()), data.size()));
+  std::vector<uint8_t> data(width * height * 4);
+  NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(data));
 
   ImageData* image_data =
       ImageData::Create(data_u8, width, IGNORE_EXCEPTION_FOR_TESTING);

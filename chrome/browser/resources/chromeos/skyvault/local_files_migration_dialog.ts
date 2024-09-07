@@ -16,9 +16,16 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
+import {LocalFilesBrowserProxy} from './local_files_browser_proxy.js';
+import {CloudProvider, TimeUnit, TimeUnitAndValue} from './local_files_migration.mojom-webui.js';
 import {getTemplate} from './local_files_migration_dialog.html.js';
 
 class LocalFilesMigrationDialogElement extends HTMLElement {
+  private proxy: LocalFilesBrowserProxy = LocalFilesBrowserProxy.getInstance();
+  private cloudProvider: CloudProvider|null = null;
+
   constructor() {
     super();
 
@@ -31,18 +38,95 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
     const dismissButton = this.$('#dismiss-button');
     dismissButton.addEventListener(
         'click', () => this.onDismissButtonClicked_());
+
+    this.proxy.callbackRouter.updateRemainingTime.addListener(
+        (remainingTime: TimeUnitAndValue) =>
+            this.updateRemainingTime_(remainingTime));
+  }
+
+  async connectedCallback() {
+    try {
+      const {cloudProvider, remainingTime, startDateAndTime} =
+          await this.proxy.handler.getInitialDialogInfo();
+      this.initializeDialog_(cloudProvider, remainingTime, startDateAndTime);
+    } catch (error) {
+      console.error('Error fetching initial dialog info:', error);
+    }
   }
 
   $<T extends HTMLElement>(query: string): T {
     return this.shadowRoot!.querySelector(query)!;
   }
 
+  private initializeDialog_(
+      cloudProvider: CloudProvider, remainingTime: TimeUnitAndValue,
+      startDateAndTime: string) {
+    this.cloudProvider = cloudProvider;
+    const providerName = this.getCloudProviderName_(cloudProvider);
+
+    const startMessage = this.$('#start-message');
+    startMessage.innerText = loadTimeData.getStringF(
+        'uploadStartMessage', providerName, startDateAndTime);
+
+    const doneMessage = this.$('#done-message');
+    doneMessage.innerText =
+        loadTimeData.getStringF('uploadDoneMessage', providerName);
+
+    this.updateRemainingTime_(remainingTime);
+  }
+
   private async onUploadNowButtonClicked_() {
-    chrome.send('startMigration');
+    this.proxy.handler.uploadNow();
   }
 
   private onDismissButtonClicked_() {
-    chrome.send('dialogClose');
+    this.proxy.handler.close();
+  }
+
+  private updateRemainingTime_(remainingTime: TimeUnitAndValue) {
+    if (this.cloudProvider === null) {
+      console.error(
+          'CloudProvider should be set before calling UpdateRemainingTime()');
+      return;
+    }
+    if (remainingTime.value < 0) {
+      console.error(
+          `Remaining time must be positive, got ${remainingTime.value}`);
+      return;
+    }
+
+    const title = this.$('#title');
+    const dismissButton = this.$('#dismiss-button');
+    const providerName = this.getCloudProviderName_(this.cloudProvider);
+    const remainingTimeValue = remainingTime.value;
+    const plural = remainingTimeValue > 1;
+    switch (remainingTime.unit) {
+      case TimeUnit.kHours:
+        title.innerText = plural ?
+            loadTimeData.getStringF(
+                'titleHours', providerName, remainingTimeValue) :
+            loadTimeData.getStringF('titleHour', providerName);
+        dismissButton.innerText =
+            loadTimeData.getStringF('uploadInHours', remainingTimeValue);
+        break;
+      case TimeUnit.kMinutes:
+        title.innerText = plural ?
+            loadTimeData.getStringF(
+                'titleMinutes', providerName, remainingTimeValue) :
+            loadTimeData.getStringF('titleMinute', providerName);
+        dismissButton.innerText =
+            loadTimeData.getStringF('uploadInMinutes', remainingTimeValue);
+        break;
+    }
+  }
+
+  private getCloudProviderName_(cloudProvider: CloudProvider) {
+    switch (cloudProvider) {
+      case CloudProvider.kOneDrive:
+        return loadTimeData.getString('oneDrive');
+      case CloudProvider.kGoogleDrive:
+        return loadTimeData.getString('googleDrive');
+    }
   }
 }
 

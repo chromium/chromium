@@ -11,11 +11,9 @@ TEST(ThreatMetadataTest, Equality) {
   ThreatMetadata t1;
   t1.threat_pattern_type = ThreatPatternType::MALWARE_DISTRIBUTION;
   t1.api_permissions = {"API_ABUSE"};
-  t1.population_id = "population1";
   ThreatMetadata t2;
   t2.threat_pattern_type = ThreatPatternType::MALWARE_DISTRIBUTION;
   t2.api_permissions = {"API_ABUSE"};
-  t2.population_id = "population1";
   EXPECT_TRUE(t1 == t2);
 }
 
@@ -23,11 +21,9 @@ TEST(ThreatMetadataTest, Inequality) {
   ThreatMetadata t1;
   t1.threat_pattern_type = ThreatPatternType::MALWARE_DISTRIBUTION;
   t1.api_permissions = {"API_ABUSE"};
-  t1.population_id = "population1";
   ThreatMetadata t2;
-  t2.threat_pattern_type = ThreatPatternType::MALWARE_DISTRIBUTION;
+  t2.threat_pattern_type = ThreatPatternType::SOCIAL_ENGINEERING_LANDING;
   t2.api_permissions = {"API_ABUSE"};
-  t2.population_id = "population2";
   EXPECT_TRUE(t1 != t2);
 }
 
@@ -37,7 +33,6 @@ TEST(ThreatMetadataTest, ToTracedValue) {
   t1.api_permissions = {"API_ABUSE"};
   t1.subresource_filter_match = {
       {SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}};
-  t1.population_id = "population1";
   std::unique_ptr<base::trace_event::TracedValue> v1 = t1.ToTracedValue();
   std::string json;
   v1->AppendAsTraceFormat(&json);
@@ -45,8 +40,7 @@ TEST(ThreatMetadataTest, ToTracedValue) {
       "{"
       "\"threat_pattern_type\":2,"
       "\"api_permissions\":[\"API_ABUSE\"],"
-      "\"subresource_filter_match\":{\"match_metadata\":[0,1]},"
-      "\"population_id\":\"population1\""
+      "\"subresource_filter_match\":{\"match_metadata\":[0,1]}"
       "}",
       json);
 }

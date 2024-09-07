@@ -1286,7 +1286,10 @@ class PowerManagerClientImpl : public PowerManagerClient {
     const bool on_battery =
         proto_->external_power() ==
         power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
-    base::PowerMonitorDeviceSource::SetPowerSource(on_battery);
+    base::PowerMonitorDeviceSource::SetPowerSource(
+        on_battery
+            ? base::PowerStateObserver::BatteryPowerStatus::kBatteryPower
+            : base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   }
 
   void HandleRegisterSuspendDelayReply(bool dark_suspend,

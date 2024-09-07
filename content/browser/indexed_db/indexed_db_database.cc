@@ -48,7 +48,6 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "ipc/ipc_channel.h"
 #include "storage/browser/blob/blob_data_handle.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
@@ -214,9 +213,10 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
   RequireBlockingTransactionClientsToBeActive(transaction, lock_requests);
 
   lock_manager().AcquireLocks(
-      std::move(lock_requests),
-      transaction->mutable_locks_receiver()->AsWeakPtr(),
-      base::BindOnce(&IndexedDBTransaction::Start, transaction->AsWeakPtr()));
+      std::move(lock_requests), *transaction->mutable_locks_receiver(),
+      base::BindOnce(&IndexedDBTransaction::Start, transaction->AsWeakPtr()),
+      base::BindRepeating(&IndexedDBConnection::HasHigherPriorityThan,
+                          transaction->mutable_locks_receiver()));
 }
 
 std::tuple<IndexedDBDatabase::RunTasksResult, leveldb::Status>
@@ -1567,7 +1567,8 @@ std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
     std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker,
-    base::UnguessableToken client_token) {
+    base::UnguessableToken client_token,
+    int scheduling_priority) {
   auto connection = std::make_unique<IndexedDBConnection>(
       *bucket_context_, weak_factory_.GetWeakPtr(),
       base::BindRepeating(&IndexedDBDatabase::VersionChangeIgnored,
@@ -1575,7 +1576,7 @@ std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
       base::BindOnce(&IndexedDBDatabase::ConnectionClosed,
                      weak_factory_.GetWeakPtr()),
       std::move(database_callbacks), std::move(client_state_checker),
-      client_token);
+      client_token, scheduling_priority);
   connections_.insert(connection.get());
   return connection;
 }

@@ -29,24 +29,23 @@ import java.util.concurrent.TimeoutException;
 public class TrustedWebActivityTestUtil {
     /** Waits till verification either succeeds or fails. */
     private static class CurrentPageVerifierWaiter extends CallbackHelper {
+        private final Runnable mVerificationObserver = this::onVerificationUpdate;
+
         private CurrentPageVerifier mVerifier;
 
         public void start(CurrentPageVerifier verifier) throws TimeoutException {
             mVerifier = verifier;
-            if (checkShouldNotify()) return;
+            if (mVerifier.getState().status != CurrentPageVerifier.VerificationStatus.PENDING) {
+                return;
+            }
 
-            mVerifier.addVerificationObserver(this::onVerificationUpdate);
+            mVerifier.addVerificationObserver(mVerificationObserver);
             waitForOnly();
         }
 
         public void onVerificationUpdate() {
-            if (checkShouldNotify()) {
-                mVerifier.removeVerificationObserver(this::onVerificationUpdate);
-            }
-        }
-
-        public boolean checkShouldNotify() {
-            return mVerifier.getState().status != CurrentPageVerifier.VerificationStatus.PENDING;
+            mVerifier.removeVerificationObserver(mVerificationObserver);
+            notifyCalled();
         }
     }
 

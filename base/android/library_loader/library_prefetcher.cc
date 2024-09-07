@@ -24,6 +24,7 @@
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -150,19 +151,18 @@ void DumpResidency(size_t start,
   CHECK_LE(kEndOfText, end);
   auto start_end = StringPrintf("%" PRIuS " %" PRIuS "\n", kStartOfText - start,
                                 kEndOfText - start);
-  file.WriteAtCurrentPos(start_end.c_str(), static_cast<int>(start_end.size()));
+  file.WriteAtCurrentPos(base::as_byte_span(start_end));
 
   for (const auto& data_point : *data) {
     auto timestamp = StringPrintf("%" PRIu64 " ", data_point.timestamp_nanos);
-    file.WriteAtCurrentPos(timestamp.c_str(),
-                           static_cast<int>(timestamp.size()));
+    file.WriteAtCurrentPos(base::as_byte_span(timestamp));
 
     std::vector<char> dump;
-    dump.reserve(data_point.residency.size() + 1);
-    for (auto c : data_point.residency)
+    dump.reserve(data_point.residency.size());
+    for (auto c : data_point.residency) {
       dump.push_back(c ? '1' : '0');
-    dump[dump.size() - 1] = '\n';
-    file.WriteAtCurrentPos(&dump[0], checked_cast<int>(dump.size()));
+    }
+    file.WriteAtCurrentPos(base::as_byte_span(dump));
   }
 }
 

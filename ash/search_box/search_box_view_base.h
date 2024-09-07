@@ -61,6 +61,17 @@ class SearchBoxViewBase : public views::View,
   views::ImageButton* CreateCloseButton(
       const base::RepeatingClosure& button_callback);
 
+  // Creates `end_button_container_`, a container view that hosts one or both of
+  // the `assistant_button_` and `sunfish_button_`.
+  void CreateEndButtonContainer();
+
+  // Creates the sunfish launcher button at the right edge of the search box,
+  // next to the assistant button. Note that it will only be shown if the close
+  // button is hidden, as the buttons have the same expected position within the
+  // search box.
+  views::ImageButton* CreateSunfishButton(
+      const base::RepeatingClosure& button_callback);
+
   // Creates the search box assistant button at the right edge of the search
   // box. Note that the assistant button will only be shown if close button is
   // hidden, as the buttons have the same expected position within the search
@@ -86,8 +97,9 @@ class SearchBoxViewBase : public views::View,
   gfx::Rect GetViewBoundsForSearchBoxContentsBounds(
       const gfx::Rect& rect) const;
 
+  views::ImageButton* sunfish_button();
   views::ImageButton* assistant_button();
-  views::View* assistant_button_container();
+  views::View* edge_button_container();
   views::ImageButton* close_button();
   views::ImageButton* filter_button();
   views::View* filter_and_close_button_container();
@@ -139,8 +151,6 @@ class SearchBoxViewBase : public views::View,
   // Whether the search box is active.
   bool is_search_box_active() const { return is_search_box_active_; }
 
-  bool show_assistant_button() { return show_assistant_button_; }
-
   void OnSearchBoxFocusedChanged();
 
   // Whether the trimmed query in the search box is empty.
@@ -182,6 +192,8 @@ class SearchBoxViewBase : public views::View,
 
   void Init(const InitParams& params);
 
+  // TODO(http://b/362364735): Fix close button positioning when Sunfish is
+  // enabled.
   // Updates the visibility of the close and assistant buttons.
   void UpdateButtonsVisibility();
 
@@ -209,6 +221,7 @@ class SearchBoxViewBase : public views::View,
   void SetSearchIconImage(gfx::ImageSkia image);
 
   void SetShowAssistantButton(bool show);
+  void SetShowSunfishButton(bool show);
 
   // Detects |kMousePressed| and |EventType::kGestureTap| events on the white
   // background of the search box.
@@ -244,9 +257,10 @@ class SearchBoxViewBase : public views::View,
   raw_ptr<views::BoxLayoutView> content_container_;
   raw_ptr<SearchIconImageView> search_icon_ = nullptr;
   raw_ptr<SearchBoxImageButton> assistant_button_ = nullptr;
+  raw_ptr<SearchBoxImageButton> sunfish_button_ = nullptr;
   raw_ptr<SearchBoxImageButton> close_button_ = nullptr;
   raw_ptr<SearchBoxImageButton> filter_button_ = nullptr;
-  raw_ptr<views::BoxLayoutView> assistant_button_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> end_button_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> filter_and_close_button_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> text_container_ = nullptr;
 
@@ -267,6 +281,8 @@ class SearchBoxViewBase : public views::View,
   bool show_close_button_when_active_ = false;
   // Whether to show assistant button.
   bool show_assistant_button_ = false;
+  // Whether to show sunfish button.
+  bool show_sunfish_button_ = false;
 
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(

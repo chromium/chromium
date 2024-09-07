@@ -94,9 +94,11 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
     case ApplicationError::kMojoConnectionFailed:
       return "A Mojo IPC connection could not be established.";
     case ApplicationError::kInstallationFailed:
-      return "The application could not be installed.";
+      return "The application could not be installed/uninstalled.";
     case ApplicationError::kIpcCallerNotAllowed:
       return "The IPC caller is not allowed.";
+    case ApplicationError::kCOMInitializationFailed:
+      return "COM initialization failed.";
   }
 }
 

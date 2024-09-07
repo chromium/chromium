@@ -135,7 +135,7 @@ ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
   parent_frame_filter_->GetLoadPolicyForSubdocument(
       navigation_handle()->GetURL(),
       base::BindOnce(
-          &ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy,
+          &ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicyForUrl,
           weak_ptr_factory_.GetWeakPtr()));
 
   if (ShouldDeferNavigation()) {
@@ -182,21 +182,41 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
   ResumeNavigation();
 }
 
+void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicyForUrl(
+    LoadPolicy policy) {
+  if (policy != load_policy_ &&
+      policy == MoreRestrictiveLoadPolicy(policy, load_policy_)) {
+    // Child frame's hostname check determined the load policy.
+    did_alias_check_determine_load_policy_ = false;
+  }
+  OnCalculatedLoadPolicy(policy);
+}
+
 void ChildFrameNavigationFilteringThrottle::
     OnCalculatedLoadPoliciesFromAliasUrls(std::vector<LoadPolicy> policies) {
   // We deferred to check aliases in WillProcessResponse.
   CHECK(defer_stage_ == DeferStage::kWillProcessResponse,
         base::NotFatalUntil::M129);
+  CHECK(alias_check_enabled_);
   CHECK(!policies.empty(), base::NotFatalUntil::M129);
 
-  LoadPolicy most_restricive_alias_policy = LoadPolicy::EXPLICITLY_ALLOW;
+  did_alias_check_ = true;
+
+  LoadPolicy most_restrictive_alias_policy = LoadPolicy::EXPLICITLY_ALLOW;
 
   for (LoadPolicy policy : policies) {
-    most_restricive_alias_policy =
-        MoreRestrictiveLoadPolicy(most_restricive_alias_policy, policy);
+    most_restrictive_alias_policy =
+        MoreRestrictiveLoadPolicy(most_restrictive_alias_policy, policy);
   }
 
-  OnCalculatedLoadPolicy(most_restricive_alias_policy);
+  if (most_restrictive_alias_policy != load_policy_ &&
+      most_restrictive_alias_policy ==
+          MoreRestrictiveLoadPolicy(most_restrictive_alias_policy,
+                                    load_policy_)) {
+    did_alias_check_determine_load_policy_ = true;
+  }
+
+  OnCalculatedLoadPolicy(most_restrictive_alias_policy);
 }
 
 void ChildFrameNavigationFilteringThrottle::DeferStart(DeferStage stage) {

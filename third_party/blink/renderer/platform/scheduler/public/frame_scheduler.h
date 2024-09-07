@@ -13,6 +13,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -45,6 +46,11 @@ class FrameScheduler : public FrameOrWorkerScheduler {
                                  base::TimeTicks end_time) = 0;
     virtual void MainFrameInteractive() {}
     virtual void MainFrameFirstMeaningfulPaint() {}
+
+    // Returns a `DocumentResourceCoordinator` to inform of feature usage by the
+    // frame. May be nullptr when the PerformanceManagerInstrumentation feature
+    // is disabled or in tests.
+    virtual DocumentResourceCoordinator* GetDocumentResourceCoordinator() = 0;
   };
 
   ~FrameScheduler() override = default;

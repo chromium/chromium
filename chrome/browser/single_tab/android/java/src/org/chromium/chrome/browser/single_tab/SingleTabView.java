@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.single_tab;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -79,14 +77,10 @@ class SingleTabView extends LinearLayout {
 
         if (mTabThumbnail == null) return;
 
-        Bitmap thumbnail = null;
         Drawable drawable = mTabThumbnail.getDrawable();
-        if (drawable instanceof BitmapDrawable) {
-            thumbnail = ((BitmapDrawable) drawable).getBitmap();
-        }
-        if (thumbnail == null) return;
+        if (drawable == null) return;
 
-        updateThumbnailMatrix(thumbnail);
+        updateThumbnailMatrix(drawable);
     }
 
     /**
@@ -114,16 +108,19 @@ class SingleTabView extends LinearLayout {
 
     /**
      * Set the Tab thumbnail.
-     * @param thumbnail The given Tab thumbnail {@link Bitmap}.
+     *
+     * @param thumbnail The given Tab thumbnail {@link Drawable}.
      */
-    public void setTabThumbnail(Bitmap thumbnail) {
+    public void setTabThumbnail(@Nullable Drawable thumbnail) {
         if (mTabThumbnail == null) return;
 
-        if (thumbnail == null || thumbnail.getWidth() <= 0 || thumbnail.getHeight() <= 0) {
+        if (thumbnail == null
+                || thumbnail.getIntrinsicWidth() <= 0
+                || thumbnail.getIntrinsicHeight() <= 0) {
             mTabThumbnail.setImageMatrix(new Matrix());
             return;
         }
-        mTabThumbnail.setImageBitmap(thumbnail);
+        mTabThumbnail.setImageDrawable(thumbnail);
 
         updateThumbnailMatrix(thumbnail);
     }
@@ -144,7 +141,7 @@ class SingleTabView extends LinearLayout {
         mUrl.setText(url);
     }
 
-    private void updateThumbnailMatrix(Bitmap thumbnail) {
+    private void updateThumbnailMatrix(Drawable thumbnail) {
         final int width = mTabThumbnail.getMeasuredWidth();
         final int height = mTabThumbnail.getMeasuredHeight();
         if (width == 0 || height == 0) {
@@ -154,9 +151,9 @@ class SingleTabView extends LinearLayout {
 
         final float scale =
                 Math.max(
-                        (float) width / thumbnail.getWidth(),
-                        (float) height / thumbnail.getHeight());
-        final int xOffset = (int) (width - thumbnail.getWidth() * scale) / 2;
+                        (float) width / thumbnail.getIntrinsicWidth(),
+                        (float) height / thumbnail.getIntrinsicHeight());
+        final int xOffset = (int) (width - thumbnail.getIntrinsicWidth() * scale) / 2;
 
         Matrix m = new Matrix();
         m.setScale(scale, scale);

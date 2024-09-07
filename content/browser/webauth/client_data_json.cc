@@ -72,10 +72,12 @@ std::string ToJSONString(std::string_view in) {
 
 ClientDataJsonParams::ClientDataJsonParams(ClientDataRequestType type,
                                            url::Origin origin,
+                                           url::Origin top_origin,
                                            std::vector<uint8_t> challenge,
                                            bool is_cross_origin_iframe)
     : type(type),
       origin(std::move(origin)),
+      top_origin(std::move(top_origin)),
       challenge(std::move(challenge)),
       is_cross_origin_iframe(is_cross_origin_iframe) {}
 ClientDataJsonParams::ClientDataJsonParams(ClientDataJsonParams&&) = default;
@@ -105,8 +107,12 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
   ret.append(R"(,"origin":)");
   ret.append(ToJSONString(params.origin.Serialize()));
 
+  std::string serialized_top_origin =
+      ToJSONString(params.top_origin.Serialize());
   if (params.is_cross_origin_iframe) {
     ret.append(R"(,"crossOrigin":true)");
+    ret.append(R"(,"topOrigin":)");
+    ret.append(serialized_top_origin);
   } else {
     ret.append(R"(,"crossOrigin":false)");
   }
@@ -118,7 +124,7 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
     ret.append(ToJSONString(params.payment_rp));
 
     ret.append(R"(,"topOrigin":)");
-    ret.append(ToJSONString(params.payment_top_origin));
+    ret.append(serialized_top_origin);
 
     if (params.payment_options->payee_name.has_value()) {
       ret.append(R"(,"payeeName":)");

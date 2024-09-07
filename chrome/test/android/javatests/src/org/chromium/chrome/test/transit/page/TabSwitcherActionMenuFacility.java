@@ -86,12 +86,9 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
      *
      * <p>This happens when there are other tabs in the same TabModel.
      */
-    public PageStation selectCloseTabAndDisplayAnotherTab() {
-        PageStation destination =
-                PageStation.newPageStationBuilder()
-                        .initFrom(mHostStation)
-                        .withIsSelectingTabs(1)
-                        .build();
+    public <T extends PageStation> T selectCloseTabAndDisplayAnotherTab(
+            PageStation.Builder<T> pageStationBuilder) {
+        T destination = pageStationBuilder.initFrom(mHostStation).withIsSelectingTabs(1).build();
 
         return selectCloseTab(destination);
     }
@@ -102,9 +99,10 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
      *
      * <p>This happens when the last incognito tab is closed but there are other regular tabs.
      */
-    public PageStation selectCloseTabAndDisplayRegularTab() {
-        PageStation destination =
-                PageStation.newPageStationBuilder()
+    public <T extends PageStation> T selectCloseTabAndDisplayRegularTab(
+            PageStation.Builder<T> pageStationBuilder) {
+        T destination =
+                pageStationBuilder
                         .withIncognito(false)
                         .withIsOpeningTabs(0)
                         .withIsSelectingTabs(1)

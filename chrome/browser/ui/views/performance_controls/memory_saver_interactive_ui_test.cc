@@ -11,6 +11,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -465,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                                             .host();
         EXPECT_TRUE(discard_exception.contains(current_site_host));
       })),
-      FlushEvents(),
+
       // Dialog's cancel button should now allow users to navigate to the
       // performance settings page
       PressButton(kMemorySaverChipElementId),
@@ -498,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       // Add site to the exceptions list
       PressButton(MemorySaverBubbleView::kMemorySaverDialogCancelButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
-      FlushEvents(),
+
       // Check that the cancel button can go to settings page
       PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
@@ -546,8 +547,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
         auto* pre_discard_resource_usage =
             performance_manager::user_tuning::UserPerformanceTuningManager::
                 PreDiscardResourceUsage::FromWebContents(web_contents);
-        pre_discard_resource_usage->SetMemoryFootprintEstimateKbForTesting(
-            135 * 1024);
+        pre_discard_resource_usage->UpdateDiscardInfo(
+            135 * 1024, LifecycleUnitDiscardReason::PROACTIVE);
       })),
       PressButton(kMemorySaverChipElementId),
       WaitForShow(
@@ -625,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverImprovedFaviconTreatmentTest,
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));
                })),
-      WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes), FlushEvents(),
+      WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes),
       Screenshot(kFirstTabFavicon,
                  /*screenshot_name=*/"NoFadeSlightlySmallerFaviconOnDiscard",
                  /*baseline_cl=*/"5493847"));

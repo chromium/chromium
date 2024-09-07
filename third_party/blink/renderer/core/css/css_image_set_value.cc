@@ -113,10 +113,9 @@ StyleImage* CSSImageSetValue::CachedImage(
 StyleImage* CSSImageSetValue::CacheImage(
     StyleImage* style_image,
     const float device_scale_factor,
-    bool is_lcp_mouseover_dispatched_recently,
     bool is_origin_clean) {
-  cached_image_ = MakeGarbageCollected<StyleImageSet>(
-      style_image, this, is_lcp_mouseover_dispatched_recently, is_origin_clean);
+  cached_image_ =
+      MakeGarbageCollected<StyleImageSet>(style_image, this, is_origin_clean);
   cached_device_scale_factor_ = device_scale_factor;
   return cached_image_.Get();
 }

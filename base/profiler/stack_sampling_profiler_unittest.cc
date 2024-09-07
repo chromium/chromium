@@ -281,7 +281,8 @@ size_t WaitForSamplingComplete(
                       return &info.get()->completed;
                     });
   // Wait for one profiler to finish.
-  return WaitableEvent::WaitMany(sampling_completed_rawptrs);
+  return WaitableEvent::WaitMany(sampling_completed_rawptrs.data(),
+                                 sampling_completed_rawptrs.size());
 }
 
 // Returns a duration that is longer than the test timeout. We would use

@@ -192,6 +192,8 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Corresponding source - dedup key query failed"/>
   <int value="31"
       label="Corresponding source - invalid randomized response rate"/>
+  <int value="32"
+      label="Corresponding source - invalid attribution scopes data"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:ReportCorruptionStatus) -->
@@ -382,12 +384,13 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="summary_buckets value invalid"/>
   <int value="41" label="event_level_epsilon value is invalid"/>
   <int value="42" label="destination_limit_priority is invalid"/>
-  <int value="43" label="attribution_scope_limit value is invalid"/>
-  <int value="44"
-      label="attribution_scope_limit is required for this configuration"/>
-  <int value="45" label="max_event_states value is invalid"/>
-  <int value="46" label="attribution_scopes value not a valid list"/>
-  <int value="47" label="attribution_scopes list value is invalid"/>
+  <int value="43" label="attribution_scopes' limit value is invalid"/>
+  <int value="44" label="attribution_scopes' limit missing"/>
+  <int value="45"
+      label="attribution_scopes' max_event_states value is invalid"/>
+  <int value="46" label="attribution_scopes not a valid dictionary"/>
+  <int value="47" label="attribution_scopes' values not a valid list"/>
+  <int value="48" label="attribution_scopes' values list value is invalid"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/source_registration_error.mojom:SourceRegistrationError) -->
@@ -475,6 +478,8 @@ chromium-metrics-reviews@google.com.
              in 2023/10."/>
   <int value="13" label="Excessive trigger state cardinality"/>
   <int value="14" label="Excessive destinations (per reporting site per day)"/>
+  <int value="15" label="Excessive scopes channel capacity"/>
+  <int value="16" label="Excessive trigger event states"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/store_source_result.mojom:StoreSourceResult) -->
@@ -580,6 +585,8 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="source-channel-capacity-limit"/>
   <int value="33" label="source-trigger-state-cardinality-limit"/>
   <int value="36" label="source-destination-per-day-rate-limit"/>
+  <int value="38" label="source-scopes-channel-capacity-limit"/>
+  <int value="39" label="source-max-event-states-limit"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/debug_types.mojom:DebugDataType) -->

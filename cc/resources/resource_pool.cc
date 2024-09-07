@@ -215,10 +215,12 @@ ResourcePool::TryAcquireResourceForPartialRaster(
   for (auto it = unused_resources_.begin(); it != unused_resources_.end();
        ++it) {
     PoolResource* resource = it->get();
-    if (resource->color_space() != raster_color_space)
-      continue;
 
     if (resource->content_id() == previous_content_id) {
+      // Skip the old resource if color space changed.
+      if (resource->color_space() != raster_color_space)
+        continue;
+
       UpdateResourceContentIdAndInvalidation(resource, new_content_id,
                                              new_invalidated_rect);
 

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+
 #include <deque>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"
-#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_test_utils.h"
 #include "dbus/bus.h"
 #include "dbus/mock_bus.h"
@@ -194,8 +196,18 @@ class TestHermesEuiccClientObserver : public HermesEuiccClient::Observer {
 
 class HermesEuiccClientTest : public HermesClientTestBase {
  public:
+  struct HistogramState {
+    size_t installation_requested_count = 0u;
+    size_t hermes_unavailable_count = 0u;
+    size_t installation_started_count = 0u;
+    size_t installation_succeeded_count = 0u;
+    size_t installation_no_response_count = 0u;
+    size_t installation_failed_count = 0u;
+  };
+
   HermesEuiccClientTest() = default;
   HermesEuiccClientTest(const HermesEuiccClientTest&) = delete;
+  HermesEuiccClientTest& operator=(const HermesEuiccClientTest&) = delete;
   ~HermesEuiccClientTest() override = default;
 
   void SetUp() override {
@@ -215,21 +227,47 @@ class HermesEuiccClientTest : public HermesClientTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void TearDown() override { HermesEuiccClient::Shutdown(); }
+
+  void CheckHistogramState(const HistogramState& histogram_state) {
+    histogram_tester_.ExpectBucketCount(
+        HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+        HermesEuiccClient::InstallationAttemptStep::kInstallationRequested,
+        histogram_state.installation_requested_count);
+    histogram_tester_.ExpectBucketCount(
+        HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+        HermesEuiccClient::InstallationAttemptStep::kHermesUnavailable,
+        histogram_state.hermes_unavailable_count);
+    histogram_tester_.ExpectBucketCount(
+        HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+        HermesEuiccClient::InstallationAttemptStep::kInstallationStarted,
+        histogram_state.installation_started_count);
+    histogram_tester_.ExpectBucketCount(
+        HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+        HermesEuiccClient::InstallationAttemptStep::kInstallationSucceeded,
+        histogram_state.installation_succeeded_count);
+    histogram_tester_.ExpectBucketCount(
+        HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+        HermesEuiccClient::InstallationAttemptStep::kInstallationNoResponse,
+        histogram_state.installation_no_response_count);
+    histogram_tester_.ExpectBucketCount(
+        HermesEuiccClient::kHermesInstallationAttemptStepsHistogram,
+        HermesEuiccClient::InstallationAttemptStep::kInstallationFailed,
+        histogram_state.installation_failed_count);
+  }
+
   int MaxInstallAttempts() { return HermesEuiccClient::kMaxInstallAttempts; }
 
   base::TimeDelta InstallRetryDelay() {
     return HermesEuiccClient::kInstallRetryDelay;
   }
 
-  void TearDown() override { HermesEuiccClient::Shutdown(); }
-
-  HermesEuiccClientTest& operator=(const HermesEuiccClientTest&) = delete;
-
  protected:
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   raw_ptr<HermesEuiccClient, DanglingUntriaged> client_;
   TestHermesEuiccClientObserver test_observer_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(HermesEuiccClientTest, TestInstallProfileWhenHermesIsDown) {
@@ -246,6 +284,9 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileWhenHermesIsDown) {
             std::move(*callback).Run(/*service_is_available=*/false);
           }));
 
+  HistogramState histogram_state;
+  CheckHistogramState(histogram_state);
+
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter response_writer(response.get());
   response_writer.AppendObjectPath(test_carrier_path);
@@ -254,9 +295,14 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileWhenHermesIsDown) {
       test_euicc_path, kTestActivationCode, kTestConfirmationCode,
       base::BindOnce(&CopyInstallResult, &install_status, &dbus_result,
                      &installed_profile_path));
+
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(install_status, HermesResponseStatus::kErrorWrongState);
   EXPECT_EQ(dbus_result, dbus::DBusResult::kErrorServiceUnknown);
+
+  histogram_state.installation_requested_count++;
+  histogram_state.hermes_unavailable_count++;
+  CheckHistogramState(histogram_state);
 }
 
 TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
@@ -288,6 +334,9 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
             std::move(*callback).Run(/*service_is_available=*/true);
           }));
 
+  HistogramState histogram_state;
+  CheckHistogramState(histogram_state);
+
   // Verify that client makes corresponding dbus method call with
   // correct arguments.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
@@ -303,6 +352,11 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
   EXPECT_EQ(dbus_result, dbus::DBusResult::kSuccess);
   EXPECT_EQ(installed_profile_path, test_carrier_path);
 
+  histogram_state.installation_requested_count++;
+  histogram_state.installation_started_count++;
+  histogram_state.installation_succeeded_count++;
+  CheckHistogramState(histogram_state);
+
   // Verify that error responses are returned properly.
   installed_profile_path = dbus::ObjectPath(kInvalidPath);
   std::unique_ptr<dbus::ErrorResponse> error_response =
@@ -317,6 +371,11 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
   EXPECT_EQ(install_status, HermesResponseStatus::kErrorInvalidActivationCode);
   EXPECT_EQ(dbus_result, dbus::DBusResult::kErrorUnknown);
   EXPECT_EQ(installed_profile_path.value(), kInvalidPath);
+
+  histogram_state.installation_requested_count++;
+  histogram_state.installation_started_count++;
+  histogram_state.installation_failed_count++;
+  CheckHistogramState(histogram_state);
 
   // Verify that dbus errors are captured properly.
   installed_profile_path = dbus::ObjectPath(kInvalidPath);
@@ -335,6 +394,11 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
   loop.Run();
   EXPECT_EQ(install_status, HermesResponseStatus::kErrorUnknownResponse);
   EXPECT_EQ(dbus_result, dbus::DBusResult::kErrorLimitsExceeded);
+
+  histogram_state.installation_requested_count++;
+  histogram_state.installation_started_count++;
+  histogram_state.installation_failed_count++;
+  CheckHistogramState(histogram_state);
 }
 
 // Hermes does not allow leading and trailing whitespace in activation codes; if provided,

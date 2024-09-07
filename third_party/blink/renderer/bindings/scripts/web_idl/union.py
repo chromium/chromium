@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
+
 from .code_generator_info import CodeGeneratorInfoMutable
 from .composition_parts import Identifier
 from .composition_parts import WithCodeGeneratorInfo
@@ -73,6 +75,8 @@ class Union(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
             self.typedefs = []
             self.sub_union_irs = []
             self.public_object = None
+            self.usage = functools.reduce(lambda usage, u: usage | u.usage,
+                                          union_types, 0)
 
         def __lt__(self, other):
             if len(self.token) == len(other.token):
@@ -149,6 +153,7 @@ class Union(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
             sorted(union_members, key=sort_key_identifier))
         self._aliasing_typedefs = tuple(
             sorted(ir.typedefs, key=sort_key_identifier))
+        self._usage = ir.usage
 
         ir.public_object = self
 
@@ -222,3 +227,7 @@ class Union(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
         aliasing_typedefs returns a list of IdlType(T1) and IdlType(T2).
         """
         return self._aliasing_typedefs
+
+    @property
+    def usage(self):
+        return self._usage

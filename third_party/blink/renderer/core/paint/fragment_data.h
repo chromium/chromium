@@ -113,7 +113,7 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
     if (!HasLocalBorderBoxProperties()) {
       return PropertyTreeState::Root();
     }
-    return rare_data_->local_border_box_properties;
+    return PropertyTreeStateOrAlias(rare_data_->local_border_box_properties);
   }
   bool HasLocalBorderBoxProperties() const {
     return rare_data_ &&
@@ -121,8 +121,7 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
   }
   void ClearLocalBorderBoxProperties() {
     if (rare_data_) {
-      rare_data_->local_border_box_properties =
-          PropertyTreeStateOrAlias::Uninitialized();
+      rare_data_->local_border_box_properties.SetUninitialized();
     }
   }
   void SetLocalBorderBoxProperties(const PropertyTreeStateOrAlias& state) {
@@ -198,8 +197,8 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
 
     // Fragment specific data.
     Member<ObjectPaintProperties> paint_properties;
-    PropertyTreeStateOrAlias local_border_box_properties =
-        PropertyTreeStateOrAlias::Uninitialized();
+    TraceablePropertyTreeStateOrAlias local_border_box_properties{
+        TraceablePropertyTreeStateOrAlias::kUninitialized};
     CullRect cull_rect_;
     CullRect contents_cull_rect_;
     UniqueObjectId unique_id = 0;

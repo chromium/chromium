@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -199,6 +200,14 @@ bool IsFetchLaterSendOnEnterBackForwardCacheEnabled() {
                                                  "send_on_enter_bfcache", true);
 }
 
+// Tells whether the FetchLater should use the "deferred-fetch" policy.
+// Defaults to false until the discussion is finalized.
+// https://github.com/WICG/pending-beacon/issues/87#issuecomment-2315624105
+bool IsFetchLaterUsePermissionsPolicyEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kFetchLaterAPI, "use_permissions_policy", false);
+}
+
 bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
   String value;
   if (!headers->Get(http_names::kLocation, value))
@@ -242,6 +251,22 @@ ResourceLoadPriority ComputeFetchLaterLoadPriority(
       params.GetRenderBlockingBehavior());
   // TODO(crbug.com/1465781): Apply kLow when IsSubframeDeprioritizationEnabled.
 }
+
+class FetchManagerResourceRequestContext final : public ResourceRequestContext {
+  STACK_ALLOCATED();
+
+ public:
+  ~FetchManagerResourceRequestContext() override = default;
+
+  // Computes the ResourceLoadPriority. This is called if the priority was not
+  // set.
+  ResourceLoadPriority ComputeLoadPriority(
+      const FetchParameters& params) override {
+    return ComputeFetchLaterLoadPriority(params);
+  }
+
+  void RecordTrace() override {}
+};
 
 }  // namespace
 
@@ -1551,7 +1576,8 @@ FetchLaterResult* FetchLaterManager::FetchLater(
   // https://w3c.github.io/webappsec-permissions-policy/#algo-is-feature-enabled
   // NOTE: The default value of True for report means that most permissions
   // policy checks will generate a violation report if the feature is disabled.
-  if (!GetExecutionContext()->IsFeatureEnabled(
+  if (IsFetchLaterUsePermissionsPolicyEnabled() &&
+      !GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kDeferredFetch,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(
@@ -1778,12 +1804,28 @@ FetchLaterManager::PrepareNetworkRequest(
   FetchParameters params(std::move(request), options);
   WebScopedVirtualTimePauser unused_virtual_time_pauser;
   params.OverrideContentType(kFetchLaterContentType);
-  if (PrepareResourceRequest(
-          kFetchLaterResourceType,
-          fetcher->GetProperties().GetFetchClientSettingsObject(), params,
-          fetcher->Context(), unused_virtual_time_pauser,
-          WTF::BindOnce(&ComputeFetchLaterLoadPriority)) != std::nullopt) {
-    return nullptr;
+  const FetchClientSettingsObject& fetch_client_settings_object =
+      fetcher->GetProperties().GetFetchClientSettingsObject();
+
+  FetchManagerResourceRequestContext resource_request_context;
+  if (!RuntimeEnabledFeatures::
+          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
+    if (PrepareResourceRequest(
+            kFetchLaterResourceType, fetch_client_settings_object, params,
+            fetcher->Context(), unused_virtual_time_pauser,
+            resource_request_context, KURL()) != std::nullopt) {
+      return nullptr;
+    }
+  } else {
+    if (PrepareResourceRequestForCacheAccess(
+            kFetchLaterResourceType, fetch_client_settings_object, KURL(),
+            resource_request_context, fetcher->Context(),
+            params) != std::nullopt) {
+      return nullptr;
+    }
+    UpgradeResourceRequestForLoaderNew(
+        kFetchLaterResourceType, params, fetcher->Context(),
+        resource_request_context, unused_virtual_time_pauser);
   }
 
   // From `ResourceFetcher::StartLoad()`:

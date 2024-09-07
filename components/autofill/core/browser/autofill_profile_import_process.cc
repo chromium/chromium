@@ -40,7 +40,7 @@ bool ShouldCountryApproximationBeRemoved(
     const std::vector<const AutofillProfile*>& existing_profiles,
     const AutofillProfileComparator& comparator) {
   auto IsMergeableWithExistingProfiles = [&](const AutofillProfile& profile) {
-    return base::ranges::any_of(existing_profiles, [&](auto* existing_profile) {
+    return std::ranges::any_of(existing_profiles, [&](auto* existing_profile) {
       return comparator.AreMergeable(profile, *existing_profile);
     });
   };
@@ -348,7 +348,7 @@ void ProfileImportProcess::MaybeSetMigrationCandidate(
   // (i.e. not only silent updates) and the `profile` is not stored in the
   // user's account already.
   if (migration_candidate || allow_only_silent_updates_ ||
-      profile.source() != AutofillProfile::Source::kLocalOrSyncable) {
+      profile.IsAccountProfile()) {
     return;
   }
   // Check the eligiblity of the user and profile.

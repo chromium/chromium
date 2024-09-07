@@ -218,3 +218,13 @@ void fct() {
 }
 
 }  // namespace templated_stuff
+
+namespace buffers_into_arrays {
+void fct() {
+  // Expected rewrite:
+  // std::array<int, 4> buf = {1, 2, 3, 4};
+  int buf[] = {1, 2, 3, 4};
+  int index = 0;
+  buf[index] = 11;
+}
+}  // namespace buffers_into_arrays

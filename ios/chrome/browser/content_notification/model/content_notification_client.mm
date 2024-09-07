@@ -20,13 +20,13 @@ ContentNotificationClient::ContentNotificationClient()
 
 ContentNotificationClient::~ContentNotificationClient() = default;
 
-void ContentNotificationClient::HandleNotificationInteraction(
+bool ContentNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   // Need to check if it is a content notification first to avoid conflicts with
   // other clients.
   if (![response.notification.request.content.categoryIdentifier
           isEqualToString:kContentNotificationFeedbackCategoryIdentifier]) {
-    return;
+    return false;
   }
   // In order to send delivered NAUs, the payload has been modified for it to be
   // processed on `HandleNotificationReception()`. Before reusing the payload,
@@ -42,8 +42,7 @@ void ContentNotificationClient::HandleNotificationInteraction(
   // object.
   NSDictionary<NSString*, id>* payload = [unprocessedPayload copy];
   ContentNotificationService* contentNotificationService =
-      ContentNotificationServiceFactory::GetForBrowserState(
-          GetLastUsedBrowserState());
+      ContentNotificationServiceFactory::GetForBrowserState(GetAnyProfile());
   ContentNotificationNAUConfiguration* config =
       [[ContentNotificationNAUConfiguration alloc] init];
   config.notification = response.notification;
@@ -55,7 +54,7 @@ void ContentNotificationClient::HandleNotificationInteraction(
         NotificationActionType::kNotificationActionTypeFeedbackClicked);
     NSDictionary<NSString*, NSString*>* feedbackPayload =
         contentNotificationService->GetFeedbackPayload(payload);
-    loadFeedbackWithPayloadAndClientId(feedbackPayload,
+    LoadFeedbackWithPayloadAndClientId(feedbackPayload,
                                        PushNotificationClientId::kContent);
   } else if ([response.actionIdentifier
                  isEqualToString:UNNotificationDefaultActionIdentifier]) {
@@ -67,11 +66,11 @@ void ContentNotificationClient::HandleNotificationInteraction(
     if (url.is_empty()) {
       base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
                                 false);
-      return;
+      return true;
     }
     base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
                               true);
-    loadUrlInNewTab(url);
+    LoadUrlInNewTab(url);
   } else if ([response.actionIdentifier
                  isEqualToString:UNNotificationDismissActionIdentifier]) {
     base::UmaHistogramBoolean("ContentNotifications.DismissAction", true);
@@ -83,14 +82,16 @@ void ContentNotificationClient::HandleNotificationInteraction(
   // TODO(crbug.com/337871560): Three way patch NAU and adding completion
   // handler.
   contentNotificationService->SendNAUForConfiguration(config);
+  return true;
 }
 
 // TODO(crbug.com/338875261): Add background refresh support.
 // Delivered NAUs are currently being sent from the push_notification_delegate,
 // and in the future they should be here once background refresh is available.
-UIBackgroundFetchResult ContentNotificationClient::HandleNotificationReception(
+std::optional<UIBackgroundFetchResult>
+ContentNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* payload) {
-  return UIBackgroundFetchResultNoData;
+  return std::nullopt;
 }
 
 NSArray<UNNotificationCategory*>*

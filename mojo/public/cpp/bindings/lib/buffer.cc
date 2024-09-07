@@ -61,8 +61,7 @@ size_t Buffer::Allocate(size_t num_bytes) {
   const size_t new_cursor = cursor_ + aligned_num_bytes;
   if (new_cursor < cursor_ || (new_cursor > size_ && !message_.is_valid())) {
     // Either we've overflowed or exceeded a fixed capacity.
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   if (new_cursor > size_) {

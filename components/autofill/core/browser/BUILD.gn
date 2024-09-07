@@ -42,12 +42,14 @@ action("regex_patterns_inl_h") {
 
   # The order of sources must be so that it matches the PatternSource enum
   # values in regex_patterns.h.
-  sources = [ "form_parsing/resources/legacy_regex_patterns.json" ]
+  sources = []
   if (use_internal_autofill_patterns) {
     sources += [
       "form_parsing/internal_resources/0_default_regex_patterns.json",
       "form_parsing/internal_resources/1_experimental_regex_patterns.json",
     ]
+  } else {
+    sources += [ "form_parsing/resources/legacy_regex_patterns.json" ]
   }
 
   script = "form_parsing/transpile_regex_patterns.py"
@@ -179,6 +181,8 @@ static_library("browser") {
     "data_model/credit_card_cloud_token_data.h",
     "data_model/data_model_utils.cc",
     "data_model/data_model_utils.h",
+    "data_model/ewallet.cc",
+    "data_model/ewallet.h",
     "data_model/form_group.cc",
     "data_model/form_group.h",
     "data_model/iban.cc",
@@ -189,10 +193,13 @@ static_library("browser") {
     "data_model/payments_metadata.h",
     "data_model/phone_number.cc",
     "data_model/phone_number.h",
+    "data_model/profile_value_source.cc",
+    "data_model/profile_value_source.h",
     "field_filling_address_util.cc",
     "field_filling_address_util.h",
     "field_filling_payments_util.cc",
     "field_filling_payments_util.h",
+    "field_filling_skip_reason.h",
     "field_type_utils.cc",
     "field_type_utils.h",
     "field_types.cc",
@@ -214,6 +221,7 @@ static_library("browser") {
     "form_parsing/address_field_parser.h",
     "form_parsing/address_field_parser_ng.cc",
     "form_parsing/address_field_parser_ng.h",
+    "form_parsing/autofill_parsing_utils.cc",
     "form_parsing/autofill_parsing_utils.h",
     "form_parsing/autofill_scanner.cc",
     "form_parsing/autofill_scanner.h",
@@ -566,6 +574,7 @@ static_library("browser") {
     "ui/region_combobox_model.h",
     "ui/suggestion.cc",
     "ui/suggestion.h",
+    "ui/suggestion_button_action.h",
     "ui/suggestion_hiding_reason.h",
     "ui/suggestion_type.cc",
     "ui/suggestion_type.h",
@@ -598,9 +607,6 @@ static_library("browser") {
     "webdata/autofill_change.h",
     "webdata/autofill_sync_metadata_table.cc",
     "webdata/autofill_sync_metadata_table.h",
-    "webdata/autofill_table_encryptor.h",
-    "webdata/autofill_table_encryptor_factory.cc",
-    "webdata/autofill_table_encryptor_factory.h",
     "webdata/autofill_table_utils.cc",
     "webdata/autofill_table_utils.h",
     "webdata/autofill_webdata_backend.h",
@@ -623,8 +629,6 @@ static_library("browser") {
     "webdata/payments/payments_autofill_table.h",
     "webdata/payments/payments_sync_bridge_util.cc",
     "webdata/payments/payments_sync_bridge_util.h",
-    "webdata/system_encryptor.cc",
-    "webdata/system_encryptor.h",
   ]
 
   sources += get_target_outputs(":regex_patterns_inl_h")
@@ -741,7 +745,6 @@ static_library("browser") {
     "//build:chromeos_buildflags",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",
-    "//components/crash/core/common:crash_key",
     "//components/device_reauth",
     "//components/feature_engagement",
     "//components/google/core/common",
@@ -753,7 +756,7 @@ static_library("browser") {
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/os_crypt/sync",
+    "//components/os_crypt/async/common",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/pref_registry",
@@ -875,6 +878,7 @@ static_library("test_support") {
     "form_filler_test_api.h",
     "form_forest_test_api.cc",
     "form_forest_test_api.h",
+    "form_parsing/regex_patterns_test_api.h",
     "form_structure_test_api.cc",
     "form_structure_test_api.h",
     "geo/alternative_state_name_map_test_utils.cc",
@@ -1008,8 +1012,7 @@ static_library("test_support") {
     "//components/feature_engagement",
     "//components/leveldb_proto",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
-    "//components/os_crypt/sync",
-    "//components/os_crypt/sync:test_support",
+    "//components/os_crypt/async/browser:test_support",
     "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
@@ -1022,6 +1025,7 @@ static_library("test_support") {
     "//components/variations:test_support",
     "//components/variations/net",
     "//components/version_info:version_info",
+    "//components/webdata/common",
     "//google_apis:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
@@ -1140,9 +1144,11 @@ source_set("unit_tests") {
     "data_model/contact_info_unittest.cc",
     "data_model/credit_card_benefit_unittest.cc",
     "data_model/credit_card_unittest.cc",
+    "data_model/ewallet_unittest.cc",
     "data_model/iban_unittest.cc",
     "data_model/payment_instrument_unittest.cc",
     "data_model/phone_number_unittest.cc",
+    "data_model/profile_value_source_unittest.cc",
     "field_filling_address_util_unittest.cc",
     "field_filling_payments_util_unittest.cc",
     "field_type_utils_unittest.cc",
@@ -1155,6 +1161,7 @@ source_set("unit_tests") {
     "form_parsing/address_field_parser_ng_unittest.cc",
     "form_parsing/address_field_parser_unittest.cc",
     "form_parsing/credit_card_field_parser_unittest.cc",
+    "form_parsing/email_field_parser_unittest.cc",
     "form_parsing/field_candidates_unittest.cc",
     "form_parsing/form_field_parser_unittest.cc",
     "form_parsing/iban_field_parser_unittest.cc",
@@ -1240,10 +1247,10 @@ source_set("unit_tests") {
     "payments/virtual_card_enroll_metrics_logger_unittest.cc",
     "payments/virtual_card_enrollment_manager_unittest.cc",
     "payments/wait_for_signal_or_timeout_unittest.cc",
+    "payments_data_manager_test_base.cc",
+    "payments_data_manager_test_base.h",
     "payments_data_manager_unittest.cc",
     "payments_suggestion_generator_unittest.cc",
-    "personal_data_manager_test_base.cc",
-    "personal_data_manager_test_base.h",
     "profile_requirement_utils_unittest.cc",
     "profile_token_quality_unittest.cc",
     "randomized_encoder_unittest.cc",
@@ -1364,8 +1371,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/os_crypt/sync",
-    "//components/os_crypt/sync:test_support",
+    "//components/os_crypt/async/browser:test_support",
     "//components/plus_addresses",
     "//components/policy/core/common",
     "//components/prefs:test_support",

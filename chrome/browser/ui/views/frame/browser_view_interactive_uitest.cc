@@ -5,6 +5,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
@@ -33,6 +34,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #endif
 
 using views::FocusManager;
@@ -452,7 +457,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
 // On Mac, voiceover treats tab modal dialogs as native windows, so setting an
 // accessible title for tab-modal dialogs is not necessary.
 #if !BUILDFLAG(IS_MAC)
-
 namespace {
 
 class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
@@ -492,5 +496,48 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
   EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
                                window_title, base::CompareCase::SENSITIVE));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
-#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using BrowserViewLockedFullscreenTestChromeOS = BrowserViewTest;
+
+IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+                       ShowExclusiveAccessBubbleWhenNotLocked) {
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
+  browser()->exclusive_access_manager()->context()->UpdateExclusiveAccessBubble(
+      {
+          .url = GURL(
+              "http://www.example.com"),  // Should be non-empty to show bubble
+          .type = ExclusiveAccessBubbleType::
+              EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
+          .force_update = true,
+      },
+      base::NullCallback());
+  EXPECT_TRUE(browser_view()->IsExclusiveAccessBubbleDisplayed());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+                       HideExclusiveAccessBubbleWhenLocked) {
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  browser()->exclusive_access_manager()->context()->UpdateExclusiveAccessBubble(
+      {.url = GURL(
+           "http://www.example.com"),  // Should be non-empty to show bubble
+       .type = ExclusiveAccessBubbleType::
+           EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
+       .force_update = true},
+      base::NullCallback());
+  EXPECT_FALSE(browser_view()->IsExclusiveAccessBubbleDisplayed());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+                       EnableImmersiveModeWhenNotLocked) {
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
+  EXPECT_TRUE(browser_view()->immersive_mode_controller()->IsEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+                       DisableImmersiveModeWhenLocked) {
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  EXPECT_FALSE(browser_view()->immersive_mode_controller()->IsEnabled());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -9,8 +9,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 component("growth") {
   sources = [
     "action_performer.h",
-    "campaigns_constants.cc",
-    "campaigns_constants.h",
+    "campaigns_logger.cc",
+    "campaigns_logger.h",
     "campaigns_manager.cc",
     "campaigns_manager.h",
     "campaigns_manager_client.h",
@@ -23,6 +23,7 @@ component("growth") {
   ]
 
   deps = [
+    ":utils",
     "//ash/constants",
     "//base",
     "//build:branding_buildflags",
@@ -43,6 +44,21 @@ component("growth") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_IMPL" ]
 }
 
+component("utils") {
+  sources = [
+    "campaigns_constants.h",
+    "campaigns_utils.cc",
+    "campaigns_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS_IMPL" ]
+}
+
 component("config_provider") {
   sources = [
     "campaigns_configuration_provider.cc",
@@ -50,6 +66,8 @@ component("config_provider") {
   ]
 
   deps = [
+    ":utils",
+    "//ash/constants",
     "//base",
     "//components/feature_engagement/public",
   ]

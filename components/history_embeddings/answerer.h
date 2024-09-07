@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 
 namespace history_embeddings {
@@ -38,20 +39,28 @@ enum class ComputeAnswerStatus {
 // Holds an answer from the model and associations to source context.
 struct AnswererResult {
   AnswererResult();
-  AnswererResult(ComputeAnswerStatus status,
-                 std::string query,
-                 optimization_guide::proto::Answer answer,
-                 std::string url,
-                 std::vector<std::string> text_directives);
+  AnswererResult(
+      ComputeAnswerStatus status,
+      std::string query,
+      optimization_guide::proto::Answer answer,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
+      std::string url,
+      std::vector<std::string> text_directives);
   AnswererResult(ComputeAnswerStatus status,
                  std::string query,
                  optimization_guide::proto::Answer answer);
-  AnswererResult(const AnswererResult&);
+  AnswererResult(AnswererResult&&);
   ~AnswererResult();
+  AnswererResult& operator=(AnswererResult&&);
 
   ComputeAnswerStatus status = ComputeAnswerStatus::UNSPECIFIED;
   std::string query;
   optimization_guide::proto::Answer answer;
+  // The partially populated v2 quality log entry. This will be dropped
+  // on destruction to avoid logging when logging is disabled. If logging
+  // is enabled, then it will be taken from here by
+  // HistoryEmbeddingsService::SendQualityLog and then logged via destruction.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry;
   // URL source of the answer.
   std::string url;
   // Scroll-to-text directives constructed from cited passages.

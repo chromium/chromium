@@ -8,16 +8,14 @@
 #include <optional>
 #include <string>
 
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 namespace content {
@@ -30,6 +28,8 @@ class MockSegmentationPlatformService;
 
 namespace webapps {
 
+// TODO(b/287255120) : Also add this as a dependency on Android for building
+// test code.
 class MLPromotionBrowserTestBase : public PlatformBrowserTest {
  public:
   MLPromotionBrowserTestBase();

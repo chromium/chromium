@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/plus_address_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -22,16 +23,6 @@
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusProfile_jni.h"
 
 namespace plus_addresses {
-
-namespace {
-std::string GetOriginFromPlusProfile(const PlusProfile& profile) {
-  if (absl::holds_alternative<std::string>(profile.facet)) {
-    return absl::get<std::string>(profile.facet);
-  } else {
-    return absl::get<affiliations::FacetURI>(profile.facet).canonical_spec();
-  }
-}
-}  // namespace
 
 AllPlusAddressesBottomSheetView::AllPlusAddressesBottomSheetView(
     AllPlusAddressesBottomSheetController* controller)
@@ -58,7 +49,8 @@ void AllPlusAddressesBottomSheetView::Show(
 
   for (const PlusProfile& profile : profiles) {
     java_profiles.emplace_back(Java_PlusProfile_Constructor(
-        env, *profile.plus_address, GetOriginFromPlusProfile(profile)));
+        env, *profile.plus_address, GetOriginForDisplay(profile),
+        profile.facet.canonical_spec()));
   }
 
   base::android::ScopedJavaLocalRef<jobject> ui_info =
@@ -98,7 +90,8 @@ AllPlusAddressesBottomSheetView::GetOrCreateJavaObject() {
     return java_object_internal_;
   }
   if (!controller_->GetNativeView() ||
-      !controller_->GetNativeView()->GetWindowAndroid()) {
+      !controller_->GetNativeView()->GetWindowAndroid() ||
+      !controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject()) {
     return nullptr;  // No window attached (yet or anymore).
   }
   return java_object_internal_ = Java_AllPlusAddressesBottomSheetBridge_create(

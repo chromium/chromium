@@ -15,10 +15,10 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
-#include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_tensor_impl.h"
 
 namespace webnn {
 
@@ -90,18 +90,18 @@ void WebNNContextImpl::CreateBuffer(
     return;
   }
 
-  mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote;
+  mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
   CreateBufferImpl(
       std::move(receiver), std::move(buffer_info),
-      base::BindOnce(&WebNNContextImpl::DidCreateWebNNBufferImpl, AsWeakPtr(),
+      base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl, AsWeakPtr(),
                      std::move(callback), std::move(remote)));
 }
 
-void WebNNContextImpl::DidCreateWebNNBufferImpl(
+void WebNNContextImpl::DidCreateWebNNTensorImpl(
     mojom::WebNNContext::CreateBufferCallback callback,
-    mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote,
-    base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr> result) {
+    mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
+    base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result) {
   if (!result.has_value()) {
     std::move(callback).Run(
         mojom::CreateBufferResult::NewError(std::move(result.error())));
@@ -113,17 +113,17 @@ void WebNNContextImpl::DidCreateWebNNBufferImpl(
   std::move(callback).Run(
       mojom::CreateBufferResult::NewSuccess(std::move(success)));
 
-  // Associates a `WebNNBuffer` instance with this context so the WebNN service
+  // Associates a `WebNNTensor` instance with this context so the WebNN service
   // can access the implementation.
   buffer_impls_.emplace(*std::move(result));
 }
 
-void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
-    const blink::WebNNBufferToken& handle) {
+void WebNNContextImpl::DisconnectAndDestroyWebNNTensorImpl(
+    const blink::WebNNTensorToken& handle) {
   const auto it = buffer_impls_.find(handle);
   CHECK(it != buffer_impls_.end());
   // Upon calling erase, the handle will no longer refer to a valid
-  // `WebNNBufferImpl`.
+  // `WebNNTensorImpl`.
   buffer_impls_.erase(it);
 }
 
@@ -132,8 +132,8 @@ void WebNNContextImpl::OnLost(std::string_view message) {
   context_provider_->OnConnectionError(this);
 }
 
-base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
-    const blink::WebNNBufferToken& buffer_handle) {
+base::optional_ref<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
+    const blink::WebNNTensorToken& buffer_handle) {
   const auto it = buffer_impls_.find(buffer_handle);
   if (it == buffer_impls_.end()) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
@@ -147,6 +147,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   // Only intersects for ones that have limits defined in the specification.
   // For ones that has no limit, no need to intersect with
   // `SupportedDataTypes::All()`.
+  backend_context_properties.data_type_limits.batch_normalization_input
+      .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.logical_not_input.RetainAll(
       DataTypeConstraint::kUint8);
   backend_context_properties.data_type_limits.logical_output.RetainAll(
@@ -157,6 +159,10 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.cos_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.dequantize_linear_input.RetainAll(
+      DataTypeConstraint::kInts8);
+  backend_context_properties.data_type_limits.dequantize_linear_scale.RetainAll(
+      DataTypeConstraint::kFloat32);
   backend_context_properties.data_type_limits.erf_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.exp_input.RetainAll(
@@ -169,6 +175,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32Int8To32);
   backend_context_properties.data_type_limits.reciprocal_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.sign_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To64);
   backend_context_properties.data_type_limits.sin_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.sqrt_input.RetainAll(
@@ -179,12 +187,64 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gather_indices.RetainAll(
       DataTypeConstraint::kGatherIndicesSupportedDataTypes);
+  backend_context_properties.data_type_limits.gather_elements_indices.RetainAll(
+      DataTypeConstraint::kGatherIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.gelu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.gemm_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.gru_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.gru_cell_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.hard_sigmoid_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.hard_swish_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.instance_normalization_input
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.layer_normalization_input
+      .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.leaky_relu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.linear_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.lstm_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.lstm_cell_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.matmul_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.average_pool2d_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.l2_pool2d_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.prelu_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.quantize_linear_input.RetainAll(
+      DataTypeConstraint::kFloat32);
+  backend_context_properties.data_type_limits.quantize_linear_zero_point
+      .RetainAll(DataTypeConstraint::kInts8);
+  backend_context_properties.data_type_limits.reduce_l1_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.reduce_l2_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_log_sum_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_log_sum_exp_input
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_mean_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_product_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.reduce_sum_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.reduce_sum_square_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
   backend_context_properties.data_type_limits.relu_input.RetainAll(
       DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.resample2d_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.sigmoid_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.softmax_input.RetainAll(
@@ -192,6 +252,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.softplus_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.softsign_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.tanh_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.where_condition.RetainAll(
       DataTypeConstraint::kUint8);

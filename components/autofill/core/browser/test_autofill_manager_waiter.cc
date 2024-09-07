@@ -35,41 +35,54 @@ TestAutofillManagerWaiter::State::GetOrCreate(Event event,
   return e;
 }
 
-size_t TestAutofillManagerWaiter::State::num_pending_calls() const {
-  size_t pending_calls = 0;
-  for (const auto& [_, event_count] : events) {
-    pending_calls += event_count.num_pending_calls;
-  }
-  return pending_calls;
-}
-
-size_t TestAutofillManagerWaiter::State::num_total_calls() const {
-  size_t total_calls = 0;
-  for (const auto& [_, event_count] : events) {
-    total_calls += event_count.num_total_calls;
-  }
-  return total_calls;
-}
-
-std::string TestAutofillManagerWaiter::State::Describe() const {
-  std::vector<std::string> strings;
-  for (const auto& [_, event_count] : events) {
-    strings.push_back(base::StringPrintf("[event=%s, pending=%zu, total=%zu]",
-                                         event_count.location.function_name(),
-                                         event_count.num_pending_calls,
-                                         event_count.num_total_calls));
-  }
-  return base::JoinString(strings, ", ");
-}
-
 TestAutofillManagerWaiter::TestAutofillManagerWaiter(
     AutofillManager& manager,
-    DenseSet<Event> relevant_events)
-    : relevant_events_(relevant_events) {
+    DenseSet<Event> relevant_events,
+    base::Location location)
+    : relevant_events_(relevant_events), waiter_location_(std::move(location)) {
   observation_.Observe(&manager);
 }
 
 TestAutofillManagerWaiter::~TestAutofillManagerWaiter() = default;
+
+std::string TestAutofillManagerWaiter::DescribeState() const {
+  std::vector<std::string> events_vector;
+  events_vector.reserve(state_->events.size());
+  for (const auto& [_, event_count] : state_->events) {
+    events_vector.push_back(base::StringPrintf(
+        "%s{num_before=%zu, num_after=%zu}",
+        event_count.location.function_name(), event_count.num_before_events,
+        event_count.num_after_events));
+  }
+  return base::StringPrintf(
+      "TestAutofillManagerWaiter created at %s for %zu relevant events has "
+      "seen events [%s] is %stimed out",
+      waiter_location_.ToString().c_str(), state_->num_expected_relevant_events,
+      base::JoinString(events_vector, ", ").c_str(),
+      state_->timed_out ? "" : "not ");
+}
+
+size_t TestAutofillManagerWaiter::num_pending_events() const {
+  size_t events = 0;
+  for (const auto& [event, event_count] : state_->events) {
+    CHECK_GE(event_count.num_before_events, event_count.num_after_events)
+        << DescribeState();
+    events += event_count.num_before_events - event_count.num_after_events;
+  }
+  return events;
+}
+
+size_t TestAutofillManagerWaiter::num_completed_relevant_events() const {
+  size_t events = 0;
+  for (const auto& [event, event_count] : state_->events) {
+    if (IsRelevant(event)) {
+      CHECK_GE(event_count.num_before_events, event_count.num_after_events)
+          << DescribeState();
+      events += event_count.num_after_events;
+    }
+  }
+  return events;
+}
 
 void TestAutofillManagerWaiter::OnAutofillManagerStateChanged(
     AutofillManager& manager,
@@ -79,9 +92,14 @@ void TestAutofillManagerWaiter::OnAutofillManagerStateChanged(
     case AutofillManager::LifecycleState::kInactive:
     case AutofillManager::LifecycleState::kActive:
       break;
-    case AutofillManager::LifecycleState::kPendingReset:
-      Reset();
+    case AutofillManager::LifecycleState::kPendingReset: {
+      std::unique_ptr<State> keep_state_alive;
+      base::AutoLock lock(state_->lock);
+      // Reset the state so Wait() can be called again. Defer the destruction
+      // until after `lock` is released.
+      keep_state_alive = std::exchange(state_, std::make_unique<State>());
       break;
+    }
     case AutofillManager::LifecycleState::kPendingDeletion:
       observation_.Reset();
       break;
@@ -90,31 +108,51 @@ void TestAutofillManagerWaiter::OnAutofillManagerStateChanged(
 
 void TestAutofillManagerWaiter::OnBeforeLanguageDetermined(
     AutofillManager& manager) {
-  Increment(Event::kLanguageDetermined);
+  OnBefore(Event::kLanguageDetermined);
 }
 
 void TestAutofillManagerWaiter::OnAfterLanguageDetermined(
     AutofillManager& manager) {
-  Decrement(Event::kLanguageDetermined);
+  OnAfter(Event::kLanguageDetermined);
 }
 
 void TestAutofillManagerWaiter::OnBeforeFormsSeen(
     AutofillManager& manager,
-    base::span<const FormGlobalId> forms) {
-  Increment(Event::kFormsSeen);
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
+  OnBefore(Event::kFormsSeen);
 }
 
 void TestAutofillManagerWaiter::OnAfterFormsSeen(
     AutofillManager& manager,
-    base::span<const FormGlobalId> forms) {
-  Decrement(Event::kFormsSeen);
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
+  OnAfter(Event::kFormsSeen);
+}
+
+void TestAutofillManagerWaiter::OnBeforeCaretMovedInFormField(
+    AutofillManager& manager,
+    const FormGlobalId& form,
+    const FieldGlobalId& field_id,
+    const std::u16string& selection,
+    const gfx::Rect& caret_bounds) {
+  OnBefore(Event::kCaretMovedInFormField);
+}
+
+void TestAutofillManagerWaiter::OnAfterCaretMovedInFormField(
+    AutofillManager& manager,
+    const FormGlobalId& form,
+    const FieldGlobalId& field_id,
+    const std::u16string& selection,
+    const gfx::Rect& caret_bounds) {
+  OnAfter(Event::kCaretMovedInFormField);
 }
 
 void TestAutofillManagerWaiter::OnBeforeTextFieldDidChange(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  Increment(Event::kTextFieldDidChange);
+  OnBefore(Event::kTextFieldDidChange);
 }
 
 void TestAutofillManagerWaiter::OnAfterTextFieldDidChange(
@@ -122,35 +160,35 @@ void TestAutofillManagerWaiter::OnAfterTextFieldDidChange(
     FormGlobalId form,
     FieldGlobalId field,
     const std::u16string& text_value) {
-  Decrement(Event::kTextFieldDidChange);
+  OnAfter(Event::kTextFieldDidChange);
 }
 
 void TestAutofillManagerWaiter::OnBeforeTextFieldDidScroll(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  Increment(Event::kTextFieldDidScroll);
+  OnBefore(Event::kTextFieldDidScroll);
 }
 
 void TestAutofillManagerWaiter::OnAfterTextFieldDidScroll(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  Decrement(Event::kTextFieldDidScroll);
+  OnAfter(Event::kTextFieldDidScroll);
 }
 
 void TestAutofillManagerWaiter::OnBeforeSelectControlDidChange(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  Increment(Event::kSelectControlDidChange);
+  OnBefore(Event::kSelectControlDidChange);
 }
 
 void TestAutofillManagerWaiter::OnAfterSelectControlDidChange(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  Decrement(Event::kSelectControlDidChange);
+  OnAfter(Event::kSelectControlDidChange);
 }
 
 void TestAutofillManagerWaiter::OnBeforeAskForValuesToFill(
@@ -158,137 +196,145 @@ void TestAutofillManagerWaiter::OnBeforeAskForValuesToFill(
     FormGlobalId form,
     FieldGlobalId field,
     const FormData& form_data) {
-  Increment(Event::kAskForValuesToFill);
+  OnBefore(Event::kAskForValuesToFill);
 }
 
 void TestAutofillManagerWaiter::OnAfterAskForValuesToFill(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  Decrement(Event::kAskForValuesToFill);
+  OnAfter(Event::kAskForValuesToFill);
+}
+
+void TestAutofillManagerWaiter::OnBeforeFocusOnFormField(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  OnBefore(Event::kFocusOnFormField);
+}
+
+void TestAutofillManagerWaiter::OnAfterFocusOnFormField(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  OnAfter(Event::kFocusOnFormField);
 }
 
 void TestAutofillManagerWaiter::OnBeforeDidFillAutofillFormData(
     AutofillManager& manager,
     FormGlobalId form) {
-  Increment(Event::kDidFillAutofillFormData);
+  OnBefore(Event::kDidFillAutofillFormData);
 }
 
 void TestAutofillManagerWaiter::OnAfterDidFillAutofillFormData(
     AutofillManager& manager,
     FormGlobalId form) {
-  Decrement(Event::kDidFillAutofillFormData);
+  OnAfter(Event::kDidFillAutofillFormData);
 }
 
 void TestAutofillManagerWaiter::OnBeforeJavaScriptChangedAutofilledValue(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  Increment(Event::kJavaScriptChangedAutofilledValue);
+  OnBefore(Event::kJavaScriptChangedAutofilledValue);
 }
 
 void TestAutofillManagerWaiter::OnAfterJavaScriptChangedAutofilledValue(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  Decrement(Event::kJavaScriptChangedAutofilledValue);
+  OnAfter(Event::kJavaScriptChangedAutofilledValue);
 }
 
 void TestAutofillManagerWaiter::OnFormSubmitted(AutofillManager& manager,
                                                 const FormData& form) {
-  Increment(Event::kFormSubmitted);
-  Decrement(Event::kFormSubmitted);
+  OnBefore(Event::kFormSubmitted);
+  OnAfter(Event::kFormSubmitted);
 }
 
-void TestAutofillManagerWaiter::Reset() {
-  // The declaration order ensures that `lock` is destroyed before `state`, so
-  // that `state_->lock` has been released at its own destruction time.
-  auto state = std::make_unique<State>();
-  base::AutoLock lock(state_->lock);
-  VLOG(1) << __func__;
-  ASSERT_EQ(state_->num_pending_calls(), 0u) << state_->Describe();
-  using std::swap;
-  swap(state_, state);
+void TestAutofillManagerWaiter::OnBeforeLoadedServerPredictions(
+    AutofillManager& manager) {
+  OnBefore(Event::kLoadedServerPredictions);
+}
+
+void TestAutofillManagerWaiter::OnAfterLoadedServerPredictions(
+    AutofillManager& manager) {
+  OnAfter(Event::kLoadedServerPredictions);
 }
 
 bool TestAutofillManagerWaiter::IsRelevant(Event event) const {
   return relevant_events_.empty() || relevant_events_.contains(event);
 }
 
-void TestAutofillManagerWaiter::Increment(Event event,
-                                          const base::Location& location) {
+void TestAutofillManagerWaiter::OnBefore(Event event,
+                                         const base::Location& location) {
   base::AutoLock lock(state_->lock);
-  if (!IsRelevant(event)) {
-    VLOG(1) << "Ignoring irrelevant event: " << __func__ << "("
-            << location.function_name() << ")";
-    return;
-  }
   if (state_->run_loop.AnyQuitCalled()) {
-    VLOG(1) << "Ignoring event because no more calls are awaited: " << __func__
-            << "(" << location.function_name() << ")";
+    VLOG(1) << "Ignoring event because there are no pending expected events: "
+            << __func__ << "(" << location.function_name() << ")";
     return;
   }
   VLOG(1) << __func__ << "(" << location.function_name() << ")";
   EventCount& e = state_->GetOrCreate(event, location);
   e.location = location;
-  ++e.num_total_calls;
-  ++e.num_pending_calls;
+  ++e.num_before_events;
 }
 
-void TestAutofillManagerWaiter::Decrement(Event event,
-                                          const base::Location& location) {
+void TestAutofillManagerWaiter::OnAfter(Event event,
+                                        const base::Location& location) {
   base::AutoLock lock(state_->lock);
-  if (!IsRelevant(event)) {
-    VLOG(1) << "Ignoring irrelevant event: " << __func__ << "("
-            << location.function_name() << ")";
-    return;
-  }
   if (state_->run_loop.AnyQuitCalled()) {
-    VLOG(1) << "Ignoring event because no more calls are awaited: " << __func__
-            << "(" << location.function_name() << ")";
+    VLOG(1) << "Ignoring event because there are no pending expected events: "
+            << __func__ << "(" << location.function_name() << ")";
     return;
   }
   VLOG(1) << __func__ << "(" << location.function_name() << ")";
   EventCount* e = state_->Get(event);
-  ASSERT_TRUE(e) << state_->Describe();
-  ASSERT_GT(e->num_pending_calls, 0u) << state_->Describe();
-  if (state_->num_awaiting_total_calls > 0)
-    --state_->num_awaiting_total_calls;
-  --e->num_pending_calls;
-  if (state_->num_pending_calls() == 0 && state_->num_awaiting_total_calls == 0)
+  ASSERT_TRUE(e) << __func__ << "(" << location.function_name()
+                 << "): " << DescribeState();
+  ++e->num_after_events;
+  ASSERT_GE(e->num_before_events, e->num_after_events) << DescribeState();
+  if (num_pending_events() == 0 &&
+      num_completed_relevant_events() >= state_->num_expected_relevant_events) {
     state_->run_loop.Quit();
+  }
 }
 
 testing::AssertionResult TestAutofillManagerWaiter::Wait(
-    size_t num_awaiting_calls,
+    size_t num_expected_relevant_events,
+    base::TimeDelta timeout,
     const base::Location& location) {
-  base::ReleasableAutoLock lock(&state_->lock);
+  // If we want to reset `state_`, it must be destroyed after `lock`.
+  std::unique_ptr<State> keep_state_alive;
+  base::AutoLock lock(state_->lock);
+
   if (state_->run_loop.AnyQuitCalled()) {
     return testing::AssertionFailure()
            << "Waiter has not been Reset() since last Wait().";
   }
-  // Some events may already have happened. Recalcultate `num_awaiting_calls`
-  // by removing the calls that are already done, which excludes the pending
-  // calls.
-  num_awaiting_calls =
-      num_awaiting_calls >
-              (state_->num_total_calls() - state_->num_pending_calls())
-          ? num_awaiting_calls -
-                (state_->num_total_calls() - state_->num_pending_calls())
-          : 0u;
-  if (state_->num_pending_calls() > 0 || num_awaiting_calls > 0) {
+
+  // Wait for pending and remaining expected events.
+  CHECK(!state_->timed_out);
+  while (!state_->timed_out &&
+         (num_pending_events() > 0 ||
+          num_completed_relevant_events() < num_expected_relevant_events)) {
     base::test::ScopedRunLoopTimeout run_loop_timeout(
-        location, timeout_,
+        location, timeout,
         base::BindRepeating(
-            [](State* state) {
-              state->timed_out = true;
-              return state->Describe();
+            [](TestAutofillManagerWaiter& waiter) {
+              waiter.state_->timed_out = true;
+              return waiter.DescribeState();
             },
-            base::Unretained(state_.get())));
-    state_->num_awaiting_total_calls = num_awaiting_calls;
-    lock.Release();
+            std::ref(*this)));
+    state_->num_expected_relevant_events = num_expected_relevant_events;
+    base::AutoUnlock unlock(state_->lock);
     state_->run_loop.Run();
   }
+  CHECK(state_->timed_out || num_pending_events() == 0u) << DescribeState();
+
+  // Reset the state so Wait() can be called again. Defer the destruction until
+  // after `lock` is released.
+  keep_state_alive = std::exchange(state_, std::make_unique<State>());
   return !state_->timed_out ? testing::AssertionSuccess()
                             : testing::AssertionFailure() << "Waiter timed out";
 }
@@ -347,8 +393,10 @@ const FormStructure* WaitForMatchingForm(
       }
     }
 
-    void OnAfterFormsSeen(AutofillManager& manager,
-                          base::span<const FormGlobalId> forms) override {
+    void OnAfterFormsSeen(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> updated_forms,
+        base::span<const FormGlobalId> removed_forms) override {
       DCHECK_EQ(&manager, manager_.get());
       if (const auto* form = FindForm()) {
         matching_form_ = form;
@@ -373,5 +421,13 @@ const FormStructure* WaitForMatchingForm(
   };
   return Waiter(manager, std::move(pred)).Wait(timeout, location);
 }
+
+TestAutofillManagerSingleEventWaiter::TestAutofillManagerSingleEventWaiter(
+    TestAutofillManagerSingleEventWaiter&&) = default;
+TestAutofillManagerSingleEventWaiter&
+TestAutofillManagerSingleEventWaiter::operator=(
+    TestAutofillManagerSingleEventWaiter&&) = default;
+TestAutofillManagerSingleEventWaiter::~TestAutofillManagerSingleEventWaiter() =
+    default;
 
 }  // namespace autofill

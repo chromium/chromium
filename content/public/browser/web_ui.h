@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "content/public/common/bindings_policy.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -74,8 +75,8 @@ class CONTENT_EXPORT WebUI {
 
   // Allows a controller to override the BindingsPolicy that should be enabled
   // for this page.
-  virtual int GetBindings() = 0;
-  virtual void SetBindings(int bindings) = 0;
+  virtual BindingsPolicySet GetBindings() = 0;
+  virtual void SetBindings(BindingsPolicySet bindings) = 0;
 
   // Allows a scheme to be requested which is provided by the WebUIController.
   virtual const std::vector<std::string>& GetRequestableSchemes() = 0;
@@ -121,7 +122,9 @@ class CONTENT_EXPORT WebUI {
   //
   // All function names in WebUI must consist of only ASCII characters.
   // There are variants for calls with more arguments.
-  virtual void CallJavascriptFunctionUnsafe(std::string_view function_name) = 0;
+  void CallJavascriptFunctionUnsafe(std::string_view function_name) {
+    CallJavascriptFunctionUnsafe(function_name, {});
+  }
 
   virtual void CallJavascriptFunctionUnsafe(
       std::string_view function_name,

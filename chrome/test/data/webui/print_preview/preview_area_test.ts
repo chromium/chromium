@@ -8,7 +8,6 @@ import {Destination, DestinationOrigin, Error, Margins, MeasurementSystem, Measu
 // clang-format off
 import {PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
 // clang-format on
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -73,18 +72,6 @@ suite('PreviewAreaTest', function() {
 
   /** Validate some preview area state transitions work as expected. */
   test('StateChanges', function() {
-    // <if expr="is_chromeos">
-    // TODO(b/289091283): Update to only run test for "not is_chromeos" as part
-    // of flag clean up. For ChromeOS, the error state change on
-    // `INVALID_PRINTER` event will display the preview-area-message when the
-    // printer setup assistance flag is off.
-    previewArea.remove();
-    loadTimeData.overrideValues({
-      isPrintPreviewSetupAssistanceEnabled: false,
-    });
-    setupPreviewElement();
-    // </if>
-
     // Simulate starting the preview.
     const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
     previewArea.state = State.READY;
@@ -130,12 +117,6 @@ suite('PreviewAreaTest', function() {
    * Printer Setup Assistance flag enabled.
    */
   test('StateChangesPrinterSetupCros', function() {
-    previewArea.remove();
-    loadTimeData.overrideValues({
-      isPrintPreviewSetupAssistanceEnabled: true,
-    });
-    setupPreviewElement();
-
     // Simulate starting the preview.
     const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
     previewArea.state = State.READY;
@@ -181,12 +162,6 @@ suite('PreviewAreaTest', function() {
   // Verify correct metric is triggered when launch printer settings button
   // is pressed from preview-area error state.
   test('ManagePrinterMetricsCros', function() {
-    previewArea.remove();
-    loadTimeData.overrideValues({
-      isPrintPreviewSetupAssistanceEnabled: true,
-    });
-    setupPreviewElement();
-
     // Simulate starting the preview.
     const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
     previewArea.state = State.READY;

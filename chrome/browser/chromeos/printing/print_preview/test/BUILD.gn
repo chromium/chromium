@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_print_preview_crosapi.cc",
+    "mock_print_preview_crosapi.h",
+    "scoped_print_preview_webcontents_manager_for_testing.cc",
+    "scoped_print_preview_webcontents_manager_for_testing.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/chromeos/printing/print_preview",
+    "//chromeos/crosapi/mojom",
+    "//components/printing/common:mojo_interfaces",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+  ]
+}

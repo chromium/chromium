@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -40,9 +41,11 @@ class AITextSessionFactory : public GarbageCollected<AITextSessionFactory>,
 
   void Trace(Visitor* visitor) const override;
 
-  void CanCreateTextSession(CanCreateTextSessionCallback callback);
+  void CanCreateTextSession(AIMetrics::AISessionType session_type,
+                            CanCreateTextSessionCallback callback);
   // The sampling_params can be nullptr and the default value will be used.
   void CreateTextSession(
+      AIMetrics::AISessionType session_type,
       mojom::blink::AITextSessionSamplingParamsPtr sampling_params,
       const WTF::String& system_prompt,
       CreateTextSessionCallback callback);

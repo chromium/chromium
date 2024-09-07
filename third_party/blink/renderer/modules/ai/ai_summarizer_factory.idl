@@ -10,6 +10,24 @@
 ]
 interface AISummarizerCapabilities {
   readonly attribute AICapabilityAvailability available;
+
+  AICapabilityAvailability supportsType(AISummarizerType type);
+  AICapabilityAvailability supportsFormat(AISummarizerFormat format);
+  AICapabilityAvailability supportsLength(AISummarizerLength length);
+
+  AICapabilityAvailability supportsInputLanguage(DOMString languageTag);
+};
+
+enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };
+enum AISummarizerFormat { "plain-text", "markdown" };
+enum AISummarizerLength { "short", "medium", "long" };
+
+dictionary AISummarizerCreateOptions {
+  AbortSignal signal;
+  DOMString sharedContext;
+  AISummarizerType type = "key-points";
+  AISummarizerFormat format = "markdown";
+  AISummarizerLength length = "medium";
 };
 
 [
@@ -22,7 +40,7 @@ interface AISummarizerFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AISummarizer> create();
+  Promise<AISummarizer> create(optional AISummarizerCreateOptions options = {});
   [
     Measure,
     CallWith=ScriptState,

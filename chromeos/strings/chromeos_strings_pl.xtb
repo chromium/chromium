@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1300115153046603471">APN jest typu domyślnego i: <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Konwertuj</translation>
 <translation id="1304014921944666344">Data utworzenia</translation>
 <translation id="1308754910631152188">Aktualizuję (ukończone <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
@@ -75,8 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Dopasuj do obszaru skanowania</translation>
 <translation id="1343442362630695901">słone jezioro</translation>
+<translation id="1348657754632799065">Pasek nagrywania</translation>
 <translation id="1367951781824006909">Wybierz plik</translation>
 <translation id="1371650399987522809">Opinia o tapecie wygenerowanej z wykorzystaniem AI od Google</translation>
+<translation id="1374385338586507108">Zdefiniuj</translation>
+<translation id="1383876407941801731">Szukaj</translation>
 <translation id="1387854245479784695">To łączne obciążenie wszystkich rdzeni</translation>
 <translation id="1393206549145430405">zamka</translation>
 <translation id="1394661041439318933">Poziom naładowania baterii obudowy urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -96,6 +100,7 @@
 <translation id="1449035143498573192">Otwórz w wyszukiwarce Google</translation>
 <translation id="1451536289672181509">Urządzenie to klawiatura.</translation>
 <translation id="1452939186874918380">parasole</translation>
+<translation id="145402479967797468">Elementy sterujące odtwarzaniem</translation>
 <translation id="1459693405370120464">Pogoda</translation>
 <translation id="1463084054301832672">domek wiejski</translation>
 <translation id="1468664791493211953">Okazje</translation>
@@ -261,6 +266,7 @@
 <translation id="2212733584906323460">Rozwiązanie nazwy</translation>
 <translation id="2215920961700443347">Brak internetu. Połącz się z internetem i spróbuj ponownie.</translation>
 <translation id="2217935453350629363">Obecna szybkość</translation>
+<translation id="221994303562837085">Zatrzymaj nagrywanie</translation>
 <translation id="2224337661447660594">Brak internetu</translation>
 <translation id="222447520299472966">Musi być wybrany co najmniej jeden album z Galerii sztuki</translation>
 <translation id="2230005943220647148">Stopnie Celsjusza</translation>
@@ -268,6 +274,7 @@
 <translation id="2230624078793142213">Utwórz więcej</translation>
 <translation id="2236746079896696523">Przełączenie podświetlenia klawiatury</translation>
 <translation id="2240366984605217732">Przełącznik układu</translation>
+<translation id="2242381852034179222">Tą funkcją zarządzają administratorzy</translation>
 <translation id="2244834438220057800">zielony</translation>
 <translation id="225692081236532131">Stan aktywacji</translation>
 <translation id="2267285889943769271">Dodaj zrzut ekranu</translation>
@@ -311,6 +318,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opalu</translation>
 <translation id="2505327257735685095">Odśwież bieżący obraz tapety</translation>
+<translation id="2507491234071975894">Głośnik</translation>
 <translation id="2512979179176933762">pokaż okna</translation>
 <translation id="2513396635448525189">Obraz użytkownika</translation>
 <translation id="2521835766824839541">poprzedni utwór</translation>
@@ -321,6 +329,7 @@
 <translation id="2533048460510040082">Sugerowane materiały pomocy</translation>
 <translation id="2536159006530886390">Nie udało się połączyć z internetem.</translation>
 <translation id="2538719227433767804">jeszcze <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Lista nagrań dźwiękowych</translation>
 <translation id="2561093647892030937">cytryny</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2575552334616524665">Możesz włączyć tę funkcję w Ustawieniach lub w menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -352,6 +361,7 @@
 <translation id="2715723665057727940">rzekę</translation>
 <translation id="2717139507051041123">Włącz ciemny tryb kolorów</translation>
 <translation id="2728460467788544679">Wyczyść całą historię drukowania</translation>
+<translation id="2731700343119398978">Czekaj...</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Udostępniane</translation>
 <translation id="2751739896257479635">Uwierzytelnianie EAP Phase 2</translation>
@@ -366,6 +376,7 @@
 <translation id="2855718259207180827">wełny</translation>
 <translation id="2859243502336719778">Krytyczna aktualizacja</translation>
 <translation id="2860473693272905224">Umieść następną stronę na skanerze</translation>
+<translation id="286265581261662583">Kliknij prawym przyciskiem lub naciśnij i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="2873483161362553159">Nawigacja w przeglądarce</translation>
 <translation id="2874939134665556319">Poprzedni utwór</translation>
@@ -406,6 +417,7 @@
 <translation id="3140130301071865159">śnieg</translation>
 <translation id="3146655726035122603">Tylko na urządzeniu <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
+<translation id="3156511682997763015">Przewiń do przodu o 10 sekund</translation>
 <translation id="3156846309055100599">Skanuję stronę <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Wykryto portal przechwytujący</translation>
 <translation id="3160172848211257835">Wyślij <ph name="BEGIN_LINK1" />informacje o systemie i aplikacjach<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />dane<ph name="END_LINK2" /></translation>
@@ -435,6 +447,7 @@
 <translation id="3303855915957856445">Brak wyników wyszukiwania</translation>
 <translation id="3305294846493618482">więcej</translation>
 <translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
+<translation id="3321030238473337787">Szybkość odtwarzania</translation>
 <translation id="3328783797891415197">Test w toku</translation>
 <translation id="3340011300870565703">Poziom naładowania baterii prawej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ustawienia</translation>
@@ -463,7 +476,6 @@
 <translation id="346423161771747987">Prąd</translation>
 <translation id="346539236881580388">Zrób ponownie</translation>
 <translation id="3484914941826596830">Podczas aktualizowania oprogramowania układowego nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Aktualizowanie może potrwać kilka minut i w tym czasie urządzenie zewnętrzne może nie działać.</translation>
-<translation id="3485555238092220889">działanie związane z ułatwieniami dostępu</translation>
 <translation id="3486220673238053218">definicja</translation>
 <translation id="3487866404496702283">Opinia na temat funkcji mahi</translation>
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
@@ -512,6 +524,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (liczba opinii: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Brak połączenia</translation>
 <translation id="3749289110408117711">Nazwa pliku</translation>
+<translation id="3767737419527918477">Wyszukaj pliki nagrań</translation>
 <translation id="3771294271822695279">Pliki wideo</translation>
 <translation id="3780740315729837296">Przypisz klawisz na klawiaturze</translation>
 <translation id="3784455785234192852">Zablokuj</translation>
@@ -672,6 +685,7 @@
 <translation id="4562494484721939086">Brak usługi</translation>
 <translation id="4570558255126759859">Pobrać model Gemini, aby podsumowywać nagrania?</translation>
 <translation id="4573777384450697571">Niepowodzenie – certyfikat wygasł</translation>
+<translation id="4575450106703099687">opcje ułatwień dostępu</translation>
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4594021849294327751">Utwórz transkrypcję</translation>
@@ -794,6 +808,7 @@
 <translation id="5223226274641517059">Transkrypcje na żywo będą wyświetlane podczas nagrywania. W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation>
 <translation id="5226879510707344687">Eksportuj transkrypcję</translation>
 <translation id="5227902338748591677">Harmonogram ciemnego motywu</translation>
+<translation id="5229104491259541281">Przekonwertuj „<ph name="QUERY" />”</translation>
 <translation id="5229344016299762883">Zamknij tryb pełnego ekranu</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” przy każdym logowaniu.}=2{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze 1 przy każdym logowaniu.}few{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze # przy każdym logowaniu.}many{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze # przy każdym logowaniu.}other{Administrator skonfigurował automatyczne uruchamianie aplikacji „<ph name="APP_NAME" />” i jeszcze # przy każdym logowaniu.}}</translation>
@@ -884,7 +899,9 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Przycisk edytowania elementu <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Zaktualizuj: <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Użycie danych zostało zresetowane</translation>
 <translation id="574392208103952083">Średni</translation>
+<translation id="5744175046705638478">Przetłumacz „<ph name="QUERY" />”</translation>
 <translation id="5757187557809630523">następny utwór</translation>
 <translation id="5760715441271661976">Stan portalu</translation>
 <translation id="5763838252932650682">Uruchamiam ponownie i aktualizuję aplikację <ph name="APP_NAME" /></translation>
@@ -893,6 +910,7 @@
 <translation id="57838592816432529">Wycisz</translation>
 <translation id="5784136236926853061">Duże opóźnienie HTTP</translation>
 <translation id="5790391387506209808">lapis-luzuli</translation>
+<translation id="5810692306010756935">Ukończenie szkoły</translation>
 <translation id="5816802250591013230">Brak przypisanego skrótu</translation>
 <translation id="5826644637650799838">Informacje o grafice</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
@@ -931,6 +949,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Nie pokazuj ponownie</translation>
 <translation id="5975130252842127517">koralowy</translation>
+<translation id="5982621672636444458">Opcje sortowania</translation>
 <translation id="5984145644188835034">Domyślna tapeta</translation>
 <translation id="5996832681196460718">jedwabiu</translation>
 <translation id="6017514345406065928">Zielony</translation>
@@ -947,7 +966,6 @@
 <translation id="6058625436358447366">Aby zakończyć, wpisz stare i nowe hasło</translation>
 <translation id="6061772781719867950">nieudane żądania HTTPS</translation>
 <translation id="6073292342939316679">zmniejsz jasność klawiatury</translation>
-<translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
 <translation id="6075872808778243331">(Android) Opóźnienie HTTP</translation>
 <translation id="6078323886959318429">Dodaj skrót</translation>
 <translation id="6091080061796993741">żółty</translation>
@@ -987,6 +1005,7 @@
 <translation id="6275224645089671689">Strzałka w prawo</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Podaj definicję słowa „<ph name="QUERY" />”</translation>
 <translation id="6283581480003247988">niebieskich i fioletowych</translation>
 <translation id="6284632978374966585">Włącz ciemny motyw</translation>
 <translation id="6285260286443238386">Eksportuj nagranie</translation>
@@ -1105,6 +1124,7 @@
 <translation id="6798678288485555829">Nawigacja po tekście</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
+<translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
 <translation id="6862416241246624313">Opinia przesłana</translation>
 <translation id="6866732840889595464">stokrotka</translation>
@@ -1315,6 +1335,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ dostawcy</translation>
 <translation id="7882501334836096755">Klucz publiczny</translation>
+<translation id="7889966925761734854">Szukaj</translation>
 <translation id="78957024357676568">w lewo</translation>
 <translation id="7897043345768902965">chodnik</translation>
 <translation id="7902285181767404769">Wyciszaj powiadomienia podczas nagrywania</translation>
@@ -1352,6 +1373,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8082366717211101304">Nie udało się znaleźć DNS w aplikacjach na Androida</translation>
 <translation id="8082644724189923105">strefa klawiatury</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
+<translation id="8088963492174775412">Naciśnij, aby nagrywać</translation>
 <translation id="8094062939584182041">Zezwalaj Google na wysyłanie e-maili dotyczących tego problemu</translation>
 <translation id="8104083085214006426">Używasz niezabezpieczonej sieci otwartej</translation>
 <translation id="811820734797650957">(Android) Brama reaguje na ping</translation>

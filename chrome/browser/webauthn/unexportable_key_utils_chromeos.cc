@@ -7,10 +7,14 @@
 #include <cstdint>
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
+#include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
 #include "ui/aura/window.h"
@@ -39,7 +43,6 @@ class UserVerifyingSigningKeyCros : public crypto::UserVerifyingSigningKey {
 
   void Sign(base::span<const uint8_t> data,
             UserVerifyingKeySignatureCallback callback) override {
-    CHECK(config_.dialog_controller);
     CHECK(config_.window);
     VerifyUser(base::BindOnce(
         &UserVerifyingSigningKeyCros::DoSign, weak_factory_.GetWeakPtr(),
@@ -56,8 +59,25 @@ class UserVerifyingSigningKeyCros : public crypto::UserVerifyingSigningKey {
 
  private:
   void VerifyUser(base::OnceCallback<void(bool)> callback) {
-    config_.dialog_controller->ShowAuthenticationDialog(
-        config_.window, config_.rp_id, std::move(callback));
+    auto visitor = base::Overloaded(
+        // Legacy code path.
+        [&](raw_ptr<ash::WebAuthNDialogController> controller) {
+          CHECK(controller);
+          controller->ShowAuthenticationDialog(config_.window, config_.rp_id,
+                                               std::move(callback));
+        },
+
+        // New code path.
+        [&](raw_ptr<ash::ActiveSessionAuthController> controller) {
+          CHECK(controller);
+          auto webauthn_auth_request =
+              std::make_unique<ash::WebAuthNAuthRequest>(config_.rp_id,
+                                                         std::move(callback));
+
+          controller->ShowAuthDialog(std::move(webauthn_auth_request));
+        });
+
+    std::visit(visitor, config_.dialog_controller);
   }
 
   void DoSign(std::vector<uint8_t> data,
@@ -134,6 +154,24 @@ class UserVerifyingKeyProviderCros : public crypto::UserVerifyingKeyProvider {
 };
 
 }  // namespace
+
+UserVerifyingKeyProviderConfigChromeos::UserVerifyingKeyProviderConfigChromeos(
+    AuthDialogController dialog_controller,
+    aura::Window* window,
+    std::string rp_id)
+    : dialog_controller(dialog_controller),
+      window(window),
+      rp_id(std::move(rp_id)) {}
+
+UserVerifyingKeyProviderConfigChromeos::
+    ~UserVerifyingKeyProviderConfigChromeos() = default;
+
+UserVerifyingKeyProviderConfigChromeos::UserVerifyingKeyProviderConfigChromeos(
+    const UserVerifyingKeyProviderConfigChromeos&) = default;
+
+UserVerifyingKeyProviderConfigChromeos&
+UserVerifyingKeyProviderConfigChromeos::operator=(
+    const UserVerifyingKeyProviderConfigChromeos&) = default;
 
 std::unique_ptr<crypto::UserVerifyingKeyProvider>
 GetWebAuthnUserVerifyingKeyProvider(

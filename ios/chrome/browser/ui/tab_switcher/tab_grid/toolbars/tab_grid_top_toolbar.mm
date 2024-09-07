@@ -61,7 +61,6 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   BOOL _undoActive;
 
   BOOL _scrolledToEdge;
-  UIView* _scrolledToTopBackgroundView;
   UIView* _scrolledBackgroundView;
   // Configures the responder following the receiver in the responder chain.
   UIResponder* _followingNextResponder;
@@ -71,6 +70,20 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   self = [super initWithFrame:frame];
   if (self) {
     [self setupViews];
+    [self setItemsForTraitCollection:self.traitCollection];
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self ]);
+      __weak TabGridTopToolbar* weakSelf = self;
+      [weakSelf
+          registerForTraitChanges:traits
+                      withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                    UITraitCollection* previousCollection) {
+                        [weakSelf
+                            setItemsForTraitCollection:weakSelf
+                                                           .traitCollection];
+                      }];
+    }
   }
   return self;
 }
@@ -212,7 +225,6 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   _scrolledToEdge = scrolledToEdge;
 
-  _scrolledToTopBackgroundView.hidden = !scrolledToEdge;
   _scrolledBackgroundView.hidden = scrolledToEdge;
   [_pageControl setScrollViewScrolledToEdge:scrolledToEdge];
 }
@@ -249,10 +261,16 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   [super didMoveToSuperview];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 17, *)) {
+    return;
+  }
   [self setItemsForTraitCollection:self.traitCollection];
 }
+#endif
 
 #pragma mark - UIBarPositioningDelegate
 
@@ -504,12 +522,6 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   AddSameConstraintsToSides(
       self, _scrolledBackgroundView,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
-
-  // Background when the content is scrolled to the top.
-  _scrolledToTopBackgroundView = CreateTabGridScrolledToEdgeBackground();
-  _scrolledToTopBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:_scrolledToTopBackgroundView];
-  AddSameConstraints(_scrolledBackgroundView, _scrolledToTopBackgroundView);
 
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.

@@ -364,15 +364,20 @@ class WPTAdapterTest(unittest.TestCase):
                 """))
         adapter = WPTAdapter.from_args(
             self.host, ['--product=headless_shell', '--no-manifest-update'])
+        adapter.set_up_derived_options()
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 3)
 
         # TODO We should not retry failures when running with '--use-upstream-wpt'
         # Consider add a unit test for that
 
+        # Create default mock smoke test file
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('TestLists', 'MacOld.txt'), "")
         adapter = WPTAdapter.from_args(
             self.host,
             ['--product=headless_shell', '--no-manifest-update', '--smoke'])
+        adapter.set_up_derived_options()
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 3)
 
@@ -380,6 +385,7 @@ class WPTAdapterTest(unittest.TestCase):
             '--product=headless_shell', '--no-manifest-update',
             'external/wpt/dir/reftest.html'
         ])
+        adapter.set_up_derived_options()
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 0)
 

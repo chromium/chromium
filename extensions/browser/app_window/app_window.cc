@@ -397,7 +397,7 @@ WebContents* AppWindow::OpenURLFromTab(
   return helper_->OpenURLFromTab(params, std::move(navigation_handle_callback));
 }
 
-void AppWindow::AddNewContents(
+content::WebContents* AppWindow::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -409,6 +409,7 @@ void AppWindow::AddNewContents(
   app_delegate_->AddNewContents(browser_context_, std::move(new_contents),
                                 target_url, disposition, window_features,
                                 user_gesture);
+  return nullptr;
 }
 
 content::KeyboardEventProcessingResult AppWindow::PreHandleKeyboardEvent(

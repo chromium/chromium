@@ -216,10 +216,13 @@ export class SeaPenRouterElement extends WithSeaPenStore {
 
   private async onCloseSeaPenIntroductionDialog_() {
     await closeSeaPenIntroductionDialog(getSeaPenProvider(), this.getStore());
-    this.focusOnFirstTemplate_();
+    // Freeform focus goes to the text input automatically.
+    if (this.relativePath_ !== SeaPenPaths.FREEFORM) {
+      this.focusOnFirstTemplate_();
+    }
   }
 
-  private onRecentImageDelete_() {
+  private onRecentTemplateImageDelete_() {
     // focus on the first template if the deleted recent image is the only image
     // or the last image of recent images list.
     this.focusOnFirstTemplate_();

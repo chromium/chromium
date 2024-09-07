@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/check.h"
@@ -177,20 +178,23 @@ void SetupFakeUpdater(UpdaterScope scope,
 
 const char kChromeAppId[] = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
 
-bool IsProcessRunning(const base::FilePath::StringType& executable_name) {
-  return base::GetProcessCount(executable_name, nullptr) != 0;
+bool IsProcessRunning(const base::FilePath::StringType& executable_name,
+                      const base::ProcessFilter* filter) {
+  return base::GetProcessCount(executable_name, filter) != 0;
 }
 
 bool WaitForProcessesToExit(const base::FilePath::StringType& executable_name,
-                            base::TimeDelta wait) {
-  return base::WaitForProcessesToExit(executable_name, wait, nullptr);
+                            base::TimeDelta wait,
+                            const base::ProcessFilter* filter) {
+  return base::WaitForProcessesToExit(executable_name, wait, filter);
 }
 
 bool KillProcesses(const base::FilePath::StringType& executable_name,
-                   int exit_code) {
+                   int exit_code,
+                   const base::ProcessFilter* filter) {
   bool result = true;
   for (const base::ProcessEntry& entry :
-       base::NamedProcessIterator(executable_name, nullptr).Snapshot()) {
+       base::NamedProcessIterator(executable_name, filter).Snapshot()) {
     base::Process process = base::Process::Open(entry.pid());
     if (!process.IsValid()) {
       PLOG(ERROR) << "Process invalid for PID: " << executable_name << ": "
@@ -215,9 +219,10 @@ bool KillProcesses(const base::FilePath::StringType& executable_name,
 }
 
 scoped_refptr<PolicyService> CreateTestPolicyService() {
-  PolicyService::PolicyManagerVector managers;
-  managers.push_back(GetDefaultValuesPolicyManager());
-  return base::MakeRefCounted<PolicyService>(std::move(managers));
+  std::vector<scoped_refptr<PolicyManagerInterface>> managers{
+      GetDefaultValuesPolicyManager()};
+  return base::MakeRefCounted<PolicyService>(std::move(managers),
+                                             /*usage_stats_enabled=*/true);
 }
 
 std::string GetTestName() {
@@ -420,15 +425,18 @@ EventHolder CreateWaitableEventForTest() {
 #endif  // BUILDFLAG(IS_WIN)
 
 const base::ProcessIterator::ProcessEntries FindProcesses(
-    const base::FilePath::StringType& executable_name) {
-  return base::NamedProcessIterator(executable_name, nullptr).Snapshot();
+    const base::FilePath::StringType& executable_name,
+    const base::ProcessFilter* filter) {
+  return base::NamedProcessIterator(executable_name, filter).Snapshot();
 }
 
-std::string PrintProcesses(const base::FilePath::StringType& executable_name) {
+std::string PrintProcesses(const base::FilePath::StringType& executable_name,
+                           const base::ProcessFilter* filter) {
   const std::string demarcation(72, '=');
   std::stringstream message;
   message << "Found processes:" << std::endl << demarcation << std::endl;
-  for (const base::ProcessEntry& entry : FindProcesses(executable_name)) {
+  for (const base::ProcessEntry& entry :
+       FindProcesses(executable_name, filter)) {
     message << entry.exe_file() << ", pid=" << entry.pid()
             << ", creation time=" << [](base::ProcessId pid) {
                  const base::Process process = base::Process::Open(pid);

@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
@@ -193,8 +194,15 @@ void FormStructure::DetermineHeuristicTypes(
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language_
           : LanguageCode();
-  ParsingContext context(client_country_, page_language, PatternSource::kLegacy,
-                         log_manager);
+  // The `PatternSource` parameter is overwritten again immediately before
+  // parsing and doesn't matter here.
+  ParsingContext context(client_country_, page_language,
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+                         PatternSource::kDefault,
+#else
+                         PatternSource::kLegacy,
+#endif
+                         GetActiveRegexFeatures(), log_manager);
 
   // The active heuristic source might not be a pattern source.
   std::optional<FieldCandidatesMap> active_predictions;
@@ -405,7 +413,7 @@ bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
     return false;
   }
 
-  bool has_text_field = base::ranges::any_of(*this, [](const auto& field) {
+  bool has_text_field = std::ranges::any_of(*this, [](const auto& field) {
     return !field->IsSelectOrSelectListElement();
   });
   if (!has_text_field) {

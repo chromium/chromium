@@ -1,15 +1,17 @@
 {
    "background": {
-      "scripts": [ "tts_extension.js" ],
-      "persistent": false
+    "service_worker": "service_worker.js"
    },
    "description": "Component extension providing speech via the Google network text-to-speech service.",
    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8GSbNUMGygqQTNDMFGIjZNcwXsHLzkNkHjWbuY37PbNdSDZ4VqlVjzbWqODSe+MjELdv5Keb51IdytnoGYXBMyqKmWpUrg+RnKvQ5ibWr4MW9pyIceOIdp9GrzC1WZGgTmZismYR3AjaIpufZ7xDdQQv+XrghPWCkdVqLN+qZDA1HU+DURznkMICiDDSH2sU0egm9UbWfS218bZqzKeQDiC3OnTPlaxcbJtKUuupIm5knjze3Wo9Ae9poTDMzKgchg0VlFCv3uqox+wlD8sjXBoyBCCK9HpImdVAF1a7jpdgiUHpPeV/26oYzM9/grltwNR3bzECQgSpyXp0eyoegwIDAQAB",
-   "manifest_version": 2,
+   "manifest_version": 3,
    "name": "Google Network Speech",
    "permissions": [
      "systemPrivate",
      "ttsEngine",
+     "offscreen"
+   ],
+  "host_permissions": [
      "https://www.google.com/"
    ],
    "tts_engine": {

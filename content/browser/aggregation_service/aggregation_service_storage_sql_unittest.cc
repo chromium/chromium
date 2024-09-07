@@ -4,6 +4,7 @@
 
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -893,10 +894,11 @@ TEST_F(AggregationServiceStorageSqlTest,
 
 TEST_F(AggregationServiceStorageSqlTest,
        ClearDataAllTimesWithFilter_OnlyRequestsSpecifiedAreDeleted) {
-  const url::Origin reporting_origins[] = {
+  const auto reporting_origins = std::to_array({
       url::Origin::Create(GURL("https://a.example")),
       url::Origin::Create(GURL("https://b.example")),
-      url::Origin::Create(GURL("https://c.example"))};
+      url::Origin::Create(GURL("https://c.example")),
+  });
 
   OpenDatabase();
 

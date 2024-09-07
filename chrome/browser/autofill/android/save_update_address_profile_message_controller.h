@@ -75,7 +75,7 @@ class SaveUpdateAddressProfileMessageController {
   bool UserSignedIn() const;
   std::u16string GetTitle();
   std::u16string GetDescription();
-  std::u16string GetSourceNotice();
+  std::u16string GetRecordTypeNotice();
   std::u16string GetPrimaryButtonText();
 
   raw_ptr<content::WebContents> web_contents_ = nullptr;

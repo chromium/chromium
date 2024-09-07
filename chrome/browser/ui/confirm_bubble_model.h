@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "url/gurl.h"
 
@@ -30,7 +31,7 @@ class ConfirmBubbleModel {
 
   // Return the label for the specified button. The default implementation
   // returns "OK" for the OK button and "Cancel" for the Cancel button.
-  virtual std::u16string GetButtonLabel(ui::DialogButton button) const;
+  virtual std::u16string GetButtonLabel(ui::mojom::DialogButton button) const;
 
   // Called when the OK button is pressed.
   virtual void Accept();

@@ -538,6 +538,62 @@ TEST_F(TouchAssociationFromPrefTest, AssociatingDeviceToNewDisplay) {
   EXPECT_TRUE(AreAssociated(displays_[3], devices_[1]));
 }
 
+TEST_F(TouchAssociationFromPrefTest, AssociateDeviceWithNoCalibrationData) {
+  test::ScopedSetInternalDisplayId set_internal(display_manager(),
+                                                displays_[1].id());
+
+  // Reassociate display with id 4 to touch device with id 3. This will
+  // bring the display to the top of the priority list.
+  touch_device_manager()->AddTouchAssociation(devices_[0], displays_[2].id());
+
+  touch_device_manager()->AssociateTouchscreens(&displays_, devices_);
+
+  EXPECT_EQ(GetTouchDeviceCount(displays_[0]), 0u);
+
+  EXPECT_EQ(GetTouchDeviceCount(displays_[1]), 1u);
+  EXPECT_TRUE(AreAssociated(displays_[1], devices_[3]));
+
+  EXPECT_EQ(GetTouchDeviceCount(displays_[2]), 2u);
+  EXPECT_TRUE(AreAssociated(displays_[2], devices_[0]));
+  EXPECT_TRUE(AreAssociated(displays_[2], devices_[2]));
+
+  EXPECT_EQ(GetTouchDeviceCount(displays_[3]), 1u);
+  EXPECT_TRUE(AreAssociated(displays_[3], devices_[1]));
+
+  auto calibration_data =
+      touch_device_manager()->GetCalibrationData(devices_[0]);
+  // Expect it to match the default calibration data (ie no calibration data)
+  // since we have not set any.
+  EXPECT_EQ(calibration_data, TouchCalibrationData());
+}
+
+// Tests that when a touch device is re-associated, the old calibration data is
+// not wiped out.
+TEST_F(TouchAssociationFromPrefTest,
+       AssociateDeviceWithPreviousCalibrationData) {
+  test::ScopedSetInternalDisplayId set_internal(display_manager(),
+                                                displays_[1].id());
+  touch_device_manager()->AddTouchCalibrationData(
+      devices_[0], displays_[2].id(),
+      TouchCalibrationData(/*point_pairs=*/{}, /*bounds=*/gfx::Size(100, 200)));
+  {
+    auto test_calibration_data =
+        touch_device_manager()->GetCalibrationData(devices_[0]);
+    EXPECT_EQ(gfx::Size(100, 200), test_calibration_data.bounds);
+  }
+  // Reassociate display with id 4 to touch device with id 3. This will
+  // bring the display to the top of the priority list.
+  touch_device_manager()->AddTouchAssociation(devices_[0], displays_[2].id());
+
+  // After updating the assosciation, the calibration data is unchanged since we
+  // only changed the association.
+  {
+    auto test_calibration_data =
+        touch_device_manager()->GetCalibrationData(devices_[0]);
+    EXPECT_EQ(gfx::Size(100, 200), test_calibration_data.bounds);
+  }
+}
+
 TEST_F(TouchAssociationFromPrefTest,
        AssociatingDeviceToNewDisplayAfterAssociation) {
   test::ScopedSetInternalDisplayId set_internal(display_manager(),

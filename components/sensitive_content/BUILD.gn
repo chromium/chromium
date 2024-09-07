@@ -2,14 +2,60 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/rules.gni")
+
 source_set("sensitive_content") {
   sources = [
     "sensitive_content_client.h",
     "sensitive_content_manager.cc",
     "sensitive_content_manager.h",
   ]
-  deps = [
+  deps = [ "//content/public/browser" ]
+  public_deps = [
+    ":features",
     "//base",
-    "//content/public/browser",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sensitive_content_manager_unittest.cc" ]
+  deps = [
+    ":sensitive_content",
+    "//base/test:test_support",
+    "//components/autofill/content/browser",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//content/test:test_support",
+    "//url",
+  ]
+}
+
+component("features") {
+  output_name = "sensitive_content_features"
+  defines = [ "IS_SENSITIVE_CONTENT_FEATURES_IMPL" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "//components/sensitive_content/features.cc" ]
+    template = "//components/sensitive_content/java_templates/SensitiveContentFeatures.java.tmpl"
+  }
+
+  # Used to expose the features to the WebView flag UI (the equivalent of
+  # chrome://flags for WebView).
+  android_library("sensitive_content_features_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }

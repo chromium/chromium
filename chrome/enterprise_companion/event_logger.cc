@@ -31,6 +31,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 #include "chrome/enterprise_companion/proto/log_request.pb.h"
@@ -47,6 +48,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace enterprise_companion {
@@ -176,13 +178,16 @@ class EventLogUploaderImpl : public EventLogUploader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(!url_loader_) << "Overlapping log requests are not permitted.";
 
+    const GURL event_logging_url =
+        GetGlobalConstants()->EnterpriseCompanionEventLoggingURL();
+
     std::unique_ptr<network::ResourceRequest> resource_request =
         std::make_unique<network::ResourceRequest>();
-    resource_request->url = GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL);
+    resource_request->url = event_logging_url;
     resource_request->request_initiator =
-        url::Origin::Create(GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL));
-    resource_request->site_for_cookies = net::SiteForCookies::FromUrl(
-        GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL));
+        url::Origin::Create(event_logging_url);
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(event_logging_url);
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
     url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                    kTrafficAnnotation);
@@ -298,8 +303,11 @@ class EventLoggerManagerImpl : public EventLoggerManager {
       events_.clear();
     }
 
+    const base::TimeDelta min_timeout =
+        GetGlobalConstants()->EventLoggerMinTimeout();
+
     if (!response_info) {
-      SetCooldown(kMinLogTransmissionCooldown);
+      SetCooldown(min_timeout);
       return;
     }
 
@@ -309,13 +317,12 @@ class EventLoggerManagerImpl : public EventLoggerManager {
       if (response_info->mime_type != "text/plain") {
         LOG(ERROR) << "Log response: " << *response_body;
       }
-      SetCooldown(kMinLogTransmissionCooldown);
+      SetCooldown(min_timeout);
       return;
     }
 
-    SetCooldown(
-        std::max(base::Milliseconds(response.next_request_wait_millis()),
-                 kMinLogTransmissionCooldown));
+    SetCooldown(std::max(
+        base::Milliseconds(response.next_request_wait_millis()), min_timeout));
   }
 
   void SetCooldown(const base::TimeDelta& cooldown) {
@@ -363,7 +370,8 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
     cookie_manager_remote_ =
         mojo::Remote(std::move(cookie_manager_pending_remote));
     cookie_manager_remote_->AddCookieChangeListener(
-        GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL), kLoggingCookieName,
+        GetGlobalConstants()->EnterpriseCompanionEventLoggingURL(),
+        kLoggingCookieName,
         cookie_listener_receiver_.BindNewPipeAndPassRemote());
     InitLoggingCookie(std::move(callback));
   }
@@ -385,6 +393,9 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
       cookie_value.resize(*bytes_read);
     }
 
+    const GURL event_logging_url =
+        GetGlobalConstants()->EnterpriseCompanionEventLoggingURL();
+
     net::CookieOptions cookie_options;
     cookie_options.set_include_httponly();
     cookie_options.set_same_site_cookie_context(
@@ -392,10 +403,10 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
             net::CookieOptions::SameSiteCookieContext::ContextType::
                 SAME_SITE_STRICT));
     url::SchemeHostPort event_logging_scheme_host_port =
-        url::SchemeHostPort(GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL));
+        url::SchemeHostPort(event_logging_url);
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateSanitizedCookie(
-            GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL), "NID", cookie_value,
+            event_logging_url, "NID", cookie_value,
             base::StrCat({".", event_logging_scheme_host_port.host()}),
             /*path=*/"/", /*creation_time=*/base::Time::Now(),
             /*expiration_time=*/base::Time::Now() + base::Days(180),
@@ -406,7 +417,7 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
 
     if (cookie->IsCanonical()) {
       cookie_manager_remote_->SetCanonicalCookie(
-          *cookie, GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL), cookie_options,
+          *cookie, event_logging_url, cookie_options,
           base::BindOnce([](net::CookieAccessResult result) {
             LOG_IF(ERROR, !result.status.IsInclude())
                 << "Failed to set logging cookie: " << result.status;

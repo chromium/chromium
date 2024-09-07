@@ -586,6 +586,8 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
       // The accessible name does not represent the entirety of the node's text
       // content, e.g. a table's caption or a figure's figcaption.
       case ax::mojom::NameFrom::kCaption:
+      // The name comes from CSS alt text.
+      case ax::mojom::NameFrom::kCssAltText:
       // The object should not have an accessible name according to ARIA 1.2.
       // If kProhibited is set, that means we calculated a name in Blink and
       // are deliberately not exposing it.

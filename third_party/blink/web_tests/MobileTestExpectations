@@ -16,34 +16,71 @@ crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_attribut
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_attributes.html?pen-right [ Failure Pass ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?mouse [ Pass Timeout ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch [ Failure Pass Timeout ]
+crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_pointerleave_after_pointercancel_touch.html [ Failure Pass ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?pen [ Failure Pass ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?touch [ Failure ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/compat/pointerevent_mouseevent_key_pressed.html [ Failure ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/compat/pointerevent_touch-action_two-finger_interaction.html [ Failure ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointer-events-none-skip-scroll-will-change-in-iframe.html [ Failure Pass ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_after_target_appended_interleaved.tentative.html?mouse [ Pass Timeout ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_after_target_appended_interleaved.tentative.html?touch [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_after_target_appended.html?touch [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_after_target_removed_interleaved.tentative.html?touch [ Failure ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_after_target_removed.html?pen [ Pass Timeout ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_after_target_removed.html?touch [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?mouse [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?mouse-nonstandard [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?mouse-right [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?mouse-right-nonstandard [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?pen [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?pen-nonstandard [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?pen-right [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?pen-right-nonstandard [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?touch [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_attributes.html?touch-nonstandard [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_change-touch-action-onpointerdown_touch.html [ Failure ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_click_during_capture.html?mouse-auxclick [ Failure ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_click_during_capture.html?mouse-click [ Failure ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_click_is_a_pointerevent.html?touch [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html [ Failure ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_movementxy.html?mouse [ Failure ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_movementxy.html?pen [ Failure ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Failure ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_pointercancel_touch.html [ Failure ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure ]
-crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-auto-css_touch.html [ Timeout ]
-crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_highest-parent-none_touch.html [ Timeout ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_pointerleave_after_pointercancel_touch.html [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_pointerout_after_pointercancel_touch.html [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_releasepointercapture_onpointercancel_touch.html [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-auto-css_touch.html [ Failure Timeout ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-button-none-test_touch.html [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-auto-child-none_touch.html [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-none_touch.html [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-pan-x-child-pan-x_touch.html [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-pan-x-child-pan-y_touch.html [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_highest-parent-none_touch.html [ Failure Timeout ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_parent-none_touch.html [ Failure Pass ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-mouse.html [ Timeout ]
-crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-down-css_touch.html [ Timeout ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-down-css_touch.html [ Failure Timeout ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-right-css_touch.html [ Failure ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Failure Timeout ]
-crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-x-pan-y_touch.html [ Timeout ]
-crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-x-pan-y-pan-y_touch.html [ Timeout ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-x-css_touch.html [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-x-pan-y_touch.html [ Failure Timeout ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-x-pan-y-pan-y_touch.html [ Failure Timeout ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-y-css_touch.html [ Skip Timeout ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-svg-none-test_touch.html [ Skip Timeout ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-table-none-test_touch.html [ Skip Timeout ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_touch-adjustment_click_target.html [ Failure ]  # Flaky output
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerlock/pointerevent_movementxy_with_pointerlock.html [ Failure ]
-crbug.com/349397104 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?mouse [ Skip Timeout ]
-crbug.com/349397104 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?pen [ Skip Timeout ]
-crbug.com/349397104 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?touch [ Failure Timeout ]
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerup_after_pointerdown_target_removed.html?touch [ Failure ]  # Flaky output
+crbug.com/349397104 [ Webview ] external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Failure ]  # Flaky output
+crbug.com/349397104 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
+crbug.com/349397104 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
+crbug.com/349397104 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?touch [ Skip Timeout ]
 crbug.com/349397104 external/wpt/pointerevents/compat/pointerevent_touch_target_after_pointerdown_target_removed.tentative.html [ Failure ]
 crbug.com/349397104 external/wpt/pointerevents/pointer-events-none-skip-scroll-in-iframe.html [ Failure Pass ]
-crbug.com/349397104 external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
+crbug.com/349397104 external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Failure Timeout ]  # Flaky output
 crbug.com/349397104 external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure ]
 crbug.com/349397104 external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html [ Failure Pass ]
 crbug.com/349397104 external/wpt/pointerevents/pointerevent_touch-action-span-none-test_touch.html [ Skip Timeout ]
@@ -91,7 +128,6 @@ crbug.com/421921 [ Webview ] external/wpt/push-api/idlharness.https.any.servicew
 
 
 # Other failing/timeout tests
-[ Android ] external/wpt/css/cssom-view/idlharness.html [ Failure ]
 [ Android ] external/wpt/visual-viewport/resize-event-order.html [ Timeout ]
 [ Android ] external/wpt/visual-viewport/viewport-resize-event-on-load-overflowing-page.html [ Failure ]
 [ Webview ] external/wpt/compat/idlharness.window.html [ Failure ]
@@ -117,3 +153,5 @@ external/wpt/webrtc/idlharness.https.window.html [ Skip Timeout ]
 [ Webview ] external/wpt/visual-viewport/viewport-scrollbars-cause-resize-in-iframe.html [ Failure Pass ]
 [ Webview ] external/wpt/webauthn/idlharness.https.window.html [ Failure Pass ]
 [ Webview ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Failure Pass ]
+[ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Failure ]  # Flaky output
+[ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Failure ]  # Flaky output

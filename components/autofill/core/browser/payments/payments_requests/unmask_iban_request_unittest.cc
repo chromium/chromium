@@ -9,14 +9,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
-
 namespace {
 
 constexpr int kBillableServiceNumber = 12345678;
 constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr int64_t kInstrumentId = 1122334455;
-
-}  // namespace
 
 class UnmaskIbanRequestTest : public testing::Test {
  public:
@@ -91,4 +88,5 @@ TEST_F(UnmaskIbanRequestTest, ParseResponse_MissingValue) {
   EXPECT_FALSE(IsResponseComplete());
 }
 
+}  // namespace
 }  // namespace autofill::payments

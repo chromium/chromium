@@ -93,6 +93,11 @@ export interface SettingsDisplayElement {
 const SettingsDisplayElementBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
+// Set the MIN_VISIBLE_PERCENT to 10%. The lowest brightness that the slider can
+// go is 5%, so the slider appears the same at 0% and 5%. Therefore, the minimum
+// visible percent should be greater than 5%.
+const MIN_VISIBLE_PERCENT = 10;
+
 export class SettingsDisplayElement extends SettingsDisplayElementBase {
   static get is() {
     return 'settings-display';
@@ -201,6 +206,13 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('listAllDisplayModes');
+        },
+      },
+
+      excludeDisplayInMirrorModeEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('excludeDisplayInMirrorModeEnabled');
         },
       },
 
@@ -323,7 +335,9 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private readonly isRevampWayfindingEnabled_: boolean;
   private isTabletMode_: boolean;
   private listAllDisplayModes_: boolean;
+  private excludeDisplayInMirrorModeEnabled_: boolean;
   private logicalResolutionText_: string;
+  private mirroringExcludedId_: string;
   private modeToParentModeMap_: Map<number, number>;
   private modeValues_: number[];
   private parentModeToRefreshRateMap_: Map<number, DropdownMenuOptionList>;
@@ -357,6 +371,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     this.displayChangedListener_ = null;
 
     this.invalidDisplayId_ = loadTimeData.getString('invalidDisplayId');
+
+    this.mirroringExcludedId_ = this.invalidDisplayId_;
 
     this.currentRoute_ = null;
 
@@ -449,7 +465,18 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Implements DisplayBrightnessSettingsObserver.OnDisplayBrightnessChanged.
    */
-  onDisplayBrightnessChanged(brightnessPercent: number): void {
+  onDisplayBrightnessChanged(
+      brightnessPercent: number, triggeredByAls: boolean): void {
+    if (triggeredByAls && brightnessPercent > 0 &&
+        brightnessPercent < MIN_VISIBLE_PERCENT) {
+      // When auto-brightness is enabled, it's likely that the automated
+      // brightness percentage will fall between 0% and 10%. To avoid confusion
+      // where the user cannot distinguish between the screen being off (0%)
+      // and low brightness levels, set the slider to a minimum visible
+      // percentage (10%).
+      this.currentInternalScreenBrightness_ = MIN_VISIBLE_PERCENT;
+      return;
+    }
     this.currentInternalScreenBrightness_ = brightnessPercent;
   }
 
@@ -532,6 +559,20 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
             this.displayLayoutFetched_(displays, layouts));
     if (this.isMirrored(displays)) {
       this.mirroringDestinationIds = displays[0].mirroringDestinationIds;
+      // If the display length is not 1, it means we are in mixed mirror mode,
+      // so we need to update mirroringExcludedId_.
+      if (displays.length !== 1) {
+        const mirroringSourceId = displays[0].mirroringSourceId;
+        this.mirroringExcludedId_ =
+            this.displays
+                .filter(
+                    display =>
+                        !this.mirroringDestinationIds.includes(display.id) &&
+                        display.id !== mirroringSourceId)[0]
+                .id;
+      } else {
+        this.mirroringExcludedId_ = this.invalidDisplayId_;
+      }
     } else {
       this.mirroringDestinationIds = [];
     }
@@ -942,6 +983,13 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   /**
+   * Returns true if external touch devices are connected a
+   */
+  private showTouchRemappingExperience_(): boolean {
+    return loadTimeData.getBoolean('enableTouchscreenMappingExperience');
+  }
+
+  /**
    * Returns true if the overscan setting should be shown for |display|.
    */
   private showOverscanSetting_(display: DisplayUnitInfo): boolean {
@@ -1040,6 +1088,21 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   isMirrored(displays: DisplayUnitInfo[]): boolean {
     return displays !== undefined && displays.length > 0 &&
         !!displays[0].mirroringSourceId;
+  }
+
+  private showExcludeInMirror_(
+      unifiedDesktopMode: boolean, displays: DisplayUnitInfo[],
+      selectedDisplay: DisplayUnitInfo): boolean {
+    if (!this.excludeDisplayInMirrorModeEnabled_ || !selectedDisplay) {
+      return false;
+    }
+    if (this.isMirrored(displays)) {
+      return selectedDisplay.id === this.mirroringExcludedId_;
+    }
+    if (displays.length < 3) {
+      return false;
+    }
+    return this.showMirror(unifiedDesktopMode, displays);
   }
 
   private isSelected_(
@@ -1192,6 +1255,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private onTouchCalibrationClick_(): void {
     getDisplayApi().showNativeTouchCalibration(this.selectedDisplay!.id);
+  }
+
+  private onTouchMappingClick_(): void {
+    this.displaySettingsProvider.startNativeTouchscreenMappingExperience();
   }
 
   /**
@@ -1420,8 +1487,43 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     (event.currentTarget as CrCheckboxElement).blur();
 
     const mirrorModeInfo: MirrorModeInfo = {
-      mode: this.isMirrored(this.displays) ? MirrorMode.OFF : MirrorMode.NORMAL,
+      mode: this.isMirrored(this.displays) ? MirrorMode.OFF :
+          this.mirroringExcludedId_ === this.invalidDisplayId_ ?
+                                             MirrorMode.NORMAL :
+                                             MirrorMode.MIXED,
     };
+    if (mirrorModeInfo.mode === MirrorMode.MIXED) {
+      const mirroredDisplay = this.displayIds.split(',').filter(
+          display => (display !== this.mirroringExcludedId_));
+      mirrorModeInfo.mirroringSourceId = mirroredDisplay[0];
+      mirrorModeInfo.mirroringDestinationIds = mirroredDisplay.slice(1);
+    }
+    this.setMirrorMode(mirrorModeInfo);
+  }
+
+  private shouldExcludeInMirror_(selectedDisplay: DisplayUnitInfo): boolean {
+    assert(this.excludeDisplayInMirrorModeEnabled_);
+    return this.mirroringExcludedId_ === selectedDisplay.id;
+  }
+
+  private onExcludeInMirrorClick_(event: Event): void {
+    assert(this.excludeDisplayInMirrorModeEnabled_);
+    (event.currentTarget as CrToggleElement).blur();
+    assertExists(this.selectedDisplay);
+    if (this.mirroringExcludedId_ === this.selectedDisplay.id) {
+      this.mirroringExcludedId_ = this.invalidDisplayId_;
+    } else {
+      this.mirroringExcludedId_ = this.selectedDisplay.id;
+    }
+    if (this.isMirrored(this.displays)) {
+      const mirrorModeInfo: MirrorModeInfo = {
+        mode: MirrorMode.NORMAL,
+      };
+      this.setMirrorMode(mirrorModeInfo);
+    }
+  }
+
+  private setMirrorMode(mirrorModeInfo: MirrorModeInfo): void {
     getDisplayApi().setMirrorMode(mirrorModeInfo).then(() => {
       const error = chrome.runtime.lastError;
       if (error) {
@@ -1430,7 +1532,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     });
     this.displaySettingsProvider.recordChangingDisplaySettings(
         DisplaySettingsType.kMirrorMode, /*value=*/ createDisplayValue({
-          mirrorModeStatus: mirrorModeInfo.mode === MirrorMode.NORMAL,
+          mirrorModeStatus: mirrorModeInfo.mode !== MirrorMode.OFF,
         }));
   }
 

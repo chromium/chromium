@@ -18,8 +18,8 @@ class MockDiscountsStorage : public DiscountsStorage {
 
   MOCK_METHOD(void,
               HandleServerDiscounts,
-              (const std::vector<std::string>& urls_to_check,
-               DiscountsMap server_results,
+              (const GURL& url,
+               std::vector<DiscountInfo> server_results,
                DiscountInfoCallback callback),
               (override));
 };

@@ -157,6 +157,11 @@
     top: 20px;
   }
 
+  #promoted wallpaper-grid-item[data-is-time-of-day-collection]::part(info-icon) {
+    right: 36px;
+    top: 20px;
+  }
+
   .tile-tag {
     background-color: var(--cros-sys-complement_variant);
     border-radius: 36px;
@@ -218,8 +223,8 @@
                   <cr-tooltip-icon
                       class="tooltip-icon"
                       icon-class="personalization:managed"
-                      tooltip-text="$i18n{managedSetting}"
-                      icon-aria-label="$i18n{managedSetting}">
+                      tooltip-text="$i18n{managedFeature}"
+                      icon-aria-label="$i18n{managedFeature}">
                   </cr-tooltip-icon>
                 </div>
               </template>
@@ -247,8 +252,8 @@
                   <cr-tooltip-icon
                       class="tooltip-icon"
                       icon-class="personalization:managed"
-                      tooltip-text="$i18n{managedSetting}"
-                      icon-aria-label="$i18n{managedSetting}">
+                      tooltip-text="$i18n{managedFeature}"
+                      icon-aria-label="$i18n{managedFeature}">
                   </cr-tooltip-icon>
                 </div>
               </template>

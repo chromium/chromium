@@ -57,7 +57,7 @@ namespace ui {
 namespace {
 struct CADisplayLinkGlobals {
   std::map<std::pair<CGDirectDisplayID, base::PlatformThreadId>,
-           std::unique_ptr<Wrapper>>
+           std::unique_ptr<CASharedState>>
       GUARDED_BY(lock) map;
 
   // The lock for updating the map.
@@ -70,11 +70,12 @@ struct CADisplayLinkGlobals {
 };
 }  // namespace
 
-// Wrapper is always accessed on the same thread.
-class Wrapper {
+// CASharedState is always accessed on the same thread.
+class CASharedState {
  public:
-  static std::unique_ptr<Wrapper> Create(CGDirectDisplayID display_id,
-                                         base::PlatformThreadId thread_id);
+  static std::unique_ptr<CASharedState> Create(
+      CGDirectDisplayID display_id,
+      base::PlatformThreadId thread_id);
 
   struct ObjCState {
     CADisplayLink* __strong display_link API_AVAILABLE(macos(14.0));
@@ -82,13 +83,13 @@ class Wrapper {
     NSScreen* ns_screen;
   };
 
-  explicit Wrapper(std::unique_ptr<ObjCState> objc_state,
-                   CGDirectDisplayID display_id,
-                   base::PlatformThreadId thread_id);
-  Wrapper(const Wrapper&) = delete;
-  Wrapper& operator=(const Wrapper&) = delete;
+  explicit CASharedState(std::unique_ptr<ObjCState> objc_state,
+                         CGDirectDisplayID display_id,
+                         base::PlatformThreadId thread_id);
+  CASharedState(const CASharedState&) = delete;
+  CASharedState& operator=(const CASharedState&) = delete;
 
-  ~Wrapper();
+  ~CASharedState();
 
   void Retain();
   void Release();
@@ -128,12 +129,13 @@ class Wrapper {
   int consecutive_vsyncs_with_no_callbacks_ = 0;
 
   std::set<VSyncCallbackMac*> callbacks_;
-  base::WeakPtrFactory<Wrapper> weak_factory_{this};
+  base::WeakPtrFactory<CASharedState> weak_factory_{this};
 };
 
 // static
-std::unique_ptr<Wrapper> Wrapper::Create(CGDirectDisplayID display_id,
-                                         base::PlatformThreadId thread_id) {
+std::unique_ptr<CASharedState> CASharedState::Create(
+    CGDirectDisplayID display_id,
+    base::PlatformThreadId thread_id) {
   if (@available(macos 14.0, *)) {
     auto objc_state = std::make_unique<ObjCState>();
     objc_state->ns_screen = GetNSScreenFromDisplayID(display_id);
@@ -163,38 +165,39 @@ std::unique_ptr<Wrapper> Wrapper::Create(CGDirectDisplayID display_id,
     [objc_state->display_link addToRunLoop:NSRunLoop.currentRunLoop
                                    forMode:NSDefaultRunLoopMode];
 
-    std::unique_ptr<Wrapper> wrapper(
-        new Wrapper(std::move(objc_state), display_id, thread_id));
+    std::unique_ptr<CASharedState> shared_state(
+        new CASharedState(std::move(objc_state), display_id, thread_id));
 
     // Set the CADisplayLinkTarget's callback to call back into the C++ code.
-    [wrapper->objc_state_->target
-        setCallback:base::BindRepeating(&Wrapper::Step,
-                                        wrapper->weak_factory_.GetWeakPtr())];
+    [shared_state->objc_state_->target
+        setCallback:base::BindRepeating(
+                        &CASharedState::Step,
+                        shared_state->weak_factory_.GetWeakPtr())];
 
-    wrapper->min_interval_ =
+    shared_state->min_interval_ =
         base::Seconds(1) *
-        wrapper->objc_state_->ns_screen.minimumRefreshInterval;
-    wrapper->max_interval_ = wrapper->min_interval_;
-    wrapper->preferred_interval_ = wrapper->min_interval_;
+        shared_state->objc_state_->ns_screen.minimumRefreshInterval;
+    shared_state->max_interval_ = shared_state->min_interval_;
+    shared_state->preferred_interval_ = shared_state->min_interval_;
 
-    return wrapper;
+    return shared_state;
   }
   return nullptr;
 }
 
-Wrapper::Wrapper(std::unique_ptr<ObjCState> objc_state,
-                 CGDirectDisplayID display_id,
-                 base::PlatformThreadId thread_id)
+CASharedState::CASharedState(std::unique_ptr<ObjCState> objc_state,
+                             CGDirectDisplayID display_id,
+                             base::PlatformThreadId thread_id)
     : display_id_(display_id), thread_id_(thread_id) {
   if (@available(macos 14.0, *)) {
     objc_state_ = std::move(objc_state);
   }
 }
 
-Wrapper::~Wrapper() {
+CASharedState::~CASharedState() {
   // We must manually invalidate the CADisplayLink as its addToRunLoop keeps
-  // strong reference to its target. Thus, releasing our wrapper won't really
-  // result in destroying the object.
+  // strong reference to its target. Thus, releasing our shared_state won't
+  // really result in destroying the object.
   if (@available(macos 14.0, *)) {
     DCHECK(objc_state_);
     DCHECK(objc_state_->display_link);
@@ -204,15 +207,15 @@ Wrapper::~Wrapper() {
   }
 }
 
-void Wrapper::Retain() {
+void CASharedState::Retain() {
   refcount_++;
 }
 
-void Wrapper::Release() {
+void CASharedState::Release() {
   DCHECK(refcount_ > 0);
   refcount_ -= 1;
 
-  // Remove this Wrapper from globals.
+  // Remove this CASharedState from globals.
   if (refcount_ == 0) {
     auto& globals = CADisplayLinkGlobals::Get();
     base::AutoLock lock(globals.lock);
@@ -223,7 +226,7 @@ void Wrapper::Release() {
     // If the reference count drops to zero, the populate `scoped_this` with
     // the std::unique_ptr holding `this`, so that it can be deleted after
     // `globals.lock` is released.
-    std::unique_ptr<Wrapper> scoped_this = std::move(found->second);
+    std::unique_ptr<CASharedState> scoped_this = std::move(found->second);
     globals.map.erase(found);
 
     // Let `scoped_this` be destroyed now that `globals.lock` is no longer held.
@@ -231,7 +234,7 @@ void Wrapper::Release() {
   }
 }
 
-void Wrapper::Step() {
+void CASharedState::Step() {
   TRACE_EVENT0("ui", "CADisplayLinkCallback");
 
   if (@available(macos 14.0, *)) {
@@ -273,7 +276,7 @@ void Wrapper::Step() {
   }
 }
 
-void Wrapper::StopDisplayLinkIfNeeded() {
+void CASharedState::StopDisplayLinkIfNeeded() {
   if (!callbacks_.empty()) {
     consecutive_vsyncs_with_no_callbacks_ = 0;
     return;
@@ -294,7 +297,7 @@ void Wrapper::StopDisplayLinkIfNeeded() {
   Stop();
 }
 
-void Wrapper::Start() {
+void CASharedState::Start() {
   if (@available(macos 14.0, *)) {
     if (!paused_) {
       return;
@@ -304,7 +307,7 @@ void Wrapper::Start() {
   }
 }
 
-void Wrapper::Stop() {
+void CASharedState::Stop() {
   if (@available(macos 14.0, *)) {
     if (paused_) {
       return;
@@ -319,7 +322,7 @@ void Wrapper::Stop() {
 
 double CADisplayLinkMac::GetRefreshRate() const {
   if (@available(macos 12.0, *)) {
-    return 1.0 / wrapper_->objc_state_->ns_screen.minimumRefreshInterval;
+    return 1.0 / shared_state_->objc_state_->ns_screen.minimumRefreshInterval;
   }
   return 0;
 }
@@ -330,11 +333,12 @@ void CADisplayLinkMac::GetRefreshIntervalRange(
     base::TimeDelta& granularity) const {
   if (@available(macos 12.0, *)) {
     min_interval = base::Seconds(1) *
-                   wrapper_->objc_state_->ns_screen.minimumRefreshInterval;
+                   shared_state_->objc_state_->ns_screen.minimumRefreshInterval;
     max_interval = base::Seconds(1) *
-                   wrapper_->objc_state_->ns_screen.maximumRefreshInterval;
-    granularity = base::Seconds(1) *
-                  wrapper_->objc_state_->ns_screen.displayUpdateGranularity;
+                   shared_state_->objc_state_->ns_screen.maximumRefreshInterval;
+    granularity =
+        base::Seconds(1) *
+        shared_state_->objc_state_->ns_screen.displayUpdateGranularity;
   }
 }
 
@@ -352,7 +356,7 @@ void CADisplayLinkMac::SetPreferredIntervalRange(
            preferred_interval >= min_interval);
 
     // The |preferred_interval| must be a supported interval if a fixed refresh
-    // rate is requested, otherwise CVDisplayLink terminates app due to uncaught
+    // rate is requested, otherwise CADisplayLink terminates app due to uncaught
     // exception 'NSInvalidArgumentException', reason: 'invalid range'.
     if (min_interval == max_interval && min_interval == preferred_interval) {
       preferred_interval = AdjustedToSupportedInterval(preferred_interval);
@@ -360,10 +364,10 @@ void CADisplayLinkMac::SetPreferredIntervalRange(
 
     base::TimeDelta ns_screen_min_interval =
         base::Seconds(1) *
-        wrapper_->objc_state_->ns_screen.minimumRefreshInterval;
+        shared_state_->objc_state_->ns_screen.minimumRefreshInterval;
     base::TimeDelta ns_screen_max_interval =
         base::Seconds(1) *
-        wrapper_->objc_state_->ns_screen.maximumRefreshInterval;
+        shared_state_->objc_state_->ns_screen.maximumRefreshInterval;
 
     // Cap the intervals to the upper bound and the lower bound.
     if (max_interval > ns_screen_max_interval) {
@@ -380,20 +384,20 @@ void CADisplayLinkMac::SetPreferredIntervalRange(
     }
 
     // No interval changes.
-    if (wrapper_->preferred_interval_ == preferred_interval &&
-        wrapper_->max_interval_ == max_interval &&
-        wrapper_->min_interval_ == min_interval) {
+    if (shared_state_->preferred_interval_ == preferred_interval &&
+        shared_state_->max_interval_ == max_interval &&
+        shared_state_->min_interval_ == min_interval) {
       return;
     }
 
-    wrapper_->min_interval_ = min_interval;
-    wrapper_->max_interval_ = max_interval;
-    wrapper_->preferred_interval_ = preferred_interval;
+    shared_state_->min_interval_ = min_interval;
+    shared_state_->max_interval_ = max_interval;
+    shared_state_->preferred_interval_ = preferred_interval;
 
     float min_refresh_rate = base::Seconds(1) / max_interval;
     float max_refresh_rate = base::Seconds(1) / min_interval;
     float preferred_refresh_rate = base::Seconds(1) / preferred_interval;
-    [wrapper_->objc_state_->display_link
+    [shared_state_->objc_state_->display_link
         setPreferredFrameRateRange:CAFrameRateRange{
                                        .minimum = min_refresh_rate,
                                        .maximum = max_refresh_rate,
@@ -442,11 +446,11 @@ scoped_refptr<CADisplayLinkMac> CADisplayLinkMac::GetForDisplayOnCurrentThread(
     return new CADisplayLinkMac(found->second.get());
   }
 
-  auto wrapper = Wrapper::Create(display_id, thread_id);
-  if (!wrapper) {
+  auto shared_state = CASharedState::Create(display_id, thread_id);
+  if (!shared_state) {
     return nullptr;
   }
-  found = globals.map.emplace(map_id, std::move(wrapper)).first;
+  found = globals.map.emplace(map_id, std::move(shared_state)).first;
 
   return new CADisplayLinkMac(found->second.get());
 }
@@ -455,19 +459,20 @@ base::TimeTicks CADisplayLinkMac::GetCurrentTime() const {
   return base::TimeTicks();
 }
 
-CADisplayLinkMac::CADisplayLinkMac(Wrapper* wrapper) : wrapper_(wrapper) {
-  wrapper_->Retain();
+CADisplayLinkMac::CADisplayLinkMac(CASharedState* shared_state)
+    : shared_state_(shared_state) {
+  shared_state_->Retain();
 }
 
 CADisplayLinkMac::~CADisplayLinkMac() {
-  // `wrapper_` may be deleted by the call to Release. Avoid dangling
-  // raw_ptr warnings by setting `wrapper_` to nullptr prior to calling
+  // `shared_state_` may be deleted by the call to Release. Avoid dangling
+  // raw_ptr warnings by setting `shared_state_` to nullptr prior to calling
   // Release.
-  Wrapper* objc_wrapper = wrapper_;
-  wrapper_ = nullptr;
+  CASharedState* shared_state = shared_state_;
+  shared_state_ = nullptr;
 
-  objc_wrapper->Release();
-  objc_wrapper = nullptr;
+  shared_state->Release();
+  shared_state = nullptr;
 }
 
 std::unique_ptr<VSyncCallbackMac> CADisplayLinkMac::RegisterCallback(
@@ -477,16 +482,16 @@ std::unique_ptr<VSyncCallbackMac> CADisplayLinkMac::RegisterCallback(
   std::unique_ptr<VSyncCallbackMac> new_callback(new VSyncCallbackMac(
       base::BindOnce(&CADisplayLinkMac::UnregisterCallback, this),
       std::move(callback), /*post_callback_to_ctor_thread=*/false));
-  wrapper_->callbacks_.insert(new_callback.get());
+  shared_state_->callbacks_.insert(new_callback.get());
 
   // Ensure that CADisplayLink is running.
-  wrapper_->Start();
+  shared_state_->Start();
 
   return new_callback;
 }
 
 void CADisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
-  wrapper_->callbacks_.erase(callback);
+  shared_state_->callbacks_.erase(callback);
 }
 
 }  // namespace ui

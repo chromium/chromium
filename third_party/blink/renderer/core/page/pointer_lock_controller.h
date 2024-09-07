@@ -61,7 +61,6 @@ class CORE_EXPORT PointerLockController final
 
   void RequestPointerLock(ScriptPromiseResolver<IDLUndefined>* resolver,
                           Element* target,
-                          ExceptionState& exception_state,
                           const PointerLockOptions* options = nullptr);
   void ExitPointerLock();
   void ElementRemoved(Element*);

@@ -123,7 +123,6 @@ class TestingBrowserProcess : public BrowserProcess {
   fingerprinting_protection_ruleset_service() override;
   BrowserProcessPlatformPart* platform_part() override;
 
-  extensions::EventRouterForwarder* extension_event_router_forwarder() override;
   NotificationUIManager* notification_ui_manager() override;
   NotificationPlatformBridge* notification_platform_bridge() override;
 #if !BUILDFLAG(IS_ANDROID)

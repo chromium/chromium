@@ -245,7 +245,6 @@
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/__init__.py
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/android_forwarder.py
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/do_nothing_forwarder.py
-../../third_party/catapult/telemetry/telemetry/internal/forwarders/forwarder_utils.py
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/fuchsia_forwarder.py
 ../../third_party/catapult/telemetry/telemetry/internal/image_processing/__init__.py
 ../../third_party/catapult/telemetry/telemetry/internal/image_processing/image_util_numpy_impl.py

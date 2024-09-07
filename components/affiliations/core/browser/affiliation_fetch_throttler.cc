@@ -122,10 +122,11 @@ void AffiliationFetchThrottler::OnBackoffDelayExpiredCallback() {
 
   // The release time might have been increased if network connectivity was lost
   // and restored while this callback was in the task queue. If so, reschedule.
-  if (exponential_backoff_->ShouldRejectRequest())
+  if (exponential_backoff_->ShouldRejectRequest()) {
     EnsureCallbackIsScheduled();
-  else
+  } else {
     state_ = delegate_->OnCanSendNetworkRequest() ? FETCH_IN_FLIGHT : IDLE;
+  }
 }
 
 void AffiliationFetchThrottler::OnConnectionChanged(

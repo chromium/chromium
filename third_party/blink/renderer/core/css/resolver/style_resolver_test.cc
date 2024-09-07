@@ -1246,11 +1246,8 @@ const CSSValue* ParseCustomProperty(Document& document,
                                     const String& value) {
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
   CSSParserLocalContext local_context;
-  auto tokens = CSSTokenizer(value).TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
 
-  return property.Parse(CSSTokenizedValue{range, value}, *context,
-                        local_context);
+  return property.Parse(value, *context, local_context);
 }
 
 }  // namespace

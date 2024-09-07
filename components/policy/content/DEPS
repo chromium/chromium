@@ -14,4 +14,7 @@ specific_include_rules = {
     "+components/sync_preferences/testing_pref_service_syncable.h",
     "+content/public/test",
   ],
+  "proceed_until_response_navigation_throttle_unittest\.cc": [
+    "+content/public/test",
+  ],
 }

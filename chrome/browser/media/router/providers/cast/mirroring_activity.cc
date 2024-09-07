@@ -355,7 +355,7 @@ MirroringActivity::MirroringActivity(
     const std::string& app_id,
     cast_channel::CastMessageHandler* message_handler,
     CastSessionTracker* session_tracker,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     const CastSinkExtraData& cast_data,
     OnStopCallback callback,
     OnSourceChangedCallback source_changed_callback)
@@ -579,7 +579,8 @@ void MirroringActivity::OnSourceChanged() {
     return;
   }
 
-  std::optional<int> frame_tree_node_id = host_->GetTabSourceId();
+  std::optional<content::FrameTreeNodeId> frame_tree_node_id =
+      host_->GetTabSourceId();
   if (!source_changed_callback_ || !frame_tree_node_id ||
       frame_tree_node_id == frame_tree_node_id_) {
     return;

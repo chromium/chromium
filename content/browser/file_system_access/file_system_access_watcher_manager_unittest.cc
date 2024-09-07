@@ -843,6 +843,45 @@ TEST_F(FileSystemAccessWatcherManagerTest, ErroredChange) {
   EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
 }
 
+TEST_F(FileSystemAccessWatcherManagerTest,
+       ErroredChangeOnBucketFileSystemWhenSourceHasLargerScopeThanObservation) {
+  ASSERT_OK_AND_ASSIGN(auto default_bucket,
+                       CreateSandboxFileSystemAndGetDefaultBucket());
+
+  auto dir_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("dir"));
+  dir_url.SetBucket(default_bucket);
+  auto sub_dir_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("dir/sub_dir"));
+  sub_dir_url.SetBucket(default_bucket);
+
+  FakeChangeSource source(
+      FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems(),
+      file_system_context_);
+  watcher_manager().RegisterSource(&source);
+  EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
+
+  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
+                                        blink::mojom::FileSystemAccessErrorPtr>>
+      get_observation_future;
+  watcher_manager().GetDirectoryObservation(
+      sub_dir_url, /*is_recursive=*/false,
+      get_observation_future.GetCallback());
+  ASSERT_TRUE(get_observation_future.Get().has_value());
+
+  ChangeAccumulator accumulator(get_observation_future.Take().value());
+  EXPECT_TRUE(
+      watcher_manager().HasObservationForTesting(accumulator.observation()));
+
+  // `accumulator` should receive this error.
+  source.Signal(dir_url, /*error=*/true);
+
+  EXPECT_THAT(accumulator.has_error(), testing::IsTrue());
+  EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
+}
+
 TEST_F(FileSystemAccessWatcherManagerTest, ChangeAtRelativePath) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("foo");
   auto dir_url = manager_->CreateFileSystemURLFromPath(

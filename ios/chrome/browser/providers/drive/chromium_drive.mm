@@ -20,6 +20,10 @@ class ChromiumDriveService final : public drive::DriveService {
       id<SystemIdentity> identity) final {
     return nullptr;
   }
+  std::unique_ptr<DriveFileDownloader> CreateFileDownloader(
+      id<SystemIdentity> identity) final {
+    return nullptr;
+  }
   std::unique_ptr<DriveList> CreateList(id<SystemIdentity> identity) final {
     return nullptr;
   }

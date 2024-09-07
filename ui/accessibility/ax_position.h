@@ -385,7 +385,7 @@ class AXPosition {
     // Use initialize without validation because this is used by ATs that
     // used outdated information to generated a selection request.
     new_position->InitializeWithoutValidation(
-        serialization.kind, ui::AXTreeID::FromString(serialization.tree_id),
+        serialization.kind, AXTreeID::FromString(serialization.tree_id),
         serialization.anchor_id, serialization.child_index,
         serialization.text_offset, serialization.affinity);
     return new_position;
@@ -4715,8 +4715,7 @@ class AXPosition {
     // child index is larger than AnchorChildCount(), which does not account
     // for them. We need to get a child count that includes extra mac nodes,
     // similar to how BrowserAccessibility::PlatformChildCount() does.
-    if (!IsValid() && IsTreePosition() &&
-        ui::IsTableLike(GetAnchor()->GetRole()) &&
+    if (!IsValid() && IsTreePosition() && IsTableLike(GetAnchor()->GetRole()) &&
         child_index > AnchorChildCount()) {
       child_index_ = AnchorChildCount();
     }

@@ -102,7 +102,6 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* guid= */ "",
                     /* origin= */ "",
                     /* isLocal= */ false,
-                    /* isCached= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "4444333322221111",
                     /* obfuscatedNumber= */ "",
@@ -117,7 +116,6 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* guid= */ "",
                     /* origin= */ "",
                     /* isLocal= */ false,
-                    /* isCached= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "5454545454545454",
                     /* obfuscatedNumber= */ "",
@@ -132,7 +130,6 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* guid= */ "",
                     /* origin= */ "",
                     /* isLocal= */ true,
-                    /* isCached= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "4111111111111111",
                     /* obfuscatedNumber= */ "",
@@ -147,7 +144,6 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* guid= */ "",
                     /* origin= */ "",
                     /* isLocal= */ false,
-                    /* isCached= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "4444333322221111",
@@ -173,7 +169,6 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* guid= */ "",
                     /* origin= */ "",
                     /* isLocal= */ false,
-                    /* isCached= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "4444333322221111",
@@ -198,7 +193,6 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* guid= */ "",
                     /* origin= */ "",
                     /* isLocal= */ false,
-                    /* isCached= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "4444333322221111",
@@ -233,14 +227,14 @@ public class AutofillPaymentMethodsFragmentTest {
 
     private static final Iban VALID_BELGIUM_IBAN =
             new Iban.Builder()
-                    .setGuid("")
+                    .setLabel("")
                     .setNickname("My IBAN")
                     .setRecordType(IbanRecordType.UNKNOWN)
                     .setValue("BE71096123456769")
                     .build();
     private static final Iban VALID_RUSSIA_IBAN =
             new Iban.Builder()
-                    .setGuid("")
+                    .setLabel("")
                     .setNickname("")
                     .setRecordType(IbanRecordType.UNKNOWN)
                     .setValue("RU0204452560040702810412345678901")

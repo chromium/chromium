@@ -268,8 +268,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3602",
             "version": "1.0"
-          },
-          "source_debug_key": "12345"
+          }
         },
         "report_time": "3602000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
@@ -288,8 +287,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3604",
             "version": "1.0"
-          },
-          "source_debug_key": "12345"
+          }
         },
         "report_time": "3604000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
@@ -310,8 +308,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3611",
             "version": "1.0"
-          },
-          "source_debug_key": "54321"
+          }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3611000"

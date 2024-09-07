@@ -56,7 +56,7 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 @implementation SafeBrowsingStandardProtectionViewController
 
 - (instancetype)initWithStyle:(UITableViewStyle)style {
-  if (self = [super initWithStyle:style]) {
+  if ((self = [super initWithStyle:style])) {
     // Wraps view controller to properly show navigation bar, otherwise "Done"
     // button won't show.
     self.navigationController =

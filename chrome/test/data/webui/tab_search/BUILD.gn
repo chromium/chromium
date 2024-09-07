@@ -6,9 +6,12 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   files = [
-    "infinite_list_test.ts",
+    "lazy_list_test.ts",
+    "selectable_lazy_list_test.ts",
     "search_test.ts",
     "auto_tab_groups_page_test.ts",
+    "declutter_page_test.ts",
+    "tab_organization_selector_test.ts",
     "tab_search_app_test.ts",
     "tab_search_item_test.ts",
     "tab_search_media_tabs_test.ts",

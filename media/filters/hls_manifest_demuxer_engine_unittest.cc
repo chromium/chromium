@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "media/filters/hls_manifest_demuxer_engine.h"
-#include "media/filters/manifest_demuxer.h"
 
 #include <memory>
 #include <string>
@@ -19,6 +18,7 @@
 #include "media/base/test_helpers.h"
 #include "media/filters/hls_data_source_provider.h"
 #include "media/filters/hls_test_helpers.h"
+#include "media/filters/manifest_demuxer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -136,6 +136,21 @@ const std::string kMultivariantPlaylistWithAlts =
     "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"mp4a.40.05\",AUDIO=\"aac\"\n"
     "main/english-audio.m3u8\n";
 
+const std::string kLiveFullEncryptedMediaPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:4\n"
+    "#EXT-X-TARGETDURATION:4\n"
+    "#EXT-X-MEDIA-SEQUENCE:13979\n"
+    "#EXT-X-DISCONTINUITY-SEQUENCE:0\n"
+    "#EXT-X-KEY:METHOD=AES-128,URI=\"K\",IV=0x66666666666666666666666666666666,"
+    "KEYFORMAT=\"identity\",KEYFORMATVERSIONS=\"1\"\n"
+    "#EXTINF:3.0,\n"
+    "13979.js\n"
+    "#EXTINF:3.0,\n"
+    "13980.js\n"
+    "#EXTINF:3.0,\n"
+    "13981.js\n";
+
 using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceClosure;
 using testing::_;
@@ -170,6 +185,18 @@ MATCHER_P2(SingleSegmentQueue,
   }
   auto first = arg.front();
   return first.uri == GURL(urlstr) && first.range == range;
+}
+
+std::tuple<std::string, std::unique_ptr<crypto::SymmetricKey>> Encrypt(
+    std::string cleartext,
+    std::string ivstr) {
+  std::string ciphertext;
+  auto mode = crypto::SymmetricKey::AES;
+  auto key = crypto::SymmetricKey::GenerateRandomKey(mode, 128);
+  auto encryptor = std::make_unique<crypto::Encryptor>();
+  encryptor->Init(key.get(), crypto::Encryptor::Mode::CBC, ivstr);
+  encryptor->Encrypt(cleartext, &ciphertext);
+  return std::make_tuple(ciphertext, std::move(key));
 }
 
 class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
@@ -977,6 +1004,23 @@ TEST_F(HlsManifestDemuxerEngineTest, TestOriginTainting) {
   InitializeEngine();
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(engine_->WouldTaintOrigin());
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestInitialSegmentEncrypted) {
+  std::string cleartext = "G <- 0x47 (G) is the sentinal byte for TS content";
+  std::string ciphertext;
+  std::unique_ptr<crypto::SymmetricKey> key;
+  std::tie(ciphertext, key) = Encrypt(cleartext, "ffffffffffffffff");
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8",
+      kLiveFullEncryptedMediaPlaylist);
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/K", key->key());
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/13979.js", ciphertext);
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace media

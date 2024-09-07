@@ -5,6 +5,7 @@
 #include "android_webview/browser/gfx/aw_draw_fn_impl.h"
 
 #include <sys/prctl.h>
+
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
@@ -14,8 +15,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 #include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
 #include "ui/gfx/color_space.h"
 
@@ -129,8 +130,7 @@ OverlaysParams::Mode GetOverlaysMode(AwDrawFnOverlaysMode mode) {
     case AW_DRAW_FN_OVERLAYS_MODE_ENABLED:
       return OverlaysParams::Mode::Enabled;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return OverlaysParams::Mode::Disabled;
+      NOTREACHED();
   }
 }
 

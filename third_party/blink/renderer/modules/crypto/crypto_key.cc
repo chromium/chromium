@@ -127,10 +127,7 @@ class DictionaryBuilder : public WebCryptoKeyAlgorithmDictionary {
 
   void SetUint8Array(const char* property_name,
                      const WebVector<unsigned char>& vector) override {
-    builder_.Add(
-        property_name,
-        DOMUint8Array::Create(vector.data(),
-                              base::checked_cast<wtf_size_t>(vector.size())));
+    builder_.Add(property_name, DOMUint8Array::Create(vector));
   }
 
  private:
@@ -209,7 +206,7 @@ bool CryptoKey::CanBeUsedForAlgorithm(const WebCryptoAlgorithm& algorithm,
 
 bool CryptoKey::ParseFormat(const String& format_string,
                             WebCryptoKeyFormat& format,
-                            CryptoResult* result) {
+                            ExceptionState& exception_state) {
   // There are few enough values that testing serially is fast enough.
   if (format_string == "raw") {
     format = kWebCryptoKeyFormatRaw;
@@ -228,20 +225,18 @@ bool CryptoKey::ParseFormat(const String& format_string,
     return true;
   }
 
-  result->CompleteWithError(kWebCryptoErrorTypeType,
-                            "Invalid keyFormat argument");
+  exception_state.ThrowTypeError("Invalid keyFormat argument");
   return false;
 }
 
 bool CryptoKey::ParseUsageMask(const Vector<String>& usages,
                                WebCryptoKeyUsageMask& mask,
-                               CryptoResult* result) {
+                               ExceptionState& exception_state) {
   mask = 0;
   for (wtf_size_t i = 0; i < usages.size(); ++i) {
     WebCryptoKeyUsageMask usage = KeyUsageStringToMask(usages[i]);
     if (!usage) {
-      result->CompleteWithError(kWebCryptoErrorTypeType,
-                                "Invalid keyUsages argument");
+      exception_state.ThrowTypeError("Invalid keyUsages argument");
       return false;
     }
     mask |= usage;

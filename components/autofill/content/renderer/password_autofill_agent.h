@@ -141,6 +141,14 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void SetPasswordFillData(const PasswordFormFillData& form_data) override;
   void FillPasswordSuggestion(const std::u16string& username,
                               const std::u16string& password) override;
+  void FillPasswordSuggestionById(FieldRendererId username_element_id,
+                                  FieldRendererId password_element_id,
+                                  const std::u16string& username,
+                                  const std::u16string& password) override;
+  void PreviewPasswordSuggestionById(FieldRendererId username_element_id,
+                                     FieldRendererId password_element_id,
+                                     const std::u16string& username,
+                                     const std::u16string& password) override;
   void InformNoSavedCredentials(
       bool should_show_popup_without_passwords) override;
   void FillIntoFocusedField(bool is_password,
@@ -286,9 +294,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   struct PasswordInfo {
     FieldRef password_field;
     PasswordFormFillData fill_data;
-    // The user manually edited the password more recently than the username was
-    // changed.
-    bool password_was_edited_last = false;
     // The user accepted a suggestion from a dropdown on a password field.
     bool password_field_suggestion_was_accepted = false;
   };
@@ -431,6 +436,21 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void DoFillField(blink::WebInputElement input,
                    const std::u16string& credential);
 
+  // Given `username_element` and `password_element`, previews `username` and
+  // `password` respectively into them.
+  void PreviewUsernameAndPasswordElements(
+      blink::WebInputElement username_element,
+      blink::WebInputElement password_element,
+      const std::u16string& username,
+      const std::u16string& password);
+
+  // Given `username_element` and `password_element`, fills `username` and
+  // `password` respectively into them.
+  void FillUsernameAndPasswordElements(blink::WebInputElement username_element,
+                                       blink::WebInputElement password_element,
+                                       const std::u16string& username,
+                                       const std::u16string& password);
+
   // Uses `FillField` to fill the given `credential` into the `password_input`.
   // Saves the password for its associated form.
   void FillPasswordFieldAndSave(blink::WebInputElement password_input,
@@ -549,9 +569,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // True indicates that a safe browsing reputation check has been triggered.
   bool checked_safe_browsing_reputation_;
-
-  // Records the username typed before suggestions preview.
-  std::u16string username_query_prefix_;
 
   raw_ptr<AutofillAgent> autofill_agent_ = nullptr;
 

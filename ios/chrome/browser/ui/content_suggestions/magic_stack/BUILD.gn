@@ -25,15 +25,21 @@ source_set("ranking_model") {
   ]
   deps = [
     ":cells",
+    ":constants",
     ":magic_stack",
     ":public",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
     "//components/prefs",
+    "//components/segmentation_platform/embedder/home_modules",
     "//components/segmentation_platform/public",
+    "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/parcel_tracking:prefs",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
@@ -41,12 +47,12 @@ source_set("ranking_model") {
     "//ios/chrome/browser/ui/content_suggestions/cells:most_visited_tiles",
     "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
-    "//ios/chrome/browser/ui/ntp",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -56,7 +62,12 @@ source_set("constants") {
     "magic_stack_constants.h",
     "magic_stack_constants.mm",
   ]
-  deps = []
+  deps = [
+    "//base",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/segmentation_platform/public",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -75,8 +86,8 @@ source_set("cells") {
     ":public",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/push_notification/model:push_notification_client",
-    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -89,6 +100,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/content_suggestions/cells:public",
     "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo",
     "//ios/chrome/browser/ui/content_suggestions/resources",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
@@ -120,6 +132,7 @@ source_set("magic_stack") {
     ":public",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -134,7 +147,6 @@ source_set("magic_stack") {
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
-    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
@@ -146,16 +158,23 @@ source_set("magic_stack") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "magic_stack_ranking_model_unittest.mm" ]
+  sources = [
+    "magic_stack_collection_view_unittest.mm",
+    "magic_stack_ranking_model_unittest.mm",
+  ]
   deps = [
+    ":magic_stack",
+    ":public",
     ":ranking_model",
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",
     "//components/feature_engagement/test:test_support",
     "//components/ntp_tiles",
+    "//components/segmentation_platform/embedder/home_modules",
     "//components/segmentation_platform/public",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
@@ -169,7 +188,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
@@ -184,12 +204,14 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/content_suggestions/cells:most_visited_tiles",
     "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

@@ -26,6 +26,7 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -80,6 +81,9 @@ namespace {
 
 static constexpr char kRelyingPartyID[] = "example.com";
 
+using TransportAvailabilityInfo =
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo;
+
 class Observer : public testing::NiceMock<
                      ChromeAuthenticatorRequestDelegate::TestObserver> {
  public:
@@ -94,7 +98,7 @@ class Observer : public testing::NiceMock<
   MOCK_METHOD(void,
               OnTransportAvailabilityEnumerated,
               (ChromeAuthenticatorRequestDelegate * delegate,
-               device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai),
+               TransportAvailabilityInfo* tai),
               (override));
   MOCK_METHOD(void,
               UIShown,
@@ -519,8 +523,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     model->observers.AddObserver(&observer);
     EXPECT_EQ(observer.last_step(),
               AuthenticatorRequestDialogModel::Step::kNotStarted);
-    delegate.OnTransportAvailabilityEnumerated(
-        AuthenticatorRequestDialogController::TransportAvailabilityInfo());
+    delegate.OnTransportAvailabilityEnumerated(TransportAvailabilityInfo());
     EXPECT_EQ(observer.last_step() ==
                   AuthenticatorRequestDialogModel::Step::kConditionalMediation,
               conditional_ui);
@@ -781,7 +784,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
   passkey_model->AddNewPasskeyForTesting(std::move(passkey_other_rp_id));
 
-  AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
+  TransportAvailabilityInfo tai;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -838,7 +841,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
   passkey.set_user_id(std::string({5, 6, 7, 8}));
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
 
-  AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
+  TransportAvailabilityInfo tai;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -901,7 +904,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
   passkey_model->AddNewPasskeyForTesting(std::move(shadowed_passkey));
 
-  AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
+  TransportAvailabilityInfo tai;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -958,8 +961,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
     SCOPED_TRACE(::testing::Message() << "rp_id=" << test.rp_id);
     SCOPED_TRACE(::testing::Message()
                  << "creds=" << base::JoinString(test.user_ids, ","));
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo data;
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo result;
+    TransportAvailabilityInfo data;
+    TransportAvailabilityInfo result;
     EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
         .WillOnce([&result](const auto* _, const auto* new_tai) {
           result = std::move(*new_tai);

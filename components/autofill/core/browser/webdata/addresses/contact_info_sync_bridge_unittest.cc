@@ -27,7 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using testing::_;
@@ -67,11 +66,10 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
 }
 
 AutofillProfile TestProfile(std::string_view guid) {
-  return AutofillProfile(std::string(guid), AutofillProfile::Source::kAccount,
+  return AutofillProfile(std::string(guid),
+                         AutofillProfile::RecordType::kAccount,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
 }
-
-}  // namespace
 
 class ContactInfoSyncBridgeTest : public testing::Test {
  public:
@@ -119,14 +117,9 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   // `bridge()` (and `GetAllDataForDebugging()`) here, since we want to simulate
   // how the PersonalDataManager will access the profiles.
   std::vector<AutofillProfile> GetAllDataFromTable() {
-    std::vector<std::unique_ptr<AutofillProfile>> profile_ptrs;
-    EXPECT_TRUE(table_.GetAutofillProfiles(AutofillProfile::Source::kAccount,
-                                           profile_ptrs));
-    // In tests, it's more convenient to work without `std::unique_ptr`.
     std::vector<AutofillProfile> profiles;
-    for (const std::unique_ptr<AutofillProfile>& profile_ptr : profile_ptrs) {
-      profiles.push_back(std::move(*profile_ptr));
-    }
+    EXPECT_TRUE(table_.GetAutofillProfiles(
+        AutofillProfile::RecordType::kAccount, profiles));
     return profiles;
   }
 
@@ -375,4 +368,6 @@ TEST_F(ContactInfoSyncBridgeTest,
                 .SerializeAsString(),
             specifics_with_only_unknown_fields.SerializePartialAsString());
 }
+
+}  // namespace
 }  // namespace autofill

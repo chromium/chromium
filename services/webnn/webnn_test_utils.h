@@ -127,6 +127,11 @@ class GraphInfoBuilder final {
         mojom::Operation::NewConv2d(std::move(conv2d)));
   }
 
+  void BuildDequantizeLinear(uint64_t input_operand_id,
+                             uint64_t scale_operand_id,
+                             uint64_t zero_point_operand_id,
+                             uint64_t output_operand_id);
+
   void BuildElementWiseBinary(mojom::ElementWiseBinary::Kind kind,
                               uint64_t lhs_operand,
                               uint64_t rhs_operand,
@@ -146,6 +151,11 @@ class GraphInfoBuilder final {
                    uint64_t indices_operand_id,
                    uint64_t output_operand_id,
                    uint32_t axis);
+
+  void BuildGatherElements(uint64_t input_operand_id,
+                           uint64_t indices_operand_id,
+                           uint64_t output_operand_id,
+                           uint32_t axis);
 
   void BuildGelu(uint64_t input_operand_id, uint64_t output_operand_id);
 
@@ -437,6 +447,11 @@ class GraphInfoBuilder final {
                   uint64_t slope_operand_id,
                   uint64_t output_operand_id);
 
+  void BuildQuantizeLinear(uint64_t input_operand_id,
+                           uint64_t scale_operand_id,
+                           uint64_t zero_point_operand_id,
+                           uint64_t output_operand_id);
+
   void BuildReduce(mojom::Reduce::Kind kind,
                    uint64_t input_operand_id,
                    uint64_t output_operand_id,
@@ -485,6 +500,10 @@ class GraphInfoBuilder final {
                   uint32_t axis);
 
   void BuildTanh(uint64_t input_operand_id, uint64_t output_operand_id);
+
+  void BuildTile(uint64_t input_operand_id,
+                 uint64_t output_operand_id,
+                 std::vector<uint32_t> repetitions);
 
   void BuildTranspose(uint64_t input_operand_id,
                       uint64_t output_operand_id,

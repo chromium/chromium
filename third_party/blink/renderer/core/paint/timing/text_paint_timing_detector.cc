@@ -89,11 +89,11 @@ void TextPaintTimingDetector::OnPaintFinished() {
   if (!added_entry_in_latest_frame_)
     return;
 
-  // |WrapCrossThreadWeakPersistent| guarantees that when |this| is killed,
+  // |WeakPersistent| guarantees that when |this| is killed,
   // the callback function will not be invoked.
   RegisterNotifyPresentationTime(
       WTF::BindOnce(&TextPaintTimingDetector::ReportPresentationTime,
-                    WrapCrossThreadWeakPersistent(this), frame_index_++));
+                    WrapWeakPersistent(this), frame_index_++));
   added_entry_in_latest_frame_ = false;
 }
 
@@ -137,10 +137,6 @@ bool TextPaintTimingDetector::ShouldWalkObject(
   if (!IsRecordingLargestTextPaint() &&
       !TextElementTiming::NeededForElementTiming(*node)) {
     return false;
-  }
-
-  if (RuntimeEnabledFeatures::LCPMultipleUpdatesPerElementEnabled()) {
-    return true;
   }
 
   if (rewalkable_set_.Contains(&object))

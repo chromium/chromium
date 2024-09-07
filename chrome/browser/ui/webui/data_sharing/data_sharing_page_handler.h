@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_DATA_SHARING_DATA_SHARING_PAGE_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -37,11 +38,20 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
 
   void ApiInitComplete() override;
 
+  void GetShareLink(const std::string& group_id,
+                    const std::string& access_token,
+                    GetShareLinkCallback callback) override;
+
+  void AssociateTabGroupWithGroupId(const std::string& tab_group_id,
+                                    const std::string& group_id) override;
+
   void ReadGroups(std::vector<std::string> group_ids,
                   data_sharing::mojom::Page::ReadGroupsCallback callback);
 
  private:
   Profile* GetProfile();
+
+  void RequestAccessToken();
 
   void OnAccessTokenFetched(GoogleServiceAuthError error,
                             signin::AccessTokenInfo access_token_info);
@@ -49,6 +59,7 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
   // webui_controller_ owns DataSharingPageHandler and outlives it.
   const raw_ptr<DataSharingUI> webui_controller_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
+  std::unique_ptr<base::OneShotTimer> access_token_refresh_timer_;
 
   mojo::Receiver<data_sharing::mojom::PageHandler> receiver_;
   mojo::Remote<data_sharing::mojom::Page> page_;

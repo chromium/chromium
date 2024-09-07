@@ -94,8 +94,6 @@ struct TestCase {
 
   TestCase& EnableLocalImageSearch();
 
-  TestCase& EnableFSPsInRecents();
-
   TestCase& EnableOsFeedback();
 
   TestCase& DisableGoogleOneOfferFilesBanner();

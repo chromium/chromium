@@ -32,7 +32,7 @@ try_.builder(
     executable = "recipe:angle_chromium_trybot",
     mirrors = [
         "ci/android-angle-chromium-arm64-builder",
-        "ci/android-angle-chromium-arm64-nexus5x",
+        "ci/android-angle-chromium-arm64-pixel2",
     ],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
@@ -43,6 +43,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    contact_team_email = "angle-team@google.com",
 )
 
 try_.builder(

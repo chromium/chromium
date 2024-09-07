@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webauthn/passkey_deleted_confirmation_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -33,16 +34,16 @@ PasskeyDeletedConfirmationView::PasskeyDeletedConfirmationView(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_GOT_IT_BUTTON));
   SetAcceptCallback(base::BindOnce(
       &PasskeyDeletedConfirmationController::OnGotItButtonClicked,
       base::Unretained(&controller_)));
 
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_MANAGE_PASSKEYS_BUTTON));
-  SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
+  SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
   SetCancelCallback(base::BindOnce(
       &PasskeyDeletedConfirmationView::OnManagePasskeysButtonClicked,
       base::Unretained(this)));

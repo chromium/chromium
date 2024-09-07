@@ -24,7 +24,9 @@ export const FaceGazeActions: MacroName[] = [
   MacroName.TOGGLE_DICTATION,
   MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
   MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
+  MacroName.TOGGLE_SCROLL_MODE,
   MacroName.TOGGLE_VIRTUAL_KEYBOARD,
+  MacroName.CUSTOM_KEY_COMBINATION,
 ];
 
 // All possible facial gestures.
@@ -65,9 +67,9 @@ export class FaceGazeUtils {
       case FacialGesture.BROWS_DOWN:
         return 'Lower eyebrows';
       case FacialGesture.EYE_SQUINT_LEFT:
-        return 'Close left eye';
+        return 'Squint left eye';
       case FacialGesture.EYE_SQUINT_RIGHT:
-        return 'Close right eye';
+        return 'Squint right eye';
       case FacialGesture.EYES_BLINK:
         return 'Blink both eyes';
       case FacialGesture.EYES_LOOK_DOWN:
@@ -83,7 +85,7 @@ export class FaceGazeUtils {
       case FacialGesture.JAW_OPEN:
         return 'Open your mouth wide';
       case FacialGesture.JAW_RIGHT:
-        return 'Open mouth shift left';
+        return 'Open mouth shift right';
       case FacialGesture.MOUTH_FUNNEL:
         return 'Mouth funnel shape';
       case FacialGesture.MOUTH_LEFT:
@@ -99,6 +101,51 @@ export class FaceGazeUtils {
       default:
         console.error(
             'Display text requested for unsupported FacialGesture ' + gesture);
+        return '';
+    }
+  }
+
+  static getGestureIconName(gesture: FacialGesture|null): string {
+    switch (gesture) {
+      case FacialGesture.BROW_INNER_UP:
+        return 'raise-eyebrows';
+      case FacialGesture.BROWS_DOWN:
+        return 'lower-eyebrows';
+      case FacialGesture.EYE_SQUINT_LEFT:
+        return 'squint-left-eye';
+      case FacialGesture.EYE_SQUINT_RIGHT:
+        return 'squint-right-eye';
+      case FacialGesture.EYES_BLINK:
+        return 'blink-both-eyes';
+      case FacialGesture.EYES_LOOK_DOWN:
+        return 'look-down';
+      case FacialGesture.EYES_LOOK_LEFT:
+        return 'look-left';
+      case FacialGesture.EYES_LOOK_RIGHT:
+        return 'look-right';
+      case FacialGesture.EYES_LOOK_UP:
+        return 'look-up';
+      case FacialGesture.JAW_LEFT:
+        return 'jaw-left';
+      case FacialGesture.JAW_OPEN:
+        return 'jaw-open';
+      case FacialGesture.JAW_RIGHT:
+        return 'jaw-right';
+      case FacialGesture.MOUTH_FUNNEL:
+        return 'mouth-funnel';
+      case FacialGesture.MOUTH_LEFT:
+        return 'mouth-left';
+      case FacialGesture.MOUTH_PUCKER:
+        return 'mouth-pucker';
+      case FacialGesture.MOUTH_RIGHT:
+        return 'mouth-right';
+      case FacialGesture.MOUTH_SMILE:
+        return 'smile';
+      case FacialGesture.MOUTH_UPPER_UP:
+        return 'wrinkle-nose';
+      default:
+        console.error(
+            'Icon requested for unsupported FacialGesture ' + gesture);
         return '';
     }
   }
@@ -126,12 +173,33 @@ export class FaceGazeUtils {
         return 'Open overview of windows';
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
         return 'Play or pause media';
+      case MacroName.TOGGLE_SCROLL_MODE:
+        return 'Toggle scroll mode';
       case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
         return 'Show or hide the virtual keyboard';
+      case MacroName.CUSTOM_KEY_COMBINATION:
+        return 'Perform a custom key combination';
       default:
         // Other macros are not supported in FaceGaze.
         console.error('Display text requested for unsupported macro ' + macro);
         return '';
+    }
+  }
+
+  /**
+   * @param macro The MacroName for which to return the display sub-label.
+   * @returns a string containing the user-friendly sub-label for the macro if
+   *     available, or null otherwise.
+   */
+  static getMacroDisplaySubLabel(macro: MacroName): string|null {
+    // TODO(b:341770655): Localize this string.
+    // TODO(b/355662619): Add a sub-label for custom key combination macro.
+    switch (macro) {
+      case MacroName.TOGGLE_SCROLL_MODE:
+        return 'Once in scroll mode, use head movement to scroll';
+      default:
+        // Other macros do not have a sub-label, return null to indicate this.
+        return null;
     }
   }
 }

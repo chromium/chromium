@@ -18,4 +18,8 @@ ChromeSensitiveContentClient::~ChromeSensitiveContentClient() = default;
 void ChromeSensitiveContentClient::SetContentSensitivity(
     bool content_is_sensitive) {}
 
+std::string_view ChromeSensitiveContentClient::GetHistogramPrefix() {
+  return "SensitiveContent.Chrome.";
+}
+
 }  // namespace sensitive_content

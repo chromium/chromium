@@ -78,16 +78,18 @@ void CreateSchema(sql::Database* db) {
       " opt_out INTEGER NOT NULL,"
       " type INTEGER NOT NULL,"
       " PRIMARY KEY(host_name, time DESC, opt_out, type))";
-  if (!db->Execute(kSqlCreateTable))
+  if (!db->Execute(kSqlCreateTable)) {
     return;
+  }
 
   static const char kSqlCreateEnabledTypeVersionTable[] =
       "CREATE TABLE IF NOT EXISTS " ENABLED_TYPES_TABLE_NAME
       " (type INTEGER NOT NULL,"
       " version INTEGER NOT NULL,"
       " PRIMARY KEY(type))";
-  if (!db->Execute(kSqlCreateEnabledTypeVersionTable))
+  if (!db->Execute(kSqlCreateEnabledTypeVersionTable)) {
     return;
+  }
 }
 
 void DatabaseErrorCallback(sql::Database* db,
@@ -305,8 +307,9 @@ void LoadBlockListSync(sql::Database* db,
                        std::unique_ptr<BlocklistData> blocklist_data,
                        scoped_refptr<base::SingleThreadTaskRunner> runner,
                        LoadBlockListCallback callback) {
-  if (!db->is_open())
+  if (!db->is_open()) {
     InitDatabase(db, path);
+  }
 
   LoadBlockListFromDataBase(db, std::move(blocklist_data), runner,
                             std::move(callback));
@@ -332,8 +335,9 @@ void AddEntrySync(bool opt_out,
                   base::Time now,
                   sql::Database* db) {
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
   AddEntryToDataBase(db, opt_out, host_name, type, now);
   MaybeEvictHostEntryFromDataBase(db, host_name);
   transaction.Commit();

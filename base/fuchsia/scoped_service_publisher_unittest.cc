@@ -16,7 +16,6 @@
 #include "base/fuchsia/test_interface_impl.h"
 #include "base/test/task_environment.h"
 #include "base/testfidl/cpp/fidl.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -51,11 +50,7 @@ TEST_F(ScopedServicePublisherTest, OutgoingDirectory) {
   // Verify that the service is no longer published.
   auto client_b =
       test_context_.published_services()->Connect<testfidl::TestInterface>();
-  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
-  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
-  EXPECT_THAT(VerifyTestInterface(client_b),
-              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
-                             testing::Eq(ZX_ERR_NOT_FOUND)));
+  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_NOT_FOUND);
 }
 
 TEST_F(ScopedServicePublisherTest, PseudoDir) {
@@ -80,11 +75,7 @@ TEST_F(ScopedServicePublisherTest, PseudoDir) {
 
   // Verify that the service is no longer published.
   auto client_b = services.Connect<testfidl::TestInterface>();
-  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
-  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
-  EXPECT_THAT(VerifyTestInterface(client_b),
-              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
-                             testing::Eq(ZX_ERR_NOT_FOUND)));
+  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_NOT_FOUND);
 }
 
 }  // namespace base

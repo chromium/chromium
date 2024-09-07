@@ -10,8 +10,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -22,6 +20,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 namespace content {
 
@@ -198,7 +198,7 @@ void AccessibilityNotificationWaiter::BindOnLocationsChanged(
 }
 
 void AccessibilityNotificationWaiter::OnGeneratedEvent(
-    BrowserAccessibilityManager* manager,
+    ui::BrowserAccessibilityManager* manager,
     ui::AXEventGenerator::Event event,
     ui::AXNodeID event_target_id) {
   DCHECK(manager);
@@ -226,7 +226,7 @@ void AccessibilityNotificationWaiter::OnLocationsChanged() {
 void AccessibilityNotificationWaiter::OnFocusChanged() {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents());
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       web_contents_impl->GetRootBrowserAccessibilityManager();
   if (manager && manager->delegate() && manager->GetFocus()) {
     OnGeneratedEvent(manager, ui::AXEventGenerator::Event::FOCUS_CHANGED,
@@ -239,7 +239,7 @@ const ui::AXTree& AccessibilityNotificationWaiter::GetAXTreeForFrame(
   static base::NoDestructor<ui::AXTree> empty_tree;
   WebContentsImpl* web_contents_impl =
       WebContentsImpl::FromRenderFrameHostImpl(render_frame);
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       web_contents_impl->GetRootBrowserAccessibilityManager();
   return manager && manager->ax_tree() ? *manager->ax_tree() : *empty_tree;
 }

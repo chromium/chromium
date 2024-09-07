@@ -10,14 +10,6 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/json.h"
 
 namespace blink {
-namespace {
-
-DOMArrayBuffer* VectorToDOMArrayBuffer(const Vector<uint8_t> buffer) {
-  return DOMArrayBuffer::Create(static_cast<const void*>(buffer.data()),
-                                buffer.size());
-}
-
-}  // namespace
 
 AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(
     const Vector<uint8_t> client_data_json,
@@ -25,11 +17,11 @@ AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(
     const Vector<uint8_t> signature,
     const std::optional<Vector<uint8_t>> optional_user_handle)
     : AuthenticatorAssertionResponse(
-          VectorToDOMArrayBuffer(client_data_json),
-          VectorToDOMArrayBuffer(authenticator_data),
-          VectorToDOMArrayBuffer(signature),
+          DOMArrayBuffer::Create(client_data_json),
+          DOMArrayBuffer::Create(authenticator_data),
+          DOMArrayBuffer::Create(signature),
           optional_user_handle && optional_user_handle->size() > 0
-              ? VectorToDOMArrayBuffer(std::move(*optional_user_handle))
+              ? DOMArrayBuffer::Create(std::move(*optional_user_handle))
               : nullptr) {}
 
 AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(

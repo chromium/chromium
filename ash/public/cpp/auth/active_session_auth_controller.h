@@ -12,6 +12,12 @@
 
 namespace ash {
 
+class AuthRequest;
+
+// ActiveSessionFingerprintClient assists ActiveSessionAuthController with
+// fingerprint authentication.
+class ActiveSessionFingerprintClient;
+
 // ActiveSessionAuthController serves active session authentication requests.
 // It takes care of showing and hiding the UI and the authentication process.
 class ASH_PUBLIC_EXPORT ActiveSessionAuthController {
@@ -20,28 +26,26 @@ class ASH_PUBLIC_EXPORT ActiveSessionAuthController {
       base::OnceCallback<void(bool success,
                               const ash::AuthProofToken& token,
                               base::TimeDelta timeout)>;
-  // The enums below are used in histograms, do not remove/renumber entries. If
-  // you're adding to any of these enums, update the corresponding enum listing
-  // in tools/metrics/histograms/metadata/ash/enums.xml:
-  enum class Reason {
-    kPasswordManager = 0,
-    kSettings = 1,
-    kMaxValue = kSettings
-  };
 
   static ActiveSessionAuthController* Get();
 
   virtual ~ActiveSessionAuthController();
 
   // Shows a standalone authentication widget.
-  // |callback| is invoked when the widget is closed e.g with the back button
-  // or the correct code is entered.
+  // `auth_request` encapsulates surface-specific behaviors and holds the auth
+  // completion callback that can be invoked via
+  // `AuthStratgy::NotifyAuthSuccess` or `AuthRequest::NotifyAuthFailure`.
   // Returns whether opening the widget was successful. Will fail if another
   // widget is already opened.
-  virtual bool ShowAuthDialog(Reason reason,
-                              AuthCompletionCallback on_auth_complete) = 0;
+  virtual bool ShowAuthDialog(std::unique_ptr<AuthRequest> auth_request) = 0;
 
   virtual bool IsShown() const = 0;
+
+  // Sets the fingerprint client responsible for:
+  // Managing the biometrics daemon (e.g initialize it to authentication mode).
+  // Handling fingerprint authentication scan events.
+  virtual void SetFingerprintClient(
+      ActiveSessionFingerprintClient* fp_client) = 0;
 
  protected:
   ActiveSessionAuthController();

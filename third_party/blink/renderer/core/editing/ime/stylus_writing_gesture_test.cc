@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -42,6 +43,23 @@ auto BoolToDirection(const testing::TestParamInfo<bool> is_RTL) {
   return is_RTL.param ? "RTL" : "LTR";
 }
 
+class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
+ public:
+  void UpdateContextMenuDataForTesting(
+      const ContextMenuData& data,
+      const std::optional<gfx::Point>& /*host_context_menu_location*/)
+      override {
+    context_menu_data_ = data;
+  }
+
+  const ContextMenuData& GetContextMenuData() const {
+    return context_menu_data_;
+  }
+
+ private:
+  ContextMenuData context_menu_data_;
+};
+
 }  // namespace
 
 class StylusWritingGestureTest : public SimTest,
@@ -72,6 +90,15 @@ class StylusWritingGestureTest : public SimTest,
 
   WebInputMethodController* Controller() {
     return WidgetImpl()->GetActiveWebInputMethodController();
+  }
+
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+  CreateWebFrameClientForMainFrame() override {
+    return std::make_unique<TestWebFrameClientImpl>();
+  }
+
+  TestWebFrameClientImpl& GetWebFrameClient() {
+    return static_cast<TestWebFrameClientImpl&>(WebFrameClient());
   }
 
   mojom::blink::HandwritingGestureResult last_gesture_result =
@@ -449,6 +476,10 @@ TEST_P(StylusWritingGestureTest, TestGestureSelect) {
   EXPECT_EQ(4, range.EndOffset());
   EXPECT_EQ(mojom::blink::HandwritingGestureResult::kSuccess,
             last_gesture_result);
+
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ("B C", context_menu_data.selected_text);
+  EXPECT_TRUE(GetDocument().GetFrame()->Selection().IsHandleVisible());
 }
 
 TEST_P(StylusWritingGestureTest, TestGestureSelectsNoSpacesEitherSide) {
@@ -476,6 +507,10 @@ TEST_P(StylusWritingGestureTest, TestGestureSelectsNoSpacesEitherSide) {
   EXPECT_EQ(8, range.EndOffset());
   EXPECT_EQ(mojom::blink::HandwritingGestureResult::kSuccess,
             last_gesture_result);
+
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ("CD EF", context_menu_data.selected_text);
+  EXPECT_TRUE(GetDocument().GetFrame()->Selection().IsHandleVisible());
 }
 
 TEST_P(StylusWritingGestureTest, TestGestureSelectMultiline) {
@@ -501,6 +536,10 @@ TEST_P(StylusWritingGestureTest, TestGestureSelectMultiline) {
   EXPECT_EQ(7, range.EndOffset());
   EXPECT_EQ(mojom::blink::HandwritingGestureResult::kSuccess,
             last_gesture_result);
+
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ("CD\nEF", context_menu_data.selected_text);
+  EXPECT_TRUE(GetDocument().GetFrame()->Selection().IsHandleVisible());
 }
 
 TEST_P(StylusWritingGestureTest, TestGestureSelectPartiallyOutsideBounds) {
@@ -526,6 +565,10 @@ TEST_P(StylusWritingGestureTest, TestGestureSelectPartiallyOutsideBounds) {
   EXPECT_EQ(3, range.EndOffset());
   EXPECT_EQ(mojom::blink::HandwritingGestureResult::kSuccess,
             last_gesture_result);
+
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ("ABC", context_menu_data.selected_text);
+  EXPECT_TRUE(GetDocument().GetFrame()->Selection().IsHandleVisible());
 }
 
 TEST_P(StylusWritingGestureTest, TestGestureAddSpaceOrText) {

@@ -64,9 +64,6 @@ EligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  if (onboarding_service) {
-    onboarding_service->MaybeResetModeBOnboardingPrefs();
-  }
   return nullptr;
 }
 

@@ -147,6 +147,13 @@ struct XrFrameStatistics {
     uint64 num_frames;
     // The number of frames that were dropped by the device.
     uint64 dropped_frames;
+    // The duration between requesting a frame and receiving the frame
+    // data back from the device.
+    mojo_base.mojom.TimeDelta frame_data_time;
+    // The duration for animation frame callback execution.
+    mojo_base.mojom.TimeDelta page_animation_frame_time;
+    // The duration for rendering the frame.
+    mojo_base.mojom.TimeDelta submit_frame_time;
 };
 
 struct XrLogMessage {

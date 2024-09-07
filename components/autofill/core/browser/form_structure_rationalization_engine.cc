@@ -308,8 +308,6 @@ void ApplyRationalizationEngineRules(
             .SetEnvironmentCondition(
                 EnvironmentConditionBuilder()
                     .SetCountryList({GeoIpCountryCode("MX")})
-                    .SetFeature(
-                        &features::kAutofillEnableRationalizationEngineForMX)
                     .Build())
 
             // This is the core field to which the rule applies.

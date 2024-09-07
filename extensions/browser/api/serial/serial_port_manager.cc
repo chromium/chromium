@@ -155,10 +155,13 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
 void SerialPortManager::DispatchEvent(
     const ReceiveParams& params,
     std::unique_ptr<extensions::Event> event) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(
+          params.browser_context_id.get())) {
+    return;
+  }
+
   content::BrowserContext* context = reinterpret_cast<content::BrowserContext*>(
       params.browser_context_id.get());
-  if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
-    return;
 
   EventRouter* router = EventRouter::Get(context);
   if (router)

@@ -31,14 +31,13 @@ class DiscountsPageActionControllerUnittest : public testing::Test {
         (base::DefaultClock::GetInstance()->Now() + base::Days(2))
             .InSecondsFSinceUnixEpoch();
 
-    shopping_service_->SetResponseForGetDiscountInfoForUrls(
-        {{url,
-          {commerce::CreateValidDiscountInfo(
-              /*detail=*/"Get 10% off",
-              /*terms_and_conditions=*/"",
-              /*value_in_text=*/"$10 off", /*discount_code=*/"discount_code",
-              /*id=*/123,
-              /*is_merchant_wide=*/true, expiry_time_sec)}}});
+    shopping_service_->SetResponseForGetDiscountInfoForUrl(
+        {commerce::CreateValidDiscountInfo(
+            /*detail=*/"Get 10% off",
+            /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", /*discount_code=*/"discount_code",
+            /*id=*/123,
+            /*is_merchant_wide=*/true, expiry_time_sec)});
   }
 
   base::test::FeatureRefAndParams GetNoAutoShownBubbleParam() {
@@ -76,8 +75,7 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldShowIcon) {
   ASSERT_FALSE(controller.ShouldShowForNavigation().has_value());
 
   EXPECT_CALL(*shopping_service_,
-              GetDiscountInfoForUrls(std::vector<GURL>{GURL(kShoppingURL)},
-                                     testing::_));
+              GetDiscountInfoForUrl(GURL(kShoppingURL), testing::_));
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   SetupDiscountResponseForURL(GURL(kShoppingURL));
 
@@ -100,10 +98,9 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldNotShowIcon_NoDiscounts) {
 
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   EXPECT_CALL(*shopping_service_,
-              GetDiscountInfoForUrls(std::vector<GURL>{GURL(kShoppingURL)},
-                                     testing::_));
+              GetDiscountInfoForUrl(GURL(kShoppingURL), testing::_));
   // Empty response, hence no discounts.
-  shopping_service_->SetResponseForGetDiscountInfoForUrls({});
+  shopping_service_->SetResponseForGetDiscountInfoForUrl({});
 
   // Simulate navigation to |kShoppingURL|
   controller.ResetForNewNavigation(GURL(kShoppingURL));
@@ -118,9 +115,8 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldNotShowIcon_NoEligible) {
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
   DiscountsPageActionController controller(callback, shopping_service_.get());
 
-  EXPECT_CALL(
-      *shopping_service_,
-      GetDiscountInfoForUrls(std::vector<GURL>{GURL(kShoppingURL)}, testing::_))
+  EXPECT_CALL(*shopping_service_,
+              GetDiscountInfoForUrl(GURL(kShoppingURL), testing::_))
       .Times(0);
 
   // Simulate navigation to |kShoppingURL|
@@ -142,8 +138,7 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldExpandIcon_ShoppyPageOff) {
 
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   EXPECT_CALL(*shopping_service_,
-              GetDiscountInfoForUrls(std::vector<GURL>{GURL(kShoppingURL)},
-                                     testing::_));
+              GetDiscountInfoForUrl(GURL(kShoppingURL), testing::_));
   SetupDiscountResponseForURL(GURL(kShoppingURL));
 
   // Simulate navigation to |kShoppingURL|
@@ -169,8 +164,7 @@ TEST_F(DiscountsPageActionControllerUnittest,
 
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   EXPECT_CALL(*shopping_service_,
-              GetDiscountInfoForUrls(std::vector<GURL>{GURL(kShoppingURL)},
-                                     testing::_));
+              GetDiscountInfoForUrl(GURL(kShoppingURL), testing::_));
   SetupDiscountResponseForURL(GURL(kShoppingURL));
 
   // Simulate navigation to |kShoppingURL|
@@ -210,8 +204,7 @@ TEST_F(DiscountsPageActionControllerUnittest,
 
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   EXPECT_CALL(*shopping_service_,
-              GetDiscountInfoForUrls(std::vector<GURL>{GURL(kShoppingURL)},
-                                     testing::_));
+              GetDiscountInfoForUrl(GURL(kShoppingURL), testing::_));
   SetupDiscountResponseForURL(GURL(kShoppingURL));
 
   // Simulate navigation to |kShoppingURL|
@@ -242,8 +235,7 @@ TEST_F(DiscountsPageActionControllerUnittest,
 
   EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   EXPECT_CALL(*shopping_service_,
-              GetDiscountInfoForUrls(std::vector<GURL>{GURL(kShoppingURL)},
-                                     testing::_));
+              GetDiscountInfoForUrl(GURL(kShoppingURL), testing::_));
   SetupDiscountResponseForURL(GURL(kShoppingURL));
 
   // Simulate navigation to |kShoppingURL|

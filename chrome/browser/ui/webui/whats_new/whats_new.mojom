@@ -50,7 +50,7 @@ enum ModulePosition {
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Returns the URL of the What's New page to show.
-  GetServerUrl() => (url.mojom.Url url);
+  GetServerUrl(bool is_staging) => (url.mojom.Url url);
 
   // Record when the content was loaded.
   // Time passed from JS is based on Unix epoch.
@@ -76,6 +76,9 @@ interface PageHandler {
 
   // Record metric for a click event within a module.
   RecordModuleLinkClicked(string module_name, ModulePosition position);
+
+  // Record metric when browser commands are executed.
+  RecordBrowserCommandExecuted();
 };
 
 // WebUI-side handler for requests from the browser.

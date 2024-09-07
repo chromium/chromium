@@ -372,7 +372,8 @@
           "builder": "android-cronet-x86-dbg-pie-tests",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-x86-dbg/targets"
     }
   },
   "$build/reclient": {

@@ -224,7 +224,7 @@ TEST(AXNodeDataTest, IsInvocable) {
     data.role = static_cast<ax::mojom::Role>(role_idx);
     bool is_activatable = data.IsActivatable();
     const bool supports_expand_collapse = data.SupportsExpandCollapse();
-    const bool supports_toggle = ui::SupportsToggle(data.role);
+    const bool supports_toggle = SupportsToggle(data.role);
     const bool is_clickable = data.IsClickable();
     const bool is_invocable = data.IsInvocable();
 
@@ -236,9 +236,8 @@ TEST(AXNodeDataTest, IsInvocable) {
                  << ", Actual: isInvocable=" << is_invocable
                  << ", Expected: isInvocable=" << !is_invocable);
 
-    if (ui::IsLink(data.role) ||
-        (is_clickable && !is_activatable && !supports_toggle &&
-         !supports_expand_collapse)) {
+    if (IsLink(data.role) || (is_clickable && !is_activatable &&
+                              !supports_toggle && !supports_expand_collapse)) {
       EXPECT_TRUE(is_invocable);
     } else {
       EXPECT_FALSE(is_invocable);

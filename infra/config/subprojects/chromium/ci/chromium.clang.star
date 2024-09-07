@@ -1536,6 +1536,8 @@ clang_mac_builder(
             "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "asn",

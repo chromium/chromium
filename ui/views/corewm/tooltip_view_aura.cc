@@ -13,6 +13,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/painter.h"
@@ -37,6 +38,8 @@ TooltipViewAura::TooltipViewAura()
       views::CreateThemedSolidBorder(kTooltipBorderThickness,
                                      ui::kColorTooltipForeground),
       kBorderInset - gfx::Insets(kTooltipBorderThickness)));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
 
   ResetDisplayRect();
 }
@@ -107,7 +110,6 @@ void TooltipViewAura::OnThemeChanged() {
 }
 
 void TooltipViewAura::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTooltip;
   node_data->SetNameChecked(render_text_->GetDisplayText());
 }
 

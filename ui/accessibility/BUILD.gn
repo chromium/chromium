@@ -373,6 +373,8 @@ test("accessibility_unittests") {
   if (is_fuchsia) {
     sources += [
       "platform/fuchsia/accessibility_bridge_fuchsia_unittest.cc",
+      "platform/fuchsia/browser_accessibility_fuchsia_unittest.cc",
+      "platform/fuchsia/browser_accessibility_manager_fuchsia_unittest.cc",
       "platform/fuchsia/semantic_provider_unittest.cc",
     ]
 
@@ -398,6 +400,8 @@ test("accessibility_unittests") {
         "platform/ax_platform_node_textrangeprovider_win_unittest.cc",
         "platform/ax_platform_node_win_unittest.cc",
         "platform/ax_platform_node_win_unittest.h",
+        "platform/browser_accessibility_manager_win_unittest.cc",
+        "platform/browser_accessibility_win_unittest.cc",
         "platform/iaccessible2/scoped_co_mem_array_unittest.cc",
       ]
 
@@ -412,10 +416,20 @@ test("accessibility_unittests") {
       ]
     }
 
+    if (is_mac) {
+      sources += [
+        "platform/browser_accessibility_mac_unittest.mm",
+        "platform/inspect/ax_element_wrapper_mac_unittest.mm",
+      ]
+      deps += [ "//ui/base:test_support" ]
+    }
+
     if (use_atk) {
       sources += [
         "platform/atk_util_auralinux_unittest.cc",
         "platform/ax_platform_node_auralinux_unittest.cc",
+        "platform/browser_accessibility_auralinux_unittest.cc",
+        "platform/browser_accessibility_manager_auralinux_unittest.cc",
       ]
 
       configs += [ "//build/config/linux/atk" ]

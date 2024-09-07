@@ -24,7 +24,7 @@
 void OptimizationGuideTestAppInterfaceWrapper::SetOptimizationGuideServiceUrl(
     NSString* url) {
   OptimizationGuideService* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   GURL gurl(base::SysNSStringToUTF8(url));
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -61,7 +61,7 @@ optimization_guide::testing::TestHintsComponentCreator
 + (void)registerOptimizationType:
     (optimization_guide::proto::OptimizationType)type {
   OptimizationGuideService* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   service->RegisterOptimizationTypes({type});
 }
@@ -71,7 +71,7 @@ optimization_guide::testing::TestHintsComponentCreator
                     metadata:
                         (optimization_guide::OptimizationMetadata*)metadata {
   OptimizationGuideService* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   service->CanApplyOptimization(GURL(base::SysNSStringToUTF8(url)), type,
                                 metadata);
@@ -93,7 +93,7 @@ optimization_guide::testing::TestHintsComponentCreator
   metadata.set_any_metadata(any_metadata);
 
   OptimizationGuideService* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   DCHECK(service);
   service->AddHintForTesting(GURL(base::SysNSStringToUTF8(url)), type,

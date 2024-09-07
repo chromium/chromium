@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_source.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
@@ -26,12 +27,26 @@ const int RTCEncodedVideoUnderlyingSource::kMinQueueDesiredSize = -60;
 
 RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
     ScriptState* script_state,
+    WTF::CrossThreadOnceClosure disconnect_callback)
+    : blink::RTCEncodedVideoUnderlyingSource(
+          script_state,
+          std::move(disconnect_callback),
+          /*enable_frame_restrictions=*/false,
+          base::UnguessableToken::Null(),
+          /*controller_override=*/nullptr) {}
+
+RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
+    ScriptState* script_state,
     WTF::CrossThreadOnceClosure disconnect_callback,
+    bool enable_frame_restrictions,
+    base::UnguessableToken owner_id,
     ReadableStreamDefaultControllerWithScriptScope* override_controller)
     : UnderlyingSourceBase(script_state),
       script_state_(script_state),
       disconnect_callback_(std::move(disconnect_callback)),
-      controller_override_(override_controller) {
+      controller_override_(override_controller),
+      enable_frame_restrictions_(enable_frame_restrictions),
+      owner_id_(owner_id) {
   DCHECK(disconnect_callback_);
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -100,9 +115,14 @@ void RTCEncodedVideoUnderlyingSource::OnFrameFromSource(
         << " encoded video frames due to too many already being queued.";
     return;
   }
-
-  RTCEncodedVideoFrame* encoded_frame =
-      MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(webrtc_frame));
+  RTCEncodedVideoFrame* encoded_frame;
+  if (enable_frame_restrictions_) {
+    encoded_frame = MakeGarbageCollected<RTCEncodedVideoFrame>(
+        std::move(webrtc_frame), owner_id_, ++last_enqueued_frame_counter_);
+  } else {
+    encoded_frame =
+        MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(webrtc_frame));
+  }
   GetController()->Enqueue(encoded_frame);
 }
 

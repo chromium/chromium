@@ -408,7 +408,7 @@ TEST_F(WebGPUTest, SPIRVIsDisallowed) {
   wgpu::Device device = GetNewDevice();
 
   // Make a invalid ShaderModuleDescriptor because it contains SPIR-V.
-  wgpu::ShaderModuleSPIRVDescriptor spirvDesc;
+  wgpu::ShaderSourceSPIRV spirvDesc;
   spirvDesc.codeSize = 0;
   spirvDesc.code = nullptr;
 

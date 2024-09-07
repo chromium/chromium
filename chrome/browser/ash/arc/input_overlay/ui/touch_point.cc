@@ -226,10 +226,9 @@ class CrossTouchPoint : public TouchPoint {
 
   // TouchPoint:
   void Init() override {
-    GetViewAccessibility().SetProperties(
-        ax::mojom::Role::kGroup,
-        l10n_util::GetStringUTF16(
-            IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_CROSS));
+    GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_CROSS));
 
     TouchPoint::Init();
   }
@@ -253,10 +252,9 @@ class DotTouchPoint : public TouchPoint {
 
   // TouchPoint:
   void Init() override {
-    GetViewAccessibility().SetProperties(
-        ax::mojom::Role::kGroup,
-        l10n_util::GetStringUTF16(
-            IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_DOT));
+    GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_DOT));
 
     TouchPoint::Init();
   }

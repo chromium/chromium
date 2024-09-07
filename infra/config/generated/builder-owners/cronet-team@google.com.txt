@@ -26,6 +26,7 @@ ci/android-cronet-x86-dbg-oreo-tests
 ci/android-cronet-x86-dbg-pie-tests
 ci/android-cronet-x86-rel
 try/android-cronet-arm-dbg
+try/android-cronet-arm-rel
 try/android-cronet-arm64-dbg
 try/android-cronet-arm64-rel
 try/android-cronet-asan-arm-rel

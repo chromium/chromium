@@ -72,8 +72,7 @@ std::string AXTreeFormatterBase::FormatTree(
   return contents;
 }
 
-base::Value::Dict AXTreeFormatterBase::BuildTreeForNode(
-    ui::AXNode* root) const {
+base::Value::Dict AXTreeFormatterBase::BuildTreeForNode(AXNode* root) const {
   NOTREACHED_IN_MIGRATION()
       << "Only supported when called on AccessibilityTreeFormatterBlink.";
   return base::Value::Dict();
@@ -81,7 +80,7 @@ base::Value::Dict AXTreeFormatterBase::BuildTreeForNode(
 
 std::string AXTreeFormatterBase::EvaluateScript(
     const AXTreeSelector& selector,
-    const ui::AXInspectScenario& scenario) const {
+    const AXInspectScenario& scenario) const {
   NOTIMPLEMENTED();
   return {};
 }
@@ -160,7 +159,7 @@ void AXTreeFormatterBase::set_show_ids(bool show_ids) {
 }
 
 std::string AXTreeFormatterBase::DumpInternalAccessibilityTree(
-    ui::AXTreeID tree_id,
+    AXTreeID tree_id,
     const std::vector<AXPropertyFilter>& property_filters) {
   NOTREACHED_IN_MIGRATION()
       << "Only supported when called on AccessibilityTreeFormatterBlink.";
@@ -215,13 +214,13 @@ bool AXTreeFormatterBase::HasMatchAllPropertyFilter() const {
 
 bool AXTreeFormatterBase::MatchesPropertyFilters(const std::string& text,
                                                  bool default_result) const {
-  return ui::AXTreeFormatter::MatchesPropertyFilters(property_filters_, text,
-                                                     default_result);
+  return AXTreeFormatter::MatchesPropertyFilters(property_filters_, text,
+                                                 default_result);
 }
 
 bool AXTreeFormatterBase::MatchesNodeFilters(
     const base::Value::Dict& dict) const {
-  return ui::AXTreeFormatter::MatchesNodeFilters(node_filters_, dict);
+  return AXTreeFormatter::MatchesNodeFilters(node_filters_, dict);
 }
 
 std::string AXTreeFormatterBase::FormatCoordinates(

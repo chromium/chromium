@@ -229,6 +229,12 @@
       depends_on: ["ComputePressure"],
     },
     {
+      name: "ControlledFrame",
+      permissions_policy_name: "controlled-frame",
+      depends_on: ["ControlledFrame"],
+      visibility: "IsolatedContext",
+    },
+    {
       name: "CrossOriginIsolated",
       permissions_policy_name: "cross-origin-isolated",
     },
@@ -351,6 +357,12 @@
       depends_on: ["WebOTPAssertionFeaturePolicy"],
     },
     {
+      name: "PartitionedPopins",
+      permissions_policy_name: "popins",
+      feature_default: "EnableForSelf",
+      depends_on: ["PartitionedPopins"],
+    },
+    {
       name: "Payment",
       permissions_policy_name: "payment",
       depends_on: ["PaymentRequest"],
@@ -470,6 +482,11 @@
       permissions_policy_name: "vertical-scroll",
       feature_default: "EnableForAll",
       depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "WebAppInstallation",
+      permissions_policy_name: "web-app-installation",
+      depends_on: ["WebAppInstallation"],
     },
     {
       name: "WebPrinting",

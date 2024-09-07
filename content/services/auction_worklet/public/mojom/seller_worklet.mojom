@@ -207,6 +207,17 @@ interface SellerWorklet {
   // `browser_signal_render_url` The `renderUrl` returned by the
   //  BidderWorklet making the bid.
   //
+  // `browser_signal_selected_buyer_and_seller_reporting_id`
+  //  The selected reporting id from the interest group's ad's
+  // `selectableBuyerAndSellerReportingIds` array.
+  //
+  // `browser_signal_buyer_and_seller_reporting_id` This is the reporting id
+  //  from from the interest group's ad's buyerAndSellerReportingId field,
+  //  which is provided to both buyer and seller reporting worklets
+  //  (reportWin() and reportResult() respectively). This is only provided to
+  //  scoreAd() if browser_signal_selected_buyer_and_seller_reporting_id is
+  //  also present.
+  //
   // `browser_signal_ad_component_urls` The `adComponents` array returned by
   //  the BidderWorklet making the bid.
   //
@@ -247,6 +258,8 @@ interface SellerWorklet {
           blink.mojom.AdCurrency? component_expect_bid_currency,
           url.mojom.Origin browser_signal_interest_group_owner,
           url.mojom.Url browser_signal_render_url,
+          string? browser_signal_selected_buyer_and_seller_reporting_id,
+          string? browser_signal_buyer_and_seller_reporting_id,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,
           uint32 browser_signal_bidding_duration_msecs,
           blink.mojom.AdSize? browser_signal_render_size,

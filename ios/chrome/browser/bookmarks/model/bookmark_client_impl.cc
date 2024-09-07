@@ -25,7 +25,7 @@
 #include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 BookmarkClientImpl::BookmarkClientImpl(
     ChromeBrowserState* browser_state,

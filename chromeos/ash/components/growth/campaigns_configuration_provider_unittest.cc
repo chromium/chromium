@@ -64,7 +64,7 @@ TEST_F(CampaignsConfigurationProviderTest, HasPrefixValidFeature) {
       provider_.MaybeProvideAllowedEventPrefixes(kTestFeatureValid);
 
   EXPECT_EQ(1u, prefixes.size());
-  EXPECT_TRUE(prefixes.contains("ChromeOSAshGrowthCampaigns"));
+  EXPECT_TRUE(prefixes.contains("ChromeOSAshGrowthCampaigns_"));
 }
 
 TEST_F(CampaignsConfigurationProviderTest, NoPrefixInvalidFeature) {

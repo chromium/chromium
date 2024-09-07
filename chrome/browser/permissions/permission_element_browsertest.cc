@@ -18,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -103,6 +104,23 @@ class PermissionElementBrowserTestBase : public InProcessBrowserTest {
         "permission element.");
   }
 
+  void TestPromptPosition(
+      permissions::feature_params::PermissionElementPromptPosition position) {
+    auto* permission_request_manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents());
+
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), "camera");
+    observer.Wait();
+
+    EXPECT_EQ(
+        permission_request_manager->view_for_testing()->GetPromptPosition(),
+        position);
+
+    permission_request_manager->Dismiss();
+    permission_request_manager->FinalizeCurrentRequests();
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 
@@ -116,7 +134,7 @@ class PermissionElementBrowserTest : public PermissionElementBrowserTestBase {
     feature_list_.InitWithFeatures(
         {blink::features::kPermissionElement,
          blink::features::kBypassPepcSecurityForTesting},
-        {});
+        {permissions::features::kPermissionElementPromptPositioning});
   }
 };
 
@@ -278,9 +296,6 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
     scrim_view->OnMousePressed(
         ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    scrim_view->OnMouseReleased(ui::MouseEvent(
-        ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
-        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     WaitForDismissEvent(id);
   }
 }
@@ -525,3 +540,65 @@ IN_PROC_BROWSER_TEST_P(PermissionElementHighDPITest, TestMargins) {
 INSTANTIATE_TEST_SUITE_P(All,
                          PermissionElementHighDPITest,
                          testing::Values(1.f, 1.25f, 1.5f, 2.f, 3.f));
+
+class PermissionElementNearElementBrowserTest
+    : public PermissionElementBrowserTestBase {
+ public:
+  PermissionElementNearElementBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPermissionElement, {}},
+         {blink::features::kBypassPepcSecurityForTesting, {}},
+         {permissions::features::kPermissionElementPromptPositioning,
+          {{"PermissionElementPromptPositioningParam", "near_element"}}}},
+        {});
+  }
+};
+
+class PermissionElementWindowMiddleBrowserTest
+    : public PermissionElementBrowserTestBase {
+ public:
+  PermissionElementWindowMiddleBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPermissionElement, {}},
+         {blink::features::kBypassPepcSecurityForTesting, {}},
+         {permissions::features::kPermissionElementPromptPositioning,
+          {{"PermissionElementPromptPositioningParam", "window_middle"}}}},
+        {});
+  }
+};
+
+class PermissionElementLegacyPromptBrowserTest
+    : public PermissionElementBrowserTestBase {
+ public:
+  PermissionElementLegacyPromptBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPermissionElement, {}},
+         {blink::features::kBypassPepcSecurityForTesting, {}},
+         {permissions::features::kPermissionElementPromptPositioning,
+          {{"PermissionElementPromptPositioningParam", "legacy_prompt"}}}},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest, DefaultPromptPosition) {
+  TestPromptPosition(permissions::feature_params::
+                         PermissionElementPromptPosition::kWindowMiddle);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionElementNearElementBrowserTest,
+                       PromptPosition) {
+  TestPromptPosition(permissions::feature_params::
+                         PermissionElementPromptPosition::kNearElement);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionElementWindowMiddleBrowserTest,
+                       PromptPosition) {
+  TestPromptPosition(permissions::feature_params::
+                         PermissionElementPromptPosition::kWindowMiddle);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionElementLegacyPromptBrowserTest,
+                       PromptPosition) {
+  TestPromptPosition(permissions::feature_params::
+                         PermissionElementPromptPosition::kLegacyPrompt);
+}

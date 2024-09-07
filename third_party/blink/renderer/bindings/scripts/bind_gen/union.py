@@ -812,8 +812,7 @@ def make_tov8_function(cg_context):
     func_decl = CxxFuncDeclNode(name="ToV8",
                                 arg_decls=["ScriptState* script_state"],
                                 return_type="v8::Local<v8::Value>",
-                                const=True,
-                                override=True)
+                                const=True)
 
     func_def = CxxFuncDefNode(name="ToV8",
                               arg_decls=["ScriptState* script_state"],
@@ -1030,9 +1029,7 @@ def generate_union(union_identifier):
     ])
 
     # Assemble the parts.
-    header_node.accumulator.add_class_decls([
-        "ExceptionState",
-    ])
+    header_node.accumulator.add_class_decls(["ExceptionState", "ScriptState"])
     header_node.accumulator.add_include_headers([
         component_export_header(api_component, for_testing),
         "base/check_op.h",
@@ -1085,10 +1082,11 @@ def generate_union(union_identifier):
     source_blink_ns.body.append(accessor_defs)
     source_blink_ns.body.append(EmptyNode())
 
-    class_def.public_section.append(tov8_func_decls)
-    class_def.public_section.append(EmptyNode())
-    source_blink_ns.body.append(tov8_func_defs)
-    source_blink_ns.body.append(EmptyNode())
+    if union.usage & web_idl.idl_type.UnionType.Usage.OUTPUT:
+        class_def.public_section.append(tov8_func_decls)
+        class_def.public_section.append(EmptyNode())
+        source_blink_ns.body.append(tov8_func_defs)
+        source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(trace_func_decls)
     class_def.public_section.append(EmptyNode())

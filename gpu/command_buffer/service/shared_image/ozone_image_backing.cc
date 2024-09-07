@@ -29,7 +29,7 @@
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
@@ -177,8 +177,7 @@ OzoneImageBacking::ProduceSkiaGraphite(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   CHECK(context_state);
-  CHECK(context_state->graphite_context());
-  CHECK(context_state->gr_context_type() == GrContextType::kGraphiteDawn);
+  CHECK(context_state->IsGraphiteDawn());
 #if BUILDFLAG(SKIA_USE_DAWN)
   auto device = context_state->dawn_context_provider()->GetDevice();
   auto backend_type = context_state->dawn_context_provider()->backend_type();
@@ -512,7 +511,7 @@ bool OzoneImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   DCHECK(context_state_->IsCurrent(nullptr));
 
 #if BUILDFLAG(USE_DAWN)
-  if (context_state_->gr_context_type() == GrContextType::kGraphiteDawn) {
+  if (context_state_->IsGraphiteDawn()) {
     return UploadFromMemoryGraphite(pixmaps);
   }
 #endif  // BUILDFLAG(USE_DAWN)
@@ -560,7 +559,7 @@ bool OzoneImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
 #if BUILDFLAG(USE_DAWN)
 bool OzoneImageBacking::UploadFromMemoryGraphite(
     const std::vector<SkPixmap>& pixmaps) {
-  DCHECK(context_state_->gr_context_type() == GrContextType::kGraphiteDawn);
+  DCHECK(context_state_->IsGraphiteDawn());
   auto representation = ProduceSkiaGraphite(
       nullptr, context_state_->memory_type_tracker(), context_state_);
   DCHECK_EQ(pixmaps.size(), representation->NumPlanesExpected());

@@ -149,10 +149,8 @@ AutofillCountry::address_format_extensions() const {
   std::vector<std::pair<std::string, base::span<const AddressFormatExtension>>>
       overrides = {{"FR", fr_extensions}, {"GB", gb_extensions}};
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAdminLevel2)) {
-    overrides.emplace_back("MX", mx_extensions);
-  }
+  overrides.emplace_back("MX", mx_extensions);
+
   if (base::FeatureList::IsEnabled(features::kAutofillUseDEAddressModel)) {
     overrides.emplace_back("DE", de_extensions);
   }

@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/toast/system_nudge_view.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -17,13 +16,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/growth/show_notification_action_performer.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
-#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -261,8 +261,8 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
       "ChromeOSAshGrowthCampaigns_Campaign100_Impression";
   EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
 
-  growth::CampaignsManager::Get()->RecordEventForTargeting(
-      growth::CampaignEvent::kImpression, "100");
+  growth::CampaignsManager::Get()->RecordEvent(
+      GetEventName(growth::CampaignEvent::kImpression, "100"));
 }
 
 IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
@@ -271,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
       "ChromeOSAshGrowthCampaigns_Campaign100_Dismissed";
   EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
 
-  growth::CampaignsManager::Get()->RecordEventForTargeting(
-      growth::CampaignEvent::kDismissed, "100");
+  growth::CampaignsManager::Get()->RecordEvent(
+      GetEventName(growth::CampaignEvent::kDismissed, "100"));
 }
 
 IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
@@ -281,8 +281,8 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
       "ChromeOSAshGrowthCampaigns_Group10_Impression";
   EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
 
-  growth::CampaignsManager::Get()->RecordEventForTargeting(
-      growth::CampaignEvent::kGroupImpression, "10");
+  growth::CampaignsManager::Get()->RecordEvent(
+      GetEventName(growth::CampaignEvent::kGroupImpression, "10"));
 }
 
 IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
@@ -290,8 +290,8 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
   const std::string event_name = "ChromeOSAshGrowthCampaigns_Group10_Dismissed";
   EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
 
-  growth::CampaignsManager::Get()->RecordEventForTargeting(
-      growth::CampaignEvent::kGroupDismissed, "10");
+  growth::CampaignsManager::Get()->RecordEvent(
+      GetEventName(growth::CampaignEvent::kGroupDismissed, "10"));
 }
 
 IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
@@ -300,8 +300,8 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
       "ChromeOSAshGrowthCampaigns_AppOpened_AppId_abcd";
   EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
 
-  growth::CampaignsManager::Get()->RecordEventForTargeting(
-      growth::CampaignEvent::kAppOpened, "abcd");
+  growth::CampaignsManager::Get()->RecordEvent(
+      GetEventName(growth::CampaignEvent::kAppOpened, "abcd"));
 }
 
 IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest, ClearConfig) {
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
                        ShowNotification) {
   RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
-      WaitForShow(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
       WithoutDelay(Steps(
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(
@@ -499,9 +499,9 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
 
   RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
-      WaitForShow(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
       Click(/*button_index=*/0),
-      WaitForHide(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
       WaitForWindowWithTitle(env, u"www.google.com"),
       WithoutDelay(Steps(
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
@@ -520,9 +520,9 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
 
   RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
-      WaitForShow(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
       Click(/*button_index=*/1),
-      WaitForHide(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
       WithoutDelay(Steps(
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(

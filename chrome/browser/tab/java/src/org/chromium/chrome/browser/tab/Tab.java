@@ -347,6 +347,12 @@ public interface Tab extends TabLifecycle {
      */
     int getParentId();
 
+    /**
+     * Set the parent identifier for the {@link Tab}. This method is only used as a temporary
+     * workaround for invalid parent ids being present in the tab state file.
+     */
+    void setParentId(int parentId);
+
     // TODO(crbug.com/41497290): deprecate RootId once TabGroupId has finished replacing it.
     /**
      * Returns the root identifier for the {@link Tab}. This method will be replaced by {@link

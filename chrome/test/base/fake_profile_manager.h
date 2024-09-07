@@ -35,7 +35,8 @@ class FakeProfileManager : public ProfileManagerWithoutInit {
   // `TestingProfile` initialized with `path` and `delegate`.
   virtual std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate);
+      Delegate* delegate,
+      Profile::CreateMode create_mode);
 
  protected:
   std::unique_ptr<Profile> CreateProfileHelper(

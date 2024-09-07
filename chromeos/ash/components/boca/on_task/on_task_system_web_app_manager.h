@@ -7,8 +7,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/sessions/core/session_id.h"
+#include "url/gurl.h"
 
-namespace ash {
+namespace ash::boca {
 
 // Responsible for managing all OnTask interactions with the Boca SWA. These
 // interactions include launching the Boca SWA, closing the active SWA instance,
@@ -36,10 +37,18 @@ class OnTaskSystemWebAppManager {
   virtual void SetPinStateForSystemWebAppWindow(bool pinned,
                                                 SessionID window_id) = 0;
 
+  // Set the window tracker to track the browser browser window with specified
+  // id.
+  virtual void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) = 0;
+
+  // Creates a background tab with the given URL in the specified Boca SWA
+  // window.
+  virtual void CreateBackgroundTabWithUrl(SessionID window_id, GURL url) = 0;
+
  protected:
   OnTaskSystemWebAppManager() = default;
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_

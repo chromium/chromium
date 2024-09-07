@@ -71,8 +71,8 @@ bool StubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
   // cellular technology is not enabled.
   if (!cellular_device || !network_state_handler_->IsTechnologyEnabled(
                               NetworkTypePattern::Cellular())) {
-    return RemoveStubCellularNetworks(/*esim_and_slot_metadata=*/nullptr,
-                                      /*shill_iccids=*/nullptr, network_list);
+    return RemoveCellularNetworks(/*esim_and_slot_metadata=*/nullptr,
+                                  /*shill_iccids=*/nullptr, network_list);
   }
 
   base::flat_set<std::string> all_iccids, shill_iccids;
@@ -84,8 +84,9 @@ bool StubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
   bool network_list_changed = false;
   network_list_changed |= AddStubNetworks(
       cellular_device, esim_and_slot_metadata, all_iccids, new_stub_networks);
-  network_list_changed |= RemoveStubCellularNetworks(
-      &esim_and_slot_metadata, &shill_iccids, network_list);
+  network_list_changed |= RemoveCellularNetworks(&esim_and_slot_metadata,
+                                                 &shill_iccids, network_list);
+  network_list_changed |= UpdateCellularNetworks(network_list);
 
   return network_list_changed;
 }
@@ -172,8 +173,8 @@ bool StubCellularNetworksProvider::AddStubNetworks(
 
     bool is_managed = false;
     if (managed_cellular_pref_handler_) {
-      is_managed = managed_cellular_pref_handler_->GetESimMetadata(
-                       iccid_eid_pair.first) != nullptr;
+      is_managed =
+          managed_cellular_pref_handler_->IsESimManaged(iccid_eid_pair.first);
     }
     NET_LOG(EVENT) << "Adding stub cellular network for ICCID="
                    << iccid_eid_pair.first << " EID=" << iccid_eid_pair.second
@@ -188,7 +189,7 @@ bool StubCellularNetworksProvider::AddStubNetworks(
   return network_added;
 }
 
-bool StubCellularNetworksProvider::RemoveStubCellularNetworks(
+bool StubCellularNetworksProvider::RemoveCellularNetworks(
     const std::vector<IccidEidPair>* esim_and_slot_metadata,
     const base::flat_set<std::string>* shill_iccids,
     NetworkStateHandler::ManagedStateList& network_list) {
@@ -224,6 +225,41 @@ bool StubCellularNetworksProvider::RemoveStubCellularNetworks(
   }
 
   return network_removed;
+}
+
+bool StubCellularNetworksProvider::UpdateCellularNetworks(
+    NetworkStateHandler::ManagedStateList& network_list) {
+  bool network_changed = false;
+
+  for (auto it = network_list.begin(); it != network_list.end(); ++it) {
+    const NetworkState* network = (*it)->AsNetworkState();
+
+    // Shill backed networks are not stubs and thus should not be modified.
+    if (!network->IsNonShillCellularNetwork()) {
+      continue;
+    }
+
+    const bool is_managed =
+        managed_cellular_pref_handler_
+            ? managed_cellular_pref_handler_->IsESimManaged(network->iccid())
+            : false;
+
+    // We only want to update the network if we detect that the managed state
+    // has changed.
+    if (is_managed == network->IsManagedByPolicy()) {
+      continue;
+    }
+
+    NET_LOG(EVENT) << "Updating managed state of stub cellular network for "
+                   << "ICCID=" << network->iccid() << " EID=" << network->eid()
+                   << ", is managed: " << is_managed;
+    *it = NetworkState::CreateNonShillCellularNetwork(
+        network->iccid(), network->eid(), GetGuidForStubIccid(network->iccid()),
+        is_managed, network->device_path());
+    network_changed = true;
+  }
+
+  return network_changed;
 }
 
 }  // namespace ash

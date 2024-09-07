@@ -12,11 +12,14 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.chrome.browser.tracing.TracingNotificationManager;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.lang.annotation.Retention;
@@ -28,7 +31,7 @@ import java.util.Set;
 
 /** Settings fragment that shows options for recording a performance trace. */
 public class TracingSettings extends PreferenceFragmentCompat
-        implements TracingController.Observer {
+        implements SettingsPage, TracingController.Observer {
     static final String NON_DEFAULT_CATEGORY_PREFIX = "disabled-by-default-";
 
     @VisibleForTesting static final String UI_PREF_DEFAULT_CATEGORIES = "default_categories";
@@ -56,6 +59,9 @@ public class TracingSettings extends PreferenceFragmentCompat
             "Record until full (large buffer)";
     private static final String MSG_MODE_RECORD_CONTINUOUSLY = "Record continuously";
     private static final String MSG_SHARE_TRACE = "Share trace";
+
+    private static final ObservableSupplier<String> sPageTitle =
+            new ObservableSupplierImpl<>(MSG_TRACING_TITLE);
 
     @VisibleForTesting
     static final String MSG_NOTIFICATIONS_DISABLED =
@@ -176,7 +182,6 @@ public class TracingSettings extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(MSG_TRACING_TITLE);
         SettingsUtils.addPreferencesFromResource(this, R.xml.tracing_preferences);
 
         mPrefDefaultCategories = findPreference(UI_PREF_DEFAULT_CATEGORIES);
@@ -219,6 +224,11 @@ public class TracingSettings extends PreferenceFragmentCompat
                     updatePreferences();
                     return true;
                 });
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return sPageTitle;
     }
 
     @Override

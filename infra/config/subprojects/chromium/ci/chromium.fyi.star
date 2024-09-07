@@ -259,6 +259,7 @@ ci.builder(
         short_name = "rel",
     ),
     execution_timeout = 3 * time.hour,
+    notifies = ["annotator-rel"],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -459,6 +460,13 @@ ci.builder(
 
 fyi_ios_builder(
     name = "ios-fieldtrial-rel",
+    description_html = (
+        "Builds the open-source version of Chrome for iOS and runs tests, " +
+        "passing the --disable-field-trial-config flag. This causes " +
+        "testing/variations/fieldtrial_testing_config.json not to be used for" +
+        " determining which finch experiments are enabled. Instead, the " +
+        "default configuration of every feature flag is used."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -487,110 +495,6 @@ fyi_ios_builder(
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
-    ),
-)
-
-ci.builder(
-    name = "linux-lacros-builder-fyi-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "lacros_on_linux",
-            "release_builder",
-            "remoteexec",
-            "also_build_ash_chrome",
-            "x64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-    ),
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.thin_tester(
-    name = "linux-lacros-tester-fyi-rel",
-    triggered_by = ["linux-lacros-builder-fyi-rel"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-    ),
-)
-
-ci.builder(
-    name = "linux-lacros-dbg-fyi",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "lacros_on_linux",
-            "debug_builder",
-            "remoteexec",
-            "also_build_ash_chrome",
-            "x64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-    ),
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.thin_tester(
-    name = "linux-lacros-dbg-tests-fyi",
-    triggered_by = ["linux-lacros-dbg-fyi"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
     ),
 )
 
@@ -826,6 +730,7 @@ fyi_ios_builder(
     ),
     builderless = True,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
@@ -1359,7 +1264,6 @@ fyi_reclient_comparison_builder(
                 "amd64-generic-vm",
                 "ozone_headless",
                 "use_fake_dbus_clients",
-                "also_build_lacros_chrome_for_architecture_amd64",
                 "x64",
             ],
         ),
@@ -1371,7 +1275,6 @@ fyi_reclient_comparison_builder(
                 "amd64-generic-vm",
                 "ozone_headless",
                 "use_fake_dbus_clients",
-                "also_build_lacros_chrome_for_architecture_amd64",
                 "x64",
             ],
         ),
@@ -1717,40 +1620,6 @@ fyi_mac_builder(
     siso_remote_jobs = None,
 )
 
-ci.builder(
-    name = "linux-lacros-builder-rel (reclient)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "lacros_on_linux",
-            "release_builder",
-            "remoteexec",
-            "also_build_ash_chrome",
-            "x64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros rel",
-    ),
-    reclient_rewrapper_env = {"RBE_cache_silo": "linux-lacros-builder-rel (reclient)"},
-    siso_remote_jobs = None,
-)
-
 fyi_ios_builder(
     name = "ios-m1-simulator",
     schedule = "0 1,5,9,13,17,21 * * *",
@@ -1932,7 +1801,7 @@ fyi_ios_builder(
             short_name = "dev",
         ),
     ],
-    xcode = xcode.x15betabots,
+    xcode = xcode.x16_1betabots,
 )
 
 fyi_ios_builder(
@@ -1967,7 +1836,7 @@ fyi_ios_builder(
             short_name = "sdk17",
         ),
     ],
-    xcode = xcode.x15betabots,
+    xcode = xcode.x16_1betabots,
 )
 
 fyi_ios_builder(
@@ -2298,48 +2167,4 @@ ci.builder(
     execution_timeout = 16 * time.hour,
     notifies = ["annotator-rel"],
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
-)
-
-# TODO(crbug.com/324461153) remove this builder once dangling check is on CQ.
-ci.builder(
-    name = "linux-lacros-rel-dangling-ptr-fyi",
-    description_html = "Dangling ptr check for lacros.",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "lacros_on_linux",
-            "release_builder",
-            "remoteexec",
-            "also_build_ash_chrome",
-            "use_cups",
-            "enable_dangling_raw_ptr_checks",
-            "enable_dangling_raw_ptr_feature_flag",
-            "enable_backup_ref_ptr_feature_flag",
-            "x64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros",
-    ),
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )

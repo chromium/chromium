@@ -51,7 +51,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::AtLeast;
@@ -131,6 +130,8 @@ MATCHER_P(AutofilledWithProfile, profile, "") {
 }
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class FormFillerTest : public testing::Test {
  public:
@@ -153,7 +154,8 @@ class FormFillerTest : public testing::Test {
     // Mandatory re-auth is required for credit card autofill on automotive, so
     // the authenticator response needs to be properly mocked.
 #if BUILDFLAG(IS_ANDROID)
-    autofill_client_.SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
+    autofill_client_.GetPaymentsAutofillClient()
+        ->SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
 #endif
   }
 
@@ -1749,6 +1751,39 @@ TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
   AutofillProfile profile = test::GetFullProfile();
   FillAutofillFormData(form, form.fields().front(), &profile);
   // Expect that this test doesn't cause a crash.
+}
+
+TEST_F(FormFillerTest, FillOrPreviewFormExperimental) {
+  test::FormDescription form_description = {
+      .fields = {{.role = NAME_FIRST, .heuristic_type = NAME_FIRST},
+                 {.role = NAME_LAST, .heuristic_type = NAME_LAST},
+                 {.role = EMAIL_ADDRESS, .heuristic_type = EMAIL_ADDRESS},
+                 {.role = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}};
+  FormData form = test::GetFormData(form_description);
+  FormsSeen({form});
+  base::flat_map<FieldGlobalId, std::u16string> values_to_fill = {
+      // Not filled because the value to fill is empty.
+      {form.fields()[0].global_id(), u""},
+      // Filled.
+      {form.fields()[1].global_id(), u"Doe"},
+      // Not filled because `field_types_to_fill` doesn't contain
+      // `EMAIL_ADDRESS`.
+      {form.fields()[2].global_id(), u"johndoe@example.com"},
+      // Filled (because `field_types_to_fill` include `UNKNOWN_TYPE` and
+      // `ignorable_skip_reasons` include `kNoFillableGroup`).
+      {form.fields()[3].global_id(), u"100 John Doe Rd"}};
+  std::vector<FormFieldData> filled_fields;
+  EXPECT_CALL(autofill_driver_, ApplyFormAction)
+      .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
+                      Return(std::vector<FieldGlobalId>())));
+  browser_autofill_manager_->FillOrPreviewFormExperimental(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress,
+      /*field_types_to_fill=*/{UNKNOWN_TYPE, NAME_FIRST, NAME_LAST},
+      /*ignorable_skip_reasons=*/{FieldFillingSkipReason::kNoFillableGroup},
+      form, form.fields().front(), values_to_fill);
+  ASSERT_EQ(filled_fields.size(), 2UL);
+  EXPECT_EQ(filled_fields[0].value(), u"Doe");
+  EXPECT_EQ(filled_fields[1].value(), u"100 John Doe Rd");
 }
 
 // The following Refill Tests ensure that Autofill can handle the situation

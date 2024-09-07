@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/passwords/model/ios_password_store_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -117,8 +117,9 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
   store->Init(ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
               std::move(affiliated_match_helper));
 
-  password_manager::RemoveUselessCredentials(
+  password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForBrowserState(context), store,
+      password_manager::kProfileStore,
       ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
       base::Seconds(60), base::NullCallback());
   if (!context->IsOffTheRecord()) {

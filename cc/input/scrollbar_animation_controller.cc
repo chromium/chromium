@@ -136,18 +136,18 @@ void ScrollbarAnimationController::PostDelayedAnimation(
       delayed_scrollbar_animation_.callback(), fade_delay_);
 }
 
-bool ScrollbarAnimationController::Animate(base::TimeTicks now,
-                                           bool& fade_out_only) {
-  bool animated_fade = false;
+bool ScrollbarAnimationController::Animate(base::TimeTicks now) {
+  bool animated = false;
 
   for (ScrollbarLayerImplBase* scrollbar : Scrollbars()) {
-    if (!scrollbar->CanScrollOrientation())
-      scrollbar->SetOverlayScrollbarLayerOpacityAnimated(0);
+    if (!scrollbar->CanScrollOrientation()) {
+      scrollbar->SetOverlayScrollbarLayerOpacityAnimated(
+          0, /*fade_out_animation=*/false);
+    }
   }
 
   if (is_animating_) {
     DCHECK(animation_change_ != AnimationChange::kNone);
-    fade_out_only = animation_change_ == AnimationChange::kFadeOut;
     if (last_awaken_time_.is_null())
       last_awaken_time_ = now;
 
@@ -156,19 +156,15 @@ bool ScrollbarAnimationController::Animate(base::TimeTicks now,
 
     if (is_animating_)
       client_->SetNeedsAnimateForScrollbarAnimation();
-    animated_fade = true;
+    animated = true;
   }
 
-  bool animated_thinning = false;
   if (need_thinning_animation_) {
-    animated_thinning |= vertical_controller_->Animate(now);
-    animated_thinning |= horizontal_controller_->Animate(now);
-  }
-  if (animated_thinning) {
-    fade_out_only = false;
+    animated |= vertical_controller_->Animate(now);
+    animated |= horizontal_controller_->Animate(now);
   }
 
-  return animated_fade || animated_thinning;
+  return animated;
 }
 
 float ScrollbarAnimationController::AnimationProgressAtTime(
@@ -384,32 +380,31 @@ bool ScrollbarAnimationController::Captured() const {
 
 void ScrollbarAnimationController::Show() {
   delayed_scrollbar_animation_.Cancel();
-  if (ApplyOpacityToScrollbars(1.0f)) {
-    // Set needs redraw explicitly since the animation system won't trigger
-    // redraw here. The scrollbar became fully opaque and isn't animating.
-    client_->SetNeedsRedrawForScrollbarAnimation();
-  }
+  ApplyOpacityToScrollbars(1.0f);
 }
 
-bool ScrollbarAnimationController::ApplyOpacityToScrollbars(float opacity) {
+void ScrollbarAnimationController::ApplyOpacityToScrollbars(float opacity) {
   for (ScrollbarLayerImplBase* scrollbar : Scrollbars()) {
     DCHECK(scrollbar->is_overlay_scrollbar());
     float effective_opacity = scrollbar->CanScrollOrientation() ? opacity : 0;
-    scrollbar->SetOverlayScrollbarLayerOpacityAnimated(effective_opacity);
+    scrollbar->SetOverlayScrollbarLayerOpacityAnimated(
+        effective_opacity,
+        /*fade_out_animation=*/animation_change_ == AnimationChange::kFadeOut);
   }
 
   bool previously_visible_ = opacity_ > 0.0f;
   bool currently_visible = opacity > 0.0f;
 
-  bool opacity_changed = opacity_ != opacity;
+  if (opacity_ != opacity) {
+    client_->SetNeedsRedrawForScrollbarAnimation();
+  }
+
   opacity_ = opacity;
 
   if (previously_visible_ != currently_visible) {
     client_->DidChangeScrollbarVisibility();
     visibility_changed_ = true;
   }
-
-  return opacity_changed;
 }
 
 }  // namespace cc

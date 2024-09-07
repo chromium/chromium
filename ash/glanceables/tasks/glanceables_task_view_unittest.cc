@@ -24,6 +24,7 @@
 #include "base/time/time_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/event_constants.h"
@@ -158,7 +159,7 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   base::test::TestFuture<GlanceablesTasksErrorType,
-                         GlanceablesErrorMessageView::ButtonActionType>
+                         ErrorMessageToast::ButtonActionType>
       error_future;
 
   const auto* const view =
@@ -185,7 +186,7 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
     EXPECT_EQ(task_error_type,
               GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork);
     EXPECT_EQ(button_action_type,
-              GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+              ErrorMessageToast::ButtonActionType::kDismiss);
   }
 
   // No `STRIKE_THROUGH` style should be applied to the label.
@@ -206,7 +207,7 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
     EXPECT_EQ(task_error_type,
               GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork);
     EXPECT_EQ(button_action_type,
-              GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+              ErrorMessageToast::ButtonActionType::kDismiss);
   }
 }
 
@@ -435,7 +436,8 @@ TEST_F(GlanceablesTaskViewTest, CommitEditedTaskOnTab) {
                   /*has_email_link=*/false, /*has_notes=*/false,
                   /*updated=*/base::Time::Now(), /*web_view_link=*/GURL(),
                   api::Task::OriginSurfaceType::kRegular);
-    std::move(callback).Run(&updated_task);
+    std::move(callback).Run(google_apis::ApiErrorCode::HTTP_SUCCESS,
+                            &updated_task);
   }
 
   const auto* title_label = views::AsViewClass<views::Label>(view->GetViewByID(
@@ -523,7 +525,8 @@ TEST_F(GlanceablesTaskViewTest, SupportsEditingRightAfterAdding) {
                   /*has_email_link=*/false, /*has_notes=*/false,
                   /*updated=*/base::Time::Now(), /*web_view_link=*/GURL(),
                   api::Task::OriginSurfaceType::kRegular);
-    std::move(callback).Run(&created_task);
+    std::move(callback).Run(google_apis::ApiErrorCode::HTTP_SUCCESS,
+                            &created_task);
   }
 
   {
@@ -593,7 +596,8 @@ TEST_F(GlanceablesTaskViewTest, HandlesPressingCheckButtonWhileAdding) {
                 /*has_email_link=*/false, /*has_notes=*/false,
                 /*updated=*/base::Time::Now(), /*web_view_link=*/GURL(),
                 api::Task::OriginSurfaceType::kRegular);
-  std::move(callback).Run(&created_task);
+  std::move(callback).Run(google_apis::ApiErrorCode::HTTP_SUCCESS,
+                          &created_task);
   EXPECT_TRUE(view->GetCheckButtonForTest()->GetEnabled());
   EXPECT_TRUE(title_button->GetEnabled());
 }

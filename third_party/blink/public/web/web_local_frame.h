@@ -240,6 +240,10 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void SetLCPPHint(
       const mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&) = 0;
 
+  // Tests whether the policy-controlled feature is enabled in this frame.
+  virtual bool IsFeatureEnabled(
+      const mojom::PermissionsPolicyFeature&) const = 0;
+
   // Hierarchy ----------------------------------------------------------
 
   // Returns true if the current frame is a provisional frame.
@@ -449,6 +453,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
                                     BackForwardCacheAware,
                                     mojom::WantResultOption,
                                     mojom::PromiseResultOption) = 0;
+
+  // Returns if devtools is connected to the frame.
+  virtual bool IsInspectorConnected() = 0;
 
   // Logs to the console associated with this frame. If |discard_duplicates| is
   // set, the message will only be added if it is unique (i.e. has not been
@@ -788,7 +795,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual bool WillPrintSoon() = 0;
 
   // Prints one page.
-  virtual void PrintPage(uint32_t page_to_print, cc::PaintCanvas*) = 0;
+  virtual void PrintPage(uint32_t page_index, cc::PaintCanvas*) = 0;
 
   // Reformats the WebFrame for screen display.
   virtual void PrintEnd() = 0;

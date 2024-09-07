@@ -106,6 +106,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       DedicatedWorkerCreator creator,
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const blink::StorageKey& creator_storage_key,
+      const url::Origin& renderer_origin,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr creator_client_security_state,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
@@ -260,8 +261,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       const std::vector<std::string>& directory_path_components,
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) override;
-  GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
-  base::UnguessableToken GetDevToolsToken() const override;
+  storage::BucketClientInfo GetBucketClientInfo() const override;
 
   // Returns the features set that disable back-forward cache.
   blink::scheduler::WebSchedulerTrackedFeatures
@@ -341,6 +341,13 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   // The origin of the frame or dedicated worker that starts this worker.
   const url::Origin creator_origin_;
+
+  // The origin used by this dedicated worker on the renderer side. This will
+  // almost always be the same as `storage_key_`'s origin, except in the case of
+  // data: URL workers, as described in the linked bug.
+  // TODO(crbug.com/40051700): Make the storage key's origin always match this,
+  // so that we can stop tracking this separately.
+  const url::Origin renderer_origin_;
 
   // The storage key of this worker. This is used for storage partitioning and
   // for retrieving the origin of this worker

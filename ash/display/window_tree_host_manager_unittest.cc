@@ -1909,6 +1909,23 @@ TEST_F(WindowTreeHostManagerTest, ReplacePrimary) {
   primary_root->RemoveObserver(&test_observer);
 }
 
+TEST_F(WindowTreeHostManagerTest, UpdateMouseLocationAfterDisplayChange_Noop) {
+  UpdateDisplay("1600x1000*.9");
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+
+  aura::Env* env = aura::Env::GetInstance();
+
+  ui::test::EventGenerator generator(root_windows[0]);
+
+  // Set the initial position.
+  generator.MoveMouseToInHost(627, 446);
+  EXPECT_EQ(gfx::Point(696, 495), env->last_mouse_location());
+
+  // A mouse pointer will stay at the same position.
+  UpdateDisplay("1600x1000*.9");
+  EXPECT_EQ(gfx::Point(696, 495), env->last_mouse_location());
+}
+
 TEST_F(WindowTreeHostManagerTest, UpdateMouseLocationAfterDisplayChange) {
   UpdateDisplay("300x200,400x300");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();

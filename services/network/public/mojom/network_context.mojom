@@ -1737,6 +1737,17 @@ interface NetworkContext {
   // nonce". Currently these are the two nonces passed in `nonces`.
   RevokeNetworkForNonces(array<mojo_base.mojom.UnguessableToken> nonces) => ();
 
+  // Clients should clear nonces tagged for network revocation using
+  // `StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelay` instead of
+  // this function. This is because `StoragePartitionImpl` also handles clearing
+  // the nonces in the browser-side replication data structure, which will
+  // ensure that stale nonces aren't re-added to the `NetworkContext` after a
+  // `NetworkService` crash. Note that this will only clear nonces specified
+  // previously in `RevokeNetworkForNonces`, and should only be called when
+  // those nonces are no longer relevant (for instance, after the corresponding
+  // fenced frame is destroyed).
+  ClearNonces(array<mojo_base.mojom.UnguessableToken> nonces);
+
   // Register that network requests operating under the nonce `nonce` whose url
   // without filename is `exempted_url` should be exempt from network
   // revocation. This can be called before network is revoked for `nonce` with

@@ -10,7 +10,6 @@
 
 #include "base/types/strong_alias.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 namespace syncer {
@@ -48,14 +47,9 @@ inline constexpr char kRequestIncludeSpecificsInitialState[] =
     "requestIncludeSpecificsInitialState";
 inline constexpr char kRequestListOfTypes[] = "requestListOfTypes";
 inline constexpr char kRequestStart[] = "requestStart";
-inline constexpr char kRequestStopClearData[] = "requestStopClearData";
 inline constexpr char kSetIncludeSpecifics[] = "setIncludeSpecifics";
 inline constexpr char kTriggerRefresh[] = "triggerRefresh";
 inline constexpr char kWriteUserEvent[] = "writeUserEvent";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-inline constexpr char kIsLacrosEnabled[] = "isLacrosEnabled";
-inline constexpr char kOpenLacrosSyncInternals[] = "openLacrosSyncInternals";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Other strings.
 // WARNING: Must match the property names used in the resource files.

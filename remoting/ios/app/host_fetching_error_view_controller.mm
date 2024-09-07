@@ -28,7 +28,7 @@ static const CGFloat kButtonBottomPaddingAdjustment = -5;
 @synthesize onRetryCallback = _onRetryCallback;
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     // Label should be created right under init because it may be accessed
     // before the view is loaded.
     _label = [[UILabel alloc] initWithFrame:CGRectZero];

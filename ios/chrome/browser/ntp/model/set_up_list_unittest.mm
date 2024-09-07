@@ -23,9 +23,11 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -49,8 +51,7 @@ class SetUpListTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ =
-        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     prefs_ = GetBrowserState()->GetPrefs();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),
@@ -93,10 +94,18 @@ class SetUpListTest : public PlatformTest {
                           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
     auth_service_->GrantSyncConsent(
         identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-    browser_state_manager_.GetBrowserStateInfoCache()
-        ->SetAuthInfoOfBrowserStateAtIndex(
-            0, base::SysNSStringToUTF8(identity.gaiaID),
-            base::SysNSStringToUTF8(identity.userEmail));
+
+    profile_manager_.GetProfileAttributesStorage()
+        ->UpdateAttributesForProfileWithName(
+            browser_state_->GetProfileName(),
+            base::BindOnce(
+                [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
+                  attr.SetAuthenticationInfo(
+                      base::SysNSStringToUTF8(identity.gaiaID),
+                      base::SysNSStringToUTF8(identity.userEmail));
+                  return attr;
+                },
+                identity));
   }
 
   // Ensures that Chrome is considered as default browser.
@@ -172,7 +181,7 @@ class SetUpListTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<AuthenticationService> auth_service_;

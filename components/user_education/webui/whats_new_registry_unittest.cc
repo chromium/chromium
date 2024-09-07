@@ -132,7 +132,7 @@ class WhatsNewRegistryTest : public testing::Test {
     whats_new_registry_->RegisterModule(
         WhatsNewModule(kTestModuleDisabledByDefault, ""));
     whats_new_registry_->RegisterModule(
-        WhatsNewModule("", BrowserCommand::kUnknownCommand));
+        WhatsNewModule("", "", BrowserCommand::kUnknownCommand));
   }
 
   void RegisterModulesAndEditions(
@@ -140,8 +140,9 @@ class WhatsNewRegistryTest : public testing::Test {
     RegisterModules(std::move(mock_storage_service));
 
     // Editions
-    whats_new_registry_->RegisterEdition(
-        WhatsNewEdition(kTestEditionEnabled1, ""));
+    whats_new_registry_->RegisterEdition(WhatsNewEdition(
+        kTestEditionEnabled1, "",
+        {BrowserCommand::kOpenAISettings, BrowserCommand::kOpenSafetyCheck}));
     whats_new_registry_->RegisterEdition(
         WhatsNewEdition(kTestEditionEnabled2, ""));
     whats_new_registry_->RegisterEdition(
@@ -170,6 +171,22 @@ TEST_F(WhatsNewRegistryTest, CommandsAreActiveForEnabledFeatures) {
   EXPECT_EQ(static_cast<size_t>(2), active_commands.size());
   EXPECT_EQ(BrowserCommand::kNoOpCommand, active_commands.at(0));
   EXPECT_EQ(BrowserCommand::kUnknownCommand, active_commands.at(1));
+}
+
+TEST_F(WhatsNewRegistryTest, CommandsAreActiveForEnabledModulesAndEditions) {
+  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
+  RegisterModulesAndEditions(std::move(mock_storage_service));
+
+  auto active_commands = whats_new_registry_->GetActiveCommands();
+  EXPECT_EQ(static_cast<size_t>(4), active_commands.size());
+  EXPECT_EQ(BrowserCommand::kNoOpCommand, active_commands.at(0));
+  EXPECT_EQ(BrowserCommand::kUnknownCommand, active_commands.at(1));
+
+  // Note: If you are removing one of these commands, you may change
+  // these to any available command to match the above Edition
+  // registratrion.
+  EXPECT_EQ(BrowserCommand::kOpenAISettings, active_commands.at(2));
+  EXPECT_EQ(BrowserCommand::kOpenSafetyCheck, active_commands.at(3));
 }
 
 TEST_F(WhatsNewRegistryTest, FindModulesForActiveFeatures) {

@@ -60,6 +60,10 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
                          base::OnceClosure callback) override {}
   void DragSourceSystemDragEnded() override {}
   void OnStartStylusWriting(OnStartStylusWritingCallback callback) override {}
+#if BUILDFLAG(IS_ANDROID)
+  void PassImeRenderWidgetHost(
+      mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost>) override {}
+#endif
   void SetBackgroundOpaque(bool value) override {}
   void SetTextDirection(base::i18n::TextDirection direction) override;
   void NotifyClearedDisplayedGraphics() override {}

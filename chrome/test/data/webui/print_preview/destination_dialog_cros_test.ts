@@ -5,7 +5,6 @@
 import type {Destination, DestinationStore, LocalDestinationInfo, PrintPreviewDestinationDialogCrosElement, RecentDestination} from 'chrome://print/print_preview.js';
 import {DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS, makeRecentDestination, NativeLayerImpl, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -233,14 +232,10 @@ suite('DestinationDialogCrosTest', function() {
             await pendingPrintServerId);
       });
 
-  // Test that the correct elements are displayed when the printer setup
-  // assistance flag is on and destination store has destinations.
+  // Test that the correct elements are displayed when the destination store has
+  // destinations.
   test(
       'PrinterSetupAssistanceHasDestinations', async () => {
-        // Set flag enabled.
-        loadTimeData.overrideValues({
-          isPrintPreviewSetupAssistanceEnabled: true,
-        });
         await recreateElementAndFinishSetup(/*removeDestinations=*/ false);
 
         // Manage printers button hidden when there are valid destinations.
@@ -272,10 +267,6 @@ suite('DestinationDialogCrosTest', function() {
   // is still searching for more.
   test('PrinterSetupAssistanceHasDestinationsSearching', async () => {
     nativeLayer.setSimulateNoResponseForGetPrinters(true);
-    // Set flag enabled.
-    loadTimeData.overrideValues({
-      isPrintPreviewSetupAssistanceEnabled: true,
-    });
 
     document.body.appendChild(dialog);
     await nativeLayer.whenCalled('getPrinterCapabilities');
@@ -318,10 +309,6 @@ suite('DestinationDialogCrosTest', function() {
   // assistance flag is on and destination store has no destinations.
   test(
       'PrinterSetupAssistanceHasNoDestinations', async () => {
-        // Set flag enabled.
-        loadTimeData.overrideValues({
-          isPrintPreviewSetupAssistanceEnabled: true,
-        });
         await recreateElementAndFinishSetup(/*removeDestinations=*/ true);
 
         // Manage printers button hidden when there are no destinations.
@@ -358,10 +345,6 @@ suite('DestinationDialogCrosTest', function() {
   // destination store has destinations.
   test(
       'ManagePrintersMetrics_HasDestinations', async () => {
-        // Set flag enabled.
-        loadTimeData.overrideValues({
-          isPrintPreviewSetupAssistanceEnabled: true,
-        });
         await recreateElementAndFinishSetup(/*removeDestinations=*/ false);
 
         assertEquals(0, nativeLayer.getCallCount('recordInHistogram'));
@@ -381,10 +364,6 @@ suite('DestinationDialogCrosTest', function() {
   // destination store has no destinations.
   test(
       'ManagePrintersMetrics_HasNoDestinations', async () => {
-        // Set flag enabled.
-        loadTimeData.overrideValues({
-          isPrintPreviewSetupAssistanceEnabled: true,
-        });
         await recreateElementAndFinishSetup(/*removeDestinations=*/ true);
 
         assertEquals(0, nativeLayer.getCallCount('recordInHistogram'));
@@ -410,10 +389,6 @@ suite('DestinationDialogCrosTest', function() {
   test(
       'PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse',
       async () => {
-        // Set flag enabled.
-        loadTimeData.overrideValues({
-          isPrintPreviewSetupAssistanceEnabled: true,
-        });
         nativeLayerCros.setShowManagePrinters(false);
         await recreateElementAndFinishSetup(/*removeDestinations=*/ false);
 
@@ -450,10 +425,6 @@ suite('DestinationDialogCrosTest', function() {
   // of 2 seconds before destination list and search box are visible.
   test(
       'CorrectlyDisplaysAndHidesLoadingUI', async () => {
-        // Set flag enabled.
-        loadTimeData.overrideValues({
-          isPrintPreviewSetupAssistanceEnabled: true,
-        });
         document.body.appendChild(dialog);
         mockTimer.install();
         await nativeLayer.whenCalled('getPrinterCapabilities');

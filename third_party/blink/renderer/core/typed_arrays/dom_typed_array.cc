@@ -44,6 +44,7 @@ v8::Local<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
   V(uint8_t, Uint8Clamped, true)           \
   V(uint16_t, Uint16, false)               \
   V(uint32_t, Uint32, false)               \
+  V(uint16_t, Float16, false)              \
   V(float, Float32, false)                 \
   V(double, Float64, false)                \
   V(int64_t, BigInt64, false)              \

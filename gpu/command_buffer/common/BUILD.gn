@@ -120,10 +120,6 @@ source_set("common_sources") {
   ]
 
   deps = [ "//base" ]
-
-  # TODO(piman): needed for gpu_memory_buffer_support.cc. Split common vs gles2
-  # specifics.
-  configs += [ "//third_party/khronos:khronos_headers" ]
 }
 
 source_set("mailbox_sources") {
@@ -226,7 +222,10 @@ component("gles2_utils") {
 
   defines = [ "GLES2_UTILS_IMPLEMENTATION" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/gl:gl_enums",
+  ]
 
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
 }

@@ -8,7 +8,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -29,7 +30,7 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   // If a dialog is already open, brings it to the front and returns false.
   // Otherwise, shows the dialog and returns true.
   static bool Show(CloudProvider cloud_provider,
-                   base::TimeDelta migration_delay,
+                   base::Time migration_start_time,
                    StartMigrationCallback migration_callback);
 
   // Returns a pointer to the instance of LocalFilesMigrationDialog, if it
@@ -43,13 +44,16 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   // Returns the native window. Should only be used in tests.
   gfx::NativeWindow GetDialogWindowForTesting() const;
 
+  // ash::SystemWebDialogDelegate implementation:
+  void OnDialogShown(content::WebUI* webui) override;
+
  private:
   LocalFilesMigrationDialog(CloudProvider cloud_provider,
-                            base::TimeDelta migration_delay,
+                            base::Time migration_start_time,
                             StartMigrationCallback migration_callback);
   ~LocalFilesMigrationDialog() override;
 
-  // ash::SystemWebDialogDelegate:
+  // ash::SystemWebDialogDelegate implementation:
   bool ShouldShowCloseButton() const override;
   ui::mojom::ModalType GetDialogModalType() const override;
 
@@ -60,8 +64,8 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   // Cloud provider to which files are uploaded.
   CloudProvider cloud_provider_;
 
-  // The time until automatic migration starts.
-  base::TimeDelta migration_delay_;
+  // The time at which migration automatically starts.
+  base::Time migration_start_time_;
 
   // Called if the user starts migration immediately.
   StartMigrationCallback migration_callback_;

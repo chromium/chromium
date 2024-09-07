@@ -118,15 +118,15 @@ std::vector<gfx::RectF> GetTextPositions(base::span<const uint8_t> pdf,
 TEST_F(PDFiumEngineExportsTest, GetPDFDocInfo) {
   base::FilePath pdf_path =
       pdf_data_dir().Append(FILE_PATH_LITERAL("hello_world2.pdf"));
-  std::string pdf_data;
-  ASSERT_TRUE(base::ReadFileToString(pdf_path, &pdf_data));
+  std::optional<std::vector<uint8_t>> pdf_data =
+      base::ReadFileToBytes(pdf_path);
+  ASSERT_TRUE(pdf_data.has_value());
 
-  auto pdf_span = base::as_bytes(base::make_span(pdf_data));
-  ASSERT_TRUE(GetPDFDocInfo(pdf_span, nullptr, nullptr));
+  ASSERT_TRUE(GetPDFDocInfo(pdf_data.value(), nullptr, nullptr));
 
   int page_count;
   float max_page_width;
-  ASSERT_TRUE(GetPDFDocInfo(pdf_span, &page_count, &max_page_width));
+  ASSERT_TRUE(GetPDFDocInfo(pdf_data.value(), &page_count, &max_page_width));
   EXPECT_EQ(2, page_count);
   EXPECT_DOUBLE_EQ(200.0, max_page_width);
 }
@@ -136,16 +136,16 @@ TEST_F(PDFiumEngineExportsTest, GetPDFPageSizeByIndex) {
   // dimensions are uninteresting.
   base::FilePath pdf_path =
       pdf_data_dir().Append(FILE_PATH_LITERAL("hello_world2.pdf"));
-  std::string pdf_data;
-  ASSERT_TRUE(base::ReadFileToString(pdf_path, &pdf_data));
+  std::optional<std::vector<uint8_t>> pdf_data =
+      base::ReadFileToBytes(pdf_path);
+  ASSERT_TRUE(pdf_data.has_value());
 
-  auto pdf_span = base::as_bytes(base::make_span(pdf_data));
   int page_count;
-  ASSERT_TRUE(GetPDFDocInfo(pdf_span, &page_count, nullptr));
+  ASSERT_TRUE(GetPDFDocInfo(pdf_data.value(), &page_count, nullptr));
   ASSERT_EQ(2, page_count);
   for (int page_index = 0; page_index < page_count; ++page_index) {
     std::optional<gfx::SizeF> page_size =
-        GetPDFPageSizeByIndex(pdf_span, page_index);
+        GetPDFPageSizeByIndex(pdf_data.value(), page_index);
     ASSERT_TRUE(page_size.has_value());
     EXPECT_EQ(gfx::SizeF(200, 200), page_size.value());
   }
@@ -154,16 +154,17 @@ TEST_F(PDFiumEngineExportsTest, GetPDFPageSizeByIndex) {
 TEST_F(PDFiumEngineExportsTest, ConvertPdfPagesToNupPdf) {
   base::FilePath pdf_path =
       pdf_data_dir().Append(FILE_PATH_LITERAL("rectangles.pdf"));
-  std::string pdf_data;
-  ASSERT_TRUE(base::ReadFileToString(pdf_path, &pdf_data));
+  std::optional<std::vector<uint8_t>> pdf_data =
+      base::ReadFileToBytes(pdf_path);
+  ASSERT_TRUE(pdf_data.has_value());
 
   std::vector<base::span<const uint8_t>> pdf_buffers;
   std::vector<uint8_t> output_pdf_buffer = ConvertPdfPagesToNupPdf(
       pdf_buffers, 1, gfx::Size(612, 792), gfx::Rect(22, 20, 570, 750));
   EXPECT_TRUE(output_pdf_buffer.empty());
 
-  pdf_buffers.push_back(base::as_bytes(base::make_span(pdf_data)));
-  pdf_buffers.push_back(base::as_bytes(base::make_span(pdf_data)));
+  pdf_buffers.push_back(pdf_data.value());
+  pdf_buffers.push_back(pdf_data.value());
   output_pdf_buffer = ConvertPdfPagesToNupPdf(
       pdf_buffers, 2, gfx::Size(612, 792), gfx::Rect(22, 20, 0, 750));
   EXPECT_TRUE(output_pdf_buffer.empty());
@@ -195,17 +196,16 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfPagesToNupPdf) {
 TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
   base::FilePath pdf_path =
       pdf_data_dir().Append(FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
-  std::string pdf_data;
-  ASSERT_TRUE(base::ReadFileToString(pdf_path, &pdf_data));
+  std::optional<std::vector<uint8_t>> pdf_data =
+      base::ReadFileToBytes(pdf_path);
+  ASSERT_TRUE(pdf_data.has_value());
 
-  base::span<const uint8_t> pdf_buffer;
   std::vector<uint8_t> output_pdf_buffer = ConvertPdfDocumentToNupPdf(
-      pdf_buffer, 1, gfx::Size(612, 792), gfx::Rect(32, 20, 570, 750));
+      {}, 1, gfx::Size(612, 792), gfx::Rect(32, 20, 570, 750));
   EXPECT_TRUE(output_pdf_buffer.empty());
 
-  pdf_buffer = base::as_bytes(base::make_span(pdf_data));
   output_pdf_buffer = ConvertPdfDocumentToNupPdf(
-      pdf_buffer, 4, gfx::Size(612, 792), gfx::Rect(22, 20, 570, 750));
+      pdf_data.value(), 4, gfx::Size(612, 792), gfx::Rect(22, 20, 570, 750));
   ASSERT_GT(output_pdf_buffer.size(), 0U);
 
   base::span<const uint8_t> output_pdf_span =

@@ -17,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -62,6 +63,13 @@ class QuickSettingsViewTest : public AshTestBase {
                                  ->quick_settings_view()
                                  ->GetViewByID(tile_view_id);
     return static_cast<FeatureTile*>(tile_view);
+  }
+
+  views::View* GetAccessibilityFocusHelperView() {
+    return GetPrimaryUnifiedSystemTray()
+        ->bubble()
+        ->quick_settings_view()
+        ->GetAccessibilityFocusHelperViewForTesting();
   }
 
  private:
@@ -158,6 +166,19 @@ TEST_F(QuickSettingsViewTest, ResetSelectedPageAfterClosingBubble) {
   GetPrimaryUnifiedSystemTray()->CloseBubble();
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   EXPECT_EQ(0, pagination_model()->selected_page());
+}
+
+TEST_F(QuickSettingsViewTest,
+       AccessibilityFocusHelperViewAccessibleProperties) {
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  ui::AXNodeData data;
+  auto* helper_view = GetAccessibilityFocusHelperView();
+
+  ASSERT_TRUE(helper_view);
+  helper_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kListItem);
+
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
 }
 
 }  // namespace ash

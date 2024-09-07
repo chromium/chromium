@@ -16,6 +16,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/label.h"
@@ -54,11 +55,12 @@ NtpDiscountConsentDialogView::NtpDiscountConsentDialogView(
   SetShowCloseButton(false);
   SetOwnedByWidget(true);
   // TODO(meiliang@): Set text for the button.
-  SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel) |
+             static_cast<int>(ui::mojom::DialogButton::kOk));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_DISCOUNT_CONTEXTUAL_CONSENT_NO_THANKS));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_ACCEPT_BUTTON));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(

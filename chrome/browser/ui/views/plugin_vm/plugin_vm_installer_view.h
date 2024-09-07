@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -80,7 +81,8 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
   ~PluginVmInstallerView() override;
 
   int GetCurrentDialogButtons() const;
-  std::u16string GetCurrentDialogButtonLabel(ui::DialogButton button) const;
+  std::u16string GetCurrentDialogButtonLabel(
+      ui::mojom::DialogButton button) const;
 
   void OnStateUpdated();
   void OnLinkClicked();

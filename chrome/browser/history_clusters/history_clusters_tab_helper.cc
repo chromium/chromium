@@ -312,6 +312,12 @@ void HistoryClustersTabHelper::DidFinishNavigation(
   if (logger->initial_state()) {
     return;
   }
+  // The WebContentsObserver::OnVisibilityChanged() doesn't fire on navigation,
+  // so we need to manually notify the logger about the visibility state when
+  // navigating to the history clusters page from another visible page.
+  if (web_contents()->GetVisibility() == content::Visibility::VISIBLE) {
+    logger->WasShown();
+  }
 
   logger->set_navigation_id(navigation_handle->GetNavigationId());
 
@@ -343,6 +349,16 @@ void HistoryClustersTabHelper::WebContentsDestroyed() {
   // tab.
   for (auto navigation_id : navigation_ids_)
     RecordPageEndMetricsIfNeeded(navigation_id);
+}
+
+void HistoryClustersTabHelper::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility != content::Visibility::VISIBLE) {
+    return;
+  }
+  history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage())
+      ->WasShown();
 }
 
 void HistoryClustersTabHelper::StartNewNavigationIfNeeded(

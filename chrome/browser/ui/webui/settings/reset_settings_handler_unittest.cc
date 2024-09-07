@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
+
 #include <stddef.h>
 
 #include "base/values.h"
 #include "chrome/browser/google/google_brand.h"
+#include "chrome/browser/profile_resetter/fake_profile_resetter.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
-#include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
@@ -17,32 +19,6 @@
 using settings::ResetSettingsHandler;
 
 namespace {
-
-// Mock version of ProfileResetter to be used in tests.
-class MockProfileResetter : public ProfileResetter {
- public:
-  explicit MockProfileResetter(TestingProfile* profile)
-      : ProfileResetter(profile) {
-  }
-
-  bool IsActive() const override {
-    return false;
-  }
-
-  void Reset(ResettableFlags resettable_flags,
-             std::unique_ptr<BrandcodedDefaultSettings> initial_settings,
-             base::OnceClosure callback) override {
-    resets_++;
-    std::move(callback).Run();
-  }
-
-  size_t resets() const {
-    return resets_;
-  }
-
- private:
-  size_t resets_ = 0;
-};
 
 class TestingResetSettingsHandler : public ResetSettingsHandler {
  public:
@@ -57,17 +33,15 @@ class TestingResetSettingsHandler : public ResetSettingsHandler {
   TestingResetSettingsHandler& operator=(const TestingResetSettingsHandler&) =
       delete;
 
-  size_t resets() const { return resetter_.resets(); }
+  size_t Resets() const { return resetter_.Resets(); }
 
   using settings::ResetSettingsHandler::HandleResetProfileSettings;
 
  protected:
-  ProfileResetter* GetResetter() override {
-    return &resetter_;
-  }
+  ProfileResetter* GetResetter() override { return &resetter_; }
 
-private:
-  MockProfileResetter resetter_;
+ private:
+  FakeProfileResetter resetter_;
 };
 
 class ResetSettingsHandlerTest : public testing::Test {
@@ -97,7 +71,7 @@ TEST_F(ResetSettingsHandlerTest, HandleResetProfileSettings) {
   list.Append("");
   handler()->HandleResetProfileSettings(list);
   // Check that the delegate ProfileResetter was called.
-  EXPECT_EQ(1u, handler()->resets());
+  EXPECT_EQ(1u, handler()->Resets());
   // Check that Javascript side is notified after resetting is done.
   EXPECT_EQ("cr.webUIResponse",
             web_ui()->call_data()[0]->function_name());

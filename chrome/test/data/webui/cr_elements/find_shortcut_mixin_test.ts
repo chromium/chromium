@@ -5,7 +5,8 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
-import {FindShortcutManager, FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_manager.js';
+import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';

@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 
 namespace blink {
 
@@ -68,8 +69,8 @@ class LineBreakStrategy {
                     const InlineBreakToken* break_token,
                     const ColumnSpannerPath* column_spanner_path) {
     if (!column_spanner_path) {
-      const TextWrap text_wrap = block_style.GetTextWrap();
-      if (text_wrap == TextWrap::kBalance) [[unlikely]] {
+      const TextWrapStyle text_wrap = block_style.GetTextWrapStyle();
+      if (text_wrap == TextWrapStyle::kBalance) [[unlikely]] {
         score_line_break_context_ = context->GetScoreLineBreakContext();
         initiate_balancing_ = !break_token;
         if (initiate_balancing_) {
@@ -77,10 +78,12 @@ class LineBreakStrategy {
                  score_line_break_context_->IsActive());
           use_score_line_break_ = score_line_break_context_;
         }
-      } else if (text_wrap == TextWrap::kPretty) [[unlikely]] {
+      } else if (text_wrap == TextWrapStyle::kPretty) [[unlikely]] {
         score_line_break_context_ = context->GetScoreLineBreakContext();
         use_score_line_break_ =
             score_line_break_context_ && score_line_break_context_->IsActive();
+      } else {
+        DCHECK(ShouldWrapLineGreedy(text_wrap));
       }
     }
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -336,32 +339,45 @@ void InlineLayoutAlgorithm::CheckBoxStates(const LineInfo& line_info) const {
 }
 #endif
 
-ALWAYS_INLINE bool InlineLayoutAlgorithm::ShouldLineClamp(
-    const LineInfo* line_info,
-    LayoutUnit line_height) const {
-  if (line_info->IsBlockInInline()) {
-    return false;
-  }
-
-  LineClampData line_clamp_data = GetConstraintSpace().GetLineClampData();
+ALWAYS_INLINE InlineLayoutAlgorithm::LineClampState
+InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info,
+                                         LayoutUnit line_box_height) const {
+  const ConstraintSpace& space = GetConstraintSpace();
+  LineClampData line_clamp_data = space.GetLineClampData();
   if (line_clamp_data.IsLineClampContext()) {
-    LayoutUnit line_start_offset =
-        container_builder_.LineBoxBfcBlockOffset().value_or(
-            GetConstraintSpace().GetBfcOffset().block_offset);
-    return line_clamp_data.IsAtClampPoint(line_start_offset + line_height);
-  } else {
-    return line_info->HasOverflow() &&
-           node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText();
-  }
-}
+    LayoutUnit line_end_offset;
 
-ALWAYS_INLINE bool InlineLayoutAlgorithm::ShouldHideLine(
-    LayoutUnit line_height) const {
-  LayoutUnit line_start_offset =
-      container_builder_.LineBoxBfcBlockOffset().value_or(
-          GetConstraintSpace().GetBfcOffset().block_offset);
-  return GetConstraintSpace().GetLineClampData().ShouldHideForPaint(
-      line_start_offset + line_height);
+    if (line_clamp_data.state == LineClampData::kClampByBfcOffset) {
+      LayoutUnit line_start_offset =
+          container_builder_.LineBoxBfcBlockOffset().value_or(
+              space.GetBfcOffset().block_offset);
+
+      // Take ruby annotations into account for measuring the line's block size.
+      // For the purposes of line-clamp, we only count the extent of the
+      // annotation overflow that makes the line's leading grow, not the one
+      // that is covered by the end padding that would follow if we clamp here.
+      LayoutUnit annotation_overflow =
+          container_builder_.AnnotationOverflow().ClampNegativeToZero();
+      LayoutUnit total_block_size = line_info->ComputeTotalBlockSize(
+          line_box_height.ClampNegativeToZero(), annotation_overflow);
+      line_end_offset =
+          line_start_offset + total_block_size -
+          std::min(annotation_overflow, space.LineClampEndPadding());
+    }
+
+    if (!line_info->IsBlockInInline() &&
+        line_clamp_data.IsAtClampPoint(line_end_offset)) {
+      return LineClampState::kEllipsize;
+    }
+    if (line_clamp_data.ShouldHideForPaint(line_end_offset)) {
+      return LineClampState::kHide;
+    }
+  } else if (!line_info->IsBlockInInline() && line_info->HasOverflow() &&
+             node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText()) {
+    return LineClampState::kEllipsize;
+  }
+
+  return LineClampState::kShow;
 }
 
 void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
@@ -405,12 +421,28 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
   const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
 
+  if (Node().HasRuby() && !line_info->IsEmptyLine()) [[unlikely]] {
+    std::optional<FontHeight> annotation_metrics;
+    if (!box_states_->RubyColumnList().empty()) {
+      HeapVector<Member<LogicalRubyColumn>>& column_list =
+          box_states_->RubyColumnList();
+      UpdateRubyColumnInlinePositions(*line_box, inline_size, column_list);
+      RubyBlockPositionCalculator calculator;
+      calculator.GroupLines(column_list)
+          .PlaceLines(*line_box, line_box_metrics)
+          .AddLinesTo(*line_container);
+      annotation_metrics = calculator.AnnotationMetrics();
+    }
+    line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
+        *line_info, *line_box, line_box_metrics, annotation_metrics));
+  }
+
   // Truncate the line if:
   //  - 'text-overflow: ellipsis' is set and we *aren't* a line-clamp context.
   //  - If we've reached the line-clamp limit.
-  const bool should_truncate =
-      ShouldLineClamp(line_info, line_box_metrics.LineHeight());
-  if (should_truncate) [[unlikely]] {
+  const LineClampState line_clamp_state =
+      GetLineClampState(line_info, line_box_metrics.LineHeight());
+  if (line_clamp_state == LineClampState::kEllipsize) [[unlikely]] {
     DCHECK(!line_info->IsBlockInInline());
     LineTruncator truncator(*line_info);
     auto* input =
@@ -425,7 +457,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
   // With the CSSLineClamp feature, if we're past the clamp point, we mark every
   // inline item in the line as hidden for paint.
-  if (ShouldHideLine(line_box_metrics.LineHeight())) [[unlikely]] {
+  if (line_clamp_state == LineClampState::kHide) [[unlikely]] {
     container_builder_.SetIsHiddenForPaint(true);
     for (auto& child : *line_box) {
       child.is_hidden_for_paint = true;
@@ -449,22 +481,6 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
       bfc_line_offset += line_info->TextIndent();
 
     container_builder_.SetBfcLineOffset(bfc_line_offset);
-  }
-
-  if (Node().HasRuby() && !line_info->IsEmptyLine()) [[unlikely]] {
-    std::optional<FontHeight> annotation_metrics;
-    if (!box_states_->RubyColumnList().empty()) {
-      HeapVector<Member<LogicalRubyColumn>>& column_list =
-          box_states_->RubyColumnList();
-      UpdateRubyColumnInlinePositions(*line_box, inline_size, column_list);
-      RubyBlockPositionCalculator calculator;
-      calculator.GroupLines(column_list)
-          .PlaceLines(*line_box, line_box_metrics)
-          .AddLinesTo(*line_container);
-      annotation_metrics = calculator.AnnotationMetrics();
-    }
-    line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
-        *line_info, *line_box, line_box_metrics, annotation_metrics));
   }
 
   if (line_builder.InitialLetterItemResult()) [[unlikely]] {
@@ -558,7 +574,8 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   const ConstraintSpace& space = GetConstraintSpace();
   if (space.ShouldTextBoxTrimStart() || space.ShouldTextBoxTrimEnd())
       [[unlikely]] {
-    ApplyTextBoxTrim(*line_info, should_truncate);
+    ApplyTextBoxTrim(*line_info,
+                     line_clamp_state == LineClampState::kEllipsize);
   }
 
   // |container_builder_| is already set up by |PlaceBlockInInline|.
@@ -1091,10 +1108,11 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
 
   // We query all the layout opportunities on the initial exclusion space up
   // front, as if the line breaker may add floats and change the opportunities.
-  const LayoutOpportunityVector& opportunities =
+  LayoutOpportunityVector opportunities =
       initial_exclusion_space.AllLayoutOpportunities(
           {constraint_space.GetBfcOffset().line_offset, bfc_block_offset},
           constraint_space.AvailableSize().inline_size);
+  ClearCollectionScope scope(&opportunities);
 
   const InlineBreakToken* break_token = GetBreakToken();
 
@@ -1402,7 +1420,7 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
       Node().ItemsData(/* is_first_line */ false).items;
 
   unsigned index = GetBreakToken() ? GetBreakToken()->StartItemIndex() : 0;
-  PositionedFloatVector& positioned_floats = leading_floats.floats;
+  HeapVector<PositionedFloat>& positioned_floats = leading_floats.floats;
   for (; index < items.size(); ++index) {
     const InlineItem& item = items[index];
 

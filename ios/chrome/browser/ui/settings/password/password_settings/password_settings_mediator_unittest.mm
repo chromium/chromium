@@ -16,7 +16,7 @@
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -77,9 +77,8 @@ class PasswordSettingsMediatorTest : public PlatformTest {
             bulk_move_passwords_to_account_handler_
                             exportHandler:export_handler_
                               prefService:browser_state_->GetPrefs()
-                          identityManager:IdentityManagerFactory::
-                                              GetForBrowserState(
-                                                  browser_state_.get())
+                          identityManager:IdentityManagerFactory::GetForProfile(
+                                              browser_state_.get())
                               syncService:&sync_service_];
     mediator_.consumer = consumer_;
   }

@@ -826,6 +826,7 @@ public class KeyboardAccessoryViewTest {
 
         onView(withText("Virtual Card")).perform(click());
         assertFalse(clickRecorded.get());
+        onView(withText("Virtual Card")).check(matches(not(isSelected())));
     }
 
     private static AutofillSuggestion.Builder getDefaultAutofillSuggestionBuilder() {

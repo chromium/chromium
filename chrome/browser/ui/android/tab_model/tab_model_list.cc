@@ -113,6 +113,13 @@ TabModel* TabModelList::FindNativeTabModelForJavaObject(
     }
   }
 
+  TabModel* archived_tab_model = GetArchivedTabModel();
+  if (archived_tab_model != nullptr &&
+      env->IsSameObject(jtab_model.obj(),
+                        archived_tab_model->GetJavaObject().obj())) {
+    return archived_tab_model;
+  }
+
   return nullptr;
 }
 

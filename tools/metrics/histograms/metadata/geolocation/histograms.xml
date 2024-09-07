@@ -72,6 +72,75 @@ chromium-metrics-reviews@google.com.
   <summary>iOS location permission state, recorded at startup.</summary>
 </histogram>
 
+<histogram name="Geolocation.LocationProviderWinrt.CreateGeoposition"
+    enum="Hresult" expires_after="2026-08-05">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the HRESULT error code encountered when creating a mojom Geoposition
+    object.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderWinrt.ErrorStatus"
+    enum="WindowsDevicesGeolocationPositionStatus" expires_after="2026-08-05">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value representing the system position status that is
+    considered an error status.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderWinrt.OnPositionChanged"
+    enum="Hresult" expires_after="2026-08-05">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the HRESULT error code encountered when processing a position
+    changed event.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderWinrt.OnStatusChanged"
+    enum="Hresult" expires_after="2026-08-05">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the HRESULT error code encountered when processing a status changed
+    event.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderWinrt.RegisterCallbacks"
+    enum="Hresult" expires_after="2026-08-05">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the HRESULT error code encountered when registering callbacks for
+    position and stauts changed events.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderWinrt.StartProvider"
+    enum="Hresult" expires_after="2026-08-05">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the HRESULT error code encountered when starting the Windows
+    platform geolocation provider.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderWinrt.TimeToFirstPosition"
+    units="ms" expires_after="2026-08-05">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the time duration for getting the first valid Geoposition.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.NetworkLocationRequest.Event"
     enum="NetworkLocationRequestEvent" expires_after="2025-01-05">
   <owner>mattreynolds@chromium.org</owner>
@@ -108,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Source"
-    enum="NetworkLocationRequestSource" expires_after="2024-12-24">
+    enum="NetworkLocationRequestSource" expires_after="2025-02-23">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

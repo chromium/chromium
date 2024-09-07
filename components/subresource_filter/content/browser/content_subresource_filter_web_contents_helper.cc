@@ -193,7 +193,7 @@ void ContentSubresourceFilterWebContentsHelper::RenderFrameDeleted(
 }
 
 void ContentSubresourceFilterWebContentsHelper::FrameDeleted(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   navigated_frames_.erase(frame_tree_node_id);
 
   // TODO(bokan): Not sure how to go from frame tree node id to a Page. The

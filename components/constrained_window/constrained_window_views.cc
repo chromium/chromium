@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"

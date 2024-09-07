@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapp_icon.h"
@@ -30,7 +31,7 @@
 #include "url/origin.h"
 
 // Browser tests for WebApkIconHasher.
-class WebApkIconHasherBrowserTest : public PlatformBrowserTest {
+class WebApkIconHasherBrowserTest : public AndroidBrowserTest {
  public:
   WebApkIconHasherBrowserTest()
       : http_server_(net::EmbeddedTestServer::TYPE_HTTP) {

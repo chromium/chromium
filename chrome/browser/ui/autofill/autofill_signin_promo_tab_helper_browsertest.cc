@@ -15,6 +15,8 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 
+namespace {
+
 class AutofillSigninPromoTabHelperTest : public PasswordManagerBrowserTestBase {
  public:
   AutofillSigninPromoTabHelperTest() = default;
@@ -122,3 +124,5 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
   ASSERT_NE(account_password_store_->stored_passwords().end(), found);
   EXPECT_THAT(found->second, testing::ElementsAre(FormMatches(form)));
 }
+
+}  // namespace

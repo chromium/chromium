@@ -204,8 +204,9 @@ TEST_F(LayerImplTest, VerifyNeedsUpdateDrawProperties) {
 
   VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(layer->ScrollBy(arbitrary_vector2d));
   VERIFY_NO_NEEDS_UPDATE_DRAW_PROPERTIES(layer->ScrollBy(gfx::Vector2d()));
-  VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(
-      layer->layer_tree_impl()->DidUpdateScrollOffset(layer->element_id()));
+  VERIFY_NO_NEEDS_UPDATE_DRAW_PROPERTIES(
+      layer->layer_tree_impl()->DidUpdateScrollOffset(
+          layer->element_id(), /*pushed_from_main_or_pending_tree=*/false));
   layer->layer_tree_impl()
       ->property_trees()
       ->scroll_tree_mutable()
@@ -296,6 +297,22 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
     EXPECT_EQ(gfx::Vector2dF(1.f, 1.f), layer->GetIdealContentsScale());
   }
+}
+
+TEST_F(LayerImplTest, GetDamageReasons) {
+  LayerImpl* root = root_layer();
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  root->SetBounds(gfx::Size(10, 10));
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  root->UnionUpdateRect(gfx::Rect(10, 10));
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
 }
 
 class LayerImplScrollTest : public LayerImplTest {

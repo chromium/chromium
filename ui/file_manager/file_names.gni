@@ -1,29 +1,33 @@
-# Static files are used as-is from the repository.
-
-image_loader_ts = [
-  "image_loader/background.ts",
-  "image_loader/cache.ts",
-  "image_loader/image_loader.ts",
+# image_loader/ files that are also used outside of the generated
+# image_loader/offscreen.rollup.js file (either in tests or in prod code).
+shared_image_loader_ts = [
   "image_loader/image_loader_client.ts",
-  "image_loader/image_loader_util.ts",
   "image_loader/image_orientation.ts",
-  "image_loader/image_request_task.ts",
   "image_loader/load_image_request.ts",
-  "image_loader/piex_loader.ts",
-  "image_loader/scheduler.ts",
 ]
 
-static_js_files = [
-  # Files app Foreground:
-  "file_manager/foreground/js/mock_navigation_list_model.js",
-  "file_manager/foreground/js/navigation_list_model.js",
+shared_image_loader_js = []
+foreach(_f, shared_image_loader_ts) {
+  shared_image_loader_js += [ string_replace(_f, ".ts", ".js") ]
+}
 
-  # Files app UI:
-  "file_manager/foreground/js/ui/directory_tree.js",
-  "file_manager/foreground/js/ui/tree.js",
-]
+# All image loader files, used for unit test and production.
+image_loader_ts = [
+                    "image_loader/cache.ts",
+                    "image_loader/image_loader.ts",
+                    "image_loader/image_loader_util.ts",
+                    "image_loader/image_request_task.ts",
+                    "image_loader/offscreen.ts",
+                    "image_loader/piex_loader.ts",
+                    "image_loader/scheduler.ts",
+                    "image_loader/service_worker.ts",
+                    "image_loader/sw_od_messages.ts",
+                  ] + shared_image_loader_ts
 
-# END: static_js_files.
+image_loader_js = []
+foreach(_f, image_loader_ts) {
+  image_loader_js += [ string_replace(_f, ".ts", ".js") ]
+}
 
 ts_files = [
   # Common:
@@ -508,13 +512,13 @@ checked_in_dts_files = [
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",
-  "file_manager/foreground/js/ui/tree.d.ts",
 ]
 
 other_dts_files = [
   "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/chrome_test.d.ts",
   "//tools/typescript/definitions/metrics_private.d.ts",
+  "//tools/typescript/definitions/offscreen.d.ts",
   "//tools/typescript/definitions/runtime.d.ts",
   "//tools/typescript/definitions/tabs.d.ts",
   "//tools/typescript/definitions/wallpaper.d.ts",
@@ -530,13 +534,6 @@ generated_js_files = [
 ]
 
 # END: generated_js_files.
-
-# Test files:
-unittest_files = [
-  # Foreground:
-  "file_manager/foreground/js/ui/directory_tree_unittest.js",
-  "file_manager/foreground/js/navigation_list_model_unittest.js",
-]
 
 # Files that don't have the generated HTML, but are used for tests.
 unittest_harness = [

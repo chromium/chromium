@@ -146,6 +146,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
 
         TrackerFactory.setTrackerForTests(mTracker);
 
@@ -292,7 +293,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING})
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testTabGridDialogVisibilitySupplier() {
 
@@ -387,14 +388,10 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.DATA_SHARING_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID, ChromeFeatureList.DATA_SHARING})
     public void testOpenInvitationModal() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
-        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
 
         DialogController controller = showTabGridDialogWithTabs();

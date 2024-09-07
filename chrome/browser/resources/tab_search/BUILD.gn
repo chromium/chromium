@@ -26,7 +26,8 @@ build_webui("build") {
   non_web_component_files = [
     "app.html.ts",
     "app.ts",
-    "infinite_list.ts",
+    "lazy_list.ts",
+    "selectable_lazy_list.ts",
     "search.ts",
     "tab_data.ts",
     "tab_group_color_helper.ts",
@@ -48,6 +49,12 @@ build_webui("build") {
     "auto_tab_groups/auto_tab_groups_results_actions.ts",
     "auto_tab_groups/auto_tab_groups_results.html.ts",
     "auto_tab_groups/auto_tab_groups_results.ts",
+    "declutter/declutter_page.html.ts",
+    "declutter/declutter_page.ts",
+    "tab_organization_selector_button.html.ts",
+    "tab_organization_selector_button.ts",
+    "tab_organization_selector.html.ts",
+    "tab_organization_selector.ts",
     "tab_search_api_proxy.ts",
     "tab_search_group_item.html.ts",
     "tab_search_group_item.ts",
@@ -63,7 +70,8 @@ build_webui("build") {
 
   css_files = [
     "app.css",
-    "infinite_list.css",
+    "lazy_list.css",
+    "selectable_lazy_list.css",
     "tab_search_page.css",
     "tab_group_shared_vars.css",
     "auto_tab_groups/auto_tab_groups_failure.css",
@@ -76,6 +84,9 @@ build_webui("build") {
     "auto_tab_groups/auto_tab_groups_results_actions.css",
     "auto_tab_groups/auto_tab_groups_results.css",
     "auto_tab_groups/auto_tab_groups_shared_style.css",
+    "declutter/declutter_page.css",
+    "tab_organization_selector_button.css",
+    "tab_organization_selector.css",
     "tab_search_group_item.css",
     "tab_search_item.css",
   ]
@@ -94,7 +105,10 @@ build_webui("build") {
   html_to_wrapper_template = "detect"
 
   ts_composite = true
-  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",

@@ -17,6 +17,17 @@ namespace on_device_model {
 
 class FakeOnDeviceModel;
 
+// The expected content of safety model files.
+inline constexpr std::string FakeTsData() {
+  return "fake_ts_data";
+}
+inline constexpr std::string FakeTsSpModel() {
+  return "fake_ts_sp_model";
+}
+inline constexpr std::string FakeLanguageModel() {
+  return "fake_language_model";
+}
+
 // Hooks for tests to control the FakeOnDeviceService behavior.
 struct FakeOnDeviceServiceSettings final {
   FakeOnDeviceServiceSettings();
@@ -31,9 +42,6 @@ struct FakeOnDeviceServiceSettings final {
 
   // If non-empty, used as the output from Execute().
   std::vector<std::string> model_execute_result;
-
-  // Counter to assign an identifier for the adaptation model.
-  uint32_t adaptation_model_id_counter = 0;
 
   mojom::LoadModelResult load_model_result = mojom::LoadModelResult::kSuccess;
 
@@ -61,7 +69,7 @@ struct FakeOnDeviceServiceSettings final {
 class FakeOnDeviceSession final : public mojom::Session {
  public:
   explicit FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
-                               std::optional<uint32_t> adaptation_model_id,
+                               const std::string& adaptation_model_weight,
                                FakeOnDeviceModel* model);
   ~FakeOnDeviceSession() override;
 
@@ -89,7 +97,7 @@ class FakeOnDeviceSession final : public mojom::Session {
                           mojo::PendingRemote<mojom::ContextClient> client);
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
-  std::optional<uint32_t> adaptation_model_id_;
+  std::string adaptation_model_weight_;
   std::vector<std::string> context_;
   raw_ptr<FakeOnDeviceModel> model_;
 
@@ -98,9 +106,13 @@ class FakeOnDeviceSession final : public mojom::Session {
 
 class FakeOnDeviceModel : public mojom::OnDeviceModel {
  public:
-  explicit FakeOnDeviceModel(
-      FakeOnDeviceServiceSettings* settings,
-      std::optional<uint32_t> adaptation_model_id = std::nullopt);
+  struct Data {
+    bool has_safety_model = false;
+    bool has_language_model = false;
+    std::string adaptation_model_weight = "";
+  };
+  explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
+                             Data&& data);
   ~FakeOnDeviceModel() override;
 
   // mojom::OnDeviceModel:
@@ -122,7 +134,7 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
 
  private:
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
-  std::optional<uint32_t> adaptation_model_id_;
+  Data data_;
 
   mojo::UniqueReceiverSet<mojom::Session> receivers_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_adaptation_receivers_;

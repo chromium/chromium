@@ -114,8 +114,11 @@ InterpolableColor* InterpolableColor::Create(
       return Create(LayoutTheme::GetTheme().FocusRingColor(color_scheme));
     default:
       DCHECK(StyleColor::IsColorKeyword(keyword));
+      // TODO(crbug.com/40229450): Pass down if within installed webapp scope
+      // from Document.
       return Create(
-          StyleColor::ColorFromKeyword(keyword, color_scheme, color_provider));
+          StyleColor::ColorFromKeyword(keyword, color_scheme, color_provider,
+                                       /*is_in_web_app_scope=*/false));
   }
 }
 

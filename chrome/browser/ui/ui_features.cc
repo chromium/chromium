@@ -200,13 +200,21 @@ const base::FeatureParam<PreloadTopChromeWebUIMode> kPreloadTopChromeWebUIMode{
 const char kPreloadTopChromeWebUISmartPreloadName[] = "smart-preload";
 const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload{
     &kPreloadTopChromeWebUI, kPreloadTopChromeWebUISmartPreloadName, false};
+const char kPreloadTopChromeWebUIDelayPreloadName[] = "delay-preload";
+const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload{
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIDelayPreloadName, false};
 
 // Enables exiting browser fullscreen (users putting the browser itself into the
 // fullscreen mode via the browser UI or shortcuts) with press-and-hold Esc.
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              "PressAndHoldEscToExitBrowserFullscreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 #endif
 
 // Enable responsive toolbar. Toolbar buttons overflow to a chevron button when
@@ -294,7 +302,7 @@ const char kTabHoverCardAdditionalMaxWidthDelay[] =
 
 BASE_FEATURE(kTabOrganization,
              "TabOrganization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsTabOrganization() {
   return base::FeatureList::IsEnabled(features::kTabOrganization);
@@ -304,7 +312,7 @@ BASE_FEATURE(kTabstripDeclutter,
              "TabstripDeclutter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsTabstripDeclutter() {
+bool IsTabstripDeclutterEnabled() {
   return base::FeatureList::IsEnabled(features::kTabstripDeclutter);
 }
 
@@ -322,6 +330,10 @@ BASE_FEATURE(kTabReorganization,
 
 BASE_FEATURE(kTabReorganizationDivider,
              "TabReorganizationDivider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabOrganizationModelStrategy,
+             "TabOrganizationModelStrategy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod{

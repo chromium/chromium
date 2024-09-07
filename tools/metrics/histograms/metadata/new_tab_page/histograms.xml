@@ -599,7 +599,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.GoogleCalendar.EventClientIndex" units="count"
+<histogram name="NewTabPage.GoogleCalendar.EventClickIndex" units="count"
     expires_after="2025-08-06">
   <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
@@ -637,8 +637,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.GoogleCalendar.UserActions"
-    enum="NTPCalendarAction" expires_after="2025-08-06">
+<histogram name="NewTabPage.GoogleCalendar.UserAction" enum="NTPCalendarAction"
+    expires_after="2025-08-06">
   <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.LoadDuration" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-01-05">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1080,7 +1080,6 @@ chromium-metrics-reviews@google.com.
   <token key="NtpModule">
     <variant name="chrome_cart" summary="the Chrome Cart module"/>
     <variant name="drive" summary="the Drive module"/>
-    <variant name="history_clusters" summary="the History clusters module"/>
     <variant name="shopping_tasks" summary="the Shopping Tasks module"/>
     <variant name="tab_resumption" summary="the Tab Resumption module"/>
   </token>
@@ -1127,7 +1126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.VisibleOnNTPLoad" enum="BooleanVisible"
-    expires_after="2024-09-01">
+    expires_after="2025-01-05">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1186,6 +1185,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NewTabPage.MostVisited.ReselectMatch.{StrictnessSuffix}"
+    enum="MvtReselectUrlMatchResult" expires_after="2025-04-16">
+  <owner>fredmello@chromium.org</owner>
+  <owner>huangs@chromium.org</owner>
+  <summary>
+    For each strict / lax match arm, histogram of the best matching result from
+    &quot;key&quot; URL (recommended by a Most Visited Tile) to
+    &quot;candidate&quot; URLs (from Tabs). Recorded when a MVT is clicked and
+    matching is performed. Only measured on Android.
+  </summary>
+  <token key="StrictnessSuffix">
+    <variant name="LaxUpToPath"/>
+    <variant name="LaxUpToQuery"/>
+    <variant name="LaxUpToRef"/>
+    <variant name="Strict"/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.MostVisitedMigratedDefaultAppType"
     enum="TypeOfDeletedMostVisitedApp" expires_after="2024-06-02">
   <owner>dibyapal@chromium.org</owner>
@@ -1211,7 +1228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.NavigationOrActivationToFirstMeaningfulPaint"
-    units="ms" expires_after="2024-09-30">
+    units="ms" expires_after="2024-12-30">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1276,7 +1293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.PrerenderNavigationToActivation" units="ms"
-    expires_after="2024-09-30">
+    expires_after="2024-12-30">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1327,7 +1344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Promos.RequestLatency2" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-01-05">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1513,7 +1530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TileType" enum="NTPTileVisualType"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1624,7 +1641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.WallpaperSearch.SessionSetTheme"
-    enum="NtpWallpaperSearchThemeType" expires_after="2024-08-22">
+    enum="NtpWallpaperSearchThemeType" expires_after="2025-02-22">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
@@ -1654,7 +1671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.WallpaperSearch.SetRecentThemeProcessingLatency"
-    units="ms" expires_after="2024-12-15">
+    units="ms" expires_after="2025-02-16">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>

@@ -109,6 +109,12 @@ class TestUkmRecorder : public UkmRecorderImpl {
       std::string entry_name,
       const std::vector<std::string>& metric_names) const;
 
+  // Returns the values of the metrics with the passed-in metric name in entries
+  // with the passed-in entry name.
+  std::vector<int64_t> GetMetricsEntryValues(
+      const std::string& entry_name,
+      const std::string& metric_name) const;
+
   // A test helper returning all entries for a given name in a human-readable
   // form, allowing to write clearer test expectations.
   std::vector<HumanReadableUkmEntry> GetEntries(

@@ -66,8 +66,11 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // feature flag is disabled.
   virtual std::u16string GetPlaceholderFeatureName() const = 0;
 
-  // Return the device's current Visibility.
+  // Returns the device's current Visibility.
   virtual ::nearby_share::mojom::Visibility GetVisibility() const = 0;
+
+  // Sets the device's Visibility.
+  virtual void SetVisibility(::nearby_share::mojom::Visibility visibility) = 0;
 };
 
 }  // namespace ash

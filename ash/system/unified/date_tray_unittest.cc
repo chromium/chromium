@@ -17,6 +17,8 @@
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/test/glanceables_tasks_test_util.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
 #include "ash/system/status_area_widget.h"
@@ -166,14 +168,7 @@ class DateTrayTest
 
     SimulateUserLogin(account_id_);
 
-    widget_ = CreateFramelessTestWidget();
-    widget_->SetContentsView(std::make_unique<views::View>());
-    widget_->SetFullscreen(true);
     date_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();
-    unified_system_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-                               ->unified_system_tray();
-    widget_->GetContentsView()->AddChildView(date_tray_.get());
-    widget_->GetContentsView()->AddChildView(unified_system_tray_.get());
     date_tray_->SetVisiblePreferred(true);
     date_tray_->unified_system_tray_->SetVisiblePreferred(true);
 
@@ -196,7 +191,6 @@ class DateTrayTest
       RemoveGlanceablesClients();
     }
 
-    widget_.reset();
     date_tray_ = nullptr;
     if (observering_activation_changes_) {
       Shell::Get()->activation_client()->RemoveObserver(this);
@@ -276,17 +270,14 @@ class DateTrayTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<views::Widget> widget_;
   AccountId account_id_ =
       AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
   std::unique_ptr<TestGlanceablesClassroomClient> glanceables_classroom_client_;
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   bool observering_activation_changes_ = false;
 
-  // Owned by `widget_`.
-  raw_ptr<DateTray, DanglingUntriaged> date_tray_ = nullptr;
-
-  raw_ptr<UnifiedSystemTray, DanglingUntriaged> unified_system_tray_ = nullptr;
+  // Owned by status area widget.
+  raw_ptr<DateTray> date_tray_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(GlanceablesClassroom, DateTrayTest, testing::Bool());
@@ -434,10 +425,12 @@ TEST_P(DateTrayTest, DontActivateBubbleIfShownByTap) {
 }
 
 TEST_P(DateTrayTest, ActivateBubbleIfShownByKeyboard) {
+  GetPrimaryShelf()->shelf_focus_cycler()->FocusStatusArea(
+      false /* last_element */);
   GetDateTray()->RequestFocus();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsBubbleShown());
+  ASSERT_TRUE(IsBubbleShown());
   EXPECT_TRUE(AreContentsViewShown());
   EXPECT_TRUE(GetDateTray()->is_active());
 
@@ -625,9 +618,8 @@ TEST_P(DateTrayTest, RendersClassroomBubblesForActiveRoles) {
                                               ->GetClassName());
 }
 
-// TODO(crbug.com/331531344): This test is flaky.
 TEST_P(GlanceablesDateTrayTest,
-       DISABLED_TrayBubbleUpdatesBoundsOnDisplayConfigurationUpdate) {
+       TrayBubbleUpdatesBoundsOnDisplayConfigurationUpdate) {
   LeftClickOn(GetDateTray());
   ASSERT_TRUE(IsBubbleShown());
   ASSERT_TRUE(GetGlanceableTrayBubble());

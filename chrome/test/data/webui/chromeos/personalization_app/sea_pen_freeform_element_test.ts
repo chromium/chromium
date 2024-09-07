@@ -8,6 +8,7 @@ import {SeaPenFreeformElement, SeaPenImagesElement, SeaPenRecentWallpapersElemen
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assert} from 'chrome://webui-test/chai.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -25,14 +26,13 @@ suite('SeaPenFreeformElementTest', function() {
         freeformElement!.shadowRoot!.querySelector(SeaPenSamplesElement.is);
     const samples = seaPenSamplesElement!.shadowRoot!
                         .querySelectorAll<WallpaperGridItemElement>(
-                            `${WallpaperGridItemElement.is}`);
+                            `${WallpaperGridItemElement.is}:not([hidden])`);
     assertTrue(!!samples, 'samples should exist');
 
-    return Array.from(samples).map(sample => {
+    return Array.from(samples).flatMap(sample => {
       const text =
           sample!.shadowRoot!.querySelector('.primary-text')?.innerHTML;
-      assertTrue(!!text, 'text content exists');
-      return text;
+      return text ? [text] : [];
     });
   }
 
@@ -94,6 +94,8 @@ suite('SeaPenFreeformElementTest', function() {
 
     const samplesElement =
         freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is);
+    await waitAfterNextRender(samplesElement as HTMLElement);
+
     assertTrue(
         !!samplesElement, 'sample prompts element shown on freeform page');
     assertEquals(6, getSamples().length, 'there are 6 sample prompts');
@@ -200,7 +202,7 @@ suite('SeaPenFreeformElementTest', function() {
         freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is);
     await waitAfterNextRender(seaPenSamplesElement as HTMLElement);
 
-    chai.assert.notSameOrderedMembers(
+    assert.notSameOrderedMembers(
         originalSamples, getSamples(), 'the order should be different');
   });
 
@@ -234,7 +236,7 @@ suite('SeaPenFreeformElementTest', function() {
         freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is);
     await waitAfterNextRender(seaPenSamplesElement as HTMLElement);
 
-    chai.assert.notSameOrderedMembers(
+    assert.notSameOrderedMembers(
         originalSamples, getSamples(), 'the order should be different');
   });
 

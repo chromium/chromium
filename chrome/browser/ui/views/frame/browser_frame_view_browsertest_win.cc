@@ -148,18 +148,19 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
       const WebAppBrowserFrameViewWinTest&) = delete;
   ~WebAppBrowserFrameViewWinTest() override = default;
 
-  GURL GetStartURL() { return GURL("https://test.org"); }
+  GURL GetStartURL() {
+    return embedded_test_server()->GetURL("/web_apps/no_manifest.html");
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-
+    CHECK(embedded_test_server()->Start());
     WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
   }
 
   void InstallAndLaunchWebApp() {
     auto web_app_info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(GetStartURL());
-    web_app_info->scope = GetStartURL().GetWithoutFilename();
     if (theme_color_) {
       web_app_info->theme_color = *theme_color_;
     }
@@ -416,8 +417,14 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
   EXPECT_EQ(close_button->GetTooltipText(), u"");
 }
 
+// TODO(crbug.com/361780162): This test has been flaky on Windows ASan testers.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_CaptionButtonHitTest DISABLED_CaptionButtonHitTest
+#else
+#define MAYBE_CaptionButtonHitTest CaptionButtonHitTest
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
-                       CaptionButtonHitTest) {
+                       MAYBE_CaptionButtonHitTest) {
   InstallAndLaunchWebAppWithWindowControlsOverlay();
   frame_view_->GetWidget()->LayoutRootViewIfNecessary();
 

@@ -6,6 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_EMOJI_BAR_VIEW_DELEGATE_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 
 namespace ui {
 enum class EmojiPickerCategory;
@@ -13,7 +14,6 @@ enum class EmojiPickerCategory;
 
 namespace ash {
 
-class PickerSearchResult;
 
 // Delegate for `PickerEmojiBarView`.
 class ASH_EXPORT PickerEmojiBarViewDelegate {

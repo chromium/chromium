@@ -11,11 +11,9 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/views/picker_emoji_bar_view_delegate.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
-#include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_style.h"
-#include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -78,17 +76,16 @@ std::unique_ptr<views::View> CreateEmptyCell() {
   return cell_view;
 }
 
-std::u16string GetTooltipForEmojiResult(
-    const PickerSearchResult::EmojiData& data) {
-  switch (data.type) {
-    case PickerSearchResult::EmojiData::Type::kEmoji:
+std::u16string GetTooltipForEmojiResult(const PickerEmojiResult& result) {
+  switch (result.type) {
+    case PickerEmojiResult::Type::kEmoji:
       return l10n_util::GetStringFUTF16(IDS_PICKER_EMOJI_ITEM_ACCESSIBLE_NAME,
-                                        data.name);
-    case PickerSearchResult::EmojiData::Type::kSymbol:
-      return data.name;
-    case PickerSearchResult::EmojiData::Type::kEmoticon:
+                                        result.name);
+    case PickerEmojiResult::Type::kSymbol:
+      return result.name;
+    case PickerEmojiResult::Type::kEmoticon:
       return l10n_util::GetStringFUTF16(
-          IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME, data.name);
+          IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME, result.name);
   }
   NOTREACHED();
 }
@@ -96,26 +93,26 @@ std::u16string GetTooltipForEmojiResult(
 // Creates an item view for a search result. Only supports results that can be
 // added to the emoji bar, i.e. emojis, symbols and emoticons.
 std::unique_ptr<PickerItemView> CreateItemView(
-    const PickerSearchResult& result,
+    const PickerEmojiResult& result,
     base::RepeatingClosure select_result_callback) {
-  const auto* data = std::get_if<PickerSearchResult::EmojiData>(&result.data());
-  CHECK(data);
-
   std::unique_ptr<PickerItemView> item_view;
-  switch (data->type) {
-    case PickerSearchResult::EmojiData::Type::kEmoji:
+  switch (result.type) {
+    case PickerEmojiResult::Type::kEmoji:
       item_view = std::make_unique<PickerEmojiItemView>(
-          std::move(select_result_callback), data->text);
+          PickerEmojiItemView::Style::kEmoji, std::move(select_result_callback),
+          result.text);
       item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
       break;
-    case PickerSearchResult::EmojiData::Type::kSymbol:
-      item_view = std::make_unique<PickerSymbolItemView>(
-          std::move(select_result_callback), data->text);
+    case PickerEmojiResult::Type::kSymbol:
+      item_view = std::make_unique<PickerEmojiItemView>(
+          PickerEmojiItemView::Style::kSymbol,
+          std::move(select_result_callback), result.text);
       item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
       break;
-    case PickerSearchResult::EmojiData::Type::kEmoticon:
-      item_view = std::make_unique<PickerEmoticonItemView>(
-          std::move(select_result_callback), data->text);
+    case PickerEmojiResult::Type::kEmoticon:
+      item_view = std::make_unique<PickerEmojiItemView>(
+          PickerEmojiItemView::Style::kEmoticon,
+          std::move(select_result_callback), result.text);
       item_view->SetPreferredSize(
           gfx::Size(std::max(item_view->GetPreferredSize().width(),
                              kEmojiBarItemPreferredSize.width()),
@@ -123,8 +120,8 @@ std::unique_ptr<PickerItemView> CreateItemView(
       break;
   }
 
-  if (!data->name.empty()) {
-    std::u16string tooltip = GetTooltipForEmojiResult(*data);
+  if (!result.name.empty()) {
+    std::u16string tooltip = GetTooltipForEmojiResult(result);
     item_view->SetTooltipText(tooltip);
     item_view->SetAccessibleName(std::move(tooltip));
   }
@@ -164,6 +161,7 @@ class GifsButton : public views::LabelButton {
     StyleUtil::InstallRoundedCornerHighlightPathGenerator(
         this, gfx::RoundedCornersF(kGifsButtonCornerRadius));
     UpdateBackground();
+    SetProperty(views::kElementIdentifierKey, kPickerGifElementId);
   }
   GifsButton(const GifsButton&) = delete;
   GifsButton& operator=(const GifsButton&) = delete;
@@ -194,11 +192,10 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
                                        bool is_gifs_enabled)
     : delegate_(delegate), picker_view_width_(picker_view_width) {
   SetUseDefaultFillLayout(true);
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kGrid,
-      l10n_util::GetStringUTF16(
-          is_gifs_enabled ? IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME
-                          : IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGrid);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      is_gifs_enabled ? IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME
+                      : IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
   SetProperty(views::kElementIdentifierKey, kPickerEmojiBarElementId);
   SetBackground(views::CreateThemedRoundedRectBackground(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
@@ -254,6 +251,8 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
               is_gifs_enabled
                   ? IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME
                   : IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
+  more_emojis_button_->SetProperty(views::kElementIdentifierKey,
+                                   kPickerMoreEmojisElementId);
 
   StyleUtil::SetUpInkDropForButton(more_emojis_button_, gfx::Insets(),
                                    /*highlight_on_hover=*/true,
@@ -304,7 +303,7 @@ void PickerEmojiBarView::ClearSearchResults() {
 }
 
 void PickerEmojiBarView::SetSearchResults(
-    std::vector<PickerSearchResult> results) {
+    std::vector<PickerEmojiResult> results) {
   ClearSearchResults();
   int item_row_width = 0;
   // This may be slow to calculate, so only `CHECK` on debug builds.

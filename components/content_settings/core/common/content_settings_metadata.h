@@ -86,7 +86,7 @@ class RuleMetaData {
   // Returns whether the Rule is expired. Expiration is handled by
   // HostContentSettingsMap automatically, clients do not have to check this
   // attribute manually.
-  bool IsExpired(base::Clock* clock) const;
+  bool IsExpired(const base::Clock* clock) const;
 
   // Computes the setting's lifetime, based on the lifetime and expiration that
   // were read from persistent storage.

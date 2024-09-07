@@ -166,8 +166,8 @@
 // Matcher for the Share... button.
 + (id<GREYMatcher>)shareButton;
 
-// Matcher for the Show Full URL action button.
-+ (id<GREYMatcher>)showFullURLFromWebContextMenu;
+// Returns a matcher for a context menu button that contains `text`.
++ (id<GREYMatcher>)contextMenuButtonContainingText:(NSString*)text;
 
 // Matcher for the tab Share button (either in the omnibox or the toolbar).
 + (id<GREYMatcher>)tabShareButton;
@@ -494,11 +494,23 @@
 // Returns the GREYMatcher for the group cell at `index` in the tab grid.
 + (id<GREYMatcher>)tabGridGroupCellAtIndex:(unsigned int)index;
 
+// Returns a matcher for the group cell for the given `groupName` and `count`.
++ (id<GREYMatcher>)tabGridGroupCellWithName:(NSString*)groupName
+                                      count:(NSInteger)count;
+
 // Returns the GREYMatcher for the cell at `index` in the tab strip.
 + (id<GREYMatcher>)tabStripCellAtIndex:(unsigned int)index;
 
 // Returns the GREYMatcher for the group cell at `index` in the tab strip.
 + (id<GREYMatcher>)tabStripGroupCellAtIndex:(unsigned int)index;
+
+// Returns a matcher for the group cell at `index` in the tab groups panel.
++ (id<GREYMatcher>)tabGroupsPanelCellAtIndex:(unsigned int)index;
+
+// Returns a matcher for the group cell created just now in the tab groups panel
+// for the given `group_name` and `tab_count`.
++ (id<GREYMatcher>)tabGroupsPanelCellWithName:(NSString*)groupName
+                                        count:(NSInteger)count;
 
 // Returns the GREYMatcher for the button that closes the tab grid.
 + (id<GREYMatcher>)tabGridDoneButton;
@@ -536,6 +548,12 @@
 // Returns the GREYMatcher for the button to go to the other devices panel in
 // the tab grid.
 + (id<GREYMatcher>)tabGridOtherDevicesPanelButton;
+
+// Returns the matcher for the tab group snack bar.
++ (id<GREYMatcher>)tabGroupSnackBar:(NSInteger)tabGroupCount;
+
+// Returns the matcher for the tab group snackbar action.
++ (id<GREYMatcher>)tabGroupSnackBarAction;
 
 // Returns the GREYMatcher for the button to go to the tab groups panel in
 // the tab grid.
@@ -697,74 +715,9 @@
 
 #pragma mark - Manual Fallback
 
-// Returns a matcher for the scroll view in keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackFormSuggestionViewMatcher;
-
-// Returns a matcher for the keyboard icon in the keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackKeyboardIconMatcher;
-
-// Returns a matcher for the password icon in the keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackPasswordIconMatcher;
-
-// Returns a matcher for the password table view in manual fallback.
-+ (id<GREYMatcher>)manualFallbackPasswordTableViewMatcher;
-
-// Returns a matcher for the password search bar in manual fallback.
-+ (id<GREYMatcher>)manualFallbackPasswordSearchBarMatcher;
-
-// Returns a matcher for the button to open password settings in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackManageSettingsMatcher;
-
-// Returns a matcher for the button to open Password Manager in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackManagePasswordsMatcher;
-
-// Returns a matcher for the button to open all passwords in manual fallback.
-+ (id<GREYMatcher>)manualFallbackOtherPasswordsMatcher;
-
-// Returns a matcher for the button to dismiss all passwords in manual fallback.
-+ (id<GREYMatcher>)manualFallbackOtherPasswordsDismissMatcher;
-
-// Returns a matcher for the a password in the manual fallback list.
-+ (id<GREYMatcher>)manualFallbackPasswordButtonMatcher;
-
-// Returns a matcher for the profiles icon in the keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackProfilesIconMatcher;
-
-// Returns a matcher for the profiles table view in manual fallback.
-+ (id<GREYMatcher>)manualFallbackProfilesTableViewMatcher;
-// Returns a matcher for the button to open profile settings in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackManageProfilesMatcher;
-
-// Returns a matcher for the ProfileTableView window.
-+ (id<GREYMatcher>)manualFallbackProfileTableViewWindowMatcher;
-
-// Returns a matcher for the credit card icon in the keyboard accessory bar.
-+ (id<GREYMatcher>)manualFallbackCreditCardIconMatcher;
-
-// Returns a matcher for the credit card table view in manual fallback.
-+ (id<GREYMatcher>)manualFallbackCreditCardTableViewMatcher;
-
-// Returns a matcher for the button to open payment method settings in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackManagePaymentMethodsMatcher;
-
-// Returns a matcher for the button to add a payment method in manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackAddPaymentMethodMatcher;
-
-// Returns a matcher for the CreditCardTableView window.
-+ (id<GREYMatcher>)manualFallbackCreditCardTableViewWindowMatcher;
-
 // Returns the matcher for the Activity View header.
 + (id<GREYMatcher>)activityViewHeaderWithURLHost:(NSString*)host
                                            title:(NSString*)pageTitle;
-
-// Returns a matcher for the button to trigger password generation on manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher;
 
 // Returns a matcher for the button to accept the generated password.
 + (id<GREYMatcher>)useSuggestedPasswordMatcher;
@@ -806,6 +759,75 @@
 
 // Returns a matcher for the tab grid search mode toolbar.
 + (id<GREYMatcher>)tabGridSearchModeToolbar;
+
+#pragma mark - Create Tab Group View
+
+// Returns the matcher for the tab group creation view.
++ (id<GREYMatcher>)tabGroupCreationView;
+
+// Returns the matcher for the text field's clear button in the tab group
+// creation view.
++ (id<GREYMatcher>)createTabGroupTextField;
+
+// Returns the matcher for the text field's clear button in the tab group
++ (id<GREYMatcher>)createTabGroupTextFieldClearButton;
+
+// Returns the matcher for `Create Group` button in the tab group creation view.
++ (id<GREYMatcher>)createTabGroupCreateButton;
+
+// Returns the matcher for the cancel button in the tab group creation view.
++ (id<GREYMatcher>)createTabGroupCancelButton;
+
+#pragma mark - Tab Group View
+
+// Returns the matcher for the tab group view.
++ (id<GREYMatcher>)tabGroupView;
+
+// Returns the matcher for the title on the tab group view.
++ (id<GREYMatcher>)tabGroupViewTitle:(NSString*)title;
+
+// Returns the matcher for the overflow menu button in the tab group view.
++ (id<GREYMatcher>)tabGroupOverflowMenuButton;
+
+// Returns the matcher for the back button in the tab group view.
++ (id<GREYMatcher>)tabGroupBackButton;
+
+#pragma mark - Tab Groups Context Menus
+
+// Returns the matcher for `Add Tab to New Group` button in the context menu.
++ (id<GREYMatcher>)addTabToNewGroupButton;
+
+// Returns the matcher for the sub menu button `New Tab Group` in the `Add Tab
+// To Group` button.
++ (id<GREYMatcher>)addTabToGroupSubMenuButton;
+
+// Returns the matcher for `Rename Group` button in the context menu of a tab
+// group.
++ (id<GREYMatcher>)renameGroupButton;
+
+// Returns the matcher for `Ungroup` button in the context menu of a tab group.
++ (id<GREYMatcher>)ungroupButton;
+
+// Returns the matcher for `Ungroup` button in the confirmation dialog of a tab
+// group. It's displayed only when tab groups sync is enabled.
++ (id<GREYMatcher>)ungroupConfirmationButton;
+
+// Returns the matcher for `Delete Group` button in the context menu of a tab
+// group.
++ (id<GREYMatcher>)deleteGroupButton;
+
+// Returns the matcher for `Delete Group` button in the confirmation dialog of a
+// tab group. It's displayed only when tab groups sync is enabled.
++ (id<GREYMatcher>)deleteGroupConfirmationButton;
+
+// Returns the matcher for `Close Group` button in the context menu of a tab
+// group.
++ (id<GREYMatcher>)closeGroupButton;
+
+#pragma mark - Tab Groups Panel
+
+// Returns the matcher for the tab groups panel view.
++ (id<GREYMatcher>)tabGroupsPanel;
 
 @end
 

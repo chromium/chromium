@@ -21,7 +21,6 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -44,6 +43,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
+#include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -165,7 +165,7 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
     // Set up fake networks.
     network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
-        true /*use_default_devices_and_services*/);
+        /*use_default_devices_and_services=*/true);
     network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
     // Fake networks have been set up. Connect to WiFi network.
     SetConnected(kWifiServicePath);
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ShowNetworkDialog) {
   // Click on the actual button to close the dialog.
   reauth_dialog_helper->ClickCloseNetworkButton();
   // Ensures that the re-auth dialog is closed.
-  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+  reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
 // TODO(crbug.com/1414002): Flaky on ChromeOS MSAN and linux-chromeos-rel.
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_TriggerDialogOnNetworkOff) {
   // Click on the actual button to close the dialog.
   reauth_dialog_helper->ClickCloseNetworkButton();
   // Ensures that both dialogs are closed.
-  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+  reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
 IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideNetworkDialog) {
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest,
 
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
-  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+  reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
 // Sets up proxy server which requires authentication.
@@ -507,7 +507,6 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
   reauth_dialog_helper->ExpectNetworkDialogHidden();
 
   reauth_dialog_helper->WaitForSigninWebview();
-  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 
   // Wait for http auth dialog and authenticate.
   ASSERT_TRUE(base::test::RunUntil(
@@ -554,7 +553,6 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
   ASSERT_TRUE(reauth_dialog_helper);
 
   reauth_dialog_helper->WaitForSigninWebview();
-  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 
   // Appearance of http auth dialog means that proxy authentication was
   // requested.
@@ -572,7 +570,6 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
 
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
-  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 }
 
 class AutoStartTest : public LockscreenWebUiTest {
@@ -618,11 +615,9 @@ class AutoStartTest : public LockscreenWebUiTest {
     // dialog is shown.
     EXPECT_TRUE(reauth_dialog_helper);
 
-    // Wait for the webview and SAML IdP page to load and confirm that we skip
-    // the "Verify account" screen: this is a requirement in auto-start flow.
+    // Wait for the webview and SAML IdP page to load.
     reauth_dialog_helper->WaitForSigninWebview();
     reauth_dialog_helper->WaitForSamlIdpPageLoad();
-    reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider;
@@ -726,30 +721,6 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SamlSwitchToGaia) {
   // With Gaia reauth endpoint we are guaranteed to land on the correct IdP
   // page so by design we don't display a button to switch to the Gaia page.
   reauth_dialog_helper->ExpectChangeIdPButtonHidden();
-}
-
-// Tests the cancel button in Verify Screen.
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_VerifyScreenCancel DISABLED_VerifyScreenCancel
-#else
-#define MAYBE_VerifyScreenCancel VerifyScreenCancel
-#endif
-IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_VerifyScreenCancel) {
-  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
-
-  Login();
-
-  // Lock the screen and trigger the lock screen SAML reauth dialog.
-  ScreenLockerTester().Lock();
-
-  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
-      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
-  ASSERT_TRUE(reauth_dialog_helper);
-
-  // With Gaia reauth endpoint we don't display native "Verify Account"
-  // screen, assuming that first Gaia page fulfils the same role.
-  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 }
 
 // Tests the close button in SAML Screen.

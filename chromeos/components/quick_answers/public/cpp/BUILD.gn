@@ -42,5 +42,10 @@ source_set("prefs") {
 }
 
 source_set("constants") {
-  sources = [ "constants.h" ]
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+
+  deps = [ "//ui/views" ]
 }

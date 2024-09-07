@@ -11,7 +11,7 @@
 SearchEngineChoiceHandler::SearchEngineChoiceHandler(
     mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver,
     base::OnceCallback<void()> display_dialog_callback,
-    base::OnceCallback<void(int)> handle_choice_selected_callback,
+    base::OnceCallback<void(int, bool)> handle_choice_selected_callback,
     base::RepeatingCallback<void()> handle_learn_more_clicked_callback,
     base::OnceCallback<void()> handle_more_button_clicked_callback)
     : receiver_(this, std::move(receiver)),
@@ -37,9 +37,11 @@ void SearchEngineChoiceHandler::DisplayDialog() {
 }
 
 void SearchEngineChoiceHandler::HandleSearchEngineChoiceSelected(
-    int prepopulate_id) {
+    int prepopulate_id,
+    bool save_guest_mode_selection) {
   if (handle_choice_selected_callback_) {
-    std::move(handle_choice_selected_callback_).Run(prepopulate_id);
+    std::move(handle_choice_selected_callback_)
+        .Run(prepopulate_id, save_guest_mode_selection);
   }
 }
 

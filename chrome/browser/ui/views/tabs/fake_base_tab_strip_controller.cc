@@ -203,7 +203,7 @@ std::optional<int> FakeBaseTabStripController::GetActiveIndex() const {
 }
 
 bool FakeBaseTabStripController::IsTabSelected(int index) const {
-  return false;
+  return GetSelectionModel().IsSelected(index);
 }
 
 bool FakeBaseTabStripController::IsTabPinned(int index) const {

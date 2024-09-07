@@ -4,23 +4,19 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/cr_elements/icons.html.js';
 import './strings.m.js';
-import './signin_shared.css.js';
-import './signin_vars.css.js';
-import './tangible_sync_style_shared.css.js';
 import './managed_user_profile_notice_disclosure.js';
 import './managed_user_profile_notice_state.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './managed_user_profile_notice_app.html.js';
+import {getCss} from './managed_user_profile_notice_app.css.js';
+import {getHtml} from './managed_user_profile_notice_app.html.js';
 import type {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxy} from './managed_user_profile_notice_browser_proxy.js';
 import {ManagedUserProfileNoticeBrowserProxyImpl, State} from './managed_user_profile_notice_browser_proxy.js';
 
@@ -39,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const ManagedUserProfileNoticeAppElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 export class ManagedUserProfileNoticeAppElement extends
     ManagedUserProfileNoticeAppElementBase {
@@ -47,26 +43,29 @@ export class ManagedUserProfileNoticeAppElement extends
     return 'managed-user-profile-notice-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       showEnterpriseBadge_: {
         type: Boolean,
-        value: false,
       },
 
       /** URL for the profile picture */
-      pictureUrl_: String,
+      pictureUrl_: {type: String},
 
       /** The title and subtitle of the screen */
-      title_: String,
-      subtitle_: String,
+      title_: {type: String},
+      subtitle_: {type: String},
 
       /** The detailed info about enterprise management */
-      enterpriseInfo_: String,
+      enterpriseInfo_: {type: String},
 
       /**
        * Whether this page is being shown as a dialog.
@@ -76,91 +75,63 @@ export class ManagedUserProfileNoticeAppElement extends
        */
       isModalDialog_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value() {
-          return loadTimeData.getBoolean('isModalDialog');
-        },
+        reflect: true,
       },
 
       /** The label for the button to proceed with the flow */
-      proceedLabel_: {
-        type: String,
-        computed: 'computeProceedLabel_(currentState_)',
-      },
+      proceedLabel_: {type: String},
 
       /** Whether to show the cancel button on the screen */
-      showCancelButton_: {
-        type: Boolean,
-        value: true,
-      },
+      showCancelButton_: {type: Boolean},
 
-      disableProceedButton_: {
-        type: Boolean,
-        value: false,
-      },
-
-      currentState_: {
-        type: Number,
-        value: State.DISCLOSURE,
-      },
-
-      showDisclosure_: {
-        type: Boolean,
-        value: true,
-      },
-
-      showProcessing_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showSuccess_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showTimeout_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showError_: {
-        type: Boolean,
-        value: false,
-      },
+      disableProceedButton_: {type: Boolean},
+      currentState_: {type: Number},
+      showDisclosure_: {type: Boolean},
+      showProcessing_: {type: Boolean},
+      showSuccess_: {type: Boolean},
+      showTimeout_: {type: Boolean},
+      showError_: {type: Boolean},
 
       useUpdatedUi_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value() {
-          return loadTimeData.getBoolean('useUpdatedUi');
-        },
+        reflect: true,
       },
     };
   }
 
-  private showEnterpriseBadge_: boolean;
-  private pictureUrl_: string;
-  private title_: string;
-  private subtitle_: string;
+  protected showEnterpriseBadge_: boolean = false;
+  protected pictureUrl_: string;
+  protected title_: string;
+  protected subtitle_: string;
   private enterpriseInfo_: string;
-  private isModalDialog_: boolean;
-  private proceedLabel_: string;
-  private disableProceedButton_: boolean;
-  private showCancelButton_: boolean;
-  private currentState_: State;
-  private showDisclosure_: boolean;
-  private showProcessing_: boolean;
-  private showSuccess_: boolean;
-  private showTimeout_: boolean;
-  private showError_: boolean;
+  protected isModalDialog_: boolean = loadTimeData.getBoolean('isModalDialog');
+  protected proceedLabel_: string;
+  protected disableProceedButton_: boolean = false;
+  private showCancelButton_: boolean = true;
+  private currentState_: State = State.DISCLOSURE;
+  protected showDisclosure_: boolean = true;
+  protected showProcessing_: boolean = false;
+  protected showSuccess_: boolean = false;
+  protected showTimeout_: boolean = false;
+  protected showError_: boolean = false;
+  protected useUpdatedUi_: boolean = loadTimeData.getBoolean('useUpdatedUi');
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
           ManagedUserProfileNoticeBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('currentState_')) {
+      this.proceedLabel_ = this.computeProceedLabel_();
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
     this.addWebUiListener(
         'on-state-changed', (state: State) => this.updateCurrentState_(state));
 
@@ -172,14 +143,14 @@ export class ManagedUserProfileNoticeAppElement extends
   }
 
   /** Called when the proceed button is clicked. */
-  private onProceed_() {
+  protected onProceed_() {
     this.disableProceedButton_ = true;
     this.managedUserProfileNoticeBrowserProxy_.proceed(
         /*currentState=*/ this.currentState_, /*linkData=*/ false);
   }
 
   /** Called when the cancel button is clicked. */
-  private onCancel_() {
+  protected onCancel_() {
     this.managedUserProfileNoticeBrowserProxy_.cancel();
   }
 
@@ -207,12 +178,12 @@ export class ManagedUserProfileNoticeAppElement extends
     }
   }
 
-  private allowCancel_() {
+  protected allowCancel_() {
     return this.showCancelButton_ && this.showDisclosure_;
   }
 
-  private computeProceedLabel_(state: State) {
-    switch (state) {
+  private computeProceedLabel_() {
+    switch (this.currentState_) {
       case State.DISCLOSURE:
       case State.PROCESSING:
         return this.i18n('continueLabel');

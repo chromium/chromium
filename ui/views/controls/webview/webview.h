@@ -87,9 +87,11 @@ class WEBVIEW_EXPORT WebView : public View,
   // convenience for loading the initial URL, and so URLs are navigated with
   // PAGE_TRANSITION_AUTO_TOPLEVEL, so this is not intended as a general purpose
   // navigation method - use WebContents' API directly.
-  void LoadInitialURL(const GURL& url,
-                      HttpsUpgradePolicy https_upgrade_policy =
-                          HttpsUpgradePolicy::kAllowUpgrade);
+  void LoadInitialURL(
+      const GURL& url,
+      HttpsUpgradePolicy https_upgrade_policy =
+          HttpsUpgradePolicy::kAllowUpgrade,
+      base::Location invoke_location = base::Location::Current());
 
   // Controls how the attached WebContents is resized.
   // false = WebContents' views' bounds are updated continuously as the
@@ -157,9 +159,6 @@ class WEBVIEW_EXPORT WebView : public View,
 
     ~ScopedWebContentsCreatorForTesting();
   };
-
-  // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  protected:
   // Called when letterboxing (scaling the native view to preserve aspect

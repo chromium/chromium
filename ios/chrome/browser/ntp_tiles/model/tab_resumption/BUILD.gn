@@ -13,6 +13,7 @@ source_set("tab_resumption_prefs") {
     "//components/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
     "//url",
   ]
 }

@@ -136,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderPrerenderBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
-  int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(kPrerenderingUrl);
   content::RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);

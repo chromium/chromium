@@ -111,7 +111,6 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:database_manager",
-    "//components/safe_browsing/core/browser/db:metadata_proto",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_database",
     "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",

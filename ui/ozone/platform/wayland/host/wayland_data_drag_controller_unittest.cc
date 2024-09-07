@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/mock_callback.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -38,7 +39,6 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
@@ -89,16 +89,6 @@ PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
 }
 
 }  // namespace
-
-class MockDragFinishedCallback {
- public:
-  MOCK_METHOD1(OnDragFinished, void(DragOperation operation));
-
-  ui::WmDragHandler::DragFinishedCallback callback() {
-    return base::BindOnce(&MockDragFinishedCallback::OnDragFinished,
-                          base::Unretained(this));
-  }
-};
 
 class MockDropHandler : public WmDropHandler {
  public:
@@ -169,7 +159,6 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
       output->Flush();
     });
 
-    drag_finished_callback_ = std::make_unique<MockDragFinishedCallback>();
     drop_handler_ = std::make_unique<MockDropHandler>();
     SetWmDropHandler(window_.get(), drop_handler_.get());
   }
@@ -188,10 +177,6 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
 
   MockDropHandler* drop_handler() { return drop_handler_.get(); }
 
-  MockDragFinishedCallback* drag_finished_callback() {
-    return drag_finished_callback_.get();
-  }
-
   WaylandConnection* connection() { return connection_.get(); }
 
   WaylandWindow* window() { return window_.get(); }
@@ -205,9 +190,11 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     ASSERT_TRUE(origin_window);
     OSExchangeData os_exchange_data;
     os_exchange_data.SetString(sample_text_for_dnd());
+    EXPECT_CALL(drag_started_callback_, Run()).Times(1);
     origin_window->StartDrag(
         os_exchange_data, operations, DragEventSource::kMouse, /*cursor=*/{},
-        /*can_grab_pointer=*/true, drag_finished_callback_->callback(),
+        /*can_grab_pointer=*/true, drag_started_callback_.Get(),
+        drag_finished_callback_.Get(),
         /*loation delegate=*/nullptr);
   }
 
@@ -216,9 +203,11 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     ASSERT_TRUE(origin_window);
     OSExchangeData os_exchange_data;
     os_exchange_data.SetString(sample_text_for_dnd());
+    EXPECT_CALL(drag_started_callback_, Run()).Times(1);
     origin_window->StartDrag(
         os_exchange_data, operations, DragEventSource::kTouch, /*cursor=*/{},
-        /*can_grab_pointer=*/true, drag_finished_callback_->callback(),
+        /*can_grab_pointer=*/true, drag_started_callback_.Get(),
+        drag_finished_callback_.Get(),
         /*loation delegate=*/nullptr);
   }
 
@@ -249,8 +238,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
           // If DnD was cancelled, or data was dropped where it was not
           // accepted, the operation result must be None (0).
           // Regression test for https://crbug.com/1136751.
-          EXPECT_CALL(*self->drag_finished_callback(),
-                      OnDragFinished(DragOperation::kNone))
+          EXPECT_CALL(self->drag_finished_callback_, Run(DragOperation::kNone))
               .Times(1);
           self->SendDndCancelled();
         },
@@ -293,7 +281,9 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
   }
 
   std::unique_ptr<MockDropHandler> drop_handler_;
-  std::unique_ptr<MockDragFinishedCallback> drag_finished_callback_;
+  base::MockOnceClosure drag_started_callback_;
+  base::MockCallback<ui::WmDragHandler::DragFinishedCallback>
+      drag_finished_callback_;
 };
 
 TEST_P(WaylandDataDragControllerTest, StartDrag) {
@@ -919,7 +909,8 @@ TEST_P(WaylandDataDragControllerTest, DestroyOriginSurface) {
   os_exchange_data.SetString(sample_text_for_dnd());
   window_2->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY,
                       DragEventSource::kMouse, {}, true,
-                      drag_finished_callback_->callback(), nullptr);
+                      drag_started_callback_.Get(),
+                      drag_finished_callback_.Get(), nullptr);
 
   // Send wl_data_source::cancelled event. The drag controller is then
   // expected to gracefully reset its internal state.
@@ -1073,7 +1064,8 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   ASSERT_FALSE(window_->StartDrag(
       os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse,
       /*cursor=*/{},
-      /*can_grab_pointer=*/true, drag_finished_callback_->callback(), nullptr));
+      /*can_grab_pointer=*/true, drag_started_callback_.Get(),
+      drag_finished_callback_.Get(), nullptr));
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   EXPECT_FALSE(drag_controller()->origin_window_);
   EXPECT_FALSE(drag_controller()->nested_dispatcher_);
@@ -1096,8 +1088,7 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   // it exits with cancellation status.
   ScheduleTestTask(base::BindLambdaForTesting([&]() {
     EXPECT_CALL(*drop_handler_, OnDragLeave).Times(1);
-    EXPECT_CALL(*drag_finished_callback_,
-                OnDragFinished(Eq(DragOperation::kNone)))
+    EXPECT_CALL(drag_finished_callback_, Run(Eq(DragOperation::kNone)))
         .Times(1);
 
     SendPointerButton(window_.get(), &delegate_, BTN_LEFT, /*pressed=*/false);
@@ -1106,7 +1097,8 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   bool result = window_->StartDrag(
       os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse,
       /*cursor=*/{},
-      /*can_grab_pointer=*/true, drag_finished_callback_->callback(), nullptr);
+      /*can_grab_pointer=*/true, drag_started_callback_.Get(),
+      drag_finished_callback_.Get(), nullptr);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Drag must be started. Availability of data_source can be used to
@@ -1117,8 +1109,6 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   // TODO(crbug.com/40050639): Double-check if this should return false instead.
   EXPECT_TRUE(result);
 
-  Mock::VerifyAndClearExpectations(drop_handler_.get());
-  Mock::VerifyAndClearExpectations(drag_finished_callback_.get());
   EXPECT_FALSE(drag_controller()->origin_window_);
   EXPECT_FALSE(drag_controller()->nested_dispatcher_);
 }
@@ -1135,14 +1125,14 @@ TEST_P(WaylandDataDragControllerTest, SuppressPointerButtonReleasesAfterEnter) {
   // Ensure start_drag request is processed at compositor side and a first enter
   // is received by the client. From that point onwards, any pointer button
   // event must be no-op.
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  WaylandTestBase::SyncDisplay();
   ASSERT_TRUE(drag_controller()->has_received_enter_);
 
   // Emulates a spurious pointer button release and ensure it is no-op.
   EXPECT_CALL(*drop_handler_, OnDragLeave).Times(0);
   SendPointerButton(window_.get(), &delegate_, BTN_LEFT, /*pressed=*/false);
   Mock::VerifyAndClearExpectations(drop_handler_.get());
-  Mock::VerifyAndClearExpectations(drag_finished_callback_.get());
+  Mock::VerifyAndClearExpectations(&drag_finished_callback_);
   EXPECT_TRUE(drag_controller()->data_source_);
 
   // Ok, we're done.
@@ -1222,8 +1212,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
   // there is a mouse button pressed (ie: kMousePress serial available).
   bool drag_started = window_->StartDrag(
       os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kTouch,
-      /*cursor=*/{}, /*can_grab_pointer=*/true,
-      drag_finished_callback_->callback(), nullptr);
+      /*cursor=*/{}, /*can_grab_pointer=*/true, drag_started_callback_.Get(),
+      drag_finished_callback_.Get(), nullptr);
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Drag must be started. Availability of data_source can be used to
     // determine if the client has initiated a drag session.
@@ -1244,8 +1234,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
   // received after mouse button press.
   bool success = window_->StartDrag(
       os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse,
-      /*cursor=*/{}, /*can_grab_pointer=*/true,
-      drag_finished_callback_->callback(), nullptr);
+      /*cursor=*/{}, /*can_grab_pointer=*/true, drag_started_callback_.Get(),
+      drag_finished_callback_.Get(), nullptr);
   EXPECT_TRUE(success);
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   PostToServerAndWait([mouse_serial = mouse_press_serial->value](
@@ -1383,7 +1373,7 @@ TEST_P(WaylandDataDragControllerTest,
   // Wait for the full data fetching flow to finish before checking all
   // expectations.
   WaitForDragDropTasks();
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 
   EXPECT_EQ(drag_controller_state(),
             WaylandDataDragController::State::kStarted);
@@ -1434,7 +1424,7 @@ TEST_P(WaylandDataDragControllerTest, LeaveWindowWhileFetchingData) {
   // Wait for the full data fetching flow and requests/events to finish before
   // checking all expectations.
   WaitForDragDropTasks();
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   EXPECT_FALSE(drop_handler_->dropped_data());
@@ -1521,7 +1511,7 @@ TEST_P(WaylandDataDragControllerTest, OutgoingSessionWithoutDndFinished) {
   bool started = drag_controller()->StartSession(
       os_exchange_data, DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE,
       DragEventSource::kMouse);
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  WaylandTestBase::SyncDisplay();
   ASSERT_TRUE(started);
 
   SendDndFinished();

@@ -258,6 +258,35 @@ void EventReportValidator::ExpectDataControlsSensitiveDataEvent(
           });
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void EventReportValidator::ExpectDataMaskingEvent(
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    extensions::api::enterprise_reporting_private::DataMaskingEvent
+        expected_event) {
+  event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
+  url_ = expected_event.url;
+  tab_url_ = expected_event.url;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
+  expected_data_masking_rules_builder_ = base::BindRepeating(
+      [](const extensions::api::enterprise_reporting_private::DataMaskingEvent&
+             event) { return event.Clone(); },
+      std::move(expected_event));
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce(
+          [this](content::BrowserContext* context, bool include_device_info,
+                 base::Value::Dict report,
+                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                     callback) {
+            ValidateReport(&report);
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 void EventReportValidator::ExpectSensitiveDataEvents(
     const std::string& expected_url,
     const std::string& expected_tab_url,
@@ -572,6 +601,9 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   ValidateMimeType(event);
   ValidateRTLookupResponse(event);
   ValidateDataControlsAttributes(event);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  ValidateDataMaskingAttributes(event);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // This field is checked using other members for non URLF events, so
   // `url_filtering_event_result_` is always expected to be empty in other
@@ -834,6 +866,26 @@ void EventReportValidator::ValidateDataControlsAttributes(
   }
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void EventReportValidator::ValidateDataMaskingAttributes(
+    const base::Value::Dict* event) {
+  if (expected_data_masking_rules_builder_) {
+    auto data_masking_rules = std::move(expected_data_masking_rules_builder_)
+                                  .Run()
+                                  .triggered_rule_info;
+    const base::Value::List* triggered_rules =
+        event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+    ASSERT_TRUE(triggered_rules);
+    ASSERT_EQ(data_masking_rules.size(), triggered_rules->size());
+    size_t rule_index = 0;
+    for (const base::Value& rule : *triggered_rules) {
+      ASSERT_EQ(rule.GetDict(), data_masking_rules[rule_index].ToValue());
+      ++rule_index;
+    }
+  }
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 void EventReportValidator::ExpectNoReport() {
   EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
 }
@@ -885,21 +937,6 @@ EventReportValidator EventReportValidatorHelper::CreateValidator() {
   return EventReportValidator(client_.get());
 }
 
-void SetAnalysisConnector(PrefService* prefs,
-                          AnalysisConnector connector,
-                          const std::string& pref_value,
-                          bool machine_scope) {
-  ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
-  if (!settings_list->empty()) {
-    settings_list->clear();
-  }
-
-  settings_list->Append(*base::JSONReader::Read(pref_value));
-  prefs->SetInteger(
-      ConnectorScopePref(connector),
-      machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
-}
-
 base::Value::List CreateOptInEventsList(
     const std::map<std::string, std::vector<std::string>>&
         enabled_opt_in_events) {
@@ -919,6 +956,22 @@ base::Value::List CreateOptInEventsList(
   return enabled_opt_in_events_list;
 }
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+void SetAnalysisConnector(PrefService* prefs,
+                          AnalysisConnector connector,
+                          const std::string& pref_value,
+                          bool machine_scope) {
+  ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
+  if (!settings_list->empty()) {
+    settings_list->clear();
+  }
+
+  settings_list->Append(*base::JSONReader::Read(pref_value));
+  prefs->SetInteger(
+      ConnectorScopePref(connector),
+      machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
+}
+
 void SetOnSecurityEventReporting(
     PrefService* prefs,
     bool enabled,
@@ -927,31 +980,30 @@ void SetOnSecurityEventReporting(
         enabled_opt_in_events,
     bool machine_scope) {
   ScopedListPrefUpdate settings_list(prefs, kOnSecurityEventPref);
+  settings_list->clear();
+  prefs->ClearPref(kOnSecurityEventScopePref);
   if (!enabled) {
-    settings_list->clear();
-    prefs->ClearPref(kOnSecurityEventScopePref);
     return;
   }
 
-  if (settings_list->empty()) {
-    base::Value::Dict settings;
+  base::Value::Dict settings;
 
-    settings.Set(kKeyServiceProvider, base::Value("google"));
-    if (!enabled_event_names.empty()) {
-      base::Value::List enabled_event_name_list;
-      for (const auto& enabled_event_name : enabled_event_names) {
-        enabled_event_name_list.Append(enabled_event_name);
-      }
-      settings.Set(kKeyEnabledEventNames, std::move(enabled_event_name_list));
+  settings.Set(kKeyServiceProvider, base::Value("google"));
+  if (!enabled_event_names.empty()) {
+    base::Value::List enabled_event_name_list;
+    for (const auto& enabled_event_name : enabled_event_names) {
+      enabled_event_name_list.Append(enabled_event_name);
     }
-
-    if (!enabled_opt_in_events.empty()) {
-      settings.Set(kKeyEnabledOptInEvents,
-                   CreateOptInEventsList(enabled_opt_in_events));
-    }
-
-    settings_list->Append(std::move(settings));
+    settings.Set(kKeyEnabledEventNames, std::move(enabled_event_name_list));
   }
+
+  if (!enabled_opt_in_events.empty()) {
+    settings.Set(kKeyEnabledOptInEvents,
+                 CreateOptInEventsList(enabled_opt_in_events));
+  }
+
+  settings_list->Append(std::move(settings));
+
   prefs->SetInteger(
       kOnSecurityEventScopePref,
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
@@ -962,6 +1014,7 @@ void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector) {
   settings_list->clear();
   prefs->ClearPref(ConnectorScopePref(connector));
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SetProfileDMToken(Profile* profile, const std::string& dm_token) {

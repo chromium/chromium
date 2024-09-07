@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -11,9 +13,12 @@
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
+#import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -21,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -61,6 +67,8 @@
 @implementation AccountMenuCoordinator {
   UINavigationController* _navigationController;
   AuthenticationService* _authenticationService;
+  signin::IdentityManager* _identityManager;
+  PrefService* _prefService;
   // Dismiss callback for account details view.
   SystemIdentityManager::DismissViewCallback
       _accountDetailsControllerDismissCallback;
@@ -74,6 +82,7 @@
       _syncEncryptionPassphraseTableViewController;
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
+  ChromeAccountManagerService* _accountManagerService;
 }
 
 - (void)dealloc {
@@ -87,10 +96,10 @@
   _syncService = SyncServiceFactory::GetForBrowserState(browserState);
   _authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  ChromeAccountManagerService* accountManagerService =
+  _accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+  _identityManager = IdentityManagerFactory::GetForProfile(browserState);
+  _prefService = browserState->GetPrefs();
   _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                            ApplicationCommands);
 
@@ -109,11 +118,14 @@
       UIPopoverArrowDirectionUp;
   _navigationController.presentationController.delegate = self;
 
+  PrefService* prefs = browserState->GetPrefs();
+
   _mediator =
       [[AccountMenuMediator alloc] initWithSyncService:_syncService
-                                 accountManagerService:accountManagerService
+                                 accountManagerService:_accountManagerService
                                            authService:_authenticationService
-                                       identityManager:identityManager];
+                                       identityManager:_identityManager
+                                                 prefs:prefs];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
@@ -135,8 +147,12 @@
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
   }
   [self stopAccountsCoordinator];
-  [_navigationController dismissViewControllerAnimated:YES completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
   _authenticationService = nil;
+  _identityManager = nil;
+  _prefService = nil;
   _navigationController.delegate = nil;
   _navigationController = nil;
   _viewController.dataSource = nil;
@@ -153,7 +169,7 @@
   _mediator = nil;
   _applicationHandler = nil;
   _syncService = nullptr;
-  _authenticationService = nullptr;
+  _accountManagerService = nullptr;
   [self stopSignoutActionSheetCoordinator];
   [self stopAccountsCoordinator];
   [super stop];
@@ -296,7 +312,7 @@
                       withSource:signin_metrics::ProfileSignout::
                                      kChangeAccountInAccountMenu];
   _signoutActionSheetCoordinator.delegate = self;
-  _signoutActionSheetCoordinator.skipPostSignoutSnackbar = YES;
+  _signoutActionSheetCoordinator.accountSwitch = YES;
 
   __weak __typeof(self) weakSelf = self;
   _signoutActionSheetCoordinator.completion = ^(BOOL signoutSuccess) {
@@ -325,12 +341,15 @@
 
 - (void)triggerAccountSwitchSnackbarWithIdentity:
     (id<SystemIdentity>)systemIdentity {
-  NSString* accountName = systemIdentity.userGivenName
-                              ? systemIdentity.userGivenName
-                              : systemIdentity.userEmail;
-  MDCSnackbarMessage* snackbarTitle = CreateSnackbarMessage(
-      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-                              base::SysNSStringToUTF16(accountName)));
+  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
+      systemIdentity, IdentityAvatarSize::Regular);
+  ManagementState managementState = GetManagementState(
+      _identityManager, _authenticationService, _prefService);
+  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
+      initWithName:systemIdentity.userGivenName
+             email:systemIdentity.userEmail
+            avatar:avatar
+           managed:managementState.is_profile_managed()];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);

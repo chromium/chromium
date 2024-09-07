@@ -2164,6 +2164,15 @@ xmlSaveTree(xmlSaveCtxtPtr ctxt, xmlNodePtr cur)
     return(ret);
 }
 
+/**
+ * xmlSaveNotationDecl:
+ * @ctxt:  save context
+ * @cur:  notation
+ *
+ * Serialize a notation declaration.
+ *
+ * Return 0 on succes, -1 on error.
+ */
 int
 xmlSaveNotationDecl(xmlSaveCtxtPtr ctxt, xmlNotationPtr cur) {
     if (ctxt == NULL)
@@ -2172,6 +2181,15 @@ xmlSaveNotationDecl(xmlSaveCtxtPtr ctxt, xmlNotationPtr cur) {
     return(0);
 }
 
+/**
+ * xmlSaveNotationTable:
+ * @ctxt:  save context
+ * @cur:  notation table
+ *
+ * Serialize notation declarations of a document.
+ *
+ * Return 0 on succes, -1 on error.
+ */
 int
 xmlSaveNotationTable(xmlSaveCtxtPtr ctxt, xmlNotationTablePtr cur) {
     if (ctxt == NULL)
@@ -2223,6 +2241,8 @@ xmlSaveClose(xmlSaveCtxtPtr ctxt)
  *
  * Close a document saving context, i.e. make sure that all bytes have
  * been output and free the associated data.
+ *
+ * Available since 2.13.0.
  *
  * Returns an xmlParserErrors code.
  */
@@ -2283,7 +2303,6 @@ xmlSaveSetAttrEscape(xmlSaveCtxtPtr ctxt, xmlCharEncodingOutputFunc escape)
  * xmlBufAttrSerializeTxtContent:
  * @buf:  output buffer
  * @doc:  the document
- * @attr: the attribute node
  * @string: the text content
  *
  * Serialize text attribute values to an xmlBufPtr

@@ -9,7 +9,7 @@
 #import "base/test/mock_callback.h"
 #import "base/time/time.h"
 #import "components/enterprise/idle/idle_pref_names.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"

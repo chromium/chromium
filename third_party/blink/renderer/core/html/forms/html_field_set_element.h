@@ -48,8 +48,7 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
 
  private:
   bool IsEnumeratable() const override { return true; }
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   LayoutBox* GetLayoutBoxForScrolling() const override;
   void DidRecalcStyle(const StyleRecalcChange change) override;

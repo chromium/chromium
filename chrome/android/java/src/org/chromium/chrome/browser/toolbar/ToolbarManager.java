@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -63,6 +62,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.dragdrop.toolbar.ToolbarDragDropCoordinator;
+import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -154,7 +154,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -274,7 +273,6 @@ public class ToolbarManager
     private final TabCreatorManager mTabCreatorManager;
     private final TabObscuringHandler mTabObscuringHandler;
     private ToolbarDragDropCoordinator mToolbarDragDropCoordinator;
-    private final SnackbarManager mSnackbarManager;
     private OnAttachStateChangeListener mAttachStateChangeListener;
     private final BackPressManager mBackPressManager;
     private final UserEducationHelper mUserEducationHelper;
@@ -412,14 +410,15 @@ public class ToolbarManager
             }
             mBackGestureInProgress = false;
             int res = BackPressResult.SUCCESS;
-            // When enabled, the content/ native will trigger the navigation; otherwise,
-            // the back gesture should be consumed by ToolbarManager.
-            if (!GestureNavigationUtils.allowTransition(
-                    mActivityTabProvider.get(), /* forward= */ false)) {
+
+            if (mHandler != null) {
+                mHandler.onBackInvoked();
+            } else {
+                assert !GestureNavigationUtils.allowTransition(
+                                mActivityTabProvider.get(), /* forward= */ false)
+                        : "No gesture handler when transition is disallowed.";
                 res = ToolbarManager.this.handleBackPress();
             }
-
-            if (mHandler != null) mHandler.onBackInvoked();
             mHandler = null;
             return res;
         }
@@ -532,7 +531,6 @@ public class ToolbarManager
      *     UI and DataSharing services.
      * @param tabContentManager Manages the content of tabs.
      * @param tabCreatorManager Manages the creation of tabs.
-     * @param snackbarManager Manages the display of snackbars.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *     MerchantTrustSignalsCoordinator}.
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
@@ -580,7 +578,6 @@ public class ToolbarManager
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull SnackbarManager snackbarManager,
             @NonNull
                     Supplier<MerchantTrustSignalsCoordinator>
                             merchantTrustSignalsCoordinatorSupplier,
@@ -620,7 +617,6 @@ public class ToolbarManager
         mTabContentManager = tabContentManager;
         mTabCreatorManager = tabCreatorManager;
         mTabObscuringHandler = tabObscuringHandler;
-        mSnackbarManager = snackbarManager;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, profileSupplier, mHandler);
         mDesktopWindowStateProvider = desktopWindowStateProvider;
@@ -778,7 +774,8 @@ public class ToolbarManager
                             mIncognitoStateProvider::isIncognitoSelected,
                             mPromoShownOneshotSupplier,
                             mLayoutStateProviderSupplier,
-                            mActivityTabProvider);
+                            mActivityTabProvider,
+                            mTabModelSelectorSupplier);
         }
 
         mToolbar =
@@ -1556,10 +1553,8 @@ public class ToolbarManager
                         mBottomSheetController,
                         mDataSharingTabManager,
                         mTabContentManager,
-                        mCompositorViewHolder,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
-                        mSnackbarManager,
                         mModalDialogManagerSupplier.get());
         var bottomControlsContentDelegateSupplier =
                 (OneshotSupplier<BottomControlsContentDelegate>)
@@ -1572,6 +1567,7 @@ public class ToolbarManager
                         mLayoutManager,
                         mCompositorViewHolder.getResourceManager(),
                         mBottomControlsStacker,
+                        mControlsVisibilityDelegate,
                         mFullscreenManager,
                         mEdgeToEdgeControllerSupplier,
                         (ScrollingBottomViewResourceFrameLayout) root,
@@ -1727,7 +1723,6 @@ public class ToolbarManager
                 && !currentTab.getUrl().isEmpty()) {
             mControlContainer.setReadyForBitmapCapture(true);
         }
-
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
 

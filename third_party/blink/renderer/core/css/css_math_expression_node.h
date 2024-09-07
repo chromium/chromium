@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
@@ -113,7 +112,7 @@ class CORE_EXPORT CSSMathExpressionNode
 
   static CSSMathExpressionNode* ParseMathFunction(
       CSSValueID function_id,
-      CSSParserTokenRange tokens,
+      CSSParserTokenStream& stream,
       const CSSParserContext&,
       const Flags parsing_flags,
       CSSAnchorQueryTypes allowed_anchor_queries,
@@ -140,6 +139,9 @@ class CORE_EXPORT CSSMathExpressionNode
   // Resolves the expression into one value *without doing any type conversion*.
   // Hits DCHECK if type conversion is required.
   virtual double DoubleValue() const = 0;
+
+  virtual const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const = 0;
 
   double ComputeNumber(const CSSLengthResolver& length_resolver) const {
     return ComputeDouble(length_resolver);
@@ -305,6 +307,8 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
     return false;
   }
 
+  const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const final;
   CSSPrimitiveValue::BoolStatus IsNegative() const final;
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
@@ -378,6 +382,10 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
     return false;
   }
 
+  const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const final {
+    return this;
+  }
   CSSPrimitiveValue::BoolStatus IsNegative() const final {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
@@ -487,6 +495,10 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
     return false;
   }
 
+  const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const final {
+    return this;
+  }
   CSSPrimitiveValue::BoolStatus IsNegative() const final {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
@@ -674,6 +686,8 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   String CSSTextAsClamp() const;
 
+  const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const final;
   CSSPrimitiveValue::BoolStatus IsNegative() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -772,6 +786,10 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
 
   CSSValueID GetValue() const { return size_feature_->GetValueID(); }
 
+  const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const final {
+    return this;
+  }
   CSSPrimitiveValue::BoolStatus IsNegative() const final {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
@@ -847,12 +865,12 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
  public:
   CSSMathExpressionAnchorQuery(CSSAnchorQueryType type,
                                const CSSValue* anchor_specifier,
-                               const CSSValue& value,
+                               const CSSValue* value,
                                const CSSPrimitiveValue* fallback);
 
   CSSMathExpressionNode* Copy() const final {
     return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
-        type_, anchor_specifier_, *value_, fallback_);
+        type_, anchor_specifier_, value_, fallback_);
   }
 
   bool IsAnchor() const { return type_ == CSSAnchorQueryType::kAnchor; }
@@ -865,6 +883,10 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   bool IsMathFunction() const final { return true; }
 
   bool IsAnchorQuery() const final { return true; }
+  const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const final {
+    return this;
+  }
   CSSPrimitiveValue::BoolStatus IsNegative() const final {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }

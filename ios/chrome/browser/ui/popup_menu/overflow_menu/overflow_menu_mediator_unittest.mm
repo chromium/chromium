@@ -56,9 +56,9 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -136,8 +136,6 @@ constexpr syncer::SyncService::UserActionableError
         syncer::SyncService::UserActionableError::kSignInNeedsUpdate;
 
 void CleanupNSUserDefaults() {
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kWhatsNewUsageEntryKey];
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kWhatsNewM116UsageEntryKey];
 }
@@ -415,7 +413,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   }
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(browser_state_.get());
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
@@ -1019,6 +1017,29 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   EXPECT_NSEQ(kToolsMenuWhatsNewId,
               mediator_.model.destinations[kNewDestinationsInsertionIndex + 1]
                   .accessibilityIdentifier);
+}
+
+// Tests that there is blue dot displayed on the Settings destination when there
+// is no sync error.
+TEST_F(OverflowMenuMediatorTest, TestSettingsBlueDotBadge) {
+  CreateMediator(/*is_incognito=*/NO);
+
+  syncer::MockSyncService syncService;
+  ON_CALL(syncService, GetUserActionableError())
+      .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
+  SetupSyncServiceEnabledExpectations(&syncService);
+  mediator_.syncService = &syncService;
+  CreateLocalStatePrefs();
+  mediator_.localStatePrefs = localStatePrefs_.get();
+  mediator_.hasSettingsBlueDot = YES;
+  mediator_.model = model_;
+
+  // Verify that the Settings destination is there and has the promo badge.
+  OverflowMenuDestination* promotedDestination =
+      mediator_.model.destinations[kNewDestinationsInsertionIndex];
+  EXPECT_NSEQ(kToolsMenuSettingsId,
+              promotedDestination.accessibilityIdentifier);
+  EXPECT_EQ(BadgeTypePromo, promotedDestination.badge);
 }
 
 // Tests that the destinations are still promoted when there is no usage

@@ -86,9 +86,6 @@ class DataTypeRegistry : public DataTypeConnector,
   CommitContributorMap* commit_contributor_map();
   KeystoreKeysHandler* keystore_keys_handler();
 
-  // Returns types that have local changes yet to be synced to the server.
-  DataTypeSet GetTypesWithUnsyncedData() const;
-
   bool HasUnsyncedItems() const;
 
   const std::vector<std::unique_ptr<DataTypeWorker>>&

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1001033507375626788">Esta rede compártese contigo</translation>
+<translation id="1001360573085135660">Fai clic para activar ou desactivar o permiso.</translation>
 <translation id="1002085272681738789">Pestana activa de novo</translation>
 <translation id="1003088604756913841">Abrir ligazón nunha nova ventá da aplicación <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
@@ -85,6 +86,7 @@
 <translation id="1054187194995068149">Ola. Esta á unha vista previa</translation>
 <translation id="1054502481659725522">As aplicacións, os sitios web e os servizos do sistema poden usar a túa localización.</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualiza o <ph name="DEVICE_TYPE" /> no prazo de 1 semana}other{Actualiza o <ph name="DEVICE_TYPE" /> no prazo de {NUM_WEEKS} semanas}}</translation>
+<translation id="1055606969515662982">Usa o mando a distancia para deter a emisión</translation>
 <translation id="1056898198331236512">Advertencia</translation>
 <translation id="1056980582064308040">Ao cambiar a configuración, a zona wifi reiniciarase. Desconectaranse dela os dispositivos que a estean usando.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -223,6 +225,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1155545602507378023">Non, só este dispositivo</translation>
 <translation id="1155816283571436363">Conectando co teu teléfono</translation>
 <translation id="1157952955648710254">Pechar o panel lateral da Busca de Google</translation>
+<translation id="1157985233335035034">Idiomas recentes</translation>
 <translation id="1158080958325422608">Escribir en maiúsculas</translation>
 <translation id="1159879754517035595">Xestionar a configuración de extensións</translation>
 <translation id="1160800016654917722">A ventá moveuse cara abaixo e cara á esquerda</translation>
@@ -263,11 +266,13 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1178601482396475810">Xestionar a sincronización do dispositivo</translation>
 <translation id="117916940443676133">A túa chave de seguranza non está protexida cun PIN. Para xestionar os datos de inicio de sesión, primeiro crea un PIN.</translation>
+<translation id="1179400851034021914">O IBAN non é válido</translation>
 <translation id="1179902906564467236">Sigue as instrucións no teléfono ou usa a aplicación da cámara</translation>
 <translation id="118057123461613219">Aforro moi elevado</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1182876754474670069">inicio</translation>
 <translation id="1183237619868651138">Non se pode instalar <ph name="EXTERNAL_CRX_FILE" /> na caché local.</translation>
+<translation id="1184037892196730210">Non se puido emitir a pantalla</translation>
 <translation id="1185924365081634987">Tamén podes intentar <ph name="GUEST_SIGNIN_LINK_START" />navegar como invitado<ph name="GUEST_SIGNIN_LINK_END" /> para corrixir este erro de rede.</translation>
 <translation id="1187692277738768150">Cando uses e gardes este contrasinal:</translation>
 <translation id="1187722533808055681">Activacións desde o modo inactivo</translation>
@@ -346,7 +351,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1238293488628890871">Queres cambiar de perfil?</translation>
 <translation id="1239594683407221485">Explora o contido do dispositivo na aplicación Ficheiros.</translation>
 <translation id="1239841552505950173">Iniciar aplicación</translation>
-<translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />condicións de servizo<ph name="END_LINK2" /> deste sitio.</translation>
 <translation id="1241066500170667906">Seleccionar o estado do experimento <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Máis idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos os marcadores</translation>
@@ -437,6 +441,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1307431692088049276">Non preguntarme de novo</translation>
 <translation id="1307559529304613120">O sistema non puido almacenar o token de acceso á API de longo prazo para este dispositivo.</translation>
 <translation id="1308548450293664112">O ficheiro é creación miña, grupo de botóns de opción, 1 de 3</translation>
+<translation id="1310482092992808703">Agrupar pestanas</translation>
 <translation id="131112695174432497">Elimínanse os datos que repercuten na personalización dos anuncios</translation>
 <translation id="1311294419381837540">Estás emitindo unha pestana. Podes pór en pausa ou deter a emisión cando queiras.</translation>
 <translation id="131188242279372879">Descubre a protección mellorada para dispor do máximo nivel de seguranza de Chrome nas descargas</translation>
@@ -461,6 +466,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1327794256477341646">As funcións que requiran a túa localización non estarán dispoñibles</translation>
 <translation id="1328364753167940710">Dentro de <ph name="NUM_HR" /> h</translation>
 <translation id="1329466763986822896">Mellorar privacidade desta zona wifi</translation>
+<translation id="1330562121671411446">Detectar idioma</translation>
 <translation id="1331977651797684645">Era eu.</translation>
 <translation id="1333489022424033687">Algunhas funcións de <ph name="ORIGIN" /> poderían non funcionar ata que borres os datos que almacenasen no teu dispositivo outros sitios</translation>
 <translation id="1333965224356556482">Non permitir que os sitios vexan a túa localización</translation>
@@ -503,6 +509,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1362829980946830670">Podes retomar a sesión anterior mentres a actual estea activa.</translation>
 <translation id="1362865166188278099">Produciuse un problema técnico. Comproba a impresora</translation>
 <translation id="1363585519747660921">É necesario configurar a impresora USB</translation>
+<translation id="1363772878823415675">Concédelle permiso a <ph name="SPECIFIC_NAME" /> para acceder aos dispositivos USB.</translation>
 <translation id="136378536198524553">Aforro de enerxía está activado</translation>
 <translation id="136522805455656552">Para manter protexido o teu dispositivo, executa e instala só software procedente de fontes e programadores de confianza. <ph name="LEARN_MORE" /></translation>
 <translation id="1367817137674340530">Xeráronse <ph name="COUNT" /> imaxes</translation>
@@ -766,6 +773,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1552752544932680961">Xestionar extensión</translation>
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /> sobre Microsoft 365 no teu Chromebook.</translation>
+<translation id="1554640914375980459">Acenderase a luz da pantalla cando cheguen notificacións. Vai con tino ao usar esta opción se es sensible á luminosidade.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556127816860282890">É posible que se limiten a actividade en segundo plano e algúns efectos visuais (como o desprazamento suave)</translation>
 <translation id="1556537182262721003">Non se puido mover o directorio de extensións ao perfil.</translation>
@@ -977,7 +985,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="168991973552362966">Engadir unha impresora que estea cerca</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
 <translation id="1690068335127678634">Configuración da pantalla dividida</translation>
-<translation id="1690443285859726589">Axusta o límite de detección para poder activar comodamente o xesto</translation>
 <translation id="1692115862433274081">Utilizar outra conta</translation>
 <translation id="1692118695553449118">A sincronización está activada</translation>
 <translation id="1692210323591458290">Púrpura escuro</translation>
@@ -1419,10 +1426,12 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="199610894463449797">{0,plural, =1{Pechar este perfil}other{Pechar este perfil (# ventás)}}</translation>
 <translation id="1997433994358798851">Para conectarse ao dispositivo, Chrome precisa permiso para usar o Bluetooth</translation>
 <translation id="1997616988432401742">Os teus certificados</translation>
+<translation id="1998715278591719161">Permiso concedido para facer un seguimento das mans</translation>
 <translation id="1999115740519098545">No inicio</translation>
 <translation id="2002109485265116295">Tempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Para activar <ph name="NAME" />, primeiro conéctate a unha rede wifi</translation>
+<translation id="2003596238737586336">Agora mesmo o horario está definido de <ph name="SUNRISE" /> a <ph name="SUNSET" />. A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="2004413981947727241">Usa os contrasinais en calquera dispositivo</translation>
 <translation id="2004697686368036666">As funcións dalgúns sitios poden deixar de funcionar</translation>
 <translation id="2005199804247617997">Outros perfís</translation>
@@ -1609,7 +1618,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2137128126782078222">Non permitir notificacións de <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Botón Configurar</translation>
 <translation id="2140788884185208305">Estado da batería</translation>
-<translation id="2140902257485550046">Seleccionar para bloquear todas as extensións neste sitio</translation>
 <translation id="2142328300403846845">Abrir ligazón como</translation>
 <translation id="2142484069755256151">Crear un PIN de recuperación de 6 díxitos para o xestor de contrasinais de Google; díxito <ph name="NUM_DIGIT" /> de 6 do PIN</translation>
 <translation id="2142582065325732898">Activa <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para ver as pestanas recentes de Chrome. <ph name="LINK2_BEGIN" />Máis información<ph name="LINK2_END" /></translation>
@@ -1688,6 +1696,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2191754378957563929">Activado</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="219283042927675668">Pestanas no grupo</translation>
+<translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> xestiona a túa páxina Nova pestana (abrirase nunha pestana nova)</translation>
 <translation id="2193365732679659387">Configuración de confianza</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2195331105963583686">Seguirás podendo utilizar este <ph name="DEVICE_TYPE" /> despois desta data, pero deixará de recibir actualizacións de software e seguranza automáticas</translation>
@@ -1963,6 +1972,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2379281330731083556">Imprimir usando a caixa de diálogo do sistema... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Este proceso pode provocar que a rede de telefonía móbil se desconecte durante uns minutos</translation>
 <translation id="2381499968174336913">Vista previa da pestana compartida</translation>
+<translation id="2382368170666222719">Desactivar panel táctil integrado</translation>
 <translation id="2382875860893882175">A emisión está en pausa. Podes retomala ou detela en calquera momento.</translation>
 <translation id="2383825469508278924">Cambia as accións asignadas ás teclas, as teclas de función e moito máis</translation>
 <translation id="2387052489799050037">Ir á páxina de inicio</translation>
@@ -2104,6 +2114,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="247051149076336810">URL do sistema de ficheiros compartido</translation>
 <translation id="2471469610750100598">Negro (predeterminado)</translation>
 <translation id="2471506181342525583">Permitiuse o acceso á localización</translation>
+<translation id="2471632709106952369">Táboas de comparación</translation>
 <translation id="2473195200299095979">Traducir esta páxina</translation>
 <translation id="2475982808118771221">Produciuse un erro</translation>
 <translation id="247616523300581745">Ocultar estes ficheiros</translation>
@@ -2166,6 +2177,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <ph name="BREAK" />
 Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións en Personalizar Chrome.</translation>
 <translation id="2514326558286966059">Desbloquea o dispositivo máis rápido coa impresión dixital</translation>
+<translation id="2514465118223423406">Cando se conecte un rato</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirma o teu nome de usuario</translation>
 <translation id="2517472476991765520">Buscar</translation>
@@ -2265,6 +2277,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2593499352046705383">Antes de comezar, asegúrate de ter unha copia de seguranza dos teus datos. Ao instalar <ph name="DEVICE_OS" /> sobrescribirase a información da unidade de disco duro. Máis información en g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Xestionar seguranza de V8</translation>
 <translation id="2597073208962000830">A función Compartir por Nearby usa o Bluetooth para buscar dispositivos próximos.</translation>
+<translation id="2598136842498757793">Personalizar os botóns da barra de ferramentas</translation>
 <translation id="2598710988533271874">Nova versión de Chrome dispoñible</translation>
 <translation id="2599048253926156421">Copiouse o nome do usuario no portapapeis</translation>
 <translation id="2602501489742255173">Pasa o dedo cara arriba para comezar</translation>
@@ -2286,7 +2299,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2610374175948698697">Permiso para ver os ficheiros ou os cartafoles do teu dispositivo</translation>
 <translation id="2610780100389066815">Sinatura da lista de confianza de Microsoft</translation>
 <translation id="261114180663074524">Inicia sesión na túa conta de Microsoft e téntao de novo</translation>
-<translation id="2611765907167846862">Serea</translation>
 <translation id="2611776654555141051">Ferramenta de rectángulos</translation>
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="261305050785128654">Permite que os sitios web saiban que idiomas falas. Mostraranche contido nesas linguas cando sexa posible.</translation>
@@ -2320,6 +2332,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2633764681656412085">FIDO</translation>
 <translation id="2634199532920451708">Historial de impresión</translation>
 <translation id="2635094637295383009">Twitter</translation>
+<translation id="2635164452434513092">Non recibirás avisos dos sitios privados (como a intranet da túa empresa, por exemplo)</translation>
 <translation id="2635276683026132559">Sinatura</translation>
 <translation id="2636266464805306348">Títulos das ventás</translation>
 <translation id="2637313651144986786">Busca nas pestanas…</translation>
@@ -2493,6 +2506,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2749881179542288782">Comprobar a gramática e a ortografía</translation>
 <translation id="2750020734439919571">Máis opcións de configuración e permisos da aplicación Chrome</translation>
 <translation id="2750602041558385535">Carga non verificada bloqueada</translation>
+<translation id="275213133112113418">Gardouse a tarxeta</translation>
 <translation id="2753623023919742414">Fai clic nun obxecto para buscalo</translation>
 <translation id="2754226775788136540">Buscando dispositivos de Vinculación rápida gardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">En Google Play Store, atopa as aplicacións que necesitas: tes desde material relacionado coa produtividade ata contido para entreterte. Podes instalar aplicacións cando queiras.</translation>
@@ -2600,6 +2614,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> utiliza a configuración de proxy do teu administrador</translation>
 <translation id="2825151610926840364">Deixa que todas as aplicacións e sitios web co permiso correspondente accedan á cámara. Para usala, pode que teñas que reiniciar a aplicación ou actualizar a páxina.</translation>
 <translation id="2825758591930162672">Clave pública de entidade</translation>
+<translation id="2826576843404243001">Recibe un aviso antes de visitar sitios que non admitan conexións seguras. Non podes cambiar esta opción de configuración porque tes activada a opción Protección avanzada.</translation>
 <translation id="2828375943530438449">Ir atrás desde a páxina de inicio de sesión</translation>
 <translation id="2828650939514476812">Conectarse a unha rede wifi</translation>
 <translation id="2828833307884755422">Espazo liberado: <ph name="MEMORY_SAVINGS" /></translation>
@@ -2612,12 +2627,12 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2835547721736623118">Servizo de recoñecemento de voz</translation>
 <translation id="2835761321523638096">Ler e cambiar entradas na lista de lectura</translation>
 <translation id="2836112522909777958">Para borrar os datos, pecha todas as ventás do modo de incógnito</translation>
-<translation id="2836232638504556905">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste sitio.</translation>
 <translation id="2836269494620652131">Erro</translation>
 <translation id="283669119850230892">Para utilizar a rede <ph name="NETWORK_ID" />, primeiro completa a túa conexión a Internet a continuación.</translation>
 <translation id="2838379631617906747">Instalando</translation>
 <translation id="2839032553903800133">As notificacións están bloqueadas</translation>
 <translation id="2841013758207633010">Hora</translation>
+<translation id="2841525013647267359">Idioma de orixe</translation>
 <translation id="2841837950101800123">Provedor</translation>
 <translation id="2842013086666334835">Inicia sesión en "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Para rematar de configurar Linux, actualiza Chrome OS e téntao de novo.</translation>
@@ -3010,6 +3025,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Para evitar problemas de carga e rendemento, utiliza un adaptador de corrente compatible de Dell ou que teña conexión USB tipo C.</translation>
 <translation id="3127862849166875294">Cambio de tamaño de disco de Linux</translation>
+<translation id="3129150892373332590">Esta opción desactivará o uso compartido permanente dos dispositivos USB con convidados. En consecuencia, restablecerase a devandita permanencia. Seguro que queres continuar?</translation>
 <translation id="3129173833825111527">Marxe esquerda</translation>
 <translation id="3130528281680948470">Restablecerase o teu dispositivo e eliminaranse todas as contas de usuario e os datos locais. Non se pode desfacer esta acción.</translation>
 <translation id="3130863904455712965">Historial e moito máis</translation>
@@ -3075,6 +3091,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3184591616546256659">Usa este PIN para cambiar a configuración dos controis parentais.
     Se esqueces o PIN, fai Powerwash neste dispositivo e configúrao de novo.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Esta aplicación está bloqueada}other{Algunhas aplicacións están bloqueadas}}</translation>
+<translation id="3185454065699440434">Permitir extensións en <ph name="SITE_NAME" /></translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3187556136478864255">Ves o dispositivo de emisión na
     <ph name="BEGIN_LINK" />
@@ -3157,7 +3174,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3251714896659475029">Permite que <ph name="SUPERVISED_USER_NAME" /> acceda ao Asistente de Google ao dicir “Hey Google”</translation>
 <translation id="3251759466064201842">&lt;Non forma parte do certificado&gt;</translation>
 <translation id="325238099842880997">Define normas básicas para axudar aos nenos a xogar, a explorar o mundo dixital e a realizar tarefas escolares na casa</translation>
-<translation id="3253083398453405334">Acenderase a luz da pantalla cando cheguen notificacións</translation>
 <translation id="3253225298092156258">Non dispoñible</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Libera espazo en <ph name="CLOUD_PROVIDER" /> para copiar este ficheiro}other{Libera espazo en <ph name="CLOUD_PROVIDER" /> para copiar estes ficheiros}}</translation>
 <translation id="3253448572569133955">Conta descoñecida</translation>
@@ -3173,6 +3189,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3262261769033093854">Non permitir que os sitios capturen e usen a entrada do rato</translation>
 <translation id="3262336253311870293">Dado que <ph name="DOMAIN" /> xestiona a túa conta, non se pechará sesión na túa Conta de Google. Deixarán de sincronizarse os marcadores, o historial, os contrasinais e outras opcións de configuración. Non obstante, os datos que se sincronizasen anteriormente permanecerán almacenados na túa Conta de Google e poden xestionarse en <ph name="BEGIN_LINK" />Panel de control de Google<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Demasiado grande</translation>
+<translation id="3264239161215962624">Para emitir contido, concédelle a Chrome acceso en <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /></translation>
 <translation id="3264544094376351444">Tipo de letra sen serifas</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Pechar ventá</translation>
@@ -3268,6 +3285,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3333190335304955291">Podes desactivar este servizo en Configuración.</translation>
 <translation id="3333961966071413176">Todos os contactos</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: reproducindo vídeo no modo de pantalla superposta</translation>
+<translation id="3335380372402547327">Previsualizar as notificacións con luz</translation>
 <translation id="3335947283844343239">Abrir de novo a pestana pechada</translation>
 <translation id="3336855445806447827">Non estou seguro</translation>
 <translation id="3337568642696914359">Non permitir que os sitios xestionen protocolos</translation>
@@ -3407,7 +3425,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3439970425423980614">Abrindo PDF en vista previa</translation>
 <translation id="3440663250074896476">Máis accións en relación co marcador <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Pantalla</translation>
-<translation id="3441663102605358937">Inicia sesión en <ph name="ACCOUNT" /> de novo para verificar esta conta</translation>
 <translation id="3441824746233675597">Fai que ás persoas que teñan acceso ao teu tráfico de Internet lles resulte máis difícil ver os sitios que visitas. <ph name="PRODUCT_NAME" /> usa unha conexión segura para buscar o enderezo IP dos sitios no DNS (Sistema de nomes de dominios).</translation>
 <translation id="3442674350323953953">Permitir que Google use os datos do hardware para axudar a mellorar <ph name="DEVICE_OS" />. Se non dás o teu permiso, estes datos enviaránselle a Google de todas as formas co obxecto de determinar as actualizacións necesarias, pero non se almacenarán nin se utilizarán con outros fins.</translation>
 <translation id="3443545121847471732">Pon un PIN de 6 díxitos</translation>
@@ -3492,7 +3509,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3497560059572256875">Compartir doodle</translation>
 <translation id="3497915391670770295">Enviar aos teus &amp;dispositivos</translation>
 <translation id="3498138244916757538">Para cambiar a configuración do micrófono é necesario pechar <ph name="SPECIFIC_NAME" />. Pecha <ph name="SPECIFIC_NAME" /> to continuar.</translation>
-<translation id="3499091376302796297">Cando navegas polos sitios, o contido das páxinas gárdase de forma encriptada no teu dispositivo.</translation>
 <translation id="3500417806337761827">Produciuse un erro ao montar o recurso compartido. Xa hai montados demasiados recursos compartidos SMB.</translation>
 <translation id="3500764001796099683">Activar aplicacións web illadas</translation>
 <translation id="350397915809787283">Se non tes ningunha conta, selecciona a primeira opción para crear unha.</translation>
@@ -3524,6 +3540,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3521606918211282604">Cambiar tamaño do disco</translation>
 <translation id="3522088408596898827">Queda pouquísimo espazo no disco. Libera espazo e téntao de novo.</translation>
 <translation id="3522979239100719575">Buscando perfís dispoñibles. Esta acción pode tardar uns minutos.</translation>
+<translation id="3523447078673133727">Non permitir que os sitios fagan un seguimento das mans</translation>
 <translation id="3524518036046613664">Descubrir dispositivos (por exemplo, impresoras) na túa rede local</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
 <translation id="3525426269008462093">Revisar sincronización do dispositivo despois da configuración</translation>
@@ -3585,6 +3602,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3568431410312984116">Permítese que a función Axúdame a escribir se abra automaticamente</translation>
 <translation id="3569382839528428029">Queres que <ph name="APP_NAME" /> comparta a túa pantalla?</translation>
 <translation id="3569614820047645079">Os ficheiros de A miña unidade sincronízanse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet.</translation>
+<translation id="3569617221227793022">O fuso horario actualmente está definido como <ph name="TIME_ZONE_ENTRY" />. A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os seguintes ficheiros e cartafoles</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3572031449439748861">Desactiváronse <ph name="NUM_EXTENSIONS" /> extensións</translation>
@@ -3875,6 +3893,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3760460896538743390">Inspeccionar &amp;páxina en segundo plano</translation>
 <translation id="37613671848467444">Abrir nunha ventá de &amp;incógnito</translation>
 <translation id="3761556954875533505">Queres permitir que o sitio edite os ficheiros?</translation>
+<translation id="3761560059647741692">Paisaxe</translation>
 <translation id="3761733456040768239">Máis accións para <ph name="CARD_DESCRIPTION" />, CVC gardado</translation>
 <translation id="3763433740586298940">Podes bloquear os sitios que non che interesen. Chrome tamén elimina automaticamente da lista os sitios que teñan máis de 30 días de antigüidade.</translation>
 <translation id="3763549179847864476">Botón Atrás da Guía de privacidade</translation>
@@ -4035,6 +4054,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3866142613641074814">Tes contrasinais que están en perigo</translation>
 <translation id="3866249974567520381">Descrición</translation>
 <translation id="3867134342671430205">Para mover unha pantalla, arrástraa ou utiliza as teclas das frechas</translation>
+<translation id="3867831579565057323">Mapear a túa pantalla táctil</translation>
 <translation id="3867944738977021751">Campos de certificado</translation>
 <translation id="3869917919960562512">Índice incorrecto.</translation>
 <translation id="3870626286046977643">Compartir tamén audio do sistema</translation>
@@ -4214,6 +4234,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3987993985790029246">Copiar ligazón</translation>
 <translation id="3988124842897276887">Esta pestana está conectada a un dispositivo USB</translation>
 <translation id="3988996860813292272">Selecciona un fuso horario</translation>
+<translation id="3989635538409502728">Pechar sesión</translation>
 <translation id="3991055816270226534">Xestiona as cookies de terceiros e as proteccións contra o rastrexo</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Cando está activada a opción Precisión da localización, a información dos sinais sen fíos (os puntos de acceso wifi, as torres das redes de telefonía móbil…) e os datos dos sensores do dispositivo, como o acelerómetro e o xiroscopio, utilízanse para calcular con maior exactitude onde está dispositivo, un dato que empregan os servizos e as aplicacións para Android para ofrecer funcións baseadas na localización. Con este fin, Google recompila periodicamente a información captada polos sensores e os sinais sen fíos que estean preto deste dispositivo para obter con participación colectiva as localizacións deses sinais.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google usa a información recollida deste dispositivo para mellorar a precisión da localización e os servizos baseados nela, así como para perfeccionar, proporcionar e manter os servizos de Google en xeral. Procesamos esta información, que non se usará para identificar a ninguén, en función dos intereses lexítimos de Google e de terceiros coa finalidade de satisfacer as necesidades dos usuarios.<ph name="END_PARAGRAPH2" />
@@ -4255,6 +4276,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4021909830315618592">Copiar detalles da compilación</translation>
 <translation id="4021941025609472374">Pechar pestanas á esquerda</translation>
 <translation id="4022426551683927403">&amp;Engadir ao dicionario</translation>
+<translation id="4022972681110646219">Traducir pantalla</translation>
 <translation id="4023048917751563912"><ph name="APP_NAME" /> está imprimindo <ph name="PAGE_NUMBER" /> páxinas con: <ph name="PRINTER_NAME" /></translation>
 <translation id="4024768890073681126">O teu pai ou nai xestiona o teu navegador</translation>
 <translation id="4025039777635956441">Silenciar sitio seleccionado</translation>
@@ -4337,6 +4359,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4085298594534903246">JavaScript bloqueouse nesta páxina.</translation>
 <translation id="4085566053793776107">Personalizar os temas</translation>
 <translation id="4085620044235559093">Escolle unha aplicación para abrir <ph name="FILE_TYPE" /> ficheiros</translation>
+<translation id="4086565736678483233">Poderás acceder a ela nos métodos de pago</translation>
 <translation id="4087089424473531098">Creouse a extensión:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4372,6 +4395,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4106054677122819586">Vamos organizar as túas pestanas</translation>
 <translation id="4107048419833779140">Identificar e expulsar dispositivos de almacenamento</translation>
 <translation id="4107522742068568249">Ir a Comprobación de seguranza</translation>
+<translation id="4108692279517313721">Recibir avisos de todos os sitios pouco seguros</translation>
 <translation id="4109135793348361820">Mover ventá a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar advertencia</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sen conexión)</translation>
@@ -4386,6 +4410,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións en Personalizar Chrome.</translation>
 <translation id="4115002065223188701">A rede está fóra de alcance</translation>
 <translation id="4115378294792113321">Maxenta</translation>
+<translation id="4116480382905329353">Detectado unha vez</translation>
 <translation id="4116704186509653070">Abrir de novo</translation>
 <translation id="4117714603282104018">Resposta háptica a través do panel táctil</translation>
 <translation id="4118579674665737931">Reinicia o dispositivo e téntao de novo.</translation>
@@ -4518,6 +4543,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4233739489690259993">O teu Chromebook xa non vai recibir máis actualizacións de seguranza e software. Cámbiao por un dispositivo que conte coa seguranza e as funcións máis recentes. Oferta suxeita a condicións.</translation>
 <translation id="4235965441080806197">Cancelar inicio de sesión</translation>
 <translation id="4235976607074422892">Velocidade do desprazamento</translation>
+<translation id="4236163961381003811">Descubrir máis extensións</translation>
 <translation id="4237282663517880406">Mostrar suxestións de Google Drive</translation>
 <translation id="4241140145060464825">Contido das aplicacións</translation>
 <translation id="4241182343707213132">Reinicia o dispositivo para actualizar as aplicacións da organización</translation>
@@ -4529,7 +4555,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4243624244759495699"><ph name="LOCALE" />, grao <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Buscar máis aplicacións de lapis óptico</translation>
 <translation id="4246980464509998944">Comentarios adicionais:</translation>
-<translation id="424726838611654458">Abrir sempre en Adobe Reader</translation>
 <translation id="4248401726442101648">Non hai ningunha cámara conectada</translation>
 <translation id="4249116869350613769">Aforro de batería</translation>
 <translation id="4249248555939881673">Esperando conexión de rede...</translation>
@@ -4754,7 +4779,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4405781821077215583">Reduce ou amplía os elementos da pantalla, como o texto</translation>
 <translation id="4406308048672435032">Podes desactivar esta pestana ou actualizar a páxina para ver a lista completa de novo</translation>
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
-<translation id="4407039574263172582">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta as <ph name="BEGIN_LINK" />condicións de servizo<ph name="END_LINK" /> deste sitio.</translation>
 <translation id="4408599188496843485">A&amp;xuda</translation>
 <translation id="4409271659088619928">O teu motor de busca é <ph name="DSE" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="4409697491990005945">Marxes</translation>
@@ -4789,6 +4813,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4426508677408162512">Todos os marcadores</translation>
 <translation id="4426513927906544654">Recibir recomendacións de contido</translation>
 <translation id="4426857487270413362">Non se puideron descargar os ficheiros do instalador. Comproba a túa conexión a Internet, asegúrate de que tes suficiente espazo no disco e téntao de novo. O código de erro é <ph name="ERROR" />.</translation>
+<translation id="4427111270137140798">Detectado <ph name="COUNT" /> veces</translation>
 <translation id="4427365070557649936">Verificando código de confirmación…</translation>
 <translation id="4429163740524851942">Deseño do teclado físico</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -4960,7 +4985,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4562155214028662640">Engadir impresión dixital</translation>
 <translation id="4562155266774382038">Ignorar suxestión</translation>
 <translation id="4562364000855074606">Bloquea as aplicacións instaladas neste dispositivo (<ph name="DEVICE_TYPE" />). Para restrinxir a descarga de aplicacións ou contido, vai á configuración de Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4562925006886238518">Usa unha linguaxe cotiá para facer buscas no historial de navegación e atopar sitios que visitaches.</translation>
 <translation id="4563210852471260509">O idioma inicial de introdución de texto é o chinés</translation>
 <translation id="4563382028841851106">Quitar da conta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
@@ -4979,6 +5003,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4569747168316751899">Cando está inactivo</translation>
 <translation id="4570201855944865395">Xustificación da solicitude desta extensión:</translation>
 <translation id="4572779512957829735">Introduce o PIN da túa chave de seguranza</translation>
+<translation id="4573098337225168831">Asegúrate de aceptar a solicitude de emisión no dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="457386861538956877">Máis...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="4575614183318795561">Configurar <ph name="FEATURE_NAME" /></translation>
@@ -5000,6 +5025,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4588749726511456218">Aceleración do desprazamento. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Os rexistros escribíronse correctamente no directorio Descargas.</translation>
 <translation id="4590785647529325123">Para borrar o historial de navegación do modo de incógnito do dispositivo, pecha todas as pestanas que teñas abertas nese modo</translation>
+<translation id="4590969863668977062">Clave de acceso actualizada</translation>
 <translation id="459204634473266369">Non hai dispositivos gardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplicación para debuxar co lapis óptico</translation>
 <translation id="4593021220803146968">&amp;Ir a <ph name="URL" /></translation>
@@ -5030,6 +5056,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4612841084470706111">Conceder acceso a todos os sitios solicitados.</translation>
 <translation id="4613144866899789710">Cancelando instalación de Linux…</translation>
 <translation id="4613271546271159013">Unha extensión cambiou a páxina que se mostra ao abrir unha pestana nova.</translation>
+<translation id="461613135510474570">Frase</translation>
 <translation id="461661862154729886">Fonte de alimentación</translation>
 <translation id="4617001782309103936">PIN demasiado curto</translation>
 <translation id="4617270414136722281">Opcións de extensión</translation>
@@ -5448,6 +5475,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4918134162946436591">Mostrar superposición de suxestións</translation>
 <translation id="4918762404810341788">Copiar e abrir</translation>
+<translation id="4918844574251943176">Copiouse a imaxe</translation>
 <translation id="4921348630401250116">Conversión de texto a voz</translation>
 <translation id="4922104989726031751">Para poder usar o xestor de contrasinais co teu sistema operativo, reinicia Chromium e permite o acceso ao xestor de contrasinais do teu ordenador. Despois do reinicio volverán abrirse as pestanas.</translation>
 <translation id="492299503953721473">Eliminar aplicacións para Android</translation>
@@ -5499,6 +5527,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />, <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="496185450405387901">O teu administrador instalou esta aplicación.</translation>
+<translation id="4963603093937263654">Asegúrate de ter as notificacións activadas no dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="4963789650715167449">Quitar pestana actual</translation>
 <translation id="4964455510556214366">Disposición</translation>
 <translation id="4964544790384916627">Fixar ventá</translation>
@@ -5606,6 +5635,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5052853071318006357">Fai clic co botón dereito nunha pestana e selecciona Engadir pestana ao novo grupo</translation>
 <translation id="5053233576223592551">Engadir nome de usuario</translation>
 <translation id="505347685865235222">Grupo sen nome: <ph name="GROUP_CONTENT_STRING" /></translation>
+<translation id="5054634168672649013">{COUNT,plural, =1{Recomendámosche que o cambies agora}other{Recomendámosche que os cambies agora}}</translation>
 <translation id="5056950756634735043">Conectando co contedor</translation>
 <translation id="5057110919553308744">Cando fagas clic na extensión</translation>
 <translation id="5057127674016624293">A exploración está levando máis tempo do normal</translation>
@@ -5661,6 +5691,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5088534251099454936">PKCS n.º 1 SHA-512 con cifrado RSA</translation>
 <translation id="5089763948477033443">Controlador de cambio de tamaño do panel lateral</translation>
 <translation id="5090637338841444533">Permiso denegado para facer un seguimento da posición da cámara</translation>
+<translation id="5090981554736747495">Concédelle permiso ás aplicacións de Linux para acceder aos dispositivos USB.</translation>
 <translation id="5091636240353511739">Mostrar o PIN</translation>
 <translation id="5093477827231450397">Lista de sitios que bloqueaches e que non queres que lles suxiran anuncios a outros sitios</translation>
 <translation id="5093569275467863761">Submarco de incógnito almacenado na memoria caché de páxinas anteriores e seguintes: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -5669,12 +5700,14 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5095252080770652994">Progreso</translation>
 <translation id="5095507226704905004">O ficheiro non se pode copiar porque xa non existe</translation>
 <translation id="5095848221827496531">Anular a selección</translation>
+<translation id="5096775069898886423">Recibe un aviso antes de visitar sitios que non admitan conexións seguras</translation>
 <translation id="5097002363526479830">Erro ao conectar coa rede "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">Máis información sobre o uso da localización</translation>
 <translation id="5097349930204431044">Os sitios que visites poden determinar o que che gusta e suxerirche anuncios a medida que navegues pola Web</translation>
 <translation id="5097649414558628673">Ferramenta: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Facer clic automaticamente cando se detén o cursor</translation>
 <translation id="5098954716528935136">Dinos por que vas descargar o ficheiro de todos os modos</translation>
+<translation id="5098963855433723436">Abrirase nunha aplicación separada</translation>
 <translation id="5100775515702043594">A persoa administradora fixou <ph name="EXTENSION_NAME" /></translation>
 <translation id="5101398513835324081">Engadir unha acción</translation>
 <translation id="5101839224773798795">Facer clic automaticamente cando se deteña o cursor</translation>
@@ -5801,6 +5834,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5187641678926990264">&amp;Instalar páxina como aplicación...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188648870018555788">Usa a localización. Permite que os servizos, sitios web e aplicacións para Android e ChromeOS con permiso de localización utilicen a do teu dispositivo. A opción Precisión da localización proporciónalles unha localización máis exacta aos servizos e aplicacións para Android. Con este fin, Google procesa periodicamente a información captada polos sinais sen fíos e os sensores do teu dispositivo para obter con participación colectiva a localización deses sinais. Estes datos utilízanse sen identificarte para mellorar a precisión da localización e os servizos baseados nela, así como para perfeccionar, proporcionar e manter os servizos de Google en función dos intereses lexítimos de Google e de terceiros coa finalidade de satisfacer as necesidades dos usuarios. <ph name="BEGIN_LINK1" />Máis información sobre o uso da localización<ph name="END_LINK1" /></translation>
+<translation id="5189274947477567401">Para desactivar o uso compartido de procesos, é necesario reiniciar o navegador. Este reiniciarase agora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> en uso</translation>
 <translation id="5190926251776387065">Activar porto</translation>
@@ -5844,6 +5878,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5215450412607891876">Activar as actualizacións de seguranza ampliadas</translation>
 <translation id="5215502535566372932">Seleccionar país</translation>
 <translation id="5220011581825921581">busca + frecha arriba</translation>
+<translation id="5221516927483787768">Non se puido emitir <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Bloqueouse unha descarga non segura</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5225324770654022472">Mostrar o atallo das aplicacións</translation>
@@ -5890,6 +5925,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="52550593576409946">Non se puido iniciar a aplicación de quiosco.</translation>
 <translation id="5255726914791076208">Ao editar a clave de acceso, a túa conta de <ph name="RP_ID" /> non cambiará</translation>
 <translation id="5255859108402770436">Iniciar sesión de novo</translation>
+<translation id="5256174546894739043">Preguntar cando un sitio queira facer un seguimento das mans</translation>
 <translation id="52566111838498928">Cargando tipos de letra…</translation>
 <translation id="5256861893479663409">En todos os sitios</translation>
 <translation id="5258992782919386492">Instalar neste dispositivo</translation>
@@ -5930,6 +5966,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5284445933715251131">Continuar coa descarga</translation>
 <translation id="5285635972691565180">Pantalla <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Buscando</translation>
+<translation id="5286907366254680517">Detectado</translation>
 <translation id="5287425679749926365">As túas contas</translation>
 <translation id="5288106344236929384">Máis opcións, opcións de clave de acceso para <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">&amp;Volver abrir pestana pechada</translation>
@@ -5963,6 +6000,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5302032366299160685">Espera a que se abra o ficheiro antes de tentalo de novo</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5302435492906794790">Buscando dispositivos detectables próximos...</translation>
 <translation id="5302932258331363306">Mostrar substitucións</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> xestiona esta conta</translation>
 <translation id="5307030433605830021">A fonte non é compatible</translation>
@@ -6057,7 +6095,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5384401776498845256">Quen pode compartir contido contigo?</translation>
 <translation id="5385628342687007304">Este contrasinal está gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google.</translation>
 <translation id="5387116558048951800">Editar <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5387496897058645038">Especificacións do produto</translation>
 <translation id="538822246583124912">Modificouse a política de empresa. Engadiuse á barra de ferramentas o botón Experiments. Fai clic nel para abrir un cadro de diálogo que permite activar os experimentos.</translation>
 <translation id="5388436023007579456">As aplicacións e sitios web co permiso correspondente, así como os servizos do sistema, poden utilizar a cámara. Para usala, pode que teñas que reiniciar a aplicación ou actualizar a páxina.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Atopouse 1 sitio con moitas notificacións}other{Atopáronse {NUM_SITES} sitios con moitas notificacións}}</translation>
@@ -6079,7 +6116,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5398572795982417028">A referencia da páxina supera o límite, que é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Permiso denegado para buscar ou usar as impresoras ás que pode acceder o teu dispositivo</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Utiliza os datos móbiles para descargar a actualización</translation>
 <translation id="5404740137318486384">Preme un interruptor ou unha tecla para asignarlle a acción <ph name="ACTION" />.
@@ -6266,7 +6302,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
         &lt;li&gt;Tes a sesión iniciada na túa Conta de Google.&lt;/li&gt;
         &lt;li&gt;Tes a opción Actividade web e das aplicacións activada.&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">O motor de busca que se utiliza na barra de enderezos.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{O administrador instalou 1 extensión}other{O administrador instalou # extensións}}</translation>
 <translation id="5523532775593636291">Os sitios que engadas sempre estarán activos e non se liberará a memoria que ocupen</translation>
 <translation id="5523558474028191231">O nome pode conter letras, números e caracteres especiais; debe incluír como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
@@ -6376,6 +6411,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensión está bloqueada}other{Estas extensións están bloqueadas}}</translation>
 <translation id="560834977503641186">Sincronización wifi; máis información</translation>
 <translation id="5608580678041221894">Toca as seguintes teclas para axustar ou mover a zona que se recortará</translation>
+<translation id="560919433407466404">Concédelle permiso a Parallels Desktop para acceder aos dispositivos USB.</translation>
 <translation id="5609231933459083978">Parece que a aplicación non é válida.</translation>
 <translation id="5610867721023328944">Téntao de novo ou selecciona máis abaixo un dos temas dispoñibles.</translation>
 <translation id="5611398002774823980">Gardar na conta</translation>
@@ -6395,6 +6431,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5620612546311710611">estatísticas de uso</translation>
 <translation id="5621272825308610394">Ningún nome visible</translation>
 <translation id="5621350029086078628">Esta función de IA é experimental.</translation>
+<translation id="5622357006621202569">Activar uso compartido permanente de dispositivos USB con convidados.</translation>
 <translation id="562250930904332809">&amp;Desactivar Subtítulos instantáneos</translation>
 <translation id="5623282979409330487">Este sitio accede aos teus sensores de movemento.</translation>
 <translation id="5623842676595125836">Rexistro</translation>
@@ -6422,6 +6459,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5638170200695981015">Se queres usar as opcións de edición e de visualización limitadas, selecciona Abrir no editor básico.</translation>
 <translation id="563821631542362636">Permitir que o sitio garde datos</translation>
 <translation id="5638309510554459422">Busca extensións e temas en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
+<translation id="5638653188468353257">Recibirás avisos tanto de sitios públicos como privados (como a intranet da túa empresa, por exemplo)</translation>
 <translation id="5639549361331209298">Volve cargar esta páxina e agarda para ver máis opcións</translation>
 <translation id="5640133431808313291">Xestionar chaves de seguranza</translation>
 <translation id="5640159004008030285">Este contrasinal está gardado só neste dispositivo. Para usalo noutros, <ph name="BEGIN_LINK" />gárdao na túa Conta de Google<ph name="END_LINK" />.</translation>
@@ -6520,7 +6558,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5713960379473463904">Estilo de introdución de espazos</translation>
 <translation id="5714100381896040477">Limita o movemento na pantalla</translation>
 <translation id="5715711091495208045">Axente do plugin: <ph name="PLUGIN_NAME" /></translation>
-<translation id="5718049162805123412">Recomendámosche que os cambies agora</translation>
 <translation id="5719854774000914513">Os sitios poden pedirche permiso para conectarse a dispositivos de interface humana</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5722086096420375088">Verde e branco</translation>
@@ -6632,6 +6669,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5801051031414037185">Configurar teléfono</translation>
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5803689677801500549">Os contrasinais gardados aparecerán aquí. Para importar os contrasinais de <ph name="USER_EMAIL" /> ao <ph name="BRAND" />, <ph name="BEGIN_LINK" /> selecciona un ficheiro CSV<ph name="END_LINK" />.</translation>
+<translation id="5804198298544152115">Os sitios normalmente fan un seguimento das mans e dos dedos para mellorar as experiencias envolventes</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804259315582798390">Non se puido activar a recuperación de datos locais</translation>
 <translation id="5805268472388605531">Mantén premidas as teclas para ver os acentos e outros caracteres especiais</translation>
@@ -6859,6 +6897,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5969728632630673489">Ignorouse o báner sobre os atallos de teclado</translation>
 <translation id="5971037678316050792">Controlar sincronización e estado do adaptador Bluetooth</translation>
 <translation id="5971400953982411053">Globo de busca de Google Lens</translation>
+<translation id="5971861540200650391">Ocultar durante <ph name="MODULE_TITLE" /> horas</translation>
 <translation id="597235323114979258">Ver máis destinos</translation>
 <translation id="5972543790327947908">Algunhas ligazóns compatibles seguirán abríndose nas aplicacións <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> ou <ph name="APP_NAME_3" />.</translation>
 <translation id="5972559880616357748">Máis accións para <ph name="SITE_GROUP" /></translation>
@@ -6927,11 +6966,9 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6020431688553761150">O servidor non che autorizou acceso a este recurso.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplicacións xa non son compatibles</translation>
 <translation id="6021969570711251331">Intercalado</translation>
-<translation id="602212068530399867">O motor de busca que se utiliza na barra de enderezos e no menú de aplicacións.</translation>
 <translation id="6022526133015258832">Abrir pantalla completa</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6023643151125006053">O administrador de <ph name="SAML_DOMAIN" /> bloqueou este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>
-<translation id="6024072172641380781">Permitir as extensións neste sitio</translation>
 <translation id="6024317249717725918">&amp;Buscar fotograma de vídeo con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Seguimento da pilla</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: conectouse a un dispositivo USB</translation>
@@ -7031,6 +7068,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6097480669505687979">Se non liberas espazo, é posible que se eliminen usuarios e datos automaticamente.</translation>
 <translation id="6097600385983390082">Pechouse a busca por voz</translation>
 <translation id="6098793583803863900">Estase analizando un ficheiro descoñecido para comprobar se o seu contido é perigoso.</translation>
+<translation id="609892108553214365">Usa esta tarxeta no teu iPhone</translation>
 <translation id="609942571968311933">Copiouse o texto desde o dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="6099766472403716061">Permitir sempre que <ph name="HOST" /> controle e volva programar os teus dispositivos MIDI</translation>
 <translation id="6100736666660498114">Menú de inicio</translation>
@@ -7068,6 +7106,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6125639926370653692">Lúa</translation>
 <translation id="6126601353087978360">Pon aquí o teu comentario:</translation>
 <translation id="6127292407256937949">O volume está activado. Desactivar o volume.</translation>
+<translation id="6127598727646973981">Conexións seguras</translation>
 <translation id="6129691635767514872">Os datos seleccionados elimináronse de Chrome e dos dispositivos sincronizados. É posible que a túa conta de Google teña outras formas do historial de navegación, como buscas e actividade doutros servizos de Google, en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentario do certificado de Netscape</translation>
 <translation id="6129953537138746214">Espazo</translation>
@@ -7134,6 +7173,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6175910054050815932">Obter unha ligazón</translation>
 <translation id="6176701216248282552">A axuda contextual está activada. Estas funcións poden enviar páxinas abertas a Google.</translation>
 <translation id="6177412385419165772">Quitando...</translation>
+<translation id="6177478397823976397">Non se atopou ningún dispositivo. Abre un artigo do Centro de axuda nunha nova pestana</translation>
 <translation id="6178664161104547336">Selecciona un certificado</translation>
 <translation id="6178682841350631965">Actualizáronse os teus datos de inicio de sesión</translation>
 <translation id="6179830757749383456">Navegador xestionado por <ph name="BROWSER_DOMAIN" />, perfil xestionado por <ph name="PROFILE_DOMAIN" /></translation>
@@ -7378,6 +7418,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6351178441572658285">Idiomas das aplicacións</translation>
 <translation id="6354918092619878358">SECG Elliptic Curve secp256r1 (tamén se denomina ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Non apagues o dispositivo</translation>
+<translation id="6356537493253478650">Sereno</translation>
 <translation id="63566973648609420">Só alguén co teu contrasinal pode ler os teus datos encriptados. O contrasinal non se envía nin se almacena en Google. Se esqueciches o contrasinal ou queres cambiar esta configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Desprázate cara arriba para mover a páxina cara abaixo</translation>
 <translation id="6356893102071098867">Comproba se seleccionaches a conta correcta</translation>
@@ -7507,6 +7548,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6460601847208524483">Buscar seguinte</translation>
 <translation id="6461170143930046705">Buscando redes…</translation>
 <translation id="6463596731306859179">Aparécenche ventás emerxentes non desexadas ou notas algún outro tipo de comportamento inesperado? Ás veces, as aplicacións e extensións que instalas poden modificar a configuración de ChromeOS sen que o saibas.</translation>
+<translation id="6463668944631062248">Acepta a solicitude de emisión no dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="6463795194797719782">&amp;Editar</translation>
 <translation id="6464825623202322042">Este dispositivo</translation>
 <translation id="6465841119675156448">Sen Internet</translation>
@@ -7553,7 +7595,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6497789971060331894">Desprazamento inverso do rato</translation>
 <translation id="6498249116389603658">&amp;Todos os teus idiomas</translation>
 <translation id="6499143127267478107">Resolvendo host en script de proxy...</translation>
-<translation id="6499764981457476645">Non se atoparon dispositivos preto</translation>
 <translation id="6501957628055559556">Todos os contedores</translation>
 <translation id="6503077044568424649">Máis visitados</translation>
 <translation id="650457560773015827">Botón esquerdo</translation>
@@ -7715,6 +7756,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6613267708691765962">Analizando en busca de software malicioso...</translation>
 <translation id="6613668613087513143">Non hai espazo suficiente neste dispositivo para completar a actualización. Libera <ph name="NECESSARY_SPACE" /> de espazo e téntao de novo desde o navegador Chrome.</translation>
+<translation id="6614172284067813496">Engadiuse a páxina á lista de lectura</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6618744767048954150">En execución</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7728,6 +7770,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6622980291894852883">Continuar bloqueando as imaxes</translation>
 <translation id="6624036901798307345">No modo de tableta, toca o botón do contador de pestanas que se atopa na barra de ferramentas para abrir a nova franxa de pestanas na que se mostra cadansúa miniatura.</translation>
 <translation id="6624687053722465643">Dozura</translation>
+<translation id="6627743754845412571">Permiso denegado para facer un seguimento das mans</translation>
 <translation id="6628316682330029452">Os certificados de cliente serven para identificarte noutros servidores.</translation>
 <translation id="6628328486509726751">Data da carga: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">Máis seguranza</translation>
@@ -7831,6 +7874,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6701535245008341853">Non se puido obter o perfil.</translation>
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6702859741546259407">Para poder usar <ph name="FEATURE_NAME" />, activa o Bluetooth e a wifi</translation>
+<translation id="6703109186846420472">,</translation>
 <translation id="6703212423117969852">Podes tentalo de novo máis tarde en Chrome.</translation>
 <translation id="6703254819490889819">Restaurar copia de seguranza</translation>
 <translation id="6703613667804166784">Este ficheiro pode danar as túas contas de redes sociais e persoais, como <ph name="USER_EMAIL" /></translation>
@@ -8095,10 +8139,12 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6876155724392614295">Ciclismo</translation>
 <translation id="6876469544038980967">Non é útil</translation>
 <translation id="6878422606530379992">Sensores permitidos</translation>
+<translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">Bloqueáronse as imaxes nesta páxina.</translation>
 <translation id="6881845890692344060">A persoa administradora pechou a sesión. Agora ti tes o control.</translation>
 <translation id="6882210908253838664">Se un sitio non funciona, proba a concederlle permiso temporal para usar as cookies de terceiros. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Produciuse un erro no sistema e non se puido gardar a configuración do dispositivo.</translation>
+<translation id="6883606786470492001">Xestiona os temas dos anuncios e outras opcións de configuración para limitar a información sobre ti que poden obter os sitios co fin de mostrarche anuncios personalizados</translation>
 <translation id="6884474387073389421">Seguro que queres eliminar os datos de inicio de sesión seleccionados?</translation>
 <translation id="6885122019363983153">Os fondos de escritorio coinciden en todos os dispositivos</translation>
 <translation id="6885771755599377173">Vista previa da información do sistema</translation>
@@ -8125,12 +8171,14 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6902066522699286937">Voz de vista previa</translation>
 <translation id="6902336033320348843">Non se admite a sección: <ph name="ERROR_LINE" /></translation>
 <translation id="6903022061658753260">Os teus datos sincronizaranse en todos os navegadores Chrome nos que activases a sincronización para esta conta. Para ver as opcións de sincronización de Chrome OS, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" />.</translation>
+<translation id="6903437476849497868">Desactivar</translation>
 <translation id="6903590427234129279">Abrir todos os URL (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6903916726032521638">Buscar <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">Queres recibir o que está compartindo este dispositivo?</translation>
 <translation id="6910190732484284349">Eliminar a clave de acceso do nome de usuario: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Eliminado</translation>
+<translation id="6910274140210351823">Escuro</translation>
 <translation id="6911734910326569517">Uso de memoria</translation>
 <translation id="6912007319859991306">PIN da SIM do móbil</translation>
 <translation id="6912380255120084882">Proba cun dispositivo diferente</translation>
@@ -8189,6 +8237,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6960648667961844909">Non se puideron descargar os ficheiros de voz en <ph name="LANGUAGE" />. Tentarase de novo máis tarde. Ata que finalice a descarga, enviaráselle a Google o que se fale para que o procese.</translation>
 <translation id="696103774840402661">Elimináronse permanentemente todos os ficheiros e os datos locais de todos os usuarios deste dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6961327401577924850">Os sitios adoitan buscar dispositivos Bluetooth para ofrecerche determinadas funcións (por exemplo, configurar ou sincronizar unha baliza de baixo consumo, un dispositivo de seguimento da saúde ou da forma física, ou unha lámpada de luz intelixente)</translation>
+<translation id="6963772203726867701">Non detectado</translation>
 <translation id="6963872466817251924">Marcador de cursor de texto</translation>
 <translation id="6964390816189577014">Heroe</translation>
 <translation id="6964760285928603117">Quitar do grupo</translation>
@@ -8282,6 +8331,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7014174261166285193">Non se puido efectuar a instalación.</translation>
 <translation id="7014480873681694324">Deixar de salientar texto</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>
+<translation id="7015135594296285641">Permitir extensións</translation>
 <translation id="7016995776279438971">Vermello-verde, vermello suave (protanomalía)</translation>
 <translation id="7017004637493394352">Di "Ok Google" de novo</translation>
 <translation id="7017219178341817193">Engadir unha nova páxina</translation>
@@ -8509,6 +8559,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="720110658997053098">Manter este dispositivo permanentemente no modo de quiosco</translation>
 <translation id="7201118060536064622">Eliminouse "<ph name="DELETED_ITEM_NAME" />"</translation>
 <translation id="7201420661433230412">Ver ficheiros</translation>
+<translation id="7201432510117121839">Non se pode emitir o audio do ordenador neste dispositivo</translation>
 <translation id="7201535955609308429">Espera mentres se leva a cabo a verificación</translation>
 <translation id="7202337678781136582">Escanea o código QR co teu teléfono Android</translation>
 <translation id="7203150201908454328">Ampliado</translation>
@@ -8585,6 +8636,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7258192266780953209">Transformacións</translation>
 <translation id="7258225044283673131">A aplicación non responde. Para pechala, selecciona Forzar peche.</translation>
 <translation id="7260186537988033909">Completouse a inscrición do dispositivo coa actualización de quiosco e de sinalización</translation>
+<translation id="7260206782629605806">Se reduces o límite, bastará con que fagas movementos sutís. Se o aumentas, pode que necesites movementos máis esaxerados.</translation>
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7261612856573623172">Voz da conversión de texto a voz do sistema</translation>
 <translation id="7262004276116528033">Este servizo de inicio de sesión está aloxado por <ph name="SAML_DOMAIN" /></translation>
@@ -8661,6 +8713,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7321545336522791733">Non se pode acceder ao servidor</translation>
 <translation id="7322515217754205362">Permisos de sitios</translation>
 <translation id="7323315405936922211">Tamaño da área do cursor</translation>
+<translation id="7324020307732396723">Abrir configuración de idioma</translation>
 <translation id="7324297612904500502">Foro de Chrome Beta</translation>
 <translation id="7325209047678309347">O papel está atascado</translation>
 <translation id="7325953439504232954">Queres cambiar de perfil?</translation>
@@ -8709,9 +8762,11 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7357271391997763660">Queres facer unha revisión de contrasinais?</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7358338787722390626">Pechar busca no panel lateral</translation>
+<translation id="7359680654975233185">Non se puido emitir a pestana</translation>
 <translation id="735994578317267253">Accede ás túas aplicacións, opcións de configuración e moito máis en calquera dispositivo ChromeOS</translation>
 <translation id="7360257054721917104">Vendo escritorios e modelos gardados. Para navegar, preme Tabulador.</translation>
 <translation id="7360333718677093875">selector de emojis</translation>
+<translation id="7360460316021916328">Seleccionar unha ventá</translation>
 <translation id="7361297102842600584">Fai clic co botón dereito para executar <ph name="PLUGIN_NAME" />.</translation>
 <translation id="7361914392989692067">Toca co dedo o botón de acendido. Os datos da túa impresión dixital almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="7362387053578559123">Os sitios poden pedirche permiso para conectarse a dispositivos Bluetooth</translation>
@@ -8936,6 +8991,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7514239104543605883">Copiar no teu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514417110442087199">Engadir asignación</translation>
+<translation id="7515139121338932179">Para compartir a ventá, usa o selector de ventás do sistema</translation>
 <translation id="7515191208480168435">Podes fixar Google Lens para acceder facilmente</translation>
 <translation id="751523031290522286">O administrador bloqueou <ph name="APP_NAME" />. Pídelle permiso para utilizar esta aplicación.</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -9103,6 +9159,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7643932971554933646">Queres permitir que o sitio vexa os ficheiros?</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7645681574855902035">Cancelando copia de seguranza de Linux</translation>
+<translation id="7646499124171960488">Recibir avisos dos sitios públicos pouco seguros</translation>
 <translation id="7646772052135772216">A sincronización de contrasinais non funciona</translation>
 <translation id="7647403192093989392">Non hai actividades recentes</translation>
 <translation id="7648023614017258011">Chrome está verificando o paquete de instalación</translation>
@@ -9133,6 +9190,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7663774460282684730">Hai atallos de teclado dispoñibles</translation>
 <translation id="7663859337051362114">Engadir perfil de eSIM</translation>
 <translation id="76641554187607347">Non hai ningún teclado conectado</translation>
+<translation id="7664442418269614729">Usa esta tarxeta no teu iPhone</translation>
 <translation id="7665082356120621510">Reservar tamaño</translation>
 <translation id="7665369617277396874">Engadir conta</translation>
 <translation id="7665445336029073980">Historial de descargas completo</translation>
@@ -9171,11 +9229,11 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7684559058815332124">Visitar a páxina de inicio de sesión do portal cautivo</translation>
 <translation id="7684718995427157417">Activa Android Debug Bridge (ADB) para poder crear e probar as túas aplicacións. Ten en conta que esta acción permite a instalación de aplicacións para Android non verificadas por Google e que require un restablecemento dos valores de fábrica para desactivarse.</translation>
 <translation id="7684913007876670600">Para mostrar unha vista simplificada desta páxina, abre o panel lateral e selecciona o modo de lectura</translation>
+<translation id="7685038817958445325">Non se puido levar a cabo a emisión</translation>
 <translation id="7685049629764448582">Memoria JavaScript</translation>
 <translation id="7685087414635069102">PIN obrigatorio</translation>
 <translation id="7685351732518564314">Preme o botón no teu dispositivo <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Máis información sobre os anuncios suxeridos polos sitios</translation>
-<translation id="7686581688229391955">Seleccionar para permitir as extensións neste sitio</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Escoller unha opción da lista</translation>
 <translation id="7690853182226561458">Engadir &amp;cartafol...</translation>
@@ -9413,7 +9471,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7853747251428735">Máis ferrament&amp;as</translation>
 <translation id="7853999103056713222">Usa un contrasinal máis seguro</translation>
 <translation id="7855678561139483478">Mover pestana a ventá nova</translation>
-<translation id="7856117067008941054">Ocultar Google Calendar</translation>
 <translation id="7857004848504343806">O ordenador contén un módulo seguro que se utiliza para implementar moitas funcións de seguranza esenciais en Chrome OS Flex. Consulta o Centro de Axuda de Chromebook para obter máis información: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Suxestións de texto</translation>
 <translation id="7858120906780498731">Dispositivos de entrada conectados a ChromeOS</translation>
@@ -9516,6 +9573,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="79312157130859720"><ph name="APP_NAME" /> está compartindo a túa pantalla e o teu audio.</translation>
 <translation id="793293630927785390">Cadro de diálogo Nova rede wifi</translation>
 <translation id="7932969338829957666">En Linux, os cartafoles compartidos están en <ph name="BASE_DIR" />.</translation>
+<translation id="7932992556896556665">Configura o teu dispositivo de pantalla táctil e mapéao á pantalla correcta</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Activar o son do sitio}other{Activar o son dos sitios}}</translation>
 <translation id="7933486544522242079">&amp;Gardar e compartir</translation>
 <translation id="7933518760693751884">Se queres gardar unha páxina para lela despois, fai clic na icona do marcador</translation>
@@ -9523,6 +9581,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="793474285422359265">Se fas clic en Cancelar, pode que os datos de navegación se vexan afectados e que teñas que restablecer a configuración de fábrica.</translation>
 <translation id="793531125873261495">Produciuse un erro ao descargar a máquina virtual. Téntao de novo.</translation>
 <translation id="7935451262452051102">Progreso: <ph name="PERCENT" /> %</translation>
+<translation id="7936195481975600746">Para compartir a pantalla, usa o selector de pantallas do sistema</translation>
 <translation id="7937809006412909895">Recompilando datos de diagnóstico</translation>
 <translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Opcións avanzadas</translation>
@@ -9603,6 +9662,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7984068253310542383">Proxectar <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985528042147759910">Queres permitir que os accesorios externos accedan á memoria?</translation>
 <translation id="7986295104073916105">Ler e cambiar a configuración dos contrasinais gardados</translation>
+<translation id="7986764869610100215">Esta opción permite compartir os dispositivos USB con convidados de forma permanente. Iso significa que un dispositivo tentará conectarse automaticamente co convidado co estea compartido. Cando se desconecta o dispositivo de xeito manual, esta permanencia desaparece. Se se desactiva a función por completo, restablécese toda a permanencia. Seguro que queres continuar?</translation>
 <translation id="7987814697832569482">Conectarse sempre a través desta VPN</translation>
 <translation id="7988355189918024273">Activa funcións de accesibilidade</translation>
 <translation id="7988805580376093356">Conserva o teu sistema operativo e executa <ph name="DEVICE_OS" /> desde unha memoria USB.</translation>
@@ -9622,6 +9682,7 @@ Ficheiro da clave: <ph name="KEY_FILE" />
 
 Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear novas versións da túa extensión.</translation>
 <translation id="8000020256436988724">Barra de ferramentas</translation>
+<translation id="800117767980299235">Selección de voz</translation>
 <translation id="8002274832045662704">Configuración avanzada da impresora</translation>
 <translation id="8002670234429879764">Xa non está dispoñible: <ph name="PRINTER_NAME" /></translation>
 <translation id="8004092996156083991">Avisarémoste se se vulneran os teus contrasinais.</translation>
@@ -9637,6 +9698,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8011372169388649948">Moveuse "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8012188750847319132">bloqueo de maiúsculas</translation>
 <translation id="8012463809859447963">Detalles da zona wifi instantánea</translation>
+<translation id="8013534738634318212">Estes sitios están nun grupo definido por <ph name="RWS_OWNER" />. Os sitios dun grupo poden ver a túa actividade no grupo.</translation>
 <translation id="8013993649590906847">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google.</translation>
 <translation id="8014154204619229810">O actualizador está en execución actualmente. Actualiza nun minuto para comprobalo de novo.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> non pode reverter á versión instalada anteriormente. Proba a facer un Powerwash no teu dispositivo.</translation>
@@ -9736,6 +9798,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> xestiona a túa sesión. Os administradores poden eliminar o teu perfil e tamén supervisar o tráfico da túa rede.</translation>
 <translation id="8081989000209387414">Queres desactivar a depuración de ADB?</translation>
 <translation id="8082106343289440791">Queres sincronizar o dispositivo co teclado (<ph name="DEVICE_NAME" />)?</translation>
+<translation id="8082132721957920509">Gardouse a tarxeta</translation>
 <translation id="8082390128630131497">A desactivación da depuración de ADB restablecerá a configuración de fábrica deste <ph name="DEVICE_TYPE" />. Eliminaranse todas as contas de usuario e os datos locais.</translation>
 <translation id="8084114998886531721">Gardouse o contrasinal</translation>
 <translation id="8084429490152575036">Configuración do APN da rede móbil</translation>
@@ -9766,6 +9829,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8097959162767603171">O teu administrador ten que aceptar as condicións de servizo que se atopan na lista de dispositivos Chrome, na consola de administración.</translation>
 <translation id="8098156986344908134">Queres instalar <ph name="DEVICE_OS" /> e borrar a información da unidade de disco duro?</translation>
 <translation id="8098616321286360457">Necesítase conexión de rede</translation>
+<translation id="8100057926383586173">Abrir configuración de idioma</translation>
 <translation id="8100230553590752325">Usa desde calquera dispositivo os contrasinais gardados</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seleccionado. Preme Buscar e Espazo para anular a selección.</translation>
 <translation id="8101409298456377967">Crea, garda e xestiona os teus contrasinais para que poidas iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -9904,6 +9968,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8205478243727418828">menú de aplicacións + frecha abaixo</translation>
 <translation id="820568752112382238">Sitios máis visitados</translation>
 <translation id="8206267832882844324">Editar nota</translation>
+<translation id="8206713788440472560">Seleccionar unha pantalla</translation>
 <translation id="8206745257863499010">Tipo blues</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8207204763121565309">Coa opción Non me gusta indicas que non che gusta esta suxestión de grupo de pestanas</translation>
@@ -10147,6 +10212,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8376752431516546391">Panel lateral da Busca de Google</translation>
 <translation id="8376812682111060348">Alerta de problema de rendemento</translation>
 <translation id="8377625247046155446">Esta clave de acceso só se gardará neste dispositivo. Permanecerá neste dispositivo despois de que peches todas as ventás do modo de incógnito.</translation>
+<translation id="837790003026572432">Non se pode emitir o audio de pestanas neste dispositivo</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>
 <translation id="8379988659465232385">Cómpre indicar un nome</translation>
 <translation id="8379991678458444070">Engade esta pestana aos marcadores para volver a ela rapidamente</translation>
@@ -10699,6 +10765,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="876956356450740926">Utiliza editores, contornos de desenvolvemento integrado e ferramentas para programadores. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Directorio raíz da extensión</translation>
 <translation id="8771300903067484968">Restableceuse o fondo predeterminado da pantalla de inicio.</translation>
+<translation id="8773535891252326047">Copiouse a ligazón ao contido destacado</translation>
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Marxe superior</translation>
 <translation id="8775144690796719618">URL non válido</translation>
@@ -10820,6 +10887,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8859662783913000679">Conta parental</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} conta}other{{COUNT} contas}}</translation>
 <translation id="8861568709166518036">Utiliza os botóns que aparecen na pantalla para ir ao inicio, volver atrás e cambiar de aplicación. Actívase automaticamente se están habilitados ChromeVox ou os clics automáticos.</translation>
+<translation id="8862171793076850931">Rexeitouse o permiso para emitir. Abre un artigo do Centro de Axuda nunha nova pestana para obter máis información.</translation>
 <translation id="8863753581171631212">Abrir ligazón na nova aplicación <ph name="APP" /></translation>
 <translation id="8864055848767439877">Compartindo <ph name="TAB_NAME" /> con <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Gardouse o teu contrasinal</translation>
@@ -11214,6 +11282,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Queres pechar a pestana e eliminar o grupo?}=1{Queres pechar as pestanas e eliminar o grupo?}other{Queres pechar as pestanas e eliminar os grupos?}}</translation>
 <translation id="9122788874051694311">Queres gardar esta clave de acceso fóra do modo de incógnito?</translation>
 <translation id="9123287046453017203">O dispositivo non está actualizado</translation>
+<translation id="9124084978667228083">{MEMBERS,plural, =1{1 sitio no grupo de <ph name="RWS_OWNER" />}other{{MEMBERS} sitios no grupo de <ph name="RWS_OWNER" />}}</translation>
 <translation id="9125910124977405374">Quitar <ph name="LANGUAGE_NAME" /> dos idiomas traducidos automaticamente</translation>
 <translation id="9126149354162942022">Cor do cursor</translation>
 <translation id="9128317794749765148">Non se puido completar a configuración</translation>

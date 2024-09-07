@@ -58,7 +58,6 @@
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
@@ -79,6 +78,7 @@
 #include "ui/ozone/platform/wayland/test/test_touch.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_toplevel.h"
+#include "ui/ozone/platform/wayland/test/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/platform_window.h"
@@ -266,7 +266,7 @@ class WaylandWindowTest : public WaylandTest {
       WaylandWindow* window,
       const MockWaylandPlatformWindowDelegate& delegate,
       int64_t viz_seq) {
-    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+    WaylandTestBase::SyncDisplay();
     window->OnSequencePoint(viz_seq);
     window->root_surface()->ApplyPendingState();
   }
@@ -502,8 +502,7 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
   window_->root_surface()->set_surface_buffer_scale(2);
   VerifyAndClearExpectations();
 
-  WaylandConnectionTestApi test_api(connection_.get());
-  test_api.SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
     auto* mock_surface = server->GetObject<wl::MockSurface>(id);
@@ -519,7 +518,7 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
   window_->root_surface()->Commit();
   VerifyAndClearExpectations();
 
-  test_api.SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 }
 
 #if BUILDFLAG(IS_LINUX)
@@ -1118,8 +1117,7 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
   auto window =
       delegate.CreateWaylandWindow(connection_.get(), std::move(properties));
 
-  WaylandConnectionTestApi test_api(connection_.get());
-  test_api.SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 
   // Make sure the window is initialized to normal state from the beginning.
   EXPECT_EQ(PlatformWindowState::kNormal, window->GetPlatformWindowState());
@@ -1143,7 +1141,7 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
   // The state of the window must already be fullscreen one.
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
 
-  test_api.SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 
   Mock::VerifyAndClearExpectations(&delegate);
 
@@ -1175,8 +1173,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
   auto window =
       delegate.CreateWaylandWindow(connection_.get(), std::move(properties));
 
-  WaylandConnectionTestApi test_api(connection_.get());
-  test_api.SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 
   // Make sure the window is initialized to normal state from the beginning.
   EXPECT_EQ(PlatformWindowState::kNormal, window->GetPlatformWindowState());
@@ -1199,7 +1196,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
   // The state of the window must already be fullscreen one.
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kMaximized);
 
-  test_api.SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 
   Mock::VerifyAndClearExpectations(&delegate);
 
@@ -3054,7 +3051,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
     EXPECT_EQ(2, window_->applied_state().window_scale);
     wayland_popup->Show(false);
 
-    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+    WaylandTestBase::SyncDisplay();
 
     // |wayland_popup|'s scale and bounds must change whenever its parents
     // scale is changed.
@@ -4058,7 +4055,7 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
 
   window->Hide();
 
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  WaylandTestBase::SyncDisplay();
 
   window->Show(false);
 
@@ -4948,8 +4945,7 @@ class BlockableWaylandToplevelWindow : public WaylandToplevelWindow {
 // This mimics the behavior of a modal dialog that comes up as a result of
 // the first touch down/up action, and blocks the original flow, before it gets
 // handled completely.
-// The test is flaky. https://crbug.com/1305272.
-TEST_P(WaylandWindowTest, DISABLED_BlockingTouchDownUp_NoCrash) {
+TEST_P(WaylandWindowTest, BlockingTouchDownUp_NoCrash) {
   window_.reset();
 
   MockWaylandPlatformWindowDelegate delegate;

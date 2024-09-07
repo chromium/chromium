@@ -48,13 +48,11 @@ class ImageRecord : public GarbageCollected<ImageRecord> {
               uint64_t new_recorded_size,
               const gfx::Rect& frame_visual_rect,
               const gfx::RectF& root_visual_rect,
-              bool is_loaded_after_mouseover_input,
               MediaRecordIdHash hash)
       : node_id(new_node_id),
         media_timing(new_media_timing),
         hash(hash),
-        recorded_size(new_recorded_size),
-        is_loaded_after_mouseover(is_loaded_after_mouseover_input) {
+        recorded_size(new_recorded_size) {
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
           frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
@@ -95,8 +93,6 @@ class ImageRecord : public GarbageCollected<ImageRecord> {
   // Images that come from origin-dirty styles should have some limitations on
   // what they report.
   bool origin_clean = true;
-
-  bool is_loaded_after_mouseover = false;
 };
 
 // |ImageRecordsManager| is the manager of all of the images that Largest
@@ -139,8 +135,7 @@ class CORE_EXPORT ImageRecordsManager {
                                           const uint64_t& visual_size,
                                           const gfx::Rect& frame_visual_rect,
                                           const gfx::RectF& root_visual_rect,
-                                          double bpp,
-                                          bool is_loaded_after_mouseover);
+                                          double bpp);
   bool IsRecordedImage(MediaRecordIdHash record_id_hash) const {
     return recorded_images_.Contains(record_id_hash);
   }
@@ -172,8 +167,7 @@ class CORE_EXPORT ImageRecordsManager {
   void MaybeUpdateLargestIgnoredImage(const MediaRecordId&,
                                       const uint64_t& visual_size,
                                       const gfx::Rect& frame_visual_rect,
-                                      const gfx::RectF& root_visual_rect,
-                                      bool is_loaded_after_mouseover);
+                                      const gfx::RectF& root_visual_rect);
   void ReportLargestIgnoredImage(unsigned current_frame_index);
 
   void AssignPaintTimeToRegisteredQueuedRecords(
@@ -189,7 +183,6 @@ class CORE_EXPORT ImageRecordsManager {
                                  const uint64_t& visual_size,
                                  const gfx::Rect& frame_visual_rect,
                                  const gfx::RectF& root_visual_rect,
-                                 bool is_loaded_after_mouseover,
                                  MediaRecordIdHash hash);
   inline void QueueToMeasurePaintTime(ImageRecord* record,
                                       unsigned current_frame_index) {
@@ -275,8 +268,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
                    const MediaTiming&,
                    const PropertyTreeStateOrAlias& current_paint_properties,
                    const StyleImage*,
-                   const gfx::Rect& image_border,
-                   const bool is_loaded_after_mouseover);
+                   const gfx::Rect& image_border);
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
   void OnPaintFinished();
   void NotifyImageRemoved(const LayoutObject&, const MediaTiming*);

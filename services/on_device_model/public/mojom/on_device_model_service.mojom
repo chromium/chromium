@@ -5,6 +5,7 @@
 module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "sandbox/policy/mojom/context.mojom";
@@ -13,9 +14,20 @@ import "services/on_device_model/public/mojom/on_device_model.mojom";
 
 // Opened file resources needed to define the model.
 struct ModelAssets {
+  // Model weights could be passed as an opened file or a file path.
+  // The backend type will decide which one should be used, or
+  // which one is preferred if both are passed. If both are unset,
+  // usually the operation should fail.
+  // APU backend: weights_path should be used.
+  // GPU backend: weights should be used.
   // TODO(b/313919363): This should also be a ReadOnlyFile.
   mojo_base.mojom.File? weights;
+  mojo_base.mojom.FilePath? weights_path;
 
+  // Currently the only usage of sp model will be passed by file path.
+  mojo_base.mojom.FilePath? sp_model_path;
+
+  // Currently the usage of models below will only be passed by opened file.
   mojo_base.mojom.ReadOnlyFile? ts_data;
   mojo_base.mojom.ReadOnlyFile? ts_sp_model;
 
@@ -23,8 +35,20 @@ struct ModelAssets {
   mojo_base.mojom.ReadOnlyFile? language_detection_model;
 };
 
+// Type of the backend to run the model.
+enum ModelBackendType {
+  // The default WebGPU backend.
+  kGpu,
+  // The APU accelerator backend. Only available on devices with APU, and need
+  // special APU model files.
+  kApu,
+};
+
 // Params to describe the model to load.
 struct LoadModelParams {
+  // Backend type of the model.
+  ModelBackendType backend_type;
+
   // Assets for the model.
   ModelAssets assets;
 
@@ -72,6 +96,15 @@ enum FormatFeature {
   kPrompt = 1,
   kAudioSummary = 2,
   kAudioTitle = 3,
+};
+
+[Stable, Extensible]
+enum SafetyFeature {
+  [Default] kGeneral = 0,
+  kAudioSummaryRequest = 1,
+  kAudioTitleRequest = 2,
+  kAudioSummaryResponse = 3,
+  kAudioTitleResponse = 4,
 };
 
 // A service which allows loading trusted models which are stored on-device and
@@ -126,4 +159,12 @@ interface OnDeviceModelPlatformService {
   FormatInput@3(mojo_base.mojom.Uuid uuid,
                 FormatFeature feature,
                 map<string, string> fields) => (string? result);
+
+  // Validates the `text` is safe or not with the given `safety_feature` and
+  // `safety_info`. The `safety_info` should be the result returned by
+  // `ClassifyTextSafety()`. Returns true if the `text` is safe.
+  [MinVersion=4]
+  ValidateSafetyResult@4(
+      SafetyFeature safety_feature, string text, SafetyInfo safety_info)
+      => (bool result);
 };

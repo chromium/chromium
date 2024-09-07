@@ -16,11 +16,28 @@ export class CraTooltip extends LitElement {
       color: var(--cros-sys-inverse_on_surface);
       display: block;
       font: var(--cros-annotation-1-font);
+
+      /*
+       * TODO: b/361221415 - Remove the old properties when stable Chrome
+       * supports new one.
+       */
       inset-area: bottom span-all;
       margin: 4px 0 0;
       max-width: 296px;
       padding: 5px 8px;
       position: absolute;
+      position-area: bottom span-all;
+      position-try:
+        bottom span-right,
+        bottom span-left,
+        top,
+        top span-right,
+        top span-left;
+
+      /*
+       * TODO: b/361221415 - Remove the old properties when stable Chrome
+       * supports new one.
+       */
       position-try-options: inset-area(bottom span-right),
         inset-area(bottom span-left), inset-area(top),
         inset-area(top span-right), inset-area(top span-left);

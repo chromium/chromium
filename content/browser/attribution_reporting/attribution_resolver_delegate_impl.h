@@ -15,6 +15,10 @@
 #include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/common/content_export.h"
 
+namespace attribution_reporting {
+class AttributionScopesData;
+}
+
 namespace base {
 class Time;
 class TimeDelta;
@@ -85,7 +89,9 @@ class CONTENT_EXPORT AttributionResolverDelegateImpl
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::EventLevelEpsilon) override;
+      attribution_reporting::EventLevelEpsilon,
+      const std::optional<attribution_reporting::AttributionScopesData>&)
+      override;
   bool GenerateNullAggregatableReportForLookbackDay(
       int lookback_day,
       attribution_reporting::mojom::SourceRegistrationTimeConfig)

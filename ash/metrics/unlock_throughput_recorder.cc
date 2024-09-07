@@ -57,8 +57,7 @@ UnlockThroughputRecorder::~UnlockThroughputRecorder() {
 
 void UnlockThroughputRecorder::OnLockStateChanged(bool locked) {
   auto logged_in_user = LoginState::Get()->GetLoggedInUserType();
-  if (!locked && (logged_in_user == LoginState::LOGGED_IN_USER_OWNER ||
-                  logged_in_user == LoginState::LOGGED_IN_USER_REGULAR)) {
+  if (!locked && logged_in_user == LoginState::LOGGED_IN_USER_REGULAR) {
     auto* primary_root = Shell::GetPrimaryRootWindow();
     new ui::TotalAnimationThroughputReporter(
         primary_root->GetHost()->compositor(), base::BindOnce(&ReportUnlock),

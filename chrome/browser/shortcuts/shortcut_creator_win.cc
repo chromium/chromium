@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
+#include "base/i18n/file_util_icu.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -73,8 +74,11 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
                             ShortcutCreatorResult::kError);
     return;
   }
-  base::FilePath shortcut_path = GetUniquePath(desktop.Append(base::StrCat(
-      {base::UTF16ToWide(shortcut_metadata.shortcut_title), L".lnk"})));
+  std::wstring shortcut_name =
+      base::UTF16ToWide(shortcut_metadata.shortcut_title);
+  base::i18n::ReplaceIllegalCharactersInPath(&shortcut_name, ' ');
+  base::FilePath shortcut_path =
+      GetUniquePath(desktop.Append(base::StrCat({shortcut_name, L".lnk"})));
 
   base::win::ShortcutProperties target_and_args_properties;
   target_and_args_properties.set_target(chrome_proxy_path);

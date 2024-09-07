@@ -41,6 +41,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -59,8 +60,8 @@ const int kModalDialogWidth = 448;
     BUILDFLAG(IS_CHROMEOS_LACROS)
 const int kManagedUserNoticeConfirmationDialogWidth = 512;
 const int kManagedUserNoticeConfirmationDialogHeight = 576;
-const int kManagedUserNoticeConfirmationUpdatedDialogWidth = 900;
-const int kManagedUserNoticeConfirmationUpdatedDialogHeight = 640;
+const int kManagedUserNoticeConfirmationUpdatedDialogWidth = 780;
+const int kManagedUserNoticeConfirmationUpdatedDialogHeight = 560;
 #endif
 const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
@@ -278,7 +279,7 @@ bool SigninViewControllerDelegateViews::HandleKeyboardEvent(
       event, GetFocusManager());
 }
 
-void SigninViewControllerDelegateViews::AddNewContents(
+content::WebContents* SigninViewControllerDelegateViews::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -289,6 +290,7 @@ void SigninViewControllerDelegateViews::AddNewContents(
   // Allows the Gaia reauth page to open links in a new tab.
   chrome::AddWebContents(browser_, source, std::move(new_contents), target_url,
                          disposition, window_features);
+  return nullptr;
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -333,7 +335,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   flex_layout->SetOrientation(views::LayoutOrientation::kVertical);
   animated_view->AddChildView(std::move(content_view));
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)

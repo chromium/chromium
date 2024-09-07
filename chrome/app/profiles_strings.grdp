@@ -513,7 +513,7 @@
     <!-- User manager web UI -->
     <if expr="use_titlecase">
       <message name="IDS_SCREEN_LOCK_SIGN_OUT">
-        Sign out
+        Sign Out
       </message>
     </if>
     <if expr="not use_titlecase">
@@ -622,8 +622,17 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX" desc="Label of the checkbox on the enterprise profile welcome screen that allows a user to link existing data to the new profile. The label informs the user that a profile will be created.">
       Add existing browsing data to managed profile
     </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TITLE" desc="Title of the dialog disclaiming information about the profile they are about to create.">
+      About this profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
+      This profile is managed by your organization, which can view certain kinds of information
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_TITLE" desc="Title of a section disclaiming to the user what their organization can do with their profile information.">
       Profile information
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_DETAILS" desc="Paragraph disclaiming to the user what their organization can do with their profile information.">
+      Your organization can see and manage browsing data in your work profile, such as your bookmarks, history, and passwords.
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_DEVICE_INFORMATION_TITLE" desc="Title of a section disclaiming to the user what their organization can do with their device information.">
       Device information
@@ -648,6 +657,14 @@
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
       You can try again or contact your administrator for help
+    </message>
+
+    <!-- Supervised user profile signin IPH -->
+    <!-- TODO(b/351333491): Mark them translateable once the strings are approved. -->
+    <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE"
+      desc="Title of the IPH bubble when a supervised user signs-in in a new or existing local profile."
+      translateable="false">
+      Welcome <ph name="CHILD_NAME">$1<ex>Charlie</ex></ph>
     </message>
 
     <!-- Profile Picker -->

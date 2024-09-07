@@ -41,6 +41,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -637,7 +638,8 @@ void WebContentsAndroid::EvaluateJavaScriptForTests(
   if (!callback) {
     // No callback requested.
     web_contents_->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        ConvertJavaStringToUTF16(env, script), base::NullCallback());
+        ConvertJavaStringToUTF16(env, script), base::NullCallback(),
+        ISOLATED_WORLD_ID_GLOBAL);
     return;
   }
 
@@ -648,7 +650,8 @@ void WebContentsAndroid::EvaluateJavaScriptForTests(
 
   web_contents_->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       ConvertJavaStringToUTF16(env, script),
-      base::BindOnce(&JavaScriptResultCallback, j_callback));
+      base::BindOnce(&JavaScriptResultCallback, j_callback),
+      ISOLATED_WORLD_ID_GLOBAL);
 }
 
 void WebContentsAndroid::AddMessageToDevToolsConsole(
@@ -716,7 +719,7 @@ void WebContentsAndroid::AXTreeSnapshotCallback(
     const JavaRef<jobject>& view_structure_root,
     const JavaRef<jobject>& view_structure_builder,
     const JavaRef<jobject>& callback,
-    const ui::AXTreeUpdate& result) {
+    ui::AXTreeUpdate& result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (result.nodes.empty()) {
     RunRunnableAndroid(callback);

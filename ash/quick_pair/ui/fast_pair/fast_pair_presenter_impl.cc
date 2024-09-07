@@ -582,6 +582,11 @@ void FastPairPresenterImpl::OnCompanionAppDismissed(
   }
 }
 
+void FastPairPresenterImpl::ShowPasskey(std::u16string device_name,
+                                        uint32_t passkey) {
+  notification_controller_->ShowPasskey(device_name, passkey);
+}
+
 void FastPairPresenterImpl::RemoveNotifications() {
   notification_controller_->RemoveNotifications();
 }

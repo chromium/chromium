@@ -14,9 +14,11 @@
 //
 // For more details, see
 // https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/README.md
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -51,6 +53,8 @@ void RoundTripFromBlink(String input) {
 // Entry point for LibFuzzer.
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
+  test::TaskEnvironment task_environment;
+
   std::string input(reinterpret_cast<const char*>(data), size);
   RoundTripFromContent(GURL(input));
   RoundTripFromBlink(String::FromUTF8(input));

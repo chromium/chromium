@@ -30,16 +30,14 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithInputForDefaultOrder) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::vector<float> input(40, 0);
-  input[34] = -1;  // mvt_freshness
-  input[35] = -1;  // shortcuts_freshness
-  input[36] = -1;  // safety_check_freshness
-  input[37] = -1;  // tab_resumption_freshness
-  input[38] = -1;  // parcel_tracking_freshness
-  input[39] = -1;  // price_tracking_promo_freshness
-  ExpectClassifierResults(
-      input, {kMostVisitedTiles, kShortcuts, kSafetyCheck, kTabResumption,
-              kParcelTracking, kPriceTrackingPromo});
+  std::vector<float> input(35, 0);
+  input[30] = -1;  // mvt_freshness
+  input[31] = -1;  // shortcuts_freshness
+  input[32] = -1;  // safety_check_freshness
+  input[33] = -1;  // tab_resumption_freshness
+  input[34] = -1;  // parcel_tracking_freshness
+  ExpectClassifierResults(input, {kMostVisitedTiles, kShortcuts, kSafetyCheck,
+                                  kTabResumption, kParcelTracking});
 }
 
 TEST_F(IosModuleRankerTest, ExecuteModelWithInputForAllModules) {
@@ -48,7 +46,7 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithInputForAllModules) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::vector<float> input(40, 0);
+  std::vector<float> input(35, 0);
   input[6] = 3.0;    // mvt_engagement
   input[7] = 11.0;   // mvt_impression
   input[8] = 4.0;    // shortcuts_engagement
@@ -60,18 +58,13 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithInputForAllModules) {
   input[28] = 3.0;   // parcel_tracking_engagement
   input[29] = 11.0;  // parcel_tracking_impression
 
-  input[32] = 3.0;   // price_tracking_promo_engagement
-  input[33] = 11.0;  // price_tracking_promo_impression
-
-  input[34] = -1;  // mvt_freshness
-  input[35] = -1;  // shortcuts_freshness
-  input[36] = -1;  // safety_check_freshness
-  input[37] = -1;  // tab_resumption_freshness
-  input[38] = -1;  // parcel_tracking_freshness
-  input[39] = -1;  // price_tracking_promo_freshness
-  ExpectClassifierResults(
-      input, {kMostVisitedTiles, kShortcuts, kTabResumption, kSafetyCheck,
-              kParcelTracking, kPriceTrackingPromo});
+  input[30] = -1;  // mvt_freshness
+  input[31] = -1;  // shortcuts_freshness
+  input[32] = -1;  // safety_check_freshness
+  input[33] = -1;  // tab_resumption_freshness
+  input[34] = -1;  // parcel_tracking_freshness
+  ExpectClassifierResults(input, {kMostVisitedTiles, kShortcuts, kTabResumption,
+                                  kSafetyCheck, kParcelTracking});
 }
 
 TEST_F(IosModuleRankerTest, ExecuteModelWithFreshnessInputOnly) {
@@ -80,26 +73,22 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithFreshnessInputOnly) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::vector<float> input(40, 0);
-  input[34] = 0;  // mvt_freshness
-  input[35] = 0;  // shortcuts_freshness
-  input[36] = 0;  // safety_check_freshness
-  input[37] = 0;  // tab_resumption_freshness
-  input[38] = 0;  // parcel_tracking_freshness
-  input[39] = 0;  // price_tracking_promo_freshness
-  ExpectClassifierResults(
-      input, {kParcelTracking, kPriceTrackingPromo, kSafetyCheck, kShortcuts,
-              kMostVisitedTiles, kTabResumption});
+  std::vector<float> input(35, 0);
+  input[30] = 0;  // mvt_freshness
+  input[31] = 0;  // shortcuts_freshness
+  input[32] = 0;  // safety_check_freshness
+  input[33] = 0;  // tab_resumption_freshness
+  input[34] = 0;  // parcel_tracking_freshness
+  ExpectClassifierResults(input, {kParcelTracking, kSafetyCheck, kShortcuts,
+                                  kMostVisitedTiles, kTabResumption});
 
-  input[34] = 1;  // mvt_freshness
-  input[35] = 1;  // shortcuts_freshness
-  input[36] = 2;  // safety_check_freshness
-  input[37] = 2;  // tab_resumption_freshness
-  input[38] = 1;  // parcel_tracking_freshness
-  input[39] = 1;  // price_tracking_promo_freshness
-  ExpectClassifierResults(
-      input, {kParcelTracking, kPriceTrackingPromo, kSafetyCheck, kShortcuts,
-              kMostVisitedTiles, kTabResumption});
+  input[30] = 1;  // mvt_freshness
+  input[31] = 1;  // shortcuts_freshness
+  input[32] = 2;  // safety_check_freshness
+  input[33] = 2;  // tab_resumption_freshness
+  input[34] = 1;  // parcel_tracking_freshness
+  ExpectClassifierResults(input, {kParcelTracking, kSafetyCheck, kShortcuts,
+                                  kMostVisitedTiles, kTabResumption});
 }
 
 }  // namespace segmentation_platform

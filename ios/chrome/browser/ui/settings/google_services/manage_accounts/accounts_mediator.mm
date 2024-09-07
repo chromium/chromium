@@ -9,9 +9,10 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -27,7 +28,6 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
@@ -132,8 +132,18 @@
 
 #pragma mark - AccountsMutator
 
-- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID {
-  [self.delegate handleRemoveIdentity:[self identityWithGaiaID:gaiaID]];
+- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID
+                               itemView:(UIView*)itemView {
+  [self.delegate handleRemoveIdentity:[self identityWithGaiaID:gaiaID]
+                             itemView:itemView];
+}
+
+- (void)requestAddIdentityToDevice {
+  [self.delegate showAddAccountToDevice];
+}
+
+- (void)requestSignOutWithItemView:(UIView*)itemView {
+  [self.delegate signOutWithItemView:itemView];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver

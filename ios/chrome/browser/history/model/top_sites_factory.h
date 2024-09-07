@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_MODEL_TOP_SITES_FACTORY_H_
 #define IOS_CHROME_BROWSER_HISTORY_MODEL_TOP_SITES_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/memory/ref_counted.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace history {
 class TopSites;

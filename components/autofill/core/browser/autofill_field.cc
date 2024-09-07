@@ -128,9 +128,7 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
 // want to prioritize local heuristics over the autocomplete type.
 bool PreferHeuristicOverHtml(FieldType heuristic_type,
                              HtmlFieldType html_type) {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillLocalHeuristicsOverrides) &&
-         base::Contains(kAutofillHeuristicsVsHtmlOverrides,
+  return base::Contains(kAutofillHeuristicsVsHtmlOverrides,
                         std::make_pair(heuristic_type, html_type));
 }
 
@@ -141,9 +139,7 @@ bool PreferHeuristicOverHtml(FieldType heuristic_type,
 // can help the server to "learn" the correct classification for these fields.
 bool PreferHeuristicOverServer(FieldType heuristic_type,
                                FieldType server_type) {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillLocalHeuristicsOverrides) &&
-         base::Contains(kAutofillHeuristicsVsServerOverrides,
+  return base::Contains(kAutofillHeuristicsVsServerOverrides,
                         std::make_pair(heuristic_type, server_type));
 }
 
@@ -396,6 +392,22 @@ AutofillType AutofillField::ComputedType() const {
           base::FeatureList::IsEnabled(
               features::kAutofillGivePrecedenceToNumericQuantities));
 
+    // Password Manager ignores the computed type - it looks at server
+    // predictions directly. Since many username fields also admit emails, we
+    // can thus give precedence to the EMAIL_ADDRESS classification. This will
+    // not affect Password Manager suggestions, but allow Autofill to provide
+    // email-related suggestions if Password Manager does not have any username
+    // suggestions to show.
+    // TODO: crbug.com/360791229 - Move into
+    // `kAutofillHeuristicsVsServerOverrides` once the feature is cleaned up.
+    const bool server_type_is_username_type =
+        server_type() == USERNAME || server_type() == SINGLE_USERNAME;
+    believe_server =
+        believe_server &&
+        !(heuristic_type() == EMAIL_ADDRESS && server_type_is_username_type &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillGivePrecedenceToEmailOverUsername));
+
     if (believe_server)
       return AutofillType(server_type());
   }
@@ -433,11 +445,11 @@ bool AutofillField::IsFieldFillable() const {
 }
 
 bool AutofillField::HasExpirationDateType() const {
-  static constexpr std::array kExpirationDateTypes = {
+  static constexpr DenseSet kExpirationDateTypes = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
       CREDIT_CARD_EXP_4_DIGIT_YEAR, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
       CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR};
-  return base::Contains(kExpirationDateTypes, Type().GetStorableType());
+  return kExpirationDateTypes.contains(Type().GetStorableType());
 }
 
 bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault() const {

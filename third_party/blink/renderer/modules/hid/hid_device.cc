@@ -547,8 +547,7 @@ void HIDDevice::FinishReceiveFeatureReport(
     const std::optional<Vector<uint8_t>>& data) {
   MarkRequestComplete(resolver);
   if (success && data) {
-    DOMArrayBuffer* dom_buffer =
-        DOMArrayBuffer::Create(data->data(), data->size());
+    DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(data.value());
     DOMDataView* data_view = DOMDataView::Create(dom_buffer, 0, data->size());
     resolver->Resolve(NotShared(data_view));
   } else {

@@ -16,6 +16,10 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 
+namespace attribution_reporting {
+class AttributionScopesData;
+}
+
 namespace content {
 
 class ConfigurableStorageDelegate : public AttributionResolverDelegate {
@@ -41,7 +45,9 @@ class ConfigurableStorageDelegate : public AttributionResolverDelegate {
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::EventLevelEpsilon) override;
+      attribution_reporting::EventLevelEpsilon,
+      const std::optional<attribution_reporting::AttributionScopesData>&)
+      override;
   bool GenerateNullAggregatableReportForLookbackDay(
       int lookback_day,
       attribution_reporting::mojom::SourceRegistrationTimeConfig)

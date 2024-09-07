@@ -24,7 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
-#include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
+#include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -199,7 +199,7 @@ class TestLostMediaProvider : public BirchDataProvider {
   void RequestBirchDataFetch() override {
     std::vector<BirchLostMediaItem> items;
     items.emplace_back(GURL("https://www.source.com"), u"media title",
-                       SecondaryIconType::kLostMediaVideo,
+                       std::nullopt, SecondaryIconType::kLostMediaVideo,
                        base::BindRepeating(&TestLostMediaProvider::OnActivation,
                                            weak_factory_.GetWeakPtr()));
     Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));
@@ -719,6 +719,9 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LostMediaChip) {
   // Clicking the button should activate the item. In this test the activation
   // callback is bound to the provider.
   EXPECT_TRUE(lost_media_provider.did_activate_);
+
+  // Reset lost media provider.
+  birch_keyed_service->set_lost_media_provider_for_test(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, ReleaseNotesChip) {

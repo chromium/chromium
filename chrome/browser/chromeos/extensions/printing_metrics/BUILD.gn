@@ -8,10 +8,10 @@ import("//printing/buildflags/buildflags.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
+assert(is_chromeos)
+assert(use_cups)
 
-assert(is_chromeos && use_cups)
-
-source_set("printing_metrics") {
+static_library("printing_metrics") {
   sources = [
     "printing_metrics_api.cc",
     "printing_metrics_api.h",
@@ -30,11 +30,33 @@ source_set("printing_metrics") {
     "//printing",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
   }
 
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:lacros" ]
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/printing/history:print_job_info_proto" ]
+  }
+}
+
+if (is_chromeos_ash) {
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [ "printing_metrics_api_unittest.cc" ]
+
+    deps = [
+      ":printing_metrics",
+      "//chrome/browser/ash/printing/history",
+      "//chrome/browser/ash/printing/history:print_job_info_proto",
+      "//chrome/browser/ash/printing/history:test_support",
+      "//chrome/browser/extensions",
+      "//chrome/common/extensions/api",
+      "//chrome/test:test_support",
+      "//content/public/browser",
+      "//extensions:test_support",
+      "//extensions/common",
+      "//testing/gtest",
+    ]
   }
 }

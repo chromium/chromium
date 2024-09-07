@@ -38,7 +38,10 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     crosapi::mojom::BrowserInitParamsPtr init_params =
         chromeos::BrowserInitParams::GetForTests()->Clone();

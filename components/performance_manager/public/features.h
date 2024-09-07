@@ -132,9 +132,6 @@ BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
 // Whether tabs are discarded under high memory pressure.
 BASE_DECLARE_FEATURE(kUrgentPageDiscarding);
 
-// This enables logging to evaluate the efficacy of potential CPU interventions.
-BASE_DECLARE_FEATURE(kCPUInterventionEvaluationLogging);
-
 // This represents the duration that CPU must be over the threshold before
 // logging the delayed metrics.
 extern const base::FeatureParam<base::TimeDelta> kDelayBeforeLogging;
@@ -163,6 +160,9 @@ BASE_DECLARE_FEATURE(kFreezingOnBatterySaverForTesting);
 // When enabled, Resource Attribution measurements will include contexts for
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);
+
+// When enabled, change the ordering of frame swap in render (crbug/357649043).
+BASE_DECLARE_FEATURE(kSeamlessRenderFrameSwap);
 
 }  // namespace performance_manager::features
 

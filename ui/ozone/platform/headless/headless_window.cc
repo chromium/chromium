@@ -125,6 +125,10 @@ void HeadlessWindow::Minimize() {
       RestoreWindowBounds();
     }
     UpdateWindowState(PlatformWindowState::kMinimized);
+    // Minimized windows are inactive. Aura activates minimized windows
+    // when restoring. If we don't deactivate the window here, the subsequent
+    // activation will be optimized away, causing https://crbug.com/358998544.
+    Deactivate();
   }
 }
 

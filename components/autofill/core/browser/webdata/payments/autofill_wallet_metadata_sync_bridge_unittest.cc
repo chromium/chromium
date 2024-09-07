@@ -28,7 +28,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -270,11 +270,10 @@ MATCHER_P(HasSpecifics, expected, "") {
   return true;
 }
 
-}  // namespace
-
 class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
  public:
-  AutofillWalletMetadataSyncBridgeTest() {}
+  AutofillWalletMetadataSyncBridgeTest()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
 
   AutofillWalletMetadataSyncBridgeTest(
       const AutofillWalletMetadataSyncBridgeTest&) = delete;
@@ -289,7 +288,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
-    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
+    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"),
+             &encryptor_);
     ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
   }
@@ -464,6 +464,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   autofill::TestAutofillClock test_clock_;
   ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  const os_crypt_async::Encryptor encryptor_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;
@@ -971,9 +972,6 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 // Verify that updates of local (non-sync) credit cards are ignored.
 // Regression test for crbug.com/1206306.
 TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
-  // Local credit cards need crypto for storage.
-  OSCryptMocker::SetUp();
-
   // Add local data.
   CreditCard existing_card =
       CreateLocalCreditCardWithDetails(/*use_count=*/30, /*use_date=*/40);
@@ -997,8 +995,6 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
 
   // Check that there is also no metadata at the end.
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
-
-  OSCryptMocker::TearDown();
 }
 
 // Verify that old orphan metadata gets deleted on startup.
@@ -1938,6 +1934,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            LATER_SYNC_ADD,
                                            LATER_SYNC_UPDATE));
 
+}  // namespace
 }  // namespace autofill
 
 namespace sync_pb {

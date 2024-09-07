@@ -42,10 +42,16 @@ public class TapToSeekHandler {
      */
     public static void tapToSeek(
             String content, int beginOffset, int endOffset, Playback playback, boolean playing) {
+        if (content == null || content.isEmpty()) {
+            return;
+        }
         char[] fullText = playback.getMetadata().fullText().toCharArray();
         // Set the needle to the word +- 15 characters on either side.
         int substringStartIndex = Math.max(0, beginOffset - 15);
         int substringEndIndex = Math.min(content.length() - 1, endOffset + 15);
+        if (substringEndIndex <= 0) {
+            return;
+        }
         String needle =
                 content.substring(substringStartIndex, substringEndIndex)
                         .replaceAll(

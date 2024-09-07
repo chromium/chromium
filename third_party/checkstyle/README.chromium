@@ -2,6 +2,7 @@ Name: Checkstyle
 Short Name: checkstyle
 URL: https://github.com/checkstyle/checkstyle
 Version: 10.12.1
+Revision: 3a4df8dfe26b99fba36b09cbf19ad994251cccff
 License: Apache 2.0 and LGPL 2.1
 License File: LICENSE.apache20, LICENSE
 Security Critical: no

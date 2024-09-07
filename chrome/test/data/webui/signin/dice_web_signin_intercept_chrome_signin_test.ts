@@ -10,8 +10,7 @@ import type {ChromeSigninAppElement} from 'chrome://signin-dice-web-intercept.to
 import type {ChromeSigninInterceptionParameters} from 'chrome://signin-dice-web-intercept.top-chrome/dice_web_signin_intercept_browser_proxy.js';
 import {DiceWebSigninInterceptBrowserProxyImpl} from 'chrome://signin-dice-web-intercept.top-chrome/dice_web_signin_intercept_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_intercept_browser_proxy.js';
 
@@ -38,7 +37,6 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('chrome-signin-app');
     document.body.append(app);
-    await waitAfterNextRender(app);
     return browserProxy.whenCalled('chromeSigninPageLoaded');
   });
 
@@ -62,7 +60,7 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     return browserProxy.whenCalled('cancel');
   });
 
-  test('AppContentValues', function() {
+  test('AppContentValues', async function() {
     const titleElement = app.shadowRoot!.querySelector('#title')!;
     assertEquals(PARAMETERS.title, titleElement.textContent);
     const subtitleElement = app.shadowRoot!.querySelector('#subtitle')!;
@@ -83,42 +81,45 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     checkImageUrl(avatarSelector, PARAMETERS.pictureUrl);
 
     // Simulate a change of picture url.
-    const new_params = {
+    const newParams = {
       ...PARAMETERS,
       pictureUrl: 'chrome://theme/IDR_PROFILE_AVATAR_2',
     };
     webUIListenerCallback(
-        'interception-chrome-signin-parameters-changed', new_params);
+        'interception-chrome-signin-parameters-changed', newParams);
+    await microtasksFinished();
 
     // It should be reflected in the UI.
-    checkImageUrl(avatarSelector, new_params.pictureUrl);
+    checkImageUrl(avatarSelector, newParams.pictureUrl);
   });
 
-  test('AccountIconsAndManagedBadges', function() {
-    const iconSelector = '#accountIconContainer>img';
-    const badgeSelector = '#accountIconContainer>.managed-user-badge';
+  test('AccountIconsAndManagedBadges', async function() {
+    const iconSelector = '#accountIconContainer > img';
+    const badgeSelector = '#accountIconContainer > .managed-user-badge';
 
     // Regular (non-supervised) user avatars.
     checkImageUrl(iconSelector, PARAMETERS.pictureUrl);
     assertFalse(isChildVisible(app, badgeSelector));
 
     // Set Supervised user badge source. The badge becomes visible.
-    let new_params = {
+    let newParams = {
       ...PARAMETERS,
       managedUserBadge: 'cr20:kite',
     };
     webUIListenerCallback(
-        'interception-chrome-signin-parameters-changed', new_params);
+        'interception-chrome-signin-parameters-changed', newParams);
+    await microtasksFinished();
     checkImageUrl(iconSelector, PARAMETERS.pictureUrl);
     assertTrue(isChildVisible(app, badgeSelector));
 
     // Un-set Supervised user badge source. The badge becomes hidden.
-    new_params = {
+    newParams = {
       ...PARAMETERS,
       managedUserBadge: '',
     };
     webUIListenerCallback(
-        'interception-chrome-signin-parameters-changed', new_params);
+        'interception-chrome-signin-parameters-changed', newParams);
+    await microtasksFinished();
     assertFalse(isChildVisible(app, badgeSelector));
   });
 

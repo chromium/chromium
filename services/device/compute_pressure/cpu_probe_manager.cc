@@ -143,6 +143,10 @@ CpuProbeManager::state_thresholds() const {
                                         : kStateBaseThresholds;
 }
 
+double CpuProbeManager::hysteresis_threshold_delta() const {
+  return kThresholdDelta;
+}
+
 void CpuProbeManager::ToggleStateRandomization() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

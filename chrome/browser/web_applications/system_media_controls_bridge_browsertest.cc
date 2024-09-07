@@ -17,8 +17,10 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/system_media_controls/system_media_controls.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
@@ -69,6 +71,11 @@ class SystemMediaControlsBridgeBrowsertest
     }
   }
 
+  void TearDownOnMainThread() override {
+    system_media_controls::SystemMediaControls::
+        SetVisibilityChangedCallbackForTesting(nullptr);
+  }
+
   void StartPlaybackAndWaitForStart(Browser* browser,
                                     const std::string& media_id) {
     content::WebContents* web_contents =
@@ -77,12 +84,32 @@ class SystemMediaControlsBridgeBrowsertest
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(content::JsReplace(
             "document.getElementById($1).play();", media_id)),
-        base::NullCallback());
+        base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 
     // Wait for start
     content::MediaStartStopObserver observer(
         web_contents, content::MediaStartStopObserver::Type::kStart);
     observer.Wait();
+  }
+
+  void WaitForStop(Browser* browser, const std::string& id) {
+    if (!IsPlaying(browser, id)) {
+      return;
+    }
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+
+    content::MediaStartStopObserver observer(
+        web_contents, content::MediaStartStopObserver::Type::kStop);
+    observer.Wait();
+  }
+
+  bool IsPlaying(Browser* browser, const std::string& id) {
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    return EvalJs(web_contents, content::JsReplace(
+                                    "!document.getElementById($1).paused;", id))
+        .ExtractBool();
   }
 
   void SetUpOnBridgeCreatedCallback(bool for_web_app) {
@@ -136,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, TwoApps) {
   wait_for_bridge_creation_run_loop_.emplace();  // Reset run loop for reuse.
 
   // Install and launch a different test media session PWA.
-  webapps::AppId app_id2 =
-      InstallPWA(https_server()->GetURL("/media/session/media-session2.html"));
+  webapps::AppId app_id2 = InstallPWA(https_server()->GetURL(
+      "/media/session/media_controls/media-session2.html"));
   Browser* web_app_browser2 = LaunchWebAppBrowserAndWait(app_id2);
   EXPECT_TRUE(web_app_browser2);
 
@@ -284,6 +311,105 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
       web_app_browser1->tab_strip_model()->GetActiveWebContents(),
       ui::DomKey::FromCharacter('Q'), ui::DomCode::US_Q, ui::VKEY_Q, false,
       false, false, /*command=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
+                       NowPlayingInfoHiddenOnNavigationAway) {
+  // Install and launch a test media session PWA.
+  webapps::AppId app_id1 =
+      InstallPWA(https_server()->GetURL("/media/session/media-session.html"));
+  Browser* web_app_browser1 = LaunchWebAppBrowserAndWait(app_id1);
+  EXPECT_TRUE(web_app_browser1);
+
+  // Wait for the app shim to connect.
+  apps::AppShimManager* app_shim_manager = apps::AppShimManager::Get();
+  AppShimHost* app_shim_host =
+      app_shim_manager->FindHost(web_app_browser1->profile(), app_id1);
+  MaybeWaitForAppShimConnection(app_shim_host);
+
+  // Register for a callback when the bridge is made. We don't really care about
+  // the bridge itself here, but this ensures everything will be set up.
+  SetUpOnBridgeCreatedCallback(/*for_web_app=*/true);
+
+  // Start the media session.
+  StartPlaybackAndWaitForStart(web_app_browser1, "long-video-loop");
+
+  // Wait for the SystemMediaControlsBridge to be created.
+  wait_for_bridge_creation_run_loop_->Run();
+
+  // Set up the listener so the app shim can tell us when the visibility of the
+  // now playing info changes.
+  base::RunLoop wait_for_visibility_change;
+  bool new_visibility = true;
+  auto visibility_changed_callback =
+      base::BindLambdaForTesting([&](bool is_visible) {
+        new_visibility = is_visible;
+        wait_for_visibility_change.Quit();
+      });
+  // Register the callback.
+  system_media_controls::SystemMediaControls::
+      SetVisibilityChangedCallbackForTesting(&visibility_changed_callback);
+
+  // Check the pwa is still playing, and navigate away to a different url.
+  EXPECT_TRUE(IsPlaying(web_app_browser1, "long-video-loop"));
+  GURL http_url2(https_server()->GetURL("/media/session/title1.html"));
+  NavigateParams params(web_app_browser1, http_url2, ui::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  // Start the visibility changed run loop and wait for the app to tell us
+  // that the metadata has been cleared, therefore the controls should not be
+  // visible.
+  wait_for_visibility_change.Run();
+  EXPECT_FALSE(new_visibility);
+}
+
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
+                       NowPlayingInfoHiddenOnAudioEnd) {
+  // Set up a media session in 1 PWA.
+  // Install and launch a test media session PWA.
+  webapps::AppId app_id1 =
+      InstallPWA(https_server()->GetURL("/media/session/media-session.html"));
+  Browser* web_app_browser1 = LaunchWebAppBrowserAndWait(app_id1);
+  EXPECT_TRUE(web_app_browser1);
+
+  // Wait for the app shim to connect.
+  apps::AppShimManager* app_shim_manager = apps::AppShimManager::Get();
+  AppShimHost* app_shim_host =
+      app_shim_manager->FindHost(web_app_browser1->profile(), app_id1);
+  MaybeWaitForAppShimConnection(app_shim_host);
+
+  // Register for a callback when the bridge is made. We don't really care about
+  // the bridge itself here, but this ensures everything will be set up.
+  SetUpOnBridgeCreatedCallback(/*for_web_app=*/true);
+
+  // Start the media session and wait for the controls to become visible.
+  StartPlaybackAndWaitForStart(web_app_browser1, "short-video");
+
+  // Wait for the SystemMediaControlsBridge to be created.
+  wait_for_bridge_creation_run_loop_->Run();
+
+  // Set up the listener so the app shim can tell us when the visibility of the
+  // now playing info changes.
+  base::RunLoop wait_for_visibility_change;
+  bool new_visibility = true;
+  auto visibility_changed_callback =
+      base::BindLambdaForTesting([&](bool is_visible) {
+        new_visibility = is_visible;
+        wait_for_visibility_change.Quit();
+      });
+  // Register the callback.
+  system_media_controls::SystemMediaControls::
+      SetVisibilityChangedCallbackForTesting(&visibility_changed_callback);
+
+  // Wait for the audio track to end on its own.
+  WaitForStop(web_app_browser1, "short-video");
+  EXPECT_FALSE(IsPlaying(web_app_browser1, "short-video"));
+
+  // Start the visibility changed run loop and wait for the app to tell us
+  // that the metadata has been cleared, therefore the controls should not be
+  // visible.
+  wait_for_visibility_change.Run();
+  EXPECT_FALSE(new_visibility);
 }
 
 }  // namespace testing

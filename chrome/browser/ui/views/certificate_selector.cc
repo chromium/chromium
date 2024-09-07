@@ -26,6 +26,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/base/models/table_model_observer.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
@@ -266,8 +267,9 @@ std::u16string CertificateSelector::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_CLIENT_CERT_DIALOG_TITLE);
 }
 
-bool CertificateSelector::IsDialogButtonEnabled(ui::DialogButton button) const {
-  return button != ui::DIALOG_BUTTON_OK || GetSelectedCert();
+bool CertificateSelector::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
+  return button != ui::mojom::DialogButton::kOk || GetSelectedCert();
 }
 
 views::View* CertificateSelector::GetInitiallyFocusedView() {

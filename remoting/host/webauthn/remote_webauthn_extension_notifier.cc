@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -192,8 +198,8 @@ void RemoteWebAuthnExtensionNotifier::Core::WakeUpExtension() {
       VLOG(1) << "Writing extension wakeup file: " << file_path;
       base::File file(file_path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-      file.WriteAtCurrentPos(kExtensionWakeupFileContent,
-                             sizeof(kExtensionWakeupFileContent));
+      file.WriteAtCurrentPos(
+          base::byte_span_with_nul_from_cstring(kExtensionWakeupFileContent));
       file.Flush();
     }
   }

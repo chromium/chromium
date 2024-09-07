@@ -9,9 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -41,6 +44,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
@@ -214,7 +218,10 @@ class MahiPanelViewTest : public AshTestBase {
  protected:
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
 
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
@@ -412,7 +419,7 @@ TEST_F(MahiPanelViewTest, LearnMoreLink) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_CALL(new_window_delegate(),
-              OpenUrl(GURL(mahi_constants::kLearnMorePage),
+              OpenUrl(GURL(chrome::kHelpMeReadWriteLearnMoreURL),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
   LeftClickOn(learn_more_link);
@@ -1958,6 +1965,36 @@ TEST_F(MahiPanelViewTest, OnlyOneFeedbackButtonCanKeepToggled) {
   LeftClickOn(thumbs_up_button);
   EXPECT_TRUE(thumbs_up_button->toggled());
   EXPECT_FALSE(thumbs_down_button->toggled());
+}
+
+TEST_F(MahiPanelViewTest, FeedbackButtonsAllowed) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  prefs->SetBoolean(prefs::kHmrFeedbackAllowed, false);
+  CreatePanelWidget();
+  EXPECT_FALSE(
+      panel_view()
+          ->GetViewByID(mahi_constants::ViewId::kFeedbackButtonsContainer)
+          ->GetVisible());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_MAHI_PANEL_DISCLAIMER_FEEDBACK_DISABLED,
+          l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT)),
+      static_cast<views::StyledLabel*>(
+          panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel))
+          ->GetText());
+
+  prefs->SetBoolean(prefs::kHmrFeedbackAllowed, true);
+  CreatePanelWidget();
+  EXPECT_TRUE(
+      panel_view()
+          ->GetViewByID(mahi_constants::ViewId::kFeedbackButtonsContainer)
+          ->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_DISCLAIMER),
+            static_cast<views::Label*>(
+                panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel))
+                ->GetText());
 }
 
 }  // namespace ash

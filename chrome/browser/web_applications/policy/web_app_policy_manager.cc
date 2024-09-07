@@ -846,6 +846,9 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
         disabled_system_apps_.insert(
             ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
         break;
+      case policy::SystemFeature::kRecorder:
+        disabled_system_apps_.insert(ash::SystemWebAppType::RECORDER);
+        break;
 #else
       case policy::SystemFeature::kCamera:
       case policy::SystemFeature::kOsSettings:
@@ -856,6 +859,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kGallery:
       case policy::SystemFeature::kPrintJobs:
       case policy::SystemFeature::kKeyShortcuts:
+      case policy::SystemFeature::kRecorder:
         break;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       case policy::SystemFeature::kUnknownSystemFeature:

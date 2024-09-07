@@ -8,10 +8,12 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -347,6 +349,39 @@ TEST_F(ContentSettingsStoreTest, RemoveEmbedded) {
 
   Mock::VerifyAndClear(&observer);
   store()->RemoveObserver(&observer);
+}
+
+TEST_F(ContentSettingsStoreTest, ChromeExtensionSchemeMetrics) {
+  base::HistogramTester histogram_tester;
+  content_settings::ContentSettingsRegistry::GetInstance();
+  std::string extension_id(32, 'a');
+  ContentSettingsPattern chrome_extension_pattern =
+      ContentSettingsPattern::FromString(
+          "chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/");
+  ContentSettingsPattern https_pattern =
+      ContentSettingsPattern::FromString("https://example.test/");
+
+  RegisterExtension(extension_id);
+  store()->SetExtensionContentSetting(
+      extension_id, chrome_extension_pattern, https_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW,
+      ChromeSettingScope::kRegular);
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.ContentSettings.PrimaryPatternChromeExtensionScheme",
+      content_settings_uma_util::ContentSettingTypeToHistogramValue(
+          ContentSettingsType::COOKIES),
+      1);
+
+  RegisterExtension(extension_id);
+  store()->SetExtensionContentSetting(
+      extension_id, https_pattern, chrome_extension_pattern,
+      ContentSettingsType::IMAGES, CONTENT_SETTING_ALLOW,
+      ChromeSettingScope::kRegular);
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.ContentSettings.SecondaryPatternChromeExtensionScheme",
+      content_settings_uma_util::ContentSettingTypeToHistogramValue(
+          ContentSettingsType::IMAGES),
+      1);
 }
 
 TEST_F(ContentSettingsStoreTest, SetExtensionContentSettingFromList) {

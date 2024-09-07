@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/connectors_manager_base.h"
 #include "components/policy/core/common/policy_types.h"
 
 class PrefService;
@@ -26,6 +27,16 @@ class ConnectorsServiceBase {
   // if it is set and if the scope it's set at has a valid browser-profile
   // affiliation.
   EnterpriseRealTimeUrlCheckMode GetAppliedRealTimeUrlCheck() const;
+
+  // Returns whether the Connectors are enabled.
+  virtual bool IsConnectorEnabled(AnalysisConnector connector) const = 0;
+  bool IsConnectorEnabled(ReportingConnector connector) const;
+
+  std::vector<std::string> GetReportingServiceProviderNames(
+      ReportingConnector connector);
+
+  virtual std::optional<ReportingSettings> GetReportingSettings(
+      ReportingConnector connector);
 
  protected:
   struct DmToken {
@@ -56,6 +67,11 @@ class ConnectorsServiceBase {
   // prefs. Should never return nullptr.
   virtual PrefService* GetPrefs() = 0;
   virtual const PrefService* GetPrefs() const = 0;
+
+  // Returns the `ConnectorsManagerBase` that should be used by this class to
+  // return reporting connector related settings. Should never return nullptr.
+  virtual ConnectorsManagerBase* GetConnectorsManagerBase() = 0;
+  virtual const ConnectorsManagerBase* GetConnectorsManagerBase() const = 0;
 };
 
 }  // namespace enterprise_connectors

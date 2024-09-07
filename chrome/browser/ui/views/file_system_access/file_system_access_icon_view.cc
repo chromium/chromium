@@ -28,10 +28,8 @@ FileSystemAccessIconView::FileSystemAccessIconView(
                          page_action_icon_delegate,
                          "FileSystemAccess") {
   SetVisible(false);
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP));
 }
 
 views::BubbleDialogDelegate* FileSystemAccessIconView::GetBubble() const {

@@ -33,7 +33,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -81,7 +80,9 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/tpm/tpm_token_loader.h"
@@ -140,6 +141,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
@@ -162,6 +164,7 @@ constexpr char kTestCookieName[] = "TestCookie";
 constexpr char kTestCookieValue[] = "present";
 constexpr char kTestGuid[] = "cccccccc-cccc-4ccc-0ccc-ccccccccccc1";
 constexpr char kTestTokenHandle[] = "test_token_handle";
+constexpr char kWifiServicePath[] = "/service/wifi1";
 
 constexpr test::UIPath kBackButton = {"gaia-signin", "signin-frame-dialog",
                                       "signin-back-button"};
@@ -916,6 +919,7 @@ IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') != -1");
 }
 
+// TODO(b/360829605) Add browser tests for case where proxy auth is required.
 // Class for testing `DeviceAuthenticationFlowAutoReloadInterval` policy cases.
 class AutoReloadWebviewLoginTest : public WebviewLoginTest {
  public:
@@ -981,6 +985,15 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
     test_tick_clock_->SetNowTicks(now_ticks);
   }
 
+  void SetUpOnMainThread() override {
+    // Set up fake networks.
+    network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
+        /*use_default_devices_and_services=*/true);
+    network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
+
+    WebviewLoginTest::SetUpOnMainThread();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     SetUpTestClocks();
     AuthenticationFlowAutoReloadManager::SetClockForTesting(
@@ -989,9 +1002,25 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
     WebviewLoginTest::SetUpInProcessBrowserTestFixture();
   }
 
+  void TearDownOnMainThread() override {
+    network_state_test_helper_.reset();
+
+    WebviewLoginTest::TearDownOnMainThread();
+  }
+
  protected:
+  bool IsAutoReloadActive() {
+    return LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->GetHandler<GaiaScreenHandler>()
+        ->GetAutoReloadManagerForTesting()
+        .IsTimerActiveForTesting();
+  }
+
   std::unique_ptr<base::SimpleTestClock> test_clock_;
   std::unique_ptr<base::SimpleTestTickClock> test_tick_clock_;
+
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 
  private:
   policy::DevicePolicyBuilder device_policy_builder_;
@@ -1009,11 +1038,7 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
       ash::prefs::kAuthenticationFlowAutoReloadInterval);
   EXPECT_EQ(pref_reload_interval, 0);
 
-  EXPECT_FALSE(LoginDisplayHost::default_host()
-                   ->GetOobeUI()
-                   ->GetHandler<GaiaScreenHandler>()
-                   ->GetAutoReloadManagerForTesting()
-                   .IsTimerActiveForTesting());
+  EXPECT_FALSE(IsAutoReloadActive());
 
   std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
   test::OobeJS().ExpectTrue(frame_url +
@@ -1056,11 +1081,36 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
 
   SetAutoReloadInterval(0);  // 0 minutes
 
-  EXPECT_FALSE(LoginDisplayHost::default_host()
-                   ->GetOobeUI()
-                   ->GetHandler<GaiaScreenHandler>()
-                   ->GetAutoReloadManagerForTesting()
-                   .IsTimerActiveForTesting());
+  EXPECT_FALSE(IsAutoReloadActive());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
+                       AutoreloadOnErrorScreenShown) {
+  SetAutoReloadInterval(10);  // 10 minutes
+
+  WaitForGaiaPageLoad();
+
+  AdvanceTime(base::Minutes(5));
+  EXPECT_TRUE(IsAutoReloadActive());
+
+  // Disconnect from all networks in order to trigger the network screen.
+  network_state_test_helper_->service_test()->ClearServices();
+  base::RunLoop().RunUntilIdle();
+
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+
+  EXPECT_FALSE(IsAutoReloadActive());
+
+  // Reconnect network.
+  network_state_test_helper_->service_test()->AddService(
+      /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
+      /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
+      /*state=*/shill::kStateOnline, /*visible=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  WaitForGaiaPageReload();
+
+  EXPECT_TRUE(IsAutoReloadActive());
 }
 
 class ReauthWebviewLoginTest : public WebviewLoginTest {
@@ -1758,7 +1808,7 @@ class SigninFrameWebviewClientCertsLoginTest
   // selector dialog once it's opened.
   void SimulateUserWillSelectClientCert(
       const std::string& cert_name_to_select) {
-    chrome::SetShowSSLClientCertificateSelectorHookForTest(base::BindRepeating(
+    SetShowSSLClientCertificateSelectorHookForTest(base::BindRepeating(
         &SigninFrameWebviewClientCertsLoginTest::OnClientCertSelectorRequested,
         cert_name_to_select));
   }

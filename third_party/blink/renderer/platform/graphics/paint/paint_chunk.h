@@ -43,12 +43,12 @@ struct PLATFORM_EXPORT PaintChunk {
              wtf_size_t end,
              const DisplayItemClient& client,
              const Id& id,
-             const PropertyTreeStateOrAlias& props,
+             const PropertyTreeStateOrAlias& properties,
              bool effectively_invisible = false)
       : begin_index(begin),
         end_index(end),
         id(id),
-        properties(props),
+        properties(properties),
         text_known_to_be_on_opaque_background(true),
         has_text(false),
         is_cacheable(client.IsCacheable()),
@@ -157,7 +157,7 @@ struct PLATFORM_EXPORT PaintChunk {
   BackgroundColorInfo background_color;
 
   // The paint properties which apply to this chunk.
-  PropertyTreeStateOrAlias properties;
+  TraceablePropertyTreeStateOrAlias properties;
 
   Member<HitTestData> hit_test_data;
   Member<RegionCaptureData> region_capture_data;

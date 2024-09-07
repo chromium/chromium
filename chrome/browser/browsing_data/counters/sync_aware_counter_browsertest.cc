@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -109,6 +110,7 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
   Profile* profile = GetProfile(kFirstProfileIndex);
   // Set up the counter.
   browsing_data::AutofillCounter counter(
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::IMPLICIT_ACCESS),
       sync_service);

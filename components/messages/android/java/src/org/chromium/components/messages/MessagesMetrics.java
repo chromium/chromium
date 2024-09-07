@@ -336,8 +336,6 @@ public class MessagesMetrics {
                 return "SaveAddressProfile";
             case MessageIdentifier.MERCHANT_TRUST:
                 return "MerchantTrust";
-            case MessageIdentifier.ADD_TO_HOMESCREEN_IPH:
-                return "AddToHomescreenIPH";
             case MessageIdentifier.SEND_TAB_TO_SELF:
                 return "SendTabToSelf";
             case MessageIdentifier.READER_MODE:
@@ -414,6 +412,8 @@ public class MessagesMetrics {
                 return "VirtualCardEnrollFailure";
             case MessageIdentifier.PROMPT_HATS_QUICK_DELETE:
                 return "PromptHatsQuickDelete";
+            case MessageIdentifier.PROMPT_HATS_SAFETY_HUB:
+                return "PromptHatsSafetyHub";
             default:
                 return "Unknown";
         }

@@ -27,6 +27,7 @@
 #include "base/test/with_feature_override.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
@@ -1000,6 +1001,82 @@ TEST_F(TemplateURLTest, ReplaceOmniboxFocusType) {
   }
 }
 
+TEST_F(TemplateURLTest, GetRegulatoryExtensionType) {
+  TemplateURLData data;
+  {
+    TemplateURL url(data);
+    EXPECT_EQ(RegulatoryExtensionType::kDefault,
+              url.GetRegulatoryExtensionType());
+  }
+
+  {
+    data.created_from_play_api = true;
+    TemplateURL url(data);
+    EXPECT_EQ(RegulatoryExtensionType::kAndroidEEA,
+              url.GetRegulatoryExtensionType());
+  }
+}
+
+TEST_F(TemplateURLTest, GetRegulatoryExtension_NoExtension) {
+  TemplateURLData data;
+  TemplateURL url(data);
+  EXPECT_EQ(nullptr,
+            url.GetRegulatoryExtension(RegulatoryExtensionType::kDefault));
+  EXPECT_EQ(nullptr,
+            url.GetRegulatoryExtension(RegulatoryExtensionType::kAndroidEEA));
+}
+
+TEST_F(TemplateURLTest, GetRegulatoryExtension_OnlyDefaultExtension) {
+  constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
+      .variant = RegulatoryExtensionType::kDefault,
+      .search_params = "search=params1",
+      .suggest_params = "suggest=params2",
+  };
+
+  TemplateURLData data;
+  data.regulatory_extensions.insert_or_assign(default_ext.variant,
+                                              &default_ext);
+
+  // Default extension should give us params mentioned above.
+  TemplateURL url(data);
+  auto* extension =
+      url.GetRegulatoryExtension(RegulatoryExtensionType::kDefault);
+  EXPECT_EQ(&default_ext, extension);
+
+  // Android EEA extension should not fall back to default; instead an empty
+  // definition should be served.
+  extension = url.GetRegulatoryExtension(RegulatoryExtensionType::kAndroidEEA);
+  EXPECT_EQ(nullptr, extension);
+}
+
+TEST_F(TemplateURLTest, GetRegulatoryExtension_WithDefaultAndEEAExtensions) {
+  constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
+      .variant = RegulatoryExtensionType::kDefault,
+      .search_params = "search=params1",
+      .suggest_params = "suggest=params2",
+  };
+  constexpr auto android_eea_ext = TemplateURLData::RegulatoryExtension{
+      .variant = RegulatoryExtensionType::kAndroidEEA,
+      .search_params = "eea_search=params3",
+      .suggest_params = "eea_suggest=params4",
+  };
+  TemplateURLData data;
+  data.regulatory_extensions.insert_or_assign(default_ext.variant,
+                                              &default_ext);
+  data.regulatory_extensions.insert_or_assign(android_eea_ext.variant,
+                                              &android_eea_ext);
+
+  // Default extension should give us default params.
+  TemplateURL url(data);
+  auto* extension =
+      url.GetRegulatoryExtension(RegulatoryExtensionType::kDefault);
+  EXPECT_EQ(&default_ext, extension);
+
+  // Android EEA extension should use android_eea params.
+  extension = url.GetRegulatoryExtension(RegulatoryExtensionType::kAndroidEEA);
+  EXPECT_EQ(&android_eea_ext, extension);
+}
+
 class TemplateURLOnePrefetchSourceTest : public base::test::WithFeatureOverride,
                                          public TemplateURLTest {
  public:
@@ -1440,7 +1517,8 @@ TEST_F(TemplateURLTest, SearchSourceId) {
   result = GURL(
       url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
   ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?source=chrome.gsc&", result.spec());
+  // The Lens Overlay url builder will handle setting the correct source.
+  EXPECT_EQ("http://google.com/?", result.spec());
 }
 
 TEST_F(TemplateURLTest, SearchClient) {
@@ -2477,6 +2555,193 @@ TEST_F(TemplateURLTest, GenerateSearchURL) {
     EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_).spec(),
               generate_url_case.expected)
         << generate_url_case.test_name << " failed.";
+  }
+}
+
+TEST_F(TemplateURLTest, GenerateURL_NoRegulatoryExtensions) {
+  TemplateURLData data;
+  data.SetURL("https://search?q={searchTerms}");
+  data.suggestions_url = "https://suggest?q={searchTerms}";
+
+  {
+    TemplateURL t_url(data);
+    EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
+              "https://search/?q=user+query");
+
+    EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
+              "https://suggest/?q=");
+  }
+
+  {
+    data.created_from_play_api = true;
+    TemplateURL t_url(data);
+
+    EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
+              "https://search/?q=user+query"
+#if BUILDFLAG(IS_ANDROID)
+              "&chrome_dse_attribution=1"
+#endif
+    );
+
+    EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
+              "https://suggest/?q="
+#if BUILDFLAG(IS_ANDROID)
+              "&chrome_dse_attribution=1"
+#endif
+    );
+  }
+}
+
+TEST_F(TemplateURLTest, GenerateURL_WithEmptyRegulatoryExtensions) {
+  TemplateURLData::RegulatoryExtension default_ext{
+      .variant = RegulatoryExtensionType::kDefault,
+  };
+  TemplateURLData::RegulatoryExtension android_eea_ext{
+      .variant = RegulatoryExtensionType::kAndroidEEA,
+  };
+  TemplateURLData data;
+  data.SetURL("https://search?q={searchTerms}");
+  data.suggestions_url = "https://suggest?q={searchTerms}";
+  data.regulatory_extensions.emplace(RegulatoryExtensionType::kDefault,
+                                     &default_ext);
+  data.regulatory_extensions.emplace(RegulatoryExtensionType::kAndroidEEA,
+                                     &android_eea_ext);
+
+  {
+    TemplateURL t_url(data);
+    EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
+              "https://search/?q=user+query");
+
+    EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
+              "https://suggest/?q=");
+  }
+
+  {
+    data.created_from_play_api = true;
+    TemplateURL t_url(data);
+
+    EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
+              "https://search/?q=user+query"
+#if BUILDFLAG(IS_ANDROID)
+              "&chrome_dse_attribution=1"
+#endif
+    );
+
+    EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
+              "https://suggest/?q="
+#if BUILDFLAG(IS_ANDROID)
+              "&chrome_dse_attribution=1"
+#endif
+    );
+  }
+}
+
+TEST_F(TemplateURLTest, GenerateURL_WithFullRegulatoryExtensions) {
+  TemplateURLData::RegulatoryExtension default_ext{
+      .variant = RegulatoryExtensionType::kDefault,
+      .search_params = "default_search_param=123",
+      .suggest_params = "default_suggest_param=456"};
+  TemplateURLData::RegulatoryExtension android_eea_ext{
+      .variant = RegulatoryExtensionType::kAndroidEEA,
+      .search_params = "eea_search_param=abc",
+      .suggest_params = "eea_suggest_param=def"};
+
+  TemplateURLData data;
+  data.SetURL("https://search?q={searchTerms}");
+  data.suggestions_url = "https://suggest?q={searchTerms}";
+  data.regulatory_extensions.emplace(RegulatoryExtensionType::kDefault,
+                                     &default_ext);
+  data.regulatory_extensions.emplace(RegulatoryExtensionType::kAndroidEEA,
+                                     &android_eea_ext);
+
+  {
+    TemplateURL t_url(data);
+    EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
+              "https://search/?default_search_param=123&q=user+query");
+
+    EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
+              "https://suggest/?default_suggest_param=456&q=");
+  }
+
+  {
+    data.created_from_play_api = true;
+    TemplateURL t_url(data);
+
+    EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
+              "https://search/?eea_search_param=abc&q=user+query"
+#if BUILDFLAG(IS_ANDROID)
+              "&chrome_dse_attribution=1"
+#endif
+    );
+
+    EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
+              "https://suggest/?eea_suggest_param=def&q="
+#if BUILDFLAG(IS_ANDROID)
+              "&chrome_dse_attribution=1"
+#endif
+    );
+  }
+}
+
+TEST_F(TemplateURLTest, GenerateURL_RegulatoryExtensionVariantHistograms) {
+  TemplateURLData data;
+  data.SetURL("https://search?q={searchTerms}");
+  data.suggestions_url = "https://suggest?q={searchTerms}";
+
+  {
+    TemplateURL t_url(data);
+    {
+      base::HistogramTester histogram_tester;
+      t_url.GenerateSearchURL(search_terms_data_, u"");
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant", 1);
+      histogram_tester.ExpectBucketCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant",
+          RegulatoryExtensionType::kDefault, 1);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant", 0);
+    }
+
+    {
+      base::HistogramTester histogram_tester;
+      t_url.GenerateSuggestionURL(search_terms_data_);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant", 1);
+      histogram_tester.ExpectBucketCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant",
+          RegulatoryExtensionType::kDefault, 1);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant", 0);
+    }
+  }
+
+  {
+    data.created_from_play_api = true;
+    TemplateURL t_url(data);
+
+    {
+      base::HistogramTester histogram_tester;
+      t_url.GenerateSearchURL(search_terms_data_, u"");
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant", 1);
+      histogram_tester.ExpectBucketCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant",
+          RegulatoryExtensionType::kAndroidEEA, 1);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant", 0);
+    }
+
+    {
+      base::HistogramTester histogram_tester;
+      t_url.GenerateSuggestionURL(search_terms_data_);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant", 1);
+      histogram_tester.ExpectBucketCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant",
+          RegulatoryExtensionType::kAndroidEEA, 1);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant", 0);
+    }
   }
 }
 

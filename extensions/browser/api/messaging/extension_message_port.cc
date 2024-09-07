@@ -34,6 +34,7 @@
 #include "extensions/browser/service_worker/service_worker_host.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -145,7 +146,7 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
 
   // extensions::ProcessManagerObserver overrides:
   void OnExtensionFrameUnregistered(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       content::RenderFrameHost* render_frame_host) override {
     if (extension_id == port_->extension_id_)
       port_->UnregisterFrame(render_frame_host);
@@ -164,7 +165,7 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
 ExtensionMessagePort::ExtensionMessagePort(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::RenderFrameHost* render_frame_host,
     bool include_child_frames)
     : MessagePort(std::move(channel_delegate), port_id),
@@ -229,7 +230,7 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForExtension(
 std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const ChannelEndpoint& endpoint,
     mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> message_port,
     mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>

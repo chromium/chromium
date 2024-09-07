@@ -13,11 +13,13 @@ namespace signin {
 class IdentityManager;
 }
 
+class Profile;
+
 namespace ntp {
 
 const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
-    bool drive_module_enabled,
-    bool is_managed_profile);
+    bool is_managed_profile,
+    Profile* profile);
 
 // Modules are considered enabled if there are actual modules enabled and
 // account credentials are available (as most modules won't have data to

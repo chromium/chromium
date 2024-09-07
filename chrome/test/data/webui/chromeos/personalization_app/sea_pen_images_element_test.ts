@@ -282,6 +282,7 @@ suite('SeaPenImagesElementTest', function() {
   });
 
   test('display feedback buttons', async () => {
+    loadTimeData.overrideValues({isManagedSeaPenFeedbackEnabled: true});
     personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.thumbnails;
@@ -293,6 +294,20 @@ suite('SeaPenImagesElementTest', function() {
         seaPenImagesElement.shadowRoot!.querySelectorAll<CrIconButtonElement>(
             `div:not([hidden]).thumbnail-item-container sea-pen-feedback`));
     assertTrue(feedbackButtons.length > 0);
+  });
+
+  test('hide feedback buttons if managed feedback disabled', async () => {
+    loadTimeData.overrideValues({isManagedSeaPenFeedbackEnabled: false});
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    assertFalse(
+        !!seaPenImagesElement.shadowRoot!.querySelector<CrIconButtonElement>(
+            `div:not([hidden]).thumbnail-item-container sea-pen-feedback`));
   });
 
   test('hide error state on success', async () => {

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/photos/model/photos_service_configuration.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/photos/photos_api.h"
@@ -48,7 +48,7 @@ std::unique_ptr<KeyedService> PhotosServiceFactory::BuildServiceInstanceFor(
       application_context->GetSingleSignOnService();
   configuration.prefService = chrome_browser_state->GetPrefs();
   configuration.identityManager =
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state);
+      IdentityManagerFactory::GetForProfile(chrome_browser_state);
   configuration.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           chrome_browser_state);

@@ -142,7 +142,7 @@ class DrmDevice::PageFlipManager {
   std::vector<PageFlip> callbacks_;
 };
 
-class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
+class DrmDevice::IOWatcher : public base::MessagePumpEpoll::FdWatcher {
  public:
   IOWatcher(int fd, DrmDevice::PageFlipManager* page_flip_manager)
       : page_flip_manager_(page_flip_manager), controller_(FROM_HERE), fd_(fd) {
@@ -166,7 +166,7 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
     controller_.StopWatchingFileDescriptor();
   }
 
-  // base::MessagePumpLibevent::FdWatcher overrides:
+  // base::MessagePumpEpoll::FdWatcher overrides:
   void OnFileCanReadWithoutBlocking(int fd) override {
     DCHECK(base::CurrentIOThread::IsSet());
     TRACE_EVENT1("drm", "OnDrmEvent", "socket", fd);
@@ -183,7 +183,7 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
 
   raw_ptr<DrmDevice::PageFlipManager> page_flip_manager_;
 
-  base::MessagePumpLibevent::FdWatchController controller_;
+  base::MessagePumpEpoll::FdWatchController controller_;
 
   int fd_;
 };

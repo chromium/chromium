@@ -110,9 +110,11 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         @Nullable
         WebContents getWebContents();
 
-        /** Returns the view this controller uses for safe area updates, if there is one. */
+        /**
+         * Returns the InsetObserver this controller uses for safe area updates, if there is one.
+         */
         @Nullable
-        InsetObserver getInsetObserverView();
+        InsetObserver getInsetObserver();
 
         /** Returns whether the user can interact with the associated WebContents/UI element. */
         boolean isInteractable();
@@ -179,7 +181,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         Activity activity = mDelegate.getAttachedActivity();
         if (activity == null || mWebContentsObserver != null) return;
 
-        updateInsetObserver(mDelegate.getInsetObserverView());
+        updateInsetObserver(mDelegate.getInsetObserver());
         updateBrowserCutoutObserver(mDelegate.getBrowserDisplayCutoutModeSupplier());
         mWebContentsObserver =
                 new WebContentsObserver(mDelegate.getWebContents()) {
@@ -212,6 +214,11 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         mInsetObserver = observer;
         if (mInsetObserver != null) {
             mInsetObserver.addObserver(this);
+
+            // For E2E pages, populate the SAI during initialization.
+            if (mDelegate.isDrawEdgeToEdgeEnabled()) {
+                maybePushSafeAreaInsets(mInsetObserver.getCurrentSafeArea());
+            }
         }
     }
 
@@ -275,22 +282,29 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     /** Implements {@link WindowInsetsObserver}. */
     @Override
     public void onSafeAreaChanged(Rect area) {
+        maybePushSafeAreaInsets(area);
+    }
+
+    private void maybePushSafeAreaInsets(Rect area) {
         WebContents webContents = mDelegate.getWebContents();
         if (webContents == null) return;
+        if (webContents.getTopLevelNativeWindow() == null) return;
 
         float dipScale = getDipScale();
-        area.set(
-                adjustInsetForScale(area.left, dipScale),
-                adjustInsetForScale(area.top, dipScale),
-                adjustInsetForScale(area.right, dipScale),
-                adjustInsetForScale(area.bottom, dipScale));
+        Rect safeArea =
+                new Rect(
+                        adjustInsetForScale(area.left, dipScale),
+                        adjustInsetForScale(area.top, dipScale),
+                        adjustInsetForScale(area.right, dipScale),
+                        adjustInsetForScale(area.bottom, dipScale));
 
         // Notify Blink of the new insets for css env() variables.
-        webContents.setDisplayCutoutSafeArea(area);
+        webContents.setDisplayCutoutSafeArea(safeArea);
     }
 
     /**
      * Adjusts a WindowInset inset to a CSS pixel value.
+     *
      * @param inset The inset as an integer.
      * @param dipScale The devices dip scale as an integer.
      * @return The CSS pixel value adjusted for scale.

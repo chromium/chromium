@@ -59,12 +59,14 @@ AppLocalBlockDialogView::AppLocalBlockDialogView(const std::string& app_name)
     : AppDialogView(ui::ImageModel::FromVectorIcon(kGuardianIcon,
                                                    ui::kColorIcon,
                                                    kIconSize)) {
+  InitializeView();
+  AddTitle(/*title_text=*/std::u16string());
+
+  // This needs to be called after `InitializeView()` and `AddTitle()` because
+  // it sets the title.
   AddApp(app_name);
 
-  std::u16string heading_text =
-      l10n_util::GetStringUTF16(IDS_APP_LOCAL_BLOCK_HEADING);
-
-  InitializeView(heading_text);
+  AddSubtitle(l10n_util::GetStringUTF16(IDS_APP_LOCAL_BLOCK_HEADING));
 
   DCHECK_EQ(nullptr, g_app_local_block_dialog_view);
   g_app_local_block_dialog_view = this;
@@ -94,10 +96,11 @@ void AppLocalBlockDialogView::AddApp(const std::string& app_name) {
     return;
   }
 
-  const int tile_string_id = num_of_blocked_apps == 1
-                                 ? IDS_APP_LOCAL_BLOCK_PROMPT_TITLE
-                                 : IDS_APP_LOCAL_BLOCK_PROMPT_MULTIPLE_TITLE;
-  SetTitle(l10n_util::GetStringFUTF16(tile_string_id,
-                                      base::UTF8ToUTF16(app_names_[0]),
-                                      ui::GetChromeOSDeviceName()));
+  const int title_string_id = num_of_blocked_apps == 1
+                                  ? IDS_APP_LOCAL_BLOCK_PROMPT_TITLE
+                                  : IDS_APP_LOCAL_BLOCK_PROMPT_MULTIPLE_TITLE;
+
+  SetTitleText(l10n_util::GetStringFUTF16(title_string_id,
+                                          base::UTF8ToUTF16(app_names_[0]),
+                                          ui::GetChromeOSDeviceName()));
 }

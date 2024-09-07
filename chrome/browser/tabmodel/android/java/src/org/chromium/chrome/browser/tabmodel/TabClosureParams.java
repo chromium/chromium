@@ -10,6 +10,7 @@ import com.google.errorprone.annotations.DoNotMock;
 
 import org.chromium.chrome.browser.tab.Tab;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -72,7 +73,7 @@ public class TabClosureParams {
         /** Builds the params. */
         public TabClosureParams build() {
             return new TabClosureParams(
-                    List.of(mTab),
+                    Arrays.asList(mTab),
                     /* isAllTabs= */ false,
                     mRecommendedNextTab,
                     mUponExit,

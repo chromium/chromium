@@ -93,8 +93,8 @@ bool IsPreconnectExpensive() {
 #if BUILDFLAG(IS_ANDROID)
   // Preconnecting is expensive while on battery power and cellular data and
   // the radio signal is weak.
-  if ((base::PowerMonitor::IsInitialized() &&
-       !base::PowerMonitor::IsOnBatteryPower()) ||
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      (power_monitor->IsInitialized() && !power_monitor->IsOnBatteryPower()) ||
       (base::android::RadioUtils::GetConnectionType() !=
        base::android::RadioConnectionType::kCell)) {
     return false;
@@ -113,8 +113,9 @@ void MaybeWarmUpServiceWorker(const GURL& url, Profile* profile) {
   static const bool kEnabled =
       base::FeatureList::IsEnabled(
           blink::features::kSpeculativeServiceWorkerWarmUp) &&
-      blink::features::kSpeculativeServiceWorkerWarmUpFromLoadingPredictor
-          .Get();
+      base::GetFieldTrialParamByFeatureAsBool(
+          blink::features::kSpeculativeServiceWorkerWarmUp,
+          "sw_warm_up_from_loading_predictor", true);
   if (!kEnabled) {
     return;
   }

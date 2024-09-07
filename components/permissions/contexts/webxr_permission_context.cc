@@ -30,7 +30,8 @@ WebXrPermissionContext::WebXrPermissionContext(
                             blink::mojom::PermissionsPolicyFeature::kWebXr),
       content_settings_type_(content_settings_type) {
   DCHECK(content_settings_type_ == ContentSettingsType::VR ||
-         content_settings_type_ == ContentSettingsType::AR);
+         content_settings_type_ == ContentSettingsType::AR ||
+         content_settings_type_ == ContentSettingsType::HAND_TRACKING);
 }
 
 WebXrPermissionContext::~WebXrPermissionContext() = default;
@@ -50,7 +51,9 @@ void WebXrPermissionContext::NotifyPermissionSet(
     ContentSetting content_setting,
     bool is_one_time,
     bool is_final_decision) {
-  DCHECK(!is_one_time);
+  const bool is_hands =
+      content_settings_type_ == ContentSettingsType::HAND_TRACKING;
+  DCHECK(!is_one_time || is_hands);
   DCHECK(is_final_decision);
 
   // Note that this method calls into base class implementation version of
@@ -73,7 +76,7 @@ void WebXrPermissionContext::NotifyPermissionSet(
               device::features::IsOpenXrEnabled();
 #endif
   const bool additional_permissions_needed =
-      permission_granted && (is_ar || is_openxr);
+      permission_granted && (is_ar || is_openxr || is_hands);
   if (!additional_permissions_needed) {
     PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback), persist,

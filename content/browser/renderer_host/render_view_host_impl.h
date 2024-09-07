@@ -171,9 +171,13 @@ class CONTENT_EXPORT RenderViewHostImpl
   void set_is_speculative(bool is_speculative) {
     is_speculative_ = is_speculative;
   }
+
+  bool is_registered_with_frame_tree() { return registered_with_frame_tree_; }
   void set_is_registered_with_frame_tree(bool is_registered) {
     registered_with_frame_tree_ = is_registered;
   }
+
+  bool renderer_view_created() const { return renderer_view_created_; }
 
   FrameTree::RenderViewHostMapId rvh_map_id() const {
     return render_view_host_map_id_;
@@ -185,6 +189,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // pending unload or unloaded), according to its main frame
   // RenderFrameHost.
   bool is_active() const { return main_frame_routing_id_ != MSG_ROUTING_NONE; }
+  int main_frame_routing_id() const { return main_frame_routing_id_; }
 
   // Returns true if the `blink::WebView` is active and has not crashed.
   bool IsRenderViewLive() const;

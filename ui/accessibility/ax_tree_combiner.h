@@ -28,22 +28,22 @@ class AX_EXPORT AXTreeCombiner {
   AXTreeCombiner();
   ~AXTreeCombiner();
 
-  void AddTree(const AXTreeUpdate& tree, bool is_root);
+  void AddTree(AXTreeUpdate& tree, bool is_root);
   bool Combine();
 
-  const AXTreeUpdate& combined() { return combined_; }
+  std::optional<AXTreeUpdate> combined() { return combined_; }
 
  private:
   AXNodeID MapId(AXTreeID tree_id, AXNodeID node_id);
 
-  void ProcessTree(const AXTreeUpdate* tree);
+  void ProcessTree(AXTreeUpdate* tree,
+                   const std::map<AXTreeID, AXTreeUpdate*>& tree_id_map);
 
-  std::vector<ui::AXTreeUpdate> trees_;
+  std::vector<AXTreeUpdate> trees_;
   AXTreeID root_tree_id_;
   AXNodeID next_id_ = 1;
-  std::map<AXTreeID, const AXTreeUpdate*> tree_id_map_;
   std::map<std::pair<AXTreeID, AXNodeID>, AXNodeID> tree_id_node_id_map_;
-  AXTreeUpdate combined_;
+  std::optional<AXTreeUpdate> combined_;
 };
 
 

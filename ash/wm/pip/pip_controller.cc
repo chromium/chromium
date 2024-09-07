@@ -14,6 +14,7 @@
 #include "ash/wm/window_dimmer.h"
 #include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "ui/aura/window_delegate.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -130,6 +131,17 @@ void PipController::UnsetPipWindow(aura::Window* window) {
   scoped_window_tucker_.reset();
   is_tucked_ = false;
   dimmer_.reset();
+}
+
+bool PipController::CanResizePip() {
+  if (!pip_window_) {
+    return false;
+  }
+  gfx::Size max_size = pip_window_->delegate()->GetMaximumSize();
+  gfx::Size min_size = pip_window_->delegate()->GetMinimumSize();
+  return !max_size.IsEmpty() && !min_size.IsEmpty() &&
+         max_size.width() > min_size.width() &&
+         max_size.height() > min_size.height();
 }
 
 void PipController::UpdatePipBounds() {

@@ -154,10 +154,10 @@ struct BlockLineClampData {
   }
 
   // Returns false if we need to relayout with a different clamp BFC offset.
-  bool UpdateAfterLayout(
-      const LayoutResult* layout_result,
-      const std::optional<LayoutUnit>& bfc_block_offset,
-      const PreviousInflowPosition& previous_inflow_position) {
+  bool UpdateAfterLayout(const LayoutResult* layout_result,
+                         const std::optional<LayoutUnit>& bfc_block_offset,
+                         const PreviousInflowPosition& previous_inflow_position,
+                         LayoutUnit block_end_padding) {
     if (data.state == LineClampData::kClampByLines) {
       if (!layout_result->GetPhysicalFragment().IsFormattingContextRoot()) {
         data.lines_until_clamp = layout_result->LinesUntilClamp();
@@ -173,6 +173,8 @@ struct BlockLineClampData {
         return true;
       }
 
+      // We compute the margin strut we'd have after this block if we were to
+      // clamp here.
       MarginStrut collapsed_strut = previous_inflow_position.margin_strut;
       collapsed_strut.positive_margin = std::max(
           collapsed_strut.positive_margin, end_margin_strut.positive_margin);
@@ -182,9 +184,21 @@ struct BlockLineClampData {
       collapsed_strut.negative_margin = std::max(
           collapsed_strut.negative_margin, end_margin_strut.negative_margin);
 
+      // The extra space after the current box that would be added by ruby
+      // annotations, considering that the annotations eat into the following
+      // padding if it exists, and that we have already subtracted the block end
+      // padding from the clamp BFC offset.
+      LayoutUnit padding_annotation_overflow;
+      if (previous_inflow_position.block_end_annotation_space < LayoutUnit()) {
+        padding_annotation_overflow =
+            std::max(previous_inflow_position.block_end_annotation_space,
+                     -block_end_padding);
+      }
+
       DCHECK(bfc_block_offset);
       LayoutUnit bfc_offset = *bfc_block_offset +
                               previous_inflow_position.logical_block_offset +
+                              padding_annotation_overflow +
                               (collapsed_strut.Sum() - end_margin_strut.Sum());
 
       if (layout_result->HasContentAfterLineClamp()) {
@@ -196,6 +210,12 @@ struct BlockLineClampData {
       } else if (bfc_offset == data.clamp_bfc_offset) {
         previous_inflow_position_when_clamped = previous_inflow_position;
       } else if (!previous_inflow_position_when_clamped.has_value()) {
+        // If we're doing a relayout, it means the current clamp offset should
+        // be the offset we'd get after the layout some line or box. If this is
+        // not the case, something other than the placement of the ellipsis must
+        // have changed between the layouts, which shouldn't happen.
+        DCHECK(!is_relayout);
+
         // We only relayout if there was any clamp opportunity in the entire
         // block box.
         if (latest_clampable_offset.has_value()) {
@@ -246,9 +266,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   NOINLINE const LayoutResult* HandleNonsuccessfulLayoutResult(
       const LayoutResult*);
 
-  const LayoutResult* LayoutInlineChild(const InlineNode& child);
-  NOINLINE const LayoutResult* LayoutWithSimpleInlineChildLayoutContext(
-      const InlineNode& child);
+  NOINLINE const LayoutResult* LayoutInlineChild(const InlineNode& child);
   template <wtf_size_t capacity>
   NOINLINE const LayoutResult* LayoutWithOptimalInlineChildLayoutContext(
       const InlineNode& child);
@@ -407,8 +425,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // clipped box gets overflowed past the fragmentation line). The return value
   // can be checked for this. Only if kContinue is returned, can a fragment be
   // created.
-  BreakStatus FinalizeForFragmentation(
-      LayoutUnit block_end_border_padding_added);
+  BreakStatus FinalizeForFragmentation();
 
   // Insert a fragmentainer break before the child if necessary.
   // See |::blink::BreakBeforeChildIfNeeded()| for more documentation.

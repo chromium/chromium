@@ -1592,6 +1592,12 @@ const gCSSProperties2 = {
     types: [
     ]
   },
+  'view-transition-class': {
+    // https://drafts.csswg.org/css-view-transitions/#propdef-view-transition-name
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'card scale-animation' ] ] },
+    ]
+  },
   'view-transition-name': {
     // https://drafts.csswg.org/css-view-transitions/#propdef-view-transition-name
     types: [

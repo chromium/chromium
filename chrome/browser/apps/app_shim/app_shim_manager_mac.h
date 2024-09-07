@@ -289,7 +289,7 @@ class AppShimManager
   typedef std::set<Browser*> BrowserSet;
 
   // Virtual for tests.
-  virtual bool IsAcceptablyCodeSigned(pid_t pid) const;
+  virtual bool IsAcceptablyCodeSigned(audit_token_t audit_token) const;
 
   // Return the profile for |path|, only if it is already loaded.
   virtual Profile* ProfileForPath(const base::FilePath& path);

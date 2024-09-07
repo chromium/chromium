@@ -8,6 +8,7 @@ import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/book
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
+import {NESTED_BOOKMARKS_BASE_MARGIN, NESTED_BOOKMARKS_MARGIN_PER_DEPTH} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
@@ -748,6 +749,20 @@ suite('SidePanelPowerBookmarksListTest', () => {
         folderElement.shadowRoot!.querySelector<PowerBookmarkRowElement>(
             '#bookmark-6');
     assertTrue(!!nestedBookmarkElement);
+    // Verify that the nested bookmark has the correct depth
+    assertEquals(1, nestedBookmarkElement.depth);
+
+    const bookmarkDiv =
+        nestedBookmarkElement.shadowRoot!.querySelector<HTMLDivElement>(
+            '#bookmark');
+    assertTrue(!!bookmarkDiv);
+
+    // Check if the depth is correctly applied to the style
+    const computedStyle = getComputedStyle(bookmarkDiv);
+    const expectedMargin =
+        nestedBookmarkElement.depth * NESTED_BOOKMARKS_MARGIN_PER_DEPTH +
+        NESTED_BOOKMARKS_BASE_MARGIN;
+    assertEquals(`${expectedMargin}px`, computedStyle.marginLeft);
 
     expandButton.click();
     await expandButton.updateComplete;

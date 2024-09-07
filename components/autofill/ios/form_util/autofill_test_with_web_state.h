@@ -23,7 +23,7 @@ class AutofillTestWithWebState : public web::WebTestWithWebState {
   AutofillTestWithWebState(std::unique_ptr<web::WebClient> web_client);
 
   // Toggles tracking form mutations in a |frame| and waits for completion.
-  void TrackFormMutations(web::WebFrame* frame, bool allow_batching = false);
+  void TrackFormMutations(web::WebFrame* frame);
 
   // web::WebTestWithWebState:
   id ExecuteJavaScript(NSString* script) override;

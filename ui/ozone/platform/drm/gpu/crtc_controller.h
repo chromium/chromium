@@ -15,6 +15,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
@@ -31,7 +32,8 @@ class CrtcController {
  public:
   CrtcController(const scoped_refptr<DrmDevice>& drm,
                  uint32_t crtc,
-                 uint32_t connector);
+                 uint32_t connector,
+                 std::optional<TileProperty> tile_property = std::nullopt);
 
   CrtcController(const CrtcController&) = delete;
   CrtcController& operator=(const CrtcController&) = delete;
@@ -44,6 +46,9 @@ class CrtcController {
   const scoped_refptr<DrmDevice>& drm() const { return drm_; }
   bool is_enabled() const { return state_->properties.active.value; }
   bool vrr_enabled() const { return state_->properties.vrr_enabled.value; }
+
+  std::optional<TileProperty> tile_property() const { return tile_property_; }
+  bool is_tiled() const { return tile_property_.has_value(); }
 
   bool AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
                            const DrmOverlayPlaneList& planes,
@@ -59,13 +64,13 @@ class CrtcController {
   // gbm will pick a modifier as it allocates the bo.
   std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format);
 
-  // Returns whether DrmWrapper successfully sets cursor with the given
-  // parameters.
-  [[nodiscard]] bool SetCursor(uint32_t handle, const gfx::Size& size);
+  void SetCursor(uint32_t handle, const gfx::Size& size);
   void MoveCursor(const gfx::Point& location);
 
   // Adds trace records to |context|.
   void WriteIntoTrace(perfetto::TracedValue context) const;
+
+  bool CurrentModeIsTiled() const;
 
  private:
   const scoped_refptr<DrmDevice> drm_;
@@ -76,6 +81,8 @@ class CrtcController {
   const uint32_t connector_;
 
   const raw_ref<const HardwareDisplayPlaneManager::CrtcState> state_;
+
+  const std::optional<TileProperty> tile_property_;
 };
 
 }  // namespace ui

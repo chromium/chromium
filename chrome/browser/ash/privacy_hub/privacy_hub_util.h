@@ -7,13 +7,13 @@
 
 #include <string>
 
+#include "ash/constants/geolocation_access_level.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings_types.mojom.h"
 
 class AppAccessNotifier;
-class Profile;
 
 namespace ash {
 
@@ -99,7 +99,25 @@ std::unique_ptr<ContentBlockObservation> CreateObservationForBlockedContent(
 
 // Opens the system settings page that allows OS level control for the provided
 // content type if such settings page exists.
-void OpenSystemSettings(Profile* profile, ContentType type);
+void OpenSystemSettings(ContentType type);
+
+class ScopedUserPermissionPrefForTest {
+ public:
+  // The AccessLevel is equivalent to GeolocationAccess level.
+  // In the context of ScopedUserPermissionPrefForTest it is used
+  // to specify access level for camera and microphone as well, however the
+  // kOnlyAllowedForSystem is to be used only for geolocation.
+  using AccessLevel = GeolocationAccessLevel;
+
+  // Sets the permission level in the OS
+  ScopedUserPermissionPrefForTest(ContentType type, AccessLevel access_level);
+  // After destruction the pref is returned to the original state.
+  ~ScopedUserPermissionPrefForTest();
+
+ private:
+  const ContentType content_type_;
+  const AccessLevel previous_access_level_;
+};
 
 }  // namespace privacy_hub_util
 

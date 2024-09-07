@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> vahelehte grupeeriti</translation>
 <translation id="1657719826150349398">Teisalda vaheleht alla</translation>
 <translation id="1713541401465507417">Sulgege kõik vahelehed ja grupid</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> vaheleht grupeeriti</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> valitud vahelehe järjehoidjatesse lisamine}other{<ph name="TABS_COUNT_MANY" /> valitud vahelehe järjehoidjatesse lisamine}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Loodud just praegu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Sule 1 päeva pärast}other{Sule <ph name="DAY_COUNT_MANY" /> päeva pärast}}</translation>
 <translation id="4777866634702576038">Kas kustutada vahelehegrupp?</translation>
+<translation id="4783638485675352219">Jagage operatsioonisüsteemiga selle seadme avatud vahelehtede pealkirju ja URL-e</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvustus)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvustust)}}</translation>
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="4870911314065352661">Kas sulgeda kõik vahelehed?</translation>

@@ -128,6 +128,7 @@
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -1680,13 +1681,13 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                 client_redirect_policy, has_transient_user_activation,
                 WTF::RetainedRef(initiator_origin), is_browser_initiated,
                 is_synchronously_committed, triggering_event_info,
-                soft_navigation_heuristics_task_id));
+                soft_navigation_heuristics_task_id, has_ua_visual_transition));
   } else {
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, same_document_navigation_type,
         client_redirect_policy, has_transient_user_activation, initiator_origin,
         is_browser_initiated, is_synchronously_committed, triggering_event_info,
-        soft_navigation_heuristics_task_id);
+        soft_navigation_heuristics_task_id, has_ua_visual_transition);
   }
   return mojom::CommitResult::Ok;
 }
@@ -1703,7 +1704,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     bool is_synchronously_committed,
     mojom::blink::TriggeringEventInfo triggering_event_info,
     std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id) {
+        soft_navigation_heuristics_task_id,
+    bool has_ua_visual_transition) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
   // might have been detached before the task ran.
   if (!frame_)
@@ -1777,8 +1779,12 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     frame_->Owner()->DispatchLoad();
   }
 
+  auto scroll_behavior = has_ua_visual_transition
+                             ? mojom::blink::ScrollBehavior::kInstant
+                             : mojom::blink::ScrollBehavior::kAuto;
   GetFrameLoader().ProcessScrollForSameDocumentNavigation(
-      url, frame_load_type, view_state, scroll_restoration_type);
+      url, frame_load_type, view_state, scroll_restoration_type,
+      scroll_behavior);
 }
 
 void DocumentLoader::ProcessDataBuffer(BodyData* data) {
@@ -2848,7 +2854,9 @@ void DocumentLoader::CommitNavigation() {
   // that it was activated before navigation. Update the frame state based on
   // the new value.
   OldDocumentInfoForCommit* old_document_info_for_commit =
-      ScopedOldDocumentInfoForCommitCapturer::CurrentInfo();
+      (commit_reason_ == CommitReason::kRegular)
+          ? ScopedOldDocumentInfoForCommitCapturer::CurrentInfo()
+          : nullptr;
   bool had_sticky_activation_before_navigation =
       old_document_info_for_commit
           ? old_document_info_for_commit
@@ -2858,6 +2866,12 @@ void DocumentLoader::CommitNavigation() {
     frame_->SetHadStickyUserActivationBeforeNavigation(had_sticky_activation_);
     frame_->GetLocalFrameHostRemote()
         .HadStickyUserActivationBeforeNavigationChanged(had_sticky_activation_);
+  }
+  bool was_focused_frame = old_document_info_for_commit
+                               ? old_document_info_for_commit->was_focused_frame
+                               : false;
+  if (was_focused_frame) {
+    frame_->GetPage()->GetFocusController().SetFocusedFrame(frame_);
   }
 
   bool should_clear_window_name =
@@ -3677,8 +3691,8 @@ WebDocumentLoader::ExtraData* DocumentLoader::GetExtraData() const {
   return extra_data_.get();
 }
 
-std::unique_ptr<WebDocumentLoader::ExtraData> DocumentLoader::TakeExtraData() {
-  return std::move(extra_data_);
+std::unique_ptr<WebDocumentLoader::ExtraData> DocumentLoader::CloneExtraData() {
+  return extra_data_ ? extra_data_->Clone() : nullptr;
 }
 
 void DocumentLoader::SetExtraData(std::unique_ptr<ExtraData> extra_data) {

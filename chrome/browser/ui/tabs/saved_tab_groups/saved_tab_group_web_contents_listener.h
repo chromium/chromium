@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_
 
-#include <vector>
-
 #include "base/token.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
@@ -21,6 +18,8 @@ class WebContents;
 
 namespace tab_groups {
 
+class TabGroupSyncService;
+
 // Class that maintains a relationship between the webcontents object of a tab
 // and the saved tab group tab that exists for that tab. Listens to navigation
 // events on the tab and performs actions to the tab group service, and when
@@ -29,11 +28,11 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
  public:
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    const LocalTabID& token,
-                                   TabGroupServiceWrapper* wrapper_service);
+                                   TabGroupSyncService* service);
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    content::NavigationHandle* navigation_handle,
                                    const LocalTabID& token,
-                                   TabGroupServiceWrapper* wrapper_service);
+                                   TabGroupSyncService* service);
   ~SavedTabGroupWebContentsListener() override;
 
   // If possible (see implementation for details) performs a naviagation of the
@@ -72,13 +71,8 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   // The webcontents for the Tab that is being listened to.
   const raw_ptr<content::WebContents> web_contents_ = nullptr;
 
-  // An adapter between TabGroupSyncService and SavedTabGroupKeyedService.
-  const raw_ptr<TabGroupServiceWrapper> wrapper_service_ = nullptr;
-
-  // Holds the current redirect chain which is used for equality check for any
-  // incoming URL update. If any of the URLs in the chain matches with the new
-  // URL, we don't do a navigation.
-  std::vector<GURL> tab_redirect_chain_;
+  // The service used to query and manage SavedTabGroups.
+  const raw_ptr<TabGroupSyncService> service_ = nullptr;
 
   // The NavigationHandle that resulted from the last sync update. Ignored by
   // `DidFinishNavigation` to prevent synclones.

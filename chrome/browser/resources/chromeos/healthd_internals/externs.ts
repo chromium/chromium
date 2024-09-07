@@ -4,6 +4,9 @@
 
 /**
  * @fileoverview External interfaces used by chrome://healthd-internals.
+ *
+ * See chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom
+ * for more details.
  */
 
 /**
@@ -97,6 +100,35 @@ export interface HealthdApiTelemetryResult {
   fans: HealthdApiFanResult[];
   memory: HealthdApiMemoryResult;
   thermals: HealthdApiThermalResult[];
+}
+
+/**
+ * `getHealthdProcessInfo` api result.
+ */
+export interface HealthdApiProcessResult {
+  processes: HealthdApiProcessInfo[];
+}
+
+/**
+ * Detailed process info. See `ProcessInfo` in
+ * chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom
+ * for more details.
+ */
+export interface HealthdApiProcessInfo {
+  command: string;
+  userId: string;
+  priority: number;
+  nice: number;
+  uptimeTicks: string;
+  state: string;
+  residentMemoryKib: string;
+  readSystemCallsCount: string;
+  writeSystemCallsCount: string;
+  name?: string;
+  parentProcessId: string;
+  processGroupId: string;
+  threadsNumber: string;
+  processId: string;
 }
 
 /**

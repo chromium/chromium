@@ -11,6 +11,8 @@
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/filter_keys_event_rewriter.h"
+#include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
@@ -40,10 +42,10 @@
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/message_center/message_center.h"
 
 using message_center::MessageCenter;
@@ -118,8 +120,7 @@ class AccessibilityControllerTest : public AshTestBase {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{media::kLiveCaption,
-                              ash::features::kOnDeviceSpeechRecognition,
+        /*enabled_features=*/{ash::features::kOnDeviceSpeechRecognition,
                               ::features::kAccessibilityAccelerator,
                               ::features::kAccessibilityFaceGaze,
                               ::features::kAccessibilityMouseKeys,
@@ -134,6 +135,23 @@ class AccessibilityControllerTest : public AshTestBase {
                                         int count) {
     histogram_tester_.ExpectTotalCount(
         "Accessibility." + feature_name + ".SessionDuration", count);
+  }
+
+  void ExpectFlashNotificationShown() {
+    gfx::AnimationTestApi animation_api(
+        AccessibilityController::Get()
+            ->GetFlashScreenControllerForTesting()
+            ->GetAnimationForTesting());
+    base::TimeTicks now = base::TimeTicks::Now();
+    animation_api.SetStartTime(now);
+    animation_api.Step(now + base::Milliseconds(1));
+
+    // A custom color matrix has been shown.
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+      const cc::FilterOperation::Matrix* matrix =
+          root_window->layer()->GetLayerCustomColorMatrix();
+      EXPECT_TRUE(matrix);
+    }
   }
 
  private:
@@ -1731,12 +1749,8 @@ TEST_F(AccessibilityControllerTest, FlashNotificationsWhenEnabled) {
   // Use dictation notification as an easy way to show any notification.
   accessibility_controller->ShowNotificationForDictation(
       DictationNotificationType::kAllDlcsDownloaded, u"en-us");
-  // A custom color matrix has been shown.
-  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-    const cc::FilterOperation::Matrix* matrix =
-        root_window->layer()->GetLayerCustomColorMatrix();
-    EXPECT_TRUE(matrix);
-  }
+
+  ExpectFlashNotificationShown();
 
   accessibility_controller->flash_notifications().SetEnabled(false);
 }
@@ -1754,12 +1768,8 @@ TEST_F(AccessibilityControllerTest, FlashNotificationsPreview) {
 
   // Preview flash notifications.
   accessibility_controller->PreviewFlashNotification();
-  // A custom color matrix has been shown.
-  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-    const cc::FilterOperation::Matrix* matrix =
-        root_window->layer()->GetLayerCustomColorMatrix();
-    EXPECT_TRUE(matrix);
-  }
+
+  ExpectFlashNotificationShown();
 
   accessibility_controller->flash_notifications().SetEnabled(false);
 }
@@ -1881,6 +1891,19 @@ TEST_F(AccessibilityControllerTest,
   // AccessibilityController shouldn't have a reference to the
   // DisableTrackpadEventRewriter.
   ASSERT_EQ(nullptr, controller->GetDisableTrackpadEventRewriterForTest());
+}
+
+// Verifies that the FilterKeysEventRewriter isn't initialized, since the
+// feature flag is off in this test suite.
+TEST_F(AccessibilityControllerTest, FilterKeysEventRewriterNotInitialized) {
+  // Initialize the EventRewriterController manually so that all EventRewriters
+  // get initialized.
+  EventRewriterController::Get()->Initialize(nullptr, nullptr);
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  // AccessibilityController shouldn't have a reference to the
+  // FilterKeysEventRewriter.
+  ASSERT_EQ(controller->GetFilterKeysEventRewriterForTest(), nullptr);
 }
 
 TEST_F(AccessibilityControllerTest, FaceGazeNotificationsOnlyShownOnce) {
@@ -2295,12 +2318,14 @@ TEST_F(AccessibilityControllerDisableTrackpadTest,
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityDisableTrackpadEnabled));
   ASSERT_FALSE(controller->disable_trackpad().enabled());
+  ASSERT_EQ(prefs->GetInteger(prefs::kAccessibilityDisableTrackpadMode),
+            static_cast<int>(DisableTrackpadMode::kNever));
 
   // AccessibilityController should have a reference to the
   // DisableTrackpadEventRewriter and it should also be off by default.
   auto* disable_trackpad_event_rewriter =
       controller->GetDisableTrackpadEventRewriterForTest();
-  ASSERT_NE(nullptr, disable_trackpad_event_rewriter);
+  ASSERT_NE(disable_trackpad_event_rewriter, nullptr);
   ASSERT_FALSE(disable_trackpad_event_rewriter->IsEnabled());
 
   // Enabling the disable trackpad feature should enable the

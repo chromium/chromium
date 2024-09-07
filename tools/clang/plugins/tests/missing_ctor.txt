@@ -1,42 +1,48 @@
 In file included from missing_ctor.cpp:5:
-./missing_ctor.h:37:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line constructor.
+./missing_ctor.h:39:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line constructor.
 class MissingCtorsArentOKInHeader {
 ^
-./missing_ctor.h:37:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line destructor.
-./missing_ctor.h:63:3: warning: [chromium-style] Complex constructor has an inlined body.
+./missing_ctor.h:39:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line destructor.
+./missing_ctor.h:65:3: warning: [chromium-style] Complex constructor has an inlined body.
   ExplicitlyDefaultedInlineAlsoWarns() = default;
   ^
-./missing_ctor.h:65:3: warning: [chromium-style] Complex constructor has an inlined body.
+./missing_ctor.h:67:3: warning: [chromium-style] Complex constructor has an inlined body.
   ExplicitlyDefaultedInlineAlsoWarns(
   ^
-./missing_ctor.h:64:3: warning: [chromium-style] Complex destructor has an inline body.
+./missing_ctor.h:66:3: warning: [chromium-style] Complex destructor has an inline body.
   ~ExplicitlyDefaultedInlineAlsoWarns() = default;
   ^
-./missing_ctor.h:128:3: warning: [chromium-style] Complex constructor has an inlined body.
+./missing_ctor.h:130:3: warning: [chromium-style] Complex constructor has an inlined body.
   FourStringsWarns() = default;
   ^
-./missing_ctor.h:129:3: warning: [chromium-style] Complex destructor has an inline body.
+./missing_ctor.h:131:3: warning: [chromium-style] Complex destructor has an inline body.
   ~FourStringsWarns() = default;
   ^
-./missing_ctor.h:166:3: warning: [chromium-style] Complex constructor has an inlined body.
+./missing_ctor.h:168:3: warning: [chromium-style] Complex constructor has an inlined body.
   TenTrivialTemplatesWarns() = default;
   ^
-./missing_ctor.h:210:3: warning: [chromium-style] Complex constructor has an inlined body.
+./missing_ctor.h:212:3: warning: [chromium-style] Complex constructor has an inlined body.
   TenTrivialAliasTemplatesWarns() = default;
   ^
-./missing_ctor.h:248:3: warning: [chromium-style] Complex constructor has an inlined body.
+./missing_ctor.h:250:3: warning: [chromium-style] Complex constructor has an inlined body.
   FourNonTrivialAliasTemplatesWarns() = default;
   ^
-./missing_ctor.h:249:3: warning: [chromium-style] Complex destructor has an inline body.
+./missing_ctor.h:251:3: warning: [chromium-style] Complex destructor has an inline body.
   ~FourNonTrivialAliasTemplatesWarns() = default;
   ^
-./missing_ctor.h:286:3: warning: [chromium-style] Complex constructor has an inlined body.
+./missing_ctor.h:288:3: warning: [chromium-style] Complex constructor has an inlined body.
   TenCheckedPtrWarns() = default;
   ^
-./missing_ctor.h:330:3: warning: [chromium-style] Complex constructor has an inlined body.
+./missing_ctor.h:332:3: warning: [chromium-style] Complex constructor has an inlined body.
   TenRawPtrWarns() = default;
   ^
-./missing_ctor.h:374:3: warning: [chromium-style] Complex constructor has an inlined body.
+./missing_ctor.h:376:3: warning: [chromium-style] Complex constructor has an inlined body.
   TenRawRefWarns() = default;
   ^
-14 warnings generated.
+./missing_ctor.h:420:3: warning: [chromium-style] Complex constructor has an inlined body.
+  TenSpanWarns() = default;
+  ^
+./missing_ctor.h:464:3: warning: [chromium-style] Complex constructor has an inlined body.
+  TenRawSpanWarns() = default;
+  ^
+16 warnings generated.

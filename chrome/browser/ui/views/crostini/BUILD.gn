@@ -32,6 +32,7 @@ static_library("crostini") {
     "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ui/views/bruschetta",
     "//chrome/browser/ui/webui/ash/crostini_upgrader",
     "//ui/chromeos",
     "//ui/strings:ui_strings_grit",

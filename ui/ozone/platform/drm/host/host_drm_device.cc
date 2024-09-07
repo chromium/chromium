@@ -146,8 +146,10 @@ void HostDrmDevice::GpuConfigureNativeDisplays(
 
 bool HostDrmDevice::GpuTakeDisplayControl() {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
+  if (!IsConnected()) {
+    LOG(WARNING) << __func__ << " GPU service not connected.";
     return false;
+  }
   auto callback =
       base::BindOnce(&HostDrmDevice::GpuTakeDisplayControlCallback, this);
 
@@ -158,8 +160,10 @@ bool HostDrmDevice::GpuTakeDisplayControl() {
 
 bool HostDrmDevice::GpuRelinquishDisplayControl() {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
+  if (!IsConnected()) {
+    LOG(WARNING) << __func__ << " GPU service not connected.";
     return false;
+  }
   auto callback =
       base::BindOnce(&HostDrmDevice::GpuRelinquishDisplayControlCallback, this);
 

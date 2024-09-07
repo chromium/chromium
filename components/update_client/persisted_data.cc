@@ -24,10 +24,17 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/update_client_errors.h"
 
 namespace update_client {
 
 const char kPersistedDataPreference[] = "updateclientdata";
+const char kLastUpdateCheckErrorPreference[] =
+    "updateclientlastupdatecheckerror";
+const char kLastUpdateCheckErrorCategoryPreference[] =
+    "updateclientlastupdatecheckerrorcategory";
+const char kLastUpdateCheckErrorExtraCode1Preference[] =
+    "updateclientlastupdatecheckerrorextracode1";
 
 namespace {
 
@@ -87,6 +94,7 @@ class PersistedDataImpl : public PersistedData {
                       const std::string& fingerprint) override;
   base::Time GetThrottleUpdatesUntil() const override;
   void SetThrottleUpdatesUntil(const base::Time& time) override;
+  void SetLastUpdateCheckError(const CategorizedError& error) override;
 
  private:
   // Returns nullptr if the app key does not exist.
@@ -370,6 +378,14 @@ void PersistedDataImpl::SetThrottleUpdatesUntil(const base::Time& time) {
   pref_service_->SetTime(kThrottleUpdatesUntilPreference, time);
 }
 
+void PersistedDataImpl::SetLastUpdateCheckError(const CategorizedError& error) {
+  pref_service_->SetInteger(kLastUpdateCheckErrorPreference, error.code_);
+  pref_service_->SetInteger(kLastUpdateCheckErrorCategoryPreference,
+                            static_cast<int>(error.category_));
+  pref_service_->SetInteger(kLastUpdateCheckErrorExtraCode1Preference,
+                            error.extra_);
+}
+
 }  // namespace
 
 std::unique_ptr<PersistedData> CreatePersistedData(
@@ -382,6 +398,9 @@ std::unique_ptr<PersistedData> CreatePersistedData(
 void RegisterPersistedDataPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kPersistedDataPreference);
   registry->RegisterTimePref(kThrottleUpdatesUntilPreference, base::Time());
+  registry->RegisterIntegerPref(kLastUpdateCheckErrorPreference, 0);
+  registry->RegisterIntegerPref(kLastUpdateCheckErrorCategoryPreference, 0);
+  registry->RegisterIntegerPref(kLastUpdateCheckErrorExtraCode1Preference, 0);
 }
 
 }  // namespace update_client

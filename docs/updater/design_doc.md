@@ -368,9 +368,9 @@ An example offline install command line on Windows platform:
 
 ```
 updater.exe /handoff "&appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&appname=MyApp&needsadmin=True&installdataindex =verboselog"
-            /installsource offline
-            /sessionid "{E85204C6-6F2F-40BF-9E6C-4952208BB977}"
-            /offlinedir "C:\Users\chrome-bot\AppData\Local\ForgedPath"]
+            /installsource offline
+            /sessionid "{E85204C6-6F2F-40BF-9E6C-4952208BB977}"
+            /offlinedir "C:\Users\chrome-bot\AppData\Local\ForgedPath"]
 ```
 DOS style command line switches are also supported for backward compatibility.
 
@@ -1046,7 +1046,7 @@ system per updater branding and is around 40 bytes.
 The updater is installed to subdirectories of `/opt/` for system-scope
 installations and `~/.local` for user-scope. Subdirectory naming is determined
 by updater branding. E.g. an unbranded user-scope updater will be installed to
-`~/.local/Chromium/ChromiumUpdater.` The installation directory will contain
+`~/.local/chromium/chromium-updater.` The installation directory will contain
 subdirectories for each installed updater version and data files.
 
 

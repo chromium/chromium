@@ -125,8 +125,6 @@ public abstract class AppMenuFacility<HostStationT extends Station>
     public static final @IdRes int SHARE_ID = R.id.share_menu_id;
     public static final @IdRes int FIND_IN_PAGE_ID = R.id.find_in_page_id;
     public static final @IdRes int TRANSLATE_ID = R.id.translate_id;
-    public static final @IdRes int ADD_TO_HOME_SCREEN_ID = R.id.add_to_homescreen_id;
-    public static final @IdRes int INSTALL_WEBAPP_ID = R.id.install_webapp_id;
     public static final @IdRes int ADD_TO_HOME_SCREEN__UNIVERSAL_INSTALL__ID =
             R.id.universal_install;
     public static final @IdRes int OPEN_WEBAPK_ID = R.id.open_webapk_id;

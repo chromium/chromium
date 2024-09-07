@@ -131,6 +131,12 @@ void CaptureModeTestApi::SetOnVideoRecordCountdownFinishedCallback(
   controller_->on_countdown_finished_callback_for_test_ = std::move(callback);
 }
 
+void CaptureModeTestApi::SetOnImageCapturedForSearchCallback(
+    base::OnceClosure callback) {
+  controller_->on_image_captured_for_search_callback_for_test_ =
+      std::move(callback);
+}
+
 void CaptureModeTestApi::SetAudioRecordingMode(AudioRecordingMode mode) {
   DCHECK(!controller_->is_recording_in_progress());
   controller_->audio_recording_mode_ = mode;

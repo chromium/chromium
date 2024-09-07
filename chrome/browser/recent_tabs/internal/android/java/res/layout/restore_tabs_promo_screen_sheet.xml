@@ -123,7 +123,7 @@ found in the LICENSE file.
             <!-- Action buttons section -->
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/restore_tabs_button_open_tabs"
-                style="@style/FilledButton.Flat"
+                style="@style/FilledButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

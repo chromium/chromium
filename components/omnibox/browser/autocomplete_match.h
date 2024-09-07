@@ -26,7 +26,6 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/suggestion_answer.h"
-#include "components/query_tiles/tile.h"
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -948,9 +947,6 @@ struct AutocompleteMatch {
   // duplicates are deleted as well. This is also used for re-duping Search
   // Entity vs. plain Search suggestions.
   std::vector<AutocompleteMatch> duplicate_matches;
-
-  // A list of query tiles to be shown as part of this match.
-  std::vector<query_tiles::Tile> query_tiles;
 
   // A list of navsuggest tiles to be shown as part of this match.
   // This object is only populated for TILE_NAVSUGGEST AutocompleteMatches.

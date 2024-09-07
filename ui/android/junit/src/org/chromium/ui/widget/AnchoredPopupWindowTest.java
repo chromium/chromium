@@ -38,6 +38,7 @@ import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.R;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.AnchoredPopupWindow.PopupSpec;
 import org.chromium.ui.widget.AnchoredPopupWindow.VerticalOrientation;
@@ -550,7 +551,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_PreferredHorizontalOrientation() {
+    public void testCalcPopupRect_PreferredHorizontalOrientationCenter() {
         mPreferredHorizontalOrientation = HorizontalOrientation.CENTER;
 
         // E.left = (A.left + A.right) / 2 - w / 2 = (300 + 300) / 2 - 150 / 2 = 225
@@ -579,6 +580,31 @@ public final class AnchoredPopupWindowTest {
                 "Above and center the anchor rect.",
                 /*anchorRect*/ new Rect(400, 600, 500, 600),
                 /*expectedPopupRect*/ new Rect(375, 300, 525, 600));
+    }
+
+    @Test
+    public void testCalcPopupRect_PreferredHorizontalOrientationLayoutDirection() {
+        mPreferredHorizontalOrientation = HorizontalOrientation.LAYOUT_DIRECTION;
+
+        LocalizationUtils.setRtlForTesting(false);
+        // E.left = A.left + w = 300
+        // E.top = A.bottom = 0
+        // E.right = E.left + w  = 300 + 150 = 450
+        // E.bottom = A.bottom + h = 300
+        doTestAnchoredPopupAtRect(
+                "Right of anchor rect.",
+                /*anchorRect*/ new Rect(300, 0, 300, 0),
+                /*expectedPopupRect*/ new Rect(300, 0, 450, 300));
+
+        LocalizationUtils.setRtlForTesting(true);
+        // E.left = A.left - w = 300 - 150 = 150
+        // E.top = A.bottom = 0
+        // E.right = E.left = 300
+        // E.bottom = A.bottom + h = 300
+        doTestAnchoredPopupAtRect(
+                "Left of anchor rect.",
+                /*anchorRect*/ new Rect(300, 0, 300, 0),
+                /*expectedPopupRect*/ new Rect(150, 0, 300, 300));
     }
 
     @Test

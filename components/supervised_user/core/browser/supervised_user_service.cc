@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+
 #include <memory>
 
 #include "base/check.h"
@@ -21,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
+#include "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -39,7 +41,6 @@ namespace supervised_user {
 
 SupervisedUserService::~SupervisedUserService() {
   DCHECK(!did_init_ || did_shutdown_);
-  url_filter_->RemoveObserver(this);
 }
 
 void SupervisedUserService::Init() {
@@ -62,18 +63,6 @@ void SupervisedUserService::Init() {
   SetActive(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
 }
 
-void SupervisedUserService::SetDelegate(Delegate* delegate) {
-  if (delegate) {
-    // Changing delegates isn't allowed.
-    DCHECK(!delegate_);
-  } else {
-    // If the delegate is removed, deactivate first to give the old delegate a
-    // chance to clean up.
-    SetActive(false);
-  }
-  delegate_ = delegate;
-}
-
 SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
   return url_filter_.get();
 }
@@ -81,14 +70,6 @@ SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
 void SupervisedUserService::SetURLFilterForTesting(
     std::unique_ptr<SupervisedUserURLFilter> test_filter) {
   url_filter_ = std::move(test_filter);
-}
-
-// static
-std::string SupervisedUserService::GetExtensionRequestId(
-    const std::string& extension_id,
-    const base::Version& version) {
-  return base::StringPrintf("%s:%s", extension_id.c_str(),
-                            version.GetString().c_str());
 }
 
 std::string SupervisedUserService::GetCustodianEmailAddress() const {
@@ -160,13 +141,11 @@ SupervisedUserService::SupervisedUserService(
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
-      delegate_(nullptr),
       platform_delegate_(std::move(platform_delegate)),
       can_show_first_time_interstitial_banner_(
           can_show_first_time_interstitial_banner) {
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
       user_prefs, std::move(url_filter_delegate));
-  url_filter_->AddObserver(this);
 }
 
 FirstTimeInterstitialBannerState SupervisedUserService::GetUpdatedBannerState(
@@ -191,10 +170,6 @@ void SupervisedUserService::SetActive(bool active) {
     return;
   }
   active_ = active;
-
-  if (delegate_) {
-    delegate_->SetActive(active_);
-  }
 
   settings_service_->SetActive(active_);
 
@@ -241,6 +216,10 @@ void SupervisedUserService::SetActive(bool active) {
           base::BindRepeating(&SupervisedUserService::OnCustodianInfoChanged,
                               base::Unretained(this)));
     }
+
+    remote_web_approvals_manager_.AddApprovalRequestCreator(
+        std::make_unique<PermissionRequestCreatorImpl>(identity_manager_,
+                                                       url_loader_factory_));
 
     // Initialize the filter.
     OnDefaultFilteringBehaviorChanged();
@@ -364,12 +343,6 @@ void SupervisedUserService::Shutdown() {
     base::RecordAction(UserMetricsAction("ManagedUsers_QuitBrowser"));
   }
   SetActive(false);
-}
-
-void SupervisedUserService::OnSiteListUpdated() {
-  for (SupervisedUserServiceObserver& observer : observer_list_) {
-    observer.OnURLFilterChanged();
-  }
 }
 
 void SupervisedUserService::MarkFirstTimeInterstitialBannerShown() const {

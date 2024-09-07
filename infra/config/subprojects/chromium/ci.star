@@ -142,6 +142,7 @@ luci.gitiles_poller(
         "chromium.gpu.fyi",
         "chromium.swangle",
         "chromium.updater",
+        "chromium.enterprise_companion",
     ],
 ) for name, title in (
     ("main", "{} Main Console".format(settings.project_title)),
@@ -219,6 +220,7 @@ exec("./ci/chromium.chromiumos.star")
 exec("./ci/chromium.clang.star")
 exec("./ci/chromium.coverage.star")
 exec("./ci/chromium.dawn.star")
+exec("./ci/chromium.enterprise_companion.star")
 exec("./ci/chromium.fuchsia.star")
 exec("./ci/chromium.fuchsia.fyi.star")
 exec("./ci/chromium.fuzz.star")

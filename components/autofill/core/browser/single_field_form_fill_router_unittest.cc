@@ -26,14 +26,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::SaveArg;
-
-}  // namespace
 
 class SingleFieldFormFillRouterTest : public testing::Test {
  protected:
@@ -354,4 +351,5 @@ TEST_F(SingleFieldFormFillRouterTest,
       SuggestionType::kIbanEntry);
 }
 
+}  // namespace
 }  // namespace autofill

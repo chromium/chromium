@@ -1361,25 +1361,13 @@ TEST_F(AutofillProfileTest, Compare) {
 // TODO(crbug.com/40275657): Extend this test to cover i18n profiles.
 TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillUseI18nAddressModel,
-       features::kAutofillUseAUAddressModel,
-       features::kAutofillUseBRAddressModel,
-       features::kAutofillUseCAAddressModel,
-       features::kAutofillUseDEAddressModel,
-       features::kAutofillUseFRAddressModel,
-       features::kAutofillUseINAddressModel,
-       features::kAutofillUseITAddressModel,
-       features::kAutofillUseMXAddressModel,
-       features::kAutofillEnableSupportForLandmark,
-       features::kAutofillEnableSupportForBetweenStreets,
-       features::kAutofillEnableSupportForAdminLevel2,
-       features::kAutofillEnableSupportForApartmentNumbers,
-       features::kAutofillEnableSupportForAddressOverflow,
-       features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-       features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-       features::kAutofillEnableDependentLocalityParsing},
-      {});
+  feature_list.InitWithFeatures({features::kAutofillUseAUAddressModel,
+                                 features::kAutofillUseCAAddressModel,
+                                 features::kAutofillUseDEAddressModel,
+                                 features::kAutofillUseFRAddressModel,
+                                 features::kAutofillUseINAddressModel,
+                                 features::kAutofillUseITAddressModel},
+                                {});
   // Those types do store a verification status.
   FieldTypeSet structured_types{
       NAME_FULL,
@@ -1533,12 +1521,6 @@ TEST_F(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
 }
 
 TEST_F(AutofillProfileTest, SetRawInfoWorksForLandmark) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillEnableSupportForLandmark,
-                                 features::kAutofillUseI18nAddressModel,
-                                 features::kAutofillUseMXAddressModel},
-                                {});
-
   AutofillProfile profile(AddressCountryCode("MX"));
 
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
@@ -1546,12 +1528,6 @@ TEST_F(AutofillProfileTest, SetRawInfoWorksForLandmark) {
 }
 
 TEST_F(AutofillProfileTest, SetRawInfoWorksForBetweenStreets) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillEnableSupportForBetweenStreets,
-       features::kAutofillUseI18nAddressModel,
-       features::kAutofillUseMXAddressModel},
-      {});
   AutofillProfile profile(AddressCountryCode("MX"));
 
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");
@@ -1627,10 +1603,12 @@ TEST_F(AutofillProfileTest, HasStructuredData) {
 
 TEST_F(AutofillProfileTest, ConvertToAccountProfile) {
   const AutofillProfile kLocalProfile = test::GetFullProfile();
-  ASSERT_EQ(kLocalProfile.source(), AutofillProfile::Source::kLocalOrSyncable);
+  ASSERT_EQ(kLocalProfile.record_type(),
+            AutofillProfile::RecordType::kLocalOrSyncable);
   const AutofillProfile kAccountProfile =
       kLocalProfile.ConvertToAccountProfile();
-  EXPECT_EQ(kAccountProfile.source(), AutofillProfile::Source::kAccount);
+  EXPECT_EQ(kAccountProfile.record_type(),
+            AutofillProfile::RecordType::kAccount);
   EXPECT_EQ(kAccountProfile.initial_creator_id(),
             AutofillProfile::kInitialCreatorOrModifierChrome);
   EXPECT_EQ(kAccountProfile.last_modifier_id(),
@@ -1641,8 +1619,7 @@ TEST_F(AutofillProfileTest, ConvertToAccountProfile) {
 
 TEST_F(AutofillProfileTest, RemoveInaccessibleProfileValues) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                 features::kAutofillUseDEAddressModel,
+  feature_list.InitWithFeatures({features::kAutofillUseDEAddressModel,
                                  features::kAutofillUseINAddressModel},
                                 {});
   // Returns true if at least one field was removed.

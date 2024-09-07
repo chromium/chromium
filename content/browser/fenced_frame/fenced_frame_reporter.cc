@@ -216,7 +216,7 @@ FencedFrameReporter::PendingEvent::PendingEvent(
     const DestinationVariant& event,
     const url::Origin& request_initiator,
     std::optional<AttributionReportingData> attribution_reporting_data,
-    int initiator_frame_tree_node_id)
+    FrameTreeNodeId initiator_frame_tree_node_id)
     : event(event),
       request_initiator(request_initiator),
       attribution_reporting_data(std::move(attribution_reporting_data)),
@@ -381,7 +381,7 @@ bool FencedFrameReporter::SendReport(
     RenderFrameHostImpl* request_initiator_frame,
     std::string& error_message,
     blink::mojom::ConsoleMessageLevel& console_message_level,
-    int initiator_frame_tree_node_id,
+    FrameTreeNodeId initiator_frame_tree_node_id,
     std::optional<int64_t> navigation_id,
     std::optional<url::Origin> ad_root_origin) {
   DCHECK(request_initiator_frame);
@@ -478,7 +478,7 @@ bool FencedFrameReporter::SendReportInternal(
     blink::FencedFrame::ReportingDestination reporting_destination,
     const url::Origin& request_initiator,
     const std::optional<AttributionReportingData>& attribution_reporting_data,
-    int initiator_frame_tree_node_id,
+    FrameTreeNodeId initiator_frame_tree_node_id,
     std::string& error_message,
     blink::mojom::ConsoleMessageLevel& console_message_level,
     const std::string& devtools_request_id) {
@@ -775,7 +775,7 @@ bool FencedFrameReporter::SendReportInternal(
                    attribution_data_host_manager,
                BeaconId beacon_id,
                std::unique_ptr<network::SimpleURLLoader> loader,
-               int initiator_frame_tree_node_id,
+               FrameTreeNodeId initiator_frame_tree_node_id,
                std::string devtools_request_id,
                scoped_refptr<net::HttpResponseHeaders> headers) {
               if (attribution_data_host_manager) {
@@ -794,9 +794,8 @@ bool FencedFrameReporter::SendReportInternal(
                                                    headers.get());
             },
             event_variant, attribution_data_host_manager->AsWeakPtr(),
-            attribution_reporting_data->beacon_id,
-            std::move(simple_url_loader), initiator_frame_tree_node_id,
-            devtools_request_id));
+            attribution_reporting_data->beacon_id, std::move(simple_url_loader),
+            initiator_frame_tree_node_id, devtools_request_id));
   } else {
     // Send out the reporting beacon.
     simple_url_loader_ptr->DownloadHeadersOnly(
@@ -804,7 +803,7 @@ bool FencedFrameReporter::SendReportInternal(
         base::BindOnce(
             [](DestinationVariant event_variant,
                std::unique_ptr<network::SimpleURLLoader> loader,
-               int initiator_frame_tree_node_id,
+               FrameTreeNodeId initiator_frame_tree_node_id,
                std::string devtools_request_id,
                scoped_refptr<net::HttpResponseHeaders> headers) {
               // Set up DevTools integration for the response.

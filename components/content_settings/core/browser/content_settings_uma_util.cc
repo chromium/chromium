@@ -143,6 +143,8 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO, 125},
     {ContentSettingsType::JAVASCRIPT_OPTIMIZER, 126},
     {ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL, 127},
+    {ContentSettingsType::HAND_TRACKING, 128},
+    {ContentSettingsType::WEB_APP_INSTALLATION, 129},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

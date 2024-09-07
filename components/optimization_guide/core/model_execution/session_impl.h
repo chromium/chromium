@@ -154,6 +154,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void GetSizeInTokens(
       const std::string& text,
       OptimizationGuideModelSizeInTokenCallback callback) override;
+  const SamplingParams GetSamplingParams() const override;
 
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;

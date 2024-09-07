@@ -69,10 +69,6 @@ def validate_property(prop, props_by_name):
                 subprop = props_by_name[subprop_name]
                 assert subprop.supports_incremental_style, \
                     '%s must be incrementally applicable when its shorthand %s is' % (subprop_name, name)
-    assert not prop.valid_for_formatted_text or prop.is_longhand, \
-        'Only longhands can be valid_for_formatted_text [%s]' % name
-    assert not prop.valid_for_formatted_text_run or prop.is_longhand, \
-        'Only longhands can be valid_for_formatted_text_run [%s]' % name
     if prop.alias_for:
         assert not prop.is_internal, \
             'Internal aliases not supported [%s]' % name

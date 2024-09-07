@@ -12,16 +12,19 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/types/expected.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
 class AggregatableTriggerConfig;
 class AggregationKeys;
+class AttributionScopesData;
 class EventReportWindows;
 class FilterData;
 class MaxEventLevelReports;
@@ -110,6 +113,13 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t>,
 
 std::optional<AttributionReport::NullAggregatableData>
     DeserializeNullAggregatableReportMetadata(base::span<const uint8_t>);
+
+std::string SerializeAttributionScopesData(
+    const attribution_reporting::AttributionScopesData&);
+
+base::expected<std::optional<attribution_reporting::AttributionScopesData>,
+               absl::monostate>
+DeserializeAttributionScopesData(sql::Statement&, int col);
 
 }  // namespace content
 

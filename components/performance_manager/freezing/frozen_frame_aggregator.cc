@@ -39,11 +39,23 @@ void FrozenFrameAggregator::OnBeforeFrameNodeRemoved(
   AddOrRemoveFrame(FrameNodeImpl::FromNode(frame_node), -1);
 }
 
-void FrozenFrameAggregator::OnIsCurrentChanged(const FrameNode* frame_node) {
-  auto* frame_impl = FrameNodeImpl::FromNode(frame_node);
-  int32_t current_frame_delta = frame_impl->IsCurrent() ? 1 : -1;
-  int32_t frozen_frame_delta = IsFrozen(frame_impl) ? current_frame_delta : 0;
-  UpdateFrameCounts(frame_impl, current_frame_delta, frozen_frame_delta);
+void FrozenFrameAggregator::OnCurrentFrameChanged(
+    const FrameNode* previous_frame_node,
+    const FrameNode* current_frame_node) {
+  if (previous_frame_node) {
+    auto* frame_impl = FrameNodeImpl::FromNode(previous_frame_node);
+    CHECK(!frame_impl->IsCurrent());
+    int32_t current_frame_delta = -1;
+    int32_t frozen_frame_delta = IsFrozen(frame_impl) ? -1 : 0;
+    UpdateFrameCounts(frame_impl, current_frame_delta, frozen_frame_delta);
+  }
+  if (current_frame_node) {
+    auto* frame_impl = FrameNodeImpl::FromNode(current_frame_node);
+    CHECK(frame_impl->IsCurrent());
+    int32_t current_frame_delta = 1;
+    int32_t frozen_frame_delta = IsFrozen(frame_impl) ? 1 : 0;
+    UpdateFrameCounts(frame_impl, current_frame_delta, frozen_frame_delta);
+  }
 }
 
 void FrozenFrameAggregator::OnFrameLifecycleStateChanged(

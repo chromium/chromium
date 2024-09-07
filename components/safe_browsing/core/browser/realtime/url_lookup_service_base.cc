@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 
+#include <memory>
+
 #include "base/base64url.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -13,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -623,6 +626,13 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   std::string browser_dm_token = GetBrowserDMTokenString();
   if (!browser_dm_token.empty()) {
     request->set_browser_dm_token(std::move(browser_dm_token));
+  }
+
+  std::unique_ptr<enterprise_connectors::ClientMetadata> client_metadata =
+      GetClientMetadata();
+
+  if (client_metadata) {
+    *request->mutable_client_reporting_metadata() = std::move(*client_metadata);
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();

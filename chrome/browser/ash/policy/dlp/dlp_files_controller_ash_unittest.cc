@@ -1161,28 +1161,22 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
 
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _, _))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(dst_url.spec()),
                                testing::SetArgPointee<5>(kRuleMetadata1),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<4>(dst_url.spec()),
                                testing::SetArgPointee<5>(kRuleMetadata2),
                                testing::Return(DlpRulesManager::Level::kAllow)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(dst_url.spec()),
                                testing::SetArgPointee<5>(kRuleMetadata1),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<4>(dst_url.spec()),
                                testing::SetArgPointee<5>(kRuleMetadata2),
                                testing::Return(DlpRulesManager::Level::kAllow)))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(dst_url.spec()),
                                testing::SetArgPointee<5>(kRuleMetadata1),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                         testing::SetArgPointee<4>(dst_url.spec()),
                          testing::SetArgPointee<5>(kRuleMetadata2),
                          testing::Return(DlpRulesManager::Level::kAllow)));
 
@@ -1278,12 +1272,10 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnMixedCalls) {
 
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _, _))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(dst_url.spec()),
                                testing::SetArgPointee<5>(kRuleMetadata1),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                         testing::SetArgPointee<4>(dst_url.spec()),
                          testing::SetArgPointee<5>(kRuleMetadata2),
                          testing::Return(DlpRulesManager::Level::kAllow)));
 
@@ -1331,12 +1323,10 @@ TEST_F(DlpFilesControllerAshTest, DoNotReportOnSystemApps) {
 
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _, _))
       .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleSourceUrl1),
-                               testing::SetArgPointee<4>(kFileManagerUrl),
                                testing::SetArgPointee<5>(kRuleMetadata1),
                                testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<3>(kExampleSourceUrl1),
-                         testing::SetArgPointee<4>(kImageLoaderUrl),
                          testing::SetArgPointee<5>(kRuleMetadata1),
                          testing::Return(DlpRulesManager::Level::kBlock)));
 
@@ -1377,7 +1367,6 @@ TEST_F(DlpFilesControllerAshTest, BlockWarningFilesOnSystemApps) {
       .Times(2)
       .WillRepeatedly(
           testing::DoAll(testing::SetArgPointee<3>(kExampleSourceUrl1),
-                         testing::SetArgPointee<4>(kFileManagerUrl),
                          testing::SetArgPointee<5>(kRuleMetadata1),
                          testing::Return(DlpRulesManager::Level::kWarn)));
 
@@ -1653,17 +1642,14 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _, _))
       .WillOnce(testing::DoAll(
           testing::SetArgPointee<3>(transferred_files[0].source_url.spec()),
-          testing::SetArgPointee<4>(destination_url),
           testing::SetArgPointee<5>(kRuleMetadata1),
           testing::Return(levels[0])))
       .WillOnce(testing::DoAll(
           testing::SetArgPointee<3>(transferred_files[1].source_url.spec()),
-          testing::SetArgPointee<4>(destination_url),
           testing::SetArgPointee<5>(kRuleMetadata2),
           testing::Return(levels[1])))
       .WillOnce(testing::DoAll(
           testing::SetArgPointee<3>(transferred_files[2].source_url.spec()),
-          testing::SetArgPointee<4>(destination_url),
           testing::SetArgPointee<5>(kRuleMetadata3),
           testing::Return(levels[2])));
 

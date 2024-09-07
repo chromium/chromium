@@ -294,6 +294,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
                 kFingerprintFailedAnimationNumFrames),
             AnimatedRoundedImageView::Playback::kSingle);
         break;
+      case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
+        NOTREACHED();
     }
   }
 
@@ -311,6 +313,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
         }
         return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PASSWORD_REQUIRED;
       case FingerprintState::UNAVAILABLE:
+      case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
         NOTREACHED();
     }
   }

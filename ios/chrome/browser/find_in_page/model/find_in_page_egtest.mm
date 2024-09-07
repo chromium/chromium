@@ -192,6 +192,12 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 // Tests that text can be copied from the web page and pasted into the FIP input
 // field and that the results UI updates accordingly.
 - (void)testFindInPageCopyPaste {
+  // TODO(crbug.com/360362288): Flaky on iOS 18 simulators.
+#if TARGET_OS_SIMULATOR
+  if (@available(iOS 18, *)) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulators.");
+  }
+#endif
   [_helper helperTestFindInPageCopyPaste];
 }
 

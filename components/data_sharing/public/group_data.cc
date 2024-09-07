@@ -51,6 +51,27 @@ GroupData& GroupData::operator=(GroupData&&) = default;
 
 GroupData::~GroupData() = default;
 
+SharedEntity::SharedEntity() = default;
+
+SharedEntity::SharedEntity(const SharedEntity&) = default;
+SharedEntity& SharedEntity::operator=(const SharedEntity&) = default;
+
+SharedEntity::SharedEntity(SharedEntity&&) = default;
+SharedEntity& SharedEntity::operator=(SharedEntity&&) = default;
+
+SharedEntity::~SharedEntity() = default;
+
+SharedDataPreview::SharedDataPreview() = default;
+
+SharedDataPreview::SharedDataPreview(const SharedDataPreview&) = default;
+SharedDataPreview& SharedDataPreview::operator=(const SharedDataPreview&) =
+    default;
+
+SharedDataPreview::SharedDataPreview(SharedDataPreview&&) = default;
+SharedDataPreview& SharedDataPreview::operator=(SharedDataPreview&&) = default;
+
+SharedDataPreview::~SharedDataPreview() = default;
+
 bool operator<(const GroupData& lhs, const GroupData& rhs) {
   return lhs.group_token.group_id < rhs.group_token.group_id;
 }

@@ -38,6 +38,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/insets.h"
@@ -637,16 +638,17 @@ IntentPickerBubbleView::IntentPickerBubbleView(
       bubble_type_(bubble_type),
       initiating_origin_(initiating_origin) {
   SetButtons(show_stay_in_chrome_
-                 ? (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL)
-                 : ui::DIALOG_BUTTON_OK);
+                 ? static_cast<int>(ui::mojom::DialogButton::kOk) |
+                       static_cast<int>(ui::mojom::DialogButton::kCancel)
+                 : static_cast<int>(ui::mojom::DialogButton::kOk));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(
           bubble_type_ == BubbleType::kClickToCall
               ? IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_CALL_BUTTON_LABEL
               : IDS_INTENT_PICKER_BUBBLE_VIEW_OPEN));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_STAY_IN_CHROME));
   SetAcceptCallback(base::BindOnce(&IntentPickerBubbleView::OnDialogAccepted,
                                    base::Unretained(this)));
@@ -678,7 +680,7 @@ void IntentPickerBubbleView::OnWidgetDestroying(views::Widget* widget) {
 
 void IntentPickerBubbleView::OnAppSelected(std::optional<size_t> index,
                                            bool accepted) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, index.has_value());
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, index.has_value());
 
   if (index.has_value()) {
     UpdateCheckboxState(index.value());

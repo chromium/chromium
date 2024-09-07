@@ -135,9 +135,25 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     switch (e.detail.key) {
       case 'left':
         selector.selectPrevious();
+        // If the previous item is hidden after pressing 'left' key at the first
+        // option or at Expand button, we should navigate to the last visible
+        // chip option.
+        if (this.isHiddenOptionSelected_()) {
+          selector.selectIndex(this.getLastVisibleChipOptionIndex_());
+        }
         break;
       case 'right':
         selector.selectNext();
+        if (this.isHiddenExpandButtonSelected_()) {
+          // If the options are fully expanded and the previous selector is at
+          // last chip option, pressing 'right' should navigate to the first
+          // chip option.
+          selector.selectIndex(0);
+        } else if (this.isHiddenChipOptionSelected_()) {
+          // If the next option is hidden, select and focus the expand button.
+          const expandButton = selector.querySelector('#expandButton');
+          selector.selectIndex(selector.indexOf(expandButton!));
+        }
         break;
       case 'esc':
         this.dispatchEvent(new SeaPenOptionEscapeEvent());
@@ -151,11 +167,6 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     }
     // Add focus state for new button.
     if (this.ironSelectedOption_) {
-      // if the next option is hidden, select and focus the expand button.
-      if (this.ironSelectedOption_.classList.contains('hidden')) {
-        const expandButton = selector.querySelector('#expandButton');
-        selector.selectIndex(selector.indexOf(expandButton!));
-      }
       this.ironSelectedOption_.setAttribute('tabindex', '0');
       this.ironSelectedOption_.focus();
     }
@@ -177,12 +188,32 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     event.stopPropagation();
   }
 
+  private isHiddenOptionSelected_() {
+    return this.ironSelectedOption_.classList.contains('hidden');
+  }
+
+  private isHiddenExpandButtonSelected_() {
+    return this.ironSelectedOption_?.id === 'expandButton' &&
+        this.isHiddenOptionSelected_();
+  }
+
+  private isHiddenChipOptionSelected_() {
+    return this.ironSelectedOption_.classList.contains('option') &&
+        this.isHiddenOptionSelected_();
+  }
+
   private isSelected_(
       option: SeaPenOption, selectedChip: ChipToken|null,
       selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>): boolean {
     return !!selectedOptions && !!selectedChip &&
         selectedOptions.has(selectedChip.id) &&
         option === selectedOptions.get(selectedChip.id);
+  }
+
+  private getLastVisibleChipOptionIndex_(): number {
+    const options = this.shadowRoot!.querySelectorAll<CrButtonElement>(
+        '.option:not(.hidden)');
+    return options.length > 0 ? options.length - 1 : 0;
   }
 
   private getOptionTabIndex_(

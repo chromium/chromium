@@ -67,6 +67,10 @@ class BASE_EXPORT HistogramSnapshotManager final {
   void PrepareDelta(HistogramBase* histogram);
   void PrepareFinalDelta(const HistogramBase* histogram);
 
+  // Used to avoid a dangling pointer `histogram_flattener_` if the referenced
+  // `HistogramFlattener` is destroyed first.
+  void ResetFlattener() { histogram_flattener_ = nullptr; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HistogramSnapshotManagerTest, CheckMerge);
 
@@ -91,7 +95,7 @@ class BASE_EXPORT HistogramSnapshotManager final {
 
   // |histogram_flattener_| handles the logistics of recording the histogram
   // deltas.
-  const raw_ptr<HistogramFlattener> histogram_flattener_;  // Weak.
+  raw_ptr<HistogramFlattener> histogram_flattener_;  // Weak.
 };
 
 }  // namespace base

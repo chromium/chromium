@@ -76,24 +76,6 @@
 #define PA_MUSTTAIL
 #endif
 
-// Specify memory alignment for structs, classes, etc.
-// Use like:
-//   class PA_ALIGNAS(16) MyClass { ... }
-//   PA_ALIGNAS(16) int array[4];
-//
-// In most places you can use the C++11 keyword "alignas", which is preferred.
-//
-// Historically, compilers had trouble mixing __attribute__((...)) syntax with
-// alignas(...) syntax. However, at least Clang is very accepting nowadays. It
-// may be that this macro can be removed entirely.
-#if defined(__clang__)
-#define PA_ALIGNAS(byte_alignment) alignas(byte_alignment)
-#elif PA_BUILDFLAG(PA_COMPILER_MSVC)
-#define PA_ALIGNAS(byte_alignment) __declspec(align(byte_alignment))
-#elif PA_BUILDFLAG(PA_COMPILER_GCC) && PA_HAS_ATTRIBUTE(aligned)
-#define PA_ALIGNAS(byte_alignment) __attribute__((aligned(byte_alignment)))
-#endif
-
 // In case the compiler supports it PA_NO_UNIQUE_ADDRESS evaluates to the C++20
 // attribute [[no_unique_address]]. This allows annotating data members so that
 // they need not have an address distinct from all other non-static data members
@@ -149,47 +131,12 @@
 #define PA_MSAN_UNPOISON(p, size)
 #endif  // MEMORY_SANITIZER
 
-// Macro for hinting that an expression is likely to be false.
-#if !defined(PA_UNLIKELY)
-#if PA_BUILDFLAG(PA_COMPILER_GCC) || defined(__clang__)
-#define PA_UNLIKELY(x) __builtin_expect(!!(x), 0)
-#else
-#define PA_UNLIKELY(x) (x)
-#endif  // PA_BUILDFLAG(PA_COMPILER_GCC)
-#endif  // !defined(PA_UNLIKELY)
-
-#if !defined(PA_LIKELY)
-#if PA_BUILDFLAG(PA_COMPILER_GCC) || defined(__clang__)
-#define PA_LIKELY(x) __builtin_expect(!!(x), 1)
-#else
-#define PA_LIKELY(x) (x)
-#endif  // PA_BUILDFLAG(PA_COMPILER_GCC)
-#endif  // !defined(PA_LIKELY)
-
 // Compiler feature-detection.
 // clang.llvm.org/docs/LanguageExtensions.html#has-feature-and-has-extension
 #if defined(__has_feature)
 #define PA_HAS_FEATURE(FEATURE) __has_feature(FEATURE)
 #else
 #define PA_HAS_FEATURE(FEATURE) 0
-#endif
-
-#if !defined(PA_CPU_ARM_NEON)
-#if defined(__arm__)
-#if !defined(__ARMEB__) && !defined(__ARM_EABI__) && !defined(__EABI__) && \
-    !defined(__VFP_FP__) && !defined(_WIN32_WCE) && !defined(ANDROID)
-#error Chromium does not support middle endian architecture
-#endif
-#if defined(__ARM_NEON__)
-#define PA_CPU_ARM_NEON 1
-#endif
-#endif  // defined(__arm__)
-#endif  // !defined(CPU_ARM_NEON)
-
-#if !defined(PA_HAVE_MIPS_MSA_INTRINSICS)
-#if defined(__mips_msa) && defined(__mips_isa_rev) && (__mips_isa_rev >= 5)
-#define PA_HAVE_MIPS_MSA_INTRINSICS 1
-#endif
 #endif
 
 // The ANALYZER_ASSUME_TRUE(bool arg) macro adds compiler-specific hints

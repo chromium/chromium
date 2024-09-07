@@ -134,8 +134,8 @@ TEST_F(LegacyDownloadManagerViewControllerTest, Failed) {
   view_controller_.fileName = @"file.txt";
   view_controller_.countOfBytesReceived = 1024;
 
-  EXPECT_NSEQ(@"Couldn't Download", view_controller_.statusLabel.text);
-  EXPECT_NSEQ(@"Try Again", [view_controller_.actionButton
+  EXPECT_NSEQ(@"Couldn't download", view_controller_.statusLabel.text);
+  EXPECT_NSEQ(@"Try again", [view_controller_.actionButton
                                 titleForState:UIControlStateNormal]);
   EXPECT_OCMOCK_VERIFY(state_symbol_partial_mock_);
   EXPECT_TRUE(view_controller_.progressView.hidden);

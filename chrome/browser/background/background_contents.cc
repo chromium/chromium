@@ -108,7 +108,7 @@ void BackgroundContents::PrimaryPageChanged(content::Page& page) {
 }
 
 // Forward requests to add a new WebContents to our delegate.
-void BackgroundContents::AddNewContents(
+WebContents* BackgroundContents::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -118,6 +118,7 @@ void BackgroundContents::AddNewContents(
     bool* was_blocked) {
   delegate_->AddWebContents(std::move(new_contents), target_url, disposition,
                             window_features, was_blocked);
+  return nullptr;
 }
 
 bool BackgroundContents::IsNeverComposited(content::WebContents* web_contents) {

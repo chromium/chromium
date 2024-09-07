@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
 
+@protocol BadgeViewVisibilityDelegate;
+@protocol ContextualPanelEntrypointVisibilityDelegate;
+@class LocationBarBadgesContainerView;
+
 // A color scheme used for the steady view elements.
 @interface LocationBarSteadyViewColorScheme : NSObject
 
@@ -39,10 +43,6 @@
 // Sets the location label's text and styles it as if it were placeholder text.
 - (void)setLocationLabelPlaceholderText:(NSString*)string;
 
-// Displays the location badge view if `display` is YES, hides it if
-// `display` is NO. Will animate change if `animated` is YES.
-- (void)displayBadgeView:(BOOL)display animated:(BOOL)animated;
-
 // Reorients the badgeView's position depending on FullScreen mode.
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed;
 
@@ -61,21 +61,35 @@
 // display a label, momentarily using significant portion of the location bar.
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
 
+// Sets the view displaying badges in the leading corner of the view.
+- (void)setBadgeView:(UIView*)badgeView;
+
+// Sets the view displaying the Contextual Panel's entrypoint.
+- (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
+
+// Returns the contextual panel entrypoint visibility delegate;
+- (id<ContextualPanelEntrypointVisibilityDelegate>)
+    contextualEntrypointVisibilityDelegate;
+
+// Returns the badge view visibility delegate.
+- (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;
+
+// Set the placeholder view when there is no badge to display.
+- (void)setPlaceholderView:(UIView*)placeholderView;
+
 // The tappable button representing the location bar.
 @property(nonatomic, strong) UIButton* locationButton;
 // The label displaying the current location URL.
 @property(nonatomic, strong) UILabel* locationLabel;
-// The view displaying badges in the leading corner of the view.
-// TODO(crbug.com/40639170): Pass into init as parameter.
-@property(nonatomic, strong) UIView* badgeView;
-// The view displaying the Contextual Panel's entrypoint.
-@property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 // The button displayed in the trailing corner of the view, i.e. share button.
 @property(nonatomic, strong) CustomHighlightableButton* trailingButton;
 // The string that describes the current security level. Used for a11y.
 @property(nonatomic, copy) NSString* securityLevelAccessibilityString;
 // Current in-use color scheme.
 @property(nonatomic, strong) LocationBarSteadyViewColorScheme* colorScheme;
+// The view containing the infobar badge and contextual panel entrypoint.
+@property(nonatomic, strong)
+    LocationBarBadgesContainerView* badgesContainerView;
 
 @end
 

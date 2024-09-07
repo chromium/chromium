@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/label.h"
@@ -83,12 +84,12 @@ ExternalProtocolDialog::ExternalProtocolDialog(
       program_name_(program_name),
       initiating_origin_(initiating_origin),
       initiator_document_(std::move(initiator_document)) {
-  SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringFUTF16(
                      IDS_EXTERNAL_PROTOCOL_OK_BUTTON_TEXT, program_name_));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_CANCEL_BUTTON_TEXT));
 
   SetAcceptCallback(base::BindOnce(&ExternalProtocolDialog::OnDialogAccepted,

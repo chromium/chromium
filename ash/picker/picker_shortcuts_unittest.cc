@@ -35,7 +35,7 @@ TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithSearchKey) {
       keyboard, std::move(keyboard_info));
 
   EXPECT_EQ(GetPickerShortcutForCapsLock(),
-            PickerSearchResult::CapsLockData::Shortcut::kAltSearch);
+            PickerCapsLockResult::Shortcut::kAltSearch);
 }
 
 TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithLauncherKey) {
@@ -51,7 +51,7 @@ TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithLauncherKey) {
       keyboard, std::move(keyboard_info));
 
   EXPECT_EQ(GetPickerShortcutForCapsLock(),
-            PickerSearchResult::CapsLockData::Shortcut::kAltLauncher);
+            PickerCapsLockResult::Shortcut::kAltLauncher);
 }
 
 TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithFnKey) {
@@ -74,7 +74,7 @@ TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithFnKey) {
       keyboard, std::move(keyboard_info));
 
   EXPECT_EQ(GetPickerShortcutForCapsLock(),
-            PickerSearchResult::CapsLockData::Shortcut::kFnRightAlt);
+            PickerCapsLockResult::Shortcut::kFnRightAlt);
 }
 
 }  // namespace

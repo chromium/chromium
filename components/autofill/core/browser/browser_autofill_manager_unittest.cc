@@ -118,7 +118,6 @@
 #include "url/url_canon.h"
 
 namespace autofill {
-
 namespace {
 
 using ::base::Bucket;
@@ -437,22 +436,19 @@ const TestCardFillData kElvisCardFillData("Elvis Presley",
                                           /*use_month_type*/ false);
 
 TestAddressFillData GetElvisAddressFillData() {
-  return {
-      "Elvis",
-      "Aaron",
-      "Presley",
-      "3734 Elvis Presley Blvd.",
-      "Apt. 10",
-      "Memphis",
-      "Tennessee",
-      "38116",
-      "United States",
-      "US",
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
-          ? "2345678901"
-          : "12345678901",
-      "theking@gmail.com",
-      "RCA"};
+  return {"Elvis",
+          "Aaron",
+          "Presley",
+          "3734 Elvis Presley Blvd.",
+          "Apt. 10",
+          "Memphis",
+          "Tennessee",
+          "38116",
+          "United States",
+          "US",
+          "2345678901",
+          "theking@gmail.com",
+          "RCA"};
 }
 
 // Matches a FillFieldLogEvent by equality of fields. Use FillEventId(-1) if
@@ -556,7 +552,7 @@ class MockAutofillClient : public TestAutofillClient {
               (),
               (override));
   MOCK_METHOD(void, NotifyAutofillManualFallbackUsed, (), (override));
-  MOCK_METHOD(AutofillPredictionImprovementsDelegate*,
+  MOCK_METHOD(MockAutofillPredictionImprovementsDelegate*,
               GetAutofillPredictionImprovementsDelegate,
               (),
               (override));
@@ -807,6 +803,8 @@ class MockAutofillDriver : public TestAutofillDriver {
 };
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class BrowserAutofillManagerTest : public testing::Test {
  public:
@@ -871,7 +869,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     // Mandatory re-auth is required for credit card autofill on automotive, so
     // the authenticator response needs to be properly mocked.
 #if BUILDFLAG(IS_ANDROID)
-    autofill_client_.SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
+    payments_client().SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
 #endif
   }
 
@@ -912,8 +910,8 @@ class BrowserAutofillManagerTest : public testing::Test {
       const FormData& form,
       size_t field_index = 0,
       SuggestionType type = SuggestionType::kAddressEntry) {
-    browser_autofill_manager_->DidShowSuggestions(
-        std::vector<SuggestionType>({type}), form, form.fields()[field_index]);
+    browser_autofill_manager_->DidShowSuggestions({type}, form,
+                                                  form.fields()[field_index]);
   }
 
   void TryToShowTouchToFill(const FormData& form,
@@ -1569,7 +1567,7 @@ TEST_F(BrowserAutofillManagerTest,
     browser_autofill_manager_->AddSeenForm(form, {NAME_FIRST, NAME_LAST});
     GetAutofillSuggestions(form, field);
     // This ensures that the field has `did_trigger_suggestion_` set.
-    external_delegate()->OnSuggestionsShown();
+    external_delegate()->OnSuggestionsShown(external_delegate()->suggestions());
     // Submit the form without calling  DidAcceptSuggestions, meaning the user
     // ignored the suggestions given by Autofill.
     FormSubmitted(form);
@@ -1730,7 +1728,7 @@ TEST_F(BrowserAutofillManagerTest,
     // generated for it.
     external_delegate()->CheckSuggestionCount(
         field.global_id(), field.label() == u"Country" ? 5 : 4);
-    EXPECT_TRUE(base::ranges::all_of(
+    EXPECT_TRUE(std::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
           // The field is classified, therefore the suggestion can be accepted.
           return suggestion.type == SuggestionType::kAddressEntry
@@ -1743,7 +1741,7 @@ TEST_F(BrowserAutofillManagerTest,
     GetAutofillSuggestions(
         form, field, AutofillSuggestionTriggerSource::kManualFallbackPayments);
     external_delegate()->CheckSuggestionCount(field.global_id(), 5);
-    EXPECT_TRUE(base::ranges::all_of(
+    EXPECT_TRUE(std::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
           // The field is not of type address, therefore the suggestion cannot
           // be acceptable.
@@ -2459,15 +2457,16 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   field.set_value(u"5255-66__-____-____");
   GetAutofillSuggestions(form, field);
 
-  // Test that we sent the right value to the external delegate.
   external_delegate()->CheckSuggestions(
-      field.global_id(), {GetCardSuggestion(kMasterCard), CreateSeparator(),
-                          CreateManageCreditCardsSuggestion(
-                              /*with_gpay_logo=*/false)});
+      field.global_id(),
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       GetCardSuggestion(kMasterCard), CreateSeparator(),
+       CreateManageCreditCardsSuggestion(
+           /*with_gpay_logo=*/false)});
 }
 
-// Test that we return only matching credit card profile suggestions when the
-// selected form field has been partially filled out.
+// Test that we still return all credit card profile suggestions when the
+// credit card form field has been partially filled out.
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_MatchCharacter) {
   // Set up our form data.
@@ -2483,7 +2482,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       cc_number_field.global_id(),
-      {GetCardSuggestion(kVisaCard), CreateSeparator(),
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       CreateSeparator(),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/false)});
 }
@@ -2661,66 +2661,6 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        CreateSeparator(),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/false)});
-}
-
-// Test that we return all credit card suggestions in the case that two cards
-// have the same obfuscated number.
-TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
-       GetCreditCardSuggestions_RepeatedObfuscatedNumber) {
-  // Add a credit card with the same obfuscated number as Elvis's.
-  // |credit_card| will be owned by the mock PersonalDataManager.
-  CreditCard credit_card;
-  test::SetCreditCardInfo(&credit_card, "Elvis Presley",
-                          "5255667890168765",  // Mastercard
-                          "10", "2098", "1");
-  credit_card.set_guid(MakeGuid(7));
-  credit_card.set_use_date(AutofillClock::Now() - base::Days(15));
-  personal_data().payments_data_manager().AddCreditCard(credit_card);
-
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  FormsSeen({form});
-
-  GetAutofillSuggestions(form, form.fields()[1]);
-
-  // Test that we sent the right values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      form.fields()[1].global_id(),
-      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       GetCardSuggestion(kMasterCard), CreateSeparator(),
-       CreateManageCreditCardsSuggestion(
-           /*with_gpay_logo=*/false)});
-}
-
-// Test that a masked server card is not suggested if more than six digits
-// have been typed in the field.
-TEST_F(BrowserAutofillManagerTest,
-       GetCreditCardSuggestions_MaskedCardWithMoreThan6Digits) {
-  // Add a masked server card.
-  personal_data().test_payments_data_manager().ClearCreditCards();
-
-  CreditCard masked_server_card;
-  test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
-                          "4234567890123456",  // Visa
-                          "04", "2999", "1");
-  masked_server_card.set_guid(MakeGuid(7));
-  masked_server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      masked_server_card);
-  EXPECT_EQ(1U,
-            personal_data().payments_data_manager().GetCreditCards().size());
-
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  FormsSeen({form});
-
-  FormFieldData& field = test_api(form).field(1);
-  field.set_value(u"12345678");
-  GetAutofillSuggestions(form, field);
-
-  external_delegate()->CheckNoSuggestions(field.global_id());
 }
 
 // Test that expired cards are ordered by their ranking score and are always
@@ -4183,11 +4123,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   response_data = FillAutofillFormDataAndGetResults(
       response_data, *response_data.fields().begin(), MakeGuid(1));
 
-  bool default_to_city_and_number =
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber);
   expected_address_fill_data.first = "Elvis";
-  expected_address_fill_data.phone =
-      default_to_city_and_number ? "2345678901" : "12345678901";
+  expected_address_fill_data.phone = "2345678901";
   expected_address_fill_data.email = "theking@gmail.com";
   ExpectFilledForm(response_data, expected_address_fill_data,
                    /*card_fill_data=*/std::nullopt);
@@ -5595,8 +5532,7 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
 }
 
 // Test that suggestions are returned for credit card fields with an
-// unrecognized
-// autocomplete attribute.
+// unrecognized autocomplete attribute.
 TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_UnrecognizedAttribute) {
   // Set up the form data.
@@ -5629,7 +5565,7 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 // Test to verify suggestions appears for forms having credit card number split
-// across fields.
+// across fields. No prefix matching is applied.
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_ForNumberSplitAcrossFields) {
   // Set up our form data with credit card number split across fields.
@@ -5669,7 +5605,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 
   external_delegate()->CheckSuggestions(
       form.fields()[3].global_id(),
-      {GetCardSuggestion(kVisaCard), CreateSeparator(),
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       CreateSeparator(),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/false)});
 }
@@ -6122,8 +6059,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
-      std::vector<SuggestionType>({SuggestionType::kAutocompleteEntry}), form,
-      form.fields().back());
+      {SuggestionType::kAutocompleteEntry}, form, form.fields().back());
   // No Autofill logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms,
@@ -6738,8 +6674,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard)
       .Times(IsCreditCardFidoAuthenticationEnabled() ? 1 : 0);
   browser_autofill_manager_->DidShowSuggestions(
-      std::vector<SuggestionType>({SuggestionType::kCreditCardEntry}), form,
-      form.fields()[0]);
+      {SuggestionType::kCreditCardEntry}, form, form.fields()[0]);
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -6748,9 +6683,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard).Times(0);
-  browser_autofill_manager_->DidShowSuggestions(
-      std::vector<SuggestionType>({SuggestionType::kAddressEntry}), form,
-      form.fields()[0]);
+  browser_autofill_manager_->DidShowSuggestions({SuggestionType::kAddressEntry},
+                                                form, form.fields()[0]);
 }
 
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
@@ -7297,7 +7231,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithPredictionImprovements) {
   AutofillPredictionImprovementsDelegate::FillPredictionsCallback fill_callback;
   EXPECT_CALL(delegate, ExtractImprovedPredictionsForFormFields)
       .WillOnce(
-          [&](const FormData& form,
+          [&](const FormData& form, const FormFieldData& trigger_field,
               AutofillPredictionImprovementsDelegate::FillPredictionsCallback
                   callback) { fill_callback = std::move(callback); });
 
@@ -7307,16 +7241,20 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithPredictionImprovements) {
 
   FormFieldData* field = form.FindFieldByNameForTest(u"firstname");
   ASSERT_TRUE(field);
-  field->set_value(u"John");
 
-  EXPECT_CALL(*autofill_driver_,
-              ApplyFieldAction(autofill::mojom::FieldActionType::kReplaceAll,
-                               autofill::mojom::ActionPersistence::kFill,
-                               field->global_id(), field->value()));
-  fill_callback.Run(autofill::mojom::ActionPersistence::kFill,
-                    autofill::mojom::FieldActionType::kReplaceAll, form, *field,
-                    field->value(),
-                    autofill::SuggestionType::kAutocompleteEntry, std::nullopt);
+  std::vector<FormFieldData> filled_fields;
+  std::vector<FieldGlobalId> filled_global_ids = {field->global_id()};
+
+  EXPECT_CALL(*autofill_driver_, ApplyFormAction)
+      .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
+                      Return(filled_global_ids)));
+  std::move(fill_callback)
+      .Run(autofill::mojom::ActionPersistence::kFill,
+           autofill::FillingProduct::kPredictionImprovements, kAllFieldTypes,
+           {}, form, *field, {{field->global_id(), u"John"}});
+
+  EXPECT_THAT(filled_fields,
+              ElementsAre(Property(&FormFieldData::value, Eq(u"John"))));
 }
 
 // Test param indicates if there is an active screen reader.
@@ -7980,7 +7918,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile = test::GetFullProfile();
   // This is needed to not get an update prompt that would compromise the test.
-  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   test_api(profile.token_quality()).disable_randomization();
   personal_data().address_data_manager().AddProfile(profile);
   const AutofillProfile* pdm_profile =
@@ -7996,7 +7934,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   // Expect that no observations for any of the form's types were collected yet.
   FormStructure* form_structure =
       browser_autofill_manager_->FindCachedFormById(form.global_id());
-  EXPECT_TRUE(base::ranges::all_of(
+  EXPECT_TRUE(std::ranges::all_of(
       *form_structure,
       [&pdm_profile](const std::unique_ptr<AutofillField>& field) {
         return pdm_profile->token_quality()
@@ -8009,7 +7947,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   pdm_profile =
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);
-  EXPECT_TRUE(base::ranges::none_of(
+  EXPECT_TRUE(std::ranges::none_of(
       *form_structure,
       [&pdm_profile](const std::unique_ptr<AutofillField>& field) {
         return pdm_profile->token_quality()
@@ -8285,7 +8223,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       external_delegate()->suggestions(),
       ElementsAre(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress),
                   EqualsSuggestion(SuggestionType::kAutocompleteEntry),
-                  EqualsSuggestion(SuggestionType::kAutocompleteEntry)));
+                  EqualsSuggestion(SuggestionType::kAutocompleteEntry),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManagePlusAddress)));
 }
 
 // Tests that a manage plus address suggestion is not added if there are no plus

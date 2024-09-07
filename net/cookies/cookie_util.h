@@ -50,7 +50,7 @@ enum class StorageAccessResult {
   ACCESS_ALLOWED_3PCD_TRIAL = 5,
   ACCESS_ALLOWED_3PCD_METADATA_GRANT = 6,
   ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT = 7,
-  ACCESS_ALLOWED_CORS_EXCEPTION = 8,
+  // ACCESS_ALLOWED_CORS_EXCEPTION = 8,  // Deprecated
   ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL = 9,
   ACCESS_ALLOWED_SCHEME = 10,
   kMaxValue = ACCESS_ALLOWED_SCHEME,
@@ -164,12 +164,6 @@ NET_EXPORT bool IsDomainMatch(const std::string& domain,
 NET_EXPORT bool IsOnPath(const std::string& cookie_path,
                          const std::string& url_path);
 
-// Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
-// applies to the given cookie |name|. If `check_insensitively` is true then
-// the string comparison will be performed case insensitively.
-CookiePrefix GetCookiePrefix(const std::string& name, bool check_insensitively);
-
-// As above, but infers `check_insensitively` from a Feature state.
 // Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
 // applies to the given cookie |name|.
 CookiePrefix GetCookiePrefix(const std::string& name);

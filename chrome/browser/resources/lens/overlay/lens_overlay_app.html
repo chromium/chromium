@@ -4,10 +4,6 @@
     width: 100%;
   }
 
-  .hidden {
-    display: none;
-  }
-
   #backgroundScrim {
     background-color: rgba(0, 0 ,0, 0.3);
     inset: 0;
@@ -27,13 +23,21 @@
 
   #optionsButtonContainer {
     gap: 12px;
-    inset-block-start: 28px;
-    inset-inline-end: 30px;
+    inset-block-start: 34px;
+    inset-inline-end: 28px;
+  }
+
+  :host([close-button-hidden]) #optionsButtonContainer {
+    inset-inline-end: 22px;
   }
 
   #translateButtonContainer {
-    inset-block-start: 21px;
-    inset-inline-start: 25px;
+    inset-block-start: 28px;
+    inset-inline-end: 148px;
+  }
+
+  :host([close-button-hidden]) #translateButtonContainer {
+    inset-inline-end: 82px;
   }
 
   .action-button {
@@ -125,6 +129,10 @@
     mask-image: url("learn_more.svg");
   }
 
+  :host(:not([is-image-rendered])) lens-selection-overlay {
+    display: none;
+  }
+
   .app-container :not(lens-selection-overlay) {
     transition: opacity 150ms linear;
   }
@@ -173,7 +181,7 @@
     --color-surface-container-highest-dark: [[skColorToHex_(theme.surfaceContainerHighestDark)]];
     --color-selection-element: [[skColorToHex_(theme.selectionElement)]];
     --color-overlay-icon: white;
-    --color-overlay-button-label: white;">
+    --color-overlay-button-label: black;">
   <cr-toast id="copyToast" duration="4000">
     <div>$i18n{copyToastMessage}</div>
     <cr-button on-click="onHideToastClick">
@@ -185,8 +193,6 @@
       on-pointerenter="handlePointerEnterBackgroundScrim"
       on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
   <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
-      screenshot-data-uri="[[screenshotDataUri]]"
-      class$="[[getSelectionOverlayClass(screenshotDataUri)]]"
       on-pointerenter="handlePointerEnterSelectionOverlay"
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>

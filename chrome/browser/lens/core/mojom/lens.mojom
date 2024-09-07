@@ -32,6 +32,11 @@ enum UserAction {
   kLearnMore = 7,
   kSendFeedback = 8,
   kTapRegionSelection = 9,
+  kTranslateButtonEnableAction = 10,
+  kTranslateButtonDisableAction = 11,
+  kTranslateSourceLanguageChanged = 12,
+  kTranslateTargetLanguageChanged = 13,
+  kTranslateTextSelection = 14,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
@@ -74,6 +79,10 @@ interface LensPageHandler {
 
   // Like above, but when dismissed by clicking on the overlay background.
   CloseRequestedByOverlayBackgroundClick();
+
+  // This method is called to notify the C++ coordinator that the overlay has
+  // content that will fill the viewport.
+  NotifyOverlayInitialized();
 
   // When this method is called, the C++ coordinator will add a blur to the
   // tab contents.
@@ -126,6 +135,15 @@ interface LensPageHandler {
                                  int32 selection_start_index,
                                  int32 selection_end_index);
 
+  // When this method is called, the C++ coordinator issues another full image
+  // request with appropriate parameters to return a response with text on the
+  // screenshot translated from `source_language` to `target_language`. This
+  // differs from IssueTranslateSelectionRequest() as this is a request to
+  // translate the entire screenshot, rather than a translation of selected
+  // text.
+  IssueTranslateFullPageRequest(
+      string source_language, string target_language);
+
   // When called, the C++ coordinator closes the lens search bubble. When the
   // user selects text or thumbnail on the WebUI overlay, the search bubble
   // must close.
@@ -138,6 +156,15 @@ interface LensPageHandler {
   // user opens side panel, we cannot guarantee the overlay webcontents will
   // still have explicit user activation. Therefore, we use this method instead.
   CopyText(string text);
+
+  // Copies the given region of the current screenshot to the user's clipboard
+  // using the browser process. Rationale for using this method is the same as
+  // for CopyText.
+  CopyImage(CenterRotatedBox region);
+
+  // Crops the current screenshot to the given region and downloads it as a PNG
+  // file.
+  SaveAsImage(CenterRotatedBox region);
 
   // When called, the C++ coordinator closes the preselection toast bubble.
   ClosePreselectionBubble();
@@ -153,7 +180,7 @@ interface LensPage {
   ScreenshotDataReceived(
       skia.mojom.BitmapMappedFromTrustedProcess screenshot_data);
 
-  // Notifies the WebUI that our results panel is opening.
+  // Notifies the WebUI that our results panel is currently opening.
   NotifyResultsPanelOpened();
 
   // Notifies the WebUI that a close has been triggered and the overlay will

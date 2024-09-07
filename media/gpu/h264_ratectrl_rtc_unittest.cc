@@ -74,7 +74,8 @@ class H264RateCtrlRTCTest : public testing::Test {
   int RunTestSequence(int fps,
                       int start_frame_index,
                       int& last_intra_frame_qp,
-                      int& last_inter_frame_qp) {
+                      int& last_inter_frame_qp,
+                      int& drop_frames) {
     constexpr size_t kFirstIntraFrameIndex = 0;
     std::vector<size_t> frames{12500, 3000, 4000, 3000, 4000,  3000,
                                8000,  6000, 8000, 6000, 10000, 8000,
@@ -100,11 +101,16 @@ class H264RateCtrlRTCTest : public testing::Test {
       frame_params.temporal_layer_id = layer_index;
       frame_params.timestamp = timestamp;
 
-      rate_ctrl_rtc_->ComputeQP(frame_params);
+      H264RateCtrlRTC::FrameDropDecision frame_drop_decision =
+          rate_ctrl_rtc_->ComputeQP(frame_params);
       if (keyframe) {
+        EXPECT_EQ(H264RateCtrlRTC::FrameDropDecision::kOk, frame_drop_decision);
         last_intra_frame_qp = rate_ctrl_rtc_->GetQP();
       } else {
         last_inter_frame_qp = rate_ctrl_rtc_->GetQP();
+        if (frame_drop_decision == H264RateCtrlRTC::FrameDropDecision::kDrop) {
+          drop_frames++;
+        }
       }
       rate_ctrl_rtc_->PostEncodeUpdate(encoded_size, frame_params);
 
@@ -135,6 +141,7 @@ TEST_F(H264RateCtrlRTCTest, RunBasicRateCtrlRTCTest) {
   constexpr int kExpectedInterFrameQP3 = -1;
   constexpr int kExpectedBufferFullness03 = 56;
   constexpr int kExpectedBufferFullness13 = 111;
+  constexpr int kExpectedDropFrames = 4;
 
   std::array<int, 2> buffer_fullness_array = {0, 0};
   base::span<int> buffer_fullness_values(buffer_fullness_array);
@@ -146,8 +153,10 @@ TEST_F(H264RateCtrlRTCTest, RunBasicRateCtrlRTCTest) {
   int start_frame_index = 0;
   int last_intra_frame_qp;
   int last_inter_frame_qp;
-  int last_frame_index = RunTestSequence(
-      kCommonFps, start_frame_index, last_intra_frame_qp, last_inter_frame_qp);
+  int drop_frames = 0;
+  int last_frame_index =
+      RunTestSequence(kCommonFps, start_frame_index, last_intra_frame_qp,
+                      last_inter_frame_qp, drop_frames);
   base::TimeDelta timestamp = base::Microseconds(
       last_frame_index * base::Time::kMicrosecondsPerSecond / kCommonFps);
 
@@ -157,6 +166,7 @@ TEST_F(H264RateCtrlRTCTest, RunBasicRateCtrlRTCTest) {
   rate_ctrl_rtc_->GetBufferFullness(buffer_fullness_values, timestamp);
   EXPECT_EQ(kExpectedBufferFullness02, buffer_fullness_values[kLayer0Index]);
   EXPECT_EQ(kExpectedBufferFullness12, buffer_fullness_values[kLayer1Index]);
+  EXPECT_EQ(0, drop_frames);
 
   rate_control_config_rtc_.layer_settings[0].avg_bitrate = kCommonAvgBitrate;
   rate_control_config_rtc_.layer_settings[0].peak_bitrate = kCommonPeakBitrate;
@@ -168,8 +178,9 @@ TEST_F(H264RateCtrlRTCTest, RunBasicRateCtrlRTCTest) {
   rate_ctrl_rtc_->UpdateRateControl(rate_control_config_rtc_);
 
   start_frame_index = last_frame_index;
-  last_frame_index = RunTestSequence(kCommonFps, start_frame_index,
-                                     last_intra_frame_qp, last_inter_frame_qp);
+  last_frame_index =
+      RunTestSequence(kCommonFps, start_frame_index, last_intra_frame_qp,
+                      last_inter_frame_qp, drop_frames);
   timestamp = base::Microseconds(
       last_frame_index * base::Time::kMicrosecondsPerSecond / kCommonFps);
 
@@ -179,6 +190,7 @@ TEST_F(H264RateCtrlRTCTest, RunBasicRateCtrlRTCTest) {
   rate_ctrl_rtc_->GetBufferFullness(buffer_fullness_values, timestamp);
   EXPECT_EQ(kExpectedBufferFullness03, buffer_fullness_values[kLayer0Index]);
   EXPECT_EQ(kExpectedBufferFullness13, buffer_fullness_values[kLayer1Index]);
+  EXPECT_EQ(kExpectedDropFrames, drop_frames);
 }
 
 }  // namespace

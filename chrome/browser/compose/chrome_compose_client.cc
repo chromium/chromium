@@ -20,6 +20,7 @@
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_text_usage_logger.h"
 #include "chrome/browser/compose/proactive_nudge_tracker.h"
+#include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/common/compose/type_conversions.h"
 #include "chrome/common/pref_names.h"
@@ -253,11 +256,11 @@ void ChromeComposeClient::ShowComposeDialog(
   std::string selected_text =
       base::UTF16ToUTF8(RemoveLastCharIfInvalid(trigger_field.selected_text()));
 
-  // We only want to resume if there is an existing session and the popup was
-  // clicked or the selection is empty. If the context menu is clicked with a
-  // selection we start a new session using the selection.
+  // We only want to resume if there is an existing, unexpired session and the
+  // popup was clicked or the selection is empty. If the context menu is clicked
+  // with a selection we start a new session using the selection.
   bool popup_clicked = ui_entry_point == EntryPoint::kAutofillPopup;
-  bool resume_current_session = HasSession(active_compose_ids_.value().first) &&
+  bool resume_current_session = ActiveFieldHasUnexpiredSession() &&
                                 (popup_clicked || selected_text.empty());
 
   if (resume_current_session) {
@@ -317,6 +320,8 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
           base::UserMetricsAction("Compose.EndedSession.CloseButtonClicked"));
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kCloseButtonPressed);
+      LaunchHatsSurveyForActiveSession(
+          compose::ComposeSessionCloseReason::kCloseButtonPressed);
       break;
     case compose::mojom::CloseReason::kInsertButton:
       base::RecordAction(
@@ -325,6 +330,8 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
           compose::ComposeSessionCloseReason::kInsertedResponse);
       SetMSBBSessionCloseReason(compose::ComposeFreOrMsbbSessionCloseReason::
                                     kAckedOrAcceptedWithInsert);
+      LaunchHatsSurveyForActiveSession(
+          compose::ComposeSessionCloseReason::kInsertedResponse);
       SetFirstRunSessionCloseReason(
           compose::ComposeFreOrMsbbSessionCloseReason::
               kAckedOrAcceptedWithInsert);
@@ -429,29 +436,39 @@ void ChromeComposeClient::CreateNewSession(
     std::string_view selected_text,
     bool popup_clicked) {
   ComposeSession* current_session;
-  bool has_session = HasSession(active_compose_ids_.value().first);
-  if (has_session) {
+  autofill::FieldGlobalId trigger_field_id = active_compose_ids_.value().first;
+  if (HasSession(trigger_field_id)) {
+    current_session = sessions_.at(trigger_field_id).get();
+
     // Set the final state for the existing session which will be closed to
     // start a new one.
-    base::RecordAction(base::UserMetricsAction(
-        "Compose.EndedSession.NewSessionWithSelectedText"));
-    SetSessionCloseReason(
-        compose::ComposeSessionCloseReason::kReplacedWithNewSession);
-    // Set the equivalent close reason if the existing session was in a
-    // consent state.
-    auto it = sessions_.find(active_compose_ids_.value().first);
-    current_session = it->second.get();
+    compose::ComposeFreOrMsbbSessionCloseReason fre_or_msbb_close_reason;
+    if (current_session->HasExpired()) {
+      base::RecordAction(
+          base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
+      SetSessionCloseReason(
+          compose::ComposeSessionCloseReason::kExceededMaxDuration);
+      fre_or_msbb_close_reason =
+          compose::ComposeFreOrMsbbSessionCloseReason::kExceededMaxDuration;
+    } else {
+      base::RecordAction(base::UserMetricsAction(
+          "Compose.EndedSession.NewSessionWithSelectedText"));
+      SetSessionCloseReason(
+          compose::ComposeSessionCloseReason::kReplacedWithNewSession);
+      fre_or_msbb_close_reason =
+          compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession;
+    }
+    // If the existing session has not accepted consent then set the equivalent
+    // close reason here. If consent was accepted in this session the close
+    // reason will remain as |kAckedOrAcceptedWithoutInsert|.
     if (!current_session->get_fre_complete()) {
-      SetFirstRunSessionCloseReason(
-          compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession);
+      SetFirstRunSessionCloseReason(fre_or_msbb_close_reason);
     }
     if (!current_session->get_current_msbb_state()) {
-      SetMSBBSessionCloseReason(
-          compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession);
+      SetMSBBSessionCloseReason(fre_or_msbb_close_reason);
     }
   }
 
-  // Now create and set up a new session.
   auto new_session = std::make_unique<ComposeSession>(
       &GetWebContents(), GetModelExecutor(), GetSessionId(),
       GetInnerTextProvider(), trigger_field.global_id(),
@@ -555,6 +572,19 @@ void ChromeComposeClient::SetSessionCloseReason(
   }
 }
 
+void ChromeComposeClient::LaunchHatsSurveyForActiveSession(
+    compose::ComposeSessionCloseReason close_reason) {
+  if (debug_session_) {
+    return;
+  }
+
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+
+  if (active_session) {
+    active_session->LaunchHatsSurvey(close_reason);
+  }
+}
+
 void ChromeComposeClient::RemoveAllSessions() {
   if (debug_session_) {
     debug_session_.reset();
@@ -623,6 +653,13 @@ compose::PageUkmTracker* ChromeComposeClient::GetPageUkmTracker() {
   return page_ukm_tracker_.get();
 }
 
+bool ChromeComposeClient::ActiveFieldHasUnexpiredSession() {
+  if (ComposeSession* current_session = GetSessionForActiveComposeField()) {
+    return !current_session->HasExpired();
+  }
+  return false;
+}
+
 bool ChromeComposeClient::ShouldTriggerPopup(
     const autofill::FormData& form_data,
     const autofill::FormFieldData& form_field_data,
@@ -633,9 +670,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   active_compose_ids_ = std::make_optional<FieldIdentifier>(
       form_field_data.global_id(), form_field_data.renderer_form_id());
 
-  bool ongoing_session = HasSession(form_field_data.global_id());
-
-  if (ongoing_session) {
+  if (ActiveFieldHasUnexpiredSession()) {
     if (compose_enabling_->ShouldTriggerSavedStatePopup(trigger_source)) {
       last_popup_trigger_source_ = trigger_source;
       return true;
@@ -653,6 +688,8 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       GetMSBBStateFromPrefs());
 
   compose::ProactiveNudgeTracker::Signals nudge_signals;
+  nudge_signals.ukm_source_id =
+      GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId();
   nudge_signals.page_origin =
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   nudge_signals.page_url = web_contents()->GetURL();
@@ -674,7 +711,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       // If the proactive nudge is disabled but the selection nudge is is
       // enabled we need to initialize the nudge tracker for this form field to
       // accept the selection nudge.
-      return nudge_tracker_.OnlySelectionNudgeRequestedForFormField(
+      return nudge_tracker_.ProactiveNudgeRequestedForFormField(
           std::move(nudge_signals));
     }
     return false;
@@ -696,6 +733,16 @@ bool ChromeComposeClient::IsPopupTimerRunning() {
 void ChromeComposeClient::DisableProactiveNudge() {
   nudge_tracker_.OnUserDisabledNudge(/*single_site_only=*/false);
   proactive_nudge_enabled_.SetValue(false);
+
+  if (base::FeatureList::IsEnabled(
+          compose::features::kHappinessTrackingSurveysForComposeAcceptance)) {
+    HatsService* hats_service = HatsServiceFactory::GetForProfile(
+        profile_, /*create_if_necessary*/ true);
+    if (hats_service) {
+      hats_service->LaunchSurveyForWebContents(
+          kHatsSurveyTriggerComposeNudgeClose, web_contents(), {}, {});
+    }
+  }
 }
 
 void ChromeComposeClient::OpenProactiveNudgeSettings() {
@@ -861,6 +908,33 @@ void ChromeComposeClient::ShowProactiveNudge(autofill::FormGlobalId form,
         field, autofill::AutofillSuggestionTriggerSource::
                    kComposeDelayedProactiveNudge);
   }
+}
+
+compose::ComposeHintMetadata ChromeComposeClient::GetComposeHintMetadata() {
+  if (!opt_guide_) {
+    return compose::ComposeHintMetadata::default_instance();
+  }
+
+  optimization_guide::OptimizationMetadata opt_guide_metadata;
+  auto opt_guide_has_hint = opt_guide_->CanApplyOptimization(
+      GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL(),
+      optimization_guide::proto::OptimizationType::COMPOSE,
+      &opt_guide_metadata);
+  if (opt_guide_has_hint !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return compose::ComposeHintMetadata::default_instance();
+  }
+
+  if (opt_guide_metadata.any_metadata().has_value()) {
+    std::optional<compose::ComposeHintMetadata> compose_metadata =
+        optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(
+            opt_guide_metadata.any_metadata().value());
+    if (compose_metadata.has_value()) {
+      return compose_metadata.value();
+    }
+  }
+
+  return compose::ComposeHintMetadata::default_instance();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeComposeClient);

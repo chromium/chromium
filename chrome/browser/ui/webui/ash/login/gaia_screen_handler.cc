@@ -112,6 +112,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -775,10 +776,9 @@ void GaiaScreenHandler::HandleCompleteAuthenticationEvent(
     signin_artifacts.scraped_saml_passwords =
         ::login::ConvertToStringList(scraped_saml_passwords_value);
   }
-  if (!services_list.empty()) {
-    signin_artifacts.services_list =
-        ::login::ConvertToStringList(services_list);
-  }
+  // The empty list of services carries an information about account state
+  // change. Do not treat it as nullopt.
+  signin_artifacts.services_list = ::login::ConvertToStringList(services_list);
   if (!password_attributes.empty()) {
     signin_artifacts.saml_password_attributes =
         SamlPasswordAttributes::FromJs(password_attributes);
@@ -872,8 +872,7 @@ void GaiaScreenHandler::RecordCompleteAuthenticationMetrics(
   const bool is_enterprise_managed = g_browser_process->platform_part()
                                          ->browser_policy_connector_ash()
                                          ->IsDeviceEnterpriseManaged();
-  if (features::IsPasswordlessGaiaEnabledForConsumers() &&
-      !is_gaia_password_required_ && !is_enterprise_managed) {
+  if (!is_gaia_password_required_ && !is_enterprise_managed) {
     base::UmaHistogramBoolean(
         "OOBE.GaiaScreen.PasswordlessLoginRequests",
         signin_artifacts.password.value_or(std::string()).empty());
@@ -1187,7 +1186,8 @@ void GaiaScreenHandler::SubmitLoginFormForTest() {
   // clang-format on
 
   frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(code),
-                                   base::NullCallback());
+                                   base::NullCallback(),
+                                   content::ISOLATED_WORLD_ID_GLOBAL);
   CallExternalAPI("clickPrimaryButtonForTesting");
 
   if (!test_services_.empty()) {
@@ -1198,13 +1198,15 @@ void GaiaScreenHandler::SubmitLoginFormForTest() {
     code = "document.getElementById('services').value = \"" + escaped_services +
            "\";";
     frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(code),
-                                     base::NullCallback());
+                                     base::NullCallback(),
+                                     content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   if (!test_pass_.empty()) {
     code = "document.getElementById('password').value = '" + test_pass_ + "';";
     frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(code),
-                                     base::NullCallback());
+                                     base::NullCallback(),
+                                     content::ISOLATED_WORLD_ID_GLOBAL);
     CallExternalAPI("clickPrimaryButtonForTesting");
   }
 
@@ -1579,6 +1581,9 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
       error_screen_->SetHideCallback(base::BindOnce(
           &GaiaScreenHandler::OnErrorScreenHide, weak_factory_.GetWeakPtr()));
     }
+
+    auth_flow_auto_reload_manager_.Terminate();
+
     // Show `ErrorScreen` or update network error message.
     error_screen_->ShowNetworkErrorMessage(state, reason);
     histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
@@ -1619,12 +1624,13 @@ void GaiaScreenHandler::HttpAuthDialogShown(
     content::WebContents* web_contents) {
   network_state_ignored_until_proxy_auth_ = true;
   update_state_callback_.Cancel();
+  auth_flow_auto_reload_manager_.Terminate();
 }
 
 void GaiaScreenHandler::HttpAuthDialogCancelled(
     content::WebContents* web_contents) {
   update_state_callback_.Cancel();
-  ReenableNetworkStateUpdatesAfterProxyAuth();
+  OnProxyAuthDone();
 }
 
 void GaiaScreenHandler::HttpAuthDialogSupplied(
@@ -1633,7 +1639,7 @@ void GaiaScreenHandler::HttpAuthDialogSupplied(
     // Start listening to network state notifications immediately, hoping
     // that the network will switch to ONLINE soon.
     update_state_callback_.Cancel();
-    ReenableNetworkStateUpdatesAfterProxyAuth();
+    OnProxyAuthDone();
   } else {
     // Gaia is not hidden behind an error yet. Discard last cached network
     // state notification and wait for `kProxyAuthTimeout` before
@@ -1642,15 +1648,18 @@ void GaiaScreenHandler::HttpAuthDialogSupplied(
     update_state_callback_.Cancel();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &GaiaScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth,
-            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&GaiaScreenHandler::OnProxyAuthDone,
+                       weak_factory_.GetWeakPtr()),
         kProxyAuthTimeout);
   }
 }
 
-void GaiaScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth() {
+void GaiaScreenHandler::OnProxyAuthDone() {
   network_state_ignored_until_proxy_auth_ = false;
+
+  auth_flow_auto_reload_manager_.Activate(
+      base::BindOnce(&GaiaScreenHandler::ReloadGaia, weak_factory_.GetWeakPtr(),
+                     /*force_reload=*/true));
 }
 
 void GaiaScreenHandler::OnErrorScreenHide() {

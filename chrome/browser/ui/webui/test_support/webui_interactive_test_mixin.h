@@ -52,8 +52,7 @@ class WebUiInteractiveTestMixin : public T {
 
   auto ClickElement(const ui::ElementIdentifier& contents_id,
                     const WebContentsInteractionTestUtil::DeepQuery& element) {
-    return T::Steps(T::FlushEvents(),
-                    WaitForElementToRender(contents_id, element),
+    return T::Steps(WaitForElementToRender(contents_id, element),
                     T::ScrollIntoView(contents_id, element),
                     T::MoveMouseTo(contents_id, element), T::ClickMouse());
   }

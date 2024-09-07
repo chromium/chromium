@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/printscanmgr/fake_printscanmgr_client.h"
@@ -211,7 +209,6 @@ class CupsPrintersHandlerTest : public testing::Test {
   ~CupsPrintersHandlerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
     printers_handler_ = CupsPrintersHandler::CreateForTesting(
         profile_.get(), base::MakeRefCounted<FakePpdProvider>(),
         &printers_manager_);
@@ -279,7 +276,6 @@ class CupsPrintersHandlerTest : public testing::Test {
   // Must outlive |profile_|.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  base::test::ScopedFeatureList feature_list_;
   content::TestWebUI web_ui_;
   FakeCupsPrintersManager printers_manager_;
   std::unique_ptr<CupsPrintersHandler> printers_handler_;

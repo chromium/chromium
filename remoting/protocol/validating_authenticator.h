@@ -51,6 +51,7 @@ class ValidatingAuthenticator : public Authenticator {
   bool started() const override;
   RejectionReason rejection_reason() const override;
   const std::string& GetAuthKey() const override;
+  const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,

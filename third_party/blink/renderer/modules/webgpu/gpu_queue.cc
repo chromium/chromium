@@ -953,6 +953,12 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     wgpu::Buffer intermediate_buffer =
         device_->GetHandle().CreateBuffer(&buffer_desc);
 
+    // This could happen either on OOM or if the image is to large to fit the
+    // size in a uint32.
+    if (!intermediate_buffer) {
+      return false;
+    }
+
     size_t size = static_cast<size_t>(buffer_desc.size);
     void* data = intermediate_buffer.GetMappedRange(0, size);
 

@@ -2,24 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_vars.css.js';
-import '../pdf_viewer_shared_style.css.js';
 import './icons.html.js';
 import './viewer_attachment_bar.js';
 import './viewer_document_outline.js';
 import './viewer_thumbnail_bar.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Bookmark} from '../bookmark_type.js';
 import type {Attachment} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
 
-import {getTemplate} from './viewer_pdf_sidenav.html.js';
+import {getCss} from './viewer_pdf_sidenav.css.js';
+import {getHtml} from './viewer_pdf_sidenav.html.js';
 
 enum TabId {
   THUMBNAIL = 0,
@@ -39,70 +37,59 @@ export interface ViewerPdfSidenavElement {
   };
 }
 
-export class ViewerPdfSidenavElement extends PolymerElement {
+export class ViewerPdfSidenavElement extends CrLitElement {
   static get is() {
     return 'viewer-pdf-sidenav';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      activePage: Number,
-
-      attachments: {
-        type: Array,
-        value: () => [],
-      },
-
-      bookmarks: {
-        type: Array,
-        value: () => [],
-      },
-
-      clockwiseRotations: Number,
-
-      docLength: Number,
-
-      hideIcons_: {
-        type: Boolean,
-        computed: 'computeHideIcons_(tabs_.length)',
-      },
-
-      tabs_: {
-        type: Array,
-        computed: `computeTabs_(bookmarks.length, attachments.length)`,
-      },
-
-      selectedTab_: {
-        type: Number,
-        value: 0,
-      },
+      activePage: {type: Number},
+      attachments: {type: Array},
+      bookmarks: {type: Array},
+      clockwiseRotations: {type: Number},
+      docLength: {type: Number},
+      pdfCr23Enabled: {type: Boolean},
+      selectedTab_: {type: Number},
+      tabs_: {type: Array},
     };
   }
 
-  activePage: number;
-  attachments: Attachment[];
-  bookmarks: Bookmark[];
-  clockwiseRotations: number;
-  docLength: number;
-  private hideIcons_: boolean;
-  private selectedTab_: number;
-  private tabs_: Tab[];
+  activePage: number = 0;
+  attachments: Attachment[] = [];
+  bookmarks: Bookmark[] = [];
+  clockwiseRotations: number = 0;
+  docLength: number = 0;
+  pdfCr23Enabled: boolean = false;
+  private selectedTab_: number = 0;
+  protected tabs_: Tab[] = [];
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
-    this.$.icons.addEventListener('keydown', this.onKeydown_.bind(this));
+    if (changedProperties.has('bookmarks') ||
+        changedProperties.has('attachments')) {
+      this.tabs_ = this.computeTabs_();
+    }
+  }
+
+  private iconsetName_(): string {
+    return this.pdfCr23Enabled ? 'pdf-cr23' : 'pdf';
   }
 
   private computeTabs_(): Tab[] {
     const tabs = [
       {
         id: TabId.THUMBNAIL,
-        icon: 'pdf:thumbnails',
+        icon: this.iconsetName_() + ':thumbnails',
         title: '$i18n{tooltipThumbnails}',
       },
     ];
@@ -110,7 +97,7 @@ export class ViewerPdfSidenavElement extends PolymerElement {
     if (this.bookmarks.length > 0) {
       tabs.push({
         id: TabId.OUTLINE,
-        icon: 'pdf:doc-outline',
+        icon: this.iconsetName_() + ':doc-outline',
         title: '$i18n{tooltipDocumentOutline}',
       });
     }
@@ -118,32 +105,33 @@ export class ViewerPdfSidenavElement extends PolymerElement {
     if (this.attachments.length > 0) {
       tabs.push({
         id: TabId.ATTACHMENT,
-        icon: 'pdf:attach-file',
+        icon: this.iconsetName_() + ':attach-file',
         title: '$i18n{tooltipAttachments}',
       });
     }
     return tabs;
   }
 
-  private computeHideIcons_(): boolean {
+  protected hideIcons_(): boolean {
     return this.tabs_.length === 1;
   }
 
-  private getTabAriaSelected_(tabId: number): string {
-    return this.tabs_[this.selectedTab_].id === tabId ? 'true' : 'false';
+  protected getTabAriaSelected_(tabId: number): string {
+    return this.tabs_[this.selectedTab_]!.id === tabId ? 'true' : 'false';
   }
 
-  private getTabIndex_(tabId: number): string {
-    return this.tabs_[this.selectedTab_].id === tabId ? '0' : '-1';
+  protected getTabIndex_(tabId: number): string {
+    return this.tabs_[this.selectedTab_]!.id === tabId ? '0' : '-1';
   }
 
-  private getTabSelectedClass_(tabId: number): string {
-    return this.tabs_[this.selectedTab_].id === tabId ? 'selected' : '';
+  protected getTabSelectedClass_(tabId: number): string {
+    return this.tabs_[this.selectedTab_]!.id === tabId ? 'selected' : '';
   }
 
-  private onTabClick_(e: DomRepeatEvent<Tab>) {
-    const targetTab = e.model.item;
-    switch (targetTab.id) {
+  protected onTabClick_(e: Event) {
+    const tabId = (e.currentTarget as HTMLElement).dataset['tabId'];
+    assert(tabId !== undefined);
+    switch (Number.parseInt(tabId, 10)) {
       case TabId.THUMBNAIL:
         record(UserAction.SELECT_SIDENAV_THUMBNAILS);
         this.selectedTab_ = 0;
@@ -161,20 +149,21 @@ export class ViewerPdfSidenavElement extends PolymerElement {
     }
   }
 
-  private hideThumbnailView_(): boolean {
-    return this.tabs_[this.selectedTab_].id !== TabId.THUMBNAIL;
+  protected hideThumbnailView_(): boolean {
+    return this.tabs_[this.selectedTab_]!.id !== TabId.THUMBNAIL;
   }
 
-  private hideOutlineView_(): boolean {
-    return this.tabs_[this.selectedTab_].id !== TabId.OUTLINE;
+  protected hideOutlineView_(): boolean {
+    return this.tabs_[this.selectedTab_]!.id !== TabId.OUTLINE;
   }
 
-  private hideAttachmentView_(): boolean {
-    return this.tabs_[this.selectedTab_].id !== TabId.ATTACHMENT;
+  protected hideAttachmentView_(): boolean {
+    return this.tabs_[this.selectedTab_]!.id !== TabId.ATTACHMENT;
   }
 
-  private onKeydown_(e: KeyboardEvent) {
-    if (this.hideIcons_ || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) {
+  protected onKeydown_(e: KeyboardEvent) {
+    if (this.tabs_.length === 1 ||
+        (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) {
       return;
     }
 
@@ -194,10 +183,6 @@ export class ViewerPdfSidenavElement extends PolymerElement {
         this.selectedTab_++;
       }
     }
-  }
-
-  getHideIconsForTesting(): boolean {
-    return this.hideIcons_;
   }
 }
 

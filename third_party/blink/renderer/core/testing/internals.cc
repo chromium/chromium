@@ -2547,7 +2547,8 @@ unsigned Internals::numberOfScrollableAreas(Document* document) {
   unsigned count = 0;
   LocalFrame* frame = document->GetFrame();
   if (frame->View()->UserScrollableAreas()) {
-    for (const auto& scrollable_area : *frame->View()->UserScrollableAreas()) {
+    for (const auto& scrollable_area :
+         frame->View()->UserScrollableAreas()->Values()) {
       if (scrollable_area->ScrollsOverflow())
         count++;
     }
@@ -2559,7 +2560,7 @@ unsigned Internals::numberOfScrollableAreas(Document* document) {
     if (child_local_frame && child_local_frame->View() &&
         child_local_frame->View()->UserScrollableAreas()) {
       for (const auto& scrollable_area :
-           *child_local_frame->View()->UserScrollableAreas()) {
+           child_local_frame->View()->UserScrollableAreas()->Values()) {
         if (scrollable_area->ScrollsOverflow())
           count++;
       }
@@ -3572,13 +3573,14 @@ void Internals::setVisualViewportOffset(int css_x, int css_y) {
 }
 
 bool Internals::isUseCounted(Document* document, uint32_t feature) {
-  if (feature >= static_cast<int32_t>(WebFeature::kNumberOfFeatures))
+  if (feature > static_cast<int32_t>(WebFeature::kMaxValue)) {
     return false;
+  }
   return document->IsUseCounted(static_cast<WebFeature>(feature));
 }
 
 bool Internals::isWebDXFeatureUseCounted(Document* document, uint32_t feature) {
-  if (feature >= static_cast<int32_t>(WebDXFeature::kNumberOfFeatures)) {
+  if (feature > static_cast<int32_t>(WebDXFeature::kMaxValue)) {
     return false;
   }
   return document->IsWebDXFeatureCounted(static_cast<WebDXFeature>(feature));
@@ -3597,8 +3599,9 @@ bool Internals::isAnimatedCSSPropertyUseCounted(Document* document,
 }
 
 void Internals::clearUseCounter(Document* document, uint32_t feature) {
-  if (feature >= static_cast<int32_t>(WebFeature::kNumberOfFeatures))
+  if (feature > static_cast<int32_t>(WebFeature::kMaxValue)) {
     return;
+  }
   document->ClearUseCounterForTesting(static_cast<WebFeature>(feature));
 }
 
@@ -3645,7 +3648,7 @@ ScriptPromise<IDLUndefined> Internals::observeUseCounter(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
-  if (feature >= static_cast<int32_t>(WebFeature::kNumberOfFeatures)) {
+  if (feature > static_cast<int32_t>(WebFeature::kMaxValue)) {
     resolver->Reject();
     return promise;
   }

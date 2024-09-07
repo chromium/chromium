@@ -54,7 +54,8 @@ struct SignalValue {
 enum ReservedEventType {
   kReservedAlways,
   kReservedWin,
-  kReservedLoss
+  kReservedLoss,
+  kReservedOnce,
 };
 
 // A bucket which is a 128bit ID or a SignalBucket which tells the browser how

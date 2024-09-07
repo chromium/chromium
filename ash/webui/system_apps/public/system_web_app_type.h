@@ -143,6 +143,12 @@ enum class SystemWebAppType {
   // Contact: chromeos-recorder-app@google.com
   RECORDER = 30,
 
+  // Graduation app for ChromeOS EDU users.
+  //
+  // Source: //ash/webui/graduation_ui/
+  // Contact: cros-families-eng@google.com
+  GRADUATION = 31,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
@@ -182,7 +188,7 @@ enum class SystemWebAppType {
   //
   // 8. Have one of System Web App Platform owners review the CL.
   //    See: //ash/webui/PLATFORM_OWNERS
-  kMaxValue = RECORDER,
+  kMaxValue = GRADUATION,
 };
 
 }  // namespace ash

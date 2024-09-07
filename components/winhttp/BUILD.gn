@@ -46,6 +46,8 @@ source_set("unit_tests") {
     ":winhttp",
     "//base",
     "//base/test:test_support",
+    "//net:test_support",
     "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
   ]
 }

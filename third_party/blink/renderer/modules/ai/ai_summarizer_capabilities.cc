@@ -14,4 +14,14 @@ void AISummarizerCapabilities::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
+V8AICapabilityAvailability AISummarizerCapabilities::supportsInputLanguage(
+    const WTF::String& language_tag) {
+  constexpr char kLanguageTagEn[] = "en";
+  if (language_tag == kLanguageTagEn) {
+    return V8AICapabilityAvailability(
+        V8AICapabilityAvailability::Enum::kReadily);
+  }
+  return V8AICapabilityAvailability(V8AICapabilityAvailability::Enum::kNo);
+}
+
 }  // namespace blink

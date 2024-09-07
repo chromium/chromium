@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TEST_UTILS_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TEST_UTILS_H_
 
+#include <string>
+
+#include "base/time/time.h"
+#include "base/values.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -23,20 +27,12 @@ inline constexpr char16_t kFakePlusAddressU16[] = u"plus@plus.plus";
 inline constexpr char16_t kFakePlusAddressRefreshU16[] =
     u"plus-refresh@plus.plus";
 
-// Returns a fully populated, confirmed PlusProfile. If `use_full_domain` is
-// true, a full domain (as opposed to eTLD+1) is used as facet.
-// TODO(b/322147254): Remove parameter once plus addresses starts fully relying
-// on sync data.
-PlusProfile CreatePlusProfile(std::string plus_address,
-                              bool is_confirmed,
-                              bool use_full_domain);
-PlusProfile CreatePlusProfile(bool use_full_domain = false);
+// Returns a fully populated, confirmed PlusProfile.
+PlusProfile CreatePlusProfile(std::string plus_address, bool is_confirmed);
+PlusProfile CreatePlusProfile();
 // Returns a fully populated, confirmed PlusProfile different from
-// `CreatePlusProfile()`. If `use_full_domain` is true, a full domain (as
-// opposed to eTLD+1) is used as facet.
-// TODO(b/322147254): Remove parameter once plus addresses starts fully relying
-// on sync data.
-PlusProfile CreatePlusProfile2(bool use_full_domain = false);
+// `CreatePlusProfile()`.
+PlusProfile CreatePlusProfile2();
 
 // Returns a fully populated, confirmed PlusProfile with the given `facet`.
 PlusProfile CreatePlusProfileWithFacet(const affiliations::FacetURI& facet);
@@ -59,6 +55,12 @@ std::string MakePlusProfile(const PlusProfile& profile);
 std::unique_ptr<net::test_server::HttpResponse>
 HandleRequestToPlusAddressWithSuccess(
     const net::test_server::HttpRequest& request);
+
+// Creates a pre-allocated plus address in the same form in which it is
+// serialized to prefs.
+base::Value CreatePreallocatedPlusAddress(
+    base::Time end_of_life,
+    std::string address = "some@plus.com");
 
 }  // namespace plus_addresses::test
 

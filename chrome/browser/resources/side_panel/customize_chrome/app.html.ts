@@ -27,7 +27,11 @@ export function getHtml(this: AppElement) {
       <cr-button id="toolbarButton" class="section sp-card"
           @click="${this.onToolbarCustomizationButtonClick_}">
         <sp-heading hide-back-button id="toolbar-customization-heading">
-          <h2 slot="heading">$i18n{toolbarHeader}</h2>
+          <h2 slot="heading" id="toolbar-customization-inner-heading"
+              aria-label="$i18n{toolbarButtonA11yLabel}">
+            $i18n{toolbarHeader}
+            <new-badge></new-badge>
+          </h2>
         </sp-heading>
         <cr-icon icon="cr:chevron-right" slot="suffix-icon"></cr-icon>
       </cr-button>

@@ -53,6 +53,7 @@ source_set("quick_answers") {
   deps = [
     "//base",
     "//chrome/common:constants",
+    "//chromeos/components/quick_answers/public/cpp:constants",
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/quick_answers/public/mojom",

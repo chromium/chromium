@@ -87,6 +87,9 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       {switches::kEnableExperimentalWebPlatformFeatures,
        std::cref(blink::features::kCSSDisplayModePictureInPicture),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableExperimentalWebPlatformFeatures,
+       std::cref(blink::features::kPartitionedPopins),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
       // Overrides for --enable-experimental-cookie-features.
       {switches::kEnableExperimentalCookieFeatures,
@@ -96,7 +99,10 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        std::cref(net::features::kSameSiteDefaultChecksMethodRigorously),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalCookieFeatures,
-       std::cref(net::features::kSchemefulSameSite),
+       std::cref(net::features::kEnablePortBoundCookies),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableExperimentalCookieFeatures,
+       std::cref(net::features::kEnableSchemeBoundCookies),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
       // Test behavior for third-party cookie phaseout.

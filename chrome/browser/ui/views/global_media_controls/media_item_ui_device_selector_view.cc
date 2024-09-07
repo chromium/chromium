@@ -169,7 +169,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
       views::BoxLayout::Orientation::kVertical));
 
   // Do not create the expand button strip if this device selector view is used
-  // on Chrome OS ash with media::kGlobalMediaControlsCrOSUpdatedUI enabled.
+  // on Chrome OS ash.
   CreateExpandButtonStrip(
       /*show_expand_button=*/!media_color_theme_.has_value());
 
@@ -307,9 +307,8 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
   is_expanded_ = true;
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 
-  // When this device selector view is used on Chrome OS ash with
-  // media::kGlobalMediaControlsCrOSUpdatedUI enabled, accessibility text will
-  // be handled by MediaItemUIDetailedView instead of here.
+  // When this device selector view is used on Chrome OS ash, accessibility text
+  // will be handled by MediaItemUIDetailedView instead of here.
   if (!media_color_theme_.has_value()) {
     GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_SHOW_DEVICE_LIST));
@@ -327,9 +326,8 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
   device_entry_views_container_->SetVisible(true);
   PreferredSizeChanged();
 
-  // When this device selector view is used on Chrome OS ash with
-  // media::kGlobalMediaControlsCrOSUpdatedUI enabled, focus the first available
-  // device when the device list is shown for accessibility.
+  // When this device selector view is used on Chrome OS ash, focus the first
+  // available device when the device list is shown for accessibility.
   if (media_color_theme_.has_value() &&
       device_entry_views_container_->children().size() > 0) {
     device_entry_views_container_->children()[0]->RequestFocus();
@@ -341,9 +339,8 @@ void MediaItemUIDeviceSelectorView::HideDevices() {
   is_expanded_ = false;
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 
-  // When this device selector view is used on Chrome OS ash with
-  // media::kGlobalMediaControlsCrOSUpdatedUI enabled, accessibility text will
-  // be handled by MediaItemUIDetailedView instead of here.
+  // When this device selector view is used on Chrome OS ash, accessibility text
+  // will be handled by MediaItemUIDetailedView instead of here.
   if (!media_color_theme_.has_value()) {
     GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_HIDE_DEVICE_LIST));
@@ -537,8 +534,10 @@ gfx::Size MediaItemUIDeviceSelectorView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   int height = GetLayoutManager()->GetPreferredHeightForWidth(
       this, kExpandButtonStripWidth);
+  int expand_button_strip_height =
+      expand_button_strip_->GetVisible() ? kExpandButtonStripHeight : 0;
   return gfx::Size(kExpandButtonStripWidth,
-                   std::max(kExpandButtonStripHeight, height));
+                   std::max(expand_button_strip_height, height));
 }
 
 void MediaItemUIDeviceSelectorView::AddObserver(

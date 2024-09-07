@@ -452,7 +452,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -461,7 +461,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -470,7 +470,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
     const testIsVisible = isChildVisible.bind(null, item);
@@ -481,25 +481,25 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
-    item.set('data.blacklistText', 'This item is blocklisted');
+    item.set('data.blocklistText', 'This item is blocklisted');
     flush();
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', true);
+    testWarningVisible('#blocklisted-warning', true);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
-    item.set('data.blacklistText', null);
+    item.set('data.blocklistText', null);
     flush();
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -508,7 +508,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', true);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -517,7 +517,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', true);
     testWarningVisible('#published-in-store-required-warning', true);
 
@@ -530,7 +530,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -539,7 +539,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', true);
@@ -549,7 +549,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', true);
@@ -557,12 +557,12 @@ suite('ExtensionDetailViewTest', function() {
     // Test that the allowlist warning is not shown when there is already a
     // blocklist message. It would be redundant since all blocklisted extension
     // are necessarily not included in the Safe Browsing allowlist.
-    item.set('data.blacklistText', 'This item is blocklisted');
+    item.set('data.blocklistText', 'This item is blocklisted');
     flush();
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', true);
+    testWarningVisible('#blocklisted-warning', true);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', false);
@@ -676,12 +676,12 @@ suite('ExtensionDetailViewTest', function() {
         item.shadowRoot!.querySelector('#safetyCheckWarningContainer')));
     loadTimeData.overrideValues({'safetyCheckShowReviewPanel': true});
     item.set('data.safetyCheckText', {'detailString': 'Test Message'});
-    item.set('data.blacklistText', 'This item is blocklisted');  // nocheck
+    item.set('data.blocklistText', 'This item is blocklisted');  // nocheck
     flush();
     // Check to make sure the warning text is hidden due to the
     // SafetyCheckWarningContainer being shown.
     assertFalse(isVisible(
-        item.shadowRoot!.querySelector('#blacklisted-warning')));  // nocheck
+        item.shadowRoot!.querySelector('#blocklisted-warning')));  // nocheck
     const safetyWarningText =
         item.shadowRoot!.querySelector('#safetyCheckWarningContainer');
     assertTrue(!!safetyWarningText);

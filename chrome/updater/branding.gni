@@ -21,10 +21,12 @@ if (is_chrome_branded) {
   privileged_helper_name = "org.chromium.Chromium.UpdaterPrivilegedHelper"
   updater_company_full_name = "Chromium Authors"
   updater_company_short_name = "Chromium"
+  updater_company_short_name_lowercase = "chromium"
   updater_company_short_name_uppercase = "CHROMIUM"
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
   updater_product_full_name = "ChromiumUpdater"
+  updater_product_full_name_dashed_lowercase = "chromium-updater"
   updater_product_full_display_name = "Chromium Updater"
   updater_metainstaller_name = "Chromium Installer"
   mac_team_identifier = "PLACEHOLDER"

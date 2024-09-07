@@ -33,7 +33,6 @@ class FakeUdevLoader : public device::UdevLoader {
   void Reset();
 
  private:
-  bool Init() override;
   const char* udev_device_get_action(udev_device* device) override;
   const char* udev_device_get_devnode(udev_device* device) override;
   const char* udev_device_get_devtype(udev_device* device) override;

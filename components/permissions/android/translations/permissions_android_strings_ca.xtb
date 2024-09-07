@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Aquest lloc web no pot demanar el teu permís</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obteniu ajuda<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">Per permetre la vinculació, <ph name="BEGIN_LINK" />activa el Bluetooth<ph name="END_LINK" /></translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> necessita permís per fer un seguiment de les teves mans.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Obtén ajuda<ph name="END_LINK" /> mentre se cerquen dispositius…</translation>
 <translation id="4925793601605263825">Per visitar aquest lloc web, <ph name="APP_NAME" /> necessita permís per accedir al micròfon.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> vol cercar dispositius Bluetooth propers. S'han trobat els dispositius següents:</translation>

@@ -284,6 +284,7 @@ public class WebViewLayoutTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message ="https://crbug.com/361258327")
     public void testWebViewIncludedStableInterfaces() throws Exception {
         // Begin by running the web test.
         loadUrlWebViewAsync(

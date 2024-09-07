@@ -21,7 +21,6 @@ using blink::WebLocalFrame;
 using blink::WebString;
 
 namespace autofill {
-
 namespace {
 
 struct TextField {
@@ -120,8 +119,6 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
     EXPECT_EQ(expected_renderer_id, renderer_ids[0]);
   }
 };
-
-}  // namespace
 
 TEST_F(HtmlBasedUsernameDetectorTest, DeveloperGroupAttributes) {
   // Each test case consists of a set of parameters to be plugged into
@@ -341,4 +338,5 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
             cache.begin()->second[0]);
 }
 
+}  // namespace
 }  // namespace autofill

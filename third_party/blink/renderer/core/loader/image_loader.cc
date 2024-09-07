@@ -884,8 +884,10 @@ bool ImageLoader::HasPendingEvent() const {
     return true;
   }
 
-  if (pending_load_event_.IsActive() || pending_error_event_.IsActive())
+  if (pending_load_event_.IsActive() || pending_error_event_.IsActive() ||
+      !decode_requests_.empty()) {
     return true;
+  }
 
   return false;
 }

@@ -53,7 +53,8 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
         agent_group_scheduler_compositor_task_runner,
     const SecurityOrigin* top_level_frame_security_origin,
     net::StorageAccessApiStatus parent_storage_access_api_status,
-    bool require_cross_site_request_for_cookies)
+    bool require_cross_site_request_for_cookies,
+    scoped_refptr<SecurityOrigin> origin_to_use)
     : script_url(script_url),
       script_type(script_type),
       global_scope_name(global_scope_name),
@@ -66,6 +67,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
           std::move(response_content_security_policies)),
       referrer_policy(referrer_policy),
       starter_origin(starter_origin ? starter_origin->IsolatedCopy() : nullptr),
+      origin_to_use(std::move(origin_to_use)),
       starter_secure_context(starter_secure_context),
       starter_https_state(starter_https_state),
       worker_clients(worker_clients),

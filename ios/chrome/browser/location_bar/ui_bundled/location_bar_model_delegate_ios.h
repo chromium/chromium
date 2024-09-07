@@ -6,9 +6,9 @@
 #define IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
 
 #import "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/location_bar_model_delegate.h"
+#import "components/omnibox/browser/location_bar_model_delegate.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class WebStateList;
 
 namespace web {

@@ -32,7 +32,7 @@
   <cr-link-row
       id="privacySandboxAdMeasurementLinkRow"
       start-icon="settings20:bar-chart"
-      class="hr"
+      class$="[[measurementLinkRowClass_]]"
       label="$i18n{adPrivacyPageAdMeasurementLinkRowLabel}"
       sub-label="[[computePrivacySandboxAdMeasurementSublabel_(
                    prefs.privacy_sandbox.m1.ad_measurement_enabled.value)]]"
@@ -73,7 +73,7 @@
   <cr-link-row
       id="privacySandboxAdMeasurementLinkRowV2"
       start-icon="settings20:bar-chart"
-      class="hr"
+      class$="[[measurementLinkRowClass_]]"
       label="$i18n{adMeasurementPageToggleLabel}"
       sub-label="$i18n{adMeasurementPageToggleSubLabel}"
       on-click="onPrivacySandboxAdMeasurementClick_">

@@ -134,12 +134,12 @@
     aria-expanded="[[opened_]]" aria-setsize$="[[dropdownLength_]]">
   <div id="destination-display-container">
     <div id="destination-icon-box">
-      <iron-icon icon="[[destinationIcon]]"></iron-icon>
+      <cr-icon icon="[[destinationIcon]]"></cr-icon>
     </div>
     <div id="destination-display" title="[[value.displayName]]">
       [[value.displayName]]
     </div>
-    <iron-icon id="dropdown-icon" icon="cr:arrow-drop-down"></iron-icon>
+    <cr-icon id="dropdown-icon" icon="cr:arrow-drop-down"></cr-icon>
   </div>
   <div id="dropdown-box">
     <iron-dropdown horizontal-align="left" vertical-align="top"
@@ -155,10 +155,10 @@
               aria-description$="[[getPrinterStatusErrorString_(
                   item.printerStatusReason)]]"
               aria-posinset$="[[getPrinterPosinset_(index)]]">
-            <iron-icon icon="[[getPrinterStatusIcon_(
+            <cr-icon icon="[[getPrinterStatusIcon_(
                 item.printerStatusReason, item.isEnterprisePrinter,
                 isDarkModeActive_)]]">
-            </iron-icon>
+            </cr-icon>
             <span class="printer-display-name">[[item.displayName]]</span>
           </button>
         </template>

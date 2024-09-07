@@ -49,12 +49,15 @@
 namespace ash {
 namespace {
 
-bool ShouldDoSamlRedirect(const std::string& email,
-                          const bool auto_start_reauth) {
+bool ShouldDoSamlRedirect(const std::string& email) {
   // TODO(b/335388700): If automatic re-authentication start is configured we
   // have to skip any user verification notice page. For SAML this is currently
   // only possible with redirect endpoint. Once reauth endpoint enables this,
   // remove auto_start_reauth from this function.
+  const PrefService* prefs =
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetProfilePrefs();
+  bool auto_start_reauth =
+      prefs && prefs->GetBoolean(::prefs::kLockScreenAutoStartOnlineReauth);
   if (!auto_start_reauth) {
     return false;
   }
@@ -205,17 +208,8 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.Set("gaiaUrl", gaia_urls.gaia_url().spec());
   params.Set("clientId", gaia_urls.oauth2_chrome_client_id());
 
-  const PrefService* prefs =
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetProfilePrefs();
-  bool auto_start_reauth =
-      prefs && prefs->GetBoolean(::prefs::kLockScreenAutoStartOnlineReauth);
-  bool do_saml_redirect =
-      ShouldDoSamlRedirect(context.email, auto_start_reauth);
+  bool do_saml_redirect = ShouldDoSamlRedirect(context.email);
   params.Set("doSamlRedirect", do_saml_redirect);
-  // TODO(b/341898144): native verification notice can be deprecated.
-  // If automatic re-authentication start is enabled, user verification notice
-  // page shouldn't be shown to ensure faster user flow.
-  params.Set("showVerificationNotice", do_saml_redirect && !auto_start_reauth);
 
   // Path without the leading slash, as expected by authenticator.js.
   const std::string default_gaia_path =

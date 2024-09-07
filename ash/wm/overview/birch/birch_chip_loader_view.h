@@ -42,6 +42,7 @@ class BirchChipLoaderView : public BirchChipButtonBase {
   void AddAnimationToBuilder(views::AnimationBuilder& builder);
 
   // BirchChipButtonBase:
+  void Init(BirchItem* item) override;
   const BirchItem* GetItem() const override;
   BirchItem* GetItem() override;
   void Shutdown() override;

@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -65,18 +66,6 @@ namespace {
 
 inline constexpr char kTestApp[] = "https://test.test";
 inline constexpr char kTestAppName[] = "WebApp";
-inline constexpr uint8_t kTestPublicKey[] = {
-    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51,
-    0x66, 0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02,
-    0x72, 0xFE, 0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
-inline constexpr uint8_t kTestPrivateKey[] = {
-    0x1F, 0x27, 0x3F, 0x93, 0xE9, 0x59, 0x4E, 0xC7, 0x88, 0x82, 0xC7, 0x49,
-    0xF8, 0x79, 0x3D, 0x8C, 0xDB, 0xE4, 0x60, 0x1C, 0x21, 0xF1, 0xD9, 0xF9,
-    0xBC, 0x3A, 0xB5, 0xC7, 0x7F, 0x2D, 0x95, 0xE1,
-    // public key (part of the private key)
-    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51, 0x66,
-    0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02, 0x72, 0xFE,
-    0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
 constexpr std::string_view kUpdateManifestFileName = "update_manifest.json";
 constexpr std::string_view kBundleFileName = "bundle.swbn";
 
@@ -647,8 +636,6 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
     iwa_server_.ServeFilesFromDirectory(temp_dir_);
     EXPECT_TRUE(iwa_server_.Start());
 
-    auto key_pair = web_package::WebBundleSigner::Ed25519KeyPair(
-        kTestPublicKey, kTestPrivateKey);
     auto bundle_id = web_package::SignedWebBundleId::CreateForPublicKey(
         key_pair_.public_key);
     url_info_ = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
@@ -716,9 +703,8 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
   base::FilePath temp_dir_;
   net::EmbeddedTestServer iwa_server_;
   std::unique_ptr<BundledIsolatedWebApp> bundle_304_;
-  web_package::WebBundleSigner::Ed25519KeyPair key_pair_ =
-      web_package::WebBundleSigner::Ed25519KeyPair(kTestPublicKey,
-                                                   kTestPrivateKey);
+  web_package::test::Ed25519KeyPair key_pair_ =
+      test::GetDefaultEd25519KeyPair();
   RunOnOsLoginTestHandlerMixin run_on_os_login_handler_{&mixin_host_, this};
 };
 

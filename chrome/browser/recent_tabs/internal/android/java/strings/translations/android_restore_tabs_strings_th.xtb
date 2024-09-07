@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">อุปกรณ์ที่ซิงค์อยู่สำหรับการคืนค่าแท็บจะทำการเปลี่ยนแปลงได้เมื่อแตะ ไปยังส่วนสำหรับดูหรือคืนค่าแท็บที่เลือกในอุปกรณ์ปัจจุบันเมื่อแตะ แป้นพิมพ์ซ่อนอยู่</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{เปิด <ph name="TABS_COUNT_ONE" /> แท็บ}other{เปิด <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="4509609396389120020">รับแท็บจากอุปกรณ์อื่นๆ</translation>
+<translation id="4619615317237390068">แท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="4811934403802581334">ระบบจะคืนค่าแท็บที่เลือกทั้งหมดจากอุปกรณ์ที่เลือกอยู่</translation>
 <translation id="5336031759968328813">ดูแท็บทั้งหมด</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>

@@ -14,7 +14,7 @@ namespace content {
 
 PrerenderHandleImpl::PrerenderHandleImpl(
     base::WeakPtr<PrerenderHostRegistry> prerender_host_registry,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const GURL& prerendering_url)
     : prerender_host_registry_(std::move(prerender_host_registry)),
       frame_tree_node_id_(frame_tree_node_id),

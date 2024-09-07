@@ -448,6 +448,16 @@ TEST(EventReportWindowsTest, Parse) {
           .expiry = base::Seconds(86400),
       },
       {
+          .desc = "event_report_windows_end_times_value_gt_int_max",
+          .json = R"json({"event_report_windows":{
+            "start_time": 0,
+            "end_times": [2147483648]
+          }})json",
+          .matches = ValueIs(Property(&EventReportWindows::end_times,
+                                      ElementsAre(base::Seconds(86400)))),
+          .expiry = base::Seconds(86400),
+      },
+      {
           "event_report_windows_valid",
           R"json({"event_report_windows":{
             "start_time":0,

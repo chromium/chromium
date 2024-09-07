@@ -699,7 +699,7 @@ public class TabListFaviconProvider {
                 : colorFaviconWithTheme(sRoundedComposedDefaultFavicon.get(mContext));
     }
 
-    private TabFavicon getRoundedChromeFavicon(boolean isIncognito) {
+    public TabFavicon getRoundedChromeFavicon(boolean isIncognito) {
         if (mIsTabStrip) {
             return sRoundedChromeFaviconForStrip.get(mContext);
         }

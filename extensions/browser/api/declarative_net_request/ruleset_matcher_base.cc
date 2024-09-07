@@ -76,8 +76,9 @@ bool GetModifiedQuery(const GURL& url,
   std::vector<std::string_view> remove_query_params;
   if (!IsEmpty(transform.remove_query_params())) {
     remove_query_params.reserve(transform.remove_query_params()->size());
-    for (const ::flatbuffers::String* str : *transform.remove_query_params())
+    for (const ::flatbuffers::String* str : *transform.remove_query_params()) {
       remove_query_params.push_back(str->string_view());
+    }
   }
 
   // We don't use a map from keys to vector of values to ensure the relative
@@ -142,8 +143,9 @@ bool GetModifiedQuery(const GURL& url,
     }
   }
 
-  if (!query_changed)
+  if (!query_changed) {
     return false;
+  }
 
   *modified_query = base::JoinString(query_parts, "&");
   return true;
@@ -153,23 +155,27 @@ GURL GetTransformedURL(const RequestParams& params,
                        const flat::UrlTransform& transform) {
   GURL::Replacements replacements;
 
-  if (transform.scheme())
+  if (transform.scheme()) {
     replacements.SetSchemeStr(transform.scheme()->string_view());
+  }
 
-  if (transform.host())
+  if (transform.host()) {
     replacements.SetHostStr(transform.host()->string_view());
+  }
 
   DCHECK(!(transform.clear_port() && transform.port()));
-  if (transform.clear_port())
+  if (transform.clear_port()) {
     replacements.ClearPort();
-  else if (transform.port())
+  } else if (transform.port()) {
     replacements.SetPortStr(transform.port()->string_view());
+  }
 
   DCHECK(!(transform.clear_path() && transform.path()));
-  if (transform.clear_path())
+  if (transform.clear_path()) {
     replacements.ClearPath();
-  else if (transform.path())
+  } else if (transform.path()) {
     replacements.SetPathStr(transform.path()->string_view());
+  }
 
   // |query| is defined outside the if conditions since url::Replacements does
   // not own the strings it uses.
@@ -183,16 +189,19 @@ GURL GetTransformedURL(const RequestParams& params,
   }
 
   DCHECK(!(transform.clear_fragment() && transform.fragment()));
-  if (transform.clear_fragment())
+  if (transform.clear_fragment()) {
     replacements.ClearRef();
-  else if (transform.fragment())
+  } else if (transform.fragment()) {
     replacements.SetRefStr(transform.fragment()->string_view());
+  }
 
-  if (transform.password())
+  if (transform.password()) {
     replacements.SetPasswordStr(transform.password()->string_view());
+  }
 
-  if (transform.username())
+  if (transform.username()) {
     replacements.SetUsernameStr(transform.username()->string_view());
+  }
 
   return params.url->ReplaceComponents(replacements);
 }
@@ -218,8 +227,9 @@ std::optional<RequestAction> RulesetMatcherBase::GetAction(
 void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   DCHECK(host);
   content::RenderFrameHost* parent = host->GetParentOrOuterDocument();
-  if (!parent)
+  if (!parent) {
     return;
+  }
 
   // Some frames like srcdoc frames inherit URLLoaderFactories from their
   // parents and can make network requests before a corresponding navigation
@@ -228,8 +238,9 @@ void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   // as well in OnRenderFrameCreated.
   std::optional<RequestAction> parent_action =
       GetAllowlistedFrameAction(parent->GetGlobalId());
-  if (!parent_action)
+  if (!parent_action) {
     return;
+  }
 
   bool inserted = false;
   std::tie(std::ignore, inserted) = allowlisted_frames_.insert(
@@ -291,8 +302,9 @@ void RulesetMatcherBase::OnDidFinishNavigation(
   content::GlobalRenderFrameHostId frame_id = host->GetGlobalId();
   allowlisted_frames_.erase(frame_id);
 
-  if (action)
+  if (action) {
     allowlisted_frames_.insert(std::make_pair(frame_id, std::move(*action)));
+  }
 }
 
 std::optional<RequestAction>
@@ -351,10 +363,11 @@ RulesetMatcherBase::CreateRedirectActionFromMetadata(
   DCHECK(metadata->redirect_url() || metadata->transform());
 
   GURL redirect_url;
-  if (metadata->redirect_url())
+  if (metadata->redirect_url()) {
     redirect_url = GURL(metadata->redirect_url()->string_view());
-  else
+  } else {
     redirect_url = GetTransformedURL(params, *metadata->transform());
+  }
 
   // Sanity check that we don't redirect to a javascript url. Specifying
   // redirect to a javascript url and specifying javascript as a transform
@@ -371,12 +384,14 @@ std::optional<RequestAction> RulesetMatcherBase::CreateRedirectAction(
     GURL redirect_url) const {
   // Redirecting WebSocket handshake request is prohibited.
   // TODO(crbug.com/40111509): this results in counterintuitive behavior.
-  if (params.element_type == flat_rule::ElementType_WEBSOCKET)
+  if (params.element_type == flat_rule::ElementType_WEBSOCKET) {
     return std::nullopt;
+  }
 
   // Prevent a redirect loop where a URL continuously redirects to itself.
-  if (!redirect_url.is_valid() || *params.url == redirect_url)
+  if (!redirect_url.is_valid() || *params.url == redirect_url) {
     return std::nullopt;
+  }
 
   RequestAction redirect_action =
       CreateRequestAction(RequestAction::Type::REDIRECT, rule);
@@ -396,8 +411,9 @@ RulesetMatcherBase::GetModifyHeadersActionsFromMetadata(
   // of RequestAction::HeaderInfo.
   auto get_headers_for_action = [](const FlatHeaderList& headers_for_rule) {
     std::vector<RequestAction::HeaderInfo> headers_for_action;
-    for (const auto* flat_header_info : headers_for_rule)
+    for (const auto* flat_header_info : headers_for_rule) {
       headers_for_action.emplace_back(*flat_header_info);
+    }
 
     return headers_for_action;
   };
@@ -433,8 +449,9 @@ RequestAction RulesetMatcherBase::CreateRequestAction(
 std::optional<RequestAction> RulesetMatcherBase::GetAllowlistedFrameAction(
     content::GlobalRenderFrameHostId frame_id) const {
   auto it = allowlisted_frames_.find(frame_id);
-  if (it == allowlisted_frames_.end())
+  if (it == allowlisted_frames_.end()) {
     return std::nullopt;
+  }
 
   return it->second.Clone();
 }

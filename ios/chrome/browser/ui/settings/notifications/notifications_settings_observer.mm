@@ -38,6 +38,9 @@
   // YES if sports notification is enabled.
   BOOL _sportsNotificationEnabled;
 
+  // Yes if send tab notification is enabled.
+  BOOL _sendTabNotificationEnabled;
+
   // Yes if tips notification is enabled.
   BOOL _tipsNotificationEnabled;
 
@@ -70,6 +73,10 @@
     _contentNotificationEnabled =
         _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
             .FindBool(kSportsNotificationKey)
+            .value_or(false);
+    _sendTabNotificationEnabled =
+        _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+            .FindBool(kSendTabNotificationKey)
             .value_or(false);
 
     _localStatePrefChangeRegistrar.Init(localState);
@@ -114,6 +121,11 @@
       _sportsNotificationEnabled = [self isSportsNotificationEnabled];
       [self.delegate notificationsSettingsDidChangeForClient:
                          PushNotificationClientId::kSports];
+    } else if (_sendTabNotificationEnabled !=
+               [self isSendTabNotificationEnabled]) {
+      _sendTabNotificationEnabled = [self isSendTabNotificationEnabled];
+      [self.delegate notificationsSettingsDidChangeForClient:
+                         PushNotificationClientId::kSendTab];
     }
   } else if (preferenceName == prefs::kAppLevelPushNotificationPermissions) {
     if (_tipsNotificationEnabled != [self isTipsNotificationEnabled]) {
@@ -155,6 +167,12 @@
 - (BOOL)isSportsNotificationEnabled {
   return _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
       .FindBool(kSportsNotificationKey)
+      .value_or(false);
+}
+
+- (BOOL)isSendTabNotificationEnabled {
+  return _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+      .FindBool(kSendTabNotificationKey)
       .value_or(false);
 }
 

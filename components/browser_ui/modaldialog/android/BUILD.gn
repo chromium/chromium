@@ -3,10 +3,25 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+source_set("android") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "modaldialog_feature_map.cc",
+  ]
+  deps = [
+    ":modaldialog_jni_headers",
+    "//base",
+  ]
+}
 
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/modaldialog/AppModalPresenter.java",
+    "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogFeatureList.java",
+    "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java",
     "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogViewBinder.java",
     "java/src/org/chromium/components/browser_ui/modaldialog/TabModalPresenter.java",
@@ -28,7 +43,14 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
+
+  srcjar_deps = [ ":modaldialog_jni_headers" ]
+
   resources_package = "org.chromium.components.browser_ui.modaldialog"
+}
+
+generate_jni("modaldialog_jni_headers") {
+  sources = [ "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogFeatureMap.java" ]
 }
 
 android_resources("java_resources") {

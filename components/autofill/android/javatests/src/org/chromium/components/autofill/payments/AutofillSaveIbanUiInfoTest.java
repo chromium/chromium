@@ -7,6 +7,7 @@ package org.chromium.components.autofill.payments;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThrows;
 
@@ -15,13 +16,19 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.Collections;
+import java.util.List;
+
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillSaveIbanUiInfoTest {
     private static AutofillSaveIbanUiInfo.Builder defaultBuilder() {
         return new AutofillSaveIbanUiInfo.Builder()
                 .withAcceptText("")
                 .withCancelText("")
-                .withIbanLabel("FR76 3000 6000 0112 3456 7890 189")
+                .withDescriptionText("")
+                .withIbanLabel("FR **0189")
+                .withLegalMessageLines(Collections.EMPTY_LIST)
+                .withLogoIcon(0)
                 .withTitleText("");
     }
 
@@ -40,11 +47,39 @@ public class AutofillSaveIbanUiInfoTest {
     }
 
     @Test
-    public void testBuilder_setsIbanLabel() {
+    public void testBuilder_setsDescriptionText() {
         AutofillSaveIbanUiInfo uiInfo =
-                defaultBuilder().withIbanLabel("FR** **** **** **** **** ***0 189").build();
+                defaultBuilder().withDescriptionText("Description Text").build();
 
-        assertThat(uiInfo.getIbanLabel(), equalTo("FR** **** **** **** **** ***0 189"));
+        assertThat(uiInfo.getDescriptionText(), equalTo("Description Text"));
+    }
+
+    @Test
+    public void testBuilder_setsIbanLabel() {
+        AutofillSaveIbanUiInfo uiInfo = defaultBuilder().withIbanLabel("DE **6789").build();
+
+        assertThat(uiInfo.getIbanLabel(), equalTo("DE **6789"));
+    }
+
+    @Test
+    public void testBuilder_setsLegalMessageLine() {
+        List<LegalMessageLine> legalMessageLines =
+                List.of(
+                        new LegalMessageLine("abc"),
+                        new LegalMessageLine("xyz"),
+                        new LegalMessageLine("uvw"));
+
+        AutofillSaveIbanUiInfo uiInfo =
+                defaultBuilder().withLegalMessageLines(legalMessageLines).build();
+
+        assertThat(uiInfo.getLegalMessageLines(), containsInAnyOrder(legalMessageLines.toArray()));
+    }
+
+    @Test
+    public void testBuilder_setsLogoIcon() {
+        AutofillSaveIbanUiInfo uiInfo = defaultBuilder().withLogoIcon(1234).build();
+
+        assertThat(uiInfo.getLogoIcon(), equalTo(1234));
     }
 
     @Test

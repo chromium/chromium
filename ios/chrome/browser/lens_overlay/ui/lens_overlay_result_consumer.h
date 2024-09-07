@@ -10,6 +10,13 @@ class GURL;
 /// Consumer for lens overlay result selection UI.
 @protocol LensOverlayResultConsumer
 
+// Notifies the consumer that the a new Lens search request started.
+- (void)handleSearchRequestStarted;
+
+// Notifies the consumer that the Lens search request received an error.
+- (void)handleSearchRequestErrored;
+
+// Loads a new results URL.
 - (void)loadResultsURL:(GURL)url;
 
 @end

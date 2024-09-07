@@ -12,6 +12,9 @@ namespace ash {
 
 LobsterCandidateStore::LobsterCandidateStore() = default;
 
+LobsterCandidateStore::LobsterCandidateStore(
+    const LobsterCandidateStore& other) = default;
+
 LobsterCandidateStore::~LobsterCandidateStore() = default;
 
 void LobsterCandidateStore::Cache(const LobsterImageCandidate& candidate) {

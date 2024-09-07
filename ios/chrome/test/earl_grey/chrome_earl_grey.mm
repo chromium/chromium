@@ -944,6 +944,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface addHistoryServiceTypedURL:spec];
 }
 
+- (void)addHistoryServiceTypedURL:(const GURL&)URL
+                   visitTimestamp:(base::Time)visitTimestamp {
+  NSString* spec = base::SysUTF8ToNSString(URL.spec());
+  [ChromeEarlGreyAppInterface addHistoryServiceTypedURL:spec
+                                         visitTimestamp:visitTimestamp];
+}
+
 - (void)deleteHistoryServiceTypedURL:(const GURL&)URL {
   NSString* spec = base::SysUTF8ToNSString(URL.spec());
   [ChromeEarlGreyAppInterface deleteHistoryServiceTypedURL:spec];
@@ -1900,4 +1907,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 - (bool)hasFirstRunSentinel {
   return [ChromeEarlGreyAppInterface hasFirstRunSentinel];
 }
+
+- (void)requestTipsNotification:(TipsNotificationType)type {
+  return [ChromeEarlGreyAppInterface requestTipsNotification:type];
+}
+
 @end

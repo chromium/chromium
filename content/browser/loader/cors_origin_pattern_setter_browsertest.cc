@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/cors_origin_pattern_setter.h"
+
 #include <memory>
 #include <string>
 
@@ -14,7 +16,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/cors_origin_pattern_setter.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -64,13 +66,15 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
     bool executing = true;
     std::string reason;
     web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        script_, base::BindOnce(
-                     [](bool* flag, std::string* reason, base::Value value) {
-                       *flag = false;
-                       DCHECK(value.is_string());
-                       *reason = value.GetString();
-                     },
-                     base::Unretained(&executing), base::Unretained(&reason)));
+        script_,
+        base::BindOnce(
+            [](bool* flag, std::string* reason, base::Value value) {
+              *flag = false;
+              DCHECK(value.is_string());
+              *reason = value.GetString();
+            },
+            base::Unretained(&executing), base::Unretained(&reason)),
+        ISOLATED_WORLD_ID_GLOBAL);
     while (executing) {
       base::RunLoop loop;
       loop.RunUntilIdle();

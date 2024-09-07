@@ -1,9 +1,11 @@
 This is a testharness.js-based test.
-[FAIL] [prelu] Test with  input's dataType = int8 and slope's dataType = int8.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
-[FAIL] [prelu] Throw if the data type of input is int64.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'input', must be one of [float32, float16, int32]."
-[FAIL] [prelu] Throw if the data type of input is uint32.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [prelu] Test slope's shape = [3, 2, 5] which is the same as input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] [prelu] Test slope's shape = [5] which is unidirectionally broadcastable to input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] [prelu] Test slope's shape = [] which is unidirectionally broadcastable to input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] [prelu] Test slope's shape = [2, 5] which is unidirectionally broadcastable to input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
 Harness: the test ran to completion.
 

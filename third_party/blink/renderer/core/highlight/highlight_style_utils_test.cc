@@ -58,8 +58,8 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
           ->firstChild();
   const ComputedStyle& text_style = text_node->GetLayoutObject()->StyleRef();
 
-  PaintController* controller = MakeGarbageCollected<PaintController>();
-  GraphicsContext context(*controller);
+  PaintController controller;
+  GraphicsContext context(controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
@@ -109,8 +109,8 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
 
   Compositor().BeginFrame();
 
-  PaintController* controller = MakeGarbageCollected<PaintController>();
-  GraphicsContext context(*controller);
+  PaintController controller;
+  GraphicsContext context(controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
@@ -203,8 +203,8 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
 
   Compositor().BeginFrame();
 
-  auto* controller = MakeGarbageCollected<PaintController>();
-  GraphicsContext context(*controller);
+  PaintController controller;
+  GraphicsContext context(controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
@@ -283,8 +283,8 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
 
   Compositor().BeginFrame();
 
-  auto* controller = MakeGarbageCollected<PaintController>();
-  GraphicsContext context(*controller);
+  PaintController controller;
+  GraphicsContext context(controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
@@ -343,8 +343,8 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
   Compositor().BeginFrame();
   std::optional<Color> previous_layer_color;
 
-  PaintController* controller = MakeGarbageCollected<PaintController>();
-  GraphicsContext context(*controller);
+  PaintController controller;
+  GraphicsContext context(controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;

@@ -62,31 +62,6 @@ OnHostResolutionCallbackResult OnHostResolution(
       spdy_session_key, is_for_websockets, endpoint_results, aliases);
 }
 
-std::string_view GetPrivacyModeGroupIdPrefix(PrivacyMode privacy_mode) {
-  switch (privacy_mode) {
-    case PrivacyMode::PRIVACY_MODE_DISABLED:
-      return "";
-    case PrivacyMode::PRIVACY_MODE_ENABLED:
-      return "pm/";
-    case PrivacyMode::PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS:
-      return "pmwocc/";
-    case PrivacyMode::PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED:
-      return "pmpsa/";
-  }
-}
-
-std::string_view GetSecureDnsPolicyGroupIdPrefix(
-    SecureDnsPolicy secure_dns_policy) {
-  switch (secure_dns_policy) {
-    case SecureDnsPolicy::kAllow:
-      return "";
-    case SecureDnsPolicy::kDisable:
-      return "dsd/";
-    case SecureDnsPolicy::kBootstrap:
-      return "dns_bootstrap/";
-  }
-}
-
 }  // namespace
 
 ClientSocketPool::SocketParams::SocketParams(
@@ -99,6 +74,34 @@ scoped_refptr<ClientSocketPool::SocketParams>
 ClientSocketPool::SocketParams::CreateForHttpForTesting() {
   return base::MakeRefCounted<SocketParams>(
       /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+}
+
+// static
+std::string_view ClientSocketPool::GroupId::GetPrivacyModeGroupIdPrefix(
+    PrivacyMode privacy_mode) {
+  switch (privacy_mode) {
+    case PrivacyMode::PRIVACY_MODE_DISABLED:
+      return "";
+    case PrivacyMode::PRIVACY_MODE_ENABLED:
+      return "pm/";
+    case PrivacyMode::PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS:
+      return "pmwocc/";
+    case PrivacyMode::PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED:
+      return "pmpsa/";
+  }
+}
+
+// static
+std::string_view ClientSocketPool::GroupId::GetSecureDnsPolicyGroupIdPrefix(
+    SecureDnsPolicy secure_dns_policy) {
+  switch (secure_dns_policy) {
+    case SecureDnsPolicy::kAllow:
+      return "";
+    case SecureDnsPolicy::kDisable:
+      return "dsd/";
+    case SecureDnsPolicy::kBootstrap:
+      return "dns_bootstrap/";
+  }
 }
 
 ClientSocketPool::GroupId::GroupId()

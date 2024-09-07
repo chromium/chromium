@@ -68,9 +68,9 @@
 #include "media/mojo/services/mojo_video_encode_accelerator_provider.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "skia/buildflags.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
-#include "third_party/skia/include/gpu/gl/GrGLInterface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLAssembleInterface.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLInterface.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_context.h"
@@ -814,7 +814,10 @@ void GpuServiceImpl::CreateJpegDecodeAccelerator(
         jda_receiver) {
   DCHECK(io_runner_->BelongsToCurrentThread());
   chromeos_camera::MojoMjpegDecodeAcceleratorService::Create(
-      std::move(jda_receiver));
+      std::move(jda_receiver),
+      base::BindRepeating(
+          &GpuServiceImpl::SetMjpegDecodeAcceleratorBeginFrameCB,
+          base::Unretained(this)));
 }
 
 void GpuServiceImpl::CreateJpegEncodeAccelerator(
@@ -1510,6 +1513,38 @@ void GpuServiceImpl::GetPeakMemoryUsageOnMainThread(
 
 gpu::Scheduler* GpuServiceImpl::GetGpuScheduler() {
   return scheduler_;
+}
+
+bool GpuServiceImpl::OnBeginFrameDerivedImpl(const BeginFrameArgs& args) {
+  io_runner_->PostTask(FROM_HERE,
+                       base::BindOnce(&GpuServiceImpl::OnBeginFrameOnIO,
+                                      base::Unretained(this), args));
+  return true;
+}
+
+void GpuServiceImpl::OnBeginFrameSourcePausedChanged(bool paused) {}
+
+void GpuServiceImpl::OnBeginFrameOnIO(const BeginFrameArgs& args) {
+  DCHECK(io_runner_->BelongsToCurrentThread());
+
+  if (mjpeg_decode_accelerator_begin_frame_cb_) {
+    mjpeg_decode_accelerator_begin_frame_cb_->Run();
+  }
+}
+
+void GpuServiceImpl::SetRequestBeginFrameForGpuServiceCB(
+    RequestBeginFrameForGpuServiceCB cb) {
+  request_begin_frame_for_gpu_service_cb_ = std::move(cb);
+}
+
+void GpuServiceImpl::SetMjpegDecodeAcceleratorBeginFrameCB(
+    std::optional<base::RepeatingClosure> cb) {
+  DCHECK(io_runner_->BelongsToCurrentThread());
+
+  main_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(request_begin_frame_for_gpu_service_cb_,
+                                        cb ? true : false));
+  mjpeg_decode_accelerator_begin_frame_cb_ = std::move(cb);
 }
 
 #if BUILDFLAG(IS_WIN)

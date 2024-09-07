@@ -108,7 +108,7 @@ bool SkiaOutputDeviceDawn::Initialize(gpu::SurfaceHandle surface_handle) {
       std::make_unique<gl::VSyncProviderWin>(window_handle_to_draw_to);
 
   // Create the wgpu::Surface from our HWND.
-  wgpu::SurfaceDescriptorFromWindowsHWND hwnd_desc;
+  wgpu::SurfaceSourceWindowsHWND hwnd_desc;
   hwnd_desc.hwnd = window_handle_to_draw_to;
   hwnd_desc.hinstance = GetModuleHandle(nullptr);
 
@@ -126,7 +126,7 @@ bool SkiaOutputDeviceDawn::Initialize(gpu::SurfaceHandle surface_handle) {
   auto& scoped_java_surface = absl::get<gl::ScopedJavaSurface>(surface_variant);
   android_native_window_ = gl::ScopedANativeWindow(scoped_java_surface);
 
-  wgpu::SurfaceDescriptorFromAndroidNativeWindow android_native_window_desc;
+  wgpu::SurfaceSourceAndroidNativeWindow android_native_window_desc;
   android_native_window_desc.window = android_native_window_.a_native_window();
   surface_desc.nextInChain = &android_native_window_desc;
 #endif

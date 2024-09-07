@@ -81,7 +81,7 @@ WEB_TESTS_PATH_PREFIX = '/third_party/blink/' + WEB_TESTS_LAST_COMPONENT
 # content/shell/app/blink_test_platform_support_fuchsia.cc .
 FONTS_DEVICE_PATH = '/system/fonts'
 
-PROCESS_START_TIMEOUT = 20
+PROCESS_START_TIMEOUT = 60
 
 _log = logging.getLogger(__name__)
 
@@ -378,9 +378,9 @@ class FuchsiaServerProcess(server_process.ServerProcess):
 
         self._set_proc(proc)
 
-    def stop(self, timeout_secs=0.0, kill_tree=False):
-        result = super(FuchsiaServerProcess, self).stop(
-            timeout_secs, kill_tree)
+    def stop(self, timeout_secs=0.0, kill_tree=False, send_sigterm=False):
+        result = super(FuchsiaServerProcess,
+                       self).stop(timeout_secs, kill_tree, send_sigterm)
         if self._symbolizer_proc:
             self._symbolizer_proc.kill()
         return result

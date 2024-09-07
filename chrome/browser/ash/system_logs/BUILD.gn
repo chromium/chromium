@@ -65,7 +65,6 @@ static_library("system_logs") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/cryptohome",
@@ -84,13 +83,10 @@ static_library("system_logs") {
   ]
 
   public_deps = [
-    "//chrome/browser/ash/crosapi:crosapi",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//components/feedback",
     "//components/feedback/redaction_tool",
   ]
-
-  allow_circular_includes_from = [ "//chrome/browser/ui/webui/ash" ]
 }
 
 source_set("unit_tests") {
@@ -110,12 +106,14 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":system_logs",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
+    "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/mojo_service_manager:test_support",
     "//chromeos/ash/services/cros_healthd/public/cpp:test_support",
@@ -132,5 +130,9 @@ source_set("browser_tests") {
 
   sources = [ "crosapi_system_log_source_browsertest.cc" ]
 
-  deps = [ "//chrome/test:test_support" ]
+  deps = [
+    ":system_logs",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/test:test_support",
+  ]
 }

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -36,7 +37,9 @@ class GeminiIntroScreenTest : public OobeBaseTest {
   GeminiIntroScreenTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kFeatureManagementOobeAiIntro,
-         features::kFeatureManagementOobeGeminiIntro},
+         features::kFeatureManagementOobeGeminiIntro,
+         features::kOobePerksDiscovery,
+         features::kOobeGeminiIntroForTesting},
         {});
   }
 
@@ -94,6 +97,21 @@ IN_PROC_BROWSER_TEST_F(GeminiIntroScreenTest, BackwardFlow) {
   test::OobeJS().TapOnPath(kBackButtonPath);
   EXPECT_EQ(WaitForScreenExitResult(), GeminiIntroScreen::Result::kBack);
   OobeScreenWaiter(AiIntroScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(GeminiIntroScreenTest, GamgeePerkShown) {
+  login_manager_.LoginAsNewRegularUser();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+
+  // Setting the user has seen the gamgee perk in OOBE.
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetBoolean(prefs::kOobePerksDiscoveryGamgeeShown, true);
+
+  WizardController::default_controller()->AdvanceToScreen(
+      GeminiIntroScreenView::kScreenId);
+
+  EXPECT_EQ(WaitForScreenExitResult(),
+            GeminiIntroScreen::Result::kNotApplicable);
 }
 
 class GeminiIntroScreenChildTest : public GeminiIntroScreenTest {

@@ -6,9 +6,6 @@ include_rules = [
   "+components/input/native_web_keyboard_event.h",
   "+components/remote_cocoa/app_shim",
   "+content/app_shim_remote_cocoa",
-  "+content/browser/accessibility/browser_accessibility_cocoa.h",
-  "+content/browser/accessibility/browser_accessibility_mac.h",
-  "+content/browser/accessibility/browser_accessibility_manager_mac.h",
   "+content/browser/cocoa/system_hotkey_helper_mac.h",
   "+content/browser/cocoa/system_hotkey_map.h",
   "+content/browser/download/drag_download_file.h",
@@ -32,4 +29,7 @@ include_rules = [
   "+content/public/common/drop_data.h",
   "+content/public/common/widget_type.h",
   "+third_party/blink/public/mojom/webshare/webshare.mojom.h",
+  "+ui/accessibility/platform/browser_accessibility_cocoa.h",
+  "+ui/accessibility/platform/browser_accessibility_mac.h",
+  "+ui/accessibility/platform/browser_accessibility_manager_mac.h",
 ]

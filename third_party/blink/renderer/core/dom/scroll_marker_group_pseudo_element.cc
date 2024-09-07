@@ -4,6 +4,11 @@
 
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+
 namespace blink {
 void ScrollMarkerGroupPseudoElement::Trace(Visitor* v) const {
   v->Trace(selected_marker_);
@@ -53,6 +58,38 @@ void ScrollMarkerGroupPseudoElement::RemoveFromFocusGroup(
   }
 }
 
+void ScrollMarkerGroupPseudoElement::ActivateNextScrollMarker() {
+  ActivateScrollMarker(&ScrollMarkerGroupPseudoElement::FindNextScrollMarker);
+}
+
+void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker() {
+  ActivateScrollMarker(
+      &ScrollMarkerGroupPseudoElement::FindPreviousScrollMarker);
+}
+
+void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
+    ScrollMarkerPseudoElement* (ScrollMarkerGroupPseudoElement::*
+                                    find_scroll_marker_func)(const Element&)) {
+  if (!selected_marker_) {
+    return;
+  }
+  ScrollMarkerPseudoElement* scroll_marker =
+      (this->*find_scroll_marker_func)(*Selected());
+  if (!scroll_marker || scroll_marker == selected_marker_) {
+    return;
+  }
+  mojom::blink::ScrollIntoViewParamsPtr params =
+      scroll_into_view_util::CreateScrollIntoViewParams(
+          *scroll_marker->OriginatingElement()->GetComputedStyle());
+  scroll_marker->OriginatingElement()->ScrollIntoViewNoVisualUpdate(
+      std::move(params));
+  GetDocument().SetFocusedElement(scroll_marker,
+                                  FocusParams(SelectionBehaviorOnFocus::kNone,
+                                              mojom::blink::FocusType::kNone,
+                                              /*capabilities=*/nullptr));
+  SetSelected(*scroll_marker);
+}
+
 void ScrollMarkerGroupPseudoElement::SetSelected(
     ScrollMarkerPseudoElement& scroll_marker) {
   if (selected_marker_ == scroll_marker) {
@@ -79,10 +116,6 @@ void ScrollMarkerGroupPseudoElement::Dispose() {
 }
 
 void ScrollMarkerGroupPseudoElement::ClearFocusGroup() {
-  if (selected_marker_) {
-    selected_marker_->SetSelected(false);
-    selected_marker_ = nullptr;
-  }
   focus_group_.clear();
 }
 

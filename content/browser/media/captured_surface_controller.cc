@@ -229,6 +229,42 @@ CapturedSurfaceControlResult DoSetZoomLevel(
   return CapturedSurfaceControlResult::kSuccess;
 }
 
+// Return success if all conditions for CSC apply, otherwise fail with the
+// appropriate error code.
+CapturedSurfaceControlResult FinalizeRequestPermission(
+    GlobalRenderFrameHostId capturer_rfh_id,
+    base::WeakPtr<WebContents> captured_wc) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  WebContentsImpl* const capturer_wci =
+      WebContentsImpl::FromRenderFrameHostImpl(
+          RenderFrameHostImpl::FromID(capturer_rfh_id));
+  if (!capturer_wci) {
+    // The capturing frame or tab appears to have closed asynchronously.
+    return CapturedSurfaceControlResult::kCapturerNotFoundError;
+  }
+
+  RenderFrameHost* const captured_rfh =
+      captured_wc ? captured_wc->GetPrimaryMainFrame() : nullptr;
+  if (!captured_rfh) {
+    return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
+  }
+
+  RenderFrameHostImpl* const captured_rfhi =
+      RenderFrameHostImpl::FromID(captured_rfh->GetGlobalId());
+  RenderWidgetHostImpl* const captured_rwhi =
+      captured_rfhi ? captured_rfhi->GetRenderWidgetHost() : nullptr;
+  if (!captured_rwhi) {
+    return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
+  }
+
+  if (capturer_wci == captured_wc.get()) {
+    return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
+  }
+
+  return CapturedSurfaceControlResult::kSuccess;
+}
+
 void OnPermissionCheckResult(
     base::OnceCallback<CapturedSurfaceControlResult()> action_callback,
     base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback,
@@ -378,6 +414,24 @@ void CapturedSurfaceController::SetZoomLevel(
       base::BindOnce(&DoSetZoomLevel, capturer_rfh_id_, captured_wc_.value(),
                      zoom_level);
 
+  permission_manager_->CheckPermission(
+      ComposeCallbacks(std::move(action_callback), std::move(reply_callback)));
+}
+
+void CapturedSurfaceController::RequestPermission(
+    base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!captured_wc_.has_value()) {
+    std::move(reply_callback)
+        .Run(CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
+    return;
+  }
+
+  // If the permission check is successful, just return success.
+  base::OnceCallback<CapturedSurfaceControlResult(void)> action_callback =
+      base::BindOnce(&FinalizeRequestPermission, capturer_rfh_id_,
+                     captured_wc_.value());
   permission_manager_->CheckPermission(
       ComposeCallbacks(std::move(action_callback), std::move(reply_callback)));
 }

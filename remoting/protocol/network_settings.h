@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "remoting/base/port_range.h"
+#include "remoting/base/session_policies.h"
 
 namespace remoting::protocol {
 
@@ -16,33 +17,35 @@ struct NetworkSettings {
   // When hosts are configured with NAT traversal disabled they will
   // typically also limit their P2P ports to this range, so that
   // sessions may be blocked or un-blocked via firewall rules.
-  static const uint16_t kDefaultMinPort = 12400;
-  static const uint16_t kDefaultMaxPort = 12409;
+  static constexpr uint16_t kDefaultMinPort = 12400;
+  static constexpr uint16_t kDefaultMaxPort = 12409;
 
-  enum Flags {
+  enum Flags : uint32_t {
     // Don't use STUN or relay servers. Accept incoming P2P connection
     // attempts, but don't initiate any. This ensures that the peer is
     // on the same network. Note that connection will always fail if
     // both ends use this mode.
-    NAT_TRAVERSAL_DISABLED = 0x0,
+    NAT_TRAVERSAL_DISABLED = 0x0u,
 
     // Allow outgoing connections, even when STUN and RELAY are not enabled.
-    NAT_TRAVERSAL_OUTGOING = 0x1,
+    NAT_TRAVERSAL_OUTGOING = 0x1u,
 
     // Active NAT traversal using STUN.
-    NAT_TRAVERSAL_STUN = 0x2,
+    NAT_TRAVERSAL_STUN = 0x2u,
 
     // Allow the use of relay servers when a direct connection is not available.
-    NAT_TRAVERSAL_RELAY = 0x4,
+    NAT_TRAVERSAL_RELAY = 0x4u,
 
     // Active NAT traversal using STUN and relay servers.
     NAT_TRAVERSAL_FULL =
         NAT_TRAVERSAL_STUN | NAT_TRAVERSAL_RELAY | NAT_TRAVERSAL_OUTGOING
   };
 
-  NetworkSettings() {}
+  NetworkSettings();
+  ~NetworkSettings();
 
-  explicit NetworkSettings(uint32_t flags) : flags(flags) {}
+  explicit NetworkSettings(uint32_t flags);
+  explicit NetworkSettings(const SessionPolicies& policies);
 
   uint32_t flags = NAT_TRAVERSAL_DISABLED;
 

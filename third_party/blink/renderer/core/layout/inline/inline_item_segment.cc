@@ -25,7 +25,7 @@ namespace {
 // UScriptCode is -1 (USCRIPT_INVALID_CODE) to 177 as of ICU 60.
 // This can be packed to 8 bits, by handling -1 separately.
 static constexpr unsigned kScriptBits = 8;
-static constexpr unsigned kFontFallbackPriorityBits = 2;
+static constexpr unsigned kFontFallbackPriorityBits = 3;
 static constexpr unsigned kRenderOrientationBits = 1;
 
 static constexpr unsigned kScriptMask = (1 << kScriptBits) - 1;

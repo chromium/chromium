@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -79,7 +80,8 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
                     context,
                     base::BindRepeating(&CreateMockPrivacySandboxService)));
 
-    ON_CALL(*mock_privacy_sandbox_service, GetRequiredPromptType())
+    ON_CALL(*mock_privacy_sandbox_service,
+            GetRequiredPromptType(PrivacySandboxService::SurfaceType::kDesktop))
         .WillByDefault(testing::Return(TestPromptType()));
     ON_CALL(*mock_privacy_sandbox_service, IsPromptOpenForBrowser(testing::_))
         .WillByDefault(testing::Return(false));
@@ -145,48 +147,16 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperTest, NoPromptRequired) {
 class PrivacySandboxPromptHelperTestWithParam
     : public PrivacySandboxPromptHelperTest,
       public testing::WithParamInterface<PrivacySandboxService::PromptType> {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    // Not setting
-    // `SearchEngineChoiceDialogServiceFactory::ScopedChromeBuildOverrideForTesting`
-    // will not initialize the `SearchEngineChoiceDialogService` in
-    // tests thus simulating the fact that the user is not eligible for the
-    // search engine choice or has already made a choice in a previous Chrome
-    // run.
-    std::vector<base::test::FeatureRef> enabled_features = {
-        switches::kSearchEngineChoiceTrigger};
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    test_prompt_type_ = GetParam();
-    switch (test_prompt_type_) {
-      case PrivacySandboxService::PromptType::kNone:
-        [[fallthrough]];
-      case PrivacySandboxService::PromptType::kM1Consent:
-        [[fallthrough]];
-      case PrivacySandboxService::PromptType::kM1NoticeROW:
-        [[fallthrough]];
-      case PrivacySandboxService::PromptType::kM1NoticeEEA:
-        [[fallthrough]];
-      case PrivacySandboxService::PromptType::kM1NoticeRestricted: {
-        enabled_features.push_back(privacy_sandbox::kPrivacySandboxSettings4);
-        break;
-      }
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    PrivacySandboxPromptHelperTest::SetUpInProcessBrowserTestFixture();
-  }
-
  private:
   PrivacySandboxService::PromptType TestPromptType() override {
     // Setup appropriate prompt type based on testing parameter. Helper
     // behavior should be "identical" regardless of which type of prompt is
     // required.
-    return test_prompt_type_;
+    return GetParam();
   }
 
-  PrivacySandboxService::PromptType test_prompt_type_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      privacy_sandbox::kPrivacySandboxSettings4};
 };
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
@@ -633,7 +603,7 @@ IN_PROC_BROWSER_TEST_P(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           browser()->profile());
   search_engine_choice_dialog_service->NotifyChoiceMade(
-      /*prepopulate_id=*/1,
+      /*prepopulate_id=*/1, /*save_guest_mode_selection=*/false,
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
 
   // Make sure that the Privacy Sandbox prompt doesn't get displayed on the next

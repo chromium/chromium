@@ -26,6 +26,7 @@
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -94,9 +95,9 @@ enum DiceTokenFetchResult {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    const std::vector<uint8_t>& wrapped_binding_key_to_reuse) {
-  return std::make_unique<RegistrationTokenHelper>(
-      unexportable_key_service, wrapped_binding_key_to_reuse);
+    RegistrationTokenHelper::KeyInitParam key_init_param) {
+  return std::make_unique<RegistrationTokenHelper>(unexportable_key_service,
+                                                   std::move(key_init_param));
 }
 
 DiceResponseHandler::RegistrationTokenHelperFactory
@@ -368,7 +369,9 @@ void DiceResponseHandler::ProcessDiceHeader(
           dice_params.signin_info->account_info;
       ProcessDiceSigninHeader(
           info.gaia_id, info.email, dice_params.signin_info->authorization_code,
-          dice_params.signin_info->no_authorization_code, std::move(delegate));
+          dice_params.signin_info->no_authorization_code,
+          dice_params.signin_info->supported_algorithms_for_token_binding,
+          std::move(delegate));
       return;
     }
     case signin::DiceAction::ENABLE_SYNC: {
@@ -415,6 +418,7 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
     const std::string& email,
     const std::string& authorization_code,
     bool no_authorization_code,
+    const std::string& supported_algorithms_for_token_binding,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate) {
   if (no_authorization_code) {
     lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
@@ -464,19 +468,39 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (!registration_token_helper_factory_.is_null() &&
-      !registration_token_helper_) {
+      !registration_token_helper_ &&
+      !supported_algorithms_for_token_binding.empty()) {
     CHECK(switches::IsChromeRefreshTokenBindingEnabled(
         signin_client_->GetPrefs()));
-    registration_token_helper_ = registration_token_helper_factory_.Run(
-        GetWrappedBindingKeyToReuse(*identity_manager_));
+    std::vector<uint8_t> wrapped_binding_key_to_reuse =
+        GetWrappedBindingKeyToReuse(*identity_manager_);
+    if (!wrapped_binding_key_to_reuse.empty()) {
+      // Ignore the value of `supported_algorithms_for_token_binding` in favor
+      // of an existing binding key.
+      registration_token_helper_ = registration_token_helper_factory_.Run(
+          std::move(wrapped_binding_key_to_reuse));
+    } else {
+      registration_token_helper_ = registration_token_helper_factory_.Run(
+          signin::ParseSignatureAlgorithmList(
+              supported_algorithms_for_token_binding));
+    }
   }
+  // If `registration_token_helper_` was reused, its supported algorithm list
+  // may mismatch `supported_algorithms_for_token_binding`. We ignore this
+  // because it's more important to reuse the same key.
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   token_fetchers_.push_back(std::make_unique<DiceTokenFetcher>(
       gaia_id, email, authorization_code, signin_client_, account_reconcilor_,
       std::move(delegate),
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      registration_token_helper_.get(),
+      // It's important to check `supported_algorithms_for_token_binding` here
+      // in addition to the factory call above because
+      // `registration_token_helper_` might be shared between several
+      // `DiceTokenFetcher`s.
+      supported_algorithms_for_token_binding.empty()
+          ? nullptr
+          : registration_token_helper_.get(),
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       this));
 }

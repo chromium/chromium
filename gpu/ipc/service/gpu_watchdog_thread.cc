@@ -127,7 +127,7 @@ GpuWatchdogThread::~GpuWatchdogThread() {
   Stop();  // stop the watchdog thread
 
   base::CurrentThread::Get()->RemoveTaskObserver(this);
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   GpuWatchdogThreadEventHistogram(GpuWatchdogThreadEvent::kGpuWatchdogEnd);
 #if BUILDFLAG(IS_WIN)
   if (watched_thread_handle_)
@@ -343,7 +343,8 @@ void GpuWatchdogThread::AddPowerObserver() {
   // Adding the Observer to the power monitor is safe even if power monitor is
   // not yet initialized.
   bool is_system_suspended =
-      base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(this);
+      base::PowerMonitor::GetInstance()
+          ->AddPowerSuspendObserverAndReturnSuspendedState(this);
   if (is_system_suspended)
     StopWatchdogTimeoutTask(kPowerSuspendResume);
 }

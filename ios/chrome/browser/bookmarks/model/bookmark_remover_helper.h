@@ -5,14 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_REMOVER_HELPER_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_REMOVER_HELPER_H_
 
-#include "base/functional/callback.h"
-#include "base/location.h"
+#import "base/functional/callback.h"
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/sequence_checker.h"
-#include "components/bookmarks/browser/base_bookmark_model_observer.h"
-
-class ChromeBrowserState;
+#import "base/scoped_observation.h"
+#import "base/sequence_checker.h"
+#import "components/bookmarks/browser/base_bookmark_model_observer.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace bookmarks {
 class BookmarkModel;

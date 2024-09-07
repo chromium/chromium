@@ -8,6 +8,7 @@ import argparse
 import collections
 import copy
 import os
+import pathlib
 import sys
 import typing
 import re
@@ -36,6 +37,10 @@ import action_helpers
 import jinja2
 import grammar
 
+# TODO(crbug.com/361369290): Remove this disable once DomatoLPM development is
+# finished and upstream changes can be made to expose the relevant protected
+# fields.
+# pylint: disable=protected-access
 
 def to_snake_case(name):
   name = re.sub(r'([A-Z]{2,})([A-Z][a-z])', r'\1_\2', name)
@@ -99,7 +104,13 @@ _C_STR_TRANS = str.maketrans({
     '\\': '\\\\'
 })
 
-CPP_PROTO_NS = '::testing::libfuzzer::research::domatolpm::'
+BASE_PROTO_NS = 'domatolpm.generated'
+
+
+def to_cpp_ns(proto_ns: str) -> str:
+  return proto_ns.replace('.', '::')
+
+
 CPP_HANDLER_PREFIX = 'handle_'
 
 
@@ -248,7 +259,7 @@ class CppStringTableHandler(CppFunctionHandler):
   def __init__(self, name: str, var_name: str,
                strings: typing.List[CppStringExpr]):
     super().__init__(name=f'{CPP_HANDLER_PREFIX}{name}', exprs=[])
-    self.proto_type = f'const {CPP_PROTO_NS}{name}& arg'
+    self.proto_type = f'{name}& arg'
     self.strings = strings
     self.var_name = var_name
 
@@ -265,7 +276,7 @@ class CppProtoMessageFunctionHandler(CppFunctionHandler):
                exprs: typing.List[CppExpression],
                creator: typing.Optional[typing.Dict[str, str]] = None):
     super().__init__(name=f'{CPP_HANDLER_PREFIX}{name}', exprs=exprs)
-    self.proto_type = f'const {CPP_PROTO_NS}{name}& arg'
+    self.proto_type = f'{name}& arg'
     self.creator = creator
 
   def creates_new(self):
@@ -282,7 +293,7 @@ class CppOneOfMessageFunctionHandler(CppFunctionHandler):
   def __init__(self, name: str, switch_name: str,
                cases: typing.Dict[str, typing.List[CppExpression]]):
     super().__init__(name=f'{CPP_HANDLER_PREFIX}{name}', exprs=[])
-    self.proto_type = f'const {CPP_PROTO_NS}{name}& arg'
+    self.proto_type = f'{name}& arg'
     self.switch_name = switch_name
     self.cases = cases
 
@@ -318,12 +329,14 @@ class DomatoBuilder:
       self.root = 'lines'
     if self.grammar._root and self.grammar._root == 'root':
       rules = self.grammar._creators[self.grammar._root]
-      for rule in rules:
-        for part in rule['parts']:
-          if part['type'] == 'tag' and part[
-              'tagname'] == 'lines' and 'count' in part:
-            self.root = f'lines_{part["count"]}'
-            break
+      # multiple roots doesn't make sense, so we only consider the last defined
+      # one.
+      rule = rules[-1]
+      for part in rule['parts']:
+        if part['type'] == 'tag' and part[
+            'tagname'] == 'lines' and 'count' in part:
+          self.root = f'lines_{part["count"]}'
+          break
     self._built_in_types_parser = {
         'int': self._int_handler,
         'int32': self._int_handler,
@@ -415,6 +428,17 @@ class DomatoBuilder:
         name='fuzzcase',
         exprs=[CppHandlerCallExpr(handler=root_handler, field_name='root')])
     return fuzz_case, fuzz_fct
+
+  def get_protos(self) -> typing.Tuple[typing.List[ProtoMessage]]:
+    if self.should_generate_one_line_handler():
+      # We're handling a code grammar.
+      roots = [v.msg for k, v in self.handlers.items() if k.startswith('line')]
+      roots.append(self.get_roots()[0])
+      non_roots = [
+          v.msg for k, v in self.handlers.items() if not k.startswith('line')
+      ]
+      return roots, non_roots
+    return [self.get_roots()[0]], self.all_proto_messages()
 
   def simplify(self):
     """Simplifies the proto and functions."""
@@ -889,28 +913,43 @@ class DomatoBuilder:
     return len(to_remove) > 0
 
 
-def render_proto(environment: jinja2.Environment, out_f: str,
-                 builder: DomatoBuilder):
+def _render_internal(template: jinja2.Template,
+                     context: typing.Dict[str, typing.Any], out_f: str):
+  with action_helpers.atomic_output(out_f, mode='w') as f:
+    f.write(template.render(context))
+
+
+def _render_proto_internal(
+    template: jinja2.Template, out_f: str,
+    proto_messages: typing.List[typing.Union[ProtoMessage, OneOfProtoMessage]],
+    should_generate_repeated_lines: bool, proto_ns: str,
+    imports: typing.List[str]):
+  _render_internal(template, {
+      'messages': [m for m in proto_messages if not m.is_one_of()],
+      'oneofmessages': [m for m in proto_messages if m.is_one_of()],
+      'generate_repeated_lines': should_generate_repeated_lines,
+      'proto_ns': proto_ns,
+      'imports': imports,
+  },
+                   out_f=out_f)
+
+
+def render_proto(environment: jinja2.Environment, generated_dir: str,
+                 out_f: str, name: str, builder: DomatoBuilder):
   template = environment.get_template('domatolpm.proto.tmpl')
-  all_messages = builder.all_proto_messages()
-  msgs = [m for m in all_messages if not m.is_one_of()]
-  oneofs = [m for m in all_messages if m.is_one_of()]
-  fuzzcase, _ = builder.get_roots()
-  with action_helpers.atomic_output(f'{out_f}.proto', mode='w') as f:
-    f.write(
-        template.render({
-            'messages':
-            msgs,
-            'oneofmessages':
-            oneofs,
-            'fuzzcase':
-            fuzzcase,
-            'generate_repeated_lines':
-            builder.should_generate_repeated_lines(),
-        }))
+  roots, non_roots = builder.get_protos()
+  ns = f'{BASE_PROTO_NS}.{name}'
+  sub_proto_filename = pathlib.PurePosixPath(f'{out_f}_sub.proto').name
+  import_path = pathlib.PurePosixPath(generated_dir).joinpath(
+      sub_proto_filename)
+  _render_proto_internal(template, f'{out_f}.proto', roots,
+                         builder.should_generate_repeated_lines(), ns,
+                         [str(import_path)])
+  _render_proto_internal(template, f'{out_f}_sub.proto', non_roots, False, ns,
+                         [])
 
 
-def render_cpp(environment: jinja2.Environment, out_f: str,
+def render_cpp(environment: jinja2.Environment, out_f: str, name: str,
                builder: DomatoBuilder):
   functions = builder.all_cpp_functions()
   funcs = [f for f in functions if f.is_message_handler()]
@@ -928,14 +967,13 @@ def render_cpp(environment: jinja2.Environment, out_f: str,
       'generate_one_line_handler': builder.should_generate_one_line_handler(),
       'line_prefix': builder.get_line_prefix(),
       'line_suffix': builder.get_line_suffix(),
-      'proto_ns': CPP_PROTO_NS,
+      'proto_ns': to_cpp_ns(f'{BASE_PROTO_NS}.{name}'),
+      'cpp_ns': f'domatolpm::{name}',
   }
   template = environment.get_template('domatolpm.cc.tmpl')
-  with action_helpers.atomic_output(f'{out_f}.cc', mode='w') as f:
-    f.write(template.render(rendering_context))
+  _render_internal(template, rendering_context, f'{out_f}.cc')
   template = environment.get_template('domatolpm.h.tmpl')
-  with action_helpers.atomic_output(f'{out_f}.h', mode='w') as f:
-    f.write(template.render(rendering_context))
+  _render_internal(template, rendering_context, f'{out_f}.h')
 
 
 def main():
@@ -946,11 +984,19 @@ def main():
                       '--path',
                       required=True,
                       help='The path to a Domato grammar file.')
+  parser.add_argument('-n',
+                      '--name',
+                      required=True,
+                      help='The name of this grammar.')
   parser.add_argument(
       '-f',
       '--file-format',
       required=True,
       help='The path prefix to which the files should be generated.')
+  parser.add_argument('-d',
+                      '--generated-dir',
+                      required=True,
+                      help='The path to the target gen directory.')
 
   args = parser.parse_args()
   g = grammar.Grammar()
@@ -962,8 +1008,9 @@ def main():
   builder = DomatoBuilder(g)
   builder.parse_grammar()
   builder.simplify()
-  render_cpp(environment, args.file_format, builder)
-  render_proto(environment, args.file_format, builder)
+  render_cpp(environment, args.file_format, args.name, builder)
+  render_proto(environment, args.generated_dir, args.file_format, args.name,
+               builder)
 
 
 if __name__ == '__main__':

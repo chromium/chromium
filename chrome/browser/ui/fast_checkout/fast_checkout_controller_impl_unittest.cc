@@ -57,8 +57,6 @@ class TestFastCheckoutControllerImpl : public FastCheckoutControllerImpl {
   raw_ptr<FastCheckoutView> view_;
 };
 
-}  // namespace
-
 class FastCheckoutControllerImplTest : public ChromeRenderViewHostTestHarness {
  protected:
   FastCheckoutControllerImplTest() = default;
@@ -117,3 +115,5 @@ TEST_F(FastCheckoutControllerImplTest, OnDismiss) {
   EXPECT_CALL(delegate_, OnDismiss);
   fast_checkout_controller_->OnDismiss();
 }
+
+}  // namespace

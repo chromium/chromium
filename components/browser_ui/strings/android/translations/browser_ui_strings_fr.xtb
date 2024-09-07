@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1192844206376121885">L'ensemble des données et cookies stockés par <ph name="ORIGIN" /> seront supprimés.</translation>
 <translation id="1201402288615127009">Suivant</translation>
+<translation id="1240190568154816272">Astuces Chrome</translation>
 <translation id="1242008676835033345">Intégration sur <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1289742167380433257">Pour sauvegarder vos données, les images de cette page ont été optimisées par Google.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Demander avant d'autoriser les sites à se connecter à un appareil (recommandé)</translation>
 <translation id="1779089405699405702">Décodage d'images</translation>
 <translation id="1785415724048343560">Recommandé pour une expérience optimale</translation>
+<translation id="1799920918471566157">Astuces Chrome</translation>
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez également l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">L'accès à la position est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
@@ -147,6 +149,7 @@
 <translation id="3448554387819310837">Lorsque cette option est activée, les sites peuvent demander à utiliser votre appareil photo. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre appareil photo.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome bloquera de nouveau les cookies demain}one{Chrome bloquera de nouveau les cookies dans # jour}other{Chrome bloquera de nouveau les cookies dans # jours}}</translation>
 <translation id="3521663503435878242">Sites de <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Ne pas autoriser les sites à suivre vos mains</translation>
 <translation id="3536227077203206203">Accès autorisé cette fois-ci</translation>
 <translation id="3538390592868664640">Empêcher les sites de créer un plan 3D de votre environnement ou de suivre la position de la caméra</translation>
 <translation id="3544058026430919413">Une entreprise peut définir un groupe de sites autorisés à utiliser des cookies pour partager votre activité dans le groupe. Cette option est désactivée en navigation privée.</translation>
@@ -157,6 +160,7 @@
 <translation id="3600792891314830896">Couper le son des sites</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3628308229821498208">Recherches suggérées</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}one{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}other{<ph name="RWS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}}</translation>
 <translation id="3697164069658504920">Lorsque cette option est activée, les sites peuvent demander à utiliser des périphériques USB. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser de périphérique USB.</translation>
 <translation id="3707034683772193706">Un site auquel vous accédez peut enregistrer une petite quantité d'informations dans Chrome, principalement pour confirmer que vous n'êtes pas un robot</translation>
 <translation id="3721953990244350188">Ignorer et afficher la prochaine action disponible</translation>
@@ -218,6 +222,7 @@
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par ton parent</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
+<translation id="4676059169848868271">Pour autoriser <ph name="APP_NAME" /> à utiliser le suivi des mains, activez-le également dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de lumière</translation>
 <translation id="4755971844837804407">Lorsque cette option est activée, les sites peuvent vous présenter tous types d'annonces. Lorsqu'elle est désactivée, les sites ne peuvent pas afficher d'annonces intrusives ou trompeuses.</translation>
 <translation id="4779083564647765204">Zoom</translation>
@@ -236,6 +241,7 @@
 <translation id="4996978546172906250">Partager via</translation>
 <translation id="5001526427543320409">Cookies tiers</translation>
 <translation id="5007392906805964215">Afficher</translation>
+<translation id="5014182796621173645">Vous l'avez consulté <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5048398596102334565">Autoriser les sites à accéder à vos capteurs de mouvement (recommandé)</translation>
 <translation id="5050380848339752099">Ce site s'apprête à partager des informations avec une appli en dehors du mode navigation privée.</translation>
@@ -245,6 +251,7 @@
 <translation id="5091663350197390230">Lorsque cette option est activée, les sites peuvent utiliser JavaScript. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser JavaScript.</translation>
 <translation id="5099358668261120049">L'ensemble des données et cookies stockés par <ph name="ORIGIN" /> ou par l'appli associée sur votre écran d'accueil seront supprimés.</translation>
 <translation id="5100237604440890931">Réduit – Cliquer pour développer</translation>
+<translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous appuyez sur des liens dans des messages, des documents et d'autres applis</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baisse de prix dans les onglets ouverts}one{Baisse de prix dans les onglets ouverts}other{Baisses de prix dans les onglets ouverts}}</translation>
 <translation id="5186036860380548585">Cette option est disponible en haut de l'écran</translation>
@@ -276,6 +283,7 @@
 <translation id="5553374991681107062">Les plus récents</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloquée</translation>
+<translation id="5632485077360054581">Démonstration</translation>
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5668404140385795438">Ignore la demande d'un site d'empêcher les zooms avant</translation>
 <translation id="5677928146339483299">Bloqués</translation>
@@ -286,6 +294,7 @@
 <translation id="5706552988683188916">Cette action supprimera les cookies et les autres données de site pour <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Les cookies tiers sont bloqués lorsque vous utilisez le mode navigation privée</translation>
 <translation id="5740126560802162366">Les sites peuvent enregistrer des données sur votre appareil</translation>
+<translation id="5750869797196646528">Suivi des mains</translation>
 <translation id="5771720122942595109">Autorisation refusée : <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5844448279347999754">Lorsque cette option est activée, les sites peuvent demander à voir le texte et les images enregistrés dans le presse-papiers. Lorsqu'elle est désactivée, les sites ne peuvent pas voir le texte ni les images enregistrés dans le presse-papiers.</translation>
@@ -347,12 +356,15 @@
 <translation id="656065428026159829">Voir plus</translation>
 <translation id="6561560012278703671">Activer les notifications discrètes (empêche les notifications de vous interrompre)</translation>
 <translation id="6593061639179217415">Version pour ordinateur</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Cookies autorisés pour <ph name="RWS_MEMBERS_COUNT" /> site <ph name="RWS_OWNER" />}one{Cookies autorisés pour <ph name="RWS_MEMBERS_COUNT" /> site <ph name="RWS_OWNER" />}other{Cookies autorisés pour <ph name="RWS_MEMBERS_COUNT" /> sites <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Go</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
 <translation id="662080504995468778">Rester</translation>
 <translation id="6653342741369270081">Appuyez sur le bouton Retour pour quitter le plein écran.</translation>
+<translation id="6683865262523156564">Ce site fait partie d'un groupe qui peut voir votre activité. Le groupe est défini par <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Photos de profil</translation>
 <translation id="6697925417670533197">Téléchargements actifs</translation>
+<translation id="6709432001666529933">Demander avant d'autoriser les sites à suivre vos mains (recommandé)</translation>
 <translation id="6722828510648505498">Bloquer les invites de connexion des services d'identité.</translation>
 <translation id="6746124502594467657">Descendre</translation>
 <translation id="6749077623962119521">Réinitialiser les autorisations ?</translation>
@@ -360,6 +372,7 @@
 <translation id="6787751205395685251">Sélectionnez une option pour <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
+<translation id="6838525730752203626">Utiliser Chrome par défaut</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, appuyez de manière prolongée sur un onglet, puis faites-le glisser vers un autre.</translation>
 <translation id="6864395892908308021">Lecture NFC impossible sur cet appareil</translation>
 <translation id="6870169401250095575">Masquer la fiche "Contrôle de sécurité"</translation>
@@ -411,6 +424,7 @@
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7667547420449112975">Le Magicien d'Oz</translation>
 <translation id="7684642910516280563">Interdisez à un site d'utiliser des cookies tiers</translation>
+<translation id="7688240020069572972">Masquer la fiche d'astuces Chrome</translation>
 <translation id="7719367874908701697">Zoom de la page</translation>
 <translation id="7759147511335618829">Contrôle/Reprog. appareils MIDI</translation>
 <translation id="7781829728241885113">Hier</translation>
@@ -476,6 +490,7 @@
 <translation id="8609465669617005112">Monter</translation>
 <translation id="8617611086246832542">Lorsque cette option est activée, les sites Web sont affichés comme sur ordinateur. Lorsqu'elle est désactivée, les sites Web sont affichés comme sur mobile.</translation>
 <translation id="8649036394979866943">Chrome empêche la plupart des sites d'utiliser des cookies tiers pour vous suivre lorsque vous naviguez. Accédez aux paramètres pour <ph name="BEGIN_LINK" />gérer vos protections contre le suivi<ph name="END_LINK" />.</translation>
+<translation id="8676316391139423634">Lorsque cette option est activée, les sites peuvent demander à suivre vos mains. Lorsqu'elle est désactivée, les sites ne peuvent pas suivre vos mains.</translation>
 <translation id="8676374126336081632">Effacer la saisie</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour afficher des annonces intrusives ou trompeuses</translation>
 <translation id="868929229000858085">Rechercher des contacts</translation>

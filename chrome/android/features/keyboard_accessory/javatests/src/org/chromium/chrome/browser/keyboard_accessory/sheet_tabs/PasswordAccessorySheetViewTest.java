@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
@@ -228,7 +228,7 @@ public class PasswordAccessorySheetViewTest {
 
     @Test
     @MediumTest
-    public void testAddingPlusAddressSectionToTheModelRendersClickableActions()
+    public void testAddingPlusAddressInfoToTheModelRendersClickableActions()
             throws ExecutionException {
         final AtomicReference<Boolean> clicked = new AtomicReference<>(false);
         assertThat(mView.get().getChildCount(), is(0));
@@ -237,7 +237,7 @@ public class PasswordAccessorySheetViewTest {
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
-                                    new PlusAddressSection(
+                                    new PlusAddressInfo(
                                             /* origin= */ "google.com",
                                             new UserInfoField.Builder()
                                                     .setDisplayText("example@gmail.com")
@@ -411,8 +411,8 @@ public class PasswordAccessorySheetViewTest {
     private ChipView getPlusAddressChipAt(int index) {
         assertThat(mView.get().getChildCount(), is(greaterThan(index)));
         assertThat(mView.get().getChildAt(index), instanceOf(ViewGroup.class));
-        LinearLayout plusAddressSection = (LinearLayout) mView.get().getChildAt(index);
-        return plusAddressSection.findViewById(R.id.plus_address);
+        LinearLayout plusAddressInfo = (LinearLayout) mView.get().getChildAt(index);
+        return plusAddressInfo.findViewById(R.id.plus_address);
     }
 
     private ChipView getPasskeyChipAt(int index) {

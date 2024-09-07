@@ -11,9 +11,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
-import static org.chromium.chrome.browser.suggestions.UrlSimilarityScorer.IDENTICAL;
+import static org.chromium.chrome.browser.suggestions.UrlSimilarityScorer.EXACT;
 import static org.chromium.chrome.browser.suggestions.UrlSimilarityScorer.MISMATCHED;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;
@@ -23,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.suggestions.UrlSimilarityScorer.MatchResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.url.GURL;
@@ -42,6 +44,11 @@ public class UrlSimilarityScorerUnitTest {
     /** Interface to reduce test boilerplate. */
     interface StringStringToInteger {
         public abstract Integer run(String s1, String s2);
+    }
+
+    /** Interface to reduce test boilerplate. */
+    interface Boolean4ToString {
+        public abstract @Nullable String run(boolean b1, boolean b2, boolean b3, boolean b4);
     }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -174,7 +181,7 @@ public class UrlSimilarityScorerUnitTest {
         GURL testUrl = new GURL("https://example.com");
         UrlSimilarityScorer scorer = makeExactMatchScorer(testUrl);
         StringToInt f = (String urlStr) -> scorer.scoreSimilarity(new GURL(urlStr));
-        assertEquals(IDENTICAL, f.run("https://example.com"));
+        assertEquals(EXACT, f.run("https://example.com"));
         assertEquals(MISMATCHED, f.run("http://example.com"));
         assertEquals(MISMATCHED, f.run("https://example.com:8000"));
         assertEquals(MISMATCHED, f.run("https://www.example.com"));
@@ -195,7 +202,7 @@ public class UrlSimilarityScorerUnitTest {
         GURL testUrl = new GURL("https://example.com");
         UrlSimilarityScorer scorer = makeLaxSchemeHostRefScorer(testUrl);
         StringToInt f = (String urlStr) -> scorer.scoreSimilarity(new GURL(urlStr));
-        assertEquals(IDENTICAL, f.run("https://example.com"));
+        assertEquals(EXACT, f.run("https://example.com"));
         assertEquals(MISMATCHED, f.run("http://example.com"));
         assertEquals(MISMATCHED, f.run("https://example.com:8000"));
         assertEquals(993, f.run("https://www.example.com"));
@@ -216,7 +223,7 @@ public class UrlSimilarityScorerUnitTest {
         GURL testUrl = new GURL("https://example.com");
         UrlSimilarityScorer scorer = makeLaxSchemeHostRefQueryPathScorer(testUrl);
         StringToInt f = (String urlStr) -> scorer.scoreSimilarity(new GURL(urlStr));
-        assertEquals(IDENTICAL, f.run("https://example.com"));
+        assertEquals(EXACT, f.run("https://example.com"));
         assertEquals(MISMATCHED, f.run("http://example.com"));
         assertEquals(MISMATCHED, f.run("https://example.com:8000"));
         assertEquals(993, f.run("https://www.example.com"));
@@ -259,7 +266,7 @@ public class UrlSimilarityScorerUnitTest {
         assertEquals(992, f.run("https://example.com/path/?query=1")); // Directory.
         assertEquals(991, f.run("https://example.com/path/#ref")); // Directory.
         assertEquals(993, f.run("https://www.example.com/path?query=1#ref")); // File.
-        assertEquals(IDENTICAL, f.run("https://m.example.com/path/?query=1#ref"));
+        assertEquals(EXACT, f.run("https://m.example.com/path/?query=1#ref"));
         assertEquals(993, f.run("https://touch.example.com/path?query=1#ref"));
         assertEquals(MISMATCHED, f.run("https://www.not-example.com"));
         assertEquals(MISMATCHED, f.run("https://www.not-example.com/path?query=1#ref"));
@@ -307,7 +314,7 @@ public class UrlSimilarityScorerUnitTest {
         assertEquals(991, f.run("http://example.com:1234/path/#ref")); // Directory.
         assertEquals(993, f.run("http://www.example.com:1234/path?query=1#ref")); // File.
         assertEquals(993, f.run("http://m.example.com:1234/path/?query=1#ref"));
-        assertEquals(IDENTICAL, f.run("http://touch.example.com:1234/path?query=1#ref"));
+        assertEquals(EXACT, f.run("http://touch.example.com:1234/path?query=1#ref"));
         assertEquals(MISMATCHED, f.run("http://www.not-example.com:1234"));
         assertEquals(MISMATCHED, f.run("http://www.not-example.com:1234/path?query=1#ref"));
         assertEquals(MISMATCHED, f.run("http://www.not-example.com:1234/path/?query=1#ref"));
@@ -410,6 +417,33 @@ public class UrlSimilarityScorerUnitTest {
                         candidateUrls, makeLaxSchemeHostRefQueryPathScorer(keyUrl4)));
     }
 
+    @Test
+    @SmallTest
+    public void testGetHistogramStrictnessSuffix() {
+        GURL url = new GURL("https://www.example.com");
+        Boolean4ToString f =
+                (boolean laxSchemeHost, boolean laxRef, boolean laxQuery, boolean laxPath) -> {
+                    return new UrlSimilarityScorer(url, laxSchemeHost, laxRef, laxQuery, laxPath)
+                            .getHistogramStrictnessSuffix();
+                };
+        assertEquals("Strict", f.run(false, false, false, false));
+        assertNull(f.run(false, false, false, true));
+        assertNull(f.run(false, false, true, false));
+        assertNull(f.run(false, false, true, true));
+        assertNull(f.run(false, true, false, false));
+        assertNull(f.run(false, true, false, true));
+        assertNull(f.run(false, true, true, false));
+        assertNull(f.run(false, true, true, true));
+        assertNull(f.run(true, false, false, false));
+        assertNull(f.run(true, false, false, true));
+        assertNull(f.run(true, false, true, false));
+        assertNull(f.run(true, false, true, true));
+        assertEquals("LaxUpToRef", f.run(true, true, false, false));
+        assertNull(f.run(true, true, false, true));
+        assertEquals("LaxUpToQuery", f.run(true, true, true, false));
+        assertEquals("LaxUpToPath", f.run(true, true, true, true));
+    }
+
     private TabList createTabList(List<GURL> urlList) {
         TabList tabList = mock(TabList.class);
         for (int i = 0; i < urlList.size(); ++i) {
@@ -469,7 +503,8 @@ public class UrlSimilarityScorerUnitTest {
         int[] bestIndices = new int[n];
         for (int i = 0; i < n; ++i) {
             TabList tabList = createTabList(candidateUrls.subList(0, i + 1));
-            bestIndices[i] = scorer.findTabWithMostSimilarUrl(tabList);
+            MatchResult result = scorer.findTabWithMostSimilarUrl(tabList);
+            bestIndices[i] = result.index;
         }
         return bestIndices;
     }

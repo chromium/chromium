@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 
@@ -44,7 +44,7 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
   // The optimization guide and history services must be available for the page
   // content annotations service to work.
   auto* optimization_guide_keyed_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(chrome_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(chrome_browser_state);
   auto* history_service = ios::HistoryServiceFactory::GetForBrowserState(
       chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   if (!optimization_guide_keyed_service || !history_service) {

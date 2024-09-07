@@ -18,6 +18,8 @@ import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -74,10 +76,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     static final String PREF_CLEAR_BROWSING_DATA_ADVANCED = "clear_browsing_data_advanced";
 
     private IncognitoLockSettings mIncognitoLockSettings;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.prefs_privacy_security);
+        mPageTitle.set(getString(R.string.prefs_privacy_security));
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
 
@@ -223,6 +226,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         }
 
         updatePreferences();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private SpannableString buildFooterString() {
@@ -389,12 +397,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
     private boolean shouldShowIpProtectionUI() {
         return !showTrackingProtectionUI()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1);
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
     }
 
     private boolean shouldShowFpProtectionUI() {
         return !showTrackingProtectionUI()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING);
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
     }
 
     @Override

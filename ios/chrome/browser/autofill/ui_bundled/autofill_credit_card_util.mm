@@ -106,11 +106,14 @@
 + (BOOL)shouldEditCardFromPaymentsWebPage:(const autofill::CreditCard*)card {
   switch (card->record_type()) {
     case autofill::CreditCard::RecordType::kLocalCard:
-    case autofill::CreditCard::RecordType::kFullServerCard:
     case autofill::CreditCard::RecordType::kVirtualCard:
       return NO;
     case autofill::CreditCard::RecordType::kMaskedServerCard:
       return YES;
+    case autofill::CreditCard::RecordType::kFullServerCard:
+      // Full server cards are a temporary cached state and should not be
+      // offered for edit (from payments web page or otherwise).
+      NOTREACHED();
   }
 }
 

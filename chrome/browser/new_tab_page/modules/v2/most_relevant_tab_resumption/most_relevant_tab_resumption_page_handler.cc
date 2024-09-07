@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -72,20 +73,6 @@ history::mojom::TabPtr TabToMojom(const URLVisitAggregate::Tab& tab,
   NewTabUI::SetUrlTitleAndDirection(&dictionary, tab.visit.title,
                                     tab.visit.url);
   tab_mojom->title = *dictionary.FindString("title");
-  tab_mojom->decorator = history::mojom::Decorator(0);
-
-  auto last_visited =
-      last_active.is_null() ? tab.visit.last_modified : last_active;
-  base::TimeDelta relative_time = base::Time::Now() - last_visited;
-  tab_mojom->relative_time = relative_time;
-  if (relative_time < base::Minutes(1)) {
-    tab_mojom->relative_time_text = l10n_util::GetStringUTF8(
-        IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED);
-  } else {
-    tab_mojom->relative_time_text =
-        base::UTF16ToUTF8(FormatRelativeTime(last_visited));
-  }
-  tab_mojom->timestamp = last_visited;
 
   return tab_mojom;
 }
@@ -101,19 +88,6 @@ history::mojom::TabPtr HistoryEntryVisitToMojom(
   NewTabUI::SetUrlTitleAndDirection(&dictionary, visit.url_row.title(),
                                     visit.url_row.url());
   tab_mojom->title = *dictionary.FindString("title");
-
-  tab_mojom->decorator = history::mojom::Decorator(0);
-  base::TimeDelta relative_time =
-      base::Time::Now() - visit.url_row.last_visit();
-  tab_mojom->relative_time = relative_time;
-  if (relative_time < base::Minutes(1)) {
-    tab_mojom->relative_time_text = l10n_util::GetStringUTF8(
-        IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED);
-  } else {
-    tab_mojom->relative_time_text =
-        base::UTF16ToUTF8(FormatRelativeTime(visit.url_row.last_visit()));
-  }
-  tab_mojom->timestamp = visit.url_row.last_visit();
 
   return tab_mojom;
 }
@@ -201,7 +175,7 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
       ntp_features::kNtpMostRelevantTabResumptionModule,
       ntp_features::kNtpMostRelevantTabResumptionModuleDataParam);
 
-  if (data_type_param == "Fake Data") {
+  if (data_type_param.find("Fake Data") != std::string::npos) {
     std::vector<history::mojom::TabPtr> tabs_mojom;
     const int kSampleVisitsCount = 3;
     for (int i = 0; i < kSampleVisitsCount; i++) {
@@ -210,6 +184,25 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
       tab_mojom->url = GURL("https://www.google.com");
       tab_mojom->url_key = "https://www.google.com";
       tab_mojom->training_request_id = 0;
+      tab_mojom->decoration = history::mojom::Decoration::New();
+      if (data_type_param.find("Most Recent Decorator") != std::string::npos) {
+        tab_mojom->decoration->type =
+            history::mojom::DecorationType::kMostRecent;
+        tab_mojom->decoration->display_string =
+            l10n_util::GetStringUTF8(IDS_TAB_RESUME_DECORATORS_MOST_RECENT);
+      } else if (data_type_param.find("Frequently Visited At Time Decorator") !=
+                 std::string::npos) {
+        tab_mojom->decoration->type =
+            history::mojom::DecorationType::kFrequentlyVisitedAtTime;
+        tab_mojom->decoration->display_string = l10n_util::GetStringUTF8(
+            IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED);
+      } else {
+        tab_mojom->decoration->type =
+            history::mojom::DecorationType::kVisitedXAgo;
+        tab_mojom->decoration->display_string = base::UTF16ToUTF8(
+            l10n_util::GetStringUTF16(IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO) +
+            u" " + FormatRelativeTime(base::Time::Now() - base::Minutes(5)));
+      }
       tabs_mojom.push_back(std::move(tab_mojom));
     }
     std::move(callback).Run(std::move(tabs_mojom));
@@ -333,6 +326,34 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
     return;
   }
 
+  int max_visits = base::GetFieldTrialParamByFeatureAsInt(
+      ntp_features::kNtpMostRelevantTabResumptionModule,
+      ntp_features::kNtpMostRelevantTabResumptionModuleMaxVisitsParam, 5);
+
+  const size_t num_visits =
+      std::min(static_cast<size_t>(max_visits), url_visit_aggregates.size());
+
+  if (num_visits < url_visit_aggregates.size()) {
+    url_visit_aggregates.erase(url_visit_aggregates.begin() + num_visits,
+                               url_visit_aggregates.end());
+    url_visit_aggregates.shrink_to_fit();
+  }
+
+  auto* visited_url_ranking_service =
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
+          profile_);
+  visited_url_ranking_service->DecorateURLVisitAggregates(
+      {.key = visited_url_ranking::kTabResumptionRankerKey},
+      std::move(url_visit_aggregates),
+      base::BindOnce(&MostRelevantTabResumptionPageHandler::
+                         OnGotDecoratedURLVisitAggregates,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
+    GetTabsCallback callback,
+    visited_url_ranking::ResultStatus status,
+    std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
   std::vector<history::mojom::TabPtr> tabs_mojom;
   for (const auto& url_visit_aggregate : url_visit_aggregates) {
     const URLVisitAggregate::TabData* tab_data =
@@ -344,6 +365,13 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
       tab_mojom->url_key = url_visit_aggregate.url_key;
       tab_mojom->training_request_id =
           url_visit_aggregate.request_id.GetUnsafeValue();
+      tab_mojom->decoration = history::mojom::Decoration::New();
+      auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
+      tab_mojom->decoration->type = history::mojom::DecorationType(
+          static_cast<int>(decoration.GetType()));
+      tab_mojom->decoration->display_string =
+          base::UTF16ToUTF8(decoration.GetDisplayString());
+      tab_mojom->timestamp = url_visit_aggregate.GetLastVisitTime();
       if (IsNewURL(tab_mojom)) {
         tabs_mojom.push_back(std::move(tab_mojom));
         base::UmaHistogramEnumeration(
@@ -361,6 +389,13 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
         history_tab_mojom->url_key = url_visit_aggregate.url_key;
         history_tab_mojom->training_request_id =
             url_visit_aggregate.request_id.GetUnsafeValue();
+        history_tab_mojom->decoration = history::mojom::Decoration::New();
+        auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
+        history_tab_mojom->decoration->type = history::mojom::DecorationType(
+            static_cast<int>(decoration.GetType()));
+        history_tab_mojom->decoration->display_string =
+            base::UTF16ToUTF8(decoration.GetDisplayString());
+        history_tab_mojom->timestamp = url_visit_aggregate.GetLastVisitTime();
         if (IsNewURL(history_tab_mojom)) {
           tabs_mojom.push_back(std::move(history_tab_mojom));
           base::UmaHistogramEnumeration(

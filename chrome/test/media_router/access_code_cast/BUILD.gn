@@ -6,12 +6,16 @@ import("//build/config/chromeos/ui_mode.gni")
 
 static_library("access_code_cast_integration_base") {
   testonly = true
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
   sources = [
     "access_code_cast_integration_browsertest.cc",
     "access_code_cast_integration_browsertest.h",
   ]
+
   public_deps = [ "//chrome/browser/ui:ui_features" ]
+
   deps = [
     "//base/test:test_support",
     "//chrome/browser:browser",
@@ -43,6 +47,6 @@ static_library("access_code_cast_integration_base") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ui/ash" ]
+    deps += [ "//chrome/browser/ui/ash/cast_config" ]
   }
 }

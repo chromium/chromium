@@ -41,7 +41,7 @@
 #import "ios/chrome/browser/safe_browsing/model/user_population_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -371,7 +371,7 @@ ChromePasswordProtectionService::GetUrlDisplayExperiment() const {
 
 AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state_);
+      IdentityManagerFactory::GetForProfile(browser_state_);
   if (!identity_manager) {
     return AccountInfo();
   }
@@ -387,7 +387,7 @@ ChromePasswordProtectionService::GetUserPopulationPref() const {
 AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
     const std::string& username) const {
   auto* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state_);
+      IdentityManagerFactory::GetForProfile(browser_state_);
   if (!identity_manager) {
     return AccountInfo();
   }
@@ -696,7 +696,7 @@ void ChromePasswordProtectionService::FillUserPopulation(
     const GURL& main_frame_url,
     LoginReputationClientRequest* request_proto) {
   *request_proto->mutable_population() =
-      GetUserPopulationForBrowserState(browser_state_);
+      GetUserPopulationForProfile(browser_state_);
 
   safe_browsing::VerdictCacheManager* cache_manager =
       VerdictCacheManagerFactory::GetForBrowserState(browser_state_);

@@ -597,7 +597,7 @@ xmlStrVPrintf(xmlChar *buf, int len, const char *msg, va_list ap) {
  * xmlStrVASPrintf:
  * @out:  pointer to the resulting string
  * @maxSize:  maximum size of the output buffer
- * @fmt:  printf format string
+ * @msg:  printf format string
  * @ap:  arguments for format string
  *
  * Creates a newly allocated string according to format.
@@ -715,8 +715,8 @@ xmlStrVASPrintf(xmlChar **out, int maxSize, const char *msg, va_list ap) {
  * xmlStrASPrintf:
  * @out:  pointer to the resulting string
  * @maxSize:  maximum size of the output buffer
- * @fmt:  printf format string
- * @ap:  arguments for format string
+ * @msg:  printf format string
+ * @...:  arguments for format string
  *
  * See xmlStrVASPrintf.
  *

@@ -69,7 +69,7 @@ TestInterestGroupManagerImpl::~TestInterestGroupManagerImpl() {
 void TestInterestGroupManagerImpl::EnqueueReports(
     ReportType report_type,
     std::vector<GURL> report_urls,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const url::Origin& frame_origin,
     const network::mojom::ClientSecurityState& client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -91,7 +91,7 @@ void TestInterestGroupManagerImpl::EnqueueReports(
 void TestInterestGroupManagerImpl::EnqueueRealTimeReports(
     std::map<url::Origin, RealTimeReportingContributions> contributions,
     AdAuctionPageDataCallback ad_auction_page_data_callback,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const url::Origin& frame_origin,
     const network::mojom::ClientSecurityState& client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {

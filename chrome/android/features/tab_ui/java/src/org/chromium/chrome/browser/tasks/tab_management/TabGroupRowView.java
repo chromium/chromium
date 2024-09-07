@@ -8,12 +8,10 @@ import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.b
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -35,7 +34,7 @@ import java.time.Clock;
 
 /** Displays a horizontal row for a single tab group. */
 public class TabGroupRowView extends LinearLayout {
-    private ViewGroup mTabGroupStartIconParent;
+    private TabGroupFaviconCluster mTabGroupFaviconCluster;
     private View mColorView;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
@@ -50,21 +49,16 @@ public class TabGroupRowView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mTabGroupStartIconParent = findViewById(R.id.tab_group_start_icon);
+        mTabGroupFaviconCluster = findViewById(R.id.tab_group_favicon_cluster);
         mColorView = findViewById(R.id.tab_group_color);
         mTitleTextView = findViewById(R.id.tab_group_title);
         mSubtitleTextView = findViewById(R.id.tab_group_subtitle);
         mListMenuButton = findViewById(R.id.more);
         mTimeAgoResolver = new TabGroupTimeAgoResolver(getResources(), Clock.systemUTC());
-
-        for (int corner = Corner.TOP_LEFT; corner <= Corner.BOTTOM_LEFT; corner++) {
-            TabGroupFaviconQuarter quarter = getTabGroupFaviconQuarter(corner);
-            quarter.setCorner(corner, mTabGroupStartIconParent.getId());
-        }
     }
 
-    void setFavicon(Drawable favicon, int plusCount, @Corner int corner) {
-        getTabGroupFaviconQuarter(corner).setIconOrText(favicon, plusCount);
+    void updateCornersForClusterData(ClusterData clusterData) {
+        mTabGroupFaviconCluster.updateCornersForClusterData(clusterData);
     }
 
     void setTitleData(Pair<String, Integer> titleData) {
@@ -104,12 +98,6 @@ public class TabGroupRowView extends LinearLayout {
         mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable, leaveRunnable));
     }
 
-    void resetOnBind() {
-        for (int corner = Corner.TOP_LEFT; corner <= Corner.BOTTOM_LEFT; corner++) {
-            setFavicon(null, 0, corner);
-        }
-    }
-
     private ListMenu getListMenu(
             @Nullable Runnable openRunnable,
             @Nullable Runnable deleteRunnable,
@@ -143,10 +131,6 @@ public class TabGroupRowView extends LinearLayout {
         } else if (textId == R.string.leave_tab_group_menu_item && leaveRunnable != null) {
             leaveRunnable.run();
         }
-    }
-
-    private TabGroupFaviconQuarter getTabGroupFaviconQuarter(@Corner int corner) {
-        return (TabGroupFaviconQuarter) mTabGroupStartIconParent.getChildAt(corner);
     }
 
     void setTimeAgoResolverForTesting(TabGroupTimeAgoResolver timeAgoResolver) {

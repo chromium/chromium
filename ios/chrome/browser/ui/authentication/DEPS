@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/ui/screen",
   "+ios/chrome/browser/first_run/ui_bundled",
   "+ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h",
-  "+ios/chrome/browser/ui/ntp/new_tab_page_feature.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
 
   # TODO(crbug.com/40269518): Remove this deps.

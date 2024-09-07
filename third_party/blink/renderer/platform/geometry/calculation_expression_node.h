@@ -43,8 +43,7 @@ enum class CalculationOperator {
 class PLATFORM_EXPORT CalculationExpressionNode
     : public RefCounted<CalculationExpressionNode> {
  public:
-  virtual float Evaluate(float max_value,
-                         const Length::EvaluationInput&) const = 0;
+  virtual float Evaluate(float max_value, const EvaluationInput&) const = 0;
   bool operator==(const CalculationExpressionNode& other) const {
     return Equals(other);
   }
@@ -72,6 +71,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual bool IsNumber() const { return false; }
   virtual bool IsIdentifier() const { return false; }
   virtual bool IsSizingKeyword() const { return false; }
+  virtual bool IsColorChannelKeyword() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
   virtual bool IsOperation() const { return false; }
 
@@ -110,7 +110,7 @@ class PLATFORM_EXPORT CalculationExpressionNumberNode final
   float Value() const { return value_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -145,13 +145,13 @@ class PLATFORM_EXPORT CalculationExpressionIdentifierNode final
   const AtomicString& Value() const { return identifier_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final {
+  float Evaluate(float max_value, const EvaluationInput&) const final {
     return 0.0f;
   }
   bool Equals(const CalculationExpressionNode& other) const final {
-    return other.IsIdentifier() &&
-           DynamicTo<CalculationExpressionIdentifierNode>(other)->Value() ==
-               Value();
+    auto* other_identifier =
+        DynamicTo<CalculationExpressionIdentifierNode>(other);
+    return other_identifier && other_identifier->Value() == Value();
   }
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final {
@@ -199,11 +199,11 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
   Keyword Value() const { return keyword_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final {
-    return other.IsSizingKeyword() &&
-           DynamicTo<CalculationExpressionSizingKeywordNode>(other)->Value() ==
-               Value();
+    auto* other_sizing_keyword =
+        DynamicTo<CalculationExpressionSizingKeywordNode>(other);
+    return other_sizing_keyword && other_sizing_keyword->Value() == Value();
   }
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final {
@@ -243,6 +243,43 @@ struct DowncastTraits<CalculationExpressionSizingKeywordNode> {
   }
 };
 
+class PLATFORM_EXPORT CalculationExpressionColorChannelKeywordNode final
+    : public CalculationExpressionNode {
+ public:
+  explicit CalculationExpressionColorChannelKeywordNode(
+      ColorChannelKeyword channel);
+
+  ColorChannelKeyword Value() const { return channel_; }
+
+  // Implement |CalculationExpressionNode|:
+  float Evaluate(float max_value, const EvaluationInput&) const final;
+  bool Equals(const CalculationExpressionNode& other) const final {
+    auto* other_color_channel_keyword =
+        DynamicTo<CalculationExpressionColorChannelKeywordNode>(other);
+    return other_color_channel_keyword &&
+           other_color_channel_keyword->Value() == Value();
+  }
+  scoped_refptr<const CalculationExpressionNode> Zoom(
+      double factor) const final {
+    return this;
+  }
+  bool IsColorChannelKeyword() const final { return true; }
+
+#if DCHECK_IS_ON()
+  ResultType ResolvedResultType() const final { return ResultType::kNumber; }
+#endif
+
+ private:
+  ColorChannelKeyword channel_;
+};
+
+template <>
+struct DowncastTraits<CalculationExpressionColorChannelKeywordNode> {
+  static bool AllowFrom(const CalculationExpressionNode& node) {
+    return node.IsColorChannelKeyword();
+  }
+};
+
 class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
     : public CalculationExpressionNode {
  public:
@@ -263,7 +300,7 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
   bool HasExplicitPercent() const { return value_.has_explicit_percent; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -301,7 +338,7 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
   CalculationOperator GetOperator() const { return operator_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;

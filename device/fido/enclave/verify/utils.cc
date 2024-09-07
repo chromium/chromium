@@ -99,9 +99,8 @@ base::expected<void, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256(reinterpret_cast<const unsigned char*>(contents.data()),
          contents.size(), digest);
-  bssl::UniquePtr<ECDSA_SIG> sig(
-      ECDSA_SIG_from_bytes(signature.data(), signature.size()));
-  if (!ECDSA_do_verify(digest, sizeof(digest), sig.get(), ec_key.get())) {
+  if (!ECDSA_verify(/*type=*/0, digest, sizeof(digest), signature.data(),
+                    signature.size(), ec_key.get())) {
     return base::unexpected("Could not verify the signature");
   }
   return base::expected<void, std::string>();

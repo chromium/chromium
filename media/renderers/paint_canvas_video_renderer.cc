@@ -11,6 +11,7 @@
 
 #include <GLES3/gl3.h>
 
+#include <array>
 #include <limits>
 #include <numeric>
 
@@ -52,11 +53,11 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageGenerator.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -392,10 +393,11 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   if (task_index + 1 == n_tasks)
     rows += height % rows_per_chunk;
 
-  struct {
+  struct PlaneMetaData {
     int stride;
     raw_ptr<const uint8_t> data;
-  } plane_meta[VideoFrame::kMaxPlanes];
+  };
+  std::array<PlaneMetaData, VideoFrame::kMaxPlanes> plane_meta;
 
   for (size_t plane = 0; plane < VideoFrame::kMaxPlanes; ++plane) {
     if (VideoFrame::IsValidPlane(format, plane)) {

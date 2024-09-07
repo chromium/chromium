@@ -124,7 +124,8 @@ TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
 TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest, OnCustomInstall) {
   PrivacySandboxAttestationsComponentInstallerPolicy policy(base::DoNothing());
 
-  EXPECT_EQ(policy.OnCustomInstall(base::Value::Dict(), base::FilePath()).error,
+  EXPECT_EQ(policy.OnCustomInstall(base::Value::Dict(), base::FilePath())
+                .result.code_,
             0);
 }
 

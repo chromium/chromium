@@ -7,7 +7,6 @@
 
 #import "base/feature_list.h"
 
-BASE_DECLARE_FEATURE(kAutofillFormActivityMsgBatchingIos);
 BASE_DECLARE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput);
 BASE_DECLARE_FEATURE(kAutofillIsolatedWorldForJavascriptIos);
 BASE_DECLARE_FEATURE(kAutofillStickyInfobarIos);

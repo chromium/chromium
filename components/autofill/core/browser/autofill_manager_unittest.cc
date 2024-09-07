@@ -35,7 +35,6 @@
 #endif
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
@@ -139,8 +138,6 @@ void OnFormsSeenWithExpectations(MockAutofillManager& manager,
   EXPECT_THAT(manager.form_structures(), HaveSameFormIdsAs(expectation));
 }
 
-}  // namespace
-
 class AutofillManagerTest : public testing::Test {
  public:
   void SetUp() override {
@@ -154,15 +151,6 @@ class AutofillManagerTest : public testing::Test {
     driver_.reset();
   }
 
-  void SetUpObserverAndCrowdsourcingManager(bool successful_request) {
-    auto crowdsourcing_manager =
-        std::make_unique<MockAutofillCrowdsourcingManager>(&client_);
-    ON_CALL(*crowdsourcing_manager, StartQueryRequest)
-        .WillByDefault(Return(successful_request));
-    client_.set_crowdsourcing_manager(std::move(crowdsourcing_manager));
-    manager().AddObserver(&observer_);
-  }
-
   MockAutofillManager& manager() {
     return static_cast<MockAutofillManager&>(driver_->GetAutofillManager());
   }
@@ -172,7 +160,6 @@ class AutofillManagerTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient client_;
   std::unique_ptr<MockAutofillDriver> driver_;
-  MockAutofillManagerObserver observer_;
 };
 
 // The test parameter sets the number of forms to be generated.
@@ -190,14 +177,26 @@ INSTANTIATE_TEST_SUITE_P(AutofillManagerTest,
 class AutofillManagerTest_OnLoadedServerPredictionsObserver
     : public AutofillManagerTest {
  public:
-  void SetUpObserverAndCrowdsourcingManager(bool successful_request) {
-    auto crowdsourcing_manager =
-        std::make_unique<MockAutofillCrowdsourcingManager>(&client_);
-    ON_CALL(*crowdsourcing_manager, StartQueryRequest)
-        .WillByDefault(Return(successful_request));
-    client_.set_crowdsourcing_manager(std::move(crowdsourcing_manager));
+  using QueryResponse = AutofillCrowdsourcingManager::QueryResponse;
+
+  void SetUp() override {
+    AutofillManagerTest::SetUp();
+    client_.set_crowdsourcing_manager(
+        std::make_unique<MockAutofillCrowdsourcingManager>(&client_));
     manager().AddObserver(&observer_);
   }
+
+  void TearDown() override {
+    manager().RemoveObserver(&observer_);
+    AutofillManagerTest::TearDown();
+  }
+
+  MockAutofillCrowdsourcingManager& crowdsourcing_manager() {
+    return static_cast<MockAutofillCrowdsourcingManager&>(
+        *client_.GetCrowdsourcingManager());
+  }
+
+  MockAutofillManagerObserver observer_;
 };
 
 // Tests that the cache size is bounded by kAutofillManagerMaxFormCacheSize.
@@ -321,9 +320,34 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // does not fire an event.
   test_api(*driver_).SetLifecycleStateAndNotifyObservers(kActive);
 
-  EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g)));
-  manager().OnFormsSeen(forms, /*removed_forms=*/{test::MakeFormGlobalId()});
-  EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g)));
+  std::vector<FormData> invalid_form_array(kMaxListSize + 10, FormData());
+  FormGlobalId id_to_remove = test::MakeFormGlobalId();
+
+  testing::MockFunction<void(int)> check;
+  {
+    testing::InSequence s;
+    EXPECT_CALL(observer, OnBeforeFormsSeen(m, testing::IsEmpty(),
+                                            ElementsAre(id_to_remove)));
+    EXPECT_CALL(observer, OnAfterFormsSeen(m, testing::IsEmpty(),
+                                           ElementsAre(id_to_remove)));
+    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g),
+                                            ElementsAre(id_to_remove)));
+    EXPECT_CALL(check, Call(2));
+    EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g),
+                                           ElementsAre(id_to_remove)));
+  }
+
+  // Invalid `updated_forms` will trigger a call to the observer with empty
+  // `updated_forms`.
+  manager().OnFormsSeen(invalid_form_array, {id_to_remove});
+  check.Call(1);
+  // Since the manager doesn't currently have any form structures cached, no
+  // forms will actually be removed, but calls to
+  // `AutofillManager::Observer::OnBeforeFormsSeen()` and
+  // `AutofillManager::Observer::OnAfterFormsSeen()` should use `id_to_remove`.
+  manager().OnFormsSeen(forms, {id_to_remove});
+  check.Call(2);
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
   task_environment_.RunUntilIdle();
@@ -363,7 +387,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   manager().OnAskForValuesToFill(form, field.global_id(), gfx::Rect(),
                                  AutofillSuggestionTriggerSource::kUnspecified);
 
-  EXPECT_CALL(observer, OnBeforeFocusOnFormField(m, f, ff, Ref(form)));
+  EXPECT_CALL(observer, OnBeforeFocusOnFormField(m, f, ff));
   EXPECT_CALL(observer, OnAfterFocusOnFormField(m, f, ff));
   manager().OnFocusOnFormField(form, field.global_id());
 
@@ -439,64 +463,69 @@ TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_SuccessfulQueryRequest_NotifiesBeforeLoadedServerPredictionsObserver) {
-  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
-
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [](const auto&, const auto&,
+             base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
+            std::move(callback).Run(QueryResponse("", {}));
+            return true;
+          });
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
   task_environment_.RunUntilIdle();
-
-  manager().RemoveObserver(&observer_);
 }
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_FailedQueryRequest_NotifiesBothLoadedServerPredictionsObservers) {
-  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/false);
-
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [](const auto&, const auto&,
+             base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
+            std::move(callback).Run(std::nullopt);
+            return true;
+          });
   EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
   task_environment_.RunUntilIdle();
-
-  manager().RemoveObserver(&observer_);
 }
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_EmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
-  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
-
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [&](const auto&, const auto&,
+              base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
+            std::move(callback).Run(QueryResponse("", {}));
+            return true;
+          });
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
   task_environment_.RunUntilIdle();
-
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
-  test_api(manager()).OnLoadedServerPredictions("", {});
-
-  manager().RemoveObserver(&observer_);
 }
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_NonEmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
-  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
-
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
@@ -506,15 +535,20 @@ TEST_F(
   EXPECT_CALL(observer_,
               OnFieldTypesDetermined(Ref(manager()), forms[0].global_id(),
                                      FieldTypeSource::kAutofillServer));
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [&](const auto&, const auto&,
+              base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
+            std::move(callback).Run(
+                QueryResponse("", {manager()
+                                       .FindCachedFormById(forms[0].global_id())
+                                       ->form_signature()}));
+            return true;
+          });
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
   task_environment_.RunUntilIdle();
-
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
-  test_api(manager()).OnLoadedServerPredictions(
-      "",
-      {manager().FindCachedFormById(forms[0].global_id())->form_signature()});
-
-  manager().RemoveObserver(&observer_);
 }
 
+}  // namespace
 }  // namespace autofill

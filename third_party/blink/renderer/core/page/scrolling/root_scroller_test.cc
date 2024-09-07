@@ -1994,9 +1994,10 @@ TEST_F(ImplicitRootScrollerSimTest, ScrollRestorationIgnoresImplicit) {
   GetDocument()
       .View()
       ->GetScrollableArea()
-      ->SetPendingHistoryRestoreScrollOffset(view_state, true);
+      ->SetPendingHistoryRestoreScrollOffset(
+          view_state, true, mojom::blink::ScrollBehavior::kAuto);
   GetDocument().View()->LayoutViewport()->SetPendingHistoryRestoreScrollOffset(
-      view_state, true);
+      view_state, true, mojom::blink::ScrollBehavior::kAuto);
   GetDocument().View()->ScheduleAnimation();
 
   Compositor().BeginFrame();

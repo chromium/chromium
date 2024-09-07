@@ -32,16 +32,6 @@ inline constexpr int kMinimumFaviconSize = 48;
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
-BASE_DECLARE_FEATURE(kInstallPromptGlobalGuardrails);
-extern const base::FeatureParam<int>
-    kInstallPromptGlobalGuardrails_DismissCount;
-extern const base::FeatureParam<base::TimeDelta>
-    kInstallPromptGlobalGuardrails_DismissPeriod;
-extern const base::FeatureParam<int> kInstallPromptGlobalGuardrails_IgnoreCount;
-extern const base::FeatureParam<base::TimeDelta>
-    kInstallPromptGlobalGuardrails_IgnorePeriod;
-
-BASE_DECLARE_FEATURE(kPwaUniversalInstallUi);
 
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -56,9 +46,6 @@ BASE_DECLARE_FEATURE(kWebAppsEnableMLModelForPromotion);
 extern const base::FeatureParam<double> kWebAppsMLGuardrailResultReportProb;
 extern const base::FeatureParam<double> kWebAppsMLModelUserDeclineReportProb;
 extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage;
-
-BASE_DECLARE_FEATURE(kUniversalInstallRootScopeNoManifest);
-BASE_DECLARE_FEATURE(kUniversalInstallDefaultUrl);
 
 }  // namespace features
 }  // namespace webapps

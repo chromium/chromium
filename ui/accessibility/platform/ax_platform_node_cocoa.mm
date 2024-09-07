@@ -48,6 +48,10 @@ using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
 namespace {
 
+// https://crbug.com/40889544 - to be removed once we gather some info on
+// the reason for the macOS exception being thrown.
+size_t lengthWithInvisibles = 0;
+
 // Same length as web content/WebKit.
 int kLiveRegionDebounceMillis = 20;
 
@@ -109,6 +113,8 @@ RoleMap BuildSubroleMap() {
       {ax::mojom::Role::kRegion, @"AXLandmarkRegion"},
       {ax::mojom::Role::kSearch, @"AXLandmarkSearch"},
       {ax::mojom::Role::kSearchBox, @"AXSearchField"},
+      {ax::mojom::Role::kSectionFooter, @"AXSectionFooter"},
+      {ax::mojom::Role::kSectionHeader, @"AXSectionHeader"},
       {ax::mojom::Role::kStatus, @"AXApplicationStatus"},
       {ax::mojom::Role::kStrong, @"AXStrongStyleGroup"},
       {ax::mojom::Role::kSubscript, @"AXSubscriptStyleGroup"},
@@ -446,14 +452,12 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kFigcaption:
     case ax::mojom::Role::kFigure:
     case ax::mojom::Role::kFooter:
-    case ax::mojom::Role::kFooterAsNonLandmark:
     case ax::mojom::Role::kForm:
     case ax::mojom::Role::kGenericContainer:
     case ax::mojom::Role::kGraphicsDocument:
     case ax::mojom::Role::kGraphicsObject:
     case ax::mojom::Role::kGroup:
     case ax::mojom::Role::kHeader:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kIframePresentational:
     case ax::mojom::Role::kLabelText:
@@ -502,6 +506,8 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kRuby:
     case ax::mojom::Role::kSearch:
     case ax::mojom::Role::kSection:
+    case ax::mojom::Role::kSectionFooter:
+    case ax::mojom::Role::kSectionHeader:
     case ax::mojom::Role::kSectionWithoutName:
     case ax::mojom::Role::kStatus:
     case ax::mojom::Role::kSubscript:
@@ -782,6 +788,10 @@ void CollectAncestorRoles(
   int anchorStartOffset = 0;
   std::map<ui::AXNodeID, std::set<ax::mojom::Role>> ancestor_roles;
 
+  // https://crbug.com/40889544 - to be removed once we gather some info on
+  // the reason for the macOS exception being thrown.
+  NSUInteger leafTextIndex = 0;
+
   [attributedString beginEditing];
   for (const AXRange& leafTextRange : *axRange) {
     DCHECK(!leafTextRange.IsNull());
@@ -826,6 +836,39 @@ void CollectAncestorRoles(
     DCHECK_LE(static_cast<unsigned long>(anchorStartOffset + leafTextLength),
               attributedString.length);
     NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
+
+    // https://crbug.com/40889544 - to be removed once we gather some info on
+    // the reason for the macOS exception being thrown.
+    // Capture info about the suspected cause of
+    // "NSRangeException: NSMutableRLEArray objectAtIndex:effectiveRange:: Out
+    // of bounds", which is thrown if the range provided to
+    // addAttribute:value:range: is out of bounds.
+    leafTextIndex++;
+    if (NSMaxRange(leafRange) > attributedString.length) {
+      // Capture:
+      //   * Current leaf text index and total number of leaves
+      //   * Current leaf text's range
+      //   * The attributed string's length if we had created it by concating
+      //     the GetText()s of the individual leaves, instead of using
+      //     _node->GetTextContentUTF16() in -AXAttributedStringForRange:
+      //   * The attributed string's length if _node->GetTextContentUTF16()
+      //     included invisible elements.
+      NSUInteger numberOfLeaves = 0;
+      NSUInteger lengthFromGetTextsOfLeafRanges = 0;
+      for (const AXRange& nextRange : *axRange) {
+        numberOfLeaves++;
+        lengthFromGetTextsOfLeafRanges += nextRange.GetText().length();
+      }
+
+      NSString* info = [NSString
+          stringWithFormat:@"%lu of %lu %lu,%lu %lu %lu", leafTextIndex,
+                           numberOfLeaves, leafRange.location, leafRange.length,
+                           lengthFromGetTextsOfLeafRanges,
+                           lengthWithInvisibles];
+      SCOPED_CRASH_KEY_STRING256("AXPlatformNodeCocoa", "addTextAnnotations",
+                                 base::SysNSStringToUTF8(info));
+      base::debug::DumpWithoutCrashing();
+    }
 
     CollectAncestorRoles(*anchor, ancestor_roles);
 
@@ -937,14 +980,11 @@ void CollectAncestorRoles(
   [attributedString endEditing];
 }
 
-- (NSString*)descriptionIfFromAriaDescription {
+- (BOOL)descriptionIsFromAriaDescription {
   ax::mojom::DescriptionFrom descFrom = static_cast<ax::mojom::DescriptionFrom>(
       _node->GetIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom));
-  if (descFrom == ax::mojom::DescriptionFrom::kAriaDescription ||
-      descFrom == ax::mojom::DescriptionFrom::kRelatedElement) {
-    return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
-  }
-  return nil;
+  return descFrom == ax::mojom::DescriptionFrom::kAriaDescription ||
+         descFrom == ax::mojom::DescriptionFrom::kRelatedElement;
 }
 
 - (NSString*)getName {
@@ -1786,17 +1826,18 @@ void CollectAncestorRoles(
 }
 
 - (NSString*)AXHelp {
-  if (![self instanceActive])
-    return nil;
-
-  // AXCustomContent is only supported by VoiceOver since macOS 11. In
-  // macOS 11 or later we expose the aria description in AXCustomContent,
-  // before then we expose the description in AXHelp.
-  if (base::mac::MacOSMajorVersion() >= 11 &&
-      [[self descriptionIfFromAriaDescription] length]) {
+  if (![self instanceActive]) {
     return nil;
   }
 
+  // ARIA descriptions are returned as AXCustomContent (see
+  // -accessibilityCustomContent below), so if the description is from ARIA,
+  // don't provide it as AXHelp, and return nothing.
+  if ([self descriptionIsFromAriaDescription]) {
+    return nil;
+  }
+
+  // Otherwise, it's a non-ARIA description, which is returned as AXHelp.
   return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
 }
 
@@ -2043,6 +2084,7 @@ void CollectAncestorRoles(
   std::u16string textContent = _node->GetTextContentUTF16();
   if (NSMaxRange(range) > textContent.length())
     return nil;
+  lengthWithInvisibles = _node->GetTextContentUTF16WithInvisibles().length();
 
   // We potentially need to add text attributes to the whole text content
   // because a spelling mistake might start or end outside the given range.
@@ -2350,8 +2392,6 @@ void CollectAncestorRoles(
   NSString* role = [self accessibilityRole];
   switch ([self internalRole]) {
     case ax::mojom::Role::kColorWell:            // Use platform's "color well"
-    case ax::mojom::Role::kFooterAsNonLandmark:  // Default: IDS_AX_ROLE_FOOTER
-    case ax::mojom::Role::kHeaderAsNonLandmark:  // Default: IDS_AX_ROLE_HEADER
     case ax::mojom::Role::kImage:                // Default: IDS_AX_ROLE_GRAPHIC
     case ax::mojom::Role::kInputTime:            // Use platform's "time field"
     case ax::mojom::Role::kMeter:        // Use platform's "level indicator"
@@ -2645,11 +2685,14 @@ void CollectAncestorRoles(
     return nil;
   }
 
-  NSString* description = [self descriptionIfFromAriaDescription];
-  if (!description.length) {
+  // Only descriptions originating from ARIA are returned as custom content.
+  // (Non-ARIA descriptions are returned as AXHelp.)
+  if (![self descriptionIsFromAriaDescription]) {
     return nil;
   }
 
+  NSString* description =
+      [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
   AXCustomContent* contentItem =
       [AXCustomContent customContentWithLabel:@"description" value:description];
   // A custom content importance of high causes it to be spoken

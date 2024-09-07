@@ -190,9 +190,11 @@ class PermissionsUpdater {
       const URLPatternSet default_runtime_allowed_hosts);
 
   // Sets the |extension|'s active permissions to |active|, and calculates and
-  // sets the |extension|'s new withheld permissions.
+  // sets the |extension|'s new withheld permissions. This also calculates the
+  // set of permissions to be withheld on the extension.
   void SetPermissions(const Extension* extension,
-                      std::unique_ptr<const PermissionSet> active);
+                      std::unique_ptr<const PermissionSet> active,
+                      bool withhold_optional_permissions);
 
   // Adds the given |active_permissions_to_add| to |extension|'s current
   // active permissions (i.e., the permissions associated with the |extension|
@@ -210,13 +212,15 @@ class PermissionsUpdater {
 
   // Sets the given `extension`'s active permissions to the specified
   // `new_active_permissions`. Also removes `permissions_to_remove_from_prefs`
-  // from the preferences indicated by `prefs_permissions_store_mask`. Invokes
-  // `completion_callback` when done.
+  // from the preferences indicated by `prefs_permissions_store_mask`. It also
+  // allows withholding optional permissions if `withhold_optional_permissions`
+  // is set to true. Invokes `completion_callback` when done.
   void RemovePermissionsImpl(
       const Extension& extension,
       std::unique_ptr<const PermissionSet> new_active_permissions,
       const PermissionSet& permissions_to_remove_from_prefs,
       int prefs_permissions_store_mask,
+      bool withhold_optional_permissions,
       base::OnceClosure completion_callback);
 
   // The associated BrowserContext.

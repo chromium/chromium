@@ -8,9 +8,13 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-struct InstallIsolatedWebAppResult {
-  bool success;  // true if app was installed successfully.
-  string error;  // should only be set if the app failed to install.
+struct InstallIsolatedWebAppSuccess {
+  string web_bundle_id;
+};
+
+union InstallIsolatedWebAppResult {
+  InstallIsolatedWebAppSuccess success;
+  string error;
 };
 
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
@@ -25,6 +29,29 @@ struct IwaDevModeAppInfo {
   string name;
   IwaDevModeLocation location;
   string installed_version;
+};
+
+// Mimics web_app::UpdateManifest::VersionEntry.
+struct VersionEntry {
+  string version;
+  url.mojom.Url web_bundle_url;
+};
+
+// Mimics web_app::UpdateManifest.
+struct UpdateManifest {
+  array<VersionEntry> versions;
+};
+
+union ParseUpdateManifestFromUrlResult {
+  UpdateManifest update_manifest;
+  string error;
+};
+
+// Parameters necessary for InstallIsolatedWebAppFromBundleUrl().
+struct InstallFromBundleUrlParams {
+  url.mojom.Url web_bundle_url;
+
+  // TODO(crbug.com/358606568): support update_manifest_url and propagate it.
 };
 
 // Handles requests from chrome://web-app-internals.
@@ -43,6 +70,16 @@ interface WebAppInternalsHandler {
   SelectFileAndInstallIsolatedWebAppFromDevBundle() =>
       (InstallIsolatedWebAppResult result);
 
+  // Attempts to fetch & parse an IWA update manifest from the provided url.
+  ParseUpdateManifestFromUrl(
+      url.mojom.Url update_manifest_url) =>
+      (ParseUpdateManifestFromUrlResult result);
+  // Attempts to download a web bundle & install an IWA in dev mode with the
+  // provided `params`.
+  InstallIsolatedWebAppFromBundleUrl(
+      InstallFromBundleUrlParams params) =>
+      (InstallIsolatedWebAppResult result);
+
   // Triggers an update for a dev mode proxy app. Returns a string containing a
   // success or error message.
   UpdateDevProxyIsolatedWebApp(string app_id) => (string result);
@@ -57,4 +94,8 @@ interface WebAppInternalsHandler {
   SearchForIsolatedWebAppUpdates() => (string result);
   // Returns information about installed dev mode IWAs.
   GetIsolatedWebAppDevModeAppInfo() => (array<IwaDevModeAppInfo> apps);
+
+  // Rotates the key for `web_bundle_id` to `rotated_key` and informs all
+  // observers that a key rotation has taken place.
+  RotateKey(string web_bundle_id, array<uint8>? rotated_key);
 };

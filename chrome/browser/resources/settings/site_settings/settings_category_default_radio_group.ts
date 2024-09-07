@@ -23,7 +23,7 @@ import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './settings_category_default_radio_group.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import type {DefaultContentSetting} from './site_settings_prefs_browser_proxy.js';
-import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
+import {DefaultSettingSource} from './site_settings_prefs_browser_proxy.js';
 
 /**
  * Selected content setting radio option.
@@ -152,6 +152,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.CLIPBOARD:
       case ContentSettingsTypes.FILE_SYSTEM_WRITE:
       case ContentSettingsTypes.GEOLOCATION:
+      case ContentSettingsTypes.HAND_TRACKING:
       case ContentSettingsTypes.HID_DEVICES:
       case ContentSettingsTypes.IDLE_DETECTION:
       case ContentSettingsTypes.KEYBOARD_LOCK:
@@ -202,18 +203,18 @@ export class SettingsCategoryDefaultRadioGroupElement extends
    */
   private updatePref_(update: DefaultContentSetting) {
     if (update.source !== undefined &&
-        update.source !== ContentSettingProvider.PREFERENCE) {
+        update.source !== DefaultSettingSource.PREFERENCE) {
       this.set(
           'pref_.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
       let controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
       switch (update.source) {
-        case ContentSettingProvider.POLICY:
+        case DefaultSettingSource.POLICY:
           controlledBy = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
           break;
-        case ContentSettingProvider.SUPERVISED_USER:
+        case DefaultSettingSource.SUPERVISED_USER:
           controlledBy = chrome.settingsPrivate.ControlledBy.PARENT;
           break;
-        case ContentSettingProvider.EXTENSION:
+        case DefaultSettingSource.EXTENSION:
           controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
           break;
       }

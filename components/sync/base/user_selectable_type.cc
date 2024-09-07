@@ -86,17 +86,27 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
     case UserSelectableType::kTabs:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      return {kTabsTypeName, SESSIONS, {SESSIONS, SAVED_TAB_GROUP}};
+      return {kTabsTypeName,
+              SESSIONS,
+              {SESSIONS, SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA,
+               COLLABORATION_GROUP}};
 #else
       return {kTabsTypeName, SESSIONS, {SESSIONS}};
 #endif
     case UserSelectableType::kSavedTabGroups:
-      // Note: Saved tab groups is presented as a separate type only on desktop.
+      // Note: Tab groups is presented as a separate type only on desktop.
       // On mobile platforms, it is bundled together with open tabs.
-      return {kSavedTabGroupsTypeName, SAVED_TAB_GROUP, {SAVED_TAB_GROUP}};
+      // TODO(crbug.com/361625227): In post-UNO world, it will be bundled
+      // together with open tabs same as mobile.
+      return {kSavedTabGroupsTypeName,
+              SAVED_TAB_GROUP,
+              {SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP}};
     case UserSelectableType::kSharedTabGroupData:
-      // Note: COLLABORATION_GROUP might be re-used for other features. If this
-      // happens, it should probably be in AlwaysPreferredUserTypes().
+      // Note: COLLABORATION_GROUP might be re-used for other
+      // features. If this happens, it should probably be in
+      // AlwaysPreferredUserTypes().
+      // TODO(crbug.com/361625648): Remove kSharedTabGroupData as it's not
+      // needed any more.
       return {kSharedTabGroupDataTypeName,
               SHARED_TAB_GROUP_DATA,
               {SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP}};

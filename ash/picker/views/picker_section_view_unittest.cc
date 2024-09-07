@@ -20,9 +20,14 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -34,17 +39,24 @@ namespace {
 using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::StrEq;
 
 constexpr int kDefaultSectionWidth = 320;
+
+std::unique_ptr<PickerImageItemView> CreateImageItem() {
+  return std::make_unique<PickerImageItemView>(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromImageSkia(
+          gfx::test::CreateImageSkia(/*size=*/100))),
+      u"image", base::DoNothing());
+}
 
 std::unique_ptr<PickerImageItemView> CreateGifItem(
     const gfx::Size& gif_dimensions) {
   return std::make_unique<PickerImageItemView>(
-      base::DoNothing(),
       std::make_unique<PickerGifView>(
           /*frames_fetcher=*/base::DoNothing(),
-          /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions,
-          /*accessible_name=*/u""));
+          /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions),
+      u"gif", base::DoNothing());
 }
 
 using PickerSectionViewTest = views::ViewsTestBase;
@@ -120,7 +132,7 @@ TEST_F(PickerSectionViewTest, AddsGifItem) {
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                  &submenu_controller);
 
-  section_view.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  section_view.AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -135,11 +147,13 @@ TEST_F(PickerSectionViewTest, AddsResults) {
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                  &submenu_controller);
 
-  section_view.AddResult(PickerSearchResult::Text(u"Result"),
-                         &preview_controller, base::DoNothing());
+  section_view.AddResult(PickerTextResult(u"Result"), &preview_controller,
+                         PickerSectionView::LocalFileResultStyle::kList,
+                         base::DoNothing());
   section_view.AddResult(
-      PickerSearchResult::LocalFile(u"title", base::FilePath("abc.png")),
-      &preview_controller, base::DoNothing());
+      PickerLocalFileResult(u"title", base::FilePath("abc.png")),
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -157,9 +171,10 @@ TEST_F(PickerSectionViewTest,
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::BrowsingHistory(GURL("https://www.example.com/foo"),
-                                          u"Example Foo", /*icon=*/{}),
-      &preview_controller, base::DoNothing());
+      PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
+                                  u"Example Foo", /*icon=*/{}),
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -179,9 +194,10 @@ TEST_F(PickerSectionViewTest,
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::BrowsingHistory(GURL("https://www.example.com/foo"),
-                                          /*title=*/u"", /*icon=*/{}),
-      &preview_controller, base::DoNothing());
+      PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
+                                  /*title=*/u"", /*icon=*/{}),
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -192,6 +208,70 @@ TEST_F(PickerSectionViewTest,
   EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
 }
 
+TEST_F(PickerSectionViewTest,
+       SingleFileClipboardHistoryResultsUseIconForFiletype) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(
+      PickerClipboardResult(base::UnguessableToken(),
+                            PickerClipboardResult::DisplayFormat::kFile,
+                            /*file_count=*/1,
+                            /*display_text=*/u"image.png",
+                            /*display_image=*/{},
+                            /*is_recent=*/false),
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_NE(list_item, nullptr);
+  const gfx::VectorIcon* vector_icon =
+      list_item->leading_icon_view_for_testing()
+          .GetImageModel()
+          .GetVectorIcon()
+          .vector_icon();
+  ASSERT_NE(vector_icon, nullptr);
+  EXPECT_THAT(vector_icon->name, StrEq(chromeos::kFiletypeImageIcon.name));
+}
+
+TEST_F(PickerSectionViewTest,
+       MultipleFileClipboardHistoryResultsUseIconForFiletype) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(
+      PickerClipboardResult(base::UnguessableToken(),
+                            PickerClipboardResult::DisplayFormat::kFile,
+                            /*file_count=*/2,
+                            /*display_text=*/u"2 files",
+                            /*display_image=*/{},
+                            /*is_recent=*/false),
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_NE(list_item, nullptr);
+  const gfx::VectorIcon* vector_icon =
+      list_item->leading_icon_view_for_testing()
+          .GetImageModel()
+          .GetVectorIcon()
+          .vector_icon();
+  ASSERT_NE(vector_icon, nullptr);
+  EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kContentCopyIcon.name));
+}
+
 TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
@@ -200,10 +280,10 @@ TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::CapsLock(
-          /*enabled=*/true,
-          PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
-      &preview_controller, base::DoNothing());
+      PickerCapsLockResult(
+          /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -249,9 +329,10 @@ TEST_P(PickerSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                  &submenu_controller);
 
-  section_view.AddResult(PickerSearchResult::BrowsingHistory(
-                             GetParam().first, u"title", /*icon=*/{}),
-                         &preview_controller, base::DoNothing());
+  section_view.AddResult(
+      PickerBrowsingHistoryResult(GetParam().first, u"title", /*icon=*/{}),
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();
@@ -260,6 +341,209 @@ TEST_P(PickerSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
   EXPECT_EQ(views::AsViewClass<PickerListItemView>(items[0])
                 ->GetSecondaryTextForTesting(),
             GetParam().second);
+}
+
+TEST_F(PickerSectionViewTest, GetItemsFromListItems) {
+  PickerSectionView section_view(kDefaultSectionWidth,
+                                 /*asset_fetcher=*/nullptr,
+                                 /*submenu_controller=*/nullptr);
+  views::View* item1 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item2 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item3 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+
+  EXPECT_EQ(section_view.GetTopItem(), item1);
+  EXPECT_EQ(section_view.GetBottomItem(), item3);
+  EXPECT_EQ(section_view.GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemAbove(item2), item1);
+  EXPECT_EQ(section_view.GetItemAbove(item3), item2);
+  EXPECT_EQ(section_view.GetItemBelow(item1), item2);
+  EXPECT_EQ(section_view.GetItemBelow(item2), item3);
+  EXPECT_EQ(section_view.GetItemBelow(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item3), nullptr);
+}
+
+TEST_F(PickerSectionViewTest, GetItemsFromImageGridItems) {
+  PickerSectionView section_view(kDefaultSectionWidth,
+                                 /*asset_fetcher=*/nullptr,
+                                 /*submenu_controller=*/nullptr);
+  views::View* item1 = section_view.AddImageGridItem(CreateImageItem());
+  views::View* item2 = section_view.AddImageGridItem(CreateImageItem());
+  views::View* item3 = section_view.AddImageGridItem(CreateImageItem());
+
+  EXPECT_EQ(section_view.GetTopItem(), item1);
+  EXPECT_EQ(section_view.GetBottomItem(), item3);
+  EXPECT_EQ(section_view.GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemAbove(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemAbove(item3), item1);
+  EXPECT_EQ(section_view.GetItemBelow(item1), item3);
+  EXPECT_EQ(section_view.GetItemBelow(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemBelow(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item2), item1);
+  EXPECT_EQ(section_view.GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item1), item2);
+  EXPECT_EQ(section_view.GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item3), item2);
+}
+
+TEST_F(PickerSectionViewTest, GetItemsFromListAboveImageGridItems) {
+  PickerSectionView section_view(kDefaultSectionWidth,
+                                 /*asset_fetcher=*/nullptr,
+                                 /*submenu_controller=*/nullptr);
+  views::View* item1 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item2 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item3 = section_view.AddImageGridItem(CreateImageItem());
+  views::View* item4 = section_view.AddImageGridItem(CreateImageItem());
+  views::View* item5 = section_view.AddImageGridItem(CreateImageItem());
+
+  EXPECT_EQ(section_view.GetTopItem(), item1);
+  EXPECT_EQ(section_view.GetBottomItem(), item5);
+  EXPECT_EQ(section_view.GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemAbove(item2), item1);
+  EXPECT_EQ(section_view.GetItemAbove(item3), item2);
+  EXPECT_EQ(section_view.GetItemAbove(item4), item2);
+  EXPECT_EQ(section_view.GetItemAbove(item5), item3);
+  EXPECT_EQ(section_view.GetItemBelow(item1), item2);
+  EXPECT_EQ(section_view.GetItemBelow(item2), item3);
+  EXPECT_EQ(section_view.GetItemBelow(item3), item5);
+  EXPECT_EQ(section_view.GetItemBelow(item4), nullptr);
+  EXPECT_EQ(section_view.GetItemBelow(item5), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item4), item3);
+  EXPECT_EQ(section_view.GetItemLeftOf(item5), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item3), item4);
+  EXPECT_EQ(section_view.GetItemRightOf(item4), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item5), item4);
+}
+
+TEST_F(PickerSectionViewTest, GetItemsFromImageGridAboveListItems) {
+  PickerSectionView section_view(kDefaultSectionWidth,
+                                 /*asset_fetcher=*/nullptr,
+                                 /*submenu_controller=*/nullptr);
+  views::View* item1 = section_view.AddImageGridItem(CreateImageItem());
+  views::View* item2 = section_view.AddImageGridItem(CreateImageItem());
+  views::View* item3 = section_view.AddImageGridItem(CreateImageItem());
+  views::View* item4 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item5 = section_view.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+
+  EXPECT_EQ(section_view.GetTopItem(), item1);
+  EXPECT_EQ(section_view.GetBottomItem(), item5);
+  EXPECT_EQ(section_view.GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemAbove(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemAbove(item3), item1);
+  EXPECT_EQ(section_view.GetItemAbove(item4), item3);
+  EXPECT_EQ(section_view.GetItemAbove(item5), item4);
+  EXPECT_EQ(section_view.GetItemBelow(item1), item3);
+  EXPECT_EQ(section_view.GetItemBelow(item2), item4);
+  EXPECT_EQ(section_view.GetItemBelow(item3), item4);
+  EXPECT_EQ(section_view.GetItemBelow(item4), item5);
+  EXPECT_EQ(section_view.GetItemBelow(item5), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item2), item1);
+  EXPECT_EQ(section_view.GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item4), nullptr);
+  EXPECT_EQ(section_view.GetItemLeftOf(item5), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item1), item2);
+  EXPECT_EQ(section_view.GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item3), item2);
+  EXPECT_EQ(section_view.GetItemRightOf(item4), nullptr);
+  EXPECT_EQ(section_view.GetItemRightOf(item5), nullptr);
+}
+
+TEST_F(PickerSectionViewTest, GetItemsFromListAboveImageRowItems) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerSectionView* section_view = widget->SetContentsView(
+      std::make_unique<PickerSectionView>(kDefaultSectionWidth,
+                                          /*asset_fetcher=*/nullptr,
+                                          /*submenu_controller=*/nullptr));
+  views::View* item1 = section_view->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item2 = section_view->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item3 = section_view->AddImageRowItem(CreateImageItem());
+  views::View* item4 = section_view->AddImageRowItem(CreateImageItem());
+  views::View* more_items =
+      section_view->GetImageRowMoreItemsButtonForTesting();
+
+  EXPECT_EQ(section_view->GetTopItem(), item1);
+  EXPECT_EQ(section_view->GetBottomItem(), item3);
+  EXPECT_EQ(section_view->GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemAbove(item2), item1);
+  EXPECT_EQ(section_view->GetItemAbove(item3), item2);
+  EXPECT_EQ(section_view->GetItemAbove(item4), item2);
+  EXPECT_EQ(section_view->GetItemAbove(more_items), item2);
+  EXPECT_EQ(section_view->GetItemBelow(item1), item2);
+  EXPECT_EQ(section_view->GetItemBelow(item2), item3);
+  EXPECT_EQ(section_view->GetItemBelow(item3), nullptr);
+  EXPECT_EQ(section_view->GetItemBelow(item4), nullptr);
+  EXPECT_EQ(section_view->GetItemBelow(more_items), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item2), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item4), item3);
+  EXPECT_EQ(section_view->GetItemLeftOf(more_items), item4);
+  EXPECT_EQ(section_view->GetItemRightOf(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item3), item4);
+  EXPECT_EQ(section_view->GetItemRightOf(item4), more_items);
+  EXPECT_EQ(section_view->GetItemRightOf(more_items), nullptr);
+}
+
+TEST_F(PickerSectionViewTest, GetItemsFromImageRowAboveListItems) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerSectionView* section_view = widget->SetContentsView(
+      std::make_unique<PickerSectionView>(kDefaultSectionWidth,
+                                          /*asset_fetcher=*/nullptr,
+                                          /*submenu_controller=*/nullptr));
+  views::View* item1 = section_view->AddImageRowItem(CreateImageItem());
+  views::View* item2 = section_view->AddImageRowItem(CreateImageItem());
+  views::View* more_items =
+      section_view->GetImageRowMoreItemsButtonForTesting();
+  views::View* item3 = section_view->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  views::View* item4 = section_view->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+
+  EXPECT_EQ(section_view->GetTopItem(), item1);
+  EXPECT_EQ(section_view->GetBottomItem(), item4);
+  EXPECT_EQ(section_view->GetItemAbove(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemAbove(item2), nullptr);
+  EXPECT_EQ(section_view->GetItemAbove(more_items), nullptr);
+  EXPECT_EQ(section_view->GetItemAbove(item3), item1);
+  EXPECT_EQ(section_view->GetItemAbove(item4), item3);
+  EXPECT_EQ(section_view->GetItemBelow(item1), item3);
+  EXPECT_EQ(section_view->GetItemBelow(item2), item3);
+  EXPECT_EQ(section_view->GetItemBelow(more_items), item3);
+  EXPECT_EQ(section_view->GetItemBelow(item3), item4);
+  EXPECT_EQ(section_view->GetItemBelow(item4), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item2), item1);
+  EXPECT_EQ(section_view->GetItemLeftOf(more_items), item2);
+  EXPECT_EQ(section_view->GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(section_view->GetItemLeftOf(item4), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item1), item2);
+  EXPECT_EQ(section_view->GetItemRightOf(item2), more_items);
+  EXPECT_EQ(section_view->GetItemRightOf(more_items), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item3), nullptr);
+  EXPECT_EQ(section_view->GetItemRightOf(item4), nullptr);
 }
 
 }  // namespace

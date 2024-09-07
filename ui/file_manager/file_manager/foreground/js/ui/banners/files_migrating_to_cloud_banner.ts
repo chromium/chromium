@@ -39,34 +39,29 @@ export class FilesMigratingToCloudBanner extends WarningBanner {
   }
 
   /**
-   * The context contains the current default download location, which is
-   * usually My Files/Downloads. When Skyvault is enabled, it should be Google
-   * Drive or OneDrive.
+   * The context contains the CloudProvider set as SkyVault migration
+   * destination.
    */
-  // TODO(b/351773604): Use MigrationDestination instead of DownloadDirectory.
   override onFilteredContext(context: {
-    defaultLocation: chrome.fileManagerPrivate.DefaultLocation,
+    cloudProvider: chrome.fileManagerPrivate.CloudProvider,
   }) {
     if (isNullOrUndefined(context) ||
-        isNullOrUndefined(context.defaultLocation)) {
+        isNullOrUndefined(context.cloudProvider)) {
       console.warn('Context not supplied or defaultLocation key missing.');
       return;
     }
     const text =
         this.shadowRoot!.querySelector('span[slot="text"]')! as HTMLSpanElement;
 
-    switch (context.defaultLocation) {
-      case chrome.fileManagerPrivate.DefaultLocation.GOOGLE_DRIVE:
+    switch (context.cloudProvider) {
+      case chrome.fileManagerPrivate.CloudProvider.GOOGLE_DRIVE:
         text.innerText = str('SKYVAULT_MIGRATION_BANNER_GOOGLE_DRIVE');
         return;
-      case chrome.fileManagerPrivate.DefaultLocation.ONEDRIVE:
+      case chrome.fileManagerPrivate.CloudProvider.ONEDRIVE:
         text.innerText = str('SKYVAULT_MIGRATION_BANNER_ONEDRIVE');
         return;
-      case chrome.fileManagerPrivate.DefaultLocation.MY_FILES:
-      default:
-        console.warn(
-            `Unsupported default location ${context.defaultLocation}.`);
-        return;
+      case chrome.fileManagerPrivate.CloudProvider.NOT_SPECIFIED:
+        console.warn(`Cloud provider must be specified.`);
     }
   }
 

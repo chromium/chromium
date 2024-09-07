@@ -45,7 +45,6 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
-#include "ui/gl/hdr_metadata_helper_win.h"
 
 namespace media {
 
@@ -96,8 +95,7 @@ std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb,
     D3D11VideoDecoder::GetD3DDeviceCB get_d3d_device_cb,
-    SupportedConfigs supported_configs,
-    bool system_hdr_enabled) {
+    SupportedConfigs supported_configs) {
   // Note that the output callback will hop to our thread, post the video
   // frame, and along with a callback that will hop back to the impl thread
   // when it's released.
@@ -108,8 +106,8 @@ std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
       base::MakeRefCounted<CommandBufferHelperHolder>(gpu_task_runner));
   return base::WrapUnique<VideoDecoder>(new D3D11VideoDecoder(
       gpu_task_runner, std::move(media_log), gpu_preferences, gpu_workarounds,
-      get_helper_cb, std::move(get_d3d_device_cb), std::move(supported_configs),
-      system_hdr_enabled));
+      get_helper_cb, std::move(get_d3d_device_cb),
+      std::move(supported_configs)));
 }
 
 D3D11VideoDecoder::D3D11VideoDecoder(
@@ -119,8 +117,7 @@ D3D11VideoDecoder::D3D11VideoDecoder(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()> get_helper_cb,
     GetD3DDeviceCB get_d3d_device_cb,
-    SupportedConfigs supported_configs,
-    bool system_hdr_enabled)
+    SupportedConfigs supported_configs)
     : media_log_(std::move(media_log)),
       mailbox_release_helper_(
           base::MakeRefCounted<D3D11VideoFrameMailboxReleaseHelper>(
@@ -133,7 +130,6 @@ D3D11VideoDecoder::D3D11VideoDecoder(
       get_d3d_device_cb_(std::move(get_d3d_device_cb)),
       get_helper_cb_(std::move(get_helper_cb)),
       supported_configs_(std::move(supported_configs)),
-      system_hdr_enabled_(system_hdr_enabled),
       use_shared_handle_(
           base::FeatureList::IsEnabled(kD3D12VideoDecoder) ||
           base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle)) {
@@ -230,12 +226,8 @@ bool D3D11VideoDecoder::ResetD3DVideoDecoder() {
         << "Could not create format checker, continuing";
   }
 
-  // Use IsHDRSupported to guess whether the compositor can output HDR textures.
-  // See TextureSelector for notes about why the decoder should not care.
   auto texture_selector = TextureSelector::Create(
       gpu_preferences_, gpu_workarounds_, decoder_configurator->TextureFormat(),
-      system_hdr_enabled_ ? TextureSelector::HDRMode::kSDROrHDR
-                          : TextureSelector::HDRMode::kSDROnly,
       &format_checker, video_device_, device_context_, media_log_.get(),
       config_.color_space_info().ToGfxColorSpace(), use_shared_handle_);
   if (!texture_selector) {
@@ -743,20 +735,6 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
     color_space = config_.color_space_info().ToGfxColorSpace();
   }
 
-  // Some streams may have varying metadata, so bitstream metadata should be
-  // preferred over metadata provide by the configuration.
-  auto hdr_metadata = accelerated_video_decoder_->GetHDRMetadata()
-                          ? accelerated_video_decoder_->GetHDRMetadata()
-                          : config_.hdr_metadata();
-
-  std::optional<DXGI_HDR_METADATA_HDR10> display_metadata;
-  if (decoder_configurator_->TextureFormat() == DXGI_FORMAT_P010) {
-    // For HDR formats, try to get the display metadata.  This may fail, which
-    // is okay.  We'll just skip sending the metadata.
-    gl::HDRMetadataHelperWin hdr_metadata_helper(device_);
-    display_metadata = hdr_metadata_helper.GetDisplayMetadata();
-  }
-
   // Since we are about to allocate new picture buffers, record whatever usage
   // we had for the outgoing ones, if any.
   LogPictureBufferUsage();
@@ -806,19 +784,17 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
 
     base::OnceCallback<void(scoped_refptr<media::D3D11PictureBuffer>)>
         picture_buffer_gpu_resource_init_done_cb = base::DoNothing();
-    if (base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) ||
-        base::FeatureList::IsEnabled(kUseClientSharedImageForD3D11Video)) {
-      // WebGPU requires interop on the picture buffer to achieve zero copy.
-      // This requires a picture buffer to produce a shared image representation
-      // during initialization. Add picture buffer in_client_use count to idle
-      // the decoder until picture buffer finished gpu resource initialization
-      // in gpu thread.
-      picture_buffers_[i]->add_client_use();
-      picture_buffer_gpu_resource_init_done_cb =
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &D3D11VideoDecoder::PictureBufferGPUResourceInitDone,
-              weak_factory_.GetWeakPtr()));
-    }
+
+    // WebGPU requires interop on the picture buffer to achieve zero copy.
+    // This requires a picture buffer to produce a shared image representation
+    // during initialization. Add picture buffer in_client_use count to idle
+    // the decoder until picture buffer finished gpu resource initialization
+    // in gpu thread.
+    picture_buffers_[i]->add_client_use();
+    picture_buffer_gpu_resource_init_done_cb =
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&D3D11VideoDecoder::PictureBufferGPUResourceInitDone,
+                           weak_factory_.GetWeakPtr()));
 
     D3D11Status result = picture_buffers_[i]->Init(
         gpu_task_runner_, get_helper_cb_, video_device_,
@@ -832,23 +808,6 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
     // the ref to it so that we allocate a new one above.
     if (use_single_video_decoder_texture_)
       in_texture = nullptr;
-
-    // If we have display metadata, then tell the processor.  Note that the
-    // order of these calls is important, and we must set the display metadata
-    // if we set the stream metadata, else it can crash on some AMD cards.
-    if (display_metadata) {
-      // If system hdr is not enabled, don't set metadata can help us avoid
-      // video processor's tone mapping (if gpu vendor is intel), since we
-      // always want to use gfx::ColorTransform do PQ tone-mapping.
-      if ((hdr_metadata && system_hdr_enabled_) ||
-          gpu_workarounds_.use_empty_video_hdr_metadata) {
-        // It's okay if this has an empty-initialized metadata.
-        picture_buffers_[i]->texture_wrapper()->SetStreamHDRMetadata(
-            hdr_metadata.value_or(gfx::HDRMetadata()));
-      }
-      picture_buffers_[i]->texture_wrapper()->SetDisplayHDRMetadata(
-          *display_metadata);
-    }
   }
 }
 
@@ -897,34 +856,19 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     picture_color_space = config_.color_space_info().ToGfxColorSpace();
   }
 
-  media::ClientSharedImageOrMailboxHolder shared_image;
-  gfx::ColorSpace output_color_space;
-  D3D11Status result = picture_buffer->ProcessTexture(
-      picture_color_space, shared_image, &output_color_space);
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  D3D11Status result =
+      picture_buffer->ProcessTexture(picture_color_space, shared_image);
   if (!result.is_ok()) {
     NotifyError(std::move(result).AddHere());
     return false;
   }
 
-  scoped_refptr<VideoFrame> frame;
-  if (absl::holds_alternative<scoped_refptr<gpu::ClientSharedImage>>(
-          shared_image)) {
-    scoped_refptr<gpu::ClientSharedImage> client_shared_image =
-        absl::get<scoped_refptr<gpu::ClientSharedImage>>(
-            std::move(shared_image));
-    frame = VideoFrame::WrapSharedImage(
-        texture_selector_->PixelFormat(), client_shared_image,
-        client_shared_image->creation_sync_token(), GL_TEXTURE_EXTERNAL_OES,
-        VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
-        natural_size, timestamp);
-  } else {
-    gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {
-        absl::get<gpu::MailboxHolder>(std::move(shared_image))};
-    frame = VideoFrame::WrapNativeTextures(
-        texture_selector_->PixelFormat(), mailbox_holders,
-        VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
-        natural_size, timestamp);
-  }
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
+      texture_selector_->PixelFormat(), shared_image,
+      shared_image->creation_sync_token(), GL_TEXTURE_EXTERNAL_OES,
+      VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
+      natural_size, timestamp);
 
   if (!frame) {
     // This can happen if, somehow, we get an unsupported combination of
@@ -963,8 +907,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   }
   frame->metadata().power_efficient = true;
 
-  frame->set_color_space(output_color_space);
-  if (output_color_space.IsHDR()) {
+  frame->set_color_space(picture_color_space);
+  if (picture_color_space.IsHDR()) {
     // Some streams may have varying metadata, so bitstream metadata should be
     // preferred over metadata provide by the configuration.
     frame->set_hdr_metadata(picture->hdr_metadata() ? picture->hdr_metadata()

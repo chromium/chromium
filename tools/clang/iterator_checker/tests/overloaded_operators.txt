@@ -1,0 +1,22 @@
+overloaded_operators.cpp:18:6: error: [iterator-checker] Potentially invalid iterator used.
+    *next;
+     ^
+overloaded_operators.cpp:30:6: error: [iterator-checker] Potentially invalid iterator used.
+    *begin;
+     ^
+overloaded_operators.cpp:31:6: error: [iterator-checker] Potentially invalid iterator used.
+    *next;
+     ^
+overloaded_operators.cpp:38:8: error: [iterator-checker] Potentially invalid iterator used.
+      *next;
+       ^
+overloaded_operators.cpp:51:6: error: [iterator-checker] Potentially invalid iterator used.
+    *begin;
+     ^
+overloaded_operators.cpp:52:6: error: [iterator-checker] Potentially invalid iterator used.
+    *next;
+     ^
+overloaded_operators.cpp:59:8: error: [iterator-checker] Potentially invalid iterator used.
+      *next;
+       ^
+7 errors generated.

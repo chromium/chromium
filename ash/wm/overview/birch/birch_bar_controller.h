@@ -43,6 +43,10 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // TODO(http://b/361326120): Temporary getter for the first bar view before
+  // the menu ownership is defined.
+  BirchBarView* primary_birch_bar_view() { return bar_views_.front(); }
+
   // Register a bar view.
   void RegisterBar(BirchBarView* bar_view);
 
@@ -76,6 +80,18 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // Toggles temperature units for weather chip between F and C.
   void ToggleTemperatureUnits();
 
+  // Executes the commands from bar and chip context menus. `from_chip` will be
+  // true if the command is from a chip context menu.
+  // Please note that most of the bar menu commands should be executed by the
+  // switch button and checkboxes, see `BirchBarMenuModelAdapter` for details.
+  // However, due to the way how `MenuController` processes gesture events, the
+  // submenu may close on touch such that switch button and checkbox callbacks
+  // are not triggered. To solve the issue, we make `SimpleMenuModel::Delegate`
+  // to execute the commands for switch button and checkboxes on touch event.
+  // This is not a normal usage. For more details, please see the bug comment in
+  // http://b/360072119.
+  void ExecuteMenuCommand(int command_id, bool from_chip);
+
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
@@ -85,6 +101,7 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
  private:
   friend class BirchBarMenuTest;
+  friend class TapAppSelectionViewTest;
 
   // Fetches data from birch model if there is no fetching in progress.
   void MaybeFetchDataFromModel();
@@ -97,6 +114,11 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   void InitBarWithItems(BirchBarView* bar_view,
                         const std::vector<std::unique_ptr<BirchItem>>& items);
 
+  // Remove the chips corresponding to the given `item` from the bars and fill
+  // in the chips if there are extra items to show. Note that the `item` is not
+  // removed from `items_` list in this method.
+  void RemoveItemChips(BirchItem* item);
+
   // Called when the context menu is closed.
   void OnChipContextMenuClosed();
 
@@ -108,6 +130,15 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
   // Called when the customize suggestion prefs change.
   void OnCustomizeSuggestionsPrefChanged();
+
+  // Called when recevice a lost media item.
+  void OnLostMediaItemReceived();
+
+  // Called when the lost media is removed.
+  void OnLostMediaItemRemoved();
+
+  // Called when the lost media item is updated with the `updated_item`.
+  void OnLostMediaItemUpdated(std::unique_ptr<BirchItem> updated_item);
 
   // Birch items fetched from model.
   std::vector<std::unique_ptr<BirchItem>> items_;

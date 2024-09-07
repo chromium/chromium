@@ -24,6 +24,8 @@ std::ostream& operator<<(std::ostream& out, AppInstallSurface surface) {
       return out << "AppInstallUriShowoff";
     case AppInstallSurface::kAppInstallUriMall:
       return out << "AppInstallUriMall";
+    case AppInstallSurface::kAppInstallUriMallV2:
+      return out << "AppInstallUriMallV2";
     case AppInstallSurface::kAppInstallUriGetit:
       return out << "AppInstallUriGetit";
     case AppInstallSurface::kAppInstallUriLauncher:

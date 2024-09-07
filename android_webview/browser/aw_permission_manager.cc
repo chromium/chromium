@@ -15,6 +15,7 @@
 #include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/common/aw_features.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -63,12 +64,10 @@ class LastRequestResultCache {
     }
 
     if (!requesting_origin.is_valid()) {
-      NOTREACHED_IN_MIGRATION() << requesting_origin.possibly_invalid_spec();
-      return;
+      NOTREACHED() << requesting_origin.possibly_invalid_spec();
     }
     if (!embedding_origin.is_valid()) {
-      NOTREACHED_IN_MIGRATION() << embedding_origin.possibly_invalid_spec();
-      return;
+      NOTREACHED() << embedding_origin.possibly_invalid_spec();
     }
 
     switch (permission) {
@@ -82,12 +81,7 @@ class LastRequestResultCache {
     }
 
     std::string key = GetCacheKey(requesting_origin, embedding_origin);
-    if (key.empty()) {
-      NOTREACHED_IN_MIGRATION();
-      // Never store an empty key because it could inadvertently be used for
-      // another combination.
-      return;
-    }
+    CHECK(!key.empty());
     pmi_result_cache_[key] = status;
   }
 
@@ -111,9 +105,8 @@ class LastRequestResultCache {
         break;
       // Other permissions are not cached.
       default:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Results are only cached for PROTECTED_MEDIA_IDENTIFIER AND SAA";
-        return PermissionStatus::ASK;
     }
 
     std::string key = GetCacheKey(requesting_origin, embedding_origin);
@@ -191,8 +184,7 @@ class AwPermissionManager::PendingRequest {
   void SetPermissionStatus(PermissionType type, PermissionStatus status) {
     auto result = permission_index_map_.find(type);
     if (result == permission_index_map_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     DCHECK(!IsCompleted());
     results[result->second] = status;
@@ -213,8 +205,7 @@ class AwPermissionManager::PendingRequest {
   PermissionStatus GetPermissionStatus(PermissionType type) {
     auto result = permission_index_map_.find(type);
     if (result == permission_index_map_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return PermissionStatus::DENIED;
+      NOTREACHED();
     }
     return results[result->second];
   }
@@ -371,6 +362,7 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::NFC:
       case PermissionType::VR:
       case PermissionType::AR:
+      case PermissionType::HAND_TRACKING:
       case PermissionType::CAMERA_PAN_TILT_ZOOM:
       case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
@@ -382,6 +374,7 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::KEYBOARD_LOCK:
       case PermissionType::POINTER_LOCK:
       case PermissionType::AUTOMATIC_FULLSCREEN:
+      case PermissionType::WEB_APP_INSTALLATION:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
         pending_request_raw->SetPermissionStatus(permissions[i],
@@ -427,11 +420,7 @@ void AwPermissionManager::RequestPermissions(
                                                  PermissionStatus::DENIED);
         break;
       case PermissionType::NUM:
-        NOTREACHED_IN_MIGRATION()
-            << "PermissionType::NUM was not expected here.";
-        pending_request_raw->SetPermissionStatus(permissions[i],
-                                                 PermissionStatus::DENIED);
-        break;
+        NOTREACHED() << "PermissionType::NUM was not expected here.";
     }
   }
 
@@ -592,6 +581,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::CLIPBOARD_READ_WRITE:
     case blink::PermissionType::DISPLAY_CAPTURE:
     case blink::PermissionType::DURABLE_STORAGE:
+    case blink::PermissionType::HAND_TRACKING:
     case blink::PermissionType::IDLE_DETECTION:
     case blink::PermissionType::KEYBOARD_LOCK:
     case blink::PermissionType::LOCAL_FONTS:
@@ -606,6 +596,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::VR:
     case blink::PermissionType::WAKE_LOCK_SCREEN:
     case blink::PermissionType::WAKE_LOCK_SYSTEM:
+    case blink::PermissionType::WEB_APP_INSTALLATION:
     case blink::PermissionType::WEB_PRINTING:
     case blink::PermissionType::WINDOW_MANAGEMENT:
       return PermissionStatus::DENIED;
@@ -680,20 +671,6 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
       content::WebContents::FromRenderFrameHost(render_frame_host));
 }
 
-AwPermissionManager::SubscriptionId
-AwPermissionManager::SubscribeToPermissionStatusChange(
-    PermissionType permission,
-    content::RenderProcessHost* render_process_host,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool should_include_device_status,
-    base::RepeatingCallback<void(PermissionStatus)> callback) {
-  return SubscriptionId();
-}
-
-void AwPermissionManager::UnsubscribeFromPermissionStatusChange(
-    SubscriptionId subscription_id) {}
-
 void AwPermissionManager::CancelPermissionRequest(int request_id) {
   PendingRequest* pending_request = pending_requests_.Lookup(request_id);
   if (!pending_request || pending_request->IsCancelled())
@@ -756,6 +733,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::IDLE_DETECTION:
       case PermissionType::PERIODIC_BACKGROUND_SYNC:
       case PermissionType::NFC:
+      case PermissionType::HAND_TRACKING:
       case PermissionType::VR:
       case PermissionType::AR:
       case PermissionType::STORAGE_ACCESS_GRANT:
@@ -771,6 +749,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::KEYBOARD_LOCK:
       case PermissionType::POINTER_LOCK:
       case PermissionType::AUTOMATIC_FULLSCREEN:
+      case PermissionType::WEB_APP_INSTALLATION:
         NOTIMPLEMENTED() << "CancelPermission not implemented for "
                          << static_cast<int>(permission);
         break;
@@ -781,9 +760,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
         // There is nothing to cancel so this is simply ignored.
         break;
       case PermissionType::NUM:
-        NOTREACHED_IN_MIGRATION()
-            << "PermissionType::NUM was not expected here.";
-        break;
+        NOTREACHED() << "PermissionType::NUM was not expected here.";
     }
     pending_request->SetPermissionStatus(permission, PermissionStatus::DENIED);
   }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -41,7 +42,7 @@ public class BatchUploadCardPreference extends Preference
     private SyncService mSyncService;
     private HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap;
     private ModalDialogManager mDialogManager;
-    private SnackbarManager mSnackbarManager;
+    private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private ReauthenticatorBridge mReauthenticatorBridge;
 
     public BatchUploadCardPreference(Context context, AttributeSet attrs) {
@@ -73,8 +74,9 @@ public class BatchUploadCardPreference extends Preference
         update();
     }
 
-    public void setSnackbarManager(SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
+    public void setSnackbarManagerSupplier(
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     @Override
@@ -129,13 +131,15 @@ public class BatchUploadCardPreference extends Preference
                                         .getIdentityManager(mProfile)
                                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
                                         .getEmail());
-        mSnackbarManager.showSnackbar(
-                Snackbar.make(
-                                snackbarMessage,
-                                /* controller= */ null,
-                                Snackbar.TYPE_ACTION,
-                                Snackbar.UMA_SETTINGS_BATCH_UPLOAD)
-                        .setSingleLine(false));
+        mSnackbarManagerSupplier
+                .get()
+                .showSnackbar(
+                        Snackbar.make(
+                                        snackbarMessage,
+                                        /* controller= */ null,
+                                        Snackbar.TYPE_ACTION,
+                                        Snackbar.UMA_SETTINGS_BATCH_UPLOAD)
+                                .setSingleLine(false));
         hideBatchUploadCardAndUpdate();
     }
 

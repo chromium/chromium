@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/types.h"
@@ -61,7 +61,11 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
           opened_web_contents_to_uuid,
       const SavedTabGroup& saved_group);
 
-  std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
+  // The service used to query and manage SavedTabGroups.
+  raw_ptr<TabGroupSyncService> service_ = nullptr;
+
+  // Listener layer which observes and manages the state of open SavedTabGroups
+  // across browsers.
   std::unique_ptr<SavedTabGroupModelListener> listener_;
 };
 

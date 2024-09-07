@@ -67,11 +67,7 @@ using storage::FileSystemURL;
 
 class FileSystemAccessFileHandleImplTest : public testing::Test {
  public:
-  FileSystemAccessFileHandleImplTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    scoped_feature_list.InitAndEnableFeature(
-        blink::features::kFileSystemAccessLockingScheme);
-  }
+  FileSystemAccessFileHandleImplTest() = default;
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -232,7 +228,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
   const blink::StorageKey test_src_storage_key_ =
       blink::StorageKey::CreateFromStringForTesting("http://example.com/foo");
 
-  BrowserTaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 
   base::ScopedTempDir dir_;
 
@@ -1213,13 +1210,12 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest, Move_SameFile) {
   ExpectFileMoveSuccess(source, source);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FileSystemAccessFileHandleImplMovePermissionsTest,
-    ::testing::Combine(
-        // Is there a file to be overwritten?
-        ::testing::Bool(),
-        // Does the site have user activation?
-        ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         FileSystemAccessFileHandleImplMovePermissionsTest,
+                         ::testing::Combine(
+                             // Is there a file to be overwritten?
+                             ::testing::Bool(),
+                             // Does the site have user activation?
+                             ::testing::Bool()));
 
 }  // namespace content

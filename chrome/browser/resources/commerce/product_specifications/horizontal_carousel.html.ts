@@ -16,7 +16,7 @@ export function getHtml(this: HorizontalCarouselElement) {
 
   <cr-icon-button id="forwardButton" class="carousel-button"
       @click="${this.onCarouselForwardClick_}" iron-icon="cr:chevron-right"
-      ?hidden="${!this.showForwardButton_}" tabindex="-1">
+      ?hidden="${!this.showForwardButton}" tabindex="-1">
   </cr-icon-button>
   <div id="forwardHoverLayer" class="hover-layer"></div>
 
@@ -24,7 +24,5 @@ export function getHtml(this: HorizontalCarouselElement) {
     <div id="startProbe"></div>
     <slot name="table" id="slottedTable"></slot>
     <div id="endProbe"></div>
-    <slot name="selector"></slot>
-    <div id=gradientLayer></div>
   </div>`;
 }

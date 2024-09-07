@@ -42,7 +42,6 @@ public interface BackPressHandler {
         Type.BOTTOM_CONTROLS,
         Type.TAB_HISTORY,
         Type.BOTTOM_SHEET,
-        Type.PAGE_INSIGHTS_BOTTOM_SHEET,
         Type.SHOW_READING_LIST,
         Type.MINIMIZE_APP_AND_CLOSE_TAB,
         Type.ARCHIVED_TABS_DIALOG
@@ -53,9 +52,6 @@ public interface BackPressHandler {
         int XR_DELEGATE = 1;
         int SCENE_OVERLAY = 2;
         int BOTTOM_SHEET = 3;
-        // TODO(b/307046796): Remove this once we have found better way to integrate with back
-        // handling logic.
-        int PAGE_INSIGHTS_BOTTOM_SHEET = 4;
         int START_SURFACE = 5;
         // The archived tabs dialog is shown on top of the hub, so it must take priority.
         int ARCHIVED_TABS_DIALOG = 6;

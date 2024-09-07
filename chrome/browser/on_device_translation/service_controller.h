@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_
 
 #include "base/no_destructor.h"
-#include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
+#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // This class is the controller that launches the on-device translation service
 // and delegates the functionalities.
+// TODO(crbug.com/364795294): This class does not support Android yet.
 class OnDeviceTranslationServiceController {
  public:
   OnDeviceTranslationServiceController(

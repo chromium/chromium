@@ -324,8 +324,9 @@ class Manager(object):
         return self._finder.find_tests(
             args,
             test_lists=self._options.test_list,
-            exclude_test_lists=self._options.exclude_test_lists,
             filter_files=self._options.isolated_script_test_filter_file,
+            inverted_filter_files=self._options.
+            inverted_test_launcher_filter_file,
             fastest_percentile=self._options.fastest,
             filters=self._options.isolated_script_test_filter)
 

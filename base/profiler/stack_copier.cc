@@ -14,7 +14,10 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/profiler/stack_buffer.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/tagging.h"
+#endif
 
 namespace base {
 
@@ -76,11 +79,13 @@ const uint8_t* StackCopier::CopyStackContentsAndRewritePointers(
     const uintptr_t* original_stack_top,
     size_t platform_stack_alignment,
     uintptr_t* stack_buffer_bottom) {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
   // Disable MTE during this function because this function indiscriminately
   // reads stack frames, some of which belong to system libraries, not Chrome
   // itself. With stack tagging, some bytes on the stack have MTE tags different
   // from the stack pointer tag.
   partition_alloc::SuspendTagCheckingScope suspend_tag_checking_scope;
+#endif
 
   const uint8_t* byte_src = original_stack_bottom;
   // The first address in the stack with pointer alignment. Pointer-aligned

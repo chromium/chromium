@@ -987,7 +987,7 @@ bool CanContributeToValueOfTextfield(AXNode* target_node) {
   }
 
   // Text and line breaks contribute.
-  if (ui::IsText(target_node->GetRole())) {
+  if (IsText(target_node->GetRole())) {
     return true;
   }
 
@@ -1341,7 +1341,7 @@ const char* ToString(AXEventGenerator::Event event) {
       return "documentSelectionChanged";
     case AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       return "documentTitleChanged";
-    case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
+    case AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
       return "editableTextChanged";
     case AXEventGenerator::Event::ENABLED_CHANGED:
       return "enabledChanged";
@@ -1357,7 +1357,7 @@ const char* ToString(AXEventGenerator::Event event) {
       return "haspopupChanged";
     case AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
       return "hierarchicalLevelChanged";
-    case ui::AXEventGenerator::Event::IGNORED_CHANGED:
+    case AXEventGenerator::Event::IGNORED_CHANGED:
       return "ignoredChanged";
     case AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
       return "imageAnnotationChanged";
@@ -1383,9 +1383,9 @@ const char* ToString(AXEventGenerator::Event event) {
       return "liveStatusChanged";
     case AXEventGenerator::Event::MENU_ITEM_SELECTED:
       return "menuItemSelected";
-    case ui::AXEventGenerator::Event::MENU_POPUP_END:
+    case AXEventGenerator::Event::MENU_POPUP_END:
       return "menuPopupEnd";
-    case ui::AXEventGenerator::Event::MENU_POPUP_START:
+    case AXEventGenerator::Event::MENU_POPUP_START:
       return "menuPopupStart";
     case AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
       return "multilineStateChanged";

@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Dette nettstedet kan ikke be deg om tillatelse</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjelp<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Slå på Bluetooth<ph name="END_LINK" /> for å tillate tilkobling</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> trenger tillatelse til å spore hendene dine.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Få hjelp<ph name="END_LINK" /> mens du skanner etter enheter …</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> trenger tilgang til mikrofonen din for dette nettstedet.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> vil søke etter Bluetooth-enheter i nærheten. Fant disse enhetene:</translation>

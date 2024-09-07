@@ -371,16 +371,42 @@ namespace declarativeNetRequest {
     HeaderInfo[]? excludedResponseHeaders;
   };
 
+  // Options for regex filters and substitutions for headers.
+  [nodoc] dictionary HeaderRegexOptions {
+    // Whether the regex should match all groups for the value. This is only
+    // relevant if a regex substitution is present and would thus need to be
+    // applied onto all matching groups. Equivalent to the "g" flag.
+    // Defaults to false.
+    boolean? matchAll;
+  };
+
   dictionary ModifyHeaderInfo {
     // The name of the header to be modified.
     DOMString header;
 
     // The operation to be performed on a header.
+    // <!-- TODO(crbug.com/352093575): Make this field optional: It is ignored
+    // if `regexSubstitution` is specified but is required otherwise. -->
     HeaderOperation operation;
 
     // The new value for the header. Must be specified for <code>append</code>
     // and <code>set</code> operations.
+    // <!-- TODO(crbug.com/352093575): Ignored if `regexSubstitution` is
+    // specified, -->
     DOMString? value;
+
+    // A regular expression to match against the header value. This follows the
+    // RE2 syntax for consistency with the rest of the API.
+    [nodoc] DOMString? regexFilter;
+
+    // Substitution pattern for the response header. `regexFilter` must be
+    // specified for this to be valid. Takes precedence over `value` and
+    // `operation` if specified and valid.
+    [nodoc] DOMString? regexSubstitution;
+
+    // Options for the regex filter. If not specified, all options will be
+    // default.
+    [nodoc] HeaderRegexOptions? regexOptions;
   };
 
   [noinline_doc]

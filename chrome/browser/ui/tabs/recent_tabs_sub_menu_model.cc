@@ -708,8 +708,15 @@ void RecentTabsSubMenuModel::AddDeviceFavicon(
     case syncer::DeviceInfo::FormFactor::kTablet:
       favicon = &kTabletIcon;
       break;
+    // Return the laptop icon as default.
     case syncer::DeviceInfo::FormFactor::kUnknown:
-      [[fallthrough]];  // Return the laptop icon as default.
+      [[fallthrough]];
+    case syncer::DeviceInfo::FormFactor::kAutomotive:
+      [[fallthrough]];
+    case syncer::DeviceInfo::FormFactor::kWearable:
+      [[fallthrough]];
+    case syncer::DeviceInfo::FormFactor::kTv:
+      [[fallthrough]];
     case syncer::DeviceInfo::FormFactor::kDesktop:
       favicon = &kLaptopIcon;
       break;

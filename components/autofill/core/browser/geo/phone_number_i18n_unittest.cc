@@ -18,6 +18,7 @@
 #include "third_party/libphonenumber/phonenumber_api.h"
 
 namespace autofill {
+namespace {
 
 using i18n::ConstructPhoneNumber;
 using i18n::NormalizePhoneNumber;
@@ -56,14 +57,10 @@ struct ParseNumberTestCase {
   std::string deduced_region;
 };
 
-namespace {
-
 // Returns a string which is too long to be considered a phone number.
 std::u16string GenerateTooLongString() {
   return std::u16string(i18n::kMaxPhoneNumberSize + 1, u'7');
 }
-
-}  // namespace
 
 class ParseNumberTest : public testing::TestWithParam<ParseNumberTestCase> {};
 
@@ -497,4 +494,5 @@ INSTANTIATE_TEST_SUITE_P(
         // If no country code is found, formats for US.
         PhoneNumberFormatCase(u"415-555-5555", u"", u"+1 415-555-5555")));
 
+}  // namespace
 }  // namespace autofill

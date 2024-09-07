@@ -266,7 +266,7 @@ void InformedRestoreController::MaybeStartInformedRestoreSession(
 
 void InformedRestoreController::MaybeEndInformedRestoreSession() {
   contents_data_.reset();
-  OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
+  OverviewController::Get()->EndOverview(OverviewEndAction::kPine,
                                          OverviewEnterExitType::kNormal);
 }
 
@@ -398,10 +398,8 @@ void InformedRestoreController::StartInformedRestoreSession() {
 
   base::UmaHistogramBoolean(kFullRestoreDialogHistogram, true);
 
-  // TODO(sammiequon): Add a new start action for this type of overview session.
   OverviewController::Get()->StartOverview(
-      OverviewStartAction::kAccelerator,
-      OverviewEnterExitType::kInformedRestore);
+      OverviewStartAction::kPine, OverviewEnterExitType::kInformedRestore);
 }
 
 void InformedRestoreController::OnOnboardingAcceptPressed(bool restore_on) {

@@ -153,6 +153,10 @@ class SystemWebAppDelegate {
   // If true, the App's window will have a tab-strip.
   virtual bool ShouldHaveTabStrip() const;
 
+  // If true, the new-tab button on the tab-strip will be hidden. Only
+  // applicable if the app's window has a tab-strip.
+  virtual bool ShouldHideNewTabButton() const;
+
   // If false, the app will not have the reload button in minimal ui
   // mode.
   virtual bool ShouldHaveReloadButtonInMinimalUi() const;

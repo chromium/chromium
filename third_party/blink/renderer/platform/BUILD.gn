@@ -16,6 +16,7 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
+import("//third_party/jinja2/jinja2.gni")
 import("//third_party/libgav1/options.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//ui/gl/features.gni")
@@ -49,6 +50,7 @@ blink_python_runner("runtime_enabled_features") {
   runtime_enabled_features_json5 = "runtime_enabled_features.json5"
   inputs = scripts_for_json5_files + [
              runtime_enabled_features_json5,
+             "../build/scripts/make_runtime_features_utilities.py",
              "../build/scripts/templates/runtime_enabled_features.cc.tmpl",
              "../build/scripts/templates/runtime_enabled_features.h.tmpl",
              "../build/scripts/templates/runtime_enabled_features_test_helpers.h.tmpl",
@@ -80,7 +82,8 @@ blink_python_runner("runtime_feature_state_override_context") {
   script = "../build/scripts/make_runtime_feature_state_override_context.py"
 
   inputs = scripts_for_json5_files + [
-             "../build/scripts/make_runtime_feature_state_override_context.py",
+             "../build/scripts/make_runtime_features_utilities.py",
+             "../build/scripts/make_runtime_features.py",
              "runtime_enabled_features.json5",
              "../build/scripts/templates/runtime_feature_state_override_context.h.tmpl",
              "../build/scripts/templates/runtime_feature_state_override_context.cc.tmpl",
@@ -102,7 +105,10 @@ blink_python_runner("color_data") {
   script = "../build/scripts/gperf.py"
 
   color_data_gperf = "color_data.gperf"
-  inputs = [ color_data_gperf ]
+  inputs = [
+             "../build/scripts/template_expander.py",
+             color_data_gperf,
+           ] + jinja2_sources
 
   output_file = "$blink_platform_output_dir/color_data.cc"
   outputs = [ output_file ]
@@ -652,7 +658,6 @@ component("platform") {
     "fonts/font_fallback_list.h",
     "fonts/font_fallback_map.cc",
     "fonts/font_fallback_map.h",
-    "fonts/font_fallback_priority.cc",
     "fonts/font_fallback_priority.h",
     "fonts/font_family.cc",
     "fonts/font_family.h",
@@ -820,6 +825,8 @@ component("platform") {
     "geometry/calculation_expression_node.h",
     "geometry/calculation_value.cc",
     "geometry/calculation_value.h",
+    "geometry/color_channel_keyword.h",
+    "geometry/evaluation_input.h",
     "geometry/float_polygon.cc",
     "geometry/float_polygon.h",
     "geometry/float_rounded_rect.cc",
@@ -829,10 +836,6 @@ component("platform") {
     "geometry/infinite_int_rect.h",
     "geometry/layout_point.cc",
     "geometry/layout_point.h",
-    "geometry/layout_rect.cc",
-    "geometry/layout_rect.h",
-    "geometry/layout_size.cc",
-    "geometry/layout_size.h",
     "geometry/layout_unit.cc",
     "geometry/layout_unit.h",
     "geometry/length.cc",
@@ -1022,6 +1025,8 @@ component("platform") {
     "graphics/gpu/webgpu_swap_buffer_provider.h",
     "graphics/gpu/webgpu_texture_alpha_clearer.cc",
     "graphics/gpu/webgpu_texture_alpha_clearer.h",
+    "graphics/gpu/webgraphics_shared_image_interface_provider_impl.cc",
+    "graphics/gpu/webgraphics_shared_image_interface_provider_impl.h",
     "graphics/gpu/xr_frame_transport.cc",
     "graphics/gpu/xr_frame_transport.h",
     "graphics/gpu/xr_webgl_drawing_buffer.cc",
@@ -1225,7 +1230,7 @@ component("platform") {
     "graphics/web_graphics_context_3d_provider_wrapper.h",
     "graphics/web_graphics_context_3d_video_frame_pool.cc",
     "graphics/web_graphics_context_3d_video_frame_pool.h",
-    "heap_observer_set.h",
+    "heap_observer_list.h",
     "image-encoders/image_encoder.cc",
     "image-encoders/image_encoder.h",
     "image-encoders/image_encoder_utils.cc",
@@ -1425,6 +1430,7 @@ component("platform") {
     "restriction_target_id.h",
     "search_engine_utils.cc",
     "search_engine_utils.h",
+    "sparse_vector.h",
     "storage/blink_storage_key.cc",
     "storage/blink_storage_key.h",
     "storage/blink_storage_key_hash.h",
@@ -1942,6 +1948,7 @@ static_library("test_support") {
     "graphics/test/mock_image_decoder.h",
     "graphics/test/mock_paint_canvas.h",
     "graphics/test/stub_image.h",
+    "graphics/test/test_webgraphics_shared_image_interface_provider.h",
     "testing/compositor_test.cc",
     "testing/compositor_test.h",
     "testing/empty_web_media_player.cc",
@@ -2183,7 +2190,6 @@ source_set("blink_platform_unittests_sources") {
     "geometry/calculation_expression_node_test.cc",
     "geometry/float_polygon_test.cc",
     "geometry/float_rounded_rect_test.cc",
-    "geometry/layout_rect_test.cc",
     "geometry/layout_unit_test.cc",
     "geometry/length_functions_test.cc",
     "geometry/length_test.cc",
@@ -2237,7 +2243,7 @@ source_set("blink_platform_unittests_sources") {
     "graphics/video_frame_image_util_test.cc",
     "graphics/video_frame_sink_bundle_test.cc",
     "graphics/video_frame_submitter_test.cc",
-    "heap_observer_set_test.cc",
+    "heap_observer_list_test.cc",
     "json/json_parser_test.cc",
     "json/json_values_test.cc",
     "media/web_audio_source_provider_impl_test.cc",
@@ -2295,6 +2301,7 @@ source_set("blink_platform_unittests_sources") {
     "peerconnection/webrtc_video_track_source_test.cc",
     "region_capture_crop_id_test.cc",
     "runtime_enabled_features_test.cc",
+    "sparse_vector_test.cc",
     "storage/blink_storage_key_mojom_traits_test.cc",
     "storage/blink_storage_key_test.cc",
     "text/bidi_paragraph_test.cc",

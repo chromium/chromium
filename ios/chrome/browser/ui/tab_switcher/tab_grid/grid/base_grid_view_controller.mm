@@ -108,9 +108,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // ID of the last item to be inserted. This is used to track if the active tab
 // was newly created when building the animation layout for transitions.
 @property(nonatomic, assign) web::WebStateID lastInsertedItemID;
-// Latest dragged item identifier. This property is set when the item is
-// long pressed which does not always result in a drag action.
-@property(nonatomic, strong) GridItemIdentifier* draggedItemIdentifier;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The layout for the tab grid.
@@ -151,12 +148,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // The supplementary view registration for the grid header.
   UICollectionViewSupplementaryRegistration* _gridHeaderRegistration;
 
+  // Latest dragged item identifier. This property is set when the item is
+  // long pressed which does not always result in a drag action.
+  GridItemIdentifier* _draggedItemIdentifier;
+
   // Current mode of the Tab Grid. Should be set through consumer protocol.
   TabGridMode _mode;
 }
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _dropAnimationInProgress = NO;
     _localDragActionInProgress = NO;
     _notSelectedTabCellOpacity = 1.0;
@@ -194,8 +195,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // If this stays as the default `YES`, then cells aren't highlighted
   // immediately on touch, but after a short delay.
   collectionView.delaysContentTouches = NO;
-  collectionView.alwaysBounceVertical =
-      base::FeatureList::IsEnabled(kTabGridAlwaysBounce);
+  collectionView.alwaysBounceVertical = YES;
 
   [self createRegistrations];
 
@@ -689,13 +689,17 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   self.dragEndAtNewIndex = NO;
   self.localDragActionInProgress = YES;
 
+  if (!_draggedItemIdentifier) {
+    CHECK_EQ(_mode, TabGridMode::kSelection);
+    base::UmaHistogramEnumeration(kUmaGridViewDragDropMultiSelectEvent,
+                                  DragDropItem::kDragBegin);
+    [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
+    return;
+  }
   switch (_draggedItemIdentifier.type) {
     case GridItemType::kInactiveTabsButton:
       NOTREACHED();
     case GridItemType::kTab: {
-      [self.dragDropHandler
-          dragWillBeginForTabSwitcherItem:_draggedItemIdentifier
-                                              .tabSwitcherItem];
       base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent,
                                     DragDropItem::kDragBegin);
       [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
@@ -725,17 +729,23 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     dragEvent = DragDropItem::kDragEndInOtherCollection;
   }
 
-  switch (_draggedItemIdentifier.type) {
-    case GridItemType::kInactiveTabsButton:
-      NOTREACHED();
-    case GridItemType::kTab:
-      base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent, dragEvent);
-      break;
-    case GridItemType::kGroup:
-      base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent, dragEvent);
-      break;
-    case GridItemType::kSuggestedActions:
-      NOTREACHED();
+  if (_draggedItemIdentifier) {
+    switch (_draggedItemIdentifier.type) {
+      case GridItemType::kInactiveTabsButton:
+        NOTREACHED();
+      case GridItemType::kTab:
+        base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent, dragEvent);
+        break;
+      case GridItemType::kGroup:
+        base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent,
+                                      dragEvent);
+        break;
+      case GridItemType::kSuggestedActions:
+        NOTREACHED();
+    }
+  } else {
+    base::UmaHistogramEnumeration(kUmaGridViewDragDropMultiSelectEvent,
+                                  dragEvent);
   }
 
   // Used to let the Taptic Engine return to its idle state.

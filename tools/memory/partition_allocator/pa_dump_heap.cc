@@ -37,9 +37,14 @@ namespace partition_alloc::tools {
 
 using partition_alloc::internal::kInvalidBucketSize;
 using partition_alloc::internal::kSuperPageSize;
-using partition_alloc::internal::PartitionPageMetadata;
+using partition_alloc::internal::MetadataKind;
 using partition_alloc::internal::PartitionPageSize;
-using partition_alloc::internal::ReadOnlyPartitionSuperPageExtentEntry;
+template <MetadataKind kind>
+using PartitionPageMetadata =
+    partition_alloc::internal::PartitionPageMetadata<kind>;
+template <MetadataKind kind>
+using PartitionSuperPageExtentEntry =
+    partition_alloc::internal::PartitionSuperPageExtentEntry<kind>;
 using partition_alloc::internal::SystemPageSize;
 
 // See https://www.kernel.org/doc/Documentation/vm/pagemap.txt.
@@ -128,10 +133,12 @@ class HeapDumper {
     uintptr_t extent_address =
         reinterpret_cast<uintptr_t>(root_.get()->first_extent);
     while (extent_address) {
-      auto extent = RawBuffer<ReadOnlyPartitionSuperPageExtentEntry>::
-          ReadFromProcessMemory(reader_, extent_address);
+      auto extent =
+          RawBuffer<PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>>::
+              ReadFromProcessMemory(reader_, extent_address);
       uintptr_t first_super_page_address = SuperPagesBeginFromExtent(
-          reinterpret_cast<ReadOnlyPartitionSuperPageExtentEntry*>(
+          reinterpret_cast<
+              PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>*>(
               extent_address));
       for (uintptr_t super_page = first_super_page_address;
            super_page < first_super_page_address +
@@ -173,8 +180,9 @@ class HeapDumper {
       ret.Set("type", value);
 
       if (value != "metadata" && value != "guard") {
-        const auto* page_metadata = PartitionPageMetadata::FromAddr(
-            reinterpret_cast<uintptr_t>(data + offset));
+        const auto* page_metadata =
+            PartitionPageMetadata<MetadataKind::kReadOnly>::FromAddr(
+                reinterpret_cast<uintptr_t>(data + offset));
         ret.Set("page_index_in_span", page_metadata->slot_span_metadata_offset);
         if (page_metadata->slot_span_metadata_offset == 0 &&
             page_metadata->slot_span_metadata.bucket) {

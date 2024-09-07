@@ -26,6 +26,7 @@
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_rules_registry.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/api/web_accessible_resources/web_accessible_resources_router.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
@@ -390,6 +391,16 @@ void OnDNRActionMatched(content::BrowserContext* browser_context,
   // `request.ShouldRecordMatchedAllowRuleInOnHeadersReceived` will only record
   // an allow rule matched in OnHeadersReceived with a greater priority than one
   // matched in OnBeforeRequest.
+}
+
+// The `use_dynamic_url` feature for web accessible resources requires that the
+// requested url be a dynamic url. A dynamic url is one where a session GUID is
+// used for the host instead of the static extension id.
+GURL GetNewUrl(const GURL& redirect_url,
+               content::BrowserContext* browser_context) {
+  auto dynamic_url =
+      TransformToDynamicURLIfNecessary(redirect_url, browser_context);
+  return dynamic_url.value_or(redirect_url);
 }
 
 using CallbacksForPageLoad = std::list<base::OnceClosure>;
@@ -994,7 +1005,7 @@ int WebRequestEventRouter::OnBeforeRequest(
           DCHECK_EQ(1u, actions.size());
           DCHECK(action.redirect_url);
           OnDNRActionMatched(browser_context, *request, action);
-          *new_url = action.redirect_url.value();
+          *new_url = GetNewUrl(action.redirect_url.value(), browser_context);
           // Collect redirect action data for the Extension Telemetry Service.
           if (action.type == DNRRequestAction::Type::REDIRECT) {
             ExtensionsBrowserClient::Get()
@@ -1222,7 +1233,8 @@ int WebRequestEventRouter::OnHeadersReceived(
 
           extension_web_request_api_helpers::
               RedirectRequestAfterHeadersReceived(
-                  *action.redirect_url, **override_response_headers,
+                  GetNewUrl(action.redirect_url.value(), browser_context),
+                  **override_response_headers,
                   preserve_fragment_on_redirect_url);
           return net::OK;
         case DNRRequestAction::Type::MODIFY_HEADERS:
@@ -2564,11 +2576,10 @@ bool WebRequestEventRouter::ProcessDeclarativeRules(
     // The rules registry is still loading. Block this request until it
     // finishes.
     rules_registry->ready().Post(
-        FROM_HERE,
-        base::BindOnce(&WebRequestEventRouter::OnRulesRegistryReady,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::UnsafeDanglingUntriaged(browser_context),
-                       event_name, request->id, request_stage));
+        FROM_HERE, base::BindOnce(&WebRequestEventRouter::OnRulesRegistryReady,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  static_cast<void*>(browser_context),
+                                  event_name, request->id, request_stage));
     BlockedRequest& blocked_request =
         GetOrAddBlockedRequest(browser_context, request->id);
     blocked_request.num_handlers_blocking++;
@@ -2599,19 +2610,21 @@ bool WebRequestEventRouter::ProcessDeclarativeRules(
   return deltas_created;
 }
 
-void WebRequestEventRouter::OnRulesRegistryReady(
-    content::BrowserContext* browser_context,
-    const std::string& event_name,
-    uint64_t request_id,
-    RequestStage request_stage) {
+void WebRequestEventRouter::OnRulesRegistryReady(void* browser_context_id,
+                                                 const std::string& event_name,
+                                                 uint64_t request_id,
+                                                 RequestStage request_stage) {
   // TODO(crbug.com/40264286): We should be able to remove this once we roll
   // out the per-BrowserContext event router, since the WeakPtr that was bound
   // to the callback will be invalidated when the BrowserContext shuts down.
   // Some additional special handling will be needed since this might be a
   // pointer to an off-the-record instance.
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_id)) {
     return;
   }
+
+  content::BrowserContext* browser_context =
+      reinterpret_cast<content::BrowserContext*>(browser_context_id);
 
   // It's possible that this request was deleted, or cancelled by a previous
   // event handler. If so, ignore this response.

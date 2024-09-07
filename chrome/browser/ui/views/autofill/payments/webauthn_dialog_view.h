@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class AuthenticatorRequestSheetView;
@@ -39,7 +40,7 @@ class WebauthnDialogView : public WebauthnDialog,
   // views::DialogDelegateView:
   bool Accept() override;
   bool Cancel() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   std::u16string GetWindowTitle() const override;
 
  private:

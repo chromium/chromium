@@ -36,6 +36,11 @@ BASE_DECLARE_FEATURE(kTrimArcVmOnMemoryPressure);
 // frames are frozen.
 BASE_DECLARE_FEATURE(kTrimOnFreeze);
 
+// If enabled, this disables trimming process nodes and ARC++ processes and
+// ARCVM under memory pressure while the system is suspended. The system can run
+// while the device is suspended if dark resume feature is enabled.
+BASE_DECLARE_FEATURE(kDisableTrimmingWhileSuspended);
+
 // The graph walk backoff is the _minimum_ backoff time between graph walks
 // under moderate pressure in seconds. By default we will not walk more than
 // once every 2 minutes.
@@ -120,6 +125,7 @@ struct TrimOnMemoryPressureParams {
   base::TimeDelta graph_walk_backoff_time;
   base::TimeDelta node_invisible_time;
   base::TimeDelta node_trim_backoff_time;
+  base::TimeDelta suspend_backoff_time;
 
   // These are used when kTrimArcOnMemoryPressure is enabled.
   base::TimeDelta arc_process_trim_backoff_time;

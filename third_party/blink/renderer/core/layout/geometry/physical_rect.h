@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -178,11 +177,6 @@ struct CORE_EXPORT PhysicalRect {
   PhysicalOffset Center() const {
     return offset + PhysicalOffset(size.width / 2, size.height / 2);
   }
-
-  // Conversions from/to existing code. New code prefers type safety for
-  // logical/physical distinctions.
-  constexpr explicit PhysicalRect(const DeprecatedLayoutRect& r)
-      : offset(r.X(), r.Y()), size(r.Width(), r.Height()) {}
 
   constexpr explicit operator gfx::RectF() const {
     return gfx::RectF(offset.left, offset.top, size.width, size.height);

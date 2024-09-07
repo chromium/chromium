@@ -21,6 +21,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Insets;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -380,8 +381,10 @@ public class TabUtilsUnitTest {
         TabThumbnailView thumbnailView = Mockito.mock(TabThumbnailView.class);
         Bitmap bitmap = Bitmap.createBitmap(mockImageSize, mockImageSize, Bitmap.Config.ARGB_8888);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
-        TabUtils.setBitmapAndUpdateImageMatrix(
-                thumbnailView, bitmap, new Size(mockTargetSize, mockTargetSize));
+        TabUtils.setDrawableAndUpdateImageMatrix(
+                thumbnailView,
+                new BitmapDrawable(bitmap),
+                new Size(mockTargetSize, mockTargetSize));
 
         assertNotEquals("The bitmap image density should not be zero.", 0, bitmap.getDensity());
         assertEquals(
@@ -402,8 +405,10 @@ public class TabUtilsUnitTest {
 
         Bitmap bitmap = Bitmap.createBitmap(mockImageSize, mockImageSize, Bitmap.Config.ARGB_8888);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
-        TabUtils.setBitmapAndUpdateImageMatrix(
-                thumbnailView, bitmap, new Size(mockTargetSize, mockTargetSize));
+        TabUtils.setDrawableAndUpdateImageMatrix(
+                thumbnailView,
+                new BitmapDrawable(bitmap),
+                new Size(mockTargetSize, mockTargetSize));
 
         assertNotEquals("The bitmap image density should not be zero.", 0, bitmap.getDensity());
         assertEquals(

@@ -645,23 +645,6 @@ class BlinkPerfParser(_BlinkPerfBenchmark):
     return 'blink_perf.parser'
 
 
-@benchmark.Info(component='Blink>Security>SanitizerAPI',
-                emails=['lyf@chromium.org'],
-                documentation_url='https://bit.ly/blink-perf-benchmarks')
-class BlinkPerfSanitizerAPI(_BlinkPerfBenchmark):
-  SUBDIR = 'sanitizer-api'
-  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
-
-  @classmethod
-  def Name(cls):
-    return 'blink_perf.sanitizer-api'
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs([
-        '--enable-blink-features=SanitizerAPI',
-    ])
-
-
 @benchmark.Info(emails=['fs@opera.com', 'pdr@chromium.org'],
                 component='Blink>SVG',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')

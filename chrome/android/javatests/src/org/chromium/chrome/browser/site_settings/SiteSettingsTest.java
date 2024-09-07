@@ -1232,7 +1232,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(31, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(32, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1637,6 +1637,14 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.FEDERATED_IDENTITY_API,
                 BINARY_TOGGLE_WITH_EXCEPTION,
                 BINARY_TOGGLE_WITH_EXCEPTION);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testOnlyExpectedPreferencesHandTracking() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.HAND_TRACKING, BINARY_TOGGLE, BINARY_TOGGLE);
     }
 
     @Test
@@ -2125,6 +2133,30 @@ public class SiteSettingsTest {
                         "VR",
                         SiteSettingsCategory.Type.VIRTUAL_REALITY,
                         ContentSettingsType.VR,
+                        false)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testAllowHandTracking() {
+        new TwoStatePermissionTestCase(
+                        "HandTracking",
+                        SiteSettingsCategory.Type.HAND_TRACKING,
+                        ContentSettingsType.HAND_TRACKING,
+                        true)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockHandTracking() {
+        new TwoStatePermissionTestCase(
+                        "HandTracking",
+                        SiteSettingsCategory.Type.HAND_TRACKING,
+                        ContentSettingsType.HAND_TRACKING,
                         false)
                 .run();
     }

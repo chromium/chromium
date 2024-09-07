@@ -7,6 +7,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
@@ -31,11 +32,13 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabels) {
       [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                     avatarImage:image
                                            name:mainText
-                                          email:detailText];
+                                          email:detailText
+                                managementState:ManagementState()];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
   EXPECT_NSEQ(accountView.email, detailText);
+  EXPECT_EQ(accountView.managed, false);
 }
 
 // Tests that the UIImageView and UILabels are set properly in the view if the
@@ -51,9 +54,61 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
       [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                     avatarImage:image
                                            name:nil
-                                          email:mainText];
+                                          email:mainText
+                                managementState:ManagementState()];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
   EXPECT_NSEQ(accountView.email, nil);
+  EXPECT_EQ(accountView.managed, false);
+}
+
+// Tests that the UIImageView and UILabels are set properly in the view if the
+// machine policy domain is provided.
+TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMachinePolicyDomain) {
+  UIImage* image = ios::provider::GetSigninDefaultAvatar();
+  image = ResizeImage(image,
+                      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),
+                      ProjectionMode::kAspectFit);
+  NSString* mainText = @"Main text";
+  NSString* detailText = @"Detail text";
+  ManagementState managementState;
+  managementState.machine_level_domain = "somethingcorp.com";
+
+  CentralAccountView* accountView =
+      [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
+                                    avatarImage:image
+                                           name:mainText
+                                          email:detailText
+                                managementState:std::move(managementState)];
+
+  EXPECT_NSEQ(accountView.avatarImage, image);
+  EXPECT_NSEQ(accountView.name, mainText);
+  EXPECT_NSEQ(accountView.email, detailText);
+  EXPECT_EQ(accountView.managed, false);
+}
+
+// Tests that the UIImageView and UILabels are set properly in the view if the
+// user policy domain is provided.
+TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithUserPolicyDomain) {
+  UIImage* image = ios::provider::GetSigninDefaultAvatar();
+  image = ResizeImage(image,
+                      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),
+                      ProjectionMode::kAspectFit);
+  NSString* mainText = @"Main text";
+  NSString* detailText = @"Detail text";
+  ManagementState managementState;
+  managementState.user_level_domain = "acme.com";
+
+  CentralAccountView* accountView =
+      [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
+                                    avatarImage:image
+                                           name:mainText
+                                          email:detailText
+                                managementState:std::move(managementState)];
+
+  EXPECT_NSEQ(accountView.avatarImage, image);
+  EXPECT_NSEQ(accountView.name, mainText);
+  EXPECT_NSEQ(accountView.email, detailText);
+  EXPECT_EQ(accountView.managed, true);
 }

@@ -25,6 +25,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
@@ -73,7 +74,7 @@ PermissionPromptBubbleBaseView::~PermissionPromptBubbleBaseView() = default;
 void PermissionPromptBubbleBaseView::CreatePermissionButtons(
     const std::u16string& allow_always_text) {
   if (is_one_time_permission_) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
     auto buttons_container = std::make_unique<views::View>();
     buttons_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -139,20 +140,20 @@ void PermissionPromptBubbleBaseView::CreatePermissionButtons(
         buttons_container->GetPreferredSize().height()));
     SetExtraView(std::move(buttons_container));
   } else {
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
                    l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
     SetAcceptCallback(base::BindOnce(
         &PermissionPromptBubbleBaseView::RunButtonCallback,
         base::Unretained(this), GetViewId(PermissionDialogButton::kAccept)));
 
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+    SetButtonLabel(ui::mojom::DialogButton::kCancel,
                    l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
     SetCancelCallback(base::BindOnce(
         &PermissionPromptBubbleBaseView::RunButtonCallback,
         base::Unretained(this), GetViewId(PermissionDialogButton::kDeny)));
 
-    SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kTonal);
-    SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
+    SetButtonStyle(ui::mojom::DialogButton::kOk, ui::ButtonStyle::kTonal);
+    SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
   }
 }
 

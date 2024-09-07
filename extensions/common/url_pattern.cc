@@ -104,8 +104,7 @@ bool IsValidPortForScheme(std::string_view scheme, std::string_view port) {
   }
 
   // Only accept non-wildcard ports if the scheme uses ports.
-  if (url::DefaultPortForScheme(scheme.data(), scheme.length()) ==
-      url::PORT_UNSPECIFIED) {
+  if (url::DefaultPortForScheme(scheme) == url::PORT_UNSPECIFIED) {
     return false;
   }
 
@@ -188,8 +187,7 @@ URLPattern::URLPattern(const URLPattern& other) = default;
 
 URLPattern::URLPattern(URLPattern&& other) = default;
 
-URLPattern::~URLPattern() {
-}
+URLPattern::~URLPattern() = default;
 
 URLPattern& URLPattern::operator=(const URLPattern& other) = default;
 

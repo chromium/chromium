@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/vector_icon_utils.h"
 
 #include <ostream>
@@ -75,13 +70,13 @@ int GetCommandArgumentCount(CommandType command) {
 int GetDefaultSizeOfVectorIcon(const VectorIcon& icon) {
   if (icon.is_empty())
     return -1;
-  const PathElement* default_icon_path = icon.reps[icon.reps_size - 1].path;
-  DCHECK_EQ(default_icon_path[0].command, CANVAS_DIMENSIONS)
+  const VectorIconRep& default_rep = icon.reps.back();
+  DCHECK_EQ(default_rep.path[0].command, CANVAS_DIMENSIONS)
       << " " << icon.name
       << " has no size in its icon definition, and it seems unlikely you want "
          "to display at the default of 48dip. Please specify a size in "
          "CreateVectorIcon().";
-  return default_icon_path[1].arg;
+  return default_rep.path[1].arg;
 }
 
 }  // namespace gfx

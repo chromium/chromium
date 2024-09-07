@@ -30,7 +30,6 @@ dmblack@google.com
 # ash
 tby@chromium.org
 jimmyxgong@chromium.org
-zentaro@chromium.org
 yulunwu@chromium.org
 michelefan@chromium.org
 # ash_growth
@@ -86,7 +85,6 @@ tby@chromium.org
 tsergeant@chromium.org
 jimmyxgong@chromium.org
 gavinwill@chromium.org
-zentaro@chromium.org
 # chromeos
 azeemarshad@chromium.org
 chadduffin@chromium.org
@@ -100,7 +98,6 @@ khorimoto@chromium.org
 nikhilcn@google.com
 tjohnsonkanu@google.com
 tsergeant@chromium.org
-zentaro@chromium.org
 # chromeos_settings
 xiaohuic@chromium.org
 # chrome
@@ -153,7 +150,7 @@ tbansal@chromium.org
 changhaohan@chromium.org
 # diagnostics
 jimmyxgong@chromium.org
-zentaro@chromium.org
+gavinwill@chromium.org
 # direct
 schenney@chromium.org
 # download
@@ -302,7 +299,7 @@ sophiechang@chromium.org
 tbansal@chromium.org
 # others
 jimmyxgong@chromium.org
-zentaro@chromium.org
+gavinwill@chromium.org
 johnidel@chromium.org
 jonross@chromium.org
 dullweber@chromium.org
@@ -359,7 +356,7 @@ spelchat@chromium.org
 # printing
 awscreen@chromium.org
 jimmyxgong@chromium.org
-zentaro@chromium.org
+gavinwill@chromium.org
 # privacy_budget
 antoniosartori@chromium.org
 # privacy
@@ -396,7 +393,7 @@ thefrog@chromium.org
 xinghuilu@chromium.org
 # scanning
 jimmyxgong@chromium.org
-zentaro@chromium.org
+gavinwill@chromium.org
 # scheduler
 altimin@chromium.org
 spvw@chromium.org
@@ -411,6 +408,9 @@ nyquist@chromium.org
 shaktisahu@chromium.org
 haileywang@google.com
 ritikagup@google.com
+# sensitive_content
+jkeitel@google.com
+schwering@google.com
 # service
 wanderview@chromium.org
 ayui@chromium.org

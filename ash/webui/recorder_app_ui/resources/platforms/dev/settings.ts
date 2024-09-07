@@ -17,6 +17,7 @@ export const devSettingsSchema = z.object({
   forceTheme: z.optional(z.nativeEnum(ColorTheme)),
   // Simulate first time soda installation cross session.
   sodaInstalled: z.boolean(),
+  canUseSpeakerLabel: z.boolean(),
   // TODO(pihsun): Persist summary model installation progress.
 });
 
@@ -25,6 +26,7 @@ type DevSettings = Infer<typeof devSettingsSchema>;
 const defaultSettings: DevSettings = {
   forceTheme: ColorTheme.LIGHT,
   sodaInstalled: false,
+  canUseSpeakerLabel: true,
 };
 
 export const devSettings = signal(defaultSettings);

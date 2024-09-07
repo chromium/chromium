@@ -10,8 +10,10 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
@@ -106,8 +108,8 @@ named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
       .message_pipe_id =
           named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection,
 #if BUILDFLAG(IS_WIN)
-      // Allow access from local system account only.
-      .security_descriptor = L"D:(A;;GA;;;SY)",
+      .security_descriptor =
+          GetGlobalConstants()->NamedPipeSecurityDescriptor(),
 #endif
   };
 }

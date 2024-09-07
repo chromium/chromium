@@ -8,10 +8,12 @@ import sys
 import idl_schema
 import json_schema
 
+
 class SchemaLoader(object):
   '''Loads a schema from a provided filename.
   |root|: path to the root directory.
   '''
+
   def __init__(self, root):
     self._root = root
 

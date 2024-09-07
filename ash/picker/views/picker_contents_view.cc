@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/controls/rounded_scroll_bar.h"
-#include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/picker/views/picker_style.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -26,8 +25,6 @@
 
 namespace ash {
 namespace {
-
-constexpr int kScrollViewGradientHeight = 16;
 
 gfx::Insets GetScrollViewContentsBorderInsets(PickerLayoutType layout_type) {
   switch (layout_type) {
@@ -60,9 +57,6 @@ class PickerScrollView : public views::ScrollView {
         .SetBackgroundColor(std::nullopt)
         .SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled)
         .BuildChildren();
-    // Paint to layer so that we can apply a gradient mask.
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
   }
   PickerScrollView(const PickerScrollView&) = delete;
   PickerScrollView& operator=(const PickerScrollView&) = delete;
@@ -81,10 +75,8 @@ PickerContentsView::PickerContentsView(PickerLayoutType layout_type) {
   auto vertical_scroll_bar = std::make_unique<RoundedScrollBar>(
       views::ScrollBar::Orientation::kVertical);
   vertical_scroll_bar->SetInsets(GetPickerScrollBarInsets(layout_type));
+  vertical_scroll_bar->SetAlwaysShowThumb(true);
   scroll_view->SetVerticalScrollBar(std::move(vertical_scroll_bar));
-
-  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
-      scroll_view, kScrollViewGradientHeight);
 
   page_container_ = scroll_view->SetContents(
       views::Builder<views::BoxLayoutView>()
@@ -100,11 +92,6 @@ void PickerContentsView::SetActivePage(views::View* view) {
   for (views::View* child : page_container_->children()) {
     child->SetVisible(child == view);
   }
-}
-
-void PickerContentsView::Layout(PassKey) {
-  LayoutSuperclass<views::View>(this);
-  gradient_helper_->UpdateGradientMask();
 }
 
 BEGIN_METADATA(PickerContentsView)

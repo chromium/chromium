@@ -460,7 +460,7 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   /**
    * Choose a label for the cookie checkbox
-   * @param isSignedIn boolean whether the user is signed in or not.
+   * @param signedInState SignedInState
    * @param shouldShowCookieException boolean whether the exception about not
    * being signed out of your Google account should be shown when user is
    * sync.
@@ -477,7 +477,7 @@ export class SettingsClearBrowsingDataDialogElement extends
    * will not be signed out on clearing cookies
    */
   private cookiesCheckboxLabel_(
-      isSignedIn: boolean,
+      signedInState: SignedInState,
       shouldShowCookieException: boolean,
       cookiesSummary: string,
       clearCookiesSummarySignedIn: string,
@@ -492,7 +492,8 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
     // </if>
 
-    if (this.unoDesktopEnabled_ && isSignedIn) {
+    // The exception is not shown for SIGNED_IN_PAUSED.
+    if (this.unoDesktopEnabled_ && signedInState === SignedInState.SIGNED_IN) {
       return clearCookiesSummarySignedIn;
     }
 

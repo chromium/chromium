@@ -11,6 +11,8 @@ import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -38,13 +40,20 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     @VisibleForTesting
     static final String PREF_TAB_ARCHIVE_SETTINGS = "archive_settings_entrypoint";
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tabs_settings);
-        getActivity().setTitle(R.string.tabs_settings_title);
+        mPageTitle.set(getString(R.string.tabs_settings_title));
 
         configureAutoOpenSyncedTabGroupsSwitch();
         configureShowCreationDialogSwitch();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

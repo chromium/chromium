@@ -21,6 +21,9 @@ class PLATFORM_EXPORT AllowedByNosniff final {
                                ConsoleLogger*,
                                const ResourceResponse&,
                                MimeTypeCheck mime_type_check_mode);
+
+  static bool MimeTypeAsXMLExternalEntity(ConsoleLogger*,
+                                          const ResourceResponse&);
 };
 
 }  // namespace blink

@@ -33,6 +33,7 @@ class MediaEngineNotifyImpl
   using LoadedDataCB = base::RepeatingClosure;
   using CanPlayThroughCB = base::RepeatingClosure;
   using PlayingCB = base::RepeatingClosure;
+  using FirstFrameReadyCB = base::RepeatingClosure;
   using WaitingCB = base::RepeatingClosure;
   using FrameStepCompletedCB = base::RepeatingClosure;
   using TimeUpdateCB = base::RepeatingClosure;
@@ -43,6 +44,7 @@ class MediaEngineNotifyImpl
                                  LoadedDataCB loaded_data_cb,
                                  CanPlayThroughCB can_play_through_cb,
                                  PlayingCB playing_cb,
+                                 FirstFrameReadyCB first_frame_ready_cb,
                                  WaitingCB waiting_cb,
                                  FrameStepCompletedCB frame_step_completed_cb,
                                  TimeUpdateCB time_update_cb);
@@ -64,6 +66,7 @@ class MediaEngineNotifyImpl
   LoadedDataCB loaded_data_cb_;
   CanPlayThroughCB can_play_through_cb_;
   PlayingCB playing_cb_;
+  FirstFrameReadyCB first_frame_ready_cb_;
   WaitingCB waiting_cb_;
   FrameStepCompletedCB frame_step_completed_cb_;
   TimeUpdateCB time_update_cb_;

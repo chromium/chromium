@@ -13,8 +13,8 @@
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/throttle_observer.h"
-#include "chrome/browser/ash/throttle_service.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {

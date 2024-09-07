@@ -13,6 +13,8 @@
 
 #include "unsafe_buffers_not_clean_dir/clean_header.h"
 #include "unsafe_buffers_not_clean_dir/not_clean_header.h"
+#include "unsafe_buffers_not_clean_dir/still_not_clean_dir_1/not_clean_header.h"
+#include "unsafe_buffers_not_clean_dir/still_not_clean_dir_2/not_clean_header.h"
 
 // This is in a known-bad cc file, so no error is emitted.
 DO_UNSAFE_THING_FROM_CHECKED_HEADER(UncheckedCpp, N, i, s);    // No error.

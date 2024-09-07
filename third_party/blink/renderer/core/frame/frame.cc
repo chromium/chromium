@@ -500,10 +500,10 @@ void Frame::UpdateVisibleToHitTesting() {
     DidChangeVisibleToHitTesting();
 }
 
-const std::string& Frame::GetFrameIdForTracing() {
+const String& Frame::GetFrameIdForTracing() {
   // token's ToString() is latin1.
   if (!trace_value_)
-    trace_value_ = devtools_frame_token_.ToString();
+    trace_value_ = String(devtools_frame_token_.ToString());
   return trace_value_.value();
 }
 
@@ -585,6 +585,7 @@ void Frame::ApplyFrameOwnerProperties(
   owner->SetAllowPaymentRequest(properties->allow_payment_request);
   owner->SetIsDisplayNone(properties->is_display_none);
   owner->SetColorScheme(properties->color_scheme);
+  owner->SetPreferredColorScheme(properties->preferred_color_scheme);
 }
 
 void Frame::InsertAfter(Frame* new_child, Frame* previous_sibling) {

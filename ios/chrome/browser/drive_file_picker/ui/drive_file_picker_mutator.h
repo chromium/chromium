@@ -7,14 +7,34 @@
 
 #import <Foundation/Foundation.h>
 
-@class DriveItem;
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+
+@class DriveItemIdentifier;
 
 // Mutator interface for the Drive file picker.
 @protocol DriveFilePickerMutator <NSObject>
 
 // Notifies the mutator that a drive item was selected in order to browse the
 // item in case of a folder or download it in case of a file.
-- (void)selectDriveItem:(DriveItem*)driveItem;
+- (void)selectDriveItem:(DriveItemIdentifier*)driveItem;
+
+// Ask the mutator to fetch the next drive items.
+- (void)fetchNextPage;
+
+// Sets the current sorting criteria and direction.
+- (void)setSortingCriteria:(DriveItemsSortingType)criteria
+                 direction:(DriveItemsSortingOrder)direction;
+
+// Toggles whether to ignore the list of types accepted by the website.
+- (void)setAcceptedTypesIgnored:(BOOL)ignoreAcceptedTypes;
+
+// Sets current filter, to only show items matching a given type.
+- (void)setFilter:(DriveFilePickerFilter)filter;
+
+- (void)fetchIconForDriveItem:(DriveItemIdentifier*)driveItem;
+
+// Submits the current file selection to the web page.
+- (void)submitFileSelection;
 
 @end
 

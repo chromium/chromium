@@ -5,14 +5,10 @@
 #ifndef ASH_SYSTEM_UNIFIED_QUICK_SETTINGS_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_QUICK_SETTINGS_VIEW_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/system/brightness/unified_brightness_view.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
 namespace views {
@@ -27,7 +23,6 @@ class PaginationView;
 class QuickSettingsFooter;
 class QuickSettingsHeader;
 class QuickSettingsMediaViewContainer;
-class UnifiedMediaControlsContainer;
 class UnifiedSystemTrayController;
 
 // View class of the bubble in status area tray.
@@ -54,20 +49,10 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   // Adds slider view.
   views::View* AddSliderView(std::unique_ptr<views::View> slider_view);
 
-  // Adds media controls view to `media_controls_container_`. Only called if
-  // media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
-  void AddMediaControlsView(views::View* media_controls);
-
-  // Shows media controls view. Only called if
-  // media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
-  void ShowMediaControls();
-
-  // Adds media view to `media_view_container_`. Only called if
-  // media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
+  // Adds media view to `media_view_container_`.
   void AddMediaView(std::unique_ptr<views::View> media_view);
 
-  // Sets whether the quick settings view should show the media view. Only
-  // called if media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
+  // Sets whether the quick settings view should show the media view.
   void SetShowMediaView(bool show_media_view);
 
   // Hides the main view and shows the given `detailed_view`.
@@ -116,14 +101,13 @@ class ASH_EXPORT QuickSettingsView : public views::View,
 
   PaginationView* pagination_view_for_test() { return pagination_view_; }
 
-  UnifiedMediaControlsContainer* media_controls_container_for_testing() {
-    return media_controls_container_;
-  }
   QuickSettingsMediaViewContainer* media_view_container_for_testing() {
     return media_view_container_;
   }
   QuickSettingsHeader* header_for_testing() { return header_; }
   QuickSettingsFooter* footer_for_testing() { return footer_; }
+
+  views::View* GetAccessibilityFocusHelperViewForTesting();
 
  private:
   class SystemTrayContainer;
@@ -141,11 +125,6 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   raw_ptr<views::FlexLayoutView> sliders_container_ = nullptr;
   raw_ptr<QuickSettingsFooter> footer_ = nullptr;
   raw_ptr<views::View> detailed_view_container_ = nullptr;
-
-  // Null if media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
-  raw_ptr<UnifiedMediaControlsContainer> media_controls_container_ = nullptr;
-
-  // Null if media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
   raw_ptr<QuickSettingsMediaViewContainer> media_view_container_ = nullptr;
 
   // The maximum height available to the view.

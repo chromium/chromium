@@ -71,6 +71,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kKeyframe,
     kLayerBlock,
     kLayerStatement,
+    kNestedDeclarations,
     kNamespace,
     kContainer,
     kCounterStyle,
@@ -107,6 +108,9 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsKeyframeRule() const { return GetType() == kKeyframe; }
   bool IsLayerBlockRule() const { return GetType() == kLayerBlock; }
   bool IsLayerStatementRule() const { return GetType() == kLayerStatement; }
+  bool IsNestedDeclarationsRule() const {
+    return GetType() == kNestedDeclarations;
+  }
   bool IsNamespaceRule() const { return GetType() == kNamespace; }
   bool IsMediaRule() const { return GetType() == kMedia; }
   bool IsPageRule() const { return GetType() == kPage; }
@@ -286,6 +290,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   const HeapVector<Member<StyleRuleBase>>* ChildRules() const {
     return child_rules_.Get();
   }
+  HeapVector<Member<StyleRuleBase>>* ChildRules() { return child_rules_.Get(); }
   void EnsureChildRules() {
     // Allocate the child rule vector only when we need it,
     // since most rules won't have children (almost by definition).

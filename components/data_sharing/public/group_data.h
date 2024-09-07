@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace data_sharing {
@@ -74,6 +76,57 @@ struct GroupData {
   GroupToken group_token;
   std::string display_name;
   std::vector<GroupMember> members;
+};
+
+// Represents an entity that is shared between users. This
+// is similar to sync_pb::SyncEntity, but it includes group
+// ID and is only for shared data types
+struct SharedEntity {
+  SharedEntity();
+
+  SharedEntity(const SharedEntity&);
+  SharedEntity& operator=(const SharedEntity&);
+
+  SharedEntity(SharedEntity&&);
+  SharedEntity& operator=(SharedEntity&&);
+
+  ~SharedEntity();
+
+  // Id of the group.
+  GroupId group_id;
+
+  // Name of the entity.
+  std::string name;
+
+  // Monotonically increasing version number.
+  int64_t version = 0;
+
+  // The time at which the SharedEntity was last modified.
+  base::Time update_time;
+
+  // The time at which the SharedEntity was created.
+  base::Time create_time;
+
+  // The data payload of the SharedEntity.
+  sync_pb::EntitySpecifics specifics;
+
+  // Part of the resource name.
+  std::string client_tag_hash;
+};
+
+// A preview of shared entities.
+struct SharedDataPreview {
+  SharedDataPreview();
+
+  SharedDataPreview(const SharedDataPreview&);
+  SharedDataPreview& operator=(const SharedDataPreview&);
+
+  SharedDataPreview(SharedDataPreview&&);
+  SharedDataPreview& operator=(SharedDataPreview&&);
+
+  ~SharedDataPreview();
+
+  std::vector<SharedEntity> shared_entities;
 };
 
 // Only takes `group_id` into account, used to allow storing GroupData in

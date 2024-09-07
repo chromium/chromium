@@ -24,6 +24,7 @@
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/browser/url_request_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/shell/browser/api/runtime/shell_runtime_api_delegate.h"
 #include "extensions/shell/browser/delegates/shell_kiosk_delegate.h"
@@ -140,7 +141,7 @@ bool ShellExtensionsBrowserClient::IsGuestSession(
 }
 
 bool ShellExtensionsBrowserClient::IsExtensionIncognitoEnabled(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* context) const {
   return false;
 }
@@ -208,7 +209,7 @@ ShellExtensionsBrowserClient::GetProcessManagerDelegate() const {
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ShellExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
     const url::Origin& app_origin,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     content::BrowserContext* browser_context) {
   return mojo::PendingRemote<network::mojom::URLLoaderFactory>();
 }
@@ -306,6 +307,11 @@ bool ShellExtensionsBrowserClient::IsMinBrowserVersionSupported(
 void ShellExtensionsBrowserClient::SetAPIClientForTest(
     ExtensionsAPIClient* api_client) {
   api_client_.reset(api_client);
+}
+
+void ShellExtensionsBrowserClient::CreateExtensionWebContentsObserver(
+    content::WebContents* web_contents) {
+  ShellExtensionWebContentsObserver::CreateForWebContents(web_contents);
 }
 
 ExtensionWebContentsObserver*

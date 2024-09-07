@@ -15,11 +15,11 @@
 namespace blink {
 
 // static
-std::unique_ptr<VSyncTickProvider> VSyncTickProvider::Create(
+scoped_refptr<VSyncTickProvider> VSyncTickProvider::Create(
     VSyncProvider& provider,
     scoped_refptr<base::SequencedTaskRunner> sequence,
-    std::unique_ptr<MetronomeSource::TickProvider> default_tick_provider) {
-  std::unique_ptr<VSyncTickProvider> tick_provider(new VSyncTickProvider(
+    scoped_refptr<MetronomeSource::TickProvider> default_tick_provider) {
+  scoped_refptr<VSyncTickProvider> tick_provider(new VSyncTickProvider(
       provider, sequence, std::move(default_tick_provider)));
   sequence->PostTask(FROM_HERE,
                      base::BindOnce(&VSyncTickProvider::Initialize,
@@ -30,7 +30,7 @@ std::unique_ptr<VSyncTickProvider> VSyncTickProvider::Create(
 VSyncTickProvider::VSyncTickProvider(
     VSyncProvider& vsync_provider,
     scoped_refptr<base::SequencedTaskRunner> sequence,
-    std::unique_ptr<MetronomeSource::TickProvider> default_tick_provider)
+    scoped_refptr<MetronomeSource::TickProvider> default_tick_provider)
     : vsync_provider_(vsync_provider),
       sequence_(std::move(sequence)),
       default_tick_provider_(std::move(default_tick_provider)) {
@@ -52,8 +52,8 @@ void VSyncTickProvider::Initialize() {
 
 void VSyncTickProvider::RequestCallOnNextTick(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  tick_callback_ = std::move(callback);
-  DCHECK(tick_callback_);
+  tick_callbacks_.push_back(std::move(callback));
+  DCHECK_GT(tick_callbacks_.size(), 0u);
   if (state_ == State::kDrivenByVSync) {
     ScheduleVSync();
   } else {
@@ -63,8 +63,9 @@ void VSyncTickProvider::RequestCallOnNextTick(base::OnceClosure callback) {
 
 base::TimeDelta VSyncTickProvider::TickPeriod() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (state_ != State::kDrivenByVSync)
+  if (state_ != State::kDrivenByVSync) {
     return default_tick_provider_->TickPeriod();
+  }
   return kVSyncTickPeriod;
 }
 
@@ -105,9 +106,11 @@ void VSyncTickProvider::OnVSync() {
 
 void VSyncTickProvider::MaybeCalloutToClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto callback = std::move(tick_callback_);
-  if (callback)
-    std::move(callback).Run();
+  WTF::Vector<base::OnceClosure> tick_callbacks;
+  tick_callbacks.swap(tick_callbacks_);
+  for (auto& tick_callback : tick_callbacks) {
+    std::move(tick_callback).Run();
+  }
 }
 
 void VSyncTickProvider::OnTabVisibilityChange(bool visible) {

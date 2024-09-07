@@ -73,7 +73,7 @@ void OfflineLoginTestMixin::PrepareOfflineLogin() {
 
 void OfflineLoginTestMixin::GoOffline() {
   network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
-      false /*use_default_devices_and_services*/);
+      /*use_default_devices_and_services=*/false);
   network_state_test_helper_->ClearServices();
   // Notify NetworkStateInformer explicitly
   if (LoginDisplayHost::default_host() &&

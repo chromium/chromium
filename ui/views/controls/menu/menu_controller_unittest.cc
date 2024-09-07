@@ -303,7 +303,7 @@ END_METADATA
 struct MenuBoundsOptions {
   gfx::Rect anchor_bounds = gfx::Rect(500, 500, 10, 10);
   gfx::Rect monitor_bounds = gfx::Rect(0, 0, 1000, 1000);
-  gfx::Size menu_size = gfx::Size(100, 100);
+  gfx::Size menu_size = gfx::Size(100, 150);
   MenuAnchorPosition menu_anchor = MenuAnchorPosition::kTopLeft;
   MenuItemView::MenuPosition menu_position =
       MenuItemView::MenuPosition::kBestFit;
@@ -531,9 +531,8 @@ void MenuControllerTest::SetUp() {
   ASSERT_TRUE(base::CurrentUIThread::IsSet());
 
   owner_ = std::make_unique<GestureTestWidget>();
-  Widget::InitParams params =
-      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                   Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   owner_->Init(std::move(params));
   event_generator_ =
       std::make_unique<ui::test::EventGenerator>(GetRootWindow(owner()));
@@ -2133,15 +2132,14 @@ TEST_F(MenuControllerTest, CalculateMenuBoundsAnchorTest) {
   EXPECT_EQ(expected, CalculateMenuBounds(options));
 
   // Menu does not fit above -> placed below.
-  options.anchor_bounds = gfx::Rect(options.menu_size.height() / 2,
-                                    options.menu_size.width(), 0, 0);
+  options.anchor_bounds = gfx::Rect(options.menu_size.width(),
+                                    options.menu_size.height() / 2, 0, 0);
   expected.set_origin(
       {options.anchor_bounds.x() +
            (options.anchor_bounds.width() - options.menu_size.width()) / 2,
-       options.anchor_bounds.y() +
-           (ShouldIgnoreScreenBoundsForMenus()
-                ? (-options.anchor_bounds.bottom() - kTouchYPadding)
-                : kTouchYPadding)});
+       (ShouldIgnoreScreenBoundsForMenus()
+            ? (-options.anchor_bounds.bottom() - kTouchYPadding)
+            : options.anchor_bounds.y() + kTouchYPadding)});
   EXPECT_EQ(expected, CalculateMenuBounds(options));
 }
 
@@ -2969,6 +2967,16 @@ TEST_F(MenuControllerTest, SetSelectionIndices_NestedButtons) {
   button2->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(5, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(5, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+}
+
+TEST_F(MenuControllerTest, AccessibleProperties) {
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  MenuScrollViewContainer* scroll_view_container =
+      submenu->GetScrollViewContainer();
+
+  ui::AXNodeData data;
+  scroll_view_container->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kMenuBar);
 }
 
 TEST_F(MenuControllerTest, SetSelectionIndices_ChildrenChanged) {

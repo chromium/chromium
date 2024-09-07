@@ -106,8 +106,9 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   content::WebContents* GetEmbedderWebContents();
 
  protected:
-  guest_view::TestGuestViewManager* GetGuestViewManager(
-      content::BrowserContext* profile = nullptr);
+  guest_view::TestGuestViewManager* GetGuestViewManager();
+  guest_view::TestGuestViewManager* GetGuestViewManagerForProfile(
+      content::BrowserContext* profile);
 
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
       content::WebContents* contents);
@@ -116,25 +117,18 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   content::RenderFrameHost* GetOnlyPdfExtensionHostEnsureValid();
 
-  int CountPDFProcesses();
+  int CountPDFProcesses() const;
 
   // Checks if the full page PDF loaded. The test will fail if it does not meet
   // the requirements of `ValidateFrameTree()`.
   testing::AssertionResult EnsureFullPagePDFHasLoadedWithValidFrameTree(
       content::WebContents* contents,
-      bool allow_multiple_frames = false);
+      bool allow_multiple_frames);
 
   // Check if the PDF loaded in the first child frame of `contents`. The test
   // will fail if it does not meet the requirements of `ValidateFrameTree()`.
   testing::AssertionResult EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
       content::WebContents* contents);
-
-  // TODO(crbug.com/40268279): Remove this once there are no more existing use
-  // cases.
-  void SimulateMouseClickAt(extensions::MimeHandlerViewGuest* guest,
-                            int modifiers,
-                            blink::WebMouseEvent::Button button,
-                            const gfx::Point& point_in_guest);
 
   void SimulateMouseClickAt(content::RenderFrameHost* extension_host,
                             content::WebContents* contents,
@@ -148,7 +142,8 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   virtual bool UseOopif() const;
 
   // Hooks to set up feature flags.
-  virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() const;
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const;
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const;
 
  private:

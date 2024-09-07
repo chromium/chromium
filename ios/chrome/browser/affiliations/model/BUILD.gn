@@ -12,11 +12,12 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//services/network/public/cpp",
   ]
   public_deps = [
     "//base",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }

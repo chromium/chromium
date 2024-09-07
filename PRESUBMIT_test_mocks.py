@@ -63,6 +63,7 @@ class MockInputApi(object):
   DEFAULT_FILES_TO_SKIP = ()
 
   def __init__(self):
+    self.basename = os.path.basename
     self.canned_checks = MockCannedChecks()
     self.fnmatch = fnmatch
     self.json = json
@@ -104,6 +105,9 @@ class MockInputApi(object):
         yield (af, line[0], line[1])
 
   def AffectedSourceFiles(self, file_filter=None):
+    return self.AffectedFiles(file_filter=file_filter, include_deletes=False)
+
+  def AffectedTestableFiles(self, file_filter=None):
     return self.AffectedFiles(file_filter=file_filter, include_deletes=False)
 
   def FilterSourceFile(self, file,
@@ -207,7 +211,7 @@ class MockFile(object):
             (local_path, len(new_contents)))
       for l in new_contents:
         self._scm_diff += "+%s\n" % l
-    self._old_contents = old_contents
+    self._old_contents = old_contents or []
 
   def __str__(self):
     return self._local_path

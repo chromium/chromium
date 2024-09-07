@@ -54,11 +54,14 @@ public class AllPlusAddressesBottomSheetRenderTest {
     private static final String BOTTOMSHEET_TITLE = "Bottom sheet title";
     private static final String BOTTOMSHEET_WARNING = "Bottom sheet warning";
     private static final String BOTTOMSHEET_QUERY_HINT = "Query hint";
-    private static final PlusProfile PROFILE_1 = new PlusProfile("google.com", "foo@gmail.com");
-    private static final PlusProfile PROFILE_2 = new PlusProfile("amazon.com", "bar@gmail.com");
+    private static final PlusProfile PROFILE_1 =
+            new PlusProfile("foo@gmail.com", "google.com", "https://google.com");
+    private static final PlusProfile PROFILE_2 =
+            new PlusProfile("bar@gmail.com", "amazon.com", "https://amazon.com");
     private static final PlusProfile PROFILE_3 =
-            new PlusProfile("facebook.com", "example@gmail.com");
-    private static final PlusProfile PROFILE_4 = new PlusProfile("microsoft.com", "lake@gmail.com");
+            new PlusProfile("example@gmail.com", "facebook.com", "https://facebook.com");
+    private static final PlusProfile PROFILE_4 =
+            new PlusProfile("lake@gmail.com", "microsoft.com", "http://microsoft.com");
 
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =

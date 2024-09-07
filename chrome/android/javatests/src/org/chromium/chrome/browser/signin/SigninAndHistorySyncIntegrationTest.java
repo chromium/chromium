@@ -50,7 +50,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
@@ -71,7 +70,8 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.sync.SyncFeatureMap;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.ViewUtils;
@@ -79,7 +79,10 @@ import org.chromium.ui.test.util.ViewUtils;
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
-@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+@EnableFeatures({
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
+})
 public class SigninAndHistorySyncIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -294,8 +297,32 @@ public class SigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
+    @EnableFeatures(ChromeFeatureList.READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN)
+    public void testWithExistingAccount_signinIn_turnsOnBookmarksAndReadingList() {
+        // Sign-in, toggle bookmarks and reading list off, then sign out.
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        disableBookmarksAndReadingList();
+        mSigninTestRule.signOut();
+
+        // Override the access point to test bookmarks-specific behavior.
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistoryOptInMode.NONE);
+
+        verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+
+        // Verify that bookmarks and reading list were enabled.
+        SyncTestUtil.waitForBookmarksAndReadingListEnabled();
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
     public void testWithExistingAccount_dismissCollapsedBottomSheet_backPress_fromBookmarks() {
         // The new sign-in flow contains behaviors specific to the bookmark access point (enabling
         // bookmark & reading list sync after successful sign-in) therefore the access point is
@@ -320,6 +347,7 @@ public class SigninAndHistorySyncIntegrationTest {
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        assertFalse(SyncTestUtil.isBookmarksAndReadingListEnabled());
     }
 
     @Test
@@ -622,5 +650,15 @@ public class SigninAndHistorySyncIntegrationTest {
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    private void disableBookmarksAndReadingList() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+                    syncService.setSelectedType(UserSelectableType.BOOKMARKS, false);
+                    syncService.setSelectedType(UserSelectableType.READING_LIST, false);
+                });
+        assertFalse(SyncTestUtil.isBookmarksAndReadingListEnabled());
     }
 }

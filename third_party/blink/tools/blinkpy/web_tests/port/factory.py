@@ -226,12 +226,13 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        action='store_false',
                        dest='use_xvfb',
                        help='Do not run tests with Xvfb')
+    group.add_argument('--coverage-dir', type=str, help=argparse.SUPPRESS)
     add_common_wpt_options(group)
     if not rwt:
         group.add_argument(
             '-p',
             '--product',
-            default='chrome',
+            default='headless_shell',
             choices=(product_choices or []),
             metavar='PRODUCT',
             help='Product (browser or browser component) to test.')
@@ -305,15 +306,16 @@ def add_results_options_group(parser: argparse.ArgumentParser,
                                action='store_false',
                                default=None,
                                help='Do not run just the SmokeTests')
+    results_group.add_argument(
+        '--additional-expectations',
+        action='append',
+        default=[],
+        help=('Path to a test_expectations file that will override previous '
+              'expectations. Specify multiple times for multiple sets of '
+              'overrides.'))
+    results_group.add_argument('--driver-name',
+                               help='Alternative driver binary to use')
     if rwt:
-        results_group.add_argument(
-            '--additional-expectations',
-            action='append',
-            default=[],
-            help=(
-                'Path to a test_expectations file that will override previous '
-                'expectations. Specify multiple times for multiple sets of '
-                'overrides.'))
         results_group.add_argument(
             '--ignore-default-expectations',
             action='store_true',
@@ -342,8 +344,6 @@ def add_results_options_group(parser: argparse.ArgumentParser,
                 'copy the current baseline into the *most-specific-platform* '
                 'directory, or the flag-specific generic-platform directory if '
                 '--additional-driver-flag is specified. See --reset-results.'))
-        results_group.add_argument('--driver-name',
-                                   help='Alternative driver binary to use')
         results_group.add_argument(
             '--reset-results',
             action='store_true',
@@ -453,13 +453,10 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                                metavar='FILE',
                                help='read filters for tests to run')
     testing_group.add_argument(
-        '--exclude-test-list',
-        dest='exclude_test_lists',
+        '--inverted-test-launcher-filter-file',
         action='append',
         metavar='FILE',
-        help=('read test (directories) that should not run '
-              '(the most specific prefix among `--(exclude-)test-list` and '
-              'the positional arguments wins)'))
+        help=('Filters in the file will be inverted before applied.'))
     testing_group.add_argument(
         '--isolated-script-test-filter-file',
         '--test-launcher-filter-file',
@@ -668,6 +665,13 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                 'finish post-run hooks, such as dumping code coverage data. '
                 'Default is 1 second, can be overriden for specific use cases.'
             ))
+        testing_group.add_argument(
+            '--kill-driver-with-sigterm',
+            action='store_true',
+            help=(
+                'Send SIGTERM to the driver process; useful in conjunction '
+                'with "--wrapper", for wrapper executables (such as rr) that '
+                'require SIGTERM to finish cleanly.'))
         testing_group.add_argument(
             '--ignore-testharness-expected-txt',
             action='store_true',

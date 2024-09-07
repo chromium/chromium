@@ -30,6 +30,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/schemeful_site.h"
@@ -212,47 +213,49 @@ std::unique_ptr<HttpStream> QuicSessionPoolTestBase::CreateStream(
 
 bool QuicSessionPoolTestBase::HasActiveSession(
     const url::SchemeHostPort& scheme_host_port,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
     SessionUsage session_usage,
     bool require_dns_https_alpn) {
-  quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
-                               false);
+  quic::QuicServerId server_id(scheme_host_port.host(),
+                               scheme_host_port.port());
   return QuicSessionPoolPeer::HasActiveSession(
-      factory_.get(), server_id, network_anonymization_key, proxy_chain,
-      session_usage, require_dns_https_alpn);
+      factory_.get(), server_id, privacy_mode, network_anonymization_key,
+      proxy_chain, session_usage, require_dns_https_alpn);
 }
 
 bool QuicSessionPoolTestBase::HasActiveJob(
     const url::SchemeHostPort& scheme_host_port,
     const PrivacyMode privacy_mode,
     bool require_dns_https_alpn) {
-  quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
-                               privacy_mode == PRIVACY_MODE_ENABLED);
-  return QuicSessionPoolPeer::HasActiveJob(factory_.get(), server_id,
-                                           require_dns_https_alpn);
+  quic::QuicServerId server_id(scheme_host_port.host(),
+                               scheme_host_port.port());
+  return QuicSessionPoolPeer::HasActiveJob(
+      factory_.get(), server_id, privacy_mode, require_dns_https_alpn);
 }
 
 // Get the pending, not activated session, if there is only one session alive.
 QuicChromiumClientSession* QuicSessionPoolTestBase::GetPendingSession(
     const url::SchemeHostPort& scheme_host_port) {
-  quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
-                               false);
-  return QuicSessionPoolPeer::GetPendingSession(factory_.get(), server_id,
-                                                scheme_host_port);
+  quic::QuicServerId server_id(scheme_host_port.host(),
+                               scheme_host_port.port());
+  return QuicSessionPoolPeer::GetPendingSession(
+      factory_.get(), server_id, PRIVACY_MODE_DISABLED, scheme_host_port);
 }
 
 QuicChromiumClientSession* QuicSessionPoolTestBase::GetActiveSession(
     const url::SchemeHostPort& scheme_host_port,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
     SessionUsage session_usage,
     bool require_dns_https_alpn) {
-  quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
-                               false);
+  quic::QuicServerId server_id(scheme_host_port.host(),
+                               scheme_host_port.port());
   return QuicSessionPoolPeer::GetActiveSession(
-      factory_.get(), server_id, network_anonymization_key, proxy_chain,
-      session_usage, require_dns_https_alpn);
+      factory_.get(), server_id, privacy_mode, network_anonymization_key,
+      proxy_chain, session_usage, require_dns_https_alpn);
 }
 
 int QuicSessionPoolTestBase::GetSourcePortForNewSessionAndGoAway(

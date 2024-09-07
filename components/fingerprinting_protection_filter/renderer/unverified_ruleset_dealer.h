@@ -30,7 +30,7 @@ class UnverifiedRulesetDealer
       public content::RenderThreadObserver,
       public mojom::FingerprintingProtectionRulesetObserver {
  public:
-  UnverifiedRulesetDealer() = default;
+  UnverifiedRulesetDealer();
 
   UnverifiedRulesetDealer(const UnverifiedRulesetDealer&) = delete;
   UnverifiedRulesetDealer& operator=(const UnverifiedRulesetDealer&) = delete;

@@ -6,13 +6,19 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
-#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_policy_handler.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
@@ -32,6 +38,7 @@
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
@@ -142,6 +149,10 @@ KioskSystemSession::KioskSystemSession(
     case KioskAppType::kWebApp:
       InitForWebKiosk(app_name);
       break;
+    case KioskAppType::kIsolatedWebApp:
+      // TODO(crbug.com/361017777): call InitForIwaKiosk or reus existing init.
+      NOTIMPLEMENTED();
+      break;
   }
   if (IsLacrosEnabled()) {
     lacros_watcher_ = std::make_unique<LacrosWatcher>(profile, kiosk_app_id_);
@@ -202,6 +213,12 @@ void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {
 void KioskSystemSession::OnGuestAdded(
     content::WebContents* guest_web_contents) {
   browser_session_.OnGuestAdded(guest_web_contents);
+}
+
+void KioskSystemSession::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled, false);
 }
 
 Profile* KioskSystemSession::profile() const {

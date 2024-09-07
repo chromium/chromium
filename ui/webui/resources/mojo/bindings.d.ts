@@ -261,6 +261,18 @@ export namespace mojo {
         objectToBlessAsType: object, name: string, fields: StructFieldSpec[],
         versionData: number[][]): void;
 
+    class TypemapAdapter<MappedType, MojoType> {
+      constructor(
+          toMojoTypeFn: (mappedType: MappedType) => MojoType,
+          toMappedTypeFn: (mojoType: MojoType) => MappedType,
+      );
+    }
+
+    function TypemappedStruct<MappedType, MojoType>(
+        objectToBlessAsType: object, name: string,
+        adapter: TypemapAdapter<MappedType, MojoType>,
+        fields: StructFieldSpec[], versionData: number[][]): void;
+
     interface UnionFieldSpec {
       name?: string;
       ordinal: number;

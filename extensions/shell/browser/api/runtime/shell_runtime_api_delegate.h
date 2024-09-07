@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -26,8 +27,8 @@ class ShellRuntimeAPIDelegate : public RuntimeAPIDelegate {
   // RuntimeAPIDelegate implementation.
   void AddUpdateObserver(UpdateObserver* observer) override;
   void RemoveUpdateObserver(UpdateObserver* observer) override;
-  void ReloadExtension(const std::string& extension_id) override;
-  bool CheckForUpdates(const std::string& extension_id,
+  void ReloadExtension(const ExtensionId& extension_id) override;
+  bool CheckForUpdates(const ExtensionId& extension_id,
                        UpdateCheckCallback callback) override;
   void OpenURL(const GURL& uninstall_url) override;
   bool GetPlatformInfo(api::runtime::PlatformInfo* info) override;

@@ -4,6 +4,9 @@
 
 source_set("model") {
   sources = [
+    "lens_overlay_snapshot_controller.h",
+    "lens_overlay_snapshot_controller.mm",
+    "lens_overlay_snapshot_controller_delegate.h",
     "lens_overlay_tab_helper.h",
     "lens_overlay_tab_helper.mm",
   ]
@@ -14,7 +17,10 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/common/ui/colors",
     "//ios/web/public",
+    "//ui/base",
   ]
   public_deps = [ "//base" ]
 }
@@ -28,7 +34,7 @@ source_set("unit_tests") {
     "//components/lens:enterprise_policy",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",

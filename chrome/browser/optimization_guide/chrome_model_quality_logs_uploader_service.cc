@@ -14,6 +14,7 @@
 #include "components/metrics/persistent_system_profile.h"
 #include "components/metrics/version_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -29,12 +30,12 @@ namespace optimization_guide {
 
 namespace {
 
-void RecordUploadStatusHistogram(UserVisibleFeatureKey feature,
+void RecordUploadStatusHistogram(const MqlsFeatureMetadata* metadata,
                                  ModelQualityLogsUploadStatus status) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.",
-           GetStringNameForModelExecutionFeature(feature)}),
+           metadata->name()}),
       status);
 }
 
@@ -66,38 +67,45 @@ ChromeModelQualityLogsUploaderService::
     ~ChromeModelQualityLogsUploaderService() = default;
 
 bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
-    UserVisibleFeatureKey feature) {
+    const MqlsFeatureMetadata* metadata) {
+  CHECK(metadata);
   // Model quality logging requires metrics reporting to be enabled. Skip upload
   // if metrics reporting is disabled.
   if (!g_browser_process->GetMetricsServicesManager()
            ->IsMetricsConsentGiven()) {
     RecordUploadStatusHistogram(
-        feature, ModelQualityLogsUploadStatus::kMetricsReportingDisabled);
+        metadata, ModelQualityLogsUploadStatus::kMetricsReportingDisabled);
     return false;
   }
 
   // Don't upload logs if logging is disabled for the feature. Nothing to
   // upload.
-  if (!features::IsModelQualityLoggingEnabledForFeature(feature)) {
+  if (!features::IsModelQualityLoggingEnabledForFeature(metadata)) {
     RecordUploadStatusHistogram(
-        feature, ModelQualityLogsUploadStatus::kLoggingNotEnabled);
+        metadata, ModelQualityLogsUploadStatus::kLoggingNotEnabled);
     return false;
   }
 
   if (model_execution_feature_controller_) {
-    // Don't upload logs if the feature is not enabled for the user.
-    if (!model_execution_feature_controller_
-             ->ShouldFeatureBeCurrentlyEnabledForUser(feature)) {
+    // Don't upload logs if the feature uses the chrome://settings/ai page
+    // (i.e. has a registered UserVisibleFeatureKey) but is not enabled for the
+    // user. If the feature don't use the chrome://settings/ai page, we assume
+    // the feature is enabled given we have a log entry.
+    std::optional<UserVisibleFeatureKey> feature_key =
+        metadata->user_visible_feature_key();
+    if (feature_key &&
+        !model_execution_feature_controller_
+             ->ShouldFeatureBeCurrentlyEnabledForUser(*feature_key)) {
       RecordUploadStatusHistogram(
-          feature, ModelQualityLogsUploadStatus::kFeatureNotEnabledForUser);
+          metadata, ModelQualityLogsUploadStatus::kFeatureNotEnabledForUser);
       return false;
     }
 
     // Don't upload logs if logging is disabled by enterprise policy.
     if (!model_execution_feature_controller_
-             ->ShouldFeatureBeCurrentlyAllowedForLogging(feature)) {
+             ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata)) {
       RecordUploadStatusHistogram(
-          feature,
+          metadata,
           ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy);
       return false;
     }

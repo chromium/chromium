@@ -14,6 +14,12 @@ export {currentReadHighlightClass, PauseActionSource, previousReadHighlightClass
 export {AppStyleUpdater} from './app_style_updater.js';
 export {getCurrentSpeechRate, playFromSelectionTimeout, ToolbarEvent} from './common.js';
 export type {LanguageMenuElement} from './language_menu.js';
+export type {ColorMenu} from './menus/color_menu.js';
+export type {HighlightMenu} from './menus/highlight_menu.js';
+export type {LetterSpacingMenu} from './menus/letter_spacing_menu.js';
+export type {LineSpacingMenu} from './menus/line_spacing_menu.js';
+export {MenuStateItem} from './menus/menu_util.js';
+export type {SimpleActionMenu} from './menus/simple_action_menu.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudHighlightState, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
 export {ReadAnythingLogger, SpeechControls, TimeFrom, TimeTo} from './read_anything_logger.js';
 export type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';

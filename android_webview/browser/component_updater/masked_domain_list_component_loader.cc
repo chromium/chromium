@@ -51,11 +51,8 @@ void LoadMaskedDomainListComponent(ComponentLoaderPolicyVector& policies) {
                 features::kWebViewIpProtectionExclusionCriteria.Get());
 
             if (mdl.has_value()) {
-              base::ThreadPool::PostTaskAndReplyWithResult(
-                  FROM_HERE,
-                  {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-                  base::BindOnce(&GetAppDefinedDomains,
-                                 std::move(exclusion_policy)),
+              AppDefinedWebsites::GetInstance()->GetAppDefinedDomains(
+                  std::move(exclusion_policy),
                   base::BindOnce(&UpdateMaskedDomainList,
                                  std::move(mdl.value())));
             } else {

@@ -19,9 +19,9 @@ bool ShouldUseCodeCacheForWebUIUrl(const GURL& request_url) {
   DCHECK(content::HasWebUIScheme(request_url));
   if (base::FeatureList::IsEnabled(features::kRestrictedWebUICodeCache)) {
     static const base::NoDestructor<base::flat_set<std::string>>
-        unrestricted_resources({base::SplitString(
+        unrestricted_resources(base::SplitString(
             features::kRestrictedWebUICodeCacheResources.Get(), ",",
-            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)});
+            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
     return unrestricted_resources->contains(request_url.path());
   }
   return true;

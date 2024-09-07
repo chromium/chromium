@@ -111,22 +111,22 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
 
  private:
   bool Invoke(const url::Origin& request_origin,
-              int main_frame_id,
+              FrameTreeNodeId main_frame_id,
               OperationPtr operation);
 
   bool Set(const url::Origin& request_origin,
-           int main_frame_id,
+           FrameTreeNodeId main_frame_id,
            std::string key,
            std::string value,
            network::mojom::OptionalBool ignore_if_present);
   bool Append(const url::Origin& request_origin,
-              int main_frame_id,
+              FrameTreeNodeId main_frame_id,
               std::string key,
               std::string value);
   bool Delete(const url::Origin& request_origin,
-              int main_frame_id,
+              FrameTreeNodeId main_frame_id,
               std::string key);
-  bool Clear(const url::Origin& request_origin, int main_frame_id);
+  bool Clear(const url::Origin& request_origin, FrameTreeNodeId main_frame_id);
 
   storage::SharedStorageManager* GetSharedStorageManager();
 
@@ -141,7 +141,7 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
       std::string* out_debug_message = nullptr);
 
   void NotifySharedStorageAccessed(AccessType type,
-                                   int main_frame_id,
+                                   FrameTreeNodeId main_frame_id,
                                    const url::Origin& request_origin,
                                    const SharedStorageEventParams& params);
 

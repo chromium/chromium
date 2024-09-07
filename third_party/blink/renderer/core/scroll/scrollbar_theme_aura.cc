@@ -34,7 +34,6 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_fluent.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
@@ -313,16 +312,13 @@ void ScrollbarThemeAura::PaintTrackBackground(GraphicsContext& context,
 
   WebThemeEngine::ExtraParams extra_params(scrollbar_track);
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
-  const ui::ColorProvider* color_provider =
-      scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
-
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(),
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalTrack
           : WebThemeEngine::kPartScrollbarVerticalTrack,
-      state, rect, &extra_params, color_scheme,
-      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
+      state, rect, &extra_params, color_scheme, scrollbar.InForcedColorsMode(),
+      scrollbar.GetColorProvider(color_scheme));
 }
 
 void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
@@ -350,11 +346,9 @@ void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
   }
   WebThemeEngine::ExtraParams extra_params(scrollbar_button);
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
-  const ui::ColorProvider* color_provider =
-      scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       gc.Canvas(), params.part, params.state, rect, &extra_params, color_scheme,
-      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
+      scrollbar.InForcedColorsMode(), scrollbar.GetColorProvider(color_scheme));
 }
 
 void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
@@ -377,17 +371,14 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
   }
 
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
-  const ui::ColorProvider* color_provider =
-      scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
   WebThemeEngine::ExtraParams params(BuildScrollbarThumbExtraParams(scrollbar));
-
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       canvas,
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalThumb
           : WebThemeEngine::kPartScrollbarVerticalThumb,
-      state, rect, &params, color_scheme,
-      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
+      state, rect, &params, color_scheme, scrollbar.InForcedColorsMode(),
+      scrollbar.GetColorProvider(color_scheme));
 }
 
 WebThemeEngine::ScrollbarThumbExtraParams
@@ -531,13 +522,9 @@ SkColor4f ScrollbarThemeAura::ThumbColor(const Scrollbar& scrollbar) const {
   } else {
     state = WebThemeEngine::kStateNormal;
   }
-  const ui::ColorProvider* color_provider =
-      scrollbar.GetScrollableArea()->GetColorProvider(
-          scrollbar.UsedColorScheme());
   WebThemeEngine::ExtraParams params(BuildScrollbarThumbExtraParams(scrollbar));
-
   return WebThemeEngineHelper::GetNativeThemeEngine()->GetScrollbarThumbColor(
-      state, &params, color_provider);
+      state, &params, scrollbar.GetColorProvider(scrollbar.UsedColorScheme()));
 }
 
 bool ScrollbarThemeAura::UsesNinePatchTrackAndButtonsResource() const {

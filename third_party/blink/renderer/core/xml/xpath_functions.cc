@@ -641,26 +641,9 @@ Value FunLang::Evaluate(EvaluationContext& context) const {
     return false;
 
   String lang_value = language_attribute->Value();
-  if (RuntimeEnabledFeatures::XPathLangUseAsciiCaseEnabled()) {
-    return lang_value.StartsWithIgnoringASCIICase(lang) &&
-           (lang.length() == lang_value.length() ||
-            lang_value[lang.length()] == '-');
-  } else {
-    while (true) {
-      if (DeprecatedEqualIgnoringCase(lang_value, lang)) {
-        return true;
-      }
-
-      // Remove suffixes one by one.
-      wtf_size_t index = lang_value.ReverseFind('-');
-      if (index == kNotFound) {
-        break;
-      }
-      lang_value = lang_value.Left(index);
-    }
-  }
-
-  return false;
+  return lang_value.StartsWithIgnoringASCIICase(lang) &&
+         (lang.length() == lang_value.length() ||
+          lang_value[lang.length()] == '-');
 }
 
 Value FunFalse::Evaluate(EvaluationContext&) const {

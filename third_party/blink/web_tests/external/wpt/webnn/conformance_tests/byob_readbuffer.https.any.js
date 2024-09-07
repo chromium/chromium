@@ -29,8 +29,11 @@ promise_setup(async () => {
   }
 
   try {
-    mlBuffer =
-        await mlContext.createBuffer({dataType: 'int32', dimensions: [2, 4]});
+    mlBuffer = await mlContext.createBuffer({
+      dataType: 'int32',
+      dimensions: [2, 4],
+      usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM,
+    });
   } catch (e) {
     throw new AssertionError(
         `Unable to create buffer for ${variant} variant. ${e}`);
@@ -92,7 +95,7 @@ promise_test(async () => {
 
 promise_test(async () => {
   // Create a slightly larger ArrayBuffer and set up the TypedArray at an
-  // offset to make sure the MLBuffer contents are written to the correct
+  // offset to make sure the MLTensor contents are written to the correct
   // offset.
   const arrayBuffer = new ArrayBuffer(testContents.byteLength + 4);
   const typedArray = new Uint32Array(arrayBuffer, 4);
@@ -119,7 +122,7 @@ promise_test(async () => {
 
 promise_test(async () => {
   // Create a slightly larger ArrayBuffer and set up the TypedArray at an
-  // offset to make sure the MLBuffer contents are written to the correct
+  // offset to make sure the MLTensor contents are written to the correct
   // offset.
   const arrayBuffer = new ArrayBuffer(testContents.byteLength * 2 + 4);
   const typedArray = new Uint32Array(arrayBuffer, 4);
@@ -135,23 +138,29 @@ promise_test(async () => {
 }, `readBuffer() with a larger TypedArray`);
 
 promise_test(async (t) => {
-  const buffer =
-      await mlContext.createBuffer({dataType: 'int32', dimensions: [2, 2]});
+  const buffer = await mlContext.createBuffer({
+    dataType: 'int32',
+    dimensions: [2, 2],
+    usage: MLTensorUsage.READ_FROM,
+  });
   const arrayBufferView = new Int32Array(2 * 2);
   const arrayBuffer = arrayBufferView.buffer;
 
-  // Reading a destroyed MLBuffer should reject.
+  // Reading a destroyed MLTensor should reject.
   buffer.destroy();
 
   await promise_rejects_dom(
       t, 'InvalidStateError', mlContext.readBuffer(buffer, arrayBuffer));
   await promise_rejects_dom(
       t, 'InvalidStateError', mlContext.readBuffer(buffer, arrayBufferView));
-}, `readBuffer() rejects on a destroyed MLBuffer`);
+}, `readBuffer() rejects on a destroyed MLTensor`);
 
 promise_test(async (t) => {
-  const buffer =
-      await mlContext.createBuffer({dataType: 'int32', dimensions: [2, 2]});
+  const buffer = await mlContext.createBuffer({
+    dataType: 'int32',
+    dimensions: [2, 2],
+    usage: MLTensorUsage.READ_FROM,
+  });
   const arrayBufferView = new Int32Array(2 * 2);
   const arrayBuffer = arrayBufferView.buffer;
 
@@ -165,4 +174,4 @@ promise_test(async (t) => {
   buffer.destroy();
 
   await checks;
-}, `readBuffer() rejects when the MLBuffer is destroyed`);
+}, `readBuffer() rejects when the MLTensor is destroyed`);

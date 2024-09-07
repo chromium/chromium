@@ -1,0 +1,16 @@
+Name: Dagger
+Short Name: Dagger
+Version: 2.52
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: No
+Shipped: no
+URL: https://github.com/google/dagger
+
+Description:
+Dagger is a fast dependency injector for Android and Java. This module contains
+the Java annotation processor, and the Dagger runtime is managed via
+//third_party/android_deps.
+
+Local Modifications:
+None

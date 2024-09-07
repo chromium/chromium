@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -280,7 +280,7 @@ class LinkCapturingNavThrottleReimplTest
     std::map<std::string, std::string> parameters;
     parameters["link_capturing_state"] = FlagBoolToReimpl();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDesktopPWAsLinkCapturing, parameters);
+        features::kPwaNavigationCapturing, parameters);
   }
 
   std::string FlagBoolToReimpl() {

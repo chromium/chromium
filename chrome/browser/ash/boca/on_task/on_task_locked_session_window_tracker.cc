@@ -8,6 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -28,8 +31,10 @@ LockedSessionWindowTracker::~LockedSessionWindowTracker() {
 
 void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
     Browser* browser) {
-  if (!browser) {
+  if (browser_ && browser_ != browser) {
     CleanupWindowTracker();
+  }
+  if (!browser) {
     return;
   }
   browser_ = browser;
@@ -82,6 +87,12 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   }
   on_task_blocklist_->CleanupBlocklist();
   browser_ = nullptr;
+  first_time_popup_ = false;
+  if (ash::Shell::HasInstance()) {
+    ash::Shell::Get()
+        ->screen_pinning_controller()
+        ->SetAllowWindowStackingWithPinnedWindow(false);
+  }
 }
 
 // TabStripModel Implementation
@@ -103,18 +114,31 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
 }
 
 // BrowserListObserver Implementation
-// TODO: b/355049175 - Allow screen pinning controller to stack popups on top of
-// pinned windows.
 void LockedSessionWindowTracker::OnBrowserClosing(Browser* browser) {
   if (browser == browser_) {
     CleanupWindowTracker();
+  }
+  if (browser->type() == Browser::Type::TYPE_APP_POPUP) {
+    ash::Shell::Get()
+        ->screen_pinning_controller()
+        ->SetAllowWindowStackingWithPinnedWindow(true);
+    first_time_popup_ = false;
   }
 }
 
 void LockedSessionWindowTracker::OnBrowserAdded(Browser* browser) {
   if (browser->type() == Browser::Type::TYPE_APP_POPUP) {
-    // TODO: b/355049175 - Allow screen pinning controller to stack popups on
-    // top of pinned windows.
+    ash::Shell::Get()
+        ->screen_pinning_controller()
+        ->SetAllowWindowStackingWithPinnedWindow(true);
+    // Since this is called after the window is created, but before we set the
+    // pinning controller to allow the popup window to be on top of the
+    // pinned window, we need to explicitly move this `browser` to be on top.
+    // Otherwise, the popup window would still be beneath the pinned window.
+    aura::Window* const top_container =
+        ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
+                                 ash::kShellWindowId_AlwaysOnTopContainer);
+    top_container->StackChildAtTop(browser->window()->GetNativeWindow());
     if (!first_time_popup_) {
       first_time_popup_ = true;
     }

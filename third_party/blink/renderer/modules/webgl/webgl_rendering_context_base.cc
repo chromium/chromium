@@ -3644,9 +3644,8 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
     case GL_COLOR_WRITEMASK:
       return GetBooleanArrayParameter(script_state, pname);
     case GL_COMPRESSED_TEXTURE_FORMATS:
-      return WebGLAny(script_state, DOMUint32Array::Create(
-                                        compressed_texture_formats_.data(),
-                                        compressed_texture_formats_.size()));
+      return WebGLAny(script_state,
+                      DOMUint32Array::Create(compressed_texture_formats_));
     case GL_CULL_FACE:
       return GetBooleanParameter(script_state, pname);
     case GL_CULL_FACE_MODE:
@@ -4429,23 +4428,24 @@ ScriptValue WebGLRenderingContextBase::getUniform(
             ContextGL()->GetUniformfv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
-            return WebGLAny(script_state,
-                            DOMFloat32Array::Create(value, length));
+            return WebGLAny(script_state, DOMFloat32Array::Create(
+                                              base::span(value).first(length)));
           }
           case GL_INT: {
             GLint value[4] = {0};
             ContextGL()->GetUniformiv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
-            return WebGLAny(script_state, DOMInt32Array::Create(value, length));
+            return WebGLAny(script_state, DOMInt32Array::Create(
+                                              base::span(value).first(length)));
           }
           case GL_UNSIGNED_INT: {
             GLuint value[4] = {0};
             ContextGL()->GetUniformuiv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
-            return WebGLAny(script_state,
-                            DOMUint32Array::Create(value, length));
+            return WebGLAny(script_state, DOMUint32Array::Create(
+                                              base::span(value).first(length)));
           }
           case GL_BOOL: {
             GLint value[4] = {0};
@@ -4539,18 +4539,17 @@ ScriptValue WebGLRenderingContextBase::getVertexAttrib(
         case kFloat32ArrayType: {
           GLfloat float_value[4];
           ContextGL()->GetVertexAttribfv(index, pname, float_value);
-          return WebGLAny(script_state,
-                          DOMFloat32Array::Create(float_value, 4));
+          return WebGLAny(script_state, DOMFloat32Array::Create(float_value));
         }
         case kInt32ArrayType: {
           GLint int_value[4];
           ContextGL()->GetVertexAttribIiv(index, pname, int_value);
-          return WebGLAny(script_state, DOMInt32Array::Create(int_value, 4));
+          return WebGLAny(script_state, DOMInt32Array::Create(int_value));
         }
         case kUint32ArrayType: {
           GLuint uint_value[4];
           ContextGL()->GetVertexAttribIuiv(index, pname, uint_value);
-          return WebGLAny(script_state, DOMUint32Array::Create(uint_value, 4));
+          return WebGLAny(script_state, DOMUint32Array::Create(uint_value));
         }
         default:
           NOTREACHED_IN_MIGRATION();
@@ -4603,14 +4602,14 @@ void WebGLRenderingContextBase::hint(GLenum target, GLenum mode) {
   ContextGL()->Hint(target, mode);
 }
 
-GLboolean WebGLRenderingContextBase::isBuffer(WebGLBuffer* buffer) {
+bool WebGLRenderingContextBase::isBuffer(WebGLBuffer* buffer) {
   if (!buffer || isContextLost() || !buffer->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (!buffer->HasEverBeenBound())
-    return 0;
+    return false;
   if (buffer->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsBuffer(buffer->Object());
 }
@@ -4619,9 +4618,9 @@ bool WebGLRenderingContextBase::isContextLost() const {
   return context_lost_mode_ != kNotLostContext;
 }
 
-GLboolean WebGLRenderingContextBase::isEnabled(GLenum cap) {
+bool WebGLRenderingContextBase::isEnabled(GLenum cap) {
   if (isContextLost() || !ValidateCapability("isEnabled", cap))
-    return 0;
+    return false;
   if (cap == GL_DEPTH_TEST) {
     return depth_enabled_;
   }
@@ -4631,23 +4630,22 @@ GLboolean WebGLRenderingContextBase::isEnabled(GLenum cap) {
   return ContextGL()->IsEnabled(cap);
 }
 
-GLboolean WebGLRenderingContextBase::isFramebuffer(
-    WebGLFramebuffer* framebuffer) {
+bool WebGLRenderingContextBase::isFramebuffer(WebGLFramebuffer* framebuffer) {
   if (!framebuffer || isContextLost() ||
       !framebuffer->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (!framebuffer->HasEverBeenBound())
-    return 0;
+    return false;
   if (framebuffer->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsFramebuffer(framebuffer->Object());
 }
 
-GLboolean WebGLRenderingContextBase::isProgram(WebGLProgram* program) {
+bool WebGLRenderingContextBase::isProgram(WebGLProgram* program) {
   if (!program || isContextLost() || !program->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   // OpenGL ES special-cases the behavior of program objects; if they're deleted
   // while attached to the current context state, glIsProgram is supposed to
@@ -4656,23 +4654,23 @@ GLboolean WebGLRenderingContextBase::isProgram(WebGLProgram* program) {
   return ContextGL()->IsProgram(program->Object());
 }
 
-GLboolean WebGLRenderingContextBase::isRenderbuffer(
+bool WebGLRenderingContextBase::isRenderbuffer(
     WebGLRenderbuffer* renderbuffer) {
   if (!renderbuffer || isContextLost() ||
       !renderbuffer->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (!renderbuffer->HasEverBeenBound())
-    return 0;
+    return false;
   if (renderbuffer->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsRenderbuffer(renderbuffer->Object());
 }
 
-GLboolean WebGLRenderingContextBase::isShader(WebGLShader* shader) {
+bool WebGLRenderingContextBase::isShader(WebGLShader* shader) {
   if (!shader || isContextLost() || !shader->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   // OpenGL ES special-cases the behavior of shader objects; if they're deleted
   // while attached to a program, glIsShader is supposed to still return true.
@@ -4681,14 +4679,14 @@ GLboolean WebGLRenderingContextBase::isShader(WebGLShader* shader) {
   return ContextGL()->IsShader(shader->Object());
 }
 
-GLboolean WebGLRenderingContextBase::isTexture(WebGLTexture* texture) {
+bool WebGLRenderingContextBase::isTexture(WebGLTexture* texture) {
   if (!texture || isContextLost() || !texture->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (!texture->HasEverBeenBound())
-    return 0;
+    return false;
   if (texture->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsTexture(texture->Object());
 }
@@ -7462,7 +7460,8 @@ ScriptValue WebGLRenderingContextBase::GetWebGLFloatArrayParameter(
     }
     RecordIdentifiableGLParameterDigest(pname, builder.GetToken());
   }
-  return WebGLAny(script_state, DOMFloat32Array::Create(value, length));
+  return WebGLAny(script_state,
+                  DOMFloat32Array::Create(base::span(value).first(length)));
 }
 
 ScriptValue WebGLRenderingContextBase::GetWebGLIntArrayParameter(
@@ -7490,7 +7489,8 @@ ScriptValue WebGLRenderingContextBase::GetWebGLIntArrayParameter(
     }
     RecordIdentifiableGLParameterDigest(pname, builder.GetToken());
   }
-  return WebGLAny(script_state, DOMInt32Array::Create(value, length));
+  return WebGLAny(script_state,
+                  DOMInt32Array::Create(base::span(value).first(length)));
 }
 
 WebGLTexture* WebGLRenderingContextBase::ValidateTexture2DBinding(

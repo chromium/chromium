@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "chrome/enterprise_companion/app/app.h"
@@ -37,10 +38,13 @@ class AppNetWorker : public App {
     net_thread_.StartWithOptions({base::MessagePumpType::IO, 0});
   }
 
-  ~AppNetWorker() override = default;
+  ~AppNetWorker() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
 
  private:
   void FirstTaskRun() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // The cookie handler is created before reducing privilege, as opening the
     // cookie file requires root.
     base::SequenceBound<EventLoggerCookieHandler> event_logger_cookie_handler =
@@ -86,9 +90,10 @@ class AppNetWorker : public App {
         net_thread_.task_runner(), std::move(event_logger_cookie_handler),
         mojo::PendingReceiver<network::mojom::URLLoaderFactory>(
             std::move(pipe)),
-        base::BindOnce(&AppNetWorker::Shutdown, weak_ptr_factory_.GetWeakPtr(),
-                       EnterpriseCompanionStatus(
-                           ApplicationError::kMojoConnectionFailed)));
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &AppNetWorker::Shutdown, weak_ptr_factory_.GetWeakPtr(),
+            EnterpriseCompanionStatus(
+                ApplicationError::kMojoConnectionFailed))));
   }
 
   SEQUENCE_CHECKER(sequence_checker_);

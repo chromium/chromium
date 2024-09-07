@@ -25,6 +25,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -287,6 +288,8 @@ struct NET_EXPORT_PRIVATE QuicEndpoint {
   quic::ParsedQuicVersion quic_version = quic::ParsedQuicVersion::Unsupported();
   IPEndPoint ip_endpoint;
   ConnectionEndpointMetadata metadata;
+
+  base::Value::Dict ToValue() const;
 };
 
 // Manages a pool of QuicChromiumClientSessions.

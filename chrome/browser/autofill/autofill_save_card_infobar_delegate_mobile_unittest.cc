@@ -28,6 +28,7 @@
 
 using testing::_;
 
+namespace autofill {
 namespace {
 
 class TestDeviceLockBridge : public DeviceLockBridge {
@@ -39,9 +40,6 @@ class TestDeviceLockBridge : public DeviceLockBridge {
   bool ShouldShowDeviceLockUi() override { return false; }
 };
 
-}  // namespace
-
-namespace autofill {
 
 using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;
 using SaveCreditCardOptions =
@@ -106,7 +104,7 @@ class AutofillSaveCardInfoBarDelegateMobileTest
 
   void UploadSaveCardPromptCallback(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details) {
     personal_data_->test_payments_data_manager().SaveImportedCreditCard(
         credit_card_to_save_);
@@ -720,4 +718,5 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest,
       u"Mock Cancel Text");
 }
 
+}  // namespace
 }  // namespace autofill

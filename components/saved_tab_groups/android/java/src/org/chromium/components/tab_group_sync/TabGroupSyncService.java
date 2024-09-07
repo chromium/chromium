@@ -5,6 +5,7 @@
 package org.chromium.components.tab_group_sync;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
@@ -26,7 +27,7 @@ public interface TabGroupSyncService {
          * Called when the sync database (DataTypeStore) has been initialized and fully loaded to
          * memory.
          */
-        void onInitialized();
+        default void onInitialized() {}
 
         /**
          * Called when a new tab group was added from sync. A corresponding local tab group should
@@ -35,7 +36,7 @@ public interface TabGroupSyncService {
          * @param group The {@link SavedTabGroup} that was added from sync.
          * @param source The source of the event which can be local or remote.
          */
-        void onTabGroupAdded(SavedTabGroup group, @TriggerSource int source);
+        default void onTabGroupAdded(SavedTabGroup group, @TriggerSource int source) {}
 
         /**
          * Called when a tab group is updated from sync. The corresponding local tab group should be
@@ -44,7 +45,7 @@ public interface TabGroupSyncService {
          * @param group The {@link SavedTabGroup} that was updated from sync.
          * @param source The source of the event which can be local or remote.
          */
-        void onTabGroupUpdated(SavedTabGroup group, @TriggerSource int source);
+        default void onTabGroupUpdated(SavedTabGroup group, @TriggerSource int source) {}
 
         /**
          * Called when a tab group is deleted from sync. The local tab group should be deleted in
@@ -53,7 +54,8 @@ public interface TabGroupSyncService {
          * @param localTabGroupId The local ID corresponding to the tab group that was removed.
          * @param source The source of the event which can be local or remote.
          */
-        void onTabGroupRemoved(LocalTabGroupId localTabGroupId, @TriggerSource int source);
+        default void onTabGroupRemoved(
+                LocalTabGroupId localTabGroupId, @TriggerSource int source) {}
 
         /**
          * Called when a tab group is deleted from sync. This signal is used by revisit surface that
@@ -63,7 +65,17 @@ public interface TabGroupSyncService {
          * @param syncTabGroupId The sync ID corresponding to the tab group that was removed.
          * @param source The source of the event which can be local or remote.
          */
-        void onTabGroupRemoved(String syncTabGroupId, @TriggerSource int source);
+        default void onTabGroupRemoved(String syncTabGroupId, @TriggerSource int source) {}
+
+        /**
+         * Called when the local ID for a tab group changes. Since Android uses stable tab group ID,
+         * this is only fired when the group is opened or closed.
+         *
+         * @param syncTabGroupId The sync ID corresponding to the tab group.
+         * @param localTabGroupId The new local ID of the tab group.
+         */
+        default void onTabGroupLocalIdChanged(
+                String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {}
     }
 
     /**

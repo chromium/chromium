@@ -57,7 +57,6 @@ public class PaymentRequestNoShippingOptionsTest {
                         "",
                         "https://example.test",
                         true,
-                        true,
                         "Jon Doe",
                         "4111111111111111",
                         "1111",

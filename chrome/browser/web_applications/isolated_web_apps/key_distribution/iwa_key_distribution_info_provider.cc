@@ -4,10 +4,12 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 
+#include <memory>
+
 #include "base/base64.h"
 #include "base/containers/map_util.h"
 #include "base/files/file_util.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -16,6 +18,12 @@
 namespace web_app {
 
 namespace {
+
+IwaKeyDistributionInfoProvider::KeyRotations& GetDevModeKeyRotationData() {
+  static base::NoDestructor<IwaKeyDistributionInfoProvider::KeyRotations>
+      dev_mode_kr_data;
+  return *dev_mode_kr_data;
+}
 
 base::expected<IwaKeyDistributionInfoProvider::KeyRotations,
                IwaKeyDistributionInfoProvider::ComponentUpdateError>
@@ -57,7 +65,18 @@ LoadKeyDistributionDataImpl(const base::FilePath& file_path) {
   return key_rotations;
 }
 
+std::unique_ptr<IwaKeyDistributionInfoProvider>&
+GetGlobalIwaKeyDistributionInfoProviderInstance() {
+  static base::NoDestructor<std::unique_ptr<IwaKeyDistributionInfoProvider>>
+      instance;
+  return *instance;
+}
+
 }  // namespace
+
+BASE_FEATURE(kIwaKeyDistributionDevMode,
+             "IwaKeyDistributionDevMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 IwaKeyDistributionInfoProvider::KeyRotationInfo::KeyRotationInfo(
     std::optional<PublicKeyData> public_key)
@@ -68,13 +87,31 @@ IwaKeyDistributionInfoProvider::KeyRotationInfo::~KeyRotationInfo() = default;
 IwaKeyDistributionInfoProvider::KeyRotationInfo::KeyRotationInfo(
     const KeyRotationInfo&) = default;
 
+base::Value IwaKeyDistributionInfoProvider::KeyRotationInfo::AsDebugValue()
+    const {
+  return base::Value(base::Value::Dict().Set(
+      "public_key", public_key ? base::Base64Encode(*public_key) : "null"));
+}
+
 IwaKeyDistributionInfoProvider* IwaKeyDistributionInfoProvider::GetInstance() {
-  return base::Singleton<IwaKeyDistributionInfoProvider>::get();
+  auto& instance = GetGlobalIwaKeyDistributionInfoProviderInstance();
+  if (!instance) {
+    instance.reset(new IwaKeyDistributionInfoProvider());
+  }
+  return instance.get();
+}
+
+void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
+  GetGlobalIwaKeyDistributionInfoProviderInstance().reset();
 }
 
 const IwaKeyDistributionInfoProvider::KeyRotationInfo*
 IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
     const std::string& web_bundle_id) const {
+  if (const auto* kr_info =
+          base::FindOrNull(GetDevModeKeyRotationData(), web_bundle_id)) {
+    return kr_info;
+  }
   return data_ ? base::FindOrNull(data_->key_rotations, web_bundle_id)
                : nullptr;
 }
@@ -128,6 +165,38 @@ void IwaKeyDistributionInfoProvider::AddObserver(Observer* observer) {
 
 void IwaKeyDistributionInfoProvider::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
+    base::PassKey<WebAppInternalsHandler>,
+    const std::string& web_bundle_id,
+    const std::optional<std::vector<uint8_t>>& rotated_key) {
+  GetDevModeKeyRotationData().insert_or_assign(web_bundle_id,
+                                               KeyRotationInfo(rotated_key));
+  DispatchComponentUpdateSuccess(base::Version());
+}
+
+base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
+  base::Value::Dict debug_data;
+
+  if (!GetDevModeKeyRotationData().empty()) {
+    auto* dev_mode_key_rotations =
+        debug_data.EnsureDict("dev_mode_key_rotations");
+    for (const auto& [web_bundle_id, kr_info] : GetDevModeKeyRotationData()) {
+      dev_mode_key_rotations->Set(web_bundle_id, kr_info.AsDebugValue());
+    }
+  }
+  if (data_) {
+    debug_data.Set("component_version", data_->version.GetString());
+    auto* key_rotations = debug_data.EnsureDict("key_rotations");
+    for (const auto& [web_bundle_id, kr_info] : data_->key_rotations) {
+      key_rotations->Set(web_bundle_id, kr_info.AsDebugValue());
+    }
+  } else {
+    debug_data.Set("component_version", "null");
+  }
+
+  return base::Value(std::move(debug_data));
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(

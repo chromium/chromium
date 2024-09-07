@@ -317,8 +317,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     // In addition to establishing one, we're nested inside another
     // fragmentation context.
-    FinishFragmentation(BorderScrollbarPadding().block_end,
-                        &container_builder_);
+    FinishFragmentation(&container_builder_);
 
     // OOF positioned elements inside a nested fragmentation context are laid
     // out at the outermost context. If this multicol has OOF positioned

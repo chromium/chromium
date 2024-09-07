@@ -83,7 +83,8 @@ class SafetyHubMenuNotificationTest : public testing::Test {
   std::unique_ptr<UnusedSitePermissionsService> service_;
 };
 
-TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
+// TODO(crbug.com/364523673): This test is flaking on android pie builder.
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_ToFromDictValue) {
   // Creating a mock menu notification.
   base::Time last = kPastTime + base::Days(30);
   auto notification = std::make_unique<SafetyHubMenuNotification>(
@@ -134,7 +135,8 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
                        .GetString());
 }
 
-TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
+// TODO(crbug.com/364523673): This test is flaking on android pie builder.
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_ShouldBeShown) {
   base::TimeDelta interval = base::Days(30);
   auto notification = std::make_unique<SafetyHubMenuNotification>(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
@@ -222,7 +224,8 @@ TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
   ASSERT_FALSE(other_notification->ShouldBeShown(interval));
 }
 
-TEST_F(SafetyHubMenuNotificationTest, IsCurrentlyActive) {
+// TODO(crbug.com/364523673): This test is flaking on android pie builder.
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_IsCurrentlyActive) {
   auto notification = std::make_unique<SafetyHubMenuNotification>(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
 

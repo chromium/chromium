@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -16,7 +15,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "components/content_settings/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -33,25 +31,14 @@ std::vector<ContentSettingsPattern> ToPrimaryPatternVector(
 
 }  // namespace
 
-class OriginValueMapTest : public testing::Test,
-                           public ::testing::WithParamInterface<
-                               /*kIndexedContentSettingsMap*/ bool> {
+class OriginValueMapTest : public testing::Test {
  public:
-  OriginValueMapTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          content_settings::features::kIndexedHostContentSettingsMap);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          content_settings::features::kIndexedHostContentSettingsMap);
-    }
-  }
+  OriginValueMapTest() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(OriginValueMapTest, SetGetValue) {
+TEST_F(OriginValueMapTest, SetGetValue) {
   content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
@@ -82,7 +69,7 @@ TEST_P(OriginValueMapTest, SetGetValue) {
                                   ContentSettingsType::POPUPS));
 }
 
-TEST_P(OriginValueMapTest, GetRule) {
+TEST_F(OriginValueMapTest, GetRule) {
   content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
@@ -113,7 +100,7 @@ TEST_P(OriginValueMapTest, GetRule) {
                                  ContentSettingsType::POPUPS));
 }
 
-TEST_P(OriginValueMapTest, GetRuleIterator) {
+TEST_F(OriginValueMapTest, GetRuleIterator) {
   content_settings::OriginValueMap map;
   auto pattern = ContentSettingsPattern::FromString;
   auto kWildcard = pattern("*");
@@ -145,7 +132,7 @@ TEST_P(OriginValueMapTest, GetRuleIterator) {
                   pattern("zoogle.com"), pattern("[*.]zoogle.com")));
 }
 
-TEST_P(OriginValueMapTest, SetValueReturnsChanges) {
+TEST_F(OriginValueMapTest, SetValueReturnsChanges) {
   content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
@@ -174,7 +161,7 @@ TEST_P(OriginValueMapTest, SetValueReturnsChanges) {
                            metadata));
 }
 
-TEST_P(OriginValueMapTest, SetDeleteValue) {
+TEST_F(OriginValueMapTest, SetDeleteValue) {
   content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
@@ -224,7 +211,7 @@ TEST_P(OriginValueMapTest, SetDeleteValue) {
                                   ContentSettingsType::GEOLOCATION));
 }
 
-TEST_P(OriginValueMapTest, Clear) {
+TEST_F(OriginValueMapTest, Clear) {
   content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
   EXPECT_TRUE(map.empty());
@@ -251,7 +238,7 @@ TEST_P(OriginValueMapTest, Clear) {
                                   ContentSettingsType::GEOLOCATION));
 }
 
-TEST_P(OriginValueMapTest, ListEntryPrecedences) {
+TEST_F(OriginValueMapTest, ListEntryPrecedences) {
   content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
@@ -280,14 +267,14 @@ TEST_P(OriginValueMapTest, ListEntryPrecedences) {
   }
 }
 
-TEST_P(OriginValueMapTest, IterateEmpty) {
+TEST_F(OriginValueMapTest, IterateEmpty) {
   content_settings::OriginValueMap map;
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       map.GetRuleIterator(ContentSettingsType::COOKIES));
   EXPECT_FALSE(rule_iterator);
 }
 
-TEST_P(OriginValueMapTest, IterateNonempty) {
+TEST_F(OriginValueMapTest, IterateNonempty) {
   // Verify the precedence order.
   content_settings::OriginValueMap map;
 
@@ -322,7 +309,7 @@ TEST_P(OriginValueMapTest, IterateNonempty) {
   EXPECT_EQ(t1, rule->metadata.last_modified());
 }
 
-TEST_P(OriginValueMapTest, UpdateLastModified) {
+TEST_F(OriginValueMapTest, UpdateLastModified) {
   // Verify that the last_modified timestamp is updated.
   content_settings::OriginValueMap map;
   map.GetLock().Acquire();
@@ -388,8 +375,3 @@ TEST_P(OriginValueMapTest, UpdateLastModified) {
     ASSERT_FALSE(rule_iterator->HasNext());
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    OriginValueMapTest,
-    testing::Bool());

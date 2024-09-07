@@ -124,5 +124,5 @@ TEST_P(FormTrackerTest, FormlessHideThenXhr) {
   task_environment_.RunUntilIdle();
 }
 
-}  // anonymous namespace
+}  // namespace
 }  // namespace autofill

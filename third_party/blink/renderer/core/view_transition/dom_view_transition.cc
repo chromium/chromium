@@ -181,6 +181,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
     // If the callback couldn't be run for some reason, treat it as an empty
     // promise rejected with an abort exception.
     if (result.IsNothing()) {
+      ScriptState::Scope scope(script_state);
       auto value = ScriptValue::From(
           script_state, MakeGarbageCollected<DOMException>(
                             DOMExceptionCode::kAbortError, kAbortedMessage));

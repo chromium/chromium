@@ -201,10 +201,10 @@ bool IsResourceWebAccessibleImpl(
         return result;
       }
 
-      // If the manifest declares `use_dynamic_url` and the extension feature is
-      // enabled, then only load the resource if the dynamic url is used. The
+      // If `use_dynamic_url` is true in the manifest and the extension feature
+      // is enabled, then only load the resource if the dynamic url is used. The
       // dynamic url should be ok to accept if it's a `host_piece` of either the
-      // `upstream_url` or the `target_url` because the goal if this feature is
+      // `upstream_url` or the `target_url` because the goal of this feature is
       // to ensure that the dynamic url was used for fetching the resource.
       if (using_dynamic_url_extension_feature && entry.use_dynamic_url) {
         bool is_guid_target_url = extension.guid() == target_url.host_piece();

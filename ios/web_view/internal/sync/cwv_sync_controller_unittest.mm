@@ -58,7 +58,6 @@ class CWVSyncControllerTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
   syncer::TestSyncService sync_service_;
-  TestingPrefServiceSimple local_state_;
   TestingPrefServiceSimple pref_service_;
 };
 

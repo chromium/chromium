@@ -167,15 +167,19 @@ public class TopToolbarOverlayMediator {
                                     TopToolbarOverlayProperties.CONTENT_OFFSET,
                                     mBrowserControlsStateProvider.getContentOffset());
                         }
-                        updateShadowState();
-                        updateVisibility();
+                        if (!ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
+                            updateShadowState();
+                            updateVisibility();
+                        }
                     }
 
                     @Override
                     public void onAndroidControlsVisibilityChanged(int visibility) {
                         if (ToolbarFeatures.shouldSuppressCaptures()) {
                             mIsBrowserControlsAndroidViewVisible = visibility == View.VISIBLE;
-                            updateShadowState();
+                            if (!ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
+                                updateShadowState();
+                            }
                         }
                     }
 

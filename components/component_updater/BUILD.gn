@@ -42,6 +42,7 @@ static_library("component_updater") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//components/crx_file",
     "//components/prefs",
@@ -81,6 +82,7 @@ source_set("unit_tests") {
     ":component_updater",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/crx_file",
     "//components/prefs:test_support",
     "//components/update_client:test_support",

@@ -60,11 +60,14 @@
 #include "chromeos/ash/services/device_sync/remote_device_provider_impl.h"
 #include "chromeos/ash/services/device_sync/software_feature_manager_impl.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -75,7 +78,10 @@ namespace {
 
 const char kTestEmail[] = "example@gmail.com";
 const char kTestGcmDeviceInfoLongDeviceId[] = "longDeviceId";
-const char kTestCryptAuthGCMRegistrationId[] = "cryptAuthRegistrationId";
+const char kTestCryptAuthGCMRegistrationId[] =
+    "aValid:cryptAuth-RegistrationId";
+const char kTestDeprecatedCryptAuthGCMRegistrationId[] =
+    "inValid-cryptAuthRegistrationId";
 const char kLocalDevicePublicKey[] = "localDevicePublicKey";
 const size_t kNumTestDevices = 5u;
 
@@ -187,11 +193,27 @@ class FakeCryptAuthDeviceNotifierDelegate
   base::RepeatingClosure on_delegate_call_closure_;
 };
 
+class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
+ public:
+  MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
+  ~MockInstanceIDDriver() override = default;
+  MOCK_METHOD(instance_id::InstanceID*,
+              GetInstanceID,
+              (const std::string& app_id),
+              (override));
+  MOCK_METHOD(void, RemoveInstanceID, (const std::string& app_id), (override));
+  MOCK_METHOD(bool,
+              ExistsInstanceID,
+              (const std::string& app_id),
+              (const override));
+};
+
 class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
  public:
-  FakeCryptAuthGCMManagerFactory(gcm::FakeGCMDriver* fake_gcm_driver,
-                                 TestingPrefServiceSimple* test_pref_service)
-      : fake_gcm_driver_(fake_gcm_driver),
+  FakeCryptAuthGCMManagerFactory(
+      instance_id::InstanceIDDriver* fake_instance_id_driver,
+      TestingPrefServiceSimple* test_pref_service)
+      : fake_instance_id_driver_(fake_instance_id_driver),
         test_pref_service_(test_pref_service) {}
 
   ~FakeCryptAuthGCMManagerFactory() override = default;
@@ -205,9 +227,9 @@ class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
  private:
   // CryptAuthGCMManagerImpl::Factory:
   std::unique_ptr<CryptAuthGCMManager> CreateInstance(
-      gcm::GCMDriver* gcm_driver,
+      instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* pref_service) override {
-    EXPECT_EQ(fake_gcm_driver_, gcm_driver);
+    EXPECT_EQ(fake_instance_id_driver_, instance_id_driver);
     EXPECT_EQ(test_pref_service_, pref_service);
 
     // Only one instance is expected to be created per test.
@@ -220,7 +242,8 @@ class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
     return instance;
   }
 
-  raw_ptr<gcm::FakeGCMDriver, DanglingUntriaged> fake_gcm_driver_;
+  raw_ptr<instance_id::InstanceIDDriver, DanglingUntriaged>
+      fake_instance_id_driver_;
   raw_ptr<TestingPrefServiceSimple> test_pref_service_;
   std::string initial_registration_id_;
   raw_ptr<FakeCryptAuthGCMManager, DanglingUntriaged> instance_ = nullptr;
@@ -486,7 +509,7 @@ class FakeCryptAuthEnrollmentManagerFactory
     instance->set_user_public_key(kLocalDevicePublicKey);
     instance->set_is_enrollment_valid(device_already_enrolled_in_cryptauth_);
     instance_ = instance.get();
-
+    LOG(INFO) << " made enrollment manager 1";
     return instance;
   }
 
@@ -552,7 +575,7 @@ class FakeCryptAuthV2EnrollmentManagerFactory
     instance->set_user_public_key(kLocalDevicePublicKey);
     instance->set_is_enrollment_valid(device_already_enrolled_in_cryptauth_);
     instance_ = instance.get();
-
+    LOG(INFO) << " made enrollment manager 2";
     return instance;
   }
 
@@ -693,7 +716,7 @@ class DeviceSyncServiceTest
     // DeviceSyncImpl::Factory:
     std::unique_ptr<DeviceSyncBase> CreateInstance(
         signin::IdentityManager* identity_manager,
-        gcm::GCMDriver* gcm_driver,
+        instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
         const GcmDeviceInfoProvider* gcm_device_info_provider,
         ClientAppMetadataProvider* client_app_metadata_provider,
@@ -702,10 +725,10 @@ class DeviceSyncServiceTest
         AttestationCertificatesSyncer::GetAttestationCertificatesFunction
             get_attestation_certificates_function) override {
       return base::WrapUnique(new DeviceSyncImpl(
-          identity_manager, gcm_driver, profile_prefs, gcm_device_info_provider,
-          client_app_metadata_provider, std::move(url_loader_factory),
-          simple_test_clock_, std::move(mock_timer_),
-          get_attestation_certificates_function));
+          identity_manager, instance_id_driver, profile_prefs,
+          gcm_device_info_provider, client_app_metadata_provider,
+          std::move(url_loader_factory), simple_test_clock_,
+          std::move(mock_timer_), get_attestation_certificates_function));
     }
 
    private:
@@ -762,8 +785,6 @@ class DeviceSyncServiceTest
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     base::RunLoop().RunUntilIdle();
 
-    fake_gcm_driver_ = std::make_unique<gcm::FakeGCMDriver>();
-
     test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterProfilePrefs(test_pref_service_->registry());
 
@@ -774,7 +795,7 @@ class DeviceSyncServiceTest
 
     fake_cryptauth_gcm_manager_factory_ =
         std::make_unique<FakeCryptAuthGCMManagerFactory>(
-            fake_gcm_driver_.get(), test_pref_service_.get());
+            &fake_instance_id_driver_, test_pref_service_.get());
     CryptAuthGCMManagerImpl::Factory::SetFactoryForTesting(
         fake_cryptauth_gcm_manager_factory_.get());
 
@@ -917,8 +938,9 @@ class DeviceSyncServiceTest
             }));
 
     device_sync_ = DeviceSyncImpl::Factory::Create(
-        identity_test_environment_->identity_manager(), fake_gcm_driver_.get(),
-        test_pref_service_.get(), fake_gcm_device_info_provider_.get(),
+        identity_test_environment_->identity_manager(),
+        &fake_instance_id_driver_, test_pref_service_.get(),
+        fake_gcm_device_info_provider_.get(),
         fake_client_app_metadata_provider_.get(), shared_url_loader_factory,
         std::make_unique<base::OneShotTimer>(),
         base::BindRepeating(
@@ -971,16 +993,13 @@ class DeviceSyncServiceTest
   void FinishInitialization() {
     // CryptAuth classes are expected to be created and initialized.
     EXPECT_TRUE(fake_cryptauth_enrollment_manager()->has_started());
-
     // If the device was already enrolled in CryptAuth, initialization should
     // now be complete; otherwise, enrollment needs to finish before
     // the flow has finished up.
     VerifyInitializationStatus(
         device_already_enrolled_in_cryptauth_ /* expected_to_be_initialized */);
-
     if (!device_already_enrolled_in_cryptauth_)
       return;
-
     // Now that the service is initialized, RemoteDeviceProvider is expected to
     // load all relevant RemoteDevice objects.
     fake_remote_device_provider_factory_->instance()
@@ -1665,7 +1684,7 @@ class DeviceSyncServiceTest
       fake_remote_device_provider_factory_;
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
-  std::unique_ptr<gcm::FakeGCMDriver> fake_gcm_driver_;
+  testing::NiceMock<MockInstanceIDDriver> fake_instance_id_driver_;
   std::unique_ptr<FakeGcmDeviceInfoProvider> fake_gcm_device_info_provider_;
 
   bool device_already_enrolled_in_cryptauth_;
@@ -1742,9 +1761,26 @@ TEST_P(DeviceSyncServiceTest, GcmRegistration) {
 TEST_P(DeviceSyncServiceTest, GcmRegistration_SkipIfAlreadyRegistered) {
   // Assume GCM registration already happened. Then, no need to register again.
   SetInitialRegistrationId(kTestCryptAuthGCMRegistrationId);
-
   MakePrimaryAccountAvailable();
   InitializeDeviceSync(true /* device_already_enrolled_in_cryptauth */);
+  SucceedClientAppMetadataFetch();
+  FinishInitialization();
+}
+
+TEST_P(DeviceSyncServiceTest, GcmRegistration_RegisterAgainIfDeprecated) {
+  // Assume GCM registration already happened, but with a deprecated
+  // registration id. This time, we should fail.
+  SetInitialRegistrationId(kTestDeprecatedCryptAuthGCMRegistrationId);
+  MakePrimaryAccountAvailable();
+  InitializeDeviceSync(true /* device_already_enrolled_in_cryptauth */);
+
+  // Unlike in the previous case, GCM Registration should have been started
+  // since our existing registration id is deprecated.
+  ASSERT_TRUE(fake_cryptauth_gcm_manager()->registration_in_progress());
+  fake_cryptauth_gcm_manager()->CompleteRegistration(
+      kTestCryptAuthGCMRegistrationId);
+  EXPECT_FALSE(fake_cryptauth_gcm_manager()->registration_in_progress());
+
   SucceedClientAppMetadataFetch();
   FinishInitialization();
 }

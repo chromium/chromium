@@ -5,6 +5,7 @@
 #include "remoting/host/setup/oauth_host_starter.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -41,8 +42,8 @@ class OAuthHostStarter : public HostStarterBase {
   ~OAuthHostStarter() override;
 
   // HostStarterBase implementation.
-  void RegisterNewHost(const std::string& access_token,
-                       const std::string& public_key) override;
+  void RegisterNewHost(const std::string& public_key,
+                       std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
 
   // DirectoryServiceClient callbacks.
@@ -70,13 +71,15 @@ OAuthHostStarter::OAuthHostStarter(
 
 OAuthHostStarter::~OAuthHostStarter() = default;
 
-void OAuthHostStarter::RegisterNewHost(const std::string& access_token,
-                                       const std::string& public_key) {
+void OAuthHostStarter::RegisterNewHost(
+    const std::string& public_key,
+    std::optional<std::string> access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!access_token.empty());
+  DCHECK(access_token.has_value());
+  DCHECK(!access_token->empty());
   DCHECK(!public_key.empty());
 
-  token_getter_.set_access_token(access_token);
+  token_getter_.set_access_token(*access_token);
 
   directory_service_client_.RegisterHost(
       params().id, params().name, public_key,

@@ -100,6 +100,11 @@
 
       _safetyCheckState = [self initialSafetyCheckState];
 
+      if (ShouldHideSafetyCheckModuleIfNoIssues()) {
+        [self updateIssueCount:[_safetyCheckState numberOfIssues]
+               withPrefService:localState];
+      }
+
       _safetyCheckManagerObserver =
           std::make_unique<SafetyCheckObserverBridge>(self, safetyCheckManager);
 
@@ -167,19 +172,14 @@
 
 #pragma mark - SafetyCheckManagerObserver
 
-- (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state {
+- (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state
+           insecurePasswordCounts:(password_manager::InsecurePasswordCounts)
+                                      insecurePasswordCounts {
   _safetyCheckState.passwordState = state;
-
-  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-      _safetyCheckManager->GetInsecureCredentials();
-
-  password_manager::InsecurePasswordCounts counts =
-      password_manager::CountInsecurePasswordsPerInsecureType(
-          insecureCredentials);
-
-  _safetyCheckState.weakPasswordsCount = counts.weak_count;
-  _safetyCheckState.reusedPasswordsCount = counts.reused_count;
-  _safetyCheckState.compromisedPasswordsCount = counts.compromised_count;
+  _safetyCheckState.weakPasswordsCount = insecurePasswordCounts.weak_count;
+  _safetyCheckState.reusedPasswordsCount = insecurePasswordCounts.reused_count;
+  _safetyCheckState.compromisedPasswordsCount =
+      insecurePasswordCounts.compromised_count;
 }
 
 - (void)safeBrowsingCheckStateChanged:(SafeBrowsingSafetyCheckState)state {
@@ -193,6 +193,11 @@
 - (void)runningStateChanged:(RunningSafetyCheckState)state {
   _safetyCheckState.runningState = state;
   _safetyCheckState.shouldShowSeeMore = [_safetyCheckState numberOfIssues] > 2;
+
+  if (ShouldHideSafetyCheckModuleIfNoIssues()) {
+    [self updateIssueCount:[_safetyCheckState numberOfIssues]
+           withPrefService:_localState];
+  }
 
   if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
           IsHomeCustomizationEnabled() ? _userState : _localState)) {
@@ -369,6 +374,17 @@
   }
 
   return std::nullopt;
+}
+
+// Persists the current number of Safety Check issues, `issuesCount`, to
+// `localPrefService`.
+- (void)updateIssueCount:(NSUInteger)issuesCount
+         withPrefService:(PrefService*)localPrefService {
+  CHECK(localPrefService);
+  CHECK(ShouldHideSafetyCheckModuleIfNoIssues());
+
+  localPrefService->SetInteger(
+      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, issuesCount);
 }
 
 @end

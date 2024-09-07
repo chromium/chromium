@@ -66,8 +66,11 @@ constexpr char16_t kFakePlusAddressRefreshU16[] = u"plus-refresh@plus.plus";
 
 constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests.";
-// Histogram names and formatting.
-constexpr char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
+// Histogram names.
+constexpr std::string_view kPlusAddressModalEventHistogram =
+    "PlusAddresses.Modal.Events";
+constexpr std::string_view kPlusAddressModalWithNoticeEventHistogram =
+    "PlusAddresses.ModalWithNotice.Events";
 
 std::string FormatHistogramNameFor(PlusAddressNetworkRequestType type) {
   return base::ReplaceStringPlaceholders(
@@ -77,17 +80,21 @@ std::string FormatHistogramNameFor(PlusAddressNetworkRequestType type) {
 }
 
 std::string FormatDurationHistogramNameFor(
-    metrics::PlusAddressModalCompletionStatus status) {
+    metrics::PlusAddressModalCompletionStatus status,
+    bool notice_shown) {
   return base::ReplaceStringPlaceholders(
-      "PlusAddresses.Modal.$1.ShownDuration",
+      notice_shown ? "PlusAddresses.ModalWithNotice.$1.ShownDuration"
+                   : "PlusAddresses.Modal.$1.ShownDuration",
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
 
 std::string FormatRefreshHistogramNameFor(
-    metrics::PlusAddressModalCompletionStatus status) {
+    metrics::PlusAddressModalCompletionStatus status,
+    bool notice_shown) {
   return base::ReplaceStringPlaceholders(
-      "PlusAddresses.Modal.$1.Refreshes",
+      notice_shown ? "PlusAddresses.ModalWithNotice.$1.Refreshes"
+                   : "PlusAddresses.Modal.$1.Refreshes",
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
@@ -102,8 +109,6 @@ void RegisterTestingFactories(content::BrowserContext* context) {
         return std::make_unique<MockPlusAddressSettingService>();
       }));
 }
-
-}  // namespace
 
 class ScopedPlusAddressFeatureList {
  public:
@@ -122,8 +127,7 @@ class ScopedPlusAddressFeatureList {
     plus_addresses_enabled_params_with_server["server-url"] = server_url;
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kPlusAddressesEnabled,
-         plus_addresses_enabled_params_with_server},
-        {features::kPlusAddressRefresh, {}}};
+         plus_addresses_enabled_params_with_server}};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (enable_onboarding) {
@@ -150,7 +154,7 @@ class ScopedPlusAddressFeatureList {
 
 class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
  public:
-  PlusAddressCreationDialogInteractiveTest() {}
+  PlusAddressCreationDialogInteractiveTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     unused_subscription_ =
@@ -188,6 +192,8 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
   }
 
   // Respond to request immediately with PlusProfile and OK status.
+  // TODO: crbug.com/354865745 - Introduce a run loop here to simulate waiting
+  // for network responses. This would allow reliably verifying loading status.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequestWithSuccess(
       const net::test_server::HttpRequest& request) {
     // Ignore unrecognized path.
@@ -219,7 +225,9 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
   std::string PlusAddressResponseContent(bool confirmed,
                                          std::string plus_address) {
     return plus_addresses::test::MakeCreationResponse(PlusProfile(
-        /*profile_id=*/"123", facet.Serialize(),
+        /*profile_id=*/"123",
+        affiliations::FacetURI::FromPotentiallyInvalidSpec(
+            facet.GetURL().spec()),
         PlusAddress(std::move(plus_address)), confirmed));
   }
 
@@ -254,20 +262,27 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
 
   InteractiveTestApi::StepBuilder CheckModalOutcomeHistograms(
       PlusAddressModalCompletionStatus status,
-      int refresh_count) {
-    return Do([this, status, refresh_count]() {
-      histogram_tester_.ExpectTotalCount(FormatDurationHistogramNameFor(status),
-                                         1);
+      int refresh_count,
+      bool notice_shown) {
+    return Do([=]() {
+      histogram_tester_.ExpectTotalCount(
+          FormatDurationHistogramNameFor(status, notice_shown), 1);
       histogram_tester_.ExpectUniqueSample(
-          FormatRefreshHistogramNameFor(status), refresh_count, 1);
+          FormatRefreshHistogramNameFor(status, notice_shown), refresh_count,
+          1);
     });
   }
 
-  InteractiveTestApi::StepBuilder
-  CheckModalEventHistogramBuckets(int shown, int confirmed, int canceled) {
-    return Do([this, shown, confirmed, canceled]() {
+  InteractiveTestApi::StepBuilder CheckModalEventHistogramBuckets(
+      int shown,
+      int confirmed,
+      int canceled,
+      bool notice_shown) {
+    return Do([=]() {
       EXPECT_THAT(
-          histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+          histogram_tester_.GetAllSamples(
+              notice_shown ? kPlusAddressModalWithNoticeEventHistogram
+                           : kPlusAddressModalEventHistogram),
           base::BucketsAre(
               base::Bucket(metrics::PlusAddressModalEvent::kModalShown, shown),
               base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed,
@@ -311,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           // Ensure hidden elements are not present.
           EnsureNotPresent(
               PlusAddressCreationView::kPlusAddressErrorTextElementId),
-          EnsureNotPresent(views::BubbleFrameView::kProgressIndicatorElementId),
+          EnsureNotPresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           // Simulate confirming plus address.
           PressButton(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
@@ -320,11 +335,11 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(), Check([&] {
+      Check([&] {
         return future_.IsReady() && future_.Get() == kFakePlusAddress;
       }),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
-                                      /*canceled=*/0),
+                                      /*canceled=*/0, /*notice_shown=*/false),
       CheckHistogramUniqueSample(
           FormatHistogramNameFor(PlusAddressNetworkRequestType::kReserve),
           net::HttpStatusCode::HTTP_OK, 1),
@@ -333,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           net::HttpStatusCode::HTTP_OK, 1),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalConfirmed,
-          /*refresh_count=*/0));
+          /*refresh_count=*/0, /*notice_shown=*/false));
 }
 
 // An interactive UI test to exercise successful plus address user flow.
@@ -360,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           // Ensure hidden elements are not present.
           EnsureNotPresent(
               PlusAddressCreationView::kPlusAddressErrorTextElementId),
-          EnsureNotPresent(views::BubbleFrameView::kProgressIndicatorElementId),
+          EnsureNotPresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           // Simulate refresh.
           PressButton(
               PlusAddressCreationView::kPlusAddressRefreshButtonElementId),
@@ -378,11 +393,11 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(), Check([&] {
+      Check([&] {
         return future_.IsReady() && future_.Get() == kFakePlusAddress;
       }),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
-                                      /*canceled=*/0),
+                                      /*canceled=*/0, /*notice_shown=*/false),
       CheckHistogramUniqueSample(
           FormatHistogramNameFor(PlusAddressNetworkRequestType::kReserve),
           net::HttpStatusCode::HTTP_OK, 2),
@@ -391,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           net::HttpStatusCode::HTTP_OK, 1),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalConfirmed,
-          /*refresh_count=*/1));
+          /*refresh_count=*/1, /*notice_shown=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
@@ -407,15 +422,15 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
   RunTestSequence(
       ShowModal(),
       InAnyContext(WaitForShow(
-          PlusAddressCreationView::kPlusAddressSuggestedEmailElementId)),
+          PlusAddressCreationView::kPlusAddressGenerationMessageElementId)),
       InSameContext(Steps(
           // Ensure that modal shows a placeholder & disables the confirm button
           // while `Reserve()` is pending.
           CheckViewProperty(
-              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
+              PlusAddressCreationView::kPlusAddressGenerationMessageElementId,
               &views::Label::GetText,
               l10n_util::GetStringUTF16(
-                  IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER)),
+                  IDS_PLUS_ADDRESS_MODAL_GENERATION_TEMPORARY_LABEL_CONTENT)),
           CheckViewProperty(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
               &views::View::GetEnabled, false),
@@ -430,12 +445,12 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(),
+
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/0,
-                                      /*canceled=*/1),
+                                      /*canceled=*/1, /*notice_shown=*/false),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kReservePlusAddressError,
-          /*refresh_count=*/0));
+          /*refresh_count=*/0, /*notice_shown=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -468,8 +483,7 @@ IN_PROC_BROWSER_TEST_F(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
           // Ensure that progress indicator is shown while waiting for response
           // to confirm request.
-          WaitForHide(views::BubbleFrameView::kProgressIndicatorElementId,
-                      true),
+          WaitForHide(PlusAddressCreationView::kPlusAddressProgressBarId, true),
           // UI should time out and eventually show error state.
           WaitForShow(PlusAddressCreationView::kPlusAddressErrorTextElementId),
           // Simulate canceling after confirm failure.
@@ -479,15 +493,14 @@ IN_PROC_BROWSER_TEST_F(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(),
       CheckHistogramUniqueSample(
           FormatHistogramNameFor(PlusAddressNetworkRequestType::kReserve),
           net::HttpStatusCode::HTTP_OK, 1),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
-                                      /*canceled=*/1),
+                                      /*canceled=*/1, /*notice_shown=*/false),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kConfirmPlusAddressError,
-          /*refresh_count=*/0));
+          /*refresh_count=*/0, /*notice_shown=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
@@ -526,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressErrorTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(),
+
       CheckHistogramUniqueSample(
           FormatHistogramNameFor(PlusAddressNetworkRequestType::kReserve),
           net::HttpStatusCode::HTTP_OK, 1),
@@ -534,10 +547,10 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           FormatHistogramNameFor(PlusAddressNetworkRequestType::kCreate),
           net::HttpStatusCode::HTTP_NOT_FOUND, 1),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
-                                      /*canceled=*/1),
+                                      /*canceled=*/1, /*notice_shown=*/false),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kConfirmPlusAddressError,
-          /*refresh_count=*/0));
+          /*refresh_count=*/0, /*notice_shown=*/false));
 }
 
 // Ensure modal handles error report link click when modal encounters error and
@@ -591,14 +604,12 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressCancelButtonElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressCancelButtonElementId))),
-      // Flush remaining instructions to ensure that all metrics are
-      // recorded.
-      FlushEvents(),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/0,
-                                      /*canceled=*/1),
+                                      /*canceled=*/1, /*notice_shown=*/false),
       CheckHistogramTotalCount(
           FormatDurationHistogramNameFor(
-              PlusAddressModalCompletionStatus::kModalCanceled),
+              PlusAddressModalCompletionStatus::kModalCanceled,
+              /*notice_shown=*/false),
           1));
 }
 
@@ -625,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           }))),
 
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/0,
-                                      /*canceled=*/0));
+                                      /*canceled=*/0, /*notice_shown=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
@@ -658,14 +669,14 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
-      FlushEvents(),
+
       // The second callback should not be run on confirmation on
       // the modal.
       Check([&] { return !double_init_future.IsReady(); }), Check([&] {
         return future_.IsReady() && future_.Get() == kFakePlusAddress;
       }),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
-                                      /*canceled=*/0));
+                                      /*canceled=*/0, /*notice_shown=*/false));
 }
 
 // A test fixture that has the feature to show the onboarding notice turned on.
@@ -729,9 +740,11 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
               PlusAddressCreationView::kPlusAddressCancelButtonElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
-      FlushEvents(),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/0,
-                                      /*canceled=*/1));
+                                      /*canceled=*/1, /*notice_shown=*/true),
+      CheckModalOutcomeHistograms(
+          PlusAddressModalCompletionStatus::kModalCanceled,
+          /*refresh_count=*/0, /*notice_shown=*/true));
 }
 
 // Tests that the notice is not shown if it has already been accepted.
@@ -769,9 +782,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
-      FlushEvents(),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
-                                      /*canceled=*/0));
+                                      /*canceled=*/0, /*notice_shown=*/false));
 }
 
 // Tests showing and accepting the creation dialog for a user that has not yet
@@ -799,9 +811,15 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
-      FlushEvents(),
+      // Flush remaining instructions to ensure that all metrics are recorded.
+      Check([&] {
+        return future_.IsReady() && future_.Get() == kFakePlusAddress;
+      }),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
-                                      /*canceled=*/0));
+                                      /*canceled=*/0, /*notice_shown=*/true),
+      CheckModalOutcomeHistograms(
+          PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*refresh_count=*/0, /*notice_shown=*/true));
 }
 
 // Tests that clicking the "learn more" link on the notice screen opens a new
@@ -883,7 +901,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsTest,
           // Ensure hidden elements are not present.
           EnsureNotPresent(
               PlusAddressCreationView::kPlusAddressErrorTextElementId),
-          EnsureNotPresent(views::BubbleFrameView::kProgressIndicatorElementId),
+          EnsureNotPresent(PlusAddressCreationView::kPlusAddressProgressBarId),
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(PlusAddressCreationView::kTopViewId,
@@ -910,15 +928,15 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsTest,
   RunTestSequence(
       ShowModal(),
       InAnyContext(WaitForShow(
-          PlusAddressCreationView::kPlusAddressSuggestedEmailElementId)),
+          PlusAddressCreationView::kPlusAddressGenerationMessageElementId)),
       InSameContext(Steps(
           // Ensure that modal shows a placeholder & disables the confirm button
           // while `Reserve()` is pending.
           CheckViewProperty(
-              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
+              PlusAddressCreationView::kPlusAddressGenerationMessageElementId,
               &views::Label::GetText,
               l10n_util::GetStringUTF16(
-                  IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER)),
+                  IDS_PLUS_ADDRESS_MODAL_GENERATION_TEMPORARY_LABEL_CONTENT)),
           CheckViewProperty(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
               &views::View::GetEnabled, false),
@@ -949,4 +967,5 @@ INSTANTIATE_TEST_SUITE_P(
            std::get<1>(info.param) ? "RightToLeft" : "LeftToRight"});
     });
 
+}  // namespace
 }  // namespace plus_addresses

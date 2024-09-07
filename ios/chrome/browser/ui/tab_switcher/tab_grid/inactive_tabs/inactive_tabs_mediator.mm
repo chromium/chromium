@@ -11,7 +11,6 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -418,16 +417,18 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED();
 }
 
-- (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
-  NOTREACHED();
+- (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
+            sourceView:(UIView*)sourceView {
+  NOTREACHED_NORETURN();
 }
 
-- (void)closeTabGroup:(const TabGroup*)group {
-  NOTREACHED();
+- (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group {
+  NOTREACHED_NORETURN();
 }
 
-- (void)ungroupTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
-  NOTREACHED();
+- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
+             sourceView:(UIView*)sourceView {
+  NOTREACHED_NORETURN();
 }
 
 #pragma mark - GridToolbarsConfigurationProvider

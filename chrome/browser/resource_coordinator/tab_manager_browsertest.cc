@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/resource_coordinator/tab_manager.h"
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -12,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,7 +26,6 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -178,10 +180,11 @@ class WindowedRenderProcessHostExitObserver
 
 class TabManagerTest : public InProcessBrowserTest {
  public:
-  TabManagerTest() : scoped_set_tick_clock_for_testing_(&test_clock_) {
+  TabManagerTest()
+      : scoped_set_clocks_for_testing_(&test_clock_, &test_tick_clock_) {
     // Start with a non-null TimeTicks, as there is no discard protection for
     // a tab with a null focused timestamp.
-    test_clock_.Advance(kShortDelay);
+    test_tick_clock_.Advance(kShortDelay);
   }
 
   void SetUpOnMainThread() override {
@@ -225,8 +228,10 @@ class TabManagerTest : public InProcessBrowserTest {
 
   memory_pressure::test::FakeMemoryPressureMonitor
       fake_memory_pressure_monitor_;
-  base::SimpleTestTickClock test_clock_;
-  ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing_;
+
+  base::SimpleTestClock test_clock_;
+  base::SimpleTestTickClock test_tick_clock_;
+  ScopedSetClocksForTesting scoped_set_clocks_for_testing_;
 };
 
 class TabManagerTestWithTwoTabs : public TabManagerTest {
@@ -262,17 +267,17 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
 
   // Get three tabs open.
 
-  test_clock_.Advance(kShortDelay);
+  test_tick_clock_.Advance(kShortDelay);
   NavigateToURLWithDisposition(browser(), url1,
                                WindowOpenDisposition::CURRENT_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  test_clock_.Advance(kShortDelay);
+  test_tick_clock_.Advance(kShortDelay);
   NavigateToURLWithDisposition(browser(), url1,
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  test_clock_.Advance(kShortDelay);
+  test_tick_clock_.Advance(kShortDelay);
   NavigateToURLWithDisposition(browser(), url1,
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -291,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   EXPECT_EQ(3, tsm()->count());
 
   // Advance time so everything is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   // Discard a tab.
   EXPECT_TRUE(
@@ -330,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
                               TabStripUserGestureDetails::GestureType::kOther));
 
   // Advance time so everything is urgent discardable again.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   EXPECT_EQ(1, tsm()->active_index());
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(1)));
@@ -469,13 +474,14 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   EXPECT_EQ(2, tsm->count());
 
   // Advance the clock for less than the protection time.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime / 2);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime / 2);
 
   // Should not be able to discard a tab.
   ASSERT_FALSE(tab_manager->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
 
   // Advance the clock for more than the protection time.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime / 2 + base::Seconds(1));
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime / 2 +
+                           base::Seconds(1));
 
   // Should be able to discard the background tab now.
   EXPECT_TRUE(tab_manager->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
@@ -486,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   EXPECT_EQ(1, tsm->active_index());
 
   // Advance the clock for less than the protection time.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime / 2);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime / 2);
 
   // Should not be able to urgent discard the tab.
   ASSERT_FALSE(tab_manager->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
@@ -630,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTestWithTwoTabs,
   // itself regardless of the discard reason.
   WindowedRenderProcessHostExitObserver observer;
   // Advance time so everything is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   EXPECT_TRUE(
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
   observer.Wait();
@@ -648,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, UrgentFastShutdownSharedTabProcess) {
             tsm()->GetWebContentsAt(1)->GetPrimaryMainFrame()->GetProcess());
 
   // Advance time so everything is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   // The Tab Manager will not be able to fast-kill either of the tabs since they
   // share the same process regardless of the discard reason. An unsafe attempt
@@ -664,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, UrgentFastShutdownWithUnloadHandler) {
               embedded_test_server()->GetURL("/unload.html"));
 
   // Advance time so everything is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   // The Tab Manager will not be able to safely fast-kill either of the tabs as
   // one of them is current, and the other has an unload handler. An unsafe
@@ -689,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
               embedded_test_server()->GetURL("/beforeunload.html"));
 
   // Advance time so everything is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   // The Tab Manager will not be able to safely fast-kill either of the tabs as
   // one of them is current, and the other has a beforeunload handler. An unsafe
@@ -970,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
   browser()->window()->Minimize();
 
   // Advance time so everything is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   for (int i = 0; i < 8; ++i)
     tab_manager()->DiscardTab(LifecycleUnitDiscardReason::EXTERNAL);
@@ -1016,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithOccludedWindow) {
   other_browser->window()->SetBounds(gfx::Rect(0, 0, 100, 100));
 
   // Advance time so everything is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   for (int i = 0; i < 3; ++i)
     tab_manager()->DiscardTab(LifecycleUnitDiscardReason::URGENT);

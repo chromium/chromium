@@ -40,6 +40,10 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
       PopupControllerCommon controller_common,
       int32_t form_control_ax_id);
 
+  using UiSessionId = AutofillClient::SuggestionUiSessionId;
+  // Generates a new unique session id for suggestion UI.
+  static UiSessionId GenerateSuggestionUiSessionId();
+
   // Recalculates the height and width of the suggestion UI and triggers a
   // redraw when suggestions change.
   virtual void OnSuggestionsChanged() = 0;
@@ -75,9 +79,16 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
 
   // Shows the suggestion UI, or updates the existing suggestion UI with the
   // given values.
-  virtual void Show(std::vector<Suggestion> suggestions,
+  virtual void Show(UiSessionId session_id,
+                    std::vector<Suggestion> suggestions,
                     AutofillSuggestionTriggerSource trigger_source,
                     AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
+
+  // Returns the unique session id for the suggestions UI that is showing. If
+  // no UI is showing, it returns `std::nullopt`. If there are multiple,
+  // connected controllers (e.g. for sub-popups on Desktop), all controllers
+  // will have the same session id.
+  virtual std::optional<UiSessionId> GetUiSessionId() const = 0;
 
   // This method cannot be moved into a test api, because it is called by
   // production code in `ChromeAutofillClient`. This happens because, before the

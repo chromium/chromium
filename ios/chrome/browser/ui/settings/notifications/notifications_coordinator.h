@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/settings/notifications/tips_notifications_alert_presenter.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
 
 @class NotificationsCoordinator;
 
@@ -23,7 +23,7 @@
 
 // The coordinator for the Notifications screen.
 @interface NotificationsCoordinator
-    : ChromeCoordinator <TipsNotificationsAlertPresenter>
+    : ChromeCoordinator <NotificationsAlertPresenter>
 
 @property(nonatomic, weak) id<NotificationsCoordinatorDelegate> delegate;
 

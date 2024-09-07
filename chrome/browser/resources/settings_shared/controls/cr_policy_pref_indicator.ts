@@ -88,7 +88,7 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
   }
 
   /**
-   * @return {string} The iron-icon icon name.
+   * @return {string} The cr-icon icon name.
    */
   private getIndicatorIcon_(type: CrPolicyIndicatorType): string {
     switch (type) {

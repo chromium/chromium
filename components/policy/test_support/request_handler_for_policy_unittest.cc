@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -245,6 +246,68 @@ TEST_P(RequestHandlerForPolicyTestWithParametrizedSignatureType,
   EXPECT_TRUE(fetch_response.new_public_key_signature().empty());
   EXPECT_EQ(fetch_response.policy_data_signature_type(),
             GetSignatureTypeParam());
+}
+
+TEST_P(RequestHandlerForPolicyTestWithParametrizedSignatureType,
+       HandleRequest_Success_SendsNewPublicKeyVerificationData) {
+  ClientStorage::ClientInfo client_info;
+  client_info.device_token = kDeviceToken;
+  client_info.device_id = kDeviceId;
+  client_info.machine_name = kMachineName;
+  client_info.username = kUsername;
+  client_info.allowed_policy_types.insert(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  client_storage()->RegisterClient(client_info);
+
+  em::CloudPolicySettings settings;
+  settings.mutable_savingbrowserhistorydisabled()
+      ->mutable_policy_options()
+      ->set_mode(em::PolicyOptions::MANDATORY);
+  settings.mutable_savingbrowserhistorydisabled()->set_value(true);
+  policy_storage()->SetPolicyPayload(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+      settings.SerializeAsString());
+
+  em::DeviceManagementRequest device_management_request;
+  em::PolicyFetchRequest* fetch_request =
+      device_management_request.mutable_policy_request()->add_requests();
+  fetch_request->set_policy_type(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  fetch_request->set_signature_type(GetSignatureTypeParam());
+
+  SetDeviceTokenHeader(kDeviceToken);
+  SetPayload(device_management_request);
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
+
+  ASSERT_TRUE(HasResponseBody());
+  em::DeviceManagementResponse device_management_response =
+      GetDeviceManagementResponse();
+
+  ASSERT_EQ(device_management_response.policy_response().responses_size(), 1);
+  const em::PolicyFetchResponse& fetch_response =
+      device_management_response.policy_response().responses(0);
+  EXPECT_TRUE(fetch_response.has_new_public_key());
+
+  em::PolicyData policy_data;
+  ASSERT_TRUE(policy_data.ParseFromString(fetch_response.policy_data()));
+
+  em::PublicKeyVerificationData verification_data;
+  ASSERT_TRUE(verification_data.ParseFromString(
+      fetch_response.new_public_key_verification_data()));
+  EXPECT_EQ(verification_data.new_public_key(),
+            fetch_response.new_public_key());
+  EXPECT_EQ(verification_data.new_public_key_version(),
+            policy_data.public_key_version());
+  EXPECT_EQ(verification_data.domain(), policy_data.managed_by());
+
+  CloudPolicyValidatorBase::VerifySignature(
+      fetch_response.new_public_key_verification_data(),
+      policy_storage()->signature_provider()->GetVerificationPublicKey(),
+      fetch_response.new_public_key_verification_data_signature(),
+      em::PolicyFetchRequest::SHA256_RSA);
 }
 
 TEST_P(RequestHandlerForPolicyTestWithParametrizedSignatureType,

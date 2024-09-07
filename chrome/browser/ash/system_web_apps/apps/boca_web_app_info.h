@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_BOCA_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_BOCA_WEB_APP_INFO_H_
 
+#include <memory>
+
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -26,9 +29,13 @@ class BocaSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldAllowResize() const override;
   bool ShouldAllowMaximize() const override;
   bool ShouldHaveTabStrip() const override;
+  bool ShouldHideNewTabButton() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
   bool ShouldPinTab(GURL url) const override;
   bool IsAppEnabled() const override;
+  bool HasCustomTabMenuModel() const override;
+  std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
+      ui::SimpleMenuModel::Delegate* delegate) const override;
 };
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp();

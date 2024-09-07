@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -269,8 +265,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
     PartitionedLockHolder locks_receiver;
     bucket_context_->lock_manager().AcquireLocks(
         {{{0, "01"}, PartitionedLockManager::LockType::kShared}},
-        locks_receiver.AsWeakPtr(),
-        base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
+        locks_receiver, base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
     loop.Run();
     return std::move(locks_receiver.locks);
   }
@@ -850,12 +845,13 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
       IndexedDBKey(u"key3")};
-  const IndexedDBKeyRange ranges[] = {
+  const auto ranges = std::to_array({
       IndexedDBKeyRange(keys[1], keys[2], false, false),
       IndexedDBKeyRange(keys[1], keys[2], false, false),
       IndexedDBKeyRange(keys[0], keys[2], true, false),
       IndexedDBKeyRange(keys[1], keys[3], false, true),
-      IndexedDBKeyRange(keys[0], keys[3], true, true)};
+      IndexedDBKeyRange(keys[0], keys[3], true, true),
+  });
 
   for (size_t i = 0; i < std::size(ranges); ++i) {
     const int64_t database_id = 1;
@@ -943,11 +939,13 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
 TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
-      IndexedDBKey(u"key3"), IndexedDBKey(u"key4")};
-  const IndexedDBKeyRange ranges[] = {
+      IndexedDBKey(u"key3"), IndexedDBKey(u"key4"),
+  };
+  const std::vector<IndexedDBKeyRange> ranges = {
       IndexedDBKeyRange(keys[3], keys[4], true, false),
       IndexedDBKeyRange(keys[2], keys[1], false, false),
-      IndexedDBKeyRange(keys[2], keys[1], true, true)};
+      IndexedDBKeyRange(keys[2], keys[1], true, true),
+  };
 
   for (size_t i = 0; i < std::size(ranges); ++i) {
     const int64_t database_id = 1;

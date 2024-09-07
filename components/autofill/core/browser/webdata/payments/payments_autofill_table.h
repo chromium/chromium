@@ -29,7 +29,6 @@ class Time;
 namespace autofill {
 
 class AutofillOfferData;
-class AutofillTableEncryptor;
 class BankAccount;
 class CreditCard;
 struct CreditCardCloudTokenData;
@@ -43,11 +42,11 @@ class VirtualCardUsageData;
 struct ServerCvc {
   bool operator==(const ServerCvc&) const = default;
   // A server generated id to identify the corresponding credit card.
-  const int64_t instrument_id;
+  int64_t instrument_id;
   // CVC value of the card.
-  const std::u16string cvc;
+  std::u16string cvc;
   // The timestamp of the most recent update to the data entry.
-  const base::Time last_updated_timestamp;
+  base::Time last_updated_timestamp;
 };
 
 // This class manages the various payments Autofill tables within the SQLite
@@ -181,7 +180,6 @@ struct ServerCvc {
 //                      shown when in a masked format.
 //   suffix             Contains the suffix of the full IBAN value that is
 //                      shown when in a masked format.
-//   length             Length of the full IBAN value.
 //   nickname           A nickname for the IBAN, entered by the user.
 // -----------------------------------------------------------------------------
 // masked_ibans_metadata
@@ -366,8 +364,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // successfully added to the database.
   bool SetMaskedBankAccounts(const std::vector<BankAccount>& bank_accounts);
   // Retrieve all bank accounts from the database.
-  bool GetMaskedBankAccounts(
-      std::vector<std::unique_ptr<BankAccount>>& bank_accounts);
+  bool GetMaskedBankAccounts(std::vector<BankAccount>& bank_accounts);
 
   // Records a single IBAN in the local_ibans table.
   bool AddLocalIban(const Iban& iban);
@@ -516,24 +513,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // "error").
   bool ClearAllServerData();
 
-  // Removes rows from credit_cards if they were created on or after
-  // `delete_begin` and strictly before `delete_end`. Returns the list of
-  // deleted cards in `credit_cards`. Return value is true if all rows were
-  // successfully removed. Returns false on database error. In that case, the
-  // output vector state is undefined, and may be partially filled.
-  // TODO(crbug.com/40151750): This function is solely used to remove browsing
-  // data. Once explicit save dialogs are fully launched, it can be removed.
-  bool RemoveAutofillDataModifiedBetween(
-      base::Time delete_begin,
-      base::Time delete_end,
-      std::vector<std::unique_ptr<CreditCard>>* credit_cards);
-
-  // Removes origin URLs from the credit_cards tables if they were written on or
-  // after `delete_begin` and strictly before `delete_end`. Returns true if all
-  // rows were successfully updated and false on a database error.
-  bool RemoveOriginURLsModifiedBetween(base::Time delete_begin,
-                                       base::Time delete_end);
-
   // Set, get, and clear the `credit_card_benefits` table and the
   // 'benefit_merchant_domains' table. Return true if the operation
   // succeeded.
@@ -557,7 +536,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
 
   // Testing helper to access the database for checking the result of database
   // update.
-  raw_ptr<sql::Database> GetDbForTesting() const { return db_.get(); }
+  sql::Database* GetDbForTesting() const { return db(); }
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
@@ -588,6 +567,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion125DeleteFullServerCardsTable();
   bool MigrateToVersion129AddGenericPaymentInstrumentsTable();
   bool MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn();
+  bool MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
@@ -620,8 +600,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitMaskedCreditCardBenefitsTable();
   bool InitBenefitMerchantDomainsTable();
   bool InitGenericPaymentInstrumentsTable();
-
-  std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 };
 
 }  // namespace autofill

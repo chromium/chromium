@@ -32,6 +32,9 @@ public interface TabWindowManager {
     // ChromeTabbedActivity.
     public static final int MAX_SELECTORS_S = 5;
 
+    // Maximum number of TabModelSelectors. Set high enough that it is functionally unlimited.
+    public static final int MAX_SELECTORS = 1000;
+
     static final String ASSERT_INDICES_MATCH_HISTOGRAM_NAME =
             "Android.MultiWindowMode.AssertIndicesMatch";
     static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_NOT_REASSIGNED = ".NotReassigned";

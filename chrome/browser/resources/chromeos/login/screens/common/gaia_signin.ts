@@ -142,15 +142,6 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
       },
 
       /**
-       * Whether the authenticator is or has been in the |SAML| AuthFlow during
-       * the current authentication attempt.
-       */
-      usedSaml: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Contains the security token PIN dialog parameters object when the
        * dialog is shown. Is null when no PIN dialog is shown.
        */
@@ -225,7 +216,9 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
       },
 
       /**
-       * Whether the default SAML 3rd-party page is visible.
+       * Whether the default SAML 3rd-party page is visible. We need to track
+       * this in addition to `isSamlSsoVisible` because it has some UI
+       * implications (e.g. user needs to be able to switch to non-default IdP).
        */
       isDefaultSsoProvider: {
         type: Boolean,
@@ -253,7 +246,6 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
   private isLoadingUiShown: boolean;
   private navigationEnabled: boolean;
   private isSaml: boolean;
-  private usedSaml: boolean;
   private pinDialogParameters: OobeTypes.SecurityTokenPinDialogParameters|null;
   private isSamlSsoVisible: boolean;
   private videoEnabled: boolean;
@@ -562,10 +554,6 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     this.authCompleted = false;
     this.navigationButtonsHidden = false;
 
-    // Reset SAML
-    this.isSaml = false;
-    this.usedSaml = false;
-
     // Reset the PIN dialog, in case it's shown.
     this.closePinDialog();
 
@@ -638,10 +626,6 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
    * Observer that is called when the |isSaml| property gets changed.
    */
   private onSamlChanged(): void {
-    if (this.isSaml) {
-      this.usedSaml = true;
-    }
-
     chrome.send('samlStateChanged', [this.isSaml]);
 
     this.classList.toggle('saml', this.isSaml);

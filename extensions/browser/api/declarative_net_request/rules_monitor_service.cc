@@ -249,8 +249,9 @@ class RulesMonitorService::ApiCallQueue {
     base::OnceClosure api_call = base::BindOnce(std::move(unbound_api_call),
                                                 std::move(wrapped_callback));
     api_call_queue_.push(std::move(api_call));
-    if (!ready_to_execute_api_calls_ || executing_api_call_)
+    if (!ready_to_execute_api_calls_ || executing_api_call_) {
       return;
+    }
 
     DCHECK_EQ(1u, api_call_queue_.size());
     ExecuteApiCallIfNecessary();
@@ -268,8 +269,9 @@ class RulesMonitorService::ApiCallQueue {
   void ExecuteApiCallIfNecessary() {
     DCHECK(!executing_api_call_);
     DCHECK(ready_to_execute_api_calls_);
-    if (api_call_queue_.empty())
+    if (api_call_queue_.empty()) {
       return;
+    }
 
     executing_api_call_ = true;
     base::OnceClosure api_call = std::move(api_call_queue_.front());
@@ -405,12 +407,14 @@ RuleCounts RulesMonitorService::GetRuleCounts(const ExtensionId& extension_id,
                                               RulesetID id) const {
   const CompositeMatcher* matcher =
       ruleset_manager_.GetMatcherForExtension(extension_id);
-  if (!matcher)
+  if (!matcher) {
     return RuleCounts();
+  }
 
   const RulesetMatcher* ruleset_matcher = matcher->GetMatcherWithID(id);
-  if (!ruleset_matcher)
+  if (!ruleset_matcher) {
     return RuleCounts();
+  }
 
   return ruleset_matcher->GetRuleCounts();
 }
@@ -456,8 +460,9 @@ void RulesMonitorService::OnExtensionWillBeInstalled(
     return;
   }
 
-  if (!is_update || Manifest::IsUnpackedLocation(extension->location()))
+  if (!is_update || Manifest::IsUnpackedLocation(extension->location())) {
     return;
+  }
 
   // Allow the extension to retain its pre-update allocation during the next
   // extension load. This can allow the extension to enable some
@@ -499,8 +504,9 @@ void RulesMonitorService::OnExtensionLoaded(
 
       bool ignored = helper.ShouldIgnoreRuleset(extension->id(), source.id());
 
-      if (!enabled || ignored)
+      if (!enabled || ignored) {
         continue;
+      }
 
       if (!helper.GetStaticRulesetChecksum(extension->id(), source.id(),
                                            expected_ruleset_checksum)) {
@@ -561,8 +567,9 @@ void RulesMonitorService::OnExtensionUnloaded(
     helper.SetKeepExcessAllocation(extension->id(), false);
   }
 
-  if (ShouldReleaseAllocationOnUnload(prefs_, *extension, reason))
+  if (ShouldReleaseAllocationOnUnload(prefs_, *extension, reason)) {
     global_rules_tracker_.ClearExtensionAllocation(extension->id());
+  }
 
   // Erase the api call queues for the extension. Any un-executed api calls
   // should just be ignored now given the extension is being unloaded.
@@ -570,8 +577,9 @@ void RulesMonitorService::OnExtensionUnloaded(
   update_dynamic_or_session_rules_queue_map_.erase(extension->id());
 
   // Return early if the extension does not have an active indexed ruleset.
-  if (!ruleset_manager_.GetMatcherForExtension(extension->id()))
+  if (!ruleset_manager_.GetMatcherForExtension(extension->id())) {
     return;
+  }
 
   RemoveCompositeMatcher(extension->id());
 }
@@ -589,8 +597,9 @@ void RulesMonitorService::OnExtensionUninstalled(
   session_rules_.erase(extension->id());
 
   // Skip if the extension will be reinstalled soon.
-  if (reason == UNINSTALL_REASON_REINSTALL)
+  if (reason == UNINSTALL_REASON_REINSTALL) {
     return;
+  }
 
   global_rules_tracker_.ClearExtensionAllocation(extension->id());
 
@@ -839,8 +848,9 @@ void RulesMonitorService::GetDisabledRuleIdsInternal(
 
 void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
     LoadRequestData load_data) {
-  if (test_observer_)
+  if (test_observer_) {
     test_observer_->OnRulesetLoadComplete(load_data.extension_id);
+  }
 
   LogMetricsAndUpdateChecksumsIfNeeded(load_data);
 
@@ -920,8 +930,10 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
       continue;
     }
 
-    if (new_ruleset_count.regex_rule_count > static_rule_limit.regex_rule_count)
+    if (new_ruleset_count.regex_rule_count >
+        static_rule_limit.regex_rule_count) {
       continue;
+    }
 
     static_rule_count = new_ruleset_count;
 
@@ -982,17 +994,20 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     for (const std::unique_ptr<RulesetMatcher>& ruleset_matcher :
          matcher->matchers()) {
       // Exclude since we are only including static rulesets.
-      if (ruleset_matcher->id() == kDynamicRulesetID)
+      if (ruleset_matcher->id() == kDynamicRulesetID) {
         continue;
+      }
 
       // Exclude since we'll be removing this |matcher|.
-      if (base::Contains(ids_to_disable, ruleset_matcher->id()))
+      if (base::Contains(ids_to_disable, ruleset_matcher->id())) {
         continue;
+      }
 
       // Exclude to prevent double counting. This will be a part of
       // |new_matchers| below.
-      if (base::Contains(ids_to_enable, ruleset_matcher->id()))
+      if (base::Contains(ids_to_enable, ruleset_matcher->id())) {
         continue;
+      }
 
       static_ruleset_count += 1;
       static_rule_count += ruleset_matcher->GetRuleCounts();
@@ -1089,14 +1104,16 @@ void RulesMonitorService::OnDynamicRulesUpdated(
   // rule request. If it's disabled, do nothing.
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(load_data.extension_id);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   RulesetInfo& dynamic_ruleset = load_data.rulesets[0];
   DCHECK_EQ(dynamic_ruleset.did_load_successfully(), !has_error);
 
-  if (!dynamic_ruleset.did_load_successfully())
+  if (!dynamic_ruleset.did_load_successfully()) {
     return;
+  }
 
   DCHECK(dynamic_ruleset.new_checksum());
 
@@ -1113,8 +1130,9 @@ void RulesMonitorService::RemoveCompositeMatcher(
 void RulesMonitorService::AddCompositeMatcher(
     const Extension& extension,
     CompositeMatcher::MatcherList matchers) {
-  if (matchers.empty())
+  if (matchers.empty()) {
     return;
+  }
 
   auto matcher = std::make_unique<CompositeMatcher>(
       std::move(matchers), extension.id(),
@@ -1144,14 +1162,16 @@ void RulesMonitorService::LogMetricsAndUpdateChecksumsIfNeeded(
   for (const RulesetInfo& ruleset : load_data.rulesets) {
     // The |load_ruleset_result()| might be empty if CreateVerifiedMatcher
     // wasn't called on the ruleset.
-    if (ruleset.load_ruleset_result())
+    if (ruleset.load_ruleset_result()) {
       LogLoadRulesetResult(*ruleset.load_ruleset_result());
+    }
   }
 
   // The extension may have been uninstalled by this point. Return early if
   // that's the case.
-  if (!extension_registry_->GetInstalledExtension(load_data.extension_id))
+  if (!extension_registry_->GetInstalledExtension(load_data.extension_id)) {
     return;
+  }
 
   // Update checksums for all rulesets.
   // Note: We also do this for a non-enabled extension. The ruleset on the disk
@@ -1159,8 +1179,9 @@ void RulesMonitorService::LogMetricsAndUpdateChecksumsIfNeeded(
   // checksum for it to be in sync with what's on disk.
   PrefsHelper helper(*prefs_);
   for (const RulesetInfo& ruleset : load_data.rulesets) {
-    if (!ruleset.new_checksum())
+    if (!ruleset.new_checksum()) {
       continue;
+    }
 
     if (ruleset.source().is_dynamic_ruleset()) {
       helper.SetDynamicRulesetChecksum(load_data.extension_id,

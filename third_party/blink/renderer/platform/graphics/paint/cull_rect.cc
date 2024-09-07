@@ -22,9 +22,20 @@ namespace {
 
 constexpr int kReasonablePixelLimit = LayoutUnit::kIntMax;
 
+// This is the size, in css pixels, for which we start using the minimum
+// expansion rect if kSmallScrollersUseMinCullRect is enabled.
+constexpr int kSmallScrollerArea = 100000;
+
 int ChangedEnoughMinimumDistance(float expansion_ratio) {
   constexpr int kChangedEnoughMinimumDistance = 512;
   return kChangedEnoughMinimumDistance * expansion_ratio;
+}
+
+int MinimumLocalPixelDistanceToExpand(float expansion_ratio) {
+  // The expansion must be larger than ChangedEnoughMinimumDistance() to
+  // prevent unpainted area from being scrolled into the scrollport without
+  // repainting. For better user experience, use 2x.
+  return 2 * ChangedEnoughMinimumDistance(expansion_ratio);
 }
 
 // Returns the number of pixels to expand the cull rect for composited scroll
@@ -35,6 +46,18 @@ int LocalPixelDistanceToExpand(
     float expansion_ratio) {
   static const int pixel_distance_to_expand =
       features::kCullRectPixelDistanceToExpand.Get();
+  static const bool small_scrollers_use_min_cull_rect =
+      features::kSmallScrollersUseMinCullRect.Get();
+
+  const int min_expansion = MinimumLocalPixelDistanceToExpand(expansion_ratio);
+  if (small_scrollers_use_min_cull_rect &&
+      !local_transform.RequiresCompositingForRootScroller() &&
+      local_transform.ScrollNode() &&
+      local_transform.ScrollNode()->ContainerRect().size().Area64() <=
+          kSmallScrollerArea * expansion_ratio * expansion_ratio) {
+    return min_expansion;
+  }
+
   int local_pixel_distance_to_expand =
       pixel_distance_to_expand * expansion_ratio;
   float scale = GeometryMapper::SourceToDestinationApproximateMinimumScale(
@@ -44,7 +67,7 @@ int LocalPixelDistanceToExpand(
   if (scale > kReasonablePixelLimit / local_pixel_distance_to_expand) {
     return local_pixel_distance_to_expand;
   }
-  return scale * local_pixel_distance_to_expand;
+  return std::max<int>(scale * local_pixel_distance_to_expand, min_expansion);
 }
 
 bool CanExpandForScroll(const ScrollPaintPropertyNode& scroll) {
@@ -132,28 +155,46 @@ std::pair<bool, bool> CullRect::ApplyScrollTranslation(
   if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
     int scroll_range_x = contents_rect.width() - container_rect.width();
     int scroll_range_y = contents_rect.height() - container_rect.height();
+    int outset_x = outset;
+    int outset_y = outset;
     if (scroll_range_x <= 0) {
-      rect_.Outset(gfx::Outsets::VH(outset, 0));
-      expanded.first = false;
-    } else if (scroll_range_y <= 0) {
-      rect_.Outset(gfx::Outsets::VH(0, outset));
-      expanded.second = false;
-    } else {
+      outset_x = 0;
+    }
+    if (scroll_range_y <= 0) {
+      outset_y = 0;
+    }
+    if (outset_x > 0 && outset_y > 0) {
       // If scroller is scrollable in both axes, expand by half to prevent the
       // area of the cull rect from being too big (thus probably too slow to
       // paint and composite).
-      int outset_x = outset / 2;
-      int outset_y = outset_x;
+      outset_x /= 2;
+      outset_y /= 2;
       // Give the extra outset beyond scroll range in one axis to the other.
       if (outset_x > scroll_range_x) {
-        outset_x = scroll_range_x;
         outset_y += outset_x - scroll_range_x;
-      } else if (outset_y > scroll_range_y) {
-        outset_y = scroll_range_y;
+      }
+      if (outset_y > scroll_range_y) {
         outset_x += outset_y - scroll_range_y;
       }
-      rect_.Outset(gfx::Outsets::VH(outset_y, outset_x));
     }
+    // The operations above may have caused the outsets to exceed the scroll
+    // range. Trim them back here. Note that we clamp the outset in a single
+    // direction to the entire scroll range. Eg, if we have a `scroll_range_x`
+    // of 100, we will clamp offset_x to 100, but this will result in both the
+    // left and right outset of 100 which means that we will expand the cull
+    // rect by 200 in the x dimension. If `rect_` is touching the edge of the
+    // contents rect, this will be required on one side (since you can paint a
+    // full 100 units into the scroller), but there can be some extra. Commonly,
+    // the extra outset will be removed by the intersection with contents_rect
+    // below, but it can happen that the original rect is sized and positioned
+    // such that the expanded rect won't be adequately clipped by this
+    // intersection. This can happen if we are clipped by an ancestor.
+    int min_expansion = MinimumLocalPixelDistanceToExpand(expansion_ratio);
+    outset_x = std::min(std::max(outset_x, min_expansion), scroll_range_x);
+    outset_y = std::min(std::max(outset_y, min_expansion), scroll_range_y);
+    expanded.first = outset_x > 0;
+    expanded.second = outset_y > 0;
+    rect_.Outset(gfx::Outsets::VH(outset_y, outset_x));
   } else {
     rect_.Outset(outset);
   }
@@ -203,14 +244,15 @@ bool CullRect::ApplyPaintProperties(
 
   for (const auto* t = &destination.Transform(); t != &source.Transform();
        t = t->UnaliasedParent()) {
-    // TODO(wangxianzhu): This should be DCHECK(t), but for now we need to
-    // work around crbug.com/1262837 etc. Also see the TODO in
-    // FragmentData::LocalBorderBoxProperties().
-    if (!t)
-      return false;
     if (t == &root.Transform()) {
       abnormal_hierarchy = true;
       break;
+    }
+    // TODO(wangxianzhu): This should be DCHECK, but for now we need to work
+    // around crbug.com/1262837 etc. Also see the TODO in
+    // FragmentData::LocalBorderBoxProperties().
+    if (t->IsRoot()) {
+      return false;
     }
     if (t->ScrollNode())
       scroll_translations.push_back(t);

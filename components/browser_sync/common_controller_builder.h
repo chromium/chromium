@@ -20,6 +20,8 @@
 
 class GoogleGroupsManager;
 class PrefService;
+class SharingMessageBridge;
+class TemplateURLService;
 
 namespace autofill {
 class AutofillWebDataService;
@@ -125,7 +127,6 @@ class CommonControllerBuilder {
   // before invoking `Build()`. In some cases it is allowed to inject nullptr.
   void SetAutofillWebDataService(
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
-      const scoped_refptr<base::SequencedTaskRunner>& db_thread,
       const scoped_refptr<autofill::AutofillWebDataService>&
           web_data_service_on_disk,
       const scoped_refptr<autofill::AutofillWebDataService>&
@@ -177,6 +178,7 @@ class CommonControllerBuilder {
                                        send_tab_to_self_sync_service);
   void SetSessionSyncService(
       sync_sessions::SessionSyncService* session_sync_service);
+  void SetSharingMessageBridge(SharingMessageBridge* sharing_message_bridge);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   void SetSupervisedUserSettingsService(
@@ -184,6 +186,7 @@ class CommonControllerBuilder {
           supervised_user_settings_service);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
+  void SetTemplateURLService(TemplateURLService* template_url_service);
   void SetUserEventService(syncer::UserEventService* user_event_service);
 
   // Actually builds the controllers. All setters above must have been called
@@ -258,8 +261,6 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<syncer::UserEventService>> user_event_service_;
   SafeOptional<scoped_refptr<base::SequencedTaskRunner>>
       autofill_web_data_ui_thread_;
-  SafeOptional<scoped_refptr<base::SequencedTaskRunner>>
-      autofill_web_data_db_thread_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>
       autofill_web_data_service_on_disk_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>
@@ -284,6 +285,8 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<commerce::ProductSpecificationsService>>
       product_specifications_service_;
   SafeOptional<raw_ptr<data_sharing::DataSharingService>> data_sharing_service_;
+  SafeOptional<raw_ptr<SharingMessageBridge>> sharing_message_bridge_;
+  SafeOptional<raw_ptr<TemplateURLService>> template_url_service_;
 };
 
 }  // namespace browser_sync

@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_error_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -288,7 +288,7 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
     }
 
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(browser_state);
+        IdentityManagerFactory::GetForProfile(browser_state);
     if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       return false;
     }

@@ -13,6 +13,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/models/list_model.h"
 
 namespace ash::api {
@@ -90,9 +91,11 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   }
   void set_paused(bool paused) { paused_ = paused; }
   void set_paused_on_fetch(bool paused) { paused_on_fetch_ = paused; }
-  void set_update_errors(bool update_errors) { update_errors_ = update_errors; }
   void set_get_task_lists_error(bool error) { get_task_lists_error_ = error; }
   void set_get_tasks_error(bool error) { get_tasks_error_ = error; }
+  void set_http_error(std::optional<google_apis::ApiErrorCode> http_error) {
+    http_error_ = http_error;
+  }
 
   ui::ListModel<TaskList>* task_lists() { return task_lists_.get(); }
 
@@ -138,10 +141,6 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   int bubble_closed_count_ = 0;
   int completed_tasks_ = 0;
 
-  // If `false` - callbacks are executed normally; if `true` - executed with
-  // simulated error. This only works for `AddTask` and `UpdateTask` functions.
-  bool update_errors_ = false;
-
   // If `true`, GetTaskListsCallback run with failure after data fetching in
   // `GetTaskLists()` is done. This should be set before `GetTaskLists()` is
   // called.
@@ -149,6 +148,11 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   // If `true`, GetTasksCallback run with failure after data fetching in
   // `GetTasks()` is done. This should be set before `GetTasks()` is called.
   bool get_tasks_error_ = false;
+
+  // A http error is required to be set if we simulate send a request to the
+  // API. For `GetTaskLists()` and `GetTasks()`, this is optional. For
+  // `AddTaskImpl()` or `UpdateTaskImpl()`, this is required.
+  std::optional<google_apis::ApiErrorCode> http_error_ = std::nullopt;
 
   // The last time when the tasks were updated. This is manually set by
   // `SetTasksLastUpdateTime`.

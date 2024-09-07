@@ -36,8 +36,9 @@ bool AreIDsUnique(const CompositeMatcher::MatcherList& matchers) {
   std::set<RulesetID> ids;
   for (const auto& matcher : matchers) {
     bool did_insert = ids.insert(matcher->id()).second;
-    if (!did_insert)
+    if (!did_insert) {
       return false;
+    }
   }
 
   return true;
@@ -110,8 +111,9 @@ void CompositeMatcher::AddOrUpdateRuleset(
 
 void CompositeMatcher::AddOrUpdateRulesets(MatcherList matchers) {
   std::set<RulesetID> ids_to_remove;
-  for (const auto& matcher : matchers)
+  for (const auto& matcher : matchers) {
     ids_to_remove.insert(matcher->id());
+  }
 
   RemoveRulesetsWithIDs(ids_to_remove);
   matchers_.insert(matchers_.end(), std::make_move_iterator(matchers.begin()),
@@ -125,15 +127,17 @@ void CompositeMatcher::RemoveRulesetsWithIDs(const std::set<RulesetID>& ids) {
         return base::Contains(ids, matcher->id());
       });
 
-  if (erased_count > 0)
+  if (erased_count > 0) {
     OnMatchersModified();
+  }
 }
 
 std::set<RulesetID> CompositeMatcher::ComputeStaticRulesetIDs() const {
   std::set<RulesetID> result;
   for (const std::unique_ptr<RulesetMatcher>& matcher : matchers_) {
-    if (matcher->id() == kDynamicRulesetID)
+    if (matcher->id() == kDynamicRulesetID) {
       continue;
+    }
 
     result.insert(matcher->id());
   }
@@ -189,8 +193,9 @@ ActionInfo CompositeMatcher::GetAction(
         GetMaxPriorityAction(std::move(final_action), std::move(action));
   }
 
-  if (!final_action)
+  if (!final_action) {
     return ActionInfo();
+  }
 
   bool requires_host_permission =
       always_require_host_permissions ||
@@ -242,25 +247,29 @@ std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
 }
 
 bool CompositeMatcher::HasAnyExtraHeadersMatcher() const {
-  if (!has_any_extra_headers_matcher_.has_value())
+  if (!has_any_extra_headers_matcher_.has_value()) {
     has_any_extra_headers_matcher_ = ComputeHasAnyExtraHeadersMatcher();
+  }
   return has_any_extra_headers_matcher_.value();
 }
 
 void CompositeMatcher::OnRenderFrameCreated(content::RenderFrameHost* host) {
-  for (auto& matcher : matchers_)
+  for (auto& matcher : matchers_) {
     matcher->OnRenderFrameCreated(host);
+  }
 }
 
 void CompositeMatcher::OnRenderFrameDeleted(content::RenderFrameHost* host) {
-  for (auto& matcher : matchers_)
+  for (auto& matcher : matchers_) {
     matcher->OnRenderFrameDeleted(host);
+  }
 }
 
 void CompositeMatcher::OnDidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  for (auto& matcher : matchers_)
+  for (auto& matcher : matchers_) {
     matcher->OnDidFinishNavigation(navigation_handle);
+  }
 }
 
 bool CompositeMatcher::HasRulesets(RulesetMatchingStage stage) const {
@@ -282,8 +291,9 @@ void CompositeMatcher::OnMatchersModified() {
 
 bool CompositeMatcher::ComputeHasAnyExtraHeadersMatcher() const {
   for (const auto& matcher : matchers_) {
-    if (matcher->IsExtraHeadersMatcher())
+    if (matcher->IsExtraHeadersMatcher()) {
       return true;
+    }
   }
   return false;
 }

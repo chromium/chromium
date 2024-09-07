@@ -148,6 +148,8 @@ PASS childWindow.onreset is null
 PASS childWindow.onresize is null
 PASS childWindow.onscroll is null
 PASS childWindow.onscrollend is null
+PASS childWindow.onscrollsnapchange is null
+PASS childWindow.onscrollsnapchanging is null
 PASS childWindow.onsearch is null
 PASS childWindow.onsecuritypolicyviolation is null
 PASS childWindow.onseeked is null

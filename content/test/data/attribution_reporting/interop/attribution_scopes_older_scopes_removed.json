@@ -1,0 +1,173 @@
+{
+  "description": "Tests that sources with outdated scopes are deleted.",
+  "api_config": {
+    "needs_attribution_scopes": true
+  },
+  "input": {
+    "registrations": [
+      // S1: attribution scopes-> ["1", "2", "3"]  destinations -> [D1].
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "1",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "1",
+                    "2",
+                    "3"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // S2: attribution scopes-> ["3", "4", "5"]  destinations -> [D1]
+      // S1 is deleted as attribution scope "1" and "2" are not selected.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "234",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "3",
+                    "4",
+                    "5"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // S3: attribution scopes-> ["4"]  destinations -> [D1]
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "345",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "4"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // T1: attribution scope -> "1", destination -> D1
+      // Given attribution scopes for S1 were removed, this should match to none.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "attribution_scopes": [
+                  "1"
+                ],
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // T2: attribution scope -> "3", destination -> D1
+      // This should match to S2 with the right scope. S3 is not selected due to
+      // scope mismatch.
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "attribution_scopes": [
+                  "3"
+                ],
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test"
+            },
+            "type": "trigger-no-matching-source"
+          }
+        ],
+        "report_time": "3000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172801",
+          "source_event_id": "234",
+          "source_type": "navigation",
+          "trigger_data": "2"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172801000"
+      }
+    ]
+  }
+}

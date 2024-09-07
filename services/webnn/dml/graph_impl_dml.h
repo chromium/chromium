@@ -362,8 +362,8 @@ class GraphImplDml final : public WebNNGraphImpl {
       mojom::WebNNGraph::ComputeCallback callback) override;
 
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
+      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
+      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)
       override;
 
   // The persistent resource is allocated after the compilation work is
@@ -412,9 +412,9 @@ class GraphImplDml final : public WebNNGraphImpl {
   // is done.
   std::unique_ptr<GraphResources> graph_resources_;
 
-  base::flat_map<std::string, base::WeakPtr<const WebNNBufferImpl>>
+  base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>
       previous_input_buffers_;
-  base::flat_map<std::string, base::WeakPtr<const WebNNBufferImpl>>
+  base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>
       previous_output_buffers_;
 
   base::WeakPtrFactory<GraphImplDml> weak_factory_{this};

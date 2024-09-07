@@ -79,7 +79,6 @@ static_library("child_accounts") {
     "//ash/strings:strings_grit",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/child_accounts/on_device_controls",
     "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/child_accounts/time_limits",
     "//chrome/browser/ash/policy/core",
@@ -121,8 +120,6 @@ static_library("test_support") {
   deps = [
     ":child_accounts",
     "//base",
-    "//chrome/browser/ash/child_accounts/parent_access_code:test_support",
-    "//chrome/browser/ash/child_accounts/time_limits:test_support",
     "//testing/gtest",
   ]
 }
@@ -155,14 +152,8 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/child_accounts/apps",
-    "//chrome/browser/ash/child_accounts/on_device_controls",
-    "//chrome/browser/ash/child_accounts/on_device_controls:unit_tests",
-    "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
-    "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
     "//chrome/browser/ash/child_accounts/time_limits",
     "//chrome/browser/ash/child_accounts/time_limits:test_support",
-    "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
-    "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
@@ -171,6 +162,13 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//extensions/common",
     "//testing/gtest",
+
+    # Tests from subdirs:
+    "//chrome/browser/ash/child_accounts/on_device_controls:unit_tests",
+    "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
+    "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
+    "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
+    "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
   ]
 }
 
@@ -192,12 +190,7 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/child_accounts:test_support",
-    "//chrome/browser/ash/child_accounts/parent_access_code:browser_tests",
-    "//chrome/browser/ash/child_accounts/time_limits",
-    "//chrome/browser/ash/child_accounts/time_limits:browser_tests",
-    "//chrome/browser/ash/child_accounts/time_limits:test_support",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/test:test_support",
@@ -219,6 +212,10 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest",
+
+    # Tests from subdirs:
+    "//chrome/browser/ash/child_accounts/parent_access_code:browser_tests",
+    "//chrome/browser/ash/child_accounts/time_limits:browser_tests",
   ]
 }
 
@@ -229,7 +226,6 @@ if (is_chromeos_device) {
     sources_metadata = [ "web_approvals_integration_test.yaml" ]
 
     deps = [
-      ":child_accounts",
       "//chrome/browser/ash/login/test:test_support",
       "//chrome/test:ash_integration_test_support",
       "//chrome/test:test_support",
@@ -252,15 +248,11 @@ if (is_chromeos_device) {
     ]
 
     deps = [
-      ":child_accounts",
-      ":test_support",
       "//ash",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser/ash",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/child_accounts/parent_access_code:test_support",
-      "//chrome/browser/ash/child_accounts/time_limits",
       "//chrome/browser/ash/child_accounts/time_limits:test_support",
       "//chrome/browser/ash/login/test:test_support",
       "//chrome/browser/ui/ash/shelf",

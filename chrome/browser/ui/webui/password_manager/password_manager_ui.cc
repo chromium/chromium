@@ -151,8 +151,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_DESCRIPTION},
       {"compromisedPasswordsEmpty",
        IDS_PASSWORD_MANAGER_UI_NO_COMPROMISED_PASSWORDS},
-      {"compromisedPasswordsTitle",
-       IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS},
       {"compromisedRowWithError",
        IDS_PASSWORD_MANAGER_UI_CHECKUP_COMPROMISED_SECTION},
       {"confirm", IDS_PASSWORD_MANAGER_UI_CONFIRM},
@@ -625,6 +623,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
       "compromisedPasswords",
       IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT);
   plural_string_handler->AddLocalizedString(
+      "compromisedPasswordsTitle",
+      IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS);
+  plural_string_handler->AddLocalizedString(
       "deviceOnlyPasswordsIconTooltip",
       IDS_PASSWORD_MANAGER_UI_DEVICE_ONLY_PASSWORDS_ICON_TOOLTIP);
   plural_string_handler->AddLocalizedString(
@@ -686,7 +687,7 @@ DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PasswordManagerUI,
                                        kAddShortcutCustomEventId);
 
 PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/true) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   // Set up the chrome://password-manager/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
   passwords_private_delegate_ =

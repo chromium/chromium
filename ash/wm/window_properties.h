@@ -28,6 +28,10 @@ class WindowState;
 ASH_EXPORT extern const aura::WindowProperty<bool>* const
     kHideDuringWindowDragging;
 
+// Used to override the icon image used for window's icon.
+ASH_EXPORT extern const aura::WindowProperty<int>* const
+    kOverrideWindowIconResourceIdKey;
+
 // A property key attached to the overview windows (contains header, backdrop,
 // etc.). Overview windows behave a little different from windows tagged with
 // just `kOverviewUiKey`. For instance, they do not get moved if the active desk

@@ -652,6 +652,11 @@ base::CallbackListSubscription Label::AddTextChangedCallback(
       std::move(callback));
 }
 
+base::CallbackListSubscription Label::AddTextContextChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&text_context_, std::move(callback));
+}
+
 int Label::GetBaseline() const {
   return GetInsets().top() + font_list().GetBaseline();
 }
@@ -712,6 +717,10 @@ gfx::Size Label::GetMinimumSize() const {
 
   size.Enlarge(GetInsets().width(), GetInsets().height());
   return size;
+}
+
+gfx::Size Label::GetMaximumSize() const {
+  return GetPreferredSize({});
 }
 
 int Label::GetLabelHeightForWidth(int w) const {
@@ -1234,11 +1243,10 @@ void Label::Init(const std::u16string& text,
   UpdateFullTextElideBehavior();
   full_text_->SetDirectionalityMode(directionality_mode);
 
-  GetViewAccessibility().SetProperties(
-      text_context_ == style::CONTEXT_DIALOG_TITLE
-          ? ax::mojom::Role::kTitleBar
-          : ax::mojom::Role::kStaticText,
-      text);
+  GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
+                                     ? ax::mojom::Role::kTitleBar
+                                     : ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetName(text);
 
   SetText(text);
 
@@ -1277,7 +1285,7 @@ gfx::Size Label::GetBoundedTextSize(const SizeBounds& available_size) const {
   const int base_line_height = GetLineHeight();
   SizeBound w =
       std::max<SizeBound>(0, available_size.width() - GetInsets().width());
-  if (GetText().empty()) {
+  if (GetText().empty() || (w == 0 && GetMultiLine())) {
     size = gfx::Size(0, base_line_height);
   } else if (max_width_single_line_ > 0) {
     DCHECK(!GetMultiLine());

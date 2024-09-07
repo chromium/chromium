@@ -8,8 +8,11 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/address_data_cleaner_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -24,6 +27,9 @@
 namespace autofill {
 
 namespace {
+
+using DifferingProfileWithTypeSet =
+    autofill_metrics::DifferingProfileWithTypeSet;
 
 // Determines whether cleanups should be deferred because the latest data wasn't
 // synced down yet.
@@ -69,7 +75,7 @@ bool IsSilentlyRemovableQuasiDuplicate(
     return false;
   }
   // Return true if any of the conflicting tokens is low quality in the profile.
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       incompatible_sets, [&](const FieldTypeSet& incompatible_set) {
         CHECK_EQ(incompatible_set.size(), 1u);
         return AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
@@ -87,10 +93,8 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
   // Partition the profiles into local and account profiles:
   // - Local: [profiles.begin(), bgn_account_profiles[
   // - Account: [bgn_account_profiles, profiles.end()[
-  auto bgn_account_profiles =
-      base::ranges::stable_partition(profiles, [](const AutofillProfile& p) {
-        return p.source() == AutofillProfile::Source::kLocalOrSyncable;
-      });
+  auto bgn_account_profiles = base::ranges::stable_partition(
+      profiles, std::not_fn(&AutofillProfile::IsAccountProfile));
 
   size_t num_profiles_deleted = 0, num_quasi_duplicates_deleted = 0;
   for (auto local_profile_it = profiles.begin();
@@ -150,6 +154,40 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
       num_quasi_duplicates_deleted);
 }
 
+template <typename T, typename Proj>
+std::vector<T> CalculateMinimalIncompatibleTypeSetsImpl(
+    const AutofillProfile& profile,
+    base::span<const AutofillProfile* const> other_profiles,
+    const AutofillProfileComparator& comparator,
+    Proj proj) {
+  std::vector<T> min_incompatible_sets;
+  size_t current_minimum = SIZE_MAX;
+  for (const AutofillProfile* other : other_profiles) {
+    if (profile.guid() == other->guid()) {
+      // When computing `CalculateMinimalIncompatibleTypeSets()` for every
+      // profile in a list of profiles, it's convenient to call the function
+      // with that list as `other_profiles`. Skip the `profile` entry.
+      continue;
+    }
+    const std::optional<FieldTypeSet> differing_types =
+        comparator.NonMergeableSettingVisibleTypes(profile, *other);
+    if (!differing_types) {
+      continue;
+    }
+
+    // Replace `min_incompatible_sets` if `differing_types->size()`
+    // is a new minimum or add to it, if it matches the current minimum.
+    if (differing_types->size() < current_minimum) {
+      current_minimum = differing_types->size();
+      min_incompatible_sets.clear();
+    }
+    if (differing_types->size() == current_minimum) {
+      min_incompatible_sets.push_back(proj(other, *differing_types));
+    }
+  }
+  return min_incompatible_sets;
+}
+
 }  // namespace
 
 AddressDataCleaner::AddressDataCleaner(
@@ -204,55 +242,54 @@ AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
     const AutofillProfile& profile,
     base::span<const AutofillProfile> other_profiles,
     const AutofillProfileComparator& comparator) {
-  std::vector<FieldTypeSet> min_incompatible_sets;
-  for (const AutofillProfile& other : other_profiles) {
-    if (profile.guid() == other.guid()) {
-      // When computing `CalculateMinimalIncompatibleTypeSets()` for every
-      // profile in a list of profiles, it's convenient to call the function
-      // with that list as `other_profiles`. Skip the `profile` entry.
-      continue;
-    }
-    const std::optional<FieldTypeSet> differing_types =
-        comparator.NonMergeableSettingVisibleTypes(profile, other);
-    if (!differing_types) {
-      continue;
-    }
-    // Replace `min_min_incompatible_sets` if `differing_types->size()` is a new
-    // minimum or add to it, if it matches the current minimum.
-    if (min_incompatible_sets.empty() ||
-        min_incompatible_sets.back().size() > differing_types->size()) {
-      min_incompatible_sets = {*differing_types};
-    } else if (min_incompatible_sets.back().size() == differing_types->size()) {
-      min_incompatible_sets.push_back(*differing_types);
-    }
-  }
-  return min_incompatible_sets;
+  return CalculateMinimalIncompatibleTypeSetsImpl<FieldTypeSet>(
+      profile, base::ToVector(other_profiles, [](auto& x) { return &x; }),
+      comparator, [](const AutofillProfile*, FieldTypeSet s) { return s; });
 }
 
 // static
 std::vector<FieldTypeSet>
 AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
-    const AutofillProfile& import_candidate,
+    const AutofillProfile& profile,
     base::span<const AutofillProfile* const> existing_profiles,
     const AutofillProfileComparator& comparator) {
-  // Unfortunately, a vector of non-pointers is needed for
-  // `CalculateMinimalIncompatibleTypeSets()`.
-  return CalculateMinimalIncompatibleTypeSets(
-      import_candidate,
-      base::ToVector(existing_profiles, [](auto* x) { return *x; }),
-      comparator);
+  return CalculateMinimalIncompatibleTypeSetsImpl<FieldTypeSet>(
+      profile, existing_profiles, comparator,
+      [](const AutofillProfile*, FieldTypeSet s) { return s; });
+}
+
+// static
+std::vector<DifferingProfileWithTypeSet>
+AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
+    const AutofillProfile& profile,
+    base::span<const AutofillProfile* const> existing_profiles,
+    const AutofillProfileComparator& comparator) {
+  return CalculateMinimalIncompatibleTypeSetsImpl<DifferingProfileWithTypeSet>(
+      profile, existing_profiles, comparator,
+      [](const AutofillProfile* other, FieldTypeSet s) {
+        return DifferingProfileWithTypeSet(other, s);
+      });
 }
 
 // static
 bool AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
     const AutofillProfile& profile,
     FieldType type) {
-  using ObservationType = ProfileTokenQuality::ObservationType;
   // A token is considered low quality for deduplication purposes, if the
   // majority of its observers are "bad", as defined by the switch below.
+  auto [count_good, count_bad] =
+      CountObservationsByQualityForDeduplicationPurposes(
+          profile.token_quality().GetObservationTypesForFieldType(type));
+  return count_good + count_bad >= 4 && count_bad - count_good >= 2;
+}
+
+// static
+std::pair<size_t, size_t>
+AddressDataCleaner::CountObservationsByQualityForDeduplicationPurposes(
+    base::span<const ProfileTokenQuality::ObservationType> observations) {
+  using ObservationType = ProfileTokenQuality::ObservationType;
   size_t count_good = 0, count_bad = 0;
-  for (ObservationType observation :
-       profile.token_quality().GetObservationTypesForFieldType(type)) {
+  for (ObservationType observation : observations) {
     switch (observation) {
       case ObservationType::kAccepted:
         count_good++;
@@ -272,7 +309,7 @@ bool AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
         break;
     }
   }
-  return count_good + count_bad >= 4 && count_bad - count_good >= 2;
+  return {count_good, count_bad};
 }
 
 void AddressDataCleaner::ApplyDeduplicationRoutine() {
@@ -310,8 +347,8 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
 
 void AddressDataCleaner::DeleteDisusedAddresses() {
   const std::vector<const AutofillProfile*>& profiles =
-      address_data_manager_->GetProfilesFromSource(
-          AutofillProfile::Source::kLocalOrSyncable);
+      address_data_manager_->GetProfilesByRecordType(
+          AutofillProfile::RecordType::kLocalOrSyncable);
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.empty()) {
     return;

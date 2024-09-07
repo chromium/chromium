@@ -216,7 +216,15 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
       viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
-  if (NeedsReadLockFences()) {
+
+  // When a resource is returned by the display compositor, a sync token is
+  // provided to indicate when the compositor's commands using the resource are
+  // executed on the GPU thread. However, if the *CPU* is used for raster we
+  // need to ensure that the display compositor's GPU-side reads have actually
+  // completed before the compositor returns the resource for reuse, as after
+  // that point the resource will be written via the CPU without any further
+  // synchronization with those GPU-side reads.
+  if (!UsesAcceleratedRaster()) {
     out_resource->synchronization_type =
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   }

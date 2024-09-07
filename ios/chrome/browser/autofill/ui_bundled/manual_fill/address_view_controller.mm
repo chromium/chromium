@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "components/plus_addresses/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -17,9 +18,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace manual_fill {
-
-NSString* const AddressTableViewAccessibilityIdentifier =
-    @"kManualFillAddressTableViewAccessibilityIdentifier";
 
 enum ManualFallbackItemType : NSInteger {
   kNoAddressesMessage = kItemTypeEnumZero,
@@ -39,7 +37,7 @@ enum ManualFallbackItemType : NSInteger {
   [super viewDidLoad];
 
   self.tableView.accessibilityIdentifier =
-      manual_fill::AddressTableViewAccessibilityIdentifier;
+      manual_fill::kAddressTableViewAccessibilityIdentifier;
 }
 
 #pragma mark - ManualFillAddressConsumer
@@ -79,6 +77,10 @@ enum ManualFallbackItemType : NSInteger {
     (NSArray<ManualFillPlusAddressItem*>*)plusAddresses {
   _plusAddresses = (NSArray<TableViewItem*>*)plusAddresses;
   [self presentItems];
+}
+
+- (void)presentPlusAddressActions:(NSArray<ManualFillActionItem*>*)actions {
+  [self presentPlusAddressActionItems:actions];
 }
 
 #pragma mark - Private

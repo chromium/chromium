@@ -24,18 +24,17 @@ import java.util.Set;
 import javax.inject.Inject;
 
 /**
- * <p>Adds and removes the given {@link PageLoadMetrics.Observer}s and {@link TabObserver}s to Tabs
- * as they enter/leave the TabModel. These managed TabObservers will listen to Tab lifecycle events
- * for *all* tabs in the tab model. </p></br>
+ * Adds and removes the given {@link PageLoadMetrics.Observer}s and {@link TabObserver}s to Tabs as
+ * they enter/leave the TabModel. These managed TabObservers will listen to Tab lifecycle events for
+ * *all* tabs in the tab model. </br>
  *
  * <p>This class also provides a different type of TabObserver, {@link CustomTabTabObserver}.
  * Different than the regular managed {@link TabObserver}, this new type of observer will only
- * attach to the current active tab.</p>
+ * attach to the current active tab.
  */
 @ActivityScope
 public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     private CustomTabActivityTabProvider mTabProvider;
-    private final CustomTabCountObserver mTabCountObserver;
     private final Set<PageLoadMetrics.Observer> mPageLoadMetricsObservers = new HashSet<>();
     private final Set<TabObserver> mTabObservers = new HashSet<>();
 
@@ -123,10 +122,8 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     @Inject
     public TabObserverRegistrar(
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            CustomTabActivityTabProvider tabProvider,
-            CustomTabCountObserver tabCountObserver) {
+            CustomTabActivityTabProvider tabProvider) {
         mTabProvider = tabProvider;
-        mTabCountObserver = tabCountObserver;
         mTabProvider.addObserver(mActivityTabProviderObserver);
 
         lifecycleDispatcher.register(this);

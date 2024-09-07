@@ -63,12 +63,13 @@ TabStatsTracker* g_tab_stats_tracker_instance = nullptr;
 
 void UmaHistogramCounts10000WithBatteryStateVariant(const char* histogram_name,
                                                     size_t value) {
-  DCHECK(base::PowerMonitor::IsInitialized());
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  DCHECK(power_monitor->IsInitialized());
 
   base::UmaHistogramCounts10000(histogram_name, value);
 
   const char* suffix =
-      base::PowerMonitor::IsOnBatteryPower() ? ".OnBattery" : ".PluggedIn";
+      power_monitor->IsOnBatteryPower() ? ".OnBattery" : ".PluggedIn";
 
   base::UmaHistogramCounts10000(base::StrCat({histogram_name, suffix}), value);
 }
@@ -147,7 +148,7 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
   }
 
   browser_list->AddObserver(this);
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 
   // Setup daily reporting of the stats aggregated in |tab_stats_data_store|.
   daily_event_->AddObserver(std::make_unique<TabStatsDailyObserver>(
@@ -169,7 +170,7 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
 TabStatsTracker::~TabStatsTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserList::GetInstance()->RemoveObserver(this);
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   g_browser_process->GetTabManager()->RemoveObserver(this);
 }
 

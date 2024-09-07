@@ -62,7 +62,7 @@ public class PrivacySandboxBridgeTest {
                         assertEquals(
                                 "Returned dialog type",
                                 PromptType.NONE,
-                                mPrivacySandboxBridge.getRequiredPromptType()));
+                                mPrivacySandboxBridge.getRequiredPromptType(SurfaceType.BR_APP)));
     }
 
     @Test
@@ -173,7 +173,8 @@ public class PrivacySandboxBridgeTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
+                    mPrivacySandboxBridge.promptActionOccurred(
+                            PromptAction.CONSENT_SHOWN, SurfaceType.BR_APP);
                     assertTrue(
                             mUserActionTester
                                     .getActions()

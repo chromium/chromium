@@ -276,7 +276,7 @@ class ExtensionProtocolsTestBase : public testing::Test,
     loader_factory_.reset();
     content_verifier_->Shutdown();
     // Shut down the PowerMonitor if initialized.
-    base::PowerMonitor::ShutdownForTesting();
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
   }
 
   GetResult RequestOrLoad(const GURL& url,

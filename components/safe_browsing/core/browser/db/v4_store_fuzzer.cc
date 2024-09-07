@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/safe_browsing/core/browser/db/v4_store.h"
+
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/db/v4_store.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 
 namespace safe_browsing {
@@ -22,9 +25,9 @@ class V4StoreFuzzer {
  public:
   static int FuzzMergeUpdate(base::span<const uint8_t> data) {
     // |prefix_map_old| represents the existing state of the |V4Store|.
-    InMemoryHashPrefixMap prefix_map_old;
+    std::unordered_map<PrefixSize, HashPrefixes> prefix_map_old;
     // |prefix_map_additions| represents the update being applied.
-    InMemoryHashPrefixMap prefix_map_additions;
+    std::unordered_map<PrefixSize, HashPrefixes> prefix_map_additions;
 
     // Pass 1:
     // Add a prefix_size->[prefixes] pair in |prefix_map_old|.
@@ -42,16 +45,24 @@ class V4StoreFuzzer {
     // during Pass 1, the older list of prefixes is lost.
     PopulateHashPrefixMap(&data, &prefix_map_additions);
 
-    auto store = std::make_unique<TestV4Store>(
-        base::MakeRefCounted<base::TestSimpleTaskRunner>(), base::FilePath());
+    base::ScopedTempDir temp_dir;
+    CHECK(temp_dir.CreateUniqueTempDir());
+    base::FilePath store_path =
+        temp_dir.GetPath().AppendASCII("V4StoreTest.store");
+
+    auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    auto store = std::make_unique<V4Store>(task_runner, store_path);
     // Assume no removals.
     google::protobuf::RepeatedField<google::protobuf::int32> raw_removals;
     // Empty checksum indicates that the checksum calculation should be skipped.
     std::string empty_checksum;
-    store->MergeUpdate(prefix_map_old, prefix_map_additions, &raw_removals,
-                       empty_checksum);
+    store->MergeUpdate(
+        HashPrefixMapView(prefix_map_old.begin(), prefix_map_old.end()),
+        HashPrefixMapView(prefix_map_additions.begin(),
+                          prefix_map_additions.end()),
+        &raw_removals, empty_checksum);
 #ifndef NDEBUG
-    DisplayHashPrefixMapDetails(*store->hash_prefix_map_);
+    DisplayHashPrefixMapDetails(store->hash_prefix_map_->view());
 #endif
 
     return 0;
@@ -69,8 +80,9 @@ class V4StoreFuzzer {
   //  * It is called as |prefixes_list_size|.
   // * Next |prefixes_list_size| bytes are added to |hash_prefix_map|
   //   as a list of prefixes of size |prefix_size|.
-  static void PopulateHashPrefixMap(base::span<const uint8_t>* data,
-                                    HashPrefixMap* hash_prefix_map) {
+  static void PopulateHashPrefixMap(
+      base::span<const uint8_t>* data,
+      std::unordered_map<PrefixSize, HashPrefixes>* hash_prefix_map) {
     uint8_t datum;
     if (!GetDatum(data, &datum)) {
       return;
@@ -97,7 +109,8 @@ class V4StoreFuzzer {
     *data = data->subspan(prefixes_list_size);
     V4Store::AddUnlumpedHashes(prefix_size, prefixes, hash_prefix_map);
 #ifndef NDEBUG
-    DisplayHashPrefixMapDetails(*hash_prefix_map);
+    DisplayHashPrefixMapDetails(
+        HashPrefixMapView(hash_prefix_map->begin(), hash_prefix_map->end()));
 #endif
   }
 
@@ -111,8 +124,8 @@ class V4StoreFuzzer {
   }
 
   static void DisplayHashPrefixMapDetails(
-      const HashPrefixMap& hash_prefix_map) {
-    for (const auto& pair : hash_prefix_map.view()) {
+      const HashPrefixMapView& hash_prefix_map) {
+    for (const auto& pair : hash_prefix_map) {
       PrefixSize prefix_size = pair.first;
       size_t prefixes_length = pair.second.length();
       DVLOG(5) << __FUNCTION__ << " : " << prefix_size << " : "

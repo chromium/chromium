@@ -3645,13 +3645,28 @@ class DeferRendererTasksAfterInputTest
       public ::testing::WithParamInterface<features::TaskDeferralPolicy>,
       public WebSchedulingTestHelper::Delegate {
  public:
+  static std::string GetFieldTrialParamName(
+      features::TaskDeferralPolicy policy) {
+    switch (policy) {
+      case features::TaskDeferralPolicy::kMinimalTypes:
+        return "minimal-types";
+      case features::TaskDeferralPolicy::kNonUserBlockingDeferrableTypes:
+        return "non-user-blocking-deferrable-types";
+      case features::TaskDeferralPolicy::kNonUserBlockingTypes:
+        return "non-user-blocking-types";
+      case features::TaskDeferralPolicy::kAllDeferrableTypes:
+        return "all-deferrable-types";
+      case features::TaskDeferralPolicy::kAllTypes:
+        return "all-types";
+    }
+  }
+
   DeferRendererTasksAfterInputTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kDeferRendererTasksAfterInput,
           base::FieldTrialParams(
-              {{"policy",
-                features::kTaskDeferralPolicyParam.GetName(GetParam())}})}},
+              {{"policy", GetFieldTrialParamName(GetParam())}})}},
         {});
   }
 
@@ -3859,6 +3874,111 @@ TEST_P(DeferRendererTasksAfterInputTest,
   EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+}
+
+TEST_P(DeferRendererTasksAfterInputTest, UseCaseTimeout) {
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "PD1");
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kDiscreteInputResponse);
+
+  test_task_runner_->AdvanceMockTickClock(
+      UserModel::kDiscreteInputResponseDeadline);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+}
+
+TEST_P(DeferRendererTasksAfterInputTest, TouchStartAndDiscreteInput) {
+  scheduler_->DidHandleInputEventOnCompositorThread(
+      FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
+      InputEventState::EVENT_CONSUMED_BY_COMPOSITOR);
+  EXPECT_EQ(ForceUpdatePolicyAndGetCurrentUseCase(), UseCase::kTouchstart);
+
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "PD1");
+  base::RunLoop().RunUntilIdle();
+  // The touchstart use case should take precedent.
+  EXPECT_EQ(CurrentUseCase(), UseCase::kTouchstart);
+  EXPECT_THAT(run_order, testing::ElementsAre("PD1"));
+}
+
+TEST_P(DeferRendererTasksAfterInputTest, DiscreteInputDuringContinuousGesture) {
+  scheduler_->DidHandleInputEventOnCompositorThread(
+      FakeInputEvent(blink::WebInputEvent::Type::kMouseDown,
+                     blink::WebInputEvent::kLeftButtonDown),
+      InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
+  scheduler_->DidHandleInputEventOnCompositorThread(
+      FakeInputEvent(blink::WebInputEvent::Type::kMouseMove,
+                     blink::WebInputEvent::kLeftButtonDown),
+      InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kMainThreadCustomInputHandling);
+
+  // Actually handling the mousedown event should transition to discrete input.
+  input_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        scheduler_->DidHandleInputEventOnMainThread(
+            FakeInputEvent(WebInputEvent::Type::kMouseDown,
+                           blink::WebInputEvent::kLeftButtonDown),
+            WebInputEventResult::kHandledApplication,
+            /*frame_requested=*/true);
+      }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kDiscreteInputResponse);
+
+  // Handling the mousemove shouldn't change anything. Note: This is necessary
+  // to bring the pending event count to 0 so that the use case gets cleared
+  // after the second timeout.
+  input_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        scheduler_->DidHandleInputEventOnMainThread(
+            FakeInputEvent(WebInputEvent::Type::kMouseMove,
+                           blink::WebInputEvent::kLeftButtonDown),
+            WebInputEventResult::kHandledApplication,
+            /*frame_requested=*/true);
+      }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kDiscreteInputResponse);
+
+  // Fast forwarding past the discrete input policy timeout should then fall
+  // back to the previous policy, since that has a longer timeout.
+  EXPECT_LT(UserModel::kDiscreteInputResponseDeadline,
+            UserModel::kGestureEstimationLimit);
+  test_task_runner_->AdvanceMockTickClock(
+      UserModel::kDiscreteInputResponseDeadline);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kMainThreadCustomInputHandling);
+
+  // Fast forwarding past the continuous gesture timeout should then reset the
+  // use case.
+  test_task_runner_->AdvanceMockTickClock(
+      UserModel::kGestureEstimationLimit -
+      UserModel::kDiscreteInputResponseDeadline);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+}
+
+TEST_P(DeferRendererTasksAfterInputTest, DiscreteInputDoesNotChangeRAILMode) {
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
+      .WillByDefault(Return(true));
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
+      .WillByDefault(Return(true));
+  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
+  scheduler_->DidStartProvisionalLoad(true);
+  EXPECT_EQ(ForceUpdatePolicyAndGetCurrentUseCase(), UseCase::kEarlyLoading);
+  EXPECT_EQ(GetRAILMode(), RAILMode::kLoad);
+
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "PD1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kDiscreteInputResponse);
+  EXPECT_EQ(GetRAILMode(), RAILMode::kLoad);
+
+  PostTestTasks(&run_order, "CM1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kEarlyLoading);
+  EXPECT_EQ(GetRAILMode(), RAILMode::kLoad);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -212,7 +212,8 @@ class DesktopBatterySaverProvider
             base::Unretained(this)));
 
     on_battery_power_ =
-        base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
+        base::PowerMonitor::GetInstance()
+            ->AddPowerStateObserverAndReturnOnBatteryState(this);
 
     base::BatteryStateSampler* battery_state_sampler =
         base::BatteryStateSampler::Get();
@@ -226,7 +227,7 @@ class DesktopBatterySaverProvider
   }
 
   ~DesktopBatterySaverProvider() override {
-    base::PowerMonitor::RemovePowerStateObserver(this);
+    base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
   }
 
   // BatterySaverProvider:

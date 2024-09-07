@@ -161,7 +161,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/arc/policy",

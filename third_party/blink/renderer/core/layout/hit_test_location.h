@@ -89,7 +89,7 @@ class CORE_EXPORT HitTestLocation {
   bool Intersects(const PhysicalRect&) const;
 
   // Uses floating-point intersection, which uses inclusive intersection
-  // (see LayoutRect::InclusiveIntersect for a definition)
+  // (see PhysicalRect::InclusiveIntersect for a definition)
   bool Intersects(const gfx::RectF&) const;
   bool Intersects(const FloatRoundedRect&) const;
   bool Intersects(const gfx::QuadF&) const;

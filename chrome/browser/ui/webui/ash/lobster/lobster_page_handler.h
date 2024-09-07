@@ -10,6 +10,7 @@
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/lobster/lobster.mojom.h"
 
 namespace ash {
@@ -18,7 +19,7 @@ class LobsterSession;
 
 class LobsterPageHandler : public lobster::mojom::LobsterPageHandler {
  public:
-  explicit LobsterPageHandler(LobsterSession* active_session);
+  explicit LobsterPageHandler(LobsterSession* active_session, Profile* profile);
 
   ~LobsterPageHandler() override;
 
@@ -31,10 +32,15 @@ class LobsterPageHandler : public lobster::mojom::LobsterPageHandler {
   void CommitAsInsert(uint32_t candidate_id, CommitAsInsertCallback) override;
   void CommitAsDownload(uint32_t candidate_id,
                         CommitAsDownloadCallback) override;
+  void PreviewFeedback(uint32_t candidate_id, PreviewFeedbackCallback) override;
+  void SubmitFeedback(uint32_t candidate_id,
+                      const std::string& description,
+                      SubmitFeedbackCallback) override;
 
  private:
   // Not owned by this class
   raw_ptr<LobsterSession> session_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace ash

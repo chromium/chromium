@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
@@ -186,14 +187,12 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   for (const auto& test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case.input);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange range(tokens);
+    CSSParserTokenStream stream(test_case.input);
 
     // Test expression evaluation.
     const CSSMathExpressionNode* expression =
         CSSMathExpressionNode::ParseMathFunction(
-            CSSValueID::kCalc, range, *context, Flags({AllowPercent}),
+            CSSValueID::kCalc, stream, *context, Flags({AllowPercent}),
             kCSSAnchorQueryTypesNone);
     InterpolableNumber* number = nullptr;
     if (auto* numeric_literal =
@@ -223,12 +222,10 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
               test_case.scale_value * test_case.output + test_case.add_value);
 
     // Test interpolation with other expression.
-    CSSTokenizer target_tokenizer(test_case.interpolation_input);
-    const auto target_tokens = target_tokenizer.TokenizeToEOF();
-    const CSSParserTokenRange target_range(target_tokens);
+    CSSParserTokenStream target_stream(test_case.interpolation_input);
     const CSSMathExpressionNode* target_expression =
         CSSMathExpressionNode::ParseMathFunction(
-            CSSValueID::kCalc, target_range, *context, Flags({AllowPercent}),
+            CSSValueID::kCalc, target_stream, *context, Flags({AllowPercent}),
             kCSSAnchorQueryTypesNone);
     InterpolableNumber* target = nullptr;
     if (auto* numeric_literal =

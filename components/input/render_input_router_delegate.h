@@ -87,6 +87,10 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
   // BrowserDeferUIThreadTasks experiments.
   virtual void NotifyUISchedulerOfGestureEventUpdate(
       blink::WebInputEvent::Type gesture_event) = 0;
+
+  // Notifies when an input event is ignored, see `IsIgnoringWebInputEvents`
+  // above.
+  virtual void OnInputIgnored(const blink::WebInputEvent& event) = 0;
 };
 
 }  // namespace input

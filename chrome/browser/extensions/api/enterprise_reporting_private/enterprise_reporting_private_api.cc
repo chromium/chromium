@@ -21,7 +21,10 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -908,5 +911,25 @@ void EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved(
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+// reportDataMaskingEvent
+
+EnterpriseReportingPrivateReportDataMaskingEventFunction::
+    EnterpriseReportingPrivateReportDataMaskingEventFunction() = default;
+EnterpriseReportingPrivateReportDataMaskingEventFunction::
+    ~EnterpriseReportingPrivateReportDataMaskingEventFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseReportingPrivateReportDataMaskingEventFunction::Run() {
+  auto params =
+      api::enterprise_reporting_private::ReportDataMaskingEvent::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  enterprise_connectors::ReportDataMaskingEvent(browser_context(),
+                                                std::move(params->event));
+
+  return RespondNow(NoArguments());
+}
 
 }  // namespace extensions

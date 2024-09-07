@@ -12,9 +12,6 @@ chrome/test/functional/special_tabs.py. -->
 <link rel="stylesheet" href="sync_node_browser.css">
 <link rel="stylesheet" href="traffic_log.css">
 <link rel="stylesheet" href="invalidations.css">
-<if expr="is_chromeos">
-  <link rel="stylesheet" href="chrome://resources/css/os_header.css">
-</if>
 
 </head>
 <body>
@@ -35,26 +32,6 @@ div[slot='panel'] {
   margin-top: 5px;
 }
 </style>
-
-<if expr="is_chromeos">
-<div class="os-link-container-container" id="os-link-container">
-  <div class="os-link-container">
-    <span class="os-link-icon"></span>
-<if expr="chromeos_ash">
-    <!--
-      We need to handle the navigation in JavaScript since currently
-      we don't have special URL scheme to tell Ash to open it in Lacros,
-      so we use href='#' here.
-    -->
-    Looking for the browser Sync internals page? Visit<a href="#" id="os-link-href">chrome://sync-internals</a>.
-</if>
-<if expr="chromeos_lacros">
-    <!-- Lacros can handle the os:// scheme, so it's okay to put the link directly.  -->
-    Looking for the OS Sync internals page? Visit<a href="os://sync-internals" id="os-link-href">os://sync-internals</a>.
-</if>
-  </div>
-</div>
-</if>
 
 <cr-tab-box id="sync-page">
   <div slot="tab" id="sync-about-tab">About</div>
@@ -93,8 +70,7 @@ div[slot='panel'] {
       </div>
 
       <div id="request-start-stop-wrapper" jsskip="true">
-        <button id="request-start">Request Start</button>
-        <button id="request-stop-clear-data">Disable Sync</button>
+        <button id="request-start">Enable Sync-The-Feature</button>
       </div>
 
       <div id="traffic-event-container-wrapper" jsskip="true">

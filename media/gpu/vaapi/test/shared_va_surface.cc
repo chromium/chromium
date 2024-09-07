@@ -11,6 +11,8 @@
 
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "media/base/video_types.h"
 #include "media/gpu/vaapi/test/macros.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
@@ -104,7 +106,8 @@ uint16_t JoinUint8(uint8_t first, uint8_t second) {
 
 }  // namespace
 
-SharedVASurface::SharedVASurface(const VaapiDevice& va_device,
+SharedVASurface::SharedVASurface(base::PassKey<SharedVASurface>,
+                                 const VaapiDevice& va_device,
                                  VASurfaceID id,
                                  const gfx::Size& size,
                                  unsigned int format)
@@ -124,8 +127,9 @@ scoped_refptr<SharedVASurface> SharedVASurface::Create(
                        &surface_id, 1u, &attrib, 1u);
   VA_LOG_ASSERT(res, "vaCreateSurfaces");
   VLOG(1) << "created surface: " << surface_id;
-  return base::WrapRefCounted(
-      new SharedVASurface(va_device, surface_id, size, va_rt_format));
+  return base::MakeRefCounted<SharedVASurface>(base::PassKey<SharedVASurface>(),
+                                               va_device, surface_id, size,
+                                               va_rt_format);
 }
 
 SharedVASurface::~SharedVASurface() {

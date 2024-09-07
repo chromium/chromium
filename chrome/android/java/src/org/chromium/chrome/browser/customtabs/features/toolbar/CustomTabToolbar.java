@@ -62,13 +62,13 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayCoordinator;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayProperties;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
+import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -125,6 +125,7 @@ import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /** The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs. */
 public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickListener {
@@ -363,9 +364,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mMinimizeButton.setOnClickListener(view -> delegate.minimize());
     }
 
-    /** Enables the interactive Omnibox in CCT. */
-    public void setOmniboxEnabled(String clientPackageName) {
-        mLocationBar.setOmniboxEnabled(clientPackageName);
+    /**
+     * Enables the interactive Omnibox in CCT.
+     *
+     * @param clientPackageName the package name of the custom tabs embedder.
+     * @param tapHandler a handler for taps on the omnibox, or null if the default handler should be
+     *     used.
+     */
+    public void setOmniboxEnabled(String clientPackageName, @Nullable Consumer<Tab> tapHandler) {
+        mLocationBar.setOmniboxEnabled(clientPackageName, tapHandler);
     }
 
     private void setButtonsVisibility() {
@@ -1879,7 +1886,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mPageInfoIPHController = pageInfoIPHController;
         }
 
-        void setOmniboxEnabled(String clientPackageName) {
+        void setOmniboxEnabled(String clientPackageName, @Nullable Consumer<Tab> tapHandler) {
             mOmniboxEnabled = true;
             mOmniboxBackground =
                     AppCompatResources.getDrawable(
@@ -1915,10 +1922,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     v -> {
                         RecordUserAction.record("CustomTabs.OmniboxClicked");
                         var tab = getCurrentTab();
-                        SearchActivityClientImpl.requestOmniboxForResult(
-                                tab.getWindowAndroid().getActivity().get(),
-                                tab.getUrl(),
-                                clientPackageName);
+                        if (tapHandler != null) {
+                            tapHandler.accept(tab);
+                        } else {
+                            SearchActivityClientImpl.requestOmniboxForResult(
+                                    tab.getWindowAndroid().getActivity().get(),
+                                    tab.getUrl(),
+                                    clientPackageName);
+                        }
+                    });
+
+            mUrlBar.setAccessibilityDelegate(
+                    new View.AccessibilityDelegate() {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfo info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            info.setClickable(true);
+                            info.setLongClickable(true);
+                            info.setEnabled(true);
+                            info.setEditable(false);
+                        }
                     });
         }
     }

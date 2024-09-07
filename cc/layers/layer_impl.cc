@@ -65,6 +65,8 @@ const char* LayerTypeAsString(mojom::LayerType type) {
       return "cc::SurfaceLayerImpl";
     case mojom::LayerType::kPicture:
       return "cc::PictureLayerImpl";
+    case mojom::LayerType::kTileDisplay:
+      return "cc::TileDisplayLayerImpl";
     case mojom::LayerType::kMirror:
       return "cc::MirrorLayerImpl";
     case mojom::LayerType::kHeadsUpDisplay:
@@ -334,47 +336,6 @@ gfx::Vector2dF LayerImpl::ScrollBy(const gfx::Vector2dF& scroll) {
   return scroll_tree.ScrollBy(*scroll_node, scroll, layer_tree_impl());
 }
 
-void LayerImpl::UpdateScrollable() {
-  if (!element_id()) {
-    scrollable_ = false;
-    return;
-  }
-
-  const auto* scroll_node = GetScrollTree().FindNodeFromElementId(element_id());
-  bool was_scrollable = scrollable_;
-  scrollable_ = scroll_node && (scroll_node->user_scrollable_horizontal ||
-                                scroll_node->user_scrollable_vertical);
-  if (was_scrollable == scrollable_) {
-    if (!scrollable_)
-      return;
-    if (scroll_container_bounds_ == scroll_node->container_bounds &&
-        scroll_contents_bounds_ == scroll_node->bounds)
-      return;
-  }
-
-  const bool container_bounds_changed =
-      scrollable_ && scroll_node->container_bounds != scroll_container_bounds_;
-  scroll_container_bounds_ =
-      scrollable_ ? scroll_node->container_bounds : gfx::Size();
-  scroll_contents_bounds_ = scrollable_ ? scroll_node->bounds : gfx::Size();
-
-  // Scrollbar positions depend on the bounds.
-  layer_tree_impl()->SetScrollbarGeometriesNeedUpdate();
-
-  if (layer_tree_impl()->settings().scrollbar_animator ==
-      LayerTreeSettings::AURA_OVERLAY) {
-    if (layer_tree_impl()->settings().enable_fluent_overlay_scrollbar) {
-      // Show scrollbars when resizing scrollable areas and
-      // not when the inside content gets expanded.
-      set_needs_show_scrollbars(scrollable_ && container_bounds_changed);
-    } else {
-      set_needs_show_scrollbars(scrollable_);
-    }
-  }
-
-  NoteLayerPropertyChanged();
-}
-
 void LayerImpl::SetTouchActionRegion(TouchActionRegion region) {
   // Avoid recalculating the cached |all_touch_action_regions_| value.
   if (touch_action_region_ == region)
@@ -432,8 +393,6 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer->effect_tree_index_ = effect_tree_index_;
   layer->clip_tree_index_ = clip_tree_index_;
   layer->scroll_tree_index_ = scroll_tree_index_;
-  if (needs_show_scrollbars_)
-    layer->needs_show_scrollbars_ = needs_show_scrollbars_;
 
   if (layer_property_changed_not_from_property_trees_ ||
       layer_property_changed_from_property_trees_)
@@ -444,7 +403,6 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
     layer->layer_property_changed_from_property_trees_ = true;
 
   layer->SetBounds(bounds_);
-  layer->UpdateScrollable();
 
   layer->UnionUpdateRect(update_rect_);
 
@@ -458,8 +416,12 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   }
 
   // Reset any state that should be cleared for the next update.
-  needs_show_scrollbars_ = false;
   ResetChangeTracking();
+
+  if (layer_tree_impl()->settings().UseLayerContextForDisplay()) {
+    // Ensure updates also propagate to the display tree on its next update.
+    layer->SetNeedsPushProperties();
+  }
 }
 
 bool LayerImpl::IsAffectedByPageScale() const {
@@ -552,11 +514,6 @@ void LayerImpl::SetBounds(const gfx::Size& bounds) {
     return;
 
   bounds_ = bounds;
-
-  // Scrollbar positions depend on the scrolling layer bounds.
-  if (scrollable_)
-    layer_tree_impl()->SetScrollbarGeometriesNeedUpdate();
-
   NoteLayerPropertyChanged();
 }
 
@@ -655,10 +612,21 @@ gfx::Rect LayerImpl::GetDamageRect() const {
   return gfx::Rect();
 }
 
+DamageReasonSet LayerImpl::GetDamageReasons() const {
+  DamageReasonSet reasons;
+  if (LayerPropertyChanged() || !update_rect_.IsEmpty() ||
+      !GetDamageRect().IsEmpty()) {
+    reasons.Put(DamageReason::kUntracked);
+  }
+  return reasons;
+}
+
 void LayerImpl::SetCurrentScrollOffset(const gfx::PointF& scroll_offset) {
   DCHECK(IsActive());
-  if (GetScrollTree().SetScrollOffset(element_id(), scroll_offset))
-    layer_tree_impl()->DidUpdateScrollOffset(element_id());
+  if (GetScrollTree().SetScrollOffset(element_id(), scroll_offset)) {
+    layer_tree_impl()->DidUpdateScrollOffset(
+        element_id(), /*pushed_from_main_or_pending_tree=*/false);
+  }
 }
 
 SimpleEnclosedRegion LayerImpl::VisibleOpaqueRegion() const {
@@ -680,10 +648,18 @@ void LayerImpl::ReleaseTileResources() {}
 void LayerImpl::RecreateTileResources() {}
 
 void LayerImpl::SetNeedsPushProperties() {
-  // There's no need to push layer properties on the active tree, or when
-  // |will_always_push_properties_| is true.
-  if (will_always_push_properties_ || layer_tree_impl()->IsActiveTree())
+  // For the pending tree, there's no need to mark this layer to push properties
+  // when |will_always_push_properties_| is true.
+  if (will_always_push_properties_ && layer_tree_impl()->IsPendingTree()) {
     return;
+  }
+
+  // We never push properties from the active tree unless using a LayerContext.
+  if (layer_tree_impl()->IsActiveTree() &&
+      !layer_tree_impl()->settings().UseLayerContextForDisplay()) {
+    return;
+  }
+
   if (!needs_push_properties_) {
     needs_push_properties_ = true;
     layer_tree_impl()->AddLayerShouldPushProperties(this);

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/translate_browser_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
@@ -432,7 +434,16 @@ void BrowserActions::InitializeBrowserActions() {
                       password_manager::ui::INACTIVE_STATE) {
                     chrome::ShowPasswordManager(browser);
                   } else {
-                    chrome::ManagePasswordsForPage(browser);
+                    content::WebContents* web_contents =
+                        browser->tab_strip_model()->GetActiveWebContents();
+                    auto* controller =
+                        ManagePasswordsUIController::FromWebContents(
+                            web_contents);
+                    if (controller->IsShowingBubble()) {
+                      controller->HidePasswordBubble();
+                    } else {
+                      chrome::ManagePasswordsForPage(browser);
+                    }
                   }
                 },
                 base::Unretained(browser)),
@@ -472,6 +483,38 @@ void BrowserActions::InitializeBrowserActions() {
 
     AddListeners();
   }
+
+  // Actions that do not directly show up in chrome UI.
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                browser->GetBrowserView().Cut();
+              },
+              base::Unretained(browser)))
+          .SetActionId(actions::kActionCut)
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                browser->GetBrowserView().Copy();
+              },
+              base::Unretained(browser)))
+          .SetActionId(actions::kActionCopy)
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                browser->GetBrowserView().Paste();
+              },
+              base::Unretained(browser)))
+          .SetActionId(actions::kActionPaste)
+          .Build());
 }
 
 void BrowserActions::RemoveListeners() {

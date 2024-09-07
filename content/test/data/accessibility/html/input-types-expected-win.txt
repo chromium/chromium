@@ -20,7 +20,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='Day Date:' value='0' FOCUSABLE
 ++++++++++++ROLE_SYSTEM_STATICTEXT name='/'
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='Year Date:' value='0' FOCUSABLE
-++++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show date picker'
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Datetime: '
 ++++++ROLE_SYSTEM_TEXT name='Datetime:' FOCUSABLE text-input-type:datetime
@@ -40,7 +40,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='Minutes Datetime-local:' value='0' FOCUSABLE
 ++++++++++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='AM/PM Datetime-local:' value='0' FOCUSABLE
-++++++++ROLE_SYSTEM_BUTTONMENU name='Show local date and time picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show local date and time picker'
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show local date and time picker' FOCUSABLE HASPOPUP
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Email: '
 ++++++ROLE_SYSTEM_TEXT name='Email:' FOCUSABLE text-input-type:email
@@ -67,7 +67,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='Month Month:' value='0' FOCUSABLE
 ++++++++++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='Year Month:' value='0' FOCUSABLE
-++++++++ROLE_SYSTEM_BUTTONMENU name='Show month picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show month picker'
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show month picker' FOCUSABLE HASPOPUP
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Number: '
 ++++++ROLE_SYSTEM_SPINBUTTON name='Number:' FOCUSABLE text-input-type:number
@@ -103,7 +103,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='Minutes Time:' value='0' FOCUSABLE
 ++++++++++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='AM/PM Time:' value='0' FOCUSABLE
-++++++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show time picker'
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Url: '
 ++++++ROLE_SYSTEM_TEXT name='Url:' FOCUSABLE text-input-type:url
@@ -116,4 +116,4 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='Week Week:' value='0' FOCUSABLE
 ++++++++++++ROLE_SYSTEM_STATICTEXT name=', '
 ++++++++++++ROLE_SYSTEM_SPINBUTTON name='Year Week:' value='0' FOCUSABLE
-++++++++ROLE_SYSTEM_BUTTONMENU name='Show week picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show week picker'
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show week picker' FOCUSABLE HASPOPUP

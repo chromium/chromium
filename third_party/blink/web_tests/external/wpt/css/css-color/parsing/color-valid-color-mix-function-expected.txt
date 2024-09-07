@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['color'] = "color-mix(in srgb, red calc(10%), blue 50%)" should set the property value
+  Colors do not match.\nActual:   color-mix(in srgb, red calc(10%), blue)\nExpected: color-mix(in srgb, red calc(10%), blue 50%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 1
+[FAIL] e.style['color'] = "color-mix(in srgb, red 50%,       blue calc(10%))" should set the property value
+  Colors do not match.\nActual:   color-mix(in srgb, red, blue)\nExpected: color-mix(in srgb, red 50%, blue calc(10%)).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 0
+[FAIL] e.style['color'] = "color-mix(in srgb, red calc(10%), blue calc(90%))" should set the property value
+  Colors do not match.\nActual:   color-mix(in srgb, red calc(10%), blue)\nExpected: color-mix(in srgb, red calc(10%), blue calc(90%)).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 1
+[FAIL] e.style['color'] = "color-mix(in srgb, red,           blue calc(50%))" should set the property value
+  Colors do not match.\nActual:   color-mix(in srgb, red 50%, blue)\nExpected: color-mix(in srgb, red, blue calc(50%)).\nError: assert_equals: Color format is correct. expected "color-mix(in srgb, red, blue calc(%))" but got "color-mix(in srgb, red %, blue)"
+Harness: the test ran to completion.
+

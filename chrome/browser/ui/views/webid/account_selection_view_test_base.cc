@@ -11,6 +11,12 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 
+const std::vector<content::IdentityRequestDialogDisclosureField>
+    kDefaultDisclosureFields = {
+        content::IdentityRequestDialogDisclosureField::kName,
+        content::IdentityRequestDialogDisclosureField::kEmail,
+        content::IdentityRequestDialogDisclosureField::kPicture};
+
 AccountSelectionViewTestBase::AccountSelectionViewTestBase() = default;
 
 AccountSelectionViewTestBase::~AccountSelectionViewTestBase() = default;
@@ -87,10 +93,12 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
 }
 
 content::ClientMetadata AccountSelectionViewTestBase::CreateTestClientMetadata(
-    const std::string& terms_of_service_url) {
+    const std::string& terms_of_service_url,
+    const std::string& privacy_policy_url,
+    const std::string& rp_brand_icon_url) {
   return content::ClientMetadata(GURL(terms_of_service_url),
-                                 GURL(kPrivacyPolicyUrl),
-                                 GURL(kRpBrandIconUrl));
+                                 GURL(privacy_policy_url),
+                                 GURL(rp_brand_icon_url));
 }
 
 std::vector<std::string> AccountSelectionViewTestBase::GetChildClassNames(

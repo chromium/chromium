@@ -210,6 +210,7 @@ static_library("common_lib") {
     "//components/favicon_base",
     "//components/flags_ui:switches",
     "//components/gcm_driver/common",
+    "//components/language_detection/content/common",
     "//components/metrics",
     "//components/metrics:net",
     "//components/nacl/common:buildflags",
@@ -285,16 +286,26 @@ static_library("common_lib") {
     public_deps += [ "//ppapi/shared_impl" ]
   }
 
-  if (enable_extensions || enable_desktop_android_extensions) {
+  if (enable_extensions_core) {
+    public_deps += [
+      "//chrome/common/extensions",
+      "//extensions/common",
+      "//extensions/common:common_constants",
+      "//extensions/common:core_api_provider",
+    ]
+
+    sources += [
+      "initialize_extensions_client.cc",
+      "initialize_extensions_client.h",
+    ]
+
     # TODO(https://crbug.com/356905053): Gradually include more of these sources
-    # in the desktop-android build, or put them behind more specific build
-    # flags.
+    # in the desktop-android build (taking them out of this enable_extensions
+    # block), or put them behind more specific build flags.
     if (enable_extensions) {
       sources += [
         "controlled_frame/controlled_frame.cc",
         "controlled_frame/controlled_frame.h",
-        "initialize_extensions_client.cc",
-        "initialize_extensions_client.h",
       ]
       deps += [
         "//chrome/common/apps/platform_apps",
@@ -302,7 +313,6 @@ static_library("common_lib") {
         "//components/app_constants",
       ]
       public_deps += [
-        "//chrome/common/extensions",
         "//chrome/common/extensions/api",
         "//chrome/common/extensions/api:extensions_features",
         "//extensions:extensions_resources",
@@ -311,12 +321,6 @@ static_library("common_lib") {
         "//services/device/public/cpp/usb",
       ]
     }  # if (enable_extensions)
-
-    public_deps += [
-      "//extensions/common",
-      "//extensions/common:common_constants",
-      "//extensions/common:core_api_provider",
-    ]
   }
 
   if (is_mac) {

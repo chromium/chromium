@@ -71,13 +71,14 @@
   <div id="passpointSubscriptionList" class="list-frame vertical-list">
     <template is="dom-repeat" items="[[passpointSubscriptionsList_]]">
       <div class="list-item">
-        <cr-link-row embedded label="[[getSubscriptionDisplayName_(item)]]"
+        <cr-link-row id="subscriptionItem" embedded
+            label="[[getSubscriptionDisplayName_(item)]]"
             on-click="onSubscriptionListItemClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
         <div class="separator"></div>
-        <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-            on-click="onSubscriptionMenuButtonClick_"
+        <cr-icon-button id="subscriptionMoreButton" class="icon-more-vert"
+            tabindex$="[[tabindex]]" on-click="onSubscriptionMenuButtonClick_"
             title="[[getSubscriptionMenuButtonTitle_(item)]]">
         </cr-icon-button>
       </div>
@@ -101,7 +102,8 @@
 </cr-action-menu>
 
 <cr-action-menu id="subscriptionDotsMenu" role-description="$i18n{menu}">
-  <button class="dropdown-item" on-click="onSubscriptionForgetClick_">
+  <button id="subscriptionForget" class="dropdown-item"
+      on-click="onSubscriptionForgetClick_">
     $i18n{knownNetworksMenuForget}
   </button>
 </cr-action-menu>

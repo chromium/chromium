@@ -208,18 +208,6 @@ class blinkFixedPointPrinter:
                             self.val['kFixedPointDenominator'])
 
 
-class blinkLayoutSizePrinter:
-    "Print a blink::DeprecatedLayoutSize"
-
-    def __init__(self, val):
-        self.val = val
-
-    def to_string(self):
-        return 'DeprecatedLayoutSize(%s, %s)' % (
-            blinkLayoutUnitPrinter(self.val['width_']).to_string(),
-            blinkLayoutUnitPrinter(self.val['height_']).to_string())
-
-
 class blinkLayoutPointPrinter:
     "Print a blink::LayoutPoint"
 
@@ -509,7 +497,6 @@ def add_pretty_printers():
         (re.compile("^blink::KURL$"), blinkKURLPrinter),
         (re.compile("^blink::LayoutUnit$"), blinkLayoutUnitPrinter),
         (re.compile("^blink::LayoutPoint$"), blinkLayoutPointPrinter),
-        (re.compile("^blink::DeprecatedLayoutSize$"), blinkLayoutSizePrinter),
         (re.compile("^blink::QualifiedName$"), blinkQualifiedNamePrinter),
         (re.compile("^blink::PixelsAndPercent$"),
          BlinkPixelsAndPercentPrinter),

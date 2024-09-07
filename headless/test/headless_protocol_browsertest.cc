@@ -21,6 +21,7 @@
 #include "headless/test/headless_browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace headless {
 
@@ -497,5 +498,26 @@ HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(
     FileInputDirectoryUpload,
     "sanity/file-input-directory-upload.js",
     "sanity/resources/file-input-directory-upload")
+
+class HeadlessProtocolBrowserTestWithExposeGC
+    : public HeadlessProtocolBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessProtocolBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
+  }
+};
+
+#define HEADLESS_PROTOCOL_TEST_WITH_EXPOSE_GC(TEST_NAME, SCRIPT_NAME)          \
+  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithExposeGC, TEST_NAME) { \
+    test_folder_ = "/protocol/";                                               \
+    script_name_ = SCRIPT_NAME;                                                \
+    RunTest();                                                                 \
+  }
+
+HEADLESS_PROTOCOL_TEST_WITH_EXPOSE_GC(
+    GetDOMCountersForLeakDetection,
+    "sanity/get-dom-counters-for-leak-detection.js")
 
 }  // namespace headless

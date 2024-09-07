@@ -97,6 +97,7 @@ enum AttributionReportingIssueType {
   kNoRegisterTriggerHeader,
   kNoRegisterOsSourceHeader,
   kNoRegisterOsTriggerHeader,
+  kNavigationRegistrationUniqueScopeAlreadySet,
 };
 
 struct AttributionReportingIssueDetails {

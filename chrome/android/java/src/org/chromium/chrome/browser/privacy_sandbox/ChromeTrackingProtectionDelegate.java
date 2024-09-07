@@ -44,38 +44,31 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
 
     @Override
     public boolean shouldDisplayIpProtection() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
     }
 
     @Override
     public boolean isIpProtectionEnabled() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1);
+        return UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED);
     }
 
     @Override
     public void setIpProtection(boolean enabled) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)) return;
         UserPrefs.get(mProfile).setBoolean(Pref.IP_PROTECTION_ENABLED, enabled);
     }
 
     @Override
     public boolean shouldDisplayFingerprintingProtection() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
     }
 
     @Override
     public boolean isFingerprintingProtectionEnabled() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING);
+        return UserPrefs.get(mProfile).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED);
     }
 
     @Override
     public void setFingerprintingProtection(boolean enabled) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING))
-            return;
         UserPrefs.get(mProfile).setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, enabled);
     }
 

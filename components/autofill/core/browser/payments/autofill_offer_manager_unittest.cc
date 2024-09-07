@@ -31,8 +31,8 @@ using testing::Pair;
 using testing::Pointee;
 
 namespace autofill {
-
 namespace {
+
 const char kTestGuid[] = "00000000-0000-0000-0000-000000000001";
 const char kTestGuid2[] = "00000000-0000-0000-0000-000000000002";
 const char kTestNumber[] = "4234567890123456";  // Visa
@@ -40,7 +40,10 @@ const char kTestUrl[] = "http://www.example.com/";
 const char kTestUrlWithParam[] =
     "http://www.example.com/en/payments?name=checkout";
 const char kOfferDetailsUrl[] = "http://pay.google.com";
+
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class AutofillOfferManagerTest : public testing::Test {
  public:

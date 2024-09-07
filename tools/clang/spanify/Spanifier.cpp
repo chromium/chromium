@@ -135,7 +135,8 @@ static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
     const clang::SourceRange replacement_range,
     std::string replacement_text,
     const clang::SourceManager& source_manager,
-    const char* include_path = nullptr) {
+    const char* include_path = nullptr,
+    bool is_system_include_path = false) {
   clang::tooling::Replacement replacement(
       source_manager, clang::CharSourceRange::getCharRange(replacement_range),
       replacement_text);
@@ -150,9 +151,16 @@ static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
 
   if (!include_path) {
     include_path = kBaseSpanIncludePath;
+    is_system_include_path = false;
   }
-  std::string include_directive = llvm::formatv(
-      "include-user-header:::{0}:::-1:::-1:::{1}", file_path, include_path);
+  std::string include_directive;
+  if (is_system_include_path) {
+    include_directive = llvm::formatv(
+        "include-system-header:::{0}:::-1:::-1:::{1}", file_path, include_path);
+  } else {
+    include_directive = llvm::formatv(
+        "include-user-header:::{0}:::-1:::-1:::{1}", file_path, include_path);
+  }
 
   return {replacement_directive, include_directive};
 }
@@ -239,6 +247,54 @@ static clang::SourceRange getSourceRange(
 
   auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
   return clang::SourceRange(getExprRange(expr).getEnd());
+}
+
+static void maybeUpdateSourceRangeIfInMacro(
+    const clang::SourceManager& source_manager,
+    const MatchFinder::MatchResult& result,
+    clang::SourceRange& range) {
+  if (!range.isValid() || !range.getBegin().isMacroID()) {
+    return;
+  }
+  // We need to find the reference to the object that might be getting
+  // accessed and rewritten to find the location to rewrite. SpellingLocation
+  // returns a different position if the source was pointing into the macro
+  // definition. See clang::SourceManager for details but relevant section:
+  //
+  // "Spelling locations represent where the bytes corresponding to a token came
+  // from and expansion locations represent where the location is in the user's
+  // view. In the case of a macro expansion, for example, the spelling location
+  // indicates where the expanded token came from and the expansion location
+  // specifies where it was expanded."
+  auto* rhs_decl_ref =
+      result.Nodes.getNodeAs<clang::DeclRefExpr>("declRefExpr");
+  if (!rhs_decl_ref) {
+    return;
+  }
+  // We're extracting the spellingLocation's position and then we'll move the
+  // location forward by the length of the variable. This will allow us to
+  // insert .data() at the end of the decl_ref.
+  clang::SourceLocation correct_start =
+      source_manager.getSpellingLoc(rhs_decl_ref->getLocation());
+
+  bool invalid_line, invalid_col = false;
+  auto line =
+      source_manager.getSpellingLineNumber(correct_start, &invalid_line);
+  auto col =
+      source_manager.getSpellingColumnNumber(correct_start, &invalid_col);
+  assert(correct_start.isValid() && !invalid_line && !invalid_col &&
+         "Unable to get SpellingLocation info");
+  // Get the name and find the end of the decl_ref.
+  std::string name = rhs_decl_ref->getFoundDecl()->getNameAsString();
+  clang::SourceLocation correct_end = source_manager.translateLineCol(
+      source_manager.getFileID(correct_start), line, col + name.size());
+  assert(correct_end.isValid() &&
+         "Incorrectly got an End SourceLocation for macro");
+  // This returns at the end of the variable being referenced so we can
+  // insert .data(), if we wanted it wrapped in params (variable).data()
+  // we'd need {correct_start, correct_end} but this doesn't seem needed in
+  // macros tested on so far.
+  range = clang::SourceRange{correct_end};
 }
 
 static Node getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
@@ -409,6 +465,13 @@ static Node getDataChangeNode(const std::string& lhs_replacement,
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
   auto rep_range = getSourceRange(result);
+
+  // If we're inside a macro the rep_range computed above is going to be
+  // incorrect because it will point into the file where the macro is defined.
+  // We need to get the "SpellingLocation", and then we figure out the end of
+  // the parameter so we can insert .data() at the end if needed.
+  maybeUpdateSourceRangeIfInMacro(source_manager, result, rep_range);
+
   std::string initial_text =
       clang::Lexer::getSourceText(
           clang::CharSourceRange::getCharRange(rep_range), source_manager,
@@ -466,6 +529,57 @@ std::string getArraySize(const MatchFinder::MatchResult& result) {
   assert(false && "Unable to determine array size.");
 }
 
+// Checks if the given array definition involves an unnamed struct type
+// or is declared inline within a struct/class definition.
+//
+// These cases currently pose challenges for the C array to std::array
+// conversion and are therefore skipped by the tool.
+//
+// Examples of problematic definitions:
+//   - Unnamed struct:
+//     `struct { int x, y; } point_array[10];`
+//   - Inline definition:
+//     `struct Point { int x, y; } inline_points[5];`
+//
+// Returns true if the definition is unnamed or inline, false otherwise.
+bool IsUnnamedOrInlinedDefinition(const std::string& element_type,
+                                  const std::string& variable_name,
+                                  const clang::SourceRange replacement_range,
+                                  const clang::SourceManager& source_manager,
+                                  const clang::ASTContext& ast_context) {
+  // Look for unnamed types. In future we could look for the ending ')' and
+  // replace it with a new type name if we determine how to split into two.
+  if (element_type.find("(unnamed struct") != std::string::npos) {
+    return true;
+  }
+
+  // Extract the source code within the replacement range.
+  // If it contains the class/struct definition itself, we cannot perform the
+  // rewrite.
+  const auto& lang_opts = ast_context.getLangOpts();
+  std::string initial_text =
+      clang::Lexer::getSourceText(
+          clang::CharSourceRange::getCharRange(replacement_range),
+          source_manager, lang_opts)
+          .str();
+
+  // Recall that inline definitions are of the form:
+  // struct TypeName { <body> } variable_name;
+  // So below we see if the location of variable_name (which has to be in the
+  // replacement_range) is after the first occurrence of a '}' bracket (if it
+  // exists). This would mean we have a class/struct definition with an inline
+  // variable and we can't rewrite without breaking into two separate nodes.
+  assert(initial_text.find(variable_name) != std::string::npos);
+  const size_t bracket_location = initial_text.find("}");
+  if (bracket_location != std::string::npos &&
+      initial_text.find(variable_name) > bracket_location) {
+    // The class definition is then:
+    // initial_text.substr(0, bracket_location + 1)
+    return true;
+  }
+  return false;
+}
+
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
@@ -485,18 +599,32 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   printing_policy.PrintCanonicalTypes = 1;
   std::string element_type_as_string =
       element_type.getAsString(printing_policy);
-
   std::string array_size_as_string = getArraySize(result);
-  std::string replacement_text =
-      llvm::formatv("std::array<{0},{1}>{2}", element_type_as_string,
-                    array_size_as_string, array_variable->getNameAsString());
+  std::string array_variable_as_string = array_variable->getNameAsString();
 
   clang::SourceRange replacement_range = {
       array_type_loc->getSourceRange().getBegin(),
       array_type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
 
+  if (IsUnnamedOrInlinedDefinition(element_type_as_string,
+                                   array_variable_as_string, replacement_range,
+                                   source_manager, ast_context)) {
+    // TODO(362644557): Handle unnamed types more reasonably, perhaps by
+    // inserting the variable name as the type but capitalized. Also figure out
+    // how to write a replacement that generates multiple output nodes.
+    // We've tried making the replacement emit the class definition with a
+    // semi-colon between to separate the inline definition but this hit an
+    // assertion node in extract_edits.
+    return Node{};
+  }
+
+  std::string replacement_text =
+      llvm::formatv("std::array<{0},{1}>{2}", element_type_as_string,
+                    array_size_as_string, array_variable_as_string);
+
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      replacement_range, replacement_text, source_manager, "<array>");
+      replacement_range, replacement_text, source_manager, "array",
+      /* is_system_include_header =*/true);
   Node n;
   n.replacement = replacement_and_include_pair.first;
   n.include_directive = replacement_and_include_pair.second;

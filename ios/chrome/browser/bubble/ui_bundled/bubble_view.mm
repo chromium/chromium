@@ -9,11 +9,11 @@
 #import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -368,6 +368,20 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     _needsAddConstraints = YES;
 
     self.isAccessibilityElement = YES;
+
+    if (@available(iOS 17, *)) {
+      __weak __typeof(self) weakSelf = self;
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
+        UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
+        UITraitUserInterfaceLevel.self
+      ]);
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf maybeChangeArrowColor:previousCollection];
+      };
+      [weakSelf registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -878,19 +892,19 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   // The combined horizontal inset distance of the label and title with respect
   // to the bubble.
   CGFloat textHorizontalInset = kBubbleHorizontalMargin * 2;
-  // Add close button size, which is on the trailing edge of the labels.
+
+  // Add the correct amount of horizontal padding depending on the bubble's
+  // features.
   if (self.showsCloseButton) {
-    textHorizontalInset += MAX(kCloseButtonSize, kBubbleHorizontalPadding);
-  } else {
-    textHorizontalInset += kBubbleHorizontalPadding;
+    textHorizontalInset += MAX(kCloseButtonSize, kBubbleHorizontalPadding) +
+                           kBubbleHorizontalPadding;
+  } else if (self.imageView) {
+    textHorizontalInset += kImageViewLeadingMargin + kImageViewSize +
+                           kImageViewTrailingMargin + kBubbleHorizontalPadding;
+  } else if (!self.titleLabel) {
+    textHorizontalInset += kBubbleHorizontalPadding * 2;
   }
-  // Add image view size, which is on the leading edge of the labels.
-  if (self.imageView) {
-    textHorizontalInset +=
-        kImageViewLeadingMargin + kImageViewSize + kImageViewTrailingMargin;
-  } else {
-    textHorizontalInset += kBubbleHorizontalPadding;
-  }
+
   CGFloat textMaxWidth = size.width - textHorizontalInset;
   CGSize optimalTextSize =
       [self optimalTextSize:CGSizeMake(textMaxWidth, size.height)];
@@ -922,14 +936,16 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   return bubbleSize;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    self.arrowLayer.fillColor = BubbleColor().CGColor;
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self maybeChangeArrowColor:previousTraitCollection];
 }
+#endif
 
 #pragma mark - Private sizes
 
@@ -937,6 +953,16 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 // causes the bubble to appear center-aligned for short display text.
 - (CGFloat)minBubbleWidth {
   return self.alignmentOffset * 2;
+}
+
+// Changes the fill color of `arrowLayer` if the current trait collection has a
+// different color appearance from the previous collection.
+- (void)maybeChangeArrowColor:(UITraitCollection*)previousTraitCollection {
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    self.arrowLayer.fillColor = BubbleColor().CGColor;
+  }
 }
 
 @end

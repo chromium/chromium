@@ -16,11 +16,11 @@
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_download_manager_delegate.h"
 #include "android_webview/browser/aw_form_database_service.h"
-#include "android_webview/browser/aw_ip_protection_config_provider.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_quota_manager_bridge.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
 #include "android_webview/browser/cookie_manager.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_core_host.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/net_helpers.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
@@ -161,8 +161,7 @@ void MigrateProfileData(base::FilePath cache_path,
 base::FilePath BuildCachePath(const base::FilePath& relative_path) {
   FilePath cache_path;
   if (!base::PathService::Get(base::DIR_CACHE, &cache_path)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Failed to get app cache directory for Android WebView";
+    NOTREACHED() << "Failed to get app cache directory for Android WebView";
   }
   return cache_path.Append(relative_path);
 }
@@ -575,24 +574,22 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   // (http://crbug.com/921750).
   context_params->enforce_chrome_ct_policy = false;
 
-  context_params->enable_brotli = base::FeatureList::IsEnabled(
-      android_webview::features::kWebViewBrotliSupport);
+  context_params->enable_brotli = true;
   context_params->enable_zstd =
       base::FeatureList::IsEnabled(net::features::kZstdContentEncoding);
 
   context_params->check_clear_text_permitted =
       AwContentBrowserClient::get_check_cleartext_permitted();
 
-  AwIpProtectionConfigProvider* aw_ipp_config_provider =
-      AwIpProtectionConfigProvider::Get(this);
-  if (aw_ipp_config_provider) {
-    aw_ipp_config_provider->AddNetworkService(
+  AwIpProtectionCoreHost* aw_ipp_core_host = AwIpProtectionCoreHost::Get(this);
+  if (aw_ipp_core_host) {
+    aw_ipp_core_host->AddNetworkService(
         context_params->ip_protection_config_getter
             .InitWithNewPipeAndPassReceiver(),
         context_params->ip_protection_proxy_delegate
             .InitWithNewPipeAndPassRemote());
     context_params->enable_ip_protection =
-        aw_ipp_config_provider->IsIpProtectionEnabled();
+        aw_ipp_core_host->IsIpProtectionEnabled();
   }
 
   // Add proxy settings
@@ -702,8 +699,7 @@ base::FilePath AwBrowserContext::BuildStoragePath(
     const base::FilePath& relative_path) {
   base::FilePath user_data_dir;
   if (!base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Failed to get app data directory for Android WebView";
+    NOTREACHED() << "Failed to get app data directory for Android WebView";
   }
   return user_data_dir.Append(relative_path);
 }

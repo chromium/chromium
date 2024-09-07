@@ -12,7 +12,7 @@
 #import "components/optimization_guide/proto/string_value.pb.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "url/gurl.h"
 
@@ -24,7 +24,7 @@ OptimizationGuideValidationTabHelper::OptimizationGuideValidationTabHelper(
   }
 
   if (OptimizationGuideService* optimization_guide_service =
-          OptimizationGuideServiceFactory::GetForBrowserState(
+          OptimizationGuideServiceFactory::GetForProfile(
               ChromeBrowserState::FromBrowserState(
                   web_state->GetBrowserState()))) {
     optimization_guide_service->RegisterOptimizationTypes(
@@ -52,7 +52,7 @@ void OptimizationGuideValidationTabHelper::DidFinishNavigation(
     return;
 
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
   if (!optimization_guide_service)
     return;

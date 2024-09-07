@@ -16,6 +16,7 @@
 #include "device/bluetooth/strings/grit/bluetooth_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -163,9 +164,10 @@ gfx::Size BluetoothDeviceCredentialsView::CalculatePreferredSize(
 }
 
 bool BluetoothDeviceCredentialsView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  if (button != ui::DIALOG_BUTTON_OK)
+    ui::mojom::DialogButton button) const {
+  if (button != ui::mojom::DialogButton::kOk) {
     return true;  // Only "OK" button is sensitized - all others are enabled.
+  }
 
   return IsInputTextValid(passkey_text_->GetText());
 }
@@ -175,7 +177,7 @@ std::u16string BluetoothDeviceCredentialsView::GetWindowTitle() const {
 }
 
 void BluetoothDeviceCredentialsView::OnDialogAccepted() {
-  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   std::u16string trimmed_input;
   base::TrimWhitespace(passkey_text_->GetText(), base::TRIM_ALL,
@@ -191,7 +193,8 @@ void BluetoothDeviceCredentialsView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
   DCHECK_EQ(sender, passkey_text_);
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, IsInputTextValid(new_contents));
+  SetButtonEnabled(ui::mojom::DialogButton::kOk,
+                   IsInputTextValid(new_contents));
   DialogModelChanged();
 }
 

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.tasks.tab_management.TabGroupUiToolbarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab_group_ui_toolbar_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:animateLayoutChanges="true">
+        <!--
+          Chain style packed with horizontal bias 0.0 forces this to effectively
+          have gravity "start" and bring anything attached to the constraint
+          chain along with it. Setting constrainedWidth to true in conjunction
+          with wrap_content for width allows the chain to dynamically resize
+          without any of the views overlapping as the maximum width of the views
+          inside of the FrameLayout are restricted by the constraints.
+        -->
+        <FrameLayout
+            android:id="@+id/toolbar_container_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/toolbar_new_tab_button"/>
+        <!-- z-index above the recycler view by putting after FrameLayout. -->
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/tab_strip_fading_edge_start"
+            android:layout_height="match_parent"
+            android:layout_width="@dimen/tab_strip_fading_edge_width"
+            android:src="@drawable/tab_strip_fading_edge_start"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            android:importantForAccessibility="no"/>
+        <!-- Use negative margin start to overlay the recycler view. -->
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/tab_strip_fading_edge_end"
+            android:layout_height="match_parent"
+            android:layout_width="@dimen/tab_strip_fading_edge_width"
+            android:layout_marginStart="@dimen/tab_strip_fading_edge_width_negative"
+            android:src="@drawable/tab_strip_fading_edge_end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/toolbar_container_view"
+            android:importantForAccessibility="no"/>
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/toolbar_new_tab_button"
+            style="@style/BottomToolbarButton"
+            android:src="@drawable/plus"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/toolbar_container_view"
+            app:layout_constraintEnd_toStartOf="@+id/toolbar_group_button_barrier"
+            android:contentDescription="@string/bottom_tab_grid_new_tab"
+            app:tint="@color/default_icon_color_tint_list" />
+
+        <!--
+          Only one of referenced IDs will be visible at a time. Use a barrier to
+          make constraints work on the new tab button.
+        -->
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/toolbar_group_button_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="toolbar_show_group_dialog_button,toolbar_image_tiles_container" />
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/toolbar_show_group_dialog_button"
+            style="@style/BottomToolbarButton"
+            android:src="@drawable/ic_expand_less_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/default_icon_color_tint_list"
+            android:contentDescription="@string/accessibility_bottom_tab_strip_expand_tab_sheet" />
+
+        <FrameLayout
+            android:id="@+id/toolbar_image_tiles_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:minWidth="@dimen/min_touch_target_size"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</org.chromium.chrome.browser.tasks.tab_management.TabGroupUiToolbarView>

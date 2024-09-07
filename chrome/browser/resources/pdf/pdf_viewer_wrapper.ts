@@ -7,6 +7,9 @@ export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button
 // <if expr="enable_ink">
 export {AnnotationTool} from './annotation_tool.js';
 // </if>
+// <if expr="enable_pdf_ink2">
+export {BeforeUnloadProxy, BeforeUnloadProxyImpl} from './before_unload_proxy.js';
+// </if>
 export {Bookmark} from './bookmark_type.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
 // <if expr="enable_pdf_ink2">

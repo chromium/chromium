@@ -89,7 +89,7 @@ bool Http1Connection::HandleReadResult(int rv) {
     request->ssl_info = ssl_info;
 
   server_delegate_->HandleRequest(weak_factory_.GetWeakPtr(),
-                                  std::move(request));
+                                  std::move(request), socket_.get());
   return true;
 }
 

@@ -54,15 +54,11 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
       base::Time log_list_date,
       std::vector<std::pair<std::string, base::Time>> disqualified_logs,
       std::map<std::string, OperatorHistoryEntry> log_operator_history);
-  ChromeCTPolicyEnforcer(
-      base::Time log_list_date,
-      std::vector<std::pair<std::string, base::Time>> disqualified_logs,
-      std::map<std::string, OperatorHistoryEntry> log_operator_history,
-      const base::Clock* clock);
 
   net::ct::CTPolicyCompliance CheckCompliance(
       net::X509Certificate* cert,
       const net::ct::SCTList& verified_scts,
+      base::Time current_time,
       const net::NetLogWithSource& net_log) const override;
 
   std::optional<base::Time> GetLogDisqualificationTime(
@@ -100,14 +96,16 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   // are embedded in certificates issued after |*disqualification_date| should
   // not be trusted, nor contribute to any uniqueness or freshness
   bool IsLogDisqualified(std::string_view log_id,
+                         base::Time current_time,
                          base::Time* disqualification_date) const;
 
   // Returns true if the supplied log data are fresh enough.
-  bool IsLogDataTimely() const;
+  bool IsLogDataTimely(base::Time current_time) const;
 
   net::ct::CTPolicyCompliance CheckCTPolicyCompliance(
       const net::X509Certificate& cert,
-      const net::ct::SCTList& verified_scts) const;
+      const net::ct::SCTList& verified_scts,
+      base::Time current_time) const;
 
   std::string GetOperatorForLog(std::string log_id, base::Time timestamp) const;
 
@@ -115,8 +113,6 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   const std::vector<std::pair<std::string, base::Time>> disqualified_logs_;
 
   const std::map<std::string, OperatorHistoryEntry> log_operator_history_;
-
-  const raw_ptr<const base::Clock> clock_;
 
   // The time at which |disqualified_logs_| and |log_operator_history_| were
   // generated.

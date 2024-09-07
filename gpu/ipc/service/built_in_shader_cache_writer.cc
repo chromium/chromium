@@ -4,10 +4,10 @@
 
 #include "gpu/ipc/service/built_in_shader_cache_writer.h"
 
-#include <limits.h>
-
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/numerics/safe_conversions.h"
 #include "gpu/config/gpu_switches.h"
 
 namespace gpu {
@@ -29,10 +29,8 @@ BuiltInShaderCacheWriter::BuiltInShaderCacheWriter(const base::FilePath& path)
     : file_(path.empty() ? GetDefaultPath() : path,
             base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_OPEN_TRUNCATED |
                 base::File::FLAG_WRITE) {
-  valid_file_ =
-      file_.IsValid() &&
-      file_.WriteAtCurrentPos(reinterpret_cast<const char*>(&kSignature),
-                              sizeof(kSignature)) == sizeof(kSignature);
+  valid_file_ = file_.IsValid() && file_.WriteAtCurrentPosAndCheck(
+                                       base::byte_span_from_ref(kSignature));
 }
 
 BuiltInShaderCacheWriter::~BuiltInShaderCacheWriter() = default;
@@ -57,10 +55,8 @@ bool BuiltInShaderCacheWriter::WriteVectorToFile(
   // `GpuPreferences::gpu_program_cache_size`), additionally the current max
   // is ~6mb (anything above the max is dropped, and shouldn't result in
   // calling this). For this reason `uint32_t` is used.
-  CHECK_LE(value.size(), std::numeric_limits<uint32_t>::max());
-  const uint32_t size = static_cast<uint32_t>(value.size());
-  return file_.WriteAtCurrentPos(reinterpret_cast<const char*>(&size),
-                                 sizeof(size)) == sizeof(size) &&
+  const uint32_t size = base::checked_cast<uint32_t>(value.size());
+  return file_.WriteAtCurrentPosAndCheck(base::byte_span_from_ref(size)) &&
          file_.WriteAtCurrentPosAndCheck(value);
 }
 

@@ -14,10 +14,13 @@ namespace webnn {
 // the width of the tensor.
 enum class InputOperandLayout { kNchw, kNhwc };
 
+enum class Resample2DAxes { kAny, kChannelsFirst, kChannelsLast };
+
 struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ContextProperties {
   explicit ContextProperties(mojo::DefaultConstruct::Tag);
 
   ContextProperties(InputOperandLayout input_operand_layout,
+                    Resample2DAxes resample_2d_axes,
                     DataTypeLimits data_type_limits);
 
   // Copyable and movable.
@@ -28,12 +31,14 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ContextProperties {
   ~ContextProperties();
 
   InputOperandLayout input_operand_layout;
+  Resample2DAxes resample_2d_axes;
   DataTypeLimits data_type_limits;
 };
 
 inline bool operator==(const ContextProperties& lhs,
                        const ContextProperties& rhs) {
   return lhs.input_operand_layout == rhs.input_operand_layout &&
+         lhs.resample_2d_axes == rhs.resample_2d_axes &&
          lhs.data_type_limits == rhs.data_type_limits;
 }
 

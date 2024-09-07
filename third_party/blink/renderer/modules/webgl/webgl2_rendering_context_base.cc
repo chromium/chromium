@@ -11,6 +11,8 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -650,18 +652,14 @@ ScriptValue WebGL2RenderingContextBase::getInternalformatParameter(
       GLint length = -1;
       ContextGL()->GetInternalformativ(target, internalformat,
                                        GL_NUM_SAMPLE_COUNTS, 1, &length);
-      if (length <= 0)
+      if (length <= 0) {
         return WebGLAny(script_state, DOMInt32Array::Create(0));
-
-      auto values = std::make_unique<GLint[]>(length);
-      for (GLint ii = 0; ii < length; ++ii)
-        values[ii] = 0;
-
+      }
+      auto values = base::HeapArray<GLint>::WithSize(length);
       ContextGL()->GetInternalformativ(target, internalformat, GL_SAMPLES,
-                                       length, values.get());
-      RecordInternalFormatParameter(internalformat, values.get(), length);
-      return WebGLAny(script_state,
-                      DOMInt32Array::Create(values.get(), length));
+                                       length, values.data());
+      RecordInternalFormatParameter(internalformat, values.data(), length);
+      return WebGLAny(script_state, DOMInt32Array::Create(values));
     }
     default:
       SynthesizeGLError(GL_INVALID_ENUM, "getInternalformatParameter",
@@ -3540,12 +3538,12 @@ void WebGL2RenderingContextBase::deleteQuery(WebGLQuery* query) {
   DeleteObject(query);
 }
 
-GLboolean WebGL2RenderingContextBase::isQuery(WebGLQuery* query) {
+bool WebGL2RenderingContextBase::isQuery(WebGLQuery* query) {
   if (!query || isContextLost() || !query->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (query->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsQueryEXT(query->Object());
 }
@@ -3760,12 +3758,12 @@ void WebGL2RenderingContextBase::deleteSampler(WebGLSampler* sampler) {
   DeleteObject(sampler);
 }
 
-GLboolean WebGL2RenderingContextBase::isSampler(WebGLSampler* sampler) {
+bool WebGL2RenderingContextBase::isSampler(WebGLSampler* sampler) {
   if (!sampler || isContextLost() || !sampler->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (sampler->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsSampler(sampler->Object());
 }
@@ -3971,12 +3969,12 @@ WebGLSync* WebGL2RenderingContextBase::fenceSync(GLenum condition,
   return MakeGarbageCollected<WebGLFenceSync>(this, condition, flags);
 }
 
-GLboolean WebGL2RenderingContextBase::isSync(WebGLSync* sync) {
+bool WebGL2RenderingContextBase::isSync(WebGLSync* sync) {
   if (!sync || isContextLost() || !sync->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (sync->MarkedForDeletion())
-    return 0;
+    return false;
 
   return sync->Object() != 0;
 }
@@ -4087,16 +4085,16 @@ void WebGL2RenderingContextBase::deleteTransformFeedback(
     transform_feedback_binding_ = default_transform_feedback_;
 }
 
-GLboolean WebGL2RenderingContextBase::isTransformFeedback(
+bool WebGL2RenderingContextBase::isTransformFeedback(
     WebGLTransformFeedback* feedback) {
   if (!feedback || isContextLost() || !feedback->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (!feedback->HasEverBeenBound())
-    return 0;
+    return false;
 
   if (feedback->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsTransformFeedback(feedback->Object());
 }
@@ -4617,10 +4615,11 @@ ScriptValue WebGL2RenderingContextBase::getActiveUniformBlockParameter(
       Vector<GLint> indices(uniform_count);
       ContextGL()->GetActiveUniformBlockiv(
           ObjectOrZero(program), uniform_block_index, pname, indices.data());
-      return WebGLAny(
-          script_state,
-          DOMUint32Array::Create(reinterpret_cast<GLuint*>(indices.data()),
-                                 indices.size()));
+      // SAFETY: conversion from GLint to uint32_t doesn't change size.
+      static_assert(sizeof(GLint) == sizeof(uint32_t));
+      auto indices_span = UNSAFE_BUFFERS(base::span<uint32_t>(
+          reinterpret_cast<uint32_t*>(indices.data()), indices.size()));
+      return WebGLAny(script_state, DOMUint32Array::Create(indices_span));
     }
     case GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER:
     case GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER: {
@@ -4712,16 +4711,16 @@ void WebGL2RenderingContextBase::deleteVertexArray(
   vertex_array->DeleteObject(ContextGL());
 }
 
-GLboolean WebGL2RenderingContextBase::isVertexArray(
+bool WebGL2RenderingContextBase::isVertexArray(
     WebGLVertexArrayObject* vertex_array) {
   if (isContextLost() || !vertex_array ||
       !vertex_array->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (!vertex_array->HasEverBeenBound())
-    return 0;
+    return false;
   if (vertex_array->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsVertexArrayOES(vertex_array->Object());
 }

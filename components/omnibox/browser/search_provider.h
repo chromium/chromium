@@ -351,11 +351,6 @@ class SearchProvider : public BaseSearchProvider,
   // those is true.
   int GetVerbatimRelevance(bool* relevance_from_server) const;
 
-  // Whether we should limit suggestions from SearchProvider while in
-  // keyword mode to only keyword suggestions. Used when we suspect that the
-  // user intentionally entered keyword mode and doesn't want the others.
-  bool ShouldCurbDefaultSuggestions() const;
-
   // Calculates the relevance score for the verbatim result from the
   // default search engine.  This version takes into account context:
   // i.e., whether the user has entered a keyword-based search or not.

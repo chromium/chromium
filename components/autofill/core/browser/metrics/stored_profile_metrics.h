@@ -28,18 +28,19 @@ struct StoredProfileCounts {
 // depending on the `category`, country-less address profiles.
 // This metric is emitted each time a new Chrome profile is started. It is
 // tracked separately for each `category`.
-void LogStoredProfileCountStatistics(AutofillProfileSourceCategory category,
+void LogStoredProfileCountStatistics(AutofillProfileRecordTypeCategory category,
                                      const StoredProfileCounts& counts);
 
 // Records the number of days since an address profile was last used. This is
 // logged separately for each profile of every `category`, each time a new
 // Chrome profile is launched.
-void LogStoredProfileDaysSinceLastUse(AutofillProfileSourceCategory category,
-                                      size_t days);
+void LogStoredProfileDaysSinceLastUse(
+    AutofillProfileRecordTypeCategory category,
+    size_t days);
 
 // Logs the `LogStoredProfileCountStatistics()` and
 // `LogStoredProfileDaysSinceLastUse()` metrics for every
-// AutofillProfileSourceCategory and the corresponding subset of `profiles`.
+// AutofillProfileRecordTypeCategory and the corresponding subset of `profiles`.
 void LogStoredProfileMetrics(
     const std::vector<const AutofillProfile*>& profiles);
 

@@ -3,7 +3,7 @@ export function buildValidNavigatorIdentityRequest() {
   return {
       digital: {
         providers: [{
-          protocol: "urn:openid.net:oid4vp",
+          protocol: "openid4vp",
           request: JSON.stringify({
             // Based on https://github.com/openid/OpenID4VP/issues/125
             client_id: "client.example.org",
@@ -24,7 +24,7 @@ export function buildValidNavigatorIdentityRequestWithRequestObject() {
   return {
       digital: {
         providers: [{
-          protocol: "urn:openid.net:oid4vp",
+          protocol: "openid4vp",
           request: {
             // Based on https://github.com/openid/OpenID4VP/issues/125
             client_id: "client.example.org",

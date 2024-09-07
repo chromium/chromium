@@ -18,21 +18,23 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
+#import "components/visited_url_ranking/public/url_visit_util.h"
 #import "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -57,7 +59,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/visited_url_ranking/model/visited_url_ranking_service_factory.h"
@@ -280,11 +281,11 @@ const char kGStatic[] = ".gstatic.com";
 
   switch (item.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
-      [self.NTPMetricsDelegate distantTabResumptionOpenedAtIndex:index];
+      [self.NTPActionsDelegate distantTabResumptionOpenedAtIndex:index];
       [self openDistantTab:item];
       break;
     case TabResumptionItemType::kMostRecentTab: {
-      [self.NTPMetricsDelegate recentTabTileOpenedAtIndex:index];
+      [self.NTPActionsDelegate recentTabTileOpenedAtIndex:index];
       [IntentDonationHelper donateIntent:IntentType::kOpenLatestTab];
       web::NavigationManager::WebLoadParams webLoadParams =
           web::NavigationManager::WebLoadParams(item.tabURL);
@@ -351,10 +352,10 @@ const char kGStatic[] = ".gstatic.com";
   }
   switch (self.itemConfig.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
-      [self.NTPMetricsDelegate distantTabResumptionDisplayedAtIndex:index];
+      [self.NTPActionsDelegate distantTabResumptionDisplayedAtIndex:index];
       break;
     case TabResumptionItemType::kMostRecentTab:
-      [self.NTPMetricsDelegate recentTabTileDisplayedAtIndex:index];
+      [self.NTPActionsDelegate recentTabTileDisplayedAtIndex:index];
       break;
   }
 }
@@ -521,7 +522,7 @@ const char kGStatic[] = ".gstatic.com";
 
 // Fetches the snapshot of the tab showing `item`.
 - (void)fetchSnapshotForItem:(TabResumptionItem*)item {
-  if (!IsTabResumption1_5SalientImageEnabled()) {
+  if (!IsTabResumption1_5ThumbnailsImageEnabled()) {
     return [self fetchSalientImageForItem:item];
   }
   BrowserList* browserList =
@@ -723,14 +724,49 @@ const char kGStatic[] = ".gstatic.com";
           }));
 }
 
-// Called when the URLs have been ranked. Pass the first one to MagicStack.
+// Called when the URLs have been ranked. Select the first one and decorate it.
 - (void)onURLRanked:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
          withStatus:(visited_url_ranking::ResultStatus)status {
   if (status != visited_url_ranking::ResultStatus::kSuccess ||
       URLs.size() == 0) {
     return;
   }
+  if (!IsTabResumption2BubbleEnabled()) {
+    return [self onURLDecorated:std::move(URLs) withStatus:status];
+  }
 
+  size_t index;
+  // Select the first URL with tab data.
+  for (index = 0; index < URLs.size(); index++) {
+    if (ExtractTabData(URLs[index])) {
+      break;
+    }
+  }
+  if (index == URLs.size()) {
+    return;
+  }
+
+  std::vector<visited_url_ranking::URLVisitAggregate> selectedURLs;
+  selectedURLs.push_back(std::move(URLs[index]));
+
+  __weak __typeof(self) weakSelf = self;
+  _visitedURLRankingService->DecorateURLVisitAggregates(
+      {}, std::move(selectedURLs),
+      base::BindOnce(
+          ^(visited_url_ranking::ResultStatus decorateStatus,
+            std::vector<visited_url_ranking::URLVisitAggregate> decoratedURLs) {
+            [weakSelf onURLDecorated:std::move(decoratedURLs)
+                          withStatus:decorateStatus];
+          }));
+}
+
+// Called when the URLs have been decorated.
+- (void)onURLDecorated:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
+            withStatus:(visited_url_ranking::ResultStatus)status {
+  if (status != visited_url_ranking::ResultStatus::kSuccess ||
+      URLs.size() == 0) {
+    return;
+  }
   const visited_url_ranking::URLVisitAggregate::TabData* tabData = nullptr;
   const visited_url_ranking::URLVisitAggregate* URLAggregate = nullptr;
   for (auto& aggregate : URLs) {
@@ -761,9 +797,11 @@ const char kGStatic[] = ".gstatic.com";
   item.commandHandler = self;
   item.delegate = self;
   if (IsTabResumption2BubbleEnabled()) {
-    // Dummy reason for now as TR2 does not return one.
-    // TODO(crbug.com/342389622): put the correct reason.
-    item.reason = @"TEST TR2 REASON.";
+    if (URLAggregate->decorations.size()) {
+      item.reason = base::SysUTF16ToNSString(
+          visited_url_ranking::GetMostRelevantDecoration(*URLAggregate)
+              .GetDisplayString());
+    }
   }
   if (tab.id > 0 && tab.session_tag && !isLocal) {
     item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());

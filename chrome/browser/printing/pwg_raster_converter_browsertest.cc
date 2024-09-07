@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
@@ -101,7 +102,8 @@ class PdfToPwgRasterBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PdfToPwgRasterBrowserTest, TestFailure) {
   scoped_refptr<base::RefCountedStaticMemory> bad_pdf_data =
-      base::MakeRefCounted<base::RefCountedStaticMemory>("0123456789", 10);
+      base::MakeRefCounted<base::RefCountedStaticMemory>(
+          base::byte_span_from_cstring("0123456789"));
   base::ReadOnlySharedMemoryRegion pwg_region;
   Convert(bad_pdf_data.get(), PdfRenderSettings(), PwgRasterSettings(),
           /*expect_success=*/false, &pwg_region);

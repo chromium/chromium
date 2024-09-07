@@ -386,8 +386,9 @@ void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
 void BrowserFrame::ShowContextMenuForViewImpl(views::View* source,
                                               const gfx::Point& p,
                                               ui::MenuSourceType source_type) {
-  if (chrome::IsRunningInForcedAppMode())
+  if (IsRunningInForcedAppMode()) {
     return;
+  }
 
   // Do not show context menu for Document picture-in-picture browser. Context:
   // http://b/274862709.

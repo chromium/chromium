@@ -12,16 +12,16 @@
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 namespace {
 
 // Marks the First Run has as completed.
-// See `ChromeEarlGreyAppInterface::writeFirstRunSentinel`.
-void writeFirstRunSentinel() {
+// See `ChromeEarlGreyAppInterface::WriteFirstRunSentinel`.
+void WriteFirstRunSentinel() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   FirstRun::RemoveSentinel();
   base::File::Error file_error;
@@ -35,8 +35,8 @@ void writeFirstRunSentinel() {
 }
 
 // Removes the file that marks a run as a First Run.
-// See `ChromeEarlGreyAppInterface::removeFirstRunSentinel`.
-void removeFirstRunSentinel() {
+// See `ChromeEarlGreyAppInterface::RemoveFirstRunSentinel`.
+void RemoveFirstRunSentinel() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (FirstRun::RemoveSentinel()) {
     FirstRun::LoadSentinelInfo();
@@ -49,59 +49,64 @@ void removeFirstRunSentinel() {
 
 // Test fixture for testing SupervisedUserServiceFactory class.
 class SupervisedUserServiceFactoryTest : public PlatformTest {
- protected:
-  SupervisedUserServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+ public:
+  SupervisedUserServiceFactoryTest() {
+    profile_ = TestProfileIOS::Builder().Build();
+    profile_->CreateOffTheRecordBrowserStateWithTestingFactories();
+  }
 
-  // ChromeBrowserState needs thread.
+  ProfileIOS* GetRegularProfile() { return profile_.get(); }
+
+  ProfileIOS* GetOffTheRecordProfile() {
+    return profile_->GetOffTheRecordChromeBrowserState();
+  }
+
+ private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that SupervisedUserServiceFactory creates
 // SupervisedUserService.
 TEST_F(SupervisedUserServiceFactoryTest, CreateService) {
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForBrowserState(browser_state_.get());
-  ASSERT_TRUE(service);
+      SupervisedUserServiceFactory::GetForProfile(GetRegularProfile());
+  EXPECT_TRUE(service);
 }
 
 // Tests that SupervisedUserServiceFactory retuns null
-// with an off-the-record ChromeBrowserState.
-TEST_F(SupervisedUserServiceFactoryTest,
-       ReturnsNullOnOffTheRecordBrowserState) {
-  ChromeBrowserState* otr_browser_state =
-      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories();
-  CHECK(otr_browser_state);
+// with an off-the-record Profile.
+TEST_F(SupervisedUserServiceFactoryTest, ReturnsNullOnOffTheRecordProfile) {
+  ProfileIOS* otr_profile = GetOffTheRecordProfile();
+  ASSERT_TRUE(otr_profile);
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForBrowserState(otr_browser_state);
-  ASSERT_FALSE(service);
+      SupervisedUserServiceFactory::GetForProfile(otr_profile);
+  EXPECT_FALSE(service);
 }
 
 // Tests that the SU interstitial first time banner should not be created for
 // first runs.
 TEST_F(SupervisedUserServiceFactoryTest,
        ServiceDoesNotShowFirstTimeInterstitialBannerOnFirstRun) {
-  removeFirstRunSentinel();
+  RemoveFirstRunSentinel();
 
-  ASSERT_FALSE(
-      supervised_user::ShouldShowFirstTimeBanner(browser_state_.get()));
+  EXPECT_FALSE(supervised_user::ShouldShowFirstTimeBanner(GetRegularProfile()));
 }
 
 // Tests that the SU interstitial first time banner should be created for
 // existing users i.e. for an existing pref store.
 TEST_F(SupervisedUserServiceFactoryTest,
        ServiceCanShowFirstTimeInterstitialBannerOnExistingUser) {
-  writeFirstRunSentinel();
+  WriteFirstRunSentinel();
 
-  ASSERT_TRUE(supervised_user::ShouldShowFirstTimeBanner(browser_state_.get()));
+  EXPECT_TRUE(supervised_user::ShouldShowFirstTimeBanner(GetRegularProfile()));
 }
 
 // Tests that the SU interstitial first time banner should not be created for
 // new users i.e. for a new pref store.
 TEST_F(SupervisedUserServiceFactoryTest,
        ServiceDoesNotShowFirstTimeInterstitialBannerOnNewUser) {
-  writeFirstRunSentinel();
+  WriteFirstRunSentinel();
 
   // Mark the user pref store as new.
   auto user_prefs = base::MakeRefCounted<TestingPrefStore>();
@@ -120,10 +125,9 @@ TEST_F(SupervisedUserServiceFactoryTest,
           std::make_unique<PrefNotifierImpl>());
   RegisterBrowserStatePrefs(testing_prefs->registry());
 
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.SetPrefService(std::move(testing_prefs));
-  std::unique_ptr<TestChromeBrowserState> browser_state =
-      std::move(builder).Build();
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
 
-  ASSERT_FALSE(supervised_user::ShouldShowFirstTimeBanner(browser_state.get()));
+  EXPECT_FALSE(supervised_user::ShouldShowFirstTimeBanner(profile.get()));
 }

@@ -31,9 +31,8 @@ base::Process::Priority ToProcessPriority(base::TaskPriority priority) {
   switch (priority) {
     case base::TaskPriority::BEST_EFFORT:
       return base::Process::Priority::kBestEffort;
-
-    // Only one foreground priority for now.
     case base::TaskPriority::USER_VISIBLE:
+      return base::Process::Priority::kUserVisible;
     case base::TaskPriority::USER_BLOCKING:
       return base::Process::Priority::kUserBlocking;
   }

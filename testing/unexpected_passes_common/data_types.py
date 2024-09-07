@@ -307,7 +307,8 @@ class BaseTypedMap(dict):
       for k, v in other.items():
         self[k] = v
     for k, v in kwargs.items():
-      self[k] = v
+      # TODO(crbug/352408455): Fix type error instead of disabling.
+      self[k] = v  # pytype: disable=unsupported-operands
 
   def setdefault(self, key: Any, value: Any = None) -> Any:
     if key not in self:

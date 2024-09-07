@@ -193,13 +193,7 @@ const char kInputDeviceSettingsMousePrefix[] =
     "peripheral_customization_mouse_";
 const char kInputDeviceSettingsGraphicsTabletPrefix[] =
     "peripheral_customization_graphics_tablet_";
-const char kKeyboardNotificationPrefix[] = "welcome_experience_keyboards";
-const char kTouchpadNotificationPrefix[] = "welcome_experience_touchpad";
-const char kPointingStickNotificationPrefix[] =
-    "welcome_experience_pointing_stick";
-const char kMouseNotificationPrefix[] = "welcome_experience_mouse";
-const char kGraphicsTabletNotificationPrefix[] =
-    "welcome_experience_graphics_tablet";
+const char kWelcomeExperienceNotificationPrefix[] = "welcome_experience";
 const char kDelimiter[] = "_";
 
 bool IsRightClickRewriteDisabled(SimulateRightClickModifier active_modifier) {
@@ -265,22 +259,21 @@ std::string GetRightClickNotificationId(
   }
 }
 
-std::string GetWelcomeExperienceNotificationId(const std::string& prefix,
-                                               uint32_t id) {
-  return prefix + kDelimiter + base::NumberToString(id);
+std::string GetWelcomeExperienceNotificationId(uint32_t id) {
+  return std::string(kWelcomeExperienceNotificationPrefix) + kDelimiter +
+         base::NumberToString(id);
 }
 
 std::string GetMouseNotificationID(uint32_t id) {
   if (features::IsWelcomeExperienceEnabled()) {
-    return GetWelcomeExperienceNotificationId(kMouseNotificationPrefix, id);
+    return GetWelcomeExperienceNotificationId(id);
   }
   return kInputDeviceSettingsMousePrefix + base::NumberToString(id);
 }
 
 std::string GetGraphicsTabletNotificationID(uint32_t id) {
   if (features::IsWelcomeExperienceEnabled()) {
-    return GetWelcomeExperienceNotificationId(kGraphicsTabletNotificationPrefix,
-                                              id);
+    return GetWelcomeExperienceNotificationId(id);
   }
   return kInputDeviceSettingsGraphicsTabletPrefix + base::NumberToString(id);
 }
@@ -562,16 +555,10 @@ void InputDeviceSettingsNotificationController::RegisterProfilePrefs(
                                   base::Time());
   pref_registry->RegisterTimePref(prefs::kTopRowRemappingNudgeLastShown,
                                   base::Time());
-  pref_registry->RegisterListPref(prefs::kMiceWelcomeNotificationSeen);
-  pref_registry->RegisterListPref(
-      prefs::kGraphicsTabletsWelcomeNotificationSeen);
-  pref_registry->RegisterListPref(prefs::kKeyboardsWelcomeNotificationSeen);
-  pref_registry->RegisterListPref(prefs::kTouchpadsWelcomeNotificationSeen);
-  pref_registry->RegisterListPref(
-      prefs::kPointingSticksWelcomeNotificationSeen);
   pref_registry->RegisterListPref(prefs::kPeripheralNotificationMiceSeen);
   pref_registry->RegisterListPref(
       prefs::kPeripheralNotificationGraphicsTabletsSeen);
+  pref_registry->RegisterListPref(prefs::kWelcomeExperienceNotificationSeen);
   pref_registry->RegisterDictionaryPref(
       prefs::kKeyboardSettingSixPackKeyRemappings);
 }
@@ -632,10 +619,6 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
     return;
   }
 
-  const char* pref_name = features::IsWelcomeExperienceEnabled()
-                              ? prefs::kMiceWelcomeNotificationSeen
-                              : prefs::kPeripheralNotificationMiceSeen;
-
   // Avoid showing notification for the virtual mouse device.
   if (mouse.device_key == kVirtualMouseDeviceKey) {
     return;
@@ -645,14 +628,17 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
+  const char* pref_name = features::IsWelcomeExperienceEnabled()
+                              ? prefs::kWelcomeExperienceNotificationSeen
+                              : prefs::kPeripheralNotificationMiceSeen;
   if (base::Contains(prefs->GetList(pref_name), mouse.device_key)) {
     return;
   }
 
-  auto seen_mouse_list = prefs->GetList(pref_name).Clone();
+  auto seen_device_list = prefs->GetList(pref_name).Clone();
 
-  seen_mouse_list.Append(mouse.device_key);
-  prefs->SetList(pref_name, std::move(seen_mouse_list));
+  seen_device_list.Append(mouse.device_key);
+  prefs->SetList(pref_name, std::move(seen_device_list));
 
   CHECK(mouse.settings);
   // Do not show notification if the device remapping list has already been
@@ -679,17 +665,18 @@ void InputDeviceSettingsNotificationController::
 
   const char* pref_name =
       features::IsWelcomeExperienceEnabled()
-          ? prefs::kGraphicsTabletsWelcomeNotificationSeen
+          ? prefs::kWelcomeExperienceNotificationSeen
           : prefs::kPeripheralNotificationGraphicsTabletsSeen;
-  auto seen_graphics_tablet_list = prefs->GetList(pref_name).Clone();
 
-  for (const auto& value : seen_graphics_tablet_list) {
+  auto seen_device_list = prefs->GetList(pref_name).Clone();
+
+  for (const auto& value : seen_device_list) {
     if (value.is_string() && value.GetString() == graphics_tablet.device_key) {
       return;
     }
   }
-  seen_graphics_tablet_list.Append(graphics_tablet.device_key);
-  prefs->SetList(pref_name, std::move(seen_graphics_tablet_list));
+  seen_device_list.Append(graphics_tablet.device_key);
+  prefs->SetList(pref_name, std::move(seen_device_list));
 
   CHECK(graphics_tablet.settings);
   // Do not show notification if the device remapping list has already been
@@ -876,17 +863,17 @@ void InputDeviceSettingsNotificationController::
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
-  if (base::Contains(prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen),
+  if (base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
                      keyboard.device_key)) {
     return;
   }
 
-  auto seen_keyboard_list =
-      prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen).Clone();
+  auto seen_device_list =
+      prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).Clone();
 
-  seen_keyboard_list.Append(keyboard.device_key);
-  prefs->SetList(prefs::kKeyboardsWelcomeNotificationSeen,
-                 std::move(seen_keyboard_list));
+  seen_device_list.Append(keyboard.device_key);
+  prefs->SetList(prefs::kWelcomeExperienceNotificationSeen,
+                 std::move(seen_device_list));
 
   CHECK(keyboard.settings);
   ShowKeyboardSettingsNotification(keyboard, device_image);
@@ -903,17 +890,17 @@ void InputDeviceSettingsNotificationController::
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
-  if (base::Contains(prefs->GetList(prefs::kTouchpadsWelcomeNotificationSeen),
+  if (base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
                      touchpad.device_key)) {
     return;
   }
 
-  auto seen_touchpad_list =
-      prefs->GetList(prefs::kTouchpadsWelcomeNotificationSeen).Clone();
+  auto seen_device_list =
+      prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).Clone();
 
-  seen_touchpad_list.Append(touchpad.device_key);
-  prefs->SetList(prefs::kTouchpadsWelcomeNotificationSeen,
-                 std::move(seen_touchpad_list));
+  seen_device_list.Append(touchpad.device_key);
+  prefs->SetList(prefs::kWelcomeExperienceNotificationSeen,
+                 std::move(seen_device_list));
 
   CHECK(touchpad.settings);
   ShowTouchpadSettingsNotification(touchpad, device_image);
@@ -923,8 +910,8 @@ void InputDeviceSettingsNotificationController::
     ShowPointingStickSettingsNotification(
         const mojom::PointingStick& pointing_stick) {
   const auto peripheral_name = base::UTF8ToUTF16(pointing_stick.name);
-  const auto notification_id = GetWelcomeExperienceNotificationId(
-      kPointingStickNotificationPrefix, pointing_stick.id);
+  const auto notification_id =
+      GetWelcomeExperienceNotificationId(pointing_stick.id);
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
@@ -960,18 +947,17 @@ void InputDeviceSettingsNotificationController::
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
-  if (base::Contains(
-          prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen),
-          pointing_stick.device_key)) {
+  if (base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
+                     pointing_stick.device_key)) {
     return;
   }
 
-  auto seen_touchpad_list =
-      prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen).Clone();
+  auto seen_device_list =
+      prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).Clone();
 
-  seen_touchpad_list.Append(pointing_stick.device_key);
-  prefs->SetList(prefs::kPointingSticksWelcomeNotificationSeen,
-                 std::move(seen_touchpad_list));
+  seen_device_list.Append(pointing_stick.device_key);
+  prefs->SetList(prefs::kWelcomeExperienceNotificationSeen,
+                 std::move(seen_device_list));
 
   CHECK(pointing_stick.settings);
   ShowPointingStickSettingsNotification(pointing_stick);
@@ -1019,8 +1005,7 @@ void InputDeviceSettingsNotificationController::
     ShowKeyboardSettingsNotification(const mojom::Keyboard& keyboard,
                                      const gfx::ImageSkia& device_image) {
   const auto peripheral_name = base::UTF8ToUTF16(keyboard.name);
-  const auto notification_id = GetWelcomeExperienceNotificationId(
-      kKeyboardNotificationPrefix, keyboard.id);
+  const auto notification_id = GetWelcomeExperienceNotificationId(keyboard.id);
   const auto message =
       keyboard.battery_info.is_null()
           ? l10n_util::GetStringFUTF16(
@@ -1064,8 +1049,7 @@ void InputDeviceSettingsNotificationController::
                 IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_TOUCHPAD,
                 peripheral_name)
           : GetBatteryLevelMessage(*touchpad.battery_info);
-  const auto notification_id = GetWelcomeExperienceNotificationId(
-      kTouchpadNotificationPrefix, touchpad.id);
+  const auto notification_id = GetWelcomeExperienceNotificationId(touchpad.id);
   message_center::RichNotificationData rich_notification_data;
   if (!device_image.isNull()) {
     rich_notification_data.image = ResizeImage(device_image);
@@ -1278,7 +1262,7 @@ void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
   nudge_data.keyboard_codes = {ui::VKEY_FUNCTION, ui::VKEY_RIGHT_ALT};
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-          IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE);
+          IDR_KEYBOARD_CAPSLOCK_KEY_NUDGE_IMAGE);
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }

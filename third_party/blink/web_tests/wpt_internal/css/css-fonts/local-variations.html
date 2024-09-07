@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      @font-face {
+        font-family: bahnschriftlocal;
+        src: local(Bahnschrift);
+      }
+
+      .test {
+        font-family: bahnschriftlocal;
+        font-size: 64px;
+      }
+
+      #bahnschrift_narrow {
+        font-variation-settings: "wdth" 75;
+      }
+
+      #bahnschrift_wide {
+        font-variation-settings: "wdht" 100;
+      }
+    </style>
+  </head>
+
+  <div class="test">
+    <span id="bahnschrift_narrow">Hamburgefonstiv</span>
+    <span id="bahnschrift_wide">Hamburgefonstiv</span>
+  </div>
+  <script>
+    var t = async_test("local() loaded variable font width variation applied.");
+    document.fonts.ready.then((fontFaceSet) => {
+      var narrow_width = bahnschrift_narrow.getBoundingClientRect().width;
+      var wide_width = bahnschrift_wide.getBoundingClientRect().width;
+      t.step(function () {
+        assert_greater_than(
+          wide_width,
+          narrow_width + 100,
+          "Width variation should be applied."
+        );
+      });
+      t.done();
+    });
+  </script>
+</html>

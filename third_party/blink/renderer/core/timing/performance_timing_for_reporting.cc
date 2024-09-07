@@ -89,8 +89,6 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
           timing.largest_contentful_paint_time,
 
           timing.largest_contentful_paint_image_request_priority,
-          timing.is_loaded_from_memory_cache,
-          timing.is_preloaded_with_early_hints,
           merged_unclamped_paint_time};
 }
 

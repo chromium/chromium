@@ -18,6 +18,7 @@
 #include "remoting/protocol/audio_pump.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_writer.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/host_control_dispatcher.h"
@@ -125,6 +126,11 @@ std::unique_ptr<AudioStream> IceConnectionToClient::StartAudioStream(
                     std::move(audio_encoder), audio_writer_.get()));
 }
 
+void IceConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_.ApplyNetworkSettings(settings);
+}
+
 // Return pointer to ClientStub.
 ClientStub* IceConnectionToClient::client_stub() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -183,7 +189,8 @@ void IceConnectionToClient::OnSessionStateChange(Session::State state) {
 
       // Notify the handler after initializing the channels, so that
       // ClientSession can get a client clipboard stub.
-      event_handler_->OnConnectionAuthenticated();
+      event_handler_->OnConnectionAuthenticated(
+          session_->authenticator().GetSessionPolicies());
       break;
 
     case Session::CLOSED:

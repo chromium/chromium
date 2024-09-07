@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ActionInSuggest.UsageByType.{Type}"
-    enum="BooleanUsage" expires_after="2025-01-05">
+    enum="BooleanUsage" expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ActionInSuggest.{ShownOrUsed}"
-    enum="ActionInSuggestType" expires_after="2025-01-05">
+    enum="ActionInSuggestType" expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -880,7 +880,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.FocusResultedInNavigation" enum="BooleanNavigated"
-    expires_after="2025-02-10">
+    expires_after="2025-09-01">
   <owner>ender@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -1142,7 +1142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2"
-    units="ms" expires_after="2024-12-24">
+    units="ms" expires_after="2025-02-23">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -1154,7 +1154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SyncDeleteTime" units="ms"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1484,7 +1484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.Search.CtrlEnter.ResolvedAsUrl" enum="Boolean"
-    expires_after="2024-12-08">
+    expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>chrome-search@google.com</owner>
   <summary>
@@ -1498,7 +1498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.Search.CtrlEnter.Used" enum="BooleanUsage"
-    expires_after="2025-02-10">
+    expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>chrome-search@google.com</owner>
   <summary>
@@ -1535,7 +1535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SearchEngineType{Population}"
-    enum="OmniboxSearchEngineType" expires_after="2024-12-15">
+    enum="OmniboxSearchEngineType" expires_after="2025-02-16">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1556,18 +1556,6 @@ chromium-metrics-reviews@google.com.
         summary="Reported for users with search engine set by the
                  SiteSearchSettings Enterprise policy."/>
   </token>
-</histogram>
-
-<histogram name="Omnibox.SearchPrefetch.PrefetchParameterExistence"
-    enum="Boolean" expires_after="2024-10-03">
-  <owner>lingqi@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Investigate the percentage of prefetch requests that do not have the
-    prefetch parameter attached. Recorded in GetPreloadURLFromMatch, when
-    generating a prefetch url. It can be caused by the missing of prefetch
-    source component from the template url.
-  </summary>
 </histogram>
 
 <histogram
@@ -2020,7 +2008,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2.1"
-    units="ms" expires_after="2024-12-24">
+    units="ms" expires_after="2025-02-23">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2066,7 +2054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.DeletedTileIndex" units="position"
-    expires_after="2024-10-06">
+    expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2081,7 +2069,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.DeletedTileType" enum="SuggestTileType"
-    expires_after="2024-10-06">
+    expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2095,7 +2083,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.SelectedTileIndex" units="position"
-    expires_after="2025-02-10">
+    expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2110,7 +2098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.SelectedTileType" enum="SuggestTileType"
-    expires_after="2024-10-06">
+    expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2126,7 +2114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.TileTypeCount.{SuggestTileType}"
-    units="count" expires_after="2025-02-10">
+    units="count" expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2174,8 +2162,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.TemplateUrl.Reconciliation.Type"
+    enum="ReconciliationType" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Captures the type of performed reconciliation (if any).
+
+    Recorded once per Default Search Engine reconciliation event (on start + any
+    time the Default Search Engine is changed).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.Reconciliation.{ByVariant}.Result"
+    enum="BooleanSuccess" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Captures the outcome of TemplateURL reconciliation whenever reconciliation
+    takes place.
+
+    This histogram captures outcome of reconciliation {ByVariant}.
+  </summary>
+  <token key="ByVariant">
+    <variant name="ByDomainBasedKeyword" summary="by Domain-based Keyword"/>
+    <variant name="ByID" summary="by ID"/>
+    <variant name="ByKeyword" summary="by Keyword"/>
+  </token>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant"
+    enum="RegulatoryExtensionVariant" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Records the type of regulatory extension used to formulate the Search URL.
+
+    Recorded for all TemplateURLs every time a Search URL is created, regardless
+    of whether extensions are used, or a specific extension type is populated.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant"
+    enum="RegulatoryExtensionVariant" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Records the type of regulatory extension used to formulate the Suggest URL.
+
+    Recorded for all TemplateURLs every time a Suggest URL is created,
+    regardless of whether extensions are used, or a specific extension type is
+    populated.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.TemplateUrl.RlzPresent" enum="Boolean"
-    expires_after="2025-05-30">
+    expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@google.com</owner>
   <owner>chrome-search@google.com</owner>
@@ -2189,7 +2231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.SearchClientPresent" enum="Boolean"
-    expires_after="2025-05-30">
+    expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@google.com</owner>
   <owner>chrome-search@google.com</owner>
@@ -2203,7 +2245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.UnrecognizedParameter"
-    enum="BooleanPrepopulated" expires_after="2025-05-30">
+    enum="BooleanPrepopulated" expires_after="2025-09-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@google.com</owner>
   <owner>chrome-search@google.com</owner>
@@ -2244,7 +2286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.URLScoringModelExecuted.ElapsedTime"
-    units="microseconds" expires_after="2024-12-24">
+    units="microseconds" expires_after="2025-02-23">
   <owner>mahmadi@chromium.org</owner>
   <owner>yoangela@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2258,7 +2300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.URLScoringModelExecuted.Matches" units="counts"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>mahmadi@chromium.org</owner>
   <owner>yoangela@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2533,6 +2575,37 @@ chromium-metrics-reviews@google.com.
     <variant name="NonPrefetch" summary="user-initiated requests"/>
     <variant name="Prefetch" summary="non-user-initiated proactive requests"/>
   </token>
+</histogram>
+
+<histogram name="Omnibox.{SearchPrefetch}.CacheAliasElapsedTimeToFallback"
+    units="ms" expires_after="2025-02-28">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    {SearchPrefetch}
+
+    Measures the time between the construction of
+    CacheAliasSearchPrefetchURLLoader and the moment the prefetch fell back from
+    the disk cache to network. This is recorded when the loader starts the
+    fallback in CacheAliasSearchPrefetchURLLoader::RestartDirect().
+  </summary>
+  <token key="SearchPrefetch" variants="SearchPrefetch"/>
+</histogram>
+
+<histogram name="Omnibox.{SearchPrefetch}.CacheAliasFallbackReason"
+    enum="SearchPrefetchCacheAliasFallbackReason" expires_after="2025-02-28">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    {SearchPrefetch}
+
+    The reason that a search prefetch request failed to read a response from the
+    disk cache and then fell back to network. This is recorded when
+    CacheAliasSearchPrefetchURLLoader is destructed regardless of whether the
+    fallback happened. When the fallback didn't happen, this records
+    kNoFallback.
+  </summary>
+  <token key="SearchPrefetch" variants="SearchPrefetch"/>
 </histogram>
 
 <histogram

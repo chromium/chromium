@@ -16,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -330,26 +329,9 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
   SetFirstRunFinished(reason);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome;
-  switch (reason) {
-    case FinishedReason::kFinishedFlow:
-      // No outcome to log, the flow logs it by itself.
-      break;
-    case FinishedReason::kProfileAlreadySetUp:
-      outcome =
-          ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedAlreadySyncing;
-      break;
-    case FinishedReason::kSkippedByPolicies:
-      outcome = ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies;
-      break;
-    case FinishedReason::kForceSignin:
-      NOTREACHED_IN_MIGRATION()
-          << "Force Signin policy value is not active on Lacros.";
-      break;
-  }
-
-  if (outcome.has_value()) {
-    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(*outcome);
+  if (reason == FinishedReason::kForceSignin) {
+    NOTREACHED_IN_MIGRATION()
+        << "Force Signin policy value is not active on Lacros.";
   }
 #endif
 
@@ -401,10 +383,6 @@ void FirstRunService::OpenFirstRunInternal(EntryPoint entry_point) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::UmaHistogramEnumeration(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", entry_point);
-#endif
   base::UmaHistogramEnumeration("ProfilePicker.FirstRun.EntryPoint",
                                 entry_point);
 

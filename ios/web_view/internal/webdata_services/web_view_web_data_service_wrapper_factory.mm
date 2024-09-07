@@ -84,7 +84,8 @@ WebViewWebDataServiceWrapperFactory::BuildServiceInstanceFor(
   return std::make_unique<WebDataServiceWrapper>(
       browser_state_path,
       ApplicationContext::GetInstance()->GetApplicationLocale(),
-      web::GetUIThreadTaskRunner({}), base::DoNothing());
+      web::GetUIThreadTaskRunner({}), base::DoNothing(),
+      ApplicationContext::GetInstance()->GetOSCryptAsync());
 }
 
 bool WebViewWebDataServiceWrapperFactory::ServiceIsNULLWhileTesting() const {

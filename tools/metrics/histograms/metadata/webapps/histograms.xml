@@ -222,16 +222,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Webapp.AddToHomescreenMediator.AppTypeToMenuEntry"
-    enum="AppTypeToMenuEntry" expires_after="2025-01-05">
-  <owner>finnur@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Keeps track of what verbiage was shown in the App menu versus what was
-    actually installed.
-  </summary>
-</histogram>
-
 <histogram name="Webapp.AmbientBadge.Terminate"
     enum="InstallableAmbientBadgeState" expires_after="2025-01-05">
   <owner>eirage@chromium.org</owner>
@@ -319,30 +309,6 @@ chromium-metrics-reviews@google.com.
     Records the source of certain navigations to chrome://app-settings.
     Recording happens at the given entry point, and not during the loading of
     chrome://app-settings, so direct visits to the URL are not recorded.
-  </summary>
-</histogram>
-
-<histogram name="Webapp.CheckServiceWorker.Status"
-    enum="ServiceWorkerOfflineCapability" expires_after="2025-10-20">
-  <owner>dmurph@chromium.org</owner>
-  <owner>pwa-team@google.com</owner>
-  <summary>
-    Records the result of the check if a PWA has a service worker with a fetch
-    event handler when the CheckOfflineCapability feature is disabled. When the
-    feature is enabled, records the result of the check if a PWA supports
-    offline pages with a service worker.
-  </summary>
-</histogram>
-
-<histogram name="Webapp.CheckServiceWorker.Time" units="ms"
-    expires_after="2025-01-26">
-  <owner>dmurph@chromium.org</owner>
-  <owner>pwa-team@google.com</owner>
-  <summary>
-    Records the time to complete the check if a PWA has a service worker with a
-    fetch event handler when the CheckOfflineCapability feature is disabled.
-    When the feature is enabled, records the time to complete the check if a PWA
-    supports offline pages with a service worker.
   </summary>
 </histogram>
 

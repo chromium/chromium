@@ -19,10 +19,9 @@ HistoryClustersMetricsLogger::HistoryClustersMetricsLogger(content::Page& page)
     : PageUserData<HistoryClustersMetricsLogger>(page) {}
 
 HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
-  if (!navigation_id_)
+  if (!navigation_id_ || !initial_state_ || !is_ever_shown_) {
     return;
-  if (!initial_state_)
-    return;
+  }
 
   // Record UKM metrics.
 
@@ -121,6 +120,10 @@ void HistoryClustersMetricsLogger::RecordToggledVisibility(bool visible) {
   base::UmaHistogramBoolean("History.Clusters.UIActions.ToggledVisiblity",
                             visible);
   toggled_visiblity_count_++;
+}
+
+void HistoryClustersMetricsLogger::WasShown() {
+  is_ever_shown_ = true;
 }
 
 bool HistoryClustersMetricsLogger::

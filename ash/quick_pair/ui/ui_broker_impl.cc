@@ -117,6 +117,10 @@ void UIBrokerImpl::ShowLaunchCompanionApp(scoped_refptr<Device> device) {
   }
 }
 
+void UIBrokerImpl::ShowPasskey(std::u16string device_name, uint32_t passkey) {
+  fast_pair_presenter_->ShowPasskey(device_name, passkey);
+}
+
 void UIBrokerImpl::RemoveNotifications() {
   fast_pair_presenter_->RemoveNotifications();
 }

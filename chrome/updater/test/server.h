@@ -112,6 +112,9 @@ class ScopedServer {
     return proxy;
   }
 
+  bool gzip_response() const { return gzip_response_; }
+  void set_gzip_response(bool gzip_response) { gzip_response_ = gzip_response; }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
@@ -122,6 +125,7 @@ class ScopedServer {
   std::list<request::MatcherGroup> request_matcher_groups_;
   std::list<std::pair<net::HttpStatusCode, std::string>> responses_;
   base::TimeDelta download_delay_;
+  bool gzip_response_ = false;
 };
 
 }  // namespace updater::test

@@ -5,16 +5,14 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=./pdf_shared_lit.css.js
- * #include=pdf-shared-lit
+ * #import=./pdf_shared.css.js
+ * #include=pdf-shared
  * #css_wrapper_metadata_end */
 
 :host {
-  --side-panel-border-color: rgb(94, 94, 94);
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
-  background-color: var(--viewer-pdf-toolbar-background-color);
-  border-inline-start: 1px solid var(--side-panel-border-color);
+  background-color: var(--viewer-side-background-color);
   padding-top: 8px;
   width: 288px;
 }
@@ -30,12 +28,21 @@ h2 {
   margin-inline-start: 14px;
 }
 
+cr-icon-button {
+  --cr-icon-button-fill-color: var(--viewer-icon-ink-fill-color);
+}
+
+cr-icon-button[data-selected="true"] {
+  --cr-icon-button-fill-color: var(--viewer-icon-ink-selected-fill-color);
+  background-color: var(--viewer-icon-ink-selected-background-color);
+}
+
 #brush-options {
   padding-top: 27px;
 }
 
 #brush-selector {
-  border-bottom: 1px solid var(--side-panel-border-color);
+  border-bottom: 1px solid var(--viewer-border-color);
   display: flex;
   justify-content: center;
   padding-bottom: 8px;
@@ -60,17 +67,6 @@ h2 {
   --cr-icon-button-size: 48px;
 }
 
-.color-chip {
-  -webkit-appearance: none;
-  background: var(--item-color, magenta);
-  cursor: pointer;
-  border: 1px solid rgba(32, 33, 36, 0.5);
-  border-radius: 12px;
-  margin: 0;
-  height: 24px;
-  width: 24px;
-}
-
 .color-item {
   align-items: center;
   cursor: pointer;
@@ -80,8 +76,18 @@ h2 {
   width: 48px;
 }
 
-.color-item input[checked] {
-  border-radius: 18px;
+.color-chip {
+  -webkit-appearance: none;
+  background: var(--item-color, magenta);
+  border: 1px solid rgba(32, 33, 36, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  margin: 0;
+  height: 24px;
+  width: 24px;
+}
+
+.color-chip[checked] {
   height: 36px;
   width: 36px;
 }

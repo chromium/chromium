@@ -603,7 +603,7 @@ class WebRequestEventRouter : public KeyedService {
 
   // Called when the RulesRegistry is ready to unblock a request that was
   // waiting for said event.
-  void OnRulesRegistryReady(content::BrowserContext* browser_context,
+  void OnRulesRegistryReady(void* browser_context_id,
                             const std::string& event_name,
                             uint64_t request_id,
                             RequestStage request_stage);

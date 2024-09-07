@@ -158,6 +158,35 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByIncludeCredentials);
 // available.
 NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByNetworkIsolationKey);
 
+// The following flags are used as part of an experiment to modify the HTTP
+// cache key scheme to better protect against leaks via navigations.
+// These flags are mutually exclusive, and for each flag the HTTP cache will be
+// cleared when the flag first transitions from being disabled to being enabled.
+//
+// This flag incorporates a boolean into the cache key that is true for
+// renderer-initiated main frame navigations when the request initiator site is
+// cross-site to the URL being navigated to.
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kSplitCacheByCrossSiteMainFrameNavigationBoolean);
+// This flag incorporates the request initiator site into the cache key for
+// renderer-initiated main frame navigations when the request initiator site is
+// cross-site to the URL being navigated to. If the request initiator site is
+// opaque, then no caching is performed of the navigated-to document.
+NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByMainFrameNavigationInitiator);
+// This flag incorporates the request initiator site into the cache key for all
+// renderer-initiated navigations (including subframe navigations) when the
+// request initiator site is cross-site to the URL being navigated to. If the
+// request initiator is opaque, then no caching is performed of the navigated-to
+// document. When this scheme is used, the `is-subframe-document-resource`
+// boolean is not incorporated into the cache key, since incorporating the
+// initiator site for subframe navigations should be sufficient for mitigating
+// the attacks that the `is-subframe-document-resource` mitigates.
+NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByNavigationInitiator);
+// This flag doesn't result in changes to the HTTP cache scheme but provides an
+// experiment control group that mitigates the differences inherent in changing
+// cache key schemes.
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheKeyingExperimentControlGroup2024);
+
 // Splits the generated code cache by the request's NetworkIsolationKey if one
 // is available. Note that this feature is also gated behind
 // `net::HttpCache::IsSplitCacheEnabled()`.
@@ -174,8 +203,14 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
 // servers.
 NET_EXPORT BASE_DECLARE_FEATURE(kTLS13KeyUpdate);
 
-// Enables Kyber-based post-quantum key-agreements in TLS 1.3 connections.
+// Enables post-quantum key-agreements in TLS 1.3 connections. kUseMLKEM
+// controls whether ML-KEM or Kyber is used.
 NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
+
+// Causes TLS 1.3 connections to use the ML-KEM standard instead of the Kyber
+// draft standard for post-quantum key-agreement. Post-quantum key-agreement
+// must be enabled (e.g. via kPostQuantumKyber) for this to have an effect.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseMLKEM);
 
 // Changes the timeout after which unused sockets idle sockets are cleaned up.
 NET_EXPORT BASE_DECLARE_FEATURE(kNetUnusedIdleSocketTimeout);
@@ -300,8 +335,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAlpsClientHintParsing);
 // Whether to kill the session on Error::kAcceptChMalformed.
 NET_EXPORT BASE_DECLARE_FEATURE(kShouldKillSessionOnAcceptChMalformed);
 
-NET_EXPORT BASE_DECLARE_FEATURE(kCaseInsensitiveCookiePrefix);
-
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebsocketsOverHttp3);
 
 #if BUILDFLAG(IS_WIN)
@@ -373,6 +406,11 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // as when a re-fetch is forced due to an error.
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kIpPrivacyProxyListMinFetchInterval;
+
+// Fetches of the IP Protection proxy list will have a random time in the range
+// of plus or minus this delta added to their interval.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyProxyListFetchIntervalFuzz;
 
 // Overrides the ProxyA hostname normally set by the proxylist fetch.
 NET_EXPORT extern const base::FeatureParam<std::string>
@@ -472,11 +510,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTimeLimitedInsecureCookies);
 // Enables enabling third-party cookie blocking from the command line.
 NET_EXPORT BASE_DECLARE_FEATURE(kForceThirdPartyCookieBlocking);
 
-// Enables an exception for third-party cookie blocking when the request is
-// same-site with the top-level document, opted into CORS, but embedded in a
-// cross-site context.
-NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyCookieTopLevelSiteCorsException);
-
 // Enables Early Hints on HTTP/1.1.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableEarlyHintsOnHttp11);
 
@@ -538,6 +571,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionProxyChains);
 
 // Enables the Storage Access Headers semantics.
 NET_EXPORT BASE_DECLARE_FEATURE(kStorageAccessHeaders);
+
+// Enables the Storage Access Headers Origin Trial.
+NET_EXPORT BASE_DECLARE_FEATURE(kStorageAccessHeadersTrial);
 
 // Enables more checks when creating a SpdySession for proxy. These checks are
 // already applied to non-proxy SpdySession creations.

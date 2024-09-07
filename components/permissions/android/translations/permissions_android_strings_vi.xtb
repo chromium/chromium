@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Trang web này không thể yêu cầu bạn cấp quyền</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Nhận trợ giúp<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Bật Bluetooth<ph name="END_LINK" /> để cho phép ghép nối</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> cần có quyền theo dõi cử chỉ tay của bạn.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Nhận trợ giúp<ph name="END_LINK" /> trong khi quét tìm thiết bị…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> cần có quyền truy cập micrô của bạn cho trang web này.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> muốn quét tìm các thiết bị Bluetooth ở gần và đã tìm thấy các thiết bị sau đây:</translation>

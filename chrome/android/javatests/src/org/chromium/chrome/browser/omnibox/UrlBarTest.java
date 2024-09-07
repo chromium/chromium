@@ -32,12 +32,8 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.RequiresRestart;
-import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -46,7 +42,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.List;
 import java.util.Optional;
@@ -672,26 +667,6 @@ public class UrlBarTest {
         mOmnibox.typeText("test", false);
         mOmnibox.clearFocus();
         mOmnibox.checkText(equalTo(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL), null);
-    }
-
-    @Test
-    @SmallTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    public void testDarkThemeColor() throws Throwable {
-        // Execute HTML from within the omnibox and observe the style change.
-        mOmnibox.typeText(
-                UrlUtils.encodeHtmlDataUri(
-                        "<html><meta name=\"theme-color\" content=\"#000000\" /></html>"),
-                true);
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    final int expectedTextColor =
-                            sActivityTestRule
-                                    .getActivity()
-                                    .getColor(R.color.branded_url_text_on_dark_bg);
-                    Criteria.checkThat(mUrlBar.getCurrentTextColor(), equalTo(expectedTextColor));
-                });
     }
 
     @Test

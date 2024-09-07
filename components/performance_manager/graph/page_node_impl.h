@@ -96,6 +96,7 @@ class PageNodeImpl
   LifecycleState GetLifecycleState() const override;
   bool IsHoldingWebLock() const override;
   bool IsHoldingIndexedDBLock() const override;
+  bool UsesWebRTC() const override;
   int64_t GetNavigationID() const override;
   const std::string& GetContentsMimeType() const override;
   std::optional<blink::mojom::PermissionStatus>
@@ -123,6 +124,12 @@ class PageNodeImpl
   void OnFaviconUpdated();
   void OnTitleUpdated();
   void OnAboutToBeDiscarded(base::WeakPtr<PageNode> new_page_node);
+  // Set main frame information of a restored page before the first navigation
+  // is committed.
+  void SetMainFrameRestoredState(
+      const GURL& url,
+      blink::mojom::PermissionStatus notification_permission_status);
+  // Invoked when a main frame navigation is committed.
   void OnMainFrameNavigationCommitted(
       bool same_document,
       base::TimeTicks navigation_committed_time,
@@ -196,6 +203,9 @@ class PageNodeImpl
                                  bool is_holding_indexeddb_lock) {
     SetIsHoldingIndexedDBLock(is_holding_indexeddb_lock);
   }
+  void SetUsesWebRTC(base::PassKey<PageAggregatorData>, bool uses_web_rtc) {
+    SetUsesWebRTC(uses_web_rtc);
+  }
   void SetHadFormInteraction(base::PassKey<PageAggregatorData>,
                              bool had_form_interaction) {
     SetHadFormInteraction(had_form_interaction);
@@ -222,6 +232,7 @@ class PageNodeImpl
   void SetLifecycleState(LifecycleState lifecycle_state);
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
+  void SetUsesWebRTC(bool uses_web_rtc);
   void SetHadFormInteraction(bool had_form_interaction);
   void SetHadUserEdits(bool had_user_edits);
 
@@ -355,6 +366,10 @@ class PageNodeImpl
       bool,
       &PageNodeObserver::OnPageIsHoldingIndexedDBLockChanged>
       is_holding_indexeddb_lock_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+  // Indicates if at least one frame of the page currently uses WebRTC.
+  ObservedProperty::
+      NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnPageUsesWebRTCChanged>
+          uses_web_rtc_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // Indicates if at least one frame of the page has received some form
   // interactions.
   ObservedProperty::NotifiesOnlyOnChanges<

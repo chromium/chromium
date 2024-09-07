@@ -454,7 +454,7 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
   }
   base::Value::Dict window_value =
       ExtensionTabUtil::CreateWindowValueForExtension(
-          *browser, extension(), ExtensionTabUtil::kPopulateTabs,
+          *browser, extension(), WindowController::kPopulateTabs,
           source_context_type());
   std::optional<api::windows::Window> window =
       api::windows::Window::FromValue(window_value);

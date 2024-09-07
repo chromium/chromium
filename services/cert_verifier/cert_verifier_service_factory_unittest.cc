@@ -1337,4 +1337,107 @@ TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
   }
 }
 
+// Tests that UpdateNetworkTime being called causes new cert verifiers to use
+// the time tracker time for verification.
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
+       UpdateNetworkTimeNewVerifier) {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  base::Time now = base::Time::Now();
+  base::TimeTicks ticks_now = base::TimeTicks::Now();
+  //  Configure the leaf certificate so it is no longer valid according to the
+  //  system time.
+  leaf->SetValidity(now - base::Days(3), now - base::Days(1));
+  leaf->SetSubjectAltName("host.test");
+  net::ScopedTestRoot scoped_test_root(root->GetX509Certificate());
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  // Update the time tracker so the current time is within the certificate
+  // validity range.
+  cv_service_factory_impl.UpdateNetworkTime(now, ticks_now,
+                                            now - base::Days(2));
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params =
+      mojom::CertVerifierCreationParams::New();
+
+  // Create the cert verifier. It should start with the time tracker set to the
+  // time passed to UpdateNetworkTime.
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params));
+
+  auto [net_error, result] =
+      Verify(cv_service_remote, leaf->GetX509Certificate(), "host.test");
+  EXPECT_THAT(net_error, IsError(net::OK));
+  EXPECT_FALSE(net::IsCertStatusError(result.cert_status));
+
+  // Update happened before the CertVerifier was created, no change observers
+  // should have been notified.
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+}
+
+// Tests that UpdateNetworkTime being called causes existing cert verifiers to
+// use the time tracker time for verification.
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
+       UpdateNetworkTimeExistingVerifier) {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  base::Time now = base::Time::Now();
+  base::TimeTicks ticks_now = base::TimeTicks::Now();
+  //  Configure the leaf certificate so it is no longer valid according to the
+  //  system time.
+  leaf->SetValidity(now - base::Days(3), now - base::Days(1));
+  leaf->SetSubjectAltName("host.test");
+  net::ScopedTestRoot scoped_test_root(root->GetX509Certificate());
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params =
+      mojom::CertVerifierCreationParams::New();
+
+  // Create the cert verifier. Request should fail since time hasn't been
+  // updated yet.
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params));
+  {
+    auto [net_error, result] =
+        Verify(cv_service_remote, leaf->GetX509Certificate(), "host.test");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_DATE_INVALID));
+    EXPECT_TRUE(net::IsCertStatusError(result.cert_status));
+  }
+
+  // No updates should have happened yet.
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // Update the time tracker so the current time is within the certificate
+  // validity range.
+  cv_service_factory_impl.UpdateNetworkTime(now, ticks_now,
+                                            now - base::Days(2));
+
+  // Update should have been notified.
+  EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(1u));
+
+  // Try request again and it should succeed.
+  {
+    auto [net_error, result] =
+        Verify(cv_service_remote, leaf->GetX509Certificate(), "host.test");
+    EXPECT_THAT(net_error, IsError(net::OK));
+    EXPECT_FALSE(net::IsCertStatusError(result.cert_status));
+  }
+}
+
 }  // namespace cert_verifier

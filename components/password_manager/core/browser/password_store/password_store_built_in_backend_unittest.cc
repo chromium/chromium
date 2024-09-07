@@ -106,7 +106,8 @@ class BadLoginDatabase : public LoginDatabase {
   BadLoginDatabase& operator=(const BadLoginDatabase&) = delete;
 
   // LoginDatabase:
-  bool Init(base::RepeatingClosure on_undecryptable_passwords_removed,
+  bool Init(base::RepeatingCallback<void(password_manager::IsAccountStore)>
+                on_undecryptable_passwords_removed,
             std::unique_ptr<os_crypt_async::Encryptor> encryptor) override {
     return false;
   }

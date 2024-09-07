@@ -258,6 +258,37 @@ void StorageStorageAreaGetFunction::OnGetOperationFinished(
   Respond(WithArguments(std::move(values)));
 }
 
+ExtensionFunction::ResponseAction StorageStorageAreaGetKeysFunction::Run() {
+  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
+  frontend->GetKeys(
+      extension(), storage_area(),
+      base::BindOnce(
+          &StorageStorageAreaGetKeysFunction::OnGetKeysOperationFinished,
+          this));
+
+  return RespondLater();
+}
+
+void StorageStorageAreaGetKeysFunction::OnGetKeysOperationFinished(
+    StorageFrontend::GetKeysResult result) {
+  // Since the storage access happens asynchronously, the browser context can
+  // be torn down in the interim. If this happens, early-out.
+  if (!browser_context()) {
+    return;
+  }
+
+  StorageFrontend::ResultStatus status = result.status;
+
+  if (!status.success) {
+    CHECK(status.error.has_value());
+    Respond(Error(*status.error));
+    return;
+  }
+
+  CHECK(result.data.has_value());
+  Respond(WithArguments(std::move(*result.data)));
+}
+
 ExtensionFunction::ResponseAction
 StorageStorageAreaGetBytesInUseFunction::Run() {
   if (args().empty()) {

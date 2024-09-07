@@ -228,6 +228,9 @@ void PaintLayer::Destroy() {
     const ComputedStyle& style = GetLayoutObject().StyleRef();
     if (style.HasFilter())
       style.Filter().RemoveClient(*resource_info_);
+    if (style.HasBackdropFilter()) {
+      style.BackdropFilter().RemoveClient(*resource_info_);
+    }
     if (auto* reference_clip =
             DynamicTo<ReferenceClipPathOperation>(style.ClipPath()))
       reference_clip->RemoveClient(*resource_info_);
@@ -2043,6 +2046,19 @@ void PaintLayer::UpdateBackdropFilters(const ComputedStyle* old_style,
     backdrop_filter_on_effect_node_dirty_ =
         old_style ? old_style->BackdropFilter() != new_style.BackdropFilter()
                   : new_style.HasBackdropFilter();
+  }
+
+  if (!new_style.HasBackdropFilter() &&
+      (!old_style || !old_style->HasBackdropFilter())) {
+    return;
+  }
+
+  const bool had_resource_info = ResourceInfo();
+  if (new_style.HasBackdropFilter()) {
+    new_style.BackdropFilter().AddClient(EnsureResourceInfo());
+  }
+  if (had_resource_info && old_style) {
+    old_style->BackdropFilter().RemoveClient(*ResourceInfo());
   }
 }
 

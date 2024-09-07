@@ -9,10 +9,13 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
 
-namespace content {
-
+namespace ui {
 class BrowserAccessibility;
 class BrowserAccessibilityManager;
+}  // namespace ui
+
+namespace content {
+
 class WebContents;
 class WebContentsImpl;
 
@@ -34,16 +37,16 @@ class AccessibilityContentBrowserTest : public ContentBrowserTest {
 
   WebContentsImpl* GetWebContentsImplAndAssertNonNull() const;
 
-  BrowserAccessibilityManager* GetManagerAndAssertNonNull() const;
+  ui::BrowserAccessibilityManager* GetManagerAndAssertNonNull() const;
 
-  BrowserAccessibility* GetRootAndAssertNonNull() const;
+  ui::BrowserAccessibility* GetRootAndAssertNonNull() const;
 
-  BrowserAccessibility* FindNode(const ax::mojom::Role role,
-                                 const std::string& name_or_value) const;
+  ui::BrowserAccessibility* FindNode(const ax::mojom::Role role,
+                                     const std::string& name_or_value) const;
 
  private:
-  BrowserAccessibility* FindNodeInSubtree(
-      BrowserAccessibility* node,
+  ui::BrowserAccessibility* FindNodeInSubtree(
+      ui::BrowserAccessibility* node,
       const ax::mojom::Role role,
       const std::string& name_or_value) const;
 };

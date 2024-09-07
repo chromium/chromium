@@ -4,6 +4,7 @@
 
 import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -54,15 +55,14 @@ source_set("permissions") {
     "quiet_notification_permission_ui_config.h",
     "quiet_notification_permission_ui_state.cc",
     "quiet_notification_permission_ui_state.h",
-    "system/platform_handle.h",
-    "system/system_permission_settings.cc",
-    "system/system_permission_settings.h",
   ]
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/permissions/system",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
+    "//chrome/browser/ui:browser_navigator_params_headers",
   ]
 
   deps = [
@@ -130,30 +130,24 @@ source_set("permissions") {
       "//components/messages/android:feature_flags",
       "//ui/android",
     ]
+
+    if (enable_openxr) {
+      deps += [ "//device/vr/public/cpp:features" ]
+    }
   }
   allow_circular_includes_from = []
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash",
       "//chrome/browser/ash/app_mode/web_app",
+      "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/shimless_rma",
+      "//chromeos/ash/components/browser_context_helper",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/shimless_rma",
     ]
-  }
-
-  if (is_mac) {
-    sources += [ "system/system_permission_settings_mac.cc" ]
-    deps += [ "//chrome//browser/web_applications" ]
-  } else if (is_chromeos_ash) {
-    sources += [ "system/system_permission_settings_chromeos.cc" ]
-  } else if (is_win) {
-    sources += [ "system/system_permission_settings_win.cc" ]
-  } else {
-    sources += [ "system/system_permission_settings_default.cc" ]
   }
 
   if (build_with_tflite_lib) {
@@ -167,11 +161,8 @@ source_set("permissions") {
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
   }
 
-  if (os_level_geolocation_permission_supported) {
-    sources += [
-      "system/geolocation_observation.cc",
-      "system/geolocation_observation.h",
-    ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/permission_bubble" ]
   }
 }
 
@@ -192,6 +183,7 @@ source_set("unit_tests") {
     "notifications_engagement_service_unittest.cc",
     "permission_context_base_permissions_policy_unittest.cc",
     "permission_revocation_request_unittests.cc",
+    "permission_subscription_unittest.cc",
     "prediction_based_permission_ui_selector_unittest.cc",
     "pref_based_quiet_permission_ui_selector_unittest.cc",
     "system/mock_platform_handle.cc",
@@ -201,6 +193,7 @@ source_set("unit_tests") {
   deps = [
     ":permissions",
     ":permissions_proto",
+    "//chrome/browser/permissions/system",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//components/site_engagement/content",
@@ -247,15 +240,23 @@ if (!is_android) {
       "permission_request_manager_browsertest.cc",
       "permission_settings_page_browsertest.cc",
     ]
+
     deps = [
       ":permissions",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/permissions/system",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/test:test_support",
       "//components/back_forward_cache",
       "//components/optimization_guide/core:test_support",
     ]
+
+    if (is_chromeos_ash) {
+      sources += [ "system/system_permission_settings_chromeos_unittest.cc" ]
+      deps += [ "//chrome/browser/ash/privacy_hub" ]
+    }
+
     if (build_with_tflite_lib) {
       sources += [ "prediction_service_browsertest.cc" ]
       deps += [ "//components/permissions/prediction_service" ]
@@ -273,6 +274,7 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":permissions",
+      "//chrome/browser/permissions/system",
       "//chrome/test:test_support",
       "//components/content_settings/browser",
       "//components/embedder_support",

@@ -10,7 +10,7 @@
 #import "base/notreached.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -50,12 +50,10 @@ const char kSupervisedUserInterstitialType[] = "kSupervisedUserInterstitial";
 
 SupervisedUserErrorContainer::SupervisedUserErrorContainer(
     web::WebState* web_state)
-    : supervised_user_service_(
-          *SupervisedUserServiceFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))),
+    : supervised_user_service_(*SupervisedUserServiceFactory::GetForProfile(
+          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()))),
       web_state_(web_state) {
-  CHECK(SupervisedUserServiceFactory::GetForBrowserState(
+  CHECK(SupervisedUserServiceFactory::GetForProfile(
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState())));
   supervised_user_service_->AddObserver(this);
 }
@@ -282,7 +280,7 @@ void SupervisedUserInterstitialBlockingPage::
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
   CHECK(chrome_browser_state);
   supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserState(chrome_browser_state);
+      SupervisedUserServiceFactory::GetForProfile(chrome_browser_state);
 
   CHECK(supervised_user_service);
   supervised_user_service->MarkFirstTimeInterstitialBannerShown();

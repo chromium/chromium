@@ -25,11 +25,6 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/url_request_context_builder_mojo.h"
 
-#if defined(HEADLESS_USE_PREFS)
-#include "components/os_crypt/sync/os_crypt.h"  // nogncheck
-#include "content/public/browser/network_service_util.h"
-#endif
-
 namespace headless {
 
 namespace {
@@ -58,26 +53,6 @@ net::NetworkTrafficAnnotationTag GetProxyConfigTrafficAnnotationTag() {
         "This config is only used for headless mode and provided by user."
     })");
   return traffic_annotation;
-}
-
-void SetCryptKeyOnce(const base::FilePath& user_data_path) {
-  static bool done_once = false;
-  if (done_once)
-    return;
-  done_once = true;
-
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(HEADLESS_USE_PREFS)
-  // The OSCrypt keys are process bound, so if network service is out of
-  // process, send it the required key if it is available.
-  if (content::IsOutOfProcessNetworkService()
-#if BUILDFLAG(IS_WIN)
-      && OSCrypt::IsEncryptionAvailable()
-#endif
-  ) {
-    content::GetNetworkService()->SetEncryptionKey(
-        OSCrypt::GetRawEncryptionKey());
-  }
-#endif
 }
 
 }  // namespace
@@ -234,8 +209,6 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
           base::SingleThreadTaskRunner::GetCurrentDefault());
     }
   }
-
-  SetCryptKeyOnce(user_data_path_);
 }
 
 HeadlessRequestContextManager::~HeadlessRequestContextManager() {

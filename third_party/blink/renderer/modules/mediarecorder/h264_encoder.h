@@ -37,10 +37,6 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
   H264Encoder(const H264Encoder&) = delete;
   H264Encoder& operator=(const H264Encoder&) = delete;
 
-  base::WeakPtr<Encoder> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
-
  private:
   friend class H264EncoderFixture;
 
@@ -66,7 +62,6 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
 
   // The |VideoFrame::timestamp()| of the first received frame.
   base::TimeTicks first_frame_timestamp_;
-  base::WeakPtrFactory<H264Encoder> weak_factory_{this};
 };
 
 }  // namespace blink

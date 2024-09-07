@@ -39,6 +39,7 @@ class VizCompositorThreadRunner {
   // VizCompositorThread.
   virtual void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
                                       GpuServiceImpl* gpu_service) = 0;
+  virtual void RequestBeginFrameForGpuService(bool toggle) {}
 };
 
 }  // namespace viz

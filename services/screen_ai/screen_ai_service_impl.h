@@ -127,8 +127,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // Wrapper to call `PerformOcr` library function and record metrics.
   std::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(
-      const SkBitmap& image,
-      bool a11y_tree_request);
+      const SkBitmap& image);
 
   void OcrReceiverDisconnected();
 
@@ -139,11 +138,6 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   // feature is initialized, and each time it is used.
   base::TimeTicks ocr_last_used_;
   base::TimeTicks main_content_extraction_last_used_;
-
-  // Whether idle state for each feature is reported or not. Idle state is
-  // reported only once per feature during the lifetime of the service.
-  bool ocr_idle_reported_ = false;
-  bool main_content_extraction_idle_reported_ = false;
 
   std::unique_ptr<base::RepeatingTimer> idle_checking_timer_;
 

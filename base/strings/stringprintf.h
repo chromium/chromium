@@ -19,8 +19,8 @@ namespace base {
 // a compile-time constant (like with `std::format()`).
 // TODO(crbug.com/40241565): Implement in terms of `std::format()`,
 // `absl::StrFormat()`, or similar.
-[[nodiscard]] BASE_EXPORT std::string StringPrintf(const char* format, ...)
-    PRINTF_FORMAT(1, 2);
+[[nodiscard]] PRINTF_FORMAT(1, 2) BASE_EXPORT std::string
+    StringPrintf(const char* format, ...);
 
 // Returns a C++ string given `printf()`-like input. The format string must be a
 // run-time value (like with `std::vformat()`), or this will not compile.
@@ -60,19 +60,19 @@ template <typename... Args>
 #endif
 
 // Returns a C++ string given `vprintf()`-like input.
-[[nodiscard]] BASE_EXPORT std::string StringPrintV(const char* format,
-                                                   va_list ap)
-    PRINTF_FORMAT(1, 0);
+[[nodiscard]] PRINTF_FORMAT(1, 0) BASE_EXPORT std::string
+    StringPrintV(const char* format, va_list ap);
 
 // Like `StringPrintf()`, but appends result to a supplied string.
 // TODO(crbug.com/40241565): Implement in terms of `std::format_to()`,
 // `absl::StrAppendFormat()`, or similar.
-BASE_EXPORT void StringAppendF(std::string* dst, const char* format, ...)
-    PRINTF_FORMAT(2, 3);
+PRINTF_FORMAT(2, 3)
+BASE_EXPORT void StringAppendF(std::string* dst, const char* format, ...);
 
 // Like `StringPrintV()`, but appends result to a supplied string.
-BASE_EXPORT void StringAppendV(std::string* dst, const char* format, va_list ap)
-    PRINTF_FORMAT(2, 0);
+PRINTF_FORMAT(2, 0)
+BASE_EXPORT
+void StringAppendV(std::string* dst, const char* format, va_list ap);
 
 }  // namespace base
 

@@ -41,7 +41,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using ::testing::SizeIs;
@@ -75,8 +74,6 @@ std::string ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType type) {
       {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }
-
-}  // namespace
 
 // Tests that use fake out the URL loading and issues requests to the enterprise
 // provided server.
@@ -269,8 +266,8 @@ class PlusAddressCreationRequests
   }
   void MakeCreationRequest(const PlusProfile& profile,
                            PlusAddressRequestCallback callback) {
-    url::Origin origin = url::Origin::Create(
-        GURL("https://" + absl::get<std::string>(profile.facet)));
+    url::Origin origin =
+        url::Origin::Create(GURL(profile.facet.canonical_spec()));
     if (GetParam() == PlusAddressNetworkRequestType::kReserve) {
       client().ReservePlusAddress(origin, /*refresh=*/false,
                                   std::move(callback));
@@ -548,129 +545,6 @@ TEST_F(PlusAddressHttpClientRequests, PreallocatePlusAddresses_SignoutError) {
                               PlusAddressRequestErrorType::kUserSignedOut)));
 }
 
-// Ensures the request sent by Chrome matches what we intended.
-TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {
-  client().GetAllPlusAddresses(base::DoNothing());
-  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kToken, base::Time::Max());
-
-  // Validate that the V1 List request uses the right url and requests method.
-  EXPECT_EQ(last_request().url, kFullProfileEndpoint);
-  EXPECT_EQ(last_request().method, net::HttpRequestHeaders::kGetMethod);
-  // Validate the Authorization header includes "myToken".
-  EXPECT_EQ(
-      last_request().headers.GetHeader("Authorization").value_or(std::string()),
-      "Bearer " + kToken);
-}
-
-TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddresses_RequestsOauthToken) {
-  base::test::TestFuture<const PlusAddressMapOrError&> future;
-  client().GetAllPlusAddresses(future.GetCallback());
-  ASSERT_FALSE(future.IsReady());
-  ASSERT_TRUE(identity_env().IsAccessTokenRequestPending());
-
-  // Verify that GetAllPlusAddresses hasn't already sent the network request.
-  ASSERT_EQ(url_loader_factory().NumPending(), 0);
-
-  // GetAllPlusAddresses will run `callback`  after an OAuth token is retrieved.
-  identity_env()
-      .WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
-          "token", base::Time::Max(), "id", {kTestScope});
-
-  // Unblock the pending request.
-  EXPECT_FALSE(future.IsReady());
-  ASSERT_EQ(url_loader_factory().NumPending(), 1);
-  url_loader_factory().SimulateResponseForPendingRequest(kFullProfileEndpoint,
-                                                         R"({
-      "plusProfiles": []
-    })");
-  EXPECT_TRUE(future.IsReady());
-}
-
-// For tests that cover successful but unexpected server responses, see the
-// PlusAddressParsing.FromV1List tests.
-TEST_F(PlusAddressHttpClientRequests,
-       GetAllPlusAddressesV1_RunsCallbackOnSuccess) {
-  base::HistogramTester histogram_tester;
-  base::test::TestFuture<const PlusAddressMapOrError&> future;
-  // Initiate a request...
-  client().GetAllPlusAddresses(future.GetCallback());
-  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kToken, base::Time::Max());
-
-  const PlusProfile profile1 = test::CreatePlusProfile();
-  const PlusProfile profile2 = test::CreatePlusProfile2();
-
-  PlusAddressMap expected(
-      {{absl::get<std::string>(profile1.facet), profile1.plus_address},
-       {absl::get<std::string>(profile2.facet), profile2.plus_address}});
-  // Fulfill the request and the callback should be run.
-  FastForwardBy(kLatency);
-  const std::string json = test::MakeListResponse({profile1, profile2});
-  url_loader_factory().SimulateResponseForPendingRequest(kFullProfileEndpoint,
-                                                         json);
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), expected);
-
-  // Verify expected metrics.
-  histogram_tester.ExpectUniqueTimeSample(
-      LatencyHistogramFor(PlusAddressNetworkRequestType::kList), kLatency, 1);
-  histogram_tester.ExpectUniqueSample(
-      ResponseCodeHistogramFor(PlusAddressNetworkRequestType::kList), 200, 1);
-  histogram_tester.ExpectUniqueSample(
-      ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType::kList),
-      json.size(), 1);
-}
-
-TEST_F(PlusAddressHttpClientRequests,
-       GetAllPlusAddressesV1_RunsCallbackOnNetworkError) {
-  base::HistogramTester histogram_tester;
-  base::test::TestFuture<const PlusAddressMapOrError&> callback;
-  client().GetAllPlusAddresses(callback.GetCallback());
-  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kToken, base::Time::Max());
-
-  // Check that the callback is run with the expected PlusAddressRequestError.
-  FastForwardBy(kLatency);
-  EXPECT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
-      kFullProfileEndpoint, "", net::HTTP_NOT_FOUND));
-  EXPECT_TRUE(callback.IsReady());
-  EXPECT_FALSE(callback.Get().has_value());
-  EXPECT_EQ(callback.Get().error(),
-            PlusAddressRequestError::AsNetworkError(net::HTTP_NOT_FOUND));
-
-  // Verify expected metrics.
-  histogram_tester.ExpectUniqueTimeSample(
-      LatencyHistogramFor(PlusAddressNetworkRequestType::kList), kLatency, 1);
-  histogram_tester.ExpectUniqueSample(
-      ResponseCodeHistogramFor(PlusAddressNetworkRequestType::kList),
-      net::HTTP_NOT_FOUND, 1);
-  histogram_tester.ExpectTotalCount(
-      ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType::kList), 0);
-}
-
-// TODO: crbug.com/1489268 - Reenable this test after fixing flakiness.
-TEST_F(
-    PlusAddressHttpClientRequests,
-    DISABLED_GetAllPlusAddressesV1_WhenLoadingRequest_NewRequestsAreDropped) {
-  base::test::TestFuture<const PlusAddressMapOrError&> first;
-  // Send two requests in quick succession
-  client().GetAllPlusAddresses(first.GetCallback());
-  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kToken, base::Time::Max());
-  EXPECT_DCHECK_DEATH(client().GetAllPlusAddresses(base::DoNothing()));
-
-  // The first callback should be run once the server responds.
-  PlusAddressMap expected;
-  url_loader_factory().SimulateResponseForPendingRequest(kFullProfileEndpoint,
-                                                         R"(
-    {
-      "plusProfiles": []
-    }
-    )");
-  EXPECT_TRUE(first.IsReady());
-}
-
 // Tests that calling reset cancels ongoing network requests and runs pending
 // callbacks with a `PlusAddressRequestErrorType::kUserSignedOut`.
 TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForNetwork) {
@@ -921,15 +795,5 @@ TEST_F(PlusAddressHttpClientNullServerUrl, ConfirmPlusAddress_SendsNoRequest) {
   EXPECT_FALSE(callback.IsReady());
 }
 
-TEST_F(PlusAddressHttpClientNullServerUrl, GetAllPlusAddresses_SendsNoRequest) {
-  base::test::TestFuture<const PlusAddressMapOrError&> callback;
-
-  EXPECT_FALSE(test_api(client()).GetServerUrlForTesting().has_value());
-  // GetAllPlusAddresses should return without making any request
-  // when no valid `server_ur_` is provided.
-  client().GetAllPlusAddresses(callback.GetCallback());
-  EXPECT_EQ(url_loader_factory().NumPending(), 0);
-  EXPECT_FALSE(callback.IsReady());
-}
-
+}  // namespace
 }  // namespace plus_addresses

@@ -10,8 +10,8 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestProfileCustomizationBrowserProxy} from './test_profile_customization_browser_proxy.js';
 
@@ -115,7 +115,7 @@ suite('ProfileCustomizationTest', function() {
   test('ProfileInfo', async function() {
     await initializeApp();
     // Check initial info.
-    assertTrue(app.$.title.innerText.match(STATIC_TITLE_PATTERN) != null);
+    assertNotEquals(null, app.$.title.innerText.match(STATIC_TITLE_PATTERN));
     checkImageUrl('#avatar', AVATAR_URL_1);
     assertFalse(isChildVisible(app, '#workBadge'));
     assertFalse(isChildVisible(app, '#customizeAvatarIcon'));
@@ -127,7 +127,8 @@ suite('ProfileCustomizationTest', function() {
       isManaged: true,
       welcomeTitle: '',
     });
-    assertTrue(app.$.title.innerText.match(STATIC_TITLE_PATTERN) != null);
+    await microtasksFinished();
+    assertNotEquals(null, app.$.title.innerText.match(STATIC_TITLE_PATTERN));
     checkImageUrl('#avatar', AVATAR_URL_2);
     assertTrue(isChildVisible(app, '#workBadge'));
     assertFalse(isChildVisible(app, '#customizeAvatarIcon'));
@@ -164,7 +165,7 @@ suite(`LocalProfileCreationTest`, function() {
   const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_1';
   const WELCOME_TITLE = 'Welcome!';
 
-  setup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({
       profileName: 'TestName',
       isLocalProfileCreation: true,
@@ -180,11 +181,12 @@ suite(`LocalProfileCreationTest`, function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('profile-customization-app');
     document.body.append(app);
-    return browserProxy.whenCalled('initialized');
+    await browserProxy.whenCalled('initialized');
+    return microtasksFinished();
   });
 
   test('LocalProfileCreationDialog', function() {
-    assertEquals(app.$.title.innerText, WELCOME_TITLE);
+    assertEquals(WELCOME_TITLE, app.$.title.innerText);
     assertFalse(isChildVisible(app, '#workBadge'));
     assertTrue(isChildVisible(app, '#customizeAvatarIcon'));
     assertTrue(isChildVisible(app, '#deleteProfileButton'));

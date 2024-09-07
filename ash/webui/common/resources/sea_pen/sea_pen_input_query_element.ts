@@ -35,6 +35,7 @@ import {getSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logGenerateSeaPenWallpaper, logNumWordsInTextQuery} from './sea_pen_metrics_logger.js';
+import {SeaPenRecentImageDeleteEvent} from './sea_pen_recent_wallpapers_element.js';
 import {SeaPenSampleSelectedEvent} from './sea_pen_samples_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SeaPenSuggestionSelectedEvent} from './sea_pen_suggestions_element.js';
@@ -99,6 +100,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     };
   }
 
+  private maxTextLength_: number;
   private textValue_: string;
   private seaPenQuery_: SeaPenQuery|null;
   private thumbnails_: SeaPenThumbnail[]|null;
@@ -108,12 +110,20 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private shouldShowSuggestions_: boolean;
   private innerContainerOriginalHeight_: number;
   private resizeObserver_: ResizeObserver;
+  private sampleSelectedListener_: (e: SeaPenSampleSelectedEvent) => void;
+  private deleteRecentImageListener_: EventListener;
 
   static get observers() {
     return [
       'updateShouldShowSuggestions_(textValue_, thumbnailsLoading_)',
       'updateSearchButton_(thumbnails_, seaPenQuery_)',
     ];
+  }
+
+  constructor() {
+    super();
+    this.sampleSelectedListener_ = this.onSampleSelected_.bind(this);
+    this.deleteRecentImageListener_ = this.focusInput_.bind(this);
   }
 
   override connectedCallback() {
@@ -128,10 +138,12 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.updateFromStore();
 
     document.body.addEventListener(
-        SeaPenSampleSelectedEvent.EVENT_NAME,
-        this.onSampleSelected_.bind(this));
+        SeaPenSampleSelectedEvent.EVENT_NAME, this.sampleSelectedListener_);
+    document.body.addEventListener(
+        SeaPenRecentImageDeleteEvent.EVENT_NAME,
+        this.deleteRecentImageListener_);
 
-    this.$.queryInput.focusInput();
+    this.focusInput_();
 
     this.resizeObserver_ =
         new ResizeObserver(() => this.animateContainerHeight());
@@ -153,11 +165,19 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.resizeObserver_.disconnect();
 
     document.body.removeEventListener(
-        SeaPenSampleSelectedEvent.EVENT_NAME, this.onSampleSelected_);
+        SeaPenSampleSelectedEvent.EVENT_NAME, this.sampleSelectedListener_);
+    document.body.removeEventListener(
+        SeaPenRecentImageDeleteEvent.EVENT_NAME,
+        this.deleteRecentImageListener_);
   }
 
   private onSampleSelected_(e: SeaPenSampleSelectedEvent) {
     this.textValue_ = e.detail;
+    this.showCreateButton_();
+  }
+
+  private focusInput_() {
+    this.$.queryInput.focusInput();
   }
 
   // Called when there is a custom dom-change event dispatched from
@@ -196,6 +216,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private onClickInspire_() {
     const index = Math.floor(Math.random() * SEA_PEN_SAMPLES.length);
     this.textValue_ = SEA_PEN_SAMPLES[index].prompt;
+    this.showCreateButton_();
   }
 
   private onSeaPenQueryChanged_(seaPenQuery: SeaPenQuery|null) {
@@ -236,21 +257,28 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   private onSuggestionSelected_(event: SeaPenSuggestionSelectedEvent) {
     this.textValue_ = this.textValue_.trim();
-    this.textValue_ = this.textValue_.length > 0 ?
-        `${this.textValue_}, ${event.detail}` :
-        event.detail;
+    const newTextValue = `${this.textValue_}, ${event.detail}`;
+    if (newTextValue.length > this.maxTextLength_) {
+      // Do nothing if the suggestion overflows the max text length.
+      return;
+    }
+    this.textValue_ = this.textValue_.length > 0 ? newTextValue : event.detail;
   }
 
   private updateSearchButton_(
       thumbnails: SeaPenThumbnail[]|null, seaPenQuery: SeaPenQuery|null) {
     if (!thumbnails || !seaPenQuery) {
       // The thumbnails are not loaded yet.
-      this.searchButtonText_ = this.i18n('seaPenCreateButton');
-      this.searchButtonIcon_ = 'sea-pen:photo-spark';
+      this.showCreateButton_();
     } else {
       this.searchButtonText_ = this.i18n('seaPenRecreateButton');
       this.searchButtonIcon_ = 'personalization-shared:refresh';
     }
+  }
+
+  private showCreateButton_() {
+    this.searchButtonText_ = this.i18n('seaPenCreateButton');
+    this.searchButtonIcon_ = 'sea-pen:photo-spark';
   }
 
   private updateShouldShowSuggestions_(

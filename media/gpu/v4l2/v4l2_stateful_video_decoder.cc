@@ -440,9 +440,19 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
   if (!IsInitialized()) {
-    Initialize(config_, /*low_delay=*/false, /*cdm_context=*/nullptr,
-               /*init_cb=*/base::DoNothing(), output_cb_,
-               /*waiting_cb=*/base::DoNothing());
+    DecoderStatus init_result;
+    Initialize(
+        config_, /*low_delay=*/false, /*cdm_context=*/nullptr,
+        base::BindOnce([](DecoderStatus* out, DecoderStatus in) { *out = in; },
+                       &init_result),
+        output_cb_,
+        /*waiting_cb=*/base::DoNothing());
+    if (!init_result.is_ok()) {
+      // Destroy output queue so IsInitialized() return false.
+      OUTPUT_queue_.reset();
+      std::move(decode_cb).Run(init_result);
+      return;
+    }
   }
 
   if (buffer->end_of_stream()) {

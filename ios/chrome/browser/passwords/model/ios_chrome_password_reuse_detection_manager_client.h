@@ -5,21 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_REUSE_DETECTION_MANAGER_CLIENT_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_REUSE_DETECTION_MANAGER_CLIENT_H_
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/scoped_observation.h"
-#include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/ios/password_reuse_detection_manager_client_bridge.h"
-#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"
-#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
+#import "base/scoped_observation.h"
+#import "components/autofill/core/browser/logging/log_manager.h"
+#import "components/password_manager/core/browser/password_reuse_manager.h"
+#import "components/password_manager/ios/password_reuse_detection_manager_client_bridge.h"
+#import "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"
+#import "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
 #import "ios/chrome/browser/safe_browsing/model/input_event_observer.h"
 #import "ios/chrome/browser/safe_browsing/model/password_protection_java_script_feature.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_observer.h"
-
-class ChromeBrowserState;
+#import "ios/web/public/web_state_observer.h"
 
 namespace safe_browsing {
 class PasswordProtectionService;

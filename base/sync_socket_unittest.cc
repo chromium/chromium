@@ -10,6 +10,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -145,7 +146,13 @@ TEST_F(CancelableSyncSocketTest, ClonedSendReceivePeek) {
   SendReceivePeek(&socket_c, &socket_d);
 }
 
-TEST_F(CancelableSyncSocketTest, ShutdownCancelsReceive) {
+// TODO(https://crbug.com/361250560): Flaky on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShutdownCancelsReceive DISABLED_ShutdownCancelsReceive
+#else
+#define MAYBE_ShutdownCancelsReceive ShutdownCancelsReceive
+#endif
+TEST_F(CancelableSyncSocketTest, MAYBE_ShutdownCancelsReceive) {
   HangingReceiveThread thread(&socket_b_, /* with_timeout = */ false);
 
   // Wait for the thread to be started. Note that this doesn't guarantee that

@@ -289,11 +289,23 @@ std::string BLINK_COMMON_EXPORT DEPRECATED_KAnonKeyForAdNameReporting(
     const InterestGroup::Ad& ad,
     base::optional_ref<const std::string>
         selected_buyer_and_seller_reporting_id);
+
 std::string BLINK_COMMON_EXPORT
 HashedKAnonKeyForAdNameReporting(const InterestGroup& group,
                                  const InterestGroup::Ad& ad,
                                  base::optional_ref<const std::string>
                                      selected_buyer_and_seller_reporting_id);
+
+std::string BLINK_COMMON_EXPORT
+HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
+    const url::Origin& interest_group_owner,
+    const std::string& interest_group_name,
+    const GURL& interest_group_bidding_url,
+    const std::string& ad_render_url,
+    base::optional_ref<const std::string> buyer_reporting_id,
+    base::optional_ref<const std::string> buyer_and_seller_reporting_id,
+    base::optional_ref<const std::string>
+        selected_buyer_and_seller_reporting_id);
 
 }  // namespace blink
 

@@ -6,16 +6,18 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/parcel_tracking/ui_bundled/parcel_tracking_opt_in_mediator.h"
 #import "ios/chrome/browser/parcel_tracking/ui_bundled/parcel_tracking_opt_in_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 
 @interface ParcelTrackingOptInCoordinator () <
     UIAdaptivePresentationControllerDelegate>
@@ -23,7 +25,7 @@
 @end
 
 @implementation ParcelTrackingOptInCoordinator {
-  raw_ptr<web::WebState> _webState;
+  raw_ptr<commerce::ShoppingService> _shoppingService;
   NSArray<CustomTextCheckingResult*>* _parcels;
   ParcelTrackingOptInMediator* _mediator;
   ParcelTrackingOptInViewController* _viewController;
@@ -31,12 +33,12 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  webState:(web::WebState*)webState
                                    parcels:(NSArray<CustomTextCheckingResult*>*)
                                                parcels {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _webState = webState;
+    _shoppingService = commerce::ShoppingServiceFactory::GetForBrowserState(
+        browser->GetBrowserState());
     _parcels = parcels;
   }
   return self;
@@ -44,7 +46,9 @@
 
 - (void)start {
   [super start];
-  _mediator = [[ParcelTrackingOptInMediator alloc] initWithWebState:_webState];
+
+  _mediator = [[ParcelTrackingOptInMediator alloc]
+      initWithShoppingService:_shoppingService];
   _mediator.parcelTrackingCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ParcelTrackingOptInCommands);
   _viewController = [[ParcelTrackingOptInViewController alloc] init];

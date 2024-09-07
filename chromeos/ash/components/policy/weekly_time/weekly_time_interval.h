@@ -79,11 +79,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeInterval {
   // or in a set timezone).
   bool Contains(const WeeklyTime& w) const;
 
-  // Returns the timezone_offset that |start_| and |end_| have.
-  std::optional<int> GetIntervalOffset(int timezone_offset) const {
-    return start_.timezone_offset();
-  }
-
   WeeklyTime start() const { return start_; }
 
   WeeklyTime end() const { return end_; }

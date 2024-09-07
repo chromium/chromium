@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
@@ -325,7 +326,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     /** Begins the process of decluttering tabs if it hasn't been started already. */
     public void maybeBeginDeclutter() {
         if (mDeclutterInitializationCalled) return;
+        mDeclutterInitializationCalled = true;
+        waitUntilSelectorInitializedAndPostTask(this::maybeBeginDeclutterImpl);
+    }
 
+    private void maybeBeginDeclutterImpl() {
         assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
         assert mTabArchiver != null;
         mTabArchiver.initDeclutter();
@@ -334,12 +339,20 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab.isEnabled()) {
             mTabArchiveSettings.setArchiveTimeDeltaHours(0);
         }
-        runDeclutterAndScheduleNext();
-        if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab.isEnabled()) {
-            mTabArchiveSettings.setArchiveTimeDeltaHours(archiveTimeHours);
-        }
 
-        mDeclutterInitializationCalled = true;
+        // TODO(crbug.com/361130234): Record timing metrics here.
+        mTabArchiver.addObserver(
+                new TabArchiver.Observer() {
+                    @Override
+                    public void onDeclutterPassCompleted() {
+                        if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab
+                                .isEnabled()) {
+                            mTabArchiveSettings.setArchiveTimeDeltaHours(archiveTimeHours);
+                        }
+                        mTabArchiver.removeObserver(this);
+                    }
+                });
+        runDeclutterAndScheduleNext();
     }
 
     /**
@@ -349,15 +362,23 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      */
     public void maybeRescueArchivedTabs() {
         if (mRescueTabsCalled) return;
+        mRescueTabsCalled = true;
+        waitUntilSelectorInitializedAndPostTask(this::maybeRescueArchivedTabsImpl);
+    }
 
+    private void maybeRescueArchivedTabsImpl() {
         assert ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled();
         mTabArchiver.rescueArchivedTabs(mRegularTabCreator);
-
-        mRescueTabsCalled = true;
     }
 
     public void initializeHistoricalTabModelObserver(Supplier<TabModel> regularTabModelSupplier) {
         mHistoricalTabModelObserver.addSecodaryTabModelSupplier(regularTabModelSupplier);
+    }
+
+    private void waitUntilSelectorInitializedAndPostTask(Runnable task) {
+        TabModelUtils.runOnTabStateInitialized(
+                getTabModelSelector(),
+                (selector) -> ThreadUtils.postOnUiThread(mCallbackController.makeCancelable(task)));
     }
 
     // TabModelOrchestrator lifecycle methods.
@@ -420,11 +441,16 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      * TabArchiveSettings#getDeclutterIntervalTimeDeltaHours} for details.
      */
     private void runDeclutterAndScheduleNext() {
+        ThreadUtils.assertOnUiThread();
         mTabArchiver.triggerScheduledDeclutter();
         mTaskRunner.postDelayedTask(
-                mCallbackController.makeCancelable(this::runDeclutterAndScheduleNext),
+                mCallbackController.makeCancelable(this::postDeclutterTaskToUiThread),
                 TimeUnit.HOURS.toMillis(mTabArchiveSettings.getDeclutterIntervalTimeDeltaHours()));
         saveState();
+    }
+
+    private void postDeclutterTaskToUiThread() {
+        ThreadUtils.postOnUiThread(this::runDeclutterAndScheduleNext);
     }
 
     // Testing-specific methods

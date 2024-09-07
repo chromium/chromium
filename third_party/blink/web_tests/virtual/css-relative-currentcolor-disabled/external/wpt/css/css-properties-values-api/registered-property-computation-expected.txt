@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] <color> values are computed correctly [color(from currentcolor srgb b g r)]
+  assert_equals: expected "color(from currentcolor srgb b g r)" but got "rgb(0, 0, 0)"
+Harness: the test ran to completion.
+

@@ -74,3 +74,12 @@ void JNI_MagicStackBridge_DismissSafeBrowsingModule(JNIEnv* env,
   service->DismissActiveNotificationOfModule(
       safety_hub::SafetyHubModuleType::SAFE_BROWSING);
 }
+
+void JNI_MagicStackBridge_DismissCompromisedPasswordsModule(JNIEnv* env,
+                                                            Profile* profile) {
+  SafetyHubMenuNotificationService* service =
+      SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
+  CHECK(service);
+  service->DismissActiveNotificationOfModule(
+      safety_hub::SafetyHubModuleType::PASSWORDS);
+}

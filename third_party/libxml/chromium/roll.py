@@ -102,7 +102,6 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-c14n', 'c14n=no'),
     ('--without-catalog', 'catalog=no'),
     ('--without-debug', 'xml_debug=no'),
-    ('--without-ftp', 'ftp=no'),
     ('--without-http', 'http=no'),
     ('--without-iconv', 'iconv=no'),
     ('--without-iso8859x', 'iso8859x=no'),
@@ -116,7 +115,6 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-valid', 'valid=no'),
     ('--without-xinclude', 'xinclude=no'),
     ('--without-xptr', 'xptr=no'),
-    ('--without-xptr-locs', 'xptr_locs=no'),
     ('--without-zlib', 'zlib=no'),
 ]
 
@@ -383,7 +381,11 @@ def roll_libxml_linux(src_path, libxml2_repo_path, fast):
             shutil.rmtree(temp_dir)
 
         with WorkingDir(THIRD_PARTY_LIBXML_SRC):
-            # Put the version number is the README file
+            # Put the version and revision IDs in the README file
+            sed_in_place('../README.chromium',
+                         's/Revision: .*$/Revision: %s/' % commit)
+            # TODO(crbug.com/349530088): Read version from VERSION file when we
+            # roll libxml to that point and use it instead of the commit hash.
             sed_in_place('../README.chromium',
                          's/Version: .*$/Version: %s/' % commit)
 

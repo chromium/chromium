@@ -204,10 +204,6 @@ struct GPU_EXPORT GpuPreferences {
   // tracking.
   bool use_passthrough_cmd_decoder = false;
 
-  // Disable using a single multiplanar GpuMemoryBuffer to store biplanar
-  // VideoFrames (e.g. NV12), see https://crbug.com/791676.
-  bool disable_biplanar_gpu_memory_buffers_for_video_frames = false;
-
   // ===================================
   // Settings from //gpu/config/gpu_switches.h
 

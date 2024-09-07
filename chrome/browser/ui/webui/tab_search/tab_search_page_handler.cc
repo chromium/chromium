@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 
+#include <stdint.h>
+
 #include <iterator>
 #include <memory>
 #include <set>
@@ -58,6 +60,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_service.h"
@@ -255,6 +258,14 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // Do not add code past this point.
 }
 
+void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
+  // TODO(crbug.com/358382903): Route this through TabDeclutterService and add
+  // metrics logging. Potentially also invoke IPH pending UX.
+  for (auto id : tab_ids) {
+    CloseTab(id);
+  }
+}
+
 void TabSearchPageHandler::AcceptTabOrganization(
     int32_t session_id,
     int32_t organization_id,
@@ -317,6 +328,13 @@ void TabSearchPageHandler::RejectTabOrganization(int32_t session_id,
   organization->Reject();
 }
 
+void TabSearchPageHandler::ExcludeFromStaleTabs(int32_t tab_id) {
+  // TODO(crbug.com/358381117): Plumb this data through TabDeclutterService to
+  // store multiple excluded tabs for a single declutter action. This is a
+  // placeholder for now, only excluding the most recently excluded tab.
+  page_->StaleTabsChanged(FindStaleTabs(tab_id));
+}
+
 void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   TRACE_EVENT0("browser", "TabSearchPageHandler:GetProfileTabs");
   auto profile_tabs = CreateProfileData();
@@ -341,6 +359,10 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   }
 
   std::move(callback).Run(std::move(profile_tabs));
+}
+
+void TabSearchPageHandler::GetStaleTabs(GetStaleTabsCallback callback) {
+  std::move(callback).Run(FindStaleTabs());
 }
 
 void TabSearchPageHandler::GetTabOrganizationSession(
@@ -387,6 +409,17 @@ TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
   }
 
   return std::nullopt;
+}
+
+void TabSearchPageHandler::GetTabOrganizationModelStrategy(
+    GetTabOrganizationModelStrategyCallback callback) {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  const int32_t strategy_int = profile->GetPrefs()->GetInteger(
+      tab_search_prefs::kTabOrganizationModelStrategy);
+  const auto strategy =
+      static_cast<tab_search::mojom::TabOrganizationModelStrategy>(
+          strategy_int);
+  std::move(callback).Run(std::move(strategy));
 }
 
 void TabSearchPageHandler::SwitchToTab(
@@ -594,7 +627,7 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
-          optimization_guide::UserVisibleFeatureKey::kTabOrganization)) {
+          optimization_guide::proto::LogAiDataRequest::kTabOrganization)) {
     return;
   }
   base::Value::Dict feedback_metadata;
@@ -627,6 +660,15 @@ void TabSearchPageHandler::OpenHelpPage() {
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
+}
+
+void TabSearchPageHandler::SetTabOrganizationModelStrategy(
+    tab_search::mojom::TabOrganizationModelStrategy strategy) {
+  const auto strategy_int = static_cast<int32_t>(strategy);
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  profile->GetPrefs()->SetInteger(
+      tab_search_prefs::kTabOrganizationModelStrategy, strategy_int);
+  page_->TabOrganizationModelStrategyUpdated(std::move(strategy));
 }
 
 void TabSearchPageHandler::SetUserFeedback(
@@ -753,6 +795,24 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
       Profile::FromWebUI(web_ui_)->GetPrefs()->GetBoolean(
           tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
   return profile_data;
+}
+
+std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs(
+    int32_t excluded_id) {
+  // TODO(crbug.com/358381117): Replace with actual stale tab data as provided
+  // by TabDeclutterService. This is a placeholder for now, returning all tabs
+  // from the current window regardless of last active time.
+  std::vector<tab_search::mojom::TabPtr> tabs;
+  Browser* browser = chrome::FindLastActive();
+  if (!browser || !browser->tab_strip_model()) {
+    return tabs;
+  }
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
+    tabs.push_back(GetTab(tab_strip_model, web_contents, i));
+  }
+  return tabs;
 }
 
 void TabSearchPageHandler::AddRecentlyClosedEntries(
@@ -994,6 +1054,11 @@ void TabSearchPageHandler::OnTabStripModelChanged(
       browser_tab_strip_tracker_.is_processing_initial_browsers()) {
     return;
   }
+  // TODO(crbug.com/358382876): Ensure this is called whenever stale tabs may
+  // have changed, once there is a method of observing this information. This
+  // call is here only as a placeholder approximation until such a method
+  // exists.
+  page_->StaleTabsChanged(FindStaleTabs());
   if (change.type() == TabStripModelChange::kRemoved) {
     std::vector<int> tab_ids;
     std::set<SessionID> tab_restore_ids;

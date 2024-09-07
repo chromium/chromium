@@ -98,7 +98,7 @@ public class DigitalIdentitySafetyInterstitialController {
                                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS);
 
         mDialogModel = dialogModelBuilder.build();
-        modalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+        modalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
 
     public void abort() {

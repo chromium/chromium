@@ -213,6 +213,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
   for (size_t i = 0; i < connector_and_crtc_count; ++i) {
     auto& connector_properties = drm_state.connector_properties.emplace_back();
     connector_properties.id = kConnectorIdBase + i;
+    connector_properties.connection = true;
     connector_properties.properties.push_back(
         {.id = kCrtcIdPropId, .value = 0});
   }

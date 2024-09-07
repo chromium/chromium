@@ -90,7 +90,7 @@ public class DisplayCutoutTabHelper implements UserData {
         }
 
         @Override
-        public InsetObserver getInsetObserverView() {
+        public InsetObserver getInsetObserver() {
             return mTab.getWindowAndroid().getInsetObserver();
         }
 

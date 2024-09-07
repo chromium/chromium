@@ -26,6 +26,7 @@
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -493,12 +494,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   std::set<FieldRendererId> formless_elements_user_edited_;
   bool formless_elements_were_autofilled_ = false;
 
-  // Keeps track of the forms for which form submitted event has been sent to
-  // AutofillDriver. We use it to avoid fire duplicated submission event when
-  // WILL_SEND_SUBMIT_EVENT and form submitted are both fired for same form.
-  // The submitted_forms_ is cleared when we know no more submission could
-  // happen for that form.
-  std::set<FormRendererId> submitted_forms_;
+  // For each form, identified by its renderer ID, keeps track of the sources of
+  // observed submissions, so that we avoid firing duplicate submission signals
+  // to the driver. See `AutofillAgent::FireHostSubmitEvent` for more details.
+  base::flat_map<FormRendererId, DenseSet<mojom::SubmissionSource>>
+      submitted_forms_;
 
   // Whether the Autofill popup is possibly visible.  This is tracked as a
   // performance improvement, so that the IPC channel isn't flooded with

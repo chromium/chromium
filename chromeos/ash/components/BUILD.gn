@@ -13,6 +13,7 @@ source_set("unit_tests") {
   deps = [
     "//chromeos/ash/components/attestation:unit_tests",
     "//chromeos/ash/components/audio:unit_tests",
+    "//chromeos/ash/components/boca:unit_tests",
     "//chromeos/ash/components/boca/babelorca:unit_tests",
     "//chromeos/ash/components/boca/on_task:unit_tests",
     "//chromeos/ash/components/boca/session_api:unit_tests",
@@ -66,6 +67,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/system_info:unit_tests",
     "//chromeos/ash/components/telemetry_extension:unit_tests",
     "//chromeos/ash/components/tether:unit_tests",
+    "//chromeos/ash/components/throttle:unit_tests",
     "//chromeos/ash/components/timezone:unit_tests",
     "//chromeos/ash/components/tpm:unit_tests",
     "//chromeos/ash/components/trash_service:unit_tests",

@@ -58,6 +58,9 @@ class CryptAuthGCMManager {
   // Registers the prefs used by the manager to the given |pref_service|.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // Check if registration ID is deprecated.
+  static bool IsRegistrationIdDeprecated(const std::string& registration_id);
+
   // Starts listening to incoming GCM messages. If GCM registration is completed
   // after this function is called, then messages will also be handled properly.
   virtual void StartListening() = 0;

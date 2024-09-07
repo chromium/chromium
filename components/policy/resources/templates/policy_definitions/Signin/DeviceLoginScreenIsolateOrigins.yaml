@@ -15,7 +15,6 @@ features:
   per_profile: false
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
 schema:
   type: string
 supported_on:

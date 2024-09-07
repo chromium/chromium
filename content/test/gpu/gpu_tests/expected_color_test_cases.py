@@ -108,9 +108,12 @@ def CaptureFullScreenshotOnFuchsia(browser: browser_module.Browser) -> bool:
 
 def MapsTestCases() -> List[ExpectedColorTestCase]:
   class TestActionStartMapsTest(sghitb.TestAction):
-    def Run(self, test_case: ExpectedColorTestCase, tab_data: sghitb.TabData,
-            loop_state: sghitb.LoopState,
-            test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase) -> None:
+
+    def Run(
+        self, test_case: ExpectedColorTestCase, tab_data: sghitb.TabData,
+        loop_state: sghitb.LoopState,
+        test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase
+    ) -> None:  # pytype: disable=signature-mismatch
       sghitb.EvalInTestIframe(
           tab_data.tab, """
         function _checkIfTestCanStart() {
@@ -192,6 +195,8 @@ def MapsTestCases() -> List[ExpectedColorTestCase]:
               'SM-A235M': 1.1025,
               # Samsung S23.
               'SM-S911U1': 1.1,
+              # Motorola Moto G Power 5G.
+              'moto g power 5G - 2023': 1.1,
           }),
   ]
 

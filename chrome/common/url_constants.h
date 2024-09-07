@@ -591,6 +591,10 @@ inline constexpr char16_t kWhoIsMyAdministratorHelpURL[] =
 inline constexpr char16_t kCwsEnhancedSafeBrowsingLearnMoreURL[] =
     u"https://support.google.com/chrome?p=cws_enhanced_safe_browsing";
 
+// The URL path to online privacy policy.
+inline constexpr char kPrivacyPolicyOnlineURLPath[] =
+    "https://policies.google.com/privacy/embedded";
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // "Learn more" URL for the enhanced playback notification dialog.
 inline constexpr char kEnhancedPlaybackNotificationLearnMoreURL[] =
@@ -800,10 +804,6 @@ inline constexpr char kCrosEulaOnlineURLPath[] =
 // The URL path to online ARC++ terms of service.
 inline constexpr char kArcTosOnlineURLPath[] =
     "https://play.google/play-terms/embedded/";
-
-// The URL path to online privacy policy.
-inline constexpr char kPrivacyPolicyOnlineURLPath[] =
-    "https://policies.google.com/privacy/embedded";
 
 // The URL for the "learn more" link for TPM firmware update.
 inline constexpr char kTPMFirmwareUpdateLearnMoreURL[] =

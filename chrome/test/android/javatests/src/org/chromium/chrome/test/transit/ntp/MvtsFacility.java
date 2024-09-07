@@ -68,7 +68,7 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
                             tileMatcher,
                             /* offScreenDataMatcher= */ null,
                             () ->
-                                    WebPageStation.newWebPageStationBuilder()
+                                    WebPageStation.newBuilder()
                                             .withIncognito(false)
                                             .withIsOpeningTabs(0)
                                             .withTabAlreadySelected(mHostStation.getLoadedTab())

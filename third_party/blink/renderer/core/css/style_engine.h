@@ -36,8 +36,8 @@
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_css_origin.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
@@ -243,7 +243,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void DocumentRulesSelectorsChanged();
   void InitialStyleChanged();
   void ColorSchemeChanged();
-  void SetOwnerColorScheme(mojom::blink::ColorScheme);
+  void SetOwnerColorScheme(
+      mojom::blink::ColorScheme color_scheme,
+      mojom::blink::PreferredColorScheme preferred_color_scheme);
   mojom::blink::ColorScheme GetOwnerColorScheme() const {
     return owner_color_scheme_;
   }
@@ -585,7 +587,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void InvalidatePositionTryStyles();
 
   void MarkLastSuccessfulPositionFallbackDirtyForElement(Element& element) {
-    CHECK(RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled());
     last_successful_option_dirty_set_.insert(&element);
   }
 
@@ -739,6 +740,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Returns true if marked dirty for layout
   bool UpdateLastSuccessfulPositionFallbacks();
 
+  void RevisitActiveStyleSheetsForInspector();
+
  private:
   void UpdateCounters(const Element& element,
                       CountersAttachmentContext& context);
@@ -768,6 +771,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkUserStyleDirty();
 
   Document& GetDocument() const { return *document_; }
+
+  void RevisitStyleRulesForInspector(
+      const RuleFeatureSet& features,
+      const HeapVector<Member<StyleRuleBase>>& rules);
 
   typedef HeapHashSet<Member<TreeScope>> UnorderedTreeScopeSet;
 
@@ -1056,14 +1063,24 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   ColorSchemeFlags page_color_schemes_ =
       static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal);
 
-  // The preferred color scheme is set in settings, but may be overridden by the
-  // ForceDarkMode setting where the preferred_color_scheme_ will be set to
-  // kLight to avoid dark styling to be applied before auto darkening.
+  // The preferred color-scheme is set from Settings for the main frame
+  // document and from the owner_preferred_color_scheme_ for iframes, but may be
+  // overridden by the ForceDarkMode setting where the preferred_color_scheme_
+  // will be set to kLight to avoid dark styling to be applied before auto
+  // darkening.
   //
   // This data member should be initialized in the constructor in order to avoid
   // including full mojom headers from this header.
-  mojom::blink::PreferredColorScheme preferred_color_scheme_ =
-      mojom::blink::PreferredColorScheme::kLight;
+  mojom::blink::PreferredColorScheme preferred_color_scheme_;
+
+  // The preferred color-scheme to be used for this document if it is an iframe.
+  // It is inferred from the used color-scheme of the FrameOwner element, the
+  // FrameOwner element's page's supported color-schemes, and OS/Browser setting
+  // preferred color-scheme.
+  //
+  // This data member should be initialized in the constructor in order to avoid
+  // including full mojom headers from this header.
+  mojom::blink::PreferredColorScheme owner_preferred_color_scheme_;
 
   // We pass the used value of color-scheme from the iframe element in the
   // embedding document. If the color-scheme of the owner element and the root
@@ -1072,8 +1089,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   //
   // This data member should be initialized in the constructor in order to avoid
   // including full mojom headers from this header.
-  mojom::blink::ColorScheme owner_color_scheme_ =
-      mojom::blink::ColorScheme::kLight;
+  mojom::blink::ColorScheme owner_color_scheme_;
 
   // The color of the canvas backdrop for the used color-scheme.
   Color color_scheme_background_;

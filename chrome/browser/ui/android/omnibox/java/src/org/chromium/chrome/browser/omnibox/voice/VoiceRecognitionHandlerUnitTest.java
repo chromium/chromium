@@ -47,7 +47,6 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -56,8 +55,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AssistantActionPerformed;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -390,10 +387,6 @@ public class VoiceRecognitionHandlerUnitTest {
         verify(mHandler, times(1)).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.NTP));
         verify(mHandler, never()).recordVoiceSearchResult(anyBoolean());
         verify(mHandler, times(1)).recordVoiceSearchFailureEvent(eq(VoiceInteractionSource.NTP));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "VoiceInteraction.QueryDuration.Android"));
     }
 
     @Test
@@ -405,10 +398,6 @@ public class VoiceRecognitionHandlerUnitTest {
         verify(mHandler, times(1)).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.NTP));
         verify(mHandler, never()).recordVoiceSearchResult(anyBoolean());
         verify(mHandler, times(1)).recordVoiceSearchDismissedEvent(eq(VoiceInteractionSource.NTP));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "VoiceInteraction.QueryDuration.Android"));
     }
 
     @Test
@@ -420,10 +409,6 @@ public class VoiceRecognitionHandlerUnitTest {
         verify(mHandler, times(1))
                 .recordVoiceSearchStartEvent(eq(VoiceInteractionSource.SEARCH_WIDGET));
         verify(mHandler, times(1)).recordVoiceSearchResult(eq(false));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "VoiceInteraction.QueryDuration.Android"));
     }
 
     @Test
@@ -433,10 +418,6 @@ public class VoiceRecognitionHandlerUnitTest {
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         verify(mHandler, times(1)).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX));
         verify(mHandler, times(1)).recordVoiceSearchResult(eq(false));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "VoiceInteraction.QueryDuration.Android"));
     }
 
     @Test
@@ -457,10 +438,6 @@ public class VoiceRecognitionHandlerUnitTest {
         verify(mAutocompleteCoordinator).onVoiceResults(mVoiceResults.capture());
         RecognitionTestHelper.assertVoiceResultsAreEqual(
                 mVoiceResults.getValue(), new String[] {"testing"}, new float[] {confidence});
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "VoiceInteraction.QueryDuration.Android"));
     }
 
     @Test
@@ -485,10 +462,6 @@ public class VoiceRecognitionHandlerUnitTest {
                 mVoiceResults.getValue(),
                 new String[] {"testing"},
                 new float[] {VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD});
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "VoiceInteraction.QueryDuration.Android"));
     }
 
     @Test
@@ -542,71 +515,5 @@ public class VoiceRecognitionHandlerUnitTest {
                 results,
                 new String[] {"a", "www.b.co.uk", "engadget.com", "www.google.com"},
                 new float[] {1.0f, 1.0f, 1.0f, 1.0f});
-    }
-
-    @Test
-    @SmallTest
-    public void testRecordSuccessMetrics_calledWithNullStartTime() {
-        mHandler.setQueryStartTimeForTesting(null);
-        mHandler.recordSuccessMetrics(
-                VoiceInteractionSource.OMNIBOX, AssistantActionPerformed.TRANSCRIPTION);
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "VoiceInteraction.QueryDuration.Android"));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "VoiceInteraction.QueryDuration.Android.Transcription"));
-    }
-
-    @Test
-    @SmallTest
-    public void testRecordAudioState_deniedCannotAsk() {
-        doReturn(false).when(mPermissionDelegate).hasPermission(anyString());
-        doReturn(false).when(mPermissionDelegate).canRequestPermission(anyString());
-        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "VoiceInteraction.AudioPermissionEvent",
-                        AudioPermissionState.DENIED_CANNOT_ASK_AGAIN));
-    }
-
-    @Test
-    @SmallTest
-    public void testRecordAudioState_deniedCanAsk() {
-        doReturn(false).when(mPermissionDelegate).hasPermission(anyString());
-        doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
-        setReportedPermissionResult(PackageManager.PERMISSION_DENIED);
-        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "VoiceInteraction.AudioPermissionEvent",
-                        AudioPermissionState.DENIED_CAN_ASK_AGAIN));
-    }
-
-    @Test
-    @SmallTest
-    public void testRecordAudioState_granted() {
-        doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
-        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "VoiceInteraction.AudioPermissionEvent", AudioPermissionState.GRANTED));
-    }
-
-    @Test
-    @SmallTest
-    public void testCallback_CalledTwice() {
-        setVoiceResult(Activity.RESULT_OK, /* text= */ "", /* confidence= */ 1.f);
-        mHandler.startVoiceRecognition(VoiceInteractionSource.NTP);
-        verify(mHandler, never()).recordVoiceSearchUnexpectedResult(anyInt());
-
-        mIntentCallback.getValue().onIntentCompleted(Activity.RESULT_CANCELED, null);
-        verify(mHandler, times(1))
-                .recordVoiceSearchUnexpectedResult(eq(VoiceInteractionSource.NTP));
     }
 }

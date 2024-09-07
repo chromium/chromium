@@ -4,28 +4,28 @@ rootWebArea
 ++++++list
 ++++++++listItem
 ++++++++++listMarker name='foo%C2%ADbar'
-++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++++++staticText ignored
 ++++++++listItem
-++++++++++listMarker
-++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText ignored
 ++++++list
 ++++++++listItem
 ++++++++++listMarker name='foo%C2%ADbar'
-++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++++++staticText ignored
 ++++++++listItem
-++++++++++listMarker
-++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText ignored
 ++++++list
 ++++++++listItem
 ++++++++++listMarker name='foo%C2%ADbar'
-++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++++++staticText ignored
 ++++++++listItem
-++++++++++listMarker
-++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText ignored
 ++++++list
 ++++++++listItem
 ++++++++++listMarker name='foo%C2%ADbar'
-++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++++++staticText ignored
 ++++++++listItem
-++++++++++listMarker
-++++++++++++staticText ignored name='foo%C2%ADbar'
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText ignored

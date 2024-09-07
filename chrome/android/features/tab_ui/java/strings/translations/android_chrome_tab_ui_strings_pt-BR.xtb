@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> guias agrupadas</translation>
 <translation id="1657719826150349398">Mover guia para baixo</translation>
 <translation id="1713541401465507417">Fechar todos os grupos e guias</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> guia agrupada</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia}one{<ph name="TABS_COUNT_MANY" /> guia}other{<ph name="TABS_COUNT_MANY" /> guias}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> guia selecionada aos favoritos}one{Adicionar <ph name="TABS_COUNT_MANY" /> guia selecionada aos favoritos}other{Adicionar <ph name="TABS_COUNT_MANY" /> guias selecionadas aos favoritos}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Criado agora</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fechar após 1 dia}one{Fechar após <ph name="DAY_COUNT_MANY" /> dia}other{Fechar após <ph name="DAY_COUNT_MANY" /> dias}}</translation>
 <translation id="4777866634702576038">Excluir grupo de guias?</translation>
+<translation id="4783638485675352219">Compartilhar títulos e URLs de guias abertas neste dispositivo com o sistema operacional</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avaliação)}one{(<ph name="REVIEWS_COUNT_MANY" /> avaliação)}other{(<ph name="REVIEWS_COUNT_MANY" /> avaliações)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4870911314065352661">Fechar todas as guias?</translation>

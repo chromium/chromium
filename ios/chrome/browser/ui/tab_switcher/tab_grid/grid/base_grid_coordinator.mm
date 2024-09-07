@@ -11,7 +11,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -59,8 +59,8 @@
                       gridMediatorDelegate:(id<GridMediatorDelegate>)delegate {
   CHECK(baseViewController);
   CHECK(browser);
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:baseViewController
+                                        browser:browser])) {
     CHECK(toolbarsMutator);
     CHECK(delegate);
     _toolbarsMutator = toolbarsMutator;
@@ -284,41 +284,39 @@
 }
 
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                    group:(const TabGroup*)tabGroup
+                                    group:
+                                        (base::WeakPtr<const TabGroup>)tabGroup
                                sourceView:(UIView*)sourceView {
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       actionType:actionType
                       sourceView:sourceView];
-  base::WeakPtr<const TabGroup> weakGroup = tabGroup->GetWeakPtr();
   __weak BaseGridCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.action = ^{
-    [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
+    [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
   [_tabGroupConfirmationCoordinator start];
-
-  self.gridViewController.tabGroupConfirmationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
+  self.gridViewController.tabGroupConfirmationHandler =
+      _tabGroupConfirmationCoordinator;
 }
 
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                    group:(const TabGroup*)tabGroup
+                                    group:
+                                        (base::WeakPtr<const TabGroup>)tabGroup
                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       actionType:actionType
                 sourceButtonItem:sourceButtonItem];
-  base::WeakPtr<const TabGroup> weakGroup = tabGroup->GetWeakPtr();
   __weak BaseGridCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.action = ^{
-    [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
+    [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
   [_tabGroupConfirmationCoordinator start];
-
-  self.gridViewController.tabGroupConfirmationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
+  self.gridViewController.tabGroupConfirmationHandler =
+      _tabGroupConfirmationCoordinator;
 }
 
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:

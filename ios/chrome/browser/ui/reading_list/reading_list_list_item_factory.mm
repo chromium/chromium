@@ -28,7 +28,7 @@
 @synthesize customActionFactory = _customActionFactory;
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _customActionFactory =
         [[ReadingListListItemCustomActionFactory alloc] init];
   }

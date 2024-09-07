@@ -78,13 +78,6 @@ export function requestStart() {
 }
 
 /**
- * Stops the SyncService and clears the sync data.
- */
-export function requestStopClearData() {
-  chrome.send('requestStopClearData');
-}
-
-/**
  * Triggers a GetUpdates call for all enabled datatypes.
  */
 export function triggerRefresh() {

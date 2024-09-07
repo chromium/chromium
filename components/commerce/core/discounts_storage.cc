@@ -21,23 +21,6 @@ namespace commerce {
 const char kDiscountsFetchResultHistogramName[] =
     "Commerce.Discounts.FetchResult";
 
-namespace {
-bool MatchPrefixBeforeUTM(const std::string& url_with_utm,
-                          const std::string& target_url) {
-  size_t index = url_with_utm.find(commerce::kUTMPrefix);
-  if (index == std::string::npos) {
-    return false;
-  }
-  // Offset the '?' which is the starting character of URL parameters. We need
-  // this offset in case the target URL doesn't have any URL parameter.
-  if (index > 0 && url_with_utm[index - 1] == '?') {
-    index--;
-  }
-  const std::string url_prefix = url_with_utm.substr(0, index);
-  return base::StartsWith(target_url, url_prefix);
-}
-}  // namespace
-
 DiscountsStorage::DiscountsStorage(
     SessionProtoStorage<DiscountsContent>* discounts_proto_db,
     history::HistoryService* history_service)
@@ -49,18 +32,12 @@ DiscountsStorage::DiscountsStorage(
 DiscountsStorage::~DiscountsStorage() = default;
 
 void DiscountsStorage::HandleServerDiscounts(
-    const std::vector<std::string>& urls_to_check,
-    DiscountsMap server_results,
+    const GURL& url,
+    std::vector<DiscountInfo> server_results,
     DiscountInfoCallback callback) {
-  // Update local database with server-fetched results.
-  for (const auto& result : server_results) {
-    const GURL& url = result.first;
-    const std::vector<DiscountInfo>& discount_infos = result.second;
-
-    CHECK(discount_infos.size() > 0);
-
+  if (server_results.size() > 0) {
     std::vector<DiscountInfo> offer_level_discount_infos;
-    for (const auto& discount_info : discount_infos) {
+    for (const auto& discount_info : server_results) {
       if (discount_info.cluster_type == DiscountClusterType::kOfferLevel) {
         offer_level_discount_infos.emplace_back(discount_info);
       }
@@ -70,17 +47,16 @@ void DiscountsStorage::HandleServerDiscounts(
       SaveDiscounts(url, offer_level_discount_infos);
     }
 
-    if (!commerce::kDiscountOnShoppyPage.Get()) {
-      server_results[url] = offer_level_discount_infos;
+    if (commerce::kDiscountOnShoppyPage.Get()) {
+      std::move(callback).Run(url, std::move(server_results));
+    } else {
+      std::move(callback).Run(url, std::move(offer_level_discount_infos));
     }
-  }
-
-  if (urls_to_check.size() == 0) {
-    std::move(callback).Run(std::move(server_results));
   } else {
-    proto_db_->LoadAllEntries(base::BindOnce(
-        &DiscountsStorage::OnLoadAllDiscounts, weak_ptr_factory_.GetWeakPtr(),
-        urls_to_check, std::move(server_results), std::move(callback)));
+    proto_db_->LoadOneEntry(url.spec(),
+                            base::BindOnce(&DiscountsStorage::OnLoadDiscounts,
+                                           weak_ptr_factory_.GetWeakPtr(), url,
+                                           std::move(callback)));
   }
 }
 
@@ -126,60 +102,40 @@ void DiscountsStorage::DeleteDiscountsForUrl(const std::string& url) {
   proto_db_->DeleteOneEntry(url, base::BindOnce([](bool succeeded) {}));
 }
 
-void DiscountsStorage::OnLoadAllDiscounts(
-    const std::vector<std::string>& urls_to_check,
-    DiscountsMap server_results,
-    DiscountInfoCallback callback,
-    bool succeeded,
-    DiscountsKeyAndValues data) {
-  if (!succeeded) {
-    std::move(callback).Run(std::move(server_results));
+void DiscountsStorage::OnLoadDiscounts(const GURL& url,
+                                       DiscountInfoCallback callback,
+                                       bool succeeded,
+                                       DiscountsKeyAndValues data) {
+  if (!succeeded || data.size() == 0) {
+    if (succeeded && data.size() == 0) {
+      base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                    DiscountsFetchResult::kInfoNotFound);
+    }
+    std::move(callback).Run(url, {});
     return;
   }
 
-  int urls_found_in_db_number = 0;
-  for (const std::string& url_to_check : urls_to_check) {
-    for (SessionProtoStorage<DiscountsContent>::KeyAndValue& kv : data) {
-      if (url_to_check == kv.first) {
-        urls_found_in_db_number++;
-        std::vector<DiscountInfo> infos =
-            GetUnexpiredDiscountsFromProto(kv.second);
-        if (infos.size() == 0) {
-          DeleteDiscountsForUrl(kv.first);
-          base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
-                                        DiscountsFetchResult::kInvalidInfoInDb);
-        } else {
-          server_results[GURL(kv.first)] = infos;
-          base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
-                                        DiscountsFetchResult::kValidInfoInDb);
-
-          // Update local database if expired discounts found.
-          if ((int)(infos.size()) != kv.second.discounts().size()) {
-            SaveDiscounts(GURL(kv.first), infos);
-          }
-        }
-      } else if (commerce::UrlContainsDiscountUtmTag(GURL(url_to_check)) &&
-                 MatchPrefixBeforeUTM(url_to_check, kv.first)) {
-        // If the `url_to_check` contains discount UTM but has no corresponding
-        // discount from server, try to see if we can find a URL that has
-        // discount in storage and points to the same product by matching URL
-        // prefix.
-        std::vector<DiscountInfo> infos =
-            GetUnexpiredDiscountsFromProto(kv.second);
-        if (infos.size() != 0) {
-          server_results[GURL(url_to_check)] = infos;
-        }
-      }
-    }
+  if (data.size() == 0) {
+    CHECK(data.size() == 1 && data[0].first == url.spec());
   }
 
-  int urls_not_found_number = urls_to_check.size() - urls_found_in_db_number;
-  for (int i = 0; i < urls_not_found_number; i++) {
+  std::vector<DiscountInfo> valid_infos =
+      GetUnexpiredDiscountsFromProto(data[0].second);
+
+  if (valid_infos.size() == 0) {
+    DeleteDiscountsForUrl(data[0].first);
     base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
-                                  DiscountsFetchResult::kInfoNotFound);
+                                  DiscountsFetchResult::kInvalidInfoInDb);
+    std::move(callback).Run(url, {});
+  } else {
+    base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                  DiscountsFetchResult::kValidInfoInDb);
+    // Update local database if expired discounts found.
+    if ((int)(valid_infos.size()) != data[0].second.discounts().size()) {
+      SaveDiscounts(url, valid_infos);
+    }
+    std::move(callback).Run(url, std::move(valid_infos));
   }
-
-  std::move(callback).Run(std::move(server_results));
 }
 
 std::vector<DiscountInfo> DiscountsStorage::GetUnexpiredDiscountsFromProto(

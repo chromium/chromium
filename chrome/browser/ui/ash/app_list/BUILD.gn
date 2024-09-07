@@ -20,6 +20,7 @@ source_set("browser_tests") {
   deps = [
     "//ash",
     "//ash:test_support",
+    "//ash/app_list",
     "//ash/app_list:test_support",
     "//ash/constants",
     "//ash/public/cpp",

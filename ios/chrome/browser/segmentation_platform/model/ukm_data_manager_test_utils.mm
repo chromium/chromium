@@ -118,7 +118,7 @@ void UkmDataManagerTestUtils::SetupForProfile(ChromeBrowserState* profile) {
   history_service_ = ios::HistoryServiceFactory::GetForBrowserState(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   // Create the platform to kick off initialization.
-  segmentation_platform::SegmentationPlatformServiceFactory::GetForBrowserState(
+  segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
       profile);
 }
 

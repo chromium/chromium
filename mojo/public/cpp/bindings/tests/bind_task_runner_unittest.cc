@@ -41,8 +41,7 @@ class TestTaskRunner : public base::SequencedTaskRunner {
   bool PostNonNestableDelayedTask(const base::Location& from_here,
                                   base::OnceClosure task,
                                   base::TimeDelta delay) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   bool PostDelayedTask(const base::Location& from_here,
@@ -141,7 +140,7 @@ class IntegerSenderImpl : public IntegerSender {
     else
       echo_handler_.Run(value, std::move(callback));
   }
-  void Send(int32_t value) override { NOTREACHED_IN_MIGRATION(); }
+  void Send(int32_t value) override { NOTREACHED(); }
 
   ReceiverType* receiver() { return &receiver_; }
 
@@ -175,7 +174,7 @@ class IntegerSenderConnectionImpl : public IntegerSenderConnection {
   }
 
   void AsyncGetSender(AsyncGetSenderCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   Receiver<IntegerSenderConnection>* receiver() { return &receiver_; }

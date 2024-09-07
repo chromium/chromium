@@ -15,7 +15,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/browser/db/database_manager.h"
-#import "components/safe_browsing/core/browser/db/metadata.pb.h"
 #import "components/safe_browsing/core/browser/db/util.h"
 #import "components/safe_browsing/core/browser/db/v4_database.h"
 #import "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
@@ -85,13 +84,7 @@ class TestUrlCheckerClient {
     url_checker_ = safe_browsing_service_->CreateUrlChecker(
         network::mojom::RequestDestination::kDocument, &web_state_,
         safe_browsing_client_);
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      CheckUrlOnSBThread(url);
-    } else {
-      web::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnSBThread,
-                                    base::Unretained(this), url));
-    }
+    CheckUrlOnUIThread(url);
   }
 
   void CheckUrlWithSyncChecker(const GURL& url) {
@@ -99,13 +92,7 @@ class TestUrlCheckerClient {
     url_checker_ = safe_browsing_service_->CreateSyncChecker(
         network::mojom::RequestDestination::kDocument, &web_state_,
         safe_browsing_client_);
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      CheckUrlOnSBThread(url);
-    } else {
-      web::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnSBThread,
-                                    base::Unretained(this), url));
-    }
+    CheckUrlOnUIThread(url);
   }
 
   void CheckUrlWithAsyncChecker(const GURL& url) {
@@ -113,13 +100,7 @@ class TestUrlCheckerClient {
     url_checker_ = safe_browsing_service_->CreateAsyncChecker(
         network::mojom::RequestDestination::kDocument, &web_state_,
         safe_browsing_client_);
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      CheckUrlOnSBThread(url);
-    } else {
-      web::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnSBThread,
-                                    base::Unretained(this), url));
-    }
+    CheckUrlOnUIThread(url);
   }
 
   bool result_pending() const { return result_pending_; }
@@ -131,7 +112,7 @@ class TestUrlCheckerClient {
   }
 
  private:
-  void CheckUrlOnSBThread(const GURL& url) {
+  void CheckUrlOnUIThread(const GURL& url) {
     url_checker_->CheckUrl(
         url, "GET",
         base::BindOnce(&TestUrlCheckerClient::OnCheckUrlResult,
@@ -213,26 +194,12 @@ class SafeBrowsingServiceTest : public PlatformTest {
   }
 
   void MarkUrlAsMalware(const GURL& bad_url) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      MarkUrlAsMalwareOnSBThread(bad_url);
-    } else {
-      web::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&SafeBrowsingServiceTest::MarkUrlAsMalwareOnSBThread,
-                         base::Unretained(this), bad_url));
-    }
+    MarkUrlAsMalwareOnUIThread(bad_url);
   }
 
   // Adds the given `safe_url` to the allowlist used by real-time checks.
   void MarkUrlAsRealTimeSafe(const GURL& safe_url) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      MarkUrlAsSafeOnSBThread(safe_url);
-    } else {
-      web::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&SafeBrowsingServiceTest::MarkUrlAsSafeOnSBThread,
-                         base::Unretained(this), safe_url));
-    }
+    MarkUrlAsSafeOnUIThread(safe_url);
   }
 
   // Caches the given `bad_url` as unsafe in the VerdictCacheManager used by
@@ -271,7 +238,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
   web::FakeWebState web_state_;
 
  private:
-  void MarkUrlAsMalwareOnSBThread(const GURL& bad_url) {
+  void MarkUrlAsMalwareOnUIThread(const GURL& bad_url) {
     safe_browsing::FullHashInfo full_hash_info =
         safe_browsing::GetFullHashInfoWithMetadata(
             bad_url, safe_browsing::GetUrlMalwareId(),
@@ -281,7 +248,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
     v4_get_hash_factory_->AddToFullHashCache(full_hash_info);
   }
 
-  void MarkUrlAsSafeOnSBThread(const GURL& bad_url) {
+  void MarkUrlAsSafeOnUIThread(const GURL& bad_url) {
     safe_browsing::FullHashInfo full_hash_info =
         safe_browsing::GetFullHashInfoWithMetadata(
             bad_url, safe_browsing::GetUrlMalwareId(),
@@ -339,11 +306,8 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
                               browser_state_.get(), &safe_browsing_client_);
   GURL safe_url = GURL(kSafePage);
   client.CheckUrl(safe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
-      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 
@@ -358,10 +322,6 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
   // Disable Safe Browsing, and ensure that unsafe URLs are no longer flagged.
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   client.CheckUrl(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 }
@@ -373,11 +333,8 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePagesWithSyncChecker) {
                               browser_state_.get(), &safe_browsing_client_);
   GURL safe_url = GURL(kSafePage);
   client.CheckUrlWithSyncChecker(safe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
-      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 
@@ -392,10 +349,6 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePagesWithSyncChecker) {
   // Disable Safe Browsing, and ensure that unsafe URLs are no longer flagged.
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   client.CheckUrlWithSyncChecker(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 }
@@ -407,11 +360,8 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePagesWithAsyncChecker) {
                               browser_state_.get(), &safe_browsing_client_);
   GURL safe_url = GURL(kSafePage);
   client.CheckUrlWithAsyncChecker(safe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
-      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 
@@ -426,10 +376,6 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePagesWithAsyncChecker) {
   // Disable Safe Browsing, and ensure that unsafe URLs are no longer flagged.
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   client.CheckUrlWithAsyncChecker(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 }
@@ -472,11 +418,8 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
   pref_service_->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   client.CheckUrl(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
-      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 }
@@ -519,11 +462,8 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePagesWithSyncChecker) {
   pref_service_->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   client.CheckUrlWithSyncChecker(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
-      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 }
@@ -566,11 +506,8 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePagesWithAsyncChecker) {
   pref_service_->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   client.CheckUrlWithAsyncChecker(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
-      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 }
@@ -609,11 +546,8 @@ TEST_F(SafeBrowsingServiceTest,
   // flagged.
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   client.CheckUrl(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
-      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 }

@@ -13,11 +13,11 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
@@ -193,8 +193,8 @@ FilePermissionRestorer::FilePermissionRestorer(const FilePath& path)
 }
 
 FilePermissionRestorer::~FilePermissionRestorer() {
-  if (!RestorePermissionInfo(path_, info_, length_))
-    NOTREACHED();
+  const bool success = RestorePermissionInfo(path_, info_, length_);
+  CHECK(success);
 }
 
 std::wstring GetFileDacl(const FilePath& path) {

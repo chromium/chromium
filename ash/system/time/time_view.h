@@ -129,7 +129,6 @@ class ASH_EXPORT TimeView : public views::View, public ClockObserver {
   friend class TimeTrayItemViewTest;
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

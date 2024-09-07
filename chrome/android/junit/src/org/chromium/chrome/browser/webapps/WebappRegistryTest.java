@@ -764,6 +764,7 @@ public class WebappRegistryTest {
     public void testHasWebApkForOrigin() throws Exception {
         final String startUrl = START_URL + "/test_page.html";
         final String testOrigin = START_URL;
+        final String testPackageName = "org.chromium.webapk";
 
         assertFalse(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
 
@@ -772,8 +773,13 @@ public class WebappRegistryTest {
         assertFalse(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
 
         BrowserServicesIntentDataProvider webApkIntentDataProvider =
-                new WebApkIntentDataProviderBuilder("org.chromium.webapk", startUrl).build();
+                new WebApkIntentDataProviderBuilder(testPackageName, startUrl).build();
         registerWebapp(webApkIntentDataProvider);
+        // Still fails because the WebAPK is "no longer installed" according to PackageManager.
+        assertFalse(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
+
+        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+                .addPackage(testPackageName);
         assertTrue(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
     }
 

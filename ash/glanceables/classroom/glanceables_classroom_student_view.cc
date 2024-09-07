@@ -14,7 +14,6 @@
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_contents_scroll_view.h"
-#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -26,6 +25,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/combobox.h"
+#include "ash/style/error_message_toast.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -399,6 +399,9 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
     }
   }
 
+  // Reset the position of the scroll view after the new data is fetched.
+  content_scroll_view()->ScrollToOffset(gfx::PointF(0, 0));
+
   auto* controller = Shell::Get()->glanceables_controller();
 
   if (initial_update) {
@@ -421,7 +424,7 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
         base::BindRepeating(
             &GlanceablesClassroomStudentView::MaybeDismissErrorMessage,
             base::Unretained(this)),
-        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+        ErrorMessageToast::ButtonActionType::kDismiss);
   }
 }
 

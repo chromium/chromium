@@ -147,18 +147,14 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogConsentViewInteractiveTest,
 
       PressButton(kBookmarkStarViewElementId),
 
-      WaitForShow(kBookmarkBubbleOkButtonId),
-
-      FlushEvents());
+      WaitForShow(kBookmarkBubbleOkButtonId));
 
   // Manually apply the meta to the bookmark since everything else is mocked.
   ApplyMetaToBookmark();
 
   RunTestSequence(PressButton(kBookmarkBubbleOkButtonId),
 
-                  WaitForShow(kPriceTrackingEmailConsentDialogId),
-
-                  FlushEvents());
+                  WaitForShow(kPriceTrackingEmailConsentDialogId));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogConsentViewInteractiveTest,
@@ -174,7 +170,5 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogConsentViewInteractiveTest,
 
       PressButton(kBookmarkBubbleOkButtonId),
 
-      EnsureNotPresent(kPriceTrackingEmailConsentDialogId),
-
-      FlushEvents());
+      EnsureNotPresent(kPriceTrackingEmailConsentDialogId));
 }

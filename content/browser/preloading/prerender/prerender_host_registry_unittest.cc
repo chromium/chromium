@@ -59,10 +59,6 @@ void SendCandidate(const GURL& url,
   SendCandidates({url}, remote);
 }
 
-// This definition is needed because this constant is odr-used in gtest macros.
-// https://en.cppreference.com/w/cpp/language/static#Constant_static_members
-const int kNoFrameTreeNodeId = RenderFrameHost::kNoFrameTreeNodeId;
-
 std::unique_ptr<NavigationSimulatorImpl> CreateActivation(
     const GURL& prerendering_url,
     WebContentsImpl& web_contents) {
@@ -164,12 +160,12 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
   void SetupPrerenderAndCommit(
       base::OnceCallback<void(NavigationSimulatorImpl*)> setup_callback) {
     const GURL kPrerenderingUrl("https://example.com/next");
-    const int prerender_frame_tree_node_id =
+    const FrameTreeNodeId prerender_frame_tree_node_id =
         registry().CreateAndStartHost(GeneratePrerenderAttributes(
             kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
             blink::mojom::SpeculationEagerness::kEager,
             contents()->GetPrimaryMainFrame()));
-    ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+    ASSERT_TRUE(prerender_frame_tree_node_id);
     PrerenderHost* prerender_host =
         registry().FindNonReservedHostById(prerender_frame_tree_node_id);
 
@@ -218,7 +214,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             contents()->GetWeakPtr(),
             /*initiator_frame_token=*/std::nullopt,
             /*initiator_frame_tree_node_id=*/
-            RenderFrameHost::kNoFrameTreeNodeId,
+            FrameTreeNodeId(),
             /*initiator_ukm_id=*/ukm::kInvalidSourceId,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -297,12 +293,12 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_SpeculationRule) {
   const GURL kPrerenderingUrl("https://example.com/next");
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_frame_tree_node_id);
   PrerenderHost* prerender_host =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);
@@ -317,11 +313,11 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_SpeculationRule) {
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_Embedder_DirectURLInput) {
   const GURL kPrerenderingUrl("https://example.com/next");
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kEmbedder, "DirectURLInput",
           std::nullopt, contents()->GetPrimaryMainFrame()));
-  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_frame_tree_node_id);
   PrerenderHost* prerender_host =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);
@@ -348,13 +344,14 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_PreloadingConfigHoldback) {
       PreloadingType::kPrerender, std::move(same_url_matcher),
       /*planned_max_preloading_type=*/std::nullopt,
       contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
-  const int prerender_frame_tree_node_id = registry().CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl,
-                                  PreloadingTriggerType::kSpeculationRule, "",
-                                  blink::mojom::SpeculationEagerness::kEager,
-                                  contents()->GetPrimaryMainFrame()),
-      preloading_attempt);
-  EXPECT_EQ(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  const FrameTreeNodeId prerender_frame_tree_node_id =
+      registry().CreateAndStartHost(
+          GeneratePrerenderAttributes(
+              kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
+              blink::mojom::SpeculationEagerness::kEager,
+              contents()->GetPrimaryMainFrame()),
+          preloading_attempt);
+  EXPECT_TRUE(prerender_frame_tree_node_id.is_null());
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -375,10 +372,10 @@ TEST_F(PrerenderHostRegistryTest,
       contents()->GetPrimaryMainFrame());
   attributes.holdback_status_override = PreloadingHoldbackStatus::kHoldback;
 
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(attributes, preloading_attempt);
 
-  EXPECT_EQ(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  EXPECT_TRUE(prerender_frame_tree_node_id.is_null());
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_HoldbackOverride_Allowed) {
@@ -402,10 +399,10 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_HoldbackOverride_Allowed) {
       contents()->GetPrimaryMainFrame());
   attributes.holdback_status_override = PreloadingHoldbackStatus::kAllowed;
 
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(attributes, preloading_attempt);
 
-  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_frame_tree_node_id);
   PrerenderHost* prerender_host =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);
@@ -421,23 +418,23 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_HoldbackOverride_Allowed) {
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   const GURL kPrerenderingUrl("https://example.com/next");
 
-  const int frame_tree_node_id1 =
+  const FrameTreeNodeId frame_tree_node_id1 =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  EXPECT_NE(frame_tree_node_id1, RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(frame_tree_node_id1);
   PrerenderHost* prerender_host1 =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
 
   // Start the prerender host for the same URL. This second host should be
   // ignored, and the first host should still be findable.
-  const int frame_tree_node_id2 =
+  const FrameTreeNodeId frame_tree_node_id2 =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  EXPECT_EQ(frame_tree_node_id2, RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(frame_tree_node_id2.is_null());
   EXPECT_EQ(registry().FindHostByUrlForTesting(kPrerenderingUrl),
             prerender_host1);
   CommitPrerenderNavigation(*prerender_host1);
@@ -465,12 +462,12 @@ class PrerenderHostRegistryLimitTest : public PrerenderHostRegistryTest {
 // to a specific number, and after once the prerender page was activated,
 // PrerenderHostRegistry can start prerendering a new one.
 TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_Activation) {
-  std::vector<int> frame_tree_node_ids;
+  std::vector<FrameTreeNodeId> frame_tree_node_ids;
   std::vector<GURL> prerendering_ulrs;
   for (int i = 0; i < MaxNumOfRunningSpeculationRules() + 1; i++) {
     const GURL prerendering_url("https://example.com/next" +
                                 base::NumberToString(i));
-    int frame_tree_node_id =
+    FrameTreeNodeId frame_tree_node_id =
         registry().CreateAndStartHost(GeneratePrerenderAttributes(
             prerendering_url, PreloadingTriggerType::kSpeculationRule, "",
             blink::mojom::SpeculationEagerness::kEager,
@@ -482,10 +479,9 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_Activation) {
 
   // PrerenderHostRegistry should only start prerendering within the limit.
   for (int i = 0; i < MaxNumOfRunningSpeculationRules(); i++) {
-    EXPECT_NE(frame_tree_node_ids[i], kNoFrameTreeNodeId);
+    EXPECT_TRUE(frame_tree_node_ids[i]);
   }
-  EXPECT_EQ(frame_tree_node_ids[MaxNumOfRunningSpeculationRules()],
-            kNoFrameTreeNodeId);
+  EXPECT_TRUE(frame_tree_node_ids[MaxNumOfRunningSpeculationRules()].is_null());
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 
@@ -497,13 +493,13 @@ TEST_F(PrerenderHostRegistryLimitTest, NumberLimit_Activation) {
 
   // After the first prerender page was activated, PrerenderHostRegistry can
   // start prerendering a new one.
-  int frame_tree_node_id =
+  FrameTreeNodeId frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           prerendering_ulrs[MaxNumOfRunningSpeculationRules()],
           PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  EXPECT_NE(frame_tree_node_id, kNoFrameTreeNodeId);
+  EXPECT_TRUE(frame_tree_node_id);
   ExpectBucketCountOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 }
@@ -640,7 +636,8 @@ class PrerenderHostRegistryNewLimitAndSchedulerTest
     return GetParam() && limit_group != PrerenderLimitGroup::kEmbedder;
   }
 
-  int CreateAndStartHostByLimitGroup(PrerenderLimitGroup limit_group) {
+  FrameTreeNodeId CreateAndStartHostByLimitGroup(
+      PrerenderLimitGroup limit_group) {
     static int unique_id = 0;
     const GURL prerendering_url("https://example.com/next_" +
                                 base::NumberToString(unique_id));
@@ -707,27 +704,28 @@ TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
        NewLimitAndScheduler_Eager) {
   // Starts the eager prerenders as many times as the specific limit.
   for (int i = 0; i < MaxNumOfRunningSpeculationRulesEagerPrerenders(); i++) {
-    int frame_tree_node_id = CreateAndStartHostByLimitGroup(
+    FrameTreeNodeId frame_tree_node_id = CreateAndStartHostByLimitGroup(
         PrerenderLimitGroup::kSpeculationRulesEager);
-    EXPECT_NE(frame_tree_node_id, kNoFrameTreeNodeId);
+    EXPECT_TRUE(frame_tree_node_id);
   }
 
   // If we try to start eager prerenders after reaching the limit, that should
   // be canceled with kMaxNumOfRunningEagerPrerendersExceeded.
-  int frame_tree_node_id_eager_exceeded = CreateAndStartHostByLimitGroup(
-      PrerenderLimitGroup::kSpeculationRulesEager);
-  EXPECT_EQ(frame_tree_node_id_eager_exceeded, kNoFrameTreeNodeId);
+  FrameTreeNodeId frame_tree_node_id_eager_exceeded =
+      CreateAndStartHostByLimitGroup(
+          PrerenderLimitGroup::kSpeculationRulesEager);
+  EXPECT_TRUE(frame_tree_node_id_eager_exceeded.is_null());
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 1);
 
   // On the other hand, prerenders belonging to different limit
   // group(non-eager, embedder) can still be started.
-  int frame_tree_node_id_non_eager = CreateAndStartHostByLimitGroup(
+  FrameTreeNodeId frame_tree_node_id_non_eager = CreateAndStartHostByLimitGroup(
       PrerenderLimitGroup::kSpeculationRulesNonEager);
-  int frame_tree_node_id_embedder =
+  FrameTreeNodeId frame_tree_node_id_embedder =
       CreateAndStartHostByLimitGroup(PrerenderLimitGroup::kEmbedder);
-  EXPECT_NE(frame_tree_node_id_non_eager, kNoFrameTreeNodeId);
-  EXPECT_NE(frame_tree_node_id_embedder, kNoFrameTreeNodeId);
+  EXPECT_TRUE(frame_tree_node_id_non_eager);
+  EXPECT_TRUE(frame_tree_node_id_embedder);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 1);
   ExpectUniqueSampleOfEmbedderFinalStatus(
@@ -738,24 +736,25 @@ TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
 // Tests the behavior of non-eager prerenders with the new limit and scheduler.
 TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
        NewLimitAndScheduler_NonEager) {
-  std::vector<int> started_prerender_ids;
+  std::vector<FrameTreeNodeId> started_prerender_ids;
 
   // Starts the non-eager prerenders as many times as the specific limit.
   for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders();
        i++) {
-    int frame_tree_node_id = CreateAndStartHostByLimitGroup(
+    FrameTreeNodeId frame_tree_node_id = CreateAndStartHostByLimitGroup(
         PrerenderLimitGroup::kSpeculationRulesNonEager);
     started_prerender_ids.push_back(frame_tree_node_id);
-    EXPECT_NE(frame_tree_node_id, kNoFrameTreeNodeId);
+    EXPECT_TRUE(frame_tree_node_id);
   }
 
   // Even after the limit of non-eager speculation rules is reached, it is
   // permissible to start a new prerender. Instead, the oldest prerender will be
   // canceled with kMaxNumOfRunningNonEagerPrerendersExceeded to make room for a
   // new one.
-  int frame_tree_node_id_non_eager_exceeded = CreateAndStartHostByLimitGroup(
-      PrerenderLimitGroup::kSpeculationRulesNonEager);
-  ASSERT_NE(frame_tree_node_id_non_eager_exceeded, kNoFrameTreeNodeId);
+  FrameTreeNodeId frame_tree_node_id_non_eager_exceeded =
+      CreateAndStartHostByLimitGroup(
+          PrerenderLimitGroup::kSpeculationRulesNonEager);
+  ASSERT_TRUE(frame_tree_node_id_non_eager_exceeded);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded, 1);
 
@@ -778,12 +777,12 @@ TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
   // On the other hand, prerenders belonging to different limit group(eager,
   // embedder) can still be started and not invoke cancellation, as these limits
   // are separated.
-  int frame_tree_node_id_eager = CreateAndStartHostByLimitGroup(
+  FrameTreeNodeId frame_tree_node_id_eager = CreateAndStartHostByLimitGroup(
       PrerenderLimitGroup::kSpeculationRulesEager);
-  int frame_tree_node_id_embedder =
+  FrameTreeNodeId frame_tree_node_id_embedder =
       CreateAndStartHostByLimitGroup(PrerenderLimitGroup::kEmbedder);
-  EXPECT_NE(frame_tree_node_id_eager, kNoFrameTreeNodeId);
-  EXPECT_NE(frame_tree_node_id_embedder, kNoFrameTreeNodeId);
+  EXPECT_TRUE(frame_tree_node_id_eager);
+  EXPECT_TRUE(frame_tree_node_id_embedder);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded, 1);
   ExpectUniqueSampleOfEmbedderFinalStatus(
@@ -796,28 +795,28 @@ TEST_P(PrerenderHostRegistryNewLimitAndSchedulerTest,
        NewLimitAndScheduler_Embedder) {
   // Starts the embedder prerenders as many times as the specific limit.
   for (int i = 0; i < MaxNumOfRunningEmbedderPrerenders(); i++) {
-    int frame_tree_node_id =
+    FrameTreeNodeId frame_tree_node_id =
         CreateAndStartHostByLimitGroup(PrerenderLimitGroup::kEmbedder);
-    EXPECT_NE(frame_tree_node_id, kNoFrameTreeNodeId);
+    EXPECT_TRUE(frame_tree_node_id);
   }
 
   // If we try to start embedder prerenders after reaching the limit, that
   // should be canceled with kMaxNumOfRunningEmbedderPrerendersExceeded.
-  int frame_tree_node_id_embedder_exceeded =
+  FrameTreeNodeId frame_tree_node_id_embedder_exceeded =
       CreateAndStartHostByLimitGroup(PrerenderLimitGroup::kEmbedder);
-  EXPECT_EQ(frame_tree_node_id_embedder_exceeded, kNoFrameTreeNodeId);
+  EXPECT_TRUE(frame_tree_node_id_embedder_exceeded.is_null());
   ExpectUniqueSampleOfEmbedderFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded,
       embedder_histogram_suffix, 1);
 
   // On the other hand, prerenders belonging to different limit group(eager,
   // non-egaer) can still be started.
-  int frame_tree_node_id_eager = CreateAndStartHostByLimitGroup(
+  FrameTreeNodeId frame_tree_node_id_eager = CreateAndStartHostByLimitGroup(
       PrerenderLimitGroup::kSpeculationRulesEager);
-  int frame_tree_node_id_non_eager = CreateAndStartHostByLimitGroup(
+  FrameTreeNodeId frame_tree_node_id_non_eager = CreateAndStartHostByLimitGroup(
       PrerenderLimitGroup::kSpeculationRulesNonEager);
-  EXPECT_NE(frame_tree_node_id_eager, kNoFrameTreeNodeId);
-  EXPECT_NE(frame_tree_node_id_non_eager, kNoFrameTreeNodeId);
+  EXPECT_TRUE(frame_tree_node_id_eager);
+  EXPECT_TRUE(frame_tree_node_id_non_eager);
   ExpectBucketCountOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 0);
   ExpectBucketCountOfSpeculationRuleFinalStatus(
@@ -832,12 +831,12 @@ TEST_F(PrerenderHostRegistryTest,
   const GURL original_url = contents()->GetLastCommittedURL();
   const GURL kPrerenderingUrl("https://example.com/next");
 
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_frame_tree_node_id);
   PrerenderHost* prerender_host =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   FrameTreeNode* ftn =
@@ -885,7 +884,7 @@ TEST_F(PrerenderHostRegistryTest,
 
 TEST_F(PrerenderHostRegistryTest, CancelHost) {
   const GURL kPrerenderingUrl("https://example.com/next");
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
@@ -905,12 +904,12 @@ TEST_F(PrerenderHostRegistryTest,
 
   // Start prerendering.
   const GURL kPrerenderingUrl("https://example.com/next");
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_frame_tree_node_id);
   PrerenderHost* prerender_host =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);
@@ -967,12 +966,12 @@ TEST_F(PrerenderHostRegistryTest,
   const GURL original_url = contents()->GetLastCommittedURL();
   const GURL kPrerenderingUrl("https://example.com/next");
 
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_frame_tree_node_id);
   PrerenderHost* prerender_host =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);
@@ -1017,12 +1016,12 @@ TEST_F(PrerenderHostRegistryTest,
 
   {
     // Start the second prerender for the same URL.
-    const int prerender_frame_tree_node_id2 =
+    const FrameTreeNodeId prerender_frame_tree_node_id2 =
         registry().CreateAndStartHost(GeneratePrerenderAttributes(
             kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
             blink::mojom::SpeculationEagerness::kEager,
             contents()->GetPrimaryMainFrame()));
-    ASSERT_NE(prerender_frame_tree_node_id2, kNoFrameTreeNodeId);
+    ASSERT_TRUE(prerender_frame_tree_node_id2);
     PrerenderHost* prerender_host2 =
         registry().FindHostByUrlForTesting(kPrerenderingUrl);
     CommitPrerenderNavigation(*prerender_host2);
@@ -1053,11 +1052,11 @@ TEST_F(PrerenderHostRegistryTest,
 
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
   RenderFrameHostImpl* initiator_rfh = contents()->GetPrimaryMainFrame();
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kEmbedder, "DirectURLInput",
           std::nullopt, initiator_rfh));
-  EXPECT_EQ(prerender_frame_tree_node_id, RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(prerender_frame_tree_node_id.is_null());
   PrerenderHost* prerender_host =
       registry().FindNonReservedHostById(prerender_frame_tree_node_id);
   EXPECT_EQ(prerender_host, nullptr);
@@ -1325,14 +1324,14 @@ TEST_F(PrerenderHostRegistryTest,
 // End replication state matching tests ------------
 
 TEST_F(PrerenderHostRegistryTest, OneTaskToDeleteAllHosts) {
-  std::vector<int> frame_tree_node_ids;
+  std::vector<FrameTreeNodeId> frame_tree_node_ids;
   std::vector<std::unique_ptr<test::PrerenderHostObserver>>
       prerender_host_observers;
 
   for (int i = 0; i < 2; i++) {
     const GURL prerendering_url("https://example.com/next" +
                                 base::NumberToString(i));
-    int frame_tree_node_id =
+    FrameTreeNodeId frame_tree_node_id =
         registry().CreateAndStartHost(GeneratePrerenderAttributes(
             prerendering_url, PreloadingTriggerType::kSpeculationRule, "",
             blink::mojom::SpeculationEagerness::kEager,
@@ -1373,12 +1372,12 @@ TEST_F(PrerenderHostRegistryTest, DisallowPageHavingEffectiveUrl_TriggerUrl) {
   // Start prerendering. This should fail as the initiator's URL has the
   // effective URL.
   const GURL kPrerenderingUrl("https://example.com/empty.html");
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  EXPECT_EQ(prerender_frame_tree_node_id, RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(prerender_frame_tree_node_id.is_null());
   PrerenderHost* prerender_host =
       registry().FindNonReservedHostById(prerender_frame_tree_node_id);
   EXPECT_EQ(prerender_host, nullptr);
@@ -1403,12 +1402,12 @@ TEST_F(PrerenderHostRegistryTest,
 
   // Start prerendering. This should fail as the prerendering URL has the
   // effective URL.
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  EXPECT_EQ(prerender_frame_tree_node_id, RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(prerender_frame_tree_node_id.is_null());
   PrerenderHost* prerender_host =
       registry().FindNonReservedHostById(prerender_frame_tree_node_id);
   EXPECT_EQ(prerender_host, nullptr);
@@ -1425,12 +1424,12 @@ TEST_F(PrerenderHostRegistryTest,
   const GURL kModifiedSiteUrl("custom-scheme://custom");
 
   // Start prerendering.
-  const int prerender_frame_tree_node_id =
+  const FrameTreeNodeId prerender_frame_tree_node_id =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kPrerenderingUrl, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
-  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_frame_tree_node_id);
   PrerenderHost* prerender_host =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);

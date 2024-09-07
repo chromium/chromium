@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -74,7 +73,9 @@ public class TabArchiveSettingsFragmentUnitTest {
                 .commit();
         mActivityScenario.moveToState(State.STARTED);
 
-        assertEquals(mActivity.getString(R.string.archive_settings_title), mActivity.getTitle());
+        assertEquals(
+                mActivity.getString(R.string.archive_settings_title),
+                tabArchiveSettingsFragment.getPageTitle().get());
         return tabArchiveSettingsFragment;
     }
 

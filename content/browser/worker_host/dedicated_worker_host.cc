@@ -74,6 +74,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     DedicatedWorkerCreator creator,
     GlobalRenderFrameHostId ancestor_render_frame_host_id,
     const blink::StorageKey& creator_storage_key,
+    const url::Origin& renderer_origin,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr creator_client_security_state,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
@@ -85,6 +86,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       creator_(creator),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_storage_key.origin()),
+      renderer_origin_(renderer_origin),
       // TODO(crbug.com/40051700): Calculate the worker origin based on
       // the worker script URL (the worker's storage key should have an opaque
       // origin if the worker script URL's scheme is data:).
@@ -546,6 +548,12 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           ancestor_render_frame_host->GetCookieSettingOverrides(),
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");
 
+  RenderFrameHost* frame = nullptr;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUseAncestorRenderFrameForWorker)) {
+    frame = ancestor_render_frame_host;
+  }
+
   return url_loader_factory::CreatePendingRemote(
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
       url_loader_factory::TerminalParams::ForNetworkContext(
@@ -554,9 +562,9 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           url_loader_factory::HeaderClientOption::kAllow,
           url_loader_factory::FactoryOverrideOption::kAllow),
       url_loader_factory::ContentClientParams(
-          worker_process_host_->GetBrowserContext(),
-          /*frame=*/nullptr, worker_process_host_->GetID(),
-          GetStorageKey().origin(), isolation_info_,
+          worker_process_host_->GetBrowserContext(), frame,
+          worker_process_host_->GetID(), GetStorageKey().origin(),
+          isolation_info_,
           ukm::SourceIdObj::FromInt64(
               ancestor_render_frame_host->GetPageUkmSourceId()),
           bypass_redirect_checks),
@@ -756,7 +764,8 @@ void DedicatedWorkerHost::CreateBlobUrlStoreProvider(
       GetProcessHost()->GetStoragePartition());
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      GetStorageKey(), std::move(receiver),
+      GetStorageKey(), renderer_origin_, GetProcessHost()->GetID(),
+      std::move(receiver),
       storage::BlobURLValidityCheckBehavior::
           ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH);
 }
@@ -804,7 +813,7 @@ void DedicatedWorkerHost::GetFileSystemAccessManager(
           // URL for workers instead of the origin as source url.
           // This URL will be used for SafeBrowsing checks and for
           // the Quarantine Service.
-          GetStorageKey().origin().GetURL(), GetAssociatedRenderFrameHostId(),
+          GetStorageKey().origin().GetURL(), GetAncestorRenderFrameHostId(),
           /*is_worker=*/true),
       std::move(receiver));
 }
@@ -1091,17 +1100,13 @@ void DedicatedWorkerHost::GetSandboxedFileSystemForBucket(
       bucket.ToBucketLocator(), directory_path_components, std::move(callback));
 }
 
-GlobalRenderFrameHostId DedicatedWorkerHost::GetAssociatedRenderFrameHostId()
-    const {
-  return GetAncestorRenderFrameHostId();
-}
-
-base::UnguessableToken DedicatedWorkerHost::GetDevToolsToken() const {
-  // This method is expected to be called only when PlzDedicatedWorker is
-  // enabled. See code comments on `WorkerDevToolsManager`.
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
-  return DedicatedWorkerDevToolsAgentHost::GetFor(this)
-      ->devtools_worker_token();
+storage::BucketClientInfo DedicatedWorkerHost::GetBucketClientInfo() const {
+  const auto* ancestor_rfh =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  return storage::BucketClientInfo{
+      worker_process_host_->GetID(), GetToken(),
+      ancestor_rfh ? std::optional(ancestor_rfh->GetDocumentToken())
+                   : std::nullopt};
 }
 
 blink::scheduler::WebSchedulerTrackedFeatures

@@ -75,8 +75,7 @@ gfx::Rect UpdateRenderPassFromOverlayData(
   // compositing scenarios.
   if (!overlay_data.promoted_overlays.empty() ||
       (frame_has_delegated_ink &&
-       base::FeatureList::IsEnabled(
-           features::kUseDCompSurfacesForDelegatedInk))) {
+       features::ShouldUseDCompSurfacesForDelegatedInk())) {
     frames_since_using_dc_layers_map[render_pass->id] = 0;
     using_dc_layers = true;
   } else if ((was_using_dc_layers &&

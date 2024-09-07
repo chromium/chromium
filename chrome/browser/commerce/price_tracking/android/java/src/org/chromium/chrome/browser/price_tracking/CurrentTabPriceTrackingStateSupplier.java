@@ -38,6 +38,7 @@ public class CurrentTabPriceTrackingStateSupplier implements ObservableSupplier<
     private final ObservableSupplier<Tab> mTabSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObserverList<Callback<Boolean>> mObservers = new ObserverList<>();
+    private final Callback<Profile> mOnProfileUpdatedCallback = this::onProfileUpdated;
     private final SubscriptionsObserver mSubscriptionObserver =
             new SubscriptionsObserver() {
                 @Override
@@ -86,14 +87,14 @@ public class CurrentTabPriceTrackingStateSupplier implements ObservableSupplier<
 
         // Check for profile availability so we can create a ShoppingService which we'll use to keep
         // track of subscription changes in the current page.
-        mProfileSupplier.addObserver(this::onProfileUpdated);
+        mProfileSupplier.addObserver(mOnProfileUpdatedCallback);
     }
 
     public void destroy() {
         mCurrentTabObserver.destroy();
         mCurrentTabObserver = null;
 
-        mProfileSupplier.removeObserver(this::onProfileUpdated);
+        mProfileSupplier.removeObserver(mOnProfileUpdatedCallback);
 
         if (mShoppingService != null) {
             mShoppingService.removeSubscriptionsObserver(mSubscriptionObserver);

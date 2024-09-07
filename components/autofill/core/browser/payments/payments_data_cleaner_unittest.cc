@@ -12,8 +12,9 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/payments_data_manager_test_base.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_test_base.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +22,7 @@
 
 namespace autofill {
 
-class PaymentsDataCleanerTest : public PersonalDataManagerTestBase,
+class PaymentsDataCleanerTest : public PaymentsDataManagerTestBase,
                                 public testing::Test {
  public:
   PaymentsDataCleanerTest() = default;
@@ -29,8 +30,16 @@ class PaymentsDataCleanerTest : public PersonalDataManagerTestBase,
 
   void SetUp() override {
     SetUpTest();
-    personal_data_ = InitPersonalDataManager(
-        /*use_sync_transport_mode=*/false);
+    MakePrimaryAccountAvailable(/*use_sync_transport_mode=*/false,
+                                identity_test_env_, sync_service_);
+    personal_data_ = std::make_unique<PersonalDataManager>(
+        profile_database_service_, account_database_service_, prefs_.get(),
+        prefs_.get(), identity_test_env_.identity_manager(),
+        /*history_service=*/nullptr, &sync_service_,
+        /*strike_database=*/nullptr,
+        /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr, "en-US",
+        "US");
+    PersonalDataChangedWaiter(*personal_data_).Wait();
     payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(
         &personal_data_->payments_data_manager());
   }

@@ -110,11 +110,8 @@ bool CompositorFilterOperations::IsEmpty() const {
 
 gfx::RectF CompositorFilterOperations::MapRect(
     const gfx::RectF& input_rect) const {
-  return gfx::RectF(filter_operations_.MapRect(
-      gfx::ToEnclosingRect(input_rect),
-      RuntimeEnabledFeatures::NewFilterMapRectEnabled()
-          ? std::nullopt
-          : std::make_optional(SkMatrix::I())));
+  return gfx::RectF(
+      filter_operations_.MapRect(gfx::ToEnclosingRect(input_rect)));
 }
 
 bool CompositorFilterOperations::HasFilterThatMovesPixels() const {

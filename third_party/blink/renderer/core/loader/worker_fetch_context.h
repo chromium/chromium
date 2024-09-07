@@ -82,10 +82,15 @@ class WorkerFetchContext final : public BaseFetchContext {
   void AddAdditionalRequestHeaders(ResourceRequest&) override;
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                          const AtomicString& initiator_type) override;
-  void PopulateResourceRequest(ResourceType,
-                               const std::optional<float> resource_width,
-                               ResourceRequest&,
-                               const ResourceLoaderOptions&) override;
+  void PopulateResourceRequestBeforeCacheAccess(
+      const ResourceLoaderOptions& options,
+      ResourceRequest& request) override;
+  void WillSendRequest(ResourceRequest& request) override;
+  void UpgradeResourceRequestForLoader(
+      ResourceType,
+      const std::optional<float> resource_width,
+      ResourceRequest&,
+      const ResourceLoaderOptions&) override;
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() override;
   scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const override;

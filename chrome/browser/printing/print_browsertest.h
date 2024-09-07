@@ -61,6 +61,8 @@ class PrintBrowserTest : public InProcessBrowserTest {
   void SetPrinterLanguageTypeForSubsequentContexts(
       mojom::PrinterLanguageType printer_language_type);
 #endif
+  void SetUserSettingsPageRangesForSubsequentContext(
+      const PageRanges& page_ranges);
   void SetNewDocumentJobId(int job_id);
 
   void PrintAndWaitUntilPreviewIsReady();

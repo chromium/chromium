@@ -640,12 +640,13 @@ chromium-metrics-reviews@google.com.
   <int value="100298" label="kAccessibilityFlashNotificationsEnabled"/>
   <int value="100299" label="kAccessibilityFlashNotificationsColor"/>
   <int value="100300" label="PinnedChromeLabsMigrationComplete"/>
+  <int value="100301" label="AccessibilityFaceGazeGesturesToKeyCombos"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
 
   <int value="200000" label="ArticlesForYouEnabled"/>
-  <int value="200001" label="ContextualSearchEnabled_IOS"/>
+  <int value="200001" label="(obsolete) ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
   <int value="200003" label="EnableDoNotTrack_IOS"/>
   <int value="200004" label="IosHandoffToOtherDevices"/>
@@ -1084,7 +1085,7 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="(Obsolete) Requested pref change. Removed 04/2024 (and not used
              for some time before that)"/>
-  <int value="4" label="Stop and clear"/>
+  <int value="4" label="Upgrade client error"/>
   <int value="5"
       label="(Obsolete) Set sync allowed by platform. Removed 01/2022."/>
   <int value="6" label="Credentials updated"/>
@@ -1138,6 +1139,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Don't migrate, migration feature flag disabled"/>
   <int value="6" label="Undo the migration"/>
   <int value="7" label="Don't undo: already completed or not necessary"/>
+  <int value="8" label="Migrate forced"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationDecisionOverall) -->

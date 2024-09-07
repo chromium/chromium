@@ -64,11 +64,11 @@ const std::u16string& TestWebUI::GetOverriddenTitle() {
   return temp_string_;
 }
 
-int TestWebUI::GetBindings() {
+BindingsPolicySet TestWebUI::GetBindings() {
   return bindings_;
 }
 
-void TestWebUI::SetBindings(int bindings) {
+void TestWebUI::SetBindings(BindingsPolicySet bindings) {
   bindings_ = bindings;
 }
 
@@ -111,11 +111,6 @@ void TestWebUI::ProcessWebUIMessage(const GURL& source_url,
 
 bool TestWebUI::CanCallJavascript() {
   return true;
-}
-
-void TestWebUI::CallJavascriptFunctionUnsafe(std::string_view function_name) {
-  call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  OnJavascriptCall(*call_data_.back());
 }
 
 void TestWebUI::CallJavascriptFunctionUnsafe(

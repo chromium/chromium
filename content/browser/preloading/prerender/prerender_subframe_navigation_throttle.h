@@ -54,7 +54,7 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
       const FrameTreeNode& frame_tree_node);
 
   bool is_deferred_ = false;
-  const int prerender_root_ftn_id_;
+  const FrameTreeNodeId prerender_root_ftn_id_;
   base::ScopedObservation<PrerenderHost, PrerenderHost::Observer> observation_{
       this};
 };

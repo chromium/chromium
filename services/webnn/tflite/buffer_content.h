@@ -10,7 +10,7 @@
 
 namespace webnn::tflite {
 
-// The internal contents of an MLBuffer. Access should be managed by wrapping in
+// The internal contents of an MLTensor. Access should be managed by wrapping in
 // a `QueueableResourceState`.
 class BufferContent {
  public:

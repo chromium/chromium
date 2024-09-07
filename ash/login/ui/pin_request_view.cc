@@ -395,6 +395,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   SetPreferredSize(GetPinRequestViewSize());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(default_accessible_title_);
 }
 
 PinRequestView::~PinRequestView() = default;
@@ -526,11 +527,6 @@ void PinRequestView::OnInputChange(bool last_field_active, bool complete) {
         FROM_HERE, base::BindOnce(&PinRequestView::FocusSubmitButton,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
-}
-
-void PinRequestView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::View::GetAccessibleNodeData(node_data);
-  node_data->SetName(default_accessible_title_);
 }
 
 // If |pin_keyboard_always_enabled_| is not set, pin keyboard is only shown in

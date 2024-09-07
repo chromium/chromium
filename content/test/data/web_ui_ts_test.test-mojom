@@ -5,6 +5,7 @@
 module content.mojom;
 
 import "content/test/data/web_ui_ts_test_types.test-mojom";
+import "content/test/data/web_ui_ts_test_other_types.test-mojom";
 import "url/mojom/url.mojom";
 
 enum TestEnum {
@@ -16,6 +17,18 @@ struct OptionalNumericsStruct {
   bool? optional_bool;
   uint8? optional_uint8;
   TestEnum? optional_enum;
+};
+
+struct SimpleMappedType {
+  string value;
+};
+
+struct NestedMappedType {
+  NestedMappedType? nested;
+};
+
+struct StringDict {
+  MappedDict data;
 };
 
 interface WebUITsMojoTestCache {
@@ -32,7 +45,10 @@ interface WebUITsMojoTestCache {
     array<TestEnum?> optional_enums,
     map<int32, bool?> bool_map,
     map<int32, int32?> int_map,
-    map<int32, TestEnum?> enum_map)
+    map<int32, TestEnum?> enum_map,
+    SimpleMappedType simple_mapped_type,
+    NestedMappedType nested_mapped_type,
+    StringDict? other_mapped_type)
   => (
     bool? optional_bool,
     uint8? optional_uint8,
@@ -43,5 +59,8 @@ interface WebUITsMojoTestCache {
     array<TestEnum?> optional_enums,
     map<int32, bool?> bool_map,
     map<int32, int32?> int_map,
-    map<int32, TestEnum?> enum_map);
+    map<int32, TestEnum?> enum_map,
+    SimpleMappedType simple_mapped_type,
+    NestedMappedType nested_mapped_type,
+    StringDict? other_mapped_type);
 };

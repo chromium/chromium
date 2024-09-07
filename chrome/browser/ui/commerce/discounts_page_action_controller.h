@@ -49,7 +49,8 @@ class DiscountsPageActionController : public CommercePageActionController {
   void DiscountsBubbleShown(uint64_t discount_id);
 
  private:
-  void HandleDiscountInfoResponse(const DiscountsMap& discounts_map);
+  void HandleDiscountInfoResponse(const GURL& url,
+                                  const std::vector<DiscountInfo> discounts);
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService> shopping_service_;

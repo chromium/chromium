@@ -176,8 +176,9 @@ void CompleteWithGeneratedResponse(
   loader_client->OnComplete(status);
 }
 
-void LogErrorMessageToConsole(std::optional<int> frame_tree_node_id,
-                              const std::string& error_message) {
+void LogErrorMessageToConsole(
+    std::optional<content::FrameTreeNodeId> frame_tree_node_id,
+    const std::string& error_message) {
   if (!frame_tree_node_id.has_value()) {
     LOG(ERROR) << error_message;
     return;
@@ -324,7 +325,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
       web_package::SignedWebBundleId web_bundle_id,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
       const network::ResourceRequest& resource_request,
-      std::optional<int> frame_tree_node_id)
+      std::optional<content::FrameTreeNodeId> frame_tree_node_id)
       : loader_client_(std::move(loader_client)),
         resource_request_(resource_request),
         frame_tree_node_id_(frame_tree_node_id) {
@@ -349,10 +350,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
     }
 
     if (!response.has_value()) {
-      LogErrorMessageToConsole(
-          frame_tree_node_id_,
-          "Failed to read response from Signed Web Bundle: " +
-              response.error().message);
+      LogErrorMessageToConsole(frame_tree_node_id_, response.error().message);
       switch (response.error().type) {
         case IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError:
           loader_client_->OnComplete(
@@ -446,7 +444,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
   int64_t header_length_;
   int64_t body_length_;
   const network::ResourceRequest resource_request_;
-  std::optional<int> frame_tree_node_id_;
+  std::optional<content::FrameTreeNodeId> frame_tree_node_id_;
 
   base::WeakPtrFactory<IsolatedWebAppURLLoader> weak_factory_{this};
 };
@@ -456,7 +454,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
 IsolatedWebAppURLLoaderFactory::IsolatedWebAppURLLoaderFactory(
     Profile* profile,
     std::optional<url::Origin> app_origin,
-    std::optional<int> frame_tree_node_id,
+    std::optional<content::FrameTreeNodeId> frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
     : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
       profile_(profile),
@@ -747,7 +745,7 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory>
 IsolatedWebAppURLLoaderFactory::CreateForFrame(
     content::BrowserContext* browser_context,
     std::optional<url::Origin> app_origin,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   return CreateInternal(browser_context, std::move(app_origin),
                         frame_tree_node_id);
 }
@@ -765,7 +763,7 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory>
 IsolatedWebAppURLLoaderFactory::CreateInternal(
     content::BrowserContext* browser_context,
     std::optional<url::Origin> app_origin,
-    std::optional<int> frame_tree_node_id) {
+    std::optional<content::FrameTreeNodeId> frame_tree_node_id) {
   DCHECK(browser_context);
   DCHECK(!browser_context->ShutdownStarted());
 

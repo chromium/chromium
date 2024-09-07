@@ -89,6 +89,7 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
       blink::mojom::SharedWorkerInfoPtr info,
       const blink::SharedWorkerToken& token,
       const blink::StorageKey& constructor_key,
+      const url::Origin& renderer_origin,
       bool is_constructor_secure_context,
       const std::string& user_agent,
       const blink::UserAgentMetadata& ua_metadata,

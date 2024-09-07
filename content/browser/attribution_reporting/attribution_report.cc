@@ -36,23 +36,8 @@ namespace {
 
 using ::attribution_reporting::SuitableOrigin;
 
-void PopulateSourceDebugKey(base::Value::Dict& dict,
-                            std::optional<uint64_t> debug_key) {
-  if (debug_key.has_value()) {
-    dict.Set("source_debug_key", base::NumberToString(*debug_key));
-  }
-}
-
-void PopulateTriggerDebugKey(base::Value::Dict& dict,
-                             std::optional<uint64_t> debug_key) {
-  if (debug_key.has_value()) {
-    dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
-  }
-}
-
 void PopulateReportBody(base::Value::Dict& dict,
-                        const AttributionReport::CommonAggregatableData& data,
-                        std::optional<uint64_t> trigger_debug_key) {
+                        const AttributionReport::CommonAggregatableData& data) {
   if (const auto& assembled_report = data.assembled_report;
       assembled_report.has_value()) {
     dict = assembled_report->GetAsJson();
@@ -62,8 +47,6 @@ void PopulateReportBody(base::Value::Dict& dict,
     dict.Set("shared_info", "not generated prior to send");
     dict.Set("aggregation_service_payloads", "not generated prior to send");
   }
-
-  PopulateTriggerDebugKey(dict, trigger_debug_key);
 
   if (const auto& trigger_context_id =
           data.aggregatable_trigger_config.trigger_context_id();
@@ -261,9 +244,6 @@ base::Value::Dict AttributionReport::ReportBody() const {
                 round(data.randomized_response_rate * 10000000) / 10000000.0;
             dict.Set("randomized_trigger_rate", rounded_rate);
 
-            PopulateSourceDebugKey(dict, data.source_debug_key);
-            PopulateTriggerDebugKey(dict, attribution_info_.debug_key);
-
             dict.Set("scheduled_report_time",
                      base::NumberToString(
                          (initial_report_time_ - base::Time::UnixEpoch())
@@ -271,18 +251,23 @@ base::Value::Dict AttributionReport::ReportBody() const {
           },
 
           [&](const AggregatableAttributionData& data) {
-            PopulateReportBody(dict, data.common_data,
-                               attribution_info_.debug_key);
-
-            PopulateSourceDebugKey(dict, data.source_debug_key);
+            PopulateReportBody(dict, data.common_data);
           },
 
           [&](const NullAggregatableData& data) {
-            PopulateReportBody(dict, data.common_data,
-                               attribution_info_.debug_key);
+            PopulateReportBody(dict, data.common_data);
           },
       },
       data_);
+
+  if (CanDebuggingBeEnabled()) {
+    std::optional<uint64_t> source_debug_key = GetSourceDebugKey();
+    CHECK(source_debug_key.has_value());
+    std::optional<uint64_t> trigger_debug_key = attribution_info_.debug_key;
+    CHECK(trigger_debug_key.has_value());
+    dict.Set("source_debug_key", base::NumberToString(*source_debug_key));
+    dict.Set("trigger_debug_key", base::NumberToString(*trigger_debug_key));
+  }
 
   return dict;
 }
@@ -333,6 +318,11 @@ const SuitableOrigin& AttributionReport::GetSourceOrigin() const {
           },
       },
       data_);
+}
+
+bool AttributionReport::CanDebuggingBeEnabled() const {
+  return attribution_info_.debug_key.has_value() &&
+         GetSourceDebugKey().has_value();
 }
 
 }  // namespace content

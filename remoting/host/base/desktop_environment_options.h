@@ -42,17 +42,8 @@ class DesktopEnvironmentOptions final {
   bool terminate_upon_input() const;
   void set_terminate_upon_input(bool enabled);
 
-  bool enable_file_transfer() const;
-  void set_enable_file_transfer(bool enabled);
-
-  bool enable_remote_open_url() const;
-  void set_enable_remote_open_url(bool enabled);
-
   bool enable_remote_webauthn() const;
   void set_enable_remote_webauthn(bool enabled);
-
-  const std::optional<size_t>& clipboard_size() const;
-  void set_clipboard_size(std::optional<size_t> clipboard_size);
 
   const webrtc::DesktopCaptureOptions* desktop_capture_options() const;
   webrtc::DesktopCaptureOptions* desktop_capture_options();
@@ -80,21 +71,8 @@ class DesktopEnvironmentOptions final {
   // True if the session should be terminated when local input is detected.
   bool terminate_upon_input_ = false;
 
-  // True if this host has file transfer enabled.
-  bool enable_file_transfer_ = false;
-
-  // True if this host has the remote open URL feature enabled. Note, caller
-  // should also call IsRemoteOpenUrlSupported() to determine if the feature is
-  // supported by the platform.
-  bool enable_remote_open_url_ = false;
-
   // True if this host has the remote WebAuthn feature enabled.
   bool enable_remote_webauthn_ = false;
-
-  // If set, this value is used to constrain the amount of data that can be
-  // transferred using ClipboardEvents. A value of 0 will effectively disable
-  // clipboard sharing.
-  std::optional<size_t> clipboard_size_;
 
   // True if the video capturer should be run on a dedicated thread.
   bool capture_video_on_dedicated_thread_ = false;

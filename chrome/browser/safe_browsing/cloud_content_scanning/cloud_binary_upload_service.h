@@ -73,8 +73,6 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // Protection users.
   static GURL GetUploadUrl(bool is_consumer_scan_eligible);
 
-  static void RemoveFCMRetryDelaysForTesting();
-
  protected:
   void FinishRequest(Request* request,
                      Result result,
@@ -121,6 +119,8 @@ class CloudBinaryUploadService : public BinaryUploadService {
 
   void MaybeFinishRequest(Request::Id request_id);
 
+  void FinishRequestWithIncompleteResponse(Request::Id request_id);
+
   void FinishIfActive(Request::Id request_id,
                       Result result,
                       enterprise_connectors::ContentAnalysisResponse response);
@@ -156,15 +156,11 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // possible.
   void PopRequestQueue();
 
-  // Called if the FCM connection isn't established to retry it. If it is
-  // established, `UploadForDeepScanning` is called.
-  void RetryFCMConnection(Request::Id request_id,
-                          int retry_count,
-                          base::TimeDelta next_backoff);
+  // Tries to connect to `binary_fcm_service_`. Regardless of the connection
+  // status, continues the upload of the scanning request.
+  void MaybeConnectToFCM(Request::Id request_id);
 
-  // This continues the upload of the scanning request after the
-  // `binary_fcm_service_` instance is known to be connected.
-  void OnFCMConnected(Request::Id request_id);
+  bool ResponseIsComplete(Request::Id request_id);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<BinaryFCMService> binary_fcm_service_;

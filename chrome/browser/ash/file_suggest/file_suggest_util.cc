@@ -18,7 +18,7 @@ constexpr char kLocalFileSuggestionPrefix[] = "zero_state_file://";
 
 // The number of days within which a file must be modified, or viewed to be
 // considered as a file suggestion.
-constexpr int kDefaultMaxRecencyInDays = 8;
+constexpr int kDefaultMaxRecencyInDays = 30;
 
 // Returns the prefix that matches `type`.
 std::string GetPrefixFromSuggestionType(FileSuggestionType type) {

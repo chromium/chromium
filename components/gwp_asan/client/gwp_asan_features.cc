@@ -27,9 +27,21 @@ const base::FeatureParam<int> kExtremeLightweightUAFDetectorSamplingFrequency{
     &kExtremeLightweightUAFDetector, "sampling_frequency",
     1000};  // Quarantine once per 1000 calls to `free`.
 const base::FeatureParam<int>
-    kExtremeLightweightUAFDetectorQuarantineCapacityInBytes{
-        &kExtremeLightweightUAFDetector, "quarantine_capacity_in_bytes",
-        256 * 1024};
+    kExtremeLightweightUAFDetectorQuarantineCapacityForSmallObjectsInBytes{
+        &kExtremeLightweightUAFDetector,
+        "quarantine_capacity_for_small_objects_in_bytes",
+        1 * 1024 * 1024 - 100 * 1024};  // 900 KiB for small objects.
+const base::FeatureParam<int>
+    kExtremeLightweightUAFDetectorQuarantineCapacityForLargeObjectsInBytes{
+        &kExtremeLightweightUAFDetector,
+        "quarantine_capacity_for_large_objects_in_bytes",
+        100 * 1024};  // 100 KiB for large objects.
+// Small objects: size <= 1 KiB
+// Large objects: size > 1 KiB
+const base::FeatureParam<int>
+    kExtremeLightweightUAFDetectorObjectSizeThresholdInBytes{
+        &kExtremeLightweightUAFDetector, "object_size_threshold_in_bytes",
+        1 * 1024};
 constexpr base::FeatureParam<ExtremeLightweightUAFDetectorTargetProcesses>::
     Option kExtremeLightweightUAFDetectorTargetProcessesOptions[] = {
         {ExtremeLightweightUAFDetectorTargetProcesses::kAllProcesses, "all"},

@@ -342,7 +342,7 @@ class MultiBufferDataSourceTest : public testing::Test {
     auto data = base::HeapArray<char>::Uninit(size);
     memset(data.data(), 0xA5, size);  // Arbitrary non-zero value.
 
-    data_provider()->DidReceiveData(data.data(), size);
+    data_provider()->DidReceiveData(data);
   }
 
   void ReceiveData(int size) {

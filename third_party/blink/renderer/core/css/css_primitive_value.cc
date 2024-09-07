@@ -1143,4 +1143,18 @@ CSSPrimitiveValue* CSSPrimitiveValue::Divide(double value,
       CSSMathOperator::kDivide);
 }
 
+CSSPrimitiveValue* CSSPrimitiveValue::ConvertLiteralsFromPercentageToNumber()
+    const {
+  if (const auto* numeric = DynamicTo<CSSNumericLiteralValue>(this)) {
+    return MakeGarbageCollected<CSSNumericLiteralValue>(
+        numeric->DoubleValue() / 100, UnitType::kNumber);
+  }
+  CHECK(IsMathFunctionValue());
+  const CSSMathExpressionNode* math_node =
+      To<CSSMathFunctionValue>(this)->ExpressionNode();
+  return MakeGarbageCollected<CSSMathFunctionValue>(
+      math_node->ConvertLiteralsFromPercentageToNumber(),
+      CSSPrimitiveValue::ValueRange::kAll);
+}
+
 }  // namespace blink

@@ -39,6 +39,11 @@ BASE_DECLARE_FEATURE(kEnableEdidBasedDisplayIds);
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsEdidBasedDisplayIdsEnabled();
 
 COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kOledScaleFactorEnabled);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsOledScaleFactorEnabled();
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kEnableHardwareMirrorMode);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsHardwareMirrorModeEnabled();
@@ -55,6 +60,11 @@ COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsPanelSelfRefresh2Enabled();
 COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kTiledDisplaySupport);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsTiledDisplaySupportEnabled();
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kExcludeDisplayInMirrorMode);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsExcludeDisplayInMirrorModeEnabled();
 
 }  // namespace features
 }  // namespace display

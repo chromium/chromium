@@ -1,5 +1,5 @@
 caption: Configure the camera, browser settings, os settings, scanning, web store,
-  canvas, explore, crosh, gallery and terminal features to be disabled
+  canvas, explore, crosh, gallery, terminal and recorder features to be disabled
 desc: |-
   Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> features to be disabled.
 
@@ -59,10 +59,12 @@ items:
 - caption: Key Shortcuts (supported since version 129)
   name: key_shortcuts
   value: key_shortcuts
+- caption: Recorder (supported since version 130)
+  name: recorder
+  value: recorder
 owners:
 - file://components/policy/OWNERS
 - ayaelattar@chromium.org
-- pmarko@chromium.org
 schema:
   items:
     enum:
@@ -79,6 +81,7 @@ schema:
     - terminal
     - print_jobs
     - key_shortcuts
+    - recorder
     type: string
   type: array
 supported_on:

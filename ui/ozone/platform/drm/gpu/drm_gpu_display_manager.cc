@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstring>
 #include <memory>
 #include <string>
@@ -61,46 +62,88 @@ enum class TestOnlyModesetOutcome {
   kMaxValue = kFailure,
 };
 
+using CrtcConnectorPairTileLocations = std::vector<
+    std::pair<CrtcConnectorPair, std::optional<gfx::Point> /*tile_location*/>>;
+
+CrtcConnectorPairTileLocations CreateCrtcConnectorPairTileLocationsForDisplay(
+    const DrmDisplay& display) {
+  CrtcConnectorPairTileLocations crtc_connector_pairs;
+  for (const DrmDisplay::CrtcConnectorPair& crtc_connector_pair :
+       display.crtc_connector_pairs()) {
+    crtc_connector_pairs.push_back(
+        {{.crtc_id = crtc_connector_pair.crtc_id,
+          .connector_id = crtc_connector_pair.connector->connector_id},
+         crtc_connector_pair.tile_location});
+  }
+  return crtc_connector_pairs;
+}
+
 class DisplayComparator {
  public:
-  explicit DisplayComparator(const DrmDisplay* display)
-      : drm_(display->drm()),
-        crtc_(display->GetPrimaryCrtcId()),
-        connector_(display->GetPrimaryConnectorId()) {
-    const std::optional<TileProperty> tile_property =
-        display->GetTileProperty();
-    tile_group_id_ = tile_property.has_value()
-                         ? std::optional<int>(tile_property->group_id)
-                         : std::nullopt;
+  explicit DisplayComparator(const DrmDisplay* display) : drm_(display->drm()) {
+    crtc_connector_pair_tile_locations_ =
+        CreateCrtcConnectorPairTileLocationsForDisplay(*display);
   }
 
   DisplayComparator(const scoped_refptr<DrmDevice>& drm,
-                    uint32_t crtc,
-                    uint32_t connector,
-                    const std::optional<TileProperty> tile_property)
-      : drm_(drm), crtc_(crtc), connector_(connector) {
-    tile_group_id_ = tile_property.has_value()
-                         ? std::optional<int>(tile_property->group_id)
-                         : std::nullopt;
+                    const HardwareDisplayControllerInfo& display_info)
+      : drm_(drm) {
+    CrtcConnectorPair primary_crtc_connector{
+        .crtc_id = display_info.crtc()->crtc_id,
+        .connector_id = display_info.connector()->connector_id};
+    std::optional<gfx::Point> primary_tile_location;
+    const std::optional<TileProperty>& primary_tile_property =
+        display_info.tile_property();
+    if (primary_tile_property.has_value()) {
+      tile_group_id_ = std::optional<int>(primary_tile_property->group_id);
+      primary_tile_location = primary_tile_property->location;
+    }
+    crtc_connector_pair_tile_locations_.push_back(
+        {primary_crtc_connector, primary_tile_location});
+
+    for (const std::unique_ptr<HardwareDisplayControllerInfo>& nonprimary_tile :
+         display_info.nonprimary_tile_infos()) {
+      CrtcConnectorPair crtc_connector_pair{
+          .crtc_id = nonprimary_tile->crtc()->crtc_id,
+          .connector_id = nonprimary_tile->connector()->connector_id};
+      crtc_connector_pair_tile_locations_.push_back(
+          {crtc_connector_pair, nonprimary_tile->tile_property()->location});
+    }
   }
 
   bool operator()(const std::unique_ptr<DrmDisplay>& other) const {
+    if (drm_ != other->drm()) {
+      return false;
+    }
+
     const std::optional<TileProperty>& other_tile_property =
         other->GetTileProperty();
     std::optional<int> other_tile_group_id =
         other_tile_property.has_value() ? other_tile_property->group_id
                                         : std::optional<int>(std::nullopt);
+    if (tile_group_id_ != other_tile_group_id) {
+      return false;
+    }
 
-    return drm_ == other->drm() &&
-           connector_ == other->GetPrimaryConnectorId() &&
-           crtc_ == other->GetPrimaryCrtcId() &&
-           tile_group_id_ == other_tile_group_id;
+    // Check that |crtc_connector_pair_tile_locations_| is unordered equal to
+    // CrtcConnectorPairs in |other| DrmDisplay.
+    CrtcConnectorPairTileLocations other_crtc_connector_tile_locations =
+        CreateCrtcConnectorPairTileLocationsForDisplay(*other);
+    return std::is_permutation(
+        crtc_connector_pair_tile_locations_.begin(),
+        crtc_connector_pair_tile_locations_.end(),
+        other_crtc_connector_tile_locations.begin(),
+        [](const std::pair<CrtcConnectorPair, std::optional<gfx::Point>>& lhs,
+           const std::pair<CrtcConnectorPair, std::optional<gfx::Point>>& rhs) {
+          return (lhs.first.crtc_id == rhs.first.crtc_id) &&
+                 (lhs.first.connector_id == rhs.first.connector_id) &&
+                 (lhs.second == rhs.second);
+        });
   }
 
  private:
   scoped_refptr<DrmDevice> drm_;
-  uint32_t crtc_;
-  uint32_t connector_;
+  CrtcConnectorPairTileLocations crtc_connector_pair_tile_locations_;
   std::optional<int> tile_group_id_;
 };
 
@@ -337,10 +380,7 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     // If the DrmDisplay was present previously, copy its origin to the
     // corresponding DisplaySnapshot before creating a new DrmDisplay.
     auto old_drm_display_it = base::ranges::find_if(
-        old_displays,
-        DisplayComparator(params.drm, params.display_info->crtc()->crtc_id,
-                          params.display_info->connector()->connector_id,
-                          params.display_info->tile_property()));
+        old_displays, DisplayComparator(params.drm, *params.display_info));
     if (old_drm_display_it != old_displays.end()) {
       params.snapshot->set_origin(old_drm_display_it->get()->origin());
       old_displays.erase(old_drm_display_it);
@@ -363,8 +403,15 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
 bool DrmGpuDisplayManager::TakeDisplayControl() {
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
   bool status = true;
-  for (const auto& drm : devices)
-    status &= drm->SetMaster();
+  for (const auto& drm : devices) {
+    const bool set_master_status = drm->SetMaster();
+    if (!set_master_status) {
+      LOG(ERROR) << __func__ << "Drm set master failed for: "  // nocheck
+                 << drm->device_path().value();
+    }
+
+    status &= set_master_status;
+  }
 
   // Roll-back any successful operation.
   if (!status) {
@@ -377,8 +424,12 @@ bool DrmGpuDisplayManager::TakeDisplayControl() {
 
 void DrmGpuDisplayManager::RelinquishDisplayControl() {
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
-  for (const auto& drm : devices)
-    drm->DropMaster();
+  for (const auto& drm : devices) {
+    if (!drm->DropMaster()) {
+      LOG(ERROR) << __func__ << "Drm drop master failed for: "  // nocheck
+                 << drm->device_path().value();
+    }
+  }
 }
 
 bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
@@ -716,9 +767,7 @@ void DrmGpuDisplayManager::NotifyScreenManager(
   for (const auto& new_display : new_displays) {
     if (base::ranges::none_of(old_displays,
                               DisplayComparator(new_display.get()))) {
-      screen_manager_->AddDisplayController(
-          new_display->drm(), new_display->GetPrimaryCrtcId(),
-          new_display->GetPrimaryConnectorId());
+      screen_manager_->AddDisplayControllersForDisplay(*new_display);
     }
   }
 }

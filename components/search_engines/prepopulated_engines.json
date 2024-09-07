@@ -31,7 +31,7 @@
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
     // Also then run tools/search_engine_choice/generate_search_engine_icons.py.
-    "kCurrentDataVersion": 164
+    "kCurrentDataVersion": 166
   },
 
   // The following engines are included in country lists and are added to the
@@ -66,13 +66,25 @@
       "name": "Microsoft Bing",
       "keyword": "bing.com",
       "favicon_url": "https://www.bing.com/sa/simg/bing_p_rr_teal_min.ico",
-      "search_url": "https://www.bing.com/search?q={searchTerms}&PC=U316&FORM=CHROMN",
-      "suggest_url": "https://www.bing.com/osjson.aspx?query={searchTerms}&language={language}&PC=U316",
+      "search_url": "https://www.bing.com/search?q={searchTerms}",
+      "suggest_url": "https://www.bing.com/osjson.aspx?query={searchTerms}&language={language}",
       "image_url": "https://www.bing.com/images/detail/search?iss=sbiupload&FORM=CHROMI#enterInsights",
       "new_tab_url": "https://www.bing.com/chrome/newtab",
       "image_url_post_params": "imageBin={google:imageThumbnailBase64}",
       "type": "SEARCH_ENGINE_BING",
-      "id": 3
+      "id": 3,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "PC=U316&FORM=CHROMN",
+          "suggest_params": "PC=U316"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "PC=U534&FORM=U534DF",
+          "suggest_params": "PC=U534&FORM=U534SS"
+        }
+      ]
     },
 
     "brave": {
@@ -112,18 +124,30 @@
       "suggest_url": "https://duckduckgo.com/ac/?q={searchTerms}&type=list",
       "new_tab_url": "https://duckduckgo.com/chrome_newtab",
       "type": "SEARCH_ENGINE_DUCKDUCKGO",
-      "id": 92
+      "id": 92,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "t=euandroid"
+        }
+      ]
     },
 
     "ecosia": {
       "name": "Ecosia",
       "keyword": "ecosia.org",
       "favicon_url": "https://cdn.ecosia.org/assets/images/ico/favicon.ico",
-      "search_url": "https://www.ecosia.org/search?q={searchTerms}&addon=opensearch",
-      "suggest_url": "https://ac.ecosia.org/autocomplete?q={searchTerms}&type=list",
+      "search_url": "https://www.ecosia.org/search?q={searchTerms}",
+      "suggest_url": "https://ac.ecosia.org?q={searchTerms}&mkt={language}&type=list&language={language}",
       "new_tab_url": "https://www.ecosia.org/newtab/",
       "type": "SEARCH_ENGINE_ECOSIA",
-      "id": 101
+      "id": 101,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "addon=opensearch"
+        }
+      ]
     },
 
     // *** *** *** *** WARNING *** *** *** ***
@@ -270,10 +294,22 @@
       "name": "Qwant",
       "keyword": "qwant.com",
       "favicon_url": "https://www.qwant.com/favicon.ico",
-      "search_url": "https://www.qwant.com/?q={searchTerms}&client=opensearch",
-      "suggest_url": "https://api.qwant.com/api/suggest/?q={searchTerms}&client=opensearch",
+      "search_url": "https://www.qwant.com/?q={searchTerms}",
+      "suggest_url": "https://api.qwant.com/api/suggest/?q={searchTerms}",
       "type": "SEARCH_ENGINE_QWANT",
-      "id": 94
+      "id": 94,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "client=cs-chrome",
+          "suggest_params": "client=opensearch"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "client=acs",
+          "suggest_params": "client=opensearch"
+        }
+      ]
     },
 
     "seznam_cz": {
@@ -284,7 +320,13 @@
       "suggest_url": "https://suggest.seznam.cz/fulltext_ff?phrase={searchTerms}",
       "new_tab_url": "https://search.seznam.cz/newtab",
       "type": "SEARCH_ENGINE_SEZNAM",
-      "id": 25
+      "id": 25,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "sourceid=srch_ga_cs"
+        }
+      ]
     },
 
     // TODO(b/335397380): Remove this entry once b/322513019 is fixed.
@@ -296,7 +338,13 @@
       "suggest_url": "https://suggest.seznam.cz/fulltext_ff?phrase={searchTerms}",
       "new_tab_url": "https://search.seznam.cz/newtab",
       "type": "SEARCH_ENGINE_SEZNAM",
-      "id": 25
+      "id": 25,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "sourceid=srch_ga_cs"
+        }
+      ]
     },
 
     "so_360": {
@@ -351,10 +399,22 @@
       "name": "Yahoo! \u00d6sterreich",
       "keyword": "at.yahoo.com",
       "favicon_url": "https://at.search.yahoo.com/favicon.ico",
-      "search_url": "https://at.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://at.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://at.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://at.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_au": {
@@ -421,10 +481,22 @@
       "name": "Yahoo! Deutschland",
       "keyword": "de.yahoo.com",
       "favicon_url": "https://de.search.yahoo.com/favicon.ico",
-      "search_url": "https://de.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://de.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://de.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://de.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     // For regional Yahoo variants without a region-specific suggestion service,
@@ -434,48 +506,108 @@
       "name": "Yahoo! Danmark",
       "keyword": "dk.yahoo.com",
       "favicon_url": "https://dk.search.yahoo.com/favicon.ico",
-      "search_url": "https://dk.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
+      "search_url": "https://dk.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_emea": {
       "name": "Yahoo Search",
       "keyword": "emea.yahoo.com",
       "favicon_url": "https://search.yahoo.com/favicon.ico",
-      "search_url": "https://emea.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://emea.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://emea.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://emea.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_es": {
       "name": "Yahoo Búsquedas",
       "keyword": "es.yahoo.com",
       "favicon_url": "https://es.search.yahoo.com/favicon.ico",
-      "search_url": "https://es.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://es.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://es.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://es.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_fi": {
       "name": "Yahoo! Suomi",
       "keyword": "fi.yahoo.com",
       "favicon_url": "https://fi.search.yahoo.com/favicon.ico",
-      "search_url": "https://fi.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
+      "search_url": "https://fi.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_fr": {
       "name": "Yahoo Recherche",
       "keyword": "fr.yahoo.com",
       "favicon_url": "https://fr.search.yahoo.com/favicon.ico",
-      "search_url": "https://fr.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://fr.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://fr.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://fr.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_hk": {
@@ -512,10 +644,22 @@
       "name": "Ricerca di Yahoo",
       "keyword": "it.yahoo.com",
       "favicon_url": "https://it.search.yahoo.com/favicon.ico",
-      "search_url": "https://it.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://it.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://it.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://it.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_jp": {
@@ -552,10 +696,22 @@
       "name": "Yahoo! Nederland",
       "keyword": "nl.yahoo.com",
       "favicon_url": "https://nl.search.yahoo.com/favicon.ico",
-      "search_url": "https://nl.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://nl.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://nl.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://nl.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_nz": {
@@ -592,9 +748,21 @@
       "name": "Yahoo! Sverige",
       "keyword": "se.yahoo.com",
       "favicon_url": "https://se.search.yahoo.com/favicon.ico",
-      "search_url": "https://se.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
+      "search_url": "https://se.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_sg": {
@@ -640,10 +808,22 @@
       "name": "Yahoo Search",
       "keyword": "uk.yahoo.com",
       "favicon_url": "https://uk.search.yahoo.com/favicon.ico",
-      "search_url": "https://uk.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://uk.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://uk.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&p={searchTerms}",
+      "suggest_url": "https://uk.search.yahoo.com/sugg/chrome?output=fxjson&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-      "id": 2
+      "id": 2,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "fr=crmas",
+          "suggest_params": "appid=crmas"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=yset_eu_chr_googchoic",
+          "suggest_params": "appid=gglandreucrmas"
+        }
+      ]
     },
 
     "yahoo_ve": {
@@ -684,12 +864,24 @@
       "name": "Yandex",
       "keyword": "yandex.com",
       "favicon_url": "https://yastatic.net/lego/_/rBTjd6UOPk5913OSn5ZQVYMTQWQ.ico",
-      "search_url": "https://yandex.com/search/?text={searchTerms}&from=os&clid=1836588",
-      "suggest_url": "https://suggest.yandex.com/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}&uil=en&v=3&sn=5",
+      "search_url": "https://yandex.com/{yandex:searchPath}?text={searchTerms}",
+      "suggest_url": "https://suggest.yandex.com/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.com/images/search?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "type": "SEARCH_ENGINE_YANDEX",
-      "id": 15
+      "id": 15,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kDefault",
+          "search_params": "from=os&clid=1836588",
+          "suggest_params": "uil=en&v=3&sn=5"
+        },
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "clid=5143284",
+          "suggest_params": "uil=en"
+        }
+      ]
     },
 
     "yandex_kz": {
@@ -897,6 +1089,7 @@
       "favicon_url": "https://www.givero.com/favicon.ico",
       "search_url": "https://www.givero.com/search?q={searchTerms}",
       "suggest_url": "https://www.givero.com/suggest?q={searchTerms}",
+      "new_tab_url": "https://givero.com/new_tab",
       "type": "SEARCH_ENGINE_GIVERO",
       "id": 95
     },
@@ -1092,7 +1285,14 @@
       "suggest_url": "https://api.oceanhero.today/suggestions?q={searchTerms}",
       "new_tab_url": "https://oceanhero.today/home",
       "type": "SEARCH_ENGINE_OCEANHERO",
-      "id": 99
+      "id": 99,
+      "regulatory_extensions": [
+        {
+          "variant": "RegulatoryExtensionType::kAndroidEEA",
+          "search_params": "fr=ch_om",
+          "suggest_params": "fr=ch_om"
+        }
+      ]
     },
 
     "ok": {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_set>
 
+#include "base/check.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -110,18 +111,13 @@ std::unique_ptr<RawVarDataGraph> RawVarDataGraph::Create(const PP_Var& var,
 
     if (CanHaveChildren(current_var))
       parent_ids.insert(current_var.value.as_id);
-    if (!current_var_data->Init(current_var, instance)) {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
-    }
+    const bool success = current_var_data->Init(current_var, instance);
+    CHECK(success);
 
     // Add child nodes to the stack.
     if (current_var.type == PP_VARTYPE_ARRAY) {
       ArrayVar* array_var = ArrayVar::FromPPVar(current_var);
-      if (!array_var) {
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
-      }
+      CHECK(array_var);
       for (ArrayVar::ElementVector::const_iterator iter =
                array_var->elements().begin();
            iter != array_var->elements().end();
@@ -139,10 +135,7 @@ std::unique_ptr<RawVarDataGraph> RawVarDataGraph::Create(const PP_Var& var,
       }
     } else if (current_var.type == PP_VARTYPE_DICTIONARY) {
       DictionaryVar* dict_var = DictionaryVar::FromPPVar(current_var);
-      if (!dict_var) {
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
-      }
+      CHECK(dict_var);
       for (DictionaryVar::KeyValueMap::const_iterator iter =
                dict_var->key_value_map().begin();
            iter != dict_var->key_value_map().end();
@@ -250,8 +243,7 @@ RawVarData* RawVarData::Create(PP_VarType type) {
     case PP_VARTYPE_RESOURCE:
       return new ResourceRawVarData();
   }
-  NOTREACHED_IN_MIGRATION();
-  return NULL;
+  NOTREACHED();
 }
 
 RawVarData::RawVarData() : initialized_(false) {
@@ -310,8 +302,7 @@ void BasicRawVarData::Write(base::Pickle* m,
       m->WriteInt64(var_.value.as_id);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -346,8 +337,7 @@ bool BasicRawVarData::Read(PP_VarType type,
         return false;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   var_ = result;
   return true;
@@ -476,8 +466,7 @@ PP_Var ArrayBufferRawVarData::CreatePPVar(PP_Instance instance) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return PP_MakeUndefined();
+      NOTREACHED();
   }
   DCHECK(result.type == PP_VARTYPE_ARRAY_BUFFER);
   return result;
@@ -526,8 +515,7 @@ bool ArrayBufferRawVarData::Read(PP_VarType type,
       break;
     default:
       // We read an invalid ID.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   return true;
 }
@@ -567,8 +555,7 @@ PP_Var ArrayRawVarData::CreatePPVar(PP_Instance instance) {
 void ArrayRawVarData::PopulatePPVar(const PP_Var& var,
                                     const std::vector<PP_Var>& graph) {
   if (var.type != PP_VARTYPE_ARRAY) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   ArrayVar* array_var = ArrayVar::FromPPVar(var);
   DCHECK(array_var->elements().empty());
@@ -627,8 +614,7 @@ PP_Var DictionaryRawVarData::CreatePPVar(PP_Instance instance) {
 void DictionaryRawVarData::PopulatePPVar(const PP_Var& var,
                                          const std::vector<PP_Var>& graph) {
   if (var.type != PP_VARTYPE_DICTIONARY) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   DictionaryVar* dictionary_var = DictionaryVar::FromPPVar(var);
   DCHECK(dictionary_var->key_value_map().empty());

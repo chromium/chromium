@@ -14,6 +14,7 @@
 #include "base/trace_event/named_trigger.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
@@ -30,12 +31,6 @@ const char kHistogramGWSHpDomainLookupStart[] =
     HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupStart";
 const char kHistogramGWSHpDomainLookupEnd[] =
     HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupEnd";
-
-const char kSuffixFirstNavigation[] = ".IsFirstNavigation";
-const char kSuffixSubsequentNavigation[] = ".IsSubsequentNavigation";
-
-const char kSuffixIsBrowserStarting[] = ".IsBrowserStarting";
-
 }  // namespace internal
 
 GWSHpPageLoadMetricsObserver::GWSHpPageLoadMetricsObserver() {

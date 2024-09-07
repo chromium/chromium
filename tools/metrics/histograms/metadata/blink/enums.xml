@@ -217,6 +217,13 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="(obsolete) kImageJXL"/>
 </enum>
 
+<enum name="DigitalIdentityInterstitialClosedReason">
+  <int value="0" label="kOther"/>
+  <int value="1" label="kOkButton"/>
+  <int value="2" label="kCancelButton"/>
+  <int value="3" label="kPageNavigated"/>
+</enum>
+
 <enum name="DigitalIdentityRequestStatus">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kErrorOther"/>
@@ -525,7 +532,7 @@ chromium-metrics-reviews@google.com.
 <enum name="PermissionElementUserInteractionDeniedReason">
   <int value="0" label="Invalid type"/>
   <int value="1" label="Failed or has not been registered"/>
-  <int value="2" label="Recently attached to layout tree"/>
+  <int value="2" label="Recently inserted into DOM"/>
   <int value="3"
       label="Intersection visibility has recently become fully visible"/>
   <int value="4" label="Invalid style"/>

@@ -33,4 +33,8 @@ void CreatePermissionService(
       std::move(receiver));
 }
 
+void DisableUnloadTimerForTesting(RenderFrameHost* rfh) {
+  static_cast<RenderFrameHostImpl*>(rfh)->DisableUnloadTimerForTesting();
+}
+
 }  // namespace content

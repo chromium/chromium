@@ -174,7 +174,9 @@ public class MultiWindowUtils implements ActivityStateListener {
         return sMaxInstancesForTesting != null
                 ? sMaxInstancesForTesting
                 : (isMultiInstanceApi31Enabled()
-                        ? TabWindowManager.MAX_SELECTORS_S
+                        ? (ChromeFeatureList.sDisableInstanceLimit.isEnabled()
+                                ? TabWindowManager.MAX_SELECTORS
+                                : TabWindowManager.MAX_SELECTORS_S)
                         : TabWindowManager.MAX_SELECTORS_LEGACY);
     }
 

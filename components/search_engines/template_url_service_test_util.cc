@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -98,8 +99,8 @@ TemplateURLServiceUnitTestBase::CreateService() {
 
 // -- LoadedTemplateURLServiceUnitTestBase ------------------------------------
 
-LoadedTemplateURLServiceUnitTestBase::LoadedTemplateURLServiceUnitTestBase() =
-    default;
+LoadedTemplateURLServiceUnitTestBase::LoadedTemplateURLServiceUnitTestBase()
+    : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {}
 LoadedTemplateURLServiceUnitTestBase::~LoadedTemplateURLServiceUnitTestBase() =
     default;
 
@@ -115,7 +116,7 @@ LoadedTemplateURLServiceUnitTestBase::CreateService() {
       /*ui_task_runner=*/task_runner,
       /*db_task_runner=*/task_runner);
   database_->AddTable(std::make_unique<KeywordTable>());
-  database_->LoadDatabase();
+  database_->LoadDatabase(os_crypt_.get());
 
   keyword_data_service_ =
       base::MakeRefCounted<KeywordWebDataService>(database_, task_runner);

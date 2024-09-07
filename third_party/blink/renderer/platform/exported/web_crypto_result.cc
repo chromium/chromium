@@ -41,16 +41,17 @@ void WebCryptoResult::CompleteWithError(WebCryptoErrorType error_type,
   Reset();
 }
 
-void WebCryptoResult::CompleteWithBuffer(const void* bytes,
-                                         unsigned bytes_size) {
-  if (!Cancelled())
-    impl_->CompleteWithBuffer(bytes, bytes_size);
+void WebCryptoResult::CompleteWithBuffer(base::span<const uint8_t> bytes) {
+  if (!Cancelled()) {
+    impl_->CompleteWithBuffer(bytes);
+  }
   Reset();
 }
 
-void WebCryptoResult::CompleteWithJson(const char* utf8_data, unsigned length) {
-  if (!Cancelled())
-    impl_->CompleteWithJson(utf8_data, length);
+void WebCryptoResult::CompleteWithJson(std::string_view utf8_data) {
+  if (!Cancelled()) {
+    impl_->CompleteWithJson(utf8_data);
+  }
   Reset();
 }
 

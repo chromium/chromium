@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
@@ -155,7 +154,6 @@ void CoreInitializer::Initialize() {
   securitypolicyviolation_disposition_names::Init();
 
   MediaQueryEvaluator::Init();
-  CSSParserTokenRange::InitStaticEOFToken();
 
   style_change_extra_data::Init();
 

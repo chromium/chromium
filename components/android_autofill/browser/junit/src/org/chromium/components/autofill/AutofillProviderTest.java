@@ -248,9 +248,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testSendingPrefillRequestUsesCorrectHints() {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mServerPredictions = new String[] {"NAME_FIRST", "NAME_LAST"};
@@ -271,9 +268,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testStartSessionWithPrefillRequestWithShowingBottomSheet() {
         int focus = 1;
         int sessionId = 123;
@@ -305,9 +299,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testStartSessionWithPrefillRequestWithoutShowingBottomSheet() {
         int focus = 1;
         int sessionId = 123;
@@ -340,9 +331,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void
             testStartSessionWithPrefillRequestWithoutShowingBottomSheetAndNoAutofillStructure() {
         int focus = 1;
@@ -375,9 +363,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testStartSessionWithDifferentSessionIdThanPrefillRequest() {
         int focus = 1;
         int prefillSessionId = 123;

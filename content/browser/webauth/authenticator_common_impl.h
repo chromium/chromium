@@ -48,6 +48,23 @@ class WebAuthRequestSecurityChecker;
 enum class RequestExtension;
 enum class AttestationErasureOption;
 
+// https://w3c.github.io/webauthn/#enumdef-clientcapability
+namespace client_capabilities {
+
+inline constexpr char kConditionalCreate[] = "conditionalCreate";
+inline constexpr char kConditionalGet[] = "conditionalGet";
+inline constexpr char kHybridTransport[] = "hybridTransport";
+inline constexpr char kPasskeyPlatformAuthenticator[] =
+    "passkeyPlatformAuthenticator";
+inline constexpr char kUserVerifyingPlatformAuthenticator[] =
+    "userVerifyingPlatformAuthenticator";
+inline constexpr char kRelatedOrigins[] = "relatedOrigins";
+// TODO(crbug.com/360327828): Add following capabilities:
+// "signalAllAcceptedCredentials", "signalCurrentUserDetails",
+// "signalUnknownCredential".
+
+}  // namespace client_capabilities
+
 // Common code for any WebAuthn Authenticator interfaces.
 class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
  public:
@@ -183,6 +200,14 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   RenderFrameHost* GetRenderFrameHost() const override;
   void EnableRequestProxyExtensionsAPISupport() override;
 
+  // GetClientCapabilities returns a list WebAuthn capabilities of the browser
+  // via the `callback` parameter. Websites can use this information to
+  // determine which WebAuthn features and extensions are supported and tailor
+  // their requests accordingly.
+  void GetClientCapabilities(
+      url::Origin caller_origin,
+      blink::mojom::Authenticator::GetClientCapabilitiesCallback callback);
+
   // Report attempts to report a WebAuthn credential on behalf of
   // `caller_origin` using the supplied `options` and invokes `callback` with
   // the result.
@@ -244,6 +269,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void ContinueIsUvpaaAfterOverrideCheck(
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback,
+      bool is_get_client_capabilities_call,
       std::optional<bool> is_uvpaa_override);
 
   void ContinueIsConditionalMediationAvailableAfterOverrideCheck(
@@ -266,6 +292,16 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void StartGetAssertionRequest(bool allow_skipping_pin_touch);
 
   bool IsFocused() const;
+
+  // `is_get_client_capabilities_call` is true if this call originated from the
+  // `GetClientCapabilities` method. The UMA metric is only recorded if this is
+  // false, i.e. the call came directly from
+  // `IsUserVerifyingPlatformAuthenticatorAvailable`.
+  void IsUvpaaAvailableInternal(
+      url::Origin caller_origin,
+      blink::mojom::Authenticator::
+          IsUserVerifyingPlatformAuthenticatorAvailableCallback callback,
+      bool is_get_client_capabilities_call);
 
   void DispatchGetAssertionRequest(
       const std::string& authenticator_id,

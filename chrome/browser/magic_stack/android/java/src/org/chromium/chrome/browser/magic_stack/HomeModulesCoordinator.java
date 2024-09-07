@@ -13,12 +13,14 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -43,10 +45,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private final ModuleDelegateHost mModuleDelegateHost;
     private HomeModulesMediator mMediator;
     private final HomeModulesRecyclerView mRecyclerView;
-    private final ModelList mModel;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ModuleRegistry mModuleRegistry;
 
+    private ModelList mModel;
     private HomeModulesContextMenuManager mHomeModulesContextMenuManager;
     private SimpleRecyclerViewAdapter mAdapter;
     private CirclePagerIndicatorDecoration mPageIndicatorDecoration;
@@ -55,7 +57,6 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private int mItemPerScreen;
     private HomeModulesConfigManager mHomeModulesConfigManager;
     private HomeModulesConfigManager.HomeModulesStateListener mHomeModulesStateListener;
-    private SegmentationPlatformService mSegmentationPlatformService;
 
     /** It is non-null for tablets. */
     @Nullable private UiConfig mUiConfig;
@@ -66,6 +67,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     @Nullable private Callback<Profile> mOnProfileAvailableObserver;
     private boolean mHasHomeModulesBeenScrolled;
     private RecyclerView.OnScrollListener mOnScrollListener;
+    private CallbackController mCallbackController;
 
     /**
      * @param activity The instance of {@link Activity}.
@@ -92,6 +94,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
         assert mModuleRegistry != null;
 
+        mCallbackController = new CallbackController();
         mHomeModulesContextMenuManager =
                 new HomeModulesContextMenuManager(
                         this, moduleDelegateHost.getContextMenuStartPoint());
@@ -222,6 +225,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
      * @param onHomeModulesShownCallback The callback called when the magic stack is shown.
      */
     public void show(Callback<Boolean> onHomeModulesShownCallback) {
+        Runnable callback = createOnModuleChangedCallback(onHomeModulesShownCallback);
+
         if (mOnProfileAvailableObserver != null) {
             // If the magic stack is waiting for the profile and show() is called again, early
             // return here since showing is working in progress.
@@ -229,26 +234,44 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         }
 
         if (mProfileSupplier.hasValue()) {
-            mMediator.showModules(
-                    onHomeModulesShownCallback, this, getSegmentationPlatformService());
+            mMediator.showModules(callback, this, getSegmentationPlatformService());
         } else {
             long waitForProfileStartTimeMs = SystemClock.elapsedRealtime();
             mOnProfileAvailableObserver =
                     (profile) -> {
-                        onProfileAvailable(
-                                profile, onHomeModulesShownCallback, waitForProfileStartTimeMs);
+                        onProfileAvailable(profile, callback, waitForProfileStartTimeMs);
                     };
 
             mProfileSupplier.addObserver(mOnProfileAvailableObserver);
         }
     }
 
+    @VisibleForTesting
+    Runnable createOnModuleChangedCallback(Callback<Boolean> onHomeModulesShownCallback) {
+        Runnable callback =
+                mCallbackController.makeCancelable(
+                        () -> {
+                            int size = mModel.size();
+                            if (size == 1) {
+                                onHomeModulesShownCallback.onResult(true);
+                            } else if (size == 0) {
+                                onHomeModulesShownCallback.onResult(false);
+                            }
+                            // Invalidates the page indication when the RecyclerView becomes
+                            // visible.
+                            if (size > mItemPerScreen) {
+                                mRecyclerView.invalidateItemDecorations();
+                            }
+                        });
+        return callback;
+    }
+
     private void onProfileAvailable(
             Profile profile,
-            Callback<Boolean> onHomeModulesShownCallback,
+            Runnable onHomeModulesChangedCallback,
             long waitForProfileStartTimeMs) {
         long delay = SystemClock.elapsedRealtime() - waitForProfileStartTimeMs;
-        mMediator.showModules(onHomeModulesShownCallback, this, getSegmentationPlatformService());
+        mMediator.showModules(onHomeModulesChangedCallback, this, getSegmentationPlatformService());
 
         mProfileSupplier.removeObserver(mOnProfileAvailableObserver);
         mOnProfileAvailableObserver = null;
@@ -400,6 +423,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             mHomeModulesContextMenuManager.destroy();
             mHomeModulesContextMenuManager = null;
         }
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
     }
 
     public boolean getIsSnapHelperAttachedForTesting() {
@@ -438,5 +465,9 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     public HomeModulesContextMenuManager getHomeModulesContextMenuManagerForTesting() {
         return mHomeModulesContextMenuManager;
+    }
+
+    public void setModelForTesting(ModelList model) {
+        mModel = model;
     }
 }

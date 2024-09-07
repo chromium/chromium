@@ -14,8 +14,10 @@
     <includes>
       <if expr="_google_chrome">
         <then>
+          <include name="IDR_MAKO_LOBSTER_HTML" file="resources/orca/lobster.html" resource_path="lobster.html" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_HTML" file="resources/orca/orca.html" resource_path="orca.html" type="BINDATA" />
           <include name="IDR_MAKO_PRIVACY_HTML" file="resources/orca/privacy.html" resource_path="privacy.html" type="BINDATA" />
+          <include name="IDR_MAKO_LOBSTER_JS" file="resources/orca/lobster_js.js" resource_path="lobster_js.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_JS" file="resources/orca/web_js.js" resource_path="web_js.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_TRANSLATION_AF_JS" file="resources/orca/translations/translations__af.js" resource_path="translations/translations__af.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_TRANSLATION_AM_JS" file="resources/orca/translations/translations__am.js" resource_path="translations/translations__am.js" type="BINDATA" />
@@ -99,10 +101,12 @@
           <include name="IDR_MAKO_ORCA_TRANSLATION_ZU_JS" file="resources/orca/translations/translations__zu.js" resource_path="translations/translations__zu.js" type="BINDATA" />
         </then>
         <else>
+          <include name="IDR_MAKO_LOBSTER_HTML" file="mako" resource_path="lobster.html" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_HTML" file="mako" resource_path="orca.html" type="BINDATA" />
           <include name="IDR_MAKO_PRIVACY_HTML" file="mako" resource_path="privacy.html" type="BINDATA" />
+          <include name="IDR_MAKO_LOBSTER_JS" file="mako" resource_path="lobster_js.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_JS" file="mako" resource_path="web_js.js" type="BINDATA" />
-          <include name="IDR_MAKO_ORCA_EN" file="mako" resource_path="translations/translations__en.js" type="BINDATA" />
+          <include name="IDR_MAKO_ORCA_TRANSLATION_EN_JS" file="mako" resource_path="translations/translations__en.js" type="BINDATA" />
         </else>
       </if>
     </includes>

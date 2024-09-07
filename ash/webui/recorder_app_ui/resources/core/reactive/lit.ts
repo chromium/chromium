@@ -148,6 +148,10 @@ export class ScopedAsyncComputed<T> implements ReactiveController {
     return this.valueInternal.value;
   }
 
+  get valueSignal(): Signal<T|null> {
+    return this.valueInternal;
+  }
+
   hostConnected(): void {
     let latestRun!: symbol;
     let abortController: AbortController|null = null;
@@ -193,3 +197,4 @@ export class ScopedAsyncComputed<T> implements ReactiveController {
 // This is for exporting the class alias.
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ScopedAsyncEffect = ScopedAsyncComputed<void>;
+export type ScopedAsyncEffect = ScopedAsyncComputed<void>;

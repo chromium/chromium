@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -34,7 +35,7 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
   CriticalClientHintsThrottle(
       BrowserContext* context,
       ClientHintsControllerDelegate* client_hint_delegate,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
   ~CriticalClientHintsThrottle() override;
 
   // blink::URLLoaderThrottle
@@ -61,7 +62,7 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
 
   raw_ptr<BrowserContext> context_;
   raw_ptr<ClientHintsControllerDelegate> client_hint_delegate_;
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
 
   // Ensure that there's only one restart per origin
   base::flat_set<url::Origin> restarted_origins_;

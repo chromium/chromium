@@ -29,11 +29,13 @@ namespace enterprise_companion {
 
 // Command line arguments.
 const char kLoggingModuleSwitch[] = "vmodule";
+const char kLoggingModuleSwitchValue[] = "*/chrome/enterprise_companion/*=2";
 const char kCrashHandlerSwitch[] = "crash-handler";
 const char kCrashMeSwitch[] = "crash-me";
 const char kShutdownSwitch[] = "shutdown";
 const char kFetchPoliciesSwitch[] = "fetch-policies";
 const char kInstallSwitch[] = "install";
+const char kUninstallSwitch[] = "uninstall";
 
 #if BUILDFLAG(IS_MAC)
 const char kNetWorkerSwitch[] = "net-worker";
@@ -41,8 +43,6 @@ const char kNetWorkerSwitch[] = "net-worker";
 
 namespace {
 
-constexpr char kLoggingModuleSwitchValue[] =
-    "*/chrome/enterprise_companion/*=2";
 constexpr int64_t kLogRotateAtSize = 1024 * 1024;  // 1 MiB.
 
 void InitLogging() {
@@ -99,6 +99,10 @@ std::unique_ptr<App> CreateAppForCommandLine(base::CommandLine* command_line) {
 
   if (command_line->HasSwitch(kInstallSwitch)) {
     return CreateAppInstall();
+  }
+
+  if (command_line->HasSwitch(kUninstallSwitch)) {
+    return CreateAppUninstall();
   }
 
 #if BUILDFLAG(IS_MAC)

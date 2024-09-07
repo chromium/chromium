@@ -4,6 +4,8 @@
 
 #include "ash/color_enhancement/color_enhancement_controller.h"
 
+#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/flash_screen_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -14,13 +16,14 @@
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
 
 namespace {
-const int delayToCheckStateChangeMs = 301;
+const int kDelayToCheckStateChangeMs = 300;
 const int kBlueColor = 0x0000ff;
 
 // Indices in a FilterOperation::Matrix that map a channel to itself.
@@ -61,8 +64,14 @@ class ColorEnhancementControllerTest : public AshTestBase {
     return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   }
 
-  void FastForwardBy(int milliseconds) {
-    task_environment()->FastForwardBy(base::Milliseconds(milliseconds));
+  void FastForwardAnimationTo(int milliseconds) {
+    gfx::AnimationTestApi animation_api(
+        AccessibilityController::Get()
+            ->GetFlashScreenControllerForTesting()
+            ->GetAnimationForTesting());
+    base::TimeTicks now = base::TimeTicks::Now();
+    animation_api.SetStartTime(now);
+    animation_api.Step(now + base::Milliseconds(milliseconds));
   }
 
   void ShowNotification() {
@@ -234,8 +243,10 @@ TEST_F(ColorEnhancementControllerTest, FlashNotifications) {
   // Show a normal notification. Flashing should occur.
   ShowNotification();
 
-  // Flashing should happen twice.
-  for (int i = 0; i < 2; i++) {
+  // The color should be shown for kDelayToCheckStateChangeMs duration, then be
+  // off.
+  for (int i = 1; i < kDelayToCheckStateChangeMs; i++) {
+    FastForwardAnimationTo(i);
     // A custom color matrix has been shown.
     for (aura::Window* root_window : Shell::GetAllRootWindows()) {
       const cc::FilterOperation::Matrix* matrix =
@@ -250,15 +261,14 @@ TEST_F(ColorEnhancementControllerTest, FlashNotifications) {
       EXPECT_NE((*matrix)[kBlueToBlueIndex], 0.0f);
       EXPECT_EQ((*matrix)[kAlphaToAlphaIndex], 1.0f);
     }
-
-    FastForwardBy(delayToCheckStateChangeMs);
-    // Should be off now.
-    ExpectNoCustomColorMatrix();
-    FastForwardBy(delayToCheckStateChangeMs);
   }
+  FastForwardAnimationTo(kDelayToCheckStateChangeMs);
 
-  // Still off: only flashed twice.
+  // Off: Completed a throb animation.
   ExpectNoCustomColorMatrix();
+
+  // Note: The throb animation does not play well with the AnimationTestAPI so
+  // we can only test the first throb cycle.
 }
 
 TEST_F(ColorEnhancementControllerTest, FlashNotificationsColorPref) {
@@ -270,29 +280,24 @@ TEST_F(ColorEnhancementControllerTest, FlashNotificationsColorPref) {
 
   // Show a normal notification. Flashing should occur.
   ShowNotification();
+  FastForwardAnimationTo(1);
 
-  // Flashing should happen twice.
-  for (int i = 0; i < 2; i++) {
-    // A custom color matrix has been shown.
-    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-      const cc::FilterOperation::Matrix* matrix =
-          root_window->layer()->GetLayerCustomColorMatrix();
-      ASSERT_TRUE(matrix);
-      // Blue has r == g !== 1.0, b = 1.0, and alpha = 1.0.
-      EXPECT_NE((*matrix)[kRedToRedIndex], 1.0f);
-      EXPECT_NE((*matrix)[kGreenToGreenIndex], 1.0f);
-      EXPECT_EQ((*matrix)[kRedToRedIndex], (*matrix)[kGreenToGreenIndex]);
-      EXPECT_EQ((*matrix)[kBlueToBlueIndex], 1.0f);
-      EXPECT_EQ((*matrix)[kAlphaToAlphaIndex], 1.0f);
-    }
-
-    FastForwardBy(delayToCheckStateChangeMs);
-    // Should be off now.
-    ExpectNoCustomColorMatrix();
-    FastForwardBy(delayToCheckStateChangeMs);
+  // A custom color matrix has been shown.
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    const cc::FilterOperation::Matrix* matrix =
+        root_window->layer()->GetLayerCustomColorMatrix();
+    ASSERT_TRUE(matrix);
+    // Blue has r == g !== 1.0, b = 1.0, and alpha = 1.0.
+    EXPECT_NE((*matrix)[kRedToRedIndex], 1.0f);
+    EXPECT_NE((*matrix)[kGreenToGreenIndex], 1.0f);
+    EXPECT_EQ((*matrix)[kRedToRedIndex], (*matrix)[kGreenToGreenIndex]);
+    EXPECT_EQ((*matrix)[kBlueToBlueIndex], 1.0f);
+    EXPECT_EQ((*matrix)[kAlphaToAlphaIndex], 1.0f);
   }
 
-  // Still off: only flashed twice.
+  FastForwardAnimationTo(kDelayToCheckStateChangeMs);
+
+  // Should be off now.
   ExpectNoCustomColorMatrix();
 }
 
@@ -318,26 +323,22 @@ TEST_F(ColorEnhancementControllerTest,
 
   // Show a normal notification. Flashing should occur.
   ShowNotification();
+  FastForwardAnimationTo(1);
 
-  // Flashing should happen twice.
-  for (int i = 0; i < 2; i++) {
-    // Overlay color matrix is shown instead.
-    const cc::FilterOperation::Matrix* matrix =
-        root_window->layer()->GetLayerCustomColorMatrix();
-    ASSERT_TRUE(matrix);
-    EXPECT_NE(r, (*matrix)[kRedToRedIndex]);
-    EXPECT_NE(g, (*matrix)[kGreenToGreenIndex]);
-    EXPECT_NE(b, (*matrix)[kBlueToBlueIndex]);
+  // Overlay color matrix is shown instead.
+  const cc::FilterOperation::Matrix* matrix =
+      root_window->layer()->GetLayerCustomColorMatrix();
+  ASSERT_TRUE(matrix);
+  EXPECT_NE(r, (*matrix)[kRedToRedIndex]);
+  EXPECT_NE(g, (*matrix)[kGreenToGreenIndex]);
+  EXPECT_NE(b, (*matrix)[kBlueToBlueIndex]);
 
-    FastForwardBy(delayToCheckStateChangeMs);
-    // Flash is off, color correction matrix is shown again.
-    matrix = root_window->layer()->GetLayerCustomColorMatrix();
-    EXPECT_EQ(r, (*matrix)[kRedToRedIndex]);
-    EXPECT_EQ(g, (*matrix)[kGreenToGreenIndex]);
-    EXPECT_EQ(b, (*matrix)[kBlueToBlueIndex]);
-
-    FastForwardBy(delayToCheckStateChangeMs);
-  }
+  FastForwardAnimationTo(kDelayToCheckStateChangeMs);
+  // Flash is off, color correction matrix is shown again.
+  matrix = root_window->layer()->GetLayerCustomColorMatrix();
+  EXPECT_EQ(r, (*matrix)[kRedToRedIndex]);
+  EXPECT_EQ(g, (*matrix)[kGreenToGreenIndex]);
+  EXPECT_EQ(b, (*matrix)[kBlueToBlueIndex]);
 }
 
 }  // namespace ash

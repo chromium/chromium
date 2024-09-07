@@ -32,20 +32,10 @@ namespace autofill {
 inline constexpr char kAutofillSubmissionDetectionSourceHistogram[] =
     "Autofill.SubmissionDetectionSource.AutofillAgent";
 
-// Histogram for recording whether the form detected as submitted after a form
-// removal event was the synthetic form. Recorded when a submission is detected
-// after a form removal event.
-inline constexpr char kFormlessSubmissionAfterFormRemovalHistogram[] =
-    "Autofill.iOS.FormRemoval.SubmissionDetected.IsFormless";
-
 // Histogram for recording whether a form submission was detected after a form
 // removal event.
 inline constexpr char kFormSubmissionAfterFormRemovalHistogram[] =
     "Autofill.iOS.FormRemoval.SubmissionDetected";
-
-// Histogram for recording the number of removed forms in a form removal event.
-inline constexpr char kFormRemovalRemovedFormsHistogram[] =
-    "Autofill.iOS.FormRemoval.RemovedForms";
 
 // Histogram for recording the number of removed unowned fields in a form
 // removal event.
@@ -133,7 +123,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override;
-  void GetFourDigitCombinationsFromDOM(
+  void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
 
@@ -232,7 +222,8 @@ class AutofillDriverIOS final : public AutofillDriver,
       AutofillManager::LifecycleState old_state,
       AutofillManager::LifecycleState new_state) override;
   void OnAfterFormsSeen(AutofillManager& manager,
-                        base::span<const FormGlobalId> forms) override;
+                        base::span<const FormGlobalId> updated_forms,
+                        base::span<const FormGlobalId> removed_forms) override;
 
   // Logs metrics related to form removal events.
   void RecordFormRemoval(bool submission_detected,

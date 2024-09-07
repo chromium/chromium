@@ -772,7 +772,7 @@ TEST_F(PowerManagerClientTest, ChangeAmbientColorTemperature) {
 TEST_F(PowerManagerClientTest, ChangeThermalState) {
   base::test::ScopedPowerMonitorTestSource power_monitor_source;
   PowerMonitorTestObserverLocal observer;
-  base::PowerMonitor::AddPowerThermalObserver(&observer);
+  base::PowerMonitor::GetInstance()->AddPowerThermalObserver(&observer);
 
   typedef struct {
     power_manager::ThermalEvent::ThermalState dbus_state;
@@ -810,7 +810,7 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
     EXPECT_EQ(observer.GetThermalState(), p.expected_state);
   }
 
-  base::PowerMonitor::RemovePowerThermalObserver(&observer);
+  base::PowerMonitor::GetInstance()->RemovePowerThermalObserver(&observer);
 }
 
 // Test that |RequestSuspend| calls the DBus method with the same name.

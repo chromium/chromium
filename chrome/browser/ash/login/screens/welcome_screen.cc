@@ -34,7 +34,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
@@ -723,6 +723,7 @@ void WelcomeScreen::UpdateA11yState() {
 
 void WelcomeScreen::OnQuickStartClicked() {
   CHECK(context()->quick_start_enabled);
+  CHECK(!context()->quick_start_setup_ongoing);
   Exit(Result::kQuickStart);
 }
 

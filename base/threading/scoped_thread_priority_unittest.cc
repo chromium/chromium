@@ -24,7 +24,7 @@ namespace {
 
 static ThreadType kAllThreadTypes[] = {
     ThreadType::kRealtimeAudio, ThreadType::kDisplayCritical,
-    ThreadType::kCompositing, ThreadType::kDefault, ThreadType::kBackground};
+    ThreadType::kDefault, ThreadType::kBackground};
 
 static_assert(static_cast<int>(ThreadType::kBackground) == 0,
               "kBackground isn't lowest");

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -32,25 +33,22 @@ namespace web_app {
 
 namespace {
 constexpr std::string_view kTypeApp = "app";
+constexpr std::string_view kIsolatedAppName = "Simple Isolated App";
+constexpr std::string_view kIsolatedAppVersion = "1.0.0";
+constexpr std::string_view kIsolatedAppDevToolsTitle =
+    "Simple Isolated App (1.0.0)";
 }
 class IsolatedWebAppDevToolsTest : public IsolatedWebAppBrowserTestHarness {
  protected:
   IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
-    server_ =
-        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-    web_app::IsolatedWebAppUrlInfo url_info =
-        InstallDevModeProxyIsolatedWebApp(server_->GetOrigin());
-    return url_info;
+    auto app =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
+                                           .SetName(kIsolatedAppName)
+                                           .SetVersion(kIsolatedAppVersion))
+            .BuildBundle();
+    app->TrustSigningKey();
+    return app->InstallChecked(profile());
   }
-
-  net::EmbeddedTestServer* dev_server() { return server_.get(); }
-
-  WebAppProvider& web_app_provider() {
-    return CHECK_DEREF(WebAppProvider::GetForTest(profile()));
-  }
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> server_;
 };
 
 // TODO (crbug.com/1522953): Resolve flakiness on linux debug builds.
@@ -60,7 +58,10 @@ class IsolatedWebAppDevToolsTest : public IsolatedWebAppBrowserTestHarness {
 #define MAYBE_ErrorPage ErrorPage
 #endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, MAYBE_ErrorPage) {
-  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  std::unique_ptr<net::EmbeddedTestServer> server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  IsolatedWebAppUrlInfo url_info =
+      InstallDevModeProxyIsolatedWebApp(server->GetOrigin());
   Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
@@ -69,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, MAYBE_ErrorPage) {
                                                 /*is_docked=*/true);
 
   content::TestNavigationObserver navigation_observer(web_contents);
-  EXPECT_TRUE(dev_server()->ShutdownAndWaitUntilComplete());
+  EXPECT_TRUE(server->ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(ExecJs(web_contents, "location.reload()"));
   navigation_observer.Wait();
 
@@ -102,10 +103,20 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, IwaIdentifiedAsApp) {
   EXPECT_EQ(1, content::EvalJs(
                    web_contents,
                    "document.getElementById('apps-list').children.length"));
-  EXPECT_EQ("Isolated Web App",
+  EXPECT_EQ(kIsolatedAppDevToolsTitle,
             content::EvalJs(web_contents,
                             "document.getElementById('apps-list').children[0]."
                             "getElementsByClassName('name')[0].innerText"));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, IwaWithCorrectTitle) {
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  Browser* iwa_app = LaunchWebAppBrowserAndWait(url_info.app_id());
+  scoped_refptr<content::DevToolsAgentHost> iwa_host =
+      content::DevToolsAgentHost::GetOrCreateFor(
+          iwa_app->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(iwa_host->GetType(), kTypeApp);
+  EXPECT_EQ(iwa_host->GetTitle(), kIsolatedAppDevToolsTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, PwaIdentifiedAsPage) {

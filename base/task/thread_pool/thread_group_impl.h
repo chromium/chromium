@@ -15,10 +15,9 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/thread_group.h"
-#include "base/task/thread_pool/thread_group_worker_delegate.h"
 #include "base/task/thread_pool/tracked_ref.h"
+#include "base/task/thread_pool/worker_thread.h"
 #include "base/task/thread_pool/worker_thread_set.h"
-#include "base/task/thread_pool/worker_thread_waitable_event.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -29,7 +28,7 @@ namespace internal {
 
 class TaskTracker;
 
-// A group of |WorkerThreadWaitableEvent|s that run |Task|s.
+// A group of |WorkerThread|s that run |Task|s.
 //
 // The thread group doesn't create threads until Start() is called. Tasks can be
 // posted at any time but will not run until after Start() is called.
@@ -71,16 +70,14 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   void JoinForTesting() override;
   void DidUpdateCanRunPolicy() override;
   void OnShutdownStarted() override;
-  std::unique_ptr<BaseScopedCommandsExecutor> GetExecutor() override;
   // Returns the number of workers that are idle (i.e. not running tasks).
   size_t NumberOfIdleWorkersLockRequiredForTesting() const
       EXCLUSIVE_LOCKS_REQUIRED(lock_) override;
 
- protected:
  private:
   class ScopedCommandsExecutor;
-  class WaitableEventWorkerDelegate;
-  friend class WaitableEventWorkerDelegate;
+  class WorkerDelegate;
+  friend class WorkerDelegate;
 
   // friend tests so that they can access |blocked_workers_poll_period| and
   // may_block_threshold(), both in ThreadGroup.
@@ -97,7 +94,8 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
       RegisteredTaskSourceAndTransaction transaction_with_task_source) override;
   void EnsureEnoughWorkersLockRequired(BaseScopedCommandsExecutor* executor)
       override EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  ThreadGroupWorkerDelegate* GetWorkerDelegate(WorkerThread* worker) override;
+  void ScheduleAdjustMaxTasks() override;
+  void AdjustMaxTasks() override;
 
   // Creates a worker and schedules its start, if needed, to maintain one idle
   // worker, |max_tasks_| permitting.
@@ -106,16 +104,13 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
 
   // Creates a worker, adds it to the thread group, schedules its start and
   // returns it. Cannot be called before Start().
-  scoped_refptr<WorkerThreadWaitableEvent> CreateAndRegisterWorkerLockRequired(
+  scoped_refptr<WorkerThread> CreateAndRegisterWorkerLockRequired(
       ScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  bool IsOnIdleSetLockRequired(WorkerThread* worker) const
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns the number of workers that are awake (i.e. not on the idle set).
   size_t GetNumAwakeWorkersLockRequired() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  bool IsOnIdleSetLockRequired(WorkerThreadWaitableEvent* worker) const
+  bool IsOnIdleSetLockRequired(WorkerThread* worker) const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   size_t worker_sequence_num_ GUARDED_BY(lock_) = 0;
@@ -129,13 +124,13 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   WorkerThreadSet idle_workers_set_ GUARDED_BY(lock_);
 
   // Ensures recently cleaned up workers (ref.
-  // WaitableEventWorkerDelegate::CleanupLockRequired()) had time to exit as
+  // WorkerDelegate::CleanupLockRequired()) had time to exit as
   // they have a raw reference to |this| (and to TaskTracker) which can
   // otherwise result in racy use-after-frees per no longer being part of
   // |workers_| and hence not being explicitly joined in JoinForTesting():
   // https://crbug.com/810464. Uses AtomicRefCount to make its only public
   // method thread-safe.
-  TrackedRefFactory<ThreadGroup> tracked_ref_factory_;
+  TrackedRefFactory<ThreadGroupImpl> tracked_ref_factory_;
 };
 
 }  // namespace internal

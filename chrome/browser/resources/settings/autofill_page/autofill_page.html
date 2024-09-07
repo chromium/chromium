@@ -15,16 +15,6 @@
             role-description="$i18n{subpageArrowRoleDescription}"
             start-icon="cr20:password" external>
         </cr-link-row>
-        <template is="dom-if"
-            if="[[isPlusAddressAutofillLevelSettingEnabled_]]">
-          <cr-link-row id="plusAddressManagerButton"
-              label="$i18n{plusAddressSettings}"
-              on-click="onPlusAddressClick_"
-              role-description="$i18n{subpageArrowRoleDescription}"
-              start-icon="[[plusAddressIcon_]]"
-              external>
-          </cr-link-row>
-        </template>
         <cr-link-row id="paymentManagerButton"
             start-icon="settings20:credit-card" label="$i18n{creditCards}"
             on-click="onPaymentsClick_"
@@ -34,6 +24,14 @@
             sub-label="[[addressesSublabel_()]]"
             on-click="onAddressesClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+        <template is="dom-if" if="[[autofillPredictionImprovementsEnabled_]]">
+          <!-- TODO(crbug.com/361437117): Set proper icon. -->
+          <!-- TODO(crbug.com/361437117): Add the beta label. -->
+          <cr-link-row id="autofillPredictionImprovementsManagerButton"
+              start-icon="settings:location-on"
+              label="$i18n{autofillPredictionImprovementsPageTitle}"
+              on-click="onAutofillPredictionImprovementsClick_"></cr-link-row>
+        </template>
       </div>
       <if expr="is_win or is_macosx">
         <template is="dom-if" route-path="/passkeys">
@@ -64,5 +62,17 @@
           <settings-autofill-section id="autofillSection" prefs="{{prefs}}">
           </settings-autofill-section>
         </settings-subpage>
+      </template>
+      <template is="dom-if" if="[[autofillPredictionImprovementsEnabled_]]">
+        <template is="dom-if" route-path="/autofillPredictionImprovements">
+          <settings-subpage
+              associated-control=
+                  "[[$$('#autofillPredictionImprovementsManagerButton')]]"
+              page-title="$i18n{autofillPredictionImprovementsPageTitle}">
+            <settings-autofill-prediction-improvements-section
+                id="autofillPredictionImprovementsSection" prefs="{{prefs}}">
+            </settings-autofill-prediction-improvements-section>
+          </settings-subpage>
+        </template>
       </template>
     </settings-animated-pages>

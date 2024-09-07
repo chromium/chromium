@@ -855,20 +855,27 @@ TEST_F(AllocatorShimTest, OptimizeAllocatorDispatchTable) {
 
 #if PA_BUILDFLAG( \
     ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+
+void MockFreeWithAdvancedChecks(void* address, void* context);
+void* MockReallocWithAdvancedChecks(void* address, size_t size, void* context);
+
 std::atomic_size_t g_mock_free_with_advanced_checks_count;
-void MockFreeWithAdvancedChecks(const AllocatorDispatch* self,
-                                void* address,
-                                void* context) {
+
+AllocatorDispatch g_mock_dispatch_for_advanced_checks = {
+    .realloc_function = &MockReallocWithAdvancedChecks,
+    .free_function = &MockFreeWithAdvancedChecks,
+    .next = nullptr,
+};
+
+void MockFreeWithAdvancedChecks(void* address, void* context) {
   g_mock_free_with_advanced_checks_count++;
-  self->next->free_function(self->next, address, context);
+  g_mock_dispatch_for_advanced_checks.next->free_function(address, context);
 }
 
-void* MockReallocWithAdvancedChecks(const AllocatorDispatch* self,
-                                    void* address,
-                                    size_t size,
-                                    void* context) {
+void* MockReallocWithAdvancedChecks(void* address, size_t size, void* context) {
   // no-op.
-  return self->next->realloc_function(self->next, address, size, context);
+  return g_mock_dispatch_for_advanced_checks.next->realloc_function(
+      address, size, context);
 }
 
 TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
@@ -877,9 +884,6 @@ TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
   AutoResetAllocatorDispatchChainForTesting chain_reset;
 
   g_mock_free_with_advanced_checks_count = 0u;
-  AllocatorDispatch dispatch{nullptr};
-  dispatch.free_function = &MockFreeWithAdvancedChecks;
-  dispatch.realloc_function = &MockReallocWithAdvancedChecks;
 
   // Insert a normal dispatch.
   InsertAllocatorDispatch(&g_mock_dispatch);
@@ -894,7 +898,8 @@ TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
   EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
   EXPECT_EQ(g_mock_free_with_advanced_checks_count, 0u);
 
-  InstallDispatchToPartitionAllocWithAdvancedChecks(&dispatch);
+  InstallDispatchToPartitionAllocWithAdvancedChecks(
+      &g_mock_dispatch_for_advanced_checks);
 
   alloc_ptr = new int;
   delete alloc_ptr;

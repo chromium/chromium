@@ -49,8 +49,6 @@ namespace {
 
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
-using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
-using SurfaceType = privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
 
 constexpr char kTestEmail[] = "test@test.com";
 
@@ -675,12 +673,11 @@ TEST_P(CookieDeprecationLabelAllowedTest, IsClientEligibleChecked) {
 
   const bool disable_3pcs = GetParam();
   if (disable_3pcs) {
-    auto* onboarding_service =
-        TrackingProtectionOnboardingFactory::GetForProfile(profile());
     // Simulate onboarding a profile.
-    onboarding_service->MaybeMarkModeBEligible();
-    onboarding_service->NoticeShown(SurfaceType::kDesktop,
-                                    NoticeType::kModeBOnboarding);
+    prefs()->SetInteger(
+        prefs::kTrackingProtectionOnboardingStatus,
+        static_cast<int>(privacy_sandbox::TrackingProtectionOnboarding::
+                             OnboardingStatus::kOnboarded));
   }
 
   for (bool is_client_eligible : {false, true}) {
@@ -821,12 +818,12 @@ TEST_P(ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest,
       test_case = GetParam();
 
   if (test_case.is_profile_onboarded) {
-    auto* onboarding_service =
-        TrackingProtectionOnboardingFactory::GetForProfile(profile());
     // Simulate onboarding a profile.
-    onboarding_service->MaybeMarkModeBEligible();
-    onboarding_service->NoticeShown(SurfaceType::kDesktop,
-                                    NoticeType::kModeBOnboarding);
+    prefs()->SetInteger(
+        prefs::kTrackingProtectionOnboardingStatus,
+        static_cast<int>(privacy_sandbox::TrackingProtectionOnboarding::
+                             OnboardingStatus::kOnboarded));
+    prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
   }
 
   prefs()->SetInteger(prefs::kCookieControlsMode,

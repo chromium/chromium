@@ -131,7 +131,6 @@ static_library("test_support") {
   deps = [
     "//ash/public/cpp",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ui",
@@ -162,7 +161,6 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/settings:test_support",

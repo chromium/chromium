@@ -4,84 +4,56 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MetricsBrowserProxyImpl, ReadAnythingLogger, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {LetterSpacingMenu} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {getItemsInMenu, stubAnimationFrame, suppressInnocuousErrors} from './common.js';
+import {emitEventWithTarget, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('LetterSpacing', () => {
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
-  let toolbar: ReadAnythingToolbarElement;
-  let spacingEmitted: boolean;
+  let letterSpacingMenu: LetterSpacingMenu;
+  let metrics: TestMetricsBrowserProxy;
 
   setup(() => {
     suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    spacingEmitted = false;
-    document.addEventListener(
-        ToolbarEvent.LETTER_SPACING, () => spacingEmitted = true);
-    toolbar = document.createElement('read-anything-toolbar');
-    document.body.appendChild(toolbar);
+
+    metrics = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metrics);
+    ReadAnythingLogger.setInstance(new ReadAnythingLogger());
+
+    letterSpacingMenu = document.createElement('letter-spacing-menu');
+    document.body.appendChild(letterSpacingMenu);
     flush();
   });
 
-  test('is dropdown menu', () => {
-    stubAnimationFrame();
-    const menuButton = toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
-        '#letter-spacing');
+  test('spacing change', async () => {
+    const veryWide = chrome.readingMode.veryWideLetterSpacing;
+    emitEventWithTarget(
+        letterSpacingMenu.$.menu, ToolbarEvent.LETTER_SPACING,
+        {detail: {data: veryWide}});
+    assertEquals(veryWide, chrome.readingMode.letterSpacing);
 
-    menuButton!.click();
-    flush();
+    const wide = chrome.readingMode.wideLetterSpacing;
+    emitEventWithTarget(
+        letterSpacingMenu.$.menu, ToolbarEvent.LETTER_SPACING,
+        {detail: {data: wide}});
+    assertEquals(wide, chrome.readingMode.letterSpacing);
 
-    assertTrue(toolbar.$.letterSpacingMenu.get().open);
-  });
+    const standard = chrome.readingMode.standardLetterSpacing;
+    emitEventWithTarget(
+        letterSpacingMenu.$.menu, ToolbarEvent.LETTER_SPACING,
+        {detail: {data: standard}});
+    assertEquals(standard, chrome.readingMode.letterSpacing);
 
-  suite('menu', () => {
-    let letterSpacingMenuOptions: HTMLButtonElement[];
-
-    setup(() => {
-      letterSpacingMenuOptions = getItemsInMenu(toolbar.$.letterSpacingMenu);
-    });
-
-    test('has 3 options', () => {
-      assertEquals(3, letterSpacingMenuOptions.length);
-    });
-
-    test('first option propagates standard spacing', () => {
-      letterSpacingMenuOptions[0]!.click();
-
-      assertTrue(spacingEmitted);
-      assertEquals(
-          chrome.readingMode.standardLetterSpacing,
-          chrome.readingMode.letterSpacing);
-    });
-
-    test('second option propagates wide spacing', () => {
-      letterSpacingMenuOptions[1]!.click();
-
-      assertTrue(spacingEmitted);
-      assertEquals(
-          chrome.readingMode.wideLetterSpacing,
-          chrome.readingMode.letterSpacing);
-    });
-
-    test('third option propagates very wide spacing', () => {
-      letterSpacingMenuOptions[2]!.click();
-
-      assertTrue(spacingEmitted);
-      assertEquals(
-          chrome.readingMode.veryWideLetterSpacing,
-          chrome.readingMode.letterSpacing);
-    });
+    assertEquals(
+        ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
+        await metrics.whenCalled('recordTextSettingsChange'));
+    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
   });
 });

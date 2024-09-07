@@ -57,15 +57,19 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -79,10 +83,12 @@ import org.chromium.customtabsclient.shared.CustomTabsHelper;
 import org.chromium.customtabsclient.shared.ServiceConnection;
 import org.chromium.customtabsclient.shared.ServiceConnectionCallback;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 /** Example client activity for using Chrome Custom Tabs. */
 public class MainActivity extends AppCompatActivity
@@ -117,10 +123,12 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_WARMUP_BUTTON = "WarmupButton";
     private static final String SHARED_PREF_MAY_LAUNCH_BUTTON = "MayLaunchButton";
     private static final String SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON = "EngagementSignalsButton";
+    private static final String SHARED_PREF_CUSTOM_SCHEME = "CustomScheme";
     private static final String CCT_OPTION_REGULAR = "CCT";
     private static final String CCT_OPTION_PARTIAL = "Partial CCT";
     private static final String CCT_OPTION_INCOGNITO = "Incognito CCT";
     private static final String CCT_OPTION_EPHEMERAL = "Ephemeral CCT";
+    private static final String CCT_OPTION_AUTHTAB = "AuthTab";
     private static final int CLOSE_ICON_X = 0;
     private static final int CLOSE_ICON_BACK = 1;
     private static final int CLOSE_ICON_CHECK = 2;
@@ -151,12 +159,14 @@ public class MainActivity extends AppCompatActivity
     private Button mLaunchButton;
     private Button mResultLaunchButton;
     private Button mEngagementSignalsButton;
+    private String mCustomScheme;
     private MediaPlayer mMediaPlayer;
     private MaterialButtonToggleGroup mCloseButtonPositionToggle;
     private MaterialButtonToggleGroup mCloseButtonIcon;
     private MaterialButtonToggleGroup mDecorationType;
     private MaterialButtonToggleGroup mThemeButton;
     private MaterialButtonToggleGroup mSideSheetPositionToggle;
+
     private TextView mToolbarCornerRadiusLabel;
     private SeekBar mToolbarCornerRadiusSlider;
     private CheckBox mBottomToolbarCheckbox;
@@ -187,6 +197,20 @@ public class MainActivity extends AppCompatActivity
             "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
     private static final String EXTRA_OMNIBOX_ENABLED =
             "org.chromium.chrome.browser.customtabs.OMNIBOX_ENABLED";
+
+    private final ActivityResultLauncher<Intent> mLauncher =
+            AuthTabIntent.registerActivityResultLauncher(this, this::handleAuthResult);
+
+    private void handleAuthResult(Uri uri) {
+        // Canceling CCT also invokes this method. See if the uri is empty.
+        boolean success = !Objects.equals(uri, Uri.EMPTY);
+        String message =
+                getResources()
+                        .getString(success ? R.string.auth_tab_result : R.string.auth_tab_canceled);
+        message += " uri: " + uri;
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Log.i(TAG, message);
+    }
 
     /** Once per second, asks the framework for the process importance, and logs any change. */
     private Runnable mLogImportance =
@@ -681,6 +705,9 @@ public class MainActivity extends AppCompatActivity
         mSendToExternalAppCheckbox = findViewById(R.id.send_to_external_app_checkbox);
         mSendToExternalAppCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SEND_TO_EXTERNAL_APP, UNCHECKED) == CHECKED);
+        mCustomScheme = mSharedPref.getString(SHARED_PREF_CUSTOM_SCHEME, "myscheme");
+        EditText customSchemeEdit = (EditText) findViewById(R.id.custom_scheme);
+        customSchemeEdit.setText(mCustomScheme, TextView.BufferType.NORMAL);
     }
 
     private void initializeCctSpinner() {
@@ -690,7 +717,8 @@ public class MainActivity extends AppCompatActivity
                     CCT_OPTION_REGULAR,
                     CCT_OPTION_PARTIAL,
                     CCT_OPTION_INCOGNITO,
-                    CCT_OPTION_EPHEMERAL
+                    CCT_OPTION_EPHEMERAL,
+                    CCT_OPTION_AUTHTAB
                 };
         String prefCct = mSharedPref.getString(SHARED_PREF_CCT, "");
         for (int i = 0; i < cctOptions.length; i++) {
@@ -736,6 +764,8 @@ public class MainActivity extends AppCompatActivity
                             return;
                         }
                         mCctType = item;
+                        int vis = CCT_OPTION_AUTHTAB.equals(mCctType) ? View.VISIBLE : View.GONE;
+                        findViewById(R.id.custom_scheme_container).setVisibility(vis);
                     }
 
                     @Override
@@ -1053,7 +1083,10 @@ public class MainActivity extends AppCompatActivity
 
         customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCCTCheckbox.isChecked());
 
-        if (startActivityForResult) {
+        if (mCctType.equals(CCT_OPTION_AUTHTAB)) {
+            launchAuthTab(url);
+            editor.putString(SHARED_PREF_CUSTOM_SCHEME, mCustomScheme);
+        } else if (startActivityForResult) {
             if (!TextUtils.isEmpty(mPackageNameToBind)) {
                 customTabsIntent.intent.setPackage(mPackageNameToBind);
             }
@@ -1084,6 +1117,31 @@ public class MainActivity extends AppCompatActivity
                 mSideSheetRoundedCornerCheckbox.isChecked() ? CHECKED : UNCHECKED);
         editor.putInt(SHARED_PREF_DECORATION, decorationType);
         editor.apply();
+    }
+
+    private void launchAuthTab(String url) {
+        AuthTabIntent authIntent = new AuthTabIntent.Builder().build();
+        try {
+            // Set the package name of the Chrome to use. The Android intent wrapped in
+            // AuthTabIntent is a private field that doesn't allow the access. Use reflection
+            // for testing. This is not likely necessary for production since the AuthTab
+            // launches a CCT of the default browser.
+            Field intentField = AuthTabIntent.class.getDeclaredField("mIntent");
+            intentField.setAccessible(true);
+            Intent intent = (Intent) intentField.get(authIntent);
+            intent.setPackage(mPackageNameToBind);
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting the Chrome package to the Intent!");
+            return;
+        }
+        String scheme = ((EditText) findViewById(R.id.custom_scheme)).getText().toString();
+        if (TextUtils.isEmpty(scheme)) {
+            String message = getResources().getString(R.string.missing_scheme);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        authIntent.launch(mLauncher, Uri.parse(url), scheme);
+        mCustomScheme = scheme;
     }
 
     private String mayPrependUrl(String url) {

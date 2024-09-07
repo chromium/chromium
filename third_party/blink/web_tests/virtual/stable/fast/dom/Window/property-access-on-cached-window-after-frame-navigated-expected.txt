@@ -187,6 +187,8 @@ PASS oldChildWindow.onreset is newChildWindow.onreset
 PASS oldChildWindow.onresize is newChildWindow.onresize
 PASS oldChildWindow.onscroll is newChildWindow.onscroll
 PASS oldChildWindow.onscrollend is newChildWindow.onscrollend
+PASS oldChildWindow.onscrollsnapchange is newChildWindow.onscrollsnapchange
+PASS oldChildWindow.onscrollsnapchanging is newChildWindow.onscrollsnapchanging
 PASS oldChildWindow.onsearch is newChildWindow.onsearch
 PASS oldChildWindow.onsecuritypolicyviolation is newChildWindow.onsecuritypolicyviolation
 PASS oldChildWindow.onseeked is newChildWindow.onseeked

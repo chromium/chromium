@@ -20,7 +20,7 @@ class PaymentInstrument;
 // be any form of payment stored in the GPay backend that can be used to
 // facilitate a payment on a webpage. Examples of derived class: BankAccount,
 // CreditCard etc.
-class PaymentInstrument {
+class PaymentInstrument final {
  public:
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.payments
   // A payment rail can loosely represent the different ways in which Chrome can
@@ -30,26 +30,27 @@ class PaymentInstrument {
     kUnknown = 0,
     // Payment Rail used in Brazil.
     kPix = 1,
-    kMaxValue = kPix,
+    // Payment Rail used for Ewallet.
+    kPaymentHyperlink = 2,
+    kMaxValue = kPaymentHyperlink,
   };
 
   PaymentInstrument(int64_t instrument_id,
-                    std::u16string_view nickname,
-                    const GURL& display_icon_url,
-                    DenseSet<PaymentInstrument::PaymentRail> supported_rails);
+                    std::u16string nickname,
+                    GURL display_icon_url,
+                    DenseSet<PaymentInstrument::PaymentRail> supported_rails,
+                    bool is_fido_enrolled = false);
   PaymentInstrument(const PaymentInstrument& other);
   PaymentInstrument& operator=(const PaymentInstrument& other);
-  virtual ~PaymentInstrument();
+  ~PaymentInstrument();
 
+  friend std::strong_ordering operator<=>(const PaymentInstrument&,
+                                          const PaymentInstrument&);
   friend bool operator==(const PaymentInstrument&, const PaymentInstrument&);
-
-  int Compare(const PaymentInstrument& payment_instrument) const;
 
   int64_t instrument_id() const { return instrument_id_; }
 
-  const DenseSet<PaymentRail>& supported_rails() const {
-    return supported_rails_;
-  }
+  DenseSet<PaymentRail> supported_rails() const { return supported_rails_; }
 
   // Check whether the PaymentInstrument is supported for a particular rail.
   bool IsSupported(PaymentRail payment_rail) const;
@@ -57,6 +58,8 @@ class PaymentInstrument {
   const std::u16string& nickname() const { return nickname_; }
 
   const GURL& display_icon_url() const { return display_icon_url_; }
+
+  bool is_fido_enrolled() const { return is_fido_enrolled_; }
 
  private:
   // This is the ID assigned by the payments backend to uniquely identify this
@@ -71,6 +74,9 @@ class PaymentInstrument {
 
   // All the payment rails that are supported by this instrument.
   DenseSet<PaymentRail> supported_rails_;
+
+  // Whether the device is enrolled in FIDO for this instrument.
+  bool is_fido_enrolled_;
 };
 
 }  // namespace autofill

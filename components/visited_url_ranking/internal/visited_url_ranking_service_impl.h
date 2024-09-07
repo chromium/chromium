@@ -83,6 +83,10 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   void RankURLVisitAggregates(const Config& config,
                               std::vector<URLVisitAggregate> visits,
                               RankURLVisitAggregatesCallback callback) override;
+  void DecorateURLVisitAggregates(
+      const Config& config,
+      std::vector<URLVisitAggregate> visit_aggregates,
+      DecorateURLVisitAggregatesCallback callback) override;
   void RecordAction(
       ScoredURLUserAction action,
       const std::string& visit_id,
@@ -146,6 +150,10 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
 
   // Sampling rate for kSeen events to balance training collection.
   const int seen_records_sampling_rate_;
+
+  // Threshold for when the "You just visited" communication should be
+  // displayed instead of relative time.
+  const base::TimeDelta recently_visited_minutes_threshold_;
 
   // The helper used by the fetchers to deduplicate URLs.
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>

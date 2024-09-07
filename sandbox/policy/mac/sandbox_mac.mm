@@ -85,6 +85,9 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
       profile += kSeatbeltPolicyString_screen_ai;
       break;
 #endif
+    case sandbox::mojom::Sandbox::kVideoEffects:
+      // TODO(crbug.com/361128453): Implement this.
+      NOTREACHED() << "kVideoEffects sandbox not implemented.";
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       profile += kSeatbeltPolicyString_speech_recognition;
       break;

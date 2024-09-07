@@ -20,11 +20,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_allocator.h"
@@ -33,6 +32,7 @@
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_jit_allocator.h"
 #include "components/plus_addresses/plus_address_preallocator.h"
+#include "components/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
@@ -41,18 +41,18 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/webdata/common/web_data_results.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 namespace plus_addresses {
 
 namespace {
 
+using autofill::AutofillSuggestionTriggerSource;
 using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
@@ -73,55 +73,15 @@ base::flat_set<std::string> GetAndParseExcludedSites() {
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 }
 
-PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
-  PlusProfile::facet_t facet;
-  if (IsSyncingPlusAddresses()) {
-    // For a valid `origin`, `origin.GetURL().spec()` is always a valid spec.
-    // However, using `FacetURI::FromCanonicalSpec(spec)` can lead to mismatches
-    // in the underlying representation, since it uses the spec verbatim. E.g.,
-    // a trailing "/" is removed by `FacetURI::FromPotentiallyInvalidSpec()`,
-    // but kept by `FacetURI::FromCanonicalSpec(spec)`.
-    // TODO(b/338342346): Revise `FacetURI::FromCanonicalSpec()`.
-    facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
-        origin.GetURL().spec());
-  } else {
-    std::string etld_plus_one = GetEtldPlusOne(origin);
-    // TODO(crbug.com/327838014): Remove the fallback and use
-    // `affiliations::FacetURI` in the tests.
-    // For empty `etld_plus_one`, fallback to `origin`.
-    facet = etld_plus_one.empty() ? origin.GetURL().spec() : etld_plus_one;
-  }
-  return facet;
-}
-
-// Returns `true` when we wish to offer plus address creation on a form with
-// password manager classification `form_classification` and a focused field
-// with id `focused_field_id`.
-// If password manager did not recognize a username field or the username field
-// is different from the focused field, this is always `true`. Otherwise,
-// whether we offer plus address creation depends on the form type.
-bool ShouldOfferPlusAddressCreationOnForm(
-    const PasswordFormClassification& form_classification,
-    autofill::FieldGlobalId focused_field_id) {
-  if ((!form_classification.username_field ||
-       *form_classification.username_field != focused_field_id) &&
-      base::FeatureList::IsEnabled(
-          features::kPlusAddressOfferCreationOnAllNonUsernameFields)) {
-    return true;
-  }
-  switch (form_classification.type) {
-    case PasswordFormClassification::Type::kNoPasswordForm:
-    case PasswordFormClassification::Type::kSignupForm:
-      return true;
-    case PasswordFormClassification::Type::kLoginForm:
-    case PasswordFormClassification::Type::kChangePasswordForm:
-    case PasswordFormClassification::Type::kResetPasswordForm:
-      return false;
-    case PasswordFormClassification::Type::kSingleUsernameForm:
-      return base::FeatureList::IsEnabled(
-          features::kPlusAddressOfferCreationOnSingleUsernameForms);
-  }
-  NOTREACHED();
+affiliations::FacetURI OriginToFacet(const url::Origin& origin) {
+  // For a valid `origin`, `origin.GetURL().spec()` is always a valid spec.
+  // However, using `FacetURI::FromCanonicalSpec(spec)` can lead to mismatches
+  // in the underlying representation, since it uses the spec verbatim. E.g.,
+  // a trailing "/" is removed by `FacetURI::FromPotentiallyInvalidSpec()`,
+  // but kept by `FacetURI::FromCanonicalSpec(spec)`.
+  // TODO(b/338342346): Revise `FacetURI::FromCanonicalSpec()`.
+  return affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      origin.GetURL().spec());
 }
 
 std::unique_ptr<PlusAddressAllocator> CreateAllocator(
@@ -190,13 +150,12 @@ PlusAddressService::PlusAddressService(
                       base::BindRepeating(&PlusAddressService::IsEnabled,
                                           base::Unretained(this)));
 
-  if (IsSyncingPlusAddresses() && webdata_service_) {
+  if (webdata_service_) {
     webdata_service_observation_.Observe(webdata_service_.get());
     if (IsEnabled()) {
       webdata_service_->GetPlusProfiles(this);
     }
   }
-  CreateAndStartTimer();
   identity_manager_observation_.Observe(identity_manager);
 
   if (!base::FeatureList::IsEnabled(features::kPlusAddressBlocklistEnabled)) {
@@ -223,6 +182,11 @@ bool PlusAddressService::IsPlusAddressCreationEnabled(
   // Disabled plus address filling implies that plus address creation is
   // disabled.
   if (!IsPlusAddressFillingEnabled(origin)) {
+    return false;
+  }
+
+  // Only offer plus address creation on https domains.
+  if (origin.scheme() != url::kHttpsScheme) {
     return false;
   }
 
@@ -263,7 +227,7 @@ bool PlusAddressService::ShouldShowManualFallback(
 }
 
 std::optional<PlusAddress> PlusAddressService::GetPlusAddress(
-    const PlusProfile::facet_t& facet) const {
+    const affiliations::FacetURI& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<PlusProfile> profile = GetPlusProfile(facet);
   return profile ? std::make_optional(std::move(profile->plus_address))
@@ -285,26 +249,23 @@ base::span<const PlusProfile> PlusAddressService::GetPlusProfiles() const {
 }
 
 std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
-    const PlusProfile::facet_t& facet) const {
+    const affiliations::FacetURI& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (auto* facet_uri = absl::get_if<affiliations::FacetURI>(&facet)) {
-    if (!facet_uri->is_valid()) {
-      return std::nullopt;
-    }
+  if (!facet.is_valid()) {
+    return std::nullopt;
   }
-
   return plus_address_cache_.FindByFacet(facet);
 }
 
 void PlusAddressService::SavePlusProfile(const PlusProfile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(profile.is_confirmed);
-  // New plus addresses are requested directly from the PlusAddress backend. If
-  // `IsSyncingPlusAddresses()`, these addresses become later available through
-  // sync. Until the address shows up in sync, it should still be available
-  // through `PlusAddressService`, even after reloading the data. This requires
-  // adding the address to the database.
-  if (webdata_service_ && IsSyncingPlusAddresses()) {
+  // New plus addresses are requested directly from the PlusAddress backend.
+  // These addresses become later available through sync. Until the address
+  // shows up in sync, it should still be available through
+  // `PlusAddressService`, even after reloading the data. This requires adding
+  // the address to the database.
+  if (webdata_service_) {
     webdata_service_->AddOrUpdatePlusProfile(profile);
   }
   // Update the in-memory plus profiles cache.
@@ -326,7 +287,7 @@ void PlusAddressService::GetSuggestions(
     bool is_off_the_record,
     const PasswordFormClassification& focused_form_classification,
     const FormFieldData& focused_field,
-    autofill::AutofillSuggestionTriggerSource trigger_source,
+    AutofillSuggestionTriggerSource trigger_source,
     GetSuggestionsCallback callback) {
   if (!IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
     std::move(callback).Run({});
@@ -336,17 +297,14 @@ void PlusAddressService::GetSuggestions(
   plus_address_match_helper_.GetAffiliatedPlusProfiles(
       OriginToFacet(last_committed_primary_main_frame_origin),
       base::BindOnce(&PlusAddressService::OnGetAffiliatedPlusProfiles,
-                     weak_factory_.GetWeakPtr(), focused_form_classification,
-                     focused_field, trigger_source, is_off_the_record,
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(),
+                     last_committed_primary_main_frame_origin,
+                     focused_form_classification, focused_field, trigger_source,
+                     is_off_the_record, std::move(callback)));
 }
 
 Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
-      SuggestionType::kManagePlusAddress);
-  suggestion.icon = Suggestion::Icon::kGoogleMonochrome;
-  return suggestion;
+  return PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion();
 }
 
 bool PlusAddressService::ShouldMixWithSingleFieldFormFillSuggestions() const {
@@ -355,88 +313,34 @@ bool PlusAddressService::ShouldMixWithSingleFieldFormFillSuggestions() const {
 }
 
 void PlusAddressService::OnGetAffiliatedPlusProfiles(
+    url::Origin origin,
     const PasswordFormClassification& focused_form_classification,
     const FormFieldData& focused_field,
-    autofill::AutofillSuggestionTriggerSource trigger_source,
+    AutofillSuggestionTriggerSource trigger_source,
     bool is_off_the_record,
     GetSuggestionsCallback callback,
     std::vector<PlusProfile> affiliated_profiles) {
-  using enum autofill::AutofillSuggestionTriggerSource;
-  const std::u16string normalized_field_value =
-      autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
+  const bool is_creation_enabled =
+      IsPlusAddressCreationEnabled(origin, is_off_the_record);
+  std::vector<Suggestion> suggestions =
+      PlusAddressSuggestionGenerator(&setting_service_.get(),
+                                     plus_address_allocator_.get(),
+                                     std::move(origin))
+          .GetSuggestions(is_creation_enabled, focused_form_classification,
+                          focused_field, trigger_source,
+                          std::move(affiliated_profiles));
+  const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
+                                                            &Suggestion::type);
 
-  if (affiliated_profiles.empty()) {
-    // Do not offer creation in incognito mode.
-    if (is_off_the_record) {
-      std::move(callback).Run({});
-      return;
-    }
-
-    // Do not offer creation if the setting is off.
-    if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
-        !setting_service_->GetIsPlusAddressesEnabled()) {
-      std::move(callback).Run({});
-      return;
-    }
-
-    // Do not offer creation on non-empty fields and certain form types (e.g.
-    // login forms).
-    if (trigger_source != kManualFallbackPlusAddresses &&
-        (!normalized_field_value.empty() ||
-         !ShouldOfferPlusAddressCreationOnForm(focused_form_classification,
-                                               focused_field.global_id()))) {
-      std::move(callback).Run({});
-      return;
-    }
-    Suggestion create_plus_address_suggestion(
-        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
-        SuggestionType::kCreateNewPlusAddress);
-    RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
-                                      kCreateNewPlusAddressSuggested);
-    if constexpr (!BUILDFLAG(IS_ANDROID)) {
-      create_plus_address_suggestion.labels = {
-          {Suggestion::Text(l10n_util::GetStringUTF16(
-              IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-    }
-    create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
-    create_plus_address_suggestion.feature_for_new_badge =
-        &features::kPlusAddressesEnabled;
-    create_plus_address_suggestion.feature_for_iph =
-        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
-#if BUILDFLAG(IS_ANDROID)
-    create_plus_address_suggestion.iph_description_text =
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID);
-#endif  // BUILDFLAG(IS_ANDROID)
-    std::move(callback).Run({std::move(create_plus_address_suggestion)});
-    return;
-  }
-
-  std::vector<Suggestion> suggestions;
-  suggestions.reserve(affiliated_profiles.size());
-  for (const PlusProfile& profile : affiliated_profiles) {
-    Suggestion suggestion =
-        Suggestion(base::UTF8ToUTF16(*profile.plus_address),
-                   SuggestionType::kFillExistingPlusAddress);
-    if constexpr (!BUILDFLAG(IS_ANDROID)) {
-      suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
-    }
-    suggestion.icon = Suggestion::Icon::kPlusAddress;
-
-    // Only suggest filling a plus address whose prefix matches the field's
-    // value.
-    if (trigger_source == kManualFallbackPlusAddresses ||
-        suggestion.main_text.value.starts_with(normalized_field_value)) {
-      suggestions.push_back(std::move(suggestion));
-    }
-  }
-
-  if (!suggestions.empty()) {
+  if (suggestion_types.contains(SuggestionType::kFillExistingPlusAddress)) {
     RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
                                       kExistingPlusAddressSuggested);
+  } else if (suggestion_types.contains_any(
+                 {SuggestionType::kCreateNewPlusAddress,
+                  SuggestionType::kCreateNewPlusAddressInline})) {
+    RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
+                                      kCreateNewPlusAddressSuggested);
   }
-
   std::move(callback).Run({std::move(suggestions)});
 }
 
@@ -482,6 +386,11 @@ void PlusAddressService::ConfirmPlusAddress(
     std::move(on_completed).Run(stored_plus_profile.value());
     return;
   }
+
+  // We remove the allocated plus address here even though the creation call
+  // may not go through. UI code may offer the user to re-attempt to confirm
+  // a plus address, e.g. in the case of time out.
+  plus_address_allocator_->RemoveAllocatedPlusAddress(plus_address);
   plus_address_http_client_->ConfirmPlusAddress(
       origin, plus_address,
       base::BindOnce(&PlusAddressService::HandleCreateOrConfirmResponse,
@@ -495,17 +404,12 @@ void PlusAddressService::HandleCreateOrConfirmResponse(
   if (maybe_profile.has_value()) {
     account_is_forbidden_ = false;
     if (maybe_profile->is_confirmed) {
-      if (IsSyncingPlusAddresses()) {
-        SavePlusProfile(*maybe_profile);
-      } else {
-        PlusProfile profile_to_save = *maybe_profile;
-        profile_to_save.facet = GetEtldPlusOne(origin);
-        SavePlusProfile(profile_to_save);
-      }
+      SavePlusProfile(*maybe_profile);
     }
   } else {
     HandlePlusAddressRequestError(maybe_profile.error());
   }
+
   // Run callback last in case it's dependent on above changes.
   std::move(callback).Run(maybe_profile);
 }
@@ -538,62 +442,6 @@ bool PlusAddressService::IsEnabled() const {
          identity_manager_
                  ->GetErrorStateOfRefreshTokenForAccount(primary_account_id)
                  .state() == GoogleServiceAuthError::State::NONE;
-}
-
-void PlusAddressService::CreateAndStartTimer() {
-  if (!IsEnabled() || !features::kSyncWithEnterprisePlusAddressServer.Get() ||
-      polling_timer_.IsRunning()) {
-    return;
-  }
-  if (IsSyncingPlusAddresses()) {
-    return;
-  }
-  SyncPlusAddressMapping();
-  polling_timer_.Start(
-      FROM_HERE, features::kEnterprisePlusAddressTimerDelay.Get(),
-      base::BindRepeating(&PlusAddressService::SyncPlusAddressMapping,
-                          // base::Unretained(this) is safe here since the timer
-                          // that is created has same lifetime as this service.
-                          base::Unretained(this)));
-}
-
-void PlusAddressService::SyncPlusAddressMapping() {
-  if (!IsEnabled()) {
-    return;
-  }
-  plus_address_http_client_->GetAllPlusAddresses(base::BindOnce(
-      [](PlusAddressService* service,
-         const PlusAddressMapOrError& maybe_mapping) {
-        if (maybe_mapping.has_value()) {
-          if (service->IsEnabled()) {
-            service->UpdatePlusAddressMap(maybe_mapping.value());
-          }
-          service->account_is_forbidden_ = false;
-        } else {
-          service->HandlePlusAddressRequestError(maybe_mapping.error());
-          // If `kDisableForForbiddenUsers` is on, we retry 403 responses.
-          if (features::kDisableForForbiddenUsers.Get() &&
-              maybe_mapping.error() == PlusAddressRequestError::AsNetworkError(
-                                           net::HTTP_FORBIDDEN) &&
-              !service->account_is_forbidden_.value_or(false)) {
-            service->SyncPlusAddressMapping();
-          }
-        }
-      },
-      // base::Unretained is safe here since PlusAddressService owns
-      // the PlusAddressHttpClient and they have the same lifetime.
-      base::Unretained(this)));
-}
-
-void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  plus_address_cache_.Clear();
-  for (const auto& [facet, address] : map) {
-    // `UpdatePlusAddressMap()` is only called when sync support is disabled.
-    // In this case, profile_ids don't matter.
-    plus_address_cache_.InsertProfile(
-        PlusProfile(/*profile_id=*/"", facet, address, /*is_confirmed=*/true));
-  }
 }
 
 void PlusAddressService::OnWebDataChangedBySync(
@@ -672,8 +520,6 @@ void PlusAddressService::OnPrimaryAccountChanged(
       event.GetEventTypeFor(signin::ConsentLevel::kSignin);
   if (type == signin::PrimaryAccountChangeEvent::Type::kCleared) {
     HandleSignout();
-  } else if (type == signin::PrimaryAccountChangeEvent::Type::kSet) {
-    CreateAndStartTimer();
   }
 }
 
@@ -689,17 +535,11 @@ void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
   if (error.state() != GoogleServiceAuthError::NONE) {
     HandleSignout();
-  } else {
-    CreateAndStartTimer();
   }
 }
 
 void PlusAddressService::HandleSignout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsSyncingPlusAddresses()) {
-    plus_address_cache_.Clear();
-    polling_timer_.Stop();
-  }
   plus_address_http_client_->Reset();
 }
 
@@ -729,6 +569,68 @@ void PlusAddressService::OnPlusAddressSuggestionShown(
   submission_logger_.OnPlusAddressSuggestionShown(
       manager, form, field, suggestion_context, form_type, suggestion_type,
       /*plus_address_count=*/plus_address_cache_.Size());
+}
+
+void PlusAddressService::OnClickedRefreshInlineSuggestion(
+    const url::Origin& last_committed_primary_main_frame_origin,
+    base::span<const autofill::Suggestion> current_suggestions,
+    size_t current_suggestion_index,
+    base::OnceCallback<void(std::vector<autofill::Suggestion>,
+                            AutofillSuggestionTriggerSource)>
+        update_suggestions_callback) {
+  std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
+                                              current_suggestions.end());
+  PlusAddressSuggestionGenerator(&setting_service_.get(),
+                                 plus_address_allocator_.get(),
+                                 last_committed_primary_main_frame_origin)
+      .RefreshPlusAddressForSuggestion(
+          updated_suggestions[current_suggestion_index]);
+  std::move(update_suggestions_callback)
+      .Run(
+          std::move(updated_suggestions),
+          AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+}
+
+void PlusAddressService::OnShowedInlineSuggestion(
+    const url::Origin& primary_main_frame_origin,
+    base::span<const Suggestion> current_suggestions,
+    UpdateSuggestionsCallback update_suggestions_callback) {
+  auto it = std::ranges::find(current_suggestions,
+                              SuggestionType::kCreateNewPlusAddressInline,
+                              &Suggestion::type);
+  CHECK(it != current_suggestions.end());
+
+  // TODO(crbug.com/362445807): Consider adding metrics.
+
+  if (it->GetPayload<Suggestion::PlusAddressPayload>().address.has_value()) {
+    // The suggestion already has a plus address - there is nothing to do.
+    return;
+  }
+
+  PlusAddressRequestCallback callback = base::BindOnce(
+      [](std::vector<Suggestion> suggestions, size_t suggestion_index,
+         UpdateSuggestionsCallback update_callback,
+         const PlusProfileOrError& profile_or_error) {
+        if (!profile_or_error.has_value()) {
+          suggestions[suggestion_index] =
+              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion();
+          std::move(update_callback)
+              .Run(std::move(suggestions),
+                   AutofillSuggestionTriggerSource::
+                       kPlusAddressUpdatedInBrowserProcess);
+          return;
+        }
+        PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
+            profile_or_error->plus_address, suggestions[suggestion_index]);
+        std::move(update_callback)
+            .Run(std::move(suggestions),
+                 AutofillSuggestionTriggerSource::
+                     kPlusAddressUpdatedInBrowserProcess);
+      },
+      std::vector<Suggestion>(current_suggestions.begin(),
+                              current_suggestions.end()),
+      it - current_suggestions.begin(), std::move(update_suggestions_callback));
+  RefreshPlusAddress(primary_main_frame_origin, std::move(callback));
 }
 
 }  // namespace plus_addresses

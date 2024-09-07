@@ -26,6 +26,7 @@
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -103,6 +104,10 @@ class TestTrayBackgroundView : public TrayBackgroundView,
   TrayBubbleView* bubble_view() { return bubble_->bubble_view(); }
 
   bool show_bubble_called() const { return show_bubble_called_; }
+
+  std::u16string GetAccessibleNameForBubble() override {
+    return u"Sample accessible name";
+  }
 
  private:
   std::unique_ptr<TrayBubbleWrapper> bubble_;
@@ -721,6 +726,38 @@ TEST_F(TrayBackgroundViewTest, TabletModeTransitionForAlignments) {
     EXPECT_EQ(clamshell_mode_bounds,
               test_tray_background_view()->bubble_view()->GetBoundsInScreen());
   }
+}
+
+TEST_F(TrayBackgroundViewTest, TrayBubbleViewAccessibleProperties) {
+  test_tray_background_view()->ShowBubble();
+  TrayBubbleView* bubble_view = test_tray_background_view()->bubble_view();
+  ASSERT_TRUE(bubble_view->CanActivate());
+  bubble_view->InitializeAndShowBubble();
+  ui::AXNodeData data;
+
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kWindow, data.role);
+
+  // Test that bubble view is hidden to a11y when `can_activate_` is false.
+  bubble_view->SetCanActivate(false);
+  // `can_activate_` value is set before showing the bubble.
+  bubble_view->InitializeAndShowBubble();
+  data = ui::AXNodeData();
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
+
+  bubble_view->SetCanActivate(true);
+  bubble_view->InitializeAndShowBubble();
+  data = ui::AXNodeData();
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Test that bubble view is hidden to a11y when `delegate_` is null.
+  bubble_view->ResetDelegate();
+  data = ui::AXNodeData();
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
 }
 
 }  // namespace ash

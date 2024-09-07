@@ -18,7 +18,7 @@ source_set("background_service") {
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
     "//ios/chrome/browser/optimization_guide/model:download_client_header",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
@@ -31,7 +31,7 @@ source_set("unit_tests") {
     "//components/download/internal/background_service/ios:background_service",
     "//components/download/internal/background_service/test:test_support",
     "//components/download/public/background_service/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//net",
     "//net:test_support",
     "//testing/gmock",

@@ -43,7 +43,7 @@
             on-click="onClearBrowsingDataClick_"></cr-link-row>
         <template is="dom-if" if="[[isPrivacyGuideAvailable]]">
           <cr-link-row id="privacyGuideLinkRow" class="hr"
-              start-icon="settings20:wind-rose"
+              start-icon="privacy20:signpost"
               label="$i18n{privacyGuideLabel}"
               sub-label="$i18n{privacyGuideSublabel}"
               on-click="onPrivacyGuideClick_"
@@ -61,7 +61,7 @@
         </template>
         <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
           <cr-link-row id="thirdPartyCookiesLinkRow"
-              start-icon="settings:cookie"
+              start-icon="privacy:cookie"
               class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
               sub-label="[[computeThirdPartyCookiesSublabel_(
                   prefs.profile.cookie_controls_mode.*)]]"
@@ -74,7 +74,7 @@
                 isPrivacySandboxRestricted_,
                 isPrivacySandboxRestrictedNoticeEnabled_)]]">
           <cr-link-row id="privacySandboxLinkRow"
-              start-icon="settings20:ads-click"
+              start-icon="privacy20:ads-click"
               class="hr"
               label="$i18n{adPrivacyLinkRowLabel}"
               sub-label="[[computeAdPrivacySublabel_(
@@ -84,12 +84,12 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
-        <cr-link-row id="securityLinkRow" start-icon="settings:lock-outline"
+        <cr-link-row id="securityLinkRow" start-icon="privacy:lock"
             class="hr" label="$i18n{securityPageTitle}"
             sub-label="$i18n{securityPageDescription}"
             on-click="onSecurityPageClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <cr-link-row id="permissionsLinkRow" start-icon="settings:permissions"
+        <cr-link-row id="permissionsLinkRow" start-icon="privacy:page-info"
             class="hr" label="$i18n{siteSettings}"
             sub-label="$i18n{permissionsPageDescription}"
             on-click="onPermissionsPageClick_"
@@ -178,7 +178,7 @@
           <settings-subpage id="safetyHub" page-title="$i18n{safetyHub}"
               class="multi-card" no-search
               learn-more-url="$i18n{safetyHubHelpCenterURL}">
-            <settings-safety-hub-page>
+            <settings-safety-hub-page prefs="{{prefs}}">
             </settings-safety-hub-page>
           </settings-subpage>
         </template>
@@ -517,7 +517,7 @@
                 <cr-radio-button no-collapse
                     name="location-ask-radio-button"
                     checked$="[[isLocationAllowed_]]">
-                  <iron-icon icon="settings:location-on"></iron-icon>
+                  <cr-icon icon="settings:location-on"></cr-icon>
                   $i18n{siteSettingsLocationAllowed}
                 </cr-radio-button>
 
@@ -548,7 +548,7 @@
                     name="location-block-radio-button"
                     sub-label="$i18n{siteSettingsLocationBlockedSubLabel}"
                     checked$="[[!isLocationAllowed_]]">
-                  <iron-icon icon="privacy:location-off"></iron-icon>
+                  <cr-icon icon="privacy:location-off"></cr-icon>
                   $i18n{siteSettingsLocationBlocked}
                 </cr-radio-button>
               </cr-radio-group>
@@ -603,7 +603,7 @@
                   label="$i18n{siteSettingsPdfsBlocked}"
                   name="false"
                   disabled$="[[isGuest_]]"
-                  icon="settings:open-in-browser">
+                  icon="privacy:open-in-browser">
               </settings-collapse-radio-button>
             </settings-radio-group>
           </div>
@@ -644,7 +644,7 @@
               allow-option-icon="privacy:volume-up"
               block-option-label="$i18n{siteSettingsSoundBlocked}"
               block-option-sub-label="$i18n{siteSettingsSoundBlockedSubLabel}"
-              block-option-icon="privacy:volume-up-off">
+              block-option-icon="privacy:volume-off">
           </settings-category-default-radio-group>
           <settings-toggle-button
               id="block-autoplay-setting"
@@ -787,7 +787,7 @@
                     id="notification-ask-radio-button"
                     name="notification-ask-radio-button"
                     checked$="[[isNotificationAllowed_]]">
-                  <iron-icon icon="privacy:notifications"></iron-icon>
+                  <cr-icon icon="privacy:notifications"></cr-icon>
                   $i18n{siteSettingsNotificationsAskState}
                 </cr-radio-button>
 
@@ -822,7 +822,7 @@
                     name="notification-block-radio-button"
                     sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
                     checked$="[[!isNotificationAllowed_]]">
-                  <iron-icon icon="privacy:notifications-off"></iron-icon>
+                  <cr-icon icon="privacy:notifications-off"></cr-icon>
                   $i18n{siteSettingsNotificationsBlocked}
                 </cr-radio-button>
               </cr-radio-group>
@@ -848,7 +848,7 @@
               allow-option-label="$i18n{siteSettingsPopupsAllowed}"
               allow-option-icon="cr:open-in-new"
               block-option-label="$i18n{siteSettingsPopupsBlocked}"
-              block-option-icon="settings:open-in-new-off">
+              block-option-icon="privacy:open-in-new-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.POPUPS]]"
@@ -1227,6 +1227,31 @@
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
+      </template>
+      <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
+        <template is="dom-if" route-path="/content/handTracking" no-search>
+        <settings-subpage page-title="$i18n{siteSettingsHandTracking}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsHandTrackingDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.HAND_TRACKING]]"
+              allow-option-label="$i18n{siteSettingsHandTrackingAsk}"
+              allow-option-icon="privacy:hand-gesture"
+              block-option-label="$i18n{siteSettingsHandTrackingBlock}"
+              block-option-icon="privacy:hand-gesture-off">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.HAND_TRACKING]]"
+              read-only-list
+              allow-header="$i18n{siteSettingsHandTrackingAllowedExceptions}"
+              block-header="$i18n{siteSettingsHandTrackingBlockedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
       </template>
       <template is="dom-if" route-path="/content/idleDetection" no-search>
         <settings-subpage page-title="$i18n{siteSettingsIdleDetection}"

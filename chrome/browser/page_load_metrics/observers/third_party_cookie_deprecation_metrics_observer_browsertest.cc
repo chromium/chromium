@@ -200,9 +200,10 @@ const Allow3PCMechanismBrowserTestCase kAllowMechanismTestCases[] = {
         // Metadata.
         .tpcd_metadata_critical_sector_allow_3p_cookie = true,
         .expected_allow_mechanism_histogram_sample =
-            ThirdPartyCookieAllowMechanism::kAllowBy3PCD,
+            ThirdPartyCookieAllowMechanism::
+                kAllowBy3PCDMetadataSourceCriticalSector,
         .expected_web_feature_histogram_sample =
-            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCD,
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
     },
     {
         .tpcd_metadata_critical_sector_allow_3p_cookie = true,
@@ -289,14 +290,13 @@ class ThirdPartyCookieDeprecationObserverBaseBrowserTest
         static_cast<int>(content_settings::CookieControlsMode::kOff));
   }
   void SetUpTrackingProtectionOnboard() {
-    onboarding_service()->MaybeMarkModeBEligible();
-    onboarding_service()->NoticeShown(
-        privacy_sandbox::TrackingProtectionOnboarding::SurfaceType::kBrApp,
-        privacy_sandbox::TrackingProtectionOnboarding::NoticeType::
-            kModeBOnboarding);
-    EXPECT_EQ(onboarding_service()->GetOnboardingStatus(),
-              privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-                  kOnboarded);
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kTrackingProtectionOnboardingStatus,
+        static_cast<int>(privacy_sandbox::TrackingProtectionOnboarding::
+                             OnboardingStatus::kOnboarded));
+    // Enable 3pcd as it's no longer done through the onboarding service.
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTrackingProtection3pcdEnabled, true);
   }
 
   content::WebContents* web_contents() {

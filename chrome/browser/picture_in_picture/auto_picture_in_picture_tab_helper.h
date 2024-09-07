@@ -153,7 +153,7 @@ class AutoPictureInPictureTabHelper
 
   bool IsEligibleForAutoPictureInPicture(
       HasSufficientlyVisibleVideo has_sufficiently_visible_video =
-          HasSufficientlyVisibleVideo::kNo) const;
+          HasSufficientlyVisibleVideo::kNo);
 
   // Returns true if the tab is currently playing unmuted playback, and
   // MediaSession reports that there exists a sufficiently visible video.
@@ -179,6 +179,9 @@ class AutoPictureInPictureTabHelper
   // visibility threshold defined by `HTMLVideoElement` (kVisibilityThreshold)
   // and tracked by the `MediaVideoVisibilityTracker`.
   void GetVideoVisibility(bool has_sufficiently_visible_video);
+
+  // Creates the `auto_pip_setting_helper_` if it does not already exist.
+  void EnsureAutoPipSettingHelper();
 
   // HostContentSettingsMap is tied to the Profile which outlives the
   // WebContents (which we're tied to), so this is safe.

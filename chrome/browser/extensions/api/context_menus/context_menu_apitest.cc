@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -137,6 +136,8 @@ class ExtensionContextMenuVisibilityApiTest
       const ExtensionContextMenuVisibilityApiTest&) = delete;
 
   void TearDownOnMainThread() override {
+    // Depends on `menu_` so must be cleared before it is destroyed.
+    top_level_model_ = nullptr;
     menu_.reset();
     ExtensionContextMenuApiTest::TearDownOnMainThread();
   }
@@ -217,9 +218,7 @@ class ExtensionContextMenuVisibilityApiTest
 
   const Extension* extension() { return extension_; }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION ui::MenuModel* top_level_model_ = nullptr;
+  raw_ptr<ui::MenuModel> top_level_model_ = nullptr;
 
  private:
   content::WebContents* GetBackgroundPage(const ExtensionId& extension_id) {

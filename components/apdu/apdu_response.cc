@@ -14,8 +14,9 @@ namespace apdu {
 std::optional<ApduResponse> ApduResponse::CreateFromMessage(
     base::span<const uint8_t> data) {
   // Invalid message size, data is appended by status byte.
-  if (data.size() < 2)
+  if (data.size() < 2) {
     return std::nullopt;
+  }
 
   uint16_t status_bytes = data[data.size() - 2] << 8;
   status_bytes |= data[data.size() - 1];

@@ -38,10 +38,10 @@ class InstallerTest : public ::testing::Test {
     std::optional<base::FilePath> install_dir = GetInstallDirectory();
     ASSERT_TRUE(install_dir);
     install_dir_ = *install_dir;
-    Clean();
+    GetTestMethods().Clean();
   }
 
-  void TearDown() override { Clean(); }
+  void TearDown() override { GetTestMethods().Clean(); }
 
  protected:
   base::test::TaskEnvironment environment_;
@@ -49,7 +49,8 @@ class InstallerTest : public ::testing::Test {
   base::FilePath install_dir_;
   // If 64-on-64, the 32-bit install directory. If 32-on-64 the 64-bit install
   // directory. Otherwise nullopt.
-  std::optional<base::FilePath> alt_install_dir_;
+  std::optional<base::FilePath> alt_install_dir_ =
+      GetInstallDirectoryForAlternateArch();
 
   // Run the installer and expect success or failure.
   void RunInstaller(bool expect_success) {
@@ -70,20 +71,6 @@ class InstallerTest : public ::testing::Test {
     }
   }
 
-  void ExpectUpdaterRegistration(const std::wstring expected_version,
-                                 const std::wstring expected_name) {
-    base::win::RegKey app_key(HKEY_LOCAL_MACHINE, kAppRegKey,
-                              KEY_QUERY_VALUE | KEY_WOW64_32KEY);
-
-    std::wstring pv;
-    ASSERT_EQ(app_key.ReadValue(kRegValuePV, &pv), ERROR_SUCCESS);
-    EXPECT_EQ(pv, expected_version);
-
-    std::wstring name;
-    ASSERT_EQ(app_key.ReadValue(kRegValueName, &name), ERROR_SUCCESS);
-    EXPECT_EQ(name, expected_name);
-  }
-
   void SetUpdaterRegistration(const std::wstring version,
                               const std::wstring name) {
     base::win::RegKey app_key(HKEY_LOCAL_MACHINE, kAppRegKey,
@@ -91,21 +78,6 @@ class InstallerTest : public ::testing::Test {
 
     ASSERT_EQ(app_key.WriteValue(kRegValuePV, version.c_str()), ERROR_SUCCESS);
     ASSERT_EQ(app_key.WriteValue(kRegValueName, name.c_str()), ERROR_SUCCESS);
-  }
-
- private:
-  void Clean() {
-    ASSERT_TRUE(base::DeletePathRecursively(install_dir_));
-
-    alt_install_dir_ = GetInstallDirectoryForAlternateArch();
-    if (alt_install_dir_) {
-      ASSERT_TRUE(base::DeletePathRecursively(*alt_install_dir_));
-    }
-
-    ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey,
-                                KEY_ALL_ACCESS | KEY_WOW64_32KEY)
-                  .DeleteKey(L""),
-              ERROR_SUCCESS);
   }
 };
 
@@ -115,8 +87,7 @@ TEST_F(InstallerTest, FirstInstall) {
   ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
   ASSERT_FALSE(alt_install_dir_ && base::PathExists(*alt_install_dir_));
 
-  ExpectUpdaterRegistration(base::ASCIIToWide(kEnterpriseCompanionVersion),
-                            L"" PRODUCT_FULLNAME_STRING);
+  ExpectUpdaterRegistration();
 }
 
 TEST_F(InstallerTest, OverinstallSameArch) {
@@ -134,8 +105,7 @@ TEST_F(InstallerTest, OverinstallSameArch) {
       base::GetFileSize(install_dir_.AppendASCII(kExecutableName), &exe_size));
   EXPECT_GT(exe_size, 0);
 
-  ExpectUpdaterRegistration(base::ASCIIToWide(kEnterpriseCompanionVersion),
-                            L"" PRODUCT_FULLNAME_STRING);
+  ExpectUpdaterRegistration();
 }
 
 TEST_F(InstallerTest, OverinstallDifferentArch) {
@@ -156,8 +126,7 @@ TEST_F(InstallerTest, OverinstallDifferentArch) {
 
   EXPECT_FALSE(base::PathExists(*alt_install_dir_));
 
-  ExpectUpdaterRegistration(base::ASCIIToWide(kEnterpriseCompanionVersion),
-                            L"" PRODUCT_FULLNAME_STRING);
+  ExpectUpdaterRegistration();
 }
 
 }  // namespace enterprise_companion

@@ -49,11 +49,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "cast_shell",
-    label = "//chromecast:cast_shell",
-)
-
-targets.compile_target(
     name = "cast_shell_apk",
     label = "//chromecast:cast_shell_apk",
 )
@@ -355,6 +350,11 @@ targets.compile_target(
 targets.compile_target(
     name = "traffic_annotation_auditor_dependencies",
     label = "//:traffic_annotation_auditor_dependencies",
+)
+
+targets.compile_target(
+    name = "traffic_annotation_proto",
+    label = "//chrome/browser/privacy:traffic_annotation_proto",
 )
 
 targets.compile_target(

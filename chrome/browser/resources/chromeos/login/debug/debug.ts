@@ -704,6 +704,10 @@ const KNOWN_SCREENS: ScreenDefType[] = [
     kind: ScreenKind.NORMAL,
   },
   {
+    id: 'split-modifier-keyboard-info',
+    kind: ScreenKind.NORMAL,
+  },
+  {
     id: 'theme-selection',
     kind: ScreenKind.NORMAL,
   },

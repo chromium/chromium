@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="@bookmarks starter pack engine"/>
   <int value="3" label="@history starter pack engine"/>
   <int value="4" label="@tabs starter pack engine"/>
-  <int value="5" label="@google starter pack engine"/>
+  <int value="5" label="@gemini starter pack engine"/>
 </enum>
 
 <enum name="OmniboxEnteredKeywordMode2">
@@ -154,6 +154,31 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Title non-prefix"/>
   <int value="4" label="Shortcut text prefix"/>
 </enum>
+
+<enum name="ReconciliationType">
+  <int value="0" label="No Reconciliation"/>
+  <int value="1" label="By prepopulate_id"/>
+  <int value="2" label="By keyword"/>
+  <int value="3" label="By domain based keyword"/>
+</enum>
+
+<enum name="RegulatoryExtensionVariant">
+  <int value="0" label="Default extension"/>
+  <int value="1" label="Android EEA"/>
+</enum>
+
+<!-- LINT.IfChange(SearchPrefetchCacheAliasFallbackReasonEnum) -->
+
+<enum name="SearchPrefetchCacheAliasFallbackReason">
+  <int value="0" label="kNoFallback"/>
+  <int value="1" label="kNoResponseHeaders"/>
+  <int value="2" label="kNon2xxResponse"/>
+  <int value="3" label="kRedirectResponse"/>
+  <int value="4" label="kErrorOnComplete"/>
+  <int value="5" label="kMojoDisconnect"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h:FallbackReason) -->
 
 <enum name="SearchPrefetchEligibilityReason">
   <int value="0" label="Prefetch started"/>

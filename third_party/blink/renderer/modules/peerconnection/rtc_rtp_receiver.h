@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -36,6 +37,7 @@ class RTCEncodedVideoUnderlyingSink;
 class RTCInsertableStreams;
 class RTCPeerConnection;
 class RTCRtpCapabilities;
+class RTCRtpScriptTransform;
 class RTCRtpTransceiver;
 class RTCStatsReport;
 
@@ -83,12 +85,18 @@ class RTCRtpReceiver final : public ScriptWrappable,
   ScriptPromise<RTCStatsReport> getStats(ScriptState*);
   RTCInsertableStreams* createEncodedStreams(ScriptState*, ExceptionState&);
 
+  RTCRtpScriptTransform* transform() { return transform_; }
+  void setTransform(RTCRtpScriptTransform*, ExceptionState&);
+
   RTCRtpReceiverPlatform* platform_receiver();
   MediaKind kind() const;
   MediaStreamVector streams() const;
   void set_streams(MediaStreamVector streams);
   void set_transceiver(RTCRtpTransceiver*);
   void set_transport(RTCDtlsTransport*);
+
+  String TransceiverDirection();
+  String TransceiverCurrentDirection();
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
@@ -147,6 +155,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
 
   THREAD_CHECKER(thread_checker_);
   Member<RTCInsertableStreams> encoded_streams_;
+  Member<RTCRtpScriptTransform> transform_;
 
   // Insertable Streams support for audio.
   base::Lock audio_underlying_source_lock_;

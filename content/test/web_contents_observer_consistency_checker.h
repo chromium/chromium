@@ -51,7 +51,7 @@ class WebContentsObserverConsistencyChecker
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(FrameTreeNodeId frame_tree_node_id) override;
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
@@ -136,7 +136,7 @@ class WebContentsObserverConsistencyChecker
   // Remembers parents to make sure RenderFrameHost::GetParent() never changes.
   std::map<GlobalRoutingID, GlobalRoutingID> parent_ids_;
 
-  std::set<int> frame_tree_node_ids_;
+  std::set<FrameTreeNodeId> frame_tree_node_ids_;
 
   bool is_loading_;
 

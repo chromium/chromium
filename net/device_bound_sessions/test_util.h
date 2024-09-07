@@ -5,6 +5,10 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_
 #define NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_
 
+#include <string>
+#include <utility>
+
+#include "base/containers/span.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,6 +37,10 @@ class SessionServiceMock : public SessionService {
                RefreshCompleteCallback continue_callback),
               (override));
 };
+
+// Return a hard-coded RS256 public key's SPKI bytes and JWK string for testing.
+std::pair<base::span<const uint8_t>, std::string>
+GetRS256SpkiAndJwkForTesting();
 
 }  // namespace net::device_bound_sessions
 

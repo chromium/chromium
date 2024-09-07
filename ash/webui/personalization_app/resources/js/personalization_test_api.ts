@@ -27,17 +27,26 @@ function makeTransparent() {
 
 // Reset to a default state at the root of the app. Useful for browsertests.
 async function reset() {
+  await selectDefaultWallpaperImage();
+  goToRootPath();
+}
+
+function goToRootPath() {
+  const router = PersonalizationRouterElement.instance();
+  router.goToRoute(Paths.ROOT);
+}
+
+async function selectDefaultWallpaperImage() {
   const wallpaperProvider = getWallpaperProvider();
   await wallpaperProvider.selectDefaultImage();
+}
 
+async function setDefaultColorScheme() {
   // Turn on dynamic color with default scheme.
   const themeProvider = getThemeProvider();
   themeProvider.setColorScheme(DEFAULT_COLOR_SCHEME);
   const {colorScheme} = await themeProvider.getColorScheme();
   assert(colorScheme === DEFAULT_COLOR_SCHEME, 'reset to default color scheme');
-
-  const router = PersonalizationRouterElement.instance();
-  router.goToRoute(Paths.ROOT);
 }
 
 async function selectTimeOfDayWallpaper() {
@@ -73,23 +82,29 @@ async function enableDailyGooglePhotosRefresh(albumId: string) {
 declare global {
   interface Window {
     personalizationTestApi: {
+      disableDailyRefresh: () => Promise<void>,
+      enableDailyGooglePhotosRefresh: (albumId: string) => Promise<void>,
+      enableDailyRefresh: (collectionId: string) => Promise<void>,
+      goToRootPath: () => void,
       isGooglePhotosIntegrationEnabled: () => boolean,
       makeTransparent: () => void,
       reset: () => Promise<void>,
+      selectDefaultWallpaperImage: () => Promise<void>,
       selectTimeOfDayWallpaper: () => Promise<void>,
-      enableDailyRefresh: (collectionId: string) => Promise<void>,
-      disableDailyRefresh: () => Promise<void>,
-      enableDailyGooglePhotosRefresh: (albumId: string) => Promise<void>,
+      setDefaultColorScheme: () => Promise<void>,
     };
   }
 }
 
 window.personalizationTestApi = {
+  disableDailyRefresh,
+  enableDailyGooglePhotosRefresh,
+  enableDailyRefresh,
+  goToRootPath,
   isGooglePhotosIntegrationEnabled,
   makeTransparent,
   reset,
+  selectDefaultWallpaperImage,
   selectTimeOfDayWallpaper,
-  enableDailyRefresh,
-  disableDailyRefresh,
-  enableDailyGooglePhotosRefresh,
+  setDefaultColorScheme,
 };

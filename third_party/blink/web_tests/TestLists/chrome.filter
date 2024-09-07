@@ -8,4 +8,4 @@
 # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
 
 # crbug.com/336866597 set_spc_transaction_mode not implemented for content shell
-external/wpt/secure-payment-confirmation/
+external/wpt/secure-payment-confirmation/*

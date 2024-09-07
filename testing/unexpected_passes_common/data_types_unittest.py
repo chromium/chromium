@@ -3,8 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import copy
 import typing
 from typing import Dict, List
@@ -14,6 +12,9 @@ from unittest import mock
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import unittest_utils as uu
+
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 GENERIC_EXPECTATION = data_types.Expectation('test', ['tag1', 'tag2'], ['Pass'])
 GENERIC_RESULT = data_types.Result('test', ['tag1', 'tag2'], 'Pass',

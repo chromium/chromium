@@ -101,7 +101,7 @@ bool FindByGUID(const C& container, std::string_view guid) {
 
 template <typename C, typename T>
 bool FindByContents(const C& container, const T& needle) {
-  return base::ranges::any_of(container, [&needle](const auto& element) {
+  return std::ranges::any_of(container, [&needle](const auto& element) {
     return element->Compare(needle) == 0;
   });
 }
@@ -687,7 +687,7 @@ std::vector<Iban> PaymentsDataManager::GetOrderedIbansToSuggest() const {
   // prefix, suffix, and length matches any existing server IBAN.
   std::erase_if(available_ibans, [this](const Iban* iban) {
     return iban->record_type() == Iban::kLocalIban &&
-           base::ranges::any_of(
+           std::ranges::any_of(
                server_ibans_, [&](const std::unique_ptr<Iban>& server_iban) {
                  return server_iban->MatchesPrefixAndSuffix(*iban);
                });
@@ -714,17 +714,12 @@ bool PaymentsDataManager::HasMaskedBankAccounts() const {
   return !masked_bank_accounts_.empty();
 }
 
-std::vector<BankAccount> PaymentsDataManager::GetMaskedBankAccounts() const {
+base::span<const BankAccount> PaymentsDataManager::GetMaskedBankAccounts()
+    const {
   if (!HasMaskedBankAccounts()) {
     return {};
   }
-  std::vector<BankAccount> bank_accounts;
-  bank_accounts.reserve(masked_bank_accounts_.size());
-  for (const std::unique_ptr<BankAccount>& bank_account :
-       masked_bank_accounts_) {
-    bank_accounts.push_back(*bank_account);
-  }
-  return bank_accounts;
+  return masked_bank_accounts_;
 }
 
 PaymentsCustomerData* PaymentsDataManager::GetPaymentsCustomerData() const {
@@ -1234,11 +1229,11 @@ std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {
   // Search through `local_ibans_` to ensure no IBAN that already saved has the
   // same value and nickname as `iban`, because we do not want to add two IBANs
   // with the exact same data.
-  if (base::ranges::any_of(local_ibans_,
-                           [&iban](const std::unique_ptr<Iban>& local_iban) {
-                             return iban.value() == local_iban->value() &&
-                                    iban.nickname() == local_iban->nickname();
-                           })) {
+  if (std::ranges::any_of(local_ibans_,
+                          [&iban](const std::unique_ptr<Iban>& local_iban) {
+                            return iban.value() == local_iban->value() &&
+                                   iban.nickname() == local_iban->nickname();
+                          })) {
     return std::string();
   }
 
@@ -1548,6 +1543,23 @@ bool PaymentsDataManager::RemoveByGUID(const std::string& guid) {
     return true;
   }
   return false;
+}
+
+void PaymentsDataManager::RemoveLocalDataModifiedBetween(base::Time begin,
+                                                         base::Time end) {
+  if (end.is_null()) {
+    end = base::Time::Max();
+  }
+  for (const CreditCard* card : GetLocalCreditCards()) {
+    if (card->modification_date() >= begin && card->modification_date() < end) {
+      RemoveByGUID(card->guid());
+    } else if (base::FeatureList::IsEnabled(
+                   features::kAutofillEnableCvcStorageAndFilling) &&
+               card->cvc_modification_date() >= begin &&
+               card->cvc_modification_date() < end) {
+      UpdateLocalCvc(card->guid(), u"");
+    }
+  }
 }
 
 void PaymentsDataManager::RecordUseOfCard(const CreditCard* card) {
@@ -1862,7 +1874,7 @@ void PaymentsDataManager::SetSyncServiceForTest(
 
 void PaymentsDataManager::AddMaskedBankAccountForTest(
     const BankAccount& bank_account) {
-  masked_bank_accounts_.push_back(std::make_unique<BankAccount>(bank_account));
+  masked_bank_accounts_.push_back(bank_account);
 }
 
 void PaymentsDataManager::AddServerCreditCardForTest(
@@ -1980,9 +1992,9 @@ std::string PaymentsDataManager::SaveImportedCreditCard(
 
 void PaymentsDataManager::OnMaskedBankAccountsRefreshed() {
   std::vector<GURL> updated_urls;
-  for (auto& bank_account : masked_bank_accounts_) {
+  for (const BankAccount& bank_account : masked_bank_accounts_) {
     const GURL& display_icon_url =
-        bank_account->payment_instrument().display_icon_url();
+        bank_account.payment_instrument().display_icon_url();
     if (!display_icon_url.is_valid()) {
       continue;
     }

@@ -4,7 +4,7 @@
 
 /** @fileoverview Assertion helper functions wrapping the chaijs API. */
 
-import '../chai.js';
+import {assert, expect} from '../chai.js';
 
 /**
  * @param {boolean} value The value to check.
@@ -12,7 +12,7 @@ import '../chai.js';
  * @throws {Error}
  */
 export function assertTrue(value, opt_message) {
-  chai.assert.isTrue(value, opt_message);
+  assert.isTrue(value, opt_message);
 }
 
 /**
@@ -21,7 +21,7 @@ export function assertTrue(value, opt_message) {
  * @throws {Error}
  */
 export function assertFalse(value, opt_message) {
-  chai.assert.isFalse(value, opt_message);
+  assert.isFalse(value, opt_message);
 }
 
 /**
@@ -31,7 +31,7 @@ export function assertFalse(value, opt_message) {
  * @throws {Error}
  */
 export function assertGE(value1, value2, opt_message) {
-  chai.expect(value1).to.be.at.least(value2, opt_message);
+  expect(value1).to.be.at.least(value2, opt_message);
 }
 
 /**
@@ -41,7 +41,7 @@ export function assertGE(value1, value2, opt_message) {
  * @throws {Error}
  */
 export function assertGT(value1, value2, opt_message) {
-  chai.assert.isAbove(value1, value2, opt_message);
+  assert.isAbove(value1, value2, opt_message);
 }
 
 /**
@@ -51,7 +51,7 @@ export function assertGT(value1, value2, opt_message) {
  * @throws {Error}
  */
 export function assertEquals(expected, actual, opt_message) {
-  chai.assert.strictEqual(actual, expected, opt_message);
+  assert.strictEqual(actual, expected, opt_message);
 }
 
 /**
@@ -61,7 +61,7 @@ export function assertEquals(expected, actual, opt_message) {
  * @throws {Error}
  */
 export function assertDeepEquals(expected, actual, opt_message) {
-  chai.assert.deepEqual(actual, expected, opt_message);
+  assert.deepEqual(actual, expected, opt_message);
 }
 
 /**
@@ -71,7 +71,7 @@ export function assertDeepEquals(expected, actual, opt_message) {
  * @throws {Error}
  */
 export function assertLE(value1, value2, opt_message) {
-  chai.expect(value1).to.be.at.most(value2, opt_message);
+  expect(value1).to.be.at.most(value2, opt_message);
 }
 
 /**
@@ -81,7 +81,7 @@ export function assertLE(value1, value2, opt_message) {
  * @throws {Error}
  */
 export function assertLT(value1, value2, opt_message) {
-  chai.assert.isBelow(value1, value2, opt_message);
+  assert.isBelow(value1, value2, opt_message);
 }
 
 /**
@@ -91,7 +91,7 @@ export function assertLT(value1, value2, opt_message) {
  * @throws {Error}
  */
 export function assertNotEquals(expected, actual, opt_message) {
-  chai.assert.notStrictEqual(actual, expected, opt_message);
+  assert.notStrictEqual(actual, expected, opt_message);
 }
 
 /**
@@ -99,7 +99,7 @@ export function assertNotEquals(expected, actual, opt_message) {
  * @throws {Error}
  */
 export function assertNotReached(opt_message) {
-  chai.assert.fail(null, null, opt_message);
+  assert.fail(null, null, opt_message);
 }
 
 /**
@@ -126,7 +126,7 @@ export function assertThrows(
   // just cast to string.
   // TODO(crbug.com/40097498): Refactor this into something that makes sense when
   // tests are actually compiled and we can do that safely.
-  chai.assert.throws(
+  assert.throws(
       testFunction,
       /** @type{string} */ (opt_expected_or_constructor), opt_message);
 }

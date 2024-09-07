@@ -15,10 +15,9 @@
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
-
 namespace {
+
 const int kDefaultOtpLength = 6;
-}  // namespace
 
 class CardUnmaskOtpInputDialogBrowserTest
     : public DialogBrowserTest,
@@ -128,4 +127,5 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(CardUnmaskChallengeOptionType::kSmsOtp,
                     CardUnmaskChallengeOptionType::kEmailOtp));
 
+}  // namespace
 }  // namespace autofill

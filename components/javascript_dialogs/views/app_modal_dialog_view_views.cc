@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/javascript_dialogs/views/app_modal_dialog_view_views.h"
+
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
@@ -11,6 +12,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -48,8 +50,9 @@ AppModalDialogViewViews::AppModalDialogViewViews(
   DialogDelegate::SetButtons(
       controller_->javascript_dialog_type() ==
               content::JAVASCRIPT_DIALOG_TYPE_ALERT
-          ? ui::DIALOG_BUTTON_OK
-          : (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
+          ? static_cast<int>(ui::mojom::DialogButton::kOk)
+          : static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel));
   DialogDelegate::SetAcceptCallback(base::BindOnce(
       [](AppModalDialogViewViews* dialog) {
         dialog->controller_->OnAccept(
@@ -68,7 +71,7 @@ AppModalDialogViewViews::AppModalDialogViewViews(
 
   if (controller_->is_before_unload_dialog()) {
     DialogDelegate::SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
+        ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(
             controller_->is_reload()
                 ? IDS_BEFORERELOAD_MESSAGEBOX_OK_BUTTON_LABEL

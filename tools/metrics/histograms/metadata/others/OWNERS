@@ -8,7 +8,7 @@ per-file histograms.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER
 # Primary reviewers
 jimmyxgong@chromium.org
 # Secondary reviewers
-zentaro@chromium.org
+gavinwill@chromium.org
 # For Conversions.* histograms:
 johnidel@chromium.org
 # For Compositor*, Gpu.*, Graphics* and Viz.* histograms:

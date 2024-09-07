@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
-#include "chrome/browser/ui/ash/mock_activation_change_observer.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
@@ -62,6 +61,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/public/activation_client.h"
+#include "ui/wm/public/mock_activation_change_observer.h"
 
 namespace ash::download_status {
 

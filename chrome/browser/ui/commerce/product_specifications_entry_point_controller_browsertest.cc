@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
@@ -21,7 +23,9 @@
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "content/public/test/browser_test.h"
@@ -58,12 +62,20 @@ class ProductSpecificationsEntryPointControllerBrowserTest
     : public InProcessBrowserTest {
  public:
   ProductSpecificationsEntryPointControllerBrowserTest()
-      : account_checker_(std::make_unique<commerce::MockAccountChecker>()) {
-    test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
+      : prefs_(std::make_unique<TestingPrefServiceSimple>()),
+        account_checker_(std::make_unique<commerce::MockAccountChecker>()) {
+    test_features_.InitAndEnableFeatureWithParameters(
+        commerce::kProductSpecifications,
+        {{commerce::kProductSpecificationsUseServerClusteringParam, "false"}});
     account_checker_->SetCountry("us");
     account_checker_->SetLocale("en-us");
     account_checker_->SetSignedIn(true);
     account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+    account_checker_->SetPrefs(prefs_.get());
+
+    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
+
     ON_CALL(*account_checker_, IsSyncTypeEnabled)
         .WillByDefault(testing::Return(true));
   }
@@ -115,6 +127,7 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   }
 
  protected:
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<commerce::MockAccountChecker> account_checker_;
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       mock_shopping_service_;
@@ -129,6 +142,8 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<MockObserver> observer_;
   bool is_browser_context_services_created{false};
+  base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 
  private:
   base::test::ScopedFeatureList test_features_;
@@ -163,6 +178,13 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
              TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterIdentified",
+      commerce::ProductSpecificationsEntryPointController::
+          CompareEntryPointTrigger::FROM_SELECTION,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterSizeWhenShown", 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
@@ -192,6 +214,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   base::RunLoop().RunUntilIdle();
   // Not trigger entry point because the two products have the same product ID.
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterIdentified",
+      commerce::ProductSpecificationsEntryPointController::
+          CompareEntryPointTrigger::FROM_SELECTION,
+      0);
 }
 
 // TODO(https://crbug.com/350021928): Flaky on Linux builders.
@@ -235,6 +262,13 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterIdentified",
+      commerce::ProductSpecificationsEntryPointController::
+          CompareEntryPointTrigger::FROM_NAVIGATION,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterSizeWhenShown", 3, 1);
 }
 
 // TODO(https://crbug.com/350021928): Flaky on Linux builders.
@@ -279,6 +313,11 @@ IN_PROC_BROWSER_TEST_F(
   controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterIdentified",
+      commerce::ProductSpecificationsEntryPointController::
+          CompareEntryPointTrigger::FROM_NAVIGATION,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
@@ -372,6 +411,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_GT(browser()->profile()->GetPrefs()->GetTime(
                 commerce::kProductSpecificationsEntryPointLastDismissedTime),
             last_dismiss_time);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.ProactiveBackoffDuration", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
@@ -407,6 +448,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_GT(browser()->profile()->GetPrefs()->GetTime(
                 commerce::kProductSpecificationsEntryPointLastDismissedTime),
             last_dismiss_time);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.ProactiveBackoffDuration", 4, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
@@ -676,6 +719,99 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       TabSwitchClosesDisclosure) {
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+
+  // Create two tabs and simulate selection.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Mock that disclosure dialog has not been accepted.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kUnknown));
+  controller_->OnEntryPointExecuted();
+
+  // Disclosure dialog has shown and product spec UI is not open.
+  ASSERT_TRUE(commerce::ProductSpecificationsDisclosureDialog::
+                  current_instance_for_testing());
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Set up observer to verify that the entry point will not be re-triggered by
+  // this selection.
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(testing::_)).Times(0);
+
+  // Switch tab will dismiss the disclosure.
+  browser()->tab_strip_model()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(commerce::ProductSpecificationsDisclosureDialog::
+                   current_instance_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       NavigationClosesDisclosure) {
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+
+  // Create two tabs and simulate selection.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Mock that disclosure dialog has not been accepted.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kUnknown));
+  controller_->OnEntryPointExecuted();
+
+  // Disclosure dialog has shown and product spec UI is not open.
+  ASSERT_TRUE(commerce::ProductSpecificationsDisclosureDialog::
+                  current_instance_for_testing());
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Navigation on the current tab will dismiss the disclosure.
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->tab_strip_model()->GetActiveWebContents(), GURL(kTestUrl2)));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(commerce::ProductSpecificationsDisclosureDialog::
+                   current_instance_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                        TestUseDefaultTitle) {
   // Mock EntryPointInfo returned by ClusterManager with long title.
   const std::string& long_title = "very very very very very long title";
@@ -757,6 +893,8 @@ IN_PROC_BROWSER_TEST_F(
              TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.CandidateClusterRejected"));
 
   // Test when the server returns that the products are comparable.
   mock_cluster_manager_->SetResponseForGetComparableProducts(info);
@@ -765,6 +903,8 @@ IN_PROC_BROWSER_TEST_F(
              TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.CandidateClusterRejected"));
 }
 
 // TODO(https://crbug.com/350021928): Flaky on Linux builders.
@@ -817,6 +957,8 @@ IN_PROC_BROWSER_TEST_F(
   controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.CandidateClusterRejected"));
 
   // Test when the server returns that the products are comparable.
   mock_cluster_manager_->SetResponseForGetComparableProducts(info);
@@ -824,4 +966,6 @@ IN_PROC_BROWSER_TEST_F(
   controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.CandidateClusterRejected"));
 }

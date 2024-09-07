@@ -62,15 +62,24 @@ source_set("data_controls") {
   if (enable_extensions) {
     deps += [ "//chrome/browser/extensions" ]
   }
+
+  allow_circular_includes_from = []
+
   if (is_chromeos) {
-    deps += [ "//chromeos/startup" ]
+    deps += [
+      "//chromeos/startup",
+
+      # Included for allow_circular_includes_from.
+      "//chrome/browser/chromeos/policy/dlp",
+    ]
+    allow_circular_includes_from += [ "//chrome/browser/chromeos/policy/dlp" ]
   }
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/ash/policy/dlp",
       "//components/user_manager",
     ]
-    allow_circular_includes_from = [ "//chrome/browser/ash/policy/dlp" ]
+    allow_circular_includes_from += [ "//chrome/browser/ash/policy/dlp" ]
   }
 }
 

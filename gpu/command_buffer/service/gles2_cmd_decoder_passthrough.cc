@@ -1041,6 +1041,19 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
   }
 
+  // Deprecation warning for SwiftShader WebGL fallback
+  if (feature_info_->IsWebGLContext() &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableUnsafeSwiftShader)) {
+    constexpr const char* kSwiftShaderFallbackDeprcationMessage =
+        "Automatic fallback to software WebGL has been deprecated. Please use "
+        "the --enable-unsafe-swiftshader flag to opt in to lower security "
+        "guarantees for trusted content.";
+    logger_.LogMessage(__FILE__, __LINE__,
+                       kSwiftShaderFallbackDeprcationMessage);
+  }
+
   set_initialized();
   return gpu::ContextResult::kSuccess;
 }
@@ -1331,9 +1344,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->feature_flags().enable_texture_half_float_linear;
   caps.image_ycbcr_420v =
       feature_info_->feature_flags().chromium_image_ycbcr_420v;
-  caps.image_ycbcr_420v_disabled_for_video_frames =
-      group_->gpu_preferences()
-          .disable_biplanar_gpu_memory_buffers_for_video_frames;
   caps.image_ar30 = feature_info_->feature_flags().chromium_image_ar30;
   caps.image_ab30 = feature_info_->feature_flags().chromium_image_ab30;
   caps.image_ycbcr_p010 =
@@ -2693,6 +2703,12 @@ GLES2DecoderPassthroughImpl::GLenumToTextureTarget(GLenum target) {
       return TextureTarget::kExternal;
     case GL_TEXTURE_RECTANGLE_ARB:
       return TextureTarget::kRectangle;
+    case GL_TEXTURE_BUFFER:
+      return TextureTarget::kBuffer;
+    case GL_TEXTURE_CUBE_MAP_ARRAY:
+      return TextureTarget::kCubeMapArray;
+    case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+      return TextureTarget::k2DMultisampleArray;
     default:
       return TextureTarget::kUnkown;
   }

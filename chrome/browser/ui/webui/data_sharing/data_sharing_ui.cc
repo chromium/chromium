@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_allowlist.h"
 
 DataSharingUIConfig::DataSharingUIConfig()
@@ -54,6 +55,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src "
       "chrome-untrusted://resources "
+      "chrome-untrusted://webui-test "
       "'unsafe-inline' 'self';");
 
   // Allow images and avatars to be loaded.
@@ -69,6 +71,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src "
+      "chrome-untrusted://theme "
       "'self';");
 
   // Allow external network connections to be made.
@@ -76,14 +79,15 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ConnectSrc,
       "connect-src "
       "https://play.google.com "
-      "https://peoplestack-pa.clients6.google.com ");
+      "https://peoplestack-pa.clients6.google.com;");
 
   // Allow trsuted types to be created.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types "
       "goog#html "
-      "lit-html;");
+      "lit-html "
+      "webui-test-script;");
 }
 
 DataSharingUI::~DataSharingUI() = default;
@@ -100,6 +104,13 @@ void DataSharingUI::ApiInitComplete() {
   if (delegate_) {
     delegate_->ApiInitComplete();
   }
+}
+
+void DataSharingUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void DataSharingUI::CreatePageHandler(

@@ -55,10 +55,6 @@ class DemoModeTestHelper {
   // Returns the path that fake Demo Mode resources will be mounted from.
   base::FilePath GetDemoResourcesPath();
 
-  // Returns the path that fake offline Demo Mode resources will be preinstalled
-  // at.
-  base::FilePath GetPreinstalledDemoResourcesPath();
-
  private:
   void InitializeComponentManager();
 

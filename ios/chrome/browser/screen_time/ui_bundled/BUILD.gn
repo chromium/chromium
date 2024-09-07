@@ -27,7 +27,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/screen_time/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/common/ui/util",
     "//ios/web/public",

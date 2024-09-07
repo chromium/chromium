@@ -175,7 +175,7 @@ enum class FormExtractionStatus {
                                 displayDescription:realm
                                               icon:nil
                                               type:autofill::SuggestionType::
-                                                       kAutocompleteEntry
+                                                       kPasswordEntry
                                  backendIdentifier:nil
                                     requiresReauth:YES
                         acceptanceA11yAnnouncement:nil

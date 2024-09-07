@@ -138,7 +138,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/ui_bundled/test",
     "//ios/chrome/browser/overlays/ui_bundled/test_modality",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/infobars/presentation",

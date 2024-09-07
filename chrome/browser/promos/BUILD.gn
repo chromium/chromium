@@ -12,7 +12,9 @@ source_set("utils") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
     "//components/feature_engagement/public",
     "//components/pref_registry",
     "//components/prefs",

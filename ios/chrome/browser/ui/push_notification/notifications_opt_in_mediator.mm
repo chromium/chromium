@@ -34,7 +34,7 @@
 
 - (instancetype)initWithAuthenticationService:
     (AuthenticationService*)authenticationService {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _authenticationService = authenticationService;
     _selected = {{NotificationsOptInItemIdentifier::kContent, NO},
                  {NotificationsOptInItemIdentifier::kTips, NO},

@@ -142,6 +142,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     // Returns all enabled services in the given property.
     virtual base::Value::List GetEnabledServiceList() const = 0;
 
+    // Restarts hotspot by disabling and enabling after configured interactive
+    // delay.
+    virtual void RestartTethering() = 0;
+
     // Called by ShillServiceClient when a service's State property changes,
     // before notifying observers. Sets the DefaultService property to empty
     // if the state changes to a non-connected state.

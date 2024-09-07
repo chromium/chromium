@@ -4,23 +4,24 @@
 
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doReturn;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.LargeTest;
-
-import com.google.common.collect.ImmutableList;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -28,18 +29,22 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.search_engines.FakeTemplateUrl;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/** Render tests for {@link ChoiceScreenCoordinator} */
+/** Render tests for {@link ChoiceDialogCoordinator} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@Features.EnableFeatures(SearchEnginesFeatures.CLAY_BLOCKING)
 public class ChoiceScreenRenderTest {
     public @Rule final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -52,46 +57,59 @@ public class ChoiceScreenRenderTest {
     public @Rule final MockitoRule mMockitoRule =
             MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    private @Mock DefaultSearchEngineDialogHelper.Delegate mDelegate;
-
-    private @Nullable ChoiceDialogCoordinator mChoiceDialogCoordinator;
+    private ModalDialogManager mDialogManager;
+    private ChoiceDialogCoordinator mChoiceDialogCoordinator;
 
     @Before
     public void setUp() {
-        doReturn(
-                        ImmutableList.of(
-                                new FakeTemplateUrl("Search Engine A", "sea"),
-                                new FakeTemplateUrl("Search Engine B", "seb"),
-                                new FakeTemplateUrl("Search Engine C", "sec")))
-                .when(mDelegate)
-                .getSearchEnginesForPromoDialog(anyInt());
-
         mActivityTestRule.launchActivity(null);
+        mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mChoiceDialogCoordinator =
+                            new ChoiceDialogCoordinator(
+                                    mActivityTestRule.getActivity(), mDialogManager);
+                });
     }
 
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testSignOutDialogForNonSyncingAccount() throws Exception {
-        mRenderTestRule.render(showChoiceScreenDialog(), "choice_screen_dialog");
+    public void testFirstChoiceScreenBlockingDialog() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(mChoiceDialogCoordinator::show);
+
+        mRenderTestRule.render(getDialogView(), "first_choice_screen_blocking_dialog");
     }
 
-    private View showChoiceScreenDialog() throws Exception {
-        assertNull(mChoiceDialogCoordinator);
+    @Test
+    @LargeTest
+    public void testFirstChoiceScreenBlockingDialogButton() {
+        ThreadUtils.runOnUiThreadBlocking(mChoiceDialogCoordinator::show);
+
+        onView(withId(R.id.choice_dialog_button)).inRoot(isDialog()).perform(click());
+
+        onView(withText(R.string.blocking_choice_dialog_second_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @DisabledTest(message = "b/355054464: UI is not final yet.")
+    public void testSecondChoiceScreenDialog() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(mChoiceDialogCoordinator::show);
+
+        onView(withId(R.id.choice_dialog_button)).inRoot(isDialog()).perform(click());
+
+        mRenderTestRule.render(getDialogView(), "second_choice_screen_dialog");
+    }
+
+    private View getDialogView() {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mChoiceDialogCoordinator =
-                            new ChoiceDialogCoordinator(
-                                    mActivityTestRule.getActivity(), mDelegate, (unused) -> {});
-                    mChoiceDialogCoordinator.show();
-
-                    PropertyModel dialogModel =
-                            mActivityTestRule
-                                    .getActivity()
-                                    .getModalDialogManager()
-                                    .getCurrentDialogForTest();
+                    PropertyModel dialogModel = mDialogManager.getCurrentDialogForTest();
                     assertNotNull(dialogModel);
-
                     return dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
                 });
     }

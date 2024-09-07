@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ActualLogUploadInterval" units="minutes"
-    expires_after="2024-09-01">
+    expires_after="2025-09-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.EntropySourceType" enum="UmaEntropySourceType"
-    expires_after="2024-09-15">
+    expires_after="2025-09-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.IsClonedInstall" enum="BooleanCloned"
-    expires_after="2024-09-22">
+    expires_after="2025-09-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -636,17 +636,6 @@ chromium-metrics-reviews@google.com.
   <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
 </histogram>
 
-<histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.Errors"
-    enum="PersistentAllocatorErrors" expires_after="M85">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Errors detected by the persistent memory allocator. These are set when they
-    occur. {PersistentAllocatorType}
-  </summary>
-  <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
-</histogram>
-
 <histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.UsedPct"
     units="%" expires_after="2025-02-09">
   <owner>asvitkine@chromium.org</owner>
@@ -783,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.SamplingRatePerMille" units="samples per mille"
-    expires_after="2024-09-01">
+    expires_after="2025-09-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -811,13 +800,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.StackProfiler.JavaNameLength" units="characters"
-    expires_after="2025-02-01">
-  <owner>thiabaud@google.com</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>The length of any Java names recorded for SSM on Android.</summary>
-</histogram>
-
 <histogram name="UMA.Startup.LocalStateFileExistence" enum="BooleanExists"
     expires_after="2025-02-28">
   <owner>caitlinfischer@google.com</owner>
@@ -829,7 +811,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.StartupVisibility" enum="StartupVisibility"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -959,7 +941,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2025-02-02">
+    expires_after="2025-03-02">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

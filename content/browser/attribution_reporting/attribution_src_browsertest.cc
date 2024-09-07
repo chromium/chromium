@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  int host_id = prerender_helper_.AddPrerender(page_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  int host_id = prerender_helper_.AddPrerender(page_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1082,7 +1082,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
-  int host_id = prerender_helper_.AddPrerender(page_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
-  int host_id = prerender_helper_.AddPrerender(page_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);

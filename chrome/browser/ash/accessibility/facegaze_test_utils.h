@@ -99,6 +99,8 @@ class FaceGazeTestUtils {
     OPEN_FACEGAZE_SETTINGS = 47,
     TOGGLE_VIRTUAL_KEYBOARD = 48,
     MOUSE_CLICK_LEFT_DOUBLE = 49,
+    TOGGLE_SCROLL_MODE = 50,
+    CUSTOM_KEY_COMBINATION = 51,
   };
 
   // Facial gestures recognized by Mediapipe. Ensure this enum stays in sync
@@ -249,6 +251,8 @@ class FaceGazeTestUtils {
 
   void MoveMouseTo(const gfx::Point& location);
   void AssertCursorAt(const gfx::Point& location);
+
+  void AssertScrollMode(bool active);
 
  private:
   void ExecuteAccessibilityCommonScript(const std::string& script);

@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -130,6 +131,11 @@ std::vector<ComponentConfig> GetInstalled() {
 }
 
 const bool kDefaultLacrosAllowUpdates = true;
+
+// Report Error code.
+void ReportError(ComponentManagerAsh::Error error) {
+  UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.InstallResult", error);
+}
 
 }  // namespace
 
@@ -400,7 +406,9 @@ void CrOSComponentInstaller::Load(const std::string& name,
     LoadInternal(name, std::move(load_callback));
   } else {
     // A compatible component is installed, do not load it.
-    std::move(load_callback).Run(Error::NONE, base::FilePath());
+    constexpr Error error = Error::NONE;
+    ReportError(error);
+    std::move(load_callback).Run(error, base::FilePath());
   }
 }
 
@@ -525,7 +533,9 @@ void CrOSComponentInstaller::Install(const std::string& name,
                                      LoadCallback load_callback) {
   const ComponentConfig* config = FindConfig(name);
   if (!config) {
-    std::move(load_callback).Run(Error::UNKNOWN_COMPONENT, base::FilePath());
+    constexpr Error error = Error::UNKNOWN_COMPONENT;
+    ReportError(error);
+    std::move(load_callback).Run(error, base::FilePath());
     return;
   }
 
@@ -570,17 +580,20 @@ void CrOSComponentInstaller::FinishInstall(const std::string& name,
     if (error == update_client::Error::UPDATE_IN_PROGRESS) {
       err = Error::UPDATE_IN_PROGRESS;
     }
+    ReportError(err);
     std::move(load_callback).Run(err, base::FilePath());
   } else if (!IsCompatible(name)) {
-    std::move(load_callback)
-        .Run(update_policy == UpdatePolicy::kSkip
-                 ? Error::NOT_FOUND
-                 : Error::COMPATIBILITY_CHECK_FAILED,
-             base::FilePath());
+    const Error err = update_policy == UpdatePolicy::kSkip
+                          ? Error::NOT_FOUND
+                          : Error::COMPATIBILITY_CHECK_FAILED;
+    ReportError(err);
+    std::move(load_callback).Run(err, base::FilePath());
   } else if (mount_policy == MountPolicy::kMount) {
     LoadInternal(name, std::move(load_callback));
   } else {
-    std::move(load_callback).Run(Error::NONE, base::FilePath());
+    constexpr Error err = Error::NONE;
+    ReportError(err);
+    std::move(load_callback).Run(err, base::FilePath());
   }
 }
 
@@ -660,6 +673,7 @@ void CrOSComponentInstaller::DispatchLoadCallback(LoadCallback callback,
                                                   base::FilePath path,
                                                   bool success) {
   Error error = success ? Error::NONE : Error::MOUNT_FAILURE;
+  ReportError(error);
   std::move(callback).Run(error, std::move(path));
 }
 

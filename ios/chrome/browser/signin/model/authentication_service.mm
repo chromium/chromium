@@ -347,6 +347,10 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
   CHECK(!primary_account.empty());
   CHECK_EQ(account_id, primary_account);
   pref_service_->SetTime(prefs::kLastSigninTimestamp, base::Time::Now());
+  pref_service_->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
+                         base::Time::Now());
+  pref_service_->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
+                            0);
   crash_keys::SetCurrentlySignedIn(true);
 }
 
@@ -374,8 +378,6 @@ void AuthenticationService::GrantSyncConsent(
 
   // When sync is disabled by enterprise, sync consent is not removed.
   // Consent can be skipped.
-  // TODO(crbug.com/40797392): Remove this if once the sync consent is removed
-  // when enteprise disable sync.
   if (!HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
     const signin::PrimaryAccountMutator::PrimaryAccountError error =
         identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
@@ -648,8 +650,8 @@ void AuthenticationService::HandleForgottenIdentity(
     bool history_sync_enabled = user_settings->GetSelectedTypes().HasAll(
         {syncer::UserSelectableType::kHistory,
          syncer::UserSelectableType::kTabs});
-    StorePreRestoreIdentity(GetApplicationContext()->GetLocalState(),
-                            extended_account_info, history_sync_enabled);
+    StorePreRestoreIdentity(pref_service_, extended_account_info,
+                            history_sync_enabled);
   }
 
   // Sign the user out.

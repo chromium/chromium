@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 void TestGenerationPopupObserver::OnPopupShown(
@@ -65,11 +66,13 @@ void ObservingAutofillClient::WaitForAutofillPopup() {
   DCHECK(!run_loop_);
 }
 
-void ObservingAutofillClient::ShowAutofillSuggestions(
+autofill::AutofillClient::SuggestionUiSessionId
+ObservingAutofillClient::ShowAutofillSuggestions(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) {
   if (run_loop_) {
     run_loop_->Quit();
   }
   run_loop_ = nullptr;
+  return SuggestionUiSessionId();
 }

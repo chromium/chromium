@@ -29,6 +29,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -605,13 +606,13 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
 class TestSharedStorageObserver
     : public SharedStorageWorkletHostManager::SharedStorageObserverInterface {
  public:
-  using Access =
-      std::tuple<AccessType, int, std::string, SharedStorageEventParams>;
+  using Access = std::
+      tuple<AccessType, FrameTreeNodeId, std::string, SharedStorageEventParams>;
 
   void OnSharedStorageAccessed(
       const base::Time& access_time,
       AccessType type,
-      int main_frame_id,
+      FrameTreeNodeId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params) override {
     accesses_.emplace_back(type, main_frame_id, owner_origin, params);
@@ -949,7 +950,9 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
         .root();
   }
 
-  int MainFrameId() { return PrimaryFrameTreeNodeRoot()->frame_tree_node_id(); }
+  FrameTreeNodeId MainFrameId() {
+    return PrimaryFrameTreeNodeRoot()->frame_tree_node_id();
+  }
 
   SharedStorageBudgetMetadata* GetSharedStorageBudgetMetadata(
       const GURL& urn_uuid) {
@@ -1331,7 +1334,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: Failed to load ",
+      {"a JavaScript error: \"OperationError: Failed to load ",
        https_server()
            ->GetURL("a.test", "/shared_storage/nonexistent_module.js")
            .spec(),
@@ -1361,7 +1364,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_RedirectNotAllowed) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: Unexpected redirect on ",
+      {"a JavaScript error: \"OperationError: Unexpected redirect on ",
        https_server()
            ->GetURL("a.test",
                     "/server-redirect?shared_storage/simple_module.js")
@@ -7030,7 +7033,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
   // `selectURL()` fails when map is full.
   std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ",
+      {"a JavaScript error: \"OperationError: ",
        "sharedStorage.selectURL() failed because number of urn::uuid to url ",
        "mappings has reached the limit.\"\n"});
   EXPECT_EQ(expected_error, extra_result.error);
@@ -7599,7 +7602,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_TRUE(request.additional_fields().empty());
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
@@ -7689,7 +7692,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
                           kDontSendReport);
@@ -7740,7 +7743,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
                           kSendNullReport);
@@ -7808,7 +7811,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
                             testing::Pair("context_id", "example_context_id")));
@@ -7867,7 +7870,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(testing::Pair("context_id", "")));
             EXPECT_EQ(budget_denied_behavior,
@@ -7926,7 +7929,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
                             testing::Pair("context_id",
@@ -9234,7 +9237,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+                      PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_EQ(budget_denied_behavior,
                       PrivateAggregationBudgeter::BudgetDeniedBehavior::
                           kDontSendReport);

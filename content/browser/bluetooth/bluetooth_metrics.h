@@ -58,9 +58,11 @@ enum class UMAConnectGATTOutcome {
   JNI_ENVIRONMENT = 18,
   JNI_THREAD_ATTACH = 19,
   WAKELOCK = 20,
+  UNEXPECTED_STATE = 21,
+  SOCKET_ERROR = 22,
   // Note: Add new ConnectGATT outcomes immediately above this line. Make sure
-  // to update the enum list in tools/metrics/histograms/histograms.xml
-  // accordingly.
+  // to update the enum list in
+  // tools/metrics/histograms/metadata/bluetooth/enums.xml accordingly.
   COUNT
 };
 

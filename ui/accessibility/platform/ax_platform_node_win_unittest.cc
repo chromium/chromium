@@ -47,7 +47,7 @@ using base::win::ScopedVariant;
 namespace ui {
 
 const std::u16string AXPlatformNodeWinTest::kEmbeddedCharacterAsString = {
-    ui::AXPlatformNodeBase::kEmbeddedCharacter};
+    AXPlatformNodeBase::kEmbeddedCharacter};
 
 namespace {
 
@@ -336,7 +336,7 @@ AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromChildIndex(
 
 Microsoft::WRL::ComPtr<IRawElementProviderSimple>
 AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromTree(
-    const ui::AXTreeID tree_id,
+    const AXTreeID tree_id,
     const AXNodeID node_id) {
   return QueryInterfaceFromNode<IRawElementProviderSimple>(
       GetNodeFromTree(tree_id, node_id));
@@ -4977,7 +4977,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
     ++++17 kForm name="name"
   )HTML"));
 
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   update.tree_data.tree_id = tree_id;
   update.has_tree_data = true;
   update.root_id = 1;
@@ -5130,9 +5130,9 @@ TEST_F(AXPlatformNodeWinTest, UIAGetEmbeddedFragmentRoots) {
   EXPECT_EQ(nullptr, embedded_fragment_roots.Get());
 }
 
-TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
+TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeIdForGeneratedId) {
   AXNodeData root_data;
-  root_data.id = 1;
+  root_data.id = -99;
   root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
@@ -5159,6 +5159,39 @@ TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
   EXPECT_NE(-1, array_data[1]);
   EXPECT_NE(-1, array_data[2]);
   EXPECT_NE(-1, array_data[3]);
+
+  EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
+}
+
+TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeIdForSuppliedId) {
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  Init(root_data);
+
+  ComPtr<IRawElementProviderFragment> root_provider =
+      GetRootIRawElementProviderFragment();
+
+  base::win::ScopedSafearray runtime_id;
+  EXPECT_HRESULT_SUCCEEDED(root_provider->GetRuntimeId(runtime_id.Receive()));
+
+  LONG array_lower_bound;
+  EXPECT_HRESULT_SUCCEEDED(
+      ::SafeArrayGetLBound(runtime_id.Get(), 1, &array_lower_bound));
+  EXPECT_EQ(0, array_lower_bound);
+
+  LONG array_upper_bound;
+  EXPECT_HRESULT_SUCCEEDED(
+      ::SafeArrayGetUBound(runtime_id.Get(), 1, &array_upper_bound));
+  EXPECT_EQ(3, array_upper_bound);
+
+  int* array_data;
+  EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+      runtime_id.Get(), reinterpret_cast<void**>(&array_data)));
+  EXPECT_EQ(UiaAppendRuntimeId, array_data[0]);
+  EXPECT_EQ(-1, array_data[1]);
+  EXPECT_EQ(-1, array_data[2]);
+  EXPECT_EQ(1, array_data[3]);
 
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
 }
@@ -6266,7 +6299,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   constexpr AXNodeID list_grid_cell_id = 38;
 
   AXTreeUpdate update;
-  update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   update.has_tree_data = true;
   update.root_id = root_id;
   update.nodes.resize(38);
@@ -6536,19 +6569,19 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData list_box;
-  ui::AXNodeData list_item;
-  ui::AXNodeData menu_item;
-  ui::AXNodeData menu_list_option;
-  ui::AXNodeData tree_item;
-  ui::AXNodeData combo_box_grouping;
-  ui::AXNodeData combo_box_menu_button;
-  ui::AXNodeData disclosure_triangle;
-  ui::AXNodeData text_field_with_combo_box;
+  AXNodeData list_box;
+  AXNodeData list_item;
+  AXNodeData menu_item;
+  AXNodeData menu_list_option;
+  AXNodeData tree_item;
+  AXNodeData combo_box_grouping;
+  AXNodeData combo_box_menu_button;
+  AXNodeData disclosure_triangle;
+  AXNodeData text_field_with_combo_box;
 
   list_box.id = 2;
   list_item.id = 3;
@@ -6655,14 +6688,14 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderInvokePattern) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData link;
-  ui::AXNodeData generic_container;
-  ui::AXNodeData combo_box_grouping;
-  ui::AXNodeData check_box;
+  AXNodeData link;
+  AXNodeData generic_container;
+  AXNodeData combo_box_grouping;
+  AXNodeData check_box;
 
   link.id = 2;
   generic_container.id = 3;
@@ -6794,18 +6827,18 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderGridCellValuePattern) {
 }
 
 TEST_F(AXPlatformNodeWinTest, IExpandCollapsePatternProviderAction) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData combo_box_grouping_has_popup;
-  ui::AXNodeData combo_box_grouping_expanded;
-  ui::AXNodeData combo_box_grouping_collapsed;
-  ui::AXNodeData combo_box_grouping_disabled;
-  ui::AXNodeData button_has_popup_menu;
-  ui::AXNodeData button_has_popup_menu_pressed;
-  ui::AXNodeData button_has_popup_true;
-  ui::AXNodeData generic_container_has_popup_menu;
+  AXNodeData combo_box_grouping_has_popup;
+  AXNodeData combo_box_grouping_expanded;
+  AXNodeData combo_box_grouping_collapsed;
+  AXNodeData combo_box_grouping_disabled;
+  AXNodeData button_has_popup_menu;
+  AXNodeData button_has_popup_menu_pressed;
+  AXNodeData button_has_popup_true;
+  AXNodeData generic_container_has_popup_menu;
 
   combo_box_grouping_has_popup.id = 2;
   combo_box_grouping_expanded.id = 3;
@@ -7067,12 +7100,12 @@ TEST_F(AXPlatformNodeWinTest,
 }
 
 TEST_F(AXPlatformNodeWinTest, IInvokeProviderInvoke) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData button;
-  ui::AXNodeData button_disabled;
+  AXNodeData button;
+  AXNodeData button_disabled;
 
   button.id = 2;
   button_disabled.id = 3;

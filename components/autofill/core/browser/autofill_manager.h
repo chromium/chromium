@@ -68,8 +68,6 @@ class AutofillManager
   // OnBeforeFoo() may be called without a corresponding OnAfterFoo() call are:
   // - if the number of cached forms exceeds `kAutofillManagerMaxFormCacheSize`;
   // - if this AutofillManager has been destroyed or reset in the meantime.
-  // - if the request in AutofillCrowdsourcingManager was not successful (i.e.
-  //   no 2XX response code or a null response body).
   //
   // When observing an AutofillManager, make sure to remove the observation
   // before the AutofillManager is destroyed. Pending destruction is signaled
@@ -91,10 +89,14 @@ class AutofillManager
     virtual void OnBeforeLanguageDetermined(AutofillManager& manager) {}
     virtual void OnAfterLanguageDetermined(AutofillManager& manager) {}
 
-    virtual void OnBeforeFormsSeen(AutofillManager& manager,
-                                   base::span<const FormGlobalId> forms) {}
-    virtual void OnAfterFormsSeen(AutofillManager& manager,
-                                  base::span<const FormGlobalId> forms) {}
+    virtual void OnBeforeFormsSeen(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> updated_forms,
+        base::span<const FormGlobalId> removed_forms) {}
+    virtual void OnAfterFormsSeen(
+        AutofillManager& manager,
+        base::span<const FormGlobalId> updated_forms,
+        base::span<const FormGlobalId> removed_forms) {}
 
     virtual void OnBeforeCaretMovedInFormField(AutofillManager& manager,
                                                const FormGlobalId& form,
@@ -141,8 +143,7 @@ class AutofillManager
 
     virtual void OnBeforeFocusOnFormField(AutofillManager& manager,
                                           FormGlobalId form,
-                                          FieldGlobalId field,
-                                          const FormData& form_data) {}
+                                          FieldGlobalId field) {}
     virtual void OnAfterFocusOnFormField(AutofillManager& manager,
                                          FormGlobalId form,
                                          FieldGlobalId field) {}
@@ -237,12 +238,13 @@ class AutofillManager
                                     const FieldGlobalId& field_id,
                                     const base::TimeTicks timestamp);
   void OnDidEndTextFieldEditing();
-  void OnTextFieldDidScroll(const FormData& form,
-                            const FieldGlobalId& field_id);
-  void OnSelectControlDidChange(const FormData& form,
-                                const FieldGlobalId& field_id);
+  virtual void OnTextFieldDidScroll(const FormData& form,
+                                    const FieldGlobalId& field_id);
+  virtual void OnSelectControlDidChange(const FormData& form,
+                                        const FieldGlobalId& field_id);
   void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);
-  void OnFocusOnFormField(const FormData& form, const FieldGlobalId& field_id);
+  virtual void OnFocusOnFormField(const FormData& form,
+                                  const FieldGlobalId& field_id);
   void OnFocusOnNonFormField();
   virtual void OnAskForValuesToFill(
       const FormData& form,
@@ -445,8 +447,7 @@ class AutofillManager
 
   // Invoked by `AutofillCrowdsourcingManager`.
   void OnLoadedServerPredictions(
-      std::string response,
-      const std::vector<FormSignature>& queried_form_signatures);
+      std::optional<AutofillCrowdsourcingManager::QueryResponse> response);
 
   // Invoked when forms from OnFormsSeen() have been parsed to
   // |form_structures|.

@@ -39,7 +39,6 @@ class IssueHoverButton : public HoverButton {
   // HoverButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int w) const override;
 
   views::Label* device_name_label() { return device_name_label_; }
   views::Label* status_text_label() { return status_text_label_; }

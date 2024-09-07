@@ -31,6 +31,7 @@ import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.URL
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
 
@@ -177,7 +178,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
 
         mPropertyModel.get(CLICK_LISTENER).onClick(null);
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
-        mPropertyModel.set(TAB_THUMBNAIL, bitmap);
+        mPropertyModel.set(TAB_THUMBNAIL, new BitmapDrawable(bitmap));
         assertNotNull(mPropertyModel.get(TAB_THUMBNAIL));
         verify(mSingleTabClickedCallback).onResult(eq(mTabId));
 

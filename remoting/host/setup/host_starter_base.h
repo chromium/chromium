@@ -65,16 +65,18 @@ class HostStarterBase : public HostStarter {
   void OnExistingConfigLoaded(std::optional<base::Value::Dict> config);
   void OnUserTokensRetrieved(const std::string& user_email,
                              const std::string& access_token,
-                             const std::string& refresh_token);
-  virtual void RegisterNewHost(const std::string& access_token,
-                               const std::string& public_key) = 0;
+                             const std::string& refresh_token,
+                             const std::string& scopes);
+  virtual void RegisterNewHost(const std::string& public_key,
+                               std::optional<std::string> access_token) = 0;
   void OnNewHostRegistered(const std::string& directory_id,
                            const std::string& owner_account_email,
                            const std::string& service_account_email,
                            const std::string& authorization_code);
   void OnServiceAccountTokensRetrieved(const std::string& service_account_email,
                                        const std::string& access_token,
-                                       const std::string& refresh_token);
+                                       const std::string& refresh_token,
+                                       const std::string& scopes);
   virtual void RemoveOldHostFromDirectory(
       base::OnceClosure on_host_removed) = 0;
   void StopOldHost();

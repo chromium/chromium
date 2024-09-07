@@ -169,6 +169,8 @@ const base::FilePath::CharType kJumpListIconDirname[] = FPL("JumpListIcons");
 // directory names
 #if BUILDFLAG(IS_WIN)
 const wchar_t kUserDataDirname[] = L"User Data";
+#elif BUILDFLAG(IS_ANDROID)
+const base::FilePath::CharType kOTRTempStateDirname[] = FPL("OTRTempState");
 #endif
 
 const float kMaxShareOfExtensionProcesses = 0.30f;

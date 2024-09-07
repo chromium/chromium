@@ -29,6 +29,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
@@ -287,18 +288,19 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
   const std::u16string& cancel_text =
       GetCancelButtonText(content_setting_bubble_model_->bubble_content());
   SetButtons(cancel_text.empty()
-                 ? ui::DIALOG_BUTTON_OK
-                 : (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, done_text.empty()
-                                           ? l10n_util::GetStringUTF16(IDS_DONE)
-                                           : done_text);
+                 ? static_cast<int>(ui::mojom::DialogButton::kOk)
+                 : static_cast<int>(ui::mojom::DialogButton::kOk) |
+                       static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(
+      ui::mojom::DialogButton::kOk,
+      done_text.empty() ? l10n_util::GetStringUTF16(IDS_DONE) : done_text);
   SetExtraView(CreateHelpAndManageView());
   SetAcceptCallback(
       base::BindOnce(&ContentSettingBubbleModel::OnDoneButtonClicked,
                      base::Unretained(content_setting_bubble_model_.get())));
 
   if (!cancel_text.empty()) {
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_text);
+    SetButtonLabel(ui::mojom::DialogButton::kCancel, cancel_text);
     SetCancelCallback(
         base::BindOnce(&ContentSettingBubbleModel::OnCancelButtonClicked,
                        base::Unretained(content_setting_bubble_model_.get())));
@@ -469,7 +471,7 @@ void ContentSettingBubbleContents::Init() {
   }
 
   if (bubble_content.manage_text_style == ManageTextStyle::kHoverButton) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     auto separator = std::make_unique<views::Separator>();
     rows.push_back({std::move(separator), LayoutRowType::DEFAULT});
 

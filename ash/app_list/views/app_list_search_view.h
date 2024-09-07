@@ -47,7 +47,6 @@ class ASH_EXPORT AppListSearchView : public views::View,
   void OnSearchResultContainerResultsChanged() override;
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   // AppListModelProvider::Observer:
@@ -124,6 +123,8 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // A callback that is triggered when the toast button of the search notifier
   // is pressed.
   void OnSearchNotifierButtonPressed();
+
+  void UpdateAccessibleValue();
 
   const raw_ptr<SearchResultPageDialogController, DanglingUntriaged>
       dialog_controller_;

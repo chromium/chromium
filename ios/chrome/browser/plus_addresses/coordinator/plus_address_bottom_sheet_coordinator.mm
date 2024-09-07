@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -37,9 +37,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForBrowserState(browserState);
+      PlusAddressServiceFactory::GetForProfile(browserState);
   plus_addresses::PlusAddressSettingService* plusAddressSettingService =
-      PlusAddressSettingServiceFactory::GetForBrowserState(browserState);
+      PlusAddressSettingServiceFactory::GetForProfile(browserState);
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   // TODO(crbug.com/40276862): Move this to the mediator to reduce model
@@ -72,10 +72,11 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   ];
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
+  _mediator.consumer = _viewController;
+
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
-  _mediator.consumer = _viewController;
 }
 
 - (void)stop {

@@ -8,4 +8,3 @@ Before copy-paste:
 
 After copy-paste:
 | "hello world<#selection-caret>"
-| <br>

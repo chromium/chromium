@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/encryptedmedia/html_media_element_encrypted_media.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -418,7 +420,8 @@ static Event* CreateEncryptedEvent(media::EmeInitDataType init_data_type,
   MediaEncryptedEventInit* initializer = MediaEncryptedEventInit::Create();
   initializer->setInitDataType(
       EncryptedMediaUtils::ConvertFromInitDataType(init_data_type));
-  initializer->setInitData(DOMArrayBuffer::Create(init_data, init_data_length));
+  initializer->setInitData(DOMArrayBuffer::Create(
+      UNSAFE_TODO(base::span(init_data, init_data_length))));
   initializer->setBubbles(false);
   initializer->setCancelable(false);
 

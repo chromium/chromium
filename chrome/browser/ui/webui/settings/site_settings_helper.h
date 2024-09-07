@@ -51,6 +51,10 @@ struct StorageAccessEmbeddingException {
   base::Time expiration;
 };
 
+// An enum representing the source of a per-site content setting (corresponds to
+// UI enum of the same name in constants.ts).
+// Note: this should not be used for default content setting sources, which
+// instead use `ProviderToDefaultSettingSourceString`.
 enum class SiteSettingSource {
   kAdsFilterBlocklist,
   kEmbargo,

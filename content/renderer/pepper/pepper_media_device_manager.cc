@@ -42,7 +42,7 @@ PP_DeviceType_Dev FromMediaDeviceType(MediaDeviceType type) {
       return PP_DEVICETYPE_DEV_AUDIOCAPTURE;
     case MediaDeviceType::kMediaVideoInput:
       return PP_DEVICETYPE_DEV_VIDEOCAPTURE;
-    case MediaDeviceType::kMediaAudioOuput:
+    case MediaDeviceType::kMediaAudioOutput:
       return PP_DEVICETYPE_DEV_AUDIOOUTPUT;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -57,10 +57,10 @@ MediaDeviceType ToMediaDeviceType(PP_DeviceType_Dev type) {
     case PP_DEVICETYPE_DEV_VIDEOCAPTURE:
       return MediaDeviceType::kMediaVideoInput;
     case PP_DEVICETYPE_DEV_AUDIOOUTPUT:
-      return MediaDeviceType::kMediaAudioOuput;
+      return MediaDeviceType::kMediaAudioOutput;
     default:
       NOTREACHED_IN_MIGRATION();
-      return MediaDeviceType::kMediaAudioOuput;
+      return MediaDeviceType::kMediaAudioOutput;
   }
 }
 

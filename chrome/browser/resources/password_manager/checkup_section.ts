@@ -83,6 +83,11 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
       weakPasswordsText_: String,
 
       /**
+       * Suggested action to take upon compromised passwords discovery.
+       */
+      compromisedPasswordsSuggestion_: String,
+
+      /**
        * The status indicates progress and affects banner, title and icon.
        */
       status_: {
@@ -135,6 +140,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
   private compromisedPasswordsText_: string;
   private reusedPasswordsText_: string;
   private weakPasswordsText_: string;
+  private compromisedPasswordsSuggestion_: string;
   private status_: chrome.passwordsPrivate.PasswordCheckStatus;
   private compromisedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
   private weakPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
@@ -305,6 +311,10 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     this.compromisedPasswordsText_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'compromisedPasswords', this.compromisedPasswords_.length);
+
+    this.compromisedPasswordsSuggestion_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'compromisedPasswordsTitle', this.compromisedPasswords_.length);
   }
 
   private async onReusedPasswordsChanged_() {
@@ -417,7 +427,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
       case CheckState.RUNNING:
       case CheckState.CANCELED:
         return this.compromisedPasswords_.length ?
-            this.i18n('compromisedPasswordsTitle') :
+            this.compromisedPasswordsSuggestion_ :
             this.i18n('compromisedPasswordsEmpty');
       case CheckState.OFFLINE:
         return this.i18n('checkupErrorOffline', brandingName);

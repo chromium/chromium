@@ -36,9 +36,14 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
     } else if (header->version == 2) {
       if (header->num_bytes == sizeof(internal::MessageHeaderV2))
         break;
-    } else if (header->version > 2) {
-      if (header->num_bytes >= sizeof(internal::MessageHeaderV2))
+    } else if (header->version == 3) {
+      if (header->num_bytes == sizeof(internal::MessageHeaderV3)) {
         break;
+      }
+    } else if (header->version > 3) {
+      if (header->num_bytes >= sizeof(internal::MessageHeaderV3)) {
+        break;
+      }
     }
     internal::ReportValidationError(
         validation_context,

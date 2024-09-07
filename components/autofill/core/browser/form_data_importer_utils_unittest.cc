@@ -3,20 +3,18 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_data_importer_utils.h"
-#include "components/autofill/core/browser/country_type.h"
 
 #include <string_view>
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 // As TimestampedSameOriginQueue cannot be initialized with primitive types,
@@ -28,10 +26,14 @@ bool operator==(IntWrapper x, int y) {
   return x.value == y;
 }
 
-}  // anonymous namespace
+class FormDataImporterUtilsTest : public testing::Test {
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
 
 // TimestampedSameOriginQueue's queue-like functionality works as expected.
-TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue) {
+TEST_F(FormDataImporterUtilsTest, TimestampedSameOriginQueue) {
   TimestampedSameOriginQueue<IntWrapper> queue;
   EXPECT_TRUE(queue.empty());
   const url::Origin irrelevant_origin;
@@ -47,7 +49,7 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue) {
   EXPECT_TRUE(queue.empty());
 }
 
-TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_MaxSize) {
+TEST_F(FormDataImporterUtilsTest, TimestampedSameOriginQueue_MaxSize) {
   TimestampedSameOriginQueue<IntWrapper> queue{/*max_size=*/1};
   const url::Origin irrelevant_origin;
   queue.Push({0}, irrelevant_origin);
@@ -56,7 +58,7 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_MaxSize) {
 }
 
 // RemoveOutdatedItems clears the queue if the origin doesn't match.
-TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_DifferentOrigins) {
+TEST_F(FormDataImporterUtilsTest, TimestampedSameOriginQueue_DifferentOrigins) {
   TimestampedSameOriginQueue<IntWrapper> queue;
   auto foo_origin = url::Origin::Create(GURL("http://foo.com"));
   queue.Push({0}, foo_origin);
@@ -69,13 +71,12 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_DifferentOrigins) {
 }
 
 // RemoveOutdatedItems clears items past their TTL.
-TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_TTL) {
+TEST_F(FormDataImporterUtilsTest, TimestampedSameOriginQueue_TTL) {
   TimestampedSameOriginQueue<IntWrapper> queue;
   const url::Origin irrelevant_origin;
-  TestAutofillClock test_clock;
   for (int i = 0; i < 4; i++) {
     queue.Push({i}, irrelevant_origin);
-    test_clock.Advance(base::Minutes(1));
+    task_environment_.FastForwardBy(base::Minutes(1));
   }
   // Remove all items older than 2.5 min.
   queue.RemoveOutdatedItems(base::Seconds(150), irrelevant_origin);
@@ -152,4 +153,5 @@ TEST_P(FormAssociatorTest, FormAssociator) {
             associations->last_credit_card_form_submitted);
 }
 
+}  // namespace
 }  // namespace autofill

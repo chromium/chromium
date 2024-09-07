@@ -25,7 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
@@ -36,11 +36,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/dips_utils.h"
 #include "net/base/schemeful_site.h"
@@ -266,10 +266,7 @@ DIPSService* DIPSService::Get(content::BrowserContext* context) {
 }
 
 DIPSServiceImpl::DIPSServiceImpl(content::BrowserContext* context)
-    : browser_context_(context),
-      cookie_settings_(CookieSettingsFactory::GetForProfile(
-          Profile::FromBrowserContext(context))),
-      dips_delegate_(ChromeDipsDelegate::Create()) {
+    : browser_context_(context), dips_delegate_(ChromeDipsDelegate::Create()) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   std::optional<base::FilePath> path_to_use;
   base::FilePath dips_path = GetDIPSFilePath(browser_context_);
@@ -322,10 +319,6 @@ DIPSServiceImpl* DIPSServiceImpl::Get(content::BrowserContext* context) {
   return DIPSServiceFactory::GetForBrowserContext(context);
 }
 
-void DIPSServiceImpl::Shutdown() {
-  cookie_settings_.reset();
-}
-
 scoped_refptr<base::SequencedTaskRunner> DIPSServiceImpl::CreateTaskRunner() {
   if (base::FeatureList::IsEnabled(kDipsOnForegroundSequence)) {
     return base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -333,18 +326,6 @@ scoped_refptr<base::SequencedTaskRunner> DIPSServiceImpl::CreateTaskRunner() {
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::ThreadPolicy::PREFER_BACKGROUND});
-}
-
-bool DIPSServiceImpl::Are3PCAllowed(const GURL& first_party_url,
-                                    const GURL& third_party_url) const {
-  DCHECK(!IsShuttingDown());
-
-  return cookie_settings_->IsFullCookieAccessAllowed(
-      third_party_url, net::SiteForCookies::FromUrl(first_party_url),
-      url::Origin::Create(first_party_url),
-      net::CookieSettingOverrides(
-          {net::CookieSettingOverride::kStorageAccessGrantEligible,
-           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible}));
 }
 
 DIPSCookieMode DIPSServiceImpl::GetCookieMode() const {
@@ -462,7 +443,7 @@ void DIPSServiceImpl::GotState(
 
 void DIPSServiceImpl::RecordBounce(
     const GURL& url,
-    const GURL& initial_url,
+    bool has_3pc_exception,
     const GURL& final_url,
     base::Time time,
     bool stateful,
@@ -471,7 +452,7 @@ void DIPSServiceImpl::RecordBounce(
   // final URL in the redirect,then clear the tracking site from the DIPS DB, to
   // avoid deleting its storage. The exception overrides any bounces from
   // non-excepted sites.
-  if (Are3PCAllowed(initial_url, url) || Are3PCAllowed(final_url, url)) {
+  if (has_3pc_exception) {
     // These records indicate sites that could've had their state deleted
     // provided their grace period expired. But are at the moment excepted
     // following `Are3PCAllowed()` of either `initial_url` or `final_url`.
@@ -561,8 +542,8 @@ void DIPSServiceImpl::HandleRedirect(
   // Record this bounce in the DIPS database.
   if (redirect.access_type != SiteDataAccessType::kUnknown) {
     record_bounce.Run(
-        redirect.url.url, chain.initial_url.url, chain.final_url.url,
-        redirect.time,
+        redirect.url.url, redirect.has_3pc_exception.value(),
+        chain.final_url.url, redirect.time,
         /*stateful=*/redirect.access_type > SiteDataAccessType::kRead,
         content_settings_callback);
   }
@@ -602,10 +583,6 @@ void DIPSServiceImpl::DeleteDIPSEligibleState(
   if (sites_to_clear.empty()) {
     UmaHistogramClearedSitesCount(GetCookieMode(), sites_to_clear.size());
     std::move(callback).Run(std::vector<std::string>());
-    return;
-  }
-
-  if (IsShuttingDown()) {
     return;
   }
 

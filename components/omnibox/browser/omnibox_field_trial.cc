@@ -962,6 +962,9 @@ const base::FeatureParam<std::string> kMlUrlScoringMaxMatchesByProvider(
 MLConfig::MLConfig() {
   log_url_scoring_signals =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
+  enable_history_scoring_signals_annotator_for_searches =
+      base::FeatureList::IsEnabled(
+          omnibox::kEnableHistoryScoringSignalsAnnotatorForSearches);
   enable_scoring_signals_annotators =
       kEnableScoringSignalsAnnotatorsForLogging.Get() ||
       kEnableScoringSignalsAnnotatorsForMlScoring.Get();
@@ -1171,11 +1174,6 @@ const base::FeatureParam<std::string> kGeminiUrlOverride(
 bool IsStarterPackExpansionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion);
 }
-
-const base::FeatureParam<int> kStarterPackIPHPerSessionLimit(
-    &omnibox::kStarterPackIPH,
-    "StarterPackIPHPerSessionLimit",
-    3);
 
 bool IsStarterPackIPHEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackIPH);

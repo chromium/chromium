@@ -35,10 +35,11 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -144,7 +145,10 @@ class SafetyCheckMediatorTest : public PlatformTest {
           return std::unique_ptr<KeyedService>(
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
-    browser_state_ = std::move(test_cbs_builder).Build();
+
+    browser_state_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
+
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -264,10 +268,11 @@ class SafetyCheckMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;
   raw_ptr<AuthenticationService> auth_service_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
+  TestProfileManagerIOS profile_manager_;
   SafetyCheckMediator* mediator_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
@@ -821,4 +826,48 @@ TEST_F(SafetyCheckMediatorTest, CheckNowClickableAll) {
   mediator_.checkStartState = CheckStartStateDefault;
   [mediator_ reconfigureCheckStartSection];
   EXPECT_TRUE([mediator_ isItemClickable:checkStartItem]);
+}
+
+// Tests that the notifications opt-in button correctly displays the "Turn Off"
+// notifications prompt when notifications are currently enabled.
+TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOff) {
+  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
+
+  mediator_ = [[SafetyCheckMediator alloc]
+      initWithUserPrefService:pref_service_
+             localPrefService:local_pref_service_
+         passwordCheckManager:password_check_
+                  authService:auth_service_
+                  syncService:syncService()
+                     referrer:password_manager::PasswordCheckReferrer::
+                                  kSafetyCheck];
+
+  [mediator_ reconfigureNotificationsSection:YES];
+
+  EXPECT_NSEQ(
+      mediator_.notificationsOptInItem.text,
+      GetNSString(
+          IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS));
+}
+
+// Tests that the notifications opt-in button correctly displays the "Turn On"
+// notifications prompt when notifications are currently disabled.
+TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOn) {
+  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
+
+  mediator_ = [[SafetyCheckMediator alloc]
+      initWithUserPrefService:pref_service_
+             localPrefService:local_pref_service_
+         passwordCheckManager:password_check_
+                  authService:auth_service_
+                  syncService:syncService()
+                     referrer:password_manager::PasswordCheckReferrer::
+                                  kSafetyCheck];
+
+  [mediator_ reconfigureNotificationsSection:NO];
+
+  EXPECT_NSEQ(
+      mediator_.notificationsOptInItem.text,
+      GetNSString(
+          IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS_ELLIPSIS));
 }

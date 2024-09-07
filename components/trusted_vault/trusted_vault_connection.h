@@ -108,6 +108,38 @@ struct GpmPinMetadata {
   base::Time expiry;
 };
 
+// A MemberKeys contains the cryptographic outputs needed to add or use an
+// authentication factor: the trusted vault key, encrypted to the public key of
+// the member, and an authenticator of that public key.
+struct MemberKeys {
+  MemberKeys(int version,
+             std::vector<uint8_t> wrapped_key,
+             std::vector<uint8_t> proof);
+  MemberKeys(const MemberKeys&) = delete;
+  MemberKeys& operator=(const MemberKeys&) = delete;
+  MemberKeys(MemberKeys&&);
+  MemberKeys& operator=(MemberKeys&&);
+  ~MemberKeys();
+
+  int version;
+  std::vector<uint8_t> wrapped_key;
+  std::vector<uint8_t> proof;
+};
+
+// A vault member public key and its member keys.
+struct VaultMember {
+  VaultMember(std::unique_ptr<SecureBoxPublicKey> public_key,
+              std::vector<MemberKeys> member_keys);
+  VaultMember(const VaultMember&) = delete;
+  VaultMember& operator=(const VaultMember&) = delete;
+  VaultMember(VaultMember&&);
+  VaultMember& operator=(VaultMember&&);
+  ~VaultMember();
+
+  std::unique_ptr<SecureBoxPublicKey> public_key;
+  std::vector<MemberKeys> member_keys;
+};
+
 // The result of calling
 // DownloadAuthenticationFactorsRegistrationState.
 struct DownloadAuthenticationFactorsRegistrationStateResult {
@@ -146,8 +178,8 @@ struct DownloadAuthenticationFactorsRegistrationStateResult {
   // for retrieval, then this will contain its metadata.
   std::optional<GpmPinMetadata> gpm_pin_metadata;
 
-  // The list of iCloud recovery key domain members as secure box public keys.
-  std::vector<std::unique_ptr<SecureBoxPublicKey>> icloud_keys;
+  // The list of iCloud recovery key domain members.
+  std::vector<VaultMember> icloud_keys;
 };
 
 // Authentication factor types:
@@ -186,26 +218,10 @@ std::vector<TrustedVaultKeyAndVersion> GetTrustedVaultKeysWithVersions(
     const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
     int last_key_version);
 
-// A PrecomputedMemberKeys contains the cryptographic outputs needed to
-// add an authentication factor: the trusted vault key, encrypted to the
-// public key of the member, and an authenticator of that public key.
-struct PrecomputedMemberKeys {
-  PrecomputedMemberKeys(int version,
-                        std::vector<uint8_t> wrapped_key,
-                        std::vector<uint8_t> proof);
-  PrecomputedMemberKeys(PrecomputedMemberKeys&&);
-  PrecomputedMemberKeys& operator=(PrecomputedMemberKeys&&);
-  ~PrecomputedMemberKeys();
-
-  int version;
-  std::vector<uint8_t> wrapped_key;
-  std::vector<uint8_t> proof;
-};
-
 // A MemberKeysSource provides a method of calculating the values needed to
 // add an authenticator factor.
-using MemberKeysSource = absl::variant<std::vector<TrustedVaultKeyAndVersion>,
-                                       PrecomputedMemberKeys>;
+using MemberKeysSource =
+    absl::variant<std::vector<TrustedVaultKeyAndVersion>, MemberKeys>;
 
 // Supports interaction with vault service, all methods must called on trusted
 // vault backend sequence.

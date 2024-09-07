@@ -21,7 +21,6 @@ class PrefService;
 namespace ash {
 class DeviceSettingsService;
 class OobeConfiguration;
-class SystemClockClient;
 }
 
 namespace network {
@@ -81,7 +80,6 @@ class EnrollmentStateFetcher {
           RlweClientFactory rlwe_client_factory,
           DeviceManagementService* device_management_service,
           scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-          ash::SystemClockClient* system_clock_client,
           ServerBackedStateKeysBroker* state_key_broker,
           ash::DeviceSettingsService* device_settings_service,
           ash::OobeConfiguration* oobe_configuration)>;
@@ -95,7 +93,6 @@ class EnrollmentStateFetcher {
       RlweClientFactory rlwe_client_factory,
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      ash::SystemClockClient* system_clock_client,
       ServerBackedStateKeysBroker* state_key_broker,
       ash::DeviceSettingsService* device_settings_service,
       ash::OobeConfiguration* oobe_configuration);

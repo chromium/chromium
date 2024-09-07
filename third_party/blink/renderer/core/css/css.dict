@@ -956,7 +956,6 @@
 "@page"
 "@font-face"
 "@keyframes"
-"@viewport"
 
 # HTML elements
 "display"

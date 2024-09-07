@@ -79,6 +79,10 @@ source_set("plus_addresses") {
     "plus_address_preallocator.h",
     "plus_address_service.cc",
     "plus_address_service.h",
+    "plus_address_suggestion_generator.cc",
+    "plus_address_suggestion_generator.h",
+    "plus_address_ui_utils.cc",
+    "plus_address_ui_utils.h",
   ]
   deps = [
     ":blocklist_data",
@@ -92,6 +96,7 @@ source_set("plus_addresses") {
     "//components/plus_addresses/webdata",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
+    "//components/url_formatter",
     "//net",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
@@ -137,6 +142,7 @@ source_set("unit_tests") {
     "plus_address_parsing_utils_unittest.cc",
     "plus_address_preallocator_unittest.cc",
     "plus_address_service_unittest.cc",
+    "plus_address_suggestion_generator_unittest.cc",
   ]
 
   deps = [
@@ -151,6 +157,7 @@ source_set("unit_tests") {
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/feature_engagement/public",
+    "//components/os_crypt/async/browser:test_support",
     "//components/plus_addresses/metrics",
     "//components/plus_addresses/settings:test_support",
     "//components/plus_addresses/webdata",
@@ -176,6 +183,7 @@ static_library("test_support") {
     "plus_address_test_utils.h",
   ]
   deps = [
+    ":prefs",
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",

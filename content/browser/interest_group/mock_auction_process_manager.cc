@@ -95,16 +95,13 @@ void MockBidderWorklet::BeginGenerateBid(
   }
 
   generate_bid_called_ = true;
-  // While the real BidderWorklet implementation supports multiple pending
-  // callbacks, this class does not.
-  DCHECK(!generate_bid_client_);
 
   // per_buyer_timeout passed that will be passed to FinishGenerateBid()
   // should not be empty, because auction_config's all_buyers_timeout (which
   // is the key of '*' in perBuyerTimeouts) is set in the AuctionRunnerTest.
-  // Figure out what it should expect here (and save it into the receiver set
-  // as context info) since the bidder name isn't easily available at
-  // FinishGenerateBid time.
+  // Figure out what it should expect here (and save it into
+  // `finalizer_receiver_set_` as context info) since the bidder name isn't
+  // easily available at FinishGenerateBid time.
   auto it =
       expected_per_buyer_timeouts_.find(bidder_worklet_non_shared_params->name);
   CHECK(it != expected_per_buyer_timeouts_.end());
@@ -117,7 +114,10 @@ void MockBidderWorklet::BeginGenerateBid(
   finalizer_receiver_set_.Add(this, std::move(bid_finalizer),
                               expected_per_buyer_timeout);
 
-  generate_bid_client_.Bind(std::move(generate_bid_client));
+  mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidClient>
+      bound_generate_bid_client;
+  bound_generate_bid_client.Bind(std::move(generate_bid_client));
+  generate_bid_clients_.push_back(std::move(bound_generate_bid_client));
 }
 
 void MockBidderWorklet::SendPendingSignalsRequests() {
@@ -202,11 +202,11 @@ void MockBidderWorklet::FinishGenerateBid(
 }
 
 void MockBidderWorklet::WaitForGenerateBid() {
-  if (!generate_bid_client_) {
+  if (generate_bid_clients_.empty()) {
     generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
     generate_bid_run_loop_->Run();
     generate_bid_run_loop_.reset();
-    DCHECK(generate_bid_client_);
+    DCHECK(!generate_bid_clients_.empty());
   }
 }
 
@@ -239,8 +239,12 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
     auction_worklet::mojom::RejectReason reject_reason) {
   WaitForGenerateBid();
 
+  mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidClient>
+      generate_bid_client = std::move(generate_bid_clients_.front());
+  generate_bid_clients_.pop_front();
+
   base::RunLoop run_loop;
-  generate_bid_client_->OnBiddingSignalsReceived(
+  generate_bid_client->OnBiddingSignalsReceived(
       /*priority_vector=*/{},
       /*trusted_signals_fetch_latency=*/trusted_signals_fetch_latency_,
       /*update_if_older_than=*/std::nullopt, run_loop.QuitClosure());
@@ -261,7 +265,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
   std::vector<auction_worklet::mojom::BidderWorkletBidPtr> bids;
   if (!bid.has_value()) {
     DCHECK(further_bids.empty());
-    generate_bid_client_->OnGenerateBidComplete(
+    generate_bid_client->OnGenerateBidComplete(
         /*bids=*/std::move(bids),
         /*bidding_signals_data_version=*/std::nullopt, debug_loss_report_url,
         /*debug_win_report_url=*/std::nullopt,
@@ -281,12 +285,13 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
 
   bids.push_back(auction_worklet::mojom::BidderWorkletBid::New(
       bid_role, "ad", *bid, bid_currency, /*ad_cost=*/std::nullopt,
-      std::move(ad_descriptor), ad_component_descriptors,
+      std::move(ad_descriptor),
+      selected_buyer_and_seller_reporting_id_, ad_component_descriptors,
       /*modeling_signals=*/std::nullopt, duration));
   bids.insert(bids.end(), std::make_move_iterator(further_bids.begin()),
               std::make_move_iterator(further_bids.end()));
 
-  generate_bid_client_->OnGenerateBidComplete(
+  generate_bid_client->OnGenerateBidComplete(
       std::move(bids), bidding_signals_data_version, debug_loss_report_url,
       debug_win_report_url,
       /*set_priority=*/std::nullopt,
@@ -303,7 +308,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
 }
 
 void MockBidderWorklet::WaitForReportWin() {
-  DCHECK(!generate_bid_client_);
+  DCHECK(generate_bid_clients_.empty());
   DCHECK(!report_win_run_loop_);
   if (!report_win_callback_) {
     report_win_run_loop_ = std::make_unique<base::RunLoop>();
@@ -333,6 +338,11 @@ void MockBidderWorklet::Flush() {
 bool MockBidderWorklet::PipeIsClosed() {
   receiver_.FlushForTesting();
   return pipe_closed_;
+}
+
+void MockBidderWorklet::SetSelectedBuyerAndSellerReportingId(
+    std::optional<std::string> selected) {
+  selected_buyer_and_seller_reporting_id_ = std::move(selected);
 }
 
 MockSellerWorklet::ScoreAdParams::ScoreAdParams() = default;
@@ -380,6 +390,10 @@ void MockSellerWorklet::ScoreAd(
     const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
+    const std::optional<std::string>&
+        browser_signal_selected_buyer_and_seller_reporting_id,
+    const std::optional<std::string>&
+        browser_signal_buyer_and_seller_reporting_id,
     const std::vector<GURL>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
     const std::optional<blink::AdSize>& browser_signal_render_size,

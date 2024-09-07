@@ -88,8 +88,7 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
                 private boolean isReadAloudSecondarySheet(@Nullable BottomSheetContent content) {
                     return (content != null
                             && (content instanceof OptionsMenuSheetContent
-                                    || content instanceof SpeedMenuSheetContent
-                                    || content instanceof VoiceMenuSheetContent));
+                                    || content instanceof SpeedMenuSheetContent));
                 }
             };
     private PropertyModel mModel;

@@ -134,7 +134,7 @@ StartupTemperature g_startup_temperature = UNDETERMINED_STARTUP_TEMPERATURE;
 // This function must only be used in code that runs after
 // |g_startup_temperature| has been initialized.
 template <typename T>
-void UmaHistogramWithTemperature(
+void EmitHistogramWithTemperature(
     void (*histogram_function)(const std::string& name, T),
     const std::string& histogram_basename,
     T value) {
@@ -159,24 +159,19 @@ void UmaHistogramWithTemperature(
   }
 }
 
-void UmaHistogramWithTraceAndTemperature(
+}  // namespace
+
+namespace startup_metric_utils {
+
+void BrowserStartupMetricRecorder::EmitHistogramWithTemperatureAndTraceEvent(
     void (*histogram_function)(const std::string& name, base::TimeDelta),
     const char* histogram_basename,
     base::TimeTicks begin_ticks,
     base::TimeTicks end_ticks) {
-  UmaHistogramWithTemperature(histogram_function, histogram_basename,
-                              end_ticks - begin_ticks);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "startup", histogram_basename, TRACE_ID_LOCAL(histogram_basename),
-      begin_ticks, "Temperature", g_startup_temperature);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "startup", histogram_basename, TRACE_ID_LOCAL(histogram_basename),
-      end_ticks);
+  EmitHistogramWithTemperature(histogram_function, histogram_basename,
+                               end_ticks - begin_ticks);
+  GetCommon().EmitTraceEvent(histogram_basename, begin_ticks, end_ticks);
 }
-
-}  // namespace
-
-namespace startup_metric_utils {
 
 BrowserStartupMetricRecorder& GetBrowser() {
   // If this ceases to be true, Get{Common,Browser} need to be changed to use
@@ -326,12 +321,12 @@ void BrowserStartupMetricRecorder::RecordBrowserMainMessageLoopStart(
 
   // Record timing of the browser message-loop start time.
   if (is_first_run) {
-    UmaHistogramWithTraceAndTemperature(
+    EmitHistogramWithTemperatureAndTraceEvent(
         &base::UmaHistogramLongTimes100,
         "Startup.BrowserMessageLoopStartTime.FirstRun",
         GetCommon().application_start_ticks_, ticks);
   } else {
-    UmaHistogramWithTraceAndTemperature(
+    EmitHistogramWithTemperatureAndTraceEvent(
         &base::UmaHistogramLongTimes100, "Startup.BrowserMessageLoopStartTime",
         GetCommon().application_start_ticks_, ticks);
   }
@@ -340,7 +335,7 @@ void BrowserStartupMetricRecorder::RecordBrowserMainMessageLoopStart(
 
   // Record values stored prior to startup temperature evaluation.
   if (ShouldLogStartupHistogram() && !browser_window_display_ticks_.is_null()) {
-    UmaHistogramWithTraceAndTemperature(
+    EmitHistogramWithTemperatureAndTraceEvent(
         &base::UmaHistogramLongTimes, "Startup.BrowserWindowDisplay",
         GetCommon().application_start_ticks_, browser_window_display_ticks_);
   }
@@ -348,7 +343,7 @@ void BrowserStartupMetricRecorder::RecordBrowserMainMessageLoopStart(
   // Process creation to application start. See comment above
   // RecordApplicationStart().
   if (!GetCommon().process_creation_ticks_.is_null()) {
-    UmaHistogramWithTraceAndTemperature(
+    EmitHistogramWithTemperatureAndTraceEvent(
         &base::UmaHistogramLongTimes,
         "Startup.LoadTime.ProcessCreateToApplicationStart",
         GetCommon().process_creation_ticks_,
@@ -356,7 +351,7 @@ void BrowserStartupMetricRecorder::RecordBrowserMainMessageLoopStart(
 
     // Application start to ChromeMain().
     DCHECK(!GetCommon().chrome_main_entry_ticks_.is_null());
-    UmaHistogramWithTraceAndTemperature(
+    EmitHistogramWithTemperatureAndTraceEvent(
         &base::UmaHistogramLongTimes,
         "Startup.LoadTime.ApplicationStartToChromeMain",
         GetCommon().application_start_ticks_,
@@ -366,7 +361,7 @@ void BrowserStartupMetricRecorder::RecordBrowserMainMessageLoopStart(
   // PreReadFile time.
   if (!GetCommon().preread_end_ticks_.is_null() &&
       !GetCommon().preread_begin_ticks_.is_null()) {
-    UmaHistogramWithTraceAndTemperature(
+    EmitHistogramWithTemperatureAndTraceEvent(
         &base::UmaHistogramLongTimes, "Startup.Browser.LoadTime.PreReadFile",
         GetCommon().preread_begin_ticks_, GetCommon().preread_end_ticks_);
   }
@@ -381,7 +376,7 @@ void BrowserStartupMetricRecorder::RecordBrowserMainLoopFirstIdle(
     return;
   }
 
-  UmaHistogramWithTraceAndTemperature(
+  EmitHistogramWithTemperatureAndTraceEvent(
       &base::UmaHistogramLongTimes100, "Startup.BrowserMessageLoopFirstIdle",
       GetCommon().application_start_ticks_, ticks);
 }
@@ -426,11 +421,11 @@ void BrowserStartupMetricRecorder::RecordFirstWebContentsNonEmptyPaint(
     return;
   }
 
-  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
-                                      "Startup.FirstWebContents.NonEmptyPaint3",
-                                      web_contents_start_ticks, now);
+  EmitHistogramWithTemperatureAndTraceEvent(
+      &base::UmaHistogramLongTimes100,
+      "Startup.FirstWebContents.NonEmptyPaint3", web_contents_start_ticks, now);
 
-  UmaHistogramWithTemperature(
+  EmitHistogramWithTemperature(
       &base::UmaHistogramLongTimes100,
       "Startup.BrowserMessageLoopStart.To.NonEmptyPaint2",
       now - message_loop_start_ticks_);
@@ -446,7 +441,7 @@ void BrowserStartupMetricRecorder::RecordFirstWebContentsMainNavigationStart(
     return;
   }
 
-  UmaHistogramWithTraceAndTemperature(
+  EmitHistogramWithTemperatureAndTraceEvent(
       &base::UmaHistogramLongTimes100,
       "Startup.FirstWebContents.MainNavigationStart", web_contents_start_ticks,
       ticks);
@@ -462,7 +457,7 @@ void BrowserStartupMetricRecorder::RecordFirstWebContentsMainNavigationFinished(
     return;
   }
 
-  UmaHistogramWithTraceAndTemperature(
+  EmitHistogramWithTemperatureAndTraceEvent(
       &base::UmaHistogramLongTimes100,
       "Startup.FirstWebContents.MainNavigationFinished",
       web_contents_start_ticks, ticks);
@@ -502,9 +497,9 @@ void BrowserStartupMetricRecorder::RecordBrowserWindowFirstPaint(
 #endif  // BUILDFLAG(IS_CHROMEOS)
   DCHECK(!latency_origin.is_null());
 
-  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
-                                      "Startup.BrowserWindow.FirstPaint",
-                                      latency_origin, ticks);
+  EmitHistogramWithTemperatureAndTraceEvent(&base::UmaHistogramLongTimes100,
+                                            "Startup.BrowserWindow.FirstPaint",
+                                            latency_origin, ticks);
 }
 
 void BrowserStartupMetricRecorder::RecordFirstRunSentinelCreation(
@@ -531,10 +526,13 @@ void BrowserStartupMetricRecorder::RecordHardFaultHistogram() {
     // Determine the startup type based on the number of observed hard faults.
     if (hard_fault_count < kWarmStartHardFaultCountThreshold) {
       g_startup_temperature = WARM_STARTUP_TEMPERATURE;
+      GetCommon().EmitInstantEvent("Startup.Temperature.Warm");
     } else if (hard_fault_count >= kColdStartHardFaultCountThreshold) {
       g_startup_temperature = COLD_STARTUP_TEMPERATURE;
+      GetCommon().EmitInstantEvent("Startup.Temperature.Cold");
     } else {
       g_startup_temperature = LUKEWARM_STARTUP_TEMPERATURE;
+      GetCommon().EmitInstantEvent("Startup.Temperature.Lukewarm");
     }
   } else {
     // |g_startup_temperature| remains
@@ -572,7 +570,7 @@ void BrowserStartupMetricRecorder::RecordExternalStartupMetric(
     return;
   }
 
-  UmaHistogramWithTraceAndTemperature(
+  EmitHistogramWithTemperatureAndTraceEvent(
       &base::UmaHistogramMediumTimes, histogram_name,
       GetCommon().application_start_ticks_, completion_ticks);
 

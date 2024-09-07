@@ -9,8 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/policy/content/policy_blocklist_service.h"
+#include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -29,15 +31,26 @@ PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     content::BrowserContext* context)
     : content::NavigationThrottle(navigation_handle),
-      safe_sites_navigation_throttle_(
-          navigation_handle,
-          context,
-          base::BindRepeating(
-              &PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult,
-              base::Unretained(this))),
       blocklist_service_(PolicyBlocklistFactory::GetForBrowserContext(context)),
       prefs_(user_prefs::UserPrefs::Get(context)) {
   DCHECK(prefs_);
+  auto safe_sites_navigation_throttle =
+      std::make_unique<SafeSitesNavigationThrottle>(navigation_handle, context);
+  if (base::FeatureList::IsEnabled(
+          policy::features::kPolicyBlocklistProceedUntilResponse)) {
+    safe_sites_navigation_throttle_ =
+        std::make_unique<ProceedUntilResponseNavigationThrottle>(
+            navigation_handle, std::move(safe_sites_navigation_throttle),
+            base::BindRepeating(
+                &PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult,
+                base::Unretained(this)));
+  } else {
+    safe_sites_navigation_throttle->SetDeferredResultCallback(
+        base::BindRepeating(
+            &PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult,
+            base::Unretained(this)));
+    safe_sites_navigation_throttle_ = std::move(safe_sites_navigation_throttle);
+  }
 }
 
 PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() {
@@ -64,7 +77,8 @@ bool PolicyBlocklistNavigationThrottle::IsBlockedViewSourceNavigation() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-PolicyBlocklistNavigationThrottle::WillStartRequest() {
+PolicyBlocklistNavigationThrottle::WillStartOrRedirectRequest(
+    bool is_redirect) {
   if (request_time_.is_null()) {
     request_time_ = base::TimeTicks::Now();
   }
@@ -91,8 +105,7 @@ PolicyBlocklistNavigationThrottle::WillStartRequest() {
     return PROCEED;
   }
 
-  content::NavigationThrottle::ThrottleCheckResult result =
-      CheckSafeSitesFilter(url);
+  ThrottleCheckResult result = CheckSafeSitesFilter(url, is_redirect);
   UpdateRequestThrottleAction(result.action());
   return result;
 }
@@ -101,7 +114,8 @@ PolicyBlocklistNavigationThrottle::WillStartRequest() {
 // because it is used outside //chrome. Therefore, the policy must be checked
 // here to determine whether to use SafeSitesNavigationThrottle.
 content::NavigationThrottle::ThrottleCheckResult
-PolicyBlocklistNavigationThrottle::CheckSafeSitesFilter(const GURL& url) {
+PolicyBlocklistNavigationThrottle::CheckSafeSitesFilter(const GURL& url,
+                                                        bool is_redirect) {
   SafeSitesFilterBehavior filter_behavior =
       static_cast<SafeSitesFilterBehavior>(
           prefs_->GetInteger(policy::policy_prefs::kSafeSitesFilterBehavior));
@@ -109,13 +123,19 @@ PolicyBlocklistNavigationThrottle::CheckSafeSitesFilter(const GURL& url) {
     return PROCEED;
   }
 
-  DCHECK_EQ(filter_behavior, SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
-  return safe_sites_navigation_throttle_.WillStartRequest();
+  CHECK_EQ(filter_behavior, SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
+  return is_redirect ? safe_sites_navigation_throttle_->WillRedirectRequest()
+                     : safe_sites_navigation_throttle_->WillStartRequest();
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+PolicyBlocklistNavigationThrottle::WillStartRequest() {
+  return WillStartOrRedirectRequest(/*is_redirect=*/false);
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillRedirectRequest() {
-  return WillStartRequest();
+  return WillStartOrRedirectRequest(/*is_redirect=*/true);
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -123,8 +143,10 @@ PolicyBlocklistNavigationThrottle::WillProcessResponse() {
   base::UmaHistogramTimes(
       "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime",
       request_time_ - base::TimeTicks::Now());
-  UpdateRequestThrottleAction(PROCEED);
-  return PROCEED;
+  ThrottleCheckResult result =
+      safe_sites_navigation_throttle_->WillProcessResponse();
+  UpdateRequestThrottleAction(result.action());
+  return result;
 }
 
 const char* PolicyBlocklistNavigationThrottle::GetNameForLogging() {
@@ -132,13 +154,14 @@ const char* PolicyBlocklistNavigationThrottle::GetNameForLogging() {
 }
 
 void PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult(
-    bool is_safe,
-    ThrottleCheckResult cancel_result) {
+    bool proceed,
+    std::optional<ThrottleCheckResult> result) {
   defer_duration_ += defer_time_ - base::TimeTicks::Now();
-  if (is_safe) {
+  if (proceed) {
     Resume();
   } else {
-    CancelDeferredNavigation(cancel_result);
+    CHECK(result.has_value());
+    CancelDeferredNavigation(*result);
   }
 }
 

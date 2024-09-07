@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
 
@@ -731,8 +732,14 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         spell_checker.SelectMisspellingAsync();
     const String& misspelled_word = misspelled_word_and_description.first;
     if (misspelled_word.length()) {
-      data.misspelled_word =
-          WebString::FromUTF8(misspelled_word.Utf8()).Utf16();
+      auto to_u16string = [](const String& s) -> std::u16string {
+        return s.empty() ? std::u16string()
+                         : WTF::VisitCharacters(
+                               s, [](const auto* chars, wtf_size_t length) {
+                                 return std::u16string(chars, chars + length);
+                               });
+      };
+      data.misspelled_word = to_u16string(misspelled_word);
       const String& description = misspelled_word_and_description.second;
       if (description.length()) {
         // Suggestions were cached for the misspelled word (won't be true for
@@ -742,9 +749,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         description.Split('\n', suggestions);
         WebVector<std::u16string> web_suggestions(suggestions.size());
         base::ranges::transform(suggestions, web_suggestions.begin(),
-                                [](const String& s) {
-                                  return WebString::FromUTF8(s.Utf8()).Utf16();
-                                });
+                                to_u16string);
         data.dictionary_suggestions = web_suggestions.ReleaseVector();
       } else if (spell_checker.GetTextCheckerClient()) {
         // No suggestions cached for the misspelled word. Retrieve suggestions

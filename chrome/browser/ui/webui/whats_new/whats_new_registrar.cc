@@ -12,8 +12,9 @@ using BrowserCommand = browser_command::mojom::Command;
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // Register modules here.
   // 129
-  registry->RegisterModule(WhatsNewModule(
-      "vinnypersky@google.com", BrowserCommand::kOpenPaymentsSettings));
+  registry->RegisterModule(
+      WhatsNewModule("GooglePayReauth", "vinnypersky@google.com",
+                     BrowserCommand::kOpenPaymentsSettings));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {

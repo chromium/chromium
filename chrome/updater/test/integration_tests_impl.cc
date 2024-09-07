@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
@@ -78,6 +79,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/file_version_info_win.h"
 #include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/test/test_executables.h"
@@ -483,7 +485,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& child_window_text_to_find,
                           const bool always_launch_cmd,
                           const bool verify_app_logo_loaded,
-                          const bool expect_success) {
+                          const bool expect_success,
+                          const bool wait_for_the_installer) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
@@ -501,10 +504,13 @@ void InstallUpdaterAndApp(UpdaterScope scope,
 
   if (child_window_text_to_find.empty()) {
     int exit_code = -1;
-    Run(scope, command_line, &exit_code);
-    ASSERT_EQ(expect_success, exit_code == 0);
+    Run(scope, command_line, wait_for_the_installer ? &exit_code : nullptr);
+    if (wait_for_the_installer) {
+      ASSERT_EQ(expect_success, exit_code == 0);
+    }
   } else {
 #if BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(wait_for_the_installer);
     Run(scope, command_line, nullptr);
     CloseInstallCompleteDialog(base::ASCIIToWide(child_window_text_to_find),
                                verify_app_logo_loaded);
@@ -531,13 +537,13 @@ std::vector<base::FilePath> GetUpdaterLogFilesInTmp() {
   base::FilePath temp_dir;
 
 #if BUILDFLAG(IS_WIN)
-  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
-    base::FilePath windows_dir;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_WINDOWS, &windows_dir));
-    temp_dir = windows_dir.Append(FILE_PATH_LITERAL("Temp"));
-  }
+  EXPECT_TRUE(
+      base::PathService::Get(IsSystemInstall(GetUpdaterScopeForTesting())
+                                 ? static_cast<int>(base::DIR_SYSTEM_TEMP)
+                                 : static_cast<int>(base::DIR_TEMP),
+                             &temp_dir));
 #endif
-  if (temp_dir.empty() && !base::GetTempDir(&temp_dir)) {
+  if (temp_dir.empty()) {
     return {};
   }
 
@@ -1098,6 +1104,14 @@ void ExpectCliResult(base::CommandLine command_line,
   }
 }
 
+void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
+  base::CommandLine command_line(GetRealUpdaterLowerVersionPath());
+  command_line.AppendSwitch(kInstallSwitch);
+  int exit_code = -1;
+  Run(scope, command_line, &exit_code);
+  ASSERT_EQ(exit_code, 0);
+}
+
 void ExpectPing(UpdaterScope scope,
                 ScopedServer* test_server,
                 int event_type,
@@ -1422,20 +1436,70 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
 #endif
 }
 
+#if BUILDFLAG(IS_WIN)
+VersionProcessFilter::VersionProcessFilter()
+    : this_version_(base::Version(kUpdaterVersion)), older_version_([] {
+        const std::unique_ptr<FileVersionInfoWin> version_info =
+            FileVersionInfoWin::CreateFileVersionInfoWin(
+                GetRealUpdaterLowerVersionPath());
+        CHECK(version_info);
+        const base::Version version(
+            base::UTF16ToUTF8(version_info->file_version()));
+        CHECK(version.IsValid());
+        return version;
+      }()) {}
+
+bool VersionProcessFilter::Includes(const base::ProcessEntry& entry) const {
+  const base::Process process(::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
+                                            false, entry.th32ProcessID));
+  if (!process.IsValid()) {
+    return false;
+  }
+
+  DWORD path_len = MAX_PATH;
+  std::wstring path(path_len, '\0');
+  if (!::QueryFullProcessImageName(process.Handle(), 0, path.data(),
+                                   &path_len)) {
+    return false;
+  }
+
+  const std::unique_ptr<FileVersionInfoWin> version_info =
+      FileVersionInfoWin::CreateFileVersionInfoWin(base::FilePath(path));
+  if (!version_info) {
+    return false;
+  }
+  const base::Version version(base::UTF16ToUTF8(version_info->file_version()));
+  return version.IsValid() &&
+         (version == this_version_ || version == older_version_);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void CleanProcesses() {
+  base::ProcessFilter* filter = nullptr;
+#if BUILDFLAG(IS_WIN)
+  VersionProcessFilter version_filter;
+  filter = &version_filter;
+#endif
+
   for (const base::FilePath::StringType& process_name : GetTestProcessNames()) {
-    EXPECT_TRUE(KillProcesses(process_name, -1)) << process_name;
-    EXPECT_TRUE(
-        WaitForProcessesToExit(process_name, TestTimeouts::action_timeout()))
+    EXPECT_TRUE(KillProcesses(process_name, -1, filter)) << process_name;
+    EXPECT_TRUE(WaitForProcessesToExit(process_name,
+                                       TestTimeouts::action_timeout(), filter))
         << process_name;
-    EXPECT_FALSE(IsProcessRunning(process_name)) << process_name;
+    EXPECT_FALSE(IsProcessRunning(process_name, filter)) << process_name;
   }
 }
 
 void ExpectCleanProcesses() {
+  base::ProcessFilter* filter = nullptr;
+#if BUILDFLAG(IS_WIN)
+  VersionProcessFilter version_filter;
+  filter = &version_filter;
+#endif
+
   for (const base::FilePath::StringType& process_name : GetTestProcessNames()) {
-    EXPECT_FALSE(IsProcessRunning(process_name))
-        << PrintProcesses(process_name);
+    EXPECT_FALSE(IsProcessRunning(process_name, filter))
+        << PrintProcesses(process_name, filter);
   }
 }
 

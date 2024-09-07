@@ -1,11 +1,16 @@
-<style include="cr-icons">
+<style include="cr-icons searchbox-shared-style">
+  :host {
+    --cr-searchbox-height: 52px;
+    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+  }
+
   .results-pane {
     border: none;
-     /* Viewport height minus the realbox height and margin. */
+     /* Viewport height minus the searchbox height and margin. */
     height: calc(100vh - 76px);
     inset-inline-start: 0;
      /*
-      * We need to offset by the realbox height and margin since we are in a
+      * We need to offset by the searchbox height and margin since we are in a
       * fixed position.
       */
     inset-block-start: 76px;
@@ -100,97 +105,32 @@
     color: #E8EAED;
   }
 
-  #realbox {
+  #searchbox {
     margin-block-start: 16px;
     margin-inline-end: 14px;
     margin-block-end: 8px;
     margin-inline-start: 14px;
   }
 
-  :host([is-back-arrow-visible]) #realbox {
+  :host([is-back-arrow-visible]) #searchbox {
     margin-block-start: 16px;
     margin-inline-end: 14px;
     margin-block-end: 8px;
     margin-inline-start: 0px;
   }
 
-  #realboxContainer {
-    display: flex;
-    font-family: Roboto, Arial, sans-serif;
+  :host([is-back-arrow-visible]) #searchboxContainer {
+    --cr-searchbox-min-width: min(calc(100vw - 60px), 768px);
+  }
+
+  #searchboxContainer {
     position: fixed;
-    width: 100%;
-    z-index: 2;  /* Searchbox should render in front of the results iframe. */
-    /* TODO(jdonnelly): Specify these in a color mixer. */
-    /* Colors used in the cr-searchbox results dropdown */
-    --color-realbox-answer-icon-background: #d3e3fdff;
-    --color-realbox-answer-icon-foreground: #041e49ff;
-    --color-realbox-results-action-chip:#a8c7faff;
-    --color-realbox-results-action-chip-icon: #0b57d0ff;
-    --color-realbox-results-action-chip-focus-outline: #0b57d0ff;
-    --color-realbox-results-background-hovered:#e9e9eaff;
-    --color-realbox-results-background: #ffffffff;
-    --color-realbox-results-button-hover: #202124ff;
-    --color-realbox-results-dim-selected: #5f6368ff;
-    --color-realbox-results-focus-indicator: #e9e9eaff;
-    --color-realbox-results-foreground: #202124;
-    --color-realbox-results-foreground-dimmed: #5f6368ff;
-    --color-realbox-results-icon-focused-outline: #1a73e8ff;
-    --color-realbox-results-icon-selected: #5f6368ff;
-    --color-realbox-results-icon: #5f6368ff;
-    --color-realbox-results-typed-prefix: #70757A;
-    --color-realbox-results-url: #1967d2ff;
-    --color-realbox-results-url-selected: #1967d2ff;
-    --color-realbox-search-icon-background: #5F6368;
-    /* Colors specific to the cr-searchbox input */
-    --color-realbox-background-hovered: #F1F3F4;
-    --color-realbox-background: #F1F3F4;
-    --color-realbox-border: #dadce0ff;
-    --color-realbox-foreground: #3C4043;
-    --color-realbox-placeholder: #70757A;
-    --color-realbox-shadow: #20212451;
-    /* Variables used by cr-realbox */
-    --cr-realbox-height: 52px;
-    --cr-realbox-icon-left-position: 10px;
-    --cr-realbox-icon-top-position: 1px;
-    --cr-realbox-match-font-weight: 400;
-    --cr-realbox-min-width: min(calc(100vw - 16px), 768px);
-    --cr-realbox-icon-size-in-searchbox: 24px;
+    --color-searchbox-results-background: #ffffffff;
   }
 
-  :host([is-back-arrow-visible]) #realboxContainer {
-    --cr-realbox-min-width: min(calc(100vw - 60px), 768px);
-  }
-
-  :host([dark-mode]) #realboxContainer {
+  :host([dark-mode]) #searchboxContainer {
     background-color: #1F1F1F;
-
-    /* Colors used in the cr-searchbox results dropdown */
-    --color-realbox-answer-icon-background: #004a77ff;
-    --color-realbox-answer-icon-foreground: #c2e7ffff;
-    --color-realbox-results-action-chip: #047db7ff;
-    --color-realbox-results-action-chip-icon: #a8c7faff;
-    --color-realbox-results-action-chip-focus-outline: #669df6ff;
-    --color-realbox-results-background: #3c3c3cff;
-    --color-realbox-results-background-hovered: #50504fff;
-    --color-realbox-results-button-hover: #fdfcfb1a;
-    --color-realbox-results-dim-selected: #c7c7c7ff;
-    --color-realbox-results-focus-indicator: #50504fff;
-    --color-realbox-results-foreground: #E8EAED;
-    --color-realbox-results-foreground-dimmed: #c7c7c7ff;
-    --color-realbox-results-icon: #c7c7c7ff;
-    --color-realbox-results-icon-focused-outline: #a8c7faff;
-    --color-realbox-results-icon-selected: #c7c7c7ff;
-    --color-realbox-results-typed-prefix: #9DA3A9;
-    --color-realbox-results-url: #a8c7faff;
-    --color-realbox-results-url-selected: #a8c7faff;
-    --color-realbox-search-icon-background: #5F6368;
-    /* Colors specific to the cr-searchbox input */
-    --color-realbox-background-hovered: #4a4a4aff;
-    --color-realbox-background: #303134;
-    --color-realbox-border: #dadce0ff;
-    --color-realbox-foreground: #BDC1C6;
-    --color-realbox-placeholder: ##9E9E9E;
-    --color-realbox-shadow: #20212451;
+    --color-searchbox-results-background: #3c3c3cff;
   }
 
   cr-icon-button.icon-arrow-back {
@@ -203,13 +143,13 @@
     color: #70757A;
   }
 </style>
-<div id="realboxContainer">
+<div id="searchboxContainer">
   <template is="dom-if" if="[[isBackArrowVisible]]">
     <cr-icon-button id="backButton" class="action-icon icon-arrow-back"
         on-click="onBackArrowClick" aria-label="$i18n{backButton}">
     </cr-icon-button>
   </template>
-  <cr-realbox id="realbox"></cr-realbox>
+  <cr-searchbox id="searchbox"></cr-searchbox>
 </div>
 
 <!-- Network error UI that is initially hidden -->

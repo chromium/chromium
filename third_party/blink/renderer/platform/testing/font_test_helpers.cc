@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
@@ -145,12 +146,14 @@ Font CreateTestFont(const AtomicString& family_name,
                     const String& font_path,
                     float size,
                     const FontDescription::VariantLigatures* ligatures,
+                    const FontVariantEmoji variant_emoji,
                     void (*init_font_description)(FontDescription*)) {
   FontDescription font_description;
   font_description.SetFamily(
       FontFamily(family_name, FontFamily::Type::kFamilyName));
   font_description.SetSpecifiedSize(size);
   font_description.SetComputedSize(size);
+  font_description.SetVariantEmoji(variant_emoji);
   if (ligatures)
     font_description.SetVariantLigatures(*ligatures);
   if (init_font_description)

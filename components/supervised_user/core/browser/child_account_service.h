@@ -15,8 +15,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
-#include "components/supervised_user/core/browser/proto_fetcher.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "net/base/backoff_entry.h"
 
@@ -29,14 +27,12 @@ class PrefService;
 class ChildAccountServiceFactory;
 
 namespace supervised_user {
-class PermissionRequestCreator;
 
 // This class handles detection of child accounts (on sign-in as well as on
 // browser restart), and triggers the appropriate behavior (e.g. enable the
 // supervised user experience, fetch information about the parent(s)).
 class ChildAccountService : public KeyedService,
-                            public signin::IdentityManager::Observer,
-                            public SupervisedUserService::Delegate {
+                            public signin::IdentityManager::Observer {
  public:
   enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
 
@@ -73,18 +69,12 @@ class ChildAccountService : public KeyedService,
   // this service.
   ChildAccountService(
       PrefService& user_prefs,
-      SupervisedUserService& supervised_user_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::RepeatingCallback<std::unique_ptr<PermissionRequestCreator>()>
-          permission_creator_callback,
       base::OnceCallback<void(bool)> check_user_child_status_callback,
       ListFamilyMembersService& list_family_members_service);
 
  private:
-  // SupervisedUserService::Delegate implementation.
-  void SetActive(bool active) override;
-
   // Sets whether the signed-in account is a supervised account.
   void SetSupervisionStatusAndNotifyObservers(
       bool is_subject_to_parental_controls);
@@ -102,8 +92,6 @@ class ChildAccountService : public KeyedService,
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
-  bool active_{false};
-
   // Subscription to set custodian preferences from successful fetch of
   // ListFamilyMembersService.
   base::CallbackListSubscription set_custodian_prefs_subscription_;
@@ -112,15 +100,9 @@ class ChildAccountService : public KeyedService,
 
   const raw_ref<PrefService> user_prefs_;
 
-  raw_ref<SupervisedUserService> supervised_user_service_;
-
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::RepeatingClosureList google_auth_state_observers_;
-
-  // Creates a new instance of a PermissionRequestCreator.
-  base::RepeatingCallback<std::unique_ptr<PermissionRequestCreator>()>
-      permission_creator_callback_;
 
   // Callback relevant on Chrome OS platform.
   // Asserts that a supervised user matches the child status of the primary

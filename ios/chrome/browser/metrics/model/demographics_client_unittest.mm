@@ -9,8 +9,8 @@
 #import "base/time/time.h"
 #import "components/network_time/network_time_tracker.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -21,14 +21,13 @@ namespace metrics {
 class DemographicsClientTest : public PlatformTest {
  public:
   DemographicsClientTest() {
-    browser_state_manager_.AddBrowserStateWithBuilder(
-        TestChromeBrowserState::Builder());
+    profile_manager_.AddProfileWithBuilder(TestChromeBrowserState::Builder());
   }
 
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
 };
 
 TEST_F(DemographicsClientTest, GetNetworkTime) {
@@ -54,9 +53,8 @@ TEST_F(DemographicsClientTest, GetSyncService) {
 
 TEST_F(DemographicsClientTest, GetNumberOfProfilesOnDisk) {
   DemographicsClient demographic_client;
-  // On ChromeBrowserState was created and registered with the
-  // ChromeBrowserStateManager, check the client returns the correct
-  // value.
+  // On ChromeBrowserState was created and registered with the ProfileManager,
+  // check the client returns the correct value.
   EXPECT_EQ(1, demographic_client.GetNumberOfProfilesOnDisk());
 }
 

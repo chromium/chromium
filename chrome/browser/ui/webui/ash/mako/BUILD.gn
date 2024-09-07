@@ -40,6 +40,7 @@ static_library("mako") {
   ]
 
   deps = [
+    "//ash",
     "//ash/constants",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",

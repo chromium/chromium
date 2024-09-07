@@ -24,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/input/utils.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
@@ -35,10 +36,10 @@
 #include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
+#include "components/viz/service/input/input_manager.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
-#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
 namespace viz {
 
@@ -80,6 +81,7 @@ operator=(FrameSinkData&& other) = default;
 FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
     : shared_bitmap_manager_(params.shared_bitmap_manager),
       output_surface_provider_(params.output_surface_provider),
+      gpu_service_(params.gpu_service),
       gmb_context_provider_(params.gmb_context_provider),
       surface_manager_(this,
                        params.activation_deadline_in_frames,
@@ -94,6 +96,10 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
       hint_session_factory_(params.hint_session_factory) {
   surface_manager_.AddObserver(&hit_test_manager_);
   surface_manager_.AddObserver(this);
+
+  if (input::TransferInputToViz()) {
+    input_manager_ = std::make_unique<InputManager>(this);
+  }
 }
 
 FrameSinkManagerImpl::~FrameSinkManagerImpl() {
@@ -155,6 +161,15 @@ void FrameSinkManagerImpl::SetLocalClient(
   ui_task_runner_ = ui_task_runner;
 }
 
+void FrameSinkManagerImpl::SetInputManagerForTesting(
+    std::unique_ptr<InputManager> input_manager) {
+  if (!input::TransferInputToViz()) {
+    return;
+  }
+
+  input_manager_ = std::move(input_manager);
+}
+
 void FrameSinkManagerImpl::RegisterFrameSinkId(const FrameSinkId& frame_sink_id,
                                                bool report_activation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -205,8 +220,12 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
   DCHECK(!base::Contains(root_sink_map_, params->frame_sink_id));
   DCHECK(output_surface_provider_);
 
-  // We are transfering ownership of |params| so remember FrameSinkId here.
+  // We are transferring ownership of |params| so remember FrameSinkId here.
   FrameSinkId frame_sink_id = params->frame_sink_id;
+
+  if (root_sink_map_.empty()) {
+    root_frame_sink_id_ = frame_sink_id;
+  }
 
   // Creating RootCompositorFrameSinkImpl can fail and return null.
   auto root_compositor_frame_sink = RootCompositorFrameSinkImpl::Create(
@@ -242,8 +261,10 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
     const std::optional<FrameSinkBundleId>& bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client) {
+    input::mojom::RenderInputRouterConfigPtr render_input_router_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("viz", "FrameSinkManagerImpl::CreateCompositorFrameSink",
+              "frame_sink_id", frame_sink_id);
   if (base::Contains(sink_map_, frame_sink_id)) {
     frame_sink_manager_receiver_.ReportBadMessage("Duplicate FrameSinkId");
     return;
@@ -252,14 +273,15 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
     VLOG(1) << "Terminating sink established with non-existent bundle";
     return;
   }
-  std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-      optional_rir_client;
-  if (rir_client) {
-    optional_rir_client = std::move(rir_client);
-  }
+
   sink_map_[frame_sink_id] = std::make_unique<CompositorFrameSinkImpl>(
-      this, frame_sink_id, bundle_id, std::move(receiver), std::move(client),
-      std::move(optional_rir_client));
+      this, frame_sink_id, bundle_id, std::move(receiver), std::move(client));
+
+  if (GetInputManager()) {
+    GetInputManager()->OnCreateCompositorFrameSink(
+        frame_sink_id, /*is_root=*/false,
+        std::move(render_input_router_config));
+  }
 }
 
 void FrameSinkManagerImpl::DestroyCompositorFrameSink(
@@ -531,6 +553,10 @@ void FrameSinkManagerImpl::RegisterBeginFrameSource(
 
   registered_sources_[source] = frame_sink_id;
   RecursivelyAttachBeginFrameSource(frame_sink_id, source);
+
+  if (frame_sink_id == root_frame_sink_id_) {
+    root_begin_frame_source_ = source;
+  }
 }
 
 void FrameSinkManagerImpl::UnregisterBeginFrameSource(
@@ -540,6 +566,10 @@ void FrameSinkManagerImpl::UnregisterBeginFrameSource(
 
   FrameSinkId frame_sink_id = registered_sources_[source];
   registered_sources_.erase(source);
+
+  if (frame_sink_id == root_frame_sink_id_) {
+    root_begin_frame_source_ = nullptr;
+  }
 
   if (frame_sink_source_map_.count(frame_sink_id) == 0u)
     return;
@@ -647,6 +677,10 @@ bool FrameSinkManagerImpl::ChildContains(
       return true;
   }
   return false;
+}
+
+InputManager* FrameSinkManagerImpl::GetInputManager() {
+  return input_manager_.get();
 }
 
 void FrameSinkManagerImpl::SubmitHitTestRegionList(
@@ -1016,6 +1050,16 @@ void FrameSinkManagerImpl::EnableFrameSinkManagerTestApi(
     mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) {
   CHECK(!test_api_receiver_.is_bound());
   test_api_receiver_.Bind(std::move(receiver));
+}
+
+void FrameSinkManagerImpl::RequestBeginFrameForGpuService(bool toggle) {
+  if (root_begin_frame_source_ && gpu_service_) {
+    if (toggle) {
+      root_begin_frame_source_->AddObserver(gpu_service_);
+    } else {
+      root_begin_frame_source_->RemoveObserver(gpu_service_);
+    }
+  }
 }
 
 }  // namespace viz

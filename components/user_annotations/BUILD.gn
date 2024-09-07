@@ -4,6 +4,8 @@
 
 static_library("user_annotations") {
   sources = [
+    "user_annotations_database.cc",
+    "user_annotations_database.h",
     "user_annotations_features.cc",
     "user_annotations_features.h",
     "user_annotations_service.cc",
@@ -15,10 +17,16 @@ static_library("user_annotations") {
     "//base",
     "//components/autofill/core/common",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 
-  deps = [ "//url" ]
+  deps = [
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/common",
+    "//sql",
+    "//url",
+  ]
 }
 
 static_library("test_support") {
@@ -34,6 +42,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "user_annotations_database_unittest.cc",
     "user_annotations_features_unittest.cc",
     "user_annotations_service_unittest.cc",
   ]
@@ -41,6 +50,8 @@ source_set("unit_tests") {
     ":test_support",
     ":user_annotations",
     "//base/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/os_crypt/async/browser:test_support",
     "//testing/gtest",
     "//url",
   ]

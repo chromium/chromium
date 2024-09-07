@@ -90,7 +90,10 @@ source_set("features") {
     "link_capturing_features.h",
   ]
   public_deps = [ "//base" ]
-  deps = [ "//chrome/common:chrome_features" ]
+  deps = [
+    "//chrome/common:chrome_features",
+    "//content/public/common",
+  ]
 }
 
 source_set("test_support") {

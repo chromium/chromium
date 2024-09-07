@@ -35,6 +35,8 @@ mojom("seal_mojom") {
 
 static_library("emoji") {
   sources = [
+    "bubble_utils.cc",
+    "bubble_utils.h",
     "emoji_page_handler.cc",
     "emoji_page_handler.h",
     "emoji_search_proxy.cc",
@@ -74,6 +76,7 @@ static_library("emoji") {
   ]
 
   deps = [
+    "//ash",
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
@@ -103,6 +106,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "bubble_utils_unittest.cc",
     "emoji_page_handler_unittest.cc",
     "emoji_ui_unittest.cc",
     "gif_tenor_api_fetcher_unittest.cc",
@@ -129,6 +133,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base:test_support",
     "//ui/base/emoji",
+    "//ui/display:test_support",
     "//ui/gfx/geometry",
     "//url",
   ]

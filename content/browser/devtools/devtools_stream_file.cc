@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -149,17 +150,16 @@ DevToolsIOContext::Stream::Status DevToolsStreamFile::InnerReadOnFileSequence(
 
 void DevToolsStreamFile::AppendOnFileSequence(
     std::unique_ptr<std::string> data) {
-  if (!InitOnFileSequenceIfNeeded())
+  if (!InitOnFileSequenceIfNeeded()) {
     return;
-  int size_written =
-      UNSAFE_TODO(file_.WriteAtCurrentPos(&*data->begin(), data->length()));
-  if (size_written != static_cast<int>(data->length())) {
+  }
+  if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(*data))) {
     LOG(ERROR) << "Failed to write temporary file";
     had_errors_ = true;
     file_.Close();
     return;
   }
-  last_written_pos_ += size_written;
+  last_written_pos_ += data->size();
 }
 
 }  // namespace content

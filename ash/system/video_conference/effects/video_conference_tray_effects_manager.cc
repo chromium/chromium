@@ -5,6 +5,7 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -21,6 +22,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
+#include "components/soda/soda_installer.h"
 
 namespace ash {
 
@@ -180,9 +182,16 @@ VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
       std::string locale = pref_service
                                ? prefs::GetLiveCaptionLanguageCode(pref_service)
                                : speech::kUsEnglishLocale;
+      std::string dlc_name =
+          speech::SodaInstaller::GetInstance()->GetLanguageDlcNameForLocale(
+              locale);
+
+      // Should always have a language DLC lib for a specific language.
+      CHECK(!dlc_name.empty());
+
       // "Live caption" requires both a binary ("libsoda") as well as a specific
       // language model (e.g. "libsoda-model-en-us") to operate.
-      return {"libsoda", base::ToLowerASCII("libsoda-model-" + locale)};
+      return {"libsoda", dlc_name};
     }
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
@@ -191,6 +200,8 @@ VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kStyleTransfer:
     case VcEffectId::kCameraFraming:
+    case VcEffectId::kFaceRetouch:
+    case VcEffectId::kStudioLook:
       return {};
   }
 }

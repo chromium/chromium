@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/base/privacy_mode.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -517,8 +518,8 @@ void QuicSessionPoolTest::VerifyInitialization(
 
   const auto network_anonymization_key1 =
       NetworkAnonymizationKey::CreateSameSite(kSite1);
-  quic::QuicServerId quic_server_id1(kDefaultServerHostName, kDefaultServerPort,
-                                     PRIVACY_MODE_DISABLED);
+  quic::QuicServerId quic_server_id1(kDefaultServerHostName,
+                                     kDefaultServerPort);
 
   NetworkAnonymizationKey network_anonymization_key2;
   quic::QuicServerId quic_server_id2;
@@ -529,8 +530,7 @@ void QuicSessionPoolTest::VerifyInitialization(
     quic_server_id2 = quic_server_id1;
   } else {
     network_anonymization_key2 = network_anonymization_key1;
-    quic_server_id2 = quic::QuicServerId(kServer2HostName, kDefaultServerPort,
-                                         PRIVACY_MODE_DISABLED);
+    quic_server_id2 = quic::QuicServerId(kServer2HostName, kDefaultServerPort);
   }
 
   quic_params_->max_server_configs_stored_in_properties = 1;
@@ -580,7 +580,7 @@ void QuicSessionPoolTest::VerifyInitialization(
 
   std::unique_ptr<QuicServerInfo> quic_server_info =
       std::make_unique<PropertiesBasedQuicServerInfo>(
-          quic_server_id1, network_anonymization_key1,
+          quic_server_id1, PRIVACY_MODE_DISABLED, network_anonymization_key1,
           http_server_properties_.get());
 
   // Update quic_server_info's server_config and persist it.
@@ -619,7 +619,7 @@ void QuicSessionPoolTest::VerifyInitialization(
 
   std::unique_ptr<QuicServerInfo> quic_server_info2 =
       std::make_unique<PropertiesBasedQuicServerInfo>(
-          quic_server_id2, network_anonymization_key2,
+          quic_server_id2, PRIVACY_MODE_DISABLED, network_anonymization_key2,
           http_server_properties_.get());
   // Update quic_server_info2's server_config and persist it.
   QuicServerInfo::State* state2 = quic_server_info2->mutable_state();
@@ -1142,8 +1142,8 @@ TEST_P(QuicSessionPoolTest, CachedInitialRttWithNetworkAnonymizationKey) {
     std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
     EXPECT_TRUE(stream.get());
 
-    QuicChromiumClientSession* session =
-        GetActiveSession(kDefaultDestination, network_anonymization_key);
+    QuicChromiumClientSession* session = GetActiveSession(
+        kDefaultDestination, PRIVACY_MODE_DISABLED, network_anonymization_key);
     if (network_anonymization_key == kNetworkAnonymizationKey1) {
       EXPECT_EQ(10000, session->connection()->GetStats().srtt_us);
       ASSERT_TRUE(session->config()->HasInitialRoundTripTimeUsToSend());
@@ -1287,12 +1287,13 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
     EXPECT_TRUE(stream.get());
 
     QuicChromiumClientSession* session =
-        GetActiveSession(kDefaultDestination, kNetworkAnonymizationKeys[i]);
+        GetActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                         kNetworkAnonymizationKeys[i]);
 
     session->OnHttp3GoAway(0);
 
-    EXPECT_FALSE(
-        HasActiveSession(kDefaultDestination, kNetworkAnonymizationKeys[i]));
+    EXPECT_FALSE(HasActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                                  kNetworkAnonymizationKeys[i]));
 
     socket_data.ExpectAllReadDataConsumed();
     socket_data.ExpectAllWriteDataConsumed();
@@ -1334,8 +1335,8 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
     EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
     EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_QUIC_HANDSHAKE_FAILED));
 
-    EXPECT_FALSE(
-        HasActiveSession(kDefaultDestination, kNetworkAnonymizationKeys[i]));
+    EXPECT_FALSE(HasActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                                  kNetworkAnonymizationKeys[i]));
 
     for (size_t j = 0; j < std::size(kNetworkAnonymizationKeys); ++j) {
       // Stats up to kNetworkAnonymizationKeys[j] should have been deleted, all
@@ -2494,19 +2495,18 @@ TEST_P(QuicSessionPoolTest, CloseSessionDuringCreation) {
   // Session should have been created before the factory is notified of IP
   // address change.
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  quic::QuicServerId server_id(kDefaultServerHostName, kDefaultServerPort,
-                               false);
-  EXPECT_TRUE(QuicSessionPoolPeer::HasActiveSession(&factory, server_id,
-                                                    NetworkAnonymizationKey()));
+  quic::QuicServerId server_id(kDefaultServerHostName, kDefaultServerPort);
+  EXPECT_TRUE(QuicSessionPoolPeer::HasActiveSession(
+      &factory, server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey()));
   QuicChromiumClientSession* session = QuicSessionPoolPeer::GetActiveSession(
-      &factory, server_id, NetworkAnonymizationKey());
+      &factory, server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(&factory, session));
 
   base::RunLoop().RunUntilIdle();
 
   // Session should now be closed.
   EXPECT_FALSE(QuicSessionPoolPeer::HasActiveSession(
-      &factory, server_id, NetworkAnonymizationKey()));
+      &factory, server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey()));
 }
 
 TEST_P(QuicSessionPoolTest, CloseSessionsOnIPAddressChanged) {
@@ -3920,15 +3920,16 @@ TEST_P(QuicSessionPoolTest,
                                          CompletionOnceCallback()));
 
   // Ensure that session to the destination is alive and active.
-  QuicChromiumClientSession* destination_session = GetActiveSession(
-      kDefaultDestination, NetworkAnonymizationKey(), proxy_chain);
+  QuicChromiumClientSession* destination_session =
+      GetActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                       NetworkAnonymizationKey(), proxy_chain);
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
 
   // Ensure that the session to the proxy is alive and active.
-  QuicChromiumClientSession* proxy_session =
-      GetActiveSession(proxy_origin, NetworkAnonymizationKey(),
-                       ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
+  QuicChromiumClientSession* proxy_session = GetActiveSession(
+      proxy_origin, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
   quic::QuicConnectionId cid_on_new_path =
@@ -3981,8 +3982,8 @@ TEST_P(QuicSessionPoolTest,
   // Both sessions should still be alive, not marked as going away.
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
-  EXPECT_TRUE(HasActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
-                               proxy_chain));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                               NetworkAnonymizationKey(), proxy_chain));
   EXPECT_EQ(1u, destination_session->GetNumActiveStreams());
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
@@ -3995,8 +3996,8 @@ TEST_P(QuicSessionPoolTest,
   // Ensure that the session to the destination is still alive.
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
-  EXPECT_TRUE(HasActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
-                               proxy_chain));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                               NetworkAnonymizationKey(), proxy_chain));
   EXPECT_EQ(1u, destination_session->GetNumActiveStreams());
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
@@ -4139,15 +4140,16 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
                                          CompletionOnceCallback()));
 
   // Ensure that session to the destination is alive and active.
-  QuicChromiumClientSession* destination_session = GetActiveSession(
-      kDefaultDestination, NetworkAnonymizationKey(), proxy_chain);
+  QuicChromiumClientSession* destination_session =
+      GetActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                       NetworkAnonymizationKey(), proxy_chain);
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
 
   // Ensure that the session to the proxy is alive and active.
-  QuicChromiumClientSession* proxy_session =
-      GetActiveSession(proxy_origin, NetworkAnonymizationKey(),
-                       ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
+  QuicChromiumClientSession* proxy_session = GetActiveSession(
+      proxy_origin, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
   quic::QuicConnectionId cid_on_new_path =
@@ -4214,8 +4216,8 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
   // Both sessions should still be alive, not marked as going away.
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
-  EXPECT_TRUE(HasActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
-                               proxy_chain));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                               NetworkAnonymizationKey(), proxy_chain));
   EXPECT_EQ(1u, destination_session->GetNumActiveStreams());
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
@@ -4228,8 +4230,8 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
   // Ensure that the session to the destination is still alive.
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
-  EXPECT_TRUE(HasActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
-                               proxy_chain));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                               NetworkAnonymizationKey(), proxy_chain));
   EXPECT_EQ(1u, destination_session->GetNumActiveStreams());
   EXPECT_TRUE(
       QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
@@ -12407,8 +12409,7 @@ TEST_P(QuicSessionPoolTest, SharedCryptoConfig) {
         QuicSessionPoolPeer::GetCryptoConfig(factory_.get(),
                                              NetworkAnonymizationKey());
     quic::QuicServerId server_id1(scheme_host_port1.host(),
-                                  scheme_host_port1.port(),
-                                  PRIVACY_MODE_DISABLED);
+                                  scheme_host_port1.port());
     quic::QuicCryptoClientConfig::CachedState* cached1 =
         crypto_config_handle->GetConfig()->LookupOrCreate(server_id1);
     EXPECT_FALSE(cached1->proof_valid());
@@ -12421,8 +12422,7 @@ TEST_P(QuicSessionPoolTest, SharedCryptoConfig) {
 
     url::SchemeHostPort scheme_host_port2(url::kHttpsScheme, r2_host_name, 80);
     quic::QuicServerId server_id2(scheme_host_port2.host(),
-                                  scheme_host_port2.port(),
-                                  PRIVACY_MODE_DISABLED);
+                                  scheme_host_port2.port());
     quic::QuicCryptoClientConfig::CachedState* cached2 =
         crypto_config_handle->GetConfig()->LookupOrCreate(server_id2);
     EXPECT_EQ(cached1->source_address_token(), cached2->source_address_token());
@@ -12449,8 +12449,7 @@ TEST_P(QuicSessionPoolTest, CryptoConfigWhenProofIsInvalid) {
         QuicSessionPoolPeer::GetCryptoConfig(factory_.get(),
                                              NetworkAnonymizationKey());
     quic::QuicServerId server_id1(scheme_host_port1.host(),
-                                  scheme_host_port1.port(),
-                                  PRIVACY_MODE_DISABLED);
+                                  scheme_host_port1.port());
     quic::QuicCryptoClientConfig::CachedState* cached1 =
         crypto_config_handle->GetConfig()->LookupOrCreate(server_id1);
     EXPECT_FALSE(cached1->proof_valid());
@@ -12463,8 +12462,7 @@ TEST_P(QuicSessionPoolTest, CryptoConfigWhenProofIsInvalid) {
 
     url::SchemeHostPort scheme_host_port2(url::kHttpsScheme, r4_host_name, 80);
     quic::QuicServerId server_id2(scheme_host_port2.host(),
-                                  scheme_host_port2.port(),
-                                  PRIVACY_MODE_DISABLED);
+                                  scheme_host_port2.port());
     quic::QuicCryptoClientConfig::CachedState* cached2 =
         crypto_config_handle->GetConfig()->LookupOrCreate(server_id2);
     EXPECT_NE(cached1->source_address_token(), cached2->source_address_token());
@@ -12839,8 +12837,8 @@ TEST_P(QuicSessionPoolTest,
         NetworkAnonymizationKey::CreateSameSite(site));
   }
 
-  const quic::QuicServerId kQuicServerId(
-      kDefaultServerHostName, kDefaultServerPort, PRIVACY_MODE_DISABLED);
+  const quic::QuicServerId kQuicServerId(kDefaultServerHostName,
+                                         kDefaultServerPort);
 
   quic_params_->max_server_configs_stored_in_properties = 1;
   quic_params_->idle_connection_timeout = base::Seconds(500);
@@ -12875,7 +12873,7 @@ TEST_P(QuicSessionPoolTest,
 
     std::unique_ptr<QuicServerInfo> quic_server_info =
         std::make_unique<PropertiesBasedQuicServerInfo>(
-            kQuicServerId, network_anonymization_keys[i],
+            kQuicServerId, PRIVACY_MODE_DISABLED, network_anonymization_keys[i],
             http_server_properties_.get());
 
     // Update quic_server_info's server_config and persist it.
@@ -13082,8 +13080,7 @@ TEST_P(QuicSessionPoolTest, PoolByOrigin) {
   QuicChromiumClientSession::Handle* session2 =
       QuicHttpStreamPeer::GetSessionHandle(stream2.get());
   EXPECT_TRUE(session1->SharesSameSession(*session2));
-  EXPECT_EQ(quic::QuicServerId(kDefaultServerHostName, kDefaultServerPort,
-                               /*privacy_mode_enabled=*/false),
+  EXPECT_EQ(quic::QuicServerId(kDefaultServerHostName, kDefaultServerPort),
             session1->server_id());
 
   socket_data.ExpectAllReadDataConsumed();
@@ -13280,8 +13277,7 @@ TEST_P(QuicSessionPoolWithDestinationTest, SharedCertificate) {
       QuicHttpStreamPeer::GetSessionHandle(stream2.get());
   EXPECT_TRUE(session1->SharesSameSession(*session2));
 
-  EXPECT_EQ(quic::QuicServerId(origin1_.host(), origin1_.port(),
-                               /*privacy_mode_enabled=*/false),
+  EXPECT_EQ(quic::QuicServerId(origin1_.host(), origin1_.port()),
             session1->server_id());
 
   socket_data.ExpectAllReadDataConsumed();
@@ -13355,11 +13351,9 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentPrivacyMode) {
       QuicHttpStreamPeer::GetSessionHandle(stream2.get());
   EXPECT_FALSE(session1->SharesSameSession(*session2));
 
-  EXPECT_EQ(quic::QuicServerId(origin1_.host(), origin1_.port(),
-                               /*privacy_mode_enabled=*/false),
+  EXPECT_EQ(quic::QuicServerId(origin1_.host(), origin1_.port()),
             session1->server_id());
-  EXPECT_EQ(quic::QuicServerId(origin2_.host(), origin2_.port(),
-                               /*privacy_mode_enabled=*/true),
+  EXPECT_EQ(quic::QuicServerId(origin2_.host(), origin2_.port()),
             session2->server_id());
 
   socket_data1.ExpectAllReadDataConsumed();
@@ -13546,8 +13540,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   ASSERT_EQ(OK, callback_.WaitForResult());
   std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
-  EXPECT_TRUE(
-      HasActiveSession(origin1_, NetworkAnonymizationKey(), proxy_chain1));
+  EXPECT_TRUE(HasActiveSession(origin1_, PRIVACY_MODE_DISABLED,
+                               NetworkAnonymizationKey(), proxy_chain1));
 
   // There are ACKs still pending at this point, so to avoid confusing logs let
   // those finish before proceeding.
@@ -13723,11 +13717,9 @@ TEST_P(QuicSessionPoolWithDestinationTest, DisjointCertificate) {
       QuicHttpStreamPeer::GetSessionHandle(stream2.get());
   EXPECT_FALSE(session1->SharesSameSession(*session2));
 
-  EXPECT_EQ(quic::QuicServerId(origin1_.host(), origin1_.port(),
-                               /*privacy_mode_enabled=*/false),
+  EXPECT_EQ(quic::QuicServerId(origin1_.host(), origin1_.port()),
             session1->server_id());
-  EXPECT_EQ(quic::QuicServerId(origin2_.host(), origin2_.port(),
-                               /*privacy_mode_enabled=*/false),
+  EXPECT_EQ(quic::QuicServerId(origin2_.host(), origin2_.port()),
             session2->server_id());
 
   socket_data1.ExpectAllReadDataConsumed();
@@ -14752,8 +14744,9 @@ TEST_P(QuicSessionPoolDnsAliasPoolingTest, IPPooling) {
 
   std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
-  EXPECT_TRUE(HasActiveSession(kOrigin1, NetworkAnonymizationKey(),
-                               ProxyChain::Direct(), session_usage));
+  EXPECT_TRUE(HasActiveSession(kOrigin1, PRIVACY_MODE_DISABLED,
+                               NetworkAnonymizationKey(), ProxyChain::Direct(),
+                               session_usage));
 
   TestCompletionCallback callback2;
   RequestBuilder builder2(this);
@@ -14766,8 +14759,9 @@ TEST_P(QuicSessionPoolDnsAliasPoolingTest, IPPooling) {
 
   std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
-  EXPECT_TRUE(HasActiveSession(kOrigin2, NetworkAnonymizationKey(),
-                               ProxyChain::Direct(), session_usage));
+  EXPECT_TRUE(HasActiveSession(kOrigin2, PRIVACY_MODE_DISABLED,
+                               NetworkAnonymizationKey(), ProxyChain::Direct(),
+                               session_usage));
 
   QuicChromiumClientSession::Handle* session1 =
       QuicHttpStreamPeer::GetSessionHandle(stream1.get());
@@ -14775,8 +14769,7 @@ TEST_P(QuicSessionPoolDnsAliasPoolingTest, IPPooling) {
       QuicHttpStreamPeer::GetSessionHandle(stream2.get());
   EXPECT_TRUE(session1->SharesSameSession(*session2));
 
-  EXPECT_EQ(quic::QuicServerId(kOrigin1.host(), kOrigin1.port(),
-                               /*privacy_mode_enabled=*/false),
+  EXPECT_EQ(quic::QuicServerId(kOrigin1.host(), kOrigin1.port()),
             session1->server_id());
 
   socket_data.ExpectAllReadDataConsumed();
@@ -14871,10 +14864,10 @@ TEST_P(QuicSessionPoolTest, EchWithQuicFromHttpsRecord) {
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
 
-  QuicChromiumClientSession* session =
-      GetActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
-                       ProxyChain::Direct(), SessionUsage::kDestination,
-                       /*require_dns_https_alpn=*/true);
+  QuicChromiumClientSession* session = GetActiveSession(
+      kDefaultDestination, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      /*require_dns_https_alpn=*/true);
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
   EXPECT_EQ(std::string(endpoint.metadata.ech_config_list.begin(),
@@ -14914,10 +14907,10 @@ TEST_P(QuicSessionPoolTest, EchDisabled) {
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
 
-  QuicChromiumClientSession* session =
-      GetActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
-                       ProxyChain::Direct(), SessionUsage::kDestination,
-                       /*require_dns_https_alpn=*/true);
+  QuicChromiumClientSession* session = GetActiveSession(
+      kDefaultDestination, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      /*require_dns_https_alpn=*/true);
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
   EXPECT_TRUE(config.ech_config_list.empty());

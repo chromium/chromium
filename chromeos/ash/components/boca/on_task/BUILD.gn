@@ -37,6 +37,7 @@ source_set("unit_tests") {
     ":on_task",
     "//base",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/boca/proto",
     "//components/sessions:session_id",
   ]
 }

@@ -231,6 +231,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chrome_codeql_query_runner",
+)
+
+build_recipe(
     name = "recipe:chromium_codesearch",
 )
 

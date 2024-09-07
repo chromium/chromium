@@ -1262,6 +1262,11 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     return;
 
   Position insertion_pos = EndingVisibleSelection().Start();
+  Position placeholder;
+  if (RuntimeEnabledFeatures::RemoveCollapsedPlaceholderEnabled()) {
+    placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
+  }
+
   // We don't want any of the pasted content to end up nested in a Mail
   // blockquote, so first break out of any surrounding Mail blockquotes. Unless
   // we're inserting in a table, in which case breaking the blockquote will
@@ -1716,13 +1721,17 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     if (editing_state->IsAborted())
       return;
   }
-
   // If we are dealing with a fragment created from plain text
   // no style matching is necessary.
   if (plain_text_fragment)
     match_style_ = false;
 
   CompleteHTMLReplacement(last_position_to_select, editing_state);
+
+  // Remove the placeholder after the replacement is complete
+  if (placeholder.IsNotNull()) {
+    RemovePlaceholderAt(placeholder);
+  }
 }
 
 bool ReplaceSelectionCommand::ShouldRemoveEndBR(
@@ -2089,6 +2098,11 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
       !fragment.FirstChild()->IsTextNode())
     return false;
 
+  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled()) {
+    // Save the text to set event data for input events.
+    input_event_data_ = To<Text>(fragment.FirstChild())->data();
+  }
+
   // FIXME: Would be nice to handle smart replace in the fast path.
   if (smart_replace_ || fragment.HasInterchangeNewlineAtStart() ||
       fragment.HasInterchangeNewlineAtEnd())
@@ -2127,10 +2141,6 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
       return false;
   }
 
-  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled()) {
-    // Save the text to set event data for input events.
-    input_event_data_ = text_node->data();
-  }
 
   start_of_inserted_range_ = start;
   end_of_inserted_range_ = end;

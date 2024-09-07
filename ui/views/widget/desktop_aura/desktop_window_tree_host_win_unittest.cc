@@ -25,8 +25,8 @@ using DesktopWindowTreeHostWinTest = DesktopWidgetTest;
 
 TEST_F(DesktopWindowTreeHostWinTest, DebuggingId) {
   Widget widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   constexpr char kDebuggingName[] = "test-debugging-id";
   params.name = kDebuggingName;
   widget.Init(std::move(params));
@@ -37,6 +37,27 @@ TEST_F(DesktopWindowTreeHostWinTest, DebuggingId) {
             DesktopWindowTreeHostWinTestApi(desktop_window_tree_host)
                 .GetHwndMessageHandler()
                 ->debugging_id());
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, SetAllowScreenshots) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget.Init(std::move(params));
+
+  // Set not allow screenshots.
+  widget.SetAllowScreenshots(false);
+
+  // It will not be set because the widget is not shown.
+  EXPECT_TRUE(widget.AreScreenshotsAllowed());
+
+  // Show the widget and should update the allow screenshots.
+  widget.Show();
+  EXPECT_FALSE(widget.AreScreenshotsAllowed());
+
+  // Widget is showing, update should take effect immediately.
+  widget.SetAllowScreenshots(true);
+  EXPECT_TRUE(widget.AreScreenshotsAllowed());
 }
 
 class DesktopWindowTreeHostWinAccessibilityObjectTest
@@ -76,8 +97,9 @@ class DesktopWindowTreeHostWinAccessibilityObjectTest
 TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, RootDoesNotLeak) {
   {
     Widget widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     widget.Init(std::move(params));
     widget.Show();
 
@@ -107,8 +129,9 @@ TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, RootDoesNotLeak) {
 TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, CaretDoesNotLeak) {
   {
     Widget widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     widget.Init(std::move(params));
     widget.Show();
 
@@ -140,8 +163,9 @@ TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, UiaRootDoesNotLeak) {
 
   {
     Widget widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     widget.Init(std::move(params));
     widget.Show();
 

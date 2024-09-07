@@ -44,6 +44,13 @@ void MockPairerBroker::NotifyPairingStart(scoped_refptr<Device> device) {
     obs.OnPairingStart(device);
 }
 
+void MockPairerBroker::NotifyDisplayPasskey(std::u16string device_name,
+                                            uint32_t passkey) {
+  for (auto& obs : observers_) {
+    obs.OnDisplayPasskey(device_name, passkey);
+  }
+}
+
 void MockPairerBroker::NotifyHandshakeComplete(scoped_refptr<Device> device) {
   for (auto& obs : observers_)
     obs.OnHandshakeComplete(device);

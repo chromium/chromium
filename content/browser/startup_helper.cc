@@ -50,40 +50,26 @@ std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
 
 namespace {
 
+#if BUILDFLAG(IS_ANDROID)
+// Mobile config, for iOS see ios/web/app/web_main_loop.cc.
+constexpr size_t kThreadPoolDefaultMin = 6;
+constexpr size_t kThreadPoolMax = 8;
+constexpr double kThreadPoolCoresMultiplier = 0.6;
+constexpr int kThreadPoolOffset = 0;
+#else
+// Desktop config.
+constexpr size_t kThreadPoolDefaultMin = 16;
+constexpr size_t kThreadPoolMax = 32;
+constexpr double kThreadPoolCoresMultiplier = 0.6;
+constexpr int kThreadPoolOffset = 0;
+#endif
+
 BASE_FEATURE(kBrowserThreadPoolAdjustment,
              "BrowserThreadPoolAdjustment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// For iOS see ios/web/app/web_main_loop.cc.
-MIRACLE_PARAMETER_FOR_INT(GetBrowserThreadPoolMin,
-                          kBrowserThreadPoolAdjustment,
-                          "BrowserThreadPoolMin",
-#if BUILDFLAG(IS_ANDROID)
-                          6
-#else
-                          16
-#endif
-)
-
-MIRACLE_PARAMETER_FOR_INT(GetBrowserThreadPoolMax,
-                          kBrowserThreadPoolAdjustment,
-                          "BrowserThreadPoolMax",
-#if BUILDFLAG(IS_ANDROID)
-                          8
-#else
-                          32
-#endif
-)
-
-MIRACLE_PARAMETER_FOR_DOUBLE(GetBrowserThreadPoolCoresMultiplier,
-                             kBrowserThreadPoolAdjustment,
-                             "BrowserThreadPoolCoresMultiplier",
-                             0.6)
-
-MIRACLE_PARAMETER_FOR_INT(GetBrowserThreadPoolOffset,
-                          kBrowserThreadPoolAdjustment,
-                          "BrowserThreadPoolOffset",
-                          0)
+const base::FeatureParam<int> kBrowserThreadPoolMin{
+    &kBrowserThreadPoolAdjustment, "min", kThreadPoolDefaultMin};
 
 }  // namespace
 
@@ -93,11 +79,10 @@ void StartBrowserThreadPool() {
   // Ensure we always support at least one thread regardless of the field trial
   // param setting.
   size_t min =
-      base::checked_cast<size_t>(std::max(GetBrowserThreadPoolMin(), 1));
+      base::checked_cast<size_t>(std::max(kBrowserThreadPoolMin.Get(), 1));
   base::ThreadPoolInstance::InitParams thread_pool_init_params = {
       base::RecommendedMaxNumberOfThreadsInThreadGroup(
-          min, base::checked_cast<size_t>(GetBrowserThreadPoolMax()),
-          GetBrowserThreadPoolCoresMultiplier(), GetBrowserThreadPoolOffset())};
+          min, kThreadPoolMax, kThreadPoolCoresMultiplier, kThreadPoolOffset)};
 
 #if BUILDFLAG(IS_WIN)
   thread_pool_init_params.common_thread_pool_environment = base::

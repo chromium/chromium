@@ -160,7 +160,7 @@ export class AppElement extends AppElementBase {
       backgroundImageAttributionUrl_: {type: String},
       backgroundColor_: {type: Object},
 
-      // Used in cr-realbox component via host-context.
+      // Used in cr-searchbox component via host-context.
       colorSourceIsBaseline: {type: Boolean},
       logoColor_: {type: String},
       singleColoredLogo_: {type: Boolean},
@@ -192,7 +192,7 @@ export class AppElement extends AppElementBase {
       realboxShown_: {type: Boolean},
 
       /* Searchbox width behavior. */
-      realboxWidthBehavior_: {
+      searchboxWidthBehavior_: {
         type: String,
         reflect: true,
       },
@@ -272,8 +272,8 @@ export class AppElement extends AppElementBase {
   realboxHadSecondarySide: boolean;
   protected realboxIsTall_ = loadTimeData.getBoolean('realboxIsTall');
   protected realboxShown_: boolean;
-  protected realboxWidthBehavior_: string =
-      loadTimeData.getString('realboxWidthBehavior');
+  protected searchboxWidthBehavior_: string =
+      loadTimeData.getString('searchboxWidthBehavior');
   protected showLensUploadDialog_: boolean = false;
   protected logoEnabled_: boolean = loadTimeData.getBoolean('logoEnabled');
   protected oneGoogleBarEnabled_: boolean =
@@ -946,7 +946,7 @@ export class AppElement extends AppElementBase {
         case $$(this, 'ntp-logo'):
           recordClick(NtpElement.LOGO);
           return;
-        case $$(this, 'cr-realbox'):
+        case $$(this, 'cr-searchbox'):
           recordClick(NtpElement.REALBOX);
           return;
         case $$(this, 'cr-most-visited'):

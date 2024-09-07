@@ -176,8 +176,7 @@ const ComputedStyle* CSSComputedStyleDeclaration::ComputeComputedStyle() const {
   Element* styled_element = StyledElement();
   DCHECK(styled_element);
   const ComputedStyle* style = styled_element->EnsureComputedStyle(
-      styled_element->IsPseudoElement() ? kPseudoIdNone
-                                        : pseudo_element_specifier_,
+      (styled_element == element_) ? pseudo_element_specifier_ : kPseudoIdNone,
       pseudo_argument_);
   if (style && style->IsEnsuredOutsideFlatTree()) {
     UseCounter::Count(element_->GetDocument(),
@@ -212,7 +211,7 @@ Element* CSSComputedStyleDeclaration::StyledElement() const {
     return nullptr;
   }
 
-  if (PseudoElement* pseudo_element = element_->GetNestedPseudoElement(
+  if (Element* pseudo_element = element_->GetStyledPseudoElement(
           pseudo_element_specifier_, pseudo_argument_)) {
     return pseudo_element;
   }

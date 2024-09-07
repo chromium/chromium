@@ -144,8 +144,7 @@ TEST_F(SignedExchangeLoaderTest, Simple) {
           network::mojom::kURLLoadOptionNone,
           false /* should_redirect_to_fallback */, nullptr /* devtools_proxy */,
           nullptr /* reporter */, nullptr /* url_loader_factory */,
-          SignedExchangeLoader::URLLoaderThrottlesGetter(),
-          FrameTreeNode::kFrameTreeNodeInvalidId,
+          SignedExchangeLoader::URLLoaderThrottlesGetter(), FrameTreeNodeId(),
           std::string() /* accept_langs */,
           false /* keep_entry_for_prefetch_cache */);
 

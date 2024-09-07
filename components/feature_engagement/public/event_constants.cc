@@ -92,8 +92,8 @@ const char kPasswordManagerWidgetPromoClosed[] =
 const char kBlueDotPromoOverflowMenuShown[] =
     "blue_dot_promo_overflow_menu_shown";
 const char kBlueDotPromoSettingsShown[] = "blue_dot_promo_settings_shown";
-const char kBlueDotPromoOverflowMenuDismissed[] =
-    "blue_dot_promo_overflow_menu_dismissed";
+const char kBlueDotPromoOverflowMenuOpened[] =
+    "blue_dot_promo_overflow_menu_opened";
 const char kBlueDotPromoSettingsDismissed[] =
     "blue_dot_promo_settings_dismissed";
 const char kBlueDotOverflowMenuCustomized[] =
@@ -156,6 +156,7 @@ const char kIOSContextualPanelPriceInsightsEntrypointUsed[] =
     "ios_contextual_panel_price_insights_entrypoint_used";
 const char kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[] =
     "ios_contextual_panel_price_insights_entrypoint_explicitly_dismissed";
+const char kHomeCustomizationMenuUsed[] = "home_customization_menu_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

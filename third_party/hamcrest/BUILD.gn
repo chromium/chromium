@@ -15,7 +15,7 @@ java_group("hamcrest_java") {
 java_prebuilt("hamcrest_core_java") {
   supports_android = true
   testonly = true
-  jar_path = "lib/hamcrest-core.jar"
+  jar_path = "cipd/lib/hamcrest-core.jar"
   proguard_configs = [ "//third_party/hamcrest/proguard.flags" ]
 }
 
@@ -24,7 +24,7 @@ java_prebuilt("hamcrest_integration_java") {
   enable_bytecode_checks = false
   supports_android = true
   testonly = true
-  jar_path = "lib/hamcrest-integration.jar"
+  jar_path = "cipd/lib/hamcrest-integration.jar"
   proguard_configs = [ "//third_party/hamcrest/proguard.flags" ]
   deps = [ ":hamcrest_library_java" ]
   jar_excluded_patterns = [
@@ -36,7 +36,7 @@ java_prebuilt("hamcrest_integration_java") {
 java_prebuilt("hamcrest_library_java") {
   supports_android = true
   testonly = true
-  jar_path = "lib/hamcrest-library.jar"
+  jar_path = "cipd/lib/hamcrest-library.jar"
   proguard_configs = [ "//third_party/hamcrest/proguard.flags" ]
   deps = [ ":hamcrest_core_java" ]
 }

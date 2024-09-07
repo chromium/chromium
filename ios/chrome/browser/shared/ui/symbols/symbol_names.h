@@ -94,6 +94,7 @@ extern NSString* const kArrowUpSymbol;
 extern NSString* const kFamilylinkSymbol;
 extern NSString* const kMyDriveSymbol;
 extern NSString* const kSharedDrivesSymbol;
+extern NSString* const kEllipsisSquareFillSymbol;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.
@@ -200,6 +201,7 @@ extern NSString* const kDocSymbol;
 extern NSString* const kOpenInDownloadsSymbol;
 extern NSString* const kExternalLinkSymbol;
 extern NSString* const kChevronDownSymbol;
+extern NSString* const kChevronUpSymbol;
 extern NSString* const kChevronBackwardSymbol;
 extern NSString* const kChevronForwardSymbol;
 extern NSString* const kChevronUpDown;

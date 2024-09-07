@@ -358,7 +358,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
         controller.setLifecycleObserver(mTabListEditorLifecycleObserver);
-        controller.show(TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel), 0, null);
+        controller.show(TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel), null);
         controller.setNavigationProvider(mNavigationProvider);
         mTabListEditorCoordinator.overrideContentDescriptions(
                 R.string.accessibility_archived_tabs_dialog,

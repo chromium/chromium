@@ -97,6 +97,7 @@
 #include "components/network_time/network_time_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -119,7 +120,7 @@
 #include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/search_engines/default_search_policy_handler.h"
+#include "components/search_engines/enterprise/default_search_policy_handler.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -195,6 +196,7 @@
 #include "chrome/browser/ash/policy/handlers/app_launch_automation_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/policy/handlers/contextual_google_integrations_policies_handler.h"
+#include "chrome/browser/ash/policy/handlers/help_me_read_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/lacros_availability_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/lacros_selection_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/multi_screen_capture_policy_handler.h"
@@ -277,7 +279,8 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-#include "components/search_engines/site_search_policy_handler.h"
+#include "chrome/browser/policy/gen_ai_default_settings_policy_handler.h"
+#include "components/search_engines/enterprise/site_search_policy_handler.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -1727,6 +1730,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDnsOverHttpsIncludedDomains,
     ash::prefs::kDnsOverHttpsIncludedDomains,
     base::Value::Type::LIST },
+  { key::kHelpMeReadSettings,
+    ash::prefs::kHmrManagedSettings,
+    base::Value::Type::INTEGER},
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
@@ -1763,12 +1769,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kBrowserSwitcherChromeParameters,
     browser_switcher::prefs::kChromeParameters,
     base::Value::Type::LIST },
+#if BUILDFLAG(ENABLE_PRINTING)
   { key::kPrintPostScriptMode,
     prefs::kPrintPostScriptMode,
     base::Value::Type::INTEGER },
   { key::kPrintRasterizationMode,
     prefs::kPrintRasterizationMode,
     base::Value::Type::INTEGER },
+#endif
   { key::kSafeBrowsingForTrustedSourcesEnabled,
     prefs::kSafeBrowsingForTrustedSourcesEnabled,
     base::Value::Type::BOOLEAN },
@@ -2043,6 +2051,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kNativeClientForceAllowed,
     prefs::kNativeClientForceAllowed,
     base::Value::Type::BOOLEAN },
+  { key::kKioskActiveWiFiCredentialsScopeChangeEnabled,
+    prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2211,20 +2222,20 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 #if !BUILDFLAG(IS_ANDROID)
   { key::kTabOrganizerSettings,
-    optimization_guide::model_execution::prefs::kTabOrganizationEnterprisePolicyAllowed,
+    optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
   { key::kHelpMeWriteSettings,
-    optimization_guide::model_execution::prefs::kComposeEnterprisePolicyAllowed,
+    optimization_guide::prefs::kComposeEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
   { key::kCreateThemesSettings,
-    optimization_guide::model_execution::prefs::kWallpaperSearchEnterprisePolicyAllowed,
+    optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
   { key::kHistorySearchSettings,
-    optimization_guide::model_execution::prefs::kHistorySearchEnterprisePolicyAllowed,
+    optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif
   { key::kTabCompareSettings,
-    optimization_guide::model_execution::prefs::kTabCompareSettingsEnterprisePolicyAllowed,
+    optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   { key::kChromeForTestingAllowed,
@@ -2395,6 +2406,34 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           optimization_guide::model_execution::prefs::
               GenAILocalFoundationalModelEnterprisePolicySettings::kMaxValue),
       false));
+
+  std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      gen_ai_default_policies;
+  gen_ai_default_policies.emplace_back(
+      key::kHelpMeWriteSettings,
+      optimization_guide::prefs::kComposeEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kTabOrganizerSettings,
+      optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kCreateThemesSettings,
+      optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(key::kDevToolsGenAiSettings,
+                                       prefs::kDevToolsGenAiSettings);
+  gen_ai_default_policies.emplace_back(
+      key::kHistorySearchSettings,
+      optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kTabCompareSettings,
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed);
+#if BUILDFLAG(IS_CHROMEOS)
+  gen_ai_default_policies.emplace_back(key::kGenAIWallpaperSettings,
+                                       ash::prefs::kGenAIWallpaperSettings);
+  gen_ai_default_policies.emplace_back(key::kGenAIVcBackgroundSettings,
+                                       ash::prefs::kGenAIVcBackgroundSettings);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+      std::move(gen_ai_default_policies)));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -3002,6 +3041,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kSystemTerminalSshAllowed,
       crostini::prefs::kTerminalSshAllowedByPolicy));
   handlers->AddHandler(std::make_unique<OsColorModePolicyHandler>());
+  handlers->AddHandler(std::make_unique<HelpMeWritePolicyHandler>());
   handlers->AddHandler(
       std::make_unique<bruschetta::BruschettaPolicyHandler>(chrome_schema));
   handlers->AddHandler(
@@ -3023,6 +3063,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       chrome_schema, SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+  handlers->AddHandler(std::make_unique<HelpMeReadPolicyHandler>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // On most platforms, there is a legacy policy

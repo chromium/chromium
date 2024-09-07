@@ -15,8 +15,8 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
   ${this.shouldShowSpinner_() ? html`
     <div class="spinner"></div>` : ''}
     <cr-icon-button id="icon" iron-icon="${this.iconOverride || 'cr:search'}"
-        title="${this.label}" dir="ltr" tabindex="${this.getIconTabIndex_()}"
-        aria-hidden="${this.getIconAriaHidden_()}"
+        title="${this.label}" tabindex="${this.getIconTabIndex_()}"
+        aria-hidden="${this.getIconAriaHidden_()}" suppress-rtl-flip
         @click="${this.onSearchIconClicked_}" ?disabled="${this.disabled}">
   </cr-icon-button>
   <div id="searchTerm">

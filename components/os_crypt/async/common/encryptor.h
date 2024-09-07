@@ -135,6 +135,18 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   [[nodiscard]] bool DecryptString16(const std::string& ciphertext,
                                      std::u16string* plaintext) const;
 
+  // Returns true if there is at least one key contained within the encryptor
+  // that could be used for encryption, otherwise, it will return the value of
+  // OSCrypt::IsEncryptionAvailable.
+  bool IsEncryptionAvailable() const;
+
+  // Returns true if there is at least one key contained within the encryptor
+  // that might be able to decrypt data, otherwise it will return the value of
+  // OSCrypt::IsEncryptionAvailable. Note that if this function returns true
+  // then there is no guarantee that arbitrary data can be decrypted, as the
+  // correct key to decrypt the data might not be available.
+  bool IsDecryptionAvailable() const;
+
  private:
   friend class TestOSCryptAsync;
   friend class EncryptorTestBase;

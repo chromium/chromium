@@ -1,0 +1,156 @@
+{
+  "description": "Trigger with multiple attribution scopes",
+  "api_config": {
+    "needs_attribution_scopes": true
+  },
+  "input": {
+    "registrations": [
+      // S1: attribution scopes -> ["1"], destinations -> [D1].
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "1",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "1"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // S2: attribution scopes -> ["2"], destinations -> [D1].
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "234",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "2"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // S3: attribution scopes -> ["2", "3"], destinations -> [D1].
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "345",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "2",
+                    "3"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // S4: attribution scopes -> ["3"], destinations -> [D1].
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "456",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "3"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // T1: attribution scopes -> ["1", "2"], destination -> D1
+      // S3 should be selected as it's the last source that matches the one of
+      // the attribution scopes ("2").
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "attribution_scopes": [
+                  "1",
+                  "2"
+                ],
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172802",
+          "source_event_id": "345",
+          "source_type": "navigation",
+          "trigger_data": "1"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172802000"
+      }
+    ]
+  }
+}

@@ -8,4 +8,6 @@ namespace ios::provider {
 
 void BeginMemoryExperimentation() {}
 
+void StopMemoryExperimentation() {}
+
 }  // namespace ios::provider

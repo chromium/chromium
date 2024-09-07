@@ -48,10 +48,15 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "android-cronet-arm-rel",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android_cronet",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-arm-rel/targets"
     }
   },
   "$build/reclient": {

@@ -29,6 +29,9 @@ import androidx.preference.PreferenceGroup;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -129,7 +132,8 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
 
     private @Nullable PasswordCheck mPasswordCheck;
     private @ManagePasswordsReferrer int mManagePasswordsReferrer;
-    private BottomSheetController mBottomSheetController;
+    private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /** For controlling the UX flow of exporting passwords. */
     private ExportFlow mExportFlow = new ExportFlow();
@@ -169,7 +173,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                     }
                 },
                 PASSWORD_SETTINGS_EXPORT_METRICS_ID);
-        getActivity().setTitle(R.string.password_manager_settings_title);
+        mPageTitle.set(getString(R.string.password_manager_settings_title));
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
         PasswordManagerHandlerProvider.getForProfile(getProfile()).addObserver(this);
 
@@ -186,6 +190,11 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         if (savedInstanceState.containsKey(SAVED_STATE_SEARCH_QUERY)) {
             mSearchQuery = savedInstanceState.getString(SAVED_STATE_SEARCH_QUERY);
         }
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private @ManagePasswordsReferrer int getReferrerFromInstanceStateOrLaunchBundle(
@@ -420,7 +429,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         if (!mNoPasswords) {
             PasswordManagerHandlerProvider.getForProfile(getProfile())
                     .getPasswordManagerHandler()
-                    .showMigrationWarning(getActivity(), mBottomSheetController);
+                    .showMigrationWarning(getActivity(), mBottomSheetControllerSupplier.get());
         }
     }
 
@@ -737,8 +746,9 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         return true;
     }
 
-    public void setBottomSheetController(BottomSheetController bottomSheetController) {
-        mBottomSheetController = bottomSheetController;
+    public void setBottomSheetControllerSupplier(
+            OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier) {
+        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
     }
 
     Menu getMenuForTesting() {

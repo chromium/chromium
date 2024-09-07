@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
                          PrefService* global_prefs) override;
   std::vector<std::string> GetAvailableLanguages() const override;
   std::vector<std::string> GetLiveCaptionEnabledLanguages() const override;
+  std::string GetLanguageDlcNameForLocale(
+      const std::string& locale) const override;
 
  private:
   // SodaInstaller:

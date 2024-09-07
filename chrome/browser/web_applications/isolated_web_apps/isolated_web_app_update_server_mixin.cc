@@ -11,9 +11,12 @@
 #include "base/strings/string_split.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "net/http/http_status_code.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#endif
 
 namespace web_app {
 
@@ -46,6 +49,7 @@ GURL IsolatedWebAppUpdateServerMixin::GetUpdateManifestUrl(
       base::StrCat({"/", web_bundle_id.id(), "/", kUpdateManifestFileName}));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 base::Value::Dict
 IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id) const {
@@ -54,6 +58,7 @@ IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
       .Set(kPolicyUpdateManifestUrlKey,
            GetUpdateManifestUrl(web_bundle_id).spec());
 }
+#endif
 
 void IsolatedWebAppUpdateServerMixin::AddBundle(
     std::unique_ptr<BundledIsolatedWebApp> bundle) {

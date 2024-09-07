@@ -4,6 +4,7 @@
 
 #include "content/public/browser/document_service_internal.h"
 
+#include "content/browser/renderer_host/document_associated_data.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 namespace content::internal {
@@ -11,12 +12,16 @@ namespace content::internal {
 DocumentServiceBase::DocumentServiceBase(RenderFrameHost& render_frame_host)
     : render_frame_host_(render_frame_host) {
   static_cast<RenderFrameHostImpl&>(*render_frame_host_)
-      .AddDocumentService(this, {});
+      .document_associated_data()
+      .AddService(this, {});
 }
 
-DocumentServiceBase::~DocumentServiceBase() {
+DocumentServiceBase::~DocumentServiceBase() = default;
+
+void DocumentServiceBase::InternalUnregisterImpl() {
   static_cast<RenderFrameHostImpl&>(*render_frame_host_)
-      .RemoveDocumentService(this, {});
+      .document_associated_data()
+      .RemoveService(this, {});
 }
 
 }  // namespace content::internal

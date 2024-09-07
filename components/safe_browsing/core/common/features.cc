@@ -37,11 +37,11 @@ BASE_FEATURE(kClientSideDetectionKillswitch,
 
 BASE_FEATURE(kClientSideDetectionKeyboardPointerLockRequest,
              "ClientSideDetectionKeyboardPointerLockRequest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionNotificationPrompt,
              "ClientSideDetectionNotificationPrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionSamplePing,
              "ClientSideDetectionSamplePing",
@@ -49,7 +49,7 @@ BASE_FEATURE(kClientSideDetectionSamplePing,
 
 BASE_FEATURE(kClientSideDetectionVibrationApi,
              "ClientSideDetectionVibrationApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports,
              "CreateNotificationsAcceptedClientSafeBrowsingReports",
@@ -65,7 +65,7 @@ BASE_FEATURE(kDangerousDownloadInterstitial,
 
 BASE_FEATURE(kDeepScanningPromptRemoval,
              "SafeBrowsingDeepScanningPromptRemoval",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeepScanningCriteria,
              "SafeBrowsingDeepScanningCriteria",
@@ -85,10 +85,6 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
 BASE_FEATURE(kDlpRegionalizedEndpoints,
              "DlpRegionalizedEndpoints",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDownloadReportWithoutUserDecision,
-             "DownloadReportWithoutUserDecision",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
@@ -201,19 +197,20 @@ BASE_FEATURE(kDownloadsPageReferrerUrl,
              "DownloadsPageReferrerUrl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHashDatabaseOffsetMap,
+             "SafeBrowsingHashDatabaseOffsetMap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kHashDatabaseOffsetMapBytesPerOffset{
+    &kHashDatabaseOffsetMap, "HashDatabaseOffsetMapBytesPerOffset",
+    /*default_value=*/0};
+
+BASE_FEATURE(kLocalListsUseSBv5,
+             "SafeBrowsingLocalListsUseSBv5",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMmapSafeBrowsingDatabase,
-             "MmapSafeBrowsingDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
-constexpr base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync{
-    &kMmapSafeBrowsingDatabase, "MmapSafeBrowsingDatabaseAsync",
-    /*default_value=*/true
-};
 
 BASE_FEATURE(kRealTimeUrlFilteringCustomMessage,
              "RealTimeUrlFilteringCustomMessage",
@@ -247,21 +244,6 @@ BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kSafeBrowsingCallNewGmsApiOnStartup,
-             "SafeBrowsingCallNewGmsApiOnStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
-             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kSafeBrowsingOnUIThread,
-             "SafeBrowsingOnUIThread",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
 BASE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation,
              "SafeBrowsingReferrerChainWithCopyPasteNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -272,7 +254,7 @@ BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
 
 BASE_FEATURE(kSafetyHubAbusiveNotificationRevocation,
              "SafetyHubAbusiveNotificationRevocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSimplifiedUrlDisplay,
              "SimplifiedUrlDisplay",
@@ -326,7 +308,7 @@ BASE_FEATURE(kEnhancedSafeBrowsingPromo,
 
 constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
     &kSafeBrowsingDailyPhishingReportsLimit,
-    /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/3};
+    /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/10};
 
 // Returns the list of the experimental features that are enabled or disabled,
 // as part of currently running Safe Browsing experiments.
@@ -340,7 +322,6 @@ base::Value::List GetFeatureStatusList() {
       &kCreateNotificationsAcceptedClientSafeBrowsingReports,
       &kDelayedWarnings,
       &kDlpRegionalizedEndpoints,
-      &kDownloadReportWithoutUserDecision,
       &kDownloadTailoredWarnings,
       &kEnhancedSafeBrowsingPromo,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
@@ -355,8 +336,8 @@ base::Value::List GetFeatureStatusList() {
       &kExtensionTelemetryTabsExecuteScriptSignal,
       &kHashPrefixRealTimeLookups,
       &kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
+      &kLocalListsUseSBv5,
       &kLogAccountEnhancedProtectionStateInProtegoPings,
-      &kMmapSafeBrowsingDatabase,
       &kRealTimeUrlFilteringCustomMessage,
       &kSafeBrowsingAsyncRealTimeCheck,
       &kSafeBrowsingRemoveCookiesInAuthRequests,

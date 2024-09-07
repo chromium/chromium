@@ -67,7 +67,7 @@ class OriginTrialsSettingsStorage;
 }  // namespace embedder_support
 
 namespace extensions {
-class ChromeExtensionsBrowserClient;
+class ExtensionsBrowserClient;
 }
 
 namespace gcm {
@@ -173,7 +173,6 @@ class BrowserProcessImpl : public BrowserProcess,
   active_primary_accounts_metrics_recorder() override;
   variations::VariationsService* variations_service() override;
   BrowserProcessPlatformPart* platform_part() override;
-  extensions::EventRouterForwarder* extension_event_router_forwarder() override;
   NotificationUIManager* notification_ui_manager() override;
   NotificationPlatformBridge* notification_platform_bridge() override;
   policy::ChromeBrowserPolicyConnector* browser_policy_connector() override;
@@ -322,13 +321,12 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<GpuModeManager> gpu_mode_manager_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  std::unique_ptr<extensions::ChromeExtensionsBrowserClient>
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::unique_ptr<extensions::ExtensionsBrowserClient>
       extensions_browser_client_;
+#endif
 
-  scoped_refptr<extensions::EventRouterForwarder>
-      extension_event_router_forwarder_;
-
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<MediaFileSystemRegistry> media_file_system_registry_;
 #endif
 

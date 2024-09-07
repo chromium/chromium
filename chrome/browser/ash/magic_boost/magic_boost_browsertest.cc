@@ -33,6 +33,7 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -93,6 +94,7 @@ class MagicBoostBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kMahi,
                               chromeos::features::kOrca,
+                              chromeos::features::kFeatureManagementMahi,
                               chromeos::features::kFeatureManagementOrca},
         /*disabled_features=*/{});
 
@@ -100,7 +102,7 @@ class MagicBoostBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kMahiRestrictionsOverride);
+    command_line->AppendSwitch(chromeos::switches::kMahiRestrictionsOverride);
 
     InProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -891,6 +893,7 @@ class MahiUiWithOptInCardBrowserTest
     // is required to show the opt-in card.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
+                              chromeos::features::kFeatureManagementMahi,
                               chromeos::features::kMahi,
                               chromeos::features::kOrca},
         /*disabled_features=*/{});

@@ -43,6 +43,7 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -78,8 +79,10 @@
 namespace {
 
 using testing::ElementsAre;
-using RequestType = device::FidoRequestType;
+
 using BleStatus = device::FidoRequestHandlerBase::BleStatus;
+using RequestType = device::FidoRequestType;
+using Step = AuthenticatorRequestDialogModel::Step;
 
 const base::flat_set<AuthenticatorTransport> kAllTransports = {
     AuthenticatorTransport::kUsbHumanInterfaceDevice,
@@ -95,7 +98,7 @@ const base::flat_set<AuthenticatorTransport> kAllTransportsWithoutCable = {
 };
 
 using TransportAvailabilityInfo =
-    ::device::FidoRequestHandlerBase::TransportAvailabilityInfo;
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo;
 
 class RequestCallbackReceiver {
  public:
@@ -373,8 +376,6 @@ class RepeatingValueCallbackReceiver {
 class AuthenticatorRequestDialogControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  using Step = AuthenticatorRequestDialogModel::Step;
-
   AuthenticatorRequestDialogControllerTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -402,13 +403,12 @@ class FakeEnclaveController : public AuthenticatorRequestDialogModel::Observer {
             device::UserVerificationRequirement::kPreferred,
             *model_->platform_has_biometrics)) {
       if (kIsMac) {
-        model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+        model_->SetStep(Step::kGPMTouchID);
       } else {
-        model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+        model_->SetStep(Step::kGPMEnterPin);
       }
     } else {
-      model_->SetStep(
-          AuthenticatorRequestDialogModel::Step::kSelectSingleAccount);
+      model_->SetStep(Step::kSelectSingleAccount);
     }
   }
 
@@ -1536,7 +1536,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
       SCOPED_TRACE(testing::Message() << "passkey req? " << is_passkey_request);
       SCOPED_TRACE(testing::Message() << "win v" << win_webauthn_api_version);
 
-      AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
+      TransportAvailabilityInfo tai;
       tai.make_credential_attachment =
           device::AuthenticatorAttachment::kCrossPlatform;
       tai.request_type = device::FidoRequestType::kMakeCredential;
@@ -1602,7 +1602,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
   fake_win_webauthn_api.set_version(4);
 
-  AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
+  TransportAvailabilityInfo tai;
   tai.request_type = device::FidoRequestType::kGetAssertion;
   tai.has_win_native_api_authenticator = true;
   tai.has_empty_allow_list = false;
@@ -1638,7 +1638,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 }
 
 TEST_F(AuthenticatorRequestDialogControllerTest, WinNoPlatformAuthenticator) {
-  AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
+  TransportAvailabilityInfo tai;
   tai.request_type = device::FidoRequestType::kMakeCredential;
   tai.make_credential_attachment = device::AuthenticatorAttachment::kAny;
   tai.request_is_internal_only = true;
@@ -1648,9 +1648,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinNoPlatformAuthenticator) {
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   controller.StartFlow(std::move(tai), /*is_conditional_mediation=*/false);
-  EXPECT_EQ(
-      model->step(),
-      AuthenticatorRequestDialogModel::Step::kErrorWindowsHelloNotEnabled);
+  EXPECT_EQ(model->step(), Step::kErrorWindowsHelloNotEnabled);
   EXPECT_FALSE(model->offer_try_again_in_ui);
 }
 #endif
@@ -2257,8 +2255,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       model.get(), main_rfh());
   controller->StartFlow(TransportAvailabilityInfo(),
                         /*is_conditional_mediation=*/true);
-  ASSERT_EQ(model->step(),
-            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
+  ASSERT_EQ(model->step(), Step::kConditionalMediation);
   testing::NiceMock<MockDialogModelObserver> mock_observer;
   model->observers.AddObserver(&mock_observer);
 
@@ -2807,20 +2804,16 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
       if (should_create_in_icloud_keychain) {
         EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
       } else {
-        EXPECT_EQ(model->step(),
-                  AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+        EXPECT_EQ(model->step(), Step::kCreatePasskey);
         controller.HideDialogAndDispatchToPlatformAuthenticator();
         EXPECT_EQ(request_callback.WaitForResult(), kProfileAuthenticatorId);
       }
 
       controller.OnUserConsentDenied();
 
-      EXPECT_EQ(
-          model->step(),
-          should_create_in_icloud_keychain
-              ? AuthenticatorRequestDialogController::Step::kMechanismSelection
-              : AuthenticatorRequestDialogController::Step::
-                    kErrorInternalUnrecognized);
+      EXPECT_EQ(model->step(), should_create_in_icloud_keychain
+                                   ? Step::kMechanismSelection
+                                   : Step::kErrorInternalUnrecognized);
 
       controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
           kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
@@ -2835,8 +2828,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
           device::AuthenticatorType::kICloudKeychain);
       controller.OnUserConsentDenied();
 
-      EXPECT_EQ(model->step(),
-                AuthenticatorRequestDialogModel::Step::kNotStarted);
+      EXPECT_EQ(model->step(), Step::kNotStarted);
     }
   }
 }

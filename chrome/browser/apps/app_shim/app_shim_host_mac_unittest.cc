@@ -102,7 +102,8 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
  public:
   explicit TestingAppShimHostBootstrap(
       mojo::PendingReceiver<chrome::mojom::AppShimHostBootstrap> host_receiver)
-      : AppShimHostBootstrap(getpid()), test_weak_factory_(this) {
+      : AppShimHostBootstrap(AuditTokenForCurrentProcess()),
+        test_weak_factory_(this) {
     // AppShimHost will bind to the receiver from ServeChannel. For testing
     // purposes, have this receiver passed in at creation.
     host_bootstrap_receiver_.Bind(std::move(host_receiver));
@@ -119,6 +120,15 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
 
  private:
   base::WeakPtrFactory<TestingAppShimHostBootstrap> test_weak_factory_;
+
+  static audit_token_t AuditTokenForCurrentProcess() {
+    audit_token_t token;
+    mach_msg_type_number_t size = TASK_AUDIT_TOKEN_COUNT;
+    int kr = task_info(mach_task_self(), TASK_AUDIT_TOKEN, (task_info_t)&token,
+                       &size);
+    CHECK(kr == KERN_SUCCESS) << " Error getting audit token.";
+    return token;
+  }
 };
 
 const char kTestAppId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";

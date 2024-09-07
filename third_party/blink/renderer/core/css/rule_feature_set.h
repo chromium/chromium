@@ -75,6 +75,8 @@ class CORE_EXPORT RuleFeatureSet {
   SelectorPreMatch CollectFeaturesFromSelector(const CSSSelector&,
                                                const StyleScope*);
 
+  void RevisitSelectorForInspector(const CSSSelector&) const;
+
   // Member functions for accessing non-invalidation-set related features.
   MediaQueryResultFlags& MutableMediaQueryResultFlags() {
     return media_query_result_flags_;

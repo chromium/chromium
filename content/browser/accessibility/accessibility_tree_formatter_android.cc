@@ -140,7 +140,7 @@ void AccessibilityTreeFormatterAndroid::RecursiveBuildTree(
       static_cast<const BrowserAccessibilityAndroid*>(&node);
 
   for (size_t i = 0; i < android_node->PlatformChildCount(); ++i) {
-    BrowserAccessibility* child_node = android_node->PlatformGetChild(i);
+    ui::BrowserAccessibility* child_node = android_node->PlatformGetChild(i);
     CHECK(child_node);
     base::Value::Dict child_dict;
     RecursiveBuildTree(*child_node, &child_dict);

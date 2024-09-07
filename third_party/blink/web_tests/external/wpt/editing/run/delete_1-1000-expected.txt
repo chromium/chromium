@@ -1,15 +1,9 @@
 This is a testharness.js-based test.
-Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""]] "<span>foo[</span><span>]bar</span>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span><span>bar</span>" but got "<span>fo</span><span>bar</span>"
 [FAIL] [["stylewithcss","true"],["delete",""]] "foo<span style=display:none>bar</span>[]baz" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<br><br></p><p>[]bar</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
-[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "<p>foo<br><br></p><p>[]bar</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
-[FAIL] [["delete",""]] "<p>foo<br><br></p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
 [FAIL] [["delete",""]] "<a>foo</a>[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "<a>fo</a>bar"
 [FAIL] [["delete",""]] "<a href=/>foo</a>[]bar" compare innerHTML

@@ -97,23 +97,6 @@ targets.variant(
     ),
 )
 
-# This set of variants is encoded in a json file so that
-# chrome/official.infra/lacros-version-skew-roller can update the variant
-# definitions
-[targets.variant(
-    name = name,
-    identifier = v["identifier"],
-    description = v["description"],
-    args = v["args"],
-    swarming = targets.swarming(
-        cipd_packages = [targets.cipd_package(
-            package = p["cipd_package"],
-            location = p["location"],
-            revision = p["revision"],
-        ) for p in v["swarming"]["cipd_packages"]],
-    ),
-) for name, v in json.decode(io.read_file("./lacros-version-skew-variants.json")).items()]
-
 targets.variant(
     name = "LINUX_INTEL_UHD_630_STABLE",
     identifier = "UHD 630",
@@ -187,6 +170,20 @@ targets.variant(
         "iPad Air (5th generation)",
         "--version",
         "17.5",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPAD_AIR_5TH_GEN_18_1",
+    identifier = "iPad Air (5th generation) 18.1",
+    mixins = [
+        "ios_runtime_cache_18_1",
+    ],
+    args = [
+        "--platform",
+        "iPad Air (5th generation)",
+        "--version",
+        "18.1",
     ],
 )
 
@@ -299,6 +296,20 @@ targets.variant(
         "iPhone 14",
         "--version",
         "18.0",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPHONE_14_18_1",
+    identifier = "iPhone 14 18.1",
+    mixins = [
+        "ios_runtime_cache_18_1",
+    ],
+    args = [
+        "--platform",
+        "iPhone 14",
+        "--version",
+        "18.1",
     ],
 )
 
@@ -425,6 +436,20 @@ targets.variant(
         "iPhone SE (3rd generation)",
         "--version",
         "18.0",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPHONE_SE_3RD_GEN_18_1",
+    identifier = "iPhone SE (3rd generation) 18.1",
+    mixins = [
+        "ios_runtime_cache_18_1",
+    ],
+    args = [
+        "--platform",
+        "iPhone SE (3rd generation)",
+        "--version",
+        "18.1",
     ],
 )
 

@@ -56,9 +56,15 @@ be describing additional metrics about the same event.
       navigation start.
     </summary>
   </metric>
-  <metric name="BodyChunkTime">
+  <metric name="BodyChunkEndTime">
     <summary>
-      The time when the body chunk is processed for the page load, relative to
+      The timestamp of the body chunk end event for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="BodyChunkStartTime">
+    <summary>
+      The timestamp of the body chunk start event for the page load, relative to
       navigation start.
     </summary>
   </metric>
@@ -107,6 +113,21 @@ be describing additional metrics about the same event.
   <metric name="FirstRedirectResponseReceived">
     <summary>
       Whether the first redirect response is received yet.
+    </summary>
+  </metric>
+  <metric name="HeaderChunkEndTime">
+    <summary>
+      The timestamp of the header chunk end event for the page load, relative to
+      navigation start.
+
+      Note that this event is randomly sampled based on the JavaScript in the
+      page, recorded at the frequency of 1%.
+    </summary>
+  </metric>
+  <metric name="HeaderChunkStartTime">
+    <summary>
+      The timestamp of the header chunk start event for the page load, relative
+      to navigation start.
     </summary>
   </metric>
   <metric name="LargestContentfulPaintTime">
@@ -7650,6 +7671,19 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Enterprise.Profile.Enrollment">
+  <owner>cbe-device-trust-team@google.com</owner>
+  <summary>
+    Metrics related to Profiles enrolling into Enterprise cloud management.
+  </summary>
+  <metric name="IsUntrustedOidcRedirect">
+    <summary>
+      A boolean capturing that a Profile enrollment flow was blocked due to a
+      lack of trust in the chain of navigation redirects.
+    </summary>
+  </metric>
+</event>
+
 <event name="Event.Scroll">
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -8136,6 +8170,31 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FamilyLinkUser.ReauthenticationInterstitial">
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    These metrics are logged when an unauthenticated Family Link user tries to
+    navigate to YouTube in the main frame, prompting a re-authentication
+    interstitial.
+  </summary>
+  <metric name="InterstitialShown" enum="BooleanHit">
+    <summary>
+      Recorded when the re-authentication interstitial is displayed.
+    </summary>
+  </metric>
+  <metric name="ReauthenticationCompleted" enum="BooleanHit">
+    <summary>
+      Recorded when users successfully re-authenticates and can continue
+      navigation, and vice-versa for failed reauthentication.
+    </summary>
+  </metric>
+  <metric name="ReauthenticationStarted" enum="BooleanHit">
+    <summary>
+      Recorded when users initiate re-authentication from the interstitial.
+    </summary>
+  </metric>
+</event>
+
 <event name="FastCheckout.FormStatus">
   <owner>bwolfgang@google.com</owner>
   <owner>jkeitel@google.com</owner>
@@ -8182,6 +8241,75 @@ be describing additional metrics about the same event.
   <metric name="RunOutcome" enum="FastCheckoutRunOutcome">
     <summary>
       States if the run was successful or why it was not.
+    </summary>
+  </metric>
+</event>
+
+<event name="Feedback.HappinessTrackingSurvey">
+  <owner>zhouzj@google.com</owner>
+  <owner>fjacky@google.com</owner>
+  <summary>
+    Recorded when a user completes a HaTS survey.
+  </summary>
+  <metric name="SurveyAnswerToQuestion1">
+    <summary>
+      The answer the user has provided to survey question number 1.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion2">
+    <summary>
+      The answer the user has provided to survey question number 2.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion3">
+    <summary>
+      The answer the user has provided to survey question number 3.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion4">
+    <summary>
+      The answer the user has provided to survey question number 4.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion5">
+    <summary>
+      The answer the user has provided to survey question number 5.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion6">
+    <summary>
+      The answer the user has provided to survey question number 6.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion7">
+    <summary>
+      The answer the user has provided to survey question number 7.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion8">
+    <summary>
+      The answer the user has provided to survey question number 8.
+    </summary>
+  </metric>
+  <metric name="SurveyAnswerToQuestion9">
+    <summary>
+      The answer the user has provided to survey question number 9.
+    </summary>
+  </metric>
+  <metric name="SurveyCompleted" enum="Boolean">
+    <summary>
+      Boolean that records if a survey has been successfully completed.
+    </summary>
+  </metric>
+  <metric name="SurveyId">
+    <summary>
+      Survey ID associated with HaTS. This ID should be unique per HaTS survey
+      and should be separate from any existing IDs.
+    </summary>
+  </metric>
+  <metric name="SurveyLoaded" enum="Boolean">
+    <summary>
+      Boolean that records if a survey has been successfully loaded.
     </summary>
   </metric>
 </event>
@@ -12355,6 +12483,63 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Media.EME.Usage">
+  <owner>jrummell@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Event recorded when an Encrypted Media Extensions (EME) API is called.
+  </summary>
+  <metric name="Api" enum="EmeApiType">
+    <summary>
+      The EME API that is called.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="IsPersistentSession" enum="Boolean">
+    <summary>
+      For EME API calls done on MediaKeySession, whether the session is
+      persistent or not.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="KeySystem" enum="MediaKeySystem">
+    <summary>
+      The key system associated with the current CDM.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UseHardwareSecureCodecs" enum="Boolean">
+    <summary>
+      Whether hardware secure codecs are required for the current CDM.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Media.Engagement.SessionFinished">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -15354,6 +15539,12 @@ be describing additional metrics about the same event.
       of the main frame request.
     </summary>
   </metric>
+  <metric name="Navigation.InitiatorLocation">
+    <summary>
+      page_load_metrics::NavigationHandleUserData::InitiatorLocation enum value.
+      This field is used for identifying the types of prerender trigger.
+    </summary>
+  </metric>
   <metric name="Navigation.PageEndReason3" enum="PageEndReason">
     <summary>
       The |page_load_metrics::PageEndReason| for the main frame navigation of
@@ -16246,6 +16437,28 @@ be describing additional metrics about the same event.
       Counts how many times the user triggered the manual fallback for password
       saving. This is only populated if events happened.
     </summary>
+  </metric>
+</event>
+
+<event name="PasswordManager.FirstCCTPageLoad" singular="True">
+  <owner>ioanap@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Logged on Android for the first page that a Chrome Custom Tab loads.
+    Recorded when the primary page changes away from the first loaded one or
+    when the WebContents is destroyed.
+  </summary>
+  <metric name="HasPasswordForm" enum="Boolean">
+    <summary>
+      True if there was a password form detected on the page.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20339,6 +20552,39 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+</event>
+
+<event name="SiteFamiliarityHeuristicResult">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Recorded when a toplevel page navigates. This records which
+    user-page-familiarity-heuristics would trigger for a given site, if any.
+  </summary>
+  <metric name="AnyHeuristicsMatch" enum="Boolean">
+    <summary>
+      Whether any familiarity heuristics would trigger on the site.
+    </summary>
+  </metric>
+  <metric name="OnHighConfidenceAllowlist" enum="Boolean">
+    <summary>
+      Whether the site is on the safe browsing high confidence allowlist.
+    </summary>
+  </metric>
+  <metric name="SiteEngagementScore">
+    <summary>
+      Site engagement score in the range [0, 100], rounded down to a multiple of
+      10 to limit granularity.
+    </summary>
+  </metric>
+  <metric name="SiteFamiliarityHistoryHeuristic"
+      enum="SiteFamiliarityHistoryHeuristicName">
+    <summary>
+      The most stringent navigation-history related familiarity heuristic that
+      would trigger on the site. If no navigation-history heuristic matches then
+      the value NO_HEURISTIC_MATCH is recorded.
+    </summary>
   </metric>
 </event>
 

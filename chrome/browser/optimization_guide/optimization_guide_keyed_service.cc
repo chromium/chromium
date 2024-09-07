@@ -605,17 +605,18 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
 
 bool OptimizationGuideKeyedService::CanCreateOnDeviceSession(
     optimization_guide::ModelBasedCapabilityKey feature,
-    raw_ptr<optimization_guide::OnDeviceModelEligibilityReason> debug_reason) {
+    optimization_guide::OnDeviceModelEligibilityReason*
+        on_device_model_eligibility_reason) {
   if (!model_execution_manager_) {
-    if (debug_reason) {
-      *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
-          kFeatureNotEnabled;
+    if (on_device_model_eligibility_reason) {
+      *on_device_model_eligibility_reason = optimization_guide::
+          OnDeviceModelEligibilityReason::kFeatureNotEnabled;
     }
     return false;
   }
 
-  return model_execution_manager_->CanCreateOnDeviceSession(feature,
-                                                            debug_reason);
+  return model_execution_manager_->CanCreateOnDeviceSession(
+      feature, on_device_model_eligibility_reason);
 }
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
@@ -735,13 +736,17 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
 }
 
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForFeedback(
-    optimization_guide::UserVisibleFeatureKey feature) const {
+    optimization_guide::proto::LogAiDataRequest::FeatureCase feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // If logging is enabled, feedback is always also enabled.
+  const optimization_guide::MqlsFeatureMetadata* metadata =
+      optimization_guide::MqlsFeatureRegistry::GetInstance().GetFeature(
+          feature);
+  DCHECK(metadata);
   if (model_execution_features_controller_ &&
       model_execution_features_controller_
-          ->ShouldFeatureBeCurrentlyAllowedForLogging(feature)) {
+          ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata)) {
     return true;
   }
 
@@ -750,7 +755,14 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForFeedback(
   auto* variations_service = g_browser_process->variations_service();
   bool is_dogfood_client =
       !!variations_service && variations_service->IsLikelyDogfoodClient();
-  return is_dogfood_client && ShouldFeatureBeCurrentlyEnabledForUser(feature);
+  std::optional<optimization_guide::UserVisibleFeatureKey> feature_key =
+      metadata->user_visible_feature_key();
+  if (!feature_key) {
+    // This isn't a user-visible feature, so we shouldn't show the feedback UI.
+    return false;
+  }
+  return is_dogfood_client &&
+         ShouldFeatureBeCurrentlyEnabledForUser(*feature_key);
 }
 
 bool OptimizationGuideKeyedService::IsSettingVisible(

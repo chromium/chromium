@@ -82,12 +82,12 @@ using OptionalSetCookie = std::optional<
     embedder_support::AndroidStreamReaderURLLoader::SetCookieHeader>;
 
 std::unique_ptr<AwContentsIoThreadClient> GetIoThreadClient(
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     AwBrowserContextIoThreadHandle* browser_context_handle) {
-  // |frame_tree_node_id_| is set to no kNoFrameTreeNodeId for service
-  // workers. |request_.originated_from_service_worker| is insufficient here
-  // because it is not set to true on browser side requested main scripts.
-  if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
+  // |frame_tree_node_id_| is set to be invalid for service workers.
+  // |request_.originated_from_service_worker| is insufficient here because it
+  // is not set to true on browser side requested main scripts.
+  if (frame_tree_node_id.is_null()) {
     return browser_context_handle
                ? browser_context_handle->GetServiceWorkerIoThreadClient()
                : nullptr;
@@ -117,7 +117,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
   InterceptedRequest(
       OptionalGetCookie get_cookie_header,
       OptionalSetCookie set_cookie_header,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       int32_t request_id,
       uint32_t options,
       network::ResourceRequest request,
@@ -220,7 +220,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   OptionalGetCookie get_cookie_header_;
   OptionalSetCookie set_cookie_header_;
-  const int frame_tree_node_id_;
+  const content::FrameTreeNodeId frame_tree_node_id_;
   const int32_t request_id_;
   const uint32_t options_;
   bool input_stream_previously_failed_ = false;
@@ -341,7 +341,7 @@ class ProtocolResponseDelegate
 InterceptedRequest::InterceptedRequest(
     OptionalGetCookie get_cookie_header,
     OptionalSetCookie set_cookie_header,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     int32_t request_id,
     uint32_t options,
     network::ResourceRequest request,
@@ -393,7 +393,7 @@ XrwEnabledMap& GetXrwEnabledMap() {
 
 // Persistent Origin Trials can only be checked on the UI thread.
 bool CheckXrwOriginTrial(const GURL& request_url,
-                         int frame_tree_node_id,
+                         content::FrameTreeNodeId frame_tree_node_id,
                          blink::mojom::ResourceType resource_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::OriginTrialsControllerDelegate* delegate =
@@ -439,7 +439,7 @@ bool CheckXrwOriginTrial(const GURL& request_url,
 // Persistent Origin Trials can only be checked on the UI thread.
 // |result_args| is owned by a BarrierClosure that executes after this call.
 void CheckXrwOriginTrialOnUiThread(GURL request_url,
-                                   int frame_tree_node_id,
+                                   content::FrameTreeNodeId frame_tree_node_id,
                                    blink::mojom::ResourceType resource_type,
                                    InterceptResponseReceivedArgs* result_args) {
   result_args->xrw_origin_trial_enabled =
@@ -452,7 +452,7 @@ void CheckXrwOriginTrialOnUiThread(GURL request_url,
 // will call |done_callback| synchronously.
 void CheckXrwOriginTrialAsync(std::optional<bool> cached_result,
                               GURL request_url,
-                              int frame_tree_node_id,
+                              content::FrameTreeNodeId frame_tree_node_id,
                               blink::mojom::ResourceType resource_type,
                               InterceptResponseReceivedArgs* result_args,
                               base::OnceClosure done_callback) {
@@ -624,7 +624,7 @@ void InterceptedRequest::InterceptResponseReceived(
         committed_mode = CommittedRequestedWithHeaderMode::kConstantWebview;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Invalid enum value for AwSettings:RequestedWithHeaderMode: "
             << requested_with_header_mode;
     }
@@ -737,14 +737,14 @@ namespace {
 // TODO(timvolodine): consider factoring this out of this file.
 
 AwContentsClientBridge* GetAwContentsClientBridgeFromID(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   content::WebContents* wc =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   return AwContentsClientBridge::FromWebContents(wc);
 }
 
 void OnReceivedHttpErrorOnUiThread(
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     const AwWebResourceRequest& request,
     std::unique_ptr<AwContentsClientBridge::HttpErrorInfo> http_error_info) {
   auto* client = GetAwContentsClientBridgeFromID(frame_tree_node_id);
@@ -756,7 +756,7 @@ void OnReceivedHttpErrorOnUiThread(
   client->OnReceivedHttpError(request, std::move(http_error_info));
 }
 
-void OnReceivedErrorOnUiThread(int frame_tree_node_id,
+void OnReceivedErrorOnUiThread(content::FrameTreeNodeId frame_tree_node_id,
                                const AwWebResourceRequest& request,
                                int error_code,
                                bool safebrowsing_hit) {
@@ -769,7 +769,7 @@ void OnReceivedErrorOnUiThread(int frame_tree_node_id,
   client->OnReceivedError(request, error_code, safebrowsing_hit, true);
 }
 
-void OnNewLoginRequestOnUiThread(int frame_tree_node_id,
+void OnNewLoginRequestOnUiThread(content::FrameTreeNodeId frame_tree_node_id,
                                  const std::string& realm,
                                  const std::string& account,
                                  const std::string& args) {
@@ -1021,7 +1021,7 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
         cookie_manager,
     AwCookieAccessPolicy* cookie_access_policy,
     std::optional<const net::IsolationInfo> isolation_info,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     bool intercept_only,
@@ -1061,7 +1061,7 @@ AwProxyingURLLoaderFactory::~AwProxyingURLLoaderFactory() = default;
 void AwProxyingURLLoaderFactory::SetXrwResultForNavigation(
     const GURL& url,
     blink::mojom::ResourceType resource_type,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     int64_t navigation_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool result = CheckXrwOriginTrial(url, frame_tree_node_id, resource_type);
@@ -1091,7 +1091,7 @@ void AwProxyingURLLoaderFactory::CreateProxy(
     mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
     AwCookieAccessPolicy* cookie_access_policy,
     std::optional<const net::IsolationInfo> isolation_info,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     std::optional<SecurityOptions> security_options,

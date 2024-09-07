@@ -51,7 +51,9 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   raw_ptr<gpu::SharedImageInterface> sii_ = nullptr;
   gfx::Size last_size_;
   scoped_refptr<gpu::ClientSharedImage> client_shared_image_;
-  GLuint dest_texture_id_ = 0;
+  std::unique_ptr<gpu::SharedImageTexture> shared_image_texture_;
+  std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
+      scoped_shared_image_access_;
   GLuint draw_frame_buffer_ = 0;
   // Sync point after access to the buffer is done.
   gpu::SyncToken access_done_sync_token_;

@@ -29,9 +29,9 @@
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
-#if !BUILDFLAG(IS_CHROMEOS)
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Generates a ContextMenuParams for the Autofill context menu options.
 content::ContextMenuParams CreateContextMenuParams(
     std::optional<autofill::FormRendererId> form_renderer_id = std::nullopt,
@@ -61,7 +61,6 @@ class TestAutofillManager : public BrowserAutofillManager {
       *this,
       {AutofillManagerEvent::kFormsSeen}};
 };
-}  // namespace
 
 class AutofillContextMenuManagerFeedbackUIBrowserTest
     : public InProcessBrowserTest {
@@ -256,4 +255,5 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+}  // namespace
 }  // namespace autofill

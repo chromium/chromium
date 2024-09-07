@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/cocoa/drag_drop_client_mac.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
@@ -346,12 +347,11 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
                                 bool full_keyboard_access_enabled) override;
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override;
-  void OnWindowParentChanged(uint64_t new_parent_id) override;
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override;
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override;
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override;
-  void DoDialogButtonAction(ui::DialogButton button) override;
-  bool GetDialogButtonInfo(ui::DialogButton type,
+  void DoDialogButtonAction(ui::mojom::DialogButton button) override;
+  bool GetDialogButtonInfo(ui::mojom::DialogButton type,
                            bool* button_exists,
                            std::u16string* button_label,
                            bool* is_button_enabled,
@@ -403,7 +403,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void GetWidgetIsModal(GetWidgetIsModalCallback callback) override;
   void GetIsFocusedViewTextual(
       GetIsFocusedViewTextualCallback callback) override;
-  void GetDialogButtonInfo(ui::DialogButton button,
+  void GetDialogButtonInfo(ui::mojom::DialogButton button,
                            GetDialogButtonInfoCallback callback) override;
   void GetDoDialogButtonsExist(
       GetDoDialogButtonsExistCallback callback) override;

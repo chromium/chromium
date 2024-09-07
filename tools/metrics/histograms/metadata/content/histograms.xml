@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Content.Classification" enum="ContentClassification"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.EligibilityType"
-    enum="ContentNotificationEligibilityType" expires_after="2024-12-20">
+    enum="ContentNotificationEligibilityType" expires_after="2025-02-23">
   <owner>tinazwang@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.NotificationActionUpload.Success"
-    enum="Boolean" expires_after="2024-12-15">
+    enum="Boolean" expires_after="2025-02-16">
   <owner>guiperez@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Promo.SetUpList.Action"
-    enum="ContentNotificationSetUpListPromoAction" expires_after="2024-09-29">
+    enum="ContentNotificationSetUpListPromoAction" expires_after="2024-12-29">
   <owner>tinazwang@chromium.org</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Promo.TopOfFeed.Action"
-    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2024-09-29">
+    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2025-03-02">
   <owner>guiperez@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.GetContentSetting.Network.Duration"
-    units="microseconds" expires_after="2024-12-24">
+    units="microseconds" expires_after="2025-02-23">
   <owner>trishalfonso@google.com</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -463,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultAutoVerifySetting"
-    enum="ContentSetting" expires_after="2024-12-24">
+    enum="ContentSetting" expires_after="2025-02-23">
   <owner>ryankalla@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultBackgroundSyncSetting"
-    enum="ContentSetting" expires_after="2024-12-15">
+    enum="ContentSetting" expires_after="2025-02-16">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2024-12-15">
+    enum="ContentSetting" expires_after="2025-02-16">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -886,6 +886,8 @@ chromium-metrics-reviews@google.com.
     <variant name="tracking-protection"
         summary="Tracking Protection exceptions"/>
     <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
+    <variant name="web-app-installation"
+        summary="Web app installation exceptions"/>
     <variant name="webid-active-session" summary="FedCM Active Session"/>
     <variant name="webid-request" summary="FedCM Request"/>
     <variant name="webid-share" summary="FedCM Share"/>

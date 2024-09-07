@@ -81,6 +81,8 @@ static_library("app_list") {
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/ash/app_icon_color_cache",
     "//chrome/browser/ui/webui/ash/settings/app_management",
     "//chrome/browser/web_applications",
     "//chrome/common",
@@ -130,6 +132,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":app_list",
     "//ash/app_list/model:app_list_model",
     "//ash/components/arc:arc_test_support",
     "//ash/constants",
@@ -140,7 +143,6 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_preload_service",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/arc:test_support",

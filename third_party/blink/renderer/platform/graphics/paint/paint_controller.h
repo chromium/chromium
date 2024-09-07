@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_under_invalidation_checker.h"
 #include "third_party/blink/renderer/platform/graphics/paint/region_capture_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -33,8 +34,6 @@
 class SkTextBlob;
 
 namespace blink {
-
-class PaintUnderInvalidationChecker;
 
 enum class PaintBenchmarkMode {
   kNormal,
@@ -53,8 +52,6 @@ enum class PaintBenchmarkMode {
 // https://github.com/WICG/paint-timing. It excludes default background paint.
 struct FrameFirstPaint {
   DISALLOW_NEW();
-
- public:
   explicit FrameFirstPaint(const void* frame)
       : frame(frame),
         first_painted(false),
@@ -67,38 +64,86 @@ struct FrameFirstPaint {
   bool image_painted : 1;
 };
 
+struct SubsequenceMarkers {
+  DISALLOW_NEW();
+  DisplayItemClientId client_id = kInvalidDisplayItemClientId;
+  // The start and end (not included) index of paint chunks in this
+  // subsequence.
+  wtf_size_t start_chunk_index = 0;
+  wtf_size_t end_chunk_index = 0;
+  bool is_moved_from_cached_subsequence = false;
+};
+
+struct SubsequencesData {
+  DISALLOW_NEW();
+  // Map a client to the index into |tree|.
+  HashMap<DisplayItemClientId, wtf_size_t> map;
+  // A pre-order list of the subsequence tree.
+  Vector<SubsequenceMarkers> tree;
+};
+
+class PaintController;
+
+class PLATFORM_EXPORT PaintControllerPersistentData
+    : public GarbageCollected<PaintControllerPersistentData> {
+ public:
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(current_paint_artifact_);
+  }
+
+  // Returns the approximate memory usage owned by by this data.
+  size_t ApproximateUnsharedMemoryUsage() const;
+
+  // Get the artifact generated after the last commit.
+  const PaintArtifact& GetPaintArtifact() const {
+    return *current_paint_artifact_;
+  }
+  const DisplayItemList& GetDisplayItemList() const {
+    return GetPaintArtifact().GetDisplayItemList();
+  }
+  const PaintChunks& GetPaintChunks() const {
+    return GetPaintArtifact().GetPaintChunks();
+  }
+
+  void InvalidateAllForTesting();
+
+  bool ClientCacheIsValid(const DisplayItemClient&) const;
+
+  wtf_size_t GetSubsequenceIndex(DisplayItemClientId) const;
+  const SubsequenceMarkers* GetSubsequenceMarkers(DisplayItemClientId) const;
+
+ private:
+  friend class PaintController;
+
+  void CommitNewDisplayItems(PaintArtifact& new_paint_artifact,
+                             SubsequencesData new_subsequences);
+
+  Member<PaintArtifact> current_paint_artifact_ =
+      MakeGarbageCollected<PaintArtifact>();
+  SubsequencesData current_subsequences_;
+
+  bool cache_is_all_invalid_ = true;
+};
+
 // Responsible for processing display items as they are produced, and producing
 // a final paint artifact when complete. This class includes logic for caching,
 // cache invalidation, and merging.
-class PLATFORM_EXPORT PaintController
-    : public GarbageCollected<PaintController> {
- public:
-  enum Usage {
-    // The PaintController will be used for multiple paint cycles. It caches
-    // display item and subsequence of the previous paint which can be used in
-    // subsequent paints.
-    kMultiplePaints,
-    // The PaintController will be used for one paint cycle only. It doesn't
-    // cache or invalidate cache.
-    kTransient,
-  };
+class PLATFORM_EXPORT PaintController {
+  STACK_ALLOCATED();
 
-  explicit PaintController(Usage = kMultiplePaints);
+ public:
+  explicit PaintController(bool record_debug_info = false,
+                           PaintControllerPersistentData* = nullptr,
+                           PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
   PaintController(const PaintController&) = delete;
   PaintController& operator=(const PaintController&) = delete;
   ~PaintController();
 
-  void Trace(Visitor*) const;
+  bool HasPersistentData() const { return persistent_data_; }
 
-#if DCHECK_IS_ON()
-  Usage GetUsage() const { return usage_; }
-#endif
-
-  friend class PaintControllerCycleScope;
-
-  void clear();
-
-  // These methods are called during painting.
+  void SetRecordDebugInfo(bool record_debug_info) {
+    record_debug_info_ = record_debug_info;
+  }
 
   // Provide a new set of paint chunk properties to apply to recorded display
   // items. If id is nullptr, the id of the first display item will be used as
@@ -193,71 +238,25 @@ class PLATFORM_EXPORT PaintController
   void EndSubsequence(wtf_size_t subsequence_index);
 
   void BeginSkippingCache() {
-    if (usage_ == kTransient)
-      return;
-    ++skipping_cache_count_;
+    if (persistent_data_) {
+      ++skipping_cache_count_;
+    }
   }
   void EndSkippingCache() {
-    if (usage_ == kTransient)
-      return;
-    DCHECK(skipping_cache_count_ > 0);
-    --skipping_cache_count_;
+    if (persistent_data_) {
+      CHECK_GT(skipping_cache_count_, 0u);
+      --skipping_cache_count_;
+    }
   }
   bool IsSkippingCache() const {
-    return usage_ == kTransient || skipping_cache_count_;
+    return !persistent_data_ || skipping_cache_count_;
   }
 
-  // Must be called when a painting is finished. Updates the current paint
-  // artifact with the new paintings.
-  void CommitNewDisplayItems();
-
-  // Returns the approximate memory usage owned by this PaintController.
-  size_t ApproximateUnsharedMemoryUsage() const;
-
-  // Get the artifact generated after the last commit.
-  const PaintArtifact& GetPaintArtifact() const {
-    CheckNoNewPaint();
-    return *current_paint_artifact_;
-  }
-  const DisplayItemList& GetDisplayItemList() const {
-    return GetPaintArtifact().GetDisplayItemList();
-  }
-  const PaintChunks& GetPaintChunks() const {
-    return GetPaintArtifact().GetPaintChunks();
-  }
-
-  const PaintArtifact& GetNewPaintArtifact() const {
-    DCHECK(new_paint_artifact_);
-    return *new_paint_artifact_;
-  }
-  wtf_size_t NewPaintChunkCount() const {
-    DCHECK(new_paint_artifact_);
-    return new_paint_artifact_->GetPaintChunks().size();
-  }
-
-  class ScopedBenchmarkMode {
-    STACK_ALLOCATED();
-
-   public:
-    ScopedBenchmarkMode(PaintController& paint_controller,
-                        PaintBenchmarkMode mode)
-        : paint_controller_(paint_controller) {
-      // Nesting is not allowed.
-      DCHECK_EQ(PaintBenchmarkMode::kNormal, paint_controller_.benchmark_mode_);
-      paint_controller.SetBenchmarkMode(mode);
-    }
-    ~ScopedBenchmarkMode() {
-      paint_controller_.SetBenchmarkMode(PaintBenchmarkMode::kNormal);
-    }
-
-   private:
-    PaintController& paint_controller_;
-  };
-
-  PaintBenchmarkMode GetBenchmarkMode() const { return benchmark_mode_; }
-  bool ShouldForcePaintForBenchmark() {
-    return benchmark_mode_ >= PaintBenchmarkMode::kForcePaint;
-  }
+  // Must be called when a painting is finished. If associated with persistent
+  // data, updates the current paint artifact in the persistent data with the
+  // new paintings. Returns the new paint artifact (which is mainly for
+  // transient (i.e. no persistent data) usages).
+  const PaintArtifact& CommitNewDisplayItems();
 
   bool IsCheckingUnderInvalidationForTesting() const;
 
@@ -302,20 +301,37 @@ class PLATFORM_EXPORT PaintController
  private:
   friend class PaintControllerTestBase;
   friend class PaintControllerPaintTestBase;
+  friend class PaintControllerPersistentData;
   friend class PaintUnderInvalidationChecker;
 
-  // Called before painting to optimize memory allocation by reserving space in
-  // |new_paint_artifact_| and |new_subsequences_| based on the size of the
-  // previous ones (|current_paint_artifact_| and |current_subsequences_|).
-  void ReserveCapacity();
-
-  // Called at the beginning of a paint cycle (see |PaintControllerCycleScope|).
-  void StartCycle(bool record_debug_info);
-
-  // Called at the end of a paint cycle (see |PaintControllerCycleScope|). This
-  // will cleanup data that will no longer be used for the next cycle, validate
-  // clients, and prepare for the next cycle.
-  void FinishCycle();
+  const PaintArtifact& CurrentPaintArtifact() const {
+    DCHECK(persistent_data_);
+    return *persistent_data_->current_paint_artifact_;
+  }
+  PaintArtifact& CurrentPaintArtifact() {
+    DCHECK(persistent_data_);
+    return *persistent_data_->current_paint_artifact_;
+  }
+  const DisplayItemList& CurrentDisplayItemList() const {
+    return CurrentPaintArtifact().GetDisplayItemList();
+  }
+  DisplayItemList& CurrentDisplayItemList() {
+    return CurrentPaintArtifact().GetDisplayItemList();
+  }
+  const PaintChunks& CurrentPaintChunks() const {
+    return CurrentPaintArtifact().GetPaintChunks();
+  }
+  PaintChunks& CurrentPaintChunks() {
+    return CurrentPaintArtifact().GetPaintChunks();
+  }
+  const SubsequencesData& CurrentSubsequences() const {
+    DCHECK(persistent_data_);
+    return persistent_data_->current_subsequences_;
+  }
+  SubsequencesData& CurrentSubsequences() {
+    DCHECK(persistent_data_);
+    return persistent_data_->current_subsequences_;
+  }
 
   void RecordDebugInfo(const DisplayItemClient&);
 
@@ -330,8 +346,6 @@ class PLATFORM_EXPORT PaintController
   // 2. the client no longer paints a display item that is cached: the cached
   //    display item will be removed. This doesn't affect performance.
   bool ClientCacheIsValid(const DisplayItemClient&) const;
-
-  void InvalidateAllForTesting();
 
   // Set new item state (cache skipping, etc) for the last new display item.
   void ProcessNewItem(const DisplayItemClient&, DisplayItem&);
@@ -364,18 +378,13 @@ class PLATFORM_EXPORT PaintController
                                  wtf_size_t start_chunk_index,
                                  wtf_size_t end_chunk_index);
 
-  struct SubsequenceMarkers {
-    DisplayItemClientId client_id = kInvalidDisplayItemClientId;
-    // The start and end (not included) index of paint chunks in this
-    // subsequence.
-    wtf_size_t start_chunk_index = 0;
-    wtf_size_t end_chunk_index = 0;
-    bool is_moved_from_cached_subsequence = false;
-    DISALLOW_NEW();
-  };
-
-  wtf_size_t GetSubsequenceIndex(DisplayItemClientId) const;
-  const SubsequenceMarkers* GetSubsequenceMarkers(DisplayItemClientId) const;
+  wtf_size_t GetSubsequenceIndex(DisplayItemClientId id) const {
+    return persistent_data_->GetSubsequenceIndex(id);
+  }
+  const SubsequenceMarkers* GetSubsequenceMarkers(
+      DisplayItemClientId id) const {
+    return persistent_data_->GetSubsequenceMarkers(id);
+  }
 
   void ValidateNewChunkClient(const DisplayItemClient&);
 
@@ -386,37 +395,23 @@ class PLATFORM_EXPORT PaintController
   void ShowDebugDataInternal(DisplayItemList::JsonOption) const;
 #endif
 
-  void SetBenchmarkMode(PaintBenchmarkMode);
+  PaintControllerPersistentData* const persistent_data_;
 
-  void CheckNoNewPaint() const {
-#if DCHECK_IS_ON()
-    DCHECK(!new_paint_artifact_ || new_paint_artifact_->IsEmpty());
-    DCHECK(paint_chunker_.IsInInitialState());
-    DCHECK(current_paint_artifact_);
-#endif
-  }
-
-  Usage usage_;
-
-  // The last paint artifact after CommitNewDisplayItems().
-  // It includes paint chunks as well as display items.
-  // It's initially empty and is never null if usage is kMultiplePaints.
-  // Otherwise it's null before CommitNewDisplayItems().
-  Member<PaintArtifact> current_paint_artifact_;
-
-  // Data being used to build the next paint artifact.
-  // It's never null and if usage is kMultiplePaints. Otherwise it's null after
+  // Data being used to build the next paint artifact. It's not null until
   // CommitNewDisplayItems().
-  Member<PaintArtifact> new_paint_artifact_;
+  PaintArtifact* new_paint_artifact_ = MakeGarbageCollected<PaintArtifact>();
   PaintChunker paint_chunker_;
-  Member<HeapVector<Member<const DisplayItemClient>>> clients_to_validate_;
+  HeapVector<Member<const DisplayItemClient>> clients_to_validate_;
 
-  bool cache_is_all_invalid_ = true;
-  bool committed_ = false;
-  bool record_debug_info_ = false;
+  // Saves the original persistent_data_->current_paint_artifact_ after calling
+  // CommitNewDisplayItems. The data will be cleared when this PaintController
+  // is destructed to reduce GC overhead.
+  PaintArtifact* old_paint_artifact_ = nullptr;
 
   // A stack recording current frames' first paints.
   Vector<FrameFirstPaint> frame_first_paints_;
+
+  bool record_debug_info_ = false;
 
   unsigned skipping_cache_count_ = 0;
 
@@ -433,6 +428,8 @@ class PLATFORM_EXPORT PaintController
   // looking for potential matches. Thus we can ensure that the algorithm runs
   // in linear time.
   IdIndexMap out_of_order_item_id_index_map_;
+
+  wtf_size_t current_fragment_ = 0;
 
   // The next item in the current list for sequential match.
   wtf_size_t next_item_to_match_ = 0;
@@ -458,38 +455,15 @@ class PLATFORM_EXPORT PaintController
   DisplayItem::Id::HashKey last_checked_cached_item_id_;
 #endif
 
-  Member<PaintUnderInvalidationChecker> under_invalidation_checker_;
+  const PaintBenchmarkMode benchmark_mode_;
 
-  struct SubsequencesData {
-    // Map a client to the index into |tree|.
-    HashMap<DisplayItemClientId, wtf_size_t> map;
-    // A pre-order list of the subsequence tree.
-    Vector<SubsequenceMarkers> tree;
-    DISALLOW_NEW();
-  };
-  SubsequencesData current_subsequences_;
+  std::optional<PaintUnderInvalidationChecker> under_invalidation_checker_;
+
   SubsequencesData new_subsequences_;
-
-  wtf_size_t current_fragment_ = 0;
-
-  PaintBenchmarkMode benchmark_mode_ = PaintBenchmarkMode::kNormal;
 
   static CounterForTesting* counter_for_testing_;
 
   class PaintArtifactAsJSON;
-};
-
-class PLATFORM_EXPORT PaintControllerCycleScope {
-  STACK_ALLOCATED();
-
- public:
-  explicit PaintControllerCycleScope(PaintController& controller,
-                                     bool record_debug_info);
-  ~PaintControllerCycleScope();
-
- protected:
-  PaintController& controller_;
-  PaintArtifact* old_paint_artifact_;
 };
 
 }  // namespace blink

@@ -128,6 +128,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      enableHandTrackingContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableHandTrackingContentSetting');
+        },
+      },
+
       enableFederatedIdentityApiContentSetting_: {
         type: Boolean,
         value() {
@@ -349,6 +356,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private blockAutoplayStatus_: BlockAutoplayStatus;
   private enableFederatedIdentityApiContentSetting_: boolean;
   private enablePaymentHandlerContentSetting_: boolean;
+  private enableHandTrackingContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;

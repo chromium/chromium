@@ -17,6 +17,7 @@
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/host_control_dispatcher.h"
@@ -136,9 +137,13 @@ void WebrtcConnectionToClient::set_input_stub(protocol::InputStub* input_stub) {
 void WebrtcConnectionToClient::ApplySessionOptions(
     const SessionOptions& options) {
   session_options_ = options;
-  DCHECK(transport_);
   transport_->ApplySessionOptions(options);
   video_encoder_factory_->ApplySessionOptions(options);
+}
+
+void WebrtcConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_->ApplyNetworkSettings(settings);
 }
 
 PeerConnectionControls* WebrtcConnectionToClient::peer_connection_controls() {
@@ -167,7 +172,8 @@ void WebrtcConnectionToClient::OnSessionStateChange(Session::State state) {
 
     case Session::AUTHENTICATED: {
       base::WeakPtr<WebrtcConnectionToClient> self = weak_factory_.GetWeakPtr();
-      event_handler_->OnConnectionAuthenticated();
+      event_handler_->OnConnectionAuthenticated(
+          session_->authenticator().GetSessionPolicies());
 
       // OnConnectionAuthenticated() call above may result in the connection
       // being torn down.

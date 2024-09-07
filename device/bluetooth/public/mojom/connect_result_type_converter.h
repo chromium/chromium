@@ -60,6 +60,10 @@ struct TypeConverter<bluetooth::mojom::ConnectResult,
         return bluetooth::mojom::ConnectResult::JNI_THREAD_ATTACH;
       case device::BluetoothDevice::ConnectErrorCode::ERROR_WAKELOCK:
         return bluetooth::mojom::ConnectResult::WAKELOCK;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_UNEXPECTED_STATE:
+        return bluetooth::mojom::ConnectResult::UNEXPECTED_STATE;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET:
+        return bluetooth::mojom::ConnectResult::SOCKET;
       case device::BluetoothDevice::ConnectErrorCode::NUM_CONNECT_ERROR_CODES:
         NOTREACHED_IN_MIGRATION();
         return bluetooth::mojom::ConnectResult::FAILED;

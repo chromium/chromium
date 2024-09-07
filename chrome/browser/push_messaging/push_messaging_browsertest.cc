@@ -2674,11 +2674,11 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
   // Start a prerender with the push messaging test URL.
   const GURL prerendering_url(
       https_server()->GetURL(GetTestURL() + "?prerendering"));
-  int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(prerendering_url);
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);
-  ASSERT_NE(prerender_helper_.GetHostForUrl(prerendering_url),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_helper_.GetHostForUrl(prerendering_url));
 
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(kIncognitoWarningPattern);

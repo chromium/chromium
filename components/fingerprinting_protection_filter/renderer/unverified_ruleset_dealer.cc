@@ -11,8 +11,11 @@
 #include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "unverified_ruleset_dealer.h"
 
 namespace fingerprinting_protection_filter {
+
+UnverifiedRulesetDealer::UnverifiedRulesetDealer() = default;
 
 UnverifiedRulesetDealer::~UnverifiedRulesetDealer() = default;
 

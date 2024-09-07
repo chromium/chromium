@@ -203,6 +203,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ONE_TIME_CODE:
     case SINGLE_USERNAME_FORGOT_PASSWORD:
     case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+    case IMPROVED_PREDICTION:
     case MAX_VALID_FIELD_TYPE:
       return nullptr;
   }
@@ -324,8 +325,7 @@ bool IsSynthesizedType(FieldType field_type, AddressCountryCode country_code) {
 
 std::u16string GetFormattingExpression(FieldType field_type,
                                        AddressCountryCode country_code) {
-  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
-      GroupTypeOfFieldType(field_type) == FieldTypeGroup::kAddress) {
+  if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kAddress) {
     // If `country_code` is specified, return the corresponding formatting
     // expression if they exist. Note that it should not fallback to a legacy
     // expression, as these ones refer to a different hierarchy.
@@ -396,7 +396,7 @@ bool IsTypeEnabledForCountry(FieldType field_type,
   }
 
   auto it = kAutofillModelRules.find(country_code.value());
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       it->second, [field_type](const FieldTypeDescription& description) {
         return description.field_type == field_type ||
                base::Contains(description.children, field_type);
@@ -404,17 +404,12 @@ bool IsTypeEnabledForCountry(FieldType field_type,
 }
 
 bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
-  if (country_code->empty() || country_code == kLegacyHierarchyCountryCode ||
-      !base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+  if (country_code->empty() || country_code == kLegacyHierarchyCountryCode) {
     return false;
   }
 
   if (country_code == AddressCountryCode("AU") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseAUAddressModel)) {
-    return false;
-  }
-  if (country_code == AddressCountryCode("BR") &&
-      !base::FeatureList::IsEnabled(features::kAutofillUseBRAddressModel)) {
     return false;
   }
 
@@ -440,11 +435,6 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
 
   if (country_code == AddressCountryCode("IT") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseITAddressModel)) {
-    return false;
-  }
-
-  if (country_code == AddressCountryCode("MX") &&
-      !base::FeatureList::IsEnabled(features::kAutofillUseMXAddressModel)) {
     return false;
   }
 

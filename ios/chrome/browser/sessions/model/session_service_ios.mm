@@ -405,7 +405,6 @@ using SaveSessionCallback =
   @try {
     NSError* error = nil;
     size_t previous_cert_policy_bytes = web::GetCertPolicyBytesEncoded();
-    const base::TimeTicks archiving_start_time = base::TimeTicks::Now();
     NSData* sessionData =
         [NSKeyedArchiver archivedDataWithRootObject:sessionWindow
                               requiringSecureCoding:NO
@@ -415,8 +414,6 @@ using SaveSessionCallback =
     // metric as part of the second metric recorded (probably negligible).
     const base::TimeTicks end_time = base::TimeTicks::Now();
     base::UmaHistogramTimes(kSessionHistogramSavingTime, end_time - start_time);
-    base::UmaHistogramTimes("Session.WebStates.ArchivedDataWithRootObjectTime",
-                            end_time - archiving_start_time);
 
     if (!sessionData || error) {
       DLOG(WARNING) << "Error serializing session for path: "
@@ -428,9 +425,6 @@ using SaveSessionCallback =
     base::UmaHistogramCounts100000(
         "Session.WebStates.AllSerializedCertPolicyCachesSize",
         web::GetCertPolicyBytesEncoded() - previous_cert_policy_bytes / 1024);
-
-    base::UmaHistogramCounts100000("Session.WebStates.SerializedSize",
-                                   sessionData.length / 1024);
 
     _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
                             [self performSaveSessionData:sessionData

@@ -106,21 +106,12 @@ instead of "initial value".
 |           pseudo="select-fallback-button-text"
 |           shadow:pseudoId="select-fallback-button-text"
 |           "initial value"
-|         <div>
-|           pseudo="select-fallback-button-icon"
-|           shadow:pseudoId="select-fallback-button-icon"
-|           <svg svg>
-|             fill="none"
-|             viewBox="0 0 20 16"
-|             <svg path>
-|               d="M4 6 L10 12 L 16 6"
-|     <slot>
-|       id="select-datalist"
-|       <datalist>
-|         pseudo="select-fallback-datalist"
-|         shadow:pseudoId="select-fallback-datalist"
-|         <slot>
-|           id="select-datalist-options"
+|     <div>
+|       popover="auto"
+|       pseudo="picker(select)"
+|       shadow:pseudoId="picker(select)"
+|       <slot>
+|         id="select-popover-options"
 |     <div>
 |       popover="manual"
 |       pseudo="-internal-select-autofill-preview"

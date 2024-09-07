@@ -9,6 +9,7 @@
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
@@ -16,9 +17,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @interface AppStoreRatingSceneAgent ()
 
@@ -30,7 +30,7 @@
 @implementation AppStoreRatingSceneAgent
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _promosManager = promosManager;
   }
   return self;
@@ -66,10 +66,6 @@
 // Returns true if this is likely the user's default browser and the user is not
 // in a country excluded from the default browser eligibility condition.
 - (BOOL)isDefaultBrowserConditionMet {
-  if (!IsDefaultBrowserConditionExclusionInEffect()) {
-    return IsChromeLikelyDefaultBrowser();
-  }
-
   // If for some reason the variations service isn't available to determine the
   // current country, err on the side of caution and assume the country is
   // excluded.

@@ -7,6 +7,7 @@ source_set("constants") {
     "constants.h",
     "constants.mm",
   ]
+  public_deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -22,6 +23,8 @@ source_set("utils") {
   deps = [
     ":constants",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ui/base",
   ]
   frameworks = [
@@ -34,6 +37,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "utils_unittest.mm" ]
   deps = [
+    ":constants",
     ":utils",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",

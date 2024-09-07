@@ -43,11 +43,10 @@ class ChunkedBufferDataSource : public mojo::DataPipeProducer::DataSource {
       return result;
     }
     uint64_t read_start = offset_ + offset;
-    uint64_t out_size = buffer.size();
-    uint64_t len = std::min(length_ - offset, out_size);
-    buffer_->ReadData(read_start, len,
-                      reinterpret_cast<uint8_t*>(buffer.data()));
-    result.bytes_read = len;
+    uint64_t len = std::min<uint64_t>(length_ - offset, buffer.size());
+    result.bytes_read = buffer_->ReadData(
+        read_start,
+        base::as_writable_bytes(buffer).first(base::checked_cast<size_t>(len)));
     return result;
   }
 
@@ -65,7 +64,7 @@ WebBundleChunkedBuffer::Chunk::Chunk(
     : start_pos_(start_pos), bytes_(std::move(bytes)) {
   DCHECK(bytes_);
   DCHECK(bytes_->size() != 0);
-  DCHECK(base::CheckAdd<uint64_t>(start_pos_, bytes_->size()).IsValid());
+  CHECK(base::CheckAdd<uint64_t>(start_pos_, bytes_->size()).IsValid());
 }
 
 WebBundleChunkedBuffer::Chunk::~Chunk() = default;
@@ -82,7 +81,7 @@ uint64_t WebBundleChunkedBuffer::Chunk::end_pos() const {
   return start_pos_ + bytes_->size();
 }
 
-uint64_t WebBundleChunkedBuffer::Chunk::size() const {
+size_t WebBundleChunkedBuffer::Chunk::size() const {
   return bytes_->size();
 }
 
@@ -97,12 +96,12 @@ WebBundleChunkedBuffer::WebBundleChunkedBuffer(ChunkVector chunks)
 
 WebBundleChunkedBuffer::~WebBundleChunkedBuffer() = default;
 
-void WebBundleChunkedBuffer::Append(const uint8_t* data, size_t num_bytes) {
-  DCHECK(base::CheckAdd<uint64_t>(end_pos(), num_bytes).IsValid());
-  if (num_bytes == 0)
+void WebBundleChunkedBuffer::Append(base::span<const uint8_t> data) {
+  if (data.empty()) {
     return;
-  auto bytes = base::MakeRefCounted<base::RefCountedBytes>(data, num_bytes);
-  chunks_.push_back(Chunk(end_pos(), std::move(bytes)));
+  }
+  auto bytes = base::MakeRefCounted<base::RefCountedBytes>(data);
+  chunks_.emplace_back(end_pos(), std::move(bytes));
 }
 
 bool WebBundleChunkedBuffer::ContainsAll(uint64_t offset,
@@ -191,21 +190,23 @@ uint64_t WebBundleChunkedBuffer::GetAvailableLength(uint64_t offset,
 }
 
 uint64_t WebBundleChunkedBuffer::ReadData(uint64_t offset,
-                                          uint64_t max_length,
-                                          uint8_t* out) const {
-  uint64_t length = GetAvailableLength(offset, max_length);
-  if (length == 0)
+                                          base::span<uint8_t> out) const {
+  uint64_t length = GetAvailableLength(offset, out.size());
+  if (length == 0) {
     return 0;
+  }
   ChunkVector::const_iterator it = FindChunk(offset);
-  CHECK(it != chunks_.end(), base::NotFatalUntil::M130);
   uint64_t written = 0;
-  while (length > written) {
-    CHECK(it != chunks_.end(), base::NotFatalUntil::M130);
+  while (length > written && it != chunks_.end()) {
+    auto it_span = base::span(*it);
     uint64_t offset_in_chunk = offset + written - it->start_pos();
     uint64_t length_in_chunk =
         std::min(it->size() - offset_in_chunk, length - written);
-    memcpy(out + written, it->data() + offset_in_chunk, length_in_chunk);
-    written += length_in_chunk;
+    size_t checked_offset = base::checked_cast<size_t>(offset_in_chunk);
+    size_t checked_length = base::checked_cast<size_t>(length_in_chunk);
+    out.copy_prefix_from(it_span.subspan(checked_offset, checked_length));
+    out = out.subspan(checked_length);
+    written += checked_length;
     ++it;
   }
   return written;

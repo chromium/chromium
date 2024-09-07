@@ -1042,7 +1042,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Loads a page in a prerendered page.
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  const int host_id = prerender_helper().AddPrerender(prerender_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
   MockAutoplayConfigurationClient prerendered_client;
@@ -1091,8 +1092,16 @@ class MediaEngagementContentsObserverFencedFrameBrowserTest
   std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
 };
 
+// TODO(crbug.com/349253812): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame \
+  DISABLED_SendEngagementLevelToRenderFrameOnFencedFrame
+#else
+#define MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame \
+  SendEngagementLevelToRenderFrameOnFencedFrame
+#endif
 IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
-                       SendEngagementLevelToRenderFrameOnFencedFrame) {
+                       MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const GURL& initial_url =

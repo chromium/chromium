@@ -10,12 +10,16 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/osauth/impl/request/password_manager_auth_request.h"
+#include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
+#include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/components/osauth/public/request/auth_request.h"
 
 namespace chromeos::auth {
 
 using AuthReason = std::variant<ash::InSessionAuthDialogController::Reason,
-                                ash::ActiveSessionAuthController::Reason>;
+                                ash::AuthRequest::Reason>;
 
 AuthReason ToAshReason(chromeos::auth::mojom::Reason reason) {
   switch (reason) {
@@ -24,14 +28,12 @@ AuthReason ToAshReason(chromeos::auth::mojom::Reason reason) {
       // implementation of the `chromeos::auth::mojom::InSessionAuth` should
       // only be reachable from ash.
       return ash::features::IsUseAuthPanelInSessionEnabled()
-                 ? AuthReason{ash::ActiveSessionAuthController::Reason::
-                                  kPasswordManager}
+                 ? AuthReason{ash::AuthRequest::Reason::kPasswordManager}
                  : AuthReason{ash::InSessionAuthDialogController::
                                   kAccessPasswordManager};
     case chromeos::auth::mojom::Reason::kAccessAuthenticationSettings:
       return ash::features::IsUseAuthPanelInSessionEnabled()
-                 ? AuthReason{ash::ActiveSessionAuthController::Reason::
-                                  kSettings}
+                 ? AuthReason{ash::AuthRequest::Reason::kSettings}
                  : AuthReason{ash::InSessionAuthDialogController::
                                   kAccessAuthenticationSettings};
     case chromeos::auth::mojom::Reason::kAccessMultideviceSettings:
@@ -48,6 +50,26 @@ void InSessionAuth::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
+std::unique_ptr<ash::AuthRequest> InSessionAuth::AuthRequestFromReason(
+    ash::AuthRequest::Reason reason,
+    RequestTokenCallback callback) {
+  switch (reason) {
+    case ash::AuthRequest::Reason::kPasswordManager:
+      return std::make_unique<ash::PasswordManagerAuthRequest>(
+          base::BindOnce(&InSessionAuth::OnAuthComplete,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+    case ash::AuthRequest::Reason::kSettings:
+      return std::make_unique<ash::SettingsAuthRequest>(
+          base::BindOnce(&InSessionAuth::OnAuthComplete,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+    case ash::AuthRequest::Reason::kWebAuthN:
+      // WebAuthN authentication requests are not made using this
+      // mojo method.
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
 void InSessionAuth::RequestToken(chromeos::auth::mojom::Reason reason,
                                  const std::optional<std::string>& prompt,
                                  RequestTokenCallback callback) {
@@ -61,11 +83,9 @@ void InSessionAuth::RequestToken(chromeos::auth::mojom::Reason reason,
       },
 
       // New Code path
-      [&](ash::ActiveSessionAuthController::Reason reason) {
+      [&](ash::AuthRequest::Reason reason) {
         ash::ActiveSessionAuthController::Get()->ShowAuthDialog(
-            reason,
-            base::BindOnce(&InSessionAuth::OnAuthComplete,
-                           weak_factory_.GetWeakPtr(), std::move(callback)));
+            AuthRequestFromReason(reason, std::move(callback)));
       });
 
   std::visit(visitor, ToAshReason(reason));
@@ -87,6 +107,14 @@ void InSessionAuth::RequestLegacyWebAuthn(
     const std::string& rp_id,
     const std::string& window_id,
     RequestLegacyWebAuthnCallback callback) {
+  if (ash::features::IsWebAuthNAuthDialogMergeEnabled()) {
+    auto webauthn_auth_request =
+        std::make_unique<ash::WebAuthNAuthRequest>(rp_id, std::move(callback));
+    ash::ActiveSessionAuthController::Get()->ShowAuthDialog(
+        std::move(webauthn_auth_request));
+    return;
+  }
+
   ash::InSessionAuthDialogController::Get()->ShowLegacyWebAuthnDialog(
       rp_id, window_id, std::move(callback));
 }

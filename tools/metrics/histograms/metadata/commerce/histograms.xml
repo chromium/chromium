@@ -143,6 +143,89 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Compare.CandidateClusterIdentified"
+    enum="CompareEntryPointTrigger" expires_after="2025-02-15">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records when we identify a candidate cluster for compare and the source of
+    triggering.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Compare.CandidateClusterSizeWhenShown" units="count"
+    expires_after="2025-02-15">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logs when the proactive entry point shows. Records the number of products in
+    the candidate cluster that triggers the entry point.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Compare.ProactiveBackoffDuration" units="days"
+    expires_after="2025-02-15">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logs when the proactive entry point is dismissed. Records the duration of
+    the chip will be suppressed (in days).
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Compare.Table.ColumnCount" units="columns"
+    expires_after="2025-02-15">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the number of columns a user has in a comparison table at the time a
+    new/updated table is requested from the backend.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Compare.Table.ColumnModification"
+    enum="CompareTableColumnAction" expires_after="2025-02-15">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the action taken to modify a column in a comparison table from the
+    table UI.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Compare.Table.PercentageValidProducts" units="%"
+    expires_after="2025-02-15">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the percentage of URLs in a user's comparison table that map to
+    valid products. This most commonly means the product has a cluster ID
+    associated with it. This is recorded each time a new/updated table is
+    requested from the backend.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Discounts.DiscountBubble.TypeOnShow"
+    enum="DiscountClusterType" expires_after="2025-01-15">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the discount type (page level vs product level) when the discount
+    bubble is opened.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Discounts.DiscountsBubble.TypeOnCopy"
+    enum="DiscountClusterType" expires_after="2025-01-15">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the discount type (page level vs product level) on Discount bubble
+    closing if user has copied the coupon code, so this records at most once per
+    opened bubble.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Discounts.DiscountsBubbleCouponCodeIsCopied"
     enum="BooleanYesNo" expires_after="2025-01-15">
   <owner>meiliang@chromium.org</owner>
@@ -196,6 +279,16 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     for every requested url. This is used to evaluate the local discounts
     database. For example, we may not need the local database if it returns
     invalid info for most requested urls / almost never returns valid info.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Discounts.PageActionIcon.TypeOnClick"
+    enum="DiscountClusterType" expires_after="2025-01-15">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the discount type (page level vs product level) when user clicks the
+    discount page action icon.
   </summary>
 </histogram>
 
@@ -286,7 +379,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.IconComputationTime" units="ms"
-    expires_after="2024-12-27">
+    expires_after="2025-03-02">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping-eng@google.com</owner>
   <summary>
@@ -298,7 +391,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ParcelTracking.{ParcelRequestTypes}.RequestStatus"
-    enum="ParcelRequestStatus" expires_after="2024-12-24">
+    enum="ParcelRequestStatus" expires_after="2025-02-23">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -396,7 +489,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
-    expires_after="2024-12-15">
+    expires_after="2025-02-16">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -601,7 +694,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.IOS.{Source}.ProductStatus"
-    enum="PriceNotificationProductStatus" expires_after="2024-12-08">
+    enum="PriceNotificationProductStatus" expires_after="2025-02-16">
   <owner>danieltwhite@google.com</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -619,7 +712,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
-    enum="PriceInsightsPriceBucket" expires_after="2024-12-24">
+    enum="PriceInsightsPriceBucket" expires_after="2025-02-23">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -634,7 +727,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.PriceTrackedProductCount"
-    units="subscriptions" expires_after="2024-10-06">
+    units="subscriptions" expires_after="2025-08-12">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.org</owner>

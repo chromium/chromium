@@ -9,7 +9,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_model_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -20,10 +19,10 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
+class AIAssistantFactory;
 class AITextSession;
-class V8AICapabilityAvailability;
-class AIWriterFactory;
 class AIRewriterFactory;
+class AIWriterFactory;
 
 // The class that manages the exposed model APIs that load model assets and
 // create AITextSession.
@@ -37,27 +36,20 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   void Trace(Visitor* visitor) const override;
 
   // model_manager.idl implementation.
-  ScriptPromise<V8AICapabilityAvailability> canCreateTextSession(
-      ScriptState* script_state,
-      ExceptionState& exception_state);
-  ScriptPromise<AITextSession> createTextSession(
-      ScriptState* script_state,
-      AITextSessionOptions* options,
-      ExceptionState& exception_state);
-  ScriptPromise<AITextModelInfo> textModelInfo(ScriptState* script_state,
-                                               ExceptionState& exception_state);
+  AIAssistantFactory* assistant();
   AISummarizerFactory* summarizer();
-
-  AIWriterFactory* writer();
   AIRewriterFactory* rewriter();
+  AIWriterFactory* writer();
 
   HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
+
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
   Member<AITextSessionFactory> text_session_factory_;
+  Member<AIAssistantFactory> ai_assistant_factory_;
   Member<AISummarizerFactory> ai_summarizer_factory_;
   Member<AIWriterFactory> ai_writer_factory_;
   Member<AIRewriterFactory> ai_rewriter_factory_;

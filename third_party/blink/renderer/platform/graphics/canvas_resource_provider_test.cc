@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
+#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/buffer_types.h"
@@ -518,6 +519,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      test_web_shared_image_interface_provider =
+          TestWebGraphicsSharedImageInterfaceProvider::Create();
 
   MockCanvasResourceDispatcherClient client;
   CanvasResourceDispatcher resource_dispatcher(
@@ -529,7 +533,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
       kInfo, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       resource_dispatcher.GetWeakPtr(),
-      /*shared_image_interface_provider=*/nullptr);
+      test_web_shared_image_interface_provider.get());
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());

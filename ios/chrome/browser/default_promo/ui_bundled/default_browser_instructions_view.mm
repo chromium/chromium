@@ -63,7 +63,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                 actionHandler:(id<ConfirmationAlertActionHandler>)actionHandler
     alertScreenViewController:(ConfirmationAlertViewController*)alertScreen
                     titleText:(NSString*)titleText {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     CHECK(alertScreen);
     [self addVideoSection];
     [self addInformationSectionWithDismissButton:hasDismissButton

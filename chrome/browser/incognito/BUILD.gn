@@ -33,6 +33,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/android/features/tab_ui/public:java",
     "//chrome/browser//device:java",
+    "//chrome/browser/android/cookies:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/dependency_injection:java",
     "//chrome/browser/device_reauth/android:java",

@@ -64,7 +64,7 @@ ObservationType GetObservationTypeForEditedField(
   // value of the `profile` for any of the `types`.
   auto matches = [&](FieldTypeSet types, const AutofillProfile& profile) {
     const l10n::CaseInsensitiveCompare compare;
-    return base::ranges::any_of(types, [&](FieldType type) {
+    return std::ranges::any_of(types, [&](FieldType type) {
       return profile.HasInfo(type) &&
              compare.StringsEqual(edited_value,
                                   profile.GetInfo(type, app_locale));
@@ -82,17 +82,17 @@ ObservationType GetObservationTypeForEditedField(
     return ObservationType::kEditedToDifferentTokenOfSameProfile;
   }
 
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           other_profiles, [&](const AutofillProfile* other_profile) {
             return matches(other_types(*other_profile), *other_profile);
           })) {
     return ObservationType::kEditedToDifferentTokenOfOtherProfile;
   }
 
-  if (base::ranges::any_of(other_profiles,
-                           [&](const AutofillProfile* other_profile) {
-                             return matches({type}, *other_profile);
-                           })) {
+  if (std::ranges::any_of(other_profiles,
+                          [&](const AutofillProfile* other_profile) {
+                            return matches({type}, *other_profile);
+                          })) {
     return ObservationType::kEditedToSameTokenOfOtherProfile;
   }
 

@@ -54,8 +54,8 @@ constexpr char16_t kWhiteSpaceSeparator = ' ';
 
 constexpr int kMaxNicknameLength = 25;
 
-constexpr std::array<int, 3> k15DigitAmexNumberSegmentations = {4, 6, 5};
-constexpr std::array<int, 4> k16DigitNumberSegmentations = {4, 4, 4, 4};
+constexpr auto k15DigitAmexNumberSegmentations = std::to_array({4, 6, 5});
+constexpr auto k16DigitNumberSegmentations = std::to_array({4, 4, 4, 4});
 
 // Suffix for GUID of a virtual card to differentiate it from it's corresponding
 // masked server card..
@@ -300,6 +300,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kEdit:
     case Suggestion::Icon::kEmail:
     case Suggestion::Icon::kEmpty:
+    case Suggestion::Icon::kError:
     case Suggestion::Icon::kGlobe:
     case Suggestion::Icon::kGoogle:
     case Suggestion::Icon::kGoogleMonochrome:
@@ -565,10 +566,12 @@ void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
   }
 }
 
-void CreditCard::GetMatchingTypes(const std::u16string& text,
-                                  const std::string& app_locale,
-                                  FieldTypeSet* matching_types) const {
-  FormGroup::GetMatchingTypes(text, app_locale, matching_types);
+void CreditCard::GetMatchingTypesWithProfileSources(
+    const std::u16string& text,
+    const std::string& app_locale,
+    FieldTypeSet* matching_types) const {
+  FormGroup::GetMatchingTypesWithProfileSources(text, app_locale,
+                                                matching_types);
 
   std::u16string card_number = GetInfo(CREDIT_CARD_NUMBER, app_locale);
   if (!card_number.empty()) {

@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Ova web-lokacija ne može tražiti vaše dopuštenje</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Potražite pomoć<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Uključite Bluetooth<ph name="END_LINK" /> da biste omogućili uparivanje</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> treba dopuštenje za praćenje pokreta vaših ruku</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Potražite pomoć<ph name="END_LINK" /> tijekom traženja uređaja…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> treba dopuštenje za pristup mikrofonu za ovu web-lokaciju.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> želi potražiti Bluetooth uređaje u blizini. Pronađeni su sljedeći uređaji:</translation>

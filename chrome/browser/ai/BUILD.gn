@@ -4,14 +4,23 @@
 
 source_set("ai") {
   sources = [
+    "ai_context_bound_object.h",
+    "ai_context_bound_object_set.cc",
+    "ai_context_bound_object_set.h",
     "ai_manager_keyed_service.cc",
     "ai_manager_keyed_service.h",
     "ai_manager_keyed_service_factory.cc",
     "ai_manager_keyed_service_factory.h",
+    "ai_rewriter.cc",
+    "ai_rewriter.h",
+    "ai_summarizer.cc",
+    "ai_summarizer.h",
     "ai_text_session.cc",
     "ai_text_session.h",
-    "ai_text_session_set.cc",
-    "ai_text_session_set.h",
+    "ai_utils.cc",
+    "ai_utils.h",
+    "ai_writer.cc",
+    "ai_writer.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

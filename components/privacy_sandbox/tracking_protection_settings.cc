@@ -16,7 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "url/gurl.h"
@@ -26,11 +25,9 @@ namespace privacy_sandbox {
 TrackingProtectionSettings::TrackingProtectionSettings(
     PrefService* pref_service,
     HostContentSettingsMap* host_content_settings_map,
-    TrackingProtectionOnboarding* onboarding_service,
     bool is_incognito)
     : pref_service_(pref_service),
       host_content_settings_map_(host_content_settings_map),
-      onboarding_service_(onboarding_service),
       is_incognito_(is_incognito) {
   CHECK(pref_service_);
   CHECK(host_content_settings_map_);
@@ -40,11 +37,6 @@ TrackingProtectionSettings::TrackingProtectionSettings(
       prefs::kEnableDoNotTrack,
       base::BindRepeating(
           &TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kFingerprintingProtectionEnabled,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnFingerprintingProtectionPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kIpProtectionEnabled,
@@ -73,13 +65,6 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged,
           base::Unretained(this)));
 
-  if (onboarding_service_) {
-    // Onboarding status may change based on a flag before this service starts.
-    OnTrackingProtectionOnboardingUpdated(
-        onboarding_service_->GetOnboardingStatus());
-    onboarding_observation_.Observe(onboarding_service_);
-  }
-
   MaybeInitializeIppPref();
   // It's possible enterprise status changed while profile was shut down.
   OnEnterpriseControlForPrefsChanged();
@@ -107,8 +92,6 @@ void TrackingProtectionSettings::Shutdown() {
   host_content_settings_map_ = nullptr;
   pref_change_registrar_.Reset();
   pref_service_ = nullptr;
-  onboarding_service_ = nullptr;
-  onboarding_observation_.Reset();
 }
 
 bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
@@ -122,11 +105,6 @@ bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
   return IsTrackingProtection3pcdEnabled() &&
          (pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
           is_incognito_);
-}
-
-bool TrackingProtectionSettings::IsFingerprintingProtectionEnabled() const {
-  return pref_service_->GetBoolean(prefs::kFingerprintingProtectionEnabled) &&
-         base::FeatureList::IsEnabled(kFingerprintingProtectionSetting);
 }
 
 bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
@@ -200,19 +178,6 @@ void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
   }
 }
 
-// TODO(https://b/333527273): Update with Mode B cleanup
-void TrackingProtectionSettings::OnTrackingProtectionOnboardingUpdated(
-    TrackingProtectionOnboarding::OnboardingStatus onboarding_status) {
-  switch (onboarding_status) {
-    case TrackingProtectionOnboarding::OnboardingStatus::kIneligible:
-    case TrackingProtectionOnboarding::OnboardingStatus::kEligible:
-      pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
-      return;
-    case TrackingProtectionOnboarding::OnboardingStatus::kOnboarded:
-      pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-      return;
-  }
-}
 void TrackingProtectionSettings::MigrateUserBypassExceptions(
     ContentSettingsType from,
     ContentSettingsType to) {
@@ -252,12 +217,6 @@ void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {
 void TrackingProtectionSettings::OnIpProtectionPrefChanged() {
   for (auto& observer : observers_) {
     observer.OnIpProtectionEnabledChanged();
-  }
-}
-
-void TrackingProtectionSettings::OnFingerprintingProtectionPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnFingerprintingProtectionEnabledChanged();
   }
 }
 

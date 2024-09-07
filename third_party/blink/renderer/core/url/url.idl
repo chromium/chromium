@@ -33,7 +33,7 @@
 ] interface URL {
     [RaisesException] constructor(USVString url, optional USVString base);
 
-    [RuntimeEnabled=URLParse] static URL? parse(USVString url, optional USVString base);
+    static URL? parse(USVString url, optional USVString base);
     static boolean canParse(USVString url, optional USVString base);
 
     [RaisesException=Setter] stringifier attribute USVString href;

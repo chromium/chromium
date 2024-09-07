@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -98,7 +99,7 @@ class LoginHandlerViews : public LoginHandler {
            LoginHandler::LoginModelData* login_model_data)
         : handler_(handler), login_view_(nullptr), widget_(nullptr) {
       SetButtonLabel(
-          ui::DIALOG_BUTTON_OK,
+          ui::mojom::DialogButton::kOk,
           l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_OK_BUTTON_LABEL));
       SetAcceptCallback(base::BindOnce(
           [](Dialog* dialog) {

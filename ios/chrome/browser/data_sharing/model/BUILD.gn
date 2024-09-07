@@ -8,6 +8,8 @@ source_set("model") {
     "data_sharing_sdk_delegate_ios.mm",
     "data_sharing_service_factory.h",
     "data_sharing_service_factory.mm",
+    "data_sharing_tab_helper.h",
+    "data_sharing_tab_helper.mm",
     "data_sharing_ui_delegate_ios.h",
     "data_sharing_ui_delegate_ios.mm",
   ]
@@ -22,6 +24,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/common",
@@ -38,7 +41,7 @@ source_set("unit_tests") {
     ":model",
     "//base/test:test_support",
     "//components/data_sharing/public",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

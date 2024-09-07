@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -25,13 +26,13 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerImageItemGridView;
+class PickerImageItemRowView;
 class PickerImageItemView;
 class PickerItemWithSubmenuView;
 class PickerItemView;
 class PickerListItemContainerView;
 class PickerListItemView;
 class PickerPreviewBubbleController;
-class PickerSearchResult;
 class PickerSubmenuController;
 class PickerTraversableItemContainer;
 enum class PickerActionType;
@@ -42,6 +43,16 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
  public:
   using SelectResultCallback = base::RepeatingClosure;
+
+  // Describes the way local file results are visually presented.
+  enum class LocalFileResultStyle {
+    // Shown as list items with the name of the file as the label.
+    kList,
+    // Shown as a grid of thumbnail previews.
+    kGrid,
+    // Shown as a single row of thumbnail previews.
+    kRow,
+  };
 
   explicit PickerSectionView(int section_width,
                              PickerAssetFetcher* asset_fetcher,
@@ -60,6 +71,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
       PickerPreviewBubbleController* preview_controller,
       PickerAssetFetcher* asset_fetcher,
       int available_width,
+      LocalFileResultStyle local_file_result_style,
       SelectResultCallback select_result_callback);
 
   void AddTitleLabel(const std::u16string& title_text);
@@ -74,11 +86,12 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // Adds an image item to the section. These are displayed in a grid with two
   // columns.
-  PickerImageItemView* AddImageItem(
+  PickerImageItemView* AddImageGridItem(
       std::unique_ptr<PickerImageItemView> image_item);
 
-  // Adds a generic item to the section.
-  PickerItemView* AddItem(std::unique_ptr<PickerItemView> item);
+  // Adds an image item to the section. These are displayed in a single row.
+  PickerImageItemView* AddImageRowItem(
+      std::unique_ptr<PickerImageItemView> image_item);
 
   // Adds an item with submenu to the section.
   PickerItemWithSubmenuView* AddItemWithSubmenu(
@@ -88,6 +101,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // section.
   PickerItemView* AddResult(const PickerSearchResult& result,
                             PickerPreviewBubbleController* preview_controller,
+                            LocalFileResultStyle local_file_result_style,
                             SelectResultCallback select_result_callback);
 
   void ClearItems();
@@ -116,6 +130,12 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // such item in the section.
   views::View* GetItemRightOf(views::View* item);
 
+  // Must be called before creating an image row.
+  // `accessible_name` is the accessible name of the image row.
+  void SetImageRowProperties(std::u16string accessible_name,
+                             base::RepeatingClosure more_items_button_callback,
+                             std::u16string more_items_button_accessible_name);
+
   const views::Label* title_label_for_testing() const { return title_label_; }
   const views::Link* title_trailing_link_for_testing() const {
     return title_trailing_link_;
@@ -133,15 +153,21 @@ class ASH_EXPORT PickerSectionView : public views::View {
   base::span<const raw_ptr<PickerItemView>> item_views_for_testing() const {
     return item_views_;
   }
+  views::View* GetImageRowMoreItemsButtonForTesting();
 
  private:
-  // Returns a non-null item container if the section has one, otherwise returns
-  // nullptr.
-  // TODO: b/322900302 - Determine whether sections can have multiple item
-  // containers. If so, `GetItemContainer` will need to get the right item
-  // container. If not, just track a single PickerTraversableItemContainer and
-  // then we won't need this method anymore.
-  PickerTraversableItemContainer* GetItemContainer();
+  struct ImageRowProperties {
+    std::u16string accessible_name;
+    base::RepeatingClosure more_items_button_callback;
+    std::u16string more_items_button_accessible_name;
+
+    ImageRowProperties();
+    ~ImageRowProperties();
+  };
+
+  PickerListItemContainerView* GetOrCreateListItemContainer();
+  PickerImageItemGridView* GetOrCreateImageItemGrid();
+  PickerImageItemRowView* GetOrCreateImageItemRow();
 
   // Width available for laying out section items. This is needed to determine
   // row and column widths for grid items in the section.
@@ -153,8 +179,10 @@ class ASH_EXPORT PickerSectionView : public views::View {
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Link> title_trailing_link_ = nullptr;
 
+  std::vector<raw_ptr<PickerTraversableItemContainer>> item_containers_;
   raw_ptr<PickerListItemContainerView> list_item_container_ = nullptr;
   raw_ptr<PickerImageItemGridView> image_item_grid_ = nullptr;
+  raw_ptr<PickerImageItemRowView> image_item_row_ = nullptr;
 
   // The views for each result item.
   std::vector<raw_ptr<PickerItemView>> item_views_;
@@ -164,6 +192,8 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // `submenu_controller` outlives `this`.
   raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
+
+  ImageRowProperties image_row_properties_;
 };
 
 }  // namespace ash

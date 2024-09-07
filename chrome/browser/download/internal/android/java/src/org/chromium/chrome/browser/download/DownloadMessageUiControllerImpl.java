@@ -32,6 +32,7 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.offline_items_collection.ContentId;
+import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -233,8 +234,11 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         public int pending;
         public int failed;
         public int completed;
+        public int blocked;
 
-        /** @return The total number of downloads being tracked. */
+        /**
+         * @return The total number of downloads being tracked.
+         */
         public int totalCount() {
             return inProgress + pending + failed + completed;
         }
@@ -259,6 +263,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             result = 31 * result + pending;
             result = 31 * result + failed;
             result = 31 * result + completed;
+            result = 31 * result + blocked;
             return result;
         }
 
@@ -271,7 +276,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             return inProgress == other.inProgress
                     && pending == other.pending
                     && failed == other.failed
-                    && completed == other.completed;
+                    && completed == other.completed
+                    && blocked == other.blocked;
         }
     }
 
@@ -500,9 +506,13 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             return false;
         }
 
-        if (LegacyHelpers.isLegacyDownload(offlineItem.id)
-                && TextUtils.isEmpty(offlineItem.filePath)) {
-            return false;
+        if (LegacyHelpers.isLegacyDownload(offlineItem.id)) {
+            boolean shouldNotify =
+                    offlineItem.state == OfflineItemState.FAILED
+                            && offlineItem.failState == FailState.FILE_BLOCKED;
+            if (!shouldNotify && TextUtils.isEmpty(offlineItem.filePath)) {
+                return false;
+            }
         }
 
         if (MimeUtils.canAutoOpenMimeType(offlineItem.mimeType) && offlineItem.hasUserGesture) {
@@ -559,7 +569,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         boolean shouldShowResult =
                 (downloadCount.completed + downloadCount.failed + downloadCount.pending) > 0;
-
         @UiState int nextState = mState;
         switch (mState) {
             case UiState.INITIAL: // Intentional fallthrough.
@@ -741,6 +750,15 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             } else {
                 // TODO(shaktisahu): Incorporate various types of failure messages.
                 // TODO(shaktisahu, xingliu): Consult UX to handle multiple schedule variations.
+                if (downloadCount.blocked > 0) {
+                    info.description =
+                            getContext()
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals.download_message_multiple_download_blocked,
+                                            downloadCount.blocked,
+                                            downloadCount.blocked);
+                }
                 info.link = getContext().getString(R.string.details_link);
             }
         }
@@ -916,6 +934,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                     break;
                 case OfflineItemState.FAILED:
                     downloadCount.failed++;
+                    if (item.failState == FailState.FILE_BLOCKED) {
+                        downloadCount.blocked++;
+                    }
                     break;
                 case OfflineItemState.CANCELLED:
                     break;

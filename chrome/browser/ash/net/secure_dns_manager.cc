@@ -18,10 +18,13 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/net/ash_dns_over_https_config_source.h"
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
@@ -36,7 +39,8 @@
 
 namespace ash {
 
-SecureDnsManager::SecureDnsManager(PrefService* local_state)
+SecureDnsManager::SecureDnsManager(PrefService* local_state,
+                                   bool is_profile_managed)
     : local_state_(local_state) {
   doh_templates_uri_resolver_ =
       std::make_unique<dns_over_https::TemplatesUriResolverImpl>();
@@ -46,6 +50,14 @@ SecureDnsManager::SecureDnsManager(PrefService* local_state)
   OnPolicyPrefChanged();
   OnDoHIncludedDomainsPrefChanged();
   OnDoHExcludedDomainsPrefChanged();
+
+  // The DNS-over-HTTPS config source is reset in the destructor of the
+  // `SecureDnsManager`. This means the `SecureDnsManager` instance should
+  // outlive the `AshDnsOverHttpsConfigSource` instance.
+  g_browser_process->system_network_context_manager()
+      ->GetStubResolverConfigReader()
+      ->SetOverrideDnsOverHttpsConfigSource(
+          std::make_unique<AshDnsOverHttpsConfigSource>(this, local_state));
 }
 
 void SecureDnsManager::MonitorPolicyPrefs() {
@@ -73,6 +85,10 @@ SecureDnsManager::~SecureDnsManager() {
   for (auto& observer : observers_) {
     observer.OnSecureDnsManagerShutdown();
   }
+
+  g_browser_process->system_network_context_manager()
+      ->GetStubResolverConfigReader()
+      ->SetOverrideDnsOverHttpsConfigSource(nullptr);
 
   // `local_state_` outlives the SecureDnsManager instance. The value of
   // `::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS` should not outlive the
@@ -149,6 +165,8 @@ base::Value::Dict SecureDnsManager::GetProviders(
 }
 
 void SecureDnsManager::AddObserver(Observer* observer) {
+  observer->OnModeChanged(cached_mode_);
+  observer->OnTemplateUrisChanged(cached_template_uris_);
   observers_.AddObserver(observer);
 }
 
@@ -292,6 +310,21 @@ void SecureDnsManager::UpdateTemplateUri() {
         ->SetSecureDnsTemplatesWithIdentifiersActive(
             doh_templates_uri_resolver_->GetDohWithIdentifiersActive());
   }
+}
+
+// static
+void SecureDnsManager::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(::prefs::kDnsOverHttpsSalt, std::string());
+  registry->RegisterStringPref(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                               std::string());
+}
+
+std::optional<std::string>
+SecureDnsManager::GetDohWithIdentifiersDisplayServers() const {
+  if (doh_templates_uri_resolver_->GetDohWithIdentifiersActive()) {
+    return doh_templates_uri_resolver_->GetDisplayTemplates();
+  }
+  return std::nullopt;
 }
 
 }  // namespace ash

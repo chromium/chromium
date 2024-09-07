@@ -19,6 +19,20 @@ constexpr DenseSet<FormType> kCreditCardFormTypes = {
 constexpr DenseSet<FieldType> kFieldTypesOfATypicalStoreLocatorForm = {
     ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP};
 
+bool IsCvcOnlyForm(const FormStructure& form) {
+  if (form.fields().size() != 1) {
+    return false;
+  }
+  // Theoretically we don't need to check
+  // CREDIT_CARD_STANDALONE_VERIFICATION_CODE type here since if it's
+  // CREDIT_CARD_STANDALONE_VERIFICATION_CODE, the form type would be treated as
+  // kStandaloneCvcForm already. Add CREDIT_CARD_STANDALONE_VERIFICATION_CODE
+  // here just for completion.
+  static constexpr FieldTypeSet kCvcTypes = {
+      CREDIT_CARD_VERIFICATION_CODE, CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
+  return kCvcTypes.contains(form.fields()[0]->Type().GetStorableType());
+}
+
 bool IsEmailOnlyForm(const FormStructure& form) {
   bool has_email_field = false;
   for (const auto& field : form.fields()) {
@@ -68,7 +82,9 @@ DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
         }
         break;
       case FormType::kCreditCardForm:
-        form_types.insert(FormTypeNameForLogging::kCreditCardForm);
+        form_types.insert(IsCvcOnlyForm(form)
+                              ? FormTypeNameForLogging::kStandaloneCvcForm
+                              : FormTypeNameForLogging::kCreditCardForm);
         break;
       case FormType::kStandaloneCvcForm:
         form_types.insert(FormTypeNameForLogging::kStandaloneCvcForm);
@@ -83,26 +99,29 @@ DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
 
 }  // namespace internal
 
-AutofillProfileSourceCategory GetCategoryOfProfile(
+AutofillProfileRecordTypeCategory GetCategoryOfProfile(
     const AutofillProfile& profile) {
-  switch (profile.source()) {
-    case AutofillProfile::Source::kLocalOrSyncable:
-      return AutofillProfileSourceCategory::kLocalOrSyncable;
-    case AutofillProfile::Source::kAccount:
+  switch (profile.record_type()) {
+    case AutofillProfile::RecordType::kLocalOrSyncable:
+      return AutofillProfileRecordTypeCategory::kLocalOrSyncable;
+    case AutofillProfile::RecordType::kAccount:
+    case AutofillProfile::RecordType::kAccountHome:
+    case AutofillProfile::RecordType::kAccountWork:
       return profile.initial_creator_id() ==
                      AutofillProfile::kInitialCreatorOrModifierChrome
-                 ? AutofillProfileSourceCategory::kAccountChrome
-                 : AutofillProfileSourceCategory::kAccountNonChrome;
+                 ? AutofillProfileRecordTypeCategory::kAccountChrome
+                 : AutofillProfileRecordTypeCategory::kAccountNonChrome;
   }
 }
 
-const char* GetProfileCategorySuffix(AutofillProfileSourceCategory category) {
+const char* GetProfileCategorySuffix(
+    AutofillProfileRecordTypeCategory category) {
   switch (category) {
-    case AutofillProfileSourceCategory::kLocalOrSyncable:
+    case AutofillProfileRecordTypeCategory::kLocalOrSyncable:
       return "Legacy";
-    case AutofillProfileSourceCategory::kAccountChrome:
+    case AutofillProfileRecordTypeCategory::kAccountChrome:
       return "AccountChrome";
-    case AutofillProfileSourceCategory::kAccountNonChrome:
+    case AutofillProfileRecordTypeCategory::kAccountNonChrome:
       return "AccountNonChrome";
   }
 }

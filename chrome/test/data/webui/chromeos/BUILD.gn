@@ -34,7 +34,6 @@ if (include_js2gtest_tests) {
     # build and are handled by a rule, but in the GN build they're in a
     # separate action so need to be separated out.
     sources = [
-      "../../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
       "../cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
       "account_manager/account_manager_browsertest.js",
       "arc_account_picker/arc_account_picker_browsertest.js",
@@ -43,12 +42,14 @@ if (include_js2gtest_tests) {
       "assertions.js",
       "async_gen.js",
       "borealis_installer/borealis_installer_browsertest.js",
+      "certificate_manager_dialog_browsertest.js",
       "cloud_upload/cloud_upload_dialog_browsertest.js",
       "cloud_upload/connect_onedrive_browsertest.js",
       "cloud_upload/file_handler_page_browsertest.js",
       "cloud_upload/move_confirmation_page_browsertest.js",
       "emoji_picker/emoji_picker_browsertest.js",
       "gaia_action_buttons/gaia_action_buttons_browsertest.js",
+      "internet_config_dialog_browsertest.js",
       "internet_detail_dialog_browsertest.js",
       "js2gtest_browsertest.js",
       "network_browsertest.js",
@@ -89,9 +90,9 @@ if (include_js2gtest_tests) {
   js2gtest("browser_tests_js_mojo_webui") {
     test_type = "mojo_webui"
     sources = [
-      "../nearby_share/nearby_browsertest.js",
-      "../nearby_share/shared/nearby_shared_v3_browsertest.js",
       "manage_mirrorsync/manage_mirrorsync_browsertest.js",
+      "nearby_share/nearby_browsertest.js",
+      "nearby_share/shared/nearby_shared_v3_browsertest.js",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
@@ -158,6 +159,7 @@ webui_ts_library("build_ts") {
     "crostini_upgrader_app_test.js",
     "fake_network_config_mojom.js",
     "fake_passpoint_service_mojom.ts",
+    "internet_config_dialog_test.ts",
     "internet_detail_dialog_test.ts",
     "mock_controller.js",
     "mock_controller.m.js",

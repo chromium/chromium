@@ -86,10 +86,6 @@ namespace component_updater {
 class ComponentUpdateService;
 }
 
-namespace extensions {
-class EventRouterForwarder;
-}
-
 namespace gcm {
 class GCMDriver;
 }
@@ -168,9 +164,6 @@ class BrowserProcess {
   virtual variations::VariationsService* variations_service() = 0;
 
   virtual BrowserProcessPlatformPart* platform_part() = 0;
-
-  virtual extensions::EventRouterForwarder*
-      extension_event_router_forwarder() = 0;
 
   // Returns the manager for desktop notifications.
   // TODO(miguelg) This is in the process of being deprecated in favour of

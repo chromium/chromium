@@ -17,4 +17,11 @@ BatchUploadDataContainer& BatchUploadDataContainer::operator=(
 
 BatchUploadDataContainer::~BatchUploadDataContainer() = default;
 
+BatchUploadDataProvider::BatchUploadDataProvider(BatchUploadDataType type)
+    : type_(type) {}
+
 BatchUploadDataProvider::~BatchUploadDataProvider() = default;
+
+BatchUploadDataType BatchUploadDataProvider::GetDataType() const {
+  return type_;
+}

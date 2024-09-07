@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "ash/ash_export.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -31,23 +32,31 @@ class Shelf;
 // IME icons like "US" (US keyboard) or "あ(Google Japanese Input)" are
 // rendered as a label, but reading such text literally will not always be
 // understandable.
-class IconizedLabel : public views::Label {
+class ASH_EXPORT IconizedLabel : public views::Label {
   METADATA_HEADER(IconizedLabel, views::Label)
 
  public:
-  void SetCustomAccessibleName(const std::u16string& name) {
-    custom_accessible_name_ = name;
-  }
+  void SetCustomAccessibleName(const std::u16string& name);
 
   std::u16string GetAccessibleNameString() const {
     return custom_accessible_name_;
   }
 
-  // views::Label:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // views::View:
+  void AdjustAccessibleName(std::u16string& new_name,
+                            ax::mojom::NameFrom& name_from) override;
 
  private:
+  // The accessible role depends on the `custom_accessible_name_` when it is
+  // non-empty.
+  void UpdateAccessibleRole();
+
   std::u16string custom_accessible_name_;
+
+  base::CallbackListSubscription text_context_changed_callback_ =
+      AddTextContextChangedCallback(
+          base::BindRepeating(&IconizedLabel::UpdateAccessibleRole,
+                              base::Unretained(this)));
 };
 
 // Base-class for items in the tray. It makes sure the widget is updated
@@ -142,7 +151,6 @@ class ASH_EXPORT TrayItemView : public views::View,
   void SetVisible(bool visible) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
 
   void set_use_scale_in_animation(bool use_scale_in_animation) {
     use_scale_in_animation_ = use_scale_in_animation;

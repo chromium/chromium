@@ -108,7 +108,8 @@ void H264RateCtrlRTC::UpdateRateControl(
   config_changed_ = true;
 }
 
-void H264RateCtrlRTC::ComputeQP(const H264FrameParamsRTC& frame_params) {
+H264RateCtrlRTC::FrameDropDecision H264RateCtrlRTC::ComputeQP(
+    const H264FrameParamsRTC& frame_params) {
   DVLOG(3) << "Compute QP - "
            << "temporal_layer_id: " << frame_params.temporal_layer_id
            << ", timestamp: " << frame_params.timestamp.InMilliseconds()
@@ -187,7 +188,7 @@ void H264RateCtrlRTC::ComputeQP(const H264FrameParamsRTC& frame_params) {
     frame_qp_ = -1;  // Drop frame.
     DVLOG(3) << "Rate controller estimated QP: " << frame_qp_
              << " - frame drop";
-    return;
+    return FrameDropDecision::kDrop;
   }
 
   frame_qp_ =
@@ -195,6 +196,7 @@ void H264RateCtrlRTC::ComputeQP(const H264FrameParamsRTC& frame_params) {
                  static_cast<int>(h264_rate_control_util::kQPMax));
 
   DVLOG(3) << "Rate controller estimated QP: " << frame_qp_;
+  return FrameDropDecision::kOk;
 }
 
 int H264RateCtrlRTC::GetQP() {

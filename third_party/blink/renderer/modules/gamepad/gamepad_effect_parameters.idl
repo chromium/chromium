@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Gamepad vibration is proposed as an extension to the Gamepad API.
-// https://docs.google.com/document/d/1jPKzVRNzzU4dUsvLpSXm1VXPQZ8FP-0lKMT-R_p-s6g
-// TODO(mattreynolds): Replace this with a link to w3c.github.io/gamepad
+// https://www.w3.org/TR/gamepad/#gamepadeffectparameters-dictionary
 dictionary GamepadEffectParameters {
     double duration = 0.0;
     double startDelay = 0.0;
     double strongMagnitude = 0.0;
     double weakMagnitude = 0.0;
-    // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/GamepadHapticsActuatorTriggerRumble/explainer.md
-    [RuntimeEnabled=WGIGamepadTriggerRumble] double leftTrigger = 0.0;
-    [RuntimeEnabled=WGIGamepadTriggerRumble] double rightTrigger = 0.0;
+    double leftTrigger = 0.0;
+    double rightTrigger = 0.0;
 };

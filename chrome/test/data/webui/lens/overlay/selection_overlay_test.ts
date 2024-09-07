@@ -9,16 +9,21 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
+import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://lens/screenshot_bitmap_browser_proxy.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertNotEquals, assertNull, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
 import {getImageBoundingRect, simulateClick, simulateDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
+import {createLine, createParagraph, createText, createTranslatedLine, createTranslatedParagraph, createWord, dispatchTranslateStateEvent} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -27,8 +32,9 @@ suite('SelectionOverlay', function() {
   let selectionOverlayElement: SelectionOverlayElement;
   let callbackRouterRemote: LensPageRemote;
   let objects: OverlayObject[];
+  let metrics: MetricsTracker;
 
-  setup(() => {
+  setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
     // attached to the DOM.
@@ -45,11 +51,17 @@ suite('SelectionOverlay', function() {
 
     selectionOverlayElement = document.createElement('lens-selection-overlay');
     document.body.appendChild(selectionOverlayElement);
+    metrics = fakeMetricsPrivate();
+
     // Since the size of the Selection Overlay is based on the screenshot which
     // is not loaded in the test, we need to force the overlay to take up the
     // viewport.
     selectionOverlayElement.$.selectionOverlay.style.width = '100%';
     selectionOverlayElement.$.selectionOverlay.style.height = '100%';
+
+    // The first frame triggers our resize handler. Wait another frame for us
+    // the changes made by our resize handler to take effect.
+    await waitAfterNextRender(selectionOverlayElement);
     return waitAfterNextRender(selectionOverlayElement);
   });
 
@@ -64,7 +76,7 @@ suite('SelectionOverlay', function() {
     };
   }
 
-  function addWords() {
+  async function addWords() {
     const text = createText([
       createParagraph([
         createLine([
@@ -74,6 +86,52 @@ suite('SelectionOverlay', function() {
               'there', normalizedBox({x: 50, y: 20, width: 50, height: 10})),
           createWord(
               'test', normalizedBox({x: 80, y: 20, width: 30, height: 10})),
+        ]),
+      ]),
+    ]);
+    callbackRouterRemote.textReceived(text);
+    await flushTasks();
+    await waitAfterNextRender(selectionOverlayElement);
+  }
+
+  function addWordsWithTranslations() {
+    const text = createText([
+      createParagraph(
+          [
+            createLine([
+              createWord(
+                  'hello',
+                  normalizedBox({x: 20, y: 20, width: 30, height: 10})),
+              createWord(
+                  'there',
+                  normalizedBox({x: 50, y: 20, width: 50, height: 10})),
+              createWord(
+                  'test', normalizedBox({x: 35, y: 20, width: 30, height: 10})),
+            ]),
+          ],
+          createTranslatedParagraph([createTranslatedLine(
+              [
+                createWord('wow'),
+                createWord('a'),
+                createWord('translation'),
+              ],
+              /*translation=*/ 'wow a translation',
+              /*textHexColor=*/ '#ffffff',
+              /*backgroundHexColor=*/ '#000000',
+              /*lineBoundingBox=*/ normalizedBox({
+                x: 80,
+                y: 20,
+                width: 100,
+                height: 30,
+              }))])),
+      // Words without translations should still be selectable.
+      createParagraph([
+        createLine([
+          createWord(
+              'no', normalizedBox({x: 70, y: 20, width: 10, height: 10})),
+          createWord(
+              'translation',
+              normalizedBox({x: 100, y: 20, width: 30, height: 10})),
         ]),
       ]),
     ]);
@@ -105,6 +163,14 @@ suite('SelectionOverlay', function() {
     assertEquals(expectedIsClick, isClick);
   }
 
+  async function waitForScreenshotResize(): Promise<void> {
+    // The first render triggers the ResizeObserver. The second runs the
+    // requestAnimationFrame callback queued by the ResizeObserver.
+    await waitAfterNextRender(selectionOverlayElement);
+    await waitAfterNextRender(selectionOverlayElement);
+  }
+
+  // <if expr="not chromeos_lacros">
   test(
       'verify that starting a drag on a word does not trigger region search',
       async () => {
@@ -115,7 +181,7 @@ suite('SelectionOverlay', function() {
                            .getWordNodesForTesting()[0]!;
         await simulateDrag(
             selectionOverlayElement, {
-              x: wordEl.getBoundingClientRect().left + 5,
+              x: wordEl.getBoundingClientRect().left + 15,
               y: wordEl.getBoundingClientRect().top + 5,
             },
             {x: 0, y: 0});
@@ -126,6 +192,7 @@ suite('SelectionOverlay', function() {
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
+  // </if>
 
   test(
       `verify that starting a drag off a word and continuing onto a word triggers region search`,
@@ -165,7 +232,7 @@ suite('SelectionOverlay', function() {
         selectionOverlayElement.style.height = '50px';
         // Resize observer does not trigger with flushTasks(), so we need to use
         // waitAfterNextRender() instead.
-        await waitAfterNextRender(selectionOverlayElement);
+        await waitForScreenshotResize();
         assertEquals(
             50,
             selectionOverlayElement.$.regionSelectionLayer.$
@@ -177,7 +244,7 @@ suite('SelectionOverlay', function() {
 
         selectionOverlayElement.style.width = '200px';
         selectionOverlayElement.style.height = '200px';
-        await waitAfterNextRender(selectionOverlayElement);
+        await waitForScreenshotResize();
         assertEquals(
             200,
             selectionOverlayElement.$.regionSelectionLayer.$
@@ -196,7 +263,7 @@ suite('SelectionOverlay', function() {
         selectionOverlayElement.style.height = '50px';
         // Resize observer does not trigger with flushTasks(), so we need to use
         // waitAfterNextRender() instead.
-        await waitAfterNextRender(selectionOverlayElement);
+        await waitForScreenshotResize();
         assertEquals(
             50,
             selectionOverlayElement.$.objectSelectionLayer.$
@@ -208,7 +275,7 @@ suite('SelectionOverlay', function() {
 
         selectionOverlayElement.style.width = '200px';
         selectionOverlayElement.style.height = '200px';
-        await waitAfterNextRender(selectionOverlayElement);
+        await waitForScreenshotResize();
         assertEquals(
             200,
             selectionOverlayElement.$.objectSelectionLayer.$
@@ -272,7 +339,8 @@ suite('SelectionOverlay', function() {
         await addWords();
 
         await simulateDrag(
-            selectionOverlayElement, {x: 51, y: 10}, {x: 80, y: 40});
+            selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
+        await waitAfterNextRender(selectionOverlayElement);
 
         assertEquals(
             1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
@@ -287,7 +355,7 @@ suite('SelectionOverlay', function() {
 
         const textQuery = await testBrowserProxy.handler.whenCalled(
             'issueTextSelectionRequest');
-        assertDeepEquals('there test', textQuery);
+        assertDeepEquals('hello there test', textQuery);
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
@@ -327,12 +395,12 @@ suite('SelectionOverlay', function() {
         await addWords();
 
         await simulateDrag(
-            selectionOverlayElement, {x: 51, y: 10}, {x: 80, y: 40});
+            selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
         selectionOverlayElement.handleSelectTextForTesting();
 
         const textQuery = await testBrowserProxy.handler.whenCalled(
             'issueTextSelectionRequest');
-        assertDeepEquals('there test', textQuery);
+        assertDeepEquals('hello there test', textQuery);
         assertEquals(
             1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
         assertFalse(
@@ -344,12 +412,12 @@ suite('SelectionOverlay', function() {
         await addWords();
 
         await simulateDrag(
-            selectionOverlayElement, {x: 51, y: 10}, {x: 80, y: 40});
+            selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
         selectionOverlayElement.handleTranslateDetectedTextForTesting();
 
         const textQuery = await testBrowserProxy.handler.whenCalled(
             'issueTranslateSelectionRequest');
-        assertDeepEquals('there test', textQuery);
+        assertDeepEquals('hello there test', textQuery);
         assertEquals(
             1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
         assertFalse(
@@ -422,28 +490,59 @@ suite('SelectionOverlay', function() {
   });
 
   test('verify that resizing renders image with padding', async () => {
+    // Resize to be the same size as screenshot.
     selectionOverlayElement.style.display = 'block';
-    selectionOverlayElement.style.width = '50px';
-    selectionOverlayElement.style.height = '50px';
-    await waitAfterNextRender(selectionOverlayElement);
-    assertNotEquals(null, selectionOverlayElement.getAttribute('is-resized'));
+    selectionOverlayElement.style.width = '100px';
+    selectionOverlayElement.style.height = '100px';
 
-    // Verify resizing back no longer renders with padding
-    selectionOverlayElement.style.width = '100%';
-    selectionOverlayElement.style.height = '100%';
-    await waitAfterNextRender(selectionOverlayElement);
-    assertNull(selectionOverlayElement.getAttribute('is-resized'));
+    // ScreenshotBitmapBrowserProxy assumes only one screenshot will be sent. We
+    // need to reset it to allow a new screenshot to be fetched.
+    ScreenshotBitmapBrowserProxyImpl.setInstance(
+        new ScreenshotBitmapBrowserProxyImpl());
+    selectionOverlayElement.fetchNewScreenshotForTesting();
+
+    // Send a fake screenshot of size 100x100.
+    testBrowserProxy.page.screenshotDataReceived(
+        fakeScreenshotBitmap(100, 100));
+    await waitForScreenshotRendered(selectionOverlayElement);
+    await waitForScreenshotResize();
+
+    // Resize to smaller than the screenshot and verify margins.
+    selectionOverlayElement.style.width = '90px';
+    selectionOverlayElement.style.height = '90px';
+    await waitForScreenshotResize();
+
+    // Size should now be 90px - 48px margin.
+    let imageSize =
+        selectionOverlayElement.$.backgroundImageCanvas.getBoundingClientRect();
+    assertEquals(42, imageSize.width);
+    assertEquals(42, imageSize.height);
+
+    // Resize back to same size as screenshot and verify no margins.
+    selectionOverlayElement.style.width = '100px';
+    selectionOverlayElement.style.height = '100px';
+    await waitForScreenshotResize();
+
+    // Size should now be back to fullscreen.
+    imageSize =
+        selectionOverlayElement.$.backgroundImageCanvas.getBoundingClientRect();
+    assertEquals(100, imageSize.width);
+    assertEquals(100, imageSize.height);
+
+    // Increase the device pixel ratio and resize. Since 100 (screenshot size) /
+    // 1.5 is 66.666667, this will also test rounding errors in our
+    // calculations.
+    selectionOverlayElement.style.width = '67px';
+    selectionOverlayElement.style.height = '67px';
+    window.devicePixelRatio = 1.5;
+    await waitForScreenshotResize();
+
+    // Size should now be back to fullscreen.
+    imageSize =
+        selectionOverlayElement.$.backgroundImageCanvas.getBoundingClientRect();
+    assertEquals(67, imageSize.width);
+    assertEquals(67, imageSize.height);
   });
-
-  test(
-      'verify that resizing within threshold does not rerender image',
-      async () => {
-        selectionOverlayElement.style.display = 'block';
-        selectionOverlayElement.style.width =
-            `${selectionOverlayElement.getBoundingClientRect().width - 4}px`;
-        await waitAfterNextRender(selectionOverlayElement);
-        assertNull(selectionOverlayElement.getAttribute('is-resized'));
-      });
 
   test('verify that you can drag text over post selection', async () => {
     // Add the words
@@ -458,7 +557,7 @@ suite('SelectionOverlay', function() {
     const wordElBoundingBox = wordEl.getBoundingClientRect();
     await simulateDrag(
         selectionOverlayElement, {
-          x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+          x: wordElBoundingBox.left + (wordElBoundingBox.width / 3),
           y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
         },
         {
@@ -484,7 +583,7 @@ suite('SelectionOverlay', function() {
     const wordElBoundingBox = wordEl.getBoundingClientRect();
     await simulateDrag(
         selectionOverlayElement, {
-          x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+          x: wordElBoundingBox.left + (wordElBoundingBox.width / 3),
           y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
         },
         {
@@ -529,7 +628,7 @@ suite('SelectionOverlay', function() {
         const wordElBoundingBox = wordEl.getBoundingClientRect();
         await simulateDrag(
             selectionOverlayElement, {
-              x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+              x: wordElBoundingBox.left + (wordElBoundingBox.width / 3),
               y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
             },
             {
@@ -751,4 +850,291 @@ suite('SelectionOverlay', function() {
     assertEquals(
         1, testBrowserProxy.handler.getCallCount('closePreselectionBubble'));
   });
+
+  test(
+      `verify that translate text is selected from anywhere on the overlay`,
+      async () => {
+        await addWordsWithTranslations();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        // Drag at the top corner, above any actual words.
+        await simulateDrag(
+            selectionOverlayElement, {
+              x: 1,
+              y: 1,
+            },
+            {
+              x: 2,
+              y: 2,
+            });
+
+        // Despite not clicking on a word to start the text selection,
+        // there should be selected text and no selected region.
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('wow', textQuery);
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
+      });
+
+  test(
+      `verify that object selection is disabled when translate mode is on`,
+      async () => {
+        await addObjects();
+        await addWordsWithTranslations();
+        const objectEl = selectionOverlayElement.$.objectSelectionLayer
+                             .getObjectNodesForTesting()[1]!;
+        const objectBoundingBox = objectEl.getBoundingClientRect();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        await simulateClick(
+            selectionOverlayElement,
+            {x: objectBoundingBox.left + 2, y: objectBoundingBox.top + 2});
+
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensObjectRequest'));
+      });
+
+  test(
+      `verify that translate text does not render if translate mode disabled`,
+      async () => {
+        await addWordsWithTranslations();
+
+        // Make sure only non-translated word divs are present and visible.
+        const wordElements = selectionOverlayElement.$.textSelectionLayer
+                                 .getWordNodesForTesting();
+        assertTrue(wordElements.length > 0);
+        for (const word of wordElements) {
+          assertTrue(isVisible(word));
+        }
+
+        const translatedWordElements =
+            selectionOverlayElement.$.textSelectionLayer
+                .getTranslatedWordNodesForTesting();
+        assertTrue(translatedWordElements.length > 0);
+        for (const word of translatedWordElements) {
+          assertFalse(isVisible(word));
+        }
+      });
+
+  test(
+      `verify that translate text does render if translate mode enabled`,
+      async () => {
+        await addWordsWithTranslations();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        const translatedWordElements =
+            selectionOverlayElement.$.textSelectionLayer
+                .getTranslatedWordNodesForTesting();
+        assertTrue(translatedWordElements.length > 0);
+        for (const word of translatedWordElements) {
+          assertTrue(isVisible(word));
+        }
+      });
+
+  test(
+      `verify that clicking a translated word issues a text request`,
+      async () => {
+        await addWordsWithTranslations();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        const wordEl = selectionOverlayElement.$.textSelectionLayer
+                           .getTranslatedWordNodesForTesting()[0]!;
+        await simulateClick(selectionOverlayElement, {
+          x: wordEl.getBoundingClientRect().left,
+          y: wordEl.getBoundingClientRect().top,
+        });
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('wow', textQuery);
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
+      });
+
+  test(
+      `verify that dragging a translated word and finishing drag off the word
+      issues a text request`,
+      async () => {
+        await addWordsWithTranslations();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        // Drag that starts on a word but finishes on empty space.
+        const wordEl = selectionOverlayElement.$.textSelectionLayer
+                           .getTranslatedWordNodesForTesting()[0]!;
+        await simulateDrag(
+            selectionOverlayElement, {
+              x: wordEl.getBoundingClientRect().left,
+              y: wordEl.getBoundingClientRect().top,
+            },
+            {x: 0, y: 0});
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('wow', textQuery);
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
+      });
+
+  test(
+      `verify that clicking a detected word without a translation in translate
+      mode issues a text request`,
+      async () => {
+        await addWordsWithTranslations();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        await simulateClick(selectionOverlayElement, {
+          x: 100,
+          y: 20,
+        });
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('translation', textQuery);
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
+      });
+
+  test(
+      `verify that dragging over translated and detected text sends a request
+      with both`,
+      async () => {
+        await addWordsWithTranslations();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        const wordEl = selectionOverlayElement.$.textSelectionLayer
+                           .getTranslatedWordNodesForTesting()[0]!;
+        await simulateDrag(
+            selectionOverlayElement, {
+              x: wordEl.getBoundingClientRect().left,
+              y: wordEl.getBoundingClientRect().top,
+            },
+            {x: 80, y: 40});
+
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('wow a translation no', textQuery);
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertFalse(
+            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
+      });
+
+  test(
+      `verify that copy in selected text context menu works for translated
+      text`,
+      async () => {
+        // Add the words
+        await addWordsWithTranslations();
+        testBrowserProxy.handler.reset();
+
+        dispatchTranslateStateEvent(
+            selectionOverlayElement.$.textSelectionLayer, true, 'es');
+        await waitAfterNextRender(selectionOverlayElement);
+
+        // Drag that starts on a word.
+        const wordEl = selectionOverlayElement.$.textSelectionLayer
+                           .getTranslatedWordNodesForTesting()[0]!;
+        await simulateDrag(
+            selectionOverlayElement, {
+              x: wordEl.getBoundingClientRect().left,
+              y: wordEl.getBoundingClientRect().top,
+            },
+            {x: 80, y: 40});
+
+        await waitAfterNextRender(selectionOverlayElement);
+        assertFalse(
+            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        assertTrue(
+            selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+
+        selectionOverlayElement.handleCopyForTesting();
+        const textQuery = await testBrowserProxy.handler.whenCalled('copyText');
+        assertDeepEquals('wow a translation no', textQuery);
+
+        // Verify context menu hides when an option is selected.
+        await waitAfterNextRender(selectionOverlayElement);
+        assertFalse(
+            selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+
+        // Verify context menu is restored when a selected word is
+        // right-clicked.
+        await simulateClick(
+            selectionOverlayElement, {
+              x: 80,
+              y: 20,
+            },
+            /* button = */ 2);
+
+        assertTrue(
+            selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+      });
 });

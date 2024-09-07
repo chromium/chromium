@@ -91,10 +91,6 @@ void PrivacySandboxPolicyHandler::ApplyPolicySettings(
   }
 
   if (ad_measurement_enabled && !ad_measurement_enabled->GetBool()) {
-    base::UmaHistogramEnumeration(
-        "PrivacySandbox.M1AdMeasurementSetReason",
-        PrivacySandboxService::M1AdMeasurementSetReason::
-            kDisabled_PolicySettings);
     prefs->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, false);
   }
 }

@@ -39,7 +39,7 @@ class SVGElementReferenceObserver : public IdTargetObserver {
   SVGElementReferenceObserver(TreeScope& tree_scope,
                               const AtomicString& id,
                               base::RepeatingClosure closure)
-      : IdTargetObserver(tree_scope.GetIdTargetObserverRegistry(), id),
+      : IdTargetObserver(tree_scope.EnsureIdTargetObserverRegistry(), id),
         closure_(std::move(closure)) {}
 
  private:

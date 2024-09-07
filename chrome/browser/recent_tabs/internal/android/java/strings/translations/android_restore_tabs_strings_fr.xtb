@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Vous pouvez modifier les appareils synchronisés dont vous voulez restaurer des onglets en appuyant dessus. Naviguez pour consulter ou restaurer les onglets sélectionnés provenant de l'appareil actuel en mode tactile. Clavier masqué.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Ouvrir <ph name="TABS_COUNT_ONE" /> onglet}one{Ouvrir <ph name="TABS_COUNT_MANY" /> onglet}other{Ouvrir <ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="4509609396389120020">Obtenir les onglets d'autres appareils</translation>
+<translation id="4619615317237390068">Onglets d'autres appareils</translation>
 <translation id="4811934403802581334">Tous les onglets sélectionnés provenant de l'appareil actuellement sélectionné seront restaurés.</translation>
 <translation id="5336031759968328813">Consulter tous les onglets</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>

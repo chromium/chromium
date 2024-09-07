@@ -30,7 +30,7 @@
     [CallWith=ScriptState] GPURenderPipeline createRenderPipeline(GPURenderPipelineDescriptor descriptor);
     [RaisesException] GPUComputePipeline createComputePipeline(GPUComputePipelineDescriptor descriptor);
 
-    [CallWith=ScriptState] Promise<GPURenderPipeline> createRenderPipelineAsync(GPURenderPipelineDescriptor descriptor);
+    [CallWith=ScriptState, RaisesException] Promise<GPURenderPipeline> createRenderPipelineAsync(GPURenderPipelineDescriptor descriptor);
     [CallWith=ScriptState] Promise<GPUComputePipeline> createComputePipelineAsync(GPUComputePipelineDescriptor descriptor);
 
     GPUCommandEncoder createCommandEncoder(optional GPUCommandEncoderDescriptor descriptor = {});

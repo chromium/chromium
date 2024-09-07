@@ -24,8 +24,7 @@ struct EnumTraits<test::nullable_value_types::mojom::TypemappedEnum,
         return MojomType::kThatOtherValue;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return MojomType::kMinValue;
+    NOTREACHED();
   }
 
   static bool FromMojom(MojomType in, CppType* out) {

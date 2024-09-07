@@ -41,7 +41,7 @@ public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
 
     public WebPageStation clickAlwaysAllow() {
         WebPageStation popupPage =
-                WebPageStation.newWebPageStationBuilder()
+                WebPageStation.newBuilder()
                         .initFrom(mHostStation)
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)

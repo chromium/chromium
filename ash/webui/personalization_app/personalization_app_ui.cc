@@ -126,6 +126,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"zeroImages", IDS_PERSONALIZATION_APP_NO_IMAGES},
       {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
       {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},
+      {"managedFeature", IDS_PERSONALIZATION_APP_MANAGED_FEATURE},
       {"managedSetting", IDS_PERSONALIZATION_APP_MANAGED_SETTING},
       {"ariaLabelChangeWallpaper",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_WALLPAPER},
@@ -526,9 +527,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isGooglePhotosIntegrationEnabled",
                      wallpaper_provider_->IsEligibleForGooglePhotos());
 
-  source->AddBoolean("isManagedSeaPenEnabled",
-                     wallpaper_provider_->IsManagedSeaPenEnabled());
-
   source->AddBoolean("isGooglePhotosSharedAlbumsEnabled",
                      features::IsWallpaperGooglePhotosSharedAlbumsEnabled());
 
@@ -563,9 +561,10 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isSeaPenUseExptTemplateEnabled",
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenUseExptTemplateEnabled());
-  source->AddBoolean("isSeaPenEnterpriseEnabled",
-                     common_sea_pen_requirements &&
-                         ::ash::features::IsSeaPenEnterpriseEnabled());
+  source->AddBoolean("isManagedSeaPenEnabled",
+                     sea_pen_provider_->IsManagedSeaPenEnabled());
+  source->AddBoolean("isManagedSeaPenFeedbackEnabled",
+                     sea_pen_provider_->IsManagedSeaPenFeedbackEnabled());
   source->AddBoolean("isLacrosEnabled",
                      ::crosapi::lacros_startup_state::IsLacrosEnabled());
   source->AddBoolean("isVcResizeThumbnailEnabled", false);

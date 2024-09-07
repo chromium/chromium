@@ -9,6 +9,49 @@
 load("//lib/targets.star", "targets")
 
 targets.bundle(
+    name = "android_10_rel_gtests",
+    targets = [
+        "android_ar_gtests",
+        "android_trichrome_smoke_tests",
+        "vr_android_specific_chromium_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_ar_gtests",
+    targets = [
+        "monochrome_public_test_ar_apk",
+        # Name is vr_*, but actually has AR tests.
+        "vr_android_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "android_desktop_tests",
+    targets = [
+        "chrome_junit_tests",
+        "chrome_public_test_apk",
+        "chrome_public_unit_test_apk",
+        "android_browsertests",
+    ],
+)
+
+targets.bundle(
+    name = "android_marshmallow_gtests",
+    targets = [
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "chrome_public_tests",
+        "linux_flavor_specific_chromium_gtests",
+        "vr_android_specific_chromium_tests",
+        "vr_platform_specific_chromium_gtests",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
+    ],
+)
+
+targets.bundle(
     name = "android_oreo_gtests",
     targets = [
         "android_ar_gtests",
@@ -55,6 +98,49 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "bfcache_android_gtests",
+    targets = [
+        "bf_cache_android_browsertests",
+        "bfcache_generic_gtests",
+        "webview_instrumentation_test_apk_bfcache_mutations",
+        "webview_cts_tests_bfcache_mutations",
+    ],
+    per_test_modifications = {
+        "bf_cache_android_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "webview_cts_tests_bfcache_mutations": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "webview_instrumentation_test_apk_bfcache_mutations": targets.mixin(
+            swarming = targets.swarming(
+                shards = 12,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "cast_junit_tests",
+    targets = [
+        "cast_base_junit_tests",
+        "cast_shell_junit_tests",
+    ],
+    mixins = [
+        "x86-64",
+        "linux-jammy",
+        "junit-swarming-emulator",
+    ],
+)
+
+targets.bundle(
     name = "chromium_linux_dbg_isolated_scripts",
     targets = [
         "desktop_chromium_isolated_scripts",
@@ -71,6 +157,85 @@ targets.bundle(
     targets = [
         "services_unittests",
     ],
+)
+
+targets.bundle(
+    name = "cronet_dbg_isolated_scripts",
+    targets = [
+        "cronet_sizes_suite",
+    ],
+)
+
+# Compile targets which are common to most cronet builders in chromium.android
+targets.bundle(
+    name = "cronet_common_compile_targets",
+    additional_compile_targets = [
+        "cronet_package",
+        "cronet_perf_test_apk",
+        "cronet_sample_test_apk",
+        "cronet_smoketests_missing_native_library_instrumentation_apk",
+        "cronet_smoketests_platform_only_instrumentation_apk",
+        "cronet_test_instrumentation_apk",
+        "cronet_tests_android",
+        "cronet_unittests_android",
+        "net_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "cronet_rel_isolated_scripts",
+    targets = [
+        "cronet_resource_sizes",
+        "cronet_sizes_suite",
+    ],
+)
+
+targets.bundle(
+    name = "cronet_resource_sizes",
+    targets = [
+        "resource_sizes_cronet_sample_apk",
+    ],
+    per_test_modifications = {
+        "resource_sizes_cronet_sample_apk": targets.mixin(
+            swarming = targets.swarming(
+                # This suite simply analyzes build targets without running them.
+                # It can thus run on a standard linux machine w/o a device.
+                dimensions = {
+                    "os": "Ubuntu-22.04",
+                    "cpu": "x86-64",
+                },
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "cronet_sizes_suite",
+    targets = [
+        "cronet_sizes",
+    ],
+    per_test_modifications = {
+        "cronet_sizes": targets.per_test_modification(
+            mixins = targets.mixin(
+                swarming = targets.swarming(
+                    # This suite simply analyzes build targets without running them.
+                    # It can thus run on a standard linux machine w/o a device.
+                    dimensions = {
+                        "os": "Ubuntu-22.04",
+                        "cpu": "x86-64",
+                    },
+                ),
+            ),
+            remove_mixins = [
+                "bullhead",
+                "marshmallow",
+                "oreo_fleet",
+                "oreo_mr1_fleet",
+                "pie_fleet",
+                "walleye",
+            ],
+        ),
+    },
 )
 
 # Runs only the accessibility tests in CI/CQ to reduce accessibility
@@ -124,7 +289,6 @@ targets.bundle(
     targets = [
         "aura_unittests",
         "blink_common_unittests",
-        "courgette_unittests",
         "crypto_unittests",
         "filesystem_service_unittests",
         "web_engine_integration_tests",
@@ -248,7 +412,7 @@ targets.bundle(
     name = "webview_bot_all_gtests",
     targets = [
         "system_webview_shell_instrumentation_tests",
-        "webview_bot_instrumentation_test_apk_gtest",
+        "webview_bot_instrumentation_test_apk_mutations_gtest",
         "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
         "webview_bot_unittests_gtest",
         "webview_cts_tests_gtest",

@@ -250,6 +250,10 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   }
 
  protected:
+  void SetEnhancedProtectionEnabled(bool enabled) {
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                                 enabled);
+  }
   void SetExtendedReportingEnabled(bool enabled) {
     browser()->profile()->GetPrefs()->SetBoolean(
         prefs::kSafeBrowsingScoutReportingEnabled, enabled);
@@ -261,6 +265,27 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   // |suffix_list| must be sorted lexicographically.
   void SetHashdanceSuffixList(std::vector<std::string> suffix_list) {
     suffix_list_ = std::move(suffix_list);
+  }
+
+  void SetExtendedReportingOrEnhancecProtectionEnabled(bool enabled) {
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kExtendedReportingRemovePrefDependency)) {
+      // Currently, the SCT reporting functionality depends on the to-be
+      // deprecated SBER (Extended Reporting) pref value,
+      // "prefs::kSafeBrowsingScoutReportingEnabled", and the ESB (Enhanced Safe
+      // Browsing) pref value, "prefs::kSafeBrowsingEnhanced".
+
+      // After the dependency on "prefs::kSafeBrowsingScoutReportingEnabled" is
+      // removed, SCT reporting should solely rely on the ESB pref
+      // "prefs::kSafeBrowsingEnhanced". This test ensures that the SCT
+      // functions as expected after this change.
+
+      // Please refer to the IsExtendedReportingEnabled function in
+      // safe_browsing_prefs.cc file and its original CL for details.
+      SetEnhancedProtectionEnabled(true);
+    } else {
+      SetExtendedReportingEnabled(true);
+    }
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -301,7 +326,24 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   // any negative tests to reduce the chance of false successes.
   bool FlushAndCheckZeroReports(size_t requests_so_far = 0) {
     SetSafeBrowsingEnabled(true);
-    SetExtendedReportingEnabled(true);
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kExtendedReportingRemovePrefDependency)) {
+      // Currently, the SCT reporting functionality depends on the to-be
+      // deprecated SBER (Extended Reporting) pref value,
+      // "prefs::kSafeBrowsingScoutReportingEnabled", and the ESB (Enhanced Safe
+      // Browsing) pref value, "prefs::kSafeBrowsingEnhanced".
+
+      // After the dependency on "prefs::kSafeBrowsingScoutReportingEnabled" is
+      // removed, SCT reporting should solely rely on the ESB pref
+      // "prefs::kSafeBrowsingEnhanced". This test ensures that the SCT
+      // functions as expected after this change.
+
+      // Please refer to the IsExtendedReportingEnabled function in
+      // safe_browsing_prefs.cc file and its original CL for details.
+      SetEnhancedProtectionEnabled(true);
+    } else {
+      SetExtendedReportingEnabled(true);
+    }
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         https_server()->GetURL("flush-and-check-zero-reports.test", "/")));
@@ -430,8 +472,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
 // Tests that reports should be sent when extended reporting is opted in.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
                        OptedIn_ShouldEnqueueReport) {
-  SetExtendedReportingEnabled(true);
-
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
   // Visit an HTTPS page and wait for the report to be sent.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("a.test", "/")));
@@ -457,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, DisableSafebrowsing) {
 // Tests that we don't send a report for a navigation with a cert error.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
                        CertErrorDoesNotEnqueueReport) {
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // Visit a page with an invalid cert.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -471,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
                        IncognitoWindow_ShouldNotEnqueueReport) {
   // Enable SBER in the main profile.
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // Create a new Incognito window.
   auto* incognito = CreateIncognitoBrowser();
@@ -488,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
                        DISABLED_OptingOutClearsSCTAuditingCache) {
   // Enable SCT auditing and enqueue a report.
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // Visit an HTTPS page and wait for a report to be sent.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -506,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
   // We can check that the same report gets cached again instead of being
   // deduplicated (i.e., another report should be sent).
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("a.test", "/")));
   WaitForRequests(2);
@@ -526,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
     return;
   }
 
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // Crash the NetworkService to force it to restart.
   SimulateNetworkServiceCrash();
@@ -629,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
       https_server()->GetCertificate().get(), "mixed-scts.test", verify_result,
       net::OK);
 
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("mixed-scts.test", "/")));
   WaitForRequests(1);
@@ -672,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
       https_server()->GetCertificate().get(), "mixed-scts.test", verify_result,
       net::OK);
 
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("mixed-scts.test", "/")));
   WaitForRequests(1);
@@ -710,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, NoValidSCTsNoReport) {
       https_server()->GetCertificate().get(), "invalid-scts.test",
       verify_result, net::OK);
 
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("invalid-scts.test", "/")));
   EXPECT_EQ(0u, requests_seen());
@@ -739,7 +780,7 @@ class SCTReportingServiceZeroSamplingRateBrowserTest
 // Tests that the embedder is not notified when the sampling rate is zero.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceZeroSamplingRateBrowserTest,
                        EmbedderNotNotified) {
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // Visit an HTTPS page.
   ASSERT_TRUE(
@@ -754,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, SucceedOnFirstTry) {
   // Succeed on the first try.
   set_error_count(0);
 
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // Visit an HTTPS page and wait for the report to be sent.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -772,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, RetryOnceAndSucceed) {
   // Succeed on the second try.
   set_error_count(1);
 
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // Visit an HTTPS page and wait for the report to be sent twice.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -790,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, FailAfterMaxRetries) {
   // Don't succeed for max_retries+1.
   set_error_count(16);
 
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // Visit an HTTPS page and wait for the report to be sent.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -824,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   // the mock cert verifier.
   mock_cert_verifier()->set_default_result(net::ERR_CERT_COMMON_NAME_INVALID);
 
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // Visit an HTTPS page, which will trigger a report being sent to the report
   // server but that report request will result in a cert error.
@@ -1101,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   // Don't immediately succeed, so report stays persisted to disk.
   set_error_count(10);
 
-  SetExtendedReportingEnabled(true);
+  SetExtendedReportingOrEnhancecProtectionEnabled(true);
 
   // The empty/cleared persistence file will be 2 bytes (the empty JSON list).
   constexpr int64_t kEmptyPersistenceFileSize = 2;

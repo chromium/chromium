@@ -22,6 +22,9 @@ import {getCss} from './power_bookmark_row.css.js';
 import {getHtml} from './power_bookmark_row.html.js';
 import type {PowerBookmarksService} from './power_bookmarks_service.js';
 
+export const NESTED_BOOKMARKS_BASE_MARGIN = 45;
+export const NESTED_BOOKMARKS_MARGIN_PER_DEPTH = 17;
+
 export interface PowerBookmarkRowElement {
   $: {
     crUrlListItem: CrUrlListItemElement,
@@ -47,6 +50,10 @@ export class PowerBookmarkRowElement extends CrLitElement {
       compact: {type: Boolean},
       bookmarksTreeViewEnabled: {type: Boolean},
       contextMenuBookmark: {type: Object},
+      depth: {
+        type: Number,
+        reflect: true,
+      },
       hasCheckbox: {
         type: Boolean,
         reflect: true,
@@ -56,11 +63,11 @@ export class PowerBookmarkRowElement extends CrLitElement {
       searchQuery: {type: String},
       shoppingCollectionFolderId: {type: String},
       rowAriaDescription: {type: String},
-      trailingIcon: {type: String},
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
       bookmarksService: {type: Object},
       toggleExpand: {type: Boolean},
+      updatedElementIds: {type: Array},
     };
   }
 
@@ -69,16 +76,17 @@ export class PowerBookmarkRowElement extends CrLitElement {
   contextMenuBookmark: chrome.bookmarks.BookmarkTreeNode|undefined;
   bookmarksTreeViewEnabled: boolean =
       loadTimeData.getBoolean('bookmarksTreeViewEnabled');
+  depth: number = 0;
   forceHover: boolean = false;
   hasCheckbox: boolean = false;
   renamingId: string = '';
   searchQuery: string|undefined;
   shoppingCollectionFolderId: string = '';
   rowAriaDescription: string = '';
-  trailingIcon: string = '';
   trailingIconTooltip: string = '';
   toggleExpand: boolean = false;
   imageUrls: {[key: string]: string} = {};
+  updatedElementIds: string[] = [];
 
   listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
   bookmarksService: PowerBookmarksService;
@@ -96,6 +104,13 @@ export class PowerBookmarkRowElement extends CrLitElement {
     if (changedProperties.has('compact')) {
       this.listItemSize =
           this.compact ? CrUrlListItemSize.COMPACT : CrUrlListItemSize.LARGE;
+      if (this.bookmarksTreeViewEnabled && this.compact) {
+        // Set custom margins for nested bookmarks in tree view.
+        this.style.setProperty(
+            '--base-margin', `${NESTED_BOOKMARKS_BASE_MARGIN}px`);
+        this.style.setProperty(
+            '--margin-per-depth', `${NESTED_BOOKMARKS_MARGIN_PER_DEPTH}px`);
+      }
     }
   }
 
@@ -108,7 +123,24 @@ export class PowerBookmarkRowElement extends CrLitElement {
         this.onInputDisplayChange_();
       }
     }
+    if (changedProperties.has('listItemSize')) {
+      this.handleListItemSizeChanged_();
+    }
+    if (changedProperties.has('depth')) {
+      this.style.setProperty('--depth', `${this.depth}`);
+    }
   }
+
+  override shouldUpdate(changedProperties: PropertyValues<this>) {
+    if (changedProperties.has('updatedElementIds')) {
+        const updatedElementIds = changedProperties.get('updatedElementIds');
+        if (updatedElementIds?.includes(this.bookmark?.id)) {
+            return true;
+        }
+        changedProperties.delete('updatedElementIds');
+    }
+    return super.shouldUpdate(changedProperties);
+}
 
   override async getUpdateComplete() {
     // Wait for all children to update before marking as complete.
@@ -156,6 +188,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
   }
 
+  protected async handleListItemSizeChanged_() {
+    await this.$.crUrlListItem.updateComplete;
+    this.dispatchEvent(new CustomEvent('list-item-size-changed', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   protected renamingItem_(id: string) {
     return id === this.renamingId;
   }
@@ -172,11 +212,18 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return !this.renamingItem_(this.bookmark?.id) && !this.hasCheckbox;
   }
 
-  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.toggleExpand = e.detail.value;
+  protected onExpandedChanged_(event: CustomEvent<{value: boolean}>) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.toggleExpand = event.detail.value;
     this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
       bubbles: true,
       composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        expanded: this.toggleExpand,
+        event: event,
+      },
     }));
   }
 
@@ -359,8 +406,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   protected shouldExpand_(): boolean|undefined {
-    return this.bookmark?.children && this.bookmark?.children.length > 0 &&
-        this.bookmarksTreeViewEnabled && this.compact;
+    return this.bookmark?.children && this.bookmarksTreeViewEnabled &&
+        this.compact;
   }
 
   protected canEdit_(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {

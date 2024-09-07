@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/browser_accessibility_cocoa.h"
+#include "ui/accessibility/platform/browser_accessibility_cocoa.h"
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_mac.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -25,8 +21,232 @@
 #include "testing/gtest_mac.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_mac.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "url/gurl.h"
+
+namespace {
+
+#include <string>
+
+// Returns HTML that creates a 60-row table.
+std::string GetLargeTableHTML() {
+  return R"delim(data:text/html,
+    <html>
+      <head>
+        <title>Large Table</title>
+        <script type="text/javascript">
+
+          function CreateTable() {
+          const numColumns = 5;
+          const numRows = 60;
+
+          const table = document.createElement('table');
+          for (let i = 0; i < numRows; i++) {
+            const row = document.createElement('tr');
+            for (let j = 0; j < numColumns; j++) {
+              const cell = document.createElement('td');
+              cell.textContent = `row ${i+1}, column ${j+1}`;
+              row.appendChild(cell);
+            }
+            table.appendChild(row);
+          }
+
+          document.body.appendChild(table);
+        }
+
+        </script>
+      </head>
+      <body onLoad="CreateTable()">
+
+      </body>
+    </html>)delim";
+}
+
+// Returns the accessibility frame assigned to `element`.
+NSRect GetAXFrame(AXUIElementRef element) {
+  AXValueRef value;
+
+  CGPoint position = CGPointZero;
+  if (AXUIElementCopyAttributeValue(element, kAXPositionAttribute,
+                                    (CFTypeRef*)&value) == kAXErrorSuccess) {
+    if (AXValueGetType(value) == kAXValueCGPointType) {
+      AXValueGetValue(value, (AXValueType)kAXValueCGPointType, &position);
+      CFRelease(value);
+    }
+  }
+
+  CGSize size = CGSizeZero;
+  if (AXUIElementCopyAttributeValue(element, kAXSizeAttribute,
+                                    (CFTypeRef*)&value) == kAXErrorSuccess) {
+    if (AXValueGetType(value) == kAXValueCGSizeType) {
+      AXValueGetValue(value, (AXValueType)kAXValueCGSizeType, &size);
+      CFRelease(value);
+    }
+  }
+
+  return NSMakeRect(position.x, position.y, size.width, size.height);
+}
+
+// Returns the string associated with `element`.
+NSString* GetAXUIElementStringValue(AXUIElementRef element) {
+  CFTypeRef value;
+  NSString* stringValue = nil;
+
+  if (AXUIElementCopyAttributeValue(element, kAXValueAttribute, &value) ==
+      kAXErrorSuccess) {
+    if (CFGetTypeID(value) == CFStringGetTypeID()) {
+      stringValue = [NSString stringWithString:(__bridge NSString*)value];
+    }
+    CFRelease(value);
+  }
+
+  return stringValue;
+}
+
+// Returns a table element within the descendants of `element`.
+AXUIElementRef FindTable(AXUIElementRef element) {
+  AXUIElementRef table = NULL;
+  CFArrayRef children = NULL;
+  CFStringRef role = NULL;
+
+  AXUIElementCopyAttributeValue(element, kAXRoleAttribute, (CFTypeRef*)&role);
+  if (role) {
+    if (CFStringCompare(role, CFSTR("AXTable"), 0) == kCFCompareEqualTo) {
+      table = element;
+      CFRetain(table);
+    }
+    CFRelease(role);
+  }
+
+  if (table) {
+    return table;
+  }
+
+  AXUIElementCopyAttributeValue(element, kAXChildrenAttribute,
+                                (CFTypeRef*)&children);
+  if (children) {
+    CFIndex count = CFArrayGetCount(children);
+    for (CFIndex i = 0; i < count && !table; i++) {
+      AXUIElementRef child =
+          (AXUIElementRef)CFArrayGetValueAtIndex(children, i);
+
+      table = FindTable(child);
+    }
+    CFRelease(children);
+  }
+
+  return table;
+}
+}  // namespace
+
+// A table cell as seen by an assitive technology when navigating a web page.
+@interface ATTestTableCell : NSObject
+@property(nonatomic) NSRect frame;
+@property(nonatomic, strong) NSString* value;
+- (instancetype)initFromElement:(AXUIElementRef)cellElement;
+@end
+
+@implementation ATTestTableCell
+@synthesize frame = _frame;
+@synthesize value = _value;
+
+- (instancetype)initFromElement:(AXUIElementRef)cellElement {
+  self = [super init];
+  if (self) {
+    _frame = GetAXFrame(cellElement);
+    _value = GetAXUIElementStringValue(cellElement);
+  }
+  return self;
+}
+@end
+
+// A table row as seen by an assitive technology when navigating a web page.
+@interface ATTestTableRow : NSObject
+@property(nonatomic) NSRect frame;
+@property(nonatomic, strong) NSMutableArray<ATTestTableCell*>* cells;
+- (instancetype)initFromElement:(AXUIElementRef)rowElement;
+@end
+
+@implementation ATTestTableRow
+@synthesize frame = _frame;
+@synthesize cells = _cells;
+
+- (instancetype)initFromElement:(AXUIElementRef)rowElement {
+  self = [super init];
+  if (self) {
+    _frame = GetAXFrame(rowElement);
+    _cells = [NSMutableArray array];
+    [self populateCellsFromRowElement:rowElement];
+  }
+  return self;
+}
+
+- (void)populateCellsFromRowElement:(AXUIElementRef)rowElement {
+  CFArrayRef cellsArray = NULL;
+
+  if (AXUIElementCopyAttributeValue(rowElement, kAXChildrenAttribute,
+                                    (CFTypeRef*)&cellsArray) ==
+          kAXErrorSuccess &&
+      cellsArray) {
+    CFIndex cellCount = CFArrayGetCount(cellsArray);
+
+    for (CFIndex i = 0; i < cellCount; i++) {
+      AXUIElementRef cellElement =
+          (AXUIElementRef)CFArrayGetValueAtIndex(cellsArray, i);
+      ATTestTableCell* cell =
+          [[ATTestTableCell alloc] initFromElement:cellElement];
+      [_cells addObject:cell];
+    }
+
+    CFRelease(cellsArray);
+  }
+}
+
+@end
+
+// A table as seen by an assitive technology when navigating a web page.
+@interface AXTestTable : NSObject
+@property(nonatomic, strong) NSMutableArray<ATTestTableRow*>* rows;
+- (instancetype)initWithAXUIElement:(AXUIElementRef)tableElement;
+@end
+
+@implementation AXTestTable
+@synthesize rows = _rows;
+
+- (instancetype)initWithAXUIElement:(AXUIElementRef)tableElement {
+  self = [super init];
+  if (self) {
+    _rows = [NSMutableArray array];
+    [self populateTableFromElement:tableElement];
+  }
+  return self;
+}
+
+- (void)populateTableFromElement:(AXUIElementRef)tableElement {
+  CFArrayRef rowsArray = NULL;
+
+  if (AXUIElementCopyAttributeValue(tableElement, kAXRowsAttribute,
+                                    (CFTypeRef*)&rowsArray) ==
+          kAXErrorSuccess &&
+      rowsArray) {
+    CFIndex rowCount = CFArrayGetCount(rowsArray);
+
+    for (CFIndex i = 0; i < rowCount; i++) {
+      AXUIElementRef rowElement =
+          (AXUIElementRef)CFArrayGetValueAtIndex(rowsArray, i);
+      ATTestTableRow* row = [[ATTestTableRow alloc] initFromElement:rowElement];
+      [_rows addObject:row];
+    }
+
+    CFRelease(rowsArray);
+  }
+}
+
+@end
 
 namespace content {
 
@@ -105,6 +325,50 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
     return nullptr;
   }
 };
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
+                       ATCanScrollLargeTable) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+
+  // Load a large table.
+  GURL url(GetLargeTableHTML());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  pid_t pid = getpid();
+  AXUIElementRef axApplication = AXUIElementCreateApplication(pid);
+  AXUIElementRef table = FindTable(axApplication);
+
+  ASSERT_TRUE(table);
+
+  AXTestTable* axTable = [[AXTestTable alloc] initWithAXUIElement:table];
+  NSArray* rows = [axTable rows];
+
+  EXPECT_TRUE(rows.count == 60);
+
+  // A very tall table will have some number of cells hidden (clipped by its
+  // container or the window). For VoiceOver and other ATs to work properly,
+  // all rows and cells must have non-zero sizes, even if clipped.
+  int rowNumber = 0;
+  for (ATTestTableRow* row in rows) {
+    EXPECT_FALSE(NSIsEmptyRect(row.frame))
+        << "zero extent for row " << rowNumber;
+    EXPECT_TRUE(row.cells.count);
+    EXPECT_FALSE(NSIsEmptyRect(row.cells[0].frame))
+        << "zero extent for row " << rowNumber << ", cell "
+        << row.cells[0].value;
+
+    rowNumber++;
+  }
+
+  CFRelease(table);
+  CFRelease(axApplication);
+}
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        AXTextMarkerForTextEdit) {

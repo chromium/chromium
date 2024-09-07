@@ -41,6 +41,7 @@
 #include "cc/layers/layer.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_track.h"
 #include "services/media_session/public/mojom/media_session.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -254,52 +255,6 @@ class AudioSourceProviderClientLockScope {
  private:
   AudioSourceProviderClient* client_;
 };
-
-const AtomicString& AudioKindToString(
-    WebMediaPlayerClient::AudioTrackKind kind) {
-  switch (kind) {
-    case WebMediaPlayerClient::kAudioTrackKindNone:
-      return g_empty_atom;
-    case WebMediaPlayerClient::kAudioTrackKindAlternative:
-      return AudioTrack::AlternativeKeyword();
-    case WebMediaPlayerClient::kAudioTrackKindDescriptions:
-      return AudioTrack::DescriptionsKeyword();
-    case WebMediaPlayerClient::kAudioTrackKindMain:
-      return AudioTrack::MainKeyword();
-    case WebMediaPlayerClient::kAudioTrackKindMainDescriptions:
-      return AudioTrack::MainDescriptionsKeyword();
-    case WebMediaPlayerClient::kAudioTrackKindTranslation:
-      return AudioTrack::TranslationKeyword();
-    case WebMediaPlayerClient::kAudioTrackKindCommentary:
-      return AudioTrack::CommentaryKeyword();
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_atom;
-}
-
-const AtomicString& VideoKindToString(
-    WebMediaPlayerClient::VideoTrackKind kind) {
-  switch (kind) {
-    case WebMediaPlayerClient::kVideoTrackKindNone:
-      return g_empty_atom;
-    case WebMediaPlayerClient::kVideoTrackKindAlternative:
-      return VideoTrack::AlternativeKeyword();
-    case WebMediaPlayerClient::kVideoTrackKindCaptions:
-      return VideoTrack::CaptionsKeyword();
-    case WebMediaPlayerClient::kVideoTrackKindMain:
-      return VideoTrack::MainKeyword();
-    case WebMediaPlayerClient::kVideoTrackKindSign:
-      return VideoTrack::SignKeyword();
-    case WebMediaPlayerClient::kVideoTrackKindSubtitles:
-      return VideoTrack::SubtitlesKeyword();
-    case WebMediaPlayerClient::kVideoTrackKindCommentary:
-      return VideoTrack::CommentaryKeyword();
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_atom;
-}
 
 bool CanLoadURL(const KURL& url, const String& content_type_str) {
   DEFINE_STATIC_LOCAL(const String, codecs, ("codecs"));
@@ -724,21 +679,27 @@ void HTMLMediaElement::ResetMojoState() {
           this, GetExecutionContext());
 }
 
-bool HTMLMediaElement::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState HTMLMediaElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   // TODO(https://crbug.com/911882): Depending on result of discussion, remove.
-  if (ownerDocument()->IsMediaDocument())
-    return false;
+  if (ownerDocument()->IsMediaDocument()) {
+    return FocusableState::kNotFocusable;
+  }
 
   // If no controls specified, we should still be able to focus the element if
   // it has tabIndex.
-  return ShouldShowControls() || HTMLElement::SupportsFocus(update_behavior);
+  if (ShouldShowControls()) {
+    return FocusableState::kFocusable;
+  }
+  return HTMLElement::SupportsFocus(update_behavior);
 }
 
-bool HTMLMediaElement::IsFocusable(UpdateBehavior update_behavior) const {
-  if (!SupportsFocus(update_behavior)) {
-    return false;
+FocusableState HTMLMediaElement::IsFocusableState(
+    UpdateBehavior update_behavior) const {
+  if (!IsFullscreen()) {
+    return SupportsFocus(update_behavior);
   }
-  return !IsFullscreen() || HTMLElement::IsFocusable(update_behavior);
+  return HTMLElement::IsFocusableState(update_behavior);
 }
 
 int HTMLMediaElement::DefaultTabIndex() const {
@@ -3270,30 +3231,6 @@ void HTMLMediaElement::AudioTracksTimerFired(TimerBase*) {
   web_media_player_->EnabledAudioTracksChanged(enabled_track_ids);
 }
 
-WebMediaPlayer::TrackId HTMLMediaElement::AddAudioTrack(
-    const WebString& id,
-    WebMediaPlayerClient::AudioTrackKind kind,
-    const WebString& label,
-    const WebString& language,
-    bool enabled) {
-  AtomicString kind_string = AudioKindToString(kind);
-  DVLOG(3) << "addAudioTrack(" << *this << ", '" << String(id) << "', ' "
-           << kind_string << "', '" << String(label) << "', '"
-           << String(language) << "', " << BoolString(enabled) << ")";
-
-  auto* audio_track = MakeGarbageCollected<AudioTrack>(id, kind_string, label,
-                                                       language, enabled);
-  audioTracks().Add(audio_track);
-
-  return audio_track->id();
-}
-
-void HTMLMediaElement::RemoveAudioTrack(WebMediaPlayer::TrackId track_id) {
-  DVLOG(3) << "removeAudioTrack(" << *this << ")";
-
-  audioTracks().Remove(track_id);
-}
-
 VideoTrackList& HTMLMediaElement::videoTracks() {
   return *video_tracks_;
 }
@@ -3315,32 +3252,39 @@ void HTMLMediaElement::SelectedVideoTrackChanged(VideoTrack* track) {
                                                                  : nullptr);
 }
 
-WebMediaPlayer::TrackId HTMLMediaElement::AddVideoTrack(
-    const WebString& id,
-    WebMediaPlayerClient::VideoTrackKind kind,
-    const WebString& label,
-    const WebString& language,
-    bool selected) {
-  AtomicString kind_string = VideoKindToString(kind);
-  DVLOG(3) << "addVideoTrack(" << *this << ", '" << String(id) << "', '"
-           << kind_string << "', '" << String(label) << "', '"
-           << String(language) << "', " << BoolString(selected) << ")";
-
-  // If another track was selected (potentially by the user), leave it selected.
-  if (selected && videoTracks().selectedIndex() != -1)
-    selected = false;
-
-  auto* video_track = MakeGarbageCollected<VideoTrack>(id, kind_string, label,
-                                                       language, selected);
-  videoTracks().Add(video_track);
-
-  return video_track->id();
+void HTMLMediaElement::AddMediaTrack(const media::MediaTrack& track) {
+  switch (track.type()) {
+    case media::MediaTrack::Type::kVideo: {
+      bool enabled = track.enabled() && videoTracks().selectedIndex() == -1;
+      videoTracks().Add(MakeGarbageCollected<VideoTrack>(
+          String::FromUTF8(track.track_id().value()),
+          WebString::FromUTF8(track.kind().value()),
+          WebString::FromUTF8(track.label().value()),
+          WebString::FromUTF8(track.language().value()), enabled));
+      break;
+    }
+    case media::MediaTrack::Type::kAudio: {
+      audioTracks().Add(MakeGarbageCollected<AudioTrack>(
+          String::FromUTF8(track.track_id().value()),
+          WebString::FromUTF8(track.kind().value()),
+          WebString::FromUTF8(track.label().value()),
+          WebString::FromUTF8(track.language().value()), track.enabled()));
+      break;
+    }
+  }
 }
 
-void HTMLMediaElement::RemoveVideoTrack(WebMediaPlayer::TrackId track_id) {
-  DVLOG(3) << "removeVideoTrack(" << *this << ")";
-
-  videoTracks().Remove(track_id);
+void HTMLMediaElement::RemoveMediaTrack(const media::MediaTrack& track) {
+  switch (track.type()) {
+    case media::MediaTrack::Type::kVideo: {
+      videoTracks().Remove(String::FromUTF8(track.track_id().value()));
+      break;
+    }
+    case media::MediaTrack::Type::kAudio: {
+      audioTracks().Remove(String::FromUTF8(track.track_id().value()));
+      break;
+    }
+  }
 }
 
 void HTMLMediaElement::ForgetResourceSpecificTracks() {
@@ -4492,15 +4436,15 @@ void HTMLMediaElement::CreatePlaceholderTracksIfNecessary() {
   // Create a placeholder audio track if the player says it has audio but it
   // didn't explicitly announce the tracks.
   if (HasAudio() && !audioTracks().length()) {
-    AddAudioTrack("audio", WebMediaPlayerClient::kAudioTrackKindMain,
-                  "Audio Track", "", true);
+    AddMediaTrack(media::MediaTrack::CreateAudioTrack(
+        "audio", media::MediaTrack::AudioKind::kMain, "Audio Track", "", true));
   }
 
   // Create a placeholder video track if the player says it has video but it
   // didn't explicitly announce the tracks.
   if (HasVideo() && !videoTracks().length()) {
-    AddVideoTrack("video", WebMediaPlayerClient::kVideoTrackKindMain,
-                  "Video Track", "", true);
+    AddMediaTrack(media::MediaTrack::CreateVideoTrack(
+        "video", media::MediaTrack::VideoKind::kMain, "Video Track", "", true));
   }
 }
 

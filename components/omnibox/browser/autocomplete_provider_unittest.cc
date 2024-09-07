@@ -826,36 +826,20 @@ TEST_F(AutocompleteProviderTest, ExtraQueryParams) {
   RunExactKeymatchTest(true);
   CopyResults();
 
-  // When LimitKeywordModeSuggestions is enabled, DSE suggestions are curbed in
-  // keyword mode, so this test is only relevant when disabled.
-  if (!omnibox_feature_configs::LimitKeywordModeSuggestions::Get().enabled) {
-    ASSERT_EQ(2U, result_.size());
-    EXPECT_EQ("http://keyword/test",
-              result_.match_at(0)->destination_url.possibly_invalid_spec());
-    EXPECT_EQ("http://defaultturl/k%20test?a=b",
-              result_.match_at(1)->destination_url.possibly_invalid_spec());
-  }
+  ASSERT_EQ(1U, result_.size());
+  EXPECT_EQ("http://keyword/test",
+            result_.match_at(0)->destination_url.possibly_invalid_spec());
 }
 
 // Ensures matches from (only) the default search provider are curbed when in
-// keyword mode and LimitKeywordModeSuggestions is enabled.
+// keyword mode.
 TEST_F(AutocompleteProviderTest, CurbDefaultSuggestions) {
-  // Enable LimitKeywordModeSuggestions flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureState(
-      omnibox_feature_configs::LimitKeywordModeSuggestions::
-          kLimitKeywordModeSuggestions,
-      true);
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::LimitKeywordModeSuggestions>
-      scoped_config;
-
   ResetControllerWithKeywordAndSearchProviders();
   RunExactKeymatchTest(true);
   CopyResults();
 
-  // When LimitKeywordModeSuggestions is enabled, DSE suggestions are curbed, so
-  // the default turl suggestion should not be present in the results.
+  // DSE suggestions are curbed in keyword mode, so the default turl suggestion
+  // should not be present in the res=ults.
   ASSERT_EQ(1U, result_.size());
   EXPECT_EQ("http://keyword/test",
             result_.match_at(0)->destination_url.possibly_invalid_spec());

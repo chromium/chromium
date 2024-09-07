@@ -27,10 +27,12 @@ using ::attribution_reporting::mojom::DebugDataType;
   X(kSourceDestinationPerDayRateLimit,                                         \
     "source-destination-per-day-rate-limit")                                   \
   X(kSourceDestinationRateLimit, "source-destination-rate-limit")              \
+  X(kSourceMaxEventStatesLimit, "source-max-event-states-limit")               \
   X(kSourceNoised, "source-noised")                                            \
   X(kSourceReportingOriginLimit, "source-reporting-origin-limit")              \
   X(kSourceReportingOriginPerSiteLimit,                                        \
     "source-reporting-origin-per-site-limit")                                  \
+  X(kSourceScopesChannelCapacityLimit, "source-scopes-channel-capacity-limit") \
   X(kSourceStorageLimit, "source-storage-limit")                               \
   X(kSourceSuccess, "source-success")                                          \
   X(kSourceTriggerStateCardinalityLimit,                                       \

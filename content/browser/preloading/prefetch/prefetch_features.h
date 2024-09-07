@@ -11,9 +11,10 @@
 
 namespace features {
 
-// If enabled, then prefetch requests from speculation rules should use the code
-// in content/browser/preloading/prefetch/ instead of
-// chrome/browser/preloadingprefetch/prefetch_proxy/.
+// This feature was used to launch the prefetch migration from embedder layer to
+// content/, and this work has finished and the old implemnetation was deleted.
+// Now this flag is just for injecting parameters through field trials as an
+// umberella feature.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUseContentRefactor);
 
 // If enabled, PrefetchContainer can be used for more than one navigation.
@@ -29,10 +30,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 // network isolation key instead of the old behavior of the referring document
 // itself. See crbug.com/1502326
 BASE_DECLARE_FEATURE(kPrefetchNIKScope);
-
-// If enabled, a will retrieve and store responses from/to the HTTP cache
-// whenever possible.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUsesHTTPCache);
 
 // If enabled, prefetches may include client hints request headers.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchClientHints);
@@ -72,6 +69,14 @@ BASE_DECLARE_FEATURE(kPrefetchProxy);
 // If enabled, responses with an operative Cookie-Indices will not be used
 // if the relevant cookie values have changed.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCookieIndices);
+
+// Does not enable any new behaviour; is only used to parameterize prefetch
+// limit values (see content/browser/preloading/prefetch/prefetch_params.cc).
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewLimits);
+
+// If enabled, use the new wait loop, which is driven by
+// `PrefetchMatchResolver2` instead of `PrefetchService`.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewWaitLoop);
 
 }  // namespace features
 

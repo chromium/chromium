@@ -31,8 +31,6 @@ TARGET_SECTIONS = {
     },
 }
 
-UINT64_SIZE = 8
-
 
 def parse_endianess(objdump_result):
   for line in objdump_result.splitlines():
@@ -45,14 +43,12 @@ def parse_endianess(objdump_result):
   raise ValueError('No endian found')
 
 
-def parse_ptr_size(objdump_result):
+def assert_elf_type(objdump_result):
   for line in objdump_result.splitlines():
     line = line.strip()
     if line.startswith('Class:'):
-      if 'ELF64' in line:
-        return 8
-      if 'ELF32' in line:
-        return 4
+      if 'ELF64' in line or 'ELF32' in line:
+        return
       raise ValueError('Class is not ELF64 nor ELF32: ' + line)
   raise ValueError('No class found')
 
@@ -68,7 +64,7 @@ def parse_section_info(objdump_result, section_name):
   return (0, 0, 0)
 
 
-def create_symbol_offset_map(binary_input, objdump_result):
+def create_symbol_map(binary_input, objdump_result):
   (rodata_section_addr, rodata_section_offset,
    rodata_section_size) = parse_section_info(objdump_result, '.rodata')
 
@@ -86,25 +82,29 @@ def create_symbol_offset_map(binary_input, objdump_result):
       for var in variable_names:
         if var in line:
           row = line.strip().split()
-          if row[2] != '8':
-            raise ValueError('variable size is not 8: ' + line)
+          if row[2] == '8':
+            size = 8
+          elif row[2] == '4':
+            size = 4
+          else:
+            raise ValueError('variable size is not 8 or 4: ' + line)
           addr = int(row[1], base=16)
           rodata_section_end_addr = rodata_section_addr + rodata_section_size
           if addr < rodata_section_addr or addr >= rodata_section_end_addr:
             raise ValueError(var + ' is not in .rodata section')
           offset = addr - rodata_section_addr + rodata_section_offset
-          result[var] = offset
+          result[var] = (offset, size)
 
   return result
 
 
-def overwrite_variable(file, symbol_offset_map, endianess, length, section_name,
-                       var_type, value):
-  var_offset = symbol_offset_map[TARGET_SECTIONS[section_name][var_type]]
+def overwrite_variable(file, symbol_map, endianess, section_name, var_type,
+                       value):
+  (var_offset, var_size) = symbol_map[TARGET_SECTIONS[section_name][var_type]]
   file.seek(var_offset)
   if file.write(
-      value.to_bytes(length=length, byteorder=endianess,
-                     signed=False)) != length:
+      value.to_bytes(length=var_size, byteorder=endianess,
+                     signed=False)) != var_size:
     raise ValueError('failed to write value to file')
 
 
@@ -121,12 +121,11 @@ def main():
                                   check=True,
                                   text=True).stdout
 
-  ptr_size = parse_ptr_size(objdump_result)
+  assert_elf_type(objdump_result)
 
-  symbol_offset_map = create_symbol_offset_map(args.binary_input,
-                                               objdump_result)
-  if len(symbol_offset_map) != len(set(symbol_offset_map.values())):
-    raise ValueError(f'symbol_offset_map overlaps: {symbol_offset_map}')
+  symbol_map = create_symbol_map(args.binary_input, objdump_result)
+  if len(symbol_map) != len(set(symbol_map.values())):
+    raise ValueError(f'symbol_map overlaps: {symbol_map}')
 
   endianess = parse_endianess(objdump_result)
 
@@ -135,10 +134,10 @@ def main():
   with open(args.binary_output, 'r+b') as file:
     for section_name in TARGET_SECTIONS:
       (addr, _, size) = parse_section_info(objdump_result, section_name)
-      overwrite_variable(file, symbol_offset_map, endianess, ptr_size,
-                         section_name, 'addr', addr)
-      overwrite_variable(file, symbol_offset_map, endianess, UINT64_SIZE,
-                         section_name, 'size', size)
+      overwrite_variable(file, symbol_map, endianess, section_name, 'addr',
+                         addr)
+      overwrite_variable(file, symbol_map, endianess, section_name, 'size',
+                         size)
 
   objdump_result_after = subprocess.run(
       [llvm_readelf, '-e', args.binary_output],

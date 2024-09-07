@@ -198,12 +198,13 @@ static_library("input_method") {
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/input_method/japanese",
-    "//chrome/browser/ash/input_method/ui",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/feedback",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/aura/accessibility",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/web_applications",
     "//chrome/common",
@@ -254,7 +255,6 @@ static_library("input_method") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/input_method/japanese",
-    "//chrome/browser/ash/input_method/ui",
     "//chrome/browser/ash/magic_boost",
   ]
 }
@@ -268,6 +268,8 @@ static_library("test_support") {
     "mock_input_method_engine.cc",
     "mock_input_method_engine.h",
     "stub_input_method_engine_observer.h",
+    "test_ime_controller.cc",
+    "test_ime_controller.h",
     "textinput_test_helper.cc",
     "textinput_test_helper.h",
   ]
@@ -341,16 +343,13 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/input_method:test_support",
-    "//chrome/browser/ash/input_method/japanese",
-    "//chrome/browser/ash/input_method/japanese:unit_tests",
-    "//chrome/browser/ash/input_method/ui",
-    "//chrome/browser/ash/input_method/ui:unit_tests",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/cast_config",
+    "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/keyboard:ash_test_support",
     "//chrome/common:channel_info",
@@ -425,6 +424,9 @@ source_set("unit_tests") {
     "//ui/views:test_support",
     "//ui/wm",
     "//url",
+
+    # Tests from subdirs:
+    "//chrome/browser/ash/input_method/japanese:unit_tests",
   ]
 }
 
@@ -459,13 +461,14 @@ source_set("browser_tests") {
     "//chrome/browser/ash/accessibility:test_support",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/input_method:test_support",
-    "//chrome/browser/ash/input_method/ui",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chromeos/strings:strings_grit",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/signin/public/identity_manager:test_support",

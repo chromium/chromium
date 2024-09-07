@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
@@ -29,6 +30,7 @@
 #include "chrome/grit/signin_resources.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -106,6 +108,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
   source->AddLocalizedString("moreButtonText",
                              IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON);
+  source->AddLocalizedString("guestCheckboxText",
+                             IDS_SEARCH_ENGINE_CHOICE_GUEST_SESSION_CHECKBOX);
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
   source->AddResourcePath("images/left_illustration_dark.svg",
@@ -115,11 +119,15 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddResourcePath("images/right_illustration_dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
   source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
-  source->AddResourcePath("tangible_sync_style_shared.css.js",
-                          IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
+  source->AddResourcePath("tangible_sync_style_shared_lit.css.js",
+                          IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_LIT_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
   source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
+  source->AddBoolean("showGuestCheckbox",
+                     base::FeatureList::IsEnabled(
+                         switches::kSearchEngineChoiceGuestExperience) &&
+                         profile_->IsGuestSession());
 
   webui::SetupWebUIDataSource(
       source,
@@ -154,7 +162,9 @@ void SearchEngineChoiceUI::Initialize(
   }
 }
 
-void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(int prepopulate_id) {
+void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(
+    int prepopulate_id,
+    bool save_guest_mode_selection) {
   if (entry_point_ != SearchEngineChoiceDialogService::EntryPoint::kDialog) {
     // If this callback is null, then this method has already been called, which
     // is a bug. (Or the initialization was skipped, but that would point to
@@ -165,8 +175,8 @@ void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(int prepopulate_id) {
 
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile_.get());
-  search_engine_choice_dialog_service->NotifyChoiceMade(prepopulate_id,
-                                                        entry_point_);
+  search_engine_choice_dialog_service->NotifyChoiceMade(
+      prepopulate_id, save_guest_mode_selection, entry_point_);
 
   // Notify that the choice was made.
   if (on_choice_made_callback_) {

@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
@@ -30,20 +29,20 @@ namespace {
 // https://drafts.csswg.org/css-contain-3/#typedef-container-condition
 template <typename Func>
 const MediaQueryExpNode* ConsumeNotAndOr(Func func,
-                                         CSSParserTokenRange& range) {
-  if (ConsumeIfIdent(range, "not")) {
-    return MediaQueryExpNode::Not(func(range));
+                                         CSSParserTokenStream& stream) {
+  if (ConsumeIfIdent(stream, "not")) {
+    return MediaQueryExpNode::Not(func(stream));
   }
 
-  const MediaQueryExpNode* result = func(range);
+  const MediaQueryExpNode* result = func(stream);
 
-  if (AtIdent(range.Peek(), "and")) {
-    while (result && ConsumeIfIdent(range, "and")) {
-      result = MediaQueryExpNode::And(result, func(range));
+  if (AtIdent(stream.Peek(), "and")) {
+    while (result && ConsumeIfIdent(stream, "and")) {
+      result = MediaQueryExpNode::And(result, func(stream));
     }
-  } else if (AtIdent(range.Peek(), "or")) {
-    while (ConsumeIfIdent(range, "or")) {
-      result = MediaQueryExpNode::Or(result, func(range));
+  } else if (AtIdent(stream.Peek(), "or")) {
+    while (ConsumeIfIdent(stream, "or")) {
+      result = MediaQueryExpNode::Or(result, func(stream));
     }
   }
 
@@ -132,22 +131,18 @@ ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
                           MediaQueryParser::SyntaxLevel::kLevel4) {}
 
 const MediaQueryExpNode* ContainerQueryParser::ParseCondition(String value) {
-  CSSTokenizer tokenizer(value);
-  auto [tokens, raw_offsets] = tokenizer.TokenizeToEOFWithOffsets();
-  CSSParserTokenRange range(tokens);
-  CSSParserTokenOffsets offsets(tokens, std::move(raw_offsets), value);
-  return ParseCondition(range, offsets);
-}
-
-const MediaQueryExpNode* ContainerQueryParser::ParseCondition(
-    CSSParserTokenRange range,
-    const CSSParserTokenOffsets& offsets) {
-  range.ConsumeWhitespace();
-  const MediaQueryExpNode* node = ConsumeContainerCondition(range, offsets);
-  if (!range.AtEnd()) {
+  CSSParserTokenStream stream(value);
+  const MediaQueryExpNode* node = ParseCondition(stream);
+  if (!stream.AtEnd()) {
     return nullptr;
   }
   return node;
+}
+
+const MediaQueryExpNode* ContainerQueryParser::ParseCondition(
+    CSSParserTokenStream& stream) {
+  stream.ConsumeWhitespace();
+  return ConsumeContainerCondition(stream);
 }
 
 // <query-in-parens> = ( <container-condition> )
@@ -155,87 +150,89 @@ const MediaQueryExpNode* ContainerQueryParser::ParseCondition(
 //                   | style( <style-query> )
 //                   | <general-enclosed>
 const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
-    CSSParserTokenRange& range,
-    const CSSParserTokenOffsets& offsets) {
-  CSSParserTokenRange original_range = range;
+    CSSParserTokenStream& stream) {
+  CSSParserTokenStream::State savepoint = stream.Save();
 
-  if (range.Peek().GetType() == kLeftParenthesisToken) {
+  if (stream.Peek().GetType() == kLeftParenthesisToken) {
     // ( <size-feature> ) | ( <container-condition> )
-    CSSParserTokenRange block = range.ConsumeBlock();
-    block.ConsumeWhitespace();
-    range.ConsumeWhitespace();
-
-    CSSParserTokenRange original_block = block;
-    // <size-feature>
-    const MediaQueryExpNode* query =
-        ConsumeFeature(block, offsets, SizeFeatureSet());
-    if (query && block.AtEnd()) {
-      return MediaQueryExpNode::Nested(query);
+    {
+      CSSParserTokenStream::RestoringBlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      // <size-feature>
+      const MediaQueryExpNode* query = ConsumeFeature(stream, SizeFeatureSet());
+      if (query && stream.AtEnd()) {
+        guard.Release();
+        stream.ConsumeWhitespace();
+        return MediaQueryExpNode::Nested(query);
+      }
     }
-    block = original_block;
 
-    // <container-condition>
-    const MediaQueryExpNode* condition =
-        ConsumeContainerCondition(block, offsets);
-    if (condition && block.AtEnd()) {
-      return MediaQueryExpNode::Nested(condition);
+    {
+      CSSParserTokenStream::RestoringBlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      // <container-condition>
+      const MediaQueryExpNode* condition = ConsumeContainerCondition(stream);
+      if (condition && stream.AtEnd()) {
+        guard.Release();
+        stream.ConsumeWhitespace();
+        return MediaQueryExpNode::Nested(condition);
+      }
     }
-  } else if (range.Peek().GetType() == kFunctionToken &&
-             range.Peek().FunctionId() == CSSValueID::kStyle) {
+  } else if (stream.Peek().GetType() == kFunctionToken &&
+             stream.Peek().FunctionId() == CSSValueID::kStyle) {
     // style( <style-query> )
-    CSSParserTokenRange block = range.ConsumeBlock();
-    block.ConsumeWhitespace();
-    range.ConsumeWhitespace();
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
 
     if (const MediaQueryExpNode* query =
-            ConsumeFeatureQuery(block, offsets, StyleFeatureSet())) {
+            ConsumeFeatureQuery(stream, StyleFeatureSet())) {
       context_.Count(WebFeature::kCSSStyleContainerQuery);
+      guard.Release();
+      stream.ConsumeWhitespace();
       return MediaQueryExpNode::Function(query, AtomicString("style"));
     }
   } else if (RuntimeEnabledFeatures::CSSScrollStateContainerQueriesEnabled() &&
-             range.Peek().GetType() == kFunctionToken &&
-             range.Peek().FunctionId() == CSSValueID::kScrollState) {
+             stream.Peek().GetType() == kFunctionToken &&
+             stream.Peek().FunctionId() == CSSValueID::kScrollState) {
     // scroll-state(stuck: [ none | top | left | right | bottom | inset-* ] )
     // scroll-state(snapped: [ none | block | inline | x | y ] )
-    CSSParserTokenRange block = range.ConsumeBlock();
-    block.ConsumeWhitespace();
-    range.ConsumeWhitespace();
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
 
     if (const MediaQueryExpNode* query =
-            ConsumeFeatureQuery(block, offsets, StateFeatureSet())) {
+            ConsumeFeatureQuery(stream, StateFeatureSet())) {
+      guard.Release();
+      stream.ConsumeWhitespace();
       return MediaQueryExpNode::Function(query, AtomicString("scroll-state"));
     }
   }
-  range = original_range;
+  stream.Restore(savepoint);
 
   // <general-enclosed>
-  return media_query_parser_.ConsumeGeneralEnclosed(range);
+  return media_query_parser_.ConsumeGeneralEnclosed(stream);
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeContainerCondition(
-    CSSParserTokenRange& range,
-    const CSSParserTokenOffsets& offsets) {
+    CSSParserTokenStream& stream) {
   return ConsumeNotAndOr(
-      [this, offsets](CSSParserTokenRange& range) {
-        return this->ConsumeQueryInParens(range, offsets);
+      [this](CSSParserTokenStream& stream) {
+        return this->ConsumeQueryInParens(stream);
       },
-      range);
+      stream);
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQuery(
-    CSSParserTokenRange& range,
-    const CSSParserTokenOffsets& offsets,
+    CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
-  CSSParserTokenRange original_range = range;
-
-  if (const MediaQueryExpNode* feature =
-          ConsumeFeature(range, offsets, feature_set)) {
+  stream.EnsureLookAhead();
+  CSSParserTokenStream::State savepoint = stream.Save();
+  if (const MediaQueryExpNode* feature = ConsumeFeature(stream, feature_set)) {
     return feature;
   }
-  range = original_range;
+  stream.Restore(savepoint);
 
   if (const MediaQueryExpNode* node =
-          ConsumeFeatureCondition(range, offsets, feature_set)) {
+          ConsumeFeatureCondition(stream, feature_set)) {
     return node;
   }
 
@@ -243,42 +240,38 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQuery(
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQueryInParens(
-    CSSParserTokenRange& range,
-    const CSSParserTokenOffsets& offsets,
+    CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
-  CSSParserTokenRange original_range = range;
-
-  if (range.Peek().GetType() == kLeftParenthesisToken) {
-    auto block = range.ConsumeBlock();
-    block.ConsumeWhitespace();
-    range.ConsumeWhitespace();
-    const MediaQueryExpNode* query =
-        ConsumeFeatureQuery(block, offsets, feature_set);
-    if (query && block.AtEnd()) {
+  CSSParserTokenStream::State savepoint = stream.Save();
+  if (stream.Peek().GetType() == kLeftParenthesisToken) {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    const MediaQueryExpNode* query = ConsumeFeatureQuery(stream, feature_set);
+    if (query && stream.AtEnd()) {
+      guard.Release();
+      stream.ConsumeWhitespace();
       return MediaQueryExpNode::Nested(query);
     }
   }
-  range = original_range;
+  stream.Restore(savepoint);
 
-  return media_query_parser_.ConsumeGeneralEnclosed(range);
+  return media_query_parser_.ConsumeGeneralEnclosed(stream);
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureCondition(
-    CSSParserTokenRange& range,
-    const CSSParserTokenOffsets& offsets,
+    CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
   return ConsumeNotAndOr(
-      [this, &offsets, &feature_set](CSSParserTokenRange& range) {
-        return this->ConsumeFeatureQueryInParens(range, offsets, feature_set);
+      [this, &feature_set](CSSParserTokenStream& stream) {
+        return this->ConsumeFeatureQueryInParens(stream, feature_set);
       },
-      range);
+      stream);
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeature(
-    CSSParserTokenRange& range,
-    const CSSParserTokenOffsets& offsets,
+    CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
-  return media_query_parser_.ConsumeFeature(range, offsets, feature_set);
+  return media_query_parser_.ConsumeFeature(stream, feature_set);
 }
 
 }  // namespace blink

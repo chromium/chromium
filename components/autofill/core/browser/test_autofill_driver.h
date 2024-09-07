@@ -99,7 +99,7 @@ class TestAutofillDriverTemplate : public T {
   void ExtractForm(
       FormGlobalId form,
       AutofillDriver::BrowserFormHandler response_handler) override {}
-  void GetFourDigitCombinationsFromDOM(
+  void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override {}
 

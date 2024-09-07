@@ -12,7 +12,7 @@ namespace performance_manager {
 
 class FakePowerMonitorSource : public base::PowerMonitorSource {
  public:
-  bool IsOnBatteryPower() override;
+  bool IsOnBatteryPower() const override;
   void SetOnBatteryPower(bool on_battery_power);
 
  private:

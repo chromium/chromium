@@ -143,6 +143,15 @@ class SharedPasswordControllerTest : public PlatformTest {
     OCMExpect([form_helper_ setDelegate:[OCMArg any]]);
     OCMExpect([suggestion_helper_ setDelegate:[OCMArg any]]);
 
+    // Some tests observe both frame managers. Making sure that both content
+    // world have managers set.
+    web_state_.SetWebFramesManager(
+        web::ContentWorld::kPageContentWorld,
+        std::make_unique<web::FakeWebFramesManager>());
+    web_state_.SetWebFramesManager(
+        web::ContentWorld::kIsolatedWorld,
+        std::make_unique<web::FakeWebFramesManager>());
+
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_frames_manager_ = web_frames_manager.get();
     web::ContentWorld content_world =
@@ -761,6 +770,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
                                form_signature, field_signature, max_length));
 
   [controller_ didSelectSuggestion:suggestion
+                           atIndex:0
                               form:@"test-form-name"
                     formRendererID:form_id
                    fieldIdentifier:@"test-field-id"
@@ -836,6 +846,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
   [controller_ didSelectSuggestion:suggestion
+                           atIndex:0
                               form:@"test-form-name"
                     formRendererID:form_id
                    fieldIdentifier:@"test-field-id"
@@ -1570,6 +1581,7 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
   EXPECT_CALL(password_manager_, OnPasswordNoLongerGenerated);
 
   [controller_ didSelectSuggestion:suggestion
+                           atIndex:0
                               form:@"test-form-name"
                     formRendererID:form_id
                    fieldIdentifier:@"test-field-id"

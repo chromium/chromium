@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.search_engines.SearchEnginePromoState;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.SogouPromoDialog;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -233,14 +232,8 @@ public class LocaleManagerDelegate {
                 break;
             case SearchEnginePromoType.SHOW_WAFFLE:
                 assert ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_ENGINE_CHOICE);
-                dialogPresenter =
-                        () ->
-                                new ChoiceDialogCoordinator(
-                                                activity,
-                                                mSearchEngineHelperDelegate,
-                                                finalizeInternalCallback)
-                                        .show();
-                break;
+                // TODO(b/31689558): Remove this switch path.
+                // fall through
             default:
                 assert false;
                 finalizeInternalCallback.onResult(true);

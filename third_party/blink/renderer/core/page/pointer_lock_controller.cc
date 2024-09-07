@@ -71,13 +71,12 @@ bool PointerLockController::RequestPointerLock(Element* target,
 void PointerLockController::RequestPointerLock(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     Element* target,
-    ExceptionState& exception_state,
     const PointerLockOptions* options) {
   if (!target || !target->isConnected() ||
       document_of_removed_element_while_waiting_for_unlock_) {
     EnqueueEvent(event_type_names::kPointerlockerror, target);
-    exception_state.ThrowDOMException(DOMExceptionCode::kWrongDocumentError,
-                                      "Target Element removed from DOM");
+    resolver->RejectWithDOMException(DOMExceptionCode::kWrongDocumentError,
+                                     "Target Element removed from DOM");
     return;
   }
 
@@ -103,7 +102,7 @@ void PointerLockController::RequestPointerLock(
           "sandboxed and the 'allow-pointer-lock' permission is not set."));
     }
     EnqueueEvent(event_type_names::kPointerlockerror, target);
-    exception_state.ThrowSecurityError(
+    resolver->RejectWithSecurityError(
         window->GetFrame()->IsInFencedFrameTree()
             ? "Blocked pointer lock on an element because the element is "
               "contained "
@@ -120,7 +119,7 @@ void PointerLockController::RequestPointerLock(
   if (element_) {
     if (element_->GetDocument() != target->GetDocument()) {
       EnqueueEvent(event_type_names::kPointerlockerror, target);
-      exception_state.ThrowDOMException(
+      resolver->RejectWithDOMException(
           DOMExceptionCode::kWrongDocumentError,
           "The new element is not in the same shadow-root document as the "
           "element that currently holds the lock.");
@@ -130,8 +129,8 @@ void PointerLockController::RequestPointerLock(
     if (unadjusted_movement_requested != current_unadjusted_movement_setting_) {
       if (!mouse_lock_context_.is_bound() || lock_pending_) {
         EnqueueEvent(event_type_names::kPointerlockerror, target);
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kInUseAttributeError, "Pointer lock pending.");
+        resolver->RejectWithDOMException(DOMExceptionCode::kInUseAttributeError,
+                                         "Pointer lock pending.");
         return;
       }
 

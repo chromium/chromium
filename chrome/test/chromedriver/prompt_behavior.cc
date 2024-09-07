@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/prompt_behavior.h"
 
 #include <memory>
+#include <unordered_map>
 
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/status.h"

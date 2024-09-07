@@ -2,6 +2,7 @@ include_rules = [
   "+components/aggregation_service",
   "+content/services/auction_worklet/public/mojom",
   "+content/services/auction_worklet/public/cpp",
+  "+third_party/snappy",
 ]
 
 specific_include_rules = {

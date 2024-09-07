@@ -44,8 +44,6 @@ class CameraHost;
 class CameraInstance;
 class ChromeFeatureFlagsInstance;
 class CastReceiverInstance;
-class ClipboardHost;
-class ClipboardInstance;
 class CompatibilityModeInstance;
 class CrashCollectorHost;
 class CrashCollectorInstance;
@@ -205,10 +203,6 @@ class ArcBridgeService {
   }
   ConnectionHolder<mojom::ChromeFeatureFlagsInstance>* chrome_feature_flags() {
     return &chrome_feature_flags_;
-  }
-  ConnectionHolder<mojom::ClipboardInstance, mojom::ClipboardHost>*
-  clipboard() {
-    return &clipboard_;
   }
   ConnectionHolder<mojom::CompatibilityModeInstance>* compatibility_mode() {
     return &compatibility_mode_;
@@ -372,7 +366,6 @@ class ArcBridgeService {
   ConnectionHolder<mojom::CameraInstance, mojom::CameraHost> camera_;
   ConnectionHolder<mojom::CastReceiverInstance> cast_receiver_;
   ConnectionHolder<mojom::ChromeFeatureFlagsInstance> chrome_feature_flags_;
-  ConnectionHolder<mojom::ClipboardInstance, mojom::ClipboardHost> clipboard_;
   ConnectionHolder<mojom::CompatibilityModeInstance> compatibility_mode_;
   ConnectionHolder<mojom::CrashCollectorInstance, mojom::CrashCollectorHost>
       crash_collector_;

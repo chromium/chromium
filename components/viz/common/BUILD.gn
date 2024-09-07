@@ -24,7 +24,6 @@ viz_component("shared_image_format") {
     "resources/shared_image_format_utils.cc",
     "resources/shared_image_format_utils.h",
   ]
-  configs = [ "//third_party/khronos:khronos_headers" ]
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
@@ -36,6 +35,7 @@ viz_component("shared_image_format") {
     "//cc/base",
     "//gpu/vulkan:buildflags",
     "//skia",
+    "//third_party/angle:includes",
     "//third_party/dawn/include/dawn:cpp_headers",
     "//ui/gfx:buffer_types",
     "//ui/gfx/geometry",
@@ -224,8 +224,6 @@ viz_component("common") {
     "quads/tile_draw_quad.h",
     "quads/video_hole_draw_quad.cc",
     "quads/video_hole_draw_quad.h",
-    "quads/yuv_video_draw_quad.cc",
-    "quads/yuv_video_draw_quad.h",
     "resources/bitmap_allocation.cc",
     "resources/bitmap_allocation.h",
     "resources/platform_color.h",

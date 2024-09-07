@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/base/buildflags.h"
 
 namespace content {
@@ -20,14 +20,6 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateBlinkFormatter() {
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
   return AXInspectFactory::CreateFormatter(DefaultPlatformFormatterType());
-}
-
-// static
-std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
-    ui::AXPlatformTreeManager* manager,
-    base::ProcessId pid,
-    const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(DefaultPlatformRecorderType());
 }
 
 // TODO(crbug.com/336611337): Add iOS-specific AXInspectorFactory logic.

@@ -35,11 +35,15 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
 
   MOCK_METHOD(void,
               OnBeforeFormsSeen,
-              (AutofillManager&, base::span<const FormGlobalId>),
+              (AutofillManager&,
+               base::span<const FormGlobalId>,
+               base::span<const FormGlobalId>),
               (override));
   MOCK_METHOD(void,
               OnAfterFormsSeen,
-              (AutofillManager&, base::span<const FormGlobalId>),
+              (AutofillManager&,
+               base::span<const FormGlobalId>,
+               base::span<const FormGlobalId>),
               (override));
 
   MOCK_METHOD(void,
@@ -90,7 +94,7 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
 
   MOCK_METHOD(void,
               OnBeforeFocusOnFormField,
-              (AutofillManager&, FormGlobalId, FieldGlobalId, const FormData&),
+              (AutofillManager&, FormGlobalId, FieldGlobalId),
               (override));
   MOCK_METHOD(void,
               OnAfterFocusOnFormField,

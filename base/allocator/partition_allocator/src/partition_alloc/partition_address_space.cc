@@ -146,15 +146,15 @@ PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
 size_t PartitionAddressSpace::RegularPoolShadowSize() {
-  return (RegularPoolSize() >> kSuperPageShift) << SystemPageShift();
+  return RegularPoolSize();
 }
 
 size_t PartitionAddressSpace::BRPPoolShadowSize() {
-  return (BRPPoolSize() >> kSuperPageShift) << SystemPageShift();
+  return BRPPoolSize();
 }
 
 size_t PartitionAddressSpace::ConfigurablePoolShadowSize() {
-  return (kConfigurablePoolMaxSize >> kSuperPageShift) << SystemPageShift();
+  return kConfigurablePoolMaxSize;
 }
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 

@@ -153,6 +153,7 @@ class TestBrowserWindow : public BrowserWindow {
   bool IsBorderlessModeEnabled() const override;
   void ShowChromeLabs() override {}
   views::WebView* GetContentsWebView() override;
+  BrowserView* AsBrowserView() override;
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
   void ShowUpdateChromeDialog() override {}
@@ -211,7 +212,6 @@ class TestBrowserWindow : public BrowserWindow {
       Browser::DownloadCloseType dialog_type,
       base::OnceCallback<void(bool)> callback) override {}
   void UserChangedTheme(BrowserThemeChangeType theme_change_type) override {}
-  void CutCopyPaste(int command_id) override {}
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
@@ -222,7 +222,8 @@ class TestBrowserWindow : public BrowserWindow {
     BUILDFLAG(IS_LINUX)
   void ShowHatsDialog(
       const std::string& site_id,
-      const std::optional<std::string>& histogram_name,
+      const std::optional<std::string>& hats_histogram_name,
+      const std::optional<uint64_t> hats_survey_ukm_id,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,

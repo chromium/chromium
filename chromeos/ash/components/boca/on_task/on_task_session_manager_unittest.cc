@@ -8,15 +8,22 @@
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using ::testing::_;
 using ::testing::Return;
+using ::testing::Sequence;
 
-namespace ash {
+namespace ash::boca {
 namespace {
+
+constexpr char kTestUrl1[] = "https://www.google.com";
+constexpr char kTestUrl2[] = "https://www.youtube.com";
 
 // Mock implementation of the `OnTaskSystemWebAppManager`.
 class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
@@ -33,6 +40,14 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
   MOCK_METHOD(void,
               SetPinStateForSystemWebAppWindow,
               (bool pinned, SessionID window_id),
+              (override));
+  MOCK_METHOD(void,
+              SetWindowTrackerForSystemWebAppWindow,
+              (SessionID window_id),
+              (override));
+  MOCK_METHOD(void,
+              CreateBackgroundTabWithUrl,
+              (SessionID window_id, GURL),
               (override));
 };
 
@@ -58,7 +73,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldLaunchBocaSWAOnSessionStart) {
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
-  session_manager_->OnSessionStarted("test_session_id");
+  session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
@@ -69,6 +84,9 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
           Return(SessionID::InvalidValue()))  // Initial check before launch.
       .WillOnce(Return(kWindowId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetWindowTrackerForSystemWebAppWindow(kWindowId))
+      .Times(1);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
               SetPinStateForSystemWebAppWindow(true, kWindowId))
       .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -78,7 +96,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
-  session_manager_->OnSessionStarted("test_session_id");
+  session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldClosePreExistingBocaSWAOnSessionStart) {
@@ -92,7 +110,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldClosePreExistingBocaSWAOnSessionStart) {
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
-  session_manager_->OnSessionStarted("test_session_id");
+  session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
@@ -112,5 +130,77 @@ TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnSessionEnd) {
   session_manager_->OnSessionEnded("test_session_id");
 }
 
+TEST_F(OnTaskSessionManagerTest, ShouldOpenTabsOnBundleUpdated) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .Times(2)
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1)))
+      .Times(1);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl2)))
+      .Times(1);
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.add_content_configs()->set_url(kTestUrl2);
+  session_manager_->OnBundleUpdated(bundle);
+}
+
+TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnBundleUpdated) {
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .Times(2)
+      .WillRepeatedly(Return(SessionID::InvalidValue()));
+  EXPECT_CALL(*system_web_app_manager_ptr_, CreateBackgroundTabWithUrl(_, _))
+      .Times(0);
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.add_content_configs()->set_url(kTestUrl2);
+  session_manager_->OnBundleUpdated(bundle);
+}
+
+TEST_F(OnTaskSessionManagerTest,
+       TabsCreatedAfterSWALaunchedWhenSessionStartsAndBundleUpdated) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillOnce(Return(
+          SessionID::InvalidValue()))  // Initial check before spawning SWA
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
+      .InSequence(s)
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetWindowTrackerForSystemWebAppWindow(kWindowId))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(true, kWindowId))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(false, kWindowId))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1)))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl2)))
+      .Times(1)
+      .InSequence(s);
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.add_content_configs()->set_url(kTestUrl2);
+  session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  session_manager_->OnBundleUpdated(bundle);
+}
+
 }  // namespace
-}  // namespace ash
+}  // namespace ash::boca

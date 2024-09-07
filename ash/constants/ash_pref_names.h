@@ -53,13 +53,24 @@ inline constexpr char kMagicBoostEnabled[] = "settings.magic_boost_enabled";
 // A boolean pref of whether orca is enabled.
 inline constexpr char kOrcaEnabled[] = "assistive_input.orca_enabled";
 
-// A boolean pref used by an admin policy to enable/disable Orca. See the policy
-// at OrcaEnabled.yaml.
+// A boolean pref indicating the status of the orca feedback.
+inline constexpr char kOrcaFeedbackEnabled[] =
+    "assistive_input.orca_feedback_enabled";
+
+// A boolean pref used by an admin policy to enable/disable Orca. See the
+// policy at OrcaEnabled.yaml.
 inline constexpr char kManagedOrcaEnabled[] =
     "assistive_input.managed.orca_enabled";
 
 // A boolean pref of whether Help Me Read (HMR) is enabled.
 inline constexpr char kHmrEnabled[] = "settings.mahi_enabled";
+
+// A boolean pref of whether feedback for Help Me Read (HMR) is allowed.
+inline constexpr char kHmrFeedbackAllowed[] = "settings.mahi_feedback_allowed";
+
+// An integer pref used by an admin policy to control the settings of Help Me
+// Read (HMR). See the policy at HelpMeReadSettings.yaml.
+inline constexpr char kHmrManagedSettings[] = "settings.managed.help_me_read";
 
 // An integer pref that stores the times the Mahi nudge has been shown.
 inline constexpr char kMahiNudgeShownCount[] = "mahi.nudge_shown_count";
@@ -537,6 +548,10 @@ inline constexpr char kAccessibilityChromeVoxVoiceName[] =
 // enabled.
 inline constexpr char kAccessibilityDisableTrackpadEnabled[] =
     "settings.a11y.disable_trackpad_enabled";
+// An integer pref which determines the mode of the disabled internal
+// trackpad. Values are from the ash::kDisableTrackpadMode enum.
+inline constexpr char kAccessibilityDisableTrackpadMode[] =
+    "settings.a11y.disable_trackpad_mode";
 // A boolean pref which determines whether high contrast is enabled.
 inline constexpr char kAccessibilityHighContrastEnabled[] =
     "settings.a11y.high_contrast_enabled";
@@ -816,6 +831,11 @@ inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
 // quickly.
 inline constexpr char kAccessibilityFaceGazeCursorUseAcceleration[] =
     "settings.a11y.face_gaze.cursor_use_acceleration";
+// A dictionary pref which maps facial gestures to key combinations defined by
+// the user. Facial gestures are strings like 'browDownLeft', and key
+// combinations are stringified JSON objects that define the key combination.
+inline constexpr char kAccessibilityFaceGazeGesturesToKeyCombos[] =
+    "settings.a11y.face_gaze.gestures_to_key_combos";
 // A dictionary pref which maps facial gestures to action macros. Facial
 // gestures are strings like 'browDownLeft', and actions are enums from
 // macro_names.
@@ -1521,7 +1541,7 @@ inline constexpr char kDeviceGeolocationAllowed[] =
 inline constexpr char kUserPreviousGeolocationAccessLevel[] =
     "ash.user.previous_geolocation_access_level";
 
-// An boolean pref indicating whether a user has enabled the improve location
+// A boolean pref indicating whether a user has enabled the improve location
 // toggle.
 inline constexpr char kUserGeolocationAccuracyEnabled[] =
     "ash.user.geolocation_accuracy_enabled";
@@ -1952,7 +1972,7 @@ inline constexpr char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 inline constexpr char kCameraAppDevToolsOpen[] =
     "ash.camera.cca_dev_tools_open";
 
-// An boolean pref that specifies the recovery service activation for user.
+// A boolean pref that specifies the recovery service activation for user.
 // When the pref is set to `true`, the user data recovery is activated. When the
 // pref is set to `false`, the user data recovery is not activated. The default
 // value of the pref is `true`. Controlled by RecoveryFactorBehavior policy.
@@ -1967,15 +1987,21 @@ inline constexpr char kApnMigratedIccids[] = "ash.cellular.apn_migrated_iccids";
 // -1 means disabled.
 inline constexpr char kBackgroundBlur[] = "ash.camera.background_blur";
 
-// An boolean pref that indicates whether background replacement is applied.
+// A boolean pref that indicates whether background replacement is applied.
 inline constexpr char kBackgroundReplace[] = "ash.camera.background_replace";
 
 // An string pref that indicates the image path of the camera background.
 inline constexpr char kBackgroundImagePath[] =
     "ash.camera.background_image_path";
 
-// An boolean pref that indicates whether portrait relighting is applied.
+// A boolean pref that indicates whether portrait relighting is applied.
 inline constexpr char kPortraitRelighting[] = "ash.camera.portrait_relighting";
+
+// A boolean pref that indicates whether face retouch is applied.
+inline constexpr char kFaceRetouch[] = "ash.camera.face_retouch";
+
+// A boolean pref that indicates whether Studio Look is applied.
+inline constexpr char kStudioLook[] = "ash.camera.studio_look";
 
 // Specifies if ARC app sync metrics should be recorded, i.e. this is the
 // initial session after sync consent screen.

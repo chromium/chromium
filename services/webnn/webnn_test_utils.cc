@@ -5,6 +5,7 @@
 #include "services/webnn/webnn_test_utils.h"
 
 #include "base/check_is_test.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn {
@@ -188,6 +189,19 @@ void GraphInfoBuilder::BuildConcat(std::vector<uint64_t> input_operand_ids,
       mojom::Operation::NewConcat(std::move(concat)));
 }
 
+void GraphInfoBuilder::BuildDequantizeLinear(uint64_t input_operand_id,
+                                             uint64_t scale_operand_id,
+                                             uint64_t zero_point_operand_id,
+                                             uint64_t output_operand_id) {
+  mojom::DequantizeLinearPtr dequantize_linear = mojom::DequantizeLinear::New();
+  dequantize_linear->input_operand_id = input_operand_id;
+  dequantize_linear->scale_operand_id = scale_operand_id;
+  dequantize_linear->zero_point_operand_id = zero_point_operand_id;
+  dequantize_linear->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewDequantizeLinear(std::move(dequantize_linear)));
+}
+
 void GraphInfoBuilder::BuildElementWiseBinary(
     mojom::ElementWiseBinary::Kind kind,
     uint64_t lhs_operand,
@@ -243,6 +257,19 @@ void GraphInfoBuilder::BuildGather(uint64_t input_operand_id,
       mojom::Operation::NewGather(std::move(gather)));
 }
 
+void GraphInfoBuilder::BuildGatherElements(uint64_t input_operand_id,
+                                           uint64_t indices_operand_id,
+                                           uint64_t output_operand_id,
+                                           uint32_t axis) {
+  auto gather_elements = mojom::GatherElements::New();
+  gather_elements->input_operand_id = input_operand_id;
+  gather_elements->output_operand_id = output_operand_id;
+  gather_elements->indices_operand_id = indices_operand_id;
+  gather_elements->axis = axis;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewGatherElements(std::move(gather_elements)));
+}
+
 void GraphInfoBuilder::BuildGelu(uint64_t input_operand_id,
                                  uint64_t output_operand_id) {
   mojom::GeluPtr gelu =
@@ -285,6 +312,19 @@ void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
   prelu->output_operand_id = output_operand_id;
   graph_info_->operations.push_back(
       mojom::Operation::NewPrelu(std::move(prelu)));
+}
+
+void GraphInfoBuilder::BuildQuantizeLinear(uint64_t input_operand_id,
+                                           uint64_t scale_operand_id,
+                                           uint64_t zero_point_operand_id,
+                                           uint64_t output_operand_id) {
+  mojom::QuantizeLinearPtr quantize_linear = mojom::QuantizeLinear::New();
+  quantize_linear->input_operand_id = input_operand_id;
+  quantize_linear->scale_operand_id = scale_operand_id;
+  quantize_linear->zero_point_operand_id = zero_point_operand_id;
+  quantize_linear->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewQuantizeLinear(std::move(quantize_linear)));
 }
 
 void GraphInfoBuilder::BuildReduce(mojom::Reduce::Kind kind,
@@ -359,6 +399,16 @@ void GraphInfoBuilder::BuildTanh(uint64_t input_operand_id,
   tanh->input_operand_id = input_operand_id;
   tanh->output_operand_id = output_operand_id;
   graph_info_->operations.push_back(mojom::Operation::NewTanh(std::move(tanh)));
+}
+
+void GraphInfoBuilder::BuildTile(uint64_t input_operand_id,
+                                 uint64_t output_operand_id,
+                                 std::vector<uint32_t> repetitions) {
+  mojom::TilePtr tile = mojom::Tile::New();
+  tile->input_operand_id = input_operand_id;
+  tile->output_operand_id = output_operand_id;
+  tile->repetitions = std::move(repetitions);
+  graph_info_->operations.push_back(mojom::Operation::NewTile(std::move(tile)));
 }
 
 void GraphInfoBuilder::BuildTranspose(uint64_t input_operand_id,
@@ -439,55 +489,104 @@ mojom::GraphInfoPtr GraphInfoBuilder::TakeGraphInfo() {
 }
 
 ContextProperties GetContextPropertiesForTesting() {
-  return WebNNContextImpl::IntersectWithBaseProperties(
-      ContextProperties(InputOperandLayout::kNchw,
-                        {/*input=*/SupportedDataTypes::All(),
-                         /*constant=*/SupportedDataTypes::All(),
-                         /*arg_min_max_input=*/SupportedDataTypes::All(),
-                         /*arg_min_max_output=*/
-                         {OperandDataType::kInt32, OperandDataType::kInt64},
-                         /*concat_inputs=*/SupportedDataTypes::All(),
-                         /*add_input=*/SupportedDataTypes::All(),
-                         /*sub_input=*/SupportedDataTypes::All(),
-                         /*mul_input=*/SupportedDataTypes::All(),
-                         /*div_input=*/SupportedDataTypes::All(),
-                         /*max_input=*/SupportedDataTypes::All(),
-                         /*min_input=*/SupportedDataTypes::All(),
-                         /*pow_input=*/SupportedDataTypes::All(),
-                         /*equal_input=*/SupportedDataTypes::All(),
-                         /*greater_input=*/SupportedDataTypes::All(),
-                         /*greater_or_equal_input=*/SupportedDataTypes::All(),
-                         /*lesser_input=*/SupportedDataTypes::All(),
-                         /*lesser_or_equal_input=*/SupportedDataTypes::All(),
-                         /*logical_not_input=*/SupportedDataTypes::All(),
-                         /*logical_output=*/SupportedDataTypes::All(),
-                         /*abs_input=*/SupportedDataTypes::All(),
-                         /*ceil_input=*/SupportedDataTypes::All(),
-                         /*cos_input=*/SupportedDataTypes::All(),
-                         /*erf_input=*/SupportedDataTypes::All(),
-                         /*exp_input=*/SupportedDataTypes::All(),
-                         /*floor_input=*/SupportedDataTypes::All(),
-                         /*identity_input=*/SupportedDataTypes::All(),
-                         /*log_input=*/SupportedDataTypes::All(),
-                         /*neg_input=*/SupportedDataTypes::All(),
-                         /*reciprocal_input=*/SupportedDataTypes::All(),
-                         /*sin_input=*/SupportedDataTypes::All(),
-                         /*sqrt_input=*/SupportedDataTypes::All(),
-                         /*tan_input=*/SupportedDataTypes::All(),
-                         /*elu_input=*/SupportedDataTypes::All(),
-                         /*gather_input=*/SupportedDataTypes::All(),
-                         /*gather_indices=*/SupportedDataTypes::All(),
-                         /*gelu_input=*/SupportedDataTypes::All(),
-                         /*leaky_relu_input=*/SupportedDataTypes::All(),
-                         /*relu_input=*/SupportedDataTypes::All(),
-                         /*sigmoid_input=*/SupportedDataTypes::All(),
-                         /*slice_input=*/SupportedDataTypes::All(),
-                         /*softmax_input=*/SupportedDataTypes::All(),
-                         /*softplus_input=*/SupportedDataTypes::All(),
-                         /*softsign_input=*/SupportedDataTypes::All(),
-                         /*split_input=*/SupportedDataTypes::All(),
-                         /*where_condition=*/SupportedDataTypes::All(),
-                         /*where_value=*/SupportedDataTypes::All()}));
+  return WebNNContextImpl::IntersectWithBaseProperties(ContextProperties(
+      InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      {/*input=*/SupportedDataTypes::All(),
+       /*constant=*/SupportedDataTypes::All(),
+       /*arg_min_max_input=*/SupportedDataTypes::All(),
+       /*arg_min_max_output=*/
+       {OperandDataType::kInt32, OperandDataType::kInt64},
+       /*batch_normalization_input=*/SupportedDataTypes::All(),
+       /*cast_input=*/SupportedDataTypes::All(),
+       /*clamp_input=*/SupportedDataTypes::All(),
+       /*concat_inputs=*/
+       SupportedDataTypes::All(),
+       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*conv_transpose2d_input=*/
+       DataTypeConstraint::kFloat16To32,
+       /*dequantize_linear_input=*/SupportedDataTypes::All(),
+       /*dequantize_linear_scale=*/SupportedDataTypes::All(),
+       /*add_input=*/SupportedDataTypes::All(),
+       /*sub_input=*/SupportedDataTypes::All(),
+       /*mul_input=*/SupportedDataTypes::All(),
+       /*div_input=*/SupportedDataTypes::All(),
+       /*max_input=*/SupportedDataTypes::All(),
+       /*min_input=*/SupportedDataTypes::All(),
+       /*pow_input=*/SupportedDataTypes::All(),
+       /*equal_input=*/SupportedDataTypes::All(),
+       /*greater_input=*/SupportedDataTypes::All(),
+       /*greater_or_equal_input=*/SupportedDataTypes::All(),
+       /*lesser_input=*/SupportedDataTypes::All(),
+       /*lesser_or_equal_input=*/SupportedDataTypes::All(),
+       /*logical_not_input=*/SupportedDataTypes::All(),
+       /*logical_output=*/SupportedDataTypes::All(),
+       /*abs_input=*/SupportedDataTypes::All(),
+       /*ceil_input=*/SupportedDataTypes::All(),
+       /*cos_input=*/SupportedDataTypes::All(),
+       /*erf_input=*/SupportedDataTypes::All(),
+       /*exp_input=*/SupportedDataTypes::All(),
+       /*floor_input=*/SupportedDataTypes::All(),
+       /*identity_input=*/SupportedDataTypes::All(),
+       /*log_input=*/SupportedDataTypes::All(),
+       /*neg_input=*/SupportedDataTypes::All(),
+       /*reciprocal_input=*/SupportedDataTypes::All(),
+       /*sign_input=*/SupportedDataTypes::All(),
+       /*sin_input=*/SupportedDataTypes::All(),
+       /*sqrt_input=*/SupportedDataTypes::All(),
+       /*tan_input=*/SupportedDataTypes::All(),
+       /*elu_input=*/SupportedDataTypes::All(),
+       /*expand_input=*/SupportedDataTypes::All(),
+       /*gather_input=*/SupportedDataTypes::All(),
+       /*gather_indices=*/
+       SupportedDataTypes::All(),
+       /*gather_elements_input=*/SupportedDataTypes::All(),
+       /*gather_elements_indices=*/
+       SupportedDataTypes::All(),
+       /*gelu_input=*/SupportedDataTypes::All(),
+       /*gemm_input=*/SupportedDataTypes::All(),
+       /*gru_input=*/SupportedDataTypes::All(),
+       /*gru_cell_input=*/SupportedDataTypes::All(),
+       /*hard_sigmoid_input=*/SupportedDataTypes::All(),
+       /*hard_swish_input=*/SupportedDataTypes::All(),
+       /*instance_normalization_input=*/SupportedDataTypes::All(),
+       /*layer_normalization_input=*/SupportedDataTypes::All(),
+       /*leaky_relu_input=*/SupportedDataTypes::All(),
+       /*linear_input=*/SupportedDataTypes::All(),
+       /*lstm_input=*/SupportedDataTypes::All(),
+       /*lstm_cell_input=*/SupportedDataTypes::All(),
+       /*matmul_input=*/SupportedDataTypes::All(),
+       /*pad_input=*/SupportedDataTypes::All(),
+       /*average_pool2d_input=*/SupportedDataTypes::All(),
+       /*l2_pool2d_input=*/SupportedDataTypes::All(),
+       /*max_pool2d_input=*/SupportedDataTypes::All(),
+       /*prelu_input=*/SupportedDataTypes::All(),
+       /*quantize_linear_input=*/SupportedDataTypes::All(),
+       /*quantize_linear_zero_point=*/SupportedDataTypes::All(),
+       /*reduce_l1_input=*/SupportedDataTypes::All(),
+       /*reduce_l2_input=*/SupportedDataTypes::All(),
+       /*reduce_log_sum_input=*/SupportedDataTypes::All(),
+       /*reduce_log_sum_exp_input=*/SupportedDataTypes::All(),
+       /*reduce_max_input=*/SupportedDataTypes::All(),
+       /*reduce_mean_input=*/SupportedDataTypes::All(),
+       /*reduce_min_input=*/SupportedDataTypes::All(),
+       /*reduce_product_input=*/SupportedDataTypes::All(),
+       /*reduce_sum_input=*/SupportedDataTypes::All(),
+       /*reduce_sum_square_input=*/SupportedDataTypes::All(),
+       /*relu_input=*/SupportedDataTypes::All(),
+       /*resample2d_input=*/SupportedDataTypes::All(),
+       /*reshape_input=*/SupportedDataTypes::All(),
+       /*sigmoid_input=*/SupportedDataTypes::All(),
+       /*slice_input=*/SupportedDataTypes::All(),
+       /*softmax_input=*/SupportedDataTypes::All(),
+       /*softplus_input=*/SupportedDataTypes::All(),
+       /*softsign_input=*/SupportedDataTypes::All(),
+       /*split_input=*/SupportedDataTypes::All(),
+       /*tanh_input=*/SupportedDataTypes::All(),
+       /*tile_input=*/SupportedDataTypes::All(),
+       /*transpose_input=*/SupportedDataTypes::All(),
+       /*triangular_input=*/SupportedDataTypes::All(),
+       /*where_condition=*/SupportedDataTypes::All(),
+       /*where_value=*/SupportedDataTypes::All()}));
 }
 
 }  // namespace webnn

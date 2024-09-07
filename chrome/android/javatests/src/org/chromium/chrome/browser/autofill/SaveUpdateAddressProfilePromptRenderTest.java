@@ -174,11 +174,11 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                                     /* address= */ "321 Spear Street",
                                     /* email= */ "example@example.com",
                                     /* phone= */ "+0000000000000");
-                            mPrompt.setSourceNotice(
+                            mPrompt.setRecordTypeNotice(
                                     getActivity()
                                             .getString(
                                                     R.string
-                                                            .autofill_address_will_be_saved_in_account_source_notice)
+                                                            .autofill_address_will_be_saved_in_account_record_type_notice)
                                             .replace("$1", "example@gmail.com"));
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
@@ -210,11 +210,11 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                                     /* address= */ "321 Spear Street",
                                     /* email= */ "example@example.com",
                                     /* phone= */ "+0000000000000");
-                            mPrompt.setSourceNotice(
+                            mPrompt.setRecordTypeNotice(
                                     getActivity()
                                             .getString(
                                                     R.string
-                                                            .autofill_address_will_be_saved_in_account_source_notice)
+                                                            .autofill_address_will_be_saved_in_account_record_type_notice)
                                             .replace("$1", "example@gmail.com"));
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
@@ -276,11 +276,11 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                                     /* subtitle= */ "Update your address",
                                     /* oldDetails= */ "321 Spear Street",
                                     /* newDetails= */ "123 Lake Street");
-                            mPrompt.setSourceNotice(
+                            mPrompt.setRecordTypeNotice(
                                     getActivity()
                                             .getString(
                                                     R.string
-                                                            .autofill_address_already_saved_in_account_source_notice)
+                                                            .autofill_address_already_saved_in_account_record_type_notice)
                                             .replace("$1", "example@gmail.com"));
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();

@@ -281,6 +281,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="File encrypted"/>
   <int value="8" label="Unsupported file type"/>
   <int value="9" label="Too many requests"/>
+  <int value="10" label="Incomplete response"/>
 </enum>
 
 <enum name="SafeBrowsingCheckUrlAction">
@@ -362,9 +363,10 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SafeBrowsingRTConsumerVersionReason">
   <int value="0" label="Total checks"/>
-  <int value="1" label="Off the record"/>
+  <int value="1" label="[Deprecated] Off the record"/>
   <int value="2" label="No valid DM token"/>
   <int value="3" label="Policy not set"/>
+  <int value="4" label="Incognito"/>
 </enum>
 
 <enum name="SafeBrowsingRTLookupResponseVerdictType">
@@ -480,6 +482,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="UNEXPECTED_COMPRESSION_TYPE_REMOVALS_FAILURE"/>
   <int value="11" label="CHECKSUM_MISMATCH_FAILURE"/>
   <int value="12" label="MMAP_FAILURE"/>
+  <int value="13" label="READ_FAILURE_NOT_SORTED"/>
 </enum>
 
 <enum name="SafeBrowsingV4DecodeResult">
@@ -622,6 +625,29 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="Apk download"/>
   <int value="24" label="High confidence allowlist"/>
   <int value="25" label="(Obsolete) Accuracy Tips. Deprecated as of 12/2022."/>
+</enum>
+
+<enum name="SiteFamiliarityHeuristicName">
+  <summary>
+    Descriptive names of heuristics that may be used to determine if a site is a
+    familiar to the user.
+  </summary>
+  <int value="0" label="NO_HEURISTIC_MATCH"/>
+  <int value="1" label="GLOBAL_ALLOWLIST_MATCH"/>
+  <int value="2" label="VISITED_MORE_THAN_A_DAY_AGO"/>
+  <int value="3" label="VISITED_MORE_THAN_FOUR_HOURS_AGO"/>
+  <int value="4" label="SITE_ENGAGEMENT_SCORE_GTE_50"/>
+  <int value="5" label="SITE_ENGAGEMENT_SCORE_GTE_25"/>
+  <int value="6" label="SITE_ENGAGEMENT_SCORE_GTE_10"/>
+  <int value="7" label="SITE_ENGAGEMENT_SCORE_EXISTS"/>
+  <int value="8" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
+</enum>
+
+<enum name="SiteFamiliarityHistoryHeuristicName">
+  <int value="0" label="NO_HEURISTIC_MATCH"/>
+  <int value="1" label="VISITED_MORE_THAN_A_DAY_AGO"/>
+  <int value="2" label="VISITED_MORE_THAN_FOUR_HOURS_AGO"/>
+  <int value="3" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
 </enum>
 
 <enum name="SuspiciousSiteTriggerEvent">

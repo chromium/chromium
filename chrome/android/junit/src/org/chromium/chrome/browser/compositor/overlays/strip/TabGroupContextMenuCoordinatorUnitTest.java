@@ -175,7 +175,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         setUpTabGroupModelFilter();
 
         // Verify tab group is ungrouped.
-        mOnItemClickedCallback.onClick(R.id.ungroup_tab, mTabId);
+        mOnItemClickedCallback.onClick(R.id.ungroup_tab, mTabId, /* collaborationId= */ null);
         verify(mActionConfirmationManager)
                 .processUngroupAttempt(mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
@@ -189,7 +189,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         List<Tab> tabsInGroup = setUpTabGroupModelFilter();
 
         // Verify tab group closed.
-        mOnItemClickedCallback.onClick(R.id.close_tab, mTabId);
+        mOnItemClickedCallback.onClick(R.id.close_tab, mTabId, /* collaborationId= */ null);
         verify(mTabGroupModelFilter)
                 .closeTabs(
                         argThat(
@@ -206,7 +206,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         List<Tab> tabsInGroup = setUpTabGroupModelFilter();
 
         // Verify tab group deleted.
-        mOnItemClickedCallback.onClick(R.id.delete_tab, mTabId);
+        mOnItemClickedCallback.onClick(R.id.delete_tab, mTabId, /* collaborationId= */ null);
         verify(mActionConfirmationManager)
                 .processDeleteGroupAttempt(mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
@@ -226,7 +226,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         List<Tab> tabsInGroup = setUpTabGroupModelFilter();
 
         // Verify new tab opened in group.
-        mOnItemClickedCallback.onClick(R.id.open_new_tab_in_group, mTabId);
+        mOnItemClickedCallback.onClick(
+                R.id.open_new_tab_in_group, mTabId, /* collaborationId= */ null);
         verify(mTabCreator)
                 .createNewTab(any(), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(tabsInGroup.get(0)));
     }
@@ -253,6 +254,15 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Verify the group title is updated.
         verify(mTabGroupModelFilter).setTabGroupTitle(mTabId, newTitle);
+
+        // Remove the custom title set by the user by clearing the edit box.
+        newTitle = "";
+        groupTitleEditText.setText(newTitle);
+        keyboardVisibilityListener.keyboardVisibilityChanged(false);
+
+        // Verify the previous title is deleted and is default to "N tabs"
+        verify(mTabGroupModelFilter).deleteTabGroupTitle(mTabId);
+        assertEquals("1 tab", groupTitleEditText.getText().toString());
     }
 
     private List<Tab> setUpTabGroupModelFilter() {

@@ -11,13 +11,7 @@ namespace autofill::features {
 
 BASE_DECLARE_FEATURE(kAndroidAutofillBottomSheetWorkaround);
 
-BASE_DECLARE_FEATURE(kAndroidAutofillCancelSessionOnNavigation);
-
 BASE_DECLARE_FEATURE(kAndroidAutofillDirectFormSubmission);
-
-BASE_DECLARE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms);
-
-BASE_DECLARE_FEATURE(kAndroidAutofillUsePwmPredictionsForOverrides);
 
 BASE_DECLARE_FEATURE(kAndroidAutofillPrefillRequestsForChangePassword);
 

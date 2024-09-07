@@ -19,7 +19,6 @@
 
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -31,40 +30,14 @@
 
 namespace blink {
 
-Document* DOMParser::parseFromString(const String& str,
-                                     const String& type,
-                                     const ParseFromStringOptions* options) {
+Document* DOMParser::parseFromString(const String& str, const String& type) {
   Document* doc = DocumentInit::Create()
                       .WithURL(window_->Url())
                       .WithTypeFrom(type)
                       .WithExecutionContext(window_)
                       .WithAgent(*window_->GetAgent())
                       .CreateDocument();
-  // TODO(crbug.com/329330085): remove the ParseFromStringOptions options
-  // entirely, once it has been disabled via DOMParserIncludeShadowRoots.
-  bool include_shadow_roots =
-      options->hasIncludeShadowRoots() && options->includeShadowRoots();
-  if (RuntimeEnabledFeatures::DOMParserIncludeShadowRootsEnabled()) {
-    if (include_shadow_roots) {
-      window_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kDeprecation,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "The includeShadowRoots parameter to parseFromString has been "
-          "deprecated, and will be removed very soon. Please use "
-          "parseHTMLUnsafe() or setHTMLUnsafe() instead."));
-      Deprecation::CountDeprecation(
-          window_, mojom::blink::WebFeature::kParseFromStringIncludeShadows);
-    }
-  } else if (include_shadow_roots) {
-    include_shadow_roots = false;
-    window_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kDeprecation,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "The includeShadowRoots parameter to parseFromString has been "
-        "deprecated and removed. Please use parseHTMLUnsafe() or "
-        "setHTMLUnsafe() instead."));
-  }
-  doc->setAllowDeclarativeShadowRoots(include_shadow_roots);
+  doc->setAllowDeclarativeShadowRoots(false);
   doc->CountUse(mojom::blink::WebFeature::kParseFromString);
   doc->SetContentFromDOMParser(str);
   doc->SetMimeType(AtomicString(type));

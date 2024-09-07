@@ -198,25 +198,6 @@ bool IsInterpolation(CascadePriority priority) {
   }
 }
 
-#if DCHECK_IS_ON()
-
-bool HasUnresolvedReferences(CSSParserTokenRange range) {
-  while (!range.AtEnd()) {
-    switch (range.Consume().FunctionId()) {
-      case CSSValueID::kVar:
-      case CSSValueID::kEnv:
-        return true;
-      case CSSValueID::kArg:
-        return RuntimeEnabledFeatures::CSSFunctionsEnabled();
-      default:
-        continue;
-    }
-  }
-  return false;
-}
-
-#endif  // DCHECK_IS_ON()
-
 // https://drafts.csswg.org/css-values-5/#attr-substitution-value
 std::optional<CSSParserToken> GetAttrSubstitutionValue(
     const String& attribute_value,
@@ -238,33 +219,30 @@ std::optional<CSSParserToken> GetAttrSubstitutionValue(
     return CSSParserToken(kStringToken, attribute_value);
   }
 
-  CSSTokenizer tokenizer(attribute_value);
-  auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(attribute_value);
 
   std::optional<CSSSyntaxDefinition> syntax_definition =
       attribute_type.ConvertToCSSSyntaxDefinition();
   if (syntax_definition.has_value()) {
-    if (!syntax_definition->Parse(CSSTokenizedValue{range, attribute_value},
-                                  context, false)) {
+    if (!syntax_definition->Parse(attribute_value, context, false)) {
       return std::nullopt;
     }
   } else {
     // <flex> has special handling because it's not supported
     // by CSSSyntaxDefinition.
     CHECK_EQ(attribute_type.category, CSSAttrType::Category::kFlex);
-    range.ConsumeWhitespace();
-    CSSParserToken token = range.ConsumeIncludingWhitespace();
-    if (!range.AtEnd() || token.GetType() != kDimensionToken ||
+    stream.ConsumeWhitespace();
+    CSSParserToken token = stream.ConsumeIncludingWhitespace();
+    if (!stream.AtEnd() || token.GetType() != kDimensionToken ||
         token.GetUnitType() != CSSPrimitiveValue::UnitType::kFlex) {
       return std::nullopt;
     }
     return token;
   }
 
-  range.ConsumeWhitespace();
-  CSSParserToken token = range.ConsumeIncludingWhitespace();
-  if (!range.AtEnd()) {
+  stream.ConsumeWhitespace();
+  CSSParserToken token = stream.ConsumeIncludingWhitespaceRaw();
+  if (!stream.AtEnd()) {
     // Only single token is allowed, see
     // https://drafts.csswg.org/css-values-5/#attr-notation.
     return std::nullopt;
@@ -982,25 +960,19 @@ bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
     return false;
   }
 
-  auto other_tokens = base::span<const CSSParserToken>(sequence.tokens_);
   StringView other_text = sequence.original_text_;
   other_text =
       CSSVariableParser::StripTrailingWhitespaceAndComments(other_text);
-  while (!other_tokens.empty() &&
-         other_tokens.front().GetType() == kWhitespaceToken) {
-    other_tokens = other_tokens.subspan(1);
-  }
-  while (!other_tokens.empty() &&
-         other_tokens.back().GetType() == kWhitespaceToken) {
-    other_tokens = other_tokens.first(other_tokens.size() - 1);
-  }
 
-  if (!tokens_.empty() && !other_tokens.empty() &&
-      NeedsInsertedComment(tokens_.back(), other_tokens.front())) {
+  CSSTokenizer tokenizer(other_text);
+  CSSParserToken first_token = tokenizer.TokenizeSingleWithComments();
+
+  if (NeedsInsertedComment(last_token_, first_token)) {
     original_text_.Append("/**/");
   }
-  tokens_.AppendSpan(other_tokens);
   original_text_.Append(other_text);
+  last_token_ = last_non_whitespace_token_ =
+      sequence.last_non_whitespace_token_;
 
   is_animation_tainted_ |= sequence.is_animation_tainted_;
   has_font_units_ |= sequence.has_font_units_;
@@ -1009,16 +981,12 @@ bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
   return true;
 }
 
-void StyleCascade::TokenSequence::StripCommentTokens() {
-  tokens_.erase(std::remove_if(tokens_.begin(), tokens_.end(),
-                               [](const CSSParserToken& token) {
-                                 return token.GetType() == kCommentToken;
-                               }),
-                tokens_.end());
+static bool IsNonWhitespaceToken(const CSSParserToken& token) {
+  return token.GetType() != kWhitespaceToken &&
+         token.GetType() != kCommentToken;
 }
 
 bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
-                                         CSSTokenizer* parent_tokenizer,
                                          wtf_size_t byte_limit) {
   // https://drafts.csswg.org/css-variables/#long-variables
   if (original_text_.length() + data->OriginalText().length() > byte_limit) {
@@ -1027,16 +995,22 @@ bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
   CSSTokenizer tokenizer(data->OriginalText());
   const CSSParserToken first_token = tokenizer.TokenizeSingleWithComments();
   if (first_token.GetType() != kEOFToken) {
-    if (!tokens_.empty() && NeedsInsertedComment(tokens_.back(), first_token)) {
+    if (NeedsInsertedComment(last_token_, first_token)) {
       original_text_.Append("/**/");
     }
-    tokens_.push_back(first_token);
+    last_token_ = first_token.CopyWithoutValue();
+    if (IsNonWhitespaceToken(first_token)) {
+      last_non_whitespace_token_ = first_token;
+    }
     while (true) {
       const CSSParserToken token = tokenizer.TokenizeSingleWithComments();
       if (token.GetType() == kEOFToken) {
         break;
       } else {
-        tokens_.push_back(token);
+        last_token_ = token.CopyWithoutValue();
+        if (IsNonWhitespaceToken(token)) {
+          last_non_whitespace_token_ = token;
+        }
       }
     }
   }
@@ -1045,9 +1019,6 @@ bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
   has_font_units_ |= data->HasFontUnits();
   has_root_font_units_ |= data->HasRootFontUnits();
   has_line_height_units_ |= data->HasLineHeightUnits();
-  if (parent_tokenizer) {
-    tokenizer.PersistStrings(*parent_tokenizer);
-  }
   return true;
 }
 
@@ -1055,10 +1026,13 @@ void StyleCascade::TokenSequence::Append(const CSSParserToken& token,
                                          StringView original_text) {
   CSSVariableData::ExtractFeatures(token, has_font_units_, has_root_font_units_,
                                    has_line_height_units_);
-  if (!tokens_.empty() && NeedsInsertedComment(tokens_.back(), token)) {
+  if (NeedsInsertedComment(last_token_, token)) {
     original_text_.Append("/**/");
   }
-  tokens_.push_back(token);
+  last_token_ = token.CopyWithoutValue();
+  if (IsNonWhitespaceToken(token)) {
+    last_non_whitespace_token_ = token;
+  }
   original_text_.Append(original_text);
 }
 
@@ -1158,12 +1132,10 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   //
   // https://drafts.csswg.org/css-variables/#substitute-a-var
   {
-    CSSTokenizer tokenizer(data->OriginalText());
-    Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    range.ConsumeWhitespace();
-    CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range);
-    if (value && range.AtEnd()) {
+    CSSParserTokenStream stream(data->OriginalText());
+    stream.ConsumeWhitespace();
+    CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
+    if (value && stream.AtEnd()) {
       return value;
     }
   }
@@ -1190,16 +1162,14 @@ const CSSValue* StyleCascade::ResolveVariableReference(
 
   TokenSequence sequence;
 
-  CSSTokenizer tokenizer(data->OriginalText());
-  CSSParserTokenStream stream(tokenizer);
-  if (ResolveTokensInto(stream, resolver, &tokenizer, *context,
-                        FunctionContext{}, sequence)) {
+  CSSParserTokenStream stream(data->OriginalText());
+  if (ResolveTokensInto(stream, resolver, *context, FunctionContext{},
+                        sequence)) {
     // TODO(sesse): It would be nice if we had some way of combining
     // ResolveTokensInto() and the re-tokenization. This is basically
     // what we pay by using the streaming parser everywhere; we tokenize
     // everything involving variable references twice.
-    CSSTokenizer tokenizer2(sequence.OriginalText());
-    CSSParserTokenStream stream2(tokenizer2);
+    CSSParserTokenStream stream2(sequence.OriginalText());
     if (const auto* parsed = Parse(property, stream2, context)) {
       return parsed;
     }
@@ -1233,9 +1203,8 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
 
     TokenSequence sequence;
 
-    CSSTokenizer tokenizer(shorthand_data->OriginalText());
-    CSSParserTokenStream stream(tokenizer);
-    if (!ResolveTokensInto(stream, resolver, &tokenizer,
+    CSSParserTokenStream stream(shorthand_data->OriginalText());
+    if (!ResolveTokensInto(stream, resolver,
                            *GetParserContext(*shorthand_value),
                            FunctionContext{}, sequence)) {
       return cssvalue::CSSUnsetValue::Create();
@@ -1245,8 +1214,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
 
     // NOTE: We don't actually need the original text to be comment-stripped,
     // since we're not storing it in a custom property anywhere.
-    CSSTokenizer tokenizer2(sequence.OriginalText());
-    CSSParserTokenStream stream2(tokenizer2);
+    CSSParserTokenStream stream2(sequence.OriginalText());
     if (!CSSPropertyParser::ParseValue(
             shorthand_property_id, /*allow_important_annotation=*/false,
             stream2, shorthand_value->ParserContext(), parsed_properties,
@@ -1401,10 +1369,9 @@ CSSVariableData* StyleCascade::ResolveVariableData(
 
   TokenSequence sequence(data);
 
-  CSSTokenizer tokenizer(data->OriginalText());
-  CSSParserTokenStream stream(tokenizer);
-  if (!ResolveTokensInto(stream, resolver, /*parent_tokenizer=*/nullptr,
-                         context, FunctionContext{}, sequence)) {
+  CSSParserTokenStream stream(data->OriginalText());
+  if (!ResolveTokensInto(stream, resolver, context, FunctionContext{},
+                         sequence)) {
     return nullptr;
   }
 
@@ -1413,7 +1380,6 @@ CSSVariableData* StyleCascade::ResolveVariableData(
 
 bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
                                      CascadeResolver& resolver,
-                                     CSSTokenizer* parent_tokenizer,
                                      const CSSParserContext& context,
                                      const FunctionContext& function_context,
                                      TokenSequence& out) {
@@ -1425,31 +1391,27 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       break;
     } else if (token.FunctionId() == CSSValueID::kVar) {
       CSSParserTokenStream::BlockGuard guard(stream);
-      success &=
-          ResolveVarInto(stream, resolver, parent_tokenizer, context, out);
+      success &= ResolveVarInto(stream, resolver, context, out);
     } else if (token.FunctionId() == CSSValueID::kEnv) {
       CSSParserTokenStream::BlockGuard guard(stream);
-      success &=
-          ResolveEnvInto(stream, resolver, parent_tokenizer, context, out);
+      success &= ResolveEnvInto(stream, resolver, context, out);
     } else if (token.FunctionId() == CSSValueID::kArg &&
                RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
       CSSParserTokenStream::BlockGuard guard(stream);
-      success &= ResolveArgInto(stream, resolver, parent_tokenizer, context,
-                                function_context, out);
+      success &=
+          ResolveArgInto(stream, resolver, context, function_context, out);
     } else if (token.FunctionId() == CSSValueID::kAttr &&
                RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
       CSSParserTokenStream::BlockGuard guard(stream);
       state_.SetHasAttrFunction();
-      success &=
-          ResolveAttrInto(stream, resolver, parent_tokenizer, context, out);
+      success &= ResolveAttrInto(stream, resolver, context, out);
     } else if (token.GetType() == kFunctionToken &&
                CSSVariableParser::IsValidVariableName(token.Value()) &&
                RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
       // User-defined CSS function.
       CSSParserTokenStream::BlockGuard guard(stream);
-      success &=
-          ResolveFunctionInto(token.Value(), stream, resolver, parent_tokenizer,
-                              context, function_context, out);
+      success &= ResolveFunctionInto(token.Value(), stream, resolver, context,
+                                     function_context, out);
     } else {
       if (token.GetBlockType() == CSSParserToken::kBlockStart) {
         ++nesting_level;
@@ -1477,7 +1439,6 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
 
 bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
-                                  CSSTokenizer* parent_tokenizer,
                                   const CSSParserContext& context,
                                   TokenSequence& out) {
   CustomProperty property(ConsumeVariableName(stream), state_.GetDocument());
@@ -1520,14 +1481,13 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     stream.ConsumeWhitespace();
 
     TokenSequence fallback;
-    bool success = ResolveTokensInto(stream, resolver, parent_tokenizer,
-                                     context, FunctionContext{}, fallback);
+    bool success = ResolveTokensInto(stream, resolver, context,
+                                     FunctionContext{}, fallback);
     // The fallback must match the syntax of the referenced custom property.
     // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
     //
     // TODO(sesse): Do we need the token range here anymore?
-    if (!ValidateFallback(property,
-                          {fallback.TokenRange(), fallback.OriginalText()})) {
+    if (!ValidateFallback(property, fallback.OriginalText())) {
       return false;
     }
     if (!data) {
@@ -1540,13 +1500,12 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     return false;
   }
 
-  return out.Append(data, parent_tokenizer, CSSVariableData::kMaxVariableBytes);
+  return out.Append(data, CSSVariableData::kMaxVariableBytes);
 }
 
 bool StyleCascade::ResolveFunctionInto(StringView function_name,
                                        CSSParserTokenStream& stream,
                                        CascadeResolver& resolver,
-                                       CSSTokenizer* parent_tokenizer,
                                        const CSSParserContext& context,
                                        const FunctionContext& function_context,
                                        TokenSequence& out) {
@@ -1610,9 +1569,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
   // Urggg
-  CSSTokenizer tokenizer(ret_value->CssText());
-  CSSParserTokenStream ret_value_stream(tokenizer);
-  return ResolveTokensInto(ret_value_stream, resolver, &tokenizer, context,
+  CSSParserTokenStream ret_value_stream(ret_value->CssText());
+  return ResolveTokensInto(ret_value_stream, resolver, context,
                            FunctionContext{}, out);
 }
 
@@ -1641,10 +1599,9 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
         kCalcStart);
   }
 
-  CSSTokenizer tokenizer(expr);
-  CSSParserTokenStream argument_stream(tokenizer);
-  if (!ResolveTokensInto(argument_stream, resolver, &tokenizer, context,
-                         function_context, resolved_expr)) {
+  CSSParserTokenStream argument_stream(expr);
+  if (!ResolveTokensInto(argument_stream, resolver, context, function_context,
+                         resolved_expr)) {
     return nullptr;
   }
 
@@ -1655,10 +1612,8 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
         kCalcEnd);
   }
 
-  const CSSValue* value =
-      type.syntax.Parse(CSSTokenizedValue{resolved_expr.TokenRange(),
-                                          resolved_expr.OriginalText()},
-                        context, /*is_animation_tainted=*/false);
+  const CSSValue* value = type.syntax.Parse(
+      resolved_expr.OriginalText(), context, /*is_animation_tainted=*/false);
   if (!value) {
     return nullptr;
   }
@@ -1671,7 +1626,6 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
 
 bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
-                                  CSSTokenizer* parent_tokenizer,
                                   const CSSParserContext& context,
                                   TokenSequence& out) {
   AtomicString variable_name = ConsumeVariableName(stream);
@@ -1694,18 +1648,17 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
 
   if (!data) {
     if (ConsumeComma(stream)) {
-      return ResolveTokensInto(stream, resolver, parent_tokenizer, context,
-                               FunctionContext{}, out);
+      return ResolveTokensInto(stream, resolver, context, FunctionContext{},
+                               out);
     }
     return false;
   }
 
-  return out.Append(data, parent_tokenizer);
+  return out.Append(data);
 }
 
 bool StyleCascade::ResolveArgInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
-                                  CSSTokenizer* parent_tokenizer,
                                   const CSSParserContext& context,
                                   const FunctionContext& function_context,
                                   TokenSequence& out) {
@@ -1718,15 +1671,13 @@ bool StyleCascade::ResolveArgInto(CSSParserTokenStream& stream,
     return false;
   }
 
-  CSSTokenizer tokenizer(it->value->CssText());
-  CSSParserTokenStream arg_value_stream(tokenizer);
-  return ResolveTokensInto(arg_value_stream, resolver, &tokenizer, context,
+  CSSParserTokenStream arg_value_stream(it->value->CssText());
+  return ResolveTokensInto(arg_value_stream, resolver, context,
                            FunctionContext{}, out);
 }
 
 bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    CascadeResolver& resolver,
-                                   CSSTokenizer* parent_tokenizer,
                                    const CSSParserContext& context,
                                    TokenSequence& out) {
   AtomicString attribute_name = ConsumeVariableName(stream);
@@ -1742,8 +1693,8 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     stream.ConsumeWhitespace();
 
     TokenSequence fallback;
-    if (!ResolveTokensInto(stream, resolver, parent_tokenizer, context,
-                           FunctionContext{}, fallback)) {
+    if (!ResolveTokensInto(stream, resolver, context, FunctionContext{},
+                           fallback)) {
       return false;
     }
     if (!substitution_value.has_value()) {
@@ -1828,10 +1779,7 @@ bool StyleCascade::HasLineHeightDependency(const CustomProperty& property,
 }
 
 bool StyleCascade::ValidateFallback(const CustomProperty& property,
-                                    CSSTokenizedValue value) const {
-#if DCHECK_IS_ON()
-  DCHECK(!HasUnresolvedReferences(value.range));
-#endif  // DCHECK_IS_ON()
+                                    StringView value) const {
   if (!property.IsRegistered()) {
     return true;
   }

@@ -41,8 +41,8 @@
 #endif
 
 namespace autofill {
-
 namespace {
+
 const base::FilePath::CharType kFeatureName[] = FILE_PATH_LITERAL("autofill");
 const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("merge");
 const base::FilePath::CharType kFileNamePattern[] = FILE_PATH_LITERAL("*.in");
@@ -117,8 +117,6 @@ std::string SerializeProfiles(
   return result;
 }
 
-}  // namespace
-
 // A data-driven test for verifying merging of Autofill profiles. Each input is
 // a structured dump of a set of implicitly detected autofill profiles. The
 // corresponding output file is a dump of the saved profiles that result from
@@ -136,8 +134,6 @@ class AutofillMergeTest : public testing::DataDrivenTest,
 
   // testing::Test:
   void SetUp() override;
-
-  void TearDown() override;
 
   // DataDrivenTest:
   void GenerateResults(const std::string& input, std::string* output) override;
@@ -163,7 +159,6 @@ AutofillMergeTest::AutofillMergeTest()
 AutofillMergeTest::~AutofillMergeTest() = default;
 
 void AutofillMergeTest::SetUp() {
-  test::DisableSystemServices(nullptr);
   test_api(test_address_data_manager()).set_auto_accept_address_imports(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
       &autofill_client_, /*history_service=*/nullptr, "en");
@@ -172,10 +167,6 @@ void AutofillMergeTest::SetUp() {
        features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
        features::kAutofillInferCountryCallingCode},
       /*disabled_features=*/{});
-}
-
-void AutofillMergeTest::TearDown() {
-  test::ReenableSystemServices();
 }
 
 void AutofillMergeTest::GenerateResults(const std::string& input,
@@ -273,4 +264,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutofillMergeTest,
                          testing::ValuesIn(GetTestFiles()));
 
+}  // namespace
 }  // namespace autofill

@@ -70,7 +70,8 @@ constexpr auto kSystemWebAppsMapping =
          {"print_preview_cros", ash::SystemWebAppType::PRINT_PREVIEW_CROS},
          {"boca", ash::SystemWebAppType::BOCA},
          {"app_mall", ash::SystemWebAppType::MALL},
-         {"recorder", ash::SystemWebAppType::RECORDER}});
+         {"recorder", ash::SystemWebAppType::RECORDER},
+         {"graduation", ash::SystemWebAppType::GRADUATION}});
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
   return base::ranges::max(kSystemWebAppsMapping, base::ranges::less{},

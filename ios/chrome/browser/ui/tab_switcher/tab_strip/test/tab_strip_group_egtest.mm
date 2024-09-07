@@ -18,6 +18,14 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::CreateTabGroupCancelButton;
+using chrome_test_util::CreateTabGroupCreateButton;
+using chrome_test_util::CreateTabGroupTextField;
+using chrome_test_util::DeleteGroupConfirmationButton;
+using chrome_test_util::TabGroupSnackBar;
+using chrome_test_util::TabGroupSnackBarAction;
+using chrome_test_util::UngroupConfirmationButton;
+
 namespace {
 
 NSString* const kGroupTitle1 = @"Group Title 1";
@@ -29,46 +37,10 @@ NSString* const kTab2Title = @"Tab2";
 // Put the number at the beginning to avoid issues with sentence case.
 NSString* const kGroupName = @"1group";
 
-// Matcher for the create button in the tab group creation view.
-id<GREYMatcher> CreateTabGroupCreateButtonMatcher() {
-  return grey_allOf(grey_accessibilityID(kCreateTabGroupCreateButtonIdentifier),
-                    grey_sufficientlyVisible(), nil);
-}
-
 // Returns the matcher for the tab group creation view.
-id<GREYMatcher> GroupCreationViewMatcher() {
+id<GREYMatcher> HalfVisibleTabGroupCreationView() {
   return grey_allOf(grey_accessibilityID(kCreateTabGroupViewIdentifier),
                     grey_minimumVisiblePercent(0.5), nil);
-}
-
-// Matcher for the text field in the tab group creation view.
-id<GREYMatcher> CreateTabGroupTextFieldMatcher() {
-  return grey_allOf(grey_accessibilityID(kCreateTabGroupTextFieldIdentifier),
-                    grey_sufficientlyVisible(), nil);
-}
-
-// Matcher for the cancel button in the tab group creation view.
-id<GREYMatcher> CreateTabGroupCancelButtonMatcher() {
-  return grey_allOf(grey_accessibilityID(kCreateTabGroupCancelButtonIdentifier),
-                    grey_sufficientlyVisible(), nil);
-}
-
-// Returns the matcher for the tab group snackbar.
-id<GREYMatcher> TabGroupSnackbarMatcher(int tabGroupCount) {
-  NSString* messageLabel =
-      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_TAB_GROUP_SNACKBAR_LABEL, tabGroupCount));
-  return grey_allOf(
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
-      grey_text(messageLabel), nil);
-}
-
-// Returns the matcher for the tab group snackbar action .
-id<GREYMatcher> TabGroupSnackbarActionMatcher() {
-  return grey_allOf(grey_kindOfClassName(@"M3CButton"),
-                    grey_buttonTitle(l10n_util::GetNSString(
-                        IDS_IOS_TAB_GROUP_SNACKBAR_ACTION)),
-                    nil);
 }
 
 // Returns the matcher for the Tab Groups view as third panel of Tab Grid.
@@ -90,12 +62,12 @@ void OpenTabGroupCreationViewUsingLongPressForCellAtIndex(int index) {
                                    1))] performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
+      waitForUIElementToAppearWithMatcher:HalfVisibleTabGroupCreationView()];
 }
 
 // Sets the tab group name in the tab group creation view.
 void SetTabGroupCreationName(NSString* group_name) {
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupTextFieldMatcher()]
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupTextField()]
       performAction:grey_tap()];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:group_name flags:0];
 }
@@ -264,11 +236,11 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   SetTabGroupCreationName(kGroupName);
 
   // Confirm the creation.
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
       performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
+      waitForUIElementToDisappearWithMatcher:HalfVisibleTabGroupCreationView()];
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupName)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -284,11 +256,11 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   SetTabGroupCreationName(kGroupName);
 
   // Cancel the creation.
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCancelButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCancelButton()]
       performAction:grey_tap()];
 
   [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
+      waitForUIElementToDisappearWithMatcher:HalfVisibleTabGroupCreationView()];
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupName)]
       assertWithMatcher:grey_nil()];
 }
@@ -657,9 +629,7 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
                                           IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
       performAction:grey_tap()];
   // Confirm ungrouping.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::AlertAction(
-                                          l10n_util::GetNSString(
-                                              IDS_IOS_CONTENT_CONTEXT_UNGROUP))]
+  [[EarlGrey selectElementWithMatcher:UngroupConfirmationButton()]
       performAction:grey_tap()];
 
   // Wait for the tab group to disappear and check that the tab is still here.
@@ -694,10 +664,7 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
                                           IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
       performAction:grey_tap()];
   // Confirm deleting a group.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::AlertAction(
-                                   l10n_util::GetNSString(
-                                       IDS_IOS_CONTENT_CONTEXT_DELETEGROUP))]
+  [[EarlGrey selectElementWithMatcher:DeleteGroupConfirmationButton()]
       performAction:grey_tap()];
 
   // Wait for the tab group to disappear and check that the tab disappeared too.
@@ -707,8 +674,8 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(aboutTabTitle)]
       assertWithMatcher:grey_nil()];
 
-  // Check that the snackbar is not dislpayed.
-  [[EarlGrey selectElementWithMatcher:TabGroupSnackbarMatcher(1)]
+  // Check that the snackbar is not displayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -742,8 +709,8 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(aboutTabTitle)]
       assertWithMatcher:grey_nil()];
 
-  // Check that the snackbar is dislpayed.
-  [[EarlGrey selectElementWithMatcher:TabGroupSnackbarMatcher(1)]
+  // Check that the snackbar is displayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -783,8 +750,8 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(versionTabTitle)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Check that the snackbar is dislpayed.
-  [[EarlGrey selectElementWithMatcher:TabGroupSnackbarMatcher(1)]
+  // Check that the snackbar is displayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -823,8 +790,8 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Check that the snackbar is not dislpayed.
-  [[EarlGrey selectElementWithMatcher:TabGroupSnackbarMatcher(1)]
+  // Check that the snackbar is not displayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -961,7 +928,7 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
       assertWithMatcher:grey_nil()];
 
   // Tap on the snackbar action.
-  [[EarlGrey selectElementWithMatcher:TabGroupSnackbarActionMatcher()]
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarAction()]
       performAction:grey_tap()];
 
   // Check that the Tab Groups Panel is shown.

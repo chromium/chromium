@@ -325,9 +325,24 @@ void IDBFactory::OpenInternalImpl(
     return;
   }
 
+  // Getting the scheduling priority as a one-off is somewhat awkward.
+  int scheduling_priority = -1;
+  std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle> lifecycle =
+      GetExecutionContext()->GetScheduler()->AddLifecycleObserver(
+          FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
+          WTF::BindRepeating(
+              [](int* priority,
+                 scheduler::SchedulingLifecycleState lifecycle_state) {
+                *priority = IDBDatabase::GetSchedulingPriority(lifecycle_state);
+              },
+              WTF::Unretained(&scheduling_priority)));
+  DCHECK_GE(scheduling_priority, 0);
+  request->set_connection_priority(scheduling_priority);
+
   GetRemote()->Open(CreatePendingRemote(request->CreateFactoryClient()),
                     std::move(callbacks_remote), name, version,
-                    std::move(transaction_receiver), transaction_id);
+                    std::move(transaction_receiver), transaction_id,
+                    scheduling_priority);
 }
 
 IDBOpenDBRequest* IDBFactory::open(ScriptState* script_state,

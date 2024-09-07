@@ -118,13 +118,6 @@ const base::FeatureParam<int> kEnableArcIdleManagerDelayMs{
 const base::FeatureParam<bool> kEnableArcIdleManagerPendingIdleReactivate{
     &kEnableArcIdleManager, "pending_idle_reactivate", false};
 
-// Controls whether files shared to ARC Nearby Share are shared through the
-// FuseBox filesystem, instead of the default method (through a temporary path
-// managed by file manager).
-BASE_FEATURE(kEnableArcNearbyShareFuseBox,
-             "ArcNearbyShareFuseBox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to enable support for s2idle in ARCVM.
 BASE_FEATURE(kEnableArcS2Idle, "ArcS2Idle", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -139,7 +132,7 @@ BASE_FEATURE(kEnableArcVmDataMigration,
 // for certain types of ARC error dialogs).
 BASE_FEATURE(kEnableFriendlierErrorDialog,
              "FriendlierErrorDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether WebView Zygote is lazily initialized in ARC.
 BASE_FEATURE(kEnableLazyWebViewInit,
@@ -192,7 +185,7 @@ BASE_FEATURE(kEnableVirtioBlkMultipleWorkers,
 // Controls whether to extend the input event ANR timeout time.
 BASE_FEATURE(kExtendInputAnrTimeout,
              "ArcExtendInputAnrTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to extend the broadcast of intent ANR timeout time.
 BASE_FEATURE(kExtendIntentAnrTimeout,
@@ -519,9 +512,6 @@ const base::FeatureParam<base::TimeDelta> kVmmSwapTrimInterval{
 // when swap is enabled or swap trimming is performed.
 const base::FeatureParam<base::TimeDelta> kVmmSwapMinShrinkInterval{
     &kVmmSwapPolicy, "min_shrink_interval", base::Minutes(10)};
-
-// When enabled, ARC uses XDG-based Wayland protocols.
-BASE_FEATURE(kXdgMode, "ArcXdgMode", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the feature to delay low memory kills of high priority apps when the
 // memory pressure is below foreground.

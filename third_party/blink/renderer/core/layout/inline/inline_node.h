@@ -205,11 +205,18 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
 };
 
 inline bool InlineNode::IsStickyImagesQuirkForContentSize() const {
+  // See https://quirks.spec.whatwg.org/#the-table-cell-width-calculation-quirk
   if (GetDocument().InQuirksMode()) [[unlikely]] {
     const ComputedStyle& style = Style();
-    if (style.Display() == EDisplay::kTableCell &&
-        style.LogicalWidth().HasAutoOrContentOrIntrinsic()) [[unlikely]] {
-      return true;
+    if (style.Display() == EDisplay::kTableCell) [[unlikely]] {
+      if (style.LogicalWidth().IsAuto()) {
+        return true;
+      }
+      if (!RuntimeEnabledFeatures::StricterCellWidthContentSizeQuirkEnabled() &&
+          (style.LogicalWidth().HasAutoOrContentOrIntrinsic() ||
+           style.LogicalWidth().HasStretch())) {
+        return true;
+      }
     }
   }
   return false;

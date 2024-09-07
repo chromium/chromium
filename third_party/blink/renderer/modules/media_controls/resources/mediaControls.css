@@ -1341,7 +1341,7 @@ video::cue(i) {
 }
 
 video::cue(rt) {
-    display: block;
+    display: ruby-text;
     font-size: 50%;
     line-height: normal;
     text-align: start;
@@ -1349,13 +1349,8 @@ video::cue(rt) {
     text-indent: 0;
 }
 
-@supports blink-feature(VttCueDisplayRuby) {
-  video::cue(rt) {
-    display: ruby-text;
-  }
-  video::cue(ruby) {
+video::cue(ruby) {
     display: ruby;
-  }
 }
 
 /*

@@ -74,7 +74,7 @@ bool IsExitUiEnabled() {
 #else
   // Kiosk mode is a fullscreen experience, which makes the exit UI
   // inappropriate.
-  return !chrome::IsRunningInAppMode();
+  return !IsRunningInAppMode();
 #endif
 }
 

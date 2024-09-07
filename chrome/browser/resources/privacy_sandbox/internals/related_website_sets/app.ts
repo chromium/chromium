@@ -5,7 +5,7 @@
 import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import './sidebar.js';
 import './toolbar.js';
-import './related_website_sets_list_container.js';
+import './list_container.js';
 
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';

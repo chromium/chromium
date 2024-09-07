@@ -77,7 +77,6 @@ public class AddToHomescreenDialogView
     public AddToHomescreenDialogView(
             Context context,
             ModalDialogManager modalDialogManager,
-            AppBannerManager.InstallStringPair installStrings,
             AddToHomescreenViewDelegate delegate) {
         assert delegate != null;
 
@@ -180,11 +179,8 @@ public class AddToHomescreenDialogView
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE, resources, installStrings.titleTextId)
-                        .with(
-                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                resources,
-                                installStrings.buttonTextId)
+                        .with(ModalDialogProperties.TITLE, mAddTitleText)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mAddButtonText)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,

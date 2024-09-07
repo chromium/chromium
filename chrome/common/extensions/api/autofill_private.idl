@@ -121,11 +121,12 @@ namespace autofillPrivate {
     ADDRESS_HOME_APT_TYPE,
     ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
     SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
+    IMPROVED_PREDICTION,
     MAX_VALID_FIELD_TYPE
   };
 
-  // The address source origin. Describes where the address is stored.
-  enum AddressSource {
+  // The address record type. Describes where the address is stored.
+  enum AddressRecordType {
     // The address is stored in the Chrome infrastructure (locally and
     // possibly synced between devices).
     LOCAL_OR_SYNCABLE,
@@ -148,14 +149,11 @@ namespace autofillPrivate {
     DOMString? summarySublabel;
 
     // For addresses. Describes where the address is stored.
-    AddressSource? source;
+    AddressRecordType? recordType;
 
     // For credit cards, whether the entry is locally owned by Chrome (as opposed to
     // being synced down from the server). Non-local entries may not be editable.
     boolean? isLocal;
-
-    // For credit cards, whether this is a full copy of the card
-    boolean? isCached;
 
     // For credit cards, whether this is migratable (both the card number and
     // expiration date valid and does not have the duplicated server card).
@@ -295,6 +293,14 @@ namespace autofillPrivate {
     AutofillMetadata? metadata;
   };
 
+  // User annotations entry data. Corresponds to the eponymous message from
+  // components/optimization_guide/proto/features/common_quality_data.proto.
+  dictionary UserAnnotationsEntry {
+    long entryId;
+    DOMString key;
+    DOMString value;
+  };
+
   callback GetAccountInfoCallback = void(optional AccountInfo accountInfo);
   callback GetCountryListCallback = void(CountryEntry[] countries);
   callback GetAddressComponentsCallback = void(AddressComponents components);
@@ -304,6 +310,7 @@ namespace autofillPrivate {
   callback IsValidIbanCallback = void(boolean isValid);
   callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
+  callback GetUserAnnotationsEntriesCallback = void(UserAnnotationsEntry[] items);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -409,6 +416,10 @@ namespace autofillPrivate {
     // Sets the Sync Autofill toggle value, which corresponds to
     // `syncer::UserSelectableType::kAutofill` in `SyncUserSettings`.
     static void setAutofillSyncToggleEnabled(boolean enabled);
+
+    // Returns the list of user annotations entries.
+    static void getUserAnnotationsEntries(
+        GetUserAnnotationsEntriesCallback callback);
   };
 
   interface Events {

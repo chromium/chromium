@@ -53,9 +53,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_user_data.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -210,7 +213,9 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
   ContextMenuBrowserTestBase() {
     scoped_feature_list_.InitWithFeatures(
         {media::kContextMenuSaveVideoFrameAs,
-         media::kContextMenuSearchForVideoFrame},
+         media::kContextMenuSearchForVideoFrame,
+         toast_features::kLinkCopiedToast, toast_features::kImageCopiedToast,
+         toast_features::kToastFramework},
         {});
   }
 
@@ -1188,6 +1193,24 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   // Emoji context menu item should never be present on a non-editable field.
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_EMOJI));
 }
+
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, ShowsToastOnLinkCopied) {
+  auto menu = CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                             GURL("http://www.google.com/"));
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
+                       /*event_flags=*/0);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, ShowsToastOnImageCopied) {
+  content::ContextMenuParams params;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kCanvas;
+
+  auto menu = CreateContextMenuFromParams(params);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Executing the emoji panel item with no associated browser should not crash.
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
@@ -1980,7 +2003,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInProfileEntryPresent) {
     ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
     ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
     // With at least two secondary profiles, they are displayed in a submenu.
-    ui::MenuModel* model = nullptr;
+    raw_ptr<ui::MenuModel> model = nullptr;
     size_t index = 0;
     ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                                &model, &index));
@@ -2056,7 +2079,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
       CreateContextMenuMediaTypeNone(url, url));
 
   // Verify that the size of the menu is correct.
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   size_t index = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                              &model, &index));
@@ -2114,7 +2137,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenProfileNoneReferrer) {
   auto menu = CreateContextMenuFromParams(params);
 
   // Verify that the Open in Profile option is shown.
-  ui::MenuModel* model = nullptr;
+  raw_ptr<ui::MenuModel> model = nullptr;
   size_t index = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                              &model, &index));
@@ -2865,6 +2888,172 @@ IN_PROC_BROWSER_TEST_F(
               testing::Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
   EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
               testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS)));
+}
+
+class ContextMenuLinkPreviewFencedFrameTest
+    : public ContextMenuFencedFrameTest {
+ public:
+  ContextMenuLinkPreviewFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kLinkPreview);
+  }
+
+  ~ContextMenuLinkPreviewFencedFrameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextMenuLinkPreviewFencedFrameTest,
+                       LinkPreviewEntryIsDisabledAfterNetworkCutoff) {
+  // Add content/test/data for cross_site_iframe_factory.html.
+  https_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate fenced frame to a page with an anchor element.
+  GURL fenced_frame_url(
+      https_server()->GetURL("a.test", "/download-anchor-same-origin.html"));
+
+  GURL main_url(https_server()->GetURL(
+      "a.test",
+      base::StringPrintf("/cross_site_iframe_factory.html?a.test(%s{fenced})",
+                         fenced_frame_url.spec().c_str())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Get fenced frame render frame host.
+  std::vector<content::RenderFrameHost*> child_frames =
+      fenced_frame_test_helper().GetChildFencedFrameHosts(
+          primary_main_frame_host());
+  ASSERT_EQ(child_frames.size(), 1u);
+  content::RenderFrameHost* fenced_frame_rfh = child_frames[0];
+  ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+
+  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+
+  // Get the coordinate of the anchor element inside the fenced frame.
+  const gfx::PointF anchor_element =
+      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
+
+  // Open a context menu by right clicking on the anchor element.
+  ContextMenuWaiter menu_observer;
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // "Preview Link" should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // "Preview Link" should be disabled in the context menu after fenced frame
+  // has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
+  EXPECT_THAT(
+      menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+      testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuLinkPreviewFencedFrameTest,
+    LinkPreviewEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
+  // Add content/test/data for cross_site_iframe_factory.html.
+  https_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate the nested iframe to a page with an anchor element.
+  GURL nested_iframe_url(
+      https_server()->GetURL("a.test", "/download-anchor-same-origin.html"));
+
+  // The page has a fenced frame with a nested iframe inside.
+  GURL main_url(https_server()->GetURL(
+      "a.test",
+      base::StringPrintf(
+          "/cross_site_iframe_factory.html?a.test(a.test{fenced}(%s))",
+          nested_iframe_url.spec().c_str())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Get fenced frame and nested iframe render frame host.
+  std::vector<content::RenderFrameHost*> child_frames =
+      fenced_frame_test_helper().GetChildFencedFrameHosts(
+          primary_main_frame_host());
+  ASSERT_EQ(child_frames.size(), 1u);
+  content::RenderFrameHost* fenced_frame_rfh = child_frames[0];
+  content::RenderFrameHost* nested_iframe_rfh =
+      content::ChildFrameAt(fenced_frame_rfh, 0);
+  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
+
+  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
+  // ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+  content::WaitForHitTestData(nested_iframe_rfh);
+
+  // Get the coordinate of the anchor element inside the nested iframe.
+  gfx::PointF anchor_element =
+      GetCenterCoordinatesOfElementWithId(nested_iframe_rfh, "anchor");
+
+  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
+  // fenced frame, the anchor element needs to be offset by the top left
+  // coordinates of the nested iframe relative to the fenced frame.
+  const gfx::PointF iframe_offset =
+      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
+                                                          "child-0");
+  anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
+
+  // Open a context menu by right clicking on the anchor element.
+  ContextMenuWaiter menu_observer;
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // "Preview Link" should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // "Preview Link" should be disabled in the context menu after fenced frame
+  // has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
+  EXPECT_THAT(
+      menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+      testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW)));
 }
 
 // TODO(crbug.com/40285326): This fails with the field trial testing config.

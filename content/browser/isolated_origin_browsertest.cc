@@ -20,6 +20,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/process_reuse_policy.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -148,8 +149,9 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         WebExposedIsolationInfo::CreateNonIsolated(),
         WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
-        /*is_jit_disabled=*/false, /*is_pdf=*/false,
-        /*is_fenced=*/false, /*cross_origin_isolation_key=*/std::nullopt));
+        /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+        /*is_pdf=*/false, /*is_fenced=*/false,
+        /*cross_origin_isolation_key=*/std::nullopt));
   }
 
   WebContentsImpl* web_contents() const {
@@ -176,8 +178,9 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         WebExposedIsolationInfo::CreateNonIsolated(),
         WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
-        /*is_jit_disabled=*/false, /*is_pdf=*/false,
-        /*is_fenced=*/false, /*cross_origin_isolation_key=*/std::nullopt));
+        /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+        /*is_pdf=*/false, /*is_fenced=*/false,
+        /*cross_origin_isolation_key=*/std::nullopt));
   }
 
  protected:
@@ -1545,7 +1548,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
   GURL non_isolated_origin_url(
       https_server()->GetURL("a.foo.com", "/title2.html"));
 
-  int host_id = prerender_helper_.AddPrerender(non_isolated_origin_url);
+  FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(non_isolated_origin_url);
 
   // In primary tab, navigate to an isolated origin.
   SetHeaderValue("?1");
@@ -1628,7 +1632,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
   GURL isolated_origin_url(
       https_server()->GetURL("a.foo.com", "/isolate_origin"));
 
-  int host_id = prerender_helper_.AddPrerender(isolated_origin_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(isolated_origin_url);
 
   // Verify origin is isolated in the prerender IsolationContext.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -1700,8 +1704,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       WebExposedIsolationInfo::CreateNonIsolated(),
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false,
-      /*is_fenced=*/false, /*cross_origin_isolation_key=*/std::nullopt));
+      /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+      /*is_pdf=*/false, /*is_fenced=*/false,
+      /*cross_origin_isolation_key=*/std::nullopt));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
@@ -3694,7 +3699,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeReusesExistingProcess) {
   EXPECT_FALSE(second_shell_instance->IsRelatedSiteInstance(
       root->current_frame_host()->GetSiteInstance()));
   RenderProcessHost* isolated_process = second_shell_instance->GetProcess();
-  EXPECT_EQ(SiteInstanceImpl::ProcessReusePolicy::DEFAULT,
+  EXPECT_EQ(ProcessReusePolicy::DEFAULT,
             second_shell_instance->process_reuse_policy());
 
   // Now navigate the first tab's subframe to an isolated origin.  See that it
@@ -3703,7 +3708,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeReusesExistingProcess) {
   EXPECT_EQ(isolated_url, child->current_url());
   EXPECT_EQ(isolated_process, child->current_frame_host()->GetProcess());
   EXPECT_EQ(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE,
+      ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
       child->current_frame_host()->GetSiteInstance()->process_reuse_policy());
 
   EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());

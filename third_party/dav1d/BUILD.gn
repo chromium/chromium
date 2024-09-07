@@ -117,8 +117,13 @@ if (enable_nasm) {
     sources = x86_asm_sources
 
     inputs = [
-      "libdav1d/src/ext/x86/x86inc.asm",
       "$platform_config_root/config.asm",
+      "libdav1d/src/ext/x86/x86inc.asm",
+
+      # This is added here in addition to sources as it is included from some
+      # other files. And in such case, we need to use inputs to teach GN that
+      # some actions depend on this file indirectly.
+      "libdav1d/src/x86/filmgrain_common.asm",
     ]
 
     include_dirs = [

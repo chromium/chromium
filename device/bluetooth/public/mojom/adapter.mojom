@@ -15,7 +15,7 @@ import "device/bluetooth/public/mojom/gatt_service_error_code.mojom";
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync
 // with the NearbyConnectionsConnectResult enum in
-// src/tools/metrics/metadata/nearby/enums.xml.
+// src/tools/metrics/histograms/metadata/nearby/enums.xml.
 enum ConnectResult {
   SUCCESS,
   AUTH_CANCELED,
@@ -38,6 +38,8 @@ enum ConnectResult {
   JNI_ENVIRONMENT,
   JNI_THREAD_ATTACH,
   WAKELOCK,
+  UNEXPECTED_STATE,
+  SOCKET,
 };
 
 union LocalCharacteristicReadResult {

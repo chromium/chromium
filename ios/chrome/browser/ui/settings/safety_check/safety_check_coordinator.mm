@@ -16,26 +16,36 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 using password_manager::WarningType;
@@ -44,7 +54,9 @@ using password_manager::WarningType;
     PasswordCheckupCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
+    NotificationsOptInAlertCoordinatorDelegate,
     SafetyCheckNavigationCommands,
+    SafetyCheckMediatorDelegate,
     SafetyCheckTableViewControllerPresentationDelegate>
 
 // Safety check mediator.
@@ -74,7 +86,10 @@ using password_manager::WarningType;
 
 @end
 
-@implementation SafetyCheckCoordinator
+@implementation SafetyCheckCoordinator {
+  // Alert Coordinator used to display the notifications system prompt.
+  NotificationsOptInAlertCoordinator* _optInAlertCoordinator;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -122,6 +137,7 @@ using password_manager::WarningType;
 
   self.mediator.consumer = self.viewController;
   self.mediator.handler = self;
+  self.mediator.delegate = self;
   self.viewController.serviceDelegate = self.mediator;
   self.viewController.presentationDelegate = self;
 
@@ -141,6 +157,57 @@ using password_manager::WarningType;
   [self.passwordCheckupCoordinator stop];
   self.passwordCheckupCoordinator.delegate = nil;
   self.passwordCheckupCoordinator = nil;
+
+  [_optInAlertCoordinator stop];
+  _optInAlertCoordinator = nil;
+}
+
+- (void)updateNotificationsButton:(BOOL)enabled {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  [self.mediator reconfigureNotificationsSection:enabled];
+}
+
+#pragma mark - SafetyCheckMediatorDelegate
+
+- (void)toggleSafetyCheckNotifications {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  // Safety Check notifications are controlled by app-wide notification
+  // settings, not profile-specific ones. No Gaia ID is required below in
+  // `GetMobileNotificationPermissionStatusForClient()`.
+  if (push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kSafetyCheck, "")) {
+    [self disableNotifications];
+
+    return;
+  }
+
+  [self enableNotifications];
+}
+
+#pragma mark - NotificationsOptInAlertCoordinatorDelegate
+
+- (void)notificationsOptInAlertCoordinator:
+            (NotificationsOptInAlertCoordinator*)alertCoordinator
+                                    result:
+                                        (NotificationsOptInAlertResult)result {
+  CHECK_EQ(_optInAlertCoordinator, alertCoordinator);
+  [_optInAlertCoordinator stop];
+  _optInAlertCoordinator = nil;
+
+  switch (result) {
+    case NotificationsOptInAlertResult::kPermissionGranted:
+      [_mediator reconfigureNotificationsSection:YES];
+      break;
+    case NotificationsOptInAlertResult::kPermissionDenied:
+    case NotificationsOptInAlertResult::kOpenedSettings:
+    case NotificationsOptInAlertResult::kCanceled:
+    case NotificationsOptInAlertResult::kError:
+      [_mediator reconfigureNotificationsSection:NO];
+      break;
+  }
 }
 
 #pragma mark - SafetyCheckTableViewControllerPresentationDelegate
@@ -289,6 +356,65 @@ using password_manager::WarningType;
   [self.privacySafeBrowsingCoordinator stop];
   self.privacySafeBrowsingCoordinator.delegate = nil;
   self.privacySafeBrowsingCoordinator = nil;
+}
+
+#pragma mark - Private methods
+
+// Prompts the user to opt-in to Safety Check push notifications.
+// If the user grants permission, updates the push notification service
+// preferences.
+- (void)enableNotifications {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  [_optInAlertCoordinator stop];
+
+  _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+
+  _optInAlertCoordinator.delegate = self;
+
+  _optInAlertCoordinator.clientIds =
+      std::vector{PushNotificationClientId::kSafetyCheck};
+
+  _optInAlertCoordinator.confirmationMessage = l10n_util::GetNSStringF(
+      IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
+      l10n_util::GetStringUTF16(IDS_IOS_SAFETY_CHECK_TITLE));
+
+  [_optInAlertCoordinator start];
+}
+
+// Opts the user out of Safety Check notifications and updates the push
+// notification service preferences. Displays a confirmation snackbar with a
+// link to notification settings.
+- (void)disableNotifications {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  GetApplicationContext()->GetPushNotificationService()->SetPreference(
+      nil, PushNotificationClientId::kSafetyCheck, false);
+
+  // Show confirmation snackbar.
+  NSString* buttonText =
+      l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_MANAGE_SETTINGS);
+
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE_OFF,
+      l10n_util::GetStringUTF16(IDS_IOS_SAFETY_CHECK_TITLE));
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+
+  __weak id<SettingsCommands> weakSettingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+
+  [snackbarHandler showSnackbarWithMessage:message
+                                buttonText:buttonText
+                             messageAction:^{
+                               [weakSettingsHandler showNotificationsSettings];
+                             }
+                          completionAction:nil];
 }
 
 @end

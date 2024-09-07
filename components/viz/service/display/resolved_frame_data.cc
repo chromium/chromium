@@ -14,7 +14,6 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -40,8 +39,6 @@ const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
     const DrawQuad* quad) {
   if (auto* texture_quad = quad->DynamicCast<TextureDrawQuad>()) {
     return texture_quad->damage_rect;
-  } else if (auto* yuv_video_quad = quad->DynamicCast<YUVVideoDrawQuad>()) {
-    return yuv_video_quad->damage_rect;
   } else {
     static std::optional<gfx::Rect> no_damage;
     return no_damage;

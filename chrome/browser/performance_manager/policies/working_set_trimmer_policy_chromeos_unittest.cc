@@ -12,11 +12,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_arcvm.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -264,6 +267,18 @@ class MockWorkingSetTrimmerPolicyChromeOS
   }
 };
 
+class PageNodeContext {
+ public:
+  TestNodeWrapper<ProcessNodeImpl> process_node_;
+  TestNodeWrapper<PageNodeImpl> page_node_;
+  TestNodeWrapper<FrameNodeImpl> parent_frame_;
+
+  PageNodeContext() = default;
+  ~PageNodeContext() = default;
+  PageNodeContext(const PageNodeContext&) = delete;
+  PageNodeContext& operator=(const PageNodeContext&) = delete;
+};
+
 class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
  public:
   WorkingSetTrimmerPolicyChromeOSTest()
@@ -278,6 +293,7 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
   ~WorkingSetTrimmerPolicyChromeOSTest() override {}
 
   void SetUp() override {
+    chromeos::PowerManagerClient::InitializeFake();
     CreateTrimmer();
     GraphTestHarness::SetUp();
     RecreatePolicy(base::BindLambdaForTesting(
@@ -285,12 +301,13 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
   }
 
   void TearDown() override {
-    policy_ = nullptr;
     // Fix flakiness due to WorkingSetTrimmerPolicyChromeOS's weak ptr factory
     // getting destroyed and causing a weak ptr to get invalidated on a
     // different sequenced thread from where it was bound.
     task_env().RunUntilIdle();
+    TakePolicyFromGraph();
     GraphTestHarness::TearDown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   void DefaultOnTrimArcVmProcessesAndQuit(
@@ -355,6 +372,28 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
   void ExpectNoReclaim();
   void ExpectFullReclaim(bool is_first_reclaim, int computed_page_limit);
   void ExpectDropPageCaches();
+
+  std::unique_ptr<PageNodeContext> CreateInvisiblePage() {
+    // Create a simple graph
+    auto context = std::make_unique<PageNodeContext>();
+    context->process_node_ = CreateNode<ProcessNodeImpl>();
+    context->page_node_ = CreateNode<PageNodeImpl>();
+    context->parent_frame_ = CreateFrameNodeAutoId(context->process_node_.get(),
+                                                   context->page_node_.get());
+
+    // Create a Process so this process node doesn't bail on Process.IsValid();
+    context->process_node_->SetProcess(base::Process::Current().Duplicate(),
+                                       /* launch_time=*/base::TimeTicks::Now());
+
+    // Set it invisible using the current clock, then we will advance the clock
+    // and it should result in a TrimWorkingSet since it's been invisible long
+    // enough.
+    context->page_node_->SetIsVisible(
+        true);  // Reset visibility and then set invisible.
+    context->page_node_->SetIsVisible(false);  // Uses the testing clock.
+
+    return context;
+  }
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -480,31 +519,14 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DontTrimIfNoMainFrame) {
 // This test will validate that we WILL trim the working set if it has been
 // invisible long enough.
 TEST_F(WorkingSetTrimmerPolicyChromeOSTest, TrimIfInvisibleLongEnough) {
-  // Create a simple graph
-  auto process_node = CreateNode<ProcessNodeImpl>();
-  auto page_node = CreateNode<PageNodeImpl>();
-  auto parent_frame =
-      CreateFrameNodeAutoId(process_node.get(), page_node.get());
-
+  auto page = CreateInvisiblePage();
   ASSERT_EQ(1u, graph()->GetAllPageNodes().size());
 
-  // Create a Process so this process node doesn't bail on Process.IsValid();
-  const base::Process self = base::Process::Current();
-  auto duplicate = self.Duplicate();
-  ASSERT_TRUE(duplicate.IsValid());
-  process_node->SetProcess(std::move(duplicate),
-                           /* launch_time=*/base::TimeTicks::Now());
-
-  // Set it invisible using the current clock, then we will advance the clock
-  // and it should result in a TrimWorkingSet since it's been invisible long
-  // enough.
-  page_node->SetIsVisible(true);   // Reset visibility and then set invisible.
-  page_node->SetIsVisible(false);  // Uses the testing clock.
   const base::TimeTicks cur_time = FastForwardBy(base::Days(365));
 
   // We will attempt to trim to corresponding ProcessNode since we've been
   // invisible long enough.
-  EXPECT_CALL(*policy(), TrimWorkingSet(process_node.get())).Times(1);
+  EXPECT_CALL(*policy(), TrimWorkingSet(page->process_node_.get())).Times(1);
 
   // Triger memory pressure and we should observe the walk since we've never
   // walked before.
@@ -515,6 +537,63 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, TrimIfInvisibleLongEnough) {
 
   // We should have triggered the walk and it should have trimmed.
   EXPECT_EQ(cur_time, policy()->get_last_graph_walk());
+}
+
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DoNotTrimWhileSuspended) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDisableTrimmingWhileSuspended);
+  RecreatePolicy(
+      base::BindLambdaForTesting([](MockWorkingSetTrimmerPolicyChromeOS*) {}));
+  auto page = CreateInvisiblePage();
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
+
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+
+  EXPECT_CALL(*policy(), TrimWorkingSet(testing::_)).Times(0);
+
+  policy()->listener().SimulatePressureNotification(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  FastForwardBy(base::Seconds(1));
+}
+
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DoNotTrimJustAfterResumed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDisableTrimmingWhileSuspended);
+  RecreatePolicy(
+      base::BindLambdaForTesting([](MockWorkingSetTrimmerPolicyChromeOS*) {}));
+  auto page = CreateInvisiblePage();
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
+
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
+
+  EXPECT_CALL(*policy(), TrimWorkingSet(testing::_)).Times(0);
+
+  policy()->listener().SimulatePressureNotification(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  FastForwardBy(base::Seconds(1));
+}
+
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, Trim15MinutesAfterResumed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDisableTrimmingWhileSuspended);
+  RecreatePolicy(
+      base::BindLambdaForTesting([](MockWorkingSetTrimmerPolicyChromeOS*) {}));
+  auto page = CreateInvisiblePage();
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
+
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
+
+  EXPECT_CALL(*policy(), TrimWorkingSet(page->process_node_.get())).Times(1);
+
+  policy()->listener().SimulatePressureNotification(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  FastForwardBy(base::Seconds(1));
 }
 
 // This test is a simple smoke test to make sure that ARC process trimming

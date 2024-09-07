@@ -80,7 +80,7 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
 
   // Embeddings don't last long enough to help users in kiosk or ephemeral
   // profile mode, so simply never construct the service for those users.
-  if (chrome::IsRunningInAppMode() || IsEphemeralProfile(profile)) {
+  if (IsRunningInAppMode() || IsEphemeralProfile(profile)) {
     return nullptr;
   }
 

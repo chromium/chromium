@@ -32,7 +32,7 @@ class ScreenNotification {
 @implementation ScreenObserver
 
 - (instancetype)initWithNotifier:(display::ScreenNotification*)notifier {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _notifier = notifier;
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self

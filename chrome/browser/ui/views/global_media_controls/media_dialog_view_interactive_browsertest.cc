@@ -43,6 +43,7 @@
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -132,7 +133,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
  public:
   MediaDialogViewBrowserTest() {
     feature_list_.InitWithFeatures(
-        {media::kGlobalMediaControls, media::kLiveCaption,
+        {media::kGlobalMediaControls,
          feature_engagement::kIPHLiveCaptionFeature,
          media::kFeatureManagementLiveTranslateCrOS,
          media::kLiveCaptionMultiLanguage, media::kLiveTranslate,
@@ -204,7 +205,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     // The test HTML files used in these tests contain "play()" functions that
     // play the video.
     GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"play()", base::NullCallback());
+        u"play()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void WaitForStart() {
@@ -223,12 +224,14 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   void DisablePictureInPicture() {
     GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"disablePictureInPicture()", base::NullCallback());
+        u"disablePictureInPicture()", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void EnablePictureInPicture() {
     GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"enablePictureInPicture()", base::NullCallback());
+        u"enablePictureInPicture()", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void WaitForEnterPictureInPicture() {

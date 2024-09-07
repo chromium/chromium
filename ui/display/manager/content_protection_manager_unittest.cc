@@ -46,7 +46,7 @@ class TestObserver : public ContentProtectionManager::Observer {
   void Reset() { security_changes_.clear(); }
 
  private:
-  void OnDisplaySecurityChanged(int64_t display_id, bool secure) override {
+  void OnDisplaySecurityMaybeChanged(int64_t display_id, bool secure) override {
     security_changes_.emplace(display_id, secure);
   }
 

@@ -12,6 +12,7 @@
 #include "clang/Analysis/FlowSensitive/AdornedCFG.h"
 #include "clang/Analysis/FlowSensitive/DataflowAnalysis.h"
 #include "clang/Analysis/FlowSensitive/DataflowLattice.h"
+#include "clang/Analysis/FlowSensitive/Models/ChromiumCheckModel.h"
 #include "clang/Analysis/FlowSensitive/NoopLattice.h"
 #include "clang/Analysis/FlowSensitive/Value.h"
 #include "clang/Analysis/FlowSensitive/WatchedLiteralsSolver.h"
@@ -726,6 +727,8 @@ class InvalidIteratorAnalysis
   void transfer(const clang::CFGElement& elt,
                 clang::dataflow::NoopLattice& state,
                 clang::dataflow::Environment& env) {
+    check_model_.transfer(elt, env);
+
     if (auto cfg_stmt = elt.getAs<clang::CFGStmt>()) {
       Transfer(*cfg_stmt->getStmt(), env);
     }
@@ -807,11 +810,12 @@ class InvalidIteratorAnalysis
     const clang::CXXConstructorDecl* ctor = expr.getConstructor();
     assert(ctor != nullptr);
 
-    if (ctor->isCopyOrMoveConstructor()) {
+    if (ctor->isCopyOrMoveConstructor() ||
+        ctor->isConvertingConstructor(false)) {
       auto* it = UnwrapAsIterator(expr.getArg(0), env);
       assert(it);
 
-      // TODO(crbug.com/40272746): Add support for copy and move constructor
+      CloneIterator(&expr, *it, env);
     }
   }
 
@@ -1458,7 +1462,7 @@ class InvalidIteratorAnalysis
     return attrs;
   }
 
-  void TransferCallReturningIterator(const clang::CallExpr* expr,
+  void TransferCallReturningIterator(const clang::Expr* expr,
                                      clang::dataflow::Value& container,
                                      clang::dataflow::BoolValue& is_valid,
                                      clang::dataflow::BoolValue& is_end,
@@ -1474,6 +1478,24 @@ class InvalidIteratorAnalysis
         env.setStorageLocation(*expr, *loc);
       }
     }
+
+    // We need to traverse the AST backwards to catch if the returning iterator
+    // belongs to a `VarDecl`. It is necessary because, in case of implicit
+    // casts, we need to keep track of the declared target type.
+    const clang::VarDecl* var_decl = nullptr;
+    auto parents = getASTContext().getParents(*expr);
+    while (!parents.empty() && !var_decl) {
+      if (auto* decl = parents[0].get<clang::VarDecl>()) {
+        var_decl = decl;
+      }
+
+      parents = getASTContext().getParents(parents[0]);
+    }
+
+    if (var_decl) {
+      iterator_types_mapping_.insert(var_decl->getType().getCanonicalType());
+    }
+
     assert(loc);
     PopulateIteratorValue(loc, container, is_valid, is_end, env);
   }
@@ -1536,8 +1558,12 @@ class InvalidIteratorAnalysis
       // would be too high as for now.
       TransferExpressionAccessForCheck(expr.getArg(0), env);
 
-      // The result of this operation is another iterator.
+      // The result of this operation "resets" the current iterator state and
+      // returns another one.
       if (auto* iterator = UnwrapAsIterator(expr.getArg(0), env)) {
+        SetIsValid(env, *iterator, env.makeAtomicBoolValue());
+        SetIsEnd(env, *iterator, env.makeAtomicBoolValue());
+
         CloneIterator(&expr, *iterator, env);
       }
       return;
@@ -1636,8 +1662,12 @@ class InvalidIteratorAnalysis
       assert(expr.getNumArgs());
       TransferExpressionAccessForDeref(expr.getArg(0), env);
 
-      // The result of this operation is another iterator.
+      // The result of this operation "resets" the current iterator state and
+      // returns another one.
       if (auto* iterator = UnwrapAsIterator(expr.getArg(0), env)) {
+        SetIsValid(env, *iterator, env.makeAtomicBoolValue());
+        SetIsEnd(env, *iterator, env.makeAtomicBoolValue());
+
         CloneIterator(&expr, *iterator, env);
       }
 
@@ -1783,7 +1813,7 @@ class InvalidIteratorAnalysis
     SetIsEnd(env, *iterator, is_end);
   }
 
-  void CloneIterator(const clang::CallExpr* expr,
+  void CloneIterator(const clang::Expr* expr,
                      clang::dataflow::RecordStorageLocation& iterator,
                      clang::dataflow::Environment& env) {
     auto* container = GetContainerValue(env, iterator);
@@ -1896,6 +1926,9 @@ class InvalidIteratorAnalysis
         location, diagnostic_.getCustomDiagID(
                       clang::DiagnosticsEngine::Level::Error, error_message));
   }
+
+  // The check model that will handle Chromium's `CHECK` macros.
+  clang::dataflow::ChromiumCheckModel check_model_;
 
   // The diagnostic engine that will issue potential errors.
   clang::DiagnosticsEngine& diagnostic_;

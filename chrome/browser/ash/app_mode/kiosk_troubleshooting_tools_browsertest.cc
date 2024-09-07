@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/views/task_manager_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
@@ -63,7 +65,16 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
 
   void ExpectOnlyKioskAppOpen() const {
     // The initial browser should exist in the web kiosk session.
-    EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+    ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+    Browser* kiosk_browser = BrowserList::GetInstance()->get(0);
+    ASSERT_EQ(kiosk_browser->tab_strip_model()->count(), 1);
+    content::WebContents* contents =
+        kiosk_browser->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(contents);
+    if (contents->IsLoading()) {
+      content::WaitForLoadStop(contents);
+    }
+    ASSERT_EQ(contents->GetLastCommittedURL(), app_install_url());
   }
 
   void EmulateOpenNewWindowShortcutPressed() const {

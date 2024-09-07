@@ -41,8 +41,6 @@ const test::UIPath kChangeIdPButtonContainer = {"main-element",
 const test::UIPath kGaiaButtons = {"main-element", "buttons-container"};
 const test::UIPath kGaiaPrimaryButton = {"main-element", "gaia-buttons",
                                          "primary-button"};
-const test::UIPath kNativeVerifyScreen = {"main-element",
-                                          "verifyAccountScreen"};
 const test::UIPath kErrorScreen = {"main-element", "errorScreen"};
 const test::UIPath kSamlConfirmPasswordScreen = {"main-element",
                                                  "samlConfirmPasswordScreen"};
@@ -91,7 +89,6 @@ LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad() {
   }
 
   reauth_dialog_helper->WaitForSigninWebview();
-  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 
   // With reauth endpoint we start on a Gaia page where user needs to click
   // "Next" before being redirected to SAML IdP page.
@@ -180,10 +177,6 @@ void LockScreenReauthDialogTestHelper::WaitForSigninWebview() {
   DialogJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kWebviewContainer)
       ->Wait();
-}
-
-void LockScreenReauthDialogTestHelper::ExpectVerifyAccountScreenHidden() {
-  DialogJS().ExpectHiddenPath(kNativeVerifyScreen);
 }
 
 void LockScreenReauthDialogTestHelper::ExpectErrorScreenVisible() {

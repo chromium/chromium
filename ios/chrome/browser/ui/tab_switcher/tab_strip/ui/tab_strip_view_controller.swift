@@ -209,9 +209,17 @@ class TabStripViewController: UIViewController,
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     self.ensureSelectedItemIsSelected()
+    // In case the device orientation was updated while the tab strip was not
+    // visible, recalculate the item size.
+    layout.needsSizeUpdate = true
     NotificationCenter.default.addObserver(
       self, selector: #selector(voiceOverChanged),
       name: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil)
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    layout.needsSizeUpdate = false
   }
 
   override func viewDidDisappear(_ animated: Bool) {
@@ -905,12 +913,12 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     dragEndAtNewIndex = false
     switch draggedItemIdentifier.item {
     case .tab(let tabSwitcherItem):
-      dragDropHandler?.dragWillBegin(for: tabSwitcherItem)
+      dragDropHandler?.dragWillBegin?(for: tabSwitcherItem)
       HistogramUtils.recordHistogram(
         kUmaTabStripViewDragDropTabsEvent, withSample: DragDropTabs.dragBegin.rawValue,
         maxValue: DragDropTabs.maxValue.rawValue)
     case .group(let tabGroupItem):
-      dragDropHandler?.dragWillBegin(for: tabGroupItem)
+      dragDropHandler?.dragWillBegin?(for: tabGroupItem)
       HistogramUtils.recordHistogram(
         kUmaTabStripViewDragDropGroupsEvent, withSample: DragDropTabs.dragBegin.rawValue,
         maxValue: DragDropTabs.maxValue.rawValue)
@@ -932,7 +940,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
       dragEvent = DragDropTabs.dragEndInOtherCollection
     }
 
-    dragDropHandler?.dragSessionDidEnd()
+    dragDropHandler?.dragSessionDidEnd?()
 
     switch draggedItemIdentifier?.item {
     case .tab(_):
@@ -980,9 +988,9 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     let dragItem: UIDragItem?
     switch itemIdentifier.item {
     case .tab(let tabSwitcherItem):
-      dragItem = dragDropHandler?.dragItem(for: tabSwitcherItem)
+      dragItem = dragDropHandler?.dragItem?(for: tabSwitcherItem)
     case .group(let tabGroupItem):
-      dragItem = dragDropHandler?.dragItem(for: tabGroupItem)
+      dragItem = dragDropHandler?.dragItem?(for: tabGroupItem)
     }
     guard let dragItem = dragItem else {
       return []

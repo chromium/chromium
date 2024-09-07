@@ -109,11 +109,14 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_system.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 #endif
@@ -1234,12 +1237,12 @@ std::unique_ptr<Profile> ProfileManager::CreateProfileHelper(
     const base::FilePath& path) {
   TRACE_EVENT0("browser", "ProfileManager::CreateProfileHelper");
 
-  return Profile::CreateProfile(path, this, Profile::CREATE_MODE_SYNCHRONOUS);
+  return Profile::CreateProfile(path, this, Profile::CreateMode::kSynchronous);
 }
 
 std::unique_ptr<Profile> ProfileManager::CreateProfileAsyncHelper(
     const base::FilePath& path) {
-  return Profile::CreateProfile(path, this, Profile::CREATE_MODE_ASYNCHRONOUS);
+  return Profile::CreateProfile(path, this, Profile::CreateMode::kAsynchronous);
 }
 
 bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,
@@ -1472,7 +1475,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 
   TRACE_EVENT0("browser", "ProfileManager::DoFinalInitForServices");
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   bool extensions_enabled = !go_off_the_record;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if ((!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -1486,6 +1489,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   extensions::ExtensionSystem::Get(profile)->InitForRegularProfile(
       extensions_enabled);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Set the block extensions bit on the ExtensionService. There likely are no
   // blockable extensions to block.
   ProfileAttributesEntry* entry =
@@ -1496,6 +1500,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
         ->extension_service()
         ->BlockAllExtensions();
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Ensure that the `ContactCenterInsightsExtensionManager` is instantiated
@@ -1510,7 +1515,8 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   }
 #endif
 
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
   // Initialization needs to happen after extension system initialization (for
   // extension::ManagementPolicy) and InitProfileUserPrefs (for setting the
   // initializing the supervised flag if necessary).
@@ -1569,10 +1575,16 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 }
 
 void ProfileManager::DoFinalInitLogging(Profile* profile) {
-  if (!do_final_services_init_)
-    return;
-
   TRACE_EVENT0("browser", "ProfileManager::DoFinalInitLogging");
+  base::UmaHistogramCounts100("Profile.NumberOfProfilesAtProfileCreation",
+                              GetNumberOfProfiles());
+
+  // Skip the rest of this function in tests as the extension service might be
+  // uninitialized.
+  if (!do_final_services_init_) {
+    return;
+  }
+
   // Count number of extensions in this profile.
   int enabled_app_count = -1;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1812,7 +1824,7 @@ void ProfileManager::OnProfileCreationFinished(Profile* profile,
   CHECK(iter != profiles_info_.end(), base::NotFatalUntil::M130);
   ProfileInfo* info = iter->second.get();
 
-  if (create_mode == Profile::CREATE_MODE_SYNCHRONOUS) {
+  if (create_mode == Profile::CreateMode::kSynchronous) {
     // Already initialized in OnProfileCreationStarted().
     // TODO(nicolaso): Figure out why this would break browser tests:
     //     DCHECK_EQ(profile, profiles_info_->GetCreatedProfile());
@@ -1862,7 +1874,7 @@ void ProfileManager::OnProfileCreationStarted(Profile* profile,
     observer.OnProfileCreationStarted(profile);
   }
 
-  if (create_mode == Profile::CREATE_MODE_ASYNCHRONOUS) {
+  if (create_mode == Profile::CreateMode::kAsynchronous) {
     // Profile will be registered later, in CreateProfileAsync().
     return;
   }

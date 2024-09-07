@@ -431,10 +431,12 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::CROSS_DEVICE_PASSKEY:
     case AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
     case AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
+    case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
       return pwd_controller_.get();
     case AccessoryAction::MANAGE_ADDRESSES:
     case AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
     case AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
+    case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
       return address_controller_.get();
     case AccessoryAction::MANAGE_CREDIT_CARDS:
       return payment_method_controller_.get();

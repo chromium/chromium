@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -17,12 +18,21 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/lens/lens_features.h"
+#include "components/profile_metrics/browser_profile_type.h"
+#include "components/saved_tab_groups/features.h"
 
 namespace {
 
@@ -69,6 +79,22 @@ void BrowserWindowFeatures::Init(Browser* browser) {
     product_specifications_entry_point_controller_ =
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
             browser);
+
+    if (browser->profile()->IsRegularProfile() &&
+        tab_groups::IsTabGroupsSaveV2Enabled() &&
+        browser->tab_strip_model()->SupportsTabGroups()) {
+      session_service_tab_group_sync_observer_ =
+          std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
+              browser->profile(), browser->tab_strip_model(),
+              browser->session_id());
+    }
+
+    if (features::IsTabstripDeclutterEnabled() &&
+        browser->profile()->IsRegularProfile()) {
+      tab_declutter_controller_ =
+          std::make_unique<tabs::TabDeclutterController>(
+              browser->tab_strip_model());
+    }
   }
 
   // The LensOverlayEntryPointController is constructed for all browser types
@@ -80,6 +106,8 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   // TODO(https://crbug.com/355485153): Move this into the normal window block.
   read_anything_coordinator_ =
       std::make_unique<ReadAnythingCoordinator>(browser);
+
+  tab_strip_model_ = browser->tab_strip_model();
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
@@ -109,6 +137,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
             extensions::MV2ExperimentStage::kDisableWithReEnable) {
       mv2_disabled_dialog_controller_ =
           std::make_unique<extensions::Mv2DisabledDialogController>(browser);
+    }
+
+    if (base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
+      toast_service_ = std::make_unique<ToastService>(browser);
     }
   }
 
@@ -142,6 +174,10 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
   return side_panel_coordinator_.get();
+}
+
+ToastController* BrowserWindowFeatures::toast_controller() {
+  return toast_service_ ? toast_service_->toast_controller() : nullptr;
 }
 
 BrowserWindowFeatures::BrowserWindowFeatures() = default;

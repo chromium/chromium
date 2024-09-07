@@ -17,7 +17,7 @@
 namespace ui {
 
 AXInspectScenario::AXInspectScenario(
-    const std::vector<ui::AXPropertyFilter>& default_filters)
+    const std::vector<AXPropertyFilter>& default_filters)
     : property_filters(default_filters) {}
 AXInspectScenario::AXInspectScenario(AXInspectScenario&&) = default;
 AXInspectScenario::~AXInspectScenario() = default;
@@ -27,7 +27,7 @@ AXInspectScenario& AXInspectScenario::operator=(AXInspectScenario&&) = default;
 std::optional<AXInspectScenario> AXInspectScenario::From(
     const std::string& directive_prefix,
     const base::FilePath& scenario_path,
-    const std::vector<ui::AXPropertyFilter>& default_filters) {
+    const std::vector<AXPropertyFilter>& default_filters) {
   std::vector<std::string> lines;
   std::string file_contents;
   {
@@ -64,7 +64,7 @@ std::optional<AXInspectScenario> AXInspectScenario::From(
 AXInspectScenario AXInspectScenario::From(
     const std::string& directive_prefix,
     const std::vector<std::string>& lines,
-    const std::vector<ui::AXPropertyFilter>& default_filters) {
+    const std::vector<AXPropertyFilter>& default_filters) {
   AXInspectScenario scenario(default_filters);
   Directive directive = kNone;
   // Directives have format of @directive:value[..value], value per line.

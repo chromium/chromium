@@ -115,6 +115,15 @@ class AbandonedPageLoadMetricsObserverBrowserTest
            suffix;
   }
 
+  std::string GetTimeToAbandonFromNavigationStart(NavigationMilestone milestone,
+                                                  std::string suffix = "") {
+    return internal::kAbandonedPageLoadMetricsHistogramPrefix +
+           AbandonedPageLoadMetricsObserver::
+               GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(
+                   milestone) +
+           suffix;
+  }
+
   void ExpectTotalCountForAllNavigationMilestones(
       bool include_redirect,
       int count,
@@ -241,7 +250,13 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   waiter3->Wait();
+
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 3);
+  // Since we made a backward navigation, we will have metrics with
+  // `ResponseFromCache`.
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/false, 1,
+      std::string(internal::kSuffixResponseFromCache));
 
   // 4) Navigate forward to B, potentially restoring from BFCache.
   auto waiter4 = CreatePageLoadMetricsTestWaiterForLoading();
@@ -263,6 +278,14 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
       std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
           internal::kRendererProcessCreatedBeforeNavHistogramName,
       expected_count);
+
+  // Since we made a backward navigation, we will have metrics with
+  // `ResponseFromCache` (unless the page is restored from BFCache).
+  expected_count =
+      (content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 1 : 2);
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/false, expected_count,
+      std::string(internal::kSuffixResponseFromCache));
 
   // No abandonment happened, so no abandonment metrics was logged.
   ExpectEmptyNavigationAbandonment();
@@ -361,6 +384,9 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
             GetAbandonReasonAtMilestoneHistogramName(milestone),
             AbandonReason::kExplicitCancellation, 1);
 
+        // Check that the abandonment time from navigation start is recorded.
+        histogram_tester.ExpectTotalCount(
+            GetTimeToAbandonFromNavigationStart(milestone), 1);
       } else {
         EXPECT_TRUE(histogram_tester
                         .GetTotalCountsForPrefix(
@@ -373,6 +399,34 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
       }
     }
   }
+}
+
+IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
+                       AbandonedByTabHidden) {
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  base::HistogramTester histogram_tester;
+
+  // Navigate to `url_a`, but pause it just after we reach the desired
+  // milestone.
+  content::TestNavigationManager navigation(web_contents(), url_a);
+  web_contents()->GetController().LoadURL(
+      url_a, content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  EXPECT_TRUE(navigation.WaitForLoaderStart());
+
+  // Hide the tab during navigation (non-terminal).
+  web_contents()->WasHidden();
+  EXPECT_TRUE(navigation.WaitForResponse());
+
+  // Stop the navigation to SRP (terminal), wait until the navigation finishes.
+  web_contents()->Stop();
+  EXPECT_TRUE(navigation.WaitForNavigationFinished());
+
+  // Ensure the record containing the hidden suffix.
+  histogram_tester.ExpectTotalCount(
+      GetTimeToAbandonFromNavigationStart(
+          NavigationMilestone::kNonRedirectResponseLoaderCallback,
+          internal::kSuffixWasHidden),
+      1);
 }
 
 // crbug.com/355352905: The test is flaky on all platforms.

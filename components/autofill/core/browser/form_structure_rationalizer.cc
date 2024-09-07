@@ -7,8 +7,10 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/rationalization_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -447,7 +449,7 @@ void FormStructureRationalizer::RationalizeMultiOriginCreditCardFields(
     // If a relevant field exists in a sub-frame, we can ignore the
     // corresponding field in the main frame as it is probably a
     // misclassification.
-    if (base::ranges::any_of(*fields_, is_relevant_in_subframe)) {
+    if (std::ranges::any_of(*fields_, is_relevant_in_subframe)) {
       for (auto& field : *fields_) {
         if (is_relevant(*field) && !is_in_subframe(*field)) {
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
@@ -490,7 +492,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   auto may_be_group = [](Group group) {
     DCHECK_GE(group.size(), 1u);
     DCHECK(
-        base::ranges::all_of(group.first(group.size() - 1), [](const auto& f) {
+        std::ranges::all_of(group.first(group.size() - 1), [](const auto& f) {
           return f->ComputedType().GetStorableType() == CREDIT_CARD_NUMBER;
         }));
     size_t last = group.size() - 1;
@@ -511,7 +513,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   // 2. there are at least 2 non-overflow fields.
   auto has_reasonable_length = [](Group group) {
     DCHECK(!group.empty());
-    DCHECK(base::ranges::all_of(
+    DCHECK(std::ranges::all_of(
         group.first(group.size() - 1), [group](const auto& f) {
           return f->max_length() == group[0]->max_length();
         }));
@@ -586,9 +588,7 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
 
 void FormStructureRationalizer::RationalizeBetweenStreetFields(
     LogManager* log_manager) {
-  if (fields_->size() < 2 ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets)) {
+  if (fields_->size() < 2) {
     return;
   }
   for (auto field = fields_->begin(); field != fields_->end() - 1; ++field) {
@@ -1038,12 +1038,13 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     const GeoIpCountryCode& client_country,
     const LanguageCode& language_code,
     LogManager* log_manager) {
-  std::optional<PatternSource> pattern_source = GetActivePatternSource();
-  if (!pattern_source.has_value()) {
-    pattern_source = PatternSource::kLegacy;
-  }
-
-  ParsingContext context(client_country, language_code, *pattern_source);
+  ParsingContext context(client_country, language_code,
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+                         PatternSource::kDefault,
+#else
+                         PatternSource::kLegacy,
+#endif
+                         GetActiveRegexFeatures());
 
   rationalization::ApplyRationalizationEngineRules(context, *fields_,
                                                    log_manager);

@@ -14,7 +14,7 @@
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -223,9 +223,9 @@
   CHECK_EQ(_webStateList, webStateList);
   switch (change.type()) {
     case WebStateListChange::Type::kGroupVisualDataUpdate: {
-      const WebStateListChangeGroupVisualDataUpdate& visual_data_update =
+      const WebStateListChangeGroupVisualDataUpdate& visualDataUpdate =
           change.As<WebStateListChangeGroupVisualDataUpdate>();
-      if (_tabGroup == visual_data_update.updated_group()) {
+      if (_tabGroup == visualDataUpdate.updated_group()) {
         // Dismiss the editor.
         [self.delegate
             createTabGroupMediatorEditedGroupWasExternallyMutated:self];

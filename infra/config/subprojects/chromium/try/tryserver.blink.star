@@ -419,11 +419,11 @@ blink_mac_builder(
 )
 
 blink_mac_builder(
-    name = "mac13-skia-alt-arm64-blink-rel",
+    name = "mac-skia-alt-arm64-blink-rel",
     branch_selector = None,
     mirrors = [
         "ci/mac-arm64-rel",
-        "ci/mac13-skia-alt-arm64-rel-tests",
+        "ci/mac-skia-alt-arm64-rel-tests",
     ],
     gn_args = gn_args.config(
         # TODO(crbug.com/40937352): Currently we override the gn args instead

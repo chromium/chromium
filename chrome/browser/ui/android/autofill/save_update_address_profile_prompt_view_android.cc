@@ -87,9 +87,9 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> title =
       base::android::ConvertUTF16ToJavaString(env, controller->GetTitle());
-  ScopedJavaLocalRef<jstring> source_notice =
+  ScopedJavaLocalRef<jstring> record_type_notice =
       base::android::ConvertUTF16ToJavaString(
-          env, controller->GetSourceNotice(identity_manager));
+          env, controller->GetRecordTypeNotice(identity_manager));
   ScopedJavaLocalRef<jstring> positive_button_text =
       base::android::ConvertUTF16ToJavaString(
           env, controller->GetPositiveButtonText());
@@ -98,8 +98,8 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
           env, controller->GetNegativeButtonText());
   Java_SaveUpdateAddressProfilePrompt_setDialogDetails(
       env, java_object_, title, positive_button_text, negative_button_text);
-  Java_SaveUpdateAddressProfilePrompt_setSourceNotice(env, java_object_,
-                                                      source_notice);
+  Java_SaveUpdateAddressProfilePrompt_setRecordTypeNotice(env, java_object_,
+                                                          record_type_notice);
 
   if (is_update) {
     ScopedJavaLocalRef<jstring> subtitle =

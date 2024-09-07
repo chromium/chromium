@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
                             SigninEmailConfirmationDialog::CREATE_NEW_USER)),
 
           // Verify that the dialog closes correctly.
-          Steps(WaitForHide(kConstrainedDialogWebViewElementId), FlushEvents(),
+          Steps(WaitForHide(kConstrainedDialogWebViewElementId),
                 CheckResult(
                     [&] {
                       return browser()

@@ -93,7 +93,13 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   bool InShadowTree() const override;
   void WillBeDetached() override;
   void Detached(FrameDetachType) override;
-  void DispatchWillSendRequest(ResourceRequest&) override;
+  void DispatchFinalizeRequest(ResourceRequest&) override;
+  std::optional<KURL> DispatchWillSendRequest(
+      const KURL& requested_url,
+      const scoped_refptr<const SecurityOrigin>& requestor_origin,
+      const net::SiteForCookies& site_for_cookies,
+      bool has_redirect_info,
+      const KURL& upstream_url) override;
   void DispatchDidLoadResourceFromMemoryCache(const ResourceRequest&,
                                               const ResourceResponse&) override;
   void DispatchDidHandleOnloadEvents() override;

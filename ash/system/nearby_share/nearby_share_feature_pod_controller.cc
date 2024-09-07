@@ -65,9 +65,17 @@ NearbyShareFeaturePodController::~NearbyShareFeaturePodController() {
 
 std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
     bool compact) {
-  auto tile = std::make_unique<FeatureTile>(
-      base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
-                          weak_ptr_factory_.GetWeakPtr()));
+  std::unique_ptr<FeatureTile> tile;
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    tile = std::make_unique<FeatureTile>(
+        base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
+                            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    tile = std::make_unique<FeatureTile>(
+        base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   tile_ = tile.get();
 
   SessionControllerImpl* session_controller =
@@ -98,6 +106,10 @@ std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
     tile_->SetSubLabel(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL));
     tile_->CreateDecorativeDrillInArrow();
+    tile_->SetIconClickable(true);
+    tile_->SetIconClickCallback(
+        base::BindRepeating(&NearbyShareFeaturePodController::OnIconPressed,
+                            weak_ptr_factory_.GetWeakPtr()));
 
     // Set tile appearance.
     UpdateQSv2Button();
@@ -120,6 +132,11 @@ QsFeatureCatalogName NearbyShareFeaturePodController::GetCatalogName() {
 }
 
 void NearbyShareFeaturePodController::OnIconPressed() {
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    // TODO(brandosocarras, b/358691432): Toggle Quick Share on icon press.
+    return;
+  }
+
   TrackToggleUMA(
       /*target_toggle_state=*/!nearby_share_delegate_->IsHighVisibilityOn());
   if (nearby_share_delegate_->IsHighVisibilityOn()) {
@@ -130,6 +147,11 @@ void NearbyShareFeaturePodController::OnIconPressed() {
 }
 
 void NearbyShareFeaturePodController::OnLabelPressed() {
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    tray_controller_->ShowNearbyShareDetailedView();
+    return;
+  }
+
   TrackDiveInUMA();
   nearby_share_delegate_->ShowNearbyShareSettings();
 }

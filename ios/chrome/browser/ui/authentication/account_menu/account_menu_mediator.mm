@@ -4,9 +4,14 @@
 
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
 
+#import <optional>
+#import <string>
+
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -34,6 +39,7 @@
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
+  raw_ptr<PrefService> _prefs;
   raw_ptr<syncer::SyncService> _syncService;
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   // The primary identity.
@@ -57,7 +63,8 @@
               accountManagerService:
                   (ChromeAccountManagerService*)accountManagerService
                         authService:(AuthenticationService*)authService
-                    identityManager:(signin::IdentityManager*)identityManager {
+                    identityManager:(signin::IdentityManager*)identityManager
+                              prefs:(PrefService*)prefs {
   self = [super init];
   if (self) {
     CHECK(syncService);
@@ -74,6 +81,7 @@
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
+    _prefs = prefs;
     _primaryIdentity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     _syncService = syncService;
@@ -93,6 +101,7 @@
   _authenticationService = nullptr;
   _identityManagerObserver.reset();
   _identityManager = nullptr;
+  _prefs = nullptr;
   _syncObserver.reset();
   _syncService = nullptr;
   _identities = nil;
@@ -135,6 +144,10 @@
 - (UIImage*)primaryAccountAvatar {
   return _accountManagerService->GetIdentityAvatarWithIdentity(
       _primaryIdentity, IdentityAvatarSize::Large);
+}
+
+- (ManagementState)managementState {
+  return GetManagementState(_identityManager, _authenticationService, _prefs);
 }
 
 - (AccountErrorUIInfo*)accountErrorUIInfo {

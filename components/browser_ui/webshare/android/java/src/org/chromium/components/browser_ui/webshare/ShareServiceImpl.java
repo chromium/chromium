@@ -11,7 +11,7 @@ import android.net.Uri;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.ContentUriUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -285,7 +285,7 @@ public class ShareServiceImpl implements ShareService {
                             tempFile = new File(tempDir, file.name.path.path);
                         } while (!tempFile.createNewFile());
 
-                        fileUris.add(ContentUriUtils.getContentUriFromFile(tempFile));
+                        fileUris.add(FileProviderUtils.getContentUriFromFile(tempFile));
                         blobReceivers.add(
                                 new BlobReceiver(
                                         new FileOutputStream(tempFile), MAX_SHARED_FILE_BYTES));

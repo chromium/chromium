@@ -10,9 +10,10 @@
 
 namespace base {
 
-bool PowerMonitorDeviceSource::IsOnBatteryPower() {
+PowerStateObserver::BatteryPowerStatus
+PowerMonitorDeviceSource::GetBatteryPowerStatus() const {
 #if TARGET_IPHONE_SIMULATOR
-  return false;
+  return PowerStateObserver::BatteryPowerStatus::kExternalPower;
 #else
   UIDevice* currentDevice = [UIDevice currentDevice];
   BOOL isCurrentAppMonitoringBattery = currentDevice.isBatteryMonitoringEnabled;
@@ -20,7 +21,9 @@ bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
   currentDevice.batteryMonitoringEnabled = isCurrentAppMonitoringBattery;
   DCHECK(batteryState != UIDeviceBatteryStateUnknown);
-  return batteryState == UIDeviceBatteryStateUnplugged;
+  return batteryState == UIDeviceBatteryStateUnplugged
+             ? PowerStateObserver::BatteryPowerStatus::kBatteryPower
+             : PowerStateObserver::BatteryPowerStatus::kExternalPower;
 #endif
 }
 

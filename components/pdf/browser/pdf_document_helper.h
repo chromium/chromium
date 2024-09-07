@@ -87,6 +87,8 @@ class PDFDocumentHelper
                         int32_t right_height) override;
   void SetPluginCanSave(bool can_save) override;
 
+  void GetPdfBytes(pdf::mojom::PdfListener::GetPdfBytesCallback callback);
+
  private:
   friend class content::DocumentUserData<PDFDocumentHelper>;
 

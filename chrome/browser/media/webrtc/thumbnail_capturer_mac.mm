@@ -11,6 +11,7 @@
 #include <cmath>
 #include <deque>
 #include <optional>
+#include <unordered_map>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -1005,6 +1006,20 @@ void ThumbnailCapturerMac::OnCapturedFrame(
                                       source_id);
 }
 
+bool ShouldUseSCContentSharingPicker() {
+  if (@available(macOS 15.0, *)) {
+    if (base::FeatureList::IsEnabled(kUseSCContentSharingPicker)) {
+      return true;
+    }
+  }
+  if (@available(macOS 14.4, *)) {
+    if (base::FeatureList::IsEnabled(kUseSCContentSharingPickerSonoma)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 bool ShouldUseThumbnailCapturerMac(DesktopMediaList::Type type) {
@@ -1013,10 +1028,12 @@ bool ShouldUseThumbnailCapturerMac(DesktopMediaList::Type type) {
   if (@available(macOS 14.4, *)) {
     switch (type) {
       case DesktopMediaList::Type::kWindow:
-        return base::FeatureList::IsEnabled(
-            kScreenCaptureKitStreamPickerSonoma);
+        return ShouldUseSCContentSharingPicker() ||
+               base::FeatureList::IsEnabled(
+                   kScreenCaptureKitStreamPickerSonoma);
       case DesktopMediaList::Type::kScreen:
-        return base::FeatureList::IsEnabled(kScreenCaptureKitPickerScreen);
+        return ShouldUseSCContentSharingPicker() ||
+               base::FeatureList::IsEnabled(kScreenCaptureKitPickerScreen);
       case DesktopMediaList::Type::kNone:
       case DesktopMediaList::Type::kCurrentTab:
       case DesktopMediaList::Type::kWebContents:
@@ -1034,19 +1051,10 @@ bool ShouldUseThumbnailCapturerMac(DesktopMediaList::Type type) {
 std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac(
     DesktopMediaList::Type type) {
   CHECK(ShouldUseThumbnailCapturerMac(type));
-  if (@available(macOS 15.0, *)) {
-    if (base::FeatureList::IsEnabled(kUseSCContentSharingPicker)) {
-      return std::make_unique<DesktopCapturerWrapper>(
-          std::make_unique<DelegatedSourceListCapturer>(
-              ConvertToDesktopMediaIDType(type)));
-    }
-  }
-  if (@available(macOS 14.0, *)) {
-    if (base::FeatureList::IsEnabled(kUseSCContentSharingPickerSonoma)) {
-      return std::make_unique<DesktopCapturerWrapper>(
-          std::make_unique<DelegatedSourceListCapturer>(
-              ConvertToDesktopMediaIDType(type)));
-    }
+  if (ShouldUseSCContentSharingPicker()) {
+    return std::make_unique<DesktopCapturerWrapper>(
+        std::make_unique<DelegatedSourceListCapturer>(
+            ConvertToDesktopMediaIDType(type)));
   }
   if (@available(macOS 13.2, *)) {
     return std::make_unique<ThumbnailCapturerMac>(type);

@@ -194,6 +194,8 @@ class WifiLanMedium : public api::WifiLanMedium,
       cros_network_config_;
   mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_;
+  // Unlike other remotes, mdns_manager_ must be implicitly destructed
+  // instead of destructed on the task_runner_ sequence.
   mojo::SharedRemote<::sharing::mojom::MdnsManager> mdns_manager_;
   mojo::Receiver<::sharing::mojom::MdnsObserver> mdns_observer_{this};
 

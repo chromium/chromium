@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
@@ -59,16 +59,15 @@
 @end
 
 namespace {
+
 // Returns the original ChromeBrowserState if `incognito` is false. If
 // `incognito` is true, returns an off-the-record ChromeBrowserState.
 ChromeBrowserState* GetBrowserState(bool incognito) {
-  std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  DCHECK(!browser_states.empty());
+  const std::vector<ChromeBrowserState*> loaded_profiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+  DCHECK(!loaded_profiles.empty());
 
-  ChromeBrowserState* browser_state = browser_states.front();
+  ChromeBrowserState* browser_state = loaded_profiles.front();
   DCHECK(!browser_state->IsOffTheRecord());
 
   return incognito ? browser_state->GetOffTheRecordChromeBrowserState()

@@ -16,6 +16,7 @@
 #include "components/data_sharing/public/jni_headers/GroupData_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupMember_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupToken_jni.h"
+#include "components/data_sharing/public/jni_headers/SharedEntity_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -61,6 +62,22 @@ ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateJavaGroupData(
           env, base::make_span(j_members),
           org_chromium_components_data_1sharing_GroupMember_clazz(env)),
       ConvertUTF8ToJavaString(env, group_data.group_token.access_token));
+}
+
+// static
+ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateJavaSharedEntity(
+    JNIEnv* env,
+    const SharedEntity& entity) {
+  int size = entity.specifics.ByteSize();
+  std::vector<uint8_t> data(size);
+  entity.specifics.SerializeToArray(data.data(), size);
+  return Java_SharedEntity_createSharedEntity(
+      env, ConvertUTF8ToJavaString(env, entity.group_id.value()),
+      ConvertUTF8ToJavaString(env, entity.name), entity.version,
+      entity.update_time.InMillisecondsSinceUnixEpoch(),
+      entity.create_time.InMillisecondsSinceUnixEpoch(),
+      ConvertUTF8ToJavaString(env, entity.client_tag_hash),
+      base::android::ToJavaByteArray(env, data));
 }
 
 // static
@@ -130,4 +147,28 @@ ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateParseURLResult(
       env, j_group_data, static_cast<int>(status));
 }
 
+// static
+ScopedJavaLocalRef<jobject>
+DataSharingConversionBridge::CreateSharedDataPreviewOrFailureOutcome(
+    JNIEnv* env,
+    const DataSharingService::SharedDataPreviewOrFailureOutcome& data) {
+  std::vector<ScopedJavaLocalRef<jobject>> j_entities;
+  DataSharingService::PeopleGroupActionFailure failure =
+      DataSharingService::PeopleGroupActionFailure::kUnknown;
+  if (data.has_value()) {
+    for (const SharedEntity& entity : data.value().shared_entities) {
+      j_entities.push_back(CreateJavaSharedEntity(env, entity));
+    }
+  } else {
+    failure = data.error();
+  }
+  ScopedJavaLocalRef<jobjectArray> j_entities_array;
+  if (!j_entities.empty()) {
+    j_entities_array = ToTypedJavaArrayOfObjects(
+        env, base::make_span(j_entities),
+        org_chromium_components_data_1sharing_SharedEntity_clazz(env));
+  }
+  return Java_DataSharingConversionBridge_createSharedDataPreviewOrFailureOutcome(
+      env, j_entities_array, static_cast<int>(failure));
+}
 }  // namespace data_sharing

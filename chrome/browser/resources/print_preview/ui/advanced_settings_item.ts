@@ -12,6 +12,7 @@ import './print_preview_shared.css.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
@@ -153,7 +154,13 @@ export class PrintPreviewAdvancedSettingsItemElement extends
    * @return Whether the item has a match for the query.
    */
   hasMatch(query: RegExp|null): boolean {
-    if (!query || this.getDisplayName_(this.capability).match(query)) {
+    if (!query) {
+      return true;
+    }
+
+    const strippedCapabilityName =
+        stripDiacritics(this.getDisplayName_(this.capability));
+    if (strippedCapabilityName.match(query)) {
       return true;
     }
 
@@ -162,7 +169,8 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     }
 
     for (const option of this.capability.select_cap!.option!) {
-      if (this.getDisplayName_(option).match(query)) {
+      const strippedOptionName = stripDiacritics(this.getDisplayName_(option));
+      if (strippedOptionName.match(query)) {
         return true;
       }
     }

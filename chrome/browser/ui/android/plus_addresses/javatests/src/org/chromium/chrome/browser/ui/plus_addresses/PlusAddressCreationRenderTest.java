@@ -28,6 +28,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -58,6 +59,8 @@ import java.util.List;
 public class PlusAddressCreationRenderTest {
     private static final String MANAGE_PLUS_ADDRESSES_DESCRIPTION = "For example@gmail.com.";
     private static final String PROPOSED_PLUS_ADDRESS = "example.foo@gmail.com";
+    private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
+            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
 
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -106,7 +109,7 @@ public class PlusAddressCreationRenderTest {
     }
 
     private void openBottomSheet(String description, boolean refreshSupported) {
-        openBottomSheet(description, refreshSupported, null);
+        openBottomSheet(description, refreshSupported, "");
     }
 
     private void openBottomSheet(String description, boolean refreshSupported, String notice) {
@@ -120,16 +123,17 @@ public class PlusAddressCreationRenderTest {
                                     mTabModel,
                                     mTabModelSelector,
                                     mBridge,
-                                    "Modal title",
-                                    description,
-                                    notice,
-                                    "Plus address placeholder",
-                                    "Accept",
-                                    "Cancel",
-                                    "Report an error <link>link</link>.",
-                                    refreshSupported,
-                                    new GURL("https://help.google.com"),
-                                    new GURL("https://error.google.com"));
+                                    new PlusAddressCreationNormalStateInfo(
+                                            "Modal title",
+                                            description,
+                                            notice,
+                                            "Plus address placeholder",
+                                            "Accept",
+                                            "Cancel",
+                                            "Report an error <link>link</link>.",
+                                            new GURL("https://help.google.com"),
+                                            new GURL("https://error.google.com")),
+                                    refreshSupported);
                     mCoordinator.requestShowContent();
                 });
     }
@@ -206,11 +210,11 @@ public class PlusAddressCreationRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testErrorShown() throws IOException {
+    public void testLegacyErrorScreen() throws IOException {
         openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ false);
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showError();
+                    mCoordinator.showError(/* errorStateInfo= */ null);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -218,5 +222,22 @@ public class PlusAddressCreationRenderTest {
                 mActivityTestRule.getActivity().findViewById(R.id.plus_address_dialog);
         mRenderTestRule.render(
                 bottomSheetView, "plus_address_bottom_sheet_error_shown_with_redesign");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/351911806")
+    public void testReserveErrorMessageContent() throws IOException {
+        openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ false);
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showError(ERROR_STATE);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView =
+                mActivityTestRule.getActivity().findViewById(R.id.plus_address_dialog);
+        mRenderTestRule.render(bottomSheetView, "plus_address_bottom_sheet_reserve_error_shown");
     }
 }

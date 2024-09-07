@@ -14,6 +14,7 @@ MockAccountChecker::MockAccountChecker()
   SetSyncingBookmarks(true);
   SetAnonymizedUrlDataCollectionEnabled(true);
   SetIsSubjectToParentalControls(false);
+  SetCanUseModelExecutionFeatures(true);
   SetCountry("us");
   SetLocale("en-us");
 }
@@ -37,6 +38,12 @@ void MockAccountChecker::SetIsSubjectToParentalControls(
     bool subject_to_parental_controls) {
   ON_CALL(*this, IsSubjectToParentalControls)
       .WillByDefault(testing::Return(subject_to_parental_controls));
+}
+
+void MockAccountChecker::SetCanUseModelExecutionFeatures(
+    bool can_use_model_execution_features) {
+  ON_CALL(*this, CanUseModelExecutionFeatures)
+      .WillByDefault(testing::Return(can_use_model_execution_features));
 }
 
 void MockAccountChecker::SetCountry(std::string country) {

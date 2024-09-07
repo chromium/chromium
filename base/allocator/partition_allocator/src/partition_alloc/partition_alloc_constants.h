@@ -75,15 +75,6 @@ using internal::FreeFlags;
 
 namespace internal {
 
-// Size of a cache line. Not all CPUs in the world have a 64 bytes cache line
-// size, but as of 2021, most do. This is in particular the case for almost all
-// x86_64 and almost all ARM CPUs supported by Chromium. As this is used for
-// static alignment, we cannot query the CPU at runtime to determine the actual
-// alignment, so use 64 bytes everywhere. Since this is only used to avoid false
-// sharing, getting this wrong only results in lower performance, not incorrect
-// code.
-constexpr size_t kPartitionCachelineSize = 64;
-
 // Underlying partition storage pages (`PartitionPage`s) are a power-of-2 size.
 // It is typical for a `PartitionPage` to be based on multiple system pages.
 // Most references to "page" refer to `PartitionPage`s.

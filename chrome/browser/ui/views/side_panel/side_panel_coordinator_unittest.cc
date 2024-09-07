@@ -47,6 +47,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
+#include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_system.h"
@@ -54,6 +55,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
@@ -119,6 +121,16 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
                                          ->GetTabFeatures()
                                          ->side_panel_registry());
 
+    // Add a kLensOverlayResults entry to the contextual registry for the second
+    // tab.
+    registry->Register(std::make_unique<SidePanelEntry>(
+        SidePanelEntry::Id::kLensOverlayResults,
+        base::BindRepeating([]() { return std::make_unique<views::View>(); }),
+        std::nullopt, base::BindRepeating([]() {
+          return std::unique_ptr<ui::MenuModel>(
+              new ui::SimpleMenuModel(nullptr));
+        })));
+
     // Add a kCustomizeChrome entry to the contextual registry for the second
     // tab.
     registry->Register(std::make_unique<SidePanelEntry>(
@@ -142,20 +154,22 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
     EXPECT_EQ(contextual_registry->entries()[1]->key().id(),
               SidePanelEntry::Id::kCustomizeChrome);
 
-    // Verify the second tab has 3 entries, kReadAnything, kLens and
-    // kCustomizeChrome.
+    // Verify the second tab has 3 entries, kReadAnything, kLens,
+    // kLensOverlayResults and kCustomizeChrome.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
     contextual_registry = browser_view()
                               ->browser()
                               ->GetActiveTabInterface()
                               ->GetTabFeatures()
                               ->side_panel_registry();
-    EXPECT_EQ(contextual_registry->entries().size(), 3u);
+    EXPECT_EQ(contextual_registry->entries().size(), 4u);
     EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
               SidePanelEntry::Id::kReadAnything);
     EXPECT_EQ(contextual_registry->entries()[1]->key().id(),
               SidePanelEntry::Id::kLens);
     EXPECT_EQ(contextual_registry->entries()[2]->key().id(),
+              SidePanelEntry::Id::kLensOverlayResults);
+    EXPECT_EQ(contextual_registry->entries()[3]->key().id(),
               SidePanelEntry::Id::kCustomizeChrome);
 
     extensions::SidePanelService::GetFactoryInstance()->SetTestingFactory(
@@ -315,6 +329,8 @@ class MockSidePanelViewStateObserver : public SidePanelViewStateObserver {
 };
 
 TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
@@ -355,6 +371,8 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   const int starting_width = 500;
@@ -412,6 +430,8 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthWindowResize) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   const int starting_width = 500;
@@ -496,6 +516,8 @@ TEST_F(SidePanelCoordinatorTest, DontNotifySidePanelObserverOfChangingContent) {
 }
 
 TEST_F(SidePanelCoordinatorTest, NotifyingSidePanelObservers) {
+  coordinator_->DisableAnimationsForTesting();
+
   MockSidePanelViewStateObserver view_state_observer;
   EXPECT_CALL(view_state_observer, OnSidePanelDidOpen()).Times(3);
   EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(2);
@@ -519,6 +541,8 @@ TEST_F(SidePanelCoordinatorTest, NotifyingSidePanelObservers) {
 }
 
 TEST_F(SidePanelCoordinatorTest, RemovingObserverDoesNotIncrementCount) {
+  coordinator_->DisableAnimationsForTesting();
+
   MockSidePanelViewStateObserver view_state_observer;
   EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(1);
   coordinator_->AddSidePanelViewStateObserver(&view_state_observer);
@@ -538,6 +562,8 @@ TEST_F(SidePanelCoordinatorTest, RemovingObserverDoesNotIncrementCount) {
 }
 
 TEST_F(SidePanelCoordinatorTest, SidePanelToggleWithEntriesTest) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Show reading list sidepanel.
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
@@ -656,6 +682,8 @@ TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregisteredWhileVisible) {
 TEST_F(
     SidePanelCoordinatorTest,
     ContextualEntryDeregisteredWhileVisibleClosesPanelIfNoLastSeenGlobalEntryExists) {
+  coordinator_->DisableAnimationsForTesting();
+
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Show(SidePanelEntry::Id::kCustomizeChrome);
   EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
@@ -760,6 +788,8 @@ TEST_F(SidePanelCoordinatorTest,
 }
 
 TEST_F(SidePanelCoordinatorTest, TogglePanelWithContextualEntryShowing) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel and verify it opens to kBookmarks by default.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
@@ -804,6 +834,8 @@ TEST_F(SidePanelCoordinatorTest, TogglePanelWithContextualEntryShowing) {
 
 TEST_F(SidePanelCoordinatorTest,
        TogglePanelWithGlobalEntryShowingWithTabSwitch) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel and verify it opens to kBookmarks by default.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
@@ -859,6 +891,8 @@ TEST_F(SidePanelCoordinatorTest,
 
 TEST_F(SidePanelCoordinatorTest,
        TogglePanelWithContextualEntryShowingWithTabSwitch) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel and verify it opens to kBookmarks by default.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
@@ -917,6 +951,8 @@ TEST_F(SidePanelCoordinatorTest,
 
 TEST_F(SidePanelCoordinatorTest,
        SwitchBetweenTabWithGlobalEntryAndTabWithLastActiveContextualEntry) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel to kBookmarks.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
@@ -1019,6 +1055,8 @@ TEST_F(SidePanelCoordinatorTest,
 TEST_F(
     SidePanelCoordinatorTest,
     SwitchBetweenTabWithContextualEntryAndTabWithNoEntryWhenThereIsALastActiveGlobalEntry) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
@@ -1100,6 +1138,8 @@ TEST_F(SidePanelCoordinatorTest,
 
 TEST_F(SidePanelCoordinatorTest,
        SwitchBackToTabWithContextualEntryAfterClosingGlobal) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel to contextual entry and verify.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Show(SidePanelEntry::Id::kCustomizeChrome);
@@ -1260,6 +1300,8 @@ TEST_F(SidePanelCoordinatorTest,
 
 TEST_F(SidePanelCoordinatorTest,
        EntryDeregistersOnBeingHiddenFromSidePanelClose) {
+  coordinator_->DisableAnimationsForTesting();
+
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
   // Create an observer that deregisters the entry once it is hidden.
@@ -1305,6 +1347,8 @@ TEST_F(SidePanelCoordinatorTest, ShouldNotRecreateTheSameEntry) {
 
 // Side panel closes if the active entry is de-registered when open.
 TEST_F(SidePanelCoordinatorTest, GlobalEntryDeregisteredWhenVisible) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
@@ -1404,6 +1448,8 @@ TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
 // the global extension entry is shown if the active tab's extension entry is
 // deregistered.
 TEST_F(SidePanelCoordinatorTest, DeregisterExtensionEntries) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Make sure the second tab is active.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
 
@@ -1641,6 +1687,7 @@ TEST_F(SidePanelCoordinatorTest, SidePanelTitleUpdates) {
 }
 
 TEST_F(SidePanelCoordinatorTest, SidePanelPinButtonsHideInGuestMode) {
+  coordinator_->DisableAnimationsForTesting();
   SetUpPinningTest();
   coordinator_->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_TRUE(coordinator_->GetHeaderPinButtonForTesting()->GetVisible());
@@ -1679,6 +1726,37 @@ TEST_F(SidePanelCoordinatorTest, ExtensionSidePanelHasPinButton) {
   EXPECT_TRUE(pin_button->GetVisible());
   EXPECT_TRUE(pin_button->GetToggled());
   EXPECT_EQ(1u, model->pinned_action_ids().size());
+}
+
+class SidePanelCoordinatorLensOverlayTest : public SidePanelCoordinatorTest {
+ public:
+  SidePanelCoordinatorLensOverlayTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSidePanelResizing, lens::features::kLensOverlay}, {});
+  }
+};
+
+TEST_F(SidePanelCoordinatorLensOverlayTest,
+       ShowMoreInfoButtonWhenCallbackProvided) {
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
+  coordinator_->Show(SidePanelEntry::Id::kLensOverlayResults);
+  VerifyEntryExistenceAndValue(contextual_registries_[1]->active_entry(),
+                               SidePanelEntry::Id::kLensOverlayResults);
+  views::ImageButton* more_info_button =
+      coordinator_->GetHeaderMoreInfoButtonForTesting();
+  EXPECT_TRUE(more_info_button->GetVisible());
+}
+
+TEST_F(SidePanelCoordinatorLensOverlayTest,
+       HideMoreInfoButtonWhenNoCallbackProvided) {
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
+  coordinator_->Show(SidePanelEntry::Id::kLens);
+  VerifyEntryExistenceAndValue(contextual_registries_[1]->active_entry(),
+                               SidePanelEntry::Id::kLens);
+  views::ImageButton* more_info_button =
+      coordinator_->GetHeaderMoreInfoButtonForTesting();
+  EXPECT_FALSE(more_info_button->GetVisible());
 }
 
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing

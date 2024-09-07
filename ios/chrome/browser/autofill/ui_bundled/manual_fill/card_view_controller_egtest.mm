@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -27,13 +29,6 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
-using chrome_test_util::ManualFallbackAddPaymentMethodMatcher;
-using chrome_test_util::ManualFallbackCreditCardIconMatcher;
-using chrome_test_util::ManualFallbackCreditCardTableViewMatcher;
-using chrome_test_util::ManualFallbackCreditCardTableViewWindowMatcher;
-using chrome_test_util::ManualFallbackFormSuggestionViewMatcher;
-using chrome_test_util::ManualFallbackKeyboardIconMatcher;
-using chrome_test_util::ManualFallbackManagePaymentMethodsMatcher;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsCreditCardMatcher;
@@ -91,9 +86,9 @@ void OpenPaymentMethodManualFillView() {
     button_to_tap = grey_accessibilityLabel(
         l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
   } else {
-    button_to_tap = ManualFallbackCreditCardIconMatcher();
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ManualFallbackFormSuggestionViewMatcher()]
+    button_to_tap = manual_fill::CreditCardIconMatcher();
+    [[EarlGrey
+        selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
         performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
   }
 
@@ -101,8 +96,7 @@ void OpenPaymentMethodManualFillView() {
   [[EarlGrey selectElementWithMatcher:button_to_tap] performAction:grey_tap()];
 
   // Verify the card table view controller is visible.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -234,6 +228,28 @@ id<GREYMatcher> CvcChipButton() {
       grey_interactable(), nullptr);
 }
 
+// Verifies that the number of accepted suggestions recorded for the given
+// `suggestion_index` is as expected.
+void CheckAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index) {
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
+      @"Unexpected histogram count for accepted card suggestion index.");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:@"Autofill.UserAcceptedSuggestionAtIndex."
+                                      @"CreditCard.ManualFallback"],
+      @"Unexpected histogram count for manual fallback accepted card "
+      @"suggestion index.");
+}
+
 // Checks that the chip buttons of the local card are all visible.
 void CheckChipButtonsOfLocalCard() {
   autofill::CreditCard card = autofill::test::GetCreditCard();
@@ -269,8 +285,7 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
       performAction:grey_tap()];
 
   // Verify the card table view controller is visible.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -303,12 +318,22 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearAllServerDataForTesting];
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
+
+  // Set up histogram tester.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearAllServerDataForTesting];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+
+  // Clean up histogram tester.
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
   [super tearDown];
 }
 
@@ -347,7 +372,7 @@ void DismissPaymentBottomSheet() {
       performAction:TapWebElementWithId(kFormElementName)];
 
   // Verify there's no credit card icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardIconMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -362,6 +387,18 @@ void DismissPaymentBottomSheet() {
   // Open the payment method manual fill view and verify that the card table
   // view controller is visible.
   OpenPaymentMethodManualFillView();
+
+  // Verify that the number of visible suggestions in the keyboard accessory was
+  // correctly recorded.
+  NSString* histogram =
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
+          ? @"ManualFallback.VisibleSuggestions.ExpandIcon.OpenPaymentMethods"
+          : @"ManualFallback.VisibleSuggestions.OpenCreditCards";
+  GREYAssertNil(
+      [MetricsAppInterface expectUniqueSampleWithCount:1
+                                             forBucket:1
+                                          forHistogram:histogram],
+      @"Unexpected histogram error for number of visible suggestions.");
 }
 
 // Tests that the saved card chip buttons are all visible in the card
@@ -418,6 +455,16 @@ void DismissPaymentBottomSheet() {
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PAYMENT_METHODS));
   [[EarlGrey selectElementWithMatcher:noPaymentMethodsFoundMessage]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the number of visible suggestions in the keyboard accessory was
+  // correctly recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:0
+                         forHistogram:@"ManualFallback.VisibleSuggestions."
+                                      @"OpenCreditCards"],
+      @"Unexpected histogram error for number of visible suggestions.");
 }
 
 // Tests that the cards view controller contains the "Manage Payment
@@ -433,14 +480,13 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Verify the payment methods controller contains the "Manage Payment
   // Methods..." action.
   [[EarlGrey
-      selectElementWithMatcher:ManualFallbackManagePaymentMethodsMatcher()]
+      selectElementWithMatcher:manual_fill::ManagePaymentMethodsMatcher()]
       assertWithMatcher:grey_interactable()];
 }
 
@@ -457,7 +503,7 @@ void DismissPaymentBottomSheet() {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     // Scroll to the right to reach the credit card icon.
     [[EarlGrey
-        selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+        selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
         performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
   }
 
@@ -468,8 +514,7 @@ void DismissPaymentBottomSheet() {
   // card cells are otherwise superimposed. We don't think this issue is likely
   // to happen in production, but it's worth investigating further.
   // TODO(crbug.com/359542780): Remove when rendering issue is fixed.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Assert presence of virtual card.
@@ -478,15 +523,13 @@ void DismissPaymentBottomSheet() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Scroll down to show the CVC chip button for virtual cards.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       performAction:grey_scrollInDirection(kGREYDirectionDown, 100)];
   [[EarlGrey selectElementWithMatcher:CvcChipButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Scroll down to show original card.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
 
   // Assert presence of original card.
@@ -510,7 +553,7 @@ void DismissPaymentBottomSheet() {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     // Scroll to the right to reach the credit card icon.
     [[EarlGrey
-        selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+        selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
         performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
   }
 
@@ -561,13 +604,12 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Tap the "Manage Payment Methods..." action.
   [[EarlGrey
-      selectElementWithMatcher:ManualFallbackManagePaymentMethodsMatcher()]
+      selectElementWithMatcher:manual_fill::ManagePaymentMethodsMatcher()]
       performAction:grey_tap()];
 
   // Verify the payment method settings opened.
@@ -590,24 +632,23 @@ void DismissPaymentBottomSheet() {
       performAction:TapWebElementWithId(kFormElementName)];
 
   // Scroll to the right.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
 
   // Verify the status of the icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardIconMatcher()]
       assertWithMatcher:grey_not(grey_userInteractionEnabled())];
 
   // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Tap the "Manage Payment Methods..." action.
   [[EarlGrey
-      selectElementWithMatcher:ManualFallbackManagePaymentMethodsMatcher()]
+      selectElementWithMatcher:manual_fill::ManagePaymentMethodsMatcher()]
       performAction:grey_tap()];
 
   // Tap Cancel Button.
@@ -620,16 +661,16 @@ void DismissPaymentBottomSheet() {
     // Skip verifications.
   } else {
     // Verify the status of the icons.
-    [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+    [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardIconMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+    [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardIconMatcher()]
         assertWithMatcher:grey_userInteractionEnabled()];
-    [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+    [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
         assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
     // Verify the keyboard is not cover by the cards view.
     [[EarlGrey
-        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
         assertWithMatcher:grey_notVisible()];
   }
 }
@@ -648,12 +689,12 @@ void DismissPaymentBottomSheet() {
   if (![ChromeEarlGrey isIPadIdiom]) {
     // Try to scroll on iPhone.
     [[EarlGrey
-        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
         performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   }
 
   // Tap the "Add Payment Method..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackAddPaymentMethodMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::AddPaymentMethodMatcher()]
       performAction:grey_tap()];
 
   // Verify the payment method settings opened.
@@ -680,12 +721,12 @@ void DismissPaymentBottomSheet() {
   // Scroll if not iPad.
   if (![ChromeEarlGrey isIPadIdiom]) {
     [[EarlGrey
-        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
         performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   }
 
   // Tap the "Add Payment Method..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackAddPaymentMethodMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::AddPaymentMethodMatcher()]
       performAction:grey_tap()];
 
   // Verify the payment method settings opened.
@@ -708,23 +749,22 @@ void DismissPaymentBottomSheet() {
       performAction:TapWebElementWithId(kFormElementName)];
 
   // Scroll to the right.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
 
   // Verify the status of the icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardIconMatcher()]
       assertWithMatcher:grey_not(grey_userInteractionEnabled())];
 
   // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Tap the "Add Payment Method..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackAddPaymentMethodMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::AddPaymentMethodMatcher()]
       performAction:grey_tap()];
 
   // Tap Cancel Button.
@@ -737,16 +777,16 @@ void DismissPaymentBottomSheet() {
     // Skip verifications.
   } else {
     // Verify the status of the icons.
-    [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+    [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardIconMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+    [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardIconMatcher()]
         assertWithMatcher:grey_userInteractionEnabled()];
-    [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+    [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
         assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
     // Verify the keyboard is not cover by the cards view.
     [[EarlGrey
-        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
         assertWithMatcher:grey_notVisible()];
   }
 }
@@ -771,15 +811,14 @@ void DismissPaymentBottomSheet() {
   OpenPaymentMethodManualFillView();
 
   // Tap on the keyboard icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
       performAction:grey_tap()];
 
   // Verify the credit card controller table view and the credit card icon is
   // NOT visible.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -802,15 +841,14 @@ void DismissPaymentBottomSheet() {
   // The way EarlGrey taps doesn't go through the window hierarchy. Because of
   // this, the tap needs to be done in the same window as the popover.
   [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewWindowMatcher()]
+      selectElementWithMatcher:manual_fill::CreditCardTableViewWindowMatcher()]
       performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 
   // Verify the credit card controller table view and the credit card icon is
   // NOT visible.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -848,13 +886,13 @@ void DismissPaymentBottomSheet() {
     // Verify the credit card controller table view and the credit card icon is
     // not visible.
     [[EarlGrey
-        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
         assertWithMatcher:grey_notVisible()];
-    [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+    [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
         assertWithMatcher:grey_notVisible()];
   } else {
     [[EarlGrey
-        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
 }
@@ -876,8 +914,7 @@ void DismissPaymentBottomSheet() {
       performAction:TapWebElementWithId(kFormElementCardNumber)];
 
   // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 }
 
@@ -896,8 +933,7 @@ void DismissPaymentBottomSheet() {
                                 error:nil];
 
   // Verify the credit card controller table view is still visible.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -1018,8 +1054,7 @@ void DismissPaymentBottomSheet() {
   // card cells are otherwise superimposed. We don't think this issue is likely
   // to happen in production, but it's worth investigating further.
   // TODO(crbug.com/359542780): Remove when rendering issue is fixed.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Assert presence of virtual card.
@@ -1114,8 +1149,7 @@ void DismissPaymentBottomSheet() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           AutofillCreditCardEditTableView()]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -1193,6 +1227,10 @@ void DismissPaymentBottomSheet() {
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 
+  // Verify that the acceptance of the card suggestion at index 0 was correctly
+  // recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
+
   [AutofillAppInterface clearMockReauthenticationModule];
 }
 
@@ -1216,21 +1254,20 @@ void DismissPaymentBottomSheet() {
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
 
-  // Check that the GPay icon is not visible in the local card cell.
-  [[EarlGrey selectElementWithMatcher:GPayIcon(local_card_last_digits)]
-      assertWithMatcher:grey_notVisible()];
-
-  // Scroll down to show the masked card.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
-
   // Check that the GPay icon is only visible in the masked card cell when the
   // Keyboard Accessory Upgrade feature is enabled.
   [[EarlGrey selectElementWithMatcher:GPayIcon(masked_card_last_digits)]
       assertWithMatcher:[AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
                             ? grey_sufficientlyVisible()
                             : grey_notVisible()];
+
+  // Scroll down to show the local card.
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
+
+  // Check that the GPay icon is not visible in the local card cell.
+  [[EarlGrey selectElementWithMatcher:GPayIcon(local_card_last_digits)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Private

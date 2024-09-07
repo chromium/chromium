@@ -89,7 +89,6 @@ BASE_DECLARE_FEATURE(kExpandedStateColors);
 BASE_DECLARE_FEATURE(kExpandedStateSuggestIcons);
 BASE_DECLARE_FEATURE(kExpandedLayout);
 BASE_DECLARE_FEATURE(kSuggestionHoverFillShape);
-BASE_DECLARE_FEATURE(kQueryTilesInZPSOnNTP);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).
@@ -120,6 +119,7 @@ inline constexpr base::FeatureParam<int> kOmniboxSpareRendererDelayMs{
 
 // Omnibox ML scoring.
 BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
+BASE_DECLARE_FEATURE(kEnableHistoryScoringSignalsAnnotatorForSearches);
 BASE_DECLARE_FEATURE(kMlUrlPiecewiseMappedSearchBlending);
 BASE_DECLARE_FEATURE(kMlUrlScoreCaching);
 BASE_DECLARE_FEATURE(kMlUrlScoring);
@@ -146,7 +146,6 @@ BASE_DECLARE_FEATURE(kMergeSubtypes);
 BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
 
 // Site search/Keyword mode related features.
-BASE_DECLARE_FEATURE(kPolicyIndicationForManagedDefaultSearch);
 BASE_DECLARE_FEATURE(kShowFeaturedEnterpriseSiteSearch);
 BASE_DECLARE_FEATURE(kShowFeaturedEnterpriseSiteSearchIPH);
 BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);

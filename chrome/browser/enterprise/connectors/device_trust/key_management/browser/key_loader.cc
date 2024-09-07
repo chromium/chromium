@@ -59,7 +59,6 @@ std::unique_ptr<KeyLoader> KeyLoader::Create(
     return std::make_unique<KeyLoaderImpl>(
         std::make_unique<
             enterprise_attestation::BrowserCloudManagementDelegate>(
-            dm_token_storage,
             enterprise_attestation::DMServerClient::Create(
                 device_management_service, std::move(url_loader_factory))));
   }

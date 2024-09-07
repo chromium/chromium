@@ -82,6 +82,9 @@ class CaptureModeBehavior {
   virtual bool ShouldShowUserNudge() const;
   virtual bool ShouldAutoSelectFirstCamera() const;
   virtual bool RequiresCaptureFolderCreation() const;
+  // Returns true if the behavior should re-show after hiding of all the capture
+  // mode UIs while waiting for DLP confirmation.
+  virtual bool ShouldReShowUisAtPerformingCapture() const;
   // Returns the full path for the capture file. If the creation of the path
   // failed, the path provided will be empty.
   using OnCaptureFolderCreatedCallback =
@@ -101,6 +104,10 @@ class CaptureModeBehavior {
   virtual std::vector<message_center::ButtonInfo> GetNotificationButtonsInfo(
       bool for_video) const;
 
+  // Returns the text to be shown by the capture label during waiting to select
+  // a capture region phase.
+  virtual const std::u16string GetCaptureLabelRegionText() const;
+
   // Creates the capture mode bar view, which might look different depending on
   // the actual type of the behavior.
   virtual std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView();
@@ -118,6 +125,10 @@ class CaptureModeBehavior {
   // decide whether to remember the demo tools settings for future sessions
   // settings restoration or not.
   virtual void OnDemoToolsSettingsChanged();
+
+  // Notifies the behavior that a region was selected. Returns true if the
+  // behavior handled the event, false otherwise.
+  virtual bool OnRegionSelected();
 
  protected:
   CaptureModeBehavior(const CaptureModeSessionConfigs& configs,

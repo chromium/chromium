@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <cstdint>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -96,8 +98,9 @@ constexpr char kWildCard[] = "*";
 std::unique_ptr<crypto::RSAPrivateKey> DecodePrivateKey(
     const char* const encoded) {
   std::string to_decrypt;
-  if (!base::Base64Decode(encoded, &to_decrypt))
+  if (!base::Base64Decode(encoded, &to_decrypt)) {
     return nullptr;
+  }
 
   return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(
       base::as_bytes(base::make_span(to_decrypt)));
@@ -106,8 +109,9 @@ std::unique_ptr<crypto::RSAPrivateKey> DecodePrivateKey(
 bool ExportPublicKeyAsString(const crypto::RSAPrivateKey& private_key,
                              std::string* public_key) {
   std::vector<uint8_t> public_key_vec;
-  if (!private_key.ExportPublicKey(&public_key_vec))
+  if (!private_key.ExportPublicKey(&public_key_vec)) {
     return false;
+  }
 
   public_key->assign(reinterpret_cast<const char*>(public_key_vec.data()),
                      public_key_vec.size());
@@ -225,7 +229,36 @@ void SignatureProvider::SetSigningKeysForChildDomain() {
   set_signing_keys(std::move(universal_signing_keys));
 }
 
-SignatureProvider::SignatureProvider() {
+bool SignatureProvider::SignVerificationData(const std::string& data,
+                                             std::string* signature) const {
+  std::unique_ptr<crypto::SignatureCreator> signer =
+      crypto::SignatureCreator::Create(verification_key_.get(),
+                                       crypto::SignatureCreator::SHA256);
+
+  std::vector<uint8_t> input(data.begin(), data.end());
+  std::vector<uint8_t> result;
+
+  if (!signer->Update(input.data(), input.size()) || !signer->Final(&result)) {
+    return false;
+  }
+
+  signature->assign(std::string(result.begin(), result.end()));
+
+  return true;
+}
+
+std::string SignatureProvider::GetVerificationPublicKey() {
+  std::string public_key;
+  std::vector<uint8_t> public_key_vec;
+  CHECK(verification_key_->ExportPublicKey(&public_key_vec));
+  public_key.assign(reinterpret_cast<const char*>(public_key_vec.data()),
+                    public_key_vec.size());
+  return public_key;
+}
+
+SignatureProvider::SignatureProvider()
+    : verification_key_(crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(
+          base::span(kVerificationPrivateKey))) {
   InitSigningKeys(&signing_keys_);
 }
 
@@ -240,12 +273,14 @@ SignatureProvider::~SignatureProvider() = default;
 const SignatureProvider::SigningKey* SignatureProvider::GetKeyByVersion(
     int key_version) const {
   // |key_version| is 1-based.
-  if (key_version < 1)
+  if (key_version < 1) {
     return nullptr;
+  }
   size_t key_index = static_cast<size_t>(key_version) - 1;
   if (key_index >= signing_keys_.size()) {
-    if (!rotate_keys())
+    if (!rotate_keys()) {
       return nullptr;
+    }
     key_index %= signing_keys_.size();
   }
   return &signing_keys_[key_index];

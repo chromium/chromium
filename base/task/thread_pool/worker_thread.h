@@ -111,7 +111,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
     // Called in WaitForWork() to hide the worker's synchronization
     // mechanism. Returns |true| if signaled, and |false| if the call timed out.
-    virtual bool TimedWait(TimeDelta timeout) = 0;
+    virtual bool TimedWait(TimeDelta timeout);
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -128,6 +128,11 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
+
+    // Event to wake up the thread managed by the WorkerThread whose delegate
+    // this is.
+    WaitableEvent wake_up_event_{WaitableEvent::ResetPolicy::AUTOMATIC,
+                                 WaitableEvent::InitialState::NOT_SIGNALED};
   };
 
   // Creates a WorkerThread that runs Tasks from TaskSources returned by
@@ -140,6 +145,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // calling methods on this WorkerThread.  Either JoinForTesting() or Cleanup()
   // must be called before releasing the last external reference.
   WorkerThread(ThreadType thread_type_hint,
+               std::unique_ptr<Delegate> delegate,
                TrackedRef<TaskTracker> task_tracker,
                size_t sequence_num,
                const CheckedLock* predecessor_lock = nullptr,
@@ -159,6 +165,20 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   bool Start(scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_,
              WorkerThreadObserver* worker_thread_observer = nullptr);
 
+  // Wakes up this WorkerThread if it wasn't already awake. After
+  // this is called, this WorkerThread will run Tasks from
+  // TaskSources returned by the GetWork() method of its delegate until it
+  // returns nullptr. No-op if Start() wasn't called. DCHECKs if called after
+  // Start() has failed or after Cleanup() has been called.
+  void WakeUp();
+
+  // Joins this WorkerThread. If a Task is already running, it will be
+  // allowed to complete its execution. This can only be called once.
+  //
+  // Note: A thread that detaches before JoinForTesting() is called may still be
+  // running after JoinForTesting() returns. However, it can't run tasks after
+  // JoinForTesting() returns.
+  void JoinForTesting();
 
   // Returns true if the worker is alive.
   bool ThreadAliveForTesting() const;
@@ -172,9 +192,9 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   //   scoped_refptr<WorkerThread> worker_ = /* Existing Worker */
   //   worker_->Cleanup();
   //   worker_ = nullptr;
-  virtual void Cleanup() = 0;
+  void Cleanup();
 
-  virtual Delegate* delegate() = 0;
+  Delegate* delegate();
 
   // Possibly updates the thread type to the appropriate type based on the
   // thread type hint, current shutdown state, and platform capabilities.
@@ -266,9 +286,6 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // because all post-construction accesses occur on the thread.
   ThreadType current_thread_type_;
 
-  // Whether this worker has been joined for testing.
-  virtual bool join_called_for_testing() const = 0;
-
   const size_t sequence_num_;
 
   // Used to terminate WorkerThread::WakeUp trace event flows.
@@ -276,6 +293,11 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Service thread task runner.
   scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;
+
+  const std::unique_ptr<Delegate> delegate_;
+
+  // Set once JoinForTesting() has been called.
+  AtomicFlag join_called_for_testing_;
 };
 
 }  // namespace internal

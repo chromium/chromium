@@ -13,8 +13,10 @@
 #import "components/gcm_driver/gcm_driver.h"
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #import "components/sharing_message/sharing_constants.h"
 #import "components/sharing_message/sharing_device_registration.h"
@@ -29,13 +31,15 @@
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_device_info/device_info_tracker.h"
 #import "components/sync_device_info/local_device_info_provider.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/gcm/model/instance_id/ios_chrome_instance_id_profile_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_device_registration_impl.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_handler_registry_impl.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -87,6 +91,8 @@ IOSSharingServiceFactory::IOSSharingServiceFactory()
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IOSSharingMessageBridgeFactory::GetInstance());
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
+  DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
+  DependsOn(ios::FaviconServiceFactory::GetInstance());
 }
 
 IOSSharingServiceFactory::~IOSSharingServiceFactory() {}
@@ -160,9 +166,22 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
       gcm_driver, device_info_tracker, fcm_sender_ptr, handler_registry.get());
 
+  favicon::FaviconService* favicon_service =
+      ios::FaviconServiceFactory::GetForBrowserState(
+          chrome_browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+
+  send_tab_to_self::SendTabToSelfModel* send_tab_model =
+      SendTabToSelfSyncServiceFactory::GetForBrowserState(chrome_browser_state)
+          ->GetSendTabToSelfModel();
+
   return std::make_unique<SharingService>(
       std::move(sync_prefs), std::move(vapid_key_manager),
       std::move(sharing_device_registration), std::move(sharing_message_sender),
       std::move(device_source), std::move(handler_registry),
-      std::move(fcm_handler), sync_service, std::move(task_runner));
+      std::move(fcm_handler), sync_service, favicon_service, send_tab_model,
+      std::move(task_runner));
+}
+
+bool IOSSharingServiceFactory::ServiceIsCreatedWithBrowserState() const {
+  return true;
 }

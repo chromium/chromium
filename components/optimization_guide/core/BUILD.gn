@@ -123,6 +123,8 @@ component("features") {
   sources = [
     "feature_registry/enterprise_policy_registry.cc",
     "feature_registry/enterprise_policy_registry.h",
+    "feature_registry/feature_registration.cc",
+    "feature_registry/feature_registration.h",
     "feature_registry/mqls_feature_registry.cc",
     "feature_registry/mqls_feature_registry.h",
     "feature_registry/settings_ui_registry.cc",
@@ -131,6 +133,7 @@ component("features") {
     "model_execution/feature_keys.h",
     "model_execution/model_execution_prefs.cc",
     "model_execution/model_execution_prefs.h",
+    "model_quality/feature_type_map.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
     "optimization_guide_enums.h",
@@ -179,8 +182,9 @@ static_library("core") {
     "hints_processing_util.h",
     "memory_hint.cc",
     "memory_hint.h",
+    "model_execution/optimization_guide_model_execution_error.cc",
+    "model_execution/optimization_guide_model_execution_error.h",
     "model_handler.h",
-    "model_quality/feature_type_map.h",
     "model_quality/model_quality_log_entry.cc",
     "model_quality/model_quality_log_entry.h",
     "model_quality/model_quality_logs_uploader_service.cc",
@@ -202,6 +206,8 @@ static_library("core") {
     "optimization_guide_navigation_data.h",
     "optimization_guide_permissions_util.cc",
     "optimization_guide_permissions_util.h",
+    "optimization_guide_proto_util.cc",
+    "optimization_guide_proto_util.h",
     "optimization_guide_store.cc",
     "optimization_guide_store.h",
     "optimization_guide_util.cc",
@@ -226,6 +232,8 @@ static_library("core") {
   ]
   if (!is_fuchsia || !optimize_for_size) {
     sources += [
+      "model_execution/aqa_response_parser.cc",
+      "model_execution/aqa_response_parser.h",
       "model_execution/json_response_parser.cc",
       "model_execution/json_response_parser.h",
       "model_execution/model_execution_features.cc",
@@ -257,8 +265,6 @@ static_library("core") {
       "model_execution/on_device_model_service_controller.h",
       "model_execution/on_device_model_validator.cc",
       "model_execution/on_device_model_validator.h",
-      "model_execution/optimization_guide_model_execution_error.cc",
-      "model_execution/optimization_guide_model_execution_error.h",
       "model_execution/redactor.cc",
       "model_execution/redactor.h",
       "model_execution/repetition_checker.cc",
@@ -294,6 +300,7 @@ static_library("core") {
   public_deps = [
     ":features",
     ":model_executor",
+    "//components/autofill/core/common",
     "//components/leveldb_proto",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core:interfaces",
@@ -474,6 +481,7 @@ source_set("unit_tests") {
     "optimization_guide_features_unittest.cc",
     "optimization_guide_navigation_data_unittest.cc",
     "optimization_guide_permissions_util_unittest.cc",
+    "optimization_guide_proto_util_unittest.cc",
     "optimization_guide_store_unittest.cc",
     "optimization_guide_switches_unittest.cc",
     "optimization_guide_util_unittest.cc",
@@ -491,12 +499,12 @@ source_set("unit_tests") {
 
   if (!is_fuchsia || !optimize_for_size) {
     sources += [
+      "model_execution/aqa_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",
       "model_execution/model_execution_features_controller_unittest.cc",
       "model_execution/model_execution_features_unittest.cc",
       "model_execution/model_execution_fetcher_unittest.cc",
       "model_execution/model_execution_manager_unittest.cc",
-      "model_execution/on_device_model_adaptation_controller_unittest.cc",
       "model_execution/on_device_model_adaptation_loader_unittest.cc",
       "model_execution/on_device_model_component_unittest.cc",
       "model_execution/on_device_model_execution_proto_value_utils_unittest.cc",
@@ -540,6 +548,7 @@ source_set("unit_tests") {
   deps = [
     ":bloomfilter",
     ":core",
+    ":features",
     ":prediction",
     ":test_support",
     ":unit_tests_bundle_data",

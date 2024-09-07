@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",
     "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
     "//content/test:test_support",
     "//extensions/browser",
     "//extensions/common",

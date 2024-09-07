@@ -260,7 +260,7 @@ void FtlSignalingPlayground::InitializeTransport() {
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(),
       url_loader_factory_owner_->GetURLLoaderFactory(), nullptr,
-      network_settings, transport_role_);
+      transport_role_);
   auto close_callback =
       base::BindOnce(&FtlSignalingPlayground::AsyncTearDownAndRunCallback,
                      base::Unretained(this));

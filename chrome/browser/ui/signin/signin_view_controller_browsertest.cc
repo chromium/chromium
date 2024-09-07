@@ -46,6 +46,8 @@ constexpr char kTestEmail[] = "email@gmail.com";
 constexpr signin_metrics::AccessPoint kTestAccessPoint = signin_metrics::
     AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT;
 
+constexpr char kConfirmationNoUnsyncedHistogramName[] =
+    "Signin.ChromeSignoutConfirmationPrompt.NoUnsynced";
 constexpr char kConfirmationUnsyncedHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.Unsynced";
 constexpr char kConfirmationUnsyncedReauthHistogramName[] =
@@ -62,6 +64,9 @@ void VerifySignoutPromptHistogram(
     ChromeSignoutConfirmationChoice choice) {
   const char* histogram_name = kConfirmationUnsyncedHistogramName;
   switch (variant) {
+    case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
+      histogram_name = kConfirmationNoUnsyncedHistogramName;
+      break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
@@ -182,6 +187,14 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserImplicitSigninTest,
 class SigninViewControllerBrowserTest
     : public SigninViewControllerBrowserTestBase {
  public:
+  SigninViewControllerBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop},
+        /*disabled_features=*/{});
+  }
+
   views::DialogDelegate* TriggerChromeSigninDialogForExtensionsPrompt(
       base::OnceClosure on_complete) {
     views::NamedWidgetShownWaiter widget_waiter(
@@ -198,8 +211,7 @@ class SigninViewControllerBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
@@ -272,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
-                       SignoutOrReauthWithPrompt_SignOut) {
+                       SignoutOrReauthWithPrompt_SignOutWithUnsyncedData) {
   // Setup a primary account.
   AccountInfo primary_account_info = SetPrimaryAccount();
   ASSERT_TRUE(
@@ -292,6 +304,66 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   VerifySignoutPromptHistogram(
       histogram_tester, ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
       ChromeSignoutConfirmationChoice::kSignout);
+
+  // User was signed out.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The tab was navigated to the signout page.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(IsSignoutTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       SignoutOrReauthWithPrompt_SignOut) {
+  // Setup a primary account.
+  AccountInfo primary_account_info = SetPrimaryAccount();
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Trigger the Chrome signout action.
+  views::DialogDelegate* dialog_delegate =
+      TriggerSignoutAndWaitForConfirmationPrompt();
+  ASSERT_TRUE(dialog_delegate);
+
+  // Click "Sign Out Anyway".
+  base::HistogramTester histogram_tester;
+  dialog_delegate->AcceptDialog();
+  VerifySignoutPromptHistogram(
+      histogram_tester, ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
+      ChromeSignoutConfirmationChoice::kSignout);
+
+  // User was signed out.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The tab was navigated to the signout page.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(IsSignoutTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       SignoutOrReauthWithPrompt_NoPrompt) {
+  // Setup a primary account in auth error.
+  AccountInfo primary_account_info = SetPrimaryAccount();
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account_info.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  // Trigger the Chrome signout action.
+  browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
+      kTestAccessPoint,
+      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+      signin_metrics::SourceForRefreshTokenOperation::
+          kUserMenu_SignOutAllAccounts);
 
   // User was signed out.
   EXPECT_FALSE(
@@ -464,12 +536,11 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerBrowserCookieParamTest, SignOut) {
   ASSERT_TRUE(
       GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
-  // Trigger the Chrome signout action, there is no prompt.
-  browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
-      kTestAccessPoint,
-      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
-      signin_metrics::SourceForRefreshTokenOperation::
-          kUserMenu_SignOutAllAccounts);
+  // Trigger the Chrome signout action, and confirm the prompt.
+  views::DialogDelegate* dialog_delegate =
+      TriggerSignoutAndWaitForConfirmationPrompt();
+  ASSERT_TRUE(dialog_delegate);
+  dialog_delegate->AcceptDialog();
 
   // User was signed out.
   EXPECT_FALSE(

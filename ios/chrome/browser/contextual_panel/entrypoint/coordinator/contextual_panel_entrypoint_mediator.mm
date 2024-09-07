@@ -142,11 +142,7 @@
 
 - (void)entrypointTapped {
   // Cancel any pending transition timers since user interacted with entrypoint.
-  _transitionToEntrypointLoudMomentTimer = nullptr;
-  _transitionToDefaultEntrypointTimer = nullptr;
-
-  [self dismissEntrypointIPHAnimated:YES];
-  [self.delegate enableFullscreen];
+  [self resetTimersAndUIStateAnimated:YES];
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
@@ -224,6 +220,8 @@
     }
   }
 
+  [self resetTimersAndUIStateAnimated:NO];
+
   // Return early if no new webstates are active.
   if (!status.new_active_web_state) {
     return;
@@ -242,8 +240,12 @@
 #pragma mark - InfobarBadgeTabHelperObserving
 
 - (void)infobarBadgesUpdated:(InfobarBadgeTabHelper*)tabHelper {
-  DCHECK_EQ(tabHelper, InfobarBadgeTabHelper::GetOrCreateForWebState(
-                           _webStateList->GetActiveWebState()));
+  // Return early if the notification doesn't come from the currently active
+  // webstate's tab helper.
+  if (tabHelper != InfobarBadgeTabHelper::GetOrCreateForWebState(
+                       _webStateList->GetActiveWebState())) {
+    return;
+  }
 
   size_t badgesCount = tabHelper->GetInfobarBadgesCount();
 
@@ -253,20 +255,29 @@
   }
   _infobarBadgesCurrentlyShown = infobarBadgesCurrentlyShown;
 
+  if (_infobarBadgesCurrentlyShown) {
+    [self dismissEntrypointIPHAnimated:YES];
+  }
+
   [self.consumer setInfobarBadgesCurrentlyShown:_infobarBadgesCurrentlyShown];
 }
 
 #pragma mark - private
 
+// Cancels pending timers, dismisses any showing IPH and removes any active
+// fullscreen disabler.
+- (void)resetTimersAndUIStateAnimated:(BOOL)animated {
+  _transitionToEntrypointLoudMomentTimer = nullptr;
+  _transitionToDefaultEntrypointTimer = nullptr;
+  [self dismissEntrypointIPHAnimated:animated];
+  [self.delegate enableFullscreen];
+}
+
 // Updates the entrypoint state whenever the active tab changes or new data is
 // provided.
 - (void)activeTabHasNewData:
     (base::WeakPtr<ContextualPanelItemConfiguration>)config {
-  _transitionToEntrypointLoudMomentTimer = nullptr;
-  _transitionToDefaultEntrypointTimer = nullptr;
-
-  [self dismissEntrypointIPHAnimated:NO];
-  [self.delegate enableFullscreen];
+  [self resetTimersAndUIStateAnimated:NO];
 
   if (!config) {
     [self.consumer hideEntrypoint];

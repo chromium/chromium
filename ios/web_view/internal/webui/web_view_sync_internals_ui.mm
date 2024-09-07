@@ -19,10 +19,9 @@ WebViewSyncInternalsUI::~WebViewSyncInternalsUI() {}
 bool WebViewSyncInternalsUI::OverrideHandleWebUIIOSMessage(
     const GURL& source_url,
     std::string_view message) {
-  // ios/web_view only supports sync in transport mode. Explicitly override sync
-  // start and stop messages and perform a no op.
-  return message == syncer::sync_ui_util::kRequestStart ||
-         message == syncer::sync_ui_util::kRequestStopClearData;
+  // ios/web_view only supports sync in transport mode. Explicitly override the
+  // sync start message and perform a no op.
+  return message == syncer::sync_ui_util::kRequestStart;
 }
 
 }  // namespace ios_web_view

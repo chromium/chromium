@@ -1349,63 +1349,6 @@ TEST_F(StructTraitsTest, SharedImageFormatWithUnknownPlane) {
                                                                     output));
 }
 
-TEST_F(StructTraitsTest, YUVDrawQuad) {
-  auto render_pass = CompositorRenderPass::Create();
-  render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(), gfx::Rect(),
-                      gfx::Transform());
-
-  const DrawQuad::Material material = DrawQuad::Material::kYuvVideoContent;
-  const gfx::Rect rect(1234, 4321, 1357, 7531);
-  const gfx::Rect visible_rect(1337, 7331, 561, 293);
-  const bool needs_blending = true;
-  const gfx::Size coded_size(1234, 5678);
-  const gfx::Rect video_visible_rect(123, 456, 789, 1011);
-  const gfx::Size uv_sample_size(1, 2);
-  const ResourceId y_plane_resource_id(1337);
-  const ResourceId u_plane_resource_id(1234);
-  const ResourceId v_plane_resource_id(2468);
-  const ResourceId a_plane_resource_id(7890);
-  const gfx::ColorSpace video_color_space = gfx::ColorSpace::CreateJpeg();
-  const uint32_t bits_per_channel = 13;
-  const gfx::ProtectedVideoType protected_video_type =
-      gfx::ProtectedVideoType::kSoftwareProtected;
-  gfx::HDRMetadata hdr_metadata = gfx::HDRMetadata();
-  hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 100);
-
-  SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
-  YUVVideoDrawQuad* quad =
-      render_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
-  quad->SetAll(sqs, rect, visible_rect, needs_blending, coded_size,
-               video_visible_rect, uv_sample_size, y_plane_resource_id,
-               u_plane_resource_id, v_plane_resource_id, a_plane_resource_id,
-               video_color_space, bits_per_channel, protected_video_type,
-               hdr_metadata);
-
-  std::unique_ptr<CompositorRenderPass> output;
-  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(render_pass,
-                                                                   output);
-
-  ASSERT_EQ(render_pass->quad_list.size(), output->quad_list.size());
-
-  ASSERT_EQ(material, output->quad_list.ElementAt(0)->material);
-  const YUVVideoDrawQuad* out_quad =
-      YUVVideoDrawQuad::MaterialCast(output->quad_list.ElementAt(0));
-  EXPECT_EQ(rect, out_quad->rect);
-  EXPECT_EQ(visible_rect, out_quad->visible_rect);
-  EXPECT_EQ(needs_blending, out_quad->needs_blending);
-  EXPECT_EQ(coded_size, out_quad->coded_size);
-  EXPECT_EQ(video_visible_rect, out_quad->video_visible_rect);
-  EXPECT_EQ(uv_sample_size.width(), out_quad->u_scale);
-  EXPECT_EQ(uv_sample_size.height(), out_quad->v_scale);
-  EXPECT_EQ(y_plane_resource_id, out_quad->y_plane_resource_id());
-  EXPECT_EQ(u_plane_resource_id, out_quad->u_plane_resource_id());
-  EXPECT_EQ(v_plane_resource_id, out_quad->v_plane_resource_id());
-  EXPECT_EQ(a_plane_resource_id, out_quad->a_plane_resource_id());
-  EXPECT_EQ(bits_per_channel, out_quad->bits_per_channel);
-  EXPECT_EQ(protected_video_type, out_quad->protected_video_type);
-  EXPECT_EQ(hdr_metadata, out_quad->hdr_metadata);
-}
-
 TEST_F(StructTraitsTest, CopyOutputResult_EmptyBitmap) {
   auto input = std::make_unique<CopyOutputResult>(
       CopyOutputRequest::ResultFormat::RGBA,

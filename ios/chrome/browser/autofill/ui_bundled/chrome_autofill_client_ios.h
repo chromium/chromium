@@ -18,7 +18,6 @@
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
-#import "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -30,7 +29,7 @@
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @protocol AutofillCommands;
 @class UIViewController;
@@ -91,8 +90,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   translate::TranslateDriver* GetTranslateDriver() override;
   GeoIpCountryCode GetVariationConfigCountryCode() const override;
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
-  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
-      override;
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
@@ -104,15 +101,12 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void ShowDeleteAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
-  void ShowAutofillSuggestions(
+  SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
   void PinAutofillSuggestions() override;
-  void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   FillingProduct main_filling_product,
-                   AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
@@ -163,7 +157,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   raw_ptr<infobars::InfoBarManager> infobar_manager_;
   std::unique_ptr<LogManager> log_manager_;
   const AutofillAblationStudy ablation_study_;
-  std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
 
   // Order matters for this initialization. This initialization must happen
   // after all of the members passed into the constructor of

@@ -221,6 +221,11 @@ chromium-metrics-reviews@google.com.
   <int value="53" label="Open Link In New Group"/>
   <int value="54" label="Show Details"/>
   <int value="55" label="Show Full URL"/>
+  <int value="56" label="Sort Drive Items By Name"/>
+  <int value="57" label="Sort Drive Items By Modification Time"/>
+  <int value="58" label="Sort Drive Items By Opening Time"/>
+  <int value="59" label="Select Drive Identity"/>
+  <int value="60" label="Add Drive Account"/>
 </enum>
 
 <enum name="IOSMenuScenario">
@@ -252,6 +257,9 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Autofill Manual Fallback Payment Entry"/>
   <int value="26" label="Autofill Manual Fallback Address Entry"/>
   <int value="27" label="Tab Groups Panel Entry"/>
+  <int value="28" label="Sort Drive Items Entry"/>
+  <int value="29" label="Select Drive Identity Entry"/>
+  <int value="30" label="Tab Group Indicator Entry"/>
 </enum>
 
 <enum name="IOSShareAction">
@@ -310,10 +318,15 @@ chromium-metrics-reviews@google.com.
 
 <enum name="MobileDefaultBrowserState">
   <int value="0" label="No default"/>
-  <int value="1" label="Chrome: System default"/>
-  <int value="2" label="Chrome: Installed default"/>
-  <int value="3" label="Other: System default"/>
-  <int value="4" label="Other: Installed default"/>
+  <int value="1"
+      label="Chrome currently default; Chrome in original system image"/>
+  <int value="2"
+      label="Chrome currently default; Chrome not in original system image"/>
+  <int value="3"
+      label="Other app currently default; that app in original system image"/>
+  <int value="4"
+      label="Other app currently default; that app not in original system
+             image"/>
 </enum>
 
 <enum name="MobileFreProgress">
@@ -337,6 +350,13 @@ chromium-metrics-reviews@google.com.
       label="The user clicked the dismiss button on welcome screen"/>
   <int value="11"
       label="The user clicked on the |settings| link on sync consent screen"/>
+  <int value="12" label="History sync opt-in shown"/>
+  <int value="13"
+      label="The user clicked on the |Yes, I'm in| button to accept history
+             sync"/>
+  <int value="14"
+      label="The user clicked on the |No thanks| button to decline history
+             sync"/>
 </enum>
 
 <enum name="MobileFreSignInChoice">
@@ -553,6 +573,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="Unified password manager error"/>
   <int value="38" label="Webapk Install Failed"/>
   <int value="39" label="Data Sharing"/>
+  <int value="40" label="Unified password manager access loss warning"/>
 </enum>
 
 </enums>

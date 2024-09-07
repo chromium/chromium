@@ -24,8 +24,12 @@ class PrefRegistrySimple;
 namespace update_client {
 
 extern const char kPersistedDataPreference[];
+extern const char kLastUpdateCheckErrorPreference[];
+extern const char kLastUpdateCheckErrorCategoryPreference[];
+extern const char kLastUpdateCheckErrorExtraCode1Preference[];
 
 class ActivityDataService;
+struct CategorizedError;
 
 // A PersistedData is a wrapper layer around a PrefService, designed to maintain
 // update data that outlives the browser process and isn't exposed outside of
@@ -37,6 +41,9 @@ class ActivityDataService;
 class PersistedData {
  public:
   virtual ~PersistedData() = default;
+
+  // Records the last update check error code (0 for success).
+  virtual void SetLastUpdateCheckError(const CategorizedError& error) = 0;
 
   // Returns the DateLastRollCall (the server-localized calendar date number the
   // |id| was last checked by this client on) for the specified |id|.

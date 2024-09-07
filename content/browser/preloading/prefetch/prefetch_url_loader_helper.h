@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace content {
@@ -15,7 +16,7 @@ namespace content {
 // Checks if `prefetch_container` can be used for `tentative_resource_request`,
 // and starts checking `PrefetchOriginProber` if needed.
 void CONTENT_EXPORT OnGotPrefetchToServe(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& tentative_resource_request,
     base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback,
     PrefetchContainer::Reader reader);

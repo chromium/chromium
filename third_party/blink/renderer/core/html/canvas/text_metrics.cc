@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 
 namespace blink {
@@ -79,6 +80,19 @@ TextMetrics::TextMetrics(const Font& font,
   Update(font, direction, baseline, align, text);
 }
 
+namespace {
+const ShapeResult* ShapeWord(const TextRun& word_run, const Font& font) {
+  ShapeResultSpacing<TextRun> spacing(word_run);
+  spacing.SetSpacingAndExpansion(font.GetFontDescription());
+  HarfBuzzShaper shaper(word_run.NormalizedUTF16());
+  ShapeResult* shape_result = shaper.Shape(&font, word_run.Direction());
+  if (!spacing.HasSpacing()) {
+    return shape_result;
+  }
+  return shape_result->ApplySpacingToCopy(spacing, word_run);
+}
+}  // namespace
+
 void TextMetrics::Update(const Font& font,
                          const TextDirection& direction,
                          const TextBaseline& baseline,
@@ -92,7 +106,12 @@ void TextMetrics::Update(const Font& font,
   text_length_ = text.length();
   direction_ = direction;
   runs_with_offset_.clear();
-  shaping_needed_ = true;
+  if (!RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
+    // If not enabled, Font::Width is called, which causes a shaping via
+    // CachingWordShaper. Since we still need the ShapeResult objects, these are
+    // lazily created the first time they are required.
+    shaping_needed_ = true;
+  }
 
   // x direction
   // Run bidi algorithm on the given text. Step 5 of:
@@ -111,11 +130,10 @@ void TextMetrics::Update(const Font& font,
     TextRun text_run(StringView(text, run.start, run.Length()), run.Direction(),
                      /* directional_override */ false);
     text_run.SetNormalizeSpace(true);
-    gfx::RectF run_glyph_bounds;
-    float run_width = font.Width(text_run, &run_glyph_bounds);
 
-    // Save the run for computing selection boxes. It will be shaped the first
-    // time it is used.
+    // Save the run for computing additional metrics. Whether we calculate the
+    // ShapeResult objects right away, or lazily when needed, depends on the
+    // Canvas2dTextMetricsShaping feature.
     RunWithOffset run_with_offset = {
         .shape_result_ = nullptr,
         .text_ = text_run.ToStringView().ToString(),
@@ -123,6 +141,16 @@ void TextMetrics::Update(const Font& font,
         .character_offset_ = run.start,
         .num_characters_ = run.Length(),
         .x_position_ = xpos};
+
+    float run_width;
+    gfx::RectF run_glyph_bounds;
+    if (RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
+      run_with_offset.shape_result_ = ShapeWord(text_run, font);
+      run_width = run_with_offset.shape_result_->Width();
+      run_glyph_bounds = run_with_offset.shape_result_->ComputeInkBounds();
+    } else {
+      run_width = font.Width(text_run, &run_glyph_bounds);
+    }
     runs_with_offset_.push_back(run_with_offset);
 
     // Accumulate the position and the glyph bounding box.
@@ -183,17 +211,6 @@ void TextMetrics::Update(const Font& font,
   } else {
     baselines_->setIdeographic(-descent - baseline_y);
   }
-}
-
-const ShapeResult* ShapeWord(const TextRun& word_run, const Font& font) {
-  ShapeResultSpacing<TextRun> spacing(word_run);
-  spacing.SetSpacingAndExpansion(font.GetFontDescription());
-  HarfBuzzShaper shaper(word_run.ToStringView().ToString());
-  ShapeResult* shape_result = shaper.Shape(&font, word_run.Direction());
-  if (!spacing.HasSpacing()) {
-    return shape_result;
-  }
-  return shape_result->ApplySpacingToCopy(spacing, word_run);
 }
 
 void TextMetrics::ShapeTextIfNeeded() {

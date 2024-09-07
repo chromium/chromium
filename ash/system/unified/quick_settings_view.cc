@@ -4,12 +4,10 @@
 
 #include "ash/system/unified/quick_settings_view.h"
 
-#include <numeric>
-
 #include "ash/ash_element_identifiers.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/style/pagination_view.h"
 #include "ash/system/media/quick_settings_media_view_container.h"
-#include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
@@ -19,24 +17,17 @@
 #include "ash/system/unified/quick_settings_footer.h"
 #include "ash/system/unified/quick_settings_header.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
-#include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -50,17 +41,14 @@ class AccessibilityFocusHelperView : public views::View {
 
  public:
   explicit AccessibilityFocusHelperView(UnifiedSystemTrayController* controller)
-      : controller_(controller) {}
+      : controller_(controller) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  }
 
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
     GetFocusManager()->ClearFocus();
     GetFocusManager()->SetStoredFocusView(nullptr);
     return true;
-  }
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kListItem;
   }
 
  private:
@@ -144,14 +132,8 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
       pagination_view_container->AddChildView(std::make_unique<PaginationView>(
           controller_->model()->pagination_model()));
 
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    media_view_container_ = system_tray_container_->AddChildView(
-        std::make_unique<QuickSettingsMediaViewContainer>(controller_));
-  } else {
-    media_controls_container_ = system_tray_container_->AddChildView(
-        std::make_unique<UnifiedMediaControlsContainer>());
-    media_controls_container_->SetExpandedAmount(1.0f);
-  }
+  media_view_container_ = system_tray_container_->AddChildView(
+      std::make_unique<QuickSettingsMediaViewContainer>(controller_));
 
   sliders_container_ = system_tray_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -165,8 +147,9 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
   detailed_view_container_->SetUseDefaultFillLayout(true);
   detailed_view_container_->SetVisible(false);
 
-  system_tray_container_->AddChildView(
+  auto* focus_helper_view_ = system_tray_container_->AddChildView(
       std::make_unique<AccessibilityFocusHelperView>(controller_));
+  focus_helper_view_->SetID(VIEW_ID_QS_ACCESSIBILITY_FOCUS_HELPER_VIEW);
 }
 
 QuickSettingsView::~QuickSettingsView() {
@@ -187,31 +170,6 @@ void QuickSettingsView::AddTiles(
 views::View* QuickSettingsView::AddSliderView(
     std::unique_ptr<views::View> slider_view) {
   return sliders_container_->AddChildView(std::move(slider_view));
-}
-
-void QuickSettingsView::AddMediaControlsView(views::View* media_controls) {
-  DCHECK(media_controls);
-  DCHECK(media_controls_container_);
-
-  media_controls->SetPaintToLayer();
-  media_controls->layer()->SetFillsBoundsOpaquely(false);
-  media_controls_container_->AddChildView(media_controls);
-}
-
-void QuickSettingsView::ShowMediaControls() {
-  DCHECK(media_controls_container_);
-  media_controls_container_->SetShouldShowMediaControls(true);
-
-  if (detailed_view_container_->GetVisible()) {
-    return;
-  }
-
-  if (media_controls_container_->MaybeShowMediaControls()) {
-    PreferredSizeChanged();
-  }
-
-  feature_tiles_container_->AdjustRowsForMediaViewVisibility(
-      true, CalculateHeightForFeatureTilesContainer());
 }
 
 void QuickSettingsView::AddMediaView(std::unique_ptr<views::View> media_view) {
@@ -245,9 +203,6 @@ void QuickSettingsView::SetDetailedView(
 void QuickSettingsView::ResetDetailedView() {
   detailed_view_container_->RemoveAllChildViews();
   detailed_view_container_->SetVisible(false);
-  if (media_controls_container_) {
-    media_controls_container_->MaybeShowMediaControls();
-  }
   if (media_view_container_) {
     media_view_container_->MaybeShowMediaView();
   }
@@ -277,18 +232,13 @@ int QuickSettingsView::GetCurrentHeight() const {
 // size constraints when vertical space is limited. This leads to the
 // `QuickSettingsView` being clipped from the bottom.
 int QuickSettingsView::CalculateHeightForFeatureTilesContainer() {
-  int media_controls_container_height =
-      media_controls_container_ ? media_controls_container_->GetExpandedHeight()
-                                : 0;
-
   int media_view_container_height =
       media_view_container_ ? media_view_container_->GetExpandedHeight() : 0;
 
   return max_height_ - header_->GetPreferredSize().height() -
          pagination_view_->GetPreferredSize().height() -
          sliders_container_->GetPreferredSize().height() -
-         media_controls_container_height - media_view_container_height -
-         footer_->GetPreferredSize().height();
+         media_view_container_height - footer_->GetPreferredSize().height();
 }
 
 std::u16string QuickSettingsView::GetDetailedViewAccessibleName() const {
@@ -302,6 +252,11 @@ bool QuickSettingsView::IsDetailedViewShown() const {
 void QuickSettingsView::TotalPagesChanged(int previous_page_count,
                                           int new_page_count) {
   pagination_view_->SetVisible(new_page_count > 1);
+}
+
+views::View* QuickSettingsView::GetAccessibilityFocusHelperViewForTesting() {
+  return system_tray_container_->GetViewByID(
+      VIEW_ID_QS_ACCESSIBILITY_FOCUS_HELPER_VIEW);
 }
 
 BEGIN_METADATA(QuickSettingsView)

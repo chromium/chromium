@@ -225,7 +225,12 @@ class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
  public:
   SharedDictionaryNetworkTransactionTest()
       : scoped_mock_transaction_(kBrotliDictionaryTestTransaction),
-        network_layer_(std::make_unique<MockNetworkLayer>()) {}
+        network_layer_(std::make_unique<MockNetworkLayer>()) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kCompressionDictionaryTransportRequireKnownRootCert});
+  }
   ~SharedDictionaryNetworkTransactionTest() override = default;
 
   SharedDictionaryNetworkTransactionTest(
@@ -250,6 +255,7 @@ class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
   std::unique_ptr<MockNetworkLayer> network_layer_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {

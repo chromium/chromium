@@ -345,7 +345,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
 
-        if (intentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO) {
+        // We need the CustomTabIncognitoManager for all OffTheRecord profiles to ensure
+        // that they are destroyed when a CCT session ends.
+        if (intentDataProvider.isOffTheRecord()) {
             component.resolveCustomTabIncognitoManager();
         }
 

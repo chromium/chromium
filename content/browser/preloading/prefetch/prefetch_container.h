@@ -10,6 +10,8 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -122,19 +124,37 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer(const PrefetchContainer&) = delete;
   PrefetchContainer& operator=(const PrefetchContainer&) = delete;
 
-  // Defines the key to uniquely identify a prefetch.
-  // DocumentToken will be provided from initiating documents on
-  // renderer-initaited prefetches, while it will be nullopt when
-  // browser-initiated ones.
-  // Please see the doc on crbug.com/40946257 for more context.
-  // TODO(crbug.com/40942681): If kPrefetchBrowserInitiatedTriggers is enabeld,
-  // NetworkIsolationKey will be used instead of DocumentToken.
+  // Key for managing and matching prefetches.
+  //
+  // This key can either represent
+  //
+  // - the key of a prefetch (typically named `prefetch_key`, and its URL is the
+  //   URL of the prefetched main resource); or
+  // - the key of a navigation (typically named `navigated_key`, and its URL is
+  //   the navigation request URL).
+  //
+  // TODO(crbug.com/364751887): This distinction is not perfect. Enforce it as
+  // much as possible.
+  //
+  // For prefetch, non URL part is given as the following:
+  //
+  // - If the prefetch is renderer-initiated, `DocumentToken` of the initiating
+  //   document is used.
+  // - If the prefetch is browser-initiated, `std::nullopt` (for
+  //   `referring_document_token`) is used.
+  // - If the prefetch is embedder-initiated, `net::NetworkIsolationKey` of the
+  //   embedder is used. Only used if `kPrefetchBrowserInitiatedTriggers` is
+  //   enabeld. See crbug.com/40942681.
+  //
+  // For navigation, `std::optional<DocumentToken>` of the initiating document
+  // of the navigation is used.
+  //
+  // See also the doc on crbug.com/40946257 for more context.
   class CONTENT_EXPORT Key {
    public:
     Key() = delete;
-    Key(net::NetworkIsolationKey nik, GURL prefetch_url);
-    Key(std::optional<blink::DocumentToken> referring_document_token,
-        GURL prefetch_url);
+    Key(net::NetworkIsolationKey nik, GURL url);
+    Key(std::optional<blink::DocumentToken> referring_document_token, GURL url);
     ~Key();
 
     Key(const Key&);
@@ -146,10 +166,10 @@ class CONTENT_EXPORT PrefetchContainer {
         return referring_document_token_or_nik_ <
                rhs.referring_document_token_or_nik_;
       }
-      return prefetch_url_ < rhs.prefetch_url_;
+      return url_ < rhs.url_;
     }
 
-    const GURL& prefetch_url() const { return prefetch_url_; }
+    const GURL& url() const { return url_; }
 
     Key WithNewUrl(const GURL& new_url) const {
       return absl::visit([&](const auto& e) { return Key(e, new_url); },
@@ -168,10 +188,34 @@ class CONTENT_EXPORT PrefetchContainer {
     const absl::variant<std::optional<blink::DocumentToken>,
                         net::NetworkIsolationKey>
         referring_document_token_or_nik_;
-    const GURL prefetch_url_;
+    const GURL url_;
   };
 
-  const Key& GetPrefetchContainerKey() const { return key_; }
+  // Observer interface to listen to lifecycle events of `PrefetchContainer`.
+  //
+  // Each callback is called at most once in the lifecycle of a container.
+  //
+  // Be careful about using this. This is designed only for
+  // `PrefetchMatchResolver2`.
+  //
+  // These callback are called only if `kPrefetchNewWaitLoop` is enabled.
+  // Observer interface to listen to lifecycle events of `PrefetchContainer`.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called at the head of dtor.
+    //
+    // TODO(crbug.com/356314759): Update the description to "Called just
+    // before dtor is called."
+    virtual void OnWillBeDestroyed(PrefetchContainer& prefetch_container) = 0;
+    // Called if non-redirect header of prefetch response is determined, i.e.
+    // successfully received or fetch requests including redirects failed.
+    // Callers can check success/failure by `GetNonRedirectHead()`.
+    virtual void OnDeterminedHead(PrefetchContainer& prefetch_container) = 0;
+  };
+
+  void OnWillBeDestroyed();
+
+  const Key& key() const { return key_; }
 
   // The ID of the RenderFrameHost that triggered the prefetch.
   const GlobalRenderFrameHostId& GetReferringRenderFrameHostId() const {
@@ -180,7 +224,7 @@ class CONTENT_EXPORT PrefetchContainer {
   bool HasSameReferringURLForMetrics(const PrefetchContainer& other) const;
 
   // The initial URL that was requested to be prefetched.
-  const GURL& GetURL() const { return key_.prefetch_url(); }
+  const GURL& GetURL() const { return key_.url(); }
 
   // The current URL being fetched.
   GURL GetCurrentURL() const;
@@ -233,8 +277,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The status of the current prefetch. Note that |HasPrefetchStatus| will be
   // initially false until |SetPrefetchStatus| is called. |SetPrefetchStatus|
-  // also sets |attempt_| PreloadingHoldbackStatus, PreloadingTriggeringOutcome
-  // and PreloadingFailureReason. It is only safe to call after
+  // also sets |attempt_| PreloadingTriggeringOutcome and
+  // PreloadingFailureReason. It is only safe to call after
   // `OnEligibilityCheckComplete`.
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
@@ -403,6 +447,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // This method must be called at most once in the lifecycle of
   // `PrefetchContainer`.
   void OnDeterminedHead();
+  void OnDeterminedHead2();
   // Unblocks waiting `PrefetchMatchResolver`.
   //
   // This method can be called multiple times.
@@ -464,10 +509,18 @@ class CONTENT_EXPORT PrefetchContainer {
   // message to DevTools console and can be null.
   void MaybeSetNoVarySearchData(RenderFrameHost* rfh);
 
-  // Called when cookies changes are detected via
-  // `HaveDefaultContextCookiesChanged()`, either for `this` or other
-  // `PrefetchContainer`s under the same `PrefetchMatchResolver`.
-  void OnCookiesChanged();
+  // Called upon detecting a change to cookies within the redirect chain.
+  //
+  // Note that there are two paths:
+  //
+  // - Roughly speaking, when non-redirect header received and
+  //   `PrefetchService`/`PrefetchContainer` detected cookies change of the head
+  //   of redirect chain. `PrefetchMatchResolver`/`PrefetchMatchResolver2`
+  //   propagates it to other waiting prefetches as they share domain.
+  // - When `PrefetchURLLoaderInterceptor::MaybeCreateLoader()` handles
+  //   redirects in the serving prefetch.
+  void OnDetectedCookiesChange();
+  void OnDetectedCookiesChange2();
 
   class SinglePrefetch;
 
@@ -578,8 +631,24 @@ class CONTENT_EXPORT PrefetchContainer {
 
   Reader CreateReader();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   bool IsExactMatch(const GURL& url) const;
   bool IsNoVarySearchHeaderMatch(const GURL& url) const;
+
+  // Records metrics when serving result is determined.
+  //
+  // This is eventually called once for every `PrefetchContainer` put in
+  // `PrefetchMatchResolver2::candidates_`, i.e. those potentially matching
+  // and expected to become servable at the head of
+  // `PrefetchMatchResolver2::FindPrefetch()`.
+  //
+  // This can be called multiple times, because this can be called for multiple
+  // `PrefetchMatchResolver2`s.
+  void OnUnregisterCandidate(const GURL& navigated_url,
+                             bool is_served,
+                             std::optional<base::TimeDelta> blocked_duration);
 
   bool is_in_dtor() const { return is_in_dtor_; }
 
@@ -687,6 +756,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // purpose.
   std::optional<PrefetchStatus> prefetch_status_;
 
+  // True iff `PrefetchStatus` was set to `kPrefetchNotUsedCookiesChanged` once.
+  //
+  // TODO(crbug.com/40075414): Remove this.
+  bool on_detected_cookies_change_called_ = false;
+
   // The current status of the prefetch.
   LoadState load_state_ = LoadState::kNotStarted;
 
@@ -771,7 +845,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Callback for non-blocking call `StartBlockUntilHead()`.
   //
-  // TODO(https://crbug.com/353490734): Remove it.
+  // TODO(crbug.com/353490734): Remove it.
   base::OnceCallback<void(PrefetchContainer&)>
       on_maybe_determined_head_callback_;
 
@@ -785,6 +859,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // True iff the destructor was called.
   bool is_in_dtor_ = false;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

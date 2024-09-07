@@ -152,7 +152,8 @@ suite('AutofillSectionAddressValidationTests', () => {
 
   test('verifySaveabilityOfInitiallyInvalid', async () => {
     const address = createAddressEntry();
-    address.metadata!.source = chrome.autofillPrivate.AddressSource.ACCOUNT;
+    address.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT;
 
     // This field is required.
     const entry = address.fields.find(
@@ -172,7 +173,7 @@ suite('AutofillSectionAddressValidationTests', () => {
     address.fields.push({type: FieldType.ADDRESS_HOME_COUNTRY, value: 'US'});
     address.metadata = {
       summaryLabel: '',
-      source: chrome.autofillPrivate.AddressSource.ACCOUNT,
+      recordType: chrome.autofillPrivate.AddressRecordType.ACCOUNT,
     };
 
     const dialog = await createAddressDialog(address);

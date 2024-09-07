@@ -41,14 +41,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-class PDFExtensionJSTest : public base::test::WithFeatureOverride,
-                           public PDFExtensionTestBase {
- public:
-  PDFExtensionJSTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
-
-  bool UseOopif() const override { return GetParam(); }
-
+class PDFExtensionJSTestBase : public PDFExtensionTestBase {
  protected:
   void SetUpOnMainThread() override {
     PDFExtensionTestBase::SetUpOnMainThread();
@@ -82,6 +75,12 @@ class PDFExtensionJSTest : public base::test::WithFeatureOverride,
     RunTestsInJsModuleHelper(filename, pdf_filename, /*new_tab=*/true);
   }
 
+  // Loads `url` either in the current tab or a new tab and wait for it to be
+  // fully loaded before returning. Returns whether the PDF loaded or not.
+  virtual bool LoadPdfAndWait(const GURL& url, bool new_tab) {
+    return new_tab ? LoadPdfInNewTab(url) : LoadPdf(url);
+  }
+
  private:
   // Runs the extensions test at chrome/test/data/pdf/<filename> on the PDF file
   // at chrome/test/data/pdf/<pdf_filename>, where |filename| is loaded as a JS
@@ -89,18 +88,14 @@ class PDFExtensionJSTest : public base::test::WithFeatureOverride,
   void RunTestsInJsModuleHelper(const std::string& filename,
                                 const std::string& pdf_filename,
                                 bool new_tab) {
-    extensions::ResultCatcher catcher;
-
     GURL url(embedded_test_server()->GetURL("/pdf/" + pdf_filename));
-
-    // Use `LoadPdfInNewTab()` or `LoadPdf()`, which ensures that the PDF is
-    // loaded before continuing.
-    ASSERT_TRUE(new_tab ? LoadPdfInNewTab(url) : LoadPdf(url));
+    ASSERT_TRUE(LoadPdfAndWait(url, new_tab));
     content::RenderFrameHost* extension_host =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(
             GetActiveWebContents());
     ASSERT_TRUE(extension_host);
 
+    extensions::ResultCatcher catcher;
     constexpr char kModuleLoaderTemplate[] =
         R"(var s = document.createElement('script');
            s.type = 'module';
@@ -131,6 +126,15 @@ class PDFExtensionJSTest : public base::test::WithFeatureOverride,
   }
 
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;
+};
+
+class PDFExtensionJSTest : public base::test::WithFeatureOverride,
+                           public PDFExtensionJSTestBase {
+ public:
+  PDFExtensionJSTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+
+  bool UseOopif() const override { return GetParam(); }
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Basic) {
@@ -399,9 +403,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
 
 class PDFExtensionWebUICodeCacheJSTest : public PDFExtensionJSTest {
  protected:
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
     auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
-    enabled.push_back(features::kWebUICodeCache);
+    enabled.push_back({features::kWebUICodeCache, {}});
     return enabled;
   }
 };
@@ -463,9 +468,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Ink2Disabled) {
 
 class PDFExtensionJSInk2Test : public PDFExtensionJSTest {
  protected:
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
     auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
-    enabled.push_back(chrome_pdf::features::kPdfInk2);
+    enabled.push_back({chrome_pdf::features::kPdfInk2, {}});
     return enabled;
   }
 };
@@ -485,6 +491,29 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2SidePanel) {
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2ViewerToolbar) {
   RunTestsInJsModule("ink2_viewer_toolbar_test.js", "test.pdf");
 }
+
+class PDFExtensionJSInk2BeforeUnloadTest : public PDFExtensionJSTestBase {
+ public:
+  // OOPIF PDF only, since MimeHandler handles the beforeunload event instead.
+  bool UseOopif() const override { return true; }
+
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionJSTestBase::GetEnabledFeatures();
+    enabled.push_back({chrome_pdf::features::kPdfInk2, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2BeforeUnloadTest, Stroke) {
+  RunTestsInJsModule("ink2_before_unload_stroke_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2BeforeUnloadTest, Undo) {
+  RunTestsInJsModule("ink2_before_unload_undo_test.js", "test.pdf");
+}
+
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer

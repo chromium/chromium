@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 // Constants for styling the app when page zoom changes.
 const OVERFLOW_X_TYPICAL = 'hidden';
@@ -49,9 +49,9 @@ enum ColorSuffix {
 
 // Handles updating the visual styles for the Reading mode content panel.
 export class AppStyleUpdater {
-  private app_: PolymerElement;
+  private app_: CrLitElement;
 
-  constructor(app: PolymerElement) {
+  constructor(app: CrLitElement) {
     this.app_ = app;
   }
 

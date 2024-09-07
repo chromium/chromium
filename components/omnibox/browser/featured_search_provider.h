@@ -17,6 +17,7 @@
 class AutocompleteInput;
 class AutocompleteProviderClient;
 class TemplateURLService;
+class AutocompleteResult;
 
 // This is the provider for built-in URLs, such as about:settings and
 // chrome://version, as well as the built-in Starter Pack search engines.
@@ -30,10 +31,14 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void DeleteMatch(const AutocompleteMatch& match) override;
 
+  // Called by `AutocompleteController` after ranking has settled. Increments
+  // IPH shown counts.
+  void RegisterDisplayedMatches(const AutocompleteResult& result);
+
  private:
   ~FeaturedSearchProvider() override;
 
-  static const int kAskGoogleRelevance;
+  static const int kGeminiRelevance;
   static const int kFeaturedEnterpriseSearchRelevance;
   static const int kStarterPackRelevance;
 
@@ -95,12 +100,16 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;
 
-  // The number of times the IPH row has been shown so far in this session.
-  size_t iph_shown_count_{0};
+  // The number of times the IPH row has been shown so far in this browser
+  // session. Shared by all IPH types. Reset when, e.g., the user opens a new
+  // browser window.
+  size_t iph_shown_in_browser_session_count_{0};
 
   // Whether an IPH match was shown during the current omnibox session. Used to
-  // avoid incrementing `iph_shown_count_` more than once per session.
-  bool iph_shown_this_session_ = false;
+  // avoid incrementing `iph_shown_in_browser_session_count_` more than once per
+  // omnibox session. Reset when, e.g.,  the user refocuses the omnibox.
+  // omnibox.
+  bool iph_shown_in_omnibox_session_ = false;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FEATURED_SEARCH_PROVIDER_H_

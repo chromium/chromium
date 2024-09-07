@@ -8,8 +8,7 @@ import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 
 declare_args() {
-  system_owns_volume =
-      use_alsa && !enable_assistant && chromecast_branding != "google"
+  system_owns_volume = use_alsa && !enable_assistant
 }
 
 cast_source_set("backend") {

@@ -37,11 +37,10 @@ void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
   PhysicalSize orthogonal_children_containing_block_size =
       child.InitialContainingBlockSize();
 
-  LayoutUnit fallback_size;
-  if (IsHorizontalWritingMode(parent_style.GetWritingMode()))
-    fallback_size = orthogonal_children_containing_block_size.height;
-  else
-    fallback_size = orthogonal_children_containing_block_size.width;
+  LayoutUnit fallback_size =
+      parent_style.IsHorizontalWritingMode()
+          ? orthogonal_children_containing_block_size.height
+          : orthogonal_children_containing_block_size.width;
 
   LayoutUnit size(LayoutUnit::Max());
   if (parent_style.LogicalHeight().IsFixed()) {

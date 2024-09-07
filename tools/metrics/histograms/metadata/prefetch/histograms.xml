@@ -33,6 +33,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Moderate" summary="Moderate"/>
 </variants>
 
+<variants name="WasServed">
+  <variant name="NotServed" summary="not served"/>
+  <variant name="Served" summary="served"/>
+</variants>
+
 <histogram
     name="PrefetchProxy.AfterClick.BlockUntilHeadDuration.{WasServed}.{SpeculationEagerness}"
     units="ms" expires_after="2025-01-05">
@@ -48,11 +53,40 @@ chromium-metrics-reviews@google.com.
     until the head of the prefetch response was received. This histogram is only
     recorded for prefetches that are {WasServed} and with an Eagerness of
     {SpeculationEagerness}.
+
+    Only recorded if `kPrefetchNewWaitLoop` is disabled.
+    `PrefetchProxy.AfterClick.BlockUntilHeadDuration2.{WasServed}.{SpeculationEagerness}`
+    is the corresponding metric for the enabled case. This metric will be
+    removed once `kPrefetchNewWaitLoop` is launched.
   </summary>
-  <token key="WasServed">
-    <variant name="NotServed" summary="not served"/>
-    <variant name="Served" summary="served"/>
-  </token>
+  <token key="WasServed" variants="WasServed"/>
+  <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
+</histogram>
+
+<histogram
+    name="PrefetchProxy.AfterClick.BlockUntilHeadDuration2.{WasServed}.{SpeculationEagerness}"
+    units="ms" expires_after="2025-01-05">
+  <owner>kouhei@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a navigation started, `PrefetchMatchResolver2` collects potentially
+    matching prefetches for it. Judging a prefetch accutally matches or not
+    needs non-redirect header. If a prefetch has non-redirect header and
+    actually matched, then this process ends synchronously. If not, it waits
+    non-redirect headers until it finds a matched and servable one or there is
+    no more candidates.
+
+    This histogram is recorded iff the matching process didn't end synchronously
+    and when the judge for a prefetch is determined. The value is the blocked
+    duration (for each tuple (navigation, candidate prefetch)).
+
+    This histogram is only recorded for prefetches that are {WasServed} and with
+    an Eagerness of {SpeculationEagerness}.
+
+    Only recorded if `kPrefetchNewWaitLoop` is enabled.
+  </summary>
+  <token key="WasServed" variants="WasServed"/>
   <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
 </histogram>
 
@@ -141,6 +175,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch.{SpeculationEagerness}"
+    enum="Boolean" expires_after="2025-01-05">
+  <owner>kouhei@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a navigation started, `PrefetchMatchResolver2` collects potentially
+    matching prefetches for it. Judging a prefetch accutally matches or not
+    needs non-redirect header. If a prefetch has non-redirect header and
+    actually matched, then this process ends synchronously. If not, it waits
+    non-redirect headers until it finds a matched and servable one or there is
+    no more candidates.
+
+    This histogram is recorded when this process ends, for each tuple
+    (navigation, candidate prefetch), true iff didn't end synchronously.
+
+    This histogram is only for prefetches with an eagerness of
+    {SpeculationEagerness}.
+
+    Only recorded if `kPrefetchNewWaitLoop` is enabled.
+  </summary>
+  <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
+</histogram>
+
 <histogram name="PrefetchProxy.AfterClick.RedirectChainSize" units="count"
     expires_after="2024-09-01">
   <owner>kouhei@chromium.org</owner>
@@ -157,14 +216,20 @@ chromium-metrics-reviews@google.com.
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    If a prefetch request has started but the head of the prefetch response has
-    not been received yet when a navigation to a URL that matches the prefetch,
-    then the prefetch service will block until the head of the prefetch response
-    is received and then decide to serve or not serve the prefetch.
+    If a prefetch request has started but the non-redirect header of the
+    prefetch response has not been received yet when a navigation to a URL that
+    is expected to matche the prefetch, then the prefetch service will block
+    until the non-redirect header of the prefetch response is received and then
+    decide to serve or not serve the prefetch.
 
     This histogram records whether or not prefetch service will block or not for
     a prefetch. This histogram is only for prefetches with an Eagerness of
     {SpeculationEagerness}.
+
+    Only recorded if `kPrefetchNewWaitLoop` is disabled.
+    `PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch.{SpeculationEagerness}`
+    is the corresponding metric for the enabled case. This metric will be
+    removed once `kPrefetchNewWaitLoop` is launched.
   </summary>
   <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
 </histogram>
@@ -183,7 +248,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheEntryAge.{PrefetchProxyCanaryCheckerClient}"
-    units="hours" expires_after="2024-12-24">
+    units="hours" expires_after="2025-02-23">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -484,10 +549,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.RespCode" enum="HttpResponseCode"
-    expires_after="2024-03-17">
+    expires_after="2025-02-23">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
+    Warning: this histogram was expired from 2024-03-17 to 2024-08-20; data may
+    be missing.
+
     Records the HTTP response code encountered when connecting to the prefetch
     proxy CONNECT tunnel. Recorded every time Chrome gets CONNECT tunnel
     response headers.

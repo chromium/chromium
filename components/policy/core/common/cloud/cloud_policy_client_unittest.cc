@@ -207,7 +207,7 @@ em::DeviceManagementRequest GetPolicyRequest() {
   em::PolicyFetchRequest* policy_fetch_request =
       policy_request.mutable_policy_request()->add_requests();
   policy_fetch_request->set_policy_type(dm_protocol::kChromeUserPolicyType);
-  policy_fetch_request->set_signature_type(em::PolicyFetchRequest::SHA1_RSA);
+  policy_fetch_request->set_signature_type(em::PolicyFetchRequest::SHA256_RSA);
   policy_fetch_request->set_verification_key_hash(kPolicyVerificationKeyHash);
   policy_fetch_request->set_device_dm_token(kDeviceDMToken);
   policy_request.mutable_policy_request()->set_reason(kProtoReason);
@@ -2071,6 +2071,8 @@ TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
             .mutable_policy_validation_report_request();
     policy_validation_report_request->set_policy_type(policy_type_);
     policy_validation_report_request->set_policy_token(kPolicyToken);
+    policy_validation_report_request->set_action(
+        em::PolicyValidationReportRequest_Action_STORE);
     policy_validation_report_request->set_validation_result_type(
         em::PolicyValidationReportRequest::
             VALIDATION_RESULT_TYPE_VALUE_WARNING);
@@ -2088,8 +2090,8 @@ TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
   issues.push_back(
       {kPolicyName, ValueValidationIssue::kWarning, kValueValidationMessage});
   client_->UploadPolicyValidationReport(
-      CloudPolicyValidatorBase::VALIDATION_VALUE_WARNING, issues, policy_type_,
-      kPolicyToken);
+      CloudPolicyValidatorBase::VALIDATION_VALUE_WARNING, issues, kStore,
+      policy_type_, kPolicyToken);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::
                 TYPE_UPLOAD_POLICY_VALIDATION_REPORT,

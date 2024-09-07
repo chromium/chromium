@@ -281,16 +281,17 @@ EventReportWindows::ParseWindowsJSON(const base::Value& v,
 
   base::TimeDelta start_duration = start_time;
   for (const auto& item : *end_times_list) {
-    ASSIGN_OR_RETURN(const int item_int, ParseInt(item), [](ParseError) {
-      return SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid;
-    });
+    ASSIGN_OR_RETURN(base::TimeDelta end_time, ParseDuration(item),
+                     [](ParseError) {
+                       return SourceRegistrationError::
+                           kEventReportWindowsEndTimeValueInvalid;
+                     });
 
-    if (item_int <= 0) {
+    if (!end_time.is_positive()) {
       return base::unexpected(
           SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid);
     }
 
-    base::TimeDelta end_time = base::Seconds(item_int);
     if (end_time > expiry) {
       end_time = expiry;
     }

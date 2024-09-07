@@ -74,6 +74,8 @@
 #include "components/user_education/common/events.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -324,6 +326,51 @@ class ShelfItemSelectionTracker : public ShelfItemDelegate {
  private:
   size_t item_selected_count_ = 0;
   ShelfAction item_selected_action_ = SHELF_ACTION_NONE;
+};
+
+// A ShelfItemDelegate that opens system modal window on activation.
+class SystemModalWindowShelfItemDelegate : public ShelfItemDelegate {
+ public:
+  using WindowCreator = base::RepeatingCallback<std::unique_ptr<
+      aura::Window>(const gfx::Rect&, aura::client::WindowType, int)>;
+  explicit SystemModalWindowShelfItemDelegate(
+      const WindowCreator& window_creator)
+      : ShelfItemDelegate(ShelfID()), window_creator_(window_creator) {}
+  SystemModalWindowShelfItemDelegate(
+      const SystemModalWindowShelfItemDelegate&) = delete;
+  SystemModalWindowShelfItemDelegate& operator=(
+      const SystemModalWindowShelfItemDelegate&) = delete;
+  ~SystemModalWindowShelfItemDelegate() override = default;
+
+  // ShelfItemDelegate:
+  void ItemSelected(std::unique_ptr<ui::Event> event,
+                    int64_t display_id,
+                    ShelfLaunchSource source,
+                    ItemSelectedCallback callback,
+                    const ItemFilterPredicate& filter_predicate) override {
+    test_window_ = window_creator_.Run(gfx::Rect(gfx::Size(50, 50)),
+                                       aura::client::WINDOW_TYPE_NORMAL,
+                                       kShellWindowId_Invalid);
+    test_window_->SetProperty(aura::client::kModalKey,
+                              ui::mojom::ModalType::kSystem);
+    test_window_->Show();
+    aura::client::ParentWindowWithContext(
+        test_window_.get(), Shell::GetPrimaryRootWindow(), gfx::Rect(),
+        display::kInvalidDisplayId);
+
+    std::move(callback).Run(SHELF_ACTION_NONE, {});
+  }
+  void ExecuteCommand(bool, int64_t, int32_t, int64_t) override {}
+  void Close() override {}
+
+  bool HasTestWindow() const { return !!test_window_; }
+
+  void ResetTestWindow() { test_window_.reset(); }
+
+ private:
+  const WindowCreator window_creator_;
+
+  std::unique_ptr<aura::Window> test_window_;
 };
 
 // A ShelfItemDelegate to generate empty shelf context menu.
@@ -3634,6 +3681,36 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionAfterGestureLongPress) {
   GetEventGenerator()->ClickLeftButton();
   EXPECT_FALSE(shelf_view_->IsShowingMenu());
   EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDropStateOfAppIcon1());
+}
+
+// Verifies that tap gesture targets the correct app item view if the previous
+// tap gesture resulted in a system modal window being shown.
+TEST_F(ShelfViewGestureTapTest, TapAfterShowingSystemModalWindow) {
+  // Add two shelf app buttons.
+  const ShelfID id1 = AddAppShortcut();
+  const ShelfID id2 = AddAppShortcut();
+
+  auto item_1_delegate_owned =
+      std::make_unique<SystemModalWindowShelfItemDelegate>(base::BindRepeating(
+          &AshTestBase::CreateTestWindow, base::Unretained(this)));
+  SystemModalWindowShelfItemDelegate* item_1_delegate =
+      item_1_delegate_owned.get();
+  model_->ReplaceShelfItemDelegate(id1, std::move(item_1_delegate_owned));
+
+  auto item_2_delegate_owned = std::make_unique<ShelfItemSelectionTracker>();
+  ShelfItemSelectionTracker* item_2_delegate = item_2_delegate_owned.get();
+  model_->ReplaceShelfItemDelegate(id2, std::move(item_2_delegate_owned));
+
+  GetEventGenerator()->GestureTapAt(
+      GetButtonByID(id1)->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(item_1_delegate->HasTestWindow());
+  ASSERT_TRUE(Shell::IsSystemModalWindowOpen());
+  item_1_delegate->ResetTestWindow();
+
+  GetEventGenerator()->GestureTapAt(
+      GetButtonByID(id2)->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(1u, item_2_delegate->item_selected_count());
+  EXPECT_FALSE(item_1_delegate->HasTestWindow());
 }
 
 // Verifies that removing an item that is still waiting for the context menu

@@ -82,6 +82,9 @@ class FfxEmulator(AbstractContextManager):
                 'sdk.overrides.qemu_internal=' +
                 os.path.join(DIR_SRC_ROOT, 'third_party', 'qemu-linux-arm64',
                              'bin', 'qemu-system-aarch64'))
+            configs.append('sdk.overrides.uefi_internal=' +
+                           os.path.join(DIR_SRC_ROOT, 'third_party', 'edk2',
+                                        'qemu-arm64', 'QEMU_EFI.fd'))
 
         # Always use qemu for arm64 images, no matter it runs on arm64 hosts or
         # x64 hosts with simulation.

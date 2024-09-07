@@ -137,6 +137,8 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_SEND_ALL_INFO},
       {"timeZoneGeolocationWarningText",
        IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_WARNING_TEXT},
+      {"timeZoneGeolocationManagedWarningText",
+       IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_MANAGED_WARNING_TEXT},
       {"use24HourClock", IDS_SETTINGS_USE_24_HOUR_CLOCK},
       {"setDateTime", IDS_SETTINGS_SET_DATE_TIME},
   };

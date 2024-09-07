@@ -94,7 +94,9 @@ TEST_F(FrameNodeImplTest, NavigationCommitted_SameDocument) {
   EXPECT_FALSE(frame_node->GetOrigin().has_value());
   const GURL kUrl("http://www.foo.com/");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
-  frame_node->OnNavigationCommitted(kUrl, kOrigin, /* same_document */ true);
+  frame_node->OnNavigationCommitted(
+      kUrl, kOrigin, /*same_document=*/true,
+      /*is_served_from_back_forward_cache=*/false);
   EXPECT_EQ(kUrl, frame_node->GetURL());
   // Origin argument is ignored for same-document navigation.
   EXPECT_FALSE(frame_node->GetOrigin().has_value());
@@ -108,7 +110,9 @@ TEST_F(FrameNodeImplTest, NavigationCommitted_DifferentDocument) {
   EXPECT_FALSE(frame_node->GetOrigin().has_value());
   const GURL kUrl("http://www.foo.com/");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
-  frame_node->OnNavigationCommitted(kUrl, kOrigin, /* same_document */ false);
+  frame_node->OnNavigationCommitted(
+      kUrl, kOrigin, /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   EXPECT_EQ(kUrl, frame_node->GetURL());
   EXPECT_EQ(kOrigin, frame_node->GetOrigin());
 }
@@ -142,7 +146,10 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
 
   MOCK_METHOD(void, OnFrameNodeAdded, (const FrameNode*), (override));
   MOCK_METHOD(void, OnBeforeFrameNodeRemoved, (const FrameNode*), (override));
-  MOCK_METHOD(void, OnIsCurrentChanged, (const FrameNode*), (override));
+  MOCK_METHOD(void,
+              OnCurrentFrameChanged,
+              (const FrameNode*, const FrameNode*),
+              (override));
   MOCK_METHOD(void, OnNetworkAlmostIdleChanged, (const FrameNode*), (override));
   MOCK_METHOD(void,
               OnFrameLifecycleStateChanged,
@@ -166,6 +173,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
               OnPriorityAndReasonChanged,
               (const FrameNode*, const PriorityAndReason& previous_value),
               (override));
+  MOCK_METHOD(void, OnFrameUsesWebRTCChanged, (const FrameNode*), (override));
   MOCK_METHOD(void, OnHadUserActivationChanged, (const FrameNode*), (override));
   MOCK_METHOD(void,
               OnHadFormInteractionChanged,
@@ -244,9 +252,10 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   const FrameNode* raw_frame_node = frame_node.get();
   EXPECT_EQ(raw_frame_node, obs.created_frame_node());
 
-  // Invoke "SetIsCurrent" and expect a "OnIsCurrentChanged" callback.
-  EXPECT_CALL(obs, OnIsCurrentChanged(raw_frame_node));
-  frame_node->SetIsCurrent(false);
+  // Invoke "UpdateCurrentFrame" and expect a "OnCurrentFrameChanged" callback.
+  EXPECT_CALL(obs, OnCurrentFrameChanged(raw_frame_node, nullptr));
+  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/frame_node.get(),
+                                    /*current_frame_node=*/nullptr, graph());
   testing::Mock::VerifyAndClear(&obs);
 
   // Invoke "SetNetworkAlmostIdle" and expect an "OnNetworkAlmostIdleChanged"
@@ -290,15 +299,18 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
         EXPECT_EQ(frame_node->GetOrigin(), kOrigin);
       });
   EXPECT_CALL(obs, OnNetworkAlmostIdleChanged(raw_frame_node));
-  frame_node->OnNavigationCommitted(kUrl, kOrigin, /*same_document=*/false);
+  frame_node->OnNavigationCommitted(
+      kUrl, kOrigin, /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   testing::Mock::VerifyAndClear(&obs);
 
   // Invoke "OnNavigationCommitted" for a same-document navigation. Origin isn't
   // affected.
   const GURL kSameDocumentUrl("http://www.foo.com#same-document");
   EXPECT_CALL(obs, OnURLChanged(raw_frame_node, kUrl));
-  frame_node->OnNavigationCommitted(kSameDocumentUrl, kOrigin,
-                                    /*same_document=*/true);
+  frame_node->OnNavigationCommitted(
+      kSameDocumentUrl, kOrigin,
+      /*same_document=*/true, /*is_served_from_back_forward_cache=*/false);
   testing::Mock::VerifyAndClear(&obs);
 
   // Re-entrant iteration should work.
@@ -423,6 +435,24 @@ TEST_F(FrameNodeImplTest, IsHoldingIndexedDBLock) {
   EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(frame_node.get()));
   frame_node->SetIsHoldingIndexedDBLock(false);
   EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock());
+
+  graph()->RemoveFrameNodeObserver(&obs);
+}
+
+TEST_F(FrameNodeImplTest, UsesWebRTC) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+
+  MockObserver obs;
+  graph()->AddFrameNodeObserver(&obs);
+
+  EXPECT_CALL(obs, OnFrameUsesWebRTCChanged(frame_node.get()));
+  frame_node->OnStartedUsingWebRTC();
+  EXPECT_TRUE(frame_node->UsesWebRTC());
+  EXPECT_CALL(obs, OnFrameUsesWebRTCChanged(frame_node.get()));
+  frame_node->OnStoppedUsingWebRTC();
+  EXPECT_FALSE(frame_node->UsesWebRTC());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }

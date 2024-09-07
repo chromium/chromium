@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/lens/search_bubble_page_handler.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -43,24 +46,25 @@ void SearchBubblePageHandler::CloseUI() {
   }
 }
 
-lens::mojom::SearchboxThemePtr MakeTheme(
-    const ui::ColorProvider& color_provider,
-    const PrefService* pref_service) {
+lens::mojom::SearchboxThemePtr MakeTheme(content::WebContents* web_contents,
+                                         const PrefService* pref_service) {
   auto theme = lens::mojom::SearchboxTheme::New();
+  const ui::ColorProvider& color_provider = web_contents->GetColorProvider();
   theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
   theme->text_color = color_provider.GetColor(kColorNewTabPageText);
   if (!CurrentThemeIsGrayscale(pref_service) &&
       CurrentThemeUserColor(pref_service).has_value()) {
     theme->logo_color = color_provider.GetColor(kColorNewTabPageLogo);
   }
-  theme->is_dark = !color_utils::IsDark(theme->text_color);
+  theme->is_dark =
+      lens::LensOverlayShouldUseDarkMode(ThemeServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())));
   return theme;
 }
 
 void SearchBubblePageHandler::SetTheme() {
   if (web_contents_) {
-    page_->SetTheme(
-        MakeTheme(web_contents_->GetColorProvider(), pref_service_));
+    page_->SetTheme(MakeTheme(web_contents_, pref_service_));
   }
 }
 

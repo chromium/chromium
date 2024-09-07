@@ -28,8 +28,7 @@
 
 namespace {
 
-// TODO(343110207): Adjust the size when the WebUI page is finalized.
-constexpr gfx::Size kDialogSize{500, 290};
+constexpr gfx::Size kDialogSize{470, 350};
 
 void UpdateDialogPosition(views::Widget* widget,
                           content::WebContents* web_contents) {
@@ -139,6 +138,16 @@ void ProductSpecificationsDisclosureDialog::ShowDialog(
   // Move it to the top of the screen below omnibox. Default behavior is to show
   // it in the middle of the screen.
   UpdateDialogPosition(current_instance_->dialog_widget_, web_contents);
+}
+
+// static
+bool ProductSpecificationsDisclosureDialog::CloseDialog() {
+  if (current_instance_) {
+    current_instance_->dialog_widget_->Close();
+    current_instance_ = nullptr;
+    return true;
+  }
+  return false;
 }
 
 ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(

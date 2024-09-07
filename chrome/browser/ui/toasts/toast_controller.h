@@ -1,0 +1,79 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_
+#define CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_
+
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "ui/views/widget/widget_observer.h"
+
+class BrowserWindowInterface;
+class ToastRegistry;
+class ToastSpecification;
+enum class ToastId;
+
+namespace toasts {
+enum class ToastCloseReason;
+class ToastView;
+}
+
+struct ToastParams {
+  explicit ToastParams(ToastId id);
+  ToastParams(ToastParams&& other) noexcept;
+  ToastParams& operator=(ToastParams&& other) noexcept;
+  ~ToastParams();
+
+  ToastId toast_id_;
+  std::vector<std::u16string> body_string_replacement_params_;
+  std::vector<std::u16string> action_button_string_replacement_params_;
+};
+
+class ToastController : public views::WidgetObserver {
+ public:
+  explicit ToastController(BrowserWindowInterface* browser_window_interface,
+                           const ToastRegistry* toast_registry);
+  ~ToastController() override;
+
+  bool IsShowingToast() const;
+  bool CanShowToast(ToastId id) const;
+
+  // Attempts to show the toast and returns true if the toast was successfully
+  // shown, otherwise return false. Callers that show a persistent toast must
+  // eventually call ClosePersistentToast() to ensure their toast closes.
+  bool MaybeShowToast(ToastParams params);
+
+  // Closes the currently showing persistent toast that must correspond to `id`.
+  void ClosePersistentToast(ToastId id);
+
+  // views::WidgetObserver:
+  void OnWidgetDestroyed(views::Widget* widget) override;
+
+ private:
+  void ShowToast(ToastParams params);
+  void CreateToast(const ToastSpecification*);
+  virtual void CloseToast(toasts::ToastCloseReason reason);
+  void OnToastClosed();
+  std::u16string FormatString(int string_id,
+                              std::vector<std::u16string> replacement);
+
+  const raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  const raw_ptr<const ToastRegistry> toast_registry_;
+  std::optional<ToastParams> current_toast_params_;
+  std::optional<ToastParams> next_toast_params_;
+  base::OneShotTimer toast_close_timer_;
+
+  // Observer to check when the toast is destroyed.
+  base::ScopedObservation<views::Widget, views::WidgetObserver> toast_observer_{
+      this};
+
+  raw_ptr<toasts::ToastView> toast_;
+};
+
+#endif  // CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_

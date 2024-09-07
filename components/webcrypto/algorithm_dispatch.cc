@@ -250,7 +250,7 @@ Status UnwrapKey(blink::WebCryptoKeyFormat format,
 
 Status DeriveBits(const blink::WebCryptoAlgorithm& algorithm,
                   const blink::WebCryptoKey& base_key,
-                  unsigned int length_bits,
+                  std::optional<unsigned int> length_bits,
                   std::vector<uint8_t>* derived_bytes) {
   if (!base_key.KeyUsageAllows(blink::kWebCryptoKeyUsageDeriveBits))
     return Status::ErrorUnexpected();

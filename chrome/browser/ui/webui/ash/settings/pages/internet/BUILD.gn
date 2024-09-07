@@ -34,6 +34,7 @@ static_library("internet") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/extensions/vpn_provider",

@@ -137,6 +137,8 @@ class CORE_EXPORT RootFrameViewport final
   void UpdateSnappedTargetsAndEnqueueScrollSnapChange() override;
   std::optional<cc::TargetSnapAreaElementIds> GetScrollsnapchangingTargetIds()
       const override;
+  void SetScrollsnapchangeTargetIds(
+      std::optional<cc::TargetSnapAreaElementIds>) override;
   void SetScrollsnapchangingTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) override;
   const cc::SnapSelectionStrategy* GetImplSnapStrategy() const override;
@@ -145,10 +147,13 @@ class CORE_EXPORT RootFrameViewport final
   void EnqueueScrollSnapChangingEventFromImplIfNeeded() override;
   void UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
       const cc::TargetSnapAreaElementIds& new_target_ids) override;
+  void SetSnappedQueryTargetIds(
+      std::optional<cc::TargetSnapAreaElementIds> new_target_ids) override;
 
   void SetPendingHistoryRestoreScrollOffset(
       const HistoryItem::ViewState& view_state,
-      bool should_restore_scroll) override {
+      bool should_restore_scroll,
+      mojom::blink::ScrollBehavior scroll_behavior) override {
     pending_view_state_ = view_state;
     should_restore_scroll_ = should_restore_scroll;
   }

@@ -25,11 +25,7 @@ _DEFAULT_VALID_PERF_POOLS = {
 _VALID_PERF_POOLS = {
     'android-builder-perf': {'chrome.tests'},
     'android_arm64-builder-perf': {'chrome.tests'},
-    'chromecast-linux-builder-perf': {'chrome.tests'},
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
-    'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
-    'chromeos-arm-generic-lacros-builder-perf': {'chrome.tests'},
-    'chromeos-arm64-generic-lacros-builder-perf': {'chrome.tests'},
     'fuchsia-perf-nsn': {'chrome.tests'},
     'fuchsia-perf-shk': {'chrome.tests'},
     'linux-builder-perf': {'chrome.tests'},

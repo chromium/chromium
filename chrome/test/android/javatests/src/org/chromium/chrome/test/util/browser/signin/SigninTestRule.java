@@ -6,6 +6,7 @@ package org.chromium.chrome.test.util.browser.signin;
 
 import static org.hamcrest.Matchers.is;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
@@ -36,6 +37,12 @@ import org.chromium.components.sync.SyncService;
  */
 public class SigninTestRule extends AccountManagerTestRule {
     private boolean mIsSignedIn;
+
+    public SigninTestRule() {}
+
+    public SigninTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade) {
+        super(fakeAccountManagerFacade);
+    }
 
     /** Signs out if user is signed in. */
     @Override

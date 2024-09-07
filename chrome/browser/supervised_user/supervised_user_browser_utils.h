@@ -11,6 +11,14 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/supervised_user/supervised_user_verification_page.h"
+#endif
+
+namespace content {
+class NavigationHandle;
+}  // namespace content
+
 class ProfileSelections;
 class Profile;
 
@@ -46,6 +54,14 @@ std::string GetAccountGivenName(Profile& profile);
 // supervision incidents. Relevant on Chrome OS platform that has the concept
 // of the user.
 void AssertChildStatusOfTheUser(Profile* profile, bool is_child);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Returns the html content of the reauthentication interstitial for blocked
+// sites. This interstitial is associated with the given NavigationHandle.
+std::string CreateReauthenticationInterstitial(
+    content::NavigationHandle& navigation_handle,
+    SupervisedUserVerificationPage::VerificationPurpose verification_purpose);
+#endif
 
 }  // namespace supervised_user
 

@@ -24,7 +24,7 @@ OriginTrialsTest* WorkerInternals::originTrialsTest() const {
 void WorkerInternals::countFeature(ScriptState* script_state,
                                    uint32_t feature,
                                    ExceptionState& exception_state) {
-  if (static_cast<int32_t>(WebFeature::kNumberOfFeatures) <= feature) {
+  if (feature > static_cast<int32_t>(WebFeature::kMaxValue)) {
     exception_state.ThrowTypeError(
         "The given feature does not exist in WebFeature.");
     return;
@@ -36,7 +36,7 @@ void WorkerInternals::countFeature(ScriptState* script_state,
 void WorkerInternals::countDeprecation(ScriptState* script_state,
                                        uint32_t feature,
                                        ExceptionState& exception_state) {
-  if (static_cast<int32_t>(WebFeature::kNumberOfFeatures) <= feature) {
+  if (feature > static_cast<int32_t>(WebFeature::kMaxValue)) {
     exception_state.ThrowTypeError(
         "The given feature does not exist in WebFeature.");
     return;

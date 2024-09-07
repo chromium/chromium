@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/process/process_iterator.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/server.h"
@@ -100,6 +101,20 @@ base::FilePath GetSetupExecutablePath();
 // during unit tests.
 std::set<base::FilePath::StringType> GetTestProcessNames();
 
+#if BUILDFLAG(IS_WIN)
+// Filters to processes that match the current and older updater versions.
+class VersionProcessFilter : public base::ProcessFilter {
+ public:
+  VersionProcessFilter();
+
+  bool Includes(const base::ProcessEntry& entry) const override;
+
+ private:
+  const base::Version this_version_;
+  const base::Version older_version_;
+};
+#endif  // BUILDFLAG(IS_WIN)
+
 // Ensures test processes are not running after the function is called.
 void CleanProcesses();
 
@@ -109,7 +124,8 @@ void ExpectCleanProcesses();
 // Prints the provided file to stdout.
 void PrintFile(const base::FilePath& file);
 
-// Returns all the updater log files found in %TMP%.
+// Returns all the `updater*.log` files found in the temp directory for the
+// current test scope.
 std::vector<base::FilePath> GetUpdaterLogFilesInTmp();
 
 // Prints the updater.log file to stdout.
@@ -168,7 +184,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& child_window_text_to_find,
                           bool always_launch_cmd,
                           bool verify_app_logo_loaded,
-                          bool expect_success);
+                          bool expect_success,
+                          bool wait_for_the_installer);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
@@ -253,6 +270,9 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 
 // Sets up a fake updater on the system at a version lower than the test.
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
+
+// Gets the file path for the real updater lower version.
+base::FilePath GetRealUpdaterLowerVersionPath();
 
 // Sets up a real updater on the system at a version lower than the test. The
 // exact version of the updater is not defined.

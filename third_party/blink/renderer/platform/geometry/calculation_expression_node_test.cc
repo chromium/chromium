@@ -211,4 +211,51 @@ TEST(CalculationExpressionOperationNodeTest, ProgressNotation) {
           ->Evaluate(FLT_MAX, {})));
 }
 
+TEST(CalculationExpressionOperationNodeTest, ColorChannelKeywordNode) {
+  scoped_refptr<CalculationExpressionColorChannelKeywordNode> node =
+      base::MakeRefCounted<CalculationExpressionColorChannelKeywordNode>(
+          ColorChannelKeyword::kAlpha);
+  EXPECT_TRUE(node->IsColorChannelKeyword());
+  EXPECT_EQ(node->Value(), ColorChannelKeyword::kAlpha);
+  EXPECT_EQ(node->Zoom(1).get(), node.get());
+}
+
+TEST(CalculationExpressionOperationNodeTest, ColorChannelKeywordNode_Equals) {
+  scoped_refptr<CalculationExpressionColorChannelKeywordNode> node_1 =
+      base::MakeRefCounted<CalculationExpressionColorChannelKeywordNode>(
+          ColorChannelKeyword::kS);
+  scoped_refptr<CalculationExpressionColorChannelKeywordNode> node_1a =
+      base::MakeRefCounted<CalculationExpressionColorChannelKeywordNode>(
+          ColorChannelKeyword::kS);
+  scoped_refptr<CalculationExpressionColorChannelKeywordNode> node_2 =
+      base::MakeRefCounted<CalculationExpressionColorChannelKeywordNode>(
+          ColorChannelKeyword::kL);
+  scoped_refptr<CalculationExpressionNode> node_3 =
+      base::MakeRefCounted<CalculationExpressionNumberNode>(-0.5f);
+
+  EXPECT_TRUE(node_1->Equals(*node_1a));
+  EXPECT_FALSE(node_1->Equals(*node_2));
+  EXPECT_FALSE(node_1->Equals(*node_3));
+}
+
+TEST(CalculationExpressionOperationNodeTest, ColorChannelKeywordNode_Evaluate) {
+  scoped_refptr<CalculationExpressionNode> node_1 =
+      base::MakeRefCounted<CalculationExpressionColorChannelKeywordNode>(
+          ColorChannelKeyword::kH);
+  scoped_refptr<CalculationExpressionNode> node_2 =
+      base::MakeRefCounted<CalculationExpressionNumberNode>(0.5f);
+
+  auto operation_node = CalculationExpressionOperationNode::CreateSimplified(
+      {node_1, node_2}, CalculationOperator::kMultiply);
+  EvaluationInput evaluation_input;
+  evaluation_input.color_channel_keyword_values = {
+      {ColorChannelKeyword::kH, 120},
+      {ColorChannelKeyword::kS, 0.3},
+      {ColorChannelKeyword::kL, 0.6}};
+  EXPECT_EQ(operation_node->Evaluate(FLT_MAX, evaluation_input), 60.f);
+
+  // Test behavior when channel values are missing.
+  EXPECT_EQ(operation_node->Evaluate(FLT_MAX, {}), 0.f);
+}
+
 }  // namespace blink

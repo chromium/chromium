@@ -710,16 +710,6 @@ JNI_AppBannerManager_GetJavaBannerManagerForWebContents(
 
 // static
 base::android::ScopedJavaLocalRef<jstring>
-JNI_AppBannerManager_GetInstallableWebAppName(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_web_contents) {
-  return base::android::ConvertUTF16ToJavaString(
-      env, AppBannerManager::GetInstallableWebAppName(
-               content::WebContents::FromJavaWebContents(java_web_contents)));
-}
-
-// static
-base::android::ScopedJavaLocalRef<jstring>
 JNI_AppBannerManager_GetInstallableWebAppManifestId(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents) {

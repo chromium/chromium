@@ -33,7 +33,7 @@ void CleanAXNodeDataString(std::string* error_str) {
 // about errors in accessibility trees that have inconsistent parent/child
 // links.
 class FakeAXTreeSource
-    : public AXTreeSource<const FakeAXNode*, ui::AXTreeData*, ui::AXNodeData> {
+    : public AXTreeSource<const FakeAXNode*, AXTreeData*, AXNodeData> {
  public:
   FakeAXTreeSource(std::vector<FakeAXNode> nodes, AXNodeID root_id)
       : nodes_(nodes), root_id_(root_id) {

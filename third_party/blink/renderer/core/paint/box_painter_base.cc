@@ -1264,7 +1264,9 @@ void BoxPainterBase::PaintFillLayer(
     clip_to_border.emplace(context, rect, border_rect);
   }
 
-  if (bg_layer.Clip() == EFillBox::kText) {
+  EFillBox effective_clip = bg_paint_context.EffectiveClip(bg_layer);
+
+  if (effective_clip == EFillBox::kText) {
     DCHECK(!bg_paint_context.CanCompositeBackgroundAttachmentFixed());
     PaintFillLayerTextFillBox(paint_info, fill_layer_info, image.get(),
                               composite_op, geometry, rect, scrolled_paint_rect,
@@ -1275,7 +1277,7 @@ void BoxPainterBase::PaintFillLayer(
   // We use BackgroundClip paint property when CanFastScrollFixedAttachment().
   std::optional<GraphicsContextStateSaver> background_clip_state_saver;
   if (!bg_paint_context.CanCompositeBackgroundAttachmentFixed()) {
-    switch (bg_layer.Clip()) {
+    switch (effective_clip) {
       case EFillBox::kFillBox:
       // Spec: For elements with associated CSS layout box, the used values for
       // fill-box compute to content-box.
@@ -1288,8 +1290,8 @@ void BoxPainterBase::PaintFillLayer(
 
         // Clip to the padding or content boxes as necessary.
         PhysicalBoxStrut outsets = border;
-        if (bg_layer.Clip() == EFillBox::kFillBox ||
-            bg_layer.Clip() == EFillBox::kContent) {
+        if (effective_clip == EFillBox::kFillBox ||
+            effective_clip == EFillBox::kContent) {
           outsets += padding;
         }
         outsets.TruncateSides(fill_layer_info.sides_to_include);

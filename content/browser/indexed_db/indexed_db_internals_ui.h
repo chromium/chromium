@@ -62,8 +62,7 @@ class IndexedDBInternalsUI : public WebUIController,
                               StartMetadataRecordingCallback callback) override;
   void StopMetadataRecording(storage::BucketId bucket_id,
                              StopMetadataRecordingCallback callback) override;
-  void InspectClient(storage::BucketId bucket_id,
-                     const std::string& client_token,
+  void InspectClient(const storage::BucketClientInfo& client_info,
                      InspectClientCallback callback) override;
 
  private:

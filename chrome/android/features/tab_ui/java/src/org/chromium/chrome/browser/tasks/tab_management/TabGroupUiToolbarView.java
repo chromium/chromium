@@ -11,9 +11,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -23,12 +23,13 @@ import org.chromium.ui.widget.ChromeImageView;
 
 /** Toolbar for the bottom tab strip see {@link TabGroupUiCoordinator}. */
 public class TabGroupUiToolbarView extends FrameLayout {
-    private ChromeImageView mRightButton;
-    private ChromeImageView mLeftButton;
+    private ChromeImageView mNewTabButton;
+    private ChromeImageView mShowGroupDialogButton;
     private ChromeImageView mFadingEdgeStart;
     private ChromeImageView mFadingEdgeEnd;
     private ViewGroup mContainerView;
-    private LinearLayout mMainContent;
+    private ViewGroup mMainContent;
+    private @Nullable FrameLayout mImageTilesContainer;
 
     public TabGroupUiToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -38,20 +39,29 @@ public class TabGroupUiToolbarView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mLeftButton = findViewById(R.id.toolbar_left_button);
-        mRightButton = findViewById(R.id.toolbar_right_button);
+        mShowGroupDialogButton = findViewById(R.id.toolbar_show_group_dialog_button);
+        mNewTabButton = findViewById(R.id.toolbar_new_tab_button);
         mFadingEdgeStart = findViewById(R.id.tab_strip_fading_edge_start);
         mFadingEdgeEnd = findViewById(R.id.tab_strip_fading_edge_end);
         mContainerView = findViewById(R.id.toolbar_container_view);
         mMainContent = findViewById(R.id.main_content);
+        mImageTilesContainer = findViewById(R.id.toolbar_image_tiles_container);
     }
 
-    void setLeftButtonOnClickListener(OnClickListener listener) {
-        mLeftButton.setOnClickListener(listener);
+    void setShowGroupDialogButtonOnClickListener(OnClickListener listener) {
+        mShowGroupDialogButton.setOnClickListener(listener);
     }
 
-    void setRightButtonOnClickListener(OnClickListener listener) {
-        mRightButton.setOnClickListener(listener);
+    void setImageTilesContainerOnClickListener(OnClickListener listener) {
+        if (mImageTilesContainer == null) return;
+
+        // TODO(crbug.com/362280397): Possibly attach to a child view instead for ripple and instead
+        // add a valid TouchDelegate.
+        mImageTilesContainer.setOnClickListener(listener);
+    }
+
+    void setNewTabButtonOnClickListener(OnClickListener listener) {
+        mNewTabButton.setOnClickListener(listener);
     }
 
     ViewGroup getViewContainer() {
@@ -87,26 +97,21 @@ public class TabGroupUiToolbarView extends FrameLayout {
     }
 
     void setTint(ColorStateList tint) {
-        ImageViewCompat.setImageTintList(mLeftButton, tint);
-        ImageViewCompat.setImageTintList(mRightButton, tint);
+        ImageViewCompat.setImageTintList(mShowGroupDialogButton, tint);
+        ImageViewCompat.setImageTintList(mNewTabButton, tint);
     }
 
     void setBackgroundColorTint(int color) {
         DrawableCompat.setTint(getBackground(), color);
     }
 
-    /** Setup the drawable in the left button. */
-    void setLeftButtonDrawableId(int drawableId) {
-        mLeftButton.setImageResource(drawableId);
+    void setShowGroupDialogButtonVisible(boolean visible) {
+        mShowGroupDialogButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    /** Set the content description of the left button. */
-    void setLeftButtonContentDescription(String string) {
-        mLeftButton.setContentDescription(string);
-    }
+    void setImageTilesContainerVisible(boolean visible) {
+        if (mImageTilesContainer == null) return;
 
-    /** Set the content description of the right button. */
-    void setRightButtonContentDescription(String string) {
-        mRightButton.setContentDescription(string);
+        mImageTilesContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }

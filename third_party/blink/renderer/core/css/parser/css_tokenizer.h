@@ -35,24 +35,7 @@ class CORE_EXPORT CSSTokenizer {
   // object, or the string data referenced by the CSSTokenizer. Do not use the
   // tokens after the CSSTokenizer or its underlying String goes out of scope.
   Vector<CSSParserToken, 32> TokenizeToEOF();
-  wtf_size_t TokenCount();
-
-  // Like TokenizeToEOF(), but also returns the start byte for each token.
-  // There's an extra offset at the very end that returns the end byte
-  // of the last token, i.e., the length of the input string.
-  // This matches the convention CSSParserTokenOffsets expects.
-  //
-  // See the warning about holding a reference in TokenizeToEOF().
-  std::pair<Vector<CSSParserToken, 32>, Vector<wtf_size_t, 32>>
-  TokenizeToEOFWithOffsets();
-
-  // The unicode-range descriptor invokes a special tokenizer
-  // to solve a design mistake in CSS.
-  //
-  // https://drafts.csswg.org/css-syntax/#consume-unicode-range-value
-  //
-  // See the warning about holding a reference in TokenizeToEOF().
-  Vector<CSSParserToken, 32> TokenizeToEOFWithUnicodeRanges();
+  wtf_size_t TokenCount() const;
 
   wtf_size_t Offset() const { return input_.Offset(); }
   wtf_size_t PreviousOffset() const { return prev_offset_; }
@@ -61,14 +44,6 @@ class CORE_EXPORT CSSTokenizer {
   const Vector<String>& StringPool() const { return string_pool_; }
   CSSParserToken TokenizeSingle();
   CSSParserToken TokenizeSingleWithComments();
-
-  // If you want the returned CSSParserTokens' Value() to be valid beyond
-  // the destruction of CSSTokenizer, you'll need to call PersistString()
-  // to some longer-lived tokenizer (escaped string tokens may have
-  // StringViews that refer to the string pool). The tokenizer
-  // (*this, not the destination) is in an undefined state after this;
-  // all you can do is destroy it.
-  void PersistStrings(CSSTokenizer& destination);
 
   // Skips to the given offset, which _must_ be exactly the end of
   // the current block. Does _not_ return a new token for lookahead
@@ -169,6 +144,10 @@ class CORE_EXPORT CSSTokenizer {
   wtf_size_t prev_offset_ = 0;
   wtf_size_t token_count_ = 0;
 
+  // The unicode-range descriptor (unicode_ranges_allowed=true) invokes
+  // a special tokenizer to solve a design mistake in CSS.
+  //
+  // https://drafts.csswg.org/css-syntax/#consume-unicode-range-value
   bool unicode_ranges_allowed_ = false;
 };
 }  // namespace blink

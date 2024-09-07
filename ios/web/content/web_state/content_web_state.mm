@@ -705,7 +705,7 @@ void ContentWebState::PrimaryMainFrameRenderProcessGone(
   }
 }
 
-void ContentWebState::AddNewContents(
+content::WebContents* ContentWebState::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -718,6 +718,7 @@ void ContentWebState::AddNewContents(
   delegate_->CreateNewWebState(this, target_url, GetLastCommittedURL(),
                                user_gesture);
   DCHECK(!child_web_contents_);
+  return nullptr;
 }
 
 int ContentWebState::GetTopControlsHeight() {

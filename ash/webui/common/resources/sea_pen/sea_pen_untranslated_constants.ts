@@ -88,14 +88,6 @@ export const SEA_PEN_SAMPLES: SeaPenSamplePrompt[] = [
   },
   {
     prompt:
-        'a curated photo of light pink sand dunes with glowing orbs and pastel purple alien plants, beautiful 4k',
-    preview: {
-      url:
-          'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/freeform/a_curated_photo_of_light_pink_sand_dunes.jpeg',
-    },
-  },
-  {
-    prompt:
         'a dalmatian dog in front of a pink background in a full body dynamic pose, shot with high resolution photography hyper realistic stock background with color grading',
     preview: {
       url:
@@ -211,22 +203,6 @@ export const SEA_PEN_SAMPLES: SeaPenSamplePrompt[] = [
     preview: {
       url:
           'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/freeform/photo_of_a_night_sky_with_a_meteor_shower.jpeg',
-    },
-  },
-  {
-    prompt:
-        'surreal glass moon floating in a city street with neon lights at night',
-    preview: {
-      url:
-          'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/freeform/surreal_glass_moon_floating_in_a_city_street.jpeg',
-    },
-  },
-  {
-    prompt:
-        'The Milky Way shines in the night sky, with stars twinkling and illuminating the vast ocean surface below. The beach is shrouded by clouds, creating an atmosphere of mystery and tranquility. High definition photography style with long exposure effects, pastel tones, a starry background, asymmetrical composition',
-    preview: {
-      url:
-          'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/freeform/the_milky_way_shines_in_the_night_sky.jpeg',
     },
   },
 ];

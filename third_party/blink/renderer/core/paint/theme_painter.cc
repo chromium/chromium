@@ -238,7 +238,22 @@ bool ThemePainter::PaintBorderOnly(const Node* node,
     case kSquareButtonPart:
       // Supported appearance values don't need CSS border painting.
       return false;
-    default:
+    case kBaseSelectPart:
+      return true;
+    case kNoControlPart:
+    case kAutoPart:
+      // kNoControlPart isn't possible because callers should only call this
+      // function when HasEffectiveAppearance is true.
+      // kAutoPart isn't possible because it can't be an effective appearance.
+      NOTREACHED();
+    // TODO(dbaron): The following values were previously covered by a
+    // default: case and should be classified correctly:
+    case kMediaControlPart:
+    case kMeterPart:
+    case kMediaSliderPart:
+    case kMediaSliderThumbPart:
+    case kMediaVolumeSliderPart:
+    case kMediaVolumeSliderThumbPart:
       UseCounter::Count(
           element.GetDocument(),
           WebFeature::kCSSValueAppearanceNoImplementationSkipBorder);
@@ -306,14 +321,14 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   if (min >= max)
     return;
 
-  ControlPart part = o.StyleRef().EffectiveAppearance();
+  const ComputedStyle& style = o.StyleRef();
+  ControlPart part = style.EffectiveAppearance();
   // We don't support ticks on alternate sliders like MediaVolumeSliders.
   bool is_slider_vertical =
       RuntimeEnabledFeatures::
           NonStandardAppearanceValueSliderVerticalEnabled() &&
       part == kSliderVerticalPart;
-  bool is_writing_mode_vertical =
-      !IsHorizontalWritingMode(o.StyleRef().GetWritingMode());
+  bool is_writing_mode_vertical = !style.IsHorizontalWritingMode();
   if (!(part == kSliderHorizontalPart || is_slider_vertical)) {
     return;
   }
@@ -328,7 +343,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
     thumb_size = ToFlooredSize(To<LayoutBox>(thumb_layout_object)->Size());
 
   gfx::Size tick_size = LayoutTheme::GetTheme().SliderTickSize();
-  float zoom_factor = o.StyleRef().EffectiveZoom();
+  float zoom_factor = style.EffectiveZoom();
   gfx::RectF tick_rect;
   int tick_region_side_margin = 0;
   int tick_region_width = 0;
@@ -343,33 +358,38 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
         ToFlooredSize(To<LayoutBox>(track_layout_object)->Size()));
   }
 
+  const float tick_offset_from_center =
+      LayoutTheme::GetTheme().SliderTickOffsetFromTrackCenter() * zoom_factor;
+  const float tick_inline_size = tick_size.width() * zoom_factor;
+  const float tick_block_size = tick_size.height() * zoom_factor;
+  const auto writing_direction = style.GetWritingDirection();
   if (is_horizontal) {
-    tick_rect.set_width(floor(tick_size.width() * zoom_factor));
-    tick_rect.set_height(floor(tick_size.height() * zoom_factor));
+    tick_rect.set_size({floor(tick_inline_size), floor(tick_block_size)});
     tick_rect.set_y(
-        floor(rect.y() + rect.height() / 2.0 +
-              LayoutTheme::GetTheme().SliderTickOffsetFromTrackCenter() *
-                  zoom_factor));
+        floor(rect.y() + rect.height() / 2.0 + tick_offset_from_center));
     tick_region_side_margin =
-        track_bounds.x() +
-        (thumb_size.width() - tick_size.width() * zoom_factor) / 2.0;
+        track_bounds.x() + (thumb_size.width() - tick_inline_size) / 2.0;
     tick_region_width = track_bounds.width() - thumb_size.width();
   } else {
-    tick_rect.set_width(floor(tick_size.height() * zoom_factor));
-    tick_rect.set_height(floor(tick_size.width() * zoom_factor));
-    tick_rect.set_x(
-        floor(rect.x() + rect.width() / 2.0 +
-              LayoutTheme::GetTheme().SliderTickOffsetFromTrackCenter() *
-                  zoom_factor));
+    tick_rect.set_size({floor(tick_block_size), floor(tick_inline_size)});
+    const float slider_center = rect.x() + rect.width() / 2.0;
+    const float tick_x =
+        (style.IsHorizontalTypographicMode() &&
+         writing_direction.LineUnder() == PhysicalDirection::kLeft)
+            ? (slider_center - tick_offset_from_center - tick_block_size)
+            : (slider_center + tick_offset_from_center);
+    tick_rect.set_x(floor(tick_x));
     tick_region_side_margin =
-        track_bounds.y() +
-        (thumb_size.height() - tick_size.width() * zoom_factor) / 2.0;
+        track_bounds.y() + (thumb_size.height() - tick_inline_size) / 2.0;
     tick_region_width = track_bounds.height() - thumb_size.height();
   }
   HTMLDataListOptionsCollection* options = data_list->options();
-  bool flip_tick_direction =
-      (is_horizontal && o.StyleRef().IsLeftToRightDirection()) ||
-      (is_writing_mode_vertical && o.StyleRef().IsLeftToRightDirection());
+  bool flip_tick_direction = true;
+  if (is_horizontal || is_writing_mode_vertical) {
+    PhysicalDirection inline_end = writing_direction.InlineEnd();
+    flip_tick_direction = inline_end == PhysicalDirection::kLeft ||
+                          inline_end == PhysicalDirection::kUp;
+  }
   for (unsigned i = 0; HTMLOptionElement* option_element = options->Item(i);
        i++) {
     String value = option_element->value();
@@ -381,7 +401,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
         ParseToDoubleForNumberType(input->SanitizeValue(value));
     double tick_fraction = (parsed_value - min) / (max - min);
     double tick_ratio =
-        flip_tick_direction ? tick_fraction : 1.0 - tick_fraction;
+        flip_tick_direction ? 1.0 - tick_fraction : tick_fraction;
     double tick_position =
         round(tick_region_side_margin + tick_region_width * tick_ratio);
     if (is_horizontal)
@@ -390,8 +410,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
       tick_rect.set_y(tick_position);
     paint_info.context.FillRect(
         tick_rect, o.ResolveColor(GetCSSPropertyColor()),
-        PaintAutoDarkMode(o.StyleRef(),
-                          DarkModeFilter::ElementRole::kBackground));
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
   }
 }
 

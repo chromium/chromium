@@ -209,11 +209,11 @@ void MediaRouterDesktop::CreateRoute(const MediaSource::Id& source_id,
                        presentation_id, origin, web_contents, timeout,
                        std::move(mr_callback)));
   } else {
-    const int frame_tree_node_id =
+    const content::FrameTreeNodeId frame_tree_node_id =
         web_contents ? web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId()
-                     : kDefaultFrameTreeNodeId;
+                     : content::FrameTreeNodeId();
     media_route_providers_[provider_id]->CreateRoute(
-        source_id, sink_id, presentation_id, origin, frame_tree_node_id,
+        source_id, sink_id, presentation_id, origin, frame_tree_node_id.value(),
         timeout, std::move(mr_callback));
   }
 }
@@ -241,14 +241,14 @@ void MediaRouterDesktop::JoinRoute(const MediaSource::Id& source_id,
     return;
   }
 
-  const int frame_tree_node_id =
+  const content::FrameTreeNodeId frame_tree_node_id =
       web_contents ? web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId()
-                   : kDefaultFrameTreeNodeId;
+                   : content::FrameTreeNodeId();
   auto mr_callback = base::BindOnce(&MediaRouterDesktop::RouteResponseReceived,
                                     weak_factory_.GetWeakPtr(), presentation_id,
                                     *provider_id, std::move(callback), true);
   media_route_providers_[*provider_id]->JoinRoute(
-      source_id, presentation_id, origin, frame_tree_node_id, timeout,
+      source_id, presentation_id, origin, frame_tree_node_id.value(), timeout,
       std::move(mr_callback));
 }
 

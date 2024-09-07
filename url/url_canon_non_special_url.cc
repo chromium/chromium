@@ -217,6 +217,9 @@ bool ReplaceNonSpecialURL(const char* base,
                           CharsetConverter* query_converter,
                           CanonOutput& output,
                           Parsed& new_parsed) {
+  // Carry over the flag.
+  new_parsed.has_opaque_path = base_parsed.has_opaque_path;
+
   if (base_parsed.has_opaque_path) {
     return ReplacePathURL(base, base_parsed, replacements, &output,
                           &new_parsed);
@@ -237,6 +240,9 @@ bool ReplaceNonSpecialURL(const char* base,
                           CharsetConverter* query_converter,
                           CanonOutput& output,
                           Parsed& new_parsed) {
+  // Carry over the flag.
+  new_parsed.has_opaque_path = base_parsed.has_opaque_path;
+
   if (base_parsed.has_opaque_path) {
     return ReplacePathURL(base, base_parsed, replacements, &output,
                           &new_parsed);

@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/types.h"
 #include "content/public/browser/page.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
@@ -33,9 +34,10 @@ class Widget;
 
 namespace tab_groups {
 
-class TabGroupServiceWrapper;
+class TabGroupSyncService;
 class SavedTabGroupButton;
 class SavedTabGroupDragData;
+class SavedTabGroupOverflowButton;
 
 // The view for accessing SavedTabGroups from the bookmarks bar. Is responsible
 // for rendering the SavedTabGroupButtons with the bounds that are defined by
@@ -49,7 +51,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
  public:
   SavedTabGroupBar(Browser* browser, bool animations_enabled);
   SavedTabGroupBar(Browser* browser,
-                   std::unique_ptr<TabGroupServiceWrapper> wrapper_service,
+                   TabGroupSyncService* tab_group_service,
                    bool animations_enabled);
   SavedTabGroupBar(const SavedTabGroupBar&) = delete;
   SavedTabGroupBar& operator=(const SavedTabGroupBar&) = delete;
@@ -100,10 +102,12 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
                        TriggerSource source) override;
   void OnTabGroupUpdated(const SavedTabGroup& group,
                          TriggerSource source) override;
-  void OnTabGroupRemoved(const LocalTabGroupID& local_id,
-                         TriggerSource source) override;
+  void OnTabGroupLocalIdChanged(
+      const base::Uuid& sync_id,
+      const std::optional<LocalTabGroupID>& local_id) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          TriggerSource source) override;
+  void OnTabGroupsReordered(TriggerSource source) override;
 
   // WidgetObserver
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -163,6 +167,10 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // The callback that the button calls when clicked by a user.
   void OnTabGroupButtonPressed(const base::Uuid& id, const ui::Event& event);
+
+  // Creates the overflow button that houses saved tab groups that are not
+  // visible in the SavedTabGroupBar.
+  std::unique_ptr<SavedTabGroupOverflowButton> CreateOverflowButton();
 
   // When called, display a bubble which shows all the groups that are saved
   // and not visible. Each entry in the bubble, when clicked, should open the
@@ -235,16 +243,14 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Used to show the overflow menu when clicked.
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
 
-  // The wrapper service used to retrieve information about the state of the tab
-  // groups. When kTabGroupSyncServiceDesktopMigration is enabled we use the
-  // TabGroupSyncService to query information. Otherwise, the
-  // SavedTabGroupKeyedService will be used.
-  std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
+  // The service used to manage and query SavedTabGroups.
+  raw_ptr<TabGroupSyncService> tab_group_service_ = nullptr;
 
   // The page navigator used to create tab groups
   raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
       page_navigator_ = nullptr;
-  raw_ptr<Browser> browser_;
+
+  raw_ptr<Browser> browser_ = nullptr;
 
   // During a drag and drop session, `drag_data_` owns the state for the drag.
   std::unique_ptr<SavedTabGroupDragData> drag_data_;

@@ -19,6 +19,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -83,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertBasic) {
                             ->GetBackgroundHostForExtension(extension->id());
   ASSERT_TRUE(host);
   host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"alert('This should not crash.');", base::NullCallback());
+      u"alert('This should not crash.');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 
   ASSERT_NO_FATAL_FAILURE(CloseDialog());
 }
@@ -104,7 +106,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertQueue) {
     host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"alert('" + base::ASCIIToUTF16(dialog_name) + u"');",
         base::BindOnce(&CheckAlertResult, dialog_name,
-                       base::Unretained(&call_count)));
+                       base::Unretained(&call_count)),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   // Closes these dialogs.
@@ -140,7 +143,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ConfirmQueue) {
     host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"confirm('" + base::ASCIIToUTF16(dialog_name) + u"');",
         base::BindOnce(&CheckConfirmResult, dialog_name, true,
-                       base::Unretained(&call_count)));
+                       base::Unretained(&call_count)),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
   for (size_t i = 0; i != num_cancelled_dialogs; ++i) {
     const std::string dialog_name =
@@ -148,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ConfirmQueue) {
     host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"confirm('" + base::ASCIIToUTF16(dialog_name) + u"');",
         base::BindOnce(&CheckConfirmResult, dialog_name, false,
-                       base::Unretained(&call_count)));
+                       base::Unretained(&call_count)),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   // Closes these dialogs.

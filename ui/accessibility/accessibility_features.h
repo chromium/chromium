@@ -101,10 +101,6 @@ AX_BASE_EXPORT bool IsTextBasedAudioDescriptionEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseAXPositionForDocumentMarkers);
 AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
 
-// Performs a move over a copy of snapshot tree data in AXTreeCombiner.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMoveNotCopyInAXTreeCombiner);
-AX_BASE_EXPORT bool IsUseMoveNotCopyInAXTreeCombinerEnabled();
-
 // Performs a move over a copy of merge tree update.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMoveNotCopyInMergeTreeUpdate);
 AX_BASE_EXPORT bool IsUseMoveNotCopyInMergeTreeUpdateEnabled();
@@ -140,6 +136,9 @@ AX_BASE_EXPORT bool IsAccessibilityReducedAnimationsEnabled();
 // Integrate with FaceGaze.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFaceGaze);
 AX_BASE_EXPORT bool IsAccessibilityFaceGazeEnabled();
+
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFaceGazeGravityWells);
+AX_BASE_EXPORT bool IsAccessibilityFaceGazeGravityWellsEnabled();
 
 // Adds reduced animations toggle to kiosk quick settings.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityReducedAnimationsInKiosk);
@@ -191,13 +190,17 @@ AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifyAcceleratorDialog);
 AX_BASE_EXPORT bool IsAccessibilityMagnifyAcceleratorDialogEnabled();
 
-// Controls whether the Select to Speak keyboard shortcut is enabled.
+// Controls whether the disable trackpad feature is enabled.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDisableTrackpad);
 AX_BASE_EXPORT bool IsAccessibilityDisableTrackpadEnabled();
 
 // Controls whether the flash screen for notifications feature is available.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFlashScreenFeature);
 AX_BASE_EXPORT bool IsAccessibilityFlashScreenFeatureEnabled();
+
+// Controls whether the filter keys features are available.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFilterKeys);
+AX_BASE_EXPORT bool IsAccessibilityFilterKeysEnabled();
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -283,6 +286,11 @@ AX_BASE_EXPORT bool IsReadAnythingImagesViaAlgorithmEnabled();
 // Enable Reading Mode to work on Google Docs. Should be disabled by default.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDocsIntegration);
 AX_BASE_EXPORT bool IsReadAnythingDocsIntegrationEnabled();
+
+// Enable "load more" button to show at the end of Reading Mode panel.
+// Should be disabled by default.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDocsLoadMoreButton);
+AX_BASE_EXPORT bool IsReadAnythingDocsLoadMoreButtonEnabled();
 
 // Write some ScreenAI library debug data in /tmp.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAIDebugMode);

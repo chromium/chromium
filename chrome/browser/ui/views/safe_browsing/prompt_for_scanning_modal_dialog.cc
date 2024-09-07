@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
@@ -52,10 +53,10 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
   SetModalType(ui::mojom::ModalType::kChild);
   SetTitle(IDS_DEEP_SCANNING_INFO_DIALOG_TITLE);
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_INFO_DIALOG_ACCEPT_BUTTON));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_INFO_DIALOG_CANCEL_BUTTON));
   SetAcceptCallback(std::move(accept_callback));
   SetExtraView(std::make_unique<views::MdTextButton>(
@@ -112,8 +113,9 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
 PromptForScanningModalDialog::~PromptForScanningModalDialog() = default;
 
 bool PromptForScanningModalDialog::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  return (button == ui::DIALOG_BUTTON_OK || button == ui::DIALOG_BUTTON_CANCEL);
+    ui::mojom::DialogButton button) const {
+  return (button == ui::mojom::DialogButton::kOk ||
+          button == ui::mojom::DialogButton::kCancel);
 }
 
 bool PromptForScanningModalDialog::ShouldShowCloseButton() const {

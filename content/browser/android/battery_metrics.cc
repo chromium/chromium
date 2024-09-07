@@ -182,9 +182,10 @@ AndroidBatteryMetrics::~AndroidBatteryMetrics() {
 
 void AndroidBatteryMetrics::InitializeOnSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
   on_battery_power_ =
-      base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
-  base::PowerMonitor::AddPowerThermalObserver(this);
+      power_monitor->AddPowerStateObserverAndReturnOnBatteryState(this);
+  power_monitor->AddPowerThermalObserver(this);
   content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
   // TODO(b/339859756): Update this call to take into account the unknown battery
   // status.
@@ -234,7 +235,7 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
   if (should_be_enabled && !metrics_timer_.IsRunning()) {
     // Capture first capacity measurement and enable the repeating timer.
     last_remaining_capacity_uah_ =
-        base::PowerMonitor::GetRemainingBatteryCapacity();
+        base::PowerMonitor::GetInstance()->GetRemainingBatteryCapacity();
     skipped_timers_ = 0;
     observed_capacity_drops_ = 0;
 
@@ -252,7 +253,7 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
 
 void AndroidBatteryMetrics::CaptureAndReportMetrics(bool disabling) {
   int remaining_capacity_uah =
-      base::PowerMonitor::GetRemainingBatteryCapacity();
+      base::PowerMonitor::GetInstance()->GetRemainingBatteryCapacity();
 
   if (remaining_capacity_uah >= last_remaining_capacity_uah_) {
     // No change in battery capacity, or it increased. The latter could happen

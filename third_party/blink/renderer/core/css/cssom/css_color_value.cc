@@ -110,8 +110,7 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
     const ExecutionContext* execution_context,
     const String& css_text,
     ExceptionState& exception_state) {
-  CSSTokenizer tokenizer(css_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
   const CSSColorType color_type = DetermineColorType(stream);

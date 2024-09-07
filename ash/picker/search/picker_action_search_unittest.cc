@@ -22,7 +22,7 @@ using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::VariantWith;
 
-using CaseTransformType = PickerSearchResult::CaseTransformData::Type;
+using CaseTransformType = PickerCaseTransformResult::Type;
 
 struct TestCase {
   PickerActionSearchOptions options;
@@ -48,8 +48,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .available_categories = {{PickerCategory::kLinks}},
                 },
             .query = u"Browsing history",
-            .expected_results = {PickerSearchResult::Category(
-                PickerCategory::kLinks)},
+            .expected_results = {PickerCategoryResult(PickerCategory::kLinks)},
         },
         // Case-insensitive match
         TestCase{
@@ -58,8 +57,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .available_categories = {{PickerCategory::kLinks}},
                 },
             .query = u"bRoWsInG hIsToRy",
-            .expected_results = {PickerSearchResult::Category(
-                PickerCategory::kLinks)},
+            .expected_results = {PickerCategoryResult(PickerCategory::kLinks)},
         },
         // Prefix match
         TestCase{
@@ -68,8 +66,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .available_categories = {{PickerCategory::kLinks}},
                 },
             .query = u"b",
-            .expected_results = {PickerSearchResult::Category(
-                PickerCategory::kLinks)},
+            .expected_results = {PickerCategoryResult(PickerCategory::kLinks)},
         },
         // Prefix match in second word
         TestCase{
@@ -78,8 +75,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .available_categories = {{PickerCategory::kLinks}},
                 },
             .query = u"hi",
-            .expected_results = {PickerSearchResult::Category(
-                PickerCategory::kLinks)},
+            .expected_results = {PickerCategoryResult(PickerCategory::kLinks)},
         },
         // Substring match
         TestCase{
@@ -115,9 +111,9 @@ INSTANTIATE_TEST_SUITE_P(
                     .caps_lock_state_to_search = false,
                 },
             .query = u"caps",
-            .expected_results = {PickerSearchResult::CapsLock(
+            .expected_results = {PickerCapsLockResult(
                 /*enabled=*/false,
-                PickerSearchResult::CapsLockData::Shortcut::kAltSearch)},
+                PickerCapsLockResult::Shortcut::kAltSearch)},
         },
         // Caps Lock On
         TestCase{
@@ -126,9 +122,9 @@ INSTANTIATE_TEST_SUITE_P(
                     .caps_lock_state_to_search = true,
                 },
             .query = u"caps",
-            .expected_results = {PickerSearchResult::CapsLock(
+            .expected_results = {PickerCapsLockResult(
                 /*enabled=*/true,
-                PickerSearchResult::CapsLockData::Shortcut::kAltSearch)},
+                PickerCapsLockResult::Shortcut::kAltSearch)},
         },
         // Uppercase
         TestCase{
@@ -137,7 +133,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .search_case_transforms = true,
                 },
             .query = u"upper",
-            .expected_results = {PickerSearchResult::CaseTransform(
+            .expected_results = {PickerCaseTransformResult(
                 CaseTransformType::kUpperCase)},
         },
         // Lowercase
@@ -147,7 +143,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .search_case_transforms = true,
                 },
             .query = u"lower",
-            .expected_results = {PickerSearchResult::CaseTransform(
+            .expected_results = {PickerCaseTransformResult(
                 CaseTransformType::kLowerCase)},
         },
         // Title case
@@ -157,7 +153,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .search_case_transforms = true,
                 },
             .query = u"title",
-            .expected_results = {PickerSearchResult::CaseTransform(
+            .expected_results = {PickerCaseTransformResult(
                 CaseTransformType::kTitleCase)},
         },
         // No case

@@ -17,12 +17,15 @@ build_webui("build") {
   ]
   css_files = [ "app.css" ]
 
+  ts_composite = true
   ts_deps = [
     "../shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/cr_components/history_embeddings:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
   ]
 
   ts_path_mappings =

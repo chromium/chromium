@@ -109,7 +109,9 @@ public class TabsSettingsUnitTest {
         fragmentManager.beginTransaction().replace(android.R.id.content, tabsSettings).commit();
         mActivityScenario.moveToState(State.STARTED);
 
-        assertEquals(mActivity.getString(R.string.tabs_settings_title), mActivity.getTitle());
+        assertEquals(
+                mActivity.getString(R.string.tabs_settings_title),
+                tabsSettings.getPageTitle().get());
         return tabsSettings;
     }
 

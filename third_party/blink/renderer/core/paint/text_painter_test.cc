@@ -25,11 +25,6 @@ namespace blink {
 namespace {
 
 class TextPainterTest : public RenderingTest {
- public:
-  TextPainterTest()
-      : layout_text_(nullptr),
-        paint_controller_(MakeGarbageCollected<PaintController>()) {}
-
  protected:
   const LayoutText& GetLayoutText() { return *layout_text_; }
 
@@ -57,7 +52,6 @@ class TextPainterTest : public RenderingTest {
   }
 
   Persistent<LayoutText> layout_text_;
-  Persistent<PaintController> paint_controller_;
 };
 
 TEST_F(TextPainterTest, TextPaintingStyle_Simple) {
@@ -65,7 +59,8 @@ TEST_F(TextPainterTest, TextPaintingStyle_Simple) {
                                                CSSValueID::kBlue);
   UpdateAllLifecyclePhasesForTest();
 
-  GraphicsContext context(*paint_controller_);
+  PaintController controller;
+  GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground(context));
@@ -90,7 +85,8 @@ TEST_F(TextPainterTest, TextPaintingStyle_AllProperties) {
                                                "1px 2px 3px yellow");
   UpdateAllLifecyclePhasesForTest();
 
-  GraphicsContext context(*paint_controller_);
+  PaintController controller;
+  GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground(context));
@@ -121,7 +117,8 @@ TEST_F(TextPainterTest, TextPaintingStyle_UsesTextAsClip) {
                                                "1px 2px 3px yellow");
   UpdateAllLifecyclePhasesForTest();
 
-  GraphicsContext context(*paint_controller_);
+  PaintController controller;
+  GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForTextClip(context));
@@ -150,7 +147,8 @@ TEST_F(TextPainterTest,
   // so we need to re-get layout_text_.
   UpdateLayoutText();
 
-  GraphicsContext context(*paint_controller_);
+  PaintController controller;
+  GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground(context));
@@ -176,7 +174,8 @@ TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
   // so we need to re-get layout_text_.
   UpdateLayoutText();
 
-  GraphicsContext context(*paint_controller_);
+  PaintController controller;
+  GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground(context));
@@ -186,9 +185,10 @@ TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
 }
 
 TEST_F(TextPainterTest, CachedTextBlob) {
-  auto& paint_controller = GetDocument().View()->GetPaintControllerForTesting();
+  auto& persistent_data =
+      GetDocument().View()->GetPaintControllerPersistentDataForTesting();
   auto* item =
-      DynamicTo<DrawingDisplayItem>(paint_controller.GetDisplayItemList()[1]);
+      DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
   ASSERT_TRUE(item);
   auto* op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
@@ -199,8 +199,7 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   // Should reuse text blob on color change.
   GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
   UpdateAllLifecyclePhasesForTest();
-  item =
-      DynamicTo<DrawingDisplayItem>(paint_controller.GetDisplayItemList()[1]);
+  item = DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
@@ -213,8 +212,7 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kFontSize,
                                                "30px");
   UpdateAllLifecyclePhasesForTest();
-  item =
-      DynamicTo<DrawingDisplayItem>(paint_controller.GetDisplayItemList()[1]);
+  item = DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
@@ -226,8 +224,7 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   // Should not reuse text blob on text content change.
   GetDocument().body()->firstChild()->setTextContent("Hello, Hello");
   UpdateAllLifecyclePhasesForTest();
-  item =
-      DynamicTo<DrawingDisplayItem>(paint_controller.GetDisplayItemList()[1]);
+  item = DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
@@ -238,8 +235,7 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   // In dark mode, the text should be drawn with dark mode flags.
   GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
   UpdateAllLifecyclePhasesForTest();
-  item =
-      DynamicTo<DrawingDisplayItem>(paint_controller.GetDisplayItemList()[1]);
+  item = DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());

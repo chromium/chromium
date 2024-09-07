@@ -36,6 +36,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
     blink::mojom::SharedWorkerInfoPtr info,
     const blink::SharedWorkerToken& token,
     const blink::StorageKey& constructor_key,
+    const url::Origin& origin,
     bool is_constructor_secure_context,
     const std::string& user_agent,
     const blink::UserAgentMetadata& ua_metadata,
@@ -119,8 +120,8 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       token, info->url, info->options->type, info->options->credentials,
       blink::WebString::FromUTF8(info->options->name),
       blink::WebSecurityOrigin(constructor_key.origin()),
-      is_constructor_secure_context, blink::WebString::FromUTF8(user_agent),
-      ua_metadata,
+      blink::WebSecurityOrigin(origin), is_constructor_secure_context,
+      blink::WebString::FromUTF8(user_agent), ua_metadata,
       ToWebContentSecurityPolicies(std::move(info->content_security_policies)),
       FetchClientSettingsObjectFromMojomToWeb(
           info->outside_fetch_client_settings_object),

@@ -16,12 +16,11 @@
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "components/account_id/account_id.h"
+#include "url/gurl.h"
 
 namespace ash {
 
 class ScopedDeviceSettings;
-
-extern const char kAppInstallUrl[];
 
 // Base class for web kiosk browser tests.
 class WebKioskBaseTest : public OobeBaseTest {
@@ -40,8 +39,6 @@ class WebKioskBaseTest : public OobeBaseTest {
   // If not called, there is no configured network.
   void SetOnline(bool online);
 
-  const AccountId& account_id() { return account_id_; }
-
   void PrepareAppLaunch();
 
   bool LaunchApp();
@@ -51,14 +48,18 @@ class WebKioskBaseTest : public OobeBaseTest {
   // in web kiosk.
   void InitializeRegularOnlineKiosk();
 
-  void SetAppInstallUrl(const std::string& app_install_url);
+  void SetAppInstallUrl(const GURL& app_install_url);
+
+  const GURL& app_install_url() const { return app_install_url_; }
+
+  const AccountId& account_id() const { return account_id_; }
 
  private:
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
-  std::string app_install_url_;
+  GURL app_install_url_;
   AccountId account_id_;
 
   std::unique_ptr<ScopedDeviceSettings> settings_;

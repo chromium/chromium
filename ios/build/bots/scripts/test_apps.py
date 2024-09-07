@@ -342,6 +342,17 @@ class EgtestsApp(GTestsApp):
   def _additional_inserted_libs(self):
     """Returns additional libraries to add to inserted_libs."""
     libs = []
+
+    # Do not insert libXCTestBundleInject.dylib if running EG2 or XCUITest
+    # tests (which set self.host_app_path), this is no longer needed and
+    # broken as of Xcode16 Beta4.
+    # However, it is still needed for unit tests which are run as XCTests
+    # (and in this case without the GTest framework). See crbug.com/361610467
+    # for more details.
+    if not self.host_app_path:
+      libs.append('__PLATFORMS__/iPhoneSimulator.platform/Developer/'
+                  'usr/lib/libXCTestBundleInject.dylib')
+
     for child in os.listdir(self.test_app_path):
       if child.startswith('libclang_rt.asan'):
         libs.append(os.path.join('@executable_path', child))

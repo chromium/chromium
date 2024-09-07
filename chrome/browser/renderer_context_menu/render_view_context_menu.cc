@@ -262,6 +262,7 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/pdf/common/constants.h"
 #include "pdf/pdf_features.h"
 #endif
 
@@ -312,7 +313,7 @@
 #include "chrome/browser/ash/url_handler/url_handler.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window.h"
 #endif
@@ -322,6 +323,12 @@
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/window.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #endif
 
 using base::UserMetricsAction;
@@ -2202,28 +2209,16 @@ void RenderViewContextMenu::AppendMediaItems() {
 }
 
 void RenderViewContextMenu::AppendPluginItems() {
-  RenderFrameHost* render_frame_host = GetRenderFrameHost();
-
-  bool is_full_page_pdf_viewer = false;
+  bool is_full_page_oopif_pdf_viewer = false;
 #if BUILDFLAG(ENABLE_PDF)
-  // Always append page items for full page PDF Viewers.
-  if (chrome_pdf::features::IsOopifPdfEnabled() && render_frame_host) {
-    // If the plugin is the PDF viewer, then `render_frame_host` will either be
-    // the PDF extension host or the PDF content host.
-    RenderFrameHost* extension_host =
-        pdf_frame_util::FindFullPagePdfExtensionHost(embedder_web_contents_);
-    // Check if the context menu is for the PDF extension host.
-    is_full_page_pdf_viewer = render_frame_host == extension_host;
-    if (!is_full_page_pdf_viewer) {
-      // Check if the context menu is for the PDF content host.
-      RenderFrameHost* parent_host = render_frame_host->GetParent();
-      is_full_page_pdf_viewer = parent_host && (parent_host == extension_host);
-    }
-  }
+  is_full_page_oopif_pdf_viewer =
+      chrome_pdf::features::IsOopifPdfEnabled() && embedder_web_contents_ &&
+      embedder_web_contents_->GetContentsMimeType() == pdf::kPDFMimeType;
 #endif  // BUILDFLAG(ENABLE_PDF)
+
   if (params_.page_url == params_.src_url ||
-      ((is_full_page_pdf_viewer ||
-        guest_view::GuestViewBase::IsGuest(render_frame_host)) &&
+      ((is_full_page_oopif_pdf_viewer ||
+        guest_view::GuestViewBase::IsGuest(GetRenderFrameHost())) &&
        (!embedder_web_contents_ || !embedder_web_contents_->IsSavable()))) {
     // Both full page and embedded plugins are hosted as guest now,
     // the difference is a full page plugin is not considered as savable.
@@ -2336,7 +2331,9 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
 
   link_to_text_menu_observer_ = LinkToTextMenuObserver::Create(
       this,
-      content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_));
+      content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+      // Browser can sometimes be undefined in tests.
+      GetBrowser() ? GetBrowser()->GetFeatures().toast_controller() : nullptr);
   if (link_to_text_menu_observer_) {
     observers_.AddObserver(link_to_text_menu_observer_.get());
     link_to_text_menu_observer_->InitMenu(params_);
@@ -2476,7 +2473,7 @@ void RenderViewContextMenu::AppendSearchProvider() {
 }
 
 void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
-  const bool use_spelling = !chrome::IsRunningInForcedAppMode();
+  const bool use_spelling = !IsRunningInForcedAppMode();
   if (use_spelling) {
     AppendSpellingSuggestionItems();
   }
@@ -2607,7 +2604,7 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
 }
 
 void RenderViewContextMenu::AppendLanguageSettings() {
-  const bool use_spelling = !chrome::IsRunningInForcedAppMode();
+  const bool use_spelling = !IsRunningInForcedAppMode();
   if (!use_spelling) {
     return;
   }
@@ -2904,9 +2901,12 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
     case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
-    case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
       return navigation_allowed && params_.link_url.is_valid() &&
              IsOpenLinkAllowedByDlp(params_.link_url);
+    case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
+      return navigation_allowed && params_.link_url.is_valid() &&
+             IsOpenLinkAllowedByDlp(params_.link_url) &&
+             IsAllowedByUntrustedNetworkStatus();
 
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
       return params_.unfiltered_link_url.is_valid();
@@ -3271,6 +3271,15 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
       WriteURLToClipboard(params_.unfiltered_link_url);
+#if !BUILDFLAG(IS_ANDROID)
+      if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
+        ToastController* const toast_controller =
+            GetBrowser()->GetFeatures().toast_controller();
+        if (toast_controller) {
+          toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
+        }
+      }
+#endif
       break;
 
     case IDC_CONTENT_CONTEXT_COPYLINKTEXT:
@@ -3284,6 +3293,15 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_COPYIMAGE:
       ExecCopyImageAt();
+#if !BUILDFLAG(IS_ANDROID)
+      if (toast_features::IsEnabled(toast_features::kImageCopiedToast)) {
+        ToastController* const toast_controller =
+            GetBrowser()->GetFeatures().toast_controller();
+        if (toast_controller) {
+          toast_controller->MaybeShowToast(ToastParams(ToastId::kImageCopied));
+        }
+      }
+#endif
       break;
 
     case IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS:
@@ -3699,8 +3717,7 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
   return true;
 }
 
-bool RenderViewContextMenu::IsSaveAsItemAllowedByUntrustedNetworkStatus()
-    const {
+bool RenderViewContextMenu::IsAllowedByUntrustedNetworkStatus() const {
   if (!GetRenderFrameHost()) {
     return true;
   }
@@ -3779,7 +3796,7 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
     return false;
   }
 
-  if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+  if (!IsAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 
@@ -3810,7 +3827,7 @@ bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
     return false;
   }
 
-  if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+  if (!IsAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 
@@ -3823,7 +3840,7 @@ bool RenderViewContextMenu::IsSaveAsEnabled() const {
     return false;
   }
 
-  if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+  if (!IsAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 
@@ -3975,7 +3992,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 
 bool RenderViewContextMenu::IsVideoFrameItemEnabled(int id) const {
   if (id == IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS &&
-      !IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+      !IsAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 

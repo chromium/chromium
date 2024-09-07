@@ -82,6 +82,10 @@ bool SystemWebAppDelegate::ShouldHaveTabStrip() const {
   return false;
 }
 
+bool SystemWebAppDelegate::ShouldHideNewTabButton() const {
+  return false;
+}
+
 bool SystemWebAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
   return true;
 }

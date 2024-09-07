@@ -15,11 +15,15 @@ import os
 import sys
 import re
 
+
 class JsInterfaceGenerator(object):
+
   def Generate(self, namespace):
     return _Generator(namespace).Generate()
 
+
 class _Generator(object):
+
   def __init__(self, namespace):
     self._namespace = namespace
     first = namespace.name[0].upper()
@@ -31,7 +35,7 @@ class _Generator(object):
     """Generates a Code object with the schema for the entire namespace.
     """
     c = Code()
-    (c.Append(self._GetHeader(sys.argv[0], self._namespace.name))
+    (c.Append(self._GetHeader(sys.argv[0], self._namespace.name)) \
       .Append())
 
     self._AppendInterfaceObject(c)
@@ -56,10 +60,10 @@ class _Generator(object):
   def _GetHeader(self, tool, namespace):
     """Returns the file header text.
     """
-    return (
-        self._js_util.GetLicense() + '\n' + self._js_util.GetInfo(tool) + '\n' +
-        ('/** @fileoverview Interface for %s that can be overriden. */' %
-         namespace))
+    return (self._js_util.GetLicense() + '\n' + self._js_util.GetInfo(tool) +
+            '\n' +
+            ('/** @fileoverview Interface for %s that can be overriden. */' %
+             namespace))
 
   def _AppendInterfaceObject(self, c):
     """Appends the code creating the interface object.
@@ -67,7 +71,7 @@ class _Generator(object):
        /** @interface */
        function SettingsPrivate() {}
     """
-    (c.Append('/** @interface */')
+    (c.Append('/** @interface */') \
       .Append('function %s() {}' % self._interface))
 
   def _AppendFunction(self, c, function):
@@ -88,8 +92,8 @@ class _Generator(object):
 
     self._js_util.AppendFunctionJsDoc(c, self._namespace.name, function)
 
-    c.Append('%s: function(%s) {},' % (function.name, ', '.join(
-        getParamNames(function))))
+    c.Append('%s: function(%s) {},' %
+             (function.name, ', '.join(getParamNames(function))))
     c.Append()
 
   def _AppendEvent(self, c, event):

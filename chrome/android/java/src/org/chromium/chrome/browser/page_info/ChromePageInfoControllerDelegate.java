@@ -23,7 +23,7 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController;
@@ -352,7 +352,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return new ChromeSiteSettingsDelegate(mContext, mProfile);
     }
 
-    @NonNull
     @Override
     public void getFavicon(GURL url, Callback<Drawable> callback) {
         Resources resources = mContext.getResources();

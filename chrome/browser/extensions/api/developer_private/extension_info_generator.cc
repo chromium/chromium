@@ -17,10 +17,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
@@ -358,31 +358,37 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
   permissions->can_access_site_data =
       CanAccessSiteData(permissions_manager, extension);
 
-  bool enable_runtime_host_permissions =
-      permissions_manager->CanAffectExtension(extension);
-
-  if (!enable_runtime_host_permissions) {
-    // Without runtime host permissions, everything goes into
-    // simple_permissions.
-    permissions->simple_permissions = get_permission_messages(
-        extension.permissions_data()->GetPermissionMessages());
-    return;
-  }
-
-  // With runtime host permissions, we separate out API permission messages
-  // from host permissions.
   // Use granted permissions here to ensure that the info is populated with all
   // the permissions which, although not active, would be implicitly granted to
   // the extension if ever requested.
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context);
   std::unique_ptr<const PermissionSet> granted_permissions =
       extension_prefs->GetGrantedPermissions(extension.id());
+
+  const PermissionMessageProvider* message_provider =
+      PermissionMessageProvider::Get();
+
+  bool enable_runtime_host_permissions =
+      permissions_manager->CanAffectExtension(extension);
+
+  if (!enable_runtime_host_permissions) {
+    // TODO(crbug.com/362536398)
+    // Without runtime host permissions, everything goes into
+    // simple_permissions.
+    PermissionMessages all_messages = message_provider->GetPermissionMessages(
+        message_provider->GetAllPermissionIDs(*granted_permissions,
+                                              extension.GetType()));
+    permissions->simple_permissions = get_permission_messages(all_messages);
+    return;
+  }
+
+  // With runtime host permissions, we separate out API permission messages
+  // from host permissions.
   PermissionSet non_host_permissions(
       granted_permissions->apis().Clone(),
       granted_permissions->manifest_permissions().Clone(), URLPatternSet(),
       URLPatternSet());
-  const PermissionMessageProvider* message_provider =
-      PermissionMessageProvider::Get();
+
   // Generate the messages for just the API (and manifest) permissions.
   PermissionMessages api_messages = message_provider->GetPermissionMessages(
       message_provider->GetAllPermissionIDs(non_host_permissions,
@@ -427,7 +433,7 @@ void ExtensionInfoGenerator::CreateExtensionInfo(
   else if ((ext = registry->terminated_extensions().GetByID(id)) != nullptr)
     state = developer::ExtensionState::kTerminated;
   else if ((ext = registry->blocklisted_extensions().GetByID(id)) != nullptr)
-    state = developer::ExtensionState::kBlacklisted;
+    state = developer::ExtensionState::kBlocklisted;
 
   if (ext && ui_util::ShouldDisplayInExtensionSettings(*ext)) {
     CreateExtensionInfoHelper(*ext, state);
@@ -463,7 +469,7 @@ void ExtensionInfoGenerator::CreateExtensionsInfo(
     add_to_list(registry->disabled_extensions(),
                 developer::ExtensionState::kDisabled);
     add_to_list(registry->blocklisted_extensions(),
-                developer::ExtensionState::kBlacklisted);
+                developer::ExtensionState::kBlocklisted);
   }
   if (include_terminated) {
     add_to_list(registry->terminated_extensions(),
@@ -551,7 +557,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
       break;
   }
   if (blocklist_text != -1) {
-    info->blacklist_text = l10n_util::GetStringUTF8(blocklist_text);
+    info->blocklist_text = l10n_util::GetStringUTF8(blocklist_text);
   }
 
   if (extension_system_->extension_service()->allowlist()->ShouldDisplayWarning(

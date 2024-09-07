@@ -11,8 +11,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -214,6 +216,8 @@ void ImeAdapterAndroid::UpdateRenderProcessConnection(
     }
   }
   rwhva_ = new_rwhva;
+  // Must be called after the new rwhva has been set.
+  SetImeRenderWidgetHost();
 }
 
 void ImeAdapterAndroid::UpdateState(const ui::mojom::TextInputState& state) {
@@ -428,9 +432,8 @@ void ImeAdapterAndroid::HandleStylusWritingGestureAction(
     return;
   blink::mojom::StylusWritingGestureDataPtr gesture_data;
   if (!blink::mojom::StylusWritingGestureData::Deserialize(
-          static_cast<jbyte*>(
-              env->GetDirectBufferAddress(jgesture_data_byte_buffer.obj())),
-          env->GetDirectBufferCapacity(jgesture_data_byte_buffer.obj()),
+          base::android::JavaByteBufferToSpan(env,
+                                              jgesture_data_byte_buffer.obj()),
           &gesture_data)) {
     NOTREACHED_IN_MIGRATION();
     return;
@@ -453,22 +456,25 @@ void ImeAdapterAndroid::OnStylusWritingGestureActionCompleted(
   }
 }
 
-void ImeAdapterAndroid::SetUpImeRenderWidgetHost(JNIEnv* env) {
+void ImeAdapterAndroid::SetImeRenderWidgetHost() {
   if (!base::FeatureList::IsEnabled(
           blink::features::kCursorAnchorInfoMojoPipe)) {
     return;
   }
-  auto* input_handler = GetFocusedFrameWidgetInputHandler();
-  if (!input_handler) {
+  if (!rwhva_) {
+    return;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (obj.is_null()) {
     return;
   }
   // Use a pending remote so we can pass it to Blink.
   mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> ime_render_widget_host;
   auto receiver = ime_render_widget_host.InitWithNewPipeAndPassReceiver();
-  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
   Java_ImeAdapterImpl_bindImeRenderHost(env, obj,
                                         receiver.PassPipe().release().value());
-  input_handler->PassImeRenderWidgetHost(std::move(ime_render_widget_host));
+  rwhva_->PassImeRenderWidgetHost(std::move(ime_render_widget_host));
 }
 
 void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env,

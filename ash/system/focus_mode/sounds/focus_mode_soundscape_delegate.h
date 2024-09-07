@@ -29,9 +29,9 @@ class ASH_EXPORT FocusModeSoundscapeDelegate : public FocusModeSoundsDelegate {
   ~FocusModeSoundscapeDelegate() override;
 
   // FocusModeSoundsDelegate:
-  bool GetNextTrack(const std::string& playlist_id,
+  void GetNextTrack(const std::string& playlist_id,
                     FocusModeSoundsDelegate::TrackCallback callback) override;
-  bool GetPlaylists(
+  void GetPlaylists(
       FocusModeSoundsDelegate::PlaylistsCallback callback) override;
 
  private:

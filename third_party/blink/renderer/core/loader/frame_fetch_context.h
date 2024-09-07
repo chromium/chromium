@@ -96,10 +96,17 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                          const AtomicString& initiator_type) override;
   bool AllowImage() const override;
 
-  void PopulateResourceRequest(ResourceType,
-                               const std::optional<float> resource_width,
-                               ResourceRequest&,
-                               const ResourceLoaderOptions&) override;
+  void PopulateResourceRequestBeforeCacheAccess(
+      const ResourceLoaderOptions& options,
+      ResourceRequest& request) override;
+
+  void WillSendRequest(ResourceRequest& resource_request) override;
+
+  void UpgradeResourceRequestForLoader(
+      ResourceType,
+      const std::optional<float> resource_width,
+      ResourceRequest&,
+      const ResourceLoaderOptions&) override;
 
   bool IsPrerendering() const override;
 

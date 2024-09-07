@@ -8,8 +8,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #include "components/compose/buildflags.h"
@@ -26,7 +26,11 @@ ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
         content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeAutofillPredictionImprovementsClient>(
-          *web_contents) {}
+          *web_contents),
+      prediction_improvements_manager_{
+          this, OptimizationGuideKeyedServiceFactory::GetForProfile(
+                    Profile::FromBrowserContext(
+                        GetWebContents().GetBrowserContext()))} {}
 
 ChromeAutofillPredictionImprovementsClient::
     ~ChromeAutofillPredictionImprovementsClient() = default;
@@ -35,8 +39,8 @@ ChromeAutofillPredictionImprovementsClient::
 std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
 ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillPredictionImprovementsEnabled)) {
+  if (!autofill_prediction_improvements::
+          IsAutofillPredictionImprovementsEnabled()) {
     return nullptr;
   }
   return base::WrapUnique<ChromeAutofillPredictionImprovementsClient>(
@@ -46,16 +50,15 @@ ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
 void ChromeAutofillPredictionImprovementsClient::GetAXTree(
     AXTreeCallback callback) {
   using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
-  base::OnceCallback<ProtoTreeUpdate(const ui::AXTreeUpdate&)>
-      processing_callback =
-          base::BindOnce([](const ui::AXTreeUpdate& ax_tree_update) {
-            ProtoTreeUpdate ax_tree_proto;
+  base::OnceCallback<ProtoTreeUpdate(ui::AXTreeUpdate&)> processing_callback =
+      base::BindOnce([](ui::AXTreeUpdate& ax_tree_update) {
+        ProtoTreeUpdate ax_tree_proto;
 #if BUILDFLAG(ENABLE_COMPOSE)
-            ComposeAXSerializationUtils::PopulateAXTreeUpdate(ax_tree_update,
-                                                              &ax_tree_proto);
+        ComposeAXSerializationUtils::PopulateAXTreeUpdate(ax_tree_update,
+                                                          &ax_tree_proto);
 #endif
-            return ax_tree_proto;
-          });
+        return ax_tree_proto;
+      });
   GetWebContents().RequestAXTreeSnapshot(
       std::move(processing_callback).Then(std::move(callback)),
       ui::kAXModeWebContentsOnly,
@@ -66,7 +69,7 @@ void ChromeAutofillPredictionImprovementsClient::GetAXTree(
 
 autofill_prediction_improvements::AutofillPredictionImprovementsManager&
 ChromeAutofillPredictionImprovementsClient::GetManager() {
-  return manager_;
+  return prediction_improvements_manager_;
 }
 
 autofill_prediction_improvements::AutofillPredictionImprovementsFillingEngine*
@@ -81,6 +84,10 @@ ChromeAutofillPredictionImprovementsClient::GetFillingEngine() {
             UserAnnotationsServiceFactory::GetForProfile(profile));
   }
   return filling_engine_.get();
+}
+
+const GURL& ChromeAutofillPredictionImprovementsClient::GetLastCommittedURL() {
+  return GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

@@ -24,6 +24,7 @@ import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.common.MediaIntegrityErrorCode;
+import org.chromium.android_webview.common.MediaIntegrityErrorWrapper;
 import org.chromium.android_webview.common.MediaIntegrityProvider;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.PlatformServiceBridgeImpl;
@@ -1033,13 +1034,15 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
         public void addRequestError(
                 @Nullable String contentBinding, @MediaIntegrityErrorCode int errorCode) {
-            mResponses.computeIfAbsent(contentBinding, s -> new LinkedList<>()).offer(errorCode);
+            mResponses
+                    .computeIfAbsent(contentBinding, s -> new LinkedList<>())
+                    .offer(new MediaIntegrityErrorWrapper(errorCode));
         }
 
         @Override
-        public void requestToken(
+        public void requestToken2(
                 @Nullable String contentBinding,
-                @NonNull ValueOrErrorCallback<String, Integer> callback) {
+                @NonNull ValueOrErrorCallback<String, MediaIntegrityErrorWrapper> callback) {
             mCallCount++;
             Queue<Object> responseQueue = mResponses.get(contentBinding);
             mCallCounts.compute(contentBinding, (s, count) -> count == null ? 1 : count + 1);
@@ -1049,8 +1052,8 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                     callback.onResult(token);
                     return;
                 }
-                if (response instanceof Integer errorCode) {
-                    callback.onError(errorCode);
+                if (response instanceof MediaIntegrityErrorWrapper error) {
+                    callback.onError(error);
                     return;
                 }
             }
@@ -1103,7 +1106,9 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                 @MediaIntegrityApiStatus int apiStatus,
                 @MediaIntegrityErrorCode int errorCode) {
             CallKey key = new CallKey(cloudProjectNumber, apiStatus);
-            mResponses.computeIfAbsent(key, k -> new LinkedList<>()).offer(errorCode);
+            mResponses
+                    .computeIfAbsent(key, k -> new LinkedList<>())
+                    .offer(new MediaIntegrityErrorWrapper(errorCode));
         }
 
         public int getProviderCallCount(
@@ -1117,10 +1122,10 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
         }
 
         @Override
-        public void getMediaIntegrityProvider(
+        public void getMediaIntegrityProvider2(
                 long cloudProjectNumber,
                 @MediaIntegrityApiStatus int apiStatus,
-                ValueOrErrorCallback<MediaIntegrityProvider, Integer> callback) {
+                ValueOrErrorCallback<MediaIntegrityProvider, MediaIntegrityErrorWrapper> callback) {
             CallKey key = new CallKey(cloudProjectNumber, apiStatus);
             Queue<Object> responseQueue = mResponses.get(key);
             mCallCounts.compute(key, (callKey, counts) -> counts == null ? 1 : counts + 1);
@@ -1132,8 +1137,8 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                     callback.onResult(provider);
                     return;
                 }
-                if (response instanceof Integer errorCode) {
-                    callback.onError(errorCode);
+                if (response instanceof MediaIntegrityErrorWrapper error) {
+                    callback.onError(error);
                     return;
                 }
             }

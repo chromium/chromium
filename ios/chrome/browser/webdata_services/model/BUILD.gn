@@ -18,6 +18,7 @@ source_set("model") {
     "//components/webdata_services",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public/thread",
   ]
 }

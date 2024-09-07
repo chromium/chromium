@@ -12,6 +12,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/network_service_instance.h"
@@ -27,12 +28,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 class CertVerifierServiceChromeRootStoreOptionalTest

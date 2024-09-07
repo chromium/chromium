@@ -23,7 +23,6 @@
 #include "url/gurl.h"
 
 namespace plus_addresses {
-
 namespace {
 
 using ::affiliations::FacetURI;
@@ -33,8 +32,6 @@ using ::testing::AssertionSuccess;
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::UnorderedElementsAreArray;
-
-}  // namespace
 
 class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  protected:
@@ -87,10 +84,8 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest, TestGetFacetsEmpty) {
 
 // Verifies that facets for plus addresses are available via GetFacets.
 TEST_F(PlusAddressAffiliationSourceAdapterTest, TestGetFacets) {
-  const PlusProfile profile1 =
-      test::CreatePlusProfile(/*use_full_domain=*/true);
-  const PlusProfile profile2 =
-      test::CreatePlusProfile2(/*use_full_domain=*/true);
+  const PlusProfile profile1 = test::CreatePlusProfile();
+  const PlusProfile profile2 = test::CreatePlusProfile2();
 
   service_->OnWebDataChangedBySync(
       {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1),
@@ -104,8 +99,8 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest, TestGetFacets) {
 // Verifies that updates (e.g. add or remove) of valid facets are communicated
 // to the affiliation source observer.
 TEST_F(PlusAddressAffiliationSourceAdapterTest, OnPlusAddressesChanged) {
-  PlusProfile profile1 = test::CreatePlusProfile(/*use_full_domain=*/true);
-  PlusProfile profile2 = test::CreatePlusProfile2(/*use_full_domain=*/true);
+  PlusProfile profile1 = test::CreatePlusProfile();
+  PlusProfile profile2 = test::CreatePlusProfile2();
   service_->OnWebDataChangedBySync(
       {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1)});
 
@@ -141,10 +136,8 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest, OnPlusAddressesChanged) {
 // Verifies that the adapter keeps functioning if the service is destroyed.
 TEST_F(PlusAddressAffiliationSourceAdapterTest,
        TestPlusAddressServiceDestroyed) {
-  const PlusProfile profile1 =
-      test::CreatePlusProfile(/*use_full_domain=*/true);
-  const PlusProfile profile2 =
-      test::CreatePlusProfile2(/*use_full_domain=*/true);
+  const PlusProfile profile1 = test::CreatePlusProfile();
+  const PlusProfile profile2 = test::CreatePlusProfile2();
 
   service_->OnWebDataChangedBySync(
       {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1),
@@ -158,4 +151,5 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest,
   EXPECT_TRUE(ExpectAdapterToReturnFacets({}));
 }
 
+}  // namespace
 }  // namespace plus_addresses

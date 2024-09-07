@@ -112,6 +112,11 @@ struct Transaction : base::RefCounted<Transaction> {
   ~Transaction() = default;
 
   void RequestReady(std::optional<std::vector<uint8_t>> request) {
+    if (!callback_) {
+      FIDO_LOG(EVENT)
+          << "Signing callback completed after transaction was finalized.";
+      return;
+    }
     if (!request) {
       FIDO_LOG(EVENT)
           << "Signing failed, potentially due to the user canceling";

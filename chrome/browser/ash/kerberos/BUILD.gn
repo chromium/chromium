@@ -8,10 +8,14 @@ assert(is_chromeos_ash)
 
 static_library("kerberos") {
   sources = [
+    "data_pipe_utils.cc",
+    "data_pipe_utils.h",
     "kerberos_credentials_manager.cc",
     "kerberos_credentials_manager.h",
     "kerberos_credentials_manager_factory.cc",
     "kerberos_credentials_manager_factory.h",
+    "kerberos_files_handler.cc",
+    "kerberos_files_handler.h",
     "kerberos_ticket_expiry_notification.cc",
     "kerberos_ticket_expiry_notification.h",
   ]
@@ -24,7 +28,6 @@ static_library("kerberos") {
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/authpolicy",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -56,12 +59,12 @@ source_set("unit_tests") {
     ":kerberos",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/authpolicy",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/kerberos",
+    "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
     "//components/user_manager",
     "//testing/gmock",
     "//testing/gtest",
@@ -78,7 +81,6 @@ source_set("browser_tests") {
   deps = [
     ":kerberos",
     "//ash/constants",
-    "//chrome/browser/ash",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/test:test_support",

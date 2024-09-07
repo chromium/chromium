@@ -37,7 +37,6 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kSearchEngineChoiceCountry) + "=" +
       switches::kEeaListCountryOverride);
-  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   config.additional_args.push_back("true");

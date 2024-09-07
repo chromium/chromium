@@ -8,16 +8,16 @@ rootWebArea
 ++++++++list
 ++++++++++listItem hierarchicalLevel=1
 ++++++++++++listMarker name='%E2%80%A2 '
-++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='List element 1'
 ++++++++++++++inlineTextBox name='List element 1'
 ++++++++++listItem hierarchicalLevel=1
 ++++++++++++listMarker name='%E2%80%A2 '
-++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='List element 2'
 ++++++++++++++inlineTextBox name='List element 2'
 ++++++++++listItem hierarchicalLevel=1
 ++++++++++++listMarker name='%E2%80%A2 '
-++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='List element 3'
 ++++++++++++++inlineTextBox name='List element 3'

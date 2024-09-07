@@ -591,32 +591,12 @@ void ProfilePolicyConnector::SetUserAffiliationIdsForTesting(
 
 void ProfilePolicyConnector::OnPolicyServiceInitialized(PolicyDomain domain) {
   DCHECK_EQ(domain, POLICY_DOMAIN_CHROME);
-  ReportChromePolicyInitialized();
   RecordAffiliationMetrics();
 }
 
 void ProfilePolicyConnector::DoPostInit() {
   DCHECK(policy_service_);
-  creation_time_for_metrics_ = base::TimeTicks::Now();
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
-  if (policy_service_->IsInitializationComplete(POLICY_DOMAIN_CHROME)) {
-    ReportChromePolicyInitialized();
-  }
-}
-
-void ProfilePolicyConnector::ReportChromePolicyInitialized() {
-  // Protect against multiple notifications: we want to report the metric only
-  // once per profile session.
-  if (!creation_time_for_metrics_.has_value()) {
-    return;
-  }
-  std::string metric_suffix = GetTimeToFirstPolicyLoadMetricSuffix();
-  if (!metric_suffix.empty()) {
-    base::UmaHistogramMediumTimes(
-        "Enterprise.TimeToFirstPolicyLoad.Profile." + metric_suffix,
-        base::TimeTicks::Now() - creation_time_for_metrics_.value());
-  }
-  creation_time_for_metrics_.reset();
 }
 
 const CloudPolicyStore* ProfilePolicyConnector::GetActualPolicyStore() const {

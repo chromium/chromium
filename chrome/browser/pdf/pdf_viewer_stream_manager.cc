@@ -45,7 +45,7 @@ PdfViewerStreamManager::EmbedderHostInfo GetEmbedderHostInfo(
 // Creates a new unclaimed `EmbedderHostInfo` for the given frame tree node ID
 // (without the `content::GlobalRenderFrameHostId`).
 PdfViewerStreamManager::EmbedderHostInfo GetUnclaimedEmbedderHostInfo(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   return {frame_tree_node_id, content::GlobalRenderFrameHostId()};
 }
 
@@ -145,7 +145,7 @@ void PdfViewerStreamManager::SetFactoryForTesting(Factory* factory) {
 }
 
 void PdfViewerStreamManager::AddStreamContainer(
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     const std::string& internal_id,
     std::unique_ptr<extensions::StreamContainer> stream_container) {
   CHECK(stream_container);
@@ -196,7 +196,7 @@ bool PdfViewerStreamManager::IsPdfExtensionHost(
 
 bool PdfViewerStreamManager::IsPdfExtensionFrameTreeNodeId(
     const content::RenderFrameHost* embedder_host,
-    int frame_tree_node_id) const {
+    content::FrameTreeNodeId frame_tree_node_id) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
   return stream_info &&
          frame_tree_node_id == stream_info->extension_host_frame_tree_node_id();
@@ -231,7 +231,7 @@ bool PdfViewerStreamManager::IsPdfContentHost(
 
 bool PdfViewerStreamManager::IsPdfContentFrameTreeNodeId(
     const content::RenderFrameHost* embedder_host,
-    int frame_tree_node_id) const {
+    content::FrameTreeNodeId frame_tree_node_id) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
   return stream_info &&
          frame_tree_node_id == stream_info->content_host_frame_tree_node_id();
@@ -260,7 +260,8 @@ void PdfViewerStreamManager::SetPluginCanSave(
   stream_info->set_plugin_can_save(plugin_can_save);
 }
 
-void PdfViewerStreamManager::DeleteUnclaimedStreamInfo(int frame_tree_node_id) {
+void PdfViewerStreamManager::DeleteUnclaimedStreamInfo(
+    content::FrameTreeNodeId frame_tree_node_id) {
   CHECK(stream_infos_.erase(GetUnclaimedEmbedderHostInfo(frame_tree_node_id)));
 
   if (stream_infos_.empty()) {
@@ -289,7 +290,8 @@ void PdfViewerStreamManager::RenderFrameDeleted(
 
   // If `render_frame_host` is an unrelated host (there isn't an unclaimed
   // stream), ignore.
-  int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      render_frame_host->GetFrameTreeNodeId();
   if (!ContainsUnclaimedStreamInfo(frame_tree_node_id)) {
     return;
   }
@@ -327,7 +329,8 @@ void PdfViewerStreamManager::RenderFrameHostChanged(
   // DO NOT add code past this point. `this` may have been deleted.
 }
 
-void PdfViewerStreamManager::FrameDeleted(int frame_tree_node_id) {
+void PdfViewerStreamManager::FrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   // If a PDF host is deleted, delete the associated `StreamInfo`.
   for (auto iter = stream_infos_.begin(); iter != stream_infos_.end();) {
     StreamInfo* stream_info = iter->second.get();
@@ -451,7 +454,7 @@ void PdfViewerStreamManager::DidFinishNavigation(
   // `about_blank_host`'s FrameTreeNode will be reused for the extension
   // `content::RenderFrameHost`, so it is safe to set it in `stream_info` to
   // identify both hosts.
-  int extension_host_frame_tree_node_id =
+  content::FrameTreeNodeId extension_host_frame_tree_node_id =
       about_blank_host->GetFrameTreeNodeId();
   stream_info->set_extension_host_frame_tree_node_id(
       extension_host_frame_tree_node_id);
@@ -468,7 +471,7 @@ void PdfViewerStreamManager::ClaimStreamInfoForTesting(
 
 void PdfViewerStreamManager::SetExtensionFrameTreeNodeIdForTesting(
     content::RenderFrameHost* embedder_host,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
   CHECK(stream_info);
 
@@ -477,7 +480,7 @@ void PdfViewerStreamManager::SetExtensionFrameTreeNodeIdForTesting(
 
 void PdfViewerStreamManager::SetContentFrameTreeNodeIdForTesting(
     content::RenderFrameHost* embedder_host,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
   CHECK(stream_info);
 
@@ -485,7 +488,7 @@ void PdfViewerStreamManager::SetContentFrameTreeNodeIdForTesting(
 }
 
 void PdfViewerStreamManager::NavigateToPdfExtensionUrl(
-    int extension_host_frame_tree_node_id,
+    content::FrameTreeNodeId extension_host_frame_tree_node_id,
     StreamInfo* stream_info,
     content::SiteInstance* source_site_instance,
     content::GlobalRenderFrameHostId global_id) {
@@ -529,7 +532,7 @@ PdfViewerStreamManager::GetClaimedStreamInfoFromPdfContentNavigation(
 }
 
 bool PdfViewerStreamManager::ContainsUnclaimedStreamInfo(
-    int frame_tree_node_id) const {
+    content::FrameTreeNodeId frame_tree_node_id) const {
   return base::Contains(stream_infos_,
                         GetUnclaimedEmbedderHostInfo(frame_tree_node_id));
 }

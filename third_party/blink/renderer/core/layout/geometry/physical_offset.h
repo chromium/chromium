@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "ui/gfx/geometry/point.h"
@@ -95,13 +94,10 @@ struct CORE_EXPORT PhysicalOffset {
   // logical/physical distinctions.
   constexpr explicit PhysicalOffset(const LayoutPoint& point)
       : left(point.X()), top(point.Y()) {}
-  constexpr explicit PhysicalOffset(const DeprecatedLayoutSize& size)
-      : left(size.Width()), top(size.Height()) {}
 
   // Conversions from/to existing code. New code prefers type safety for
   // logical/physical distinctions.
   constexpr LayoutPoint ToLayoutPoint() const { return {left, top}; }
-  constexpr DeprecatedLayoutSize ToLayoutSize() const { return {left, top}; }
 
   explicit PhysicalOffset(const gfx::Point& point)
       : left(point.x()), top(point.y()) {}

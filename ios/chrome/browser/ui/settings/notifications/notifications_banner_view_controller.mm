@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_banner_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
@@ -61,8 +63,13 @@ NSString* BannerImageName(bool landscape) {
 @property(nonatomic, strong) TableViewItem* contentNotificationsItem;
 // All the items for the tips notifications section received by mediator.
 @property(nonatomic, strong) TableViewSwitchItem* tipsNotificationsItem;
+// All the items for the Safety Check notifications section received by
+// mediator.
+@property(nonatomic, strong) TableViewSwitchItem* safetyCheckItem;
 @property(nonatomic, strong)
     TableViewHeaderFooterItem* tipsNotificationsFooterItem;
+// All the items for the send tab notifications section received by mediator.
+@property(nonatomic, strong) TableViewSwitchItem* sendTabNotificationsItem;
 
 @end
 
@@ -229,6 +236,12 @@ NSString* BannerImageName(bool landscape) {
         @(NotificationsItemIdentifier::ItemIdentifierContent)
       ]];
     }
+    if (base::FeatureList::IsEnabled(
+            send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+      [_snapshot appendItemsWithIdentifiers:@[
+        @(NotificationsItemIdentifier::ItemIdentifierSendTab)
+      ]];
+    }
     if (IsIOSTipsNotificationsEnabled()) {
       [_snapshot appendItemsWithIdentifiers:@[
         @(NotificationsItemIdentifier::ItemIdentifierTips)
@@ -237,6 +250,11 @@ NSString* BannerImageName(bool landscape) {
     [_snapshot appendItemsWithIdentifiers:@[
       @(NotificationsItemIdentifier::ItemIdentifierPriceTracking)
     ]];
+    if (IsSafetyCheckNotificationsEnabled()) {
+      [_snapshot appendItemsWithIdentifiers:@[
+        @(NotificationsItemIdentifier::ItemIdentifierSafetyCheck)
+      ]];
+    }
   }
   return _snapshot;
 }
@@ -305,6 +323,10 @@ NSString* BannerImageName(bool landscape) {
       return self.tipsNotificationsItem;
     case ItemIdentifierPriceTracking:
       return self.priceTrackingItem;
+    case ItemIdentifierSafetyCheck:
+      return self.safetyCheckItem;
+    case ItemIdentifierSendTab:
+      return self.sendTabNotificationsItem;
     case ItemIdentifierTipsNotificationsFooter:
       NOTREACHED();
   }

@@ -29,8 +29,25 @@ static_library("floating_sso") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sync/service",
+    "//components/url_matcher",
     "//content/public/browser",
     "//net",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "cookie_sync_test_util.cc",
+    "cookie_sync_test_util.h",
+  ]
+
+  deps = [
+    ":floating_sso",
+    "//base",
+    "//components/sync/protocol:protocol",
+    "//components/sync/protocol:util",
   ]
 }
 
@@ -39,14 +56,12 @@ source_set("unit_tests") {
 
   sources = [
     "cookie_sync_conversions_unittest.cc",
-    "cookie_sync_test_util.cc",
-    "cookie_sync_test_util.h",
     "floating_sso_sync_bridge_unittest.cc",
   ]
 
   deps = [
     ":floating_sso",
-    "//base",
+    ":test_support",
     "//base/test:test_support",
     "//components/sync:test_support",
     "//components/sync/service",
@@ -65,10 +80,11 @@ source_set("browser_tests") {
 
   deps = [
     ":floating_sso",
-    "//base",
+    ":test_support",
     "//base/test:test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:sync",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/constants",

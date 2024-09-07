@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 
 #import "base/feature_list.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -61,7 +62,8 @@ bool AutofillSaveCardInfoBarDelegateIOS::UpdateAndAccept(
     std::u16string cardholder_name,
     std::u16string expiration_date_month,
     std::u16string expiration_date_year) {
-  AutofillClient::UserProvidedCardDetails user_provided_details;
+  payments::PaymentsAutofillClient::UserProvidedCardDetails
+      user_provided_details;
   user_provided_details.cardholder_name = cardholder_name;
   user_provided_details.expiration_date_month = expiration_date_month;
   user_provided_details.expiration_date_year = expiration_date_year;

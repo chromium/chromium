@@ -14,6 +14,7 @@
 #include "chrome/browser/dips/dips_navigation_flow_detector_wrapper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -108,9 +109,20 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       commerce_ui_tab_helper_ =
           CreateCommerceUiTabHelper(tab.GetContents(), profile);
     }
+
+    privacy_sandbox_tab_observer_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
+            tab.GetContents());
   }
-  fedcm_account_selection_view_controller_ =
-      std::make_unique<FedCmAccountSelectionViewController>(&tab);
+
+  // FedCM is supported in general web content, but not in chrome UI. Of the
+  // BrowserWindow types, devtools show Chrome UI and the rest show general web
+  // content.
+  if (tab.GetBrowserWindowInterface()->GetType() !=
+      BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+    fedcm_account_selection_view_controller_ =
+        std::make_unique<FedCmAccountSelectionViewController>(&tab);
+  }
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
@@ -166,6 +178,16 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       std::make_unique<ReadAnythingSidePanelController>(
           tab, side_panel_registry_.get());
 
+  // Deregister side-panel entries that are web-contents scoped rather than tab
+  // scoped.
+  side_panel_registry_->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    extensions::ExtensionSidePanelManager::GetForTabForTesting(old_contents)
+        ->WillDiscard();
+  }
+
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_.reset();
     commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(
@@ -181,6 +203,19 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     chrome_autofill_prediction_improvements_client_ =
         ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
             new_contents);
+  }
+
+  if (privacy_sandbox_tab_observer_) {
+    privacy_sandbox_tab_observer_.reset();
+    privacy_sandbox_tab_observer_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
+            tab->GetContents());
+  }
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    extensions::ExtensionSidePanelManager::CreateForTab(
+        Profile::FromBrowserContext(new_contents->GetBrowserContext()),
+        new_contents, side_panel_registry_.get());
   }
 }
 

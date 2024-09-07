@@ -37,6 +37,8 @@ static_library("session") {
     "arc_vm_client_adapter.h",
     "file_system_status.cc",
     "file_system_status.h",
+    "mojo_invitation_manager.cc",
+    "mojo_invitation_manager.h",
     "serial_number_util.cc",
     "serial_number_util.h",
   ]
@@ -69,6 +71,7 @@ static_library("session") {
     "//components/prefs:prefs",
     "//components/user_manager",
     "//components/version_info",
+    "//mojo/proxy:switches",
     "//services/accessibility/android/public/mojom",
     "//ui/display/manager",
   ]
@@ -133,6 +136,7 @@ source_set("unit_tests") {
     "connection_holder_unittest.cc",
     "connection_notifier_unittest.cc",
     "file_system_status_unittest.cc",
+    "mojo_invitation_manager_unittest.cc",
     "serial_number_util_unittest.cc",
   ]
 

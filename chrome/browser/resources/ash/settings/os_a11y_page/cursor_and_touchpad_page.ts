@@ -187,6 +187,21 @@ export class SettingsCursorAndTouchpadPageElement extends
         },
       },
 
+      disableTrackpadOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {value: 0, name: loadTimeData.getString('disableTrackpadNever')},
+            {value: 1, name: loadTimeData.getString('disableTrackpadAlways')},
+            {
+              value: 2,
+              name: loadTimeData.getString('disableTrackpadMouseConnected'),
+            },
+          ];
+        },
+      },
+
       mouseKeysDominantHandOptions_: {
         readOnly: true,
         type: Array,
@@ -245,6 +260,18 @@ export class SettingsCursorAndTouchpadPageElement extends
         computed: 'getShelfNavigationButtonsEnabledPref_(' +
             'shelfNavigationButtonsImplicitlyEnabled_,' +
             'prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled)',
+      },
+
+      /**
+       * Whether the controlling the mouse cursor with the keyboard feature is
+       * enabled.
+       */
+      isAccessibilityDisableTrackpadEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityDisableTrackpadEnabled');
+        },
       },
 
       /**
@@ -331,11 +358,13 @@ export class SettingsCursorAndTouchpadPageElement extends
   private cursorAndTouchpadBrowserProxy_: CursorAndTouchpadPageBrowserProxy;
   private cursorColorOptions_: Option[];
   private deviceBrowserProxy_: DevicePageBrowserProxy;
+  private disableTrackpadOptions_: Option[];
   private readonly isKioskModeActive_: boolean;
   private shelfNavigationButtonsImplicitlyEnabled_: boolean;
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   private showShelfNavigationButtonsSettings_: boolean;
+  private readonly isAccessibilityDisableTrackpadEnabled_: boolean;
   private readonly isAccessibilityFaceGazeEnabled_: boolean;
   private readonly isAccessibilityMouseKeysEnabled_: boolean;
   private readonly isAccessibilityOverscrollSettingFeatureEnabled_: boolean;

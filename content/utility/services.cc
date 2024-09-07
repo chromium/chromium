@@ -374,8 +374,7 @@ auto RunVideoEffects(
 auto RunOnDeviceModel(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
         receiver) {
-  return std::make_unique<on_device_model::OnDeviceModelService>(
-      std::move(receiver));
+  return on_device_model::OnDeviceModelService::Create(std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)

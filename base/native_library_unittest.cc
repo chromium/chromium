@@ -48,7 +48,7 @@ TEST(NativeLibraryTest, GetNativeLibraryName) {
 #if BUILDFLAG(IS_WIN)
       "mylib.dll";
 #elif BUILDFLAG(IS_IOS)
-      "mylib";
+      "Frameworks/mylib.framework/mylib";
 #elif BUILDFLAG(IS_MAC)
       "libmylib.dylib";
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -62,7 +62,7 @@ TEST(NativeLibraryTest, GetLoadableModuleName) {
 #if BUILDFLAG(IS_WIN)
       "mylib.dll";
 #elif BUILDFLAG(IS_IOS)
-      "mylib";
+      "Frameworks/mylib.framework";
 #elif BUILDFLAG(IS_MAC)
       "mylib.so";
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -71,14 +71,16 @@ TEST(NativeLibraryTest, GetLoadableModuleName) {
   EXPECT_EQ(kExpectedName, GetLoadableModuleName("mylib"));
 }
 
-// We don't support dynamic loading on iOS, and ASAN will complain about our
-// intentional ODR violation because of |g_native_library_exported_value| being
-// defined globally both here and in the shared library.
-#if !BUILDFLAG(IS_IOS) && !defined(ADDRESS_SANITIZER)
+// ASAN will complain about our intentional ODR violation because of
+// |g_native_library_exported_value| being defined globally both here
+// and in the shared library.
+#if !defined(ADDRESS_SANITIZER)
 
 const char kTestLibraryName[] =
 #if BUILDFLAG(IS_WIN)
     "test_shared_library.dll";
+#elif BUILDFLAG(IS_IOS)
+    "Frameworks/test_shared_library_ios.framework/test_shared_library_ios";
 #elif BUILDFLAG(IS_MAC)
     "libtest_shared_library.dylib";
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -162,6 +164,11 @@ TEST(NativeLibraryTest, LoadLibraryPreferOwnSymbols) {
   // binary return a sequence of values independent from the sequence returned
   // by GetIncrementValue(), ensuring that the DSO is calling its own local
   // definition of NativeLibraryTestIncrement().
+
+  // Ensure that the counter starts at the expected value (0).
+  library.Call<void>("NativeLibraryResetCounter");
+  NativeLibraryResetCounter();
+
   EXPECT_EQ(1, library.Call<int>("GetIncrementValue"));
   EXPECT_EQ(1, NativeLibraryTestIncrement());
   EXPECT_EQ(2, library.Call<int>("GetIncrementValue"));
@@ -174,6 +181,6 @@ TEST(NativeLibraryTest, LoadLibraryPreferOwnSymbols) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !defined(THREAD_SANITIZER) && \
         // !defined(MEMORY_SANITIZER)
 
-#endif  // !BUILDFLAG(IS_IOS) && !defined(ADDRESS_SANITIZER)
+#endif  // !defined(ADDRESS_SANITIZER)
 
 }  // namespace base

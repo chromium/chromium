@@ -114,10 +114,6 @@ void AppsGridViewTestApi::FireReorderTimerAndWaitForAnimationDone() {
   WaitForItemMoveAnimationDone();
 }
 
-void AppsGridViewTestApi::FireFolderItemReparentTimer() {
-  view_->FireFolderItemReparentTimerForTest();
-}
-
 gfx::Rect AppsGridViewTestApi::GetDragIconBoundsInAppsGridView() {
   if (!view_->drag_icon_proxy_)
     return gfx::Rect();

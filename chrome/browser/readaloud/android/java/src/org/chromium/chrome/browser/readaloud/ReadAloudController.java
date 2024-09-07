@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
+import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
@@ -33,12 +35,16 @@ import org.chromium.base.UserData;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.OnUserLeaveHintObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -66,6 +72,8 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.ConnectionType;
+import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
@@ -84,6 +92,7 @@ public class ReadAloudController
         implements Player.Observer,
                 Player.Delegate,
                 PlaybackListener,
+                NetworkChangeNotifier.ConnectionTypeObserver,
                 ApplicationStatus.ActivityStateListener,
                 ApplicationStatus.ApplicationStateListener,
                 InsetObserver.WindowInsetObserver,
@@ -96,6 +105,9 @@ public class ReadAloudController
 
     private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
+    private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
+
     private final ObserverList<Runnable> mReadabilityUpdateObserverList = new ObserverList<>();
     // Delay added to readability check that should run it after largest contentful paint for >85%
     // of users http://uma/p/chrome/timeline_v2?sid=c975abf9022aac7b36bf28285f068dd6
@@ -145,6 +157,8 @@ public class ReadAloudController
     private boolean mRestoringPlayer;
     private boolean mIsDestroyed;
     private boolean mIsScreenOnAndUnlocked = true;
+    private boolean mKeepScreenOnFlagIsSet;
+    private CallbackController mCallbackController;
 
     /**
      * ReadAloud entrypoint defined in readaloud/enums.xml.
@@ -474,8 +488,10 @@ public class ReadAloudController
             BottomControlsStacker bottomControlsStacker,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityWindowAndroid activityWindowAndroid,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         sInstances.add(this);
+        mCallbackController = new CallbackController();
         ReadAloudFeatures.init();
         mActivity = activity;
         mProfileSupplier = profileSupplier;
@@ -501,6 +517,33 @@ public class ReadAloudController
             mTapToSeekSelectionManager =
                     new TapToSeekSelectionManager(this, mActivePlaybackTabSupplier);
         }
+        if (NetworkChangeNotifier.isInitialized()) {
+            NetworkChangeNotifier.addConnectionTypeObserver(this);
+        }
+        mLayoutStateProviderSupplier = layoutStateProviderSupplier;
+        mLayoutStateProviderSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::addLayoutStateObserver));
+    }
+
+    private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {
+        mLayoutStateObserver =
+                new LayoutStateObserver() {
+
+                    @Override
+                    public void onStartedShowing(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
+                            maybeHidePlayer();
+                        }
+                    }
+
+                    @Override
+                    public void onFinishedHiding(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
+                            maybeShowPlayer();
+                        }
+                    }
+                };
+        layoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -768,7 +811,11 @@ public class ReadAloudController
                 || GURL.isEmptyOrInvalid(tab.getUrl())
                 || tab.getWebContents() == null
                 || mProfileSupplier.get() == null
-                || !mProfileSupplier.get().isNativeInitialized()) {
+                || !mProfileSupplier.get().isNativeInitialized()
+                || DeviceConditions.getCurrentNetConnectionType(mActivity.getApplicationContext())
+                        == ConnectionType.CONNECTION_NONE
+                // TODO(crbug.com/363326024): Remove once feature is supported for PDF.
+                || (tab.isNativePage() && tab.getNativePage().isPdf())) {
             return false;
         }
 
@@ -1005,7 +1052,11 @@ public class ReadAloudController
             mPlayback = null;
             mPlayerCoordinator.recordPlaybackDuration();
             ReadAloudMetrics.recordReasonForStoppingPlayback(reason);
+            if (mKeepScreenOnFlagIsSet) {
+                mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
         }
+        mKeepScreenOnFlagIsSet = false;
         mPlayingTabTranslationObserver.stopObservingTab(null);
         mActivePlaybackTabSupplier.set(null);
         mCurrentlyPlayingGurl = null;
@@ -1017,6 +1068,11 @@ public class ReadAloudController
 
     /** Cleanup: unregister listeners. */
     public void destroy() {
+        // This check is only needed for tests in which destroy can be called twice
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
         sInstances.remove(this);
         mIsDestroyed = true;
         if (mVoicePreviewPlayback != null) {
@@ -1032,6 +1088,9 @@ public class ReadAloudController
             mTabObserver.destroy();
         }
 
+        if (mLayoutStateProviderSupplier.get() != null) {
+            mLayoutStateProviderSupplier.get().removeObserver(mLayoutStateObserver);
+        }
         removeTranslationObservers(null);
 
         mHighlightingEnabled.removeObserver(mHighlightingEnabledObserver);
@@ -1047,6 +1106,9 @@ public class ReadAloudController
         mActivityLifecycleDispatcher.unregister(this);
         mRestoringPlayer = false;
         mReadabilityUpdateObserverList.clear();
+        if (NetworkChangeNotifier.isInitialized()) {
+            NetworkChangeNotifier.removeConnectionTypeObserver(this);
+        }
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
@@ -1450,6 +1512,12 @@ public class ReadAloudController
         }
     }
 
+    // NetworkChangeNotifier.ConnectionTypeObserver
+    @Override
+    public void onConnectionTypeChanged(int connectionType) {
+        notifyReadabilityMayHaveChanged();
+    }
+
     /** Show mini player if there is an active playback. */
     public void maybeShowPlayer() {
         if (mPlayback != null) {
@@ -1476,6 +1544,17 @@ public class ReadAloudController
 
     @Override
     public void onPlaybackDataChanged(PlaybackData data) {
+        if (data.state() == PLAYING) {
+            if (!mKeepScreenOnFlagIsSet) {
+                mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                mKeepScreenOnFlagIsSet = true;
+            }
+        } else {
+            if (mKeepScreenOnFlagIsSet) {
+                mKeepScreenOnFlagIsSet = false;
+                mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
         mCurrentPlaybackData = data;
     }
 

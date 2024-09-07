@@ -98,12 +98,11 @@
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
 
+namespace autofill {
+namespace {
+
 using base::Bucket;
 using testing::ElementsAre;
-
-namespace autofill {
-
-namespace {
 
 ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
@@ -150,6 +149,8 @@ constexpr double kFakeGeolocationLatitude = 1.23;
 constexpr double kFakeGeolocationLongitude = 4.56;
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class LocalCardMigrationBrowserTest
     : public SyncTest,

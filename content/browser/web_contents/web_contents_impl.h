@@ -221,7 +221,7 @@ class CONTENT_EXPORT WebContentsImpl
       GlobalRenderFrameHostId render_frame_host_id);
   static WebContents* FromRenderFrameHostID(int render_process_host_id,
                                             int render_frame_host_id);
-  static WebContents* FromFrameTreeNodeId(int frame_tree_node_id);
+  static WebContents* FromFrameTreeNodeId(FrameTreeNodeId frame_tree_node_id);
   static WebContentsImpl* FromOuterFrameTreeNode(
       const FrameTreeNode* frame_tree_node);
   static WebContentsImpl* FromRenderWidgetHostImpl(RenderWidgetHostImpl* rwh);
@@ -380,9 +380,9 @@ class CONTENT_EXPORT WebContentsImpl
   RenderFrameHostImpl* GetPrimaryMainFrame() override;
   PageImpl& GetPrimaryPage() override;
   RenderFrameHostImpl* GetFocusedFrame() override;
-  bool IsPrerenderedFrame(int frame_tree_node_id) override;
+  bool IsPrerenderedFrame(FrameTreeNodeId frame_tree_node_id) override;
   RenderFrameHostImpl* UnsafeFindFrameByFrameTreeNodeId(
-      int frame_tree_node_id) override;
+      FrameTreeNodeId frame_tree_node_id) override;
   void ForEachRenderFrameHostWithAction(
       base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame)
       override;
@@ -409,7 +409,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsWebContentsOnlyAccessibilityModeForTesting() override;
   bool IsFullAccessibilityModeForTesting() override;
   const std::u16string& GetTitle() override;
-  const std::u16string& GetAppTitle() override;
+  const std::optional<std::u16string>& GetAppTitle() override;
   void UpdateTitleForEntry(NavigationEntry* entry,
                            const std::u16string& title) override;
   SiteInstanceImpl* GetSiteInstance() override;
@@ -429,6 +429,7 @@ class CONTENT_EXPORT WebContentsImpl
   uint64_t GetUploadSize() override;
   uint64_t GetUploadPosition() override;
   const std::string& GetEncoding() override;
+  void Discard() override;
   bool WasDiscarded() override;
   void SetWasDiscarded(bool was_discarded) override;
   [[nodiscard]] base::ScopedClosureRunner IncrementCapturerCount(
@@ -642,6 +643,7 @@ class CONTENT_EXPORT WebContentsImpl
   void OnWebPreferencesChanged() override;
 
   void AboutToBeDiscarded(WebContents* new_contents) override;
+  void NotifyWasDiscarded() override;
 
   [[nodiscard]] base::ScopedClosureRunner CreateDisallowCustomCursorScope(
       int max_dimension_dips) override;
@@ -1052,8 +1054,9 @@ class CONTENT_EXPORT WebContentsImpl
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
   bool HandleWheelEvent(const blink::WebMouseWheelEvent& event) override;
   bool PreHandleGestureEvent(const blink::WebGestureEvent& event) override;
-  BrowserAccessibilityManager* GetRootBrowserAccessibilityManager() override;
-  BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager()
+  ui::BrowserAccessibilityManager* GetRootBrowserAccessibilityManager()
+      override;
+  ui::BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager()
       override;
   // The following 4 functions are already listed under WebContents overrides:
   // void Cut() override;
@@ -1117,6 +1120,7 @@ class CONTENT_EXPORT WebContentsImpl
   VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() final;
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
       ui::Compositor* compositor) override;
+  void OnInputIgnored(const blink::WebInputEvent& event) override;
 
   // RenderFrameHostManager::Delegate ------------------------------------------
 
@@ -1175,7 +1179,7 @@ class CONTENT_EXPORT WebContentsImpl
   void DidStartLoading(FrameTreeNode* frame_tree_node) override;
   void DidStopLoading() override;
   bool IsHidden() override;
-  int GetOuterDelegateFrameTreeNodeId() override;
+  FrameTreeNodeId GetOuterDelegateFrameTreeNodeId() override;
   RenderFrameHostImpl* GetProspectiveOuterDocument() override;
   FrameTree* LoadingTree() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
@@ -1483,7 +1487,9 @@ class CONTENT_EXPORT WebContentsImpl
 
   bool IsPopup() const override;
 
-  bool IsPartitionedPopin() const override;
+  RenderFrameHostImpl* PartitionedPopinOpener() const override;
+
+  WebContents* OpenedPartitionedPopin() const override;
 
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
@@ -1620,7 +1626,7 @@ class CONTENT_EXPORT WebContentsImpl
                                 RenderFrameHostImpl* render_frame_host);
 
     WebContentsImpl* outer_web_contents() const { return outer_web_contents_; }
-    int outer_contents_frame_tree_node_id() const {
+    FrameTreeNodeId outer_contents_frame_tree_node_id() const {
       return outer_contents_frame_tree_node_id_;
     }
     FrameTreeNode* OuterContentsFrameTreeNode() const;
@@ -1650,7 +1656,7 @@ class CONTENT_EXPORT WebContentsImpl
 
     // The ID of the FrameTreeNode in the |outer_web_contents_| that hosts
     // |current_web_contents_| as an inner WebContents.
-    int outer_contents_frame_tree_node_id_;
+    FrameTreeNodeId outer_contents_frame_tree_node_id_;
 
     // List of inner WebContents that we host. The outer WebContents owns the
     // inner WebContents.
@@ -2037,6 +2043,14 @@ class CONTENT_EXPORT WebContentsImpl
 
   // WarmUp a spare render process for future navigations.
   void WarmUpAndroidSpareRenderer();
+
+  // If the new window will be a partitioned popin, we need to validate the
+  // settings and set the opener.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  void SetPartitionedPopinOpenerOnNewWindowIfNeeded(
+      WebContentsImpl* new_window,
+      const mojom::CreateNewWindowParams& params,
+      RenderFrameHostImpl* opener);
 
   // Describes the different types of groups we can be interested in when
   // looking for scriptable frames.
@@ -2557,10 +2571,21 @@ class CONTENT_EXPORT WebContentsImpl
   // Whether this contents represents a window initially opened as a new popup.
   bool is_popup_{false};
 
-  // Whether this contents represents a window initially opened as a new
-  // partitioned popin. Should only be true if `is_popup_` is true. See:
-  // https://explainers-by-googlers.github.io/partitioned-popins/
-  bool is_partitioned_popin_{false};
+  // If this window was opened as a new partitioned popin this will be the
+  // frame of the opener. This will only have a value if `is_popup_` is true.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  // TODO(crbug.com/340606651): If this is cleared after being set or navigated
+  // the popin should be forced to close. Ownership here need to be firmed up.
+  base::WeakPtr<RenderFrameHostImpl> partitioned_popin_opener_;
+
+  // Each window can have at most one open partitioned popin, and this will be a
+  // pointer to it. If this is set `partitioned_popin_opener_` must be null as
+  // no popin can open a popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  // TODO(crbug.com/340606651): Ownership here is likely weaker than possible.
+  // Given the 1:1 relationship here the opened popin could probably be a
+  // unique_ptr cleared via a WebContentsModalDialogManager observer on close.
+  base::WeakPtr<WebContents> opened_partitioned_popin_;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

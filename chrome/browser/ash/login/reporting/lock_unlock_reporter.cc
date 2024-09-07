@@ -89,12 +89,15 @@ void LockUnlockReporter::MaybeReportEvent(LockUnlockRecord record) {
   }
   const std::string& user_email =
       user_manager::UserManager::Get()->GetPrimaryUser()->GetDisplayEmail();
-  if (!helper_->ShouldReportUser(user_email)) {
-    return;
+  if (helper_->ShouldReportUser(user_email)) {
+    record.mutable_affiliated_user()->set_user_email(user_email);
+  } else {
+    // This is an unaffiliated user. We can't report any personal information
+    // about them, so we report a device-unique user id instead.
+    record.mutable_unaffiliated_user()->set_user_id(
+        helper_->GetUniqueUserIdForThisDevice(user_email));
   }
-
   record.set_event_timestamp_sec(clock_->Now().ToTimeT());
-  record.mutable_affiliated_user()->set_user_email(user_email);
 
   helper_->ReportEvent(std::make_unique<LockUnlockRecord>(std::move(record)),
                        ::reporting::Priority::SECURITY);

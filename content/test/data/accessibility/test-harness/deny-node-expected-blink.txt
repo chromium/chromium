@@ -14,11 +14,11 @@ rootWebArea
 ++++++++++staticText name='Moo?:'
 ++++++++radioButton name='Mooooo!' checkedState=false
 ++++++++labelText ignored
-++++++++++staticText ignored name='Mooooo!'
+++++++++++staticText ignored
 ++++++++radioButton name='Mooooo?' checkedState=false
 ++++++++labelText ignored
-++++++++++staticText ignored name='Mooooo?'
+++++++++++staticText ignored
 ++++++++labelText ignored
-++++++++++staticText ignored name='This isn't a useful checkbox'
+++++++++++staticText ignored
 ++++++++button name='Submit'
 ++++++++++staticText name='Submit'

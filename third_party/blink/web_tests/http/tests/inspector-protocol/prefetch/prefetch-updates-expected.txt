@@ -1,3 +1,5 @@
+
+Running test: basicTest
 Tests that Preload.prefetchStatusUpdated is dispatched for prefetch requests.
 {
     method : Preload.prefetchStatusUpdated
@@ -31,4 +33,38 @@ Tests that Preload.prefetchStatusUpdated is dispatched for prefetch requests.
     }
     sessionId : <string>
 }
+
+Running test: testRedispatchAfterEnable
+Tests that Preload.prefetchStatusUpdated is redispatched for a previously completed prefetch request.
+{
+    initiatingFrameId : <string>
+    key : {
+        action : Prefetch
+        loaderId : <string>
+        url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?page=2
+    }
+    prefetchStatus : PrefetchSuccessfulButNotUsed
+    prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?page=2
+    requestId : <string>
+    status : Ready
+}
+
+Running test: testRedispatchAfterEnable_FailedPrefetch
+Tests that Preload.prefetchStatusUpdated is redispatched for a previously failed prefetch request.
+{
+    initiatingFrameId : <string>
+    key : {
+        action : Prefetch
+        loaderId : <string>
+        url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/non_existent.bmp
+    }
+    prefetchStatus : PrefetchFailedNon2XX
+    prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/non_existent.bmp
+    requestId : <string>
+    status : Failure
+}
+
+Running test: testNoRedispatchAfterEnableIfCandidateRemoved
+Tests that Preload.prefetchStatusUpdated is not redispatched for a prefetch request if the candidate was removed.
+No update received after Preload domain is re-enabled.
 

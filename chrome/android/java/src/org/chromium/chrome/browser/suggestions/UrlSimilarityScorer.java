@@ -5,7 +5,12 @@
 package org.chromium.chrome.browser.suggestions;
 
 import android.annotation.SuppressLint;
+import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
@@ -19,10 +24,45 @@ import java.util.Set;
  * main use is to find the best match among "candidate" URLs from a TabList.
  */
 public class UrlSimilarityScorer {
+
+    /** Return value for findTabWithMostSimilarUrl(). */
+    static class MatchResult {
+        public final int index;
+        public final int score;
+
+        public MatchResult(int index, int score) {
+            this.index = index;
+            this.score = score;
+        }
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // Information on the tile clicked by the user. The values must be consistent with
+    // MvtReselectUrlMatchResult in enums.xml.
+    @IntDef({
+        MvtReselectUrlMatchResult.NONE,
+        MvtReselectUrlMatchResult.EXACT,
+        MvtReselectUrlMatchResult.PARTIAL,
+        MvtReselectUrlMatchResult.NUM_ENTRIES
+    })
+    @interface MvtReselectUrlMatchResult {
+        int NONE = 0;
+        int EXACT = 1;
+        int PARTIAL = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    private static final String HISTOGRAM_MATCH_PREFIX = "NewTabPage.MostVisited.ReselectMatch.";
+    private static final String HISTOGRAM_ARM_LAX_UP_TO_PATH = "LaxUpToPath";
+    private static final String HISTOGRAM_ARM_LAX_UP_TO_QUERY = "LaxUpToQuery";
+    private static final String HISTOGRAM_ARM_LAX_UP_TO_REF = "LaxUpToRef";
+    private static final String HISTOGRAM_ARM_STRICT = "Strict";
+
     // Value for candidate URL rejection, set to negative since match scores are non-negative.
     public static final int MISMATCHED = -1;
-    // Identical matches beat all, and so is assigned maximal value.
-    public static final int IDENTICAL = Integer.MAX_VALUE;
+    // Exact matches beat all, and so is assigned maximal value.
+    public static final int EXACT = Integer.MAX_VALUE;
 
     public static final int PATH_MATCH_MAX_SCORE = 99;
     public static final int SCORE_PATH_MATCH_MULTIPLIER = 10;
@@ -148,7 +188,7 @@ public class UrlSimilarityScorer {
     /** Computes the similarity score of {@param candidateUrl}. */
     public int scoreSimilarity(GURL candidateUrl) {
         if (candidateUrl.equals(mKeyUrl)) {
-            return IDENTICAL;
+            return EXACT;
         }
 
         // Port difference (e.g., example.com:443 vs. example.com:8000) is MISMATCHED to support
@@ -164,15 +204,15 @@ public class UrlSimilarityScorer {
             return MISMATCHED;
         }
 
-        int sim = 0;
+        int score = 0;
         if (candidateUrl.getQuery().contentEquals(mKeyQuery)) {
-            sim += SCORE_QUERY_MATCH;
+            score += SCORE_QUERY_MATCH;
         } else if (!mLaxQuery) {
             return MISMATCHED;
         }
 
         if (candidateUrl.getRef().contentEquals(mKeyRef)) {
-            sim += SCORE_REF_MATCH;
+            score += SCORE_REF_MATCH;
         } else if (!mLaxRef) {
             return MISMATCHED;
         }
@@ -190,28 +230,65 @@ public class UrlSimilarityScorer {
         } else if (!mProcessedKeyPath.contentEquals(candidateUrl.getPath())) {
             return MISMATCHED;
         }
-        sim += pathScore * SCORE_PATH_MATCH_MULTIPLIER;
+        score += pathScore * SCORE_PATH_MATCH_MULTIPLIER;
 
-        return sim;
+        return score;
     }
 
     /**
-     * Returns the index of a tab in {@param tabList} whose URL attains the highest similarity
-     * score, taking the first found if a tie exist.
+     * Finds the tab in {@param tabList} whose URL attains the highest similarity score, taking the
+     * first if a tie exists, and returns the result.
      */
-    public int findTabWithMostSimilarUrl(TabList tabList) {
+    public MatchResult findTabWithMostSimilarUrl(TabList tabList) {
         int bestIndex = TabList.INVALID_TAB_INDEX;
-        int bestSim = MISMATCHED;
+        int bestScore = MISMATCHED;
         int count = tabList.getCount();
         for (int i = 0; i < count; ++i) {
-            int sim = scoreSimilarity(tabList.getTabAt(i).getUrl());
-            if (sim != MISMATCHED && bestSim < sim) {
-                bestSim = sim;
+            int score = scoreSimilarity(tabList.getTabAt(i).getUrl());
+            if (score != MISMATCHED && bestScore < score) {
+                bestScore = score;
                 bestIndex = i;
                 // Early-exit on finding identical match.
-                if (bestSim == IDENTICAL) break;
+                if (bestScore == EXACT) break;
             }
         }
-        return bestIndex;
+        return new MatchResult(bestIndex, bestScore);
+    }
+
+    /**
+     * Returns the suffix string to compute histogram name, based on lax match configurations.
+     * Returns null if the configuration is unrecognized for logging.
+     */
+    public @Nullable String getHistogramStrictnessSuffix() {
+        if (!mLaxSchemeHost) {
+            return !mLaxRef && !mLaxQuery && !mLaxPath ? HISTOGRAM_ARM_STRICT : null;
+        }
+        if (!mLaxRef) return null;
+
+        if (!mLaxQuery) return mLaxPath ? null : HISTOGRAM_ARM_LAX_UP_TO_REF;
+
+        return mLaxPath ? HISTOGRAM_ARM_LAX_UP_TO_PATH : HISTOGRAM_ARM_LAX_UP_TO_QUERY;
+    }
+
+    /**
+     * Records histograms for the given {@param matchResult}, which is assumed to be generated by
+     * this class instance (whose configs are used to find the right histogram suffix).
+     */
+    public void recordMatchResult(MatchResult matchResult) {
+        String suffix = getHistogramStrictnessSuffix();
+        if (TextUtils.isEmpty(suffix)) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_MATCH_PREFIX + suffix,
+                scoreToMvtReselectUrlMatchResult(matchResult.score),
+                MvtReselectUrlMatchResult.NUM_ENTRIES);
+    }
+
+    int scoreToMvtReselectUrlMatchResult(int score) {
+        if (score == MISMATCHED) return MvtReselectUrlMatchResult.NONE;
+
+        if (score == EXACT) return MvtReselectUrlMatchResult.EXACT;
+
+        return MvtReselectUrlMatchResult.PARTIAL;
     }
 }

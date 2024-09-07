@@ -8,6 +8,7 @@
 
 #import <limits>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
@@ -87,11 +88,10 @@ NSData* ReadDataFromFile(base::FilePath path, int64_t bytes) {
     return nil;
   }
 
-  const int bytes_to_read = static_cast<int>(bytes);
   NSMutableData* data = [NSMutableData dataWithLength:bytes];
-  char* buffer = static_cast<char*>(data.mutableBytes);
-
-  if (base::ReadFile(path, buffer, bytes_to_read) != bytes_to_read) {
+  std::optional<uint64_t> bytes_read =
+      base::ReadFile(path, base::apple::NSMutableDataToSpan(data));
+  if (!bytes_read || *bytes_read != static_cast<uint64_t>(bytes)) {
     return nil;
   }
 

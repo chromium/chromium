@@ -8,7 +8,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(enable_extensions || enable_desktop_android_extensions)
+assert(enable_extensions_core)
 
 # The overarching "build all the things" for the browser side of the
 # //extensions module. In particular, this includes:
@@ -168,6 +168,8 @@ source_set("browser_sources") {
     "api/system_display/display_info_provider.h",
     "api/system_display/system_display_api.cc",
     "api/system_display/system_display_api.h",
+    "api/web_accessible_resources/web_accessible_resources_router.cc",
+    "api/web_accessible_resources/web_accessible_resources_router.h",
     "api/web_contents_capture_client.cc",
     "api/web_contents_capture_client.h",
     "api/web_request/extension_web_request_event_router.cc",

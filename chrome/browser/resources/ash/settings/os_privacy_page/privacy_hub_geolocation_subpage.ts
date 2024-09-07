@@ -19,6 +19,7 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExhaustive, castExists} from '../assert_extras.js';
@@ -477,6 +478,25 @@ export class SettingsPrivacyHubGeolocationSubpage extends
     this.browserProxy_.getCurrentSunsetTime().then((time) => {
       this.currentSunSetTime_ = time;
     });
+  }
+
+  private onTimeZoneClick_(): void {
+    Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE);
+  }
+
+  private onNightLightClick_(): void {
+    Router.getInstance().navigateTo(routes.DISPLAY);
+  }
+
+  private onDarkThemeClick_(): void {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('personalizationAppUrl'));
+  }
+
+  private onLocalWeatherClick_(): void {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('personalizationAppUrl') +
+        loadTimeData.getString('ambientSubpageRelativeUrl'));
   }
 
   private onGeolocationAdvancedAreaClick_(): void {

@@ -114,7 +114,7 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
 
     // Request a re-draw, and set a non-empty damage region (otherwise the
     // draw is aborted with 'no damage').
-    host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+    host_impl->SetNeedsRedraw();
     host_impl->SetViewportDamage(gfx::Rect(0, 0, 10, 20));
 
     if (skip_main_thread_next_frame_) {

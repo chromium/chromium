@@ -15,7 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
@@ -28,25 +28,16 @@ namespace {
 // Padding between image grid items.
 constexpr int kImageGridPadding = 8;
 
-// Horizontal margin for the image grid.
-constexpr int kImageGridMargin = 16;
-
-// Number of columns in an image grid.
-constexpr int kNumImageGridColumns = 2;
-
-int GetImageGridColumnWidth(int grid_width) {
-  return (grid_width - (kNumImageGridColumns - 1) * kImageGridPadding -
-          kImageGridMargin * 2) /
-         kNumImageGridColumns;
-}
+// Margin for the image grid.
+constexpr auto kImageGridMargin = gfx::Insets::TLBR(16, 16, 0, 16);
 
 std::unique_ptr<views::View> CreateImageGridColumn() {
-  auto column = views::Builder<views::FlexLayoutView>()
-                    .SetOrientation(views::LayoutOrientation::kVertical)
-                    .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-                    .Build();
-  column->SetDefault(views::kMarginsKey,
-                     gfx::Insets::TLBR(0, 0, kImageGridPadding, 0));
+  auto column =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
+          .Build();
+  column->SetBetweenChildSpacing(kImageGridPadding);
   return column;
 }
 
@@ -67,7 +58,7 @@ PickerImageItemGridView::PickerImageItemGridView(int grid_width)
     : grid_width_(grid_width) {
   SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
-                  /*v_align=*/views::LayoutAlignment::kStart,
+                  /*v_align=*/views::LayoutAlignment::kStretch,
                   /*horizontal_resize=*/1.0f,
                   /*size_type=*/views::TableLayout::ColumnSize::kFixed,
                   /*fixed_width=*/0, /*min_width=*/0)
@@ -75,14 +66,14 @@ PickerImageItemGridView::PickerImageItemGridView(int grid_width)
           /*horizontal_resize=*/views::TableLayout::kFixedSize,
           /*width=*/kImageGridPadding)
       .AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
-                 /*v_align=*/views::LayoutAlignment::kStart,
+                 /*v_align=*/views::LayoutAlignment::kStretch,
                  /*horizontal_resize=*/1.0f,
                  /*size_type=*/views::TableLayout::ColumnSize::kFixed,
                  /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize,
                /*height=*/0);
 
-  SetProperty(views::kMarginsKey, gfx::Insets::VH(0, kImageGridMargin));
+  SetProperty(views::kMarginsKey, kImageGridMargin);
 
   AddChildView(CreateImageGridColumn());
   AddChildView(CreateImageGridColumn());
@@ -160,7 +151,6 @@ PickerImageItemView* PickerImageItemGridView::AddImageItem(
     std::unique_ptr<PickerImageItemView> image_item) {
   // TODO: b/338142316 - Wrap the image item in a View and give it a correct
   // accessible role.
-  image_item->SetImageSizeFromWidth(GetImageGridColumnWidth(grid_width_));
   views::View* shortest_column =
       base::ranges::min(children(),
                         /*comp=*/base::ranges::less(),

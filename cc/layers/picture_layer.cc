@@ -47,6 +47,10 @@ void PictureLayer::PushPropertiesTo(
     const ThreadUnsafeCommitState& unsafe_state) {
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
+  if (!update_rect().IsEmpty()) {
+    layer_impl->set_has_non_animated_image_update_rect();
+  }
+
   Layer::PushPropertiesTo(base_layer, commit_state, unsafe_state);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "PictureLayer::PushPropertiesTo");

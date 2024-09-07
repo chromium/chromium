@@ -52,15 +52,15 @@ class TabGroupSyncCoordinatorImpl : public TabGroupSyncCoordinator {
                          TriggerSource source) override;
 
  private:
+  // The service which represents remote from the point of view of this class.
+  raw_ptr<TabGroupSyncService> service_ = nullptr;
+
   // The platform specific delegate which represents local from the point of
   // view of this class.
   std::unique_ptr<TabGroupSyncDelegate> platform_delegate_;
 
-  // The service which represents remote from the point of view of this class.
-  const raw_ptr<TabGroupSyncService> service_;
-
   // To help with the startup logic.
-  StartupHelper startup_helper_;
+  std::unique_ptr<StartupHelper> startup_helper_;
 };
 
 }  // namespace tab_groups

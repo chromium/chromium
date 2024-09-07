@@ -49,6 +49,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -77,10 +78,11 @@ public class TabPersistentStore {
     private static final String TAG = "tabmodel";
     private static final String TAG_MIGRATION = "fb_migration";
 
+    private static final long INVALID_TIME = -1;
+
     /**
-     * The current version of the saved state file.
-     * Version 4: In addition to the tab's ID, save the tab's last URL.
-     * Version 5: In addition to the total tab count, save the incognito tab count.
+     * The current version of the saved state file. Version 4: In addition to the tab's ID, save the
+     * tab's last URL. Version 5: In addition to the total tab count, save the incognito tab count.
      */
     private static final int SAVED_STATE_VERSION = 5;
 
@@ -100,6 +102,8 @@ public class TabPersistentStore {
 
     private TabModelObserver mTabModelObserver;
     private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
+
+    private int mDuplicateTabIdsSeen;
 
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
     @Retention(RetentionPolicy.SOURCE)
@@ -291,6 +295,7 @@ public class TabPersistentStore {
         }
     }
 
+    private final Set<Integer> mSeenTabIds = new HashSet<>();
     private final String mClientTag;
     private final TabPersistencePolicy mPersistencePolicy;
     private final TabModelSelector mTabModelSelector;
@@ -326,6 +331,8 @@ public class TabPersistentStore {
 
     // Tracks whether this TabPersistentStore's tabs are being loaded.
     private boolean mLoadInProgress;
+
+    private long mTabRestoreStartTime = INVALID_TIME;
 
     AsyncTask<TabState> mPrefetchTabStateActiveTabTask;
 
@@ -540,11 +547,13 @@ public class TabPersistentStore {
         initializeRestoreVars(ignoreIncognitoFiles);
 
         try {
+            mTabRestoreStartTime = SystemClock.elapsedRealtime();
             assert mTabModelSelector.getModel(true).getCount() == 0;
             assert mTabModelSelector.getModel(false).getCount() == 0;
             checkAndUpdateMaxTabId();
             DataInputStream stream;
             if (mPrefetchTabListTask != null) {
+                mTabRestoreStartTime = SystemClock.elapsedRealtime();
                 stream = mPrefetchTabListTask.get();
 
                 // Restore the tabs for this TabPersistentStore instance if the tab metadata file
@@ -556,6 +565,8 @@ public class TabPersistentStore {
                             createOnTabStateReadCallback(
                                     mTabModelSelector.isIncognitoSelected(), false),
                             null);
+                } else {
+                    mTabRestoreStartTime = INVALID_TIME;
                 }
             }
 
@@ -584,6 +595,7 @@ public class TabPersistentStore {
         } catch (Exception e) {
             // Catch generic exception to prevent a corrupted state from crashing app on startup.
             Log.i(TAG, "loadState exception: " + e.toString(), e);
+            mTabRestoreStartTime = INVALID_TIME;
         }
 
         mPersistencePolicy.notifyStateLoaded(mTabsToRestore.size());
@@ -803,8 +815,13 @@ public class TabPersistentStore {
                 }
             }
         }
-
         int tabId = tabToRestore.id;
+        if (ChromeFeatureList.sAndroidTabDeclutterDedupeTabIdsKillSwitch.isEnabled()
+                && mSeenTabIds.contains(tabId)) {
+            mDuplicateTabIdsSeen++;
+            return;
+        }
+
         if (tabState != null) {
             @TabRestoreMethod int tabRestoreMethod = TabRestoreMethod.TAB_STATE;
             RecordHistogram.recordEnumeratedHistogram(
@@ -817,6 +834,12 @@ public class TabPersistentStore {
                 mTabsToMigrate.add(tab);
             }
 
+            if (tab != null) {
+                RecordHistogram.recordBooleanHistogram(
+                        "Tabs.TabRestoreUrlMatch", tabToRestore.url.equals(tab.getUrl().getSpec()));
+            }
+
+            mSeenTabIds.add(tabId);
         } else {
             Log.w(TAG, "Failed to restore TabState; creating Tab with last known URL.");
             Tab fallbackTab =
@@ -1200,8 +1223,10 @@ public class TabPersistentStore {
                 int numTabsTotal = incognitoCount + standardCount;
                 Log.d(TAG, "Persisting tab lists; " + standardCount + ", " + incognitoCount);
 
-                // Save the index file containing the list of tabs to restore.
-                DataOutputStream stream = new DataOutputStream(output);
+                // Save the index file containing the list of tabs to restore. Wrap a
+                // BufferedOutputStream to batch/buffer actual writes. Most urls are far smaller
+                // than the 8K buffer.
+                DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(output));
                 stream.writeInt(SAVED_STATE_VERSION);
                 stream.writeInt(numTabsTotal);
                 stream.writeInt(incognitoCount);
@@ -1677,6 +1702,7 @@ public class TabPersistentStore {
 
             recordLegacyTabCountMetrics();
             recordTabCountMetrics();
+            recordRestoreDuration();
             cleanUpPersistentData();
             onStateLoaded();
             mTabLoader = null;
@@ -1686,11 +1712,23 @@ public class TabPersistentStore {
                             + mTabModelSelector.getModel(false).getCount()
                             + ","
                             + mTabModelSelector.getModel(true).getCount());
+
+            // If there were any duplicate tab ids seen, then force a write to overwrite tab ids.
+            if (ChromeFeatureList.sAndroidTabDeclutterDedupeTabIdsKillSwitch.isEnabled()
+                    && mDuplicateTabIdsSeen > 0) {
+                recordDuplicateTabIdMetrics();
+                saveState();
+            }
         } else {
             TabRestoreDetails tabToRestore = mTabsToRestore.removeFirst();
             mTabLoader = new TabLoader(tabToRestore);
             mTabLoader.load();
         }
+    }
+
+    private void recordDuplicateTabIdMetrics() {
+        RecordHistogram.recordCount1000Histogram(
+                "Tabs.Startup.TabCount2." + mClientTag + ".DuplicateTabIds", mDuplicateTabIdsSeen);
     }
 
     protected void recordLegacyTabCountMetrics() {
@@ -1707,6 +1745,21 @@ public class TabPersistentStore {
         RecordHistogram.recordCount1MHistogram(
                 "Tabs.Startup.TabCount2." + mClientTag + ".Incognito",
                 mTabModelSelector.getModel(true).getCount());
+    }
+
+    private void recordRestoreDuration() {
+        if (mTabRestoreStartTime == INVALID_TIME) return;
+
+        long duration = SystemClock.elapsedRealtime() - mTabRestoreStartTime;
+        RecordHistogram.recordMediumTimesHistogram(
+                "Tabs.Startup.RestoreDuration." + mClientTag, duration);
+        int tabCount = mTabModelSelector.getTotalTabCount();
+        if (tabCount != 0) {
+            RecordHistogram.recordTimesHistogram(
+                    "Tabs.Startup.RestoreDurationPerTab." + mClientTag,
+                    Math.round((float) duration / tabCount));
+        }
+        mTabRestoreStartTime = INVALID_TIME;
     }
 
     /**
@@ -1852,13 +1905,11 @@ public class TabPersistentStore {
     private class LoadTabTask extends AsyncTask<TabState> {
         private final TabRestoreDetails mTabToRestore;
         private TabState mTabState;
-        private long mStartTime;
 
         public LoadTabTask(TabRestoreDetails tabToRestore) {
             mTabToRestore = tabToRestore;
             TraceEvent.startAsync("LoadTabTask", mTabToRestore.id);
             TraceEvent.startAsync("LoadTabState", mTabToRestore.id);
-            mStartTime = SystemClock.elapsedRealtime();
         }
 
         @Override

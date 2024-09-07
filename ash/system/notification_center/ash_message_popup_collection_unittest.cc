@@ -20,11 +20,11 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
-#include "ash/system/notification_center/views/ash_notification_expand_button.h"
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/message_center_test_util.h"
 #include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/views/ash_notification_expand_button.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -46,6 +46,8 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/rect.h"
@@ -59,6 +61,7 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
@@ -196,10 +199,11 @@ class AshMessagePopupCollectionTest : public AshTestBase,
   gfx::Rect GetWorkArea() { return GetPrimaryPopupCollection()->work_area_; }
 
   std::string AddNotification(bool has_image = false,
-                              const GURL& origin_url = GURL()) {
+                              const GURL& origin_url = GURL(),
+                              bool has_inline_reply = false) {
     std::string id = base::NumberToString(notification_id_++);
     message_center::MessageCenter::Get()->AddNotification(
-        CreateSimpleNotification(id, has_image, origin_url));
+        CreateSimpleNotification(id, has_image, origin_url, has_inline_reply));
     return id;
   }
 
@@ -1635,6 +1639,42 @@ TEST_P(AshMessagePopupCollectionTest, BubbleNotCloseWhenPopupClose) {
 
   EXPECT_FALSE(popup_collection->GetPopupViewForNotificationID(id));
   EXPECT_TRUE(phone_hub_tray->GetBubbleView());
+}
+
+// For b/346641561
+TEST_P(AshMessagePopupCollectionTest, InlineReplyTextfield) {
+  if (!IsNotifierCollisionEnabled()) {
+    GTEST_SKIP() << "Popup notifications does not show when notifier collision "
+                    "is enabled";
+  }
+
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  unified_system_tray->ShowBubble();
+
+  // Attempt showing a notification when Quick Settings is open.
+  AddNotification(/*has_image=*/false,
+                  /*origin_url=*/GURL(),
+                  /*has_inline_reply=*/true);
+  auto* popup = GetLastPopUpAdded();
+  ASSERT_TRUE(popup);
+
+  AnimateUntilIdle();
+
+  auto* message_view =
+      static_cast<AshNotificationView*>(GetLastPopUpAdded()->message_view());
+  ASSERT_TRUE(message_view);
+
+  LeftClickOn(message_view->GetActionButtonsForTest().front());
+
+  auto* textfield = message_view->GetInlineReplyForTest()->textfield();
+  EXPECT_TRUE(textfield->GetVisible());
+  EXPECT_TRUE(textfield->HasFocus());
+
+  PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
+
+  // Make sure that inline reply textfield can receive keyboard events.
+  EXPECT_EQ(u"aa", textfield->GetText());
 }
 
 class AshMessagePopupCollectionMockTimeTest : public ash::AshTestBase {

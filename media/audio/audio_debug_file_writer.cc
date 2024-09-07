@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/audio_debug_file_writer.h"
 
 #include <stdint.h>
@@ -174,8 +179,7 @@ void AudioDebugFileWriter::DoWrite(std::unique_ptr<AudioBus> data) {
   // to write to the file.
   static_assert(ARCH_CPU_LITTLE_ENDIAN);
 
-  auto span = base::as_chars(interleaved_data_->as_span());
-  file_.WriteAtCurrentPos(span.data(), span.size_bytes());
+  file_.WriteAtCurrentPos(base::as_bytes(interleaved_data_->as_span()));
 
   // Cache the AudioBus for later use.
   audio_bus_pool_->InsertAudioBus(std::move(data));

@@ -758,7 +758,6 @@ public class PageInfoViewTest {
         ChromeFeatureList.IP_PROTECTION_USER_BYPASS,
         ChromeFeatureList.IP_PROTECTION_V1
     })
-    @Features.DisableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING)
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
     public void testShowCookiesSubpageTrackingProtectionLaunchIPP() throws IOException {
@@ -782,7 +781,6 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures({
         ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING
     })
     @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
     @Feature({"RenderTest"})
@@ -810,7 +808,6 @@ public class PageInfoViewTest {
         ChromeFeatureList.IP_PROTECTION_USER_BYPASS,
         ChromeFeatureList.IP_PROTECTION_V1,
         ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING
     })
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")

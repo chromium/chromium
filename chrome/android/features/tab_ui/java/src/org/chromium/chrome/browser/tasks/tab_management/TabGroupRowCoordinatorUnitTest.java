@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertNotNull;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
@@ -20,19 +19,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.url.GURL;
-
-import java.util.function.BiConsumer;
 
 /** Tests for {@link TabGroupRowCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.DATA_SHARING_ANDROID)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupRowCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -41,7 +36,7 @@ public class TabGroupRowCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private Activity mActivity;
-    @Mock private BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
+    @Mock private FaviconResolver mFaviconResolver;
 
     private SavedTabGroup mSavedTabGroup;
     private TabGroupRowCoordinator mCoordinator;

@@ -210,66 +210,6 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
   histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, 0, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
-                       EligibilityChanged_OnboardingServiceNotified) {
-  privacy_sandbox::TrackingProtectionOnboarding* onboarding_service =
-      TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
-
-  const bool disable_3p_cookies = GetParam();
-
-  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
-            disable_3p_cookies ? privacy_sandbox::TrackingProtectionOnboarding::
-                                     OnboardingStatus::kEligible
-                               : privacy_sandbox::TrackingProtectionOnboarding::
-                                     OnboardingStatus::kIneligible);
-
-  MarkProfileEligibility(/*is_eligible=*/false);
-
-  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
-            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-                kIneligible);
-
-  MarkProfileEligibility(/*is_eligible=*/true);
-
-  // Onboarding should be marked eligible for the cohort where 3PCD is enabled,
-  // but not when 3PCD is disabled.
-  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
-            disable_3p_cookies ? privacy_sandbox::TrackingProtectionOnboarding::
-                                     OnboardingStatus::kEligible
-                               : privacy_sandbox::TrackingProtectionOnboarding::
-                                     OnboardingStatus::kIneligible);
-}
-
 INSTANTIATE_TEST_SUITE_P(All, EligibilityServiceBrowserTest, testing::Bool());
-
-class EligibilityServiceSilentOnboardingBrowserTest
-    : public EligibilityServiceBrowserTestBase {
- public:
-  EligibilityServiceSilentOnboardingBrowserTest()
-      : EligibilityServiceBrowserTestBase(/*disable_3p_cookies=*/false,
-                                          /*enable_silent_onboarding=*/true) {}
-};
-
-IN_PROC_BROWSER_TEST_F(EligibilityServiceSilentOnboardingBrowserTest,
-                       EligibilityChanged_OnboardingServiceNotified) {
-  privacy_sandbox::TrackingProtectionOnboarding* onboarding_service =
-      TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
-
-  EXPECT_EQ(onboarding_service->GetSilentOnboardingStatus(),
-            privacy_sandbox::TrackingProtectionOnboarding::
-                SilentOnboardingStatus::kEligible);
-
-  MarkProfileEligibility(/*is_eligible=*/false);
-
-  EXPECT_EQ(onboarding_service->GetSilentOnboardingStatus(),
-            privacy_sandbox::TrackingProtectionOnboarding::
-                SilentOnboardingStatus::kIneligible);
-
-  MarkProfileEligibility(/*is_eligible=*/true);
-
-  EXPECT_EQ(onboarding_service->GetSilentOnboardingStatus(),
-            privacy_sandbox::TrackingProtectionOnboarding::
-                SilentOnboardingStatus::kEligible);
-}
 
 }  // namespace tpcd::experiment

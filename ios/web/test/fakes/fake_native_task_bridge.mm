@@ -22,7 +22,7 @@
 - (instancetype)initWithDownload:(WKDownload*)download
                         delegate:
                             (id<DownloadNativeTaskBridgeDelegate>)delegate {
-  if (self = [super initWithDownload:download delegate:delegate]) {
+  if ((self = [super initWithDownload:download delegate:delegate])) {
     _calledStartDownloadBlock = NO;
     [self downloadInitialized];
   }

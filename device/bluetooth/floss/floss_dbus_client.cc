@@ -236,8 +236,11 @@ FlossDBusClient::BtifStatusToConnectErrorCode(
     case BtifStatus::kTimeout:
       return device::BluetoothDevice::ConnectErrorCode::ERROR_NON_AUTH_TIMEOUT;
     case BtifStatus::kDeviceNotFound:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_DOES_NOT_EXIST;
     case BtifStatus::kUnexpectedState:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_UNEXPECTED_STATE;
     case BtifStatus::kSocketError:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET;
     default:
       return device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED;
   }

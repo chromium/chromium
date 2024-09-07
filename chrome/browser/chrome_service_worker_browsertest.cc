@@ -58,6 +58,7 @@
 #include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -817,7 +818,8 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
                 [](base::OnceClosure quit_callback, base::Value result) {
                   std::move(quit_callback).Run();
                 },
-                run_loop.QuitClosure()));
+                run_loop.QuitClosure()),
+            content::ISOLATED_WORLD_ID_GLOBAL);
     run_loop.Run();
   }
 

@@ -4,12 +4,9 @@
 
 #include "components/tpcd/metadata/browser/manager.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <string>
-#include <tuple>
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -21,7 +18,6 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/tpcd/metadata/browser/parser.h"
 #include "components/tpcd/metadata/browser/prefs.h"
@@ -65,16 +61,12 @@ class TestTpcdManagerDelegate : public Manager::Delegate {
 
 class ManagerTest : public testing::Test,
                     public testing::WithParamInterface<
-                        std::tuple</*kTpcdMetadataGrants*/ bool,
-                                   /*kIndexedHostContentSettingsMap*/ bool>> {
+                        /*kTpcdMetadataGrants*/ bool> {
  public:
   ManagerTest() = default;
   ~ManagerTest() override = default;
 
-  bool IsTpcdMetadataGrantsEnabled() { return std::get<0>(GetParam()); }
-  bool IsIndexedHostContentSettingsMapEnabled() {
-    return std::get<1>(GetParam());
-  }
+  bool IsTpcdMetadataGrantsEnabled() const { return GetParam(); }
 
   Parser* GetParser() {
     if (!parser_) {
@@ -101,14 +93,6 @@ class ManagerTest : public testing::Test,
       disabled_features.push_back(net::features::kTpcdMetadataGrants);
     }
 
-    if (IsIndexedHostContentSettingsMapEnabled()) {
-      enabled_features.push_back(
-          content_settings::features::kIndexedHostContentSettingsMap);
-    } else {
-      disabled_features.push_back(
-          content_settings::features::kIndexedHostContentSettingsMap);
-    }
-
     scoped_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -128,7 +112,7 @@ class ManagerTest : public testing::Test,
 INSTANTIATE_TEST_SUITE_P(
     /* no label */,
     ManagerTest,
-    testing::Combine(testing::Bool(), testing::Bool()));
+    testing::Bool());
 
 TEST_P(ManagerTest, OnMetadataReady) {
   const std::string primary_pattern_spec = "https://www.der.com";
@@ -286,8 +270,6 @@ class ManagerCohortsTest : public testing::Test,
     std::vector<base::test::FeatureRef> disabled_features;
 
     enabled_features.push_back(net::features::kTpcdMetadataGrants);
-    enabled_features.push_back(
-        content_settings::features::kIndexedHostContentSettingsMap);
 
     if (IsTpcdMetadataStagedRollbackEnabled()) {
       enabled_features.push_back(net::features::kTpcdMetadataStageControl);

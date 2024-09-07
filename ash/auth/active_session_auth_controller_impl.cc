@@ -12,6 +12,7 @@
 #include "ash/auth/views/auth_view_utils.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -19,13 +20,18 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -43,6 +49,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
 
@@ -84,12 +94,14 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
   return widget;
 }
 
-const char* ReasonToString(ActiveSessionAuthController::Reason reason) {
+const char* ReasonToString(AuthRequest::Reason reason) {
   switch (reason) {
-    case ActiveSessionAuthController::Reason::kPasswordManager:
+    case AuthRequest::Reason::kPasswordManager:
       return "PasswordManager";
-    case ActiveSessionAuthController::Reason::kSettings:
+    case AuthRequest::Reason::kSettings:
       return "Settings";
+    case AuthRequest::Reason::kWebAuthN:
+      return "WebAuthN";
   }
   NOTREACHED();
 }
@@ -113,26 +125,38 @@ const char* ActiveSessionAuthStateToString(
     case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
         kPinAuthSucceeded:
       return "PinAuthSucceeded";
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
+        kFingerprintAuthSucceeded:
+      return "FingerprintAuthSucceeded";
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
+        kFingerprintAuthSucceededWaiting:
+      return "FingerprintAuthSucceededWaiting";
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
+        kCloseRequested:
+      return "CloseRequested";
   }
   NOTREACHED();
 }
 
-AuthSessionIntent IntentFromReason(
-    ActiveSessionAuthControllerImpl::Reason reason) {
-  switch (reason) {
-    case ActiveSessionAuthController::Reason::kPasswordManager:
-      return AuthSessionIntent::kVerifyOnly;
-    case ActiveSessionAuthController::Reason::kSettings:
-      return AuthSessionIntent::kDecrypt;
+std::u16string BuildPinStatusMessage(const cryptohome::PinStatus& pin_status) {
+  if (!pin_status.IsLockedFactor()) {
+    return u"";
   }
-}
-
-int MessageFromReason(ActiveSessionAuthControllerImpl::Reason reason) {
-  switch (reason) {
-    case ActiveSessionAuthController::Reason::kPasswordManager:
-      return IDS_ASH_IN_SESSION_AUTH_PASSWORD_MANAGER_PROMPT;
-    case ActiveSessionAuthController::Reason::kSettings:
-      return IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT;
+  if (pin_status.AvailableAt() == base::Time::Max()) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS);
+  } else {
+    base::TimeDelta delta = pin_status.AvailableAt() - base::Time::Now();
+    std::u16string time_left_message;
+    if (base::TimeDurationCompactFormatWithSeconds(
+            delta, base::DurationFormatWidth::DURATION_WIDTH_WIDE,
+            &time_left_message)) {
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_IN_SESSION_AUTH_PIN_DELAY_REQUIRED, time_left_message);
+    } else {
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS);
+    }
   }
 }
 
@@ -159,29 +183,46 @@ void ActiveSessionAuthControllerImpl::TestApi::SubmitPin(
   controller_->OnPinSubmit(base::UTF8ToUTF16(pin));
 }
 
+void ActiveSessionAuthControllerImpl::TestApi::DisplayPinStatusMessage(
+    const cryptohome::PinStatus pin_status) {
+  controller_->DisplayPinStatusMessage(pin_status);
+}
+
+const std::u16string&
+ActiveSessionAuthControllerImpl::TestApi::GetPinStatusMessage() const {
+  return controller_->pin_status_message_;
+}
+
 void ActiveSessionAuthControllerImpl::TestApi::Close() {
-  controller_->Close();
+  controller_->StartClose();
 }
 
 ActiveSessionAuthControllerImpl::ActiveSessionAuthControllerImpl() = default;
 ActiveSessionAuthControllerImpl::~ActiveSessionAuthControllerImpl() = default;
 
+bool ActiveSessionAuthControllerImpl::IsSucceedState() const {
+  return state_ == ActiveSessionAuthState::kPasswordAuthSucceeded ||
+         state_ == ActiveSessionAuthState::kPinAuthSucceeded ||
+         state_ == ActiveSessionAuthState::kFingerprintAuthSucceeded ||
+         state_ == ActiveSessionAuthState::kFingerprintAuthSucceededWaiting;
+}
+
 bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
-    Reason reason,
-    AuthCompletionCallback on_auth_complete) {
-  LOG(WARNING) << "Show is requested with reason: " << ReasonToString(reason);
+    std::unique_ptr<AuthRequest> auth_request) {
+  CHECK(auth_request);
+  VLOG(1) << "Show is requested with reason: "
+          << ReasonToString(auth_request->GetAuthReason());
   if (IsShown()) {
     LOG(ERROR) << "ActiveSessionAuthController widget is already exists.";
-    std::move(on_auth_complete)
-        .Run(false, ash::AuthProofToken{}, base::TimeDelta{});
+    auth_request->NotifyAuthFailure();
     return false;
   }
 
-  reason_ = reason;
+  CHECK(!auth_request_);
+  auth_request_ = std::move(auth_request);
+
   title_ = l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
-  description_ = l10n_util::GetStringUTF16(MessageFromReason(reason));
-  CHECK(!on_auth_complete_);
-  on_auth_complete_ = std::move(on_auth_complete);
+  description_ = auth_request_->GetDescription();
   auth_factor_editor_ =
       std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
   auth_performer_ = std::make_unique<AuthPerformer>(UserDataAuthClient::Get());
@@ -196,7 +237,7 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
           account_id_);
 
   auth_performer_->StartAuthSession(
-      std::move(user_context), ephemeral, IntentFromReason(reason),
+      std::move(user_context), ephemeral, auth_request_->GetAuthSessionIntent(),
       base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthSessionStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -207,53 +248,143 @@ bool ActiveSessionAuthControllerImpl::IsShown() const {
   return widget_ != nullptr;
 }
 
+void ActiveSessionAuthControllerImpl::SetFingerprintClient(
+    ActiveSessionFingerprintClient* fp_client) {
+  CHECK_NE(fp_client_ == nullptr, fp_client == nullptr);
+  fp_client_ = fp_client;
+}
+
 void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> authentication_error) {
+  user_context_ = std::move(user_context);
+
   if (!user_exists || authentication_error.has_value()) {
     LOG(ERROR) << "Failed to start auth session, code "
                << authentication_error->get_cryptohome_code();
-    Close();
+    StartClose();
     return;
   }
 
-  SetState(ActiveSessionAuthState::kInitialized);
-  uma_recorder_.RecordShow(reason_);
-
-  auth_factor_editor_->GetAuthFactorsConfiguration(
-      std::move(user_context),
-      base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&ActiveSessionAuthControllerImpl::InitUi,
-                                    weak_ptr_factory_.GetWeakPtr())));
-}
-
-void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
-    base::OnceClosure callback,
-    std::unique_ptr<UserContext> user_context,
-    std::optional<AuthenticationError> authentication_error) {
-  if (authentication_error.has_value()) {
-    LOG(ERROR) << "Failed to get auth factors configuration, code "
-               << authentication_error->get_cryptohome_code();
-    Close();
-    return;
-  }
+  uma_recorder_.RecordShow(auth_request_->GetAuthReason());
+  UserDataAuthClient::Get()->AddAuthFactorStatusUpdateObserver(this);
 
   available_factors_.Clear();
-  const auto& config = user_context->GetAuthFactorsConfiguration();
-  user_context_ = std::move(user_context);
+  const auto& auth_factors = user_context_->GetAuthFactorsData();
 
-  if (config.FindFactorByType(cryptohome::AuthFactorType::kPassword)) {
+  if (auth_factors.FindAnyPasswordFactor()) {
     available_factors_.Put(AuthInputType::kPassword);
   }
 
-  if (config.FindFactorByType(cryptohome::AuthFactorType::kPin) &&
-      !IsPinLocked()) {
-    available_factors_.Put(AuthInputType::kPin);
+  auto* pin_factor = auth_factors.FindPinFactor();
+  if (pin_factor) {
+    if (!pin_factor->GetPinStatus().IsLockedFactor()) {
+      available_factors_.Put(AuthInputType::kPin);
+    }
+    pin_status_message_ = BuildPinStatusMessage(pin_factor->GetPinStatus());
   }
 
-  std::move(callback).Run();
+  MaybePrepareFingerprint(
+      BindOnce(&ActiveSessionAuthControllerImpl::AuthFactorsAreReady,
+               weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActiveSessionAuthControllerImpl::MaybePrepareFingerprint(
+    AuthFactorsReadyCallback on_auth_factors_ready) {
+  // If the fingerprint factor is allowed to use by the user for the current
+  // reason then start it before initialize the UI.
+  if (fp_client_ && fp_client_->IsFingerprintAvailable(
+                        auth_request_->GetAuthReason(), account_id_)) {
+    VLOG(1) << "PrepareFingerprintAuth started.";
+    fp_client_->PrepareFingerprintAuth(
+        std::move(user_context_),
+        /* auth_ready_callback = */
+        base::BindOnce(&ActiveSessionAuthControllerImpl::OnFingerprintReady,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(on_auth_factors_ready)),
+        /* on_scan_callback = */
+        base::BindRepeating(&ActiveSessionAuthControllerImpl::OnFingerprintScan,
+                            weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  std::move(on_auth_factors_ready).Run(std::move(user_context_));
+}
+
+void ActiveSessionAuthControllerImpl::OnFingerprintReady(
+    AuthFactorsReadyCallback on_auth_factors_ready,
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> authentication_error) {
+  if (authentication_error.has_value()) {
+    LOG(ERROR) << "Failed to start fingerprint auth session - only "
+                  "non-fingerprint factors will be available.";
+  } else {
+    available_factors_.Put(AuthInputType::kFingerprint);
+  }
+  std::move(on_auth_factors_ready).Run(std::move(user_context));
+}
+
+void ActiveSessionAuthControllerImpl::AuthFactorsAreReady(
+    std::unique_ptr<UserContext> user_context) {
+  user_context_ = std::move(user_context);
+  InitUi();
+}
+
+void ActiveSessionAuthControllerImpl::OnFingerprintScan(
+    const FingerprintAuthScanResult scan_result) {
+  CHECK_NE(state_, ActiveSessionAuthState::kWaitForInit);
+  // Avoid unnecessary processing if we've already initiated close.
+  if (IsSucceedState() || state_ == ActiveSessionAuthState::kCloseRequested) {
+    return;
+  }
+  switch (scan_result) {
+    case FingerprintAuthScanResult::kSuccess:
+      if (state_ == ActiveSessionAuthState::kPasswordAuthStarted ||
+          state_ == ActiveSessionAuthState::kPinAuthStarted) {
+        SetState(ActiveSessionAuthState::kFingerprintAuthSucceededWaiting);
+        // The user_context_ is not available, we have to wait for the
+        // OnAuthComplete callback to have UserContext.
+        return;
+      }
+      HandleFingerprintAuthSuccess();
+      return;
+    case FingerprintAuthScanResult::kTooManyAttempts:
+      uma_recorder_.RecordAuthFailed(AuthInputType::kFingerprint);
+
+      contents_view_->SetFingerprintState(
+          FingerprintState::DISABLED_FROM_ATTEMPTS);
+      return;
+    case FingerprintAuthScanResult::kFailed:
+      uma_recorder_.RecordAuthFailed(AuthInputType::kFingerprint);
+
+      contents_view_->NotifyFingerprintAuthFailure();
+      return;
+    case FingerprintAuthScanResult::kFatalError:
+      contents_view_->SetFingerprintState(FingerprintState::UNAVAILABLE);
+      return;
+  }
+  NOTREACHED();
+}
+
+void ActiveSessionAuthControllerImpl::OnFingerprintSuccess(
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> authentication_error) {
+  if (authentication_error.has_value()) {
+    LOG(ERROR) << "Authentication error during OnFingerprintSuccess code: "
+               << authentication_error->get_cryptohome_code();
+  }
+  user_context_ = std::move(user_context);
+  StartClose();
+}
+
+void ActiveSessionAuthControllerImpl::HandleFingerprintAuthSuccess() {
+  CHECK(user_context_);
+  uma_recorder_.RecordAuthSucceeded(AuthInputType::kFingerprint);
+  SetState(ActiveSessionAuthState::kFingerprintAuthSucceeded);
+  auth_performer_->AuthenticateWithLegacyFingerprint(
+      std::move(user_context_),
+      base::BindOnce(&ActiveSessionAuthControllerImpl::OnFingerprintSuccess,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActiveSessionAuthControllerImpl::InitUi() {
@@ -264,6 +395,10 @@ void ActiveSessionAuthControllerImpl::InitUi() {
   widget_ = CreateAuthDialogWidget(std::move(contents_view));
   contents_view_observer_.Observe(contents_view_);
   contents_view_->AddObserver(this);
+  SetState(ActiveSessionAuthState::kInitialized);
+  if (!pin_status_message_.empty()) {
+    contents_view_->SetPinStatus(pin_status_message_);
+  }
 
   MoveToTheCenter();
   widget_->Show();
@@ -272,37 +407,57 @@ void ActiveSessionAuthControllerImpl::InitUi() {
       ->NotifyInSessionAuthDialogShown();
 }
 
-void ActiveSessionAuthControllerImpl::Close() {
-  LOG(WARNING) << "Close with : " << ActiveSessionAuthStateToString(state_)
-               << " state.";
+void ActiveSessionAuthControllerImpl::StartClose() {
+  VLOG(1) << "Close with : " << ActiveSessionAuthStateToString(state_)
+          << " state.";
+
+  CHECK(user_context_);
+  CHECK(auth_request_);
+  CHECK(auth_performer_);
   uma_recorder_.RecordClose();
   contents_view_observer_.Reset();
   CHECK(contents_view_);
   contents_view_->RemoveObserver(this);
   contents_view_ = nullptr;
-  SetState(ActiveSessionAuthState::kWaitForInit);
 
-  if (auth_performer_) {
-    auth_performer_->InvalidateCurrentAttempts();
-    auth_performer_.reset();
+  pending_pin_factor_status_update_.reset();
+  UserDataAuthClient::Get()->RemoveAuthFactorStatusUpdateObserver(this);
+
+  auth_performer_->InvalidateCurrentAttempts();
+  if (fp_client_ && available_factors_.Has(AuthInputType::kFingerprint)) {
+    fp_client_->TerminateFingerprintAuth(
+        std::move(user_context_),
+        base::BindOnce(&ActiveSessionAuthControllerImpl::CompleteClose,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+  CompleteClose(std::move(user_context_), std::nullopt);
+}
+
+void ActiveSessionAuthControllerImpl::CompleteClose(
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> authentication_error) {
+  user_context_ = std::move(user_context);
+  CHECK(user_context_);
+  CHECK(auth_request_);
+  auth_performer_.reset();
   auth_factor_editor_.reset();
+
+  if (IsSucceedState()) {
+    auth_request_->NotifyAuthSuccess(std::move(user_context_));
+  } else {
+    auth_request_->NotifyAuthFailure();
+    user_context_.reset();
+  }
+  auth_request_.reset();
+  available_factors_.Clear();
+
+  SetState(ActiveSessionAuthState::kWaitForInit);
 
   title_.clear();
   description_.clear();
 
   widget_.reset();
-
-  if (on_auth_complete_) {
-    std::move(on_auth_complete_)
-        .Run(false, ash::AuthProofToken{}, base::TimeDelta{});
-  }
-
-  if (user_context_) {
-    user_context_.reset();
-  }
-
-  available_factors_.Clear();
 }
 
 void ActiveSessionAuthControllerImpl::OnViewPreferredSizeChanged(
@@ -316,6 +471,9 @@ void ActiveSessionAuthControllerImpl::MoveToTheCenter() {
 
 void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
     const std::u16string& password) {
+  if (IsSucceedState()) {
+    return;
+  }
   SetState(ActiveSessionAuthState::kPasswordAuthStarted);
   uma_recorder_.RecordAuthStarted(AuthInputType::kPassword);
   CHECK(user_context_);
@@ -332,6 +490,9 @@ void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
 }
 
 void ActiveSessionAuthControllerImpl::OnPinSubmit(const std::u16string& pin) {
+  if (IsSucceedState()) {
+    return;
+  }
   SetState(ActiveSessionAuthState::kPinAuthStarted);
   uma_recorder_.RecordAuthStarted(AuthInputType::kPin);
   CHECK(user_context_);
@@ -344,78 +505,68 @@ void ActiveSessionAuthControllerImpl::OnPinSubmit(const std::u16string& pin) {
                      weak_ptr_factory_.GetWeakPtr(), AuthInputType::kPin));
 }
 
-void ActiveSessionAuthControllerImpl::OnFailedPinAttempt() {
-  contents_view_->SetHasPin(available_factors_.Has(AuthInputType::kPin));
-  SetState(ActiveSessionAuthState::kInitialized);
-}
-
 void ActiveSessionAuthControllerImpl::OnAuthComplete(
     AuthInputType input_type,
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> authentication_error) {
+  user_context_ = std::move(user_context);
+  // If fingerprint auth succeeded during wait for PIN/password authentication,
+  // handle success directly.
+  if (state_ == ActiveSessionAuthState::kFingerprintAuthSucceededWaiting) {
+    HandleFingerprintAuthSuccess();
+    return;
+  }
+  CHECK(!IsSucceedState());
+  if (state_ == ActiveSessionAuthState::kCloseRequested) {
+    StartClose();
+    return;
+  }
   if (authentication_error.has_value()) {
     uma_recorder_.RecordAuthFailed(input_type);
-    user_context_ = std::move(user_context);
+    if (pending_pin_factor_status_update_.has_value()) {
+      ProcessAuthFactorStatusUpdate(pending_pin_factor_status_update_.value());
+      pending_pin_factor_status_update_.reset();
+    }
     contents_view_->SetErrorTitle(l10n_util::GetStringUTF16(
         input_type == AuthInputType::kPassword
             ? IDS_ASH_IN_SESSION_AUTH_PASSWORD_INCORRECT
             : IDS_ASH_IN_SESSION_AUTH_PIN_INCORRECT));
-    if (input_type == AuthInputType::kPassword) {
-      SetState(ActiveSessionAuthState::kInitialized);
-    } else {
-      auth_factor_editor_->GetAuthFactorsConfiguration(
-          std::move(user_context_),
-          base::BindOnce(
-              &ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
-              weak_ptr_factory_.GetWeakPtr(),
-              base::BindOnce(
-                  &ActiveSessionAuthControllerImpl::OnFailedPinAttempt,
-                  weak_ptr_factory_.GetWeakPtr())));
-    }
+    SetState(ActiveSessionAuthState::kInitialized);
   } else {
     uma_recorder_.RecordAuthSucceeded(input_type);
     SetState(input_type == AuthInputType::kPassword
                  ? ActiveSessionAuthState::kPasswordAuthSucceeded
                  : ActiveSessionAuthState::kPinAuthSucceeded);
-    ExchangeForToken(
-        std::move(user_context),
-        base::BindOnce(&ActiveSessionAuthControllerImpl::NotifySuccess,
-                       weak_ptr_factory_.GetWeakPtr()));
+    StartClose();
   }
 }
 
-void ActiveSessionAuthControllerImpl::ExchangeForToken(
-    std::unique_ptr<UserContext> user_context,
-    InSessionAuthTokenProvider::OnAuthTokenGenerated callback) {
-  AuthProofToken token =
-      AuthSessionStorage::Get()->Store(std::move(user_context));
-  std::move(callback).Run(token, cryptohome::kAuthsessionInitialLifetime);
-}
-
-void ActiveSessionAuthControllerImpl::NotifySuccess(const AuthProofToken& token,
-                                                    base::TimeDelta timeout) {
-  CHECK(on_auth_complete_);
-  std::move(on_auth_complete_).Run(true, token, timeout);
-  Close();
-}
-
 void ActiveSessionAuthControllerImpl::OnClose() {
-  Close();
-}
-
-bool ActiveSessionAuthControllerImpl::IsPinLocked() const {
-  CHECK(user_context_);
-  const auto& config = user_context_->GetAuthFactorsConfiguration();
-  auto* pin_factor = config.FindFactorByType(cryptohome::AuthFactorType::kPin);
-  CHECK(pin_factor);
-  return pin_factor->GetPinStatus().IsLockedFactor();
+  switch (state_) {
+    case ActiveSessionAuthState::kWaitForInit:
+      NOTREACHED();
+    case ActiveSessionAuthState::kInitialized:
+      StartClose();
+      return;
+    case ActiveSessionAuthState::kPasswordAuthStarted:
+    case ActiveSessionAuthState::kPinAuthStarted:
+      SetState(ActiveSessionAuthState::kCloseRequested);
+      return;
+    case ActiveSessionAuthState::kPasswordAuthSucceeded:
+    case ActiveSessionAuthState::kPinAuthSucceeded:
+    case ActiveSessionAuthState::kFingerprintAuthSucceeded:
+    case ActiveSessionAuthState::kFingerprintAuthSucceededWaiting:
+    case ActiveSessionAuthState::kCloseRequested:
+      return;
+  }
+  NOTREACHED();
 }
 
 void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
-  LOG(WARNING) << "SetState is requested from: "
-               << ActiveSessionAuthStateToString(state_)
-               << " state to : " << ActiveSessionAuthStateToString(state)
-               << "state.";
+  VLOG(1) << "SetState is requested from: "
+          << ActiveSessionAuthStateToString(state_)
+          << " state to : " << ActiveSessionAuthStateToString(state)
+          << " state.";
   switch (state) {
     case ActiveSessionAuthState::kWaitForInit:
       break;
@@ -423,9 +574,7 @@ void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
       CHECK(state_ == ActiveSessionAuthState::kWaitForInit ||
             state_ == ActiveSessionAuthState::kPasswordAuthStarted ||
             state_ == ActiveSessionAuthState::kPinAuthStarted);
-      if (contents_view_) {
-        contents_view_->SetInputEnabled(true);
-      }
+      contents_view_->SetInputEnabled(true);
       break;
     case ActiveSessionAuthState::kPasswordAuthStarted:
       // Disable the UI while we are waiting for the response, except the close
@@ -443,8 +592,88 @@ void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
     case ActiveSessionAuthState::kPinAuthSucceeded:
       CHECK_EQ(state_, ActiveSessionAuthState::kPinAuthStarted);
       break;
+    case ActiveSessionAuthState::kFingerprintAuthSucceeded:
+      CHECK(state_ == ActiveSessionAuthState::kInitialized ||
+            state_ == ActiveSessionAuthState::kFingerprintAuthSucceededWaiting);
+      contents_view_->SetInputEnabled(false);
+      break;
+    case ActiveSessionAuthState::kFingerprintAuthSucceededWaiting:
+      CHECK(state_ == ActiveSessionAuthState::kPasswordAuthStarted ||
+            state_ == ActiveSessionAuthState::kPinAuthStarted);
+      contents_view_->SetInputEnabled(false);
+      break;
+    case ActiveSessionAuthState::kCloseRequested:
+      CHECK(state_ == ActiveSessionAuthState::kPasswordAuthStarted ||
+            state_ == ActiveSessionAuthState::kPinAuthStarted);
+      contents_view_->SetInputEnabled(false);
+      break;
   }
   state_ = state;
+}
+
+void ActiveSessionAuthControllerImpl::OnAuthFactorStatusUpdate(
+    const user_data_auth::AuthFactorStatusUpdate& update) {
+  switch (state_) {
+    case ActiveSessionAuthState::kInitialized:
+      // Handle the updates in the initialized state.
+      CHECK(user_context_);
+      if (update.auth_factor_with_status().auth_factor().type() ==
+          user_data_auth::AUTH_FACTOR_TYPE_PIN) {
+        ProcessAuthFactorStatusUpdate(update);
+      }
+      return;
+    case ActiveSessionAuthState::kPinAuthStarted:
+    case ActiveSessionAuthState::kPasswordAuthStarted:
+      // Handle the updates in the *Started states.
+      if (update.auth_factor_with_status().auth_factor().type() ==
+          user_data_auth::AUTH_FACTOR_TYPE_PIN) {
+        if (pending_pin_factor_status_update_.has_value()) {
+          LOG(WARNING) << "Overwrite pending pin status update.";
+        }
+        pending_pin_factor_status_update_ = update;
+      }
+      return;
+    case ActiveSessionAuthState::kWaitForInit:
+      return;
+
+    case ActiveSessionAuthState::kPasswordAuthSucceeded:
+    case ActiveSessionAuthState::kPinAuthSucceeded:
+    case ActiveSessionAuthState::kFingerprintAuthSucceeded:
+    case ActiveSessionAuthState::kFingerprintAuthSucceededWaiting:
+    case ActiveSessionAuthState::kCloseRequested:
+      // No need to handle PIN updates as dialog closing is in progress.
+      return;
+  }
+  NOTREACHED();
+}
+
+void ActiveSessionAuthControllerImpl::ProcessAuthFactorStatusUpdate(
+    const user_data_auth::AuthFactorStatusUpdate& update) {
+  CHECK(user_context_);
+  // Broadcast id is a public id of an ongoing auth session.
+  // Generally it is unlikely to have two active auth session running
+  // in parallel, but we need to make sure we only react to signals
+  // mapped to this session.
+  if (user_context_->GetBroadcastId() == update.broadcast_id()) {
+    auto auth_factor = cryptohome::DeserializeAuthFactor(
+        update.auth_factor_with_status(),
+        /*fallback_type=*/cryptohome::AuthFactorType::kPassword);
+    if (auth_factor.ref().type() == cryptohome::AuthFactorType::kPin) {
+      CHECK(contents_view_);
+      auto pin_status = auth_factor.GetPinStatus();
+      bool pin_enabled = !pin_status.IsLockedFactor();
+      // Only need to update the auth view because |available_factors_| is only
+      // used to initialize the view.
+      contents_view_->SetHasPin(pin_enabled);
+      DisplayPinStatusMessage(pin_status);
+    }
+  }
+}
+
+void ActiveSessionAuthControllerImpl::DisplayPinStatusMessage(
+    const cryptohome::PinStatus pin_status) {
+  pin_status_message_ = BuildPinStatusMessage(pin_status);
+  contents_view_->SetPinStatus(pin_status_message_);
 }
 
 }  // namespace ash

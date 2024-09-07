@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/invalidation/rule_invalidation_data_builder.h"
+#include "third_party/blink/renderer/core/css/invalidation/rule_invalidation_data_tracer.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -57,6 +58,12 @@ SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
     const StyleScope* style_scope) {
   RuleInvalidationDataBuilder builder(rule_invalidation_data_);
   return builder.CollectFeaturesFromSelector(selector, style_scope);
+}
+
+void RuleFeatureSet::RevisitSelectorForInspector(
+    const CSSSelector& selector) const {
+  RuleInvalidationDataTracer tracer(rule_invalidation_data_);
+  tracer.TraceInvalidationSetsForSelector(selector);
 }
 
 void RuleFeatureSet::Merge(const RuleFeatureSet& other) {

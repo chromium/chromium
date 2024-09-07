@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://settings/settings.js';
 import type {CrInputElement, SettingsCreditCardEditDialogElement, SettingsIbanEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCreditCardEntry, createIbanEntry, TestPaymentsManager} from './autofill_fake_data.js';
@@ -26,6 +26,15 @@ async function typeInNickname(
   await nicknameInput.updateComplete;
   nicknameInput.dispatchEvent(
       new CustomEvent('input', {bubbles: true, composed: true}));
+}
+
+/**
+ * Helper function to wait for IBAN validation to complete and any associated UI
+ * to be updated.
+ */
+async function ibanValidated(paymentsManager: TestPaymentsManager) {
+  await paymentsManager.whenCalled('isValidIban');
+  await microtasksFinished();
 }
 
 suite('PaymentsSectionCreditCardEditDialogTest', function() {
@@ -691,8 +700,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertTrue(characterCount.textContent!.includes('16/25'));
 
     valueInput.value = 'IT60X0542811101000000123456';
-    await valueInput.updateComplete;
-    flush();
+
+    // IBAN validation is asynchronous, so wait for it to complete and the save
+    // button state to be updated.
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    await ibanValidated(paymentsManager);
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);
     const saveButton = ibanDialog.$.saveButton;
@@ -720,9 +733,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const valueInput = ibanDialog.$.valueInput;
     nicknameInput.value = '   My doctor\'s IBAN  ';
     valueInput.value = '  IT60 X054 2811 1010 0000 0123 456 ';
-    await Promise.all(
-        [nicknameInput.updateComplete, valueInput.updateComplete]);
-    flush();
+
+    // IBAN validation is asynchronous, so wait for it to complete and the save
+    // button state to be updated.
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    await ibanValidated(paymentsManager);
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);
     const saveButton = ibanDialog.$.saveButton;
@@ -732,7 +748,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Verify the input values are correctly passed to save-iban.
     // `guid` is undefined when saving a new IBAN.
     assertEquals(saveEvent.detail.guid, undefined);
-    assertEquals(saveEvent.detail.value, 'IT60 X054 2811 1010 0000 0123 456');
+    assertEquals(saveEvent.detail.value, 'IT60X0542811101000000123456');
     assertEquals(saveEvent.detail.nickname, 'My doctor\'s IBAN');
   });
 
@@ -752,9 +768,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const valueInput = ibanDialog.$.valueInput;
     valueInput.value = 'DE75 5121 0800 1245 1261 99';
     nicknameInput.value = 'My brother\'s IBAN';
-    await Promise.all(
-        [valueInput.updateComplete, nicknameInput.updateComplete]);
-    flush();
+
+    // IBAN validation is asynchronous, so wait for it to complete and the save
+    // button state to be updated.
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    await ibanValidated(paymentsManager);
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);
     const saveButton = ibanDialog.$.saveButton;
@@ -763,7 +782,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Verify the updated values are correctly passed to save-iban.
     assertEquals(saveEvent.detail.guid, iban.guid);
-    assertEquals(saveEvent.detail.value, 'DE75 5121 0800 1245 1261 99');
+    assertEquals(saveEvent.detail.value, 'DE75512108001245126199');
     assertEquals(saveEvent.detail.nickname, 'My brother\'s IBAN');
   });
 

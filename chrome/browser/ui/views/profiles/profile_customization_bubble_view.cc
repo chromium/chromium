@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
@@ -72,7 +73,8 @@ ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
   AddChildView(std::move(web_view));
 
   set_margins(gfx::Insets());
-  SetButtons(ui::DIALOG_BUTTON_NONE);  // Buttons are implemented in WebUI.
+  SetButtons(static_cast<int>(
+      ui::mojom::DialogButton::kNone));  // Buttons are implemented in WebUI.
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 

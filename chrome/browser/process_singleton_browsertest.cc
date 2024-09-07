@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ProcessSingletonTest, MAYBE_StartupRaceCondition) {
             &chrome_starters_[pending_starters[i]]->done_event_;
       }
       size_t done_index = base::WaitableEvent::WaitMany(
-          base::span(starters_done_events).first(pending_starters.size()));
+          starters_done_events, pending_starters.size());
       size_t starter_index = pending_starters[done_index];
       // If the starter is done but has not marked itself as terminated,
       // it is because it timed out of its WaitForExitCodeWithTimeout(). Only

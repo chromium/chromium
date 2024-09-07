@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_TOKEN_MOJOM_TRAITS_HELPER_H_
 
 #include "base/unguessable_token.h"
+#include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 
 namespace blink {
 

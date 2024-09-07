@@ -329,8 +329,6 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
 void FormEventLoggerBase::LogWillSubmitForm(const FormStructure& form) {
   if (!has_logged_form_filling_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, form);
-  } else if (logged_suggestion_filled_was_server_data_) {
-    Log(FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE, form);
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, form);
   }
@@ -339,8 +337,6 @@ void FormEventLoggerBase::LogWillSubmitForm(const FormStructure& form) {
 void FormEventLoggerBase::LogFormSubmitted(const FormStructure& form) {
   if (!has_logged_form_filling_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, form);
-  } else if (logged_suggestion_filled_was_server_data_) {
-    Log(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, form);
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, form);
   }

@@ -11,14 +11,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_consumer.h"
 
-namespace manual_fill {
-
-extern NSString* const kPasswordDoneButtonAccessibilityIdentifier;
-extern NSString* const kPasswordSearchBarAccessibilityIdentifier;
-extern NSString* const kPasswordTableViewAccessibilityIdentifier;
-
-}  // namespace manual_fill
-
 @class PasswordViewController;
 @class CrURL;
 

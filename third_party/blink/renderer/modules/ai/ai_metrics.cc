@@ -14,12 +14,14 @@ namespace {
 
 std::string_view GetAISessionTypeName(AIMetrics::AISessionType session_type) {
   switch (session_type) {
-    case AIMetrics::AISessionType::kText:
-      return "Text";
+    case AIMetrics::AISessionType::kAssistant:
+      return "Assistant";
     case AIMetrics::AISessionType::kWriter:
       return "Writer";
     case AIMetrics::AISessionType::kRewriter:
       return "Rewriter";
+    case AIMetrics::AISessionType::kSummarizer:
+      return "Summarizer";
   }
   NOTREACHED_IN_MIGRATION();
 }

@@ -64,6 +64,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'getParentBookmarkFolderNameForCurrentUrl',
       'showBookmarkEditorForCurrentUrl',
       'showProductSpecificationsSetForUuid',
+      'getPriceInsightsInfoForUrl',
       'getProductInfoForUrl',
       'getProductSpecificationsForUrls',
       'getAllProductSpecificationsSets',
@@ -78,6 +79,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'declineProductSpecificationDisclosure',
       'showSyncSetupFlow',
       'getProductSpecificationsFeatureState',
+      'getPageTitleFromHistory',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -110,6 +112,11 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
 
   untrackPriceForBookmark(bookmarkId: bigint) {
     this.methodCalled('untrackPriceForBookmark', bookmarkId);
+  }
+
+  getPriceInsightsInfoForUrl(url: Url) {
+    this.methodCalled('getPriceInsightsInfoForUrl', url);
+    return Promise.resolve({priceInsightsInfo: this.priceInsights_});
   }
 
   getProductInfoForUrl(url: Url) {
@@ -245,6 +252,11 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
   getProductSpecificationsFeatureState() {
     this.methodCalled('getProductSpecificationsFeatureState');
     return Promise.resolve({state: null});
+  }
+
+  getPageTitleFromHistory() {
+    this.methodCalled('getPageTitleFromHistory');
+    return Promise.resolve({title: ''});
   }
 
   getCallbackRouter() {

@@ -9,7 +9,8 @@
 {
   "type_name": "PrepopulatedEngine",
   "headers": [
-    "components/search_engines/search_engine_type.h"
+    "components/search_engines/search_engine_type.h",
+    "components/search_engines/regulatory_extension_type.h"
   ],
   "schema": [
     { "field": "name", "type": "string16" },
@@ -147,8 +148,9 @@
         "type": "struct",
         "type_name": "RegulatoryExtension",
         "fields": [
-          { "field": "variant", "type": "string" },
-          { "field": "params", "type": "string" }
+          { "field": "variant", "type": "enum", "ctype": "RegulatoryExtensionType" },
+          { "field": "search_params", "type": "string" },
+          { "field": "suggest_params", "type": "string" }
         ]
       },
       "optional": true

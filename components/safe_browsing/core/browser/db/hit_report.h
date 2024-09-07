@@ -18,8 +18,6 @@ enum class ThreatSource {
   UNKNOWN,
   // From V4LocalDatabaseManager, protocol v4. Desktop only.
   LOCAL_PVER4,
-  // From GmsCore SafetyNet API. Android only.
-  REMOTE,
   // From ClientSideDetectionHost.
   CLIENT_SIDE_DETECTION,
   // From RealTimeUrlLookupService. Not including fallback to protocol v4.
@@ -49,10 +47,6 @@ struct HitReport {
   bool is_subresource;
   SBThreatType threat_type;
   ThreatSource threat_source;
-
-  // Opaque string used for tracking Pver4-based experiments.
-  // NOTE(vakh): Unused at the moment, but may be used later.
-  std::string population_id;
 
   ExtendedReportingLevel extended_reporting_level;
   bool is_enhanced_protection = false;

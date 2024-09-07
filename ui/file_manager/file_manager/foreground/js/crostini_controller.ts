@@ -5,7 +5,6 @@
 
 import type {Crostini} from '../../background/js/crostini.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
@@ -15,21 +14,14 @@ import type {FilesToast} from '../elements/files_toast.js';
 
 import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
 import {DEFAULT_BRUSCHETTA_VM, DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
-import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
-import type {DirectoryTree} from './ui/directory_tree.js';
-
 /**
  * CrostiniController handles the foreground UI relating to crostini.
  */
 export class CrostiniController {
   /**
    * @param crostini_ Crostini background object.
-   * @param disabled_ Whether the Crostini item should be disabled.
    */
-  constructor(
-      private readonly crostini_: Crostini,
-      private readonly directoryTree_: DirectoryTree,
-      private readonly disabled_: boolean = false) {}
+  constructor(private readonly crostini_: Crostini) {}
 
   /**
    * Refreshes the Linux files item at startup and when crostini enabled
@@ -38,24 +30,12 @@ export class CrostiniController {
   async redraw() {
     const store = getStore();
     // Setup Linux files fake root.
-    let crostiniNavigationModelItem;
     if (this.crostini_.isEnabled(DEFAULT_CROSTINI_VM)) {
       const crostiniEntry =
           new FakeEntryImpl(str('LINUX_FILES_ROOT_LABEL'), RootType.CROSTINI);
-      crostiniNavigationModelItem = new NavigationModelFakeItem(
-          str('LINUX_FILES_ROOT_LABEL'), NavigationModelItemType.CROSTINI,
-          crostiniEntry);
-      crostiniNavigationModelItem.disabled = this.disabled_;
       store.dispatch(addUiEntry(crostiniEntry));
     } else {
-      crostiniNavigationModelItem = null;
       store.dispatch(removeUiEntry(crostiniPlaceHolderKey));
-    }
-    if (!isNewDirectoryTreeEnabled()) {
-      this.directoryTree_.dataModel.linuxFilesItem =
-          crostiniNavigationModelItem;
-      // Redraw the tree to ensure 'Linux files' is added/removed.
-      this.directoryTree_.redraw(false);
     }
   }
 

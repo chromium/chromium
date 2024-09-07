@@ -181,18 +181,6 @@ public class TaskRunnerImpl implements TaskRunner {
         }
     }
 
-    final boolean belongsToCurrentThreadInternal() {
-        // TODO(crbug.com/40108370): This function shouldn't be here, and should only be used
-        // by derived classes (eg. SingleThreadTaskRunner) until it is moved there, as TaskRunner
-        // has no notion of belonging to a thread.
-        assert !getClass().equals(TaskRunnerImpl.class);
-        synchronized (mPreNativeTaskLock) {
-            oneTimeInitialization();
-        }
-
-        return TaskRunnerImplJni.get().belongsToCurrentThread(mNativeTaskRunnerAndroid);
-    }
-
     @GuardedBy("mPreNativeTaskLock")
     private void oneTimeInitialization() {
         if (mDidOneTimeInitialization) return;
@@ -313,7 +301,5 @@ public class TaskRunnerImpl implements TaskRunner {
                 Runnable task,
                 long delay,
                 @JniType("std::string") String runnableClassName);
-
-        boolean belongsToCurrentThread(long nativeTaskRunnerAndroid);
     }
 }

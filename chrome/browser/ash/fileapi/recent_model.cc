@@ -82,27 +82,26 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
       "FileBrowser.Recent.LoadDownloads"));
   sources.emplace_back(std::make_unique<RecentDriveSource>(profile));
 
-  if (base::FeatureList::IsEnabled(ash::features::kFSPsInRecents)) {
-    file_manager::VolumeManager* volume_manager =
-        file_manager::VolumeManager::Get(profile);
-    for (const base::WeakPtr<file_manager::Volume> volume :
-         volume_manager->GetVolumeList()) {
-      if (!volume || volume->type() != file_manager::VOLUME_TYPE_PROVIDED ||
-          volume->file_system_type() == file_manager::util::kFuseBox) {
-        // Provided volume types are served via two file system types: fusebox
-        // (usable from ash or lacros, but requires ChromeOS' /usr/bin/fusebox
-        // daemon process to be running) and non-fusebox (ash only, no separate
-        // process required). The Files app runs in ash and could use either.
-        // Using both would return duplicate results. We therefore filter out
-        // the fusebox file system type.
-        continue;
-      }
-      sources.emplace_back(std::make_unique<RecentDiskSource>(
-          fmp::VolumeType::kProvided,
-          volume->mount_path().BaseName().AsUTF8Unsafe(),
-          /*ignore_dot_files=*/true, /*max_depth=*/0,
-          "FileBrowser.Recent.LoadFileSystemProvider"));
+  // File System Providers.
+  file_manager::VolumeManager* volume_manager =
+      file_manager::VolumeManager::Get(profile);
+  for (const base::WeakPtr<file_manager::Volume> volume :
+       volume_manager->GetVolumeList()) {
+    if (!volume || volume->type() != file_manager::VOLUME_TYPE_PROVIDED ||
+        volume->file_system_type() == file_manager::util::kFuseBox) {
+      // Provided volume types are served via two file system types: fusebox
+      // (usable from ash or lacros, but requires ChromeOS' /usr/bin/fusebox
+      // daemon process to be running) and non-fusebox (ash only, no separate
+      // process required). The Files app runs in ash and could use either.
+      // Using both would return duplicate results. We therefore filter out
+      // the fusebox file system type.
+      continue;
     }
+    sources.emplace_back(std::make_unique<RecentDiskSource>(
+        fmp::VolumeType::kProvided,
+        volume->mount_path().BaseName().AsUTF8Unsafe(),
+        /*ignore_dot_files=*/true, /*max_depth=*/0,
+        "FileBrowser.Recent.LoadFileSystemProvider"));
   }
 
   return sources;

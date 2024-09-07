@@ -305,6 +305,7 @@ export class PaymentsManagerExpectations {
  */
 export class TestPaymentsManager extends TestBrowserProxy implements
     PaymentsManagerProxy {
+  private isValidIbanResult_: boolean = true;
   private isUserVerifyingPlatformAuthenticatorAvailable_: boolean|null = null;
   // <if expr="is_win or is_macosx">
   private isDeviceAuthAvailable_: boolean = false;
@@ -388,9 +389,13 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     return Promise.resolve(this.data.ibans);
   }
 
+  setIsValidIban(isValidIbanResult: boolean) {
+    this.isValidIbanResult_ = isValidIbanResult;
+  }
+
   isValidIban(_ibanValue: string) {
     this.methodCalled('isValidIban');
-    return Promise.resolve(true);
+    return Promise.resolve(this.isValidIbanResult_);
   }
 
   setIsUserVerifyingPlatformAuthenticatorAvailable(available: boolean|null) {

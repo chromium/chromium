@@ -70,6 +70,8 @@ std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(wgpu::FeatureName f) {
       return V8GPUFeatureName::Enum::kSubgroups;
     case wgpu::FeatureName::SubgroupsF16:
       return V8GPUFeatureName::Enum::kSubgroupsF16;
+    case wgpu::FeatureName::ClipDistances:
+      return V8GPUFeatureName::Enum::kClipDistances;
     default:
       return std::nullopt;
   }
@@ -118,7 +120,8 @@ GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter,
 GPUAdapter::GPUAdapter(
     GPU* gpu,
     wgpu::Adapter handle,
-    scoped_refptr<DawnControlClientHolder> dawn_control_client)
+    scoped_refptr<DawnControlClientHolder> dawn_control_client,
+    const GPURequestAdapterOptions* options)
     : DawnObject(dawn_control_client, std::move(handle), String()), gpu_(gpu) {
   wgpu::AdapterInfo info = {};
   wgpu::ChainedStructOut** propertiesChain = &info.nextInChain;
@@ -146,6 +149,9 @@ GPUAdapter::GPUAdapter(
   adapter_type_ = info.adapterType;
   backend_type_ = info.backendType;
   is_compatibility_mode_ = info.compatibilityMode;
+
+  // TODO(crbug.com/359418629): Report xr compatibility in GetInfo()
+  is_xr_compatible_ = options->xrCompatible();
 
   vendor_ = info.vendor;
   architecture_ = info.architecture;

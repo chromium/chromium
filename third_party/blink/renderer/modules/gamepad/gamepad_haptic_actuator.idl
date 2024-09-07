@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/gamepad/extensions.html#gamepadhapticactuatortype-enum
+// https://www.w3.org/TR/gamepad/#gamepadhapticeffecttype-enum
 enum GamepadHapticActuatorType {
     "vibration",
     "dual-rumble"
@@ -24,8 +24,7 @@ enum GamepadHapticsResult {
 [
     Exposed=Window
 ] interface GamepadHapticActuator {
-    [RuntimeEnabled=WGIGamepadTriggerRumble, SameObject]
-    readonly attribute FrozenArray<GamepadHapticEffectType> effects;
+    [SameObject] readonly attribute FrozenArray<GamepadHapticEffectType> effects;
     [MeasureAs=GamepadHapticActuatorType] readonly attribute GamepadHapticActuatorType type;
     [CallWith=ScriptState] Promise<GamepadHapticsResult> playEffect(
         GamepadHapticEffectType type,

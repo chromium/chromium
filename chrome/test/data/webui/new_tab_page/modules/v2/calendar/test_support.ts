@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Attachment, CalendarEvent} from 'chrome://new-tab-page/google_calendar.mojom-webui.js';
+import type {Attachment, CalendarEvent} from 'chrome://new-tab-page/calendar_data.mojom-webui.js';
 import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 // Microseconds between windows and unix epoch.

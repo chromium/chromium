@@ -30,9 +30,11 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ModelExecutionFeature">
   <variant name="Compose" summary="Compose"/>
+  <variant name="FormsAnnotations" summary="Forms Annotations"/>
   <variant name="FormsPredictions" summary="Forms Predictions"/>
   <variant name="HistorySearch" summary="History Search"/>
   <variant name="PromptApi" summary="Prompt API"/>
+  <variant name="Summarize" summary="Summarize"/>
   <variant name="TabOrganization" summary="Tab Organization"/>
   <variant name="Test" summary="Test"/>
   <variant name="TextSafety" summary="Text Safety"/>
@@ -57,6 +59,8 @@ chromium-metrics-reviews@google.com.
       summary="Model Execution Feature: History Search"/>
   <variant name="ModelExecutionFeaturePromptAPI"
       summary="Model Execution Feature: Prompt API"/>
+  <variant name="ModelExecutionFeatureSummarize"
+      summary="Model Execution Feature: Summarize"/>
   <variant name="ModelValidation" summary="Model validation triggered via CLI"/>
   <variant name="NewTabPageHistoryClustersModuleRanking"
       summary="New Tab Page History Clusters Module Ranking"/>
@@ -133,6 +137,14 @@ chromium-metrics-reviews@google.com.
   <variant name="AmountExtractionAllowlist"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling price/amount extraction."/>
+  <variant name="AmountExtractionAllowlistAffirm"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for buy now pay later provider Affirm to enable
+               price/amount extraction."/>
+  <variant name="AmountExtractionAllowlistZip"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for buy now pay later provider Zip to enable
+               price/amount extraction."/>
   <variant name="AutofillAblationSitesList1"
       summary="This optimization provides information for whether a page is
                eligible for autofill ablation."/>
@@ -151,6 +163,9 @@ chromium-metrics-reviews@google.com.
   <variant name="AutofillAblationSitesList6"
       summary="This optimization provides information for whether a page is
                eligible for autofill ablation."/>
+  <variant name="AutofillPredictionImprovementsAllowlist"
+      summary="This optimization provides information for whether a page is
+               eligible for Autofill prediction improvements."/>
   <variant name="AutofillSamplingRate"
       summary="This optimization provides information about a sampling rate
                of Autofill UKM metrics per origin based on origin popularity."/>
@@ -427,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount"
-    units="total host count" expires_after="2024-12-15">
+    units="total host count" expires_after="2025-02-16">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -438,7 +453,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount.{RequestContext}"
-    units="total host count" expires_after="2024-12-15">
+    units="total host count" expires_after="2025-02-16">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -450,7 +465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2024-12-15">
+    enum="NetErrorCodes" expires_after="2025-02-16">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -494,7 +509,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount.{RequestContext}"
-    units="total url count" expires_after="2024-12-24">
+    units="total url count" expires_after="2025-02-23">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -638,7 +653,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability.{ModelExecutionFeature}"
-    enum="OnDeviceModelAdaptationAvailability" expires_after="2024-12-15">
+    enum="OnDeviceModelAdaptationAvailability" expires_after="2025-02-16">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -675,7 +690,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceContextTokensProcessed.{ModelExecutionFeature}"
-    units="tokens" expires_after="2024-12-15">
+    units="tokens" expires_after="2025-02-16">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -725,7 +740,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelAdaptationLoadResult"
-    enum="OnDeviceModelLoadResult" expires_after="2024-12-15">
+    enum="OnDeviceModelLoadResult" expires_after="2025-02-16">
   <owner>rajendrant@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
@@ -849,7 +864,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.{ModelExecutionFeature}"
-    units="ms" expires_after="2024-12-15">
+    units="ms" expires_after="2025-03-02">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1036,7 +1051,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ExecutionThreadTime.{OptimizationTarget}"
-    units="ms" expires_after="2024-12-30">
+    units="ms" expires_after="2025-03-02">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1096,7 +1111,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.TaskExecutionLatency.{OptimizationTarget}"
-    units="ms" expires_after="2024-12-24">
+    units="ms" expires_after="2025-02-23">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1558,8 +1573,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadStatus"
-    enum="OptimizationGuidePredictionModelDownloadStatus"
-    expires_after="2024-09-15">
+    enum="OptimizationGuidePredictionModelDownloadStatus" expires_after="M135">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1570,7 +1584,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded"
-    enum="BooleanSuccess" expires_after="2024-09-15">
+    enum="BooleanSuccess" expires_after="M135">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1856,7 +1870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PushNotifications.ReceivedNotificationType"
-    enum="OptimizationType" expires_after="2024-12-15">
+    enum="OptimizationType" expires_after="2025-02-16">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1880,7 +1894,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.TextSafetyChecker.InferenceResult"
     enum="OptimizationGuideTextSafetyInferenceResult"
-    expires_after="2024-12-15">
+    expires_after="2025-02-16">
   <owner>rockot@google.com</owner>
   <owner>sophiechange@chromium.org</owner>
   <summary>
@@ -1920,7 +1934,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.TextSafetyChecker.TokensPerSecond"
-    units="counts" expires_after="2024-12-15">
+    units="counts" expires_after="2025-02-16">
   <owner>rockot@google.com</owner>
   <owner>sophiechange@chromium.org</owner>
   <summary>

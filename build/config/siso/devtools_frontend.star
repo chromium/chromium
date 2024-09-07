@@ -37,6 +37,7 @@ def __step_config(ctx, step_config):
                 "remote": True,
                 "handler": "devtools_frontend/typescript_ts_library",
                 "output_local": True,
+                "timeout": "2m",
             },
         ])
     return step_config

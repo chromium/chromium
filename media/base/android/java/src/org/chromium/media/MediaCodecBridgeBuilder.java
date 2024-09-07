@@ -33,6 +33,7 @@ class MediaCodecBridgeBuilder {
             HdrMetadata hdrMetadata,
             boolean allowAdaptivePlayback,
             boolean useAsyncApi,
+            boolean useBlockModel,
             String decoderName) {
         CodecCreationInfo info = new CodecCreationInfo();
         try {
@@ -61,7 +62,13 @@ class MediaCodecBridgeBuilder {
                             hdrMetadata,
                             info.supportsAdaptivePlayback && allowAdaptivePlayback);
 
-            if (!bridge.configureVideo(format, surface, mediaCrypto, 0)) return null;
+            if (!bridge.configureVideo(
+                    format,
+                    surface,
+                    mediaCrypto,
+                    useBlockModel ? MediaCodec.CONFIGURE_FLAG_USE_BLOCK_MODEL : 0)) {
+                return null;
+            }
 
             if (!bridge.start()) {
                 bridge.release();

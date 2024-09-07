@@ -544,10 +544,11 @@ void TestFeedNetwork::SendQueryRequest(
   query_request_sent = request;
   QueryRequestResult result;
 
-  if (error != net::Error::OK)
+  if (error != net::Error::OK) {
     result.response_info.status_code = error;
-  else
+  } else {
     result.response_info.status_code = http_status_code;
+  }
 
   result.response_info.response_body_bytes = 100;
   result.response_info.fetch_duration = base::Milliseconds(42);

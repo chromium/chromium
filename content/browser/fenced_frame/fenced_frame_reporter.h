@@ -257,7 +257,7 @@ class CONTENT_EXPORT FencedFrameReporter
       RenderFrameHostImpl* request_initiator_frame,
       std::string& error_message,
       blink::mojom::ConsoleMessageLevel& console_message_level,
-      int initiator_frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId,
+      FrameTreeNodeId initiator_frame_tree_node_id = FrameTreeNodeId(),
       std::optional<int64_t> navigation_id = std::nullopt,
       std::optional<url::Origin> ad_root_origin = std::nullopt);
 
@@ -335,7 +335,7 @@ class CONTENT_EXPORT FencedFrameReporter
         const DestinationVariant& event,
         const url::Origin& request_initiator,
         std::optional<AttributionReportingData> attribution_reporting_data,
-        int initiator_frame_tree_node_id);
+        FrameTreeNodeId initiator_frame_tree_node_id);
 
     PendingEvent(const PendingEvent&);
     PendingEvent(PendingEvent&&);
@@ -350,7 +350,7 @@ class CONTENT_EXPORT FencedFrameReporter
     // The data necessary for attribution reporting. Will be `std::nullopt` if
     // attribution reporting is disallowed in the initiator frame.
     std::optional<AttributionReportingData> attribution_reporting_data;
-    int initiator_frame_tree_node_id;
+    FrameTreeNodeId initiator_frame_tree_node_id;
   };
 
   // The per-blink::FencedFrame::ReportingDestination reporting information.
@@ -388,7 +388,7 @@ class CONTENT_EXPORT FencedFrameReporter
       blink::FencedFrame::ReportingDestination reporting_destination,
       const url::Origin& request_initiator,
       const std::optional<AttributionReportingData>& attribution_reporting_data,
-      int initiator_frame_tree_node_id,
+      FrameTreeNodeId initiator_frame_tree_node_id,
       std::string& error_message,
       blink::mojom::ConsoleMessageLevel& console_message_level,
       const std::string& devtools_request_id);

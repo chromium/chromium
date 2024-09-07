@@ -5,20 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_IMPL_H_
 #define IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_IMPL_H_
 
+#import <Foundation/Foundation.h>
+
 #import <memory>
 
-#include "base/gtest_prod_util.h"
+#import "base/gtest_prod_util.h"
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class Browser;
-class ChromeBrowserState;
 @class HandoffManager;
 
 class DeviceSharingManagerImpl : public DeviceSharingManager {
  public:
-  explicit DeviceSharingManagerImpl(ChromeBrowserState* browser_state);
+  explicit DeviceSharingManagerImpl(ProfileIOS* profile);
 
   // Not copyable or moveable.
   DeviceSharingManagerImpl(const DeviceSharingManagerImpl&) = delete;
@@ -35,13 +37,13 @@ class DeviceSharingManagerImpl : public DeviceSharingManager {
   // Allow tests to inspect the handoff manager.
   friend class DeviceSharingManagerImplTest;
   friend class DeviceSharingBrowserAgentTest;
-  friend class DeviceSharingAppInterfaceWrapper;
+  friend NSURL* GetCurrentUserActivityURL(ProfileIOS* profile);
 
   void UpdateHandoffManager();
 
-  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
+  raw_ptr<ProfileIOS> profile_ = nullptr;
 
-  // Registrar for pref change notifications to the active browser state.
+  // Registrar for pref change notifications to the active profile.
   PrefChangeRegistrar prefs_change_observer_;
 
   // Responsible for maintaining all state related to the Handoff feature.

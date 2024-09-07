@@ -218,6 +218,7 @@ void EditorMediator::HandleTrigger(
       mako_bubble_coordinator_.LoadEditorUI(
           profile_, MakoEditorMode::kRewrite,
           /*can_fallback_to_center_position=*/true,
+          /*feedback_enabled=*/editor_switch_->IsFeedbackEnabled(),
           active_query_context.preset_query_id,
           active_query_context.freeform_text);
       query_context_ = std::nullopt;
@@ -227,6 +228,7 @@ void EditorMediator::HandleTrigger(
       mako_bubble_coordinator_.LoadEditorUI(
           profile_, MakoEditorMode::kWrite,
           /*can_fallback_to_center_position=*/true,
+          /*feedback_enabled=*/editor_switch_->IsFeedbackEnabled(),
           active_query_context.preset_query_id,
           active_query_context.freeform_text);
       query_context_ = std::nullopt;

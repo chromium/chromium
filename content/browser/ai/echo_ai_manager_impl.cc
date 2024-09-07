@@ -8,11 +8,13 @@
 #include "base/supports_user_data.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
+#include "content/browser/ai/echo_ai_summarizer.h"
 #include "content/browser/ai/echo_ai_text_session.h"
 #include "content/browser/ai/echo_ai_writer.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
 
 namespace content {
 
@@ -43,7 +45,28 @@ void EchoAIManagerImpl::CreateTextSession(
     CreateTextSessionCallback callback) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAITextSession>(),
                               std::move(receiver));
-  std::move(callback).Run(/*success=*/true);
+  std::move(callback).Run(blink::mojom::AITextSessionInfo::New(
+      optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
+      blink::mojom::AITextSessionSamplingParams::New(
+          optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+          optimization_guide::features::GetOnDeviceModelDefaultTemperature())));
+}
+
+void EchoAIManagerImpl::CanCreateSummarizer(
+    CanCreateSummarizerCallback callback) {
+  std::move(callback).Run(
+      /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
+}
+
+void EchoAIManagerImpl::CreateSummarizer(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
+    blink::mojom::AISummarizerCreateOptionsPtr options) {
+  mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
+      std::move(client));
+  mojo::PendingRemote<blink::mojom::AISummarizer> summarzier;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAISummarizer>(),
+                              summarzier.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(summarzier));
 }
 
 void EchoAIManagerImpl::GetTextModelInfo(GetTextModelInfoCallback callback) {
@@ -54,8 +77,8 @@ void EchoAIManagerImpl::GetTextModelInfo(GetTextModelInfoCallback callback) {
 }
 
 void EchoAIManagerImpl::CreateWriter(
-    const std::optional<std::string>& shared_context,
-    mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
+    blink::mojom::AIWriterCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
       std::move(client));
   mojo::PendingRemote<blink::mojom::AIWriter> writer;
@@ -65,10 +88,8 @@ void EchoAIManagerImpl::CreateWriter(
 }
 
 void EchoAIManagerImpl::CreateRewriter(
-    const std::optional<std::string>& shared_context,
-    blink::mojom::AIRewriterTone tone,
-    blink::mojom::AIRewriterLength length,
-    mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
+    blink::mojom::AIRewriterCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
       std::move(client));
   mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter;

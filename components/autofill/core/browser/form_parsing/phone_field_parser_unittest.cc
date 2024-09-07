@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +25,6 @@
 using base::ASCIIToUTF16;
 
 namespace autofill {
-
 namespace {
 
 const FormControlType kFieldTypes[] = {
@@ -32,8 +32,6 @@ const FormControlType kFieldTypes[] = {
     FormControlType::kInputTelephone,
     FormControlType::kInputNumber,
 };
-
-}  // namespace
 
 class PhoneFieldParserTest
     : public testing::TestWithParam<PatternProviderFeatureState> {
@@ -139,7 +137,7 @@ void PhoneFieldParserTest::RunParsingTest(
   // Parse.
   AutofillScanner scanner(list_);
   ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                         PatternSource::kLegacy);
+                         *GetActivePatternSource());
   field_ = Parse(context, &scanner);
   ASSERT_EQ(expect_success, field_.get() != nullptr);
 
@@ -176,18 +174,7 @@ TEST_P(PhoneFieldParserTest, NonParse) {
   RunParsingTest({}, /*expect_success=*/false);
 }
 
-TEST_P(PhoneFieldParserTest, ParseOneLinePhoneWithoutDefaultToCityAndNumber) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillDefaultToCityAndNumber);
-  for (FormControlType field_type : kFieldTypes) {
-    RunParsingTest({{field_type, u"Phone", u"phone", PHONE_HOME_WHOLE_NUMBER}});
-  }
-}
-
 TEST_P(PhoneFieldParserTest, ParseOneLinePhoneWithDefaultToCityAndNumber) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillDefaultToCityAndNumber};
   for (FormControlType field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Phone", u"phone", PHONE_HOME_CITY_AND_NUMBER}});
@@ -253,11 +240,8 @@ TEST_P(PhoneFieldParserTest, GrammarMetrics) {
   // 14 of the grammars array in PhoneFieldParser::GetPhoneGrammars. We thus
   // expect that 14 is logged.
   base::HistogramTester histogram_tester;
-  bool default_to_city_and_number =
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber);
   RunParsingTest({{FormControlType::kInputText, u"Phone", u"phone",
-                   default_to_city_and_number ? PHONE_HOME_CITY_AND_NUMBER
-                                              : PHONE_HOME_WHOLE_NUMBER}});
+                   PHONE_HOME_CITY_AND_NUMBER}});
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.FieldPrediction.PhoneNumberGrammarUsage2"),
               BucketsAre(base::Bucket(14, 1)));
@@ -496,4 +480,5 @@ TEST_P(PhoneFieldParserTest, IsTimeZoneField) {
   }
 }
 
+}  // namespace
 }  // namespace autofill

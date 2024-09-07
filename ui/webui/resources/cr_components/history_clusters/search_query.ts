@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CrRippleMixin} from '//resources/cr_elements/cr_ripple/cr_ripple_mixin.js';
+import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -56,7 +57,7 @@ export class SearchQueryElement extends SearchQueryElementBase {
   //============================================================================
 
   index: number = -1;  // Initialized to an invalid value.
-  searchQuery: SearchQuery;
+  searchQuery?: SearchQuery;
 
   //============================================================================
   // Event handlers
@@ -114,6 +115,7 @@ export class SearchQueryElement extends SearchQueryElementBase {
   }
 
   private openUrl_(event: MouseEvent|KeyboardEvent) {
+    assert(this.searchQuery);
     BrowserProxyImpl.getInstance().handler.openHistoryCluster(
         this.searchQuery.url, {
           middleButton: false,

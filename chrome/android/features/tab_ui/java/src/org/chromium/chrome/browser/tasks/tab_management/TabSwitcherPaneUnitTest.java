@@ -1170,11 +1170,6 @@ public class TabSwitcherPaneUnitTest {
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
         assertNotNull(coordinator);
 
-        when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.LIST);
-        mTabSwitcherPane.showCloseAllTabsAnimation(mRunnable);
-        verify(mRunnable, times(2)).run();
-
-        when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
         mTabSwitcherPane.showCloseAllTabsAnimation(mRunnable);
         verify(coordinator).showCloseAllTabsAnimation(mRunnable);
     }

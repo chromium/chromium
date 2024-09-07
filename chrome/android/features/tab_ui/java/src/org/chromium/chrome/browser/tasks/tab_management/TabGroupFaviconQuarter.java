@@ -51,33 +51,34 @@ public class TabGroupFaviconQuarter extends FrameLayout {
         mOuterRadius = getResources().getDimension(R.dimen.tab_group_quarter_outer_radius);
     }
 
-    void setCorner(@Corner int corner, @IdRes int parentId) {
+    void adjustPositionForCorner(@Corner int corner, @IdRes int parentId) {
         mBackground.setCornerRadii(buildCornerRadii(corner));
         ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) getLayoutParams();
         setConstraintForCorner(params, corner, parentId);
         setLayoutParams(params);
     }
 
-    /** Can only display one or neither. Favicon takes precedence. */
-    void setIconOrText(Drawable favicon, int plusCount) {
-        final @DimenRes int elevation;
-        if (favicon != null) {
-            elevation = R.dimen.default_elevation_0;
-            mImageView.setVisibility(View.VISIBLE);
-            mImageView.setImageDrawable(favicon);
-            hideText();
-        } else if (plusCount > 0) {
-            elevation = R.dimen.default_elevation_1;
-            hideImage();
-            mTextView.setVisibility(View.VISIBLE);
-            String text = getResources().getString(R.string.plus_hidden_tab_count, plusCount);
-            mTextView.setText(text);
-        } else {
-            elevation = R.dimen.default_elevation_1;
-            hideImage();
-            hideText();
-        }
-        mBackground.setColor(ChromeColors.getSurfaceColor(getContext(), elevation));
+    /** The displayed image is exclusive with the plus count. */
+    void setImage(Drawable image) {
+        mImageView.setVisibility(View.VISIBLE);
+        mImageView.setImageDrawable(image);
+        hideText();
+        updateBackgroundColor(R.dimen.default_elevation_0);
+    }
+
+    /** The displayed plus count is exclusive with the image. */
+    void setPlusCount(int plusCount) {
+        hideImage();
+        mTextView.setVisibility(View.VISIBLE);
+        String text = getResources().getString(R.string.plus_hidden_tab_count, plusCount);
+        mTextView.setText(text);
+        updateBackgroundColor(R.dimen.default_elevation_1);
+    }
+
+    void clear() {
+        hideImage();
+        hideText();
+        updateBackgroundColor(R.dimen.default_elevation_1);
     }
 
     private void hideImage() {
@@ -128,5 +129,9 @@ public class TabGroupFaviconQuarter extends FrameLayout {
         radii[cornerStartIndex] = mOuterRadius;
         radii[cornerStartIndex + 1] = mOuterRadius;
         return radii;
+    }
+
+    private void updateBackgroundColor(@DimenRes int elevation) {
+        mBackground.setColor(ChromeColors.getSurfaceColor(getContext(), elevation));
     }
 }

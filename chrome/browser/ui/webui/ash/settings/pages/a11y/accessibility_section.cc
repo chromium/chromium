@@ -578,6 +578,10 @@ bool IsAccessibilityMouseKeysEnabled() {
   return ::features::IsAccessibilityMouseKeysEnabled();
 }
 
+bool IsAccessibilityDisableTrackpadEnabled() {
+  return ::features::IsAccessibilityDisableTrackpadEnabled();
+}
+
 bool IsAccessibilityOverscrollSettingFeatureEnabled() {
   return ::features::IsAccessibilityOverscrollSettingFeatureEnabled();
 }
@@ -889,6 +893,11 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR},
       {"dictationLocaleSubLabelOffline",
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE},
+      {"disableTrackpadLabel", IDS_SETTINGS_DISABLE_TRACKPAD_LABEL},
+      {"disableTrackpadAlways", IDS_SETTINGS_DISABLE_TRACKPAD_ALWAYS},
+      {"disableTrackpadMouseConnected",
+       IDS_SETTINGS_DISABLE_TRACKPAD_MOUSE_CONNECTED},
+      {"disableTrackpadNever", IDS_SETTINGS_DISABLE_TRACKPAD_NEVER},
       {"displayAndMagnificationLinkTitle",
        IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_TITLE},
       {"displayHeading", IDS_SETTINGS_ACCESSIBILITY_DISPLAY_HEADING},
@@ -958,6 +967,12 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_TITLE},
       {"faceGazeActionsDialogGestureThresholdSubtitle",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_SUBTITLE},
+      {"faceGazeActionsDialogGestureNotDetectedLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_NOT_DETECTED_LABEL},
+      {"faceGazeActionsDialogGestureDetectedCountOneLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_DETECTED_COUNT_ONE_LABEL},
+      {"faceGazeActionsDialogGestureDetectedCountLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_DETECTED_COUNT_LABEL},
       {"faceGazeActionsDialogGestureThresholdKnobLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_KNOB_LABEL},
       {"faceGazeCursorAccelerationLabel",
@@ -1003,6 +1018,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_FLASH_NOTIFICATIONS_COLOR_OPTIONS_LABEL},
       {"flashNotificationsPreviewButton",
        IDS_SETTINGS_FLASH_NOTIFICATIONS_PREVIEW_BUTTON},
+      {"flashNotificationsPreviewButtonLabel",
+       IDS_SETTINGS_FLASH_NOTIFICATIONS_PREVIEW_BUTTON_LABEL},
       {"keyboardAndTextInputHeading",
        IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_HEADING},
       {"keyboardAndTextInputLinkDescription",
@@ -1352,6 +1369,9 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
                           IsAccessibilityFaceGazeEnabled());
+
+  html_source->AddBoolean("isAccessibilityDisableTrackpadEnabled",
+                          IsAccessibilityDisableTrackpadEnabled());
 
   html_source->AddBoolean("isAccessibilityMouseKeysEnabled",
                           IsAccessibilityMouseKeysEnabled());

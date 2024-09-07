@@ -41,6 +41,8 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 @property(nonatomic, assign) BOOL iphHighlighted;
 // View used to display the view used for the spotlight effect.
 @property(nonatomic, strong) UIView* spotlightView;
+// Whether this button has blue dot promo.
+@property(nonatomic, assign) BOOL hasBlueDot;
 
 // Returns a ToolbarButton with a type system, using the `imageLoader` to load
 // the image for normal state. Can only be used when

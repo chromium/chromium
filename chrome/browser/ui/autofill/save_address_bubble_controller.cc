@@ -234,8 +234,7 @@ SaveAddressBubbleController::GetCancelCallbackValue() const {
 }
 
 std::u16string SaveAddressBubbleController::GetFooterMessage() const {
-  if (address_profile_.source() == AutofillProfile::Source::kAccount &&
-      web_contents()) {
+  if (address_profile_.IsAccountProfile() && web_contents()) {
     std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());

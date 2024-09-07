@@ -29,6 +29,7 @@ export enum ContentSettingsTypes {
   FEDERATED_IDENTITY_API = 'federated-identity-api',
   FILE_SYSTEM_WRITE = 'file-system-write',
   GEOLOCATION = 'location',
+  HAND_TRACKING = 'hand-tracking',
   HID_DEVICES = 'hid-devices',
   IDLE_DETECTION = 'idle-detection',
   IMAGES = 'images',
@@ -103,6 +104,7 @@ export enum CookieControlsMode {
   OFF = 0,
   BLOCK_THIRD_PARTY = 1,
   INCOGNITO_ONLY = 2,
+  LIMITED = 3,
 }
 
 /**

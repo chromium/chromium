@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<link rel=stylesheet href="/html/semantics/forms/the-select-element/stylable-select/resources/stylable-select-styles.css">
-<script src="/html/semantics/forms/the-select-element/stylable-select/resources/stylable-select-utils.js"></script>
+<link rel=stylesheet href="resources/stylable-select-styles.css">
 
 <style>
 :root {
@@ -9,9 +8,8 @@
 </style>
 
 <div id=container class=stylable-select-container>
-  <button class=stylable-select-button popovertarget=popover id=button>
+  <button class="stylable-select-button open" popovertarget=popover id=button>
     <span class=stylable-select-selectedoption>one</span>
-    <div class=stylable-select-button-icon></div>
   </button>
   <div id=popover popover=auto anchor=container class=stylable-select-datalist>
     <div class="stylable-select-option selected">one</div>
@@ -20,6 +18,5 @@
 </div>
 
 <script>
-populateFallbackButtonIcon();
 document.getElementById('popover').showPopover();
 </script>

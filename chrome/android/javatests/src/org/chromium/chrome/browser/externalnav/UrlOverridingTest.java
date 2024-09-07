@@ -62,6 +62,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -1110,6 +1111,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "b/361599939")
     public void testIntentURIWithMixedCaseFileSchemeDoesNothing() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         String targetUrl =
@@ -1138,6 +1140,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "b/361599939")
     public void testIntentURIWithEmptySchemeDoesNothing() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         String targetUrl =

@@ -60,6 +60,7 @@ class BLINK_EXPORT WebDocumentLoader {
   class ExtraData {
    public:
     virtual ~ExtraData() = default;
+    virtual std::unique_ptr<ExtraData> Clone() = 0;
   };
 
   static bool WillLoadUrlAsEmpty(const WebURL&);
@@ -99,7 +100,7 @@ class BLINK_EXPORT WebDocumentLoader {
   // Extra data associated with this DocumentLoader.
   // Setting extra data will cause any existing extra data to be deleted.
   virtual ExtraData* GetExtraData() const = 0;
-  virtual std::unique_ptr<ExtraData> TakeExtraData() = 0;
+  virtual std::unique_ptr<ExtraData> CloneExtraData() = 0;
   virtual void SetExtraData(std::unique_ptr<ExtraData>) = 0;
 
   // Allows the embedder to inject a filter that will be consulted for each

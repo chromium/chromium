@@ -5,6 +5,7 @@
 #include "chrome/browser/support_tool/support_tool_util.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -100,11 +101,12 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
     std::string case_id,
     std::string email_address,
     std::string issue_description,
+    std::optional<std::string> upload_id,
     Profile* profile,
     std::set<support_tool::DataCollectorType> included_data_collectors) {
   std::unique_ptr<SupportToolHandler> handler =
       std::make_unique<SupportToolHandler>(case_id, email_address,
-                                           issue_description);
+                                           issue_description, upload_id);
   for (const auto& data_collector_type : included_data_collectors) {
     switch (data_collector_type) {
       case support_tool::CHROME_INTERNAL:

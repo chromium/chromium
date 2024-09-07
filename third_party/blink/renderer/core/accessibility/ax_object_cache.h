@@ -145,8 +145,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void HandleTextFormControlChanged(Node*) = 0;
   virtual void HandleValueChanged(Node*) = 0;
   virtual void HandleUpdateActiveMenuOption(Node*) = 0;
-  virtual void DidShowMenuListPopup(LayoutObject*) = 0;
-  virtual void DidHideMenuListPopup(LayoutObject*) = 0;
+  virtual void DidShowMenuListPopup(Node*) = 0;
+  virtual void DidHideMenuListPopup(Node*) = 0;
   virtual void HandleLoadStart(Document*) = 0;
   virtual void HandleLoadComplete(Document*) = 0;
   virtual void HandleClicked(Node*) = 0;

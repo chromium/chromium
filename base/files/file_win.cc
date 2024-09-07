@@ -11,6 +11,7 @@
 
 #include <tuple>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/immediate_crash.h"
@@ -399,9 +400,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     disposition = TRUNCATE_EXISTING;
   }
 
-  if (!disposition) {
-    NOTREACHED();
-  }
+  CHECK(disposition);
 
   DWORD access = 0;
   if (flags & FLAG_WRITE)

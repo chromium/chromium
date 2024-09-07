@@ -18,43 +18,44 @@ AudioPlayoutStats::AudioPlayoutStats(AudioContext* context)
 DOMHighResTimeStamp AudioPlayoutStats::fallbackFramesDuration(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.FallbackFramesDuration().InMillisecondsF();
+  return stats_.glitch_frames_duration().InMillisecondsF();
 }
 
 uint32_t AudioPlayoutStats::fallbackFramesEvents(ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return base::saturated_cast<uint32_t>(stats_.FallbackFramesEvents());
+  return base::saturated_cast<uint32_t>(stats_.glitch_event_count());
 }
 
 DOMHighResTimeStamp AudioPlayoutStats::totalFramesDuration(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.TotalFramesDuration().InMillisecondsF();
+  return (stats_.glitch_frames_duration() + stats_.observed_frames_duration())
+      .InMillisecondsF();
 }
 
 DOMHighResTimeStamp AudioPlayoutStats::averageLatency(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.AverageLatency().InMillisecondsF();
+  return stats_.average_latency().InMillisecondsF();
 }
 
 DOMHighResTimeStamp AudioPlayoutStats::minimumLatency(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.MinimumLatency().InMillisecondsF();
+  return stats_.min_latency().InMillisecondsF();
 }
 
 DOMHighResTimeStamp AudioPlayoutStats::maximumLatency(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.MaximumLatency().InMillisecondsF();
+  return stats_.max_latency().InMillisecondsF();
 }
 
 void AudioPlayoutStats::resetLatency(ScriptState* script_state) {
   MaybeUpdateStats(script_state);
   // Reset the latency stats correctly by having a temporary stats object absorb
   // them.
-  AudioContext::AudioFrameStats temp_stats;
+  AudioFrameStatsAccumulator temp_stats;
   temp_stats.Absorb(stats_);
 }
 

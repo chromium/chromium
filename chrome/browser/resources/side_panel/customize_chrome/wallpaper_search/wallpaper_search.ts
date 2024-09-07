@@ -481,7 +481,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       descriptors.mood?.label,
       colorName,
     ].filter(Boolean)
-        .join(', ');
+        .join(this.i18n('separator'));
   }
 
   protected getHistoryResultAriaLabel_(

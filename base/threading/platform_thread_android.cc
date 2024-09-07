@@ -34,7 +34,6 @@ const ThreadPriorityToNiceValuePairForTest
     kThreadPriorityToNiceValueMapForTest[7] = {
         {ThreadPriorityForTest::kRealtimeAudio, -16},
         {ThreadPriorityForTest::kDisplay, -4},
-        {ThreadPriorityForTest::kCompositing, -4},
         {ThreadPriorityForTest::kNormal, 0},
         {ThreadPriorityForTest::kResourceEfficient, 0},
         {ThreadPriorityForTest::kUtility, 1},
@@ -45,14 +44,12 @@ const ThreadPriorityToNiceValuePairForTest
 // result in heavy throttling and force the thread onto a little core on
 // big.LITTLE devices.
 // - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1 value.
-// - kCompositing and kDisplayCritical corresponds to Android's PRIORITY_DISPLAY
-// = -4 value.
+// - kDisplayCritical corresponds to Android's PRIORITY_DISPLAY = -4 value.
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
 const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
     {ThreadType::kBackground, 10},       {ThreadType::kUtility, 1},
     {ThreadType::kResourceEfficient, 0}, {ThreadType::kDefault, 0},
-    {ThreadType::kCompositing, -4},      {ThreadType::kDisplayCritical, -4},
-    {ThreadType::kRealtimeAudio, -16},
+    {ThreadType::kDisplayCritical, -4},  {ThreadType::kRealtimeAudio, -16},
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {
@@ -70,10 +67,10 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
   }
   // Recent versions of Android (O+) up the priority of the UI thread
   // automatically.
-  if (thread_type == ThreadType::kCompositing &&
+  if (thread_type == ThreadType::kDisplayCritical &&
       pump_type_hint == MessagePumpType::UI &&
       GetCurrentThreadNiceValue() <=
-          ThreadTypeToNiceValue(ThreadType::kCompositing)) {
+          ThreadTypeToNiceValue(ThreadType::kDisplayCritical)) {
     return true;
   }
   return false;

@@ -6,6 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {PauseActionSource, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
@@ -89,11 +90,14 @@ suite('Speech', () => {
 
     app.enabledLangs = ['en'];
     app.getSpeechSynthesisVoice();
+
+    return microtasksFinished();
   });
 
   suite('on play', () => {
     setup(() => {
       app.playSpeech();
+      return microtasksFinished();
     });
 
     test('speaks all text by sentences', () => {
@@ -105,7 +109,7 @@ suite('Speech', () => {
           paragraph2.every(sentence => utteranceTexts.includes(sentence)));
     });
 
-    test('uses set language', () => {
+    test('uses set language', async () => {
       // no need to update fonts for this test
       app.$.toolbar.updateFonts = () => {};
 
@@ -119,6 +123,7 @@ suite('Speech', () => {
       expectedLang = 'fr';
       chrome.readingMode.setLanguageForTesting(expectedLang);
       app.playSpeech();
+      await microtasksFinished();
 
       assertTrue(
           speechSynthesis.spokenUtterances.every(
@@ -129,6 +134,7 @@ suite('Speech', () => {
       expectedLang = 'zh';
       chrome.readingMode.setLanguageForTesting(expectedLang);
       app.playSpeech();
+      await microtasksFinished();
 
       assertTrue(
           speechSynthesis.spokenUtterances.every(
@@ -311,11 +317,12 @@ suite('Speech', () => {
     });
   });
 
-  test('next granularity plays from there', () => {
+  test('next granularity plays from there', async () => {
     chrome.readingMode.initAxPositionWithNode(2);
     const expectedNumSentences = totalSentences - 1;
 
     emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+    await microtasksFinished();
 
     assertEquals(expectedNumSentences, speechSynthesis.spokenUtterances.length);
     const utteranceTexts = getSpokenTexts();
@@ -323,7 +330,7 @@ suite('Speech', () => {
     assertTrue(paragraph2.every(sentence => utteranceTexts.includes(sentence)));
   });
 
-  test('previous granularity plays from there', () => {
+  test('previous granularity plays from there', async () => {
     speechSynthesis.setMaxSegments(7);
     chrome.readingMode.initAxPositionWithNode(2);
     app.playSpeech();
@@ -331,6 +338,7 @@ suite('Speech', () => {
 
     speechSynthesis.setMaxSegments(1);
     emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
+    await microtasksFinished();
 
     assertEquals(1, speechSynthesis.spokenUtterances.length);
     assertEquals(
@@ -445,19 +453,22 @@ suite('Speech', () => {
       assertFalse(speechSynthesis.paused);
     });
 
-    suite('isReadAloudPlayable updates', () => {
-      setup(() => {
-        assertTrue(app.isReadAloudPlayable());
-      });
-      test('before utterance.onStarted', () => {
-        app.playSpeech();
-        assertFalse(app.isReadAloudPlayable());
-      });
-      test('after utterance.onStarted', () => {
-        speechSynthesis.triggerUtteranceStartedOnNextSpeak();
-        app.playSpeech();
-        assertTrue(app.isReadAloudPlayable());
-      });
+    test('is playable', () => {
+      assertTrue(app.$.toolbar.isReadAloudPlayable);
+    });
+
+    test('before utterance.onStarted is not playable', async () => {
+      app.playSpeech();
+      await microtasksFinished();
+
+      assertFalse(app.$.toolbar.isReadAloudPlayable);
+    });
+
+    test('after utterance.onStarted is playable', async () => {
+      speechSynthesis.triggerUtteranceStartedOnNextSpeak();
+      app.playSpeech();
+      await microtasksFinished();
+      assertTrue(app.$.toolbar.isReadAloudPlayable);
     });
 
     suite('language change to unavailable language', () => {
@@ -473,6 +484,7 @@ suite('Speech', () => {
             chrome.readingMode.defaultLanguageForSpeech);
         chrome.readingMode.setLanguageForTesting(pageLanguage);
         app.playSpeech();
+        return microtasksFinished();
       });
 
       test('selects default voice', () => {
@@ -491,13 +503,14 @@ suite('Speech', () => {
         chrome.readingMode.onVoiceChange = () => {};
       });
 
-      test('cancels and selects default voice', () => {
+      test('cancels and selects default voice', async () => {
         emitEvent(app, 'select-voice', {
           detail: {
             selectedVoice:
                 createSpeechSynthesisVoice({lang: 'en', name: 'Lisie'}),
           },
         });
+        await microtasksFinished();
 
         assertFalse(speechSynthesis.speaking);
         assertTrue(speechSynthesis.canceled);

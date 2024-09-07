@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_PA_REPORT_UTIL_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
@@ -120,6 +121,11 @@ FillInPrivateAggregationRequest(
     const PrivateAggregationTimings& timings,
     bool is_winner);
 
+// Returns true if `request` is a for-event contribution with "reserved.once"
+// event type.
+CONTENT_EXPORT bool IsPrivateAggregationRequestReservedOnce(
+    const auction_worklet::mojom::PrivateAggregationRequest& request);
+
 // Splits a vector of requests into those with matching debug mode details and
 // then forwards to a new mojo pipe.
 CONTENT_EXPORT void SplitContributionsIntoBatchesThenSendToHost(
@@ -135,6 +141,12 @@ CONTENT_EXPORT bool HasValidFilteringId(
 
 // Returns true if filtering ID is valid.
 CONTENT_EXPORT bool IsValidFilteringId(std::optional<uint64_t> filtering_id);
+
+// If `pa_requests` contains malformed requests, returns an error message.
+// Otherwise returns nullopt.
+CONTENT_EXPORT std::optional<std::string> ValidatePrivateAggregationRequests(
+    const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
+        pa_requests);
 
 }  // namespace content
 

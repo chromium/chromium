@@ -15,7 +15,7 @@
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/webui/ui_bundled/about/about_ui.h"

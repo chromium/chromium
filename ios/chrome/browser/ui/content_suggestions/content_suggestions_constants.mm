@@ -57,6 +57,7 @@ ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
 
 bool IsSetUpListModuleType(ContentSuggestionsModuleType type) {
   switch (type) {
+    case ContentSuggestionsModuleType::kInvalid:
     case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kSafetyCheck:
     case ContentSuggestionsModuleType::kParcelTracking:

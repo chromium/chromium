@@ -11,7 +11,3 @@ proto_library("proto") {
     "permissions_common.proto",
   ]
 }
-
-proto_library("test_support") {
-  sources = [ "test.proto" ]
-}

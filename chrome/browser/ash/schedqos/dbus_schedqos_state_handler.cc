@@ -349,7 +349,6 @@ void DBusSchedQOSStateHandler::SetThreadTypeOnThread(
     case base::ThreadType::kDefault:
       state = resource_manager::ThreadState::kBalanced;
       break;
-    case base::ThreadType::kCompositing:
     case base::ThreadType::kDisplayCritical:
       state = resource_manager::ThreadState::kUrgent;
       break;

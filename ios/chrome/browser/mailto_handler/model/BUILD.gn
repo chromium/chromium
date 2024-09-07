@@ -32,6 +32,7 @@ source_set("mailto_handler_factory") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/mailto_handler:mailto_handler_api",
   ]

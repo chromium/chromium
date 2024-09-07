@@ -500,9 +500,13 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
       config.bitrate_allocation.GetMode() == Bitrate::Mode::kVariable;
   const double tolerance =
       vbr_encoding ? kVariableBitrateTolerance : kBitrateTolerance;
-  if (!vbr_encoding) {
-    config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 3;
-  }
+  // Encode twice as many frame as kNumFramesToEncodeForBitrateCheck in VBR
+  // encoding. This is a workaround the zork rate controller. See b/361109092.
+  // TODO(b/195407733): Remove this workaround if we introduce the rate
+  // controller to the H264 vaapi encoder.
+  config.num_frames_to_encode = vbr_encoding
+                                    ? kNumFramesToEncodeForBitrateCheck * 2
+                                    : kNumFramesToEncodeForBitrateCheck * 3;
 
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
   // Set longer event timeout than the default (30 sec) because encoding 2160p

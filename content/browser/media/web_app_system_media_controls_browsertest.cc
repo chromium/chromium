@@ -13,11 +13,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread_win.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/web_app_system_media_controls_manager.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -90,7 +92,7 @@ class WebAppSystemMediaControlsBrowserTest
     shell->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(
             JsReplace("document.getElementById($1).play();", id)),
-        base::NullCallback());
+        base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
     WaitForStart(shell);
   }
 
@@ -270,7 +272,14 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   WaitForStop(shell());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeBrowserTest) {
+// TODO: crbug.com/361543620 - Fix the test on Win11 arm64 debug platform.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG) && defined(ARCH_CPU_ARM64)
+#define MAYBE_ThreeBrowserTest DISABLED_ThreeBrowserTest
+#else
+#define MAYBE_ThreeBrowserTest ThreeBrowserTest
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
+                       MAYBE_ThreeBrowserTest) {
   GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
 
   Shell* browser2 = CreateBrowser();

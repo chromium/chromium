@@ -19,6 +19,9 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "skia/buildflags.h"
+#include "skia/rusty_png_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libpng/png.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -111,7 +114,7 @@ void MakeGrayscaleAlphaImage(int w, int h, std::vector<unsigned char>* data) {
     for (int x = 0; x < w; x++) {
       size_t base = (y * w + x) * 2;
       (*data)[base] = x;      // gray value
-      (*data)[base + 1] = x;  // alpha
+      (*data)[base + 1] = y;  // alpha
     }
   }
 }
@@ -396,7 +399,26 @@ void MakeTestA8SkBitmap(int w, int h, SkBitmap* bmp) {
   }
 }
 
-TEST(PNGCodec, EncodeDecodeRGBA) {
+enum class RustFeatureState { kRustEnabled, kRustDisabled };
+
+class PNGCodecTest : public testing::TestWithParam<RustFeatureState> {
+ public:
+  PNGCodecTest() {
+    switch (GetParam()) {
+      case RustFeatureState::kRustEnabled:
+        features_.InitAndEnableFeature(skia::kRustyPngFeature);
+        break;
+      case RustFeatureState::kRustDisabled:
+        features_.InitAndDisableFeature(skia::kRustyPngFeature);
+        break;
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_P(PNGCodecTest, EncodeDecodeRGBA) {
   const int w = 20, h = 20;
 
   // create an image with known values, a must be opaque because it will be
@@ -429,7 +451,7 @@ TEST(PNGCodec, EncodeDecodeRGBA) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_RGBA)));
 }
 
-TEST(PNGCodec, EncodeDecodeBGRA) {
+TEST_P(PNGCodecTest, EncodeDecodeBGRA) {
   const int w = 20, h = 20;
 
   // Create an image with known values, alpha must be opaque because it will be
@@ -454,7 +476,7 @@ TEST(PNGCodec, EncodeDecodeBGRA) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_BGRA)));
 }
 
-TEST(PNGCodec, DecodePalette) {
+TEST_P(PNGCodecTest, DecodePalette) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -481,7 +503,7 @@ TEST(PNGCodec, DecodePalette) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_RGBA)));
 }
 
-TEST(PNGCodec, DecodeInterlacedPalette) {
+TEST_P(PNGCodecTest, DecodeInterlacedPalette) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -507,7 +529,7 @@ TEST(PNGCodec, DecodeInterlacedPalette) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_RGBA)));
 }
 
-TEST(PNGCodec, DecodeGrayscale) {
+TEST_P(PNGCodecTest, DecodeGrayscale) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -528,7 +550,7 @@ TEST(PNGCodec, DecodeGrayscale) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_RGBA)));
 }
 
-TEST(PNGCodec, DecodeGrayscaleWithAlpha) {
+TEST_P(PNGCodecTest, DecodeGrayscaleWithAlpha) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -549,7 +571,7 @@ TEST(PNGCodec, DecodeGrayscaleWithAlpha) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_RGBA)));
 }
 
-TEST(PNGCodec, DecodeInterlacedGrayscale) {
+TEST_P(PNGCodecTest, DecodeInterlacedGrayscale) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -571,7 +593,7 @@ TEST(PNGCodec, DecodeInterlacedGrayscale) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_RGBA)));
 }
 
-TEST(PNGCodec, DecodeInterlacedGrayscaleWithAlpha) {
+TEST_P(PNGCodecTest, DecodeInterlacedGrayscaleWithAlpha) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -593,7 +615,7 @@ TEST(PNGCodec, DecodeInterlacedGrayscaleWithAlpha) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_RGBA)));
 }
 
-TEST(PNGCodec, DecodeInterlacedRGBA) {
+TEST_P(PNGCodecTest, DecodeInterlacedRGBA) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -615,7 +637,7 @@ TEST(PNGCodec, DecodeInterlacedRGBA) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_RGBA)));
 }
 
-TEST(PNGCodec, DecodeInterlacedBGR) {
+TEST_P(PNGCodecTest, DecodeInterlacedBGR) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -637,7 +659,7 @@ TEST(PNGCodec, DecodeInterlacedBGR) {
                          ImageSpec(outw, outh, decoded, COLOR_TYPE_BGRA)));
 }
 
-TEST(PNGCodec, DecodeInterlacedBGRA) {
+TEST_P(PNGCodecTest, DecodeInterlacedBGRA) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -661,7 +683,7 @@ TEST(PNGCodec, DecodeInterlacedBGRA) {
 
 // Not encoding an interlaced PNG from SkBitmap because we don't do it
 // anywhere, and the ability to do that requires more code changes.
-TEST(PNGCodec, DecodeInterlacedRGBtoSkBitmap) {
+TEST_P(PNGCodecTest, DecodeInterlacedRGBtoSkBitmap) {
   const int w = 20, h = 20;
 
   // create an image with known values
@@ -715,11 +737,11 @@ void DecodeInterlacedRGBAtoSkBitmap(bool use_transparency) {
                                          decoded_bitmap));
 }
 
-TEST(PNGCodec, DecodeInterlacedRGBAtoSkBitmap_Opaque) {
+TEST_P(PNGCodecTest, DecodeInterlacedRGBAtoSkBitmap_Opaque) {
   DecodeInterlacedRGBAtoSkBitmap(/*use_transparency=*/false);
 }
 
-TEST(PNGCodec, DecodeInterlacedRGBAtoSkBitmap_Transparent) {
+TEST_P(PNGCodecTest, DecodeInterlacedRGBAtoSkBitmap_Transparent) {
   DecodeInterlacedRGBAtoSkBitmap(/*use_transparency=*/true);
 }
 
@@ -746,7 +768,7 @@ TEST(PNGCodec, EncoderSavesImagesWithAllOpaquePixelsAsOpaque) {
 }
 
 // Test that corrupted data decompression causes failures.
-TEST(PNGCodec, DecodeCorrupted) {
+TEST_P(PNGCodecTest, DecodeCorrupted) {
   int w = 20, h = 20;
 
   // Make some random data (an uncompressed image).
@@ -815,7 +837,7 @@ TEST(PNGCodec, DecodeCorrupted) {
 // up-scaling (e.g. on high DPI displays), trumping the "two halves should have
 // roughly equal / different brightness" effect. You can view the images at
 // https://nigeltao.github.io/blog/2022/gamma-aware-pixelated-images.html
-TEST(PNGCodec, DecodeGamma) {
+TEST_P(PNGCodecTest, DecodeGamma) {
   base::FilePath root_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir));
   base::FilePath data_dir = root_dir.AppendASCII("ui")
@@ -854,7 +876,7 @@ TEST(PNGCodec, DecodeGamma) {
   }
 }
 
-TEST(PNGCodec, EncodeBGRASkBitmapStridePadded) {
+TEST_P(PNGCodecTest, EncodeBGRASkBitmapStridePadded) {
   const int kWidth = 20;
   const int kHeight = 20;
   const int kPaddedWidth = 32;
@@ -897,7 +919,7 @@ TEST(PNGCodec, EncodeBGRASkBitmapStridePadded) {
   }
 }
 
-TEST(PNGCodec, EncodeBGRASkBitmap) {
+TEST_P(PNGCodecTest, EncodeBGRASkBitmap) {
   const int w = 20, h = 20;
 
   SkBitmap original_bitmap;
@@ -926,7 +948,7 @@ TEST(PNGCodec, EncodeBGRASkBitmap) {
   }
 }
 
-TEST(PNGCodec, EncodeA8SkBitmap) {
+TEST_P(PNGCodecTest, EncodeA8SkBitmap) {
   const int w = 20, h = 20;
 
   SkBitmap original_bitmap;
@@ -950,7 +972,7 @@ TEST(PNGCodec, EncodeA8SkBitmap) {
   }
 }
 
-TEST(PNGCodec, EncodeBGRASkBitmapDiscardTransparency) {
+TEST_P(PNGCodecTest, EncodeBGRASkBitmapDiscardTransparency) {
   const int w = 20, h = 20;
 
   SkBitmap original_bitmap;
@@ -988,7 +1010,7 @@ TEST(PNGCodec, EncodeBGRASkBitmapDiscardTransparency) {
   }
 }
 
-TEST(PNGCodec, EncodeWithComment) {
+TEST_P(PNGCodecTest, EncodeWithComment) {
   const int w = 10, h = 10;
 
   std::vector<unsigned char> original;
@@ -1017,7 +1039,7 @@ TEST(PNGCodec, EncodeWithComment) {
   EXPECT_NE(base::ranges::search(encoded, kExpected3), encoded.end());
 }
 
-TEST(PNGCodec, EncodeDecodeWithVaryingCompressionLevels) {
+TEST_P(PNGCodecTest, EncodeDecodeWithVaryingCompressionLevels) {
   const int w = 20, h = 20;
 
   // create an image with known values, a must be opaque because it will be
@@ -1049,7 +1071,7 @@ TEST(PNGCodec, EncodeDecodeWithVaryingCompressionLevels) {
   EXPECT_TRUE(BitmapsAreEqual(decoded, original_bitmap));
 }
 
-TEST(PNGCodec, DecodingTruncatedEXIFChunkIsSafe) {
+TEST_P(PNGCodecTest, DecodingTruncatedEXIFChunkIsSafe) {
   // Libpng 1.6.37 had a bug which caused it to read two uninitialized bytes of
   // stack memory if a PNG contained an invalid EXIF chunk, when in progressive
   // reading mode. This would manifest as an MSAN error (crbug.com/332475837)
@@ -1080,5 +1102,15 @@ TEST(PNGCodec, DecodingTruncatedEXIFChunkIsSafe) {
   SkBitmap bitmap;
   EXPECT_FALSE(PNGCodec::Decode(kPNGData, sizeof(kPNGData), &bitmap));
 }
+
+#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
+INSTANTIATE_TEST_SUITE_P(RustEnabled,
+                         PNGCodecTest,
+                         ::testing::Values(RustFeatureState::kRustEnabled));
+#endif
+
+INSTANTIATE_TEST_SUITE_P(RustDisabled,
+                         PNGCodecTest,
+                         ::testing::Values(RustFeatureState::kRustDisabled));
 
 }  // namespace gfx

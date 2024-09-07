@@ -75,7 +75,7 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
   bool current_entry_is_executable;
 #if BUILDFLAG(IS_MAC)
   uint32_t magic;
-  file->Read(0, reinterpret_cast<char*>(&magic), sizeof(uint32_t));
+  file->Read(0, base::byte_span_from_ref(magic));
 
   uint8_t dmg_header[DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize];
   file->Read(0, dmg_header);
@@ -172,23 +172,28 @@ void SetLengthAndDigestForContainedFile(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
 
   const size_t kReadBufferSize = 4096;
-  char block[kReadBufferSize];
+  uint8_t block[kReadBufferSize];
 
-  int bytes_read_previously = 0;
+  size_t bytes_read_previously = 0;
   temp_file->Seek(base::File::Whence::FROM_BEGIN, 0);
   while (true) {
-    int bytes_read_now = temp_file->ReadAtCurrentPos(block, kReadBufferSize);
+    std::optional<size_t> bytes_read_now =
+        temp_file->ReadAtCurrentPos(base::span(block));
 
-    if (bytes_read_now > file_length - bytes_read_previously) {
-      bytes_read_now = file_length - bytes_read_previously;
-    }
-
-    if (bytes_read_now <= 0) {
+    if (!bytes_read_now) {
       break;
     }
 
-    hasher->Update(block, bytes_read_now);
-    bytes_read_previously += bytes_read_now;
+    if (*bytes_read_now > file_length - bytes_read_previously) {
+      bytes_read_now = file_length - bytes_read_previously;
+    }
+
+    if (*bytes_read_now <= 0) {
+      break;
+    }
+
+    hasher->Update(base::make_span(block).first(*bytes_read_now));
+    bytes_read_previously += *bytes_read_now;
   }
 
   uint8_t digest[crypto::kSHA256Length];

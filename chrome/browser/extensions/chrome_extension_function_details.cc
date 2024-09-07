@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"

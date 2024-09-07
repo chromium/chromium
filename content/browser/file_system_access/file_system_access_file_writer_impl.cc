@@ -50,9 +50,6 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
       has_transient_user_activation_(has_transient_user_activation),
       auto_close_(auto_close) {
   CHECK_EQ(swap_url.type(), url.type());
-  CHECK(!lock_->IsExclusive() ||
-        base::FeatureList::IsEnabled(
-            blink::features::kFileSystemAccessLockingScheme));
   CHECK(swap_lock_->IsExclusive());
 
   receiver_.set_disconnect_handler(base::BindOnce(

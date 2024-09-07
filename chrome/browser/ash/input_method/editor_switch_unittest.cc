@@ -23,7 +23,9 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -39,10 +41,33 @@ using ::testing::ElementsAreArray;
 using ::testing::TestWithParam;
 
 const char kAllowedTestCountry[] = "au";
-const char kDeniedTestCountry[] = "br";
+const char kDeniedTestCountry[] = "hk";
 const char kUsEngineId[] = "xkb:us::eng";
 
 const char kAllowedTestUrl[] = "https://allowed.testurl.com/allowed/path";
+
+TextFieldContextualInfo CreateFakeTextFieldContextualInfo(
+    chromeos::AppType app_type,
+    std::string_view url,
+    std::string_view app_key) {
+  auto text_field_contextual_info = TextFieldContextualInfo();
+  text_field_contextual_info.app_type = app_type;
+  text_field_contextual_info.tab_url = GURL(url);
+  text_field_contextual_info.app_key = app_key;
+
+  return text_field_contextual_info;
+}
+
+std::unique_ptr<TestingProfile> CreateTestingProfile(std::string email) {
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile.get());
+
+  signin::MakePrimaryAccountAvailable(identity_manager, email,
+                                      signin::ConsentLevel::kSync);
+  return profile;
+}
 
 class FakeEditorContextObserver : public EditorContext::Observer {
  public:
@@ -68,17 +93,152 @@ class FakeEditorSwitchObserver : public EditorSwitch::Observer {
   void OnEditorModeChanged(const EditorMode& mode) override {}
 };
 
-struct EditorSwitchAvailabilityTestCase {
+struct EditorSwitchAvailabilityWithoutPolicyTestCase {
   std::string test_name;
 
   std::vector<base::test::FeatureRef> enabled_flags;
   std::vector<base::test::FeatureRef> disabled_flags;
 
   std::string country_code;
-  bool is_managed;
 
   bool expected_availability;
 };
+
+using EditorSwitchAvailabilityWithoutPolicyTest =
+    TestWithParam<EditorSwitchAvailabilityWithoutPolicyTestCase>;
+
+// TODO: b:329215512: Remove the OrcaUseAccountCapabilities from the disable
+// lists of all test cases.
+INSTANTIATE_TEST_SUITE_P(
+    EditorSwitchAvailabilityWithoutPolicyTests,
+    EditorSwitchAvailabilityWithoutPolicyTest,
+    testing::ValuesIn<EditorSwitchAvailabilityWithoutPolicyTestCase>({
+        {.test_name = "FeatureNotAvailableForUseWithoutReceivingOrcaFlag",
+         .enabled_flags = {},
+         .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
+         .country_code = kAllowedTestCountry,
+         .expected_availability = false},
+        {.test_name = "FeatureNotAvailableInACountryNotApprovedYet",
+         .enabled_flags = {chromeos::features::kOrca,
+                           chromeos::features::kFeatureManagementOrca},
+         .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
+         .country_code = kDeniedTestCountry,
+         .expected_availability = false},
+        {.test_name = "FeatureNotAvailableWithoutFeatureManagementFlag",
+         .enabled_flags = {chromeos::features::kOrca},
+         .disabled_flags = {chromeos::features::kFeatureManagementOrca,
+                            ash::features::kOrcaUseAccountCapabilities},
+         .country_code = kAllowedTestCountry,
+         .expected_availability = false},
+        {.test_name = "FeatureAvailableWhenReceivingDogfoodFlag",
+         .enabled_flags = {chromeos::features::kOrcaDogfood},
+         .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
+         .country_code = kAllowedTestCountry,
+         .expected_availability = true},
+        {.test_name = "FeatureAvailableInApprovedCountryWithFe"
+                      "atureManagementFlag",
+         .enabled_flags = {chromeos::features::kOrca,
+                           chromeos::features::kFeatureManagementOrca},
+         .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
+         .country_code = kAllowedTestCountry,
+         .expected_availability = true},
+    }),
+    [](const testing::TestParamInfo<
+        EditorSwitchAvailabilityWithoutPolicyTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(EditorSwitchAvailabilityWithoutPolicyTest,
+       TestEditorAvailabilityWhenNoPolicyIsApplied) {
+  const EditorSwitchAvailabilityWithoutPolicyTestCase& test_case = GetParam();
+  content::BrowserTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(/*enabled_features=*/test_case.enabled_flags,
+                                /*disabled_features=*/test_case.disabled_flags);
+
+  TestingProfile profile;
+  FakeSystem system;
+  FakeEditorContextObserver context_observer;
+  FakeEditorSwitchObserver switch_observer;
+  EditorGeolocationMockProvider geolocation_provider(test_case.country_code);
+  EditorContext context(&context_observer, &system, &geolocation_provider);
+  EditorSwitch editor_switch(/*observer=*/&switch_observer,
+                             /*profile=*/&profile,
+                             /*context=*/&context);
+
+  EXPECT_EQ(editor_switch.IsAllowedForUse(), test_case.expected_availability);
+}
+
+struct EditorSwitchAvailabilityWithPolicyTestCase {
+  std::string test_name;
+
+  std::vector<base::test::FeatureRef> enabled_flags;
+  std::vector<base::test::FeatureRef> disabled_flags;
+
+  std::string country_code;
+  bool enabled_by_policy;
+
+  bool expected_availability;
+};
+
+using EditorSwitchAvailabilityWithPolicyTest =
+    TestWithParam<EditorSwitchAvailabilityWithPolicyTestCase>;
+
+// TODO: b:329215512: Remove the OrcaUseAccountCapabilities from the disable
+// lists of all test cases.
+INSTANTIATE_TEST_SUITE_P(
+    EditorSwitchAvailabilityWithPolicyTests,
+    EditorSwitchAvailabilityWithPolicyTest,
+    testing::ValuesIn<EditorSwitchAvailabilityWithPolicyTestCase>(
+        {{.test_name = "FeatureAvailableIfAllowedByPolicy",
+          .enabled_flags = {chromeos::features::kOrca,
+                            chromeos::features::kFeatureManagementOrca},
+          .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
+          .country_code = kAllowedTestCountry,
+          .enabled_by_policy = true,
+          .expected_availability = true},
+         {.test_name = "FeatureAvailableEvenIfPolicyValueIsDisabled",
+          .enabled_flags = {chromeos::features::kOrca,
+                            chromeos::features::kFeatureManagementOrca},
+          .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
+          .country_code = kAllowedTestCountry,
+          .enabled_by_policy = false,
+          .expected_availability = true},
+         {.test_name = "FeatureUnavailableIfOrcaForManagedUsersFlagIsDisabled",
+          .enabled_flags = {chromeos::features::kOrca,
+                            chromeos::features::kFeatureManagementOrca},
+          .disabled_flags = {ash::features::kOrcaUseAccountCapabilities,
+                             ash::features::kOrcaForManagedUsers},
+          .country_code = kAllowedTestCountry,
+          .enabled_by_policy = true,
+          .expected_availability = false}}),
+    [](const testing::TestParamInfo<
+        EditorSwitchAvailabilityWithPolicyTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(EditorSwitchAvailabilityWithPolicyTest,
+       TestEditorAvailabilityWhenPolicyIsApplied) {
+  const EditorSwitchAvailabilityWithPolicyTestCase& test_case = GetParam();
+  content::BrowserTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(/*enabled_features=*/test_case.enabled_flags,
+                                /*disabled_features=*/test_case.disabled_flags);
+
+  TestingProfile profile;
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kOrcaEnabled, base::Value(test_case.enabled_by_policy));
+  FakeSystem system;
+  FakeEditorContextObserver context_observer;
+  FakeEditorSwitchObserver switch_observer;
+  EditorGeolocationMockProvider geolocation_provider(test_case.country_code);
+  EditorContext context(&context_observer, &system, &geolocation_provider);
+  EditorSwitch editor_switch(/*observer=*/&switch_observer,
+                             /*profile=*/&profile,
+                             /*context=*/&context);
+
+  EXPECT_EQ(editor_switch.IsAllowedForUse(), test_case.expected_availability);
+}
 
 struct EditorSwitchTriggerTestCase {
   std::string test_name;
@@ -103,105 +263,7 @@ struct EditorSwitchTriggerTestCase {
   std::vector<EditorBlockedReason> expected_blocked_reasons;
 };
 
-using EditorSwitchAvailabilityTest =
-    TestWithParam<EditorSwitchAvailabilityTestCase>;
-
 using EditorSwitchTriggerTest = TestWithParam<EditorSwitchTriggerTestCase>;
-
-TextFieldContextualInfo CreateFakeTextFieldContextualInfo(
-    chromeos::AppType app_type,
-    std::string_view url,
-    std::string_view app_key) {
-  auto text_field_contextual_info = TextFieldContextualInfo();
-  text_field_contextual_info.app_type = app_type;
-  text_field_contextual_info.tab_url = GURL(url);
-  text_field_contextual_info.app_key = app_key;
-  return text_field_contextual_info;
-}
-
-std::unique_ptr<TestingProfile> CreateTestingProfile(std::string email) {
-  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile.get());
-
-  signin::MakePrimaryAccountAvailable(identity_manager, email,
-                                      signin::ConsentLevel::kSync);
-  return profile;
-}
-
-// TODO: b:329215512: Remove the OrcaUseAccountCapabilities from the disable
-// lists of all test cases.
-INSTANTIATE_TEST_SUITE_P(
-    EditorSwitchAvailabilityTests,
-    EditorSwitchAvailabilityTest,
-    testing::ValuesIn<EditorSwitchAvailabilityTestCase>({
-        {.test_name = "FeatureNotAvailableForUseWithoutReceivingOrcaFlag",
-         .enabled_flags = {},
-         .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
-         .country_code = kAllowedTestCountry,
-         .is_managed = false,
-         .expected_availability = false},
-        {.test_name = "FeatureNotAvailableForManagedAccountOnNonDogfoodDevices",
-         .enabled_flags = {chromeos::features::kOrca,
-                           chromeos::features::kFeatureManagementOrca},
-         .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
-         .country_code = kAllowedTestCountry,
-         .is_managed = true,
-         .expected_availability = false},
-        {.test_name = "FeatureNotAvailableInACountryNotApprovedYet",
-         .enabled_flags = {chromeos::features::kOrca,
-                           chromeos::features::kFeatureManagementOrca},
-         .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
-         .country_code = kDeniedTestCountry,
-         .is_managed = false,
-         .expected_availability = false},
-        {.test_name = "FeatureNotAvailableWithoutFeatureManagementFlag",
-         .enabled_flags = {chromeos::features::kOrca},
-         .disabled_flags = {chromeos::features::kFeatureManagementOrca,
-                            ash::features::kOrcaUseAccountCapabilities},
-         .country_code = kAllowedTestCountry,
-         .is_managed = false,
-         .expected_availability = false},
-        {.test_name = "FeatureAvailableWhenReceivingDogfoodFlag",
-         .enabled_flags = {chromeos::features::kOrcaDogfood},
-         .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
-         .country_code = kAllowedTestCountry,
-         .is_managed = true,
-         .expected_availability = true},
-        {.test_name = "FeatureAvailableOnUnmanagedDeviceInApprovedCountryWithFe"
-                      "atureManagementFlag",
-         .enabled_flags = {chromeos::features::kOrca,
-                           chromeos::features::kFeatureManagementOrca},
-         .disabled_flags = {ash::features::kOrcaUseAccountCapabilities},
-         .country_code = kAllowedTestCountry,
-         .is_managed = false,
-         .expected_availability = true},
-    }),
-    [](const testing::TestParamInfo<EditorSwitchAvailabilityTest::ParamType>&
-           info) { return info.param.test_name; });
-
-TEST_P(EditorSwitchAvailabilityTest, TestEditorAvailability) {
-  const EditorSwitchAvailabilityTestCase& test_case = GetParam();
-  content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(/*enabled_features=*/test_case.enabled_flags,
-                                /*disabled_features=*/test_case.disabled_flags);
-
-  TestingProfile profile;
-  profile.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
-      test_case.is_managed);
-  FakeSystem system;
-  FakeEditorContextObserver context_observer;
-  FakeEditorSwitchObserver switch_observer;
-  EditorGeolocationMockProvider geolocation_provider(test_case.country_code);
-  EditorContext context(&context_observer, &system, &geolocation_provider);
-  EditorSwitch editor_switch(/*observer=*/&switch_observer,
-                             /*profile=*/&profile,
-                             /*context=*/&context);
-
-  EXPECT_EQ(editor_switch.IsAllowedForUse(), test_case.expected_availability);
-}
 
 INSTANTIATE_TEST_SUITE_P(
     EditorSwitchTriggerTests,

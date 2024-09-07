@@ -24,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/image_view.h"
@@ -82,7 +83,7 @@ BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
   SetTitle(IDS_BOREALIS_SPLASHSCREEN_TITLE);
   SetShowCloseButton(false);
   SetHasWindowSizeControls(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets(kOuterPadding));
   set_corner_radius(kCornerRadius);
   set_use_custom_frame(true);

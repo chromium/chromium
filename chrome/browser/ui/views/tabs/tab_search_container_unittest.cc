@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -37,25 +38,31 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
-    scoped_feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kTabstripDeclutter}, {});
 
     tab_strip_controller_ =
         std::make_unique<FakeBaseTabStripControllerWithProfile>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &tab_strip_model_delegate_, tab_strip_controller_->GetProfile());
+
+    tab_declutter_controller_ =
+        std::make_unique<tabs::TabDeclutterController>(tab_strip_model_.get());
+
     locked_expansion_view_ = std::make_unique<views::View>();
     container_before_tab_strip_ = std::make_unique<TabSearchContainer>(
         tab_strip_controller_.get(), tab_strip_model_.get(), true,
-        locked_expansion_view_.get());
+        locked_expansion_view_.get(), tab_declutter_controller_.get());
     container_after_tab_strip_ = std::make_unique<TabSearchContainer>(
         tab_strip_controller_.get(), tab_strip_model_.get(), false,
-        locked_expansion_view_.get());
+        locked_expansion_view_.get(), tab_declutter_controller_.get());
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TabStripController> tab_strip_controller_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   std::unique_ptr<views::View> locked_expansion_view_;
   std::unique_ptr<TabSearchContainer> container_before_tab_strip_;

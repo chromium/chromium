@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/chromeos/token_manager.h"
 
 #include <grp.h>
@@ -58,8 +63,7 @@ bool WriteTokenToFile(const base::FilePath& token_path,
                << token_path.AsUTF8Unsafe();
     return false;
   }
-  std::string token_string = token.ToString();
-  token_file.WriteAtCurrentPos(token_string.c_str(), token_string.length());
+  token_file.WriteAtCurrentPos(base::as_byte_span(token.ToString()));
   return true;
 }
 

@@ -122,6 +122,8 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
 
   void HasAmbientLightSensor(HasAmbientLightSensorCallback callback) override;
 
+  void StartNativeTouchscreenMappingExperience() override;
+
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;
 

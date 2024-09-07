@@ -28,9 +28,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskRunner;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -53,12 +50,10 @@ public class ChannelsInitializerTest {
     private ChannelsInitializer mChannelsInitializer;
     private BaseNotificationManagerProxy mNotificationManagerProxy;
     private Context mContext;
-    private TaskRunner mTaskQueue;
 
     @Before
     @RequiresApi(Build.VERSION_CODES.O)
     public void setUp() {
-        mTaskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.UI_DEFAULT);
         mContext = RuntimeEnvironment.getApplication();
         mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create(mContext);
 

@@ -184,7 +184,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return navigation_type_;
   }
   ExtraData* GetExtraData() const override;
-  std::unique_ptr<ExtraData> TakeExtraData() override;
+  std::unique_ptr<ExtraData> CloneExtraData() override;
   void SetExtraData(std::unique_ptr<ExtraData>) override;
   void SetSubresourceFilter(WebDocumentSubresourceFilter*) override;
   void SetServiceWorkerNetworkProvider(
@@ -557,7 +557,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
       std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id);
+          soft_navigation_heuristics_task_id,
+      bool has_ua_visual_transition);
 
   // Use these method only where it's guaranteed that |m_frame| hasn't been
   // cleared.

@@ -8,7 +8,6 @@
 
 #include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
-#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -37,6 +36,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/view.h"
@@ -62,6 +62,8 @@ class GlanceablesTasksViewTest : public AshTestBase {
     fake_glanceables_tasks_client_ =
         glanceables_tasks_test_util::InitializeFakeTasksClient(
             base::Time::Now());
+    fake_glanceables_tasks_client_->set_http_error(
+        google_apis::ApiErrorCode::HTTP_SUCCESS);
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesController::ClientsRegistration{
                          .tasks_client = fake_glanceables_tasks_client_.get()});
@@ -84,11 +86,11 @@ class GlanceablesTasksViewTest : public AshTestBase {
   }
 
   // Populates `num` of tasks to the default task list.
-  void PopulateTasks(size_t num) {
+  void PopulateTasks(size_t num, std::string task_list_id = "TaskListID1") {
     for (size_t i = 0; i < num; ++i) {
       auto num_string = base::NumberToString(i);
       fake_glanceables_tasks_client_->AddTask(
-          "TaskListID1", base::StrCat({"title_", num_string}),
+          task_list_id, base::StrCat({"title_", num_string}),
           base::DoNothing());
     }
 
@@ -123,6 +125,11 @@ class GlanceablesTasksViewTest : public AshTestBase {
             GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
+  views::ScrollView* GetScrollView() const {
+    return views::AsViewClass<views::ScrollView>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
+  }
+
   const views::View* GetTaskItemsContainerView() const {
     return views::AsViewClass<views::View>(
         view_->GetViewByID(base::to_underlying(
@@ -150,9 +157,10 @@ class GlanceablesTasksViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kProgressBar)));
   }
 
-  const GlanceablesErrorMessageView* GetErrorMessage() const {
-    return views::AsViewClass<GlanceablesErrorMessageView>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView)));
+  const ErrorMessageToast* GetErrorMessage() const {
+    return views::AsViewClass<ErrorMessageToast>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementErrorMessageToast)));
   }
 
   api::FakeTasksClient* tasks_client() const {
@@ -271,6 +279,20 @@ TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileEditingTask) {
 
   histogram_tester.ExpectUniqueSample(
       "Ash.Glanceables.TimeManagement.Tasks.UserAction", 4, 1);
+}
+
+TEST_F(GlanceablesTasksViewTest, ScrollViewResetPositionAfterSwitchingLists) {
+  PopulateTasks(20, "TaskListID1");
+  PopulateTasks(20, "TaskListID2");
+
+  auto* scroll_bar = GetScrollView()->vertical_scroll_bar();
+  EXPECT_EQ(scroll_bar->GetPosition(), scroll_bar->GetMinPosition());
+  ASSERT_TRUE(scroll_bar->GetVisible());
+  scroll_bar->ScrollByAmount(views::ScrollBar::ScrollAmount::kEnd);
+  EXPECT_GT(scroll_bar->GetPosition(), scroll_bar->GetMinPosition());
+
+  GetComboBoxView()->SelectMenuItemForTest(1);
+  EXPECT_EQ(scroll_bar->GetPosition(), scroll_bar->GetMinPosition());
 }
 
 TEST_F(GlanceablesTasksViewTest, OnlyShowsFooterIfAtLeast100Tasks) {
@@ -582,7 +604,8 @@ TEST_F(GlanceablesTasksViewTest, OpenBrowserWithEmptyNewTaskDoesntCrash) {
 
 TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
   tasks_client()->set_paused(true);
-  tasks_client()->set_update_errors(true);
+  tasks_client()->set_http_error(
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR);
 
   const auto* const task_items_container_view = GetTaskItemsContainerView();
   ASSERT_TRUE(task_items_container_view);
@@ -609,7 +632,8 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
 
 TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
   tasks_client()->set_paused(true);
-  tasks_client()->set_update_errors(true);
+  tasks_client()->set_http_error(
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR);
 
   const auto* const task_items_container_view = GetTaskItemsContainerView();
   ASSERT_TRUE(task_items_container_view);

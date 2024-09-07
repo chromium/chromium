@@ -40,6 +40,7 @@ class FilterMenuAdapter;
 class ResultSelectionController;
 class SearchBoxViewDelegate;
 class SearchResultBaseView;
+using QueryChangedCallback = base::RepeatingCallback<void()>;
 
 // Subclass of SearchBoxViewBase. SearchBoxModel is its data model
 // that controls what icon to display, what placeholder text to use for
@@ -106,7 +107,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Overridden from views::View:
   void OnKeyEvent(ui::KeyEvent* event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
@@ -199,6 +199,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   int GetSearchBoxIconSize();
   int GetSearchBoxButtonSize();
 
+  void SetQueryChangedCallback(QueryChangedCallback callback);
+
  private:
   class FocusRingLayer;
 
@@ -207,6 +209,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Called when the assistant button within the search box gets pressed.
   void AssistantButtonPressed();
+
+  // Called when the sunfish launcher button within the search box gets pressed.
+  void SunfishButtonPressed();
 
   // Updates the icon shown left of the search box texfield.
   void UpdateSearchIcon();
@@ -263,6 +268,12 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Clear highlight range.
   void ResetHighlightRange();
 
+  // Updates the kValue attribute of the search box textfield for accessibility.
+  void UpdateAccessibleValue();
+
+  // Updates the search box's text value.
+  void SetText(const std::u16string& text);
+
   // Builds the menu model for the category filter menu. This returns a vector
   // of AppListSearchControlCategory that is shown in the filter menu.
   ui::SimpleMenuModel* BuildFilterMenuModel();
@@ -284,6 +295,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   AppListState current_app_list_state_ = AppListState::kStateApps;
 
   std::u16string current_query_;
+
+  QueryChangedCallback query_changed_callback_;
 
   // The range of highlighted text for autocomplete.
   gfx::Range highlight_range_;

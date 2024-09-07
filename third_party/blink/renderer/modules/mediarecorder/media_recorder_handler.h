@@ -131,6 +131,7 @@ class MODULES_EXPORT MediaRecorderHandler final
       std::string encoded_data,
       std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) override;
+  void OnAudioEncodingError(media::EncoderStatus error_status) override;
   // [Audio/Video]TrackRecorder::CallbackInterface overrides.
   void OnSourceReadyStateChanged() override;
 

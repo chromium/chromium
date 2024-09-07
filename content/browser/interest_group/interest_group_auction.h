@@ -26,7 +26,6 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/additional_bid_result.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
-#include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
@@ -36,6 +35,7 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/auction_result.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -199,8 +199,8 @@ class CONTENT_EXPORT InterestGroupAuction
 
     const SingleStorageInterestGroup bidder;
 
-    // Set of render keys that are k-anonymous and correspond to ad or ad
-    // component render URLs for this interest group.
+    // Set of keys that are k-anonymous and correspond to ad and ad component
+    // render URLs, and to reporting ids, for this interest group.
     // (Not set if we are not configured to care).
     base::flat_set<std::string> kanon_keys;
 
@@ -258,6 +258,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // True if the worklet successfully made a bid.
     bool made_bid = false;
+
+    // True if the worklet execution on this IG was cancelled due to cumulative
+    // timeout.
+    bool affected_by_cumulative_timeout = false;
 
     // If this was provided as an additional bid, this is set to the origin it
     // claims to be.
@@ -342,6 +346,7 @@ class CONTENT_EXPORT InterestGroupAuction
         base::TimeDelta bid_duration,
         std::optional<uint32_t> bidding_signals_data_version,
         const blink::InterestGroup::Ad* bid_ad,
+        std::optional<std::string> selected_buyer_and_seller_reporting_id,
         BidState* bid_state,
         InterestGroupAuction* auction);
 
@@ -382,6 +387,8 @@ class CONTENT_EXPORT InterestGroupAuction
     const std::optional<uint16_t> modeling_signals;
     const base::TimeDelta bid_duration;
     const std::optional<uint32_t> bidding_signals_data_version;
+
+    const std::optional<std::string> selected_buyer_and_seller_reporting_id;
 
     // InterestGroup that made the bid. Owned by the BidState of that
     // InterestGroup.
@@ -1208,6 +1215,12 @@ class CONTENT_EXPORT InterestGroupAuction
       std::string ad_slot,
       scoped_refptr<HeaderDirectFromSellerSignals::Result> signals);
 
+  // For metrics only -- update `interest_groups_bytes_for_metrics_` and
+  // `ads_and_ad_components_bytes_for_metrics_` based on the currently loaded
+  // `interest_groups`.
+  void UpdateIgSizeMetrics(
+      const std::vector<SingleStorageInterestGroup>& interest_groups);
+
   // For associating various events with a particular auction. Note that
   // component auctions have their own.
   const std::string devtools_auction_id_;
@@ -1416,6 +1429,11 @@ class CONTENT_EXPORT InterestGroupAuction
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
 
+  // This is used to keep track of which scoreAd execution's PA contributions on
+  // "reserved.once" to use; it's incrementally updated as the scores come in.
+  raw_ptr<BidState> seller_reserved_once_rep_ = nullptr;
+  int seller_reserved_once_rep_count_ = 0;
+
   // A cache of feature params to avoid getting these values many times which
   // can be slow.
   std::optional<int> real_time_reporting_num_buckets_;
@@ -1468,6 +1486,13 @@ class CONTENT_EXPORT InterestGroupAuction
       score_ad_receivers_;
 
   GetDataDecoderCallback get_data_decoder_callback_;
+
+  // For metrics only -- stores the size of interest groups and their internal
+  // ads and ad components, respectively, as computed by EstimateSize(). Only
+  // stores for the current auction; if this is the parent auction of component
+  // auctions, their sizes are not included.
+  size_t interest_groups_bytes_for_metrics_ = 0u;
+  size_t ads_and_ad_components_bytes_for_metrics_ = 0u;
 
   base::WeakPtrFactory<InterestGroupAuction> weak_ptr_factory_{this};
 };

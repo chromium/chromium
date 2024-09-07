@@ -40,7 +40,7 @@ class CORE_EXPORT TrackBase : public Supplementable<TrackBase> {
  public:
   virtual ~TrackBase();
 
-  WebMediaPlayer::TrackId id() const { return id_; }
+  String id() const { return id_; }
 
   WebMediaPlayer::TrackType GetType() const { return type_; }
 

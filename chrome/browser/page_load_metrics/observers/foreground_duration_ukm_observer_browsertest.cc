@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest,
   GURL empty = https_test_server()->GetURL("/empty.html");
   GURL simple = https_test_server()->GetURL("/simple.html");
   prerender_helper().NavigatePrimaryPage(empty);
-  int host_id = prerender_helper().AddPrerender(simple);
+  content::FrameTreeNodeId host_id = prerender_helper().AddPrerender(simple);
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 
   ExpectMetricCountForUrl(simple, "ForegroundDuration", 0);
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest,
   GURL empty = https_test_server()->GetURL("/empty.html");
   GURL simple = https_test_server()->GetURL("/simple.html");
   prerender_helper().NavigatePrimaryPage(empty);
-  int host_id = prerender_helper().AddPrerender(simple);
+  content::FrameTreeNodeId host_id = prerender_helper().AddPrerender(simple);
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 
   // Make the initiator page occluded. This will be treated as a background

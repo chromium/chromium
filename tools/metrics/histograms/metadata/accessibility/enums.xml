@@ -26,6 +26,8 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AccessibilityAndroidServiceInfoEnum)-->
+
 <enum name="AccessibilityAndroidServiceInfoEnum">
   <summary>
     Track flags and capabilities of enabled accessibility services on Android.
@@ -96,6 +98,10 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="FLAG_INPUT_METHOD_EDITOR"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_android.cc) -->
+
+<!-- LINT.IfChange(AccessibilityATKAPIEnum)-->
+
 <enum name="AccessibilityATKAPIEnum">
   <summary>
     Track which ATK APIs are being called by clients on Linux Desktop.
@@ -114,6 +120,10 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kRefStateSet">atk_object_ref_state_set</int>
 </enum>
 
+<!-- LINT.ThenChange(//ui/accessibility/platform/ax_platform_node_auralinux.cc:UmaAtkApi) -->
+
+<!-- LINT.IfChange(AccessibilityImageLabelModeAndroid)-->
+
 <enum name="AccessibilityImageLabelModeAndroid">
   <summary>
     Tracks what mode the user has selected for accessibility image labels on
@@ -127,18 +137,21 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Cancel"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/image_descriptions/android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsDialog.java:ImageDescriptionsDialogAction) -->
+
+<!-- LINT.IfChange(AccessibilityPageZoomAppMenuEnabledState)-->
+
 <enum name="AccessibilityPageZoomAppMenuEnabledState">
   <summary>Track enabled state of page zoom option on app menu.</summary>
-<!-- This must be kept in sync with
-PageZoomUma.AccessibilityPageZoomAppMenuEnabledState in
-components/browser_ui/accessibility/android/java/src/org/chromium/
-components/browser_ui/accessibility/PageZoomUma.java -->
-
   <int value="0" label="Not Enabled"/>
   <int value="1" label="User Enabled"/>
   <int value="2" label="OS Enabled"/>
   <int value="3" label="User Disabled"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java:AccessibilityPageZoomAppMenuEnabledState) -->
+
+<!-- LINT.IfChange(AccessibilityTreeUnserializeError) -->
 
 <enum name="AccessibilityTreeUnserializeError">
   <summary>
@@ -154,6 +167,10 @@ components/browser_ui/accessibility/PageZoomUma.java -->
   <int value="6" label="Pending Nodes"/>
   <int value="7" label="Pending Changes"/>
 </enum>
+
+<!-- LINT.ThenChange(//ui/accessibility/ax_tree.h:AXTreeUnserializeError) -->
+
+<!-- LINT.IfChange(AccessibilityWinAPIEnum) -->
 
 <enum name="AccessibilityWinAPIEnum">
   <summary>
@@ -675,6 +692,8 @@ components/browser_ui/accessibility/PageZoomUma.java -->
   </int>
 </enum>
 
+<!-- LINT.ThenChange(//ui/accessibility/platform/ax_platform_node_win.h) -->
+
 <enum name="AccessibilityWinAPIGetPropertyValueEnum">
 <!-- Property IDs are defined in UIAutomationClient.h in the Windows SDK.
 Unknown properties are collapsed to zero. -->
@@ -857,6 +876,8 @@ Unknown properties are collapsed to zero. -->
   <int value="30174" label="IsDialog"/>
 </enum>
 
+<!-- LINT.IfChange(AutoclickActionType) -->
+
 <enum name="AutoclickActionType">
   <int value="0" label="Left click"/>
   <int value="1" label="Right click"/>
@@ -865,6 +886,10 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Pause"/>
   <int value="5" label="Scroll"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/public/cpp/accessibility_controller_enums.h:AutoclickEventType) -->
+
+<!-- LINT.IfChange(AXTreeSnapshotErrorReason) -->
 
 <enum name="AXTreeSnapshotErrorReason">
   <int value="0" label="Generic Serialization error"/>
@@ -876,12 +901,18 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Max nodes and timeout limits both reached"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/renderer/accessibility/ax_tree_snapshotter_impl.cc:AXTreeSnapshotErrorReason) -->
+
+<!-- LINT.IfChange(CaptionBubbleErrorType) -->
+
 <enum name="CaptionBubbleErrorType">
   <int value="0" label="Generic"/>
   <int value="1" label="Media foundation renderer unsupported"/>
 </enum>
 
-<!-- LINT.IfChange(ChromeVoxCommand)-->
+<!-- LINT.ThenChange(//components/live_caption/views/caption_bubble_model.h:CaptionBubbleErrorType) -->
+
+<!-- LINT.IfChange(ChromeVoxCommand) -->
 
 <enum name="ChromeVoxCommand">
   <summary>
@@ -1212,14 +1243,21 @@ Unknown properties are collapsed to zero. -->
   <int value="15" label="Invalid selection bounds"/>
 </enum>
 
-<!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning)-->
+<!-- LINT.IfChange(DependencyParserModelState) -->
+
+<enum name="DependencyParserModelState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Model file invalid"/>
+  <int value="2" label="Model file valid"/>
+  <int value="3" label="Model file valid and available"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h:DependencyParserModelState) -->
+
+<!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyboardShortcutsSemanticMeaning">
   <summary>Track keyboard shortcuts used on Android.</summary>
-<!-- This must be kept in sync with
-KeyboardShortcuts.KeyboardShortcutsSemanticMeaning in
-chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
-
   <int value="0" label="Unknown"/>
   <int value="1" label="Open recently closed tab"/>
   <int value="2" label="Open new tab"/>
@@ -1514,16 +1552,17 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="1" label="Bubble expanded"/>
 </enum>
 
-<enum name="LiveCaptionPinBubbleEvent">
-  <int value="0" label="Bubble unpinned"/>
-  <int value="1" label="Bubble pinned"/>
-</enum>
+<!-- LINT.IfChange(LiveCaptionSessionEvent) -->
 
 <enum name="LiveCaptionSessionEvent">
   <int value="0" label="Stream started"/>
   <int value="1" label="Stream finished"/>
   <int value="2" label="User closed bubble"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/live_caption/views/caption_bubble.h:LiveCaptionSessionEvent) -->
+
+<!-- LINT.IfChange(LoadSodaResult) -->
 
 <enum name="LoadSodaResult">
   <int value="0" label="Unknown"/>
@@ -1534,16 +1573,28 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
              null."/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/services/speech/soda/soda_client.h:LoadSodaResult) -->
+
+<!-- LINT.IfChange(MainNodeAnnotationResult) -->
+
 <enum name="MainNodeAnnotationResult">
   <int value="0" label="Main node successfully identified"/>
   <int value="1" label="Invalid node returned"/>
   <int value="2" label="Main node was already set"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/renderer/accessibility/annotations/ax_main_node_annotator.cc:MainNodeAnnotationResult) -->
+
+<!-- LINT.IfChange(PdfOcrRequestStatus) -->
+
 <enum name="PdfOcrRequestStatus">
   <int value="0" label="OCR requested"/>
   <int value="1" label="OCR performed"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_ocr_helper.h:PdfOcrRequestStatus) -->
+
+<!-- LINT.IfChange(ReadAnythingColor) -->
 
 <enum name="ReadAnythingColor">
   <int value="0" label="Default"/>
@@ -1553,10 +1604,18 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="4" label="Blue"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:Colors) -->
+
+<!-- LINT.IfChange(ReadAnythingEmptyState) -->
+
 <enum name="ReadAnythingEmptyState">
   <int value="0" label="Empty state shown"/>
   <int value="1" label="User selection after empty state shown"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingEmptyState) -->
+
+<!-- LINT.IfChange(ReadAnythingFontName) -->
 
 <enum name="ReadAnythingFontName">
   <int value="0" label="Poppins"/>
@@ -1568,10 +1627,18 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="6" label="STIX Two Text"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingFont) -->
+
+<!-- LINT.IfChange(ReadAnythingHighlightState) -->
+
 <enum name="ReadAnythingHighlightState">
   <int value="0" label="Reading highlight shown"/>
   <int value="1" label="Reading highlight hidden"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudHighlightState) -->
+
+<!-- LINT.IfChange(ReadAnythingLetterSpacing) -->
 
 <enum name="ReadAnythingLetterSpacing">
   <int value="0" label="Tight (Deprecated)"/>
@@ -1580,6 +1647,10 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="3" label="Very Wide"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:LetterSpacing) -->
+
+<!-- LINT.IfChange(ReadAnythingLineSpacing) -->
+
 <enum name="ReadAnythingLineSpacing">
   <int value="0" label="Tight (Deprecated)"/>
   <int value="1" label="Standard"/>
@@ -1587,10 +1658,18 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="3" label="Very Loose"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:LineSpacing) -->
+
+<!-- LINT.IfChange(ReadAnythingNewPage) -->
+
 <enum name="ReadAnythingNewPage">
   <int value="0" label="New page distilled"/>
   <int value="1" label="Speech played on new page"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingNewPage) -->
+
+<!-- LINT.IfChange(ReadAnythingReadAloudSettingsChange) -->
 
 <enum name="ReadAnythingReadAloudSettingsChange">
   <int value="0" label="Voice speed change"/>
@@ -1598,11 +1677,19 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="2" label="Highlight change"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudSettingsChange) -->
+
+<!-- LINT.IfChange(ReadAnythingReadAloudVoice) -->
+
 <enum name="ReadAnythingReadAloudVoice">
   <int value="0" label="Natural voice"/>
   <int value="1" label="eSpeak voice"/>
   <int value="2" label="ChromeOS voice"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingVoiceType) -->
+
+<!-- LINT.IfChange(ReadAnythingScrollEvent) -->
 
 <enum name="ReadAnythingScrollEvent">
   <int value="0" label="Side panel selected"/>
@@ -1611,6 +1698,10 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="3" label="Main panel scrolled"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingScrollEvent) -->
+
+<!-- LINT.IfChange(ReadAnythingSettingsChange) -->
+
 <enum name="ReadAnythingSettingsChange">
   <int value="0" label="Font change"/>
   <int value="1" label="Font size change"/>
@@ -1618,7 +1709,12 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="3" label="Line height change"/>
   <int value="4" label="Letter spacing change"/>
   <int value="5" label="Links enabled change"/>
+  <int value="6" label="Images enabled change"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingSettingsChange) -->
+
+<!-- LINT.IfChange(ReadAnythingSpeechError) -->
 
 <enum name="ReadAnythingSpeechError">
   <int value="0" label="Text too long"/>
@@ -1632,10 +1728,18 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="8" label="Network"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingSpeechError) -->
+
+<!-- LINT.IfChange(ReaderModeEntryPoint) -->
+
 <enum name="ReaderModeEntryPoint">
   <int value="0" label="Omnibox icon"/>
   <int value="1" label="Menu option"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/dom_distiller/content/browser/uma_helper.h:ReaderModeEntryPoint) -->
+
+<!-- LINT.IfChange(ReaderModeMessageDismissalCondition) -->
 
 <enum name="ReaderModeMessageDismissalCondition">
   <int value="0"
@@ -1650,6 +1754,10 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
              deselected"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java:MessageDismissalCondition) -->
+
+<!-- LINT.IfChange(SodaLanguageCode) -->
+
 <enum name="SodaLanguageCode">
   <int value="0" label="None"/>
   <int value="1" label="en-US"/>
@@ -1658,7 +1766,40 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="4" label="es-ES"/>
   <int value="5" label="fr-FR"/>
   <int value="6" label="it-IT"/>
+  <int value="7" label="en-CA"/>
+  <int value="8" label="en-AU"/>
+  <int value="9" label="en-GB"/>
+  <int value="10" label="en-IE"/>
+  <int value="11" label="en-SG"/>
+  <int value="12" label="fr-BE"/>
+  <int value="13" label="fr-CH"/>
+  <int value="14" label="en-IN"/>
+  <int value="15" label="it-CH"/>
+  <int value="16" label="de-AT"/>
+  <int value="17" label="de-BE"/>
+  <int value="18" label="de-CH"/>
+  <int value="19" label="es-US"/>
+  <int value="20" label="hi-IN"/>
+  <int value="21" label="pt-BR"/>
+  <int value="22" label="id-ID"/>
+  <int value="23" label="ko-KR"/>
+  <int value="24" label="pl-PL"/>
+  <int value="25" label="th-TH"/>
+  <int value="26" label="tr-TR"/>
+  <int value="27" label="zh-CN"/>
+  <int value="28" label="zh-TW"/>
+  <int value="29" label="da-DK"/>
+  <int value="30" label="fr-CA"/>
+  <int value="31" label="nb-NO"/>
+  <int value="32" label="nl-NL"/>
+  <int value="33" label="sv-SE"/>
+  <int value="34" label="ru-RU"/>
+  <int value="35" label="vi-VN"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/soda/constants.h:LanguageCode) -->
+
+<!-- LINT.IfChange(TextToSpeechEvent) -->
 
 <enum name="TextToSpeechEvent">
   <int value="0" label="Start"/>
@@ -1672,6 +1813,8 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="8" label="Pause"/>
   <int value="9" label="Resume"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/speech/tts_controller_impl.cc:UMATextToSpeechEvent) -->
 
 <enum name="TextToSpeechFromExtensionAPI">
   <int value="0" label="Web speech API"/>
@@ -1696,11 +1839,15 @@ chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
   <int value="1" label="Native Speech"/>
 </enum>
 
+<!-- LINT.IfChange(TextToSpeechSource) -->
+
 <enum name="TextToSpeechSource">
   <int value="0" label="Other"/>
   <int value="1" label="ChromeVox"/>
   <int value="2" label="SelectToSpeak"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/speech/extension_api/tts_extension_api.cc:TextToSpeechSource) -->
 
 </enums>
 

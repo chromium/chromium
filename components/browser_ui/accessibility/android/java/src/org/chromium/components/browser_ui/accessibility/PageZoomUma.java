@@ -19,6 +19,8 @@ public class PageZoomUma {
     // Add new values before MAX_VALUE.
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
+    //
+    // LINT.IfChange(AccessibilityPageZoomAppMenuEnabledState)
     @IntDef({
         AccessibilityPageZoomAppMenuEnabledState.NOT_ENABLED,
         AccessibilityPageZoomAppMenuEnabledState.USER_ENABLED,
@@ -35,6 +37,8 @@ public class PageZoomUma {
         // Be sure to also update enums.xml when updating these values.
         int MAX_VALUE = 4;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityPageZoomAppMenuEnabledState)
 
     // Page Zoom histogram values
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

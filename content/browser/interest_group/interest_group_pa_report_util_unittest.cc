@@ -273,6 +273,21 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionReservedEventType) {
       /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
       /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
       /*is_winner=*/true));
+
+  // reserved.once works and doesn't care about winner/loser.
+  for (const bool is_winner : {false, true}) {
+    EXPECT_EQ(
+        kExpectedRequestWithReservedEventType,
+        FillInPrivateAggregationRequest(
+            CreateForEventRequest(
+                /*bucket=*/123, /*value=*/45,
+                /*event_type=*/
+                Reserved(
+                    auction_worklet::mojom::ReservedEventType::kReservedOnce)),
+            /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+            /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+            /*is_winner=*/is_winner));
+  }
 }
 
 TEST_F(InterestGroupPaReportUtilTest,
@@ -892,6 +907,22 @@ TEST_F(InterestGroupPaReportUtilTest, HasValidFilteringId_FeatureDisabled) {
     EXPECT_EQ(HasValidFilteringId(histogram_contribution),
               test_case.expected_to_be_valid);
   }
+}
+
+TEST_F(InterestGroupPaReportUtilTest, IsPrivateAggregationRequestReservedOnce) {
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways))));
+  EXPECT_TRUE(IsPrivateAggregationRequestReservedOnce(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce))));
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(
+      *CreateForEventRequest(/*bucket=*/123, /*value=*/45,
+                             /*event_type=*/NonReserved("click"))));
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(
+      *CreateHistogramRequest(/*bucket=*/123, /*value=*/45)));
 }
 
 }  // namespace content

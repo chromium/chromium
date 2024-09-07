@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/fonts/symbols_iterator.h"
-#include "third_party/blink/renderer/platform/fonts/utf16_ragel_iterator.h"
-#include "third_party/blink/renderer/platform/text/character.h"
 
 #include <unicode/uchar.h>
 #include <unicode/uniset.h>
+
 #include <memory>
 
 #include "third_party/blink/renderer/platform/fonts/utf16_ragel_iterator.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 
 namespace blink {
 
@@ -24,9 +25,10 @@ SymbolsIterator::SymbolsIterator(const UChar* buffer, unsigned buffer_size)
     : cursor_(0), next_token_end_(0), next_token_emoji_(false) {
   if (buffer_size) {
     buffer_iterator_ = UTF16RagelIterator(buffer, buffer_size);
-    next_token_end_ = cursor_ + (scan_emoji_presentation(buffer_iterator_,
-                                                         buffer_iterator_.end(),
-                                                         &next_token_emoji_) -
+
+    next_token_end_ = cursor_ + (scan_emoji_presentation(
+                                     buffer_iterator_, buffer_iterator_.end(),
+                                     &next_token_emoji_, &next_token_has_vs_) -
                                  buffer_iterator_);
   }
 }
@@ -38,9 +40,11 @@ bool SymbolsIterator::Consume(unsigned* symbols_limit,
   }
 
   bool current_token_emoji = false;
+  bool curr_has_vs = false;
   do {
     cursor_ = next_token_end_;
     current_token_emoji = next_token_emoji_;
+    curr_has_vs = next_token_has_vs_;
 
     if (cursor_ >= buffer_iterator_.end().Cursor())
       break;
@@ -49,21 +53,29 @@ bool SymbolsIterator::Consume(unsigned* symbols_limit,
         !Character::MaybeEmojiPresentation(buffer_iterator_.PeekCodepoint())) {
       ++buffer_iterator_;
       next_token_end_ = buffer_iterator_.Cursor();
+      next_token_has_vs_ = false;
       continue;
     }
 
     buffer_iterator_.SetCursor(cursor_);
 
-    next_token_end_ = cursor_ + (scan_emoji_presentation(buffer_iterator_,
-                                                         buffer_iterator_.end(),
-                                                         &next_token_emoji_) -
+    next_token_end_ = cursor_ + (scan_emoji_presentation(
+                                     buffer_iterator_, buffer_iterator_.end(),
+                                     &next_token_emoji_, &next_token_has_vs_) -
                                  buffer_iterator_);
+  } while (current_token_emoji == next_token_emoji_ &&
+           (!RuntimeEnabledFeatures::FontVariantEmojiEnabled() ||
+            curr_has_vs == next_token_has_vs_));
 
-  } while (current_token_emoji == next_token_emoji_);
-
-  *font_fallback_priority = current_token_emoji
-                                ? FontFallbackPriority::kEmojiEmoji
-                                : FontFallbackPriority::kText;
+  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled() && curr_has_vs) {
+    *font_fallback_priority = current_token_emoji
+                                  ? FontFallbackPriority::kEmojiEmojiWithVS
+                                  : FontFallbackPriority::kEmojiTextWithVS;
+  } else {
+    *font_fallback_priority = current_token_emoji
+                                  ? FontFallbackPriority::kEmojiEmoji
+                                  : FontFallbackPriority::kText;
+  }
   *symbols_limit = cursor_;
 
   return true;

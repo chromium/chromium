@@ -87,7 +87,8 @@ class PdfViewerStreamManagerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(PdfViewerStreamManagerTest, AddAndGetStreamContainer) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
@@ -117,7 +118,8 @@ TEST_F(PdfViewerStreamManagerTest,
        AddStreamContainerSameFrameTreeNodeIdUnclaimed) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl2));
-  int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id1",
@@ -329,7 +331,8 @@ TEST_F(PdfViewerStreamManagerTest, DeleteWithMultipleStreamContainers) {
 TEST_F(PdfViewerStreamManagerTest, DeleteUnclaimedStreamInfo) {
   content::RenderFrameHost* unclaimed_embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  int frame_tree_node_id = unclaimed_embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      unclaimed_embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
@@ -539,7 +542,8 @@ TEST_F(PdfViewerStreamManagerTest, ContentRenderFrameHostChanged) {
 TEST_F(PdfViewerStreamManagerTest, EmbedderFrameDeleted) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
@@ -559,7 +563,8 @@ TEST_F(PdfViewerStreamManagerTest, ExtensionFrameDeleted) {
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
   auto* extension_host =
       CreateChildRenderFrameHost(embedder_host, "extension host");
-  int frame_tree_node_id = extension_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      extension_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
@@ -590,7 +595,8 @@ TEST_F(PdfViewerStreamManagerTest, ContentFrameDeleted) {
 
   auto* content_host =
       CreateChildRenderFrameHost(extension_host, "content host");
-  int frame_tree_node_id = content_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      content_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
@@ -621,7 +627,8 @@ TEST_F(PdfViewerStreamManagerTest,
   auto* extension_host =
       CreateChildRenderFrameHost(embedder_host, "extension host");
   auto* pdf_host = CreateChildRenderFrameHost(extension_host, "pdf host");
-  int content_frame_tree_node_id = pdf_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId content_frame_tree_node_id =
+      pdf_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),

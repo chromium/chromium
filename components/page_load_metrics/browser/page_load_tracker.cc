@@ -47,18 +47,6 @@ const char kPageLoadPrerender2Event[] = "PageLoad.Internal.Prerender2.Event";
 const char kPageLoadPrerender2VisibilityAtActivation[] =
     "PageLoad.Internal.Prerender2.VisibilityAtActivation";
 const char kPageLoadTrackerPageType[] = "PageLoad.Internal.PageType";
-const char kImageLoadStartLessThanDocumentTTFB[] =
-    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
-    "ImageLoadStartLessThanDocumentTTFB";
-const char kImageLoadEndLessThanLoadStart[] =
-    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
-    "ImageLoadEndLessThanLoadStart";
-const char kImageLCPLessThanLoadEnd[] =
-    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
-    "ImageLCPLessThanLoadEnd";
-const char kImageLoadStartLessThanDocumentTtfbCause[] =
-    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
-    "ImageLoadStartLessThanDocumentTtfbCauses";
 }  // namespace internal
 
 void RecordInternalError(InternalErrorLoadEvent event) {
@@ -67,67 +55,6 @@ void RecordInternalError(InternalErrorLoadEvent event) {
 
 void RecordPageType(internal::PageLoadTrackerPageType type) {
   base::UmaHistogramEnumeration(internal::kPageLoadTrackerPageType, type);
-}
-
-void RecordImageLoadStartLessThanDocumentTtfbCause(
-    page_load_metrics::internal::ImageLoadStartLessThanDocumentTtfbCause
-        sample) {
-  base::UmaHistogramEnumeration(
-      internal::kImageLoadStartLessThanDocumentTtfbCause, sample);
-}
-
-void RecordLargestContentfulPaintImageLoadTiming(
-    const page_load_metrics::mojom::LargestContentfulPaintTiming&
-        largest_contentful_paint,
-    base::TimeDelta document_ttfb) {
-  if (largest_contentful_paint.resource_load_timings->load_start.has_value()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        internal::kImageLoadStartLessThanDocumentTTFB,
-        largest_contentful_paint.resource_load_timings->load_start <
-            document_ttfb);
-  }
-
-  if (largest_contentful_paint.resource_load_timings->load_start.has_value() &&
-      largest_contentful_paint.resource_load_timings->load_end.has_value()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        internal::kImageLoadEndLessThanLoadStart,
-        largest_contentful_paint.resource_load_timings->load_end <
-            largest_contentful_paint.resource_load_timings->load_start);
-  }
-
-  if (largest_contentful_paint.resource_load_timings->load_end.has_value() &&
-      largest_contentful_paint.largest_image_paint.has_value()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        internal::kImageLCPLessThanLoadEnd,
-        largest_contentful_paint.largest_image_paint <
-            largest_contentful_paint.resource_load_timings->load_end);
-  }
-
-  // If the images load_start is less than document_ttfb, then something may be
-  // wrong with the metric. Attempt to diagnose the cause and record it to UMA,
-  // or report 'Unknown' if no cause is identified. This code may be removed
-  // when https://crbug.com/1431906 is resolved.
-  if (largest_contentful_paint.resource_load_timings->load_start.has_value() &&
-      largest_contentful_paint.resource_load_timings->load_start <
-          document_ttfb) {
-    if (largest_contentful_paint.is_loaded_from_memory_cache &&
-        largest_contentful_paint.is_preloaded_with_early_hints) {
-      RecordImageLoadStartLessThanDocumentTtfbCause(
-          internal::ImageLoadStartLessThanDocumentTtfbCause::
-              kLoadedFromMemoryCacheAndPreloadedWithEarlyHints);
-    } else if (largest_contentful_paint.is_loaded_from_memory_cache) {
-      RecordImageLoadStartLessThanDocumentTtfbCause(
-          internal::ImageLoadStartLessThanDocumentTtfbCause::
-              kLoadedFromMemoryCache);
-    } else if (largest_contentful_paint.is_preloaded_with_early_hints) {
-      RecordImageLoadStartLessThanDocumentTtfbCause(
-          internal::ImageLoadStartLessThanDocumentTtfbCause::
-              kPreloadedWithEarlyHints);
-    } else {
-      RecordImageLoadStartLessThanDocumentTtfbCause(
-          internal::ImageLoadStartLessThanDocumentTtfbCause::kUnknown);
-    }
-  }
 }
 
 // TODO(csharrison): Add a case for client side redirects, which is what JS
@@ -540,7 +467,8 @@ void PageLoadTracker::RenderFrameDeleted(content::RenderFrameHost* rfh) {
   }
 }
 
-void PageLoadTracker::FrameTreeNodeDeleted(int frame_tree_node_id) {
+void PageLoadTracker::FrameTreeNodeDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   if (parent_tracker_) {
     // Notify the parent of a deletion of FrameTreeNode of a subframe.
     //
@@ -817,15 +745,6 @@ void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
 
 void PageLoadTracker::OnLoadedResource(
     const ExtraRequestCompleteInfo& extra_request_complete_info) {
-  // The main_frame_receive_headers_start_ should be only set once during a
-  // page load. A new page load would have a new PageLoadTracker object.
-  if (extra_request_complete_info.request_destination ==
-          network::mojom::RequestDestination::kDocument &&
-      !main_frame_receive_headers_start_.has_value()) {
-    main_frame_receive_headers_start_ =
-        extra_request_complete_info.load_timing_info->receive_headers_start;
-  }
-
   for (const auto& observer : observers_) {
     observer->OnLoadedResource(extra_request_complete_info);
   }
@@ -1069,31 +988,6 @@ void PageLoadTracker::OnTimingChanged() {
 
   const mojom::PaintTimingPtr& paint_timing =
       metrics_update_dispatcher_.timing().paint_timing;
-
-  // Record UMA if the LCP candidate changes.
-
-  // TODO(crbug.com/40902605): This is to track irregularities in the LCP timing
-  // values in the UKM recording. We would remove this code once we have
-  // identified all of the conditions where these irregularities happen.
-  bool largest_contentful_image_changed =
-      !largest_contentful_paint_handler_.GetImageContentfulPaintTimingInfo()
-           .Time()
-           .has_value() ||
-      (paint_timing->largest_contentful_paint->largest_image_paint
-           .has_value() &&
-       paint_timing->largest_contentful_paint->largest_image_paint.value() !=
-           largest_contentful_paint_handler_.GetImageContentfulPaintTimingInfo()
-               .Time()
-               .value());
-
-  if (largest_contentful_image_changed) {
-    if (main_frame_receive_headers_start_.has_value() &&
-        !GetNavigationStart().is_null()) {
-      RecordLargestContentfulPaintImageLoadTiming(
-          *paint_timing->largest_contentful_paint,
-          main_frame_receive_headers_start_.value() - GetNavigationStart());
-    }
-  }
 
   largest_contentful_paint_handler_.RecordMainFrameTiming(
       *paint_timing->largest_contentful_paint,
@@ -1535,9 +1429,12 @@ void PageLoadTracker::OnSharedStorageSelectURLCalled() {
   }
 }
 
-void PageLoadTracker::OnAdAuctionComplete() {
+void PageLoadTracker::OnAdAuctionComplete(bool is_server_auction,
+                                          bool is_on_device_auction,
+                                          content::AuctionResult result) {
   for (const auto& observer : observers_) {
-    observer->OnAdAuctionComplete();
+    observer->OnAdAuctionComplete(is_server_auction, is_on_device_auction,
+                                  result);
   }
 }
 

@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
@@ -45,6 +46,9 @@ constexpr TypographyToken kDescriptionFont = TypographyToken::kCrosAnnotation1;
 
 AuthHeaderView::TestApi::TestApi(AuthHeaderView* view) : view_(view) {}
 AuthHeaderView::TestApi::~TestApi() = default;
+
+AuthHeaderView::Observer::Observer() = default;
+AuthHeaderView::Observer::~Observer() = default;
 
 const std::u16string& AuthHeaderView::TestApi::GetCurrentTitle() const {
   return view_->title_label_->GetText();
@@ -96,6 +100,8 @@ AuthHeaderView::AuthHeaderView(const AccountId& account_id,
   title_label_->SetEnabledColorId(kTitleColorId);
   title_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kTitleFont));
+  title_label_->GetViewAccessibility().SetRole(ax::mojom::Role::kTitleBar);
+  title_label_->GetViewAccessibility().SetName(title);
   decorate_label(title_label_);
   AddChildView(title_label_.get());
 
@@ -133,13 +139,33 @@ gfx::Size AuthHeaderView::CalculatePreferredSize(
 void AuthHeaderView::SetErrorTitle(const std::u16string& error_str) {
   title_label_->SetText(error_str);
   title_label_->SetEnabledColorId(kTitleErrorColorId);
+  NotifyTitleChanged(error_str);
+  title_label_->GetViewAccessibility().SetName(error_str);
+  title_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
+                                         /*send_native_event=*/true);
+  title_label_->GetViewAccessibility().AnnounceText(error_str);
 }
 
 void AuthHeaderView::RestoreTitle() {
   if (title_label_->GetText() != title_str_) {
     title_label_->SetText(title_str_);
     title_label_->SetEnabledColorId(kTitleColorId);
+    NotifyTitleChanged(title_str_);
   }
+}
+
+void AuthHeaderView::NotifyTitleChanged(const std::u16string& title) {
+  for (auto& observer : observers_) {
+    observer.OnTitleChanged(title);
+  }
+}
+
+void AuthHeaderView::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AuthHeaderView::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 BEGIN_METADATA(AuthHeaderView)

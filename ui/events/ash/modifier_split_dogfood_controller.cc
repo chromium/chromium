@@ -6,7 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/location.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -16,8 +18,7 @@ ModifierSplitDogfoodController::ModifierSplitDogfoodController() {
   // Dogfood flag should be ignored and not considered if the secret key
   // matches.
   modifier_split_enabled_ = ash::features::IsModifierSplitEnabled() &&
-                            (ash::switches::IsModifierSplitSecretKeyMatched() ||
-                             !ash::features::IsModifierSplitDogfoodEnabled());
+                            ash::switches::IsModifierSplitSecretKeyMatched();
 
   if (user_manager::UserManager::IsInitialized() &&
       ash::features::IsModifierSplitEnabled()) {
@@ -30,6 +31,10 @@ ModifierSplitDogfoodController::~ModifierSplitDogfoodController() {
       ash::features::IsModifierSplitEnabled()) {
     user_manager::UserManager::Get()->RemoveObserver(this);
   }
+}
+
+void ModifierSplitDogfoodController::ForceEnableFeature() {
+  modifier_split_enabled_ = true;
 }
 
 void ModifierSplitDogfoodController::OnUserLoggedIn(

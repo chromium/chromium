@@ -9,6 +9,8 @@
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -64,6 +66,14 @@ class PersonalDataChangedWaiter {
 // If possible, prefer `PersonalDataChangedWaiter`, since it is more
 // explicit which event is waited for.
 void WaitForPendingDBTasks(AutofillWebDataService& webdata_service);
+
+// Signs in through the `identity_test_env` and makes the primary account
+// info available to the `sync_service`. Depending on
+// `use_sync_transport_mode`, sync-the-feature is either activated or not.
+void MakePrimaryAccountAvailable(
+    bool use_sync_transport_mode,
+    signin::IdentityTestEnvironment& identity_test_env,
+    syncer::TestSyncService& sync_service);
 
 }  // namespace autofill
 

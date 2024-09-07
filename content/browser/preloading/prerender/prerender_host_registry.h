@@ -102,7 +102,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
     virtual void OnTrigger(const GURL& url) {}
 
     // Called when CancelHosts() actually cancels each host.
-    virtual void OnCancel(int host_frame_tree_node_id,
+    virtual void OnCancel(FrameTreeNodeId host_frame_tree_node_id,
                           const PrerenderCancellationReason& reason) {}
 
     // Called from the registry's destructor. The observer
@@ -122,33 +122,37 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // TODO(crbug.com/40234240): Remove the default value as nullptr for
   // preloading_attempt once new-tab-prerender is integrated with Preloading
   // APIs.
-  int CreateAndStartHost(const PrerenderAttributes& attributes,
-                         PreloadingAttempt* preloading_attempt = nullptr);
+  FrameTreeNodeId CreateAndStartHost(
+      const PrerenderAttributes& attributes,
+      PreloadingAttempt* preloading_attempt = nullptr);
 
   // Creates and starts a host in a new WebContents so that a navigation in a
   // new tab will be able to activate it. PrerenderHostRegistry associated with
   // the new WebContents manages the started host, and `this`
   // PrerenderHostRegistry manages PrerenderNewTabHandle that owns the
   // WebContents (see `prerender_new_tab_handle_by_frame_tree_node_id_`).
-  int CreateAndStartHostForNewTab(const PrerenderAttributes& attributes,
-                                  const PreloadingPredictor& creating_predictor,
-                                  const PreloadingPredictor& enacting_predictor,
-                                  PreloadingConfidence confidence);
+  FrameTreeNodeId CreateAndStartHostForNewTab(
+      const PrerenderAttributes& attributes,
+      const PreloadingPredictor& creating_predictor,
+      const PreloadingPredictor& enacting_predictor,
+      PreloadingConfidence confidence);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
   // immediately removed from the map of non-reserved hosts but asynchronously
   // destroyed so that prerendered pages can cancel themselves without concern
   // for self destruction.
   // Returns true if a cancelation has occurred.
-  bool CancelHost(int frame_tree_node_id, PrerenderFinalStatus final_status);
+  bool CancelHost(FrameTreeNodeId frame_tree_node_id,
+                  PrerenderFinalStatus final_status);
   // Same as CancelHost, but can pass a detailed reason for recording if given.
-  bool CancelHost(int frame_tree_node_id,
+  bool CancelHost(FrameTreeNodeId frame_tree_node_id,
                   const PrerenderCancellationReason& reason);
 
   // Cancels the existing hosts specified in the vector with the same reason.
   // Returns a subset of `frame_tree_node_ids` that were actually cancelled.
-  std::set<int> CancelHosts(const std::vector<int>& frame_tree_node_ids,
-                            const PrerenderCancellationReason& reason);
+  std::set<FrameTreeNodeId> CancelHosts(
+      const std::vector<FrameTreeNodeId>& frame_tree_node_ids,
+      const PrerenderCancellationReason& reason);
 
   // Applies CancelHost for all existing PrerenderHost.
   void CancelAllHosts(PrerenderFinalStatus final_status);
@@ -159,41 +163,41 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // host so it can be destroyed or activated by another navigation. This also
   // cancels all the prerender hosts except the one to be activated. See also
   // comments on ReserveHostToActivate().
-  int FindPotentialHostToActivate(NavigationRequest& navigation_request);
+  FrameTreeNodeId FindPotentialHostToActivate(
+      NavigationRequest& navigation_request);
 
   // For activators. Reserves the host to activate for a navigation for the
   // given NavigationRequest. Returns the root frame tree node id of the
-  // prerendered page, which can be used as the id of the host. Returns
-  // RenderFrameHost::kNoFrameTreeNodeId if it's not found or not ready for
-  // activation yet. The caller is responsible for calling
-  // OnActivationFinished() with the id to release the reserved host. This also
-  // cancels all the prerender hosts except the one to be activated.
+  // prerendered page, which can be used as the id of the host. Returns an
+  // invalid FrameTreeNodeId if it's not found or not ready for activation yet.
+  // The caller is responsible for calling OnActivationFinished() with the id to
+  // release the reserved host. This also cancels all the prerender hosts except
+  // the one to be activated.
   //
-  // TODO(crbug.com/40177514): Consider returning the ownership of the
-  // reserved host and letting NavigationRequest own it instead of
-  // PrerenderHostRegistry.
-  int ReserveHostToActivate(NavigationRequest& navigation_request,
-                            int expected_host_id);
+  // TODO(crbug.com/40177514): Consider returning the ownership of the reserved
+  // host and letting NavigationRequest own it instead of PrerenderHostRegistry.
+  FrameTreeNodeId ReserveHostToActivate(NavigationRequest& navigation_request,
+                                        FrameTreeNodeId expected_host_id);
 
   // For activators.
   // Activates the host reserved by ReserveHostToActivate() and returns the
   // StoredPage containing the page that was activated on success, or nullptr
   // on failure.
   std::unique_ptr<StoredPage> ActivateReservedHost(
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       NavigationRequest& navigation_request);
 
   RenderFrameHostImpl* GetRenderFrameHostForReservedHost(
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
 
   // For activators.
   // Called from the destructor of NavigationRequest that reserved the host.
   // `frame_tree_node_id` should be the id returned by ReserveHostToActivate().
-  void OnActivationFinished(int frame_tree_node_id);
+  void OnActivationFinished(FrameTreeNodeId frame_tree_node_id);
 
   // Returns the non-reserved host with the given id. Returns nullptr if the id
   // does not match any non-reserved host.
-  PrerenderHost* FindNonReservedHostById(int frame_tree_node_id);
+  PrerenderHost* FindNonReservedHostById(FrameTreeNodeId frame_tree_node_id);
 
   // Returns true if this registry reserves a host for activation.
   bool HasReservedHost() const;
@@ -214,17 +218,18 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // Returns whether prerender_new_tab_handle_by_frame_tree_node_id_ has the
   // given id.
-  bool HasNewTabHandleByIdForTesting(int frame_tree_node_id);
+  bool HasNewTabHandleByIdForTesting(FrameTreeNodeId frame_tree_node_id);
 
   // Cancels all hosts.
   void CancelAllHostsForTesting();
 
   // Gets the trigger type from the reserved PrerenderHost.
-  PreloadingTriggerType GetPrerenderTriggerType(int frame_tree_node_id);
+  PreloadingTriggerType GetPrerenderTriggerType(
+      FrameTreeNodeId frame_tree_node_id);
   // Gets the embedder histogram suffix from the reserved PrerenderHost. Only
   // used for metrics.
   const std::string& GetPrerenderEmbedderHistogramSuffix(
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
 
   // Represents the group of prerender limit calculated by PreloadingTriggerType
   // and SpeculationEagerness on GetPrerenderLimitGroup.
@@ -266,12 +271,14 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
-  bool CancelHostInternal(int frame_tree_node_id,
+  bool CancelHostInternal(FrameTreeNodeId frame_tree_node_id,
                           const PrerenderCancellationReason& reason);
-  bool CancelNewTabHostInternal(int frame_tree_node_id,
+  bool CancelNewTabHostInternal(FrameTreeNodeId frame_tree_node_id,
                                 const PrerenderCancellationReason& reason);
 
-  int FindHostToActivateInternal(NavigationRequest& navigation_request);
+  // Returns true if `navigation_request` can activate `host`.
+  bool CanNavigationActivateHost(NavigationRequest& navigation_request,
+                                 PrerenderHost& host);
 
   void ScheduleToDeleteAbandonedHost(
       std::unique_ptr<PrerenderHost> prerender_host,
@@ -279,16 +286,15 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);
-  void NotifyCancel(int host_frame_tree_node_id,
+  void NotifyCancel(FrameTreeNodeId host_frame_tree_node_id,
                     const PrerenderCancellationReason& reason);
 
   // Pops one PrerenderHost from the queue and starts the prerendering if
   // there's no running prerender and `kNoFrameTreeNode` is passed as
   // `frame_tree_node_id`. If the given `frame_tree_node_id` is valid, this
   // function starts prerendering for the id. Returns starting prerender host id
-  // when it succeeds, and returns `RenderFrameHost::kNoFrameTreeNodeId` if it's
-  // cancelled.
-  int StartPrerendering(int frame_tree_node_id);
+  // when it succeeds, and returns an invalid FrameTreeNodeId if it's cancelled.
+  FrameTreeNodeId StartPrerendering(FrameTreeNodeId frame_tree_node_id);
 
   // Cancels the existing hosts that were triggered by `trigger_types`.
   void CancelHostsForTriggers(std::vector<PreloadingTriggerType> trigger_types,
@@ -328,37 +334,38 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
-  // Holds the frame_tree_node_id of running PrerenderHost. Reset to
-  // RenderFrameHost::kNoFrameTreeNodeId when there's no running PrerenderHost.
-  // Tracks only the host id of speculation rules triggers and ignores requests
-  // from embedder because embedder requests are more urgent and we'd like to
-  // handle embedder prerender independently from speculation rules requests.
-  int running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  // Holds the frame_tree_node_id of running PrerenderHost. Reset to an invalid
+  // value when there's no running PrerenderHost. Tracks only the host id of
+  // speculation rules triggers and ignores requests from embedder because
+  // embedder requests are more urgent and we'd like to handle embedder
+  // prerender independently from speculation rules requests.
+  FrameTreeNodeId running_prerender_host_id_;
 
   // Holds the ids of upcoming prerender requests. The requests from embedder
   // trigger are prioritized and pushed to the front of the queue, while the
   // requests from the speculation rules are appended to the back. This may
   // contain ids of cancelled requests. You can identify cancelled requests by
   // checking if an id is in `prerender_host_by_frame_tree_node_id_`.
-  base::circular_deque<int> pending_prerenders_;
+  base::circular_deque<FrameTreeNodeId> pending_prerenders_;
 
   // Hosts that are not reserved for activation yet. This map also includes the
   // hosts still waiting for their start.
   // TODO(crbug.com/40150744): Expire prerendered contents if they are
   // not used for a while.
-  base::flat_map<int, std::unique_ptr<PrerenderHost>>
+  base::flat_map<FrameTreeNodeId, std::unique_ptr<PrerenderHost>>
       prerender_host_by_frame_tree_node_id_;
 
   // Holds the host id of non-eager prerenders by their arrival order.
   // Currently, it is used to calculate the oldest prerender on
   // GetOldestHostPerLimitGroup for kPrerender2NewLimitAndScheduler.
-  base::circular_deque<int> non_eager_prerender_host_id_by_arrival_order_;
+  base::circular_deque<FrameTreeNodeId>
+      non_eager_prerender_host_id_by_arrival_order_;
 
   // The host that is reserved for activation.
   std::unique_ptr<PrerenderHost> reserved_prerender_host_;
 
   // Handles that manage WebContents for prerendering in new tabs.
-  base::flat_map<int, std::unique_ptr<PrerenderNewTabHandle>>
+  base::flat_map<FrameTreeNodeId, std::unique_ptr<PrerenderNewTabHandle>>
       prerender_new_tab_handle_by_frame_tree_node_id_;
 
   // Hosts that are scheduled to be deleted asynchronously.

@@ -1,0 +1,59 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "services/webnn/webnn_tensor_impl.h"
+
+#include "services/webnn/error.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
+
+namespace webnn {
+
+WebNNTensorImpl::WebNNTensorImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+    WebNNContextImpl* context,
+    mojom::BufferInfoPtr buffer_info)
+    : context_(context),
+      descriptor_(std::move(buffer_info->descriptor)),
+      usage_(std::move(buffer_info->usage)),
+      receiver_(this, std::move(receiver)) {
+  // Safe to use base::Unretained because `this` owns `receiver_`.
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&WebNNTensorImpl::OnDisconnect, base::Unretained(this)));
+}
+
+WebNNTensorImpl::~WebNNTensorImpl() = default;
+
+void WebNNTensorImpl::ReadBuffer(ReadBufferCallback callback) {
+  if (!usage().Has(MLTensorUsageFlags::kReadFrom)) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return;
+  }
+
+  // Call ReadBufferImpl() implemented by a backend.
+  ReadBufferImpl(std::move(callback));
+}
+
+void WebNNTensorImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
+  if (!usage().Has(MLTensorUsageFlags::kWriteTo)) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return;
+  }
+
+  // TODO(https://crbug.com/40278771): Generate error using MLContext.
+  if (PackedByteLength() < src_buffer.size()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return;
+  }
+
+  // Call WriteBufferImpl() implemented by a backend.
+  WriteBufferImpl(std::move(src_buffer));
+}
+
+void WebNNTensorImpl::OnDisconnect() {
+  context_->DisconnectAndDestroyWebNNTensorImpl(handle());
+}
+
+}  // namespace webnn

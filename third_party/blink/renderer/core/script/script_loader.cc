@@ -347,12 +347,12 @@ bool IsEligibleForDelay(const Resource& resource,
 
   // Most LCP elements are provided by the main frame, and delaying subframe's
   // resources seems not to improve LCP.
-  static const bool main_frame_only =
+  const bool main_frame_only =
       features::kDelayAsyncScriptExecutionMainFrameOnlyParam.Get();
   if (main_frame_only && !element_document.IsInOutermostMainFrame())
     return false;
 
-  static const base::TimeDelta feature_limit =
+  const base::TimeDelta feature_limit =
       features::kDelayAsyncScriptExecutionFeatureLimitParam.Get();
   if (!feature_limit.is_zero() &&
       element_document.GetStartTime().Elapsed() > feature_limit) {
@@ -360,7 +360,7 @@ bool IsEligibleForDelay(const Resource& resource,
   }
 
   bool is_ad_resource = resource.GetResourceRequest().IsAdResource();
-  static const features::AsyncScriptExperimentalSchedulingTarget target =
+  const features::AsyncScriptExperimentalSchedulingTarget target =
       features::kDelayAsyncScriptExecutionTargetParam.Get();
   switch (target) {
     case features::AsyncScriptExperimentalSchedulingTarget::kAds:
@@ -377,12 +377,12 @@ bool IsEligibleForDelay(const Resource& resource,
       break;
   }
 
-  static const bool opt_out_low =
+  const bool opt_out_low =
       features::kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam.Get();
-  static const bool opt_out_auto =
+  const bool opt_out_auto =
       features::kDelayAsyncScriptExecutionOptOutAutoFetchPriorityHintParam
           .Get();
-  static const bool opt_out_high =
+  const bool opt_out_high =
       features::kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam
           .Get();
 
@@ -404,7 +404,7 @@ bool IsEligibleForDelay(const Resource& resource,
       break;
   }
 
-  static const features::DelayAsyncScriptTarget delay_async_script_target =
+  const features::DelayAsyncScriptTarget delay_async_script_target =
       features::kDelayAsyncScriptTargetParam.Get();
   switch (delay_async_script_target) {
     case features::DelayAsyncScriptTarget::kAll:
@@ -439,19 +439,19 @@ bool IsEligibleForLowPriorityScriptLoading(const Document& element_document,
 
   // Most LCP elements are provided by the main frame, and delaying subframe's
   // resources seems not to improve LCP.
-  static const bool main_frame_only =
+  const bool main_frame_only =
       features::kLowPriorityScriptLoadingMainFrameOnlyParam.Get();
   if (main_frame_only && !element_document.IsInOutermostMainFrame())
     return false;
 
-  static const base::TimeDelta feature_limit =
+  const base::TimeDelta feature_limit =
       features::kLowPriorityScriptLoadingFeatureLimitParam.Get();
   if (!feature_limit.is_zero() &&
       element_document.GetStartTime().Elapsed() > feature_limit) {
     return false;
   }
 
-  static const bool cross_site_only =
+  const bool cross_site_only =
       features::kLowPriorityScriptLoadingCrossSiteOnlyParam.Get();
   if (cross_site_only && IsSameSite(url, element_document))
     return false;
@@ -731,7 +731,7 @@ PendingScript* ScriptLoader::PrepareScript(
   mojom::blink::FetchPriorityHint fetch_priority_hint =
       GetFetchPriorityAttributeValue(fetch_priority_attr);
 
-  // <spec step="26">Let parser metadata be "parser-inserted" if el is
+  // <spec step="28">Let parser metadata be "parser-inserted" if el is
   // ...</spec>
   ParserDisposition parser_state =
       IsParserInserted() ? kParserInserted : kNotParserInserted;
@@ -748,7 +748,7 @@ PendingScript* ScriptLoader::PrepareScript(
       potentially_render_blocking ? RenderBlockingBehavior::kBlocking
                                   : RenderBlockingBehavior::kNonBlocking;
 
-  // <spec step="27">Let options be a script fetch options whose cryptographic
+  // <spec step="29">Let options be a script fetch options whose cryptographic
   // nonce is cryptographic nonce, integrity metadata is integrity metadata,
   // parser metadata is parser metadata, credentials mode is module script
   // credentials mode, and referrer policy is referrer policy.</spec>
@@ -757,7 +757,7 @@ PendingScript* ScriptLoader::PrepareScript(
                              fetch_priority_hint, render_blocking_behavior,
                              RejectCoepUnsafeNone(false));
 
-  // <spec step="28">Let settings object be el's node document's relevant
+  // <spec step="30">Let settings object be el's node document's relevant
   // settings object.</spec>
   //
   // In some cases (mainly for classic scripts) |element_document| is used as
@@ -768,57 +768,26 @@ PendingScript* ScriptLoader::PrepareScript(
   ScriptState* script_state =
       ToScriptStateForMainWorld(context_window->GetFrame());
 
-  // https://wicg.github.io/import-maps/#integration-prepare-a-script
-  // If the script’s type is "importmap": [spec text]
-  if (GetScriptType() == ScriptTypeAtPrepare::kImportMap) {
-    Modulator* modulator = Modulator::From(script_state);
-    auto aquiring_state = modulator->GetAcquiringImportMapsState();
-    switch (aquiring_state) {
-      case Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad:
-      case Modulator::AcquiringImportMapsState::kMultipleImportMaps:
-        // 1. If the element’s node document's acquiring import maps is false,
-        // then queue a task to fire an event named error at the element, and
-        // return. [spec text]
-        element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kJavaScript,
-            mojom::blink::ConsoleMessageLevel::kError,
-            aquiring_state ==
-                    Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad
-                ? "An import map is added after module script load was "
-                  "triggered."
-                : "Multiple import maps are not yet supported. "
-                  "https://crbug.com/927119"));
-        element_document.GetTaskRunner(TaskType::kDOMManipulation)
-            ->PostTask(FROM_HERE,
-                       WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                     WrapPersistent(element_.Get())));
-        return nullptr;
-
-      case Modulator::AcquiringImportMapsState::kAcquiring:
-        // 2. Set the element’s node document's acquiring import maps to false.
-        // [spec text]
-        modulator->SetAcquiringImportMapsState(
-            Modulator::AcquiringImportMapsState::kMultipleImportMaps);
-
-        // 3. Assert: the element’s node document's pending import map script is
-        // null. [spec text]
-        //
-        // TODO(crbug.com/922212): Currently there are no implementation for
-        // "pending import map script" as we don't support external import maps.
-        break;
-    }
-  }
-
   bool is_eligible_for_delay = false;
   bool is_eligible_for_selective_in_order = false;
 
-  // <spec step="29">If el has a src content attribute, then:</spec>
+  // <spec step="31">If el has a src content attribute, then:</spec>
   if (element_->HasSourceAttribute()) {
-    // <spec step="29.1">Let src be the value of el's src attribute.</spec>
+    // <spec step="31.1">If el's type is "importmap", then queue an element task
+    // on the DOM manipulation task source given el to fire an event named error
+    // at el, and return.
+    if (GetScriptType() == ScriptTypeAtPrepare::kImportMap) {
+      element_document.GetTaskRunner(TaskType::kDOMManipulation)
+          ->PostTask(FROM_HERE,
+                     WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                   WrapPersistent(element_.Get())));
+      return nullptr;
+    }
+    // <spec step="31.2">Let src be the value of el's src attribute.</spec>
     String src =
         StripLeadingAndTrailingHTMLSpaces(element_->SourceAttributeValue());
 
-    // <spec step="29.2">If src is the empty string, then queue a task to fire
+    // <spec step="31.3">If src is the empty string, then queue a task to fire
     // an event named error at el, and return.</spec>
     if (src.empty()) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
@@ -828,15 +797,16 @@ PendingScript* ScriptLoader::PrepareScript(
       return nullptr;
     }
 
-    // <spec step="29.3">Set el's from an external file to true.</spec>
+    // <spec step="31.4">Set el's from an external file to true.</spec>
     is_external_script_ = true;
 
-    // <spec step="29.4">Parse src relative to el's node document.</spec>
+    // <spec step="31.5">Let url be the result of encoding-parsing a URL given
+    // src, relative to el's node document.</spec>
     KURL url = element_document.CompleteURL(src);
 
-    // <spec step="29.5">If the previous step failed, queue a task to fire an
-    // event named error at el, and return. Otherwise, let url be the resulting
-    // URL record.</spec>
+    // <spec step="31.6">If url is failure, then queue an element task on the
+    // DOM manipulation task source given el to fire an event named error at el,
+    // and return.</spec>
     if (!url.IsValid()) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
@@ -855,7 +825,7 @@ PendingScript* ScriptLoader::PrepareScript(
           ScriptFetchOptions::AttributionReportingEligibility::kEligible);
     }
 
-    // <spec step="29.6">If el is potentially render-blocking, then block
+    // <spec step="31.7">If el is potentially render-blocking, then block
     // rendering on el.</spec>
     if (potentially_render_blocking &&
         element_document.GetRenderBlockingResourceManager()) {
@@ -863,9 +833,9 @@ PendingScript* ScriptLoader::PrepareScript(
           *element_);
     }
 
-    // <spec step="29.7">Set el's delaying the load event to true.</spec>
+    // <spec step="31.8">Set el's delaying the load event to true.</spec>
     //
-    // <spec step="30.2.B.1">Set el's delaying the load event to true.</spec>
+    // <spec step="32.2.B.1">Set el's delaying the load event to true.</spec>
     //
     // When controlled by ScriptRunner, implemented by
     // ScriptRunner::QueueScriptForExecution(). Otherwise (controlled by a
@@ -873,22 +843,11 @@ PendingScript* ScriptLoader::PrepareScript(
     // defer, etc.) before DOMContentLoaded, and thus explicit logic for this is
     // not needed.
 
-    // <spec step="29.9">Switch on el's type:</spec>
+    // <spec step="31.11">Switch on el's type:</spec>
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
-
       case ScriptTypeAtPrepare::kImportMap:
-        // TODO(crbug.com/922212): Implement external import maps.
-        element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kJavaScript,
-            mojom::ConsoleMessageLevel::kError,
-            "External import maps are not yet supported."));
-        element_document.GetTaskRunner(TaskType::kDOMManipulation)
-            ->PostTask(FROM_HERE,
-                       WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                     WrapPersistent(element_.Get())));
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
 
       case ScriptTypeAtPrepare::kSpeculationRules:
@@ -926,7 +885,7 @@ PendingScript* ScriptLoader::PrepareScript(
         else
           encoding = element_document.Encoding();
 
-        // <spec step="29.9.A">"classic"
+        // <spec step="31.11.A">"classic"
         //
         // Fetch a classic script given url, settings object, options, classic
         // script CORS setting, and encoding.</spec>
@@ -958,7 +917,7 @@ PendingScript* ScriptLoader::PrepareScript(
         // Step 15 is skipped because they are not used in module
         // scripts.
 
-        // <spec step="29.9.B">"module"
+        // <spec step="31.11.B">"module"
         //
         // Fetch an external module script graph given url, settings object, and
         // options.</spec>
@@ -977,9 +936,9 @@ PendingScript* ScriptLoader::PrepareScript(
     }
   }
 
-  // <spec step="30">If el does not have a src content attribute:</spec>
+  // <spec step="32">If el does not have a src content attribute:</spec>
   if (!element_->HasSourceAttribute()) {
-    // <spec step="30.1">Let base URL be el's node document's document base
+    // <spec step="32.1">Let base URL be el's node document's document base
     // URL.</spec>
     KURL base_url = element_document.BaseURL();
 
@@ -994,26 +953,59 @@ PendingScript* ScriptLoader::PrepareScript(
                           ? element_document.Url()
                           : KURL();
 
-    // <spec step="30.2">Switch on el's type:</spec>
+    // <spec step="32.2">Switch on el's type:</spec>
 
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
         NOTREACHED_IN_MIGRATION();
         return nullptr;
 
+      // <spec step="32.2.C">"importmap"</spec>
       case ScriptTypeAtPrepare::kImportMap: {
+        // <spec step="32.2.C.1">If el's relevant global object's import maps
+        // allowed is false, then queue an element task on the DOM manipulation
+        // task source given el to fire an event named error at el, and
+        // return.</spec>
+        Modulator* modulator = Modulator::From(script_state);
+        auto aquiring_state = modulator->GetAcquiringImportMapsState();
+        switch (aquiring_state) {
+          case Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad:
+          case Modulator::AcquiringImportMapsState::kMultipleImportMaps:
+            element_document.AddConsoleMessage(
+                MakeGarbageCollected<ConsoleMessage>(
+                    mojom::blink::ConsoleMessageSource::kJavaScript,
+                    mojom::blink::ConsoleMessageLevel::kError,
+                    aquiring_state == Modulator::AcquiringImportMapsState::
+                                          kAfterModuleScriptLoad
+                        ? "An import map is added after module script load was "
+                          "triggered."
+                        : "Multiple import maps are not yet supported. "
+                          "https://crbug.com/927119"));
+            element_document.GetTaskRunner(TaskType::kDOMManipulation)
+                ->PostTask(FROM_HERE,
+                           WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                         WrapPersistent(element_.Get())));
+            return nullptr;
+
+          case Modulator::AcquiringImportMapsState::kAcquiring:
+            // <spec step="32.2.C.2">Set el's relevant global object's import
+            // maps allowed to false.</spec>
+            modulator->SetAcquiringImportMapsState(
+                Modulator::AcquiringImportMapsState::kMultipleImportMaps);
+            break;
+        }
         UseCounter::Count(*context_window, WebFeature::kImportMap);
 
-        // https://wicg.github.io/import-maps/#integration-prepare-a-script
-        // 1. Let import map parse result be the result of create an import map
-        // parse result, given source text, base URL and settings object. [spec
-        // text]
+        // <spec step="32.2.C.3">Let result be the result of creating an import
+        // map parse result given source text and base URL.</spec>
         PendingImportMap* pending_import_map =
             PendingImportMap::CreateInline(*element_, source_text, base_url);
 
         // Because we currently support inline import maps only, the pending
         // import map is ready immediately and thus we call `register an import
         // map` synchronously here.
+        //
+        // https://html.spec.whatwg.org/C#execute-the-script-element step 6.C
         pending_import_map->RegisterImportMap();
 
         return nullptr;
@@ -1229,9 +1221,8 @@ PendingScript* ScriptLoader::PrepareScript(
         // kCrossSiteWithAllowListReportOnly.
         if (is_eligible_for_delay &&
             script_scheduling_type == ScriptSchedulingType::kAsync) {
-          static const features::DelayAsyncScriptTarget
-              delay_async_script_target =
-                  features::kDelayAsyncScriptTargetParam.Get();
+          const features::DelayAsyncScriptTarget delay_async_script_target =
+              features::kDelayAsyncScriptTargetParam.Get();
           if (delay_async_script_target ==
               features::DelayAsyncScriptTarget::
                   kCrossSiteWithAllowListReportOnly) {

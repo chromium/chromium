@@ -30,6 +30,13 @@
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/installation_notifier.h"
+#import "ios/chrome/browser/download/ui_bundled/activities/open_downloads_folder_activity.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_mediator.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_delegate.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_protocol.h"
+#import "ios/chrome/browser/download/ui_bundled/legacy_download_manager_view_controller.h"
+#import "ios/chrome/browser/download/ui_bundled/unopened_downloads_tracker.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response.h"
@@ -37,7 +44,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -50,13 +57,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
-#import "ios/chrome/browser/download/ui_bundled/activities/open_downloads_folder_activity.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_mediator.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_delegate.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_protocol.h"
-#import "ios/chrome/browser/download/ui_bundled/legacy_download_manager_view_controller.h"
-#import "ios/chrome/browser/download/ui_bundled/unopened_downloads_tracker.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
@@ -132,7 +132,7 @@
     _mediator.SetIsIncognito(isIncognito);
     ChromeBrowserState* browserState = self.browser->GetBrowserState();
     _mediator.SetIdentityManager(
-        IdentityManagerFactory::GetForBrowserState(browserState));
+        IdentityManagerFactory::GetForProfile(browserState));
     _mediator.SetDriveService(
         drive::DriveServiceFactory::GetForBrowserState(browserState));
     _mediator.SetPrefService(browserState->GetPrefs());

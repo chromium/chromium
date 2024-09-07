@@ -25,7 +25,7 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     def __init__(self, args, swarming_args, files, list_bots_result,
                  list_tasks_results):
         self._bot_statuses = []
-        self._swarming_runs = []
+        self.swarming_runs = []
         self._files = files
         self._temp_file_id = 0
         self._triggered_with_swarming_go = 0
@@ -64,7 +64,7 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
         return res
 
     def run_swarming(self, args):
-        self._swarming_runs.append(args)
+        self.swarming_runs.append(args)
 
     def run_swarming_go(self,
                         args,
@@ -174,7 +174,7 @@ class UnitTest(unittest.TestCase):
 
     def get_triggered_shard_to_bot(self, triggerer):
         triggered_map = {}
-        for run in triggerer._swarming_runs:
+        for run in triggerer.swarming_runs:
             if not 'trigger' in run:
                 continue
             bot_id = run[(run.index('id') + 1)]

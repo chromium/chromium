@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/sounds/focus_mode_soundscape_delegate.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
@@ -75,13 +76,19 @@ FocusModeSoundscapeDelegate::~FocusModeSoundscapeDelegate() {
   playlist_tracker_.reset();
 }
 
-bool FocusModeSoundscapeDelegate::GetNextTrack(
+void FocusModeSoundscapeDelegate::GetNextTrack(
     const std::string& playlist_id,
     FocusModeSoundsDelegate::TrackCallback callback) {
   if (!cached_configuration_) {
     // TODO(b/342467806): Support fetching a configuration here.
     LOG(WARNING) << "Track requested before configuration download";
-    return false;
+
+    // The callback must be invoked no matter what since the mojom
+    // interface pipe is still waiting for response. Please see bug:
+    // b/358625939.
+    std::move(callback).Run(std::nullopt);
+
+    return;
   }
 
   if (!playlist_tracker_ || playlist_id != playlist_tracker_->id()) {
@@ -95,7 +102,15 @@ bool FocusModeSoundscapeDelegate::GetNextTrack(
                      });
 
     if (iter == playlists.end() || iter->tracks.empty()) {
-      return false;
+      LOG(WARNING)
+          << (iter == playlists.end()
+                  ? "Could not find playlist in the cached configuration."
+                  : "The playlist has no tracks.");
+
+      // Must invoke the callback.
+      std::move(callback).Run(std::nullopt);
+
+      return;
     }
 
     const SoundscapePlaylist& playlist = *iter;
@@ -107,11 +122,9 @@ bool FocusModeSoundscapeDelegate::GetNextTrack(
       next_track, playlist_tracker_->playlist().thumbnail, *downloader_);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(track)));
-
-  return true;
 }
 
-bool FocusModeSoundscapeDelegate::GetPlaylists(PlaylistsCallback callback) {
+void FocusModeSoundscapeDelegate::GetPlaylists(PlaylistsCallback callback) {
   if (cached_configuration_) {
     base::TimeDelta update_age = base::Time::Now() - last_update_;
     if (update_age < kCacheLifetime) {
@@ -120,7 +133,7 @@ bool FocusModeSoundscapeDelegate::GetPlaylists(PlaylistsCallback callback) {
           FROM_HERE, base::BindOnce(std::move(callback),
                                     PlaylistsFromConfig(*cached_configuration_,
                                                         downloader_.get())));
-      return true;
+      return;
     }
   }
 
@@ -131,7 +144,6 @@ bool FocusModeSoundscapeDelegate::GetPlaylists(PlaylistsCallback callback) {
   downloader_->FetchConfiguration(
       base::BindOnce(&FocusModeSoundscapeDelegate::HandleConfiguration,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
-  return true;
 }
 
 void FocusModeSoundscapeDelegate::HandleConfiguration(

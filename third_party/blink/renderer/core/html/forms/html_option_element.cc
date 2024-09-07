@@ -131,18 +131,22 @@ void HTMLOptionElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
-bool HTMLOptionElement::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState HTMLOptionElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   if (is_descendant_of_select_list_) {
-    return !IsDisabledFormControl();
+    return IsDisabledFormControl() ? FocusableState::kNotFocusable
+                                   : FocusableState::kFocusable;
   }
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList()) {
-    if (select->IsAppearanceBaseSelect()) {
-      // If this option is in an appearance:base-select <select>, then we need
-      // this element to be focusable.
-      return !IsDisabledFormControl();
+    if (select->IsAppearanceBasePicker()) {
+      // If this option is being rendered as regular web content inside a
+      // base-select <select> popover, then we need this element to be
+      // focusable.
+      return IsDisabledFormControl() ? FocusableState::kNotFocusable
+                                     : FocusableState::kFocusable;
     }
-    return false;
+    return FocusableState::kNotFocusable;
   }
   return HTMLElement::SupportsFocus(update_behavior);
 }
@@ -688,9 +692,9 @@ bool HTMLOptionElement::IsDisplayNone() const {
 
 void HTMLOptionElement::DefaultEventHandler(Event& event) {
   auto* select = OwnerSelectElement();
-  if (select && !select->IsAppearanceBaseSelect()) {
+  if (select && !select->IsAppearanceBasePicker()) {
     // We only want to apply mouse/keyboard behavior for appearance:base-select
-    // selects.
+    // select pickers.
     select = nullptr;
   }
 
@@ -705,7 +709,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
          mouse_event->button() ==
              static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
       SetSelected(true);
-      select->DisplayedDatalist()->HidePopoverForSelectElement();
+      select->HidePopup();
       event.SetDefaultHandled();
       return;
     }
@@ -749,7 +753,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         }
       } else if ((key == " " || key == keywords::kCapitalEnter) && select) {
         SetSelected(true);
-        select->DisplayedDatalist()->HidePopoverForSelectElement();
+        select->HidePopup();
         event.SetDefaultHandled();
         return;
       }
@@ -764,7 +768,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
       } else if (select) {
         // TODO(http://crbug.com/1511354): Consider focusing something in this
         // case. https://github.com/openui/open-ui/issues/1016
-        select->DisplayedDatalist()->HidePopoverForSelectElement();
+        select->HidePopup();
         event.SetDefaultHandled();
         return;
       }

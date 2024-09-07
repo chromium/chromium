@@ -6,6 +6,8 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 
 namespace syncer {
 
@@ -51,20 +53,22 @@ DeviceInfo::FormFactor DeriveFormFactorFromDeviceType(
 }
 
 syncer::DeviceInfo::FormFactor ToDeviceInfoFormFactor(
-    const sync_pb::SyncEnums_DeviceFormFactor& form_factor) {
+    const sync_pb::SyncEnums::DeviceFormFactor& form_factor) {
   switch (form_factor) {
-    case sync_pb::SyncEnums::DeviceFormFactor::
-        SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED:
+    case sync_pb::SyncEnums::DEVICE_FORM_FACTOR_UNSPECIFIED:
       return syncer::DeviceInfo::FormFactor::kUnknown;
-    case sync_pb::SyncEnums::DeviceFormFactor::
-        SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP:
+    case sync_pb::SyncEnums::DEVICE_FORM_FACTOR_DESKTOP:
       return syncer::DeviceInfo::FormFactor::kDesktop;
-    case sync_pb::SyncEnums::DeviceFormFactor::
-        SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE:
+    case sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE:
       return syncer::DeviceInfo::FormFactor::kPhone;
-    case sync_pb::SyncEnums::DeviceFormFactor::
-        SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET:
+    case sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET:
       return syncer::DeviceInfo::FormFactor::kTablet;
+    case sync_pb::SyncEnums::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+      return syncer::DeviceInfo::FormFactor::kAutomotive;
+    case sync_pb::SyncEnums::DEVICE_FORM_FACTOR_WEARABLE:
+      return syncer::DeviceInfo::FormFactor::kWearable;
+    case sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TV:
+      return syncer::DeviceInfo::FormFactor::kTv;
   }
 }
 
@@ -72,17 +76,19 @@ sync_pb::SyncEnums_DeviceFormFactor ToDeviceFormFactorProto(
     const syncer::DeviceInfo::FormFactor& form_factor) {
   switch (form_factor) {
     case syncer::DeviceInfo::FormFactor::kUnknown:
-      return sync_pb::SyncEnums::DeviceFormFactor::
-          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED;
+      return sync_pb::SyncEnums::DEVICE_FORM_FACTOR_UNSPECIFIED;
     case syncer::DeviceInfo::FormFactor::kDesktop:
-      return sync_pb::SyncEnums::DeviceFormFactor::
-          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP;
+      return sync_pb::SyncEnums::DEVICE_FORM_FACTOR_DESKTOP;
     case syncer::DeviceInfo::FormFactor::kPhone:
-      return sync_pb::SyncEnums::DeviceFormFactor::
-          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+      return sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE;
     case syncer::DeviceInfo::FormFactor::kTablet:
-      return sync_pb::SyncEnums::DeviceFormFactor::
-          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET;
+      return sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET;
+    case syncer::DeviceInfo::FormFactor::kAutomotive:
+      return sync_pb::SyncEnums::DEVICE_FORM_FACTOR_AUTOMOTIVE;
+    case syncer::DeviceInfo::FormFactor::kWearable:
+      return sync_pb::SyncEnums::DEVICE_FORM_FACTOR_WEARABLE;
+    case syncer::DeviceInfo::FormFactor::kTv:
+      return sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TV;
   }
 }
 

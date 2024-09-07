@@ -40,6 +40,10 @@ void AddSignificantRegions(
     lens::ImageData& image_data,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes);
 
+// Crops the given bitmap to the given region.
+SkBitmap CropBitmapToRegion(const SkBitmap& image,
+                            lens::mojom::CenterRotatedBoxPtr region);
+
 // Downscales and encodes the provided bitmap region and then stores it in a
 // lens::ImageCrop object if needed. Returns a nullopt if the region is not
 // set. Downscaling only occurs if the region dimensions exceed configured

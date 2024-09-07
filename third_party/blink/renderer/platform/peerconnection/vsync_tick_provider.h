@@ -36,10 +36,10 @@ class PLATFORM_EXPORT VSyncTickProvider : public MetronomeSource::TickProvider {
   static constexpr base::TimeDelta kVSyncTickPeriod = base::Hertz(30);
 
   // Create using a begin frame provider.
-  static std::unique_ptr<VSyncTickProvider> Create(
+  static scoped_refptr<VSyncTickProvider> Create(
       VSyncProvider& vsync_provider,
       scoped_refptr<base::SequencedTaskRunner> sequence,
-      std::unique_ptr<MetronomeSource::TickProvider> default_tick_provider);
+      scoped_refptr<MetronomeSource::TickProvider> default_tick_provider);
   ~VSyncTickProvider() override;
 
   // TickProvider overrides.
@@ -50,7 +50,7 @@ class PLATFORM_EXPORT VSyncTickProvider : public MetronomeSource::TickProvider {
   VSyncTickProvider(
       VSyncProvider& vsync_provider,
       scoped_refptr<base::SequencedTaskRunner> sequence,
-      std::unique_ptr<MetronomeSource::TickProvider> default_tick_provider);
+      scoped_refptr<MetronomeSource::TickProvider> default_tick_provider);
   void Initialize();
 
   // Requests a callback to OnVSync.
@@ -87,11 +87,12 @@ class PLATFORM_EXPORT VSyncTickProvider : public MetronomeSource::TickProvider {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The default tick provider, used when the tab is occluded.
-  const std::unique_ptr<MetronomeSource::TickProvider> default_tick_provider_
+  const scoped_refptr<MetronomeSource::TickProvider> default_tick_provider_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The currently scheduled tick callback.
-  base::OnceClosure tick_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  WTF::Vector<base::OnceClosure> tick_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The state of this tick provider.
   State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kDrivenByDefault;

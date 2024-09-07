@@ -45,6 +45,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -214,7 +215,7 @@
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
-#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #else
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
@@ -961,15 +962,10 @@ class RemoveAutofillTester {
       : personal_data_manager_(
             autofill::PersonalDataManagerFactory::GetForBrowserContext(
                 profile)) {
-    autofill::test::DisableSystemServices(profile->GetPrefs());
   }
 
   RemoveAutofillTester(const RemoveAutofillTester&) = delete;
   RemoveAutofillTester& operator=(const RemoveAutofillTester&) = delete;
-
-  ~RemoveAutofillTester() {
-    autofill::test::ReenableSystemServices();
-  }
 
   // Returns true if there is at least one address and one card.
   bool HasProfileAndCard() const {

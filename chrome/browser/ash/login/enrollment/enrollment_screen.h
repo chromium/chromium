@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -181,7 +182,7 @@ class EnrollmentScreen
   // Clears auth in `enrollment_launcher_`. Deletes
   // `enrollment_launcher_` and runs `callback` on completion. See the
   // comment for EnrollmentLauncher::ClearAuth for details.
-  void ClearAuth(base::OnceClosure callback);
+  void ClearAuth(base::OnceClosure callback, bool revoke_oauth2_tokens = true);
 
   // Used as a callback for EnrollmentLauncher::ClearAuth.
   virtual void OnAuthCleared(base::OnceClosure callback);
@@ -252,6 +253,10 @@ class EnrollmentScreen
   void HideOfflineMessage(NetworkStateInformer::State state,
                           NetworkError::ErrorReason reason);
 
+  // Stores the signin artifacts and the refresh token in the wizard context
+  // if the appropriate conditions are met.
+  bool MaybeStoreUserContextInWizardContext();
+
   base::WeakPtr<EnrollmentScreenView> view_;
   raw_ptr<ErrorScreen> error_screen_ = nullptr;
   ScreenExitCallback exit_callback_;
@@ -295,6 +300,9 @@ class EnrollmentScreen
   int num_retries_ = 0;
   std::unique_ptr<EnrollmentLauncher> enrollment_launcher_;
   std::unique_ptr<policy::AccountStatusCheckFetcher> status_checker_;
+
+  std::unique_ptr<login::OnlineSigninArtifacts> signin_artifacts_;
+  bool using_saml_api_ = false;
 
   base::WeakPtrFactory<EnrollmentScreen> weak_ptr_factory_{this};
 };

@@ -51,7 +51,9 @@ class TestStrikeDatabase : public StrikeDatabase {
   }
 };
 
-}  // anonymous namespace
+}  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 // Runs tests against the actual StrikeDatabase class, complete with
 // ProtoDatabase.

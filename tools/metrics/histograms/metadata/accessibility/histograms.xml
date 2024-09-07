@@ -510,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime"
-    units="ms" expires_after="2024-09-30">
+    units="ms" expires_after="2025-01-30">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -535,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Nodes"
-    units="count" expires_after="2024-12-24">
+    units="count" expires_after="2025-03-02">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -545,7 +545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Time"
-    units="ms" expires_after="2024-12-24">
+    units="ms" expires_after="2025-03-02">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -650,7 +650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterAmount" units="%"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -662,7 +662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterType"
-    enum="ColorCorrectionFilterTypes" expires_after="2024-12-24">
+    enum="ColorCorrectionFilterTypes" expires_after="2025-02-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1158,6 +1158,41 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.DependencyParserModel.Create.Duration"
+    units="ms" expires_after="2025-02-28">
+  <owner>xiangxiao@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The time takes to load the file and create the TFLite dependency parser
+    model. This histogram is recorded once for each successful creation of the
+    model.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.DependencyParserModel.DependencyParserModelState"
+    enum="DependencyParserModelState" expires_after="2025-02-28">
+  <owner>xiangxiao@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The state of the dependency parser model used by Reading Mode. Recorded once
+    per model load attempt for each renderer process.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.DependencyParserModelLoader.DependencyParserModel.WasLoaded"
+    enum="BooleanLoaded" expires_after="2025-02-28">
+  <owner>xiangxiao@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether the dependency parser model file provided by the
+    OptimizationGuide was valid and was successfully loaded by the
+    DependencyParserModelLoader. Recorded once per model update by the
+    OptimizationGuide.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.DlcInstallerFaceGazeAssetsInstallationDuration"
     units="ms" expires_after="2025-02-28">
   <owner>akihiroota@chromium.org</owner>
@@ -1393,7 +1428,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
-    expires_after="2024-12-15">
+    expires_after="2025-02-16">
   <owner>gambard@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
@@ -1482,11 +1517,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.AudioPropertyChanged"
-    enum="BooleanEnabled" expires_after="2024-09-30">
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
+    enum="BooleanEnabled" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Whether the sample rate or channel count of a Live Caption audio stream
     changed midstream. This is logged once per audio stream on the destruction
@@ -1495,10 +1528,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.CaptionBubbleError"
-    enum="CaptionBubbleErrorType" expires_after="2024-09-30">
-  <owner>abigailbklein@google.com</owner>
+    enum="CaptionBubbleErrorType" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Records when the caption bubble displays an error. This is logged once each
     time the caption bubble model encounters an error.
@@ -1506,10 +1538,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3"
-    units="ms" expires_after="2025-02-10">
-  <owner>abigailbklein@google.com</owner>
+    units="ms" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Measures how long SODA was running while the Live Caption UI was
     {Visibility}. Logged once on the destruction of the
@@ -1524,11 +1555,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2025-02-10">
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
+    enum="BooleanEnabled" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Records when a user enables or disables the Live Caption feature from
     {Entrypoint}.
@@ -1541,22 +1570,18 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.ExpandBubble"
-    enum="LiveCaptionExpandBubbleEvent" expires_after="2024-09-30">
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
+    enum="LiveCaptionExpandBubbleEvent" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Records when a user expands or collapses the Live Caption bubble.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.FeatureEnabled2"
-    enum="BooleanEnabled" expires_after="2024-09-30">
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
+    enum="BooleanEnabled" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Whether the Live Caption feature flag is enabled. This is logged once when
     the Live Caption controller is initialized.
@@ -1564,28 +1589,19 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LanguageCount" units="count"
-    expires_after="2024-09-30">
+    expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     The number of languages used to initialize the Speech On-Device API (SODA).
     This is logged each time SODA is reset.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption.LiveCaptionPinBubbleEvent"
-    enum="LiveCaptionPinBubbleEvent" expires_after="2024-09-30">
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>Records when a user pins or unpins the Live Caption bubble.</summary>
-</histogram>
-
 <histogram name="Accessibility.LiveCaption.LoadSodaErrorCode"
-    enum="WinGetLastError" expires_after="2024-12-08">
-  <owner>abigailbklein@google.com</owner>
+    enum="WinGetLastError" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     The error code of a failed attempt to load the Speech On-Device API (SODA)
     binary. This is logged once for each media stream if the SODA binary failed
@@ -1594,10 +1610,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaResult"
-    enum="LoadSodaResult" expires_after="2025-02-10">
-  <owner>abigailbklein@google.com</owner>
+    enum="LoadSodaResult" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     The result of an attempt to load the Speech On-Device API (SODA) binary.
     This is logged once for each media stream when the SODA binary is loaded.
@@ -1605,10 +1620,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.MaskOffensiveWords" enum="Boolean"
-    expires_after="2024-09-30">
-  <owner>abigailbklein@google.com</owner>
+    expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Records when a user toggles the &quot;hide profanity&quot; option in
     settings.
@@ -1616,18 +1630,16 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.PinBubble" enum="Boolean"
-    expires_after="2024-09-30">
+    expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>Records when a user pins or unpins the Live Caption bubble.</summary>
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Session2"
-    enum="LiveCaptionSessionEvent" expires_after="2025-02-10">
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
+    enum="LiveCaptionSessionEvent" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Logged when the Live Caption bubble appears and disappears. Stream start
     indicates when the bubble appears due to an audio session starting. Stream
@@ -1640,10 +1652,9 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.LiveCaption.SodaVerificationFailureMissingIndicatorFile"
-    enum="Boolean" expires_after="2024-09-30">
-  <owner>abigailbklein@google.com</owner>
+    enum="Boolean" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Whether the verification of the Speech On-Device API (SODA) component failed
     due to a mismatch of the component architecture. Logged once during the
@@ -1652,10 +1663,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.SpeechRecognitionServiceLanguage"
-    enum="SodaLanguageCode" expires_after="2024-09-30">
+    enum="SodaLanguageCode" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The language code used to initialize the speech recognition service. Logged
     once when getting the Speech On-Device API (SODA) config path to use with
@@ -1665,10 +1675,9 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.LiveCaption.{SodaLanguageCode}.SessionContainsRecognizedSpeech"
-    enum="BooleanEnabled" expires_after="2025-02-10">
+    enum="BooleanEnabled" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether the speech recognition session contains any recognized speech. This
     is logged once per media stream upon the destruction of the
@@ -1678,11 +1687,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption2" enum="BooleanEnabled"
-    expires_after="2024-09-30">
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
+    expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Whether the Live Caption feature is enabled. This is logged once when the
     Live Caption controller is initialized on platforms that support Live
@@ -1691,9 +1698,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.CharactersTranslated"
-    units="count" expires_after="2024-12-15">
+    units="count" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Records the number of characters sent to the translate service. Records once
     per session upon the destruction of the LiveCaptionSpeechRecognitionHost.
@@ -1701,9 +1708,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2024-12-15">
+    enum="BooleanEnabled" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Records when a user enables or disables the Live Translate feature from
     {Entrypoint}. Warning: this histogram was expired from 2024-06-13 to
@@ -1717,9 +1724,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.SourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-12-15">
+    enum="LocaleCodeISO639" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Records the source language of a request to the Cloud Translate service.
     Recorded once per call to the Cloud Translate service.
@@ -1727,9 +1734,9 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-12-15">
+    enum="LocaleCodeISO639" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Records the target language of a request to the Cloud Translate service.
     Recorded once per call to the Cloud Translate service.
@@ -2491,7 +2498,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.ReadAloud{Action}SessionCount"
-    units="count" expires_after="2024-12-15">
+    units="count" expires_after="2025-02-16">
   <owner>lwinston@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
@@ -2658,7 +2665,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.DlcInstallResult"
-    enum="DlcInstallResult" expires_after="2024-12-13">
+    enum="DlcInstallResult" expires_after="2025-02-16">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Records the result of Screen AI DLC installation.</summary>
@@ -2679,6 +2686,13 @@ even if they fit the naming pattern. -->
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Records the client type of each OCR request.</summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.Failed.ClientType"
+    enum="OCRClientType" expires_after="2025-05-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records the client type of each failed OCR request.</summary>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.ImageSize.PDF" units="count"
@@ -2783,21 +2797,6 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.{Feature}.Idle.Connected"
-    enum="BooleanConnected" expires_after="2025-02-28">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records whether the {Feature} has been connected to a client or not while
-    being idle (initialized but not used for more than 10min). This metric is
-    collected only once during the life time of ScreenAI service.
-  </summary>
-  <token key="Feature">
-    <variant name="MainContentExtraction" summary="Main Content Extraction"/>
-    <variant name="OCR" summary="Optical Character Recognition"/>
-  </token>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"
     units="ms" expires_after="2025-02-28">
   <owner>rhalavati@chromium.org</owner>
@@ -2890,6 +2889,17 @@ even if they fit the naming pattern. -->
   <summary>
     Tracks properties requested via UI Automation GetPropertyValue(). Warning:
     this histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WinHighContrastTheme"
+    enum="AccessibilityHighContrastColorScheme" expires_after="2025-08-30">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>almaher@microsoft.com</owner>
+  <summary>
+    Tracks which Windows high contrast theme is set in system settings (logged
+    once 45 secs after startup). AccessibilityHighContrastColorScheme::None
+    indicates that high contrast mode is not enabled.
   </summary>
 </histogram>
 

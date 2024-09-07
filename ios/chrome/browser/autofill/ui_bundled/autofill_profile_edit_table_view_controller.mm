@@ -42,7 +42,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 @property(nonatomic, strong)
     NSMutableDictionary<NSString*, NSString*>* fieldValuesMap;
 
-// YES, if the profile's source is autofill::AutofillProfile::Source::kAccount.
+// YES, if the profile's record type is
+// autofill::AutofillProfile::RecordType::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
 // If YES, denotes that the view is laid out for the migration prompt.

@@ -87,11 +87,9 @@ SyncTransportDataStartupState ValidateSyncTransportData(
   // one (otherwise the data may be corrupt). Note that, for local sync, the
   // authenticated account is always empty.
   if (prefs.GetCurrentSyncingGaiaId() != core_account_info.gaia) {
-    // Note that if kSyncAccountKeyedTransportPrefs is enabled, an empty
-    // last-syncing-GaiaID is fine and expected if the user signed out and back
-    // in again.
-    if (!prefs.GetCurrentSyncingGaiaId().empty() ||
-        !base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
+    // Note that an empty last-syncing-GaiaID is fine and expected if the user
+    // signed out and back in again.
+    if (!prefs.GetCurrentSyncingGaiaId().empty()) {
       DLOG(WARNING) << "Found mismatching gaia ID in sync preferences";
       return SyncTransportDataStartupState::kGaiaIdMismatch;
     }
@@ -139,7 +137,6 @@ void SyncEngineImpl::Initialize(InitParams params) {
     // everything away and start from scratch with a new cache GUID, which also
     // cascades into datatypes throwing away their dangling sync metadata due to
     // cache GUID mismatches.
-    prefs_->ClearAllLegacy();
     prefs_->ClearForCurrentAccount();
 
     prefs_->SetCacheGuid(GenerateCacheGUID());
@@ -309,7 +306,6 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 
   if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
-    prefs_->ClearAllLegacy();
     prefs_->ClearCurrentSyncingGaiaId();
   }
 }
@@ -348,15 +344,6 @@ void SyncEngineImpl::HasUnsyncedItemsForTest(
   sync_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::HasUnsyncedItemsForTest, backend_),
-      std::move(cb));
-}
-
-void SyncEngineImpl::GetTypesWithUnsyncedData(
-    base::OnceCallback<void(DataTypeSet)> cb) const {
-  DCHECK(IsInitialized());
-  sync_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&SyncEngineBackend::GetTypesWithUnsyncedData, backend_),
       std::move(cb));
 }
 

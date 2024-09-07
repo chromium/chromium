@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -89,7 +89,7 @@ using signin_metrics::PromoAction;
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   self.viewController = viewController;
   self.mediator = [[GoogleServicesSettingsMediator alloc]
-      initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
+      initWithIdentityManager:IdentityManagerFactory::GetForProfile(
                                   self.browser->GetBrowserState())
               userPrefService:self.browser->GetBrowserState()->GetPrefs()
              localPrefService:GetApplicationContext()->GetLocalState()];
@@ -142,8 +142,7 @@ using signin_metrics::PromoAction;
 }
 
 - (signin::IdentityManager*)identityManager {
-  return IdentityManagerFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
 }
 
 #pragma mark - GoogleServicesSettingsCommandHandler

@@ -34,6 +34,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1104621072296271835">Tus dispositivos funcionan incluso mejor juntos</translation>
 <translation id="1111021433905331574">Puedes cambiar el color de la retroiluminación del teclado en Configuración &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Activa o desactiva los datos móviles. <ph name="STATE" />.</translation>
+<translation id="1122849163460178706">Ejemplos que puedes probar</translation>
 <translation id="112308213915226829">Ocultar la barra automáticamente</translation>
 <translation id="1129383337808748948">Actualizar <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Fotos recientes</translation>
@@ -42,6 +43,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1155734730463845512">Nivel de batería actual <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">La IA generativa es experimental y el contenido puede ser impreciso, ofensivo o engañoso. Si quieres informar un problema, comunícate con tu administrador. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">se activó y está en uso</translation>
 <translation id="1163437384438183174">Quitar Phone Hub de la barra</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -303,6 +305,8 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2049240716062114887">Se cambió el nombre del escritorio a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2064048859448024834">Se muestra la vista previa de la cámara</translation>
+<translation id="2065098273523946419">Vínculo Más información. Redirecciona al navegador cuando se activa</translation>
+<translation id="2067220651560163985">Mostrar la temperatura en grados Celsius</translation>
 <translation id="2067602449040652523">Brillo del teclado</translation>
 <translation id="2075520525463668108">Activar o desactivar <ph name="CAPTURE_MEDIUM" /> (estado de <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />)</translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -358,6 +362,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2318576281648121272">Hoy, <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, categoría de resultados de la búsqueda</translation>
 <translation id="2322173485024759474">Volver letra por letra</translation>
+<translation id="2326112202058075478">Mostrar más emojis</translation>
 <translation id="2335091074961603075">Tu Chromebook o dispositivo Bluetooth usan una versión anterior de Bluetooth. Usa el micrófono interno para mejorar la calidad del audio.</translation>
 <translation id="2339073806695260576">Presiona el botón de la pluma stylus en la biblioteca para tomar notas y capturas de pantalla, y usar el puntero láser o la lupa.</translation>
 <translation id="2341729377289034582">Se bloqueó en posición vertical</translation>
@@ -391,6 +396,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2426051945783024481">El encuadre de la cámara se centró automáticamente</translation>
 <translation id="2427507373259914951">Clic con botón izquierdo</translation>
 <translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Antes de aceptar, debes confirmar que aparece la siguiente clave de contraseña en el dispositivo: <ph name="PASSKEY" />.</translation>
+<translation id="2430444791038754658">Listo. ¡Muy bien!</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2437771564543046790">Batería baja; el Ahorro de batería está activado</translation>
 <translation id="243878895369688216">Se abrió ayer</translation>
@@ -404,6 +410,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="246052086404491029">Desglosar información</translation>
 <translation id="2465145153332031561">Estado de la batería <ph name="BATTERY_HEALTH_PERCENTAGE" />%, conteo de ciclos <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Confirmar la resolución</translation>
+<translation id="2475783092753560388">Insertar <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Se ha producido un error</translation>
 <translation id="2478076885740497414">Instalar aplicación</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
@@ -419,6 +426,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2509468283778169019">BLOQ MAYÚS está activado.</translation>
 <translation id="2514415433888497495">Detener <ph name="CAPTURE_MEDIUM" /> (estado de <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2515962024736506925">Abrir opciones de accesibilidad</translation>
 <translation id="2516416533263263796">El Modo sin distracciones está activado, quedan 10 minutos</translation>
 <translation id="2516637483312286228">Editar los controles de juego</translation>
 <translation id="252054055865191167">Herramienta de marcador</translation>
@@ -461,6 +469,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2670350619068134931">Animaciones reducidas</translation>
 <translation id="2673968385134502798">Juegos</translation>
 <translation id="2678852583403169292">Menú de Seleccionar para pronunciar</translation>
+<translation id="2683887737780133806">El <ph name="DAY_OF_WEEK" /> de la semana pasada</translation>
 <translation id="2687510499067466116">Se modificó la combinación de teclas</translation>
 <translation id="2689613560355655046">Escritorio 8</translation>
 <translation id="2695305337569143674">web</translation>
@@ -511,10 +520,12 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2849936225196189499">Crítico</translation>
 <translation id="2860184359326882502">Mejor coincidencia</translation>
 <translation id="2865888419503095837">Información de red</translation>
+<translation id="2869095047958348710">El <ph name="DAY_OF_WEEK" /> pasado</translation>
 <translation id="2872353916818027657">Intercambiar monitor principal</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2876338922445400217">Acercar la pantalla</translation>
 <translation id="2878884018241093801">No hay elementos recientes</translation>
+<translation id="2880541185262491188">Demasiados intentos de ingresar PIN. Espera <ph name="TIME_LEFT" /> y vuelve a intentarlo</translation>
 <translation id="2885950158625301909">Más información</translation>
 <translation id="2891209721153296020">"Anular la selección"</translation>
 <translation id="2894949423239620203">El cable puede reducir el rendimiento</translation>
@@ -539,6 +550,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2968761508099987738">Tu ubicación actual no es compatible en este momento.</translation>
 <translation id="2970920913501714344">Instalar apps, extensiones y temas</translation>
 <translation id="2977598380246111477">Próximo número</translation>
+<translation id="2980700224869191055">Emoticón de <ph name="EMOTICON_NAME" /></translation>
 <translation id="2985148236010982088">Ver todas las apps</translation>
 <translation id="2992272421330787632">Ocultar todas las sugerencias de contenido multimedia</translation>
 <translation id="2992327365391326550">El botón del micrófono del dispositivo está desactivado.</translation>
@@ -617,6 +629,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3264031581203585083">Ocultar todas las sugerencias de Google Drive</translation>
 <translation id="3265032511221679826">¿Quieres activar el acceso a la ubicación precisa?</translation>
 <translation id="3269597722229482060">Hacer clic con el botón derecho</translation>
+<translation id="3271554781793662131">Buscar para insertar</translation>
 <translation id="3273040715184276344">Bloqueo de mayúsculas desactivado</translation>
 <translation id="3274634049061007184">Ver las apps de tu teléfono</translation>
 <translation id="3289364673986435196">Menú de encendido</translation>
@@ -650,6 +663,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">¿Quieres activar el dictado?</translation>
+<translation id="3392702002175498061">Mostrar todo el contenido del historial de navegación</translation>
 <translation id="3394432020929931914">, expandido</translation>
 <translation id="3401474642070997151">Para personalizar las sugerencias, haz clic con el botón derecho o mantén presionada una sugerencia</translation>
 <translation id="3405101454990027959">Activar el acceso al micrófono</translation>
@@ -726,6 +740,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3619536907358025872">Configuración de Captura de pantalla</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Configuración de audio</translation>
+<translation id="362253242168828226">Emoji de <ph name="EMOJI_NAME" /></translation>
 <translation id="3626281679859535460">Brillo</translation>
 <translation id="3628323833346754646">Botón frontal</translation>
 <translation id="3630697955794050612">desactivado</translation>
@@ -760,6 +775,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3706423975342040244">Entretenimiento</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> y <ph name="UNAVAILABLE_DLC_TWO" /> no están disponibles.</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
+<translation id="3711282657843423160">Listo. ¡Sigue así!</translation>
 <translation id="3712143870407382523">Elige una ventana para este lado</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="3713734891607377840">Abrir cuando se complete la descarga</translation>
@@ -785,6 +801,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3799080171973636491">Presionaste la combinación de teclas para activar la lupa de pantalla completa. ¿Quieres activarla?</translation>
 <translation id="380165613292957338">Hola, ¿cómo puedo ayudarte?</translation>
 <translation id="3804737937830804242">Contraer la cámara</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. No hay más resultados.}other{# emojis. No hay más resultados.}}</translation>
 <translation id="3824784079442479685">Permite el acceso a la cámara para <ph name="APP_NAME" /> y todas las apps y sitios web con el permiso correspondiente. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="3826099427150913765">Cambiar a contraseña</translation>
 <translation id="383058930331066723">El modo de Ahorro de batería está activado</translation>
@@ -799,6 +816,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="385300504083504382">Inicio</translation>
 <translation id="3859364108019690">No se pueden transmitir apps</translation>
 <translation id="3861651314799684201">Presiona intro para grabar la pantalla completa</translation>
+<translation id="3870197372373144624">Intenta apagar el dispositivo.</translation>
 <translation id="3886872229787704059">Se abrió hoy</translation>
 <translation id="3891340733213178823">Presiona Ctrl + Mayús + Q dos veces para salir.</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios por voz)</translation>
@@ -867,6 +885,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activar el escritorio de la izquierda</translation>
+<translation id="4119928251231465047">Demasiados intentos de ingresar PIN</translation>
 <translation id="412298498316631026">ventana</translation>
 <translation id="4123259114412175274">Para desbloquear tu Chromebook, asegúrate de que la conexión Bluetooth del teléfono esté activada</translation>
 <translation id="4125970834901680537">No se puede transmitir apps en el modo tablet. Inténtalo en el modo laptop.</translation>
@@ -903,6 +922,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app instalada, pausada</translation>
 <translation id="4228078597006700451">No se configuraron los controles</translation>
+<translation id="4230560241506423345">Nuevo</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de vista Recientes</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
@@ -913,6 +933,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4264977415328155183">, contraído</translation>
 <translation id="4265259722091164182">Tipo título</translation>
 <translation id="4269883910223712419">El administrador de este dispositivo puede hacer lo siguiente:</translation>
+<translation id="4271841440229266861">Mostrar todo el contenido de Archivos</translation>
 <translation id="4274537685965975248">Se modificó la combinación de teclas Ctrl + Alt + flecha hacia abajo. Para usar la tecla Fin, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia la derecha.</translation>
 <translation id="4275283744500212192">Abrir opciones de diseño de ventana</translation>
 <translation id="4275663329226226506">Multimedia</translation>
@@ -940,6 +961,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4327147325944669226">Grabar juego</translation>
 <translation id="4333628967105022692">Lacros no es compatible si acceden varios usuarios.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, silenciado</translation>
 <translation id="4351244548802238354">Cerrar cuadro de diálogo</translation>
 <translation id="4356872429719185452">Mostrar detalles del hotspot. Se está activando el hotspot.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> Grabando</translation>
@@ -1031,6 +1053,7 @@ Se conectó un dispositivo.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Se habilitó ChromeVox</translation>
+<translation id="4665182893355091947">Listo. ¡Así se hace!</translation>
 <translation id="4666911709726371538">Más apps</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Se activó el Ahorro de batería.</translation>
@@ -1044,6 +1067,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4706121060329443414">Se intentará completar la descarga más tarde. Por ahora, se enviará la voz a Google para su procesamiento.</translation>
 <translation id="470644585772471629">Inversión de colores</translation>
 <translation id="4708065238214351979">Aumentar el brillo del teclado</translation>
+<translation id="4708185346211948049">El <ph name="DAY_OF_WEEK" /> de la semana siguiente</translation>
 <translation id="4717575069099566988">Tu cable USB-C no admite USB4. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="4724328513667182700">6 sugerencias para comenzar a usar <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">USADAS CON FRECUENCIA</translation>
@@ -1147,6 +1171,7 @@ Se conectó un dispositivo.</translation>
 <translation id="5013847959275396160">Ocultar barra de herramientas</translation>
 <translation id="5016558321564993266">Activar o desactivar el marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Buscar categorías</translation>
+<translation id="5025389392398927910">Buscar para editar el texto</translation>
 <translation id="5030659775136592441">Mostrar el Administrador de favoritos</translation>
 <translation id="5030687792513154421">Se acabó el tiempo</translation>
 <translation id="5033299697334913360">Haz clic en cualquier parte para capturar la pantalla completa</translation>
@@ -1252,6 +1277,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5369573834963677938">El control facial estará disponible para otros usuarios del dispositivo</translation>
 <translation id="5369717264580061086">Obtener la vista previa del archivo en la app de Files</translation>
 <translation id="5377367976106153749">¿Deseas activar el acceso a la cámara?</translation>
+<translation id="5378450298115733949">Más</translation>
 <translation id="5379115545237091094">Realizaste demasiados intentos</translation>
 <translation id="5383434787520761436">No hay archivos de Google Drive</translation>
 <translation id="5391307769715781764">¿Deseas reemplazar el escritorio?</translation>
@@ -1281,6 +1307,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5503884284981862082">Abrir o cerrar Asistente de Google</translation>
 <translation id="550391772491508736">Reanudar transmisión</translation>
 <translation id="5506975627792768506">Activar o desactivar la lupa</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, presionar Intro silenciará el audio.</translation>
 <translation id="5512042095225963688">Borrar la palabra anterior</translation>
 <translation id="5519005148254860683">Expandir Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -1332,6 +1359,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiere tu atención.</translation>
 <translation id="5662075790140998213">Escritorio 10</translation>
 <translation id="5662709761327382534">Grabar con el micrófono: <ph name="CURRENT_STATE" />; presiona Intro para cambiar el estado a <ph name="NEW_STATE" /></translation>
+<translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5672890847723042801">Utilidades</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración</translation>
@@ -1485,6 +1513,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6141988275892716286">Confirmar la descarga</translation>
 <translation id="6143578372829139382">Compartir en YouTube</translation>
 <translation id="6147182561428020853">Ahora puedes bloquear las apps instaladas en este dispositivo <ph name="DEVICE_TYPE" /></translation>
+<translation id="6153745728877356366">Buscar para abrir</translation>
 <translation id="6154006699632741460">El dispositivo periférico no es compatible</translation>
 <translation id="6156960295318603523">Configuración de idioma</translation>
 <translation id="6158923546703693047">Información de la fuente del contenido</translation>
@@ -1502,7 +1531,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6185696379715117369">Retroceder página</translation>
 <translation id="619335566042889110">Cargar por completo ahora</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">Aspecto de estudio</translation>
 <translation id="6199775032047436064">Cargar de nuevo la página actual</translation>
 <translation id="6200515304866777730">No es compatible con la app</translation>
 <translation id="6210042900243040400">Conectar <ph name="NAME" /> que guardaste anteriormente en <ph name="EMAIL" /></translation>
@@ -1670,6 +1698,7 @@ Nueva instalación</translation>
 <translation id="6782919488259222803">Buscar en la página actual</translation>
 <translation id="6786750046913594791">Cerrar carpeta</translation>
 <translation id="6790428901817661496">Reproducir</translation>
+<translation id="6792262051831399889">No disponible</translation>
 <translation id="679368458793552943">Acercar cuando la lupa esté activada</translation>
 <translation id="6794287755901682422">Este elemento tiene: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6797745268063125932">Mantenerla encendida</translation>
@@ -1744,8 +1773,10 @@ Nueva instalación</translation>
 <translation id="7051244143160304048">Se desconectó <ph name="DEVICE_NAME" /></translation>
 <translation id="7055910611768509537">No se usó la pluma stylus en más de una semana</translation>
 <translation id="7061457967428964661">Vista previa de la cámara, presiona Control + las teclas de flecha para mover la vista previa a una esquina diferente</translation>
+<translation id="7064351585062927183">El próximo <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">El administrador inhabilitó esta red.</translation>
 <translation id="7067196344162293536">Rotación automática</translation>
+<translation id="7067569040620564762">Listo. ¡Se terminó!</translation>
 <translation id="7068360136237591149">Abrir archivos</translation>
 <translation id="7076293881109082629">Accediendo</translation>
 <translation id="7076878155205969899">Silenciar sonido</translation>
@@ -1759,6 +1790,7 @@ Nueva instalación</translation>
 <translation id="7108254681523785542">Selecciona un elemento para pegarlo. Para ver el portapapeles, presiona <ph name="SHORTCUT_KEY_NAME" /> + v.</translation>
 <translation id="7116969082764510092">Escritorio 11</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
+<translation id="7118597077555700347">Abrir <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Seleccionar la palabra o letra siguiente</translation>
 <translation id="7126996685418858413">Se abrió la semana pasada</translation>
 <translation id="7130207228079676353">MUY PROBABLES</translation>
@@ -1779,6 +1811,7 @@ Nueva instalación</translation>
 <translation id="7189412385142492784">A qué distancia está Venus</translation>
 <translation id="7198435252016571249">Se ajustó la cámara a la esquina inferior derecha. Entra en conflicto con la superficie del sistema.</translation>
 <translation id="7219573373513695352">No hay dispositivos conectados</translation>
+<translation id="7226347284543965442">Listo. ¡Lo lograste!</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> de memoria | <ph name="TOTAL_MEMORY" /> en total</translation>
 <translation id="7244725679040769470">Queda <ph name="PERCENTAGE" />% de batería. Conecta tu dispositivo a la corriente.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Debes reiniciar esta Chromebook para aplicar una actualización. Este proceso puede tardar 1 minuto.</translation>
@@ -1880,6 +1913,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7593891976182323525">Tecla de búsqueda o Mayús</translation>
 <translation id="7598054670902114203">Resumen de uso de la CPU, <ph name="CPU_USEAGE" />%. Temperatura: <ph name="TEMPERATURE" /> grados Celsius. Velocidad actual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
+<translation id="7599378375976398913">Se está insertando el resultado seleccionado</translation>
 <translation id="7600875258240007829">Ver todas las notificaciones</translation>
 <translation id="7601417191446344542">¿Quieres activar el aviso de micrófono silenciado?</translation>
 <translation id="7607002721634913082">Detenido</translation>
@@ -1888,6 +1922,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7613620083300976559">Activar los controles de juego</translation>
 <translation id="761736749114493194">Activa o desactiva el encuadre de la cámara. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Haz una pregunta</translation>
 <translation id="7634648064048557203">Se ajustó la cámara a la esquina inferior derecha</translation>
 <translation id="7638572816805275740">Tomar una captura de pantalla de la ventana o grabar la pantalla</translation>
 <translation id="7642106959537987271">modo de inversión de colores</translation>
@@ -2070,6 +2105,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8198456017687137612">Pestaña de transmisión</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Acabas de concentrarte durante <ph name="FOCUSED_TIME" />. Abre la Configuración rápida para volver a concentrarte.</translation>
+<translation id="8203224998425013577">Mostrar más emojis y GIFs</translation>
 <translation id="8203795194971602413">Clic con botón derecho</translation>
 <translation id="8214996719228530800">Canal de Canary</translation>
 <translation id="8219451629189078428">Durante ese período, la Chromebook deberá estar encendida y enchufada a una fuente de alimentación. Asegúrate de que el cable del cargador o adaptador esté conectado correctamente tanto a la Chromebook como al enchufe. No apagues la Chromebook.</translation>
@@ -2082,6 +2118,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8239034820133090126">Activar el escritorio de la derecha</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, nivel de batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
+<translation id="825129991941217170">Mostrar todo el contenido de Google Drive</translation>
 <translation id="8257510091797044096">Configura el dispositivo</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8262312463845990408">Activar o desactivar la reproducción</translation>
@@ -2096,7 +2133,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8315514906653279104">Activando…</translation>
 <translation id="8331351032546853669">Descarga pendiente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
-<translation id="8340621004014372743">Haz una pregunta.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Malos resultados</translation>
 <translation id="8345019317483336363">Ventana <ph name="WINDOW_TITLE" /> seleccionada</translation>
@@ -2170,6 +2206,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8615778328722901791">Abrir barra de herramientas</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Bajar el volumen</translation>
+<translation id="862543346640737572">Emojis y GIFs</translation>
 <translation id="8627191004499078455">Conectado a <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Configuración de accesibilidad</translation>
 <translation id="8634326941504371857">Tus archivos en este dispositivo y Google Drive</translation>
@@ -2236,6 +2273,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activar o desactivar el bloqueo de rotación: <ph name="STATE_TEXT" /></translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
+<translation id="8847100217801213944">Mostrar la temperatura en grados Fahrenheit</translation>
 <translation id="8849001918648564819">Oculta</translation>
 <translation id="8853703225951107899">Aún no se pudo verificar tu PIN o contraseña. Nota: Si cambiaste la contraseña recientemente, usa la anterior. Se aplicará la nueva cuando salgas de la cuenta.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
@@ -2269,7 +2307,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8951539504029375108">Solo los dispositivos Thunderbolt aprobados son compatibles con tu Chromebook.</translation>
 <translation id="8956420987536947088">Abre las ventanas y apps anteriores</translation>
 <translation id="8959380109429710384">Presionaste la combinación de teclas para activar la lupa de pantalla completa. Usa Ctrl + Alt + flechas para moverte por la vista con zoom.</translation>
-<translation id="896335827708646237">Abrir la configuración rápida de accesibilidad</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Enfocar el ícono de menú</translation>
 <translation id="8980862970816311842">Mover el ícono de una app hacia dentro o fuera de una carpeta en la cuadrícula de apps</translation>
@@ -2279,6 +2316,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="899350903320462459">Desbloquea el dispositivo como <ph name="LOGIN_ID" /> para realizar la acción con las notificaciones</translation>
 <translation id="8993733019280019776">¿Estás hablando? Tu micrófono está desactivado. Selecciónalo para activarlo.</translation>
 <translation id="9000771174482730261">ADMINISTRAR EL ALMACENAMIENTO</translation>
+<translation id="9003374957546315126">Emojis y más</translation>
 <translation id="9005984960510803406">Abrir Crosh Window</translation>
 <translation id="9017320285115481645">Ingresa el código de acceso parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
@@ -2287,6 +2325,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9030665205623277906">Resumen de uso de la CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
+<translation id="9050012935252397793">Bluetooth no está disponible</translation>
 <translation id="906458777597946297">Maximizar ventana</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configuración de Asistente</translation>
@@ -2309,6 +2348,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Deshacer la última acción</translation>
+<translation id="9126642911267312373">Bluetooth no disponible</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{En 1 min}other{En # min}}</translation>
 <translation id="9129245940793250979">Botón trasero</translation>
 <translation id="9133335900048457298">No se puede grabar contenido protegido</translation>
@@ -2355,7 +2395,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="974545358917229949">Mostrando <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Sin fecha límite</translation>
 <translation id="98120814841227350">Ir al final del documento</translation>
-<translation id="98515147261107953">Horizontal</translation>
+<translation id="98515147261107953">Paisajes</translation>
 <translation id="987589956647469042">Los datos móviles están activados</translation>
 <translation id="989374776391122812">Controles de cámara y audio</translation>
 <translation id="990277280839877440">Se cerró la ventana <ph name="WINDOW_TITILE" />.</translation>

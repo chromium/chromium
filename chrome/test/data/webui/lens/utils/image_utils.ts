@@ -18,18 +18,19 @@ export function waitForScreenshotRendered(selectionOverlay: HTMLElement):
   });
 }
 
-export function fakeScreenshotBitmap(): BitmapMappedFromTrustedProcess {
+export function fakeScreenshotBitmap(
+    width = 1, height = 1): BitmapMappedFromTrustedProcess {
   return {
     imageInfo: {
-      width: 1,
-      height: 1,
+      width,
+      height,
       colorType: 0,
       alphaType: 0,
       colorTransferFunction: [],
       colorToXyzMatrix: [],
     },
     pixelData: {
-      bytes: [0, 0, 0, 0],
+      bytes: Array(4 * width * height).fill(0),
     } as BigBuffer,
     uNUSEDRowBytes: BigInt(0),
   };

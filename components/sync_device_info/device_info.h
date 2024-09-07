@@ -126,7 +126,15 @@ class DeviceInfo {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync_device_info
   //
-  enum class FormFactor { kUnknown = 0, kDesktop = 1, kPhone = 2, kTablet = 3 };
+  enum class FormFactor {
+    kUnknown = 0,
+    kDesktop = 1,
+    kPhone = 2,
+    kTablet = 3,
+    kAutomotive = 4,
+    kWearable = 5,
+    kTv = 6,
+  };
 
   DeviceInfo(
       const std::string& guid,

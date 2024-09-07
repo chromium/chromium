@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -23,6 +24,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -52,11 +54,6 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
    public:
     std::string title;
     Design design = Design::kCurrent;
-    // Unlike `ResultType`, `Intent` won't change depending on a response from
-    // the backend. e.g., (Intent::kDefinition, ResultType::kNoResult) can
-    // happen if our local code thinks we can find a definition but the backend
-    // doesn't. `Intent::kDefinition` is set as a default placeholder value.
-    Intent intent = Intent::kDefinition;
     // Set true to show a Google internal variant of Qucik Answers UI.
     bool is_internal = false;
   };
@@ -77,12 +74,22 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   bool HasFocus() const override;
   void OnFocus() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size GetMaximumSize() const override;
   void UpdateBoundsForQuickAnswers() override;
 
   // Called when a click happens to trigger Assistant Query.
   void SendQuickAnswersQuery();
+
+  // `std::nullopt` means an unknown intent, which is used only from
+  // Linux-ChromeOS. On Linux-ChromeOS, intent generation code is not exercised.
+  // Intent is initially set to `kUnknown` on Linux-ChromeOS and set it to an
+  // actual intent later by the backend, i.e., intent transition `std::nullopt`
+  // -> an intent value. There can be a case where pre-process find an intent
+  // but the backend doesn't find the intent. For that case, the spec is that we
+  // keep the original intent icon/ui, i.e., no transition of an intent value ->
+  // `std::nullopt`.
+  void SetIntent(Intent intent);
+  std::optional<Intent> GetIntent() const;
 
   void SetResult(const StructuredResult& structured_result);
 
@@ -118,19 +125,26 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   void OnPhoneticsAudioButtonPressed(
       const quick_answers::PhoneticsInfo& phonetics_info);
 
+  void UpdateUiText();
+  void UpdateAccessibleName();
+  void UpdateIcon();
+
   base::WeakPtr<QuickAnswersUiController> controller_;
   std::string title_;
   const Design design_;
-  const Intent intent_;
+  std::optional<Intent> intent_ = std::nullopt;
   const bool is_internal_;
 
   raw_ptr<QuickAnswersStageButton> quick_answers_stage_button_ = nullptr;
-  raw_ptr<views::ImageView> icon_view_ = nullptr;
+  raw_ptr<views::Label> refreshed_ui_header_ = nullptr;
+
   raw_ptr<LoadingView> loading_view_ = nullptr;
   raw_ptr<RetryView> retry_view_ = nullptr;
   raw_ptr<ResultView> result_view_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::ImageButton> dogfood_button_ = nullptr;
+
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
   MockGenerateTtsCallback mock_generate_tts_callback_;
 
@@ -142,6 +156,14 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   base::WeakPtrFactory<QuickAnswersView> weak_factory_{this};
 };
 
+BEGIN_VIEW_BUILDER(/* no export */,
+                   QuickAnswersView,
+                   chromeos::ReadWriteCardsView)
+VIEW_BUILDER_PROPERTY(Intent, Intent)
+END_VIEW_BUILDER
+
 }  // namespace quick_answers
+
+DEFINE_VIEW_BUILDER(/* no export */, quick_answers::QuickAnswersView)
 
 #endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_

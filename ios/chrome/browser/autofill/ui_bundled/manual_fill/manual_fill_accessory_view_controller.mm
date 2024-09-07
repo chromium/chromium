@@ -6,27 +6,15 @@
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_accessory_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_accessory_view_controller_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-
-namespace manual_fill {
-
-NSString* const AccessoryKeyboardAccessibilityIdentifier =
-    @"kManualFillAccessoryKeyboardAccessibilityIdentifier";
-NSString* const AccessoryPasswordAccessibilityIdentifier =
-    @"kManualFillAccessoryPasswordAccessibilityIdentifier";
-NSString* const AccessoryAddressAccessibilityIdentifier =
-    @"kManualFillAccessoryAddressAccessibilityIdentifier";
-NSString* const AccessoryCreditCardAccessibilityIdentifier =
-    @"kManualFillAccessoryCreditCardAccessibilityIdentifier";
-
-}  // namespace manual_fill
 
 namespace {
 
@@ -192,7 +180,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
                        symbolNamed:kKeyboardSymbol
                      defaultSymbol:YES
            accessibilityIdentifier:manual_fill::
-                                       AccessoryKeyboardAccessibilityIdentifier
+                                       kAccessoryKeyboardAccessibilityIdentifier
                 accessibilityLabel:l10n_util::GetNSString(
                                        IDS_IOS_MANUAL_FALLBACK_SHOW_KEYBOARD)];
     [icons addObject:self.keyboardButton];
@@ -205,7 +193,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
                      symbolNamed:kPasswordSymbol
                    defaultSymbol:NO
          accessibilityIdentifier:manual_fill::
-                                     AccessoryPasswordAccessibilityIdentifier
+                                     kAccessoryPasswordAccessibilityIdentifier
               accessibilityLabel:l10n_util::GetNSString(
                                      IDS_IOS_MANUAL_FALLBACK_SHOW_PASSWORDS)];
 
@@ -223,7 +211,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
                            symbolNamed:kCreditCardSymbol
                          defaultSymbol:YES
                accessibilityIdentifier:
-                   manual_fill::AccessoryCreditCardAccessibilityIdentifier
+                   manual_fill::kAccessoryCreditCardAccessibilityIdentifier
                     accessibilityLabel:
                         l10n_util::GetNSString(
                             IDS_IOS_MANUAL_FALLBACK_SHOW_CREDIT_CARDS)];
@@ -235,7 +223,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
                      symbolNamed:kLocationSymbol
                    defaultSymbol:NO
          accessibilityIdentifier:manual_fill::
-                                     AccessoryAddressAccessibilityIdentifier
+                                     kAccessoryAddressAccessibilityIdentifier
               accessibilityLabel:l10n_util::GetNSString(
                                      IDS_IOS_MANUAL_FALLBACK_SHOW_ADDRESSES)];
 

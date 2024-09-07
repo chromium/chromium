@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 /** JNI wrapper for C++ PlusAddressCreationViewAndroid. */
 @JNINamespace("plus_addresses")
@@ -38,14 +37,16 @@ public class PlusAddressCreationViewBridge {
     @VisibleForTesting
     /*package*/ PlusAddressCreationViewBridge(
             long nativePlusAddressCreationPromptAndroid,
-            WindowAndroid window,
+            Activity activity,
+            BottomSheetController bottomSheetController,
+            LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
             TabModelSelector tabModelSelector,
             CoordinatorFactory coordinatorFactory) {
         mNativePlusAddressCreationPromptAndroid = nativePlusAddressCreationPromptAndroid;
-        mActivity = window.getActivity().get();
-        mBottomSheetController = BottomSheetControllerProvider.from(window);
-        mLayoutStateProvider = LayoutManagerProvider.from(window);
+        mActivity = activity;
+        mBottomSheetController = bottomSheetController;
+        mLayoutStateProvider = layoutStateProvider;
         mTabModel = tabModel;
         mTabModelSelector = tabModelSelector;
         mCoordinatorFactory = coordinatorFactory;
@@ -60,44 +61,31 @@ public class PlusAddressCreationViewBridge {
                 TabModel tabModel,
                 TabModelSelector tabModelSelector,
                 PlusAddressCreationViewBridge bridge,
-                String modalTitle,
-                String plusAddressDescription,
-                @Nullable String plusAddressNotice,
-                String proposedPlusAddressPlaceholder,
-                String plusAddressModalOkText,
-                @Nullable String plusAddressModalCancelText,
-                String errorReportInstruction,
-                boolean refreshSupported,
-                GURL learnMoreUrl,
-                GURL errorReportUrl);
+                PlusAddressCreationNormalStateInfo info,
+                boolean refreshSupported);
     }
 
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Nullable
     static PlusAddressCreationViewBridge create(
             long nativePlusAddressCreationPromptAndroid, WindowAndroid window, TabModel tabModel) {
         var tabModelSelector = TabModelSelectorSupplier.getValueOrNullFrom(window);
-        assert tabModelSelector != null : "No TabModelSelector available.";
+        if (tabModelSelector == null || window.getActivity().get() == null) {
+            return null;
+        }
         return new PlusAddressCreationViewBridge(
                 nativePlusAddressCreationPromptAndroid,
-                window,
+                window.getActivity().get(),
+                BottomSheetControllerProvider.from(window),
+                LayoutManagerProvider.from(window),
                 tabModel,
                 tabModelSelector,
                 PlusAddressCreationCoordinator::new);
     }
 
     @CalledByNative
-    void show(
-            String modalTitle,
-            String plusAddressDescription,
-            @Nullable String plusAddressNotice,
-            String proposedPlusAddressPlaceholder,
-            String plusAddressModalOkText,
-            @Nullable String plusAddressModalCancelText,
-            String errorReportInstruction,
-            String learnMoreUrl,
-            String errorReportUrl,
-            boolean refreshSupported) {
+    void show(PlusAddressCreationNormalStateInfo info, boolean refreshSupported) {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             mCoordinator =
                     mCoordinatorFactory.create(
@@ -107,16 +95,8 @@ public class PlusAddressCreationViewBridge {
                             mTabModel,
                             mTabModelSelector,
                             this,
-                            modalTitle,
-                            plusAddressDescription,
-                            plusAddressNotice,
-                            proposedPlusAddressPlaceholder,
-                            plusAddressModalOkText,
-                            plusAddressModalCancelText,
-                            errorReportInstruction,
-                            refreshSupported,
-                            new GURL(learnMoreUrl),
-                            new GURL(errorReportUrl));
+                            info,
+                            refreshSupported);
             mCoordinator.requestShowContent();
         }
     }
@@ -135,10 +115,16 @@ public class PlusAddressCreationViewBridge {
         }
     }
 
+    /**
+     * TODO: crbug.com/354881207 - Remove `@Nullable` when enhanced error handling is launched.
+     *
+     * @param errorStateInfo necassary UI information to show a meaningful error message to the
+     *     user.
+     */
     @CalledByNative
-    void showError() {
+    void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
         if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
-            mCoordinator.showError();
+            mCoordinator.showError(errorStateInfo);
         }
     }
 

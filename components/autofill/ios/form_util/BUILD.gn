@@ -96,11 +96,8 @@ compile_ts("child_frame_registration_ts_lib") {
 optimize_ts("child_frame_registration_test_ts") {
   sources = [ "resources/child_frame_registration_test.ts" ]
   deps = [
-    ":autofill_form_features_ts",
     ":child_frame_registration_ts_lib",
-    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -126,9 +123,7 @@ optimize_ts("fill_js") {
   deps = [
     ":child_frame_registration_ts_lib",
     ":fill_js_dependencies",
-    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -145,9 +140,7 @@ optimize_ts("form_js") {
 optimize_ts("form_handlers_js") {
   sources = [ "resources/form_handlers.ts" ]
   deps = [
-    ":autofill_form_features_ts",
     ":child_frame_registration_ts_lib",
-    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -210,6 +203,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test:javascript_test",

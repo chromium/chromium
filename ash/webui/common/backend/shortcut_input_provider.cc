@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -79,11 +80,27 @@ void ShortcutInputProvider::OnShortcutInputEventReleased(
 
 void ShortcutInputProvider::OnPrerewrittenShortcutInputEventPressed(
     const mojom::KeyEvent& key_event) {
+  // We discard the event if it is a function key, so no "post rewrite" event
+  // will be seen.
+  if (key_event.vkey == ui::VKEY_FUNCTION) {
+    for (auto& observer : shortcut_input_observers_) {
+      observer->OnShortcutInputEventPressed(key_event.Clone(), nullptr);
+    }
+    return;
+  }
   prerewritten_event_ = key_event.Clone();
 }
 
 void ShortcutInputProvider::OnPrerewrittenShortcutInputEventReleased(
+    // We discard the event if it is a function key, so no "post rewrite" event
+    // will be seen.
     const mojom::KeyEvent& key_event) {
+  if (key_event.vkey == ui::VKEY_FUNCTION) {
+    for (auto& observer : shortcut_input_observers_) {
+      observer->OnShortcutInputEventReleased(key_event.Clone(), nullptr);
+    }
+    return;
+  }
   prerewritten_event_ = key_event.Clone();
 }
 

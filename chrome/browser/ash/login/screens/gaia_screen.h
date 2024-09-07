@@ -107,6 +107,8 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   void LoadOnlineGaiaForAccount(const AccountId& account,
                                 bool force_default_gaia_page = false);
 
+  bool MaybeLoginWithCachedCredentials();
+
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
   std::unique_ptr<policy::AccountStatusCheckFetcher> account_status_fetcher_;

@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -491,12 +492,9 @@ bool XMLDocumentParser::ParseDocumentFragment(
 
   auto* parser = MakeGarbageCollected<XMLDocumentParser>(
       fragment, context_element, parser_content_policy);
-  if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled()) {
-    parser->exception_copy_ = ExceptionCopy();
-  }
+  parser->exception_copy_ = ExceptionCopy();
   bool well_formed = parser->AppendFragmentSource(chunk);
-  if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled() && exception_state &&
-      parser->exception_copy_->HadException()) {
+  if (exception_state && parser->exception_copy_->HadException()) {
     parser->exception_copy_->ApplyTo(*exception_state);
   }
 
@@ -658,6 +656,12 @@ static void* OpenFunc(const char* uri) {
         network::mojom::RequestMode::kSameOrigin);
     Resource* resource =
         RawResource::FetchSynchronously(params, document->Fetcher());
+
+    if (!AllowedByNosniff::MimeTypeAsXMLExternalEntity(
+            document->GetExecutionContext(), resource->GetResponse())) {
+      return &g_global_descriptor;
+    }
+
     if (!resource->ErrorOccurred()) {
       data = resource->ResourceBuffer();
       final_url = resource->GetResponse().CurrentRequestUrl();
@@ -965,14 +969,12 @@ static inline void HandleElementAttributes(
             initial_prefix_to_namespace_map.find(attr_prefix);
         if (it != initial_prefix_to_namespace_map.end()) {
           attr_uri = it->value;
-        } else if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled()) {
+        } else {
           exception_state.ThrowDOMException(DOMExceptionCode::kNamespaceError,
                                             "Namespace prefix " + attr_prefix +
                                                 " for attribute " + attr_value +
                                                 " is not declared.");
           return;
-        } else {
-          attr_uri = AtomicString();
         }
       }
     }
@@ -1059,8 +1061,7 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
   std::optional<CEReactionsScope> reactions;
   std::optional<ThrowOnDynamicMarkupInsertionCountIncrementer>
       throw_on_dynamic_markup_insertions;
-  if (RuntimeEnabledFeatures::RunMicrotaskBeforeXmlCustomElementEnabled() &&
-      !parsing_fragment_) {
+  if (!parsing_fragment_) {
     if (HTMLConstructionSite::LookUpCustomElementDefinition(*document_, q_name,
                                                             is)) {
       throw_on_dynamic_markup_insertions.emplace(document_);

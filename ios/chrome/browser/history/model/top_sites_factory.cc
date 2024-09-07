@@ -17,7 +17,7 @@
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/history/model/history_utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/web/public/thread/web_thread.h"
 
 namespace ios {

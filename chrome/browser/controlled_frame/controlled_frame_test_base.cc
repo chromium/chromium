@@ -94,7 +94,11 @@ void ControlledFrameTestBase::StartContentServer(
 web_app::IsolatedWebAppUrlInfo
 ControlledFrameTestBase::CreateAndInstallEmptyApp(
     const web_app::ManifestBuilder& manifest_builder) {
-  app_ = web_app::IsolatedWebAppBuilder(manifest_builder).BuildBundle();
+  auto updated_manifest_builder = manifest_builder;
+  updated_manifest_builder.AddPermissionsPolicy(
+      blink::mojom::PermissionsPolicyFeature::kControlledFrame, /*self=*/true,
+      /*origins=*/{});
+  app_ = web_app::IsolatedWebAppBuilder(updated_manifest_builder).BuildBundle();
   app_->TrustSigningKey();
   base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
       app_->Install(profile());

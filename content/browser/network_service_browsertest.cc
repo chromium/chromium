@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -110,8 +107,9 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
       WebUI* web_ui,
       const GURL& url) override {
     std::string foo(url.path());
-    if (url.path() == "/nobinding/")
-      web_ui->SetBindings(BINDINGS_POLICY_NONE);
+    if (url.path() == "/nobinding/") {
+      web_ui->SetBindings(BindingsPolicySet());
+    }
     return HasWebUIScheme(url) ? std::make_unique<WebUIController>(web_ui)
                                : nullptr;
   }
@@ -1660,19 +1658,20 @@ class NetworkServiceWithUDPSocketLimit : public NetworkServiceBrowserTest {
 // ERR_INSUFFICIENT_RESOURCES due to having exceeding the global bound.
 IN_PROC_BROWSER_TEST_F(NetworkServiceWithUDPSocketLimit,
                        UDPSocketBoundEnforced) {
-  constexpr size_t kNumContexts = 2;
+  auto network_contexts =
+      std::to_array<mojo::Remote<network::mojom::NetworkContext>>({
+          CreateNetworkContext(),
+          CreateNetworkContext(),
+      });
 
-  mojo::Remote<network::mojom::NetworkContext> network_contexts[kNumContexts] =
-      {CreateNetworkContext(), CreateNetworkContext()};
-
-  mojo::Remote<network::mojom::UDPSocket> sockets[kMaxUDPSockets];
+  std::array<mojo::Remote<network::mojom::UDPSocket>, kMaxUDPSockets> sockets;
 
   // Try to connect the maximum number of UDP sockets (|kMaxUDPSockets|),
   // spread evenly between 2 NetworkContexts. These should succeed as the
   // global limit has not been reached yet. This assumes there are no
   // other consumers of UDP sockets in the browser yet.
   for (size_t i = 0; i < kMaxUDPSockets; ++i) {
-    auto* network_context = &network_contexts[i % kNumContexts];
+    auto* network_context = &network_contexts[i % network_contexts.size()];
     EXPECT_EQ(net::OK, ConnectUDPSocketSync(network_context, &sockets[i]));
   }
 
@@ -1682,7 +1681,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceWithUDPSocketLimit,
   // is done to ensure the socket limit is global and not per
   // NetworkContext.
   for (size_t i = 0; i < 4; ++i) {
-    auto* network_context = &network_contexts[i % kNumContexts];
+    auto* network_context = &network_contexts[i % network_contexts.size()];
     mojo::Remote<network::mojom::UDPSocket> socket;
     EXPECT_EQ(net::ERR_INSUFFICIENT_RESOURCES,
               ConnectUDPSocketSync(network_context, &socket));

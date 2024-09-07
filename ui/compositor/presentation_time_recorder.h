@@ -5,6 +5,8 @@
 #ifndef UI_COMPOSITOR_PRESENTATION_TIME_RECORDER_H_
 #define UI_COMPOSITOR_PRESENTATION_TIME_RECORDER_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -40,7 +42,7 @@ class COMPOSITOR_EXPORT PresentationTimeRecorder {
   };
 
   explicit PresentationTimeRecorder(
-      std::unique_ptr<PresentationTimeRecorderInternal> internal);
+      raw_ptr<PresentationTimeRecorderInternal> internal);
 
   PresentationTimeRecorder(const PresentationTimeRecorder&) = delete;
   PresentationTimeRecorder& operator=(const PresentationTimeRecorder&) = delete;
@@ -51,12 +53,18 @@ class COMPOSITOR_EXPORT PresentationTimeRecorder {
   // false if the previous frame has not been committed yet.
   bool RequestNext();
 
+  // Returns the average latency of all recordings thus far. Returns `nullopt`
+  // if no recordings have been made.
+  std::optional<base::TimeDelta> GetAverageLatency() const;
+
   // Enable this to report the presentation time immediately with
   // fake value when RequestNext is called.
   static void SetReportPresentationTimeImmediatelyForTest(bool enable);
 
  private:
-  std::unique_ptr<PresentationTimeRecorderInternal> recorder_internal_;
+  // `PresentationTimeRecorderInternal` owns itself. Self destruct when
+  // recording is done or on shutdown (whichever comes first).
+  raw_ptr<PresentationTimeRecorderInternal> recorder_internal_ = nullptr;
 };
 
 // Creates a PresentationTimeRecorder that records timing histograms of

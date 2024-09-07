@@ -26,8 +26,6 @@
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
@@ -567,47 +565,6 @@ TEST_F(BookmarkBarViewTest, PageNavigatorSet) {
   // BookmarkBarView.
   test_helper_->saved_tab_group_bar()->SetPageNavigator(browser());
   EXPECT_TRUE(test_helper_->saved_tab_group_bar()->page_navigator());
-}
-
-TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
-  tab_groups::SavedTabGroupKeyedService* keyed_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser()->profile());
-  ASSERT_TRUE(keyed_service);
-  ASSERT_TRUE(keyed_service->model());
-
-  // Add 3 saved tab groups.
-  keyed_service->model()->Add(
-      tab_groups::SavedTabGroup(std::u16string(u"tab group 1"),
-                                tab_groups::TabGroupColorId::kGrey, {},
-                                std::nullopt)
-          .SetPinned(true));
-
-  base::Uuid button_2_id = base::Uuid::GenerateRandomV4();
-  keyed_service->model()->Add(
-      tab_groups::SavedTabGroup(std::u16string(u"tab group 2"),
-                                tab_groups::TabGroupColorId::kGrey, {},
-                                std::nullopt, button_2_id)
-          .SetPinned(true));
-
-  keyed_service->model()->Add(
-      tab_groups::SavedTabGroup(std::u16string(u"tab group 3"),
-                                tab_groups::TabGroupColorId::kGrey, {},
-                                std::nullopt)
-          .SetPinned(true));
-
-  // Save the position of the 3rd button. The 4th button is an overflow menu
-  // that is only visible when there are more than 4 groups saved.
-  ASSERT_EQ(4u, test_helper_->saved_tab_group_bar()->children().size());
-  const auto* button_3 =
-      test_helper_->saved_tab_group_bar()->children()[2].get();
-  gfx::Rect bounds_in_screen = button_3->GetBoundsInScreen();
-
-  // Remove the middle tab group.
-  keyed_service->model()->Remove(button_2_id);
-
-  // Make sure the positions of the buttons were updated.
-  EXPECT_EQ(bounds_in_screen, button_3->GetBoundsInScreen());
 }
 
 TEST_F(BookmarkBarViewTest, GetAvailableWidthForSavedTabGroupsBar) {

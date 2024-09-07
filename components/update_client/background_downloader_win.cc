@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#include "background_downloader_win.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
@@ -30,6 +29,7 @@
 #include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -925,7 +925,7 @@ void BackgroundDownloader::EnumerateDownloadDirs(
   DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
   base::FilePath dir;
   std::vector<base::FilePath> dirs;
-  if (base::GetSecureSystemTemp(&dir)) {
+  if (base::PathService::Get(base::DIR_SYSTEM_TEMP, &dir)) {
     dirs.push_back(dir);
   }
   if (base::GetTempDir(&dir)) {

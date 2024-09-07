@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -37,6 +38,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -343,6 +346,32 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(emptyNtpDetails, null, true);
 
         verifyNoMoreInteractions(mIncognitoTabCreator);
+    }
+
+    @Test
+    @SmallTest
+    @Feature("TabPersistentStore")
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH)
+    public void testDuplicateTabIds() {
+        mPersistentStore =
+                new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager);
+        mPersistentStore.initializeRestoreVars(false);
+
+        TabRestoreDetails regularTabRestoreDetails =
+                new TabRestoreDetails(RESTORE_TAB_ID_1, 2, false, RESTORE_TAB_STRING_1, false);
+        TabRestoreDetails regularTabRestoreDetailsDupe =
+                new TabRestoreDetails(RESTORE_TAB_ID_1, 2, false, RESTORE_TAB_STRING_1, false);
+        TabState state = new TabState();
+        mPersistentStore.restoreTab(regularTabRestoreDetails, state, false);
+        mPersistentStore.restoreTab(regularTabRestoreDetailsDupe, state, false);
+
+        // Restoring a dupe should only create a single tab, and skip the second.
+        verify(mNormalTabCreator, times(1)).createFrozenTab(eq(state), eq(RESTORE_TAB_ID_1), eq(0));
     }
 
     @Test

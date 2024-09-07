@@ -206,7 +206,8 @@ constexpr std::array<ZoomListBucket, 8> kZoomListBuckets{{
 // zoom values that includes a zoom level to go to the native resolution of the
 // display. Ensure that the list of DSFs are in sync with the list of default
 // device scale factors in display_change_observer.cc.
-constexpr std::array<ZoomListBucketDsf, 8> kZoomListBucketsForDsf{{
+constexpr std::array<ZoomListBucketDsf, 9> kZoomListBucketsForDsf{{
+    {1.2f, {0.7f, 0.8f, 1.0f / 1.2f, 0.9f, 0.95f, 1.0f, 1.1f, 1.2f, 1.3f}},
     {1.25f, {0.7f, 1.f / 1.25f, 0.85f, 0.9f, 0.95f, 1.f, 1.1f, 1.2f, 1.3f}},
     {1.6f, {1.f / 1.6f, 0.7f, 0.75f, 0.8f, 0.85f, 0.9f, 1.f, 1.15f, 1.3f}},
     {kDsf_1_777,

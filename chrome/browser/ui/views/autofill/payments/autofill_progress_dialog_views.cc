@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -30,8 +31,9 @@ namespace autofill {
 AutofillProgressDialogViews::AutofillProgressDialogViews(
     base::WeakPtr<AutofillProgressDialogController> controller)
     : controller_(controller) {
-  SetButtons(ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_->GetCancelButtonLabel());
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 controller_->GetCancelButtonLabel());
   SetCancelCallback(
       base::BindOnce(&AutofillProgressDialogViews::OnDialogCanceled,
                      weak_ptr_factory_.GetWeakPtr()));

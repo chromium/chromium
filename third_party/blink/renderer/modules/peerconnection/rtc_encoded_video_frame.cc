@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_decode_target_indication.h"
@@ -127,8 +128,18 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
 
 RTCEncodedVideoFrame::RTCEncodedVideoFrame(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame)
+    : RTCEncodedVideoFrame(std::move(webrtc_frame),
+                           base::UnguessableToken::Null(),
+                           0) {}
+
+RTCEncodedVideoFrame::RTCEncodedVideoFrame(
+    std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame,
+    base::UnguessableToken owner_id,
+    int64_t counter)
     : delegate_(base::MakeRefCounted<RTCEncodedVideoFrameDelegate>(
-          std::move(webrtc_frame))) {}
+          std::move(webrtc_frame))),
+      owner_id_(owner_id),
+      counter_(counter) {}
 
 RTCEncodedVideoFrame::RTCEncodedVideoFrame(
     scoped_refptr<RTCEncodedVideoFrameDelegate> delegate)
@@ -142,9 +153,9 @@ uint32_t RTCEncodedVideoFrame::timestamp() const {
   return delegate_->RtpTimestamp();
 }
 
-DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
+DOMArrayBuffer* RTCEncodedVideoFrame::data(ExecutionContext* context) const {
   if (!frame_data_) {
-    frame_data_ = delegate_->CreateDataBuffer();
+    frame_data_ = delegate_->CreateDataBuffer(context->GetIsolate());
   }
   return frame_data_.Get();
 }
@@ -194,6 +205,13 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   metadata->setRtpTimestamp(delegate_->RtpTimestamp());
 
   return metadata;
+}
+
+base::UnguessableToken RTCEncodedVideoFrame::OwnerId() {
+  return owner_id_;
+}
+int64_t RTCEncodedVideoFrame::Counter() {
+  return counter_;
 }
 
 base::expected<void, String> RTCEncodedVideoFrame::SetMetadata(
@@ -263,11 +281,11 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
   }
 }
 
-void RTCEncodedVideoFrame::setData(DOMArrayBuffer* data) {
+void RTCEncodedVideoFrame::setData(ExecutionContext*, DOMArrayBuffer* data) {
   frame_data_ = data;
 }
 
-String RTCEncodedVideoFrame::toString() const {
+String RTCEncodedVideoFrame::toString(ExecutionContext* context) const {
   if (!delegate_) {
     return "empty";
   }
@@ -276,7 +294,7 @@ String RTCEncodedVideoFrame::toString() const {
   sb.Append("RTCEncodedVideoFrame{rtpTimestamp: ");
   sb.AppendNumber(timestamp());
   sb.Append(", size: ");
-  sb.AppendNumber(data()->ByteLength());
+  sb.AppendNumber(data(context)->ByteLength());
   sb.Append(" bytes, type: ");
   sb.Append(type());
   sb.Append("}");
@@ -294,9 +312,21 @@ scoped_refptr<RTCEncodedVideoFrameDelegate> RTCEncodedVideoFrame::Delegate()
 }
 
 std::unique_ptr<webrtc::TransformableVideoFrameInterface>
-RTCEncodedVideoFrame::PassWebRtcFrame() {
+RTCEncodedVideoFrame::PassWebRtcFrame(v8::Isolate* isolate,
+                                      bool detach_frame_data) {
   SyncDelegate();
-  return delegate_->PassWebRtcFrame();
+  auto transformable_video_frame = delegate_->PassWebRtcFrame();
+  // Detach the `frame_data_` ArrayBuffer if it's been created, as described in
+  // the transfer on step 5 of the encoded transform spec write steps
+  // (https://www.w3.org/TR/webrtc-encoded-transform/#stream-processing)
+  if (detach_frame_data && frame_data_ && !frame_data_->IsDetached()) {
+    CHECK(isolate);
+    ArrayBufferContents contents_to_drop;
+    NonThrowableExceptionState exception_state;
+    CHECK(frame_data_->Transfer(isolate, v8::Local<v8::Value>(),
+                                contents_to_drop, exception_state));
+  }
+  return transformable_video_frame;
 }
 
 void RTCEncodedVideoFrame::Trace(Visitor* visitor) const {

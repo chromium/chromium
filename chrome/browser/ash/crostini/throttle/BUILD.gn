@@ -14,7 +14,10 @@ static_library("throttle") {
     "crostini_throttle.h",
   ]
 
-  public_deps = [ "//components/keyed_service/core" ]
+  public_deps = [
+    "//chromeos/ash/components/throttle",
+    "//components/keyed_service/core",
+  ]
 
   deps = [
     "//ash/public/cpp",
@@ -40,7 +43,6 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/guest_os",
     "//chrome/test:test_support",

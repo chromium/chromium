@@ -95,7 +95,7 @@ UIImageView* CheckmarkIcon() {
               weakPasswordsCount:(NSInteger)weakPasswordsCount
             reusedPasswordsCount:(NSInteger)reusedPasswordsCount
        compromisedPasswordsCount:(NSInteger)compromisedPasswordsCount {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _itemType = itemType;
     _layoutType = layoutType;
     _weakPasswordsCount = weakPasswordsCount;

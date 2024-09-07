@@ -93,6 +93,16 @@ interface PageHandler {
       map<string, string> fields)
       => (string? result);
 
+  // Validates the `text` is safe or not with the given `safety_feature` and
+  // `safety_info`. The `safety_info` should be the result returned by
+  // `ClassifyTextSafety()` from `on_device_model.mojom.OnDeviceModel`. Returns
+  // true if the `text` is safe.
+  ValidateSafetyResult(
+      on_device_model.mojom.SafetyFeature safety_feature,
+      string text,
+      on_device_model.mojom.SafetyInfo safety_info)
+      => (bool is_safe);
+
   // Adds a new monitor for model state change.
   // Returns the current state.
   AddModelMonitor(
@@ -142,4 +152,21 @@ interface PageHandler {
 
   // Sets the system quiet mode.
   SetQuietMode(bool quiet_mode);
+
+  // Gets whether speaker label can be used for current profile.
+  // Note that there are some other requirements for speaker label (SODA is
+  // downloaded and installed, the language pack supports it, ...), but this
+  // method specifically only query if the current profile has the capabilities
+  // needed to use speaker label.
+  CanUseSpeakerLabelForCurrentProfile() => (bool supported);
+
+  // Records the consent of speaker label from user.
+  // Since the frontend doesn't have info about resource ID, the given
+  // consent_description_names and consent_confirmation_name corresponds to the
+  // name (camelCase, without the IDS_RECORDER prefix) in the resources.h, and
+  // will be converted back to the corresponding numbered resource IDs.
+  RecordSpeakerLabelConsent(
+      bool consent_given,
+      array<string> consent_description_names,
+      string consent_confirmation_name);
 };

@@ -3052,7 +3052,8 @@ TEST(URLCanonTest, DefaultPortForScheme) {
   for (const auto& test_case : cases) {
     SCOPED_TRACE(test_case.scheme);
     EXPECT_EQ(test_case.expected_port,
-              DefaultPortForScheme(test_case.scheme, strlen(test_case.scheme)));
+              DefaultPortForScheme(std::string_view(test_case.scheme,
+                                                    strlen(test_case.scheme))));
   }
 }
 

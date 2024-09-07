@@ -76,6 +76,11 @@ FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::GetPolicy() const {
   return policy_;
 }
 
+SchedulingPolicy::Feature
+FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::GetFeature() const {
+  return feature_;
+}
+
 const FeatureAndJSLocationBlockingBFCache& FrameOrWorkerScheduler::
     SchedulingAffectingFeatureHandle::GetFeatureAndJSLocationBlockingBFCache()
         const {

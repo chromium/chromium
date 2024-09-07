@@ -4,14 +4,22 @@
 
 #include "components/attribution_reporting/privacy_math.h"
 
+#include <stdint.h>
+
 #include <limits>
+#include <optional>
+#include <sstream>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/timer/lap_timer.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,83 +29,158 @@
 namespace attribution_reporting {
 namespace {
 
-struct NumStatesTestCase {
-  std::string story_name;
-  MaxEventLevelReports max_reports;
-  std::vector<int> windows_per_type;
+struct TriggerConfig {
+  int max_reports;
+  int num_windows;
+  int trigger_data_cardinality;
 };
 
-const NumStatesTestCase kNumStatesTestCases[] = {
-    {"default_nav", MaxEventLevelReports(3),
-     std::vector<int>(/*count=*/8, /*value=*/3)},
+struct ScopesConfig {
+  uint32_t attribution_scope_limit;
+  uint32_t max_event_states;
+};
 
-    {"default_event", MaxEventLevelReports(1),
-     std::vector<int>(/*count=*/2, /*value=*/1)},
+using ScopedCollapsibleTriggerConfig =
+    std::tuple</*collapse=*/bool, TriggerConfig, std::optional<ScopesConfig>>;
 
-    // r = max event level reports
-    // w = num windows
-    // t = trigger data types
-    {"(20r,5w,8t)", MaxEventLevelReports(20),
-     std::vector<int>(/*count=*/8, /*value=*/5)},
+std::string StoryName(const ScopedCollapsibleTriggerConfig& p) {
+  std::stringstream name;
 
-    {"(20r,5w,32t)", MaxEventLevelReports(20),
-     std::vector<int>(/*count=*/32, /*value=*/5)},
+  const TriggerConfig& tc = std::get<1>(p);
+  name << tc.max_reports << "r_"  //
+       << tc.num_windows << "w_"  //
+       << tc.trigger_data_cardinality << "t";
+
+  if (const std::optional<ScopesConfig>& scopes = std::get<2>(p)) {
+    name << "_" << scopes->attribution_scope_limit << "s_"  //
+         << scopes->max_event_states << "m_scoped";
+  }
+
+  if (std::get<0>(p)) {
+    name << "_collapsed";
+  }
+  return std::move(name).str();
+}
+
+constexpr TriggerConfig kTriggerConfigs[] = {
+    // default navigation source
+    {
+        .max_reports = 3,
+        .num_windows = 3,
+        .trigger_data_cardinality = 8,
+    },
+    // default event source
+    {
+        .max_reports = 1,
+        .num_windows = 1,
+        .trigger_data_cardinality = 2,
+    },
+    {
+        .max_reports = 20,
+        .num_windows = 5,
+        .trigger_data_cardinality = 8,
+    },
+    {
+        .max_reports = 20,
+        .num_windows = 5,
+        .trigger_data_cardinality = 32,
+    },
+};
+
+constexpr std::optional<ScopesConfig> kScopeConfigs[] = {
+    // null scopes
+    std::nullopt,
+    // simple scopes
+    ScopesConfig{
+        .attribution_scope_limit = 3,
+        .max_event_states = 3,
+    },
+    ScopesConfig{
+        .attribution_scope_limit = 5,
+        .max_event_states = std::numeric_limits<uint32_t>::max(),
+    },
+    ScopesConfig{
+        .attribution_scope_limit = 10,
+        .max_event_states = std::numeric_limits<uint32_t>::max(),
+    },
+    ScopesConfig{
+        .attribution_scope_limit = 20,
+        .max_event_states = std::numeric_limits<uint32_t>::max(),
+    },
 };
 
 class PrivacyMathPerfTest
     : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, NumStatesTestCase>> {
+      public testing::WithParamInterface<ScopedCollapsibleTriggerConfig> {
+ protected:
+  template <typename Func>
+  void Run(const std::string& metric_basename, Func&& func) const {
+    const auto& [collapse, tc, sc] = GetParam();
+    const TriggerSpecs specs = SpecsFromWindowList(
+        std::vector<int>(/*count=*/tc.trigger_data_cardinality,
+                         /*value=*/tc.num_windows),
+        collapse, MaxEventLevelReports(tc.max_reports));
+    std::optional<AttributionScopesData> scopes;
+    if (sc.has_value()) {
+      scopes = AttributionScopesData::Create(AttributionScopesSet({"1"}),
+                                             sc->attribution_scope_limit,
+                                             sc->max_event_states);
+      ASSERT_TRUE(scopes);
+    }
+
+    base::LapTimer timer;
+    do {
+      auto result = func(specs, scopes);
+      ::benchmark::DoNotOptimize(result);
+      timer.NextLap();
+    } while (!timer.HasTimeLimitExpired());
+
+    perf_test::PerfResultReporter reporter(metric_basename,
+                                           StoryName(GetParam()));
+    reporter.RegisterImportantMetric(".wall_time", "ms");
+    reporter.AddResult(".wall_time", timer.TimePerLap());
+  }
 };
 
 TEST_P(PrivacyMathPerfTest, NumStates) {
-  const auto [collapse, test_case] = GetParam();
-  const auto specs = SpecsFromWindowList(test_case.windows_per_type, collapse,
-                                         test_case.max_reports);
-
-  base::LapTimer timer;
-  do {
-    auto result = GetNumStates(specs);
-
-    ::benchmark::DoNotOptimize(result);
-
-    timer.NextLap();
-  } while (!timer.HasTimeLimitExpired());
-
-  std::string story = test_case.story_name + (collapse ? "(collapsed)" : "");
-  perf_test::PerfResultReporter reporter("AttributionReporting.NumStates",
-                                         story);
-  reporter.RegisterImportantMetric(".wall_time", "ms");
-  reporter.AddResult(".wall_time", 1e6 / timer.LapsPerSecond());
+  if (std::get<2>(GetParam())) {
+    GTEST_SKIP();
+  }
+  Run("AttributionReporting.NumStates",
+      [](const TriggerSpecs& specs,
+         const std::optional<AttributionScopesData>& scopes) {
+        return GetNumStates(specs);
+      });
 }
 
 TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
-  const auto [collapse, test_case] = GetParam();
-  const auto specs = SpecsFromWindowList(test_case.windows_per_type, collapse,
-                                         test_case.max_reports);
+  attribution_reporting::ScopedMaxNavigationChannelCapacityForTesting
+      scoped_max_navigation_channel_capacity(
+          std::numeric_limits<double>::infinity());
 
-  base::LapTimer timer;
-  do {
-    auto result = DoRandomizedResponse(
-        specs,
-        /*epsilon=*/0,
-        /*max_channel_capacity=*/std::numeric_limits<double>::infinity());
+  attribution_reporting::ScopedMaxScopesNavigationChannelCapacityForTesting
+      scoped_max_scopes_navigation_channel_capacity(
+          std::numeric_limits<double>::infinity());
 
-    ::benchmark::DoNotOptimize(result);
-
-    timer.NextLap();
-  } while (!timer.HasTimeLimitExpired());
-
-  std::string story = test_case.story_name + (collapse ? " (collapsed)" : "");
-  perf_test::PerfResultReporter reporter(
-      "AttributionReporting.RandomizedResponse", story);
-  reporter.RegisterImportantMetric(".wall_time", "ms");
-  reporter.AddResult(".wall_time", (1e6 / timer.LapsPerSecond()));
+  Run("AttributionReporting.RandomizedResponse",
+      [](const TriggerSpecs& specs,
+         const std::optional<AttributionScopesData>& scopes) {
+        return DoRandomizedResponse(
+            specs,
+            /*epsilon=*/0,
+            /*source_type=*/mojom::SourceType::kNavigation, scopes);
+      });
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     PrivacyMathPerfTest,
-    testing::Combine(testing::Bool(), testing::ValuesIn(kNumStatesTestCases)));
+    testing::Combine(/*collapse=*/testing::Bool(),
+                     testing::ValuesIn(kTriggerConfigs),
+                     testing::ValuesIn(kScopeConfigs)),
+    [](const testing::TestParamInfo<ScopedCollapsibleTriggerConfig>& info) {
+      return StoryName(info.param);
+    });
 
 }  // namespace
 }  // namespace attribution_reporting

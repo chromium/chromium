@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_UI_CONTROLLER_H_
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_UI_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_tracker.h"
@@ -55,11 +58,14 @@ class QuickAnswersUiController {
   void CreateQuickAnswersView(Profile* profile,
                               const std::string& title,
                               const std::string& query,
+                              std::optional<quick_answers::Intent> intent,
+                              QuickAnswersState::FeatureType feature_type,
                               bool is_internal);
 
   void CreateQuickAnswersViewForPixelTest(
       Profile* profile,
       const std::string& query,
+      std::optional<quick_answers::Intent> intent,
       quick_answers::QuickAnswersView::Params params);
 
   // Returns true if there was a QuickAnswersView to close.
@@ -85,10 +91,16 @@ class QuickAnswersUiController {
   void ShowRetry();
 
   // Creates a view for asking the user for consent about the Quick Answers
-  // feature vertically aligned to the anchor.
+  // feature vertically aligned to the anchor. Note that user consent is handled
+  // by Quick Answers code only if `QuickAnswersState::FeatureType` is
+  // `kQuickAnswers`.
   void CreateUserConsentView(const gfx::Rect& anchor_bounds,
-                             const std::u16string& intent_type,
+                             quick_answers::IntentType intent_type,
                              const std::u16string& intent_text);
+  void CreateUserConsentViewForPixelTest(const gfx::Rect& anchor_bounds,
+                                         quick_answers::IntentType intent_type,
+                                         const std::u16string& intent_text,
+                                         bool use_refreshed_design);
 
   // Closes the user consent view.
   void CloseUserConsentView();
@@ -143,11 +155,18 @@ class QuickAnswersUiController {
   void OpenSettings();
   void OpenFeedbackPage(const std::string& feedback_template);
   void OpenWebUrl(const GURL& url);
+  void OnUserConsentNoThanksPressed();
+  void OnUserConsentAllowPressed();
 
   void CreateQuickAnswersViewInternal(
       Profile* profile,
       const std::string& query,
+      std::optional<quick_answers::Intent> intent,
       quick_answers::QuickAnswersView::Params params);
+  void CreateUserConsentViewInternal(const gfx::Rect& anchor_bounds,
+                                     quick_answers::IntentType intent_type,
+                                     const std::u16string& intent_text,
+                                     bool use_refreshed_design);
 
   // Constructs/resets the Quick Answers rich card view.
   void CreateRichAnswersView();

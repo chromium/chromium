@@ -54,15 +54,17 @@ found in the LICENSE file.
                 android:contentDescription="@string/price_insights_open_url_button_content_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/price_insights_open_jackpot_url_button_text_start_padding"
+                android:text="@string/price_insights_open_url_title"
+                app:drawableEndCompat="@drawable/ic_open_in_new_20dp"
+                android:paddingStart="@dimen/open_jackpot_url_button_text_horizontal_padding"
                 android:paddingEnd="@dimen/price_insights_general_padding"
-                android:paddingTop="@dimen/price_insights_general_padding"
-                android:paddingBottom="@dimen/price_insights_general_padding"
+                android:paddingVertical="@dimen/open_jackpot_url_button_text_vertical_padding"
                 android:clickable="true"
                 android:focusable="true"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary"
                 android:background="@drawable/price_insights_sheet_bottom_corner_background"
-                android:foreground="?attr/selectableItemBackground"/>
+                android:foreground="?attr/selectableItemBackground"
+                android:visibility="gone"/>
 
     <!-- End of scroll view wrapper -->
         </LinearLayout>

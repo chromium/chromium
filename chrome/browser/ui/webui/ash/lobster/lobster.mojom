@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 3
+
 module lobster.mojom;
 
 import "url/mojom/url.mojom";
@@ -32,6 +34,11 @@ struct Error {
     string message@1;
 };
 
+struct FeedbackPreview {
+  map<string, string> fields;
+  url.mojom.Url preview_data_url;
+};
+
 // Responses from the server.
 union Response {
     array<Candidate> candidates@0;
@@ -52,4 +59,13 @@ interface LobsterPageHandler {
 
   // Queues the given candidate for download
   CommitAsDownload@3(uint32 candidate_id) => (bool status);
+
+  // Constructs and returns a feedback report preview
+  [MinVersion=2] PreviewFeedback@4(uint32 candidate_id)
+    => (FeedbackPreview preview);
+
+  // Construct and submits a feedback report for the given candidate
+  [MinVersion=2] SubmitFeedback@5(uint32 candidate_id,
+                   string description) => (bool status);
+
 };

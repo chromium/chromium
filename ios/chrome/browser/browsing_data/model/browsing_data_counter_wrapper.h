@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_COUNTER_WRAPPER_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_COUNTER_WRAPPER_H_
 
-#include <memory>
-#include <string_view>
+#import <memory>
+#import <string_view>
 
-#include "base/functional/callback_forward.h"
-#include "components/browsing_data/core/counters/browsing_data_counter.h"
+#import "base/functional/callback_forward.h"
+#import "components/browsing_data/core/counters/browsing_data_counter.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class PrefService;
 
 // Wrapper around a browsing data volume counter that bridges the update counter

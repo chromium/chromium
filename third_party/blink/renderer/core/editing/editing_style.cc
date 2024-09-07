@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -101,7 +102,7 @@ static const CSSPropertyID kStaticEditingProperties[] = {
     CSSPropertyID::kWebkitTextStrokeColor,
     CSSPropertyID::kWebkitTextStrokeWidth,
     CSSPropertyID::kCaretColor,
-    CSSPropertyID::kTextWrap,
+    CSSPropertyID::kTextWrapMode,
     CSSPropertyID::kWhiteSpaceCollapse,
 };
 
@@ -1049,10 +1050,17 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
     // e-mail, etc., `white-space` is more interoperable when
     // `white-space-collapse` is not broadly supported. See crbug.com/1417543
     // and `editing/pasteboard/pasting-tabs.html`.
+#if EXPENSIVE_DCHECKS_ARE_ON()
     DCHECK_NE(property_id, CSSPropertyID::kWhiteSpace);
+    DCHECK_EQ(whiteSpaceShorthand().length(), 2u);
+    DCHECK_EQ(whiteSpaceShorthand().properties()[0]->PropertyID(),
+              CSSPropertyID::kWhiteSpaceCollapse);
+    DCHECK_EQ(whiteSpaceShorthand().properties()[1]->PropertyID(),
+              CSSPropertyID::kTextWrapMode);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
     const bool is_whitespace_property =
         property_id == CSSPropertyID::kWhiteSpaceCollapse ||
-        property_id == CSSPropertyID::kTextWrap;
+        property_id == CSSPropertyID::kTextWrapMode;
     if (is_whitespace_property && IsTabHTMLSpanElement(element)) {
       continue;
     }

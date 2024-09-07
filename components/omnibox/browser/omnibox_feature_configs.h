@@ -135,24 +135,6 @@ struct ForceAllowedToBeDefault : Config<ForceAllowedToBeDefault> {
   bool enabled;
 };
 
-// If enabled, only suggestions from the keyword mode provider and historical
-// keyword mode suggestions will be shown in keyword mode.
-struct LimitKeywordModeSuggestions : Config<LimitKeywordModeSuggestions> {
-  DECLARE_FEATURE(kLimitKeywordModeSuggestions);
-  LimitKeywordModeSuggestions();
-  bool enabled;
-
-  // If enabled, limits document provider suggestions except for the Google
-  // Drive keyword engine.
-  bool limit_document_suggestions;
-  // If enabled, limits history cluster suggestions in keyword mode.
-  bool limit_history_cluster_suggestions;
-  // If enabled, limits default search engine suggestions in keyword mode.
-  bool limit_dse_suggestions;
-  // If enabled, limits on device head uggestions in keyword mode.
-  bool limit_on_device_head_suggestions;
-};
-
 // If enabled, NTP Realbox second column will allow displaying contextual and
 // trending suggestions.
 struct RealboxContextualAndTrendingSuggestions

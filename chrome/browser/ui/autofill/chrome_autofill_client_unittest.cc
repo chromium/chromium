@@ -111,6 +111,7 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
        std::optional<
            payments::PaymentsAutofillClient::OnConfirmationClosedCallback>),
       (override));
+  MOCK_METHOD(void, HideSaveCardBubble, (), (override));
 };
 #endif
 
@@ -433,7 +434,8 @@ TEST_F(ChromeAutofillClientTest,
                   true, A<std::optional<payments::PaymentsAutofillClient::
                                             OnConfirmationClosedCallback>>()));
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
-      true, /*on_confirmation_closed_callback=*/std::nullopt);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
 TEST_F(ChromeAutofillClientTest,
@@ -443,7 +445,23 @@ TEST_F(ChromeAutofillClientTest,
                   false, A<std::optional<payments::PaymentsAutofillClient::
                                              OnConfirmationClosedCallback>>()));
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
-      false, /*on_confirmation_closed_callback=*/std::nullopt);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      /*on_confirmation_closed_callback=*/std::nullopt);
+}
+
+// Test that on getting client-side timeout, save card dialog is dismissed and
+// confirmation dialog is not shown.
+TEST_F(ChromeAutofillClientTest,
+       CreditCardUploadCompleted_NoConfirmationBubbleView_OnRequestTimeout) {
+  EXPECT_CALL(save_card_bubble_controller(), HideSaveCardBubble());
+  EXPECT_CALL(save_card_bubble_controller(),
+              ShowConfirmationBubbleView(
+                  false, A<std::optional<payments::PaymentsAutofillClient::
+                                             OnConfirmationClosedCallback>>()))
+      .Times(0);
+  client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout,
+      /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
 TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {
@@ -462,7 +480,7 @@ TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {
 
   // Account profile
   AutofillProfile profile2 = test::GetFullProfile();
-  test_api(profile2).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile2).set_record_type(AutofillProfile::RecordType::kAccount);
   client()->ShowEditAddressProfileDialog(profile2, base::DoNothing());
   std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
       web_contents()->GetBrowserContext());

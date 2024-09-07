@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
+#include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 
 namespace blink {
 
@@ -148,9 +149,8 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoClosed:
     case CSSSelector::kPseudoDialogInTopLayer:
     case CSSSelector::kPseudoSelectFallbackButton:
-    case CSSSelector::kPseudoSelectFallbackButtonIcon:
     case CSSSelector::kPseudoSelectFallbackButtonText:
-    case CSSSelector::kPseudoSelectFallbackDatalist:
+    case CSSSelector::kPseudoPicker:
     case CSSSelector::kPseudoPopoverInTopLayer:
     case CSSSelector::kPseudoPopoverOpen:
     case CSSSelector::kPseudoSlotted:
@@ -1814,9 +1814,7 @@ void RuleInvalidationDataVisitor<VisitorType>::AddFeaturesToInvalidationSet(
     }
   }
   if (features.invalidation_flags.WholeSubtreeInvalid()) {
-    if constexpr (is_builder()) {
-      invalidation_set->SetWholeSubtreeInvalid();
-    }
+    SetWholeSubtreeInvalid(invalidation_set);
   }
   if (features.invalidation_flags.InvalidatesParts()) {
     if constexpr (is_builder()) {
@@ -1832,26 +1830,43 @@ void RuleInvalidationDataVisitor<VisitorType>::AddFeaturesToInvalidationSet(
     if constexpr (is_builder()) {
       invalidation_set->AddId(id);
     }
+    InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+        invalidation_set,
+        InvalidationSetToSelectorMap::SelectorFeatureType::kId, id);
   }
   for (const auto& tag_name : features.tag_names) {
     if constexpr (is_builder()) {
       invalidation_set->AddTagName(tag_name);
     }
+    InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+        invalidation_set,
+        InvalidationSetToSelectorMap::SelectorFeatureType::kTagName, tag_name);
   }
   for (const auto& emitted_tag_name : features.emitted_tag_names) {
     if constexpr (is_builder()) {
       invalidation_set->AddTagName(emitted_tag_name);
     }
+    InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+        invalidation_set,
+        InvalidationSetToSelectorMap::SelectorFeatureType::kTagName,
+        emitted_tag_name);
   }
   for (const auto& class_name : features.classes) {
     if constexpr (is_builder()) {
       invalidation_set->AddClass(class_name);
     }
+    InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+        invalidation_set,
+        InvalidationSetToSelectorMap::SelectorFeatureType::kClass, class_name);
   }
   for (const auto& attribute : features.attributes) {
     if constexpr (is_builder()) {
       invalidation_set->AddAttribute(attribute);
     }
+    InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+        invalidation_set,
+        InvalidationSetToSelectorMap::SelectorFeatureType::kAttribute,
+        attribute);
   }
   if (features.invalidation_flags.InvalidateCustomPseudo()) {
     if constexpr (is_builder()) {
@@ -1866,6 +1881,10 @@ void RuleInvalidationDataVisitor<VisitorType>::SetWholeSubtreeInvalid(
   if constexpr (is_builder()) {
     invalidation_set->SetWholeSubtreeInvalid();
   }
+  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+      invalidation_set,
+      InvalidationSetToSelectorMap::SelectorFeatureType::kWholeSubtree,
+      g_empty_atom);
 }
 
 template <RuleInvalidationDataVisitorType VisitorType>

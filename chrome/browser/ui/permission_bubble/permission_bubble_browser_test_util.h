@@ -8,13 +8,14 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
 #include "components/permissions/permission_prompt.h"
+
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
-#include "url/gurl.h"
+#endif
 
 namespace base {
 class CommandLine;

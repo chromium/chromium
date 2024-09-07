@@ -11,7 +11,7 @@ import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file
 import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {IwaDevModeLocation} from './web_app_internals.mojom-webui.js';
+import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation, ParseUpdateManifestFromUrlResult, UpdateManifest, VersionEntry} from './web_app_internals.mojom-webui.js';
 import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
 
 const webAppInternalsHandler = WebAppInternalsHandler.getRemote();
@@ -24,6 +24,12 @@ const iwaDevProxyInstallButton =
     getRequiredElement('iwa-dev-install-proxy-button') as HTMLButtonElement;
 const iwaDevProxyInstallUrl =
     getRequiredElement('iwa-dev-install-proxy-url') as HTMLInputElement;
+
+const iwaDevUpdateManifestUrl =
+    getRequiredElement('iwa-dev-update-manifest-url') as HTMLInputElement;
+
+const iwaDevUpdateManifestDialog =
+    getRequiredElement('iwa-update-manifest-dialog') as HTMLDialogElement;
 
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
@@ -83,8 +89,7 @@ getRequiredElement('download-button').addEventListener('click', async () => {
 });
 
 function updateDevProxyInstallButtonState() {
-  iwaDevProxyInstallButton.disabled =
-      (iwaDevProxyInstallUrl.value.length === 0);
+  iwaDevProxyInstallButton.disabled = iwaDevProxyInstallUrl.value.length === 0;
 }
 
 async function iwaDevProxyInstall() {
@@ -116,9 +121,10 @@ async function iwaDevProxyInstall() {
 
   const location: Url = {url: iwaDevProxyInstallUrl.value};
 
-  const installFromDevProxy =
-      await webAppInternalsHandler.installIsolatedWebAppFromDevProxy(location);
-  if (installFromDevProxy.result.success) {
+  const result: InstallIsolatedWebAppResult =
+      (await webAppInternalsHandler.installIsolatedWebAppFromDevProxy(location))
+          .result;
+  if (result.success) {
     iwaInstallMessageDiv.innerText = `Installing IWA: ${
         iwaDevProxyInstallUrl.value} successfully installed.`;
     iwaDevProxyInstallUrl.value = '';
@@ -127,9 +133,8 @@ async function iwaDevProxyInstall() {
     return;
   }
 
-  iwaInstallMessageDiv.innerText =
-      `Installing IWA: ${iwaDevProxyInstallUrl.value} failed to install: ${
-          installFromDevProxy.result.error}`;
+  iwaInstallMessageDiv.innerText = `Installing IWA: ${
+      iwaDevProxyInstallUrl.value} failed to install: ${result.error}`;
   updateDevProxyInstallButtonState();
 }
 iwaDevProxyInstallUrl.addEventListener('enter', iwaDevProxyInstall);
@@ -152,29 +157,183 @@ getRequiredElement('iwa-dev-install-bundle-selector')
 
       iwaInstallMessageDiv.innerText = `Installing IWA from bundle...`;
 
-      const installFromDevBundle =
-          await webAppInternalsHandler
-              .selectFileAndInstallIsolatedWebAppFromDevBundle();
-      if (installFromDevBundle.result.success) {
+      const result: InstallIsolatedWebAppResult =
+          (await webAppInternalsHandler
+               .selectFileAndInstallIsolatedWebAppFromDevBundle())
+              .result;
+      if (result.success) {
         iwaInstallMessageDiv.innerText =
-            `Installing IWA: successfully installed.`;
+            `Installing IWA: successfully installed (Web Bundle ID: ${
+                result.success.webBundleId}).`;
         refreshDevModeAppList();
         return;
       }
 
-      iwaInstallMessageDiv.innerText = `Installing IWA: failed to install: ${
-          installFromDevBundle.result.error}`;
+      iwaInstallMessageDiv.innerText =
+          `Installing IWA: failed to install: ${result.error}`;
     });
+
+async function iwaDevFetchUpdateManifest() {
+  const iwaInstallMessageDiv = getRequiredElement('iwa-dev-install-message');
+
+  // Validate the provided URL.
+  try {
+    // We don't need the result of this, only to verify it doesn't throw an
+    // exception.
+    new URL(iwaDevUpdateManifestUrl.value);
+  } catch (_) {
+    iwaInstallMessageDiv.innerText = `Fetching the update manifest: ${
+        iwaDevUpdateManifestUrl.value} is not a valid URL`;
+    return;
+  }
+
+  iwaInstallMessageDiv.innerText =
+      `Fetching the update manifest at ${iwaDevUpdateManifestUrl.value}...`;
+
+  const updateManifestUrl: Url = {url: iwaDevUpdateManifestUrl.value};
+
+  const result: ParseUpdateManifestFromUrlResult =
+      (await webAppInternalsHandler.parseUpdateManifestFromUrl(
+           updateManifestUrl))
+          .result;
+  if (result.error) {
+    iwaInstallMessageDiv.innerText = `Installing IWA from update manifest: ${
+        iwaDevUpdateManifestUrl.value} failed to install: ${result.error}`;
+    return;
+  }
+
+  // `result` is a mojo union where there's always one of `error` or
+  // `updateManifest` defined.
+  const manifest: UpdateManifest = result.updateManifest!;
+  const versions: VersionEntry[] = manifest.versions;
+
+  const select = getRequiredElement('iwa-update-manifest-version-select') as
+      HTMLSelectElement;
+  select.replaceChildren();
+
+  for (const versionEntry of versions) {
+    const option = document.createElement('option');
+    option.value = versionEntry.version;
+    option.textContent = versionEntry.version;
+    select.appendChild(option);
+  }
+
+  const installButton =
+      getRequiredElement('iwa-update-manifest-dialog-install') as
+      HTMLButtonElement;
+
+  const installEventListener = async () => {
+    installButton.removeEventListener('click', installEventListener);
+
+    const selectedVersion = select.value;
+    iwaDevUpdateManifestDialog.close();
+
+    iwaInstallMessageDiv.innerText = `Installing version ${
+        selectedVersion} from ${updateManifestUrl.url}...`;
+    const selectedVersionEntry: VersionEntry|null =
+        versions.find(
+            versionEntry => versionEntry.version === selectedVersion) ||
+        null;
+
+    if (!selectedVersionEntry) {
+      iwaInstallMessageDiv.innerText =
+          `Installing version ${selectedVersion} from ${
+              updateManifestUrl.url} failed: no such version`;
+      return;
+    }
+
+    const installResult: InstallIsolatedWebAppResult =
+        (await webAppInternalsHandler.installIsolatedWebAppFromBundleUrl({
+          webBundleUrl: selectedVersionEntry.webBundleUrl,
+        })).result;
+    if (installResult.success) {
+      iwaInstallMessageDiv.innerText = `Installing version ${
+          selectedVersion} from ${updateManifestUrl.url}: success!`;
+    } else {
+      iwaInstallMessageDiv.innerText =
+          `Installing version ${selectedVersion} from ${
+              updateManifestUrl.url} failed: ${installResult.error}`;
+    }
+
+    refreshDevModeAppList();
+  };
+
+  installButton.addEventListener('click', installEventListener);
+
+  iwaDevUpdateManifestDialog.showModal();
+}
+
+getRequiredElement('iwa-update-manifest-dialog-close')
+    .addEventListener('click', () => {
+      getRequiredElement('iwa-dev-install-message').innerText = '';
+      iwaDevUpdateManifestDialog.close();
+    });
+
+iwaDevUpdateManifestUrl.addEventListener('enter', iwaDevFetchUpdateManifest);
+getRequiredElement('iwa-dev-update-manifest-fetch-button')
+    .addEventListener('click', iwaDevFetchUpdateManifest);
 
 getRequiredElement('iwa-updates-search-button')
     .addEventListener('click', async () => {
       const messageDiv = getRequiredElement('iwa-updates-message');
 
       messageDiv.innerText = `Queueing update discovery tasks...`;
-      const {result} =
-          await webAppInternalsHandler.searchForIsolatedWebAppUpdates();
+      const result: string =
+          (await webAppInternalsHandler.searchForIsolatedWebAppUpdates())
+              .result;
       messageDiv.innerText = result;
     });
+
+const iwaRotateKeyButton =
+    getRequiredElement('iwa-rotate-key-button') as HTMLButtonElement;
+
+iwaRotateKeyButton.addEventListener('click', async () => {
+  const webBundleId =
+      getRequiredElement('iwa-kr-web-bundle-id') as HTMLInputElement;
+  const publicKeyBase64 =
+      getRequiredElement('iwa-kr-public-key-b64') as HTMLInputElement;
+
+  const keyRotationMessageDiv = getRequiredElement('iwa-kr-message');
+  keyRotationMessageDiv.innerText = '';
+
+  if (webBundleId.value.length === 0) {
+    keyRotationMessageDiv.innerText = `web-bundle-id must not be empty.`;
+    return;
+  }
+
+  let publicKeyBytes: number[]|null = null;
+  if (publicKeyBase64.value.length > 0) {
+    try {
+      const pk = atob(publicKeyBase64.value);
+
+      publicKeyBytes = [];
+      for (let i = 0; i < pk.length; i++) {
+        publicKeyBytes.push(pk.charCodeAt(i));
+      }
+    } catch (err) {
+      // This block handles `atob()` errors.
+      keyRotationMessageDiv.innerText =
+          `${publicKeyBase64.value} is not a base64 encoded key.`;
+      return;
+    }
+  }
+
+  iwaRotateKeyButton.disabled = true;
+
+  // If `publicKeyBytes` are `null`, the app with this `webBundleId` will be
+  // disabled.
+  webAppInternalsHandler.rotateKey(webBundleId.value, publicKeyBytes);
+
+  // Improve end user experience by providing a delay of 1000 ms to enable the
+  // key rotation button.
+  setTimeout(() => {
+    keyRotationMessageDiv.innerText = `Successfully rotated public key for ${
+        webBundleId.value} to ${publicKeyBase64.value}!`;
+    publicKeyBase64.value = '';
+    webBundleId.value = '';
+    iwaRotateKeyButton.disabled = false;
+  }, 1000);
+});
 
 function formatDevModeLocation(location: IwaDevModeLocation): string {
   if (location.proxyOrigin) {
@@ -194,19 +353,19 @@ function showIwaSection(containerId: string) {
 async function refreshDevModeAppList() {
   const devModeUpdatesMessage = getRequiredElement('iwa-dev-updates-message');
   devModeUpdatesMessage.innerText = 'Loading...';
-  const {apps: devModeApps} =
-      await webAppInternalsHandler.getIsolatedWebAppDevModeAppInfo();
+  const devModeApps: IwaDevModeAppInfo[] =
+      (await webAppInternalsHandler.getIsolatedWebAppDevModeAppInfo()).apps;
   const devModeAppList = getRequiredElement('iwa-dev-updates-app-list');
   devModeAppList.replaceChildren();
   if (devModeApps.length === 0) {
     devModeUpdatesMessage.innerText = 'None';
   } else {
     devModeUpdatesMessage.innerText = '';
-    for (const devModeApp of devModeApps) {
+    for (const {appId, name, location, installedVersion} of devModeApps) {
       const li = document.createElement('li');
 
-      li.innerText = `${devModeApp.name} (${devModeApp.installedVersion}) → ${
-          formatDevModeLocation(devModeApp.location)}`;
+      li.innerText =
+          `${name} (${installedVersion}) → ${formatDevModeLocation(location)}`;
 
       const updateMsg = document.createElement('p');
 
@@ -220,16 +379,15 @@ async function refreshDevModeAppList() {
           updateBtn.innerText =
               'Performing update... (close the IWA if it is currently open!)';
 
-          if (devModeApp.location.bundlePath) {
-            const {result} =
+          if (location.bundlePath) {
+            const {result}: {result: string} =
                 await webAppInternalsHandler
-                    .selectFileAndUpdateIsolatedWebAppFromDevBundle(
-                        devModeApp.appId);
+                    .selectFileAndUpdateIsolatedWebAppFromDevBundle(appId);
             updateMsg.innerText = result;
-          } else if (devModeApp.location.proxyOrigin) {
-            const {result} =
+          } else if (location.proxyOrigin) {
+            const {result}: {result: string} =
                 await webAppInternalsHandler.updateDevProxyIsolatedWebApp(
-                    devModeApp.appId);
+                    appId);
             updateMsg.innerText = result;
           } else {
             assertNotReached();
@@ -257,6 +415,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (loadTimeData.getBoolean('isIwaDevModeEnabled')) {
     // Unhide the IWA dev mode UI.
+    if (loadTimeData.getBoolean('isIwaKeyDistributionDevModeEnabled')) {
+      showIwaSection('iwa-kr-container');
+    }
     showIwaSection('iwa-dev-container');
     refreshDevModeAppList();
   }

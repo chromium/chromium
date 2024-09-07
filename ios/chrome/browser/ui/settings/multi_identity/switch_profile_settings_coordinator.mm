@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_view_controller.h"
 
@@ -24,8 +24,8 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser {
-  if (self = [super initWithBaseViewController:navigationController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:navigationController
+                                        browser:browser])) {
     _baseNavigationController = navigationController;
     _browserState = browser->GetBrowserState();
   }
@@ -36,8 +36,8 @@
   _mediator = [[SwitchProfileSettingsMediator alloc] init];
   _viewController = [[SwitchProfileSettingsTableViewController alloc] init];
   _viewController.delegate = _mediator;
-  _viewController.activeBrowserStateName =
-      base::SysUTF8ToNSString(_browserState->GetBrowserStateName());
+  _viewController.activeProfileName =
+      base::SysUTF8ToNSString(_browserState->GetProfileName());
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
 }

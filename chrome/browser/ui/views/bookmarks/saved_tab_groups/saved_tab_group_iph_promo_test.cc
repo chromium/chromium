@@ -44,8 +44,7 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest {
                                                                   group_id);
         }),
         WaitForShow(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-        FlushEvents());
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
     AddDescription(steps, "SaveAndCloseGroup( %s )");
     return steps;
   }

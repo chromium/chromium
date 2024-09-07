@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
@@ -20,11 +21,10 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/chrome_features.h"
@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
@@ -43,36 +44,10 @@ namespace policy::local_user_files {
 
 namespace {
 
-// Delay the migration for a total of 24 hours.
-const base::TimeDelta kTotalMigrationTimeout = base::Hours(24);
-
-// Show another dialog 1 hour before the migration.
-const base::TimeDelta kRemainingMigrationTimeout = base::Hours(1);
-
-// The prefix of the directory the files should be uploaded to. Used with the
-// unique identifier of the device to form the directory's full name.
-constexpr char kDestinationDirName[] = "ChromeOS device";
-
 // Returns true if `cloud_provider` is set to Google Drive or OneDrive.
 bool IsMigrationEnabled(CloudProvider cloud_provider) {
   return cloud_provider == CloudProvider::kGoogleDrive ||
          cloud_provider == CloudProvider::kOneDrive;
-}
-
-// Converts `destination`, which should hold the value of the
-// `kLocalUserFilesMigrationDestination` pref, to the CloudProvider enum value.
-CloudProvider StringToCloudProvider(const std::string destination) {
-  if (destination == download_dir_util::kLocationGoogleDrive) {
-    return CloudProvider::kGoogleDrive;
-  }
-  if (destination == download_dir_util::kLocationOneDrive) {
-    return CloudProvider::kOneDrive;
-  }
-  if (destination == "read_only") {
-    return CloudProvider::kNotSpecified;
-  }
-  LOG(ERROR) << "Unexpected destination value " << destination;
-  return CloudProvider::kNotSpecified;
 }
 
 // Returns a list of files under MyFiles.
@@ -100,6 +75,14 @@ std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
   return files;
 }
 
+// Generates the destination directory name, combining the "ChromeOS device"
+// prefix with a unique identifier of the device.
+std::string GenerateDestinationDirName() {
+  std::optional<std::string_view> id =
+      ash::system::StatisticsProvider::GetInstance()->GetMachineID();
+  return std::string(kDestinationDirName) + " " + std::string(id.value_or(""));
+}
+
 }  // namespace
 
 LocalFilesMigrationManager::LocalFilesMigrationManager(
@@ -113,18 +96,9 @@ LocalFilesMigrationManager::LocalFilesMigrationManager(
   notification_manager_ =
       MigrationNotificationManagerFactory::GetForBrowserContext(context);
   CHECK(notification_manager_);
-
-  pref_change_registrar_.Init(g_browser_process->local_state());
-  pref_change_registrar_.Add(
-      prefs::kLocalUserFilesMigrationDestination,
-      base::BindRepeating(
-          &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
-          base::Unretained(this)));
 }
 
-LocalFilesMigrationManager::~LocalFilesMigrationManager() {
-  pref_change_registrar_.RemoveAll();
-}
+LocalFilesMigrationManager::~LocalFilesMigrationManager() = default;
 
 void LocalFilesMigrationManager::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
@@ -155,10 +129,8 @@ void LocalFilesMigrationManager::SetCoordinatorForTesting(
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   bool local_user_files_allowed_old = local_user_files_allowed_;
   local_user_files_allowed_ = LocalUserFilesAllowed();
-  std::string destination = g_browser_process->local_state()->GetString(
-      prefs::kLocalUserFilesMigrationDestination);
   CloudProvider cloud_provider_old = cloud_provider_;
-  cloud_provider_ = StringToCloudProvider(destination);
+  cloud_provider_ = GetMigrationDestination();
 
   if (local_user_files_allowed_ == local_user_files_allowed_old &&
       cloud_provider_ == cloud_provider_old) {
@@ -203,14 +175,15 @@ void LocalFilesMigrationManager::InformUser() {
   CHECK(!local_user_files_allowed_);
   CHECK(IsMigrationEnabled(cloud_provider_));
 
+  migration_start_time_ = base::Time::Now() + kTotalMigrationTimeout;
+
   notification_manager_->ShowMigrationInfoDialog(
-      cloud_provider_, kTotalMigrationTimeout,
+      cloud_provider_, migration_start_time_,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Schedule another dialog closer to the migration.
   scheduling_timer_->Start(
-      FROM_HERE,
-      base::Time::Now() + (kTotalMigrationTimeout - kRemainingMigrationTimeout),
+      FROM_HERE, migration_start_time_ - kFinalMigrationTimeout,
       base::BindOnce(
           &LocalFilesMigrationManager::ScheduleMigrationAndInformUser,
           weak_factory_.GetWeakPtr()));
@@ -222,12 +195,12 @@ void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
   }
 
   notification_manager_->ShowMigrationInfoDialog(
-      cloud_provider_, kRemainingMigrationTimeout,
+      cloud_provider_, migration_start_time_,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Also schedule migration to automatically start after the timeout.
   scheduling_timer_->Start(
-      FROM_HERE, base::Time::Now() + kRemainingMigrationTimeout,
+      FROM_HERE, migration_start_time_,
       base::BindOnce(&LocalFilesMigrationManager::OnTimeoutExpired,
                      weak_factory_.GetWeakPtr()));
 }
@@ -271,8 +244,8 @@ void LocalFilesMigrationManager::StartMigration(
     return;
   }
 
-  // TODO(aidazolic): Add unique ID of the device.
-  coordinator_->Run(cloud_provider_, std::move(files), kDestinationDirName,
+  coordinator_->Run(cloud_provider_, std::move(files),
+                    GenerateDestinationDirName(),
                     base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
                                    weak_factory_.GetWeakPtr()));
 }

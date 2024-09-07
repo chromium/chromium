@@ -31,7 +31,6 @@
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/pref_names.h"
 #include "chromecast/browser/application_media_info_manager.h"
-#include "chromecast/browser/browser_buildflags.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_main_parts.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -282,7 +281,7 @@ CastContentBrowserClient::CreateAudioManager(
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
       content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
-      BUILDFLAG(ENABLE_CAST_AUDIO_MANAGER_MIXER));
+      /* use_mixer= */ false);
 #elif BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kEnableChromeAudioManagerAndroid)) {
     LOG(INFO) << "Use AudioManagerAndroid instead of CastAudioManagerAndroid.";
@@ -301,7 +300,7 @@ CastContentBrowserClient::CreateAudioManager(
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
       content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
-      BUILDFLAG(ENABLE_CAST_AUDIO_MANAGER_MIXER));
+      /* use_mixer= */ false);
 #endif
 }
 
@@ -875,34 +874,6 @@ CastContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
   // media can be streamed from a local media server.
   return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
       kForceAllow;
-}
-
-std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-CastContentBrowserClient::CreateURLLoaderThrottles(
-    const network::ResourceRequest& request,
-    content::BrowserContext* browser_context,
-    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-    content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
-    std::optional<int64_t> navigation_id) {
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
-    // No support for service workers.
-    return throttles;
-  }
-
-  auto* cast_web_contents = CastWebContents::FromWebContents(wc_getter.Run());
-
-  // |cast_web_contents| may be nullptr in browser tests.
-  if (cast_web_contents) {
-    auto rules =
-        cast_web_contents->url_rewrite_rules_manager()->GetCachedRules();
-    if (rules) {
-      throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
-          rules, base::BindRepeating(&IsCorsExemptHeader)));
-    }
-  }
-  return throttles;
 }
 
 std::string CastContentBrowserClient::GetUserAgent() {

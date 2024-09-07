@@ -32,8 +32,8 @@ class PaintControllerPaintTestBase : public RenderingTest {
 
  protected:
   LayoutView& GetLayoutView() const { return *GetDocument().GetLayoutView(); }
-  PaintController& RootPaintController() const {
-    return GetDocument().View()->GetPaintControllerForTesting();
+  PaintControllerPersistentData& GetPersistentData() const {
+    return GetDocument().View()->GetPaintControllerPersistentDataForTesting();
   }
 
   void SetUp() override {
@@ -68,17 +68,17 @@ class PaintControllerPaintTestBase : public RenderingTest {
   }
 
   void InvalidateAll() {
-    RootPaintController().InvalidateAllForTesting();
+    GetPersistentData().InvalidateAllForTesting();
     GetLayoutView().Layer()->SetNeedsRepaint();
   }
 
   bool ClientCacheIsValid(const DisplayItemClient& client) {
-    return RootPaintController().ClientCacheIsValid(client);
+    return GetPersistentData().ClientCacheIsValid(client);
   }
 
-  using SubsequenceMarkers = const PaintController::SubsequenceMarkers;
-  SubsequenceMarkers* GetSubsequenceMarkers(const DisplayItemClient& client) {
-    return RootPaintController().GetSubsequenceMarkers(client.Id());
+  const SubsequenceMarkers* GetSubsequenceMarkers(
+      const DisplayItemClient& client) {
+    return GetPersistentData().GetSubsequenceMarkers(client.Id());
   }
 
   static bool IsNotContentType(DisplayItem::Type type) {
@@ -91,7 +91,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
   // Excludes display items for LayoutView non-scrolling background, visual
   // viewport, overlays, etc. Includes LayoutView scrolling background.
   DisplayItemRange ContentDisplayItems() {
-    const auto& display_item_list = RootPaintController().GetDisplayItemList();
+    const auto& display_item_list = GetPersistentData().GetDisplayItemList();
     wtf_size_t begin_index = 0;
     wtf_size_t end_index = display_item_list.size();
     while (begin_index < end_index &&
@@ -109,7 +109,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
   // hit test, visual viewport, overlays, etc. Includes LayoutView scrolling
   // background.
   PaintChunkSubset ContentPaintChunks() {
-    const auto& chunks = RootPaintController().GetPaintChunks();
+    const auto& chunks = GetPersistentData().GetPaintChunks();
     wtf_size_t begin_index = 0;
     wtf_size_t end_index = chunks.size();
     while (begin_index < end_index) {
@@ -124,7 +124,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
            IsNotContentType(chunks[end_index - 1].id.type)) {
       end_index--;
     }
-    const auto& artifact = RootPaintController().GetPaintArtifact();
+    const auto& artifact = GetPersistentData().GetPaintArtifact();
     PaintChunkSubset subset(artifact, chunks[begin_index]);
     for (wtf_size_t i = begin_index + 1; i < end_index; i++) {
       subset.Merge(PaintChunkSubset(artifact, chunks[i]));

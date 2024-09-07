@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 // static
@@ -52,7 +52,7 @@ std::unique_ptr<KeyedService> PageImageServiceFactory::BuildServiceInstanceFor(
   RemoteSuggestionsService* remote_suggestions_service =
       RemoteSuggestionsServiceFactory::GetForBrowserState(browser_state, true);
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(browser_state);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
   std::unique_ptr<AutocompleteSchemeClassifier> autocomplete_scheme_classifier =

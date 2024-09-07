@@ -119,8 +119,8 @@ class FileResultTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<Profile> profile_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
+  std::unique_ptr<Profile> profile_;
 };
 
 TEST_F(FileResultTest, CheckMetadata) {

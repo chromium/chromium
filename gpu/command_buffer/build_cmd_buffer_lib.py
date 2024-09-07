@@ -7266,43 +7266,7 @@ extern const NameToFunc g_gles2_function_table[] = {
 
   def WriteCommonUtilsImpl(self, filename):
     """Writes the gles2 common utility header."""
-    enum_re = re.compile(r'\#define\s+(GL_[a-zA-Z0-9_]+)\s+([0-9A-Fa-fx]+)')
-    define_dict = {}
-    for fname in ['third_party/khronos/GLES2/gl2.h',
-                  'third_party/khronos/GLES2/gl2ext.h',
-                  'third_party/khronos/GLES3/gl3.h',
-                  'third_party/khronos/GLES3/gl31.h',
-                  'gpu/GLES2/gl2chromium.h',
-                  'gpu/GLES2/gl2extchromium.h']:
-      fname = os.path.join(self.chromium_root_dir, fname)
-      lines = open(fname).readlines()
-      for line in lines:
-        m = enum_re.match(line)
-        if m:
-          name = m.group(1)
-          value = m.group(2)
-          if len(value) <= 10 and value.startswith('0x'):
-            if not value in define_dict:
-              define_dict[value] = name
-            # check our own _CHROMIUM macro conflicts with khronos GL headers.
-            elif EnumsConflict(define_dict[value], name):
-              self.Error("code collision: %s and %s have the same code %s" %
-                         (define_dict[value], name, value))
-
     with CHeaderWriter(filename, self.year) as f:
-      f.write("static const %sUtil::EnumToString "
-                 "enum_to_string_table[] = {\n" % _prefix)
-      for value in sorted(define_dict):
-        f.write('  { %s, "%s", },\n' % (value, define_dict[value]))
-      f.write("""};
-
-const %(p)sUtil::EnumToString* const %(p)sUtil::enum_to_string_table_ =
-    enum_to_string_table;
-const size_t %(p)sUtil::enum_to_string_table_len_ =
-    sizeof(enum_to_string_table) / sizeof(enum_to_string_table[0]);
-
-""" % { 'p' : _prefix})
-
       enums = sorted(self.named_type_info.keys())
       for enum in enums:
         if self.named_type_info[enum]['type'] == 'GLenum':

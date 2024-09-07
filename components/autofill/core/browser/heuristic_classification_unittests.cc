@@ -114,6 +114,7 @@
 //  }
 
 #include <iomanip>
+#include <ranges>
 #include <sstream>
 #include <string_view>
 
@@ -516,8 +517,10 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
              "--run-internal-tests --test-launcher-timeout 100000 "
              "to execute these tests.";
     }
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     ASSERT_NE(GetActiveHeuristicSource(), HeuristicSource::kLegacy)
         << "Internal tests are only supported with internal parsing patterns";
+#endif
     ASSERT_GE(TestTimeouts::test_launcher_timeout().InSeconds(), 100)
         << "This is a long-running test; you must specify "
            "--test-launcher-timeout to have a value of at least 100000.";
@@ -548,30 +551,13 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
 
   std::vector<base::test::FeatureRef> enabled_features = {
       // Support for new field types.
-      features::kAutofillUseI18nAddressModel,
       features::kAutofillUseAUAddressModel,
-      features::kAutofillUseBRAddressModel,
       features::kAutofillUseCAAddressModel,
       features::kAutofillUseDEAddressModel,
       features::kAutofillUseITAddressModel,
-      features::kAutofillUseMXAddressModel,
       features::kAutofillUsePLAddressModel,
-      features::kAutofillEnableSupportForBetweenStreets,
-      features::kAutofillEnableSupportForAdminLevel2,
-      features::kAutofillEnableSupportForAddressOverflow,
-      features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-      features::kAutofillEnableSupportForLandmark,
-      features::kAutofillEnableSupportForApartmentNumbers,
-      features::kAutofillEnableDependentLocalityParsing,
       features::kAutofillEnableExpirationDateImprovements,
-      features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-      features::kAutofillEnableParsingOfStreetLocation,
-      features::kAutofillEnableRationalizationEngineForMX,
-      // Allow local heuristics to take precedence.
-      features::kAutofillLocalHeuristicsOverrides,
       // Other improvements.
-      features::kAutofillDefaultToCityAndNumber,
-      features::kAutofillPreferLabelsInSomeCountries,
       features::kAutofillEnableCacheForRegexMatching};
   std::vector<base::test::FeatureRef> disabled_features = {};
 
@@ -639,26 +625,36 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   // Replace \r\n on windows with \n to get a canonical representation.
   base::RemoveChars(*output_json_text, "\r", &(*output_json_text));
 
-    base::FilePath output_file =
-        GetParam().AddExtension(FILE_PATH_LITERAL(".new"));
-    if (input_json_text != output_json_text) {
-      // Write output if and only if it is different.
-      LOG(ERROR) << "Classifications changed. Writing new file " << output_file;
-      EXPECT_TRUE(base::WriteFile(output_file, *output_json_text));
-    } else {
-      // If output is as expected, delete stale .new files.
-      if (base::PathExists(output_file)) {
-        base::DeleteFile(output_file);
-      }
+  base::FilePath output_file =
+      GetParam().AddExtension(FILE_PATH_LITERAL(".new"));
+  if (input_json_text != output_json_text) {
+    // Write output if and only if it is different.
+    LOG(ERROR) << "Classifications changed. Writing new file " << output_file;
+    EXPECT_TRUE(base::WriteFile(output_file, *output_json_text));
+  } else {
+    // If output is as expected, delete stale .new files.
+    if (base::PathExists(output_file)) {
+      base::DeleteFile(output_file);
     }
+  }
 
   EXPECT_EQ(old_stats, new_stats);
 
   // Too large inputs crash the test.
   if (input_json_text.size() < 20000) {
-    EXPECT_EQ(input_json_text, output_json_text);
+    EXPECT_EQ(input_json_text, *output_json_text);
   } else {
-    EXPECT_TRUE(input_json_text == output_json_text);
+    EXPECT_EQ(input_json_text.length(), output_json_text->length());
+    auto mismatch = std::ranges::mismatch(input_json_text, *output_json_text);
+    if (mismatch.in1 != input_json_text.end()) {
+      int offset = mismatch.in1 - input_json_text.begin();
+      offset = std::max(offset - 128, 0);
+      EXPECT_TRUE(input_json_text == *output_json_text)
+          << "input_json_text, output_json_text differ but are too large to be "
+             "printed\ninput_json_text and output_json_text are:\n"
+          << "..." << input_json_text.substr(offset, 256) << "...\n"
+          << "..." << output_json_text->substr(offset, 256) << "...";
+    }
   }
 }
 

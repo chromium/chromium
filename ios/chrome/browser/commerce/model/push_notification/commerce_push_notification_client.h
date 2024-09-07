@@ -5,18 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_COMMERCE_MODEL_PUSH_NOTIFICATION_COMMERCE_PUSH_NOTIFICATION_CLIENT_H_
 #define IOS_CHROME_BROWSER_COMMERCE_MODEL_PUSH_NOTIFICATION_COMMERCE_PUSH_NOTIFICATION_CLIENT_H_
 
-#import "components/optimization_guide/proto/push_notification.pb.h"
-#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
-
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
-class CommercePushNotificationClientTest;
+#import "base/functional/callback_forward.h"
+#import "components/optimization_guide/proto/push_notification.pb.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
-namespace base {
-class RunLoop;
-}  // namespace base
+class CommercePushNotificationClientTest;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -32,9 +28,9 @@ class CommercePushNotificationClient : public PushNotificationClient {
   ~CommercePushNotificationClient() override;
 
   // Override PushNotificationClient::
-  void HandleNotificationInteraction(
+  bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
-  UIBackgroundFetchResult HandleNotificationReception(
+  std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
 
@@ -51,9 +47,9 @@ class CommercePushNotificationClient : public PushNotificationClient {
 
   // Handle the interaction from the user be it tapping the notification or
   // long pressing and then presing 'Visit Site' or 'Untrack Price'.
-  void HandleNotificationInteraction(
-      NSString* action_identifier,
-      NSDictionary* user_info,
-      base::RunLoop* on_complete_for_testing = nil);
+  bool HandleNotificationInteraction(NSString* action_identifier,
+                                     NSDictionary* user_info,
+                                     base::OnceClosure completion);
 };
+
 #endif  // IOS_CHROME_BROWSER_COMMERCE_MODEL_PUSH_NOTIFICATION_COMMERCE_PUSH_NOTIFICATION_CLIENT_H_

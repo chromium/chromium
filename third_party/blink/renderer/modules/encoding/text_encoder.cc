@@ -79,23 +79,17 @@ NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
     result = codec_->Encode(input.Characters16(), input.length(),
                             WTF::kNoUnencodables);
   }
-
-  const char* buffer = result.c_str();
-  const unsigned char* unsigned_buffer =
-      reinterpret_cast<const unsigned char*>(buffer);
-
   if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
     NotShared<DOMUint8Array> result_array(
-        DOMUint8Array::CreateOrNull(unsigned_buffer, result.size()));
+        DOMUint8Array::CreateOrNull(base::as_byte_span(result)));
     if (result_array.IsNull()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
                                         "Failed to allocate buffer.");
     }
     return result_array;
-  } else {
-    return NotShared<DOMUint8Array>(
-        DOMUint8Array::Create(unsigned_buffer, result.size()));
   }
+  return NotShared<DOMUint8Array>(
+      DOMUint8Array::Create(base::as_byte_span(result)));
 }
 
 TextEncoderEncodeIntoResult* TextEncoder::encodeInto(

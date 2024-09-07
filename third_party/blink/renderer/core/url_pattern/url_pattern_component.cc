@@ -224,21 +224,7 @@ Component* Component::Compile(v8::Isolate* isolate,
     regexp = MakeGarbageCollected<ScriptRegexp>(
         isolate, String(regexp_string.data(), regexp_string.size()),
         case_sensitive, MultilineMode::kMultilineDisabled,
-        UnicodeMode::kUnicode);
-
-    // There are some incompatible regexp patterns between "u" and "v". Counting
-    // those cases to measure the potential impact of upgrading to the "v" flag.
-    ScriptRegexp* regexp_v = MakeGarbageCollected<ScriptRegexp>(
-        isolate, String(regexp_string.data(), regexp_string.size()),
-        case_sensitive, MultilineMode::kMultilineDisabled,
         UnicodeMode::kUnicodeSets);
-    base::UmaHistogramBoolean(
-        "Blink.URLPattern.IncompatiblePatternWithUnicodeSetsMode",
-        regexp->IsValid() && !regexp_v->IsValid());
-
-    if (RuntimeEnabledFeatures::URLPatternRegexpUnicodeSetsModeEnabled()) {
-      regexp = regexp_v;
-    }
 
     if (!regexp->IsValid()) {
       // The regular expression failed to compile.  This means that some
@@ -252,10 +238,7 @@ Component* Component::Compile(v8::Isolate* isolate,
         String group_value(part.value.data(), part.value.size());
         regexp = MakeGarbageCollected<ScriptRegexp>(
             isolate, group_value, case_sensitive,
-            MultilineMode::kMultilineDisabled,
-            RuntimeEnabledFeatures::URLPatternRegexpUnicodeSetsModeEnabled()
-                ? UnicodeMode::kUnicodeSets
-                : UnicodeMode::kUnicode);
+            MultilineMode::kMultilineDisabled, UnicodeMode::kUnicodeSets);
         if (regexp->IsValid())
           continue;
         exception_state.ThrowTypeError("Invalid " + TypeToString(type) +

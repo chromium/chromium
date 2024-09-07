@@ -110,11 +110,13 @@ dependencies {
     compile 'androidx.annotation:annotation-experimental:{{androidx_dependency_version}}'
     compile 'androidx.emoji:emoji:{{androidx_dependency_version}}'
     compile 'androidx.room:room-runtime:{{androidx_dependency_version}}'
+    compile 'androidx.room:room-runtime-android:{{androidx_dependency_version}}'
     compile 'androidx.transition:transition:{{androidx_dependency_version}}'
     compile 'androidx.viewpager2:viewpager2:{{androidx_dependency_version}}'
     compile 'androidx.legacy:legacy-support-core-utils:1.0.0'
     compile 'androidx.documentfile:documentfile:{{androidx_dependency_version}}'
     compile 'androidx.print:print:{{androidx_dependency_version}}'
+    compile 'androidx.sqlite:sqlite-android:{{androidx_dependency_version}}'
 
     String media3Version = '1.2.0'
     compile "androidx.media3:media3-common:${media3Version}"

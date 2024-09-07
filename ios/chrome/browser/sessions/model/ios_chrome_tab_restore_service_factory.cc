@@ -11,7 +11,7 @@
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_client.h"
 #include "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 

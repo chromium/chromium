@@ -144,7 +144,10 @@ static_library("printing") {
   ]
 
   if (use_cups) {
-    deps += [ "//chrome/services/cups_proxy" ]
+    deps += [
+      "//chrome/browser/chromeos/printing",
+      "//chrome/services/cups_proxy",
+    ]
   }
 
   public_deps = [
@@ -216,6 +219,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/printing:test_support",
     "//chrome/browser/ash/printing/enterprise",
+    "//chrome/browser/ash/printing/history:print_job_info_proto",
     "//chrome/browser/ash/printing/oauth2",
     "//chrome/browser/ash/printing/oauth2:test_support",
     "//chrome/browser/ash/settings",
@@ -255,7 +259,6 @@ fuzzer_test("zeroconf_printer_detector_fuzzer") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//components/exo/wayland:test_controller_stub",
     "//components/exo/wayland:ui_controls_protocol_stub",
   ]

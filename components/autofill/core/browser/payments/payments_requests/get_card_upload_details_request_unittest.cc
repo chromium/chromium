@@ -17,7 +17,6 @@
 using ::testing::HasSubstr;
 
 namespace autofill::payments {
-
 namespace {
 
 int kAllDetectableValues =
@@ -66,8 +65,6 @@ std::unique_ptr<GetCardUploadDetailsRequest> CreateGetCardUploadDetailsRequest(
       get_card_upload_details_options.billing_customer_number,
       get_card_upload_details_options.upload_card_source);
 }
-
-}  // namespace
 
 TEST(GetCardUploadDetailsRequestTest, GetDetailsRemovesNonLocationData) {
   std::unique_ptr<GetCardUploadDetailsRequest> request =
@@ -252,4 +249,5 @@ TEST(GetCardUploadDetailsRequestTest,
               std::string::npos);
 }
 
+}  // namespace
 }  // namespace autofill::payments

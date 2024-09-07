@@ -167,7 +167,8 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 
   // By default, the user is not opted in, but eligible.
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_NE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(),
+            ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
   EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
@@ -260,7 +261,8 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 
   // In this state, the user could opt in to the account storage.
   ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  ASSERT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  ASSERT_NE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(),
+            ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
 
   // Now the user enables Sync-the-feature.
@@ -352,7 +354,8 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // The account storage is available in principle, so the opt-in will be shown.
   ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  ASSERT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  ASSERT_NE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(),
+            ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
   ASSERT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
 

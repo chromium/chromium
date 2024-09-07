@@ -13,3 +13,7 @@ body {
   line-height: 154%;
   margin: 0;
 }
+
+html[pdfcr23enabled] body {
+  background-color: rgb(40, 40, 40);
+}

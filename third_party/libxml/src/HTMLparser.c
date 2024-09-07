@@ -5817,12 +5817,16 @@ htmlCreatePushParserCtxt(htmlSAXHandlerPtr sax, void *user_data,
 	return(NULL);
 
     encoding = xmlGetCharEncodingName(enc);
-    input = xmlNewInputPush(ctxt, filename, chunk, size, encoding);
+    input = xmlInputCreatePush(filename, chunk, size);
     if (input == NULL) {
 	htmlFreeParserCtxt(ctxt);
 	return(NULL);
     }
+
     inputPush(ctxt, input);
+
+    if (encoding != NULL)
+        xmlSwitchEncodingName(ctxt, encoding);
 
     return(ctxt);
 }
@@ -6305,8 +6309,11 @@ htmlCtxtUseOptions(htmlParserCtxtPtr ctxt, int options)
 /**
  * htmlCtxtParseDocument:
  * @ctxt:  an HTML parser context
+ * @input:  parser input
  *
  * Parse an HTML document and return the resulting document tree.
+ *
+ * Available since 2.13.0.
  *
  * Returns the resulting document tree or NULL
  */

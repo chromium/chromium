@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -145,7 +144,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     // Create a proxy for a data source instance which may change, typically
     // between test iterations. Note that it is not safe to change the data
     // source instance while any tracing sessions are started or stopped.
-    explicit DataSourceProxy(PerfettoTracedProcess::DataSourceBase**);
+    explicit DataSourceProxy(raw_ptr<PerfettoTracedProcess::DataSourceBase>*);
     ~DataSourceProxy() override;
 
     // perfetto::DataSource implementation:
@@ -161,12 +160,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     static constexpr bool kSupportsMultipleInstances = false;
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #addr-of
-    RAW_PTR_EXCLUSION PerfettoTracedProcess::DataSourceBase* const
-        data_source_ = nullptr;
-    raw_ptr<PerfettoTracedProcess::DataSourceBase* const> data_source_ptr_ =
-        &data_source_;
+    const raw_ptr<PerfettoTracedProcess::DataSourceBase> data_source_ = nullptr;
+    raw_ptr<const raw_ptr<PerfettoTracedProcess::DataSourceBase>>
+        data_source_ptr_ = &data_source_;
     perfetto::DataSourceConfig data_source_config_;
   };
 
@@ -347,7 +343,7 @@ PerfettoTracedProcess::DataSourceProxy<T>::DataSourceProxy(
 
 template <typename T>
 PerfettoTracedProcess::DataSourceProxy<T>::DataSourceProxy(
-    PerfettoTracedProcess::DataSourceBase** data_source_ptr)
+    raw_ptr<PerfettoTracedProcess::DataSourceBase>* data_source_ptr)
     : data_source_ptr_(data_source_ptr) {}
 
 template <typename T>

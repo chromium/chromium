@@ -32,6 +32,9 @@
 
 namespace {
 
+using PlusAddressModalCompletionStatus =
+    plus_addresses::metrics::PlusAddressModalCompletionStatus;
+
 // Generates the notice to be displayed in the bottomsheet, which includes an
 // attributed string.
 NSAttributedString* NoticeMessage(NSString* primaryEmailAddress) {
@@ -160,8 +163,7 @@ UIImageView* BrandingImageView() {
   // Record of the time the bottom sheet is shown.
   base::Time _bottomSheetShownTime;
   // Error that occurred while bottom sheet is showing.
-  std::optional<plus_addresses::metrics::PlusAddressModalCompletionStatus>
-      _bottomSheetErrorStatus;
+  std::optional<PlusAddressModalCompletionStatus> _bottomSheetErrorStatus;
   // Keeps track of the number of times the refresh button was hit.
   NSInteger _refreshCount;
   // The notice message if it will be shown.
@@ -222,7 +224,8 @@ UIImageView* BrandingImageView() {
   self.primaryActionButton.enabled = NO;
   [_delegate reservePlusAddress];
   plus_addresses::metrics::RecordModalEvent(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalShown);
+      plus_addresses::metrics::PlusAddressModalEvent::kModalShown,
+      [_delegate shouldShowNotice]);
   _bottomSheetShownTime = base::Time::Now();
 }
 
@@ -234,7 +237,8 @@ UIImageView* BrandingImageView() {
   [_activityIndicator startAnimating];
   [_delegate confirmPlusAddress];
   plus_addresses::metrics::RecordModalEvent(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed);
+      plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed,
+      [_delegate shouldShowNotice]);
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -254,16 +258,14 @@ UIImageView* BrandingImageView() {
 
 - (void)didConfirmPlusAddress {
   plus_addresses::metrics::RecordModalShownOutcome(
-      plus_addresses::metrics::PlusAddressModalCompletionStatus::
-          kModalConfirmed,
+      PlusAddressModalCompletionStatus::kModalConfirmed,
       base::Time::Now() - _bottomSheetShownTime,
-      /*refresh_count=*/(int)_refreshCount);
+      /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
   [_activityIndicator stopAnimating];
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
-- (void)notifyError:
-    (plus_addresses::metrics::PlusAddressModalCompletionStatus)status {
+- (void)notifyError:(PlusAddressModalCompletionStatus)status {
   // With any error, whether during the reservation step or the confirmation
   // step, disable submission of the modal.
   _bottomSheetErrorStatus = status;
@@ -483,20 +485,15 @@ UIImageView* BrandingImageView() {
 }
 
 - (void)dismiss {
+  const bool was_notice_shown = [_delegate shouldShowNotice];
   plus_addresses::metrics::RecordModalEvent(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled);
-  if (_bottomSheetErrorStatus.has_value()) {
-    plus_addresses::metrics::RecordModalShownOutcome(
-        _bottomSheetErrorStatus.value(),
-        base::Time::Now() - _bottomSheetShownTime,
-        /*refresh_count=*/(int)_refreshCount);
-  } else {
-    plus_addresses::metrics::RecordModalShownOutcome(
-        plus_addresses::metrics::PlusAddressModalCompletionStatus::
-            kModalCanceled,
-        base::Time::Now() - _bottomSheetShownTime,
-        /*refresh_count=*/(int)_refreshCount);
-  }
+      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled,
+      was_notice_shown);
+  plus_addresses::metrics::RecordModalShownOutcome(
+      _bottomSheetErrorStatus.value_or(
+          PlusAddressModalCompletionStatus::kModalCanceled),
+      base::Time::Now() - _bottomSheetShownTime,
+      /*refresh_count=*/(int)_refreshCount, was_notice_shown);
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 

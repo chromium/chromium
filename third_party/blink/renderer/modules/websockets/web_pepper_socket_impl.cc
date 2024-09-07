@@ -155,7 +155,7 @@ void WebPepperSocketImpl::DidReceiveTextMessage(const String& payload) {
 void WebPepperSocketImpl::DidReceiveBinaryMessage(
     std::unique_ptr<Vector<char>> payload) {
   client_->DidReceiveArrayBuffer(
-      WebArrayBuffer(DOMArrayBuffer::Create(payload->data(), payload->size())));
+      WebArrayBuffer(DOMArrayBuffer::Create(base::as_byte_span(*payload))));
 }
 
 void WebPepperSocketImpl::DidError() {

@@ -43,6 +43,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
@@ -72,7 +73,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -113,7 +113,6 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/variations/service/variations_service.h"
-#include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/ssl_status.h"
@@ -137,7 +136,6 @@
 #include "components/infobars/core/infobar.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/webauthn/android/internal_authenticator_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
@@ -147,6 +145,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -277,8 +276,8 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
 AutofillPredictionImprovementsDelegate*
 ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillPredictionImprovementsEnabled)) {
+  if (!autofill_prediction_improvements::
+          IsAutofillPredictionImprovementsEnabled()) {
     return nullptr;
   }
   if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
@@ -436,18 +435,6 @@ FastCheckoutClient* ChromeAutofillClient::GetFastCheckoutClient() {
 #endif
 }
 
-std::unique_ptr<webauthn::InternalAuthenticator>
-ChromeAutofillClient::CreateCreditCardInternalAuthenticator(
-    AutofillDriver* driver) {
-  auto* cad = static_cast<ContentAutofillDriver*>(driver);
-  content::RenderFrameHost* rfh = cad->render_frame_host();
-#if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<webauthn::InternalAuthenticatorAndroid>(rfh);
-#else
-  return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
-#endif
-}
-
 void ChromeAutofillClient::ShowAutofillSettings(
     SuggestionType suggestion_type) {
 #if BUILDFLAG(IS_ANDROID)
@@ -486,16 +473,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-payments::MandatoryReauthManager*
-ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
-  if (!payments_mandatory_reauth_manager_) {
-    payments_mandatory_reauth_manager_ =
-        std::make_unique<payments::MandatoryReauthManager>(this);
-  }
-
-  return payments_mandatory_reauth_manager_.get();
-}
-
 void ChromeAutofillClient::ShowEditAddressProfileDialog(
     const AutofillProfile& profile,
     AddressProfileSavePromptCallback on_user_decision_callback) {
@@ -509,7 +486,7 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
       web_contents()->GetBrowserContext());
   CHECK(account);
   std::u16string footer_message =
-      profile.source() == AutofillProfile::Source::kAccount
+      profile.IsAccountProfile()
           ? l10n_util::GetStringFUTF16(
                 IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
                 base::ASCIIToUTF16(account->email))
@@ -535,8 +512,7 @@ void ChromeAutofillClient::ShowDeleteAddressProfileDialog(
   DeleteAddressProfileDialogControllerImpl* controller =
       DeleteAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferDelete(
-      /*is_account_address_profile=*/profile.source() ==
-          AutofillProfile::Source::kAccount,
+      profile.IsAccountProfile(),
       /*delete_dialog_callback=*/std::move(delete_dialog_callback));
 #else
   // Delete address profile dialog is only available is desktop.
@@ -560,7 +536,8 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
 #endif
 }
 
-void ChromeAutofillClient::ShowAutofillSuggestions(
+AutofillClient::SuggestionUiSessionId
+ChromeAutofillClient::ShowAutofillSuggestions(
     const PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   // The Autofill Popup cannot open if it overlaps with another popup.
@@ -571,10 +548,13 @@ void ChromeAutofillClient::ShowAutofillSuggestions(
   // guarantees the IPH will be hidden by the time the Autofill Popup will
   // attempt to open. This works because the tasks of hiding the IPH and showing
   // the Autofill Popup are posted on the same thread (UI thread).
+  const SuggestionUiSessionId session_id =
+      AutofillSuggestionController::GenerateSuggestionUiSessionId();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ChromeAutofillClient::ShowAutofillSuggestionsImpl,
-                     GetWeakPtr(), open_args, delegate));
+                     GetWeakPtr(), session_id, open_args, delegate));
+  return session_id;
 }
 
 void ChromeAutofillClient::UpdateAutofillDataListValues(
@@ -603,17 +583,25 @@ ChromeAutofillClient::GetPopupScreenLocation() const {
              : std::make_optional<AutofillClient::PopupScreenLocation>();
 }
 
-void ChromeAutofillClient::UpdatePopup(
+std::optional<AutofillClient::SuggestionUiSessionId>
+ChromeAutofillClient::GetSessionIdForCurrentAutofillSuggestions() const {
+  return suggestion_controller_ ? suggestion_controller_->GetUiSessionId()
+                                : std::nullopt;
+}
+
+void ChromeAutofillClient::UpdateAutofillSuggestions(
     const std::vector<Suggestion>& suggestions,
     FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (!suggestion_controller_.get()) {
-    return;  // Update only if there is a popup.
+  const std::optional<SuggestionUiSessionId> session_id =
+      GetSessionIdForCurrentAutofillSuggestions();
+  if (!session_id) {
+    return;  // Update only if there is UI showing.
   }
 
-  // When a form changes dynamically, |suggestion_controller_| may hold a
+  // When a form changes dynamically, `suggestion_controller_` may hold a
   // delegate of the wrong type, so updating the popup would call into the wrong
-  // delegate. Hence, just close the existing popup (crbug/1113241).
+  // delegate. Hence, just close the existing popup (crbug.com/1113241).
   if (main_filling_product !=
       suggestion_controller_.get()->GetMainFillingProduct()) {
     suggestion_controller_->Hide(SuggestionHidingReason::kStaleData);
@@ -622,7 +610,7 @@ void ChromeAutofillClient::UpdatePopup(
 
   // Calling show will reuse the existing view automatically.
   suggestion_controller_->Show(
-      suggestions, trigger_source,
+      *session_id, suggestions, trigger_source,
       ShouldAutofillPopupAutoselectFirstSuggestion(trigger_source));
 }
 
@@ -804,6 +792,7 @@ Profile* ChromeAutofillClient::GetProfile() const {
 }
 
 void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
+    SuggestionUiSessionId session_id,
     const PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   // Convert element_bounds to be in screen space.
@@ -820,7 +809,7 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
       open_args.form_control_ax_id);
 
   suggestion_controller_->Show(
-      open_args.suggestions, open_args.trigger_source,
+      session_id, open_args.suggestions, open_args.trigger_source,
       ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source));
 
   // When testing, try to keep popup open when the reason to hide is one of:

@@ -58,8 +58,7 @@
     <print-preview-destination-list id="printList"
         destinations="[[destinations_]]"
         hidden$="[[!isShowingDestinationList]]"
-        loading-destinations="[[showDestinationListThrobber(
-            loadingAnyDestinations_)]]"
+        loading-destinations="false"
         search-query="[[searchQuery_]]"
         on-destination-selected="onDestinationSelected_">
     </print-preview-destination-list>
@@ -76,7 +75,7 @@
     <cr-button on-click="onManageButtonClick_" id="managePrinters"
         hidden$="[[!showManagePrintersButton]]">
       $i18n{manage}
-      <iron-icon icon="cr:open-in-new" id="manageIcon"></iron-icon>
+      <cr-icon icon="cr:open-in-new" id="manageIcon"></cr-icon>
     </cr-button>
     <cr-button class="cancel-button" on-click="onCancelButtonClick_">
       $i18n{cancel}

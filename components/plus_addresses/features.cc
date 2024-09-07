@@ -13,8 +13,6 @@ namespace {
 
 constexpr char kEnterprisePlusAddressOAuthScopeName[] = "oauth-scope";
 constexpr char kEnterprisePlusAddressServerUrlName[] = "server-url";
-constexpr char kSyncWithEnterprisePlusAddressServerName[] = "sync-with-server";
-constexpr char kEnterprisePlusAddressTimerDelayName[] = "timer-delay";
 constexpr char kPlusAddressManagementUrlName[] = "manage-url";
 constexpr char kPlusAddressLearnMoreUrlName[] = "learn-more";
 constexpr char kPlusAddressExcludedSitesName[] = "excluded-sites";
@@ -23,14 +21,13 @@ constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
 
 }  // namespace
 
-// When enabled, allows the use of affiliation data with plus addresses. This
-// includes things like prefetching affiliation data, or suggesting plus
-// addresses for affiliated domains.
-BASE_FEATURE(kPlusAddressAffiliations,
-             "PlusAddressAffiliations",
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, mobile plus address creation bottom sheet shows enhanced UI for
+// different error states.
+BASE_FEATURE(kPlusAddressAndroidErrorStatesEnabled,
+             "PlusAddressAndroidErrorStatesEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
 // When enabled, mobile manual fallbacks for addresses and passwords show plus
 // address filling information.
 BASE_FEATURE(kPlusAddressAndroidManualFallbackEnabled,
@@ -61,11 +58,6 @@ const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope{
     &kPlusAddressesEnabled, kEnterprisePlusAddressOAuthScopeName, ""};
 const base::FeatureParam<std::string> kEnterprisePlusAddressServerUrl{
     &kPlusAddressesEnabled, kEnterprisePlusAddressServerUrlName, ""};
-const base::FeatureParam<bool> kSyncWithEnterprisePlusAddressServer{
-    &kPlusAddressesEnabled, kSyncWithEnterprisePlusAddressServerName, false};
-const base::FeatureParam<base::TimeDelta> kEnterprisePlusAddressTimerDelay{
-    &kPlusAddressesEnabled, kEnterprisePlusAddressTimerDelayName,
-    base::Hours(24)};
 const base::FeatureParam<std::string> kPlusAddressManagementUrl{
     &kPlusAddressesEnabled, kPlusAddressManagementUrlName, ""};
 const base::FeatureParam<std::string> kPlusAddressLearnMoreUrl{
@@ -88,6 +80,15 @@ BASE_FEATURE(kPlusAddressGlobalToggle,
              "PlusAddressGlobalToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// When enabled, users that have accepted the legal notice will see a
+// streamlined flow for creating plus addresses that never leaves the Autofill
+// popup.
+BASE_FEATURE(kPlusAddressInlineCreation,
+             "PlusAddressInlineCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, mobile manual fallbacks for addresses and passwords show plus
 // address filling information.
@@ -95,14 +96,6 @@ BASE_FEATURE(kPlusAddressIOSManualFallbackEnabled,
              "PlusAddressIOSManualFallbackEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, loading states during plus address creation on Android are more
-// refined.
-BASE_FEATURE(kPlusAddressLoadingStatesAndroid,
-             "PlusAddressLoadingStatesAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, plus address creation is offered on all email fields that are
 // not a username field - even if they are on a login form or a change password
@@ -137,11 +130,6 @@ extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize(
 BASE_FEATURE(kPlusAddressProfileAwareFeatureCheck,
              "PlusAddressProfileAwareFeatureCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, plus address refresh requests to the backend are supported.
-BASE_FEATURE(kPlusAddressRefresh,
-             "PlusAddressRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // When enabled, plus address settings on Desktop are nested under address

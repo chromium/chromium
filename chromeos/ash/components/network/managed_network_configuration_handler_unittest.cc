@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
+#include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -32,21 +33,25 @@
 #include "chromeos/ash/components/network/fake_network_connection_handler.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/ash/components/network/mock_network_metadata_store.h"
 #include "chromeos/ash/components/network/mock_network_state_handler.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/ash/components/network/shill_property_util.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/text_message_suppression_state.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/onc_utils.h"
@@ -71,6 +76,7 @@ namespace ash {
 
 using testing::ElementsAre;
 using testing::IsEmpty;
+using ::testing::Return;
 
 namespace {
 
@@ -109,6 +115,8 @@ constexpr char kTestGuidEthernetEap[] = "policy_ethernet_eap";
 
 constexpr char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
 constexpr char kTestEid[] = "12345678901234567890123456789012";
+constexpr char kTestCellularServicePath[] = "cellular_service_path";
+constexpr char kTestCellularGuid[] = "cellular_guid";
 
 // A valid but empty (no networks and no certificates) and unencrypted
 // configuration.
@@ -221,6 +229,11 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     // ManagedNetworkConfigurationHandlerImpl's ctor is private.
     managed_network_configuration_handler_.reset(
         new ManagedNetworkConfigurationHandlerImpl());
+
+    network_metadata_store_ =
+        base::WrapUnique(new testing::NiceMock<MockNetworkMetadataStore>());
+    managed_network_configuration_handler_
+        ->set_network_metadata_store_for_testing(network_metadata_store_.get());
 
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
@@ -382,6 +395,10 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     managed_network_configuration_handler_.reset();
   }
 
+  NetworkHandlerTestHelper* network_handler_test_helper() {
+    return network_handler_test_helper_.get();
+  }
+
   bool PropertiesMatch(const base::Value::Dict& v1,
                        const base::Value::Dict& v2) {
     if (v1 == v2)
@@ -418,6 +435,23 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     return prohibited_technologies_handler_.get();
   }
 
+  void ConfigureCellularService(const std::string& service_path,
+                                const std::string& type) {
+    base::Value::Dict properties;
+    shill_property_util::SetSSID(service_path, &properties);
+    properties.Set(shill::kNameProperty, service_path);
+    properties.Set(shill::kGuidProperty, kTestCellularGuid);
+    properties.Set(shill::kTypeProperty, type);
+    properties.Set(shill::kStateProperty, shill::kStateIdle);
+    properties.Set(shill::kProfileProperty,
+                   NetworkProfileHandler::GetSharedProfilePath());
+
+    network_configuration_handler_->CreateShillConfiguration(
+        std::move(properties), base::DoNothing(),
+        base::BindOnce(&ErrorCallback));
+    base::RunLoop().RunUntilIdle();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -443,6 +477,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   std::unique_ptr<ProhibitedTechnologiesHandler>
       prohibited_technologies_handler_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  std::unique_ptr<MockNetworkMetadataStore> network_metadata_store_;
 
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_, device_prefs_;
@@ -662,6 +697,45 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyProhibitedTechnology) {
   EXPECT_THAT(
       prohibited_technologies_handler()->GetCurrentlyProhibitedTechnologies(),
       IsEmpty());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest, ModifyCustomApns) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
+                                       {features::kApnRevamp,
+                                        features::kAllowApnModificationPolicy},
+                                       /*disabled_features=*/{});
+  ConfigureCellularService(kTestCellularServicePath, shill::kTypeCellular);
+
+  auto custom_apn_list = base::Value::List().Append(
+      base::Value::Dict()
+          .Set(::onc::cellular_apn::kAccessPointName, "apn1")
+          .Set(::onc::cellular_apn::kState, ::onc::cellular_apn::kStateEnabled)
+          .Set(::onc::cellular_apn::kApnTypes,
+               base::Value::List().Append(
+                   ::onc::cellular_apn::kApnTypeDefault)));
+  EXPECT_CALL(*(network_metadata_store_.get()),
+              GetCustomApnList(kTestCellularGuid))
+      .WillRepeatedly(Return(&custom_apn_list));
+
+  // Set 'AllowApnModification' policy.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_allow_apn_modification.onc"));
+  base::RunLoop().RunUntilIdle();
+
+  std::optional<base::Value::List> shill_custom_apns =
+      network_handler_test_helper()->GetServiceListProperty(
+          kTestCellularServicePath, shill::kCellularCustomApnListProperty);
+  ASSERT_FALSE(shill_custom_apns.has_value());
+
+  EXPECT_TRUE(SetPolicy(
+      ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      "managed_cellular_no_recommended_allow_apn_modification_true.onc"));
+  base::RunLoop().RunUntilIdle();
+
+  shill_custom_apns = network_handler_test_helper()->GetServiceListProperty(
+      "service_path_for_cellular_guid", shill::kCellularCustomApnListProperty);
+  ASSERT_TRUE(shill_custom_apns.has_value());
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {

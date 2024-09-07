@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("fake") {
+  public = [ "on_device_model_fake.h" ]
+  sources = [
+    "fake_chrome_ml_api.cc",
+    "fake_chrome_ml_api.h",
+    "on_device_model_fake.cc",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/on_device_model/ml:api",
+    "//services/on_device_model/ml:ml_no_internal",
+    "//services/on_device_model/public/mojom",
+  ]
+  defines = [ "IS_ON_DEVICE_MODEL_FAKE_IMPL" ]
+}

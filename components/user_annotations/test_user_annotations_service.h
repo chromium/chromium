@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "components/user_annotations/user_annotations_service.h"
+#include "components/user_annotations/user_annotations_types.h"
 
 namespace optimization_guide::proto {
 class UserAnnotationsEntry;
@@ -24,14 +25,11 @@ class TestUserAnnotationsService : public UserAnnotationsService {
   ~TestUserAnnotationsService() override;
 
   // Replaces all entries in the service with `entries`.
-  void ReplaceAllEntries(
-      std::vector<optimization_guide::proto::UserAnnotationsEntry> entries);
+  void ReplaceAllEntries(UserAnnotationsEntries entries);
 
   // UserAnnotationsService:
   void RetrieveAllEntries(
-      base::OnceCallback<
-          void(std::vector<optimization_guide::proto::UserAnnotationsEntry>)>
-          callback) override;
+      base::OnceCallback<void(UserAnnotationsEntries)> callback) override;
 
  private:
   // An in-memory representation of the "database" of user annotation entries.

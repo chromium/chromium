@@ -11,9 +11,9 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_view_consumer.h"
 
 @class LayoutGuideCenter;
-@protocol OmniboxAdditionalTextConsumer;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
@@ -48,7 +48,11 @@ class OmniboxTextChangeDelegate;
 
 @interface OmniboxViewController : UIViewController <EditViewAnimatee,
                                                      LocationBarOffsetProvider,
-                                                     OmniboxConsumer>
+                                                     OmniboxConsumer,
+                                                     OmniboxViewConsumer>
+
+/// Whether the UI is configured for search-only mode.
+@property(nonatomic, assign) BOOL isSearchOnlyUI;
 
 // The textfield used by this view controller.
 @property(nonatomic, readonly, strong) OmniboxTextFieldIOS* textField;
@@ -56,10 +60,6 @@ class OmniboxTextChangeDelegate;
 // The view, which contains a text field view.
 @property(nonatomic, readonly)
     UIView<TextFieldViewContaining>* viewContainingTextField;
-
-// Consumer of additional text.
-@property(nonatomic, readonly) id<OmniboxAdditionalTextConsumer>
-    additionalTextConsumer;
 
 // The default leading image to be used on omnibox focus before this is updated
 // via OmniboxConsumer protocol.
@@ -89,10 +89,6 @@ class OmniboxTextChangeDelegate;
 - (void)prepareOmniboxForScribble;
 // Restores the chrome post-scribble.
 - (void)cleanupOmniboxAfterScribble;
-
-/// Sets the thumbnail image used for image search. Set to`nil` to hide the
-/// thumbnail.
-- (void)setThumbnailImage:(UIImage*)image;
 
 @end
 

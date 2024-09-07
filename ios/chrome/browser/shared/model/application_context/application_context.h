@@ -64,6 +64,7 @@ namespace variations {
 class VariationsService;
 }
 
+class AdditionalFeaturesController;
 class AccountProfileMapper;
 class ApplicationContext;
 class BrowserPolicyConnectorIOS;
@@ -72,15 +73,11 @@ class IOSChromeIOThread;
 class PrefService;
 
 class ProfileManagerIOS;
-// TODO(crbug.com/358356195): Remove this typedef when this header is updated
-// to use ProfileManagerIOS.
-using ChromeBrowserStateManager = ProfileManagerIOS;
 
 class PushNotificationService;
 class SafeBrowsingService;
 @protocol SingleSignOnService;
 class SystemIdentityManager;
-@class UpgradeCenter;
 
 // Gets the global application context. Cannot return null.
 ApplicationContext* GetApplicationContext();
@@ -127,13 +124,8 @@ class ApplicationContext {
   // Gets the country locale used by the application
   virtual const std::string& GetApplicationCountry() = 0;
 
-  // Gets the ChromeBrowserStateManager used by this application.
-  // TODO(crbug.com/358299872): After all usage has changed to
-  // GetProfileManager(), remove this method.
-  virtual ChromeBrowserStateManager* GetChromeBrowserStateManager() = 0;
-
   // Gets the Profile Manager used by this application.
-  virtual ChromeBrowserStateManager* GetProfileManager() = 0;
+  virtual ProfileManagerIOS* GetProfileManager() = 0;
 
   // Gets the manager for the various metrics-related service, constructing it
   // if necessary. May return null.
@@ -198,13 +190,13 @@ class ApplicationContext {
   // interactions with the push notification server
   virtual PushNotificationService* GetPushNotificationService() = 0;
 
-  // Returns the application's UpgradeCenter that handle presenting all the
-  // notification to upgrade Chrome on iOS.
-  virtual UpgradeCenter* GetUpgradeCenter() = 0;
-
   // Returns the application's OSCryptAsync instance which can be used to create
   // instances of Encryptor for data encryption.
   virtual os_crypt_async::OSCryptAsync* GetOSCryptAsync() = 0;
+
+  // Returns the application's AdditionalFeaturesController that manages some
+  // features not declared by `BASE_DECLARE_FEATURE()`.
+  virtual AdditionalFeaturesController* GetAdditionalFeaturesController() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

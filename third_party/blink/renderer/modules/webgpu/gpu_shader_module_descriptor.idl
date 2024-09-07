@@ -6,6 +6,5 @@
 
 dictionary GPUShaderModuleDescriptor : GPUObjectDescriptorBase {
     required (USVString or Uint32Array) code;
-    object sourceMap;
     record<USVString, GPUShaderModuleCompilationHint> hints;
 };

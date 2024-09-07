@@ -55,11 +55,11 @@ class SmartCardPermissionContext::PowerSuspendObserver
  public:
   explicit PowerSuspendObserver(SmartCardPermissionContext& permission_context)
       : permission_context_(permission_context) {
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 
   ~PowerSuspendObserver() override {
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   }
 
   void OnSuspend() override {

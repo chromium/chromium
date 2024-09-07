@@ -6,7 +6,6 @@ import 'chrome://downloads/downloads.js';
 
 import type {DownloadsDangerousDownloadInterstitialElement, PageRemote} from 'chrome://downloads/downloads.js';
 import {BrowserProxy, loadTimeData} from 'chrome://downloads/downloads.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -35,7 +34,6 @@ suite('interstitial tests', function() {
         'warningBypassInterstitialSurveyTrustSiteWithUrl', displayReferrerUrl);
     interstitial.bypassPromptItemId = bypassPromptItemId;
     document.body.appendChild(interstitial);
-    flush();
   });
 
   test('trust site line with url displays correctly', function() {
@@ -45,9 +43,10 @@ suite('interstitial tests', function() {
     assertEquals(trustSiteLineUrl, trustSiteRadioButton.textContent!.trim());
   });
 
-  test('trust site line without url displays correctly', function() {
+  test('trust site line without url displays correctly', async () => {
     interstitial.trustSiteLine = loadTimeData.getString(
         'warningBypassInterstitialSurveyTrustSiteWithoutUrl');
+    await microtasksFinished();
 
     const trustSiteRadioButton = interstitial.shadowRoot!.querySelector(
         'cr-radio-button[name=TrustSite]');
@@ -133,12 +132,12 @@ suite('interstitial tests', function() {
         assertFalse(isVisible(surveyAndDownloadButton));
 
         continueAnywayButton.click();
+        await microtasksFinished();
 
         assertTrue(isVisible(surveyAndDownloadButton));
         assertTrue(continueAnywayButton.disabled);
 
         await callbackRouterRemote.$.flushForTesting();
-        flush();
 
         const openSurveyId = await testDownloadsProxy.handler.whenCalled(
             'recordOpenSurveyOnDangerousInterstitial');

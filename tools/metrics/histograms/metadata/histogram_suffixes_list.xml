@@ -217,18 +217,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Arc.AndroidBootTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AndroidFeatureModuleInstallDuration" separator=".">
-  <suffix name="Download"
-      label="Duration between download start and download end"/>
-  <suffix name="Installing"
-      label="Duration between install start and install end"/>
-  <suffix name="PendingDownload"
-      label="Duration between request and download start"/>
-  <affected-histogram name="Android.FeatureModules.CachedAwakeInstallDuration"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AndroidFeatureModuleName" separator=".">
   <suffix name="ar" label="Augmented Reality Module"/>
   <suffix name="cablev2_authenticator" label="caBLEv2 Authenticator Module"/>
@@ -243,24 +231,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="tab_ui" label="Tab Management Module"/>
   <suffix name="test_dummy" label="Test Dummy Module"/>
   <suffix name="vr" label="Virtual Reality Module"/>
-  <affected-histogram name="Android.FeatureModules.AvailabilityStatus"/>
-  <affected-histogram name="Android.FeatureModules.CachedAwakeInstallDuration"/>
-  <affected-histogram
-      name="Android.FeatureModules.CachedAwakeInstallDuration.Download"/>
-  <affected-histogram
-      name="Android.FeatureModules.CachedAwakeInstallDuration.Installing"/>
-  <affected-histogram
-      name="Android.FeatureModules.CachedAwakeInstallDuration.PendingDownload"/>
-  <affected-histogram name="Android.FeatureModules.InstallingStatus"/>
-  <affected-histogram name="Android.FeatureModules.InstallStatus"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration.Download"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration.Installing"/>
-  <affected-histogram
-      name="Android.FeatureModules.UncachedAwakeInstallDuration.PendingDownload"/>
   <affected-histogram name="Android.IsolatedSplits.ClassLoaderReplaced"/>
   <affected-histogram name="Android.IsolatedSplits.ContextCreateTime"/>
   <affected-histogram name="Android.IsolatedSplits.PreloadWaitTime"/>
@@ -414,15 +384,7 @@ chromium-metrics-reviews@google.com.
   <owner>jsaul@google.com</owner>
   <suffix name="WithNickname" label="Card with a valid nickname"/>
   <affected-histogram name="Autofill.StoredCreditCardCount.Local"/>
-  <affected-histogram name="Autofill.StoredCreditCardCount.Server.Masked"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillStoredServerCardType" separator=".">
-  <suffix name="Masked" label="Masked cards"/>
-  <suffix name="Unmasked" label="Unmasked cards (locally cached)"/>
-  <affected-histogram name="Autofill.DaysSinceLastUse.StoredCreditCard.Server"/>
   <affected-histogram name="Autofill.StoredCreditCardCount.Server"/>
-  <affected-histogram name="Autofill.StoredCreditCardDisusedCount.Server"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AutofillSyncState" separator=".">
@@ -494,28 +456,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="TZ-B" label="TZ-B partition"/>
   <suffix name="Userdata" label="userdata partition"/>
   <affected-histogram name="Platform.Storage.Flash.BadBlocks"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BatchStunPingParameters" separator=".">
-  <suffix name="1ms.1" label="1ms gap, 1st batch"/>
-  <suffix name="1ms.2" label="1ms gap, 2nd batch"/>
-  <suffix name="1ms.3" label="1ms gap, 3rd batch"/>
-  <suffix name="5ms.1" label="5ms gap, 1st batch"/>
-  <suffix name="5ms.2" label="5ms gap, 2nd batch"/>
-  <suffix name="5ms.3" label="5ms gap, 3rd batch"/>
-  <suffix name="10ms.1" label="10ms gap, 1st batch"/>
-  <suffix name="10ms.2" label="10ms gap, 2nd batch"/>
-  <suffix name="10ms.3" label="10ms gap, 3rd batch"/>
-  <suffix name="25ms.1" label="25ms gap, 1st batch"/>
-  <suffix name="25ms.2" label="25ms gap, 2nd batch"/>
-  <suffix name="25ms.3" label="25ms gap, 3rd batch"/>
-  <suffix name="50ms.1" label="50ms gap, 1st batch"/>
-  <suffix name="50ms.2" label="50ms gap, 2nd batch"/>
-  <suffix name="50ms.3" label="50ms gap, 3rd batch"/>
-  <affected-histogram name="WebRTC.Stun.BatchSuccessPercent.NoNAT"/>
-  <affected-histogram name="WebRTC.Stun.BatchSuccessPercent.NonSymNAT"/>
-  <affected-histogram name="WebRTC.Stun.BatchSuccessPercent.SymNAT"/>
-  <affected-histogram name="WebRTC.Stun.BatchSuccessPercent.UnknownNAT"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="BlinkUpdateTimeSuffixes" separator=".">
@@ -1836,12 +1776,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Mobile.Messages.Passwords.Modal.Present"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MobileFreEntryType" separator=".">
-  <suffix name="MainIntent" label="Icon click"/>
-  <suffix name="ViewIntent" label="VIEW intent"/>
-  <affected-histogram name="MobileFre.Progress"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MobileFreFragmentInflationVsAppRestriction"
     separator=".">
   <suffix name="FasterThanAppRestriction" label=""/>
@@ -2062,11 +1996,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="drive" label="Module ID for Google Drive module"/>
   <suffix name="dummy" label="Module ID for a dummy module"/>
   <suffix name="dummy2" label="Module ID for another dummy module"/>
+  <suffix name="google_calendar" label="Module ID for Google Calendar"/>
   <suffix name="history_clusters"
       label="Module ID for History Clusters module"/>
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
   <suffix name="tab_resumption" label="Module ID for Tab Resumption"/>
-  <suffix name="google_calendar" label="Module ID for Google Calendar"/>
   <affected-histogram name="NewTabPage.Modules.Dismissed"/>
   <affected-histogram name="NewTabPage.Modules.EnabledOnNTPLoad"/>
   <affected-histogram name="NewTabPage.Modules.Impression"/>
@@ -2119,20 +2053,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="WebUI" label=""/>
   <affected-histogram
       name="Notifications.Scheduler.NotificationLifeCycleEvent"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OfflinePagesNamespace" separator=".">
-  <suffix name="async_loading" label="Offline async loaded pages"/>
-  <suffix name="auto_async_loading"
-      label="Automatic offline async loaded pages"/>
-  <suffix name="bookmark" label="Offline bookmark cache"/>
-  <suffix name="browser_actions" label="Offline Browser Actions pages"/>
-  <suffix name="custom_tabs" label="Offline custom tabs"/>
-  <suffix name="download" label="Offline downloaded pages"/>
-  <suffix name="last_n" label="Offline recent pages"/>
-  <suffix name="ntp_suggestions" label="NTP suggestions offlined by the user"/>
-  <suffix name="suggested_articles" label="Prefetched NTP suggestions"/>
-  <affected-histogram name="OfflinePages.PageAccessInterval"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="OmniboxClipboardSuggestionType" separator=".">
@@ -2699,6 +2619,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="CapturedSurfaceControl"
       label="Captured Surface Control permission"/>
   <suffix name="Geolocation" label="Geolocation permission"/>
+  <suffix name="HandTracking" label="Hand tracking permission"/>
   <suffix name="KeyboardAndPointerLock"
       label="Keyboard and pointer lock permission"/>
   <suffix name="KeyboardLock" label="Keyboard lock permission"/>
@@ -2720,6 +2641,7 @@ chromium-metrics-reviews@google.com.
       label="Top-level Storage Access API permission"/>
   <suffix name="VideoCapture" label="Camera permission"/>
   <suffix name="VR" label="VR permission"/>
+  <suffix name="WebAppInstallation" label="Web app installation permission"/>
   <suffix name="WebPrinting" label="Web Printing permission"/>
   <suffix name="WindowPlacement" label="Window Management permission"/>
   <affected-histogram name="Permissions.Engagement.Accepted"/>
@@ -2749,6 +2671,8 @@ chromium-metrics-reviews@google.com.
       label="Top-level Storage Access API permission actions"/>
   <suffix name="VideoCapture" label="Camera permission actions"/>
   <suffix name="VR" label="VR permission actions"/>
+  <suffix name="WebAppInstallation"
+      label="Web app installation permission actions"/>
   <suffix name="WindowPlacement" label="Window Management permission actions"/>
   <affected-histogram name="Permissions.Action"/>
   <affected-histogram name="Permissions.DSE.AutoPermissionRevertTransition"/>
@@ -2950,11 +2874,23 @@ chromium-metrics-reviews@google.com.
       label="Memory used by IOAccelerator, on macOS. Only account for dirty
              (resident and swapped) memory, which is part of private memory
              footprint."/>
+  <suffix name="IOAccelerator.NonPurgeable"
+      label="Memory used by IOAccelerator, on macOS. Only account for
+             non-purgeable memory, which is part of private memory footprint."/>
+  <suffix name="IOAccelerator.Purgeable"
+      label="Memory used by IOAccelerator, on macOS. Only account for
+             purgeable memory, which is part of private memory footprint."/>
   <suffix name="IOSurface" label="Memory used for IOSurfaces, on macOS."/>
   <suffix name="IOSurface.DirtyMemory"
       label="Memory used for IOSurfaces, on macOS. Only account for dirty
              (resident and swapped) memory, which is part of private memory
              footprint."/>
+  <suffix name="IOSurface.NonPurgeable"
+      label="Memory used by IOSurface, on macOS. Only account for
+             non-purgeable memory, which is part of private memory footprint."/>
+  <suffix name="IOSurface.Purgeable"
+      label="Memory used by IOSurface, on macOS. Only account for purgeable
+             memory, which is part of private memory footprint."/>
   <suffix name="JavaHeap"
       label="Only counting memory used by Java heap in Android."/>
   <suffix name="Malloc"
@@ -2966,7 +2902,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.CommittedSize"
       label="Committed memory size for malloc(). Recorded only when
              PartitionAlloc is used as malloc()."/>
-  <suffix name="Malloc.ExtremeLUD.CumulativeSizeInBytes"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.CumulativeSizeInBytes"
+      label="Total size of quarantined allocations in the ELUD quarantine
+             since process start, including already dequarantined
+             allocations."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.CumulativeSizeInBytes"
       label="Total size of quarantined allocations in the ELUD quarantine
              since process start, including already dequarantined
              allocations."/>
@@ -3343,18 +3283,32 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.BRPQuarantinedBytesPerMinute"
       label="Total size of BRP quarantined bytes per minute, averaged during
              the last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.BytesPerMinute"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.BytesPerMinute"
       label="Size of ELUD quarantined bytes per minute, averaged during the
              last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.CumulativeCount"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.CumulativeCount"
       label="Total count of quarantined allocations in the ELUD quarantine
              since process start, including already dequarantined
              allocations."/>
-  <suffix name="Malloc.ExtremeLUD.QuarantinedTime"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.QuarantinedTime"
       label="Time to use up the capacity of the ELUD quarantine in
              milliseconds, estimated from BytesPerMinute. Very rough
              approximation to how long time allocations are quarantined."/>
-  <suffix name="Malloc.ExtremeLUD.SizeInBytes"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.SizeInBytes"
+      label="Size of quarantined allocations in the ELUD quarantine at dump
+             time."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.BytesPerMinute"
+      label="Size of ELUD quarantined bytes per minute, averaged during the
+             last memory dump interval."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.CumulativeCount"
+      label="Total count of quarantined allocations in the ELUD quarantine
+             since process start, including already dequarantined
+             allocations."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.QuarantinedTime"
+      label="Time to use up the capacity of the ELUD quarantine in
+             milliseconds, estimated from BytesPerMinute. Very rough
+             approximation to how long time allocations are quarantined."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.SizeInBytes"
       label="Size of quarantined allocations in the ELUD quarantine at dump
              time."/>
   <suffix name="Malloc.Original.ObjectCount"
@@ -3450,16 +3404,29 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.BRPQuarantinedCountPerMinute"
       label="Number of BRP quarantined allocations per minute, averaged
              during the last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.Count"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.Count"
       label="Count of all quarantined allocations in the ELUD quarantine at
              dump time."/>
-  <suffix name="Malloc.ExtremeLUD.CountPerMinute"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.CountPerMinute"
       label="Number of ELUD quarantined allocations per minute, averaged
              during the last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.MissCountPerMinute"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.MissCountPerMinute"
       label="Number of ELUD quarantine requests that were not satisfied per
              minute, averaged during the last memory dump interval."/>
-  <suffix name="Malloc.ExtremeLUD.QuarantineMissCount"
+  <suffix name="Malloc.ExtremeLUD.LargeObjects.QuarantineMissCount"
+      label="Monotonically increasing count of quarantine requests that were
+             not satisfied due to the configured size limit of the ELUD
+             quarantine."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.Count"
+      label="Count of all quarantined allocations in the ELUD quarantine at
+             dump time."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.CountPerMinute"
+      label="Number of ELUD quarantined allocations per minute, averaged
+             during the last memory dump interval."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.MissCountPerMinute"
+      label="Number of ELUD quarantine requests that were not satisfied per
+             minute, averaged during the last memory dump interval."/>
+  <suffix name="Malloc.ExtremeLUD.SmallObjects.QuarantineMissCount"
       label="Monotonically increasing count of quarantine requests that were
              not satisfied due to the configured size limit of the ELUD
              quarantine."/>
@@ -4210,29 +4177,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.LoadTime.ProcessCreateToApplicationStart"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="StunPingInternal" separator=".">
-  <suffix name="0ms" label="0ms between requests"/>
-  <suffix name="5ms" label="5ms between requests"/>
-  <suffix name="10ms" label="10ms between requests"/>
-  <suffix name="15ms" label="15ms between requests"/>
-  <suffix name="20ms" label="20ms between requests"/>
-  <suffix name="25ms" label="25ms between requests"/>
-  <suffix name="30ms" label="30ms between requests"/>
-  <suffix name="35ms" label="35ms between requests"/>
-  <suffix name="40ms" label="40ms between requests"/>
-  <suffix name="45ms" label="45ms between requests"/>
-  <suffix name="50ms" label="50ms between requests"/>
-  <suffix name="100ms" label="100ms between requests"/>
-  <affected-histogram name="WebRTC.Stun.ResponseLatency.NoNAT"/>
-  <affected-histogram name="WebRTC.Stun.ResponseLatency.NonSymNAT"/>
-  <affected-histogram name="WebRTC.Stun.ResponseLatency.SymNAT"/>
-  <affected-histogram name="WebRTC.Stun.ResponseLatency.UnknownNAT"/>
-  <affected-histogram name="WebRTC.Stun.SuccessPercent.NoNAT"/>
-  <affected-histogram name="WebRTC.Stun.SuccessPercent.NonSymNAT"/>
-  <affected-histogram name="WebRTC.Stun.SuccessPercent.SymNAT"/>
-  <affected-histogram name="WebRTC.Stun.SuccessPercent.UnknownNAT"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SystemNotificationAgeType" separator=".">
   <suffix name="ClickToCall" label="Click To Call"/>
   <suffix name="PriceDropChromeManaged"
@@ -4275,7 +4219,6 @@ chromium-metrics-reviews@google.com.
   <suffix base="true" name="GPU" label="ThreadPool for the gpu process."/>
   <suffix base="true" name="Renderer"
       label="ThreadPools for renderer processes."/>
-  <affected-histogram name="ThreadPool.NumTasksBeforeDetach"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup"/>
 </histogram_suffixes>
 
@@ -4284,9 +4227,6 @@ chromium-metrics-reviews@google.com.
       label="Applies to the Background priority worker group."/>
   <suffix name="Foreground"
       label="Applies to the Foreground priority worker group."/>
-  <affected-histogram name="ThreadPool.NumTasksBeforeDetach.Browser"/>
-  <affected-histogram name="ThreadPool.NumTasksBeforeDetach.ContentChild"/>
-  <affected-histogram name="ThreadPool.NumTasksBeforeDetach.Renderer"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.Browser"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.ContentChild"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.GPU"/>
@@ -4427,6 +4367,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Eche" label="Eche"/>
   <suffix name="FaceML" label="Face ML (Deprecated)"/>
   <suffix name="FirmwareUpdate" label="FirmwareUpdate"/>
+  <suffix name="Graduation" label="Graduation"/>
   <suffix name="Help" label="Help"/>
   <suffix name="Mall" label="App Mall"/>
   <suffix name="Media" label="Media"/>

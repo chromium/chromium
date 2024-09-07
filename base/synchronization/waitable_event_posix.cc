@@ -235,32 +235,31 @@ cmp_fst_addr(const std::pair<WaitableEvent*, unsigned> &a,
 
 // static
 // NO_THREAD_SAFETY_ANALYSIS: Complex control flow.
-size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables)
-    NO_THREAD_SAFETY_ANALYSIS {
+size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
+                                   size_t count) NO_THREAD_SAFETY_ANALYSIS {
   // We need to acquire the locks in a globally consistent order. Thus we sort
   // the array of waitables by address. We actually sort a pairs so that we can
   // map back to the original index values later.
-  std::vector<std::pair<WaitableEvent*, size_t>> waitables;
-  waitables.reserve(raw_waitables.size());
-  for (size_t i = 0; i < raw_waitables.size(); ++i) {
-    waitables.emplace_back(raw_waitables[i], i);
-  }
+  std::vector<std::pair<WaitableEvent*, size_t> > waitables;
+  waitables.reserve(count);
+  for (size_t i = 0; i < count; ++i)
+    waitables.push_back(std::make_pair(raw_waitables[i], i));
 
-  DCHECK_EQ(raw_waitables.size(), waitables.size());
+  DCHECK_EQ(count, waitables.size());
 
   ranges::sort(waitables, cmp_fst_addr);
 
   // The set of waitables must be distinct. Since we have just sorted by
   // address, we can check this cheaply by comparing pairs of consecutive
   // elements.
-  for (size_t i = 1; i < waitables.size(); ++i) {
-    DCHECK(waitables[i - 1].first != waitables[i].first);
+  for (size_t i = 0; i < waitables.size() - 1; ++i) {
+    DCHECK(waitables[i].first != waitables[i+1].first);
   }
 
   SyncWaiter sw;
 
-  const size_t r = EnqueueMany(&waitables[0], waitables.size(), &sw);
-  if (r < waitables.size()) {
+  const size_t r = EnqueueMany(&waitables[0], count, &sw);
+  if (r < count) {
     // One of the events is already signaled. The SyncWaiter has not been
     // enqueued anywhere.
     return waitables[r].second;
@@ -270,16 +269,16 @@ size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables)
   // enqueued our waiter in them all.
   sw.lock()->Acquire();
     // Release the WaitableEvent locks in the reverse order
-  for (size_t i = 0; i < waitables.size(); ++i) {
-    waitables[waitables.size() - (1 + i)].first->kernel_->lock_.Release();
-  }
-
-  for (;;) {
-    if (sw.fired()) {
-      break;
+    for (size_t i = 0; i < count; ++i) {
+      waitables[count - (1 + i)].first->kernel_->lock_.Release();
     }
-    sw.cv()->Wait();
-  }
+
+    for (;;) {
+      if (sw.fired())
+        break;
+
+      sw.cv()->Wait();
+    }
   sw.lock()->Release();
 
   // The address of the WaitableEvent which fired is stored in the SyncWaiter.
@@ -289,13 +288,13 @@ size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables)
 
   // Take the locks of each WaitableEvent in turn (except the signaled one) and
   // remove our SyncWaiter from the wait-list
-  for (size_t i = 0; i < raw_waitables.size(); ++i) {
+  for (size_t i = 0; i < count; ++i) {
     if (raw_waitables[i] != signaled_event) {
       raw_waitables[i]->kernel_->lock_.Acquire();
-      // There's no possible ABA issue with the address of the SyncWaiter here
-      // because it lives on the stack. Thus the tag value is just the pointer
-      // value again.
-      raw_waitables[i]->kernel_->Dequeue(&sw, &sw);
+        // There's no possible ABA issue with the address of the SyncWaiter here
+        // because it lives on the stack. Thus the tag value is just the pointer
+        // value again.
+        raw_waitables[i]->kernel_->Dequeue(&sw, &sw);
       raw_waitables[i]->kernel_->lock_.Release();
     } else {
       // By taking this lock here we ensure that |Signal| has completed by the

@@ -30,6 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -298,14 +299,14 @@ TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledOnOkButtonPressed) {
   media_lists_[DesktopMediaList::Type::kWindow]->AddSourceByFullMediaID(
       kFakeId);
 
-  EXPECT_FALSE(
-      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
   test_api_.FocusSourceAtIndex(0);
 
-  EXPECT_TRUE(
-      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
 
   GetPickerDialogView()->AcceptDialog();
   EXPECT_EQ(kFakeId, WaitForPickerDone());
@@ -327,8 +328,8 @@ TEST_P(DesktopMediaPickerViewsTest, DoneCallbackNotCalledOnDoubleTap) {
 }
 
 TEST_P(DesktopMediaPickerViewsTest, CancelButtonAlwaysEnabled) {
-  EXPECT_TRUE(
-      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL));
+  EXPECT_TRUE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kCancel));
 }
 
 TEST_P(DesktopMediaPickerViewsTest, AudioCheckboxDefaultStates) {
@@ -470,8 +471,8 @@ TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
     fake_id.audio_share = true;
   }
 
-  EXPECT_FALSE(
-      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
 
   GetPickerDialogView()->AcceptSpecificSource(fake_id);
   EXPECT_EQ(fake_id, WaitForPickerDone());
@@ -636,16 +637,16 @@ TEST_P(DesktopMediaPickerViewsPerTypeTest, FocusMediaSourceViewToSelect) {
 TEST_P(DesktopMediaPickerViewsPerTypeTest, OkButtonDisabledWhenNoSelection) {
   media_lists_[type()]->AddSourceByFullMediaID(
       DesktopMediaID(source_id_type(), 111));
-  EXPECT_FALSE(
-      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
 
   test_api_.FocusSourceAtIndex(0);
-  EXPECT_TRUE(
-      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
 
   media_lists_[type()]->RemoveSource(0);
-  EXPECT_FALSE(
-      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
 }
 
 // Verifies that the controller can successfully clear the selection when asked
@@ -791,8 +792,8 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest,
 
   test_api_.FocusSourceAtIndex(0, false);
   EXPECT_EQ(std::nullopt, test_api_.GetSelectedSourceId());
-  EXPECT_FALSE(
-      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
 
   // Send the tab list a Return key press, to make sure it doesn't try to accept
   // with no selected source. If the fix to https://crbug.com/1042976 regresses,
@@ -814,12 +815,17 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, AccessibleProperties) {
       /*image_rect=*/gfx::Rect(8, 8, 250, 180));
 
   // DesktopMediaListView accessible properties test.
+
+  std::u16string sample_accessible_name = u"Sample accessible name";
   auto list_view = std::make_unique<DesktopMediaListView>(
-      test_api_.GetSelectedController(), style, style,
-      u"Sample accessible name");
+      test_api_.GetSelectedController(), style, style, sample_accessible_name);
 
   list_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            sample_accessible_name);
+  EXPECT_EQ(list_view->GetViewAccessibility().GetCachedName(),
+            sample_accessible_name);
 
   // DesktopMediaSourceView accessible properties test.
   const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
@@ -831,6 +837,21 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, AccessibleProperties) {
   ASSERT_TRUE(source_view);
   source_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME));
+  EXPECT_EQ(source_view->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME));
+
+  source_view->SetName(sample_accessible_name);
+
+  data = ui::AXNodeData();
+  source_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            sample_accessible_name);
+  EXPECT_EQ(source_view->GetViewAccessibility().GetCachedName(),
+            sample_accessible_name);
 }
 
 class DesktopMediaPickerPreferredDisplaySurfaceTest

@@ -22,8 +22,7 @@ void RequestSurroundingText(PP_Instance instance,
       proxy::HostDispatcher::GetForInstance(instance);
   if (!dispatcher) {
     // The dispatcher should always be valid.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   dispatcher->Send(new PpapiMsg_PPPTextInput_RequestSurroundingText(

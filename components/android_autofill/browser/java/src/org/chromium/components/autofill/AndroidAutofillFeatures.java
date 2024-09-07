@@ -12,26 +12,19 @@ import org.chromium.base.Features;
 /**
  * Java accessor for base/feature_list.h state.
  *
- * This class provides methods to access values of feature flags registered in
+ * <p>This class provides methods to access values of feature flags registered in
  * `kFeaturesExposedToJava` in components/android_autofill/browser/android_autofill_features.cc.
- *
  */
 @JNINamespace("autofill::features")
 public class AndroidAutofillFeatures extends Features {
     public static final String ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME =
             "AndroidAutofillBottomSheetWorkaround";
-    public static final String ANDROID_AUTOFILL_CANCEL_SESSION_ON_NAVIGATION_NAME =
-            "AndroidAutofillCancelSessionOnNavigation";
     public static final String ANDROID_AUTOFILL_DIRECT_FORM_SUBMISSION =
             "AndroidAutofillDirectFormSubmission";
-    public static final String ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME =
-            "AndroidAutofillPrefillRequestsForLoginForms";
     public static final String ANDROID_AUTOFILL_PREFILL_REQUEST_FOR_CHANGE_PASSWORD_NAME =
             "AndroidAutofillPrefillRequestsForChangePassword";
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND =
             new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME);
-    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS =
-            new AndroidAutofillFeatures(1, ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME);
     private final int mOrdinal;
 
     private AndroidAutofillFeatures(int ordinal, String name) {

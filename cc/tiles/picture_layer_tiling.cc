@@ -22,6 +22,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/raster/raster_source.h"
@@ -137,7 +138,7 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
       }
     }
   }
-  VerifyLiveTilesRect();
+  VerifyTiles();
 }
 
 void PictureLayerTiling::TakeTilesAndPropertiesFrom(
@@ -148,13 +149,6 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
   RemoveTilesInRegion(layer_invalidation, false /* recreate tiles */);
 
   resolution_ = pending_twin->resolution_;
-  bool create_missing_tiles = false;
-  if (live_tiles_rect_.IsEmpty()) {
-    live_tiles_rect_ = pending_twin->live_tiles_rect();
-    create_missing_tiles = true;
-  } else {
-    SetLiveTilesRect(pending_twin->live_tiles_rect());
-  }
 
   while (!pending_twin->tiles_.empty()) {
     auto pending_iter = pending_twin->tiles_.begin();
@@ -162,6 +156,15 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
     tiles_[pending_iter->first] = std::move(pending_iter->second);
     pending_twin->tiles_.erase(pending_iter);
   }
+
+  ComputeTilePriorityRects(
+      pending_twin->current_visible_rect_in_layer_space_,
+      pending_twin->current_skewport_rect_in_layer_space_,
+      pending_twin->current_soon_border_rect_in_layer_space_,
+      pending_twin->current_eventually_rect_in_layer_space_,
+      pending_twin->current_content_to_screen_scale_ * contents_scale_key(),
+      pending_twin->current_occlusion_in_layer_space_);
+
   if (all_tiles_done_ && !pending_twin->all_tiles_done_) {
     all_tiles_done_ = false;
     client_->OnAllTilesDoneCleared();
@@ -170,17 +173,7 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
   DCHECK(pending_twin->tiles_.empty());
   pending_twin->all_tiles_done_ = true;
 
-  if (create_missing_tiles)
-    CreateMissingTilesInLiveTilesRect();
-
-  VerifyLiveTilesRect();
-
-  SetTilePriorityRects(pending_twin->current_content_to_screen_scale_,
-                       pending_twin->current_visible_rect_,
-                       pending_twin->current_skewport_rect_,
-                       pending_twin->current_soon_border_rect_,
-                       pending_twin->current_eventually_rect_,
-                       pending_twin->current_occlusion_in_layer_space_);
+  VerifyTiles();
 }
 
 bool PictureLayerTiling::SetRasterSourceAndResize(
@@ -210,14 +203,26 @@ bool PictureLayerTiling::SetRasterSourceAndResize(
     return false;
   }
 
-  // The SetLiveTilesRect() method would drop tiles outside the new bounds,
-  // but may do so incorrectly if resizing the tiling causes the number of
-  // tiles in the tiling_data_ to change.
-  int before_left = tiling_data_.TileXIndexFromSrcCoord(live_tiles_rect_.x());
-  int before_top = tiling_data_.TileYIndexFromSrcCoord(live_tiles_rect_.y());
-  int before_right =
+  // We can't use SetPriorityRect(EVENTUALLY_RECT) and SetLiveTilesRect()
+  // to drop and create tiles according to the new bounds. This is because
+  // resizing the tiling causes the number of tiles in the tiling_data_ to
+  // change.
+  int before_eventually_left =
+      tiling_data_.TileXIndexFromSrcCoord(current_eventually_rect_.x());
+  int before_eventually_top =
+      tiling_data_.TileYIndexFromSrcCoord(current_eventually_rect_.y());
+  int before_eventually_right =
+      tiling_data_.TileXIndexFromSrcCoord(current_eventually_rect_.right() - 1);
+  int before_eventually_bottom = tiling_data_.TileYIndexFromSrcCoord(
+      current_eventually_rect_.bottom() - 1);
+
+  int before_live_left =
+      tiling_data_.TileXIndexFromSrcCoord(live_tiles_rect_.x());
+  int before_live_top =
+      tiling_data_.TileYIndexFromSrcCoord(live_tiles_rect_.y());
+  int before_live_right =
       tiling_data_.TileXIndexFromSrcCoord(live_tiles_rect_.right() - 1);
-  int before_bottom =
+  int before_live_bottom =
       tiling_data_.TileYIndexFromSrcCoord(live_tiles_rect_.bottom() - 1);
 
   // The live_tiles_rect_ is clamped to stay within the tiling rect as we
@@ -225,46 +230,54 @@ bool PictureLayerTiling::SetRasterSourceAndResize(
   live_tiles_rect_.Intersect(tiling_rect);
   SetTilingRect(tiling_rect);
 
-  int after_right = -1;
-  int after_bottom = -1;
+  // Evict tiles outside the new tiling rect.
+  int after_eventually_right = tiling_data_.num_tiles_x() - 1;
+  int after_eventually_bottom = tiling_data_.num_tiles_y() - 1;
+
+  int after_live_right = -1;
+  int after_live_bottom = -1;
   if (!live_tiles_rect_.IsEmpty()) {
-    after_right =
+    after_live_right =
         tiling_data_.TileXIndexFromSrcCoord(live_tiles_rect_.right() - 1);
-    after_bottom =
+    after_live_bottom =
         tiling_data_.TileYIndexFromSrcCoord(live_tiles_rect_.bottom() - 1);
   }
 
   // There is no recycled twin since this is run on the pending tiling
   // during commit, and on the active tree during activate.
   // Drop tiles outside the new recorded bounds if the they shrank.
-  for (int i = after_right + 1; i <= before_right; ++i) {
-    for (int j = before_top; j <= before_bottom; ++j)
+  for (int i = after_eventually_right + 1; i <= before_eventually_right; ++i) {
+    for (int j = before_eventually_top; j <= before_eventually_bottom; ++j) {
       TakeTileAt(i, j);
+    }
   }
-  for (int i = before_left; i <= after_right; ++i) {
-    for (int j = after_bottom + 1; j <= before_bottom; ++j)
+  for (int i = before_eventually_left; i <= after_eventually_right; ++i) {
+    for (int j = after_eventually_bottom + 1; j <= before_eventually_bottom;
+         ++j) {
       TakeTileAt(i, j);
+    }
   }
 
-  if (after_right > before_right) {
-    DCHECK_EQ(after_right, before_right + 1);
-    for (int j = before_top; j <= after_bottom; ++j) {
-      Tile::CreateInfo info = CreateInfoForTile(after_right, j);
+  if (after_live_right > before_live_right) {
+    DCHECK_EQ(after_live_right, before_live_right + 1);
+    for (int j = before_live_top; j <= after_live_bottom; ++j) {
+      Tile::CreateInfo info = CreateInfoForTile(after_live_right, j);
       if (ShouldCreateTileAt(info))
         CreateTile(info);
     }
   }
-  if (after_bottom > before_bottom) {
+  if (after_live_bottom > before_live_bottom) {
     // Using the smallest horizontal bound here makes sure we don't
     // create tiles twice and don't iterate into deleted tiles.
-    int boundary_right = std::min(after_right, before_right);
-    DCHECK_EQ(after_bottom, before_bottom + 1);
-    for (int i = before_left; i <= boundary_right; ++i) {
-      Tile::CreateInfo info = CreateInfoForTile(i, after_bottom);
+    int boundary_right = std::min(after_live_right, before_live_right);
+    DCHECK_EQ(after_live_bottom, before_live_bottom + 1);
+    for (int i = before_live_left; i <= boundary_right; ++i) {
+      Tile::CreateInfo info = CreateInfoForTile(i, after_live_bottom);
       if (ShouldCreateTileAt(info))
         CreateTile(info);
     }
   }
+  VerifyTiles();
   // We need not notify the caller as it will update tiling as needed, so return
   // false to ensure the existing logic remains unchanged.
   return false;
@@ -283,8 +296,8 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
     return;
 
   base::flat_map<TileIndex, gfx::Rect> remove_tiles;
-  gfx::Rect expanded_live_tiles_rect =
-      tiling_data_.ExpandRectToTileBounds(live_tiles_rect_);
+  gfx::Rect expanded_eventually_rect =
+      tiling_data_.ExpandRectToTileBounds(current_eventually_rect_);
   for (gfx::Rect layer_rect : layer_invalidation) {
     // The pixels which are invalid in content space.
     gfx::Rect invalid_content_rect =
@@ -292,7 +305,7 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
     gfx::Rect coverage_content_rect = invalid_content_rect;
     // Avoid needless work by not bothering to invalidate where there aren't
     // tiles.
-    coverage_content_rect.Intersect(expanded_live_tiles_rect);
+    coverage_content_rect.Intersect(expanded_eventually_rect);
     if (coverage_content_rect.IsEmpty())
       continue;
     // Since the content_rect needs to invalidate things that only touch a
@@ -414,6 +427,34 @@ std::unique_ptr<Tile> PictureLayerTiling::TakeTileAt(int i, int j) {
   return result;
 }
 
+void PictureLayerTiling::SetTilePriorityRectsForTesting(
+    const gfx::Rect& visible_rect,
+    const gfx::Rect& skewport_rect,
+    const gfx::Rect& soon_border_rect,
+    const gfx::Rect& eventually_rect,
+    bool evicts_tiles) {
+  current_occlusion_in_layer_space_ = Occlusion();
+  current_content_to_screen_scale_ = 1.0;
+
+  SetPriorityRect(EnclosingLayerRectFromContentsRect(visible_rect),
+                  VISIBLE_RECT);
+  SetPriorityRect(EnclosingLayerRectFromContentsRect(skewport_rect),
+                  SKEWPORT_RECT);
+  SetPriorityRect(EnclosingLayerRectFromContentsRect(soon_border_rect),
+                  SOON_BORDER_RECT);
+  SetPriorityRect(EnclosingLayerRectFromContentsRect(eventually_rect),
+                  EVENTUALLY_RECT, evicts_tiles);
+
+  // Note that we use the largest skewport extent from the viewport as the
+  // "skewport extent". Also note that this math can't produce negative numbers,
+  // since skewport.Contains(visible_rect) is always true.
+  max_skewport_extent_in_screen_space_ = std::max(
+      {current_visible_rect_.x() - current_skewport_rect_.x(),
+       current_skewport_rect_.right() - current_visible_rect_.right(),
+       current_visible_rect_.y() - current_skewport_rect_.y(),
+       current_skewport_rect_.bottom() - current_visible_rect_.bottom()});
+}
+
 void PictureLayerTiling::Reset() {
   live_tiles_rect_ = gfx::Rect();
   tiles_.clear();
@@ -422,12 +463,11 @@ void PictureLayerTiling::Reset() {
 
 void PictureLayerTiling::ComputeTilePriorityRects(
     const gfx::Rect& visible_rect_in_layer_space,
-    const gfx::Rect& skewport_in_layer_space,
+    const gfx::Rect& skewport_rect_in_layer_space,
     const gfx::Rect& soon_border_rect_in_layer_space,
     const gfx::Rect& eventually_rect_in_layer_space,
     float ideal_contents_scale,
-    const Occlusion& occlusion_in_layer_space,
-    TileMemoryLimitPolicy) {
+    const Occlusion& occlusion_in_layer_space) {
   // If we have, or had occlusions, mark the tiles as 'not done' to ensure that
   // we reiterate the tiles for rasterization.
   if (occlusion_in_layer_space.HasOcclusion() ||
@@ -435,43 +475,18 @@ void PictureLayerTiling::ComputeTilePriorityRects(
     set_all_tiles_done(false);
   }
 
-  const float content_to_screen_scale =
+  TileMemoryLimitPolicy memory_limit_policy =
+      client_->global_tile_state().memory_limit_policy;
+
+  current_occlusion_in_layer_space_ = occlusion_in_layer_space;
+  current_content_to_screen_scale_ =
       ideal_contents_scale / contents_scale_key();
 
-  const gfx::Rect* input_rects[] = {
-      &visible_rect_in_layer_space, &skewport_in_layer_space,
-      &soon_border_rect_in_layer_space, &eventually_rect_in_layer_space};
-  gfx::Rect output_rects[4];
-  for (size_t i = 0; i < std::size(input_rects); ++i)
-    output_rects[i] = EnclosingContentsRectFromLayerRect(*input_rects[i]);
-
-  SetTilePriorityRects(content_to_screen_scale, output_rects[0],
-                       output_rects[1], output_rects[2], output_rects[3],
-                       occlusion_in_layer_space);
-  output_rects[3].Intersect(tiling_rect());
-  SetLiveTilesRect(output_rects[3]);
-}
-
-void PictureLayerTiling::SetTilePriorityRects(
-    float content_to_screen_scale,
-    const gfx::Rect& visible_rect_in_content_space,
-    const gfx::Rect& skewport,
-    const gfx::Rect& soon_border_rect,
-    const gfx::Rect& eventually_rect,
-    const Occlusion& occlusion_in_layer_space) {
-  current_visible_rect_ = visible_rect_in_content_space;
-  current_skewport_rect_ = skewport;
-  current_soon_border_rect_ = soon_border_rect;
-  current_eventually_rect_ = eventually_rect;
-  current_occlusion_in_layer_space_ = occlusion_in_layer_space;
-  current_content_to_screen_scale_ = content_to_screen_scale;
-
-  has_visible_rect_tiles_ = tiling_rect().Intersects(current_visible_rect_);
-  has_skewport_rect_tiles_ = tiling_rect().Intersects(current_skewport_rect_);
-  has_soon_border_rect_tiles_ =
-      tiling_rect().Intersects(current_soon_border_rect_);
-  has_eventually_rect_tiles_ =
-      tiling_rect().Intersects(current_eventually_rect_);
+  SetPriorityRect(visible_rect_in_layer_space, VISIBLE_RECT);
+  SetPriorityRect(skewport_rect_in_layer_space, SKEWPORT_RECT);
+  SetPriorityRect(soon_border_rect_in_layer_space, SOON_BORDER_RECT);
+  SetPriorityRect(eventually_rect_in_layer_space, EVENTUALLY_RECT,
+                  /*evicts_tiles=*/true);
 
   // Note that we use the largest skewport extent from the viewport as the
   // "skewport extent". Also note that this math can't produce negative numbers,
@@ -483,6 +498,93 @@ void PictureLayerTiling::SetTilePriorityRects(
            current_skewport_rect_.right() - current_visible_rect_.right(),
            current_visible_rect_.y() - current_skewport_rect_.y(),
            current_skewport_rect_.bottom() - current_visible_rect_.bottom()});
+
+  gfx::Rect live_tiles_rect;
+  if (features::IsCCSlimmingEnabled()) {
+    live_tiles_rect = current_visible_rect_;
+    bool draws_tiles = has_visible_rect_tiles_;
+
+    if (memory_limit_policy >= TileMemoryLimitPolicy::ALLOW_PREPAINT_ONLY) {
+      draws_tiles |= has_skewport_rect_tiles_;
+      if (has_skewport_rect_tiles_) {
+        live_tiles_rect.Union(current_skewport_rect_);
+      }
+
+      draws_tiles |= has_soon_border_rect_tiles_;
+      if (has_soon_border_rect_tiles_) {
+        live_tiles_rect.Union(current_soon_border_rect_);
+      }
+    }
+
+    if (memory_limit_policy >= TileMemoryLimitPolicy::ALLOW_ANYTHING) {
+      draws_tiles |= has_eventually_rect_tiles_;
+      if (has_eventually_rect_tiles_) {
+        live_tiles_rect.Union(current_eventually_rect_);
+      }
+    }
+    if (!draws_tiles) {
+      all_tiles_done_ = true;
+    }
+  } else {
+    live_tiles_rect = current_eventually_rect_;
+  }
+  live_tiles_rect.Intersect(tiling_rect());
+  SetLiveTilesRect(live_tiles_rect);
+}
+
+void PictureLayerTiling::SetPriorityRect(const gfx::Rect& rect_in_layer_space,
+                                         PriorityRectType rect_type,
+                                         bool evicts_tiles) {
+  DCHECK(!evicts_tiles || rect_type == EVENTUALLY_RECT);
+  switch (rect_type) {
+    case VISIBLE_RECT:
+      if (current_visible_rect_in_layer_space_ != rect_in_layer_space) {
+        current_visible_rect_in_layer_space_ = rect_in_layer_space;
+        current_visible_rect_ =
+            EnclosingContentsRectFromLayerRect(rect_in_layer_space);
+        has_visible_rect_tiles_ =
+            tiling_rect().Intersects(current_visible_rect_);
+      }
+      break;
+    case SKEWPORT_RECT:
+      if (current_skewport_rect_in_layer_space_ != rect_in_layer_space) {
+        current_skewport_rect_in_layer_space_ = rect_in_layer_space;
+        current_skewport_rect_ =
+            EnclosingContentsRectFromLayerRect(rect_in_layer_space);
+        has_skewport_rect_tiles_ =
+            tiling_rect().Intersects(current_skewport_rect_);
+      }
+      break;
+    case SOON_BORDER_RECT:
+      if (current_soon_border_rect_in_layer_space_ != rect_in_layer_space) {
+        current_soon_border_rect_in_layer_space_ = rect_in_layer_space;
+        current_soon_border_rect_ =
+            EnclosingContentsRectFromLayerRect(rect_in_layer_space);
+        has_soon_border_rect_tiles_ =
+            tiling_rect().Intersects(current_soon_border_rect_);
+      }
+      break;
+    case EVENTUALLY_RECT:
+      if (current_eventually_rect_in_layer_space_ != rect_in_layer_space) {
+        current_eventually_rect_in_layer_space_ = rect_in_layer_space;
+        gfx::Rect rect =
+            EnclosingContentsRectFromLayerRect(rect_in_layer_space);
+        if (evicts_tiles) {
+          // Iterate to delete all tiles outside of our new live_tiles rect.
+          for (TilingData::DifferenceIterator iter(
+                   &tiling_data_, current_eventually_rect_, rect);
+               iter; ++iter) {
+            TakeTileAt(iter.index_x(), iter.index_y());
+          }
+        }
+        current_eventually_rect_ = rect;
+        has_eventually_rect_tiles_ =
+            tiling_rect().Intersects(current_eventually_rect_);
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void PictureLayerTiling::SetLiveTilesRect(
@@ -494,18 +596,11 @@ void PictureLayerTiling::SetLiveTilesRect(
   if (live_tiles_rect_ == new_live_tiles_rect)
     return;
 
-  // Iterate to delete all tiles outside of our new live_tiles rect.
-  for (TilingData::DifferenceIterator iter(&tiling_data_, live_tiles_rect_,
-                                           new_live_tiles_rect);
-       iter; ++iter) {
-    TakeTileAt(iter.index_x(), iter.index_y());
-  }
-
   // We don't rasterize non ideal resolution tiles, so there is no need to
   // create any new tiles.
   if (resolution_ == NON_IDEAL_RESOLUTION) {
     live_tiles_rect_.Intersect(new_live_tiles_rect);
-    VerifyLiveTilesRect();
+    VerifyTiles();
     return;
   }
 
@@ -514,32 +609,40 @@ void PictureLayerTiling::SetLiveTilesRect(
                                            live_tiles_rect_);
        iter; ++iter) {
     Tile::CreateInfo info = CreateInfoForTile(iter.index_x(), iter.index_y());
-    if (ShouldCreateTileAt(info))
-      CreateTile(info);
+    if (ShouldCreateTileAt(info)) {
+      Tile* tile = TileAt(iter.index_x(), iter.index_y());
+      if (tile) {
+        if (!tile->IsReadyToDraw()) {
+          all_tiles_done_ = false;
+        }
+      } else {
+        CreateTile(info);
+      }
+    }
   }
 
   live_tiles_rect_ = new_live_tiles_rect;
-  VerifyLiveTilesRect();
+  VerifyTiles();
 }
 
-void PictureLayerTiling::VerifyLiveTilesRect() const {
+void PictureLayerTiling::VerifyTiles() const {
 #if DCHECK_IS_ON()
   for (auto it = tiles_.begin(); it != tiles_.end(); ++it) {
     DCHECK(it->second);
     TileIndex index = it->first;
     DCHECK(index.i < tiling_data_.num_tiles_x())
         << this << " " << index.i << "," << index.j << " num_tiles_x "
-        << tiling_data_.num_tiles_x() << " live_tiles_rect "
-        << live_tiles_rect_.ToString();
+        << tiling_data_.num_tiles_x() << " eventually_rect "
+        << current_eventually_rect_.ToString();
     DCHECK(index.j < tiling_data_.num_tiles_y())
         << this << " " << index.i << "," << index.j << " num_tiles_y "
-        << tiling_data_.num_tiles_y() << " live_tiles_rect "
-        << live_tiles_rect_.ToString();
-    DCHECK(
-        tiling_data_.TileBounds(index.i, index.j).Intersects(live_tiles_rect_))
+        << tiling_data_.num_tiles_y() << " eventually_rect "
+        << current_eventually_rect_.ToString();
+    DCHECK(tiling_data_.TileBounds(index.i, index.j)
+               .Intersects(current_eventually_rect_))
         << this << " " << index.i << "," << index.j << " tile bounds "
         << tiling_data_.TileBounds(index.i, index.j).ToString()
-        << " live_tiles_rect " << live_tiles_rect_.ToString();
+        << " eventually_rect " << current_eventually_rect_.ToString();
   }
 #endif
 }
@@ -645,6 +748,14 @@ PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
   return PrioritizedTile(tile, this, tile_priority, is_tile_occluded,
                          process_for_images_only,
                          ShouldDecodeCheckeredImagesForTile(tile));
+}
+
+void PictureLayerTiling::CreateAllTilesForTesting(
+    const gfx::Rect& rect_to_raster) {
+  SetTilePriorityRectsForTesting(  // IN-TEST
+      rect_to_raster, rect_to_raster, rect_to_raster, rect_to_raster,
+      /*evicts_tiles=*/true);
+  SetLiveTilesRect(rect_to_raster);
 }
 
 std::map<const Tile*, PrioritizedTile>
@@ -801,12 +912,17 @@ gfx::Rect PictureLayerTiling::ComputeTilingRect() const {
 }
 
 void PictureLayerTiling::SetTilingRect(const gfx::Rect& tiling_rect) {
+  if (tiling_data_.tiling_rect() == tiling_rect) {
+    return;
+  }
+
   has_visible_rect_tiles_ = tiling_rect.Intersects(current_visible_rect_);
   has_skewport_rect_tiles_ = tiling_rect.Intersects(current_skewport_rect_);
   has_soon_border_rect_tiles_ =
       tiling_rect.Intersects(current_soon_border_rect_);
   has_eventually_rect_tiles_ = tiling_rect.Intersects(current_eventually_rect_);
   tiling_data_.SetTilingRect(tiling_rect);
+  tiling_rect_in_layer_space_ = EnclosingLayerRectFromContentsRect(tiling_rect);
 }
 
 PictureLayerTiling::TileIterator::TileIterator(PictureLayerTiling* tiling)

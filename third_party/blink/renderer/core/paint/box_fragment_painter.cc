@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 
+#include <algorithm>
+#include <numeric>
+#include <vector>
+
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -661,6 +665,8 @@ void BoxFragmentPainter::PaintObject(const PaintInfo& paint_info,
       } else if (items_) {
         DCHECK(fragment.IsBlockFlow());
         PaintLineBoxes(paint_info, paint_offset);
+      } else if (fragment.IsPaginatedRoot()) {
+        PaintCurrentPageContainer(paint_info);
       } else if (!fragment.IsInlineFormattingContext()) {
         PaintBlockChildren(paint_info, paint_offset);
       }
@@ -820,29 +826,63 @@ void BoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   PaintLineBoxChildItems(&children, child_paint_info, paint_offset);
 }
 
+void BoxFragmentPainter::PaintCurrentPageContainer(
+    const PaintInfo& paint_info) {
+  DCHECK(box_fragment_.IsPaginatedRoot());
+
+  PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
+  // The correct page box fragment for the given page has been selected, and
+  // that's all that's going to be painted now. The cull rect used during
+  // printing is for the paginated content only, in the stitched coordinate
+  // system with all the page areas stacked after oneanother. However, no
+  // paginated content will be painted here (that's in separate paint layers),
+  // only page box decorations and margin fragments.
+  paint_info_for_descendants.SetCullRect(CullRect::Infinite());
+
+  PaintInfo paint_info_for_page_container = paint_info_for_descendants;
+  // We only want the page container to paint itself and return (and then handle
+  // its children on our own here, further below).
+  paint_info_for_page_container.SetDescendantPaintingBlocked();
+
+  const PaginationState* pagination_state =
+      box_fragment_.GetDocument().View()->GetPaginationState();
+  wtf_size_t page_index = pagination_state->CurrentPageIndex();
+
+  const auto& page_container =
+      To<PhysicalBoxFragment>(*box_fragment_.Children()[page_index]);
+  BoxFragmentPainter(page_container).Paint(paint_info_for_page_container);
+
+  // Paint children of the page container - that is the page border box
+  // fragment, and any surrounding page margin boxes. Paint sorted by
+  // z-index. We sort a vector of fragment indices, rather than sorting a
+  // temporary list of fragments directly, as that would involve oilpan
+  // allocations and garbage for no reason.
+  //
+  // TODO(crbug.com/363031541) Although the page background and borders (and
+  // outlines, etc) are painted at the correct time, the paginated document
+  // contents (the page areas) will be painted on top of everything, since the
+  // document root element, and anything contained by the initial containing
+  // block, are separate layers.
+  base::span<const PhysicalFragmentLink> children = page_container.Children();
+  std::vector<wtf_size_t> indices;
+  indices.resize(children.size());
+  std::iota(indices.begin(), indices.end(), 0);
+  std::stable_sort(
+      indices.begin(), indices.end(), [&children](wtf_size_t a, wtf_size_t b) {
+        return children[a]->Style().ZIndex() < children[b]->Style().ZIndex();
+      });
+  for (wtf_size_t index : indices) {
+    const PhysicalFragmentLink& child = children[index];
+    const auto& child_fragment = To<PhysicalBoxFragment>(*child);
+    DCHECK(!child_fragment.HasSelfPaintingLayer());
+    BoxFragmentPainter(child_fragment).Paint(paint_info_for_descendants);
+  }
+}
+
 void BoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
                                             PhysicalOffset paint_offset) {
   DCHECK(!box_fragment_.IsInlineFormattingContext());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
-  if (box_fragment_.IsPaginatedRoot()) {
-    const PaginationState* pagination_state =
-        box_fragment_.GetDocument().View()->GetPaginationState();
-    wtf_size_t page_number = pagination_state->CurrentPageNumber();
-    const auto& page_box = box_fragment_.Children()[page_number];
-
-    // The correct page box fragment for the given page has been selected, and
-    // that's all that's going to be painted now. The cull rect used during
-    // printing is for the paginated content only, in the stitched coordinate
-    // system with all the page areas stacked after oneanother. However, no
-    // paginated content will be painted here (that's in separate paint layers),
-    // only page box decorations and margin fragments.
-    paint_info_for_descendants.SetCullRect(CullRect::Infinite());
-
-    PaintBlockChild(page_box, paint_info, paint_info_for_descendants,
-                    paint_offset);
-    return;
-  }
-
   for (const PhysicalFragmentLink& child : box_fragment_.Children()) {
     const PhysicalFragment& child_fragment = *child;
     DCHECK(child_fragment.IsBox());

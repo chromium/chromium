@@ -39,9 +39,9 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   static constexpr int kMaxExtraVSyncs = 12;
 
  private:
-  friend class CVDisplayLinkMac;
   friend class CADisplayLinkMac;
-  friend class Wrapper;
+  friend class CASharedState;
+  friend class CVDisplayLinkMac;
   friend class DisplayLinkMacSharedState;
   using UnregisterCallback = base::OnceCallback<void(VSyncCallbackMac*)>;
 

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SENSITIVE_CONTENT_SENSITIVE_CONTENT_CLIENT_H_
 #define COMPONENTS_SENSITIVE_CONTENT_SENSITIVE_CONTENT_CLIENT_H_
 
+#include <string>
+
 namespace sensitive_content {
 
 // Used for dependency injection from the embedder (Chrome on Android or
@@ -14,6 +16,11 @@ class SensitiveContentClient {
   virtual ~SensitiveContentClient() = default;
 
   virtual void SetContentSensitivity(bool content_is_sensitive) = 0;
+
+  // Returns the prefix of the histograms that will be recorded. The prefix is
+  // embedder specific, as the metrics are recorded individually for each
+  // embedder.
+  virtual std::string_view GetHistogramPrefix() = 0;
 };
 
 }  // namespace sensitive_content

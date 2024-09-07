@@ -53,13 +53,6 @@ class PlusAddressHttpClient {
   virtual void PreallocatePlusAddresses(
       PreallocatePlusAddressesCallback callback) = 0;
 
-  // Initiates a request to get all plus addresses from the remote enterprise-
-  // specified server and runs `on_completed` when the request is completed.
-  // On success, the facets of the returned `PlusProfile` are set to eTLD+1s.
-  // TODO(b/322147254): Remove once sync support is launched.
-  virtual void GetAllPlusAddresses(
-      PlusAddressMapRequestCallback on_completed) = 0;
-
   // Resets state in the client, e.g., by cancelling ongoing network requests.
   virtual void Reset() = 0;
 };

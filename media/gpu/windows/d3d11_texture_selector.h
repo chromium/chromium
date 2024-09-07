@@ -25,11 +25,6 @@ class FormatSupportChecker;
 // GUID support.
 class MEDIA_GPU_EXPORT TextureSelector {
  public:
-  enum class HDRMode {
-    kSDROnly = 0,
-    kSDROrHDR = 1,
-  };
-
   TextureSelector(VideoPixelFormat pixfmt,
                   DXGI_FORMAT output_dxgifmt,
                   ComD3D11VideoDevice video_device,
@@ -41,7 +36,6 @@ class MEDIA_GPU_EXPORT TextureSelector {
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& workarounds,
       DXGI_FORMAT decoder_output_format,
-      HDRMode hdr_output_mode,
       const FormatSupportChecker* format_checker,
       ComD3D11VideoDevice video_device,
       ComD3D11DeviceContext device_context,
@@ -85,11 +79,8 @@ class MEDIA_GPU_EXPORT TextureSelector {
 
 class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
  public:
-  // TODO(liberato): do we need |input_dxgifmt| here?
   CopyTextureSelector(VideoPixelFormat pixfmt,
-                      DXGI_FORMAT input_dxgifmt,
                       DXGI_FORMAT output_dxgifmt,
-                      std::optional<gfx::ColorSpace> output_color_space,
                       ComD3D11VideoDevice video_device,
                       ComD3D11DeviceContext d3d11_device_context,
                       bool use_shared_handle);
@@ -105,7 +96,6 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
   bool WillCopyForTesting() const override;
 
  private:
-  std::optional<gfx::ColorSpace> output_color_space_;
   scoped_refptr<VideoProcessorProxy> video_processor_proxy_;
 };
 

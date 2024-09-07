@@ -12,8 +12,13 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/sync_internals/sync_internals_message_handler.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_invalidations_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/user_event_service_factory.h"
+#include "chrome/browser/ui/webui/sync_internals/chrome_sync_internals_message_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/grit/sync_service_sync_internals_resources.h"
 #include "components/grit/sync_service_sync_internals_resources_map.h"
@@ -49,7 +54,13 @@ SyncInternalsUI::SyncInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   CreateAndAddSyncInternalsHTMLSource(Profile::FromWebUI(web_ui));
 
-  web_ui->AddMessageHandler(std::make_unique<SyncInternalsMessageHandler>());
+  auto* profile = Profile::FromWebUI(web_ui)->GetOriginalProfile();
+  web_ui->AddMessageHandler(std::make_unique<ChromeSyncInternalsMessageHandler>(
+      IdentityManagerFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
+      SyncInvalidationsServiceFactory::GetForProfile(profile),
+      browser_sync::UserEventServiceFactory::GetForProfile(profile),
+      chrome::GetChannelName(chrome::WithExtendedStable(true))));
 }
 
 SyncInternalsUI::~SyncInternalsUI() = default;

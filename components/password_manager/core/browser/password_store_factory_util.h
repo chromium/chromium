@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace network::mojom {
 class NetworkContext;
@@ -23,7 +24,6 @@ namespace password_manager {
 
 class CredentialsCleanerRunner;
 class PasswordStoreBackend;
-class PasswordStoreInterface;
 
 // Creates a LoginDatabase. Looks in |db_directory| for the database file.
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be
@@ -47,9 +47,12 @@ std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
 // HTTP credentials. This feature is not available on iOS platform because the
 // HSTS query is not supported. |network_context_getter| is always null for iOS
 // and it can also be null for some unittests.
-void RemoveUselessCredentials(
+// (4) Indirectly re-encrypts all passwords by reading them form the |store| and
+// invoking UpdateLogins.
+void SanitizeAndMigrateCredentials(
     CredentialsCleanerRunner* cleaning_tasks_runner,
     scoped_refptr<PasswordStoreInterface> store,
+    password_manager::IsAccountStore is_account_store,
     PrefService* prefs,
     base::TimeDelta delay,
     base::RepeatingCallback<network::mojom::NetworkContext*()>

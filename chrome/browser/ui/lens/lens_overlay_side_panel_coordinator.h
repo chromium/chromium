@@ -11,6 +11,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/models/menu_model.h"
+#include "ui/base/models/simple_menu_model.h"
 
 class GURL;
 class LensOverlayController;
@@ -41,7 +43,8 @@ namespace lens {
 class LensOverlaySidePanelCoordinator
     : public SidePanelEntryObserver,
       public content::WebContentsObserver,
-      public ChromeWebModalDialogManagerDelegate {
+      public ChromeWebModalDialogManagerDelegate,
+      public ui::SimpleMenuModel::Delegate {
  public:
   explicit LensOverlaySidePanelCoordinator(
       LensOverlayController* lens_overlay_controller);
@@ -74,6 +77,15 @@ class LensOverlaySidePanelCoordinator
   // panel UI.
   bool IsEntryShowing();
 
+  enum CommandID {
+    COMMAND_MY_ACTIVITY,
+    COMMAND_LEARN_MORE,
+    COMMAND_SEND_FEEDBACK,
+  };
+
+  // SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
+
  private:
   // content::WebContentsObserver:
   void DidOpenRequestedURL(content::WebContents* new_contents,
@@ -102,6 +114,13 @@ class LensOverlaySidePanelCoordinator
   GURL GetOpenInNewTabUrl();
 
   std::unique_ptr<views::View> CreateLensOverlayResultsView();
+
+  // Returns the more info callback for creating the side panel entry.
+  base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
+  GetMoreInfoCallback();
+
+  // Returns the menu model for the more info menu.
+  std::unique_ptr<ui::MenuModel> GetMoreInfoMenuModel();
 
   // Owns this.
   const raw_ptr<LensOverlayController> lens_overlay_controller_;

@@ -16,6 +16,7 @@ def CheckTsTypemapConfigs(target_name, config_filename, out_filename):
   ])
   _SUPPORTED_TYPE_KEYS = set([
       'ts',
+      'ts_import',
       'converter',
       'import',
       'mojom',

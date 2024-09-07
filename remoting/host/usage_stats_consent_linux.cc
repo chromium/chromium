@@ -32,19 +32,21 @@ bool GetUsageStatsConsent(bool* allowed, bool* set_by_policy) {
     return false;
   }
 
-  // TODO(joedow): Check kUsageStatsConsentConfigPath to enable crash reporting
-  // for non-Google Linux hosts.  Also requires modifying the native message
-  // host to write the value during setup.
+  bool initialized = false;
+  auto usage_stats_consent = config->FindBool(kUsageStatsConsentConfigPath);
+  if (usage_stats_consent.has_value()) {
+    initialized = true;
+    *allowed = *usage_stats_consent;
+  }
   const std::string* host_owner_ptr = config->FindString(kHostOwnerConfigPath);
-  if (!host_owner_ptr) {
-    LOG(ERROR) << "Host config has no host_owner field.";
-    return false;
+  if (host_owner_ptr) {
+    // Override crash reporting for Google hosts.
+    initialized = true;
+    *allowed |= IsGoogleEmail(*host_owner_ptr);
   }
 
-  *allowed = IsGoogleEmail(*host_owner_ptr);
-
-  // Indicate that |allowed| was successfully initialized.
-  return true;
+  // Indicate whether |allowed| was successfully initialized.
+  return initialized;
 }
 
 bool IsUsageStatsAllowed() {

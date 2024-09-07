@@ -1,7 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/app_store_rating/ui_bundled",
   "+ios/chrome/browser/appearance/ui_bundled/appearance_customization.h",
-  "+ios/chrome/browser/browser_state_metrics/model",
   "+ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h",
   "+ios/chrome/browser/browsing_data/model",
   "+ios/chrome/browser/crash_report/model",
@@ -35,4 +34,5 @@ include_rules = [
   "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/window_activities/model",
   "+ios/chrome/browser/web_state_list/model",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
 ]

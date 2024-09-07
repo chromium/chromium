@@ -49,6 +49,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search/ntp_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -575,7 +576,7 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
-          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch)) {
+          optimization_guide::proto::LogAiDataRequest::kWallpaperSearch)) {
     return;
   }
   base::Value::Dict feedback_metadata;

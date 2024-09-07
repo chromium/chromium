@@ -16,7 +16,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -67,7 +66,6 @@ MojoSafeBrowsingImpl::~MojoSafeBrowsingImpl() {
 // static
 void MojoSafeBrowsingImpl::MaybeCreate(
     int render_process_id,
-    base::WeakPtr<content::ResourceContext> resource_context,
     const base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>&
         delegate_getter,
     mojo::PendingReceiver<mojom::SafeBrowsing> receiver) {
@@ -112,9 +110,9 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
   if (frame_token) {
     sb_frame_token = frame_token->value();
   }
-  if (delegate_->ShouldSkipRequestCheck(
-          url, content::RenderFrameHost::kNoFrameTreeNodeId, render_process_id_,
-          sb_frame_token, originated_from_service_worker)) {
+  if (delegate_->ShouldSkipRequestCheck(url, content::FrameTreeNodeId().value(),
+                                        render_process_id_, sb_frame_token,
+                                        originated_from_service_worker)) {
     // Ensure that we don't destroy an uncalled CreateCheckerAndCheckCallback
     if (callback) {
       std::move(callback).Run(true /* proceed */,
@@ -137,7 +135,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       base::BindRepeating(&GetWebContentsFromToken, render_process_id_,
                           frame_token),
       /*weak_web_state=*/nullptr, render_process_id_, sb_frame_token,
-      content::RenderFrameHost::kNoFrameTreeNodeId,
+      content::FrameTreeNodeId().value(),
       /*navigation_id=*/std::nullopt,
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,

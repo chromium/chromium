@@ -17,4 +17,6 @@ const char kTipsNotifClientStatusByProviderHistogram[] =
     "IOS.Notifications.Tips.ClientStatus.Enabled.ByProvider";
 const char kSafetyCheckNotifClientStatusByProviderHistogram[] =
     "IOS.Notifications.SafetyCheck.ClientStatus.Enabled.ByProvider";
+const char kSendTabNotifClientStatusByProviderHistogram[] =
+    "IOS.Notifications.SendTab.ClientStatus.Enabled.ByProvider";
 const char kFeedEnabledHistogram[] = "ContentSuggestions.Feed.CanBeShown";

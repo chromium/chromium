@@ -186,7 +186,10 @@ public class AccessorySheetRenderTest {
     public void testAddingPasswordTabToModelRendersTabsView() throws Exception {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
-                        AccessoryTabType.PASSWORDS, "Passwords", "");
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         sheet.getUserInfoList()
                 .add(new KeyboardAccessoryData.UserInfo("http://psl.origin.com/", true));
         sheet.getUserInfoList()
@@ -218,10 +221,13 @@ public class AccessorySheetRenderTest {
     public void testAddingPlusAddressesToPasswordTabRendersTabsView() throws Exception {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
-                        AccessoryTabType.PASSWORDS, "Passwords", "");
-        sheet.getPlusAddressSectionList()
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "No saved passwords for google.com",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
+        sheet.getPlusAddressInfoList()
                 .add(
-                        new KeyboardAccessoryData.PlusAddressSection(
+                        new KeyboardAccessoryData.PlusAddressInfo(
                                 /* origin= */ "google.com",
                                 new UserInfoField(
                                         "example@gmail.com",
@@ -252,7 +258,10 @@ public class AccessorySheetRenderTest {
     public void testAddingCreditCardAndPromoCodeToModelRendersTabsView() throws Exception {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
-                        AccessoryTabType.CREDIT_CARDS, "Payments", "");
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         sheet.getUserInfoList().add(new KeyboardAccessoryData.UserInfo("", true));
         sheet.getUserInfoList()
                 .get(0)
@@ -302,7 +311,10 @@ public class AccessorySheetRenderTest {
     public void testAddingIbansToModelRendersTabsView() throws Exception {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
-                        AccessoryTabType.CREDIT_CARDS, "Payments", "");
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         sheet.getIbanInfoList().add(new KeyboardAccessoryData.IbanInfo());
         sheet.getIbanInfoList()
                 .get(0)
@@ -334,7 +346,10 @@ public class AccessorySheetRenderTest {
         // screenshot (but supply the fields itself since the field count should be fixed).
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
-                        AccessoryTabType.ADDRESSES, "Addresses", "");
+                        AccessoryTabType.ADDRESSES,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         sheet.getUserInfoList().add(new KeyboardAccessoryData.UserInfo("", true));
         sheet.getUserInfoList()
                 .get(0)
@@ -399,10 +414,13 @@ public class AccessorySheetRenderTest {
     public void testAddingPlusAddressToModelRendersTabsView() throws Exception {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
-                        AccessoryTabType.ADDRESSES, "Addresses", "");
-        sheet.getPlusAddressSectionList()
+                        AccessoryTabType.ADDRESSES,
+                        /* userInfoTitle= */ "No saved addresses",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
+        sheet.getPlusAddressInfoList()
                 .add(
-                        new KeyboardAccessoryData.PlusAddressSection(
+                        new KeyboardAccessoryData.PlusAddressInfo(
                                 /* origin= */ "google.com",
                                 new UserInfoField(
                                         "example@gmail.com",

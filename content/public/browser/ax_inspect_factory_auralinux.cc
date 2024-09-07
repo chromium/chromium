@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/ax_inspect_factory.h"
-
 #include "base/notreached.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/public/browser/ax_inspect_factory.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_auralinux.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_auralinux.h"
 

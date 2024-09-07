@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <new>
 #include <optional>
 
 #include "partition_alloc/build_config.h"
@@ -604,7 +605,7 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   // % 16. Its distance to the next cacheline is
   //   `64 - ((slot_start & 63) / 16) * 16`
   static_assert(
-      internal::kPartitionCachelineSize == 64,
+      std::hardware_destructive_interference_size == 64,
       "The computation below assumes that cache lines are 64 bytes long.");
   int distance_to_next_cacheline_in_16_bytes = 4 - ((slot_start >> 4) & 3);
   int slot_size_remaining_in_16_bytes = bucket.slot_size / 16;

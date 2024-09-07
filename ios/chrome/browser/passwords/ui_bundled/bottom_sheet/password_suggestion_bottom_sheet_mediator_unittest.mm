@@ -24,12 +24,12 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -77,6 +77,7 @@ NSString* PrimaryActionLabelForUsernameFill() {
     : NSObject <FormSuggestionProvider>
 
 @property(weak, nonatomic, readonly) FormSuggestion* suggestion;
+@property(nonatomic, assign) NSInteger index;
 @property(weak, nonatomic, readonly) NSString* formName;
 @property(weak, nonatomic, readonly) NSString* fieldIdentifier;
 @property(weak, nonatomic, readonly) NSString* frameID;
@@ -170,6 +171,7 @@ NSString* PrimaryActionLabelForUsernameFill() {
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                        form:(NSString*)formName
              formRendererID:(autofill::FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
@@ -178,6 +180,7 @@ NSString* PrimaryActionLabelForUsernameFill() {
           completionHandler:(SuggestionHandledCompletion)completion {
   self.selected = YES;
   _suggestion = suggestion;
+  _index = index;
   _formName = [formName copy];
   _formRendererID = formRendererID;
   _fieldIdentifier = [fieldIdentifier copy];
@@ -324,37 +327,9 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, WithSuggestions) {
 }
 
 // Tests setting the consumer when suggestions are available for a single
-// username form and the feature is disabled.
-TEST_F(PasswordSuggestionBottomSheetMediatorTest,
-       WithSuggestions_ForSingleUsernameForm_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordSignInUff);
-
-  id<FormSuggestionProvider> provider =
-      [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
-          initWithSuggestions:@[ SuggestionForSingleUsernameForm() ]];
-
-  CreateMediatorWithSuggestions(@[ provider ]);
-  ASSERT_TRUE(mediator_);
-
-  OCMExpect([consumer_ setSuggestions:[OCMArg isNotNil]
-                            andDomain:[OCMArg isNotNil]]);
-  [[consumer_ expect]
-      setPrimaryActionString:PrimaryActionLabelForPasswordFill()];
-
-  [mediator_ setConsumer:consumer_];
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
-// Tests setting the consumer when suggestions are available for a single
 // username form and the feature is enabled.
 TEST_F(PasswordSuggestionBottomSheetMediatorTest,
        WithSuggestions_ForSingleUsernameForm_FeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSPasswordSignInUff);
-
   id<FormSuggestionProvider> provider =
       [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
           initWithSuggestions:@[ SuggestionForSingleUsernameForm() ]];

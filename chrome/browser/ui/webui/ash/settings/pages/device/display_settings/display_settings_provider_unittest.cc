@@ -107,7 +107,8 @@ class FakeDisplayBrightnessSettingsObserver
   double current_brightness() { return current_brightness_; }
 
   // mojom::DisplayBrightnessSettingsObserver:
-  void OnDisplayBrightnessChanged(double brightness_percent) override {
+  void OnDisplayBrightnessChanged(double brightness_percent,
+                                  bool triggered_by_als) override {
     ++num_display_brightness_changed_calls_;
     current_brightness_ = brightness_percent;
 

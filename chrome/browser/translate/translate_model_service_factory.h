@@ -40,4 +40,4 @@ class TranslateModelServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-#endif  //  CHROME_BROWSER_TRANSLATE_TRANSLATE_MODEL_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_TRANSLATE_TRANSLATE_MODEL_SERVICE_FACTORY_H_

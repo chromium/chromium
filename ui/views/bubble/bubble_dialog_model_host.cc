@@ -15,6 +15,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_utils.h"
@@ -799,19 +800,20 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   RegisterWindowClosingCallback(base::BindOnce(
       &BubbleDialogModelHost::OnWindowClosing, base::Unretained(this)));
 
-  int button_mask = ui::DIALOG_BUTTON_NONE;
+  int button_mask = static_cast<int>(ui::mojom::DialogButton::kNone);
   auto* ok_button = model_->ok_button(DialogModelHost::GetPassKey());
   if (ok_button) {
-    button_mask |= ui::DIALOG_BUTTON_OK;
+    button_mask |= static_cast<int>(ui::mojom::DialogButton::kOk);
     ConfigureBubbleButtonForParams(*this, /*button_view=*/nullptr,
-                                   ui::DIALOG_BUTTON_OK, *ok_button);
+                                   ui::mojom::DialogButton::kOk, *ok_button);
   }
 
   auto* cancel_button = model_->cancel_button(DialogModelHost::GetPassKey());
   if (cancel_button) {
-    button_mask |= ui::DIALOG_BUTTON_CANCEL;
+    button_mask |= static_cast<int>(ui::mojom::DialogButton::kCancel);
     ConfigureBubbleButtonForParams(*this, /*button_view=*/nullptr,
-                                   ui::DIALOG_BUTTON_CANCEL, *cancel_button);
+                                   ui::mojom::DialogButton::kCancel,
+                                   *cancel_button);
   }
 
   // TODO(pbos): Consider refactoring ::SetExtraView() so it can be called
@@ -842,8 +844,9 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   SetButtons(button_mask);
 
   if (model_->override_default_button(DialogModelHost::GetPassKey())) {
-    SetDefaultButton(
-        model_->override_default_button(DialogModelHost::GetPassKey()).value());
+    SetDefaultButton(static_cast<int>(
+        model_->override_default_button(DialogModelHost::GetPassKey())
+            .value()));
   }
 
   SetTitle(model_->title(DialogModelHost::GetPassKey()));
@@ -1126,8 +1129,9 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
   const int top_margin =
       GetDialogTopMargins(layout_provider, first_field) - extra_margin;
   const int bottom_margin =
-      GetDialogBottomMargins(layout_provider, last_field,
-                             buttons() != ui::DIALOG_BUTTON_NONE) -
+      GetDialogBottomMargins(
+          layout_provider, last_field,
+          buttons() != static_cast<int>(ui::mojom::DialogButton::kNone)) -
       extra_margin;
   set_margins(gfx::Insets::TLBR(top_margin >= 0 ? top_margin : 0, 0,
                                 bottom_margin >= 0 ? bottom_margin : 0, 0));
@@ -1145,13 +1149,14 @@ void BubbleDialogModelHost::OnWindowClosing() {
 void BubbleDialogModelHost::UpdateDialogButtons() {
   if (ui::DialogModel::Button* const ok_button =
           model_->ok_button(DialogModelHost::GetPassKey())) {
-    ConfigureBubbleButtonForParams(*this, GetOkButton(), ui::DIALOG_BUTTON_OK,
-                                   *ok_button);
+    ConfigureBubbleButtonForParams(*this, GetOkButton(),
+                                   ui::mojom::DialogButton::kOk, *ok_button);
   }
   if (ui::DialogModel::Button* const cancel_button =
           model_->cancel_button(DialogModelHost::GetPassKey())) {
     ConfigureBubbleButtonForParams(*this, GetCancelButton(),
-                                   ui::DIALOG_BUTTON_CANCEL, *cancel_button);
+                                   ui::mojom::DialogButton::kCancel,
+                                   *cancel_button);
   }
   if (ui::DialogModel::Button* const extra_button =
           model_->extra_button(DialogModelHost::GetPassKey())) {

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -56,6 +57,8 @@ public class LogoMediatorUnitTest {
     @Mock ImageFetcher mImageFetcher;
 
     @Mock TemplateUrlService mTemplateUrlService;
+
+    @Mock TemplateUrl mTemplateUrl;
 
     @Mock Callback<LoadUrlParams> mLogoClickedCallback;
 
@@ -77,6 +80,8 @@ public class LogoMediatorUnitTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+        when(mTemplateUrlService.getDefaultSearchEngineTemplateUrl()).thenReturn(mTemplateUrl);
+        when(mTemplateUrl.getKeyword()).thenReturn(null);
 
         mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
 

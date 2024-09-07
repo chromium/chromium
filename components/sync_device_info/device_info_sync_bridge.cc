@@ -629,6 +629,17 @@ std::vector<const DeviceInfo*> DeviceInfoSyncBridge::GetAllDeviceInfo() const {
                all_data_.size());
   std::vector<const DeviceInfo*> list;
   for (const auto& [cache_guid, device_info_and_specifics] : all_data_) {
+    list.push_back(&device_info_and_specifics.device_info());
+  }
+  return list;
+}
+
+std::vector<const DeviceInfo*> DeviceInfoSyncBridge::GetAllChromeDeviceInfo()
+    const {
+  TRACE_EVENT1("sync", "DeviceInfoSyncBridge::GetAllChromeDeviceInfo", "size",
+               all_data_.size());
+  std::vector<const DeviceInfo*> list;
+  for (const auto& [cache_guid, device_info_and_specifics] : all_data_) {
     if (IsChromeClient(device_info_and_specifics.specifics())) {
       list.push_back(&device_info_and_specifics.device_info());
     }

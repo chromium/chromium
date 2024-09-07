@@ -5,13 +5,18 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.EditText;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -37,18 +42,27 @@ import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.EmptyTextWatcher;
+import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
+import org.chromium.ui.widget.RectProvider;
 
 /**
  * A coordinator for the context menu on the tab strip by long-pressing on the group titles. It is
  * responsible for creating a list of menu items, setting up the menu and displaying the menu.
  */
 public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordinator {
+    private static final String MENU_USER_ACTION_PREFIX = "MobileToolbarTabGroupMenu.";
     private View mContentView;
     private EditText mGroupTitleEditText;
     private ColorPickerCoordinator mColorPickerCoordinator;
     private TabGroupModelFilter mTabGroupModelFilter;
     private int mGroupRootId;
     private Context mContext;
+
+    // Title currently modified by the user through the edit box. This does not include previously
+    // updated or default title.
+    private String mCurrentModifiedTitle;
+    private boolean mIsPresetTitleUsed;
     private WindowAndroid mWindowAndroid;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
 
@@ -81,8 +95,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mTabGroupModelFilter = tabGroupModelFilter;
         mWindowAndroid = windowAndroid;
         mKeyboardVisibilityListener =
-                isHiding -> {
-                    updateTabGroupTitle();
+                isShowing -> {
+                    if (!isShowing) updateTabGroupTitle();
                 };
     }
 
@@ -92,13 +106,14 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             ActionConfirmationManager actionConfirmationManager,
             TabCreator tabCreator,
             boolean isTabGroupSyncEnabled) {
-        return (menuId, tabId) -> {
+        return (menuId, tabId, collaborationId) -> {
             if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
                 TabUiUtils.ungroupTabGroup(
                         tabGroupModelFilter,
                         actionConfirmationManager,
                         tabId,
                         isTabGroupSyncEnabled);
+                recordUserAction("Ungroup");
             } else if (menuId == org.chromium.chrome.R.id.close_tab) {
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
@@ -107,6 +122,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         /* hideTabGroups= */ true,
                         isTabGroupSyncEnabled,
                         /* didCloseCallback= */ null);
+                recordUserAction("CloseGroup");
             } else if (menuId == org.chromium.chrome.R.id.delete_tab) {
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
@@ -115,9 +131,11 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         /* hideTabGroups= */ false,
                         isTabGroupSyncEnabled,
                         /* didCloseCallback= */ null);
+                recordUserAction("DeleteGroup");
             } else if (menuId == org.chromium.chrome.R.id.open_new_tab_in_group) {
                 TabUiUtils.openNtpInGroup(
                         tabGroupModelFilter, tabCreator, tabId, TabLaunchType.FROM_TAB_GROUP_UI);
+                recordUserAction("NewTabInGroup");
             }
         };
     }
@@ -125,12 +143,21 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     /**
      * Show the context menu of the tab group.
      *
-     * @param anchorView The anchor {@link View} of the context menu.
+     * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
+     *     coordinates..
      * @param rootId The root id of the interacting tab group.
      */
-    protected void showMenu(View anchorView, int rootId) {
+    protected void showMenu(RectProvider anchorViewRectProvider, int rootId) {
         mGroupRootId = rootId;
-        createAndShowMenu(anchorView, rootId, mWindowAndroid.getActivity().get());
+        createAndShowMenu(
+                anchorViewRectProvider,
+                rootId,
+                /* horizontalOverlapAnchor= */ true,
+                /* verticalOverlapAnchor= */ false,
+                /* animStyle= */ ResourcesCompat.ID_NULL,
+                HorizontalOrientation.LAYOUT_DIRECTION,
+                mWindowAndroid.getActivity().get());
+        recordUserAction("Shown");
     }
 
     @Override
@@ -138,7 +165,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mContentView = contentView;
         mContext = contentView.getContext();
 
-        buildTitleEditor();
+        buildTitleEditor(isIncognito);
 
         buildColorEditor(isIncognito);
     }
@@ -211,6 +238,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
     @Override
     protected void onMenuDismissed() {
+        // TODO(Crbug.com/360044398) Record user action dismiss without any action taken.
         updateTabGroupTitle();
         mWindowAndroid
                 .getKeyboardDelegate()
@@ -224,38 +252,71 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
     private void updateTabGroupColor() {
         @TabGroupColorId int newColor = mColorPickerCoordinator.getSelectedColorSupplier().get();
-        TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor);
+        if (TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor)) {
+            recordUserAction("ColorChanged");
+        }
     }
 
     @VisibleForTesting
     void updateTabGroupTitle() {
-        String newTitle = mGroupTitleEditText.getText().toString();
-        TabUiUtils.updateTabGroupTitle(mTabGroupModelFilter, mGroupRootId, newTitle);
-        if (mTabGroupModelFilter.getTabGroupTitle(mGroupRootId) == null) {
-            setEditTextToDefaultGroupTitle();
+        String newTitle = mCurrentModifiedTitle;
+        if (newTitle == null) {
+            return;
+        } else if (TextUtils.isEmpty(newTitle) || newTitle.equals(getDefaultTitle())) {
+            mTabGroupModelFilter.deleteTabGroupTitle(mGroupRootId);
+            recordUserAction("TitleReset");
+            setExistingOrDefaultTitle(getDefaultTitle());
+        } else if (TabUiUtils.updateTabGroupTitle(mTabGroupModelFilter, mGroupRootId, newTitle)) {
+            recordUserAction("TitleChanged");
         }
+        mCurrentModifiedTitle = null;
     }
 
-    private void setEditTextToDefaultGroupTitle() {
-        String defaultTitle =
-                TabGroupTitleEditor.getDefaultTitle(
-                        mContext, mTabGroupModelFilter.getRelatedTabCountForRootId(mGroupRootId));
-        mGroupTitleEditText.setText(defaultTitle);
+    private void setExistingOrDefaultTitle(String s) {
+        // Flip `IsPresetTitleUsed`to prevent `TextWatcher` from treating `#setText` as a title
+        // update.
+        mIsPresetTitleUsed = true;
+        mGroupTitleEditText.setText(s);
     }
 
-    // TODO(crbug.com/358689769): Enable live editing and updating of the group title by
-    // implementing a `TextWatcher`.
-    private void buildTitleEditor() {
-        // TODO:(crbug.com/359622287): Set incognito color with ColorStateList for title editor.
+    private String getDefaultTitle() {
+        return TabGroupTitleEditor.getDefaultTitle(
+                mContext, mTabGroupModelFilter.getRelatedTabCountForRootId(mGroupRootId));
+    }
+
+    // TODO(crbug.com/358689769): Enable live editing and updating of the group title.
+    private void buildTitleEditor(boolean isIncognito) {
         mGroupTitleEditText = mContentView.findViewById(R.id.tab_group_title);
-        String curGroupTitle = mTabGroupModelFilter.getTabGroupTitle(mGroupRootId);
+
+        // Set incognito style.
+        if (isIncognito) {
+            mGroupTitleEditText.setBackgroundTintList(
+                    AppCompatResources.getColorStateList(
+                            mContext,
+                            org.chromium.chrome.R.color.menu_edit_text_bg_tint_list_baseline));
+            mGroupTitleEditText.setTextAppearance(
+                    R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
+        }
+
+        // Listen to title update as user types.
+        mGroupTitleEditText.addTextChangedListener(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (!mIsPresetTitleUsed) {
+                            mCurrentModifiedTitle = s.toString();
+                        }
+                        mIsPresetTitleUsed = false;
+                    }
+                });
 
         // Set the initial text to the existing group title, defaulting to "N tabs" if no title name
         // is set.
+        String curGroupTitle = mTabGroupModelFilter.getTabGroupTitle(mGroupRootId);
         if (curGroupTitle == null || curGroupTitle.isEmpty()) {
-            setEditTextToDefaultGroupTitle();
+            setExistingOrDefaultTitle(getDefaultTitle());
         } else {
-            mGroupTitleEditText.setText(curGroupTitle);
+            setExistingOrDefaultTitle(curGroupTitle);
         }
 
         // Add listener to group title EditText to update group title when keyboard starts hiding.
@@ -291,6 +352,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         @TabGroupColorId
         int curGroupColor = mTabGroupModelFilter.getTabGroupColorWithFallback(mGroupRootId);
         mColorPickerCoordinator.setSelectedColorItem(curGroupColor);
+    }
+
+    private static void recordUserAction(String action) {
+        RecordUserAction.record(MENU_USER_ACTION_PREFIX + action);
     }
 
     EditText getGroupTitleEditTextForTesting() {

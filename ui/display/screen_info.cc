@@ -11,8 +11,8 @@ namespace display {
 namespace {
 
 // Returns a debug string for the orientation type.
-const char* ToOrientationString(mojom::ScreenOrientation orientaiton_type) {
-  switch (orientaiton_type) {
+const char* ToOrientationString(mojom::ScreenOrientation orientation_type) {
+  switch (orientation_type) {
     case mojom::ScreenOrientation::kUndefined:
       return "Undefined";
     case mojom::ScreenOrientation::kPortraitPrimary:
@@ -40,8 +40,7 @@ bool ScreenInfo::operator==(const ScreenInfo& other) const {
          display_color_spaces == other.display_color_spaces &&
          depth == other.depth &&
          depth_per_component == other.depth_per_component &&
-         is_monochrome == other.is_monochrome &&
-         display_frequency == other.display_frequency && rect == other.rect &&
+         is_monochrome == other.is_monochrome && rect == other.rect &&
          available_rect == other.available_rect &&
          orientation_type == other.orientation_type &&
          orientation_angle == other.orientation_angle &&

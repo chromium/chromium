@@ -34,10 +34,15 @@ class TimerBasedTickProviderTest : public ::testing::Test {
     return TimerBasedTickProvider::TimeSnappedToNextTick(time, kTickPeriod);
   }
 
+  TimerBasedTickProvider* tick_provider() { return tick_provider_.get(); }
+
   static constexpr base::TimeDelta kTickPeriod = base::Milliseconds(10);
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TimerBasedTickProvider tick_provider_{kTickPeriod};
+
+ private:
+  scoped_refptr<TimerBasedTickProvider> tick_provider_ =
+      base::MakeRefCounted<TimerBasedTickProvider>(kTickPeriod);
 };
 
 TEST_F(TimerBasedTickProviderTest, SnapsTimeToNextTick) {
@@ -61,7 +66,7 @@ TEST_F(TimerBasedTickProviderTest, InvokesRequestedCallbackOnTick) {
   EXPECT_CALL(callback, Run).WillOnce(Invoke([&] {
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
   }));
-  tick_provider_.RequestCallOnNextTick(callback.Get());
+  tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
 
@@ -74,7 +79,7 @@ TEST_F(TimerBasedTickProviderTest, InvokesRequestedCallbackAfterTickElapsed) {
   EXPECT_CALL(callback, Run).WillOnce(Invoke([&] {
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
   }));
-  tick_provider_.RequestCallOnNextTick(callback.Get());
+  tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
 
@@ -85,9 +90,9 @@ TEST_F(TimerBasedTickProviderTest, InvokesTwoCallbacksOnSameTick) {
   EXPECT_CALL(callback, Run).Times(2).WillRepeatedly(Invoke([&] {
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
   }));
-  tick_provider_.RequestCallOnNextTick(callback.Get());
+  tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardBy(kTickPeriod / 2);
-  tick_provider_.RequestCallOnNextTick(callback.Get());
+  tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
 
@@ -98,11 +103,11 @@ TEST_F(TimerBasedTickProviderTest,
   bool first_callback_invoke = true;
   EXPECT_CALL(callback, Run).Times(2).WillRepeatedly(Invoke([&] {
     if (first_callback_invoke)
-      tick_provider_.RequestCallOnNextTick(callback.Get());
+      tick_provider()->RequestCallOnNextTick(callback.Get());
     first_callback_invoke = false;
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
   }));
-  tick_provider_.RequestCallOnNextTick(callback.Get());
+  tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
 
@@ -115,17 +120,18 @@ TEST_F(TimerBasedTickProviderTest,
   InSequence s;
   EXPECT_CALL(callback, Run).WillOnce(Invoke([&] {
     task_environment_.AdvanceClock(base::Microseconds(1));
-    tick_provider_.RequestCallOnNextTick(callback.Get());
+    tick_provider()->RequestCallOnNextTick(callback.Get());
   }));
   EXPECT_CALL(callback, Run).WillOnce(Invoke(([&] {
     EXPECT_EQ(base::TimeTicks::Now(), expected_run_time);
   })));
-  tick_provider_.RequestCallOnNextTick(callback.Get());
+  tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
 
 TEST_F(TimerBasedTickProviderTest, MultipleTickProvidersAreAligned) {
-  TimerBasedTickProvider tick_provider2(kTickPeriod);
+  auto tick_provider2 =
+      base::MakeRefCounted<TimerBasedTickProvider>(kTickPeriod);
   base::MockOnceCallback<void()> callback;
   std::optional<base::TimeTicks> callback_time;
 
@@ -133,9 +139,9 @@ TEST_F(TimerBasedTickProviderTest, MultipleTickProvidersAreAligned) {
   // Nudge time between the requests to guard against too simplistic
   // implementations.
   EnsureTickJustElapsed();
-  tick_provider_.RequestCallOnNextTick(callback.Get());
+  tick_provider()->RequestCallOnNextTick(callback.Get());
   task_environment_.FastForwardBy(base::Microseconds(1));
-  tick_provider2.RequestCallOnNextTick(callback.Get());
+  tick_provider2->RequestCallOnNextTick(callback.Get());
   EXPECT_CALL(callback, Run).Times(2).WillRepeatedly(Invoke([&] {
     if (!callback_time.has_value())
       callback_time = base::TimeTicks::Now();

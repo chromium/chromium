@@ -1,0 +1,93 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("metrics") {
+  sources = [
+    "feed_metrics_recorder+testing.h",
+    "feed_metrics_recorder.h",
+    "feed_metrics_recorder.mm",
+    "feed_refresh_state_tracker.h",
+    "new_tab_page_metrics_recorder.h",
+    "new_tab_page_metrics_recorder.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/favicon_base",
+    "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/v2/public:common",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/metrics",
+    "//components/ntp_tiles",
+    "//components/prefs",
+    "//ios/chrome/browser/discover_feed/model:constants",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_refresher",
+    "//ios/chrome/browser/favicon/ui_bundled",
+    "//ios/chrome/browser/metrics/model:constants",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
+    "//ios/chrome/common/ui/favicon",
+    "//url",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "feed_metrics_constants.h",
+    "feed_metrics_constants.mm",
+    "new_tab_page_metrics_constants.h",
+    "new_tab_page_metrics_constants.h",
+    "new_tab_page_metrics_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("home_metrics") {
+  sources = [
+    "home_metrics.h",
+    "home_metrics.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "feed_metrics_recorder_unittest.mm",
+    "home_metrics_unittest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":home_metrics",
+    ":metrics",
+    "//base",
+    "//base/test:test_support",
+    "//components/feed/core/v2/public:common",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/metrics/model:constants",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/shared/model/application_context:application_context",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//ui/base:test_support",
+  ]
+}

@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
@@ -242,7 +243,7 @@ std::optional<std::string_view> DataPackWithResourceSharing::GetStringPiece(
 base::RefCountedStaticMemory* DataPackWithResourceSharing::GetStaticMemory(
     uint16_t resource_id) const {
   if (auto piece = GetStringPiece(resource_id); piece.has_value()) {
-    return new base::RefCountedStaticMemory(piece->data(), piece->length());
+    return new base::RefCountedStaticMemory(base::as_byte_span(*piece));
   }
   return nullptr;
 }

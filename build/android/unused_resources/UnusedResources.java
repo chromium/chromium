@@ -581,6 +581,12 @@ public class UnusedResources {
         }
     }
 
+    private static List<File> parsePathsFromFile(String path) throws IOException {
+        return java.nio.file.Files.readAllLines(new File(path).toPath()).stream()
+                .map(File::new)
+                .collect(Collectors.toList());
+    }
+
     public static void main(String[] args) throws Exception {
         List<File> rTxtFiles = null; // R.txt files
         List<File> classes = null; // Dex/jar w dex
@@ -597,22 +603,16 @@ public class UnusedResources {
                                         .collect(Collectors.toList());
                     break;
                 case "--dexes":
-                    classes = Arrays.stream(args[i + 1].split(":"))
-                                      .map(s -> new File(s))
-                                      .collect(Collectors.toList());
+                    classes = parsePathsFromFile(args[i + 1]);
                     break;
                 case "--manifests":
-                    manifests = Arrays.stream(args[i + 1].split(":"))
-                                        .map(s -> new File(s))
-                                        .collect(Collectors.toList());
+                    manifests = parsePathsFromFile(args[i + 1]);
                     break;
                 case "--mapping":
                     mapping = new File(args[i + 1]);
                     break;
                 case "--resourceDirs":
-                    resources = Arrays.stream(args[i + 1].split(":"))
-                                        .map(s -> new File(s))
-                                        .collect(Collectors.toList());
+                    resources = parsePathsFromFile(args[i + 1]);
                     break;
                 case "--log":
                     log = new File(args[i + 1]);

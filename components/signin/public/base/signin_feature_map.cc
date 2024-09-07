@@ -23,7 +23,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kRestoreSignedInAccountAndSettingsFromBackup,
     &switches::kHideSettingsSignInPromo,
-    &switches::kUpdateMetricsServicesStateInRestore,
     &switches::kUseConsentLevelSigninForLegacyAccountEmailPref,
     &switches::kDontFallbackToDefaultImplementationInAccountManagerFacade};
 

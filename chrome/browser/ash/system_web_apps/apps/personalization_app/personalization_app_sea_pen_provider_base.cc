@@ -21,13 +21,15 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -35,6 +37,7 @@
 #include "components/manta/features.h"
 #include "components/manta/manta_status.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -94,6 +97,33 @@ bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
 
 bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPenTextInput() {
   return ::ash::personalization_app::IsEligibleForSeaPenTextInput(profile_);
+}
+
+bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenEnabled() {
+  return IsManagedSeaPenEnabledInternal();
+}
+
+bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenFeedbackEnabled() {
+  if (!profile_->GetProfilePolicyConnector()->IsManaged()) {
+    return true;
+  }
+
+  // Allow internal Google accounts to see and provide feedback.
+  if (gaia::IsGoogleInternalAccountEmail(profile_->GetProfileUserName())) {
+    DVLOG(1) << __func__ << " Google internal account";
+    return true;
+  }
+
+  // Allow Demo Mode public accounts to see and provide feedback.
+  if (features::IsSeaPenDemoModeEnabled() &&
+      DemoSession::IsDeviceInDemoMode()) {
+    DVLOG(1) << __func__ << " demo mode";
+    const auto* user = GetUser(profile_);
+    return DemoSession::Get() && user &&
+           user->GetType() == user_manager::UserType::kPublicAccount;
+  }
+
+  return IsManagedSeaPenFeedbackEnabledInternal();
 }
 
 void PersonalizationAppSeaPenProviderBase::SetSeaPenObserver(

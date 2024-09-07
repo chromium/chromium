@@ -184,8 +184,8 @@ EditorStates ToEditorStatesMetric(EditorBlockedReason reason) {
       return EditorStates::kBlockedByNetworkStatus;
     case EditorBlockedReason::kBlockedByUnsupportedRegion:
       return EditorStates::kBlockedByUnsupportedRegion;
-    case EditorBlockedReason::kBlockedByManagedStatus:
-      return EditorStates::kBlockedByManagedStatus;
+    case EditorBlockedReason::kBlockedByPolicy:
+      return EditorStates::kBlockedByPolicy;
     case EditorBlockedReason::kBlockedByUnknownCapability:
       return EditorStates::kBlockedByUnknownCapability;
     case EditorBlockedReason::kBlockedByUnsupportedCapability:

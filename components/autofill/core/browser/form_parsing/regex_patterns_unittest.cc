@@ -18,10 +18,29 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+bool operator==(MatchPatternRef a, MatchPatternRef b) {
+  return test_api(a).is_supplementary() == test_api(b).is_supplementary() &&
+         test_api(a).index() == test_api(b).index();
+}
+
+bool operator!=(MatchPatternRef a, MatchPatternRef b) {
+  return !(a == b);
+}
+
+void PrintTo(MatchPatternRef p, std::ostream* os) {
+  *os << "MatchPatternRef(" << test_api(p).is_supplementary() << ","
+      << test_api(p).index() << ")";
+}
+
+namespace {
 
 using ::testing::Contains;
 using ::testing::Each;
@@ -30,34 +49,6 @@ using ::testing::ElementsAreArray;
 using ::testing::IsSupersetOf;
 using ::testing::Not;
 using ::testing::UnorderedElementsAreArray;
-
-namespace autofill {
-
-class MatchPatternRefTestApi {
- public:
-  using UnderlyingType = MatchPatternRef::UnderlyingType;
-
-  explicit MatchPatternRefTestApi(MatchPatternRef p) : p_(p) {}
-
-  std::optional<MatchPatternRef> MakeSupplementary() const {
-    if (!(*p_).match_field_attributes.contains(MatchAttribute::kName))
-      return std::nullopt;
-    return MatchPatternRef(true, index());
-  }
-
-  UnderlyingType is_supplementary() const { return p_.is_supplementary(); }
-
-  UnderlyingType index() const { return p_.index(); }
-
- private:
-  MatchPatternRef p_;
-};
-
-namespace {
-
-MatchPatternRefTestApi test_api(MatchPatternRef p) {
-  return MatchPatternRefTestApi(p);
-}
 
 auto Matches(std::u16string_view regex) {
   icu::RegexPattern regex_pattern = *CompileRegex(regex);
@@ -93,22 +84,6 @@ bool IsEmpty(const char* s) {
   return s == nullptr || s[0] == '\0';
 }
 
-}  // namespace
-
-bool operator==(MatchPatternRef a, MatchPatternRef b) {
-  return test_api(a).is_supplementary() == test_api(b).is_supplementary() &&
-         test_api(a).index() == test_api(b).index();
-}
-
-bool operator!=(MatchPatternRef a, MatchPatternRef b) {
-  return !(a == b);
-}
-
-void PrintTo(MatchPatternRef p, std::ostream* os) {
-  *os << "MatchPatternRef(" << test_api(p).is_supplementary() << ","
-      << test_api(p).index() << ")";
-}
-
 // The parameter is the PatternSource to pass to GetMatchPatterns().
 class RegexPatternsTest : public testing::TestWithParam<PatternSource> {
  public:
@@ -121,7 +96,6 @@ INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                              PatternSource::kLegacy
 #else
-                             PatternSource::kLegacy,
                              PatternSource::kDefault,
                              PatternSource::kExperimental
 #endif
@@ -166,10 +140,10 @@ TEST_F(RegexPatternsTest, MatchPatternRefDereference) {
   EXPECT_TRUE((*a).negative_pattern);
   EXPECT_EQ((*a).positive_pattern, (*b).positive_pattern);
   EXPECT_EQ((*a).negative_pattern, (*b).negative_pattern);
-  EXPECT_EQ((*a).positive_score, (*b).positive_score);
   EXPECT_EQ((*a).form_control_types, (*b).form_control_types);
   EXPECT_THAT((*a).match_field_attributes, Contains(MatchAttribute::kLabel));
   EXPECT_THAT((*b).match_field_attributes, ElementsAre(MatchAttribute::kName));
+  EXPECT_EQ((*a).feature.has_value(), (*b).feature.has_value());
 }
 
 TEST_F(RegexPatternsTest, IsSupportedLanguageCode) {
@@ -253,15 +227,15 @@ TEST_P(RegexPatternsTest,
 struct PatternTestCase {
   // The set of patterns. In non-branded builds, only the default set is
   // supported.
-  PatternSource pattern_source = PatternSource::kLegacy;
+  PatternSource pattern_source;
   // Reference to the pattern name in the resources/regex_patterns.json file.
   const char* pattern_name;
   // Language selector for the pattern, refers to the detected language of a
   // website.
   const char* language = "en";
   // Strings that should be matched by the pattern.
-  std::vector<std::string> positive_samples = {};
-  std::vector<std::string> negative_samples = {};
+  std::vector<std::string> positive_samples;
+  std::vector<std::string> negative_samples;
 };
 
 class RegexPatternsTestWithSamples
@@ -300,7 +274,7 @@ INSTANTIATE_TEST_SUITE_P(
                         .pattern_name = "PATTERN_SOURCE_DUMMY",
                         .language = "en",
                         .positive_samples = {"legacy"},
-                        .negative_samples = {"default", "experimental"}},
+                        .negative_samples = {"default", "experimental"}}
 #else
         PatternTestCase{.pattern_source = PatternSource::kDefault,
                         .pattern_name = "PATTERN_SOURCE_DUMMY",
@@ -312,14 +286,8 @@ INSTANTIATE_TEST_SUITE_P(
                         .language = "en",
                         .positive_samples = {"experimental"},
                         .negative_samples = {"default", "legacy"}},
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
-                        .pattern_name = "PATTERN_SOURCE_DUMMY",
-                        .language = "en",
-                        .positive_samples = {"legacy"},
-                        .negative_samples = {"default", "experimental"}},
-#endif
         PatternTestCase{
-            .pattern_source = PatternSource::kLegacy,
+            .pattern_source = PatternSource::kDefault,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -344,7 +312,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
                  "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
         PatternTestCase{
-            .pattern_source = PatternSource::kLegacy,
+            .pattern_source = PatternSource::kDefault,
             .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -369,7 +337,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM / YY", "Expiration Date MM/YY",
                  "Expiration Date MM - YY", "Expiration Date MM-YY",
                  "expiration date yy", "Exp Date     (MM / YY)"}},
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
+        PatternTestCase{.pattern_source = PatternSource::kDefault,
                         .pattern_name = "ZIP_CODE",
                         .language = "en",
                         .positive_samples = {"Zip code", "postal code"},
@@ -378,16 +346,14 @@ INSTANTIATE_TEST_SUITE_P(
                              "postleitzahl",
                              // Not referring to a ZIP code:
                              "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
+        PatternTestCase{.pattern_source = PatternSource::kDefault,
                         .pattern_name = "ZIP_CODE",
                         .language = "de",
                         .positive_samples =
                             {// Inherited from "en":
                              "Zip code", "postal code",
                              // Specifically added for "de":
-                             "postleitzahl"}}
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        ,
+                             "postleitzahl"}},
         PatternTestCase{
             .pattern_source = PatternSource::kExperimental,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
@@ -459,4 +425,5 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
         ));
 
+}  // namespace
 }  // namespace autofill

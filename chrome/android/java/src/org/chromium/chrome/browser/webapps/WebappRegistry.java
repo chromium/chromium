@@ -216,7 +216,10 @@ public class WebappRegistry {
             String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
-            if (scope.startsWith(origin)) return true;
+            if (scope.startsWith(origin)
+                    && PackageUtils.isPackageInstalled(storage.getWebApkPackageName())) {
+                return true;
+            }
         }
         return false;
     }

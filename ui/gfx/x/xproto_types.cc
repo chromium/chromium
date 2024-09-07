@@ -100,13 +100,13 @@ WriteBuffer::WriteBuffer(WriteBuffer&&) = default;
 
 WriteBuffer::~WriteBuffer() = default;
 
-// TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
 void WriteBuffer::AppendBuffer(scoped_refptr<UnsizedRefCountedMemory> buffer,
                                size_t size) {
   AppendCurrentBuffer();
   sized_buffers_.push_back(
-      // SAFETY: This relies on the caller to pass a correct size.
-      UNSAFE_TODO(base::span(buffer->bytes(), size)));
+      // SAFETY: This relies on the caller to pass a correct size, as enforced
+      // by UNSAFE_BUFFER_USAGE in header.
+      UNSAFE_BUFFERS(base::span(buffer->bytes(), size)));
   owned_buffers_.push_back(buffer);
   offset_ += size;
 }

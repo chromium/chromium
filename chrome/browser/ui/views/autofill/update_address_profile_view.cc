@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
@@ -146,14 +147,14 @@ void AddValuesRow(views::TableLayoutView* layout_view,
 // Returns true if there is there is at least one entry in `diff` with
 // non-empty second value.
 bool HasNonEmptySecondValues(const std::vector<ProfileValueDifference>& diff) {
-  return base::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
+  return std::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
     return !entry.second_value.empty();
   });
 }
 
 // Returns true if there is an entry coressponding to type ADDRESS_HOME_ADDRESS.
 bool HasAddressEntry(const std::vector<ProfileValueDifference>& diff) {
-  return base::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
+  return std::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
     return entry.type == ADDRESS_HOME_ADDRESS;
   });
 }
@@ -179,10 +180,10 @@ UpdateAddressProfileView::UpdateAddressProfileView(
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
 

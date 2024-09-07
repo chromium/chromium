@@ -56,11 +56,6 @@
 //   * Signals completion of requests through RequestCore's WaitableEvent.
 //   * Attaches requests to Jobs for the purpose of de-duplication
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 
 #include <memory>
@@ -68,6 +63,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -262,12 +259,8 @@ class CertNetFetcherURLLoader::RequestCore
     DCHECK_EQ(job_, job);
     job_ = nullptr;
 
-    const uint8_t* string_data =
-        reinterpret_cast<const uint8_t*>(response_body->data());
-
     error_ = error;
-    bytes_ =
-        std::vector<uint8_t>(string_data, string_data + response_body->size());
+    bytes_ = base::ToVector(base::as_byte_span(*response_body));
     completion_event_.Signal();
   }
 

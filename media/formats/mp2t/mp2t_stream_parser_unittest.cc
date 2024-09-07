@@ -261,7 +261,7 @@ class Mp2tStreamParserTest : public testing::Test {
     size_t audio_track_count = 0;
     size_t video_track_count = 0;
     for (const auto& track : tracks->tracks()) {
-      const auto& track_id = track->bytestream_track_id();
+      const auto& track_id = track->stream_id();
       if (track->type() == MediaTrack::Type::kAudio) {
         audio_track_id_ = track_id;
         audio_track_count++;

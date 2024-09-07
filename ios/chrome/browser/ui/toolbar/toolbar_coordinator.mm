@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -127,7 +127,7 @@
   if (!browser->GetBrowserState()->IsOffTheRecord()) {
     deviceSwitcherResult =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browser->GetBrowserState());
+            GetDispatcherForProfile(browser->GetProfile());
   }
   self.toolbarMediator = [[ToolbarMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
@@ -336,12 +336,6 @@
 }
 
 - (CGFloat)expandedPrimaryToolbarHeight {
-  if (_omniboxPosition == ToolbarType::kSecondary) {
-    // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
-    // zero. This is a temporary fix for the pdf bug.
-    return 1.0;
-  }
-
   CGFloat height =
       self.primaryToolbarViewController.view.intrinsicContentSize.height;
   if (!IsSplitToolbarMode(self.traitEnvironment)) {
@@ -433,6 +427,12 @@
 - (void)updateUIForIPHDismissed {
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater updateUIForIPHDismissed];
+  }
+}
+
+- (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
+  for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
+    [coordinator.popupMenuUIUpdater setOverflowMenuBlueDot:hasBlueDot];
   }
 }
 

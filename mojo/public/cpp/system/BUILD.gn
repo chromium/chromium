@@ -15,8 +15,6 @@ component("system") {
     "data_pipe_producer.h",
     "data_pipe_utils.cc",
     "data_pipe_utils.h",
-    "dynamic_library_support.cc",
-    "dynamic_library_support.h",
     "file_data_source.cc",
     "file_data_source.h",
     "filtered_data_source.cc",

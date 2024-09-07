@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -440,7 +436,7 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
                        MAYBE_RedirectNavigation) {
-  GURL page_urls[3] = {
+  std::array<GURL, 3> page_urls = {
       https_server()->GetURL("origin1.com", "/"),
       https_server()->GetURL("origin2.com", "/foo/bar"),
       https_server()->GetURL("origin3.com", "/index.html"),
@@ -449,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   // Iterate through the configurations. URLs whose index is matched by the mask
   // will send the header, the others won't.
   for (int mask = 0; mask < (1 << 3); ++mask) {
-    GURL urls[3];
+    std::array<GURL, 3> urls;
 
     // Set up the expectations.
     for (int i = 0; i < 3; ++i) {
@@ -490,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
                        MAYBE_RedirectResourceLoad) {
-  GURL resource_urls[3] = {
+  std::array<GURL, 3> resource_urls = {
       https_server()->GetURL("origin1.com", "/redirect-start"),
       https_server()->GetURL("origin2.com", "/redirect-middle"),
       https_server()->GetURL("origin3.com", "/redirect-end"),
@@ -499,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   // Iterate through the configurations. URLs whose index is matched by the mask
   // will send the header, the others won't.
   for (int mask = 0; mask < (1 << 3); ++mask) {
-    GURL urls[3];
+    std::array<GURL, 3> urls;
 
     // Set up the expectations.
     GURL page_with_image = https_server()->GetURL("origin4.com", "/index.html");

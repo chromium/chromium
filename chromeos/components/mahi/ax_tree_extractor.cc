@@ -35,16 +35,11 @@ static const ax::mojom::Role kContentRoles[]{
 };
 
 static const ax::mojom::Role kRolesToSkip[]{
-    ax::mojom::Role::kAudio,
-    ax::mojom::Role::kBanner,
-    ax::mojom::Role::kButton,
-    ax::mojom::Role::kComplementary,
-    ax::mojom::Role::kContentInfo,
-    ax::mojom::Role::kFooter,
-    ax::mojom::Role::kFooterAsNonLandmark,
-    ax::mojom::Role::kImage,
-    ax::mojom::Role::kLabelText,
-    ax::mojom::Role::kNavigation,
+    ax::mojom::Role::kAudio,       ax::mojom::Role::kBanner,
+    ax::mojom::Role::kButton,      ax::mojom::Role::kComplementary,
+    ax::mojom::Role::kContentInfo, ax::mojom::Role::kFooter,
+    ax::mojom::Role::kImage,       ax::mojom::Role::kLabelText,
+    ax::mojom::Role::kNavigation,  ax::mojom::Role::kSectionFooter,
 };
 
 // Recurse through the root node, searching for content nodes (any node whose

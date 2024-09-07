@@ -105,14 +105,21 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
 
     _app_controller = AppController.sharedController;
 
-    _cmdw_menu_item = [[NSMenuItem alloc] initWithTitle:@""
-                                                 action:nullptr
-                                          keyEquivalent:@"w"];
+    _cmdw_menu_item =
+        [[NSMenuItem alloc] initWithTitle:@""
+                                   action:@selector(commandDispatch:)
+                            keyEquivalent:@"w"];
+    _cmdw_menu_item.keyEquivalentModifierMask = NSEventModifierFlagCommand;
+    _cmdw_menu_item.tag = IDC_CLOSE_TAB;
     [_app_controller setCmdWMenuItemForTesting:_cmdw_menu_item];
 
-    _shift_cmdw_menu_item = [[NSMenuItem alloc] initWithTitle:@""
-                                                       action:nullptr
-                                                keyEquivalent:@"W"];
+    _shift_cmdw_menu_item =
+        [[NSMenuItem alloc] initWithTitle:@""
+                                   action:@selector(performClose:)
+                            keyEquivalent:@"W"];
+    _shift_cmdw_menu_item.keyEquivalentModifierMask =
+        NSEventModifierFlagCommand;
+    _shift_cmdw_menu_item.tag = IDC_CLOSE_WINDOW;
     [_app_controller setShiftCmdWMenuItemForTesting:_shift_cmdw_menu_item];
   }
 
@@ -148,6 +155,70 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
     EXPECT_EQ(_cmdw_menu_item.action, @selector(performClose:));
     EXPECT_TRUE([_cmdw_menu_item.title
         isEqualToString:l10n_util::GetNSStringWithFixup(IDS_CLOSE_WINDOW_MAC)]);
+  }
+
+  // Check that we don't perform any shortcut switching when there's a custom
+  // shortcut assigned to File->Close Window.
+  void VerifyMenuItemsForCustomCloseWindowShortcut() {
+    ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
+              *TargetForAction());
+
+    NSMenuItem* close_tab_menu_item = _cmdw_menu_item;
+    NSMenuItem* close_window_menu_item = _shift_cmdw_menu_item;
+
+    // Assign a custom shortcut to Close Window.
+    close_window_menu_item.keyEquivalent = @"w";
+    close_window_menu_item.keyEquivalentModifierMask =
+        NSEventModifierFlagCommand | NSEventModifierFlagControl;
+
+    [_app_controller updateMenuItemKeyEquivalents];
+
+    // Both menu items should be undisturbed from their original states.
+    EXPECT_FALSE(close_tab_menu_item.hidden);
+    EXPECT_EQ(close_tab_menu_item.tag, IDC_CLOSE_TAB);
+    EXPECT_EQ(close_tab_menu_item.action, @selector(commandDispatch:));
+    EXPECT_TRUE([close_tab_menu_item.keyEquivalent isEqualToString:@"w"]);
+    EXPECT_EQ(close_tab_menu_item.keyEquivalentModifierMask,
+              NSEventModifierFlagCommand);
+
+    EXPECT_FALSE(close_window_menu_item.hidden);
+    EXPECT_EQ(close_window_menu_item.tag, IDC_CLOSE_WINDOW);
+    EXPECT_EQ(close_window_menu_item.action, @selector(performClose:));
+    EXPECT_TRUE([close_window_menu_item.keyEquivalent isEqualToString:@"w"]);
+    EXPECT_EQ(close_window_menu_item.keyEquivalentModifierMask,
+              NSEventModifierFlagCommand | NSEventModifierFlagControl);
+  }
+
+  // Check that we don't perform any shortcut switching when there's a custom
+  // shortcut assigned to File->Close Tab.
+  void VerifyMenuItemsForCustomCloseTabShortcut() {
+    ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
+              *TargetForAction());
+
+    NSMenuItem* close_tab_menu_item = _cmdw_menu_item;
+    NSMenuItem* close_window_menu_item = _shift_cmdw_menu_item;
+
+    // Assign a custom shortcut to Close Tab.
+    close_tab_menu_item.keyEquivalent = @"w";
+    close_tab_menu_item.keyEquivalentModifierMask =
+        NSEventModifierFlagCommand | NSEventModifierFlagControl;
+
+    [_app_controller updateMenuItemKeyEquivalents];
+
+    // Both menu items should be undisturbed from their original states.
+    EXPECT_FALSE(close_tab_menu_item.hidden);
+    EXPECT_EQ(close_tab_menu_item.tag, IDC_CLOSE_TAB);
+    EXPECT_EQ(close_tab_menu_item.action, @selector(commandDispatch:));
+    EXPECT_TRUE([close_tab_menu_item.keyEquivalent isEqualToString:@"w"]);
+    EXPECT_EQ(close_tab_menu_item.keyEquivalentModifierMask,
+              NSEventModifierFlagCommand | NSEventModifierFlagControl);
+
+    EXPECT_FALSE(close_window_menu_item.hidden);
+    EXPECT_EQ(close_window_menu_item.tag, IDC_CLOSE_WINDOW);
+    EXPECT_EQ(close_window_menu_item.action, @selector(performClose:));
+    EXPECT_TRUE([close_window_menu_item.keyEquivalent isEqualToString:@"W"]);
+    EXPECT_EQ(close_window_menu_item.keyEquivalentModifierMask,
+              NSEventModifierFlagCommand);
   }
 
   void TearDown() override {
@@ -366,6 +437,36 @@ TEST_F(AppControllerKeyEquivalentTest, MenuItemsUpdateWithWindowChanges) {
   *TargetForAction() = browser_window;
 
   CheckMenuItemsMatchBrowserWindow();
+}
+
+TEST_F(AppControllerKeyEquivalentTest,
+       DontChangeShortcutsWhenCustomCloseWindowShortcutAssigned) {
+  // Set up the window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  NSWindow* main_window =
+      [[NSWindow alloc] initWithContentRect:kContentRect
+                                  styleMask:NSWindowStyleMaskClosable
+                                    backing:NSBackingStoreBuffered
+                                      defer:YES];
+
+  *TargetForAction() = main_window;
+
+  VerifyMenuItemsForCustomCloseWindowShortcut();
+}
+
+TEST_F(AppControllerKeyEquivalentTest,
+       DontChangeShortcutsWhenCustomCloseTabShortcutAssigned) {
+  // Set up the window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  NSWindow* main_window =
+      [[NSWindow alloc] initWithContentRect:kContentRect
+                                  styleMask:NSWindowStyleMaskClosable
+                                    backing:NSBackingStoreBuffered
+                                      defer:YES];
+
+  *TargetForAction() = main_window;
+
+  VerifyMenuItemsForCustomCloseTabShortcut();
 }
 
 class AppControllerSafeProfileTest : public AppControllerTest {

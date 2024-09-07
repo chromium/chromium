@@ -29,6 +29,35 @@ class SingleThreadTaskRunner;
 
 namespace gpu {
 
+// FenceSyncReleaseDelegate can be used to release fence sync during task
+// execution.
+class GPU_EXPORT FenceSyncReleaseDelegate {
+ public:
+  explicit FenceSyncReleaseDelegate(SyncPointManager* sync_point_manager);
+
+  // Releases fence sync with the release count specified at task registration.
+  void Release();
+  // Releases fence sync with release count `release`, which should be no
+  // greater than the release count specified at task registration.
+  void Release(uint64_t release);
+
+  // Used by TaskGraph::Sequence.
+  void Reset(const SyncToken& release_upperbound);
+
+ private:
+  const raw_ptr<SyncPointManager> sync_point_manager_;
+  SyncToken release_upperbound_;
+};
+
+// The task can use `release_delegate` during its execution to release fence
+// sync specified at task registration. Note:
+// * Calling `release_delegate` is optional. If not called, release will happen
+//   right after task completion.
+// * `release_delegate` is not supposed to be stored or used after the task
+//   callback returns.
+using TaskCallback =
+    base::OnceCallback<void(FenceSyncReleaseDelegate* release_delegate)>;
+
 // TaskGraph keeps track of task sequences and the sync point dependencies
 // between tasks.
 class GPU_EXPORT TaskGraph {
@@ -56,6 +85,12 @@ class GPU_EXPORT TaskGraph {
       LOCKS_EXCLUDED(lock_);
 
   void AddSequence(std::unique_ptr<Sequence> sequence) LOCKS_EXCLUDED(lock_);
+
+  // Creates a SyncPointClientState object associated with the sequence.
+  void CreateSyncPointClientState(SequenceId sequence_id,
+                                  CommandBufferNamespace namespace_id,
+                                  CommandBufferId command_buffer_id)
+      LOCKS_EXCLUDED(lock_);
 
   void DestroySequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock_);
 
@@ -99,26 +134,38 @@ class GPU_EXPORT TaskGraph {
       return order_data_;
     }
 
+    void CreateSyncPointClientState(CommandBufferNamespace namespace_id,
+                                    CommandBufferId command_buffer_id)
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+
     bool HasTasks() const EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_) {
       return !tasks_.empty();
     }
 
     // Enqueues a task in the sequence and returns the generated order number.
-    virtual uint32_t AddTask(base::OnceClosure closure,
+    uint32_t AddTask(TaskCallback task_callback,
+                     std::vector<SyncToken> wait_fences,
+                     const SyncToken& release,
+                     ReportingCallback report_callback)
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+
+    virtual uint32_t AddTask(base::OnceClosure task_closure,
                              std::vector<SyncToken> wait_fences,
                              const SyncToken& release,
                              ReportingCallback report_callback)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
-    virtual uint32_t BeginTask(base::OnceClosure* closure)
+    virtual uint32_t BeginTask(base::OnceClosure* task_closure)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
     // Should be called after running the closure returned by BeginTask().
     virtual void FinishTask() EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
-    // Continues running the current task with the given closure. Must be called
-    // in between BeginTask() and FinishTask().
-    virtual void ContinueTask(base::OnceClosure closure)
+    // Continues running the current task with the given callback. Must be
+    // called in between BeginTask() and FinishTask().
+    void ContinueTask(TaskCallback task_callback)
+        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
+    virtual void ContinueTask(base::OnceClosure task_closure)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
     // Sets the first dependency added time on the last task if it wasn't
@@ -193,14 +240,16 @@ class GPU_EXPORT TaskGraph {
 
     struct Task {
       Task(Task&& other);
-      Task(base::OnceClosure closure,
+      Task(base::OnceClosure task_closure,
            uint32_t order_num,
            const SyncToken& release,
            ReportingCallback report_callback);
       ~Task();
       Task& operator=(Task&& other);
 
-      base::OnceClosure closure;
+      // Always store tasks as closures. TaskCallbacks are bound with argument
+      // and wrap as closures.
+      base::OnceClosure task_closure;
       uint32_t order_num;
       SyncToken release;
 
@@ -219,7 +268,7 @@ class GPU_EXPORT TaskGraph {
     using TaskIter = typename base::circular_deque<Task>::iterator;
 
     // Must NOT be accessed under `&TaskGraph::lock_`.
-    void StopValidation() LOCKS_EXCLUDED(&TaskGraph::lock_);
+    void Destroy() LOCKS_EXCLUDED(&TaskGraph::lock_);
 
     void UpdateValidationTimer() EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
@@ -230,11 +279,16 @@ class GPU_EXPORT TaskGraph {
     const Task* FindReleaseTask(const SyncToken& sync_token) const
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
+    base::OnceClosure CreateTaskClosure(TaskCallback task_callback);
+
     const raw_ptr<TaskGraph> task_graph_ = nullptr;
     const scoped_refptr<SyncPointOrderData> order_data_;
     const SequenceId sequence_id_;
 
     const base::RepeatingClosure front_task_unblocked_callback_
+        GUARDED_BY(&TaskGraph::lock_);
+
+    std::vector<scoped_refptr<SyncPointClientState>> sync_point_states_
         GUARDED_BY(&TaskGraph::lock_);
 
     // While processing a task, the task is removed from `tasks_`. This field is
@@ -254,6 +308,10 @@ class GPU_EXPORT TaskGraph {
     // blocked if there's a wait fence with order number less than or equal to
     // the task's order number.
     WaitFenceSet wait_fences_ GUARDED_BY(&TaskGraph::lock_);
+
+    // Not supposed to be accessed from multiple thread simultaneously. It is
+    // updated by BeginTask() and called by user task callback.
+    FenceSyncReleaseDelegate release_delegate_;
 
     scoped_refptr<RetainingOneShotTimerHolder> validation_timer_;
   };

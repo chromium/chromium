@@ -8,11 +8,44 @@
 
 #import "base/ios/block_types.h"
 #import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
+#import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 #import "ios/chrome/app/background_refresh_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+
+namespace {
+
+// Debug NSUserDefaults key used to collect debug data.
+NSString* triggeredBackgroundRefreshesKey =
+    @"debug_number_of_triggered_background_refreshes";
+
+// Debug NSUserDefaults key used to collect debug data.
+// Number of times systemTriggeredRefreshForTask was run when appState was
+// UIApplicationStateActive.
+NSString* appStateActiveCountDuringBackgroundRefreshKey =
+    @"debug_app_state_active_count_during_background_refresh";
+
+// Debug NSUserDefaults key used to collect debug data.
+// Number of times systemTriggeredRefreshForTask was run when appState was
+// UIApplicationStateInactive.
+NSString* appStateInactiveCountDuringBackgroundRefreshKey =
+    @"debug_app_state_inactive_count_during_background_refresh";
+
+// Debug NSUserDefaults key used to collect debug data.
+// Number of times systemTriggeredRefreshForTask was run when appState was
+// UIApplicationStateBackground.
+NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
+    @"debug_app_state_background_count_during_background_refresh";
+
+// Debug NSUserDefaults key used to collect debug data.
+// Number of times systemTriggeredRefreshForTask was run with no due tasks.
+NSString* appStateDueCountDuringBackgroundRefreshKey =
+    @"debug_app_state_no_due_count_during_background_refresh";
+
+}  // namespace
 
 @interface BGTaskScheduler (cheating)
 - (void)_simulateLaunchForTaskWithIdentifier:(NSString*)ident;
@@ -25,7 +58,7 @@
 @implementation BackgroundRefreshAppAgent
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _providers = [NSMutableSet set];
     [self registerBackgroundRefreshTask];
   }
@@ -37,43 +70,10 @@
   [self.providers addObject:provider];
 }
 
-- (void)requestAppRefreshWithDelay:(NSTimeInterval)delay {
-  // Schedule requests only if flag is enabled.
-  if (!IsAppBackgroundRefreshEnabled()) {
-    return;
-  }
+#pragma mark - SceneObservingAppAgent
 
-  // TODO(crbug.com/354918222): coalesce multiple requests so there's only ever
-  // a single scheduled refresh pending.
-  BGAppRefreshTaskRequest* request = [[BGAppRefreshTaskRequest alloc]
-      initWithIdentifier:kAppBackgroundRefreshTaskIdentifier];
-  request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:delay];
-  NSError* error = nil;
-  [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:&error];
-
-  if (error) {
-    BGTaskSchedulerErrorCode code = (BGTaskSchedulerErrorCode)error.code;
-    switch (code) {
-      case BGTaskSchedulerErrorCodeUnavailable:
-        LOG(ERROR) << "REFRESH: BGTaskScheduler unavailable";
-        break;
-      case BGTaskSchedulerErrorCodeNotPermitted:
-        LOG(ERROR) << "REFRESH: BGTaskScheduler not permitted";
-        break;
-      case BGTaskSchedulerErrorCodeTooManyPendingTaskRequests:
-        LOG(ERROR) << "REFRESH: BGTaskScheduler Too many pending requests";
-        break;
-    }
-    LOG(ERROR) << "REFRESH: Unknown error";
-  } else {
-    LOG(ERROR) << "REFRESH: Scheduled without a problem!";
-  }
-
-  // Time-saving debug mode.
-  if (delay == 0.0) {
-    [[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:
-                                           kAppBackgroundRefreshTaskIdentifier];
-  }
+- (void)appDidEnterBackground {
+  [self requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
 }
 
 #pragma mark - Private
@@ -130,14 +130,98 @@
   //    it.
   //  - Handle tracking completion of each task, and only signal success if
   //    all tasks succeeded overall.
+
+  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  int triggeredRefreshCount =
+      [defaults integerForKey:triggeredBackgroundRefreshesKey];
+  [defaults setInteger:triggeredRefreshCount + 1
+                forKey:triggeredBackgroundRefreshesKey];
+
+  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
+  // ApplicationState must be called from the main thread.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSString* appState;
+    switch ([[UIApplication sharedApplication] applicationState]) {
+      case UIApplicationStateActive:
+        appState = appStateActiveCountDuringBackgroundRefreshKey;
+        break;
+      case UIApplicationStateInactive:
+        appState = appStateInactiveCountDuringBackgroundRefreshKey;
+        break;
+      case UIApplicationStateBackground:
+        appState = appStateBackgroundCountDuringBackgroundRefreshKey;
+        break;
+    }
+    [defaults setInteger:[defaults integerForKey:appState] + 1 forKey:appState];
+  });
+
   ProceduralBlock completion = ^{
     [task setTaskCompletedWithSuccess:YES];
   };
+
+  // YES if there is at least one due task.
+  BOOL hasDueTasks = NO;
   for (AppRefreshProvider* provider in self.providers) {
     // Only execute due tasks.
     if ([provider isDue]) {
+      hasDueTasks = YES;
       [provider handleRefreshWithCompletion:completion];
     }
+  }
+
+  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
+  if (!hasDueTasks) {
+    [defaults
+        setInteger:[defaults integerForKey:
+                                 appStateDueCountDuringBackgroundRefreshKey] +
+                   1
+            forKey:appStateDueCountDuringBackgroundRefreshKey];
+  }
+}
+
+// Request that app refresh runs no sooner than `delay` seconds from now.
+// Multiple requests for refresh will be coalesced.
+// TODO(crbug.com/354918222): Derive `delay` from the refresh intervals of the
+// providers.
+- (void)requestAppRefreshWithDelay:(NSTimeInterval)delay {
+  // Schedule requests only if flag is enabled.
+  if (!IsAppBackgroundRefreshEnabled()) {
+    return;
+  }
+
+  // TODO(crbug.com/354918222): coalesce multiple requests so there's only ever
+  // a single scheduled refresh pending.
+  BGAppRefreshTaskRequest* request = [[BGAppRefreshTaskRequest alloc]
+      initWithIdentifier:kAppBackgroundRefreshTaskIdentifier];
+  request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:delay];
+  NSError* error = nil;
+  [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:&error];
+  BGTaskSchedulerErrorActions action = BGTaskSchedulerErrorActions::kUnknown;
+  if (error) {
+    BGTaskSchedulerErrorCode code = (BGTaskSchedulerErrorCode)error.code;
+    switch (code) {
+      case BGTaskSchedulerErrorCodeUnavailable:
+        action = BGTaskSchedulerErrorActions::kErrorCodeUnavailable;
+        break;
+      case BGTaskSchedulerErrorCodeNotPermitted:
+        action = BGTaskSchedulerErrorActions::kErrorCodeNotPermitted;
+        break;
+      case BGTaskSchedulerErrorCodeTooManyPendingTaskRequests:
+        action =
+            BGTaskSchedulerErrorActions::kErrorCodeTooManyPendingTaskRequests;
+        break;
+    }
+  } else {
+    action = BGTaskSchedulerErrorActions::kSuccess;
+  }
+
+  base::UmaHistogramEnumeration(kBGTaskSchedulerErrorHistogram, action);
+
+  // Time-saving debug mode.
+  if (delay == 0.0) {
+    [[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:
+                                           kAppBackgroundRefreshTaskIdentifier];
   }
 }
 

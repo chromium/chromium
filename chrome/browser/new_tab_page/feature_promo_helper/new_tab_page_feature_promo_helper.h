@@ -11,8 +11,8 @@
 
 class NewTabPageFeaturePromoHelper {
  public:
-  virtual void RecordFeatureUsage(const std::string& event,
-                                  content::WebContents* web_contents);
+  virtual void RecordPromoFeatureUsage(const base::Feature& iph_feature,
+                                       content::WebContents* web_contents);
   virtual void SetDefaultSearchProviderIsGoogleForTesting(bool value);
   virtual bool DefaultSearchProviderIsGoogle(Profile* profile);
   virtual void MaybeShowFeaturePromo(const base::Feature& iph_feature,

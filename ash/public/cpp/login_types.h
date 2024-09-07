@@ -125,6 +125,10 @@ enum class FingerprintState {
   // should be displayed for 3 seconds before getting back to AVAILABLE_DEFAULT
   // state.
   AVAILABLE_WITH_TOUCH_SENSOR_WARNING,
+  // Fingerprint can be used to unlock the device but the user has a failed
+  // attempt. The failed attempt feedback should be displayed for a short
+  // amount of times before getting back to AVAILABLE_DEFAULT state.
+  AVAILABLE_WITH_FAILED_ATTEMPT,
   // There have been too many attempts, so now fingerprint is disabled.
   DISABLED_FROM_ATTEMPTS,
   // It has been too long since the device was last used.

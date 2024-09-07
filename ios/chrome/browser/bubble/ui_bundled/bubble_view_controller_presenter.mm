@@ -7,12 +7,13 @@
 #import "base/check.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter+Testing.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/named_guide.h"
 
 namespace {
 
@@ -456,9 +457,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 // superview. `anchorPoint` is the anchor point of the bubble. `anchorPoint`
 // and `rect` must be in the same coordinates.
 - (CGRect)frameForBubbleInRect:(CGRect)rect atAnchorPoint:(CGPoint)anchorPoint {
-  const BOOL arrowIsFloating = self.bubbleType != BubbleViewTypeDefault;
   CGFloat bubbleAlignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
-  if (arrowIsFloating) {
+  if ([self arrowIsFloating]) {
     bubbleAlignmentOffset = bubble_util::FloatingArrowAlignmentOffset(
         rect.size.width, anchorPoint, self.alignment);
   }
@@ -469,9 +469,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
       rect.size);
   CGSize bubbleSize =
       [self.bubbleViewController.view sizeThatFits:maxBubbleSize];
-  const BOOL bubbleIsFullWidth = self.bubbleType != BubbleViewTypeDefault &&
-                                 self.bubbleType != BubbleViewTypeWithClose;
-  if (bubbleIsFullWidth) {
+
+  if ([self bubbleIsFullWidth]) {
     bubbleSize.width = maxBubbleSize.width;
   }
   // If `bubbleSize` does not fit in `maxBubbleSize`, the bubble will be
@@ -493,10 +492,26 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   return bubbleFrame;
 }
 
+// Whether the bubble's arrow is floating.
+- (BOOL)arrowIsFloating {
+  return self.bubbleType == BubbleViewTypeWithClose ||
+         ((self.bubbleType == BubbleViewTypeRichWithSnooze ||
+           self.bubbleType == BubbleViewTypeRich) &&
+          !IsRichBubbleWithoutImageEnabled());
+}
+
+// Whether the bubble should be full width.
+- (BOOL)bubbleIsFullWidth {
+  return (self.bubbleType == BubbleViewTypeRichWithSnooze ||
+          self.bubbleType == BubbleViewTypeRich) &&
+         !IsRichBubbleWithoutImageEnabled();
+}
+
 // Whether the bubble should stick or auto-dismiss when the user uses a screen
-// reader.
+// reader. This is for bubble types that don't have interaction buttons.
 - (BOOL)bubbleShouldAutoDismissUnderAccessibility {
-  return self.bubbleType == BubbleViewTypeDefault;
+  return self.bubbleType == BubbleViewTypeDefault ||
+         self.bubbleType == BubbleViewTypeRich;
 }
 
 @end

@@ -61,7 +61,7 @@ public class TabShareUtils {
      * @return Whether the provided collaboration id is valid or not.
      */
     public static boolean isCollaborationIdValid(String collaborationId) {
-        return collaborationId != null && !TextUtils.isEmpty(collaborationId);
+        return !TextUtils.isEmpty(collaborationId);
     }
 
     /**

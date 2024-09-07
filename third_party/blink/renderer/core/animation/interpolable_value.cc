@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_style_color.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 
 namespace blink {
@@ -34,18 +35,33 @@ InterpolableNumber::InterpolableNumber(
   SetExpression(expression);
 }
 
+InterpolableNumber::InterpolableNumber(const CSSPrimitiveValue& value) {
+  if (const auto* numeric = DynamicTo<CSSNumericLiteralValue>(value)) {
+    SetDouble(numeric->DoubleValue(), numeric->GetType());
+  } else {
+    CHECK(value.IsMathFunctionValue());
+    const auto& function = To<CSSMathFunctionValue>(value);
+    SetExpression(*function.ExpressionNode());
+  }
+}
+
 double InterpolableNumber::Value(
     const CSSLengthResolver& length_resolver) const {
   if (IsDoubleValue()) {
-    return value_.Value();
+    return value_.Value() *
+           CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(unit_type_);
   }
-  return expression_->ComputeNumber(length_resolver);
+  std::optional<double> result =
+      expression_->ComputeValueInCanonicalUnit(length_resolver);
+  CHECK(result.has_value());
+  return result.value();
 }
 
 void InterpolableNumber::SetExpression(
     const CSSMathExpressionNode& expression) {
   type_ = Type::kExpression;
   expression_ = &expression;
+  unit_type_ = expression.ResolvedUnitType();
 }
 
 void InterpolableNumber::SetDouble(double value, UnitType unit_type) {
@@ -63,11 +79,11 @@ const CSSMathExpressionNode& InterpolableNumber::AsExpression() const {
 
 bool InterpolableNumber::Equals(const InterpolableValue& other) const {
   const auto& other_number = To<InterpolableNumber>(other);
-  if (IsDoubleValue() && other_number.IsDoubleValue()) {
+  if (IsDoubleValue() && other_number.IsDoubleValue() &&
+      unit_type_ == other_number.unit_type_) {
     return value_.Value() == To<InterpolableNumber>(other).value_.Value();
   }
-  return AsExpression().CustomCSSText() ==
-         other_number.AsExpression().CustomCSSText();
+  return AsExpression() == other_number.AsExpression();
 }
 
 bool InterpolableList::Equals(const InterpolableValue& other) const {
@@ -102,7 +118,8 @@ void InterpolableNumber::Interpolate(const InterpolableValue& to,
                                      InterpolableValue& result) const {
   const auto& to_number = To<InterpolableNumber>(to);
   auto& result_number = To<InterpolableNumber>(result);
-  if (IsDoubleValue() && to_number.IsDoubleValue()) {
+  if (IsDoubleValue() && to_number.IsDoubleValue() &&
+      unit_type_ == to_number.unit_type_) {
     result_number.SetDouble(value_.Interpolate(to_number.Value(), progress),
                             unit_type_);
     return;
@@ -167,11 +184,13 @@ void InterpolableNumber::Scale(double scale) {
 }
 
 void InterpolableNumber::Scale(const InterpolableNumber& other) {
-  if (IsDoubleValue()) {
-    SetExpression(*CSSMathExpressionOperation::
-                      CreateArithmeticOperationAndSimplifyCalcSize(
-                          &other.AsExpression(), NumberNode(value_.Value()),
-                          CSSMathOperator::kMultiply));
+  if (IsDoubleValue() && other.IsDoubleValue() &&
+      (unit_type_ == CSSPrimitiveValue::UnitType::kNumber ||
+       other.unit_type_ == CSSPrimitiveValue::UnitType::kNumber)) {
+    SetDouble(
+        value_.Value() * other.Value(),
+        (unit_type_ == CSSPrimitiveValue::UnitType::kNumber ? other.unit_type_
+                                                            : unit_type_));
     return;
   }
   SetExpression(
@@ -186,7 +205,8 @@ void InterpolableList::Scale(double scale) {
 
 void InterpolableNumber::Add(const InterpolableValue& other) {
   const auto& other_number = To<InterpolableNumber>(other);
-  if (IsDoubleValue() && other_number.IsDoubleValue()) {
+  if (IsDoubleValue() && other_number.IsDoubleValue() &&
+      unit_type_ == other_number.unit_type_) {
     value_.Add(other_number.value_.Value());
     return;
   }

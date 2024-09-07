@@ -67,7 +67,7 @@ class PLATFORM_EXPORT UserModel {
   // Returns the estimated amount of time left in the current user gesture, to a
   // maximum of |kGestureEstimationLimitMillis|.  After that time has elapased
   // this function should be called again.
-  base::TimeDelta TimeLeftInUserGesture(base::TimeTicks now) const;
+  base::TimeDelta TimeLeftInContinuousUserGesture(base::TimeTicks now) const;
 
   // Tries to guess if a user gesture is expected soon. Currently this is
   // very simple, but one day I hope to do something more sophisticated here.
@@ -82,6 +82,11 @@ class PLATFORM_EXPORT UserModel {
       const base::TimeTicks now,
       base::TimeDelta* prediction_valid_duration) const;
 
+  // Returns the time left before the deadline for UI response of the most
+  // recent discrete input event.
+  base::TimeDelta TimeLeftUntilDiscreteInputResponseDeadline(
+      base::TimeTicks now) const;
+
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // Clears input signals.
@@ -91,13 +96,6 @@ class PLATFORM_EXPORT UserModel {
   bool IsGestureExpectedSoonImpl(
       const base::TimeTicks now,
       base::TimeDelta* prediction_valid_duration) const;
-
-  // Returns the time left before the deadline for UI response of the most
-  // recent discrete input event.
-  base::TimeDelta TimeLeftUntilDiscreteInputResponseDeadline(
-      base::TimeTicks now) const;
-
-  base::TimeDelta TimeLeftInContinuousUserGesture(base::TimeTicks now) const;
 
   int pending_input_event_count_ = 0;
   base::TimeTicks last_input_signal_time_;

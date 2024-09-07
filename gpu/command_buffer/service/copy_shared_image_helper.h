@@ -120,6 +120,7 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       GLenum subsampling,
       const volatile GLbyte* bytes_in,
       SkSurface* dest_surface,
+      bool dest_need_graphite_submit,
       std::vector<GrBackendSemaphore>& begin_semaphores,
       std::vector<GrBackendSemaphore>& end_semaphores,
       sk_sp<SkColorSpace> src_rgb_color_space,

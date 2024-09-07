@@ -134,18 +134,44 @@ void PlusAddressPreallocator::AllocatePlusAddress(
   ProcessAllocationRequests(/*is_user_triggered=*/true);
 }
 
+std::optional<PlusProfile>
+PlusAddressPreallocator::AllocatePlusAddressSynchronously(
+    const url::Origin& origin,
+    AllocationMode mode) {
+  auto facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      origin.GetURL().spec());
+  if (!facet.is_valid()) {
+    return std::nullopt;
+  }
+  if (!IsEnabled()) {
+    return std::nullopt;
+  }
+  if (!requests_.empty()) {
+    return std::nullopt;
+  }
+
+  if (std::optional<PlusAddress> address = GetNextPreallocatedPlusAddress()) {
+    return std::make_optional<PlusProfile>(
+        /*profile_id=*/std::nullopt,
+        /*facet=*/std::move(facet),
+        /*plus_address=*/std::move(address).value(),
+        /*is_confirmed=*/false);
+  }
+  return std::nullopt;
+}
+
 bool PlusAddressPreallocator::IsRefreshingSupported(
     const url::Origin& origin) const {
   return true;
 }
 
 void PlusAddressPreallocator::RemoveAllocatedPlusAddress(
-    std::string_view plus_address) {
+    const PlusAddress& plus_address) {
   {
     ScopedListPrefUpdate update(&pref_service_.get(),
                                 prefs::kPreallocatedAddresses);
     update->EraseIf([&](const base::Value& value) {
-      return *value.GetDict().FindString(kPlusAddressKey) == plus_address;
+      return *value.GetDict().FindString(kPlusAddressKey) == *plus_address;
     });
   }
   FixIndexOfNextPreallocatedAddress();
@@ -176,6 +202,10 @@ void PlusAddressPreallocator::PrunePreallocatedPlusAddresses() {
 
 void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses(
     bool is_user_triggered) {
+  if (!IsEnabled()) {
+    return;
+  }
+
   if (is_server_request_ongoing_) {
     return;
   }
@@ -184,23 +214,23 @@ void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
-      !settings_->GetIsPlusAddressesEnabled()) {
-    return;
-  }
-
   if (static_cast<int>(GetPreallocatedAddresses().size()) >=
       features::kPlusAddressPreallocationMinimumSize.Get()) {
-    return;
-  }
-
-  if (!is_enabled_check_.Run()) {
     return;
   }
 
   SendRequestWithDelay(is_user_triggered
                            ? base::TimeDelta()
                            : backoff_entry_.GetTimeUntilRelease());
+}
+
+bool PlusAddressPreallocator::IsEnabled() const {
+  if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
+      !settings_->GetIsPlusAddressesEnabled()) {
+    return false;
+  }
+
+  return is_enabled_check_.Run();
 }
 
 void PlusAddressPreallocator::SendRequestWithDelay(base::TimeDelta delay) {
@@ -226,7 +256,7 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
       backoff_entry_.InformOfRequest(/*succeeded=*/false);
       SendRequestWithDelay(backoff_entry_.GetTimeUntilRelease());
     }
-    // TODO: crbug.com/324559503 - Inform the existing requests about the error.
+    ReplyToRequestsWithError(result.error());
     return;
   }
 
@@ -242,6 +272,15 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
 
 void PlusAddressPreallocator::ProcessAllocationRequests(
     bool is_user_triggered) {
+  if (!IsEnabled()) {
+    // TODO: crbug.com/324559503 - distinguish between the signout case other
+    // reasons for errors by making `IsEnabled` return an error code. That  will
+    // likely also require changing the `IsEnabledCheck`'s return type.
+    ReplyToRequestsWithError(
+        PlusAddressRequestError(PlusAddressRequestErrorType::kUserSignedOut));
+    return;
+  }
+
   while (!requests_.empty()) {
     std::optional<PlusAddress> next_address = GetNextPreallocatedPlusAddress();
     if (!next_address) {
@@ -258,8 +297,15 @@ void PlusAddressPreallocator::ProcessAllocationRequests(
   // We may have dipped below the minimum size of the pre-allocated plus address
   // pool that we want to keep around. If so, request new ones.
   MaybeRequestNewPreallocatedPlusAddresses(is_user_triggered);
-  // TODO: crbug.com/324559503 - Send errors to existing requests if no
-  // additional pre-allocation call was made.
+}
+
+void PlusAddressPreallocator::ReplyToRequestsWithError(
+    const PlusAddressRequestError& error) {
+  while (!requests_.empty()) {
+    Request request = std::move(requests_.front());
+    requests_.pop();
+    std::move(request.callback).Run(base::unexpected(error));
+  }
 }
 
 std::optional<PlusAddress>

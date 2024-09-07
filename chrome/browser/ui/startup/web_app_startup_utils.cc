@@ -35,7 +35,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
-#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -73,19 +72,6 @@ base::OnceClosure& GetStartupDoneCallback() {
 base::OnceClosure& GetBrowserShutdownCompleteCallback() {
   static base::NoDestructor<base::OnceClosure> instance;
   return *instance;
-}
-
-// TODO(https::/crbug.com/1366137): Remove this when LaunchMode is removed.
-OldLaunchMode ConvertOpenModeToLaunchMode(OpenMode open_mode) {
-  static constexpr auto kModeMap =
-      base::MakeFixedFlatMap<OpenMode, OldLaunchMode>({
-          {OpenMode::kInTab, OldLaunchMode::kAsWebAppInTab},
-          {OpenMode::kUnknown, OldLaunchMode::kUnknownWebApp},
-          {OpenMode::kInWindowByUrl, OldLaunchMode::kAsWebAppInWindowByUrl},
-          {OpenMode::kInWindowByAppId, OldLaunchMode::kAsWebAppInWindowByAppId},
-          {OpenMode::kInWindowOther, OldLaunchMode::kAsWebAppInWindowOther},
-      });
-  return kModeMap.at(open_mode);
 }
 
 // Encapsulates web app startup logic. This object keeps itself alive via ref
@@ -437,8 +423,6 @@ void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,
   // Log in a histogram the different ways web apps are opened. See
   // OpenMode enum for the values of the buckets.
   base::UmaHistogramEnumeration("WebApp.OpenMode", mode);
-
-  OldLaunchModeRecorder().SetLaunchMode(ConvertOpenModeToLaunchMode(mode));
 
   AddInfoBarsIfNecessary(browser, browser->profile(), command_line,
                          is_first_run,

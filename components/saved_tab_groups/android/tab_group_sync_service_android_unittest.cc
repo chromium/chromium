@@ -45,6 +45,11 @@ MATCHER_P(UuidEq, uuid, "") {
   return arg.saved_guid() == uuid;
 }
 
+MATCHER_P3(TabBuilderEq, title, url, position, "") {
+  return arg.title() == title && arg.url() == url &&
+         static_cast<int>(arg.position()) == position;
+}
+
 }  // namespace
 
 class TabGroupSyncServiceAndroidTest : public testing::Test {
@@ -159,6 +164,14 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupRemoved) {
   Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupRemoved(env, j_test_);
 }
 
+TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupLocalIdChanged) {
+  auto* env = AttachCurrentThread();
+  base::Uuid group_id = base::Uuid::GenerateRandomV4();
+  bridge_->OnTabGroupLocalIdChanged(group_id, test_tab_group_id_);
+  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupLocalIdChanged(env,
+                                                                       j_test_);
+}
+
 TEST_F(TabGroupSyncServiceAndroidTest, CreateGroup) {
   auto* env = AttachCurrentThread();
   SavedTabGroup captured_group = test::CreateTestSavedTabGroup();
@@ -229,11 +242,11 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateTab) {
 
   GURL url(kTestUrl);
   EXPECT_CALL(tab_group_sync_service_,
-              UpdateTab(Eq(test_tab_group_id_), Eq(kTabId1), Eq(kTestTabTitle),
-                        Eq(url), Eq(kPosition)));
+              UpdateTab(Eq(test_tab_group_id_), Eq(kTabId1),
+                        TabBuilderEq(kTestTabTitle, url, kPosition)));
   EXPECT_CALL(tab_group_sync_service_,
-              UpdateTab(Eq(test_tab_group_id_), Eq(kTabId2), Eq(kTestTabTitle),
-                        Eq(url), Eq(std::nullopt)));
+              UpdateTab(Eq(test_tab_group_id_), Eq(kTabId2),
+                        TabBuilderEq(kTestTabTitle, url, 0)));
   Java_TabGroupSyncServiceAndroidUnitTest_testUpdateTab(env, j_test_);
 }
 

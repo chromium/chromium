@@ -42,6 +42,8 @@ class FakeTachyonAuthedClient : public TachyonAuthedClient {
       base::expected<std::string, ResponseCallbackWrapper::TachyonRequestError>
           response);
 
+  std::unique_ptr<ResponseCallbackWrapper> TakeResponseCallback();
+
   std::string GetRequestString();
 
   void WaitForRequest();

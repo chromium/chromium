@@ -73,7 +73,6 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
   hit_report->is_subresource = false;
   hit_report->threat_type = resource.threat_type;
   hit_report->threat_source = resource.threat_source;
-  hit_report->population_id = resource.threat_metadata.population_id;
 
   NavigationEntry* entry =
       unsafe_resource_util::GetNavigationEntryForResource(resource);
@@ -125,11 +124,6 @@ void SafeBrowsingUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
   }
 
   report->set_type(ClientSafeBrowsingReportRequest::WARNING_SHOWN);
-  report->mutable_client_properties()->set_url_api_type(
-      client_report_utils::GetUrlApiTypeForThreatSource(
-          resource.threat_source));
-  report->mutable_client_properties()->set_is_async_check(
-      resource.is_async_check);
   report->set_warning_shown_timestamp_msec(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   report->mutable_warning_shown_info()->set_warning_type(
@@ -198,7 +192,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   // main frame) are canceled with BLOCKED_BY_CLIENT, as the TODO comment
   // below also mentions. We plan to change the cancellation way from using
   // BLOCKED_BY_CLIENT as the subresource load case.
-  if (web_contents->IsPrerenderedFrame(resource.frame_tree_node_id)) {
+  if (web_contents->IsPrerenderedFrame(
+          content::FrameTreeNodeId(resource.frame_tree_node_id))) {
     // TODO(mcnee): If we were to indicate that this does not show an
     // interstitial, the loader throttle would cancel with ERR_ABORTED to
     // suppress an error page, instead of blocking using ERR_BLOCKED_BY_CLIENT.

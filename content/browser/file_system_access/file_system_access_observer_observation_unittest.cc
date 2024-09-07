@@ -339,7 +339,7 @@ class FileSystemAccessObserverObservationTest
     RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
 
     auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-        kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+        kTestStorageKey, kTestURL, rfh->GetGlobalId());
 
     manager_->watcher_manager().BindObserverHost(bf_cache_context,
                                                  std::move(host_receiver));
@@ -405,6 +405,58 @@ TEST_F(FileSystemAccessObserverObservationTest,
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
   EXPECT_TRUE(observation.EventsReceivedMatches({}));
+}
+
+TEST_F(FileSystemAccessObserverObservationTest,
+       AnErrorDestroysTheCorrectObservation) {
+  base::FilePath file_path1 = CreateFile();
+  storage::FileSystemURL file_url1 = CreateFileSystemURL(
+      FileSystemAccessEntryFactory::PathType::kLocal, file_path1);
+  std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle1 =
+      CreateFileHandle(file_url1);
+
+  FileSystemAccessWatchScope scope1 =
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url1);
+
+  FakeChangeSource source1(scope1, file_system_context());
+  RegisterChangeSource(source1);
+
+  base::FilePath file_path2 = CreateFile();
+  storage::FileSystemURL file_url2 = CreateFileSystemURL(
+      FileSystemAccessEntryFactory::PathType::kLocal, file_path2);
+  std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle2 =
+      CreateFileHandle(file_url2);
+
+  FileSystemAccessWatchScope scope2 =
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url2);
+
+  FakeChangeSource source2(scope2, file_system_context());
+  RegisterChangeSource(source2);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation1 = observer.Observe(file_handle1, false);
+  FakeObservation observation2 = observer.Observe(file_handle2, false);
+
+  // Only `observation1` receives the error for `source`.
+  source1.SignalError();
+  EXPECT_TRUE(observation1.EventsReceivedMatches(
+      {{MojoChangeType::kErrored, MojoFilePathType::kFile, {}}}));
+  EXPECT_TRUE(observation2.EventsReceivedMatches({}));
+
+  // `observation1` won't receive any further error events or changes, and
+  // `observation2` will continue not to receive changes for `source1`.
+  source1.SignalError();
+  source1.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path1));
+  EXPECT_TRUE(observation1.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation2.EventsReceivedMatches({}));
+
+  // `observation2` continues to receive changes.
+  source2.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path2));
+  EXPECT_TRUE(observation1.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation2.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {}}}));
 }
 
 TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {

@@ -98,6 +98,7 @@ ClientPermissionState GetClientPermissionState(
       return ClientPermissionState::INDETERMINANT;
     }
     case PushNotificationClientId::kContent:
+    case PushNotificationClientId::kSendTab:
     case PushNotificationClientId::kTips:
     case PushNotificationClientId::kSafetyCheck:
     case PushNotificationClientId::kSports: {

@@ -5,7 +5,6 @@ package org.chromium.chrome.browser.safe_browsing;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.provider.Browser;
 
 import androidx.annotation.IntDef;
@@ -89,7 +88,8 @@ public class SafeBrowsingReferringAppBridge {
             url = "";
         }
 
-        @ExternalAppId int externalId = IntentHandler.determineExternalIntentSource(intent);
+        @ExternalAppId
+        int externalId = IntentHandler.determineExternalIntentSource(intent, activity);
         if (externalId != ExternalAppId.OTHER) {
             return new ReferringAppInfo(
                     ReferringAppInfo.ReferringAppSource.KNOWN_APP_ID,
@@ -104,24 +104,11 @@ public class SafeBrowsingReferringAppBridge {
                     ReferringAppInfo.ReferringAppSource.UNKNOWN_APP_ID, appId, url);
         }
 
-        // If appId is empty, fallback to EXTRA_REFERRER;
-        // If the activity is launched through launcher activity, the referrer is set through
-        // intent extra.
-        String activity_referrer =
-                IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_ACTIVITY_REFERRER);
-        if (activity_referrer != null) {
-            return new ReferringAppInfo(
-                    ReferringAppInfo.ReferringAppSource.ACTIVITY_REFERRER, activity_referrer, url);
-        }
-
-        // If the activity referrer is not found in intent extra, get it from the activity
-        // directly.
-        Uri extraReferrer = activity.getReferrer();
+        // If appId is empty, fallback to the referrer.
+        String extraReferrer = IntentHandler.getActivityReferrer(intent, activity);
         if (extraReferrer != null) {
             return new ReferringAppInfo(
-                    ReferringAppInfo.ReferringAppSource.ACTIVITY_REFERRER,
-                    extraReferrer.toString(),
-                    url);
+                    ReferringAppInfo.ReferringAppSource.ACTIVITY_REFERRER, extraReferrer, url);
         }
 
         return getEmptyReferringInfo();
@@ -161,6 +148,8 @@ public class SafeBrowsingReferringAppBridge {
                 return "viber";
             case ExternalAppId.YOUTUBE:
                 return "youtube";
+            case ExternalAppId.CAMERA:
+                return "camera";
             default:
                 assert false : "not reached";
                 return "";

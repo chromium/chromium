@@ -33,6 +33,13 @@ ScopedHInternet CreateSessionHandle(std::wstring_view user_agent,
     ::WinHttpSetOption(session_handle.get(), WINHTTP_OPTION_SECURE_PROTOCOLS,
                        &protocols, sizeof(protocols));
   }
+
+  // WINHTTP_OPTION_DECOMPRESSION is supported on Windows 8.1 and higher.
+  if (session_handle.is_valid() && ::IsWindows8Point1OrGreater()) {
+    DWORD decompression_flag = WINHTTP_DECOMPRESSION_FLAG_ALL;
+    ::WinHttpSetOption(session_handle.get(), WINHTTP_OPTION_DECOMPRESSION,
+                       &decompression_flag, sizeof(decompression_flag));
+  }
   return session_handle;
 }
 

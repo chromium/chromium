@@ -126,10 +126,15 @@ def ProcessResults(options, is_unittest=False):
 
     print('View results at file://', output_file, sep='')
 
-  if options.fetch_device_data:
-    PullDeviceArtifacts(options)
+  exit_code = GenerateExitCode(test_results)
 
-  return GenerateExitCode(test_results)
+  if options.fetch_device_data:
+    if options.fetch_device_data_on_success and exit_code != 0:
+      logging.warning('Not fetching device data due to non zero exit code.')
+    else:
+      PullDeviceArtifacts(options)
+
+  return exit_code
 
 
 def _AmortizeProcessingDuration(processing_duration, test_results):

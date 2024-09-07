@@ -40,7 +40,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
 - (instancetype)initWithPasswordSuggestion:(NSString*)passwordSuggestion
                                  userEmail:(NSString*)userEmail
                                  proactive:(BOOL)proactivePasswordGeneration {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _userEmail = userEmail;
     _passwordSuggestion = passwordSuggestion;
     _proactive = proactivePasswordGeneration;

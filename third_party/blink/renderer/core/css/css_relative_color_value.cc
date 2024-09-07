@@ -14,16 +14,16 @@ namespace blink::cssvalue {
 CSSRelativeColorValue::CSSRelativeColorValue(
     const CSSValue& origin_color,
     Color::ColorSpace color_interpolation_space,
+    const CSSValue& channel0,
     const CSSValue& channel1,
     const CSSValue& channel2,
-    const CSSValue& channel3,
     const CSSValue* alpha)
     : CSSValue(kRelativeColorClass),
       origin_color_(origin_color),
       color_interpolation_space_(color_interpolation_space),
+      channel0_(channel0),
       channel1_(channel1),
       channel2_(channel2),
-      channel3_(channel3),
       alpha_(alpha) {}
 
 String CSSRelativeColorValue::CustomCSSText() const {
@@ -43,11 +43,11 @@ String CSSRelativeColorValue::CustomCSSText() const {
     result.Append(Color::ColorSpaceToString(color_interpolation_space_));
     result.Append(" ");
   }
+  result.Append(channel0_->CssText());
+  result.Append(" ");
   result.Append(channel1_->CssText());
   result.Append(" ");
   result.Append(channel2_->CssText());
-  result.Append(" ");
-  result.Append(channel3_->CssText());
   if (alpha_ != nullptr) {
     result.Append(" / ");
     result.Append(alpha_->CssText());
@@ -58,9 +58,9 @@ String CSSRelativeColorValue::CustomCSSText() const {
 
 void CSSRelativeColorValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(origin_color_);
+  visitor->Trace(channel0_);
   visitor->Trace(channel1_);
   visitor->Trace(channel2_);
-  visitor->Trace(channel3_);
   visitor->Trace(alpha_);
   CSSValue::TraceAfterDispatch(visitor);
 }
@@ -68,9 +68,9 @@ void CSSRelativeColorValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 bool CSSRelativeColorValue::Equals(const CSSRelativeColorValue& other) const {
   return base::ValuesEquivalent(origin_color_, other.origin_color_) &&
          (color_interpolation_space_ == other.color_interpolation_space_) &&
+         base::ValuesEquivalent(channel0_, other.channel0_) &&
          base::ValuesEquivalent(channel1_, other.channel1_) &&
          base::ValuesEquivalent(channel2_, other.channel2_) &&
-         base::ValuesEquivalent(channel3_, other.channel3_) &&
          base::ValuesEquivalent(alpha_, other.alpha_);
 }
 
@@ -82,16 +82,16 @@ Color::ColorSpace CSSRelativeColorValue::ColorInterpolationSpace() const {
   return color_interpolation_space_;
 }
 
+const CSSValue& CSSRelativeColorValue::Channel0() const {
+  return *channel0_;
+}
+
 const CSSValue& CSSRelativeColorValue::Channel1() const {
   return *channel1_;
 }
 
 const CSSValue& CSSRelativeColorValue::Channel2() const {
   return *channel2_;
-}
-
-const CSSValue& CSSRelativeColorValue::Channel3() const {
-  return *channel3_;
 }
 
 const CSSValue* CSSRelativeColorValue::Alpha() const {

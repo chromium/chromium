@@ -1159,8 +1159,7 @@ class ConditionalTutorialTest : public ui::test::InteractiveTestT<TutorialTest>,
 
   // Closes a help bubble. The bubble must already be visible.
   auto CloseHelpBubble() {
-    return Steps(FlushEvents(),
-                 WithElement(test::TestHelpBubble::kElementId,
+    return Steps(WithElement(test::TestHelpBubble::kElementId,
                              [](ui::TrackedElement* el) {
                                el->AsA<test::TestHelpBubbleElement>()
                                    ->bubble()

@@ -25,10 +25,9 @@ class TaskGraphTest : public testing::Test {
  protected:
   TaskGraphTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kUseGpuSchedulerDfs,
-                              features::kSyncPointGraphValidation},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSyncPointGraphValidation);
+    // Initialize after the feature flag has set.
     sync_point_manager_ = std::make_unique<SyncPointManager>();
     task_graph_ = std::make_unique<TaskGraph>(sync_point_manager_.get());
 
@@ -38,7 +37,6 @@ class TaskGraphTest : public testing::Test {
   ~TaskGraphTest() override {
     for (auto& info : sequence_info_) {
       task_graph_->DestroySequence(info.second.sequence_id);
-      info.second.release_state->Destroy();
     }
   }
 
@@ -47,13 +45,11 @@ class TaskGraphTest : public testing::Test {
         base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault());
     CommandBufferId command_buffer_id =
         CommandBufferId::FromUnsafeValue(sequence_key);
-    scoped_refptr<SyncPointClientState> release_state =
-        sync_point_manager_->CreateSyncPointClientState(
-            kNamespaceId, command_buffer_id, sequence_id);
+    task_graph_->CreateSyncPointClientState(sequence_id, kNamespaceId,
+                                            command_buffer_id);
 
-    sequence_info_.emplace(
-        sequence_key,
-        SequenceInfo(sequence_id, command_buffer_id, release_state));
+    sequence_info_.emplace(sequence_key,
+                           SequenceInfo(sequence_id, command_buffer_id));
   }
 
   void CreateSyncToken(int sequence_key, int release_sync) {
@@ -66,29 +62,16 @@ class TaskGraphTest : public testing::Test {
         SyncToken(kNamespaceId, info_it->second.command_buffer_id, release));
   }
 
-  base::OnceClosure GetTaskClosure(int sequence_key, int release_sync) {
+  TaskCallback GetTaskCallback() {
     const int task_id = num_tasks_added_++;
 
-    uint64_t release = 0;
-    if (release_sync >= 0) {
-      CreateSyncToken(sequence_key, release_sync);
-      release = release_sync + 1;
-    }
-
-    auto info_it = sequence_info_.find(sequence_key);
-    CHECK(info_it != sequence_info_.end());
-
-    auto closure =
-        base::BindLambdaForTesting([this, task_id, sequence_key, release] {
-          if (release) {
-            auto info_it = sequence_info_.find(sequence_key);
-            ASSERT_TRUE(info_it != sequence_info_.end());
-            info_it->second.release_state->ReleaseFenceSync(release);
+    return base::BindLambdaForTesting(
+        [this, task_id](FenceSyncReleaseDelegate* release_delegate) {
+          if (release_delegate) {
+            release_delegate->Release();
           }
           tasks_executed_.push_back(task_id);
         });
-
-    return closure;
   }
 
   void AddTask(int sequence_key, int wait_sync, int release_sync) {
@@ -116,8 +99,8 @@ class TaskGraphTest : public testing::Test {
     base::AutoLock auto_lock(task_graph_->lock());
 
     task_graph_->GetSequence(info_it->second.sequence_id)
-        ->AddTask(GetTaskClosure(sequence_key, release_sync), std::move(waits),
-                  release, /*report_callback=*/{});
+        ->AddTask(GetTaskCallback(), std::move(waits), release,
+                  /*report_callback=*/{});
   }
 
   void RunAllPendingTasks() {
@@ -130,14 +113,21 @@ class TaskGraphTest : public testing::Test {
             task_graph_->GetSequence(info.second.sequence_id);
 
         while (sequence->IsFrontTaskUnblocked()) {
-          base::OnceClosure task;
-          uint32_t order_num = sequence->BeginTask(&task);
-          sequence->order_data()->BeginProcessingOrderNumber(order_num);
+          base::OnceClosure task_closure;
+          uint32_t order_num = sequence->BeginTask(&task_closure);
+          SyncToken release = sequence->current_task_release();
+
           {
             base::AutoUnlock auto_unlock(task_graph_->lock());
-            std::move(task).Run();
+            sequence->order_data()->BeginProcessingOrderNumber(order_num);
+            std::move(task_closure).Run();
+
+            if (release.HasData()) {
+              task_graph_->sync_point_manager()->EnsureFenceSyncReleased(
+                  release, ReleaseCause::kTaskCompletionRelease);
+            }
+            sequence->order_data()->FinishProcessingOrderNumber(order_num);
           }
-          sequence->order_data()->FinishProcessingOrderNumber(order_num);
           sequence->FinishTask();
         }
       }
@@ -148,27 +138,23 @@ class TaskGraphTest : public testing::Test {
 
   std::vector<int> tasks_executed_;
 
+  std::unique_ptr<SyncPointManager> sync_point_manager_;
+
  private:
   const CommandBufferNamespace kNamespaceId = CommandBufferNamespace::GPU_IO;
 
   int num_tasks_added_ = 0;
 
   struct SequenceInfo {
-    SequenceInfo(SequenceId sequence_id,
-                 CommandBufferId command_buffer_id,
-                 scoped_refptr<SyncPointClientState> release_state)
-        : sequence_id(sequence_id),
-          command_buffer_id(command_buffer_id),
-          release_state(release_state) {}
+    SequenceInfo(SequenceId sequence_id, CommandBufferId command_buffer_id)
+        : sequence_id(sequence_id), command_buffer_id(command_buffer_id) {}
 
     SequenceId sequence_id;
     CommandBufferId command_buffer_id;
-    scoped_refptr<SyncPointClientState> release_state;
   };
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<SyncPointManager> sync_point_manager_;
   std::unique_ptr<TaskGraph> task_graph_;
 
   std::map<int, const SequenceInfo> sequence_info_;
@@ -357,6 +343,8 @@ TEST_F(TaskGraphTest, ValidationCircularWaits4) {
   // |        |     |        |                   |
   //                |(task 6)|<-0----------------|
   //                |        |
+
+  sync_point_manager_->set_suppress_fatal_log_for_testing();
 
   CreateSequence(0);
   CreateSequence(1);

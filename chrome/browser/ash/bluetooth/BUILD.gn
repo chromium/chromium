@@ -67,7 +67,6 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base/test:test_support",
     "//chrome/browser/ash/hats",
-    "//chrome/browser/ash/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/common",
@@ -86,7 +85,6 @@ if (is_chromeos_device) {
     sources_metadata = [ "bluetooth_integration_test.yaml" ]
 
     deps = [
-      ":bluetooth",
       "//ash",
       "//base",
       "//base/test:test_support",

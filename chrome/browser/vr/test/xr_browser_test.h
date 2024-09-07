@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/test/conditional_skipping.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "device/vr/public/cpp/features.h"
 #include "device/vr/test/test_hook.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -22,11 +23,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else  // !IS_ANDROID
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 namespace content {

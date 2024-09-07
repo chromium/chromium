@@ -69,11 +69,8 @@ class MEDIA_GPU_EXPORT SharedImageVideoProvider {
 
     ~ImageRecord();
 
-    // Mailbox or ClientSharedImage for the current shared image.
-    // TODO(crbug.com/40286368): Replace this variant with
-    // scoped_refptr<gpu::ClientSharedImage>.
-    absl::variant<gpu::Mailbox, scoped_refptr<gpu::ClientSharedImage>>
-        shared_image;
+    // ClientSharedImage for the current shared image.
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
 
     // Release callback.  When this is called (or dropped), the image will be
     // considered to be unused.

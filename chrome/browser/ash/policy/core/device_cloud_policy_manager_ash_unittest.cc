@@ -266,7 +266,7 @@ class DeviceCloudPolicyManagerAshTest
     }
     ShutdownManager();
 
-    manager_->OnUserManagerWillBeDestroyed(user_manager_.get());
+    manager_->OnUserManagerWillBeDestroyed();
     user_manager_.reset();
 
     manager_.reset();

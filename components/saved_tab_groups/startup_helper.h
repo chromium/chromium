@@ -52,12 +52,12 @@ class StartupHelper {
   void CloseDeletedTabGroupsFromTabModel();
   void CreateRemoteTabGroupForNewGroups();
 
+  // The service which represents remote from the point of view of this class.
+  const raw_ptr<TabGroupSyncService> service_ = nullptr;
+
   // The platform specific delegate which represents local from the point of
   // view of this class.
-  const raw_ptr<TabGroupSyncDelegate> platform_delegate_;
-
-  // The service which represents remote from the point of view of this class.
-  const raw_ptr<TabGroupSyncService> service_;
+  const raw_ptr<TabGroupSyncDelegate> platform_delegate_ = nullptr;
 };
 
 }  // namespace tab_groups

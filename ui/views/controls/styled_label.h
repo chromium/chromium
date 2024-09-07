@@ -262,6 +262,11 @@ class VIEWS_EXPORT StyledLabel : public View {
   // layout.
   std::list<std::unique_ptr<View>> custom_views_;
 
+  // Temporarily owns the views to be deleted during layout. These views might
+  // still be referenced on the stack. If we delete them immediately, UaFs
+  // could happen when the stack unwinds.
+  std::vector<std::unique_ptr<View>> pending_delete_views_;
+
   // The ranges that should be linkified, sorted by start position.
   StyleRanges style_ranges_;
 

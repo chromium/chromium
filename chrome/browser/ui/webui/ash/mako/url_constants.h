@@ -19,9 +19,13 @@ extern const char kOrcaRewriteMode[];
 extern const char kOrcaPresetParamKey[];
 extern const char kOrcaFreeformParamKey[];
 
+extern const char kOrcaFeedbackEnabledParamKey[];
+
 extern const char kOrcaResizingEnabledParamKey[];
 
 extern const char kOrcaHostLanguageParamKey[];
+
+extern const char kOrcaMagicBoostParamKey[];
 
 }  // namespace ash
 

@@ -34,6 +34,10 @@ targets.builder_defaults.set(
     mixins = ["chromium-tester-service-account"],
 )
 
+targets.settings_defaults.set(
+    os_type = targets.os_type.ANDROID,
+)
+
 consoles.console_view(
     name = "chromium.android",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -83,6 +87,11 @@ ci.builder(
             "no_symbols",
             "strip_debug_info",
             "arm",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
         ],
     ),
     builderless = False,
@@ -144,9 +153,6 @@ ci.thin_tester(
             ),
         ],
     ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
-    ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
         short_name = "O",
@@ -193,9 +199,6 @@ ci.thin_tester(
             "pie_fleet",
             "walleye",
         ],
-    ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
@@ -351,6 +354,11 @@ ci.builder(
             "webview_google",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     builderless = False,
     cores = None,
     tree_closing = True,
@@ -427,6 +435,11 @@ ci.builder(
             "webview_shell",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|x86",
@@ -465,6 +478,11 @@ ci.builder(
             "remoteexec",
             "x86",
             "webview_shell",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
         ],
     ),
     ssd = True,
@@ -585,6 +603,18 @@ ci.builder(
             "arm",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "cast_junit_tests",
+        ],
+        additional_compile_targets = [
+            "cast_junit_test_lists",
+            "cast_shell_apk",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+        ],
+    ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
@@ -689,9 +719,6 @@ ci.thin_tester(
             ),
         },
     ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
-    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
@@ -735,6 +762,26 @@ ci.builder(
             "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_10_rel_gtests",
+        ],
+        additional_compile_targets = [
+            "check_chrome_static_initializers",
+        ],
+        mixins = [
+            targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "device_os": "QQ1A.191205.008",
+                        "device_os_flavor": "google",
+                    },
+                ),
+            ),
+            "has_native_resultdb_integration",
+            "walleye",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -802,8 +849,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
-    # TODO(crbug.com/351944004): Enable gardening once tests are stable
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|tablet",
         short_name = "12L-L",
@@ -846,6 +891,56 @@ ci.builder(
             "webview_google",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "android_marshmallow_gtests",
+            "chromium_junit_tests_scripts",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "pie_fleet",
+            "walleye",
+        ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 25,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 16,
+                ),
+            ),
+            "crashpad_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.arm64_proguard_rel.crashpad_tests.filter",
+                ],
+            ),
+            "gin_unittests": targets.mixin(
+                args = [
+                    # https://crbug.com/1404782
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests.filter",
+                ],
+            ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.arm64_proguard_rel.gl_tests.filter",  # https://crbug.com/1034007
+                ],
+            ),
+            "perfetto_unittests": targets.remove(
+                reason = "TODO(crbug.com/931138): Fix permission issue when creating tmp files",
+            ),
+        },
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
@@ -886,6 +981,28 @@ ci.builder(
             "webview_shell",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "bfcache_android_gtests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "oreo-x86-emulator",
+            "emulator-8-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "bf_cache_content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 15,
+                ),
+            ),
+        },
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
         short_name = "bfc",
@@ -910,6 +1027,8 @@ ci.builder(
             # Allows the bot to measure low-end arm32 and high-end arm64 using
             # a single build.
             "android_low_end_secondary_toolchain",
+            # Disable PGO due to too much volatility: https://crbug.com/344608183
+            "pgo_phase_0",
         ],
     ),
     builderless = False,
@@ -956,6 +1075,12 @@ ci.builder(
             "remoteexec",
             "arm_no_neon",
             "release_java",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+            "cronet_dbg_isolated_scripts",
         ],
     ),
     gardener_rotations = args.ignore_default(None),
@@ -1005,6 +1130,14 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_rel_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "cronet_package",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm",
@@ -1042,6 +1175,15 @@ ci.builder(
             "debug_static_builder",
             "remoteexec",
             "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+            "cronet_dbg_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "cronet_package_ci",
         ],
     ),
     gardener_rotations = args.ignore_default(None),
@@ -1083,6 +1225,15 @@ ci.builder(
             "minimal_symbols",
             "arm64",
             "strip_debug_info",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+            "cronet_rel_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "cronet_package_ci",
         ],
     ),
     gardener_rotations = args.ignore_default(None),
@@ -1127,6 +1278,20 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        additional_compile_targets = [
+            "cronet_package",
+            "cronet_perf_test_apk",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "bullhead",
+            "marshmallow",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
@@ -1164,6 +1329,11 @@ ci.builder(
             "remoteexec",
             "arm64",
             "cronet_android_mainline_clang",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
         ],
     ),
     gardener_rotations = args.ignore_default(None),
@@ -1210,6 +1380,11 @@ ci.builder(
             "use_clang_coverage",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang_coverage|arm64",
@@ -1248,6 +1423,11 @@ ci.builder(
             "remoteexec",
             "riscv64",
             "cronet_android_mainline_clang",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
         ],
     ),
     gardener_rotations = args.ignore_default(None),
@@ -1291,6 +1471,11 @@ ci.builder(
             "riscv64",
             "strip_debug_info",
             "cronet_android_mainline_clang",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
         ],
     ),
     gardener_rotations = args.ignore_default(None),
@@ -1338,6 +1523,11 @@ ci.builder(
             "cronet_android_mainline_clang",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|x86",
@@ -1380,6 +1570,11 @@ ci.builder(
             "strip_debug_info",
             "cronet_android_mainline_clang",
             "use_clang_coverage",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
         ],
     ),
     gardener_rotations = args.ignore_default(None),
@@ -1450,6 +1645,12 @@ ci.builder(
             "riscv64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+            "cronet_dbg_isolated_scripts",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|riscv64",
@@ -1490,6 +1691,12 @@ ci.builder(
             "minimal_symbols",
             "riscv64",
             "strip_debug_info",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+            "cronet_rel_isolated_scripts",
         ],
     ),
     gardener_rotations = args.ignore_default(None),
@@ -1535,6 +1742,23 @@ ci.builder(
             "x86",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+            "cronet_dbg_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "cronet_perf_test_apk",
+            "cronet_smoketests_apk",
+        ],
+        per_test_modifications = {
+            # Do not run cronet_sizes on CQ builders (binaries are instrumented
+            # for code coverage)
+            "cronet_sizes": targets.mixin(
+                ci_only = True,
+            ),
+        },
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x86",
@@ -1578,6 +1802,23 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+            "cronet_dbg_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "cronet_perf_test_apk",
+            "cronet_smoketests_apk",
+        ],
+        per_test_modifications = {
+            # Do not run cronet_sizes on CQ builders (binaries are instrumented
+            # for code coverage)
+            "cronet_sizes": targets.mixin(
+                ci_only = True,
+            ),
+        },
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x64",
@@ -1613,6 +1854,18 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "12-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -1647,6 +1900,18 @@ ci.thin_tester(
             config = "x64_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "13-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
     ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -1684,6 +1949,19 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "14-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -1718,6 +1996,26 @@ ci.thin_tester(
             config = "x86_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "lollipop-x86-emulator",
+            "emulator-4-cores",
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "net_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_l.net_unittests.filter",
+                ],
+            ),
+        },
     ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -1754,6 +2052,18 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "marshmallow-x86-emulator",
+            "emulator-4-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -1788,6 +2098,18 @@ ci.thin_tester(
             config = "x86_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "nougat-x86-emulator",
+            "emulator-4-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
     ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -1824,6 +2146,25 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "oreo-x86-emulator",
+            "emulator-4-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "net_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter",
+                ],
+            ),
+        },
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -1858,6 +2199,26 @@ ci.thin_tester(
             config = "x86_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "pie-x86-emulator",
+            "emulator-4-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "net_unittests": targets.mixin(
+                # crbug.com/1046060
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter",
+                ],
+            ),
+        },
     ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -1895,6 +2256,25 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "10-x86-emulator",
+            "emulator-4-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "net_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.net_unittests.filter",
+                ],
+            ),
+        },
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -1929,6 +2309,18 @@ ci.thin_tester(
             config = "x86_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "11-x86-emulator",
+            "emulator-4-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
     ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -1971,6 +2363,16 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+            "cronet_rel_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "cronet_package_ci",
+            "cronet_smoketests_apk",
+        ],
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x86",
@@ -2010,6 +2412,16 @@ ci.builder(
             "minimal_symbols",
             "x64",
             "strip_debug_info",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_common_compile_targets",
+            "cronet_rel_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "cronet_package_ci",
+            "cronet_smoketests_apk",
         ],
     ),
     gardener_rotations = args.ignore_default(None),
@@ -2104,9 +2516,6 @@ ci.thin_tester(
             "pie_fleet",
             "walleye",
         ],
-    ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",

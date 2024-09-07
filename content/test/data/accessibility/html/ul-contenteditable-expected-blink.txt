@@ -5,11 +5,11 @@ rootWebArea
 ++++++++list
 ++++++++++listItem
 ++++++++++++listMarker name='%E2%80%A2 '
-++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='Hello'
 ++++++++++++++inlineTextBox name='Hello'
 ++++++++++listItem
 ++++++++++++listMarker name='%E2%80%A2 '
-++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='Bye'
 ++++++++++++++inlineTextBox name='Bye'

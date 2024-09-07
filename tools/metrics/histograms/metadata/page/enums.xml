@@ -122,16 +122,6 @@ chromium-metrics-reviews@google.com.
              tracking a relevant committed load"/>
 </enum>
 
-<enum name="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Image is loaded from memory cache"/>
-  <int value="2"
-      label="Image is preloaded after receiving a 103 (Early Hints) response"/>
-  <int value="3"
-      label="Image is loaded from memory and preloaded after receiving a 103
-             (Early Hints) response"/>
-</enum>
-
 <enum name="LcppPredictResult">
   <int value="0" label="Success">Prediction is success.</int>
   <int value="1" label="Failure: No hit">
@@ -221,6 +211,17 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
+
+<!-- LINT.IfChange(NavigationSourceTypeEnum) -->
+
+<enum name="NavigationSourceTypeEnum">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kFromNewTabPage"/>
+  <int value="2" label="kStartedInBackground"/>
+  <int value="3" label="kStartedInBackgroundFromNewTabPage"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/gws_page_load_metrics_observer.h:NavigationSourceType) -->
 
 <enum name="OriginTrialStatusChange">
   <int value="0"

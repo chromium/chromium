@@ -19,8 +19,8 @@
 #import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
@@ -67,18 +67,18 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
   // given parental control capabilities on this account.
   void SignIn(const std::string& email, bool is_subject_to_parental_controls) {
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
+        IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         identity_manager, email, signin::ConsentLevel::kSignin);
     supervised_user::UpdateSupervisionStatusForAccount(
         account, identity_manager, is_subject_to_parental_controls);
 
     // Initialize supervised_user services.
-    ChildAccountServiceFactory::GetForBrowserState(chrome_browser_state_.get())
+    ChildAccountServiceFactory::GetForProfile(chrome_browser_state_.get())
         ->Init();
 
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserState(
+        SupervisedUserServiceFactory::GetForProfile(
             chrome_browser_state_.get());
     supervised_user_service->Init();
 
@@ -118,7 +118,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
 
   void AllowExampleSiteForSupervisedUser() {
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserState(
+        SupervisedUserServiceFactory::GetForProfile(
             chrome_browser_state_.get());
 
     std::map<std::string, bool> hosts;
@@ -130,7 +130,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
 
   void RestrictAllSitesForSupervisedUser() {
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserState(
+        SupervisedUserServiceFactory::GetForProfile(
             chrome_browser_state_.get());
     supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
         supervised_user::FilteringBehavior::kBlock);

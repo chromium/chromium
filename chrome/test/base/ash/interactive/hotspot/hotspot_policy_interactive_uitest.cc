@@ -41,13 +41,10 @@ class HotspotPolicyInteractiveUITest : public InteractiveAshTest {
             shill::kTetheringReadinessReady);
 
     ShillServiceClient::Get()->GetTestInterface()->AddService(
-        shill_service_info().service_path(),
-        shill_service_info().service_guid(),
-        shill_service_info().service_name(), shill::kTypeCellular,
+        shill_service_info_.service_path(), shill_service_info_.service_guid(),
+        shill_service_info_.service_name(), shill::kTypeCellular,
         shill::kStateOnline, /*visible=*/true);
   }
-
-  const ShillServiceInfo& shill_service_info() { return shill_service_info_; }
 
   void RestrictHotspotFromPolicy() {
     base::Value::Dict global_config;
@@ -59,7 +56,8 @@ class HotspotPolicyInteractiveUITest : public InteractiveAshTest {
   }
 
  private:
-  const ShillServiceInfo shill_service_info_ = ShillServiceInfo(/*id=*/0);
+  const ShillServiceInfo shill_service_info_ =
+      ShillServiceInfo(/*id=*/0, shill::kTypeCellular);
 };
 
 IN_PROC_BROWSER_TEST_F(HotspotPolicyInteractiveUITest,

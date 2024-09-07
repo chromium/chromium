@@ -237,7 +237,6 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
     // No feature usage recorded for the following mechanism values.
     case ThirdPartyCookieAllowMechanism::kNone:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
-    case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
     case ThirdPartyCookieAllowMechanism::kAllowByScheme:
       break;
   }

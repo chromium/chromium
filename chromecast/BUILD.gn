@@ -14,10 +14,6 @@ import("//media/media_options.gni")
 import("//tools/grit/repack.gni")
 import("//v8/gni/v8.gni")
 
-if (chromecast_branding != "public") {
-  import("//chromecast/internal/chromecast_internal.gni")
-}
-
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//components/module_installer/android/module_desc_java.gni")
@@ -36,13 +32,7 @@ group("all") {
   data_deps = []
   deps = [ "//chromecast/build:archive" ]
   if (is_android) {
-    if (chromecast_branding == "public") {
-      deps += [ ":cast_shell_apk" ]
-    } else {
-      foreach(device_type, android_device_types) {
-        deps += [ ":cast_browser_${device_type}_bundle_module" ]
-      }
-    }
+    deps += [ ":cast_shell_apk" ]
   } else if (!is_fuchsia) {
     data_deps += [
       ":cast_browser",
@@ -51,9 +41,6 @@ group("all") {
   }
   if (is_linux) {
     deps += [ "//chromecast/tracing" ]
-  }
-  if (chromecast_branding != "public") {
-    deps += [ "//chromecast/internal:all" ]
   }
   if (enable_external_mojo_services) {
     deps += [ "//chromecast/external_mojo/external_service_support:standalone_mojo_broker" ]
@@ -459,10 +446,6 @@ cast_test_group_list("cast_test_lists") {
   ]
 
   test_groups = [ ":cast_tests" ]
-
-  if (chromecast_branding != "public") {
-    test_groups += internal_cast_test_groups
-  }
 }
 
 if (is_android) {
@@ -485,9 +468,6 @@ if (is_android) {
     runtime_deps_path = "$root_out_dir/junit/runtime_deps.json"
     run_list_path = "$root_out_dir/junit/run_junit_test_list.txt"
     test_groups = [ ":cast_junit_tests" ]
-    if (chromecast_branding != "public") {
-      test_groups += [ "//chromecast/internal:internal_cast_junit_tests" ]
-    }
   }
 }
 
@@ -516,14 +496,7 @@ if (!is_fuchsia) {
   }
 
   group("cast_shell_lib") {
-    if (chromecast_branding != "public") {
-      deps = [
-        ":cast_shell_lib_base",
-        "//chromecast/internal/shell",
-      ]
-    } else {
-      deps = [ ":cast_shell_lib_simple" ]
-    }
+    deps = [ ":cast_shell_lib_simple" ]
   }
 
   group("cast_shell_lib_base") {
@@ -539,13 +512,7 @@ if (!is_fuchsia) {
   }
 
   group("cast_shell_lib_simple") {
-    deps = [
-      ":cast_shell_lib_base",
-      "//chromecast/browser:prefs_simple",
-      "//chromecast/browser:simple_client",
-      "//chromecast/browser:simple_main_parts",
-      "//chromecast/renderer:simple_client",
-    ]
+    deps = [ "//chromecast/cast_core:core_runtime_lib_simple" ]
   }
 
   cast_executable("cast_shell") {
@@ -620,13 +587,6 @@ if (!is_fuchsia) {
       sources =
           [ "$root_gen_dir/chromecast/app/chromecast_settings_${locale}.pak" ]
       deps = [ "//chromecast/app:chromecast_settings" ]
-
-      if (chromecast_branding != "public") {
-        sources += [
-          "$root_gen_dir/chromecast/internal/castui/app_strings_${locale}.pak",
-        ]
-        deps += [ "//chromecast/internal/castui:cast_ui_app_strings" ]
-      }
     }
   }
 
@@ -647,7 +607,6 @@ buildflag_header("chromecast_buildflags") {
     "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
-    "ENABLE_PLAYREADY=$enable_playready",
     "ENABLE_VIDEO_CAPTURE_SERVICE=$enable_video_capture_service",
     "IS_CAST_AUDIO_ONLY=$is_cast_audio_only",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
@@ -716,54 +675,5 @@ if (is_android) {
     command_line_flags_file = "castshell-command-line"
 
     product_config_java_packages = [ "org.chromium.chromecast.shell" ]
-  }
-
-  if (chromecast_branding != "public") {
-    foreach(device_type, android_device_types) {
-      android_app_bundle_module("cast_browser_${device_type}_bundle_module") {
-        is_base_module = false
-        base_module_target = "//chromecast/internal/service/main/android:cast_service_${device_type}_bundle_module"
-
-        android_manifest = "$root_gen_dir/cast_browser_${device_type}_manifest.AndroidManifest.xml"
-        android_manifest_dep =
-            "//chromecast/browser/android:cast_browser_${device_type}_manifest"
-
-        min_sdk_version = 24
-        target_sdk_version = 33
-
-        module_name = "cast_browser"
-
-        # |package_id| is required because the default one conflicts with the base
-        # modules' ID (0x7f).
-        package_id = 125
-
-        shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
-        srcjar_deps =
-            [ "//chromecast/android:libcast_browser_android__jni_registration" ]
-        deps = [
-          "//base:base_java",
-          "//build/android:build_java",
-          "//chromecast/browser/android:cast_browser_java",
-          "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
-          "//components/viz/service:service_java",
-          "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
-          "//third_party/jni_zero:jni_zero_java",
-        ]
-
-        loadable_modules = [
-          "$root_out_dir/libchrome_crashpad_handler.so",
-          "$root_out_dir/libcrashpad_handler_trampoline.so",
-        ]
-
-        # TODO(b/228506503): remove the exclusion rule after cast_service and
-        # cast_browser depend on different resource targets.
-        resource_exclusion_regex = "cast_web_contents_activity.xml"
-
-        # TODO(b/222780347): Enable when compile errors are resolved on release
-        # builds.
-        proguard_enabled = false
-        generate_native_libraries_java = true
-      }
-    }
   }
 }

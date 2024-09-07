@@ -22,15 +22,6 @@ base::FilePath GetDIPSFilePath(content::BrowserContext* context) {
   return context->GetPath().Append(kDIPSFilename);
 }
 
-ProfileSelections GetHumanProfileSelections() {
-  return ProfileSelections::Builder()
-      .WithRegular(ProfileSelection::kOwnInstance)
-      .WithGuest(ProfileSelection::kOffTheRecordOnly)
-      .WithSystem(ProfileSelection::kNone)
-      .WithAshInternals(ProfileSelection::kNone)
-      .Build();
-}
-
 bool UpdateTimestampRange(TimestampRange& range, base::Time time) {
   if (!range.has_value()) {
     range = {time, time};

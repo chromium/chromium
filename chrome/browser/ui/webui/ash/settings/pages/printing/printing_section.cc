@@ -323,9 +323,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
-  html_source->AddBoolean(
-      "isLocalPrinterObservingEnabled",
-      base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {

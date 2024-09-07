@@ -9,12 +9,10 @@
 #import <string>
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
-#import "components/search_engines/search_engines_switches.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "url/gurl.h"
@@ -98,8 +96,6 @@ class SearchEngineTableViewControllerTest
   [[nodiscard]] bool DeleteItemsAndWait(NSArray<NSIndexPath*>* indexes,
                                         ConditionBlock condition);
 
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   base::HistogramTester histogram_tester_;

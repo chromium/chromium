@@ -35,6 +35,7 @@
 #include "content/browser/interest_group/interest_group_update_manager.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "content/public/browser/storage_partition.h"
@@ -335,7 +336,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   virtual void EnqueueReports(
       ReportType report_type,
       std::vector<GURL> report_urls,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& frame_origin,
       const network::mojom::ClientSecurityState& client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -347,7 +348,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   virtual void EnqueueRealTimeReports(
       std::map<url::Origin, RealTimeReportingContributions> contributions,
       AdAuctionPageDataCallback ad_auction_page_data_callback,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& frame_origin,
       const network::mojom::ClientSecurityState& client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -482,10 +483,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       blink::mojom::AuctionDataConfigPtr config,
       base::OnceCallback<void(BiddingAndAuctionData)> callback);
 
-  // Get the public key to use for the auction data. The `loader` pointer must
-  // remain valid until the `callback` is called or destroyed. The `callback`
-  // may be called synchronously if the key is already available or the
-  // coordinator is not recognized.
+  // Get the public key to use for the auction data. The `callback` may be
+  // called synchronously if the key is already available or the coordinator is
+  // not recognized.
   void GetBiddingAndAuctionServerKey(
       std::optional<url::Origin> coordinator,
       base::OnceCallback<void(
@@ -540,7 +540,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     // the binary, so no need for anything to own them.
     const char* name;
     int request_url_size_bytes;
-    int frame_tree_node_id;
+    FrameTreeNodeId frame_tree_node_id;
   };
 
   struct AdAuctionDataLoaderState {
@@ -632,7 +632,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Invoked when a report request completed.
   void OnOneReportSent(
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const std::string& devtools_request_id,
       scoped_refptr<net::HttpResponseHeaders> response_headers);
 
@@ -662,9 +662,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       url::Origin owner,
       scoped_refptr<StorageInterestGroups> groups);
 
+  // Invoked when loading interest groups is completed. Load debug report
+  // lockout information if sampling debug report is enabled, otherwise invoke
+  // `OnAdAuctionDataLoadComplete()` directly.
+  void OnInterestGroupAdAuctionDataLoadComplete(AdAuctionDataLoaderState state);
+
   // Constructs the AuctionAdata when the load is complete and calls the
   // provided callback.
-  void OnAdAuctionDataLoadComplete(AdAuctionDataLoaderState state);
+  void OnAdAuctionDataLoadComplete(
+      AdAuctionDataLoaderState state,
+      std::optional<base::Time> last_report_sent_time);
 
   // Helper to that returns bound NotifyInterestGroupAccessed() callbacks to
   // allow notifications to be sent after a database update.

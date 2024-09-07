@@ -8,8 +8,6 @@
 
 #include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/pdfium/public/fpdf_sysfontinfo.h"
@@ -26,9 +24,7 @@ class PDFiumFontWinTest : public testing::Test {
   // Secretly this is a skia typeface id.
   using FontId = void*;
 
-  PDFiumFontWinTest() {
-    scoped_feature_list_.InitWithFeatures({features::kWinPdfUseFontProxy}, {});
-  }
+  PDFiumFontWinTest() = default;
   PDFiumFontWinTest(const PDFiumFontWinTest&) = delete;
   PDFiumFontWinTest& operator=(const PDFiumFontWinTest&) = delete;
   ~PDFiumFontWinTest() override = default;
@@ -68,7 +64,6 @@ class PDFiumFontWinTest : public testing::Test {
 
  private:
   raw_ptr<FPDF_SYSFONTINFO> mapper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

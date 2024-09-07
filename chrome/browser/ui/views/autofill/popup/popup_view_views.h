@@ -162,8 +162,9 @@ class PopupViewViews : public PopupBaseView,
 
   void UpdateExpandedCollapsedAccessibleState() const;
 
-  // Returns whether the row at `index` exists and is a `PopupRowView`.
-  bool HasPopupRowViewAt(size_t index) const;
+  // Returns whether the row at `index` exists, is a `PopupRowView` and is
+  // selectable.
+  bool HasSelectablePopupRowViewAt(size_t index) const;
 
   // Instantiates the content of the popup.
   void InitViews();
@@ -180,11 +181,11 @@ class PopupViewViews : public PopupBaseView,
   void SelectPreviousRow();
 
   // Analogous to previous row, just in the opposite direction: Tries to find
-  // the next selectable row after the currently selected one. If no row is
-  // selected or no row following the currently selected one is selectable, it
-  // tries to select the first row. If that one is unselectable, no row is
-  // selected.
-  void SelectNextRow();
+  // the next selectable row after the currently selected one and selects it
+  // with the given selection source. If no row is selected or no row following
+  // the currently selected one is selectable, it tries to select the first
+  // row. If that one is unselectable, no row is selected.
+  void SelectNextRow(PopupCellSelectionSource source);
 
   // Selects the next/previous in horizontal direction (i.e. left to right or
   // vice versa) cell, if there is one. Otherwise leaves the current selection.

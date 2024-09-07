@@ -6,6 +6,7 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 namespace {
 
@@ -23,7 +24,8 @@ NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
 @implementation BridgedContentView (TouchBarAdditions)
 
 - (void)touchBarButtonAction:(id)sender {
-  ui::DialogButton type = static_cast<ui::DialogButton>([sender tag]);
+  ui::mojom::DialogButton type =
+      static_cast<ui::mojom::DialogButton>([sender tag]);
   if (_bridge)
     _bridge->host()->DoDialogButtonAction(type);
 }
@@ -49,11 +51,11 @@ NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
                           items:items];
   }
 
-  ui::DialogButton type = ui::DIALOG_BUTTON_NONE;
+  ui::mojom::DialogButton type = ui::mojom::DialogButton::kNone;
   if ([identifier isEqualToString:kTouchBarOKId])
-    type = ui::DIALOG_BUTTON_OK;
+    type = ui::mojom::DialogButton::kOk;
   else if ([identifier isEqualToString:kTouchBarCancelId])
-    type = ui::DIALOG_BUTTON_CANCEL;
+    type = ui::mojom::DialogButton::kCancel;
   else
     return nil;
 
@@ -82,7 +84,7 @@ NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
                                               alpha:1.0]];
   }
   [button setEnabled:isButtonEnabled];
-  [button setTag:type];
+  [button setTag:static_cast<int>(type)];
   [item setView:button];
   return item;
 }

@@ -68,6 +68,8 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
   // Used to link to personalization app search results.
   html_source->AddString("personalizationAppUrl",
                          personalization_app::kChromeUIPersonalizationAppURL);
+  html_source->AddString("ambientSubpageRelativeUrl",
+                         personalization_app::kAmbientSubpageRelativeUrl);
 }
 
 void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {

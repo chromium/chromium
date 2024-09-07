@@ -13,6 +13,12 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "Id3987d4c3662d674fab99cc92e40efdd859015d2",
+      "good_change_id": "I722bc4085cf789b85d05b962f7e8d5a984f30653",
+      "bugs": ["b/361725824"],
+      "comment": "Faulty call from Impl to API through QuicException#getConnectionCloseSource."
+    },
+    {
       "bad_change_id": "I8c8c4e96b90675894ff49dc1ad6f8ecf23b38f1e",
       "good_change_id": "I6f9d0e2e4b6ae864912a80f43697fbf13956f924",
       "bugs": ["b/340192797"],

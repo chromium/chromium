@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -23,7 +24,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageThrottle
   explicit ReduceAcceptLanguageThrottle(
       ReduceAcceptLanguageControllerDelegate& accept_language_delegate,
       OriginTrialsControllerDelegate* origin_trials_delegate,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
   ~ReduceAcceptLanguageThrottle() override;
 
   // blink::URLLoaderThrottle
@@ -56,7 +57,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageThrottle
   // The delegate is owned by the BrowserContext, and both are expected to
   // outlive this throttle.
   raw_ptr<OriginTrialsControllerDelegate> origin_trials_delegate_;
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
 
   // Ensure that there's only one restart per origin.
   base::flat_set<url::Origin> restarted_origins_;

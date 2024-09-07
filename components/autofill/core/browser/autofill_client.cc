@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
-#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/version_info/channel.h"
@@ -117,18 +116,6 @@ FastCheckoutClient* AutofillClient::GetFastCheckoutClient() {
   return nullptr;
 }
 
-payments::MandatoryReauthManager*
-AutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
-  return nullptr;
-}
-
-#if !BUILDFLAG(IS_IOS)
-std::unique_ptr<webauthn::InternalAuthenticator>
-AutofillClient::CreateCreditCardInternalAuthenticator(AutofillDriver* driver) {
-  return nullptr;
-}
-#endif
-
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }
@@ -165,9 +152,21 @@ AutofillClient::GetPopupScreenLocation() const {
   return std::nullopt;
 }
 
+std::optional<AutofillClient::SuggestionUiSessionId>
+AutofillClient::GetSessionIdForCurrentAutofillSuggestions() const {
+  return std::nullopt;
+}
+
 base::span<const Suggestion> AutofillClient::GetAutofillSuggestions() const {
   NOTIMPLEMENTED();
   return {};
+}
+
+void AutofillClient::UpdateAutofillSuggestions(
+    const std::vector<Suggestion>& suggestions,
+    FillingProduct main_filling_product,
+    AutofillSuggestionTriggerSource trigger_source) {
+  NOTIMPLEMENTED();
 }
 
 void AutofillClient::set_test_addresses(

@@ -179,13 +179,11 @@ function requestCreated(isSuccessful, isMainFrame) {
           event) {
         sendCommand('requestUrlAccessLocal');
       };
-      $('local-approvals-remote-request-sent-button').focus();
     } else {
       $('back-button').hidden = !isMainFrame;
       $('back-button').onclick = function(event) {
         sendCommand('back');
       };
-      $('back-button').focus();
     }
     $('error-page-illustration').hidden = true;
     $('waiting-for-approval-illustration').hidden = false;
@@ -196,6 +194,8 @@ function requestCreated(isSuccessful, isMainFrame) {
     $('remote-approvals-button').disabled = false;
     $('show-details-link').hidden = false;
   }
+  // After updating the contents, focus the top-level div for screen readers.
+  $('frame-blocked').focus();
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

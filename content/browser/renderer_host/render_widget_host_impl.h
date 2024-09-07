@@ -112,7 +112,6 @@ enum class DomCode : uint32_t;
 }
 
 namespace content {
-class BrowserAccessibilityManager;
 class FrameTree;
 class MockRenderWidgetHost;
 class MockRenderWidgetHostImpl;
@@ -393,6 +392,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnInvalidInputEventSource() override;
   void NotifyUISchedulerOfGestureEventUpdate(
       blink::WebInputEvent::Type gesture_event) override;
+  void OnInputIgnored(const blink::WebInputEvent& event) override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
@@ -704,11 +704,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetForceEnableZoom(bool);
 
   // Get the BrowserAccessibilityManager for the root of the frame tree,
-  BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
+  ui::BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
 
   // Get the BrowserAccessibilityManager for the root of the frame tree,
   // or create it if it doesn't already exist.
-  BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager();
+  ui::BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager();
 
   void RejectPointerLockOrUnlockIfNecessary(
       blink::mojom::PointerLockResult reason);
@@ -811,6 +811,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnImeCancelComposition() override;
   input::StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
+  void UpdateElementFocusForStylusWriting() override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override;
   void SetAutoscrollSelectionActiveInMainFrame(
@@ -936,6 +937,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const cc::RenderFrameMetadata& metadata) override;
 
   SiteInstanceGroup* GetSiteInstanceGroup();
+
+  void PassImeRenderWidgetHost(
+      mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote);
 
   // Updates the browser controls by directly IPCing onto the compositor thread.
   void UpdateBrowserControlsState(
@@ -1165,7 +1169,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // It receives the focused edit element bounds and the current caret bounds
   // needed for stylus writing service. These bounds would be null when the
   // stylus writable element could not be focused.
-  void OnEditElementFocusedForStylusWriting(
+  void OnUpdateElementFocusForStylusWritingHandled(
       const std::optional<gfx::Rect>& focused_edit_bounds,
       const std::optional<gfx::Rect>& caret_bounds);
 

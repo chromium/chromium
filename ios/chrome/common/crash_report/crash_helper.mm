@@ -30,10 +30,6 @@ void SetUserEnabledUploading(bool enabled) {
       setBool:enabled ? YES : NO
        forKey:base::SysUTF8ToNSString(
                   common::kCrashReportsUploadingEnabledKey)];
-  // TODO(crbug.com/1260646) Remove old deprecated Breakpad key, remove this
-  // after a few milestones.
-  [app_group::GetGroupUserDefaults()
-      removeObjectForKey:@"CrashpadStartOnNextRun"];
 }
 
 base::FilePath CrashpadDumpLocation() {

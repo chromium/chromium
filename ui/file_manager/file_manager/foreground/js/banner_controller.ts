@@ -11,7 +11,7 @@ import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
 import {getTeamDriveName, isFakeEntry} from '../../common/js/entry_utils.js';
 import type {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
-import {isGoogleOneOfferFilesBannerEligibleAndEnabled, isSkyvaultV2Enabled} from '../../common/js/flags.js';
+import {isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
 import type {RootType} from '../../common/js/volume_manager_types.js';
@@ -254,16 +254,10 @@ export class BannerController extends EventTarget {
   private bulkPinningEnabled_ = false;
 
   /**
-   * Whether local user files are currently allowed.
+   * SkyVault migration destination. If set, one of {Google Drive, OneDrive}.
    */
-  private localUserFilesAllowed_ = true;
-
-  /**
-   * Default downloads location, usually My Files, or {Google Drive, OneDrive}
-   * if SkyVault is enabled.
-   */
-  private defaultLocation_: chrome.fileManagerPrivate.DefaultLocation =
-      chrome.fileManagerPrivate.DefaultLocation.MY_FILES;
+  private migrationDestination_: chrome.fileManagerPrivate.CloudProvider =
+      chrome.fileManagerPrivate.CloudProvider.NOT_SPECIFIED;
 
   constructor(
       private directoryModel_: DirectoryModel,
@@ -291,12 +285,10 @@ export class BannerController extends EventTarget {
     chrome.fileManagerPrivate.getPreferences(pref => {
       if (this.bulkPinningAvailable_ !== pref.driveFsBulkPinningAvailable ||
           this.bulkPinningEnabled_ !== pref.driveFsBulkPinningEnabled ||
-          this.localUserFilesAllowed_ !== pref.localUserFilesAllowed ||
-          this.defaultLocation_ !== pref.defaultLocation) {
+          this.migrationDestination_ !== pref.skyVaultMigrationDestination) {
         this.bulkPinningAvailable_ = pref.driveFsBulkPinningAvailable;
         this.bulkPinningEnabled_ = pref.driveFsBulkPinningEnabled;
-        this.localUserFilesAllowed_ = pref.localUserFilesAllowed;
-        this.defaultLocation_ = pref.defaultLocation;
+        this.migrationDestination_ = pref.skyVaultMigrationDestination;
         this.reconcile();
       }
     });
@@ -440,11 +432,10 @@ export class BannerController extends EventTarget {
         context: () => ({type: this.dialogType_}),
       });
 
-      // TODO(b/351773604): Use MigrationDestination instead of
-      // DownloadDirectory.
       this.registerCustomBannerFilter(FilesMigratingToCloudBannerTagName, {
-        shouldShow: () => isSkyvaultV2Enabled() && !this.localUserFilesAllowed_,
-        context: () => ({defaultLocation: this.defaultLocation_}),
+        shouldShow: () => this.migrationDestination_ !==
+            chrome.fileManagerPrivate.CloudProvider.NOT_SPECIFIED,
+        context: () => ({cloudProvider: this.migrationDestination_}),
       });
     }
 

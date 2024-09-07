@@ -47,11 +47,11 @@ class RenderWidgetHostInputEventRouter;
 
 namespace ui {
 class Compositor;
+class BrowserAccessibilityManager;
 }  // namespace ui
 
 namespace content {
 
-class BrowserAccessibilityManager;
 class RenderFrameProxyHost;
 class RenderWidgetHostImpl;
 class RenderViewHostDelegateView;
@@ -135,11 +135,11 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual bool PreHandleGestureEvent(const blink::WebGestureEvent& event);
 
   // Get the root BrowserAccessibilityManager for this frame tree.
-  virtual BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
+  virtual ui::BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
 
   // Get the root BrowserAccessibilityManager for this frame tree,
   // or create it if it doesn't exist.
-  virtual BrowserAccessibilityManager*
+  virtual ui::BrowserAccessibilityManager*
   GetOrCreateRootBrowserAccessibilityManager();
 
   // Send OS Cut/Copy/Paste actions to the focused frame.
@@ -354,6 +354,9 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns false if it's a private window, and text entered into this page
   // shouldn't be used to improve typing suggestions for the user.
   virtual bool ShouldDoLearning();
+
+  // Notifies when an input event is ignored.
+  virtual void OnInputIgnored(const blink::WebInputEvent& event) {}
 
  protected:
   virtual ~RenderWidgetHostDelegate() {}

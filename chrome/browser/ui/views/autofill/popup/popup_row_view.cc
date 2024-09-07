@@ -270,11 +270,13 @@ PopupRowView::PopupRowView(
   content_view_->GetViewAccessibility().SetSetSize(set_size);
   content_view_->GetViewAccessibility().SetIsSelected(false);
 
-  if (controller_ && line_number_ < controller_->GetLineCount()) {
-    GetViewAccessibility().SetPosInSet(position);
-    GetViewAccessibility().SetSetSize(set_size);
-    GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
-  }
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+  GetViewAccessibility().SetName(
+      GetSuggestionA11yString(suggestion,
+                              /*add_call_to_action_if_expandable=*/false));
+  GetViewAccessibility().SetPosInSet(position);
+  GetViewAccessibility().SetSetSize(set_size);
+
   content_event_handler_ =
       set_exit_enter_callbacks(CellType::kContent, *content_view_);
   layout->SetFlexForView(content_view_.get(), 1);
@@ -370,16 +372,6 @@ void PopupRowView::OnVisibleBoundsChanged() {
         AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration);
   } else {
     barrier_for_accepting_.reset();
-  }
-}
-
-void PopupRowView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::View::GetAccessibleNodeData(node_data);
-
-  if (controller_ && line_number_ < controller_->GetLineCount()) {
-    node_data->SetName(
-        GetSuggestionA11yString(controller_->GetSuggestionAt(line_number_),
-                                /*add_call_to_action_if_expandable=*/false));
   }
 }
 
@@ -479,6 +471,11 @@ bool PopupRowView::HandleKeyPressEvent(
   }
 }
 
+bool PopupRowView::IsSelectable() const {
+  return controller_ && line_number_ < controller_->GetLineCount() &&
+         !controller_->GetSuggestionAt(line_number_).apply_deactivated_style;
+}
+
 void PopupRowView::UpdateUI() {
   UpdateBackground();
   UpdateOpenSubPopupIconVisibility();
@@ -524,7 +521,13 @@ bool PopupRowView::IsViewVisibleEnough() const {
     return true;
   }
 
-  return barrier_for_accepting_ && barrier_for_accepting_->value();
+  bool visible_enough =
+      barrier_for_accepting_ && barrier_for_accepting_->value();
+
+  base::UmaHistogramBoolean(
+      "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", visible_enough);
+
+  return visible_enough;
 }
 
 BEGIN_METADATA(PopupRowView)

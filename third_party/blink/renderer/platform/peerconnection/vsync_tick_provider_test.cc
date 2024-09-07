@@ -69,13 +69,12 @@ class FakeDefaultTickProvider : public MetronomeSource::TickProvider {
 class VSyncTickProviderTest : public ::testing::Test {
  public:
   VSyncTickProviderTest() {
-    auto fake_default_tick_provider_holder =
-        std::make_unique<FakeDefaultTickProvider>();
-    fake_default_tick_provider_ = fake_default_tick_provider_holder.get();
+    fake_default_tick_provider_ =
+        base::MakeRefCounted<FakeDefaultTickProvider>();
     begin_frame_tick_provider_ = VSyncTickProvider::Create(
         fake_begin_frame_provider_,
         base::SequencedTaskRunner::GetCurrentDefault(),
-        std::move(fake_default_tick_provider_holder));
+        fake_default_tick_provider_);
     DepleteTaskQueues();
   }
 
@@ -101,8 +100,8 @@ class VSyncTickProviderTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeVSyncProvider fake_begin_frame_provider_;
-  std::unique_ptr<VSyncTickProvider> begin_frame_tick_provider_;
-  raw_ptr<FakeDefaultTickProvider> fake_default_tick_provider_;
+  scoped_refptr<VSyncTickProvider> begin_frame_tick_provider_;
+  scoped_refptr<FakeDefaultTickProvider> fake_default_tick_provider_;
 };
 
 TEST_F(VSyncTickProviderTest, ReportsDefaultTickPeriod) {
@@ -239,5 +238,36 @@ TEST_F(VSyncTickProviderTest, IgnoresVSyncsAfterDefaultSwitchback) {
   EXPECT_CALL(closure, Run).Times(0);
   RunVSyncCallback();
 }
+
+TEST_F(VSyncTickProviderTest, MultipleMetronomeAreAlignedOnTick) {
+  std::unique_ptr<MetronomeSource> source1 =
+      std::make_unique<MetronomeSource>(begin_frame_tick_provider_);
+  std::unique_ptr<MetronomeSource> source2 =
+      std::make_unique<MetronomeSource>(begin_frame_tick_provider_);
+  auto metronome1 = source1->CreateWebRtcMetronome();
+  auto metronome2 = source2->CreateWebRtcMetronome();
+
+  testing::MockFunction<void()> callback1;
+  testing::MockFunction<void()> callback2;
+  metronome1->RequestCallOnNextTick(callback1.AsStdFunction());
+  metronome2->RequestCallOnNextTick(callback2.AsStdFunction());
+
+  // Default tick used to align the metronomes.
+  EXPECT_CALL(callback1, Call());
+  EXPECT_CALL(callback2, Call());
+  RunDefaultCallbacks();
+
+  SetTabVisible(true);
+  RunVSyncCallback();
+
+  metronome1->RequestCallOnNextTick(callback1.AsStdFunction());
+  metronome2->RequestCallOnNextTick(callback2.AsStdFunction());
+
+  // VSync tick used to align the metronomes when tab visible.
+  EXPECT_CALL(callback1, Call());
+  EXPECT_CALL(callback2, Call());
+  RunVSyncCallback();
+}
+
 }  // namespace
 }  // namespace blink

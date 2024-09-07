@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache_entry.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "net/base/hash_value.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "url/gurl.h"
@@ -60,7 +61,7 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
   // subresource.
   std::unique_ptr<NavigationLoaderInterceptor> MaybeCreateInterceptor(
       const GURL& outer_url,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const net::IsolationInfo& isolation_info);
 
   const EntryMap& GetExchanges();
@@ -85,7 +86,7 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
   GetInfoListForNavigation(
       const PrefetchedSignedExchangeCacheEntry& main_exchange,
       const base::Time& now,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const net::NetworkAnonymizationKey& network_anonymization_key);
 
   EntryMap exchanges_;

@@ -12,9 +12,8 @@
 /android_sdk/public/
 /android_sdk/sources/
 /android_support_test_runner/lib/
-/android_system_sdk/*.jar
+/android_system_sdk/cipd/
 /android_toolchain/ndk/
-/android_toolchain_canary/ndk/
 /android_tools_internal/
 /android_webview_glue/src
 /androidx_javascriptengine/src/
@@ -44,6 +43,7 @@
 /data_sharing_sdk
 /devserver
 /directxsdk
+/edk2
 /elfutils/src
 /espresso/lib/
 /eyesfree/src
@@ -59,14 +59,7 @@
 /google-truth/src/
 /googlefonts_testdata/data
 /guava/lib/
-/hamcrest/lib/
-/icu4j/lib/
 /instrumented_libs/
-/jacoco/coverage/
-/jacoco/doc/
-/jacoco/index.html
-/jacoco/lib/
-/jacoco/test/
 /javalang/src/
 /javax_inject/lib/
 /jdk/current/
@@ -108,7 +101,6 @@
 /node/node_modules/
 /node/win
 /nss
-/objenesis/lib/
 /omaha/src/omaha
 /pdfsqueeze
 /pefile
@@ -126,10 +118,6 @@
 /qemu-linux-arm64
 /qemu-linux-x64
 /qemu-mac-x64
-/r8/d8/lib
-/r8/lib
-/robolectric/lib/
-/robolectric/robolectric
 /rust-src
 /rust-toolchain/
 /rust-toolchain-intermediate
@@ -149,7 +137,7 @@
 /spirv-cross/src
 /spirv-headers/src
 /spirv-tools/src
-/sqlite4java/lib/
+/src
 /subresource-filter-ruleset/data/*
 /swift-format
 /swift-toolchain
@@ -157,7 +145,6 @@
 /syzygy
 /syzygy/binaries
 /tint/src
-/turbine/*.jar
 /usb_ids
 /v8-i18n
 /vulkan-headers/src

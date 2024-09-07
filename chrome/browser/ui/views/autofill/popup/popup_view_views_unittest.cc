@@ -70,7 +70,6 @@
 #include "ui/views/widget/widget_utils.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
@@ -172,8 +171,6 @@ class TestPopupViewViews : public PopupViewViews {
   GetOptimalPositionAndPlaceArrowOnPopupOverride
       get_optimal_position_and_place_arrow_on_popup_override_;
 };
-
-}  // namespace
 
 class PopupViewViewsTest : public ChromeViewsTestBase {
  public:
@@ -638,6 +635,112 @@ TEST_F(PopupViewViewsTest, CursorUpDownForSelectableCells) {
             std::make_optional<CellIndex>(1u, CellType::kContent));
 }
 
+TEST_F(PopupViewViewsTest, CursorUpWithNonSelectableCells) {
+  // Set up the popup.
+  Suggestion disabledSuggestion1 =
+      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #1")});
+  disabledSuggestion1.is_acceptable = false;
+  disabledSuggestion1.apply_deactivated_style = true;
+  Suggestion acceptableSuggestion1 =
+      CreateSuggestionWithChildren({Suggestion(u"Credit Card #1")});
+  Suggestion disabledSuggestion2 =
+      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #2")});
+  disabledSuggestion2.is_acceptable = false;
+  disabledSuggestion2.apply_deactivated_style = true;
+  Suggestion acceptableSuggestion2 =
+      CreateSuggestionWithChildren({Suggestion(u"Credit Card #2")});
+  Suggestion acceptableSuggestion3 =
+      CreateSuggestionWithChildren({Suggestion(u"Credit Card #3")});
+  controller().set_suggestions({disabledSuggestion1, acceptableSuggestion1,
+                                disabledSuggestion2, acceptableSuggestion2,
+                                acceptableSuggestion3});
+  CreateAndShowView();
+
+  // By default, no row is selected.
+  EXPECT_FALSE(view().GetSelectedCell().has_value());
+
+  // Test wrapping before the front. Last cell gets selected.
+  SimulateKeyPress(ui::VKEY_UP);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(4u, CellType::kContent));
+  SimulateKeyPress(ui::VKEY_UP);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(3u, CellType::kContent));
+  // `disabledSuggestion2` at index 2 was skipped.
+  SimulateKeyPress(ui::VKEY_UP);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(1u, CellType::kContent));
+  // `disabledSuggestion1` at index 0 was skipped and cursor moved back to the
+  // end.
+  SimulateKeyPress(ui::VKEY_UP);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(4u, CellType::kContent));
+}
+
+TEST_F(PopupViewViewsTest, CursorDownWithNonSelectableCells) {
+  // Set up the popup.
+  Suggestion disabledSuggestion1 =
+      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #1")});
+  disabledSuggestion1.is_acceptable = false;
+  disabledSuggestion1.apply_deactivated_style = true;
+  Suggestion acceptableSuggestion1 =
+      CreateSuggestionWithChildren({Suggestion(u"Credit Card #1")});
+  Suggestion disabledSuggestion2 =
+      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #2")});
+  disabledSuggestion2.is_acceptable = false;
+  disabledSuggestion2.apply_deactivated_style = true;
+  Suggestion acceptableSuggestion2 =
+      CreateSuggestionWithChildren({Suggestion(u"Credit Card #2")});
+  Suggestion acceptableSuggestion3 =
+      CreateSuggestionWithChildren({Suggestion(u"Credit Card #3")});
+  controller().set_suggestions({disabledSuggestion1, acceptableSuggestion1,
+                                disabledSuggestion2, acceptableSuggestion2,
+                                acceptableSuggestion3});
+  CreateAndShowView();
+
+  // By default, no row is selected.
+  EXPECT_FALSE(view().GetSelectedCell().has_value());
+
+  // Test wrapping before the front. First cell gets skipped.
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(1u, CellType::kContent));
+  // `disabledSuggestion2` at index 2 was skipped.
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(3u, CellType::kContent));
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(4u, CellType::kContent));
+}
+
+TEST_F(PopupViewViewsTest, OverflowWithNonSelectableCells) {
+  // Set up the popup.
+  Suggestion disabledSuggestion1 =
+      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #1")});
+  disabledSuggestion1.is_acceptable = false;
+  disabledSuggestion1.apply_deactivated_style = true;
+  Suggestion acceptableSuggestion1 =
+      CreateSuggestionWithChildren({Suggestion(u"Credit Card #1")});
+  Suggestion disabledSuggestion2 =
+      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #2")});
+  disabledSuggestion2.is_acceptable = false;
+  disabledSuggestion2.apply_deactivated_style = true;
+  Suggestion acceptableSuggestion2 =
+      CreateSuggestionWithChildren({Suggestion(u"Credit Card #2")});
+  controller().set_suggestions({disabledSuggestion1, acceptableSuggestion1,
+                                acceptableSuggestion2, disabledSuggestion2});
+  CreateAndShowView();
+
+  view().SetSelectedCell(CellIndex{2u, CellType::kContent},
+                         PopupCellSelectionSource::kMouse);
+
+  // Last and first row should get skipped.
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(1u, CellType::kContent));
+}
+
 TEST_F(PopupViewViewsTest, SelectingSuggestionWithNoControlResetsToContent) {
   controller().set_suggestions(
       {CreateSuggestionWithChildren({Suggestion(u"Child suggestion")}),
@@ -790,16 +893,19 @@ TEST_F(PopupViewViewsTest, MovingSelectionSkipsInsecureFormWarning) {
   // Cursor up skips the unselectable form warning when the last item cannot be
   // selected.
   SimulateKeyPress(ui::VKEY_UP);
-  EXPECT_FALSE(view().GetSelectedCell().has_value());
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(0u, CellType::kContent));
 
   // Cursor down selects the first element.
   SimulateKeyPress(ui::VKEY_DOWN);
   EXPECT_EQ(view().GetSelectedCell(),
             std::make_optional<CellIndex>(0u, CellType::kContent));
 
-  // Cursor up leads to no selection because the last item cannot be selected.
+  // Cursor up leads to no change in selection because no other element is
+  // selectable.
   SimulateKeyPress(ui::VKEY_UP);
-  EXPECT_FALSE(view().GetSelectedCell());
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(0u, CellType::kContent));
 }
 
 TEST_F(PopupViewViewsTest, EscClosesSubPopup) {
@@ -1884,4 +1990,5 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
   generator().PressAndReleaseKey(ui::VKEY_DOWN);
 }
 
+}  // namespace
 }  // namespace autofill

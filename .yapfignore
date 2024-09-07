@@ -5,6 +5,3 @@
 third_party/blink/tools/blinkpy/third_party/*
 third_party/blink/web_tests/external/wpt/*
 tools/valgrind/asan/third_party/asan_symbolize.py
-
-# TODO(crbug.com/1116155): Enable this for formatting by yapf.
-tools/json_schema_compiler/*

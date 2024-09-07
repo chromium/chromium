@@ -24,11 +24,20 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
+class RTCRtpReceiver;
 
 class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class SendKeyFrameRequestResult {
+    kSuccess,
+    kNoReceiver,
+    kNoVideo,
+    kTrackEnded,
+    kInvalidState
+  };
+
   static RTCRtpScriptTransform* Create(ScriptState*,
                                        DedicatedWorker* worker,
                                        ExceptionState&);
@@ -65,18 +74,27 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     is_attached_ = true;
   }
+  void AttachToReceiver(RTCRtpReceiver*);
   bool IsAttached() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_attached_;
   }
+  void Detach();
 
   void CreateVideoUnderlyingSink(
       scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
           encoded_video_transformer);
-
   void CreateAudioUnderlyingSink(
       scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
           encoded_audio_transformer);
+
+  void SendKeyFrameRequestToReceiver(
+      CrossThreadFunction<void(const SendKeyFrameRequestResult)> callback);
+
+  RTCRtpScriptTransform::SendKeyFrameRequestResult
+  HandleSendKeyFrameRequestResults();
+
+  void Trace(Visitor*) const override;
 
  private:
   // These methods post a task to the worker to set up an
@@ -107,8 +125,8 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
   scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       encoded_video_transformer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  String kind_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_attached_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  WeakMember<RTCRtpReceiver> receiver_;
 };
 }  // namespace blink
 

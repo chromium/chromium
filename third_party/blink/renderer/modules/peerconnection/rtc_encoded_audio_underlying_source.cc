@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_source.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
@@ -26,12 +27,26 @@ const int RTCEncodedAudioUnderlyingSource::kMinQueueDesiredSize = -60;
 
 RTCEncodedAudioUnderlyingSource::RTCEncodedAudioUnderlyingSource(
     ScriptState* script_state,
+    WTF::CrossThreadOnceClosure disconnect_callback)
+    : blink::RTCEncodedAudioUnderlyingSource(
+          script_state,
+          std::move(disconnect_callback),
+          /*enable_frame_restrictions=*/false,
+          base::UnguessableToken::Null(),
+          /*controller_override=*/nullptr) {}
+
+RTCEncodedAudioUnderlyingSource::RTCEncodedAudioUnderlyingSource(
+    ScriptState* script_state,
     WTF::CrossThreadOnceClosure disconnect_callback,
+    bool enable_frame_restrictions,
+    base::UnguessableToken owner_id,
     ReadableStreamDefaultControllerWithScriptScope* override_controller)
     : UnderlyingSourceBase(script_state),
       script_state_(script_state),
       disconnect_callback_(std::move(disconnect_callback)),
-      override_controller_(override_controller) {
+      override_controller_(override_controller),
+      enable_frame_restrictions_(enable_frame_restrictions),
+      owner_id_(owner_id) {
   DCHECK(disconnect_callback_);
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -100,8 +115,15 @@ void RTCEncodedAudioUnderlyingSource::OnFrameFromSource(
         << " encoded audio frames due to too many already being queued.";
     return;
   }
-  GetController()->Enqueue(
-      MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(webrtc_frame)));
+  RTCEncodedAudioFrame* encoded_frame;
+  if (enable_frame_restrictions_) {
+    encoded_frame = MakeGarbageCollected<RTCEncodedAudioFrame>(
+        std::move(webrtc_frame), owner_id_, ++last_enqueued_frame_counter_);
+  } else {
+    encoded_frame =
+        MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(webrtc_frame));
+  }
+  GetController()->Enqueue(encoded_frame);
 }
 
 void RTCEncodedAudioUnderlyingSource::Close() {

@@ -15,11 +15,7 @@ static_library("enterprise") {
   deps = [
     "//ash/components/arc",
     "//base",
-    "//chrome/browser/ash/arc/enterprise/cert_store",
   ]
-
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/arc/enterprise/cert_store" ]
 }
 
 source_set("unit_tests") {
@@ -33,7 +29,6 @@ source_set("unit_tests") {
     "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc/enterprise/cert_store:unit_tests",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",

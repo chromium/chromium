@@ -22,8 +22,12 @@ fun:*v8*internal*GlobalHandles*Node*PostGarbageCollectionProcessing*
 # https://crbug.com/40943968
 [signed-integer-overflow]
 fun:*OT*Layout*propagate_attachment_offsets*
+fun:*_hb_ot_shape_fallback_mark_position*
 
-#############################################################################
-# https://github.com/llvm/llvm-project/issues/96772
-[nonnull-attribute]
-src:*/third_party/libFuzzer/*
+# https://crbug.com/363189664
+[null]
+fun:*views*ViewAccessibilityUtils*IsFocusedChildWidget*
+
+# https://crbug.com/363225486
+[alignment]
+fun:*base*Pickle*

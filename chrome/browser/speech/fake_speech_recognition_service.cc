@@ -4,6 +4,7 @@
 
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/notimplemented.h"
@@ -12,6 +13,7 @@
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace speech {
@@ -31,16 +33,34 @@ void FakeSpeechRecognitionService::BindSpeechRecognitionContext(
   speech_recognition_contexts_.Add(this, std::move(receiver));
 }
 
+std::unique_ptr<FakeSpeechRecognizer>
+FakeSpeechRecognitionService::GetNextRecognizerAndBindItsRemote(
+    mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options) {
+  // If the test has injected a fake recognizer for assertions then use it here
+  // otherwise create a new one which can be ignored.
+  std::unique_ptr<FakeSpeechRecognizer> next_fake_recognizer =
+      std::make_unique<FakeSpeechRecognizer>();
+  next_fake_recognizer->BindRecognizerClientRemoteAndPassRecognitionOptions(
+      std::move(client), std::move(options));
+
+  for (Observer& obs : observers_) {
+    obs.OnRecognizerBound(next_fake_recognizer.get());
+  }
+
+  return next_fake_recognizer;
+}
+
 void FakeSpeechRecognitionService::BindRecognizer(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
-  recognizer_receiver_.Bind(std::move(receiver));
-  recognizer_client_remote_.Bind(std::move(client));
-  recognizer_client_remote_.set_disconnect_handler(base::BindOnce(
-      &FakeSpeechRecognitionService::OnRecognizerClientDisconnected,
-      base::Unretained(this)));
+  // Bind the remote for the fake recognizer, then make it a self owned
+  // receiver.
+  mojo::MakeSelfOwnedReceiver(
+      GetNextRecognizerAndBindItsRemote(std::move(client), std::move(options)),
+      std::move(receiver));
   std::move(callback).Run(is_multichannel_supported_);
 }
 
@@ -63,75 +83,11 @@ void FakeSpeechRecognitionService::BindAudioSourceFetcher(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
-  fetcher_receiver_.Bind(std::move(fetcher_receiver));
-  recognizer_client_remote_.Bind(std::move(client));
-  recognizer_client_remote_.set_disconnect_handler(base::BindOnce(
-      &FakeSpeechRecognitionService::OnRecognizerClientDisconnected,
-      base::Unretained(this)));
+  // See above, BindRecognizer.
+  mojo::MakeSelfOwnedReceiver(
+      GetNextRecognizerAndBindItsRemote(std::move(client), std::move(options)),
+      std::move(fetcher_receiver));
   std::move(callback).Run(is_multichannel_supported_);
-}
-
-void FakeSpeechRecognitionService::Start(
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
-    const std::string& device_id,
-    const ::media::AudioParameters& audio_parameters) {
-  capturing_audio_ = true;
-  device_id_ = device_id;
-  audio_parameters_ = audio_parameters;
-  if (recognition_started_closure_) {
-    std::move(recognition_started_closure_).Run();
-  }
-}
-void FakeSpeechRecognitionService::Stop() {
-  capturing_audio_ = false;
-  device_id_ = "";
-  audio_parameters_ = std::nullopt;
-  MarkDone();
-}
-
-void FakeSpeechRecognitionService::SendAudioToSpeechRecognitionService(
-    media::mojom::AudioDataS16Ptr buffer) {
-  has_received_audio_ = true;
-}
-
-void FakeSpeechRecognitionService::MarkDone() {
-  recognizer_client_remote_->OnSpeechRecognitionStopped();
-}
-
-void FakeSpeechRecognitionService::SendSpeechRecognitionResult(
-    const media::SpeechRecognitionResult& result) {
-  ASSERT_TRUE(recognizer_client_remote_.is_bound());
-  EXPECT_TRUE(capturing_audio_ || has_received_audio_);
-  recognizer_client_remote_->OnSpeechRecognitionRecognitionEvent(
-      result, base::BindOnce(&FakeSpeechRecognitionService::
-                                 OnSpeechRecognitionRecognitionEventCallback,
-                             base::Unretained(this)));
-}
-
-void FakeSpeechRecognitionService::OnSpeechRecognitionRecognitionEventCallback(
-    bool success) {
-  capturing_audio_ = success;
-}
-
-void FakeSpeechRecognitionService::SendSpeechRecognitionError() {
-  ASSERT_TRUE(recognizer_client_remote_.is_bound());
-  recognizer_client_remote_->OnSpeechRecognitionError();
-}
-
-void FakeSpeechRecognitionService::WaitForRecognitionStarted() {
-  base::RunLoop runner;
-  recognition_started_closure_ = runner.QuitClosure();
-  runner.Run();
-}
-
-void FakeSpeechRecognitionService::OnRecognizerClientDisconnected() {
-  // Reset everything in case it will be re-used.
-  recognizer_client_remote_.reset();
-  fetcher_receiver_.reset();
-  recognizer_receiver_.reset();
-  capturing_audio_ = false;
-  device_id_ = "";
-  audio_parameters_ = std::nullopt;
 }
 
 }  // namespace speech

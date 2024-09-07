@@ -17,6 +17,12 @@ const PORTRAIT_WIDTH: number = 108;
 
 const LANDSCAPE_WIDTH: number = 140;
 
+const PDF_CANVAS_ID: string = 'pdf-canvas';
+
+// <if expr="enable_pdf_ink2">
+const INK2_CANVAS_ID: string = 'ink2-canvas';
+// </if>
+
 export const PAINTED_ATTRIBUTE: string = 'painted';
 
 export interface ViewerThumbnailElement {
@@ -58,8 +64,17 @@ export class ViewerThumbnailElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('clockwiseRotations') && this.getCanvas_()) {
-      this.styleCanvas_();
+    if (changedProperties.has('clockwiseRotations')) {
+      const canvas = this.getCanvas_();
+      if (canvas) {
+        this.styleCanvas_(canvas);
+      }
+      // <if expr="enable_pdf_ink2">
+      const ink2Canvas = this.getInk2Canvas_();
+      if (ink2Canvas) {
+        this.styleCanvas_(ink2Canvas);
+      }
+      // </if>
     }
 
     if (changedProperties.has('isActive') && this.isActive) {
@@ -67,26 +82,52 @@ export class ViewerThumbnailElement extends CrLitElement {
     }
   }
 
-  set image(imageData: ImageData) {
-    let canvas = this.getCanvas_();
-    if (!canvas) {
-      canvas = document.createElement('canvas');
+  private createCanvasHelper_(id: string) {
+    const canvas = document.createElement('canvas');
+    canvas.id = id;
 
-      // Prevent copying or saving of the thumbnail image in case the document
-      // has restricted access rights.
-      canvas.oncontextmenu = e => e.preventDefault();
+    // Prevent copying or saving of the thumbnail image in case the document
+    // has restricted access rights.
+    canvas.oncontextmenu = e => e.preventDefault();
 
-      this.$.thumbnail.appendChild(canvas);
-    }
+    return canvas;
+  }
 
+  private setImageHelper_(canvas: HTMLCanvasElement, imageData: ImageData) {
     canvas.width = imageData.width;
     canvas.height = imageData.height;
 
-    this.styleCanvas_();
+    this.styleCanvas_(canvas);
 
     const ctx = canvas.getContext('2d')!;
     ctx.putImageData(imageData, 0, 0);
   }
+
+  set image(imageData: ImageData) {
+    let canvas = this.getCanvas_();
+    if (!canvas) {
+      canvas = this.createCanvasHelper_(PDF_CANVAS_ID);
+      const canvasContainer =
+          this.$.thumbnail.querySelector('#canvas-container')!;
+      canvasContainer.appendChild(canvas);
+    }
+
+    this.setImageHelper_(canvas, imageData);
+  }
+
+  // <if expr="enable_pdf_ink2">
+  set ink2Image(imageData: ImageData) {
+    let canvas = this.getInk2Canvas_();
+    if (!canvas) {
+      canvas = this.createCanvasHelper_(INK2_CANVAS_ID);
+      const canvasContainer =
+          this.$.thumbnail.querySelector('#canvas-container')!;
+      canvasContainer.insertBefore(canvas, canvasContainer.firstChild);
+    }
+
+    this.setImageHelper_(canvas, imageData);
+  }
+  // </if>
 
   clearImage() {
     if (!this.isPainted()) {
@@ -99,6 +140,12 @@ export class ViewerThumbnailElement extends CrLitElement {
     if (canvas) {
       canvas.remove();
     }
+    // <if expr="enable_pdf_ink2">
+    const ink2Canvas = this.getInk2Canvas_();
+    if (ink2Canvas) {
+      ink2Canvas.remove();
+    }
+    // </if>
     this.removeAttribute(PAINTED_ATTRIBUTE);
   }
 
@@ -107,8 +154,14 @@ export class ViewerThumbnailElement extends CrLitElement {
   }
 
   private getCanvas_(): HTMLCanvasElement|null {
-    return this.shadowRoot!.querySelector('canvas');
+    return this.shadowRoot!.querySelector('#' + PDF_CANVAS_ID);
   }
+
+  // <if expr="enable_pdf_ink2">
+  private getInk2Canvas_(): HTMLCanvasElement|null {
+    return this.shadowRoot!.querySelector('#' + INK2_CANVAS_ID);
+  }
+  // </if>
 
   /**
    * Calculates the CSS size of the thumbnail depending on the rotation, the
@@ -163,10 +216,9 @@ export class ViewerThumbnailElement extends CrLitElement {
    * Sets the canvas CSS size to maintain the resolution of the thumbnail at any
    * rotation.
    */
-  private styleCanvas_() {
+  private styleCanvas_(canvas: HTMLCanvasElement) {
     assert(this.clockwiseRotations >= 0 && this.clockwiseRotations < 4);
 
-    const canvas = this.getCanvas_()!;
     const div = this.shadowRoot!.querySelector<HTMLElement>('#thumbnail')!;
 
     const degreesRotated = this.clockwiseRotations * 90;

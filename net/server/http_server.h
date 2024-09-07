@@ -16,6 +16,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/net_export.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -28,7 +29,7 @@ class IPEndPoint;
 class ServerSocket;
 class StreamSocket;
 
-class HttpServer {
+class NET_EXPORT HttpServer {
  public:
   // Delegate to handle http/websocket events. Beware that it is not safe to
   // destroy the HttpServer in any of these callbacks.
@@ -149,4 +150,4 @@ class HttpServer {
 
 }  // namespace net
 
-#endif // NET_SERVER_HTTP_SERVER_H_
+#endif  // NET_SERVER_HTTP_SERVER_H_

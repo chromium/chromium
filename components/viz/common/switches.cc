@@ -19,6 +19,11 @@ namespace switches {
 const char kDeadlineToSynchronizeSurfaces[] =
     "deadline-to-synchronize-surfaces";
 
+// Force the use of a Delegated Ink renderer as specified by
+// the command line argument, rather than using system details. Acceptable
+// values are: skia, system, none. Default to skia.
+const char kDelegatedInkRenderer[] = "delegated-ink-renderer";
+
 // Disables reporting of frame timing via ADPF, even if supported on the device.
 const char kDisableAdpf[] = "disable-adpf";
 
@@ -32,10 +37,6 @@ const char kDisableFrameRateLimit[] = "disable-frame-rate-limit";
 
 // Sets the number of max pending frames in the GL buffer queue to 1.
 const char kDoubleBufferCompositing[] = "double-buffer-compositing";
-
-// Sets the maximum number (exclusive) of quads one draw quad can be split into
-// during occlusion culling.
-const char kDrawQuadSplitLimit[] = "draw-quad-split-limit";
 
 // Enable compositing individual elements via hardware overlays when
 // permitted by device.
@@ -83,6 +84,26 @@ std::optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
     return std::nullopt;
   }
   return activation_deadline_in_frames;
+}
+
+std::optional<DelegatedInkRendererMode> GetDelegatedInkRendererMode() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kDelegatedInkRenderer)) {
+    return std::nullopt;
+  }
+  std::string mode =
+      command_line->GetSwitchValueASCII(switches::kDelegatedInkRenderer);
+  if (mode == "system") {
+    return DelegatedInkRendererMode::kSystem;
+  }
+  if (mode == "none") {
+    return DelegatedInkRendererMode::kNone;
+  }
+  if (mode == "skia") {
+    return DelegatedInkRendererMode::kSkia;
+  }
+  // Default to system.
+  return DelegatedInkRendererMode::kSystem;
 }
 
 }  // namespace switches

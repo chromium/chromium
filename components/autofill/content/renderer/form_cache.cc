@@ -37,11 +37,11 @@ namespace {
 // IsAutofillableInputElement()?
 bool IsFormInteresting(const FormData& form) {
   return !form.child_frames().empty() ||
-         base::ranges::any_of(form.fields(),
-                              std::not_fn(&form_util::IsCheckable),
-                              &FormFieldData::form_control_type) ||
-         base::ranges::any_of(form.fields(), std::not_fn(&std::string::empty),
-                              &FormFieldData::autocomplete_attribute);
+         std::ranges::any_of(form.fields(),
+                             std::not_fn(&form_util::IsCheckable),
+                             &FormFieldData::form_control_type) ||
+         std::ranges::any_of(form.fields(), std::not_fn(&std::string::empty),
+                             &FormFieldData::autocomplete_attribute);
 }
 
 }  // namespace

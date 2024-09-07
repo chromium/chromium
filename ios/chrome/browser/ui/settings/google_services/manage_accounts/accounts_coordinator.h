@@ -19,6 +19,9 @@ class Browser;
 // coordinator when a sign-out happens.
 @property(nonatomic, assign) BOOL signoutDismissalByParentCoordinator;
 
+// If YES, the view will offer a sign-out button.
+@property(nonatomic, assign) BOOL showSignoutButton;
+
 // Initializes AccountsCoordinator to present its controller modally.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser

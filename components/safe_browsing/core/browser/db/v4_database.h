@@ -109,20 +109,18 @@ class V4Database {
   // the database creation is complete, it runs the NewDatabaseReadyCallback on
   // the same thread as it was called.
   // NOTE: Within |new_db_callback| the client should invoke
-  // V4Database::InitializeOnIOSequence() on the IO thread.
+  // V4Database::InitializeOnUIThread() on the UI thread.
   static void Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::FilePath& base_path,
       const ListInfos& list_infos,
       NewDatabaseReadyCallback new_db_callback);
 
-  // Initialize state that lives on the IO thread or UI thread if
-  // kSafeBrowsingOnUIThread is enabled.
-  void InitializeOnSBThread();
+  // Initialize state that lives on the UI thread.
+  void InitializeOnUIThread();
 
-  // Destroy state that lives on the IO thread or UI thread if
-  // kSafeBrowsingOnUIThread is enabled.
-  void StopOnSBThread();
+  // Destroy state that lives on the UI thread.
+  void StopOnUIThread();
 
   V4Database(const V4Database&) = delete;
   V4Database& operator=(const V4Database&) = delete;
@@ -151,9 +149,9 @@ class V4Database {
       const StoresToCheck& stores_to_check) const;
 
   // Searches for hash prefixes matching the |full_hashes| in stores in the
-  // database, filtered by |stores_to_check|. The callback is run synchronously,
-  // or asynchronously if MmapSafeBrowsingDatabaseAsync is enabled, with the
-  // identifier of the stores along with the matching hash prefixes.
+  // database, filtered by |stores_to_check|. The callback is run
+  // asynchronously, with the identifier of the stores along with the matching
+  // hash prefixes.
   virtual void GetStoresMatchingFullHash(
       const std::vector<FullHashStr>& full_hashes,
       const StoresToCheck& stores_to_check,
@@ -247,9 +245,8 @@ class V4Database {
   // Log the difference in time between database updates in a UMA histogram.
   void RecordDatabaseUpdateLatency();
 
-  // Used to verify that certain methods are called on the client-designated SB
-  // sequence (see InitializeOnSBThread()).
-  SEQUENCE_CHECKER(sb_sequence_checker_);
+  // Used to verify that certain methods are called on the UI thread.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   const scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 

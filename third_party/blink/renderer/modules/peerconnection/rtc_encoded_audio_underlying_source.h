@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -26,7 +27,12 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
   // RTCEncodedUnderlyingSourceWrapper.
   explicit RTCEncodedAudioUnderlyingSource(
       ScriptState*,
+      WTF::CrossThreadOnceClosure disconnect_callback);
+  explicit RTCEncodedAudioUnderlyingSource(
+      ScriptState*,
       WTF::CrossThreadOnceClosure disconnect_callback,
+      bool enable_frame_restrictions,
+      base::UnguessableToken owner_id,
       ReadableStreamDefaultControllerWithScriptScope* controller_override =
           nullptr);
 
@@ -65,6 +71,9 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
   // Count of frames dropped due to the queue being full, for logging.
   int dropped_frames_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  const bool enable_frame_restrictions_;
+  const base::UnguessableToken owner_id_;
+  int64_t last_enqueued_frame_counter_ = 0;
 };
 
 }  // namespace blink

@@ -10,11 +10,15 @@ source_set("profile") {
     "profile_state.h",
     "profile_state.mm",
     "profile_state_agent.h",
+    "profile_state_observer.h",
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
@@ -28,7 +32,7 @@ source_set("unit_tests") {
     ":profile",
     "//base/test:test_support",
     "//ios/chrome/app/profile/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",
   ]
 }

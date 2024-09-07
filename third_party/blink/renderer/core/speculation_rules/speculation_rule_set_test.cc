@@ -105,11 +105,7 @@ class URLPatternMatcher {
     if (!pattern) {
       return false;
     }
-    return MatchAndExplain(*pattern, listener);
-  }
 
-  bool MatchAndExplain(const URLPattern& pattern,
-                       ::testing::MatchResultListener* listener) const {
     using Component = V8URLPatternComponent::Enum;
     Component components[] = {Component::kProtocol, Component::kUsername,
                               Component::kPassword, Component::kHostname,
@@ -117,7 +113,7 @@ class URLPatternMatcher {
                               Component::kSearch,   Component::kHash};
     for (auto component : components) {
       if (URLPattern::compareComponent(V8URLPatternComponent(component),
-                                       url_pattern_, &pattern) != 0) {
+                                       url_pattern_, pattern) != 0) {
         return false;
       }
     }
@@ -1328,6 +1324,30 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForChildModification) {
       }));
 }
 
+// Tests that a console warning mentions duplicate keys.
+TEST_F(SpeculationRuleSetTest, ConsoleWarningForDuplicateKey) {
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
+  script->setText(
+      R"({
+        "prefetch": [{"urls": ["a.html"]}],
+        "prefetch": [{"urls": ["b.html"]}]
+      })");
+  document.head()->appendChild(script);
+
+  EXPECT_TRUE(base::ranges::any_of(
+      chrome_client->ConsoleMessages(), [](const String& message) {
+        return message.Contains("speculation rule") &&
+               message.Contains("more than one") &&
+               message.Contains("prefetch");
+      }));
+}
 TEST_F(SpeculationRuleSetTest, DropNotArrayAtRuleSetPosition) {
   auto* rule_set = CreateRuleSet(
       R"({
@@ -1364,12 +1384,12 @@ TEST_F(SpeculationRuleSetTest, DropNotObjectAtRulePosition) {
 
 MATCHER_P(MatchesPredicate,
           matcher,
-          ::testing::DescribeMatcher<DocumentRulePredicate>(matcher)) {
+          ::testing::DescribeMatcher<DocumentRulePredicate*>(matcher)) {
   if (!arg->predicate()) {
     *result_listener << "does not have a predicate";
     return false;
   }
-  return ExplainMatchResult(matcher, *(arg->predicate()), result_listener);
+  return ExplainMatchResult(matcher, arg->predicate(), result_listener);
 }
 
 String GetTypeString(DocumentRulePredicate::Type type) {
@@ -1393,7 +1413,7 @@ class PredicateMatcher {
   using DocumentRulePredicateGetter =
       HeapVector<Member<ItemType>> (DocumentRulePredicate::*)() const;
 
-  explicit PredicateMatcher(Vector<::testing::Matcher<ItemType>> matchers,
+  explicit PredicateMatcher(Vector<::testing::Matcher<ItemType*>> matchers,
                             DocumentRulePredicate::Type type,
                             DocumentRulePredicateGetter getter)
       : matchers_(std::move(matchers)), type_(type), getter_(getter) {}
@@ -1403,26 +1423,22 @@ class PredicateMatcher {
     if (!predicate) {
       return false;
     }
-    return MatchAndExplain(*predicate, listener);
-  }
 
-  bool MatchAndExplain(const DocumentRulePredicate& predicate,
-                       ::testing::MatchResultListener* listener) const {
-    if (predicate.GetTypeForTesting() != type_) {
-      *listener << predicate.ToString();
+    if (predicate->GetTypeForTesting() != type_) {
+      *listener << predicate->ToString();
       return false;
     }
 
-    HeapVector<Member<ItemType>> items = ((predicate).*(getter_))();
+    HeapVector<Member<ItemType>> items = ((*predicate).*(getter_))();
     if (items.size() != matchers_.size()) {
-      *listener << predicate.ToString();
+      *listener << predicate->ToString();
       return false;
     }
 
     ::testing::StringMatchResultListener inner_listener;
     for (wtf_size_t i = 0; i < matchers_.size(); i++) {
-      if (!matchers_[i].MatchAndExplain(*items[i], &inner_listener)) {
-        *listener << predicate.ToString();
+      if (!matchers_[i].MatchAndExplain(items[i], &inner_listener)) {
+        *listener << predicate->ToString();
         return false;
       }
     }
@@ -1443,14 +1459,14 @@ class PredicateMatcher {
   void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
 
  private:
-  Vector<::testing::Matcher<ItemType>> matchers_;
+  Vector<::testing::Matcher<ItemType*>> matchers_;
   DocumentRulePredicate::Type type_;
   DocumentRulePredicateGetter getter_;
 };
 
 template <typename ItemType>
 auto MakePredicateMatcher(
-    Vector<::testing::Matcher<ItemType>> matchers,
+    Vector<::testing::Matcher<ItemType*>> matchers,
     DocumentRulePredicate::Type type,
     typename PredicateMatcher<ItemType>::DocumentRulePredicateGetter getter) {
   return testing::MakePolymorphicMatcher(
@@ -1458,34 +1474,34 @@ auto MakePredicateMatcher(
 }
 
 auto MakeConditionMatcher(
-    Vector<::testing::Matcher<DocumentRulePredicate>> matchers,
+    Vector<::testing::Matcher<DocumentRulePredicate*>> matchers,
     DocumentRulePredicate::Type type) {
   return MakePredicateMatcher(
       std::move(matchers), type,
       &DocumentRulePredicate::GetSubPredicatesForTesting);
 }
 
-auto And(Vector<::testing::Matcher<DocumentRulePredicate>> matchers = {}) {
+auto And(Vector<::testing::Matcher<DocumentRulePredicate*>> matchers = {}) {
   return MakeConditionMatcher(std::move(matchers),
                               DocumentRulePredicate::Type::kAnd);
 }
 
-auto Or(Vector<::testing::Matcher<DocumentRulePredicate>> matchers = {}) {
+auto Or(Vector<::testing::Matcher<DocumentRulePredicate*>> matchers = {}) {
   return MakeConditionMatcher(std::move(matchers),
                               DocumentRulePredicate::Type::kOr);
 }
 
-auto Neg(::testing::Matcher<DocumentRulePredicate> matcher) {
+auto Neg(::testing::Matcher<DocumentRulePredicate*> matcher) {
   return MakeConditionMatcher({matcher}, DocumentRulePredicate::Type::kNot);
 }
 
-auto Href(Vector<::testing::Matcher<URLPattern>> pattern_matchers = {}) {
+auto Href(Vector<::testing::Matcher<URLPattern*>> pattern_matchers = {}) {
   return MakePredicateMatcher(std::move(pattern_matchers),
                               DocumentRulePredicate::Type::kURLPatterns,
                               &DocumentRulePredicate::GetURLPatternsForTesting);
 }
 
-auto Selector(Vector<::testing::Matcher<StyleRule>> style_rule_matchers = {}) {
+auto Selector(Vector<::testing::Matcher<StyleRule*>> style_rule_matchers = {}) {
   return MakePredicateMatcher(std::move(style_rule_matchers),
                               DocumentRulePredicate::Type::kCSSSelectors,
                               &DocumentRulePredicate::GetStyleRulesForTesting);
@@ -1501,12 +1517,7 @@ class StyleRuleMatcher {
     if (!style_rule) {
       return false;
     }
-    return MatchAndExplain(*style_rule, listener);
-  }
-
-  bool MatchAndExplain(const StyleRule& style_rule,
-                       ::testing::MatchResultListener* listener) const {
-    return style_rule.SelectorsText() == selector_text_;
+    return style_rule->SelectorsText() == selector_text_;
   }
 
   void DescribeTo(::std::ostream* os) const { *os << selector_text_; }

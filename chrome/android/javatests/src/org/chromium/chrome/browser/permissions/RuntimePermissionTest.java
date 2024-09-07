@@ -440,6 +440,7 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
+    @DisabledTest(message = "crbug.com/325085976")
     public void testAllowRuntimeCameraIncognito() throws Exception {
         mPermissionTestRule.newIncognitoTabFromMenu();
 
@@ -463,6 +464,7 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
+    @DisabledTest(message = "crbug.com/325085976")
     public void testAllowRuntimeMicrophoneIncognito() throws Exception {
         mPermissionTestRule.newIncognitoTabFromMenu();
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};

@@ -136,14 +136,11 @@ scoped_refptr<SecurityOrigin> CreateSecurityOrigin(
   if (KURL(creation_params->script_url).ProtocolIsData()) {
     // Workers with data: URL should use a new, unique opaque origin per spec:
     // https://html.spec.whatwg.org/multipage/workers.html#script-settings-for-workers:concept-settings-object-origin-2
-    // We derive the new opaque origin from the starter origin because of a bug
-    // where the browser thinks the worker's origin is the starter origin (see
-    // https://crbug.com/1058759). With `DeriveNewOpaqueOrigin()`, the precursor
-    // origin of the new opaque origin will be the starter origin. This way, if
-    // the browser needs to verify that the browser and renderer origin matches,
-    // it can just compare the browser-side origin with the precursor of the
-    // renderer-side origin.
-    security_origin = creation_params->starter_origin->DeriveNewOpaqueOrigin();
+    // We use the `origin_to_use`, which is pre-calculated and passed down from
+    // the browser process instead of newly calculated here, since the browser
+    // side needs to know the exact opaque origin used in the renderer.
+    CHECK(creation_params->origin_to_use);
+    security_origin = creation_params->origin_to_use->IsolatedCopy();
   } else {
     // TODO(https://crbug.com/1058305) Inherit |agent_cluster_id_| for dedicated
     // workers. DO NOT inherit for shared workers and service workers.

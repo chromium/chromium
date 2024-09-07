@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -16,6 +17,7 @@
 #include "components/payments/core/sizes.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -137,7 +139,9 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
 
   SetModalType(ui::mojom::ModalType::kChild);
 
-  constrained_window::ShowWebModalDialogViews(this, web_contents);
+  views::Widget* widget =
+      constrained_window::ShowWebModalDialogViews(this, web_contents);
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 
   // The progress bar doesn't exist until after ShowWebModalDialogViews, so we
   // have to update it here in case it starts visible.
@@ -190,10 +194,13 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
   UpdateProgressBarVisiblity(GetBubbleFrameView(),
                              model_->progress_bar_visible());
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, model_->verify_button_label());
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, model_->verify_button_enabled());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, model_->cancel_button_label());
-  SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, model_->cancel_button_enabled());
+  SetButtonLabel(ui::mojom::DialogButton::kOk, model_->verify_button_label());
+  SetButtonEnabled(ui::mojom::DialogButton::kOk,
+                   model_->verify_button_enabled());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 model_->cancel_button_label());
+  SetButtonEnabled(ui::mojom::DialogButton::kCancel,
+                   model_->cancel_button_enabled());
 
   SetAccessibleTitle(model_->title());
   UpdateLabelView(DialogViewID::TITLE,

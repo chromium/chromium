@@ -29,12 +29,12 @@
 
 #import "third_party/blink/renderer/platform/fonts/font_cache.h"
 
-#include <memory>
-
 #import <AppKit/AppKit.h>
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreText/CoreText.h>
 #include <Foundation/Foundation.h>
+
+#include <memory>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
 #include "third_party/blink/renderer/platform/fonts/mac/font_platform_data_mac.h"
@@ -140,9 +141,9 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
   ScopedCFTypeRef<CTFontRef> substitute_font;
   // System API might return colored "Apple Color Emoji" font for some emoji
   // codepoints. But if emoji codepoint was requested and
-  // fallback_priority != kEmojiEmoji, it means that we need a monochromatic
-  // (text) presentation of emoji. For that we use hardcoded monochromatic emoji
-  // font.
+  // fallback_priority is not emoji presentation, it means that we need a
+  // monochromatic (text) presentation of emoji. For that we use hardcoded
+  // monochromatic emoji font.
   if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
       Character::IsEmoji(character)) {
     ScopedCFTypeRef<CTFontRef> emoji_font(
@@ -321,7 +322,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     UChar32 character,
     const SimpleFontData* font_data_to_substitute,
     FontFallbackPriority fallback_priority) {
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) {
+  if (IsEmojiPresentationEmoji(fallback_priority)) {
     if (const SimpleFontData* emoji_font =
             GetFontData(font_description, AtomicString(kColorEmojiFontMac))) {
       return emoji_font;

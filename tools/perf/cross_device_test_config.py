@@ -93,10 +93,10 @@ TARGET_DEVICES = {
             'JetStream2': 5,
         },
         'speedometer2': {
-            'Speedometer2': 20,
+            'Speedometer2': 5,
         },
         'speedometer3': {
-            'Speedometer3': 20,
+            'Speedometer3': 5,
         },
     },
     'android-pixel6-perf-pgo': {
@@ -104,10 +104,10 @@ TARGET_DEVICES = {
             'JetStream2': 5,
         },
         'speedometer2': {
-            'Speedometer2': 20,
+            'Speedometer2': 5,
         },
         'speedometer3': {
-            'Speedometer3': 20,
+            'Speedometer3': 8,
         },
     },
     'linux-perf': {

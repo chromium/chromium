@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <list>
 #include <map>
 #include <memory>
 #include <optional>
@@ -193,16 +194,21 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // Flush the receiver pipe and return whether or not its closed.
   bool PipeIsClosed();
 
+  void SetSelectedBuyerAndSellerReportingId(
+      std::optional<std::string> selected);
+
  private:
   void OnPipeClosed() { pipe_closed_ = true; }
 
-  mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidClient>
-      generate_bid_client_;
+  std::list<mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidClient>>
+      generate_bid_clients_;
   mojo::AssociatedReceiverSet<auction_worklet::mojom::GenerateBidFinalizer,
                               base::TimeDelta>
       finalizer_receiver_set_;
 
   bool pipe_closed_ = false;
+
+  std::optional<std::string> selected_buyer_and_seller_reporting_id_;
 
   std::unique_ptr<base::RunLoop> generate_bid_run_loop_;
   std::unique_ptr<base::RunLoop> report_win_run_loop_;
@@ -278,6 +284,10 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const std::optional<blink::AdCurrency>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_buyer_and_seller_reporting_id,
       const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
       const std::optional<blink::AdSize>& browser_signal_render_size,

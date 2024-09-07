@@ -1357,7 +1357,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
   // should only scroll to the top-left corner.
   handler_->ViewportUpdated(
       gfx::RectF(/*x=*/kPageX + kTestPageWidth - kViewportWidth,
-                 /*y-*/ kPageY + kTestPageHeight - kViewportHeight,
+                 /*y=*/kPageY + kTestPageHeight - kViewportHeight,
                  kViewportWidth, kViewportHeight),
       /*scale_factor=*/1.0f);
   handler_->PerformAction(scroll_action_data);

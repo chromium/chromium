@@ -5,12 +5,12 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -23,12 +23,28 @@
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
+#include "components/prefs/pref_service.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+
 using safe_browsing::BinaryUploadService;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace enterprise_connectors {
 
 namespace {
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
   switch (action) {
     case TriggeredRule::ACTION_UNSPECIFIED:
@@ -49,9 +65,35 @@ bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
          (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
           !block_password_protected_files);
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+std::string EventResultToString(
+    extensions::api::enterprise_reporting_private::EventResult event_result) {
+  // Make sure the values returned by this function match the names in
+  // google3/chrome/cros/reporting/api/proto/browser_events.proto
+  if (event_result ==
+      extensions::api::enterprise_reporting_private::EventResult::kNone) {
+    return "EVENT_RESULT_UNKNOWN";
+  }
+  return ToString(event_result);
+}
+
+std::string DetectorTypeToString(
+    extensions::api::enterprise_reporting_private::DetectorType detector_type) {
+  // Make sure the values returned by this function match the names in
+  // google3/chrome/cros/reporting/api/proto/browser_events.proto
+  if (detector_type ==
+      extensions::api::enterprise_reporting_private::DetectorType::kNone) {
+    return "DETECTOR_TYPE_UNSPECIFIED";
+  }
+  return ToString(detector_type);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
                               BinaryUploadService::Result upload_result) {
   bool default_action_allow_data_use =
@@ -73,6 +115,7 @@ bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
     case BinaryUploadService::Result::TOO_MANY_REQUESTS:
     case BinaryUploadService::Result::UNKNOWN:
+    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
       DVLOG(1) << __func__
                << ": handled by fail-closed settings, "
                   "default_action_allow_data_use="
@@ -148,6 +191,7 @@ safe_browsing::EventResult CalculateEventResult(
              : (should_warn ? safe_browsing::EventResult::WARNED
                             : safe_browsing::EventResult::BLOCKED);
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 const char SavePackageScanningData::kKey[] =
     "enterprise_connectors.save_package_scanning_key";
@@ -214,6 +258,35 @@ bool ShouldPromptReviewForDownload(
   return false;
 }
 
+std::string GetProfileEmail(Profile* profile) {
+  if (!profile) {
+    return std::string();
+  }
+
+  std::string email =
+      GetProfileEmail(IdentityManagerFactory::GetForProfile(profile));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (email.empty()) {
+    email = profile->GetPrefs()->GetString(
+        enterprise_signin::prefs::kProfileUserEmail);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  return email;
+}
+
+std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
+  // If the profile is not signed in, GetPrimaryAccountInfo() returns an
+  // empty account info.
+  return identity_manager
+             ? identity_manager
+                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                   .email
+             : std::string();
+}
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void ShowDownloadReviewDialog(const std::u16string& filename,
                               Profile* profile,
                               download::DownloadItem* download_item,
@@ -299,8 +372,10 @@ bool ResultIsFailClosed(BinaryUploadService::Result result) {
          result == BinaryUploadService::Result::TIMEOUT ||
          result == BinaryUploadService::Result::FAILED_TO_GET_TOKEN ||
          result == BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-         result == BinaryUploadService::Result::UNKNOWN;
+         result == BinaryUploadService::Result::UNKNOWN ||
+         result == BinaryUploadService::Result::INCOMPLETE_RESPONSE;
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 Profile* GetMainProfileLacros() {
@@ -314,5 +389,64 @@ Profile* GetMainProfileLacros() {
   return *main_it;
 }
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void ReportDataMaskingEvent(
+    content::BrowserContext* browser_context,
+    extensions::api::enterprise_reporting_private::DataMaskingEvent
+        data_masking_event) {
+  CHECK(browser_context);
+
+  auto* reporting_client =
+      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+          browser_context);
+  std::optional<enterprise_connectors::ReportingSettings> settings =
+      reporting_client->GetReportingSettings();
+  if (!settings.has_value() ||
+      !base::Contains(settings->enabled_event_names,
+                      enterprise_connectors::kKeySensitiveDataEvent)) {
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyUrl,
+            data_masking_event.url);
+  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTabUrl,
+            std::move(data_masking_event.url));
+  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyEventResult,
+            EventResultToString(data_masking_event.event_result));
+
+  base::Value::List triggered_rule_info;
+  triggered_rule_info.reserve(data_masking_event.triggered_rule_info.size());
+  for (auto& rule : data_masking_event.triggered_rule_info) {
+    base::Value::Dict triggered_rule;
+    triggered_rule.Set(
+        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+        std::move(rule.rule_id));
+    triggered_rule.Set(
+        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
+        std::move(rule.rule_name));
+
+    base::Value::List matched_detectors;
+    for (auto& detector : rule.matched_detectors) {
+      base::Value::Dict detector_value;
+      detector_value.Set(kKeyDetectorId, std::move(detector.detector_id));
+      detector_value.Set(kKeyDisplayName, std::move(detector.display_name));
+      detector_value.Set(kKeyDetectorType,
+                         DetectorTypeToString(detector.detector_type));
+      matched_detectors.Append(std::move(detector_value));
+    }
+    triggered_rule.Set(kKeyMatchedDetectors, std::move(matched_detectors));
+
+    triggered_rule_info.Append(std::move(triggered_rule));
+  }
+  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo,
+            std::move(triggered_rule_info));
+
+  reporting_client->ReportRealtimeEvent(
+      enterprise_connectors::kKeySensitiveDataEvent,
+      std::move(settings.value()), std::move(event));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace enterprise_connectors

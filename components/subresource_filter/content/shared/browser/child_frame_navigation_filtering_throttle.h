@@ -90,6 +90,7 @@ class ChildFrameNavigationFilteringThrottle
   MaybeDeferToCalculateLoadPolicy();
 
   void OnCalculatedLoadPolicy(LoadPolicy policy);
+  void OnCalculatedLoadPolicyForUrl(LoadPolicy policy);
   void OnCalculatedLoadPoliciesFromAliasUrls(std::vector<LoadPolicy> policies);
   void HandleDisallowedLoad();
 
@@ -111,6 +112,14 @@ class ChildFrameNavigationFilteringThrottle
   base::TimeDelta total_defer_time_;
 
   const bool alias_check_enabled_;
+
+  // Set to true if aliases were checked.
+  bool did_alias_check_ = false;
+
+  // Set to true if alias checking determined the load policy. If the non-alias
+  // check and the alias check are the same load policy, then whichever check
+  // came first will determine the value of this variable.
+  bool did_alias_check_determine_load_policy_ = false;
 
   // Set to the least restrictive load policy by default.
   LoadPolicy load_policy_ = LoadPolicy::EXPLICITLY_ALLOW;

@@ -2,5 +2,5 @@ include_rules = [
   "-url",
   "+ios/chrome/browser/ui/util",
   "+ios/chrome/browser/favicon/ui_bundled",
-  "+ios/chrome/browser/ui/ntp",
+  "+ios/chrome/browser/ntp/ui_bundled",
 ]

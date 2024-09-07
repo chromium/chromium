@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -287,6 +288,16 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlagsInIframe) {
   // outermost main frame.
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameFailedSandboxLoadInTopLevelFrame, false, 1);
+}
+
+TEST_F(HTMLFencedFrameElementTest, HistogramTestCanLoadOpaqueURL) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kFencedFrameCanLoadOpaqueURL));
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  HTMLFencedFrameElement::canLoadOpaqueURL(script_state);
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kFencedFrameCanLoadOpaqueURL));
 }
 
 }  // namespace blink

@@ -333,6 +333,14 @@ void BrowserTabStripController::OnCloseTab(
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Tabs cannot be closed when the app is locked for OnTask. Only relevant for
+  // non-web browser scenarios.
+  if (browser_view_->browser()->IsLockedForOnTask()) {
+    return;
+  }
+#endif
+
   // Only consider pausing the close operation if this is the last remaining
   // tab (since otherwise closing it won't close the browser window).
   if (GetCount() <= 1) {
@@ -793,7 +801,7 @@ void BrowserTabStripController::TabBlockedStateChanged(WebContents* contents,
 
 void BrowserTabStripController::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    content::WebContents* contents,
+    tabs::TabModel* tab,
     int index) {
   tabstrip_->AddTabToGroup(std::move(group), index);
 }

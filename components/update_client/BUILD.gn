@@ -104,6 +104,8 @@ static_library("update_client") {
     "network.h",
     "op_download.cc",
     "op_download.h",
+    "op_install.cc",
+    "op_install.h",
     "op_puffin.cc",
     "op_puffin.h",
     "patcher.h",
@@ -175,6 +177,7 @@ static_library("update_client") {
       "background_downloader_mac.mm",
     ]
     frameworks = [ "Foundation.framework" ]
+    deps += [ ":background_downloader_delegate" ]
   }
 
   if (is_win) {
@@ -182,6 +185,25 @@ static_library("update_client") {
       "background_downloader_win.cc",
       "background_downloader_win.h",
     ]
+  }
+}
+
+if (is_mac) {
+  # The background downloader delegate is implemented as a component to avoid
+  # duplicate symbol warnings at runtime in component builds:
+  # http://crbug.com/361129285.
+  component("background_downloader_delegate") {
+    sources = [
+      "background_downloader_mac_delegate.h",
+      "background_downloader_mac_delegate.mm",
+      "update_client_errors.h",
+    ]
+    frameworks = [ "Foundation.framework" ]
+    deps = [
+      "//base",
+      "//url",
+    ]
+    defines = [ "IS_BACKGROUND_DOWNLOADER_DELEGATE_IMPL" ]
   }
 }
 

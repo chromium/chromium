@@ -47,6 +47,9 @@ class AURA_EXPORT WindowTreeHostObserver {
       const aura::WindowTreeHost* host,
       const base::flat_set<viz::FrameSinkId>& ids) {}
 
+  virtual void OnSetPreferredRefreshRate(WindowTreeHost* host,
+                                         float preferred_refresh_rate) {}
+
  protected:
   virtual ~WindowTreeHostObserver() {}
 };

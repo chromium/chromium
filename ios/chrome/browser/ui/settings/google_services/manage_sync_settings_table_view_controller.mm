@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -205,12 +206,14 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 - (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
                                        name:(NSString*)name
-                                      email:(NSString*)email {
+                                      email:(NSString*)email
+                            managementState:(ManagementState)managementState {
   CentralAccountView* identityAccountItem = [[CentralAccountView alloc]
-      initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-        avatarImage:avatarImage
-               name:name
-              email:email];
+        initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
+          avatarImage:avatarImage
+                 name:name
+                email:email
+      managementState:std::move(managementState)];
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }

@@ -14,7 +14,8 @@ LobsterUI::LobsterUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui),
       page_handler_(std::make_unique<LobsterPageHandler>(
           LobsterServiceProvider::GetForProfile(Profile::FromWebUI(web_ui))
-              ->active_session())) {
+              ->active_session(),
+          Profile::FromWebUI(web_ui))) {
   // TODO(b/348281154): Initialize WebUI container and show to the user.
 }
 

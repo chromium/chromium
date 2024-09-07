@@ -289,10 +289,6 @@ gfx::Size HoverHighlightView::CalculatePreferredSize(
   return size;
 }
 
-int HoverHighlightView::GetHeightForWidth(int width) const {
-  return GetPreferredSize(views::SizeBounds(width, {})).height();
-}
-
 void HoverHighlightView::OnFocus() {
   ScrollRectToVisible(gfx::Rect(gfx::Point(), size()));
   views::Button::OnFocus();

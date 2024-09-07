@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/views/window/dialog_delegate.h"
+
 #include <stddef.h>
 
 #include "base/functional/callback.h"
@@ -10,6 +12,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/event_processor.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -21,7 +24,6 @@
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
@@ -404,7 +406,7 @@ TEST_F(DialogTest, InitialFocus) {
 class InitialFocusTestDialog : public DialogDelegateView {
  public:
   InitialFocusTestDialog() {
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
+    DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   }
 
   InitialFocusTestDialog(const InitialFocusTestDialog&) = delete;
@@ -476,7 +478,7 @@ TEST_F(DialogTest, ButtonEnableUpdatesState) {
   auto* dialog = static_cast<DialogDelegateView*>(widget->widget_delegate());
 
   EXPECT_TRUE(dialog->GetOkButton()->GetEnabled());
-  dialog->SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  dialog->SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
   dialog->DialogModelChanged();
   EXPECT_FALSE(dialog->GetOkButton()->GetEnabled());
 }

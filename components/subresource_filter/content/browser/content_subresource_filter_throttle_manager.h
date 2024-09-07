@@ -23,6 +23,7 @@
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 
@@ -193,7 +194,7 @@ class ContentSubresourceFilterThrottleManager
   }
 
   // Returns whether the identified frame is considered to be an ad.
-  bool IsFrameTaggedAsAd(int frame_tree_node_id) const;
+  bool IsFrameTaggedAsAd(content::FrameTreeNodeId frame_tree_node_id) const;
   // Returns whether `frame_host` is in a frame considered to be an ad.
   bool IsRenderFrameHostTaggedAsAd(content::RenderFrameHost* frame_host) const;
 
@@ -203,7 +204,7 @@ class ContentSubresourceFilterThrottleManager
   // filter. Load policy is determined by presence of the navigation url in the
   // filter list.
   std::optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
-      int frame_tree_node_id) const;
+      content::FrameTreeNodeId frame_tree_node_id) const;
 
   // Called when the user has requested a reload of a page with
   // blocked ads (e.g., via an infobar).
@@ -230,7 +231,7 @@ class ContentSubresourceFilterThrottleManager
   // called explicitly from the WebContentsHelper, which is a
   // WebContentsObserver, but only for the appropriate throttle manager.
   void RenderFrameDeleted(content::RenderFrameHost* frame_host);
-  void FrameDeleted(int frame_tree_node_id);
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id);
   // "InFrame" here means that the navigation doesn't move a page between frame
   // trees. i.e.  it is not a prerender activation.
   void ReadyToCommitInFrameNavigation(
@@ -305,8 +306,9 @@ class ContentSubresourceFilterThrottleManager
       content::NavigationHandle* navigation_handle);
   blink::FrameAdEvidence& EnsureFrameAdEvidence(
       content::RenderFrameHost* render_frame_host);
-  blink::FrameAdEvidence& EnsureFrameAdEvidence(int frame_tree_node_id,
-                                                int parent_frame_tree_node_id);
+  blink::FrameAdEvidence& EnsureFrameAdEvidence(
+      content::FrameTreeNodeId frame_tree_node_id,
+      content::FrameTreeNodeId parent_frame_tree_node_id);
 
   mojom::ActivationState ActivationStateForNextCommittedLoad(
       content::NavigationHandle* navigation_handle);
@@ -375,18 +377,19 @@ class ContentSubresourceFilterThrottleManager
   // Set of frames that have been identified as ads, identified by FrameTreeNode
   // ID. A RenderFrameHost is an ad frame iff the FrameAdEvidence
   // corresponding to the frame indicates that it is.
-  base::flat_set<int> ad_frames_;
+  base::flat_set<content::FrameTreeNodeId> ad_frames_;
 
   // Map of child frames, keyed by FrameTreeNode ID, with value being the
   // evidence for or against the frames being ads. This evidence is updated
   // whenever a navigation's LoadPolicy is calculated.
-  std::map<int, blink::FrameAdEvidence> tracked_ad_evidence_;
+  std::map<content::FrameTreeNodeId, blink::FrameAdEvidence>
+      tracked_ad_evidence_;
 
   // Map of frames whose navigations have been identified as ads, keyed by
   // FrameTreeNode ID. Contains information on the most current completed
   // navigation for any given frames. If a frame is not present in the map, it
   // has not had a navigation evaluated by the filter list.
-  std::map<int, LoadPolicy> navigation_load_policies_;
+  std::map<content::FrameTreeNodeId, LoadPolicy> navigation_load_policies_;
 
   // Receiver set for all RenderFrames in this throttle manager's page.
   content::RenderFrameHostReceiverSet<mojom::SubresourceFilterHost> receiver_;

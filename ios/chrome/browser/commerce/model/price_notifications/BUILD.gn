@@ -14,7 +14,7 @@ source_set("price_notifications") {
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",

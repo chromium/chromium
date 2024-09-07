@@ -64,6 +64,10 @@ SubmenuView::SubmenuView(MenuItemView* parent) : parent_menu_item_(parent) {
   CHECK(parent_menu_item_);
   // We'll delete ourselves, otherwise the ScrollView would delete us on close.
   set_owned_by_client();
+
+  // Menus in Chrome are always traversed in a vertical direction.
+  GetViewAccessibility().SetIsVertical(true);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
 }
 
 SubmenuView::~SubmenuView() {
@@ -298,11 +302,14 @@ gfx::Size SubmenuView::CalculatePreferredSize(
 void SubmenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Inherit most of the state from the parent menu item, except the role and
   // the orientation.
-  if (parent_menu_item_)
+  if (parent_menu_item_) {
+    // TODO(crbug.com/325137417): To ensure the name is set for
+    // parent_menu_item_, the role must be assigned before calling
+    // GetAccessibleNodeData. Omitting this role could disrupt functionality, as
+    // the AXNodeData::SetName() function checks for the relevant role.
+    node_data->role = parent_menu_item_->GetViewAccessibility().GetCachedRole();
     parent_menu_item_->GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kMenu;
-  // Menus in Chrome are always traversed in a vertical direction.
-  node_data->AddState(ax::mojom::State::kVertical);
+  }
 }
 
 void SubmenuView::PaintChildren(const PaintInfo& paint_info) {

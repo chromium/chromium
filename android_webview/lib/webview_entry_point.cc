@@ -25,8 +25,7 @@ bool NativeInit(base::android::LibraryProcessType library_process_type) {
       LOG(FATAL) << "WebView cannot be started with a browser process type.";
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

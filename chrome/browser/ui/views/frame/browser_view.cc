@@ -300,8 +300,8 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/wm/window_properties.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ui/ash/window_properties.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "ui/compositor/throughput_tracker.h"
 #else
@@ -459,7 +459,7 @@ bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
 // for tab-fullscreen and not for app/popup type windows).
 bool ShouldUseImmersiveFullscreenForUrl(const GURL& url) {
   // Kiosk mode needs the whole screen.
-  if (chrome::IsRunningInAppMode()) {
+  if (IsRunningInAppMode()) {
     return false;
   }
   // An empty URL signifies browser fullscreen. Immersive is used for browser
@@ -618,7 +618,10 @@ class TabContainerOverlayView : public views::View {
       : browser_view_(std::move(browser_view)) {}
   ~TabContainerOverlayView() override = default;
 
-  // views::View override
+  //
+  // views::View overrides
+  //
+
   void OnPaintBackground(gfx::Canvas* canvas) override {
     SkColor frame_color = browser_view_->frame()->GetFrameView()->GetFrameColor(
         BrowserFrameActiveState::kUseCurrent);
@@ -632,6 +635,45 @@ class TabContainerOverlayView : public views::View {
     }
   }
 
+  //
+  // `BrowserRootView` handles drag and drop for the tab strip. In immersive
+  // fullscreen, the tab strip is hosted in a separate Widget, in a separate
+  // view, this view` TabContainerOverlayView`. To support drag and drop for the
+  // tab strip in immersive fullscreen, forward all drag and drop requests to
+  // the `BrowserRootView`.
+  //
+
+  bool GetDropFormats(
+      int* formats,
+      std::set<ui::ClipboardFormatType>* format_types) override {
+    return browser_view_->GetWidget()->GetRootView()->GetDropFormats(
+        formats, format_types);
+  }
+
+  bool AreDropTypesRequired() override {
+    return browser_view_->GetWidget()->GetRootView()->AreDropTypesRequired();
+  }
+
+  bool CanDrop(const ui::OSExchangeData& data) override {
+    return browser_view_->GetWidget()->GetRootView()->CanDrop(data);
+  }
+
+  void OnDragEntered(const ui::DropTargetEvent& event) override {
+    return browser_view_->GetWidget()->GetRootView()->OnDragEntered(event);
+  }
+
+  int OnDragUpdated(const ui::DropTargetEvent& event) override {
+    return browser_view_->GetWidget()->GetRootView()->OnDragUpdated(event);
+  }
+
+  void OnDragExited() override {
+    return browser_view_->GetWidget()->GetRootView()->OnDragExited();
+  }
+
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    return browser_view_->GetWidget()->GetRootView()->GetDropCallback(event);
+  }
+
  private:
   // The BrowserView this overlay is created for. WeakPtr is used since
   // this view is held in a different hierarchy.
@@ -640,6 +682,25 @@ class TabContainerOverlayView : public views::View {
 
 BEGIN_METADATA(TabContainerOverlayView)
 END_METADATA
+
+#else  // !BUILDFLAG(IS_MAC)
+
+// Calls |method| which is either WebContents::Cut, ::Copy, or ::Paste on
+// the given WebContents, returning true if it consumed the event.
+bool DoCutCopyPasteForWebContents(content::WebContents* contents,
+                                  void (content::WebContents::*method)()) {
+  // It's possible for a non-null WebContents to have a null RWHV if it's
+  // crashed or otherwise been killed.
+  content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();
+  if (!rwhv || !rwhv->HasFocus()) {
+    return false;
+  }
+  // Calling |method| rather than using a fake key event is important since a
+  // fake event might be consumed by the web content.
+  (contents->*method)();
+  return true;
+}
+
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
@@ -869,7 +930,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   // In forced app mode, all size controls are always disabled. Otherwise, use
   // `create_params` to enable/disable specific size controls.
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
     SetHasWindowSizeControls(false);
   } else if (GetIsPictureInPictureType()) {
     // Picture in picture windows must always have a title, can never minimize,
@@ -2510,6 +2571,10 @@ views::WebView* BrowserView::GetContentsWebView() {
   return contents_web_view_;
 }
 
+BrowserView* BrowserView::AsBrowserView() {
+  return this;
+}
+
 bool BrowserView::AppUsesBorderlessMode() const {
   return browser()->app_controller() &&
          browser()->app_controller()->AppUsesBorderlessMode();
@@ -2986,11 +3051,13 @@ BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
 
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(std::nullopt);
-  if (features::IsToolbarPinningEnabled() &&
-      toolbar()->pinned_toolbar_actions_container()->IsActionPinnedOrPoppedOut(
-          kActionQrCodeGenerator)) {
-    anchor_view = toolbar()->pinned_toolbar_actions_container()->GetButtonFor(
-        kActionQrCodeGenerator);
+  if (features::IsToolbarPinningEnabled()) {
+    if (PinnedToolbarActionsContainer* container =
+            toolbar()->pinned_toolbar_actions_container();
+        container &&
+        container->IsActionPinnedOrPoppedOut(kActionQrCodeGenerator)) {
+      anchor_view = container->GetButtonFor(kActionQrCodeGenerator);
+    }
   }
 
   auto* bubble = new qrcode_generator::QRCodeGeneratorBubble(
@@ -3035,11 +3102,13 @@ BrowserView::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* web_contents) {
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(std::nullopt);
-  if (features::IsToolbarPinningEnabled() &&
-      toolbar()->pinned_toolbar_actions_container()->IsActionPinnedOrPoppedOut(
-          kActionSendTabToSelf)) {
-    anchor_view = toolbar()->pinned_toolbar_actions_container()->GetButtonFor(
-        kActionSendTabToSelf);
+  if (features::IsToolbarPinningEnabled()) {
+    if (PinnedToolbarActionsContainer* container =
+            toolbar()->pinned_toolbar_actions_container();
+        container &&
+        container->IsActionPinnedOrPoppedOut(kActionSendTabToSelf)) {
+      anchor_view = container->GetButtonFor(kActionSendTabToSelf);
+    }
   }
   auto* bubble = new send_tab_to_self::SendTabToSelfDevicePickerBubbleView(
       anchor_view, web_contents);
@@ -3056,11 +3125,13 @@ BrowserView::ShowSendTabToSelfPromoBubble(content::WebContents* web_contents,
                                           bool show_signin_button) {
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(std::nullopt);
-  if (features::IsToolbarPinningEnabled() &&
-      toolbar()->pinned_toolbar_actions_container()->IsActionPinnedOrPoppedOut(
-          kActionSendTabToSelf)) {
-    anchor_view = toolbar()->pinned_toolbar_actions_container()->GetButtonFor(
-        kActionSendTabToSelf);
+  if (features::IsToolbarPinningEnabled()) {
+    if (PinnedToolbarActionsContainer* container =
+            toolbar()->pinned_toolbar_actions_container();
+        container &&
+        container->IsActionPinnedOrPoppedOut(kActionSendTabToSelf)) {
+      anchor_view = container->GetButtonFor(kActionSendTabToSelf);
+    }
   }
   auto* bubble = new send_tab_to_self::SendTabToSelfPromoBubbleView(
       anchor_view, web_contents, show_signin_button);
@@ -3357,6 +3428,19 @@ remote_cocoa::mojom::CutCopyPasteCommand CommandFromBrowserCommand(
 }
 }  // namespace
 #endif
+
+void BrowserView::Cut() {
+  base::RecordAction(UserMetricsAction("Cut"));
+  CutCopyPaste(IDC_CUT);
+}
+void BrowserView::Copy() {
+  base::RecordAction(UserMetricsAction("Copy"));
+  CutCopyPaste(IDC_COPY);
+}
+void BrowserView::Paste() {
+  base::RecordAction(UserMetricsAction("Paste"));
+  CutCopyPaste(IDC_PASTE);
+}
 
 // TODO(devint): http://b/issue?id=1117225 Cut, Copy, and Paste are always
 // enabled in the page menu regardless of whether the command will do
@@ -3873,7 +3957,7 @@ ui::ImageModel BrowserView::GetWindowIcon() {
   }
   auto* window = GetNativeWindow();
   int override_window_icon_resource_id =
-      window ? window->GetProperty(kOverrideWindowIconResourceIdKey) : -1;
+      window ? window->GetProperty(ash::kOverrideWindowIconResourceIdKey) : -1;
   if (override_window_icon_resource_id >= 0)
     return ui::ImageModel::FromImage(
         rb.GetImageNamed(override_window_icon_resource_id));
@@ -4944,7 +5028,7 @@ void BrowserView::LoadAccelerators() {
   DCHECK(focus_manager);
 
   // Let's fill our own accelerator table.
-  const bool is_app_mode = chrome::IsRunningInForcedAppMode();
+  const bool is_app_mode = IsRunningInForcedAppMode();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_lacros_only = !crosapi::browser_util::IsAshWebBrowserEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -4957,9 +5041,10 @@ void BrowserView::LoadAccelerators() {
   for (const auto& entry : accelerator_list) {
     // In app mode, only allow accelerators of white listed commands to pass
     // through.
-    if (is_app_mode && !chrome::IsCommandAllowedInAppMode(
-                           entry.command_id, browser()->is_type_popup()))
+    if (is_app_mode && !IsCommandAllowedInAppMode(entry.command_id,
+                                                  browser()->is_type_popup())) {
       continue;
+    }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // When Lacros is the only browser, disable some browser commands in Ash so
@@ -5153,14 +5238,15 @@ void BrowserView::MaybeShowProfileSwitchIPH() {
 
 void BrowserView::ShowHatsDialog(
     const std::string& site_id,
-    const std::optional<std::string>& histogram_name,
+    const std::optional<std::string>& hats_histogram_name,
+    const std::optional<uint64_t> hats_survey_ukm_id,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data) {
   // Self deleting on close.
-  new HatsNextWebDialog(browser(), site_id, histogram_name,
-                        std::move(success_callback),
+  new HatsNextWebDialog(browser(), site_id, hats_histogram_name,
+                        hats_survey_ukm_id, std::move(success_callback),
                         std::move(failure_callback), product_specific_bits_data,
                         product_specific_string_data);
 }
@@ -5301,19 +5387,6 @@ user_education::DisplayNewBadge BrowserView::MaybeShowNewBadgeFor(
     return user_education::DisplayNewBadge();
   }
   return service->new_badge_controller()->MaybeShowNewBadge(feature);
-}
-
-bool BrowserView::DoCutCopyPasteForWebContents(WebContents* contents,
-                                               void (WebContents::*method)()) {
-  // It's possible for a non-null WebContents to have a null RWHV if it's
-  // crashed or otherwise been killed.
-  content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();
-  if (!rwhv || !rwhv->HasFocus())
-    return false;
-  // Calling |method| rather than using a fake key event is important since a
-  // fake event might be consumed by the web content.
-  (contents->*method)();
-  return true;
 }
 
 void BrowserView::ActivateAppModalDialog() const {

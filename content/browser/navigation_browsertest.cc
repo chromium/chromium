@@ -1954,7 +1954,7 @@ class CorsContentBrowserClient : public ContentBrowserTestContentBrowserClient {
       BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
       NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(
@@ -3274,7 +3274,7 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
     CreateNonNetworkNavigationURLLoaderFactory(
         const std::string& scheme,
-        int frame_tree_node_id) override {
+        FrameTreeNodeId frame_tree_node_id) override {
       if (scheme == kNoAccessScheme) {
         mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
         fake_url_loader_factory_->Clone(
@@ -3404,51 +3404,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_TRUE(navigation_1.has_committed());
   EXPECT_FALSE(navigation_0.was_same_document());
   EXPECT_FALSE(navigation_1.was_same_document());
-}
-
-namespace {
-class VisualTransitionAddingObserver : public WebContentsObserver {
- public:
-  VisualTransitionAddingObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-  ~VisualTransitionAddingObserver() override = default;
-
-  void DidStartNavigation(NavigationHandle* handle) override {
-    NavigationRequest* navigation_request = NavigationRequest::From(handle);
-    navigation_request->set_was_initiated_by_animated_transition();
-  }
-};
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       HasUaVisualTransitionValueForSameDocumentNavigation) {
-  WebContents* wc = shell()->web_contents();
-  GURL url1 = embedded_test_server()->GetURL(
-      "a.com", "/has-ua-visual-transition.html#frag1");
-  GURL url2 = embedded_test_server()->GetURL(
-      "a.com", "/has-ua-visual-transition.html#frag2");
-  NavigationHandleCommitObserver navigation_0(wc, url1);
-  NavigationHandleCommitObserver navigation_1(wc, url2);
-
-  ASSERT_TRUE(NavigateToURL(shell(), url1));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(NavigateToURL(shell(), url2));
-  // The NavigationEntry changes on a same-document navigation.
-  EXPECT_NE(web_contents()->GetController().GetLastCommittedEntry(), entry);
-  ASSERT_FALSE(EvalJs(wc, "hasUAVisualTransitionValue").ExtractBool());
-
-  EXPECT_TRUE(navigation_0.has_committed());
-  EXPECT_TRUE(navigation_1.has_committed());
-  EXPECT_FALSE(navigation_0.was_same_document());
-  EXPECT_TRUE(navigation_1.was_same_document());
-
-  VisualTransitionAddingObserver observer(web_contents());
-  TestNavigationManager manager(web_contents(), url1);
-  wc->GetController().GoBack();
-
-  ASSERT_TRUE(manager.WaitForNavigationFinished());
-  ASSERT_TRUE(EvalJs(wc, "hasUAVisualTransitionValue").ExtractBool());
 }
 
 // This navigation is allowed by the browser, but the network will not be able
@@ -8175,85 +8130,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AboutMumble) {
       GURL("about:blank#blocked"));
 }
 
-// Verifies that cross-origin iframes cannot navigate the top frame to a
-// different origin (sometimes called "framebusting") without user activation.
-//
-// This is non-standard, unspecified behavior.
-// See also https://www.chromestatus.com/features/5851021045661696.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       FramebustingWithoutUserActivationFails) {
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/defaultresponse")));
-
-  RenderFrameHost* child = CreateSubframe(
-      web_contents(), "child",
-      embedded_test_server()->GetURL("other.test", "/defaultresponse"),
-      /*wait_for_navigation=*/true);
-
-  EXPECT_FALSE(
-      ExecJs(child, "top.location = 'foo'", EXECUTE_SCRIPT_NO_USER_GESTURE));
-}
-
-// Verifies that cross-origin iframes can navigate the top frame to a different
-// origin (sometimes called "framebusting") with user activation.
-//
-// This is non-standard, unspecified behavior.
-// See also https://www.chromestatus.com/features/5851021045661696.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       FramebustingWithUserActivationSucceeds) {
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/defaultresponse")));
-
-  GURL other_url =
-      embedded_test_server()->GetURL("other.test", "/defaultresponse");
-  RenderFrameHost* child = CreateSubframe(web_contents(), "child", other_url,
-                                          /*wait_for_navigation=*/true);
-
-  TestNavigationObserver observer(web_contents());
-
-  // By default `ExecJs()` executes the provided script with user activation.
-  EXPECT_TRUE(ExecJs(child, "top.location = '/defaultresponse'"));
-
-  // The top frame is indeed navigated successfully.
-  observer.Wait();
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), other_url);
-}
-
-// Verifies that cross-origin iframes can navigate the top frame to a different
-// origin (sometimes called "framebusting") with user activation, even after
-// a couple `setTimeout()` calls.
-//
-// This is non-standard, unspecified behavior.
-// See also https://www.chromestatus.com/features/5851021045661696.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       FramebustingWithAsyncUserActivationSucceeds) {
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/defaultresponse")));
-
-  GURL other_url =
-      embedded_test_server()->GetURL("other.test", "/defaultresponse");
-  RenderFrameHost* child = CreateSubframe(web_contents(), "child", other_url,
-                                          /*wait_for_navigation=*/true);
-
-  TestNavigationObserver observer(web_contents());
-
-  // By default `ExecJs()` executes the provided script with a user activation.
-  //
-  // With user activation, the navigation should succeed even through nested
-  // `setTimeout()` calls.
-  EXPECT_TRUE(ExecJs(child, R"(
-    setTimeout(() => {
-      setTimeout(() => {
-        top.location = '/defaultresponse';
-      }, 0);
-    }, 0);
-  )"));
-
-  // The top frame is indeed navigated successfully.
-  observer.Wait();
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), other_url);
-}
-
 // Ensure that the browser process doesn't see a javascript: URL when opening a
 // new window to a javascript: URL. These URLs are typically handled on the
 // renderer side, and the renderer should not send the javascript: URL to the
@@ -8395,32 +8271,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // window.foo should stay unchanged.
   new_shell->LoadURL(GURL("javascript:window.foo=456"));
   EXPECT_EQ(123, EvalJs(new_shell, "window.foo"));
-}
-
-// Verifies that cross-origin iframes can navigate the top frame to another URL
-// belonging to the top frame's origin without user activation.
-//
-// This is non-standard, unspecified behavior.
-// See also https://www.chromestatus.com/features/5851021045661696.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       FramebustingSameOriginWithoutUserActivationSucceeds) {
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/defaultresponse")));
-
-  RenderFrameHost* child = CreateSubframe(
-      web_contents(), "child",
-      embedded_test_server()->GetURL("other.test", "/defaultresponse"),
-      /*wait_for_navigation=*/true);
-
-  TestNavigationObserver observer(web_contents());
-
-  GURL destination = embedded_test_server()->GetURL("/echo");
-  EXPECT_TRUE(ExecJs(child, JsReplace("top.location = $1", destination),
-                     EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  // The top frame is indeed navigated successfully.
-  observer.Wait();
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), destination);
 }
 
 // Test navigation with site instances whose storage partitions are fixed.
@@ -8621,6 +8471,76 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FCPMetrics) {
   web_contents()->GetController().LoadURLWithParams(params);
   WaitForHistogramRecordedInChildProcess(
       "Navigation.FCPFrameSubmittedBeforeSurfaceEmbed");
+}
+
+// Tests that if the main frame has focus before a same-site navigation, it's
+// kept after navigation.
+// Regression test for crbug.com/360705823.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FocusPreservedOnNavigation_MainFrame) {
+  GURL url_1(embedded_test_server()->GetURL("/page_with_iframe.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+
+  // Set focus on a button in the main frame.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+    let button = document.createElement('button');
+    document.body.appendChild(button);
+    button.focus();
+  )"));
+  // The main document should have focus.
+  ASSERT_EQ(true, EvalJs(current_frame_host(), "document.hasFocus();"));
+
+  // After navigation, the main document should still have focus.
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+  ASSERT_EQ(true, EvalJs(current_frame_host(), "document.hasFocus();"));
+}
+
+// Same as the above test, but the focus is on the iframe.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FocusPreservedOnNavigation_Subframe) {
+  GURL url_1(embedded_test_server()->GetURL("/page_with_iframe.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+
+  // Set focus on a button in the iframe.
+  FrameTreeNode* child_ftn = current_frame_host()->child_at(0);
+  ASSERT_TRUE(ExecJs(child_ftn, R"(
+    let button = document.createElement('button');
+    document.body.appendChild(button);
+    button.focus();
+  )"));
+  // The iframe document should have focus.
+  ASSERT_EQ(true, EvalJs(child_ftn, "document.hasFocus();"));
+
+  // After navigation, the child document should still have focus.
+  ASSERT_TRUE(NavigateFrameToURL(child_ftn, url_2));
+  ASSERT_EQ(true, EvalJs(child_ftn, "document.hasFocus();"));
+}
+
+// When the navigation is cross-site, focus is not preserved.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FocusNotPreservedOnNavigation_SubframeCrossSite) {
+  if (!AreAllSitesIsolatedForTesting()) {
+    GTEST_SKIP() << "Test needs local -> remote swap";
+  }
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+
+  // Set focus on a button in the iframe.
+  FrameTreeNode* child_ftn = current_frame_host()->child_at(0);
+  ASSERT_TRUE(ExecJs(child_ftn, R"(
+    let button = document.createElement('button');
+    document.body.appendChild(button);
+    button.focus();
+  )"));
+  // The iframe document should have focus.
+  ASSERT_EQ(true, EvalJs(child_ftn, "document.hasFocus();"));
+
+  // After navigation, the child document should no longer have focus.
+  ASSERT_TRUE(NavigateFrameToURL(child_ftn, url_2));
+  ASSERT_EQ(false, EvalJs(child_ftn, "document.hasFocus();"));
 }
 
 class NavigationWithPageSwapBrowserTest : public NavigationBrowserTest {
@@ -9566,8 +9486,14 @@ class VisualPropertiesSynchronization : public NavigationBrowserTest {
 // Verify that when a cross-origin subframe initiates a top-level navigation to
 // a same-origin (with respect to itself) URL, that the visual properties
 // are invalidated correctly.
+// TODO(https://crbug.com/361299696): Flaky on Fuchsia and ChromeOS Ash.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_RemoteToLocalTransition DISABLED_RemoteToLocalTransition
+#else
+#define MAYBE_RemoteToLocalTransition RemoteToLocalTransition
+#endif
 IN_PROC_BROWSER_TEST_F(VisualPropertiesSynchronization,
-                       RemoteToLocalTransition) {
+                       MAYBE_RemoteToLocalTransition) {
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b_top_level(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_b_iframe(embedded_test_server()->GetURL("b.com", "/title2.html"));

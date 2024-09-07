@@ -66,14 +66,29 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     @IntDef({
         LayerVisibility.VISIBLE,
         LayerVisibility.HIDDEN,
+        LayerVisibility.SHOWING,
+        LayerVisibility.HIDING,
         LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE
     })
     public @interface LayerVisibility {
         int VISIBLE = 0;
         int HIDDEN = 1;
 
-        /** Will be shown if and only if another layer is labeled as VISIBLE. */
-        int VISIBLE_IF_OTHERS_VISIBLE = 2;
+        /**
+         * The layer is currently animating to become visible. Its height will contribute to the
+         * total height of the bottom controls.
+         */
+        int SHOWING = 2;
+
+        /**
+         * The layer is currently animating to become hidden. Its height will not contribute to the
+         * total height of the bottom controls, but its #getHeight should remain at a meaningful
+         * value.
+         */
+        int HIDING = 3;
+
+        /** Will be shown if and only if another layer is labeled as VISIBLE or SHOWING. */
+        int VISIBLE_IF_OTHERS_VISIBLE = 4;
     }
 
     // The pre-defined stack order for different bottom controls.
@@ -146,13 +161,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      */
     public void requestLayerUpdate(boolean animate) {
         assert isEnabled();
-
-        // TODO(crbug.com/359539294) Re-enable animations when integration of read aloud with the
-        // bottom chin is fixed.
-        // Turn off animations when chin is showing.
-        if (mLayers.get(LayerType.BOTTOM_CHIN) != null) {
-            animate = false;
-        }
 
         updateLayerVisibilities();
         recalculateLayerSizes();
@@ -249,7 +257,12 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                     /* actual= */ "onBottomControlsHeightChanged",
                     bottomControlsHeight,
                     bottomControlsMinHeight);
-            if (isDispatchingYOffset()) {
+
+            // If animations are enabled, calls to #onControlsOffsetChanged will reposition the
+            // layers. If animations aren't enabled, no such calls will occur, and #repositionLayers
+            // should be triggered here.
+            if (isDispatchingYOffset()
+                    && !mBrowserControlsSizer.shouldAnimateBrowserControlsHeightChanges()) {
                 repositionLayers(
                         mBrowserControlsSizer.getBottomControlOffset(),
                         mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
@@ -359,6 +372,12 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             for (int type : STACK_ORDER) {
                 BottomControlsLayer layer = mLayers.get(type);
                 if (layer == null) continue;
+                // If the layer is not visible, don't account for it for animation calculations
+                // unless it's still actively animating to hide.
+                if (!mLayerVisibilities.get(type)
+                        && layer.getLayerVisibility() != LayerVisibility.HIDING) {
+                    continue;
+                }
 
                 // Read the yOffset calculated in step #1. If the layer is hiding, use a default
                 // value.
@@ -458,7 +477,8 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             BottomControlsLayer layer = mLayers.get(type);
             if (layer == null) continue;
 
-            if (layer.getLayerVisibility() == LayerVisibility.VISIBLE) {
+            if (layer.getLayerVisibility() == LayerVisibility.VISIBLE
+                    || layer.getLayerVisibility() == LayerVisibility.SHOWING) {
                 atLeastOneVisibleLayer = true;
                 break;
             }
@@ -471,6 +491,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             mLayerVisibilities.put(
                     type,
                     layerVisibility == LayerVisibility.VISIBLE
+                            || layer.getLayerVisibility() == LayerVisibility.SHOWING
                             || (atLeastOneVisibleLayer
                                     && layerVisibility
                                             == LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE));

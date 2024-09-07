@@ -4,6 +4,7 @@
 
 #include "components/saved_tab_groups/saved_tab_group.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
@@ -22,6 +23,26 @@
 #include "url/gurl.h"
 
 namespace tab_groups {
+
+namespace {
+
+bool ShouldPlaceNewTabBeforeExistingTab(const SavedTabGroupTab& new_tab,
+                                        const SavedTabGroupTab& existing_tab) {
+  if (new_tab.position() < existing_tab.position()) {
+    return true;
+  }
+
+  if (existing_tab.position() == new_tab.position() &&
+      existing_tab.update_time_windows_epoch_micros() <
+          new_tab.update_time_windows_epoch_micros()) {
+    // Use the update time for a consistent ordering across devices.
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
 
 SavedTabGroup::SavedTabGroup(
     const std::u16string& title,
@@ -203,7 +224,15 @@ SavedTabGroup& SavedTabGroup::AddTabLocally(SavedTabGroupTab tab) {
 
 SavedTabGroup& SavedTabGroup::AddTabFromSync(SavedTabGroupTab tab) {
   InsertTabImpl(tab);
-  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  if (is_shared_tab_group()) {
+    // Shared tabs use unique positions for syncing, hence generate a local
+    // numbered position on remote update.
+    UpdateTabPositionsImpl();
+  } else {
+    // TODO(crbug.com/351357559): consider removing the following line for saved
+    // tab groups because update time is used from sync.
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  }
   return *this;
 }
 
@@ -288,37 +317,25 @@ void SavedTabGroup::InsertTabImpl(SavedTabGroupTab tab) {
     tab.SetPosition(saved_tabs_.size());
   }
 
-  // We can always safely insert the first tab at the end. We can also safely
-  // insert `tab` if its position is larger than the position at the end of
-  // `saved_tabs_`.
-  if (saved_tabs_.empty() ||
-      saved_tabs_[saved_tabs_.size() - 1].position() < tab.position()) {
-    saved_tabs_.emplace_back(std::move(tab));
+  if (is_shared_tab_group()) {
+    // Shared tab groups use unique positions for syncing tabs. The callers are
+    // expected to provide the valid index as a position to insert.
+    size_t position_to_insert =
+        std::min(saved_tabs_.size(), tab.position().value());
+    saved_tabs_.insert(saved_tabs_.begin() + position_to_insert,
+                       std::move(tab));
     return;
   }
 
-  // Insert `tab` in front of an element if one of these criteria
-  // are met:
-  // 1. The current index is larger than `tab`.
-  // 2. The current index has the same position as `tab` and is not
-  // the most recently updated position.
   for (size_t index = 0; index < saved_tabs_.size(); ++index) {
-    const SavedTabGroupTab& curr_tab = saved_tabs_[index];
-    bool curr_position_larger = curr_tab.position() > tab.position();
-    bool curr_position_same = curr_tab.position() == tab.position();
-    bool curr_position_least_recently_updated =
-        curr_tab.update_time_windows_epoch_micros() <
-        tab.update_time_windows_epoch_micros();
-
-    if (curr_position_larger ||
-        (curr_position_same && curr_position_least_recently_updated)) {
+    if (ShouldPlaceNewTabBeforeExistingTab(tab, saved_tabs_[index])) {
       saved_tabs_.insert(saved_tabs_.begin() + index, std::move(tab));
       return;
     }
   }
 
   // This can happen when the last element of the vector has the same position
-  // as `group` and was more recently updated.
+  // as `group` and was more recently updated, or `tab` is the last element.
   saved_tabs_.push_back(std::move(tab));
 }
 

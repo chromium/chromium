@@ -4,7 +4,7 @@
 
 // https://drafts.fxtf.org/geometry/#DOMPoint
 
-dictionary DOMPointInit {
+[ConvertibleToObject] dictionary DOMPointInit {
     unrestricted double x = 0;
     unrestricted double y = 0;
     unrestricted double z = 0;

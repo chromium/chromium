@@ -30,13 +30,13 @@ struct AX_BASE_EXPORT AXUpdatesAndEvents {
   ~AXUpdatesAndEvents();
 
   // The unique ID of the accessibility tree this event bundle applies to.
-  ui::AXTreeID ax_tree_id;
+  AXTreeID ax_tree_id;
 
   // Zero or more updates to the accessibility tree to apply first.
-  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<AXTreeUpdate> updates;
 
   // Zero or more events to fire after the tree updates have been applied.
-  std::vector<ui::AXEvent> events;
+  std::vector<AXEvent> events;
 };
 
 struct AX_BASE_EXPORT AXLocationChanges {
@@ -47,8 +47,8 @@ struct AX_BASE_EXPORT AXLocationChanges {
   ~AXLocationChanges();
 
   int id;
-  ui::AXTreeID ax_tree_id;
-  ui::AXRelativeBounds new_location;
+  AXTreeID ax_tree_id;
+  AXRelativeBounds new_location;
 };
 
 }  // namespace ui

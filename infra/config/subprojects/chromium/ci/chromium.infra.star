@@ -167,6 +167,9 @@ packager_builder(
                 "tools/android/avd/proto_creation/android_32_google_atd_x64_foldable.textpb",
                 "tools/android/avd/proto_creation/android_33_google_atd_x64.textpb",
 
+                # Desktop system images
+                "tools/android/avd/proto_creation/android_34_desktop_x64.textpb",
+
                 # TODO(hypan): Using more specific names for the configs below.
                 "tools/android/avd/proto_creation/generic_android19.textpb",
                 "tools/android/avd/proto_creation/generic_android22.textpb",
@@ -315,6 +318,10 @@ packager_builder(
             {
                 "sdk_package_name": "system-images;android-35;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-34;android-desktop;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/android-desktop/x86_64.yaml",
             },
         ],
     },

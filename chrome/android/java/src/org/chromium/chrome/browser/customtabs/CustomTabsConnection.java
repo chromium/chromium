@@ -71,9 +71,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
-import org.chromium.chrome.browser.page_insights.PageInsightsConfigRequest;
-import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
-import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
@@ -89,8 +86,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
-import org.chromium.content_public.browser.NavigationEntry;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -108,6 +103,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * Implementation of the ICustomTabsService interface.
@@ -672,6 +668,10 @@ public class CustomTabsConnection {
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.prefetch")) {
             if (!ChromeFeatureList.sPrefetchBrowserInitiatedTriggers.isEnabled()
                     || !ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
+                Log.w(
+                        TAG,
+                        "Prefetch failed because PrefetchBrowserInitiatedTriggers and/or"
+                                + " CCTNavigationalPrefetch is not enabled.");
                 return false;
             }
             return prefetchInternal(session, uri, options);
@@ -1697,12 +1697,13 @@ public class CustomTabsConnection {
 
     /**
      * Notifies the application that the user has selected to open the page in their browser.
+     *
      * @param session Session identifier.
      * @param webContents the WebContents of the tab being taken out of CCT.
      * @return true if success. To protect Chrome exceptions in the client application are swallowed
      *     and false is returned.
      */
-    boolean notifyOpenInBrowser(CustomTabsSessionToken session, WebContents webContents) {
+    public boolean notifyOpenInBrowser(CustomTabsSessionToken session, WebContents webContents) {
         // Reset the client data header for the WebContents since it's not a CCT tab anymore.
         if (webContents != null) CustomTabsConnectionJni.get().setClientDataHeader(webContents, "");
         return safeExtraCallback(
@@ -2067,66 +2068,22 @@ public class CustomTabsConnection {
         return false;
     }
 
+    /**
+     * Returns an alternate handler for taps on the Custom Tabs Omnibox, or null if the default
+     * handler should be used.
+     */
+    @Nullable
+    public Consumer<Tab> getAlternateOmniboxTapHandler(
+            BrowserServicesIntentDataProvider intentData) {
+        return null;
+    }
+
     /** Specifies what content should be presented by the CustomTabs instance in location bar. */
     public int getTitleVisibilityState(BrowserServicesIntentDataProvider intentData) {
         if (shouldEnableOmniboxForIntent(intentData)) {
             return CustomTabsIntent.NO_TITLE;
         }
         return intentData.getTitleVisibilityState();
-    }
-
-    /**
-     * Whether PageInsight Hub is enabled by the launching Intent. False by default.
-     *
-     * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
-     *     launched this CCT.
-     */
-    public boolean shouldEnablePageInsightsForIntent(BrowserServicesIntentDataProvider intentData) {
-        return false;
-    }
-
-    public PageInsightsIntentParams getPageInsightsIntentParams(
-            BrowserServicesIntentDataProvider intentData) {
-        return PageInsightsIntentParams.getDefaultInstance();
-    }
-
-    /** DEPRECATED - do not use. */
-    @Deprecated
-    public PageInsightsConfig getPageInsightsConfig(
-            BrowserServicesIntentDataProvider intentData,
-            @Nullable NavigationHandle navigationHandle,
-            @Nullable NavigationEntry navigationEntry,
-            Supplier<Profile> profileSupplier) {
-        // For all params, by default populate the most conservative values.
-        return PageInsightsConfig.newBuilder()
-                .setShouldAutoTrigger(false)
-                .setShouldXsurfaceLog(false)
-                .setIsInitialPage(false)
-                .setServerShouldNotLogOrPersonalize(true)
-                .build();
-    }
-
-    /**
-     * Returns how the Page Insights feature should be configured for the given params. Only applies
-     * if {@link #shouldEnablePageInsightsForIntent(BrowserServicesIntentDataProvider)} returns
-     * true.
-     *
-     * @param request {@link PageInsightsConfigRequest} containing info important for config
-     * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
-     *     launched this CCT.
-     * @param profileSupplier supplier of the current {@link Profile}.
-     */
-    public PageInsightsConfig getPageInsightsConfig(
-            PageInsightsConfigRequest request,
-            BrowserServicesIntentDataProvider intentData,
-            Supplier<Profile> profileSupplier) {
-        // For all params, by default populate the most conservative values.
-        return PageInsightsConfig.newBuilder()
-                .setShouldAutoTrigger(false)
-                .setShouldXsurfaceLog(false)
-                .setIsInitialPage(false)
-                .setServerShouldNotLogOrPersonalize(true)
-                .build();
     }
 
     /**

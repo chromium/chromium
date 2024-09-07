@@ -36,19 +36,19 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
                            const AXTreeID& tree_id,
                            int node_id,
                            ax::mojom::Mutation change_type);
-  void SendNodesRemovedEvent(const ui::AXTreeID& tree_id,
+  void SendNodesRemovedEvent(const AXTreeID& tree_id,
                              const std::vector<int>& ids);
-  void SendChildTreeIDEvent(const ui::AXTreeID& child_tree_id);
+  void SendChildTreeIDEvent(const AXTreeID& child_tree_id);
   void SendTreeDestroyedEvent(const AXTreeID& tree_id);
-  void SendActionResultEvent(const ui::AXActionData& data, bool result);
-  void SendGetTextLocationResult(const ui::AXActionData& data,
+  void SendActionResultEvent(const AXActionData& data, bool result);
+  void SendGetTextLocationResult(const AXActionData& data,
                                  const std::optional<gfx::Rect>& rect);
   void SendAutomationEvent(
       const AXTreeID& tree_id,
       const AXEvent& event,
       const gfx::Point& mouse_location,
       const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type);
-  void SendTreeSerializationError(const ui::AXTreeID& tree_id);
+  void SendTreeSerializationError(const AXTreeID& tree_id);
   void SendOnAllEventListenersRemoved();
 
   void AddV8Routes();
@@ -58,28 +58,28 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
       const std::string& name,
       base::RepeatingCallback<void(v8::Isolate* isolate,
                                    v8::ReturnValue<v8::Value> result,
-                                   ui::AutomationAXTreeWrapper* tree_wrapper,
-                                   ui::AXNode* node)> callback);
+                                   AutomationAXTreeWrapper* tree_wrapper,
+                                   AXNode* node)> callback);
 
   void RouteTreeIDFunction(
       const std::string& name,
       void (*callback)(v8::Isolate* isolate,
                        v8::ReturnValue<v8::Value> result,
-                       ui::AutomationAXTreeWrapper* tree_wrapper));
+                       AutomationAXTreeWrapper* tree_wrapper));
 
   void RouteNodeIDPlusAttributeFunction(
       const std::string& name,
       void (*callback)(v8::Isolate* isolate,
                        v8::ReturnValue<v8::Value> result,
-                       ui::AXTree* tree,
-                       ui::AXNode* node,
+                       AXTree* tree,
+                       AXNode* node,
                        const std::string& attribute_name));
   void RouteNodeIDPlusRangeFunction(
       const std::string& name,
       base::RepeatingCallback<void(v8::Isolate* isolate,
                                    v8::ReturnValue<v8::Value> result,
-                                   ui::AutomationAXTreeWrapper* tree_wrapper,
-                                   ui::AXNode* node,
+                                   AutomationAXTreeWrapper* tree_wrapper,
+                                   AXNode* node,
                                    int start,
                                    int end,
                                    bool clipped)> callback);
@@ -87,16 +87,16 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
       const std::string& name,
       base::RepeatingCallback<void(v8::Isolate* isolate,
                                    v8::ReturnValue<v8::Value> result,
-                                   ui::AutomationAXTreeWrapper* tree_wrapper,
-                                   ui::AXNode* node,
+                                   AutomationAXTreeWrapper* tree_wrapper,
+                                   AXNode* node,
                                    const std::string& strVal,
                                    bool boolVal)> callback);
   void RouteNodeIDPlusDimensionsFunction(
       const std::string& name,
       base::RepeatingCallback<void(v8::Isolate* isolate,
                                    v8::ReturnValue<v8::Value> result,
-                                   ui::AutomationAXTreeWrapper* tree_wrapper,
-                                   ui::AXNode* node,
+                                   AutomationAXTreeWrapper* tree_wrapper,
+                                   AXNode* node,
                                    int start,
                                    int end,
                                    int width,
@@ -106,9 +106,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
       base::RepeatingCallback<
           void(v8::Isolate* isolate,
                v8::ReturnValue<v8::Value> result,
-               ui::AutomationAXTreeWrapper* tree_wrapper,
-               ui::AXNode* node,
-               const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
+               AutomationAXTreeWrapper* tree_wrapper,
+               AXNode* node,
+               const std::tuple<ax::mojom::Event, AXEventGenerator::Event>&
                    event_type)> callback);
 
   // Helper functions which reference this and need to be bound.
@@ -183,8 +183,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
       const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type);
   void GetMarkers(v8::Isolate* isolate,
                   v8::ReturnValue<v8::Value> result,
-                  ui::AutomationAXTreeWrapper* tree_wrapper,
-                  ui::AXNode* node) const;
+                  AutomationAXTreeWrapper* tree_wrapper,
+                  AXNode* node) const;
   void GetFocus(const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   //
@@ -239,8 +239,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
 
   void GetImageAnnotation(v8::Isolate* isolate,
                           v8::ReturnValue<v8::Value> result,
-                          ui::AutomationAXTreeWrapper* tree_wrapper,
-                          ui::AXNode* node) const;
+                          AutomationAXTreeWrapper* tree_wrapper,
+                          AXNode* node) const;
 
   // This is called by automation_internal_custom_bindings.js to indicate
   // that an API was called that needs access to accessibility trees.

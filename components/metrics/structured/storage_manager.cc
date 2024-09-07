@@ -11,13 +11,15 @@ StorageManager::StorageManager() = default;
 StorageManager::~StorageManager() = default;
 
 void StorageManager::NotifyOnFlushed(const FlushedKey& key) {
-  CHECK(delegate_);
-  delegate_->OnFlushed(key);
+  if (delegate_) {
+    delegate_->OnFlushed(key);
+  }
 }
 
 void StorageManager::NotifyOnDeleted(const FlushedKey& key,
                                      DeleteReason reason) {
-  CHECK(delegate_);
-  delegate_->OnDeleted(key, reason);
+  if (delegate_) {
+    delegate_->OnDeleted(key, reason);
+  }
 }
 }  // namespace metrics::structured

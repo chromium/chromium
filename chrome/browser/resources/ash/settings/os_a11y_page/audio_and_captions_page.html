@@ -58,13 +58,14 @@
       </div>
       <div class="button-container">
         <cr-button id="notificationPreviewBtn"
-            on-click="previewFlashNotification_">
+            on-click="previewFlashNotification_"
+            aria-label="$i18n{flashNotificationsPreviewButtonLabel}">
           $i18n{flashNotificationsPreviewButton}
         </cr-button>
       </div>
       <settings-dropdown-menu id="notificationColorDropdown"
           pref="{{prefs.settings.a11y.flash_notifications_color}}"
-          aria-labeledby="notificationColorOptionsLabel"
+          label="$i18n{flashNotificationsColorOptionsLabel}"
           menu-options="[[notificationColorOptions_]]">
       </settings-dropdown-menu>
     </div>

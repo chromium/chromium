@@ -7,16 +7,24 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/i18n/rtl.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/strcat.h"
+#import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_label.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_label.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+
+using autofill::FillingProduct;
+using autofill::SuggestionType;
+using base::UmaHistogramSparse;
 
 namespace {
 
@@ -40,6 +48,38 @@ constexpr CGFloat kScrollHintInitialSpacing = 50;
 
 // The amount of time (in seconds) the scroll hint animation takes.
 constexpr CGFloat kScrollHintDuration = 0.5;
+
+// Logs the right histogram when a suggestion from the keyboard accessory is
+// selected. `suggestion_type` is the type of the selected suggestion and
+// `index` is the position of the selected position among the available
+// suggestions.
+void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
+                                      NSInteger index) {
+  FillingProduct filling_product =
+      GetFillingProductFromSuggestionType(suggestion_type);
+  std::string filling_product_bucket;
+  switch (filling_product) {
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kIban:
+    case FillingProduct::kStandaloneCvc:
+    case FillingProduct::kAddress:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPassword:
+    case FillingProduct::kNone:
+    case FillingProduct::kAutocomplete:
+      filling_product_bucket = FillingProductToString(filling_product);
+      break;
+    case FillingProduct::kCompose:
+    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kMerchantPromoCode:
+      // These cases are currently not available on iOS.
+      NOTREACHED_NORETURN();
+  }
+  UmaHistogramSparse(
+      base::StrCat({"Autofill.UserAcceptedSuggestionAtIndex.",
+                    filling_product_bucket, ".KeyboardAccessory"}),
+      index);
+}
 
 }  // namespace
 
@@ -143,8 +183,12 @@ constexpr CGFloat kScrollHintDuration = 0.5;
       [self.stackView.arrangedSubviews indexOfObject:formSuggestionLabel];
   DCHECK(index != NSNotFound);
   FormSuggestion* suggestion = [self.suggestions objectAtIndex:index];
+  LogSelectedSuggestionIndexMetric(suggestion.type, index);
+  base::RecordAction(
+      base::UserMetricsAction("KeyboardAccessory_SuggestionAccepted"));
   [self.formSuggestionViewDelegate formSuggestionView:self
-                                  didAcceptSuggestion:suggestion];
+                                  didAcceptSuggestion:suggestion
+                                              atIndex:index];
 }
 
 #pragma mark - Helper methods

@@ -57,7 +57,7 @@ ProfileProvider::ProfileProvider()
 ProfileProvider::~ProfileProvider() {
   ash::LoginState::Get()->RemoveObserver(this);
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  base::PowerMonitor::RemovePowerThermalObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerThermalObserver(this);
   if (jank_monitor_) {
     jank_monitor_->RemoveObserver(this);
     jank_monitor_->Destroy();
@@ -82,7 +82,8 @@ void ProfileProvider::Init() {
 
   // Register as an observer of thermal state changes.
   base::PowerThermalObserver::DeviceThermalState thermal_state =
-      base::PowerMonitor::AddPowerStateObserverAndReturnPowerThermalState(this);
+      base::PowerMonitor::GetInstance()
+          ->AddPowerStateObserverAndReturnPowerThermalState(this);
   OnThermalStateChange(thermal_state);
 
   // Check the login state. At the time of writing, this class is instantiated

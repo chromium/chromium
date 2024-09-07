@@ -42,6 +42,12 @@ class TestAudioEncoder final : public media::mojom::AudioEncoder {
     std::move(init_cb_).Run(media::EncoderStatus::Codes::kOk);
   }
 
+  void FinishInitializationWithFailed() {
+    CHECK(init_cb_);
+    std::move(init_cb_).Run(
+        media::EncoderStatus::Codes::kEncoderInitializeTwice);
+  }
+
   // media::mojom::AudioEncoder:
   void Initialize(
       mojo::PendingAssociatedRemote<media::mojom::AudioEncoderClient> client,
@@ -179,11 +185,14 @@ class AudioTrackMojoEncoderTest : public testing::Test {
   }
   AudioTrackMojoEncoder& audio_track_encoder() { return audio_track_encoder_; }
   int output_count() const { return output_count_; }
+  media::EncoderStatus::Codes error_code() const { return error_code_; }
 
  private:
   test::TaskEnvironment task_environment_;
   TestInterfaceFactory interface_factory_;
   int output_count_ = 0;
+  media::EncoderStatus::Codes error_code_ = media::EncoderStatus::Codes::kOk;
+
   AudioTrackMojoEncoder audio_track_encoder_{
       scheduler::GetSequencedTaskRunnerForTesting(),
       AudioTrackRecorder::CodecId::kAac,
@@ -193,7 +202,13 @@ class AudioTrackMojoEncoderTest : public testing::Test {
                  std::string /*encoded_data*/,
                  std::optional<
                      media::AudioEncoder::CodecDescription> /*codec_desc*/,
-                 base::TimeTicks /*capture_time*/) { ++output_count_; })};
+                 base::TimeTicks /*capture_time*/) { ++output_count_; }),
+      /*on_encoded_audio_error_cb=*/
+      base::BindLambdaForTesting([this](media::EncoderStatus status) {
+        ASSERT_EQ(error_code_, media::EncoderStatus::Codes::kOk);
+        ASSERT_FALSE(status.is_ok());
+        error_code_ = status.code();
+      })};
 };
 
 TEST_F(AudioTrackMojoEncoderTest, InputArrivingAfterInitialization) {
@@ -261,6 +276,28 @@ TEST_F(AudioTrackMojoEncoderTest, PausedWhileUninitialized) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(output_count(), 2);
+}
+
+TEST_F(AudioTrackMojoEncoderTest, OnSetFormatError) {
+  audio_encoder().FinishInitialization();
+  media::AudioParameters invalid_params = media::TestAudioParameters::Normal();
+  invalid_params.set_sample_rate(0);
+  audio_track_encoder().OnSetFormat(invalid_params);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(error_code(),
+            media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
+}
+
+TEST_F(AudioTrackMojoEncoderTest, EncoderInitializationError) {
+  audio_encoder().FinishInitializationWithFailed();
+  base::RunLoop().RunUntilIdle();
+
+  audio_track_encoder().EncodeAudio(GenerateInput(), base::TimeTicks::Now());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(output_count(), 0);
+  EXPECT_EQ(error_code(), media::EncoderStatus::Codes::kEncoderInitializeTwice);
 }
 
 }  // namespace blink

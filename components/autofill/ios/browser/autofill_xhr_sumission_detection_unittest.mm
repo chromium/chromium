@@ -12,7 +12,6 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/test_autofill_client.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
@@ -58,10 +57,6 @@ class TestingAutofillManager : public BrowserAutofillManager {
 // AutofillDriverIOS.
 class AutofillXHRSubmissionDetectionTest : public PlatformTest {
  public:
-  AutofillXHRSubmissionDetectionTest()
-      : PlatformTest(),
-        feature_list_(features::kAutofillEnableXHRSubmissionDetectionIOS) {}
-
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -106,7 +101,6 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
         main_frame_driver()->GetAutofillManager());
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   autofill::TestAutofillClient autofill_client_;
   web::FakeWebState web_state_;
@@ -177,12 +171,6 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
       /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/true,
       /*expected_bucket_count=*/1);
   histogram_tester_->ExpectUniqueSample(
-      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram, /*sample=*/false,
-      /*expected_bucket_count=*/1);
-  histogram_tester_->ExpectUniqueSample(
-      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/2,
-      /*expected_bucket_count=*/1);
-  histogram_tester_->ExpectUniqueSample(
       /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/0,
       /*expected_bucket_count=*/1);
 }
@@ -224,12 +212,6 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
       /*expected_count=*/1);
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester_->ExpectUniqueSample(
-      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram, /*sample=*/false,
-      /*expected_bucket_count=*/1);
-  histogram_tester_->ExpectUniqueSample(
-      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/1,
       /*expected_bucket_count=*/1);
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/0,
@@ -283,12 +265,6 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/false,
       /*expected_bucket_count=*/1);
-  histogram_tester_->ExpectTotalCount(
-      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram,
-      /*expected_count=*/0);
-  histogram_tester_->ExpectUniqueSample(
-      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/0,
-      /*expected_bucket_count=*/1);
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/1,
       /*expected_bucket_count=*/1);
@@ -316,12 +292,6 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
       /*expected_count=*/1);
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester_->ExpectUniqueSample(
-      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram, /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester_->ExpectUniqueSample(
-      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/0,
       /*expected_bucket_count=*/1);
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/1,
@@ -355,12 +325,6 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
       /*expected_count=*/0);
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/false,
-      /*expected_bucket_count=*/1);
-  histogram_tester_->ExpectTotalCount(
-      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram,
-      /*expected_count=*/0);
-  histogram_tester_->ExpectUniqueSample(
-      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/1,
       /*expected_bucket_count=*/1);
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/0,

@@ -72,7 +72,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service/app_icon",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/test_support",

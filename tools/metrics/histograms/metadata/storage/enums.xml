@@ -26,6 +26,15 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AdProtoDecompressionOutcome) -->
+
+<enum name="AdProtoDecompressionOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:AdProtoDecompressionOutcome) -->
+
 <enum name="AutograntViaFedCmOutcome">
   <int value="0" label="Allowed"/>
   <int value="1" label="Denied by permissions policy"/>
@@ -101,6 +110,26 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Filenames"/>
 </enum>
 
+<!-- LINT.IfChange(FileErrorCode) -->
+
+<enum name="FileErrorCode">
+  <int value="0" label="kOK"/>
+  <int value="1" label="kNotFoundErr"/>
+  <int value="2" label="kSecurityErr"/>
+  <int value="3" label="kAbortErr"/>
+  <int value="4" label="kNotReadableErr"/>
+  <int value="5" label="kEncodingErr"/>
+  <int value="6" label="kNoModificationAllowedErr"/>
+  <int value="7" label="kInvalidStateErr"/>
+  <int value="8" label="kSyntaxErr"/>
+  <int value="9" label="kInvalidModificationErr"/>
+  <int value="10" label="kQuotaExceededErr"/>
+  <int value="11" label="kTypeMismatchErr"/>
+  <int value="12" label="kPathExistsErr"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/fileapi/file_error.h:FileErrorCode) -->
+
 <enum name="FileReaderLoaderFailureType">
   <int value="0" label="Mojo pipe creation failed"/>
   <int value="1" label="Data incomplete after synchronous reading"/>
@@ -167,6 +196,8 @@ chromium-metrics-reviews@google.com.
       label="Windows, reached the root directory and couldn't watch it"/>
   <int value="4" label="Windows, error when calling CreateIoCompletionPort"/>
   <int value="5" label="Windows, error when calling ReadDirectoryChangesW"/>
+  <int value="6" label="Mac, error when the resolved target path is empty"/>
+  <int value="7" label="Mac, error when starting the FSEvents event stream"/>
 </enum>
 
 <enum name="ImportantSitesReason">
@@ -514,6 +545,7 @@ chromium-metrics-reviews@google.com.
   <int value="13"
       label="Denied due to an abort by browser (e.g. RenderFrameHost was
              deleted)"/>
+  <int value="14" label="Allowed by FedCM connection"/>
 </enum>
 
 <enum name="StorageAccessResult">

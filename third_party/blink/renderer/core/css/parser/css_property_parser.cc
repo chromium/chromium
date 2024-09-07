@@ -47,6 +47,7 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
     case StyleRule::kStyle:
       return true;
     case StyleRule::kPage:
+    case StyleRule::kPageMargin:
       // TODO(sesse): Limit the allowed properties here.
       // https://www.w3.org/TR/css-page-3/#page-property-list
       // https://www.w3.org/TR/css-page-3/#margin-property-list
@@ -130,7 +131,7 @@ StringView StripInitialWhitespace(StringView value) {
 bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
                                         bool allow_important_annotation,
                                         StyleRule::RuleType rule_type) {
-  if (ConsumeCSSWideKeyword(unresolved_property, rule_type)) {
+  if (ParseCSSWideKeyword(unresolved_property, rule_type)) {
     return true;
   }
 
@@ -209,42 +210,32 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   stream_.EnsureLookAhead();
   stream_.Restore(savepoint);
 
-  CSSTokenizedValue value =
-      CSSParserImpl::ConsumeRestrictedPropertyValue(stream_);
-  if (!stream_.AtEnd()) {
+  bool important = false;
+  CSSVariableData* variable_data =
+      CSSVariableParser::ConsumeUnparsedDeclaration(
+          stream_,
+          /*allow_important_annotation=*/true,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/true,
+          /*restricted_value=*/true, /*comma_ends_declaration=*/false,
+          important, context_->GetExecutionContext());
+  if (!variable_data) {
     return false;
   }
 
-  const bool important =
-      CSSParserImpl::RemoveImportantAnnotationIfPresent(value);
-  value.text =
-      CSSVariableParser::StripTrailingWhitespaceAndComments(value.text);
-
-  if (CSSVariableParser::ContainsValidVariableReferences(
-          value.range, context_->GetExecutionContext())) {
-    if (value.text.length() > CSSVariableData::kMaxVariableBytes) {
-      return false;
-    }
-
-    bool is_animation_tainted = false;
-    auto* variable = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-        CSSVariableData::Create(std::move(value), is_animation_tainted, true),
-        context_);
-
-    if (is_shorthand) {
-      const cssvalue::CSSPendingSubstitutionValue& pending_value =
-          *MakeGarbageCollected<cssvalue::CSSPendingSubstitutionValue>(
-              property_id, variable);
-      css_parsing_utils::AddExpandedPropertyForValue(
-          property_id, pending_value, important, *parsed_properties_);
-    } else {
-      AddProperty(property_id, CSSPropertyID::kInvalid, *variable, important,
-                  IsImplicitProperty::kNotImplicit, *parsed_properties_);
-    }
-    return true;
+  auto* variable = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
+      variable_data, context_);
+  if (is_shorthand) {
+    const cssvalue::CSSPendingSubstitutionValue& pending_value =
+        *MakeGarbageCollected<cssvalue::CSSPendingSubstitutionValue>(
+            property_id, variable);
+    css_parsing_utils::AddExpandedPropertyForValue(
+        property_id, pending_value, important, *parsed_properties_);
+  } else {
+    AddProperty(property_id, CSSPropertyID::kInvalid, *variable, important,
+                IsImplicitProperty::kNotImplicit, *parsed_properties_);
   }
-
-  return false;
+  return true;
 }
 
 static inline bool IsExposedInMode(const ExecutionContext* execution_context,
@@ -421,22 +412,36 @@ CSSValueID CssValueKeywordID(StringView string) {
                          : CssValueKeywordID(string.Characters16(), length);
 }
 
-bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
-                                              bool allow_important_annotation) {
-  CSSParserTokenStream::State savepoint = stream_.Save();
+const CSSValue* CSSPropertyParser::ConsumeCSSWideKeyword(
+    CSSParserTokenStream& stream,
+    bool allow_important_annotation,
+    bool& important) {
+  CSSParserTokenStream::State savepoint = stream.Save();
 
-  const CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream_);
+  const CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
   if (!value) {
     // No need to Restore(), we are at the right spot anyway.
     // (We do this instead of relying on CSSParserTokenStream's
     // Restore() optimization, as this path is so hot.)
-    return false;
+    return nullptr;
   }
 
-  bool important = css_parsing_utils::MaybeConsumeImportant(
-      stream_, allow_important_annotation);
-  if (!stream_.AtEnd()) {
-    stream_.Restore(savepoint);
+  important = css_parsing_utils::MaybeConsumeImportant(
+      stream, allow_important_annotation);
+  if (!stream.AtEnd()) {
+    stream.Restore(savepoint);
+    return nullptr;
+  }
+
+  return value;
+}
+
+bool CSSPropertyParser::ParseCSSWideKeyword(CSSPropertyID unresolved_property,
+                                            bool allow_important_annotation) {
+  bool important;
+  const CSSValue* value =
+      ConsumeCSSWideKeyword(stream_, allow_important_annotation, important);
+  if (!value) {
     return false;
   }
 
@@ -464,22 +469,8 @@ bool CSSPropertyParser::ParseFontFaceDescriptor(
     return false;
   }
 
-  // ParseFontFaceDescriptor() could want the original text,
-  // for re-tokenization for the specific case of the “unicode-range”
-  // property (which is the only property where UnicodeRange productions
-  // are allowed). Thus, we need to keep track of exactly what
-  // we tokenized, so that we can also send in the original text.
-  //
-  // This should obviously go away when everything uses
-  // the streaming parser.
-  wtf_size_t start_offset = stream_.LookAheadOffset();
-  CSSParserTokenRange range = stream_.ConsumeUntilPeekedTypeIs();
-  wtf_size_t end_offset = stream_.Offset();
-  StringView original_text =
-      stream_.StringRangeAt(start_offset, end_offset - start_offset);
-
-  CSSValue* parsed_value = AtRuleDescriptorParser::ParseFontFaceDescriptor(
-      id, {range, original_text}, *context_);
+  CSSValue* parsed_value =
+      AtRuleDescriptorParser::ParseFontFaceDescriptor(id, stream_, *context_);
   if (!parsed_value) {
     return false;
   }

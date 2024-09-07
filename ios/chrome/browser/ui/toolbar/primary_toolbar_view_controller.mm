@@ -29,9 +29,11 @@
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 @interface PrimaryToolbarViewController ()
+
 // Redefined to be a PrimaryToolbarView.
 @property(nonatomic, strong) PrimaryToolbarView* view;
 @property(nonatomic, assign) BOOL isNTP;
@@ -39,6 +41,7 @@
 @property(nonatomic, assign) CGFloat previousFullscreenProgress;
 // Pan Gesture Recognizer for the view revealing pan gesture handler.
 @property(nonatomic, weak) UIPanGestureRecognizer* panGestureRecognizer;
+
 @end
 
 @implementation PrimaryToolbarViewController
@@ -153,12 +156,28 @@
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  self.view.locationBarBottomConstraint.constant =
-      [self verticalMarginForLocationBarForFullscreenProgress:
-                self.previousFullscreenProgress];
-  self.view.topCornersRounded = NO;
-  [self.delegate
-      viewControllerTraitCollectionDidChange:previousTraitCollection];
+  // iOS 17 and later introduce a new way to handle trait changes. If the OS
+  // version is iOS 17 or later, we skip the old way of updating views.
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  [self updateViews:self.view previousTraitCollection:previousTraitCollection];
+}
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+
+  // On iOS 17 and later, we register for specific trait changes (vertical and
+  // horizontal size classes) and provide a handler method
+  // `updateViews:previousTraitCollection:` to be called when those traits
+  // change.
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:@[
+      UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self
+    ]
+                       withAction:@selector(updateViews:
+                                      previousTraitCollection:)];
+  }
 }
 
 #pragma mark - UIResponder
@@ -176,6 +195,13 @@
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
   [self.delegate close];
+}
+
+#pragma mark - Public
+
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
+  CHECK(IsTabGroupIndicatorEnabled());
+  self.view.tabGroupIndicatorView = view;
 }
 
 #pragma mark - Property accessors
@@ -219,7 +245,9 @@
   CGFloat alphaValue = fmax(progress * 2 - 1, 0);
   self.view.leadingStackView.alpha = alphaValue;
   self.view.trailingStackView.alpha = alphaValue;
-
+  if (IsTabGroupIndicatorEnabled()) {
+    self.view.tabGroupIndicatorView.alpha = alphaValue;
+  }
   self.view.locationBarBottomConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:progress];
 }
@@ -284,6 +312,21 @@
 }
 
 #pragma mark - Private
+
+// Adjusts the layout and appearance of views in response to changes in
+// available space and trait collections.
+- (void)updateViews:(UIView*)updatedView
+    previousTraitCollection:(UITraitCollection*)previousTraitCollection {
+  self.view.locationBarBottomConstraint.constant =
+      [self verticalMarginForLocationBarForFullscreenProgress:
+                self.previousFullscreenProgress];
+  self.view.topCornersRounded = NO;
+  if (IsTabGroupIndicatorEnabled()) {
+    [self.view updateTabGroupIndicatorAvailability];
+  }
+  [self.delegate
+      viewControllerTraitCollectionDidChange:previousTraitCollection];
+}
 
 - (CGFloat)clampedFontSizeMultiplier {
   return ToolbarClampedFontSizeMultiplier(

@@ -7,17 +7,17 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 
-import android.graphics.drawable.Drawable;
+import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -43,16 +44,16 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
 import org.chromium.components.tab_group_sync.TriggerSource;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
 public class TabGroupListMediator {
@@ -79,7 +80,7 @@ public class TabGroupListMediator {
     private final ModelList mModelList;
     private final PropertyModel mPropertyModel;
     private final TabGroupModelFilter mFilter;
-    private final BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
+    private final FaviconResolver mFaviconResolver;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final @Nullable DataSharingService mDataSharingService;
     private final IdentityManager mIdentityManager;
@@ -87,6 +88,8 @@ public class TabGroupListMediator {
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final ActionConfirmationManager mActionConfirmationManager;
     private final SyncService mSyncService;
+    private final ModalDialogManager mModalDialogManager;
+    private final Resources mResources;
     private final CallbackController mCallbackController = new CallbackController();
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
@@ -133,6 +136,12 @@ public class TabGroupListMediator {
                 public void onTabGroupRemoved(String syncId, @TriggerSource int source) {
                     mPendingRefresh.post();
                 }
+
+                @Override
+                public void onTabGroupLocalIdChanged(
+                        String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {
+                    mPendingRefresh.post();
+                }
             };
 
     private final SyncService.SyncStateChangedListener mSyncStateChangeListener =
@@ -157,19 +166,23 @@ public class TabGroupListMediator {
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
      * @param actionConfirmationManager Used to show confirmation dialogs.
      * @param syncService Used to query active sync types.
+     * @param modalDialogManager Used to show error dialogs.
+     * @param resources Used to load localized resources.
      */
     public TabGroupListMediator(
             ModelList modelList,
             PropertyModel propertyModel,
             TabGroupModelFilter filter,
-            BiConsumer<GURL, Callback<Drawable>> faviconResolver,
+            FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @Nullable DataSharingService dataSharingService,
             IdentityManager identityManager,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ActionConfirmationManager actionConfirmationManager,
-            SyncService syncService) {
+            SyncService syncService,
+            ModalDialogManager modalDialogManager,
+            Resources resources) {
         mModelList = modelList;
         mPropertyModel = propertyModel;
         mFilter = filter;
@@ -181,6 +194,8 @@ public class TabGroupListMediator {
         mTabGroupUiActionHandler = tabGroupUiActionHandler;
         mActionConfirmationManager = actionConfirmationManager;
         mSyncService = syncService;
+        mModalDialogManager = modalDialogManager;
+        mResources = resources;
 
         mFilter.addObserver(mTabModelObserver);
         if (mTabGroupSyncService != null) {
@@ -258,7 +273,7 @@ public class TabGroupListMediator {
             ListItem listItem = new ListItem(0, model);
             mModelList.add(listItem);
 
-            if (isShared) {
+            if (isShared && mDataSharingService != null) {
                 if (currentAccountInfo == null) {
                     currentAccountInfo = getAccountInfo();
                 }
@@ -266,11 +281,12 @@ public class TabGroupListMediator {
                 mDataSharingService.readGroup(
                         collaborationId,
                         (GroupDataOrFailureOutcome outcome) ->
-                                onGroupDataOrFailureOutcome(outcome, finalAccountInfo, model));
+                                onGroupDataOrFailureOutcome(
+                                        outcome, finalAccountInfo, model, savedTabGroup));
             }
         }
 
-        boolean empty = mModelList.size() <= 0;
+        boolean empty = mModelList.isEmpty();
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
     }
 
@@ -279,10 +295,17 @@ public class TabGroupListMediator {
     }
 
     private void onGroupDataOrFailureOutcome(
-            GroupDataOrFailureOutcome outcome, CoreAccountInfo accountInfo, PropertyModel model) {
+            GroupDataOrFailureOutcome outcome,
+            CoreAccountInfo accountInfo,
+            PropertyModel model,
+            SavedTabGroup savedTabGroup) {
         @MemberRole
         int memberRole = TabShareUtils.getSelfMemberRole(outcome, accountInfo.getGaiaId());
         @Nullable GroupData groupData = outcome.groupData;
+        if (groupData == null || memberRole == MemberRole.UNKNOWN) {
+            // Likely no longer shared.
+            model.set(DELETE_RUNNABLE, () -> processDeleteGroup(savedTabGroup));
+        }
         if (memberRole == MemberRole.OWNER) {
             model.set(
                     DELETE_RUNNABLE,
@@ -348,7 +371,7 @@ public class TabGroupListMediator {
                 groupTitle,
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        mDataSharingService.deleteGroup(groupId, null);
+                        mDataSharingService.deleteGroup(groupId, this::onLeaveOrDeleteGroup);
                     }
                 });
     }
@@ -358,9 +381,23 @@ public class TabGroupListMediator {
                 groupTitle,
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        mDataSharingService.removeMember(groupId, memberEmail, null);
+                        mDataSharingService.removeMember(
+                                groupId, memberEmail, this::onLeaveOrDeleteGroup);
                     }
                 });
+    }
+
+    private void onLeaveOrDeleteGroup(@PeopleGroupActionOutcome int outcome) {
+        if (outcome == PeopleGroupActionOutcome.SUCCESS) {
+            mPendingRefresh.post();
+        } else {
+            ModalDialogUtils.showOneButtonConfirmation(
+                    mModalDialogManager,
+                    mResources,
+                    R.string.data_sharing_generic_failure_title,
+                    R.string.data_sharing_generic_failure_description,
+                    R.string.data_sharing_invitation_failure_button);
+        }
     }
 
     private void deleteGroup(SavedTabGroup savedTabGroup) {

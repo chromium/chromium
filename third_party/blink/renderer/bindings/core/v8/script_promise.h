@@ -177,15 +177,6 @@ class ScriptPromise : public ScriptPromiseUntyped {
         ScriptPromiseUntyped::RejectRaw(script_state, value));
   }
 
-  static ScriptPromise<IDLResolvedType> Reject(
-      ScriptState* script_state,
-      ExceptionState& exception_state) {
-    DCHECK(exception_state.HadException());
-    auto promise = Reject(script_state, exception_state.GetException());
-    exception_state.ClearException();
-    return promise;
-  }
-
   void MarkAsSilent() {
     if (!IsEmpty()) {
       V8Promise()->MarkAsSilent();

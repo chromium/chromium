@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 namespace data_controls {
 
@@ -40,7 +41,8 @@ class DesktopDataControlsDialogTest : public InProcessBrowserTest,
     ++constructor_called_count_;
 
     ASSERT_TRUE(dialog);
-    ASSERT_EQ(dialog->GetDefaultDialogButton(), ui::DIALOG_BUTTON_OK);
+    ASSERT_EQ(dialog->GetDefaultDialogButton(),
+              static_cast<int>(ui::mojom::DialogButton::kOk));
     ASSERT_FALSE(base::Contains(dialog_close_loops_, dialog));
     ASSERT_FALSE(base::Contains(dialog_close_callbacks_, dialog));
 

@@ -40,14 +40,8 @@ class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
   // Element must be on a surface that is visible and not occluded (for example,
   // a widget, or the active tab in a browser).
   //
-  // If `element` is a TrackedElementWebContents of any sort, it is useful to
-  // verify that the contents you intend to take a screenshot of are present and
-  // rendered before taking the screenshot. One way to do this is by calling:
-  //  - SendEventOnElementMinimumSize() for pages in browser tabs
-  //  - SendEventOnWebViewMinimumSize() for secondary WebUI
-  // These are especially important if your WebView contains any dynamic content
-  // that may populate and display after the page is loaded. After you receive
-  // the event, you should be able to call CompareScreenshot() safely.
+  // Be sure that everything is completely loaded before attempting a
+  // screenshot!
   //
   // In order to actually take screenshots:
   // - Your test must be in browser_tests or interactive_ui_tests

@@ -109,6 +109,9 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_FM_REGISTRATION_TOKEN:
       return dm_protocol::kValueRequestFmRegistrationTokenUpload;
+    case DeviceManagementService::JobConfiguration::
+        TYPE_POLICY_AGENT_REGISTRATION:
+      return dm_protocol::kValueRequestRegisterPolicyAgent;
   }
   NOTREACHED_IN_MIGRATION() << "Invalid job type " << type;
   return "";
@@ -242,8 +245,9 @@ DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
     int net_error,
     int response_code,
     const std::string& response_body) {
-  if (net_error != net::OK)
+  if (net_error != net::OK) {
     return DM_STATUS_REQUEST_FAILED;
+  }
 
   switch (response_code) {
     case DeviceManagementService::kSuccess:
@@ -304,8 +308,9 @@ DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
     default:
       // Handle all unknown 5xx HTTP error codes as temporary and any other
       // unknown error as one that needs more time to recover.
-      if (response_code >= 500 && response_code <= 599)
+      if (response_code >= 500 && response_code <= 599) {
         return DM_STATUS_TEMPORARY_UNAVAILABLE;
+      }
 
       return DM_STATUS_HTTP_STATUS_ERROR;
   }

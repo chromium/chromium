@@ -162,26 +162,43 @@ void FileSystemAccessWatcherManager::GetDirectoryObservation(
 void FileSystemAccessWatcherManager::OnRawChange(
     const storage::FileSystemURL& changed_url,
     bool error,
-    const FileSystemAccessChangeSource::ChangeInfo& change_info,
+    const FileSystemAccessChangeSource::ChangeInfo& raw_change_info,
     const FileSystemAccessWatchScope& scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/40268906): Batch changes.
 
-  // Changes to swap files are implementation details and should be ignored.
+  // Writes via FileSystemWritableFileStream are done on a temporary swap file,
+  // so ignore the swap file changes. When a writable is closed, the swap file
+  // overrides the original file, producing a moved event. We will convert this
+  // "moved" event to "modified" below.
   if (changed_url.virtual_path().FinalExtension() ==
       FILE_PATH_LITERAL(".crswap")) {
     return;
   }
 
-  if (change_info != FileSystemAccessChangeSource::ChangeInfo()) {
+  if (raw_change_info != FileSystemAccessChangeSource::ChangeInfo()) {
     // If non-empty ChangeInfo exists, this change should not be an error.
     CHECK(!error);
   }
   // For ChangeType::kMoved, ChangeInfo.moved_from_path is expected.
-  bool is_move_event = change_info.change_type ==
+  bool is_move_event = raw_change_info.change_type ==
                        FileSystemAccessChangeSource::ChangeType::kMoved;
-  CHECK(!is_move_event || change_info.moved_from_path.has_value());
+  CHECK(!is_move_event || raw_change_info.moved_from_path.has_value());
+
+  // Convert the "moved" event to "modified" if the event is from the swap file
+  // overriding the original file due to `FileSystemWritableFileStream.close()`.
+  FileSystemAccessChangeSource::ChangeInfo change_info = raw_change_info;
+  if (is_move_event &&
+      raw_change_info.moved_from_path.value().FinalExtension() ==
+          FILE_PATH_LITERAL(".crswap")) {
+    is_move_event = false;
+    change_info = FileSystemAccessChangeSource::ChangeInfo(
+        raw_change_info.file_path_type,
+        FileSystemAccessChangeSource::ChangeType::kModified,
+        raw_change_info.modified_path);
+  }
+
   std::optional<storage::FileSystemURL> moved_from_url =
       is_move_event ? std::make_optional(
                           ToFileSystemURL(*manager()->context(), changed_url,
@@ -198,6 +215,15 @@ void FileSystemAccessWatcherManager::OnRawChange(
     // matching on Local FS.
     if (scope.GetWatchType() != WatchType::kAllBucketFileSystems &&
         observation.scope() != scope) {
+      continue;
+    }
+
+    // On both Local and Bucket File Systems, errors shouldn't be sent to
+    // observations based on their scope but based on the source the
+    // observations are tied to.
+    if (error) {
+      observation.NotifyOfChanges(
+          changes_or_error, base::PassKey<FileSystemAccessWatcherManager>());
       continue;
     }
     bool modified_url_in_scope = observation.scope().Contains(changed_url);

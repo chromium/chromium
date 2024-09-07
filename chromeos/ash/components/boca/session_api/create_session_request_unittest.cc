@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -44,7 +45,6 @@ using ::testing::Truly;
 
 namespace {
 const char kTestUserAgent[] = "test-user-agent";
-}
 
 class MockRequestHandler {
  public:
@@ -64,6 +64,8 @@ class MockRequestHandler {
               HandleRequest,
               (const HttpRequest&));
 };
+
+}  // namespace
 
 namespace ash::boca {
 
@@ -111,7 +113,7 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithFullInputAndSucceed) {
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
   std::string gaia_id = "1";
-  int session_duration = 120;
+  base::TimeDelta session_duration = base::Seconds(120);
 
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
@@ -209,7 +211,7 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndSucceed) {
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
 
   std::string gaia_id = "1";
-  int session_duration = 120;
+  base::TimeDelta session_duration = base::Seconds(120);
 
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
@@ -246,7 +248,7 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndFail) {
                       Return(MockRequestHandler::CreateFailedResponse())));
 
   std::string gaia_id = "1";
-  int session_duration = 120;
+  base::TimeDelta session_duration = base::Seconds(120);
 
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;

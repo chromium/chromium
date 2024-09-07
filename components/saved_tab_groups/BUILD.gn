@@ -207,8 +207,6 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "fake_tab_group_sync_service.cc",
-    "fake_tab_group_sync_service.h",
     "mock_tab_group_sync_delegate.cc",
     "mock_tab_group_sync_delegate.h",
     "mock_tab_group_sync_service.cc",
@@ -218,6 +216,7 @@ source_set("test_support") {
   ]
   deps = [
     ":core",
+    ":fake_tab_group_sync_service",
     ":model",
     "//base",
     "//base/test:test_support",
@@ -225,6 +224,18 @@ source_set("test_support") {
     "//components/tab_groups",
     "//testing/gtest",
     "//url",
+  ]
+}
+
+source_set("fake_tab_group_sync_service") {
+  sources = [
+    "fake_tab_group_sync_service.cc",
+    "fake_tab_group_sync_service.h",
+  ]
+  deps = [
+    ":core",
+    ":model",
+    "//base",
   ]
 }
 
@@ -236,6 +247,7 @@ source_set("tab_group_sync_bridge") {
     # to TabGroupSyncService.
     "//chrome/browser",
     "//chrome/browser/ui",
+    "//chrome/test:browser_tests",
     "//chrome/test:sync_integration_tests",
     "//ios/chrome/browser/saved_tab_groups/model",
   ]

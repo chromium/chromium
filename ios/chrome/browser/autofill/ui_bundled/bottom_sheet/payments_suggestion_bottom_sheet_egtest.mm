@@ -131,6 +131,28 @@ NSString* ExpirationDateNSString() {
                                  autofill::test::NextYear().substr(2));
 }
 
+// Verifies that the number of accepted suggestions recorded for the given
+// `suggestion_index` is as expected.
+void CheckAutofillSuggestionAcceptedIndexMetricsCount(
+    NSInteger suggestion_index) {
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
+      @"Unexpected histogram count for accepted card suggestion index.");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:suggestion_index
+                         forHistogram:@"Autofill.UserAcceptedSuggestionAtIndex."
+                                      @"CreditCard.BottomSheet"],
+      @"Unexpected histogram count for bottom sheet accepted card suggestion "
+      @"index.");
+}
+
 #pragma mark - Helper methods
 
 // Loads simple page on localhost.
@@ -212,6 +234,42 @@ NSString* ExpirationDateNSString() {
           expectTotalCount:0
               forHistogram:@"Autofill.TouchToFill.CreditCard.SelectedIndex"],
       @"Unexpected histogram error for touch to fill credit card selected");
+
+  // Verify that the acceptance of the card suggestion at index 0 was correctly
+  // recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
+
+  // Verify that the page is filled properly.
+  [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
+}
+
+// Tests that the expected metric is logged when accepting a suggestion from
+// the bottom sheet that is not the first one in the list.
+- (void)testAcceptedSuggestionIndexLogged {
+  // Add a credit card to the Personal Data Manager.
+  [AutofillAppInterface saveMaskedCreditCard];
+
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = ContinueButton();
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+
+  // Make sure the user is seeing 2 cards on the bottom sheet.
+  GREYAssertEqual(2, [AutofillAppInterface localCreditCount],
+                  @"Wrong number of stored credit cards.");
+
+  // Select and use the second credit card.
+  [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
+
+  // Verify that the acceptance of the card suggestion at index 1 was correctly
+  // recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/1);
 
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];

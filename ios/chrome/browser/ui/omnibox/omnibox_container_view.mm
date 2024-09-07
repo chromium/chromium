@@ -19,6 +19,7 @@
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
@@ -29,12 +30,16 @@
 
 namespace {
 
-/// Width and height of the thumbnail image view.
-const CGFloat kOmniboxThumbnailImageSize = 24;
+/// Width of the thumbnail.
+const CGFloat kThumbnailWidth = 48;
+/// Height of the thumbnail.
+const CGFloat kThumbnailHeight = 40;
 /// Corner radius of the thumbnail image.
-const CGFloat kThumbnailImageCornerRadius = 4;
+const CGFloat kThumbnailImageCornerRadius = 12;
 /// Space between the thumbnail image and the omnibox text.
-const CGFloat kThumbnailImageTrailingMargin = 8;
+const CGFloat kThumbnailImageTrailingMargin = 10;
+/// Space between the leading icon and the thumbnail image.
+const CGFloat kThumbnailImageLeadingMargin = 10;
 
 /// Space between the clear button and the edge of the omnibox.
 const CGFloat kTextFieldClearButtonTrailingOffset = 4;
@@ -127,14 +132,37 @@ const CGFloat kClearButtonSize = 28.5f;
       _thumbnailImageView.hidden = YES;
       [NSLayoutConstraint activateConstraints:@[
         [_thumbnailImageView.widthAnchor
-            constraintEqualToConstant:kOmniboxThumbnailImageSize],
+            constraintEqualToConstant:kThumbnailWidth],
         [_thumbnailImageView.heightAnchor
-            constraintEqualToConstant:kOmniboxThumbnailImageSize],
+            constraintEqualToConstant:kThumbnailHeight],
       ]];
       [_stackView addArrangedSubview:_thumbnailImageView];
       // Spacing between thumbnail and text field.
       [_stackView setCustomSpacing:kThumbnailImageTrailingMargin
                          afterView:_thumbnailImageView];
+
+      // Button to delete the thumbnail.
+      _thumbnailButton = [[UIButton alloc] init];
+      _thumbnailButton.translatesAutoresizingMaskIntoConstraints = NO;
+      _thumbnailButton.backgroundColor = UIColor.clearColor;
+      _thumbnailButton.tintColor = UIColor.whiteColor;
+      [NSLayoutConstraint activateConstraints:@[
+        [_thumbnailButton.widthAnchor
+            constraintEqualToConstant:kThumbnailWidth],
+        [_thumbnailButton.heightAnchor
+            constraintEqualToConstant:kThumbnailHeight],
+      ]];
+      UIImage* selectedImage = MakeSymbolMonochrome(
+          DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize));
+      [_thumbnailButton setImage:selectedImage forState:UIControlStateSelected];
+      [_thumbnailButton
+          setBackgroundImage:ImageWithColor([UIColor.systemBlueColor
+                                 colorWithAlphaComponent:0.5])
+                    forState:UIControlStateSelected];
+      [_thumbnailImageView addSubview:_thumbnailButton];
+      AddSameCenterConstraints(_thumbnailButton, _thumbnailImageView);
+
+      _thumbnailImageView.userInteractionEnabled = YES;
     }
 
     if (IsRichAutocompletionEnabled(RichAutocompletionImplementation::kLabel)) {
@@ -251,8 +279,21 @@ const CGFloat kClearButtonSize = 28.5f;
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
+  _thumbnailImage = image;
+  if (image) {
+    image = ResizeImage(image, CGSizeMake(kThumbnailWidth, kThumbnailHeight),
+                        ProjectionMode::kAspectFill);
+  }
   _thumbnailImageView.image = image;
   _thumbnailImageView.hidden = !image;
+
+  if (image) {
+    [_stackView setCustomSpacing:kThumbnailImageLeadingMargin
+                       afterView:_leadingImageView];
+  } else {
+    [_stackView setCustomSpacing:kOmniboxTextFieldLeadingOffsetImage
+                       afterView:_leadingImageView];
+  }
 }
 
 - (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
@@ -277,8 +318,6 @@ const CGFloat kClearButtonSize = 28.5f;
   [super setSemanticContentAttribute:semanticContentAttribute];
   _stackView.semanticContentAttribute = semanticContentAttribute;
 }
-
-#pragma mark - OmniboxAdditionalTextConsumer
 
 - (void)updateAdditionalText:(NSString*)additionalText {
   CHECK(IsRichAutocompletionEnabled(RichAutocompletionImplementation::kAny));

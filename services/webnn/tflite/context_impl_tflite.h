@@ -34,7 +34,7 @@ class ContextImplTflite final : public WebNNContextImpl {
       CreateGraphImplCallback callback) override;
 
   void CreateBufferImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::BufferInfoPtr buffer_info,
       CreateBufferImplCallback callback) override;
 

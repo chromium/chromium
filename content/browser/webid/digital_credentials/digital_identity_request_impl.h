@@ -60,32 +60,6 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   void Abort() override;
 
  private:
-  // Notifies callback if the passed-in WebContents no longer uses the
-  // passed-in RenderFrameHost or the passed-in RenderFrameHost becomes
-  // inactive.
-  class RenderFrameHostLifecycleObserver : public WebContentsObserver {
-   public:
-    RenderFrameHostLifecycleObserver(
-        const raw_ptr<WebContents> web_contents,
-        raw_ptr<RenderFrameHost> render_frame_host,
-        DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
-            abort_callback);
-    ~RenderFrameHostLifecycleObserver() override;
-
-   private:
-    // WebContentsObserver:
-    void RenderFrameHostChanged(RenderFrameHost* old_host,
-                                RenderFrameHost* new_host) override;
-    void RenderFrameHostStateChanged(
-        content::RenderFrameHost* rfh,
-        content::RenderFrameHost::LifecycleState old_state,
-        content::RenderFrameHost::LifecycleState new_state) override;
-
-    const raw_ptr<RenderFrameHost> render_frame_host_;
-    DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
-        abort_callback_;
-  };
-
   DigitalIdentityRequestImpl(
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
@@ -93,7 +67,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // Called when the request JSON has been parsed.
   void OnRequestJsonParsed(
       Protocol protocol,
-      std::string request_to_send,
+      base::Value request_to_send,
       data_decoder::DataDecoder::ValueOrError parsed_result);
 
   // Called after fetching the user's identity. Shows an interstitial if needed.
@@ -106,7 +80,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // Called when the user has fulfilled the interstitial requirement. Will be
   // called immediately after OnRequestJsonParsed() if no interstitial is
   // needed.
-  void OnInterstitialDone(const std::string& request_to_send,
+  void OnInterstitialDone(base::Value request_to_send,
                           DigitalIdentityProvider::RequestStatusForMetrics
                               status_after_interstitial);
 
@@ -130,11 +104,6 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // request has been aborted.
   DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
       update_interstitial_on_abort_callback_;
-
-  // Updates interstitial to indicate that credential request was canceled when
-  // page navigation occurs.
-  std::unique_ptr<RenderFrameHostLifecycleObserver>
-      render_frame_host_lifecycle_observer_;
 
   base::WeakPtrFactory<DigitalIdentityRequestImpl> weak_ptr_factory_{this};
 };

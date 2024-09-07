@@ -209,19 +209,24 @@ public class ImeAdapterImpl
         private static final UserDataFactory<ImeAdapterImpl> INSTANCE = ImeAdapterImpl::new;
     }
 
-    private final class ImeRenderWidgetHostImpl
+    private static final class ImeRenderWidgetHostImpl
             implements org.chromium.blink.mojom.ImeRenderWidgetHost {
+        private final WeakReference<ImeAdapterImpl> mImeAdapter;
         private final MessagePipeHandle mHandle;
         private final Router mRouter;
 
-        ImeRenderWidgetHostImpl(MessagePipeHandle handle) {
+        ImeRenderWidgetHostImpl(ImeAdapterImpl imeAdapter, MessagePipeHandle handle) {
+            mImeAdapter = new WeakReference<>(imeAdapter);
             mHandle = handle;
             mRouter = org.chromium.blink.mojom.ImeRenderWidgetHost.MANAGER.bind(this, mHandle);
         }
 
         @Override
         public void updateCursorAnchorInfo(InputCursorAnchorInfo cursorAnchorInfo) {
-            ImeAdapterImpl.this.updateCursorAnchorInfo(cursorAnchorInfo);
+            ImeAdapterImpl imeAdapter = mImeAdapter.get();
+            if (imeAdapter != null) {
+                imeAdapter.updateCursorAnchorInfo(cursorAnchorInfo);
+            }
         }
 
         @Override
@@ -329,10 +334,6 @@ public class ImeAdapterImpl
                             SelectRangeGesture.class,
                             DeleteRangeGesture.class);
             outAttrs.setSupportedHandwritingGestures(supportedGestures);
-        }
-
-        if (mNativeImeAdapterAndroid != 0) {
-            ImeAdapterImplJni.get().setUpImeRenderWidgetHost(mNativeImeAdapterAndroid);
         }
         return inputConnection;
     }
@@ -1442,7 +1443,7 @@ public class ImeAdapterImpl
     private void bindImeRenderHost(long nativeHandle) {
         MessagePipeHandle handle =
                 CoreImpl.getInstance().acquireNativeHandle(nativeHandle).toMessagePipeHandle();
-        new ImeRenderWidgetHostImpl(handle);
+        new ImeRenderWidgetHostImpl(this, handle);
     }
 
     /**
@@ -1692,8 +1693,6 @@ public class ImeAdapterImpl
                 boolean monitorRequest);
 
         void advanceFocusForIME(long nativeImeAdapterAndroid, ImeAdapterImpl caller, int focusType);
-
-        void setUpImeRenderWidgetHost(long nativeImeAdapterAndroid);
 
         // Stylus Writing
         void handleStylusWritingGestureAction(

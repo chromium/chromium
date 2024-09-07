@@ -81,11 +81,13 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
       css_sheet->Contents()->ClearRuleSetDiff();
     }
   }
-  if (!GetTreeScope().HasAdoptedStyleSheets()) {
+
+  const TreeScope& tree_scope = GetTreeScope();
+  if (!tree_scope.HasAdoptedStyleSheets()) {
     return;
   }
 
-  for (CSSStyleSheet* sheet : *GetTreeScope().AdoptedStyleSheets()) {
+  for (CSSStyleSheet* sheet : *tree_scope.AdoptedStyleSheets()) {
     if (!sheet ||
         !sheet->CanBeActivated(
             GetDocument().GetStyleEngine().PreferredStylesheetSetName())) {

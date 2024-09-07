@@ -37,41 +37,7 @@ using chrome_test_util::SettingsTrackingPriceTableView;
       "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag +
       "," + settingsMenuItem);
 
-  // Test the updated settings page when the Tips Notifications feature is
-  // enabled.
-  if ([self isRunningTest:@selector
-            (testTrackingPriceSwipeDown_FromUpdatedSettingsView)]) {
-    config.additional_args.push_back("--enable-features=IOSTipsNotifications");
-  } else {
-    config.additional_args.push_back("--disable-features=IOSTipsNotifications");
-  }
-
   return config;
-}
-
-// Tests that the settings page is dismissed by swiping down from the top.
-// TODO(crbug.com/326070899): remove this test when Tips Notifications is
-// enabled by default.
-// TODO(crbug.com/341308196): reenable for device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testTrackingPriceSwipeDown DISABLED_testTrackingPriceSwipeDown
-#else
-#define MAYBE_testTrackingPriceSwipeDown testTrackingPriceSwipeDown
-#endif
-- (void)MAYBE_testTrackingPriceSwipeDown {
-  [self openTrackingPriceSettings];
-
-  // Check that Tracking Price TableView is presented.
-  [[EarlGrey selectElementWithMatcher:SettingsTrackingPriceTableView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Swipe TableView down.
-  [[EarlGrey selectElementWithMatcher:SettingsTrackingPriceTableView()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-
-  // Check that Settings has been dismissed.
-  [[EarlGrey selectElementWithMatcher:SettingsTrackingPriceTableView()]
-      assertWithMatcher:grey_nil()];
 }
 
 // Tests that the settings page is dismissed by swiping down from the top.
@@ -92,15 +58,6 @@ using chrome_test_util::SettingsTrackingPriceTableView;
 }
 
 #pragma mark - Helpers
-
-// Opens tracking price settings from price notifications setting page.
-- (void)openTrackingPriceSettings {
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuNotificationsButton()];
-  [ChromeEarlGreyUI tapPriceNotificationsMenuButton:
-                        ButtonWithAccessibilityLabelId(
-                            IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACKING_TITLE)];
-}
 
 // Opens tracking price settings from updated notifications setting page.
 - (void)openTrackingPriceSettingsFromUpdatedSettingsView {

@@ -46,6 +46,9 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
     WindowAndroid* get() { return window_; }
 
+    void SetModalDialogManager(
+        base::android::ScopedJavaLocalRef<jobject> modal_dialog_manager);
+
    private:
     raw_ptr<WindowAndroid> window_;
   };

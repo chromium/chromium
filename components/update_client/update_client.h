@@ -171,12 +171,21 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
   struct Result {
     Result() = default;
     explicit Result(int error, int extended_error = 0)
-        : error(error), extended_error(extended_error) {}
+        : result({.category_ = error == 0 ? ErrorCategory::kNone
+                                          : ErrorCategory::kInstall,
+                  .code_ = error,
+                  .extra_ = extended_error}) {}
     explicit Result(InstallError error, int extended_error = 0)
-        : error(static_cast<int>(error)), extended_error(extended_error) {}
+        : result({.category_ = error == InstallError::NONE
+                                   ? ErrorCategory::kNone
+                                   : ErrorCategory::kInstall,
+                  .code_ = static_cast<int>(error),
+                  .extra_ = extended_error}) {}
+    explicit Result(CategorizedError error) : result(error) {}
 
-    int error = 0;  // 0 indicates that install has been successful.
-    int extended_error = 0;
+    // The install is successful if and only if result.category_ is kNone.
+    // result.code_ may be non-zero for a successful install.
+    CategorizedError result;
 
     // Localized text displayed to the user, if applicable.
     std::string installer_text;
@@ -184,23 +193,6 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
     // Shell command run at the end of the install, if applicable. This string
     // must be escaped to be a command line.
     std::string installer_cmd_line;
-
-    // A `CrxInstaller` instance that runs other application installers needs
-    // the ability to report error codes that `update_client` should not
-    // interpret. For instance:
-    //   * the application installer error code may be an OS error code that
-    //   overlaps with the error codes in `update_client::InstallError`. Error
-    //   code `2` could mean `FINGERPRINT_WRITE_FAILED = 2` or the windows error
-    //   `ERROR_FILE_NOT_FOUND`.
-    //   * the application installer may report a non-zero success code.
-    //   `update_client` views any error code other than `0` as an error.
-    //   `ERROR_SUCCESS_REBOOT_INITIATED`, `ERROR_SUCCESS_REBOOT_REQUIRED`, and
-    //   `ERROR_SUCCESS_RESTART_REQUIRED` are examples of non-zero success
-    //   codes.
-    // In these cases, the `CrxInstaller` may choose to store the application
-    // installer result in `original_error`, and use a zero/non-zero `error`
-    // only to indicate a success/error.
-    int original_error = 0;
   };
 
   struct InstallParams {
@@ -458,6 +450,7 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   struct PingParams {
     int event_type = 0;
     int result = 0;
+    ErrorCategory error_category = ErrorCategory::kNone;
     int error_code = 0;
     int extra_code1 = 0;
     std::string app_command_id;

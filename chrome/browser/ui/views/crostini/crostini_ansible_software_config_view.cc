@@ -16,6 +16,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/layout/box_layout.h"
@@ -184,14 +185,17 @@ void CrostiniAnsibleSoftwareConfigView::OnStateChanged() {
   SetTitle(GetWindowTitleForState(state_));
   progress_bar_->SetVisible(state_ == State::CONFIGURING);
   subtext_label_->SetText(GetSubtextLabel());
-  SetButtons(state_ == State::CONFIGURING
-                 ? ui::DIALOG_BUTTON_CANCEL
-                 : (state_ == State::ERROR
-                        ? ui::DIALOG_BUTTON_OK
-                        : ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
+  SetButtons(
+      state_ == State::CONFIGURING
+          ? static_cast<int>(ui::mojom::DialogButton::kCancel)
+          : (state_ == State::ERROR
+                 ? static_cast<int>(ui::mojom::DialogButton::kOk)
+                 : static_cast<int>(ui::mojom::DialogButton::kOk) |
+                       static_cast<int>(ui::mojom::DialogButton::kCancel)));
   // The cancel button, even when present, always uses the default text.
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_APP_OK));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(IDS_APP_OK));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_APP_CANCEL));
   DialogModelChanged();
   if (GetWidget())

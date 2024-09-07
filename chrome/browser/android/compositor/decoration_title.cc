@@ -7,10 +7,12 @@
 #include <android/bitmap.h>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
+#include "components/viz/common/features.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -233,7 +235,13 @@ void DecorationTitle::setBounds(const gfx::Size& bounds) {
     gradient.AddStep(0.f, a1 * 255);
     gradient.AddStep(1.f, a2 * 255);
     gradient.set_angle(0);
-    layer_fade_->SetGradientMask(gradient);
+
+    // TODO(b/361804880) With BCIV, offsets aren't applied correctly to layers
+    // with clipped regions. Remove the fade effect from the title for now, so
+    // we can still run the experiment for large screens.
+    if (!base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz)) {
+      layer_fade_->SetGradientMask(gradient);
+    }
   } else {
     layer_fade_->SetIsDrawable(false);
   }

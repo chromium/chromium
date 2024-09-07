@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Windows.AcLayersLoaded" enum="BooleanLoaded"
-    expires_after="2024-12-30">
+    expires_after="2025-03-02">
   <owner>ajgo@chromium.org</owner>
   <owner>brucedawson@chromium.org</owner>
   <summary>
@@ -191,20 +191,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.Launch.TaskbarInstallerPinned" enum="Boolean"
-    expires_after="2024-04-28">
-  <owner>davidbienvenu@chromium.org</owner>
-  <owner>jessemckenna@google.com</owner>
-  <summary>
-    Whether or not the taskbar shortcut Chrome was launched from was pinned by
-    the installer. Recorded when Chrome is launched from the taskbar, and the
-    install was done after the installer started pinning Chrome to the taskbar
-    for Windows 10+.
-  </summary>
-</histogram>
-
 <histogram name="Windows.LegacyDisplayIdAlgorithm" enum="UsedDisplayIdFallback"
-    expires_after="2024-12-31">
+    expires_after="2025-03-02">
   <owner>btriebw@google.com</owner>
   <owner>msw@google.com</owner>
   <summary>

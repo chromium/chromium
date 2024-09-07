@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -31,16 +33,22 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
     private SyncService mSyncService;
     private Preference mWebAndAppActivity;
     private Preference mLinkedGoogleServices;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
-        getActivity().setTitle(R.string.sign_in_personalize_google_services_title_eea);
+        mPageTitle.set(getString(R.string.sign_in_personalize_google_services_title_eea));
         SettingsUtils.addPreferencesFromResource(
                 this, R.xml.personalize_google_services_preferences);
 
         mSyncService = SyncServiceFactory.getForProfile(getProfile());
         mWebAndAppActivity = findPreference(PREF_WEB_AND_APP_ACTIVITY);
         mLinkedGoogleServices = findPreference(PREF_LINKED_GOOGLE_SERVICES);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

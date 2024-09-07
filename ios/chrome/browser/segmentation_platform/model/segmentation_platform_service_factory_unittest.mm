@@ -23,7 +23,7 @@
 #import "components/segmentation_platform/public/service_proxy.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_data_manager_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -78,8 +78,8 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
                 {TestChromeBrowserState::TestingFactory{
                     SegmentationPlatformServiceFactory::GetInstance(),
                     SegmentationPlatformServiceFactory::GetDefaultFactory()}});
-    ASSERT_FALSE(SegmentationPlatformServiceFactory::GetForBrowserState(
-        otr_browser_state));
+    ASSERT_FALSE(
+        SegmentationPlatformServiceFactory::GetForProfile(otr_browser_state));
   }
 
   void TearDown() override {
@@ -145,17 +145,14 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
   struct ProfileData {
     explicit ProfileData(UkmDataManagerTestUtils* test_utils,
                          const std::string& result_pref)
-        : test_utils(test_utils) {
+        : result_pref(result_pref), test_utils(test_utils) {
       TestChromeBrowserState::Builder builder;
       builder.AddTestingFactory(
           SegmentationPlatformServiceFactory::GetInstance(),
-          SegmentationPlatformServiceFactory::GetDefaultFactory());
+          base::BindOnce(&ProfileData::SetUpEnvironment, base::Unretained(this))
+              .Then(SegmentationPlatformServiceFactory::GetDefaultFactory()));
       browser_state = std::move(builder).Build();
-
-      browser_state->GetPrefs()->SetString(kSegmentationClientResultPrefs,
-                                           result_pref);
-      test_utils->SetupForProfile(browser_state.get());
-      service = SegmentationPlatformServiceFactory::GetForBrowserState(
+      service = SegmentationPlatformServiceFactory::GetForProfile(
           browser_state.get());
     }
 
@@ -163,6 +160,16 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
 
     ProfileData(ProfileData&) = delete;
 
+    // Setup environment required to create the SegmentationPlatformService.
+    web::BrowserState* SetUpEnvironment(web::BrowserState* context) {
+      ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+      profile->GetPrefs()->SetString(kSegmentationClientResultPrefs,
+                                     result_pref);
+      test_utils->SetupForProfile(profile);
+      return context;
+    }
+
+    const std::string result_pref;
     const raw_ptr<UkmDataManagerTestUtils> test_utils;
     std::unique_ptr<TestChromeBrowserState> browser_state;
     raw_ptr<SegmentationPlatformService> service;
@@ -251,7 +258,6 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
   int safety_check_freshness_impression_count = -1;
   int tab_resumption_freshness_impression_count = -1;
   int parcel_tracking_freshness_impression_count = -1;
-  int price_tracking_promo_freshness_impression_count = -1;
 
   input_context->metadata_args.emplace(
       segmentation_platform::kMostVisitedTilesFreshness,
@@ -273,17 +279,12 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
       segmentation_platform::kParcelTrackingFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           parcel_tracking_freshness_impression_count));
-  input_context->metadata_args.emplace(
-      segmentation_platform::kPriceTrackingPromoFreshness,
-      segmentation_platform::processing::ProcessedValue::FromFloat(
-          price_tracking_promo_freshness_impression_count));
 
   ExpectGetClassificationResult(
       segmentation_platform::kIosModuleRankerKey, prediction_options,
       input_context, PredictionStatus::kSucceeded,
       std::vector<std::string>{"MostVisitedTiles", "Shortcuts", "SafetyCheck",
-                               "TabResumption", "ParcelTracking",
-                               "PriceTrackingPromo"});
+                               "TabResumption", "ParcelTracking"});
 }
 
 }  // namespace segmentation_platform

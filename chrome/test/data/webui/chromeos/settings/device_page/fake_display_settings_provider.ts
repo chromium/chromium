@@ -38,6 +38,7 @@ export class FakeDisplaySettingsProvider implements
       [];
   private isTabletMode: boolean = false;
   private brightnessPercent: number = 0;
+  private triggeredByAls: boolean = false;
   // Enabled by default to match system behavior.
   private isAmbientLightSensorEnabled: boolean = true;
   private hasAmbientLightSensor_: boolean = true;
@@ -106,12 +107,15 @@ export class FakeDisplaySettingsProvider implements
 
   notifyDisplayBrightnessChanged(): void {
     for (const observer of this.displayBrightnessSettingsObservers) {
-      observer.onDisplayBrightnessChanged(this.brightnessPercent);
+      observer.onDisplayBrightnessChanged(
+          this.brightnessPercent, this.triggeredByAls);
     }
   }
 
-  setBrightnessPercentForTesting(brightnessPercent: number): void {
+  setBrightnessPercentForTesting(
+      brightnessPercent: number, triggeredByAls: boolean): void {
     this.brightnessPercent = brightnessPercent;
+    this.triggeredByAls = triggeredByAls;
     this.notifyDisplayBrightnessChanged();
   }
 
@@ -225,6 +229,8 @@ export class FakeDisplaySettingsProvider implements
               1);
     }
   }
+
+  startNativeTouchscreenMappingExperience(): void {}
 
   // Implement DisplaySettingsProviderInterface.
   setShinyPerformance(enabled: boolean): void {

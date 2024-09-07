@@ -1737,7 +1737,9 @@ class LayerTreeHostAnimationTestIsAnimating
 };
 
 // TODO(https://issues.chromium.org/41490442): Flaky on Linux/ASAN/debug.
-#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+// TODO(crbug.com/364634743): Flaky on Android.
+#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG) || \
+    BUILDFLAG(IS_ANDROID)
 SINGLE_THREAD_TEST_F(LayerTreeHostAnimationTestIsAnimating);
 #else
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestIsAnimating);

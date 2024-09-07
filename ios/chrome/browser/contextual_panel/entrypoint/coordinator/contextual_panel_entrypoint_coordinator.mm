@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_view_controller.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -46,6 +47,7 @@
   [super start];
   _viewController = [[ContextualPanelEntrypointViewController alloc] init];
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
+  _viewController.visibilityDelegate = self.visibilityDelegate;
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();

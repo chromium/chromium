@@ -440,6 +440,12 @@ class CONTENT_EXPORT MediaStreamManager
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           callback);
 
+  void RequestCapturedSurfaceControlPermission(
+      GlobalRenderFrameHostId capturer_rfh_id,
+      const base::UnguessableToken& session_id,
+      base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+          callback);
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void RegisterDispatcherHost(

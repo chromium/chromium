@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -123,7 +122,8 @@ class BASE_EXPORT WaitableEvent {
   void declare_only_used_while_idle() { only_used_while_idle_ = true; }
 
   // Wait, synchronously, on multiple events.
-  //   waitables: a span of WaitableEvent pointers
+  //   waitables: an array of WaitableEvent pointers
+  //   count: the number of elements in @waitables
   //
   // returns: the index of a WaitableEvent which has been signaled.
   //
@@ -133,7 +133,8 @@ class BASE_EXPORT WaitableEvent {
   //
   // If more than one WaitableEvent is signaled to unblock WaitMany, the lowest
   // index among them is returned.
-  NOT_TAIL_CALLED static size_t WaitMany(base::span<WaitableEvent*> waitables);
+  NOT_TAIL_CALLED static size_t WaitMany(WaitableEvent** waitables,
+                                         size_t count);
 
   // For asynchronous waiting, see WaitableEventWatcher
 
@@ -174,7 +175,7 @@ class BASE_EXPORT WaitableEvent {
   // the actual signaling and waiting).
   void SignalImpl();
   bool TimedWaitImpl(TimeDelta wait_delta);
-  static size_t WaitManyImpl(base::span<WaitableEvent*> raw_waitables);
+  static size_t WaitManyImpl(WaitableEvent** waitables, size_t count);
 
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle handle_;

@@ -76,7 +76,7 @@ void PaginationState::UpdateContentAreaPropertiesForCurrentPage(
   DCHECK(layout_view.ShouldUsePaginatedLayout());
   auto chunk_properties = layout_view.FirstFragment().ContentsProperties();
   const PhysicalBoxFragment& page_container =
-      *GetPageContainer(layout_view, current_page_number_);
+      *GetPageContainer(layout_view, current_page_index_);
   float scale = TargetScaleForPage(page_container);
   const PhysicalFragmentLink& link = GetPageBorderBoxLink(page_container);
   const auto& page_border_box = *To<PhysicalBoxFragment>(link.get());
@@ -105,7 +105,7 @@ void PaginationState::UpdateContentAreaPropertiesForCurrentPage(
   // Translate by the offset into the stitched coordinate system for the given
   // page.
   PhysicalOffset stitched_offset =
-      StitchedPageContentRect(layout_view, current_page_number_).offset;
+      StitchedPageContentRect(layout_view, current_page_index_).offset;
   matrix.Translate(-gfx::Vector2dF(stitched_offset));
 
   TransformPaintPropertyNode::State transform_state;

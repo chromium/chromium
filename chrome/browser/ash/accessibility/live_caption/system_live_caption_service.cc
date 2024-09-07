@@ -24,6 +24,7 @@
 #include "components/soda/constants.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/speech_recognition.mojom-forward.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "system_live_caption_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -137,7 +138,8 @@ void SystemLiveCaptionService::OnSpeechRecognitionStateChanged(
     // Client finished stopping, so let's just update state to Ready and
     // return. The very next step is OnSpeechRecognitionStopped, which will
     // reset the client.
-    new_state = SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY;
+    current_recognizer_status_ =
+        SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY;
     return;
   }
 
@@ -201,9 +203,7 @@ void SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged(
     // speech or not right now, and pretend that speech started at that
     // moment. This is common when live captions is switched on during audio
     // playback.
-
-    int32_t current_streams =
-        CrasAudioHandler::Get()->NumberOfNonChromeOutputStreams();
+    int32_t current_streams = GetNumberOfNonChromeOutputStreams();
     if (current_streams > 0) {
       OnNonChromeOutputStarted();
     } else {
@@ -222,7 +222,12 @@ void SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged(
 
 void SystemLiveCaptionService::SpeechRecognitionLanguageChanged(
     const std::string& language) {
-  // TODO(b:260372471): pipe through language info.
+  // Set the new language, if we have a client stop recognizing.  SODA will
+  // notify us when the new language pack is ready to use in
+  // OnSpeechRecognitionAvailability changed.
+  source_language_ = language;
+  output_running_ = false;
+  StopRecognizing();
 }
 
 void SystemLiveCaptionService::SpeechRecognitionMaskOffensiveWordsChanged(
@@ -282,7 +287,7 @@ void SystemLiveCaptionService::StopTimeoutFinished() {
 }
 
 void SystemLiveCaptionService::CreateClient() {
-  // We must reset first to detach everything first, and then reattach.
+  // We must reset to detach everything first, and then reattach.
   client_.reset();
   client_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
       weak_ptr_factory_.GetWeakPtr(), profile_,
@@ -339,6 +344,14 @@ void SystemLiveCaptionService::OnTranslationCallback(
 void SystemLiveCaptionService::OpenCaptionSettings() {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kAudioAndCaptionsSubpagePath);
+}
+
+uint32_t SystemLiveCaptionService::GetNumberOfNonChromeOutputStreams() {
+  if (num_output_streams_for_testing_.has_value()) {
+    return num_output_streams_for_testing_.value();
+  }
+
+  return CrasAudioHandler::Get()->NumberOfNonChromeOutputStreams();
 }
 
 }  // namespace ash

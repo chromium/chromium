@@ -119,6 +119,20 @@ def _parse_log(lines: List[str]) -> Tuple[str, str]:
 
 def get_trybot_log(patch_set: Optional[int]) -> List:
   '''Get trybot data for the current branch's issue.'''
+
+  def _ensure_luci_logged_in():
+    '''Ensure we are logged into LUCI, as `git cl try-results` will log a
+     warning otherwise.'''
+    process = subprocess.run(
+        f'luci-auth token -scopes https://www.googleapis.com/auth/userinfo.email',
+        shell=True,
+        capture_output=True,
+    )
+    if (process.returncode != 0):
+      raise PermissionError(
+          'Not logged into LUCI, please run `luci-auth login`')
+
+  _ensure_luci_logged_in()
   patch_set_arg = f'--patchset={patch_set}' if patch_set is not None else ''
   if not (output := subprocess.run(
       f'git cl try-results --json=- {patch_set_arg}',

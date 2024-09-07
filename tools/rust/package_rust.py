@@ -29,13 +29,11 @@ RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tar.xz'
 # TODO(crbug.com/40226863): Use this function (after integrating Crubit
 # into Chromium; this work is on hold right now - see also
 # https://crbug.com/1510943#c2).
-def BuildCrubit(build_mac_arm):
+def BuildCrubit():
     with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME),
               'w',
               encoding='utf-8') as log:
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
-        if build_mac_arm:
-            build_cmd.append('--build-mac-arm')
         # TODO(crbug.com/40226863): Default to `fail_hard` once we
         # actually depend on the build step (i.e. once we start packaging
         # Crubit).
@@ -57,23 +55,11 @@ def main():
         default=DEFAULT_GCS_BUCKET,
         help='Google Cloud Storage bucket where the target archive is uploaded'
     )
-    parser.add_argument('--build-mac-arm',
-                        action='store_true',
-                        help='Build arm binaries. Only valid on macOS.')
     args = parser.parse_args()
-
-    if args.build_mac_arm and sys.platform != 'darwin':
-        print('--build-mac-arm only valid on macOS')
-        return 1
-    if args.build_mac_arm and platform.machine() == 'arm64':
-        print('--build-mac-arm only valid on intel to cross-build arm')
-        return 1
 
     # The gcs_platform logic copied from `//tools/clang/scripts/upload.sh`.
     if sys.platform == 'darwin':
-        # The --build-mac-intel switch can be used to force the Mac build to
-        # target arm64.
-        if args.build_mac_arm or platform.machine() == 'arm64':
+        if platform.machine() == 'arm64':
             gcs_platform = 'Mac_arm64'
         else:
             gcs_platform = 'Mac'
@@ -91,8 +77,6 @@ def main():
               encoding='utf-8') as log:
         # Build the Rust toolchain.
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_rust.py')]
-        if args.build_mac_arm:
-            build_cmd.append('--build-mac-arm')
         TeeCmd(build_cmd, log)
 
         # Build bindgen.
@@ -100,8 +84,6 @@ def main():
             sys.executable,
             os.path.join(THIS_DIR, 'build_bindgen.py')
         ]
-        if args.build_mac_arm:
-            build_cmd.append('--build-mac-arm')
         TeeCmd(build_cmd, log)
 
         # Build cargo-vet.

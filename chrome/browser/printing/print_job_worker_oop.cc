@@ -177,7 +177,7 @@ void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
                                        base::RetainedRef(page)));
 
   ++pages_printed_count_;
-  if (pages_printed_count_ == document_oop_->page_count()) {
+  if (pages_printed_count_ == document_oop_->expected_page_count()) {
     // The last page has printed, can proceed to document done processing.
     VLOG(1) << "All pages printed for document";
     SendDocumentDone();
@@ -203,7 +203,7 @@ void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
                                           mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if BUILDFLAG(IS_WIN)
-  DCHECK_EQ(pages_printed_count_, document_oop_->page_count());
+  DCHECK_EQ(pages_printed_count_, document_oop_->expected_page_count());
 #endif
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Error completing printing via service for document "

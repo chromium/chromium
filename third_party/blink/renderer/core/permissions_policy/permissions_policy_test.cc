@@ -1528,15 +1528,23 @@ class FeaturePolicyVisibilityTest
 INSTANTIATE_TEST_SUITE_P(All, FeaturePolicyVisibilityTest, testing::Bool());
 
 TEST_P(FeaturePolicyVisibilityTest, VerifyIsolated) {
+  EXPECT_TRUE(RuntimeEnabledFeatures::ControlledFrameEnabled());
   EXPECT_TRUE(RuntimeEnabledFeatures::DirectSocketsEnabled());
 
   auto dummy_page_holder = std::make_unique<DummyPageHolder>();
   ExecutionContext* execution_context =
       dummy_page_holder->GetFrame().DomWindow();
+
   Agent::ResetIsIsolatedContextForTest();
   Agent::SetIsIsolatedContext(GetIsIsolated());
   bool is_isolated_context = execution_context->IsIsolatedContext();
   EXPECT_EQ(is_isolated_context, GetIsIsolated());
+
+  const String kControlledFrameFeature = "controlled-frame";
+  EXPECT_EQ(GetDefaultFeatureNameMap(is_isolated_context)
+                .Contains(kControlledFrameFeature),
+            GetIsIsolated());
+
   const String kDirectSocketsFeature = "direct-sockets";
   EXPECT_EQ(GetDefaultFeatureNameMap(is_isolated_context)
                 .Contains(kDirectSocketsFeature),

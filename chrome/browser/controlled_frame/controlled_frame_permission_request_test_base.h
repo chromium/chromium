@@ -36,8 +36,8 @@ struct PermissionRequestTestCase {
   std::string permission_name;
   // Policy features the permission depends on.
   std::set<blink::mojom::PermissionsPolicyFeature> policy_features;
-  // ContentSettingsType(s) of the embedder the permission depends on.
-  std::set<ContentSettingsType> embedder_content_settings_type;
+  // Corresponding ContentSettingsType(s) of the permission.
+  std::set<ContentSettingsType> content_settings_type;
 };
 
 enum class EmbedderPolicy {
@@ -47,29 +47,57 @@ enum class EmbedderPolicy {
   kBothEmbedderAndRequestingOrigin
 };
 
+enum class ContentSettingsState { kDefault, kAllow, kDeny };
+
 struct PermissionRequestTestParam {
   std::string name;
   bool calls_allow;
   EmbedderPolicy embedder_policy;
-  bool has_embedder_content_setting;
+  bool allowed_by_embedder_content_settings;
+  ContentSettingsState embedded_origin_content_settings_state;
   bool expected_success;
 };
 
 const std::vector<PermissionRequestTestParam>&
 GetDefaultPermissionRequestTestParams();
 
+struct DisabledPermissionTestCase {
+  DisabledPermissionTestCase();
+  ~DisabledPermissionTestCase();
+
+  // Script to request the permission.
+  std::string request_script;
+  // Policy features the permission depends on.
+  std::set<blink::mojom::PermissionsPolicyFeature> policy_features;
+  std::string success_result;
+  std::string failure_result;
+};
+
+struct DisabledPermissionTestParam {
+  std::string name;
+  bool policy_features_enabled;
+  bool iwa_expect_success;
+  bool controlled_frame_expect_success;
+};
+
+const std::vector<DisabledPermissionTestParam>&
+GetDefaultDisabledPermissionTestParams();
+
 class ControlledFramePermissionRequestTestBase
-    : public ControlledFrameTestBase,
-      public testing::WithParamInterface<PermissionRequestTestParam> {
+    : public ControlledFrameTestBase {
  protected:
   // `ControlledFrameTestBase`:
   void SetUpOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  void RunTestAndVerify(const PermissionRequestTestCase& test_case,
-                        const PermissionRequestTestParam& test_param,
-                        std::optional<base::OnceCallback<std::string(bool)>>
-                            get_expected_result_callback = std::nullopt);
+  void VerifyEnabledPermission(
+      const PermissionRequestTestCase& test_case,
+      const PermissionRequestTestParam& test_param,
+      std::optional<base::OnceCallback<std::string(bool)>>
+          get_expected_result_callback = std::nullopt);
+
+  void VerifyDisabledPermission(const DisabledPermissionTestCase& test_case,
+                                const DisabledPermissionTestParam& test_param);
 
  private:
   void SetUpPermissionRequestEventListener(

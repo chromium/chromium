@@ -39,8 +39,8 @@ class TestingApplicationContext : public ApplicationContext {
   // Sets the last shutdown "clean" state.
   void SetLastShutdownClean(bool clean);
 
-  // Sets the ChromeBrowserStateManager.
-  void SetChromeBrowserStateManager(ChromeBrowserStateManager* manager);
+  // Sets the ProfileManager.
+  void SetProfileManager(ProfileManagerIOS* manager);
 
   // Sets the VariationsService.
   void SetVariationsService(variations::VariationsService* variations_service);
@@ -50,10 +50,6 @@ class TestingApplicationContext : public ApplicationContext {
   // creating a TestChromeBrowserState).
   void SetSystemIdentityManager(
       std::unique_ptr<SystemIdentityManager> system_identity_manager);
-
-  // Sets the UpgradeCenter.
-  // Must be set before `GetUpgradeCenter` is called.
-  void SetUpgradeCenter(UpgradeCenter* upgrade_center);
 
   // Sets the IOSChromeIOThread.
   void SetIOSChromeIOThread(IOSChromeIOThread* ios_chrome_io_thread);
@@ -70,10 +66,7 @@ class TestingApplicationContext : public ApplicationContext {
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   const std::string& GetApplicationLocale() override;
   const std::string& GetApplicationCountry() override;
-  // TODO(crbug.com/358299872): After all usage has changed to
-  // GetProfileManager(), remove this method.
-  ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
-  ChromeBrowserStateManager* GetProfileManager() override;
+  ProfileManagerIOS* GetProfileManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* GetMetricsService() override;
@@ -96,8 +89,8 @@ class TestingApplicationContext : public ApplicationContext {
   AccountProfileMapper* GetAccountProfileMapper() override;
   IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
-  UpgradeCenter* GetUpgradeCenter() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
+  AdditionalFeaturesController* GetAdditionalFeaturesController() override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -112,7 +105,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
   std::unique_ptr<MockPromosManager> promos_manager_;
 
-  raw_ptr<ChromeBrowserStateManager> chrome_browser_state_manager_;
+  raw_ptr<ProfileManagerIOS> profile_manager_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   bool was_last_shutdown_clean_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
@@ -124,8 +117,8 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
-  __strong UpgradeCenter* upgrade_center_ = nil;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
   raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
 };
 

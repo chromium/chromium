@@ -158,8 +158,8 @@ bool ComputeIsVisible(const LayoutObject* target, const PhysicalRect& rect) {
 // multiple block fragments.
 gfx::Transform ObjectToViewTransform(const LayoutObject& object) {
   // Use faster GeometryMapper when possible.
-  PropertyTreeStateOrAlias container_properties =
-      PropertyTreeState::Uninitialized();
+  PropertyTreeStateOrAlias container_properties(
+      PropertyTreeState::kUninitialized);
   const LayoutObject* property_container =
       IntersectionGeometry::CanUseGeometryMapper(object)
           ? object.GetPropertyContainer(nullptr, &container_properties)

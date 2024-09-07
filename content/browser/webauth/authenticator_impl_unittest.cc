@@ -376,6 +376,8 @@ constexpr OriginClaimedAuthorityPair kInvalidRelyingPartyTestCases[] = {
      AuthenticatorStatus::BAD_RELYING_PARTY_ID},
 };
 
+using TestGetClientCapabilityFuture = base::test::TestFuture<
+    std::vector<blink::mojom::WebAuthnClientCapabilityPtr>>;
 using TestIsUvpaaFuture = base::test::TestFuture<bool>;
 using TestMakeCredentialFuture =
     base::test::TestFuture<AuthenticatorStatus,
@@ -522,7 +524,7 @@ url::Origin GetTestOrigin() {
 }
 
 std::string GetTestClientDataJSON(ClientDataRequestType type) {
-  return BuildClientDataJson({std::move(type), GetTestOrigin(),
+  return BuildClientDataJson({std::move(type), GetTestOrigin(), GetTestOrigin(),
                               GetTestChallengeBytes(),
                               /*is_cross_origin_iframe=*/false});
 }
@@ -731,6 +733,33 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     return future.Get();
   }
 
+  using ClientCapabilitiesList =
+      std::vector<blink::mojom::WebAuthnClientCapabilityPtr>;
+
+  ClientCapabilitiesList AuthenticatorGetClientCapabilities() {
+    mojo::Remote<blink::mojom::Authenticator> authenticator =
+        ConnectToAuthenticator();
+    TestGetClientCapabilityFuture future;
+    authenticator->GetClientCapabilities(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    return future.Take();
+  }
+
+  void ExpectCapability(
+      const std::vector<blink::mojom::WebAuthnClientCapabilityPtr>&
+          capabilities,
+      std::string_view capability_name,
+      bool supported) {
+    auto capability_it =
+        std::find_if(capabilities.begin(), capabilities.end(),
+                     [&capability_name](const auto& capability) {
+                       return capability->name == capability_name;
+                     });
+
+    ASSERT_NE(capability_it, capabilities.end());
+    EXPECT_EQ(supported, (*capability_it)->supported);
+  }
+
   bool AuthenticatorIsConditionalMediationAvailable() {
     TestIsUvpaaFuture future;
     mojo::Remote<blink::mojom::Authenticator> authenticator =
@@ -895,7 +924,8 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   std::vector<uint8_t> challenge_bytes = {1, 2, 3};
   EXPECT_EQ(
       BuildClientDataJson({ClientDataRequestType::kWebAuthnCreate,
-                           GetTestOrigin(), challenge_bytes, false})
+                           GetTestOrigin(), GetTestOrigin(), challenge_bytes,
+                           false})
           .find(
               "{\"type\":\"webauthn.create\",\"challenge\":\"AQID\",\"origin\":"
               "\"https://a.google.com\",\"crossOrigin\":false"),
@@ -905,11 +935,13 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   static const struct {
     const ClientDataRequestType type;
     url::Origin origin;
+    url::Origin top_origin;
     std::vector<uint8_t> challenge;
     bool is_cross_origin;
   } kTestCases[] = {
       {
           ClientDataRequestType::kWebAuthnGet,
+          GetTestOrigin(),
           GetTestOrigin(),
           {1, 2, 3},
           false,
@@ -917,6 +949,14 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
       {
           ClientDataRequestType::kPaymentGet,
           GetTestOrigin(),
+          GetTestOrigin(),
+          {1, 2, 3},
+          false,
+      },
+      {
+          ClientDataRequestType::kWebAuthnCreate,
+          GetTestOrigin(),
+          url::Origin::Create(GURL("https://toplevel.example")),
           {1, 2, 3},
           false,
       },
@@ -926,8 +966,9 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(num++);
 
-    const std::string json = BuildClientDataJson(
-        {test.type, test.origin, test.challenge, test.is_cross_origin});
+    const std::string json =
+        BuildClientDataJson({test.type, test.origin, test.top_origin,
+                             test.challenge, test.is_cross_origin});
 
     const auto parsed = base::JSONReader::Read(json);
     ASSERT_TRUE(parsed.has_value());
@@ -957,6 +998,12 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
         base::Base64UrlEncodePolicy::OMIT_PADDING, &expected_challenge);
     EXPECT_EQ(*parsed->GetDict().FindString("challenge"), expected_challenge);
     EXPECT_EQ(*parsed->GetDict().FindBool("crossOrigin"), test.is_cross_origin);
+    if (test.is_cross_origin) {
+      EXPECT_EQ(*parsed->GetDict().FindString("topOrigin"),
+                test.top_origin.Serialize());
+    } else {
+      EXPECT_EQ(parsed->GetDict().FindString("topOrigin"), nullptr);
+    }
   }
 }
 
@@ -1034,6 +1081,54 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPlatformAuthenticator) {
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kUiTimeout,
                                  RequestMode::kModalWebAuthn);
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+
+  std::vector<std::string> capability_names;
+  base::ranges::transform(
+      capabilities, std::back_inserter(capability_names),
+      [](const auto& capability) { return capability->name; });
+
+  const std::vector<std::string_view> kRequiredCapabilities = {
+      client_capabilities::kConditionalCreate,
+      client_capabilities::kConditionalGet,
+      client_capabilities::kHybridTransport,
+      client_capabilities::kPasskeyPlatformAuthenticator,
+      client_capabilities::kUserVerifyingPlatformAuthenticator,
+      client_capabilities::kRelatedOrigins,
+  };
+
+  // Ensure no extra capabilities
+  EXPECT_EQ(kRequiredCapabilities.size(), capabilities.size());
+
+  // Check that each required capability is present exactly once.
+  for (const auto& capability : kRequiredCapabilities) {
+    EXPECT_EQ(1u, static_cast<size_t>(
+                      base::ranges::count(capability_names, capability)));
+  }
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditionalCreate) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kConditionalCreate,
+                   false);
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_HybridTransport) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kHybridTransport, false);
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_RelatedOrigins) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kRelatedOrigins, true);
 }
 
 // Parses its arguments as JSON and expects that all the keys in the first are
@@ -1668,7 +1763,7 @@ TEST_F(AuthenticatorImplTest, GetAssertionResponseWithAttestedCredentialData) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_F(AuthenticatorImplTest, IsUVPAA) {
+TEST_F(AuthenticatorImplTest, Win_IsUVPAA) {
   virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
@@ -1679,11 +1774,14 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
                                          : "!enable_win_webauthn_api");
     for (const bool is_uvpaa : {false, true}) {
       SCOPED_TRACE(is_uvpaa ? "is_uvpaa" : "!is_uvpaa");
-
-      fake_win_webauthn_api_.set_available(enable_win_webauthn_api);
-      fake_win_webauthn_api_.set_is_uvpaa(is_uvpaa);
-
-      EXPECT_EQ(AuthenticatorIsUvpaa(), enable_win_webauthn_api && is_uvpaa);
+      for (bool is_off_the_record : {true, false}) {
+        SCOPED_TRACE(is_off_the_record ? "off the record" : "on the record");
+        static_cast<TestBrowserContext*>(GetBrowserContext())
+            ->set_is_off_the_record(is_off_the_record);
+        fake_win_webauthn_api_.set_available(enable_win_webauthn_api);
+        fake_win_webauthn_api_.set_is_uvpaa(is_uvpaa);
+        EXPECT_EQ(AuthenticatorIsUvpaa(), enable_win_webauthn_api && is_uvpaa);
+      }
     }
   }
 }
@@ -1695,36 +1793,6 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
   EXPECT_FALSE(AuthenticatorIsUvpaa());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-class OffTheRecordAuthenticatorImplTest : public AuthenticatorImplTest {
- protected:
-  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
-    auto browser_context = std::make_unique<TestBrowserContext>();
-    browser_context->set_is_off_the_record(true);
-    return browser_context;
-  }
-};
-
-// Tests that IsUVPAA returns true if the version of Windows supports an
-// appropriate warning.
-TEST_F(OffTheRecordAuthenticatorImplTest, WinIsUVPAAIncognito) {
-  virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
-  NavigateAndCommit(GURL(kTestOrigin1));
-  fake_win_webauthn_api_.set_available(true);
-  fake_win_webauthn_api_.set_is_uvpaa(true);
-
-  for (bool win_api_supports_incognito_warning : {false, true}) {
-    SCOPED_TRACE(win_api_supports_incognito_warning
-                     ? "supports incognito"
-                     : "does not support incognito");
-    fake_win_webauthn_api_.set_version(win_api_supports_incognito_warning
-                                           ? WEBAUTHN_API_VERSION_4
-                                           : WEBAUTHN_API_VERSION_3);
-    EXPECT_EQ(AuthenticatorIsUvpaa(), win_api_supports_incognito_warning);
-  }
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 // TestWebAuthenticationRequestProxy is a test fake implementation of the
 // WebAuthenticationRequestProxy embedder interface.
@@ -3507,6 +3575,41 @@ TEST_F(AuthenticatorContentBrowserClientTest, IsUVPAAOverride) {
 
     EXPECT_EQ(AuthenticatorIsUvpaa(), is_uvpaa);
   }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GetClientCapabilities_CheckUvpaaPlumbing) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  for (const bool is_uvpaa : {false, true}) {
+    SCOPED_TRACE(::testing::Message() << "is_uvpaa=" << is_uvpaa);
+    test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override =
+        is_uvpaa;
+
+    ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+    ExpectCapability(capabilities,
+                     client_capabilities::kUserVerifyingPlatformAuthenticator,
+                     is_uvpaa);
+
+    // TODO(crbug.com/360327828): Test PPAA separately. Given that the value of
+    // "hybridTransport" is currently hardcoded to "false", it's safe to assume
+    // that "passkeyPlatformAuthenticator" matches the value of "is_uvpaa".
+    ExpectCapability(capabilities,
+                     client_capabilities::kPasskeyPlatformAuthenticator,
+                     is_uvpaa);
+  }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GetClientCapabilities_ConditionalGet_ReturnsFalse) {
+  // Conditional mediation should always be available if gpm passkeys are
+  // enabled.
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->supports_passkey_metadata_syncing = true;
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kConditionalGet, true);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest,
@@ -8934,6 +9037,21 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential) {
   EXPECT_EQ(metadata.ToPublicKeyCredentialUserEntity(), expected_user);
 }
 
+TEST_F(TouchIdAuthenticatorImplTest, MakeCredentialUnsupportedAlgorithm) {
+  // crbug.com/362766319
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  auto options = GetTestPublicKeyCredentialCreationOptions();
+  options->authenticator_selection->authenticator_attachment =
+      device::AuthenticatorAttachment::kPlatform;
+  options->public_key_parameters = GetTestPublicKeyCredentialParameters(
+      static_cast<int32_t>(device::CoseAlgorithmIdentifier::kEdDSA));
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
 TEST_F(TouchIdAuthenticatorImplTest, OptionalUv) {
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
@@ -10013,6 +10131,21 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsConditionalMediationAvailable) {
   // proxy.
   EXPECT_FALSE(AuthenticatorIsConditionalMediationAvailable());
   EXPECT_EQ(request_proxy().observations().num_isuvpaa, 1u);
+}
+
+TEST_F(AuthenticatorImplWithRequestProxyTest,
+       GetClientCapabilities_ConditionalGet_ReturnsFalse) {
+  // We can't autofill credentials over the request proxy. Hence, conditional
+  // mediation is unavailable, even if IsUVPAA returns true.
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ASSERT_EQ(test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override,
+            std::nullopt);
+  request_proxy().config().is_uvpaa = true;
+
+  // Internally, `IsConditionalMediationAvailable()` should returns `false`,
+  // bypassing the proxy.
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kConditionalGet, false);
 }
 
 // Temporary regression test for crbug.com/1489468.

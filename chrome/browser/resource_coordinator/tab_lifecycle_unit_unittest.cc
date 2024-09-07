@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -48,6 +50,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/permissions/system/system_permission_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace resource_coordinator {
 
@@ -99,9 +106,11 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
   // TabLifecycleUnitTest.
   class ScopedEnterpriseOptOut;
 
-  TabLifecycleUnitTest() : scoped_set_tick_clock_for_testing_(&test_clock_) {
+  TabLifecycleUnitTest()
+      : scoped_set_clocks_for_testing_(&test_clock_, &test_tick_clock_) {
+    test_clock_.SetNow(base::Time::NowFromSystemTime());
     // Advance the clock so that it doesn't yield null time ticks.
-    test_clock_.Advance(base::Seconds(1));
+    test_tick_clock_.Advance(base::Seconds(1));
     observers_.AddObserver(&observer_);
   }
 
@@ -122,6 +131,7 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
     web_contents_ = test_web_contents.get();
     auto* tester = content::WebContentsTester::For(web_contents_);
     tester->SetLastActiveTimeTicks(NowTicks());
+    tester->SetLastActiveTime(Now());
     ResourceCoordinatorTabHelper::CreateForWebContents(web_contents_);
     // Commit an URL to allow discarding.
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
@@ -170,13 +180,15 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<content::WebContents, DanglingUntriaged>
       web_contents_;  // Owned by tab_strip_model_.
   std::unique_ptr<TabStripModel> tab_strip_model_;
-  base::SimpleTestTickClock test_clock_;
+  base::SimpleTestClock test_clock_;
+  base::SimpleTestTickClock test_tick_clock_;
   std::unique_ptr<UsageClock> usage_clock_;
 
  private:
   // So that the main thread looks like the UI thread as expected.
   TestTabStripModelDelegate tab_strip_model_delegate_;
-  ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing_;
+  ScopedSetClocksForTesting scoped_set_clocks_for_testing_;
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 class TabLifecycleUnitTest::ScopedEnterpriseOptOut {
@@ -202,7 +214,7 @@ TEST_F(TabLifecycleUnitTest, CanDiscardByDefault) {
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 }
 
@@ -210,24 +222,30 @@ TEST_F(TabLifecycleUnitTest, SetFocused) {
   TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
-  EXPECT_EQ(NowTicks(), tab_lifecycle_unit.GetLastFocusedTime());
+  EXPECT_EQ(NowTicks(), tab_lifecycle_unit.GetLastFocusedTimeTicks());
+  EXPECT_EQ(Now(), tab_lifecycle_unit.GetLastFocusedTime());
   // Advance time enough that the tab is urgent discardable.
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   test_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   tab_lifecycle_unit.SetFocused(true);
   tab_strip_model_->ActivateTabAt(0);
   web_contents_->WasShown();
-  EXPECT_EQ(base::TimeTicks::Max(), tab_lifecycle_unit.GetLastFocusedTime());
+  EXPECT_EQ(base::TimeTicks::Max(),
+            tab_lifecycle_unit.GetLastFocusedTimeTicks());
+  EXPECT_EQ(base::Time::Max(), tab_lifecycle_unit.GetLastFocusedTime());
   ExpectCanDiscardFalseAllReasons(&tab_lifecycle_unit,
                                   DecisionFailureReason::LIVE_STATE_VISIBLE);
 
   tab_lifecycle_unit.SetFocused(false);
   tab_strip_model_->ActivateTabAt(1);
   web_contents_->WasHidden();
-  EXPECT_EQ(test_clock_.NowTicks(), tab_lifecycle_unit.GetLastFocusedTime());
+  EXPECT_EQ(test_tick_clock_.NowTicks(),
+            tab_lifecycle_unit.GetLastFocusedTimeTicks());
+  EXPECT_EQ(test_clock_.Now(), tab_lifecycle_unit.GetLastFocusedTime());
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 }
 
@@ -237,7 +255,7 @@ TEST_F(TabLifecycleUnitTest, AutoDiscardable) {
                                       tab_strip_model_.get());
 
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   EXPECT_TRUE(tab_lifecycle_unit.IsAutoDiscardable());
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
@@ -277,7 +295,7 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardActive) {
   tab_strip_model_->ActivateTabAt(0);
 
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   ExpectCanDiscardFalseAllReasons(&tab_lifecycle_unit,
                                   DecisionFailureReason::LIVE_STATE_VISIBLE);
@@ -295,7 +313,7 @@ TEST_F(TabLifecycleUnitTest, UrgentDiscardProtections) {
                                LifecycleUnitDiscardReason::URGENT);
 
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   // The tab should now be discardable for all reasons.
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
@@ -306,7 +324,7 @@ TEST_F(TabLifecycleUnitTest, UrgentDiscardProtections) {
   // Advance time enough that the time protection no longer applies. The tab
   // should still not be urgent discardable at this point, because it has
   // already been discarded at least once.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   // External discarding should be fine, but not urgent.
   ExpectCanDiscardTrue(&tab_lifecycle_unit,
@@ -345,11 +363,17 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardEmptyURL) {
 }
 
 TEST_F(TabLifecycleUnitTest, CannotDiscardVideoCapture) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Mock system-level microphone permission.
+  system_permission_settings::ScopedSettingsForTesting mic_settings(
+      ContentSettingsType::MEDIASTREAM_MIC, false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   blink::mojom::StreamDevices devices;
@@ -377,7 +401,7 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardHasFormInteractions) {
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   FormInteractionTabHelper::CreateForWebContents(web_contents_);
@@ -396,7 +420,7 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardDesktopCapture) {
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   blink::mojom::StreamDevices devices;
@@ -423,7 +447,7 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardRecentlyAudible) {
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   // Cannot discard when the "recently audible" bit is set.
@@ -432,20 +456,20 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardRecentlyAudible) {
       &tab_lifecycle_unit, DecisionFailureReason::LIVE_STATE_PLAYING_AUDIO);
 
   // The "recently audible" bit is still set. The tab cannot be discarded.
-  test_clock_.Advance(kTabAudioProtectionTime);
+  test_tick_clock_.Advance(kTabAudioProtectionTime);
   ExpectCanDiscardFalseAllReasons(
       &tab_lifecycle_unit, DecisionFailureReason::LIVE_STATE_PLAYING_AUDIO);
 
   // The "recently audible" bit was unset less than
   // kTabAudioProtectionTime ago. The tab cannot be discarded.
   tab_lifecycle_unit.SetRecentlyAudible(false);
-  test_clock_.Advance(kShortDelay);
+  test_tick_clock_.Advance(kShortDelay);
   ExpectCanDiscardFalseAllReasons(
       &tab_lifecycle_unit, DecisionFailureReason::LIVE_STATE_PLAYING_AUDIO);
 
   // The "recently audible" bit was unset kTabAudioProtectionTime ago. The tab
   // can be discarded.
-  test_clock_.Advance(kTabAudioProtectionTime - kShortDelay);
+  test_tick_clock_.Advance(kTabAudioProtectionTime - kShortDelay);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   // Calling SetRecentlyAudible(false) again does not change the fact that the
@@ -459,7 +483,7 @@ TEST_F(TabLifecycleUnitTest, CanDiscardNeverAudibleTab) {
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   tab_lifecycle_unit.SetRecentlyAudible(false);
@@ -473,7 +497,7 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardPDF) {
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
   // Advance time enough that the tab is urgent discardable.
-  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   content::WebContentsTester::For(web_contents_)

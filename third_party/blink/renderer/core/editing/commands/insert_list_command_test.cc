@@ -211,7 +211,7 @@ TEST_F(InsertListCommandTest, ListifyInputInTableCell1) {
   EXPECT_EQ(
       "<div contenteditable=\"true\">^<br><ol><li><ruby><rb><ol><li><br></li>"
       "<li><ruby><rb><input></rb></ruby></li><li><br></li><li><br></li></ol>"
-      "</rb></ruby></li></ol>|XXX<br><div></div></div>",
+      "</rb></ruby></li></ol>|XXX<div></div></div>",
       GetSelectionTextFromBody());
 }
 

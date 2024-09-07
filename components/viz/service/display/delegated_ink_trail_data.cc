@@ -21,7 +21,6 @@
 #include "ui/base/prediction/linear_predictor.h"
 #include "ui/base/prediction/linear_resampling.h"
 #include "ui/gfx/delegated_ink_metadata.h"
-#include "ui/gfx/delegated_ink_point.h"
 
 namespace viz {
 
@@ -63,22 +62,24 @@ DelegatedInkTrailData::PredictionHandler::PredictionHandler() = default;
 DelegatedInkTrailData::PredictionHandler::~PredictionHandler() = default;
 
 void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
-  if (static_cast<int>(points_.size()) == 0)
+  if (points_.empty()) {
     pointer_id_ = point.pointer_id();
-  else
-    DCHECK_EQ(pointer_id_, point.pointer_id());
+  }
+  CHECK_EQ(pointer_id_, point.pointer_id());
 
-  for (auto& it : prediction_handlers_)
+  for (auto& it : prediction_handlers_) {
     it.predictor->Update(
         ui::InputPredictor::InputData(point.point(), point.timestamp()));
+  }
 
   // Fail-safe to prevent storing excessive points if they are being sent but
   // never filtered and used, like if the renderer has stalled during a long
   // running script.
-  if (points_.size() == gfx::kMaximumNumberOfDelegatedInkPoints)
+  if (points_.size() == gfx::kMaximumNumberOfDelegatedInkPoints) {
     points_.erase(points_.begin());
+  }
 
-  points_.insert({point.timestamp(), point.point()});
+  points_.insert({point.timestamp(), point});
 }
 
 void DelegatedInkTrailData::PredictPoints(
@@ -146,12 +147,15 @@ void DelegatedInkTrailData::Reset() {
 
 bool DelegatedInkTrailData::ContainsMatchingPoint(
     gfx::DelegatedInkMetadata* metadata) const {
-  auto point = points_.find(metadata->timestamp());
-  if (point == points_.end())
-    return false;
+  const auto& point = points_.find(metadata->timestamp());
+  return point != points_.end() &&
+         point->second.MatchesDelegatedInkMetadata(metadata);
+}
 
-  return gfx::DelegatedInkPoint(point->second, point->first)
-      .MatchesDelegatedInkMetadata(metadata);
+gfx::DelegatedInkPoint DelegatedInkTrailData::GetMatchingPoint(
+    gfx::DelegatedInkMetadata* metadata) const {
+  CHECK(ContainsMatchingPoint(metadata));
+  return points_.find(metadata->timestamp())->second;
 }
 
 void DelegatedInkTrailData::ErasePointsOlderThanMetadata(
@@ -160,16 +164,18 @@ void DelegatedInkTrailData::ErasePointsOlderThanMetadata(
   // drawn by the app. Since the metadata timestamp will only increase, we can
   // safely erase every point earlier than it and be left only with the points
   // that can be drawn.
-  while (points_.size() > 0 && points_.begin()->first < metadata->timestamp() &&
-         points_.begin()->second != metadata->point())
+  while (!points_.empty() &&
+         points_.begin()->second.timestamp() < metadata->timestamp()) {
     points_.erase(points_.begin());
+  }
 }
 
 void DelegatedInkTrailData::UpdateMetrics(gfx::DelegatedInkMetadata* metadata) {
   for (auto& handler : prediction_handlers_) {
-    for (auto it : points_)
-      handler.metrics_handler->AddRealEvent(it.second, it.first,
+    for (const auto& [_, point] : points_) {
+      handler.metrics_handler->AddRealEvent(point.point(), point.timestamp(),
                                             metadata->frame_time());
+    }
   }
 }
 

@@ -301,6 +301,8 @@ export class EnterpriseEnrollmentElement extends
         this.authenticator.getDeviceIdResponse(deviceId);
       });
     });
+
+    this.authenticator.samlApiUsedCallback = this.samlApiUsed.bind(this);
   }
 
   /**
@@ -788,6 +790,14 @@ export class EnterpriseEnrollmentElement extends
 
   showSkipConfirmationDialog(): void {
     this.getSkipConfirmationDialog().showDialog();
+  }
+
+  /**
+   * Record that SAML API was used during sign-in.
+   * @param isThirdPartyIdP ignored.
+   */
+  private samlApiUsed(_: boolean): void {
+    this.userActed('using-saml-api');
   }
 }
 

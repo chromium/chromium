@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/search_engine_table_view_controller_unittest.h"
-
+#import "base/command_line.h"
 #import "components/search_engines/search_engines_pref_names.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/ui/settings/search_engine_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/search_engine_table_view_controller_unittest.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -15,8 +16,6 @@
 
 namespace {
 
-// Unit tests for SearchEngineTableViewController when
-// `kSearchEngineChoiceTrigger` is enabled.
 class SearchEngineTableViewControllerEEATest
     : public SearchEngineTableViewControllerTest {
   void SetUp() override {

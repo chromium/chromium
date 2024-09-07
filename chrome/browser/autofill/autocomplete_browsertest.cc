@@ -47,6 +47,8 @@ namespace autofill {
 namespace {
 
 using ::base::UTF8ToUTF16;
+using ::testing::_;
+using ::testing::AssertionResult;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -54,15 +56,10 @@ using ::testing::IsEmpty;
 const char kDefaultAutocompleteInputId[] = "n300";
 const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
 
-}  // namespace
-
 class AutocompleteTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     active_browser_ = browser();
-
-    // Don't want Keychain coming up on Mac.
-    test::DisableSystemServices(pref_service());
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -80,7 +77,6 @@ class AutocompleteTest : public InProcessBrowserTest {
         .client()
         .HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
     active_browser_ = nullptr;
-    test::ReenableSystemServices();
   }
 
   // Necessary to avoid flakiness or failure due to input arriving
@@ -117,12 +113,12 @@ class AutocompleteTest : public InProcessBrowserTest {
 
     // Simulate a mouse click to submit the form because form submissions not
     // triggered by user gestures are ignored.
-    TestAutofillManagerWaiter waiter(manager(),
-                                     {AutofillManagerEvent::kFormSubmitted});
+    TestAutofillManagerSingleEventWaiter submission_waiter(
+        manager(), &AutofillManager::Observer::OnFormSubmitted);
     content::SimulateMouseClick(
         active_browser_->tab_strip_model()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft);
-    ASSERT_TRUE(waiter.Wait(1));
+    ASSERT_TRUE(std::move(submission_waiter).Wait());
 
     if (!should_skip_save) {
       // Wait for data to have been saved in the DB.
@@ -296,5 +292,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
               SuggestionVectorMainTextsAre(Suggestion::Text(
                   UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 }
+
+}  // namespace
 
 }  // namespace autofill

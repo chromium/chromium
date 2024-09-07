@@ -15,7 +15,9 @@
 #include "ash/system/video_conference/video_conference_utils.h"
 #include "base/barrier_callback.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/utils/haptics_util.h"
@@ -229,6 +231,9 @@ void VcTileUiController::OnDlcDownloadStateFetched(
   if (!tile_) {
     return;
   }
+
+  SCOPED_CRASH_KEY_STRING32("VCTileUIC", "label",
+                            base::UTF16ToUTF8(effect_state_label_for_debug_));
 
   CHECK(effect_state_)
       << "DLC State retrieved, but `effect_state_` is no longer valid for: "

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -40,6 +41,15 @@ bool GeminiIntroScreen::ShouldBeSkipped() {
     return true;
   }
 
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+
+  // Skip the screen if the perk was already shown to the user in perks
+  // discovery.
+  if (features::IsOobePerksDiscoveryEnabled() &&
+      prefs->GetBoolean(prefs::kOobePerksDiscoveryGamgeeShown)) {
+    return true;
+  }
+
   auto* user_manager = user_manager::UserManager::Get();
   if (user_manager->IsLoggedInAsChildUser()) {
     return true;
@@ -48,8 +58,7 @@ bool GeminiIntroScreen::ShouldBeSkipped() {
   // Skip the screen if `kShowGeminiIntroScreenEnabled` preference is set by
   // managed user default or admin to false.
   const PrefService::Preference* pref =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
-          prefs::kShowGeminiIntroScreenEnabled);
+      prefs->FindPreference(prefs::kShowGeminiIntroScreenEnabled);
   if (pref->IsManaged() && !pref->GetValue()->GetBool()) {
     return true;
   }

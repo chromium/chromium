@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
@@ -17,13 +18,23 @@
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_iban_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
+#if !BUILDFLAG(IS_IOS)
+namespace webauthn {
+class InternalAuthenticator;
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 namespace autofill {
 
 class AutofillClient;
+#if !BUILDFLAG(IS_IOS)
+class AutofillDriver;
+#endif  // !BUILDFLAG(IS_IOS)
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class MerchantPromoCodeManager;
@@ -104,6 +115,12 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions) override;
+#if !BUILDFLAG(IS_IOS)
+  std::unique_ptr<webauthn::InternalAuthenticator>
+  CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
+#endif
+  MockMandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
+      override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
 
@@ -167,6 +184,12 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       std::unique_ptr<AutofillOfferManager> autofill_offer_manager) {
     autofill_offer_manager_ = std::move(autofill_offer_manager);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Set up a mock to simulate successful mandatory reauth when autofilling
+  // payment methods.
+  void SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
+#endif
 
  private:
   const raw_ref<AutofillClient> client_;
@@ -233,6 +256,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       mock_merchant_promo_code_manager_;
 
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
+
+  std::unique_ptr<MockMandatoryReauthManager>
+      mock_payments_mandatory_reauth_manager_;
 };
 
 }  // namespace payments

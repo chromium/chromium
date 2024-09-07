@@ -13,7 +13,9 @@ export function getHtml(this: DisclosureAppElement) {
       <cr-icon icon="product-specifications:table-chart-organize">
       </cr-icon>
     </div>
-    <div id="title">${this.i18n('disclosureTitle')}</div>
+    <div id="title" role="heading">
+      ${this.i18n('disclosureTitle')}
+    </div>
   </div>
 
   <div id="summary">
@@ -28,12 +30,16 @@ export function getHtml(this: DisclosureAppElement) {
         </div>`)}
     </div>
   </div>
-
+  <a id="learnMoreLink" href="${this.i18n('compareLearnMoreUrl')}"
+    @click="${this.onLearnMoreClicked_}" target="_blank"
+    aria-label="${this.i18n('learnMoreA11yLabel')}">
+      ${this.i18n('learnMore')}
+  </a>
   <div id="actionsContainer">
-    <cr-button class="tonal-button" @click=${this.declineDisclosure}>
+    <cr-button class="tonal-button" @click=${this.declineDisclosure_}>
       ${this.i18n('declineDisclosure')}
     </cr-button>
-    <cr-button class="action-button" @click=${this.acceptDisclosure}>
+    <cr-button class="action-button" @click=${this.acceptDisclosure_}>
       ${this.i18n('acceptDisclosure')}
     </cr-button>
   </div>`;

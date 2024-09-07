@@ -46,14 +46,14 @@ void CreateLoaderAndStart(
 // static
 std::unique_ptr<content::URLLoaderRequestInterceptor>
 PdfURLLoaderRequestInterceptor::MaybeCreateInterceptor(
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::unique_ptr<PdfStreamDelegate> stream_delegate) {
   return std::make_unique<PdfURLLoaderRequestInterceptor>(
       frame_tree_node_id, std::move(stream_delegate));
 }
 
 PdfURLLoaderRequestInterceptor::PdfURLLoaderRequestInterceptor(
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::unique_ptr<PdfStreamDelegate> stream_delegate)
     : frame_tree_node_id_(frame_tree_node_id),
       stream_delegate_(std::move(stream_delegate)) {}

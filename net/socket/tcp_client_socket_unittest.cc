@@ -60,7 +60,9 @@ class TCPClientSocketTest : public testing::Test {
   TCPClientSocketTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
-  ~TCPClientSocketTest() override { base::PowerMonitor::ShutdownForTesting(); }
+  ~TCPClientSocketTest() override {
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
+  }
 
   void Suspend() { power_monitor_source_.Suspend(); }
   void Resume() { power_monitor_source_.Resume(); }

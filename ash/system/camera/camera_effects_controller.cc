@@ -376,7 +376,9 @@ cros::mojom::InferenceBackend GetInferenceBackend(
     const base::Feature& feature) {
   const std::string value =
       GetFieldTrialParamValueByFeature(feature, "inference_backend");
-  if (value == "GPU") {
+  if (value == "AUTO") {
+    return cros::mojom::InferenceBackend::kAuto;
+  } else if (value == "GPU") {
     return cros::mojom::InferenceBackend::kGpu;
   } else if (value == "NPU") {
     return cros::mojom::InferenceBackend::kNpu;
@@ -403,7 +405,19 @@ void CameraEffectsController::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kBackgroundReplace, false);
 
-  registry->RegisterBooleanPref(prefs::kPortraitRelighting, false);
+  // If the Studio Look feature is available, the portrait relighting and face
+  // retouch prefs are used to determine which effects are applied. Enable both
+  // of them by default. Otherwise, disable both of them.
+  registry->RegisterBooleanPref(prefs::kPortraitRelighting,
+                                features::IsVcStudioLookEnabled());
+  registry->RegisterBooleanPref(prefs::kFaceRetouch,
+                                features::IsVcStudioLookEnabled());
+
+  // If the Studio Look feature is available, disable Studio Look by default.
+  // Otherwise, set it to always true to apply effects based on the portrait
+  // relighting and face retouch pref values.
+  registry->RegisterBooleanPref(prefs::kStudioLook,
+                                !features::IsVcStudioLookEnabled());
 
   registry->RegisterFilePathPref(prefs::kBackgroundImagePath, base::FilePath());
 }
@@ -641,6 +655,10 @@ std::optional<int> CameraEffectsController::GetEffectState(
                        current_effects_->blur_enabled);
     case VcEffectId::kPortraitRelighting:
       return current_effects_->relight_enabled;
+    case VcEffectId::kFaceRetouch:
+      return current_effects_->retouch_enabled;
+    case VcEffectId::kStudioLook:
+      return current_effects_->studio_look_enabled;
     case VcEffectId::kCameraFraming:
       return Shell::Get()->autozoom_controller()->GetState() !=
              cros::mojom::CameraAutoFramingState::OFF;
@@ -694,6 +712,38 @@ void CameraEffectsController::OnEffectControlActivated(
     case VcEffectId::kPortraitRelighting: {
       new_effects->relight_enabled =
           state.value_or(!new_effects->relight_enabled);
+      if (!features::IsVcStudioLookEnabled()) {
+        // Make sure that `studio_look_enabled` is set to true. Otherwise, this
+        // will override the value of `relight_enabled`.
+        new_effects->studio_look_enabled = true;
+      }
+      // TODO(b/354069928): Toggle off the Studio Look button when both
+      // relighting and retouch are disabled.
+      break;
+    }
+    case VcEffectId::kFaceRetouch: {
+      new_effects->retouch_enabled =
+          state.value_or(!new_effects->retouch_enabled);
+      if (!features::IsVcStudioLookEnabled()) {
+        // Make sure that `studio_look_enabled` is set to true. Otherwise, this
+        // will override the value of `retouch_enabled`.
+        new_effects->studio_look_enabled = true;
+      }
+      // TODO(b/354069928): Toggle off the Studio Look button when both
+      // relighting and retouch are disabled.
+      break;
+    }
+    case VcEffectId::kStudioLook: {
+      new_effects->studio_look_enabled =
+          state.value_or(!new_effects->studio_look_enabled);
+      if (new_effects->studio_look_enabled && !new_effects->relight_enabled &&
+          !new_effects->retouch_enabled) {
+        // When Studio Look is toggled enabled but portrait relighting and face
+        // retouch are currently both disabled, the portrait relighting and face
+        // retouch prefs are updated to be enabled.
+        new_effects->relight_enabled = true;
+        new_effects->retouch_enabled = true;
+      }
       break;
     }
     case VcEffectId::kCameraFraming: {
@@ -847,9 +897,10 @@ void CameraEffectsController::SetCameraEffects(
             &CameraEffectsController::OnCopyBackgroundImageFileComplete,
             weak_factory_.GetWeakPtr(), std::move(config), is_initialization,
             std::move(copy_background_image_complete_callback)));
-  } else {
-    SetCameraEffectsInCameraHalDispatcherImpl(std::move(config));
+    return;
   }
+
+  SetCameraEffectsInCameraHalDispatcherImpl(std::move(config));
 }
 
 void CameraEffectsController::OnCopyBackgroundImageFileComplete(
@@ -922,6 +973,10 @@ CameraEffectsController::GetEffectsConfigFromPref() {
 
   effects->relight_enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kPortraitRelighting);
+  effects->retouch_enabled =
+      pref_change_registrar_->prefs()->GetBoolean(prefs::kFaceRetouch);
+  effects->studio_look_enabled =
+      pref_change_registrar_->prefs()->GetBoolean(prefs::kStudioLook);
   return effects;
 }
 
@@ -956,6 +1011,17 @@ void CameraEffectsController::SetEffectsConfigToPref(
   if (new_config->relight_enabled != current_effects_->relight_enabled) {
     pref_change_registrar_->prefs()->SetBoolean(prefs::kPortraitRelighting,
                                                 new_config->relight_enabled);
+  }
+
+  if (new_config->retouch_enabled != current_effects_->retouch_enabled) {
+    pref_change_registrar_->prefs()->SetBoolean(prefs::kFaceRetouch,
+                                                new_config->retouch_enabled);
+  }
+
+  if (new_config->studio_look_enabled !=
+      current_effects_->studio_look_enabled) {
+    pref_change_registrar_->prefs()->SetBoolean(
+        prefs::kStudioLook, new_config->studio_look_enabled);
   }
 }
 
@@ -1026,42 +1092,46 @@ void CameraEffectsController::InitializeEffectControls() {
     AddEffect(std::move(effect));
   }
 
-  // If portrait relight UI controls are present, construct the effect
-  // and its state.
+  // If portrait relight UI controls are present, construct the effect and its
+  // state. If the Studio Look feature is available, the same UI control is used
+  // for Studio Look.
   if (IsEffectControlAvailable(cros::mojom::CameraEffect::kPortraitRelight)) {
+    auto effect_id = features::IsVcStudioLookEnabled()
+                         ? VcEffectId::kStudioLook
+                         : VcEffectId::kPortraitRelighting;
     std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
         /*type=*/VcEffectType::kToggle,
         /*get_state_callback=*/
         base::BindRepeating(&CameraEffectsController::GetEffectState,
-                            base::Unretained(this),
-                            VcEffectId::kPortraitRelighting),
-        /*effect_id=*/VcEffectId::kPortraitRelighting);
+                            base::Unretained(this), effect_id),
+        effect_id);
 
     const base::CommandLine* command_line =
         base::CommandLine::ForCurrentProcess();
     std::string face_retouch_override = command_line->GetSwitchValueASCII(
         media::switches::kFaceRetouchOverride);
-    bool is_studio_look_enabled =
+    bool show_studio_look_ui =
         face_retouch_override ==
             media::switches::kFaceRetouchForceEnabledWithRelighting ||
         face_retouch_override ==
-            media::switches::kFaceRetouchForceEnabledWithoutRelighting;
+            media::switches::kFaceRetouchForceEnabledWithoutRelighting ||
+        features::IsVcStudioLookEnabled();
 
     auto effect_state = std::make_unique<VcEffectState>(
-        /*icon=*/is_studio_look_enabled
-            ? &kVideoConferenceStudioLookIcon
-            : &kVideoConferencePortraitRelightOnIcon,
+        /*icon=*/show_studio_look_ui ? &kVideoConferenceStudioLookIcon
+                                     : &kVideoConferencePortraitRelightOnIcon,
         /*label_text=*/
         l10n_util::GetStringUTF16(
-            is_studio_look_enabled
+            show_studio_look_ui
                 ? IDS_ASH_VIDEO_CONFERENCE_BUBBLE_STUDIO_LOOK_NAME
                 : IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME),
         /*accessible_name_id=*/
-        IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME,
+        show_studio_look_ui
+            ? IDS_ASH_VIDEO_CONFERENCE_BUBBLE_STUDIO_LOOK_NAME
+            : IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME,
         /*button_callback=*/
         base::BindRepeating(&CameraEffectsController::OnEffectControlActivated,
-                            base::Unretained(this),
-                            /*effect_id=*/VcEffectId::kPortraitRelighting,
+                            base::Unretained(this), effect_id,
                             /*value=*/std::nullopt));
     effect->AddState(std::move(effect_state));
 

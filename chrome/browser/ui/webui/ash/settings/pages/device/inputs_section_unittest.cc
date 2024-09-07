@@ -29,8 +29,7 @@ namespace ash::settings {
 namespace {
 
 constexpr OsSettingsIdentifier kShowOrcaSettingsId = {
-    .setting = chromeos::settings::mojom::Setting::kShowOrca
-};
+    .setting = chromeos::settings::mojom::Setting::kShowOrca};
 
 std::string GetSettingsSearchResultId(OsSettingsIdentifier id, int message_id) {
   std::stringstream ss;
@@ -93,6 +92,7 @@ TEST_F(InputsSectionTest,
           chromeos::features::kFeatureManagementOrca,
       },
       /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
+                             chromeos::features::kFeatureManagementMahi,
                              chromeos::features::kMahi});
 
   auto mock_geolocation_provider =
@@ -117,6 +117,7 @@ TEST_F(InputsSectionTest,
   // Note that `kMahi` is associated with the Magic Boost feature.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
+                            chromeos::features::kFeatureManagementMahi,
                             chromeos::features::kMahi},
       /*disabled_features=*/{
           ash::features::kOrcaUseAccountCapabilities,
@@ -147,6 +148,7 @@ TEST_F(InputsSectionTest, SearchResultShouldIncludeHelpMeWrite) {
           chromeos::features::kFeatureManagementOrca,
       },
       /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
+                             chromeos::features::kFeatureManagementMahi,
                              chromeos::features::kMahi});
 
   auto mock_geolocation_provider =

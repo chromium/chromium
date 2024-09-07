@@ -93,7 +93,7 @@ void AddGroupToEntries(
   Java_RecentlyClosedBridge_addGroupToEntries(
       env, jentries, group.id.id(),
       group.timestamp.InMillisecondsSinceUnixEpoch(), group.visual_data.title(),
-      tabs);
+      static_cast<int>(group.visual_data.color()), tabs);
 }
 
 void AddBulkEventToEntries(

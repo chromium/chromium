@@ -129,7 +129,7 @@ class HostDisplayClient : public viz::HostDisplayClient {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetPreferredRefreshRate(float refresh_rate) override {
-    NOTIMPLEMENTED();
+    compositor_->OnSetPreferredRefreshRate(refresh_rate);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

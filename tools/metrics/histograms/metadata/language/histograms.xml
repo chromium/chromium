@@ -31,7 +31,7 @@ chromium-metrics-reviews@google.com.
 
     This histogram is recorded once for each invocation of the model. The model
     may be invoked multiple times after pageload, running against samples of
-    text from the page..
+    text from the page.
   </summary>
 </histogram>
 
@@ -40,11 +40,11 @@ chromium-metrics-reviews@google.com.
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    The time takes to prepare the input and run the TFLite detection model.
+    The time taken to prepare the input and run the TFLite detection model.
 
     This histogram is recorded once for each invocation of the model. The model
     may be invoked multiple times after pageload, running against samples of
-    text from the page..
+    text from the page.
   </summary>
 </histogram>
 
@@ -59,13 +59,13 @@ chromium-metrics-reviews@google.com.
 
     This histogram is recorded once for each invocation of the model. The model
     may be invoked multiple times after pageload, running against samples of
-    text from the page.. A successful invocation will record Detected (above) as
+    text from the page. A successful invocation will record Detected (above) as
     true.
   </summary>
 </histogram>
 
-<histogram name="LanguageDetection.TFLiteModel.ClassifyText.Size" units="bytes"
-    expires_after="2025-01-20">
+<histogram name="LanguageDetection.TFLiteModel.ClassifyText.Size"
+    units="characters" expires_after="2025-01-20">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 
     This histogram is recorded once for each invocation of the model. The model
     may be invoked multiple times after pageload, running against samples of
-    text from the page..
+    text from the page.
   </summary>
 </histogram>
 
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    The time takes to load the file and create the TFLite detection model. Note
+    The time taken to load the file and create the TFLite detection model. Note
     that on Windows, this operation is a file read, on other platforms it is an
     MMAP.
 

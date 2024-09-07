@@ -22,10 +22,9 @@
 using base::ASCIIToUTF16;
 
 namespace autofill {
+namespace {
 
 using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
-
-namespace {
 
 // A test record that contains all entries of the hybrid-structure name tree.
 struct NameParserTestRecord {
@@ -94,8 +93,6 @@ void TestLastNameParsing(const std::u16string& last_name,
   EXPECT_EQ(last_name_component.GetValueForType(NAME_LAST_SECOND),
             target_second);
 }
-
-}  // namespace
 
 // Tests the parsing of last names into their tree components:
 // * The first part, that is only used in Latinx/Hispanic names.
@@ -796,4 +793,5 @@ TEST(AutofillStructuredName, MergeSubsetLastname2) {
   VerifyTestValues(&name, name_values);
 }
 
+}  // namespace
 }  // namespace autofill

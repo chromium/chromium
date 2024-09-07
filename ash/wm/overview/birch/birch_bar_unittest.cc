@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/birch/birch_client.h"
-#include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
+#include "ash/birch/test_birch_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -46,6 +45,7 @@
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/test/views_test_utils.h"
@@ -102,198 +102,6 @@ class TestBirchItem : public BirchItem {
   }
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// TestBirchDataProvider:
-// A test birch data provider that runs the data fetched callback with saved
-// items when receives a data fetch request.
-template <typename T>
-class TestBirchDataProvider : public BirchDataProvider {
- public:
-  using DataFetchedCallback =
-      base::RepeatingCallback<void(const std::vector<T>&)>;
-
-  TestBirchDataProvider(DataFetchedCallback data_fetched_callback,
-                        const std::string& pref_name)
-      : data_fetched_callback_(data_fetched_callback), pref_name_(pref_name) {}
-  TestBirchDataProvider(const TestBirchDataProvider&) = delete;
-  TestBirchDataProvider& operator=(const TestBirchDataProvider&) = delete;
-  ~TestBirchDataProvider() override = default;
-
-  void set_items(const std::vector<T>& items) { items_ = items; }
-
-  void ClearItems() { items_.clear(); }
-
-  // BirchDataProvider:
-  void RequestBirchDataFetch() override {
-    data_fetched_callback_.Run(
-        (pref_name_.empty() || GetPrefService()->GetBoolean(pref_name_))
-            ? items_
-            : std::vector<T>());
-  }
-
- private:
-  DataFetchedCallback data_fetched_callback_;
-  const std::string pref_name_;
-  std::vector<T> items_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// TestBirchClient:
-// A test birch client that returns the specific items to birch model.
-class TestBirchClient : public BirchClient {
- public:
-  explicit TestBirchClient(BirchModel* birch_model) {
-    calendar_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchCalendarItem>>(
-            base::BindRepeating(&TestBirchClient::HandleCalendarFetch,
-                                base::Unretained(this)),
-            prefs::kBirchUseCalendar);
-    file_provider_ = std::make_unique<TestBirchDataProvider<BirchFileItem>>(
-        base::BindRepeating(&BirchModel::SetFileSuggestItems,
-                            base::Unretained(birch_model)),
-        prefs::kBirchUseFileSuggest);
-    tab_provider_ = std::make_unique<TestBirchDataProvider<BirchTabItem>>(
-        base::BindRepeating(&BirchModel::SetRecentTabItems,
-                            base::Unretained(birch_model)),
-        prefs::kBirchUseChromeTabs);
-    last_active_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchLastActiveItem>>(
-            base::BindRepeating(&BirchModel::SetLastActiveItems,
-                                base::Unretained(birch_model)),
-            prefs::kBirchUseChromeTabs);
-    most_visited_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchMostVisitedItem>>(
-            base::BindRepeating(&BirchModel::SetMostVisitedItems,
-                                base::Unretained(birch_model)),
-            prefs::kBirchUseChromeTabs);
-    self_share_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchSelfShareItem>>(
-            base::BindRepeating(&BirchModel::SetSelfShareItems,
-                                base::Unretained(birch_model)),
-            prefs::kBirchUseChromeTabs);
-    lost_media_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchLostMediaItem>>(
-            base::BindRepeating(&BirchModel::SetLostMediaItems,
-                                base::Unretained(birch_model)),
-            prefs::kBirchUseLostMedia);
-    release_notes_provider_ =
-        std::make_unique<TestBirchDataProvider<BirchReleaseNotesItem>>(
-            base::BindRepeating(&BirchModel::SetReleaseNotesItems,
-                                base::Unretained(birch_model)),
-            std::string());
-    EXPECT_TRUE(test_dir_.CreateUniqueTempDir());
-  }
-  TestBirchClient(const TestBirchClient&) = delete;
-  TestBirchClient& operator=(const TestBirchClient&) = delete;
-  ~TestBirchClient() override = default;
-
-  void SetCalendarItems(const std::vector<BirchCalendarItem>& items) {
-    calendar_provider_->set_items(items);
-  }
-
-  void SetFileSuggestItems(const std::vector<BirchFileItem>& items) {
-    file_provider_->set_items(items);
-  }
-
-  void SetRecentTabsItems(const std::vector<BirchTabItem>& items) {
-    tab_provider_->set_items(items);
-  }
-
-  void SetLastActiveItems(const std::vector<BirchLastActiveItem>& items) {
-    last_active_provider_->set_items(items);
-  }
-
-  void SetMostVisitedItems(const std::vector<BirchMostVisitedItem>& items) {
-    most_visited_provider_->set_items(items);
-  }
-
-  void SetReleaseNotesItems(const std::vector<BirchReleaseNotesItem>& items) {
-    release_notes_provider_->set_items(items);
-  }
-
-  void SetSelfShareItems(const std::vector<BirchSelfShareItem>& items) {
-    self_share_provider_->set_items(items);
-  }
-
-  void SetLostMediaItems(const std::vector<BirchLostMediaItem>& items) {
-    lost_media_provider_->set_items(items);
-  }
-
-  // Clear all items.
-  void Reset() {
-    calendar_provider_->ClearItems();
-    file_provider_->ClearItems();
-    tab_provider_->ClearItems();
-    last_active_provider_->ClearItems();
-    release_notes_provider_->ClearItems();
-    self_share_provider_->ClearItems();
-    lost_media_provider_->ClearItems();
-  }
-
-  // BirchClient:
-  BirchDataProvider* GetCalendarProvider() override {
-    return calendar_provider_.get();
-  }
-  BirchDataProvider* GetFileSuggestProvider() override {
-    return file_provider_.get();
-  }
-  BirchDataProvider* GetRecentTabsProvider() override {
-    return tab_provider_.get();
-  }
-  BirchDataProvider* GetLastActiveProvider() override {
-    return last_active_provider_.get();
-  }
-  BirchDataProvider* GetMostVisitedProvider() override {
-    return most_visited_provider_.get();
-  }
-  BirchDataProvider* GetSelfShareProvider() override {
-    return self_share_provider_.get();
-  }
-  BirchDataProvider* GetLostMediaProvider() override {
-    return lost_media_provider_.get();
-  }
-  BirchDataProvider* GetReleaseNotesProvider() override {
-    return release_notes_provider_.get();
-  }
-  void WaitForRefreshTokens(base::OnceClosure callback) override {
-    std::move(callback).Run();
-  }
-
-  base::FilePath GetRemovedItemsFilePath() override {
-    return test_dir_.GetPath();
-  }
-
-  void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
-
-  void GetFaviconImage(
-      const GURL& url,
-      const bool is_page_url,
-      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
-
- private:
-  void HandleCalendarFetch(const std::vector<BirchCalendarItem>& items) {
-    // The production calendar provider sets both calendar items and attachment
-    // items. Set both so the fetch can complete.
-    Shell::Get()->birch_model()->SetCalendarItems(items);
-    Shell::Get()->birch_model()->SetAttachmentItems({});
-  }
-
-  std::unique_ptr<TestBirchDataProvider<BirchCalendarItem>> calendar_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchFileItem>> file_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchTabItem>> tab_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchLastActiveItem>>
-      last_active_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchMostVisitedItem>>
-      most_visited_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchSelfShareItem>>
-      self_share_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchLostMediaItem>>
-      lost_media_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchReleaseNotesItem>>
-      release_notes_provider_;
-  base::ScopedTempDir test_dir_;
-};
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -303,7 +111,9 @@ class BirchBarTest : public AshTestBase {
  public:
   BirchBarTest() {
     feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather}, {});
+        {features::kForestFeature, features::kBirchWeather,
+         features::kBirchCoral},
+        {});
   }
 
   BirchBarTest(const BirchBarTest&) = delete;
@@ -320,7 +130,7 @@ class BirchBarTest : public AshTestBase {
          {prefs::kBirchShowSuggestions, prefs::kBirchUseCalendar,
           prefs::kBirchUseWeather, prefs::kBirchUseFileSuggest,
           prefs::kBirchUseChromeTabs, prefs::kBirchUseLostMedia,
-          prefs::kBirchUseReleaseNotes}) {
+          prefs::kBirchUseReleaseNotes, prefs::kBirchUseCoral}) {
       GetPrefService()->SetBoolean(pref_name, true);
     }
 
@@ -335,6 +145,16 @@ class BirchBarTest : public AshTestBase {
             prefs::kBirchUseWeather);
     weather_provider_ = weather_provider.get();
     birch_model->OverrideWeatherProviderForTest(std::move(weather_provider));
+
+    // TODO(make coral provider)
+    auto coral_provider =
+        std::make_unique<TestBirchDataProvider<BirchCoralItem>>(
+            base::BindRepeating(&BirchModel::SetCoralItems,
+                                base::Unretained(birch_model)),
+            prefs::kBirchUseCoral);
+    coral_provider_ = coral_provider.get();
+    birch_model->OverrideCoralProviderForTest(std::move(coral_provider));
+
     base::RunLoop run_loop;
     Shell::Get()
         ->birch_model()
@@ -349,6 +169,7 @@ class BirchBarTest : public AshTestBase {
   void TearDown() override {
     Shell::Get()->birch_model()->SetClientAndInit(nullptr);
     weather_provider_ = nullptr;
+    coral_provider_ = nullptr;
     birch_client_.reset();
     image_downloader_.reset();
     AshTestBase::TearDown();
@@ -442,12 +263,14 @@ class BirchBarTest : public AshTestBase {
   }
 
   // Adds `num` lost media items to data source.
-  void SetLostMediaItems(size_t num) {
+  void SetLostMediaItems(size_t num,
+                         const std::u16string& media_title = u"media title") {
     std::vector<BirchLostMediaItem> item_list;
     for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(
           /*source_url=*/GURL("https://www.source.com/"),
-          /*media_title=*/u"media title",
+          /*media_title=*/media_title,
+          /*backup_icon=*/std::nullopt,
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
@@ -480,8 +303,20 @@ class BirchBarTest : public AshTestBase {
     weather_provider_->set_items(item_list);
   }
 
+  // Adds `num` coral items to data source.
+  void SetCoralItems(size_t num) {
+    std::vector<BirchCoralItem> item_list;
+    for (size_t i = 0; i < num; i++) {
+      item_list.emplace_back(
+          /*coral_title=*/u"coral_title",
+          /*coral_text=*/u"coral_text");
+      item_list.back().set_ranking(1.0f);
+    }
+    coral_provider_->set_items(item_list);
+  }
   std::unique_ptr<TestBirchClient> birch_client_;
   raw_ptr<TestBirchDataProvider<BirchWeatherItem>> weather_provider_;
+  raw_ptr<TestBirchDataProvider<BirchCoralItem>> coral_provider_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -629,6 +464,43 @@ TEST_F(BirchBarTest, NoCrashOnSettingIconAfterShutdown) {
 
   // Trigger setting icon.
   std::move(set_icon).Run();
+}
+
+// Tests that the lost media chip will get updated once the lost media data
+// provider changed.
+TEST_F(BirchBarTest, UpdateLostMediaChip) {
+  // Clear all items and only add one lost media item.
+  birch_client_->Reset();
+  SetLostMediaItems(/*num=*/1, /*media_title=*/u"media 1");
+  EnterOverview();
+
+  // The bar have the only most media chip.
+  const auto& chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  ASSERT_EQ(1u, chips.size());
+
+  auto* lost_media_chip = views::AsViewClass<BirchChipButton>(chips[0]);
+  ASSERT_EQ(BirchItemType::kLostMedia, lost_media_chip->GetItem()->GetType());
+
+  // The chip has expected title string.
+  EXPECT_EQ(u"media 1", lost_media_chip->title_->GetText());
+
+  // Update media item with a new title and notify the data change.
+  SetLostMediaItems(/*num=*/1, /*media_title=*/u"media 2");
+  auto* lost_media_provider =
+      static_cast<TestBirchDataProvider<BirchLostMediaItem>*>(
+          birch_client_->GetLostMediaProvider());
+  lost_media_provider->RunDataProviderChangedCallback();
+
+  // The chip title string should get updated.
+  EXPECT_EQ(u"media 2", lost_media_chip->title_->GetText());
+
+  // Clear the media item and notify data change.
+  SetLostMediaItems(/*num=*/0);
+  lost_media_provider->RunDataProviderChangedCallback();
+
+  // The lost media chip should also be removed.
+  EXPECT_EQ(0u, chips.size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1092,6 +964,52 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsExtended) {
       bar_chips));
 }
 
+// The bar shows a maximum of 4 suggestion chips. The above tests verifies
+// customizing the first 8 suggestion types; this test verifies the rest.
+TEST_F(BirchBarMenuTest, CustomizeSuggestionsExtended2) {
+  SetCoralItems(/*num=*/1);
+
+  // Set show suggestions initially.
+  GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+  const auto& bar_chips = grid_test_api.GetBirchChips();
+
+  // At the beginning, all types should be shown on the bar.
+  EXPECT_TRUE(HasSuggestionTypes({BirchItemType::kCoral}, bar_chips));
+
+  auto* root_window_controller = RootWindowController::ForWindow(root_window);
+  // Right clicking on the wallpaper of the first display to show the context
+  // menu.
+  RightClickOn(root_window_controller->wallpaper_widget_controller()
+                   ->GetWidget()
+                   ->GetContentsView());
+  auto* model_adapter =
+      root_window_controller->menu_model_adapter_for_testing();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* coral_item = sub_menu->GetMenuItemAt(6);
+  EXPECT_EQ(coral_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kCoralSuggestions));
+
+  // Deselect coral suggestion.
+  LeftClickOn(coral_item);
+  EXPECT_FALSE(HasSuggestionTypes({BirchItemType::kCoral}, bar_chips));
+
+  // There is no suggestions showing on the bar.
+  EXPECT_TRUE(bar_chips.empty());
+
+  // Re-select coral suggestion.
+  LeftClickOn(coral_item);
+  EXPECT_TRUE(HasSuggestionTypes({BirchItemType::kCoral}, bar_chips));
+}
+
 // Tests resetting suggestions from context menu.
 TEST_F(BirchBarMenuTest, ResetSuggestions) {
   // Create 4 suggestions, one for each customizable suggestion type.
@@ -1146,7 +1064,7 @@ TEST_F(BirchBarMenuTest, ResetSuggestions) {
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* reset_item = sub_menu->GetMenuItemAt(6);
+  auto* reset_item = sub_menu->GetMenuItemAt(7);
   EXPECT_EQ(reset_item->GetCommand(),
             base::to_underlying(BirchBarContextMenuModel::CommandId::kReset));
 
@@ -1170,6 +1088,7 @@ TEST_F(BirchBarMenuTest, ResetSuggestionsExtended) {
   SetLastActiveItems(/*num=*/1);
   SetMostVisitedItems(/*num=*/1);
   SetLostMediaItems(/*num=*/1);
+  SetCoralItems(/*num=*/1);
 
   // Enter Overview and check a bar view is created.
   EnterOverview();
@@ -1182,6 +1101,7 @@ TEST_F(BirchBarMenuTest, ResetSuggestionsExtended) {
   auto* pref_service = GetPrefService();
   pref_service->SetBoolean(prefs::kBirchUseChromeTabs, false);
   pref_service->SetBoolean(prefs::kBirchUseLostMedia, false);
+  pref_service->SetBoolean(prefs::kBirchUseCoral, false);
 
   EXPECT_EQ(0u, bar_chips.size());
 
@@ -1197,7 +1117,7 @@ TEST_F(BirchBarMenuTest, ResetSuggestionsExtended) {
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* reset_item = sub_menu->GetMenuItemAt(6);
+  auto* reset_item = sub_menu->GetMenuItemAt(7);
   EXPECT_EQ(reset_item->GetCommand(),
             base::to_underlying(BirchBarContextMenuModel::CommandId::kReset));
 
@@ -1206,11 +1126,12 @@ TEST_F(BirchBarMenuTest, ResetSuggestionsExtended) {
   LeftClickOn(reset_item);
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseChromeTabs));
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseLostMedia));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseCoral));
 
-  EXPECT_EQ(3u, bar_chips.size());
+  EXPECT_EQ(4u, bar_chips.size());
   EXPECT_TRUE(HasSuggestionTypes(
       {BirchItemType::kLastActive, BirchItemType::kMostVisited,
-       BirchItemType::kLostMedia},
+       BirchItemType::kLostMedia, BirchItemType::kCoral},
       bar_chips));
 }
 
@@ -1471,9 +1392,110 @@ TEST_F(BirchBarMenuTest, CheckboxAccessibleName) {
   // `views::MenuItemView` calculates its accessible name by calling
   // `GetAccessibleNodeData()`. Test that it returns the correct string.
   ui::AXNodeData node_data;
-  item_view->GetAccessibleNodeData(&node_data);
+  item_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(u"Weather",
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+// Tests that hide the birch bar from chip context menu with tapping works.
+TEST_F(BirchBarMenuTest, HideSuggestionsByTappingChipMenu) {
+  // Set show suggestions initially.
+  GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
+
+  // Create a chip.
+  SetCalendarItems(/*num=*/1);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+
+  // The birch bars should be shown.
+  ASSERT_TRUE(grid_test_api.birch_bar_view());
+
+  // Right clicking on a chip to show the chip menu.
+  RightClickOn(grid_test_api.GetBirchChips()[0]);
+  auto* model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  ASSERT_TRUE(model_adapter->IsShowingMenu());
+
+  auto* chip_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* customize_suggestions_item = chip_menu->GetMenuItemAt(2);
+  GestureTapOn(customize_suggestions_item);
+
+  auto* sub_menu = customize_suggestions_item->GetSubmenu();
+  auto* sub_show_suggestions_item = sub_menu->GetMenuItemAt(0);
+  EXPECT_EQ(sub_show_suggestions_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kShowSuggestions));
+  auto switch_container = sub_show_suggestions_item->children()[0];
+  auto* switch_button = AsViewClass<Switch>(switch_container->children()[2]);
+  GestureTapOn(switch_button);
+  EXPECT_FALSE(grid_test_api.birch_bar_view());
+}
+
+// Tests that customize the birch bar from chip context menu with tapping works.
+TEST_F(BirchBarMenuTest, CustomizeSuggestionsByTappingChipMenu) {
+  // Set show suggestions and enable weather suggestions initially.
+  GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
+
+  // Create 3 suggestions, one for each customizable suggestion type.
+  SetCalendarItems(/*num=*/1);
+  SetFileItems(/*num=*/1);
+  SetTabItems(/*num=*/1);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+
+  // The birch bars should be shown.
+  ASSERT_TRUE(grid_test_api.birch_bar_view());
+
+  // Right clicking on a chip to show the chip menu.
+  RightClickOn(grid_test_api.GetBirchChips()[0]);
+  auto* model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  ASSERT_TRUE(model_adapter->IsShowingMenu());
+
+  auto* chip_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* customize_suggestions_item = chip_menu->GetMenuItemAt(2);
+  GestureTapOn(customize_suggestions_item);
+
+  auto* sub_menu = customize_suggestions_item->GetSubmenu();
+  auto* calendar_item = sub_menu->GetMenuItemAt(2);
+  EXPECT_EQ(calendar_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kCalendarSuggestions));
+  auto* calendar_checkbox =
+      views::AsViewClass<Checkbox>(calendar_item->children()[0]);
+
+  // Deselect the calendar.
+  GestureTapOn(calendar_checkbox);
+  EXPECT_FALSE(GetPrefService()->GetBoolean(prefs::kBirchUseCalendar));
+
+  // The menu will be closed after selection.
+  EXPECT_FALSE(
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing());
+
+  RightClickOn(grid_test_api.GetBirchChips()[0]);
+  model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  ASSERT_TRUE(model_adapter->IsShowingMenu());
+
+  customize_suggestions_item =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
+  GestureTapOn(customize_suggestions_item);
+
+  calendar_item = customize_suggestions_item->GetSubmenu()->GetMenuItemAt(2);
+  calendar_checkbox =
+      views::AsViewClass<Checkbox>(calendar_item->children()[0]);
+
+  // Select the calendar.
+  GestureTapOn(calendar_checkbox);
+  EXPECT_TRUE(GetPrefService()->GetBoolean(prefs::kBirchUseCalendar));
 }
 
 // The parameter structure for birch bar responsive layout tests.
@@ -1517,9 +1539,7 @@ class BirchBarLayoutTest
     scoped_internal_display_id_ =
         std::make_unique<display::test::ScopedSetInternalDisplayId>(
             Shell::Get()->display_manager(), display_id);
-    SetShelfAlignmentPref(
-        Shell::Get()->session_controller()->GetPrimaryUserPrefService(),
-        display_id, params.shelf_alignment);
+    SetShelfAlignmentPref(GetPrefService(), display_id, params.shelf_alignment);
   }
 
  private:

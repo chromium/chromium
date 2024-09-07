@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Cannot reuse attached transforms
-  assert_throws_dom: function "() => receiver2.transform = receiver.transform" did not throw
-Harness: the test ran to completion.
-

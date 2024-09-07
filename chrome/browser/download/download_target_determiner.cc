@@ -64,7 +64,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #include "ui/shell_dialogs/select_file_utils_win.h"
 #endif
 
@@ -99,11 +98,6 @@ void VisitCountsToVisitedBefore(base::OnceCallback<void(bool)> callback,
       result.success && result.count > 0 &&
       (result.first_visit.LocalMidnight() < base::Time::Now().LocalMidnight()));
 }
-
-#if BUILDFLAG(IS_WIN)
-// Keeps track of whether Adobe Reader is up to date.
-bool g_is_adobe_reader_up_to_date_ = false;
-#endif
 
 // For the `new_path`, generates a new safe file name if needed. Keep its
 // extension if it is empty or matches that of the `old_extension`. Otherwise,
@@ -195,9 +189,6 @@ void DownloadTargetDeterminer::DoLoop() {
         break;
       case STATE_DETERMINE_IF_HANDLED_SAFELY_BY_BROWSER:
         result = DoDetermineIfHandledSafely();
-        break;
-      case STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE:
-        result = DoDetermineIfAdobeReaderUpToDate();
         break;
       case STATE_CHECK_DOWNLOAD_URL:
         result = DoCheckDownloadUrl();
@@ -887,7 +878,7 @@ DownloadTargetDeterminer::Result
   DCHECK(!local_path_.empty());
   DCHECK(!is_filetype_handled_safely_);
 
-  next_state_ = STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE;
+  next_state_ = STATE_CHECK_DOWNLOAD_URL;
 
   if (mime_type_.empty())
     return CONTINUE;
@@ -903,49 +894,10 @@ void DownloadTargetDeterminer::DetermineIfHandledSafelyDone(
     bool is_handled_safely) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DVLOG(20) << "Is file type handled safely: " << is_filetype_handled_safely_;
-  DCHECK_EQ(STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE, next_state_);
+  DCHECK_EQ(STATE_CHECK_DOWNLOAD_URL, next_state_);
   is_filetype_handled_safely_ = is_handled_safely;
   DoLoop();
 }
-
-DownloadTargetDeterminer::Result
-    DownloadTargetDeterminer::DoDetermineIfAdobeReaderUpToDate() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  next_state_ = STATE_CHECK_DOWNLOAD_URL;
-
-#if BUILDFLAG(IS_WIN)
-  if (!local_path_.MatchesExtension(FILE_PATH_LITERAL(".pdf")))
-    return CONTINUE;
-  if (!IsAdobeReaderDefaultPDFViewer()) {
-    g_is_adobe_reader_up_to_date_ = false;
-    return CONTINUE;
-  }
-
-  // IsAdobeReaderUpToDate() needs to be run with COM as it makes COM calls via
-  // AssocQueryString() in IsAdobeReaderDefaultPDFViewer().
-  base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
-      ->PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce(&::IsAdobeReaderUpToDate),
-          base::BindOnce(
-              &DownloadTargetDeterminer::DetermineIfAdobeReaderUpToDateDone,
-              weak_ptr_factory_.GetWeakPtr()));
-  return QUIT_DOLOOP;
-#else
-  return CONTINUE;
-#endif
-}
-
-#if BUILDFLAG(IS_WIN)
-void DownloadTargetDeterminer::DetermineIfAdobeReaderUpToDateDone(
-    bool adobe_reader_up_to_date) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DVLOG(20) << "Is Adobe Reader Up To Date: " << adobe_reader_up_to_date;
-  DCHECK_EQ(STATE_CHECK_DOWNLOAD_URL, next_state_);
-  g_is_adobe_reader_up_to_date_ = adobe_reader_up_to_date;
-  DoLoop();
-}
-#endif
 
 DownloadTargetDeterminer::Result
     DownloadTargetDeterminer::DoCheckDownloadUrl() {
@@ -1430,10 +1382,3 @@ base::FilePath DownloadTargetDeterminer::GetCrDownloadPath(
     const base::FilePath& suggested_path) {
   return base::FilePath(suggested_path.value() + kCrdownloadSuffix);
 }
-
-#if BUILDFLAG(IS_WIN)
-// static
-bool DownloadTargetDeterminer::IsAdobeReaderUpToDate() {
-  return g_is_adobe_reader_up_to_date_;
-}
-#endif

@@ -4,10 +4,13 @@
 
 #include <memory>
 
+#include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
+#include "base/win/windows_version.h"
 #include "build/buildflag.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,15 +29,115 @@ namespace content {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA) && \
+    !BUILDFLAG(IS_MAC)
 constexpr int kBFCacheTestTimeoutMs = 3000;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_FUCHSIA)
+        // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_MAC)
+constexpr char kAttemptToObserveSymlinkHistogram[] =
+    "Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction";
 
 enum class TestFileSystemType {
   kBucket,
   kLocal,
 };
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+enum class CreateSymbolicLinkResult {
+  // The symbolic link creation failed because the platform does not support it.
+  // On Windows, that may be due to the lack of the required privilege.
+  kUnsupported = -1,
+
+  // The symbolic link creation failed.
+  kFailed,
+
+  // The symbolic link was created successfully.
+  kSucceeded,
+};
+
+#if BUILDFLAG(IS_WIN)
+CreateSymbolicLinkResult CreateWinSymbolicLink(const base::FilePath& target,
+                                               const base::FilePath& symlink,
+                                               bool is_directory = false) {
+  // Creating symbolic links on Windows requires Administrator privileges.
+  // However, recent versions of Windows introduced the
+  // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE flag, which allows the
+  // creation of symbolic links by processes with lower privileges, provided
+  // that Developer Mode is enabled.
+  //
+  // On older versions of Windows where the
+  // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE flag does not exist, the OS
+  // will return the error code ERROR_INVALID_PARAMETER when attempting to
+  // create a symbolic link without sufficient privileges.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS3) {
+    return CreateSymbolicLinkResult::kUnsupported;
+  }
+
+  DWORD flags = is_directory ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0;
+
+  if (!::CreateSymbolicLink(
+          symlink.value().c_str(), target.value().c_str(),
+          flags | SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE)) {
+    // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE works only if Developer
+    // Mode is enabled.
+    if (::GetLastError() == ERROR_PRIVILEGE_NOT_HELD) {
+      return CreateSymbolicLinkResult::kUnsupported;
+    }
+    return CreateSymbolicLinkResult::kFailed;
+  }
+
+  return CreateSymbolicLinkResult::kSucceeded;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+CreateSymbolicLinkResult CreateSymbolicLinkForTesting(
+    const base::FilePath& target,
+    const base::FilePath& symlink) {
+  // base::ScopedAllowBlockingForTesting allow_blocking;
+#if BUILDFLAG(IS_WIN)
+  return CreateWinSymbolicLink(target, symlink);
+#elif BUILDFLAG(IS_POSIX)
+  if (!base::CreateSymbolicLink(target, symlink)) {
+    return CreateSymbolicLinkResult::kFailed;
+  }
+  return CreateSymbolicLinkResult::kSucceeded;
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+std::optional<base::FilePath> CreateSymlinkToBePicked(
+    base::ScopedTempDir& temp_dir,
+    Shell* shell,
+    const GURL& test_url) {
+  base::FilePath file_path;
+  base::FilePath symlink_path = temp_dir.GetPath().AppendASCII("symlink1");
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Create the temporary file in the `temp_dir`.
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+
+    // Create a symbolic link to the temporary file
+    CreateSymbolicLinkResult result =
+        CreateSymbolicLinkForTesting(file_path, symlink_path);
+    if (result == CreateSymbolicLinkResult::kUnsupported) {
+      return std::nullopt;
+    }
+    EXPECT_EQ(result, CreateSymbolicLinkResult::kSucceeded);
+  }
+
+  // Set up the file dialog factory with the symlink path
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{symlink_path}));
+
+  // Navigate to the test URL
+  EXPECT_TRUE(NavigateToURL(shell, test_url));
+
+  return symlink_path;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 
@@ -379,6 +482,37 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
   EXPECT_THAT(records.GetList(), testing::IsEmpty());
 }
 
+// Local file system access - including the open*Picker() methods used here
+// - is not supported on Android or iOS. Fuchsia does not support symlinks.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       SymlinkCannotBeObserved) {
+  base::HistogramTester histogram_tester;
+  std::optional<base::FilePath> symlink_path =
+      CreateSymlinkToBePicked(temp_dir_, shell(), test_url_);
+  if (!symlink_path.has_value()) {
+    GTEST_SKIP() << "Platform does not support symlinks.";
+  }
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_FILE(TestFileSystemType::kLocal)
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto result = EvalJs(shell(), script);
+
+  // Check if a JavaScript error occurred.
+  EXPECT_TRUE(result.error.find("InvalidModificationError") !=
+              std::string::npos)
+      << "Unexpected result: " << result.error;
+  histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
+                                      /*sample=*/true, 1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
+
 class FileSystemAccessObserveWithUnobserveFlagBrowserTest
     : public FileSystemAccessObserveWithFlagBrowserTest {
  public:
@@ -481,6 +615,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, CreateObserver) {
 // TODO(b/360153904): Disabled on Mac due to flakiness.
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
+  base::HistogramTester histogram_tester;
   base::FilePath file_path = CreateFileToBePicked();
 
   const std::string script =
@@ -494,6 +629,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
+                                      /*sample=*/false, 1);
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
@@ -556,7 +693,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto result = EvalJs(shell(), script);
 
-  // Check if a JavaScript error occurred and contains "NotFoundError"
+  // Check if a JavaScript error occurred and contains "NotFoundError".
   EXPECT_TRUE(result.error.find("NotFoundError") != std::string::npos)
       << "Unexpected result: " << result.error;
 }
@@ -579,7 +716,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto result = EvalJs(shell(), script);
 
-  // Check if a JavaScript error occurred and contains "NotFoundError"
+  // Check if a JavaScript error occurred and contains "NotFoundError".
   EXPECT_TRUE(result.error.find("NotFoundError") != std::string::npos)
       << "Unexpected result: " << result.error;
 }
@@ -730,8 +867,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 #endif  // !BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/343961295): Windows reports two events when a swap file
-// is closed: a "disappear" for the target file being overwritten, and a "move"
-// for the swap file being moved to the target file.
+// is closed: a "disappeared" for the target file being overwritten, and a
+// "appeared" for the swap file being moved to the target file.
 //
 // TODO(crbug.com/357134621): Like on Windows, FSEvents (Mac) also reports two
 // events when the swap file is closed. This test fails due to a "disappear"
@@ -754,8 +891,16 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
   // TODO(crbug.com/321980270): Support change types for the local file system
   // on more platforms.
+  //
+  // TODO(crbug.com/340584120): On Local FS, when writable close() causes the
+  // swap file to override the file that is being observed, it reports
+  // "appeared" when watching a file. (Note that this does not happen when
+  // watching a directory and its descendent file gets written via writable).
+  // On Bucket FS, it correctly reports as "modified".
   const std::string expected_change_type =
-      SupportsChangeInfo() ? "appeared" : "unknown";
+      GetTestFileSystemType() == TestFileSystemType::kBucket
+          ? "modified"
+          : (SupportsChangeInfo() ? "appeared" : "unknown");
   EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
               testing::StrEq(expected_change_type));
 }
@@ -1108,11 +1253,15 @@ IN_PROC_BROWSER_TEST_P(
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(crbug.com/343961295): Windows reports two events when a swap file
+// is closed: a "disappeared" for the target file being overwritten, and a
+// "appeared" for the swap file being moved to the target file.
+//
 // TODO(b/321980270): Filter out changes to swap files reported by FSEvents,
 // and re-enable this test on Mac.
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       IgnoreSwapFileChanges) {
+                       WritableReportsSingleModifiedEventOnClose) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
   // Set up the directory structure.
@@ -1137,27 +1286,19 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
+
+  // Expect one modified event upon closing the writable.
   auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(records.GetList(), testing::SizeIs(1));
+  auto& record_dict = records.GetList().front().GetDict();
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("modified"));
   const auto relative_path_component_matcher = testing::Conditional(
       SupportsReportingModifiedPath(), testing::ElementsAre("file.txt"),
       testing::IsEmpty());
-  EXPECT_THAT(
-      *records.GetList().front().GetDict().FindList("relativePathComponents"),
-      relative_path_component_matcher);
-
-  // Check that none of the events are for swap files.
-  const auto relative_path_component_matcher_for_swap_file =
-      testing::Conditional(
-          SupportsReportingModifiedPath(),
-          testing::ElementsAre(testing::Not("file.txt.crswap")),
-          testing::IsEmpty());
-  for (const auto& record : records.GetList()) {
-    EXPECT_THAT(*record.GetDict().FindList("relativePathComponents"),
-                relative_path_component_matcher_for_swap_file);
-  }
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              relative_path_component_matcher);
 }
-#endif  // !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
@@ -1196,6 +1337,10 @@ class FileSystemAccessObserverWithBFCacheBrowserTest
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
 };
 
+// TODO(b/360153904): This test is flaky on Mac, likely as a result of FSEvents
+// reporting events later than expected, on occasion. Re-enable once flake is
+// resolved.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                        ReceivesFileUpdatesAfterReturningFromBFCache) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -1282,6 +1427,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                 .ExtractInt(),
             1);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                        NotifyOnReturnFromBFCacheWhenFileUpdates) {

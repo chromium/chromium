@@ -67,6 +67,14 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
 
   ~MahiMenuControllerTest() override = default;
 
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
+    ChromeViewsTestBase::SetUp();
+  }
+
   void TearDown() override {
     // Manually reset `menu_controller_` here because it requires the existence
     // of `mock_mahi_media_app_events_proxy_` to destroy.
@@ -89,7 +97,7 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
   ReadWriteCardsUiController read_write_cards_ui_controller_;
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kMahi};
+  base::test::ScopedFeatureList feature_list_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Providing a mock MahiMediaAppEvnetsProxy and a fake mahi manager to satisfy

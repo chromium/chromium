@@ -13,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/structured_headers.h"
 
@@ -24,19 +25,6 @@ constexpr char kRegistrationListHeaderName[] =
 constexpr char kRegistrationItemKey[] = "registration";
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kPathItemKey[] = "path";
-
-std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
-    const std::string& algo) {
-  if (base::EqualsCaseInsensitiveASCII(algo, "ES256")) {
-    return crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
-  }
-
-  if (base::EqualsCaseInsensitiveASCII(algo, "RS256")) {
-    return crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
-  }
-
-  return std::nullopt;
-}
 }  // namespace
 
 // A temporary feature to gate the new list header support until its format is
@@ -115,7 +103,7 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
       continue;
     }
     std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algo =
-        AlgoFromString(algo_token.item.GetString());
+        signin::SignatureAlgorithmFromString(algo_token.item.GetString());
     if (algo) {
       supported_algos.push_back(*algo);
     }
@@ -198,7 +186,7 @@ BoundSessionRegistrationFetcherParam::MaybeCreateFromLegacyHeader(
                                     base::SplitResult::SPLIT_WANT_NONEMPTY);
       for (const auto& alg_string : list) {
         std::optional<crypto::SignatureVerifier::SignatureAlgorithm> alg =
-            AlgoFromString(alg_string);
+            signin::SignatureAlgorithmFromString(alg_string);
         if (alg.has_value()) {
           supported_algos.push_back(alg.value());
         }

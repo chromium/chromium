@@ -1208,13 +1208,6 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
       return;
     }
   }
-  if (auto* listbox = DynamicTo<HTMLDataListElement>(this)) {
-    if (listbox->ParentSelect()) {
-      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-      // Select datalist listboxes manage their own popover state.
-      return;
-    }
-  }
 
   PopoverValueType type = GetPopoverTypeFromAttributeValue(value);
   if (type == PopoverValueType::kManual &&
@@ -1325,9 +1318,7 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
 
   auto* listbox = DynamicTo<HTMLListboxElement>(this);
   bool is_selectlist_listbox = listbox && listbox->OwnerSelectList();
-  auto* datalist = DynamicTo<HTMLDataListElement>(this);
-  bool is_select_listbox = datalist && datalist->ParentSelect();
-  if (!HasPopoverAttribute() && !is_selectlist_listbox && !is_select_listbox) {
+  if (!HasPopoverAttribute() && !is_selectlist_listbox) {
     maybe_throw_exception(DOMExceptionCode::kNotSupportedError,
                           "Not supported on elements that do not have a valid "
                           "value for the 'popover' attribute.");
@@ -1554,21 +1545,18 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     CHECK(!append_to_stack->Contains(this));
     append_to_stack->push_back(this);
 
-    if (RuntimeEnabledFeatures::CloseWatcherEnabled()) {
-      CloseWatcher* close_watcher = nullptr;
-      if (auto* window = GetDocument().domWindow()) {
-        close_watcher = CloseWatcher::Create(*window);
-      }
-      if (close_watcher) {
-        auto* event_listener =
-            MakeGarbageCollected<PopoverCloseWatcherEventListener>(this);
-        close_watcher->addEventListener(event_type_names::kClose,
-                                        event_listener);
-        close_watcher->addEventListener(event_type_names::kCancel,
-                                        event_listener);
-      }
-      GetPopoverData()->setCloseWatcher(close_watcher);
+    CloseWatcher* close_watcher = nullptr;
+    if (auto* window = GetDocument().domWindow()) {
+      close_watcher = CloseWatcher::Create(*window);
     }
+    if (close_watcher) {
+      auto* event_listener =
+          MakeGarbageCollected<PopoverCloseWatcherEventListener>(this);
+      close_watcher->addEventListener(event_type_names::kClose, event_listener);
+      close_watcher->addEventListener(event_type_names::kCancel,
+                                      event_listener);
+    }
+    GetPopoverData()->setCloseWatcher(close_watcher);
   }
 
   MarkPopoverInvokersDirty(*this);
@@ -1923,7 +1911,7 @@ void HTMLElement::SetPopoverFocusOnShow() {
       this, DocumentUpdateReason::kPopover);
 
   if (auto* dialog = DynamicTo<HTMLDialogElement>(this)) {
-    if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
+    if (RuntimeEnabledFeatures::PopoverDialogNewFocusBehaviorEnabled()) {
       dialog->SetFocusForDialog();
     } else {
       HTMLDialogElement::SetFocusForDialogLegacy(dialog);
@@ -2221,21 +2209,6 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
             ancestor_popover, document, HidePopoverFocusBehavior::kNone,
             HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
       }
-    }
-  } else if (event_type == event_type_names::kKeydown) {
-    // TODO(http://crbug.com/1171318): Remove this keydown branch once
-    // CloseWatcher has been fully enabled. CloseWatcher will handle escape key
-    // presses instead of this.
-    DCHECK(!RuntimeEnabledFeatures::CloseWatcherEnabled());
-    const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
-    if (key_event && key_event->key() == keywords::kEscape) {
-      CHECK(!event.GetEventPath().IsEmpty());
-      CHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
-      // Escape key just pops the topmost popover=auto/hint off the stack.
-      document.TopmostPopoverOrHint()->HidePopoverInternal(
-          HidePopoverFocusBehavior::kFocusPreviousElement,
-          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-          /*exception_state=*/nullptr);
     }
   }
 }
@@ -2664,16 +2637,21 @@ HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
 }
 
 bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
-  bool is_deferred = false;
+  // This can become a CHECK() when the TextInputNotAlwaysDirAuto flag is
+  // removed.
+  DCHECK(HasDirectionAuto());
+
+  // Note that HTMLSlotElement overrides this method in order to defer
+  // its work in some cases.
+
   TextDirection text_direction;
-  std::optional<TextDirection> resolve_result =
-      ResolveAutoDirectionality(is_deferred);
+  std::optional<TextDirection> resolve_result = ResolveAutoDirectionality();
   if (resolve_result) {
     text_direction = *resolve_result;
   } else {
     text_direction = TextDirection::kLtr;
   }
-  if (CachedDirectionality() != text_direction && !is_deferred) {
+  if (CachedDirectionality() != text_direction) {
     UpdateDirectionalityAndDescendant(text_direction);
 
     const ComputedStyle* style = GetComputedStyle();
@@ -2969,10 +2947,16 @@ bool HTMLElement::MatchesReadWritePseudoClass() const {
 }
 
 void HTMLElement::HandleKeypressEvent(KeyboardEvent& event) {
-  if (!IsSpatialNavigationEnabled(GetDocument().GetFrame()) || !SupportsFocus())
+  if (!IsSpatialNavigationEnabled(GetDocument().GetFrame()) ||
+      SupportsFocus(UpdateBehavior::kStyleAndLayout) ==
+          FocusableState::kNotFocusable) {
     return;
+  }
+  // The SupportsFocus call above will almost always ensure style and layout is
+  // clean, but it isn't guaranteed for all overrides. So double-check.
   GetDocument().UpdateStyleAndLayoutTree();
-  // if the element is a text form control (like <input type=text> or
+
+  // If the element is a text form control (like <input type=text> or
   // <textarea>) or has contentEditable attribute on, we should enter a space or
   // newline even in spatial navigation mode instead of handling it as a "click"
   // action.
@@ -3218,8 +3202,12 @@ bool HTMLElement::IsFormAssociatedCustomElement() const {
          GetCustomElementDefinition()->IsFormAssociated();
 }
 
-bool HTMLElement::SupportsFocus(UpdateBehavior update_behavior) const {
-  return Element::SupportsFocus(update_behavior) && !IsDisabledFormControl();
+FocusableState HTMLElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
+  if (IsDisabledFormControl()) {
+    return FocusableState::kNotFocusable;
+  }
+  return Element::SupportsFocus(update_behavior);
 }
 
 bool HTMLElement::IsDisabledFormControl() const {
@@ -3278,7 +3266,6 @@ void HTMLElement::FinishParsingChildren() {
 }
 
 AtomicString HTMLElement::writingSuggestions() const {
-  CHECK(RuntimeEnabledFeatures::WritingSuggestionsEnabled());
   for (const Element* element = this; element;
        element = element->ParentOrShadowHostElement()) {
     const AtomicString& value =
@@ -3297,7 +3284,6 @@ AtomicString HTMLElement::writingSuggestions() const {
 }
 
 void HTMLElement::setWritingSuggestions(const AtomicString& value) {
-  CHECK(RuntimeEnabledFeatures::WritingSuggestionsEnabled());
   setAttribute(html_names::kWritingsuggestionsAttr, value);
 }
 

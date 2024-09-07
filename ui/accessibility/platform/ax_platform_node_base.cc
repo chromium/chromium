@@ -460,7 +460,7 @@ gfx::NativeViewAccessible AXPlatformNodeBase::GetNativeViewAccessible() {
 
 void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   if (event_type == ax::mojom::Event::kAlert) {
-    CHECK(ui::IsAlert(GetRole()))
+    CHECK(IsAlert(GetRole()))
         << "On some platforms, the alert event does not work correctly unless "
            "it is fired on an object with an alert role. Role was "
         << GetRole();
@@ -942,6 +942,15 @@ std::u16string AXPlatformNodeBase::GetTextContentUTF16() const {
   return delegate_->GetTextContentUTF16();
 }
 
+// https://crbug.com/40889544 - to be removed once we gather some info on
+// the reason for the macOS exception being thrown.
+std::u16string AXPlatformNodeBase::GetTextContentUTF16WithInvisibles() const {
+  if (!delegate_) {
+    return std::u16string();
+  }
+  return delegate_->GetTextContentUTF16WithInvisibles();
+}
+
 std::u16string
 AXPlatformNodeBase::GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
     const {
@@ -1311,6 +1320,10 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       from = "contents";
       DCHECK(!GetName().empty());
       break;
+    case ax::mojom::NameFrom::kCssAltText:
+      from = "CSS alt text";
+      DCHECK(!GetName().empty());
+      break;
     case ax::mojom::NameFrom::kPlaceholder:
       from = "placeholder";
       DCHECK(!GetName().empty());
@@ -1470,20 +1483,6 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnIndex,
                          "colindex", attributes);
     }
-
-    // Experimental: expose aria-rowtext / aria-coltext. Not standardized
-    // yet, but obscure enough that it's safe to expose.
-    // http://crbug.com/791634
-    for (const auto& attribute_value : GetHtmlAttributes()) {
-      const std::string& attr = attribute_value.first;
-      const std::string& value = attribute_value.second;
-      if (attr == "aria-coltext") {
-        AddAttributeToList("coltext", value, attributes);
-      }
-      if (attr == "aria-rowtext") {
-        AddAttributeToList("rowtext", value, attributes);
-      }
-    }
   }
 
   // Expose row or column header sort direction.
@@ -1510,16 +1509,21 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   }
 
   if (IsCellOrTableHeader(GetRole())) {
-    // Expose colspan attribute.
-    std::string colspan;
-    if (GetHtmlAttribute("aria-colspan", &colspan)) {
-      AddAttributeToList("colspan", colspan, attributes);
-    }
-    // Expose rowspan attribute.
-    std::string rowspan;
-    if (GetHtmlAttribute("aria-rowspan", &rowspan)) {
-      AddAttributeToList("rowspan", rowspan, attributes);
-    }
+    // These are the older, backwards compatible names that work with JAWS/NVDA:
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellColumnIndexText,
+                       "coltext", attributes);
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellRowIndexText,
+                       "rowtext", attributes);
+    // These newer names are consistent with the ARIA attribute names:
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellColumnIndexText,
+                       "colindextext", attributes);
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellRowIndexText,
+                       "rowindextext", attributes);
+
+    AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnSpan, "colspan",
+                       attributes);
+    AddAttributeToList(ax::mojom::IntAttribute::kAriaCellRowSpan, "rowspan",
+                       attributes);
   }
 
   // Expose the value of a progress bar, slider, scroll bar or <select> element.
@@ -1601,7 +1605,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("text-model", "a1", attributes);
 
   // Expose input-text type attribute.
-  if (IsAtomicTextField() || ui::IsDateOrTimeInput(GetRole())) {
+  if (IsAtomicTextField() || IsDateOrTimeInput(GetRole())) {
     AddAttributeToList(ax::mojom::StringAttribute::kInputType,
                        "text-input-type", attributes);
   }
@@ -1610,7 +1614,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   if (!details_roles.empty())
     AddAttributeToList("details-roles", details_roles, attributes);
 
-  if (ui::IsLink(GetRole())) {
+  if (IsLink(GetRole())) {
     AddAttributeToList(ax::mojom::StringAttribute::kLinkTarget, "link-target",
                        attributes);
   }
@@ -1758,7 +1762,7 @@ bool AXPlatformNodeBase::ScrollToNode(ScrollType scroll_type) {
       break;
   }
 
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.target_node_id = GetData().id;
   action_data.action = ax::mojom::Action::kScrollToMakeVisible;
   action_data.horizontal_scroll_alignment =
@@ -2378,8 +2382,8 @@ int AXPlatformNodeBase::NearestTextIndexToPoint(gfx::Point point) {
   return nearest_index;
 }
 
-ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
-  ui::TextAttributeList attributes;
+TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
+  TextAttributeList attributes;
 
   // From the IA2 Spec:
   // Occasionally, word processors will automatically generate characters which

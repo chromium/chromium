@@ -52,6 +52,10 @@ class TestView : public View {
   using View::View;
   ~TestView() override = default;
 
+  void set_preferred_size(gfx::Size preferred_size) {
+    preferred_size_ = preferred_size;
+  }
+
   void SetMinimumSize(gfx::Size minimum_size) { minimum_size_ = minimum_size; }
   gfx::Size GetMinimumSize() const override {
     return minimum_size_ ? *minimum_size_ : View::GetMinimumSize();
@@ -60,14 +64,25 @@ class TestView : public View {
   void SetFixArea(bool fix_area) { fix_area_ = fix_area; }
   bool fix_area() const { return fix_area_; }
 
-  int GetHeightForWidth(int width) const override {
-    const gfx::Size preferred_size = GetPreferredSize({width, {}});
-    return fix_area_ ? preferred_size.height() * preferred_size.width() /
-                           std::max(1, width)
-                     : preferred_size.height();
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override {
+    gfx::Size preferred_size =
+        preferred_size_ ? preferred_size_.value()
+                        : View::CalculatePreferredSize(available_size);
+    if (fix_area_) {
+      const int min_width = minimum_size_ ? minimum_size_->width() : 0;
+      const int width = std::max(
+          min_width, available_size.width().value_or(preferred_size.width()));
+      const int height =
+          preferred_size.height() * preferred_size.width() / std::max(1, width);
+      return gfx::Size(width, height);
+    }
+
+    return preferred_size;
   }
 
  private:
+  std::optional<gfx::Size> preferred_size_;
   std::optional<gfx::Size> minimum_size_;
   bool fix_area_ = false;
 };
@@ -179,7 +194,7 @@ class AnimatingLayoutManagerTest : public testing::Test {
     view_ = new View();
     for (int i = 0; i < 3; ++i) {
       auto child = std::make_unique<TestView>();
-      child->SetPreferredSize(kChildViewSize);
+      child->set_preferred_size(kChildViewSize);
       children_.push_back(view_->AddChildView(std::move(child)));
     }
     view_->SetLayoutManager(std::make_unique<AnimatingLayoutManager>());
@@ -4418,7 +4433,7 @@ class AnimatingLayoutManagerInFlexLayoutTest
 };
 
 TEST_F(AnimatingLayoutManagerInFlexLayoutTest, NoAnimation) {
-  other_view()->SetPreferredSize(gfx::Size());
+  other_view()->set_preferred_size(gfx::Size());
   const gfx::Size preferred = target_layout()->GetPreferredSize(view());
   root_view()->SetSize(preferred);
   layout()->ResetLayout();
@@ -4431,7 +4446,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest, NoAnimation) {
 
 TEST_F(AnimatingLayoutManagerInFlexLayoutTest,
        AnimateFullyWithinAvailableSpace) {
-  other_view()->SetPreferredSize(gfx::Size());
+  other_view()->set_preferred_size(gfx::Size());
   const gfx::Size preferred = target_layout()->GetPreferredSize(view());
   root_view()->SetSize(preferred);
   layout()->ResetLayout();
@@ -4465,7 +4480,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest,
 }
 
 TEST_F(AnimatingLayoutManagerInFlexLayoutTest, NoAnimationRestart) {
-  other_view()->SetPreferredSize(gfx::Size());
+  other_view()->set_preferred_size(gfx::Size());
   const gfx::Size preferred = target_layout()->GetPreferredSize(view());
   root_view()->SetSize(preferred);
   layout()->ResetLayout();
@@ -4496,7 +4511,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest, NoAnimationRestart) {
 }
 
 TEST_F(AnimatingLayoutManagerInFlexLayoutTest, GrowWithinConstrainedSpace) {
-  other_view()->SetPreferredSize(gfx::Size(5, 5));
+  other_view()->set_preferred_size(gfx::Size(5, 5));
   const gfx::Size preferred = target_layout()->GetPreferredSize(view());
   root_view()->SetSize(preferred);
   layout()->ResetLayout();
@@ -4532,7 +4547,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest, GrowWithinConstrainedSpace) {
 
 TEST_F(AnimatingLayoutManagerInFlexLayoutTest,
        GrowWithinConstrainedSpace_NoAnimationRestart) {
-  other_view()->SetPreferredSize(gfx::Size(5, 5));
+  other_view()->set_preferred_size(gfx::Size(5, 5));
   const gfx::Size preferred = target_layout()->GetPreferredSize(view());
   root_view()->SetSize(preferred);
   layout()->ResetLayout();
@@ -4587,7 +4602,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest,
   animation_api()->IncrementTime(base::Milliseconds(500));
 
   // Constrain the layout before continuing.
-  other_view()->SetPreferredSize(gfx::Size(5, 5));
+  other_view()->set_preferred_size(gfx::Size(5, 5));
   test::RunScheduledLayout(root_view());
   EXPECT_TRUE(layout()->is_animating());
 
@@ -4628,7 +4643,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest,
   animation_api()->IncrementTime(base::Milliseconds(500));
 
   // Constrain the layout before continuing, killing the animation.
-  other_view()->SetPreferredSize(gfx::Size(20, 5));
+  other_view()->set_preferred_size(gfx::Size(20, 5));
   test::RunScheduledLayout(root_view());
   EXPECT_FALSE(layout()->is_animating());
   EXPECT_EQ(gfx::Size(20, 20), view()->size());
@@ -4658,7 +4673,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest,
 
   // Constrain the layout before continuing, but not enough to affect the
   // current frame or target layout.
-  other_view()->SetPreferredSize(gfx::Size(5, 5));
+  other_view()->set_preferred_size(gfx::Size(5, 5));
   test::RunScheduledLayout(root_view());
   EXPECT_TRUE(layout()->is_animating());
 
@@ -4725,7 +4740,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest,
   animation_api()->IncrementTime(base::Milliseconds(500));
 
   // Constrain the layout before continuing.
-  other_view()->SetPreferredSize(gfx::Size(20, 5));
+  other_view()->set_preferred_size(gfx::Size(20, 5));
   test::RunScheduledLayout(root_view());
   EXPECT_FALSE(layout()->is_animating());
   EXPECT_EQ(gfx::Size(20, 20), view()->size());
@@ -4753,7 +4768,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest,
   animation_api()->IncrementTime(base::Milliseconds(500));
 
   // Constrain the layout before continuing.
-  other_view()->SetPreferredSize(gfx::Size(20, 5));
+  other_view()->set_preferred_size(gfx::Size(20, 5));
   test::RunScheduledLayout(root_view());
   EXPECT_FALSE(layout()->is_animating());
   EXPECT_EQ(gfx::Size(20, 20), view()->size());
@@ -4782,7 +4797,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutTest,
   animation_api()->IncrementTime(base::Milliseconds(750));
 
   // Constrain the layout before continuing.
-  other_view()->SetPreferredSize(gfx::Size(20, 5));
+  other_view()->set_preferred_size(gfx::Size(20, 5));
   child(1)->SetVisible(true);
   test::RunScheduledLayout(root_view());
   EXPECT_TRUE(layout()->is_animating());
@@ -4818,7 +4833,7 @@ TEST_F(AnimatingLayoutManagerInFlexLayoutNoAnimationTest, ShrinkAndGrow) {
                                               MinimumFlexSizeRule::kPreferred,
                                               MaximumFlexSizeRule::kUnbounded)
                                 .WithOrder(3));
-  other_view()->SetPreferredSize(kChildViewSize);
+  other_view()->set_preferred_size(kChildViewSize);
 
   constexpr gfx::Size kFullSize = {60, 20};
   constexpr gfx::Size kReducedSize = {59, 20};

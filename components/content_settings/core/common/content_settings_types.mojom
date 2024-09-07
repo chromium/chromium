@@ -451,5 +451,12 @@ enum ContentSettingsType {
   //        origins to retry a request or load with storage access.
   // BLOCK (default): no effect.
   STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
+
+  // Whether or not sites can request Hand Tracking data within WebXR Sessions.
+  HAND_TRACKING,
+
+  // Website setting to indicate whether user has opted in to allow web apps to
+  // install other web apps.
+  WEB_APP_INSTALLATION,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

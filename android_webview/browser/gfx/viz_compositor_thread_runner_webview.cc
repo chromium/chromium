@@ -54,11 +54,11 @@ VizCompositorThreadRunnerWebView::VizCompositorThreadRunnerWebView()
     : viz_thread_("VizWebView") {
   if (base::FeatureList::IsEnabled(kWebViewVizUseThreadPool)) {
     // TODO(crbug.com/341151462): See if this task runner can use the
-    // kCompositing thread type.
+    // kDisplayCritical thread type.
     viz_task_runner_ =
         base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
   } else {
-    base::Thread::Options options(base::ThreadType::kCompositing);
+    base::Thread::Options options(base::ThreadType::kDisplayCritical);
     CHECK(viz_thread_.StartWithOptions(std::move(options)));
     viz_task_runner_ = viz_thread_.task_runner();
   }

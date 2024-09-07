@@ -1,0 +1,4 @@
+file://components/enterprise/OWNERS
+
+# Prefer sending logic changes to the following owners.
+ftirelo@chromium.org

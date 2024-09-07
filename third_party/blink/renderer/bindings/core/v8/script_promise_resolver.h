@@ -101,11 +101,9 @@ class CORE_EXPORT ScriptPromiseResolverBase
   void Reject(bool);
   void Reject() { Reject<IDLUndefined>(ToV8UndefinedGenerator()); }
 
-  // Reject with a given exception.
-  void Reject(ExceptionState&);
-
-  // Following functions create exceptions using ExceptionState.
-  // They require ScriptPromiseResolverBase to be created with ExceptionContext.
+  // The following functions create an exception of the given type.
+  // They require ScriptPromiseResolver to be created with ExceptionContext in
+  // order to have context information added to the message.
 
   // Reject with DOMException with given exception code.
   void RejectWithDOMException(DOMExceptionCode exception_code,

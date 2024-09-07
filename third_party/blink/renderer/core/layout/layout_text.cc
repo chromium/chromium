@@ -179,14 +179,6 @@ LayoutText::LayoutText(Node* node, String str)
 
   if (node)
     GetFrameView()->IncrementVisuallyNonEmptyCharacterCount(text_.length());
-
-  // Call GetSecureTextTimers() and GetSelectionDisplayItemClientMap() to ensure
-  // map exists. They are called in pre-finalizer where allocation is not
-  // allowed.
-  // TODO(yukiy): Remove these if FormattedTextRun::Dispose() can be
-  // removed.
-  GetSecureTextTimers();
-  GetSelectionDisplayItemClientMap();
 }
 
 void LayoutText::Trace(Visitor* visitor) const {
@@ -200,17 +192,6 @@ LayoutText* LayoutText::CreateEmptyAnonymous(Document& doc,
   text->SetDocumentForAnonymous(&doc);
   text->SetStyle(style);
   return text;
-}
-
-LayoutText* LayoutText::CreateAnonymousForFormattedText(
-    Document& doc,
-    const ComputedStyle* style,
-    String text) {
-  auto* layout_text =
-      MakeGarbageCollected<LayoutText>(nullptr, std::move(text));
-  layout_text->SetDocumentForAnonymous(&doc);
-  layout_text->SetStyleInternal(std::move(style));
-  return layout_text;
 }
 
 bool LayoutText::IsWordBreak() const {

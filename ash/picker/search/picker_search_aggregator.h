@@ -15,6 +15,7 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -23,7 +24,6 @@
 
 namespace ash {
 
-class PickerSearchResult;
 
 // Aggregates search results for a single Picker search request, including
 // managing the order of search results and managing when to publish search

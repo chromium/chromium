@@ -34,10 +34,6 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
     return r.is_monochrome;
   }
 
-  static float display_frequency(const display::ScreenInfo& r) {
-    return r.display_frequency;
-  }
-
   static const gfx::Rect& rect(const display::ScreenInfo& r) { return r.rect; }
 
   static const gfx::Rect& available_rect(const display::ScreenInfo& r) {

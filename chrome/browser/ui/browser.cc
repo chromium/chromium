@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -133,7 +134,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -187,7 +188,7 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/search/search.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_types.h"
@@ -600,16 +601,6 @@ Browser::Browser(const CreateParams& params)
 
   tab_strip_model_->AddObserver(this);
 
-  if (tab_groups::IsTabGroupsSaveV2Enabled() &&
-      tab_strip_model_->SupportsTabGroups() && is_type_normal()) {
-    auto* saved_tab_group_keyed_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-    if (saved_tab_group_keyed_service) {
-      saved_tab_group_observation_.Observe(
-          saved_tab_group_keyed_service->model());
-    }
-  }
-
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
 
   profile_pref_registrar_.Init(profile_->GetPrefs());
@@ -680,8 +671,6 @@ Browser::~Browser() {
   // destroy `features_` because that's what breaks things the least :)
   features_.reset();
   ClearAllUserData();
-
-  saved_tab_group_observation_.Reset();
 
   // Stop observing notifications and destroy the tab monitor before continuing
   // with destruction. Profile destruction will unload extensions and reentrant
@@ -779,6 +768,10 @@ Browser::~Browser() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Getters & Setters
+
+BrowserView& Browser::GetBrowserView() {
+  return CHECK_DEREF(window_->AsBrowserView());
+}
 
 base::WeakPtr<Browser> Browser::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -1168,6 +1161,14 @@ BrowserActions* Browser::GetActions() {
   return browser_actions();
 }
 
+BrowserWindowInterface::Type Browser::GetType() const {
+  return type_;
+}
+
+user_education::FeaturePromoController* Browser::GetFeaturePromoController() {
+  return window()->GetFeaturePromoController();
+}
+
 void Browser::DidBecomeActive() {
   BrowserList::SetLastActive(this);
   did_become_active_callback_list_.Notify(this);
@@ -1498,12 +1499,11 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
   if (change.type == TabGroupChange::kVisualsChanged) {
     std::optional<std::string> saved_guid;
 
-    const tab_groups::SavedTabGroupKeyedService* const
-        saved_tab_group_keyed_service =
-            tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-    if (saved_tab_group_keyed_service) {
-      const tab_groups::SavedTabGroup* const saved_group =
-          saved_tab_group_keyed_service->model()->Get(change.group);
+    tab_groups::TabGroupSyncService* tab_group_service =
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
+    if (tab_group_service) {
+      const std::optional<tab_groups::SavedTabGroup> saved_group =
+          tab_group_service->GetGroup(change.group);
       if (saved_group) {
         saved_guid = saved_group->saved_guid().AsLowercaseString();
       }
@@ -1535,7 +1535,7 @@ void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
 
 void Browser::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    content::WebContents* contents,
+    tabs::TabModel* tab,
     int index) {
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
@@ -1545,7 +1545,7 @@ void Browser::TabGroupedStateChanged(
     return;
 
   sessions::SessionTabHelper* const session_tab_helper =
-      sessions::SessionTabHelper::FromWebContents(contents);
+      sessions::SessionTabHelper::FromWebContents(tab->contents());
   session_service->SetTabGroup(session_id(), session_tab_helper->session_id(),
                                std::move(group));
 }
@@ -1559,48 +1559,6 @@ void Browser::TabStripEmpty() {
   // Instant may have visible WebContents that need to be detached before the
   // window system closes.
   instant_controller_.reset();
-}
-
-void Browser::SavedTabGroupAddedLocally(const base::Uuid& guid) {
-  // See comment in Browser::OnTabGroupChanged
-  DCHECK(!IsRelevantToAppSessionService(type_));
-  DCHECK(tab_strip_model_->group_model());
-
-  const tab_groups::SavedTabGroupKeyedService* const
-      saved_tab_group_keyed_service =
-          tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-  CHECK(saved_tab_group_keyed_service);
-
-  const tab_groups::SavedTabGroup* const added_group =
-      saved_tab_group_keyed_service->model()->Get(guid);
-  CHECK(added_group);
-
-  if (!added_group->local_group_id().has_value()) {
-    return;
-  }
-
-  if (tab_strip_model()->group_model()->ContainsTabGroup(
-          added_group->local_group_id().value())) {
-    UpdateTabGroupSessionMetadata(this, added_group->local_group_id().value(),
-                                  guid.AsLowercaseString());
-  }
-}
-
-void Browser::SavedTabGroupRemovedLocally(
-    const tab_groups::SavedTabGroup& removed_group) {
-  // See comment in Browser::OnTabGroupChanged
-  DCHECK(!IsRelevantToAppSessionService(type_));
-  DCHECK(tab_strip_model_->group_model());
-
-  if (!removed_group.local_group_id().has_value()) {
-    return;
-  }
-
-  if (tab_strip_model()->group_model()->ContainsTabGroup(
-          removed_group.local_group_id().value())) {
-    UpdateTabGroupSessionMetadata(this, removed_group.local_group_id().value(),
-                                  std::nullopt);
-  }
 }
 
 void Browser::SetTopControlsShownRatio(content::WebContents* web_contents,
@@ -1926,7 +1884,7 @@ void Browser::VisibleSecurityStateChanged(WebContents* source) {
   }
 }
 
-void Browser::AddNewContents(
+content::WebContents* Browser::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -1977,14 +1935,17 @@ void Browser::AddNewContents(
     // Defer popup creation if the opener has a fullscreen transition in
     // progress. This works around a defect on Mac where separate displays
     // cannot switch their independent spaces simultaneously (crbug.com/1315749)
-    fullscreen_controller->RunOrDeferUntilTransitionIsComplete(base::BindOnce(
+    auto web_contents_creation_callback = base::BindOnce(
         &chrome::AddWebContents, this, source, std::move(new_contents),
-        target_url, disposition, window_features, window_action));
-    return;
+        target_url, disposition, window_features, window_action);
+    fullscreen_controller->RunOrDeferUntilTransitionIsComplete(base::BindOnce(
+        base::IgnoreResult(std::move(web_contents_creation_callback))));
+    return nullptr;
   }
 
-  chrome::AddWebContents(this, source, std::move(new_contents), target_url,
-                         disposition, window_features, window_action);
+  return chrome::AddWebContents(this, source, std::move(new_contents),
+                                target_url, disposition, window_features,
+                                window_action);
 }
 
 void Browser::ActivateContents(WebContents* contents) {
@@ -3066,7 +3027,7 @@ void Browser::RemoveScheduledUpdatesFor(WebContents* contents) {
 
 StatusBubble* Browser::GetStatusBubble() {
   // For kiosk and exclusive app mode we want to always hide the status bubble.
-  if (chrome::IsRunningInAppMode()) {
+  if (IsRunningInAppMode()) {
     return nullptr;
   }
 

@@ -6,29 +6,28 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/shopping_service.h"
-#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/parcel_tracking/tracking_source.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @implementation ParcelTrackingOptInMediator {
-  raw_ptr<web::WebState> _webState;
+  raw_ptr<commerce::ShoppingService> _shoppingService;
 }
 
-- (instancetype)initWithWebState:(web::WebState*)webState {
+- (instancetype)initWithShoppingService:
+    (commerce::ShoppingService*)shoppingService {
+  CHECK(shoppingService);
+
   self = [super init];
   if (self) {
-    _webState = webState;
+    _shoppingService = shoppingService;
   }
   return self;
 }
 
 - (void)didTapAlwaysTrack:(NSArray<CustomTextCheckingResult*>*)parcelList {
-  commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(
-          _webState->GetBrowserState());
-  TrackParcels(shoppingService, parcelList, std::string(),
+  TrackParcels(_shoppingService, parcelList, std::string(),
                _parcelTrackingCommandsHandler, true,
                TrackingSource::kAutoTrack);
 }

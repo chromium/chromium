@@ -430,9 +430,7 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
             // Force a frame to render before proceeding.
             // After this is done, we at least known that the contents have been
             // painted - even if the WebContents object itself doesn't!
-            CheckJsResult(webcontents_id, kPaintWorkaroundFunction),
-            // Try to ensure that the paint reaches the renderer.
-            FlushEvents()));
+            CheckJsResult(webcontents_id, kPaintWorkaroundFunction)));
   }
 
   // If the element is already painted, there is no reason to actually wait (and

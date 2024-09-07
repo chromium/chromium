@@ -85,10 +85,9 @@ std::u16string SaveUpdateAddressProfilePromptController::GetTitle() {
           : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
 }
 
-std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
+std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
     signin::IdentityManager* identity_manager) {
-  if (!is_migration_to_account_ &&
-      profile_.source() != AutofillProfile::Source::kAccount) {
+  if (!is_migration_to_account_ && !profile_.IsAccountProfile()) {
     return std::u16string();
   }
   std::optional<AccountInfo> account =
@@ -115,14 +114,14 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
   // account and is only going to be updated there.
   if (original_profile_) {
     return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
+        IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
         base::UTF8ToUTF16(account->email));
   }
 
   // Notify the user that their address is going to be saved in their Google
   // account if they accept the prompt.
   return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
+      IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
       base::UTF8ToUTF16(account->email));
 }
 

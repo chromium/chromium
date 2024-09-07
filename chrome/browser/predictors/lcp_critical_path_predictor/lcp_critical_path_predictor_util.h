@@ -88,6 +88,10 @@ struct LcppDataInputs {
   // This field keeps the number of preloaded font hit. i.e. it is incremented
   // if the fetched font URL is listed in the list of predicted fonts.
   size_t font_url_hit_count = 0;
+  // This field keeps the number of same-site font URLs.
+  size_t same_site_font_url_count = 0;
+  // This field keeps the number of cross-site font URLs.
+  size_t cross_site_font_url_count = 0;
   // This field keeps the number of preloaded font that is going to be recorded
   // to the database again.
   size_t font_url_reenter_count = 0;

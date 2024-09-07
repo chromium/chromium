@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
+#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "ui/gl/gpu_preference.h"
 
 namespace blink {
@@ -416,6 +417,8 @@ class DrawingBufferForTests : public DrawingBuffer {
  public:
   static scoped_refptr<DrawingBufferForTests> Create(
       std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
+      std::unique_ptr<TestWebGraphicsSharedImageInterfaceProvider>
+          shared_image_interface_provider_for_shared_bitmap,
       const Platform::GraphicsInfo& graphics_info,
       DrawingBuffer::Client* client,
       const gfx::Size& size,
@@ -432,6 +435,9 @@ class DrawingBufferForTests : public DrawingBuffer {
       drawing_buffer->BeginDestruction();
       return nullptr;
     }
+    drawing_buffer->SetSharedImageInterfaceProviderForBitmapTest(
+        std::move(shared_image_interface_provider_for_shared_bitmap));
+
     return drawing_buffer;
   }
 

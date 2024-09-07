@@ -4,60 +4,61 @@
 
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
-import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.Nullable;
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
-import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
+import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
-import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Entry point to show the choice screen associated with {@link SearchEnginePromoType#SHOW_WAFFLE}
- * as a modal dialog.
+ * Entry point to show a blocking choice dialog inviting users to finish their default app & search
+ * engine choice in Android settings.
  */
 public class ChoiceDialogCoordinator {
-    @VisibleForTesting
-    static final @DialogDismissalCause int SUCCESS_DISMISSAL_CAUSE =
-            DialogDismissalCause.ACTION_ON_CONTENT;
+    @IntDef({DialogType.CHOICE_LAUNCH, DialogType.CHOICE_CONFIRM})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface DialogType {
+        int CHOICE_LAUNCH = 0;
+        int CHOICE_CONFIRM = 1;
+    }
 
-    private final ChoiceScreenCoordinator mContentCoordinator;
+    private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final @Nullable Callback<Boolean> mOnClosedCallback;
-    private final ChoiceScreenDelegate mDelegate;
+    private final View mView;
+    private final PropertyModel mModel;
+    private final OnBackPressedCallback mEmptyBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {}
+            };
+    private @DialogType int mType = DialogType.CHOICE_LAUNCH;
 
-    private @Nullable PropertyModel mDialogModel;
-
-    public static ChoiceDialogCoordinator maybeShow(Activity activity) {
-        return maybeShowInternal(
-                () ->
-                        new ChoiceDialogCoordinator(
-                                activity, new PlaceholderDelegate(), unused -> {}));
+    public static ChoiceDialogCoordinator maybeShow(
+            Context context, ModalDialogManager modalDialogManager) {
+        return maybeShowInternal(() -> new ChoiceDialogCoordinator(context, modalDialogManager));
     }
 
     @VisibleForTesting
     static ChoiceDialogCoordinator maybeShowInternal(
             Supplier<ChoiceDialogCoordinator> coordinatorSupplier) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.CLAY_BLOCKING);
-
         var searchEngineChoiceService = SearchEngineChoiceService.getInstance();
         if (searchEngineChoiceService == null
                 || !searchEngineChoiceService.isDeviceChoiceDialogEligible()) {
@@ -77,96 +78,36 @@ public class ChoiceDialogCoordinator {
         return coordinator;
     }
 
-    /**
-     * Creates the coordinator that will show a search engine choice dialog.
-     * Shows a promotion dialog about search engines depending on Locale and other conditions.
-     * See {@link org.chromium.chrome.browser.locale.LocaleManager#getSearchEnginePromoShowType} for
-     * possible types and logic.
-     *
-     * @param activity Activity that will show through its {@link ModalDialogManager}.
-     * @param delegate Object providing access to the data to display and callbacks to run to act on
-     *         the user choice.
-     * @param onClosedCallback If provided, should be notified when the search engine choice has
-     *         been finalized and the dialog closed.  It should be called with {@code true} if a
-     *         search engine was selected, or {@code false} if the dialog was dismissed without a
-     *         selection.
-     */
-    public ChoiceDialogCoordinator(
-            Activity activity,
-            DefaultSearchEngineDialogHelper.Delegate delegate,
-            @Nullable Callback<Boolean> onClosedCallback) {
-        mModalDialogManager = ((ModalDialogManagerHolder) activity).getModalDialogManager();
-        mOnClosedCallback = onClosedCallback;
-        mDelegate =
-                new ChoiceScreenDelegate(delegate, onClosedCallback) {
-                    @Override
-                    void onChoiceMade(String keyword) {
-                        super.onChoiceMade(keyword);
-                        ChoiceDialogCoordinator.this.dismissDialog();
-                    }
-                };
-        mContentCoordinator = buildContentCoordinator(activity, mDelegate);
-    }
-
     /** Constructs and shows the dialog. */
     public void show() {
-        assert mDialogModel == null;
-        mDialogModel = createDialogPropertyModel(mContentCoordinator.getContentView());
         mModalDialogManager.showDialog(
-                mDialogModel,
+                mModel,
                 ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
     @VisibleForTesting
-    ChoiceScreenCoordinator buildContentCoordinator(
-            Activity activity, ChoiceScreenDelegate delegate) {
-        return new ChoiceScreenCoordinator(activity, delegate);
-    }
+    ChoiceDialogCoordinator(Context context, ModalDialogManager modalDialogManager) {
+        mContext = context;
+        mModalDialogManager = modalDialogManager;
+        mView = LayoutInflater.from(context).inflate(R.layout.blocking_choice_dialog, null);
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mView)
+                        .with(ModalDialogProperties.CONTROLLER, createController())
+                        .build();
 
-    private void dismissDialog() {
-        assert mDialogModel != null;
-
-        // For non-reentry verification.
-        PropertyModel model = mDialogModel;
-        mDialogModel = null;
-
-        // Will no-op if the dialog was already dismissed.
-        mModalDialogManager.dismissDialog(model, SUCCESS_DISMISSAL_CAUSE);
-    }
-
-    private PropertyModel createDialogPropertyModel(View contentView) {
-        return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                .with(ModalDialogProperties.CUSTOM_VIEW, contentView)
-                .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                .with(
-                        ModalDialogProperties.DIALOG_STYLES,
-                        ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG)
-                .with(
-                        ModalDialogProperties.CONTROLLER,
-                        new ModalDialogProperties.Controller() {
-                            @Override
-                            public void onClick(PropertyModel model, @ButtonType int buttonType) {}
-
-                            @Override
-                            public void onDismiss(
-                                    PropertyModel model, @DialogDismissalCause int dismissalCause) {
-                                if (dismissalCause != SUCCESS_DISMISSAL_CAUSE) {
-                                    mDelegate.onExitWithoutChoice();
-                                }
-                            }
-                        })
-                .with(
-                        ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
-                        // Capture back navigations and suppress them. The user must complete the
-                        // screen by interacting with the options presented.
-                        // TODO(b/280753530): Instead of fully suppressing it, maybe perform back
-                        // from Chrome's highest level to go back to the caller?
-                        new OnBackPressedCallback(true) {
-                            @Override
-                            public void handleOnBackPressed() {}
-                        })
-                .build();
+        prepareView();
+        ButtonCompat button = mView.findViewById(R.id.choice_dialog_button);
+        button.setOnClickListener(
+                view -> {
+                    // TODO(b/355054464): Remove after play api is ready and add test for the logic.
+                    switch (mType) {
+                        case DialogType.CHOICE_LAUNCH -> advance();
+                        case DialogType.CHOICE_CONFIRM -> mModalDialogManager.dismissDialog(
+                                mModel, DialogDismissalCause.ACTION_ON_CONTENT);
+                    }
+                });
     }
 
     private static <T> Promise<T> withUiThreadTimeout(Promise<T> promise, long delayMillis) {
@@ -184,40 +125,57 @@ public class ChoiceDialogCoordinator {
         return timeoutPromise;
     }
 
-    // TODO(b/355054464): Remove when we update the coordinator.
-    private static class PlaceholderDelegate implements DefaultSearchEngineDialogHelper.Delegate {
-        @Override
-        public List<TemplateUrl> getSearchEnginesForPromoDialog(int type) {
-            return List.of(
-                    new TemplateUrl(0) {
-                        @Override
-                        public String getShortName() {
-                            return "Placeholder Engine";
-                        }
+    private ModalDialogProperties.Controller createController() {
+        return new ModalDialogProperties.Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {}
 
-                        @Override
-                        public int getPrepopulatedId() {
-                            return 999;
-                        }
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {
+                assert mType == DialogType.CHOICE_CONFIRM
+                        || dismissalCause == DialogDismissalCause.ACTIVITY_DESTROYED;
+            }
+        };
+    }
 
-                        @Override
-                        public boolean getIsPrepopulated() {
-                            return true;
-                        }
+    private void prepareView() {
+        View illustration = mView.findViewById(R.id.illustration);
+        TextView title = mView.findViewById(R.id.choice_dialog_title);
+        TextView message = mView.findViewById(R.id.choice_dialog_message);
+        ButtonCompat button = mView.findViewById(R.id.choice_dialog_button);
+        switch (mType) {
+            case DialogType.CHOICE_LAUNCH -> {
+                illustration.setBackgroundResource(R.drawable.blocking_choice_dialog_illustration);
+                title.setText(R.string.blocking_choice_dialog_first_title);
+                message.setText(R.string.blocking_choice_dialog_first_message);
+                button.setText(mContext.getString(R.string.blocking_choice_dialog_first_button));
 
-                        @Override
-                        public String getKeyword() {
-                            return "placeholder";
-                        }
+                mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false);
+                mModel.set(
+                        ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                        // Capture back navigation and suppress it. The user must complete the
+                        // screen by interacting with the options presented.
+                        mEmptyBackPressedCallback);
+            }
+            case DialogType.CHOICE_CONFIRM -> {
+                illustration.setBackgroundResource(R.drawable.blocking_choice_dialog_illustration);
+                title.setText(R.string.blocking_choice_dialog_second_title);
+                message.setText(R.string.blocking_choice_dialog_second_message);
+                button.setText(mContext.getString(R.string.blocking_choice_dialog_second_button));
 
-                        @Override
-                        public long getLastVisitedTime() {
-                            return 0;
-                        }
-                    });
+                mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true);
+                mEmptyBackPressedCallback.remove();
+            }
+            default -> throw new IllegalArgumentException("Invalid DialogType: " + mType);
+        }
+    }
+
+    public void advance() {
+        if (mType == DialogType.CHOICE_CONFIRM) {
+            return;
         }
 
-        @Override
-        public void onUserSearchEngineChoice(int type, List<String> keywords, String keyword) {}
+        mType = DialogType.CHOICE_CONFIRM;
+        prepareView();
     }
 }

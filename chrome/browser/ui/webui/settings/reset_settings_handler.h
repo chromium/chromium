@@ -14,12 +14,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
+#include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 
-class BrandcodeConfigFetcher;
 class Profile;
-class ProfileResetter;
 class ResettableSettingsSnapshot;
 
 namespace settings {
@@ -52,7 +51,7 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   void OnJavascriptDisallowed() override;
 
  protected:
-  // Overriden in tests to substitute with a test version of ProfileResetter.
+  // Overridden in tests to substitute with a test version of ProfileResetter.
   virtual ProfileResetter* GetResetter();
 
   // Javascript callback to start clearing data.
@@ -77,12 +76,6 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   // Retrieve the triggered reset tool name, called from Javascript.
   void HandleGetTriggeredResetToolName(const base::Value::List& args);
 
-  // Fetches the settings via BrandcodeConfigFetcher.
-  void FetchSettings();
-
-  // Called when BrandcodeConfigFetcher completed fetching settings.
-  void OnSettingsFetched();
-
   // Resets the settings that are marked in the resettable flags to the default
   // value, callback will be called once the reset is complete. The difference
   // between this function and |ResetProfile| function is that individual
@@ -104,30 +97,19 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
       reset_report::ChromeResetReport::ResetRequestOrigin request_origin);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Will be called when sanitize dialog is shown.
   void OnShowSanitizeDialog(const base::Value::List& args);
-
-  // Javascript callback to perform settings sanitization.
-  void HandleSanitizeSettings(const base::Value::List& args);
-
-  void SanitizeSettings();
+  // Resets most profile settings.
+  void SanitizeSettings(const base::Value::List& args);
+  // Resets the DNS configurations and marks sanitize as done.
   void OnSanitizeDone();
-
-  // Call to reset a users's DNS settings.
-  void ResetDnsConfigurations();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const raw_ptr<Profile> profile_;
 
   std::unique_ptr<ProfileResetter> resetter_;
 
-  std::unique_ptr<BrandcodeConfigFetcher> config_fetcher_;
-
   // Snapshot of settings before profile was reseted.
   std::unique_ptr<ResettableSettingsSnapshot> setting_snapshot_;
-
-  // Contains Chrome brand code; empty for organic Chrome.
-  std::string brandcode_;
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<ResetSettingsHandler> callback_weak_ptr_factory_{this};

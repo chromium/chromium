@@ -27,7 +27,7 @@ const CGFloat kErrorIconLength = 20;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
-  if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+  if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
     _textLabel = [[UILabel alloc] init];
     _textLabel.adjustsFontForContentSizeCategory = YES;
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;

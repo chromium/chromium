@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
@@ -26,6 +27,8 @@
 
 namespace net {
 
+class TCPSocketDefaultWin;
+
 class AddressList;
 class IOBuffer;
 class IPEndPoint;
@@ -35,18 +38,20 @@ class SocketTag;
 
 class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
  public:
-  TCPSocketWin(
+  static std::unique_ptr<TCPSocketWin> Create(
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLog* net_log,
       const NetLogSource& source);
-
-  TCPSocketWin(
+  static std::unique_ptr<TCPSocketWin> Create(
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLogWithSource net_log_source);
 
   TCPSocketWin(const TCPSocketWin&) = delete;
   TCPSocketWin& operator=(const TCPSocketWin&) = delete;
 
+  // IMPORTANT: All subclasses must call `Close`. The base class cannot do it
+  // because `Close` invokes virtual methods, but it CHECKs that the socket is
+  // closed.
   ~TCPSocketWin() override;
 
   int Open(AddressFamily family);
@@ -75,13 +80,17 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
 
   // Multiple outstanding requests are not supported.
   // Full duplex mode (reading and writing at the same time) is supported.
-  int Read(IOBuffer* buf, int buf_len, CompletionOnceCallback callback);
-  int ReadIfReady(IOBuffer* buf, int buf_len, CompletionOnceCallback callback);
-  int CancelReadIfReady();
-  int Write(IOBuffer* buf,
-            int buf_len,
-            CompletionOnceCallback callback,
-            const NetworkTrafficAnnotationTag& traffic_annotation);
+  virtual int Read(IOBuffer* buf,
+                   int buf_len,
+                   CompletionOnceCallback callback) = 0;
+  virtual int ReadIfReady(IOBuffer* buf,
+                          int buf_len,
+                          CompletionOnceCallback callback) = 0;
+  virtual int CancelReadIfReady() = 0;
+  virtual int Write(IOBuffer* buf,
+                    int buf_len,
+                    CompletionOnceCallback callback,
+                    const NetworkTrafficAnnotationTag& traffic_annotation) = 0;
 
   int GetLocalAddress(IPEndPoint* address) const;
   int GetPeerAddress(IPEndPoint* address) const;
@@ -149,8 +158,54 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
     return socket_performance_watcher_.get();
   }
 
- private:
-  class Core;
+ protected:
+  friend class TCPSocketDefaultWin;
+
+  // Encapsulates state that must be preserved while network IO operations are
+  // in progress. If the owning TCPSocketWin is destroyed while an operation is
+  // in progress, the Core is detached and lives until the operation completes
+  // and the OS doesn't reference any resource owned by it.
+  class Core : public base::RefCounted<Core> {
+   public:
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
+    // Invoked when the socket is closed. Clears any reference from the `Core`
+    // to its parent socket.
+    virtual void Detach() = 0;
+
+    // Returns the event to use for watching the completion of a connect()
+    // operation.
+    virtual HANDLE GetConnectEvent() = 0;
+
+    // Must be invoked after initiating a connect() operation. Will invoke
+    // `DidCompleteConnect()` when the connect() operation is complete.
+    virtual void WatchForConnect() = 0;
+
+   protected:
+    friend class base::RefCounted<Core>;
+
+    Core();
+    virtual ~Core();
+  };
+
+  TCPSocketWin(
+      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetLog* net_log,
+      const NetLogSource& source);
+
+  TCPSocketWin(
+      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetLogWithSource net_log_source);
+
+  // Instantiates a `Core` object for this socket.
+  virtual scoped_refptr<Core> CreateCore() = 0;
+
+  // Whether there is a pending read operation on this socket.
+  virtual bool HasPendingRead() const = 0;
+
+  // Invoked when the socket is closed.
+  virtual void OnClosed() = 0;
 
   // base::ObjectWatcher::Delegate implementation.
   void OnObjectSignaled(HANDLE object) override;
@@ -164,10 +219,7 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
   void LogConnectBegin(const AddressList& addresses);
   void LogConnectEnd(int net_error);
 
-  void RetryRead(int rv);
   void DidCompleteConnect();
-  void DidCompleteWrite();
-  void DidSignalRead();
 
   SOCKET socket_;
 
@@ -181,26 +233,13 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
   raw_ptr<IPEndPoint> accept_address_ = nullptr;
   CompletionOnceCallback accept_callback_;
 
-  // The various states that the socket could be in.
-  bool waiting_connect_ = false;
-  bool waiting_read_ = false;
-  bool waiting_write_ = false;
-
   // The core of the socket that can live longer than the socket itself. We pass
   // resources to the Windows async IO functions and we have to make sure that
   // they are not destroyed while the OS still references them.
   scoped_refptr<Core> core_;
 
-  // External callback; called when connect or read is complete.
-  CompletionOnceCallback read_callback_;
-
-  // Non-null if a ReadIfReady() is to be completed asynchronously. This is an
-  // external callback if user used ReadIfReady() instead of Read(), but a
-  // wrapped callback on top of RetryRead() if Read() is used.
-  CompletionOnceCallback read_if_ready_callback_;
-
-  // External callback; called when write is complete.
-  CompletionOnceCallback write_callback_;
+  // Callback invoked when connect is complete.
+  CompletionOnceCallback connect_callback_;
 
   std::unique_ptr<IPEndPoint> peer_address_;
   // The OS error that a connect attempt last completed with.

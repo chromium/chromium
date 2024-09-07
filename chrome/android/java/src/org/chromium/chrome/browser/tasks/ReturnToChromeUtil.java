@@ -86,7 +86,7 @@ public final class ReturnToChromeUtil {
             ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_RETURN_TIME,
                     HOME_SURFACE_RETURN_TIME_SECONDS_PARAM,
-                    14400); // 4 hours
+                    28800); // 8 hours
 
     private ReturnToChromeUtil() {}
 

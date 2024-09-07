@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 #include "chrome/enterprise_companion/proto/log_request.pb.h"
@@ -69,7 +70,7 @@ TEST_F(EventLoggerTest, TransmitsEvents) {
         captured_request = std::move(request);
         proto::LogResponse response;
         response.set_next_request_wait_millis(
-            kMinLogTransmissionCooldown.InMilliseconds());
+            GetGlobalConstants()->EventLoggerMinTimeout().InMilliseconds());
         std::move(callback).Run(network::CreateURLResponseHead(net::HTTP_OK),
                                 response.SerializeAsString());
       });
@@ -178,7 +179,7 @@ TEST_F(EventLoggerTest, RespectsMinimumCooldown) {
   ASSERT_FALSE(captured_request);
 
   // The passage of time triggers the uploading of queued logs.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_TRUE(captured_request);
 
@@ -201,7 +202,7 @@ TEST_F(EventLoggerTest, RespectsRequestedCooldown) {
         proto::LogResponse response;
         // Respond with a cooldown greater than the hardcoded minimum.
         response.set_next_request_wait_millis(
-            kMinLogTransmissionCooldown.InMilliseconds() * 2);
+            GetGlobalConstants()->EventLoggerMinTimeout().InMilliseconds() * 2);
         std::move(callback).Run(network::CreateURLResponseHead(net::HTTP_OK),
                                 response.SerializeAsString());
       });
@@ -232,11 +233,11 @@ TEST_F(EventLoggerTest, RespectsRequestedCooldown) {
   ASSERT_FALSE(captured_request);
 
   // Logs should not be sent using the default cooldown.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_FALSE(captured_request);
 
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_TRUE(captured_request);
 
@@ -284,7 +285,7 @@ TEST_F(EventLoggerTest, RequestsBatchedAcrossLoggers) {
       EnterpriseCompanionStatus::Success());
 
   // The passage of time triggers the uploading of queued logs.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_TRUE(captured_request);
 
@@ -325,7 +326,7 @@ TEST_F(EventLoggerTest, FlushedLogsClearedOnHTTP2XX) {
   captured_request = std::nullopt;
 
   // The flushed logs should not be retransmitted.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_FALSE(captured_request);
 }
@@ -360,7 +361,7 @@ TEST_F(EventLoggerTest, FlushedLogsClearedOnHTTP4XX) {
   captured_request = std::nullopt;
 
   // The flushed logs should not be retransmitted.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_FALSE(captured_request);
 }
@@ -395,7 +396,7 @@ TEST_F(EventLoggerTest, FlushedLogsRetainedOnHTTP5XX) {
   captured_request = std::nullopt;
 
   // The flushed logs should be retransmitted.
-  environment_.AdvanceClock(kMinLogTransmissionCooldown);
+  environment_.AdvanceClock(GetGlobalConstants()->EventLoggerMinTimeout());
   environment_.RunUntilIdle();
   ASSERT_TRUE(captured_request);
 
@@ -437,12 +438,13 @@ class EventLoggerCookieHandlerTest : public ::testing::Test {
 
   void DispatchLoggingCookieChange(const std::string& logging_cookie_value,
                                    net::CookieChangeCause cause) {
+    const GURL event_logging_url =
+        GetGlobalConstants()->EnterpriseCompanionEventLoggingURL();
     url::SchemeHostPort event_logging_scheme_host_port =
-        url::SchemeHostPort(GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL));
+        url::SchemeHostPort(event_logging_url);
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateSanitizedCookie(
-            GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL), kLoggingCookieName,
-            logging_cookie_value,
+            event_logging_url, kLoggingCookieName, logging_cookie_value,
             base::StrCat({".", event_logging_scheme_host_port.host()}),
             /*path=*/"/", /*creation_time=*/base::Time::Now(),
             /*expiration_time=*/base::Time::Now() + base::Days(180),
@@ -485,7 +487,8 @@ TEST_F(EventLoggerCookieHandlerTest, InitializesNewLoggingCookie) {
         ASSERT_TRUE(cookie.IsCanonical());
         EXPECT_EQ(cookie.Name(), kLoggingCookieName);
         EXPECT_EQ(cookie.Value(), kLoggingCookieDefaultValue);
-        EXPECT_EQ(source_url, GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL));
+        EXPECT_EQ(source_url,
+                  GetGlobalConstants()->EnterpriseCompanionEventLoggingURL());
         std::move(callback).Run(net::CookieAccessResult());
       });
 
@@ -500,7 +503,8 @@ TEST_F(EventLoggerCookieHandlerTest, InitializesExistingLoggingCookie) {
         ASSERT_TRUE(cookie.IsCanonical());
         EXPECT_EQ(cookie.Name(), kLoggingCookieName);
         EXPECT_EQ(cookie.Value(), "123");
-        EXPECT_EQ(source_url, GURL(ENTERPRISE_COMPANION_EVENT_LOGGING_URL));
+        EXPECT_EQ(source_url,
+                  GetGlobalConstants()->EnterpriseCompanionEventLoggingURL());
         std::move(callback).Run(net::CookieAccessResult());
       });
 

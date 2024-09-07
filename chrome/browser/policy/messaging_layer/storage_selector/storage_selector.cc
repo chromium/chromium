@@ -7,12 +7,12 @@
 #include <string_view>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/types/expected.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module.h"
 #include "components/reporting/storage/storage_configuration.h"
@@ -21,10 +21,6 @@
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {
-
-BASE_FEATURE(kControlledDegradationFeature,
-             "ControlledDegradation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 bool StorageSelector::is_uploader_required() {
@@ -49,22 +45,19 @@ void StorageSelector::CreateLocalStorageModule(
       StorageOptions()
           .set_directory(local_reporting_path)
           .set_signature_verification_public_key(verification_key),
-      base::FeatureList::IsEnabled(kLegacyStorageEnabledFeature)
-          ? "SECURITY,IMMEDIATE,FAST_BATCH,SLOW_BATCH,BACKGROUND_BATCH,"
-            "MANUAL_BATCH,MANUAL_BATCH_LACROS"
-          : "UNDEFINED_PRIORITY",
-      QueuesContainer::Create(
-          base::FeatureList::IsEnabled(kControlledDegradationFeature)),
-      EncryptionModule::Create(),
+      std::move(async_start_upload_cb), EncryptionModule::Create(),
       CompressionModule::Create(512, compression_algorithm),
-      std::move(async_start_upload_cb),
       // Callback wrapper changes result type from `StorageModule` to
       // `StorageModuleInterface`.
       base::BindOnce(
           [](base::OnceCallback<void(
                  StatusOr<scoped_refptr<StorageModuleInterface>>)> cb,
              StatusOr<scoped_refptr<StorageModule>> result) {
-            std::move(cb).Run(std::move(result));
+            if (!result.has_value()) {
+              std::move(cb).Run(base::unexpected(std::move(result).error()));
+              return;
+            }
+            std::move(cb).Run(std::move(result).value());
           },
           std::move(cb)));
 }
@@ -77,8 +70,7 @@ StorageSelector::GetLocalReportSuccessfulUploadCb(
       [](scoped_refptr<StorageModuleInterface> storage_module,
          SequenceInformation sequence_information, bool force) {
         static_cast<StorageModule*>(storage_module.get())
-            ->ReportSuccess(std::move(sequence_information), force,
-                            base::DoNothing());
+            ->ReportSuccess(std::move(sequence_information), force);
       },
       storage_module);
 }

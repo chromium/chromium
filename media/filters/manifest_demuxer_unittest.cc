@@ -57,6 +57,7 @@ class ManifestDemuxerTest : public ::testing::Test {
         mock_host_(std::make_unique<NiceMock<MockDemuxerHost>>()) {
     auto mock_engine = std::make_unique<MockEngine>();
     mock_engine_ = mock_engine.get();
+    EXPECT_CALL(*mock_engine_, Stop());
     manifest_demuxer_ = std::make_unique<ManifestDemuxer>(
         task_environment_.GetMainThreadTaskRunner(),
         base::BindRepeating(&ManifestDemuxerTest::DemuxerRequestsSeek,
@@ -346,6 +347,91 @@ TEST_F(ManifestDemuxerTest, CancelSeekAfterDemuxerBeforeEngine) {
   ASSERT_TRUE(!delay_cb);
   ASSERT_FALSE(manifest_demuxer_->has_pending_seek_for_testing());
   ASSERT_FALSE(manifest_demuxer_->has_pending_event_for_testing());
+}
+
+TEST_F(ManifestDemuxerTest, TrackChanges) {
+  // Chunk demuxer won't finish initialization until content starts being
+  // added, and we don't have any mock content at this point.
+  EXPECT_CALL(*this, MockInitComplete(_)).Times(1);
+  EXPECT_CALL(*mock_engine_, OnTimeUpdate(_, _, _))
+      .WillOnce(RunOnceCallback<2>(kNoTimestamp));
+
+  // Mark the engine as initialized successfully.
+  EXPECT_CALL(*mock_engine_, Initialize(_, _))
+      .WillOnce(RunOnceCallback<1>(media::PIPELINE_OK));
+
+  manifest_demuxer_->Initialize(
+      mock_host_.get(), base::BindOnce(&ManifestDemuxerTest::MockInitComplete,
+                                       base::Unretained(this)));
+
+  base::TimeDelta offset;
+  manifest_demuxer_->AddRole("test", RelaxedParserSupportedType::kMP2T);
+  scoped_refptr<DecoderBuffer> bear = ReadTestDataFile("bear-1280x720.ts");
+  manifest_demuxer_->AppendAndParseData("test", base::Seconds(10), &offset,
+                                        bear->AsSpan());
+
+  std::vector<DemuxerStream*> streams = manifest_demuxer_->GetAllStreams();
+  ASSERT_EQ(streams.size(), 2u);
+
+  // Disable video track:
+  bool was_called = false;
+  manifest_demuxer_->OnSelectedVideoTrackChanged(
+      {}, base::Seconds(0),
+      base::BindOnce(
+          [](bool* was_called, DemuxerStream::Type type,
+             const std::vector<DemuxerStream*>& streams) {
+            ASSERT_EQ(type, DemuxerStream::VIDEO);
+            ASSERT_TRUE(streams.empty());
+            *was_called = true;
+          },
+          &was_called));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(was_called);
+
+  // Enable video track:
+  was_called = false;
+  manifest_demuxer_->OnSelectedVideoTrackChanged(
+      {MediaTrack::Id("video")}, base::Seconds(0),
+      base::BindOnce(
+          [](bool* was_called, DemuxerStream::Type type,
+             const std::vector<DemuxerStream*>& streams) {
+            ASSERT_EQ(type, DemuxerStream::VIDEO);
+            ASSERT_EQ(streams.size(), 1u);
+            *was_called = true;
+          },
+          &was_called));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(was_called);
+
+  // Disable audio track:
+  was_called = false;
+  manifest_demuxer_->OnEnabledAudioTracksChanged(
+      {}, base::Seconds(0),
+      base::BindOnce(
+          [](bool* was_called, DemuxerStream::Type type,
+             const std::vector<DemuxerStream*>& streams) {
+            ASSERT_EQ(type, DemuxerStream::AUDIO);
+            ASSERT_TRUE(streams.empty());
+            *was_called = true;
+          },
+          &was_called));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(was_called);
+
+  // Enable audio track:
+  was_called = false;
+  manifest_demuxer_->OnEnabledAudioTracksChanged(
+      {MediaTrack::Id("audio")}, base::Seconds(0),
+      base::BindOnce(
+          [](bool* was_called, DemuxerStream::Type type,
+             const std::vector<DemuxerStream*>& streams) {
+            ASSERT_EQ(type, DemuxerStream::AUDIO);
+            ASSERT_EQ(streams.size(), 1u);
+            *was_called = true;
+          },
+          &was_called));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(was_called);
 }
 
 }  // namespace media

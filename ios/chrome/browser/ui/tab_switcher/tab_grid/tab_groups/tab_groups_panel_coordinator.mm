@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
@@ -116,6 +116,18 @@
   _disabledViewController = nil;
   _gridContainerViewController.containedViewController = nil;
   _gridContainerViewController = nil;
+}
+
+- (void)prepareForAppearance {
+  [_gridViewController prepareForAppearance];
+}
+
+- (void)stopChildCoordinators {
+  if (_tabGroupConfirmationCoordinator) {
+    [_tabGroupConfirmationCoordinator stop];
+    _tabGroupConfirmationCoordinator = nil;
+  }
+  [_gridViewController dismissModals];
 }
 
 #pragma mark - TabGroupsPanelMediatorDelegate

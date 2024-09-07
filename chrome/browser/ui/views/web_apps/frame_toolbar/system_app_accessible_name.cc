@@ -23,8 +23,8 @@ SystemAppAccessibleName::SystemAppAccessibleName(const std::u16string& app_name)
       app_name_(app_name) {
   SetEnabledColor(SK_ColorTRANSPARENT);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kApplication,
-                                       app_name_);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kApplication);
+  GetViewAccessibility().SetName(app_name_);
 }
 
 SystemAppAccessibleName::~SystemAppAccessibleName() = default;

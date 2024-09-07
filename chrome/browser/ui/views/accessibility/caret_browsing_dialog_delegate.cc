@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/size.h"
@@ -109,7 +110,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
   SetTitle(l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_TITLE));
 
   DialogDelegate::SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_TURN_ON));
 
   SetShowCloseButton(false);

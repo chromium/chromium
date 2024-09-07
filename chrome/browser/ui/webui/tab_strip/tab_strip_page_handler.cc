@@ -251,11 +251,11 @@ void TabStripPageHandler::OnTabGroupChanged(const TabGroupChange& change) {
 
 void TabStripPageHandler::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    content::WebContents* contents,
+    tabs::TabModel* tab,
     int index) {
   TRACE_EVENT0("browser", "TabStripPageHandler:TabGroupedStateChanged");
   const SessionID::id_type tab_id =
-      extensions::ExtensionTabUtil::GetTabId(contents);
+      extensions::ExtensionTabUtil::GetTabId(tab->contents());
   if (group.has_value()) {
     page_->TabGroupStateChanged(tab_id, index, group.value().ToString());
   } else {

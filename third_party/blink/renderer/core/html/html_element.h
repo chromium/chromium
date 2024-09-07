@@ -232,7 +232,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void UpdateDirectionalityAfterInputTypeChange(const AtomicString& old_value,
                                                 const AtomicString& new_value);
   void AdjustDirectionAutoAfterRecalcAssignedNodes();
-  bool CalculateAndAdjustAutoDirectionality();
+  virtual bool CalculateAndAdjustAutoDirectionality();
 
   V8UnionBooleanOrStringOrUnrestrictedDouble* hidden() const;
   void setHidden(const V8UnionBooleanOrStringOrUnrestrictedDouble*);
@@ -327,8 +327,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void setWritingSuggestions(const AtomicString& value);
 
  protected:
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };

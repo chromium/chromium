@@ -55,7 +55,7 @@ AccessibilityOrientation AXSlider::Orientation() const {
     return kAccessibilityOrientationHorizontal;
 
   // If CSS writing-mode is vertical, return kAccessibilityOrientationVertical.
-  if (!IsHorizontalWritingMode(style->GetWritingMode())) {
+  if (!style->IsHorizontalWritingMode()) {
     return kAccessibilityOrientationVertical;
   }
 

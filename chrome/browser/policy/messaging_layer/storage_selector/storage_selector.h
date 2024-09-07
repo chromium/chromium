@@ -15,7 +15,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"  // nogncheck
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/reporting/storage/storage_uploader_interface.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -56,6 +56,7 @@ class StorageSelector {
 
   static EncryptionKeyAttachedCallback GetLocalEncryptionKeyAttachedCb(
       scoped_refptr<StorageModuleInterface> storage_module);
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 }  // namespace reporting

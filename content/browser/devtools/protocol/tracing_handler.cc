@@ -1113,8 +1113,9 @@ void TracingHandler::EmitFrameTree() {
     auto* frame_host =
         static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
     CHECK(frame_host);
-    data->SetInteger("frameTreeNodeId",
-                     frame_host->frame_tree_node()->frame_tree_node_id());
+    data->SetInteger(
+        "frameTreeNodeId",
+        frame_host->frame_tree_node()->frame_tree_node_id().value());
     data->SetBoolean("persistentIds", true);
     data->BeginArray("frames");
     wc->ForEachRenderFrameHost([&data](RenderFrameHost* rfh) {
@@ -1159,7 +1160,7 @@ void TracingHandler::ReadyToCommitNavigation(
   }
 }
 
-void TracingHandler::FrameDeleted(int frame_tree_node_id) {
+void TracingHandler::FrameDeleted(FrameTreeNodeId frame_tree_node_id) {
   if (!did_initiate_recording_)
     return;
   FrameTreeNode* node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);

@@ -64,10 +64,10 @@ class PlusAddressCreationControllerAndroid
   // and closes the dialog. Otherwise shows an error message on the dialog.
   void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
 
-  // Records the time between `modal_shown_time_` and now as modal shown
-  // duration and clear `modal_shown_time_`.
-  void RecordModalShownDuration(
-      metrics::PlusAddressModalCompletionStatus status);
+  // Records the modal outcome and the time between `modal_shown_time_` and now
+  // as modal shown duration and clear `modal_shown_time_`.
+  void RecordModalShownOutcome(metrics::PlusAddressModalCompletionStatus status,
+                               bool was_notice_shown);
 
   // Returns whether the onboarding screen with the notice should be shown.
   bool ShouldShowNotice() const;

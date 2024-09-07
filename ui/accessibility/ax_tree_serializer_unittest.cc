@@ -26,9 +26,9 @@ namespace ui {
 using BasicAXTreeSerializer =
     AXTreeSerializer<const AXNode*,
                      std::vector<raw_ptr<const AXNode, VectorExperimental>>,
-                     ui::AXTreeUpdate*,
-                     ui::AXTreeData*,
-                     ui::AXNodeData>;
+                     AXTreeUpdate*,
+                     AXTreeData*,
+                     AXNodeData>;
 
 // The framework for these tests is that each test sets up |treedata0_|
 // and |treedata1_| and then calls GetTreeSerializer, which creates a
@@ -52,9 +52,9 @@ class AXTreeSerializerTest : public testing::Test {
   AXTreeUpdate treedata1_;
   std::unique_ptr<AXSerializableTree> tree0_;
   std::unique_ptr<AXSerializableTree> tree1_;
-  std::unique_ptr<AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+  std::unique_ptr<AXTreeSource<const AXNode*, AXTreeData*, AXNodeData>>
       tree0_source_;
-  std::unique_ptr<AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+  std::unique_ptr<AXTreeSource<const AXNode*, AXTreeData*, AXNodeData>>
       tree1_source_;
   std::unique_ptr<BasicAXTreeSerializer> serializer_;
 };
@@ -310,7 +310,7 @@ TEST_F(AXTreeSerializerTest, ReparentingWithDirtySubtreeUpdates) {
 // A variant of AXTreeSource that does not serialize one particular id,
 // returning nullptr from methods that try to retrieve it.
 class AXTreeSourceWithInvalidId
-    : public AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData> {
+    : public AXTreeSource<const AXNode*, AXTreeData*, AXNodeData> {
  public:
   AXTreeSourceWithInvalidId(AXTree* tree, int invalid_id)
       : tree_(tree),
@@ -594,8 +594,7 @@ TEST_F(AXTreeSerializerTest, TestPartialSerialization) {
     }
 
     // The result should be indistinguishable from the source tree.
-    std::unique_ptr<
-        AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+    std::unique_ptr<AXTreeSource<const AXNode*, AXTreeData*, AXNodeData>>
         dst_tree_source(dst_tree.CreateTreeSource());
     BasicAXTreeSerializer serializer(dst_tree_source.get());
     AXTreeUpdate dst_update;

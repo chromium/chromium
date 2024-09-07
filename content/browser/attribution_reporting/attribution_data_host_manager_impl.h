@@ -55,6 +55,7 @@ namespace content {
 
 class AttributionManager;
 class AttributionSuitableContext;
+struct GlobalRenderFrameHostId;
 
 // Manages a receiver set of all ongoing `AttributionDataHost`s and forwards
 // events to the `AttributionManager` that owns `this`. Because attributionsrc
@@ -249,9 +250,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   void MaybeStartNavigation(int64_t navigation_id);
   void MaybeDoneWithNavigation(int64_t navigation_id, bool due_to_timeout);
 
-  void AddNavigationSourceRegistrationToBatchMap(
+  [[nodiscard]] bool AddNavigationSourceRegistrationToBatchMap(
       int64_t navigation_id,
-      const attribution_reporting::SuitableOrigin& reporting_origin);
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      const attribution_reporting::SourceRegistration&,
+      const GlobalRenderFrameHostId&,
+      const std::optional<std::string>& devtools_request_id);
   void ClearRegistrationsForNavigationBatch(int64_t navigation_id);
 
   void MaybeBindDeferredReceivers(int64_t navigation_id, bool due_to_timeout);
@@ -378,12 +382,19 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   // always eventually considered done.
   SequentialTimeoutsTimer navigation_registrations_timer_;
 
-  // Stores the reporting origin of each registration tied to navigation keyed
-  // by the navigation id.
-  base::flat_map<
-      int64_t,
-      base::flat_map<attribution_reporting::SuitableOrigin, int /*count*/>>
-      registrations_per_navigation_;
+  // Struct to contain useful information to be mapped against for limiting
+  // navigation and metric purposes.
+  struct ScopesAndCountForReportingOriginPerNavigation;
+
+  // Stores the first received non-empty attribution scopes set for each
+  // reporting origin tied to each navigation keyed by the navigation ID. Used
+  // to limit source registrations per reporting origin per navigation to only 1
+  // unique attribution scopes set. Also keeps count of each source registration
+  // attempt per reporting origin.
+  base::flat_map<int64_t,
+                 base::flat_map<attribution_reporting::SuitableOrigin,
+                                ScopesAndCountForReportingOriginPerNavigation>>
+      registrations_count_and_set_scopes_per_navigation_;
 
   data_decoder::DataDecoder data_decoder_;
 

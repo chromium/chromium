@@ -7,13 +7,15 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "net/cookies/parsed_cookie.h"
+
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
-#include "net/cookies/parsed_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -1174,8 +1176,6 @@ TEST(ParsedCookieTest, ValidNonAlphanumericChars) {
 }
 
 TEST(ParsedCookieTest, PreviouslyTruncatingCharInCookieLine) {
-  using std::string_literals::operator""s;
-
   // Test scenarios where a control char may appear at start, middle and end of
   // a cookie line. Control char array with NULL (\x0), CR (\xD), LF (xA),
   // HT (\x9) and BS (\x1B).
@@ -1192,7 +1192,8 @@ TEST(ParsedCookieTest, PreviouslyTruncatingCharInCookieLine) {
     SCOPED_TRACE(testing::Message() << "Using test.ctlChar == "
                                     << base::NumberToString(test.ctlChar));
     std::string ctl_string(1, test.ctlChar);
-    std::string ctl_at_start_cookie_string = ctl_string + "foo=bar"s;
+    std::string ctl_at_start_cookie_string =
+        base::StrCat({ctl_string, "foo=bar"});
     ParsedCookie ctl_at_start_cookie(ctl_at_start_cookie_string);
     // Lots of factors determine whether IsValid() is true here:
     //
@@ -1207,14 +1208,14 @@ TEST(ParsedCookieTest, PreviouslyTruncatingCharInCookieLine) {
     EXPECT_EQ(ctl_at_start_cookie.IsValid(), test.ctlChar == '\x9');
 
     std::string ctl_at_middle_cookie_string =
-        "foo=bar;"s + ctl_string + "secure"s;
+        base::StrCat({"foo=bar;", ctl_string, "secure"});
     ParsedCookie ctl_at_middle_cookie(ctl_at_middle_cookie_string);
     if (test.invalid_character) {
       EXPECT_EQ(ctl_at_middle_cookie.IsValid(), false);
     }
 
     std::string ctl_at_end_cookie_string =
-        "foo=bar;"s + "secure;"s + ctl_string;
+        base::StrCat({"foo=bar;", "secure;", ctl_string});
     ParsedCookie ctl_at_end_cookie(ctl_at_end_cookie_string);
     if (test.invalid_character) {
       EXPECT_EQ(ctl_at_end_cookie.IsValid(), false);
@@ -1222,7 +1223,7 @@ TEST(ParsedCookieTest, PreviouslyTruncatingCharInCookieLine) {
   }
 
   // Test if there are multiple control characters that terminate.
-  std::string ctls_cookie_string = "foo=bar;\xA\xD"s;
+  std::string ctls_cookie_string = "foo=bar;\xA\xD";
   ParsedCookie ctls_cookie(ctls_cookie_string);
   EXPECT_EQ(ctls_cookie.IsValid(), false);
 }

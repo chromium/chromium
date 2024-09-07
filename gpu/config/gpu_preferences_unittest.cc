@@ -61,8 +61,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.enable_gpu_service_tracing, right.enable_gpu_service_tracing);
   EXPECT_EQ(left.use_passthrough_cmd_decoder,
             right.use_passthrough_cmd_decoder);
-  EXPECT_EQ(left.disable_biplanar_gpu_memory_buffers_for_video_frames,
-            right.disable_biplanar_gpu_memory_buffers_for_video_frames);
   EXPECT_EQ(left.ignore_gpu_blocklist, right.ignore_gpu_blocklist);
   EXPECT_EQ(left.watchdog_starts_backgrounded,
             right.watchdog_starts_backgrounded);
@@ -154,8 +152,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(enable_gpu_service_logging, true)
     GPU_PREFERENCES_FIELD(enable_gpu_service_tracing, true)
     GPU_PREFERENCES_FIELD(use_passthrough_cmd_decoder, true)
-    GPU_PREFERENCES_FIELD(disable_biplanar_gpu_memory_buffers_for_video_frames,
-                          true)
     GPU_PREFERENCES_FIELD(ignore_gpu_blocklist, true)
     GPU_PREFERENCES_FIELD(watchdog_starts_backgrounded, true)
     GPU_PREFERENCES_FIELD_ENUM(gr_context_type, GrContextType::kVulkan,
@@ -238,7 +234,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_BOOL(enable_gpu_service_logging);
   PRINT_BOOL(enable_gpu_service_tracing);
   PRINT_BOOL(use_passthrough_cmd_decoder);
-  PRINT_BOOL(disable_biplanar_gpu_memory_buffers_for_video_frames);
   PRINT_BOOL(ignore_gpu_blocklist);
   PRINT_BOOL(watchdog_starts_backgrounded);
   PRINT_INT(gr_context_type);

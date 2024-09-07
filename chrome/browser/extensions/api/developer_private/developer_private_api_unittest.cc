@@ -40,6 +40,7 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
@@ -61,7 +62,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/install/extension_install_ui.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_event_router_observer.h"
@@ -1417,7 +1417,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   EXPECT_FALSE(RunFunction(function, args));
   EXPECT_EQ("Cannot repair a healthy extension.", function->GetError());
 
-  // Corrupt the extension , still expect repair failure because this is a
+  // Corrupt the extension, still expect repair failure because this is a
   // policy extension.
   service()->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
   args = base::Value::List().Append(extension_id);
@@ -1426,6 +1426,31 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   EXPECT_FALSE(RunFunction(function, args));
   EXPECT_EQ("Cannot repair a policy-installed extension.",
             function->GetError());
+}
+
+// Tests that developerPrivate.repair does not succeed for an extension not from
+// the Chrome Web Store.
+TEST_F(DeveloperPrivateApiUnitTest, RepairNonCWSExtension) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  base::FilePath extension_path = data_dir().AppendASCII("good.crx");
+  const Extension* extension = InstallCRX(extension_path, INSTALL_NEW);
+
+  // Corrupt the extension, still expect repair failure because `good.crx` does
+  // not update from the web store.
+  service()->DisableExtension(extension->id(),
+                              disable_reason::DISABLE_CORRUPTED);
+
+  base::Value::List args = base::Value::List().Append(extension->id());
+  auto function =
+      base::MakeRefCounted<api::DeveloperPrivateRepairExtensionFunction>();
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  EXPECT_FALSE(RunFunction(function, args));
+  EXPECT_EQ(
+      "Cannot repair an extension that is not installed from the Chrome Web "
+      "Store.",
+      function->GetError());
 }
 
 // Test developerPrivate.updateProfileConfiguration: Try to turn on devMode
@@ -1539,7 +1564,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileNoDraggedPath) {
-  extensions::ExtensionInstallUI::set_disable_ui_for_tests();
+  base::AutoReset<bool> disable_ui =
+      ExtensionInstallUI::disable_ui_for_tests(true);
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   std::unique_ptr<content::WebContents> web_contents(
@@ -1563,7 +1589,8 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileCrx) {
            "manifest_version": 2
          })");
   base::FilePath crx_path = test_dir.Pack();
-  extensions::ExtensionInstallUI::set_disable_ui_for_tests();
+  base::AutoReset<bool> disable_ui =
+      ExtensionInstallUI::disable_ui_for_tests(true);
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   std::unique_ptr<content::WebContents> web_contents(
@@ -1587,7 +1614,8 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileCrx) {
 TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileUserScript) {
   base::FilePath script_path =
       data_dir().AppendASCII("user_script_basic.user.js");
-  extensions::ExtensionInstallUI::set_disable_ui_for_tests();
+  base::AutoReset<bool> disable_ui =
+      ExtensionInstallUI::disable_ui_for_tests(true);
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   std::unique_ptr<content::WebContents> web_contents(
@@ -2073,7 +2101,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
   base::FilePath zip_path = data_dir().AppendASCII("simple_empty.zip");
-  extensions::ExtensionInstallUI::set_disable_ui_for_tests();
+  base::AutoReset<bool> disable_ui =
+      ExtensionInstallUI::disable_ui_for_tests(true);
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   std::unique_ptr<content::WebContents> web_contents(

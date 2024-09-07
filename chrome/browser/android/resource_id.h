@@ -51,6 +51,8 @@ DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
                     R.drawable.ic_photo_camera_black)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_XR,
                     R.drawable.gm_filled_cardboard_24)
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_HAND_TRACKING,
+                    R.drawable.gm_filled_hand_gesture_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SETTINGS, R.drawable.settings_cog)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SHIELD_BLUE,
                     R.drawable.blue_google_shield)

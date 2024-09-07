@@ -7,11 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+enum class ContentSuggestionsModuleType;
+
 // Audience for Magic Stack module events.
 @protocol MagicStackCollectionViewControllerAudience
 
 // Notifies the audience that the Magic Stack edit button was tapped.
 - (void)didTapMagicStackEditButton;
+
+// Notifies the audience that the displayed ephemeral `card` was shown to the
+// user.
+- (void)logEphemeralCardVisibility:(ContentSuggestionsModuleType)card;
 
 @end
 

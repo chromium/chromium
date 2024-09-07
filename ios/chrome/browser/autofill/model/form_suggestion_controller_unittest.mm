@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_view.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -46,6 +46,7 @@ using autofill::FormRendererId;
 @interface TestSuggestionProvider : NSObject<FormSuggestionProvider>
 
 @property(weak, nonatomic, readonly) FormSuggestion* suggestion;
+@property(nonatomic, assign) NSInteger index;
 @property(weak, nonatomic, readonly) NSString* formName;
 @property(weak, nonatomic, readonly) NSString* fieldIdentifier;
 @property(weak, nonatomic, readonly) NSString* frameID;
@@ -138,6 +139,7 @@ using autofill::FormRendererId;
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                        form:(NSString*)formName
              formRendererID:(FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
@@ -146,6 +148,7 @@ using autofill::FormRendererId;
           completionHandler:(SuggestionHandledCompletion)completion {
   self.selected = YES;
   _suggestion = suggestion;
+  _index = index;
   _formName = [formName copy];
   _formRendererID = formRendererID;
   _fieldIdentifier = [fieldIdentifier copy];
@@ -471,7 +474,7 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
                                                         params);
 
   // Selecting a suggestion should notify the delegate.
-  [suggestion_controller_ didSelectSuggestion:suggestions[0]];
+  [suggestion_controller_ didSelectSuggestion:suggestions[0] atIndex:0];
   EXPECT_TRUE([provider selected]);
   EXPECT_NSEQ(@"form", [provider formName]);
   EXPECT_NSEQ(@"field_id", [provider fieldIdentifier]);

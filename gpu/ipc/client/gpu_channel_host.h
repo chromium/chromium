@@ -181,7 +181,8 @@ class GPU_EXPORT GpuChannelHost
  private:
   // Establishes shared memory communication with the GPU process. This memory
   // is used to keep track of flushed items and avoid unnecessary IPCs.
-  void EstablishSharedMemoryForFlushVerification();
+  void EstablishSharedMemoryForFlushVerification()
+      EXCLUSIVE_LOCKS_REQUIRED(shared_memory_version_lock_);
 
   // Tracks whether we still have a working connection to the GPU process. This
   // is updated eaglerly from the IO thread if the connection is broken, but it
@@ -273,7 +274,7 @@ class GPU_EXPORT GpuChannelHost
   // - |next_image_id_|, atomic type
   // - |next_route_id_|, atomic type
   // - |deferred_messages_| and |*_deferred_message_id_| protected by
-  // |context_lock_|
+  // |deferred_message_lock_|
   const scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
 
   const int channel_id_;
@@ -293,8 +294,10 @@ class GPU_EXPORT GpuChannelHost
   mojo::SharedAssociatedRemote<mojom::GpuChannel> gpu_channel_;
   SharedImageInterfaceProxy shared_image_interface_;
 
+  mutable base::Lock shared_memory_version_lock_;
   // Used to synchronize flushed request ids with the GPU process.
-  std::optional<mojo::SharedMemoryVersionClient> shared_memory_version_client_;
+  std::optional<mojo::SharedMemoryVersionClient> shared_memory_version_client_
+      GUARDED_BY(shared_memory_version_lock_);
 
   // A client-side helper to send image decode requests to the GPU process.
   ImageDecodeAcceleratorProxy image_decode_accelerator_proxy_;
@@ -310,16 +313,16 @@ class GPU_EXPORT GpuChannelHost
 
   // Protects |deferred_messages_|, |pending_ordering_barrier_| and
   // |*_deferred_message_id_|.
-  mutable base::Lock context_lock_;
+  mutable base::Lock deferred_message_lock_;
   std::vector<mojom::DeferredRequestPtr> deferred_messages_
-      GUARDED_BY(context_lock_);
+      GUARDED_BY(deferred_message_lock_);
   std::optional<OrderingBarrierInfo> pending_ordering_barrier_
-      GUARDED_BY(context_lock_);
-  uint32_t next_deferred_message_id_ GUARDED_BY(context_lock_) = 1;
+      GUARDED_BY(deferred_message_lock_);
+  uint32_t next_deferred_message_id_ GUARDED_BY(deferred_message_lock_) = 1;
   // Highest deferred message id in |deferred_messages_|.
-  uint32_t enqueued_deferred_message_id_ GUARDED_BY(context_lock_) = 0;
+  uint32_t enqueued_deferred_message_id_ GUARDED_BY(deferred_message_lock_) = 0;
   // Highest deferred message id sent to the channel.
-  uint32_t flushed_deferred_message_id_ GUARDED_BY(context_lock_) = 0;
+  uint32_t flushed_deferred_message_id_ GUARDED_BY(deferred_message_lock_) = 0;
 
   const bool sync_point_graph_validation_enabled_;
 };

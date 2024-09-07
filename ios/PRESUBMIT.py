@@ -157,6 +157,27 @@ def _CheckHasNoPipeInComment(input_api, output_api):
 
     return [output_api.PresubmitPromptWarning(error_message)]
 
+def _CheckHasNoChromeBrowserStateForwardDeclaration(input_api, output_api):
+    """ Checks that header files don't forward-declare ChromeBrowserState."""
+    errors = []
+    for f in input_api.AffectedFiles():
+        for line_num, line in f.ChangedContents():
+            if line == 'class ChromeBrowserState;':
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors:
+        return []
+
+    plural_suffix = '' if len(errors) == 1 else 's'
+    error_message = '\n'.join([
+         'Found forward-declaration%(plural)s of ChromeBrowserState. Please'
+         'instead import this header:'
+         '  ios/chrome/browser/shared/model/profile/profile_ios_forward.h'
+         '\n\nAffected file%(plural)s:' % {
+            'plural': plural_suffix,
+          }
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitError(error_message)]
 
 def _IsInIosPackage(input_api, path):
     """ Returns True if path is within ios package"""
@@ -220,4 +241,6 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckHasNoIncludeDirectives(input_api, output_api))
     results.extend(_CheckHasNoPipeInComment(input_api, output_api))
     results.extend(_CheckHasNoBoxedBOOL(input_api, output_api))
+    results.extend(_CheckHasNoChromeBrowserStateForwardDeclaration(input_api,
+        output_api))
     return results

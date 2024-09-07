@@ -31,7 +31,7 @@
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        modality:(OverlayModality)modality {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _browser = browser;
     DCHECK(_browser);
 

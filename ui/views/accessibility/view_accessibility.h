@@ -114,11 +114,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Call when a menu closes, to restore focus to where it was previously.
   virtual void FireFocusAfterMenuClose();
 
-  // Convenience function to set common accessibility properties during view
-  // construction/initialization. It should only be used to define property
-  // values as part of the creation of this view; not to provide property-
-  // change updates. This function will only modify properties for which a value
-  // has been explicitly set.
+  // Deprecated, do not use. Prefer calling SetName, SetDescription, etc.
   // TODO(crbug.com/325137417): Remove this function, no real benefit is added
   // anymore now that all event firing is blocked during
   // construction/initialization.
@@ -240,6 +236,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // will work.
   void SetName(View& naming_view);
 
+  // Removes kName and KNameFrom attributes from accessibility cache.
+  void RemoveName();
+
   void SetIsEditable(bool editable);
 
   void SetBounds(const gfx::RectF& bounds);
@@ -298,6 +297,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // cache.
   void RemoveExpandCollapseState();
 
+  void SetIsVertical(bool vertical);
+
   void SetIsDefault(bool is_default);
 
   // Sets/gets whether or not this view should be marked as "enabled" for the
@@ -331,6 +332,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   std::u16string GetCachedDescription() const;
 
   void SetPlaceholder(const std::string& placeholder);
+
+  void AddAction(ax::mojom::Action action);
 
   void SetCheckedState(ax::mojom::CheckedState checked_state);
   void RemoveCheckedState();
@@ -375,6 +378,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetValue(const std::string& value);
   void SetValue(const std::u16string& value);
   void RemoveValue();
+  std::u16string GetValue() const;
 
   void SetDefaultActionVerb(
       const ax::mojom::DefaultActionVerb default_action_verb);

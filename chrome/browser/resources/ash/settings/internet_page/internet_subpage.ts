@@ -617,6 +617,10 @@ export class SettingsInternetSubpageElement extends
    */
   private deviceIsEnabled_(deviceState: OncMojo.DeviceStateProperties|
                            undefined): boolean {
+    if (OncMojo.deviceIsFlashing(deviceState)) {
+      return false;
+    }
+
     return !!deviceState &&
         (deviceState.type === NetworkType.kVPN ||
          deviceState.deviceState === DeviceStateType.kEnabled);
@@ -645,6 +649,9 @@ export class SettingsInternetSubpageElement extends
       return false;
     }
     if (OncMojo.deviceStateIsIntermediate(deviceState.deviceState)) {
+      return false;
+    }
+    if (OncMojo.deviceIsFlashing(deviceState)) {
       return false;
     }
     return !this.isDeviceInhibited_();

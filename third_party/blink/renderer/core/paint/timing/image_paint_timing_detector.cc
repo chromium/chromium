@@ -233,9 +233,9 @@ void ImagePaintTimingDetector::StopRecordEntries() {
 }
 
 void ImagePaintTimingDetector::RegisterNotifyPresentationTime() {
-  auto callback = WTF::BindOnce(
-      &ImagePaintTimingDetector::ReportPresentationTime,
-      WrapCrossThreadWeakPersistent(this), last_registered_frame_index_);
+  auto callback =
+      WTF::BindOnce(&ImagePaintTimingDetector::ReportPresentationTime,
+                    WrapWeakPersistent(this), last_registered_frame_index_);
   callback_manager_->RegisterCallback(std::move(callback));
 }
 
@@ -287,8 +287,7 @@ bool ImagePaintTimingDetector::RecordImage(
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const StyleImage* style_image,
-    const gfx::Rect& image_border,
-    const bool is_loaded_after_mouseover) {
+    const gfx::Rect& image_border) {
   Node* node = object.GetNode();
 
   if (!node)
@@ -319,8 +318,7 @@ bool ImagePaintTimingDetector::RecordImage(
           image_border, mapped_visual_rect, intrinsic_size,
           current_paint_chunk_properties, object, media_timing);
       records_manager_.MaybeUpdateLargestIgnoredImage(
-          record_id, rect_size, image_border, mapped_visual_rect,
-          is_loaded_after_mouseover);
+          record_id, rect_size, image_border, mapped_visual_rect);
     }
     return false;
   }
@@ -367,8 +365,7 @@ bool ImagePaintTimingDetector::RecordImage(
                    : 0.0;
 
   bool added_pending = records_manager_.RecordFirstPaintAndReturnIsPending(
-      record_id, rect_size, image_border, mapped_visual_rect, bpp,
-      is_loaded_after_mouseover);
+      record_id, rect_size, image_border, mapped_visual_rect, bpp);
   if (!added_pending)
     return false;
 
@@ -525,14 +522,12 @@ void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
     const MediaRecordId& record_id,
     const uint64_t& visual_size,
     const gfx::Rect& frame_visual_rect,
-    const gfx::RectF& root_visual_rect,
-    bool is_loaded_after_mouseover) {
+    const gfx::RectF& root_visual_rect) {
   if (visual_size && (!largest_ignored_image_ ||
                       visual_size > largest_ignored_image_->recorded_size)) {
     largest_ignored_image_ = CreateImageRecord(
         *record_id.GetLayoutObject(), record_id.GetMediaTiming(), visual_size,
-        frame_visual_rect, root_visual_rect, is_loaded_after_mouseover,
-        record_id.GetHash());
+        frame_visual_rect, root_visual_rect, record_id.GetHash());
     largest_ignored_image_->load_time = base::TimeTicks::Now();
   }
 }
@@ -542,8 +537,7 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
     const uint64_t& visual_size,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect,
-    double bpp,
-    bool is_loaded_after_mouseover) {
+    double bpp) {
   // Don't process the image yet if it is invisible, as it may later become
   // visible, and potentially eligible to be an LCP candidate.
   if (visual_size == 0u) {
@@ -560,24 +554,10 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
       bpp < features::kMinimumEntropyForLCP.Get()) {
     return false;
   }
-  if (RuntimeEnabledFeatures::LCPMouseoverHeuristicsEnabled() &&
-      is_loaded_after_mouseover) {
-    // TODO(https://crbug.com/1288027): Remove this debugging info once we have
-    // a clearer picture on heuristic failures.
-    if (Document* document = frame_view_->GetFrame().GetDocument()) {
-      document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kOther,
-          mojom::blink::ConsoleMessageLevel::kVerbose,
-          "Not emitting an LCP image entry, because it was loaded due to a "
-          "mouseover."));
-    }
-    return false;
-  }
 
   ImageRecord* record = CreateImageRecord(
       *record_id.GetLayoutObject(), record_id.GetMediaTiming(), visual_size,
-      frame_visual_rect, root_visual_rect, is_loaded_after_mouseover,
-      record_id.GetHash());
+      frame_visual_rect, root_visual_rect, record_id.GetHash());
   AddPendingImage(record);
   return true;
 }
@@ -595,14 +575,13 @@ ImageRecord* ImageRecordsManager::CreateImageRecord(
     const uint64_t& visual_size,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect,
-    bool is_loaded_after_mouseover,
     MediaRecordIdHash hash) {
   DCHECK_GT(visual_size, 0u);
   Node* node = object.GetNode();
   DOMNodeId node_id = node->GetDomNodeId();
   return MakeGarbageCollected<ImageRecord>(node_id, media_timing, visual_size,
                                            frame_visual_rect, root_visual_rect,
-                                           is_loaded_after_mouseover, hash);
+                                           hash);
 }
 
 void ImageRecordsManager::ClearImagesQueuedForPaintTime() {

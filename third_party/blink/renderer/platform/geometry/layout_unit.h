@@ -183,15 +183,32 @@ class PLATFORM_EXPORT FixedPoint {
     return FromRawValue(value);
   }
   template <unsigned source_fractional_bits>
-    requires(source_fractional_bits > kFractionalBits)
-  static constexpr FixedPoint FromFixed(Storage value) {
-    return FromRawValue(value >> (source_fractional_bits - kFractionalBits));
+    requires(source_fractional_bits >= kFractionalBits)
+  static constexpr FixedPoint FromFixed(std::integral auto value) {
+    constexpr unsigned kBitsDiff = source_fractional_bits - kFractionalBits;
+    return FromRawValueWithClamp(value >> kBitsDiff);
+  }
+  template <unsigned source_fractional_bits>
+    requires(kFractionalBits > source_fractional_bits)
+  static constexpr FixedPoint FromFixed(std::integral auto value) {
+    constexpr unsigned kBitsDiff = kFractionalBits - source_fractional_bits;
+    if (value >= kRawValueMax >> kBitsDiff) [[unlikely]] {
+      return Max();
+    }
+    if (value <= kRawValueMin >> kBitsDiff) [[unlikely]] {
+      return Min();
+    }
+    return FromRawValue(value << kBitsDiff);
   }
 
-  // Convert to a `FixedPoint` of the same storage but with a different
-  // precision.
+  // Convert to a `FixedPoint` with a different storage and/or precision.
   template <typename Target>
-    requires(std::is_same_v<Storage, typename Target::StorageType>)
+    requires(Target::kIntegralBits >= kIntegralBits)
+  constexpr Target To() const {
+    return Target::template FromFixed<kFractionalBits>(RawValue());
+  }
+  template <typename Target>
+    requires(Target::kIntegralBits < kIntegralBits)
   constexpr Target To() const {
     return Target::template FromFixed<kFractionalBits>(RawValue());
   }
@@ -547,11 +564,12 @@ template <unsigned fractional_bits, typename RawValue>
 inline FixedPoint<fractional_bits, RawValue> operator*(
     const FixedPoint<fractional_bits, RawValue> a,
     std::integral auto b) {
-  return a * FixedPoint<fractional_bits, RawValue>(b);
+  return FixedPoint<fractional_bits, RawValue>::FromRawValue(
+      base::ClampMul(a.RawValue(), b));
 }
 
 inline LayoutUnit operator*(std::integral auto a, const LayoutUnit& b) {
-  return LayoutUnit(a) * b;
+  return b * a;
 }
 
 constexpr float operator*(const float a, const LayoutUnit& b) {
@@ -595,7 +613,7 @@ template <unsigned fractional_bits, typename RawValue>
 inline FixedPoint<fractional_bits, RawValue> operator/(
     const FixedPoint<fractional_bits, RawValue>& a,
     std::integral auto b) {
-  return a / FixedPoint<fractional_bits, RawValue>(b);
+  return FixedPoint<fractional_bits, RawValue>::FromRawValue(a.RawValue() / b);
 }
 
 constexpr float operator/(const float a, const LayoutUnit& b) {

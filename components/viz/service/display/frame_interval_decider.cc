@@ -84,11 +84,19 @@ FrameIntervalDecider::~FrameIntervalDecider() = default;
 void FrameIntervalDecider::UpdateSettings(
     Settings settings,
     std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers) {
-  if (settings.fixed_intervals) {
-    CHECK(!settings.fixed_intervals->supported_intervals.empty());
-    CHECK(settings.fixed_intervals->supported_intervals.contains(
-        settings.fixed_intervals->default_interval));
-  }
+  absl::visit(base::Overloaded(
+                  [](const absl::monostate& monostate) {},
+                  [](const FixedIntervalSettings& fixed_interval_settings) {
+                    CHECK(!fixed_interval_settings.supported_intervals.empty());
+                    CHECK(fixed_interval_settings.supported_intervals.contains(
+                        fixed_interval_settings.default_interval));
+                  },
+                  [](const ContinuousRangeSettings& continuous_range_settings) {
+                    CHECK_LE(continuous_range_settings.min_interval,
+                             continuous_range_settings.max_interval);
+                  }),
+              settings.interval_settings);
+
   settings_ = std::move(settings);
   matchers_ = std::move(matchers);
 }
@@ -124,11 +132,17 @@ void FrameIntervalDecider::Decide(
 
   // If nothing matched, use the default.
   if (!match_result) {
-    if (settings_.fixed_intervals) {
-      match_result = settings_.fixed_intervals->default_interval;
-    } else {
-      match_result = FrameIntervalClass::kDefault;
-    }
+    match_result = absl::visit(
+        base::Overloaded(
+            [](const absl::monostate& monostate) -> Result {
+              return FrameIntervalClass::kDefault;
+            },
+            [](const FixedIntervalSettings& fixed_interval_settings) -> Result {
+              return fixed_interval_settings.default_interval;
+            },
+            [](const ContinuousRangeSettings& continuous_range_settings)
+                -> Result { return continuous_range_settings.min_interval; }),
+        settings_.interval_settings);
   }
 
   // No need to notify client if result did not change.

@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/media_router/browser/media_router_metrics.h"
+#include "components/media_router/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,7 +45,8 @@ constexpr int kDeviceEntryIconSize = 20;
 
 constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 8);
 constexpr gfx::Insets kCastHeaderRowInsets = gfx::Insets::VH(0, 8);
-constexpr gfx::Insets kIssueHoverButtonInsets = gfx::Insets::VH(6, 16);
+constexpr gfx::Insets kIconHoverButtonInsets = gfx::Insets::VH(6, 8);
+constexpr gfx::Insets kThrobberHoverButtonInsets = gfx::Insets::VH(0, 8);
 
 }  // namespace
 
@@ -59,7 +63,7 @@ IssueHoverButton::IssueHoverButton(PressedCallback callback,
   GetViewAccessibility().SetName(
       base::JoinString({device_name, status_text}, u"\n"));
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kIssueHoverButtonInsets,
+      views::BoxLayout::Orientation::kHorizontal, kIconHoverButtonInsets,
       kDeviceEntrySeparator));
 
   // Create a column to hold the info icon view.
@@ -98,11 +102,7 @@ IssueHoverButton::IssueHoverButton(PressedCallback callback,
 
 gfx::Size IssueHoverButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return GetLayoutManager()->GetPreferredSize(this);
-}
-
-int IssueHoverButton::GetHeightForWidth(int w) const {
-  return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
+  return GetLayoutManager()->GetPreferredSize(this, available_size);
 }
 
 BEGIN_METADATA(IssueHoverButton)
@@ -218,9 +218,9 @@ void CastDeviceSelectorView::OnDevicesUpdated(
 }
 
 void CastDeviceSelectorView::OnPermissionRejected() {
-  // TODO(crbug.com/358821864): Do not show the permission error if users have
-  // dismissed it.
-  if (has_permission_rejected_issue_) {
+  if (has_permission_rejected_issue_ ||
+      g_browser_process->local_state()->GetBoolean(
+          media_router::prefs::kSuppressLocalDiscoveryPermissionError)) {
     return;
   }
   has_permission_rejected_issue_ = true;
@@ -229,6 +229,23 @@ void CastDeviceSelectorView::OnPermissionRejected() {
           media_router::MediaRouterUiPermissionRejectedViewEvents::
               kGmcDialogErrorShown);
 
+  size_t offset;
+  std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
+      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK);
+  std::u16string label_text = l10n_util::GetStringFUTF16(
+      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
+      settings_text_for_link, &offset);
+
+  // TODO(crbug.com/359973625): Do not set the accessibility name for
+  // `permission_rejected_view_` once AXPlatformNodeCocoa::AXBoundsForRange is
+  // implemented.
+  permission_rejected_view_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kGroup);
+  permission_rejected_view_->GetViewAccessibility().SetName(
+      label_text, ax::mojom::NameFrom::kRelatedElement);
+  permission_rejected_view_->SetFocusBehavior(
+      views::View::FocusBehavior::ACCESSIBLE_ONLY);
+
   auto* permission_rejected_label_ = permission_rejected_view_->AddChildView(
       std::make_unique<views::StyledLabel>());
   permission_rejected_label_->SetBorder(
@@ -236,13 +253,7 @@ void CastDeviceSelectorView::OnPermissionRejected() {
   permission_rejected_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   permission_rejected_label_->SetDefaultEnabledColorId(
       media_color_theme_.secondary_foreground_color_id);
-
-  size_t offset;
-  std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
-      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK);
-  permission_rejected_label_->SetText(l10n_util::GetStringFUTF16(
-      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
-      settings_text_for_link, &offset));
+  permission_rejected_label_->SetText(label_text);
 
 #if BUILDFLAG(IS_MAC)
   base::RepeatingClosure open_settings_cb = base::BindRepeating([]() {
@@ -281,6 +292,8 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
 
     device_entry_button = std::make_unique<HoverButton>(
         std::move(callback), std::move(throbber), device_name);
+    device_entry_button->SetBorder(
+        views::CreateEmptyBorder(kThrobberHoverButtonInsets));
     device_entry_button->title()->SetDefaultTextStyle(
         views::style::STYLE_BODY_2);
     device_entry_button->title()->SetDefaultEnabledColorId(
@@ -302,6 +315,8 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
             media_color_theme_.secondary_foreground_color_id,
             kDeviceEntryIconSize),
         device_name);
+    device_entry_button->SetBorder(
+        views::CreateEmptyBorder(kIconHoverButtonInsets));
     device_entry_button->SetLabelStyle(views::style::STYLE_BODY_2);
     device_entry_button->SetEnabledTextColorIds(
         media_color_theme_.secondary_foreground_color_id);
@@ -350,7 +365,11 @@ void CastDeviceSelectorView::CloseButtonPressed() {
         RecordMediaRouterUiPermissionRejectedViewEvents(
             media_router::MediaRouterUiPermissionRejectedViewEvents::
                 kGmcDialogErrorDismissed);
+    g_browser_process->local_state()->SetBoolean(
+        media_router::prefs::kSuppressLocalDiscoveryPermissionError, true);
+    has_permission_rejected_issue_ = false;
   }
+
   HideDevices();
 }
 

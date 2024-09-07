@@ -30,8 +30,6 @@
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
-#include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h"
-#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -138,11 +136,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                              ->search_terms_data()
                              .GoogleBaseURLValue())
                         .spec());
-
-  source->AddBoolean(
-      "handleMostVisitedNavigationExplicitly",
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpHandleMostVisitedNavigationExplicitly));
 
   source->AddInteger(
       "prerenderStartTimeThreshold",
@@ -310,6 +303,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       // Modules.
       {"dismissModuleToastMessage", IDS_NTP_MODULES_DISMISS_TOAST_MESSAGE},
       {"disableModuleToastMessage", IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE},
+      {"moduleHeaderMoreActionsMenu", IDS_NTP_MODULE_HEADER_MORE_ACTIONS_MENU},
       {"moduleInfoButtonTitle", IDS_NTP_MODULES_INFO_BUTTON_TITLE},
       {"modulesDismissButtonText", IDS_NTP_MODULES_DISMISS_BUTTON_TEXT},
       {"modulesDisableButtonText", IDS_NTP_MODULES_DISABLE_BUTTON_TEXT},
@@ -396,6 +390,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE},
       {"modulesMostRelevantTabResumptionSeeMore",
        IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_SEE_MORE},
+      {"modulesMostRelevantTabResumptionMostRecent",
+       IDS_TAB_RESUME_DECORATORS_MOST_RECENT},
+      {"modulesMostRelevantTabResumptionFrequentlyVisited",
+       IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED},
+      {"modulesMostRelevantTabResumptionVisitedXAgo",
+       IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},
@@ -465,8 +465,8 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()),
       module_id_names_(
-          ntp::MakeModuleIdNames(IsDriveModuleEnabledForProfile(profile_),
-                                 NewTabPageUI::IsManagedProfile(profile_))) {
+          ntp::MakeModuleIdNames(NewTabPageUI::IsManagedProfile(profile_),
+                                 profile_)) {
   auto* source = CreateAndAddNewTabPageUiHtmlSource(profile_);
   bool wallpaper_search_button_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&
@@ -651,13 +651,6 @@ void NewTabPageUI::BindInterface(
   most_relevant_tab_resumption_handler_ =
       std::make_unique<MostRelevantTabResumptionPageHandler>(
           std::move(pending_page_handler), web_contents());
-}
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<ntp::tab_resumption::mojom::PageHandler>
-        pending_page_handler) {
-  tab_resumption_handler_ = std::make_unique<TabResumptionPageHandler>(
-      std::move(pending_page_handler), web_contents());
 }
 
 void NewTabPageUI::BindInterface(

@@ -45,7 +45,7 @@ bool IsCreditCardNumberSupported(
     const std::u16string& card_number,
     const std::vector<std::pair<int, int>>& supported_card_bin_ranges) {
   std::u16string stripped_number = StripCardNumberSeparators(card_number);
-  return base::ranges::any_of(supported_card_bin_ranges, [&](const auto& p) {
+  return std::ranges::any_of(supported_card_bin_ranges, [&](const auto& p) {
     auto& [bin_low, bin_high] = p;
     unsigned long range_num_of_digits = base::NumberToString(bin_low).size();
     DCHECK_EQ(range_num_of_digits, base::NumberToString(bin_high).size());

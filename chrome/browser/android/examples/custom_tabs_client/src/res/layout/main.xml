@@ -75,6 +75,25 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/custom_scheme_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:text="@string/custom_scheme"/>
+	    <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:inputType="text"
+                android:singleLine="true"
+                android:id="@+id/custom_scheme"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"

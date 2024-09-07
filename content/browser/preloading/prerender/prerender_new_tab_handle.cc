@@ -65,7 +65,7 @@ PrerenderNewTabHandle::~PrerenderNewTabHandle() {
     web_contents_->SetDelegate(nullptr);
 }
 
-int PrerenderNewTabHandle::StartPrerendering(
+FrameTreeNodeId PrerenderNewTabHandle::StartPrerendering(
     const PreloadingPredictor& creating_predictor,
     const PreloadingPredictor& enacting_predictor,
     PreloadingConfidence confidence) {

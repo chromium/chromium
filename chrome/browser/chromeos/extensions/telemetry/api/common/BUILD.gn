@@ -213,6 +213,7 @@ source_set("unit_tests") {
       "//ash/webui/shimless_rma/backend",
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/common/chromeos/extensions",
+      "//chromeos/ash/components/browser_context_helper",
       "//components/user_manager",
     ]
   }

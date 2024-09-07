@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 
-#include <codecvt>
 #include <cstddef>
 #include <cstring>
+#include <ios>
 #include <map>
 #include <optional>
 #include <ostream>
@@ -19,6 +19,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -492,7 +493,7 @@ std::string GetSiteId(Site site) {
   return base::NumberToString(base::to_underlying(site));
 }
 
-web_package::WebBundleSigner::Ed25519KeyPair GetKeyPairForSite(Site site) {
+web_package::test::Ed25519KeyPair GetKeyPairForSite(Site site) {
   std::string site_id = GetSiteId(site);
   size_t seed_length = 32;
   site_id.resize(seed_length, 'a');
@@ -501,7 +502,7 @@ web_package::WebBundleSigner::Ed25519KeyPair GetKeyPairForSite(Site site) {
   uint8_t public_key[ED25519_PUBLIC_KEY_LEN];
   uint8_t private_key[ED25519_PRIVATE_KEY_LEN];
   ED25519_keypair_from_seed(public_key, private_key, seed.data());
-  return web_package::WebBundleSigner::Ed25519KeyPair(public_key, private_key);
+  return web_package::test::Ed25519KeyPair(public_key, private_key);
 }
 
 std::string GetFileExtension(FileExtension file_extension) {
@@ -814,8 +815,8 @@ void LoadFileFromDisk(const base::FilePath& path,
   std::string result;
   CHECK(base::ReadFileToString(path, &result));
 
-  std::move(callback).Run(new base::RefCountedBytes(
-      reinterpret_cast<const unsigned char*>(result.data()), result.size()));
+  std::move(callback).Run(
+      new base::RefCountedBytes(base::as_byte_span(result)));
 }
 
 void LoadResponseFromDisk(const base::FilePath& root,
@@ -4101,7 +4102,7 @@ void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
 
 webapps::AppId GetAppIdForIsolatedSite(Site site) {
   auto parent_site = GetSiteConfiguration(site).parent_site;
-  web_package::WebBundleSigner::Ed25519KeyPair key_pair =
+  web_package::test::Ed25519KeyPair key_pair =
       GetKeyPairForSite(parent_site ? parent_site.value() : site);
 
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
@@ -4791,7 +4792,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
 #else
   // TODO(b/313492499): Update test driver to work with new intent picker UI.
-  enabled_features.push_back(features::kDesktopPWAsLinkCapturing);
+  enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }

@@ -10,8 +10,10 @@ if (is_chrome_branded) {
 }
 build_webui("build") {
   grd_prefix = "data_sharing"
+  ts_composite = true
 
   ts_deps = [
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
@@ -33,10 +35,9 @@ build_webui("build") {
 
   non_web_component_files = [
     "browser_proxy.ts",
-    "browser_proxy_api.ts",
-    "browser_proxy_base.ts",
     "data_sharing.ts",
     "data_sharing_api.ts",
+    "mojom_conversion_utils.ts",
   ]
 
   if (is_chrome_branded) {

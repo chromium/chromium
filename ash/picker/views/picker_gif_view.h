@@ -39,14 +39,14 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
 
   PickerGifView(FramesFetcher frames_fetcher,
                 PreviewImageFetcher preview_image_fetcher,
-                const gfx::Size& original_dimensions,
-                std::u16string accessible_name);
+                const gfx::Size& original_dimensions);
   PickerGifView(const PickerGifView&) = delete;
   PickerGifView& operator=(const PickerGifView&) = delete;
   ~PickerGifView() override;
 
   // views::ImageViewBase:
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:

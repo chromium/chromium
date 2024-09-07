@@ -22,7 +22,7 @@ source_set("model") {
     "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/price_insights/model:feature",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

@@ -153,4 +153,15 @@ TEST_F(SwitchAccessMenuBubbleControllerTest, AccessibleValueTest) {
             node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
+TEST_F(SwitchAccessMenuBubbleControllerTest,
+       SwitchAccessMenuViewAccessibleProperties) {
+  gfx::Rect anchor_rect(10, 10, 0, 0);
+  GetBubbleController()->ShowMenu(anchor_rect,
+                                  {"select", "scrollDown", "settings"});
+  ui::AXNodeData node_data;
+
+  GetMenuView()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::Role::kMenu, node_data.role);
+}
+
 }  // namespace ash

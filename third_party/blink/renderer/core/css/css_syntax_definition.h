@@ -7,8 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace blink {
@@ -18,7 +16,7 @@ class CSSValue;
 
 class CORE_EXPORT CSSSyntaxDefinition {
  public:
-  const CSSValue* Parse(CSSTokenizedValue,
+  const CSSValue* Parse(StringView,
                         const CSSParserContext&,
                         bool is_animation_tainted) const;
 

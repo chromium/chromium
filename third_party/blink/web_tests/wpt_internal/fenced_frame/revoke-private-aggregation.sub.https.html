@@ -5,6 +5,7 @@
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="resources/utils.js"></script>
+<script src="../aggregation-service/support/aggregation-service.js"></script>
 <script src="/wpt_internal/private-aggregation/resources/utils.js"></script>
 
 <body>
@@ -24,7 +25,7 @@ promise_test(async t => {
   const reports = await pollReports(
       '/.well-known/private-aggregation/report-protected-audience');
   assert_equals(reports.length, 1);
-}, 'Private aggregaion events should send after network cutoff.');
+}, 'Private Aggregation events should send after network cutoff.');
 
 </script>
 </body>

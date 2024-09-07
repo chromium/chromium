@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -315,6 +315,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       [[ActionFactory alloc] initWithScenario:scenario];
 
   const TabGroup* group = cell.itemIdentifier.tabGroupItem.tabGroup;
+  base::WeakPtr<const TabGroup> weakGroup = group->GetWeakPtr();
   BOOL incognito = self.incognito;
   CHECK(group);
   __weak __typeof(self) weakSelf = self;
@@ -322,30 +323,30 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate editTabGroup:group
+                  [weakSelf.contextMenuDelegate editTabGroup:weakGroup
                                                    incognito:incognito];
                 }]];
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate ungroupTabGroup:group
+                  [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
                                                       incognito:incognito
                                                      sourceView:cell];
                 }]];
 
   if (IsTabGroupSyncEnabled()) {
     [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-                    [weakSelf.contextMenuDelegate closeTabGroup:group
+                    [weakSelf.contextMenuDelegate closeTabGroup:weakGroup
                                                       incognito:incognito];
                   }]];
     if (!incognito) {
       [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                      [weakSelf.contextMenuDelegate deleteTabGroup:group
+                      [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
                                                          incognito:incognito
                                                         sourceView:cell];
                     }]];
     }
   } else {
     [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    [weakSelf.contextMenuDelegate deleteTabGroup:group
+                    [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
                                                        incognito:incognito
                                                       sourceView:cell];
                   }]];

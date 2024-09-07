@@ -88,10 +88,19 @@ class MockProactiveNudgeTrackerDelegate
     return page_ukm_tracker_.get();
   }
 
+  compose::ComposeHintMetadata GetComposeHintMetadata() override {
+    return compose_metadata_;
+  }
+
+  void SetComposeHintMetadata(compose::ComposeHintMetadata metadata) {
+    compose_metadata_ = metadata;
+  }
+
  private:
   const ukm::SourceId valid_test_source_id_{1};
   std::unique_ptr<compose::PageUkmTracker> page_ukm_tracker_ =
       std::make_unique<compose::PageUkmTracker>(valid_test_source_id_);
+  compose::ComposeHintMetadata compose_metadata_;
 };
 
 class ProactiveNudgeTrackerTestBase : public testing::Test {
@@ -105,8 +114,10 @@ class ProactiveNudgeTrackerTestBase : public testing::Test {
   ~ProactiveNudgeTrackerTestBase() override = default;
 
   void SetUpNudgeTrackerTest(bool use_segmentation) {
-    compose::GetMutableConfigForTesting().proactive_nudge_segmentation =
-        use_segmentation;
+    compose::Config& config = compose::GetMutableConfigForTesting();
+    config.proactive_nudge_enabled = true;
+    config.proactive_nudge_segmentation = use_segmentation;
+    config.proactive_nudge_focus_delay = base::Microseconds(4);
     nudge_tracker_ = std::make_unique<ProactiveNudgeTracker>(
         &segmentation_service_, &delegate_);
 
@@ -189,6 +200,7 @@ ProactiveNudgeTracker::Signals TestSignals(
     autofill::FormFieldData field = CreateTestFormFieldData(),
     base::TimeTicks page_change_time = base::TimeTicks::Now()) {
   ProactiveNudgeTracker::Signals signals;
+  signals.ukm_source_id = ukm::kInvalidSourceId;
   signals.field = field;
   signals.form = CreateFormData();
   signals.page_change_time = page_change_time;
@@ -214,7 +226,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestWait) {
   EXPECT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   if (uses_segmentation()) {
     EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
         TestSignals(field)));
@@ -237,7 +250,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestFocusChangePreventsNudge) {
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   nudge_tracker().FocusChangedInPage();
 
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   EXPECT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
@@ -257,7 +271,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestTrackingDifferentFormField) {
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   EXPECT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field2)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   EXPECT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
@@ -269,12 +284,13 @@ TEST_P(ProactiveNudgeTrackerTest, TestFocusChangeInUninitializedState) {
       .Times(0);
 
   nudge_tracker().FocusChangedInPage();
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 }
 
 TEST_P(ProactiveNudgeTrackerTest, TestNoNudgeDelay) {
   compose::Config& config = compose::GetMutableConfigForTesting();
-  config.proactive_nudge_delay = base::Milliseconds(0);
+  config.proactive_nudge_focus_delay = base::Milliseconds(0);
 
   auto field = CreateTestFormFieldData();
   if (uses_segmentation()) {
@@ -283,21 +299,21 @@ TEST_P(ProactiveNudgeTrackerTest, TestNoNudgeDelay) {
     BindFutureToSegmentationRequest(future);
     EXPECT_CALL(delegate(),
                 ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
-        .Times(1);
+        .Times(0);
     EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
         TestSignals(field)));
-    auto result = segmentation_platform::ClassificationResult(
-        segmentation_platform::PredictionStatus::kSucceeded);
-    result.ordered_labels = {"Show"};
-    future.Take().Run(result);
+    // Wait just in case the timer could be pending.
+    task_environment().FastForwardBy(
+        GetComposeConfig().proactive_nudge_focus_delay);
   } else {
     EXPECT_CALL(delegate(),
                 ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
         .Times(0);
-    EXPECT_TRUE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+    EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
         TestSignals(field)));
     // Wait just in case the timer could be pending.
-    task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+    task_environment().FastForwardBy(
+        GetComposeConfig().proactive_nudge_focus_delay);
   }
 }
 
@@ -311,16 +327,19 @@ TEST_P(ProactiveNudgeTrackerTest, TestOneNudgeUntilCleared) {
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   ASSERT_TRUE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   nudge_tracker().FocusChangedInPage();
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   EXPECT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 
   nudge_tracker().Clear();
   EXPECT_CALL(delegate(),
@@ -329,16 +348,19 @@ TEST_P(ProactiveNudgeTrackerTest, TestOneNudgeUntilCleared) {
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   ASSERT_TRUE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   nudge_tracker().FocusChangedInPage();
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   EXPECT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 }
 
 TEST_P(ProactiveNudgeTrackerTest, TestOneNudgePerFocus) {
@@ -352,16 +374,19 @@ TEST_P(ProactiveNudgeTrackerTest, TestOneNudgePerFocus) {
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   ASSERT_TRUE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   nudge_tracker().FocusChangedInPage();
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   EXPECT_TRUE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -392,7 +417,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, SegmentationDontShow) {
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
@@ -408,7 +434,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, SegmentationDontShow) {
 
 TEST_F(ProactiveNudgeTrackerSegmentationTest,
        SegmentationShowWithoutCollectingTrainingData) {
-  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _)).Times(0);
+  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _, _))
+      .Times(0);
   base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
       future;
   auto field = CreateTestFormFieldData();
@@ -416,7 +443,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
@@ -431,7 +459,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
 
 TEST_F(ProactiveNudgeTrackerSegmentationTest,
        SegmentationShowWithAlwaysCollectTrainingData) {
-  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _)).Times(1);
+  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _, _))
+      .Times(1);
   compose::GetMutableConfigForTesting()
       .proactive_nudge_always_collect_training_data = true;
 
@@ -442,7 +471,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
@@ -460,7 +490,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
 TEST_F(ProactiveNudgeTrackerSegmentationTest, SegmentationRandomForceShow) {
   compose::GetMutableConfigForTesting().proactive_nudge_force_show_probability =
       kSegmentationForceShowResult + 1e-6;
-  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _)).Times(1);
+  EXPECT_CALL(segmentation_service(), CollectTrainingData(_, _, _, _, _))
+      .Times(1);
   base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
       future;
   auto field = CreateTestFormFieldData();
@@ -472,7 +503,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, SegmentationRandomForceShow) {
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
@@ -503,7 +535,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
@@ -532,7 +565,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
 
   ASSERT_FALSE(
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
@@ -544,7 +578,11 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
 
-TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
+TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContextNoModelParams) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  // Need a longer delay for this test to measure time on page in seconds.
+  config.proactive_nudge_focus_delay = base::Seconds(2);
+
   scoped_refptr<segmentation_platform::InputContext> input_context;
   base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
       future;
@@ -561,7 +599,8 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
   task_environment().FastForwardBy(base::Seconds(63));
   ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
       TestSignals(field, page_load_time)));
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
   ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
       TestSignals(field, page_load_time)));
 
@@ -585,7 +624,7 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
           Pair("multiline_field_count", Val(1.0f)),
           Pair("time_spent_on_page",
                Val(63.0f +
-                   GetComposeConfig().proactive_nudge_delay.InSeconds())),
+                   GetComposeConfig().proactive_nudge_focus_delay.InSeconds())),
           Pair("field_signature",
                Val(autofill::HashFieldSignature(
                    autofill::CalculateFieldSignatureForField(field)))),
@@ -602,6 +641,78 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
           Pair("field_aria_label", Val(std::string("aria label"))),
           Pair("field_aria_description",
                Val(std::string("aria description")))));
+}
+
+TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContextWithModelParams) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  // Need a longer delay for this test to measure time on page in seconds.
+  config.proactive_nudge_focus_delay = base::Seconds(2);
+
+  scoped_refptr<segmentation_platform::InputContext> input_context;
+  base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
+      future;
+  auto field = CreateTestFormFieldData();
+
+  compose::ComposeHintMetadata metadata;
+  (*metadata.mutable_model_params())["name1"] = 1.1;
+  (*metadata.mutable_model_params())["name2"] = 2.2;
+  (*metadata.mutable_model_params())["name3"] = 3.3;
+  delegate().SetComposeHintMetadata(metadata);
+
+  ON_CALL(segmentation_service(), GetClassificationResult(_, _, _, _))
+      .WillByDefault(testing::Invoke(
+          [&](auto, auto, scoped_refptr<segmentation_platform::InputContext> ic,
+              segmentation_platform::ClassificationResultCallback cb) {
+            input_context = ic;
+            future.SetValue(std::move(cb));
+          }));
+  auto page_load_time = base::TimeTicks::Now();
+  task_environment().FastForwardBy(base::Seconds(63));
+  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+      TestSignals(field, page_load_time)));
+  task_environment().FastForwardBy(
+      GetComposeConfig().proactive_nudge_focus_delay);
+  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+      TestSignals(field, page_load_time)));
+
+  auto result = segmentation_platform::ClassificationResult(
+      segmentation_platform::PredictionStatus::kSucceeded);
+  result.ordered_labels = {
+      segmentation_platform::kComposePrmotionLabelDontShow};
+  future.Take().Run(result);
+  ASSERT_TRUE(input_context);
+
+  using Val = segmentation_platform::processing::ProcessedValue;
+  EXPECT_THAT(
+      input_context->metadata_args,
+      testing::UnorderedElementsAre(
+          Pair("field_max_length", Val(524.0f)),
+          Pair("field_width_pixels", Val(300.0f)),
+          Pair("field_height_pixels", Val(100.0f)),
+          Pair("field_form_control_type",
+               Val(static_cast<float>(autofill::FormControlType::kTextArea))),
+          Pair("total_field_count", Val(2.0f)),
+          Pair("multiline_field_count", Val(1.0f)),
+          Pair("time_spent_on_page",
+               Val(63.0f +
+                   GetComposeConfig().proactive_nudge_focus_delay.InSeconds())),
+          Pair("field_signature",
+               Val(autofill::HashFieldSignature(
+                   autofill::CalculateFieldSignatureForField(field)))),
+          Pair("form_signature",
+               Val(autofill::HashFormSignature(
+                   autofill::CalculateFormSignature(CreateFormData())))),
+          Pair("page_url", Val(GURL("https://example.com/test"))),
+          Pair("origin", Val(GURL("https://example.com"))),
+          Pair("field_value", Val(std::string("FormFieldDataInitialValue"))),
+          Pair("field_selected_text", Val(std::string("selected text"))),
+          Pair("field_placeholder_text",
+               Val(std::string("Please enter your value"))),
+          Pair("field_label", Val(std::string("field label"))),
+          Pair("field_aria_label", Val(std::string("aria label"))),
+          Pair("field_aria_description", Val(std::string("aria description"))),
+          Pair("name1", Val(1.1f)), Pair("name2", Val(2.2f)),
+          Pair("name3", Val(3.3f))));
 }
 
 class ProactiveNudgeTrackerDerivedEngagementTest
@@ -624,7 +735,8 @@ class ProactiveNudgeTrackerDerivedEngagementTest
 
     EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
         TestSignals(field)));
-    task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+    task_environment().FastForwardBy(
+        GetComposeConfig().proactive_nudge_focus_delay);
     EXPECT_TRUE(nudge_tracker().ProactiveNudgeRequestedForFormField(
         TestSignals(field)));
 
@@ -634,9 +746,9 @@ class ProactiveNudgeTrackerDerivedEngagementTest
                 CollectTrainingData(
                     segmentation_platform::proto::SegmentId::
                         OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION,
-                    TrainingRequestId(request_number), _, _))
+                    TrainingRequestId(request_number), _, _, _))
         .Times(1)
-        .WillOnce(testing::Invoke([&](auto, auto, auto labels, auto) {
+        .WillOnce(testing::Invoke([&](auto, auto, auto, auto labels, auto) {
           training_labels.SetValue(labels);
         }));
     return training_labels;

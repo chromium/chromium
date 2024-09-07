@@ -785,8 +785,8 @@ TEST_P(CullRectTest, CompositedTranslationUnderClip) {
   CullRect cull_rect1(gfx::Rect(0, 0, 300, 500));
   EXPECT_TRUE(ApplyPaintProperties(cull_rect1, root, root, state1));
   // The result in NonCompositedTransformUnderClip expanded by 2000 (scaled by
-  // minimum of 1/2 and 1/4).
-  EXPECT_EQ(gfx::Rect(-955, -955, 2100, 2075), cull_rect1.Rect());
+  // minimum of 1/2 and 1/4), and clamped by minimum 2 * 512.
+  EXPECT_EQ(gfx::Rect(-979, -979, 2148, 2123), cull_rect1.Rect());
 
   CullRect cull_rect2(gfx::Rect(0, 0, 300, 500));
   CullRect old_cull_rect = cull_rect1;
@@ -805,7 +805,7 @@ TEST_P(CullRectTest, CompositedTranslationUnderClip) {
 
   CullRect cull_rect4 = CullRect::Infinite();
   EXPECT_TRUE(ApplyPaintProperties(cull_rect4, root, root, state1));
-  EXPECT_EQ(gfx::Rect(-955, -955, 2150, 2100), cull_rect4.Rect());
+  EXPECT_EQ(gfx::Rect(-979, -979, 2198, 2148), cull_rect4.Rect());
 
   CullRect cull_rect5;
   EXPECT_TRUE(ApplyPaintProperties(cull_rect4, root, root, state1));
@@ -974,6 +974,110 @@ TEST_P(CullRectTest, IntersectsHorizontalRange) {
   EXPECT_TRUE(cull_rect.IntersectsHorizontalRange(LayoutUnit(), LayoutUnit(1)));
   EXPECT_FALSE(
       cull_rect.IntersectsHorizontalRange(LayoutUnit(50), LayoutUnit(51)));
+}
+
+TEST_P(CullRectTest, TransferExpansionOutsetY) {
+  auto state = CreateCompositedScrollTranslationState(
+      PropertyTreeState::Root(), -10, -15, gfx::Rect(20, 10, 40, 50),
+      gfx::Size(200, 12000));
+  auto& scroll_translation = state.Transform();
+
+  CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    // Clipped: (20, 10, 30, 50)
+    // Inverse transformed: (30, 25, 30, 50)
+    // Outsets in the dynamic case are initially 4000, but in this case, the
+    // scrollable is scrollable in both dimensions, so we initially drop this to
+    // 2000 in all directions to prevent the rect from being too large. However,
+    // in this case, our scroll extent in the x direction is small (160). This
+    // reduces the total extent in the x dimension to 160 and the remaining
+    // outset (1840) is added to the y outset (giving a total outset of 3840).
+    // So the expanded width will be 30 + 2 * 160 = 350 and the total height
+    // will be 50 + 2 * 3840 = 7730.
+    // Expanded: (-130, -3815, 350, 7730)
+    // Now the contents rect is (20, 10, 200, 12000),
+    // Clipped with contents rect: (20, 10, 200, 3905)
+    EXPECT_EQ(gfx::Rect(20, 10, 200, 3905), cull_rect.Rect());
+  } else {
+    // Clipped: (20, 10, 30, 50)
+    // Inverse transformed: (30, 25, 30, 50)
+    // Uniform outset of 4000.
+    // Expanded: (-3970, -3975, 8030, 8050)
+    // Contents rect is (20, 10, 200, 12000)
+    // Clipped with contents rect: (20, 10, 200, 4065)
+    EXPECT_EQ(gfx::Rect(20, 10, 200, 4065), cull_rect.Rect());
+  }
+
+  cull_rect = CullRect::Infinite();
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(gfx::Rect(20, 10, 200, 3905), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(20, 10, 200, 4065), cull_rect.Rect());
+  }
+}
+
+TEST_P(CullRectTest, TransferExpansionOutsetX) {
+  auto state = CreateCompositedScrollTranslationState(
+      PropertyTreeState::Root(), -10, -15, gfx::Rect(20, 10, 40, 50),
+      gfx::Size(12000, 200));
+  auto& scroll_translation = state.Transform();
+
+  CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    // Clipped: (20, 10, 30, 50)
+    // Inverse transformed: (30, 25, 30, 50)
+    // We have a scroll range of 150 in y. We're starting with 2000 in the case
+    // of being scrollable in two dimensions, so this leaves 1850 to be
+    // transferred to the x outset leading to an outset of 3850.
+    // Expanded: (-3820, -125, 7730, 350)
+    // Clip to contents rect (20, 10, 12000, 2000)
+    EXPECT_EQ(gfx::Rect(20, 10, 3890, 200), cull_rect.Rect());
+  } else {
+    // Clipped: (20, 10, 30, 50)
+    // Inverse transformed: (30, 25, 30, 50)
+    // Uniform outset of 4000.
+    // Expanded: (-3970, -3975, 8030, 8050)
+    // Clip to contents rect (20, 10, 12000, 2000)
+    EXPECT_EQ(gfx::Rect(20, 10, 4040, 200), cull_rect.Rect());
+  }
+
+  cull_rect = CullRect::Infinite();
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  // In the following cases, the infinite rect is clipped to (20, 10, 40, 50).
+  // The increase in width is reflected in the values below.
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(gfx::Rect(20, 10, 3900, 200), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(20, 10, 4050, 200), cull_rect.Rect());
+  }
+}
+
+TEST_P(CullRectTest, TransferExpansionOutsetBlocked) {
+  auto state = CreateCompositedScrollTranslationState(
+      PropertyTreeState::Root(), -10, -15, gfx::Rect(20, 10, 40, 50),
+      gfx::Size(200, 200));
+  auto& scroll_translation = state.Transform();
+
+  CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+
+  // Clipping to the contents rect should give us 200 both directions in all
+  // cases.
+  EXPECT_EQ(gfx::Rect(20, 10, 200, 200), cull_rect.Rect());
+  cull_rect = CullRect::Infinite();
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(gfx::Rect(20, 10, 200, 200), cull_rect.Rect());
 }
 
 }  // namespace blink

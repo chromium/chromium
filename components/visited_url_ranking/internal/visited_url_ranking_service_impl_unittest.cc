@@ -9,12 +9,15 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/public/result.h"
@@ -22,11 +25,13 @@
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,31 +95,46 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
  public:
   VisitedURLRankingServiceImplTest() = default;
 
+  URLVisitAggregate::TabData GetSampleTabData(int32_t id, const char* url) {
+    return URLVisitAggregate::TabData(URLVisitAggregate::Tab(
+        id,
+        URLVisit(GURL(url), u"sample_title", base::Time::Now(),
+                 syncer::DeviceInfo::FormFactor::kUnknown,
+                 URLVisit::Source::kLocal),
+        "sample_tag", "sample_session_name"));
+  }
+
+  std::unique_ptr<MockURLVisitDataFetcher>
+  CreateMockTabDataFetcherWithExpectation(
+      std::vector<URLVisitAggregate::TabData> data) {
+    auto data_fetcher = std::make_unique<MockURLVisitDataFetcher>();
+    EXPECT_CALL(*data_fetcher, FetchURLVisitData(_, _, _))
+        .Times(1)
+        .WillOnce(testing::Invoke(
+            [data](const FetchOptions& options, const FetcherConfig& config,
+                   URLVisitDataFetcher::FetchResultCallback callback) {
+              std::map<URLMergeKey, URLVisitAggregate::URLVisitVariant>
+                  variant_data_map = {};
+              for (auto& tab_data : data) {
+                variant_data_map.emplace(
+                    tab_data.last_active_tab.visit.url.spec(),
+                    std::move(tab_data));
+              }
+              std::move(callback).Run(
+                  {FetchResult::Status::kSuccess, std::move(variant_data_map)});
+            }));
+
+    return data_fetcher;
+  }
+
   std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>>
   PrepareMockDataFetchers() {
-    auto session_tab_data_fetcher = std::make_unique<MockURLVisitDataFetcher>();
-    EXPECT_CALL(*session_tab_data_fetcher, FetchURLVisitData(_, _, _))
-        .Times(1)
-        .WillOnce(testing::Invoke([](const FetchOptions& options,
-                                     const FetcherConfig& config,
-                                     URLVisitDataFetcher::FetchResultCallback
-                                         callback) {
-          std::map<URLMergeKey, URLVisitAggregate::URLVisitVariant> data = {};
-          data.emplace(kSampleSearchUrl,
-                       URLVisitAggregate::TabData(URLVisitAggregate::Tab(
-                           1,
-                           URLVisit(GURL(kSampleSearchUrl), u"sample_title",
-                                    base::Time::Now(),
-                                    syncer::DeviceInfo::FormFactor::kUnknown,
-                                    URLVisit::Source::kLocal),
-                           "sample_tag", "sample_session_name")));
-          std::move(callback).Run(
-              {FetchResult::Status::kSuccess, std::move(data)});
-        }));
-
     std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers = {};
-    data_fetchers.emplace(Fetcher::kSession,
-                          std::move(session_tab_data_fetcher));
+    std::vector<URLVisitAggregate::TabData> tab_data_entries;
+    tab_data_entries.push_back(GetSampleTabData(1, kSampleSearchUrl));
+    data_fetchers.emplace(
+        Fetcher::kSession,
+        CreateMockTabDataFetcherWithExpectation(std::move(tab_data_entries)));
     return data_fetchers;
   }
 
@@ -166,6 +186,25 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
     Result result;
     base::RunLoop wait_loop;
     service_impl_->RankURLVisitAggregates(
+        config, std::move(visit_aggregates),
+        base::BindOnce(
+            [](base::OnceClosure stop_waiting, Result* result,
+               ResultStatus status, std::vector<URLVisitAggregate> aggregates) {
+              result->first = status;
+              result->second = std::move(aggregates);
+              std::move(stop_waiting).Run();
+            },
+            wait_loop.QuitClosure(), &result));
+    wait_loop.Run();
+    return result;
+  }
+
+  Result RunDecorateURLVisitAggregates(
+      const Config& config,
+      std::vector<URLVisitAggregate> visit_aggregates) {
+    Result result;
+    base::RunLoop wait_loop;
+    service_impl_->DecorateURLVisitAggregates(
         config, std::move(visit_aggregates),
         base::BindOnce(
             [](base::OnceClosure stop_waiting, Result* result,
@@ -270,17 +309,32 @@ TEST_F(VisitedURLRankingServiceImplTest,
           [](std::vector<URLVisitAggregate> aggregates,
              const FetchOptions& options,
              URLVisitAggregatesTransformer::OnTransformCallback callback) {
+            std::erase_if(
+                aggregates, [](const URLVisitAggregate& visit_aggregate) {
+                  const auto& visit_variant =
+                      visit_aggregate.fetcher_data_map.at(Fetcher::kSession);
+                  int id = std::get<URLVisitAggregate::TabData>(visit_variant)
+                               .last_active_tab.id;
+                  return static_cast<bool>(id % 2);
+                });
             std::move(callback).Run(
                 URLVisitAggregatesTransformer::Status::kSuccess,
                 std::move(aggregates));
           }));
 
+  std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers = {};
+  std::vector<URLVisitAggregate::TabData> tab_data_entries;
+  tab_data_entries.push_back(GetSampleTabData(1, "https://mail.google.com"));
+  tab_data_entries.push_back(GetSampleTabData(2, "https://docs.google.com"));
+  data_fetchers.emplace(
+      Fetcher::kSession,
+      CreateMockTabDataFetcherWithExpectation(std::move(tab_data_entries)));
   std::map<URLVisitAggregatesTransformType,
            std::unique_ptr<URLVisitAggregatesTransformer>>
       transformers = {};
   transformers.emplace(URLVisitAggregatesTransformType::kBookmarkData,
                        std::move(mock_bookmark_transformer));
-  InitService(PrepareMockDataFetchers(), std::move(transformers));
+  InitService(std::move(data_fetchers), std::move(transformers));
 
   FetchOptions fetch_options = FetchOptions(
       {
@@ -290,7 +344,6 @@ TEST_F(VisitedURLRankingServiceImplTest,
           {Fetcher::kSession,
            FetchOptions::FetchSources({URLVisit::Source::kForeign})},
       },
-
       base::Time::Now() - base::Days(1),
       {URLVisitAggregatesTransformType::kBookmarkData});
   VisitedURLRankingServiceImplTest::Result result =
@@ -303,8 +356,8 @@ TEST_F(VisitedURLRankingServiceImplTest,
       static_cast<int>(VisitedURLRankingRequestStepStatus::kSuccess), 1);
   histogram_tester.ExpectTotalCount(
       "VisitedURLRanking.TransformType.BookmarkData.Success", 1);
-  histogram_tester.ExpectTotalCount(
-      "VisitedURLRanking.TransformType.BookmarkData.InOutPercentage", 1);
+  histogram_tester.ExpectUniqueSample(
+      "VisitedURLRanking.TransformType.BookmarkData.InOutPercentage", 50, 1);
   histogram_tester.ExpectTotalCount(
       "VisitedURLRanking.TransformType.BookmarkData.Latency", 1);
 }
@@ -499,6 +552,76 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordActionTimeout) {
   histogram_tester.ExpectUniqueSample(
       "VisitedURLRanking.ScoredURLAction",
       static_cast<int>(ScoredURLUserAction::kSeen), 1);
+}
+
+TEST_F(VisitedURLRankingServiceImplTest, DecorateURLVisitAggregates) {
+  InitService(/*data_fetchers=*/{}, /*transformers=*/{});
+
+  base::FieldTrialParams params = {
+      {features::kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold
+           .name,
+       base::StringPrintf("%u", 1)}};
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{features::kVisitedURLRankingDecorations, params}}, {});
+
+  base::Time timestamp = base::Time::Now() - base::Minutes(5);
+  std::vector<URLVisitAggregate> url_visit_aggregates = {};
+  const GURL kSampleUrl = GURL(kSampleSearchUrl);
+
+  auto url_visit_aggregate1 = CreateSampleURLVisitAggregate(
+      kSampleUrl, 1.0f, timestamp, {Fetcher::kHistory});
+  url_visit_aggregate1.decorations.clear();
+  auto* history_data = std::get_if<URLVisitAggregate::HistoryData>(
+      &url_visit_aggregate1.fetcher_data_map.at(Fetcher::kHistory));
+  history_data->same_time_group_visit_count = 6;
+  history_data->visit_count = 6;
+  url_visit_aggregates.push_back(std::move(url_visit_aggregate1));
+
+  auto url_visit_aggregate2 = CreateSampleURLVisitAggregate(
+      kSampleUrl, 1.0f, base::Time::Now(), {Fetcher::kHistory});
+  url_visit_aggregate2.decorations.clear();
+  url_visit_aggregates.push_back(std::move(url_visit_aggregate2));
+
+  VisitedURLRankingServiceImplTest::Result result =
+      RunDecorateURLVisitAggregates({}, std::move(url_visit_aggregates));
+  EXPECT_EQ(result.first, ResultStatus::kSuccess);
+  EXPECT_EQ(result.second.size(), 2u);
+  EXPECT_EQ(**result.second[0].GetAssociatedURLs().begin(), kSampleUrl);
+  EXPECT_EQ(result.second[0].decorations.size(), 3u);
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[0]).GetType(),
+            DecorationType::kFrequentlyVisited);
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[1]).GetType(),
+            DecorationType::kMostRecent);
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(result.second[0].decorations[0].GetDisplayString(),
+            u"You Visit Often");
+  EXPECT_EQ(result.second[0].decorations[1].GetDisplayString(),
+            u"You Visit Often");
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[1]).GetDisplayString(),
+            u"Your Most Recent Tab");
+  EXPECT_EQ(result.second[1].decorations[1].GetDisplayString(),
+            u"You Just Visited");
+#else
+  EXPECT_EQ(result.second[0].decorations[0].GetDisplayString(),
+            u"You visit often");
+  EXPECT_EQ(result.second[0].decorations[1].GetDisplayString(),
+            u"You visit often");
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[1]).GetDisplayString(),
+            u"Your most recent tab");
+  EXPECT_EQ(result.second[1].decorations[1].GetDisplayString(),
+            u"You just visited");
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(result.second[0].decorations[2].GetDisplayString(),
+            u"You visited 5 min ago");
+#elif BUILDFLAG(IS_IOS)
+  EXPECT_EQ(result.second[0].decorations[2].GetDisplayString(),
+            u"You Visited 5 min ago");
+#else
+  EXPECT_EQ(result.second[0].decorations[2].GetDisplayString(),
+            u"You visited 5 mins ago");
+#endif
 }
 
 }  // namespace visited_url_ranking

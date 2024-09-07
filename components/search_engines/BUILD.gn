@@ -15,11 +15,11 @@ static_library("search_engines") {
     "choice_made_location.h",
     "default_search_manager.cc",
     "default_search_manager.h",
-    "default_search_policy_handler.cc",
-    "default_search_policy_handler.h",
     "eea_countries_ids.h",
-    "enterprise_site_search_manager.cc",
-    "enterprise_site_search_manager.h",
+    "enterprise/default_search_policy_handler.cc",
+    "enterprise/default_search_policy_handler.h",
+    "enterprise/enterprise_site_search_manager.cc",
+    "enterprise/enterprise_site_search_manager.h",
     "keyword_table.cc",
     "keyword_table.h",
     "keyword_web_data_service.cc",
@@ -110,13 +110,17 @@ static_library("search_engines") {
 
   if (is_android) {
     sources += [
+      "android/search_engines_feature_map.cc",
       "android/template_url_android.cc",
       "android/template_url_android.h",
       "android/template_url_service_android.cc",
       "android/template_url_service_android.h",
     ]
 
-    deps += [ "//components/search_engines/android:jni_headers" ]
+    deps += [
+      "//components/search_engines/android:features_jni_headers",
+      "//components/search_engines/android:jni_headers",
+    ]
   }
 
   if (!is_android) {
@@ -130,8 +134,8 @@ static_library("search_engines") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
-      "site_search_policy_handler.cc",
-      "site_search_policy_handler.h",
+      "enterprise/site_search_policy_handler.cc",
+      "enterprise/site_search_policy_handler.h",
     ]
   }
 
@@ -181,6 +185,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/country_codes",
     "//components/metrics:metrics_pref_names",
+    "//components/os_crypt/async/browser:test_support",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
@@ -191,7 +196,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "default_search_manager_unittest.cc",
-    "enterprise_site_search_manager_unittest.cc",
+    "enterprise/enterprise_site_search_manager_unittest.cc",
     "keyword_table_unittest.cc",
     "search_engine_choice/search_engine_choice_service_unittest.cc",
     "search_engine_choice/search_engine_choice_utils_unittest.cc",
@@ -232,11 +237,11 @@ source_set("unit_tests") {
   ]
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    sources += [ "site_search_policy_handler_unittest.cc" ]
+    sources += [ "enterprise/site_search_policy_handler_unittest.cc" ]
   }
 
   if (!is_ios) {
-    sources += [ "default_search_policy_handler_unittest.cc" ]
+    sources += [ "enterprise/default_search_policy_handler_unittest.cc" ]
 
     deps += [
       "//components/policy:generated",

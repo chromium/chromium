@@ -93,6 +93,10 @@ export class MockSpeechRecognizer {
   onDeviceWebSpeechAvailable(params) {
     return Promise.resolve(false);
   }
+
+  installOnDeviceSpeechRecognition(params) {
+    return Promise.resolve(false);
+  }
 }
 
 class MockSpeechRecognitionSession {

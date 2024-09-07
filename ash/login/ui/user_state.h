@@ -10,6 +10,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -38,6 +39,8 @@ class UserState {
   bool auth_factor_is_hiding_password = false;
   // When present, indicates that the TPM is locked.
   std::optional<base::TimeDelta> time_until_tpm_unlock = std::nullopt;
+  // When present, indicates that the PIN is soft locked.
+  cryptohome::PinLockAvailability pin_available_at = std::nullopt;
 };
 
 }  // namespace ash

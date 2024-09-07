@@ -50,9 +50,10 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback) override;
-  void CreditCardUploadCompleted(bool card_saved,
-                                 std::optional<OnConfirmationClosedCallback>
-                                     on_confirmation_closed_callback) override;
+  void CreditCardUploadCompleted(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      std::optional<OnConfirmationClosedCallback>
+          on_confirmation_closed_callback) override;
   PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   void ShowUnmaskPrompt(
       const CreditCard& card,

@@ -69,13 +69,14 @@ content::WebContents* AddSelectedTabWithURL(Browser* browser,
   return params.navigated_or_inserted_contents;
 }
 
-void AddWebContents(Browser* browser,
-                    content::WebContents* source_contents,
-                    std::unique_ptr<content::WebContents> new_contents,
-                    const GURL& target_url,
-                    WindowOpenDisposition disposition,
-                    const blink::mojom::WindowFeatures& window_features,
-                    NavigateParams::WindowAction window_action) {
+content::WebContents* AddWebContents(
+    Browser* browser,
+    content::WebContents* source_contents,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    NavigateParams::WindowAction window_action) {
   // No code for this yet.
   DCHECK(disposition != WindowOpenDisposition::SAVE_TO_DISK);
   // Can't create a new contents for the current tab - invalid case.
@@ -95,6 +96,7 @@ void AddWebContents(Browser* browser,
   ConfigureTabGroupForNavigation(&params);
 
   Navigate(&params);
+  return params.navigated_or_inserted_contents;
 }
 
 void CloseWebContents(Browser* browser,

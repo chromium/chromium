@@ -191,33 +191,41 @@ const char TestingProfile::kTestUserProfileDir[] = "Default";
 TestingProfile::TestingProfile() : TestingProfile(base::FilePath()) {}
 
 TestingProfile::TestingProfile(const base::FilePath& path)
-    : TestingProfile(path, nullptr) {}
+    : TestingProfile(path,
+                     /*delegate=*/nullptr,
+                     Profile::CreateMode::kSynchronous) {}
 
-TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
-    : Profile(nullptr), profile_path_(path), delegate_(delegate) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!user_manager::UserManager::IsInitialized()) {
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
-  }
+TestingProfile::TestingProfile(const base::FilePath& path,
+                               Delegate* delegate,
+                               CreateMode create_mode)
+    : TestingProfile(path,
+                     delegate,
+                     create_mode,
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+                     /*extension_policy=*/nullptr,
 #endif
-
-  if (profile_path_.empty()) {
-    profile_path_ = base::CreateUniqueTempDirectoryScopedToTest();
-  }
-  Init(/*is_supervised_profile=*/false);
-  if (delegate_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TestingProfile::FinishInit, base::Unretained(this)));
-  } else {
-    FinishInit();
-  }
+                     /*prefs=*/nullptr,
+                     /*parent=*/nullptr,
+                     /*guest_session=*/false,
+                     /*allows_browser_windows=*/true,
+                     /*is_new_profile=*/false,
+                     /*is_supervised_profile=*/false,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                     /*is_main_profile=*/false,
+#endif
+                     /*policy_manager=*/{},
+                     /*policy_service=*/nullptr,
+                     /*testing_factories=*/{},
+                     /*profile_name=*/kDefaultProfileUserName,
+                     /*override_policy_connector_is_managed=*/std::nullopt,
+                     /*otr_profile_id=*/nullptr,
+                     /*url_loader_factory=*/nullptr) {
 }
 
 TestingProfile::TestingProfile(
     const base::FilePath& path,
     Delegate* delegate,
+    CreateMode create_mode,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     scoped_refptr<ExtensionSpecialStoragePolicy> extension_policy,
 #endif
@@ -303,22 +311,22 @@ TestingProfile::TestingProfile(
         f.service_factory_and_testing_factory);
   }
 
-  Init(is_supervised_profile);
+  Init(is_supervised_profile, create_mode);
 
-  // If caller supplied a delegate, delay the FinishInit invocation until other
-  // tasks have run.
-  // TODO(atwilson): See if this is still required once we convert the current
-  // users of the constructor that takes a Delegate* param.
-  if (delegate_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TestingProfile::FinishInit, base::Unretained(this)));
-  } else {
-    FinishInit();
+  switch (create_mode) {
+    case CreateMode::kSynchronous:
+      FinishInit(CreateMode::kSynchronous);
+      break;
+    case CreateMode::kAsynchronous:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&TestingProfile::FinishInit, base::Unretained(this),
+                         CreateMode::kAsynchronous));
+      break;
   }
 }
 
-void TestingProfile::Init(bool is_supervised_profile) {
+void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
   if (!g_browser_process) {
     // This is intentionally not a CHECK because that would exonerate any
     // EXPECT_CHECK_DEATH()s for the wrong reason by printing "Check failed" to
@@ -335,6 +343,10 @@ void TestingProfile::Init(bool is_supervised_profile) {
          content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   InitializeProfileType();
+
+  if (delegate_) {
+    delegate_->OnProfileCreationStarted(this, create_mode);
+  }
 
   if (IsOffTheRecord()) {
     key_ = std::make_unique<TestingProfileKey>(
@@ -511,7 +523,7 @@ void TestingProfile::InitializeProfileType() {
       this, profile_metrics::BrowserProfileType::kRegular);
 }
 
-void TestingProfile::FinishInit() {
+void TestingProfile::FinishInit(CreateMode create_mode) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager)
     profile_manager->InitProfileUserPrefs(this);
@@ -523,8 +535,9 @@ void TestingProfile::FinishInit() {
   }
 
   if (delegate_) {
-    delegate_->OnProfileCreationFinished(this, CREATE_MODE_ASYNCHRONOUS, true,
-                                         false);
+    delegate_->OnProfileCreationFinished(this, create_mode,
+                                         /*success=*/true,
+                                         /*is_new_profile=*/false);
   }
 }
 
@@ -1052,6 +1065,12 @@ TestingProfile::Builder& TestingProfile::Builder::SetDelegate(
   return *this;
 }
 
+TestingProfile::Builder& TestingProfile::Builder::SetCreateMode(
+    Profile::CreateMode create_mode) {
+  create_mode_ = create_mode;
+  return *this;
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TestingProfile::Builder&
 TestingProfile::Builder::SetExtensionSpecialStoragePolicy(
@@ -1184,7 +1203,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<TestingProfile>(
-      path_, delegate_,
+      path_, delegate_, create_mode_,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_policy_,
 #endif
@@ -1211,7 +1230,7 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
 
   // Note: Owned by |original_profile|.
   return new TestingProfile(
-      path_, delegate_,
+      path_, delegate_, create_mode_,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_policy_,
 #endif

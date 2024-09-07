@@ -70,6 +70,10 @@ base::expected<std::reference_wrapper<const WebApp>, std::string>
 GetIsolatedWebAppById(const WebAppRegistrar& registrar,
                       const webapps::AppId& iwa_id);
 
+base::flat_map<web_package::SignedWebBundleId,
+               std::reference_wrapper<const WebApp>>
+GetInstalledIwas(const WebAppRegistrar& registrar);
+
 enum class KeyRotationLookupResult { kNoKeyRotation, kKeyFound, kKeyBlocked };
 
 // Queries the `IwaKeyDistributionInfoProvider` whether there's

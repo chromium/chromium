@@ -434,8 +434,10 @@ size_t OutgoingStream::WriteDataSynchronously(base::span<const uint8_t> data) {
                                             actually_written_bytes);
   switch (result) {
     case MOJO_RESULT_OK:
-    case MOJO_RESULT_SHOULD_WAIT:
       return actually_written_bytes;
+
+    case MOJO_RESULT_SHOULD_WAIT:
+      return 0;
 
     case MOJO_RESULT_FAILED_PRECONDITION:
       HandlePipeClosed();

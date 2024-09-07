@@ -760,6 +760,9 @@ bool WaylandSurface::ApplyPendingState() {
   if (crop.IsEmpty()) {
     viewport_src_dip = gfx::RectF(bounds);
   } else {
+    // TODO(crbug.com/359904707) Fix rounding errors which can lead to imprecise
+    // values below.
+
     // viewport_src_dip needs to be in post-transform coordinates.
     gfx::RectF crop_transformed = wl::ApplyWaylandTransform(
         crop, gfx::SizeF(1, 1),

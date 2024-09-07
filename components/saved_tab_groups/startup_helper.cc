@@ -15,7 +15,7 @@ namespace tab_groups {
 
 StartupHelper::StartupHelper(TabGroupSyncDelegate* delegate,
                              TabGroupSyncService* service)
-    : platform_delegate_(delegate), service_(service) {
+    : service_(service), platform_delegate_(delegate) {
   CHECK(platform_delegate_);
   CHECK(service_);
 }

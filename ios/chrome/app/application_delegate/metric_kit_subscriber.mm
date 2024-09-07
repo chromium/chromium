@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/metrics/histogram_base.h"
@@ -96,8 +97,7 @@ void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type) {
   }
 
   if (crash_reporter::IsCrashpadRunning()) {
-    base::span<const uint8_t> spanpayload(
-        reinterpret_cast<const uint8_t*>(payload.bytes), payload.length);
+    base::span<const uint8_t> spanpayload = base::apple::NSDataToSpan(payload);
 
     std::map<std::string, std::string> override_annotations = {
         {"ver",

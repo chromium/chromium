@@ -95,7 +95,7 @@ source_set("eg_app_support+eg2") {
     "//components/plus_addresses:test_support",
     "//components/plus_addresses:types",
     "//ios/chrome/browser/plus_addresses/model",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
   ]
 }

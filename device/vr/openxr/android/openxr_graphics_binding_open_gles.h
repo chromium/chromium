@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "device/vr/android/local_texture.h"
 #include "device/vr/android/xr_renderer.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform.h"
@@ -75,7 +76,7 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
 
   std::unique_ptr<XrRenderer> renderer_;
   GLuint back_buffer_fbo_ = 0;
-  GLuint overlay_texture_ = 0;
+  LocalTexture overlay_texture_;
 };
 
 }  // namespace device

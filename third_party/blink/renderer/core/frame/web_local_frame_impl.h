@@ -199,6 +199,7 @@ class CORE_EXPORT WebLocalFrameImpl final
                             BackForwardCacheAware back_forward_cache_aware,
                             mojom::blink::WantResultOption,
                             mojom::blink::PromiseResultOption) override;
+  bool IsInspectorConnected() override;
   void Alert(const WebString& message) override;
   bool Confirm(const WebString& message) override;
   WebString Prompt(const WebString& message,
@@ -407,6 +408,9 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   void SetLCPPHint(
       const mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&) override;
+
+  bool IsFeatureEnabled(
+      const mojom::blink::PermissionsPolicyFeature&) const override;
 
   void InitializeCoreFrame(
       Page&,

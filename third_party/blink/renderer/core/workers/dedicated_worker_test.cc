@@ -257,9 +257,9 @@ class DedicatedWorkerObjectProxyForTest final
   }
 
  private:
-  std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(WebFeature::kMaxValue) + 1>
       reported_features_;
-  std::bitset<static_cast<size_t>(WebDXFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(WebDXFeature::kMaxValue) + 1>
       reported_webdx_features_;
 };
 
@@ -355,6 +355,7 @@ class FakeWebDedicatedWorkerHostFactoryClient
   void CreateWorkerHostDeprecated(
       const DedicatedWorkerToken& dedicated_worker_token,
       const WebURL& script_url,
+      const WebSecurityOrigin& origin,
       CreateWorkerHostCallback callback) override {}
   void CreateWorkerHost(
       const DedicatedWorkerToken& dedicated_worker_token,

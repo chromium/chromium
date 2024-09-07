@@ -10,23 +10,24 @@
 
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/check.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "base/i18n/char_iterator.h"
 
 namespace ash {
 namespace {
 
-constexpr int kMinWordsNeededForEditorMatch = 4;
-
+// An Editor match requires at least 3 characters.
+bool HasMinCharsNeededForEditorMatch(std::u16string_view query) {
+  base::i18n::UTF16CharIterator it(query);
+  return it.Advance() && it.Advance() && it.Advance();
+}
 }
 
 std::optional<PickerSearchResult> PickerEditorSearch(
-    PickerSearchResult::EditorData::Mode mode,
+    PickerEditorResult::Mode mode,
     std::u16string_view query) {
   CHECK(!query.empty());
-  string_matching::TokenizedString tokenized_query{std::u16string(query)};
-  return tokenized_query.tokens().size() >= kMinWordsNeededForEditorMatch
-             ? std::make_optional(PickerSearchResult::Editor(
+  return HasMinCharsNeededForEditorMatch(query)
+             ? std::make_optional(PickerEditorResult(
                    mode, /*display_name=*/u"", /*category=*/std::nullopt,
                    /*preset_query_id=*/std::nullopt))
              : std::nullopt;

@@ -69,7 +69,7 @@ public:
   InteractiveTestApi::MultiStep
   RemovesAllBrowserDefaultPromptsWhen(InteractiveTestApi::MultiStep steps,
                                       bool preserve_app_menu_item = false) {
-    return Steps(WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+    return Steps(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                  WaitForShow(kToolbarAppMenuButtonElementId),
                  CheckView(kToolbarAppMenuButtonElementId,
                            IsAppMenuChipDefaultBrowserPromptShowing(true)),
@@ -78,7 +78,7 @@ public:
                                     GURL(chrome::kChromeUINewTabURL)),
                  WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                  std::move(steps),
-                 WaitForHide(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+                 WaitForHide(ConfirmInfoBar::kInfoBarElementId),
                  SelectTab(kTabStripElementId, 0),
                  WaitForHide(ConfirmInfoBar::kInfoBarElementId),
                  CheckView(kToolbarAppMenuButtonElementId,
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTestWithAppMenuDuration,
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      WaitForHide(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      WaitForHide(ConfirmInfoBar::kInfoBarElementId),
       SelectTab(kTabStripElementId, 0),
       WaitForHide(ConfirmInfoBar::kInfoBarElementId),
       CheckView(kToolbarAppMenuButtonElementId,

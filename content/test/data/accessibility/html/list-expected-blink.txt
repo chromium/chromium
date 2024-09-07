@@ -4,17 +4,17 @@ rootWebArea
 ++++++list
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='%E2%80%A2 '
-++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++staticText ignored
 ++++++++++staticText name='tic'
 ++++++++++++inlineTextBox name='tic'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='%E2%80%A2 '
-++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++staticText ignored
 ++++++++++staticText name='tac'
 ++++++++++++inlineTextBox name='tac'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='%E2%80%A2 '
-++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++staticText ignored
 ++++++++++staticText name='toe'
 ++++++++++++inlineTextBox name='toe'
 ++++++list

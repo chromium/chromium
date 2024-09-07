@@ -8,7 +8,7 @@
 #include <string>
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
-#import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_source.h"
+#import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_record_type.h"
 
 // Item for autofill profile (address).
 @interface AutofillProfileItem : TableViewItem
@@ -27,7 +27,8 @@
 @property(nonatomic, assign) std::string GUID;
 
 // Denotes whether the profile is local, syncable or account profile.
-@property(nonatomic, assign) AutofillAddressProfileSource autofillProfileSource;
+@property(nonatomic, assign)
+    AutofillAddressProfileRecordType autofillProfileRecordType;
 
 // If YES, a section is shown to the user containing a button to migrate the
 // profile to Account.

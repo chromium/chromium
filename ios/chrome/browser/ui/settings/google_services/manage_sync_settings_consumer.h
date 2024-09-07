@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 
+struct ManagementState;
+
 // Consumer protocol for manage sync settings.
 @protocol ManageSyncSettingsConsumer <NSObject>
 
@@ -34,7 +36,8 @@
 // Updates the primary account details.
 - (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
                                        name:(NSString*)name
-                                      email:(NSString*)email;
+                                      email:(NSString*)email
+                            managementState:(ManagementState)managementState;
 
 @end
 

@@ -23,7 +23,7 @@ namespace chromeos::platform_keys {
 enum class KeyType { kRsassaPkcs1V15, kEcdsa };
 
 // Supported symmetric key types.
-enum class SymKeyType { kAesCbc, kHmac };
+enum class SymKeyType { kAesCbc, kHmac, kSp800Kdf };
 
 // Supported key attribute types.
 enum class KeyAttributeType { kCertificateProvisioningId, kKeyPermissions };

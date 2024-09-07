@@ -126,8 +126,6 @@ class SystemUIComponentsStyleViewerView::ComponentButton
     return gfx::Size(kMenuWidth, kDefaultButtonHeight);
   }
 
-  int GetHeightForWidth(int w) const override { return kDefaultButtonHeight; }
-
   void OnThemeChanged() override {
     views::LabelButton::OnThemeChanged();
 

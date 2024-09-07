@@ -186,6 +186,9 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                 suggestion.getAnswer() == null
                         ? suggestion.getAnswerType()
                         : suggestion.getAnswer().getType();
+        if (type == null) {
+            type = AnswerType.ANSWER_TYPE_UNSPECIFIED;
+        }
         if (type != AnswerType.ANSWER_TYPE_UNSPECIFIED) {
             switch (type) {
                 case ANSWER_TYPE_DICTIONARY:

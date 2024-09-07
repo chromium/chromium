@@ -594,7 +594,7 @@ TEST_F(SafeBrowsingUIManagerTest, VisibleSecurityStateChanged) {
   // Simulate a blocking page.
   security_interstitials::UnsafeResource resource = MakeUnsafeResource(kBadURL);
   // Needed for showing the blocking page.
-  resource.threat_source = safe_browsing::ThreatSource::REMOTE;
+  resource.threat_source = safe_browsing::ThreatSource::ANDROID_SAFEBROWSING;
 
   NavigateAndCommit(GURL(kBadURL));
 
@@ -630,7 +630,7 @@ TEST_F(SafeBrowsingUIManagerTest, ShowBlockPageNoCallback) {
   // Simulate a blocking page.
   security_interstitials::UnsafeResource resource = MakeUnsafeResource(kBadURL);
   // Needed for showing the blocking page.
-  resource.threat_source = safe_browsing::ThreatSource::REMOTE;
+  resource.threat_source = safe_browsing::ThreatSource::ANDROID_SAFEBROWSING;
 
   // This call caused a crash in https://crbug.com/1058094. Just verify that we
   // don't crash anymore.
@@ -671,7 +671,7 @@ TEST_F(SafeBrowsingUIManagerTest, DisplayInterstitial) {
 
 TEST_F(SafeBrowsingUIManagerTest, DisplayInterstitial_PostCommitInterstitial) {
   security_interstitials::UnsafeResource resource = MakeUnsafeResource(kBadURL);
-  resource.threat_source = safe_browsing::ThreatSource::REMOTE;
+  resource.threat_source = safe_browsing::ThreatSource::ANDROID_SAFEBROWSING;
   // Make it a post commit interstitial.
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
 

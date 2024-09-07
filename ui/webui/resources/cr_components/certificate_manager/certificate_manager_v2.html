@@ -1,26 +1,8 @@
-<style include="cr-page-host-style cr-shared-style cr-nav-menu-item-style">
+<style include="cr-page-host-style cr-shared-style cr-nav-menu-item-style certificate-manager-style-v2">
   :host {
     display: flex;
     flex-direction: column;
     height: 100%;
-  }
-
-  .card {
-    background-color: var(--cr-card-background-color);
-    border-radius: var(--cr-card-border-radius);
-    box-shadow: var(--cr-card-shadow);
-  }
-
-  h2, h3 {
-    font-weight: 400;
-  }
-
-  #importOsCerts {
-    margin-inline-start: auto;
-  }
-
-  .enterprise-icon {
-    padding-inline-start: 5px;
   }
 
   .menu-icon {
@@ -37,6 +19,7 @@
     height: 100%;
     overflow: auto;
     padding-top: 8px;
+    padding-bottom: 8px;
     width: 250px;
   }
 
@@ -70,10 +53,6 @@
             var(--cr-toolbar-padding-top, 0px));
   }
 
-  .cr-centered-card-container {
-    padding-bottom: 20px;
-  }
-
   #sidebar {
     position: sticky;
     top: 0;
@@ -87,28 +66,23 @@
 </cr-toolbar>
 <div id="container">
   <div id="sidebar" role="navigation">
-    <!-- TODO(crbug.com/40928765): see if we can just use href for
-         attr-for-selected and get rid of path -->
-    <cr-menu-selector id="menu" selectable="a" attr-for-selected="path"
+    <cr-menu-selector id="menu" selectable="a" attr-for-selected="href"
         selected-attribute="selected"
-        selected="[[getSelectedTopLevelPage_(selectedPage_)]]"
+        selected="[[getSelectedTopLevelHref_(selectedPage_)]]"
         on-iron-activate="onMenuItemActivate_">
       <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
-          path$="[[pageEnum_.LOCAL_CERTS]]"
           href$="[[generateHrefForPage_(pageEnum_.LOCAL_CERTS)]]"
           on-click="onMenuItemClick_">
         <cr-icon icon="cr:computer" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2LocalCerts')]]
       </a>
       <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
-          path$="[[pageEnum_.CLIENT_CERTS]]"
           href$="[[generateHrefForPage_(pageEnum_.CLIENT_CERTS)]]"
           on-click="onMenuItemClick_">
         <cr-icon icon="certmanager:card" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2ClientCerts')]]
       </a>
       <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
-          path$="[[pageEnum_.CRS_CERTS]]"
           href$="[[generateHrefForPage_(pageEnum_.CRS_CERTS)]]"
           on-click="onMenuItemClick_">
         <cr-icon icon="cr:chrome-product" class="menu-icon"></cr-icon>
@@ -122,7 +96,7 @@
 
     <div id="clientCertSection" class="cr-centered-card-container"
         path$="[[pageEnum_.CLIENT_CERTS]]">
-      <h2>[[i18n('certificateManagerV2ClientCerts')]]</h2>
+      <h2 class="page-title">[[i18n('certificateManagerV2ClientCerts')]]</h2>
       [[i18n("certificateManagerV2ClientCertsDescription")]]
 
       <if expr="is_win or is_macosx or is_linux">
@@ -130,7 +104,7 @@
             id="provisionedClientCerts"
             cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
             header-text="[[i18n('certificateManagerV2ClientCertsFromAdmin')]]"
-            hide-export
+            hide-export hide-if-empty
             on-hash-copied="onHashCopied_">
         </certificate-list-v2>
       </if>
@@ -139,12 +113,12 @@
             id="extensionsClientCerts"
             cert-source="[[certificateSourceEnum_.kExtensionsClientCert]]"
             header-text="[[i18n('certificateManagerV2ClientCertsFromExtension')]]"
-            hide-export
+            hide-export hide-if-empty
             on-hash-copied="onHashCopied_">
         </certificate-list-v2>
       </if>
 
-      <h3>[[i18n("certificateManagerV2Platform")]]</h3>
+      <h3 class="section-title">[[i18n("certificateManagerV2Platform")]]</h3>
 
       <div class="card">
         <cr-link-row id="viewOsImportedClientCerts"
@@ -152,7 +126,7 @@
             on-click="onClientPlatformCertsLinkRowClick_">
         </cr-link-row>
         <if expr="is_win or is_macosx">
-          <cr-link-row external id="manageOsImportedClientCerts"
+          <cr-link-row external id="manageOsImportedClientCerts" class="hr"
               label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
               button-aria-description="[[i18n('certificateManagerV2PlatformCertsManageLinkAriaDescription')]]"
               on-click="onManageCertsExternal_">
@@ -161,88 +135,20 @@
       </div>
     </div>
 
-    <div id="localCertSection" class="cr-centered-card-container"
-        path$="[[pageEnum_.LOCAL_CERTS]]">
-      <h2>[[i18n('certificateManagerV2LocalCerts')]]</h2>
-      [[i18n("certificateManagerV2LocalCertsDescription")]]
-
-      <!-- TODO(crbug.com/40928765): Allow user modifications of trust settings
-        here when allowed by enterprise.  -->
-      <h3>[[i18n("certificateManagerV2Platform")]]</h3>
-      <div class="card">
-        <div class="cr-row">
-          <div class="cr-padded-text">
-            <div>
-              [[i18n("certificateManagerV2PlatformCertsToggleLabel")]]
-            </div>
-            <div id="numSystemCerts" class="cr-secondary-text"
-                hidden="[[!importOsCertsEnabled_]]">
-              [[numSystemCertsString_]]
-            </div>
-          </div>
-          <cr-toggle id="importOsCerts"
-              aria-label="Toggle operating system certificate imports"
-              checked="[[importOsCertsEnabled_]]" disabled>
-          </cr-toggle>
-
-          <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
-              class="enterprise-icon" hidden="[[!importOsCertsEnabledManaged_]]">
-          </cr-icon>
-        </div>
-
-        <cr-link-row id="viewOsImportedCerts"
-            label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
-            on-click="onPlatformCertsLinkRowClick_"
-            hidden="[[!importOsCertsEnabled_]]">
-        </cr-link-row>
-        <if expr="is_win or is_macosx">
-          <cr-link-row external id="manageOsImportedCerts"
-              label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
-              on-click="onManageCertsExternal_"
-              button-aria-description="[[i18n('certificateManagerV2PlatformCertsManageLinkAriaDescription')]]"
-              hidden="[[!importOsCertsEnabled_]]">
-          </cr-link-row>
-        </if>
-      </div>
-
-      <template is="dom-if" if="[[showCustomSection_(certManagementMetadata_)]]">
-        <div id="customCertsSection">
-          <h3>[[i18n("certificateManagerV2CustomCertsTitle")]]</h3>
-          <cr-link-row id="adminCertsInstalledLinkRow"
-              start-icon="cr:domain"
-              class="card"
-              label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
-              sub-label="[[numPolicyCertsString_]]"
-              on-click="onAdminCertsInstalledLinkRowClick_">
-         </cr-link-row>
-        </div>
-      </template>
-    </div>
+    <local-certs-section-v2 id="localCertSection"
+        path$="[[pageEnum_.LOCAL_CERTS]]" on-hash-copied="onHashCopied_">
+    </local-certs-section-v2>
 
     <!-- Chrome Root Store section -->
-    <div id="crsCertSection" class="cr-centered-card-container"
-        path$="[[pageEnum_.CRS_CERTS]]">
-      <h2>[[i18n('certificateManagerV2CRSCerts')]]</h2>
-      [[i18n("certificateManagerV2CRSCertsDescription")]]
-      <a href="[[crsLearnMoreUrl_]]" target="_blank"
-          aria-label="[[i18n('certificateManagerV2CRSLearnMoreLinkAriaLabel')]]">
-        [[i18n("certificateManagerV2CRSLearnMoreLink")]]
-      </a>
-
-      <certificate-list-v2
-          id="crsCerts"
-          cert-source="[[certificateSourceEnum_.kChromeRootStore]]"
-          header-text="[[i18n('certificateManagerV2TrustedCertsList')]]"
-          on-hash-copied="onHashCopied_">
-      </certificate-list-v2>
-    </div>
+    <crs-section-v2 id="crsCertSection"
+        path$="[[pageEnum_.CRS_CERTS]]" on-hash-copied="onHashCopied_">
+    </crs-section-v2>
 
     <certificate-subpage-v2 id="adminCertsSection"
         path$="[[pageEnum_.ADMIN_CERTS]]"
         class="cr-centered-card-container"
-        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
-        navigate-back-source="[[pageEnum_.ADMIN_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
         subpage-cert-lists="[[enterpriseSubpageLists_]]">
     </certificate-subpage-v2>
@@ -250,9 +156,8 @@
     <certificate-subpage-v2 id="platformCertsSection"
         path$="[[pageEnum_.PLATFORM_CERTS]]"
         class="cr-centered-card-container"
-        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
-        navigate-back-source="[[pageEnum_.PLATFORM_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
         subpage-cert-lists="[[platformSubpageLists_]]">
     </certificate-subpage-v2>
@@ -260,9 +165,8 @@
     <certificate-subpage-v2 id="platformClientCertsSection"
         path$="[[pageEnum_.PLATFORM_CLIENT_CERTS]]"
         class="cr-centered-card-container"
-        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.CLIENT_CERTS]]"
-        navigate-back-source="[[pageEnum_.PLATFORM_CLIENT_CERTS]]"
         on-import-result="onImportResult_"
         subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
         subpage-cert-lists="[[clientPlatformSubpageLists_]]">

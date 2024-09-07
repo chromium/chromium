@@ -5,20 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_OBSERVER_BRIDGE_H_
 #define IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_OBSERVER_BRIDGE_H_
 
+#import <Foundation/Foundation.h>
+
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
-
-#import <Foundation/Foundation.h>
 
 // Objective-C protocol mirroring `IOSChromeSafetyCheckManagerObserver`.
 @protocol SafetyCheckManagerObserver <NSObject>
 
 // Called whenever the Safety Check determines a change in the Password check
 // state (i.e. when user has reused passwords, weak passwords, no compromised
-// password, etc.)
-- (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state;
+// password, etc.), and includes the latest `insecurePasswordCounts`.
+- (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state
+           insecurePasswordCounts:
+               (password_manager::InsecurePasswordCounts)insecurePasswordCounts;
 
 // Called whenever the Safety Check determines a change in the Safe Browsing
 // check state (i.e. when Safe Browsing is enabled, disabled, the check
@@ -49,7 +52,9 @@ class SafetyCheckObserverBridge : public IOSChromeSafetyCheckManagerObserver {
 
   ~SafetyCheckObserverBridge() override;
 
-  void PasswordCheckStateChanged(PasswordSafetyCheckState state) override;
+  void PasswordCheckStateChanged(PasswordSafetyCheckState state,
+                                 password_manager::InsecurePasswordCounts
+                                     insecure_password_counts) override;
   void SafeBrowsingCheckStateChanged(
       SafeBrowsingSafetyCheckState state) override;
   void UpdateChromeCheckStateChanged(

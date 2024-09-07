@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
@@ -23,11 +24,6 @@ namespace content {
 // `PrivateAggregationBudgeter::kLargerScopeValues.budget_scope_duration`.
 class CONTENT_EXPORT PrivateAggregationBudgetKey {
  public:
-  enum class Api { kProtectedAudience, kSharedStorage };
-
-  static constexpr Api kAllApis[] = {Api::kProtectedAudience,
-                                     Api::kSharedStorage};
-
   // Represents the smallest period of time for which budget usage is recorded.
   // This interval includes the `start_time()` instant, but excludes the end
   // time (`start_time() + kDuration`) instant. (But note the
@@ -65,27 +61,31 @@ class CONTENT_EXPORT PrivateAggregationBudgetKey {
       default;
 
   // Returns `std::nullopt` if `origin` is not potentially trustworthy.
-  static std::optional<PrivateAggregationBudgetKey>
-  Create(url::Origin origin, base::Time api_invocation_time, Api api);
+  static std::optional<PrivateAggregationBudgetKey> Create(
+      url::Origin origin,
+      base::Time api_invocation_time,
+      PrivateAggregationCallerApi api);
 
   // Skips validity checks
-  static PrivateAggregationBudgetKey
-  CreateForTesting(url::Origin origin, base::Time api_invocation_time, Api api);
+  static PrivateAggregationBudgetKey CreateForTesting(
+      url::Origin origin,
+      base::Time api_invocation_time,
+      PrivateAggregationCallerApi api);
 
   const url::Origin& origin() const { return origin_; }
   TimeWindow time_window() const { return time_window_; }
-  Api api() const { return api_; }
+  PrivateAggregationCallerApi api() const { return api_; }
 
  private:
   PrivateAggregationBudgetKey(url::Origin origin,
                               base::Time api_invocation_time,
-                              Api api);
+                              PrivateAggregationCallerApi api);
 
   // `origin_` must be potentially trustworthy. Even though the budget is scoped
   // per-site, we store the origin to support deleting the data by origin later.
   url::Origin origin_;
   TimeWindow time_window_;
-  Api api_;
+  PrivateAggregationCallerApi api_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `private_aggregation_test_utils.h` should also be updated.

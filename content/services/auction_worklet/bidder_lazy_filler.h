@@ -51,7 +51,14 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
       v8::Local<v8::Object> object,
       base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
       base::RepeatingCallback<bool(const std::string&)>
-          is_ad_component_excluded);
+          is_ad_component_excluded,
+      base::RepeatingCallback<bool(
+          const std::string& ad_render_url,
+          base::optional_ref<const std::string> buyer_reporting_id,
+          base::optional_ref<const std::string> buyer_and_seller_reporting_id,
+          base::optional_ref<const std::string>
+              selected_buyer_and_seller_reporting_id)>
+          is_reporting_id_set_excluded);
 
   void Reset() override;
 
@@ -64,6 +71,11 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
       v8::Local<v8::Object>& object,
       std::string_view name,
       base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+      base::RepeatingCallback<bool(const std::string&,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>)>
+          is_reporting_id_set_excluded,
       const std::vector<blink::InterestGroup::Ad>& ads,
       v8::Local<v8::ObjectTemplate>& lazy_filler_template);
 

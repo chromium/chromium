@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "gardener_rotations", "os", "siso")
+load("//lib/builders.star", "cpu", "gardener_rotations", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -732,6 +732,11 @@ ci.builder(
 
 ci.builder(
     name = "ios-asan",
+    description_html = (
+        "Builds the open-source version of Chrome for iOS with " +
+        "AddressSanitizer (ASan) and runs unit tests for detecting memory " +
+        "errors."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -765,6 +770,7 @@ ci.builder(
     ),
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     gardener_rotations = args.ignore_default(gardener_rotations.IOS),
     console_view_entry = consoles.console_view_entry(
         category = "iOS",
@@ -786,6 +792,26 @@ ci.builder(
         consoles.console_view_entry(
             category = "codeql-linux",
             short_name = "cdql-lnx",
+        ),
+    ],
+    contact_team_email = "chrome-memory-safety-team@google.com",
+    execution_timeout = 18 * time.hour,
+    notifies = ["codeql-infra"],
+)
+
+ci.builder(
+    name = "linux-codeql-query-runner",
+    description_html = "Runs a set of CodeQL queries against a CodeQL database on a Linux host and uploads the result.",
+    executable = "recipe:chrome_codeql_query_runner",
+    # Run once daily at 5am Pacific/1 PM UTC
+    schedule = "0 13 * * *",
+    cores = 32,
+    ssd = True,
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "codeql-linux-queries",
+            short_name = "cdql-lnx-qrs",
         ),
     ],
     contact_team_email = "chrome-memory-safety-team@google.com",

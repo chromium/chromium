@@ -78,7 +78,7 @@ TEST(AXRolePropertiesTest, TestIsTableWithColumns) {
   for (int role_idx = static_cast<int>(ax::mojom::Role::kMinValue);
        role_idx <= static_cast<int>(ax::mojom::Role::kMaxValue); role_idx++) {
     ax::mojom::Role role = static_cast<ax::mojom::Role>(role_idx);
-    bool is_table_with_columns = IsTableWithColumns(role);
+    bool is_table_with_columns = IsTableLike(role);
 
     SCOPED_TRACE(testing::Message()
                  << "ax::mojom::Role=" << ToString(role)

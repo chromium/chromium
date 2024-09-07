@@ -15,6 +15,10 @@ namespace data_sharing {
 
 // Used by DataSharingService to provide access to SDK.
 class DataSharingSDKDelegateIOS : public DataSharingSDKDelegate {
+ public:
+  explicit DataSharingSDKDelegateIOS();
+  ~DataSharingSDKDelegateIOS() override;
+
   DataSharingSDKDelegateIOS(const DataSharingSDKDelegateIOS&) = delete;
   DataSharingSDKDelegateIOS& operator=(const DataSharingSDKDelegateIOS&) =
       delete;

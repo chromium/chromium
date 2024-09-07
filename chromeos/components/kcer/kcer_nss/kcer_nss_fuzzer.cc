@@ -6,13 +6,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/logging.h"
-
 #include "base/base64.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
+#include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/allow_check_is_test_for_testing.h"
@@ -26,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/secure_hash.h"
+#include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,8 +121,7 @@ struct Environment {
 
 base::span<const uint8_t> GetCertData(
     const scoped_refptr<net::X509Certificate>& cert) {
-  return base::make_span(CRYPTO_BUFFER_data(cert->cert_buffer()),
-                         CRYPTO_BUFFER_len(cert->cert_buffer()));
+  return net::x509_util::CryptoBufferAsSpan(cert->cert_buffer());
 }
 base::span<const uint8_t> GetCertData(const scoped_refptr<const Cert>& cert) {
   return GetCertData(cert->GetX509Cert());

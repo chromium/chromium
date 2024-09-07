@@ -22,11 +22,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 
 #include "base/auto_reset.h"
@@ -414,7 +409,7 @@ CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(
     property_name_to_id_map = new HashMap<StringImpl*, CSSPropertyID>;
     // This is a list of all base CSS and SVG CSS properties which are exposed
     // as SVG XML attributes
-    const QualifiedName* const attr_names[] = {
+    const auto attr_names = std::to_array<const QualifiedName*>({
         &svg_names::kAlignmentBaselineAttr,
         &svg_names::kBaselineShiftAttr,
         &svg_names::kBufferedRenderingAttr,
@@ -473,13 +468,12 @@ CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(
         &svg_names::kVisibilityAttr,
         &svg_names::kWordSpacingAttr,
         &svg_names::kWritingModeAttr,
-    };
-    for (size_t i = 0; i < std::size(attr_names); i++) {
+    });
+    for (const auto* qname : attr_names) {
       CSSPropertyID property_id =
-          CssPropertyID(execution_context, attr_names[i]->LocalName());
+          CssPropertyID(execution_context, qname->LocalName());
       DCHECK_GT(property_id, CSSPropertyID::kInvalid);
-      property_name_to_id_map->Set(attr_names[i]->LocalName().Impl(),
-                                   property_id);
+      property_name_to_id_map->Set(qname->LocalName().Impl(), property_id);
     }
   }
 
@@ -712,7 +706,7 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
       const QualifiedName& attr;
       const AnimatedPropertyType prop_type;
     };
-    const AttrToTypeEntry attr_to_types[] = {
+    const auto attr_to_types = std::to_array<const AttrToTypeEntry>({
         {svg_names::kAlignmentBaselineAttr, kAnimatedString},
         {svg_names::kBaselineShiftAttr, kAnimatedString},
         {svg_names::kBufferedRenderingAttr, kAnimatedString},
@@ -766,9 +760,10 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
         {svg_names::kVectorEffectAttr, kAnimatedString},
         {svg_names::kVisibilityAttr, kAnimatedString},
         {svg_names::kWordSpacingAttr, kAnimatedLength},
-    };
-    for (size_t i = 0; i < std::size(attr_to_types); i++)
-      css_property_map.Set(attr_to_types[i].attr, attr_to_types[i].prop_type);
+    });
+    for (const auto& item : attr_to_types) {
+      css_property_map.Set(item.attr, item.prop_type);
+    }
   }
   auto it = css_property_map.find(attribute_name);
   if (it == css_property_map.end())

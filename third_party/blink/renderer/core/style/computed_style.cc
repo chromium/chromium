@@ -481,12 +481,12 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
 
 StyleSelfAlignmentData ResolvedSelfAlignment(
     const StyleSelfAlignmentData& value,
-    ItemPosition normal_value_behavior,
+    const StyleSelfAlignmentData& normal_value_behavior,
     bool has_out_of_flow_position) {
   if (value.GetPosition() == ItemPosition::kLegacy ||
       value.GetPosition() == ItemPosition::kNormal ||
       value.GetPosition() == ItemPosition::kAuto) {
-    return {normal_value_behavior, OverflowAlignment::kDefault};
+    return normal_value_behavior;
   }
   if (!has_out_of_flow_position &&
       value.GetPosition() == ItemPosition::kAnchorCenter) {
@@ -496,33 +496,33 @@ StyleSelfAlignmentData ResolvedSelfAlignment(
 }
 
 StyleSelfAlignmentData ComputedStyle::ResolvedAlignSelf(
-    ItemPosition normal_value_behaviour,
+    const StyleSelfAlignmentData& normal_value_behavior,
     const ComputedStyle* parent_style) const {
   // We will return the behaviour of 'normal' value if needed, which is specific
   // of each layout model.
   if (!parent_style || AlignSelf().GetPosition() != ItemPosition::kAuto) {
-    return ResolvedSelfAlignment(AlignSelf(), normal_value_behaviour,
+    return ResolvedSelfAlignment(AlignSelf(), normal_value_behavior,
                                  HasOutOfFlowPosition());
   }
 
   // The 'auto' keyword computes to the parent's align-items computed value.
   return ResolvedSelfAlignment(parent_style->AlignItems(),
-                               normal_value_behaviour, HasOutOfFlowPosition());
+                               normal_value_behavior, HasOutOfFlowPosition());
 }
 
 StyleSelfAlignmentData ComputedStyle::ResolvedJustifySelf(
-    ItemPosition normal_value_behaviour,
+    const StyleSelfAlignmentData& normal_value_behavior,
     const ComputedStyle* parent_style) const {
   // We will return the behaviour of 'normal' value if needed, which is specific
   // of each layout model.
   if (!parent_style || JustifySelf().GetPosition() != ItemPosition::kAuto) {
-    return ResolvedSelfAlignment(JustifySelf(), normal_value_behaviour,
+    return ResolvedSelfAlignment(JustifySelf(), normal_value_behavior,
                                  HasOutOfFlowPosition());
   }
 
   // The auto keyword computes to the parent's justify-items computed value.
   return ResolvedSelfAlignment(parent_style->JustifyItems(),
-                               normal_value_behaviour, HasOutOfFlowPosition());
+                               normal_value_behavior, HasOutOfFlowPosition());
 }
 
 StyleContentAlignmentData ResolvedContentAlignment(
@@ -946,12 +946,19 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetZIndexChanged();
   }
 
-  // If the (current)color changes and a filter uses it, the filter needs to be
-  // updated. This reads `diff.TextDecorationOrColorChanged()` and so needs to
-  // be after the setters, above.
-  if (diff.TextDecorationOrColorChanged() && HasFilter() &&
-      Filter().UsesCurrentColor()) {
-    diff.SetFilterChanged();
+  // If the (current)color changes and a filter or backdrop-filter uses it, the
+  // filter or backdrop-filter needs to be updated. This reads
+  // `diff.TextDecorationOrColorChanged()` and so needs to be after the setters,
+  // above.
+  if (diff.TextDecorationOrColorChanged()) {
+    if (HasFilter() && Filter().UsesCurrentColor()) {
+      diff.SetFilterChanged();
+    }
+    if (HasBackdropFilter() && BackdropFilter().UsesCurrentColor()) {
+      // This could be optimized with a targeted backdrop-filter-changed
+      // invalidation.
+      diff.SetCompositingReasonsChanged();
+    }
   }
 
   // The following condition needs to be at last, because it may depend on
@@ -1134,8 +1141,8 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     // has changed, we need to recompute it even though VisuallyEqual()
     // thinks the old and new background styles are identical.
     if ((BackgroundInternal().AnyLayerUsesCurrentColor() ||
-         BackgroundColor().IsUnresolvedColorMixFunction() ||
-         InternalVisitedBackgroundColor().IsUnresolvedColorMixFunction()) &&
+         BackgroundColor().IsUnresolvedColorFunction() ||
+         InternalVisitedBackgroundColor().IsUnresolvedColorFunction()) &&
         (GetCurrentColor() != other.GetCurrentColor() ||
          GetInternalVisitedCurrentColor() !=
              other.GetInternalVisitedCurrentColor())) {
@@ -2416,7 +2423,7 @@ LayoutUnit ComputedStyle::ComputedLineHeightAsFixed(const Font& font) const {
     return MinimumValueForLength(lh, ComputedFontSizeAsFixed(font));
   }
 
-  return LayoutUnit::FromFloatFloor(lh.Value());
+  return LayoutUnit::FromFloatRound(lh.Value());
 }
 
 LayoutUnit ComputedStyle::ComputedLineHeightAsFixed() const {
@@ -2567,7 +2574,11 @@ TextEmphasisMark ComputedStyle::GetTextEmphasisMark() const {
     return mark;
   }
 
-  if (IsHorizontalWritingMode()) {
+  // https://drafts.csswg.org/css-text-decor/#propdef-text-emphasis-style
+  // If only `filled` or `open` is specified, the shape keyword computes to
+  // `circle` in horizontal typographic modes and `sesame` in vertical
+  // typographic modes.
+  if (IsHorizontalTypographicMode()) {
     return TextEmphasisMark::kDot;
   }
 

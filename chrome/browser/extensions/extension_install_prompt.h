@@ -21,6 +21,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/common/buildflags.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -38,7 +39,6 @@ class WebContents;
 namespace extensions {
 class CrxInstallError;
 class Extension;
-class ExtensionInstallUI;
 class PermissionSet;
 }  // namespace extensions
 
@@ -281,9 +281,7 @@ class ExtensionInstallPrompt {
 
   virtual ~ExtensionInstallPrompt();
 
-  extensions::ExtensionInstallUI* install_ui() const {
-    return install_ui_.get();
-  }
+  ExtensionInstallUI* install_ui() const { return install_ui_.get(); }
 
   // Starts the process to show the install dialog. Loads the icon (if |icon| is
   // null), sets up the Prompt, and calls |show_dialog_callback| when ready to
@@ -364,7 +362,7 @@ class ExtensionInstallPrompt {
   std::unique_ptr<const extensions::PermissionSet> custom_permissions_;
 
   // The object responsible for doing the UI specific actions.
-  std::unique_ptr<extensions::ExtensionInstallUI> install_ui_;
+  std::unique_ptr<ExtensionInstallUI> install_ui_;
 
   // Parameters to show the confirmation UI.
   std::unique_ptr<ExtensionInstallPromptShowParams> show_params_;

@@ -14,14 +14,9 @@
  * [android-pixel-tangor-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-tangor-perf): Android U.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
  * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
- * [android-pixel6-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf): Android T.
- * [android-pixel6-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf-pgo): Android T.
+ * [android-pixel6-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf): Android U.
+ * [android-pixel6-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf-pgo): Android U.
  * [android-pixel6-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-pro-perf): Android T.
-
-### Chromeos
-
- * [lacros-eve-perf](https://ci.chromium.org/p/chrome/builders/ci/lacros-eve-perf).
- * [lacros-x86-perf](https://ci.chromium.org/p/chrome/builders/ci/lacros-x86-perf).
 
 ### Linux
 
@@ -66,7 +61,6 @@
 
  * mac-laptop_high_end-perf-pgo: MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
  * mac-laptop_low_end-perf-pgo: MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
- * mac-m1_mini_2020-perf-local: Mac M1 Mini 2020 without use_remoteexec (temporary).
 
 ### Win
 

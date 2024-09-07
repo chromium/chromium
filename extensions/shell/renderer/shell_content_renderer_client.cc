@@ -36,8 +36,6 @@ ShellContentRendererClient::ShellContentRendererClient() = default;
 ShellContentRendererClient::~ShellContentRendererClient() = default;
 
 void ShellContentRendererClient::RenderThreadStarted() {
-  RenderThread* thread = RenderThread::Get();
-
   extensions_client_.reset(CreateExtensionsClient());
   ExtensionsClient::Set(extensions_client_.get());
 
@@ -49,8 +47,6 @@ void ShellContentRendererClient::RenderThreadStarted() {
       std::make_unique<ShellExtensionsRendererAPIProvider>());
   ExtensionsRendererClient::Set(extensions_renderer_client_.get());
   extensions_renderer_client_->RenderThreadStarted();
-
-  thread->AddObserver(extensions_renderer_client_->dispatcher());
 }
 
 void ShellContentRendererClient::RenderFrameCreated(

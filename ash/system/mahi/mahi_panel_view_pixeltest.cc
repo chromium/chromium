@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
@@ -42,12 +45,26 @@ class MahiPanelViewPixelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+        {});
     AshTestBase::SetUp();
 
     scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
         &mock_mahi_manager_);
 
+    CreatePanelWidget();
+  }
+
+  void TearDown() override {
+    panel_view_ = nullptr;
+    widget_.reset();
+    scoped_setter_.reset();
+
+    AshTestBase::TearDown();
+  }
+
+  void CreatePanelWidget() {
     widget_ = CreateFramelessTestWidget();
     widget_->SetBounds(
         gfx::Rect(/*x=*/0, /*y=*/0,
@@ -57,12 +74,11 @@ class MahiPanelViewPixelTest : public AshTestBase {
         std::make_unique<MahiPanelView>(&ui_controller_));
   }
 
-  void TearDown() override {
+  void RecreatePanelWidget() {
     panel_view_ = nullptr;
     widget_.reset();
-    scoped_setter_.reset();
 
-    AshTestBase::TearDown();
+    CreatePanelWidget();
   }
 
   // Scroll the scroll view inside Mahi panel to the bottom.
@@ -109,7 +125,7 @@ TEST_F(MahiPanelViewPixelTest, MainPanel) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "panel_view", /*revision_number=*/6, panel_view()));
+      "panel_view", /*revision_number=*/7, panel_view()));
 }
 
 TEST_F(MahiPanelViewPixelTest, ContentSourceButton) {
@@ -142,6 +158,27 @@ TEST_F(MahiPanelViewPixelTest, SummaryView) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "summary_view", /*revision_number=*/4,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
+}
+
+TEST_F(MahiPanelViewPixelTest, PanelWithoutFeedbackButtons) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kHmrFeedbackAllowed, false);
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
+        std::move(callback).Run(
+            base::StrCat(std::vector<std::u16string>(35, u"Summary text ")),
+            chromeos::MahiResponseStatus::kSuccess);
+      });
+
+  RecreatePanelWidget();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "scroll_view", /*revision_number=*/0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "footer", /*revision_number=*/0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel)));
 }
 
 TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {

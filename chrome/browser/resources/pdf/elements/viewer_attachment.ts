@@ -54,7 +54,7 @@ export class ViewerAttachmentElement extends CrLitElement {
     };
   }
 
-  attachment: Attachment;
+  attachment: Attachment = {name: '', size: 0, readable: false};
   index: number = -1;
   protected saveAllowed_: boolean = false;
 

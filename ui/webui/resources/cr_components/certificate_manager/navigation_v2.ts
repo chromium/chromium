@@ -33,6 +33,19 @@ export class Route {
   path(): string {
     return '/' + this.page;
   }
+
+  isSubpage(): boolean {
+    switch (this.page) {
+      case Page.ADMIN_CERTS:
+      case Page.PLATFORM_CERTS:
+      case Page.PLATFORM_CLIENT_CERTS:
+        return true;
+      case Page.LOCAL_CERTS:
+      case Page.CLIENT_CERTS:
+      case Page.CRS_CERTS:
+        return false;
+    }
+  }
 }
 
 /**

@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -40,6 +42,10 @@ class GWSPageLoadMetricsObserverTest
   // page_load_metrics::PageLoadMetricsObserverTestHarness:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     auto observer = std::make_unique<GWSPageLoadMetricsObserver>();
+    // Set the PLMO navigation to the first navigation to ensure that we get
+    // constant UMA names.
+    observer->SetIsFirstNavigationForTesting(true);
+    observer->SetNewTabPageForTesting(true);
     observer_ = observer.get();
     tracker->AddObserver(std::move(observer));
   }
@@ -61,6 +67,11 @@ class GWSPageLoadMetricsObserverTest
     tester()->SimulateTimingUpdate(timing);
   }
 
+  std::string AddHistogramSuffix(const std::string& metric_name) {
+    return metric_name + internal::kSuffixFirstNavigation +
+           internal::kSuffixFromNewTabPage;
+  }
+
  protected:
   raw_ptr<GWSPageLoadMetricsObserver, DanglingUntriaged> observer_ = nullptr;
 };
@@ -78,6 +89,10 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
       base::Milliseconds(100);
   timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 20u;
   PopulateRequiredTimingFields(&timing);
+
+  // Wait until the browser init is complete.
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+
   NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
 
   tester()->SimulateTimingUpdate(timing);
@@ -115,17 +130,17 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSParseStart, 1, 1);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSConnectStart, 1);
+      AddHistogramSuffix(internal::kHistogramGWSConnectStart), 1);
   tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramGWSConnectStart, 1, 1);
+      AddHistogramSuffix(internal::kHistogramGWSConnectStart), 1, 1);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSDomainLookupStart, 1);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupStart), 1);
   tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramGWSDomainLookupStart, 1, 1);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupStart), 1, 1);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSDomainLookupEnd, 1);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupEnd), 1);
   tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramGWSDomainLookupEnd, 1, 1);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupEnd), 1, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSFirstContentfulPaint, 1);
   tester()->histogram_tester().ExpectBucketCount(
@@ -149,6 +164,10 @@ TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {
       base::Milliseconds(100);
   timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 20u;
   PopulateRequiredTimingFields(&timing);
+
+  // Wait until the browser init is complete.
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+
   NavigateAndCommit(GURL("https://www.google.com/foo&q=test"));
 
   tester()->SimulateTimingUpdate(timing);
@@ -172,11 +191,11 @@ TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 0);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSConnectStart, 0);
+      AddHistogramSuffix(internal::kHistogramGWSConnectStart), 0);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSDomainLookupStart, 0);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupStart), 0);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSDomainLookupEnd, 0);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupEnd), 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSFirstContentfulPaint, 0);
   tester()->histogram_tester().ExpectTotalCount(
@@ -196,6 +215,9 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackground) {
       base::Seconds(60);
   timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 20u;
   PopulateRequiredTimingFields(&timing);
+
+  // Wait until the browser init is complete.
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
 
   NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
   web_contents()->WasHidden();
@@ -218,11 +240,11 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackground) {
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSNavigationStartToOnComplete, 1);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSConnectStart, 0);
+      AddHistogramSuffix(internal::kHistogramGWSConnectStart), 0);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSDomainLookupStart, 0);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupStart), 0);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSDomainLookupEnd, 0);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupEnd), 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 0);
   tester()->histogram_tester().ExpectTotalCount(
@@ -244,6 +266,9 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
       base::Microseconds(1);
   timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 20u;
   PopulateRequiredTimingFields(&timing);
+
+  // Wait until the browser init is complete.
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
 
   NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
   // Sleep to make sure the backgrounded time is > than the paint time, even
@@ -285,17 +310,17 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSParseStart, 0, 1);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSConnectStart, 1);
+      AddHistogramSuffix(internal::kHistogramGWSConnectStart), 1);
   tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramGWSConnectStart, 0, 1);
+      AddHistogramSuffix(internal::kHistogramGWSConnectStart), 0, 1);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSDomainLookupStart, 1);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupStart), 1);
   tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramGWSDomainLookupStart, 0, 1);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupStart), 0, 1);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramGWSDomainLookupEnd, 1);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupEnd), 1);
   tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramGWSDomainLookupEnd, 0, 1);
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupEnd), 0, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSFirstContentfulPaint, 1);
   tester()->histogram_tester().ExpectBucketCount(
@@ -309,6 +334,10 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
 TEST_F(GWSPageLoadMetricsObserverTest, CustomUserTimingMark) {
   // No user timing mark. Expecting AFT events are not recorded.
   page_load_metrics::mojom::CustomUserTimingMark timing;
+
+  // Wait until the browser init is complete.
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+
   NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
   tester()->SimulateCustomUserTimingUpdate(timing.Clone());
   tester()->histogram_tester().ExpectTotalCount(internal::kHistogramGWSAFTStart,

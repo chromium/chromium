@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace ash::boca {
 namespace {
 
 using ::net::test_server::BasicHttpResponse;
@@ -276,11 +276,11 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllStudents) {
           ]
         })"))));
 
-  std::vector<mojom::StudentPtr> response;
+  std::vector<mojom::IdentityPtr> response;
   base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::StudentPtr> students) {
+      .WillOnce(testing::Invoke([&](std::vector<mojom::IdentityPtr> students) {
         response = std::move(students);
       }));
 
@@ -291,12 +291,12 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllStudents) {
   run_loop.Run();
 
   ASSERT_EQ(response.size(), 2u);
-  EXPECT_EQ(response.at(0)->profile->id, "student-1");
-  EXPECT_EQ(response.at(0)->profile->name->full_name, "Student1 full");
-  EXPECT_EQ(response.at(0)->profile->email_address, "student1@foo.com");
-  EXPECT_EQ(response.at(1)->profile->id, "student-2");
-  EXPECT_EQ(response.at(1)->profile->name->full_name, "Student2 full");
-  EXPECT_EQ(response.at(1)->profile->email_address, "student2@foo.com");
+  EXPECT_EQ(response.at(0)->id, "student-1");
+  EXPECT_EQ(response.at(0)->name, "Student1 full");
+  EXPECT_EQ(response.at(0)->email, "student1@foo.com");
+  EXPECT_EQ(response.at(1)->id, "student-2");
+  EXPECT_EQ(response.at(1)->name, "Student2 full");
+  EXPECT_EQ(response.at(1)->email, "student2@foo.com");
 }
 
 TEST_F(ClassroomPageHandlerImplTest, ListStudentsOnHttpError) {
@@ -330,11 +330,11 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsOnHttpError) {
   EXPECT_CALL(request_handler(), HandleRequest(testing::_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  std::vector<mojom::StudentPtr> response;
+  std::vector<mojom::IdentityPtr> response;
   base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::StudentPtr> students) {
+      .WillOnce(testing::Invoke([&](std::vector<mojom::IdentityPtr> students) {
         response = std::move(students);
       }));
 
@@ -434,11 +434,11 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
             ]
             })"))));
 
-  std::vector<mojom::StudentPtr> response;
+  std::vector<mojom::IdentityPtr> response;
   base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::StudentPtr> students) {
+      .WillOnce(testing::Invoke([&](std::vector<mojom::IdentityPtr> students) {
         response = std::move(students);
       }));
 
@@ -449,9 +449,9 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
   run_loop.Run();
 
   ASSERT_EQ(response.size(), 3u);
-  EXPECT_EQ(response.at(0)->profile->id, "student-1-page-1");
-  EXPECT_EQ(response.at(1)->profile->id, "student-2-page-2");
-  EXPECT_EQ(response.at(2)->profile->id, "student-3-page-3");
+  EXPECT_EQ(response.at(0)->id, "student-1-page-1");
+  EXPECT_EQ(response.at(1)->id, "student-2-page-2");
+  EXPECT_EQ(response.at(2)->id, "student-3-page-3");
 }
 
 TEST_F(ClassroomPageHandlerImplTest, ListStudentsWithInvalidCourseId) {
@@ -482,11 +482,11 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsWithInvalidCourseId) {
                                                         course_callback.Get()));
   course_run_loop.Run();
 
-  std::vector<mojom::StudentPtr> response;
+  std::vector<mojom::IdentityPtr> response;
   base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&](std::vector<mojom::StudentPtr> students) {
+      .WillOnce(testing::Invoke([&](std::vector<mojom::IdentityPtr> students) {
         response = std::move(students);
       }));
 
@@ -499,4 +499,4 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsWithInvalidCourseId) {
   ASSERT_EQ(response.size(), 0u);
 }
 
-}  // namespace ash
+}  // namespace ash::boca

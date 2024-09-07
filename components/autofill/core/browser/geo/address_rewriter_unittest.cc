@@ -7,6 +7,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill {
+namespace {
+
 using autofill::AddressRewriter;
 
 TEST(AddressRewriterTest, InvalidCountryCode) {
@@ -299,3 +302,6 @@ TEST(AddressRewriterTest, ZA) {
   EXPECT_EQ(za.Rewrite(u"republic of south africa"),
             za.Rewrite(u"south africa"));
 }
+
+}  // namespace
+}  // namespace autofill

@@ -5,24 +5,29 @@
 import 'chrome://compare/app.js';
 
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction} from 'chrome://compare/app.js';
 import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
+import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
 import {Router} from 'chrome://compare/router.js';
-import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsSet, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
+import type {PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsSet, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {WindowProxy} from 'chrome://compare/window_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter, UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, installMock} from './test_support.js';
 
-function createInfo(overrides?: Partial<ProductInfo>): ProductInfo {
+function createProductInfo(overrides?: Partial<ProductInfo>): ProductInfo {
   return Object.assign(
       {
         clusterId: BigInt(0),
@@ -34,6 +39,24 @@ function createInfo(overrides?: Partial<ProductInfo>): ProductInfo {
         currentPrice: '',
         previousPrice: '',
         categoryLabels: [],
+      },
+      overrides);
+}
+
+function createPriceInsightsInfo(overrides?: Partial<PriceInsightsInfo>):
+    PriceInsightsInfo {
+  return Object.assign(
+      {
+        clusterId: BigInt(0),
+        typicalLowPrice: '',
+        typicalHighPrice: '',
+        catalogAttributes: '',
+        jackpot: {url: ''},
+        bucket: 0,
+        hasMultipleCatalogs: false,
+        history: [],
+        locale: '',
+        currencyCode: '',
       },
       overrides);
 }
@@ -77,8 +100,11 @@ interface AppPromiseValues {
   idParam: string;
   urlsParam: string[];
   specs: ProductSpecifications;
-  infos: ProductInfo[];
+  productInfos: ProductInfo[];
+  urlToPriceInsightsInfoMap: Map<string, PriceInsightsInfo>;
   specsSet: ProductSpecificationsSet|null;
+  urlToPageTitleFromHistoryMap: Map<string, string>;
+  minLoadingAnimationMs: number;
 }
 
 function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
@@ -88,8 +114,11 @@ function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
         idParam: '',
         urlsParam: '',
         specs: createSpecs(),
-        infos: [createInfo()],
+        productInfos: [createProductInfo()],
+        urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>(),
         specsSet: null,
+        urlToPageTitleFromHistoryMap: new Map<string, string>(),
+        minLoadingAnimationMs: 0,
       },
       overrides);
 }
@@ -97,6 +126,8 @@ function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
 suite('AppTest', () => {
   let appElement: ProductSpecificationsElement;
   let windowProxy: TestMock<WindowProxy>;
+  const mockOpenWindowProxy = TestMock.fromClass(OpenWindowProxyImpl);
+
   const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
   const callbackRouter = new PageCallbackRouter();
   const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
@@ -105,7 +136,6 @@ suite('AppTest', () => {
   async function createAppElement(): Promise<ProductSpecificationsElement> {
     appElement = document.createElement('product-specifications-app');
     document.body.appendChild(appElement);
-    appElement.resetMinLoadingAnimationMsForTesting();
     return appElement;
   }
 
@@ -128,16 +158,33 @@ suite('AppTest', () => {
         Promise.resolve({productSpecs: promiseValues.specs}));
     shoppingServiceApi.setResultMapperFor(
         'getProductInfoForUrl', (url: Url) => {
-          for (const info of promiseValues.infos) {
+          for (const info of promiseValues.productInfos) {
             if (info.productUrl.url === url.url) {
               return Promise.resolve({productInfo: info});
             }
           }
-          const emptyInfo = createInfo();
+          const emptyInfo = createProductInfo();
           return Promise.resolve({productInfo: emptyInfo});
+        });
+    shoppingServiceApi.setResultMapperFor(
+        'getPriceInsightsInfoForUrl', (url: Url) => {
+          return Promise.resolve({
+            priceInsightsInfo:
+                promiseValues.urlToPriceInsightsInfoMap.get(url.url) ??
+                createPriceInsightsInfo(),
+          });
+        });
+    shoppingServiceApi.setResultMapperFor(
+        'getPageTitleFromHistory', (url: Url) => {
+          return Promise.resolve({
+            title:
+                promiseValues.urlToPageTitleFromHistoryMap.get(url.url) ?? '',
+          });
         });
 
     const appElement = await createAppElement();
+    appElement.resetMinLoadingAnimationMsForTesting(
+        promiseValues.minLoadingAnimationMs);
     await flushTasks();
 
     return appElement;
@@ -145,9 +192,23 @@ suite('AppTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues(
-        {priceRowTitle: 'price', productSummaryRowTitle: 'summary'});
+    loadTimeData.overrideValues({
+      defaultTableTitle: 'title',
+      priceRowTitle: 'price',
+      productSummaryRowTitle: 'summary',
+    });
     shoppingServiceApi.reset();
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsFeatureState', Promise.resolve({
+          state: {
+            isSyncingTabCompare: true,
+            canLoadFullPageUi: true,
+            canManageSets: true,
+            canFetchData: true,
+            isAllowedForEnterprise: true,
+            isQualityLoggingAllowed: true,
+          },
+        }));
     shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
     shoppingServiceApi.setResultFor(
         'maybeShowProductSpecificationDisclosure',
@@ -157,39 +218,45 @@ suite('AppTest', () => {
     Router.setInstance(router);
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('onLine', true);
+    OpenWindowProxyImpl.setInstance(mockOpenWindowProxy);
   });
 
-  test('calls shopping service when there are url params', () => {
+  test('calls shopping service when there are url params', async () => {
     const urlsParam = ['https://example.com/', 'https://example2.com/'];
     router.setResultFor(
         'getCurrentQuery',
         new URLSearchParams('urls=' + JSON.stringify(urlsParam)));
     createAppElement();
+    await shoppingServiceApi.whenCalled('addProductSpecificationsSet');
 
+    assertEquals(
+        1,
+        shoppingServiceApi.getCallCount(
+            'getProductSpecificationsFeatureState'));
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
         1, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
     assertEquals(
-        'Product specs',
+        'title',
         shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][0]);
     assertArrayEquals(
         urlsParam.map(url => ({url})),
         shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][1]);
   });
 
-  test('handles invalid route', () => {
+  test('handles invalid route', async () => {
     router.setResultFor(
         'getCurrentQuery', new URLSearchParams('urls=INVALID_JSON'));
-    createAppElement();
+    await createAppElement();
 
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
         0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
   });
 
-  test('handles missing router', () => {
+  test('handles missing router', async () => {
     router.setResultFor('getCurrentQuery', new URLSearchParams(''));
-    createAppElement();
+    await createAppElement();
 
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
@@ -253,7 +320,7 @@ suite('AppTest', () => {
     assertEquals(
         1, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
     assertEquals(
-        'Product specs',
+        'title',
         shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][0]);
     const mappedUrlsParams = urlsParam.map(url => ({url}));
     assertArrayEquals(
@@ -324,18 +391,22 @@ suite('AppTest', () => {
         urls: [],
       }],
     });
-    const info1 = createInfo({
+    const productInfo1 = createProductInfo({
       clusterId: BigInt(123),
       title: 'qux',
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'qux.com/image'},
       currentPrice: '$100',
     });
-    const info2 = createInfo({
+    const productInfo2 = createProductInfo({
       clusterId: BigInt(231),
       title: 'foobar',
       productUrl: {url: 'https://example2.com/'},
       imageUrl: {url: 'foobar.com/image'},
+    });
+    const priceInsightsInfo = createPriceInsightsInfo({
+      clusterId: BigInt(123),
+      jackpot: {url: 'https://example.com/jackpot/'},
     });
 
     const promiseValues = createAppPromiseValues({
@@ -345,7 +416,13 @@ suite('AppTest', () => {
             new Map<bigint, string>([[BigInt(2), detailTitle]]),
         products: [specsProduct1],
       }),
-      infos: [info1, info2, createInfo({clusterId: BigInt(0)})],
+      productInfos: [
+        productInfo1,
+        productInfo2,
+        createProductInfo({clusterId: BigInt(0)}),
+      ],
+      urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>(
+          [[productInfo1.productUrl.url, priceInsightsInfo]]),
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -357,34 +434,38 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct1.title,
               url: 'https://example.com/',
-              imageUrl: info1.imageUrl.url,
+              imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: '$100', description: [], summary: []},
+              {title: 'price', content: '$100'},
               {
                 title: 'summary',
-                text: null,
-                description: [],
-                summary: [{
-                  text: 'product summary',
-                  urls: [],
-                }],
+                content: {
+                  attributes: [],
+                  summary: [{
+                    text: 'product summary',
+                    urls: [],
+                  }],
+                },
               },
               {
                 title: detailTitle,
-                text: null,
-                description: [
-                  {label: 'label', description: 'bar, baz'},
-                ],
-                summary: [{
-                  text: 'summary',
-                  urls: [{
-                    url: {url: 'http://example.com/citation'},
-                    title: '',
-                    faviconUrl: {url: ''},
-                    thumbnailUrl: {url: ''},
+                content: {
+                  attributes: [{label: 'label', value: 'bar, baz'}],
+                  summary: [{
+                    text: 'summary',
+                    urls: [{
+                      url: {url: 'http://example.com/citation'},
+                      title: '',
+                      faviconUrl: {url: ''},
+                      thumbnailUrl: {url: ''},
+                    }],
                   }],
-                }],
+                },
+              },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo.jackpot.url},
               },
             ],
           },
@@ -392,17 +473,19 @@ suite('AppTest', () => {
             selectedItem: {
               // If the product spec doesn't have a title, the column should
               // use the title from the product info.
-              title: info2.title,
+              title: productInfo2.title,
               url: 'https://example2.com/',
-              imageUrl: info2.imageUrl.url,
+              imageUrl: productInfo2.imageUrl.url,
             },
             // Since this item's product dimension values have no ID, its
             // `productDetails` should have empty strings for `description` and
-            // summary`.
+            // summary`. Its `jackpotUrl` should also be empty since no price
+            // insights are available.
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
-              {title: detailTitle, text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
+              {title: detailTitle, content: null},
+              {title: null, content: {jackpotUrl: ''}},
             ],
           },
         ],
@@ -442,7 +525,7 @@ suite('AppTest', () => {
       title: 'qux',
       productDimensionValues: dimensionValuesMap,
     });
-    const info1 = createInfo({
+    const productInfo1 = createProductInfo({
       clusterId: BigInt(123),
       title: 'qux',
       productUrl: {url: 'https://example.com/'},
@@ -456,7 +539,7 @@ suite('AppTest', () => {
             new Map<bigint, string>([[BigInt(2), detailTitle]]),
         products: [specsProduct1],
       }),
-      infos: [info1],
+      productInfos: [productInfo1],
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -468,17 +551,19 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct1.title,
               url: 'https://example.com/',
-              imageUrl: info1.imageUrl.url,
+              imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
-                text: null,
-                description: [{label: '', description: 'bar'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'bar'}],
+                  summary: [],
+                },
               },
+              {title: null, content: {jackpotUrl: ''}},
             ],
           },
         ],
@@ -518,11 +603,15 @@ suite('AppTest', () => {
       title: 'Product 1',
       productDimensionValues: dimensionValuesMap1,
     });
-    const info1 = createInfo({
+    const productInfo1 = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product 1',
       productUrl: {url: 'https://example.com/1'},
       imageUrl: {url: 'http://example.com/image1.png'},
+    });
+    const priceInsightsInfo1 = createPriceInsightsInfo({
+      clusterId: BigInt(123),
+      jackpot: {url: 'https://example.com/jackpot1'},
     });
 
     // Set up the second product - the description needs to be different from
@@ -558,11 +647,15 @@ suite('AppTest', () => {
       title: 'Product 2',
       productDimensionValues: dimensionValuesMap2,
     });
-    const info2 = createInfo({
+    const productInfo2 = createProductInfo({
       clusterId: BigInt(456),
       title: 'Product 2',
       productUrl: {url: 'https://example.com/2'},
       imageUrl: {url: 'http://example.com/image2.png'},
+    });
+    const priceInsightsInfo2 = createPriceInsightsInfo({
+      clusterId: BigInt(456),
+      jackpot: {url: 'https://example.com/jackpot2'},
     });
 
     const detailTitle = 'Section';
@@ -576,7 +669,11 @@ suite('AppTest', () => {
         // order.
         products: [specsProduct2, specsProduct1],
       }),
-      infos: [info1, info2],
+      productInfos: [productInfo1, productInfo2],
+      urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>([
+        [productInfo1.productUrl.url, priceInsightsInfo1],
+        [productInfo2.productUrl.url, priceInsightsInfo2],
+      ]),
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -589,16 +686,21 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct1.title,
               url: 'https://example.com/1',
-              imageUrl: info1.imageUrl.url,
+              imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
-                text: null,
-                description: [{label: '', description: 'desc 1'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'desc 1'}],
+                  summary: [],
+                },
+              },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo1.jackpot.url},
               },
             ],
           },
@@ -606,22 +708,69 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct2.title,
               url: 'https://example.com/2',
-              imageUrl: info2.imageUrl.url,
+              imageUrl: productInfo2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
-                text: null,
-                description: [{label: '', description: 'desc 2'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'desc 2'}],
+                  summary: [],
+                },
+              },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo2.jackpot.url},
               },
             ],
           },
         ],
         tableColumns);
   });
+
+  test(
+      'uses history page title when available if other titles are unavailable',
+      async () => {
+        const specsProduct = createSpecsProduct({
+          productClusterId: BigInt(123),
+          title: 'foo',
+          summary: [{
+            text: 'product summary',
+            urls: [],
+          }],
+        });
+        const productInfo = createProductInfo({
+          clusterId: BigInt(123),
+          title: 'foo',
+          productUrl: {url: 'https://example.com/'},
+          imageUrl: {url: 'foo.com/image'},
+        });
+        const urlInHistory = 'https://example2.com/';
+        const pageTitleInHistory = 'foo title';
+
+        const promiseValues = createAppPromiseValues({
+          urlsParam: [productInfo.productUrl.url, urlInHistory],
+          specs: createSpecs({
+            products: [specsProduct],
+          }),
+          productInfos: [
+            productInfo,
+            createProductInfo({clusterId: BigInt(0)}),
+          ],
+          urlToPageTitleFromHistoryMap: new Map<string, string>([
+            [productInfo.productUrl.url, 'bar'],
+            [urlInHistory, pageTitleInHistory],
+          ]),
+        });
+        await createAppElementWithPromiseValues(promiseValues);
+
+        const tableColumns = appElement.$.summaryTable.columns;
+        assertEquals(2, tableColumns.length);
+        assertEquals(specsProduct.title, tableColumns[0]!.selectedItem.title);
+        assertEquals(pageTitleInHistory, tableColumns[1]!.selectedItem.title);
+      });
 
   test('reacts to update event, column reordering', async () => {
     // Set up the first product with at least one unique description.
@@ -657,11 +806,15 @@ suite('AppTest', () => {
       title: 'Product 1',
       productDimensionValues: dimensionValuesMap1,
     });
-    const info1 = createInfo({
+    const productInfo1 = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product 1',
       productUrl: {url: 'https://example.com/1'},
       imageUrl: {url: 'http://example.com/image1.png'},
+    });
+    const priceInsightsInfo1 = createPriceInsightsInfo({
+      clusterId: BigInt(123),
+      jackpot: {url: 'https://example.com/jackpot1'},
     });
 
     // Set up the second product - the description needs to be different from
@@ -697,11 +850,15 @@ suite('AppTest', () => {
       title: 'Product 2',
       productDimensionValues: dimensionValuesMap2,
     });
-    const info2 = createInfo({
+    const productInfo2 = createProductInfo({
       clusterId: BigInt(456),
       title: 'Product 2',
       productUrl: {url: 'https://example.com/2'},
       imageUrl: {url: 'http://example.com/image2.png'},
+    });
+    const priceInsightsInfo2 = createPriceInsightsInfo({
+      clusterId: BigInt(456),
+      jackpot: {url: 'https://example.com/jackpot2'},
     });
 
     const specsSetUrls =
@@ -719,7 +876,11 @@ suite('AppTest', () => {
         productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
         products: [specsProduct1, specsProduct2],
       }),
-      infos: [info1, info2],
+      productInfos: [productInfo1, productInfo2],
+      urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>([
+        [productInfo1.productUrl.url, priceInsightsInfo1],
+        [productInfo2.productUrl.url, priceInsightsInfo2],
+      ]),
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -755,16 +916,21 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct2.title,
               url: 'https://example.com/2',
-              imageUrl: info2.imageUrl.url,
+              imageUrl: productInfo2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: rowTitle,
-                text: null,
-                description: [{label: '', description: 'desc 2'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'desc 2'}],
+                  summary: [],
+                },
+              },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo2.jackpot.url},
               },
             ],
           },
@@ -772,16 +938,21 @@ suite('AppTest', () => {
             selectedItem: {
               title: specsProduct1.title,
               url: 'https://example.com/1',
-              imageUrl: info1.imageUrl.url,
+              imageUrl: productInfo1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: rowTitle,
-                text: null,
-                description: [{label: '', description: 'desc 1'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'desc 1'}],
+                  summary: [],
+                },
+              },
+              {
+                title: null,
+                content: {jackpotUrl: priceInsightsInfo1.jackpot.url},
               },
             ],
           },
@@ -802,7 +973,7 @@ suite('AppTest', () => {
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info = createInfo({
+    const info = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
@@ -821,7 +992,7 @@ suite('AppTest', () => {
             new Map<bigint, string>([[BigInt(2), 'Row Title']]),
         products: [specsProduct],
       }),
-      infos: [info],
+      productInfos: [info],
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -855,7 +1026,7 @@ suite('AppTest', () => {
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info = createInfo({
+    const info = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
@@ -874,7 +1045,7 @@ suite('AppTest', () => {
             new Map<bigint, string>([[BigInt(2), 'Row Title']]),
         products: [specsProduct],
       }),
-      infos: [info],
+      productInfos: [info],
     });
     await createAppElementWithPromiseValues(promiseValues);
 
@@ -986,7 +1157,7 @@ suite('AppTest', () => {
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info = createInfo({
+    const info = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
@@ -999,7 +1170,7 @@ suite('AppTest', () => {
         productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
         products: [specsProduct],
       }),
-      infos: [info],
+      productInfos: [info],
     });
     const specsSet = createSpecsSet(
         {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
@@ -1014,6 +1185,7 @@ suite('AppTest', () => {
     shoppingServiceApi.setResultFor(
         'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
     await createAppElementWithPromiseValues(promiseValues);
+    await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
 
     // Click on the "add column" button and select the first (only) item.
     const newColSelector = appElement.$.newColumnSelector;
@@ -1041,6 +1213,164 @@ suite('AppTest', () => {
             'maybeShowProductSpecificationDisclosure'));
   });
 
+  suite('metrics', () => {
+    let metrics: MetricsTracker;
+    const tabInfos = [{
+      title: 'title',
+      url: stringToMojoUrl('https://example.com'),
+    }];
+
+    setup(async () => {
+      metrics = fakeMetricsPrivate();
+      const dimensionValues = {
+        summary: [],
+        specificationDescriptions: [
+          {
+            label: '',
+            altText: '',
+            options: [],
+          },
+        ],
+      };
+      const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+          [[BigInt(2), dimensionValues]]);
+      const specsProduct = createSpecsProduct({
+        productClusterId: BigInt(123),
+        title: 'Product',
+        productDimensionValues: dimensionValuesMap,
+      });
+      const info = createProductInfo({
+        clusterId: BigInt(123),
+        title: 'Product',
+        productUrl: {url: 'https://example.com/'},
+        imageUrl: {url: 'http://example.com/image.png'},
+      });
+      const testId = '00000000-0000-0000-0000-000000000001';
+      const promiseValues = createAppPromiseValues({
+        idParam: testId,
+        specs: createSpecs({
+          productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
+          products: [specsProduct],
+        }),
+        productInfos: [info],
+      });
+      const specsSet = createSpecsSet(
+          {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsSetByUuid',
+          Promise.resolve({set: specsSet}));
+
+      await createAppElementWithPromiseValues(promiseValues);
+    });
+
+    async function clickFirstAvailableItemInFirstColumn() {
+      const table = appElement.$.summaryTable;
+      const selector = table.shadowRoot!.querySelector<ProductSelectorElement>(
+          'product-selector');
+      assertTrue(!!selector);
+      selector.$.currentProductContainer.click();
+      await waitAfterNextRender(appElement);
+      const crActionMenu = selector.$.productSelectionMenu.$.menu.get();
+      assertTrue(crActionMenu.open);
+      const item = crActionMenu.querySelector<HTMLElement>('.dropdown-item')!;
+      item.click();
+      await waitAfterNextRender(appElement);
+    }
+
+    async function clickFirstAvailableItemInNewColumnSelector() {
+      const newColSelector = appElement.$.newColumnSelector;
+      newColSelector.$.button.click();
+      await waitAfterNextRender(appElement);
+      const menu = newColSelector.$.productSelectionMenu;
+      const crActionMenu = menu.$.menu.get();
+      assertTrue(crActionMenu.open);
+      const dropdownItem =
+          crActionMenu.querySelector<HTMLElement>('.dropdown-item')!;
+      dropdownItem.click();
+      await waitAfterNextRender(appElement);
+    }
+
+    test('add column from suggested', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: tabInfos}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      await clickFirstAvailableItemInNewColumnSelector();
+
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.ADD_FROM_SUGGESTED));
+    });
+
+    test('add column from recently viewed', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: []}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs',
+          Promise.resolve({urlInfos: tabInfos}));
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      await clickFirstAvailableItemInNewColumnSelector();
+
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.ADD_FROM_RECENTLY_VIEWED));
+    });
+
+    test('remove column', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: []}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+
+      await clickFirstAvailableItemInFirstColumn();
+
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.REMOVE));
+    });
+
+    test('Update column from suggested', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: tabInfos}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+
+      await clickFirstAvailableItemInFirstColumn();
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.UPDATE_FROM_SUGGESTED));
+    });
+
+    test('Update column from recently viewed', async () => {
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForProductTabs', Promise.resolve({urlInfos: []}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs',
+          Promise.resolve({urlInfos: tabInfos}));
+
+      await clickFirstAvailableItemInFirstColumn();
+
+      assertEquals(
+          1,
+          metrics.count(
+              COLUMN_MODIFICATION_HISTOGRAM_NAME,
+              CompareTableColumnAction.UPDATE_FROM_RECENTLY_VIEWED));
+    });
+  });
+
   test('name change updates page title', async () => {
     const dimensionValues = {
       summary: [],
@@ -1059,7 +1389,7 @@ suite('AppTest', () => {
       title: 'Product',
       productDimensionValues: dimensionValuesMap,
     });
-    const info = createInfo({
+    const info = createProductInfo({
       clusterId: BigInt(123),
       title: 'Product',
       productUrl: {url: 'https://example.com/'},
@@ -1072,7 +1402,7 @@ suite('AppTest', () => {
         productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
         products: [specsProduct],
       }),
-      infos: [info],
+      productInfos: [info],
     });
     const specsSet = createSpecsSet({
       name: 'My products',
@@ -1097,54 +1427,121 @@ suite('AppTest', () => {
   });
 
   test('shows full table loading state', async () => {
-    const minLoadingAnimationMs = 10;
+    const minLoadingAnimationMs = 40;
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: minLoadingAnimationMs,
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
-    await flushTasks();
+    // Needs to await in order to load elements.
+    await createAppElementWithPromiseValues(promiseValues);
+    await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
 
     assertTrue(isVisible(appElement.$.loading));
     assertFalse(isVisible(appElement.$.summaryTable));
 
     // Wait for the loading animation to finish.
     await new Promise(res => setTimeout(res, minLoadingAnimationMs));
-
     assertFalse(isVisible(appElement.$.loading));
   });
 
   test('disables menu button while loading', async () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: 500,
     });
     createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting(500);
     await flushTasks();
 
     assertTrue(appElement.$.header.$.menuButton.disabled);
   });
 
   test('show feedback loading state while loading', async () => {
+    const minLoadingAnimationMs = 80;
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: minLoadingAnimationMs,
+    });
+    // Needs to await in order to load elements.
+    await createAppElementWithPromiseValues(promiseValues);
+    await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
+
+    const feedbackLoading =
+        appElement.shadowRoot!.querySelector('#feedbackLoading');
+    assertTrue(!!feedbackLoading);
+    const feedbackButtons =
+        appElement.shadowRoot!.querySelector('#feedbackButtons');
+    assertTrue(!!feedbackButtons);
+
+    assertTrue(isVisible(feedbackLoading));
+    assertFalse(isVisible(feedbackButtons));
+
+    // Wait for the loading animation to finish.
+    await new Promise(res => setTimeout(res, minLoadingAnimationMs));
+    assertFalse(isVisible(feedbackLoading));
+    assertTrue(isVisible(feedbackButtons));
+  });
+
+  test('feedback hidden if not allowed', async () => {
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsFeatureState', Promise.resolve({
+          state: {
+            isSyncingTabCompare: true,
+            canLoadFullPageUi: true,
+            canManageSets: true,
+            canFetchData: true,
+            isAllowedForEnterprise: true,
+            isQualityLoggingAllowed: false,
+          },
+        }));
     const minLoadingAnimationMs = 10;
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: minLoadingAnimationMs,
     });
     createAppElementWithPromiseValues(promiseValues);
-    const feedbackButtonPlacholder =
-        appElement.shadowRoot!.querySelector('#feedbackLoading');
-    const feedbackButtons = appElement.$.feedbackButtons;
-    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
     await flushTasks();
+    const feedbackLoading =
+        appElement.shadowRoot!.querySelector('#feedbackLoading');
+    const feedbackButtons =
+        appElement.shadowRoot!.querySelector('#feedbackButtons');
 
-    assertTrue(isVisible(feedbackButtonPlacholder));
+    assertFalse(isVisible(feedbackLoading));
     assertFalse(isVisible(feedbackButtons));
 
     // Wait for the loading animation to finish.
     await new Promise(res => setTimeout(res, minLoadingAnimationMs));
 
-    assertFalse(isVisible(feedbackButtonPlacholder));
-    assertTrue(isVisible(feedbackButtons));
+    assertFalse(isVisible(feedbackLoading));
+    assertFalse(isVisible(feedbackButtons));
+  });
+
+  test('shows learn more link', async () => {
+    const testEmail = 'test@gmail.com';
+    loadTimeData.overrideValues({userEmail: testEmail});
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+    });
+    await createAppElementWithPromiseValues(promiseValues);
+    const learnMoreLink =
+        appElement.shadowRoot!.querySelector('#learnMoreLink');
+    const disclaimer = appElement.shadowRoot!.querySelector('#disclaimer');
+
+    assertTrue(!!learnMoreLink);
+    assertTrue(isVisible(learnMoreLink));
+    assertEquals(
+        loadTimeData.getString('compareLearnMoreUrl'),
+        learnMoreLink!.getAttribute('href'));
+
+    assertTrue(!!disclaimer);
+    assertTrue(!!disclaimer.textContent);
+    // Remove the link part before verifying the string to avoid verifying the
+    // spaces due to the templated string.
+    const disclaimerText =
+        disclaimer!.textContent!.replace(learnMoreLink!.textContent!, '')
+            .trim();
+    assertEquals(
+        loadTimeData.getStringF('experimentalFeatureDisclaimer', testEmail),
+        disclaimerText);
   });
 
   test('updates on selection change', async () => {
@@ -1313,7 +1710,7 @@ suite('AppTest', () => {
 
       // TODO(b/338427523): Parameterize this test once there is UI for
       // choosing the name.
-      assertEquals('Product specs', appElement.$.header.subtitle);
+      assertEquals('title', appElement.$.header.subtitle);
     });
 
     test('displays correct subtitle for empty state', async () => {
@@ -1325,9 +1722,10 @@ suite('AppTest', () => {
   });
 
   suite('EmptyState', () => {
-    test('shows empty state if app loads without urls', () => {
+    test('shows empty state if app loads without urls', async () => {
       router.setResultFor('getCurrentQuery', '');
       createAppElement();
+      await flushTasks();
 
       assertTrue(isVisible(appElement.$.empty));
       assertFalse(isVisible(appElement.$.specs));
@@ -1357,7 +1755,7 @@ suite('AppTest', () => {
           'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
       const promiseValues = createAppPromiseValues({
         urlsParam: [],
-        infos: [createInfo({
+        productInfos: [createProductInfo({
           clusterId: BigInt(123),
           productUrl: {url: 'https://example.com/'},
         })],
@@ -1418,18 +1816,62 @@ suite('AppTest', () => {
     });
   });
 
-  suite('Offline', () => {
-    test('shows empty state and offline toast if app loads offline', () => {
-      router.setResultFor(
-          'getCurrentQuery',
-          new URLSearchParams(
-              'urls=' + JSON.stringify('https://example.com/')));
-      windowProxy.setResultFor('onLine', false);
-      createAppElement();
-
-      assertTrue(isVisible(appElement.$.empty));
-      assertTrue(appElement.$.offlineToast.open);
+  test('error toast shown with two URLs and no table', async () => {
+    const productInfo1 = createProductInfo({
+      clusterId: BigInt(123),
+      title: 'Product 1',
+      productUrl: {url: 'https://example.com/1'},
+      imageUrl: {url: 'http://example.com/image1.png'},
     });
+
+    const productInfo2 = createProductInfo({
+      clusterId: BigInt(456),
+      title: 'Product 2',
+      productUrl: {url: 'https://example.com/2'},
+      imageUrl: {url: 'http://example.com/image2.png'},
+    });
+
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/1', 'https://example.com/2'],
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>(),
+      }),
+      productInfos: [productInfo1, productInfo2],
+    });
+    await createAppElementWithPromiseValues(promiseValues);
+
+    // Any comparison with a valid product should return at least one column. In
+    // this case the error toast should be shown.
+    assertTrue(appElement.$.errorToast.open);
+  });
+
+  test('error toast not shown with one URL', async () => {
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>(),
+      }),
+    });
+    await createAppElementWithPromiseValues(promiseValues);
+
+    // If there's only one URL in the comparison, don't show the error.
+    assertFalse(appElement.$.errorToast.open);
+  });
+
+  suite('Offline', () => {
+    test(
+        'shows error state and offline toast if app loads offline',
+        async () => {
+          router.setResultFor(
+              'getCurrentQuery',
+              new URLSearchParams(
+                  'urls=' + JSON.stringify('https://example.com/')));
+          windowProxy.setResultFor('onLine', false);
+          await createAppElement();
+
+          assertTrue(isVisible(appElement.$.error));
+          assertTrue(appElement.$.offlineToast.open);
+        });
 
     test(
         `shows offline toast instead of making api call when
@@ -1548,7 +1990,10 @@ suite('AppTest', () => {
     await createAppElementWithPromiseValues(promiseValues);
 
     function updateCrFeedbackButtons(option: CrFeedbackOption) {
-      appElement.$.feedbackButtons.dispatchEvent(
+      const feedbackButtons =
+          appElement.shadowRoot!.querySelector('#feedbackButtons');
+      assertTrue(!!feedbackButtons);
+      feedbackButtons!.dispatchEvent(
           new CustomEvent('selected-option-changed', {
             bubbles: true,
             composed: true,
@@ -1572,5 +2017,171 @@ suite('AppTest', () => {
     feedbackArgs = await shoppingServiceApi.whenCalled(
         'setProductSpecificationsUserFeedback');
     assertEquals(UserFeedback.kUnspecified, feedbackArgs);
+  });
+
+  suite('FeatureState', () => {
+    test('feedback hidden if not allowed', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+              isQualityLoggingAllowed: false,
+            },
+          }));
+      const minLoadingAnimationMs = 10;
+      const promiseValues = createAppPromiseValues({
+        urlsParam: ['https://example.com/'],
+        minLoadingAnimationMs: minLoadingAnimationMs,
+      });
+      createAppElementWithPromiseValues(promiseValues);
+      await flushTasks();
+      const feedbackLoading =
+          appElement.shadowRoot!.querySelector('#feedbackLoading');
+      const feedbackButtons =
+          appElement.shadowRoot!.querySelector('#feedbackButtons');
+
+      assertFalse(isVisible(feedbackLoading));
+      assertFalse(isVisible(feedbackButtons));
+
+      // Wait for the loading animation to finish.
+      await new Promise(res => setTimeout(res, minLoadingAnimationMs));
+
+      assertFalse(isVisible(feedbackLoading));
+      assertFalse(isVisible(feedbackButtons));
+    });
+
+    test('shows sync state if user is not syncing', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: false,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+            },
+          }));
+      await createAppElement();
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      assertTrue(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.error));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+    });
+
+    test('shows error state if disabled', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: false,
+              isAllowedForEnterprise: true,
+            },
+          }));
+      createAppElement();
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      assertTrue(isVisible(appElement.$.error));
+      assertFalse(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+    });
+
+    test('reload with sync screen', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: false,
+              isAllowedForEnterprise: true,
+            },
+          }));
+      await createAppElement();
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      assertTrue(isVisible(appElement.$.error));
+      assertFalse(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+
+      shoppingServiceApi.reset();
+      shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: false,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+            },
+          }));
+
+      window.dispatchEvent(new Event('focus'));
+      await flushTasks();
+
+      assertFalse(isVisible(appElement.$.error));
+      assertTrue(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+    });
+
+    test('sync button click when user not signed in', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: false,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+              isSignedIn: false,
+            },
+          }));
+      const appElement = await createAppElement();
+      await flushTasks();
+      shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
+      assertTrue(isVisible(appElement.$.syncPromo));
+
+      appElement.$.turnOnSyncButton.click();
+      shoppingServiceApi.whenCalled('showSyncSetupFlow');
+    });
+
+    test('sync button click when user is signed in', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: false,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+              isSignedIn: true,
+            },
+          }));
+      const appElement = await createAppElement();
+      await flushTasks();
+      shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
+      assertTrue(isVisible(appElement.$.syncPromo));
+
+      appElement.$.turnOnSyncButton.click();
+      await flushTasks();
+      assertEquals(0, shoppingServiceApi.getCallCount('showSyncSetupFlow'));
+
+      const arg = await mockOpenWindowProxy.whenCalled('openUrl');
+      assertEquals('chrome://settings/syncSetup/advanced', arg);
+    });
   });
 });

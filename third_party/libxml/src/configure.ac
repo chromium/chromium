@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.63])
 
 m4_define([MAJOR_VERSION], 2)
-m4_define([MINOR_VERSION], 13)
+m4_define([MINOR_VERSION], 14)
 m4_define([MICRO_VERSION], 0)
 
 AC_INIT([libxml2],[MAJOR_VERSION.MINOR_VERSION.MICRO_VERSION])
@@ -69,8 +69,6 @@ AC_ARG_WITH(catalog,
 [  --with-catalog          XML Catalogs support (on)])
 AC_ARG_WITH(debug,
 [  --with-debug            debugging module and shell (on)])
-AC_ARG_WITH(ftp,
-[  --with-ftp              FTP support (off)])
 AC_ARG_WITH(history,
 [  --with-history          history support for shell (off)])
 AC_ARG_WITH(readline,
@@ -78,7 +76,7 @@ AC_ARG_WITH(readline,
 AC_ARG_WITH(html,
 [  --with-html             HTML parser (on)])
 AC_ARG_WITH(http,
-[  --with-http             HTTP support (on)])
+[  --with-http             HTTP support (off)])
 AC_ARG_WITH(iconv,
 [  --with-iconv[[=DIR]]      iconv support (on)])
 AC_ARG_WITH(icu,
@@ -123,8 +121,6 @@ AC_ARG_WITH(xpath,
 [  --with-xpath            XPath 1.0 support (on)])
 AC_ARG_WITH(xptr,
 [  --with-xptr             XPointer support (on)])
-AC_ARG_WITH(xptr-locs,
-[  --with-xptr-locs        XPointer ranges and points (off)])
 AC_ARG_WITH(zlib,
 [  --with-zlib[[=DIR]]       use libz in DIR (off)])
 
@@ -135,10 +131,21 @@ AC_ARG_WITH(legacy,
 
 AC_ARG_WITH(tls,
 [  --with-tls              thread-local storage (off)])
-AC_ARG_WITH(fexceptions,
-[  --with-fexceptions      add GCC flag -fexceptions for C++ exceptions (off)])
-AC_ARG_WITH(coverage,
-[  --with-coverage         build for code coverage with GCC (off)])
+
+dnl
+dnl Legacy defaults
+dnl
+if test "$with_legacy" = "yes"; then
+    if test "$with_http" = ""; then
+        with_http=yes
+    fi
+    if test "$with_lzma" = ""; then
+        with_lzma=yes
+    fi
+    if test "$with_zlib" = ""; then
+        with_zlib=yes
+    fi
+fi
 
 dnl
 dnl hard dependencies on options
@@ -203,12 +210,6 @@ if test "$with_xinclude" = "yes"; then
     fi
     with_xpath=yes
 fi
-if test "$with_xptr_locs" = "yes"; then
-    if test "$with_xptr" = "no"; then
-        echo WARNING: --with-xptr-locs overrides --without-xptr
-    fi
-    with_xptr=yes
-fi
 if test "$with_xptr" = "yes"; then
     if test "$with_xpath" = "no"; then
         echo WARNING: --with-xptr overrides --without-xpath
@@ -224,7 +225,6 @@ if test "$with_minimum" = "yes"; then
     test "$with_c14n" = "" && with_c14n=no
     test "$with_catalog" = "" && with_catalog=no
     test "$with_debug" = "" && with_debug=no
-    test "$with_fexceptions" = "" && with_fexceptions=no
     test "$with_history" = "" && with_history=no
     test "$with_html" = "" && with_html=no
     test "$with_http" = "" && with_http=no
@@ -290,24 +290,17 @@ XML_PC_REQUIRES=
 dnl
 dnl Checks for header files.
 dnl
-AC_CHECK_HEADERS([stdint.h inttypes.h])
+AC_CHECK_HEADERS([stdint.h])
 AC_CHECK_HEADERS([fcntl.h unistd.h sys/stat.h])
 AC_CHECK_HEADERS([sys/mman.h])
-AC_CHECK_HEADERS([sys/socket.h netinet/in.h arpa/inet.h netdb.h])
-AC_CHECK_HEADERS([sys/select.h poll.h])
 AC_CHECK_HEADERS([sys/time.h sys/timeb.h])
 AC_CHECK_HEADERS([sys/random.h])
 AC_CHECK_HEADERS([dl.h dlfcn.h])
 AC_CHECK_HEADERS([glob.h])
 AM_CONDITIONAL(WITH_GLOB, test "$ac_cv_header_glob_h" = "yes")
 
-dnl
-dnl Checking types
-dnl
-AC_TYPE_UINT32_T
-
 dnl Checks for library functions.
-AC_CHECK_FUNCS([getentropy gettimeofday ftime isascii stat mmap munmap])
+AC_CHECK_FUNCS([getentropy gettimeofday ftime stat mmap munmap])
 
 AH_VERBATIM([HAVE_MUNMAP_AFTER],[/* mmap() is no good without munmap() */
 #if defined(HAVE_MMAP) && !defined(HAVE_MUNMAP)
@@ -317,7 +310,10 @@ AH_VERBATIM([HAVE_MUNMAP_AFTER],[/* mmap() is no good without munmap() */
 dnl
 dnl Checks for inet libraries
 dnl
-if test "$with_http" != "no" || test "with_ftp" = "yes"; then
+if test "$with_http" = "yes"; then
+    AC_CHECK_HEADERS([sys/socket.h netinet/in.h arpa/inet.h netdb.h])
+    AC_CHECK_HEADERS([sys/select.h poll.h])
+
     case "$host" in
         *-*-mingw*)
             dnl AC_SEARCH_LIBS doesn't work because of non-standard calling
@@ -470,15 +466,6 @@ if test "${GCC}" != "yes" ; then
 	       ;;
     esac
 else
-    if test "$with_fexceptions" = "yes"
-    then
-        #
-	# Not activated by default because this inflates the code size
-	# Used to allow propagation of C++ exceptions through the library
-	#
-	AM_CFLAGS="${AM_CFLAGS} -fexceptions"
-    fi
-
     # warnings we'd like to see
     AM_CFLAGS="${AM_CFLAGS} -pedantic -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes"
     # warnings we'd like to suppress
@@ -522,19 +509,10 @@ else
 fi
 AC_SUBST(WITH_TREE)
 
-if test "$with_ftp" != "yes" ; then
-    WITH_FTP=0
-else
-    echo Enabling FTP support
-    WITH_FTP=1
-fi
-AC_SUBST(WITH_FTP)
-AM_CONDITIONAL(WITH_FTP_SOURCES, test "$WITH_FTP" = "1")
-
-if test "$with_http" = "no" ; then
-    echo Disabling HTTP support
+if test "$with_http" != "yes" ; then
     WITH_HTTP=0
 else
+    echo Enabling HTTP support
     WITH_HTTP=1
 fi
 AC_SUBST(WITH_HTTP)
@@ -623,20 +601,11 @@ AM_CONDITIONAL(WITH_CATALOG_SOURCES, test "$WITH_CATALOG" = "1")
 if test "$with_xptr" = "no" ; then
     echo Disabling XPointer support
     WITH_XPTR=0
-    WITH_XPTR_LOCS=0
 else
     WITH_XPTR=1
 fi
 AC_SUBST(WITH_XPTR)
 AM_CONDITIONAL(WITH_XPTR_SOURCES, test "$WITH_XPTR" = "1")
-
-if test "$with_xptr_locs" != "yes" ; then
-    WITH_XPTR_LOCS=0
-else
-    echo Enabling Xpointer locations support
-    WITH_XPTR_LOCS=1
-fi
-AC_SUBST(WITH_XPTR_LOCS)
 
 if test "$with_c14n" = "no" ; then
     echo Disabling C14N support
@@ -809,10 +778,10 @@ else
             dnl Use pthread by default in other cases
             _libs=$LIBS
             AC_CHECK_HEADERS(pthread.h,
-                AC_SEARCH_LIBS([pthread_join], [pthread], [
+                AC_SEARCH_LIBS([pthread_create], [pthread], [
                     WITH_THREADS="1"
-                    if test "$ac_cv_search_pthread_join" != "none required"; then
-                        THREAD_LIBS=$ac_cv_search_pthread_join
+                    if test "$ac_cv_search_pthread_create" != "none required"; then
+                        THREAD_LIBS=$ac_cv_search_pthread_create
                     fi
                     AC_DEFINE([HAVE_PTHREAD_H], [],
                               [Define if <pthread.h> is there])]))
@@ -885,9 +854,7 @@ dnl Checks for zlib library.
 dnl
 WITH_ZLIB=0
 
-if test "$with_zlib" != "no" && \
-   (test "$with_zlib" != "" || test "$with_legacy" = "yes")
-then
+if test "$with_zlib" != "no" && test "$with_zlib" != ""; then
     echo "Enabling zlib compression support"
 
     if test "$with_zlib" != "yes"; then
@@ -939,9 +906,7 @@ dnl Checks for lzma library.
 dnl
 WITH_LZMA=0
 
-if test "$with_lzma" != "no" && \
-   (test "$with_lzma" != "" || test "$with_legacy" = "yes")
-then
+if test "$with_lzma" != "no" && test "$with_lzma" != ""; then
     echo "Enabling lzma compression support"
 
     if test "$with_lzma" != "yes"; then
@@ -1037,9 +1002,9 @@ dnl Checks for ICU library.
 dnl
 WITH_ICU=0
 
-if test "$with_icu" = "no" || test "$with_icu" = "" ; then
-    echo Disabling ICU support
-else
+if test "$with_icu" != "no" && test "$with_icu" != "" ; then
+    echo Enabling ICU support
+
     # Try pkg-config first so that static linking works.
     # If this succeeeds, we ignore the WITH_ICU directory.
     PKG_CHECK_MODULES([ICU], [icu-i18n], [
@@ -1094,15 +1059,6 @@ case "$host" in
         CRYPTO_LIBS="-lbcrypt"
         ;;
 esac
-
-if test "$with_coverage" = "yes" && test "${GCC}" = "yes"
-then
-    echo Enabling code coverage for GCC
-    AM_CFLAGS="$AM_CFLAGS -fprofile-arcs -ftest-coverage"
-    AM_LDFLAGS="$AM_LDFLAGS -fprofile-arcs -ftest-coverage"
-else
-    echo Disabling code coverage for GCC
-fi
 
 XML_LIBS="-lxml2"
 XML_LIBTOOLLIBS="libxml2.la"

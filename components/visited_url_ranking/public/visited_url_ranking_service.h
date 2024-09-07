@@ -97,6 +97,16 @@ class VisitedURLRankingService : public KeyedService {
       std::vector<URLVisitAggregate> visit_aggregates,
       RankURLVisitAggregatesCallback callback) = 0;
 
+  // Adds relevant decorations to a collection of `URLVisitAggregate` objects.
+  // Only the visits that are to be displayed on the UI should be passed to
+  // this method.
+  using DecorateURLVisitAggregatesCallback =
+      base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
+  virtual void DecorateURLVisitAggregates(
+      const Config& config,
+      std::vector<URLVisitAggregate> visit_aggregates,
+      DecorateURLVisitAggregatesCallback callback) = 0;
+
   // Records a user action performed for a `URLVisitAggregate` object returned
   // by `RankURLVisitAggregates`. This is needed to collect feedback on whether
   // the predicted URL visit was a success or failure, to help train the ranking

@@ -11,7 +11,7 @@ source_set("model") {
     "//base",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
   ]
 }
@@ -24,7 +24,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/test/fakes",
     "//ios/web/public",

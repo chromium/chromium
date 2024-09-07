@@ -49,6 +49,7 @@ import "third_party/blink/public/mojom/navigation/navigation_initiator_activatio
 import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/page/prerender_page_param.mojom";
+import "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom";
 import "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
@@ -168,6 +169,10 @@ struct CreateViewParams {
   // Indicates whether web or OS-level Attribution Reporting is supported. See
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md
   network.mojom.AttributionSupport attribution_support;
+
+  // This must be null unless the view being created is a partitioned popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  blink.mojom.PartitionedPopinParams? partitioned_popin_params;
 };
 
 // A union to distinguish between parameters specific to local main frame
@@ -522,7 +527,7 @@ interface FrameBindingsControl {
   // Used to tell a render frame whether it should expose various bindings
   // that allow JS content extended privileges. See BindingsPolicy for valid
   // flag values.
-  AllowBindings(int32 enabled_bindings_flags);
+  AllowBindings(int64 enabled_bindings_flags);
 
   // Used to tell the RenderFrame to enable Mojo JS bindings, which allows
   // JS code running in the renderer process to connect to Mojo interfaces
@@ -678,6 +683,10 @@ struct CreateNewWindowReply {
 
   // The ColorProviderColorMaps for this view.
   blink.mojom.ColorProviderColorMaps color_provider_colors;
+
+  // This must be null unless the view being created is a partitioned popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  blink.mojom.PartitionedPopinParams? partitioned_popin_params;
 };
 
 // A per-navigation interface passed along with the BeginNavigation call, used

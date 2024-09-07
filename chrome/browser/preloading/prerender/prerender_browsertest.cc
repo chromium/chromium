@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -36,12 +37,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 namespace {
 
@@ -160,10 +155,10 @@ void PrerenderBrowserTest::TestPrerenderAndActivateInNewTab(
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
-  int host_id =
+  content::FrameTreeNodeId host_id =
       prerender_helper().AddPrerender(prerender_url,
                                       /*eagerness=*/std::nullopt, "_blank");
-  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(host_id);
 
   // Activate.
   EXPECT_TRUE(ExecJs(GetActiveWebContents(), link_click_script));
@@ -240,9 +235,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
-  int host_id = prerender_helper().AddPrerender(
+  content::FrameTreeNodeId host_id = prerender_helper().AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, "_blank");
-  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(host_id);
 
   // Navigate a prerendered page to another page.
   GURL navigation_url =
@@ -415,8 +410,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
   prerender_helper().AddPrerenderAsync(prerender_url);
   // Since preload setting is disabled, prerender shouldn't be triggered.
   base::RunLoop().RunUntilIdle();
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_TRUE(host_id.is_null());
 
   // Reload the initial page to reset the speculation rules.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
@@ -435,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
   // successfully.
   registry_observer.WaitForTrigger(prerender_url);
   host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(host_id);
 }
 
 // Tests that DevTools open overrides PreloadingConfig's holdback.
@@ -499,8 +495,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PreloadingHoldbackNotOverridden) {
   prerender_helper().AddPrerenderAsync(prerender_url);
   // Since preload setting is disabled, prerender shouldn't be triggered.
   registry_observer.WaitForTrigger(prerender_url);
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_TRUE(host_id.is_null());
 }
 
 // Tests that the same-origin main frame navigation in an embedder triggered
@@ -530,8 +527,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginMainFrameNavigation) {
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  ASSERT_TRUE(host_id);
 
   // Start a same-origin navigation in the prerender frame tree. It will not
   // cancel the initiator's prerendering.
@@ -586,8 +584,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  ASSERT_TRUE(host_id);
 
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), host_id);
@@ -645,8 +644,9 @@ IN_PROC_BROWSER_TEST_F(
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  ASSERT_TRUE(host_id);
 
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), host_id);
@@ -672,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
-  int host_id = prerender_helper().AddPrerender(
+  content::FrameTreeNodeId host_id = prerender_helper().AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, "_blank");
 
   // Navigate a prerendered page to another page.
@@ -902,8 +902,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
   EXPECT_FALSE(
       prerender_manager->StartPrerenderNewTabPage(prerender_url, GetParam()));
   base::RunLoop().RunUntilIdle();
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_TRUE(host_id.is_null());
 
   // Navigate to a different URL other than the prerender_url to flush the
   // metrics.
@@ -984,8 +985,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  ASSERT_TRUE(host_id);
 
   // Navigate to a different page. This should cancel prerendering.
   GURL different_url = GetUrl("/simple.html?different");

@@ -438,7 +438,8 @@ bool IsBottomOmniboxAvailable() {
 }
 
 NSArray<UITrait>* TraitCollectionSetForTraits(NSArray<UITrait>* traits) {
-  if (base::FeatureList::IsEnabled(kEnableTraitCollectionRegistration)) {
+  if (base::FeatureList::IsEnabled(kEnableTraitCollectionRegistration) &&
+      traits) {
     return traits;
   }
 

@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -162,6 +163,7 @@ class InterestGroupStorageTest : public testing::Test {
         case 25:
         case 26:
         case 27:
+        case 30:
           *version_changed_ig_fields = false;
           break;
         default:
@@ -194,6 +196,9 @@ class InterestGroupStorageTest : public testing::Test {
     // instance.
 
     switch (version_number) {
+      case 30:
+        // Compressed AdsProto, but introduced no new fields.
+        ABSL_FALLTHROUGH_INTENDED;
       case 29:
         result.ads.value()[0].selectable_buyer_and_seller_reporting_ids = {
             "selectable_id1", "selectable_id2"};
@@ -1247,6 +1252,9 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   EXPECT_FALSE(cooldowns->last_report_sent_time.has_value());
   EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
 
+  std::optional<base::Time> lockout = storage->GetDebugReportLockout();
+  ASSERT_FALSE(lockout.has_value());
+
   base::Time time = base::Time::Now();
   base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
       time.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
@@ -1256,6 +1264,9 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   ASSERT_TRUE(cooldowns->last_report_sent_time.has_value());
   EXPECT_EQ(expected_time, *cooldowns->last_report_sent_time);
   EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
+  lockout = storage->GetDebugReportLockout();
+  ASSERT_TRUE(lockout.has_value());
+  EXPECT_EQ(expected_time, *lockout);
 
   storage->RecordDebugReportCooldown(test_origin, time,
                                      DebugReportCooldownType::kShortCooldown);
@@ -1764,6 +1775,8 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   StoresAllFieldsTest();
 }
 
+#if !BUILDFLAG(IS_IOS)
+// std::system is not available on iOS.
 TEST_F(InterestGroupStorageTest, DumpAllIgFields) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("dump-all-ig-fields")) {
     // This is not part of the proper test, but rather serves as a utility run
@@ -1800,6 +1813,7 @@ TEST_F(InterestGroupStorageTest, DumpAllIgFields) {
     }
   }
 }
+#endif
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   const url::Origin owner_originA =

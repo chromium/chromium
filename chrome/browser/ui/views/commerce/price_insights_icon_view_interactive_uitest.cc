@@ -163,15 +163,15 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(),
+
       // Ensure the side panel isn't open
       EnsureNotPresent(kSidePanelElementId),
       // Click on the action chip to open the side panel
       PressButton(kPriceInsightsChipElementId),
-      WaitForShow(kSidePanelElementId), FlushEvents(),
+      WaitForShow(kSidePanelElementId),
       // Click on the action chip again to close the side panel
       PressButton(kPriceInsightsChipElementId),
-      WaitForHide(kSidePanelElementId), FlushEvents());
+      WaitForHide(kSidePanelElementId));
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Shopping_ShoppingAction::kEntryName);
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
       WaitForShow(kPriceInsightsChipElementId),
-      PressButton(kPriceInsightsChipElementId), FlushEvents(),
+      PressButton(kPriceInsightsChipElementId),
       CheckView(
           kPriceInsightsChipElementId,
           [](PriceInsightsIconView* icon) {

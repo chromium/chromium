@@ -620,10 +620,8 @@ void ByteStreamTeeEngine::PullWithBYOBReader(ScriptState* script_state,
 
 DOMUint8Array* ByteStreamTeeEngine::CloneAsUint8Array(
     DOMArrayBufferView* chunk) {
-  auto* cloned_buffer =
-      DOMArrayBuffer::Create(chunk->buffer()->Data(), chunk->byteLength());
-  return DOMUint8Array::Create(cloned_buffer, chunk->byteOffset(),
-                               chunk->byteLength());
+  auto* cloned_buffer = DOMArrayBuffer::Create(chunk->ByteSpan());
+  return DOMUint8Array::Create(cloned_buffer, 0, chunk->byteLength());
 }
 
 void ByteStreamTeeEngine::Start(ScriptState* script_state,

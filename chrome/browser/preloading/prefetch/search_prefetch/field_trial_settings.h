@@ -97,4 +97,9 @@ BASE_DECLARE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork);
 extern const base::FeatureParam<base::TimeDelta>
     kSuppressesSearchPrefetchOnSlowNetworkThreshold;
 
+// If enabled, SearchPrefetchService is ensured on
+// `SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest`, so that
+// navigation can consult the search prefetch cache even during browser startup.
+BASE_DECLARE_FEATURE(kEnsureSearchPrefetchServiceOnInterceptor);
+
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

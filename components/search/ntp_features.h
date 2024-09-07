@@ -21,7 +21,6 @@ namespace ntp_features {
 // the .cc file.
 
 BASE_DECLARE_FEATURE(kConfirmSuggestionRemovals);
-BASE_DECLARE_FEATURE(kCacheOneGoogleBar);
 BASE_DECLARE_FEATURE(kCustomizeChromeColorExtraction);
 BASE_DECLARE_FEATURE(kCustomizeChromeSidePanelExtensionsCard);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearch);
@@ -29,11 +28,6 @@ BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchButton);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard);
 BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
 BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
-BASE_DECLARE_FEATURE(kRealboxCr23All);
-BASE_DECLARE_FEATURE(kRealboxCr23ConsistentRowHeight);
-BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateIcons);
-BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateLayout);
-BASE_DECLARE_FEATURE(kRealboxCr23HoverFillShape);
 BASE_DECLARE_FEATURE(kRealboxCr23Theming);
 BASE_DECLARE_FEATURE(kRealboxMatchOmniboxTheme);
 BASE_DECLARE_FEATURE(kRealboxMatchSearchboxTheme);
@@ -72,25 +66,9 @@ BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpSharepointModule);
 BASE_DECLARE_FEATURE(kNtpShortcuts);
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModule);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumVisitsRequired);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleCategories);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMaxClusters);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleTextOnly);
 BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
-BASE_DECLARE_FEATURE(kNtpChromeCartInHistoryClusterModule);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleUseModelRanking);
-BASE_DECLARE_FEATURE(kNtpChromeCartHistoryClusterCoexist);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon);
-BASE_DECLARE_FEATURE(kNtpTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleTimeLimit);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButton);
@@ -158,44 +136,13 @@ extern const char kNtpSafeBrowsingModuleCountMaxParam[];
 extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 // Parameter determining the variation of the omnibox theme matching.
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
-// Parameter for determining the maximum number of hours to look back to show a
-// history cluster.
-extern const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[];
-// Parameter for determining the minimum number of visits that are required in
-// order to show a history cluster.
-extern const char kNtpHistoryClustersModuleMinimumVisitsRequiredParam[];
-// Parameter for determining the minimum number of visits with an image that are
-// required in order to show a history cluster.
-extern const char kNtpHistoryClustersModuleMinimumImagesRequiredParam[];
-// Parameter for determining the categories a history cluster must fall into to
-// be shown.
-extern const char kNtpHistoryClustersModuleCategoriesAllowlistParam[];
-// Parameter for determining the categories a history cluster must not fall into
-// to be shown.
-extern const char kNtpHistoryClustersModuleCategoriesBlocklistParam[];
-// Parameter for determining the categories a history cluster falls into to be
-// boosted for showing on the New Tab Page.
-extern const char kNtpHistoryClustersModuleCategoriesBoostlistParam[];
-// Parameter for setting the maximum number of candidate clusters for the
-// History Clusters Service to return.
-extern const char kNtpHistoryClustersModuleMaxClustersParam[];
-// Parameter for setting the maximum number of category ids associated with a
-// cluster that will be recorded and queried to determine if a cluster belongs
-// to the most frequently seen or used category.
-extern const char kNtpHistoryClustersModuleMaxCategoriesToRecordParam[];
-// Parameter for setting the minimum category weight required for a category
-// associated with a cluster to be recorded and queried at a later time to
-// determine if a cluster belongs to the most frequently seen or used category.
-extern const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[];
-// Parameter for setting the number of days to query for cluster metric data
-// that is used to compute metrics used cluster ranking.
-extern const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[];
-extern const char kNtpHistoryClustersModuleScoreThresholdParam[];
+extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
+// Parameter determining the max visits to show.
+extern const char kNtpMostRelevantTabResumptionModuleMaxVisitsParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
 // Parameter for determining the categories a tab must not fall into
 // to be shown.
 extern const char kNtpTabResumptionModuleCategoriesBlocklistParam[];
-extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
 // Parameter determining for how long a dismissed tab should be discarded
 // from the module's displayed visit resumption suggestions.

@@ -37,14 +37,20 @@ class SVGPathByteStream {
   USING_FAST_MALLOC(SVGPathByteStream);
 
  public:
+  using Data = Vector<unsigned char>;
+  using DataIterator = Data::const_iterator;
+
   SVGPathByteStream() = default;
+  explicit SVGPathByteStream(const Vector<unsigned char, 1024>& other) {
+    // NOTE: This does not use `_data(other)` as that triggers an
+    // allocation at the capacity of `other`, which may be far too large.
+    data_.ReserveInitialCapacity(other.size());
+    data_.InsertVector(0, other);
+  }
 
   std::unique_ptr<SVGPathByteStream> Clone() const {
     return base::WrapUnique(new SVGPathByteStream(data_));
   }
-
-  typedef Vector<unsigned char> Data;
-  typedef Data::const_iterator DataIterator;
 
   DataIterator begin() const { return data_.begin(); }
   DataIterator end() const { return data_.end(); }

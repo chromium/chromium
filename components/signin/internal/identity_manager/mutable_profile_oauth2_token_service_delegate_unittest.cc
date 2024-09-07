@@ -20,7 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -71,6 +71,8 @@ class MutableProfileOAuth2TokenServiceDelegateTest
       : task_environment_(
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC),
+        os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)),
         access_token_success_count_(0),
         access_token_failure_count_(0),
         access_token_failure_(GoogleServiceAuthError::NONE),
@@ -82,7 +84,6 @@ class MutableProfileOAuth2TokenServiceDelegateTest
         revoke_all_tokens_on_load_(RevokeAllTokensOnLoad::kNo) {}
 
   void SetUp() override {
-    OSCryptMocker::SetUp();
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
     client_ = std::make_unique<TestSigninClient>(&pref_service_);
@@ -93,12 +94,12 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   }
 
   void TearDown() override {
+    token_web_data_->ShutdownDatabase();
     base::RunLoop().RunUntilIdle();
     if (oauth2_service_delegate_) {
       test_service_observation_.Reset();
       oauth2_service_delegate_->Shutdown();
     }
-    OSCryptMocker::TearDown();
   }
 
   void LoadTokenDatabase() {
@@ -107,10 +108,9 @@ class MutableProfileOAuth2TokenServiceDelegateTest
         path, base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     web_database->AddTable(std::make_unique<TokenServiceTable>());
-    web_database->LoadDatabase();
+    web_database->LoadDatabase(os_crypt_.get());
     token_web_data_ = new TokenWebData(
-        web_database, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        web_database, base::SingleThreadTaskRunner::GetCurrentDefault());
     token_web_data_->Init(base::NullCallback());
   }
 
@@ -277,6 +277,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   TestingOAuth2AccessTokenManagerConsumer consumer_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   AccountTrackerService account_tracker_service_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<TokenWebData> token_web_data_;
   std::unique_ptr<WDResult<TokenResult>> token_web_data_result_;
   int access_token_success_count_;
@@ -804,6 +805,79 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {
             oauth2_service_delegate_->GetAuthError(account_id));
 }
 
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryAvailable) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const std::string gaia_id = "gaia_id";
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
+  tokens["AccountId-gaia_id"] = TokenWithBindingKey("refresh_token");
+
+  // Primary account is available in account tracker service.
+  account_tracker_service_.SeedAccountInfo(gaia_id, "test@google.com");
+  oauth2_service_delegate_->loading_primary_account_id_ = account_id;
+
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountInPref.StartupState.Primary",
+      AccountStartupState::kKnownValidToken, 1);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryNotAvailable) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const std::string gaia_id = "gaia_id";
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
+  tokens["AccountId-gaia_id"] =
+      TokenWithBindingKey(GaiaConstants::kInvalidRefreshToken);
+
+  // Primary account is not seeded in the account tracker service.
+  oauth2_service_delegate_->loading_primary_account_id_ = account_id;
+
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountInPref.StartupState.Primary",
+      AccountStartupState::kUnknownInvalidToken, 1);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryAvailable) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const std::string gaia_id = "gaia_id";
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
+  tokens["AccountId-gaia_id"] =
+      TokenWithBindingKey(GaiaConstants::kInvalidRefreshToken);
+
+  // Secondary account is available in account tracker service.
+  account_tracker_service_.SeedAccountInfo(gaia_id, "test@google.com");
+
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountInPref.StartupState.Secondary",
+      AccountStartupState::kKnownInvalidToken, 1);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryNotAvailable) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const std::string gaia_id = "gaia_id";
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
+  tokens["AccountId-gaia_id"] = TokenWithBindingKey("refresh_token");
+
+  // Secondary account is not seeded in the account tracker service.
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountInPref.StartupState.Secondary",
+      AccountStartupState::kUnknownValidToken, 1);
+}
+
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetTokenForMultilogin) {
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
   const CoreAccountId account_id1 = CoreAccountId::FromGaiaId("account_id1");
@@ -1178,8 +1252,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
                        "refresh_token");
   AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
                        "refresh_token");
+  // With explicit signin, tokens are only cleared at startup for syncing users.
   oauth2_service_delegate_->LoadCredentials(primary_account,
-                                            /*is_syncing=*/false);
+                                            /*is_syncing=*/true);
   WaitForRefreshTokensLoaded();
 
   EXPECT_EQ(1, tokens_loaded_count_);
@@ -1208,7 +1283,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
   // revoked again on the server.
   client_->SetNetworkCallsDelayed(true);
   oauth2_service_delegate_->LoadCredentials(primary_account,
-                                            /*is_syncing=*/false);
+                                            /*is_syncing=*/true);
   WaitForRefreshTokensLoaded();
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));

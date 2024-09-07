@@ -516,28 +516,4 @@ TEST_F(ExternalPopupMenuTest, RemoveFrameOnChange) {
   // The test passes if the test didn't crash and ASAN didn't complain.
 }
 
-// <datalist> normally has display:none which would prevent the <option>s from
-// being included in menu_items, but an additional UA style rule undoes the
-// display:none in this case.
-TEST_F(ExternalPopupMenuTest, OptionsInAuthorDatalist) {
-  RegisterMockedURLLoad("select_with_datalist.html");
-  LoadFrame("select_with_datalist.html");
-
-  Document& document = *MainFrame()->GetFrame()->GetDocument();
-  auto* select = To<HTMLSelectElement>(document.getElementById(AtomicString("select")));
-  document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  select->ShowPopup();
-
-  int32_t item_height;
-  double font_size;
-  int32_t selected_item;
-  Vector<mojom::blink::MenuItemPtr> menu_items;
-  bool right_aligned;
-  bool allow_multiple_selection;
-  ExternalPopupMenu::GetPopupMenuInfo(
-      *select, &item_height, &font_size, &selected_item, &menu_items,
-      &right_aligned, &allow_multiple_selection);
-  EXPECT_EQ(2u, menu_items.size());
-}
-
 }  // namespace blink

@@ -102,6 +102,7 @@ NSString* const kArrowUpSymbol = @"arrow.up";
 NSString* const kFamilylinkSymbol = @"familylink";
 NSString* const kMyDriveSymbol = @"my_drive";
 NSString* const kSharedDrivesSymbol = @"shared_drives";
+NSString* const kEllipsisSquareFillSymbol = @"ellipsis_square_fill";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
@@ -206,6 +207,7 @@ NSString* const kDocSymbol = @"doc";
 NSString* const kOpenInDownloadsSymbol = @"arrow.down.to.line.compact";
 NSString* const kExternalLinkSymbol = @"arrow.up.forward.square";
 NSString* const kChevronDownSymbol = @"chevron.down";
+NSString* const kChevronUpSymbol = @"chevron.up";
 NSString* const kChevronBackwardSymbol = @"chevron.backward";
 NSString* const kChevronForwardSymbol = @"chevron.forward";
 NSString* const kChevronUpDown = @"chevron.up.chevron.down";

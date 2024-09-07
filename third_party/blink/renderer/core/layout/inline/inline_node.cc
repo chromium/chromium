@@ -192,8 +192,8 @@ class ReusingTextShaper final {
       return Reshape(start_item, font, start_offset, end_offset);
 
     HeapVector<Member<const ShapeResult>> reusable_shape_results =
-        CollectReusableShapeResults(start_offset, end_offset,
-                                    font.PrimaryFont(), start_item.Direction());
+        CollectReusableShapeResults(start_offset, end_offset, font,
+                                    start_item.Direction());
     ClearCollectionScope clear_scope(&reusable_shape_results);
 
     if (reusable_shape_results.empty())
@@ -240,7 +240,7 @@ class ReusingTextShaper final {
   HeapVector<Member<const ShapeResult>> CollectReusableShapeResults(
       unsigned start_offset,
       unsigned end_offset,
-      const SimpleFontData* primary_font,
+      const Font& font,
       TextDirection direction) {
     DCHECK_LT(start_offset, end_offset);
     HeapVector<Member<const ShapeResult>> shape_results;
@@ -256,11 +256,20 @@ class ReusingTextShaper final {
         break;
       if (item->EndOffset() < start_offset)
         continue;
+      // This is trying to reuse `ShapeResult` only by the string match. Check
+      // if it's reusable for the given style. crbug.com/40879986
       const ShapeResult* const shape_result = item->TextShapeResult();
       if (!shape_result || item->Direction() != direction)
         continue;
-      if (shape_result->PrimaryFont() != primary_font)
-        continue;
+      if (RuntimeEnabledFeatures::ReuseShapeResultsByFontsEnabled()) {
+        if (item->Style()->GetFont() != font) {
+          continue;
+        }
+      } else {
+        if (shape_result->PrimaryFont() != font.PrimaryFont()) {
+          continue;
+        }
+      }
       if (shape_result->IsAppliedSpacing())
         continue;
       shape_results.push_back(shape_result);

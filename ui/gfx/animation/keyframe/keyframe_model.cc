@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/animation/keyframe/keyframe_model.h"
 
 #include "base/memory/ptr_util.h"
@@ -17,14 +12,10 @@ namespace gfx {
 namespace {
 
 // This should match the RunState enum.
-static const char* const s_runStateNames[] = {"WAITING_FOR_TARGET_AVAILABILITY",
-                                              "WAITING_FOR_DELETION",
-                                              "STARTING",
-                                              "RUNNING",
-                                              "PAUSED",
-                                              "FINISHED",
-                                              "ABORTED",
-                                              "ABORTED_BUT_NEEDS_COMPLETION"};
+static constexpr auto s_runStateNames = std::to_array<const char*>(
+    {"WAITING_FOR_TARGET_AVAILABILITY", "WAITING_FOR_DELETION", "STARTING",
+     "RUNNING", "PAUSED", "FINISHED", "ABORTED",
+     "ABORTED_BUT_NEEDS_COMPLETION"});
 
 static_assert(static_cast<int>(KeyframeModel::LAST_RUN_STATE) + 1 ==
                   std::size(s_runStateNames),

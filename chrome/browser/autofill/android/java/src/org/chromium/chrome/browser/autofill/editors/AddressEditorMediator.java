@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
-import org.chromium.components.autofill.Source;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -238,7 +238,7 @@ class AddressEditorMediator {
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(EDITOR_TITLE, getEditorTitle())
                         .with(CUSTOM_DONE_BUTTON_TEXT, mCustomDoneButtonText)
-                        .with(FOOTER_MESSAGE, getSourceNoticeText())
+                        .with(FOOTER_MESSAGE, getRecordTypeNoticeText())
                         .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
                         .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
                         .with(SHOW_REQUIRED_INDICATOR, false)
@@ -380,7 +380,7 @@ class AddressEditorMediator {
         if (willBeSavedInAccount()
                 && mUserFlow == CREATE_NEW_ADDRESS_PROFILE
                 && mPersonalDataManager.isCountryEligibleForAccountStorage(country)) {
-            profile.setSource(Source.ACCOUNT);
+            profile.setRecordType(RecordType.ACCOUNT);
         }
         // Country code and phone number are always required and are always collected from the
         // editor model.
@@ -424,7 +424,7 @@ class AddressEditorMediator {
             case UPDATE_EXISTING_ADDRESS_PROFILE:
                 return false;
             case SAVE_NEW_ADDRESS_PROFILE:
-                return mProfileToEdit.getSource() == Source.ACCOUNT;
+                return mProfileToEdit.getRecordType() == RecordType.ACCOUNT;
             case CREATE_NEW_ADDRESS_PROFILE:
                 return mPersonalDataManager.isEligibleForAddressAccountStorage();
         }
@@ -451,27 +451,28 @@ class AddressEditorMediator {
         if (isAccountAddressProfile()) {
             @Nullable String email = getUserEmail();
             if (email == null) return null;
-            return mContext.getString(R.string.autofill_delete_account_address_source_notice)
+            return mContext.getString(R.string.autofill_delete_account_address_record_type_notice)
                     .replace("$1", email);
         }
         if (isAddressSyncOn()) {
-            return mContext.getString(R.string.autofill_delete_sync_address_source_notice);
+            return mContext.getString(R.string.autofill_delete_sync_address_record_type_notice);
         }
-        return mContext.getString(R.string.autofill_delete_local_address_source_notice);
+        return mContext.getString(R.string.autofill_delete_local_address_record_type_notice);
     }
 
-    private @Nullable String getSourceNoticeText() {
+    private @Nullable String getRecordTypeNoticeText() {
         if (!isAccountAddressProfile()) return null;
         @Nullable String email = getUserEmail();
         if (email == null) return null;
 
         if (isAlreadySavedInAccount()) {
             return mContext.getString(
-                            R.string.autofill_address_already_saved_in_account_source_notice)
+                            R.string.autofill_address_already_saved_in_account_record_type_notice)
                     .replace("$1", email);
         }
 
-        return mContext.getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
+        return mContext.getString(
+                        R.string.autofill_address_will_be_saved_in_account_record_type_notice)
                 .replace("$1", email);
     }
 
@@ -483,7 +484,7 @@ class AddressEditorMediator {
         // User edits an account address profile either from Chrome settings or upon form
         // submission.
         return mUserFlow == UPDATE_EXISTING_ADDRESS_PROFILE
-                && mProfileToEdit.getSource() == Source.ACCOUNT;
+                && mProfileToEdit.getRecordType() == RecordType.ACCOUNT;
     }
 
     private boolean isAddressSyncOn() {

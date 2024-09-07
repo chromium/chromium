@@ -99,8 +99,7 @@ class PlatformHandleTest : public testing::Test,
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
     return GetSharedMemoryContents(handle);
 #else
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
 #endif
   }
 

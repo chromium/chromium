@@ -90,7 +90,8 @@ CommerceUiTabHelper::CommerceUiTabHelper(
       shopping_service_(shopping_service),
       bookmark_model_(model),
       image_fetcher_(image_fetcher),
-      side_panel_registry_(side_panel_registry) {
+      side_panel_registry_(side_panel_registry),
+      price_insights_label_type_(PriceInsightsIconLabelType::kNone) {
   if (!image_fetcher_) {
     CHECK_IS_TEST();
   }
@@ -172,8 +173,7 @@ void CommerceUiTabHelper::DidFinishNavigation(
   pending_tracking_state_.reset();
   price_insights_info_.reset();
   icon_use_recorded_for_page_.clear();
-  price_insights_label_type_ =
-      PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+  price_insights_label_type_ = PriceInsightsIconLabelType::kNone;
 
   MakeShoppingInsightsSidePanelUnavailable();
 
@@ -571,10 +571,9 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
 
   // Prioritize the price insights icon.
   if (ShouldShowPriceInsightsIconView()) {
-    PriceInsightsIconView::PriceInsightsIconLabelType label_type =
+    PriceInsightsIconLabelType label_type =
         GetPriceInsightsIconLabelTypeForPage();
-    bool icon_has_label =
-        label_type != PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+    bool icon_has_label = label_type != PriceInsightsIconLabelType::kNone;
 
     if (icon_has_label && tracker &&
         tracker->ShouldTriggerHelpUI(
@@ -599,7 +598,7 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
   MaybeRecordShoppingInformationUKM(std::nullopt);
 }
 
-PriceInsightsIconView::PriceInsightsIconLabelType
+PriceInsightsIconLabelType
 CommerceUiTabHelper::GetPriceInsightsIconLabelTypeForPage() {
   auto& price_insights_info = GetPriceInsightsInfo();
 
@@ -607,16 +606,16 @@ CommerceUiTabHelper::GetPriceInsightsIconLabelTypeForPage() {
       !price_insights_info->typical_low_price_micros.has_value() ||
       !price_insights_info->typical_high_price_micros.has_value() ||
       price_insights_info->catalog_history_prices.empty()) {
-    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+    return PriceInsightsIconLabelType::kNone;
   } else if (price_insights_info->price_bucket ==
              commerce::PriceBucket::kLowPrice) {
-    return PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow;
+    return PriceInsightsIconLabelType::kPriceIsLow;
   } else if (price_insights_info->price_bucket ==
                  commerce::PriceBucket::kHighPrice &&
              commerce::kPriceInsightsChipLabelExpandOnHighPrice.Get()) {
-    return PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh;
+    return PriceInsightsIconLabelType::kPriceIsHigh;
   } else {
-    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+    return PriceInsightsIconLabelType::kNone;
   }
 }
 

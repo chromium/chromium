@@ -9,6 +9,7 @@
 
 #include "base/test/perf_log.h"
 
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 
@@ -35,9 +36,7 @@ void FinalizePerfLog() {
 }
 
 void LogPerfResult(const char* test_name, double value, const char* units) {
-  if (!perf_log_file) {
-    NOTREACHED();
-  }
+  CHECK(perf_log_file);
 
   fprintf(perf_log_file, "%s\t%g\t%s\n", test_name, value, units);
   printf("%s\t%g\t%s\n", test_name, value, units);

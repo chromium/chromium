@@ -63,6 +63,9 @@ class RemoteCommandCenterDelegate {
   // Notifies the browser process when a SystemMediaControlsBridge is made.
   void OnBridgeCreatedForTesting();
 
+  // Notifies the browser process when the now playing info has been cleared.
+  void OnMetadataClearedForTesting();
+
  private:
   // Used to track which commands we're already listening for.
   enum class Command {

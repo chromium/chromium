@@ -7,7 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -20,8 +20,7 @@ SyncedBookmarksObserverBridge::SyncedBookmarksObserverBridge(
     ChromeBrowserState* browserState)
     : SyncObserverBridge(delegate,
                          SyncServiceFactory::GetForBrowserState(browserState)),
-      identity_manager_(
-          IdentityManagerFactory::GetForBrowserState(browserState)),
+      identity_manager_(IdentityManagerFactory::GetForProfile(browserState)),
       browser_state_(browserState->AsWeakPtr()) {}
 
 SyncedBookmarksObserverBridge::~SyncedBookmarksObserverBridge() {}

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -138,12 +139,13 @@ PasswordAddUsernameView::PasswordAddUsernameView(
 
   SetShowIcon(true);
   SetFootnoteView(CreateFooterView());
-  SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
 
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_ADD_USERNAME));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CANCEL_BUTTON));
 
   SetTitle(controller_.GetTitle());
@@ -202,6 +204,6 @@ std::unique_ptr<views::View> PasswordAddUsernameView::CreateFooterView() {
 }
 
 void PasswordAddUsernameView::OnUsernameChanged() {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK,
+  SetButtonEnabled(ui::mojom::DialogButton::kOk,
                    !username_dropdown_->GetText().empty());
 }

@@ -172,9 +172,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestNotification"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
@@ -198,9 +196,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
@@ -224,9 +220,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
@@ -246,9 +240,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
@@ -268,9 +260,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),

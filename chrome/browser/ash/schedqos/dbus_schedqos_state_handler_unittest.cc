@@ -360,7 +360,7 @@ TEST_F(DBusSchedQOSStateHandlerTest, GetProcessPriority) {
 
   ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kUserVisible));
   // base::Process::Priority::kUserVisible is translated as
-  // base::Process::Priority::kUserBlocking.
+  // base::Process::Priority::kUserBlocking on ChromeOS.
   EXPECT_EQ(process_.GetPriority(), base::Process::Priority::kUserBlocking);
 
   process_.ForgetPriority();
@@ -390,12 +390,9 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadType) {
   base::PlatformThread::SetThreadType(
       process_.Pid(), 103, base::ThreadType::kDefault, base::IsViaIPC(false));
   base::PlatformThread::SetThreadType(process_.Pid(), 104,
-                                      base::ThreadType::kCompositing,
-                                      base::IsViaIPC(false));
-  base::PlatformThread::SetThreadType(process_.Pid(), 105,
                                       base::ThreadType::kDisplayCritical,
                                       base::IsViaIPC(false));
-  base::PlatformThread::SetThreadType(process_.Pid(), 106,
+  base::PlatformThread::SetThreadType(process_.Pid(), 105,
                                       base::ThreadType::kRealtimeAudio,
                                       base::IsViaIPC(false));
   task_environment_.RunUntilIdle();
@@ -416,8 +413,6 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadType) {
           FieldsAre(process_.Pid(), 104,
                     resource_manager::ThreadState::kUrgent),
           FieldsAre(process_.Pid(), 105,
-                    resource_manager::ThreadState::kUrgent),
-          FieldsAre(process_.Pid(), 106,
                     resource_manager::ThreadState::kUrgentBursty)));
 }
 

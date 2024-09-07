@@ -183,9 +183,10 @@ bool AppActivity::CanJoinSession(const CastMediaSource& cast_source) const {
   return true;
 }
 
-bool AppActivity::HasJoinableClient(AutoJoinPolicy policy,
-                                    const url::Origin& origin,
-                                    int frame_tree_node_id) const {
+bool AppActivity::HasJoinableClient(
+    AutoJoinPolicy policy,
+    const url::Origin& origin,
+    content::FrameTreeNodeId frame_tree_node_id) const {
   return base::ranges::any_of(
       connected_clients_,
       [policy, &origin, frame_tree_node_id](const auto& client) {

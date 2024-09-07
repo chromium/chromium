@@ -35,15 +35,10 @@ class COMPONENT_EXPORT(LIBURLPATTERN) ConstructorStringParser {
     std::optional<std::string_view> search;
     std::optional<std::string_view> hash;
   };
-  struct StringParserOptions {
-    // This enables the behavior proposed in WICG/urlpattern#179.
-    bool more_wildcards = true;
-  };
   using ProtocolCheckCallback =
       std::function<absl::StatusOr<bool>(std::string_view)>;
 
-  ConstructorStringParser(std::string_view constructor_string,
-                          const StringParserOptions& options);
+  explicit ConstructorStringParser(std::string_view constructor_string);
 
   // Attempt to parse the input string used to construct the Parser object.
   // This method may only be called once.  Retrieve the parse result by calling
@@ -163,7 +158,6 @@ class COMPONENT_EXPORT(LIBURLPATTERN) ConstructorStringParser {
 
   // The input UTF-8 string to the parser.
   const std::string_view input_;
-  const StringParserOptions options_;
 
   // The list of Tokens produced by calling `Tokenize()` on `input_`.
   std::vector<Token> token_list_;

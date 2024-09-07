@@ -81,7 +81,8 @@ public class NotificationUmaTracker {
         SystemNotificationType.USB,
         SystemNotificationType.UPM_ERROR,
         SystemNotificationType.WEBAPK_INSTALL_FAILED,
-        SystemNotificationType.DATA_SHARING
+        SystemNotificationType.DATA_SHARING,
+        SystemNotificationType.UPM_ACCESS_LOSS_WARNING
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
@@ -126,8 +127,9 @@ public class NotificationUmaTracker {
         int UPM_ERROR = 37;
         int WEBAPK_INSTALL_FAILED = 38;
         int DATA_SHARING = 39;
+        int UPM_ACCESS_LOSS_WARNING = 40;
 
-        int NUM_ENTRIES = 40;
+        int NUM_ENTRIES = 41;
     }
 
     /*
@@ -323,6 +325,16 @@ public class NotificationUmaTracker {
         int DISPATCH_EVENT = 5;
 
         int NUM_ENTRIES = 6;
+    }
+
+    /** The action during which the `WasGlobalStatePreserved` histogram is recorded. */
+    @IntDef({GlobalStatePreservedActionSuffix.UNDO, GlobalStatePreservedActionSuffix.COMMIT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface GlobalStatePreservedActionSuffix {
+        int UNDO = 0;
+        int COMMIT = 1;
+
+        int NUM_ENTRIES = 2;
     }
 
     private static class LazyHolder {
@@ -577,6 +589,52 @@ public class NotificationUmaTracker {
         RecordHistogram.recordBooleanHistogram(
                 "Mobile.SystemNotification.Permission.OneTapUnsubscribe.IsDuplicatePreUnsubscribe",
                 isDuplicate);
+    }
+
+    /**
+     * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
+     * real time, which includes time spent in power-saving modes and/or display being dark.
+     */
+    public void recordPreUnsubscribeRealDuration(long durationMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "PreUnsubscribePreNativeRealDuration",
+                durationMillis);
+    }
+
+    /**
+     * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
+     * `uptimeMillis`, which stops the clock when in power-saving modes and/or display being dark.
+     */
+    public void recordPreUnsubscribeDuration(long durationMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "PreUnsubscribePreNativeDuration",
+                durationMillis);
+    }
+
+    /**
+     * Records the time, as perceived by the user, that has elapsed between the most recent
+     * non-duplicate `PRE_UNSUBSCRIBE` intent and the current, duplicate `PRE_UNSUBSCRIBE` intent,
+     * including time spent in power-saving modes and/or display being dark.
+     */
+    public void recordDuplicatePreUnsubscribeRealDelay(long delayMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "DuplicatePreUnsubscribeRealDelay",
+                delayMillis);
+    }
+
+    /**
+     * Records whether the Java global state was preserved between `PRE_UNSUBSCRIBE` and the
+     * `UNDO_UNSUBSCRIBE`/`COMMIT_UNSUBSCRIBE_*` events.
+     */
+    public void recordWasGlobalStatePreserved(
+            @GlobalStatePreservedActionSuffix int action, boolean wasPreserved) {
+        RecordHistogram.recordBooleanHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe.WasGlobalStatePreserved."
+                        + (action == GlobalStatePreservedActionSuffix.UNDO ? "Undo" : "Commit"),
+                wasPreserved);
     }
 
     /**

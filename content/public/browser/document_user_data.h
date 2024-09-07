@@ -15,6 +15,8 @@ namespace content {
 
 class RenderFrameHost;
 
+namespace internal {
+
 CONTENT_EXPORT base::SupportsUserData::Data* GetDocumentUserData(
     const RenderFrameHost* rfh,
     const void* key);
@@ -26,6 +28,8 @@ CONTENT_EXPORT void SetDocumentUserData(
 
 CONTENT_EXPORT void RemoveDocumentUserData(RenderFrameHost* rfh,
                                            const void* key);
+
+}  // namespace internal
 
 // This class approximates the lifetime of a single blink::Document in the
 // browser process. At the moment RenderFrameHost can correspond to multiple
@@ -98,18 +102,19 @@ class DocumentUserData : public base::SupportsUserData::Data {
     DCHECK(rfh);
     if (!GetForCurrentDocument(rfh)) {
       T* data = new T(rfh, std::forward<Args>(args)...);
-      SetDocumentUserData(rfh, UserDataKey(), base::WrapUnique(data));
+      internal::SetDocumentUserData(rfh, UserDataKey(), base::WrapUnique(data));
     }
   }
 
   static T* GetForCurrentDocument(RenderFrameHost* rfh) {
     DCHECK(rfh);
-    return static_cast<T*>(GetDocumentUserData(rfh, UserDataKey()));
+    return static_cast<T*>(internal::GetDocumentUserData(rfh, UserDataKey()));
   }
 
   static const T* GetForCurrentDocument(const RenderFrameHost* rfh) {
     DCHECK(rfh);
-    return static_cast<const T*>(GetDocumentUserData(rfh, UserDataKey()));
+    return static_cast<const T*>(
+        internal::GetDocumentUserData(rfh, UserDataKey()));
   }
 
   static T* GetOrCreateForCurrentDocument(RenderFrameHost* rfh) {
@@ -125,7 +130,7 @@ class DocumentUserData : public base::SupportsUserData::Data {
   static void DeleteForCurrentDocument(RenderFrameHost* rfh) {
     DCHECK(rfh);
     DCHECK(GetForCurrentDocument(rfh));
-    RemoveDocumentUserData(rfh, UserDataKey());
+    internal::RemoveDocumentUserData(rfh, UserDataKey());
   }
 
   // Returns the RenderFrameHost associated with `this` object of a subclass

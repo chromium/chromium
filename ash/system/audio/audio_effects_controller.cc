@@ -65,6 +65,8 @@ bool AudioEffectsController::IsEffectSupported(VcEffectId effect_id) {
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
+    case VcEffectId::kFaceRetouch:
+    case VcEffectId::kStudioLook:
       NOTREACHED();
   }
 }
@@ -84,6 +86,8 @@ std::optional<int> AudioEffectsController::GetEffectState(
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
+    case VcEffectId::kFaceRetouch:
+    case VcEffectId::kStudioLook:
       NOTREACHED();
   }
 }
@@ -119,6 +123,8 @@ void AudioEffectsController::OnEffectControlActivated(
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
+    case VcEffectId::kFaceRetouch:
+    case VcEffectId::kStudioLook:
       NOTREACHED();
   }
 }

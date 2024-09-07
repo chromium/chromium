@@ -11,6 +11,8 @@
 
 namespace blink {
 
+class GridSizingTrackCollection;
+
 class CORE_EXPORT MasonryLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
@@ -18,6 +20,13 @@ class CORE_EXPORT MasonryLayoutAlgorithm
 
   const LayoutResult* Layout();
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+
+ private:
+  friend class MasonryLayoutAlgorithmTest;
+
+  GridSizingTrackCollection ComputeCrossAxisTrackSizes() const;
+
+  wtf_size_t ComputeAutomaticRepetitions() const;
 };
 
 }  // namespace blink

@@ -60,13 +60,6 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
                                       size_t element_byte_size);
   static DOMArrayBuffer* CreateOrNull(base::span<const uint8_t> source);
 
-  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
-  static DOMArrayBuffer* CreateOrNull(const void* source, size_t byte_length) {
-    // SAFETY: Caller guarantees that `source` contains `byte_length` bytes.
-    return CreateOrNull(UNSAFE_BUFFERS(
-        base::span(static_cast<const uint8_t*>(source), byte_length)));
-  }
-
   // Only for use by XMLHttpRequest::responseArrayBuffer,
   // Internals::serializeObject, and
   // FetchDataLoaderAsArrayBuffer::OnStateChange.

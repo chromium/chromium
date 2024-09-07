@@ -29,7 +29,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -41,20 +40,15 @@
 
 namespace ash {
 
-// Parameterized by drag and drop refactor enabled/disabled.
-class AppListMainViewTest : public AshTestBase,
-                            public testing::WithParamInterface<bool> {
+class AppListMainViewTest : public AshTestBase {
  public:
-  AppListMainViewTest() : is_drag_drop_refactor_enabled_(GetParam()) {}
+  AppListMainViewTest() {}
   AppListMainViewTest(const AppListMainViewTest& other) = delete;
   AppListMainViewTest& operator=(const AppListMainViewTest& other) = delete;
   ~AppListMainViewTest() override = default;
 
   // testing::Test overrides:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        app_list_features::kDragAndDropRefactor,
-        is_drag_drop_refactor_enabled_);
     AshTestBase::SetUp();
 
     // Create and show the app list in fullscreen apps grid state.
@@ -167,26 +161,15 @@ class AppListMainViewTest : public AshTestBase,
         GetFolderGridView()->GetBoundsInScreen().bottom_right());
     GetEventGenerator()->MoveMouseBy(10, 10);
 
-    // Fire reparent timer, which should start when the item exits the folder
-    // bounds. The timer closes the folder view.
-    EXPECT_TRUE(GetFolderGridView()->FireFolderItemReparentTimerForTest());
-
     // Generate OnDragExit/OnDragEnter
     GetEventGenerator()->MoveMouseTo(
         GetRootGridView()->GetBoundsInScreen().CenterPoint());
 
-    // Note: with the old behaviour, the folder item is expected to remain
-    // visible so it keeps getting drag events, but it should become
-    // completely transparent.
     // The drag and drop refactor, expects the folder grid view to end drag once
     // the dragged view exits the host.
-    EXPECT_EQ(!is_drag_drop_refactor_enabled_, GetFolderView()->GetVisible());
-    if (!is_drag_drop_refactor_enabled_) {
-      EXPECT_EQ(0.0f, GetFolderGridView()->layer()->opacity());
-    }
+    EXPECT_FALSE(GetFolderView()->GetVisible());
     EXPECT_TRUE(GetRootGridView()->has_dragged_item());
-    EXPECT_EQ(!is_drag_drop_refactor_enabled_,
-              GetFolderGridView()->has_dragged_item());
+    EXPECT_FALSE(GetFolderGridView()->has_dragged_item());
     return item_view;
   }
 
@@ -203,22 +186,13 @@ class AppListMainViewTest : public AshTestBase,
         base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   }
 
-  bool is_drag_drop_refactor_enabled() {
-    return is_drag_drop_refactor_enabled_;
-  }
-
  protected:
   raw_ptr<AppListView, DanglingUntriaged> app_list_view_ =
       nullptr;  // Owned by native widget.
- private:
-  const bool is_drag_drop_refactor_enabled_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, AppListMainViewTest, testing::Bool());
-
 // Tests that the close button becomes invisible after close button is clicked.
-TEST_P(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
+TEST_F(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
   PressAndReleaseKey(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
   EXPECT_FALSE(
@@ -226,21 +200,21 @@ TEST_P(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
 }
 
 // Tests that the search box becomes empty after close button is clicked.
-TEST_P(AppListMainViewTest, SearchBoxEmptyAfterCloseButtonClicked) {
+TEST_F(AppListMainViewTest, SearchBoxEmptyAfterCloseButtonClicked) {
   PressAndReleaseKey(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
   EXPECT_TRUE(search_box_view()->search_box()->GetText().empty());
 }
 
 // Tests that the search box is no longer active after close button is clicked.
-TEST_P(AppListMainViewTest, SearchBoxActiveAfterCloseButtonClicked) {
+TEST_F(AppListMainViewTest, SearchBoxActiveAfterCloseButtonClicked) {
   PressAndReleaseKey(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
   EXPECT_FALSE(search_box_view()->is_search_box_active());
 }
 
 // Tests changing the AppListModel when switching profiles.
-TEST_P(AppListMainViewTest, ModelChanged) {
+TEST_F(AppListMainViewTest, ModelChanged) {
   const size_t kInitialItems = 2;
   GetTestModel()->PopulateApps(kInitialItems);
   EXPECT_EQ(kInitialItems, GetRootViewModel()->view_size());
@@ -268,7 +242,7 @@ TEST_P(AppListMainViewTest, ModelChanged) {
 
 // Tests dragging an item out of a single item folder and dropping it onto the
 // page switcher. Regression test for http://crbug.com/415530/.
-TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
+TEST_F(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   ASSERT_TRUE(folder_item_view);
 
@@ -311,7 +285,7 @@ TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
 // Test that an interrupted drag while reparenting an item from a folder, when
 // canceled via the root grid, correctly forwards the cancelation to the drag
 // occurring from the folder.
-TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
+TEST_F(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
   CreateAndOpenSingleItemFolder();
   AppListItemView* dragged = StartDragOnItemInFolderAt(0);
 
@@ -327,13 +301,11 @@ TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
     EXPECT_FALSE(GetRootGridView()->has_dragged_item());
     EXPECT_FALSE(GetFolderGridView()->has_dragged_item());
   }));
-  if (is_drag_drop_refactor_enabled()) {
-    tasks.push_back(base::BindLambdaForTesting([&]() {
-      // Required by the drag and drop controller to end the loop, since the
-      // action does not cancel the drag sequence.
-      GetEventGenerator()->ReleaseLeftButton();
-    }));
-  }
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Required by the drag and drop controller to end the loop, since the
+    // action does not cancel the drag sequence.
+    GetEventGenerator()->ReleaseLeftButton();
+  }));
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // Additional mouse move operations should be ignored.
@@ -346,7 +318,7 @@ TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
 // Test that dragging an app out of a single item folder and reparenting it
 // back into its original folder results in a cancelled reparent. This is a
 // regression test for http://crbug.com/429083.
-TEST_P(AppListMainViewTest, ReparentSingleItemOntoSelf) {
+TEST_F(AppListMainViewTest, ReparentSingleItemOntoSelf) {
   // Add a folder with 1 item.
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   std::string folder_id = folder_item_view->item()->id();

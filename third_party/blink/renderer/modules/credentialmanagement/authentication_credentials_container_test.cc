@@ -19,14 +19,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_credential_report_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_report_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -208,25 +206,6 @@ TEST(AuthenticationCredentialsContainerTest, RejectPublicKeyCredentialStoreOpera
                              IGNORE_EXCEPTION_FOR_TESTING);
 
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
-}
-
-TEST(AuthenticationCredentialsContainerTest,
-     RejectPublicKeyCredentialReportOperation) {
-  test::TaskEnvironment task_environment;
-  MockCredentialManager mock_credential_manager;
-  CredentialManagerTestingContext context(&mock_credential_manager);
-
-  CredentialReportOptions* options = CredentialReportOptions::Create();
-  options->setPublicKey(PublicKeyCredentialReportOptions::Create());
-
-  auto promise = AuthenticationCredentialsContainer::credentials(
-                     *context.DomWindow().navigator())
-                     ->report(context.GetScriptState(), options,
-                              IGNORE_EXCEPTION_FOR_TESTING);
-
-  ScriptPromiseTester tester(context.GetScriptState(), promise);
-  tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsRejected());
 }
 
 class AuthenticationCredentialsContainerButtonModeMultiIdpTest

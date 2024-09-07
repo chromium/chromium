@@ -16,6 +16,8 @@ import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {getTemplate} from './region_selection.html.js';
+import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
+import {renderScreenshot} from './screenshot_utils.js';
 import {focusShimmerOnRegion, type GestureEvent, GestureState, getRelativeCoordinate, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {Point} from './selection_utils.js';
 
@@ -30,7 +32,7 @@ interface NormalizedRectangle {
 
 export interface RegionSelectionElement {
   $: {
-    highlightImg: HTMLImageElement,
+    highlightImgCanvas: HTMLCanvasElement,
     regionSelectionCanvas: HTMLCanvasElement,
   };
 }
@@ -63,6 +65,7 @@ export class RegionSelectionElement extends PolymerElement {
         type: Object,
         value: getFallbackTheme,
       },
+      selectionOverlayRect: Object,
     };
   }
 
@@ -75,6 +78,9 @@ export class RegionSelectionElement extends PolymerElement {
   private screenshotDataUri: string;
   // The overlay theme.
   private theme: OverlayTheme;
+  // The bounds of the parent element. This is updated by the parent to avoid
+  // this class needing to call getBoundingClientRect()
+  private selectionOverlayRect: DOMRect;
   // Shader hex colors.
   private shaderLayerColorHexes: string[];
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -90,6 +96,15 @@ export class RegionSelectionElement extends PolymerElement {
     super.ready();
 
     this.context = this.$.regionSelectionCanvas.getContext('2d')!;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
+        (screenshot: ImageBitmap) => {
+          renderScreenshot(this.$.highlightImgCanvas, screenshot);
+        });
   }
 
   private computeShaderLayerColorHexes_() {
@@ -148,7 +163,7 @@ export class RegionSelectionElement extends PolymerElement {
   }
 
   private renderBoundingBox(event: GestureEvent, idealCornerRadius = 24) {
-    const parentRect = this.getBoundingClientRect();
+    const parentRect = this.selectionOverlayRect;
 
     // Get the drag event coordinates relative to the canvas
     const relativeDragStart =
@@ -197,7 +212,7 @@ export class RegionSelectionElement extends PolymerElement {
     this.context.save();
     this.context.clip();
     this.context.drawImage(
-        this.$.highlightImg, 0, 0, this.canvasWidth, this.canvasHeight);
+        this.$.highlightImgCanvas, 0, 0, this.canvasWidth, this.canvasHeight);
     this.context.restore();
 
     // Stroke the path on top of the image.
@@ -241,8 +256,7 @@ export class RegionSelectionElement extends PolymerElement {
    */
   private getNormalizedCenterRotatedBoxFromDrag(gesture: GestureEvent):
       CenterRotatedBox {
-    const parentRect = this.getBoundingClientRect();
-
+    const parentRect = this.selectionOverlayRect;
     // Get coordinates relative to the region selection bounds
     const relativeDragStart = getRelativeCoordinate(
         {x: gesture.startX, y: gesture.startY}, parentRect);
@@ -295,7 +309,7 @@ export class RegionSelectionElement extends PolymerElement {
 
   private getPostSelectionRegionFromDrag(gesture: GestureEvent):
       PostSelectionBoundingBox {
-    const parentRect = this.getBoundingClientRect();
+    const parentRect = this.selectionOverlayRect;
 
     // Get coordinates relative to the region selection bounds
     const relativeDragStart = getRelativeCoordinate(
@@ -322,7 +336,7 @@ export class RegionSelectionElement extends PolymerElement {
 
   private getNormalizedRectangleFromTap(gesture: GestureEvent):
       NormalizedRectangle {
-    const parentRect = this.getBoundingClientRect();
+    const parentRect = this.selectionOverlayRect;
     // The size of the canvas relative to the size of the viewport.
     const scaleFactor = Math.min(
         parentRect.height / window.innerHeight,

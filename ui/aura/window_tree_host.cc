@@ -515,9 +515,9 @@ void WindowTreeHost::DestroyDispatcher() {
   // isn't called from WED, and WED isn't a subclass of Window. So it seems
   // like we could just rely on ~Window now.
   // Destroy child windows while we're still valid. This is also done by
-  // ~Window, but by that time any calls to virtual methods overriden here (such
-  // as GetRootWindow()) result in Window's implementation. By destroying here
-  // we ensure GetRootWindow() still returns this.
+  // ~Window, but by that time any calls to virtual methods overridden here
+  // (such as GetRootWindow()) result in Window's implementation. By destroying
+  // here we ensure GetRootWindow() still returns this.
   // window()->RemoveOrDestroyChildren();
 }
 
@@ -820,6 +820,13 @@ void WindowTreeHost::OnFrameSinksToThrottleUpdated(
     const base::flat_set<viz::FrameSinkId>& ids) {
   for (auto& observer : observers_)
     observer.OnCompositingFrameSinksToThrottleUpdated(this, ids);
+}
+
+void WindowTreeHost::OnSetPreferredRefreshRate(ui::Compositor*,
+                                               float preferred_refresh_rate) {
+  for (auto& observer : observers_) {
+    observer.OnSetPreferredRefreshRate(this, preferred_refresh_rate);
+  }
 }
 
 }  // namespace aura

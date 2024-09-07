@@ -117,7 +117,8 @@ class CORE_EXPORT DedicatedWorker final
       CrossVariantMojoRemote<mojom::blink::BrowserInterfaceBrokerInterfaceBase>
           browser_interface_broker,
       CrossVariantMojoRemote<mojom::blink::DedicatedWorkerHostInterfaceBase>
-          dedicated_worker_host) override;
+          dedicated_worker_host,
+      const WebSecurityOrigin& origin) override;
   void OnScriptLoadStarted(
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
@@ -222,6 +223,10 @@ class CORE_EXPORT DedicatedWorker final
 
   // Whether the worker is frozen due to a call from this context.
   bool requested_frozen_ = false;
+
+  // The origin used by this dedicated worker on the renderer side, calculated
+  // from the browser side.
+  scoped_refptr<SecurityOrigin> origin_;
 };
 
 }  // namespace blink

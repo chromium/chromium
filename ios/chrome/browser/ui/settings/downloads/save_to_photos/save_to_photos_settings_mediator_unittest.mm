@@ -10,8 +10,8 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -99,7 +99,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(fake_identity_b_);
 
     signin::MakeAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
+        IdentityManagerFactory::GetForProfile(browser_state_.get()),
         signin::AccountAvailabilityOptionsBuilder()
             .AsPrimary(signin::ConsentLevel::kSignin)
             .WithGaiaId(base::SysNSStringToUTF8(fake_identity_a_.gaiaID))
@@ -116,7 +116,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             browser_state_.get());
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_.get());
     mediator_ = [[SaveToPhotosSettingsMediator alloc]
         initWithAccountManagerService:account_manager_service
                           prefService:pref_service
@@ -307,7 +307,7 @@ TEST_F(SaveToPhotosSettingsMediatorTest, HidesSettingsIfUserSignsOut) {
   mediator.delegate = fake_delegate;
 
   signin::ClearPrimaryAccount(
-      IdentityManagerFactory::GetForBrowserState(browser_state_.get()));
+      IdentityManagerFactory::GetForProfile(browser_state_.get()));
 
   EXPECT_TRUE(fake_delegate.hideSaveToPhotosSettingsCalled);
 

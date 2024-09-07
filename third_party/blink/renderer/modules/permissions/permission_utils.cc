@@ -137,6 +137,8 @@ String PermissionNameToString(PermissionName name) {
       return "pointer-lock";
     case PermissionName::FULLSCREEN:
       return "fullscreen";
+    case PermissionName::WEB_APP_INSTALLATION:
+      return "web-app-installation";
   }
 }
 
@@ -417,6 +419,14 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     }
     return CreateFullscreenPermissionDescriptor(
         fullscreen_permission->allowWithoutGesture());
+  }
+  if (name == V8PermissionName::Enum::kWebAppInstallation) {
+    if (!RuntimeEnabledFeatures::WebAppInstallationEnabled(
+            ExecutionContext::From(script_state))) {
+      exception_state.ThrowTypeError("The Web App Install API is not enabled.");
+      return nullptr;
+    }
+    return CreatePermissionDescriptor(PermissionName::WEB_APP_INSTALLATION);
   }
   return nullptr;
 }

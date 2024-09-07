@@ -208,10 +208,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             .build();
 
             mContainerViewModel = containerViewModel;
-            Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
+
             TabGroupModelFilter filter = (TabGroupModelFilter) tabModelFilterSupplier.get();
+            Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
             ActionConfirmationManager actionConfirmationManager =
-                    new ActionConfirmationManager(profile, mActivity, filter, mModalDialogManager);
+                    filter.isIncognitoBranded()
+                            ? null
+                            : new ActionConfirmationManager(
+                                    profile, mActivity, filter, mModalDialogManager);
 
             mDialogControllerSupplier =
                     LazyOneshotSupplier.fromSupplier(
@@ -232,7 +236,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                         ::getTabGridDialogAnimationSourceView,
                                                 scrimCoordinator,
                                                 getTabGroupTitleEditor(),
-                                                /* rootView= */ coordinatorView,
                                                 actionConfirmationManager,
                                                 mModalDialogManager);
                                 return mTabGridDialogCoordinator.getDialogController();
@@ -274,6 +277,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             tabModelFilterSupplier,
                             mMultiThumbnailCardProvider,
                             /* actionOnRelatedTabs= */ true,
+                            actionConfirmationManager,
                             getGridCardOnClickListenerProvider(),
                             /* dialogHandler= */ null,
                             TabProperties.TabActionState.CLOSABLE,
@@ -583,8 +587,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
 
-    void showCloseAllTabsAnimation(Runnable onAnimationEnd) {
-        mTabListCoordinator.showCloseAllTabsAnimation(onAnimationEnd);
+    void showCloseAllTabsAnimation(Runnable closeTabs) {
+        mTabListCoordinator.showCloseAllTabsAnimation(closeTabs);
     }
 
     /** Returns the filter index of a tab from its view index. */

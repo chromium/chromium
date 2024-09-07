@@ -10,7 +10,7 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 component("smbprovider") {
   output_name = "ash_smbprovider"
   defines = [ "IS_ASH_DBUS_SMBPROVIDER_IMPL" ]
-  deps = [
+  public_deps = [
     ":proto",
     "//base",
     "//chromeos/dbus/common",

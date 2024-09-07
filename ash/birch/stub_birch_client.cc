@@ -18,6 +18,10 @@ StubBirchClient::StubDataProvider::StubDataProvider() = default;
 
 StubBirchClient::StubDataProvider::~StubDataProvider() = default;
 
+void StubBirchClient::StubDataProvider::RunDataProviderChangedCallback() {
+  NotifyDataProviderChanged();
+}
+
 void StubBirchClient::StubDataProvider::RequestBirchDataFetch() {
   did_request_birch_data_fetch_ = true;
 }

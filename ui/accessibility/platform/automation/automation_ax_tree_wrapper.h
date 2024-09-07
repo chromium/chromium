@@ -99,13 +99,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationAXTreeWrapper
   // Updates or gets this wrapper with the latest state of listeners in js.
   void EventListenerAdded(
       const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
-      ui::AXNode* node);
+      AXNode* node);
   void EventListenerRemoved(
       const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
-      ui::AXNode* node);
+      AXNode* node);
   bool HasEventListener(
       const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
-      ui::AXNode* node);
+      AXNode* node);
   size_t EventListenerCount() const;
 
   // Indicates whether this tree is ignored due to a hosting ancestor tree/node

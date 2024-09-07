@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/common/api/runtime.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/shell/browser/shell_extension_system.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -29,12 +30,12 @@ void ShellRuntimeAPIDelegate::AddUpdateObserver(UpdateObserver* observer) {}
 
 void ShellRuntimeAPIDelegate::RemoveUpdateObserver(UpdateObserver* observer) {}
 
-void ShellRuntimeAPIDelegate::ReloadExtension(const std::string& extension_id) {
+void ShellRuntimeAPIDelegate::ReloadExtension(const ExtensionId& extension_id) {
   static_cast<ShellExtensionSystem*>(ExtensionSystem::Get(browser_context_))
       ->ReloadExtension(extension_id);
 }
 
-bool ShellRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
+bool ShellRuntimeAPIDelegate::CheckForUpdates(const ExtensionId& extension_id,
                                               UpdateCheckCallback callback) {
   return false;
 }

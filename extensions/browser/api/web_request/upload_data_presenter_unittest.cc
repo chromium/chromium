@@ -29,7 +29,7 @@ namespace extensions {
 TEST(WebRequestUploadDataPresenterTest, ParsedData) {
   // Input.
   const char block[] = "key.with.dots=value";
-  net::UploadBytesElementReader element(block, sizeof(block) - 1);
+  net::UploadBytesElementReader element(base::byte_span_from_cstring(block));
 
   // Expected output.
   base::Value::List values;
@@ -41,8 +41,7 @@ TEST(WebRequestUploadDataPresenterTest, ParsedData) {
   std::unique_ptr<ParsedDataPresenter> parsed_data_presenter(
       ParsedDataPresenter::CreateForTests());
   ASSERT_TRUE(parsed_data_presenter.get() != nullptr);
-  parsed_data_presenter->FeedBytes(
-      std::string_view(element.bytes(), element.length()));
+  parsed_data_presenter->FeedBytes(base::as_string_view(element.bytes()));
   EXPECT_TRUE(parsed_data_presenter->Succeeded());
   std::optional<base::Value> result = parsed_data_presenter->TakeResult();
   EXPECT_EQ(result, expected_form);

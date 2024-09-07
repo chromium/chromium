@@ -9,6 +9,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
 @interface ShortcutsConsumerList : CRBProtocolObservers <ShortcutsConsumer>
@@ -123,9 +123,9 @@
   if (shortcutsItem.disabled) {
     return;
   }
-  [self.NTPMetricsDelegate shortcutTileOpened];
-    [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
-                                                      kShortcuts];
+  [self.NTPActionsDelegate shortcutTileOpened];
+  [self.delegate
+      logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts];
   [self.contentSuggestionsMetricsRecorder
       recordShortcutTileTapped:shortcutsItem.collectionShortcutType];
   switch (shortcutsItem.collectionShortcutType) {

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash)
@@ -46,6 +47,10 @@ static_library("history") {
     "//printing/mojom:mojom",
   ]
 
+  if (use_cups) {
+    deps += [ "//chrome/browser/chromeos/printing" ]
+  }
+
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
     "//printing",
@@ -82,6 +87,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (use_cups) {
+    deps += [ "//chrome/browser/chromeos/printing" ]
+  }
 }
 
 static_library("test_support") {

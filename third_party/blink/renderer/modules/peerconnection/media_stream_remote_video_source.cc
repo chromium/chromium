@@ -10,11 +10,13 @@
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_remote_video_source.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -257,6 +259,9 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
             ->receive_time();
     video_frame->metadata().receive_time =
         base::TimeTicks() + base::Microseconds(last_packet_arrival.us());
+    base::UmaHistogramTimes(
+        "WebRTC.Video.TotalReceiveDelay",
+        current_time - *video_frame->metadata().receive_time);
   }
 
   // Use our computed render time as estimated capture time. If timestamp_us()

@@ -16,10 +16,10 @@
 #import "base/threading/thread_restrictions.h"
 #import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
 #import "ios/chrome/browser/sessions/model/web_session_state_cache_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -48,7 +48,7 @@ const int64_t kMaxSessionState = 1024 * 5;  // 5MB
 }
 
 - (instancetype)initWithClosure:(base::RepeatingClosure)closure {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     callback_ = std::move(closure);
   }
   return self;
@@ -103,9 +103,6 @@ void WebSessionStateTabHelper::SaveSessionState() {
   NSData* data = web_state_->SessionStateData();
   if (data) {
     int64_t size_kb = data.length / 1024;
-    UMA_HISTOGRAM_COUNTS_100000("Session.WebState.CustomWebViewSerializedSize",
-                                size_kb);
-
     WebSessionStateCache* cache =
         WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
     // To prevent very large session states from using too much space, don't

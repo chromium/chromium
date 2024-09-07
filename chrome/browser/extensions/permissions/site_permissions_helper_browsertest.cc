@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/dns/mock_host_resolver.h"
@@ -636,6 +638,130 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ReloadPageAndWaitForLoad());
   EXPECT_FALSE(ContentScriptInjected());
   EXPECT_TRUE(ExtensionWantsToRun());
+}
+
+class SitePermissionsHelperOptionalHostPermissions
+    : public SitePermissionsHelperBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+    // Loads an extension that, when granted the optional host permission,
+    // executes a script on every page that is navigated to. Then loads a test
+    // page and confirms it is running on the page.
+    ASSERT_TRUE(embedded_test_server()->Start());
+    extension_ = LoadExtension(test_data_dir_.AppendASCII(
+        "blocked_actions/optional_host_permissions"));
+    ASSERT_TRUE(extension_);
+
+    // Grant the optional host permissions.
+    permissions_manager_ = PermissionsManager::Get(profile());
+    permissions_test_util::GrantOptionalPermissionsAndWaitForCompletion(
+        profile(), *extension_,
+        PermissionsParser::GetOptionalPermissions(extension_));
+
+    // Navigate to a page where the extension can run.
+    original_url_ = embedded_test_server()->GetURL("/simple.html");
+    ExtensionTestMessageListener listener("success");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url_));
+    ASSERT_TRUE(active_web_contents());
+    ASSERT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnAllSites);
+
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+    ASSERT_TRUE(active_action_runner());
+    ASSERT_TRUE(ContentScriptInjected());
+    ASSERT_FALSE(ExtensionWantsToRun());
+
+    permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
+  }
+};
+
+// Tests the behavior when granted optional host permissions are altered by
+// updating site access. The scenarios tested here are
+// on all sites -> on site
+// on site -> on click
+// on click -> on site
+// on site -> on all sites
+// on all sites -> on click
+IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
+                       UpdateSiteAccess) {
+  // By default, test setup should set site access to be on all sites.
+  ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+            UserSiteAccess::kOnAllSites);
+  active_action_runner()->accept_bubble_for_testing(true);
+
+  {
+    // on all sites -> on site.
+    ExtensionTestMessageListener listener("success");
+    permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                          UserSiteAccess::kOnSite);
+    EXPECT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnSite);
+    // Changing the site access to on site should still allow script injection.
+    // Reloading the page to verify if the scripts were re-injected.
+    ASSERT_TRUE(ReloadPageAndWaitForLoad());
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    EXPECT_TRUE(ContentScriptInjected());
+    EXPECT_FALSE(ExtensionWantsToRun());
+  }
+  {
+    // on site -> on-click (refresh needed due to revoking permissions).
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                          UserSiteAccess::kOnClick);
+    EXPECT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnClick);
+    ASSERT_TRUE(WaitForReloadToFinish());
+    blocked_action_waiter.Wait();
+
+    EXPECT_FALSE(ContentScriptInjected());
+    EXPECT_TRUE(ExtensionWantsToRun());
+  }
+  {
+    // on click -> on site
+    ExtensionTestMessageListener listener("success");
+    permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                          UserSiteAccess::kOnSite);
+    EXPECT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnSite);
+    ASSERT_TRUE(WaitForReloadToFinish());
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    EXPECT_TRUE(ContentScriptInjected());
+    EXPECT_FALSE(ExtensionWantsToRun());
+  }
+  {
+    // on site -> on all sites
+    ExtensionTestMessageListener listener("success");
+    permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                          UserSiteAccess::kOnAllSites);
+    EXPECT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnAllSites);
+    // Reloading the page to verify if the scripts were re-injected.
+    ASSERT_TRUE(ReloadPageAndWaitForLoad());
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    EXPECT_TRUE(ContentScriptInjected());
+    EXPECT_FALSE(ExtensionWantsToRun());
+  }
+  {
+    // on all sites -> on-click
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
+                                          UserSiteAccess::kOnClick);
+    EXPECT_EQ(
+        permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
+        UserSiteAccess::kOnClick);
+    ASSERT_TRUE(WaitForReloadToFinish());
+    blocked_action_waiter.Wait();
+    EXPECT_FALSE(ContentScriptInjected());
+    EXPECT_TRUE(ExtensionWantsToRun());
+  }
 }
 
 }  // namespace extensions

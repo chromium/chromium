@@ -60,7 +60,7 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   void DidSendData(uint64_t bytesSent, uint64_t totalBytesToBeSent) override;
   void DidReceiveResponse(const WebURLResponse& response) override;
   void DidDownloadData(uint64_t data_length) override;
-  void DidReceiveData(const char* data, int data_length) override;
+  void DidReceiveData(base::span<const char> data_length) override;
   void DidFinishLoading() override;
   void DidFail(const WebURLError&) override;
 

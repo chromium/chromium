@@ -75,7 +75,11 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
         content::WebContents::FromRenderFrameHost(iwa_frame));
     console_observer.SetFilter(base::BindRepeating(
         [](const content::WebContentsConsoleObserver::Message& message) {
-          return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+          return message.log_level ==
+                     blink::mojom::ConsoleMessageLevel::kError &&
+                 base::Contains(
+                     message.message,
+                     u"Failed to read response from Signed Web Bundle");
         }));
 
     iwa_frame =
@@ -135,9 +139,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
       iwa_frame, url_info.origin().GetURL(), u"some data"));
 }
 
-// Disabled due to flakiness. http://crbug.com/1381002
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
-                       DISABLED_InvalidStatusCode) {
+                       InvalidStatusCode) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder())
           .AddResource("/", "<title>Hello Isolated Apps</title>",
@@ -152,9 +155,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
       "unsupported HTTP status code: 201 (only status code 200 is allowed)."));
 }
 
-// Disabled due to flakiness. http://crbug.com/1381002
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
-                       DISABLED_NonExistingResource) {
+                       NonExistingResource) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder())
           .AddHtml("/", "<title>Hello Isolated Apps</title>")

@@ -16,5 +16,6 @@ source_set("model") {
     "//components/keyed_service/ios",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }

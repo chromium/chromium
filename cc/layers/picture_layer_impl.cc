@@ -140,6 +140,10 @@ std::unique_ptr<LayerImpl> PictureLayerImpl::CreateLayerImpl(
 void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
+  layer_impl->has_animated_image_update_rect_ = has_animated_image_update_rect_;
+  layer_impl->has_non_animated_image_update_rect_ =
+      has_non_animated_image_update_rect_;
+
   LayerImpl::PushPropertiesTo(base_layer);
 
   // Twin relationships should never change once established.
@@ -179,6 +183,15 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   // since the pending tree tiles would have this handled. This is here to
   // ensure the state is consistent for future raster.
   layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
+
+  if (layer_tree_impl()->settings().UseLayerContextForDisplay()) {
+    // Move tile updates over to the active layer so they get pushed to the
+    // display tree. Note that active layers never accumulate their own tile
+    // updates, so replacement is safe.
+    layer_impl->updated_tiles_ = std::move(updated_tiles_);
+    updated_tiles_.clear();
+    layer_impl->SetNeedsPushProperties();
+  }
 
   layer_impl->SanityCheckTilingState();
 }
@@ -589,7 +602,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   SanityCheckTilingState();
 }
 
-bool PictureLayerImpl::UpdateTiles(TileMemoryLimitPolicy memory_limit_policy) {
+bool PictureLayerImpl::UpdateTiles() {
   if (!CanHaveTilings()) {
     ideal_page_scale_ = 0.f;
     ideal_device_scale_ = 0.f;
@@ -665,8 +678,7 @@ bool PictureLayerImpl::UpdateTiles(TileMemoryLimitPolicy memory_limit_policy) {
   bool updated = tilings_->UpdateTilePriorities(
       viewport_rect_for_tile_priority_in_content_space_,
       ideal_contents_scale_key(), current_frame_time_in_seconds,
-      occlusion_in_content_space, can_require_tiles_for_activation,
-      memory_limit_policy);
+      occlusion_in_content_space, can_require_tiles_for_activation);
   DCHECK_GT(tilings_->num_tilings(), 0u);
   SanityCheckTilingState();
   return updated;
@@ -946,6 +958,14 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile) {
       tilings_->set_all_tiles_done(false);
     }
   }
+
+  if (layer_tree_impl()->settings().UseLayerContextForDisplay() &&
+      !IsActive()) {
+    // Accumulate tile changes on the pending tree only. These are pushed to the
+    // active tree in PushPropertiesTo().
+    updated_tiles_[tile->contents_scale_key()].emplace(tile->tiling_i_index(),
+                                                       tile->tiling_j_index());
+  }
 }
 
 gfx::Rect PictureLayerImpl::GetDamageRect() const {
@@ -955,6 +975,8 @@ gfx::Rect PictureLayerImpl::GetDamageRect() const {
 void PictureLayerImpl::ResetChangeTracking() {
   LayerImpl::ResetChangeTracking();
   damage_rect_.SetRect(0, 0, 0, 0);
+  has_animated_image_update_rect_ = false;
+  has_non_animated_image_update_rect_ = false;
 }
 
 void PictureLayerImpl::DidBeginTracing() {
@@ -1065,6 +1087,11 @@ ScrollOffsetMap PictureLayerImpl::GetRasterInducingScrollOffsets() const {
     }
   }
   return map;
+}
+
+const GlobalStateThatImpactsTilePriority& PictureLayerImpl::global_tile_state()
+    const {
+  return layer_tree_impl()->global_tile_state();
 }
 
 gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
@@ -2078,8 +2105,11 @@ PictureLayerImpl::InvalidateRegionForImages(
     return ImageInvalidationResult::kNoImages;
   }
 
+  bool all_animated_image = true;
+  auto* controller = layer_tree_impl()->image_animation_controller();
   InvalidationRegion image_invalidation;
   for (auto image_id : images_to_invalidate) {
+    all_animated_image &= controller->IsRegistered(image_id);
     const auto& rects = discardable_image_map_->GetRectsForImage(image_id);
     for (const auto& r : rects) {
       image_invalidation.Union(r);
@@ -2094,6 +2124,11 @@ PictureLayerImpl::InvalidateRegionForImages(
   // Note: We can use a rect here since this is only used to track damage for a
   // frame and not raster invalidation.
   UnionUpdateRect(invalidation.bounds());
+  if (all_animated_image) {
+    has_animated_image_update_rect_ = true;
+  } else {
+    has_non_animated_image_update_rect_ = true;
+  }
 
   invalidation_.Union(invalidation);
   tilings_->Invalidate(invalidation);
@@ -2114,6 +2149,7 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
     auto it = raster_inducing_scrolls.find(element_id);
     if (it != raster_inducing_scrolls.end()) {
       UnionUpdateRect(it->second.visual_rect);
+      has_non_animated_image_update_rect_ = true;
       invalidation.Union(it->second.visual_rect);
       needs_regenerate_discardable_image_map_ |=
           it->second.has_discardable_images;
@@ -2220,12 +2256,30 @@ void PictureLayerImpl::InvalidatePaintWorklets(
   }
 }
 
+PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeUpdatedTiles() {
+  TileUpdateSet updates;
+  updates.swap(updated_tiles_);
+  return updates;
+}
+
 gfx::ContentColorUsage PictureLayerImpl::GetContentColorUsage() const {
   auto display_item_list = raster_source_->GetDisplayItemList();
   if (!display_item_list)
     return gfx::ContentColorUsage::kSRGB;
 
   return display_item_list->content_color_usage();
+}
+
+DamageReasonSet PictureLayerImpl::GetDamageReasons() const {
+  DamageReasonSet reasons;
+  if (has_animated_image_update_rect_) {
+    reasons.Put(DamageReason::kAnimatedImage);
+  }
+  if (LayerPropertyChanged() || has_non_animated_image_update_rect_ ||
+      !damage_rect_.IsEmpty()) {
+    reasons.Put(DamageReason::kUntracked);
+  }
+  return reasons;
 }
 
 }  // namespace cc

@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UnownedUserData;
@@ -41,6 +42,38 @@ public class NativePageBitmapCapturer implements UnownedUserData {
      */
     public static boolean maybeCaptureNativeView(
             @NonNull Tab tab, @NonNull Callback<Bitmap> callback, int topControlsHeight) {
+        if (!isCapturable(tab)) {
+            return false;
+        }
+
+        UnownedUserDataHost host = tab.getWindowAndroid().getUnownedUserDataHost();
+        if (CAPTURER_KEY.retrieveDataFromHost(host) == null) {
+            CAPTURER_KEY.attachToHost(host, new NativePageBitmapCapturer());
+        }
+
+        // TODO(crbug.com/330230340): capture bitmap asynchronously.
+        Bitmap bitmap = capture(tab, topControlsHeight);
+        PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(bitmap));
+        return true;
+    }
+
+    /**
+     * Synchronous version of {@link #maybeCaptureNativeView(Tab, Callback, int)}.
+     *
+     * @param tab The target tab to be captured.
+     * @param topControlsHeight Height of the top controls.
+     * @return Null if fails; otherwise, a Bitmap object.
+     */
+    @Nullable
+    public static Bitmap maybeCaptureNativeViewSync(@NonNull Tab tab, int topControlsHeight) {
+        if (!isCapturable(tab)) {
+            return null;
+        }
+
+        return capture(tab, topControlsHeight);
+    }
+
+    private static boolean isCapturable(Tab tab) {
         if (!tab.isNativePage()) {
             return false;
         }
@@ -52,6 +85,13 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         }
         if (tab.getWindowAndroid() == null) return false;
 
+        View view = tab.getView();
+        // The view is not laid out yet.
+        if (view.getWidth() == 0 || view.getHeight() == 0) return false;
+        return true;
+    }
+
+    private static Bitmap capture(Tab tab, int topControlsHeight) {
         UnownedUserDataHost host = tab.getWindowAndroid().getUnownedUserDataHost();
         if (CAPTURER_KEY.retrieveDataFromHost(host) == null) {
             CAPTURER_KEY.attachToHost(host, new NativePageBitmapCapturer());
@@ -71,8 +111,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         canvas.translate(0, -topControlsHeight);
         canvas.scale(scale, scale);
         view.draw(canvas);
-        PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(bitmap));
-        return true;
+        return bitmap;
     }
 
     private float getScale() {

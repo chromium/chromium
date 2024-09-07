@@ -5,12 +5,12 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac highsierra mojave catalina bigsur monterey ventura sonoma
+#         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
-#             android-sm-a235m android-sm-s911u1
+#             android-sm-a235m android-sm-s911u1 android-moto-g-power-5g---2023
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -34,6 +34,7 @@
 #             apple-angle-metal-renderer:-apple-m2
 #         arm
 #         google google-0xffff google-0xc0de
+#         imagination
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
@@ -147,15 +148,18 @@
 
 # Tests running with SwiftShader are skipped on platforms where SwiftShader
 # isn't supported.
-[ mac ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
 [ android ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
-[ chromeos ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
-[ mac ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
 [ android ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
-[ chromeos ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
-[ mac ] Pixel_WebGLGreenTriangle_AA_Alpha_SwiftShader [ Skip ]
+[ android ] Pixel_RepeatedWebGLTo2D_SwiftShader [ Skip ]
 [ android ] Pixel_WebGLGreenTriangle_AA_Alpha_SwiftShader [ Skip ]
+[ chromeos ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
+[ chromeos ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
+[ chromeos ] Pixel_RepeatedWebGLTo2D_SwiftShader [ Skip ]
 [ chromeos ] Pixel_WebGLGreenTriangle_AA_Alpha_SwiftShader [ Skip ]
+[ fuchsia ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
+[ fuchsia ] Pixel_CSS3DBlueBox_SwiftShader [ Skip ]
+[ fuchsia ] Pixel_RepeatedWebGLTo2D_SwiftShader [ Skip ]
+[ fuchsia ] Pixel_WebGLGreenTriangle_AA_Alpha_SwiftShader [ Skip ]
 
 # Tests running in no GPU process mode are skipped on platforms where GPU
 # process is required.
@@ -217,6 +221,7 @@ crbug.com/1307787 [ win ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 
 # Test is too slow for old phones and laptops, and in Debug and ASAN.
 crbug.com/1356246 [ android android-nexus-5x ] Pixel_SVGHuge [ Skip ]
+crbug.com/1356246 [ android android-moto-g-power-5G---2023 ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac amd release asan ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac intel debug ] Pixel_SVGHuge [ Skip ]
@@ -315,22 +320,11 @@ crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_
 crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_SolidColorBackground [ Skip ]
 
-# Android Graphite/Dawn/Vulkan video isn't implemented yet.
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_AV1 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_Context_Loss_VP9 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_HEVC [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Rot_180 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Rot_270 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Rot_90 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_Rounded_Corner [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_VP9 [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_BackdropFilter [ Skip ]
-
 # Nexus 5x consistently fail for View transition capture on webview.
 crbug.com/349071740 [ android-webview-instrumentation android-nexus-5x ] Pixel_ViewTransitionsCapture [ Failure ]
+
+# Flaky timeout on Linux
+crbug.com/364179193 [ linux ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #
@@ -440,8 +434,9 @@ crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreen
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
 crbug.com/328649150 [ sonoma amd angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ Failure ]
-crbug.com/354152172 [ mac amd angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
-crbug.com/354152172 [ mac intel angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
+crbug.com/354152172 [ amd-0x67ef angle-opengl mac ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
+crbug.com/354152172 [ angle-opengl asan intel mac release ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
+crbug.com/354152172 [ angle-opengl intel mac no-asan ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
 
@@ -475,24 +470,19 @@ crbug.com/345146895 [ chromeos cros-chrome chromeos-board-amd64-generic renderer
 # Failures on fuchsia
 crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_AV1 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_Context_Loss_MP4 [ Failure ]
-crbug.com/40935289 [ fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_Context_Loss_MP4 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_HEVC [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
-crbug.com/40935289 [ fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
 
-# Tab change tests failing to find foreground tabs
-crbug.com/338574386 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] Pixel_Canvas2DTabSwitch [ Failure ]
-crbug.com/338574386 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] Pixel_Canvas2DTabSwitch_SoftwareCompositing [ Failure ]
-crbug.com/338574386 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] Pixel_WebGLReadPixelsTabSwitch [ Failure ]
-crbug.com/338574386 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

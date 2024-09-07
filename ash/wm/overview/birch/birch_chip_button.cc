@@ -7,7 +7,6 @@
 #include "ash/birch/birch_item.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
@@ -360,12 +359,6 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
   auto* birch_bar_controller = BirchBarController::Get();
   CHECK(birch_bar_controller);
 
-  if (command_id ==
-      base::to_underlying(BirchBarContextMenuModel::CommandId::kReset)) {
-    birch_bar_controller->ExecuteCommand(command_id, event_flags);
-    return;
-  }
-
   using CommandId = BirchChipContextMenuModel::CommandId;
 
   switch (command_id) {
@@ -397,11 +390,12 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kMedia,
                                                   /*show=*/false);
       break;
-    case base::to_underlying(CommandId::kFeedback):
-      Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-          ShellDelegate::FeedbackSource::kBirch,
-          /*description_template=*/std::string(), /*category_tag=*/"fromBirch");
+    case base::to_underlying(CommandId::kHideCoralSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kCoral,
+                                                  /*show=*/false);
       break;
+    default:
+      birch_bar_controller->ExecuteMenuCommand(command_id, /*from_chip=*/true);
   }
 }
 

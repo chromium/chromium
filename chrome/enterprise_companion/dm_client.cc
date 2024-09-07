@@ -26,6 +26,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/event_logger.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -39,9 +40,6 @@
 namespace enterprise_companion {
 
 namespace {
-
-constexpr char kGoogleUpdateMachineLevelAppsPolicyType[] =
-    "google/machine-level-apps";
 
 // Given the void-returning callbacks A and B with the same signature, return a
 // callback that invokes A and B in sequence with the same arguments.
@@ -79,7 +77,7 @@ class DMConfiguration : public policy::DeviceManagementService::Configuration {
   ~DMConfiguration() override = default;
 
   std::string GetDMServerUrl() const override {
-    return DEVICE_MANAGEMENT_SERVER_URL;
+    return GetGlobalConstants()->DeviceManagementServerURL().spec();
   }
   std::string GetAgentParameter() const override {
     return base::StrCat({PRODUCT_FULLNAME_STRING, kEnterpriseCompanionVersion});
@@ -95,10 +93,10 @@ class DMConfiguration : public policy::DeviceManagementService::Configuration {
         bugfix);
   }
   std::string GetRealtimeReportingServerUrl() const override {
-    return DEVICE_MANAGEMENT_REALTIME_REPORTING_URL;
+    return GetGlobalConstants()->DeviceManagementRealtimeReportingURL().spec();
   }
   std::string GetEncryptedReportingServerUrl() const override {
-    return DEVICE_MANAGEMENT_ENCRYPTED_REPORTING_URL;
+    return GetGlobalConstants()->DeviceManagementEncryptedReportingURL().spec();
   }
   std::string GetReportingConnectorServerUrl(
       content::BrowserContext* context) const override {
@@ -166,7 +164,7 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     dm_service_.ScheduleInitialization(0);
     cloud_policy_client_->AddObserver(this);
     cloud_policy_client_->AddPolicyTypeToFetch(
-        kGoogleUpdateMachineLevelAppsPolicyType,
+        policy::dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,
         /*settings_entity_id=*/"");
     if (!dm_storage->GetDmToken().empty()) {
       cloud_policy_client_->SetupRegistration(dm_storage_->GetDmToken(),
@@ -178,8 +176,8 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
   ~DMClientImpl() override { cloud_policy_client_->RemoveObserver(this); }
 
   // Overrides for DMClient.
-  void RegisterBrowser(scoped_refptr<EventLogger> event_logger,
-                       StatusCallback callback) override {
+  void RegisterPolicyAgent(scoped_refptr<EventLogger> event_logger,
+                           StatusCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(!pending_callback_);
 
@@ -191,9 +189,9 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     dm_storage_->RemoveAllPolicies();
     pending_callback_ =
         TeeOnceCallback(std::move(callback), event_logger->OnEnrollmentStart());
-    cloud_policy_client_->RegisterBrowserWithEnrollmentToken(
+    cloud_policy_client_->RegisterPolicyAgentWithEnrollmentToken(
         dm_storage_->GetEnrollmentToken(), dm_storage_->GetDeviceID(),
-        client_data_delegate_, dm_storage_->IsEnrollmentMandatory());
+        client_data_delegate_);
   }
 
   void FetchPolicies(scoped_refptr<EventLogger> event_logger,
@@ -216,6 +214,7 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
       VLOG(1) << "Failed to fetch policies: policies cannot be persisted.";
       std::move(callback).Run(EnterpriseCompanionStatus(
           ApplicationError::kPolicyPersistenceImpossible));
+      return;
     }
 
     pending_callback_ = std::move(callback);

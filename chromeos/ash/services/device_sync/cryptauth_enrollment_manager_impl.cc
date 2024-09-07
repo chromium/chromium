@@ -286,7 +286,9 @@ void CryptAuthEnrollmentManagerImpl::OnSyncRequested(
   NotifyEnrollmentStarted();
 
   sync_request_ = std::move(sync_request);
-  if (gcm_manager_->GetRegistrationId().empty() ||
+  const std::string& registration_id = gcm_manager_->GetRegistrationId();
+  if (registration_id.empty() ||
+      CryptAuthGCMManager::IsRegistrationIdDeprecated(registration_id) ||
       pref_service_->GetInteger(prefs::kCryptAuthEnrollmentReason) ==
           cryptauth::INVOCATION_REASON_MANUAL) {
     gcm_manager_->RegisterWithGCM();

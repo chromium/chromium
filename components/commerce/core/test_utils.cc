@@ -14,9 +14,12 @@
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,6 +87,20 @@ void SetShoppingListEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
   prefs->SetManagedPref(kShoppingListEnabledPrefName, base::Value(enabled));
 }
 
+void RegisterCommercePrefs(PrefRegistrySimple* registry) {
+  RegisterPrefs(registry);
+  registry->RegisterIntegerPref(
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+      0);
+}
+
+void SetTabCompareEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
+                                       int enabled_state) {
+  prefs->SetManagedPref(
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+      base::Value(enabled_state));
+}
+
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
     bool has_price_range_data,
     bool has_price_history_data,
@@ -126,9 +143,11 @@ DiscountInfo CreateValidDiscountInfo(const std::string& detail,
                                      const std::string& discount_code,
                                      int64_t id,
                                      bool is_merchant_wide,
-                                     double expiry_time_sec) {
+                                     double expiry_time_sec,
+                                     DiscountClusterType cluster_type) {
   DiscountInfo discount_info;
 
+  discount_info.cluster_type = cluster_type;
   discount_info.description_detail = detail;
   discount_info.terms_and_conditions.emplace(terms_and_conditions);
   discount_info.value_in_text = value_in_text;

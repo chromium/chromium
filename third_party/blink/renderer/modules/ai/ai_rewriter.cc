@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_rewriter.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
@@ -75,7 +76,8 @@ ScriptPromise<IDLString> AIRewriter::rewrite(
     return ScriptPromise<IDLString>();
   }
   auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, signal, task_runner_, AIMetrics::AISessionType::kWriter);
+      script_state, signal, task_runner_, AIMetrics::AISessionType::kWriter,
+      base::DoNothing());
   remote_->Rewrite(input, context_string, std::move(pending_remote));
   return promise;
 }
@@ -111,7 +113,8 @@ ReadableStream* AIRewriter::rewriteStreaming(
   }
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(script_state, signal, task_runner_,
-                                             AIMetrics::AISessionType::kWriter);
+                                             AIMetrics::AISessionType::kWriter,
+                                             base::DoNothing());
   remote_->Rewrite(input, context_string, std::move(pending_remote));
   return readable_stream;
 }

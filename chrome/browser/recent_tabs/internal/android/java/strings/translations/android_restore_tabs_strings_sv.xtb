@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Synkroniserade enheter för flikåterställning kan ändras vid beröring. Navigera för att granska eller återställa valda flikar för den aktuella enheten med ett tryck. Tangentbordet är dolt.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Öppna <ph name="TABS_COUNT_ONE" /> flik}other{Öppna <ph name="TABS_COUNT_MANY" /> flikar}}</translation>
 <translation id="4509609396389120020">Hämta flikar från andra enheter</translation>
+<translation id="4619615317237390068">Flikar från andra enheter</translation>
 <translation id="4811934403802581334">Alla valda flikar från den valda enheten återställs.</translation>
 <translation id="5336031759968328813">Granska alla flikar</translation>
 <translation id="5494920125229734069">Markera alla</translation>

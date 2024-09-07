@@ -378,11 +378,6 @@ BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
   return platform_part_.get();
 }
 
-extensions::EventRouterForwarder*
-TestingBrowserProcess::extension_event_router_forwarder() {
-  return nullptr;
-}
-
 NotificationUIManager* TestingBrowserProcess::notification_ui_manager() {
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   if (!notification_ui_manager_.get())

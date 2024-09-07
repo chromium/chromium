@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_text_session_info.mojom";
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
 // A session for a model that allows executing an input and streaming the output.
@@ -16,7 +17,11 @@ interface AITextSession {
   // blink, but it is named as `Fork` instead of `Clone` to avoid confusion with
   // the "clone" term in mojo context (which indicates binding another client to
   // the same instance).
-  Fork(pending_receiver<blink.mojom.AITextSession> session) => (bool success);
+  // Similar to `AIManager.CreateTextSession`, this method returns the information
+  // of the created session.
+  Fork(
+    pending_receiver<blink.mojom.AITextSession> session
+  ) => (AITextSessionInfo? info);
   // Destroys the session.
   Destroy();
 };

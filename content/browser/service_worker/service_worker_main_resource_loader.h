@@ -76,7 +76,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   ServiceWorkerMainResourceLoader(
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       base::TimeTicks find_registration_start_time);
 
   ServiceWorkerMainResourceLoader(const ServiceWorkerMainResourceLoader&) =
@@ -260,7 +260,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   network::ResourceRequest resource_request_;
 
   base::WeakPtr<ServiceWorkerClient> service_worker_client_;
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
 
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
   std::unique_ptr<ServiceWorkerCacheStorageMatcher> cache_matcher_;

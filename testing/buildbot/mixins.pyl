@@ -2,7 +2,10 @@
 # Instead:
 # 1. Modify //infra/config/targets/mixins.star
 # 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-pyl-files.py
+
+# The copy of this file in //testing/buildbot is not read by generate_buildbot_json.py,
+# but must be present for downstream uses. It can be kept in sync by running
+# //infra/config/scripts/sync-pyl-files.py.
 
 {
   '10-x86-emulator': {
@@ -268,31 +271,6 @@
       'service_account': 'chrome-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
-  'chromeos-betty': {
-    'args': [
-      '--magic-vm-cache=magic_cros_vm_cache',
-    ],
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'kvm': '1',
-        'gce': '1',
-        'os': 'Ubuntu-22.04',
-        'pool': 'chrome.tests',
-      },
-      'optional_dimensions': {
-        '60': {
-          'caches': 'cros_vm',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'cros_vm',
-          'path': 'magic_cros_vm_cache',
-        },
-      ],
-    },
-  },
   'chromeos-betty-finch': {
     'args': [
       '--board=betty',
@@ -381,6 +359,9 @@
   },
   'ci_only': {
     'ci_only': True,
+  },
+  'cros-cbx-dut': {
+    'cros_cbx': True,
   },
   'crosier-no-arc': {
     'args': [
@@ -648,6 +629,16 @@
       ],
     },
   },
+  'ios_runtime_cache_18_1': {
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'runtime_ios_18_1',
+          'path': 'Runtime-ios-18.1',
+        },
+      ],
+    },
+  },
   'ioswpt-chromium-swarming-pool': {
     'swarming': {
       'dimensions': {
@@ -729,8 +720,8 @@
   'linux_intel_uhd_630_stable': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:9bc5-20.0.8',
-        'os': 'Ubuntu-18.04.6',
+        'gpu': '8086:9bc5-20.0.8|8086:9bc5-23.2.1',
+        'os': 'Ubuntu-18.04.6|Ubuntu-22.04.4',
         'pool': 'chromium.tests.gpu',
       },
     },
@@ -767,24 +758,6 @@
     'linux_args': [
       '--extra-browser-args=--enable-features=Vulkan',
     ],
-  },
-  'lollipop-x86-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android22.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'generic_android22',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'generic_android22',
-          'path': '.android_emulator/generic_android22',
-        },
-      ],
-    },
   },
   'long_skylab_timeout': {
     'timeout_sec': 10800,
@@ -1052,16 +1025,9 @@
         {
           'cipd_package': 'infra/tools/mac_toolchain/${platform}',
           'location': '.',
-          'revision': 'git_revision:81653990788282be32e97d2e15ff585dd9f068f6',
+          'revision': 'git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d',
         },
       ],
-    },
-  },
-  'marshmallow': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'MMB29Q',
-      },
     },
   },
   'marshmallow-x86-emulator': {
@@ -1086,8 +1052,9 @@
     'swarming': {
       'dimensions': {
         'device_type': 'devonn',
-        'device_os': 'T1TOS33.33-45-23-12',
+        'device_os': 'T',
         'device_os_flavor': 'motorola',
+        'device_os_type': 'user',
         'os': 'Android',
         'pool': 'chromium.tests.gpu',
       },
@@ -1105,24 +1072,6 @@
       'dimensions': {
         'device_os': 'N2G48C',
       },
-    },
-  },
-  'nougat-x86-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android24.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'generic_android24',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'generic_android24',
-          'path': '.android_emulator/generic_android24',
-        },
-      ],
     },
   },
   'nvidia_geforce_gtx_1660': {
@@ -1313,6 +1262,13 @@
       },
     },
   },
+  'web-test-leak': {
+    'args': [
+      '--additional-expectations',
+      '../../third_party/blink/web_tests/LeakExpectations',
+      '--enable-leak-detection',
+    ],
+  },
   'webgpu_cts': {
     'args': [
       '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
@@ -1464,6 +1420,14 @@
       },
     },
   },
+  'win11-23h2': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Windows-11-22631',
+      },
+      'expiration': 36000,
+    },
+  },
   'win11-any': {
     'swarming': {
       'dimensions': {
@@ -1504,15 +1468,29 @@
       ],
     },
   },
-  'xcode_16_beta': {
+  'xcode_16_1_beta': {
     'args': [
       '--xcode-build-version',
-      '16a5221g',
+      '16b5001e',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_16a5221g',
+          'name': 'xcode_ios_16b5001e',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
+  'xcode_16_beta': {
+    'args': [
+      '--xcode-build-version',
+      '16a5230g',
+    ],
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_16a5230g',
           'path': 'Xcode.app',
         },
       ],
@@ -1521,12 +1499,12 @@
   'xcode_16_main': {
     'args': [
       '--xcode-build-version',
-      '16a5211f',
+      '16a5230g',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_16a5211f',
+          'name': 'xcode_ios_16a5230g',
           'path': 'Xcode.app',
         },
       ],

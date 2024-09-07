@@ -147,6 +147,10 @@ TimeView::TimeView(ClockLayout clock_layout, ClockModel* model, Type type)
       SetupDateviews(clock_layout);
       break;
   }
+  // Set role before updating text to ensure that AccessibilityPaintChecks don't
+  // fail.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTime);
+
   UpdateTextInternal(GetTimeToShow());
 }
 
@@ -272,11 +276,6 @@ void TimeView::Refresh() {
 
 base::HourClockType TimeView::GetHourTypeForTesting() const {
   return model_->hour_clock_type();
-}
-
-void TimeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kTime;
 }
 
 void TimeView::ChildPreferredSizeChanged(views::View* child) {

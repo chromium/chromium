@@ -14,6 +14,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -71,7 +72,7 @@ void LensRegionSearchInstructionsView::Init() {
       layout_provider->GetDistanceMetric(
           views::DistanceMetric::DISTANCE_CLOSE_BUTTON_MARGIN) +
           kCloseButtonExtraMargin));
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_close_on_deactivate(false);
   set_corner_radius(kCornerRadius);
 

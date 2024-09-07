@@ -42,22 +42,16 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return Create(buffer, 0, array.size());
   }
 
-  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
-  static ThisType* Create(const ValueType* array, size_t length) {
-    // SAFETY: Caller guarantees that `array` contains `length` elements.
-    return Create(UNSAFE_BUFFERS(base::span(array, length)));
-  }
-
   static ThisType* CreateOrNull(size_t length) {
     DOMArrayBuffer* buffer =
         DOMArrayBuffer::CreateOrNull(length, sizeof(ValueType));
     return buffer ? Create(buffer, 0, length) : nullptr;
   }
 
-  static ThisType* CreateOrNull(const ValueType* array, size_t length) {
+  static ThisType* CreateOrNull(base::span<const ValueType> array) {
     DOMArrayBuffer* buffer =
-        DOMArrayBuffer::CreateOrNull(array, length * sizeof(ValueType));
-    return buffer ? Create(buffer, 0, length) : nullptr;
+        DOMArrayBuffer::CreateOrNull(base::as_bytes(array));
+    return buffer ? Create(buffer, 0, array.size()) : nullptr;
   }
 
   static ThisType* CreateUninitializedOrNull(size_t length) {
@@ -125,6 +119,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
   V(uint8_t, Uint8Clamped, true)           \
   V(uint16_t, Uint16, false)               \
   V(uint32_t, Uint32, false)               \
+  V(uint16_t, Float16, false)              \
   V(float, Float32, false)                 \
   V(double, Float64, false)                \
   V(int64_t, BigInt64, false)              \

@@ -46,7 +46,7 @@ ValidateProfileImportRequirements(const AutofillProfile& profile,
       [&](bool required, const std::vector<FieldType>& types,
           AddressImportRequirement valid, AddressImportRequirement invalid) {
         const bool is_valid =
-            !required || base::ranges::any_of(types, [&](FieldType type) {
+            !required || std::ranges::any_of(types, [&](FieldType type) {
               return profile.HasRawInfo(type);
             });
         if (is_valid) {
@@ -148,7 +148,7 @@ bool IsMinimumAddress(const AutofillProfile& profile, LogBuffer* log_buffer) {
   }
   std::vector<AddressImportRequirement> address_requirements =
       ValidateProfileImportRequirements(profile, log_buffer);
-  return !base::ranges::any_of(
+  return !std::ranges::any_of(
       kMinimumAddressRequirementViolations,
       [&](AddressImportRequirement address_requirement_violation) {
         return base::Contains(address_requirements,

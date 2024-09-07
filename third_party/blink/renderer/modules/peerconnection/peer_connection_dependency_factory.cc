@@ -225,7 +225,7 @@ class PeerConnectionStaticDeps {
   }
 
   void EnsureVsyncProvider(ExecutionContext& context) {
-    if (!vsync_provider_) {
+    if (!vsync_tick_provider_) {
       vsync_provider_.emplace(
           Platform::Current()->VideoFrameCompositorTaskRunner(),
           To<LocalDOMWindow>(context)
@@ -234,6 +234,10 @@ class PeerConnectionStaticDeps {
               ->GetChromeClient()
               .GetFrameSinkId(To<LocalDOMWindow>(context).GetFrame())
               .client_id());
+      vsync_tick_provider_ = VSyncTickProvider::Create(
+          *vsync_provider_, chrome_worker_thread_.task_runner(),
+          base::MakeRefCounted<TimerBasedTickProvider>(
+              features::kVSyncDecodingHiddenOccludedTickDuration.Get()));
     }
   }
 
@@ -260,30 +264,22 @@ class PeerConnectionStaticDeps {
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
     if (!decode_metronome_source_) {
-      std::unique_ptr<MetronomeSource::TickProvider> tick_provider;
       if (base::FeatureList::IsEnabled(features::kVSyncDecoding)) {
         EnsureVsyncProvider(context);
-        tick_provider = VSyncTickProvider::Create(
-            *vsync_provider_, chrome_worker_thread_.task_runner(),
-            std::make_unique<TimerBasedTickProvider>(
-                features::kVSyncDecodingHiddenOccludedTickDuration.Get()));
+        decode_metronome_source_ =
+            std::make_unique<MetronomeSource>(vsync_tick_provider_);
       } else {
-        tick_provider = std::make_unique<TimerBasedTickProvider>(
+        auto tick_provider = base::MakeRefCounted<TimerBasedTickProvider>(
             TimerBasedTickProvider::kDefaultPeriod);
+        decode_metronome_source_ =
+            std::make_unique<MetronomeSource>(std::move(tick_provider));
       }
-      decode_metronome_source_ =
-          std::make_unique<MetronomeSource>(std::move(tick_provider));
     }
     if (base::FeatureList::IsEnabled(features::kVSyncEncoding) &&
         !encode_metronome_source_) {
-      std::unique_ptr<MetronomeSource::TickProvider> tick_provider;
       EnsureVsyncProvider(context);
-      tick_provider = VSyncTickProvider::Create(
-          *vsync_provider_, chrome_worker_thread_.task_runner(),
-          std::make_unique<TimerBasedTickProvider>(
-              features::kVSyncDecodingHiddenOccludedTickDuration.Get()));
       encode_metronome_source_ =
-          std::make_unique<MetronomeSource>(std::move(tick_provider));
+          std::make_unique<MetronomeSource>(vsync_tick_provider_);
     }
   }
 
@@ -423,7 +419,9 @@ class PeerConnectionStaticDeps {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED};
 
+  // Generates VSync ticks, these two are always allocated together.
   std::optional<VSyncProviderImpl> vsync_provider_;
+  scoped_refptr<MetronomeSource::TickProvider> vsync_tick_provider_;
 
   THREAD_CHECKER(thread_checker_);
 };

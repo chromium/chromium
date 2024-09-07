@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -166,7 +167,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   void InstallAppAsPlaceholder() {
     InstallAppInternal(/*install_app_as_placeholder=*/true);
     // sanity check
-    EXPECT_TRUE(IsAppInstalleAsPlaceholder());
+    EXPECT_TRUE(IsAppInstalledAsPlaceholder());
   }
 
   void InstallApp() {
@@ -180,7 +181,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     app_manager_->UpdateAppByAccountId(account_id_, *info);
   }
 
-  bool IsAppInstalleAsPlaceholder() {
+  bool IsAppInstalledAsPlaceholder() {
     return web_app_provider()
         .registrar_unsafe()
         .LookupPlaceholderAppId(GURL(kAppInstallUrl),
@@ -258,6 +259,25 @@ TEST_F(WebKioskAppServiceLauncherTest,
 }
 
 TEST_F(WebKioskAppServiceLauncherTest,
+       ShouldNotInvokeInitializeNetworkWhenAppIsSuccessfullyInstalled) {
+  InstallApp();
+
+  EXEC_AND_WAIT_FOR_CALL(launcher().Initialize(), observer(), OnAppPrepared());
+  EXPECT_CALL(delegate(), InitializeNetwork()).Times(0);
+}
+
+TEST_F(
+    WebKioskAppServiceLauncherTest,
+    ShouldInvokeInitializeNetworkWhenAppIsSuccessfullyInstalledButNotOfflineEnabled) {
+  profile()->GetPrefs()->SetBoolean(::prefs::kKioskWebAppOfflineEnabled, false);
+  InstallApp();
+
+  EXEC_AND_WAIT_FOR_CALL(launcher().Initialize(), delegate(),
+                         InitializeNetwork());
+  EXPECT_CALL(observer(), OnAppPrepared()).Times(0);
+}
+
+TEST_F(WebKioskAppServiceLauncherTest,
        InitializeShouldInvokeAppPreparedIfAppAlreadyInstalled) {
   InstallApp();
 
@@ -282,7 +302,7 @@ TEST_F(WebKioskAppServiceLauncherTest, ShouldAlwaysInstallPlaceholder) {
   EXEC_AND_WAIT_FOR_CALL(launcher().ContinueWithNetworkReady(), observer(),
                          OnAppPrepared());
 
-  EXPECT_TRUE(IsAppInstalleAsPlaceholder());
+  EXPECT_TRUE(IsAppInstalledAsPlaceholder());
 }
 
 TEST_F(WebKioskAppServiceLauncherTest, LaunchAppShouldInvokeOnAppLaunched) {
@@ -331,7 +351,7 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowNotInstalled) {
                          OnAppPrepared());
   EXEC_AND_WAIT_FOR_CALL(launcher().LaunchApp(), observer(), OnAppLaunched());
 
-  EXPECT_FALSE(IsAppInstalleAsPlaceholder());
+  EXPECT_FALSE(IsAppInstalledAsPlaceholder());
 
   // App isn't always ready by the time it's being launched. Therefore we
   // check the total count of kLaunchAppReadinessUMA instead of individual
@@ -372,7 +392,7 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowPlaceholderReplaced) {
                          OnAppPrepared());
   EXEC_AND_WAIT_FOR_CALL(launcher().LaunchApp(), observer(), OnAppLaunched());
 
-  EXPECT_FALSE(IsAppInstalleAsPlaceholder());
+  EXPECT_FALSE(IsAppInstalledAsPlaceholder());
 
   // App isn't always ready by the time it's being launched. Therefore we
   // check the total count of kLaunchAppReadinessUMA instead of individual

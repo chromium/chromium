@@ -3,43 +3,57 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
-import '../signin_shared.css.js';
-import '../signin_vars.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement, nothing} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ChromeSigninInterceptionParameters, DiceWebSigninInterceptBrowserProxy} from '../dice_web_signin_intercept_browser_proxy.js';
 import {DiceWebSigninInterceptBrowserProxyImpl} from '../dice_web_signin_intercept_browser_proxy.js';
 
-import {getTemplate} from './chrome_signin_app.html.js';
+import {getCss} from './chrome_signin_app.css.js';
+import {getHtml} from './chrome_signin_app.html.js';
+
+export interface ChromeSigninAppElement {
+  $: {
+    interceptDialog: HTMLElement,
+  };
+}
 
 const ChromeSigninAppElementBase =
-    I18nMixin(WebUiListenerMixin(PolymerElement));
+    I18nMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
   static get is() {
     return 'chrome-signin-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      interceptionParameters_: {
-        type: Object,
-        value: null,
-      },
+      interceptionParameters_: {type: Object},
     };
   }
 
-  private interceptionParameters_: ChromeSigninInterceptionParameters;
+  protected interceptionParameters_: ChromeSigninInterceptionParameters = {
+    title: '',
+    subtitle: '',
+    fullName: '',
+    givenName: '',
+    email: '',
+    pictureUrl: '',
+    managedUserBadge: '',
+  };
   private diceWebSigninInterceptBrowserProxy_:
       DiceWebSigninInterceptBrowserProxy =
           DiceWebSigninInterceptBrowserProxyImpl.getInstance();
@@ -59,28 +73,26 @@ export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
     this.interceptionParameters_ = parameters;
   }
 
-  private onParametersLoaded_(parameters: ChromeSigninInterceptionParameters) {
+  private async onParametersLoaded_(parameters:
+                                        ChromeSigninInterceptionParameters) {
     this.setParameters_(parameters);
 
-    afterNextRender(this, () => {
-      const height =
-          this.shadowRoot!.querySelector<HTMLElement>(
-                              '#interceptDialog')!.offsetHeight;
-      this.diceWebSigninInterceptBrowserProxy_.initializedWithHeight(height);
-    });
+    await this.updateComplete;
+    const height = this.$.interceptDialog.offsetHeight;
+    this.diceWebSigninInterceptBrowserProxy_.initializedWithHeight(height);
   }
 
-  private onCancel_() {
+  protected onCancel_() {
     this.diceWebSigninInterceptBrowserProxy_.cancel();
   }
 
-  private onAccept_() {
+  protected onAccept_() {
     this.diceWebSigninInterceptBrowserProxy_.accept();
   }
 
-  private getAcceptButtonAriaLabel_() {
-    if (!this.interceptionParameters_) {
-      return null;
+  protected getAcceptButtonAriaLabel_() {
+    if (this.interceptionParameters_.email.length === 0) {
+      return nothing;
     }
     return this.i18n(
         'acceptButtonAriaLabel', this.interceptionParameters_.email);

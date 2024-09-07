@@ -8,6 +8,7 @@
 #include <mfapi.h>
 #include <mfidl.h>
 #include <stdint.h>
+#include <wrl/client.h>
 
 #include <memory>
 
@@ -145,12 +146,16 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Activates the asynchronous encoder instance |encoder_| according to codec
   // merit.
-  bool ActivateAsyncEncoder(std::vector<IMFActivate*>& activates,
-                            bool is_constrained_h264);
+  bool ActivateAsyncEncoder(
+      std::vector<Microsoft::WRL::ComPtr<IMFActivate>>& activates,
+      bool is_constrained_h264);
 
   // Initializes and allocates memory for input and output parameters.
   bool InitializeInputOutputParameters(VideoCodecProfile output_profile,
                                        bool is_constrained_h264);
+
+  // Sets the SW implementation of the BRC, if the encoder supports it.
+  void SetSWRateControl();
 
   // Initializes encoder parameters for real-time use.
   bool SetEncoderModes();
@@ -326,6 +331,12 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // from the front.
   base::circular_deque<OutOfBandMetadata> sample_metadata_queue_;
   gpu::GpuDriverBugWorkarounds workarounds_;
+
+  // This counter starts from 0, used for managing the METransformNeedInput
+  // events sent by MFT encoder.
+  uint32_t encoder_needs_input_counter_;
+
+  gfx::Size max_resolution_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

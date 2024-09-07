@@ -174,6 +174,10 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterListPref(prefs::kOobeCategoriesSelected);
   }
 
+  if (features::IsOobePerksDiscoveryEnabled()) {
+    registry->RegisterBooleanPref(prefs::kOobePerksDiscoveryGamgeeShown, false);
+  }
+
   if (features::IsOobeDisplaySizeEnabled()) {
     registry->RegisterDoublePref(prefs::kOobeDisplaySizeFactorDeferred, 1.0);
   }

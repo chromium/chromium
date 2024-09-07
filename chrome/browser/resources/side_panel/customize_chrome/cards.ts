@@ -99,6 +99,10 @@ export class CardsElement extends CrLitElement {
   }
 
   protected onShowToggleClick_() {
+    if (this.managedByPolicy_) {
+      return;
+    }
+
     this.setShow_(!this.show_);
   }
 
@@ -120,6 +124,10 @@ export class CardsElement extends CrLitElement {
   }
 
   protected onCardClick_(e: Event) {
+    if (this.managedByPolicy_) {
+      return;
+    }
+
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const module = this.modules_[index]!;
     this.setModuleStatus(index, !module.enabled);

@@ -18,7 +18,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.fakepdf.PdfDocumentRequest;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -57,27 +56,17 @@ public class PdfUtilsUnitTest {
     }
 
     @Test
-    public void testGetPdfDocumentRequest_WithPdfLink() {
-        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(FILE_PATH);
-        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
-        Assert.assertNotNull("Uri should not be null.", request.getUri());
-        Assert.assertNull("File should be null.", request.getFile());
-    }
-
-    @Test
-    public void testGetPdfDocumentRequest_WithContentUri() {
-        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(CONTENT_URL);
-        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
-        Assert.assertNotNull("Uri should not be null.", request.getUri());
-        Assert.assertNull("File should be null.", request.getFile());
-    }
-
-    @Test
-    public void testGetPdfDocumentRequest_WithFileUri() {
-        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(FILE_URL);
-        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
-        Assert.assertNull("Uri should be null.", request.getUri());
-        Assert.assertNotNull("File should not be null.", request.getFile());
+    public void testGetUriFromFilePath() {
+        Uri uri = PdfUtils.getUriFromFilePath(FILE_PATH);
+        Assert.assertNotNull("Uri should not be null.", uri);
+        uri = PdfUtils.getUriFromFilePath(CONTENT_URL);
+        Assert.assertNotNull("Uri should not be null.", uri);
+        Assert.assertEquals(
+                "Uri should match the input when it is already a content uri",
+                CONTENT_URL,
+                uri.toString());
+        uri = PdfUtils.getUriFromFilePath(FILE_URL);
+        Assert.assertNotNull("Uri should not be null.", uri);
     }
 
     @Test

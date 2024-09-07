@@ -66,6 +66,10 @@ DesktopMediaSourceView::DesktopMediaSourceView(
                                                 kCornerRadius);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  UpdateAccessibleName();
+  label_text_changed_callback_ =
+      label_->AddTextChangedCallback(base::BindRepeating(
+          &DesktopMediaSourceView::OnLabelTextChanged, base::Unretained(this)));
 }
 
 DesktopMediaSourceView::~DesktopMediaSourceView() {}
@@ -174,12 +178,17 @@ void DesktopMediaSourceView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-void DesktopMediaSourceView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetNameChecked(
-      label_->GetText().empty()
-          ? l10n_util::GetStringUTF16(
-                IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME)
-          : label_->GetText());
+void DesktopMediaSourceView::OnLabelTextChanged() {
+  UpdateAccessibleName();
+}
+
+void DesktopMediaSourceView::UpdateAccessibleName() {
+  if (label_->GetText().empty()) {
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME));
+  } else {
+    GetViewAccessibility().SetName(label_->GetText());
+  }
 }
 
 BEGIN_METADATA(DesktopMediaSourceView)

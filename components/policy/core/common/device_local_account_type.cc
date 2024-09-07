@@ -80,7 +80,7 @@ GetDeviceLocalAccountType(std::string_view user_id) {
   }
 
   // |user_id| is a device-local account but its type is not recognized.
-  NOTREACHED_IN_MIGRATION();
+  DUMP_WILL_BE_NOTREACHED();
   return base::unexpected(GetDeviceLocalAccountTypeError::kUnknownDomain);
 }
 

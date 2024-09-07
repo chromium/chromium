@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 // Matches two AutofillProfiles and expects that they `Compare()` equal. This
@@ -31,8 +30,6 @@ namespace {
 MATCHER(DataModelsCompareEqual, "") {
   return std::get<0>(arg).Compare(std::get<1>(arg)) == 0;
 }
-
-}  // namespace
 
 class ManualTestingImportTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir()); }
@@ -185,7 +182,7 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Valid) {
         "NAME_LAST_SECOND" : "last"
       },
       {
-        "source" : "account",
+        "record_type" : "account",
         "initial_creator_id": 999,
         "ADDRESS_HOME_STREET_ADDRESS" : "street 123",
         "ADDRESS_HOME_STREET_NAME" : "street",
@@ -195,7 +192,7 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Valid) {
   })");
 
   AutofillProfile expected_profile1(
-      AutofillProfile::Source::kLocalOrSyncable,
+      AutofillProfile::RecordType::kLocalOrSyncable,
       i18n_model_definition::kLegacyHierarchyCountryCode);
   expected_profile1.SetRawInfoWithVerificationStatus(
       NAME_FULL, u"first last", VerificationStatus::kObserved);
@@ -207,7 +204,7 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Valid) {
       NAME_LAST_SECOND, u"last", VerificationStatus::kObserved);
 
   AutofillProfile expected_profile2(
-      AutofillProfile::Source::kAccount,
+      AutofillProfile::RecordType::kAccount,
       i18n_model_definition::kLegacyHierarchyCountryCode);
   expected_profile2.set_initial_creator_id(999);
   expected_profile2.SetRawInfoWithVerificationStatus(
@@ -263,14 +260,15 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Invalid_UnrecognizedType) {
   EXPECT_FALSE(LoadProfilesFromFile(file_path).has_value());
 }
 
-// Tests that the conversion fails when the "source" has an unrecognized value.
+// Tests that the conversion fails when the "record_type" has an unrecognized
+// value.
 TEST_F(ManualTestingImportTest,
-       LoadProfilesFromFile_Invalid_UnrecognizedSource) {
+       LoadProfilesFromFile_Invalid_UnrecognizedRecordType) {
   base::FilePath file_path = GetFilePath();
   base::WriteFile(file_path, R"({
     "profiles" : [
       {
-        "source" : "invalid"
+        "record_type" : "invalid"
       }
     ]
   })");
@@ -322,15 +320,12 @@ TEST_F(ManualTestingImportTest,
 class ManualTestingImportTesti18n : public ManualTestingImportTest {
  public:
   ManualTestingImportTesti18n() {
-    features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
-                                features::kAutofillUseAUAddressModel,
-                                features::kAutofillUseBRAddressModel,
+    features_.InitWithFeatures({features::kAutofillUseAUAddressModel,
                                 features::kAutofillUseCAAddressModel,
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseFRAddressModel,
                                 features::kAutofillUseINAddressModel,
-                                features::kAutofillUseITAddressModel,
-                                features::kAutofillUseMXAddressModel},
+                                features::kAutofillUseITAddressModel},
                                {});
   }
   base::test::ScopedFeatureList features_;
@@ -357,7 +352,7 @@ TEST_F(ManualTestingImportTesti18n, Loadi18nProfilesFromFile_Valid) {
   })");
 
   AutofillProfile expected_profile1(
-      AutofillProfile::Source::kLocalOrSyncable,
+      AutofillProfile::RecordType::kLocalOrSyncable,
       i18n_model_definition::kLegacyHierarchyCountryCode);
   expected_profile1.SetRawInfoWithVerificationStatus(
       NAME_FULL, u"first last", VerificationStatus::kObserved);
@@ -368,8 +363,8 @@ TEST_F(ManualTestingImportTesti18n, Loadi18nProfilesFromFile_Valid) {
   expected_profile1.SetRawInfoWithVerificationStatus(
       NAME_LAST_SECOND, u"last", VerificationStatus::kObserved);
 
-  AutofillProfile expected_profile2(AutofillProfile::Source::kLocalOrSyncable,
-                                    AddressCountryCode("BR"));
+  AutofillProfile expected_profile2(
+      AutofillProfile::RecordType::kLocalOrSyncable, AddressCountryCode("BR"));
   expected_profile2.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS, u"street 123",
       VerificationStatus::kObserved);
@@ -386,4 +381,5 @@ TEST_F(ManualTestingImportTesti18n, Loadi18nProfilesFromFile_Valid) {
   EXPECT_FALSE(loaded_profiles.value().at(1).GetAddress().IsLegacyAddress());
 }
 
+}  // namespace
 }  // namespace autofill

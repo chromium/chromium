@@ -42,9 +42,11 @@ namespace {
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ContainsPartialText;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
+using chrome_test_util::CreateTabGroupCreateButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridGroupCellAtIndex;
+using chrome_test_util::TabGroupCreationView;
 
 // Constant for timeout while waiting for asynchronous sync operations.
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
@@ -54,18 +56,6 @@ const GURL mockURL("http://not-a-real-site.test/");
 
 // Link for my activity page.
 const char kMyActivityURL[] = "myactivity.google.com";
-
-// Returns the matcher for the tab group creation view.
-id<GREYMatcher> GroupCreationViewMatcher() {
-  return grey_allOf(grey_accessibilityID(kCreateTabGroupViewIdentifier),
-                    grey_sufficientlyVisible(), nil);
-}
-
-// Returns the matcher for `Create Group` button.
-id<GREYMatcher> CreateGroupButtonInGroupCreation() {
-  return grey_allOf(grey_accessibilityID(kCreateTabGroupCreateButtonIdentifier),
-                    grey_sufficientlyVisible(), nil);
-}
 
 // Creates a group with default title from a tab cell at index `tab_cell_index`
 // when no group is in the grid.
@@ -77,9 +67,8 @@ void CreateDefaultGroupFromTabCellAtIndex(int tab_cell_index) {
           ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
               IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1))]
       performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
-  [[EarlGrey selectElementWithMatcher:CreateGroupButtonInGroupCreation()]
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
       performAction:grey_tap()];
 }
 
@@ -756,9 +745,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 1))]
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(@"1 tab,")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.

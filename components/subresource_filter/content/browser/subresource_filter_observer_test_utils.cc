@@ -9,6 +9,7 @@
 #include "base/containers/map_util.h"
 #include "base/types/optional_util.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,7 +80,8 @@ TestSubresourceFilterObserver::GetPageActivation(const GURL& url) const {
   return base::OptionalFromPtr(base::FindOrNull(page_activations_, url));
 }
 
-bool TestSubresourceFilterObserver::GetIsAdFrame(int frame_tree_node_id) const {
+bool TestSubresourceFilterObserver::GetIsAdFrame(
+    content::FrameTreeNodeId frame_tree_node_id) const {
   return base::Contains(ad_frames_, frame_tree_node_id);
 }
 

@@ -3,7 +3,11 @@
 //base/allocator/partition_allocator
 //base/allocator/partition_allocator/src/partition_alloc
 //base/numerics
+//base/third_party/cityhash
+//base/third_party/cityhash_v103
 //base/third_party/double_conversion
+//base/third_party/icu
+//base/third_party/superfasthash
 //build
 //build/android
 //build/config
@@ -22,6 +26,7 @@
 //components/grpc_support
 //components/metrics
 //components/miracle_parameter/common
+//components/network_time/time_tracker
 //components/prefs
 //components/prefs/android
 //crypto
@@ -32,6 +37,7 @@
 //net/dns/public
 //net/http
 //net/third_party/quiche
+//net/third_party/uri_template
 //net/traffic_annotation
 //third_party/abseil-cpp
 //third_party/android_build_tools
@@ -51,7 +57,6 @@
 //third_party/jdk
 //third_party/jni_zero
 //third_party/kotlin_stdlib
-//third_party/libevent
 //third_party/metrics_proto
 //third_party/modp_b64
 //third_party/protobuf

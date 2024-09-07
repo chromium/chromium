@@ -317,6 +317,13 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   MOCK_METHOD(void, Reset, (), (override));
   MOCK_METHOD(bool, ShouldParseForms, (), (override));
   MOCK_METHOD(void,
+              OnAskForValuesToFill,
+              (const FormData&,
+               const FieldGlobalId&,
+               const gfx::Rect&,
+               AutofillSuggestionTriggerSource),
+              (override));
+  MOCK_METHOD(void,
               OnFormsSeen,
               (const std::vector<FormData>& updated_forms,
                const std::vector<FormGlobalId>& removed_forms),
@@ -342,6 +349,26 @@ class ContentAutofillDriverWithFakeAutofillAgent
 
  private:
   FakeAutofillAgent agent_;
+};
+
+// RAII type that intercepts mojom::ReportBadMessage() calls.
+class BadMessageHelper {
+ public:
+  BadMessageHelper() { mojo::SetDefaultProcessErrorHandler(callback_.Get()); }
+  ~BadMessageHelper() {
+    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+  }
+
+  // This callback is invoked when a bad message arrives.
+  base::MockRepeatingCallback<void(const std::string&)>& callback() {
+    return callback_;
+  }
+
+ private:
+  base::MockRepeatingCallback<void(const std::string&)> callback_;
+  // mojo::ReportBadMessage() needs a MessageDispatchContext.
+  mojo::Message dummy_message_{0, 0, 0, 0, nullptr};
+  mojo::internal::MessageDispatchContext context_{&dummy_message_};
 };
 
 class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
@@ -670,7 +697,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
     field.set_origin(triggered_origin);
     field.set_value(u"dummy_value");
   }
-  ASSERT_TRUE(base::ranges::all_of(
+  ASSERT_TRUE(std::ranges::all_of(
       address_form().fields(),
       [](const FormFieldData& field) { return !field.value().empty(); }));
   base::RunLoop run_loop;
@@ -844,7 +871,7 @@ TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm, ExtractForm_Found) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {
+TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDom_NoMatches) {
   base::RunLoop run_loop;
   auto cb =
       [](base::OnceCallback<void(const std::vector<std::string>&)> callback) {
@@ -855,7 +882,7 @@ TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {
       .WillOnce(WithArg<0>(Invoke(cb)));
 
   std::vector<std::string> matches = {"dummy data"};
-  driver().browser_events().GetFourDigitCombinationsFromDOM(
+  driver().browser_events().GetFourDigitCombinationsFromDom(
       base::BindLambdaForTesting([&](const std::vector<std::string>& result) {
         matches = result;
         run_loop.Quit();
@@ -865,7 +892,7 @@ TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {
 }
 
 TEST_F(ContentAutofillDriverTest,
-       GetFourDigitCombinationsFromDOM_SuccessfulMatches) {
+       GetFourDigitCombinationsFromDom_SuccessfulMatches) {
   base::RunLoop run_loop;
   auto cb =
       [](base::OnceCallback<void(const std::vector<std::string>&)> callback) {
@@ -875,7 +902,7 @@ TEST_F(ContentAutofillDriverTest,
   EXPECT_CALL(agent(), GetPotentialLastFourCombinationsForStandaloneCvc)
       .WillOnce(WithArg<0>(Invoke(cb)));
   std::vector<std::string> matches;
-  driver().browser_events().GetFourDigitCombinationsFromDOM(
+  driver().browser_events().GetFourDigitCombinationsFromDom(
       base::BindLambdaForTesting([&](const std::vector<std::string>& result) {
         matches = result;
         run_loop.Quit();
@@ -884,25 +911,18 @@ TEST_F(ContentAutofillDriverTest,
   EXPECT_THAT(matches, ElementsAre("1234"));
 }
 
-// RAII type that intercepts mojom::ReportBadMessage() calls.
-class BadMessageHelper {
- public:
-  BadMessageHelper() { mojo::SetDefaultProcessErrorHandler(callback_.Get()); }
-  ~BadMessageHelper() {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
-
-  // This callback is invoked when a bad message arrives.
-  base::MockRepeatingCallback<void(const std::string&)>& callback() {
-    return callback_;
-  }
-
- private:
-  base::MockRepeatingCallback<void(const std::string&)> callback_;
-  // mojo::ReportBadMessage() needs a MessageDispatchContext.
-  mojo::Message dummy_message_{0, 0, 0, 0, nullptr};
-  mojo::internal::MessageDispatchContext context_{&dummy_message_};
-};
+// Tests that calls from the renderer with trigger source
+// kPlusAddressUpdatedInBrowserProcess are classified as bad messages.
+TEST_F(ContentAutofillDriverTest, AskForValuesToFillChecksTriggerSource) {
+  BadMessageHelper bad_message_helper;
+  EXPECT_CALL(manager(), OnAskForValuesToFill).Times(0);
+  EXPECT_CALL(bad_message_helper.callback(),
+              Run("PlusAddressUpdatedInBrowserProcess is not a permitted "
+                  "trigger source in the renderer"));
+  driver().renderer_events().AskForValuesToFill(
+      FormData(), FieldRendererId(), gfx::Rect(),
+      AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+}
 
 class ContentAutofillDriverTest_PrerenderBadMessage
     : public ContentAutofillDriverTest {

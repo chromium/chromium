@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Eksklüziv <ph name="PRODUCT_NAME" /> aktivləri əlçatandır</translation>
 <translation id="1022628058306505708">Aşağıya axın</translation>
 <translation id="1026212596705997935">Qısayol "<ph name="CONFLICT_ACCEL_NAME" />" üçün istifadə edilir. Yeni qısayol üzərinə basın. Mövcud qısayolu əvəzləmək üçün bu qısayolun üzərinə yenidən basın.</translation>
+<translation id="1030856839388844477">Data istifadəsini sıfırlayın</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> mövzu, <ph name="CPU_MAX_CLOCK_SPEED" /> GHs)</translation>
 <translation id="1047773237499189053">Yeni funksiya əlçatandır, ətraflı məlumat üçün Yuxarı ox düyməsini istifadə edin.</translation>
 <translation id="1049663189809099096">pastel sarı</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Zəif siqnal</translation>
 <translation id="1300115153046603471">APN növü: defolt və <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Çevirin</translation>
 <translation id="1304014921944666344">Yaradılma tarixi</translation>
 <translation id="1308754910631152188">Güncəllənir (<ph name="PERCENTAGE_VALUE" />% tamamlanıb)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> dəqiqə</translation>
@@ -74,8 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Skanlama sahəsinə sığdırın</translation>
 <translation id="1343442362630695901">duzlu göl</translation>
+<translation id="1348657754632799065">Səsyazma paneli</translation>
 <translation id="1367951781824006909">Fayl seçin</translation>
 <translation id="1371650399987522809">Google AI tərəfindən dəstəklənən divar kağızı üçün rəy</translation>
+<translation id="1374385338586507108">Təyin edin</translation>
+<translation id="1383876407941801731">Axtar</translation>
 <translation id="1387854245479784695">Bu, bütün nüvələrin birləşməsidir</translation>
 <translation id="1393206549145430405">qala</translation>
 <translation id="1394661041439318933">Keysin batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -95,6 +100,7 @@
 <translation id="1449035143498573192">Google Axtarışda açın</translation>
 <translation id="1451536289672181509">Cihaz klaviaturadır.</translation>
 <translation id="1452939186874918380">çətirlər</translation>
+<translation id="145402479967797468">Oxutma kontrolları</translation>
 <translation id="1459693405370120464">Hava</translation>
 <translation id="1463084054301832672">kottec</translation>
 <translation id="1468664791493211953">Təkliflər</translation>
@@ -260,6 +266,7 @@
 <translation id="2212733584906323460">Ad Həlli</translation>
 <translation id="2215920961700443347">İnternet yoxdur. İnternetə qoşulun və yenidən cəhd edin.</translation>
 <translation id="2217935453350629363">Cari sürət</translation>
+<translation id="221994303562837085">Qeydəalmanı dayandırın</translation>
 <translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="222447520299472966">Ən azı bir İncəsənət qalereyası albomu seçilməlidir</translation>
 <translation id="2230005943220647148">Selsi</translation>
@@ -267,6 +274,7 @@
 <translation id="2230624078793142213">Daha çox yaradın</translation>
 <translation id="2236746079896696523">Klaviaturanın arxa işığının keçiricisi</translation>
 <translation id="2240366984605217732">Düzən keçiricisi</translation>
+<translation id="2242381852034179222">Bu funksiya administratorlarınız tərəfindən idarə olunur</translation>
 <translation id="2244834438220057800">yaşıl</translation>
 <translation id="225692081236532131">Aktivləşdirmə statusu</translation>
 <translation id="2267285889943769271">Skrinşot əlavə edin</translation>
@@ -310,6 +318,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
 <translation id="2505327257735685095">Cari divar kağızı şəklini yeniləyin</translation>
+<translation id="2507491234071975894">Dinamik</translation>
 <translation id="2512979179176933762">pəncərələri göstərin</translation>
 <translation id="2513396635448525189">Giriş şəkli</translation>
 <translation id="2521835766824839541">əvvəlki trek</translation>
@@ -320,6 +329,7 @@
 <translation id="2533048460510040082">Təklif olunan yardım məzmunu</translation>
 <translation id="2536159006530886390">İnternetə qoşulmaq olmur.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> digəri</translation>
+<translation id="2560876255701405320">Audioyazılar siyahısı</translation>
 <translation id="2561093647892030937">limonlar</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi icra edilir...</translation>
 <translation id="2575552334616524665">Bunu Ayarlarda və ya <ph name="THREE_DOTS_MENU_ICON" /> menyusunda yandıra bilərsiniz</translation>
@@ -351,6 +361,7 @@
 <translation id="2715723665057727940">çay</translation>
 <translation id="2717139507051041123">Tünd rəng rejimini aktiv edin</translation>
 <translation id="2728460467788544679">Çap tarixçəsini silin</translation>
+<translation id="2731700343119398978">Gözləyin...</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Paylaşılan</translation>
 <translation id="2751739896257479635">EAP Faza 2 doğrulaması</translation>
@@ -365,6 +376,7 @@
 <translation id="2855718259207180827">yun</translation>
 <translation id="2859243502336719778">Önəmli güncəlləmə</translation>
 <translation id="2860473693272905224">Başqa bir səhifəni skanerə yerləşdirin</translation>
+<translation id="286265581261662583">Təfsir, tərcümə və ya vahid çevirmələri üçün sağ düymə ilə toxunun və ya basıb saxlayın</translation>
 <translation id="2872961005593481000">Qapadın</translation>
 <translation id="2873483161362553159">Brauzer naviqasiyası</translation>
 <translation id="2874939134665556319">Öncəki trek</translation>
@@ -405,6 +417,7 @@
 <translation id="3140130301071865159">qar</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> üçün eksklüziv</translation>
 <translation id="315116470104423982">Mobil data</translation>
+<translation id="3156511682997763015">10 saniyə irəli çəkin</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır...</translation>
 <translation id="315738237743207937">Avtorizasiya portalı aşkarlanıb</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Sistem və tətbiq məlumatı<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />göstəriciləri<ph name="END_LINK2" /> göndərin</translation>
@@ -434,6 +447,7 @@
 <translation id="3303855915957856445">Heç bir axtarış nəticəsi tapılmadı</translation>
 <translation id="3305294846493618482">ardı</translation>
 <translation id="3310640316857623290">DNS gecikməsi icazə verilən həddən xeyli yuxarıdır</translation>
+<translation id="3321030238473337787">Oxutma sürəti</translation>
 <translation id="3328783797891415197">Test icra edilir</translation>
 <translation id="3340011300870565703">Sağ qulaqlığın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ayarlar</translation>
@@ -462,7 +476,6 @@
 <translation id="346423161771747987">Cərəyan</translation>
 <translation id="346539236881580388">Yenidən çəkin</translation>
 <translation id="3484914941826596830">Proqram güncəllənərkən bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu güncəlləmə bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
-<translation id="3485555238092220889">xüsusi imkanlar əməliyyatı</translation>
 <translation id="3486220673238053218">təsvir</translation>
 <translation id="3487866404496702283">Mahi funksiyası haqqında rəy</translation>
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
@@ -511,6 +524,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> rəy)</translation>
 <translation id="3748026146096797577">Qoşulmayıb</translation>
 <translation id="3749289110408117711">Fayl adı</translation>
+<translation id="3767737419527918477">Səsyazma fayllarını axtarın</translation>
 <translation id="3771294271822695279">Video Fayllar</translation>
 <translation id="3780740315729837296">Klaviatura düyməsi təyin edin</translation>
 <translation id="3784455785234192852">Kilidləyin</translation>
@@ -671,6 +685,7 @@
 <translation id="4562494484721939086">Xidmət yoxdur</translation>
 <translation id="4570558255126759859">Səsyazmaları xülasələmək üçün Gemini modeli endirilsin?</translation>
 <translation id="4573777384450697571">Alınmadı - Sertifikatın vaxtı bitib</translation>
+<translation id="4575450106703099687">xüsusi imkanlar üzrə seçimlər</translation>
 <translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
 <translation id="4593212453765072419">Proksi doğrulama tələb olunur</translation>
 <translation id="4594021849294327751">Transkript yaradın</translation>
@@ -793,6 +808,7 @@
 <translation id="5223226274641517059">Qeydə aldığınız zaman canlı transkriptlər göstəriləcək. Bunu Ayarlarda söndürə bilərsiniz.</translation>
 <translation id="5226879510707344687">Transkripti eksport edin</translation>
 <translation id="5227902338748591677">Qaranlıq tema cədvəli</translation>
+<translation id="5229104491259541281">Çevirin: "<ph name="QUERY" />"</translation>
 <translation id="5229344016299762883">Tam ekrandan çıxın</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrator "<ph name="APP_NAME" />" tətbiqini hər daxilolmada avtomatik başlamağa ayarlayıb.}=2{Administrator "<ph name="APP_NAME" />" və digər 1 tətbiqi hər daxilolmada avtomatik başlamağa ayarlayıb.}other{Administrator "<ph name="APP_NAME" />" və digər # tətbiqi hər daxilolmada avtomatik başlamağa ayarlayıb.}}</translation>
@@ -883,7 +899,9 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> üçün redaktə düyməsi.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazını güncəlləyin</translation>
+<translation id="5736820754189340309">Data istifadəsi sıfırlanıb</translation>
 <translation id="574392208103952083">Orta</translation>
+<translation id="5744175046705638478">Tərcümə edin: "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">növbəti trek</translation>
 <translation id="5760715441271661976">Portal Vəziyyəti</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> yenidən başladılır və güncəllənir</translation>
@@ -892,6 +910,7 @@
 <translation id="57838592816432529">Səssiz</translation>
 <translation id="5784136236926853061">Yüksək HTTP gecikməsi</translation>
 <translation id="5790391387506209808">göy daş</translation>
+<translation id="5810692306010756935">Nəzarətsiz hesaba keçid</translation>
 <translation id="5816802250591013230">Qısayol təyin edilməyib</translation>
 <translation id="5826644637650799838">Rəsm haqqında</translation>
 <translation id="5832805196449965646">Şəxs əlavə edin</translation>
@@ -930,6 +949,7 @@
 <translation id="5972388717451707488">Güncəlləmə Mexanizmi</translation>
 <translation id="5972801171078377748">Daha göstərməyin</translation>
 <translation id="5975130252842127517">mərcan</translation>
+<translation id="5982621672636444458">Çeşidləmə variantları</translation>
 <translation id="5984145644188835034">Defolt Divar Kağızı</translation>
 <translation id="5996832681196460718">ipək</translation>
 <translation id="6017514345406065928">Yaşıl</translation>
@@ -946,7 +966,6 @@
 <translation id="6058625436358447366">Tamamlamaq üçün yeni və köhnə parolları yazın</translation>
 <translation id="6061772781719867950">HTTP sorğuları alınmadı</translation>
 <translation id="6073292342939316679">klaviatura parlaqlığını azaldın</translation>
-<translation id="6073451960410192870">Çəkməyi dayandırın</translation>
 <translation id="6075872808778243331">(Android) HTTP Gecikməsi</translation>
 <translation id="6078323886959318429">Qısayol əlavə edin</translation>
 <translation id="6091080061796993741">sarı</translation>
@@ -986,6 +1005,7 @@
 <translation id="6275224645089671689">Sağ ox</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Təfsir edin: "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">mavi və bənövşəyi</translation>
 <translation id="6284632978374966585">Qaranlıq temanı aktiv edin</translation>
 <translation id="6285260286443238386">Qeydi eksport edin</translation>
@@ -1104,6 +1124,7 @@
 <translation id="6798678288485555829">Mətn naviqasiyası</translation>
 <translation id="680983167891198932">Açar</translation>
 <translation id="6816797338148849397">Seçiminizlə əlaqəli məlumat əlçatandır. Giriş üçün Yuxarı ox düyməsini istifadə edin.</translation>
+<translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6853312040151791195">Deşarj faizi</translation>
 <translation id="6862416241246624313">Rəy göndərildi</translation>
 <translation id="6866732840889595464">çobanyastığı</translation>
@@ -1317,6 +1338,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provayder növü</translation>
 <translation id="7882501334836096755">İctimai açar</translation>
+<translation id="7889966925761734854">Axtarın</translation>
 <translation id="78957024357676568">sol</translation>
 <translation id="7897043345768902965">piyada yolu</translation>
 <translation id="7902285181767404769">Qeydə alarkən bildirişləri susdurun</translation>
@@ -1354,6 +1376,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8082366717211101304">Android tətbiqlərindən DNS'i həll etmək olmur</translation>
 <translation id="8082644724189923105">klaviatura zonası</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
+<translation id="8088963492174775412">Basaraq qeydə alın</translation>
 <translation id="8094062939584182041">Google'un bu problemlə bağlı sizə e-məktub göndərməsinə icazə verin</translation>
 <translation id="8104083085214006426">Açıq və güvənsiz şəbəkədən istifadə edirsiniz</translation>
 <translation id="811820734797650957">(Android) Giriş test edilə bilər</translation>
@@ -1551,6 +1574,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="9087578468327036362">Bu sorğunu bildirin</translation>
 <translation id="9088306295921699330">Cari istifadə</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Sıfırlama tarixi haqqında ətraflı məlumat</translation>
 <translation id="9100765901046053179">Qabaqcıl ayarlar</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> üçün bileti yeniləyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır</translation>

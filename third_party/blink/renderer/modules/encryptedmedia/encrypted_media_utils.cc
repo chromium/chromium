@@ -6,7 +6,11 @@
 
 #include "base/notreached.h"
 #include "media/base/eme_constants.h"
+#include "media/base/key_systems.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 
@@ -19,6 +23,7 @@ const char kPersistentLicense[] = "persistent-license";
 
 }  // namespace
 
+// static
 media::EmeInitDataType EncryptedMediaUtils::ConvertToInitDataType(
     const String& init_data_type) {
   if (init_data_type == "cenc")
@@ -32,6 +37,7 @@ media::EmeInitDataType EncryptedMediaUtils::ConvertToInitDataType(
   return media::EmeInitDataType::UNKNOWN;
 }
 
+// static
 String EncryptedMediaUtils::ConvertFromInitDataType(
     media::EmeInitDataType init_data_type) {
   switch (init_data_type) {
@@ -156,12 +162,31 @@ String EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
   return "not-allowed";
 }
 
+// static
 WebEncryptedMediaClient*
 EncryptedMediaUtils::GetEncryptedMediaClientFromLocalDOMWindow(
     LocalDOMWindow* window) {
   WebLocalFrameImpl* web_frame =
       WebLocalFrameImpl::FromFrame(window->GetFrame());
   return web_frame->Client()->EncryptedMediaClient();
+}
+
+// static
+void EncryptedMediaUtils::ReportUsage(EmeApiType api_type,
+                                      ExecutionContext* execution_context,
+                                      const String& key_system,
+                                      bool use_hardware_secure_codecs,
+                                      bool is_persistent_session) {
+  if (!execution_context) {
+    return;
+  }
+
+  ukm::builders::Media_EME_Usage builder(execution_context->UkmSourceID());
+  builder.SetKeySystem(media::GetKeySystemIntForUKM(key_system.Ascii()));
+  builder.SetUseHardwareSecureCodecs(use_hardware_secure_codecs);
+  builder.SetApi(static_cast<int>(api_type));
+  builder.SetIsPersistentSession(is_persistent_session);
+  builder.Record(execution_context->UkmRecorder());
 }
 
 }  // namespace blink

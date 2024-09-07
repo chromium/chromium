@@ -35,8 +35,7 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        WebPageStation entryPageStation =
-                WebPageStation.newWebPageStationBuilder().withEntryPoint().build();
+        WebPageStation entryPageStation = WebPageStation.newBuilder().withEntryPoint().build();
         return sentinel.travelToSync(
                 entryPageStation, mActivityTestRule::startMainActivityOnBlankPage);
     }
@@ -59,9 +58,9 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
     /**
      * Start the batched test in a blank page.
      *
-     * @return the active entry {@link PageStation}
+     * @return the active entry {@link WebPageStation}
      */
-    public PageStation startOnBlankPage(BatchedPublicTransitRule<PageStation> batchedRule) {
+    public WebPageStation startOnBlankPage(BatchedPublicTransitRule<WebPageStation> batchedRule) {
         return startBatched(batchedRule, this::startOnBlankPageNonBatched);
     }
 
@@ -102,8 +101,7 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        WebPageStation entryPageStation =
-                WebPageStation.newWebPageStationBuilder().withEntryPoint().build();
+        WebPageStation entryPageStation = WebPageStation.newBuilder().withEntryPoint().build();
         return sentinel.travelToSync(entryPageStation, /* trigger= */ null);
     }
 }

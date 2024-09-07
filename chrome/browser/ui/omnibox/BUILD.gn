@@ -75,7 +75,7 @@ source_set("impl") {
       "//chrome/app:command_ids",
       "//chrome/browser:primitives",
       "//chrome/browser/bitmap_fetcher",
-      "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/favicon",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",

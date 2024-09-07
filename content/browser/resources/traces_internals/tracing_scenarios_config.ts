@@ -40,8 +40,8 @@ export class TracingScenariosConfigElement extends CrLitElement {
 
   static override get properties() {
     return {
-      currentConfig_: {type: Array},
-      newConfig_: {type: Array},
+      presetConfig_: {type: Array},
+      fieldConfig_: {type: Array},
       isEdited_: {type: Boolean},
       isLoading_: {type: Boolean},
       toastMessage_: {type: String},
@@ -51,7 +51,8 @@ export class TracingScenariosConfigElement extends CrLitElement {
   private traceReportProxy_: TraceReportBrowserProxy =
       TraceReportBrowserProxy.getInstance();
 
-  protected currentConfig_: Config[] = [];
+  protected presetConfig_: Config[] = [];
+  protected fieldConfig_: Config[] = [];
   protected isEdited_: boolean = false;
   protected isLoading_: boolean = false;
   protected toastMessage_: string = '';
@@ -64,18 +65,29 @@ export class TracingScenariosConfigElement extends CrLitElement {
   private async initScenariosConfig_(): Promise<void> {
     this.isLoading_ = true;
     this.isEdited_ = false;
-    this.currentConfig_ = [];
+    this.presetConfig_ = [];
+    this.fieldConfig_ = [];
 
     const enabledList =
         await this.traceReportProxy_.handler.getEnabledScenarios();
     const enabledSet: Set<string> = new Set(enabledList.config);
 
-    const {config} =
+    const {config: presetScenarios} =
         await this.traceReportProxy_.handler.getAllPresetScenarios();
+    const {config: fieldScenarios} =
+        await this.traceReportProxy_.handler.getAllFieldScenarios();
 
-    for (const scenario of config) {
+    for (const scenario of presetScenarios) {
       const isSelected = enabledSet.has(scenario.hash);
-      this.currentConfig_.push({
+      this.presetConfig_.push({
+        scenarioName: scenario.scenarioName,
+        selected: isSelected,
+        hash: scenario.hash,
+      });
+    }
+    for (const scenario of fieldScenarios) {
+      const isSelected = enabledSet.has(scenario.hash);
+      this.fieldConfig_.push({
         scenarioName: scenario.scenarioName,
         selected: isSelected,
         hash: scenario.hash,
@@ -87,23 +99,23 @@ export class TracingScenariosConfigElement extends CrLitElement {
 
   protected valueDidChange_(event: CustomEvent<{value: boolean}>): void {
     const index = Number((event.currentTarget as HTMLElement).dataset['index']);
-    if (this.currentConfig_[index] === undefined) {
+    if (this.presetConfig_[index] === undefined) {
       this.toastMessage_ = 'Failed to find selected scenario';
       this.$.toast.show();
       return;
     }
 
-    if (this.currentConfig_[index].selected === event.detail.value) {
+    if (this.presetConfig_[index].selected === event.detail.value) {
       return;
     }
 
-    this.currentConfig_[index].selected = event.detail.value;
+    this.presetConfig_[index].selected = event.detail.value;
     this.isEdited_ = true;
   }
 
   protected async onConfirmClick_(): Promise<void> {
     const enabledScenarios: string[] = [];
-    for (const scenario of this.currentConfig_) {
+    for (const scenario of this.presetConfig_) {
       if (scenario.selected) {
         enabledScenarios.push(scenario.hash);
       }
@@ -123,14 +135,19 @@ export class TracingScenariosConfigElement extends CrLitElement {
   }
 
   protected hasSelectedConfig_(): boolean {
-    return this.currentConfig_.some(scenario => scenario.selected);
+    return this.presetConfig_.some(scenario => scenario.selected) ||
+        this.fieldConfig_.some(scenario => scenario.selected);
   }
 
-  protected clearAllClick_() {
-    this.currentConfig_.forEach(config => {
-      config.selected = false;
-    });
-    this.isEdited_ = true;
+  protected async clearAllClick_(): Promise<void> {
+    const {success} =
+        await this.traceReportProxy_.handler.setEnabledScenarios([]);
+    if (!success) {
+      this.toastMessage_ = 'Failed to clear scenarios';
+      this.$.toast.show();
+      return;
+    }
+    await this.initScenariosConfig_();
   }
 }
 

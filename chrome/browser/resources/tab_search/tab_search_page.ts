@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import './infinite_list.js';
+import './selectable_lazy_list.js';
 import './strings.m.js';
 import './tab_search_group_item.js';
 import './tab_search_item.js';
@@ -22,10 +22,10 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {InfiniteList} from './infinite_list.js';
-import {NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
 import type {SearchOptions} from './search.js';
 import {search} from './search.js';
+import type {SelectableLazyListElement} from './selectable_lazy_list.js';
+import {NO_SELECTION, selectorNavigationKeys} from './selectable_lazy_list.js';
 import {ariaLabel, getHostname, getTabGroupTitle, getTitle, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
 import type {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
@@ -54,10 +54,11 @@ export enum TabSwitchAction {
 
 export interface TabSearchPageElement {
   $: {
+    divider: HTMLElement,
     searchField: HTMLElement,
     searchInput: HTMLInputElement,
     searchWrapper: HTMLElement,
-    tabsList: InfiniteList,
+    tabsList: SelectableLazyListElement,
   };
 }
 
@@ -75,6 +76,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       availableHeight_: {type: Number},
       filteredItems_: {type: Array},
       listMaxHeight_: {type: Number},
+      listItemSize_: {type: Number},
 
       /**
        * Options for search. Controls how heavily weighted fields are relative
@@ -95,6 +97,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private searchText_: string = '';
   private availableHeight_?: number;
   protected listMaxHeight_?: number;
+  protected listItemSize_?: number;
   protected filteredItems_: Array<TitleItem|TabData|TabGroupData> = [];
   private searchOptions_: SearchOptions = {
     includeScore: true,
@@ -183,6 +186,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     return this.metricsReporter_;
   }
 
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.listItemSize_ = this.getStylePropertyPixelValue_('--mwb-item-height');
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -228,7 +236,8 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
        * the search and feedback fields.
        */
       this.listMaxHeight_ = Math.max(
-          this.availableHeight_ - this.$.searchField.offsetHeight,
+          this.availableHeight_ - this.$.searchField.offsetHeight -
+              this.$.divider.offsetHeight,
           Math.round(
               MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT *
               this.getStylePropertyPixelValue_('--mwb-item-height')));
@@ -278,7 +287,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
   private onElementVisibilityChanged_(visible: boolean) {
     if (visible && this.wasInactive_) {
-      this.$.tabsList.fillCurrentViewHeight();
+      this.$.tabsList.fillCurrentViewport();
     } else if (!visible) {
       this.wasInactive_ = true;
     }
@@ -317,13 +326,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       this.availableHeight_ =
           activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
 
-      // The infinite-list produces viewport-filled events whenever a data or
-      // scroll position change triggers the the viewport fill logic.
-      listenOnce(this.$.tabsList, 'viewport-filled', () => {
-        // Push notifySearchUiReadyToShow() to the event loop to allow reflow
-        // to occur following the DOM update.
-        setTimeout(() => this.apiProxy_.notifySearchUiReadyToShow(), 0);
-      });
+      // The selectable-list produces viewport-filled events whenever a data
+      // or scroll position change triggers the viewport fill logic.
+      listenOnce(
+          this.$.tabsList, 'viewport-filled',
+          () => this.apiProxy_.notifySearchUiReadyToShow());
 
       this.tabsChanged_(profileData);
     });
@@ -546,8 +553,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     this.recentlyClosedTitleItem_.expanded =
         profileData.recentlyClosedSectionExpanded;
 
-    this.$.tabsList.toggleAttribute(
-        'expanded-list', profileData.recentlyClosedSectionExpanded);
+    this.$.tabsList.expandedList = profileData.recentlyClosedSectionExpanded;
 
     this.updateFilteredTabs_();
   }

@@ -113,11 +113,7 @@ class Component {
   bool diff_update_failed() const { return diff_error_code_; }
 
   ErrorCategory error_category() const { return error_category_; }
-  int error_code() const {
-    return installer_result_ && installer_result_->original_error
-               ? installer_result_->original_error
-               : error_code_;
-  }
+  int error_code() const { return error_code_; }
   int extra_code1() const { return extra_code1_; }
   ErrorCategory diff_error_category() const { return diff_error_category_; }
   int diff_error_code() const { return diff_error_code_; }
@@ -290,10 +286,7 @@ class Component {
     void PatchingComplete(
         const base::expected<base::FilePath, CategorizedError>&);
     void InstallProgress(int install_progress);
-    void InstallComplete(ErrorCategory error_category,
-                         int error_code,
-                         int extra_code1,
-                         std::optional<CrxInstaller::Result> installer_result);
+    void InstallComplete(const CrxInstaller::Result& installer_result);
   };
 
   class StateUpdating : public State {
@@ -308,10 +301,7 @@ class Component {
     void DoHandle() override;
 
     void InstallProgress(int install_progress);
-    void InstallComplete(ErrorCategory error_category,
-                         int error_code,
-                         int extra_code1,
-                         std::optional<CrxInstaller::Result> installer_result);
+    void InstallComplete(const CrxInstaller::Result& installer_result);
   };
 
   class StateUpdated : public State {

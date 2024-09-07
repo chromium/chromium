@@ -140,8 +140,7 @@ void RTCDtlsTransport::OnStateChange(webrtc::DtlsTransportInformation info) {
         auto& cert = certs->Get(i);
         rtc::Buffer der_cert;
         cert.ToDER(&der_cert);
-        DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(
-            der_cert.data(), static_cast<unsigned int>(der_cert.size()));
+        DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(der_cert);
         remote_certificates_.push_back(dab_cert);
       }
     } else {
@@ -150,8 +149,7 @@ void RTCDtlsTransport::OnStateChange(webrtc::DtlsTransportInformation info) {
         auto& cert = certs->Get(i);
         rtc::Buffer der_cert;
         cert.ToDER(&der_cert);
-        DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(
-            der_cert.data(), static_cast<unsigned int>(der_cert.size()));
+        DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(der_cert);
         // Don't replace the certificate if it's unchanged.
         // Should have been "if (*dab_cert != *remote_certificates_[i])"
         if (dab_cert->ByteLength() != remote_certificates_[i]->ByteLength() ||

@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 #include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_bridge_android.h"
@@ -77,13 +78,15 @@ DigitalIdentityProviderAndroid::ShowDigitalIdentityInterstitial(
 
 void DigitalIdentityProviderAndroid::Request(content::WebContents* web_contents,
                                              const url::Origin& origin,
-                                             const std::string& request,
+                                             const base::Value request,
                                              DigitalIdentityCallback callback) {
   callback_ = std::move(callback);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_origin =
       ConvertUTF8ToJavaString(env, origin.Serialize());
-  ScopedJavaLocalRef<jstring> j_request = ConvertUTF8ToJavaString(env, request);
+  std::optional<std::string> request_str = base::WriteJson(request);
+  ScopedJavaLocalRef<jstring> j_request =
+      ConvertUTF8ToJavaString(env, *request_str);
 
   base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
 

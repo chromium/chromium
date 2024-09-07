@@ -43,6 +43,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,14 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         headers.add(Pair.create("Content-Type", "text/html"));
         headers.add(Pair.create("Cache-Control", "no-store"));
         return webServer.setResponse(httpPath, html, headers);
+    }
+
+    private String addJavaScriptToTestServer(
+            TestWebServer webServer, String httpPath, String script) {
+        List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(Pair.create("Content-Type", "text/javascript"));
+        headers.add(Pair.create("Cache-Control", "no-store"));
+        return webServer.setResponse(httpPath, script, headers);
     }
 
     private String addAboutPageToTestServer(TestWebServer webServer) {
@@ -1711,5 +1720,48 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         final WebServer.HTTPRequest fetchRequestToPass = mWebServer.getLastRequest(fetchPathToPass);
         Assert.assertEquals(preflightTriggeringMethod, fetchRequestToPass.getMethod());
         Assert.assertEquals(customScheme, fetchRequestToPass.headerValue("Origin"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=PlzDedicatedWorker"})
+    public void testDedicatedWorkerSubresourceIntercepted() throws Throwable {
+        final String importScriptJs = addJavaScriptToTestServer(mWebServer, "/test-worker.js", "");
+        final String workerJs =
+                addJavaScriptToTestServer(
+                        mWebServer,
+                        "/worker.js",
+                        String.format(
+                                """
+                                    self.onmessage = () => {
+                                      importScripts('%s');
+                                    }
+                        """,
+                                importScriptJs));
+        final String mainPageUrl =
+                addPageToTestServer(
+                        mWebServer,
+                        "/main",
+                        CommonResources.makeHtmlPageFrom(
+                                "",
+                                String.format(
+                                        """
+                                            <script>
+                                              const w = new Worker('%s');
+                                              w.postMessage('msg');
+                                            </script>
+                                """,
+                                        workerJs)));
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+
+        int callCount = mShouldInterceptRequestHelper.getCallCount();
+        mActivityTestRule.loadUrlAsync(mAwContents, mainPageUrl);
+        // 3 below stands for "/main", "/worker.js", and "/test-worker.js".
+        mShouldInterceptRequestHelper.waitForCallback(callCount, 3);
+
+        Assert.assertEquals(
+                Arrays.asList(mainPageUrl, workerJs, importScriptJs),
+                mShouldInterceptRequestHelper.getUrls());
     }
 }

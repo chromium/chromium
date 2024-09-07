@@ -86,7 +86,7 @@ class PdfViewerStreamManager
     // `PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse()`,
     // before the embedder's frame tree node has swapped from its previous RFH
     // to the embedder RFH that will hold the PDF.
-    int frame_tree_node_id;
+    content::FrameTreeNodeId frame_tree_node_id;
     content::GlobalRenderFrameHostId global_id;
   };
 
@@ -118,7 +118,7 @@ class PdfViewerStreamManager
   // This can occur if an embedder frame navigating to a PDF starts navigating
   // to another PDF URL before the original `StreamContainer` is claimed.
   void AddStreamContainer(
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       const std::string& internal_id,
       std::unique_ptr<extensions::StreamContainer> stream_container);
 
@@ -140,7 +140,7 @@ class PdfViewerStreamManager
   // extension frame under `embedder_host`, false otherwise.
   bool IsPdfExtensionFrameTreeNodeId(
       const content::RenderFrameHost* embedder_host,
-      int frame_tree_node_id) const;
+      content::FrameTreeNodeId frame_tree_node_id) const;
 
   // Returns true if `embedder_host` has a PDF extension frame and it has
   // already finished its navigation, false otherwise.
@@ -160,7 +160,7 @@ class PdfViewerStreamManager
   // content frame under `embedder_host`, false otherwise.
   bool IsPdfContentFrameTreeNodeId(
       const content::RenderFrameHost* embedder_host,
-      int frame_tree_node_id) const;
+      content::FrameTreeNodeId frame_tree_node_id) const;
 
   // Returns true if `embedder_host` has a PDF content frame and it has already
   // finished its navigation, false otherwise.
@@ -176,13 +176,13 @@ class PdfViewerStreamManager
 
   // Deletes the unclaimed stream info associated with `frame_tree_node_id`, and
   // deletes `this` if there are no remaining stream infos.
-  void DeleteUnclaimedStreamInfo(int frame_tree_node_id);
+  void DeleteUnclaimedStreamInfo(content::FrameTreeNodeId frame_tree_node_id);
 
   // WebContentsObserver overrides.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(
@@ -200,14 +200,14 @@ class PdfViewerStreamManager
   // Callers must ensure that `embedder_host` has a claimed stream info.
   void SetExtensionFrameTreeNodeIdForTesting(
       content::RenderFrameHost* embedder_host,
-      int frame_tree_node_id);
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // For testing only. Set `embedder_host`'s content frame tree node ID as
   // `frame_tree_node_id`. This is needed to listen for content host deletion.
   // Callers must ensure that `embedder_host` has a claimed stream info.
   void SetContentFrameTreeNodeIdForTesting(
       content::RenderFrameHost* embedder_host,
-      int frame_tree_node_id);
+      content::FrameTreeNodeId frame_tree_node_id);
 
  protected:
   // Stream container stored for a single PDF navigation.
@@ -250,19 +250,21 @@ class PdfViewerStreamManager
 
     bool DidPdfContentNavigate() const;
 
-    int extension_host_frame_tree_node_id() const {
+    content::FrameTreeNodeId extension_host_frame_tree_node_id() const {
       return extension_host_frame_tree_node_id_;
     }
 
-    void set_extension_host_frame_tree_node_id(int frame_tree_node_id) {
+    void set_extension_host_frame_tree_node_id(
+        content::FrameTreeNodeId frame_tree_node_id) {
       extension_host_frame_tree_node_id_ = frame_tree_node_id;
     }
 
-    int content_host_frame_tree_node_id() const {
+    content::FrameTreeNodeId content_host_frame_tree_node_id() const {
       return content_host_frame_tree_node_id_;
     }
 
-    void set_content_host_frame_tree_node_id(int frame_tree_node_id) {
+    void set_content_host_frame_tree_node_id(
+        content::FrameTreeNodeId frame_tree_node_id) {
       content_host_frame_tree_node_id_ = frame_tree_node_id;
     }
 
@@ -291,11 +293,11 @@ class PdfViewerStreamManager
 
     // The frame tree node ID of the extension host. Initialized when the
     // initial about:blank navigation commits in the extension frame.
-    int extension_host_frame_tree_node_id_ = 0;
+    content::FrameTreeNodeId extension_host_frame_tree_node_id_;
 
     // The frame tree node ID of the content host. Initialized when the
     // navigation to the stream URL starts.
-    int content_host_frame_tree_node_id_ = 0;
+    content::FrameTreeNodeId content_host_frame_tree_node_id_;
 
     // A unique ID for this instance. Used for postMessage support to identify
     // `extensions::MimeHandlerViewFrameContainer` objects.
@@ -329,7 +331,7 @@ class PdfViewerStreamManager
   // which is the ID for the intermediate about:blank host for the PDF extension
   // frame, can be used to get the other parameters safely.
   virtual void NavigateToPdfExtensionUrl(
-      int extension_host_frame_tree_node_id,
+      content::FrameTreeNodeId extension_host_frame_tree_node_id,
       StreamInfo* stream_info,
       content::SiteInstance* source_site_instance,
       content::GlobalRenderFrameHostId global_id);
@@ -343,7 +345,8 @@ class PdfViewerStreamManager
 
   // Returns whether there's an unclaimed stream info with the default embedder
   // host info.
-  bool ContainsUnclaimedStreamInfo(int frame_tree_node_id) const;
+  bool ContainsUnclaimedStreamInfo(
+      content::FrameTreeNodeId frame_tree_node_id) const;
 
   // Mark an unclaimed stream info with the same frame tree node ID as
   // `embedder_host` as claimed by `embedder_host`. Returns a pointer to the

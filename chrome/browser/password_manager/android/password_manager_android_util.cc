@@ -20,8 +20,9 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
@@ -105,14 +106,17 @@ bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
           password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
     return false;
   }
-  // TODO - b/342376844 : Don't delay migration because of warning
-  // acknowledgment if the access loss warning UI is active.
 
   // There is no warning shown on automotive.
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     return false;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
+    return false;
+  }
   return !pref_service->GetBoolean(
       password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning);
 }

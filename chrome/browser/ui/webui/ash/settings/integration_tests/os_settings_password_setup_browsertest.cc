@@ -74,6 +74,8 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPasswordSetupTestWithGaiaPassword,
     mojom::PasswordSettingsApiAsyncWaiter password_settings =
         GoToPasswordSettings(lock_screen_settings);
     password_settings.AssertCanOpenLocalPasswordDialog();
+    password_settings.AssertSubmitButtonDisabledForInvalidPasswordInput();
+    password_settings.AssertSubmitButtonEnabledForValidPasswordInput();
   }
 }
 

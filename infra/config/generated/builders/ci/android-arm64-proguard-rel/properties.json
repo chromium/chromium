@@ -45,7 +45,8 @@
           "builder": "android-arm64-proguard-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-arm64-proguard-rel/targets"
     }
   },
   "$build/reclient": {

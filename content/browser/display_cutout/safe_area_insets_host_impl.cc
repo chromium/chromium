@@ -70,9 +70,9 @@ void SafeAreaInsetsHostImpl::DidFinishNavigation(
 }
 
 void SafeAreaInsetsHostImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
+  insets_ = insets;
   RenderFrameHostImpl* rfh = ActiveRenderFrameHost();
   if (rfh) {
-    insets_ = insets;
     SendSafeAreaToFrame(rfh, insets);
   }
 }

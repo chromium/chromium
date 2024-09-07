@@ -127,6 +127,9 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
       const base::flat_map<int32_t, std::optional<bool>>& bool_map,
       const base::flat_map<int32_t, std::optional<int32_t>>& int_map,
       const base::flat_map<int32_t, std::optional<mojom::TestEnum>>& enum_map,
+      mojom::SimpleMappedTypePtr simple_mapped,
+      mojom::NestedMappedTypePtr nested_mapped,
+      mojom::StringDictPtr dict_ptr,
       EchoCallback callback) override {
     std::move(callback).Run(
         optional_bool.has_value() ? std::make_optional(!optional_bool.value())
@@ -146,7 +149,8 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
                 ? std::make_optional(mojom::TestEnum::kTwo)
                 : std::nullopt),
         optional_bools, optional_ints, optional_enums, bool_map, int_map,
-        enum_map);
+        enum_map, simple_mapped->Clone(), nested_mapped->Clone(),
+        dict_ptr ? dict_ptr->Clone() : nullptr);
   }
 
  private:
@@ -158,7 +162,8 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
 class TestWebUIController : public WebUIController {
  public:
   explicit TestWebUIController(WebUI* web_ui,
-                               int bindings = BINDINGS_POLICY_MOJO_WEB_UI)
+                               BindingsPolicySet bindings = BindingsPolicySet(
+                                   {BindingsPolicyValue::kMojoWebUi}))
       : WebUIController(web_ui) {
     const base::span<const webui::ResourcePath> kMojoWebUiResources =
         base::make_span(kWebUiMojoTestResources, kWebUiMojoTestResourcesSize);
@@ -292,13 +297,13 @@ class TestWebUIControllerFactory : public WebUIControllerFactory {
   }
 
   std::unique_ptr<WebUIController> CreateHybridController(WebUI* web_ui) {
-    return std::make_unique<TestWebUIController>(
-        web_ui, BINDINGS_POLICY_WEB_UI | BINDINGS_POLICY_MOJO_WEB_UI);
+    return std::make_unique<TestWebUIController>(web_ui,
+                                                 kWebUIBindingsPolicySet);
   }
 
   std::unique_ptr<WebUIController> CreateWebUIController(WebUI* web_ui) {
-    return std::make_unique<TestWebUIController>(web_ui,
-                                                 BINDINGS_POLICY_WEB_UI);
+    return std::make_unique<TestWebUIController>(
+        web_ui, BindingsPolicySet({BindingsPolicyValue::kWebUi}));
   }
 
   bool web_ui_enabled_ = true;

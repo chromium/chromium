@@ -41,6 +41,9 @@ ub-risk-2 = "ub-risk-2"
 ub-risk-3 = "ub-risk-3"
 ub-risk-4 = "ub-risk-4"
 
+[policy."adler2:2.0.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."adler:1.0.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -62,25 +65,25 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."bitflags:2.6.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."bytemuck:1.16.3"]
+[policy."bytemuck:1.17.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."bytemuck_derive:1.7.0"]
+[policy."bytemuck_derive:1.7.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bytes:1.7.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cc:1.1.10"]
+[policy."cc:1.1.16"]
 criteria = []
 
 [policy."cfg-if:1.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."clap:4.5.9"]
+[policy."clap:4.5.17"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_builder:4.5.9"]
+[policy."clap_builder:4.5.17"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."clap_lex:0.7.2"]
@@ -92,16 +95,16 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."crc32fast:1.4.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx:1.0.124"]
+[policy."cxx:1.0.128"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.126"]
+[policy."cxxbridge-cmd:1.0.128"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.124"]
+[policy."cxxbridge-flags:1.0.128"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.124"]
+[policy."cxxbridge-macro:1.0.128"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."either:1.13.0"]
@@ -113,7 +116,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."fend-core:1.5.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."flate2:1.0.31"]
+[policy."flate2:1.0.33"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."font-types:0.6.0"]
@@ -140,7 +143,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."lazy_static:1.5.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."libc:0.2.155"]
+[policy."libc:0.2.158"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."link-cplusplus:1.0.9"]
@@ -156,6 +159,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = []
 
 [policy."miniz_oxide:0.7.4"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."miniz_oxide:0.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."nom:7.1.3"]
@@ -179,7 +185,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."qr_code:2.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."quote:1.0.36"]
+[policy."quote:1.0.37"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."rand:0.8.5"]
@@ -221,7 +227,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rustc-demangle:0.1.24"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rustc_version:0.4.0"]
+[policy."rustc_version:0.4.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rustversion:1.0.17"]
@@ -233,17 +239,20 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."semver:1.0.23"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."serde:1.0.204"]
+[policy."serde:1.0.209"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_derive:1.0.204"]
+[policy."serde_derive:1.0.209"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_json:1.0.124"]
+[policy."serde_json:1.0.128"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."serde_json_lenient:0.2.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."shlex:1.3.0"]
+criteria = []
 
 [policy."simd-adler32:0.3.7"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -269,7 +278,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."syn:1.0.109"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."syn:2.0.74"]
+[policy."syn:2.0.77"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."termcolor:1.4.1"]
@@ -327,8 +336,8 @@ criteria = ["crypto-safe", "safe-to-run"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [[exemptions.cxx]]
-version = "1.0.124"
-criteria = ["safe-to-deploy", "ub-risk-2"]
+version = "1.0.128"
+criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
@@ -340,11 +349,13 @@ Exemption updated to 1.0.117 in Feb 2024.
 Exemption updated to 1.0.122 in May 2024.
 Exemption updated to 1.0.123 in June 2024.
 Exemption updated to 1.0.124 in June 2024.
+Exemption updated to 1.0.126 in August 2024.
+Exemption updated to 1.0.128 in September 2024.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.124"
-criteria = ["safe-to-deploy", "ub-risk-2"]
+version = "1.0.128"
+criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
@@ -356,6 +367,8 @@ Exemption updated to 1.0.117 in Feb 2024.
 Exemption updated to 1.0.122 in May 2024.
 Exemption updated to 1.0.123 in June 2024.
 Exemption updated to 1.0.124 in June 2024.
+Exemption updated to 1.0.126 in August 2024.
+Exemption updated to 1.0.128 in September 2024.
 """
 
 [[exemptions.memchr]]
@@ -401,7 +414,7 @@ Exemption updated to 1.0.18 in May 2024.
 """
 
 [[exemptions.syn]]
-version = "2.0.74"
+version = "2.0.77"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -425,4 +438,6 @@ Exemption updated to 2.0.69 when updating the crate in July 2024.
 Exemption updated to 2.0.71 when updating the crate in July 2024.
 Exemption updated to 2.0.72 when updating the crate in July 2024.
 Exemption updated to 2.0.74 when updating the crate in August 2024.
+Exemption updated to 2.0.76 when updating the crate in August 2024.
+Exemption updated to 2.0.77 when updating the crate in September 2024.
 """

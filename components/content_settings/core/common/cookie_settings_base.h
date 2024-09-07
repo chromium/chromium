@@ -99,7 +99,7 @@ class CookieSettingsBase {
     kAllowBy3PCDHeuristics = 5,
     kAllowByStorageAccess = 6,
     kAllowByTopLevelStorageAccess = 7,
-    kAllowByCORSException = 8,
+    // kAllowByCORSException = 8,  // Deprecated
     // Allow by 1P (AKA First Party, Top-level) DT (Deprecation Trial) token
     // being deployed.
     kAllowByTopLevel3PCD = 9,
@@ -199,7 +199,7 @@ class CookieSettingsBase {
   };
 
   // Set of types relevant for CookieSettings.
-  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 10>;
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 11>;
 
   // ContentSettings listed in this set will be automatically synced to the
   // CookieSettings instance in the network service.

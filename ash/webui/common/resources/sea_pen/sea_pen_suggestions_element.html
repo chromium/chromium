@@ -45,7 +45,7 @@
       selected="0"
       selected-item="{{ironSelectedSuggestion_}}"
       role="radiogroup">
-    <template is="dom-repeat" items="[[suggestions_]]" as="suggestion">
+    <template is="dom-repeat" items="[[selectableSuggestions_]]" as="suggestion">
       <cr-button
           class="suggestion"
           on-click="onClickSuggestion_"

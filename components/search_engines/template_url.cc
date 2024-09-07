@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
@@ -1362,8 +1363,12 @@ std::string TemplateURLRef::HandleReplacements(
         switch (search_terms_args.request_source) {
           case RequestSource::CONTEXTUAL_SEARCHBOX:
           case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
             HandleReplacement("source", "chrome.gsc", replacement, &url);
+            break;
+          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
+            // Lens side panel searchbox source is set via the Lens Overlay
+            // url builder as it contains entry point information.
+            // Therefore we shouldn't replace anything here.
             break;
           default:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -1830,8 +1835,8 @@ BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
         return KEYWORD_MODE_STARTER_PACK_HISTORY;
       case TemplateURLStarterPackData::kTabs:
         return KEYWORD_MODE_STARTER_PACK_TABS;
-      case TemplateURLStarterPackData::kAskGoogle:
-        return KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE;
+      case TemplateURLStarterPackData::kGemini:
+        return KEYWORD_MODE_STARTER_PACK_GEMINI;
       default:
         // In theory, this code path should never be reached.  However, it's
         // possible that when expanding the starter pack, a new entry may
@@ -1896,6 +1901,7 @@ bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
   TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
   search_terms_args.additional_query_params =
       base::JoinString(query_params, "&");
+
   *out_url =
       GURL(url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data));
   if (out_search_terms) {
@@ -1985,9 +1991,21 @@ GURL TemplateURL::GenerateSearchURL(const SearchTermsData& search_terms_data,
   if (!url_ref().SupportsReplacement(search_terms_data))
     return GURL(url());
 
-  return GURL(url_ref().ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(search_terms), search_terms_data,
-      nullptr));
+  TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
+  auto regulatory_extension_type = GetRegulatoryExtensionType();
+  base::UmaHistogramEnumeration(
+      "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant",
+      regulatory_extension_type);
+
+  auto* regulatory_extension =
+      GetRegulatoryExtension(regulatory_extension_type);
+  if (regulatory_extension && regulatory_extension->search_params) {
+    search_terms_args.additional_query_params =
+        regulatory_extension->search_params;
+  }
+
+  return GURL(url_ref().ReplaceSearchTerms(std::move(search_terms_args),
+                                           search_terms_data, nullptr));
 }
 
 GURL TemplateURL::GenerateSuggestionURL(
@@ -1998,8 +2016,39 @@ GURL TemplateURL::GenerateSuggestionURL(
   if (!suggestions_url_ref().SupportsReplacement(search_terms_data))
     return GURL(suggestions_url());
 
+  TemplateURLRef::SearchTermsArgs search_terms_args{};
+  auto regulatory_extension_type = GetRegulatoryExtensionType();
+  base::UmaHistogramEnumeration(
+      "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant",
+      regulatory_extension_type);
+
+  auto* regulatory_extension =
+      GetRegulatoryExtension(regulatory_extension_type);
+  if (regulatory_extension && regulatory_extension->suggest_params) {
+    search_terms_args.additional_query_params =
+        regulatory_extension->suggest_params;
+  }
+
   return GURL(suggestions_url_ref().ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(), search_terms_data, nullptr));
+      std::move(search_terms_args), search_terms_data, nullptr));
+}
+
+RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
+  if (data_.created_from_play_api) {
+    return RegulatoryExtensionType::kAndroidEEA;
+  }
+  return RegulatoryExtensionType::kDefault;
+}
+
+const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(
+    RegulatoryExtensionType type) const {
+  auto extension_iter = data_.regulatory_extensions.find(type);
+  auto* extension = extension_iter == data_.regulatory_extensions.end()
+                        ? nullptr
+                        : extension_iter->second;
+
+  DCHECK(extension == nullptr || extension->variant == type);
+  return extension;
 }
 
 bool TemplateURL::IsSideSearchSupported() const {

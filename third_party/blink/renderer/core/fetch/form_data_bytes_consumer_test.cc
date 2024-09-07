@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -170,7 +171,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromStringNonLatin) {
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBuffer) {
   constexpr unsigned char kData[] = {0x21, 0xfe, 0x00, 0x00, 0xff, 0xa3,
                                      0x42, 0x30, 0x42, 0x99, 0x88};
-  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(kData, std::size(kData));
+  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(kData);
   auto result = (MakeGarbageCollected<BytesConsumerTestReader>(
                      MakeGarbageCollected<FormDataBytesConsumer>(buffer)))
                     ->Run();
@@ -185,7 +186,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBufferView) {
   constexpr unsigned char kData[] = {0x21, 0xfe, 0x00, 0x00, 0xff, 0xa3,
                                      0x42, 0x30, 0x42, 0x99, 0x88};
   constexpr size_t kOffset = 1, kSize = 4;
-  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(kData, std::size(kData));
+  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(kData);
   auto result = (MakeGarbageCollected<BytesConsumerTestReader>(
                      MakeGarbageCollected<FormDataBytesConsumer>(
                          DOMUint8Array::Create(buffer, kOffset, kSize))))
@@ -268,7 +269,7 @@ TEST_F(FormDataBytesConsumerTest, DrainAsBlobDataHandleFromString) {
 
 TEST_F(FormDataBytesConsumerTest, DrainAsBlobDataHandleFromArrayBuffer) {
   BytesConsumer* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
-      DOMArrayBuffer::Create("foo", 3));
+      DOMArrayBuffer::Create(base::byte_span_from_cstring("foo")));
   scoped_refptr<BlobDataHandle> blob_data_handle =
       consumer->DrainAsBlobDataHandle();
   ASSERT_TRUE(blob_data_handle);
@@ -337,7 +338,7 @@ TEST_F(FormDataBytesConsumerTest, DrainAsFormDataFromString) {
 
 TEST_F(FormDataBytesConsumerTest, DrainAsFormDataFromArrayBuffer) {
   BytesConsumer* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
-      DOMArrayBuffer::Create("foo", 3));
+      DOMArrayBuffer::Create(base::byte_span_from_cstring("foo")));
   scoped_refptr<EncodedFormData> form_data = consumer->DrainAsFormData();
   ASSERT_TRUE(form_data);
   EXPECT_TRUE(form_data->IsSafeToSendToAnotherThread());

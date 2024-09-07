@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // This object is a convenience ObjC wrapper around UndoManager.
 // On construction, it registers itself as an observer of the UndoManager.

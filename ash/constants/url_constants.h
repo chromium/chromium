@@ -33,6 +33,10 @@ extern const char kChromeUIFocusModePlayerHost[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kChromeUIFocusModePlayerURL[];
 
+// "Learn more" URL for Help Me Read and Help Me Write feature on ChromeOS.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kHelpMeReadWriteLearnMoreURL[];
+
 // The URL for additional help that is given when Linux export/import fails.
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLinuxExportImportHelpURL[];
 

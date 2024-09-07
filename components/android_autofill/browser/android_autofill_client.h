@@ -106,16 +106,12 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ShowDeleteAddressProfileDialog(
       const autofill::AutofillProfile& profile,
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
-  void ShowAutofillSuggestions(
+  SuggestionUiSessionId ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
   void PinAutofillSuggestions() override;
-  void UpdatePopup(
-      const std::vector<autofill::Suggestion>& suggestions,
-      autofill::FillingProduct main_filling_product,
-      autofill::AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillSuggestions(
       autofill::SuggestionHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;

@@ -9,9 +9,11 @@ import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AddressNormalizerFactory;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
@@ -96,6 +98,20 @@ public class PaymentUiService
                 NormalizedAddressRequestDelegate,
                 PaymentRequestUI.Client,
                 LayoutStateObserver {
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        PaymentRequestAddressEditorMode.ADD_NEW_ADDRESS,
+        PaymentRequestAddressEditorMode.EDIT_EXISTING_ADDRESS,
+        PaymentRequestAddressEditorMode.COUNT,
+    })
+    private @interface PaymentRequestAddressEditorMode {
+        int ADD_NEW_ADDRESS = 0;
+        int EDIT_EXISTING_ADDRESS = 1;
+        int COUNT = 2;
+    }
+
     /** Limit in the number of suggested items in a section. */
     /* package */ static final int SUGGESTIONS_LIMIT = 4;
 
@@ -1049,6 +1065,16 @@ public class PaymentUiService
                         if (!mRetryQueue.isEmpty()) mHandler.post(mRetryQueue.remove());
                     }
                 });
+
+        @PaymentRequestAddressEditorMode
+        int addressEditorMode =
+                toEdit == null
+                        ? PaymentRequestAddressEditorMode.ADD_NEW_ADDRESS
+                        : PaymentRequestAddressEditorMode.EDIT_EXISTING_ADDRESS;
+        RecordHistogram.recordEnumeratedHistogram(
+                "PaymentRequest.AddressEditorTrigerred",
+                addressEditorMode,
+                PaymentRequestAddressEditorMode.COUNT);
     }
 
     /**

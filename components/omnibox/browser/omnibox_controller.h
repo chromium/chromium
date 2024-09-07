@@ -72,7 +72,7 @@ class OmniboxController : public AutocompleteController::Observer {
       omnibox::GroupId suggestion_group_id) const;
 
   // Returns whether or not the row for a particular match should be hidden in
-  // the UI. This is currently used to hide suggestions in the 'AskGoogle' scope
+  // the UI. This is currently used to hide suggestions in the 'Gemini' scope
   // when the starter pack expansion feature is enabled.
   bool IsSuggestionHidden(const AutocompleteMatch& match) const;
 

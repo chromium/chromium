@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -171,6 +172,11 @@ std::string RealTimeUrlLookupService::GetBrowserDMTokenString() const {
 
 std::string RealTimeUrlLookupService::GetProfileDMTokenString() const {
   return "";
+}
+
+std::unique_ptr<enterprise_connectors::ClientMetadata>
+RealTimeUrlLookupService::GetClientMetadata() const {
+  return nullptr;
 }
 
 void RealTimeUrlLookupService::Shutdown() {

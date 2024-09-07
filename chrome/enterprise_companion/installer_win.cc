@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
@@ -14,7 +15,13 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
+#include "base/strings/strcat.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/registry.h"
+#include "base/win/windows_types.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/installer_paths.h"
@@ -80,6 +87,45 @@ bool Install() {
     return false;
   }
 
+  return true;
+}
+
+bool Uninstall() {
+  const std::optional<base::FilePath> install_directory = GetInstallDirectory();
+  if (!install_directory) {
+    LOG(ERROR) << "Failed to get install directory";
+    return false;
+  }
+  std::optional<base::FilePath> alternate_arch_install_dir =
+      GetInstallDirectoryForAlternateArch();
+
+  base::DeletePathRecursively(*alternate_arch_install_dir);
+  base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey, KEY_WOW64_32KEY)
+      .DeleteKey(L"");
+
+  base::FilePath cmd_exe_path;
+  if (!base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path)) {
+    LOG(ERROR) << "Failed to get System32 path.";
+    return false;
+  }
+  cmd_exe_path = cmd_exe_path.AppendASCII("cmd.exe");
+
+  // Try deleting the directory 15 times and wait one second between tries.
+  const std::wstring command_line = base::StrCat(
+      {L"\"", cmd_exe_path.value(),
+       L"\" /Q /C for /L \%G IN (1,1,15) do ( ping -n 2 127.0.0.1 > nul & "
+       L"rmdir \"",
+       install_directory->value(), L"\" /s /q > nul & if not exist \"",
+       install_directory->value(), L"\" exit 0 ) & exit 3"});
+  VLOG(1) << "Running " << command_line;
+
+  base::LaunchOptions options;
+  options.start_hidden = true;
+  base::Process process = base::LaunchProcess(command_line, options);
+  if (!process.IsValid()) {
+    LOG(ERROR) << "Failed to create process " << command_line;
+    return false;
+  }
   return true;
 }
 

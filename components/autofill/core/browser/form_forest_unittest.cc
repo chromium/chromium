@@ -522,7 +522,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
     };
     auto it = base::ranges::find_if(form_fields, IsRoot);
     CHECK(it != form_fields.end());
-    CHECK(base::ranges::all_of(form_fields, [&](FormSpan fs) {
+    CHECK(std::ranges::all_of(form_fields, [&](FormSpan fs) {
       return !IsRoot(fs) || fs.form == it->form;
     }));
     GetFlattenedForm(it->form).set_fields(fields);
@@ -532,11 +532,11 @@ class FormForestTestWithMockedTree : public FormForestTest {
              frame_datas(mocked_forms_).size());
     auto IsRoorOrEmpty = [](const auto& frame) {
       return !frame->parent_form ||
-             base::ranges::all_of(frame->child_forms,
-                                  &std::vector<FormFieldData>::empty,
-                                  &FormData::fields);
+             std::ranges::all_of(frame->child_forms,
+                                 &std::vector<FormFieldData>::empty,
+                                 &FormData::fields);
     };
-    CHECK(base::ranges::all_of(frame_datas(flattened_forms_), IsRoorOrEmpty));
+    CHECK(std::ranges::all_of(frame_datas(flattened_forms_), IsRoorOrEmpty));
   }
 
   FakeAutofillDriver& GetDriverOfForm(std::string_view form_name) {

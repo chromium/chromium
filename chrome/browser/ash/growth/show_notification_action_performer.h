@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/growth/ui_action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 // A simple notification delegate which invokes the passed closure when the body
@@ -49,6 +50,8 @@ class HandleNotificationClickAndCloseDelegate
 // Implements show system notification action for the growth framework.
 class ShowNotificationActionPerformer : public UiActionPerformer {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleIdForTesting);
+
   ShowNotificationActionPerformer();
   ~ShowNotificationActionPerformer() override;
 

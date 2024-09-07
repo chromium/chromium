@@ -20,6 +20,16 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace {
+
+const std::vector<content::IdentityRequestDialogDisclosureField>
+    kDefaultPermissions = {
+        content::IdentityRequestDialogDisclosureField::kName,
+        content::IdentityRequestDialogDisclosureField::kEmail,
+        content::IdentityRequestDialogDisclosureField::kPicture};
+
+}  // namespace
+
 constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
 
@@ -142,7 +152,7 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
             content::IdentityProviderMetadata(),
             content::ClientMetadata(GURL(), GURL(), GURL()),
             blink::mojom::RpContext::kSignIn,
-            /*request_permission=*/true,
+            kDefaultPermissions,
             /*has_login_status_mismatch=*/false};
   }
 };

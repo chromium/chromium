@@ -20,25 +20,28 @@
 #include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/url_matcher/url_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
+
+using url_matcher::URLMatcher;
 
 namespace {
 
-constexpr char kEnrollmentFallbackHost[] = "chromeenterprise.google";
-constexpr char kEnrollmentFallbackPath[] = "/enroll/";
+constexpr char kEnrollmentFallbackUrl[] =
+    "https://chromeenterprise.google/enroll";
 
-// Msft Entra will first navigate to a reprocess URL and redirect to our
-// enrolllment URL, we need to capture this to correctly create the navigation
-// throttle.
-constexpr char kOidcEntraLoginHost[] = "login.microsoftonline.com";
-constexpr char kOidcEntraReprocessPath[] = "/common/reprocess";
-constexpr char kOidcEntraLoginPath[] = "/common/login";
-// For new identities, the redirection starts from the "Keep me signed in" page.
-constexpr char kOidcEntraKmsiPath[] = "/kmsi";
+// We consider this common host for Microsoft authentication to be valid
+// redirection source.
+constexpr char kEntraLoginHost[] = "https://login.microsoftonline.com";
+// Valid redirection from MSFT Cloud App Security portal.
+constexpr char kEntraMcasHost[] = "https://mcas.ms";
 
 constexpr char kQuerySeparator[] = "&";
 constexpr char kKeyValueSeparator[] = "=";
@@ -63,9 +66,55 @@ base::flat_map<std::string, std::string> SplitUrl(const std::string& url) {
   return url_map;
 }
 
+std::unique_ptr<URLMatcher> CreateEnrollmentRedirectUrlMatcher() {
+  auto matcher = std::make_unique<URLMatcher>();
+  url_matcher::util::AddAllowFilters(
+      matcher.get(), std::vector<std::string>({kEnrollmentFallbackUrl}));
+  return matcher;
+}
+
+const url_matcher::URLMatcher* GetEnrollmentRedirectUrlMatcher() {
+  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
+      CreateEnrollmentRedirectUrlMatcher());
+  return matcher->get();
+}
+
 bool IsEnrollmentUrl(GURL& url) {
-  return url.DomainIs(kEnrollmentFallbackHost) &&
-         url.path() == kEnrollmentFallbackPath;
+  return !GetEnrollmentRedirectUrlMatcher()->MatchURL(url).empty();
+}
+
+std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
+  auto matcher = std::make_unique<URLMatcher>();
+
+  std::vector<std::string> allowed_hosts({kEntraLoginHost, kEntraMcasHost});
+  if (base::FeatureList::IsEnabled(
+          profile_management::features::kOidcEnrollmentAuthSource)) {
+    const std::vector<std::string>& hosts = base::SplitString(
+        profile_management::features::kOidcAuthAdditionalHosts.Get(), ",",
+        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    for (std::string host : hosts) {
+      allowed_hosts.push_back(host);
+    }
+  }
+
+  url_matcher::util::AddAllowFilters(matcher.get(), allowed_hosts);
+  return matcher;
+}
+
+const url_matcher::URLMatcher* GetOidcEnrollmentUrlMatcher() {
+  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
+      CreateOidcEnrollmentUrlMatcher());
+  return matcher->get();
+}
+
+void RecordUntrustedRedirectChain(
+    content::NavigationHandle& navigation_handle) {
+  ukm::SourceId source_id = ukm::ConvertToSourceId(
+      navigation_handle.GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  ukm::builders::Enterprise_Profile_Enrollment(source_id)
+      .SetIsUntrustedOidcRedirect(true)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace
@@ -76,28 +125,14 @@ namespace profile_management {
 std::unique_ptr<OidcAuthResponseCaptureNavigationThrottle>
 OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(
-          profile_management::features::kOidcAuthProfileManagement)) {
-    return nullptr;
+  if (base::FeatureList::IsEnabled(
+          profile_management::features::kOidcAuthProfileManagement) &&
+      navigation_handle->IsInMainFrame()) {
+    return std::make_unique<OidcAuthResponseCaptureNavigationThrottle>(
+        navigation_handle);
   }
 
-  auto url = navigation_handle->GetURL();
-  if (!base::FeatureList::IsEnabled(
-          profile_management::features::
-              kEnableGenericOidcAuthProfileManagement)) {
-    if (!(url.DomainIs(kOidcEntraLoginHost) &&
-          (url.path() == kOidcEntraReprocessPath ||
-           url.path() == kOidcEntraKmsiPath ||
-           url.path() == kOidcEntraLoginPath))) {
-      return nullptr;
-    }
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "Valid enrollment URL found, processing URL: " << url;
-  }
-
-  return std::make_unique<OidcAuthResponseCaptureNavigationThrottle>(
-      navigation_handle);
+  return nullptr;
 }
 
 OidcAuthResponseCaptureNavigationThrottle::
@@ -115,7 +150,20 @@ OidcAuthResponseCaptureNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 OidcAuthResponseCaptureNavigationThrottle::WillProcessResponse() {
-  return AttemptToTriggerInterception();
+  return (base::FeatureList::IsEnabled(
+             profile_management::features::kOidcAuthResponseInterception))
+             ? AttemptToTriggerInterception()
+             : PROCEED;
+}
+
+const char* OidcAuthResponseCaptureNavigationThrottle::GetNameForLogging() {
+  return "OidcAuthResponseCaptureNavigationThrottle";
+}
+
+// static
+std::unique_ptr<URLMatcher> OidcAuthResponseCaptureNavigationThrottle::
+    GetOidcEnrollmentUrlMatcherForTesting() {
+  return CreateOidcEnrollmentUrlMatcher();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -123,14 +171,35 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
   if (interception_triggered_) {
     return PROCEED;
   }
-  auto url = navigation_handle()->GetURL();
 
-  // This maybe some other redirect from MSFT Entra that isn't an OIDC profile
-  // registration attempt.
+  auto url = navigation_handle()->GetURL();
+  // Only try kicking off OIDC enrollment process if a valid enroll URL is seen.
   if (!IsEnrollmentUrl(url)) {
-    VLOG_POLICY(1, OIDC_ENROLLMENT)
-        << "Enrollment URL from OIDC redirection is invalid: " << url;
     return PROCEED;
+  }
+
+  VLOG_POLICY(1, OIDC_ENROLLMENT)
+      << "Valid enrollment URL from OIDC redirection is found: " << url;
+
+  if (!base::FeatureList::IsEnabled(
+          profile_management::features::
+              kEnableGenericOidcAuthProfileManagement)) {
+    bool accept_redirect = false;
+
+    for (const auto& chain_url : navigation_handle()->GetRedirectChain()) {
+      if (!GetOidcEnrollmentUrlMatcher()->MatchURL(chain_url).empty()) {
+        accept_redirect = true;
+        break;
+      }
+    }
+
+    if (!accept_redirect) {
+      RecordUntrustedRedirectChain(*navigation_handle());
+      VLOG_POLICY(1, OIDC_ENROLLMENT)
+          << "Enrollment flow cannot be initiated due to an untrusted chain of "
+             "redirects.";
+      return PROCEED;
+    }
   }
 
   RecordOidcInterceptionFunnelStep(
@@ -212,10 +281,6 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
           ProfileManagementOidcTokens(std::move(auth_token),
                                       std::move(id_token), std::move(state))));
   return DEFER;
-}
-
-const char* OidcAuthResponseCaptureNavigationThrottle::GetNameForLogging() {
-  return "OidcAuthResponseCaptureNavigationThrottle";
 }
 
 void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(

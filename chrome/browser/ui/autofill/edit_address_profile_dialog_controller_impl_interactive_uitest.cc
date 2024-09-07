@@ -13,11 +13,10 @@
 #include "ui/views/window/dialog_client_view.h"
 
 namespace autofill {
-
 namespace {
+
 constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests on Windows.";
-}  // namespace
 
 // TODO(crbug.com/40280921): Cover EditAddressProfileDialogControllerImpl with
 // more tests.
@@ -26,7 +25,8 @@ class EditAddressProfileDialogControllerImplTest
  protected:
   EditAddressProfileDialogControllerImplTest() {
     local_profile_ = std::make_unique<AutofillProfile>(
-        AutofillProfile::Source::kLocalOrSyncable, AddressCountryCode("US"));
+        AutofillProfile::RecordType::kLocalOrSyncable,
+        AddressCountryCode("US"));
     local_profile_->SetRawInfoWithVerificationStatus(
         NAME_FULL, u"Mona J. Liza", VerificationStatus::kUserVerified);
     test::SetProfileInfo(local_profile_.get(), "", "", "", "email@example.com",
@@ -109,10 +109,11 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
           Screenshot(EditAddressProfileView::kTopViewId,
                      /*screenshot_name=*/"editor", /*baseline_cl=*/"4846629"),
           PressButton(views::DialogClientView::kOkButtonElementId),
-          WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents())),
+          WaitForHide(EditAddressProfileView::kTopViewId))),
       EnsureClosedWithDecisionAndProfile(
           AutofillClient::AddressPromptUserDecision::kEditAccepted,
           local_profile()));
 }
 
+}  // namespace
 }  // namespace autofill

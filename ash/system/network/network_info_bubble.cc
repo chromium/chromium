@@ -15,6 +15,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -63,7 +64,7 @@ NetworkInfoBubble::NetworkInfoBubble(base::WeakPtr<Delegate> delegate,
                                      views::View* anchor)
     : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
       delegate_(delegate) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets(kBubbleMargin));
   SetArrow(views::BubbleBorder::NONE);
   set_shadow(views::BubbleBorder::NO_SHADOW);

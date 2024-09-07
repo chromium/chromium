@@ -1007,6 +1007,7 @@
     <variant value="6">APP_INSTALL_URI_GETIT</variant>
     <variant value="7">APP_INSTALL_URI_LAUNCHER</variant>
     <variant value="8">APP_INSTALL_URI_PERIPHERALS</variant>
+    <variant value="9">APP_INSTALL_URI_MALL_V2</variant>
   </enum>
 
   <enum name="CameraAppLaunchType">

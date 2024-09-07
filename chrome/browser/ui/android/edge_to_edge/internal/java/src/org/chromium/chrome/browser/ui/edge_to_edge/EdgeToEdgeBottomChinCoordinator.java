@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -39,6 +40,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
      *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
+     * @param fullscreenManager The {@link FullscreenManager} for provide the fullscreen state.
      */
     public EdgeToEdgeBottomChinCoordinator(
             View androidView,
@@ -46,7 +48,8 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
             @NonNull NavigationBarColorProvider navigationBarColorProvider,
-            @NonNull BottomControlsStacker bottomControlsStacker) {
+            @NonNull BottomControlsStacker bottomControlsStacker,
+            @NonNull FullscreenManager fullscreenManager) {
         this(
                 androidView,
                 keyboardVisibilityDelegate,
@@ -54,7 +57,8 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
                 edgeToEdgeController,
                 navigationBarColorProvider,
                 bottomControlsStacker,
-                new EdgeToEdgeBottomChinSceneLayer());
+                new EdgeToEdgeBottomChinSceneLayer(),
+                fullscreenManager);
     }
 
     @VisibleForTesting
@@ -65,7 +69,8 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
             @NonNull EdgeToEdgeController edgeToEdgeController,
             @NonNull NavigationBarColorProvider navigationBarColorProvider,
             @NonNull BottomControlsStacker bottomControlsStacker,
-            @NonNull EdgeToEdgeBottomChinSceneLayer sceneLayer) {
+            @NonNull EdgeToEdgeBottomChinSceneLayer sceneLayer,
+            @NonNull FullscreenManager fullscreenManager) {
         mLayoutManager = layoutManager;
         mSceneLayer = sceneLayer;
 
@@ -90,7 +95,8 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
                         mLayoutManager,
                         edgeToEdgeController,
                         navigationBarColorProvider,
-                        bottomControlsStacker);
+                        bottomControlsStacker,
+                        fullscreenManager);
 
         mLayoutManager.addSceneOverlay(sceneLayer);
     }

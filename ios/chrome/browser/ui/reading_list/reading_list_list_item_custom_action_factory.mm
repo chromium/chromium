@@ -37,7 +37,7 @@
                       target:(id)target
                     selector:(SEL)selector
                         item:(id<ReadingListListItem>)item {
-  if (self = [super initWithName:name target:target selector:selector]) {
+  if ((self = [super initWithName:name target:target selector:selector])) {
     _item = item;
   }
   return self;

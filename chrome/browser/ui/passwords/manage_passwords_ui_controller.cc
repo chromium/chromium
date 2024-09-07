@@ -37,9 +37,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -347,16 +344,6 @@ void ManagePasswordsUIController::OnAutomaticPasswordSave(
 
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
-
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-      /*create_if_necessary=*/true);
-  if (hats_service) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerSuggestedPasswordsExperiment, web_contents(),
-        /*timeout_ms=*/0, /*product_specific_bits_data=*/
-        {{"Suggested password accepted", true}});
-  }
 }
 
 void ManagePasswordsUIController::OnPasswordAutofilled(
@@ -545,9 +532,8 @@ void ManagePasswordsUIController::OnKeychainError() {
 #endif
 }
 
-void ManagePasswordsUIController::OnPasskeySaved(const std::u16string& username,
-                                                 bool gpm_pin_created) {
-  passwords_data_.OnPasskeySaved(username, gpm_pin_created);
+void ManagePasswordsUIController::OnPasskeySaved(bool gpm_pin_created) {
+  passwords_data_.OnPasskeySaved(gpm_pin_created);
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }
@@ -560,6 +546,12 @@ void ManagePasswordsUIController::OnPasskeyDeleted() {
 
 void ManagePasswordsUIController::OnPasskeyUpdated() {
   passwords_data_.OnPasskeyUpdated();
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
+}
+
+void ManagePasswordsUIController::OnPasskeyNotAccepted() {
+  passwords_data_.OnPasskeyNotAccepted();
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }
@@ -744,12 +736,6 @@ bool ManagePasswordsUIController::GpmPinCreatedDuringRecentPasskeyCreation()
   return passwords_data_.gpm_pin_created_during_recent_passkey_creation();
 }
 
-std::u16string ManagePasswordsUIController::GetRecentlySavedPasskeyUsername()
-    const {
-  CHECK_EQ(GetState(), password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
-  return passwords_data_.recently_saved_passkey_username();
-}
-
 void ManagePasswordsUIController::OnBubbleShown() {
   bubble_status_ = BubbleStatus::SHOWN;
 }
@@ -891,16 +877,6 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
       return;
     }
     MaybeShowPasswordManagerShortcutIPH(browser);
-  }
-
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-      /*create_if_necessary=*/true);
-  if (hats_service) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerSuggestedPasswordsExperiment, web_contents(),
-        /*timeout_ms=*/0, /*product_specific_bits_data=*/
-        {{"Suggested password accepted", false}});
   }
 }
 

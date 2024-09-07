@@ -12,9 +12,11 @@ namespace blink {
 
 class DOMException;
 class ExceptionState;
+class ScriptPromiseResolverBase;
 
 DOMException* CreateDOMExceptionFromRTCError(const webrtc::RTCError&);
-
+void RejectPromiseFromRTCError(const webrtc::RTCError&,
+                               ScriptPromiseResolverBase*);
 void ThrowExceptionFromRTCError(const webrtc::RTCError&, ExceptionState&);
 
 }  // namespace blink

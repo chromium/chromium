@@ -164,6 +164,8 @@ FaceGazeTestBase = class extends E2ETestBase {
     this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
 
+    this.scrollDirection = this.mockAccessibilityPrivate.ScrollDirection;
+
     if (this.overrideIntervalFunctions_) {
       this.intervalCallbacks_ = {};
       this.nextCallbackId_ = 1;
@@ -195,6 +197,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     assertNotNullNorUndefined(MediapipeFacialGesture);
     assertNotNullNorUndefined(MetricsUtils);
     assertNotNullNorUndefined(MouseController);
+    assertNotNullNorUndefined(ScrollModeController);
     assertNotNullNorUndefined(WebCamFaceLandmarker);
     await new Promise(resolve => {
       accessibilityCommon.setFeatureLoadCallbackForTest('facegaze', resolve);
@@ -234,6 +237,24 @@ FaceGazeTestBase = class extends E2ETestBase {
   /** @return {!FaceGaze} */
   getFaceGaze() {
     return accessibilityCommon.getFaceGazeForTest();
+  }
+
+  async startFacegazeWithConfigAndForeheadLocation_(
+      config, forehead_x, forehead_y) {
+    await this.configureFaceGaze(config);
+
+    // No matter the starting location, the cursor position won't change
+    // initially, and upcoming forehead locations will be computed relative to
+    // this.
+    const result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+        forehead_x, forehead_y);
+    this.processFaceLandmarkerResult(result);
+    if (config.cursorControlEnabled) {
+      this.assertLatestCursorPosition(config.mouseLocation);
+    } else {
+      assertEquals(
+          null, this.mockAccessibilityPrivate.getLatestCursorPosition());
+    }
   }
 
   /** @param {!Config} config */

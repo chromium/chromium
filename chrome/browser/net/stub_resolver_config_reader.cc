@@ -21,6 +21,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/default_dns_over_https_config_source.h"
+#include "chrome/browser/net/dns_over_https_config_source.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -40,12 +42,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "chrome/browser/enterprise/util/android_enterprise_info.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include <optional>
-
-#include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -109,35 +105,25 @@ constexpr base::TimeDelta StubResolverConfigReader::kParentalControlsCheckDelay;
 StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
                                                    bool set_up_pref_defaults)
     : local_state_(local_state) {
+  default_doh_source_ = std::make_unique<DefaultDnsOverHttpsConfigSource>(
+      local_state_, set_up_pref_defaults);
+  if (set_up_pref_defaults) {
+    // Update the DnsClient based on the corresponding features before
+    // registering change callbacks for these preferences. Changing prefs or
+    // defaults after registering change callbacks could result in reentrancy
+    // and mess up registration between this code and NetworkService creation.
+    local_state->SetDefaultPrefValue(prefs::kBuiltInDnsClientEnabled,
+                                     base::Value(ShouldEnableAsyncDns()));
+  }
   base::RepeatingClosure pref_callback =
       base::BindRepeating(&StubResolverConfigReader::UpdateNetworkService,
                           base::Unretained(this), false /* record_metrics */);
+  default_doh_source_->SetDohChangeCallback(pref_callback);
 
   pref_change_registrar_.Init(local_state_);
-
-  // Update the DnsClient and DoH default preferences based on the corresponding
-  // features before registering change callbacks for these preferences.
-  // Changing prefs or defaults after registering change callbacks could result
-  // in reentrancy and mess up registration between this code and NetworkService
-  // creation.
-  if (set_up_pref_defaults) {
-    local_state_->SetDefaultPrefValue(prefs::kBuiltInDnsClientEnabled,
-                                      base::Value(ShouldEnableAsyncDns()));
-    local_state_->SetDefaultPrefValue(prefs::kDnsOverHttpsMode,
-                                      base::Value(SecureDnsConfig::ModeToString(
-                                          net::SecureDnsMode::kAutomatic)));
-  }
-
   pref_change_registrar_.Add(prefs::kBuiltInDnsClientEnabled, pref_callback);
-  pref_change_registrar_.Add(prefs::kDnsOverHttpsMode, pref_callback);
   pref_change_registrar_.Add(prefs::kAdditionalDnsQueryTypesEnabled,
                              pref_callback);
-#if BUILDFLAG(IS_CHROMEOS)
-  pref_change_registrar_.Add(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-                             pref_callback);
-#else
-  pref_change_registrar_.Add(prefs::kDnsOverHttpsTemplates, pref_callback);
-#endif
 
   parental_controls_delay_timer_.Start(
       FROM_HERE, kParentalControlsCheckDelay,
@@ -163,16 +149,7 @@ void StubResolverConfigReader::RegisterPrefs(PrefRegistrySimple* registry) {
   // captured). Thus, the preference defaults are updated in the constructor
   // for SystemNetworkContextManager, at which point the feature list is ready.
   registry->RegisterBooleanPref(prefs::kBuiltInDnsClientEnabled, false);
-  registry->RegisterStringPref(prefs::kDnsOverHttpsMode, std::string());
-  registry->RegisterStringPref(prefs::kDnsOverHttpsTemplates, std::string());
   registry->RegisterBooleanPref(prefs::kAdditionalDnsQueryTypesEnabled, true);
-#if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterStringPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                               std::string());
-  registry->RegisterStringPref(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-                               std::string());
-  registry->RegisterStringPref(prefs::kDnsOverHttpsSalt, std::string());
-#endif
 }
 
 SecureDnsConfig StubResolverConfigReader::GetSecureDnsConfiguration(
@@ -227,6 +204,26 @@ bool StubResolverConfigReader::ShouldDisableDohForParentalControls() {
 #endif
 }
 
+void StubResolverConfigReader::SetOverrideDnsOverHttpsConfigSource(
+    std::unique_ptr<DnsOverHttpsConfigSource> doh_source) {
+  override_doh_source_ = std::move(doh_source);
+
+  if (override_doh_source_) {
+    override_doh_source_->SetDohChangeCallback(base::BindRepeating(
+        &StubResolverConfigReader::UpdateNetworkService,
+        weak_factory_.GetWeakPtr(), /*record_metrics=*/false));
+  }
+  UpdateNetworkService(/*record_metrics=*/false);
+}
+
+const DnsOverHttpsConfigSource*
+StubResolverConfigReader::GetDnsOverHttpsConfigSource() const {
+  if (override_doh_source_) {
+    return override_doh_source_.get();
+  }
+  return default_doh_source_.get();
+}
+
 void StubResolverConfigReader::OnParentalControlsDelayTimer() {
   DCHECK(!parental_controls_delay_timer_.IsRunning());
 
@@ -255,14 +252,13 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
   SecureDnsModeDetailsForHistogram mode_details;
   SecureDnsConfig::ManagementMode forced_management_mode =
       SecureDnsConfig::ManagementMode::kNoOverride;
-  bool is_managed =
-      local_state_->FindPreference(prefs::kDnsOverHttpsMode)->IsManaged();
+  bool is_managed = GetDnsOverHttpsConfigSource()->IsConfigManaged();
   if (!is_managed && ShouldDisableDohForManaged()) {
     secure_dns_mode = net::SecureDnsMode::kOff;
     forced_management_mode = SecureDnsConfig::ManagementMode::kDisabledManaged;
   } else {
     secure_dns_mode = SecureDnsConfig::ParseMode(
-                          local_state_->GetString(prefs::kDnsOverHttpsMode))
+                          GetDnsOverHttpsConfigSource()->GetDnsOverHttpsMode())
                           .value_or(net::SecureDnsMode::kOff);
   }
 
@@ -345,13 +341,8 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
 
   net::DnsOverHttpsConfig doh_config;
   if (secure_dns_mode != net::SecureDnsMode::kOff) {
-#if BUILDFLAG(IS_CHROMEOS)
-    doh_config = net::DnsOverHttpsConfig::FromStringLax(local_state_->GetString(
-        prefs::kDnsOverHttpsEffectiveTemplatesChromeOS));
-#else
     doh_config = net::DnsOverHttpsConfig::FromStringLax(
-        local_state_->GetString(prefs::kDnsOverHttpsTemplates));
-#endif
+        GetDnsOverHttpsConfigSource()->GetDnsOverHttpsTemplates());
   }
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
@@ -372,18 +363,5 @@ void StubResolverConfigReader::OnAndroidOwnedStateCheckComplete(
   // update the network service if the actual result is "true" to save time.
   if (android_has_owner_.value())
     UpdateNetworkService(false /* record_metrics */);
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-std::optional<std::string>
-StubResolverConfigReader::GetDohWithIdentifiersDisplayServers() {
-  ash::dns_over_https::TemplatesUriResolverImpl doh_template_uri_resolver;
-  doh_template_uri_resolver.Update(local_state_);
-
-  if (doh_template_uri_resolver.GetDohWithIdentifiersActive())
-    return doh_template_uri_resolver.GetDisplayTemplates();
-
-  return std::nullopt;
 }
 #endif

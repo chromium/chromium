@@ -1,0 +1,232 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./pdf_shared.css.js
+ * #include=pdf-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  --viewer-pdf-toolbar-height: 56px;
+  box-shadow:
+      0 -2px 8px rgba(0, 0, 0, 0.09),
+      0 4px 8px rgba(0, 0, 0, 0.06),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 2px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+:host-context([pdfcr23enabled]) {
+  box-shadow: none;
+}
+
+:host([more-menu-open_]) #more {
+  background-color: var(--active-button-bg);
+  border-radius: 50%;
+}
+
+#toolbar {
+  align-items: center;
+  background-color: var(--viewer-pdf-toolbar-background-color);
+  color: white;
+  display: flex;
+  height: var(--viewer-pdf-toolbar-height);
+  padding: 0 16px;
+}
+
+#title {
+  font-size: 0.87rem;
+  font-weight: 500;
+  margin-inline-start: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#actionMenuTrigger {
+  margin-inline-end: 6px;
+}
+
+#start {
+  align-items: center;
+  display: flex;
+  overflow: hidden;
+  padding-inline-end: 20px;
+}
+
+#start,
+#end {
+  flex: 1;
+}
+
+#center {
+  align-items: center;
+  display: flex;
+}
+
+#end {
+  display: flex;
+  justify-content: flex-end;
+  padding-inline-start: 20px;
+  text-align: end;
+  white-space: nowrap;
+}
+
+.vertical-separator {
+  background: rgba(255, 255, 255, 0.3);
+  height: 15px;
+  width: 1px;
+}
+
+:host-context([pdfcr23enabled]) .vertical-separator {
+  height: 20px;
+}
+
+#zoom-controls {
+  align-items: center;
+  display: flex;
+  padding: 0 4px;
+}
+
+#zoom-controls input::selection {
+  background-color: var(--viewer-text-input-selection-color);
+}
+
+@media(max-width: 600px) {
+  #title,
+  #zoom-controls input {
+    display: none;
+  }
+}
+
+@media(max-width: 500px) {
+  #start,
+  #fit {
+    display: none;
+  }
+}
+
+@media(max-width: 420px) {
+  #center {
+    display: none;
+  }
+
+  #end {
+    padding-inline-start: initial;
+    text-align: center;
+  }
+}
+
+viewer-page-selector {
+  display: inline-flex;
+  height: 36px; /* Matching default --cr-icon-button-size */
+  margin-inline-end: 20px;
+}
+
+viewer-page-selector::part(input),
+input {
+  max-height: var(--viewer-pdf-toolbar-height);
+}
+
+input {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  caret-color: currentColor;
+  color: inherit;
+  font-family: inherit;
+  line-height: inherit;
+  margin: 0 4px;
+  outline: none;
+  padding: 0 4px;
+  text-align: center;
+  width: 5ch;
+}
+
+#fit {
+  margin-inline-start: 12px;
+}
+
+cr-progress {
+  --cr-progress-active-color: var(--google-blue-300);
+  --cr-progress-container-color: transparent;
+  --cr-progress-height: 3px;
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+}
+
+cr-progress,
+#center,
+#end {
+  transition: opacity 100ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+cr-progress,
+:host([loading_]) #menuButton,
+:host([loading_]) #center,
+:host([loading_]) #end {
+  opacity: 0;
+  /* Ensure UI is not interactable while hidden */
+  visibility: hidden;
+}
+
+:host([loading_]) cr-progress,
+#menuButton,
+#center,
+#end {
+  opacity: 1;
+  visibility: visible;
+}
+
+<if expr="enable_ink or enable_pdf_ink2">
+#annotate {
+  margin-inline-end: 4px;
+}
+
+:host([annotation-mode]) #annotate {
+  background-color: var(--active-button-bg);
+  border-radius: 50%;
+}
+</if>
+
+<if expr="enable_pdf_ink2">
+#annotate-controls {
+  align-items: center;
+  display: flex;
+}
+
+#annotate-controls #annotate {
+  margin-inline: 0;
+}
+
+:host([annotation-mode]) #annotate-controls #annotate {
+  --cr-icon-button-fill-color: var(--viewer-icon-ink-selected-fill-color);
+}
+
+#annotate-controls .vertical-separator {
+  margin-inline: 12px;
+}
+</if>
+
+ #print,
+ #more {
+   margin-inline-start: 4px;
+ }
+
+.dropdown-item {
+  padding-inline-end: 16px;
+  padding-inline-start: 12px;
+}
+
+.check-container {
+  margin-inline-end: 12px;
+  width: 16px;
+}
+
+cr-action-menu hr {
+  border: none;
+  border-top: var(--cr-separator-line);
+}

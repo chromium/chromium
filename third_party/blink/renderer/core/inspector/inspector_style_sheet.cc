@@ -23,7 +23,6 @@
  * DAMAGE.
  */
 
-
 #include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
 
 #include <algorithm>
@@ -37,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -205,6 +205,7 @@ class StyleSheetHandler final : public CSSParserObserver {
       unsigned start_offset,
       CSSAtRuleID id,
       const Vector<CSSPropertyID, 2>& invalid_properties = {}) override;
+  void ObserveNestedDeclarations(wtf_size_t insert_rule_index) override;
 
   TextPosition GetTextPosition(unsigned start_offset);
   void AddNewRuleToSourceTree(CSSRuleSourceData*);
@@ -244,6 +245,21 @@ void StyleSheetHandler::StartRuleHeader(StyleRule::RuleType type,
   // Pop off data for a previous invalid rule.
   if (current_rule_data_)
     current_rule_data_stack_.pop_back();
+
+  if (RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled() &&
+      !current_rule_data_stack_.empty() &&
+      current_rule_data_stack_.back()->type == StyleRule::RuleType::kStyle &&
+      current_rule_data_stack_.back()->rule_body_range.end == 0) {
+    unsigned end_of_last_declaration =
+        current_rule_data_stack_.back()->property_data.empty()
+            ? current_rule_data_stack_.back()->rule_body_range.start
+            : current_rule_data_stack_.back()->property_data.back().range.end;
+    // This is the first nested rule in this nesting context. We cut off the
+    // rule body here to not include inner rules in the outer rules body text.
+    // Following bare declarations are captured by CSSNestedDeclarations.
+    current_rule_data_stack_.back()->rule_body_range.end =
+        end_of_last_declaration;
+  }
 
   CSSRuleSourceData* data = MakeGarbageCollected<CSSRuleSourceData>(type);
   data->rule_header_range.start = offset;
@@ -316,7 +332,22 @@ void StyleSheetHandler::EndRuleBody(unsigned offset) {
     current_rule_data_stack_.pop_back();
   }
   DCHECK(!current_rule_data_stack_.empty());
-  current_rule_data_stack_.back()->rule_body_range.end = offset;
+  // See comment about non-empty property_data for rules with
+  // HasProperties()==false in ObserveProperty.
+  if (!current_rule_data_stack_.back()->HasProperties()) {
+    // It's possible for nested grouping rules to still hold some
+    // CSSPropertySourceData objects if only commented-out or invalid
+    // declarations were observed. There will be no ObserveNestedDeclarations
+    // call in that case.
+    current_rule_data_stack_.back()->property_data.clear();
+  }
+
+  // We ignore this event if we've already seen the start of a child rule,
+  // see StyleSheetHandler::StartRuleHeader.
+  if (!RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled() ||
+      current_rule_data_stack_.back()->rule_body_range.end == 0) {
+    current_rule_data_stack_.back()->rule_body_range.end = offset;
+  }
   AddNewRuleToSourceTree(PopRuleData());
 }
 
@@ -337,17 +368,22 @@ void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
   // inside the rule. A `disabled` property means that
   // it is a commented out property and parsing it happens
   // inside the inspector[4] and it is not a feature of the Blink CSS parser.
-  // So, even if there is a disabled property in the rule; the rule is not added as a
-  // CSSOM rule in the blink parser, because of this, we're not adding
-  // it as a rule to the source data as well.
+  // So, even if there is a disabled property in the rule; the rule is not added
+  // as a CSSOM rule in the blink parser, because of this, we're not adding it
+  // as a rule to the source data as well.
+  //
+  //   NOTE: After the introduction of CSSNestedDeclarations, the implicit
+  //         wrapper rules are instead handled by ObserveNestedDeclarations.
   //
   // [1]: https://drafts.csswg.org/css-nesting-1/#nested-group-rules
   // [2]:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2122;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
   // [3]:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2131;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
-  // [4]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_style_sheet.cc;l=484?q=f:inspector_style_sheet
-  if (rule->rule_header_range.length() == 0 &&
+  // [4]:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_style_sheet.cc;l=484?q=f:inspector_style_sheet
+  if (!RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled() &&
+      rule->rule_header_range.length() == 0 &&
       (rule->type == StyleRule::RuleType::kStyle)) {
     // Check if there is an active property inside the style rule.
     bool contains_active_property = false;
@@ -422,9 +458,34 @@ void StyleSheetHandler::ObserveProperty(unsigned start_offset,
     current_rule_data_stack_.pop_back();
   }
 
-  if (current_rule_data_stack_.empty() ||
-      !current_rule_data_stack_.back()->HasProperties())
+  if (current_rule_data_stack_.empty()) {
     return;
+  }
+  if (!current_rule_data_stack_.back()->HasProperties()) {
+    if (!RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
+      // We normally don't allow rules with HasProperties()==false to hold
+      // properties directly.
+      return;
+    }
+    // However, with CSSNestedDeclarations enabled, we *can* see ObserveProperty
+    // calls for nested group rules, e.g. @media.
+    //
+    // Example:
+    //
+    //  div {
+    //    @media (width > 100px) {
+    //      width: 100px;
+    //      height: 100px;
+    //    }
+    //  }
+    //
+    // Here, the declarations appear directly within @media, and they are
+    // reported as such through the CSSParserObserver. We therefore allow
+    // properties (CSSPropertySourceData objects) to exist temporarily
+    // on rules with HasProperties()==false, with the expectation that
+    // an ObserveNestedDeclarations call will come later and erase those
+    // properties again.
+  }
 
   DCHECK_LE(end_offset, parsed_text_.length());
   if (end_offset < parsed_text_.length() &&
@@ -467,9 +528,14 @@ void StyleSheetHandler::ObserveComment(unsigned start_offset,
   DCHECK_LE(end_offset, parsed_text_.length());
 
   if (current_rule_data_stack_.empty() ||
-      !current_rule_data_stack_.back()->rule_header_range.end ||
-      !current_rule_data_stack_.back()->HasProperties())
+      !current_rule_data_stack_.back()->rule_header_range.end) {
     return;
+  }
+  if (!current_rule_data_stack_.back()->HasProperties() &&
+      !RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
+    // See comment for similar check in ObserveProperty.
+    return;
+  }
 
   // The lexer is not inside a property AND it is scanning a declaration-aware
   // rule body.
@@ -572,6 +638,61 @@ void StyleSheetHandler::ObserveErroneousAtRule(
     default:
       break;
   }
+}
+
+void StyleSheetHandler::ObserveNestedDeclarations(unsigned insert_rule_index) {
+  CHECK(!current_rule_data_stack_.empty());
+  CSSRuleSourceData* rule = current_rule_data_stack_.back().Get();
+  Vector<CSSPropertySourceData>& property_data = rule->property_data;
+  HeapVector<Member<CSSRuleSourceData>>& child_rules = rule->child_rules;
+
+  CHECK_LE(insert_rule_index, child_rules.size());
+
+  // We're going to insert a CSSRuleSourceData for the nested declarations
+  // rule at `insert_rule_index`. The rule that ends up immediately before
+  // that CSSRuleSourceData is the "preceding rule".
+  CSSRuleSourceData* preceding_rule =
+      (insert_rule_index > 0) ? child_rules[insert_rule_index - 1].Get()
+                              : nullptr;
+
+  // Traverse backwards until we see a declaration at the preceding rule,
+  // or earlier.
+  Vector<CSSPropertySourceData>::iterator iter = property_data.end();
+  while (iter != property_data.begin()) {
+    Vector<CSSPropertySourceData>::iterator prev = std::prev(iter);
+    if (preceding_rule &&
+        (prev->range.start <= preceding_rule->rule_body_range.end)) {
+      break;
+    }
+    iter = prev;
+  }
+
+  // Copy the CSSPropertySourceData objects between preceding and following
+  // rules into a new CSSRuleSourceData object for the nested declarations.
+  Vector<CSSPropertySourceData> nested_property_data;
+  std::ranges::copy(iter, property_data.end(),
+                    std::back_inserter(nested_property_data));
+  // Remove the objects we just copied from the original vector. They should
+  // only exist in one place.
+  property_data.resize(property_data.size() - nested_property_data.size());
+
+  CHECK(!nested_property_data.empty());
+
+  // Note that the nested declarations rule has no prelude (i.e. no selector
+  // list), and no curly brackets surrounding its body. Therefore, the header
+  // range is empty, and exists at the same offset as the body-start.
+  auto* nested_declarations_rule =
+      MakeGarbageCollected<CSSRuleSourceData>(StyleRule::kStyle);
+  nested_declarations_rule->rule_header_range.start =
+      nested_property_data.front().range.start;
+  nested_declarations_rule->rule_header_range.end =
+      nested_property_data.front().range.start;
+  nested_declarations_rule->rule_body_range.start =
+      nested_property_data.front().range.start;
+  nested_declarations_rule->rule_body_range.end =
+      nested_property_data.back().range.end;
+  nested_declarations_rule->property_data = std::move(nested_property_data);
+  child_rules.insert(insert_rule_index, nested_declarations_rule);
 }
 
 static CSSPropertySourceData* GetPropertySourceData(
@@ -677,8 +798,26 @@ bool VerifyStyleText(Document* document,
   if (rule_type == StyleRule::kProperty) {
     return VerifyRuleText(document, "@property --property {" + text + "}");
   }
-
   return VerifyRuleText(document, "div {" + text + "}");
+}
+
+bool VerifyNestedDeclarations(Document* document, const String& rule_text) {
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
+      ParserContextForDocument(document));
+  CSSRuleSourceDataList* source_data =
+      MakeGarbageCollected<CSSRuleSourceDataList>();
+  String text = ".a { .b {} " + rule_text + " }";
+  StyleSheetHandler handler(text, document, source_data);
+  CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
+                                    style_sheet, text, handler);
+
+  unsigned rule_count = source_data->size();
+  if (rule_count != 1 || source_data->at(0)->type != StyleRule::kStyle) {
+    return false;
+  }
+  const CSSRuleSourceData& property_data = *source_data->front();
+
+  return property_data.child_rules.size() == 2;
 }
 
 bool VerifyPropertyNameText(Document* document, const String& name_text) {
@@ -922,12 +1061,12 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
     // collectFlatRules().
     switch (data->type) {
       case StyleRule::kImport:
-      case StyleRule::kPage:
       case StyleRule::kFontFace:
       case StyleRule::kKeyframe:
       case StyleRule::kFontFeature:
       case StyleRule::kPositionTry:
       case StyleRule::kViewTransition:
+      case StyleRule::kFontPaletteValues:
         result->push_back(data);
         break;
       case StyleRule::kStyle:
@@ -939,7 +1078,6 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kLayerBlock:
       case StyleRule::kFontFeatureValues:
       case StyleRule::kProperty:
-      case StyleRule::kFontPaletteValues:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -997,10 +1135,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
     // flattenSourceData().
     switch (rule->GetType()) {
       case CSSRule::kImportRule:
-      case CSSRule::kCharsetRule:
-      case CSSRule::kPageRule:
       case CSSRule::kFontFaceRule:
-      case CSSRule::kViewportRule:
       case CSSRule::kKeyframeRule:
       case CSSRule::kFontFeatureRule:
       case CSSRule::kPositionTryRule:
@@ -1019,6 +1154,10 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kPropertyRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
+        break;
+      case CSSRule::kNestedDeclarationsRule:
+        result->push_back(
+            To<CSSNestedDeclarationsRule>(*rule).InnerCSSStyleRule());
         break;
       default:
         break;
@@ -1200,16 +1339,11 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
     return false;
   }
 
-  CSSTokenizer tokenizer(property.value);
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
-                                    property.value};
-
   PropertyRegistry* empty_registry = MakeGarbageCollected<PropertyRegistry>();
   CustomProperty p(atomic_name, empty_registry);
 
   const CSSParserContext* parser_context = ParserContextForDocument(document);
-  const CSSValue* result = p.Parse(tokenized_value, *parser_context, {});
+  const CSSValue* result = p.Parse(property.value, *parser_context, {});
   if (!result) {
     return false;
   }
@@ -1223,13 +1357,7 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
   }
 
   // Now check the substitution result against the registered syntax.
-  String computed_text = computed_value->CssText();
-  CSSTokenizer computed_text_tokenizer(computed_text);
-  Vector<CSSParserToken, 32> computed_text_tokens =
-      computed_text_tokenizer.TokenizeToEOF();
-  CSSTokenizedValue tokenized_computed_value{
-      CSSParserTokenRange(computed_text_tokens), computed_text};
-  if (!registration->Syntax().Parse(tokenized_computed_value, *parser_context,
+  if (!registration->Syntax().Parse(computed_value->CssText(), *parser_context,
                                     false)) {
     return false;
   }
@@ -1351,8 +1479,7 @@ InspectorStyle::LonghandProperties(
     property_value = property_value.Substring(
         0, property_value.length() - 10 /* length of "!important" */);
   }
-  CSSTokenizer tokenizer(property_value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(property_value);
   stream.EnsureLookAhead();  // Several parsers expect this.
   CSSPropertyID property_id =
       CssPropertyID(style_->GetExecutionContext(), property_entry.name);
@@ -1649,6 +1776,17 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
                        source_data->type)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Style text is not valid.");
+    return nullptr;
+  }
+
+  if (source_data->type == StyleRule::RuleType::kStyle &&
+      source_data->rule_header_range.length() == 0u &&
+      !VerifyNestedDeclarations(page_style_sheet_->OwnerDocument(), text)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "Style text would cause rule to disappear");
+    // TODO(crbug.com/361116768): This should work, but we're not yet
+    // equipped to handle rules that disappear.
     return nullptr;
   }
 
@@ -2148,12 +2286,9 @@ void InspectorStyleSheet::ParseText(const String& text) {
           if (!registration) {
             continue;
           }
-          CSSTokenizer tokenizer(property_source_data.value);
-          Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-          CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
-                                            property_source_data.value};
-          if (!registration->Syntax().Parse(
-                  tokenized_value, *style_sheet->ParserContext(), false)) {
+          if (!registration->Syntax().Parse(property_source_data.value,
+                                            *style_sheet->ParserContext(),
+                                            false)) {
             property_source_data.parsed_ok = false;
           }
         }

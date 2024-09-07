@@ -63,6 +63,7 @@ build_webui("build") {
   web_component_files = [
     "a11y_page/a11y_page.ts",
     "about_page/about_page.ts",
+    "ai_page/ai_info_card.ts",
     "ai_page/ai_page.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
@@ -70,6 +71,7 @@ build_webui("build") {
     "autofill_page/address_edit_dialog.ts",
     "autofill_page/address_remove_confirmation_dialog.ts",
     "autofill_page/autofill_page.ts",
+    "autofill_page/autofill_prediction_improvements_section.ts",
     "autofill_page/autofill_section.ts",
     "autofill_page/credit_card_edit_dialog.ts",
     "autofill_page/credit_card_list_entry.ts",
@@ -296,6 +298,7 @@ build_webui("build") {
     "autofill_page/autofill_manager_proxy.ts",
     "autofill_page/password_manager_proxy.ts",
     "autofill_page/payments_manager_proxy.ts",
+    "autofill_page/user_annotations_manager_proxy.ts",
     "base_mixin.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/settings_idle_load.ts",

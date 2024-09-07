@@ -57,7 +57,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
+#include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #endif
 
 using testing::_;

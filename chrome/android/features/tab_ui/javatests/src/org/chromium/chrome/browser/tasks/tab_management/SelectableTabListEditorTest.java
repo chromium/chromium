@@ -40,7 +40,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -1251,97 +1250,6 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    public void testShowTabsWithPreSelectedTabs() {
-        prepareBlankTab(2, false);
-        List<Tab> tabs = getTabsInCurrentTabModel();
-        int preSelectedTabCount = 1;
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    List<TabListEditorAction> actions = new ArrayList<>();
-                    actions.add(
-                            TabListEditorGroupAction.createAction(
-                                    sActivityTestRule.getActivity(),
-                                    mCreationDialogManager,
-                                    ShowMode.IF_ROOM,
-                                    ButtonType.TEXT,
-                                    IconPosition.START));
-                    actions.add(
-                            TabListEditorCloseAction.createAction(
-                                    sActivityTestRule.getActivity(),
-                                    ShowMode.MENU_ONLY,
-                                    ButtonType.TEXT,
-                                    IconPosition.START,
-                                    mActionConfirmationManager));
-                    mTabListEditorController.show(
-                            tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions);
-                });
-        mRobot.resultRobot
-                .verifyTabListEditorIsVisible()
-                .verifyToolbarActionViewEnabled(R.id.tab_list_editor_group_menu_item)
-                .verifyToolbarActionViewWithText(R.id.tab_list_editor_group_menu_item, "Group tab")
-                .verifyToolbarSelectionText("1 tab")
-                .verifyHasAtLeastNItemVisible(tabs.size() + 1)
-                .verifyItemSelectedAtAdapterPosition(0)
-                .verifyHasItemViewTypeAtAdapterPosition(1, TabProperties.UiType.DIVIDER)
-                .verifyDividerAlwaysStartsAtTheEdgeOfScreen();
-        mRobot.actionRobot.clickToolbarMenuButton();
-        mRobot.resultRobot.verifyToolbarMenuItemState("Close tab", /* enabled= */ true);
-        Espresso.pressBack();
-    }
-
-    @Test
-    @LargeTest
-    public void testShowTabsWithPreSelectedTabs_6Tabs() {
-        prepareBlankTab(7, false);
-        int preSelectedTabCount = 6;
-        List<Tab> tabs = getTabsInCurrentTabModel();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    List<TabListEditorAction> actions = new ArrayList<>();
-                    actions.add(
-                            TabListEditorGroupAction.createAction(
-                                    sActivityTestRule.getActivity(),
-                                    mCreationDialogManager,
-                                    ShowMode.IF_ROOM,
-                                    ButtonType.TEXT,
-                                    IconPosition.START));
-                    actions.add(
-                            TabListEditorCloseAction.createAction(
-                                    sActivityTestRule.getActivity(),
-                                    ShowMode.MENU_ONLY,
-                                    ButtonType.TEXT,
-                                    IconPosition.START,
-                                    mActionConfirmationManager));
-
-                    mTabListEditorController.show(
-                            tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions);
-                });
-
-        mRobot.resultRobot
-                .verifyToolbarSelectionText("6 tabs")
-                .verifyHasItemViewTypeAtAdapterPosition(
-                        preSelectedTabCount, TabProperties.UiType.DIVIDER)
-                .verifyDividerAlwaysStartsAtTheEdgeOfScreenAtPosition(preSelectedTabCount);
-    }
-
-    @Test
-    @MediumTest
-    public void testDividerIsNotClickable() {
-        prepareBlankTab(2, false);
-        List<Tab> tabs = getTabsInCurrentTabModel();
-        int preSelectedTabCount = 1;
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mTabListEditorController.show(
-                                tabs, preSelectedTabCount, /* recyclerViewPosition= */ null));
-
-        mRobot.resultRobot.verifyDividerNotClickableNotFocusable();
-    }
-
-    @Test
-    @MediumTest
     @Feature({"RenderTest"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testGridViewAppearance() throws IOException {
@@ -1418,129 +1326,6 @@ public class SelectableTabListEditorTest {
 
         ChromeRenderTestRule.sanitize(mTabListEditorLayout);
         mRenderTestRule.render(mTabListEditorLayout, "grid_view_v2_one_selected_tab_0.85");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-    public void testGridViewAppearance_onePreSelectedTab() throws IOException {
-        prepareBlankTabWithThumbnail(3, false);
-        List<Tab> tabs = getTabsInCurrentTabModel();
-        int preSelectedTabCount = 1;
-
-        // Enter tab switcher to get all thumbnails.
-        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
-        TabUiTestHelper.verifyAllTabsHaveThumbnail(
-                sActivityTestRule.getActivity().getCurrentTabModel());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    List<TabListEditorAction> actions = new ArrayList<>();
-                    actions.add(
-                            TabListEditorGroupAction.createAction(
-                                    sActivityTestRule.getActivity(),
-                                    mCreationDialogManager,
-                                    ShowMode.IF_ROOM,
-                                    ButtonType.TEXT,
-                                    IconPosition.START));
-
-                    mTabListEditorController.show(
-                            tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions);
-                });
-
-        mRobot.resultRobot.verifyTabListEditorIsVisible();
-        TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
-                        });
-        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
-
-        ChromeRenderTestRule.sanitize(mTabListEditorLayout);
-        mRenderTestRule.render(mTabListEditorLayout, "grid_view_v2_one_pre_selected_tab_0.85");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-    public void testGridViewAppearance_twoPreSelectedTab() throws IOException {
-        prepareBlankTabWithThumbnail(3, false);
-        List<Tab> tabs = getTabsInCurrentTabModel();
-        int preSelectedTabCount = 2;
-
-        // Enter tab switcher to get all thumbnails.
-        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
-        TabUiTestHelper.verifyAllTabsHaveThumbnail(
-                sActivityTestRule.getActivity().getCurrentTabModel());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    List<TabListEditorAction> actions = new ArrayList<>();
-                    actions.add(
-                            TabListEditorGroupAction.createAction(
-                                    sActivityTestRule.getActivity(),
-                                    mCreationDialogManager,
-                                    ShowMode.IF_ROOM,
-                                    ButtonType.TEXT,
-                                    IconPosition.START));
-
-                    mTabListEditorController.show(
-                            tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions);
-                });
-
-        mRobot.resultRobot.verifyTabListEditorIsVisible();
-        TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
-                        });
-        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
-
-        ChromeRenderTestRule.sanitize(mTabListEditorLayout);
-        mRenderTestRule.render(mTabListEditorLayout, "grid_view_v2_pre_selected_tab_0.85");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-    public void testGridViewAppearance_allPreSelectedTab() throws IOException {
-        prepareBlankTabWithThumbnail(3, false);
-        List<Tab> tabs = getTabsInCurrentTabModel();
-        int preSelectedTabCount = tabs.size();
-
-        // Enter tab switcher to get all thumbnails.
-        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
-        TabUiTestHelper.verifyAllTabsHaveThumbnail(
-                sActivityTestRule.getActivity().getCurrentTabModel());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    List<TabListEditorAction> actions = new ArrayList<>();
-                    actions.add(
-                            TabListEditorGroupAction.createAction(
-                                    sActivityTestRule.getActivity(),
-                                    mCreationDialogManager,
-                                    ShowMode.IF_ROOM,
-                                    ButtonType.TEXT,
-                                    IconPosition.START));
-
-                    mTabListEditorController.show(
-                            tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions);
-                });
-
-        mRobot.resultRobot.verifyTabListEditorIsVisible();
-        TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
-                        });
-        TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
-
-        ChromeRenderTestRule.sanitize(mTabListEditorLayout);
-        mRenderTestRule.render(mTabListEditorLayout, "grid_view_v2_all_pre_selected_tab_0.85");
     }
 
     @Test
@@ -2004,8 +1789,7 @@ public class SelectableTabListEditorTest {
     private void showSelectionEditor(List<Tab> tabs, @Nullable List<TabListEditorAction> actions) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabListEditorController.show(
-                            tabs, /* preSelectedTabCount= */ 0, /* recyclerViewPosition= */ null);
+                    mTabListEditorController.show(tabs, /* recyclerViewPosition= */ null);
                     if (actions != null) {
                         mTabListEditorController.configureToolbarWithMenuItems(actions);
                     }

@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display/frame_interval_matchers.h"
 
+#include <algorithm>
+
 #include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "media/filters/video_cadence_estimator.h"
@@ -48,25 +50,71 @@ std::optional<FrameIntervalMatcher::Result> MatchContentIntervalType(
   if (!content_interval) {
     return std::nullopt;
   }
-  // If supports variable interval, then just return the content interval.
-  if (!matcher_inputs.settings->fixed_intervals) {
-    return content_interval.value();
-  }
 
-  // Pick best interval from supported intervals using `HasSimpleCadence`.
-  std::optional<base::TimeDelta> best_interval;
-  for (auto supported_interval :
-       matcher_inputs.settings->fixed_intervals->supported_intervals) {
-    bool simple_cadence = media::VideoCadenceEstimator::HasSimpleCadence(
-        supported_interval, content_interval.value(),
-        matcher_inputs.settings->max_time_until_next_glitch);
-    if (simple_cadence &&
-        (!best_interval || supported_interval > best_interval)) {
-      best_interval = supported_interval;
-    }
-  }
-  return best_interval.value_or(
-      matcher_inputs.settings->fixed_intervals->default_interval);
+  return absl::visit(
+      base::Overloaded(
+          [&](const absl::monostate& monostate) {
+            // If no intervals settings are given, then just return the content
+            // interval.
+            return content_interval.value();
+          },
+          [&](const FrameIntervalMatcher::FixedIntervalSettings&
+                  fixed_interval_settings) {
+            // Pick the best interval from supported intervals using
+            // `HasSimpleCadence`.
+            std::optional<base::TimeDelta> best_interval;
+            for (auto supported_interval :
+                 fixed_interval_settings.supported_intervals) {
+              bool simple_cadence =
+                  media::VideoCadenceEstimator::HasSimpleCadence(
+                      supported_interval, content_interval.value(),
+                      matcher_inputs.settings->max_time_until_next_glitch);
+              if (simple_cadence &&
+                  (!best_interval || supported_interval > best_interval)) {
+                best_interval = supported_interval;
+              }
+            }
+            return best_interval.value_or(
+                fixed_interval_settings.default_interval);
+          },
+          [&](const FrameIntervalMatcher::ContinuousRangeSettings&
+                  continuous_range_settings) {
+            // Pick the best interval within the continuous range, such that the
+            // chosen value has a perfect integer cadence relative to the
+            // target.
+            base::TimeDelta range_min = continuous_range_settings.min_interval;
+            base::TimeDelta range_max = continuous_range_settings.max_interval;
+            // If the target is below the range minimum (too fast), determine
+            // the minimum cadence necessary to reach the minimum interval.
+            if (content_interval.value() < range_min) {
+              int cadence = std::ceil(range_min / content_interval.value());
+              base::TimeDelta cadence_interval =
+                  cadence * content_interval.value();
+              // Use the calculated cadence if it didn't overshoot the range
+              // maximum. Otherwise use the range minimum as the closest
+              // fallback.
+              return cadence_interval <= range_max ? cadence_interval
+                                                   : range_min;
+            }
+            // If the target is above the range maximum (too slow), determine
+            // the minimum cadence necessary to reach the maximum interval.
+            if (content_interval.value() > range_max) {
+              // Use inverse cadence (i.e. 1/2, 1/3, 1/4, ... of the content
+              // interval.)
+              int cadence = std::ceil(content_interval.value() / range_max);
+              base::TimeDelta cadence_interval =
+                  content_interval.value() / cadence;
+              // Use the calculated cadence if it didn't undershoot the range
+              // minimum. Otherwise use the range maximum as the closest
+              // fallback.
+              return cadence_interval >= range_min ? cadence_interval
+                                                   : range_max;
+            }
+            // Content falls within the supported range and can be used
+            // directly.
+            return content_interval.value();
+          }),
+      matcher_inputs.settings->interval_settings);
 }
 
 }  // namespace
@@ -75,6 +123,13 @@ FrameIntervalMatcher::FixedIntervalSettings::FixedIntervalSettings() = default;
 FrameIntervalMatcher::FixedIntervalSettings::FixedIntervalSettings(
     const FixedIntervalSettings&) = default;
 FrameIntervalMatcher::FixedIntervalSettings::~FixedIntervalSettings() = default;
+
+FrameIntervalMatcher::ContinuousRangeSettings::ContinuousRangeSettings() =
+    default;
+FrameIntervalMatcher::ContinuousRangeSettings::ContinuousRangeSettings(
+    const ContinuousRangeSettings&) = default;
+FrameIntervalMatcher::ContinuousRangeSettings::~ContinuousRangeSettings() =
+    default;
 
 FrameIntervalMatcher::Settings::Settings() = default;
 FrameIntervalMatcher::Settings::~Settings() = default;
@@ -157,12 +212,18 @@ std::optional<FrameIntervalMatcher::Result> InputBoostMatcher::Match(
     if (inputs.has_input &&
         (matcher_inputs.aggregated_frame_time - inputs.frame_time) <
             matcher_inputs.settings->ignore_frame_sink_timeout) {
-      if (matcher_inputs.settings->fixed_intervals) {
-        return *matcher_inputs.settings->fixed_intervals->supported_intervals
-                    .begin();
-      } else {
-        return FrameIntervalClass::kBoost;
-      }
+      return absl::visit(
+          base::Overloaded(
+              [](const absl::monostate& monostate) -> Result {
+                return FrameIntervalClass::kBoost;
+              },
+              [](const FixedIntervalSettings& fixed_interval_settings)
+                  -> Result {
+                return *fixed_interval_settings.supported_intervals.begin();
+              },
+              [](const ContinuousRangeSettings& continuous_range_settings)
+                  -> Result { return continuous_range_settings.min_interval; }),
+          matcher_inputs.settings->interval_settings);
     }
   }
   return std::nullopt;
@@ -215,25 +276,35 @@ std::optional<FrameIntervalMatcher::Result> VideoConferenceMatcher::Match(
     return std::nullopt;
   }
 
-  if (!matcher_inputs.settings->fixed_intervals) {
-    return min_interval.value();
-  }
-
-  // Pick closest supported interval.
-  base::TimeDelta closest_supported_interval;
-  base::TimeDelta min_delta = base::TimeDelta::Max();
-  for (auto supported_interval :
-       matcher_inputs.settings->fixed_intervals.value().supported_intervals) {
-    base::TimeDelta delta = min_interval.value() - supported_interval;
-    if ((AreAlmostEqual(min_interval.value(), supported_interval,
-                        matcher_inputs.settings->epsilon) ||
-         delta.is_positive()) &&
-        delta.magnitude() < min_delta) {
-      closest_supported_interval = supported_interval;
-      min_delta = delta.magnitude();
-    }
-  }
-  return closest_supported_interval;
+  return absl::visit(
+      base::Overloaded(
+          [&](const absl::monostate& monostate) {
+            return min_interval.value();
+          },
+          [&](const FixedIntervalSettings& fixed_interval_settings) {
+            // Pick closest supported interval amongst discrete list.
+            base::TimeDelta closest_supported_interval;
+            base::TimeDelta min_delta = base::TimeDelta::Max();
+            for (auto supported_interval :
+                 fixed_interval_settings.supported_intervals) {
+              base::TimeDelta delta = min_interval.value() - supported_interval;
+              if ((AreAlmostEqual(min_interval.value(), supported_interval,
+                                  matcher_inputs.settings->epsilon) ||
+                   delta.is_positive()) &&
+                  delta.magnitude() < min_delta) {
+                closest_supported_interval = supported_interval;
+                min_delta = delta.magnitude();
+              }
+            }
+            return closest_supported_interval;
+          },
+          [&](const ContinuousRangeSettings& continuous_range_settings) {
+            // Pick closest supported interval within continuous range.
+            return std::clamp(min_interval.value(),
+                              continuous_range_settings.min_interval,
+                              continuous_range_settings.max_interval);
+          }),
+      matcher_inputs.settings->interval_settings);
 }
 
 DefineSimpleMatcherConstructorDestructor(OnlyAnimatingImageMatcher,

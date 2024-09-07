@@ -1150,7 +1150,7 @@ void USBDevice::AsyncIsochronousTransferIn(
     Vector<UsbIsochronousPacketPtr> mojo_packets) {
   MarkRequestComplete(resolver);
 
-  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(data.data(), data.size());
+  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(data);
   HeapVector<Member<USBIsochronousInTransferPacket>> packets;
   packets.reserve(mojo_packets.size());
   uint32_t byte_offset = 0;

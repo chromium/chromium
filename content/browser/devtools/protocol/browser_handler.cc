@@ -196,6 +196,8 @@ Response PermissionDescriptorToPermissionType(
           "Fullscreen Permission only supports allowWithoutGesture:true");
     }
     *permission_type = PermissionType::AUTOMATIC_FULLSCREEN;
+  } else if (name == "web-app-installation") {
+    *permission_type = PermissionType::WEB_APP_INSTALLATION;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);
@@ -271,6 +273,9 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::CAPTURED_SURFACE_CONTROL;
   } else if (type == protocol::Browser::PermissionTypeEnum::SpeakerSelection) {
     *out_type = PermissionType::SPEAKER_SELECTION;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::WebAppInstallation) {
+    *out_type = PermissionType::WEB_APP_INSTALLATION;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }

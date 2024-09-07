@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/proto/device_management_backend.pb.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/common/channel_info.h"
 
@@ -34,14 +34,13 @@ version_info::Channel BrowserReportGeneratorIOS::GetChannel() {
 std::vector<BrowserReportGenerator::ReportedProfileData>
 BrowserReportGeneratorIOS::GetReportedProfiles() {
   std::vector<BrowserReportGenerator::ReportedProfileData> reportedProfileData;
-  for (const auto* browser_state : GetApplicationContext()
-                                       ->GetChromeBrowserStateManager()
-                                       ->GetLoadedBrowserStates()) {
-    // ChromeBrowserStateManager should not return off-the-record BrowserStates.
+  for (const auto* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    // ProfileManager should not return off-the-record BrowserStates.
     CHECK(!browser_state->IsOffTheRecord());
     reportedProfileData.push_back({
         browser_state->GetStatePath().AsUTF8Unsafe(),
-        browser_state->GetBrowserStateName(),
+        browser_state->GetProfileName(),
     });
   }
 

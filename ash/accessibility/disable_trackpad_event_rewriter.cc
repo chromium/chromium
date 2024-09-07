@@ -9,6 +9,13 @@
 
 namespace ash {
 
+namespace {
+bool IsFromInternalTrackpad(const ui::Event& event) {
+  // TODO(b/354176487): Implement checking for internal trackpad.
+  return true;
+}
+}  // namespace
+
 DisableTrackpadEventRewriter::DisableTrackpadEventRewriter() {
   Shell::Get()->accessibility_controller()->SetDisableTrackpadEventRewriter(
       this);
@@ -30,9 +37,36 @@ bool DisableTrackpadEventRewriter::IsEnabled() {
 ui::EventDispatchDetails DisableTrackpadEventRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
-  // TODO(b/259378560): Implement this method so that it cancels all events
-  // from the built-in trackpad.
+  if (!IsEnabled()) {
+    return SendEvent(continuation, &event);
+  }
+
+  if (event.IsKeyEvent()) {
+    HandleKeyEvent(event.AsKeyEvent());
+  }
+
+  if (event.IsMouseEvent() && IsFromInternalTrackpad(event)) {
+    return DiscardEvent(continuation);
+  }
+
   return SendEvent(continuation, &event);
+}
+
+void DisableTrackpadEventRewriter::HandleKeyEvent(const ui::KeyEvent* event) {
+  // TODO(b/361611253): Make sure to check for control presses within a 10
+  // second window.
+  if (event->type() == ui::EventType::kKeyPressed) {
+    if (event->key_code() == ui::VKEY_CONTROL) {
+      ++control_press_count_;
+    } else {
+      control_press_count_ = 0;
+    }
+  }
+
+  if (control_press_count_ >= 5) {
+    SetEnabled(false);
+    control_press_count_ = 0;
+  }
 }
 
 }  // namespace ash

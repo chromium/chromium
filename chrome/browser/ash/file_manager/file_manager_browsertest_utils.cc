@@ -169,11 +169,6 @@ TestCase& TestCase::EnableLocalImageSearch() {
   return *this;
 }
 
-TestCase& TestCase::EnableFSPsInRecents() {
-  options.enable_fsps_in_recents = true;
-  return *this;
-}
-
 TestCase& TestCase::DisableGoogleOneOfferFilesBanner() {
   options.enable_google_one_offer_files_banner = false;
   return *this;
@@ -283,10 +278,6 @@ std::string TestCase::GetFullName() const {
 
   if (options.enable_local_image_search) {
     full_name += "_LocalImageSearch";
-  }
-
-  if (options.enable_fsps_in_recents) {
-    full_name += "_FSPsInRecents";
   }
 
   // Google One offer is enabled by default. Append it to a test name only if

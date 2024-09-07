@@ -4,8 +4,10 @@
 
 #include "chrome/browser/on_device_translation/translation_manager_impl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/translator.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
@@ -32,8 +34,13 @@ void TranslationManagerImpl::CanCreateTranslator(
     const std::string& source_lang,
     const std::string& target_lang,
     CanCreateTranslatorCallback callback) {
+  // The API is not supported on Android yet.
+#if !BUILDFLAG(IS_ANDROID)
   OnDeviceTranslationServiceController::GetInstance()->CanTranslate(
       source_lang, target_lang, std::move(callback));
+#else
+  std::move(callback).Run(false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void TranslationManagerImpl::CreateTranslator(
@@ -41,8 +48,13 @@ void TranslationManagerImpl::CreateTranslator(
     const std::string& target_lang,
     mojo::PendingReceiver<blink::mojom::Translator> receiver,
     CreateTranslatorCallback callback) {
+  // The API is not supported on Android yet.
+#if !BUILDFLAG(IS_ANDROID)
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<Translator>(source_lang, target_lang,
                                    std::move(callback)),
       std::move(receiver));
+#else
+  std::move(callback).Run(false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }

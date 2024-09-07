@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Tämä sivusto ei saa pyytää lupaasi</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Tutustu ohjeisiin<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Ota Bluetooth käyttöön<ph name="END_LINK" />, jotta laiteparin muodostus onnistuu.</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> tarvitsee luvan käsien liikkeen seuraamiseen.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Tutustu ohjeisiin<ph name="END_LINK" /> laitteiden skannauksen aikana…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> tarvitsee pääsyn mikrofoniisi tällä sivustolla.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> haluaa etsiä lähellä olevia Bluetooth-laitteita. Seuraavat laitteet löydettiin:</translation>

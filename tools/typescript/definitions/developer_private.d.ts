@@ -60,6 +60,7 @@ declare global {
             'EXTENSION_SERVICE_WORKER_BACKGROUND',
         TAB_CONTENTS = 'TAB_CONTENTS',
         EXTENSION_SIDE_PANEL = 'EXTENSION_SIDE_PANEL',
+        DEVELOPER_TOOLS = 'DEVELOPER_TOOLS',
       }
 
       export enum ErrorType {
@@ -77,7 +78,7 @@ declare global {
         ENABLED = 'ENABLED',
         DISABLED = 'DISABLED',
         TERMINATED = 'TERMINATED',
-        BLACKLISTED = 'BLACKLISTED',
+        BLOCKLISTED = 'BLOCKLISTED',
       }
 
       export enum ComandScope {
@@ -226,7 +227,7 @@ declare global {
       }
 
       export interface ExtensionInfo {
-        blacklistText?: string;
+        blocklistText?: string;
         safetyCheckText?: SafetyCheckStrings;
         commands: Command[];
         controlledInfo?: ControlledInfo;

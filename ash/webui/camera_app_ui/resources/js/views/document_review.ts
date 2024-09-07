@@ -25,6 +25,8 @@ import {
   ChromeHelper,
   createBigBufferFromBlob,
   createNumArrayFromBlob,
+  handleBigBufferError,
+  shouldUseBigBuffer,
 } from '../mojo/chrome_helper.js';
 import {
   BigBuffer,
@@ -645,13 +647,13 @@ class PdfBuilder {
   async addPage(jpg: Blob, index: number): Promise<void> {
     assert(this.builder !== null);
     try {
-      if (ChromeHelper.useBigBuffer) {
+      if (shouldUseBigBuffer()) {
         const bigBuffer = await createBigBufferFromBlob(jpg);
         this.builder.addPage(bigBuffer, index);
         return;
       }
     } catch (e) {
-      ChromeHelper.handleBigBufferError(e);
+      handleBigBufferError(e);
     }
     const numArray = await createNumArrayFromBlob(jpg);
     this.builder.addPageInline(numArray, index);
@@ -671,12 +673,12 @@ class PdfBuilder {
   async save(): Promise<Blob> {
     assert(this.builder !== null);
     try {
-      if (ChromeHelper.useBigBuffer) {
+      if (shouldUseBigBuffer()) {
         const {pdf} = await this.builder.save();
         return this.createPdfBlob(pdf);
       }
     } catch (e) {
-      ChromeHelper.handleBigBufferError(e);
+      handleBigBufferError(e);
     }
     const {pdf} = await this.builder.saveInline();
     return new Blob([new Uint8Array(pdf)], {type: MimeType.PDF});

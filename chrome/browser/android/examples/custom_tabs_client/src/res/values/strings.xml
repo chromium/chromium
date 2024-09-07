@@ -70,4 +70,8 @@
     <string name="send_to_external_app_text">External Intent Handler</string>
     <string name="search_in_cct_text">Interactive Omnibox</string>
     <string name="share_identity_text">Share Identity</string>
+    <string name="custom_scheme">Custom scheme:</string>
+    <string name="auth_tab_result">Received auth result.</string>
+    <string name="auth_tab_canceled">AuthTab canceled</string>
+    <string name="missing_scheme">Please specify a custom scheme.</string>
 </resources>

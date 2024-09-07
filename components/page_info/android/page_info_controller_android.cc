@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_info/android/page_info_controller_android.h"
+
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -26,10 +27,15 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/page_info/android/jni_headers/PageInfoController_jni.h"
+
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
@@ -145,6 +151,11 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     permissions_to_display.push_back(ContentSettingsType::BLUETOOTH_SCANNING);
   permissions_to_display.push_back(ContentSettingsType::VR);
   permissions_to_display.push_back(ContentSettingsType::AR);
+#if BUILDFLAG(ENABLE_VR)
+  if (device::features::IsHandTrackingEnabled()) {
+    permissions_to_display.push_back(ContentSettingsType::HAND_TRACKING);
+  }
+#endif
   if (base::FeatureList::IsEnabled(features::kFedCm)) {
     permissions_to_display.push_back(
         ContentSettingsType::FEDERATED_IDENTITY_API);

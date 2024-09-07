@@ -36,8 +36,6 @@ struct LargestContentfulPaintDetailsForReporting {
   uint64_t text_paint_size = 0;
   base::TimeTicks paint_time = base::TimeTicks();
   std::optional<WebURLRequest::Priority> image_request_priority = std::nullopt;
-  bool is_loaded_from_memory_cache = false;
-  bool is_preloaded_with_early_hints = false;
   // The unclamped paint time of the largest content (image/text).
   std::optional<base::TimeTicks> merged_unclamped_paint_time = std::nullopt;
 };

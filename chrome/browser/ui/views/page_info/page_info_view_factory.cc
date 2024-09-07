@@ -363,6 +363,10 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = show_blocked_badge ? &vector_icons::kVrHeadsetOffChromeRefreshIcon
                                 : &vector_icons::kVrHeadsetChromeRefreshIcon;
       break;
+    case ContentSettingsType::HAND_TRACKING:
+      icon = show_blocked_badge ? &vector_icons::kHandGestureOffIcon
+                                : &vector_icons::kHandGestureIcon;
+      break;
     case ContentSettingsType::AR:
       icon = show_blocked_badge ? &vector_icons::kViewInArOffChromeRefreshIcon
                                 : &vector_icons::kViewInArChromeRefreshIcon;
@@ -496,6 +500,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     case ContentSettingsType::VR:
     case ContentSettingsType::AR:
       icon = &vector_icons::kVrHeadsetIcon;
+      break;
+    case ContentSettingsType::HAND_TRACKING:
+      icon = &vector_icons::kHandGestureIcon;
       break;
     case ContentSettingsType::WINDOW_MANAGEMENT:
       icon = &vector_icons::kSelectWindowIcon;

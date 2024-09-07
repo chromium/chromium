@@ -30,11 +30,12 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
                         public content::WebContentsObserver,
                         public WebAppInstallManagerObserver {
  public:
-  static void CreateForWebContents(content::WebContents* contents);
+  using content::WebContentsUserData<WebAppTabHelper>::CreateForWebContents;
 
-  // Retrieves the WebAppTabHelper's app ID off |web_contents|, returns nullptr
-  // if there is no tab helper or app ID.
-  static const webapps::AppId* GetAppId(content::WebContents* web_contents);
+  // Retrieves the WebAppTabHelper's app ID off |web_contents|, returns
+  // nullptr if there is no tab helper or app ID.
+  static const webapps::AppId* GetAppId(
+      const content::WebContents* web_contents);
 
 #if BUILDFLAG(IS_MAC)
   // Like the above method, but also checks if notification attribution should
@@ -44,15 +45,33 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
       content::WebContents* web_contents);
 #endif
 
-  explicit WebAppTabHelper(content::WebContents* web_contents);
   WebAppTabHelper(const WebAppTabHelper&) = delete;
   WebAppTabHelper& operator=(const WebAppTabHelper&) = delete;
   ~WebAppTabHelper() override;
 
+  // Sets the app id for this web contents. Ideally the app id would always be
+  // equal to the id of whatever app the last committed primary main frame URL
+  // is in scope for (and WebAppTabHelper resets it to that any time a
+  // navigation commits), but for legacy reasons sometimes the app id is set
+  // explicitly from elsewhere.
   void SetAppId(std::optional<webapps::AppId> app_id);
+
+  // Called by `WebAppBrowserController::OnTabInserted` and `OnTabRemoved` to
+  // indicate if this web contents is currently being displayed inside an app
+  // window.
+  void SetIsInAppWindow(bool is_in_app_window);
+
+  // True when this web contents is currently being displayed inside an app
+  // window instead of in a browser tab.
+  bool is_in_app_window() const { return is_in_app_window_; }
+
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
 
   const std::optional<webapps::AppId> app_id() const { return app_id_; }
+
+  // Returns if this web contents was from an app-like launch from the OS, or if
+  // it was ever in an app window. This is used to determine if app settings
+  // should be shown in the page controls panel.
   bool acting_as_app() const { return acting_as_app_; }
   void set_acting_as_app(bool acting_as_app) { acting_as_app_ = acting_as_app; }
 
@@ -75,8 +94,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   friend class WebAppAudioFocusBrowserTest;
   friend class content::WebContentsUserData<WebAppTabHelper>;
 
-  // Returns whether the associated web contents belongs to an app window.
-  bool IsInAppWindow() const;
+  explicit WebAppTabHelper(content::WebContents* web_contents);
 
   // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const webapps::AppId& installed_app_id) override;
@@ -85,6 +103,11 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   void OnWebAppInstallManagerDestroyed() override;
 
   void ResetAppId();
+
+  // Sets the state of this tab helper. This will call
+  // `WebAppUiManager::OnAssociatedAppChanged` if the id has changed, and
+  // `UpdateAudioFocusGroupId()` if either has changed.
+  void SetState(std::optional<webapps::AppId> app_id, bool is_in_app_window);
 
   // Runs any logic when the associated app is added, changed or removed.
   void OnAssociatedAppChanged(
@@ -108,6 +131,8 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // when an app is first installed and reparented from tab to window. It should
   // be false if a user types the app's URL into a normal browser window.
   bool acting_as_app_ = false;
+
+  bool is_in_app_window_ = false;
 
   // True when this tab is the pinned home tab of a tabbed web app.
   bool is_pinned_home_tab_ = false;

@@ -1090,6 +1090,17 @@ bool KeyboardCapability::HasRightAltKeyForOobe(int device_id) const {
   return HasRightAltKeyForOobe(*keyboard);
 }
 
+bool KeyboardCapability::IsSplitModifierKeyboardForOverride(
+    const KeyboardDevice& keyboard) const {
+  if (kRightAltBlocklist.contains(board_name_)) {
+    return false;
+  }
+
+  return ash::features::IsModifierSplitEnabled() &&
+         keyboard.type == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+         keyboard.has_function_key && keyboard.has_assistant_key;
+}
+
 ui::mojom::MetaKey KeyboardCapability::GetMetaKey(
     const KeyboardDevice& keyboard) const {
   const auto device_type = GetDeviceType(keyboard);
@@ -1128,6 +1139,15 @@ ui::mojom::MetaKey KeyboardCapability::GetMetaKey(
     case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
       return mojom::MetaKey::kLauncher;
   }
+}
+
+ui::mojom::MetaKey KeyboardCapability::GetMetaKey(int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return mojom::MetaKey::kLauncher;
+  }
+
+  return GetMetaKey(*keyboard);
 }
 
 ui::mojom::MetaKey KeyboardCapability::GetMetaKeyToDisplay() const {
@@ -1295,6 +1315,10 @@ bool KeyboardCapability::IsChromeOSKeyboard(int device_id) const {
 
 void KeyboardCapability::SetBoardNameForTesting(const std::string& board_name) {
   board_name_ = board_name;
+}
+
+void KeyboardCapability::ForceEnableFeature() {
+  modifier_split_dogfood_controller_->ForceEnableFeature();
 }
 
 void KeyboardCapability::ResetModifierSplitDogfoodControllerForTesting() {

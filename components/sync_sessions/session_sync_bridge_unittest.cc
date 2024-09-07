@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -126,12 +127,13 @@ syncer::UpdateResponseData CreateTombstone(const std::string& client_tag) {
   return data;
 }
 
-syncer::CommitResponseData CreateSuccessResponse(
-    const std::string& client_tag) {
+syncer::CommitResponseData CreateSuccessResponse(const std::string& client_tag,
+                                                 int sequence_number = 1) {
   syncer::CommitResponseData response;
   response.client_tag_hash =
       syncer::ClientTagHash::FromUnhashed(syncer::SESSIONS, client_tag);
-  response.sequence_number = 1;
+  response.sequence_number = sequence_number;
+  response.response_version = sequence_number;
   return response;
 }
 
@@ -214,14 +216,10 @@ class SessionSyncBridgeTest : public ::testing::Test {
     request.cache_guid = kLocalCacheGuid;
     request.authenticated_account_id = CoreAccountId::FromGaiaId(kAccountId);
 
-    base::RunLoop loop;
-    real_processor_->OnSyncStarting(
-        request,
-        base::BindLambdaForTesting(
-            [&loop](std::unique_ptr<syncer::DataTypeActivationResponse>) {
-              loop.Quit();
-            }));
-    loop.Run();
+    base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
+        sync_starting_cb;
+    real_processor_->OnSyncStarting(request, sync_starting_cb.GetCallback());
+    ASSERT_TRUE(sync_starting_cb.Wait());
 
     // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
@@ -374,6 +372,41 @@ TEST_F(SessionSyncBridgeTest, ShouldCreateHeaderByDefault) {
   StartSyncing();
 
   EXPECT_THAT(GetAllData(), SizeIs(1));
+}
+
+TEST_F(SessionSyncBridgeTest, ShouldPopulateSessionStartTimeOnFirstSync) {
+  // Store the initial time, in order to later verify that the session start
+  // time is >= this time. Round down to the nearest millisecond, since the
+  // session start time only uses millisecond granularity.
+  const base::Time initial_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+
+  InitializeBridge();
+
+  EXPECT_CALL(mock_processor(), ModelReadyToSync(IsEmptyMetadataBatch()));
+  StartSyncing();
+
+  const std::string header_storage_key =
+      SessionStore::GetHeaderStorageKey(kLocalCacheGuid);
+
+  // The session start time should have been populated.
+  const base::Time session_start_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          GetAllData()[header_storage_key]
+              ->specifics.session()
+              .header()
+              .session_start_time_unix_epoch_millis());
+  EXPECT_GE(session_start_time, initial_time);
+
+  // A browser restart should not change the session start time.
+  ShutdownBridge();
+  InitializeBridge();
+  StartSyncing();
+  EXPECT_THAT(GetAllData(),
+              UnorderedElementsAre(
+                  Pair(header_storage_key,
+                       EntityDataHasSpecifics(MatchesHeader(
+                           kLocalCacheGuid, session_start_time, _, _)))));
 }
 
 // Tests that local windows and tabs that exist at the time the bridge is

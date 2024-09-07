@@ -59,6 +59,8 @@ URLVisitAggregate CreateSampleURLVisitAggregate(const GURL& url,
                                                 std::set<Fetcher> fetchers) {
   URLVisitAggregate visit_aggregate(url.spec());
   visit_aggregate.bookmarked = true;
+  visit_aggregate.decorations.emplace_back(DecorationType::kVisitedXAgo,
+                                           u"You visited X ago");
 
   const std::u16string kSampleTitle(u"sample_title");
   if (fetchers.contains(Fetcher::kHistory)) {

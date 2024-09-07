@@ -267,8 +267,10 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   // See: http://crbug.com/956264.
   host_->SetVisible(true);
 
-  if (base::PowerMonitor::IsInitialized())
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->AddPowerSuspendObserver(this);
+  }
 
   if (command_line->HasSwitch(switches::kUISlowAnimations)) {
     slow_animations_ = std::make_unique<ScopedAnimationDurationScaleMode>(
@@ -281,8 +283,10 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
 
 Compositor::~Compositor() {
   TRACE_EVENT0("shutdown,viz", "Compositor::destructor");
-  if (base::PowerMonitor::IsInitialized())
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->RemovePowerSuspendObserver(this);
+  }
 
   for (auto& observer : observer_list_)
     observer.OnCompositingShuttingDown(this);
@@ -355,6 +359,9 @@ void Compositor::SetLayerTreeFrameSink(
                                                   vsync_interval_);
     }
     display_private_->SetMaxVSyncAndVrr(max_vsync_interval_, vrr_state_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    display_private_->SetSupportedRefreshRates(seamless_refresh_rates_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   MaybeUpdateObserveBeginFrame();
@@ -1015,5 +1022,22 @@ void Compositor::MaybeUpdateObserveBeginFrame() {
   display_private_->SetStandaloneBeginFrameObserver(
       host_begin_frame_observer_->GetBoundRemote());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void Compositor::SetSeamlessRefreshRates(
+    const std::vector<float>& seamless_refresh_rates) {
+  seamless_refresh_rates_ = seamless_refresh_rates;
+
+  if (display_private_) {
+    display_private_->SetSupportedRefreshRates(seamless_refresh_rates);
+  }
+}
+
+void Compositor::OnSetPreferredRefreshRate(float refresh_rate) {
+  for (auto& observer : observer_list_) {
+    observer.OnSetPreferredRefreshRate(this, refresh_rate);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace ui

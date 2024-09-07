@@ -18,6 +18,8 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -52,6 +54,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
 
     private PersonalDataManager mPersonalDataManager;
     private BankAccount[] mBankAccounts;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     // ChromeBaseSettingsFramgent override.
     @Override
@@ -61,7 +64,8 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         if (extras != null) {
             title = extras.getString(TITLE_KEY, "");
         }
-        getActivity().setTitle(title);
+        mPageTitle.set(title);
+
         setHasOptionsMenu(false);
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
         // Suppresses unwanted animations while Preferences are removed from and re-added to the
@@ -73,6 +77,11 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
             sObserverForTest.onResult(this);
         }
         RecordHistogram.recordBooleanHistogram(FRAGMENT_SHOWN_HISTOGRAM, /* sample= */ true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     // ChromeBaseSettingsFramgent override.

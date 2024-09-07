@@ -949,7 +949,7 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(bottom, 0);
 
         // Simulate a browser controls height change because top layer is removed.
-        top.setVisibility(LayerVisibility.HIDDEN);
+        top.setVisibility(LayerVisibility.HIDING);
         mBottomControlsStacker.requestLayerUpdate(true);
         verify(mBrowserControlsSizer).setBottomControlsHeight(10, 0);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
@@ -1036,7 +1036,7 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(bottom, 0);
 
         // Simulate a browser controls height change because bottom layer is removed.
-        bottom.setVisibility(LayerVisibility.HIDDEN);
+        bottom.setVisibility(LayerVisibility.HIDING);
         mBottomControlsStacker.requestLayerUpdate(true);
         verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
@@ -1140,7 +1140,7 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(bottom, 0);
 
         // Simulate a browser controls height change because mid layer is hidden.
-        mid.setVisibility(LayerVisibility.HIDDEN);
+        mid.setVisibility(LayerVisibility.HIDING);
         mBottomControlsStacker.requestLayerUpdate(true);
         verify(mBrowserControlsSizer).setBottomControlsHeight(1010, 0);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);

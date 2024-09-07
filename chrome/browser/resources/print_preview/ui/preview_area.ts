@@ -12,9 +12,6 @@ import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-// <if expr="is_chromeos">
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -125,15 +122,6 @@ export class PrintPreviewPreviewAreaElement extends
       },
 
       // <if expr="is_chromeos">
-      isPrintPreviewSetupAssistanceEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrintPreviewSetupAssistanceEnabled');
-        },
-        readOnly: true,
-      },
-
       printerOffline_: {
         type: Number,
         value: PrinterSetupInfoMessageType.PRINTER_OFFLINE,
@@ -174,9 +162,6 @@ export class PrintPreviewPreviewAreaElement extends
   private pluginLoadComplete_: boolean;
   private documentReady_: boolean;
   private previewLoaded_: boolean;
-  // <if expr="is_chromeos">
-  private isPrintPreviewSetupAssistanceEnabled_: boolean;
-  // </if>
 
   private showCrosPrinterSetupInfo_: boolean = false;
   private nativeLayer_: NativeLayer|null = null;
@@ -814,14 +799,13 @@ export class PrintPreviewPreviewAreaElement extends
 
   /**
    * Determines if setup info element should be shown instead of the preview
-   * area message. For ChromeOS, setup assistance is shown if the flag is
-   * enabled and the `INVALID_PRINTER` error has occurred. All other platforms
+   * area message. For ChromeOS, setup assistance is shown if the
+   * `INVALID_PRINTER` error has occurred. All other platforms
    * `computeShowCrosPrinterSetupInfo` will return false.
    */
   private computeShowCrosPrinterSetupInfo(): boolean {
     // <if expr="is_chromeos">
-    return this.isPrintPreviewSetupAssistanceEnabled_ &&
-        shouldShowCrosPrinterSetupError(this.state, this.error);
+    return shouldShowCrosPrinterSetupError(this.state, this.error);
     // </if>
     // <if expr="not is_chromeos">
     return false;

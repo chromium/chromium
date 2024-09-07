@@ -14,8 +14,6 @@ CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
   switch (source) {
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       return CSBRR::PVER4_NATIVE;
-    case safe_browsing::ThreatSource::REMOTE:
-      return CSBRR::ANDROID_SAFETYNET;
     case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
       return CSBRR::REAL_TIME;
     case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
@@ -226,6 +224,11 @@ void FillReportBasicResourceDetails(
   if (IsReportableUrl(referrer_url)) {
     report->set_referrer_url(referrer_url.spec());
   }
+  report->mutable_client_properties()->set_url_api_type(
+      client_report_utils::GetUrlApiTypeForThreatSource(
+          resource.threat_source));
+  report->mutable_client_properties()->set_is_async_check(
+      resource.is_async_check);
 }
 
 void FillInterstitialInteractionsHelper(

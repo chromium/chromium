@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
+import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -20,6 +21,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -39,7 +41,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -251,11 +253,12 @@ public class IntentHandler {
     public static final String EXTRA_APP_SPECIFIC_HISTORY =
             "org.chromium.chrome.browser.app_specific_history";
 
+    /** The package name for the Google Search App. */
+    public static final String PACKAGE_GSA = GSAUtils.GSA_PACKAGE_NAME;
+
     private static Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
     private static String sPendingIncognitoUrl;
-
-    public static final String PACKAGE_GSA = GSAState.PACKAGE_NAME;
 
     private static final String PACKAGE_GMAIL = "com.google.android.gm";
     private static final String PACKAGE_PLUS = "com.google.android.apps.plus";
@@ -278,10 +281,10 @@ public class IntentHandler {
     public static final String SHARE_INTENT_HISTOGRAM = "Android.Intent.ShareIntentUrlCount";
 
     /**
-     * Represents popular external applications that can load a page in Chrome via intent.
-     * DO NOT reorder items in this interface, because it's mirrored to UMA (as ClientAppId).
-     * Values should be enumerated from 0 and can't have gaps. When removing items,
-     * comment them out and keep existing numeric values stable.
+     * Represents popular external applications that can load a page in Chrome via intent. DO NOT
+     * reorder items in this interface, because it's mirrored to UMA (as ClientAppId). Values should
+     * be enumerated from 0 and can't have gaps. When removing items, comment them out and keep
+     * existing numeric values stable.
      */
     @IntDef({
         ExternalAppId.OTHER,
@@ -300,6 +303,7 @@ public class IntentHandler {
         ExternalAppId.YAHOO_MAIL,
         ExternalAppId.VIBER,
         ExternalAppId.YOUTUBE,
+        ExternalAppId.CAMERA,
         ExternalAppId.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -320,8 +324,9 @@ public class IntentHandler {
         int YAHOO_MAIL = 13;
         int VIBER = 14;
         int YOUTUBE = 15;
+        int CAMERA = 16;
         // Update ClientAppId in enums.xml when adding new items.
-        int NUM_ENTRIES = 16;
+        int NUM_ENTRIES = 17;
     }
 
     /**
@@ -424,11 +429,36 @@ public class IntentHandler {
     private IntentHandler() {}
 
     /**
+     * Returns information on the activity referrer. Queries the intent in case that the activity
+     * was launched through the Chrome launcher activity, falling back to {@link
+     * Activity#getReferrer()}.
+     */
+    public static String getActivityReferrer(Intent intent, @NonNull Activity activity) {
+        String activityReferrer =
+                IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_ACTIVITY_REFERRER);
+        if (activityReferrer != null) {
+            return activityReferrer;
+        }
+        Uri activityReferrerUri = activity.getReferrer();
+        return (activityReferrerUri != null) ? activityReferrerUri.toString() : null;
+    }
+
+    /** Determines if Chrome was used to fire this intent. */
+    public static boolean isExternalIntentSourceChrome(Intent intent) {
+        // Intent should be sufficient for determining whether the intent originated from Chrome.
+        return determineExternalIntentSource(intent, /* activity= */ null) == ExternalAppId.CHROME;
+    }
+
+    /**
      * Determines what App was used to fire this Intent.
+     *
      * @param intent Intent that was used to launch Chrome.
+     * @param activity Queried if the app which launched Chrome could not be determined from the
+     *     intent.
      * @return ExternalAppId representing the app.
      */
-    public static @ExternalAppId int determineExternalIntentSource(Intent intent) {
+    public static @ExternalAppId int determineExternalIntentSource(
+            Intent intent, @Nullable Activity activity) {
         if (wasIntentSenderChrome(intent)) return ExternalAppId.CHROME;
 
         String appId = IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID);
@@ -459,6 +489,15 @@ public class IntentHandler {
         } else {
             externalId = mapPackageToExternalAppId(appId);
         }
+
+        if (externalId == ExternalAppId.OTHER && activity != null) {
+            String activityReferrer = getActivityReferrer(intent, activity);
+            if (activityReferrer != null
+                    && activityReferrer.toLowerCase(Locale.getDefault()).endsWith("camera")) {
+                return ExternalAppId.CAMERA;
+            }
+        }
+
         return externalId;
     }
 
@@ -1075,6 +1114,7 @@ public class IntentHandler {
         String url = getUrlFromVoiceSearchResult(intent);
         if (url == null) url = getUrlForCustomTab(intent);
         if (url == null) url = getUrlForWebapp(intent);
+        if (url == null) url = getUrlFromShareIntent(intent);
         if (url == null) url = intent.getDataString();
         if (url == null) return null;
         url = url.trim();
@@ -1105,14 +1145,20 @@ public class IntentHandler {
     }
 
     /**
-     * Extract a raw URL from the Share intent text, without further processing. In the case of
-     * multiple URLs being present, picks the last one. Only considers http/https URLs.
+     * Extract a raw URL from the Share intent text.
+     *
+     * <p>This first try to extract raw http/https URLs. In the case of multiple URLs being present,
+     * picks the last one. If no explicit URLs are found, try using autocomplete to resembles the
+     * URL. If not, it will construct a search query with the default search engine.
+     *
      * @param intent Intent to examine.
-     * @return Raw URL from the intent, or null if no URL could be found.
+     * @return URL from the intent, or null if no URL could be found.
      */
     public static @Nullable String getUrlFromShareIntent(Intent intent) {
-        assert Intent.ACTION_SEND.equals(intent.getAction());
-        if (!"text/plain".equals(intent.getType())) return null;
+        if (!Intent.ACTION_SEND.equals(intent.getAction())
+                || !"text/plain".equals(intent.getType())) {
+            return null;
+        }
 
         String text = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_TEXT);
         List<String> urls = new ArrayList<>();
@@ -1125,10 +1171,22 @@ public class IntentHandler {
         // larger counts would be interesting.
         RecordHistogram.recordExactLinearHistogram(SHARE_INTENT_HISTOGRAM, urls.size(), 5);
 
-        if (urls.isEmpty()) return null;
-        // If multiple URLs are present, somewhat arbitrarily pick the last one (preferring https) -
-        // share actions seem to usually put the URL at the end.
-        return urls.get(urls.size() - 1);
+        if (!urls.isEmpty()) {
+            // If multiple URLs are present, somewhat arbitrarily pick the last one (preferring
+            // https) - share actions seem to usually put the URL at the end.
+            return urls.get(urls.size() - 1);
+        }
+
+        if (TextUtils.isEmpty(text)
+                || !BrowserStartupController.getInstance().isFullBrowserStarted()) {
+            return null;
+        }
+
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        AutocompleteMatch match = AutocompleteCoordinator.classify(profile, text);
+        if (match != null) return match.getUrl().getSpec();
+
+        return TemplateUrlServiceFactory.getForProfile(profile).getUrlForSearchQuery(text);
     }
 
     private static String getUrlForCustomTab(Intent intent) {

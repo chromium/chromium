@@ -10,17 +10,18 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
 /** Wrapper that allows passing a Profile reference around in the Java layer. */
 public class Profile implements BrowserContextHandle {
+    private final @Nullable OTRProfileID mOtrProfileId;
+
     /** Pointer to the Native-side Profile. */
     private long mNativeProfile;
 
-    private final @Nullable OTRProfileID mOtrProfileId;
+    private boolean mDestroyNotified;
 
     @CalledByNative
     private Profile(long nativeProfile, @Nullable OTRProfileID otrProfileId) {
@@ -62,6 +63,11 @@ public class Profile implements BrowserContextHandle {
 
     public Profile getOriginalProfile() {
         return ProfileJni.get().getOriginalProfile(mNativeProfile);
+    }
+
+    /** Return whether this Profile represents the initially created "Default" Profile. */
+    public boolean isInitialProfile() {
+        return ProfileJni.get().isInitialProfile(mNativeProfile);
     }
 
     /**
@@ -180,15 +186,34 @@ public class Profile implements BrowserContextHandle {
         return mNativeProfile;
     }
 
+    /**
+     * Returns whether shutdown has been initiated. This is a signal that the object will be
+     * destroyed soon and no new references to this object should be created.
+     */
+    public boolean shutdownStarted() {
+        return mDestroyNotified;
+    }
+
+    private void notifyWillBeDestroyed() {
+        assert !mDestroyNotified;
+        mDestroyNotified = true;
+
+        ProfileManager.onProfileDestroyed(this);
+    }
+
+    @CalledByNative
+    private void onProfileWillBeDestroyed() {
+        notifyWillBeDestroyed();
+    }
+
     @CalledByNative
     private void onNativeDestroyed() {
         mNativeProfile = 0;
 
-        if (isPrimaryOTRProfile()) {
-            CookiesFetcher.scheduleDeleteCookies();
+        if (!mDestroyNotified) {
+            assert false : "Destroy should have been notified previously.";
+            notifyWillBeDestroyed();
         }
-
-        ProfileManager.onProfileDestroyed(this);
     }
 
     @CalledByNative
@@ -201,6 +226,8 @@ public class Profile implements BrowserContextHandle {
         Profile fromWebContents(WebContents webContents);
 
         Profile getOriginalProfile(long ptr);
+
+        boolean isInitialProfile(long ptr);
 
         Profile getOffTheRecordProfile(long ptr, OTRProfileID otrProfileID, boolean createIfNeeded);
 

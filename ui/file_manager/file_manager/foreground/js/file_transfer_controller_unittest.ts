@@ -13,21 +13,25 @@ import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
+import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
+import {cacheEntries} from '../../state/ducks/all_entries.js';
+import {setUpFileManagerOnWindow, setupStore} from '../../state/for_tests.js';
 import {DialogType} from '../../state/state.js';
+import {getFileData} from '../../state/store.js';
+import type {XfTree} from '../../widgets/xf_tree.js';
 import type {FilesToast} from '../elements/files_toast.js';
 
 import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
 import {FileListModel} from './file_list_model.js';
 import type {FileSelectionHandler} from './file_selection.js';
-import {deduplicatePath, FileTransferController, resolvePath, writeFile} from './file_transfer_controller.js';
+import {deduplicatePath, DRAG_AND_DROP_GLOBAL_DATA, ENCRYPTED, FileTransferController, MISSING_FILE_CONTENTS, resolvePath, SOURCE_ROOT_URL, SOURCE_URLS, writeFile} from './file_transfer_controller.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
 import type {A11yAnnounce} from './ui/a11y_announce.js';
 import {Command} from './ui/command.js';
-import type {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {FileTable} from './ui/file_table.js';
@@ -37,15 +41,21 @@ class TestFileTransferController extends FileTransferController {
   isDocumentWideEvent() {
     return super.isDocumentWideEvent_();
   }
+
+  isDropTargetAllowed(destinationEntryURL: string) {
+    return super.isDropTargetAllowed_(destinationEntryURL);
+  }
 }
 
 let listContainer: ListContainer;
 let fileTransferController: TestFileTransferController;
-let directoryTree: DirectoryTree;
+let directoryTree: XfTree;
 let selectionHandler: FakeFileSelectionHandler;
 let volumeManager: VolumeManager;
 
 export function setUp() {
+  setUpFileManagerOnWindow();
+
   // Setup page DOM.
   document.body.innerHTML = getTrustedHTML`
     <style>
@@ -95,7 +105,7 @@ export function setUp() {
   const directoryModel = createFakeDirectoryModel();
 
   // Create fake VolumeManager and install webkitResolveLocalFileSystemURL.
-  volumeManager = new MockVolumeManager();
+  volumeManager = window.fileManager.volumeManager;
   window.webkitResolveLocalFileSystemURL =
       MockVolumeManager.resolveLocalFileSystemUrl.bind(null, volumeManager);
 
@@ -134,7 +144,7 @@ export function setUp() {
 
   // Setup DirectoryTree elements.
   directoryTree =
-      document.querySelector('#directory-tree') as unknown as DirectoryTree;
+      document.querySelector('#directory-tree') as unknown as XfTree;
 
   const filesToast =
       document.querySelector('files-toast') as unknown as FilesToast;
@@ -293,6 +303,76 @@ export async function testPreparePaste(done: () => void) {
   const writtenEntry =
       myFilesMockFs.entries['/testdir/browserfile']! as MockFileEntry;
   assertEquals('content', await writtenEntry.content.text());
+
+  done();
+}
+
+/**
+ * Tests the drag-and-drop's `isDropTargetAllowed_` utility function, which
+ * relies on the local storage that mirrors the data stored in the clipboard,
+ * and on the "disabled" state of the target entry in the store.
+ *
+ * Note: Setting the drop target used to infer the dragged entries from the
+ * selection handler, which is not valid when entries are dragged from one Files
+ * window to another.
+ */
+export async function testDropTargetAllowed(done: () => void) {
+  // Item 1 of the volume info list should be Downloads volume type.
+  assertEquals(
+      VolumeType.DOWNLOADS, volumeManager.volumeInfoList.item(1).volumeType);
+  const myFilesVolume = volumeManager.volumeInfoList.item(1);
+  const myFilesMockFs = myFilesVolume.fileSystem as MockFileSystem;
+
+  // Create entries under myFiles and cache them in the store.
+  myFilesMockFs.populate(
+      ['/file.txt', '/dir/', '/dir/file2.txt', '/dir/dir2/']);
+  const file = myFilesMockFs.entries['/file.txt'] as FileEntry;
+  const dir = myFilesMockFs.entries['/dir'] as DirectoryEntry;
+  const file2 = myFilesMockFs.entries['/dir/file2.txt'] as FileEntry;
+  const dir2 = myFilesMockFs.entries['/dir/dir2'] as FileEntry;
+  const store = setupStore();
+  cacheEntries(store.getState(), [file, dir, file2]);
+
+  // Update the local storage to simulate dragging the "/dir" entry.
+  const storage = window.localStorage;
+  storage.setItem(
+      `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`,
+      entriesToURLs([dir]).join('\n'));
+  storage.setItem(
+      `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`, myFilesMockFs.rootURL);
+  storage.setItem(
+      `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`, 'false');
+  storage.setItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${ENCRYPTED}`, 'false');
+
+  // "/dir" is not a valid target for itself.
+  assertFalse(fileTransferController.isDropTargetAllowed(dir.toURL()));
+
+  // Check that "/dir" is a valid target for "/file.txt".
+  storage.setItem(
+      `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`,
+      entriesToURLs([file]).join('\n'));
+  assertTrue(fileTransferController.isDropTargetAllowed(dir.toURL()));
+
+  // Check that "/dir" is a valid target for "/dir/file2.txt".
+  storage.setItem(
+      `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`,
+      entriesToURLs([file2]).join('\n'));
+  assertTrue(fileTransferController.isDropTargetAllowed(dir.toURL()));
+
+  // Check that "/dir/dir2" is not a valid target for "/dir".
+  storage.setItem(
+      `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`,
+      entriesToURLs([dir]).join('\n'));
+  assertFalse(fileTransferController.isDropTargetAllowed(dir2.toURL()));
+
+  // Disable the directory "/dir" in the store and check that it can't be used
+  // as a drop target anymore for "/file.txt".
+  const dirFileData = getFileData(store.getState(), dir.toURL())!;
+  dirFileData.disabled = true;
+  storage.setItem(
+      `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`,
+      entriesToURLs([file]).join('\n'));
+  assertFalse(fileTransferController.isDropTargetAllowed(dir.toURL()));
 
   done();
 }

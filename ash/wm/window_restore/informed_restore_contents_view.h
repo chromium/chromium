@@ -47,6 +47,12 @@ class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
   // the updated contents data.
   void UpdateContents();
 
+  // Update the preferred width for the container which contains the restore,
+  // cancel and settings button. Its preferred width is smaller if the screen
+  // size is too small.
+  void UpdatePrimaryContainerPreferredWidth(aura::Window* root_window,
+                                            std::optional<bool> is_landscape);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(InformedRestoreContextMenuModelTest,
                            ShowContextMenuOnSettingsButtonClicked);
@@ -79,6 +85,11 @@ class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
   // The menu runner that is responsible for the context menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
+  // Container for the restore, cancel and settings button.
+  raw_ptr<views::BoxLayoutView> primary_container_view_;
+
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
+
   // The container of the items list view or screenshot.
   raw_ptr<views::BoxLayoutView> preview_container_view_;
 
@@ -95,8 +106,6 @@ class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
 
   bool showing_list_view_ = true;
   bool close_metric_recorded_ = false;
-
-  raw_ptr<views::ImageButton> settings_button_ = nullptr;
 
   base::CallbackListSubscription contents_data_updated_subscription_;
 

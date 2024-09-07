@@ -785,6 +785,8 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
 }
 
 struct wl_callback* WaylandConnection::GetSyncCallback() {
+  // We use display_wrapped here since we create all the objects against this
+  // display, and the default one is responsible for a different event queue.
   return wl_display_sync(display_wrapper());
 }
 

@@ -8,8 +8,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
-import("BUILD.generated.gni")
-import("BUILD.generated_tests.gni")
+import("src/gen/sources.gni")
 
 if (enable_rust) {
   import("//build/rust/cargo_crate.gni")
@@ -26,7 +25,7 @@ config("external_config") {
 
 # The config used by the :boringssl component itself, and the fuzzer copies.
 config("component_config") {
-  visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  visibility = [ ":*" ]
   configs = [ ":internal_config" ]
   defines = [ "BORINGSSL_IMPLEMENTATION" ]
 }
@@ -34,18 +33,19 @@ config("component_config") {
 # This config is used by anything that consumes internal headers. Tests consume
 # this rather than :component_config.
 config("internal_config") {
-  visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  visibility = [ ":*" ]
   defines = [ "OPENSSL_SMALL" ]
 }
 
 config("no_asm_config") {
-  visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  visibility = [ ":*" ]
   defines = [ "OPENSSL_NO_ASM" ]
 }
 
-# TODO(crbug.com/1496373): having the headers in all_sources is hacky and should
-# be fixed. It is caused by issues with the fuzzer target.
-all_sources = crypto_sources + ssl_sources + pki_sources + pki_internal_headers
+# TODO(crbug.com/42290535): Move Chromium's use of libpki to the public API and
+# unexport pki_internal_headers.
+all_sources = bcm_internal_headers + bcm_sources + crypto_internal_headers +
+              crypto_sources + ssl_internal_headers + ssl_sources + pki_sources
 all_headers = crypto_headers + ssl_headers + pki_headers + pki_internal_headers
 
 if (enable_rust) {
@@ -74,7 +74,7 @@ if (enable_rust) {
   cargo_crate("bssl_sys") {
     crate_type = "rlib"
     crate_root = "src/rust/bssl-sys/src/lib.rs"
-    sources = rust_bssl_sys
+    sources = rebase_path(rust_bssl_sys_sources, ".", "src")
     edition = "2021"
     deps = [
       ":boringssl",
@@ -96,7 +96,7 @@ if (enable_rust) {
   cargo_crate("bssl_crypto") {
     crate_type = "rlib"
     crate_root = "src/rust/bssl-crypto/src/lib.rs"
-    sources = rust_bssl_crypto
+    sources = rebase_path(rust_bssl_crypto_sources, ".", "src")
     edition = "2021"
     deps = [ ":bssl_sys" ]
   }
@@ -107,32 +107,43 @@ if (is_msan) {
   # BoringSSL's GAS-compatible assembly knows how to detect MSan, but the NASM
   # assembly does not, so we check for MSan explicitly.
   source_set("boringssl_asm") {
-    visibility = [ ":*" ]  # Only targets in this file can depend on this.
-
+    visibility = [ ":*" ]
     public_configs = [ ":no_asm_config" ]
+  }
+  source_set("test_support_asm") {
+    visibility = [ ":*" ]
+    testonly = true
   }
 } else if (is_win && (current_cpu == "x86" || current_cpu == "x64")) {
   # Windows' x86 and x86_64 assembly is built with NASM.
   import("//third_party/nasm/nasm_assemble.gni")
   nasm_assemble("boringssl_asm") {
-    sources = crypto_sources_nasm
-    visibility = [ ":*" ]  # Only targets in this file can depend on this.
+    visibility = [ ":*" ]
+    sources = rebase_path(bcm_sources_nasm + crypto_sources_nasm, ".", "src")
+  }
+  nasm_assemble("test_support_asm") {
+    visibility = [ ":*" ]
+    sources = rebase_path(test_support_sources_nasm, ".", "src")
   }
 } else {
   # All other targets use GAS-compatible assembler. BoringSSL's assembly files
   # are all wrapped in processor checks for the corresponding target, so there
   # is no need to add target conditions in the build.
   source_set("boringssl_asm") {
-    visibility = [ ":*" ]  # Only targets in this file can depend on this.
-
-    sources = crypto_sources_asm
+    visibility = [ ":*" ]
+    sources = rebase_path(bcm_sources_asm + crypto_sources_asm, ".", "src")
+    include_dirs = [ "src/include" ]
+  }
+  source_set("test_support_asm") {
+    visibility = [ ":*" ]
+    sources = rebase_path(test_support_sources_asm, ".", "src")
     include_dirs = [ "src/include" ]
   }
 }
 
 component("boringssl") {
-  sources = all_sources
-  public = all_headers
+  sources = rebase_path(all_sources, ".", "src")
+  public = rebase_path(all_headers, ".", "src")
   friend = [ ":*" ]
   deps = [ "//third_party/boringssl/src/third_party/fiat:fiat_license" ]
 
@@ -168,10 +179,9 @@ if (build_with_chromium) {
   import("//testing/libfuzzer/fuzzer_test.gni")
 
   source_set("test_support") {
-    # TODO(crbug.com/boringssl/542): When we switch to the new source lists,
-    # we will have separate variables for the sources and headers.
-    sources = filter_exclude(test_support_sources, [ "*.h" ])
-    public = filter_include(test_support_sources, [ "*.h" ])
+    visibility = [ ":*" ]
+    sources = rebase_path(test_support_sources, ".", "src")
+    public = rebase_path(test_support_internal_headers, ".", "src")
     testonly = true
 
     # Test data in Chromium is complex. Swap out GetTestData with a
@@ -181,6 +191,7 @@ if (build_with_chromium) {
 
     deps = [
       ":boringssl",
+      ":test_support_asm",
       "//base",
       "//testing/gtest",
     ]
@@ -191,15 +202,15 @@ if (build_with_chromium) {
   # iOS build rules.
 
   bundle_data("boringssl_crypto_tests_bundle_data") {
-    sources = crypto_test_data
+    sources = rebase_path(crypto_test_data, ".", "src")
     testonly = true
     outputs = [ "{{bundle_resources_dir}}/" +
                 "{{source_root_relative_dir}}/{{source_file_part}}" ]
   }
 
   test("boringssl_crypto_tests") {
-    sources = crypto_test_sources
-    data = crypto_test_data
+    sources = rebase_path(crypto_test_sources, ".", "src")
+    data = rebase_path(crypto_test_data, ".", "src")
     deps = [
       ":boringssl",
       ":boringssl_crypto_tests_bundle_data",
@@ -225,7 +236,7 @@ if (build_with_chromium) {
   }
 
   test("boringssl_ssl_tests") {
-    sources = ssl_test_sources
+    sources = rebase_path(ssl_test_sources, ".", "src")
     deps = [
       ":boringssl",
       ":test_support",
@@ -245,8 +256,8 @@ if (build_with_chromium) {
   }
 
   test("boringssl_pki_tests") {
-    sources = pki_test_sources
-    data = pki_test_data
+    sources = rebase_path(pki_test_sources, ".", "src")
+    data = rebase_path(pki_test_data, ".", "src")
     deps = [
       ":boringssl",
       ":test_support",
@@ -266,7 +277,7 @@ if (build_with_chromium) {
   }
 
   config("fuzzer_config") {
-    visibility = [ ":*" ]  # Only targets in this file can depend on this.
+    visibility = [ ":*" ]
     defines = [
       "BORINGSSL_UNSAFE_FUZZER_MODE",
       "BORINGSSL_UNSAFE_DETERMINISTIC_MODE",
@@ -276,9 +287,11 @@ if (build_with_chromium) {
   # The same as boringssl, but builds with BORINGSSL_UNSAFE_FUZZER_MODE.
   # TODO(https://crbug.com/boringssl/258): Fold this into the normal target.
   component("boringssl_fuzzer") {
-    visibility = [ ":*" ]  # Only targets in this file can depend on this.
+    visibility = [ ":*" ]
 
-    sources = all_sources
+    sources = rebase_path(all_sources, ".", "src")
+    public = rebase_path(all_headers, ".", "src")
+    friend = [ ":*" ]
     deps = [ "//third_party/boringssl/src/third_party/fiat:fiat_license" ]
 
     # Mark boringssl_asm as a public dependency so the OPENSSL_NO_ASM
@@ -300,13 +313,11 @@ if (build_with_chromium) {
     }
   }
 
-  # Do not run the fuzzers on windows until 1477042 is fixed, they
-  # make the fuzzer infrastructure exceed the windows command line
-  # length.
-  foreach(fuzzer, fuzzers) {
+  foreach(source, fuzz_sources) {
+    fuzzer = get_path_info(source, "name")
     fuzzer_test("boringssl_${fuzzer}_fuzzer") {
       sources = [
-        "src/fuzz/${fuzzer}.cc",
+        rebase_path(source, ".", "src"),
         "src/ssl/test/fuzzer.h",
         "src/ssl/test/fuzzer_tags.h",
       ]
@@ -337,16 +348,18 @@ if (build_with_chromium) {
   }
 
   config("fuzzer_no_fuzzer_mode_config") {
-    visibility = [ ":*" ]  # Only targets in this file can depend on this.
+    visibility = [ ":*" ]
     defines = [ "BORINGSSL_UNSAFE_DETERMINISTIC_MODE" ]
   }
 
   # The same as boringssl, but builds with BORINGSSL_UNSAFE_DETERMINISTIC_MODE.
   # TODO(https://crbug.com/boringssl/258): Fold this into the normal target.
   component("boringssl_fuzzer_no_fuzzer_mode") {
-    visibility = [ ":*" ]  # Only targets in this file can depend on this.
+    visibility = [ ":*" ]
 
-    sources = all_sources
+    sources = rebase_path(all_sources, ".", "src")
+    public = rebase_path(all_headers, ".", "src")
+    friend = [ ":*" ]
     deps = [ "//third_party/boringssl/src/third_party/fiat:fiat_license" ]
 
     # Mark boringssl_asm as a public dependency so the OPENSSL_NO_ASM

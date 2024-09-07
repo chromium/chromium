@@ -9,10 +9,10 @@
 #import "base/types/cxx23_to_underlying.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +29,7 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
 
   void AddBrowserState(const std::string& name, FeedActivityBucket bucket) {
     TestChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
+        profile_manager_.AddProfileWithBuilder(
             std::move(TestChromeBrowserState::Builder().SetName(name)));
 
     browser_state->GetPrefs()->SetInteger(kActivityBucketKey,
@@ -39,7 +39,7 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
  private:
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   base::HistogramTester histogram_tester_;
 };
 

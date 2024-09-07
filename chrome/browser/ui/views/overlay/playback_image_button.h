@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_PLAYBACK_IMAGE_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_PLAYBACK_IMAGE_BUTTON_H_
 
+#include <optional>
+
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
 #include "chrome/browser/ui/views/overlay/video_overlay_window_views.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,12 +26,21 @@ class PlaybackImageButton : public OverlayWindowImageButton {
   void SetPlaybackState(
       const VideoOverlayWindowViews::PlaybackState playback_state);
 
+  // Updates the position of this button within the new bounds of the window.
+  void SetWindowSize(const gfx::Size& window_size);
+
  protected:
   // Overridden from views::View.
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
   void UpdateImageAndText();
+  void UpdatePosition();
+
+  void SetPlayButtonBackground();
+  void SetPauseButtonBackground();
+
+  std::optional<gfx::Size> window_size_;
 
   VideoOverlayWindowViews::PlaybackState playback_state_ =
       VideoOverlayWindowViews::PlaybackState::kEndOfVideo;

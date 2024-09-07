@@ -170,17 +170,22 @@ void ZWPTextInputWrapperV3::Deactivate() {
 }
 
 void ZWPTextInputWrapperV3::ShowInputPanel() {
-  // Not directly supported in zwp_text_input_v3
-  // Enable again to show the screen keyboard in GNOME:
-  // https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1543#note_1051704
-  // We do not reset the pending requests here because this may be called after
-  // sending a request like surrounding text before done event is received, in
-  // which case the pending surrounding text should still be sent.
-  zwp_text_input_v3_enable(obj_.get());
-  Commit();
+  VLOG(1) << __func__;
+  // Unsupported in zwp_text_input_v3 yet. To be supported soon as per wayland
+  // governance meeting on 2024-07-02:
+  // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/wikis/meetings
+  //
+  // Some earlier notes in
+  // https://lists.freedesktop.org/archives/wayland-devel/2018-March/037341.html
+  //
+  // Calling enable here could be problematic, as enable clears state, so for
+  // instance cursor position sent previously will be reset and the input method
+  // popup will not appear next to the cursor after this.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void ZWPTextInputWrapperV3::HideInputPanel() {
+  VLOG(1) << __func__;
   // Unsupported in zwp_text_input_v3 yet. To be supported soon as per wayland
   // governance meeting on 2024-07-02:
   // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/wikis/meetings
@@ -212,10 +217,59 @@ void ZWPTextInputWrapperV3::SendCursorRect(const gfx::Rect& rect) {
 }
 
 void ZWPTextInputWrapperV3::SetSurroundingText(
-    const std::string& text,
+    const std::string& text_with_preedit,
     const gfx::Range& preedit_range,
     const gfx::Range& selection_range) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto text = text_with_preedit;
+  int32_t anchor, cursor;
+  if (!preedit_range.is_empty()) {
+    CHECK(preedit_range.IsBoundedBy({0, text_with_preedit.length()}));
+    const size_t preedit_min = preedit_range.GetMin();
+    const size_t preedit_max = preedit_range.GetMax();
+    // Remove preedit portion from surrounding text
+    text.erase(preedit_min, preedit_range.length());
+    // Now re-calculate selection range
+    if (selection_range.IsValid()) {
+      auto selection_start = selection_range.start();
+      auto selection_end = selection_range.end();
+      anchor = selection_start -
+               (selection_start <= preedit_min
+                    ? 0
+                    : std::min(selection_start, preedit_max) - preedit_min);
+      cursor = selection_end -
+               (selection_end <= preedit_min
+                    ? 0
+                    : std::min(selection_end, preedit_max) - preedit_min);
+
+    } else {
+      // Invalid selection range. Put cursor at preedit position.
+      anchor = preedit_min;
+      cursor = preedit_min;
+    }
+  } else {
+    anchor = base::checked_cast<int32_t>(
+        selection_range.IsValid() ? selection_range.start() : text.length());
+    cursor = base::checked_cast<int32_t>(
+        selection_range.IsValid() ? selection_range.end() : text.length());
+  }
+  SetSurroundingTextData data{std::move(text), cursor, anchor};
+  if (last_sent_surrounding_text_data_ == data) {
+    return;
+  }
+  if (commit_count_ != last_done_serial_) {
+    pending_set_surrounding_text_ = std::move(data);
+    return;
+  }
+  SendSurroundingText(data);
+  Commit();
+}
+
+void ZWPTextInputWrapperV3::SendSurroundingText(
+    const SetSurroundingTextData& data) {
+  CHECK_EQ(commit_count_, last_done_serial_);
+  zwp_text_input_v3_set_surrounding_text(obj_.get(), data.text.c_str(),
+                                         data.cursor, data.anchor);
+  last_sent_surrounding_text_data_ = data;
 }
 
 void ZWPTextInputWrapperV3::SetContentType(ui::TextInputType type,
@@ -254,6 +308,9 @@ void ZWPTextInputWrapperV3::ApplyPendingSetRequests() {
   }
   if (auto cursor_rect = pending_set_cursor_rect_) {
     SendCursorRect(*cursor_rect);
+  }
+  if (auto surrounding_text = pending_set_surrounding_text_) {
+    SendSurroundingText(*surrounding_text);
     commit = true;
   }
   // clear pending set requests
@@ -266,11 +323,13 @@ void ZWPTextInputWrapperV3::ApplyPendingSetRequests() {
 void ZWPTextInputWrapperV3::ResetPendingSetRequests() {
   pending_set_cursor_rect_.reset();
   pending_set_content_type_.reset();
+  pending_set_surrounding_text_.reset();
 }
 
 void ZWPTextInputWrapperV3::ResetLastSentValues() {
-  last_sent_cursor_rect_ = {};
-  last_sent_content_type_ = {};
+  last_sent_cursor_rect_.reset();
+  last_sent_content_type_.reset();
+  last_sent_surrounding_text_data_.reset();
 }
 
 void ZWPTextInputWrapperV3::ResetPendingInputEvents() {

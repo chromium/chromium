@@ -13,6 +13,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
@@ -38,6 +39,14 @@ class NavigationHandle;
 class InteractiveAshTest
     : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
  public:
+  // Helper struct for filling out the Wi-Fi configuration dialog.
+  struct WifiDialogConfig {
+    std::string ssid = "";
+    ::chromeos::network_config::mojom::SecurityType security_type =
+        ::chromeos::network_config::mojom::SecurityType::kNone;
+    bool is_shared = true;
+  };
+
   InteractiveAshTest();
   InteractiveAshTest(const InteractiveAshTest&) = delete;
   InteractiveAshTest& operator=(const InteractiveAshTest&) = delete;
@@ -77,6 +86,13 @@ class InteractiveAshTest
   NavigateSettingsToBluetoothPage(const ui::ElementIdentifier& element_id);
 
   // Navigates the Settings app, which is expected to be associated with
+  // `element_id`, to the subpage of the network with type `network_pattern`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateSettingsToNetworkSubpage(
+      const ui::ElementIdentifier& element_id,
+      const ash::NetworkTypePattern network_pattern);
+
+  // Navigates the Settings app, which is expected to be associated with
   // `element_id`, to the details page for the network named `network_name`
   // with type `network_pattern`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
@@ -96,6 +112,17 @@ class InteractiveAshTest
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateToApnRevampDetailsPage(const ui::ElementIdentifier& element_id);
 
+  // Navigates the Settings app to the Known Networks subpage.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateToKnownNetworksPage(const ui::ElementIdentifier& element_id);
+
+  // Navigates the Settings app to the passpoint subscription details page for
+  // the passpoint named `passpoint_name`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateToPasspointSubscriptionSubpage(
+      const ui::ElementIdentifier& element_id,
+      const std::string& passpoint_name);
+
   // This function expects the Settings app to already be open and on the APN
   // subpage.
   ui::test::internal::InteractiveTestPrivate::MultiStep
@@ -110,6 +137,18 @@ class InteractiveAshTest
   // app to already be open.
   ui::test::internal::InteractiveTestPrivate::MultiStep OpenAddBuiltInVpnDialog(
       const ui::ElementIdentifier& element_id);
+
+  // Open up the "Add Wi-Fi" dialog. This function expects the Settings app to
+  // already be open.
+  ui::test::internal::InteractiveTestPrivate::MultiStep OpenAddWifiDialog(
+      const ui::ElementIdentifier& element_id);
+
+  // Completes the "Add Wi-Fi" dialog according to the properties provided by
+  // the `config` parameter. This function expects the dialog to already be open
+  // prior to being called.
+  ui::test::internal::InteractiveTestPrivate::MultiStep CompleteAddWifiDialog(
+      const ui::ElementIdentifier& element_id,
+      const WifiDialogConfig& config);
 
   // Opens the Quick Settings bubble.
   ui::test::internal::InteractiveTestPrivate::MultiStep OpenQuickSettings();
@@ -166,6 +205,17 @@ class InteractiveAshTest
   InteractiveTestApi::MultiStep WaitForElementEnabled(
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery query);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and have a particular value
+  // for a boolean property within its managed properties. Managed properties
+  // are used to communicate the state of networks to the UI.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  WaitForElementWithManagedPropertyBoolean(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query,
+      const std::string& property,
+      bool expected_value);
 
   // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and be disabled.
@@ -232,6 +282,14 @@ class InteractiveAshTest
   // instrumented WebUI identified by `element_id` and have attribute
   // `attribute`.
   InteractiveTestApi::MultiStep WaitForElementHasAttribute(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery element,
+      const std::string& attribute);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and not have attribute
+  // `attribute`.
+  InteractiveTestApi::MultiStep WaitForElementDoesNotHaveAttribute(
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery element,
       const std::string& attribute);

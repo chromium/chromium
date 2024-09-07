@@ -148,8 +148,7 @@ void UDPReadableStreamWrapper::OnReceived(
   DCHECK_GT(pending_receive_requests_, 0);
   pending_receive_requests_--;
 
-  auto* buffer = DOMUint8Array::Create(data->data(), data->size_bytes());
-
+  auto* buffer = DOMUint8Array::Create(data.value());
   auto* message = UDPMessage::Create();
   message->setData(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
       NotShared<DOMUint8Array>(buffer)));

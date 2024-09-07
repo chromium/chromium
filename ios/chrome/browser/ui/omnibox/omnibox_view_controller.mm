@@ -26,6 +26,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using base::UserMetricsAction;
 
@@ -46,6 +47,9 @@ using base::UserMetricsAction;
 // Whether the default search engine supports Lens. This controls the
 // edit menu option to do a Lens search.
 @property(nonatomic, assign) BOOL lensImageEnabled;
+
+/// The short name of the search provider.
+@property(nonatomic, assign) std::u16string searchProviderName;
 
 // YES if we are already forwarding an OnDidChange() message to the edit view.
 // Needed to prevent infinite recursion.
@@ -136,7 +140,7 @@ using base::UserMetricsAction;
              action:@selector(searchCopiedText:)]);
 #endif
 
-  self.textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+  self.textField.placeholder = [self placeholderText];
 
   [_clearButton addTarget:self
                    action:@selector(clearButtonPressed)
@@ -148,11 +152,25 @@ using base::UserMetricsAction;
                      action:@selector(textFieldDidChange:)
            forControlEvents:UIControlEventEditingChanged];
 
+  if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    [self.view.thumbnailButton addTarget:self
+                                  action:@selector(didTapThumbnailButton)
+                        forControlEvents:UIControlEventTouchUpInside];
+  }
+
   [NSNotificationCenter.defaultCenter
       addObserver:self
          selector:@selector(textInputModeDidChange)
              name:UITextInputCurrentInputModeDidChangeNotification
            object:nil];
+
+  // Reset the text after initial layout has been forced, see comment in
+  // `OmniboxTextFieldIOS`.
+  if ([self.textField.text isEqualToString:@" "]) {
+    self.textField.text = @"";
+  }
+  [self updateClearButtonVisibility];
+  [self updateLeadingImage];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -225,10 +243,6 @@ using base::UserMetricsAction;
   return self.view;
 }
 
-- (id<OmniboxAdditionalTextConsumer>)additionalTextConsumer {
-  return self.view;
-}
-
 #pragma mark - public methods
 
 - (OmniboxTextFieldIOS*)textField {
@@ -243,11 +257,7 @@ using base::UserMetricsAction;
 }
 
 - (void)cleanupOmniboxAfterScribble {
-  self.textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
-}
-
-- (void)setThumbnailImage:(UIImage*)image {
-  [self.view setThumbnailImage:image];
+  self.textField.placeholder = [self placeholderText];
 }
 
 #pragma mark - OmniboxTextFieldDelegate
@@ -260,18 +270,15 @@ using base::UserMetricsAction;
     // already deconstructed on shutdown.
     return YES;
   }
+
+  // Any change in the content of the omnibox should deselect thumbnail button.
+  self.view.thumbnailButton.selected = NO;
   self.processingUserEvent = _textChangeDelegate->OnWillChange(range, newText);
   return self.processingUserEvent;
 }
 
 - (void)textFieldDidChange:(id)sender {
-  // If the text is empty, update the leading image.
-  if (self.textField.text.length == 0) {
-    [self.view setLeadingImage:self.emptyTextLeadingImage
-        withAccessibilityIdentifier:
-            kOmniboxLeadingImageEmptyTextAccessibilityIdentifier];
-  }
-
+  [self updateLeadingImage];
   [self updateClearButtonVisibility];
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
 
@@ -314,15 +321,11 @@ using base::UserMetricsAction;
 
   // Update the clear button state.
   [self updateClearButtonVisibility];
-  UIImage* image = self.textField.text.length ? self.defaultLeadingImage
-                                              : self.emptyTextLeadingImage;
+  [self updateLeadingImage];
 
-  NSString* accessibilityID =
-      self.textField.text.length
-          ? kOmniboxLeadingImageDefaultAccessibilityIdentifier
-          : kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
-
-  [self.view setLeadingImage:image withAccessibilityIdentifier:accessibilityID];
+  if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    self.view.thumbnailButton.selected = NO;
+  }
 
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
   self.isTextfieldEditing = YES;
@@ -340,6 +343,10 @@ using base::UserMetricsAction;
 - (void)textFieldDidEndEditing:(UITextField*)textField
                         reason:(UITextFieldDidEndEditingReason)reason {
   self.isTextfieldEditing = NO;
+
+  if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    self.view.thumbnailButton.selected = NO;
+  }
 
   if (!self.omniboxInteractedWhileFocused) {
     RecordAction(
@@ -378,6 +385,14 @@ using base::UserMetricsAction;
 }
 
 - (void)onDeleteBackward {
+  // If not in pre-edit, deleting when cursor is at the beginning interacts with
+  // the thumbnail.
+  if (OmniboxTextFieldIOS* textField = self.textField;
+      !textField.isPreEditing && textField.selectedTextRange.empty &&
+      [textField offsetFromPosition:textField.beginningOfDocument
+                         toPosition:textField.selectedTextRange.start] == 0) {
+    [self didTapThumbnailButton];
+  }
   if (!_textChangeDelegate) {
     // This can happen when the view controller is still alive but the model is
     // already deconstructed on shutdown.
@@ -508,9 +523,22 @@ using base::UserMetricsAction;
   [self.textField setText:text userTextLength:text.length];
 }
 
-- (void)updateAdditionalText:(NSAttributedString*)additionalText {
-  CHECK(IsRichAutocompletionEnabled());
-  self.textField.additionalText = additionalText;
+#pragma mark - OmniboxViewConsumer
+
+- (void)updateAdditionalText:(NSString*)additionalText {
+  [self.view updateAdditionalText:additionalText];
+}
+
+- (void)setOmniboxHasRichInline:(BOOL)omniboxHasRichInline {
+  [self.view setOmniboxHasRichInline:omniboxHasRichInline];
+}
+
+- (void)setThumbnailImage:(UIImage*)image {
+  [self.view setThumbnailImage:image];
+  // Cancel any pending image removal if a new selection is made.
+  self.view.thumbnailButton.selected = NO;
+  self.textField.allowsReturnKeyWithEmptyText = !!image;
+  self.textField.placeholder = [self placeholderText];
 }
 
 #pragma mark - EditViewAnimatee
@@ -530,6 +558,17 @@ using base::UserMetricsAction;
 }
 
 #pragma mark - private
+
+- (void)updateLeadingImage {
+  UIImage* image = self.textField.text.length ? self.defaultLeadingImage
+                                              : self.emptyTextLeadingImage;
+  NSString* accessibilityID =
+      self.textField.text.length
+          ? kOmniboxLeadingImageDefaultAccessibilityIdentifier
+          : kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
+
+  [self.view setLeadingImage:image withAccessibilityIdentifier:accessibilityID];
+}
 
 - (BOOL)shouldUseLensInMenu {
   return ios::provider::IsLensSupported() &&
@@ -724,6 +763,37 @@ using base::UserMetricsAction;
 
   if (IsRichAutocompletionEnabled() && _textChangeDelegate) {
     _textChangeDelegate->OnRemoveAdditionalText();
+  }
+}
+
+/// Handles interaction with the thumbnail button. (tap or keyboard delete)
+- (void)didTapThumbnailButton {
+  if (!self.view.thumbnailButton.selected) {
+    self.view.thumbnailButton.selected = YES;
+  } else {
+    if (_textChangeDelegate) {
+      _textChangeDelegate->RemoveThumbnail();
+      // Clear the selection once it's no longer needed. This prevents it from
+      // reappearing unexpectedly as the user navigates back through previous
+      // results.
+      self.view.thumbnailButton.selected = NO;
+    }
+  }
+}
+
+/// Returns the placeholder text for the current state.
+- (NSString*)placeholderText {
+  if (!base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
+  }
+
+  if (self.view.thumbnailImage) {
+    return l10n_util::GetNSString(IDS_IOS_OMNIBOX_PLACEHOLDER_IMAGE_SEARCH);
+  } else if (self.isSearchOnlyUI) {
+    return l10n_util::GetNSStringF(IDS_IOS_OMNIBOX_PLACEHOLDER_SEARCH_ONLY,
+                                   self.searchProviderName);
+  } else {
+    return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
   }
 }
 

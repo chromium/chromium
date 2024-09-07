@@ -437,15 +437,6 @@ bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
       utility_sub_type);
 }
 
-bool UtilitySandboxedProcessLauncherDelegate::AllowWindowsFontsDir() {
-  // New utilities should use a font proxy rather than allowing direct access.
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor &&
-      !GetContentClient()->browser()->IsPdfFontProxyEnabled()) {
-    return true;
-  }
-  return false;
-}
-
 bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
   AddDelegateData(policy, preload_libraries_);

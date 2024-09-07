@@ -91,6 +91,9 @@ std::optional<blink::PermissionType> XrPermissionResults::GetPermissionFor(
   if (feature == device::mojom::XRSessionFeature::CAMERA_ACCESS) {
     return blink::PermissionType::VIDEO_CAPTURE;
   }
+  if (feature == device::mojom::XRSessionFeature::HAND_INPUT) {
+    return blink::PermissionType::HAND_TRACKING;
+  }
 
   return std::nullopt;
 }

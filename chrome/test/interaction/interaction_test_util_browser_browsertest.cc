@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
                      std::make_unique<ScreenshotSurfaceTestDialog>(anchor));
                  widget->Show();
                }),
-      WaitForShow(ScreenshotSurfaceTestDialog::kTitleElementId), FlushEvents(),
+      WaitForShow(ScreenshotSurfaceTestDialog::kTitleElementId),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kSkipPixelTestsReason),
       ScreenshotSurface(ScreenshotSurfaceTestDialog::kTitleElementId,

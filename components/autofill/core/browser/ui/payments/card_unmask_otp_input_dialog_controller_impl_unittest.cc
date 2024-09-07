@@ -14,7 +14,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 class TestCardUnmaskOtpInputDialogView : public CardUnmaskOtpInputDialogView {
@@ -33,8 +32,6 @@ class TestCardUnmaskOtpInputDialogView : public CardUnmaskOtpInputDialogView {
   base::WeakPtrFactory<TestCardUnmaskOtpInputDialogView> weak_ptr_factory_{
       this};
 };
-
-}  // namespace
 
 class CardUnmaskOtpInputDialogControllerImplTest
     : public testing::Test,
@@ -210,4 +207,5 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(CardUnmaskChallengeOptionType::kSmsOtp,
                     CardUnmaskChallengeOptionType::kEmailOtp));
 
+}  // namespace
 }  // namespace autofill

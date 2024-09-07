@@ -39,6 +39,10 @@ BASE_FEATURE(kRestrictFileURLNavigation,
              "RestrictFileURLNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kApiEnterpriseReportingPrivateReportDataMaskingEvent,
+             "ApiEnterpriseReportingPrivateReportDataMaskingEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,7 +71,7 @@ BASE_FEATURE(kEnableWebHidInWebView,
 
 BASE_FEATURE(kExtensionDynamicURLRedirection,
              "ExtensionDynamicURLRedirection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionIconVariants,
              "ExtensionIconVariants",
@@ -188,6 +192,10 @@ BASE_FEATURE(kUseItemSnippetsAPI,
 
 BASE_FEATURE(kUseNewServiceWorkerTaskQueue,
              "UseNewServiceWorkerTaskQueue",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDeclarativeNetRequestHeaderSubstitution,
+             "DeclarativeNetRequestHeaderSubstitution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

@@ -7,6 +7,9 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -33,8 +36,6 @@ const CGFloat kLocationBarLeadingPadding = 8.0;
 // location bar.
 const CGFloat kShareButtonTrailingSpacing = -11;
 const CGFloat kVoiceSearchButtonTrailingSpacing = -7;
-// Duration of display and hide animation of the badge view, in seconds.
-const CGFloat kbadgeViewAnimationDuration = 0.2;
 // Location label vertical offset.
 const CGFloat kLocationLabelVerticalOffset = -1;
 // The margin from the leading side when not centered.
@@ -53,9 +54,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 // view.
 @property(nonatomic, strong) UIView* locationContainerView;
 
-// The stackview containing the infobar badge and Contextual Panel entrypoint.
-@property(nonatomic, strong) UIStackView* badgesContainerStackView;
-
 // Leading constraint for locationContainerView when there is no BadgeView to
 // its left.
 @property(nonatomic, strong)
@@ -73,12 +71,12 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 // Constraints to pin the badges container stackview to the right next to the
 // `locationContainerView`.
 @property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* badgesStackViewFullScreenEnabledConstraints;
+    NSArray<NSLayoutConstraint*>* badgesViewFullScreenEnabledConstraints;
 
 // Constraints to pin the badges container stackview to the left side of the
 // LocationBar.
 @property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* badgesStackViewFullScreenDisabledConstraints;
+    NSArray<NSLayoutConstraint*>* badgesViewFullScreenDisabledConstraints;
 
 // Constraints to hide the location image view.
 @property(nonatomic, strong)
@@ -251,45 +249,43 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 
     AddSameConstraints(self, _locationButton);
 
-    // Badges (infobar badge & Contextual Panel entrypoint) container stackview.
-    _badgesContainerStackView = [[UIStackView alloc] init];
-    _badgesContainerStackView.translatesAutoresizingMaskIntoConstraints = NO;
-    _badgesContainerStackView.isAccessibilityElement = NO;
-    _badgesContainerStackView.axis = UILayoutConstraintAxisHorizontal;
-    _badgesContainerStackView.alignment = UIStackViewAlignmentCenter;
-    [_locationButton addSubview:_badgesContainerStackView];
+    // Badges (infobar badge & Contextual Panel entrypoint) container view.
+    _badgesContainerView = [[LocationBarBadgesContainerView alloc] init];
+    _badgesContainerView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    self.badgesStackViewFullScreenEnabledConstraints = @[
-      [_badgesContainerStackView.leadingAnchor
+    [_locationButton addSubview:_badgesContainerView];
+
+    self.badgesViewFullScreenEnabledConstraints = @[
+      [_badgesContainerView.leadingAnchor
           constraintGreaterThanOrEqualToAnchor:self.leadingAnchor],
-      [_badgesContainerStackView.trailingAnchor
+      [_badgesContainerView.trailingAnchor
           constraintEqualToAnchor:self.locationContainerView.leadingAnchor],
     ];
 
-    self.badgesStackViewFullScreenDisabledConstraints = @[
-      [_badgesContainerStackView.leadingAnchor
+    self.badgesViewFullScreenDisabledConstraints = @[
+      [_badgesContainerView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor],
-      [_badgesContainerStackView.trailingAnchor
+      [_badgesContainerView.trailingAnchor
           constraintLessThanOrEqualToAnchor:self.locationContainerView
                                                 .leadingAnchor],
     ];
 
     // This low-priority, 0 width constraint is necessary for the stackview to
     // return to its 0 size when empty and exiting fullscreen.
-    NSLayoutConstraint* badgesContainerStackViewWidthConstraint =
-        [_badgesContainerStackView.widthAnchor constraintEqualToConstant:0];
-    badgesContainerStackViewWidthConstraint.priority =
+    NSLayoutConstraint* badgesContainerViewWidthConstraint =
+        [_badgesContainerView.widthAnchor constraintEqualToConstant:0];
+    badgesContainerViewWidthConstraint.priority =
         UILayoutPriorityDefaultLow - 1;
 
     [NSLayoutConstraint
         activateConstraints:
-            [self.badgesStackViewFullScreenDisabledConstraints
+            [self.badgesViewFullScreenDisabledConstraints
                 arrayByAddingObjectsFromArray:@[
-                  [_badgesContainerStackView.topAnchor
+                  [_badgesContainerView.topAnchor
                       constraintEqualToAnchor:self.topAnchor],
-                  [_badgesContainerStackView.bottomAnchor
+                  [_badgesContainerView.bottomAnchor
                       constraintEqualToAnchor:self.bottomAnchor],
-                  badgesContainerStackViewWidthConstraint,
+                  badgesContainerViewWidthConstraint,
                 ]]];
 
     // Different possible X anchors for the location label container.
@@ -316,7 +312,7 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
           addLayoutGuide:_centeredBetweenLocationBarContentsLayoutGuide];
       [NSLayoutConstraint activateConstraints:@[
         [_centeredBetweenLocationBarContentsLayoutGuide.leadingAnchor
-            constraintEqualToAnchor:_badgesContainerStackView.trailingAnchor],
+            constraintEqualToAnchor:_badgesContainerView.trailingAnchor],
         [_centeredBetweenLocationBarContentsLayoutGuide.trailingAnchor
             constraintEqualToAnchor:_trailingButton.leadingAnchor],
       ]];
@@ -450,73 +446,49 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 }
 
 - (void)setBadgeView:(UIView*)badgeView {
-  BOOL hadBadgeView = _badgeView != nil;
-  _badgeView = badgeView;
+  BOOL hadBadgeView = _badgesContainerView.badgeView != nil;
   if (!hadBadgeView && badgeView) {
-    _badgeView.translatesAutoresizingMaskIntoConstraints = NO;
-    _badgeView.isAccessibilityElement = NO;
-    [_badgesContainerStackView addArrangedSubview:_badgeView];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [_badgeView.heightAnchor
-          constraintEqualToAnchor:_badgesContainerStackView.heightAnchor],
-    ]];
-
+    _badgesContainerView.badgeView = badgeView;
     [self updateAccessibility];
   }
 }
 
 - (void)setContextualPanelEntrypointView:
     (UIView*)contextualPanelEntrypointView {
-  BOOL hadEntrypointView = _contextualPanelEntrypointView != nil;
+  BOOL hadEntrypointView =
+      _badgesContainerView.contextualPanelEntrypointView != nil;
   if (!hadEntrypointView && contextualPanelEntrypointView) {
-    _contextualPanelEntrypointView = contextualPanelEntrypointView;
-    _contextualPanelEntrypointView.translatesAutoresizingMaskIntoConstraints =
-        NO;
-    _contextualPanelEntrypointView.isAccessibilityElement = NO;
+    _badgesContainerView.contextualPanelEntrypointView =
+        contextualPanelEntrypointView;
+    [self updateAccessibility];
+  }
+}
 
-    // The Contextual Panel entrypoint view should be first in its containing
-    // stackview, regardless of when it was added.
-    [_badgesContainerStackView
-        insertArrangedSubview:_contextualPanelEntrypointView
-                      atIndex:0];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [_contextualPanelEntrypointView.heightAnchor
-          constraintEqualToAnchor:_badgesContainerStackView.heightAnchor],
-    ]];
-
+- (void)setPlaceholderView:(UIView*)placeholderView {
+  BOOL hadPlaceholderView = _badgesContainerView.placeholderView != nil;
+  if (!hadPlaceholderView && placeholderView) {
+    _badgesContainerView.placeholderView = placeholderView;
     [self updateAccessibility];
   }
 }
 
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed {
-  if (!self.badgeView) {
+  if (!self.badgesContainerView.badgeView) {
     return;
   }
+
+  [self.badgesContainerView updateForFullscreen:isFullScreenCollapsed];
+
   if (isFullScreenCollapsed) {
     [NSLayoutConstraint
-        activateConstraints:self.badgesStackViewFullScreenEnabledConstraints];
-    [NSLayoutConstraint deactivateConstraints:
-                            self.badgesStackViewFullScreenDisabledConstraints];
+        activateConstraints:self.badgesViewFullScreenEnabledConstraints];
+    [NSLayoutConstraint
+        deactivateConstraints:self.badgesViewFullScreenDisabledConstraints];
   } else {
     [NSLayoutConstraint
-        deactivateConstraints:self.badgesStackViewFullScreenEnabledConstraints];
+        deactivateConstraints:self.badgesViewFullScreenEnabledConstraints];
     [NSLayoutConstraint
-        activateConstraints:self.badgesStackViewFullScreenDisabledConstraints];
-  }
-}
-
-- (void)displayBadgeView:(BOOL)display animated:(BOOL)animated {
-  void (^changeHiddenState)() = ^{
-    self.badgeView.hidden = !display;
-    [self updateAccessibility];
-  };
-  if (animated) {
-    [UIView animateWithDuration:kbadgeViewAnimationDuration
-                     animations:changeHiddenState];
-  } else {
-    changeHiddenState();
+        activateConstraints:self.badgesViewFullScreenDisabledConstraints];
   }
 }
 
@@ -546,7 +518,8 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   // Early return if the label is already justified to the leading edge, or if
   // the Contextual Panel entrypoint is not being shown.
   if (_xStickToLeadingSideConstraint.active ||
-      (centered && _contextualPanelEntrypointView.hidden)) {
+      (centered &&
+       self.badgesContainerView.contextualPanelEntrypointView.hidden)) {
     _locationContainerView.transform = CGAffineTransformIdentity;
     return;
   }
@@ -569,6 +542,15 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 
   // This method is called as part of an animation, so layout here if needed.
   [self layoutIfNeeded];
+}
+
+- (id<ContextualPanelEntrypointVisibilityDelegate>)
+    contextualEntrypointVisibilityDelegate {
+  return self.badgesContainerView;
+}
+
+- (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate {
+  return self.badgesContainerView;
 }
 
 #pragma mark - UIResponder
@@ -628,13 +610,8 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
         [NSString stringWithFormat:@"%@", self.locationLabel.text];
   }
 
-  if (IsContextualPanelEnabled() && self.contextualPanelEntrypointView) {
-    [self.accessibleElements addObject:self.contextualPanelEntrypointView];
-  }
-
-  if (self.badgeView && !self.badgeView.hidden) {
-    [self.accessibleElements addObject:self.badgeView];
-  }
+  [self.accessibleElements
+      addObjectsFromArray:self.badgesContainerView.accessibilityElements];
 
   if (self.trailingButton && self.trailingButton.enabled) {
     [self.accessibleElements addObject:self.trailingButton];

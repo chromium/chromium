@@ -19,7 +19,7 @@ namespace mojom = ash::boca::mojom;
 using ListCoursesCallback =
     base::OnceCallback<void(std::vector<mojom::CoursePtr>)>;
 using ListStudentsCallback =
-    base::OnceCallback<void(std::vector<mojom::StudentPtr>)>;
+    base::OnceCallback<void(std::vector<mojom::IdentityPtr>)>;
 
 namespace google_apis {
 class RequestSender;
@@ -30,9 +30,9 @@ class Students;
 }  // namespace classroom
 }  // namespace google_apis
 
-namespace ash {
+namespace ash::boca {
 
-using StudentList = std::vector<mojom::StudentPtr>;
+using StudentList = std::vector<mojom::IdentityPtr>;
 using CourseList = std::vector<mojom::CoursePtr>;
 
 class ClassroomPageHandlerImpl {
@@ -81,6 +81,6 @@ class ClassroomPageHandlerImpl {
   base::WeakPtrFactory<ClassroomPageHandlerImpl> weak_factory_;
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // ASH_WEBUI_BOCA_UI_PROVIDER_CLASSROOM_PAGE_HANDLER_IMPL_H_

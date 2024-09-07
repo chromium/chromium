@@ -1,22 +1,24 @@
 <style import="cr-shared-style">
   :host {
-    --action-height: 32px;
-    border: solid 1px var(--google-grey-400);
-    border-radius: calc(var(--action-height) / 2);
+    --action-height: 28px;
+    border: solid 1px var(--color-searchbox-results-action-chip);
+    border-radius: 8px;
     display: flex;
     height: var(--action-height);
     min-width: 0;
     outline: none;
-    padding-inline-end: 16px;
-    padding-inline-start: 12px;
-  }
-
-  :host-context([expanded-state-layout-chrome-refresh]) {
-    --action-height: 28px;
-    border: solid 1px var(--color-realbox-results-action-chip);
-    border-radius: 8px;
     padding-inline-end: 8px;
     padding-inline-start: 8px;
+  }
+
+  :host(:hover) {
+    background-color: var(--color-searchbox-results-button-hover);
+  }
+
+  :host(:focus) {
+    margin: 2px;
+    border: solid 1px var(--color-searchbox-results-action-chip);
+    box-shadow: none;
   }
 
   .contents {
@@ -27,15 +29,10 @@
 
   #action-icon {
     flex-shrink: 0;
-    height: var(--cr-icon-size);
-    width: var(--cr-icon-size);
-  }
-
-  :host-context([expanded-state-layout-chrome-refresh]) #action-icon {
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 15px;
-    background-color: var(--color-realbox-results-action-chip-icon);
+    background-color: var(--color-searchbox-results-action-chip-icon);
     background-position: center center;
     background-repeat: no-repeat;
     height: 16px;
@@ -49,28 +46,9 @@
     white-space: nowrap;
   }
 
-  :host(:hover) {
-    background-color: var(--color-realbox-results-button-hover);
-  }
-
-  :host-context(.focus-outline-visible):host(:focus) {
-    border: solid 1px transparent;
-    box-shadow: inset 0 0 0 2px var(--google-blue-600);
-  }
-
-  :host-context([expanded-state-layout-chrome-refresh]):host(:focus) {
-    margin: 2px;
-    margin-inline-end: 2px;
-    border: solid 1px var(--color-realbox-results-action-chip);
-    box-shadow: none;
-  }
-
 </style>
 <div class="contents" title="[[tooltip_]]">
-  <div id="action-icon" style$="-webkit-mask-image: url([[action.iconUrl]])"
-      hidden="[[!showCr23ActionIcon_()]]"></div>
-  <img id="action-icon" src$="[[action.iconUrl]]"
-      hidden="[[showCr23ActionIcon_()]]">
+  <div id="action-icon" style$="-webkit-mask-image: url([[action.iconUrl]])"></div>
   <div id="text" inner-h-t-m-l="[[hintHtml_]]"></div>
 </div>
 

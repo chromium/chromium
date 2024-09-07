@@ -42,10 +42,12 @@ source_set("model") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/web",
+    "//ios/web/public/thread",
   ]
   public_deps = [ ":model_utils" ]
   allow_circular_includes_from = [
@@ -65,8 +67,8 @@ source_set("model_utils") {
     "//base",
     "//components/bookmarks/browser",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
   ]
   public_deps = [ ":bookmark_storage_type" ]
 }
@@ -84,7 +86,7 @@ source_set("test_support") {
     "//components/bookmarks/test",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
@@ -109,8 +111,8 @@ source_set("unit_tests") {
     "//components/bookmarks/browser",
     "//components/bookmarks/browser:unit_tests_bundle_data",
     "//components/bookmarks/test",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

@@ -276,7 +276,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
           bubbleBoundingSize:(CGSize)bubbleBoundingSize
               swipeDirection:(UISwipeGestureRecognizerDirection)direction
        voiceOverAnnouncement:(NSString*)voiceOverAnnouncement {
-  if (self = [super initWithFrame:CGRectZero]) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     _text = UIAccessibilityIsVoiceOverRunning() && voiceOverAnnouncement
                 ? voiceOverAnnouncement
                 : text;
@@ -976,7 +976,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
       }
       completion:^(BOOL completed) {
         [previousBubbleView removeFromSuperview];
-        if (completed) {
+        if (completed && weakSelf.superview) {
           [weakSelf setInitialBubbleViewWithDirection:
                         GetExpectedBubbleArrowDirectionForSwipeDirection(
                             weakSelf.animatingDirection)

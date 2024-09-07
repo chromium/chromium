@@ -9,6 +9,7 @@ include_rules = [
   "+components/signin/public",
   "+components/vector_icons",
   "+components/webdata/common",
+  "+components/url_formatter",
   "+google_apis",
   "+net/base",
   "+net/http",
@@ -20,3 +21,9 @@ include_rules = [
   "+third_party/re2",
   "+ui/base",
 ]
+
+specific_include_rules = {
+  ".*test.(cc|h)": [
+    "+components/os_crypt/async/browser/test_utils.h"
+  ],
+}

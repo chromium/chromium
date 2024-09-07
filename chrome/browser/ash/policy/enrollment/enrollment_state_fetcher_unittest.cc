@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/dbus/system_clock/fake_system_clock_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -217,7 +216,6 @@ class EnrollmentStateFetcherTest : public testing::Test {
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kEnterpriseEnableUnifiedStateDetermination,
         AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
-    system_clock_.SetNetworkSynchronized(true);
 
     DeviceCloudPolicyManagerAsh::RegisterPrefs(local_state_.registry());
     EnrollmentStateFetcher::RegisterPrefs(local_state_.registry());
@@ -233,8 +231,8 @@ class EnrollmentStateFetcherTest : public testing::Test {
     auto fetcher = EnrollmentStateFetcher::Create(
         future.GetCallback(), &local_state_,
         base::BindRepeating(&CreateRlweClientForTesting, psm_test_case_),
-        fake_dm_service_.get(), shared_url_loader_factory_, &system_clock_,
-        &state_key_broker_, &device_settings_service_,
+        fake_dm_service_.get(), shared_url_loader_factory_, &state_key_broker_,
+        &device_settings_service_,
         enrollment_test_helper_.oobe_configuration());
     fetcher->Start();
     return future.Get();
@@ -329,7 +327,6 @@ class EnrollmentStateFetcherTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedCommandLine command_line_;
   TestingPrefServiceSimple local_state_;
-  ash::FakeSystemClockClient system_clock_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   ash::ScopedStubInstallAttributes install_attributes_;
   MockStateKeyBroker state_key_broker_;
@@ -370,26 +367,6 @@ TEST_F(EnrollmentStateFetcherTest, DisabledViaSwitches) {
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableUnifiedStateDetermination,
       AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
-
-  const AutoEnrollmentState state = FetchEnrollmentState();
-
-  EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
-}
-
-TEST_F(EnrollmentStateFetcherTest, SystemClockNotSynchronized) {
-  system_clock_.DisableService();
-
-  const AutoEnrollmentState state = FetchEnrollmentState();
-
-  EXPECT_EQ(state, ToState(AutoEnrollmentSystemClockSyncError{}));
-}
-
-TEST_F(EnrollmentStateFetcherTest, EmbargoDateNotPassed) {
-  statistics_provider_.SetMachineStatistic(
-      ash::system::kRlzEmbargoEndDateKey,
-      base::UnlocalizedTimeFormatWithPattern(base::Time::Now() + base::Days(7),
-                                             "yyyy-MM-dd",
-                                             icu::TimeZone::getGMT()));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
 
@@ -582,9 +559,8 @@ TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
                        "seed4567890123456789012345678912")
                     .value();
           }),
-      fake_dm_service_.get(), shared_url_loader_factory_, &system_clock_,
-      &state_key_broker_, &device_settings_service_,
-      enrollment_test_helper_.oobe_configuration());
+      fake_dm_service_.get(), shared_url_loader_factory_, &state_key_broker_,
+      &device_settings_service_, enrollment_test_helper_.oobe_configuration());
 
   fetcher->Start();
   AutoEnrollmentState state = future.Get();
@@ -739,8 +715,6 @@ TEST_F(EnrollmentStateFetcherTest, UmaHistogramsTimes) {
   histograms.ExpectTotalCount(kUMAStateDeterminationTotalDuration, 1);
 
   const char* step_d = kUMAStateDeterminationStepDuration;
-  histograms.ExpectUniqueTimeSample(
-      base::StrCat({step_d, kUMASuffixSystemClockSync}), base::Seconds(0), 1);
   histograms.ExpectUniqueTimeSample(
       base::StrCat({step_d, kUMASuffixOwnershipCheck}), base::Seconds(1), 1);
   histograms.ExpectUniqueTimeSample(
@@ -1492,13 +1466,9 @@ TEST_P(EnrollmentStateFetcherTestP, UmaHistogramsCounts) {
 
   histograms.ExpectUniqueSample(kUMAStateDeterminationDeviceIdentifierStatus,
                                 0 /*kAllPresent*/, 1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationEmbargoDatePassed, true,
-                                1);
   histograms.ExpectUniqueSample(kUMAStateDeterminationEnabled, true, 1);
   histograms.ExpectUniqueSample(kUMAStateDeterminationOnFlex,
                                 device_os_ == DeviceOs::Flex, 1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationSystemClockSynchronized,
-                                true, 1);
   histograms.ExpectUniqueSample(
       kUMAStateDeterminationOwnershipStatus,
       ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone, 1);

@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
     destination_profile = Profile::CreateProfile(
         g_browser_process->profile_manager()->user_data_dir().Append(
             FILE_PATH_LITERAL("DC Test Profile")),
-        /*delegate=*/nullptr, Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
     destination_profile = Profile::CreateProfile(
         g_browser_process->profile_manager()->user_data_dir().Append(
             FILE_PATH_LITERAL("DC Test Profile")),
-        /*delegate=*/nullptr, Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
     destination_profile = Profile::CreateProfile(
         g_browser_process->profile_manager()->user_data_dir().Append(
             FILE_PATH_LITERAL("DC Test Profile")),
-        /*delegate=*/nullptr, Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
     destination_profile = Profile::CreateProfile(
         g_browser_process->profile_manager()->user_data_dir().Append(
             FILE_PATH_LITERAL("DC Test Profile")),
-        /*delegate=*/nullptr, Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
   }
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;

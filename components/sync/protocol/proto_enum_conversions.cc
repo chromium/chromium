@@ -343,12 +343,15 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::OsType os_type) {
 const char* ProtoEnumToString(
     sync_pb::SyncEnums::DeviceFormFactor device_form_factor) {
   ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, DeviceFormFactor,
-                     DEVICE_FORM_FACTOR_UNSPECIFIED, DEVICE_FORM_FACTOR_TABLET);
+                     DEVICE_FORM_FACTOR_UNSPECIFIED, DEVICE_FORM_FACTOR_TV);
   switch (device_form_factor) {
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_UNSPECIFIED);
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_DESKTOP);
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_PHONE);
     ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_TABLET);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_AUTOMOTIVE);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_WEARABLE);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_FORM_FACTOR_TV);
   }
   NOTREACHED_IN_MIGRATION();
   return "";
@@ -1031,6 +1034,37 @@ const char* ProtoEnumToString(
   }
   NOTREACHED_IN_MIGRATION();
   return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::ThemeSpecifics::UserColorTheme::BrowserColorVariant
+        browser_color_variant) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ThemeSpecifics::UserColorTheme,
+                     BrowserColorVariant, BROWSER_COLOR_VARIANT_UNSPECIFIED,
+                     EXPRESSIVE);
+  switch (browser_color_variant) {
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme,
+              BROWSER_COLOR_VARIANT_UNSPECIFIED);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, SYSTEM);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, TONAL_SPOT);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, NEUTRAL);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, VIBRANT);
+    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, EXPRESSIVE);
+  }
+  NOTREACHED_IN_MIGRATION();
+  return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::ThemeSpecifics::BrowserColorScheme browser_color_scheme) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ThemeSpecifics, BrowserColorScheme,
+                     BROWSER_COLOR_SCHEME_UNSPECIFIED, DARK);
+  switch (browser_color_scheme) {
+    ENUM_CASE(sync_pb::ThemeSpecifics, BROWSER_COLOR_SCHEME_UNSPECIFIED);
+    ENUM_CASE(sync_pb::ThemeSpecifics, SYSTEM);
+    ENUM_CASE(sync_pb::ThemeSpecifics, LIGHT);
+    ENUM_CASE(sync_pb::ThemeSpecifics, DARK);
+  }
 }
 
 #undef ASSERT_ENUM_BOUNDS

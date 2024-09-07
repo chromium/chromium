@@ -308,7 +308,6 @@ class PLATFORM_EXPORT ResourceFetcher
   // Workaround for https://crbug.com/666214.
   // TODO(hiroshige): Remove this hack.
   void EmulateLoadStartedForInspector(Resource*,
-                                      const KURL&,
                                       mojom::blink::RequestContextType,
                                       network::mojom::RequestDestination,
                                       const AtomicString& initiator_name);
@@ -350,7 +349,6 @@ class PLATFORM_EXPORT ResourceFetcher
     scheduler_->SetThrottleOptionOverride(throttle_option_override);
   }
 
-  void AttachWebBundleTokenIfNeeded(ResourceRequest&) const;
   SubresourceWebBundleList* GetOrCreateSubresourceWebBundleList();
 
   BackForwardCacheLoaderHelper* GetBackForwardCacheLoaderHelper() {
@@ -402,6 +400,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
  private:
   friend class ResourceCacheValidationSuppressor;
+  class ResourcePrepareHelper;
+
   enum class StopFetchingTarget {
     kExcludingKeepaliveLoaders,
     kIncludingKeepaliveLoaders,
@@ -443,11 +443,6 @@ class PLATFORM_EXPORT ResourceFetcher
       const std::optional<float> resource_height = std::nullopt,
       bool is_potentially_lcp_element = false,
       bool is_potentially_lcp_influencer = false);
-  // A helper that uses `params` to fill out other remaining parameters.
-  ResourceLoadPriority ComputeLoadPriorityHelper(
-      ResourceType,
-      ResourcePriority::VisibilityStatus,
-      const FetchParameters& params);
   ResourceLoadPriority AdjustImagePriority(
       const ResourceLoadPriority priority_so_far,
       const ResourceType type,
@@ -458,13 +453,8 @@ class PLATFORM_EXPORT ResourceFetcher
       const std::optional<float> resource_height,
       const bool is_potentially_lcp_element);
 
-  // |virtual_time_pauser| is an output parameter. PrepareRequest may
-  // create a new WebScopedVirtualTimePauser and set it to
-  // |virtual_time_pauser|.
-  std::optional<ResourceRequestBlockedReason> PrepareRequest(
-      FetchParameters&,
-      const ResourceFactory&,
-      WebScopedVirtualTimePauser& virtual_time_pauser);
+  std::optional<ResourceRequestBlockedReason>
+  UpdateRequestForTransparentPlaceholderImage(FetchParameters& params);
 
   Resource* CreateResourceForStaticData(const FetchParameters&,
                                         const ResourceFactory&);
@@ -567,6 +557,10 @@ class PLATFORM_EXPORT ResourceFetcher
       base::OnceCallback<void(Vector<KURL> unused_preloads)> callback);
 
   void RemoveResourceStrongReference(Resource* resource);
+
+  KURL PrepareRequestForWebBundle(ResourceRequest& resource_request) const;
+
+  void AttachWebBundleTokenIfNeeded(ResourceRequest&) const;
 
   // Information about a resource fetch that had started but not completed yet.
   // Would be added to the response data when the response arrives.

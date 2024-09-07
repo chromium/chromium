@@ -14,10 +14,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
@@ -32,6 +34,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -44,6 +47,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -241,6 +245,25 @@ void TrayBubbleView::RerouteEventHandler::OnKeyEvent(ui::KeyEvent* event) {
     }
   }
 
+  // For shelf pod bubble that is anchored to the shelf corner, popup
+  // notifications and the bubble can be shown at the same time. If the keyboard
+  // happens inside the popup collection, we need to let the keyboard event pass
+  // there to make sure notification popups can receive keyboard events.
+  if (target &&
+      tray_bubble_view_->GetBubbleType() == TrayBubbleType::kShelfPodBubble &&
+      tray_bubble_view_->IsAnchoredToShelfCorner()) {
+    auto* popup_collection = RootWindowController::ForWindow(target)
+                                 ->shelf()
+                                 ->GetStatusAreaWidget()
+                                 ->notification_center_tray()
+                                 ->popup_collection();
+
+    if (popup_collection->popup_collection_bounds().Contains(
+            target->GetActualBoundsInScreen())) {
+      return;
+    }
+  }
+
   // Always consumes key event not to pass it to other widgets. Calling
   // StopPropagation here to make this consistent with
   // MenuController::OnWillDispatchKeyEvent.
@@ -302,7 +325,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   DCHECK(delegate_);
   DCHECK(params_.parent_window);
   // anchor_widget() is computed by BubbleDialogDelegateView().
@@ -370,6 +393,9 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
 
   message_center::MessageCenter::Get()->AddObserver(this);
   Shell::Get()->display_manager()->AddDisplayObserver(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
+  UpdateAccessibleIgnoredState();
 }
 
 TrayBubbleView::~TrayBubbleView() {
@@ -387,6 +413,7 @@ TrayBubbleView::~TrayBubbleView() {
 void TrayBubbleView::InitializeAndShowBubble() {
   GetWidget()->Show();
   UpdateBubble();
+  UpdateAccessibleIgnoredState();
 
   // Manually sets the shadow position since `CreateShadowOnTextureLayer` only
   // constructs the shadow but doesn't deal with shadow positioning.
@@ -447,6 +474,7 @@ void TrayBubbleView::ResetDelegate() {
   reroute_event_handler_.reset();
 
   delegate_ = nullptr;
+  UpdateAccessibleIgnoredState();
 }
 
 void TrayBubbleView::ChangeAnchorView(views::View* anchor_view) {
@@ -562,21 +590,19 @@ void TrayBubbleView::AddedToWidget() {
 
 gfx::Size TrayBubbleView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(preferred_width_, GetHeightForWidth(preferred_width_));
-}
-
-int TrayBubbleView::GetHeightForWidth(int width) const {
-  width = std::max(width - GetInsets().width(), 0);
+  const int width = std::max(preferred_width_ - GetInsets().width(), 0);
   const int height = std::transform_reduce(
       children().cbegin(), children().cend(), GetInsets().height(),
       std::plus<>(), [width](const views::View* child) {
         return child->GetVisible() ? child->GetHeightForWidth(width) : 0;
       });
   if (params_.use_fixed_height) {
-    return (params_.max_height != 0) ? params_.max_height : height;
+    return gfx::Size(preferred_width_,
+                     (params_.max_height != 0) ? params_.max_height : height);
   }
-  return (params_.max_height != 0) ? std::min(height, params_.max_height)
-                                   : height;
+  return gfx::Size(preferred_width_, (params_.max_height != 0)
+                                         ? std::min(height, params_.max_height)
+                                         : height);
 }
 
 void TrayBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -606,7 +632,6 @@ void TrayBubbleView::OnMouseExited(const ui::MouseEvent& event) {
 
 void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (delegate_ && CanActivate()) {
-    node_data->role = ax::mojom::Role::kWindow;
     node_data->SetNameChecked(delegate_->GetAccessibleNameForBubble());
   }
 }
@@ -724,6 +749,10 @@ void TrayBubbleView::SetBubbleBorderInsets(gfx::Insets insets) {
   if (GetBubbleFrameView()->bubble_border()) {
     GetBubbleFrameView()->bubble_border()->set_insets(insets);
   }
+}
+
+void TrayBubbleView::UpdateAccessibleIgnoredState() {
+  GetViewAccessibility().SetIsIgnored(!delegate_ || !CanActivate());
 }
 
 BEGIN_METADATA(TrayBubbleView)

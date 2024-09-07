@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_form_filler.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -37,21 +38,30 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   // AutofillManager overrides.
   // The overrides ensure that the thread is blocked until the form has been
-  // parsed (perhaps asynchronously, depending on AutofillParseAsync).
+  // parsed.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
   void OnFormsSeen(const std::vector<FormData>& updated_forms,
                    const std::vector<FormGlobalId>& removed_forms) override;
+  void OnCaretMovedInFormField(const FormData& form,
+                               const FieldGlobalId& field_id,
+                               const gfx::Rect& caret_bounds) override;
   void OnTextFieldDidChange(const FormData& form,
                             const FieldGlobalId& field_id,
                             const base::TimeTicks timestamp) override;
-  void OnDidFillAutofillFormData(const FormData& form,
-                                 const base::TimeTicks timestamp) override;
+  void OnTextFieldDidScroll(const FormData& form,
+                            const FieldGlobalId& field_id) override;
+  void OnSelectControlDidChange(const FormData& form,
+                                const FieldGlobalId& field_id) override;
   void OnAskForValuesToFill(
       const FormData& form,
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
+  void OnFocusOnFormField(const FormData& form,
+                          const FieldGlobalId& field_id) override;
+  void OnDidFillAutofillFormData(const FormData& form,
+                                 const base::TimeTicks timestamp) override;
   void OnJavaScriptChangedAutofilledValue(const FormData& form,
                                           const FieldGlobalId& field_id,
                                           const std::u16string& old_value,
@@ -133,6 +143,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   std::string submitted_form_signature_;
   std::vector<FieldTypeSet> expected_submitted_field_types_;
+
+  TestAutofillManagerWaiter waiter_{*this};
 };
 
 }  // namespace autofill

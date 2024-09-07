@@ -14,7 +14,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/display/output_surface.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
@@ -336,20 +335,10 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
   EXPECT_EQ(1u, impl.quad_list().size());
   const viz::DrawQuad* draw_quad = impl.quad_list().ElementAt(0);
 
-  if (media::IsWritePixelsYUVEnabled()) {
-    ASSERT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
-    const auto* texture_draw_quad =
-        static_cast<const viz::TextureDrawQuad*>(draw_quad);
-    EXPECT_TRUE(texture_draw_quad->is_video_frame);
-  } else {
-    ASSERT_EQ(viz::DrawQuad::Material::kYuvVideoContent, draw_quad->material);
-    const auto* yuv_draw_quad =
-        static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
-    EXPECT_EQ(yuv_draw_quad->uv_tex_size().height(),
-              (yuv_draw_quad->ya_tex_size().height() + 1) / 2);
-    EXPECT_EQ(yuv_draw_quad->uv_tex_size().width(),
-              (yuv_draw_quad->ya_tex_size().width() + 1) / 2);
-  }
+  ASSERT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
+  const auto* texture_draw_quad =
+      static_cast<const viz::TextureDrawQuad*>(draw_quad);
+  EXPECT_TRUE(texture_draw_quad->is_video_frame);
 }
 
 TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
@@ -383,18 +372,10 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
   EXPECT_EQ(1u, impl.quad_list().size());
   const viz::DrawQuad* draw_quad = impl.quad_list().ElementAt(0);
 
-  if (media::IsWritePixelsYUVEnabled()) {
-    ASSERT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
-    const auto* texture_draw_quad =
-        static_cast<const viz::TextureDrawQuad*>(draw_quad);
-    EXPECT_TRUE(texture_draw_quad->is_video_frame);
-  } else {
-    ASSERT_EQ(viz::DrawQuad::Material::kYuvVideoContent, draw_quad->material);
-    const auto* yuv_draw_quad =
-        static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
-    EXPECT_EQ(5, yuv_draw_quad->uv_tex_size().height());
-    EXPECT_EQ(10, yuv_draw_quad->uv_tex_size().width());
-  }
+  ASSERT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
+  const auto* texture_draw_quad =
+      static_cast<const viz::TextureDrawQuad*>(draw_quad);
+  EXPECT_TRUE(texture_draw_quad->is_video_frame);
 }
 
 TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
@@ -478,6 +459,34 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
   const viz::TextureDrawQuad* texture_draw_quad =
       viz::TextureDrawQuad::MaterialCast(draw_quad);
   EXPECT_EQ(texture_draw_quad->resource_size_in_pixels(), resource_size);
+}
+
+TEST(VideoLayerImplTest, GetDamageReasons) {
+  gfx::Size layer_size(1000, 1000);
+
+  LayerTreeImplTestBase impl;
+  DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
+
+  scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
+      media::PIXEL_FORMAT_I420, gfx::Size(10, 10), gfx::Rect(10, 10),
+      gfx::Size(10, 10), base::TimeDelta());
+  FakeVideoFrameProvider provider;
+  provider.set_frame(video_frame);
+
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
+
+  video_layer_impl->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(video_layer_impl->GetDamageReasons().empty());
+  video_layer_impl->SetBounds(layer_size);
+  EXPECT_EQ(video_layer_impl->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
+
+  video_layer_impl->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(video_layer_impl->GetDamageReasons().empty());
+  video_layer_impl->SetNeedsRedraw();
+  EXPECT_EQ(video_layer_impl->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kVideoLayer});
 }
 
 }  // namespace

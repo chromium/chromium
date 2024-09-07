@@ -19,12 +19,16 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -71,6 +75,19 @@ void OpenUrl(Profile* profile, const GURL& url) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+quick_answers::Design GetDesign(QuickAnswersState::FeatureType feature_type) {
+  switch (feature_type) {
+    case QuickAnswersState::FeatureType::kQuickAnswers:
+      return chromeos::features::IsQuickAnswersMaterialNextUIEnabled()
+                 ? quick_answers::Design::kRefresh
+                 : quick_answers::Design::kCurrent;
+    case QuickAnswersState::FeatureType::kHmr:
+      return quick_answers::Design::kMagicBoost;
+  }
+
+  CHECK(false) << "Invalid feature type enum value provided";
+}
+
 }  // namespace
 
 using chromeos::ReadWriteCardsUiController;
@@ -79,36 +96,42 @@ QuickAnswersUiController::QuickAnswersUiController(
     QuickAnswersControllerImpl* controller)
     : controller_(controller) {}
 
-QuickAnswersUiController::~QuickAnswersUiController() = default;
+QuickAnswersUiController::~QuickAnswersUiController() {
+  // Created Quick Answers UIs (e.g., `UserConsentView`) can have dependency to
+  // `QuickAnswersUiController`. Destruct those UIs before destructing a UI
+  // controller. Note that `RemoveQuickAnswersUi` is no-op if no Quick Answers
+  // UI is currently shown.
+  GetReadWriteCardsUiController().RemoveQuickAnswersUi();
+}
 
-void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
-                                                      const std::string& title,
-                                                      const std::string& query,
-                                                      bool is_internal) {
-  CreateQuickAnswersViewInternal(
-      profile, query,
-      {
-          .title = title,
-          .design = quick_answers::Design::kCurrent,
-          // Use `kDefinition` as a placeholder for now. `Design::kCurrent`
-          // doesn't care intent.
-          // TODO(b/340628664): wire the correct intent.
-          .intent = quick_answers::Intent::kDefinition,
-          .is_internal = is_internal,
-      });
+void QuickAnswersUiController::CreateQuickAnswersView(
+    Profile* profile,
+    const std::string& title,
+    const std::string& query,
+    std::optional<quick_answers::Intent> intent,
+    QuickAnswersState::FeatureType feature_type,
+    bool is_internal) {
+  CreateQuickAnswersViewInternal(profile, query, intent,
+                                 {
+                                     .title = title,
+                                     .design = GetDesign(feature_type),
+                                     .is_internal = is_internal,
+                                 });
 }
 
 void QuickAnswersUiController::CreateQuickAnswersViewForPixelTest(
     Profile* profile,
     const std::string& query,
+    std::optional<quick_answers::Intent> intent,
     quick_answers::QuickAnswersView::Params params) {
   CHECK_IS_TEST();
-  CreateQuickAnswersViewInternal(profile, query, params);
+  CreateQuickAnswersViewInternal(profile, query, intent, params);
 }
 
 void QuickAnswersUiController::CreateQuickAnswersViewInternal(
     Profile* profile,
     const std::string& query,
+    std::optional<quick_answers::Intent> intent,
     quick_answers::QuickAnswersView::Params params) {
   // Currently there are timing issues that causes the quick answers view is not
   // dismissed. TODO(updowndota): Remove the special handling after the root
@@ -122,9 +145,20 @@ void QuickAnswersUiController::CreateQuickAnswersViewInternal(
   SetActiveQuery(profile, query);
 
   auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
-      std::make_unique<quick_answers::QuickAnswersView>(
-          params,
-          /*controller=*/weak_factory_.GetWeakPtr()));
+      views::Builder<quick_answers::QuickAnswersView>(
+          std::make_unique<quick_answers::QuickAnswersView>(
+              params,
+              /*controller=*/weak_factory_.GetWeakPtr()))
+          .CustomConfigure(base::BindOnce(
+              [](std::optional<quick_answers::Intent> intent,
+                 quick_answers::QuickAnswersView* quick_answers_view) {
+                if (intent) {
+                  quick_answers_view->SetIntent(intent.value());
+                }
+              },
+              intent))
+          .Build());
+
   quick_answers_view_.SetView(view);
 }
 
@@ -234,14 +268,48 @@ void QuickAnswersUiController::ShowRetry() {
 
 void QuickAnswersUiController::CreateUserConsentView(
     const gfx::Rect& anchor_bounds,
-    const std::u16string& intent_type,
+    quick_answers::IntentType intent_type,
     const std::u16string& intent_text) {
+  CreateUserConsentViewInternal(
+      anchor_bounds, intent_type, intent_text,
+      /*use_refreshed_design=*/
+      chromeos::features::IsQuickAnswersMaterialNextUIEnabled());
+}
+
+void QuickAnswersUiController::CreateUserConsentViewForPixelTest(
+    const gfx::Rect& anchor_bounds,
+    quick_answers::IntentType intent_type,
+    const std::u16string& intent_text,
+    bool use_refreshed_design) {
+  CHECK_IS_TEST();
+  CreateUserConsentViewInternal(anchor_bounds, intent_type, intent_text,
+                                use_refreshed_design);
+}
+
+void QuickAnswersUiController::CreateUserConsentViewInternal(
+    const gfx::Rect& anchor_bounds,
+    quick_answers::IntentType intent_type,
+    const std::u16string& intent_text,
+    bool use_refreshed_design) {
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kPending);
 
   auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
-      std::make_unique<quick_answers::UserConsentView>(
-          intent_type, intent_text, weak_factory_.GetWeakPtr()));
+      views::Builder<quick_answers::UserConsentView>(
+          std::make_unique<quick_answers::UserConsentView>(
+              use_refreshed_design, GetReadWriteCardsUiController()))
+          .SetIntentType(intent_type)
+          .SetIntentText(intent_text)
+          // It is safe to do `base::Unretained(this)`. UIs are destructed
+          // before a UI controller gets destructed. See
+          // `~QuickAnswersUiController`.
+          .SetNoThanksButtonPressed(base::BindRepeating(
+              &QuickAnswersUiController::OnUserConsentNoThanksPressed,
+              base::Unretained(this)))
+          .SetAllowButtonPressed(base::BindRepeating(
+              &QuickAnswersUiController::OnUserConsentAllowPressed,
+              base::Unretained(this)))
+          .Build());
   user_consent_view_.SetView(view);
 }
 
@@ -343,6 +411,20 @@ void QuickAnswersUiController::OpenWebUrl(const GURL& url) {
   }
 
   OpenUrl(profile_, url);
+}
+
+void QuickAnswersUiController::OnUserConsentNoThanksPressed() {
+  OnUserConsentResult(false);
+}
+
+void QuickAnswersUiController::OnUserConsentAllowPressed() {
+  // When user consent is accepted, `QuickAnswersView` will be displayed instead
+  // of dismissing the menu.
+  GetReadWriteCardsUiController()
+      .pre_target_handler()
+      .set_dismiss_anchor_menu_on_view_closed(false);
+
+  OnUserConsentResult(true);
 }
 
 void QuickAnswersUiController::OnUserConsentResult(bool consented) {

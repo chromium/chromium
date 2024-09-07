@@ -38,8 +38,7 @@ constexpr base::TimeDelta kAdjustedDurationForShortFrames =
 
 PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
                              PreviewImageFetcher preview_image_fetcher,
-                             const gfx::Size& original_dimensions,
-                             std::u16string accessible_name)
+                             const gfx::Size& original_dimensions)
     : original_dimensions_(original_dimensions) {
   // Show a placeholder rect while the gif loads.
   views::Builder<PickerGifView>(this)
@@ -47,7 +46,6 @@ PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
           cros_tokens::kCrosSysAppBaseShaded, kPickerGifCornerRadius))
       .SetImage(ui::ImageModel::FromImageSkia(
           image_util::CreateEmptyImage(original_dimensions)))
-      .SetAccessibleName(std::move(accessible_name))
       .BuildChildren();
 
   fetch_frames_start_time_ = base::TimeTicks::Now();
@@ -61,11 +59,20 @@ PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
 
 PickerGifView::~PickerGifView() = default;
 
-int PickerGifView::GetHeightForWidth(int width) const {
-  return original_dimensions_.width() == 0
-             ? 0
-             : (width * original_dimensions_.height()) /
-                   original_dimensions_.width();
+gfx::Size PickerGifView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  int width = 0;
+  if (!available_size.width().is_bounded()) {
+    width = views::ImageView::CalculatePreferredSize(available_size).width();
+  } else {
+    width = available_size.width().value();
+  }
+
+  const int height = original_dimensions_.width() == 0
+                         ? 0
+                         : (width * original_dimensions_.height()) /
+                               original_dimensions_.width();
+  return gfx::Size(width, height);
 }
 
 void PickerGifView::OnBoundsChanged(const gfx::Rect& previous_bounds) {

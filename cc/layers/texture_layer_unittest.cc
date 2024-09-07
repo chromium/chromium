@@ -84,6 +84,17 @@ gpu::SyncToken SyncTokenFromUInt(uint32_t value) {
                         gpu::CommandBufferId::FromUnsafeValue(0x123), value);
 }
 
+scoped_refptr<CrossThreadSharedBitmap> AllocateCrossThreadSharedBitmap(
+    gfx::Size size,
+    viz::SharedImageFormat format) {
+  auto id = viz::SharedBitmap::GenerateId();
+  base::MappedReadOnlyRegion shm =
+      viz::bitmap_allocation::AllocateSharedBitmap(size, format);
+  auto bitmap = base::MakeRefCounted<CrossThreadSharedBitmap>(
+      id, std::move(shm.region), std::move(shm.mapping), size, format);
+  return bitmap;
+}
+
 class MockLayerTreeHost : public LayerTreeHost {
  public:
   static std::unique_ptr<MockLayerTreeHost> Create(
@@ -1505,10 +1516,8 @@ class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
     gfx::Size size(1, 1);
     viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
 
-    id_ = viz::SharedBitmap::GenerateId();
-    bitmap_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
-        format);
+    bitmap_ = AllocateCrossThreadSharedBitmap(size, format);
+    id_ = bitmap_->id();
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1609,10 +1618,8 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
     const gfx::Size size(1, 1);
     const viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
 
-    id_ = viz::SharedBitmap::GenerateId();
-    bitmap_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
-        format);
+    bitmap_ = AllocateCrossThreadSharedBitmap(size, format);
+    id_ = bitmap_->id();
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1689,14 +1696,10 @@ class SoftwareTextureLayerMultipleRegisterTest
     gfx::Size size(1, 1);
     viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
 
-    id1_ = viz::SharedBitmap::GenerateId();
-    bitmap1_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id1_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
-        format);
-    id2_ = viz::SharedBitmap::GenerateId();
-    bitmap2_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id2_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
-        format);
+    bitmap1_ = AllocateCrossThreadSharedBitmap(size, format);
+    id1_ = bitmap1_->id();
+    bitmap2_ = AllocateCrossThreadSharedBitmap(size, format);
+    id2_ = bitmap2_->id();
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1783,14 +1786,10 @@ class SoftwareTextureLayerRegisterUnregisterTest
     gfx::Size size(1, 1);
     viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
 
-    id1_ = viz::SharedBitmap::GenerateId();
-    bitmap1_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id1_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
-        format);
-    id2_ = viz::SharedBitmap::GenerateId();
-    bitmap2_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id2_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
-        format);
+    bitmap1_ = AllocateCrossThreadSharedBitmap(size, format);
+    id1_ = bitmap1_->id();
+    bitmap2_ = AllocateCrossThreadSharedBitmap(size, format);
+    id2_ = bitmap2_->id();
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1872,10 +1871,8 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
     gfx::Size size(1, 1);
     viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
 
-    id_ = viz::SharedBitmap::GenerateId();
-    bitmap_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
-        format);
+    bitmap_ = AllocateCrossThreadSharedBitmap(size, format);
+    id_ = bitmap_->id();
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1993,10 +1990,8 @@ class SoftwareTextureLayerUnregisterRegisterTest
     gfx::Size size(1, 1);
     viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
 
-    id_ = viz::SharedBitmap::GenerateId();
-    bitmap_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
-        format);
+    bitmap_ = AllocateCrossThreadSharedBitmap(size, format);
+    id_ = bitmap_->id();
   }
 
   void DidCommitAndDrawFrame() override {

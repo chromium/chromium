@@ -280,6 +280,14 @@ void HWNDMessageHandlerHeadless::Minimize() {
 
   window_state_ = WindowState::kMinimized;
 
+  // Windows automatiaclly deactivates minimized windows, so we need to
+  // replicate this behavior to prevent focus not being restored, see
+  // https://crbug.com/358998544.
+  was_active_before_minimize_ = is_active_;
+  if (is_active_) {
+    Deactivate();
+  }
+
   delegate_->HandleWindowMinimizedOrRestored(/*restored=*/false);
   delegate_->HandleCommand(static_cast<int>(SC_MINIMIZE));
   delegate_->HandleNativeBlur(nullptr);
@@ -297,6 +305,9 @@ void HWNDMessageHandlerHeadless::Restore() {
 
   if (prev_state == WindowState::kMinimized) {
     delegate_->HandleWindowMinimizedOrRestored(/*restored=*/true);
+    if (was_active_before_minimize_) {
+      Activate();
+    }
   }
 
   delegate_->HandleCommand(static_cast<int>(SC_RESTORE));
@@ -310,7 +321,7 @@ void HWNDMessageHandlerHeadless::Activate() {
 }
 
 void HWNDMessageHandlerHeadless::Deactivate() {
-  if (is_active_ && delegate_->CanActivate() && IsTopLevelWindow(hwnd())) {
+  if (is_active_) {
     is_active_ = false;
     delegate_->HandleActivationChanged(/*active=*/false);
   }

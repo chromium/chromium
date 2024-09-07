@@ -273,7 +273,7 @@ void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
   // payments delegate if the editor was already closed.
   if (virtual_card_enrollment_update_response_callback_.has_value()) {
     std::move(virtual_card_enrollment_update_response_callback_.value())
-        .Run(result == PaymentsRpcResult::kSuccess);
+        .Run(result);
   }
 
   LogUpdateVirtualCardEnrollmentRequestResult(
@@ -283,9 +283,9 @@ void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
 }
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollCompleted(
-    bool is_vcn_enrolled) {
+    PaymentsRpcResult result) {
   autofill_client_->GetPaymentsAutofillClient()->VirtualCardEnrollCompleted(
-      /*is_vcn_enrolled=*/is_vcn_enrolled);
+      result);
 }
 
 void VirtualCardEnrollmentManager::Reset() {

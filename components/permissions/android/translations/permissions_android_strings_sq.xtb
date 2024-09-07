@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Ky sajt nuk mund të kërkojë lejen tënde</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kërko ndihmë<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Aktivizo Bluetooth-in<ph name="END_LINK" /> për të lejuar çiftimin</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> ka nevojë për leje për të gjurmuar duart e tua.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Kërko ndihmë<ph name="END_LINK" /> gjatë skanimit për pajisje…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> ka nevojë për leje për t'u qasur te mikrofoni yt për këtë sajt.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> dëshiron të skanojë për pajisje Bluetooth në afërsi. Janë gjetur pajisjet e mëposhtme:</translation>

@@ -181,11 +181,13 @@ void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Converts |url| to a fixed-up one and checks validity.
   const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
-  if (!gurl.is_valid())
+  if (!gurl.is_valid()) {
     return;
+  }
 
-  if (allowed_arc_schemes_.find(gurl.scheme()) != allowed_arc_schemes_.end())
+  if (allowed_arc_schemes_.find(gurl.scheme()) != allowed_arc_schemes_.end()) {
     g_open_url_delegate->OpenUrlFromArc(gurl);
+  }
 }
 
 void ArcIntentHelperBridge::OnOpenCustomTab(const std::string& url,
@@ -209,8 +211,9 @@ void ArcIntentHelperBridge::OnOpenChromePage(mojom::ChromePage page) {
 }
 
 void ArcIntentHelperBridge::FactoryResetArc() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->ResetArc();
+  }
 }
 
 void ArcIntentHelperBridge::OpenWallpaperPicker() {
@@ -231,8 +234,9 @@ void ArcIntentHelperBridge::OnOpenWebApp(const std::string& url) {
   const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
 
   // Web app launches should only be invoked on HTTPS URLs.
-  if (CanOpenWebAppForUrl(gurl))
+  if (CanOpenWebAppForUrl(gurl)) {
     g_open_url_delegate->OpenWebAppFromArc(gurl);
+  }
 }
 
 void ArcIntentHelperBridge::LaunchCameraApp(uint32_t intent_id,
@@ -260,11 +264,13 @@ void ArcIntentHelperBridge::OnIntentFiltersUpdatedForPackage(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   intent_filters_.erase(package_name);
-  if (filters.size() > 0)
+  if (filters.size() > 0) {
     intent_filters_[package_name] = std::move(filters);
+  }
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnIntentFiltersUpdated(package_name);
+  }
 }
 
 void ArcIntentHelperBridge::CloseCameraApp() {
@@ -412,8 +418,9 @@ ArcIntentHelperBridge::FilterOutIntentHelper(
     std::vector<mojom::IntentHandlerInfoPtr> handlers) {
   std::vector<mojom::IntentHandlerInfoPtr> handlers_filtered;
   for (auto& handler : handlers) {
-    if (handler->package_name == kArcIntentHelperPackageName)
+    if (handler->package_name == kArcIntentHelperPackageName) {
       continue;
+    }
     handlers_filtered.push_back(std::move(handler));
   }
   return handlers_filtered;

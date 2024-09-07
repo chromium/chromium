@@ -9,13 +9,14 @@ import androidx.annotation.Nullable;
 
 /** Async handler for media integrity token requests. */
 public interface MediaIntegrityProvider {
+
     /**
      * Asynchronously request a token.
      *
      * @param contentBinding An optional content binding string.
      * @param callback Callback to be called with the result of the request.
      */
-    void requestToken(
+    void requestToken2(
             @Nullable String contentBinding,
-            @NonNull ValueOrErrorCallback<String, Integer> callback);
+            @NonNull ValueOrErrorCallback<String, MediaIntegrityErrorWrapper> callback);
 }

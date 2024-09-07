@@ -13,10 +13,10 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "pdf/paint_ready_rect.h"
@@ -99,17 +99,14 @@ void PaintManager::SetTransform(float scale,
   if (!surface_)
     return;
 
-  if (scale <= 0.0f) {
-    NOTREACHED_IN_MIGRATION();
-  } else {
-    // translate_with_origin = origin - scale * origin - translate
-    gfx::Vector2dF translate_with_origin = origin.OffsetFromOrigin();
-    translate_with_origin.Scale(1.0f - scale);
-    translate_with_origin.Subtract(translate);
+  CHECK_GT(scale, 0.0f);
+  // translate_with_origin = origin - scale * origin - translate
+  gfx::Vector2dF translate_with_origin = origin.OffsetFromOrigin();
+  translate_with_origin.Scale(1.0f - scale);
+  translate_with_origin.Subtract(translate);
 
-    // TODO(crbug.com/40203030): Should update be deferred until `Flush()`?
-    client_->UpdateLayerTransform(scale, translate_with_origin);
-  }
+  // TODO(crbug.com/40203030): Should update be deferred until `Flush()`?
+  client_->UpdateLayerTransform(scale, translate_with_origin);
 
   if (!schedule_flush)
     return;

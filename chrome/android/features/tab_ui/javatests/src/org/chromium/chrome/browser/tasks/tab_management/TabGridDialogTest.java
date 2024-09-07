@@ -42,7 +42,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING_ANDROID;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.createTabStatesAndMetadataFile;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
@@ -173,7 +174,7 @@ import java.util.concurrent.ExecutionException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@DisableFeatures({TAB_GROUP_PARITY_ANDROID})
+@DisableFeatures({TAB_GROUP_PARITY_ANDROID, NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND})
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
@@ -863,7 +864,7 @@ public class TabGridDialogTest {
                                         .getBottomControlOffset()
                                 == 0);
         ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
     }
 
     @Test
@@ -1815,7 +1816,7 @@ public class TabGridDialogTest {
                                         .getBottomControlOffset()
                                 == 0);
         ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1872,7 +1873,7 @@ public class TabGridDialogTest {
                                         .getBottomControlOffset()
                                 == 0);
         ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1915,7 +1916,7 @@ public class TabGridDialogTest {
                                         .getBottomControlOffset()
                                 == 0);
         ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1953,7 +1954,7 @@ public class TabGridDialogTest {
         // Create a tab by tapping "+" on the dialog.
         onView(
                         allOf(
-                                withId(R.id.toolbar_right_button),
+                                withId(R.id.toolbar_new_tab_button),
                                 isDescendantOfA(withId(R.id.tab_grid_dialog_toolbar_container))))
                 .perform(click());
         waitForDialogHidingAnimation(cta);
@@ -1972,7 +1973,7 @@ public class TabGridDialogTest {
             // Create a tab by tapping "+" on the dialog.
             onView(
                             allOf(
-                                    withId(R.id.toolbar_right_button),
+                                    withId(R.id.toolbar_new_tab_button),
                                     isDescendantOfA(
                                             withId(R.id.tab_grid_dialog_toolbar_container))))
                     .perform(click());
@@ -1986,9 +1987,10 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({DATA_SHARING_ANDROID, TAB_GROUP_PARITY_ANDROID})
+    @EnableFeatures({DATA_SHARING, TAB_GROUP_PARITY_ANDROID})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisabledTest(message = "crbug.com/362762206")
     public void testRenderDialog_TwoRows_Portrait(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareTabsWithThumbnail(sActivityTestRule, 3, 0, "about:blank");
@@ -2141,7 +2143,7 @@ public class TabGridDialogTest {
                         isCompletelyDisplayed()));
         onViewWaiting(
                         allOf(
-                                withId(R.id.toolbar_left_button),
+                                withId(R.id.toolbar_show_group_dialog_button),
                                 isDescendantOfA(withId(R.id.bottom_controls))))
                 .perform(click());
     }
@@ -2453,7 +2455,7 @@ public class TabGridDialogTest {
         assertTrue(isDialogFullyVisible(cta));
         onViewWaiting(
                         allOf(
-                                withId(R.id.toolbar_left_button),
+                                withId(R.id.toolbar_back_button),
                                 isDescendantOfA(withId(R.id.tab_grid_dialog_toolbar_container))))
                 .check((v, e) -> assertEquals(s, v.getContentDescription()));
     }

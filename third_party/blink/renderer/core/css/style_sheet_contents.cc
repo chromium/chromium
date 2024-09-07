@@ -79,7 +79,6 @@ StyleSheetContents::StyleSheetContents(const CSSParserContext* context,
       did_load_error_occur_(false),
       is_mutable_(false),
       has_font_face_rule_(false),
-      has_viewport_rule_(false),
       has_media_queries_(false),
       has_single_owner_document_(true),
       is_used_from_text_cache_(false),
@@ -100,7 +99,6 @@ StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
       did_load_error_occur_(false),
       is_mutable_(false),
       has_font_face_rule_(o.has_font_face_rule_),
-      has_viewport_rule_(o.has_viewport_rule_),
       has_media_queries_(o.has_media_queries_),
       has_single_owner_document_(true),
       is_used_from_text_cache_(false),
@@ -278,6 +276,13 @@ static wtf_size_t ReplaceRuleIfExistsInternal(
     if (auto* style_rule_group = DynamicTo<StyleRuleGroup>(rule)) {
       if (ReplaceRuleIfExistsInternal(old_rule, new_rule,
                                       style_rule_group->ChildRules()) !=
+          std::numeric_limits<wtf_size_t>::max()) {
+        return 0;  // Dummy non-failure value.
+      }
+    } else if (auto* style_rule = DynamicTo<StyleRule>(rule);
+               style_rule && style_rule->ChildRules()) {
+      if (ReplaceRuleIfExistsInternal(old_rule, new_rule,
+                                      *style_rule->ChildRules()) !=
           std::numeric_limits<wtf_size_t>::max()) {
         return 0;  // Dummy non-failure value.
       }
@@ -655,6 +660,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kMixin:
         NOTREACHED_IN_MIGRATION();
         break;
+      case StyleRuleBase::kNestedDeclarations:
       case StyleRuleBase::kPage:
       case StyleRuleBase::kPageMargin:
       case StyleRuleBase::kProperty:

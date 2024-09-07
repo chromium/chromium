@@ -1427,4 +1427,19 @@ export class RemoteCallFilesApp extends RemoteCall {
     await this.callRemoteTestUtil(
         'fakeMouseClick', appId, ['#gear-menu-toggle-hidden-files']);
   }
+
+  /**
+   * Sets the local user files policies to enable migration to `provider`.
+   * @param provider Where local files should be moved. One of
+   *     microsoft_onedrive, google_drive.
+   */
+  async setLocalFilesMigrationDestination(provider: string) {
+    // Disable local storage - migration destination is ignored otherwise.
+    await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
+    // Set the destination.
+    await sendTestMessage({
+      name: 'setLocalFilesMigrationDestination',
+      provider: provider,
+    });
+  }
 }

@@ -63,9 +63,13 @@ IDR_X002_APP_LIST_SXS   ICON       "theme\\google_chrome\\win\\app_list_sxs.ico"
 IDR_X003_INCOGNITO      ICON       "theme\\google_chrome\\win\\incognito.ico"
 IDR_X004_DEV            ICON       "theme\\google_chrome\\win\\chrome_dev.ico"
 IDR_X005_BETA           ICON       "theme\\google_chrome\\win\\chrome_beta.ico"
+IDR_X006_HTML_DOC       ICON       "theme\\google_chrome\\win\\chrome_doc.ico"
+IDR_X007_PDF_DOC        ICON       "theme\\google_chrome\\win\\chrome_pdf.ico"
 #else
 IDR_X001_APP_LIST       ICON       "theme\\chromium\\win\\app_list.ico"
 IDR_X003_INCOGNITO      ICON       "theme\\chromium\\win\\incognito.ico"
+IDR_X006_HTML_DOC       ICON       "theme\\chromium\\win\\chromium_doc.ico"
+IDR_X007_PDF_DOC        ICON       "theme\\chromium\\win\\chromium_pdf.ico"
 #endif
 
 

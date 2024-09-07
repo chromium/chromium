@@ -356,6 +356,23 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                          Vector<int>& word_ends) const override;
 
  private:
+  // Store values that could change over the lifetime of the AXObject, but
+  // are repeatedly looked up during serialization. While the tree is frozen,
+  // the value remains constant. The generation ID is incremented each time
+  // the tree is frozen. Anytime a value is recomputed that is stored in this
+  // cache, it compares the current vs cached generation, updating the cached
+  // value and generation if needed.
+  struct GenerationalCache : public GarbageCollected<GenerationalCache> {
+    virtual void Trace(Visitor*) const;
+    uint64_t generation = 0;
+    Member<AXObject> next_on_line;
+    Member<AXObject> previous_on_line;
+  };
+  mutable Member<GenerationalCache> generational_cache_;
+  void MaybeResetCache() const;
+  AXObject* SetNextOnLine(AXObject* next_on_line) const;
+  AXObject* SetPreviousOnLine(AXObject* previous_on_line) const;
+
   bool HasInternalsAttribute(Element&, const QualifiedName&) const;
   const AtomicString& GetInternalsAttribute(Element&,
                                             const QualifiedName&) const;
@@ -397,6 +414,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   void AddChildrenImpl();
   void AddNodeChildren();
+  void AddMenuListChildren();
+  void AddMenuListPopupChildren();
   void AddPseudoElementChildrenFromLayoutTree();
   bool CanAddLayoutChild(LayoutObject& child);
   void AddInlineTextBoxChildren();

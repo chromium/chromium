@@ -285,12 +285,10 @@ def is_supported_platform():
   return os.path.isfile(DEBIAN_XSESSION_PATH);
 
 
-def is_googler_owned(config):
-  try:
-    host_owner = config["host_owner"]
-    return host_owner.endswith("@google.com")
-  except KeyError:
-    return False
+def is_crash_reporting_enabled(config):
+  # Enable crash reporting for Google hosts or when usage_stats_consent is true.
+  return (config.get("host_owner", "").endswith("@google.com") or
+          config.get("usage_stats_consent", False))
 
 
 def get_pipewire_session_manager():
@@ -445,8 +443,8 @@ class Config:
     except (IOError, TypeError) as e:
       logging.error("Failed to save config: " + str(e))
 
-  def get(self, key):
-    return self.data.get(key)
+  def get(self, key, default = None):
+    return self.data.get(key, default)
 
   def __getitem__(self, key):
     return self.data[key]
@@ -2533,7 +2531,7 @@ def main():
   else:
     desktop = XDesktop(sizes, host_config)
 
-  if is_googler_owned(host_config):
+  if is_crash_reporting_enabled(host_config):
     desktop.enable_crash_reporting()
 
   # Whether we are tearing down because the display server and/or session

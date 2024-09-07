@@ -63,6 +63,8 @@ struct EncoderStatusTraits {
 
 using EncoderStatus = TypedStatus<EncoderStatusTraits>;
 
+MEDIA_EXPORT const char* EncoderStatusCodeToString(
+    const EncoderStatus& error_status);
 }  // namespace media
 
 #endif  // MEDIA_BASE_ENCODER_STATUS_H_

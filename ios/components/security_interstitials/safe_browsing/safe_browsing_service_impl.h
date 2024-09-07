@@ -67,30 +67,23 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   // A helper class for enabling/disabling Safe Browsing and maintaining state
   // on the IO thread. This class may be constructed and destroyed on the UI
   // thread, but all of its other methods should only be called on the IO
-  // thread. If kSafeBrowsingOnUIThread is enabled then it will be used on the
-  // UI thread.
+  // thread.
   class IOThreadEnabler : public base::RefCountedThreadSafe<IOThreadEnabler> {
    public:
-    IOThreadEnabler(scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-                        database_manager);
+    IOThreadEnabler();
 
     IOThreadEnabler(const IOThreadEnabler&) = delete;
     IOThreadEnabler& operator=(const IOThreadEnabler&) = delete;
 
     // Creates the network context and URL loader factory used by the
     // SafeBrowsingDatabaseManager.
-    void Initialize(
-        scoped_refptr<SafeBrowsingServiceImpl> safe_browsing_service,
-        mojo::PendingReceiver<network::mojom::NetworkContext>
-            network_context_receiver,
-        const base::FilePath& safe_browsing_data_path);
+    void Initialize(mojo::PendingReceiver<network::mojom::NetworkContext>
+                        network_context_receiver,
+                    const base::FilePath& safe_browsing_data_path);
 
     // Disables Safe Browsing, and destroys the network context and URL loader
     // factory used by the SafeBrowsingDatabaseManager.
     void ShutDown();
-
-    // Enables or disables Safe Browsing database updates and lookups.
-    void SetSafeBrowsingEnabled(bool enabled);
 
     // Clears all cookies. Calls the given `callback` when deletion is complete.
     void ClearAllCookies(base::OnceClosure callback);
@@ -99,41 +92,15 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
     friend base::RefCountedThreadSafe<IOThreadEnabler>;
     ~IOThreadEnabler();
 
-    // Starts the SafeBrowsingDatabaseManager, making it ready to accept
-    // queries.
-    void StartSafeBrowsingDBManager();
-
     // Constructs a URLRequestContext, using the given path as the location for
     // the cookie store.
     void SetUpURLRequestContext(const base::FilePath& safe_browsing_data_path);
-
-    // Constructs a SharedURLLoaderFactory.
-    void SetUpURLLoaderFactory(
-        scoped_refptr<SafeBrowsingServiceImpl> safe_browsing_service);
-
-    // This tracks whether the service is running. Only used if
-    // kSafeBrowsingOnUIThread is enabled.
-    bool enabled_ = false;
-
-    // This tracks whether ShutDown() has been called.
-    bool shutting_down_ = false;
 
     // This is wrapped by `network_context`.
     std::unique_ptr<net::URLRequestContext> url_request_context_;
 
     // The network context used for Safe Browsing related network requests.
     std::unique_ptr<network::NetworkContext> network_context_;
-
-    // An IO thread remote for a URLLoaderFactory created on the UI thread.
-    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
-
-    // A SharedURLLoaderFactory that wraps `url_loader_factory_`.
-    scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
-        shared_url_loader_factory_;
-
-    // The database manager used for Safe Browsing queries.
-    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-        safe_browsing_db_manager_;
   };
 
   ~SafeBrowsingServiceImpl() override;
@@ -167,8 +134,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
       safe_browsing_db_manager_;
 
-  // This tracks whether the service is running. Only used if
-  // kSafeBrowsingOnUIThread is enabled.
+  // This tracks whether the service is running.
   bool enabled_ = false;
 
   // This watches for changes to the Safe Browsing opt-out preference.

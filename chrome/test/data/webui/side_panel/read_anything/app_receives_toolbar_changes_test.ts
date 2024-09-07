@@ -8,7 +8,7 @@ import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {hasStyle} from 'chrome-untrusted://webui-test/test_util.js';
+import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -47,24 +47,28 @@ suite('AppReceivesToolbarChanges', () => {
         actual.trim().toLowerCase().replaceAll('"', ''));
   }
 
-  function emitFont(fontName: string): void {
+  function emitFont(fontName: string) {
     chrome.readingMode.fontName = fontName;
     emitEvent(app, ToolbarEvent.FONT);
+    return microtasksFinished();
   }
 
-  function emitFontSize(size: number): void {
+  function emitFontSize(size: number) {
     chrome.readingMode.fontSize = size;
     emitEvent(app, ToolbarEvent.FONT_SIZE);
+    return microtasksFinished();
   }
 
-  function emitLineSpacing(spacingEnumValue: number): void {
+  function emitLineSpacing(spacingEnumValue: number) {
     chrome.readingMode.onLineSpacingChange(spacingEnumValue);
     emitEvent(app, ToolbarEvent.LINE_SPACING);
+    return microtasksFinished();
   }
 
-  function emitLetterSpacing(spacingEnumValue: number): void {
+  function emitLetterSpacing(spacingEnumValue: number) {
     chrome.readingMode.onLetterSpacingChange(spacingEnumValue);
     emitEvent(app, ToolbarEvent.LETTER_SPACING);
+    return microtasksFinished();
   }
 
   function emitColorTheme(colorEnumValue: number): void {
@@ -83,32 +87,33 @@ suite('AppReceivesToolbarChanges', () => {
     document.body.appendChild(app);
   });
 
-  test('on letter spacing change container letter spacing updated', () => {
-    for (let letterSpacingEnum = 0; letterSpacingEnum < 4;
-         letterSpacingEnum++) {
-      emitLetterSpacing(letterSpacingEnum);
-      assertEquals(letterSpacingEnum, containerLetterSpacing());
-    }
-  });
+  test(
+      'on letter spacing change container letter spacing updated', async () => {
+        for (let letterSpacingEnum = 0; letterSpacingEnum < 4;
+             letterSpacingEnum++) {
+          await emitLetterSpacing(letterSpacingEnum);
+          assertEquals(letterSpacingEnum, containerLetterSpacing());
+        }
+      });
 
-  test('on line spacing change container line spacing updated', () => {
+  test('on line spacing change container line spacing updated', async () => {
     for (let lineSpacingEnum = 0; lineSpacingEnum < 4; lineSpacingEnum++) {
-      emitLineSpacing(lineSpacingEnum);
+      await emitLineSpacing(lineSpacingEnum);
       assertEquals(lineSpacingEnum, containerLineSpacing());
     }
   });
 
-  test('on font size change container font size updated', () => {
+  test('on font size change container font size updated', async () => {
     const fontSize1 = 12;
-    emitFontSize(fontSize1);
+    await emitFontSize(fontSize1);
     assertEquals(fontSize1, containerFontSize());
 
     const fontSize2 = 16;
-    emitFontSize(fontSize2);
+    await emitFontSize(fontSize2);
     assertEquals(fontSize2, containerFontSize());
 
     const fontSize3 = 9;
-    emitFontSize(fontSize3);
+    await emitFontSize(fontSize3);
     assertEquals(fontSize3, containerFontSize());
   });
 
@@ -153,43 +158,44 @@ suite('AppReceivesToolbarChanges', () => {
     });
   });
 
-  test('on font change font updates container font', () => {
+  test('on font change font updates container font', async () => {
     const font1 = 'Andika';
-    emitFont(font1);
+    await emitFont(font1);
     assertFontsEqual(containerFont(), font1);
 
     const font2 = 'Comic Neue';
-    emitFont(font2);
+    await emitFont(font2);
     assertFontsEqual(containerFont(), font2);
   });
 
   suite('on language toggle', () => {
-    function emitLanguageToggle(lang: string): void {
+    function emitLanguageToggle(lang: string) {
       emitEvent(app, ToolbarEvent.LANGUAGE_TOGGLE, {detail: {language: lang}});
+      return microtasksFinished();
     }
 
-    test('enabled languages are added', () => {
+    test('enabled languages are added', async () => {
       const firstLanguage = 'English';
-      emitLanguageToggle(firstLanguage);
+      await emitLanguageToggle(firstLanguage);
       assertTrue(app.enabledLangs.includes(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(firstLanguage));
 
       const secondLanguage = 'French';
-      emitLanguageToggle(secondLanguage);
+      await emitLanguageToggle(secondLanguage);
       assertTrue(app.enabledLangs.includes(secondLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(secondLanguage));
     });
 
-    test('disabled languages are removed', () => {
+    test('disabled languages are removed', async () => {
       const firstLanguage = 'English';
-      emitLanguageToggle(firstLanguage);
+      await emitLanguageToggle(firstLanguage);
       assertTrue(app.enabledLangs.includes(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(firstLanguage));
 
-      emitLanguageToggle(firstLanguage);
+      await emitLanguageToggle(firstLanguage);
       assertFalse(app.enabledLangs.includes(firstLanguage));
       assertFalse(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(firstLanguage));
@@ -210,10 +216,10 @@ suite('AppReceivesToolbarChanges', () => {
 
       test(
           'when previous language install failed, directly installs lang without usual protocol of sending status request first',
-          () => {
+          async () => {
             const lang = 'en-us';
             app.updateVoicePackStatus(lang, 'kOther');
-            emitLanguageToggle(lang);
+            await emitLanguageToggle(lang);
 
             assertEquals(lang, sentInstallRequestFor);
             assertEquals(
@@ -223,8 +229,8 @@ suite('AppReceivesToolbarChanges', () => {
 
       test(
           'when there is no status for lang, directly sends install request',
-          () => {
-            emitLanguageToggle('en-us');
+          async () => {
+            await emitLanguageToggle('en-us');
 
             assertEquals('en-us', sentInstallRequestFor);
           });
@@ -232,42 +238,42 @@ suite('AppReceivesToolbarChanges', () => {
 
       test(
           'when language status is uninstalled, does not directly install lang',
-          () => {
+          async () => {
             const lang = 'en-us';
             app.updateVoicePackStatus(lang, 'kNotInstalled');
-            emitLanguageToggle(lang);
+            await emitLanguageToggle(lang);
 
             assertEquals('', sentInstallRequestFor);
           });
       });
-
   });
 
   suite('on speech rate change', () => {
-    function emitRate(): void {
+    function emitRate() {
       emitEvent(app, ToolbarEvent.RATE);
+      return microtasksFinished();
     }
 
-    test('speech rate updated', () => {
+    test('speech rate updated', async () => {
       const speechSynthesis = new FakeSpeechSynthesis();
       app.synth = speechSynthesis;
       app.playSpeech();
 
       const speechRate1 = 2;
       chrome.readingMode.speechRate = speechRate1;
-      emitRate();
+      await emitRate();
       assertTrue(speechSynthesis.spokenUtterances.every(
           utterance => utterance.rate === speechRate1));
 
       const speechRate2 = 0.5;
       chrome.readingMode.speechRate = speechRate2;
-      emitRate();
+      await emitRate();
       assertTrue(speechSynthesis.spokenUtterances.every(
           utterance => utterance.rate === speechRate2));
 
       const speechRate3 = 4;
       chrome.readingMode.speechRate = speechRate3;
-      emitRate();
+      await emitRate();
       assertTrue(speechSynthesis.spokenUtterances.every(
           utterance => utterance.rate === speechRate3));
     });
@@ -281,10 +287,12 @@ suite('AppReceivesToolbarChanges', () => {
         propagatedActiveState = isSpeechActive;
       };
       app.updateContent();
+      return microtasksFinished();
     });
 
-    function emitPlayPause(): void {
+    function emitPlayPause() {
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      return microtasksFinished();
     }
 
     test('by default is paused', () => {
@@ -297,17 +305,17 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
 
-    test('on first click starts speech', () => {
-      emitPlayPause();
+    test('on first click starts speech', async () => {
+      await emitPlayPause();
       assertTrue(app.speechPlayingState.isSpeechActive);
       assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
       assertTrue(app.speechPlayingState.hasSpeechBeenTriggered);
       assertTrue(propagatedActiveState);
     });
 
-    test('on second click stops speech', () => {
-      emitPlayPause();
-      emitPlayPause();
+    test('on second click stops speech', async () => {
+      await emitPlayPause();
+      await emitPlayPause();
 
       assertFalse(app.speechPlayingState.isSpeechActive);
       assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
@@ -322,15 +330,19 @@ suite('AppReceivesToolbarChanges', () => {
         kPress = new KeyboardEvent('keydown', {key: 'k'});
       });
 
-      test('first press plays', () => {
+      test('first press plays', async () => {
         app.$.appFlexParent!.dispatchEvent(kPress);
+        await microtasksFinished();
+
         assertTrue(app.speechPlayingState.isSpeechActive);
         assertTrue(propagatedActiveState);
       });
 
-      test('second press pauses', () => {
+      test('second press pauses', async () => {
         app.$.appFlexParent!.dispatchEvent(kPress);
         app.$.appFlexParent!.dispatchEvent(kPress);
+        await microtasksFinished();
+
         assertFalse(app.speechPlayingState.isSpeechActive);
         assertFalse(propagatedActiveState);
       });
@@ -343,13 +355,14 @@ suite('AppReceivesToolbarChanges', () => {
           .getPropertyValue('--current-highlight-bg-color');
     }
 
-    function emitHighlight(highlightOn: boolean): void {
+    function emitHighlight(highlightOn: boolean) {
       if (highlightOn) {
         chrome.readingMode.turnedHighlightOn();
       } else {
         chrome.readingMode.turnedHighlightOff();
       }
       emitEvent(app, ToolbarEvent.HIGHLIGHT_TOGGLE);
+      return microtasksFinished();
     }
 
     setup(() => {
@@ -358,27 +371,29 @@ suite('AppReceivesToolbarChanges', () => {
       app.playSpeech();
     });
 
-    test('on hide, uses transparent highlight', () => {
-      emitHighlight(false);
+    test('on hide, uses transparent highlight', async () => {
+      await emitHighlight(false);
       assertEquals('transparent', highlightColor());
     });
 
-    test('on show, uses colored highlight', () => {
-      emitHighlight(true);
+    test('on show, uses colored highlight', async () => {
+      await emitHighlight(true);
       assertNotEquals('transparent', highlightColor());
     });
 
-    test('new theme uses colored highlight with highlights on', () => {
-      emitHighlight(true);
+    test('new theme uses colored highlight with highlights on', async () => {
+      await emitHighlight(true);
       emitColorTheme(chrome.readingMode.blueTheme);
       assertNotEquals('transparent', highlightColor());
     });
 
-    test('new theme uses transparent highlight with highlights off', () => {
-      emitHighlight(false);
-      emitColorTheme(chrome.readingMode.yellowTheme);
-      assertEquals('transparent', highlightColor());
-    });
+    test(
+        'new theme uses transparent highlight with highlights off',
+        async () => {
+          await emitHighlight(false);
+          emitColorTheme(chrome.readingMode.yellowTheme);
+          assertEquals('transparent', highlightColor());
+        });
   });
 
   suite('on granularity change', () => {

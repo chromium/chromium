@@ -58,6 +58,10 @@ class VcBackgroundUISeaPenProviderImpl
       bool preview_mode,
       SelectRecentSeaPenImageCallback callback) override;
 
+  bool IsManagedSeaPenEnabledInternal() override;
+
+  bool IsManagedSeaPenFeedbackEnabledInternal() override;
+
   void GetRecentSeaPenImageIdsInternal(
       GetRecentSeaPenImageIdsCallback callback) override;
 

@@ -56,9 +56,7 @@ size_t GetOffsetIndex(HashPrefixesView prefix, size_t size) {
 
 // Gets the size of the offset map based on the experiment configuration.
 size_t GetOffsetMapSize(size_t file_size) {
-  static const base::FeatureParam<int> kBytesPerOffsetParam{
-      &kMmapSafeBrowsingDatabase, "store-bytes-per-offset", 0};
-  size_t bytes_per_offset = kBytesPerOffsetParam.Get();
+  size_t bytes_per_offset = kHashDatabaseOffsetMapBytesPerOffset.Get();
   if (!bytes_per_offset)
     return 0;
   return std::min(kMaxOffsetMapSize, file_size / bytes_per_offset);
@@ -123,153 +121,9 @@ class OffsetMapBuilder {
 
 }  // namespace
 
-InMemoryHashPrefixMap::InMemoryHashPrefixMap() = default;
-InMemoryHashPrefixMap::~InMemoryHashPrefixMap() = default;
-
-void InMemoryHashPrefixMap::Clear() {
-  map_.clear();
-}
-
-HashPrefixMapView InMemoryHashPrefixMap::view() const {
-  HashPrefixMapView view;
-  view.reserve(map_.size());
-  for (const auto& kv : map_)
-    view.emplace(kv.first, kv.second);
-  return view;
-}
-
-HashPrefixesView InMemoryHashPrefixMap::at(PrefixSize size) const {
-  return map_.at(size);
-}
-
-void InMemoryHashPrefixMap::Append(PrefixSize size, HashPrefixesView prefix) {
-  map_[size].append(prefix);
-}
-
-void InMemoryHashPrefixMap::Reserve(PrefixSize size, size_t capacity) {
-  map_[size].reserve(capacity);
-}
-
-ApplyUpdateResult InMemoryHashPrefixMap::ReadFromDisk(
-    const V4StoreFileFormat& file_format) {
-  // This is currently handled in V4Store::UpdateHashPrefixMapFromAdditions().
-  // TODO(cduvall): Move that logic here?
-  DCHECK(file_format.hash_files().empty());
-  return APPLY_UPDATE_SUCCESS;
-}
-
-namespace {
-
-class InMemoryHashPrefixMapWriteSession : public HashPrefixMap::WriteSession {
- public:
-  InMemoryHashPrefixMapWriteSession(
-      std::unordered_map<PrefixSize, HashPrefixes>& map,
-      ListUpdateResponse* lur)
-      : map_(map), lur_(*lur) {}
-  InMemoryHashPrefixMapWriteSession(const InMemoryHashPrefixMapWriteSession&) =
-      delete;
-  InMemoryHashPrefixMapWriteSession& operator=(
-      const InMemoryHashPrefixMapWriteSession&) = delete;
-  ~InMemoryHashPrefixMapWriteSession() override {
-    auto addition_scanner = lur_->mutable_additions()->begin();
-    // Move each raw hash from the `ListUpdateResponse` back into the map.
-    for (auto& entry : *map_) {
-      auto raw_hashes = base::WrapUnique(
-          addition_scanner->mutable_raw_hashes()->release_raw_hashes());
-      entry.second = std::move(*raw_hashes);
-      ++addition_scanner;
-    }
-  }
-
- private:
-  const raw_ref<std::unordered_map<PrefixSize, HashPrefixes>> map_;
-  const raw_ref<ListUpdateResponse> lur_;
-};
-
-}  // namespace
-
-std::unique_ptr<HashPrefixMap::WriteSession> InMemoryHashPrefixMap::WriteToDisk(
-    V4StoreFileFormat* file_format) {
-  ListUpdateResponse* const lur = file_format->mutable_list_update_response();
-  // `file_format` is expected to not contain any additions at this point. It
-  // will during migration from an MmapHashPrefixMap, but the map itself is
-  // empty in that case so there is no data to move into/out of the session.
-  CHECK(lur->additions_size() == 0 || map_.empty());
-  for (auto& entry : map_) {
-    ThreatEntrySet* additions = lur->add_additions();
-    // TODO(vakh): Write RICE encoded hash prefixes on disk. Not doing so
-    // currently since it takes a long time to decode them on startup, which
-    // blocks resource load. See: http://crbug.com/654819
-    additions->set_compression_type(RAW);
-    additions->mutable_raw_hashes()->set_prefix_size(entry.first);
-
-    // Avoid copying the raw hashes by temporarily moving them into
-    // `file_format`. They will be returned to the map when the caller destroys
-    // the returned write session.
-    auto raw_hashes = std::make_unique<std::string>(std::move(entry.second));
-    additions->mutable_raw_hashes()->set_allocated_raw_hashes(
-        raw_hashes.release());
-  }
-  return std::make_unique<InMemoryHashPrefixMapWriteSession>(map_, lur);
-}
-
-ApplyUpdateResult InMemoryHashPrefixMap::IsValid() const {
-  return APPLY_UPDATE_SUCCESS;
-}
-
-HashPrefixStr InMemoryHashPrefixMap::GetMatchingHashPrefix(
-    std::string_view full_hash) {
-  for (const auto& [size, prefixes] : map_) {
-    std::string_view hash_prefix = full_hash.substr(0, size);
-    if (HashPrefixMatches(hash_prefix, prefixes, size, 0,
-                          prefixes.size() / size)) {
-      return std::string(hash_prefix);
-    }
-  }
-  return HashPrefixStr();
-}
-
-HashPrefixMap::MigrateResult InMemoryHashPrefixMap::MigrateFileFormat(
-    const base::FilePath& store_path,
-    V4StoreFileFormat* file_format) {
-  if (file_format->hash_files().empty())
-    return MigrateResult::kNotNeeded;
-
-  ListUpdateResponse* lur = file_format->mutable_list_update_response();
-  for (const auto& hash_file : file_format->hash_files()) {
-    std::string contents;
-    base::FilePath hashes_path =
-        MmapHashPrefixMap::GetPath(store_path, hash_file.extension());
-    if (!base::ReadFileToStringWithMaxSize(hashes_path, &contents,
-                                           kMaxStoreSizeBytes)) {
-      return MigrateResult::kFailure;
-    }
-    auto* additions = lur->add_additions();
-    additions->set_compression_type(RAW);
-    additions->mutable_raw_hashes()->set_prefix_size(hash_file.prefix_size());
-    additions->mutable_raw_hashes()->set_raw_hashes(std::move(contents));
-  }
-  file_format->clear_hash_files();
-  return MigrateResult::kSuccess;
-}
-
-void InMemoryHashPrefixMap::GetPrefixInfo(
-    google::protobuf::RepeatedPtrField<
-        DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>* prefix_sets) {
-  for (const auto& size_and_prefixes : map_) {
-    const PrefixSize& size = size_and_prefixes.first;
-    const HashPrefixes& hash_prefixes = size_and_prefixes.second;
-
-    DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet* prefix_set =
-        prefix_sets->Add();
-    prefix_set->set_size(size);
-    prefix_set->set_count(hash_prefixes.size() / size);
-  }
-}
-
 // Writes a hash prefix file, and buffers writes to avoid a write call for each
 // hash prefix. The file will be deleted if Finish() is never called.
-class MmapHashPrefixMap::BufferedFileWriter {
+class HashPrefixMap::BufferedFileWriter {
  public:
   BufferedFileWriter(const base::FilePath& store_path,
                      PrefixSize prefix_size,
@@ -345,7 +199,7 @@ class MmapHashPrefixMap::BufferedFileWriter {
   bool has_error_;
 };
 
-MmapHashPrefixMap::MmapHashPrefixMap(
+HashPrefixMap::HashPrefixMap(
     const base::FilePath& store_path,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     size_t buffer_size)
@@ -355,30 +209,29 @@ MmapHashPrefixMap::MmapHashPrefixMap(
                        : base::SequencedTaskRunner::GetCurrentDefault()),
       buffer_size_(buffer_size) {}
 
-MmapHashPrefixMap::~MmapHashPrefixMap() {
+HashPrefixMap::~HashPrefixMap() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 }
 
-void MmapHashPrefixMap::Clear() {
-  if (kMmapSafeBrowsingDatabaseAsync.Get() &&
-      !task_runner_->RunsTasksInCurrentSequence()) {
+void HashPrefixMap::Clear() {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
     // Clear the map on the db task runner, since the memory mapped files should
     // be destroyed on the same thread they were created. base::Unretained is
     // safe since the map is destroyed on the db task runner.
     task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&MmapHashPrefixMap::ClearOnTaskRunner,
+                           base::BindOnce(&HashPrefixMap::ClearOnTaskRunner,
                                           base::Unretained(this)));
   } else {
     map_.clear();
   }
 }
 
-void MmapHashPrefixMap::ClearOnTaskRunner() {
+void HashPrefixMap::ClearOnTaskRunner() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   map_.clear();
 }
 
-HashPrefixMapView MmapHashPrefixMap::view() const {
+HashPrefixMapView HashPrefixMap::view() const {
   HashPrefixMapView view;
   view.reserve(map_.size());
   for (const auto& kv : map_) {
@@ -390,43 +243,37 @@ HashPrefixMapView MmapHashPrefixMap::view() const {
   return view;
 }
 
-HashPrefixesView MmapHashPrefixMap::at(PrefixSize size) const {
+HashPrefixesView HashPrefixMap::at(PrefixSize size) const {
   const FileInfo& info = map_.at(size);
   CHECK(info.IsReadable());
   return info.GetView();
 }
 
-void MmapHashPrefixMap::Append(PrefixSize size, HashPrefixesView prefix) {
+void HashPrefixMap::Append(PrefixSize size, HashPrefixesView prefix) {
   if (prefix.empty())
     return;
 
   GetFileInfo(size).GetOrCreateWriter(buffer_size_)->Write(prefix);
 }
 
-void MmapHashPrefixMap::Reserve(PrefixSize size, size_t capacity) {
+void HashPrefixMap::Reserve(PrefixSize size, size_t capacity) {
   GetFileInfo(size).GetOrCreateWriter(buffer_size_)->Reserve(capacity);
 }
 
-ApplyUpdateResult MmapHashPrefixMap::ReadFromDisk(
+ApplyUpdateResult HashPrefixMap::ReadFromDisk(
     const V4StoreFileFormat& file_format) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   DCHECK(file_format.list_update_response().additions().empty());
   for (const auto& hash_file : file_format.hash_files()) {
     PrefixSize prefix_size = hash_file.prefix_size();
+    if (hash_file.file_size() % prefix_size != 0) {
+      return ADDITIONS_SIZE_UNEXPECTED_FAILURE;
+    }
+
     auto& file_info = GetFileInfo(prefix_size);
     if (!file_info.Initialize(hash_file)) {
       return MMAP_FAILURE;
-    }
-    static const base::FeatureParam<bool> kCheckMapSorted{
-        &kMmapSafeBrowsingDatabase, "check-sb-map-sorted", true};
-    if (kCheckMapSorted.Get()) {
-      HashPrefixesView prefixes = file_info.GetView();
-      uint32_t end = prefixes.size() / prefix_size;
-      if (!std::is_sorted(PrefixIterator(prefixes, 0, prefix_size),
-                          PrefixIterator(prefixes, end, prefix_size))) {
-        return MMAP_FAILURE;
-      }
     }
   }
   return APPLY_UPDATE_SUCCESS;
@@ -434,33 +281,41 @@ ApplyUpdateResult MmapHashPrefixMap::ReadFromDisk(
 
 namespace {
 
-class MmapHashPrefixMapWriteSession : public HashPrefixMap::WriteSession {
+class HashPrefixMapWriteSession : public HashPrefixMap::WriteSession {
  public:
-  MmapHashPrefixMapWriteSession() = default;
-  MmapHashPrefixMapWriteSession(const MmapHashPrefixMapWriteSession&) = delete;
-  MmapHashPrefixMapWriteSession& operator=(
-      const MmapHashPrefixMapWriteSession&) = delete;
-  ~MmapHashPrefixMapWriteSession() override = default;
+  HashPrefixMapWriteSession() = default;
+  HashPrefixMapWriteSession(const HashPrefixMapWriteSession&) = delete;
+  HashPrefixMapWriteSession& operator=(const HashPrefixMapWriteSession&) =
+      delete;
+  ~HashPrefixMapWriteSession() override = default;
 };
 
 }  // namespace
 
-std::unique_ptr<HashPrefixMap::WriteSession> MmapHashPrefixMap::WriteToDisk(
+std::unique_ptr<HashPrefixMap::WriteSession> HashPrefixMap::WriteToDisk(
     V4StoreFileFormat* file_format) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   for (auto& [size, file_info] : map_) {
-    auto* hash_file = file_format->add_hash_files();
-    if (!file_info.Finalize(hash_file))
+    HashFile hash_file;
+    if (!file_info.Finalize(&hash_file)) {
       return nullptr;
+    }
 
-    if (!file_info.Initialize(*hash_file))
+    if (hash_file.file_size() == 0) {
+      continue;
+    }
+
+    if (!file_info.Initialize(hash_file)) {
       return nullptr;
+    }
+
+    file_format->add_hash_files()->Swap(&hash_file);
   }
-  return std::make_unique<MmapHashPrefixMapWriteSession>();
+  return std::make_unique<HashPrefixMapWriteSession>();
 }
 
-ApplyUpdateResult MmapHashPrefixMap::IsValid() const {
+ApplyUpdateResult HashPrefixMap::IsValid() const {
   for (const auto& kv : map_) {
     if (!kv.second.IsReadable())
       return MMAP_FAILURE;
@@ -468,8 +323,7 @@ ApplyUpdateResult MmapHashPrefixMap::IsValid() const {
   return APPLY_UPDATE_SUCCESS;
 }
 
-HashPrefixStr MmapHashPrefixMap::GetMatchingHashPrefix(
-    std::string_view full_hash) {
+HashPrefixStr HashPrefixMap::GetMatchingHashPrefix(std::string_view full_hash) {
   for (const auto& kv : map_) {
     HashPrefixStr matching_prefix = kv.second.Matches(full_hash);
     if (!matching_prefix.empty())
@@ -478,7 +332,7 @@ HashPrefixStr MmapHashPrefixMap::GetMatchingHashPrefix(
   return HashPrefixStr();
 }
 
-HashPrefixMap::MigrateResult MmapHashPrefixMap::MigrateFileFormat(
+HashPrefixMap::MigrateResult HashPrefixMap::MigrateFileFormat(
     const base::FilePath& store_path,
     V4StoreFileFormat* file_format) {
   // Check if the offset map needs to be updated. This should only happen if a
@@ -516,7 +370,7 @@ HashPrefixMap::MigrateResult MmapHashPrefixMap::MigrateFileFormat(
   return MigrateResult::kSuccess;
 }
 
-void MmapHashPrefixMap::GetPrefixInfo(
+void HashPrefixMap::GetPrefixInfo(
     google::protobuf::RepeatedPtrField<
         DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>* prefix_sets) {
   for (const auto& size_and_info : map_) {
@@ -531,40 +385,40 @@ void MmapHashPrefixMap::GetPrefixInfo(
 }
 
 // static
-base::FilePath MmapHashPrefixMap::GetPath(const base::FilePath& store_path,
-                                          const std::string& extension) {
+base::FilePath HashPrefixMap::GetPath(const base::FilePath& store_path,
+                                      const std::string& extension) {
   return store_path.AddExtensionASCII(extension);
 }
 
-const std::string& MmapHashPrefixMap::GetExtensionForTesting(PrefixSize size) {
+const std::string& HashPrefixMap::GetExtensionForTesting(PrefixSize size) {
   return GetFileInfo(size).GetExtensionForTesting();  // IN-TEST
 }
 
-void MmapHashPrefixMap::ClearAndWaitForTesting() {
+void HashPrefixMap::ClearAndWaitForTesting() {
   Clear();
   base::RunLoop run_loop;
   task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 
-MmapHashPrefixMap::FileInfo& MmapHashPrefixMap::GetFileInfo(PrefixSize size) {
+HashPrefixMap::FileInfo& HashPrefixMap::GetFileInfo(PrefixSize size) {
   auto [it, inserted] = map_.try_emplace(size, store_path_, size);
   return it->second;
 }
 
-MmapHashPrefixMap::FileInfo::FileInfo(const base::FilePath& store_path,
-                                      PrefixSize size)
+HashPrefixMap::FileInfo::FileInfo(const base::FilePath& store_path,
+                                  PrefixSize size)
     : store_path_(store_path), prefix_size_(size) {}
 
-MmapHashPrefixMap::FileInfo::~FileInfo() = default;
+HashPrefixMap::FileInfo::~FileInfo() = default;
 
-HashPrefixesView MmapHashPrefixMap::FileInfo::GetView() const {
+HashPrefixesView HashPrefixMap::FileInfo::GetView() const {
   DCHECK(IsReadable());
   return HashPrefixesView(reinterpret_cast<const char*>(file_.data()),
                           file_.length());
 }
 
-bool MmapHashPrefixMap::FileInfo::Initialize(const HashFile& hash_file) {
+bool HashPrefixMap::FileInfo::Initialize(const HashFile& hash_file) {
   // Make sure file size is correct before attempting to mmap.
   int64_t file_size;
   base::FilePath path = GetPath(store_path_, hash_file.extension());
@@ -593,7 +447,7 @@ bool MmapHashPrefixMap::FileInfo::Initialize(const HashFile& hash_file) {
   return true;
 }
 
-bool MmapHashPrefixMap::FileInfo::Finalize(HashFile* hash_file) {
+bool HashPrefixMap::FileInfo::Finalize(HashFile* hash_file) {
   if (!writer_->Finish())
     return false;
 
@@ -606,7 +460,7 @@ bool MmapHashPrefixMap::FileInfo::Finalize(HashFile* hash_file) {
   return true;
 }
 
-HashPrefixStr MmapHashPrefixMap::FileInfo::Matches(
+HashPrefixStr HashPrefixMap::FileInfo::Matches(
     std::string_view full_hash) const {
   HashPrefixStr hash_prefix(full_hash.substr(0, prefix_size_));
   HashPrefixesView prefixes = GetView();
@@ -645,8 +499,8 @@ HashPrefixStr MmapHashPrefixMap::FileInfo::Matches(
   return HashPrefixStr();
 }
 
-MmapHashPrefixMap::BufferedFileWriter*
-MmapHashPrefixMap::FileInfo::GetOrCreateWriter(size_t buffer_size) {
+HashPrefixMap::BufferedFileWriter* HashPrefixMap::FileInfo::GetOrCreateWriter(
+    size_t buffer_size) {
   DCHECK(!file_.IsValid());
   if (!writer_) {
     writer_ = std::make_unique<BufferedFileWriter>(store_path_, prefix_size_,
@@ -655,7 +509,7 @@ MmapHashPrefixMap::FileInfo::GetOrCreateWriter(size_t buffer_size) {
   return writer_.get();
 }
 
-const std::string& MmapHashPrefixMap::FileInfo::GetExtensionForTesting() const {
+const std::string& HashPrefixMap::FileInfo::GetExtensionForTesting() const {
   return writer_->extension();
 }
 

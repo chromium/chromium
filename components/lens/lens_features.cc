@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace lens::features {
 
@@ -41,7 +42,15 @@ BASE_FEATURE(kEnableContextMenuInLensSidePanel,
              "EnableContextMenuInLensSidePanel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlay, "LensOverlay", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlay,
+             "LensOverlay",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 BASE_FEATURE(kLensOverlayTranslateButton,
              "LensOverlayTranslateButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -95,7 +104,7 @@ const base::FeatureParam<int> kLensOverlayImageDownscaleUiScalingFactor{
 const base::FeatureParam<bool> kLensOverlayDebuggingMode{
     &kLensOverlay, "debugging-mode", false};
 const base::FeatureParam<int> kLensOverlayVerticalTextMargin{
-    &kLensOverlay, "text-vertical-margin", 4};
+    &kLensOverlay, "text-vertical-margin", 12};
 const base::FeatureParam<int> kLensOverlayHorizontalTextMargin{
     &kLensOverlay, "text-horizontal-margin", 4};
 const base::FeatureParam<bool> kLensOverlaySearchBubble{&kLensOverlay,
@@ -169,6 +178,9 @@ constexpr base::FeatureParam<bool>
     kUseSearchContextForMultimodalLensOverlayRequests{
         &kLensOverlay, "use-search-context-for-multimodal-requests", false};
 
+constexpr base::FeatureParam<bool> kUsePdfsAsContext{
+    &kLensOverlay, "use-pdfs-as-context", false};
+
 constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
     &kLensOverlay, "tap-region-height", 300};
 constexpr base::FeatureParam<int> kLensOverlayTapRegionWidth{
@@ -176,7 +188,7 @@ constexpr base::FeatureParam<int> kLensOverlayTapRegionWidth{
 
 constexpr base::FeatureParam<double>
     kLensOverlaySelectTextOverRegionTriggerThreshold{
-        &kLensOverlay, "select-text-over-region-trigger-threshold", 0.03};
+        &kLensOverlay, "select-text-over-region-trigger-threshold", 0.1};
 
 constexpr base::FeatureParam<int> kLensOverlaySignificantRegionMinArea{
     &kLensOverlay, "significant-regions-min-area", 500};
@@ -186,6 +198,18 @@ constexpr base::FeatureParam<int> kLensOverlayMaxSignificantRegions{
 
 constexpr base::FeatureParam<int> kLensOverlayLivePageBlurRadiusPixels{
     &kLensOverlay, "live-page-blur-radius-pixels", 200};
+
+constexpr base::FeatureParam<bool> kLensOverlayUseCustomBlur{
+    &kLensOverlay, "use-custom-blur", true};
+
+constexpr base::FeatureParam<int> kLensOverlayCustomBlurBlurRadiusPixels{
+    &kLensOverlay, "custom-blur-blur-radius-pixels", 60};
+
+constexpr base::FeatureParam<double> kLensOverlayCustomBlurQuality{
+    &kLensOverlay, "custom-blur-quality", 0.1};
+
+constexpr base::FeatureParam<double> kLensOverlayCustomBlurRefreshRateHertz{
+    &kLensOverlay, "custom-blur-refresh-rate-hertz", 30};
 
 constexpr base::FeatureParam<double>
     kLensOverlayPostSelectionComparisonThreshold{
@@ -438,6 +462,10 @@ bool UseSearchContextForMultimodalLensOverlayRequests() {
   return kUseSearchContextForMultimodalLensOverlayRequests.Get();
 }
 
+bool UsePdfsAsContext() {
+  return kUsePdfsAsContext.Get();
+}
+
 int GetLensOverlayVerticalTextMargin() {
   return kLensOverlayVerticalTextMargin.Get();
 }
@@ -537,6 +565,22 @@ double GetLensOverlayPostSelectionComparisonThreshold() {
 
 int GetLensOverlayLivePageBlurRadiusPixels() {
   return kLensOverlayLivePageBlurRadiusPixels.Get();
+}
+
+bool GetLensOverlayUseCustomBlur() {
+  return kLensOverlayUseCustomBlur.Get();
+}
+
+int GetLensOverlayCustomBlurBlurRadiusPixels() {
+  return kLensOverlayCustomBlurBlurRadiusPixels.Get();
+}
+
+double GetLensOverlayCustomBlurQuality() {
+  return kLensOverlayCustomBlurQuality.Get();
+}
+
+double GetLensOverlayCustomBlurRefreshRateHertz() {
+  return kLensOverlayCustomBlurRefreshRateHertz.Get();
 }
 
 int GetLensOverlayServerRequestTimeout() {

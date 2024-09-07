@@ -28,6 +28,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/throbber.h"
@@ -35,12 +36,14 @@
 #include "ui/views/view_observer.h"
 
 namespace autofill {
-
 namespace {
 
 constexpr int kCardImageWidthInPx = 32;
 constexpr int kCardImageLengthInPx = 20;
+
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class VirtualCardEnrollBubbleViewsInteractiveUiTest
     : public InProcessBrowserTest {
@@ -605,7 +608,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(GetBubbleViews());
   EXPECT_FALSE(IsLoadingProgressRowVisible());
   EXPECT_EQ(GetBubbleViews()->buttons(),
-            (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
+            static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel));
 
   GetBubbleViews()->AcceptDialog();
 
@@ -614,7 +618,8 @@ IN_PROC_BROWSER_TEST_P(
   views::View* loading_throbber =
       GetBubbleViews()->GetViewByID(DialogViewId::LOADING_THROBBER);
   EXPECT_TRUE(loading_throbber->IsDrawn());
-  EXPECT_EQ(GetBubbleViews()->buttons(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(GetBubbleViews()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
 
   CloseBubbleForReasonAndWaitTillDestroyed(
       views::Widget::ClosedReason::kAcceptButtonClicked);
@@ -663,7 +668,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(GetBubbleViews());
   EXPECT_FALSE(IsLoadingProgressRowVisible());
   EXPECT_EQ(GetBubbleViews()->buttons(),
-            (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
+            static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel));
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(
       GetBubbleViews()->GetWidget());

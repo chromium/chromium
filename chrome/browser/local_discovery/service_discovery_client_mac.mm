@@ -96,31 +96,37 @@ void SetUpServiceBrowser(
                  bool batch_complete) {
         nw_browse_result_change_t change =
             nw_browse_result_get_changes(old_result, new_result);
-        const char* new_service_name = nw_endpoint_get_bonjour_service_name(
-            nw_browse_result_copy_endpoint(new_result));
-        const char* old_service_name = nw_endpoint_get_bonjour_service_name(
-            nw_browse_result_copy_endpoint(old_result));
+        nw_endpoint_t new_endpoint = nw_browse_result_copy_endpoint(new_result);
+        nw_endpoint_t old_endpoint = nw_browse_result_copy_endpoint(old_result);
+        const char* new_service_name =
+            nw_endpoint_get_bonjour_service_name(new_endpoint);
+        const char* old_service_name =
+            nw_endpoint_get_bonjour_service_name(old_endpoint);
+
         switch (change) {
           case nw_browse_result_change_result_added:
+            CHECK(new_service_name);
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(services_update_callback,
                                ServiceWatcher::UpdateType::UPDATE_ADDED,
-                               new_service_name));
+                               std::string(new_service_name)));
             break;
           case nw_browse_result_change_result_removed:
+            CHECK(old_service_name);
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(services_update_callback,
                                ServiceWatcher::UpdateType::UPDATE_REMOVED,
-                               old_service_name));
+                               std::string(old_service_name)));
             break;
           case nw_browse_result_change_txt_record_changed:
+            CHECK(new_service_name);
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(services_update_callback,
                                ServiceWatcher::UpdateType::UPDATE_CHANGED,
-                               new_service_name));
+                               std::string(new_service_name)));
             break;
           default:
             break;

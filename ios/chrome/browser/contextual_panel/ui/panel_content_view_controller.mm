@@ -65,6 +65,27 @@ NSString* const kViewAccessibilityIdentifier = @"PanelContentViewAXID";
 
 NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
+UIImage* CloseButtonImage(BOOL highlighted) {
+  NSArray<UIColor*>* palette = @[
+    [UIColor colorNamed:kGrey600Color],
+    [UIColor colorNamed:kBackgroundColor],
+  ];
+
+  if (highlighted) {
+    NSMutableArray<UIColor*>* transparentPalette =
+        [[NSMutableArray alloc] init];
+    [palette enumerateObjectsUsingBlock:^(UIColor* color, NSUInteger idx,
+                                          BOOL* stop) {
+      [transparentPalette addObject:[color colorWithAlphaComponent:0.6]];
+    }];
+    palette = [transparentPalette copy];
+  }
+
+  return SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonIconSize),
+      palette);
+}
+
 }  // namespace
 
 @interface PanelContentViewController () <UICollectionViewDelegate,
@@ -78,6 +99,10 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
   // The header view at the top of the panel.
   UIVisualEffectView* _headerView;
+
+  // Background for the header when the Reduce Transparency accessibility
+  // setting is on.
+  UIView* _headerViewAccessibilityBackground;
 
   // The button to close the view.
   UIButton* _closeButton;
@@ -141,6 +166,16 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
         constraintEqualToAnchor:_headerView.trailingAnchor],
     [self.view.topAnchor constraintEqualToAnchor:_headerView.topAnchor],
   ]];
+
+  _headerViewAccessibilityBackground = [[UIView alloc] init];
+  _headerViewAccessibilityBackground.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  _headerViewAccessibilityBackground.backgroundColor =
+      [UIColor colorNamed:kGrey100Color];
+  [_headerView.contentView addSubview:_headerViewAccessibilityBackground];
+  AddSameConstraints(_headerView, _headerViewAccessibilityBackground);
+  _headerViewAccessibilityBackground.hidden =
+      !UIAccessibilityIsReduceTransparencyEnabled();
 
   [self createDragHandleView];
   [_headerView.contentView addSubview:_dragHandleView];
@@ -206,15 +241,11 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   [self.view layoutIfNeeded];
   [self.sheetDisplayController
       setContentHeight:[self preferredHeightForContent]];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
 
   [[NSNotificationCenter defaultCenter]
       addObserver:self
-         selector:@selector(handleKeyboardWillShow:)
-             name:UIKeyboardWillShowNotification
+         selector:@selector(accessibilityReduceTransparencySettingDidChange)
+             name:UIAccessibilityReduceTransparencyStatusDidChangeNotification
            object:nil];
 }
 
@@ -223,28 +254,6 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _appearanceTime = base::Time::Now();
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   _headerView);
-}
-
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-
-  // One of UIVisualEffectView's subviews has a white-ish background color,
-  // which is not desired for this feature.
-  for (UIView* subview in _headerView.subviews) {
-    // Replace any non-nil backgrounds with clear.
-    if (subview.backgroundColor) {
-      subview.backgroundColor = UIColor.clearColor;
-    }
-  }
-
-  [self setCollectionViewContentInset];
-  [self setCollectionViewScrollIndicatorInsets];
-}
-
-- (void)viewSafeAreaInsetsDidChange {
-  [super viewSafeAreaInsetsDidChange];
-
-  [self setCollectionViewScrollIndicatorInsets];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -307,10 +316,43 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   }
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  [self addAccessibilityTransparencyWorkaround];
+
+  [self setCollectionViewContentInset];
+  [self setCollectionViewScrollIndicatorInsets];
+}
+
+- (void)accessibilityReduceTransparencySettingDidChange {
+  [self addAccessibilityTransparencyWorkaround];
+
+  _headerViewAccessibilityBackground.hidden =
+      !UIAccessibilityIsReduceTransparencyEnabled();
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+
+  [self setCollectionViewScrollIndicatorInsets];
+}
+
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
   [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
+}
+
+// Removes the white-ish background color of one of UIVisualEffectView's
+// subviews that is not desired for this feature.
+- (void)addAccessibilityTransparencyWorkaround {
+  for (UIView* subview in _headerView.subviews) {
+    // Replace any non-nil backgrounds with clear.
+    if (subview.backgroundColor) {
+      subview.backgroundColor = UIColor.clearColor;
+    }
+  }
 }
 
 #pragma mark - Public methods
@@ -459,15 +501,10 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
 // Creates and initializes `_closeButton`.
 - (void)createCloseButton {
-  UIImage* closeButtonImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonIconSize),
-      @[
-        [UIColor colorNamed:kGrey600Color],
-        [UIColor colorNamed:kBackgroundColor],
-      ]);
   UIButtonConfiguration* closeButtonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
-  closeButtonConfiguration.image = closeButtonImage;
+  // The image itself is set below in the configurationUpdateHandler, which
+  // is called before the button appears for the first time as well.
   closeButtonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
   closeButtonConfiguration.buttonSize = UIButtonConfigurationSizeSmall;
   closeButtonConfiguration.accessibilityLabel =
@@ -481,6 +518,18 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   _closeButton.accessibilityIdentifier = kCloseButtonAccessibilityIdentifier;
   _closeButton.pointerInteractionEnabled = YES;
+  _closeButton.configurationUpdateHandler = ^(UIButton* button) {
+    UIButtonConfiguration* updatedConfig = button.configuration;
+    switch (button.state) {
+      case UIControlStateHighlighted:
+        updatedConfig.image = CloseButtonImage(YES);
+        break;
+      case UIControlStateNormal:
+        updatedConfig.image = CloseButtonImage(NO);
+        break;
+    }
+    button.configuration = updatedConfig;
+  };
 }
 
 - (void)createDragHandleView {
@@ -570,14 +619,6 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
   UIPointerStyle* style = [UIPointerStyle styleWithEffect:effect shape:shape];
   return style;
-}
-
-#pragma mark - Keyboard notifications
-
-- (void)handleKeyboardWillShow:(NSNotification*)notification {
-  base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
-                                ContextualPanelDismissedReason::KeyboardOpened);
-  [self.contextualSheetCommandHandler closeContextualSheet];
 }
 
 @end

@@ -105,6 +105,11 @@ int UpdaterState::StateReaderKeystone::GetUpdatePolicy() const {
   return UpdaterState::GetUpdatePolicy();
 }
 
+update_client::CategorizedError
+UpdaterState::StateReaderKeystone::GetLastUpdateCheckError() const {
+  return {};
+}
+
 bool UpdaterState::IsAutoupdateCheckEnabled() {
   // Auto-update check period override (in seconds).
   // Applies only to older versions of Keystone.

@@ -160,6 +160,11 @@ class PipWindowResizerTest : public AshTestBase,
     WindowState::Get(window_)->SetStateObject(std::move(test_state));
     Shell::Get()->pip_controller()->SetPipWindow(window_);
 
+    auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+        NonClientFrameViewAsh::Get(window()));
+    custom_frame->SetMaximumSize(gfx::Size(300, 200));
+    custom_frame->SetMinimumSize(gfx::Size(30, 20));
+
     long root_window_index = static_cast<long>(std::get<1>(GetParam()));
     window_->SetProperty(aura::client::kFullscreenTargetDisplayIdKey,
                          root_window_index);
@@ -214,12 +219,6 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // The Pinch-to-Resize feature requires that the maximum and
-  // minimum size are set.
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window()));
-  custom_frame->SetMaximumSize(gfx::Size(300, 200));
-  custom_frame->SetMinimumSize(gfx::Size(30, 20));
   window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));
 
   // Pinch zoom in.
@@ -330,8 +329,8 @@ TEST_P(PipWindowResizerTest, PipWindowCanBeSwipeDismissed) {
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // Drag to the left.
-  resizer->Drag(CalculateDragPoint(*resizer, -100, 0), 0);
+  // Drag to the top.
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -100), 0);
 
   // Should be dismissed when the drag completes.
   resizer->CompleteDrag();
@@ -343,8 +342,8 @@ TEST_P(PipWindowResizerTest, PipWindowPartiallySwipedDoesNotDismiss) {
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // Drag to the left, but only a little bit.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, 0), 0);
+  // Drag to the top, but only a little bit.
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -30), 0);
 
   // Should not be dismissed when the drag completes.
   resizer->CompleteDrag();
@@ -358,13 +357,13 @@ TEST_P(PipWindowResizerTest, PipWindowInSwipeToDismissGestureLocksToAxis) {
       CreateResizerForTest(HTCAPTION, gfx::Point(50, 50)));
   ASSERT_TRUE(resizer.get());
 
-  // Drag to the left, but only a little bit, to start a swipe-to-dismiss.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, 0), 0);
-  EXPECT_EQ(gfx::Rect(-22, 8, 100, 100), test_state()->last_requested_bounds());
+  // Drag to the top, but only a little bit, to start a swipe-to-dismiss.
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -30), 0);
+  EXPECT_EQ(gfx::Rect(8, -22, 100, 100), test_state()->last_requested_bounds());
 
-  // Now try to drag down, it should be locked to the horizontal axis.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, 30), 0);
-  EXPECT_EQ(gfx::Rect(-22, 8, 100, 100), test_state()->last_requested_bounds());
+  // Now try to drag to the right, it should be locked to the horizontal axis.
+  resizer->Drag(CalculateDragPoint(*resizer, 30, -30), 0);
+  EXPECT_EQ(gfx::Rect(8, -22, 100, 100), test_state()->last_requested_bounds());
 }
 
 TEST_P(PipWindowResizerTest,
@@ -373,13 +372,13 @@ TEST_P(PipWindowResizerTest,
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // Drag to the right and up a bit.
-  resizer->Drag(CalculateDragPoint(*resizer, 30, -8), 0);
-  EXPECT_EQ(gfx::Rect(38, 8, 100, 100), test_state()->last_requested_bounds());
+  // Drag to the bottom and left a bit.
+  resizer->Drag(CalculateDragPoint(*resizer, -8, 30), 0);
+  EXPECT_EQ(gfx::Rect(8, 46, 100, 100), test_state()->last_requested_bounds());
 
-  // Now try to drag to the left start a swipe-to-dismiss. It should stop
+  // Now try to drag to the top start a swipe-to-dismiss. It should stop
   // at the edge of the work area.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, -8), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, -8, -30), 0);
   EXPECT_EQ(gfx::Rect(8, 8, 100, 100), test_state()->last_requested_bounds());
 }
 
@@ -390,8 +389,8 @@ TEST_P(PipWindowResizerTest, PipWindowAtCornerLocksToOneAxisOnSwipeToDismiss) {
 
   // Try dragging up and to the left. It should lock onto the axis with the
   // largest displacement.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, -40), 0);
-  EXPECT_EQ(gfx::Rect(8, -32, 100, 100), test_state()->last_requested_bounds());
+  resizer->Drag(CalculateDragPoint(*resizer, -40, -30), 0);
+  EXPECT_EQ(gfx::Rect(-32, 8, 100, 100), test_state()->last_requested_bounds());
 }
 
 TEST_P(
@@ -401,9 +400,10 @@ TEST_P(
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // Try a lot downward and a bit to the left. Swiping should not be initiated.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, 50), 0);
-  EXPECT_EQ(gfx::Rect(8, 58, 100, 100), test_state()->last_requested_bounds());
+  // Try a lot to the right and a bit to the top. Swiping should not be
+  // initiated.
+  resizer->Drag(CalculateDragPoint(*resizer, 50, -30), 0);
+  EXPECT_EQ(gfx::Rect(58, 8, 100, 100), test_state()->last_requested_bounds());
 }
 
 TEST_P(PipWindowResizerTest,
@@ -414,7 +414,7 @@ TEST_P(PipWindowResizerTest,
 
   // Move a small amount - this should not trigger any bounds change, since
   // we don't know whether a swipe will start or not.
-  resizer->Drag(CalculateDragPoint(*resizer, -4, 0), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -4), 0);
   EXPECT_TRUE(test_state()->last_requested_bounds().IsEmpty());
 }
 

@@ -76,42 +76,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.OfflineUsage" enum="OfflinePagesOfflineUsage"
-    expires_after="2023-08-13">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Counts user-days when Chrome was used in specific ways regarding navigation
-    to online and offline content. Buckets are mutually exclusive so that only
-    one bucket is incremented per reported day. This metric is not recorded to
-    UMA immediately due to potential data loss while offline. So day counters
-    are persisted to prefs and reported to the histogram only when the next UMA
-    data upload is likely to succeed. For more details see:
-    https://goo.gl/GJXwFe.
-  </summary>
-</histogram>
-
-<histogram base="true" name="OfflinePages.PageAccessInterval" units="minutes"
-    expires_after="2021-08-29">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Length of time between accesses to an offline page. This is the same time
-    period used for expiring temporary pages. This metric is recorded when an
-    offline page is accessed.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.WebsiteSettings.OpenOnlineButtonVisible"
-    enum="BooleanVisible" expires_after="M77">
-  <owner>fgorski@chromium.org</owner>
-  <summary>
-    Indicates whether Open online was visible in Page Info popup, when it was
-    shown for an offline page. (The button is visible only when Chrome is
-    connected when the Page Info popup is opened for offline page.)
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

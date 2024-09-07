@@ -200,7 +200,7 @@ class CSSLazyPropertyParser : public GarbageCollected<CSSLazyPropertyParser> {
   virtual void Trace(Visitor*) const;
 };
 
-class CORE_EXPORT ALIGNAS(std::max(alignof(Member<const CSSValue>),
+class CORE_EXPORT alignas(std::max(alignof(Member<const CSSValue>),
                                    alignof(CSSPropertyValueMetadata)))
     ImmutableCSSPropertyValueSet : public CSSPropertyValueSet {
  public:

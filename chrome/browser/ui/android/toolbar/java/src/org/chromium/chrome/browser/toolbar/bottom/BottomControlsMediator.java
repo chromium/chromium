@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerS
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -50,6 +51,7 @@ class BottomControlsMediator
     /** The browser controls sizer/manager to observe browser controls events. */
     private final BottomControlsStacker mBottomControlsStacker;
 
+    private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final TabObscuringHandler mTabObscuringHandler;
 
     private final CallbackController mCallbackController;
@@ -105,6 +107,7 @@ class BottomControlsMediator
             WindowAndroid windowAndroid,
             PropertyModel model,
             BottomControlsStacker controlsStacker,
+            BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             FullscreenManager fullscreenManager,
             TabObscuringHandler tabObscuringHandler,
             int bottomControlsHeight,
@@ -116,6 +119,7 @@ class BottomControlsMediator
         mFullscreenManager = fullscreenManager;
         mBottomControlsStacker = controlsStacker;
         getBrowserControls().addObserver(this);
+        mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mTabObscuringHandler = tabObscuringHandler;
         tabObscuringHandler.addObserver(this);
 
@@ -147,9 +151,17 @@ class BottomControlsMediator
     }
 
     void setBottomControlsVisible(boolean visible) {
+        boolean visibilityChanged = mIsBottomControlsVisible != visible;
         mIsBottomControlsVisible = visible;
         updateCompositedViewVisibility();
         updateAndroidViewVisibility();
+
+        // When tab group UI changed from hidden -> visible, request browser controls to show
+        // transiently. This is a workaround to when tab is opened in background with a new tab
+        // group, the offsets in TabBrowserControlsOffsetHelper is stale. See crbug.com/357398783
+        if (visible && visibilityChanged) {
+            mBrowserControlsVisibilityDelegate.showControlsTransient();
+        }
     }
 
     void setBottomControlsColor(@ColorInt int color) {

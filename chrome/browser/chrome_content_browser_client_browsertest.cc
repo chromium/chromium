@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/chrome_content_browser_client.h"
 
 #include <memory>
@@ -365,6 +370,111 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
   EXPECT_FALSE(instant_service->IsInstantProcess(
       opened_tab->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
+
+// Test that the System AccentColor keyword is supported ONLY for installed
+// WebApps. Currently this test is appliable ONLY for Windows and ChromeOS, Mac
+// uses it own implementation to derive System AccentColor and doesn't use same
+// pipeline.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+class SystemAccentColorTest : public InProcessBrowserTest {
+ protected:
+  SystemAccentColorTest() : browser_client_(&test_theme_) {}
+
+  ~SystemAccentColorTest() override {
+    CHECK_EQ(&browser_client_, SetBrowserClientForTesting(original_client_));
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "CSSSystemAccentColor");
+  }
+
+  void SetWebAppScope(const GURL web_app_scope) {
+    browser_client_.set_web_app_scope(web_app_scope);
+    original_client_ = content::SetBrowserClientForTesting(&browser_client_);
+    browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->OnWebPreferencesChanged();
+  }
+
+  ui::TestNativeTheme test_theme_;
+
+ private:
+  class BrowserClientForAccentColorTest : public ChromeContentBrowserClient {
+   public:
+    explicit BrowserClientForAccentColorTest(const ui::NativeTheme* theme)
+        : theme_(theme) {}
+
+    void set_web_app_scope(const GURL& web_app_scope) {
+      web_app_scope_ = web_app_scope;
+    }
+
+    void OverrideWebkitPrefs(
+        content::WebContents* web_contents,
+        blink::web_pref::WebPreferences* web_prefs) override {
+      ChromeContentBrowserClient::OverrideWebkitPrefs(web_contents, web_prefs);
+
+      web_prefs->web_app_scope = web_app_scope_;
+    }
+
+   protected:
+    const ui::NativeTheme* GetWebTheme() const override { return theme_; }
+
+   private:
+    const raw_ptr<const ui::NativeTheme> theme_;
+    GURL web_app_scope_;
+  };
+
+  BrowserClientForAccentColorTest browser_client_;
+  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemAccentColorTest,
+                       SystemAccentColorKeywordForInstalledWebApp) {
+  GURL web_app_scope = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("system-accent-color.html")));
+  SetWebAppScope(web_app_scope);
+  ui::NativeTheme::GetInstanceForWeb()->set_user_color(
+      SkColorSetRGB(135, 115, 10));
+  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_app_scope));
+  // For installled WebApps we expect System AccentColor keyword resolve to
+  // OS-defined accent-color, which are currently pumped for ChromeOS and
+  // Windows.
+  EXPECT_EQ("rgb(135, 115, 10)",
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   base::StringPrintf(
+                       "window.getComputedStyle(document.getElementById('"
+                       "header_element')).backgroundColor")));
+}
+
+IN_PROC_BROWSER_TEST_F(SystemAccentColorTest,
+                       SystemAccentColorKeywordForNonWebApp) {
+  GURL web_app_scope = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("system-accent-color.html")));
+  SetWebAppScope(GURL());
+  ui::NativeTheme::GetInstanceForWeb()->set_user_color(
+      SkColorSetRGB(135, 115, 10));
+  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_app_scope));
+  // System AccentColor keyword returns a hard coded value (Shade of blue) for
+  // non-installed websites.
+  EXPECT_EQ("rgb(0, 117, 255)",
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   base::StringPrintf(
+                       "window.getComputedStyle(document.getElementById('"
+                       "header_element')).backgroundColor")));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 // Test for the state of Forced Colors Mode for a given WebContents across
 // various scenarios.

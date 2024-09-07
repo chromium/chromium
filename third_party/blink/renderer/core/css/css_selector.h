@@ -124,7 +124,7 @@ class CORE_EXPORT CSSSelector {
     kClass,             // Example: .class
     kPseudoClass,       // Example: :nth-child(2)
     kPseudoElement,     // Example: ::first-line
-    kPagePseudoClass,   // ??
+    kPagePseudoClass,   // Example: @page :right
     kAttributeExact,    // Example: E[foo="bar"]
     kAttributeSet,      // Example: E[foo]
     kAttributeHyphen,   // Example: E[foo|="bar"]
@@ -312,9 +312,8 @@ class CORE_EXPORT CSSSelector {
     kPseudoScrollbarTrackPiece,
     kPseudoSearchText,
     kPseudoSelectFallbackButton,
-    kPseudoSelectFallbackButtonIcon,
     kPseudoSelectFallbackButtonText,
-    kPseudoSelectFallbackDatalist,
+    kPseudoPicker,
     kPseudoSelection,
     kPseudoSelectorFragmentAnchor,
     kPseudoSingleButton,
@@ -432,6 +431,8 @@ class CORE_EXPORT CSSSelector {
   //
   // Note that :true is always implicit (see IsImplicit).
   void SetTrue();
+  // Sets this CSSSelector to a :where() class with the specified argument.
+  void SetWhere(CSSSelectorList*);
   void UpdatePseudoPage(const AtomicString&, const Document*);
   static PseudoType NameToPseudoType(const AtomicString&,
                                      bool has_arguments,

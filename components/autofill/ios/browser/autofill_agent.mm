@@ -308,6 +308,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                        form:(NSString*)formName
              formRendererID:(FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
@@ -350,8 +351,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
        suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry)) {
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_suggestionDelegate) {
-      // TODO(crbug.com/41460687): Replace 0 with the index of the selected
-      // suggestion.
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
@@ -364,7 +363,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                 SysNSStringToUTF8(suggestion.backendIdentifier)));
       }
 
-      _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion, {0, 0});
+      _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion,
+                                               {static_cast<int>(index), 0});
     }
     return;
   }
@@ -684,8 +684,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   [self onSuggestionsReady:suggestions suggestionDelegate:delegate];
 
-  if (delegate)
-    delegate->OnSuggestionsShown();
+  // TODO(crbug.com/363958046): Pass the actually shown suggestions instead of
+  // `popup_suggestions`.
+  if (delegate) {
+    delegate->OnSuggestionsShown(popup_suggestions);
+  }
 }
 
 - (void)hideAutofillPopup {
@@ -760,7 +763,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   }
   auto* main_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       _webState, webFramesManager->GetMainWebFrame());
-  CHECK(main_driver, base::NotFatalUntil::M132);
+  DLOG_IF(WARNING, !main_driver) << "No AutofillDriverIOS found for WebFrame";
   if (!main_driver || !main_driver->is_processed()) {
     return;
   }
@@ -783,10 +786,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // Return early if the page is not processed yet.
   auto* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
-  CHECK(driver, base::NotFatalUntil::M132);
-  if (!driver ||
-      !autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame)
-           ->is_processed()) {
+  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
+  if (!driver || !driver->is_processed()) {
     return;
   }
 
@@ -854,7 +855,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   bool success = autofill::ExtractFormsData(
       base::SysUTF8ToNSString(formData), true, base::UTF8ToUTF16(formName),
       webState->GetLastCommittedURL(), frame->GetSecurityOrigin(),
-      *fieldDataManager, &forms);
+      *fieldDataManager, frame->GetFrameId(), &forms);
 
   if (!success || forms.empty()) {
     return;
@@ -871,11 +872,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 - (void)webState:(web::WebState*)webState
     didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
                    inFrame:(web::WebFrame*)frame {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableXHRSubmissionDetectionIOS)) {
-    return;
-  }
-
   CHECK_EQ(_webState, webState);
   CHECK(!params.removed_forms.empty() || !params.removed_unowned_fields.empty())
       << "Invalid params. Form removal events with missing input should have "
@@ -1175,7 +1171,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   }
   auto* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, webFrame);
-  CHECK(driver, base::NotFatalUntil::M132);
+  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
   if (!driver) {
     return nullptr;
   }
@@ -1224,16 +1220,17 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                            BOOL filtered, const std::u16string& formName,
                            const GURL& pageURL, const GURL& frameOrigin,
                            scoped_refptr<FieldDataManager> fieldDataManager,
-                           NSString* formJSON) {
+                           const std::string& frame_id, NSString* formJSON) {
     std::vector<FormData> formData;
-    bool success =
-        autofill::ExtractFormsData(formJSON, filtered, formName, pageURL,
-                                   frameOrigin, *fieldDataManager, &formData);
+    bool success = autofill::ExtractFormsData(
+        formJSON, filtered, formName, pageURL, frameOrigin, *fieldDataManager,
+        frame_id, &formData);
     std::move(completion).Run(success, formData);
   };
   AutofillJavaScriptFeature::GetInstance()->FetchForms(
       frame, base::BindOnce(callback, std::move(completionHandler), filtered,
-                            formName, pageURL, frameOrigin, fieldDataManager));
+                            formName, pageURL, frameOrigin, fieldDataManager,
+                            frame->GetFrameId()));
 }
 
 - (void)onSuggestionsReady:(NSArray<FormSuggestion*>*)suggestions
@@ -1274,7 +1271,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   _lastQueriedFieldID = {form.host_frame(), fieldIdentifier};
   auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       _webState, frame.get());
-  CHECK(driver, base::NotFatalUntil::M132);
+  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
   if (!driver) {
     return;
   }
@@ -1303,7 +1300,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   autofill::AutofillDriverIOS* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
-  CHECK(driver, base::NotFatalUntil::M132);
+  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
   // This process is only done once.
   if (!driver || driver->is_processed()) {
     return;
@@ -1314,9 +1311,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       frame, base::FeatureList::IsEnabled(
                  autofill::features::kAutofillAcrossIframesIos));
 
-  FormUtilJavaScriptFeature::GetInstance()->SetAutofillXHRSubmissionDetection(
-      frame, base::FeatureList::IsEnabled(
-                 autofill::features::kAutofillEnableXHRSubmissionDetectionIOS));
+  FormUtilJavaScriptFeature::GetInstance()->SetAutofillIsolatedContentWorld(
+      frame,
+      base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos));
 
   if (frame->IsMainFrame()) {
     _suggestionDelegate.reset();
@@ -1332,10 +1329,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // Use a delay of 200ms when tracking form mutations to reduce the
   // communication overhead (as mutations are likely to come in batch).
   constexpr int kMutationTrackingEnabledDelayInMs = 200;
-  const bool allowMsgBatching =
-      base::FeatureList::IsEnabled(kAutofillFormActivityMsgBatchingIos);
-  formHandlerFeature->TrackFormMutations(
-      frame, kMutationTrackingEnabledDelayInMs, allowMsgBatching);
+  formHandlerFeature->TrackFormMutations(frame,
+                                         kMutationTrackingEnabledDelayInMs);
 
   formHandlerFeature->ToggleTrackingUserEditedFields(
       frame,

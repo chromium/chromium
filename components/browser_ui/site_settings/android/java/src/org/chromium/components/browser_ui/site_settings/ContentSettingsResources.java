@@ -239,6 +239,16 @@ public class ContentSettingsResources {
                         0,
                         R.string.website_settings_category_location_a11y);
 
+            case ContentSettingsType.HAND_TRACKING:
+                return new ResourceItem(
+                        R.drawable.gm_filled_hand_gesture_24,
+                        R.string.hand_tracking_permission_title,
+                        ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_hand_tracking_ask,
+                        R.string.website_settings_category_hand_tracking_blocked,
+                        R.string.website_settings_category_hand_tracking_a11y);
+
             case ContentSettingsType.IDLE_DETECTION:
                 return new ResourceItem(
                         R.drawable.gm_filled_devices_24,

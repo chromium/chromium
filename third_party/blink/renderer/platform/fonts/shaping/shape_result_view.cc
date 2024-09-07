@@ -372,15 +372,14 @@ void ShapeResultView::GetRunFontData(
   }
 }
 
-void ShapeResultView::FallbackFonts(
-    HeapHashSet<Member<const SimpleFontData>>* fallback) const {
-  DCHECK(fallback);
-  DCHECK(primary_font_);
+HeapHashSet<Member<const SimpleFontData>> ShapeResultView::UsedFonts() const {
+  HeapHashSet<Member<const SimpleFontData>> used_fonts;
   for (const auto& part : RunsOrParts()) {
-    if (part.run_->font_data_ && part.run_->font_data_ != primary_font_) {
-      fallback->insert(part.run_->font_data_.Get());
+    if (part.run_->font_data_) {
+      used_fonts.insert(part.run_->font_data_.Get());
     }
   }
+  return used_fonts;
 }
 
 template <bool has_non_zero_glyph_offsets>
@@ -600,7 +599,7 @@ void ShapeResultView::ComputePartInkBounds(
   current_font_data.BoundsForGlyphs(glyphs, &bounds_list);
 #endif
 
-  GlyphBoundsAccumulator bounds(run_advance);
+  GlyphBoundsAccumulator<is_horizontal_run> bounds;
   for (unsigned j = 0; j < num_glyphs; ++j) {
     const HarfBuzzRunGlyphData& glyph_data = part.GlyphAt(j);
 #if BUILDFLAG(IS_APPLE)
@@ -609,8 +608,8 @@ void ShapeResultView::ComputePartInkBounds(
 #else
     gfx::RectF glyph_bounds = gfx::SkRectToRectF(bounds_list[j]);
 #endif
-    bounds.Unite<is_horizontal_run>(glyph_bounds, *glyph_offsets);
-    bounds.origin += glyph_data.advance;
+    bounds.Unite(glyph_bounds, run_advance, *glyph_offsets);
+    run_advance += glyph_data.advance;
     ++glyph_offsets;
   }
 

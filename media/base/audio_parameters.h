@@ -38,7 +38,7 @@ constexpr int kParametersAlignment = 16;
 // ****WARNING****: Do not change the field types or ordering of these fields
 // without checking that alignment is correct. The structs may be concurrently
 // accessed by both 32bit and 64bit process in shmem. http://crbug.com/781095.
-struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
+struct MEDIA_SHMEM_EXPORT alignas(kParametersAlignment)
     AudioInputBufferParameters {
   double volume;
   int64_t capture_time_us;     // base::TimeTicks in microseconds.
@@ -48,7 +48,7 @@ struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
   uint32_t id;
   bool key_pressed;
 };
-struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
+struct MEDIA_SHMEM_EXPORT alignas(kParametersAlignment)
     AudioOutputBufferParameters {
   int64_t delay_us;            // base::TimeDelta in microseconds.
   int64_t delay_timestamp_us;  // base::TimeTicks in microseconds.

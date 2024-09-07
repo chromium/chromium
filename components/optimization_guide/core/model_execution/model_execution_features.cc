@@ -43,7 +43,7 @@ BASE_FEATURE(kComposeGraduated,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabOrganizationGraduated,
              "TabOrganizationGraduated",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWallpaperSearchGraduated,
              "WallpaperSearchGraduated",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -65,6 +65,10 @@ BASE_FEATURE(kOnDeviceModelTestFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kModelAdaptationHistorySearch,
+             "ModelAdaptationHistorySearch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kModelAdaptationSummarize,
              "ModelAdaptationHistorySearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -132,6 +136,10 @@ bool ShouldEnableFeatureWhenMainToggleOn(UserVisibleFeatureKey feature) {
 // On-device supported features should return true.
 // `GetOnDeviceFeatureRecentlyUsedPref` should return a valid pref for each
 // on-device feature.
+// Due to limitations of the gerrit IFTTT analyzer(b/249297195),
+// multiple paths are not supported.
+// Be sure to edit `IsOnDeviceModelAdaptationEnabled` as well if you edit this
+// function.
 bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature) {
   switch (feature) {
     case ModelBasedCapabilityKey::kCompose:
@@ -139,6 +147,7 @@ bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature) {
           optimization_guide::features::kOptimizationGuideComposeOnDeviceEval);
     case ModelBasedCapabilityKey::kTest:
       return base::FeatureList::IsEnabled(kOnDeviceModelTestFeature);
+    case ModelBasedCapabilityKey::kFormsAnnotations:
     case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
@@ -146,12 +155,11 @@ bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature) {
       return false;
     case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kPromptApi:
+    case ModelBasedCapabilityKey::kSummarize:
       return true;
   }
 }
-// LINT.ThenChange(model_execution_prefs.cc:GetOnDeviceFeatureRecentlyUsedPref,
-//                 IsOnDeviceModelAdaptationEnabled,
-//                 GetOptimizationTargetForModelAdaptation)
+// LINT.ThenChange(//components/optimization_guide/core/model_execution/model_execution_prefs.cc:GetOnDeviceFeatureRecentlyUsedPref)
 
 // LINT.IfChange(IsOnDeviceModelAdaptationEnabled)
 //
@@ -167,9 +175,11 @@ bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
       return base::GetFieldTrialParamByFeatureAsBool(
           kOnDeviceModelTestFeature, "enable_adaptation", false);
     case ModelBasedCapabilityKey::kPromptApi:
+    case ModelBasedCapabilityKey::kSummarize:
       return true;
     case ModelBasedCapabilityKey::kHistorySearch:
       return true;
+    case ModelBasedCapabilityKey::kFormsAnnotations:
     case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
@@ -177,7 +187,7 @@ bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
       return false;
   }
 }
-// LINT.ThenChange(IsOnDeviceModelEnabled)
+// LINT.ThenChange(//components/optimization_guide/core/model_execution/model_execution_features.cc:IsOnDeviceModelEnabled)
 
 proto::OptimizationTarget GetOptimizationTargetForModelAdaptation(
     ModelBasedCapabilityKey feature_key) {

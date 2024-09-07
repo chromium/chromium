@@ -6,22 +6,22 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "97gAPeXJa7zT-JcddyV8fpQtsx6kJjwqfmLe8FhZD1kC"  # 34.2.14 (Stable)
+  version: "5biVQLkXXVm61beRTyVfmPBrmjEJFBJTpdzAUcXY378C"  # 34.2.16 (Stable)
   dest_path: "android_35_google_apis_x64"
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-35/google_apis/x86_64"
-  version: "lbE3tmhSwAT8SKxgShTPEnc8VZQi-S4f7jD6D-s3Hw8C"  # AP31.240617.003
+  version: "vNcoxPG6VS5NgGEWmx2Qi3R9P8EC8E-MvyVZ-diDxWYC"  # (r8) AE3A.240806.005
   dest_path: "android_35_google_apis_x64"
 }
 system_image_name: "system-images;android-35;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-35/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8741031598871909201
+  # Created in https://ci.chromium.org/ui/b/8738153483134684913
   # Patched gmscore version 24.26.32 in https://crrev.com/c/5735581
-  version: "HmDI9tNbx8I_gn08-Ecy5PP-Gp_gGQJsXvpIVczwc_MC"
+  version: "IFO4uI1VCMvYQU-0l__xEftbBT1X8Tdpxzp9WOl6QwYC"
   dest_path: "android_35_google_apis_x64"
 }
 avd_name: "android_35_google_apis_x64"

@@ -637,12 +637,15 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
 
   // Assign URL's to frames in the graph so that they'll be mapped to
   // OriginInBrowsingInstanceContexts.
-  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                          /*same_document=*/false);
-  mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
-                                                /*same_document=*/false);
-  mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                                /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(
+      kUrl2, kOrigin2,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
+  mock_graph.child_frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
 
   // The mock browser and utility processes should be measured, but do not
   // contain frames or workers so should not affect the distribution of
@@ -921,12 +924,15 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
 
   // Assign URL's to frames in the graph so that they'll be mapped to
   // OriginInBrowsingInstanceContexts.
-  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                          /*same_document=*/false);
-  mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
-                                                /*same_document=*/false);
-  mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                                /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(
+      kUrl2, kOrigin2,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
+  mock_graph.child_frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
@@ -974,7 +980,9 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   auto new_frame1 = CreateFrameNodeAutoId(
       mock_graph.process.get(), mock_graph.page.get(),
       /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage);
-  new_frame1->OnNavigationCommitted(kUrl1, kOrigin1, /*same_document=*/false);
+  new_frame1->OnNavigationCommitted(
+      kUrl1, kOrigin1, /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   auto new_worker1 = CreateWorkerNodeWithOrigin(
       graph(), mock_graph.other_process.get(), kOrigin1);
   const auto new_frame1_context = new_frame1->GetResourceContext();
@@ -985,7 +993,9 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   auto new_frame2 = CreateFrameNodeAutoId(
       mock_graph.process.get(), mock_graph.page.get(),
       /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage);
-  new_frame2->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
+  new_frame2->OnNavigationCommitted(
+      kUrl2, kOrigin2, /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   auto new_worker2 = CreateWorkerNodeWithOrigin(
       graph(), mock_graph.other_process.get(), kOrigin2);
   const auto new_frame2_context = new_frame2->GetResourceContext();
@@ -996,7 +1006,9 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   auto new_frame3 = CreateFrameNodeAutoId(
       mock_graph.process.get(), mock_graph.page.get(),
       /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage);
-  new_frame3->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
+  new_frame3->OnNavigationCommitted(
+      kUrl2, kOrigin2, /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   auto new_worker3 = CreateWorkerNodeWithOrigin(
       graph(), mock_graph.other_process.get(), kOrigin2);
   const auto new_frame3_context = new_frame3->GetResourceContext();
@@ -1274,12 +1286,15 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
 
   // Assign URL's to frames in the graph so that they'll be mapped to
   // OriginInBrowsingInstanceContexts.
-  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                          /*same_document=*/false);
-  mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
-                                                /*same_document=*/false);
-  mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                                /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(
+      kUrl2, kOrigin2,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
+  mock_graph.child_frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
@@ -1633,10 +1648,12 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
 
   // Assign URL's to some frames in the graph so that they'll be mapped to
   // OriginInBrowsingInstanceContexts.
-  mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
-                                                /*same_document=*/false);
-  mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                                /*same_document=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(
+      kUrl2, kOrigin2,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
+  mock_graph.child_frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
@@ -1669,17 +1686,19 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
 
   // No origin -> kOrigin2.
-  mock_graph.frame->OnNavigationCommitted(kUrl2, kOrigin2,
-                                          /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(
+      kUrl2, kOrigin2,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
   // kOrigin2 -> kOrigin1.
-  mock_graph.other_frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                                /*same_document=*/false);
+  mock_graph.other_frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
 
   // Same-document navigation should not change the origin (kOrigin1 ->
   // kOrigin1).
-  mock_graph.child_frame->OnNavigationCommitted(GURL("http://a.com#fragment"),
-                                                kOrigin1,
-                                                /*same_document=*/true);
+  mock_graph.child_frame->OnNavigationCommitted(
+      GURL("http://a.com#fragment"), kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements * 2 / 3);
   UpdateAndGetCPUMeasurements(kQueryId);
@@ -1882,11 +1901,13 @@ TEST_F(ResourceAttrCPUMonitorTest, OriginInBrowsingInstanceContextLifetime) {
   const OriginInBrowsingInstanceContext kOrigin2Context(
       kOrigin2, kBrowsingInstanceForPage);
 
-  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                          /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
-  mock_graph.frame->OnNavigationCommitted(kUrl2, kOrigin2,
-                                          /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(
+      kUrl2, kOrigin2,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
 
   {
@@ -1916,8 +1937,9 @@ TEST_F(ResourceAttrCPUMonitorTest, OriginInBrowsingInstanceContextLifetime) {
               kCPUProportion * kTimeBetweenMeasurements * 1.5);
   }
 
-  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                          /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(
+      kUrl1, kOrigin1,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
   task_env().FastForwardBy(kTimeBetweenMeasurements);
 
   {
@@ -1970,8 +1992,9 @@ TEST_F(ResourceAttrCPUMonitorTest, OriginInBrowsingInstanceContextLifetime) {
   }
 
   // Revive the context for origin 2.
-  mock_graph.frame->OnNavigationCommitted(kUrl2, kOrigin2,
-                                          /*same_document=*/false);
+  mock_graph.frame->OnNavigationCommitted(
+      kUrl2, kOrigin2,
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
   task_env().FastForwardBy(kTimeBetweenMeasurements);
 
   {

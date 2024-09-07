@@ -383,33 +383,6 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
 
   // Miscellaneous Tools ///////////////////////////////////////////////////////
 
-  // Convenience method to wait on a state change when the element at `where`
-  // reaches `minimum_size`. If `must_already_exist` is false (recommended),
-  // Type::kExistsAndConditionTrue is used; if true, then Type::kConditionTrue
-  // is used instead.
-  void SendEventOnElementMinimumSize(ui::CustomElementEventType event_type,
-                                     const DeepQuery& where,
-                                     const gfx::Size& minimum_size,
-                                     bool must_already_exist);
-
-  // Sends an event on the instrumented WebView when its size exceeds some
-  // minimum, then checks that an element within the WebView is present and of
-  // minimum size. If no `element_to_check` is specified, the body element of
-  // the document is checked instead.
-  //
-  // Currently only supported for WebView instrumented with ForNonTabWebView().
-  //
-  // Useful when you expect a secondary UI to resize in response to loading data
-  // but that resize might not be synchronous (and you have some idea how large
-  // the surface should be).
-  //
-  // If the surface never reaches the minimum size, the current test will fail.
-  void SendEventOnWebViewMinimumSize(
-      const gfx::Size& minimum_webui_size,
-      ui::CustomElementEventType event_type,
-      const DeepQuery& element_to_check = DeepQuery({"body"}),
-      const gfx::Size& minimum_element_size = gfx::Size(1, 1));
-
  protected:
   // content::WebContentsObserver:
   void DidStopLoading() override;

@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -102,7 +103,7 @@ WebUIBubbleDialogView::WebUIBubbleDialogView(
 
   contents_wrapper_->web_contents()->WasShown();
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets());
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }

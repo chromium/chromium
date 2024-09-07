@@ -36,12 +36,6 @@ class SyncTransportDataPrefs {
   SyncTransportDataPrefs& operator=(const SyncTransportDataPrefs&) = delete;
   ~SyncTransportDataPrefs();
 
-  // Clears all legacy (non-account-keyed) preferences in this class.
-  // TODO(crbug.com/337034860): Remove once the account-keyed version of the
-  // transport prefs is rolled out.
-  void ClearAllLegacy();
-  static void ClearAllLegacy(PrefService* pref_service);
-
   // Clears all account-keyed preferences for the current account (i.e. the one
   // passed into the constructor).
   void ClearForCurrentAccount();

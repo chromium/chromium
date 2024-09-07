@@ -99,10 +99,7 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     pages += namespace.WebGPUCanvasCapturePages(cls.test_base_name)
     pages += namespace.PaintWorkletPages(cls.test_base_name)
     pages += namespace.VideoFromCanvasPages(cls.test_base_name)
-    # pages += namespace.NoGpuProcessPages(cls.test_base_name)
-    # The following pages should run only on platforms where SwiftShader is
-    # enabled. They are skipped on other platforms through test expectations.
-    # pages += namespace.SwiftShaderPages(cls.test_base_name)
+    pages += namespace.NoGpuProcessPages(cls.test_base_name)
     if host_information.IsMac():
       pages += namespace.MacSpecificPages(cls.test_base_name)
       # Unfortunately we don't have a browser instance here so can't tell
@@ -112,6 +109,10 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     if host_information.IsWindows():
       pages += namespace.DirectCompositionPages(cls.test_base_name)
       pages += namespace.HdrTestPages(cls.test_base_name)
+    # Only run SwiftShader tests on platforms that support it.
+    if host_information.IsLinux() or (host_information.IsWindows()
+                                      and not host_information.IsArmCpu()):
+      pages += namespace.SwiftShaderPages(cls.test_base_name)
     for p in pages:
       yield (p.name, posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
                                     p.url), [p])

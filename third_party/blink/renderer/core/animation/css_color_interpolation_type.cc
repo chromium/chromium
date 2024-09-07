@@ -103,7 +103,7 @@ BaseInterpolableColor* CSSColorInterpolationType::CreateBaseInterpolableColor(
     const StyleColor& color,
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider) {
-  if (color.IsUnresolvedColorMixFunction()) {
+  if (color.IsUnresolvedColorFunction()) {
     return InterpolableStyleColor::Create(color);
   }
   return CreateInterpolableColor(color, color_scheme, color_provider);

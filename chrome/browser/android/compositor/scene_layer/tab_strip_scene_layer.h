@@ -12,6 +12,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/input/android/offset_tag_android.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/android/resources/resource_manager.h"
 
@@ -48,6 +49,10 @@ class TabStripSceneLayer : public SceneLayer {
 
   void FinishBuildingFrame(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jobj);
+
+  void UpdateOffsetTag(JNIEnv* env,
+                       const base::android::JavaParamRef<jobject>& jobj,
+                       const base::android::JavaParamRef<jobject>& joffset_tag);
 
   void UpdateTabStripLayer(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jobj,

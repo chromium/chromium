@@ -16,15 +16,15 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -114,9 +114,10 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
 
   [coordinator_ start];
 
-  [coordinator_ primaryButtonTapped:[[CreditCardData alloc]
-                                        initWithCreditCard:credit_card_
-                                                      icon:nil]];
+  [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
+                                               initWithCreditCard:credit_card_
+                                                             icon:nil]
+                                   atIndex:0];
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 
@@ -135,9 +136,10 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
 
   [coordinator_ start];
 
-  [coordinator_ primaryButtonTapped:[[CreditCardData alloc]
-                                        initWithCreditCard:virtual_card_
-                                                      icon:nil]];
+  [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
+                                               initWithCreditCard:virtual_card_
+                                                             icon:nil]
+                                   atIndex:0];
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 

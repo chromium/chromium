@@ -147,8 +147,6 @@ std::string FormStructuresToString(
   return base::JoinString(string_forms, "\n");
 }
 
-}  // namespace
-
 // A data-driven test for verifying Autofill heuristics. Each input is an HTML
 // file that contains one or more forms. The corresponding output file lists the
 // heuristically detected type for each field.
@@ -208,8 +206,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {
-          // TODO(crbug.com/40160818) Remove once launched.
-          features::kAutofillEnableDependentLocalityParsing,
           features::kAutofillPageLanguageDetection,
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
@@ -220,8 +216,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillInferCountryCallingCode,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
-          // TODO(crbug.com/40279279): Clean up when launched.
-          features::kAutofillDefaultToCityAndNumber,
       },
       // Disabled
       {// TODO(crbug.com/40220393): Remove once launched.
@@ -302,10 +296,12 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
 #define MAYBE_DataDrivenHeuristics DataDrivenHeuristics
 #endif
 IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, MAYBE_DataDrivenHeuristics) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
     GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                     "parsing patterns";
   }
+#endif
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
   bool is_expected_to_pass =
@@ -317,4 +313,5 @@ INSTANTIATE_TEST_SUITE_P(AllForms,
                          FormStructureBrowserTest,
                          testing::ValuesIn(GetTestFiles()));
 
+}  // namespace
 }  // namespace autofill

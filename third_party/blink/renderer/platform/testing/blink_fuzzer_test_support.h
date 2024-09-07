@@ -12,7 +12,7 @@
 #include "v8/include/v8-forward.h"
 
 namespace content {
-class BlinkTestEnvironmentWithIsolate;
+class BlinkTestEnvironment;
 }
 
 namespace blink {
@@ -30,10 +30,8 @@ class BlinkFuzzerTestSupport {
   BlinkFuzzerTestSupport(int argc, char** argv);
   ~BlinkFuzzerTestSupport();
 
-  v8::Isolate* GetIsolate();
-
  private:
-  std::unique_ptr<content::BlinkTestEnvironmentWithIsolate> test_environment_;
+  std::unique_ptr<content::BlinkTestEnvironment> test_environment_;
   base::AtExitManager at_exit_;
 };
 

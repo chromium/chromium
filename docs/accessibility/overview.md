@@ -555,8 +555,8 @@ For more detail on Chrome OS accessibility, read [How Chrome OS Accessibility Wo
 [AXPlatformNode]: https://cs.chromium.org/chromium/src/ui/accessibility/platform/ax_platform_node.h
 [AXTreeSerializer]: https://cs.chromium.org/chromium/src/ui/accessibility/ax_tree_serializer.h
 [BlinkAXTreeSource]: https://cs.chromium.org/chromium/src/content/renderer/accessibility/blink_ax_tree_source.h
-[BrowserAccessibility]: https://cs.chromium.org/chromium/src/content/browser/accessibility/browser_accessibility.h
-[BrowserAccessibilityManager]: https://cs.chromium.org/chromium/src/content/browser/accessibility/browser_accessibility_manager.h
+[BrowserAccessibility]: https://cs.chromium.org/chromium/src/ui/accessibility/platform/browser_accessibility.h
+[BrowserAccessibilityManager]: https://cs.chromium.org/chromium/src/ui/accessibility/platform/browser_accessibility_manager.h
 [LayoutObject]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/layout/layout_object.h
 [AXPlatformTreeManagerDelegate]: https://cs.chromium.org/chromium/src/ui/accessibility/platform/ax_platform_tree_manager_delegate.h
 [ViewAccessibility]: https://cs.chromium.org/chromium/src/ui/views/accessibility/view_accessibility.h

@@ -368,8 +368,7 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
   result += HostForDisplay(host);
 
   const int port = origin.IntPort();
-  const int default_port = url::DefaultPortForScheme(
-      scheme.data(), static_cast<int>(scheme.length()));
+  const int default_port = url::DefaultPortForScheme(scheme);
   if (port != url::PORT_UNSPECIFIED && port != default_port)
     result += base::StrCat({colon, base::UTF8ToUTF16(origin.port_piece())});
 
@@ -394,8 +393,7 @@ std::u16string FormatOriginForSecurityDisplay(
   result += HostForDisplay(host);
 
   int port = static_cast<int>(origin.port());
-  const int default_port = url::DefaultPortForScheme(
-      scheme.data(), static_cast<int>(scheme.length()));
+  const int default_port = url::DefaultPortForScheme(scheme);
   if (port != 0 && port != default_port)
     result += base::StrCat({colon, base::NumberToString16(origin.port())});
 

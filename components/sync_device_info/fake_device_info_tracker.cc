@@ -42,6 +42,11 @@ std::vector<const DeviceInfo*> FakeDeviceInfoTracker::GetAllDeviceInfo() const {
   return devices;
 }
 
+std::vector<const DeviceInfo*> FakeDeviceInfoTracker::GetAllChromeDeviceInfo()
+    const {
+  return GetAllDeviceInfo();
+}
+
 void FakeDeviceInfoTracker::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

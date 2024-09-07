@@ -82,7 +82,8 @@ TEST(HardeningTest, MetadataPointerCrashing) {
   root.Free(data);
 
   uintptr_t slot_start = root.ObjectToSlotStart(data);
-  auto* metadata = SlotSpanMetadata::FromSlotStart(slot_start);
+  auto* metadata =
+      SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(slot_start);
 
   root.get_freelist_dispatcher()->EmplaceAndInitForTest(slot_start, metadata,
                                                         true);
@@ -174,7 +175,8 @@ TEST(HardeningTest, PoolOffsetMetadataPointerCrashing) {
   root.Free(data);
 
   uintptr_t slot_start = root.ObjectToSlotStart(data);
-  auto* metadata = SlotSpanMetadata::FromSlotStart(slot_start);
+  auto* metadata =
+      SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(slot_start);
 
   root.get_freelist_dispatcher()->EmplaceAndInitForTest(slot_start, metadata,
                                                         true);

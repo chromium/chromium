@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
@@ -40,6 +41,7 @@ class MockInstallIsolatedWebAppCommand : public InstallIsolatedWebAppCommand {
                                      std::move(optional_profile_keep_alive),
                                      std::move(callback),
                                      std::move(command_helper)),
+        url_info_(url_info),
         execution_mode_(execution_mode) {}
 
  protected:
@@ -54,7 +56,7 @@ class MockInstallIsolatedWebAppCommand : public InstallIsolatedWebAppCommand {
         CompleteAndSelfDestruct(
             CommandResult::kSuccess,
             InstallIsolatedWebAppCommandSuccess(
-                base::Version(),
+                url_info_, base::Version(),
                 IsolatedWebAppStorageLocation::OwnedBundle(
                     /*dir_name_ascii=*/"some_dir", /*dev_mode=*/false)));
         break;
@@ -69,6 +71,7 @@ class MockInstallIsolatedWebAppCommand : public InstallIsolatedWebAppCommand {
   }
 
  private:
+  const IsolatedWebAppUrlInfo url_info_;
   const MockIsolatedWebAppInstallCommandWrapper::ExecutionMode execution_mode_;
 };
 

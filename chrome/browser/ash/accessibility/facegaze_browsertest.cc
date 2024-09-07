@@ -72,7 +72,8 @@ class MockEventHandler : public ui::EventHandler {
     ui::EventType type = event->type();
     if (type == ui::EventType::kMousePressed ||
         type == ui::EventType::kMouseReleased ||
-        type == ui::EventType::kMouseMoved) {
+        type == ui::EventType::kMouseMoved ||
+        type == ui::EventType::kMousewheel) {
       mouse_events_.push_back(*event);
     }
   }
@@ -548,6 +549,41 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, CancelDialog) {
   // Verify that the dialog accepted pref is still false.
   ASSERT_FALSE(prefs->GetBoolean(
       prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted));
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ScrollMode) {
+  utils()->EnableFaceGaze(
+      Config()
+          .Default()
+          .WithGesturesToMacros(
+              {{FaceGazeGesture::JAW_LEFT, MacroName::TOGGLE_SCROLL_MODE}})
+          .WithGestureConfidences({{FaceGazeGesture::JAW_LEFT, 30}})
+          .WithCursorSpeeds({/*up=*/1, /*down=*/1, /*left=*/1, /*right=*/1})
+          .WithGestureRepeatDelayMs(0));
+
+  // Move jaw left to enter scroll mode.
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult().WithGesture(MediapipeGesture::JAW_LEFT, 40));
+  utils()->AssertScrollMode(true);
+
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult()
+          .WithNormalizedForeheadLocation(0.9, 0.9)
+          .WithGesture(MediapipeGesture::JAW_LEFT, 0));
+  utils()->TriggerMouseControllerInterval();
+
+  // Head movement should cause one scroll event to be sent.
+  ASSERT_EQ(1u,
+            event_handler().mouse_events(ui::EventType::kMousewheel).size());
+  // No mouse movement events should be sent.
+  ASSERT_EQ(0u,
+            event_handler().mouse_events(ui::EventType::kMouseMoved).size());
+
+  // Move jaw left again to exit scroll mode.
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult().WithGesture(MediapipeGesture::JAW_LEFT, 40));
+  utils()->AssertScrollMode(false);
 }
 
 }  // namespace ash

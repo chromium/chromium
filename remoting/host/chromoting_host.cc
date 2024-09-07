@@ -22,6 +22,7 @@
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/host_config.h"
@@ -83,7 +84,8 @@ ChromotingHost::ChromotingHost(
     scoped_refptr<protocol::TransportContext> transport_context,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
-    const DesktopEnvironmentOptions& options)
+    const DesktopEnvironmentOptions& options,
+    const LocalSessionPoliciesProvider* local_session_policies_provider)
     : desktop_environment_factory_(desktop_environment_factory),
       session_manager_(std::move(session_manager)),
       transport_context_(transport_context),
@@ -91,7 +93,8 @@ ChromotingHost::ChromotingHost(
       video_encode_task_runner_(video_encode_task_runner),
       status_monitor_(new HostStatusMonitor()),
       login_backoff_(&kDefaultBackoffPolicy),
-      desktop_environment_options_(options) {
+      desktop_environment_options_(options),
+      local_session_policies_provider_(local_session_policies_provider) {
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 }
 
@@ -156,11 +159,6 @@ void ChromotingHost::SetAuthenticatorFactory(
     std::unique_ptr<protocol::AuthenticatorFactory> authenticator_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   session_manager_->set_authenticator_factory(std::move(authenticator_factory));
-}
-
-void ChromotingHost::SetMaximumSessionDuration(
-    const base::TimeDelta& max_session_duration) {
-  max_session_duration_ = max_session_duration;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -319,8 +317,8 @@ void ChromotingHost::OnIncomingSession(
   }
   clients_.push_back(std::make_unique<ClientSession>(
       this, std::move(connection), desktop_environment_factory_,
-      desktop_environment_options_, max_session_duration_, pairing_registry_,
-      extension_ptrs));
+      desktop_environment_options_, pairing_registry_, extension_ptrs,
+      local_session_policies_provider_));
 }
 
 ClientSession* ChromotingHost::GetConnectedClientSession() const {

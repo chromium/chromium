@@ -28,7 +28,6 @@ static_library("camera_app") {
     "//chrome/browser/ash/hats",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/services/pdf/public/mojom",
     "//content/public/browser",
     "//mojo/public/cpp/base",
@@ -48,6 +47,8 @@ static_library("camera_app") {
     "//chrome/browser/feedback",
     "//chrome/browser/pdf:pdf_service",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/internet",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:constants",
@@ -79,7 +80,6 @@ source_set("browser_tests") {
   sources = [ "camera_app_integration_browsertest.cc" ]
 
   deps = [
-    "//chrome/browser/ash/hats",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",

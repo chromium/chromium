@@ -52,15 +52,15 @@ public class TabSwitcherThumbnailTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private TabListMediator.ThumbnailFetcher mNullThumbnailProvider =
-            new TabListMediator.ThumbnailFetcher(
-                    (tabId, thumbnailSize, callback, isSelected) -> callback.onResult(null),
+    private ThumbnailFetcher mNullThumbnailFetcher =
+            new ThumbnailFetcher(
+                    (tabId, thumbnailSize, isSelected, callback) -> callback.onResult(null),
                     Tab.INVALID_TAB_ID);
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        TabGridViewBinder.setThumbnailFeatureForTesting(mNullThumbnailProvider);
+        TabGridViewBinder.setThumbnailFeatureForTesting(mNullThumbnailFetcher);
     }
 
     @Test

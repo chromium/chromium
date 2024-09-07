@@ -1635,11 +1635,11 @@ mojom("mojom") {
       types = [
         {
           mojom = "network.mojom.GeoHint"
-          cpp = "::network::GeoHint"
+          cpp = "::ip_protection::GeoHint"
         },
         {
           mojom = "network.mojom.BlindSignedAuthToken"
-          cpp = "::network::BlindSignedAuthToken"
+          cpp = "::ip_protection::BlindSignedAuthToken"
         },
       ]
       traits_headers = [

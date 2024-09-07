@@ -973,9 +973,6 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_ENTERPRISE_SIGNIN_WORK_PROFILE_EXPLANATION" desc="The warning message displayed to an enterprise user about to link their profile to their Google account. This message is followed by a 'Learn more' link.">
           Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords, and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
         </message>
-        <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_DETAILS" desc="Paragraph disclaiming to the user what their organization can do with their profile information.">
-          Your organization can see and manage browsing data in your work profile, such as your bookmarks, history, and passwords. It can’t see browsing data in personal Chrome profiles.
-        </message>
         <!-- New one-click sign-in dialog contents for SAML support -->
         <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW" desc="The title of the modal dialog window that opens when the user chooses to use one click sign-in.">
           You're signed in to Chrome!
@@ -1071,6 +1068,12 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER_SCREENREADER" desc="This string is the accessibility text of a reminder message, which is intended to help users understand that they have been signed in to Chrome.">
           While you're signed in, you can use your passwords and more from your Google Account in Chrome. <ph name="SHORTCUT">$1<ex>CTRL+SHIFT+M</ex></ph> can change your Google services settings.
+        </message>
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_TITLE" desc="This is the title of a confirmation dialog and asks the user to confirm that they want to sign out of Chrome. It appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. This title is before the 'Your passwords and other Chrome data are saved to your Google Account, and will be removed from this device. To use them in the future, sign back in to Chrome.' string. The tone should be straightforward.">
+          Sign out of Chrome?
+        </message>
+        <message name="CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_BODY" desc="This is the subtitle of a confirmation dialog that asks the user to confirm that they want to sign out of Chrome. It appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. This subtitle is after the 'Sign out of Chrome?' string. The tone should be calm, because we want to explain to the user that their data is saved; however, we want to set expectations by clarifying that the data will be removed from the device. This string provides a path to resolution because it explains how the user can see their data again (by signing back in).">
+          Your passwords and other Chrome data are saved in your Google Account, and will be removed from this device. To use them in the future, sign back in to Chrome.
         </message>
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY" desc="This is the subtitle of an error message dialog that appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. The error message appears when the user has saved some data (like a password or payment method) to Chrome, but Chrome wasn't able to save the data to the user's Google Account due to a sign-in error; but, the data has been saved locally to Chrome. This subtitle is after the 'Some data isn’t saved yet' string. The tone should be cautionary, because we want to explain to the user that their data is not saved to their Google Account. This string provides a path to resolution because it explains how the user can properly save their data before they sign out of Chrome.">
           Chrome needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out, this data will stay on this device.
@@ -1647,6 +1650,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON" desc="Button in the header of desktop user menu that prompts the user to update Chrome to fix the out-of-date Chrome client error.">
         Update Chrome
       </message>
+      <message name="IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_TITLE_SIGNED_IN_ONLY" desc="Title of the sync/signin error header of desktop user menu. Shown for users who are signed-in but not syncing.">
+        To use and save Chrome data in your Google Account, enter your passphrase
+      </message>
 
       <!-- Sync errors. Android uses native UI to handle Sync settings -->
       <if expr="not is_android">
@@ -1715,6 +1721,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_INFOBAR_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
           Chrome needs permission to access your camera for this site
         </message>
+        <message name="IDS_INFOBAR_MISSING_HAND_TRACKING_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to hand tracking capabilities, but Chrome is missing the Android hand tracking permission.">
+          Chrome needs permission to track your hands
+        </message>
         <message name="IDS_INFOBAR_MISSING_MICROPHONE_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the microphone capabilities, but Chrome is missing the Android microphone permission.">
           Chrome needs permission to access your microphone for this site
         </message>
@@ -1731,11 +1740,11 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_MESSAGE_MISSING_AR_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to augmented reality capabilities, but Chrome is missing the Android camera permission.">
           Chrome needs camera permission to create a 3D map of your surroundings
         </message>
-        <message name="IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to mixed reality capabilities, but Chrome is missing the Android scene understanding and hand tracking permission.">
-          Chrome needs permission to map your surroundings and track your hands
-        </message>
         <message name="IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
           Chrome needs camera permission for this site
+        </message>
+        <message name="IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to mixed reality capabilities, but Chrome is missing the Android hand tracking permission.">
+          Chrome needs permission to track your hands
         </message>
         <message name="IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the microphone capabilities, but Chrome is missing the Android microphone permission.">
           Chrome needs microphone permission for this site
@@ -1748,6 +1757,9 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT" desc="Text shown educating the user that Chrome is missing the Android storage permission, which is required to download files.">
           Chrome needs storage access permission to download files
+        </message>
+        <message name="IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to mixed reality capabilities, but Chrome is missing the Android scene understanding and hand tracking permission.">
+          Chrome needs permission to map your surroundings and track your hands
         </message>
       </if>
 
@@ -1917,6 +1929,15 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_SUBTITLE" desc="Subtitle of a section telling the user that their work profile was created but is not fully ready yet.">
           While we're setting up account access, you can still use Chrome. You may not be able to access some resources until setup is complete.
         </message>
+
+        <!-- Supervised user profile signin IPH -->
+        <!-- TODO(b/351333491): Mark them translateable once the strings are approved. -->
+        <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT"
+          desc="Informative text shown on the IPH bubble when a supervised user signs-in in a new profile or an existing local profile."
+          translateable="false">
+          The Chrome settings your parent chose in Family Link can help keep you safe online
+        </message>
+
         <!-- Profile Picker -->
         <if expr="chromeos_lacros">
           <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS" desc="Profile picker main view subtitle">
@@ -2211,6 +2232,24 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_EXTRA_CODE"
                  desc="The optional extra code for any of the errors below">
           Extra code: <ph name="EXTRA_CODE">$1<ex>0x80071234</ex></ph>.
+        </message>
+
+        <!--Startup errors.-->
+        <message name="IDS_UNABLE_TO_GET_SETUP_LOCK"
+                 desc="Error message displayed in the main dialog when the updater is unable to get the setup lock at startup.">
+          Startup error: another instance of setup is currently running, please try again later.
+        </message>
+        <message name="IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR"
+                 desc="Error message displayed in the main dialog when the updater is run without administrative privileges to install a per-system application.">
+          Startup error: please run the installer as administrator.
+        </message>
+        <message name="IDS_WRONG_USER_DEELEVATION_REQUIRED_ERROR"
+                 desc="Error message displayed in the main dialog when the updater is run with administrative privileges to install a per-user application.">
+          Startup error: please run the installer as a regular user, not as administrator.
+        </message>
+        <message name="IDS_GENERIC_STARTUP_ERROR"
+                 desc="Error message displayed in the main dialog when an error is encountered at startup of the updater.">
+          Startup error: <ph name="STARTUP_ERROR">$1<ex>error-internal</ex></ph>.
         </message>
 
         <!--Network errors.-->

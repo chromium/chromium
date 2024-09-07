@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "components/safe_search_api/url_checker.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/family_link_user_log_record.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
@@ -22,10 +23,15 @@ namespace supervised_user {
 enum class FilteringBehaviorReason {
   DEFAULT = 0,
   ASYNC_CHECKER = 1,
-  // Deprecated, DENYLIST = 2,
-  MANUAL = 3,
-  ALLOWLIST = 4,
-  NOT_SIGNED_IN = 5,
+  MANUAL = 2,
+};
+
+// Details degarding how a particular filtering classification was arrived at.
+struct FilteringBehaviorDetails {
+  FilteringBehaviorReason reason;
+
+  // The following field only applies if `reason` is `ASYNC_CHECKER`.
+  safe_search_api::ClassificationDetails classification_details;
 };
 
 // A Java counterpart will be generated for this enum.
@@ -63,9 +69,6 @@ enum class LocallyParentApprovedExtensionsMigrationState : int {
 
 // Converts FamilyRole enum to string format.
 std::string FamilyRoleToString(kidsmanagement::FamilyRole role);
-
-// Converts FilteringBehaviorReason enum to string format.
-std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason);
 
 // Strips user-specific tokens in a URL to generalize it.
 GURL NormalizeUrl(const GURL& url);

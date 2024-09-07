@@ -18,7 +18,7 @@ def _GenerateFilenames(full_namespace):
   # 4. sub_name_space.idl,
   # 5. etc.
   sub_namespaces = full_namespace.split('.')
-  filenames = [ ]
+  filenames = []
   basename = None
   for namespace in reversed(sub_namespaces):
     if basename is not None:
@@ -39,6 +39,7 @@ class NamespaceResolver(object):
     used when searching for types.
   - |cpp_namespace_pattern| Default namespace pattern
   '''
+
   def __init__(self, root, path, include_rules, cpp_namespace_pattern):
     self._root = root
     self._include_rules = [(path, cpp_namespace_pattern)] + include_rules
@@ -53,13 +54,12 @@ class NamespaceResolver(object):
       if cpp_namespace:
         cpp_namespace_environment = CppNamespaceEnvironment(cpp_namespace)
       for filename in reversed(filenames):
-        filepath = os.path.join(path, filename);
+        filepath = os.path.join(path, filename)
         if os.path.exists(os.path.join(self._root, filepath)):
           schema = SchemaLoader(self._root).LoadSchema(filepath)[0]
-          return Model().AddNamespace(
-              schema,
-              filepath,
-              environment=cpp_namespace_environment)
+          return Model().AddNamespace(schema,
+                                      filepath,
+                                      environment=cpp_namespace_environment)
     return None
 
   def ResolveType(self, full_name, default_namespace):

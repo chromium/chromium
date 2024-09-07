@@ -60,11 +60,11 @@ remains an Undefined Behavior.
 - ChromeOS (incl. Ash & Lacros)
 - macOS
 - Linux
+- Fuchsia
 
 In particular, it isn't enabled by default on:
 - iOS
 - ChromeCast
-- Fuchsia
 - Aix
 - Zos
 

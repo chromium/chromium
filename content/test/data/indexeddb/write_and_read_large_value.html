@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<head>
+<title>IDB test for a large value that gets wrapped in a blob</title>
+<script type="text/javascript" src="common.js"></script>
+<script>
+
+// Constants
+const databaseName = 'large_value_db';
+const storeName = 'large_value_store';
+const id = 0;
+// Use a large array of random numbers so that it's not compressible and gets
+// stored as a blob.
+const data = Array.from({ length: 10000 }, () => Math.random()).join("");
+
+let db;
+
+function upgradeCallback(db) {
+  deleteAllObjectStores(db);
+  db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+}
+
+async function writeAndReadData() {
+  db = await promiseOpenDb(databaseName, upgradeCallback);
+  const transaction = db.transaction(storeName, 'readwrite');
+  transaction.onabort = unexpectedAbortCallback;
+  transaction.onerror = unexpectedErrorCallback;
+  transaction.oncomplete = readData().then((result) => {
+    if (result !== id) {
+      fail(`expected result to be '${id}', got '${result}'`);
+      return;
+    }
+    done();
+  }).catch(unexpectedErrorCallback);
+  const objectStore = transaction.objectStore(storeName);
+  const request = objectStore.put({ id: id, data: data });
+  request.onerror = unexpectedErrorCallback;
+}
+
+function readData() {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, 'readonly');
+    transaction.onerror = () => reject(transaction.error);
+    const objectStore = transaction.objectStore(storeName);
+    const request = objectStore.get(id);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result.id);
+  });
+}
+
+</script>
+</head>
+<body onLoad="writeAndReadData()">
+<div id="status">Starting...</div>
+</body>
+</html>

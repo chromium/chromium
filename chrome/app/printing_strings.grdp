@@ -68,7 +68,7 @@
     <message name="IDS_PRINT_PREVIEW_OPTION_COLOR" desc="Option to print in color.">
       Color
     </message>
-    <message name="IDS_PRINT_PREVIEW_OPTION_LANDSCAPE" desc="Option to print in landscape mode.">
+    <message name="IDS_PRINT_PREVIEW_OPTION_LANDSCAPE" desc="Option to print in landscape mode." meaning="Dimension of media that is wider than it is high.">
       Landscape
     </message>
     <message name="IDS_PRINT_PREVIEW_OPTION_PORTRAIT" desc="Option to print in portrait mode.">

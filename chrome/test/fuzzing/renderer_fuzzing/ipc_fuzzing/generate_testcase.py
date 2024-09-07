@@ -246,10 +246,14 @@ def run_ipc_dumper(dumper_path: str, out_file: str):
   # this tool.
   env["ASAN_OPTIONS"] = 'detect_odr_violation=0'
   args = [XVFB_PATH, os.path.abspath(dumper_path)]
-  # TODO(349980051): crbug.com/349980051: re-enable checking for the output of
-  # the script once we understand why UBSan is making browsertests so slow with
-  # DCHECKs on.
-  subprocess.run(args, capture_output=True, env=env, check=False)
+  # TODO(349980051): crbug.com/349980051: when ubsan is enabled by default in
+  # ASAN enabled builds, we had timeout issues running this binary.
+  try:
+    subprocess.run(args, capture_output=True, env=env, check=True)
+  except subprocess.CalledProcessError as e:
+    raise Exception(f'Command {args} failed (ret {e.returncode}) with:'
+                    f'{e.output.decode(sys.getfilesystemencoding())}'
+                    f'{e.stderr.decode(sys.getfilesystemencoding())}')
 
 
 def generate_interfaces(ipc_interfaces_dumper: str,

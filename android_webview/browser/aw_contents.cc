@@ -34,6 +34,7 @@
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "android_webview/browser/permission/aw_permission_request.h"
+#include "android_webview/browser/permission/permission_callback.h"
 #include "android_webview/browser/permission/permission_request_handler.h"
 #include "android_webview/browser/permission/simple_permission_request.h"
 #include "android_webview/browser/state_serializer.h"
@@ -64,6 +65,7 @@
 #include "base/pickle.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -157,24 +159,6 @@ std::string* g_locale() {
 std::string* g_locale_list() {
   static base::NoDestructor<std::string> locale_list;
   return locale_list.get();
-}
-
-// The g_app_defined_domains and g_app_asset_domains don't change between app
-// launches, so it is better to cache it across every navigation. We will want
-// to re-use these lists a fair bit below.
-std::vector<std::string>* g_app_defined_domains() {
-  static base::NoDestructor<std::vector<std::string>> app_defined_domains(
-      GetAppDefinedDomains(
-          AppDefinedDomainCriteria::kAndroidAssetStatementsAndWebLinks));
-
-  return app_defined_domains.get();
-}
-
-std::vector<std::string>* g_app_asset_domains() {
-  static base::NoDestructor<std::vector<std::string>> app_asset_domains(
-      GetAppDefinedDomains(AppDefinedDomainCriteria::kAndroidAssetStatements));
-
-  return app_asset_domains.get();
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -801,32 +785,30 @@ void AwContents::CancelMIDISysexPermissionRequests(const GURL& origin) {
       origin, AwPermissionRequest::AwPermissionRequest::MIDISysex);
 }
 
-void WebsiteStatementResults(
-    base::TimeTicks time_requested,
-    base::OnceCallback<void(bool)> callback,
-    content_relationship_verification::RelationshipCheckResult result) {
-  const base::TimeTicks time_answered = base::TimeTicks::Now();
-  base::UmaHistogramTimes("Android.WebView.StorageAccessAutoGrantTime",
-                          time_answered - time_requested);
-  std::move(callback).Run(
-      result ==
-      content_relationship_verification::RelationshipCheckResult::kSuccess);
-}
 
 void AwContents::RequestStorageAccess(const url::Origin& top_level_origin,
                                       PermissionCallback callback) {
   base::TimeTicks time_requested = base::TimeTicks::Now();
-
   // TODO(crbug.com/355460995): We should investigate if we should have a
   // particular relation string from the android app side as well. For the
   // moment, we will just accept any string that the app declares, and then
   // verify the relation on the website's side.
-  auto* domains = g_app_asset_domains();
-  bool is_defined =
-      std::find_if(domains->begin(), domains->end(),
-                   [&top_level_origin](const std::string& domain) {
-                     return top_level_origin.DomainIs(domain);
-                   }) != domains->end();
+  AppDefinedWebsites::GetInstance()->GetAppDefinedDomains(
+      AppDefinedDomainCriteria::kAndroidAssetStatements,
+      base::BindOnce(&AwContents::RequestStorageAccessWithAppDomainList,
+                     weak_ptr_factory_.GetWeakPtr(), top_level_origin,
+                     time_requested, std::move(callback)));
+}
+
+void AwContents::RequestStorageAccessWithAppDomainList(
+    const url::Origin& top_level_origin,
+    base::TimeTicks time_requested,
+    PermissionCallback callback,
+    const std::vector<std::string>& domains) {
+  bool is_defined = std::find_if(domains.begin(), domains.end(),
+                                 [&](const std::string& domain) {
+                                   return top_level_origin.DomainIs(domain);
+                                 }) != domains.end();
 
   base::UmaHistogramEnumeration("Android.WebView.StorageAccessRelation2",
                                 is_defined
@@ -851,8 +833,19 @@ void AwContents::RequestStorageAccess(const url::Origin& top_level_origin,
       std::vector<std::string>{
           base::android::BuildInfo::GetInstance()->host_signing_cert_sha256()},
       base::android::BuildInfo::GetInstance()->host_package_name(),
-      base::BindOnce(&WebsiteStatementResults, std::move(time_requested),
-                     std::move(callback)));
+      base::BindOnce(
+          [](base::TimeTicks time_requested, PermissionCallback callback,
+             content_relationship_verification::RelationshipCheckResult
+                 result) {
+            const base::TimeTicks time_answered = base::TimeTicks::Now();
+            base::UmaHistogramTimes(
+                "Android.WebView.StorageAccessAutoGrantTime",
+                time_answered - time_requested);
+            std::move(callback).Run(result ==
+                                    content_relationship_verification::
+                                        RelationshipCheckResult::kSuccess);
+          },
+          time_requested, std::move(callback)));
 }
 
 void AwContents::FindAllAsync(JNIEnv* env,
@@ -1426,8 +1419,7 @@ jint AwContents::GetEffectivePriority(JNIEnv* env) {
     case content::ChildProcessImportance::IMPORTANT:
       return static_cast<jint>(RendererPriority::HIGH);
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 JsCommunicationHost* AwContents::GetJsCommunicationHost() {
@@ -1596,21 +1588,45 @@ void JNI_AwContents_SetShouldDownloadFavicons(JNIEnv* env) {
   g_should_download_favicons = true;
 }
 
+namespace {
+
+// Returns true if any of the `domains` match the `etld_plus1`.
+bool IncludesETLDPlusOne(const std::string& etld_plus1,
+                         const std::vector<std::string>& domains) {
+  return std::find_if(
+             domains.begin(), domains.end(), [&](const std::string& domain) {
+               return etld_plus1 ==
+                      net::registry_controlled_domains::GetDomainAndRegistry(
+                          domain, net::registry_controlled_domains::
+                                      INCLUDE_PRIVATE_REGISTRIES);
+             }) != domains.end();
+}
+
+// Post a task to a background thread to log a site visit.
+void LogSiteVisitOnBackgroundThread(jlong site_hash, bool is_related_site) {
+  // Logging a site visit involves writing to shared preferences, which should
+  // not be done on the main thread.
+  base::ThreadPool::PostTask(FROM_HERE,
+                             base::BindOnce(
+                                 [](jlong site_hash, bool is_related_site) {
+                                   JNIEnv* env = AttachCurrentThread();
+                                   Java_AwSiteVisitLogger_logVisit(
+                                       env, site_hash, is_related_site);
+                                 },
+                                 site_hash, is_related_site));
+}
+}  // namespace
+
 void LogSiteVisit(std::string etld_plus1, jlong site_hash) {
-  auto* domains = g_app_defined_domains();
-  bool site_related =
-      std::find_if(domains->begin(), domains->end(),
-                   [&etld_plus1](const std::string& domain) {
-                     std::string domain_etld_plus1 =
-                         net::registry_controlled_domains::GetDomainAndRegistry(
-                             domain, net::registry_controlled_domains::
-                                         INCLUDE_PRIVATE_REGISTRIES);
-
-                     return etld_plus1 == domain_etld_plus1;
-                   }) != domains->end();
-
-  JNIEnv* env = AttachCurrentThread();
-  Java_AwSiteVisitLogger_logVisit(env, site_hash, site_related);
+  AppDefinedWebsites::GetInstance()->GetAppDefinedDomains(
+      AppDefinedDomainCriteria::kAndroidAssetStatementsAndWebLinks,
+      base::BindOnce(
+          [](std::string etld_plus1, jlong site_hash,
+             const std::vector<std::string>& domains) {
+            LogSiteVisitOnBackgroundThread(
+                site_hash, IncludesETLDPlusOne(etld_plus1, domains));
+          },
+          std::move(etld_plus1), site_hash));
 }
 
 void AwContents::PrimaryPageChanged(content::Page& page) {
@@ -1638,13 +1654,7 @@ void AwContents::PrimaryPageChanged(content::Page& page) {
 
       Java_AwContents_logOriginVisit(env, j_ref, j_origin_hash);
 
-      // When recording the site visit, we want to reference this against
-      // g_app_defined_domains which may take a moment to retrieve since
-      // we are getting that from a system service so we need post this
-      // to the background thread to avoid blocking things here.
-      base::ThreadPool::PostTask(
-          FROM_HERE, base::BindOnce(&LogSiteVisit, std::move(etld_plus1),
-                                    j_etld_plus1_hash));
+      LogSiteVisit(std::move(etld_plus1), j_etld_plus1_hash);
     }
   }
 

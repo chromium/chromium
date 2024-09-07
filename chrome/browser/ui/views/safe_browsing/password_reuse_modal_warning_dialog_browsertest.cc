@@ -70,13 +70,13 @@ IN_PROC_BROWSER_TEST_F(PasswordReuseModalWarningTest, InvokeUi_default) {
 IN_PROC_BROWSER_TEST_F(PasswordReuseModalWarningTest, TestBasicDialogBehavior) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Simulating a click on ui::DIALOG_BUTTON_OK button results in a
+  // Simulating a click on ui::mojom::DialogButton::kOk button results in a
   // CHANGE_PASSWORD action.
   ShowUi(std::string());
   dialog_->AcceptDialog();
   EXPECT_EQ(WarningAction::CHANGE_PASSWORD, latest_user_action_);
 
-  // Simulating a click on ui::DIALOG_BUTTON_CANCEL button results in an
+  // Simulating a click on ui::mojom::DialogButton::kCancel button results in an
   // IGNORE_WARNING action.
   ShowUi(std::string());
   dialog_->CancelDialog();

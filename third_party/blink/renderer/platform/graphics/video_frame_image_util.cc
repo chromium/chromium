@@ -164,9 +164,9 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         },
         frame, SharedGpuContext::ContextProviderWrapper());
 
-    if (frame->HasSharedImages()) {
+    if (frame->HasSharedImage()) {
       return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          frame->shared_image(0), frame->mailbox_holder(0).sync_token, 0u,
+          frame->shared_image(), frame->mailbox_holder(0).sync_token, 0u,
           sk_image_info, frame->mailbox_holder(0).texture_target,
           frame->metadata().texture_origin_is_top_left,
           // Pass nullptr for |context_provider_wrapper|, because we don't

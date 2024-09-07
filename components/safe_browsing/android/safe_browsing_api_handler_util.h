@@ -13,7 +13,8 @@
 
 namespace safe_browsing {
 
-// These match what SafetyNetApiHandler.java uses for |resultStatus|
+// TODO(crbug.com/40935425): Remove this enum once internal reference is
+// removed. These match what SafetyNetApiHandler.java uses for |resultStatus|
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SafeBrowsingResult
 enum class SafetyNetRemoteCallResultStatus {
@@ -25,11 +26,6 @@ enum class SafetyNetRemoteCallResultStatus {
 // Threat types as per the Java code.
 // This must match those in SafeBrowsingThreat.java in GMS's SafetyNet API.
 enum class SafetyNetJavaThreatType {
-  UNWANTED_SOFTWARE = 3,
-  POTENTIALLY_HARMFUL_APPLICATION = 4,
-  SOCIAL_ENGINEERING = 5,
-  SUBRESOURCE_FILTER = 13,
-  BILLING = 15,
   // Magic numbers for allowlists. Not actually used by GMSCore.
   CSD_ALLOWLIST = 16,
   MAX_VALUE
@@ -113,20 +109,6 @@ enum class SafeBrowsingJavaValidationResult {
   kMaxValue = INVALID_THREAT_ATTRIBUTE
 };
 
-// Do not reorder or delete entries, and make sure changes here are reflected
-// in SB2RemoteCallResult histogram.
-enum class UmaRemoteCallResult {
-  INTERNAL_ERROR = 0,
-  TIMEOUT = 1,
-  SAFE = 2,
-  MATCH = 3,
-  JSON_EMPTY = 4,
-  JSON_FAILED_TO_PARSE = 5,
-  JSON_UNKNOWN_THREAT = 6,
-  UNSUPPORTED = 7,
-  MAX_VALUE
-};
-
 // LINT.IfChange(VerifyAppsEnabledResult)
 // The result of either SafetyNet.isVerifyAppsEnabled or
 // SafetyNet.enableVerifyApps. These values are persisted to
@@ -142,16 +124,6 @@ enum class VerifyAppsEnabledResult {
   kMaxValue = FAILED,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SafeBrowsingVerifyAppsEnabledResult)
-
-// This parses the JSON from the GMSCore API and then:
-//   1) Picks the most severe threat type
-//   2) Parses that threat's key/value pairs into the metadata struct.
-//
-// If anything fails to parse, this sets the threat to "safe".  The caller
-// should report the return value via UMA.
-UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
-                                         SBThreatType* worst_threat,
-                                         ThreatMetadata* metadata);
 
 // Translates |threat_type| and |threat_attributes| from the Safe Browsing API
 // into ThreatMetadata.

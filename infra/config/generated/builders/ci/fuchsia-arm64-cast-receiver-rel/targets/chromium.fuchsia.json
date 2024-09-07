@@ -450,26 +450,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "courgette_unittests",
-        "resultdb": {
-          "enable": true,
-          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
-        },
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "courgette_unittests",
-        "test_id_prefix": "ninja://courgette:courgette_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "crypto_unittests",
         "resultdb": {
           "enable": true,

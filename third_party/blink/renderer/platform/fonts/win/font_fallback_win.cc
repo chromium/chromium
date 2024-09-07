@@ -42,6 +42,7 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -400,9 +401,22 @@ UScriptCode GetScript(int ucs4) {
   return script;
 }
 
-const char* FirstAvailableEmojiFont(const SkFontMgr& font_manager) {
+const char* AvailableColorEmojiFont(const SkFontMgr& font_manager) {
   static const char* const kEmojiFonts[] = {"Segoe UI Emoji",
                                             "Segoe UI Symbol"};
+  static const char* emoji_font = nullptr;
+  // `std::once()` may cause hangs. crbug.com/349456407
+  static bool initialized = false;
+  if (!initialized) {
+    emoji_font = FirstAvailableFont(kEmojiFonts, font_manager);
+    initialized = true;
+  }
+  return emoji_font;
+}
+
+const char* AvailableMonoEmojiFont(const SkFontMgr& font_manager) {
+  static const char* const kEmojiFonts[] = {"Segoe UI Symbol",
+                                            "Segoe UI Emoji"};
   static const char* emoji_font = nullptr;
   // `std::once()` may cause hangs. crbug.com/349456407
   static bool initialized = false;
@@ -426,15 +440,37 @@ const char* FirstAvailableMathFont(const SkFontMgr& font_manager) {
   return math_font;
 }
 
-const AtomicString& GetEmojiFont(const SkFontMgr& font_manager) {
-  // Calling `FirstAvailableEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+const AtomicString& GetColorEmojiFont(const SkFontMgr& font_manager) {
+  // Calling `AvailableColorEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
   // may cause hangs. crbug.com/349456407
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
   if (emoji_font.empty() && !emoji_font.IsNull()) {
-    emoji_font = AtomicString(FirstAvailableEmojiFont(font_manager));
+    emoji_font = AtomicString(AvailableColorEmojiFont(font_manager));
     CHECK(!emoji_font.empty() || emoji_font.IsNull());
   }
   return emoji_font;
+}
+
+const AtomicString& GetMonoEmojiFont(const SkFontMgr& font_manager) {
+  // Calling `AvailableMonoEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+  // may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
+  if (emoji_font.empty() && !emoji_font.IsNull()) {
+    emoji_font = AtomicString(AvailableMonoEmojiFont(font_manager));
+    CHECK(!emoji_font.empty() || emoji_font.IsNull());
+  }
+  return emoji_font;
+}
+
+const AtomicString& GetMathFont(const SkFontMgr& font_manager) {
+  // Calling `AvailableMonoEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+  // may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, math_font, (g_empty_atom));
+  if (math_font.empty() && !math_font.IsNull()) {
+    math_font = AtomicString(FirstAvailableMathFont(font_manager));
+    CHECK(!math_font.empty() || math_font.IsNull());
+  }
+  return math_font;
 }
 
 const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
@@ -442,7 +478,9 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
   switch (block_code) {
     case UBLOCK_EMOTICONS:
     case UBLOCK_ENCLOSED_ALPHANUMERIC_SUPPLEMENT:
-      return GetEmojiFont(font_manager);
+      // We call this function only when FallbackPriority is not kEmojiEmoji or
+      // kEmojiEmojiWithVS, so we need a text presentation of emoji.
+      return GetMonoEmojiFont(font_manager);
     case UBLOCK_PLAYING_CARDS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS_AND_ARROWS:
@@ -466,11 +504,8 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
     case UBLOCK_SUPPLEMENTAL_MATHEMATICAL_OPERATORS:
     case UBLOCK_MATHEMATICAL_ALPHANUMERIC_SYMBOLS:
     case UBLOCK_ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS:
-    case UBLOCK_GEOMETRIC_SHAPES_EXTENDED: {
-      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kMathFont,
-                                      (FirstAvailableMathFont(font_manager)));
-      return kMathFont;
-    }
+    case UBLOCK_GEOMETRIC_SHAPES_EXTENDED:
+      return GetMathFont(font_manager);
     default:
       return g_null_atom;
   }
@@ -541,8 +576,13 @@ const AtomicString& GetFallbackFamily(
     const SkFontMgr& font_manager,
     UScriptCode& script_out) {
   DCHECK(character);
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) [[unlikely]] {
-    if (const AtomicString& family = GetEmojiFont(font_manager)) {
+  if (IsEmojiPresentationEmoji(fallback_priority)) [[unlikely]] {
+    if (const AtomicString& family = GetColorEmojiFont(font_manager)) {
+      script_out = USCRIPT_INVALID_CODE;
+      return family;
+    }
+  } else if (IsTextPresentationEmoji(fallback_priority)) [[unlikely]] {
+    if (const AtomicString& family = GetMonoEmojiFont(font_manager)) {
       script_out = USCRIPT_INVALID_CODE;
       return family;
     }

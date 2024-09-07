@@ -21,6 +21,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
@@ -130,7 +131,7 @@ void VideoCaptureManager::RegisterListener(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(listener);
   listeners_.AddObserver(listener);
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
   application_state_has_running_activities_ = true;
   app_status_listener_ =
       base::android::ApplicationStatusListener::New(base::BindRepeating(
@@ -418,12 +419,13 @@ void VideoCaptureManager::OnDeviceConnectionLost(
 
 void VideoCaptureManager::OpenNativeScreenCapturePicker(
     DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback) {
   video_capture_provider_->OpenNativeScreenCapturePicker(
-      type, std::move(picker_callback), std::move(cancel_callback),
-      std::move(error_callback));
+      type, std::move(created_callback), std::move(picker_callback),
+      std::move(cancel_callback), std::move(error_callback));
 }
 
 void VideoCaptureManager::CloseNativeScreenCapturePicker(
@@ -970,7 +972,7 @@ VideoCaptureController* VideoCaptureManager::GetOrCreateController(
   return new_controller;
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 void VideoCaptureManager::OnApplicationStateChange(
     base::android::ApplicationState state) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -1056,7 +1058,7 @@ void VideoCaptureManager::OnScreenLocked() {
   for (auto session_id : desktopcapture_session_ids) {
     Close(session_id);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void VideoCaptureManager::OnScreenUnlocked() {

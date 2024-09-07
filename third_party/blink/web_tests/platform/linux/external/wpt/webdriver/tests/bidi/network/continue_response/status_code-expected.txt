@@ -1,0 +1,72 @@
+This is a wdspec test.
+[FAIL] test_status_code[status0]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status1]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status2]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status3]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status4]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status5]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status6]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status7]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status8]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status9]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status10]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status11]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status12]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status13]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status14]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status15]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status16]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status17]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status18]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status19]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status20]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status21]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status22]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status23]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status24]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status25]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status26]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status27]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status28]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status29]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status30]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status31]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status32]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status33]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_status_code[status34]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+Harness: the test ran to completion.

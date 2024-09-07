@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -95,7 +95,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
   return std::make_unique<PersonalDataManager>(
       local_storage, account_storage, chrome_browser_state->GetPrefs(),
       GetApplicationContext()->GetLocalState(),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
+      IdentityManagerFactory::GetForProfile(chrome_browser_state),
       history_service, sync_service, strike_database, autofill_image_fetcher,
       /*shared_storage_handler=*/nullptr,
       GetApplicationContext()->GetApplicationLocale(),

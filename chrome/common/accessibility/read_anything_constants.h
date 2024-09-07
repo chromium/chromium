@@ -34,6 +34,8 @@ namespace fonts {
 // Enum for logging the user-chosen font.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ReadAnythingFont)
 enum class ReadAnythingFont {
   kPoppins = 0,
   kSansSerif = 1,
@@ -46,6 +48,7 @@ enum class ReadAnythingFont {
   kAtkinsonHyperlegible = 8,
   kMaxValue = kAtkinsonHyperlegible,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingFontName)
 
 // Holds compile-time known information about each of Read Anything's supported
 // fonts. If num_langs_supported is 0, then that font supports all languages.
@@ -144,6 +147,8 @@ inline constexpr bool kReadAnythingDefaultImagesEnabled = false;
 // Enum for logging how a scroll occurs.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ReadAnythingScrollEvent)
 enum class ReadAnythingScrollEvent {
   kSelectedSidePanel = 0,
   kSelectedMainPanel = 1,
@@ -151,15 +156,19 @@ enum class ReadAnythingScrollEvent {
   kScrolledMainPanel = 3,
   kMaxValue = kScrolledMainPanel,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingScrollEvent)
 
 // Enum for logging when we show the empty state.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ReadAnythingEmptyState)
 enum class ReadAnythingEmptyState {
   kEmptyStateShown = 0,
   kSelectionAfterEmptyStateShown = 1,
   kMaxValue = kSelectionAfterEmptyStateShown,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingFontName)
 
 }  // namespace
 

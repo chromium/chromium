@@ -768,9 +768,10 @@ message RendererMainThreadTaskExecution {
     TASK_TYPE_LOW_PRIORITY_SCRIPT_EXECUTION = 81;
     TASK_TYPE_STORAGE = 82;
     TASK_TYPE_NETWORKING_UNFREEZABLE_RENDER_BLOCKING_LOADING = 83;
-    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_V8_LOW_PRIORITY = 84;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_V8_USER_VISIBLE = 84;
     TASK_TYPE_CLIPBOARD = 85;
     TASK_TYPE_MACHINE_LEARNING = 86;
+    TASK_TYPE_MAIN_THREAD_TASK_QUEUE_V8_BEST_EFFORT = 87;
   }
 
   enum FrameType {
@@ -978,7 +979,8 @@ message SequenceManagerTask {
     UI_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ = 54;
     IO_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ = 55;
 
-    V8_LOW_PRIORITY_TQ = 56;
+    V8_USER_VISIBLE_TQ = 56;
+    V8_BEST_EFFORT_TQ = 57;
   }
 
   optional Priority priority = 1;
@@ -1397,7 +1399,7 @@ message ChromeGraphicsPipeline {
     STEP_RECEIVE_COMPOSITOR_FRAME = 5;
     STEP_RECEIVE_BEGIN_FRAME = 6;
     STEP_RECEIVE_BEGIN_FRAME_DISCARD = 7;
-    STEP_SEND_BEGIN_MAIN_FRAME = 8;
+    STEP_SEND_BEGIN_MAIN_FRAME = 8 [deprecated = true];
     STEP_SUBMIT_COMPOSITOR_FRAME = 9;
     STEP_SURFACE_AGGREGATION = 10;
     STEP_SEND_BUFFER_SWAP = 11;
@@ -1448,7 +1450,11 @@ message ChromeGraphicsPipeline {
   }
   optional StepName step = 1;
   optional FrameSinkId frame_sink_id = 2;
+
+  // Id used to link `ChromeGraphicsPipeline`s corresponding to work done
+  // on creating and presenting one frame.
   optional int64 display_trace_id = 3;
+
   optional LocalSurfaceId local_surface_id = 4;
   optional int64 frame_sequence = 5;
   optional FrameSkippedReason frame_skipped_reason = 6;
@@ -1926,9 +1932,56 @@ message AnimationFrameScriptTimingInfo {
   optional ThirdPartyTechnology third_party_technology = 10;
 }
 
+message BeginFrameId {
+  optional uint64 source_id = 1;
+  optional uint64 sequence_number = 2;
+}
+
+message MainFramePipeline {
+  enum Step {
+    UNKNOWN = 0;
+    SEND_BEGIN_MAIN_FRAME = 1;
+    BEGIN_MAIN_FRAME = 2;
+    ABORTED_ON_MAIN = 3;
+    COMMIT_ON_MAIN = 4;
+    READY_TO_COMMIT_ON_IMPL = 5;
+    COMMIT_ON_IMPL = 6;
+    COMMIT_COMPLETE = 7;
+    READY_TO_ACTIVATE = 8;
+    ACTIVATE = 9;
+    DRAW = 10;
+    UPDATE_DISPLAY_TREE = 11;
+  }
+
+  // Id connecting the steps of the pipeline together.
+  optional uint64 main_frame_id = 1;
+  optional Step step = 2;
+
+  // Id for the BeginFrame, which triggered this main frame.
+  // Set for the SEND_BEGIN_MAIN_FRAME step.
+  optional BeginFrameId begin_frame_id = 3;
+
+  // If the step is ABORTED_ON_MAIN, this field will contain the reason.
+  enum AbortedOnMainReason {
+    ABORTED_MAIN_REASON_UNKNOWN = 0;
+    NOT_VISIBLE = 1;
+    DEFERRED_UPDATE = 2;
+    DEFERRED_COMMIT_ABORTED = 3;
+    NO_UPDATE = 4;
+  }
+  optional AbortedOnMainReason aborted_on_main_reason = 4;
+
+  // Id of the last begin frame id issued by renderer compositor by the time
+  // this main frame is drawn for the first time.
+  // The difference between `begin_frame_id` and
+  // `last_begin_frame_id_during_first_draw` can be used to reason about the
+  // main frame latency. Set for the first DRAW step.
+  optional BeginFrameId last_begin_frame_id_during_first_draw = 5;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1067
+  // Next ID: 1068
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2070,5 +2123,7 @@ message ChromeTrackEvent {
         1065;
 
     optional ScrollMetrics scroll_metrics = 1066;
+
+    optional MainFramePipeline main_frame_pipeline = 1067;
   }
 }

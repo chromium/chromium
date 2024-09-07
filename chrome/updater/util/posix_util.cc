@@ -61,11 +61,6 @@ bool DeleteCandidateInstallFolder(UpdaterScope scope) {
   return DeleteFolder(GetVersionedInstallDirectory(scope));
 }
 
-base::FilePath GetUpdaterFolderName() {
-  return base::FilePath(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
-}
-
 bool CopyDir(const base::FilePath& from_path,
              const base::FilePath& to_path,
              bool world_readable) {

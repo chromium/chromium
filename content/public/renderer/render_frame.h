@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/common/bindings_policy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -213,9 +214,8 @@ class CONTENT_EXPORT RenderFrame :
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       blink::TaskType task_type) = 0;
 
-  // Bitwise-ORed set of extra bindings that have been enabled.  See
-  // BindingsPolicy for details.
-  virtual int GetEnabledBindings() = 0;
+  // The extra bindings that have been enabled.
+  virtual BindingsPolicySet GetEnabledBindings() = 0;
 
   // Set the accessibility mode to force creation of RenderAccessibility.
   virtual void SetAccessibilityModeForTest(ui::AXMode new_mode) = 0;

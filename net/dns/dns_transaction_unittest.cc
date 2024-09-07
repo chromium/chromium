@@ -479,7 +479,7 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
       for (auto& reader : *readers) {
         const UploadBytesElementReader* byte_reader = reader->AsBytesReader();
         decoded_query +=
-            std::string(byte_reader->bytes(), byte_reader->length());
+            std::string(base::as_string_view(byte_reader->bytes()));
       }
     }
 

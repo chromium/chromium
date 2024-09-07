@@ -4,22 +4,22 @@
 
 package org.chromium.chrome.browser.bottom_sheet;
 
-import org.chromium.base.Callback;
+import android.text.SpannableString;
+
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties defined here reflect the visible state of the simple notice sheet */
-class SimpleNoticeSheetProperties {
-    static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey("visible");
-    static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
-            new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
+public class SimpleNoticeSheetProperties {
+    public static final PropertyModel.WritableObjectPropertyKey<String> SHEET_TITLE =
+            new PropertyModel.WritableObjectPropertyKey<>("sheet_title");
+    public static final PropertyModel.WritableObjectPropertyKey<SpannableString> SHEET_TEXT =
+            new PropertyModel.WritableObjectPropertyKey<>("sheet_text");
+    public static final PropertyModel.WritableObjectPropertyKey<String> BUTTON_TITLE =
+            new PropertyModel.WritableObjectPropertyKey<>("button_title");
+    public static final PropertyModel.ReadableObjectPropertyKey<Runnable> BUTTON_ACTION =
+            new PropertyModel.ReadableObjectPropertyKey<>("button_action");
 
-    static PropertyModel createDefaultModel(Callback<Integer> dismissHandler) {
-        return new PropertyModel.Builder(VISIBLE, DISMISS_HANDLER)
-                .with(VISIBLE, false)
-                .with(DISMISS_HANDLER, dismissHandler)
-                .build();
-    }
-
-    private SimpleNoticeSheetProperties() {}
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {SHEET_TITLE, SHEET_TEXT, BUTTON_TITLE, BUTTON_ACTION};
 }

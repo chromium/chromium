@@ -8,7 +8,7 @@
 #import "base/test/task_environment.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -94,7 +94,7 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
                           browser_state_.get())
                                     prefService:browser_state_->GetPrefs()
                                 identityManager:IdentityManagerFactory::
-                                                    GetForBrowserState(
+                                                    GetForProfile(
                                                         browser_state_.get())])
           .andReturn(mock_save_to_photos_settings_mediator_);
     }
@@ -160,14 +160,14 @@ TEST_F(DownloadsSettingsCoordinatorTest,
   CreateMockSaveToPhotosSettingsMediatorStubbed(false);
   OCMExpect([mock_save_to_photos_settings_mediator_ alloc])
       .andReturn(mock_save_to_photos_settings_mediator_);
-  OCMExpect([mock_save_to_photos_settings_mediator_
-                initWithAccountManagerService:
-                    ChromeAccountManagerServiceFactory::GetForBrowserState(
-                        browser_state_.get())
-                                  prefService:browser_state_->GetPrefs()
-                              identityManager:IdentityManagerFactory::
-                                                  GetForBrowserState(
-                                                      browser_state_.get())])
+  OCMExpect(
+      [mock_save_to_photos_settings_mediator_
+          initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                            GetForBrowserState(
+                                                browser_state_.get())
+                            prefService:browser_state_->GetPrefs()
+                        identityManager:IdentityManagerFactory::GetForProfile(
+                                            browser_state_.get())])
       .andReturn(mock_save_to_photos_settings_mediator_);
 
   // Mock VC and expect it is created and initialized as expected.

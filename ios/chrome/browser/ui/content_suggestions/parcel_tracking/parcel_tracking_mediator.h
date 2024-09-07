@@ -14,7 +14,7 @@ class ShoppingService;
 }
 
 enum class ContentSuggestionsModuleType;
-@protocol NewTabPageMetricsDelegate;
+@protocol NewTabPageActionsDelegate;
 @class ParcelTrackingItem;
 enum class ParcelType;
 class UrlLoadingBrowserAgent;
@@ -42,9 +42,8 @@ class PrefService;
 // Delegate used to communicate events back to the owner of this class.
 @property(nonatomic, weak) id<ParcelTrackingMediatorDelegate> delegate;
 
-// Delegate for reporting content suggestions actions to the NTP metrics
-// recorder.
-@property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
+// Delegate for reporting content suggestions actions to the NTP.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 // Default initializer.
 - (instancetype)
@@ -58,6 +57,9 @@ class PrefService;
 
 // Resets the latest fetched tracked packages and re-fecthes if applicable.
 - (void)reset;
+
+// Fetches the latest tracked parcels.
+- (void)fetchTrackedParcels;
 
 // Returns the parcel tracking items to show.
 - (ParcelTrackingItem*)parcelTrackingItemToShow;

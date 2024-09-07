@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
 
 import java.util.ArrayList;
@@ -114,18 +115,6 @@ public class PostTask {
 
     /**
      * @param taskTraits The TaskTraits that describe the desired TaskRunner.
-     * @return The TaskRunner for the specified TaskTraits.
-     */
-    public static SingleThreadTaskRunner createSingleThreadTaskRunner(@TaskTraits int taskTraits) {
-        if (isUiTaskTraits(taskTraits)) {
-            return (SingleThreadTaskRunner) sTraitsToRunnerMap[taskTraits];
-        }
-        // Tasks posted via this API will not execute until after native has started.
-        return new SingleThreadTaskRunnerImpl(taskTraits);
-    }
-
-    /**
-     * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @param task The task to be run with the specified traits.
      */
     public static void postTask(@TaskTraits int taskTraits, Runnable task) {
@@ -142,11 +131,8 @@ public class PostTask {
     }
 
     /**
-     * This function executes the task immediately if the current thread is the same as the one
-     * corresponding to the SingleThreadTaskRunner, otherwise it posts it.
-     *
-     * <p>It should be executed only for tasks with traits corresponding to executors backed by a
-     * SingleThreadTaskRunner, like TaskTraits.UI_*.
+     * This function executes the task immediately if given UI task traits, and the current thread
+     * is the UI thread.
      *
      * <p>Use this only for trivial tasks as it ignores task priorities.
      *
@@ -161,22 +147,17 @@ public class PostTask {
         }
     }
 
-    /**
-     * Returns true if the task can be executed immediately (i.e. the current thread is the same as
-     * the one corresponding to the SingleThreadTaskRunner)
-     */
+    /** Returns true if the traits are UI traits, and the current thread is the UI thread. */
     public static boolean canRunTaskImmediately(@TaskTraits int taskTraits) {
         if (isUiTaskTraits(taskTraits)) {
-            return ((SingleThreadTaskRunner) sTraitsToRunnerMap[taskTraits])
-                    .belongsToCurrentThread();
+            return ThreadUtils.runningOnUiThread();
         }
         return false;
     }
 
     /**
-     * This function executes the task immediately if the current thread is the same as the one
-     * corresponding to the SingleThreadTaskRunner, otherwise it posts it and blocks until the task
-     * finishes.
+     * Executes the task immediately if the current thread is the UI thread, otherwise it posts it
+     * and blocks until the task finishes.
      *
      * <p>Usage outside of testing contexts is discouraged. Prefer callbacks in order to avoid
      * blocking.
@@ -190,9 +171,8 @@ public class PostTask {
     }
 
     /**
-     * This function executes the task immediately if the current thread is the same as the one
-     * corresponding to the SingleThreadTaskRunner, otherwise it posts it and blocks until the task
-     * finishes.
+     * This function executes the task immediately if the current thread is the UI thread, otherwise
+     * it posts it and blocks until the task finishes.
      *
      * <p>Usage outside of testing contexts is discouraged. Prefer callbacks in order to avoid
      * blocking.

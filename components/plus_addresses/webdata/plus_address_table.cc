@@ -141,7 +141,7 @@ bool PlusAddressTable::MigrateToVersion(int version,
 }
 
 std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
-  sql::Statement query(db_->GetUniqueStatement(
+  sql::Statement query(db()->GetUniqueStatement(
       base::StringPrintf("SELECT %s, %s, %s FROM %s", kProfileId, kFacet,
                          kPlusAddress, kPlusAddressTable)));
   std::vector<PlusProfile> result;
@@ -155,7 +155,7 @@ std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
 
 std::optional<PlusProfile> PlusAddressTable::GetPlusProfileForId(
     std::string_view profile_id) const {
-  sql::Statement query(db_->GetUniqueStatement(
+  sql::Statement query(db()->GetUniqueStatement(
       base::StringPrintf("SELECT %s, %s, %s FROM %s WHERE %s=?", kProfileId,
                          kFacet, kPlusAddress, kPlusAddressTable, kProfileId)));
   query.BindString(0, profile_id);
@@ -167,25 +167,24 @@ std::optional<PlusProfile> PlusAddressTable::GetPlusProfileForId(
 
 bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
   CHECK(profile.is_confirmed);
-  sql::Statement query(db_->GetUniqueStatement(base::StringPrintf(
+  sql::Statement query(db()->GetUniqueStatement(base::StringPrintf(
       "INSERT OR REPLACE INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
       kPlusAddressTable, kProfileId, kFacet, kPlusAddress)));
   query.BindString(0, profile.profile_id.value());
-  query.BindString(
-      1, absl::get<affiliations::FacetURI>(profile.facet).canonical_spec());
+  query.BindString(1, profile.facet.canonical_spec());
   query.BindString(2, *profile.plus_address);
   return query.Run();
 }
 
 bool PlusAddressTable::RemovePlusProfile(std::string_view profile_id) {
-  sql::Statement query(db_->GetUniqueStatement(base::StringPrintf(
+  sql::Statement query(db()->GetUniqueStatement(base::StringPrintf(
       "DELETE FROM %s WHERE %s=?", kPlusAddressTable, kProfileId)));
   query.BindString(0, profile_id);
   return query.Run();
 }
 
 bool PlusAddressTable::ClearPlusProfiles() {
-  return db_->Execute(base::StrCat({"DELETE FROM ", kPlusAddressTable}));
+  return db()->Execute(base::StrCat({"DELETE FROM ", kPlusAddressTable}));
 }
 
 bool PlusAddressTable::UpdateEntityMetadata(
@@ -193,7 +192,7 @@ bool PlusAddressTable::UpdateEntityMetadata(
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
   CHECK_EQ(data_type, syncer::PLUS_ADDRESS);
-  sql::Statement query(db_->GetUniqueStatement(base::StringPrintf(
+  sql::Statement query(db()->GetUniqueStatement(base::StringPrintf(
       "INSERT OR REPLACE INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
       kSyncEntityMetadata, kModelType, kStorageKey, kValue)));
   query.BindInt(0, syncer::DataTypeToStableIdentifier(data_type));
@@ -205,7 +204,7 @@ bool PlusAddressTable::UpdateEntityMetadata(
 bool PlusAddressTable::ClearEntityMetadata(syncer::DataType data_type,
                                            const std::string& storage_key) {
   CHECK_EQ(data_type, syncer::PLUS_ADDRESS);
-  sql::Statement query(db_->GetUniqueStatement(
+  sql::Statement query(db()->GetUniqueStatement(
       base::StringPrintf("DELETE FROM %s WHERE %s=? AND %s=?",
                          kSyncEntityMetadata, kModelType, kStorageKey)));
   query.BindInt(0, syncer::DataTypeToStableIdentifier(data_type));
@@ -217,7 +216,7 @@ bool PlusAddressTable::UpdateDataTypeState(
     syncer::DataType data_type,
     const sync_pb::DataTypeState& data_type_state) {
   CHECK_EQ(data_type, syncer::PLUS_ADDRESS);
-  sql::Statement query(db_->GetUniqueStatement(
+  sql::Statement query(db()->GetUniqueStatement(
       base::StringPrintf("INSERT OR REPLACE INTO %s (%s, %s) VALUES (?, ?)",
                          kSyncDataTypeState, kModelType, kValue)));
   query.BindInt(0, syncer::DataTypeToStableIdentifier(data_type));
@@ -227,7 +226,7 @@ bool PlusAddressTable::UpdateDataTypeState(
 
 bool PlusAddressTable::ClearDataTypeState(syncer::DataType data_type) {
   CHECK_EQ(data_type, syncer::PLUS_ADDRESS);
-  sql::Statement query(db_->GetUniqueStatement(base::StringPrintf(
+  sql::Statement query(db()->GetUniqueStatement(base::StringPrintf(
       "DELETE FROM %s WHERE %s=?", kSyncDataTypeState, kModelType)));
   query.BindInt(0, syncer::DataTypeToStableIdentifier(data_type));
   return query.Run();
@@ -237,28 +236,28 @@ bool PlusAddressTable::GetAllSyncMetadata(
     syncer::DataType data_type,
     syncer::MetadataBatch& metadata_batch) {
   CHECK_EQ(data_type, syncer::PLUS_ADDRESS);
-  return GetDataTypeState(*db_, data_type, metadata_batch) &&
-         AddEntityMetadata(*db_, data_type, metadata_batch);
+  return GetDataTypeState(*db(), data_type, metadata_batch) &&
+         AddEntityMetadata(*db(), data_type, metadata_batch);
 }
 
 bool PlusAddressTable::CreatePlusAddressesTable() {
-  return db_->DoesTableExist(kPlusAddressTable) ||
-         db_->Execute(base::StringPrintf("CREATE TABLE %s (%s VARCHAR PRIMARY "
-                                         "KEY, %s VARCHAR, %s VARCHAR)",
-                                         kPlusAddressTable, kProfileId, kFacet,
-                                         kPlusAddress));
+  return db()->DoesTableExist(kPlusAddressTable) ||
+         db()->Execute(base::StringPrintf("CREATE TABLE %s (%s VARCHAR PRIMARY "
+                                          "KEY, %s VARCHAR, %s VARCHAR)",
+                                          kPlusAddressTable, kProfileId, kFacet,
+                                          kPlusAddress));
 }
 
 bool PlusAddressTable::CreateSyncDataTypeStateTable() {
-  return db_->DoesTableExist(kSyncDataTypeState) ||
-         db_->Execute(base::StringPrintf(
+  return db()->DoesTableExist(kSyncDataTypeState) ||
+         db()->Execute(base::StringPrintf(
              "CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s BLOB)",
              kSyncDataTypeState, kModelType, kValue));
 }
 
 bool PlusAddressTable::CreateSyncEntityMetadataTable() {
-  return db_->DoesTableExist(kSyncEntityMetadata) ||
-         db_->Execute(base::StringPrintf(
+  return db()->DoesTableExist(kSyncEntityMetadata) ||
+         db()->Execute(base::StringPrintf(
              "CREATE TABLE %s (%s INTEGER, %s VARCHAR, %s BLOB, "
              "PRIMARY KEY (%s, %s))",
              kSyncEntityMetadata, kModelType, kStorageKey, kValue, kModelType,
@@ -266,28 +265,28 @@ bool PlusAddressTable::CreateSyncEntityMetadataTable() {
 }
 
 bool PlusAddressTable::MigrateToVersion126_InitialSchema() {
-  return db_->Execute(
+  return db()->Execute(
       base::StringPrintf("CREATE TABLE %s (%s VARCHAR PRIMARY KEY, %s VARCHAR)",
                          kPlusAddressTable, kFacet, kPlusAddress));
 }
 
 bool PlusAddressTable::MigrateToVersion127_SyncSupport() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   // The migration logic drops the existing `kPlusAddressTable` and recreates it
   // with a new schema. No data needs to be migrated between the tables, since
   // the table was not used yet.
   // Then, new `kSyncDataTypeState` and `kSyncEntityMetadata` tables are
   // created.
   return transaction.Begin() &&
-         db_->Execute(base::StrCat({"DROP TABLE ", kPlusAddressTable})) &&
-         db_->Execute(base::StringPrintf("CREATE TABLE %s (%s INTEGER PRIMARY "
-                                         "KEY, %s VARCHAR, %s VARCHAR)",
-                                         kPlusAddressTable, kProfileId, kFacet,
-                                         kPlusAddress)) &&
-         db_->Execute(base::StringPrintf(
+         db()->Execute(base::StrCat({"DROP TABLE ", kPlusAddressTable})) &&
+         db()->Execute(base::StringPrintf("CREATE TABLE %s (%s INTEGER PRIMARY "
+                                          "KEY, %s VARCHAR, %s VARCHAR)",
+                                          kPlusAddressTable, kProfileId, kFacet,
+                                          kPlusAddress)) &&
+         db()->Execute(base::StringPrintf(
              "CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s BLOB)",
              kSyncDataTypeState, kModelType, kValue)) &&
-         db_->Execute(base::StringPrintf(
+         db()->Execute(base::StringPrintf(
              "CREATE TABLE %s (%s INTEGER, %s VARCHAR, %s BLOB, "
              "PRIMARY KEY (%s, %s))",
              kSyncEntityMetadata, kModelType, kStorageKey, kValue, kModelType,
@@ -296,15 +295,15 @@ bool PlusAddressTable::MigrateToVersion127_SyncSupport() {
 }
 
 bool PlusAddressTable::MigrateToVersion128_ProfileIdString() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   // Recreates `kPlusAddressTable`, with `kProfileId`'s type changed to VARCHAR.
   // No data needs to be migrated, since the table was not used yet.
   return transaction.Begin() &&
-         db_->Execute(base::StrCat({"DROP TABLE ", kPlusAddressTable})) &&
-         db_->Execute(base::StringPrintf("CREATE TABLE %s (%s VARCHAR PRIMARY "
-                                         "KEY, %s VARCHAR, %s VARCHAR)",
-                                         kPlusAddressTable, kProfileId, kFacet,
-                                         kPlusAddress)) &&
+         db()->Execute(base::StrCat({"DROP TABLE ", kPlusAddressTable})) &&
+         db()->Execute(base::StringPrintf("CREATE TABLE %s (%s VARCHAR PRIMARY "
+                                          "KEY, %s VARCHAR, %s VARCHAR)",
+                                          kPlusAddressTable, kProfileId, kFacet,
+                                          kPlusAddress)) &&
          transaction.Commit();
 }
 

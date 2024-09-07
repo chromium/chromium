@@ -13,6 +13,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/navigation_handle_timing.h"
@@ -199,7 +200,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // navigation is committed into may later transfer to another FrameTreeNode.
   // See documentation for RenderFrameHost::GetFrameTreeNodeId() for more
   // details.
-  virtual int GetFrameTreeNodeId() = 0;
+  virtual FrameTreeNodeId GetFrameTreeNodeId() = 0;
 
   // Returns the RenderFrameHost for the parent frame, or nullptr if this
   // navigation is taking place in the main frame. This value will not change

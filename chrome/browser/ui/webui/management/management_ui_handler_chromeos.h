@@ -17,6 +17,12 @@ class StatusCollector;
 class SystemLogUploader;
 }  // namespace policy
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ash {
+class SecureDnsManager;
+}
+#endif
+
 class ManagementUIHandlerChromeOS :
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     public BitmapFetcherDelegate,
@@ -71,6 +77,8 @@ class ManagementUIHandlerChromeOS :
   void RegisterPrefChange(PrefChangeRegistrar& pref_registrar) override;
 
   std::u16string GetFilesUploadToCloudInfo(Profile* profile);
+
+  virtual const ash::SecureDnsManager* GetSecureDnsManager() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::Value::Dict GetContextualManagedData(Profile* profile) override;

@@ -33,25 +33,29 @@ build_webui("build") {
   quota_folder = "third_party/blink/public/mojom/quota"
   storage_key_folder = "third_party/blink/public/mojom/storage_key"
   schemeful_site_folder = "services/network/public/mojom"
+  tokens_folder = "third_party/blink/public/mojom/tokens"
 
   mojo_files = [
     "$root_gen_dir/$buckets_folder/bucket_id.mojom-webui.ts",
     "$root_gen_dir/$buckets_folder/bucket_locator.mojom-webui.ts",
+    "$root_gen_dir/$indexeddb_bucket_folder/bucket_client_info.mojom-webui.ts",
     "$root_gen_dir/$indexeddb_bucket_folder/indexed_db_internals_types.mojom-webui.ts",
     "$root_gen_dir/$indexeddb_internal_folder/indexed_db_internals.mojom-webui.ts",
     "$root_gen_dir/$quota_folder/quota_types.mojom-webui.ts",
     "$root_gen_dir/$schemeful_site_folder/schemeful_site.mojom-webui.ts",
     "$root_gen_dir/$storage_key_folder/ancestor_chain_bit.mojom-webui.ts",
     "$root_gen_dir/$storage_key_folder/storage_key.mojom-webui.ts",
+    "$root_gen_dir/$tokens_folder/tokens.mojom-webui.ts",
   ]
 
   mojo_files_deps = [
     "//$buckets_folder:buckets_ts__generator",
-    "//$indexeddb_bucket_folder:mojom_bucket_ts__generator",
+    "//$indexeddb_bucket_folder:mojom_webui_ts__generator",
     "//$indexeddb_internal_folder:internals_mojo_bindings_ts__generator",
     "//$quota_folder:quota_ts__generator",
     "//$schemeful_site_folder:mojom_schemeful_site_ts__generator",
     "//$storage_key_folder:storage_key_ts__generator",
+    "//$tokens_folder:tokens_ts__generator",
   ]
 
   grit_output_dir = "$root_gen_dir/content"

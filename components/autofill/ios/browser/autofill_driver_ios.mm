@@ -14,7 +14,6 @@
 #import "components/autofill/core/browser/autofill_driver_router.h"
 #import "components/autofill/core/browser/form_filler.h"
 #import "components/autofill/core/browser/form_structure.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -139,7 +138,20 @@ bool AutofillDriverIOS::IsInAnyMainFrame() const {
 bool AutofillDriverIOS::HasSharedAutofillPermission() const {
   // Give the shared-autofill permission to the main frame of the webstate by
   // default.
-  return IsInAnyMainFrame();
+  if (IsInAnyMainFrame()) {
+    return true;
+  }
+
+  // Also propagate that permission to the direct children of the main
+  // frame on the same origin as the main frame.
+  if (parent_ && parent_->web_frame() && parent_->IsInAnyMainFrame() &&
+      web_frame()) {
+    return parent_->web_frame()->GetSecurityOrigin() ==
+           web_frame()->GetSecurityOrigin();
+  }
+
+  // Return false as share-autofill is not allowed.
+  return false;
 }
 
 bool AutofillDriverIOS::CanShowAutofillUi() const {
@@ -264,10 +276,11 @@ void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
   NOTIMPLEMENTED();
 }
 
-void AutofillDriverIOS::GetFourDigitCombinationsFromDOM(
+void AutofillDriverIOS::GetFourDigitCombinationsFromDom(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {
-  // TODO(crbug.com/40260122): Implement GetFourDigitCombinationsFromDOM in iOS.
+  // TODO(crbug.com/40260122): Implement GetFourDigitCombinationsFromDom() in
+  // iOS.
   NOTIMPLEMENTED();
 }
 
@@ -448,12 +461,6 @@ void AutofillDriverIOS::SetSelfAsParent(const autofill::FormData& form,
 void AutofillDriverIOS::UpdateLastInteractedForm(
     const FormData& form_data,
     const FieldRendererId& formless_field) {
-  // No-op when XHR submission detection disabled.
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableXHRSubmissionDetectionIOS)) {
-    return;
-  }
-
   last_interacted_form_.emplace(form_data, formless_field);
 }
 
@@ -476,15 +483,17 @@ void AutofillDriverIOS::OnAutofillManagerStateChanged(
   }
 }
 
-void AutofillDriverIOS::OnAfterFormsSeen(AutofillManager& manager,
-                                         base::span<const FormGlobalId> forms) {
+void AutofillDriverIOS::OnAfterFormsSeen(
+    AutofillManager& manager,
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
   DCHECK_EQ(&manager, manager_.get());
-  if (forms.empty()) {
+  if (updated_forms.empty()) {
     return;
   }
   std::vector<raw_ptr<FormStructure, VectorExperimental>> form_structures;
-  form_structures.reserve(forms.size());
-  for (const FormGlobalId& form : forms) {
+  form_structures.reserve(updated_forms.size());
+  for (const FormGlobalId& form : updated_forms) {
     if (FormStructure* form_structure = manager.FindCachedFormById(form)) {
       form_structures.push_back(form_structure);
     }
@@ -497,9 +506,6 @@ void AutofillDriverIOS::OnAfterFormsSeen(AutofillManager& manager,
 void AutofillDriverIOS::FormsRemoved(
     const std::set<FormRendererId>& removed_forms,
     const std::set<FieldRendererId>& removed_unowned_fields) {
-  CHECK(base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableXHRSubmissionDetectionIOS));
-
   const bool submission_detected = DetectFormSubmissionAfterFormRemoval(
       removed_forms, removed_unowned_fields);
   RecordFormRemoval(
@@ -615,18 +621,10 @@ void AutofillDriverIOS::RecordFormRemoval(bool submission_detected,
                                           int removed_unowned_fields_count) {
   base::UmaHistogramBoolean(/*name=*/kFormSubmissionAfterFormRemovalHistogram,
                             /*sample=*/submission_detected);
-  base::UmaHistogramCounts100(/*name=*/kFormRemovalRemovedFormsHistogram,
-                              /*sample=*/removed_forms_count);
   base::UmaHistogramCounts100(
       /*name=*/kFormRemovalRemovedUnownedFieldsHistogram,
       /*sample=*/removed_unowned_fields_count);
 
-  if (submission_detected) {
-    CHECK(last_interacted_form_);
-    base::UmaHistogramBoolean(
-        /*name=*/kFormlessSubmissionAfterFormRemovalHistogram,
-        /*sample=*/!last_interacted_form_->form_data.renderer_id());
-  }
 }
 
 }  // namespace autofill

@@ -102,11 +102,6 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
     source->AddString("isdark", "");
   }
 
-  source->AddBoolean(
-      "handleMostVisitedNavigationExplicitly",
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpHandleMostVisitedNavigationExplicitly));
-
   source->AddInteger(
       "prerenderStartTimeThreshold",
       features::kNewTabPagePrerenderStartDelayOnMouseHoverByMiliSeconds.Get());

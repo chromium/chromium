@@ -75,7 +75,7 @@ void LogPerfectFillingMetric(const FormStructure& form) {
           {}, [&form](FillingProduct filling_product) {
             return std::make_pair(
                 filling_product,
-                base::ranges::any_of(
+                std::ranges::any_of(
                     form, [&filling_product](const auto& field) {
                       return field->filling_product() == filling_product;
                     }));
@@ -85,7 +85,7 @@ void LogPerfectFillingMetric(const FormStructure& form) {
   // scenario, a field is either autofilled, empty, has value at page load or
   // has value set by JS.
   const bool perfect_filling =
-      base::ranges::none_of(form, [](const auto& field) {
+      std::ranges::none_of(form, [](const auto& field) {
         return field->is_user_edited() && !field->is_autofilled();
       });
   // The perfect filling metric is only recorded if Autofill was used on at
@@ -135,10 +135,10 @@ void LogDurationMetrics(const FormStructure& form,
   size_t num_detected_field_types =
       base::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
                              &std::unique_ptr<AutofillField>::operator*);
-  bool form_has_autofilled_fields = base::ranges::any_of(
+  bool form_has_autofilled_fields = std::ranges::any_of(
       form, [](const auto& field) { return field->is_autofilled(); });
   bool has_observed_one_time_code_field =
-      base::ranges::any_of(form, [](const auto& field) {
+      std::ranges::any_of(form, [](const auto& field) {
         return field->Type().html_type() == HtmlFieldType::kOneTimeCode;
       });
   if (num_detected_field_types >= kMinRequiredFieldsForHeuristics ||

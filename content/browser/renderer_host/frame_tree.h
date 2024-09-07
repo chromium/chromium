@@ -174,9 +174,8 @@ class CONTENT_EXPORT FrameTree {
     // there may be a FrameTreeNode in the outer FrameTree that is considered
     // our outer delegate FrameTreeNode. This method returns the outer delegate
     // FrameTreeNode ID if one exists. If we don't have a an outer delegate
-    // FrameTreeNode, this method returns
-    // FrameTreeNode::kFrameTreeNodeInvalidId.
-    virtual int GetOuterDelegateFrameTreeNodeId() = 0;
+    // FrameTreeNode, this method returns an invalid value.
+    virtual FrameTreeNodeId GetOuterDelegateFrameTreeNodeId() = 0;
 
     // If the FrameTree using this delegate is an inner/nested FrameTree that
     // has not yet been attached to an outer FrameTreeNode, returns the parent
@@ -312,7 +311,7 @@ class CONTENT_EXPORT FrameTree {
 
   // Returns the FrameTreeNode with the given |frame_tree_node_id| if it is part
   // of this FrameTree.
-  FrameTreeNode* FindByID(int frame_tree_node_id);
+  FrameTreeNode* FindByID(FrameTreeNodeId frame_tree_node_id);
 
   // Returns the FrameTreeNode with the given renderer-specific |routing_id|.
   FrameTreeNode* FindByRoutingID(int process_id, int routing_id);
@@ -560,6 +559,11 @@ class CONTENT_EXPORT FrameTree {
   // each inner FrameTree is attached.
   void FocusOuterFrameTrees();
 
+  // Discards the frame tree. The root frame is transitioned to an empty
+  // document in blink and BFCache entries are cleared. The tree is configured
+  // to reload when activated.
+  void Discard();
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -639,7 +643,7 @@ class CONTENT_EXPORT FrameTree {
   // Indicates type of frame tree.
   const Type type_;
 
-  int focused_frame_tree_node_id_;
+  FrameTreeNodeId focused_frame_tree_node_id_;
 
   // Overall load progress.
   double load_progress_;

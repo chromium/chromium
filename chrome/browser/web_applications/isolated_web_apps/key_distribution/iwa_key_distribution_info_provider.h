@@ -12,15 +12,25 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/memory/singleton.h"
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 
+class WebAppInternalsHandler;
+
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace web_app {
+
+// Enables the key distribution dev mode UI on chrome://web-app-internals.
+BASE_DECLARE_FEATURE(kIwaKeyDistributionDevMode);
 
 // This class is a singleton responsible for processing the IWA Key Distribution
 // Component data.
@@ -32,6 +42,8 @@ class IwaKeyDistributionInfoProvider {
     explicit KeyRotationInfo(std::optional<PublicKeyData> public_key);
     ~KeyRotationInfo();
     KeyRotationInfo(const KeyRotationInfo&);
+
+    base::Value AsDebugValue() const;
 
     std::optional<PublicKeyData> public_key;
   };
@@ -54,6 +66,9 @@ class IwaKeyDistributionInfoProvider {
   };
 
   static IwaKeyDistributionInfoProvider* GetInstance();
+  static void DestroyInstanceForTesting();
+
+  ~IwaKeyDistributionInfoProvider();
 
   IwaKeyDistributionInfoProvider(const IwaKeyDistributionInfoProvider&) =
       delete;
@@ -72,9 +87,17 @@ class IwaKeyDistributionInfoProvider {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
- private:
-  friend struct base::DefaultSingletonTraits<IwaKeyDistributionInfoProvider>;
+  // Sets a custom key rotation outside of the component updater flow and
+  // triggers an `OnComponentUpdateSuccess()` event. The usage of this function
+  // is intentionally limited to chrome://web-app-internals.
+  void RotateKeyForDevMode(
+      base::PassKey<WebAppInternalsHandler>,
+      const std::string& web_bundle_id,
+      const std::optional<std::vector<uint8_t>>& rotated_key);
 
+  base::Value AsDebugValue() const;
+
+ private:
   struct ComponentData {
     ComponentData(base::Version version, KeyRotations key_rotations);
     ~ComponentData();
@@ -85,7 +108,6 @@ class IwaKeyDistributionInfoProvider {
   };
 
   IwaKeyDistributionInfoProvider();
-  ~IwaKeyDistributionInfoProvider();
 
   void OnKeyDistributionDataLoaded(
       const base::Version& version,

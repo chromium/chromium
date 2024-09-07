@@ -30,64 +30,64 @@
 ++[landmark] xml-roles:search
 ++++[static] name='This is an ARIA search landmark.'
 ++[article]
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT banner role.'
 ++[landmark] xml-roles:complementary
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:navigation
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT have banner role.'
 ++[section]
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:main
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT have banner role.'
 ++[article]
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT banner role.'
 ++[landmark] xml-roles:complementary
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:navigation
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT have banner role.'
 ++[section]
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:main
-++++[section]
+++++[header]
 ++++++[static] name='This should NOT have banner role.'
 ++[article]
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT footer role.'
 ++[landmark] xml-roles:complementary
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:navigation
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT have footer role.'
 ++[section]
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:main
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT have footer role.'
 ++[article]
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT footer role.'
 ++[landmark] xml-roles:complementary
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:navigation
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT have footer role.'
 ++[section]
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:main
-++++[section]
+++++[footer]
 ++++++[static] name='This should NOT have footer role.'
 ++[article]
 ++++[section]

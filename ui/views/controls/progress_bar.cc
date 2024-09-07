@@ -222,7 +222,7 @@ int ProgressBar::GetPreferredHeight() const {
   return preferred_height_;
 }
 
-void ProgressBar::SetPreferredHeight(const int preferred_height) {
+void ProgressBar::SetPreferredHeight(int preferred_height) {
   if (preferred_height_ == preferred_height) {
     return;
   }
@@ -245,7 +245,7 @@ gfx::RoundedCornersF ProgressBar::GetPreferredCornerRadii() const {
 }
 
 void ProgressBar::SetPreferredCornerRadii(
-    const std::optional<gfx::RoundedCornersF> preferred_corner_radii) {
+    std::optional<gfx::RoundedCornersF> preferred_corner_radii) {
   if (preferred_corner_radii_ == preferred_corner_radii) {
     return;
   }

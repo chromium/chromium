@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "extensions/common/features/feature.h"
@@ -40,11 +41,6 @@ class WindowController;
 // Provides various utility functions that help manipulate tabs.
 class ExtensionTabUtil {
  public:
-  enum PopulateTabBehavior {
-    kPopulateTabs,
-    kDontPopulateTabs,
-  };
-
   enum ScrubTabBehaviorType {
     kScrubTabFully,
     kScrubTabUrlToOrigin,
@@ -132,7 +128,7 @@ class ExtensionTabUtil {
   static base::Value::Dict CreateWindowValueForExtension(
       const Browser& browser,
       const Extension* extension,
-      PopulateTabBehavior populate_tab_behavior,
+      WindowController::PopulateTabBehavior populate_tab_behavior,
       mojom::ContextType context);
 
   // Creates a tab MutedInfo object (see chrome/common/extensions/api/tabs.json)
@@ -163,11 +159,19 @@ class ExtensionTabUtil {
   static bool GetTabStripModel(const content::WebContents* web_contents,
                                TabStripModel** tab_strip_model,
                                int* tab_index);
-  static bool GetDefaultTab(Browser* browser,
-                            content::WebContents** contents,
-                            int* tab_id);
+
+  // On success, returns true and fills in the WebContents and extensions API
+  // tab ID for the active tab. The optional_tab_id may be null if the caller
+  // doesn't need it. Returns false if there is no active tab.
+  static bool GetActiveTab(Browser* browser,
+                           content::WebContents** contents,
+                           int* optional_tab_id);
+
   // Any out parameter (|browser|, |tab_strip|, |contents|, & |tab_index|) may
   // be NULL and will not be set within the function.
+  //
+  // The output `*browser` value may be null if the tab is a prerender tab that
+  // has no corresponding browser window.
   static bool GetTabById(int tab_id,
                          content::BrowserContext* browser_context,
                          bool include_incognito,

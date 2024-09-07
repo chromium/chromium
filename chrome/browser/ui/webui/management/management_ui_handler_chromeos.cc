@@ -23,6 +23,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 #include "chrome/grit/branded_strings.h"
@@ -89,6 +91,7 @@ enum class DeviceReportingType {
   kPeripherals,
   kLegacyTech,
   kWebsiteInfoAndActivity,
+  kFileEvents,
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -159,6 +162,8 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
       return kReportingTypeLegacyTech;
     case DeviceReportingType::kWebsiteInfoAndActivity:
       return "website info and activity";
+    case DeviceReportingType::kFileEvents:
+      return "file events";
     default:
       NOTREACHED_IN_MIGRATION() << "Unknown device reporting type";
       return "device";
@@ -337,6 +342,11 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   if (report_login_logout || report_xdr_events) {
     AddDeviceReportingElement(report_sources, kManagementReportLoginLogout,
                               DeviceReportingType::kLoginLogout);
+  }
+
+  if (report_xdr_events) {
+    AddDeviceReportingElement(report_sources, kManagementReportFileEvents,
+                              DeviceReportingType::kFileEvents);
   }
 
   bool report_crd_sessions = false;
@@ -571,10 +581,13 @@ void ManagementUIHandlerChromeOS::AddMonitoredNetworkPrivacyDisclosure(
   bool showMonitoredNetworkDisclosure = false;
 
   // Check for secure DNS templates with identifiers.
+  std::optional<std::string> doh_with_identifiers_servers_for_display;
+
+  doh_with_identifiers_servers_for_display =
+      GetSecureDnsManager()->GetDohWithIdentifiersDisplayServers();
+
   showMonitoredNetworkDisclosure =
-      SystemNetworkContextManager::GetStubResolverConfigReader()
-          ->GetDohWithIdentifiersDisplayServers()
-          .has_value();
+      doh_with_identifiers_servers_for_display.has_value();
   if (showMonitoredNetworkDisclosure) {
     response->Set("showMonitoredNetworkPrivacyDisclosure",
                   showMonitoredNetworkDisclosure);
@@ -889,6 +902,11 @@ std::u16string ManagementUIHandlerChromeOS::GetFilesUploadToCloudInfo(
       IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_CONFIGURATION,
       l10n_util::GetStringUTF16(uploads_id),
       l10n_util::GetStringUTF16(destination_id));
+}
+
+const ash::SecureDnsManager* ManagementUIHandlerChromeOS::GetSecureDnsManager()
+    const {
+  return g_browser_process->platform_part()->secure_dns_manager();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -9,6 +9,7 @@
 
 namespace base {
 class TickClock;
+class Clock;
 }
 
 namespace resource_coordinator {
@@ -17,19 +18,27 @@ namespace resource_coordinator {
 // TimeTicks::Now() otherwise.
 base::TimeTicks NowTicks();
 
+// Returns the current time. Obtained from the testing clock if set; from
+// Time::Now() otherwise.
+base::Time Now();
+
 // Returns the testing TickClock.
 const base::TickClock* GetTickClock();
 
-// Sets the testing TickClock within its scope.
-class ScopedSetTickClockForTesting {
- public:
-  explicit ScopedSetTickClockForTesting(const base::TickClock* tick_clock);
+// Returns the testing Clock.
+const base::Clock* GetClock();
 
-  ScopedSetTickClockForTesting(const ScopedSetTickClockForTesting&) = delete;
-  ScopedSetTickClockForTesting& operator=(const ScopedSetTickClockForTesting&) =
+// Sets the testing Clock and TickClock within its scope.
+class ScopedSetClocksForTesting {
+ public:
+  explicit ScopedSetClocksForTesting(const base::Clock* clock,
+                                     const base::TickClock* tick_clock);
+
+  ScopedSetClocksForTesting(const ScopedSetClocksForTesting&) = delete;
+  ScopedSetClocksForTesting& operator=(const ScopedSetClocksForTesting&) =
       delete;
 
-  ~ScopedSetTickClockForTesting();
+  ~ScopedSetClocksForTesting();
 };
 
 }  // namespace resource_coordinator

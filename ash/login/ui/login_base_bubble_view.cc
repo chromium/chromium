@@ -336,7 +336,7 @@ views::View* LoginBaseBubbleView::GetAnchorView() const {
   if (anchor_view_.WasInvalidated()) {
     // TODO(crbug.com/1171827): This is to detect dangling anchor_view_
     // pointers.
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
   }
   return anchor_view_.get();
 }

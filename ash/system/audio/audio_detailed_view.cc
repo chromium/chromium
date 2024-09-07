@@ -525,6 +525,11 @@ LabeledSliderView* AudioDetailedView::CreateLabeledSliderView(
                                                        device.IsInternalMic());
   } else {
     slider = unified_volume_slider_controller_->CreateVolumeSlider(device.id);
+    if (device.active) {
+      views::AsViewClass<QuickSettingsSlider>(
+          views::AsViewClass<UnifiedVolumeView>(slider.get())->slider())
+          ->set_is_toggleable_volume_slider(true);
+    }
   }
 
   auto* labeled_slider_view = views::AsViewClass<LabeledSliderView>(

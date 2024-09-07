@@ -46,10 +46,10 @@ std::wstring GetPreferredLanguage() {
   return languages[0];
 }
 
-std::wstring GetLocalizedString(UINT base_message_id,
+std::wstring GetLocalizedString(unsigned int base_message_id,
                                 const std::wstring& lang) {
   // Map `base_message_id` to the base id for the current install mode.
-  const UINT message_id =
+  const unsigned int message_id =
       static_cast<UINT>(base_message_id + GetLanguageOffset(lang));
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
@@ -69,14 +69,14 @@ std::wstring GetLocalizedString(UINT base_message_id,
   return std::wstring();
 }
 
-std::wstring GetLocalizedStringF(UINT base_message_id,
+std::wstring GetLocalizedStringF(unsigned int base_message_id,
                                  const std::wstring& replacement,
                                  const std::wstring& lang) {
   return GetLocalizedStringF(base_message_id,
                              std::vector<std::wstring>{replacement}, lang);
 }
 
-std::wstring GetLocalizedStringF(UINT base_message_id,
+std::wstring GetLocalizedStringF(unsigned int base_message_id,
                                  std::vector<std::wstring> replacements,
                                  const std::wstring& lang) {
   // Replacements start at index 1 because the implementation of

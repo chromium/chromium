@@ -71,7 +71,6 @@ class MockSyncService : public SyncService {
               GetTypesWithPendingDownloadForInitialSync,
               (),
               (const override));
-  MOCK_METHOD(void, StopAndClear, (), (override));
   MOCK_METHOD(void, OnDataTypeRequestsSyncStartup, (DataType type), (override));
   MOCK_METHOD(void, TriggerRefresh, (const DataTypeSet& types), (override));
   MOCK_METHOD(void,

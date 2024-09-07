@@ -7,14 +7,19 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
+import org.chromium.ui.widget.TextViewWithLeading;
 
 /** Dialog in the form of a consent shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogConsentEEA extends ChromeDialog
@@ -34,14 +39,20 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private ButtonCompat mMoreButton;
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
+    private TextViewWithLeading mLearnMoreText;
+    private int mSurfaceType;
 
     private boolean mAreAnimationsDisabled;
 
     public PrivacySandboxDialogConsentEEA(
-            Context context, PrivacySandboxBridge privacySandboxBridge, boolean disableAnimations) {
+            Context context,
+            PrivacySandboxBridge privacySandboxBridge,
+            boolean disableAnimations,
+            @SurfaceType int surfaceType) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mPrivacySandboxBridge = privacySandboxBridge;
         mAreAnimationsDisabled = disableAnimations;
+        mSurfaceType = surfaceType;
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea, null);
         setContentView(mContentView);
@@ -86,7 +97,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     @Override
     public void show() {
-        mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
+        mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN, mSurfaceType);
         super.show();
     }
 
@@ -95,13 +106,14 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED, mSurfaceType);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.no_button) {
-            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED, mSurfaceType);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.more_button) {
-            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_BUTTON_CLICKED);
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.CONSENT_MORE_BUTTON_CLICKED, mSurfaceType);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
                 mScrollView.post(
                         () -> {
@@ -117,7 +129,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             }
         } else if (id == R.id.dropdown_element) {
             if (isDropdownExpanded()) {
-                mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_CLOSED);
+                mPrivacySandboxBridge.promptActionOccurred(
+                        PromptAction.CONSENT_MORE_INFO_CLOSED, mSurfaceType);
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
                 mScrollView.post(
@@ -126,7 +139,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                         });
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
-                mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_OPENED);
+                mPrivacySandboxBridge.promptActionOccurred(
+                        PromptAction.CONSENT_MORE_INFO_OPENED, mSurfaceType);
                 LayoutInflater.from(getContext())
                         .inflate(R.layout.privacy_sandbox_consent_eea_dropdown, mDropdownContainer);
 
@@ -150,6 +164,22 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                         () -> {
                             mScrollView.scrollTo(0, mDropdownElement.getTop());
                         });
+                mLearnMoreText = mContentView.findViewById(R.id.privacy_sandbox_learn_more_text);
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)) {
+                    mLearnMoreText.setText(
+                            SpanApplier.applySpans(
+                                    getContext()
+                                            .getResources()
+                                            .getString(
+                                                    R.string
+                                                            .privacy_sandbox_m1_notice_learn_more_v2_clank),
+                                    new SpanApplier.SpanInfo(
+                                            "<link>",
+                                            "</link>",
+                                            new NoUnderlineClickableSpan(
+                                                    getContext(), this::onPrivacyPolicyClicked))));
+                    mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
+                }
             }
 
             mExpandArrowView.setChecked(isDropdownExpanded());
@@ -179,6 +209,10 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
         }
     }
 
+    private void onPrivacyPolicyClicked(View view) {
+        // TODO: Open ThinWebView
+    }
+
     private void dismissAndMaybeShowNotice() {
         mProgressBarContainer.setVisibility(View.VISIBLE);
         mConsentViewContainer.setVisibility(View.GONE);
@@ -190,7 +224,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     }
 
     private void showNotice() {
-        PrivacySandboxDialogController.showNoticeEEA(getContext(), mPrivacySandboxBridge);
+        PrivacySandboxDialogController.showNoticeEEA(
+                getContext(), mPrivacySandboxBridge, mSurfaceType);
     }
 
     private boolean isDropdownExpanded() {
@@ -203,5 +238,9 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     private long getSpinnerTimeout() {
         return mAreAnimationsDisabled ? 0 : SPINNER_DURATION_MS;
+    }
+
+    public int getSurfaceTypeForTesting() {
+        return mSurfaceType;
     }
 }

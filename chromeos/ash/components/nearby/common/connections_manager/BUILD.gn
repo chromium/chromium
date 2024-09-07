@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/cross_device/nearby:nearby",

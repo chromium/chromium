@@ -1,10 +1,10 @@
 set noparent
-halliwell@chromium.org
+
+antoniori@google.com
 sandv@google.com
 sanfin@chromium.org
-seantopping@chromium.org
-yucliu@chromium.org
 vigeni@google.com
+yucliu@chromium.org
 
 # Android
 per-file *android*=file://chromecast/android/OWNERS
@@ -16,3 +16,5 @@ per-file ...fuchsia*=file://build/fuchsia/OWNERS
 # For major changes, please use one of the reviewers above!
 dnicoara@chromium.org
 spang@chromium.org
+halliwell@chromium.org
+seantopping@chromium.org

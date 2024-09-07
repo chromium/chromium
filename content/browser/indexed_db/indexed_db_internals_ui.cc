@@ -21,10 +21,17 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/thread_pool.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/devtools/service_worker_devtools_agent_host.h"
+#include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/grit/indexed_db_resources.h"
 #include "content/grit/indexed_db_resources_map.h"
 #include "content/public/browser/browser_context.h"
@@ -42,6 +49,64 @@
 using storage::mojom::IdbPartitionMetadataPtr;
 
 namespace content {
+
+namespace {
+
+scoped_refptr<DevToolsAgentHostImpl> GetDevToolsAgentHostForClient(
+    const storage::BucketClientInfo& client_info) {
+  int32_t process_id = client_info.process_id;
+  const blink::ExecutionContextToken& context_token = client_info.context_token;
+
+  if (client_info.document_token) {
+    auto* rfh = RenderFrameHostImpl::FromDocumentToken(
+        process_id, client_info.document_token.value());
+    return rfh ? RenderFrameDevToolsAgentHost::GetFor(rfh) : nullptr;
+  }
+
+  if (context_token.Is<blink::SharedWorkerToken>()) {
+    auto* rph = RenderProcessHost::FromID(process_id);
+    if (!rph || !rph->IsInitializedAndNotDead()) {
+      return nullptr;
+    }
+    auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
+        static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
+            ->GetSharedWorkerService());
+    SharedWorkerHost* shared_worker_host =
+        worker_service->GetSharedWorkerHostFromToken(
+            context_token.GetAs<blink::SharedWorkerToken>());
+    return shared_worker_host
+               ? SharedWorkerDevToolsAgentHost::GetFor(shared_worker_host)
+               : nullptr;
+  }
+
+  if (context_token.Is<blink::ServiceWorkerToken>()) {
+    auto* rph = RenderProcessHost::FromID(process_id);
+    if (!rph || !rph->IsInitializedAndNotDead()) {
+      return nullptr;
+    }
+    ServiceWorkerContextWrapper* service_worker_context =
+        static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
+            ->GetServiceWorkerContext();
+    for (const auto& [version_id, info] :
+         service_worker_context->GetRunningServiceWorkerInfos()) {
+      if (info.token != context_token.GetAs<blink::ServiceWorkerToken>()) {
+        continue;
+      }
+      ServiceWorkerVersion* version =
+          service_worker_context->GetLiveVersion(version_id);
+      return version ? ServiceWorkerDevToolsManager::GetInstance()
+                           ->GetDevToolsAgentHostForWorker(
+                               version->GetInfo().process_id,
+                               version->GetInfo().devtools_agent_route_id)
+                     : nullptr;
+    }
+    return nullptr;
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
 
 IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
@@ -230,52 +295,25 @@ void IndexedDBInternalsUI::StopMetadataRecording(
       bucket_id, base::BindOnce(std::move(callback), std::nullopt));
 }
 
-void IndexedDBInternalsUI::InspectClient(storage::BucketId bucket_id,
-                                         const std::string& client_token,
-                                         InspectClientCallback callback) {
+void IndexedDBInternalsUI::InspectClient(
+    const storage::BucketClientInfo& client_info,
+    InspectClientCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
-  if (!control) {
-    std::move(callback).Run("IndexedDB control not found");
-    return;
-  }
-
-  std::optional<base::UnguessableToken> deserialized_token =
-      base::UnguessableToken::DeserializeFromString(client_token);
-  if (!deserialized_token) {
-    std::move(callback).Run("Invalid client token");
-    return;
-  }
-
-  control->GetDevToolsTokenForClient(
-      bucket_id, deserialized_token.value(),
-      base::BindOnce(
-          [](InspectClientCallback callback,
-             const std::optional<base::UnguessableToken>& dev_tools_token) {
-            DCHECK_CURRENTLY_ON(BrowserThread::UI);
-            DevToolsAgentHostImpl* dev_tools_agent =
-                dev_tools_token ? DevToolsAgentHostImpl::GetForId(
-                                      dev_tools_token->ToString())
-                                      .get()
-                                : nullptr;
-            if (dev_tools_agent && dev_tools_agent->Inspect()) {
-              std::move(callback).Run(std::nullopt);
-              return;
-            }
-            std::move(callback).Run("Client not found");
-          },
-          std::move(callback)));
   if (!devtools_agent_hosts_created_) {
-    // If a DevTools window has never been opened in this browser session, the
-    // DevTools Agent Hosts for Render Frames and Web Contents will not have
-    // been created. Trigger their creation now so that the inspect action
-    // succeeds when we finish fetching the devtools token. The callback above
-    // will be queued on the current `SequencedTaskRunner` so is guaranteed to
-    // run only after this completes.
+    // If a DevTools window has never been opened in this browser session,
+    // DevToolsAgentHosts will not have been created for RenderFrameHosts.
+    // Trigger their creation now so that the inspect call succeeds.
     DevToolsAgentHostImpl::GetOrCreateAll();
     devtools_agent_hosts_created_ = true;
   }
+
+  scoped_refptr<DevToolsAgentHostImpl> dev_tools_agent =
+      GetDevToolsAgentHostForClient(client_info);
+  if (dev_tools_agent && dev_tools_agent->Inspect()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run("Client not found");
 }
 
 void IndexedDBInternalsUI::OnDownloadDataReady(

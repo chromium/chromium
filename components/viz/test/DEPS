@@ -2,6 +2,7 @@
 
 include_rules = [
   "+cc/test/pixel_test_utils.h",
+  "+components/input",
   "+components/viz",
   "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/client/context_support.h",

@@ -139,14 +139,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   void SetSelectedView(AppListItemView* view) override;
   void ClearSelectedView() override;
   bool IsSelectedView(const AppListItemView* view) const override;
-  bool InitiateDrag(AppListItemView* view,
-                    const gfx::Point& location,
-                    const gfx::Point& root_location,
-                    base::OnceClosure drag_start_callback,
-                    base::OnceClosure drag_end_callback) override;
-  void StartDragAndDropHostDragAfterLongPress() override;
-  bool UpdateDragFromItem(bool is_touch,
-                          const ui::LocatedEvent& event) override;
   void EndDrag(bool cancel) override;
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                   const ui::Event& event) override;
@@ -207,28 +199,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // view at |index|.
   AppListItemView* GetItemViewAt(size_t index) const;
 
-  // Called to initiate drag for reparenting a folder item in root level grid
-  // view.
-  // `pointer` - The pointer that's used for dragging (mouse or touch).
-  // `drag_point` is in the coordinates of root level grid view.
-  // `cancellation_callback` - the callback that can be invoked from the root
-  // level grid to cancel drag operation in the originating folder grid.
-  void InitiateDragFromReparentItemInRootLevelGridView(
-      Pointer pointer,
-      AppListItemView* original_drag_view,
-      const gfx::Point& drag_point,
-      base::OnceClosure cancellation_callback);
-
   // Updates drag in the root level grid view when receiving the drag event
   // dispatched from the hidden grid view for reparenting a folder item.
   // `pointer` - The pointer that's used for dragging (mouse or touch).
   void UpdateDragFromReparentItem(Pointer pointer,
                                   const gfx::Point& drag_point);
-
-  // Dispatches the drag event from hidden grid view to the top level grid view.
-  // `pointer` - The pointer that's used for dragging (mouse or touch).
-  void DispatchDragEventForReparent(Pointer pointer,
-                                    const gfx::Point& drag_point);
 
   // Handles EndDrag event dispatched from the hidden folder grid view in the
   // root level grid view to end reparenting a folder item.
@@ -331,7 +306,8 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   GridIndex reorder_placeholder() const { return reorder_placeholder_; }
 
-  bool FireFolderItemReparentTimerForTest();
+  AppsGridView::Pointer drag_pointer() const { return drag_pointer_; }
+
   bool FireDragToShelfTimerForTest();
 
   // Carries two parameters:
@@ -582,17 +558,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Subclasses need non-const access.
   raw_ptr<AppListItemView> drag_view_ = nullptr;
 
-  // If set, a callback called when the dragged item starts moving during a drag
-  // (i.e. when the drag icon proxy gets created).
-  // Registered in `InitiateDrag()`
-  base::OnceClosure drag_start_callback_;
-
-  // If set, a callback called when an item drag ends, and drag state is
-  // cleared. It may get called before the drag icon proxy drop animation
-  // finishes.
-  // Registered in `InitiateDrag()`.
-  base::OnceClosure drag_end_callback_;
-
   // If app item drag is in progress, the icon proxy created for the app list
   // item.
   std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
@@ -716,14 +681,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Whether the current drag position is over an item.
   // `point` is the drag location in the apps grid's coordinates.
   bool DragPointIsOverItem(const gfx::Point& point);
-
-  // Initiates drag and drop host drag as needed.
-  // `pointer` - The pointer that's used for dragging.
-  void TryStartDragAndDropHostDrag(Pointer pointer);
-
-  // Prepares |drag_and_drop_host_| for dragging. |grid_location| contains
-  // the drag point in this grid view's coordinates.
-  void StartDragAndDropHostDrag();
 
   // Dispatch the drag and drop update event to the dnd host (if needed).
   void DispatchDragEventToDragAndDropHost(

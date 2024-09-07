@@ -20,13 +20,10 @@
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/ukm/content/source_url_recorder.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -115,10 +112,6 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
        FlagDisabled_IsUnknown) {
   base::HistogramTester histograms;
 
-  ukm::InitializeSourceUrlRecorderForWebContents(
-      mock_nav_handle_->GetWebContents());
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
   // Disable the feature.
   scoped_feature_list_.InitAndDisableFeature(
       features::kEnableFingerprintingProtectionFilter);
@@ -146,22 +139,15 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   // Expect no histograms are emitted when the feature flag is disabled.
   histograms.ExpectTotalCount(ActivationDecisionHistogramName, 0);
   histograms.ExpectTotalCount(ActivationLevelHistogramName, 0);
-
-  EXPECT_EQ(0u, test_ukm_recorder.entries_count());
 }
 
 TEST_F(FingerprintingProtectionPageActivationThrottleTest,
        FlagEnabledDefaultActivatedParams_IsActivated) {
   base::HistogramTester histograms;
 
-  ukm::InitializeSourceUrlRecorderForWebContents(
-      mock_nav_handle_->GetWebContents());
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Enable the feature with default params, i.e. activation_level = enabled.
   scoped_feature_list_.InitWithFeatures(
-      {features::kEnableFingerprintingProtectionFilter,
-       privacy_sandbox::kFingerprintingProtectionSetting},
-      {});
+      {features::kEnableFingerprintingProtectionFilter}, {});
 
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.
@@ -189,35 +175,16 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   histograms.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kEnabled, 1);
-
-  const auto& entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  EXPECT_EQ(1u, test_ukm_recorder.entries_count());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::ACTIVATED));
-    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kDryRunName));
-    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kAllowlistSourceName));
-  }
 }
 
 TEST_F(FingerprintingProtectionPageActivationThrottleTest,
        FlagEnabledWithDryRun_IsActivated) {
   base::HistogramTester histograms;
 
-  ukm::InitializeSourceUrlRecorderForWebContents(
-      mock_nav_handle_->GetWebContents());
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
   // Enable the feature with dry_run params: activation_level = dry_run.
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {{features::kEnableFingerprintingProtectionFilter,
-        {{"activation_level", "dry_run"}}},
-       {privacy_sandbox::kFingerprintingProtectionSetting, {}}},
+        {{"activation_level", "dry_run"}}}},
       {});
 
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
@@ -246,35 +213,16 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   histograms.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDryRun, 1);
-
-  const auto& entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  EXPECT_EQ(1u, test_ukm_recorder.entries_count());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::ACTIVATED));
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kDryRunName, true);
-    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kAllowlistSourceName));
-  }
 }
 
 TEST_F(FingerprintingProtectionPageActivationThrottleTest,
        FlagEnabledWithAllSitesDisabledParams_IsDisabled) {
   base::HistogramTester histograms;
 
-  ukm::InitializeSourceUrlRecorderForWebContents(
-      mock_nav_handle_->GetWebContents());
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
   // Enable the feature with disabling params, i.e. activation_level = disabled.
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {{features::kEnableFingerprintingProtectionFilter,
-        {{"activation_level", "disabled"}}},
-       {privacy_sandbox::kFingerprintingProtectionSetting, {}}},
+        {{"activation_level", "disabled"}}}},
       {});
 
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
@@ -307,29 +255,11 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   histograms.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
-
-  const auto& entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  EXPECT_EQ(1u, test_ukm_recorder.entries_count());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::ACTIVATION_DISABLED));
-    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kDryRunName));
-    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kAllowlistSourceName));
-  }
 }
 
 TEST_F(FingerprintingProtectionPageActivationThrottleTest,
        FlagEnabledDefaultActivatedParams_IsAllowlisted) {
   base::HistogramTester histograms;
-
-  ukm::InitializeSourceUrlRecorderForWebContents(
-      mock_nav_handle_->GetWebContents());
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   // Enable the feature with disabling params, i.e. activation_level = disabled.
   scoped_feature_list_.InitAndEnableFeature(
@@ -353,21 +283,6 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   histograms.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
-
-  const auto& entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  EXPECT_EQ(1u, test_ukm_recorder.entries_count());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::URL_ALLOWLISTED));
-    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kDryRunName));
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kAllowlistSourceName,
-        static_cast<int64_t>(content_settings::SettingSource::kUser));
-  }
 }
 
 }  // namespace fingerprinting_protection_filter

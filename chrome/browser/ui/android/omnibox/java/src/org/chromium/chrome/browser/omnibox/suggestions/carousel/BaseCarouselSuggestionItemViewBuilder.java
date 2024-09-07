@@ -14,8 +14,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileView;
-import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileViewBinder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
@@ -39,9 +37,6 @@ public class BaseCarouselSuggestionItemViewBuilder {
     public @interface ViewType {
         /** Carousel item is a TileView instance. */
         public int TILE_VIEW = 0;
-
-        /** Carousel item is a QueryTile instance. */
-        public int QUERY_TILE = 1;
     }
 
     /**
@@ -56,10 +51,6 @@ public class BaseCarouselSuggestionItemViewBuilder {
                 ViewType.TILE_VIEW,
                 BaseCarouselSuggestionItemViewBuilder::createTileView,
                 TileViewBinder::bind);
-        adapter.registerType(
-                ViewType.QUERY_TILE,
-                BaseCarouselSuggestionItemViewBuilder::createQueryTile,
-                QueryTileViewBinder::bind);
         return new BaseCarouselSuggestionView(parent.getContext(), adapter);
     }
 
@@ -85,18 +76,6 @@ public class BaseCarouselSuggestionItemViewBuilder {
         View iconBackground = tile.findViewById(R.id.tile_view_icon_background);
         iconBackground.setBackground(modernizedBackground);
 
-        return tile;
-    }
-
-    /**
-     * Create a QueryTile element.
-     *
-     * @param parent ViewGroup that will host the QueryTile.
-     * @return A View element hosting QueryTile.
-     */
-    private static QueryTileView createQueryTile(ViewGroup parent) {
-        var tile = new QueryTileView(parent.getContext());
-        applyViewBackground(tile);
         return tile;
     }
 

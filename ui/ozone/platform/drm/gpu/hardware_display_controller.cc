@@ -32,6 +32,7 @@
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
@@ -83,9 +84,9 @@ bool IsRockchipAfbc(uint64_t modifier) {
 }
 
 std::unique_ptr<DrmDumbBuffer> MakeCursorDrmBuffer(
-    int size,
+    gfx::Size size,
     scoped_refptr<DrmDevice> drm_device) {
-  SkImageInfo info = SkImageInfo::MakeN32Premul(size, size);
+  SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
   auto buffer = std::make_unique<DrmDumbBuffer>(drm_device);
 
   // Don't register a framebuffer for cursors since they are special (they
@@ -103,9 +104,11 @@ HardwareDisplayController::HardwareDisplayController(
     std::unique_ptr<CrtcController> controller,
     const gfx::Point& origin,
     raw_ptr<DrmModifiersFilter> drm_modifiers_filter)
-    : origin_(origin), drm_modifiers_filter_(drm_modifiers_filter) {
+    : origin_(origin),
+      drm_modifiers_filter_(drm_modifiers_filter),
+      tile_property_(controller->tile_property()) {
   AddCrtc(std::move(controller));
-  ProbeValidCursorSizes();
+  InitSupportedCursorSizes();
   AllocateCursorBuffers();
 }
 
@@ -447,16 +450,20 @@ bool HardwareDisplayController::HasCrtc(const scoped_refptr<DrmDevice>& drm,
 }
 
 bool HardwareDisplayController::IsMirrored() const {
-  return crtc_controllers_.size() > 1;
+  return crtc_controllers_.size() > 1 && !IsTiled();
 }
 
 bool HardwareDisplayController::IsEnabled() const {
-  bool is_enabled = true;
+  bool is_enabled = false;
 
   for (const auto& controller : crtc_controllers_)
-    is_enabled &= controller->is_enabled();
+    is_enabled |= controller->is_enabled();
 
   return is_enabled;
+}
+
+bool HardwareDisplayController::IsTiled() const {
+  return tile_property_.has_value();
 }
 
 gfx::Size HardwareDisplayController::GetModeSize() const {
@@ -530,6 +537,14 @@ void HardwareDisplayController::WriteIntoTrace(
   }
 }
 
+size_t HardwareDisplayController::NumOfSupportedCursorSizesForTesting() const {
+  return supported_cursor_sizes_.size();
+}
+
+gfx::Size HardwareDisplayController::CurrentCursorSizeForTesting() const {
+  return current_cursor_ ? current_cursor_->GetSize() : gfx::Size();
+}
+
 void HardwareDisplayController::OnModesetComplete(
     const DrmOverlayPlaneList& modeset_planes) {
   // Modesetting is blocking so it has an immediate effect. We can assume that
@@ -546,7 +561,7 @@ void HardwareDisplayController::AllocateCursorBuffers() {
   TRACE_EVENT0("drm", "HDC::AllocateCursorBuffers");
   constexpr int kActiveBufferCount = 2;
 
-  for (auto& size : valid_cursor_sizes_) {
+  for (auto& size : supported_cursor_sizes_) {
     for (int i = 0; i < kActiveBufferCount; i++) {
       cursor_buffer_map_[size].push_back(
           MakeCursorDrmBuffer(size, GetDrmDevice()));
@@ -557,11 +572,11 @@ void HardwareDisplayController::AllocateCursorBuffers() {
 DrmDumbBuffer* HardwareDisplayController::NextCursorBuffer(
     const SkBitmap& image) {
   // Use the largest buffer as default.
-  int buffer_size = valid_cursor_sizes_.back();
+  gfx::Size buffer_size = supported_cursor_sizes_.back();
 
   // Find the smallest buffer size that fits the |image| size.
-  for (auto size : valid_cursor_sizes_) {
-    if (image.width() <= size && image.height() <= size) {
+  for (auto size : supported_cursor_sizes_) {
+    if (image.width() <= size.width() && image.height() <= size.width()) {
       buffer_size = size;
       break;
     }
@@ -576,7 +591,7 @@ DrmDumbBuffer* HardwareDisplayController::NextCursorBuffer(
   return next_buffer;
 }
 
-bool HardwareDisplayController::UpdateCursorImage() {
+void HardwareDisplayController::UpdateCursorImage() {
   uint32_t handle = 0;
   gfx::Size size;
 
@@ -585,14 +600,9 @@ bool HardwareDisplayController::UpdateCursorImage() {
     size = current_cursor_->GetSize();
   }
 
-  // |success| is only used for tests in ProbeValidCursorSizes().
-  bool success = true;
   for (const auto& controller : crtc_controllers_) {
-    if (!controller->SetCursor(handle, size)) {
-      success = false;
-    }
+    controller->SetCursor(handle, size);
   }
-  return success;
 }
 
 void HardwareDisplayController::UpdateCursorLocation() {
@@ -605,51 +615,44 @@ void HardwareDisplayController::ResetCursor() {
   UpdateCursorImage();
 }
 
-void HardwareDisplayController::ProbeValidCursorSizes() {
-  gfx::Size max_cursor_size_supported = GetMaximumCursorSize(*GetDrmDevice());
-  // max_cursor_size_supported can be as large as 4096 depending on platform
-  // and driver capabilities, but we don't need huge buffer like that for the
-  // cursor.
-  // Using a moderate size e.g. 256 for the cursor is enough in most cases.
-  int max_cursor_buffer_size =
-      std::min(std::min(max_cursor_size_supported.width(),
-                        max_cursor_size_supported.height()),
-               256);
-
+void HardwareDisplayController::InitSupportedCursorSizes() {
   // Only use dynamic cursor size on Intel GPUs.
   std::optional<std::string> driver = GetDrmDevice()->GetDriverName();
   bool use_dynamic_cursor_size = IsUseDynamicCursorSizeEnabled() &&
                                  driver.has_value() && *driver == "i915";
-  if (!use_dynamic_cursor_size) {
-    valid_cursor_sizes_.push_back(max_cursor_buffer_size);
-    return;
+  if (use_dynamic_cursor_size) {
+    const std::vector<std::unique_ptr<HardwareDisplayPlane>>& planes =
+        GetDrmDevice()->plane_manager()->planes();
+    for (const auto& plane : planes) {
+      // Currently on Intel, if there are multiple CRTCs they should all have
+      // the same supported cursor sizes.
+      if (plane->type() == DRM_PLANE_TYPE_CURSOR) {
+        const std::vector<gfx::Size>& supported_cursor_sizes =
+            plane->supported_cursor_sizes();
+        supported_cursor_sizes_.assign(supported_cursor_sizes.begin(),
+                                       supported_cursor_sizes.end());
+        break;
+      }
+    }
   }
 
-  // According to Intel GPU spec and i915 driver code, Intel GPUs support cursor
-  // buffer with width of 64, 128 or 256 for the cursor plane. As we can only
-  // read the max supported width from DRM directly, a probe is done here to
-  // determine all the supported sizes.
-  constexpr int kMinCursorSize = 64;
-  int size = kMinCursorSize;
-  while (size <= max_cursor_buffer_size) {
-    // Create a test buffer and try UpdateCursorImage() to determine if a buffer
-    // size is supported.
-    // Although rectangle buffers are supported, square sizes are used here to
-    // simplify the probe process.
-    SkBitmap image;
-    SkImageInfo info =
-        SkImageInfo::Make(size, size, kN32_SkColorType, kPremul_SkAlphaType);
-    image.allocPixels(info);
-    image.eraseColor(SK_ColorTRANSPARENT);
-    auto cursor_buffer = MakeCursorDrmBuffer(size, GetDrmDevice());
-    current_cursor_ = cursor_buffer.get();
-    DrawCursor(current_cursor_, image);
-    if (UpdateCursorImage()) {
-      valid_cursor_sizes_.push_back(size);
-    }
-    current_cursor_ = nullptr;
-    size *= 2;
+  if (supported_cursor_sizes_.empty()) {
+    // Get the maximum cursor size supported by the GPU.
+    const gfx::Size max_cursor_size_supported =
+        GetMaximumCursorSize(*GetDrmDevice());
+    // max_cursor_size_supported can be as large as 4096 depending on platform
+    // and driver capabilities, but we don't need huge buffer like that for the
+    // cursor.
+    supported_cursor_sizes_.push_back(gfx::Size(
+        std::min(max_cursor_size_supported.width(), kMaxCursorBufferSize),
+        std::min(max_cursor_size_supported.height(), kMaxCursorBufferSize)));
   }
+
+  // Sort the supported cursor sizes in ascending order so that we can use the
+  // smallest buffer.
+  DCHECK(!supported_cursor_sizes_.empty());
+  std::sort(supported_cursor_sizes_.begin(), supported_cursor_sizes_.end(),
+            CursorSizeComparator());
 }
 
 }  // namespace ui

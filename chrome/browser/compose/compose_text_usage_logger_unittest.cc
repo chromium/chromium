@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
@@ -45,6 +46,14 @@ using autofill::test::MakeFormGlobalId;
 using content::RenderFrameHostImpl;
 using content::RenderViewHostTestHarness;
 using content::WebContents;
+
+std::u16string repeat(std::u16string_view s, int n) {
+  std::u16string result;
+  for (int i = 0; i < n; ++i) {
+    result += s;
+  }
+  return result;
+}
 
 FormData CreateForm(
     FormControlType control_type = FormControlType::kInputText) {
@@ -105,6 +114,12 @@ class ComposeTextUsageLoggerTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
+  void SimulateClearingField(autofill::FormGlobalId form_id,
+                             autofill::FieldGlobalId field_id) {
+    logger()->OnAfterTextFieldDidChange(*autofill_manager(), form_id, field_id,
+                                        u"");
+  }
+
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
 
   TestAutofillClientInjector<TestContentAutofillClient>
@@ -115,6 +130,28 @@ class ComposeTextUsageLoggerTest : public ChromeRenderViewHostTestHarness {
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   ukm::SourceId ukm_source_id_;
 };
+
+TEST_F(ComposeTextUsageLoggerTest, ShortTextFieldEntry) {
+  FormData form_data = CreateForm(FormControlType::kInputText);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
+                 u"abcdefg");
+
+  DeleteContents();
+
+  EXPECT_THAT(LoggedTextUsage(),
+              testing::ElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
+                  ukm_source_id_,
+                  {
+                      {"AutofillFormControlType",
+                       static_cast<int64_t>(FormControlType::kInputText)},
+                      {"IsAutofillFieldType", 0},
+                      {"TypedCharacterCount", 4},
+                      {"TypedWordCount", 1},
+                  })));
+}
 
 TEST_F(ComposeTextUsageLoggerTest, TextFieldEntry) {
   FormData form_data = CreateForm(FormControlType::kInputText);
@@ -135,6 +172,50 @@ TEST_F(ComposeTextUsageLoggerTest, TextFieldEntry) {
                       {"IsAutofillFieldType", 0},
                       {"TypedCharacterCount", 8},
                       {"TypedWordCount", 2},
+                  })));
+}
+
+TEST_F(ComposeTextUsageLoggerTest, TextFieldEntry_64) {
+  FormData form_data = CreateForm(FormControlType::kInputText);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
+                 repeat(u"x ", 32));
+
+  DeleteContents();
+
+  EXPECT_THAT(LoggedTextUsage(),
+              testing::ElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
+                  ukm_source_id_,
+                  {
+                      {"AutofillFormControlType",
+                       static_cast<int64_t>(FormControlType::kInputText)},
+                      {"IsAutofillFieldType", 0},
+                      {"TypedCharacterCount", 64},
+                      {"TypedWordCount", 32},
+                  })));
+}
+
+TEST_F(ComposeTextUsageLoggerTest, TextFieldEntry_62) {
+  FormData form_data = CreateForm(FormControlType::kInputText);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
+                 repeat(u"x ", 31));
+
+  DeleteContents();
+
+  EXPECT_THAT(LoggedTextUsage(),
+              testing::ElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
+                  ukm_source_id_,
+                  {
+                      {"AutofillFormControlType",
+                       static_cast<int64_t>(FormControlType::kInputText)},
+                      {"IsAutofillFieldType", 0},
+                      {"TypedCharacterCount", 32},
+                      {"TypedWordCount", 16},
                   })));
 }
 
@@ -309,7 +390,7 @@ TEST_F(ComposeTextUsageLoggerTest, FieldNotEmptyAtStart) {
       std::make_unique<autofill::FormStructure>(form_data));
   SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"This is some longer text that exists in the field. New text"
-                 u" is now written here !!!!",
+                 u" is now written here !!!",
                  /*start_index=*/50);
 
   DeleteContents();
@@ -323,6 +404,32 @@ TEST_F(ComposeTextUsageLoggerTest, FieldNotEmptyAtStart) {
                static_cast<int64_t>(FormControlType::kTextArea)},
               {"IsAutofillFieldType", 0},
               {"TypedCharacterCount", 32},
+              {"TypedWordCount", 4},
+          })));
+}
+
+// Slightly shorter text than is in `FieldNotEmptyAtStart()`, so that it rounds
+// down to 32 chars.
+TEST_F(ComposeTextUsageLoggerTest, FieldNotEmptyAtStart16) {
+  FormData form_data = CreateForm(FormControlType::kTextArea);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
+                 u"This is some longer text that exists in the field. New text"
+                 u" is now written here !",
+                 /*start_index=*/50);
+
+  DeleteContents();
+
+  EXPECT_THAT(
+      LoggedTextUsage(),
+      testing::UnorderedElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
+          ukm_source_id_,
+          {
+              {"AutofillFormControlType",
+               static_cast<int64_t>(FormControlType::kTextArea)},
+              {"IsAutofillFieldType", 0},
+              {"TypedCharacterCount", 16},
               {"TypedWordCount", 4},
           })));
 }
@@ -352,6 +459,26 @@ TEST_F(ComposeTextUsageLoggerTest, CantWriteMoreCharactersThanExistInField) {
               {"TypedCharacterCount", 8 /*10 rounded down*/},
               {"TypedWordCount", 1},
           })));
+}
+
+// Clears the field after editing. No text editing is logged for empty fields.
+TEST_F(ComposeTextUsageLoggerTest,
+       CantWriteMoreCharactersThanExistInField_FieldEmptyAtEnd) {
+  FormData form_data = CreateForm(FormControlType::kTextArea);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+
+  // Types 0123456789 three times, replacing the field contents each time.
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
+                 u"0123456789");
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
+                 u"0123456789");
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(), u"");
+  SimulateClearingField(form_data.global_id(),
+                        form_data.fields()[0].global_id());
+  DeleteContents();
+
+  EXPECT_THAT(LoggedTextUsage(), testing::IsEmpty());
 }
 
 TEST_F(ComposeTextUsageLoggerTest, TwoFieldsModified) {

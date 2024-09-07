@@ -378,6 +378,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     content::DOMMessageQueue message_queue(web_contents);
     content::ExecuteScriptAsync(web_contents, request);
 
+    delegate_observer_->WaitForUI();
+
     // Interact with the username field until the popup shows up. This has the
     // effect of waiting for the browser to send the renderer the password
     // information, and waiting for the UI to render.
@@ -429,6 +431,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     // Execute the Conditional UI request.
     content::DOMMessageQueue message_queue(web_contents);
     content::ExecuteScriptAsync(web_contents, kConditionalUIRequest);
+
+    delegate_observer_->WaitForUI();
 
     // Interact with the username field until the popup shows up. This has the
     // effect of waiting for the browser to send the renderer the password

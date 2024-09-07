@@ -24,7 +24,7 @@ class BatteryStatusListener {
   virtual int GetBatteryPercentage() = 0;
 
   // Is the device is using battery power instead of charging.
-  virtual bool IsOnBatteryPower() = 0;
+  virtual bool IsOnBatteryPower() const = 0;
 
   // Start/Stop to listen to battery status changes.
   virtual void Start(Observer* observer) = 0;

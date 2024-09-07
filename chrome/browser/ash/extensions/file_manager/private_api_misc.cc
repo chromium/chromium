@@ -249,6 +249,27 @@ api::file_manager_private::DefaultLocation GetDefaultLocation(
   return api::file_manager_private::DefaultLocation::kMyFiles;
 }
 
+// Converts the value of LocalUserFilesMigrationDestination policy to
+// api::file_manager_private::CloudProvider. If SkyVault is misconfigured,
+// e.g. local files are enabled returns kNotSpecified, regardless of the policy
+// value.
+api::file_manager_private::CloudProvider GetSkyVaultMigrationDestination() {
+  if (policy::local_user_files::LocalUserFilesAllowed()) {
+    // If local files are allowed, just return kNotSpecified.
+    return api::file_manager_private::CloudProvider::kNotSpecified;
+  }
+
+  auto cloud_provider = policy::local_user_files::GetMigrationDestination();
+  switch (cloud_provider) {
+    case policy::local_user_files::CloudProvider::kNotSpecified:
+      return api::file_manager_private::CloudProvider::kNotSpecified;
+    case policy::local_user_files::CloudProvider::kGoogleDrive:
+      return api::file_manager_private::CloudProvider::kGoogleDrive;
+    case policy::local_user_files::CloudProvider::kOneDrive:
+      return api::file_manager_private::CloudProvider::kOnedrive;
+  }
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
@@ -294,6 +315,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
       policy::local_user_files::LocalUserFilesAllowed();
   result.default_location =
       GetDefaultLocation(prefs->GetString(prefs::kFilesAppDefaultLocation));
+  result.sky_vault_migration_destination = GetSkyVaultMigrationDestination();
 
   return RespondNow(WithArguments(result.ToValue()));
 }
@@ -1047,13 +1069,13 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
       {.volume_type = fmp::VolumeType::kProvided},
   };
 
-  if (base::FeatureList::IsEnabled(ash::features::kFSPsInRecents)) {
-    // If File System Provider is enabled, we set the maximum latency to be 3s.
-    // This is based on "User Preference and Search Engine Latency" paper, which
-    // stated that "[...] once latency exceeds 3 seconds for the slower engine,
-    // users are 1.5 times as likely to choose the faster engine."
-    options.scan_timeout = base::Milliseconds(3000);
-  }
+  // We set the maximum latency to be 3s due to File System Provider volumes.
+  // As these types of volumes may be located in the cloud, they may be slow.
+  // 3s is based on "User Preference and Search Engine Latency" paper, which
+  // stated that "[...] once latency exceeds 3 seconds for the slower engine,
+  // users are 1.5 times as likely to choose the faster engine."
+  options.scan_timeout = base::Milliseconds(3000);
+
   model->GetRecentFiles(
       file_system_context.get(), source_url(), params->query, options,
       base::BindOnce(

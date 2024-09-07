@@ -70,7 +70,6 @@ void ScriptingPermissionsModifier::GrantHostPermission(const GURL& url) {
                       base::DoNothing());
 }
 
-// Adds `site` to the extension's set of runtime granted host permissions.
 void ScriptingPermissionsModifier::GrantHostPermission(
     const URLPattern& site,
     base::OnceClosure done_callback) {

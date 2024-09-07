@@ -4,11 +4,13 @@
 
 #include "services/on_device_model/on_device_model_service.h"
 
+#include "base/files/scoped_temp_file.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/on_device_model/on_device_model_fake.h"
+#include "services/on_device_model/fake/on_device_model_fake.h"
+#include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,20 +43,49 @@ class ContextClientWaiter : public mojom::ContextClient {
   int tokens_processed_ = 0;
 };
 
+class FakeFile {
+ public:
+  explicit FakeFile(const std::string& content) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CHECK(temp_file_.Create());
+    base::File file(temp_file_.path(), base::File::FLAG_OPEN |
+                                           base::File::FLAG_WRITE |
+                                           base::File::FLAG_READ);
+    CHECK(file.IsValid());
+    file.WriteAtCurrentPos(base::as_byte_span(content));
+  }
+  ~FakeFile() { CHECK(temp_file_.Delete()); }
+
+  base::File Open() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    return base::File(temp_file_.path(), base::File::FLAG_OPEN |
+                                             base::File::FLAG_WRITE |
+                                             base::File::FLAG_READ);
+  }
+
+  base::FilePath Path() { return temp_file_.path(); }
+
+ private:
+  base::ScopedTempFile temp_file_;
+};
+
 class OnDeviceModelServiceTest : public testing::Test {
  public:
   OnDeviceModelServiceTest()
       : service_impl_(service_.BindNewPipeAndPassReceiver(),
-                      GetOnDeviceModelFakeImpl()) {}
+                      *fake_ml::GetFakeChromeML()) {}
 
   mojo::Remote<mojom::OnDeviceModelService>& service() { return service_; }
 
   mojo::Remote<mojom::OnDeviceModel> LoadModel(
-      bool support_multiple_sessions = false) {
+      bool support_multiple_sessions = false,
+      mojom::ModelBackendType backend_type = mojom::ModelBackendType::kGpu) {
     base::RunLoop run_loop;
     mojo::Remote<mojom::OnDeviceModel> remote;
     auto params = mojom::LoadModelParams::New();
+    params->backend_type = backend_type;
     params->support_multiple_sessions = support_multiple_sessions;
+    params->max_tokens = 8000;
     service()->LoadModel(
         std::move(params), remote.BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting([&](mojom::LoadModelResult result) {
@@ -65,12 +96,13 @@ class OnDeviceModelServiceTest : public testing::Test {
     return remote;
   }
 
-  mojo::Remote<mojom::OnDeviceModel> LoadAdaptation(
-      mojom::OnDeviceModel& model) {
+  mojo::Remote<mojom::OnDeviceModel> LoadAdaptationWithParams(
+      mojom::OnDeviceModel& model,
+      mojom::LoadAdaptationParamsPtr adaptation_params) {
     base::RunLoop run_loop;
     mojo::Remote<mojom::OnDeviceModel> remote;
     model.LoadAdaptation(
-        mojom::LoadAdaptationParams::New(), remote.BindNewPipeAndPassReceiver(),
+        std::move(adaptation_params), remote.BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting([&](mojom::LoadModelResult result) {
           EXPECT_EQ(mojom::LoadModelResult::kSuccess, result);
           run_loop.Quit();
@@ -79,10 +111,32 @@ class OnDeviceModelServiceTest : public testing::Test {
     return remote;
   }
 
+  mojo::Remote<mojom::OnDeviceModel> LoadAdaptation(
+      mojom::OnDeviceModel& model,
+      base::File adaptation_data) {
+    auto params = mojom::LoadAdaptationParams::New();
+    params->assets.weights = std::move(adaptation_data);
+    return LoadAdaptationWithParams(model, std::move(params));
+  }
+
+  mojo::Remote<mojom::OnDeviceModel> LoadAdaptation(
+      mojom::OnDeviceModel& model,
+      base::FilePath adaptation_path) {
+    auto params = mojom::LoadAdaptationParams::New();
+    params->assets.weights_path = std::move(adaptation_path);
+    return LoadAdaptationWithParams(model, std::move(params));
+  }
+
   mojom::InputOptionsPtr MakeInput(const std::string& input) {
-    return mojom::InputOptions::New(input, std::nullopt, std::nullopt, false,
-                                    std::nullopt, std::nullopt, std::nullopt,
-                                    std::nullopt);
+    auto options = mojom::InputOptions::New();
+    options->text = input;
+    return options;
+  }
+
+  mojom::InputOptionsPtr MakeInput(std::vector<ml::InputPiece> input) {
+    auto options = mojom::InputOptions::New();
+    options->input = mojom::Input::New(std::move(input));
+    return options;
   }
 
   std::vector<std::string> GetResponses(mojom::OnDeviceModel& model,
@@ -353,10 +407,10 @@ TEST_F(OnDeviceModelServiceTest, CancelsPreviousSession) {
   session1.set_disconnect_handler(run_loop.QuitClosure());
   run_loop.Run();
 
-  // Response from first session should still work since it was sent before
-  // cancel.
+  // Response from first session may or may not have completed before being
+  // cancelled, but should be terminated.
   response1.WaitForCompletion();
-  EXPECT_THAT(response1.responses(), ElementsAre("Input: 1\n"));
+  EXPECT_TRUE(response1.terminated());
 
   // Second session still works.
   TestResponseHolder response2;
@@ -393,53 +447,78 @@ TEST_F(OnDeviceModelServiceTest, MultipleSessionsWaitPreviousSession) {
 }
 
 TEST_F(OnDeviceModelServiceTest, LoadsAdaptation) {
+  FakeFile weights1("Adapt1");
+  FakeFile weights2("Adapt2");
   auto model = LoadModel();
-  auto adaptation1 = LoadAdaptation(*model);
+  auto adaptation1 = LoadAdaptation(*model, weights1.Open());
   EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation1, "foo"),
-              ElementsAre("Adaptation: 1\n", "Input: foo\n"));
+              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
 
-  auto adaptation2 = LoadAdaptation(*model);
+  auto adaptation2 = LoadAdaptation(*model, weights2.Open());
   EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation1, "foo"),
-              ElementsAre("Adaptation: 1\n", "Input: foo\n"));
+              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation2, "foo"),
-              ElementsAre("Adaptation: 2\n", "Input: foo\n"));
+              ElementsAre("Adaptation: Adapt2\n", "Input: foo\n"));
+}
+
+TEST_F(OnDeviceModelServiceTest, LoadsAdaptationWithPath) {
+  FakeFile weights1("Adapt1");
+  FakeFile weights2("Adapt2");
+  auto model = LoadModel(/*support_multiple_sessions=*/false,
+                         mojom::ModelBackendType::kApu);
+  auto adaptation1 = LoadAdaptation(*model, weights1.Path());
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
+  EXPECT_THAT(GetResponses(*adaptation1, "foo"),
+              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
+
+  auto adaptation2 = LoadAdaptation(*model, weights2.Path());
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
+  EXPECT_THAT(GetResponses(*adaptation1, "foo"),
+              ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
+  EXPECT_THAT(GetResponses(*adaptation2, "foo"),
+              ElementsAre("Adaptation: Adapt2\n", "Input: foo\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, LoadingAdaptationCancelsSession) {
+  FakeFile weights1("Adapt1");
   auto model = LoadModel();
 
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver());
   session.reset_on_disconnect();
 
-  LoadAdaptation(*model);
+  LoadAdaptation(*model, weights1.Open());
   FlushService();
   EXPECT_FALSE(session);
 }
 
 TEST_F(OnDeviceModelServiceTest,
        MultipleSessionsLoadingAdaptationNotCancelsSession) {
+  FakeFile weights1("Adapt1");
   auto model = LoadModel(/*support_multiple_sessions=*/true);
 
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver());
   session.reset_on_disconnect();
 
-  LoadAdaptation(*model);
+  LoadAdaptation(*model, weights1.Open());
   FlushService();
   EXPECT_TRUE(session);
 }
 
 TEST_F(OnDeviceModelServiceTest, DeletesModel) {
+  FakeFile weights1("Adapt1");
+  FakeFile weights2("Adapt2");
+  FakeFile weights3("Adapt3");
   auto model1 = LoadModel();
-  auto adaptation1 = LoadAdaptation(*model1);
-  auto adaptation2 = LoadAdaptation(*model1);
+  auto adaptation1 = LoadAdaptation(*model1, weights1.Open());
+  auto adaptation2 = LoadAdaptation(*model1, weights2.Open());
   EXPECT_EQ(GetNumModels(), 1u);
 
   auto model2 = LoadModel();
-  auto adaptation3 = LoadAdaptation(*model2);
+  auto adaptation3 = LoadAdaptation(*model2, weights3.Open());
   EXPECT_EQ(GetNumModels(), 2u);
 
   adaptation1.reset();
@@ -477,6 +556,39 @@ TEST_F(OnDeviceModelServiceTest, Score) {
     session->Score("y", future.GetCallback());
     EXPECT_EQ(future.Get(), float('y'));
   }
+}
+
+TEST_F(OnDeviceModelServiceTest, AddContextWithTokens) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver());
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back(ml::Token::kSystem);
+    pieces.push_back("hi");
+    pieces.push_back(ml::Token::kEnd);
+    session->AddContext(MakeInput(std::move(pieces)), {});
+  }
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back(ml::Token::kModel);
+    pieces.push_back("hello");
+    pieces.push_back(ml::Token::kEnd);
+    session->AddContext(MakeInput(std::move(pieces)), {});
+  }
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back(ml::Token::kUser);
+    pieces.push_back("bye");
+    session->Execute(MakeInput(std::move(pieces)), response.BindRemote());
+  }
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("Context: System: hi End.\n",
+                                                "Context: Model: hello End.\n",
+                                                "Input: User: bye\n"));
 }
 
 }  // namespace

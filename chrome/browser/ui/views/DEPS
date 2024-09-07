@@ -29,6 +29,10 @@ specific_include_rules = {
   "qrcode_generator\.*": [
     "+components/qr_code_generator/bitmap_generator.h",
   ],
+  "mv2_disabled_dialog_controller_interactive_uitest\.cc": [
+    "+ash/constants/ash_pref_names.h",
+    "+ash/wm/window_restore/window_restore_util.h",
+  ],
   "save_card_bubble_views_browsertest\.cc": [
     "+chromeos/ash/services/multidevice_setup/public/cpp/prefs.h",
   ],

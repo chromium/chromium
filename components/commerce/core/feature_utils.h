@@ -23,6 +23,10 @@ bool IsShoppingListEligible(AccountChecker* account_checker);
 // Check if the product specifications feature is allowed for enterprise.
 bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs);
 
+// Returns whether quality logging is allowed for the product specifications
+// feature. This is directly tied to the enterprise setting.
+bool IsProductSpecificationsQualityLoggingAllowed(PrefService* prefs);
+
 // Returns whether the sync type for product specifications is enabled and
 // syncing.
 bool IsSyncingProductSpecifications(AccountChecker* account_checker);

@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -98,8 +98,7 @@
 
   if (IsAboutThisSiteFeatureEnabled()) {
     page_info::AboutThisSiteService* service =
-        AboutThisSiteServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        AboutThisSiteServiceFactory::GetForProfile(self.browser->GetProfile());
     _aboutThisSiteMediator =
         [[PageInfoAboutThisSiteMediator alloc] initWithWebState:webState
                                                         service:service];

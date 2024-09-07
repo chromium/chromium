@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "printing/buildflags/buildflags.h"
@@ -72,7 +73,8 @@ BrowserPrintingContextFactoryForTest::CreatePrintingContext(
   }
 #endif
 
-  context->SetUserSettings(*test::MakeUserModifiedPrintSettings(printer_name_));
+  context->SetUserSettings(*test::MakeUserModifiedPrintSettings(
+      printer_name_, base::OptionalToPtr(page_ranges_)));
 
   context->SetOnNewDocumentCallback(on_new_document_callback_);
 
@@ -91,6 +93,12 @@ void BrowserPrintingContextFactoryForTest::
   printer_language_type_ = printer_language_type;
 }
 #endif
+
+void BrowserPrintingContextFactoryForTest::
+    SetUserSettingsPageRangesForSubsequentContext(
+        const PageRanges& page_ranges) {
+  page_ranges_ = page_ranges;
+}
 
 void BrowserPrintingContextFactoryForTest::
     SetFailedErrorOnUpdatePrinterSettings() {

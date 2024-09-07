@@ -190,6 +190,19 @@
       deep-link-focus-id$="[[Setting.kOverscrollEnabled]]">
   </settings-toggle-button>
 </template>
+<template is="dom-if" if="[[isAccessibilityDisableTrackpadEnabled_]]">
+  <div class="settings-box start-padding">
+      <div class="start settings-box-text" id="disableInternalTrackpadLabel">
+      $i18n{disableTrackpadLabel}
+    </div>
+    <settings-dropdown-menu id="disableInternalTrackpadDropdown"
+        aria-labeledby="disableInternalTrackpadLabel"
+        pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
+        menu-options="[[disableTrackpadOptions_]]"
+        deep-link-focus-id$="[[Setting.kAccessibilityDisableTrackpad]]">
+    </settings-dropdown-menu>
+  </div>
+</template>
 <template is="dom-if" if="[[showShelfNavigationButtonsSettings_]]" restamp>
   <!-- If shelf navigation buttons are implicitly enabled by other a11y
       settings (e.g. by spoken feedback), the toggle control should be

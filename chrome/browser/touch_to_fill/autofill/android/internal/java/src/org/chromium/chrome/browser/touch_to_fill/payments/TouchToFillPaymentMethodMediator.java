@@ -4,15 +4,27 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ITEM_COLLECTION_INFO;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ON_CREDIT_CARD_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_IMAGE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ITEM_COLLECTION_INFO;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MINOR_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.NON_TRANSFORMING_IBAN_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
@@ -21,7 +33,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -161,9 +172,9 @@ class TouchToFillPaymentMethodMediator {
         for (int i = 0; i < mCards.size(); ++i) {
             CreditCard card = mCards.get(i);
             final PropertyModel model =
-                    createCardModel(
+                    createCardSuggestionModel(
                             card,
-                            /* isAcceptable= */ !suggestions.get(i).applyDeactivatedStyle(),
+                            suggestions.get(i),
                             new FillableItemCollectionInfo(i + 1, mCards.size()),
                             cardImageFunction);
             sheetItems.add(new ListItem(CREDIT_CARD, model));
@@ -283,9 +294,9 @@ class TouchToFillPaymentMethodMediator {
                 TOUCH_TO_FILL_IBAN_INDEX_SELECTED, mIbans.indexOf(iban));
     }
 
-    private PropertyModel createCardModel(
+    private PropertyModel createCardSuggestionModel(
             CreditCard card,
-            boolean isAcceptable,
+            AutofillSuggestion suggestion,
             FillableItemCollectionInfo itemCollectionInfo,
             Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
                     cardImageFunction) {
@@ -296,79 +307,43 @@ class TouchToFillPaymentMethodMediator {
                         : new GURL("");
         TouchToFillPaymentMethodProperties.CardImageMetaData cardImageMetaData =
                 new TouchToFillPaymentMethodProperties.CardImageMetaData(drawableId, artUrl);
-        PropertyModel.Builder creditCardModelBuilder =
-                new PropertyModel.Builder(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties
-                                        .NON_TRANSFORMING_CREDIT_CARD_KEYS)
-                        .withTransformingKey(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_IMAGE,
-                                cardImageFunction,
-                                cardImageMetaData)
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties
-                                        .NETWORK_NAME,
-                                "")
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NAME,
-                                card.getCardNameForAutofillDisplay())
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NUMBER,
-                                card.getObfuscatedLastFourDigits())
+        PropertyModel.Builder creditCardSuggestionModelBuilder =
+                new PropertyModel.Builder(NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
+                        .withTransformingKey(CARD_IMAGE, cardImageFunction, cardImageMetaData)
+                        .with(NETWORK_NAME, "")
+                        .with(MAIN_TEXT, suggestion.getLabel())
+                        .with(MINOR_TEXT, suggestion.getSecondaryLabel())
+                        // For virtual cards, show the "Virtual card" label on the second
+                        // line, and for non-virtual cards, show the expiration date.
+                        // If the merchant has opted-out for the virtual card, on the second
+                        // line we convey that merchant does not accept this virtual card.
+                        .with(FIRST_LINE_LABEL, suggestion.getSublabel())
                         .with(ON_CREDIT_CARD_CLICK_ACTION, () -> this.onSelectedCreditCard(card))
                         .with(ITEM_COLLECTION_INFO, itemCollectionInfo)
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardProperties
-                                        .IS_ACCEPTABLE,
-                                isAcceptable);
+                        .with(APPLY_DEACTIVATED_STYLE, suggestion.applyDeactivatedStyle());
 
         // If a card has a nickname, the network name should also be announced, otherwise the name
         // of the card will be the network name and it will be announced.
         if (!card.getBasicCardIssuerNetwork()
                 .equals(card.getCardNameForAutofillDisplay().toLowerCase(Locale.getDefault()))) {
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardProperties.NETWORK_NAME,
-                    card.getBasicCardIssuerNetwork());
+            creditCardSuggestionModelBuilder.with(NETWORK_NAME, card.getBasicCardIssuerNetwork());
         }
 
-        // For virtual cards, show the "Virtual card" label on the second line, and for non-virtual
-        // cards, show the expiration date.
-        if (card.getIsVirtual()) {
-            // If the merchant has opted-out for the virtual card, on the second line we convey
-            // that merchant does not accept this virtual card.
-            @StringRes
-            int virtualCardLabel =
-                    isAcceptable
-                            ? R.string.autofill_virtual_card_number_switch_label
-                            : R.string.autofill_virtual_card_disabled_suggestion_option_value;
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardProperties.VIRTUAL_CARD_LABEL,
-                    mContext.getString(virtualCardLabel));
-        } else {
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_EXPIRATION,
-                    card.getFormattedExpirationDate(mContext));
-        }
-        return creditCardModelBuilder.build();
+        return creditCardSuggestionModelBuilder.build();
     }
 
     private PropertyModel createIbanModel(Iban iban) {
         PropertyModel.Builder ibanModelBuilder =
-                new PropertyModel.Builder(
-                                TouchToFillPaymentMethodProperties.IbanProperties
-                                        .NON_TRANSFORMING_IBAN_KEYS)
-                        .with(
-                                TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE,
-                                iban.getLabel())
-                        .with(
-                                TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME,
-                                iban.getNickname())
+                new PropertyModel.Builder(NON_TRANSFORMING_IBAN_KEYS)
+                        .with(IBAN_VALUE, iban.getLabel())
+                        .with(IBAN_NICKNAME, iban.getNickname())
                         .with(ON_IBAN_CLICK_ACTION, () -> this.onSelectedIban(iban));
         return ibanModelBuilder.build();
     }
 
     private ListItem buildHeader(boolean hasOnlyLocalPaymentMethods) {
         return new ListItem(
-                TouchToFillPaymentMethodProperties.ItemType.HEADER,
+                HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(
                                 IMAGE_DRAWABLE_ID,
@@ -380,7 +355,7 @@ class TouchToFillPaymentMethodMediator {
 
     private ListItem buildFooterForCreditCard(boolean hasScanCardButton) {
         return new ListItem(
-                TouchToFillPaymentMethodProperties.ItemType.FOOTER,
+                FOOTER,
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(SHOULD_SHOW_SCAN_CREDIT_CARD, hasScanCardButton)
                         .with(SCAN_CREDIT_CARD_CALLBACK, this::scanCreditCard)
@@ -392,7 +367,7 @@ class TouchToFillPaymentMethodMediator {
 
     private ListItem buildFooterForIban() {
         return new ListItem(
-                TouchToFillPaymentMethodProperties.ItemType.FOOTER,
+                FOOTER,
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(
                                 SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,

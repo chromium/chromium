@@ -24,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
 
@@ -156,11 +157,14 @@ TEST_F(PasswordSaveUpdateViewTest, SaveButtonIsDisabledWhenPasswordIsEmpty) {
   const views::DialogDelegate* dialog_delegate = view();
 
   save_bubble->password_dropdown_for_testing()->SetText(u"password");
-  EXPECT_TRUE(dialog_delegate->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(
+      dialog_delegate->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   save_bubble->password_dropdown_for_testing()->SetText(u"");
-  EXPECT_FALSE(dialog_delegate->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(
+      dialog_delegate->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   save_bubble->password_dropdown_for_testing()->SetText(u"pass");
-  EXPECT_TRUE(dialog_delegate->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(
+      dialog_delegate->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 }

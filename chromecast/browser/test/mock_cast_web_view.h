@@ -25,10 +25,6 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(int, id, (), (const, override));
   MOCK_METHOD(content::WebContents*, web_contents, (), (const, override));
   MOCK_METHOD(PageState, page_state, (), (const, override));
-  MOCK_METHOD(url_rewrite::UrlRequestRewriteRulesManager*,
-              url_rewrite_rules_manager,
-              (),
-              (override));
   MOCK_METHOD(const media_control::MediaBlocker*,
               media_blocker,
               (),
@@ -49,10 +45,6 @@ class MockCastWebContents : public CastWebContents {
                const std::vector<std::string>&),
               (override));
   MOCK_METHOD(void, SetGroupInfo, (const std::string&, bool), (override));
-  MOCK_METHOD(void,
-              SetUrlRewriteRules,
-              (url_rewrite::mojom::UrlRequestRewriteRulesPtr),
-              (override));
   MOCK_METHOD(void, LoadUrl, (const GURL&), (override));
   MOCK_METHOD(void, ClosePage, (), (override));
   MOCK_METHOD(void, Stop, (int), (override));

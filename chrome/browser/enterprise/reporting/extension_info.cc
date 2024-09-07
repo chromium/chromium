@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -24,10 +23,6 @@ namespace em = ::enterprise_management;
 namespace enterprise_reporting {
 
 namespace {
-
-BASE_FEATURE(kNewExtensionReportPermissionApi,
-             "NewExtensionReportPermissionApi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 em::Extension_InstallType GetExtensionInstallType(
     ManifestLocation extension_location) {
@@ -60,22 +55,16 @@ void AddPermission(const extensions::Extension* extension,
     extension_info->add_permissions(permission);
   };
 
-  if (base::FeatureList::IsEnabled(kNewExtensionReportPermissionApi)) {
-    base::ranges::for_each(
-        extensions::PermissionsParser::GetRequiredPermissions(extension)
-            .GetAPIsAsStrings(),
-        add_permission);
-
-    base::ranges::for_each(
-        extensions::PermissionsParser::GetOptionalPermissions(extension)
-            .GetAPIsAsStrings(),
-        add_permission);
-    return;
-  }
+  base::ranges::for_each(
+      extensions::PermissionsParser::GetRequiredPermissions(extension)
+          .GetAPIsAsStrings(),
+      add_permission);
 
   base::ranges::for_each(
-      extension->permissions_data()->active_permissions().GetAPIsAsStrings(),
+      extensions::PermissionsParser::GetOptionalPermissions(extension)
+          .GetAPIsAsStrings(),
       add_permission);
+  return;
 }
 
 void AddHostPermission(const extensions::Extension* extension,
@@ -83,22 +72,18 @@ void AddHostPermission(const extensions::Extension* extension,
   auto add_permission = [extension_info](const URLPattern& url) {
     extension_info->add_host_permissions(url.GetAsString());
   };
-  if (base::FeatureList::IsEnabled(kNewExtensionReportPermissionApi)) {
-    base::ranges::for_each(
-        extensions::PermissionsParser::GetRequiredPermissions(extension)
-            .explicit_hosts(),
-        add_permission);
 
-    base::ranges::for_each(
-        extensions::PermissionsParser::GetOptionalPermissions(extension)
-            .explicit_hosts(),
-        add_permission);
-
-    return;
-  }
   base::ranges::for_each(
-      extension->permissions_data()->active_permissions().explicit_hosts(),
+      extensions::PermissionsParser::GetRequiredPermissions(extension)
+          .explicit_hosts(),
       add_permission);
+
+  base::ranges::for_each(
+      extensions::PermissionsParser::GetOptionalPermissions(extension)
+          .explicit_hosts(),
+      add_permission);
+
+  return;
 }
 
 void AddExtensions(const extensions::ExtensionSet& extensions,

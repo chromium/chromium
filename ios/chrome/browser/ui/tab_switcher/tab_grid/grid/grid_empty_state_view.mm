@@ -95,7 +95,7 @@ NSString* BodyTextForPageAndMode(TabGridPage page, TabGridMode mode) {
 @synthesize tabGridMode = _tabGridMode;
 
 - (instancetype)initWithPage:(TabGridPage)page {
-  if (self = [super initWithFrame:CGRectZero]) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     _activePage = page;
     _tabGridMode = TabGridMode::kNormal;
   }

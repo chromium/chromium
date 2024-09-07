@@ -630,9 +630,13 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
 
 void HTMLInputElement::SubtreeHasChanged() {
   input_type_view_->SubtreeHasChanged();
-  // When typing in an input field, childrenChanged is not called, so we need to
-  // force the directionality check.
-  CalculateAndAdjustAutoDirectionality();
+
+  if (HasDirectionAuto() ||
+      !RuntimeEnabledFeatures::TextInputNotAlwaysDirAutoEnabled()) {
+    // When typing in an input field, childrenChanged is not called, so we
+    // need to force the directionality check.
+    CalculateAndAdjustAutoDirectionality();
+  }
 }
 
 FormControlType HTMLInputElement::FormControlType() const {
@@ -2154,7 +2158,7 @@ void HTMLInputElement::setWidth(unsigned width) {
 ListAttributeTargetObserver::ListAttributeTargetObserver(
     const AtomicString& id,
     HTMLInputElement* element)
-    : IdTargetObserver(element->GetTreeScope().GetIdTargetObserverRegistry(),
+    : IdTargetObserver(element->GetTreeScope().EnsureIdTargetObserverRegistry(),
                        id),
       element_(element) {}
 
@@ -2419,9 +2423,7 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
         "HTMLInputElement::showPicker() requires a user gesture.");
     return;
   }
-  if (RuntimeEnabledFeatures::ShowPickerConsumeUserActivationEnabled()) {
-    LocalFrame::ConsumeTransientUserActivation(frame);
-  }
+  LocalFrame::ConsumeTransientUserActivation(frame);
 
   input_type_view_->OpenPopupView();
 }

@@ -42,6 +42,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -66,8 +67,6 @@ namespace {
 using OriginStatus = page_load_metrics::OriginStatus;
 using OriginStatusWithThrottling =
     page_load_metrics::OriginStatusWithThrottling;
-
-using FrameTreeNodeId = int;
 
 const char kAdsInterventionRecordedHistogram[] =
     "SubresourceFilter.PageLoad.AdsInterventionTriggered";
@@ -1009,9 +1008,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       page_load_metrics::UserActivationStatus::kReceivedActivation, 2);
 }
 
-// TODO(crbug.com/40781435): Test is flaky.
-// TODO(crbug.com/40286659)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/40286659): Fix this test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_DocOverwritesNavigation DISABLED_DocOverwritesNavigation
 #else
 #define MAYBE_DocOverwritesNavigation DocOverwritesNavigation
@@ -1022,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                        MAYBE_DocOverwritesNavigation) {
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
-  // TODO(crbug.com/40189815): Investigate if this needs further fix.
+  // TODO(https://crbug.com/40189815): Investigate if this needs further fix.
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -1623,7 +1622,8 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
       browser(), embedded_test_server()->GetURL(
                      "foo.com", "/ad_tagging/frame_factory.html")));
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"createAdFrame('frame_factory.html', '');", base::NullCallback());
+      u"createAdFrame('frame_factory.html', '');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   // Two pages subresources should have been reported as ad. The iframe resource
   // and its three subresources should also be reported as ads.
   waiter->AddMinimumAdResourceExpectation(6);
@@ -1643,7 +1643,8 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
       browser(), embedded_test_server()->GetURL(
                      "foo.com", "/ad_tagging/frame_factory.html")));
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"createAdFrame('frame_factory.html', 'test');", base::NullCallback());
+      u"createAdFrame('frame_factory.html', 'test');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   waiter->AddMinimumAdResourceExpectation(6);
   waiter->Wait();
   NavigateIframeToURL(web_contents(), "test",
@@ -2230,7 +2231,8 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
                                             "/ad_tagging/frame_factory.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"createAdFrame('multiple_mimes.html', 'test');", base::NullCallback());
+      u"createAdFrame('multiple_mimes.html', 'test');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   waiter->AddMinimumAdResourceExpectation(8);
   waiter->Wait();
 
@@ -2643,7 +2645,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverPrerenderingBrowserTest,
   // Start a prerender.
   GURL prerender_url =
       embedded_test_server()->GetURL("/ads_observer/srcdoc_embedded_ad.html");
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);
 

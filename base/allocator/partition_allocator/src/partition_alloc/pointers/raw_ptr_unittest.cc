@@ -1652,13 +1652,8 @@ TEST_F(BackupRefPtrTest, Basic) {
   // In debug builds, the use-after-free should be caught immediately.
   EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *wrapped_ptr1, "");
 #else   // DCHECK_IS_ON() || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  if (cpu.has_mte()) {
-    // If the hardware supports MTE, the use-after-free should also be caught.
-    EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *wrapped_ptr1, "");
-  } else {
-    // The allocation should be poisoned since there's a raw_ptr alive.
-    EXPECT_NE(*wrapped_ptr1, 42);
-  }
+  // The allocation should be poisoned since there's a raw_ptr alive.
+  EXPECT_NE(*wrapped_ptr1, 42);
 
   // The allocator should not be able to reuse the slot at this point.
   void* raw_ptr2 = allocator_.root()->Alloc(sizeof(int), "");

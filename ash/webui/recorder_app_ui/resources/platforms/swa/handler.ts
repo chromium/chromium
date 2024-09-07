@@ -16,6 +16,7 @@ import {
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
+import {NoArgStringName} from '../../core/i18n.js';
 import {InternalMicInfo} from '../../core/microphone_manager.js';
 import {ModelState} from '../../core/on_device_model/types.js';
 import {
@@ -23,6 +24,8 @@ import {
 } from '../../core/platform_handler.js';
 import {computed, Signal, signal} from '../../core/reactive/signal.js';
 import {SodaSession} from '../../core/soda/types.js';
+import {assertInstanceof} from '../../core/utils/assert.js';
+import {parseTopFrameInfo} from '../../core/utils/errors.js';
 
 import {
   mojoModelStateToModelState,
@@ -39,6 +42,8 @@ import {
   SodaRecognizerRemote,
 } from './types.js';
 
+const CRASH_SERVER_PRODUCT_NAME = 'ChromeOS_RecorderApp';
+
 export class PlatformHandler extends PlatformHandlerBase {
   private readonly remote = MojoPageHandler.getRemote();
 
@@ -51,6 +56,13 @@ export class PlatformHandler extends PlatformHandlerBase {
   readonly quietModeInternal = signal(false);
 
   override readonly quietMode: Signal<boolean>;
+
+  override canUseSpeakerLabel = signal(false);
+
+  static override getStringF(id: string, ...args: Array<number|string>):
+    string {
+    return loadTimeData.getStringF(id, ...args);
+  }
 
   constructor() {
     super();
@@ -71,6 +83,9 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override async init(): Promise<void> {
     ColorChangeUpdater.forDocument().start();
+
+    this.canUseSpeakerLabel.value =
+      (await this.remote.canUseSpeakerLabelForCurrentProfile()).supported;
 
     const update = (state: MojoModelState) => {
       this.sodaState.value = mojoModelStateToModelState(state);
@@ -126,16 +141,30 @@ export class PlatformHandler extends PlatformHandlerBase {
     return info ?? {isDefault: false, isInternal: false};
   }
 
-  override getStringF(id: string, ...args: Array<number|string>): string {
-    return loadTimeData.getStringF(id, ...args);
-  }
-
   override renderDevUi(): RenderResult {
     return nothing;
   }
 
-  override handleUncaughtError(_error: unknown): RenderResult|null {
-    return null;
+  override handleUncaughtError(errorRaw: unknown): void {
+    const error = assertInstanceof(errorRaw, Error);
+
+    // TODO: b/327538011 - Hook the error handling with the integration tests so
+    // that it can properly fail the test when an error is thrown.
+
+    const stackStr = error.stack ?? '';
+    const {lineNo, colNo} = parseTopFrameInfo(stackStr);
+
+    chrome.crashReportPrivate.reportError(
+      {
+        product: CRASH_SERVER_PRODUCT_NAME,
+        url: self.location.href,
+        message: `${error.name}: ${error.message}`,
+        lineNumber: lineNo,
+        stackTrace: stackStr,
+        columnNumber: colNo,
+      },
+      /* callback= */ () => {}
+    );
   }
 
   override showAiFeedbackDialog(description: string): void {
@@ -147,8 +176,22 @@ export class PlatformHandler extends PlatformHandlerBase {
       // `video: false` can be used here with the special permission
       // DISPLAY_MEDIA_SYSTEM_AUDIO.
       video: false,
-      audio: true,
+      audio: {
+        autoGainControl: {ideal: false},
+      },
       systemAudio: 'include',
     });
+  }
+
+  override recordSpeakerLabelConsent(
+    consentGiven: boolean,
+    consentDescriptionNames: NoArgStringName[],
+    consentConfirmationName: NoArgStringName,
+  ): void {
+    this.remote.recordSpeakerLabelConsent(
+      consentGiven,
+      consentDescriptionNames,
+      consentConfirmationName,
+    );
   }
 }

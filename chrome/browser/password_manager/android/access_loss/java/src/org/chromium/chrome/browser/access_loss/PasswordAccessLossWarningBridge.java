@@ -4,17 +4,54 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import android.app.Activity;
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 
-class PasswordAccessLossWarningBridge {
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.ui.base.WindowAndroid;
 
-    @CalledByNative
-    private static PasswordAccessLossWarningBridge create() {
-        return new PasswordAccessLossWarningBridge();
+class PasswordAccessLossWarningBridge {
+    PasswordAccessLossWarningHelper mHelper;
+
+    public PasswordAccessLossWarningBridge(
+            Context context,
+            BottomSheetController bottomSheetController,
+            Profile profile,
+            Activity activity) {
+        mHelper =
+                new PasswordAccessLossWarningHelper(
+                        context, bottomSheetController, profile, activity);
     }
 
     @CalledByNative
-    private void show() {
-        // TODO: crbug.com/356627466 - Show the sheet.
+    @Nullable
+    static PasswordAccessLossWarningBridge create(WindowAndroid windowAndroid, Profile profile) {
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) {
+            return null;
+        }
+        Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            return null;
+        }
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity == null) {
+            return null;
+        }
+        return new PasswordAccessLossWarningBridge(
+                context, bottomSheetController, profile, activity);
+    }
+
+    @CalledByNative
+    public void show(@PasswordAccessLossWarningType int warningType) {
+        mHelper.show(warningType);
+        mHelper.showNotification(PasswordAccessLossWarningType.NO_UPM);
     }
 }

@@ -101,8 +101,7 @@ void SerializedHandle::Close() {
   if (IsHandleValid()) {
     switch (type_) {
       case INVALID:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case SHARED_MEMORY_REGION:
         shm_region_ = base::subtle::PlatformSharedMemoryRegion();
         break;

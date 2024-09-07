@@ -75,6 +75,8 @@ chromium-metrics-reviews@google.com.
       summary="the module for Search Box Suggestions"/>
   <variant name="SidePanelPinning" summary="the module for Side Panel Pinning"/>
   <variant name="TabOrganizer" summary="the module for Tab Organizer"/>
+  <variant name="TestDefaultModule"
+      summary="the default module used for testing only"/>
   <variant name="TestModule" summary="the module used for testing only"/>
   <variant name="TranslationSettings"
       summary="the module for Translation Settings"/>
@@ -200,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.NewBadge.{NewBadgeFeature}.MaxShownReached"
-    enum="BooleanCompleted" expires_after="2024-12-01">
+    enum="BooleanCompleted" expires_after="2025-02-16">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -239,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under24Hours"
-    units="minutes" expires_after="2025-01-19">
+    units="minutes" expires_after="2025-02-10">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -286,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.MonthlyActiveDays" units="count"
-    expires_after="2024-12-24">
+    expires_after="2025-02-10">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -322,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.RecentSuperActiveWeeks" units="count"
-    expires_after="2024-09-21">
+    expires_after="2025-02-10">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -397,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.WhatsNew.TimeToLoadContent" units="ms"
-    expires_after="2024-12-03">
+    expires_after="2025-02-23">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

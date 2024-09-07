@@ -5,13 +5,18 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsProperties.ANDROID_VIEW_HEIGHT;
+import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsProperties.ANDROID_VIEW_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsProperties.COMPOSITED_VIEW_VISIBLE;
 
 import android.app.Activity;
 
@@ -26,16 +31,17 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -65,10 +71,10 @@ public class BottomControlsMediatorTest {
 
     @Mock BottomControlsStacker mBottomControlsStacker;
     @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     @Mock LayoutManager mLayoutManager;
     @Mock WindowAndroid mWindowAndroid;
     @Mock TabObscuringHandler mTabObscuringHandler;
-    @Mock ObservableSupplier<Boolean> mOverlayPanelVisibilitySupplier;
     @Mock EdgeToEdgeController mEdgeToEdgeController;
     @Mock FullscreenManager mFullscreenManager;
     @Mock KeyboardVisibilityDelegate mKeyboardDelegate;
@@ -77,6 +83,8 @@ public class BottomControlsMediatorTest {
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
+    private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
+            new ObservableSupplierImpl();
 
     private PropertyModel mModel;
     private BottomControlsMediator mMediator;
@@ -99,6 +107,7 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mModel,
                         mBottomControlsStacker,
+                        mBrowserControlsVisibilityDelegate,
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
@@ -114,6 +123,7 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mModel,
                         mBottomControlsStacker,
+                        mBrowserControlsVisibilityDelegate,
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
@@ -158,12 +168,14 @@ public class BottomControlsMediatorTest {
                         mTabObservableSupplier,
                         null,
                         mBrowserControlsStateProvider,
-                        mLayoutManager);
+                        mLayoutManager,
+                        mFullscreenManager);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
                         mWindowAndroid,
                         mModel,
                         mBottomControlsStacker,
+                        mBrowserControlsVisibilityDelegate,
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
@@ -187,11 +199,13 @@ public class BottomControlsMediatorTest {
                         mTabObservableSupplier,
                         null,
                         mBrowserControlsStateProvider,
-                        mLayoutManager);
+                        mLayoutManager,
+                        mFullscreenManager);
         new BottomControlsMediator(
                 mWindowAndroid,
                 mModel,
                 mBottomControlsStacker,
+                mBrowserControlsVisibilityDelegate,
                 mFullscreenManager,
                 mTabObscuringHandler,
                 DEFAULT_HEIGHT,
@@ -204,5 +218,44 @@ public class BottomControlsMediatorTest {
         // Go to a native page which will go ToEdge due to our enabled Feature for this test case.
         mTabObservableSupplier.set(null);
         assertEquals(toNormalHeight, mModel.get(ANDROID_VIEW_HEIGHT));
+    }
+
+    @Test
+    public void testSetVisibility() {
+        // The initial visibility is false, defined in #setup.
+        verifyNoInteractions(mBrowserControlsVisibilityDelegate);
+
+        mMediator.setBottomControlsVisible(true);
+        assertTrue("Compositor view is not visible.", mModel.get(COMPOSITED_VIEW_VISIBLE));
+        assertTrue("Android view is not visible.", mModel.get(ANDROID_VIEW_VISIBLE));
+        verify(mBrowserControlsVisibilityDelegate).showControlsTransient();
+    }
+
+    @Test
+    public void testSetVisibility_SwipeLayout() {
+        // The initial visibility is false, defined in #setup.
+        verifyNoInteractions(mBrowserControlsVisibilityDelegate);
+
+        mMediator.onStartedShowing(LayoutType.TOOLBAR_SWIPE);
+        mMediator.setBottomControlsVisible(true);
+        assertTrue("Compositor view is not visible.", mModel.get(COMPOSITED_VIEW_VISIBLE));
+        assertFalse(
+                "Android view is not visible during toolbar swipe.",
+                mModel.get(ANDROID_VIEW_VISIBLE));
+        verify(mBrowserControlsVisibilityDelegate).showControlsTransient();
+    }
+
+    @Test
+    public void testSetVisibility_OverviewPannel() {
+        // The initial visibility is false, defined in #setup.
+        verifyNoInteractions(mBrowserControlsVisibilityDelegate);
+
+        mOverlayPanelVisibilitySupplier.set(true);
+        mMediator.setBottomControlsVisible(true);
+        assertTrue("Compositor view is not visible.", mModel.get(COMPOSITED_VIEW_VISIBLE));
+        assertFalse(
+                "Android view is not visible during overlay panel.",
+                mModel.get(ANDROID_VIEW_VISIBLE));
+        verify(mBrowserControlsVisibilityDelegate).showControlsTransient();
     }
 }

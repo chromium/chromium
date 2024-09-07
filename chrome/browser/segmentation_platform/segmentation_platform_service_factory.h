@@ -19,6 +19,11 @@ class BrowserContext;
 class Profile;
 
 namespace segmentation_platform {
+
+namespace home_modules {
+class HomeModulesCardRegistry;
+}
+
 class SegmentationPlatformService;
 
 // A factory to create a unique SegmentationPlatformService.
@@ -30,6 +35,9 @@ class SegmentationPlatformServiceFactory : public ProfileKeyedServiceFactory {
 
   // Gets the lazy singleton instance of SegmentationPlatformService.
   static SegmentationPlatformServiceFactory* GetInstance();
+
+  static home_modules::HomeModulesCardRegistry* GetHomeModulesCardRegistry(
+      content::BrowserContext* context);
 
   // Disallow copy/assign.
   SegmentationPlatformServiceFactory(

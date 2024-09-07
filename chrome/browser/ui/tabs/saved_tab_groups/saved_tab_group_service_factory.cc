@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
@@ -41,6 +42,8 @@ SavedTabGroupServiceFactory::~SavedTabGroupServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SavedTabGroupServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  CHECK(!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled());
+
   DCHECK(context);
   Profile* profile = Profile::FromBrowserContext(context);
   syncer::DeviceInfoTracker* device_info_tracker =

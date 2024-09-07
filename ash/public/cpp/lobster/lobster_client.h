@@ -28,6 +28,10 @@ class ASH_PUBLIC_EXPORT LobsterClient {
   virtual void InflateCandidate(uint32_t seed,
                                 const std::string& query,
                                 InflateCandidateCallback) = 0;
+  virtual bool SubmitFeedback(const std::string& query,
+                              const std::string& model_version,
+                              const std::string& description,
+                              const std::string& image_bytes) = 0;
 };
 
 }  // namespace ash

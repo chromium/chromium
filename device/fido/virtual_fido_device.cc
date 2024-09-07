@@ -237,7 +237,7 @@ class Ed25519PrivateKey : public EVPBackedPrivateKey {
                             EVP_marshal_public_key>(pkey_.get()));
 
     return std::make_unique<PublicKey>(
-        static_cast<int32_t>(CoseAlgorithmIdentifier::kRs256), *cbor_bytes,
+        static_cast<int32_t>(CoseAlgorithmIdentifier::kEdDSA), *cbor_bytes,
         std::move(der_bytes));
   }
 

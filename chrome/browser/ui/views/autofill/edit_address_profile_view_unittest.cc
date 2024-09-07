@@ -22,6 +22,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -132,8 +133,9 @@ void EditAddressProfileViewTest::CreateViewAndShow(
 TEST_F(EditAddressProfileViewTest, Sanity) {
   CreateViewAndShow();
   // Check that both OK and cancel button are enabled.
-  EXPECT_TRUE(dialog()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
-  EXPECT_TRUE(dialog()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL));
+  EXPECT_TRUE(dialog()->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  EXPECT_TRUE(
+      dialog()->IsDialogButtonEnabled(ui::mojom::DialogButton::kCancel));
 }
 
 TEST_F(EditAddressProfileViewTest, SaveInvokesTheCallbackWithEditedFullname) {

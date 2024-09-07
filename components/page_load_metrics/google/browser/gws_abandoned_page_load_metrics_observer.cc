@@ -98,11 +98,19 @@ std::string GWSAbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
 
 std::vector<std::string>
 GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
+  auto base_suffixes =
+      AbandonedPageLoadMetricsObserver::GetAdditionalSuffixes();
+
+  std::string request_source_suffix =
+      did_request_non_srp_ ? internal::kSuffixWasNonSRP : "";
+  std::vector<std::string> suffixes_with_request_source;
   // Add suffix that indicates the navigation prevviously requested a non-SRP
   // URL (instead of immediately targeting a SRP URL) to all histograms, if
   // necessary.
-  std::string suffix = did_request_non_srp_ ? internal::kSuffixWasNonSRP : "";
-  return {suffix};
+  for (auto base_suffix : base_suffixes) {
+    suffixes_with_request_source.push_back(base_suffix + request_source_suffix);
+  }
+  return suffixes_with_request_source;
 }
 
 void GWSAbandonedPageLoadMetricsObserver::AddSRPMetricsToUKMIfNeeded(

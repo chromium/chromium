@@ -49,6 +49,12 @@ class MigratableCreditCard;
 
 namespace payments {
 
+using GetCardUploadDetailsCallback = base::OnceCallback<void(
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    const std::u16string& context_token,
+    std::unique_ptr<base::Value::Dict> legal_message,
+    std::vector<std::pair<int, int>> supported_card_bin_ranges)>;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Callback type for MigrateCards callback. |result| is the Payments Rpc result.
 // |save_result| is an unordered_map parsed from the response whose key is the
@@ -518,10 +524,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       const int detected_values,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       const std::string& app_locale,
-      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                              const std::u16string&,
-                              std::unique_ptr<base::Value::Dict>,
-                              std::vector<std::pair<int, int>>)> callback,
+      GetCardUploadDetailsCallback callback,
       const int billable_service_number,
       const int64_t billing_customer_number,
       UploadCardSource upload_card_source =

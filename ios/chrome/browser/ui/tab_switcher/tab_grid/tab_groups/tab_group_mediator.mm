@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -53,7 +53,7 @@
   CHECK(webStateList);
   CHECK(groupConsumer);
   CHECK(tabGroup);
-  if (self = [super initWithModeHolder:modeHolder]) {
+  if ((self = [super initWithModeHolder:modeHolder])) {
     self.webStateList = webStateList;
     _groupConsumer = groupConsumer;
     self.consumer = gridConsumer;

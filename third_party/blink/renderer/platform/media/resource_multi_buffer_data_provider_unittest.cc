@@ -185,12 +185,13 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
 
   // Helper method to write to |loader_| from |data_|.
   void WriteLoader(int position, int size) {
-    loader_->DidReceiveData(reinterpret_cast<char*>(data_ + position), size);
+    loader_->DidReceiveData(
+        base::as_chars(base::span(data_).subspan(position, size)));
   }
 
   void WriteData(int size) {
     auto data = base::HeapArray<char>::Uninit(size);
-    loader_->DidReceiveData(data.data(), size);
+    loader_->DidReceiveData(data);
   }
 
   // Verifies that data in buffer[0...size] is equal to data_[pos...pos+size].

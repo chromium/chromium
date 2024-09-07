@@ -256,6 +256,7 @@ source_set("wayland") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//skia",
+    "//third_party/angle:includes",
     "//third_party/libsync",
     "//third_party/wayland:wayland_client",
     "//third_party/wayland:wayland_cursor",
@@ -405,15 +406,12 @@ source_set("wayland") {
     ":wayland_proxy",
     "//ui/events/platform/wayland:wayland_event_watcher",
   ]
-
-  configs += [ "//third_party/khronos:khronos_headers" ]
 }
 
 source_set("test_support") {
   testonly = true
 
   sources = [
-    "host/wayland_connection_test_api.h",
     "test/global_object.cc",
     "test/global_object.h",
     "test/mock_pointer.cc",
@@ -546,6 +544,8 @@ source_set("test_support") {
     "test/test_zxdg_output.h",
     "test/test_zxdg_output_manager.cc",
     "test/test_zxdg_output_manager.h",
+    "test/wayland_connection_test_api.cc",
+    "test/wayland_connection_test_api.h",
   ]
 
   deps = [

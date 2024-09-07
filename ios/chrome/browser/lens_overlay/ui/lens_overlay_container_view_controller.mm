@@ -43,9 +43,9 @@
       NO;
   [NSLayoutConstraint activateConstraints:@[
     [self.selectionViewController.view.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        constraintEqualToAnchor:self.view.topAnchor],
     [self.selectionViewController.view.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+        constraintEqualToAnchor:self.view.bottomAnchor],
     [self.selectionViewController.view.leftAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor],
     [self.selectionViewController.view.rightAnchor
@@ -53,6 +53,10 @@
   ]];
 
   [self.selectionViewController didMoveToParentViewController:self];
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+  return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - Accessibility

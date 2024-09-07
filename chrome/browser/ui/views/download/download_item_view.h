@@ -85,7 +85,6 @@ class DownloadItemView : public views::View,
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,
@@ -224,6 +223,10 @@ class DownloadItemView : public views::View,
   // Forwards |command| to |commands_|; useful for callbacks.
   void ExecuteCommand(DownloadCommands::Command command);
 
+  void UpdateAccessibleName();
+
+  std::u16string CalculateAccessibleName() const;
+
   // The model controlling this object's state.
   const DownloadUIModel::DownloadUIModelPtr model_;
 
@@ -291,8 +294,6 @@ class DownloadItemView : public views::View,
 
   // The tooltip.  Only displayed when not showing a warning dialog.
   std::u16string tooltip_text_;
-
-  std::u16string accessible_name_;
 
   // A hidden view for accessible status alerts that are spoken by screen
   // readers when a download changes state.

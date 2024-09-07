@@ -220,6 +220,7 @@ DEFINE_ABV_TRAIT(Uint16Array)
 DEFINE_ABV_TRAIT(Uint32Array)
 DEFINE_ABV_TRAIT(BigInt64Array)
 DEFINE_ABV_TRAIT(BigUint64Array)
+DEFINE_ABV_TRAIT(Float16Array)
 DEFINE_ABV_TRAIT(Float32Array)
 DEFINE_ABV_TRAIT(Float64Array)
 #undef DEFINE_ABV_TRAIT
@@ -384,30 +385,45 @@ DOMArrayBufferView* ToDOMArrayBufferView(v8::Isolate* isolate,
     return blink_view;
   }
 
-  if (v8_view->IsInt8Array())
+  if (v8_view->IsInt8Array()) {
     return ToDOMViewType<DOMInt8Array, allow_shared>(isolate, value);
-  if (v8_view->IsInt16Array())
+  }
+  if (v8_view->IsInt16Array()) {
     return ToDOMViewType<DOMInt16Array, allow_shared>(isolate, value);
-  if (v8_view->IsInt32Array())
+  }
+  if (v8_view->IsInt32Array()) {
     return ToDOMViewType<DOMInt32Array, allow_shared>(isolate, value);
-  if (v8_view->IsUint8Array())
+  }
+  if (v8_view->IsUint8Array()) {
     return ToDOMViewType<DOMUint8Array, allow_shared>(isolate, value);
-  if (v8_view->IsUint8ClampedArray())
+  }
+  if (v8_view->IsUint8ClampedArray()) {
     return ToDOMViewType<DOMUint8ClampedArray, allow_shared>(isolate, value);
-  if (v8_view->IsUint16Array())
+  }
+  if (v8_view->IsUint16Array()) {
     return ToDOMViewType<DOMUint16Array, allow_shared>(isolate, value);
-  if (v8_view->IsUint32Array())
+  }
+  if (v8_view->IsUint32Array()) {
     return ToDOMViewType<DOMUint32Array, allow_shared>(isolate, value);
-  if (v8_view->IsBigInt64Array())
+  }
+  if (v8_view->IsBigInt64Array()) {
     return ToDOMViewType<DOMBigInt64Array, allow_shared>(isolate, value);
-  if (v8_view->IsBigUint64Array())
+  }
+  if (v8_view->IsBigUint64Array()) {
     return ToDOMViewType<DOMBigUint64Array, allow_shared>(isolate, value);
-  if (v8_view->IsFloat32Array())
+  }
+  if (v8_view->IsFloat16Array()) {
+    return ToDOMViewType<DOMFloat16Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsFloat32Array()) {
     return ToDOMViewType<DOMFloat32Array, allow_shared>(isolate, value);
-  if (v8_view->IsFloat64Array())
+  }
+  if (v8_view->IsFloat64Array()) {
     return ToDOMViewType<DOMFloat64Array, allow_shared>(isolate, value);
-  if (v8_view->IsDataView())
+  }
+  if (v8_view->IsDataView()) {
     return ToDOMViewType<DOMDataView, allow_shared>(isolate, value);
+  }
 
   NOTREACHED_IN_MIGRATION();
   return nullptr;

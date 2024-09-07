@@ -12,6 +12,8 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.Display;
 import android.widget.ImageView;
@@ -301,25 +303,32 @@ public class TabUtils {
     }
 
     /**
-     * Update the {@link Bitmap} and @{@link Matrix} of ImageView. The bitmap is scaled by a
-     * matrix to be scaled to larger of the two dimensions of {@code destinationSize},
-     * then top-center aligned.
+     * Update the {@link Bitmap} and @{@link Matrix} of ImageView. The drawable is scaled by a
+     * matrix to be scaled to larger of the two dimensions of {@code destinationSize}, then
+     * top-center aligned.
+     *
      * @param view The {@link ImageView} to update.
-     * @param bitmap The {@link Bitmap} to set in the view and scale.
-     * @param destinationSize The desired {@link Size} of the bitmap.
+     * @param drawable The {@link Drawable} to set in the view and scale.
+     * @param destinationSize The desired {@link Size} of the drawable.
      */
-    public static void setBitmapAndUpdateImageMatrix(
-            ImageView view, Bitmap bitmap, Size destinationSize) {
+    public static void setDrawableAndUpdateImageMatrix(
+            ImageView view, Drawable drawable, Size destinationSize) {
         if (BuildInfo.getInstance().isAutomotive) {
-            bitmap.setDensity(
-                    DisplayUtil.getUiDensityForAutomotive(view.getContext(), bitmap.getDensity()));
+            if (drawable instanceof BitmapDrawable bitmapDrawable) {
+                Bitmap bitmap = bitmapDrawable.getBitmap();
+                assert bitmap != null;
+                bitmap.setDensity(
+                        DisplayUtil.getUiDensityForAutomotive(
+                                view.getContext(), bitmap.getDensity()));
+            }
         }
-        view.setImageBitmap(bitmap);
+        view.setImageDrawable(drawable);
         int newWidth = destinationSize == null ? 0 : destinationSize.getWidth();
         int newHeight = destinationSize == null ? 0 : destinationSize.getHeight();
         if (newWidth <= 0
                 || newHeight <= 0
-                || (newWidth == bitmap.getWidth() && newHeight == bitmap.getHeight())) {
+                || (newWidth == drawable.getIntrinsicWidth()
+                        && newHeight == drawable.getIntrinsicHeight())) {
             view.setScaleType(ScaleType.FIT_CENTER);
             return;
         }
@@ -327,16 +336,16 @@ public class TabUtils {
         final Matrix m = new Matrix();
         final float scale =
                 Math.max(
-                        (float) newWidth / bitmap.getWidth(),
-                        (float) newHeight / bitmap.getHeight());
+                        (float) newWidth / drawable.getIntrinsicWidth(),
+                        (float) newHeight / drawable.getIntrinsicHeight());
         m.setScale(scale, scale);
 
         /**
          * Bitmap is top-left aligned by default. We want to translate the image to be horizontally
          * center-aligned. |destination width - scaled width| is the width that is out of view
-         * bounds. We need to translate bitmap (to left) by half of this distance.
+         * bounds. We need to translate the drawable (to left) by half of this distance.
          */
-        final int xOffset = (int) ((newWidth - (bitmap.getWidth() * scale)) / 2);
+        final int xOffset = (int) ((newWidth - (drawable.getIntrinsicWidth() * scale)) / 2);
         m.postTranslate(xOffset, 0);
 
         view.setScaleType(ScaleType.MATRIX);

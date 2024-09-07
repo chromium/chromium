@@ -60,7 +60,6 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<InstallableManager>(*web_contents),
       page_data_(std::make_unique<InstallablePageData>()),
-      service_worker_context_(nullptr),
       sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   // This is null in unit tests.
   if (web_contents) {
@@ -68,15 +67,10 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
         web_contents->GetBrowserContext()->GetStoragePartition(
             web_contents->GetSiteInstance());
     DCHECK(storage_partition);
-
-    service_worker_context_ = storage_partition->GetServiceWorkerContext();
-    service_worker_context_->AddObserver(this);
   }
 }
 
 InstallableManager::~InstallableManager() {
-  if (service_worker_context_)
-    service_worker_context_->RemoveObserver(this);
 }
 
 void InstallableManager::GetData(const InstallableParams& params,
@@ -87,8 +81,8 @@ void InstallableManager::GetData(const InstallableParams& params,
   // looked at once the current task is finished.
   bool was_active = task_queue_.HasCurrent();
   task_queue_.Add(std::make_unique<InstallableTask>(
-      GetWebContents(), service_worker_context_, weak_factory_.GetWeakPtr(),
-      params, std::move(callback), *page_data_));
+      GetWebContents(), weak_factory_.GetWeakPtr(), params, std::move(callback),
+      *page_data_));
   if (was_active)
     return;
 
@@ -127,10 +121,6 @@ InstallableStatusCode InstallableManager::manifest_error() const {
   return page_data_->manifest_error();
 }
 
-InstallableStatusCode InstallableManager::worker_error() const {
-  return page_data_->worker_error();
-}
-
 InstallableStatusCode InstallableManager::icon_error() const {
   return page_data_->icon_error();
 }
@@ -155,8 +145,6 @@ void InstallableManager::Reset(InstallableStatusCode error) {
   // Prevent any outstanding callbacks to or from this object from being called.
   weak_factory_.InvalidateWeakPtrs();
 
-  // If we have paused tasks, we are waiting for a service worker. Execute the
-  // callbacks with the status_code being passed for the paused tasks.
   task_queue_.ResetWithError(error);
 
   page_data_->Reset();
@@ -176,43 +164,6 @@ void InstallableManager::FinishAndStartNextTask() {
   if (task_queue_.HasCurrent()) {
     task_queue_.Current().Start();
   }
-}
-
-void InstallableManager::OnTaskPaused() {
-  // Wait for ServiceWorkerContextObserver::OnRegistrationCompleted.
-  task_queue_.PauseCurrent();
-  if (task_queue_.HasCurrent()) {
-    task_queue_.Current().Start();
-  }
-}
-
-void InstallableManager::OnRegistrationCompleted(const GURL& pattern) {
-  // If the scope doesn't match we keep waiting.
-  if (!content::ServiceWorkerContext::ScopeMatches(pattern, manifest().scope))
-    return;
-
-  bool was_active = task_queue_.HasCurrent();
-
-  // The existence of paused tasks implies that we are waiting for a service
-  // worker. We move any paused tasks back into the main queue so that the
-  // pipeline will call CheckHasServiceWorker again, in order to find out if
-  // the SW has a fetch handler.
-  // NOTE: If there are no paused tasks, that means:
-  //   a) we've already failed the check, or
-  //   b) we haven't yet called CheckHasServiceWorker.
-  task_queue_.UnpauseAll();
-
-  if (was_active) {
-    return;  // If the pipeline was already running, we don't restart it.
-  }
-  if (task_queue_.HasCurrent()) {
-    task_queue_.Current().Start();
-  }
-}
-
-void InstallableManager::OnDestruct(content::ServiceWorkerContext* context) {
-  service_worker_context_->RemoveObserver(this);
-  service_worker_context_ = nullptr;
 }
 
 void InstallableManager::PrimaryPageChanged(content::Page& page) {
@@ -238,10 +189,6 @@ const GURL& InstallableManager::manifest_url() const {
 
 const blink::mojom::Manifest& InstallableManager::manifest() const {
   return page_data_->GetManifest();
-}
-
-bool InstallableManager::has_worker() const {
-  return page_data_->has_worker();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(InstallableManager);

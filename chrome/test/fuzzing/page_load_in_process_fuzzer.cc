@@ -133,8 +133,6 @@ PageLoadInProcessFuzzer::DoHandleHTTPRequest(
     const net::test_server::HttpRequest& request) {
   // Look through all the network resources given in the fuzz case and build
   // a response if we find one.
-  LOG(INFO) << "Got request at " << which_server << " path "
-            << request.relative_url;
   for (const auto& network_resource : fuzz_case_.network_resource()) {
     if (network_resource.which_server() == which_server &&
         request.relative_url.substr(1) == network_resource.path()) {
@@ -150,8 +148,6 @@ PageLoadInProcessFuzzer::DoHandleHTTPRequest(
       if (network_resource.has_body()) {
         response->set_content(SubstituteServersInBody(network_resource.body()));
       }
-      LOG(INFO) << "Returning valid response for " << which_server << " path "
-                << request.relative_url;
       return response;
     }
   }
@@ -177,7 +173,7 @@ int PageLoadInProcessFuzzer::Fuzz(
       return -1;  // invalid fuzz case.
     }
     const auto& network_resource = fuzz_case_.network_resource(0);
-    std::string path = network_resource.path();
+    std::string path = "/" + network_resource.path();
     switch (network_resource.which_server()) {
       case WhichServer::HTTP_ORIGIN1:
         test_url = http_test_server1_.GetURL(path);
@@ -196,7 +192,6 @@ int PageLoadInProcessFuzzer::Fuzz(
     }
   }
 
-  LOG(INFO) << "Navigating to " << test_url;
   base::IgnoreResult(ui_test_utils::NavigateToURL(browser(), test_url));
   return 0;
 }
@@ -205,7 +200,7 @@ void PageLoadInProcessFuzzer::SubstituteServerPattern(
     std::string* body,
     const std::string& pattern,
     const net::EmbeddedTestServer& server) {
-  std::string url = server.GetURL("").spec();
+  std::string url = server.GetURL("/").spec();
   url.pop_back();  // remove trailing /
   base::ReplaceSubstringsAfterOffset(body, 0, pattern, url);
 }

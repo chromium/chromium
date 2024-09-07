@@ -1,6 +1,19 @@
-<style include="cr-icons">
+<style include="cr-icons searchbox-shared-style">
 :host {
-  --cr-realbox-min-width: 332px;
+  --cr-searchbox-height: 48px;
+  --cr-searchbox-min-width: 332px;
+  --cr-searchbox-shadow: none;
+}
+
+cr-searchbox::part(searchbox-dropdown) {
+  left: -8px;
+  right: -8px;
+  top: 60px;
+}
+
+cr-searchbox::part(dropdown-content) {
+  border-radius: 0px;
+  padding-top: 0px;
 }
 
 #container {
@@ -26,6 +39,10 @@
   --cr-icon-button-icon-size: 16px;
 }
 
+:host([dark-mode]) #closeButton {
+  --cr-icon-button-fill-color: #9AA0A6;
+}
+
 :host-context([dir='ltr']) #closeButton {
   margin-right: 16px;
 }
@@ -34,21 +51,26 @@
   margin-left: 16px;
 }
 
-#realboxContainer {
-  display: flex;
+#searchboxContainer {
   flex-basis: 100%;
   justify-content: center;
-  --cr-realbox-height: 52px;
-  --cr-realbox-icon-left-position: 10px;
-  --cr-realbox-icon-top-position: 1px;
-  --cr-realbox-icon-size-in-searchbox: 24px;
+  --color-searchbox-results-background: none;
+  --color-bubble-searchbox-results-input-background: #F1F3F4;
+}
+
+:host([dark-mode]) #searchboxContainer {
+  --color-bubble-searchbox-results-input-background: #303134;
+}
+
+cr-searchbox {
+  --cr-searchbox-match-padding-inline-start: 20px;
 }
 </style>
 <div id="container">
   <div id="header"></div>
   <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}"
     on-click="onClose_"></cr-icon-button>
-  <div id="realboxContainer">
-    <cr-realbox id="realbox"></cr-realbox>
+  <div id="searchboxContainer">
+    <cr-searchbox id="realbox"></cr-searchbox>
   </div>
 </div>

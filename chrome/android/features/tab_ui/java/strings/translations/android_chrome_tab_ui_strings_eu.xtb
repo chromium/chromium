@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> fitxa taldekatu dira</translation>
 <translation id="1657719826150349398">Eraman fitxa behera</translation>
 <translation id="1713541401465507417">Itxi fitxa eta talde guztiak</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Lortu informazio gehiago<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> fitxa taldekatu da</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fitxa}other{<ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Egin hautatutako fitxa <ph name="TABS_COUNT_ONE" />en laster-marka}other{Egin hautatutako <ph name="TABS_COUNT_MANY" /> fitxen laster-markak}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Oraintxe bertan sortua</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Itxi egun bat igaro ondoren}other{Itxi <ph name="DAY_COUNT_MANY" /> egun igaro ondoren}}</translation>
 <translation id="4777866634702576038">Fitxa taldea ezabatu nahi duzu?</translation>
+<translation id="4783638485675352219">Partekatu gailu honetan irekita dauden fitxen izenak eta URLak sistema eragilearekin</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> iritzi)}other{(<ph name="REVIEWS_COUNT_MANY" /> iritzi)}}</translation>
 <translation id="4850886885716139402">Ikusi</translation>
 <translation id="4870911314065352661">Fitxa guztiak itxi nahi dituzu?</translation>

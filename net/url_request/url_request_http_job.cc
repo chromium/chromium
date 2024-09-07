@@ -445,6 +445,9 @@ void URLRequestHttpJob::Start() {
   request_info_.is_subframe_document_resource =
       request_->isolation_info().request_type() ==
       net::IsolationInfo::RequestType::kSubFrame;
+  request_info_.is_main_frame_navigation =
+      request_->isolation_info().IsMainFrameRequest();
+  request_info_.initiator = request_->initiator();
   request_info_.load_flags = request_->load_flags();
   request_info_.priority_incremental = request_->priority_incremental();
   request_info_.secure_dns_policy = request_->secure_dns_policy();
@@ -1040,10 +1043,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     clear_site_data_prevents_cookies_from_being_stored = true;
   }
 
-  base::Time response_date;
-  std::optional<base::Time> server_time = std::nullopt;
-  if (GetResponseHeaders()->GetDateValue(&response_date))
-    server_time = std::make_optional(response_date);
+  std::optional<base::Time> server_time = GetResponseHeaders()->GetDateValue();
 
   bool force_ignore_site_for_cookies =
       request_->force_ignore_site_for_cookies();

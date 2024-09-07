@@ -1,5 +1,3 @@
 This is a testharness.js-based test.
-[FAIL] where float32 1D constant tensors
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported constant type."
 Harness: the test ran to completion.
 

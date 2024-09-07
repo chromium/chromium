@@ -51,6 +51,7 @@
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/utils/haptics_util.h"
 #include "components/services/app_service/public/cpp/app_shortcut_image.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -68,6 +69,7 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -1053,9 +1055,7 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
   ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
   settings.SetTransitionDuration(
       base::Milliseconds((kDragDropAppIconScaleTransitionInMs)));
-  settings.SetTweenType(app_list_features::IsDragAndDropRefactorEnabled()
-                            ? gfx::Tween::ACCEL_20_DECEL_100
-                            : gfx::Tween::EASE_OUT_2);
+  settings.SetTweenType(gfx::Tween::ACCEL_20_DECEL_100);
   if (scale_up) {
     layer()->SetTransform(gfx::Transform());
     if (progress_indicator_) {
@@ -1106,6 +1106,12 @@ void AppListItemView::SetMouseDragging(bool mouse_dragging) {
 
   mouse_dragging_ = mouse_dragging;
 
+  if (mouse_dragging) {
+    chromeos::haptics_util::PlayHapticTouchpadEffect(
+        ui::HapticTouchpadEffect::kTick,
+        ui::HapticTouchpadEffectStrength::kMedium);
+  }
+
   SetState(STATE_NORMAL);
   SetUIState(mouse_dragging_ ? UI_STATE_DRAGGING : UI_STATE_NORMAL);
 }
@@ -1128,15 +1134,6 @@ void AppListItemView::OnTouchDragTimer(
 
 bool AppListItemView::InitiateDrag(const gfx::Point& location,
                                    const gfx::Point& root_location) {
-  if (!app_list_features::IsDragAndDropRefactorEnabled() &&
-      !grid_delegate_->InitiateDrag(
-          this, location, root_location,
-          base::BindOnce(&AppListItemView::OnDragStarted,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&AppListItemView::OnDragEnded,
-                         weak_ptr_factory_.GetWeakPtr()))) {
-    return false;
-  }
   if (!IsItemDraggable()) {
     return false;
   }
@@ -1497,50 +1494,15 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
 
   SetMouseDragging(false);
 
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
     // Cancel drag timer set when the mouse was pressed, to prevent the app
     // item from entering dragged state.
     mouse_drag_timer_.Stop();
     drag_state_ = DragState::kNone;
-    return;
-  }
-
-  // EndDrag may delete |this|.
-  grid_delegate_->EndDrag(/*cancel=*/false);
 }
 
 void AppListItemView::OnMouseCaptureLost() {
   Button::OnMouseCaptureLost();
   SetMouseDragging(false);
-
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    return;
-  }
-
-  // EndDrag may delete |this|.
-  grid_delegate_->EndDrag(/*cancel=*/true);
-}
-
-bool AppListItemView::OnMouseDragged(const ui::MouseEvent& event) {
-  bool return_value = Button::OnMouseDragged(event);
-
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    return return_value;
-  }
-
-  if (drag_state_ != DragState::kNone && mouse_dragging_) {
-    // Update the drag location of the drag proxy if it has been created.
-    // If the drag is no longer happening, it could be because this item
-    // got removed, in which case this item has been destroyed. So, bail out
-    // now as there will be nothing else to do anyway as
-    // grid_delegate_->IsDragging() will be false.
-    if (!grid_delegate_->UpdateDragFromItem(/*is_touch=*/false, event))
-      return true;
-  }
-
-  if (!grid_delegate_->IsSelectedView(this))
-    grid_delegate_->ClearSelectedView();
-  return true;
 }
 
 bool AppListItemView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
@@ -1569,18 +1531,11 @@ int AppListItemView::GetDragOperations(const gfx::Point& press_pt) {
     return ui::DragDropTypes::DRAG_NONE;
   }
 
-  return app_list_features::IsDragAndDropRefactorEnabled()
-             ? ui::DragDropTypes::DRAG_MOVE
-             : views::View::GetDragOperations(press_pt);
+  return ui::DragDropTypes::DRAG_MOVE;
 }
 
 void AppListItemView::WriteDragData(const gfx::Point& press_pt,
                                     OSExchangeData* data) {
-  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
-    views::View::WriteDragData(press_pt, data);
-    return;
-  }
-
   if (item_weak_) {
     data->provider().SetDragImage(GetDragImage(), press_pt.OffsetFromOrigin());
     const DraggableAppType app_type = is_folder_
@@ -1594,8 +1549,6 @@ void AppListItemView::WriteDragData(const gfx::Point& press_pt,
 }
 
 bool AppListItemView::MaybeStartTouchDrag(const gfx::Point& location) {
-  DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
-
   int drag_operations = GetDragOperations(location);
   views::Widget* widget = GetWidget();
   DCHECK(widget);
@@ -1619,17 +1572,11 @@ bool AppListItemView::MaybeStartTouchDrag(const gfx::Point& location) {
 }
 
 void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
-  const bool is_drag_and_drop_enabled =
-      app_list_features::IsDragAndDropRefactorEnabled();
-
+  gfx::Point screen_location(event->location());
   switch (event->type()) {
     case ui::EventType::kGestureScrollBegin:
       if (touch_dragging_) {
-        if (is_drag_and_drop_enabled) {
-          OnDragStarted();
-        } else {
-          grid_delegate_->StartDragAndDropHostDragAfterLongPress();
-        }
+        OnDragStarted();
         event->SetHandled();
       } else {
         touch_drag_timer_.Stop();
@@ -1637,22 +1584,8 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::EventType::kGestureScrollUpdate:
       if (touch_dragging_ && drag_state_ != DragState::kNone) {
-        if (is_drag_and_drop_enabled &&
-            MaybeStartTouchDrag(event->location())) {
-          event->SetHandled();
-        } else {
-          grid_delegate_->UpdateDragFromItem(/*is_touch=*/true, *event);
-          event->SetHandled();
-        }
-      }
-      break;
-    case ui::EventType::kGestureScrollEnd:
-    case ui::EventType::kScrollFlingStart:
-      if (touch_dragging_) {
-        if (!is_drag_and_drop_enabled) {
-          SetTouchDragging(false);
-          event->SetHandled();
-        }
+        MaybeStartTouchDrag(event->location());
+        event->SetHandled();
       }
       break;
     case ui::EventType::kGestureTapDown:
@@ -1675,7 +1608,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::EventType::kGestureLongTap:
     case ui::EventType::kGestureEnd:
-      if (is_drag_and_drop_enabled && drag_state_ == DragState::kInitialized) {
+      if (drag_state_ == DragState::kInitialized) {
         // Reset `drag_state_` if there was an attempt to initiate it (i.e. the
         // touch drag timer fired) but was not properly started (i.e. the app
         // item was never actually dragged) before a release event occurred.
@@ -1688,14 +1621,11 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::EventType::kGestureLongPress:
-      if (is_drag_and_drop_enabled) {
-        // Handle the long press event on long press to avoid RootView to
-        // trigger View::DoDrag for this view before the item is dragged.
-        gfx::Point screen_location(event->location());
-        View::ConvertPointToScreen(this, &screen_location);
-        ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
-        event->SetHandled();
-      }
+      // Handle the long press event on long press to avoid RootView to
+      // trigger View::DoDrag for this view before the item is dragged.
+      View::ConvertPointToScreen(this, &screen_location);
+      ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
+      event->SetHandled();
       break;
     case ui::EventType::kGestureTwoFingerTap:
       if (touch_dragging_) {
@@ -2123,17 +2053,6 @@ void AppListItemView::ItemBeingDestroyed() {
   UpdateAccessibleDescription();
   if (!use_item_icon_) {
     folder_icon_->ResetFolderItem();
-  }
-
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    // When drag and drop refactor is enabled, AppsGridView observes dragged
-    // item destruction to ensure the drag is finalized.
-    return;
-  }
-
-  // `EndDrag()` may delete this.
-  if (drag_state_ != DragState::kNone) {
-    grid_delegate_->EndDrag(/*cancel=*/true);
   }
 }
 

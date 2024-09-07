@@ -17,10 +17,6 @@ class AuthenticationService;
 @protocol ManualFillAddressConsumer;
 @protocol AddressListDelegate;
 
-namespace manual_fill {
-extern NSString* const ManageAddressAccessibilityIdentifier;
-}  // namespace manual_fill
-
 // Object in charge of getting the addresses relevant for the manual fill UI.
 @interface ManualFillAddressMediator : NSObject
 

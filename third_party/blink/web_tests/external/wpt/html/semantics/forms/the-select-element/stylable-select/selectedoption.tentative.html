@@ -6,19 +6,23 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
+
 <form>
-  <select style="appearance:base-select">
+  <select>
     <button>
       <selectedoption></selectedoption>
     </button>
-    <datalist>
-      <option class=one value=one>
-        <span class=one>span</span> one
-      </option>
-      <option class=two value=two>
-        <span class=two>span</span> two
-      </option>
-    </datalist>
+    <option class=one value=one>
+      <span class=one>span</span> one
+    </option>
+    <option class=two value=two>
+      <span class=two>span</span> two
+    </option>
   </select>
 </form>
 

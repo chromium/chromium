@@ -17,6 +17,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/game_capture_bar_view.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
+#include "ash/capture_mode/sunfish_capture_bar_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/session/session_controller_impl.h"
@@ -314,6 +315,26 @@ class SunfishBehavior : public CaptureModeBehavior {
   SunfishBehavior(const SunfishBehavior&) = delete;
   SunfishBehavior& operator=(const SunfishBehavior&) = delete;
   ~SunfishBehavior() override = default;
+
+  // CaptureModeBehavior:
+  bool ShouldShowUserNudge() const override { return false; }
+  bool ShouldReShowUisAtPerformingCapture() const override { return true; }
+  const std::u16string GetCaptureLabelRegionText() const override {
+    return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
+  }
+  int GetCaptureBarWidth() const override {
+    // Return the height so the button is circular.
+    return capture_mode::kCaptureBarHeight;
+  }
+  std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
+    return std::make_unique<SunfishCaptureBarView>();
+  }
+  bool OnRegionSelected() override {
+    // `CaptureModeController` will perform DLP restriction checks and determine
+    // whether the image can be sent for search.
+    CaptureModeController::Get()->PerformCapture();
+    return true;
+  }
 };
 
 }  // namespace
@@ -419,6 +440,15 @@ bool CaptureModeBehavior::RequiresCaptureFolderCreation() const {
   return false;
 }
 
+bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture() const {
+  // We don't need to bring capture mode UIs back if `type_` is
+  // `CaptureModeType::kImage`, since the session is about to shutdown anyways
+  // at these use cases, so it's better to avoid any wasted effort. In the case
+  // of video recording, we need to reshow the UIs so that we can start the
+  // 3-second count down animation.
+  return CaptureModeController::Get()->type() != CaptureModeType::kImage;
+}
+
 void CaptureModeBehavior::CreateCaptureFolder(
     OnCaptureFolderCreatedCallback callback) {
   NOTREACHED();
@@ -457,6 +487,15 @@ CaptureModeBehavior::GetNotificationButtonsInfo(bool for_video) const {
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
 
   return buttons_info;
+}
+
+const std::u16string CaptureModeBehavior::GetCaptureLabelRegionText() const {
+  CaptureModeController* controller = CaptureModeController::Get();
+  DCHECK(controller->user_capture_region().IsEmpty());
+  return l10n_util::GetStringUTF16(
+      controller->type() == CaptureModeType::kImage
+          ? IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE
+          : IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD);
 }
 
 std::unique_ptr<CaptureModeBarView>
@@ -507,5 +546,9 @@ int CaptureModeBehavior::GetCaptureBarWidth() const {
 void CaptureModeBehavior::OnAudioRecordingModeChanged() {}
 
 void CaptureModeBehavior::OnDemoToolsSettingsChanged() {}
+
+bool CaptureModeBehavior::OnRegionSelected() {
+  return false;
+}
 
 }  // namespace ash

@@ -48,7 +48,7 @@ using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
 
 namespace {
 
-// When enabled, the main thread's type is reduced from `kCompositing` to
+// When enabled, the main thread's type is reduced from `kDisplayCritical` to
 // `kDefault` when WebRTC is in use within the renderer. This is a simple
 // workaround meant to be merged to higher channels while we're working on a
 // more refined solution. See crbug.com/1513904.
@@ -613,7 +613,8 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
               QueueTraits::PrioritisationType::kPostMessageForwarding);
     case TaskType::kDeprecatedNone:
     case TaskType::kMainThreadTaskQueueV8:
-    case TaskType::kMainThreadTaskQueueV8LowPriority:
+    case TaskType::kMainThreadTaskQueueV8UserVisible:
+    case TaskType::kMainThreadTaskQueueV8BestEffort:
     case TaskType::kMainThreadTaskQueueCompositor:
     case TaskType::kMainThreadTaskQueueDefault:
     case TaskType::kMainThreadTaskQueueInput:
@@ -758,11 +759,17 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
     DisableAlignWakeUpsForProcess();
   }
 
-  if (feature == SchedulingPolicy::Feature::kWebRTC &&
-      base::FeatureList::IsEnabled(kRendererMainIsDefaultThreadTypeForWebRTC) &&
-      base::PlatformThread::GetCurrentThreadType() ==
-          base::ThreadType::kCompositing) {
-    base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
+  if (feature == SchedulingPolicy::Feature::kWebRTC) {
+    if (base::FeatureList::IsEnabled(
+            kRendererMainIsDefaultThreadTypeForWebRTC) &&
+        base::PlatformThread::GetCurrentThreadType() ==
+            base::ThreadType::kDisplayCritical) {
+      base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
+    }
+
+    if (auto* rc = delegate_->GetDocumentResourceCoordinator()) {
+      rc->OnStartedUsingWebRTC();
+    }
   }
 }
 
@@ -788,6 +795,12 @@ void FrameSchedulerImpl::OnStoppedUsingNonStickyFeature(
   if (handle->GetPolicy().disable_back_forward_cache) {
     back_forward_cache_disabling_feature_tracker_.Remove(
         handle->GetFeatureAndJSLocationBlockingBFCache());
+  }
+
+  if (handle->GetFeature() == SchedulingPolicy::Feature::kWebRTC) {
+    if (auto* rc = delegate_->GetDocumentResourceCoordinator()) {
+      rc->OnStoppedUsingWebRTC();
+    }
   }
 }
 

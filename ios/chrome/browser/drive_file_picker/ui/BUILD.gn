@@ -10,8 +10,8 @@ source_set("ui") {
     "drive_file_picker_navigation_controller.mm",
     "drive_file_picker_table_view_controller.h",
     "drive_file_picker_table_view_controller.mm",
-    "drive_item.h",
-    "drive_item.mm",
+    "drive_item_identifier.h",
+    "drive_item_identifier.mm",
     "root_drive_file_picker_table_view_controller.h",
     "root_drive_file_picker_table_view_controller.mm",
   ]
@@ -25,6 +25,7 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/settings/password:title_view",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

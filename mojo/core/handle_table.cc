@@ -39,8 +39,7 @@ const char* GetNameForDispatcherType(Dispatcher::Type type) {
     case Dispatcher::Type::INVITATION:
       return "invitation";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
 }
 
 }  // namespace

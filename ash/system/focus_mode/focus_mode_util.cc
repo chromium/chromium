@@ -170,4 +170,12 @@ std::u16string GetCongratulatoryTextAndEmoji(const size_t index) {
       {GetCongratulatoryText(index), GetCongratulatoryEmoji(index)}, u" ");
 }
 
+int GetNextProgressStep(double current_progress) {
+  CHECK_GE(current_progress, 0.0);
+  CHECK_LE(current_progress, 1.0);
+  return std::min(
+      (int)(std::floor(current_progress * kProgressIndicatorSteps) + 1),
+      kProgressIndicatorSteps);
+}
+
 }  // namespace ash::focus_mode_util

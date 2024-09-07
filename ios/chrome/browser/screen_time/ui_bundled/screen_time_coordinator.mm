@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/screen_time/model/screen_time_history_deleter_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/screen_time/ui_bundled/screen_time_mediator.h"
 #import "ios/chrome/browser/screen_time/ui_bundled/screen_time_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

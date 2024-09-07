@@ -20,8 +20,10 @@ enum ViewId {
   kScrollView,
   kScrollViewContents,
   kSummaryLabel,
+  kFeedbackButtonsContainer,
   kThumbsUpButton,
   kThumbsDownButton,
+  kFooterLabel,
   kLearnMoreLink,
   kRefreshView,
   kMahiPanelView,
@@ -63,9 +65,6 @@ inline constexpr int kScrollViewWidth = kPanelDefaultWidth -
                                         kPanelPadding.width();
 
 inline constexpr int kScrollContentsViewBottomPadding = 40;
-
-inline constexpr char kLearnMorePage[] =
-    "https://support.google.com/chromebook/?p=settings_help_me_read_write";
 
 inline constexpr int kRefreshBannerStackDepth = 25;
 inline constexpr int kPanelCornerRadius = 16;

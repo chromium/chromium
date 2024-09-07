@@ -24,6 +24,7 @@
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/structured_shared_memory.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
@@ -495,7 +496,8 @@ class CONTENT_EXPORT RenderThreadImpl
   // and back to a null TimeTicks when it's backgrounded. Used to track the
   // exact state of this process without relying on IPC (which can itself be
   // delayed) for use cases that require that precision.
-  base::ReadOnlySharedMemoryMapping last_foreground_time_mapping_;
+  std::optional<base::AtomicSharedMemory<base::TimeTicks>::ReadOnlyMapping>
+      last_foreground_time_mapping_;
 
   blink::WebString user_agent_;
   blink::UserAgentMetadata user_agent_metadata_;

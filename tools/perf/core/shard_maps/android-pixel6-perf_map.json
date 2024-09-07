@@ -11,7 +11,7 @@
                 "abridged": false
             },
             "blink_perf.css": {
-                "end": 69,
+                "end": 21,
                 "abridged": false
             },
             "jetstream2": {
@@ -21,14 +21,15 @@
                 "abridged": false
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 4
             }
         }
     },
     "1": {
         "benchmarks": {
             "blink_perf.css": {
-                "begin": 69,
+                "begin": 21,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -41,7 +42,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 114,
+                "end": 16,
                 "abridged": false
             },
             "jetstream2": {
@@ -51,19 +52,34 @@
                 "abridged": false
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 4
             }
         }
     },
     "2": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 114,
+                "begin": 16,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
                 "abridged": false
             },
+            "jetstream2": {
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false,
+                "pageset_repeat": 4
+            }
+        }
+    },
+    "3": {
+        "benchmarks": {
             "blink_perf.parser": {
                 "abridged": false
             },
@@ -85,21 +101,15 @@
             "dummy_benchmark.noisy_benchmark_1": {
                 "abridged": false
             },
-            "dummy_benchmark.stable_benchmark_1": {
-                "abridged": false
-            },
             "jetstream2": {
-                "abridged": false
-            },
-            "media.mobile": {
-                "end": 7,
                 "abridged": false
             },
             "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 4
             }
         },
         "executables": {
@@ -111,10 +121,15 @@
             }
         }
     },
-    "3": {
+    "4": {
         "benchmarks": {
+            "dummy_benchmark.stable_benchmark_1": {
+                "abridged": false
+            },
+            "jetstream2": {
+                "abridged": false
+            },
             "media.mobile": {
-                "begin": 7,
                 "abridged": false
             },
             "octane": {
@@ -124,49 +139,23 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "end": 47,
-                "abridged": false
-            },
-            "jetstream2": {
+                "end": 36,
                 "abridged": false
             },
             "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
-                "abridged": false
-            }
-        }
-    },
-    "4": {
-        "benchmarks": {
-            "rendering.mobile": {
-                "begin": 47,
-                "end": 121,
-                "abridged": false
-            },
-            "jetstream2": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 4
             }
         }
     },
     "5": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 121,
-                "end": 204,
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
+                "begin": 36,
+                "end": 131,
                 "abridged": false
             }
         }
@@ -174,14 +163,8 @@
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 204,
-                "end": 290,
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
+                "begin": 131,
+                "end": 222,
                 "abridged": false
             }
         }
@@ -189,14 +172,8 @@
     "7": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 290,
-                "end": 351,
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
+                "begin": 222,
+                "end": 325,
                 "abridged": false
             }
         }
@@ -204,22 +181,21 @@
     "8": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 351,
-                "abridged": false
-            },
-            "rendering.mobile.notracing": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
+                "begin": 325,
+                "end": 402,
                 "abridged": false
             }
         }
     },
     "9": {
         "benchmarks": {
+            "rendering.mobile": {
+                "begin": 402,
+                "abridged": false
+            },
+            "rendering.mobile.notracing": {
+                "abridged": false
+            },
             "speedometer": {
                 "abridged": false
             },
@@ -233,7 +209,8 @@
                 "abridged": false
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 4
             },
             "speedometer3-future": {
                 "abridged": false
@@ -242,7 +219,7 @@
                 "abridged": false
             },
             "system_health.common_mobile": {
-                "end": 69,
+                "end": 43,
                 "abridged": false
             }
         },
@@ -256,17 +233,11 @@
     "10": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 69,
+                "begin": 43,
                 "abridged": false
             },
             "system_health.memory_mobile": {
-                "end": 20,
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
+                "end": 19,
                 "abridged": false
             }
         }
@@ -274,14 +245,8 @@
     "11": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 20,
-                "end": 42,
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
+                "begin": 19,
+                "end": 47,
                 "abridged": false
             }
         }
@@ -289,22 +254,7 @@
     "12": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 42,
-                "end": 69,
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
-            }
-        }
-    },
-    "13": {
-        "benchmarks": {
-            "system_health.memory_mobile": {
-                "begin": 69,
+                "begin": 47,
                 "abridged": false
             },
             "system_health.scroll_jank_mobile": {
@@ -314,21 +264,23 @@
                 "abridged": false
             },
             "v8.browsing_mobile": {
-                "end": 25,
+                "end": 3,
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
+            }
+        },
+        "executables": {
+            "tint_benchmark": {
+                "arguments": [
+                    "--use-chrome-perf-format"
+                ],
+                "path": "tint_benchmark"
             }
         }
     },
-    "14": {
+    "13": {
         "benchmarks": {
             "v8.browsing_mobile": {
-                "begin": 25,
+                "begin": 3,
                 "abridged": false
             },
             "v8.browsing_mobile-future": {
@@ -339,35 +291,28 @@
             },
             "webrtc": {
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
     "extra_infos": {
-        "num_stories": 1169,
-        "predicted_min_shard_time": 1941.0,
-        "predicted_min_shard_index": 13,
-        "predicted_max_shard_time": 2148.0,
-        "predicted_max_shard_index": 8,
-        "shard #0": 1984.0,
-        "shard #1": 1988.0,
-        "shard #2": 1964.0,
-        "shard #3": 1999.0,
-        "shard #4": 1977.0,
-        "shard #5": 1987.0,
-        "shard #6": 1982.0,
-        "shard #7": 1958.0,
-        "shard #8": 2148.0,
-        "shard #9": 1979.0,
-        "shard #10": 1945.0,
-        "shard #11": 1947.0,
-        "shard #12": 2028.0,
-        "shard #13": 1941.0,
-        "shard #14": 1959.0
+        "num_stories": 1150,
+        "predicted_min_shard_time": 3984.0,
+        "predicted_min_shard_index": 10,
+        "predicted_max_shard_time": 4429.0,
+        "predicted_max_shard_index": 13,
+        "shard #0": 4059.0,
+        "shard #1": 4042.0,
+        "shard #2": 4064.0,
+        "shard #3": 4035.0,
+        "shard #4": 4063.0,
+        "shard #5": 4052.0,
+        "shard #6": 4052.0,
+        "shard #7": 4043.0,
+        "shard #8": 4068.0,
+        "shard #9": 4057.0,
+        "shard #10": 3984.0,
+        "shard #11": 4086.0,
+        "shard #12": 4033.0,
+        "shard #13": 4429.0
     }
 }

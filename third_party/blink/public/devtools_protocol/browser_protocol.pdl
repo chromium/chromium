@@ -743,6 +743,7 @@ experimental domain Audits
       NoRegisterTriggerHeader
       NoRegisterOsSourceHeader
       NoRegisterOsTriggerHeader
+      NavigationRegistrationUniqueScopeAlreadySet
 
   type SharedDictionaryError extends string
     enum
@@ -1392,6 +1393,7 @@ domain Browser
       videoCapturePanTiltZoom
       wakeLockScreen
       wakeLockSystem
+      webAppInstallation
       windowManagement
 
   experimental type PermissionSetting extends string
@@ -2701,6 +2703,12 @@ domain DOM
       view-transition-image-pair
       view-transition-old
       view-transition-new
+      placeholder
+      file-selector-button
+      details-content
+      select-fallback-button
+      select-fallback-button-text
+      picker
 
   # Shadow root type.
   type ShadowRootType extends string
@@ -2805,6 +2813,7 @@ domain DOM
       optional boolean isSVG
       optional CompatibilityMode compatibilityMode
       optional BackendNode assignedSlot
+      experimental optional boolean isScrollable
 
   # A structure to hold the top-level node of a detached tree and an array of its retained descendants.
   type DetachedElementInfo extends object
@@ -3493,6 +3502,14 @@ domain DOM
 
   # Called when top layer elements are changed.
   experimental event topLayerElementsUpdated
+
+  # Fired when a node's scrollability state changes.
+  experimental event scrollableFlagUpdated
+    parameters
+      # The id of the node.
+      DOM.NodeId nodeId
+      # If the node is scrollable.
+      boolean isScrollable
 
   # Called when a pseudo element is removed from an element.
   experimental event pseudoElementRemoved
@@ -5522,12 +5539,21 @@ experimental domain Memory
       moderate
       critical
 
+  # Retruns current DOM object counters.
   command getDOMCounters
     returns
       integer documents
       integer nodes
       integer jsEventListeners
 
+  # Retruns DOM object counters after preparing renderer for leak detection.
+  command getDOMCountersForLeakDetection
+    returns
+      # DOM object counters.
+      array of DOMCounter counters
+
+  # Prepares for leak detection by terminating workers, stopping spellcheckers,
+  # dropping non-essential internal caches, running garbage collections, etc.
   command prepareForLeakDetection
 
   # Simulate OomIntervention by purging V8 memory.
@@ -5602,6 +5628,15 @@ experimental domain Memory
       string baseAddress
       # Size of the module in bytes.
       number size
+
+  # DOM object counter data.
+  type DOMCounter extends object
+    properties
+      # Object name. Note: object names should be presumed volatile and clients should not expect
+      # the returned names to be consistent across runs.
+      string name
+      # Object count.
+      integer count
 
 # Network domain allows tracking network activities of the page. It exposes information about http,
 # file, data and other requests and responses, their headers, bodies, timing, etc.
@@ -6340,6 +6375,8 @@ domain Network
       TPCDMetadata
       # The cookie should have been blocked by 3PCD but is exempted by Deprecation Trial mitigation.
       TPCDDeprecationTrial
+      # The cookie should have been blocked by 3PCD but is exempted by Top-level Deprecation Trial mitigation.
+      TopLevelTPCDDeprecationTrial
       # The cookie should have been blocked by 3PCD but is exempted by heuristics mitigation.
       TPCDHeuristics
       # The cookie should have been blocked by 3PCD but is exempted by Enterprise Policy.
@@ -6348,8 +6385,6 @@ domain Network
       StorageAccess
       # The cookie should have been blocked by 3PCD but is exempted by Top-level Storage Access API.
       TopLevelStorageAccess
-      # The cookie should have been blocked by 3PCD but is exempted by CORS opt-in.
-      CorsOptIn
       # The cookie should have been blocked by 3PCD but is exempted by the first-party URL scheme.
       Scheme
 
@@ -8048,6 +8083,7 @@ domain Page
       clipboard-read
       clipboard-write
       compute-pressure
+      controlled-frame
       cross-origin-isolated
       deferred-fetch
       digital-credentials-get
@@ -8077,6 +8113,7 @@ domain Page
       otp-credentials
       payment
       picture-in-picture
+      popins
       private-aggregation
       private-state-token-issuance
       private-state-token-redemption
@@ -8097,6 +8134,7 @@ domain Page
       usb
       usb-unrestricted
       vertical-scroll
+      web-app-installation
       web-printing
       web-share
       window-management
@@ -9196,6 +9234,13 @@ domain Page
         # A new frame target will be created (see Target.attachedToTarget).
         swap
 
+  # Fired before frame subtree is detached. Emitted before any frame of the
+  # subtree is actually detached.
+  experimental event frameSubtreeWillBeDetached
+    parameters
+      # Id of the frame that is the root of the subtree that will be detached.
+      FrameId frameId
+
   # The type of a frameNavigated event.
   experimental type NavigationType extends string
     enum
@@ -9453,6 +9498,7 @@ domain Page
       ContentWebUSB
       ContentMediaSessionService
       ContentScreenReader
+      ContentDiscarded
 
       # See components/back_forward_cache/back_forward_cache_disable.h for explanations.
       EmbedderPopupBlockerTabHelper
@@ -10636,6 +10682,14 @@ experimental domain Storage
       array of AttributionReportingAggregatableDebugReportingData debugData
       optional string aggregationCoordinatorOrigin
 
+  experimental type AttributionScopesData extends object
+    properties
+      array of string values
+      # number instead of integer because not all uint32 can be represented by
+      # int
+      number limit
+      number maxEventStates
+
   experimental type AttributionReportingSourceRegistration extends object
     properties
       Network.TimeSinceEpoch time
@@ -10656,6 +10710,7 @@ experimental domain Storage
       AttributionReportingTriggerDataMatching triggerDataMatching
       SignedInt64AsBase10 destinationLimitPriority
       AttributionReportingAggregatableDebugReportingConfig aggregatableDebugReportingConfig
+      optional AttributionScopesData scopesData
 
   experimental type AttributionReportingSourceRegistrationResult extends string
     enum
@@ -10671,7 +10726,9 @@ experimental domain Storage
       destinationBothLimitsReached
       reportingOriginsPerSiteLimitReached
       exceedsMaxChannelCapacity
+      exceedsMaxScopesChannelCapacity
       exceedsMaxTriggerStateCardinality
+      exceedsMaxEventStatesLimit
       destinationPerDayReportingLimitReached
 
   experimental event attributionReportingSourceRegistered
@@ -10730,6 +10787,7 @@ experimental domain Storage
       AttributionReportingSourceRegistrationTimeConfig sourceRegistrationTimeConfig
       optional string triggerContextId
       AttributionReportingAggregatableDebugReportingConfig aggregatableDebugReportingConfig
+      array of string scopes
 
   experimental type AttributionReportingEventLevelResult extends string
     enum
@@ -12381,7 +12439,6 @@ experimental domain Preload
       PrefetchFailedMIMENotSupported
       PrefetchFailedNetError
       PrefetchFailedNon2XX
-      PrefetchFailedPerPageLimitExceeded
       PrefetchEvictedAfterCandidateRemoved
       PrefetchEvictedForNewerPrefetch
       PrefetchHeldback

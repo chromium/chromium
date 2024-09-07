@@ -1,0 +1,76 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("file_system_provider") {
+  sources = [
+    "file_system_provider_api.cc",
+    "file_system_provider_api.h",
+    "provider_function.cc",
+    "provider_function.h",
+    "service_worker_lifetime_manager.cc",
+    "service_worker_lifetime_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common/extensions/api:api",
+    "//chromeos/crosapi/mojom",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//extensions/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//storage/browser",
+    "//third_party/blink/public/mojom/service_worker:storage",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/guest_os" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "service_worker_lifetime_manager_unittest.cc" ]
+
+  deps = [
+    ":file_system_provider",
+    "//base",
+    "//extensions/browser",
+    "//testing/gtest",
+  ]
+}
+
+if (is_chromeos_ash) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "file_system_provider_apitest.cc" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ash/file_system_provider",
+      "//chrome/browser/ash/login/users:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//ui/message_center/public/cpp",
+    ]
+  }
+}

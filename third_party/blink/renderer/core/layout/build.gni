@@ -794,6 +794,7 @@ blink_core_tests_layout = [
   "list/layout_list_item_test.cc",
   "list/list_marker_test.cc",
   "map_coordinates_test.cc",
+  "masonry/masonry_layout_algorithm_test.cc",
   "min_max_size_test.cc",
   "min_max_sizes_cache_test.cc",
   "multi_column_fragmentainer_group_test.cc",

@@ -7,8 +7,8 @@ import './strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter} from '//resources/cr_components/searchbox/searchbox.mojom-webui.js';
-import {RealboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
-import type {RealboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
+import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {assert} from '//resources/js/assert.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -21,7 +21,7 @@ const canShowSecondarySideMediaQueryList =
 
 export interface OmniboxPopupAppElement {
   $: {
-    matches: RealboxDropdownElement,
+    matches: SearchboxDropdownElement,
   };
 }
 
@@ -69,7 +69,7 @@ export class OmniboxPopupAppElement extends PolymerElement {
 
   constructor() {
     super();
-    this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
+    this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;
     ColorChangeUpdater.forDocument().start();
   }
 

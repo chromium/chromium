@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/codec/video_encoder_vpx.h"
 
 #include <utility>
@@ -135,13 +140,13 @@ void SetVp9CodecOptions(vpx_codec_ctx_t* codec) {
 void FreeImageIfMismatched(bool use_i444,
                            const webrtc::DesktopSize& size,
                            std::unique_ptr<vpx_image_t>* out_image,
-                           std::unique_ptr<uint8_t[]>* out_image_buffer) {
+                           base::HeapArray<uint8_t>* out_image_buffer) {
   if (*out_image) {
     const vpx_img_fmt_t desired_fmt =
         use_i444 ? VPX_IMG_FMT_I444 : VPX_IMG_FMT_I420;
     if (!size.equals(webrtc::DesktopSize((*out_image)->w, (*out_image)->h)) ||
         (*out_image)->fmt != desired_fmt) {
-      out_image_buffer->reset();
+      *out_image_buffer = base::HeapArray<uint8_t>::Uninit(0);
       out_image->reset();
     }
   }
@@ -150,9 +155,9 @@ void FreeImageIfMismatched(bool use_i444,
 void CreateImage(bool use_i444,
                  const webrtc::DesktopSize& size,
                  std::unique_ptr<vpx_image_t>* out_image,
-                 std::unique_ptr<uint8_t[]>* out_image_buffer) {
+                 base::HeapArray<uint8_t>* out_image_buffer) {
   DCHECK(!size.is_empty());
-  DCHECK(!*out_image_buffer);
+  DCHECK(out_image_buffer->empty());
   DCHECK(!*out_image);
 
   std::unique_ptr<vpx_image_t> image(new vpx_image_t());
@@ -194,14 +199,15 @@ void CreateImage(bool use_i444,
 
   // Allocate a YUV buffer large enough for the aligned data & padding.
   const int buffer_size = y_stride * y_rows + 2 * uv_stride * uv_rows;
-  std::unique_ptr<uint8_t[]> image_buffer(new uint8_t[buffer_size]);
+  auto image_buffer = base::HeapArray<uint8_t>::Uninit(buffer_size);
 
   // Reset image value to 128 so we just need to fill in the y plane.
-  memset(image_buffer.get(), 128, buffer_size);
+  memset(image_buffer.data(), 128, buffer_size);
 
   // Fill in the information for |image_|.
   unsigned char* uchar_buffer =
-      reinterpret_cast<unsigned char*>(image_buffer.get());
+      reinterpret_cast<unsigned char*>(image_buffer.data());
+
   image->planes[0] = uchar_buffer;
   image->planes[1] = image->planes[0] + y_stride * y_rows;
   image->planes[2] = image->planes[1] + uv_stride * uv_rows;

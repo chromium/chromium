@@ -122,13 +122,14 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
     // feature.
     int64_t client_id_i_compose =
         optimization_guide::GetHashedModelQualityClientId(
-            optimization_guide::UserVisibleFeatureKey::kCompose, day_i,
-            client_id);
+            optimization_guide::proto::LogAiDataRequest::FeatureCase::kCompose,
+            day_i, client_id);
 
     int64_t client_id_i_tab_organization =
         optimization_guide::GetHashedModelQualityClientId(
-            optimization_guide::UserVisibleFeatureKey::kTabOrganization, day_i,
-            client_id);
+            optimization_guide::proto::LogAiDataRequest::FeatureCase::
+                kTabOrganization,
+            day_i, client_id);
 
     logged_client_ids.push_back(
         optimization_guide_internals::mojom::LoggedClientIds::New(

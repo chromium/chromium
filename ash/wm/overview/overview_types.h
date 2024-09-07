@@ -118,6 +118,22 @@ enum class OverviewItemFillMode {
   kPillarBoxed,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DeskBarVisibility)
+enum class DeskBarVisibility {
+  // Desk bar is shown in the first overview frame.
+  kShownImmediately = 0,
+  // Desk bar is shown after the first overview frame (usually after the
+  // enter-overview animation is complete).
+  kShownAfterFirstFrame = 1,
+  // Desk bar was never shown during the overview session.
+  kNotShown = 2,
+  kMaxValue = kNotShown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:DeskBarVisibility)
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_TYPES_H_

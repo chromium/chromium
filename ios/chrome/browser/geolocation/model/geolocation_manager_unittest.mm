@@ -88,16 +88,15 @@ TEST_F(GeolocationManagerTest, AuthorizationStatusCacheUtilSetAndRetrieve) {
 
 // Tests that the internal CLLocationManager calls its delegate after creation.
 TEST_F(GeolocationManagerTest, LocationUpdatesOnCreation) {
-  CLLocationManager* manager = [[CLLocationManager alloc] init];
   FakeCLLocationManagerDelegate* delegate =
       [[FakeCLLocationManagerDelegate alloc] init];
-  manager.delegate = delegate;
-
   ASSERT_EQ(delegate.delegateCallbackCount, 0);
+
+  CLLocationManager* manager = [[CLLocationManager alloc] init];
+  manager.delegate = delegate;
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForFileOperationTimeout, ^bool() {
-        base::RunLoop().RunUntilIdle();
         return delegate.delegateCallbackCount > 0;
       }));
 }
@@ -112,7 +111,6 @@ TEST_F(GeolocationManagerTest, GeolocationManagerCache) {
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForFileOperationTimeout, ^bool() {
-        base::RunLoop().RunUntilIdle();
         return authorization_status_cache_util::GetAuthorizationStatus()
             .has_value();
       }));

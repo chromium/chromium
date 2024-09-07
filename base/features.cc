@@ -11,7 +11,6 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "base/message_loop/message_pump_epoll.h"
-#include "base/message_loop/message_pump_libevent.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -38,6 +37,12 @@ namespace base::features {
 // backed by executable files.
 BASE_FEATURE(kEnforceNoExecutableFileHandles,
              "EnforceNoExecutableFileHandles",
+             FEATURE_ENABLED_BY_DEFAULT);
+
+// Activate base::FeatureParamWithCache internal cache.
+// TODO(https://crbug.com/340824113): Remove the feature flag below.
+BASE_FEATURE(kFeatureParamWithCache,
+             "FeatureParamWithCache",
              FEATURE_ENABLED_BY_DEFAULT);
 
 // Use non default low memory device threshold.
@@ -111,7 +116,6 @@ void Init(EmitThreadControllerProfilerMetadata
       emit_thread_controller_profiler_metadata);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  MessagePumpLibevent::InitializeFeatures();
   MessagePumpEpoll::InitializeFeatures();
 #endif
 

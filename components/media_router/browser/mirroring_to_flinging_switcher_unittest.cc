@@ -97,7 +97,7 @@ class MirroringToFlingingSwitcherTest : public testing::Test {
         presentation_manager_.get());
   }
 
-  int GetNewTabSource() {
+  content::FrameTreeNodeId GetNewTabSource() {
     return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   }
 

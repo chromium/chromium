@@ -35,6 +35,8 @@ export interface BrowserProxy {
   showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean): void;
   showFeedbackForPriceInsights(): void;
   getCallbackRouter(): PageCallbackRouter;
+  getPriceInsightsInfoForUrl(url: Url):
+      Promise<{priceInsightsInfo: PriceInsightsInfo}>;
   getProductInfoForUrl(url: Url): Promise<{productInfo: ProductInfo}>;
   getProductSpecificationsForUrls(urls: Url[]):
       Promise<{productSpecs: ProductSpecifications}>;
@@ -58,6 +60,7 @@ export interface BrowserProxy {
   showSyncSetupFlow(): void;
   getProductSpecificationsFeatureState():
       Promise<{state: ProductSpecificationsFeatureState | null}>;
+  getPageTitleFromHistory(url: Url): Promise<{title: string}>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -105,6 +108,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getPriceInsightsInfoForCurrentUrl() {
     return this.handler.getPriceInsightsInfoForCurrentUrl();
+  }
+
+  getPriceInsightsInfoForUrl(url: Url) {
+    return this.handler.getPriceInsightsInfoForUrl(url);
   }
 
   getProductSpecificationsForUrls(urls: Url[]) {
@@ -206,6 +213,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getProductSpecificationsFeatureState() {
     return this.handler.getProductSpecificationsFeatureState();
+  }
+
+  getPageTitleFromHistory(url: Url): Promise<{title: string}> {
+    return this.handler.getPageTitleFromHistory(url);
   }
 
   getCallbackRouter() {

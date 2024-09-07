@@ -42,6 +42,9 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
       apps::InstanceRegistry* cache) override;
 
   void PrimaryPageChanged(const content::WebContents* web_contents);
+
+  void MaybeTriggerCampaignsOnEvent(const std::string& event);
+
   aura::Window* GetOpenedWindow() { return opened_window_; }
 
   void SetProfileForTesting(Profile* profile);
@@ -73,6 +76,8 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
 
   // Handles app destruction update.
   void HandleAppInstanceDestruction(const apps::InstanceUpdate& update);
+
+  void MaybeTriggerCampaignsWhenAppOpened();
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

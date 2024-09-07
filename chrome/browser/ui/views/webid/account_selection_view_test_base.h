@@ -24,6 +24,10 @@ const std::u16string kTitleRequestPermission =
     u"idp-example.com";
 const std::u16string kBodySignIn = u"Choose an account to continue";
 
+// The char version of `kIdpETLDPlusOne`.
+inline constexpr char kIdpForDisplay[] = "idp-example.com";
+// The char version of `kSecondIdpETLDPlusOne`.
+inline constexpr char kSecondIdpForDisplay[] = "idp2.com";
 inline constexpr char kIdBase[] = "id";
 inline constexpr char kEmailBase[] = "email";
 inline constexpr char kNameBase[] = "name";
@@ -31,7 +35,11 @@ inline constexpr char kGivenNameBase[] = "given_name";
 
 inline constexpr char kTermsOfServiceUrl[] = "https://terms-of-service.com";
 inline constexpr char kPrivacyPolicyUrl[] = "https://privacy-policy.com";
+inline constexpr char kIdpBrandIconUrl[] = "https://idp-brand-icon.com";
 inline constexpr char kRpBrandIconUrl[] = "https://rp-brand-icon.com";
+
+extern const std::vector<content::IdentityRequestDialogDisclosureField>
+    kDefaultDisclosureFields;
 
 // A base class for FedCM account selection view unit tests.
 class AccountSelectionViewTestBase {
@@ -75,7 +83,9 @@ class AccountSelectionViewTestBase {
           login_states = {},
       const std::vector<std::optional<base::Time>>& last_used_timestamps = {});
   content::ClientMetadata CreateTestClientMetadata(
-      const std::string& terms_of_service_url);
+      const std::string& terms_of_service_url = kTermsOfServiceUrl,
+      const std::string& privacy_policy_url = kPrivacyPolicyUrl,
+      const std::string& rp_brand_icon_url = kRpBrandIconUrl);
 
   std::vector<std::string> GetChildClassNames(views::View* parent);
   views::View* GetViewWithClassName(views::View* parent,

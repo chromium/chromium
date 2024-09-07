@@ -126,11 +126,25 @@ extern const char kPreloadTopChromeWebUIModePreloadOnWarmupName[];
 extern const char kPreloadTopChromeWebUIModePreloadOnMakeContentsName[];
 extern const base::FeatureParam<PreloadTopChromeWebUIMode>
     kPreloadTopChromeWebUIMode;
-extern const char kPreloadTopChromeWebUISmartPreloadName[];
+
 // If smart preload is enabled, the preload WebUI is determined by historical
 // engagement scores and whether a WebUI is currently being shown.
 // If disabled, always preload Tab Search.
+extern const char kPreloadTopChromeWebUISmartPreloadName[];
 extern const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload;
+
+// If delay preload is enabled, the preloading is delayed until the first
+// non empty paint of an observed web contents.
+//
+// In case of browser startup, the observed web contents is the active web
+// contents of the last created browser.
+//
+// In case of Request() is called, the requested web contents is observed.
+//
+// In case of web contents destroy, the preloading simply waits for a fixed
+// amount of time.
+extern const char kPreloadTopChromeWebUIDelayPreloadName[];
+extern const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload;
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
@@ -188,7 +202,7 @@ BASE_DECLARE_FEATURE(kTabOrganization);
 bool IsTabOrganization();
 
 BASE_DECLARE_FEATURE(kTabstripDeclutter);
-bool IsTabstripDeclutter();
+bool IsTabstripDeclutterEnabled();
 
 BASE_DECLARE_FEATURE(kMultiTabOrganization);
 
@@ -197,6 +211,8 @@ BASE_DECLARE_FEATURE(kTabOrganizationAppMenuItem);
 BASE_DECLARE_FEATURE(kTabReorganization);
 
 BASE_DECLARE_FEATURE(kTabReorganizationDivider);
+
+BASE_DECLARE_FEATURE(kTabOrganizationModelStrategy);
 
 // The target (and minimum) interval between proactive nudge triggers. Measured
 // against a clock that only runs while Chrome is in the foreground.

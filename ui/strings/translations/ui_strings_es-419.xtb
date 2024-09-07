@@ -159,12 +159,11 @@
 <translation id="6503257047630241175">Contenido del archivo RTF</translation>
 <translation id="6539092367496845964">Se produjo un error; vuelve a intentarlo más tarde.</translation>
 <translation id="654149438358937226">Bloquear todas las notificaciones</translation>
-<translation id="6612467943526193239">Para salir de las opciones de calibración, presiona Esc.</translation>
 <translation id="6620110761915583480">Guardar archivo</translation>
 <translation id="6699343763173986273">Pista multimedia siguiente</translation>
 <translation id="6808150112686056157">Detener contenido multimedia</translation>
 <translation id="6845383723252244143">Seleccionar carpeta</translation>
-<translation id="6863590663815976734">{HOURS,plural, =1{Falta 1 hora.}other{Faltan # horas.}}</translation>
+<translation id="6863590663815976734">{HOURS,plural, =1{falta 1 hora}other{faltan # horas}}</translation>
 <translation id="688711909580084195">Página web sin título</translation>
 <translation id="6902419395050653510">Contenido HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>

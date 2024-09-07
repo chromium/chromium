@@ -95,6 +95,9 @@ void XRFrameProvider::OnSessionStarted(
         WTF::BindOnce(&XRFrameProvider::OnProviderConnectionError,
                       WrapWeakPersistent(this), WrapWeakPersistent(session)));
 
+    frame_transport_->RegisterFrameRenderedCallback(WTF::BindRepeating(
+        &XRFrameProvider::OnRenderComplete, WrapWeakPersistent(this)));
+
     frame_transport_->BindSubmitFrameClient(
         std::move(session_ptr->submit_frame_sink->client_receiver));
     frame_transport_->SetTransportOptions(
@@ -237,7 +240,7 @@ void XRFrameProvider::ScheduleImmersiveFrame(
     return;
 
   pending_immersive_vsync_ = true;
-
+  frame_data_time_.StartTimer();
   immersive_data_provider_->GetFrameData(
       std::move(options), WTF::BindOnce(&XRFrameProvider::OnImmersiveFrameData,
                                         WrapWeakPersistent(this)));
@@ -269,6 +272,7 @@ void XRFrameProvider::ScheduleNonImmersiveFrame(
 
 void XRFrameProvider::OnImmersiveFrameData(
     device::mojom::blink::XRFrameDataPtr data) {
+  frame_data_time_.StopTimer();
   TRACE_EVENT0("gpu", __FUNCTION__);
   if (data.is_null()) {
     DVLOG(2) << __func__ << ": no data, current frame_id=" << frame_id_;
@@ -668,6 +672,9 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
         webgl_context->SharedImageInterface(), webgl_context,
         std::move(image_ref), frame_id_);
     succeeded ? num_frames_++ : dropped_frames_++;
+    if (succeeded) {
+      submit_frame_time_.StartTimer();
+    }
 
     return;
   }
@@ -692,6 +699,9 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
       std::move(image_ref), frame_id_);
 
   succeeded ? num_frames_++ : dropped_frames_++;
+  if (succeeded) {
+    submit_frame_time_.StartTimer();
+  }
 
   // Reset our frame id, since anything we'd want to do (resizing/etc) can
   // no-longer happen to this frame.
@@ -763,10 +773,22 @@ void XRFrameProvider::SendFrameData() {
   num_frames_ = 0;
   dropped_frames_ = 0;
 
+  xr_frame_stat->frame_data_time = frame_data_time_.TakeAverageMicroseconds();
+
+  xr_frame_stat->page_animation_frame_time =
+      immersive_session()->TakeAnimationFrameTimerAverage();
+
+  xr_frame_stat->submit_frame_time =
+      submit_frame_time_.TakeAverageMicroseconds();
+
   if (xr_->GetWebXrInternalsRendererListener()) {
     xr_->GetWebXrInternalsRendererListener()->OnFrameData(
         std::move(xr_frame_stat));
   }
+}
+
+void XRFrameProvider::OnRenderComplete() {
+  submit_frame_time_.StopTimer();
 }
 
 void XRFrameProvider::Trace(Visitor* visitor) const {

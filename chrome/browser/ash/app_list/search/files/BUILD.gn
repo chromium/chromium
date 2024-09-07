@@ -88,7 +88,6 @@ source_set("unit_tests") {
     "//ash/strings",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/ranking:proto",

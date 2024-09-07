@@ -9,7 +9,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
-#include "ash/system/mahi/mahi_panel_drag_controller.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "base/functional/bind.h"
@@ -17,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "components/account_id/account_id.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -55,8 +55,7 @@ MahiUiController::Delegate::~Delegate() = default;
 
 // MahiUiController ------------------------------------------------------------
 
-MahiUiController::MahiUiController()
-    : drag_controller_(std::make_unique<MahiPanelDragController>(this)) {
+MahiUiController::MahiUiController() {
   // The shell may not be available in tests if using a plain object for the UI
   // controller, which means the session will not be observed.
   if (Shell::HasInstance()) {
@@ -200,7 +199,12 @@ void MahiUiController::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (state != session_manager::SessionState::ACTIVE) {
     RecordTimesPanelOpenedMetric();
+    CloseMahiPanel();
   }
+}
+
+void MahiUiController::OnActiveUserSessionChanged(const AccountId& account_id) {
+  CloseMahiPanel();
 }
 
 void MahiUiController::RecordTimesPanelOpenedMetric() {

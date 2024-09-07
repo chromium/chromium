@@ -68,7 +68,9 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
 
     private static String makeTestPage(String title, @Nullable String iFrameUrl) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<html><head><title>").append(title).append("</title></head><body>Hello world!");
+        sb.append("<html><head><title>").append(title).append("</title></head>");
+        sb.append("<body>");
+        sb.append("<h1>").append(title).append("</h1>");
         if (iFrameUrl != null) {
             sb.append("<iframe id='testIframe' src='").append(iFrameUrl).append("'></iframe>");
             sb.append("<script>");

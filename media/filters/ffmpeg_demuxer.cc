@@ -1481,9 +1481,10 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
           audio_config, stream_enabled, track_id, MediaTrack::Kind("main"),
           track_label, track_language);
       media_track->set_id(MediaTrack::Id(base::NumberToString(track_id)));
-      DCHECK(track_id_to_demux_stream_map_.find(media_track->id()) ==
+      DCHECK(track_id_to_demux_stream_map_.find(media_track->track_id()) ==
              track_id_to_demux_stream_map_.end());
-      track_id_to_demux_stream_map_[media_track->id()] = streams_[i].get();
+      track_id_to_demux_stream_map_[media_track->track_id()] =
+          streams_[i].get();
     } else if (codec_type == AVMEDIA_TYPE_VIDEO) {
       VideoDecoderConfig video_config = streams_[i]->video_decoder_config();
 
@@ -1494,9 +1495,10 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
           video_config, stream_enabled, track_id, MediaTrack::Kind("main"),
           track_label, track_language);
       media_track->set_id(MediaTrack::Id(base::NumberToString(track_id)));
-      DCHECK(track_id_to_demux_stream_map_.find(media_track->id()) ==
+      DCHECK(track_id_to_demux_stream_map_.find(media_track->track_id()) ==
              track_id_to_demux_stream_map_.end());
-      track_id_to_demux_stream_map_[media_track->id()] = streams_[i].get();
+      track_id_to_demux_stream_map_[media_track->track_id()] =
+          streams_[i].get();
     }
 
     max_duration = std::max(max_duration, streams_[i]->duration());

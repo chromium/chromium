@@ -280,11 +280,11 @@ export class SettingsMenu extends ReactiveLitElement {
     }
   }
 
-  private renderTranscriptionDetailSettings() {
-    if (!this.transcriptionEnabled ||
-        this.platformHandler.sodaState.value.kind === 'notInstalled') {
+  private renderSpeakerLabelSettings() {
+    if (!this.platformHandler.canUseSpeakerLabel.value) {
       return nothing;
     }
+
     const speakerLabelEnabled =
       settings.value.speakerLabelEnabled === SpeakerLabelEnableState.ENABLED;
     return html`
@@ -299,9 +299,18 @@ export class SettingsMenu extends ReactiveLitElement {
           @change=${this.onSpeakerLabelToggle}
         ></cros-switch>
       </settings-row>
-      <!-- TODO: b/336963138 - Add transcription language. -->
-      ${this.renderSummaryModelSettings()}
     `;
+  }
+
+  private renderTranscriptionDetailSettings() {
+    if (!this.transcriptionEnabled ||
+        this.platformHandler.sodaState.value.kind === 'notInstalled') {
+      return nothing;
+    }
+    return [
+      this.renderSpeakerLabelSettings(),
+      this.renderSummaryModelSettings(),
+    ];
   }
 
   private onCloseClick() {

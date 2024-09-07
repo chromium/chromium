@@ -16,7 +16,7 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -91,9 +91,8 @@ class SyncServiceFactoryTest : public PlatformTest {
       datatypes.Put(syncer::COLLABORATION_GROUP);
       datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
     }
-    if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
-      datatypes.Put(syncer::PLUS_ADDRESS);
-    }
+    // syncer::PLUS_ADDRESS is excluded because GoogleGroupsManagerFactory is
+    // null for testing and hence no controller gets instantiated for the type.
     if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
       datatypes.Put(syncer::PLUS_ADDRESS_SETTING);
     }

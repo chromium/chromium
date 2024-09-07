@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"
@@ -39,7 +40,7 @@
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -217,7 +218,7 @@ class CONTENT_EXPORT VideoCaptureManager
   void TakePhoto(const base::UnguessableToken& session_id,
                  VideoCaptureDevice::TakePhotoCallback callback);
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
   // Some devices had troubles when stopped and restarted quickly, so the device
   // is only stopped when Chrome is sent to background and not when, e.g., a tab
   // is hidden, see http://crbug.com/582295.
@@ -240,6 +241,7 @@ class CONTENT_EXPORT VideoCaptureManager
 
   void OpenNativeScreenCapturePicker(
       DesktopMediaID::Type type,
+      base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
       base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
       base::OnceCallback<void()> cancel_callback,
       base::OnceCallback<void()> error_callback);
@@ -331,7 +333,7 @@ class CONTENT_EXPORT VideoCaptureManager
   void ReleaseDevices();
   void ResumeDevices();
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
   bool application_state_has_running_activities_;

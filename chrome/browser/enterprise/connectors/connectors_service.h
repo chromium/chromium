@@ -14,6 +14,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/connectors_manager_base.h"
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -44,7 +45,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
 
   // Accessors that call the corresponding method in ConnectorsManager.
   std::optional<ReportingSettings> GetReportingSettings(
-      ReportingConnector connector);
+      ReportingConnector connector) override;
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
@@ -55,8 +56,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
       AnalysisConnector connector);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  bool IsConnectorEnabled(AnalysisConnector connector) const;
-  bool IsConnectorEnabled(ReportingConnector connector) const;
+  bool IsConnectorEnabled(AnalysisConnector connector) const override;
 
   bool DelayUntilVerdict(AnalysisConnector connector);
 
@@ -78,8 +78,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
 
   std::vector<std::string> GetAnalysisServiceProviderNames(
       AnalysisConnector connector);
-  std::vector<std::string> GetReportingServiceProviderNames(
-      ReportingConnector connector);
 
   std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
       AnalysisConnector connector);
@@ -88,6 +86,11 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::optional<std::string> GetProfileDmToken() const;
 #endif
+
+  // Obtain a ClientMetadata instance corresponding to the current
+  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
+  // based service provider and false when using a local service provider.
+  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud);
 
   // Returns the profile email if real-time URL check is set for the profile,
   // the device ID if it is set for the device, or an empty string if it is
@@ -121,17 +124,14 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   bool ConnectorsEnabled() const override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
+  ConnectorsManagerBase* GetConnectorsManagerBase() override;
+  const ConnectorsManagerBase* GetConnectorsManagerBase() const override;
 
   // Returns the policy::PolicyScope stored in the given |scope_pref|.
   policy::PolicyScope GetPolicyScope(const char* scope_pref) const;
 
   // Returns ClientMetadata populated with minimum required information
   std::unique_ptr<ClientMetadata> GetBasicClientMetadata(Profile* profile);
-
-  // Obtain a ClientMetadata instance corresponding to the current
-  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
-  // based service provider and false when using a local service provider.
-  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud);
 
   raw_ptr<content::BrowserContext> context_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;

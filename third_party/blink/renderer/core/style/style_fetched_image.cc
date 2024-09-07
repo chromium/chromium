@@ -51,10 +51,6 @@ StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
   is_image_resource_ = true;
   is_lazyload_possibly_deferred_ = is_lazyload_possibly_deferred;
 
-  const PaintTiming* paint_timing = PaintTiming::From(document);
-  is_loaded_after_mouseover_ =
-      paint_timing && paint_timing->IsLCPMouseoverDispatchedRecently();
-
   image_ = image;
   image_->AddObserver(this);
   // ResourceFetcher is not determined from StyleFetchedImage and it is

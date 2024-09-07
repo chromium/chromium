@@ -17,11 +17,13 @@ import java.lang.annotation.RetentionPolicy;
  * <p>IMPORTANT: Do not delete or renumber entries. Keep this list in sync with HubPaneId in
  * tools/metrics/histograms/metadata/android/enums.xml.
  */
+// LINT.IfChange(PaneId)
 @IntDef({
     PaneId.TAB_SWITCHER,
     PaneId.INCOGNITO_TAB_SWITCHER,
     PaneId.BOOKMARKS,
     PaneId.TAB_GROUPS,
+    PaneId.CROSS_DEVICE,
     PaneId.COUNT
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -30,7 +32,9 @@ public @interface PaneId {
     int INCOGNITO_TAB_SWITCHER = 1;
     int BOOKMARKS = 2;
     int TAB_GROUPS = 3;
+    int CROSS_DEVICE = 4;
 
     /** Must be last. */
-    int COUNT = 4;
+    int COUNT = 5;
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:HubPaneId)

@@ -326,7 +326,6 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
                        : nullptr),
       additional_info(match.additional_info),
       duplicate_matches(match.duplicate_matches),
-      query_tiles(match.query_tiles),
       suggest_tiles(match.suggest_tiles),
       scoring_signals(match.scoring_signals),
       culled_by_provider(match.culled_by_provider),
@@ -390,7 +389,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   post_content = std::move(match.post_content);
   additional_info = std::move(match.additional_info);
   duplicate_matches = std::move(match.duplicate_matches);
-  query_tiles = std::move(match.query_tiles);
   suggest_tiles = std::move(match.suggest_tiles);
   scoring_signals = std::move(match.scoring_signals);
   culled_by_provider = std::move(match.culled_by_provider);
@@ -472,7 +470,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
                          : nullptr);
   additional_info = match.additional_info;
   duplicate_matches = match.duplicate_matches;
-  query_tiles = match.query_tiles;
   suggest_tiles = match.suggest_tiles;
   scoring_signals = match.scoring_signals;
   culled_by_provider = match.culled_by_provider;
@@ -636,7 +633,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
             return vector_icons::kHistoryChromeRefreshIcon;
           case KEYWORD_MODE_STARTER_PACK_TABS:
             return omnibox::kProductChromeRefreshIcon;
-          case KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE:
+          case KEYWORD_MODE_STARTER_PACK_GEMINI:
             return omnibox::kSparkIcon;
           default:
             break;
@@ -1463,6 +1460,9 @@ int AutocompleteMatch::GetSortingOrder() const {
 
 bool AutocompleteMatch::IsMlSignalLoggingEligible() const {
   const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
+  if (answer.has_value()) {
+    return false;
+  }
   return type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
          type == AutocompleteMatchType::HISTORY_URL ||
          type == AutocompleteMatchType::HISTORY_TITLE ||
@@ -1471,15 +1471,30 @@ bool AutocompleteMatch::IsMlSignalLoggingEligible() const {
          type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
          type == AutocompleteMatchType::TILE_NAVSUGGEST ||
          (ml_config.shortcut_document_signals &&
-          type == AutocompleteMatchType::DOCUMENT_SUGGESTION) ||
+          type == AutocompleteMatchType::DOCUMENT_SUGGESTION &&
+          relevance != 0) ||
          AutocompleteMatch::IsSearchType(type) ||
          AutocompleteMatch::IsVerbatimType();
 }
 
 bool AutocompleteMatch::IsMlScoringEligible() const {
-  if (!scoring_signals.has_value()) {
+  if (!IsMlSignalLoggingEligible() || !scoring_signals.has_value()) {
     return false;
   }
+
+  // Do not apply ML scoring to calculator or answer suggestions as the ML model
+  // currently doesn't provide accurate scores for suggestions that have a low
+  // click-through rate.
+  if (type == AutocompleteMatchType::CALCULATOR || answer.has_value()) {
+    return false;
+  }
+
+  // Do not apply ML scoring to stale suggestions sourced from the
+  // DocumentProvider cache.
+  if (type == AutocompleteMatchType::DOCUMENT_SUGGESTION && relevance == 0) {
+    return false;
+  }
+
   const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
 
   // Search suggestions are conditionally eligible for ML scoring.
@@ -1500,12 +1515,6 @@ bool AutocompleteMatch::IsMlScoringEligible() const {
   if (type == AutocompleteMatchType::NAVSUGGEST ||
       type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
       type == AutocompleteMatchType::TILE_NAVSUGGEST) {
-    return false;
-  }
-
-  // Do not apply ML scoring to stale suggestions sourced from the
-  // DocumentProvider cache.
-  if (type == AutocompleteMatchType::DOCUMENT_SUGGESTION && relevance == 0) {
     return false;
   }
 

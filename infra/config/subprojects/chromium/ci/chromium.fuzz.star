@@ -1058,10 +1058,8 @@ ci.builder(
             "no_remoting",
         ],
     ),
-    builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "ios",

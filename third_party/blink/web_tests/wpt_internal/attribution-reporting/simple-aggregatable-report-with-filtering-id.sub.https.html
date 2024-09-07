@@ -9,109 +9,13 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/attribution-reporting/resources/helpers.js"></script>
+<script src="../aggregation-service/support/aggregation-service.js"></script>
 <script>
 
-// Payload with contributions [{key: 0xA85, value: 1664}], padded to 20
-// contributions (and with default filtering IDs)
-const DEFAULT_MAX_BYTES_DEFAULT_FILTERING_ID =
-  'omRkYXRhlKNiaWRBAGV2YWx1ZUQAAAaAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAqFo2JpZEEAZX' +
-  'ZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNr' +
-  'ZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAA' +
-  'AAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFs' +
-  'dWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldF' +
-  'AAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAA' +
-  'AACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZU' +
-  'QAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAA' +
-  'AAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAK' +
-  'NiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAA' +
-  'AABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAA' +
-  'AAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2Jp' +
-  'ZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAG' +
-  'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAA' +
-  'AAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAABpb3Blcm' +
-  'F0aW9uaWhpc3RvZ3JhbQ==';
-
-// Payload with contributions [{key: 0xA85, value: 1664, id: 125}], padded to 20
-// contributions.
-const DEFAULT_MAX_BYTES_NON_DEFAULT_FILTERING_ID =
-  'omRkYXRhlKNiaWRBfWV2YWx1ZUQAAAaAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAqFo2JpZEEAZX' +
-  'ZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNr' +
-  'ZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAA' +
-  'AAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFs' +
-  'dWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldF' +
-  'AAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAA' +
-  'AACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZU' +
-  'QAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAA' +
-  'AAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAK' +
-  'NiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAA' +
-  'AABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAA' +
-  'AAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2Jp' +
-  'ZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAG' +
-  'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAA' +
-  'AAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAABpb3Blcm' +
-  'F0aW9uaWhpc3RvZ3JhbQ==';
-
-// Payload with contributions [{key: 0xA85, value: 1664, id: 125}], padded to 20
-// contributions where contributions ids are 2 bytes.
-const NON_DEFAULT_MAX_BYTES_NON_DEFAULT_FILTERING_ID =
-  'omRkYXRhlKNiaWRCAH1ldmFsdWVEAAAGgGZidWNrZXRQAAAAAAAAAAAAAAAAAAAKhaNiaWRCAA' +
-  'BldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZi' +
-  'dWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAA' +
-  'AAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRC' +
-  'AABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAG' +
-  'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAA' +
-  'AAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaW' +
-  'RCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAA' +
-  'AGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAA' +
-  'AAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNi' +
-  'aWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAA' +
-  'AAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAA' +
-  'AAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAK' +
-  'NiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVE' +
-  'AAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAA' +
-  'AAAAAAAAAAAAAAAAAAAGlvcGVyYXRpb25paGlzdG9ncmFt';
-
-// Payload with contributions [{key: 0xA85, value: 1664, id: 0}], padded to 20
-// contributions where contributions ids are 2 bytes.
-const NON_DEFAULT_MAX_BYTES_DEFAULT_FILTERING_ID =
-  'omRkYXRhlKNiaWRCAABldmFsdWVEAAAGgGZidWNrZXRQAAAAAAAAAAAAAAAAAAAKhaNiaWRCAA' +
-  'BldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZi' +
-  'dWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAA' +
-  'AAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRC' +
-  'AABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAG' +
-  'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAA' +
-  'AAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaW' +
-  'RCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAA' +
-  'AGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAA' +
-  'AAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNi' +
-  'aWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAA' +
-  'AAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAA' +
-  'AAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAK' +
-  'NiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVE' +
-  'AAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRCAABldmFsdWVEAAAAAGZidWNrZXRQAA' +
-  'AAAAAAAAAAAAAAAAAAAGlvcGVyYXRpb25paGlzdG9ncmFt';
-
 attribution_reporting_promise_test(async t => {
-  assert_equals(new Set([
-    DEFAULT_MAX_BYTES_DEFAULT_FILTERING_ID,
-    DEFAULT_MAX_BYTES_NON_DEFAULT_FILTERING_ID,
-    NON_DEFAULT_MAX_BYTES_NON_DEFAULT_FILTERING_ID,
-    NON_DEFAULT_MAX_BYTES_DEFAULT_FILTERING_ID
-  ]).size, 4)
-
   const searchParams = new URLSearchParams(location.search);
   const withFilteringId = searchParams.get('with-filtering-id') == 'true';
   const withMaxBytes = searchParams.get('with-max-bytes') == 'true';
-  let expected_agg_service_payload;
-  if(withMaxBytes) {
-    expected_agg_service_payload = withFilteringId
-      ? NON_DEFAULT_MAX_BYTES_NON_DEFAULT_FILTERING_ID
-      : NON_DEFAULT_MAX_BYTES_DEFAULT_FILTERING_ID;
-  } else {
-    expected_agg_service_payload = withFilteringId
-      ? DEFAULT_MAX_BYTES_NON_DEFAULT_FILTERING_ID
-      : DEFAULT_MAX_BYTES_DEFAULT_FILTERING_ID;
-  }
 
   const expectedSourceDebugKey = '246';
   const expectedTriggerDebugKey = '357';
@@ -147,6 +51,22 @@ attribution_reporting_promise_test(async t => {
     },
   ]));
 
+  const expectedAggServicePayload = buildExpectedPayload(
+    /*contributions=*/ [{
+      bucket: encodeBigInt(0xa85n, 16),
+      value: encodeBigInt(1664n, 4),
+      id: encodeBigInt(
+          /*num=*/ withFilteringId ? 125n : 0n,
+          /*size=*/ withMaxBytes ? 2 : 1),
+    }],
+    /*padToNumContributions=*/ 20,
+    /*nullContribution=*/ {
+      bucket: encodeBigInt(0n, 16),
+      value: encodeBigInt(0n, 4),
+      id: encodeBigInt(0n, withMaxBytes ? 2 : 1),
+    },
+  );
+
   const payload = await pollAggregatableReports();
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
@@ -159,9 +79,9 @@ attribution_reporting_promise_test(async t => {
   assert_equals(shared_info.debug_mode, 'enabled');
   const agg_service_payload = report.aggregation_service_payloads[0];
   assert_own_property(agg_service_payload, 'debug_cleartext_payload');
-  assert_equals(
-    agg_service_payload.debug_cleartext_payload,
-    expected_agg_service_payload
+  assert_payload_equals(
+    CborParser.parse(agg_service_payload.debug_cleartext_payload),
+    expectedAggServicePayload
   );
 
   const debugPayload = await pollAttributionSuccessDebugAggregatableReports();
@@ -176,9 +96,9 @@ attribution_reporting_promise_test(async t => {
   assert_equals(debug_shared_info.debug_mode, 'enabled');
   const debug_agg_service_payload = debugReport.aggregation_service_payloads[0];
   assert_own_property(debug_agg_service_payload, 'debug_cleartext_payload');
-  assert_equals(
-    debug_agg_service_payload.debug_cleartext_payload,
-    expected_agg_service_payload
+  assert_payload_equals(
+    CborParser.parse(debug_agg_service_payload.debug_cleartext_payload),
+    expectedAggServicePayload
   );
 
 }, 'Ensure the aggregation service payload include the provided filtering id.');

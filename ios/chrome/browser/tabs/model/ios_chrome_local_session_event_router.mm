@@ -131,9 +131,7 @@ void IOSChromeLocalSessionEventRouter::Observer::PageLoaded(
 
 void IOSChromeLocalSessionEventRouter::Observer::WasShown(
     web::WebState* web_state) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    router_->OnWebStateChange(web_state);
-  }
+  router_->OnWebStateChange(web_state);
 }
 
 void IOSChromeLocalSessionEventRouter::Observer::DidChangeBackForwardState(

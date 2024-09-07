@@ -5,9 +5,11 @@
 #ifndef REMOTING_PROTO_SESSION_AUTHZ_SERVICE_H_
 #define REMOTING_PROTO_SESSION_AUTHZ_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
+#include "remoting/base/session_policies.h"
 
 // This file defines structs for the SessionAuthzService. For official builds,
 // these structs are populated by code in //remoting/internal. For unofficial
@@ -41,6 +43,7 @@ struct VerifySessionTokenResponseStruct {
   std::string shared_secret;
   std::string session_reauth_token;
   base::TimeDelta session_reauth_token_lifetime;
+  std::optional<SessionPolicies> session_policies;
 };
 
 struct ReauthorizeHostRequestStruct {

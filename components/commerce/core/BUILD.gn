@@ -57,6 +57,7 @@ source_set("feature_utils") {
     ":feature_list",
     ":pref_names",
     "product_specifications",
+    "//components/optimization_guide/core:features",
     "//components/prefs",
     "//components/sync/base",
   ]
@@ -88,6 +89,7 @@ static_library("metrics") {
 
   deps = [
     ":account_checker",
+    ":commerce_types",
     ":feature_list",
     ":proto",
     "//base",
@@ -324,6 +326,7 @@ source_set("shopping_service_test_support") {
     "//components/commerce/core/product_specifications:test_support",
     "//components/commerce/core/subscriptions",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:features",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/power_bookmarks/core",
     "//components/prefs:test_support",
@@ -372,6 +375,7 @@ source_set("shopping_service_unit_tests") {
     "subscriptions:test_support",
     "webui:unit_tests",
     "//components/history/core/browser",
+    "//components/optimization_guide/core:features",
     "//components/search",
     "//components/ukm:test_support",
     "//services/metrics/public/cpp:ukm_builders",

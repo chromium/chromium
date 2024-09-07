@@ -18,7 +18,7 @@ struct SameSizeAsPaintChunk {
   wtf_size_t end_index;
   PaintChunk::Id id;
   PaintChunk::BackgroundColorInfo background_color;
-  PropertyTreeState properties;
+  TraceablePropertyTreeState properties;
   Member<HitTestData> hit_test_data;
   Member<RegionCaptureData> region_capture_data;
   Member<LayerSelectionData> layer_selection;

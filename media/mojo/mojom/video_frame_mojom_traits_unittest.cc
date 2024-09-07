@@ -255,7 +255,7 @@ TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
   EXPECT_EQ(frame->natural_size(), gfx::Size(200, 100));
   EXPECT_EQ(frame->timestamp(), base::Seconds(100));
   ASSERT_TRUE(frame->HasTextures());
-  ASSERT_EQ(frame->shared_image(0)->mailbox(), shared_image->mailbox());
+  ASSERT_EQ(frame->shared_image()->mailbox(), shared_image->mailbox());
 }
 
 // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) because

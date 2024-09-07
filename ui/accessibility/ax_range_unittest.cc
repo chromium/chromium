@@ -65,7 +65,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
       AXNodeID node_id,
       int start_offset,
       int end_offset,
-      const ui::AXClippingBehavior clipping_behavior,
+      const AXClippingBehavior clipping_behavior,
       AXOffscreenResult* offscreen_result) override {
     if (tree_manager_->GetTreeID() != tree_id)
       return gfx::Rect();

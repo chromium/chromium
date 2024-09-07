@@ -9,7 +9,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/model/sync_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -63,7 +63,7 @@ std::unique_ptr<KeyedService> WebHistoryServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<history::WebHistoryService>(
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           browser_state->GetURLLoaderFactory()));
 }

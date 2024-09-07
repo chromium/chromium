@@ -22,6 +22,7 @@ var TestRunner = class {
     this._fetch = fetch;
     this._params = params;
     this._browserSession = new TestRunner.Session(this, '');
+    this._stableValues = new Map();
   }
 
   static get stabilizeNames() {
@@ -50,6 +51,7 @@ var TestRunner = class {
       'requestId',
       'openerFrameId',
       'issueId',
+      'initiatingFrameId'
     ];
   }
 
@@ -68,9 +70,9 @@ var TestRunner = class {
     this._completeTest.call(null);
   }
 
-  log(item, title, stabilizeNames) {
+  log(item, title, stabilizeNames, stabilizeValues) {
     if (typeof item === 'object')
-      return this._logObject(item, title, stabilizeNames);
+      return this._logObject(item, title, stabilizeNames, stabilizeValues);
     this._log.call(null, item);
   }
 
@@ -83,8 +85,9 @@ var TestRunner = class {
     return this._params;
   }
 
-  _logObject(object, title, stabilizeNames = TestRunner.stabilizeNames) {
+  _logObject(object, title, stabilizeNames = TestRunner.stabilizeNames, stabilizeValues = []) {
     var lines = [];
+    const stableValues = this._stableValues;
 
     function dumpValue(value, prefix, prefixWithName) {
       if (typeof value === 'object' && value !== null) {
@@ -110,8 +113,14 @@ var TestRunner = class {
           continue;
         var prefixWithName = '    ' + prefix + name + ' : ';
         var value = object[name];
-        if (stabilizeNames && stabilizeNames.includes(name))
+        if (stabilizeValues && stabilizeValues.includes(name)) {
+          if (!stableValues.has(value)) {
+            stableValues.set(value, `<${typeof value} ${stableValues.size}>`);
+          }
+          value = stableValues.get(value);
+        } else if (stabilizeNames && stabilizeNames.includes(name)) {
           value = `<${typeof value}>`;
+        }
         dumpValue(value, '    ' + prefix, prefixWithName);
       }
       lines.push(prefix + '}');

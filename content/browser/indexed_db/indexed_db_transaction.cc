@@ -142,7 +142,8 @@ IndexedDBTransaction::IndexedDBTransaction(
 
   locks_receiver_.SetUserData(
       IndexedDBLockRequestData::kKey,
-      std::make_unique<IndexedDBLockRequestData>(connection->client_token()));
+      std::make_unique<IndexedDBLockRequestData>(
+          connection->client_token(), connection->scheduling_priority()));
 
   database_ = connection_->database();
   if (database_) {
@@ -159,7 +160,7 @@ IndexedDBTransaction::IndexedDBTransaction(
   diagnostics_.tasks_scheduled = 0;
   diagnostics_.tasks_completed = 0;
   diagnostics_.creation_time = base::Time::Now();
-  NotifyOfIdbInternalsRelevantChange();
+  SetState(state_);  // Process the initial state.
 }
 
 IndexedDBTransaction::~IndexedDBTransaction() {
@@ -255,7 +256,7 @@ leveldb::Status IndexedDBTransaction::Abort(
   // front-end is notified, as the transaction completion unblocks
   // operations like closing connections.
   locks_receiver_.locks.clear();
-  locks_receiver_.AbortLockRequest();
+  locks_receiver_.CancelLockRequest();
 
   callbacks()->OnAbort(*this, error);
 
@@ -293,28 +294,31 @@ void IndexedDBTransaction::DontAllowInactiveClientToBlockOthers(
   }
 }
 
-bool IndexedDBTransaction::IsTransactionBlockingOtherClients() const {
+bool IndexedDBTransaction::IsTransactionBlockingOtherClients(
+    bool consider_priority) const {
   CHECK_EQ(state_, STARTED);
-  for (const PartitionedLockId& lock_id : lock_ids_) {
-    std::set<PartitionedLockHolder*> blocked_requests =
-        bucket_context_->lock_manager().GetQueuedRequests(lock_id);
-    if (std::any_of(blocked_requests.begin(), blocked_requests.end(),
-                    [&](PartitionedLockHolder* blocked_lock_holder) {
-                      auto* lock_request_data =
-                          static_cast<IndexedDBLockRequestData*>(
-                              blocked_lock_holder->GetUserData(
-                                  IndexedDBLockRequestData::kKey));
-                      if (!lock_request_data) {
-                        return true;
-                      }
-                      return lock_request_data->client_token !=
-                             connection_->client_token();
-                    })) {
-      return true;
-    }
-  }
-
-  return false;
+  std::set<PartitionedLockHolder*> blocked_requests =
+      bucket_context_->lock_manager().GetBlockedRequests(lock_ids());
+  return std::any_of(
+      blocked_requests.begin(), blocked_requests.end(),
+      [&](PartitionedLockHolder* blocked_lock_holder) {
+        auto* lock_request_data = static_cast<IndexedDBLockRequestData*>(
+            blocked_lock_holder->GetUserData(IndexedDBLockRequestData::kKey));
+        if (!lock_request_data) {
+          return true;
+        }
+        // If `this`
+        //   * comes from a background client (priority > 0), and
+        //   * is equal or higher priority than the blocked transaction's client
+        //     (aka equally or less severely throttled)
+        // then don't worry about blocking it.
+        const int this_priority = connection_->scheduling_priority();
+        if (consider_priority && (this_priority > 0) &&
+            (this_priority <= lock_request_data->scheduling_priority)) {
+          return false;
+        }
+        return lock_request_data->client_token != connection_->client_token();
+      });
 }
 
 void IndexedDBTransaction::Start() {
@@ -803,22 +807,23 @@ IndexedDBTransaction::GetIdbInternalsMetadata() const {
   info->mode = static_cast<storage::mojom::IdbTransactionMode>(mode());
   switch (state()) {
     case IndexedDBTransaction::CREATED:
-      info->status = storage::mojom::IdbTransactionState::kBlocked;
+      info->state = storage::mojom::IdbTransactionState::kBlocked;
       break;
     case IndexedDBTransaction::STARTED:
-      info->status = diagnostics().tasks_scheduled > 0
-                         ? storage::mojom::IdbTransactionState::kRunning
-                         : storage::mojom::IdbTransactionState::kStarted;
+      info->state = diagnostics().tasks_scheduled > 0
+                        ? storage::mojom::IdbTransactionState::kRunning
+                        : storage::mojom::IdbTransactionState::kStarted;
       break;
     case IndexedDBTransaction::COMMITTING:
-      info->status = storage::mojom::IdbTransactionState::kCommitting;
+      info->state = storage::mojom::IdbTransactionState::kCommitting;
       break;
     case IndexedDBTransaction::FINISHED:
-      info->status = storage::mojom::IdbTransactionState::kFinished;
+      info->state = storage::mojom::IdbTransactionState::kFinished;
       break;
   }
 
   info->tid = id();
+  info->connection_id = connection()->id();
   info->client_token = connection()->client_token().ToString();
   info->age =
       (base::Time::Now() - diagnostics().creation_time).InMillisecondsF();
@@ -835,7 +840,6 @@ IndexedDBTransaction::GetIdbInternalsMetadata() const {
       info->scope.emplace_back(stores_it->second.name);
     }
   }
-
   return info;
 }
 
@@ -847,7 +851,7 @@ void IndexedDBTransaction::NotifyOfIdbInternalsRelevantChange() {
 }
 
 void IndexedDBTransaction::TimeoutFired() {
-  if (!IsTransactionBlockingOtherClients()) {
+  if (!IsTransactionBlockingOtherClients(/*consider_priority=*/true)) {
     return;
   }
 
@@ -904,6 +908,13 @@ IndexedDBTransaction::BuildLockRequests() const {
         object_store_lock_type);
   }
   return lock_requests;
+}
+
+void IndexedDBTransaction::OnSchedulingPriorityUpdated(int new_priority) {
+  auto* lock_request_data = static_cast<IndexedDBLockRequestData*>(
+      locks_receiver_.GetUserData(IndexedDBLockRequestData::kKey));
+  DCHECK(lock_request_data);
+  lock_request_data->scheduling_priority = new_priority;
 }
 
 }  // namespace content

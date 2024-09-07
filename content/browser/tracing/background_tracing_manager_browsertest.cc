@@ -347,15 +347,16 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
             scenarios);
   {
     auto all_scenarios =
-        BackgroundTracingManager::GetInstance().GetAllPresetScenarios();
-    std::vector<std::pair<std::string, std::string>> expected = {
-        std::make_pair("e345f523fcd98b60063256afa89905ca", "test_scenario")};
+        BackgroundTracingManagerImpl::GetInstance().GetAllPresetScenarios();
+    std::vector<trace_report::mojom::ScenarioPtr> expected;
+    expected.push_back(trace_report::mojom::Scenario::New(
+        "e345f523fcd98b60063256afa89905ca", "test_scenario"));
     EXPECT_EQ(expected, all_scenarios);
   }
 
   BackgroundTracingManager::GetInstance().SetEnabledScenarios(scenarios);
   EXPECT_EQ(std::vector<std::string>({"e345f523fcd98b60063256afa89905ca"}),
-            BackgroundTracingManager::GetInstance().GetEnabledScenarios());
+            BackgroundTracingManagerImpl::GetInstance().GetEnabledScenarios());
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
@@ -392,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
             scenarios);
   BackgroundTracingManager::GetInstance().SetEnabledScenarios(scenarios);
   EXPECT_EQ(std::vector<std::string>({"5875325968aa9b724ccf25e4018a2907"}),
-            BackgroundTracingManager::GetInstance().GetEnabledScenarios());
+            BackgroundTracingManagerImpl::GetInstance().GetEnabledScenarios());
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
@@ -401,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   background_tracing_helper.ExpectOnScenarioIdle("test_scenario");
   BackgroundTracingManager::GetInstance().SetEnabledScenarios({});
   EXPECT_EQ(std::vector<std::string>(),
-            BackgroundTracingManager::GetInstance().GetEnabledScenarios());
+            BackgroundTracingManagerImpl::GetInstance().GetEnabledScenarios());
   background_tracing_helper.WaitForScenarioIdle();
 }
 
@@ -1553,7 +1554,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 }
 
 // TODO(crbug.com/40267734): Re-enable this test once fixed
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_RunStartupTracing DISABLED_RunStartupTracing
 #else
 #define MAYBE_RunStartupTracing RunStartupTracing

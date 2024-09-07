@@ -142,8 +142,7 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
 
     return subresource_proxying_url_loader_service_->GetFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
-        /*frame_tree_node_id=*/0,
-        proxied_url_loader_factory.GetSafeWeakWrapper(),
+        FrameTreeNodeId(), proxied_url_loader_factory.GetSafeWeakWrapper(),
         /*render_frame_host=*/nullptr,
         /*prefetched_signed_exchange_cache=*/nullptr);
   }

@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -178,6 +179,7 @@ Page* Page::CreateNonOrdinary(
   return MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
       BrowsingContextGroupInfo::CreateUnique(), color_provider_colors,
+      /*partitioned_popin_params=*/nullptr,
       /*is_ordinary=*/false);
 }
 
@@ -186,10 +188,12 @@ Page* Page::CreateOrdinary(
     Page* opener,
     AgentGroupScheduler& agent_group_scheduler,
     const BrowsingContextGroupInfo& browsing_context_group_info,
-    const ColorProviderColorMaps* color_provider_colors) {
+    const ColorProviderColorMaps* color_provider_colors,
+    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
   Page* page = MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
-      browsing_context_group_info, color_provider_colors, /*is_ordinary=*/true);
+      browsing_context_group_info, color_provider_colors,
+      std::move(partitioned_popin_params), /*is_ordinary=*/true);
   page->opener_ = opener;
 
   OrdinaryPages().insert(page);
@@ -213,6 +217,7 @@ Page::Page(base::PassKey<Page>,
            AgentGroupScheduler& agent_group_scheduler,
            const BrowsingContextGroupInfo& browsing_context_group_info,
            const ColorProviderColorMaps* color_provider_colors,
+           blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
@@ -257,6 +262,13 @@ Page::Page(base::PassKey<Page>,
           MakeGarbageCollected<
               v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>()),
       browsing_context_group_info_(browsing_context_group_info) {
+  if (partitioned_popin_params) {
+    partitioned_popin_opener_top_frame_origin_ =
+        SecurityOrigin::CreateFromUrlOrigin(
+            partitioned_popin_params->opener_top_frame_origin);
+    partitioned_popin_opener_site_for_cookies_ =
+        partitioned_popin_params->opener_site_for_cookies;
+  }
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
 
@@ -483,6 +495,26 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
   // renderer-side opener is only set during construction and might be stale.
   // When we create the new page, we get the latest opener frame token, so the
   // new page's opener should be the most up-to-date opener.
+}
+
+const SecurityOrigin* Page::GetPartitionedPopinOpenerTopFrameOrigin() const {
+  // We should never be in a state where one of these was set and not the other.
+  DCHECK(!partitioned_popin_opener_top_frame_origin_ ==
+         !partitioned_popin_opener_site_for_cookies_);
+  return partitioned_popin_opener_top_frame_origin_.get();
+}
+
+const std::optional<net::SiteForCookies>
+Page::GetPartitionedPopinOpenerSiteForCookies() const {
+  // We should never be in a state where one of these was set and not the other.
+  DCHECK(!partitioned_popin_opener_top_frame_origin_ ==
+         !partitioned_popin_opener_site_for_cookies_);
+  return partitioned_popin_opener_site_for_cookies_;
+}
+
+bool Page::IsPartitionedPopin() const {
+  return GetPartitionedPopinOpenerTopFrameOrigin() &&
+         GetPartitionedPopinOpenerSiteForCookies();
 }
 
 LocalFrame* Page::DeprecatedLocalMainFrame() const {
@@ -1112,7 +1144,7 @@ void Page::SettingsChanged(ChangeType change_type) {
         // objects for layout.
         if (LocalFrameView* view = local_frame->View()) {
           if (const auto* scrollable_areas = view->UserScrollableAreas()) {
-            for (const auto& scrollable_area : *scrollable_areas) {
+            for (const auto& scrollable_area : scrollable_areas->Values()) {
               if (scrollable_area->ScrollsOverflow()) {
                 if (auto* layout_box = scrollable_area->GetLayoutBox()) {
                   layout_box->SetNeedsLayout(
@@ -1198,7 +1230,7 @@ void Page::UpdateAcceleratedCompositingSettings() {
     // compositing reasons may have changed.
     if (LocalFrameView* view = local_frame->View()) {
       if (const auto* areas = view->UserScrollableAreas()) {
-        for (const auto& scrollable_area : *areas) {
+        for (const auto& scrollable_area : areas->Values()) {
           if (scrollable_area->ScrollsOverflow()) {
             if (auto* layout_box = scrollable_area->GetLayoutBox()) {
               layout_box->SetNeedsPaintPropertyUpdate();

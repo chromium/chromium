@@ -34,6 +34,7 @@
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_profile.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
@@ -97,6 +98,10 @@ void LogErrorWithDictAndCallCallback(base::OnceClosure callback,
 void OnResetDnsPropertiesFailure(const std::string& error_name) {
   NET_LOG(ERROR) << "Failed to clear DNS Configurations, error name: "
                  << error_name;
+}
+
+void OnSetCustomApnFailure(const std::string& error_name) {
+  NET_LOG(ERROR) << "Failed to set custom APNs, error name: " << error_name;
 }
 
 std::string GetStringFromDictionary(const base::Value::Dict& dict,
@@ -508,6 +513,15 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
       shill_dictionary, std::move(callback), std::move(error_callback));
 }
 
+NetworkMetadataStore*
+ManagedNetworkConfigurationHandlerImpl::GetNetworkMetadataStore() {
+  if (network_metadata_store_for_testing_) {
+    return network_metadata_store_for_testing_;
+  }
+
+  return NetworkHandler::Get()->network_metadata_store();
+}
+
 void ManagedNetworkConfigurationHandlerImpl::ConfigurePolicyNetwork(
     const base::Value::Dict& shill_properties,
     base::OnceClosure callback) const {
@@ -888,6 +902,10 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
     network_device_handler_->SetAllowCellularSimLock(AllowCellularSimLock());
   }
 
+  if (features::IsApnRevampAndAllowApnModificationPolicyEnabled()) {
+    ModifyCustomAPNs();
+  }
+
   if (hotspot_controller_) {
     hotspot_controller_->SetPolicyAllowHotspot(AllowCellularHotspot());
   }
@@ -900,6 +918,35 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
 
   for (auto& observer : observers_)
     observer.PoliciesApplied(userhash);
+}
+
+void ManagedNetworkConfigurationHandlerImpl::ModifyCustomAPNs() {
+  NetworkStateHandler::NetworkStateList networks;
+
+  network_state_handler_->GetNetworkListByType(NetworkTypePattern::Cellular(),
+                                               /*configured_only=*/false,
+                                               /*visible_only=*/false,
+                                               /*limit=*/0, &networks);
+
+  for (const NetworkState* network : networks) {
+    if (network->IsManagedByPolicy()) {
+      continue;
+    }
+    const base::Value::List* existing_custom_apn_list =
+        GetNetworkMetadataStore()->GetCustomApnList(network->guid());
+    if (existing_custom_apn_list) {
+      base::Value::Dict onc;
+      onc.Set(::onc::network_config::kGUID, network->guid());
+      onc.Set(::onc::network_config::kType, ::onc::network_type::kCellular);
+      base::Value::Dict type_dict;
+      type_dict.Set(::onc::cellular::kCustomAPNList,
+                    AllowApnModification() ? existing_custom_apn_list->Clone()
+                                           : base::Value::List());
+      onc.Set(::onc::network_type::kCellular, std::move(type_dict));
+      SetProperties(network->path(), onc, base::DoNothing(),
+                    base::BindOnce(&OnSetCustomApnFailure));
+    }
+  }
 }
 
 const base::Value::Dict*

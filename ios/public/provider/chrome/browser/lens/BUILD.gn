@@ -18,6 +18,8 @@ source_set("lens_api") {
 
 source_set("lens_overlay_api") {
   sources = [
+    "lens_overlay_accessibility_configuration.h",
+    "lens_overlay_accessibility_configuration.mm",
     "lens_overlay_api.h",
     "lens_overlay_result.h",
   ]

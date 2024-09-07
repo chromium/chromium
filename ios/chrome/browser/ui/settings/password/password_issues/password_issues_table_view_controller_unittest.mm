@@ -10,7 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
@@ -185,7 +185,7 @@ class PasswordIssuesTableViewControllerTest
     TableViewMultiDetailTextItem* dismissed_warnings_button_item =
         GetTableViewItem(/*section=*/section, /*item=*/0);
     // Validate button text.
-    EXPECT_NSEQ(@"Dismissed Warnings", dismissed_warnings_button_item.text);
+    EXPECT_NSEQ(@"Dismissed warnings", dismissed_warnings_button_item.text);
     // Validate count.
     EXPECT_NSEQ([@(expected_count) stringValue],
                 dismissed_warnings_button_item.trailingDetailText);

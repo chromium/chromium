@@ -50,7 +50,8 @@ namespace {
 
 AccessorySheetData::Builder PaymentMethodAccessorySheetDataBuilder() {
   return AccessorySheetData::Builder(AccessoryTabType::CREDIT_CARDS,
-                                     std::u16string())
+                                     /*user_info_title=*/std::u16string(),
+                                     /*plus_address_title=*/std::u16string())
       .AppendFooterCommand(
           l10n_util::GetStringUTF16(
               IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
@@ -471,7 +472,8 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   data_manager_.test_payments_data_manager().AddAutofillOfferData(
       promo_code_expired);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                            std::u16string());
+                            /*user_info_title=*/std::u16string(),
+                            /*plus_address_title=*/std::u16string());
 
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));

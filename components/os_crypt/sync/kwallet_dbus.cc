@@ -245,70 +245,6 @@ KWalletDBus::Error KWalletDBus::EntryType(const int wallet_handle,
   return SUCCESS;
 }
 
-KWalletDBus::Error KWalletDBus::ReadEntry(const int wallet_handle,
-                                          const std::string& folder_name,
-                                          const std::string& key,
-                                          const std::string& app_name,
-                                          std::vector<uint8_t>* bytes_ptr) {
-  dbus::MethodCall method_call(kKWalletInterface, "readEntry");
-  dbus::MessageWriter builder(&method_call);
-  builder.AppendInt32(wallet_handle);  // handle
-  builder.AppendString(folder_name);   // folder
-  builder.AppendString(key);           // key
-  builder.AppendString(app_name);      // appid
-  std::unique_ptr<dbus::Response> response(
-      kwallet_proxy_
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
-  if (!response) {
-    LOG(ERROR) << "Error contacting " << kwalletd_name_ << " (readEntry)";
-    return CANNOT_CONTACT;
-  }
-  size_t length = 0;
-  const uint8_t* bytes_temp = nullptr;
-  dbus::MessageReader reader(response.get());
-  if (!reader.PopArrayOfBytes(&bytes_temp, &length)) {
-    LOG(ERROR) << "Error reading response from " << kwalletd_name_
-               << " (readEntry): " << response->ToString();
-    return CANNOT_READ;
-  }
-  if (bytes_temp) {
-    bytes_ptr->assign(bytes_temp, bytes_temp + length);
-  } else {
-    bytes_ptr->clear();
-  }
-  return SUCCESS;
-}
-
-KWalletDBus::Error KWalletDBus::EntryList(
-    const int wallet_handle,
-    const std::string& folder_name,
-    const std::string& app_name,
-    std::vector<std::string>* entry_list_ptr) {
-  dbus::MethodCall method_call(kKWalletInterface, "entryList");
-  dbus::MessageWriter builder(&method_call);
-  builder.AppendInt32(wallet_handle);  // handle
-  builder.AppendString(folder_name);   // folder
-  builder.AppendString(app_name);      // appid
-  std::unique_ptr<dbus::Response> response(
-      kwallet_proxy_
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
-  if (!response) {
-    LOG(ERROR) << "Error contacting " << kwalletd_name_ << " (entryList)";
-    return CANNOT_CONTACT;
-  }
-  dbus::MessageReader reader(response.get());
-  if (!reader.PopArrayOfStrings(entry_list_ptr)) {
-    LOG(ERROR) << "Error reading response from " << kwalletd_name_
-               << "(entryList): " << response->ToString();
-    return CANNOT_READ;
-  }
-  return SUCCESS;
-}
-
 KWalletDBus::Error KWalletDBus::RemoveEntry(const int wallet_handle,
                                             const std::string& folder_name,
                                             const std::string& key,
@@ -333,37 +269,6 @@ KWalletDBus::Error KWalletDBus::RemoveEntry(const int wallet_handle,
   if (!reader.PopInt32(return_code_ptr)) {
     LOG(ERROR) << "Error reading response from " << kwalletd_name_
                << " (removeEntry): " << response->ToString();
-    return CANNOT_READ;
-  }
-  return SUCCESS;
-}
-
-KWalletDBus::Error KWalletDBus::WriteEntry(const int wallet_handle,
-                                           const std::string& folder_name,
-                                           const std::string& key,
-                                           const std::string& app_name,
-                                           base::span<const uint8_t> data,
-                                           int* return_code_ptr) {
-  dbus::MethodCall method_call(kKWalletInterface, "writeEntry");
-  dbus::MessageWriter builder(&method_call);
-  builder.AppendInt32(wallet_handle);                         // handle
-  builder.AppendString(folder_name);                          // folder
-  builder.AppendString(key);                                  // key
-  builder.AppendArrayOfBytes(data);                           // value
-  builder.AppendString(app_name);                             // appid
-  std::unique_ptr<dbus::Response> response(
-      kwallet_proxy_
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
-  if (!response) {
-    LOG(ERROR) << "Error contacting " << kwalletd_name_ << " (writeEntry)";
-    return CANNOT_CONTACT;
-  }
-  dbus::MessageReader reader(response.get());
-  if (!reader.PopInt32(return_code_ptr)) {
-    LOG(ERROR) << "Error reading response from " << kwalletd_name_
-               << " (writeEntry): " << response->ToString();
     return CANNOT_READ;
   }
   return SUCCESS;

@@ -25,6 +25,7 @@
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
+#include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -76,6 +77,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_util.h"
@@ -1213,6 +1215,20 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return ignore_windows;
 }
 
+void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
+  DCHECK_EQ(active_behavior()->behavior_type(), BehaviorType::kSunfish);
+  if (!search_results_panel_widget_) {
+    search_results_panel_widget_ =
+        SearchResultsPanel::CreateWidget(current_root());
+    search_results_panel_widget_->Show();
+  }
+  // TODO(b/359317857): Determine whether to hide or refresh the panel if a new
+  // region selection and/or session is started.
+  auto* search_results_panel = views::AsViewClass<SearchResultsPanel>(
+      search_results_panel_widget_->GetContentsView());
+  search_results_panel->SetSearchBoxImage(image);
+}
+
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
   // If the drag of camera preview is in progress, we will hide other capture
   // UIs (capture bar, capture label), but we should still paint the layer to
@@ -1597,8 +1613,10 @@ void CaptureModeSession::MaybeCreateUserNudge() {
     return;
   }
 
-  user_nudge_controller_ = std::make_unique<UserNudgeController>(
-      this, capture_mode_bar_view_->settings_button());
+  auto* settings_button = capture_mode_bar_view_->settings_button();
+  CHECK(settings_button);
+  user_nudge_controller_ =
+      std::make_unique<UserNudgeController>(this, settings_button);
   user_nudge_controller_->SetVisible(true);
 }
 
@@ -1808,6 +1826,17 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   aura::Window* event_target = static_cast<aura::Window*>(event->target());
   wm::ConvertPointToScreen(event_target, &screen_location);
 
+  // Allow events that target the results panel (if present) to go through. This
+  // must be done before running `deferred_cursor_updater` to allow the panel to
+  // update the cursor type.
+  if (capture_mode_util::IsEventTargetedOnWidget(
+          *event, search_results_panel_widget_.get())) {
+    if (cursor_setter_) {
+      cursor_setter_->ResetCursor();
+    }
+    return;
+  }
+
   // For fullscreen/window mode, change the root window as soon as we detect the
   // cursor on a new display. For region mode, wait until the user taps down to
   // try to select a new region on the new display.
@@ -1892,12 +1921,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // press event, we will use it to dismiss the settings menu, unless it's on
   // the settings button (since in this case, the settings button handler will
   // take care of dismissing the menu).
-  const bool is_event_on_settings_button =
-      capture_mode_bar_view_->settings_button()->GetBoundsInScreen().Contains(
-          screen_location);
-  const bool should_close_settings = is_press_event &&
-                                     !is_event_on_settings_button &&
-                                     capture_mode_settings_widget_;
+  const bool should_close_settings =
+      is_press_event &&
+      !capture_mode_bar_view_->IsEventOnSettingsButton(screen_location) &&
+      capture_mode_settings_widget_;
   if (should_close_settings) {
     // All future located events up to and including a released events will be
     // consumed and ignored (i.e. won't be used to update the capture region,
@@ -2184,6 +2211,12 @@ void CaptureModeSession::OnLocatedEventReleased(
 
   // After first release event, we advance to the next phase.
   is_selecting_region_ = false;
+  if (active_behavior_->OnRegionSelected()) {
+    // If the behavior handled the event, stop propagation.
+    return;
+  }
+  // TODO(b/359317857): Determine whether to show the capture label view after
+  // drag release.
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);
 
   A11yAlertCaptureSource(/*trigger_now=*/true);

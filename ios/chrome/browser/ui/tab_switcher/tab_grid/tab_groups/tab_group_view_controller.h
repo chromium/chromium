@@ -45,6 +45,9 @@ class TabGroup;
 - (void)animateDismissal;
 - (void)fadeBlurOut;
 
+// Called when the contained grid view controller scrolled.
+- (void)gridViewControllerDidScroll;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUP_VIEW_CONTROLLER_H_

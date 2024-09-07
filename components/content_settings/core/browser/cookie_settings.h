@@ -45,7 +45,8 @@ enum class CookieControlsMode {
   kOff = 0,
   kBlockThirdParty = 1,
   kIncognitoOnly = 2,
-  kMaxValue = kIncognitoOnly,
+  kLimited = 3,
+  kMaxValue = kLimited,
 };
 
 // Default value for |extension_scheme|.
@@ -168,6 +169,12 @@ class CookieSettings
   //
   // This should only be called on the UI thread.
   void ResetCookieSetting(const GURL& primary_url);
+
+  // Returns true if third party cookies should be limited (blocked with
+  // mitigations).
+  //
+  // This should only be called on the UI thread.
+  bool AreThirdPartyCookiesLimited() const;
 
   // Returns true if cookies are allowed for *most* third parties on |url|.
   // There might be rules allowing or blocking specific third parties from

@@ -5,12 +5,12 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac highsierra mojave catalina bigsur monterey ventura sonoma
+#         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
-#             android-sm-a235m android-sm-s911u1
+#             android-sm-a235m android-sm-s911u1 android-moto-g-power-5g---2023
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -34,6 +34,7 @@
 #             apple-angle-metal-renderer:-apple-m2
 #         arm
 #         google google-0xffff google-0xc0de
+#         imagination
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
@@ -103,11 +104,6 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
-# Android Graphite/Dawn/Vulkan video isn't implemented yet.
-crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] ExpectedColor_MediaRecorderFrom2DCanvas [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElement [ Skip ]
-crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Skip ]
-
 ###################
 # Failures/Flakes #
 ###################
@@ -126,6 +122,9 @@ crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecord
 # Gardener 2024-04-29 - page reported failure
 crbug.com/40877266 [ amd-0x7340 angle-d3d11 graphite-enabled passthrough release-x64 win10 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
+# Tests are hitting an assertion, root cause needs to be tracked down.
+crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

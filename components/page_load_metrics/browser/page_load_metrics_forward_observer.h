@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_interface.h"
+#include "content/public/browser/auction_result.h"
 
 namespace page_load_metrics {
 
@@ -148,7 +149,7 @@ class PageLoadMetricsForwardObserver final
                         const gfx::Size& frame_size) override;
   void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override;
-  void OnSubFrameDeleted(int frame_tree_node_id) override;
+  void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void OnCookiesRead(
       const GURL& url,
       const GURL& first_party_url,
@@ -178,7 +179,9 @@ class PageLoadMetricsForwardObserver final
   void OnSharedStorageSelectURLCalled() override;
   void OnCustomUserTimingMarkObserved(
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) override;
-  void OnAdAuctionComplete() override;
+  void OnAdAuctionComplete(bool is_server_auction,
+                           bool is_on_device_auction,
+                           content::AuctionResult result) override;
 
   // Holds the forward target observer running in the parent PageLoadTracker.
   base::WeakPtr<PageLoadMetricsObserverInterface> parent_observer_;

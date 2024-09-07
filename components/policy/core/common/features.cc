@@ -4,12 +4,10 @@
 
 #include "components/policy/core/common/features.h"
 
-#include "google_apis/gaia/gaia_constants.h"
+namespace policy::features {
 
-namespace policy {
+BASE_FEATURE(kPolicyBlocklistProceedUntilResponse,
+             "PolicyBlocklistProceedUntilResponse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-namespace features {
-
-}  // namespace features
-
-}  // namespace policy
+}  // namespace policy::features

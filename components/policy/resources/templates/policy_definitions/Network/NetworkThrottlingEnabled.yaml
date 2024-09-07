@@ -11,8 +11,7 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- kirtika@chromium.org
-- pmarko@chromium.org
+- acostinas@google.com
 schema:
   properties:
     download_rate_kbits:

@@ -85,9 +85,6 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   // Custom sources of data, keyed by source path (e.g. "favicon").
   DataSourceMap data_sources_;
 
-  // The ID we'll use for the next request we receive.
-  RequestID next_request_id_;
-
   // Vends weak pointers to URLDataSources, allowing them to continue referring
   // to the backend that originally owned them, even if they've been replaced
   // and detached from the backend. This allows outstanding asynchronous queries

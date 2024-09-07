@@ -11,11 +11,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/notifier_settings_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/test_notifier_settings_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -54,6 +57,17 @@ TEST_F(NotifierSettingsViewTest, TestEmptyNotifierView) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(notifier_settings_view->no_notifiers_view_->GetVisible());
   EXPECT_FALSE(notifier_settings_view->top_label_->GetVisible());
+}
+
+TEST_F(NotifierSettingsViewTest, AccessibleProperties) {
+  auto notifier_settings_view = std::make_unique<NotifierSettingsView>();
+  ui::AXNodeData data;
+
+  notifier_settings_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kList);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
 }
 
 // Tests the notifier settings view with kSettingsAppNotificationSettings

@@ -119,7 +119,7 @@ bool OnlyAllowDefaultMatchPreloading() {
 }
 
 BASE_FEATURE(kAutocompleteDictionaryPreload,
-             "SearchPrefetchDictionaryPreload",
+             "AutocompleteDictionaryPreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
@@ -137,3 +137,7 @@ const base::FeatureParam<base::TimeDelta>
     kSuppressesSearchPrefetchOnSlowNetworkThreshold{
         &kSuppressesSearchPrefetchOnSlowNetwork,
         "slow_network_threshold_for_search_prefetch", base::Milliseconds(208)};
+
+BASE_FEATURE(kEnsureSearchPrefetchServiceOnInterceptor,
+             "EnsureSearchprefetchServiceOnInterceptor",
+             base::FEATURE_ENABLED_BY_DEFAULT);

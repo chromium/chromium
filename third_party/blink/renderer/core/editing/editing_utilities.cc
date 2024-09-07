@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -1297,6 +1298,30 @@ PositionWithAffinity AdjustForEditingBoundary(const Position& position) {
   return AdjustForEditingBoundary(PositionWithAffinity(position));
 }
 
+Position ComputePlaceholderToCollapseAt(const Position& insertion_pos) {
+  Position placeholder;
+  // We want to remove preserved newlines and brs that will collapse (and thus
+  // become unnecessary) when content is inserted just before them.
+  // FIXME: We shouldn't really have to do this, but removing placeholders is a
+  // workaround for 9661.
+  // If the caret is just before a placeholder, downstream will normalize the
+  // caret to it.
+  Position downstream(MostForwardCaretPosition(insertion_pos));
+  if (LineBreakExistsAtPosition(downstream)) {
+    // FIXME: This doesn't handle placeholders at the end of anonymous blocks.
+    VisiblePosition caret = CreateVisiblePosition(insertion_pos);
+    if (IsEndOfBlock(caret) && IsStartOfParagraph(caret)) {
+      placeholder = downstream;
+    }
+    // Don't remove the placeholder yet, otherwise the block we're inserting
+    // into would collapse before we get a chance to insert into it.  We check
+    // for a placeholder now, though, because doing so requires the creation of
+    // a VisiblePosition, and if we did that post-insertion it would force a
+    // layout.
+  }
+  return placeholder;
+}
+
 Position ComputePositionForNodeRemoval(const Position& position,
                                        const Node& node) {
   if (position.IsNull())
@@ -1643,6 +1668,10 @@ void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
   Element* const target = FindEventTargetFrom(
       frame, frame.Selection().ComputeVisibleSelectionInDOMTree());
 
+  // Copy the original target text into a string, in case the 'beforeinput'
+  // event handler modifies the text.
+  const String before_input_target_string = target->GetInnerTextWithoutUpdate();
+
   DataTransfer* const data_transfer = DataTransfer::Create(
       DataTransfer::DataTransferType::kInsertReplacementText,
       DataTransferAccessPolicy::kReadable,
@@ -1655,6 +1684,12 @@ void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
 
   // 'beforeinput' event handler may destroy target frame.
   if (current_document != frame.GetDocument()) {
+    return;
+  }
+
+  // If the 'beforeinput' event handler has modified the input text, then the
+  // replacement text shouldn't be inserted.
+  if (target->innerText() != before_input_target_string) {
     return;
   }
 

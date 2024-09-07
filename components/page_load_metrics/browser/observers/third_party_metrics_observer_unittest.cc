@@ -375,7 +375,8 @@ TEST_P(ThirdPartyMetricsObserverTest,
   NavigateAndCommit(GURL("https://foo.test"));
   tester()->SimulateTimingUpdate(timing);
 
-  int frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      main_rfh()->GetFrameTreeNodeId();
   tester()->SimulateLoadedResource(
       {url::SchemeHostPort(GURL("https://bar.test")), net::IPEndPoint(),
        frame_tree_node_id, false /* was_cached */,
@@ -413,7 +414,8 @@ TEST_P(ThirdPartyMetricsObserverTest,
   tester()->SimulateTimingUpdate(timing);
 
   // Load a same-site font, the histogram should not be recorded.
-  int frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      main_rfh()->GetFrameTreeNodeId();
   tester()->SimulateLoadedResource(
       {url::SchemeHostPort(GURL("http://b.foo.test")), net::IPEndPoint(),
        frame_tree_node_id, false /* was_cached */,
@@ -446,7 +448,8 @@ TEST_P(ThirdPartyMetricsObserverTest,
   NavigateAndCommit(GURL("https://foo.test"));
   tester()->SimulateTimingUpdate(timing);
 
-  int frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      main_rfh()->GetFrameTreeNodeId();
   tester()->SimulateLoadedResource(
       {url::SchemeHostPort(GURL("https://bar.test")), net::IPEndPoint(),
        frame_tree_node_id, false /* was_cached */,

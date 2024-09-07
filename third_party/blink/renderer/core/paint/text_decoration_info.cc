@@ -287,8 +287,7 @@ TextDecorationInfo::TextDecorationInfo(
       width_(width),
       target_ascent_(GetAscent(target_style, font_override)),
       scaling_factor_(scaling_factor),
-      use_decorating_box_(RuntimeEnabledFeatures::TextDecoratingBoxEnabled() &&
-                          inline_context && !decoration_override_ &&
+      use_decorating_box_(inline_context && !decoration_override_ &&
                           !font_override_ &&
                           ShouldUseDecoratingBox(target_style)),
       minimum_thickness_is_one_(minimum_thickness1) {

@@ -42,6 +42,8 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   static constexpr webui::ResourcePath kResources[] = {
       {"profile_customization_app.js",
        IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_APP_JS},
+      {"profile_customization_app.css.js",
+       IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_APP_CSS_JS},
       {"profile_customization_app.html.js",
        IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_APP_HTML_JS},
       {"profile_customization_browser_proxy.js",

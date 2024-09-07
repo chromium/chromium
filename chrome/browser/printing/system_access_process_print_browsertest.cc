@@ -2269,7 +2269,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
     EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-    EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1"),
+    EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1",
+                                                   /*page_ranges=*/nullptr),
               *document_print_settings());
   } else {
 #if !BUILDFLAG(IS_WIN)
@@ -2277,7 +2278,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     EXPECT_EQ(did_print_document_count(), 1);
 #endif
     EXPECT_TRUE(!in_process_last_error_result_code().has_value());
-    EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1"),
+    EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1",
+                                                   /*page_ranges=*/nullptr),
               *document_print_settings());
   }
   EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
@@ -2623,7 +2625,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_TRUE(did_use_default_settings());
   EXPECT_TRUE(did_get_settings_with_ui());
 #endif
-  EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1"),
+  EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1",
+                                                 /*page_ranges=*/nullptr),
             *document_print_settings());
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
@@ -2631,6 +2634,83 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // RenderPrintedDocument() once XPS print pipeline is added.
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
+#else
+  EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
+#endif
+  EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
+  EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(did_print_document_count(), 1);
+  EXPECT_EQ(print_job_destruction_count(), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
+                       StartBasicPrintPageRanges) {
+  const PageRanges kPageRanges{{/*from=*/2, /*to=*/3}};
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  SetUserSettingsPageRangesForSubsequentContext(kPageRanges);
+  constexpr int kJobId = 1;
+  SetNewDocumentJobId(kJobId);
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/7_pages.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+#if BUILDFLAG(IS_WIN)
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings.
+  // 3.  A print job is started.
+  // 4.  The print compositor will complete generating the document.
+  // 5.  Page 2 of the document is rendered.
+  // 6.  Page 3 of the document is rendered.
+  // 7.  Receive document done notification.
+  // 8.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
+  // TODO(crbug.com/40100562)  Include Windows coverage of
+  // RenderPrintedDocument() once XPS print pipeline is added.
+  SetNumExpectedMessages(/*num=*/8);
+#else
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings.
+  // 3.  A print job is started.
+  // 4.  The print compositor will complete generating the document.
+  // 5.  The document is rendered.
+  // 6.  Receive document done notification.
+  // 7.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
+  SetNumExpectedMessages(/*num=*/7);
+#endif
+
+  StartBasicPrint(web_contents);
+
+  WaitUntilCallbackReceived();
+
+  // macOS and Linux currently have to invoke a system dialog from within the
+  // browser process.  There is not a callback to capture the result in these
+  // cases.
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kSuccess);
+#else
+  EXPECT_TRUE(did_use_default_settings());
+  EXPECT_TRUE(did_get_settings_with_ui());
+#endif
+  EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1", &kPageRanges),
+            *document_print_settings());
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/40100562)  Include Windows coverage of
+  // RenderPrintedDocument() once XPS print pipeline is added.
+  EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(render_printed_page_count(), 2);
 #else
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif

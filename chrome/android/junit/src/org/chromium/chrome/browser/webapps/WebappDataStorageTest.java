@@ -23,6 +23,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -36,8 +37,8 @@ import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBui
 import java.util.concurrent.TimeUnit;
 
 /**
- * Tests the WebappDataStorage class by ensuring that it persists data to
- * SharedPreferences as expected.
+ * Tests the WebappDataStorage class by ensuring that it persists data to SharedPreferences as
+ * expected.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -45,7 +46,7 @@ import java.util.concurrent.TimeUnit;
         shadows = {BackgroundShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebappDataStorageTest {
-    @Rule public MockWebappDataStorageClockRule mClockRule = new MockWebappDataStorageClockRule();
+    @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
 
     private SharedPreferences mSharedPreferences;
     private boolean mCallbackCalled;
@@ -358,15 +359,15 @@ public class WebappDataStorageTest {
         storage.updateTimeOfLastCheckForUpdatedWebManifest();
         storage.setRelaxedUpdates(true);
 
-        mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
+        mClockRule.advanceMillis(WebappDataStorage.UPDATE_INTERVAL);
         assertFalse(storage.shouldCheckForUpdate());
-        mClockRule.advance(
+        mClockRule.advanceMillis(
                 WebappDataStorage.RELAXED_UPDATE_INTERVAL - WebappDataStorage.UPDATE_INTERVAL);
         assertTrue(storage.shouldCheckForUpdate());
 
         storage.updateTimeOfLastCheckForUpdatedWebManifest();
         storage.setRelaxedUpdates(false);
-        mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
+        mClockRule.advanceMillis(WebappDataStorage.UPDATE_INTERVAL);
         assertTrue(storage.shouldCheckForUpdate());
     }
 

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -39,10 +39,10 @@ class Origin;
 }  // namespace url
 
 namespace extensions {
-
 class ChromeComponentExtensionResourceManager;
 class ChromeExtensionsAPIClient;
 class ChromeProcessManagerDelegate;
+class EventRouterForwarder;
 class ScopedExtensionUpdaterKeepAlive;
 
 // Implementation of BrowserClient for Chrome, which includes
@@ -61,15 +61,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   ~ChromeExtensionsBrowserClient() override;
 
-  // Called by the BrowserProcess to indicate that we should perform any
-  // teardown necessary before being destroyed (e.g. unsubscribing observers, or
-  // any other pre-emptive freeing of resources. Note that we may still receive
-  // calls from other shutting down objects after this call, so this should
-  // primarily be used for things that may need to be cleaned up before other
-  // parts of the browser).
-  void StartTearDown();
-
   // ExtensionsBrowserClient overrides:
+  void StartTearDown() override;
   bool IsShuttingDown() override;
   bool AreExtensionsDisabled(const base::CommandLine& command_line,
                              content::BrowserContext* context) override;
@@ -138,7 +131,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
   GetControlledFrameEmbedderURLLoader(
       const url::Origin& app_origin,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       content::BrowserContext* browser_context) override;
   std::unique_ptr<ExtensionHostDelegate> CreateExtensionHostDelegate() override;
   bool DidVersionUpdate(content::BrowserContext* context) override;
@@ -165,6 +158,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   ExtensionCache* GetExtensionCache() override;
   bool IsBackgroundUpdateAllowed() override;
   bool IsMinBrowserVersionSupported(const std::string& min_version) override;
+  void CreateExtensionWebContentsObserver(
+      content::WebContents* web_contents) override;
   ExtensionWebContentsObserver* GetExtensionWebContentsObserver(
       content::WebContents* web_contents) override;
   void ReportError(content::BrowserContext* context,
@@ -294,6 +289,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
 
   UserScriptListener user_script_listener_;
+
+  scoped_refptr<EventRouterForwarder> event_router_forwarder_;
 };
 
 }  // namespace extensions

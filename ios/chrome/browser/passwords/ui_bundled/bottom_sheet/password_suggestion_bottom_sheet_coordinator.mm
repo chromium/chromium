@@ -14,17 +14,18 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+using PasswordSuggestionBottomSheetExitReason::kCouldNotPresent;
 using PasswordSuggestionBottomSheetExitReason::kDismissal;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
@@ -122,6 +123,26 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                                       completion:^{
                                         [weakSelf setInitialVoiceOverFocus];
                                       }];
+
+  // Dismiss right away if the presentation failed to avoid having a zombie
+  // coordinator. This is the best proxy we have to know whether the view
+  // controller for the bottom sheet could really be presented as the completion
+  // block is only called when presentation really happens, and we can't get any
+  // error message or signal. Based on what we could test, we know that
+  // presentingViewController is only set if the view controller can be
+  // presented, where it is left to nil if the presentation is rejected for
+  // various reasons (having another view controller already presented is one of
+  // them). One should not think they can know all the reasons why the
+  // presentation fails.
+  //
+  // Keep this line at the end of -start because the
+  // delegate will likely -stop the coordinator when closing suggestions, so the
+  // coordinator should be in the most up to date state where it can be safely
+  // stopped.
+  if (!self.viewController.presentingViewController) {
+    [self.mediator logExitReason:kCouldNotPresent];
+    [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+  }
 }
 
 - (void)stop {
@@ -172,7 +193,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                          }];
 }
 
-- (void)primaryButtonTapped:(FormSuggestion*)formSuggestion {
+- (void)primaryButtonTappedForSuggestion:(FormSuggestion*)formSuggestion
+                                 atIndex:(NSInteger)index {
   _dismissing = YES;
   [self.mediator logExitReason:kUsePasswordSuggestion];
   __weak __typeof(self) weakSelf = self;
@@ -183,6 +205,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf.mediator didSelectSuggestion:formSuggestion
+                                                          atIndex:index
                                                        completion:completion];
                          }];
 }

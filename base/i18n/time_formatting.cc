@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/i18n/unicodestring.h"
-#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -285,35 +284,15 @@ bool TimeDurationFormat(TimeDelta time,
   const int minutes = total_minutes % 60;
   UMeasureFormatWidth u_width = DurationWidthToMeasureWidth(width);
 
-  // TODO(derat): Delete the |status| checks and LOG(ERROR) calls throughout
-  // this function once the cause of http://crbug.com/677043 is tracked down.
   const icu::Measure measures[] = {
       icu::Measure(hours, icu::MeasureUnit::createHour(status), status),
       icu::Measure(minutes, icu::MeasureUnit::createMinute(status), status)};
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "Creating MeasureUnit or Measure for " << hours << "h"
-               << minutes << "m failed: " << u_errorName(status);
-    return false;
-  }
-
   icu::MeasureFormat measure_format(icu::Locale::getDefault(), u_width, status);
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "Creating MeasureFormat for "
-               << icu::Locale::getDefault().getName()
-               << " failed: " << u_errorName(status);
-    return false;
-  }
-
   icu::UnicodeString formatted;
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   measure_format.formatMeasures(measures, 2, formatted, ignore, status);
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "formatMeasures failed: " << u_errorName(status);
-    return false;
-  }
-
   *out = i18n::UnicodeStringToString16(formatted);
-  return true;
+  return U_SUCCESS(status);
 }
 
 bool TimeDurationFormatWithSeconds(TimeDelta time,
@@ -337,6 +316,42 @@ bool TimeDurationFormatWithSeconds(TimeDelta time,
   icu::UnicodeString formatted;
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   measure_format.formatMeasures(measures, 3, formatted, ignore, status);
+  *out = i18n::UnicodeStringToString16(formatted);
+  return U_SUCCESS(status);
+}
+
+bool TimeDurationCompactFormatWithSeconds(TimeDelta time,
+                                          DurationFormatWidth width,
+                                          std::u16string* out) {
+  DCHECK(out);
+  UErrorCode status = U_ZERO_ERROR;
+  const int64_t total_seconds = ClampRound<int64_t>(time.InSecondsF());
+  const int64_t hours = total_seconds / base::Time::kSecondsPerHour;
+  const int64_t minutes =
+      (total_seconds - hours * base::Time::kSecondsPerHour) /
+      base::Time::kSecondsPerMinute;
+  const int64_t seconds = total_seconds % base::Time::kSecondsPerMinute;
+  UMeasureFormatWidth u_width = DurationWidthToMeasureWidth(width);
+  const icu::Measure hours_measure =
+      icu::Measure(hours, icu::MeasureUnit::createHour(status), status);
+  const icu::Measure minutes_measure =
+      icu::Measure(minutes, icu::MeasureUnit::createMinute(status), status);
+  const icu::Measure seconds_measure =
+      icu::Measure(seconds, icu::MeasureUnit::createSecond(status), status);
+  icu::MeasureFormat measure_format(icu::Locale::getDefault(), u_width, status);
+  icu::UnicodeString formatted;
+  icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
+  if (hours != 0 || width == DurationFormatWidth::DURATION_WIDTH_NUMERIC) {
+    icu::Measure input_measures[3]{hours_measure, minutes_measure,
+                                   seconds_measure};
+    measure_format.formatMeasures(input_measures, 3, formatted, ignore, status);
+  } else if (minutes != 0) {
+    icu::Measure input_measures[2]{minutes_measure, seconds_measure};
+    measure_format.formatMeasures(input_measures, 2, formatted, ignore, status);
+  } else {
+    icu::Measure input_measures[1]{seconds_measure};
+    measure_format.formatMeasures(input_measures, 1, formatted, ignore, status);
+  }
   *out = i18n::UnicodeStringToString16(formatted);
   return U_SUCCESS(status);
 }

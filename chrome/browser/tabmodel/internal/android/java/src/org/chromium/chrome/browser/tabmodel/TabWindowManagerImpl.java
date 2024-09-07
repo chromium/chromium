@@ -483,7 +483,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     }
 
     private boolean isPossiblyAnArchivedTab() {
-        return ChromeFeatureList.sAndroidTabDeclutter.isEnabled()
+        return ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()
                 && (mArchivedTabModelSelector == null
                         || !mArchivedTabModelSelector.isTabStateInitialized());
     }

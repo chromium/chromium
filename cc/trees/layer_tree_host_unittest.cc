@@ -95,7 +95,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -2961,7 +2961,7 @@ class LayerTreeHostTestSetNeedsCommitWithForcedRedraw
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     if (num_draws_ == 3) {
       host_impl->SetViewportDamage(invalid_rect_);
-      host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+      host_impl->SetNeedsRedraw();
     }
   }
 
@@ -3345,7 +3345,7 @@ class LayerTreeHostTestFrameTimeUpdatesAfterDraw : public LayerTreeHostTest {
     frame_++;
     if (frame_ == 1) {
       first_frame_time_ = impl->CurrentBeginFrameArgs().frame_time;
-      impl->SetNeedsRedraw(RedrawReason::kUntracked);
+      impl->SetNeedsRedraw();
 
       // Since we might use a low-resolution clock on Windows, we need to
       // make sure that the clock has incremented past first_frame_time_.
@@ -8218,11 +8218,11 @@ class LayerTreeHostTestSubmitFrameResources : public LayerTreeHostTest {
   void DisplayReceivedCompositorFrameOnThread(
       const viz::CompositorFrame& frame) override {
     EXPECT_EQ(2u, frame.render_pass_list.size());
-    // Each render pass has 10 resources in it. And the root render pass has a
-    // mask resource used when drawing the child render pass. The number 10 may
+    // Each render pass has 6 resources in it. And the root render pass has a
+    // mask resource used when drawing the child render pass. The number 6 may
     // change if AppendOneOfEveryQuadType() is updated, and the value here
     // should be updated accordingly.
-    EXPECT_EQ(21u, frame.resource_list.size());
+    EXPECT_EQ(13u, frame.resource_list.size());
 
     EndTest();
   }
@@ -8456,12 +8456,16 @@ class LayerTreeHostTestImageAnimation : public LayerTreeHostTest {
         EXPECT_EQ(layer->update_rect(), image_rect);
         EXPECT_EQ(generator_->frames_decoded().size(), 2u);
         EXPECT_EQ(generator_->frames_decoded().count(1u), 1u);
+        EXPECT_EQ(layer->GetDamageReasons(),
+                  DamageReasonSet{DamageReason::kAnimatedImage});
         break;
       case 3:
         EXPECT_EQ(layer->InvalidationForTesting().bounds(), image_rect);
         EXPECT_EQ(layer->update_rect(), image_rect);
         EXPECT_EQ(generator_->frames_decoded().size(), 3u);
         EXPECT_EQ(generator_->frames_decoded().count(2u), 1u);
+        EXPECT_EQ(layer->GetDamageReasons(),
+                  DamageReasonSet{DamageReason::kAnimatedImage});
         break;
       default:
         // Only 3 draws should happen for 3 frames of the animate image.
@@ -8470,6 +8474,37 @@ class LayerTreeHostTestImageAnimation : public LayerTreeHostTest {
 
     if (draw_count_ == 3)
       EndTest();
+  }
+
+  void WillSubmitCompositorFrame(LayerTreeHostImpl* host_impl,
+                                 const viz::CompositorFrame& frame) override {
+    const viz::FrameIntervalInputs& inputs =
+        frame.metadata.frame_interval_inputs;
+
+    // `draw_count_` matches `WillPrepareToDrawOnThread`
+    switch (draw_count_) {
+      case 1:
+        // Very first frame is set directly, without calling
+        // PictureLayerImpl::InvalidateRegionForImages.
+        EXPECT_FALSE(inputs.has_only_content_frame_interval_updates);
+        break;
+      case 2:
+        // Second frame contains damage from animating image only.
+        ASSERT_EQ(inputs.content_interval_info.size(), 1u);
+        EXPECT_EQ(inputs.content_interval_info[0].type,
+                  viz::ContentFrameIntervalType::kAnimatingImage);
+        EXPECT_EQ(inputs.content_interval_info[0].frame_interval,
+                  base::Seconds(1));
+        EXPECT_TRUE(inputs.has_only_content_frame_interval_updates);
+        break;
+      case 3:
+        // Because the image isn't repeating, it's no longer considered
+        // animating at the very last frame.
+        EXPECT_FALSE(inputs.has_only_content_frame_interval_updates);
+        break;
+      default:
+        NOTREACHED();
+    }
   }
 
   void AfterTest() override {
@@ -9183,7 +9218,7 @@ class LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame
     } else if (begin_frame_count_ == 4) {
       PostIssueBeginFrame(false);
     }
-    host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+    host_impl->SetNeedsRedraw();
     host_impl->SetViewportDamage(gfx::Rect(1, 1));
   }
 
@@ -9702,7 +9737,7 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
     // Mark every frame as a dropped frame affecting smoothness.
     host_impl->dropped_frame_counter()->OnEndFrame(
         last_args_, CreateFakeImplDroppedFrameInfo());
-    host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+    host_impl->SetNeedsRedraw();
     --frames_counter_;
   }
 
@@ -9758,7 +9793,7 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
     // main-thread update.
     host_impl->dropped_frame_counter()->OnEndFrame(
         last_args_, CreateFakeImplDroppedFrameInfo());
-    host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+    host_impl->SetNeedsRedraw();
     --frames_counter_;
   }
 
@@ -10145,7 +10180,7 @@ class LayerTreeHostTestDelayRecreateTiling
       host_impl->pending_tree()->set_needs_update_draw_properties();
 
       // to make sure Draw happen
-      host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+      host_impl->SetNeedsRedraw();
     }
   }
 
@@ -10301,7 +10336,7 @@ class LayerTreeHostTestInvalidateImplSideForRerasterTiling
         // implside will be requested for rerastering tiling.
         ClearAnimationForLayer(host_impl->active_tree(), target_layer);
         ClearAnimationForLayer(host_impl->recycle_tree(), target_layer);
-        host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+        host_impl->SetNeedsRedraw();
       }
     }
   }
@@ -10329,7 +10364,7 @@ class LayerTreeHostTestInvalidateImplSideForRerasterTiling
 
           // trigger draw to check if invalidating implside is not triggered
           // if animation is still active.
-          host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+          host_impl->SetNeedsRedraw();
         } else {
           // check if invalidation implside was requested successfully.
           // new tiling should be created.

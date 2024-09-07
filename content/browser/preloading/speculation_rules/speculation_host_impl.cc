@@ -99,6 +99,12 @@ void SpeculationHostImpl::InitiatePreview(const GURL& url) {
     mojo::ReportBadMessage("SH_PREVIEW");
     return;
   }
+
+  // Link Preview is not allowed in a frame with untrusted network disabled.
+  if (render_frame_host().IsUntrustedNetworkDisabled()) {
+    return;
+  }
+
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
   CHECK(web_contents);

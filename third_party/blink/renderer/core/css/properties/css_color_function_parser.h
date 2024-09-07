@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_COLOR_FUNCTION_PARSER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/color_function.h"
 #include "third_party/blink/renderer/core/css/css_color_channel_map.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
@@ -25,8 +25,6 @@ class CORE_EXPORT ColorFunctionParser {
   // oklab(), lch(), oklch() and color(). https://www.w3.org/TR/css-color-4/
   CSSValue* ConsumeFunctionalSyntaxColor(CSSParserTokenStream& stream,
                                          const CSSParserContext& context);
-
-  struct FunctionMetadata;
 
  private:
   enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
@@ -67,7 +65,7 @@ class CORE_EXPORT ColorFunctionParser {
   // Metadata about the current function being parsed. Set by
   // `ConsumeColorSpaceAndOriginColor()` after parsing the preamble of the
   // function.
-  const FunctionMetadata* function_metadata_ = nullptr;
+  const ColorFunction::Metadata* function_metadata_ = nullptr;
 
   // Legacy colors have commas separating their channels. This syntax is
   // incompatible with CSSColor4 features like "none" or alpha with a slash.

@@ -55,6 +55,7 @@ class LanguageLabelButton;
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. These should be the same as
 // LiveCaptionSessionEvent in enums.xml.
+// LINT.IfChange(SessionEvent)
 enum class SessionEvent {
   // We began showing captions for an audio stream.
   kStreamStarted = 0,
@@ -64,6 +65,7 @@ enum class SessionEvent {
   kCloseButtonClicked = 2,
   kMaxValue = kCloseButtonClicked,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:LiveCaptionSessionEvent)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Used by ash window manager to place the caption bubble in the correct

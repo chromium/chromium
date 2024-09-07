@@ -65,11 +65,12 @@ TEST_F(WaylandEventWatcherTest, CrashKeyResourceError) {
                                       ->resource();
 
         // Prepare the expectation error string.
-        const std::string expected_error_code =
-            base::StrCat({wl_resource_get_class(xdg_surface), ": error ",
-                          NumberToString(static_cast<uint32_t>(
-                              XDG_SURFACE_ERROR_UNCONFIGURED_BUFFER)),
-                          ": ", kTestErrorString});
+        const std::string expected_error_code = base::StrCat(
+            {wl_resource_get_class(xdg_surface), "#",
+             NumberToString(wl_resource_get_id(xdg_surface)), ": error ",
+             NumberToString(
+                 static_cast<uint32_t>(XDG_SURFACE_ERROR_UNCONFIGURED_BUFFER)),
+             ": ", kTestErrorString});
 
         callback.Run(expected_error_code);
         wl_resource_post_error(xdg_surface,
@@ -85,7 +86,7 @@ TEST_F(WaylandEventWatcherTest, CrashKeyResourceError) {
 TEST_F(WaylandEventWatcherTest, CrashKeyResourceNoMemory) {
   // Prepare the expectation error string.
   const std::string expected_error_code = base::StrCat(
-      {"wl_display: error ",
+      {"wl_display#1: error ",
        NumberToString(static_cast<uint32_t>(WL_DISPLAY_ERROR_NO_MEMORY)),
        ": no memory"});
 
@@ -107,7 +108,7 @@ TEST_F(WaylandEventWatcherTest, CrashKeyResourceNoMemory) {
 
 TEST_F(WaylandEventWatcherTest, CrashKeyClientNoMemoryError) {
   const std::string expected_error_code = base::StrCat(
-      {"wl_display: error ",
+      {"wl_display#1: error ",
        NumberToString(static_cast<uint32_t>(WL_DISPLAY_ERROR_NO_MEMORY)),
        ": no memory"});
 
@@ -125,7 +126,7 @@ TEST_F(WaylandEventWatcherTest, CrashKeyClientNoMemoryError) {
 TEST_F(WaylandEventWatcherTest, CrashKeyClientImplementationError) {
   const std::string kError = "A nice error.";
   const std::string expected_error_code = base::StrCat(
-      {"wl_display: error ",
+      {"wl_display#1: error ",
        NumberToString(static_cast<uint32_t>(WL_DISPLAY_ERROR_IMPLEMENTATION)),
        ": ", kError});
 

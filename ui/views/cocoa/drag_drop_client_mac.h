@@ -63,6 +63,7 @@ class VIEWS_EXPORT DragDropClientMac : public remote_cocoa::DragDropClient {
 
   // Converts the given NSPoint to the coordinate system in Views.
   gfx::Point LocationInView(NSPoint point) const;
+  gfx::Point LocationInView(NSPoint point, NSWindow* destination_window) const;
 
   // Provides the data for the drag and drop session.
   std::unique_ptr<ui::OSExchangeData> exchange_data_;

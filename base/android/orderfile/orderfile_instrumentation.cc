@@ -23,6 +23,7 @@
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -216,8 +217,7 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path,
     if (!offset)
       continue;
     auto offset_str = base::StringPrintf("%" PRIuS "\n", offset);
-    if (file.WriteAtCurrentPos(offset_str.c_str(),
-                               static_cast<int>(offset_str.size())) < 0) {
+    if (!file.WriteAtCurrentPosAndCheck(base::as_byte_span(offset_str))) {
       // If the file could be opened, but writing has failed, it's likely that
       // data was partially written. Producing incomplete profiling data would
       // lead to a poorly performing orderfile, but might not be otherwised

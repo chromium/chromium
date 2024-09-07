@@ -1596,9 +1596,7 @@ void HTMLSelectElement::showPicker(ExceptionState& exception_state) {
     return;
   }
 
-  if (RuntimeEnabledFeatures::ShowPickerConsumeUserActivationEnabled()) {
-    LocalFrame::ConsumeTransientUserActivation(frame);
-  }
+  LocalFrame::ConsumeTransientUserActivation(frame);
 
   select_type_->ShowPicker();
 }
@@ -1675,12 +1673,25 @@ HTMLButtonElement* HTMLSelectElement::DisplayedButton() const {
   return select_type_->DisplayedButton();
 }
 
-HTMLDataListElement* HTMLSelectElement::DisplayedDatalist() const {
-  return select_type_->DisplayedDatalist();
+HTMLElement* HTMLSelectElement::PopoverForAppearanceBase() const {
+  return select_type_->PopoverForAppearanceBase();
 }
 
-bool HTMLSelectElement::IsAppearanceBaseSelect() const {
-  return select_type_->IsAppearanceBaseSelect();
+// static
+bool HTMLSelectElement::IsPopoverForAppearanceBase(const Element* element) {
+  if (auto* root = DynamicTo<ShadowRoot>(element->parentNode())) {
+    return IsA<HTMLSelectElement>(root->host()) &&
+           element->FastHasAttribute(html_names::kPopoverAttr);
+  }
+  return false;
+}
+
+bool HTMLSelectElement::IsAppearanceBaseButton() const {
+  return select_type_->IsAppearanceBaseButton();
+}
+
+bool HTMLSelectElement::IsAppearanceBasePicker() const {
+  return select_type_->IsAppearanceBasePicker();
 }
 
 void HTMLSelectElement::SelectedOptionElementInserted(
@@ -1695,12 +1706,13 @@ void HTMLSelectElement::SelectedOptionElementRemoved(
   selectedoption->CloneContentsFromOptionElement(nullptr);
 }
 
-bool HTMLSelectElement::SupportsFocus(UpdateBehavior update_behavior) const {
-  if (IsAppearanceBaseSelect()) {
+FocusableState HTMLSelectElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
+  if (IsAppearanceBaseButton()) {
     // In appearance:base-select mode, the child button gets focus instead of the
     // select via delegatesfocus. We must return false here in order to make the
     // delegatesfocus focusing code find the child button.
-    return false;
+    return FocusableState::kNotFocusable;
   }
   return HTMLFormControlElementWithState::SupportsFocus(update_behavior);
 }

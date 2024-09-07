@@ -57,6 +57,7 @@ public class StaticLayout extends Layout {
     private static final int HIDE_DURATION_MS = 500;
 
     private boolean mHandlesTabLifecycles;
+    private boolean mNeedsOffsetTag;
 
     private class UnstallRunnable implements Runnable {
         @Override
@@ -169,9 +170,15 @@ public class StaticLayout extends Layout {
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             StaticTabSceneLayer testSceneLayer) {
         super(context, updateHost, renderHost);
+
         mContext = context;
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         // Only handle tab lifecycle on tablets.
-        mHandlesTabLifecycles = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+        mHandlesTabLifecycles = isTablet;
+        // On tablets, StaticTabSceneLayer is a subtree of TabStripSceneLayer,
+        // and the tag would have been set on the TabStripSceneLayer already.
+        mNeedsOffsetTag = !isTablet;
+
         mViewHost = viewHost;
         mRequestSupplier = requestSupplier;
 
@@ -212,9 +219,13 @@ public class StaticLayout extends Layout {
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            mModel.set(
-                                    LayoutTab.CONTENT_OFFSET_TAG,
-                                    offsetTagsInfo.getTopControlsOffsetTag());
+                            // On tablets, StaticTabSceneLayer is a subtree of TabStripSceneLayer,
+                            // and the tag would have been set on the TabStripSceneLayer already.
+                            if (mNeedsOffsetTag) {
+                                mModel.set(
+                                        LayoutTab.CONTENT_OFFSET_TAG,
+                                        offsetTagsInfo.getTopControlsOffsetTag());
+                            }
 
                             // With BCIV enabled, scrolling will not update the content offset of
                             // the browser's compositor frame. If we transition to a HIDDEN state
@@ -324,6 +335,13 @@ public class StaticLayout extends Layout {
                     @Override
                     public void onDidChangeThemeColor(Tab tab, int color) {
                         updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
+                    }
+
+                    @Override
+                    public void didBackForwardTransitionAnimationChange() {
+                        updateStaticTab(
+                                tabModelSelector.getCurrentTab(),
+                                /* skipUpdateVisibleIds= */ false);
                     }
                 };
     }

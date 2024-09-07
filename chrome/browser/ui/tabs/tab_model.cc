@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -49,6 +50,9 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
       soon_to_be_owning_model_(soon_to_be_owning_model) {
   TabLookupFromWebContents::CreateForWebContents(contents_, this);
 
+  // TODO(https://crbug.com/362038317): Tab-helpers should be created in exactly
+  // one place, which is here.
+  TabHelpers::AttachTabHelpers(contents_);
   tab_features_ = TabFeatures::CreateTabFeatures();
 
   // Once tabs are pulled into a standalone module, TabFeatures and its
@@ -162,6 +166,10 @@ BrowserWindowInterface* TabModel::GetBrowserWindowInterface() {
 
 tabs::TabFeatures* TabModel::GetTabFeatures() {
   return tab_features_.get();
+}
+
+uint32_t TabModel::GetTabHandle() {
+  return GetHandle().raw_value();
 }
 
 void TabModel::OnTabStripModelChanged(

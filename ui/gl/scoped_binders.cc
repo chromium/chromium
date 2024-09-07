@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -191,7 +186,7 @@ ScopedBufferBinder::~ScopedBufferBinder() {
 }
 
 ScopedViewport::ScopedViewport(int x, int y, int width, int height) {
-  glGetIntegerv(GL_VIEWPORT, data_);
+  glGetIntegerv(GL_VIEWPORT, data_.data());
   glViewport(x, y, width, height);
 }
 
@@ -200,7 +195,7 @@ ScopedViewport::~ScopedViewport() {
 }
 
 ScopedColorMask::ScopedColorMask(char red, char green, char blue, char alpha) {
-  glGetBooleanv(GL_COLOR_WRITEMASK, colors_);
+  glGetBooleanv(GL_COLOR_WRITEMASK, colors_.data());
   glColorMask(red, green, blue, alpha);
 }
 

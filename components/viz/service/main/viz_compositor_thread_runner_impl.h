@@ -57,6 +57,7 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   void SetIOThreadId(base::PlatformThreadId io_thread_id) override {}
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
                               GpuServiceImpl* gpu_service) override;
+  void RequestBeginFrameForGpuService(bool toggle) override;
 
  private:
   void CreateHintSessionFactoryOnCompositorThread(
@@ -67,6 +68,7 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   void CreateFrameSinkManagerOnCompositorThread(
       mojom::FrameSinkManagerParamsPtr params,
       GpuServiceImpl* gpu_service);
+  void RequestBeginFrameForGpuServiceOnCompositorThread(bool toggle);
   void TearDownOnCompositorThread();
 
   std::unique_ptr<VizCompositorThreadType> thread_;

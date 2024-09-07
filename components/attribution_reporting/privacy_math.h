@@ -16,9 +16,11 @@
 #include "base/component_export.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 
 namespace attribution_reporting {
 
+class AttributionScopesData;
 class TriggerSpecs;
 
 struct FakeEventLevelReport {
@@ -41,7 +43,9 @@ bool IsValid(const RandomizedResponse&, const TriggerSpecs&);
 
 enum class RandomizedResponseError {
   kExceedsChannelCapacityLimit,
+  kExceedsScopesChannelCapacityLimit,
   kExceedsTriggerStateCardinalityLimit,
+  kExceedsMaxEventStatesLimit,
 };
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RandomizedResponseData {
@@ -90,12 +94,18 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStates(
 // Otherwise will return a vector of fake reports.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponse(
-    const TriggerSpecs& specs,
-    double epsilon,
-    double max_channel_capacity);
+DoRandomizedResponse(const TriggerSpecs& specs,
+                     double epsilon,
+                     mojom::SourceType,
+                     const std::optional<AttributionScopesData>&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING) uint32_t MaxTriggerStateCardinality();
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+double GetMaxChannelCapacity(mojom::SourceType);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+double GetMaxChannelCapacityScopes(mojom::SourceType);
 
 // Exposed for testing purposes.
 namespace internal {
@@ -153,6 +163,15 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 double ComputeChannelCapacity(base::StrictNumeric<uint32_t> num_states_strict,
                               double randomized_response_rate);
 
+// Computes the upper-bound channel capacity of a qary-symmetric channel for a
+// given attribution scopes configuration.
+// https://wicg.github.io/attribution-reporting-api/#compute-the-scopes-channel-capacity-of-a-source
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+double ComputeChannelCapacityScopes(
+    base::StrictNumeric<uint32_t> num_states_strict,
+    uint32_t max_event_states,
+    uint32_t attribution_scope_limit);
+
 // Generates fake reports from the "stars and bars" sequence index of a
 // possible output of the API. This output is determined by the following
 // algorithm:
@@ -190,7 +209,8 @@ DoRandomizedResponseWithCache(
     const TriggerSpecs& specs,
     double epsilon,
     StateMap& map,
-    double max_channel_capacity);
+    mojom::SourceType,
+    const std::optional<AttributionScopesData>& scopes_data);
 
 }  // namespace internal
 
@@ -213,6 +233,90 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 
  private:
   uint32_t previous_;
+};
+
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+    ScopedMaxNavigationChannelCapacityForTesting {
+ public:
+  explicit ScopedMaxNavigationChannelCapacityForTesting(double);
+
+  ~ScopedMaxNavigationChannelCapacityForTesting();
+
+  ScopedMaxNavigationChannelCapacityForTesting(
+      const ScopedMaxNavigationChannelCapacityForTesting&) = delete;
+  ScopedMaxNavigationChannelCapacityForTesting& operator=(
+      const ScopedMaxNavigationChannelCapacityForTesting&) = delete;
+
+  ScopedMaxNavigationChannelCapacityForTesting(
+      ScopedMaxNavigationChannelCapacityForTesting&&) = delete;
+  ScopedMaxNavigationChannelCapacityForTesting& operator=(
+      ScopedMaxNavigationChannelCapacityForTesting&&) = delete;
+
+ private:
+  double previous_;
+};
+
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+    ScopedMaxEventChannelCapacityForTesting {
+ public:
+  explicit ScopedMaxEventChannelCapacityForTesting(double);
+
+  ~ScopedMaxEventChannelCapacityForTesting();
+
+  ScopedMaxEventChannelCapacityForTesting(
+      const ScopedMaxEventChannelCapacityForTesting&) = delete;
+  ScopedMaxEventChannelCapacityForTesting& operator=(
+      const ScopedMaxEventChannelCapacityForTesting&) = delete;
+
+  ScopedMaxEventChannelCapacityForTesting(
+      ScopedMaxEventChannelCapacityForTesting&&) = delete;
+  ScopedMaxEventChannelCapacityForTesting& operator=(
+      ScopedMaxEventChannelCapacityForTesting&&) = delete;
+
+ private:
+  double previous_;
+};
+
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+    ScopedMaxScopesNavigationChannelCapacityForTesting {
+ public:
+  explicit ScopedMaxScopesNavigationChannelCapacityForTesting(double);
+
+  ~ScopedMaxScopesNavigationChannelCapacityForTesting();
+
+  ScopedMaxScopesNavigationChannelCapacityForTesting(
+      const ScopedMaxScopesNavigationChannelCapacityForTesting&) = delete;
+  ScopedMaxScopesNavigationChannelCapacityForTesting& operator=(
+      const ScopedMaxScopesNavigationChannelCapacityForTesting&) = delete;
+
+  ScopedMaxScopesNavigationChannelCapacityForTesting(
+      ScopedMaxScopesNavigationChannelCapacityForTesting&&) = delete;
+  ScopedMaxScopesNavigationChannelCapacityForTesting& operator=(
+      ScopedMaxScopesNavigationChannelCapacityForTesting&&) = delete;
+
+ private:
+  double previous_;
+};
+
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+    ScopedMaxScopesEventChannelCapacityForTesting {
+ public:
+  explicit ScopedMaxScopesEventChannelCapacityForTesting(double);
+
+  ~ScopedMaxScopesEventChannelCapacityForTesting();
+
+  ScopedMaxScopesEventChannelCapacityForTesting(
+      const ScopedMaxScopesEventChannelCapacityForTesting&) = delete;
+  ScopedMaxScopesEventChannelCapacityForTesting& operator=(
+      const ScopedMaxScopesEventChannelCapacityForTesting&) = delete;
+
+  ScopedMaxScopesEventChannelCapacityForTesting(
+      ScopedMaxScopesEventChannelCapacityForTesting&&) = delete;
+  ScopedMaxScopesEventChannelCapacityForTesting& operator=(
+      ScopedMaxScopesEventChannelCapacityForTesting&&) = delete;
+
+ private:
+  double previous_;
 };
 
 }  // namespace attribution_reporting

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
@@ -252,11 +253,7 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
     }
     AddPublicSuffixListRules(psl_private_domains);
   }
-  // TODO(crbug.com/356109549): Consider renaming this metric.
-  base::UmaHistogramMemoryKB(
-      "NetworkService.MaskedDomainList.NetworkServiceProxyAllowList."
-      "EstimatedMemoryUsageInKB",
-      EstimateMemoryUsage() / 1024);
+  ip_protection::Telemetry().MdlEstimatedMemoryUsage(EstimateMemoryUsage());
 }
 
 bool MaskedDomainListManager::MatchesPublicSuffixList(

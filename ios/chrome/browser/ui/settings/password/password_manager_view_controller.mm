@@ -1701,6 +1701,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (bool)allowsAddPassword {
+  if (!self.prefService) {
+    return NO;
+  }
   // If the settings are managed by enterprise policy and the password manager
   // is not enabled, there won't be any add functionality.
   const char* prefName = password_manager::prefs::kCredentialsEnableService;

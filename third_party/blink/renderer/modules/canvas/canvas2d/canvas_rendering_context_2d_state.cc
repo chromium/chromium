@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -76,25 +76,24 @@ namespace blink {
 bool StringToNumWithUnit(String spacing,
                          float* number_spacing,
                          CSSPrimitiveValue::UnitType* unit) {
-  CSSTokenizer tokenizer(spacing);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(spacing);
   // If we failed to parse token, return immediately.
-  if (range.AtEnd())
+  if (stream.AtEnd()) {
     return false;
+  }
 
-  const CSSParserToken* result = range.begin();
-  range.Consume();
   // If there is more than 1 dimension token or |spacing| is not a valid
   // dimension token, or unit is not a valid CSS length unit, return
   // immediately.
-  if (!range.AtEnd() || result->GetType() != kDimensionToken ||
-      !CSSPrimitiveValue::IsLength(result->GetUnitType())) {
-    return false;
+  const CSSParserToken& result = stream.Peek();
+  if (result.GetType() == kDimensionToken &&
+      CSSPrimitiveValue::IsLength(result.GetUnitType())) {
+    *number_spacing = result.NumericValue();
+    *unit = result.GetUnitType();
+    stream.Consume();
+    return stream.AtEnd();
   }
-  *number_spacing = result->NumericValue();
-  *unit = result->GetUnitType();
-  return true;
+  return false;
 }
 
 FontSelectionValue CanvasFontStretchToSelectionValue(
@@ -798,8 +797,8 @@ const cc::PaintFlags* CanvasRenderingContext2DState::GetFlags(
       break;
     default:
       NOTREACHED_IN_MIGRATION();
-      // no break on purpose: flags needs to be assigned to avoid compiler warning
-      // about uninitialized variable.
+      // no break on purpose: flags needs to be assigned to avoid compiler
+      // warning about uninitialized variable.
       [[fallthrough]];
     case kFillPaintType:
       fill_style_.SyncFlags(fill_flags_, global_alpha_);

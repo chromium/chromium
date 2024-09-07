@@ -28,6 +28,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -134,8 +135,8 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
   SetCancelCallback(base::BindOnce(&FilesPolicyWarnDialog::CancelWarning,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    std::move(split.second)));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
-  SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
+  SetButtonLabel(ui::mojom::DialogButton::kOk, GetOkButton());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel, GetCancelButton());
 
   AddGeneralInformation();
   if (dialog_info_.GetLearnMoreURL().has_value()) {
@@ -301,7 +302,7 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   }
 
   // Disable the proceed button until some text is entered.
-  DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
 
   views::View* justification_panel =
       AddChildView(std::make_unique<views::View>());
@@ -384,9 +385,9 @@ void FilesPolicyWarnDialog::ContentsChanged(
 
   if (new_contents.size() == 0 ||
       new_contents.size() > kMaxBypassJustificationLength) {
-    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+    DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
   } else {
-    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
+    DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, true);
   }
 }
 

@@ -7,9 +7,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/boca/boca_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 
 namespace ash {
-
 // static
 BocaManagerFactory* BocaManagerFactory::GetInstance() {
   static base::NoDestructor<BocaManagerFactory> instance;
@@ -27,15 +28,21 @@ BocaManagerFactory::BocaManagerFactory()
           "BocaManagerFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              // Do not init for ash internal such as login and lock screen.
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 BocaManagerFactory::~BocaManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
 BocaManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  CHECK(boca_util::IsEnabled());
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<BocaManager>(profile);
+  auto service = std::make_unique<BocaManager>(profile);
+  return service;
 }
 
 }  // namespace ash

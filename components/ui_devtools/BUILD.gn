@@ -100,8 +100,6 @@ component("ui_devtools") {
   ]
 
   public_deps = [
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
     "//services/service_manager/public/cpp",
     "//services/tracing/public/cpp",
     "//services/tracing/public/mojom",
@@ -153,9 +151,8 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//base/test:test_support",
+    "//net",
     "//net:test_support",
-    "//services/network:network_service",
-    "//services/network:test_support",
     "//testing/gtest",
   ]
 

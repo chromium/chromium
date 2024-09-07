@@ -1057,6 +1057,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Block"/>
   <int value="2" label="Allow on every visit"/>
   <int value="3" label="Allow this time"/>
+  <int value="4" label="Not shown because allowed on every visit"/>
+  <int value="5" label="Not shown because allowed once"/>
+  <int value="6" label="Not shown because blocked"/>
+  <int value="7" label="Not shown because incognito"/>
 </enum>
 
 <enum name="MediaContainers">
@@ -1655,6 +1659,15 @@ chromium-metrics-reviews@google.com.
       label="kHardwareDecoderWithMojoVideoDecoderAndThenSoftwareDecoder"/>
   <int value="5" label="kSoftwareDecoderOnly"/>
 </enum>
+
+<!-- LINT.IfChange(PictureInPictureDisallowedTypeEnum) -->
+
+<enum name="PictureInPictureDisallowedType">
+  <int value="0" label="Existing picture-in-picture window was closed"/>
+  <int value="1" label="New picture-in-picture window was closed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/picture_in_picture/picture_in_picture_window_manager.h:PictureInPictureDisallowedType) -->
 
 <enum name="PlaylistSegmentType">
   <int value="0" label="kTS"/>
@@ -2326,15 +2339,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="VIDIOC_STREAMON"/>
   <int value="9" label="VIDIOC_STREAMOFF"/>
   <int value="10" label="VIDIOC_S_EXT_CTRLS"/>
-</enum>
-
-<enum name="VTVDASessionFailureType">
-  <int value="0" label="Successfully Initialized"/>
-  <int value="1" label="Platform Error"/>
-  <int value="2" label="Invalid Stream"/>
-  <int value="3" label="Unsupported Stream Parameters"/>
-  <int value="4" label="Decode Error"/>
-  <int value="5" label="Unsupported Stream"/>
 </enum>
 
 </enums>

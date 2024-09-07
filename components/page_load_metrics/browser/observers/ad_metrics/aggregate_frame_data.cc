@@ -6,6 +6,7 @@
 
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "content/public/browser/auction_result.h"
 
 namespace page_load_metrics {
 
@@ -32,9 +33,18 @@ void AggregateFrameData::UpdateFirstAdFCPSinceNavStart(
   }
 }
 
-void AggregateFrameData::OnAdAuctionComplete() {
-  if (!first_ad_fcp_after_main_nav_start_) {
-    completed_fledge_auction_before_fcp_ = true;
+void AggregateFrameData::OnAdAuctionComplete(bool is_server_auction,
+                                             bool is_on_device_auction,
+                                             content::AuctionResult result) {
+  // Don't consider an auction to have completed if it was aborted -- if an
+  // abort signal was sent, the caller likely was not waiting for the auction to
+  // finish.
+  if (!first_ad_fcp_after_main_nav_start_ &&
+      result != content::AuctionResult::kAborted) {
+    completed_fledge_server_auction_before_fcp_ |= is_server_auction;
+    completed_fledge_on_device_auction_before_fcp_ |= is_on_device_auction;
+    completed_only_winning_fledge_auctions_ &=
+        result == content::AuctionResult::kSuccess;
   }
 }
 

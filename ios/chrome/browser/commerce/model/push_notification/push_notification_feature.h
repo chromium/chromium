@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMMERCE_MODEL_PUSH_NOTIFICATION_PUSH_NOTIFICATION_FEATURE_H_
 #define IOS_CHROME_BROWSER_COMMERCE_MODEL_PUSH_NOTIFICATION_PUSH_NOTIFICATION_FEATURE_H_
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Determine if the price drop notifications and ShoppingService are enabled.
 // Use this function if the code embedded in the check relies on using the

@@ -354,15 +354,15 @@ void DrmThread::GetHardwareCapabilities(
   }
 
   const auto& crtc_controllers = hdc->crtc_controllers();
-  // We almost always expect only one CRTC. Multiple CRTCs for one widget was
-  // the old way mirror mode was supported.
-  if (crtc_controllers.size() == 1) {
+  const bool multiple_controllers_but_tiled =
+      (crtc_controllers.size() > 1 && hdc->IsTiled() && !hdc->IsMirrored());
+  if (crtc_controllers.size() == 1 || multiple_controllers_but_tiled) {
     std::move(receive_callback)
         .Run(plane_manager->GetHardwareCapabilities(
             crtc_controllers[0]->crtc()));
   } else {
-    // If there are multiple CRTCs for this widget we shouldn't rely on overlays
-    // working.
+    // We should not rely on overlays if there are multiple non-tiled CRTCs for
+    // this widget.
     HardwareCapabilities hardware_capabilities;
     hardware_capabilities.is_valid = false;
     std::move(receive_callback).Run(hardware_capabilities);

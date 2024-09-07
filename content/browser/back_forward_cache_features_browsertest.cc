@@ -248,15 +248,15 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 
 // TODO(crbug.com/40823301): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
-#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel \
-  DISABLED_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel
+#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature \
+  DISABLED_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature
 #else
-#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel \
-  DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel
+#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature \
+  DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature
 #endif
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
-    MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel) {
+    MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
@@ -281,9 +281,8 @@ IN_PROC_BROWSER_TEST_P(
           .HasAll(
               {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}));
 
-  // Use a broadcast channel in the frame.
-  EXPECT_TRUE(ExecJs(current_frame_host(),
-                     "window.foo = new BroadcastChannel('foo');"));
+  // Use a blocking feature in the frame.
+  EXPECT_TRUE(ExecJs(current_frame_host(), kBlockingScript));
   RenderFrameDeletedObserver delete_observer_rfh(current_frame_host());
 
   // Navigate away.
@@ -298,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(
   ExpectNotRestored(
       {NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport,
-       blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
+       kBlockingReasonEnum},
       {}, {}, {}, FROM_HERE);
 }
 
@@ -1829,7 +1828,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        BlocklistedFeaturesTracking_CrossSite_BrowserInitiated) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", kBlockingPagePath));
   GURL url_b(https_server()->GetURL("b.test", "/title2.html"));
   // 1) Navigate to a page.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -1840,9 +1839,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       static_cast<SiteInstanceImpl*>(rfh_a->GetSiteInstance());
   RenderFrameDeletedObserver rfh_a_deleted(rfh_a);
 
-  // 2) Use BroadcastChannel (non-sticky) and a dummy sticky blocklisted
-  // features.
-  EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
+  // 2) Use a dummy sticky blocklisted feature.
   rfh_a->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // 3) Navigate cross-site, browser-initiated.
@@ -1861,11 +1858,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Both sticky and non-sticky features are recorded.
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
-       blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
-      {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
+                     kBlockingReasonEnum},
+                    {}, {}, {}, FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used
@@ -1875,7 +1871,7 @@ IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
     BlocklistedFeaturesTracking_CrossSite_RendererInitiated) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", kBlockingPagePath));
   GURL url_b(https_server()->GetURL("b.test", "/title2.html"));
 
   // 1) Navigate to a page.
@@ -1886,9 +1882,7 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<SiteInstanceImpl> site_instance_a =
       static_cast<SiteInstanceImpl*>(rfh_a->GetSiteInstance());
 
-  // 2) Use BroadcastChannel (non-sticky) and Dummy sticky blocklisted
-  // features.
-  EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
+  // 2) Use a Dummy sticky blocklisted feature.
   rfh_a->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // 3) Navigate cross-site, renderer-inititated.
@@ -1907,7 +1901,7 @@ IN_PROC_BROWSER_TEST_F(
       {NotRestoredReason::kBlocklistedFeatures,
        NotRestoredReason::kBrowsingInstanceNotSwapped},
       {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
-       blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
+       kBlockingReasonEnum},
       {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
       FROM_HERE);
 
@@ -1931,7 +1925,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url_1(https_server()->GetURL("/title1.html"));
+  GURL url_1(https_server()->GetURL(kBlockingPagePath));
   GURL url_2(https_server()->GetURL("/title2.html"));
 
   // 1) Navigate to a page.
@@ -1943,8 +1937,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       static_cast<SiteInstanceImpl*>(rfh_1->GetSiteInstance());
   rfh_1->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
-  // 2) Use BroadcastChannel (non-sticky) and dummy sticky blocklisted features.
-  EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
+  // 2) Use a dummy sticky blocklisted features.
   rfh_1->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // 3) Navigate same-site.
@@ -1966,7 +1959,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
           NotRestoredReason::kBrowsingInstanceNotSwapped,
       },
       {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
-       blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
+       kBlockingReasonEnum},
       {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
       FROM_HERE);
   // NotRestoredReason tree should match the flattened list.
@@ -1977,8 +1970,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                               NotRestoredReason::kBrowsingInstanceNotSwapped}),
           BlockListedFeatures(
               {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
-               blink::scheduler::WebSchedulerTrackedFeature::
-                   kBroadcastChannel})));
+               kBlockingReasonEnum})));
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a
@@ -1989,20 +1981,17 @@ IN_PROC_BROWSER_TEST_F(
     BlocklistedFeaturesTracking_CrossSite_BrowserInitiated_NonSticky) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  // 1) Navigate to an empty page.
-  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  // 1) Navigate to a blocking page.
+  GURL url_a(https_server()->GetURL("a.test", kBlockingPagePath));
   GURL url_b(https_server()->GetURL("b.test", "/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  // 2) Use BroadcastChannel (a non-sticky blocklisted feature).
-  EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
   scoped_refptr<SiteInstanceImpl> site_instance_a =
       static_cast<SiteInstanceImpl*>(
           web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
 
-  // 3) Navigate cross-site, browser-initiated.
+  // 2) Navigate cross-site, browser-initiated.
   // The previous page won't get into the back-forward cache because of the
   // blocklisted feature.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -2012,15 +2001,13 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(site_instance_a->IsRelatedSiteInstance(
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
-  // 4) Go back.
+  // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {kBlockingReasonEnum}, {}, {}, {}, FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a
@@ -2031,15 +2018,12 @@ IN_PROC_BROWSER_TEST_F(
     BlocklistedFeaturesTracking_CrossSite_RendererInitiated_NonSticky) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  // 1) Navigate to an empty page.
-  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  // 1) Navigate to an blocking page.
+  GURL url_a(https_server()->GetURL("a.test", kBlockingPagePath));
   GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  // 2) Use BroadcastChannel (a non-sticky blocklisted feature).
-  EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
   scoped_refptr<SiteInstanceImpl> site_instance_a =
       static_cast<SiteInstanceImpl*>(
           web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
@@ -2058,10 +2042,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {kBlockingReasonEnum}, {}, {}, {}, FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a
@@ -2071,19 +2053,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   // 1) Navigate to an empty page.
-  GURL url_1(https_server()->GetURL("/title1.html"));
+  GURL url_1(https_server()->GetURL(kBlockingPagePath));
   GURL url_2(https_server()->GetURL("/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  RenderFrameHostImpl* rfh_1 = current_frame_host();
-  // 2) Use BroadcastChannel (a non-sticky blocklisted feature).
-  EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
   scoped_refptr<SiteInstanceImpl> site_instance_1 =
       static_cast<SiteInstanceImpl*>(
           web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
 
-  // 3) Navigate same-site.
+  // 2) Navigate same-site.
   // The previous page won't get into the back-forward cache because of the
   // blocklisted feature.
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
@@ -2093,15 +2072,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
-  // 4) Go back.
+  // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {kBlockingReasonEnum}, {}, {}, {}, FROM_HERE);
 }
 
 // Test for sending JavaScript details where blocking features are used.
@@ -5060,14 +5037,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
                        DontCache) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", kBlockingPagePath));
   GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
-  // 1) Navigate to the page A with BroadcastChannel.
+  // 1) Navigate to the page A with a blocking feature.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a1 = current_frame_host();
   RenderFrameDeletedObserver deleted_a1(rfh_a1);
-  EXPECT_TRUE(ExecJs(rfh_a1, "window.foo = new BroadcastChannel('foo');"));
 
   // 2) Navigate away.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -5075,10 +5051,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
 
   // 3) Go back to the page A
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {kBlockingReasonEnum}, {}, {}, {}, FROM_HERE);
 
   RenderFrameHostImpl* rfh_a2 = current_frame_host();
   RenderFrameDeletedObserver deleted_a2(rfh_a2);
@@ -5094,8 +5068,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {}, {},
-      FROM_HERE);
+      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock,
+       kBlockingReasonEnum},
+      {}, {}, {}, FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestWithMediaSession

@@ -88,6 +88,9 @@ class ASH_EXPORT CaptureModeSession
   views::Widget* capture_mode_settings_widget() {
     return capture_mode_settings_widget_.get();
   }
+  views::Widget* search_results_panel_widget() {
+    return search_results_panel_widget_.get();
+  }
   bool is_selecting_region() const { return is_selecting_region_; }
   CaptureModeToastController* capture_toast_controller() {
     return &capture_toast_controller_;
@@ -168,6 +171,7 @@ class ASH_EXPORT CaptureModeSession
   void MaybeChangeRoot(aura::Window* new_root,
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
+  void ShowSearchResultsPanel(const gfx::ImageSkia& image) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -413,6 +417,11 @@ class ASH_EXPORT CaptureModeSession
   views::UniqueWidgetPtr recording_type_menu_widget_;
   raw_ptr<RecordingTypeMenuView, DanglingUntriaged> recording_type_menu_view_ =
       nullptr;
+
+  // Contains `SearchResultsPanel` as its contents view.
+  // TODO(b/362772923): Determine whether we need to move
+  // `search_results_panel_widget_` to `CaptureModeController`.
+  std::unique_ptr<views::Widget> search_results_panel_widget_;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;

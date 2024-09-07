@@ -4,106 +4,210 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/tabs_closure_animation.h"
 
+#import "base/check.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
 // Tab closure full animation duration;
-constexpr CFTimeInterval kAnimationDuration = 1.3;
+constexpr CFTimeInterval kAnimationDuration = 1.0;
 
-// Duration for the opacity disappearing animation.
-constexpr CFTimeInterval kDisappearingOpacityDuration =
-    kAnimationDuration / 3.0;
+// Duration for the opacity animation of the color gradient.
+constexpr CFTimeInterval kColorGradientOpacityDuration =
+    (kAnimationDuration / 3.0);
 
-// Delay for the start of the grid cell disappearing animation.
-constexpr CFTimeInterval kGridCellDisappearingAnimationDelay = 0.0;
+// Duration for the opacity disappearing animation of the wipe effect animation.
+constexpr CFTimeInterval kWipeDisappearingOpacityDuration =
+    (kAnimationDuration / 2.0);
+
+// Duration for the opacity disappearing animation of the grid cell animation.
+constexpr CFTimeInterval kGridCellDisappearingOpacityDuration =
+    (kAnimationDuration / 8.0);
 
 // Delay for the start of the disappearing animation of the wipe effect
 // animation.
 constexpr CFTimeInterval kWipeDisappearingAnimationDelay =
-    kDisappearingOpacityDuration - (kAnimationDuration / 10.0);
+    (kAnimationDuration / 7.0);
+
+// Delay for the start of the grid cell disappearing animation.
+constexpr CFTimeInterval kGridCellDisappearingAnimationDelay =
+    (kAnimationDuration / 10.0);
 
 // Tab closure animation start point.
 constexpr CGFloat kAnimationStartPointX = 0.5;
 constexpr CGFloat kAnimationStartPointY = 1.0;
 
-// Disapperating animation radius at the start of the animation.
-constexpr CGFloat kDisappearinAnimationStartRadius = 0.1;
+// Disapperating animation radius at the start of the wipe effect animation.
+constexpr CGFloat kWipeDisappearinAnimationStartRadius = 0.1;
 
 // Gradient animation radius at the end of the animation.
-constexpr CGFloat kColorGradientAnimationEndRadius = 2.5;
-
-// Grid cell disapperating animation radius at the end of the animation.
-constexpr CGFloat kGridCellDisappearingAnimationEndRadius = 2.8;
+constexpr CGFloat kColorGradientAnimationEndRadius = 3.2;
 
 // Disapperating animation radius at the end of the wipe effect animation.
-constexpr CGFloat kWipeDisappearingAnimationEndRadius = 1.8;
+constexpr CGFloat kWipeDisappearingAnimationEndRadius = 3.0;
 
-// Returns an animated disappearing gradient the size of `frame`. Callers are
-// expected to add the gradient to the view hierarchy.
-CAGradientLayer* GetAnimatedDisappearingGradient(CGRect frame,
-                                                 CGFloat end_radius,
-                                                 NSTimeInterval duration,
-                                                 NSTimeInterval delay) {
+// Grid cell disapperating animation radius at the end of the animation.
+constexpr CGFloat kGridCellDisappearingAnimationEndRadius = 5.1;
+
+// Returns an animated disappearing gradient the size of `frame` for a grid
+// cell. Callers are expected to add the gradient to the view hierarchy.
+CAGradientLayer* GetAnimatedGridCellDisappearingGradient(
+    CGRect frame,
+    NSTimeInterval media_time) {
   CAGradientLayer* gradient_layer = [CAGradientLayer layer];
   gradient_layer.type = kCAGradientLayerRadial;
 
-  // Start with everything fully opaque and ease disapering while the circle
-  // expands.
+  // Start with mostly opaque and ease disappearing while the circle expands.
   gradient_layer.colors = @[
-    (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
-    (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.9].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.94].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.97].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.98].CGColor,
     (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
   ];
 
-  // Start already with a small circle. Since, the circle begins fully opaque,
-  // there isn't a harsh transition.
+  // The circle begins mostly opaque, and comes into view by making the view
+  // disappear as it grows.
   gradient_layer.startPoint =
       CGPointMake(kAnimationStartPointX, kAnimationStartPointY);
   gradient_layer.endPoint =
-      CGPointMake(kAnimationStartPointX + kDisappearinAnimationStartRadius,
-                  kAnimationStartPointY - kDisappearinAnimationStartRadius);
+      CGPointMake(kAnimationStartPointX, kAnimationStartPointY);
 
   CGFloat frame_size = MAX(frame.size.width, frame.size.height);
   gradient_layer.frame =
       CGRectMake(CGPointZero.x, CGPointZero.y, frame_size, frame_size);
 
-  NSTimeInterval start_time = [gradient_layer convertTime:CACurrentMediaTime()
+  NSTimeInterval start_time = [gradient_layer convertTime:media_time
                                                 fromLayer:nil];
 
   // Circle expanding animation. We'll use the end point to expand the circle
   // past the size of the frame so we end up with a fully transparent view at
   // the end.
-  CABasicAnimation* expandAnimation =
+  CABasicAnimation* expand_animation =
       [CABasicAnimation animationWithKeyPath:@"endPoint"];
-  expandAnimation.duration = duration - delay;
-  expandAnimation.beginTime = start_time + delay;
-  expandAnimation.fromValue =
+  expand_animation.beginTime = start_time + kGridCellDisappearingAnimationDelay;
+  expand_animation.duration =
+      kAnimationDuration - kGridCellDisappearingAnimationDelay;
+  expand_animation.fromValue =
       [NSValue valueWithCGPoint:gradient_layer.endPoint];
-  expandAnimation.toValue = [NSValue
-      valueWithCGPoint:CGPointMake(kAnimationStartPointX + end_radius,
-                                   kAnimationStartPointY - end_radius)];
+  expand_animation.toValue = [NSValue
+      valueWithCGPoint:CGPointMake(
+                           kAnimationStartPointX +
+                               kGridCellDisappearingAnimationEndRadius,
+                           kAnimationStartPointY -
+                               kGridCellDisappearingAnimationEndRadius)];
 
   // Prolong the end state of the animation, so the view continues to be fully
   // transparent.
-  expandAnimation.fillMode = kCAFillModeForwards;
-  expandAnimation.removedOnCompletion = NO;
+  expand_animation.fillMode = kCAFillModeForwards;
+  expand_animation.removedOnCompletion = NO;
 
-  [gradient_layer addAnimation:expandAnimation forKey:@"endPoint"];
+  [gradient_layer addAnimation:expand_animation forKey:@"endPoint"];
 
   // Opacity animation. The circle shouldn't be fully visible from the start,
   // but come into view while it's expanding.
   CABasicAnimation* opacity_animation =
       [CABasicAnimation animationWithKeyPath:@"colors"];
   // The opacity animation should be shorter than the main one since the circle
-  // should be fully transparent before it stops growing.
-  opacity_animation.duration = kDisappearingOpacityDuration;
-  opacity_animation.beginTime = start_time + delay;
+  // should be fully visible before it stops growing.
+  opacity_animation.beginTime =
+      start_time + kGridCellDisappearingAnimationDelay;
+  opacity_animation.duration = kGridCellDisappearingOpacityDuration;
+
+  opacity_animation.byValue = @[
+    (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.25].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.6].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.85].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
+  ];
+  opacity_animation.toValue = @[
+    (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.5].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
+  ];
+
+  // Prolong the end state of the animation, so the view continues to be
+  // transparent.
+  opacity_animation.fillMode = kCAFillModeForwards;
+  opacity_animation.removedOnCompletion = NO;
+
+  [gradient_layer addAnimation:opacity_animation forKey:@"colors"];
+
+  return gradient_layer;
+}
+
+// Returns an animated disappearing gradient the size of `frame` for the wipe
+// gradient. Callers are expected to add the gradient to the view hierarchy.
+CAGradientLayer* GetAnimatedWipeDisappearingGradient(
+    CGRect frame,
+    NSTimeInterval media_time) {
+  CAGradientLayer* gradient_layer = [CAGradientLayer layer];
+  gradient_layer.type = kCAGradientLayerRadial;
+
+  // The circle begins mostly opaque, and comes into view by making the view
+  // disappear as it grows.
+  gradient_layer.colors = @[
+    (id)[UIColor colorWithWhite:1.0 alpha:0.95].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.97].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.99].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
+  ];
+
+  // Start already with a small circle. Since the circle begins mostly opaque,
+  // there isn't a harsh transition.
+  gradient_layer.startPoint =
+      CGPointMake(kAnimationStartPointX, kAnimationStartPointY);
+  gradient_layer.endPoint =
+      CGPointMake(kAnimationStartPointX + kWipeDisappearinAnimationStartRadius,
+                  kAnimationStartPointY - kWipeDisappearinAnimationStartRadius);
+
+  CGFloat frame_size = MAX(frame.size.width, frame.size.height);
+  gradient_layer.frame =
+      CGRectMake(CGPointZero.x, CGPointZero.y, frame_size, frame_size);
+
+  NSTimeInterval start_time = [gradient_layer convertTime:media_time
+                                                fromLayer:nil];
+
+  // Circle expanding animation. We'll use the end point to expand the circle
+  // past the size of the frame so we end up with a fully transparent view at
+  // the end.
+  CABasicAnimation* expand_animation =
+      [CABasicAnimation animationWithKeyPath:@"endPoint"];
+  expand_animation.beginTime = start_time + kWipeDisappearingAnimationDelay;
+  expand_animation.duration =
+      kAnimationDuration - kWipeDisappearingAnimationDelay;
+  expand_animation.fromValue =
+      [NSValue valueWithCGPoint:gradient_layer.endPoint];
+  expand_animation.toValue = [NSValue
+      valueWithCGPoint:CGPointMake(kAnimationStartPointX +
+                                       kWipeDisappearingAnimationEndRadius,
+                                   kAnimationStartPointY -
+                                       kWipeDisappearingAnimationEndRadius)];
+
+  // Prolong the end state of the animation, so the view continues to be fully
+  // transparent.
+  expand_animation.fillMode = kCAFillModeForwards;
+  expand_animation.removedOnCompletion = NO;
+
+  [gradient_layer addAnimation:expand_animation forKey:@"endPoint"];
+
+  // Opacity animation. The circle shouldn't be fully visible from the start,
+  // but come into view while it's expanding.
+  CABasicAnimation* opacity_animation =
+      [CABasicAnimation animationWithKeyPath:@"colors"];
+  // The opacity animation should be shorter than the main one since the circle
+  // should be fully visible before it stops growing.
+  opacity_animation.beginTime = start_time + kWipeDisappearingAnimationDelay;
+  opacity_animation.duration = kWipeDisappearingOpacityDuration;
   opacity_animation.fromValue = gradient_layer.colors;
   opacity_animation.toValue = @[
     (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
     (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
-    (id)[UIColor colorWithWhite:1.0 alpha:0.8].CGColor,
+    (id)[UIColor colorWithWhite:1.0 alpha:0.5].CGColor,
     (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
     (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor,
   ];
@@ -120,7 +224,9 @@ CAGradientLayer* GetAnimatedDisappearingGradient(CGRect frame,
 
 // Returns the animated gradient that creates a "wipe" effect the size of
 // `frame`. Callers are expected to add the gradient to the view hierarchy.
-CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
+CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
+                                       NSTimeInterval duration,
+                                       NSTimeInterval media_time) {
   CAGradientLayer* gradient_layer = [CAGradientLayer layer];
   gradient_layer.type = kCAGradientLayerRadial;
   gradient_layer.colors = @[
@@ -138,15 +244,15 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   gradient_layer.frame =
       CGRectMake(CGPointZero.x, CGPointZero.y, frame_size, frame_size);
 
-  NSTimeInterval startTime = [gradient_layer convertTime:CACurrentMediaTime()
+  NSTimeInterval startTime = [gradient_layer convertTime:media_time
                                                fromLayer:nil];
 
   // Expand circle animation.  We'll use the end point to expand the circle past
   // the size of the frame so we end up with a fully colored view at the end.
   CABasicAnimation* end_point_animation =
       [CABasicAnimation animationWithKeyPath:@"endPoint"];
-  end_point_animation.duration = duration;
   end_point_animation.beginTime = startTime;
+  end_point_animation.duration = duration;
   end_point_animation.fromValue =
       [NSValue valueWithCGPoint:gradient_layer.endPoint];
   end_point_animation.toValue = [NSValue
@@ -162,10 +268,9 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   CABasicAnimation* colors_animation =
       [CABasicAnimation animationWithKeyPath:@"colors"];
   // The opacity animation should be shorter than the main one since the circle
-  // should be fully opaque before it stops growing.
+  // should be mostly opaque before it stops growing.
   colors_animation.beginTime = startTime;
-  colors_animation.duration = kDisappearingOpacityDuration;
-  colors_animation.fromValue = gradient_layer.colors;
+  colors_animation.duration = kColorGradientOpacityDuration;
   colors_animation.byValue = @[
     (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.1].CGColor,
     (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.05].CGColor,
@@ -173,7 +278,7 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   ];
   colors_animation.toValue = @[
     (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.7].CGColor,
-    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.35].CGColor,
+    (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.45].CGColor,
     (id)[[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.0].CGColor,
   ];
 
@@ -185,11 +290,10 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
 
   [gradient_layer addAnimation:colors_animation forKey:@"colors"];
 
-  // Add the gradient to animate the disapering of the blue circle shown by
+  // Add the gradient to animate the disappearing of the blue circle shown by
   // `gradient_layer`.
-  CAGradientLayer* inner_gradient_layer = GetAnimatedDisappearingGradient(
-      frame, kWipeDisappearingAnimationEndRadius, duration,
-      kWipeDisappearingAnimationDelay);
+  CAGradientLayer* inner_gradient_layer =
+      GetAnimatedWipeDisappearingGradient(frame, media_time);
   gradient_layer.mask = inner_gradient_layer;
 
   return gradient_layer;
@@ -215,30 +319,32 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
 }
 
 - (void)animateWithCompletion:(ProceduralBlock)completion {
+  CHECK(!_window.userInteractionEnabled);
+
   [CATransaction begin];
   [CATransaction
       setAnimationTimingFunction:MaterialTimingFunction(MaterialCurveEaseIn)];
   [CATransaction setAnimationDuration:kAnimationDuration];
 
   __weak TabsClosureAnimation* weakSelf = self;
-  UIView* window = _window;
-  window.userInteractionEnabled = NO;
   [CATransaction setCompletionBlock:^{
-    window.userInteractionEnabled = YES;
     [weakSelf onAnimationCompletedWithCompletionBlock:completion];
   }];
 
-  [self addWipeEffectAnimation];
-  [self addGridCellDisapperingAnimation];
+  CFTimeInterval mediaTime = CACurrentMediaTime();
+
+  [self addWipeEffectAnimationWithMediaTime:mediaTime];
+  [self addGridCellDisapperingAnimationWithMediaTime:mediaTime];
 
   [CATransaction commit];
 }
 
 #pragma mark - Private
 
-// Adds the "wipe" effect animation to `window`.
-- (void)addWipeEffectAnimation {
-  _gradientLayer = GetAnimatedWipeEffect(_window.frame, kAnimationDuration);
+// Adds the "wipe" effect animation to `window` with `mediaTime`.
+- (void)addWipeEffectAnimationWithMediaTime:(CFTimeInterval)mediaTime {
+  _gradientLayer =
+      GetAnimatedWipeEffect(_window.frame, kAnimationDuration, mediaTime);
   // The grid view is scrollable. The animation should happen on what is visible
   // in the window not in the middle of the grid view which might not even be
   // visible.
@@ -246,12 +352,11 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   [_window.layer addSublayer:_gradientLayer];
 }
 
-// Adds the disappering animation to all views in `_gridCells`.
-- (void)addGridCellDisapperingAnimation {
+// Adds the disappering animation to all views in `_gridCells` with `mediaTime`.
+- (void)addGridCellDisapperingAnimationWithMediaTime:(CFTimeInterval)mediaTime {
   for (UIView* cell : _gridCells) {
-    CAGradientLayer* gridCellGradientLayer = GetAnimatedDisappearingGradient(
-        _window.frame, kGridCellDisappearingAnimationEndRadius,
-        kAnimationDuration, kGridCellDisappearingAnimationDelay);
+    CAGradientLayer* gridCellGradientLayer =
+        GetAnimatedGridCellDisappearingGradient(_window.frame, mediaTime);
 
     // Get position of the cell on the tab grid's coordinate system. The
     // `gridCellGradientLayer` position coordinates are in the cell's coordinate

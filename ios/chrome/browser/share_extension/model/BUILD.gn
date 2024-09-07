@@ -20,9 +20,11 @@ source_set("model") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/common/app_group",
     "//ios/web",
+    "//ios/web/public/thread",
     "//net",
     "//url",
   ]

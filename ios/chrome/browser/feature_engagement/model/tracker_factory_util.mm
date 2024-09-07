@@ -12,7 +12,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_promo_event_exporter.h"
 #import "ios/chrome/browser/feature_engagement/model/ios_tracker_session_controller.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 

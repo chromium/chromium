@@ -142,6 +142,7 @@ static_library("protocol") {
     "negotiating_client_authenticator.h",
     "negotiating_host_authenticator.cc",
     "negotiating_host_authenticator.h",
+    "network_settings.cc",
     "network_settings.h",
     "observing_input_filter.cc",
     "observing_input_filter.h",
@@ -160,6 +161,7 @@ static_library("protocol") {
     "performance_tracker.h",
     "port_allocator.cc",
     "port_allocator.h",
+    "port_allocator_factory.cc",
     "port_allocator_factory.h",
     "pseudotcp_adapter.cc",
     "pseudotcp_adapter.h",
@@ -260,7 +262,7 @@ static_library("protocol") {
   defines = []
 
   # Must be a subset of the platforms built in //remoting/codec/BUILD.gn
-  if (is_win) {
+  if (remoting_enable_h264 && is_win) {
     defines += [ "USE_H264_ENCODER" ]
     deps += [
       "//media",
@@ -368,6 +370,7 @@ static_library("test_support") {
     "//net/traffic_annotation:test_support",
     "//net/traffic_annotation:traffic_annotation",
     "//remoting/base:base",
+    "//remoting/base:session_policies",
     "//remoting/codec:encoder",
     "//remoting/signaling:signaling",
     "//testing/gtest:gtest",
@@ -405,6 +408,7 @@ source_set("unit_tests") {
     "monitored_video_stub_unittest.cc",
     "mouse_input_filter_unittest.cc",
     "negotiating_authenticator_unittest.cc",
+    "network_settings_unittest.cc",
     "pairing_registry_unittest.cc",
     "pseudotcp_adapter_unittest.cc",
     "remoting_ice_config_request_unittest.cc",
@@ -438,6 +442,7 @@ source_set("unit_tests") {
     "//components/webrtc:thread_wrapper",
     "//net:test_support",
     "//remoting/base:base",
+    "//remoting/base:session_policies",
     "//remoting/base:test_support",
     "//remoting/codec:encoder",
     "//remoting/proto:internal_structs",

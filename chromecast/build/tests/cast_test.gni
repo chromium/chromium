@@ -440,10 +440,6 @@ template("cast_test_group_list") {
     if (_build_cast_tests) {
       deps += _build_test_targets
     }
-
-    if (chromecast_branding != "public") {
-      deps += [ "//chromecast/internal:cast_test_checker" ]
-    }
   }
 }
 

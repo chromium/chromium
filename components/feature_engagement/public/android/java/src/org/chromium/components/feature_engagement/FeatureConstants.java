@@ -21,7 +21,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_TRANSLATE_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE,
-    FeatureConstants.ADD_TO_HOMESCREEN_MESSAGE_FEATURE,
     FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE,
     FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE,
@@ -62,6 +61,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
     FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
+    FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
     FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
@@ -76,7 +76,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
-    FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE,
     FeatureConstants.PAGE_INFO_FEATURE,
     FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE,
     FeatureConstants.PAGE_ZOOM_FEATURE,
@@ -122,7 +121,6 @@ public @interface FeatureConstants {
             "IPH_AdaptiveButtonInTopToolbarCustomization_AddToBookmarks";
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_ReadAloud";
-    String ADD_TO_HOMESCREEN_MESSAGE_FEATURE = "IPH_AddToHomescreenMessage";
     String ANDROID_TAB_DECLUTTER_FEATURE = "IPH_AndroidTabDeclutter";
     String APP_SPECIFIC_HISTORY_FEATURE = "IPH_AppSpecificHistory";
     String AUTO_DARK_OPT_OUT_FEATURE = "IPH_AutoDarkOptOut";
@@ -227,6 +225,12 @@ public @interface FeatureConstants {
     /** An IPH feature to prompt users to open the tab switcher after a navigation. */
     String TAB_SWITCHER_BUTTON_FEATURE = "IPH_TabSwitcherButton";
 
+    /**
+     * An IPH feature to prompt users to open the tab switcher to switch to incognito when incognito
+     * tabs are present.
+     */
+    String TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO = "IPH_TabSwitcherButtonSwitchIncognito";
+
     /** An IPH feature to show a highlight on the floating action button in the tab switcher. */
     String TAB_SWITCHER_FLOATING_ACTION_BUTTON = "IPH_TabSwitcherFloatingActionButton";
 
@@ -310,9 +314,6 @@ public @interface FeatureConstants {
 
     /** An IPH feature to show the third re-engagement notification. */
     String CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE = "IPH_ChromeReengagementNotification3";
-
-    /** An IPH feature to inform users that installing a PWA is an option. */
-    String PWA_INSTALL_AVAILABLE_FEATURE = "IPH_PwaInstallAvailableFeature";
 
     /** An IPH feature to inform about changing permissions in PageInfo. */
     String PAGE_INFO_FEATURE = "IPH_PageInfo";

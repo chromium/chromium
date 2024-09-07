@@ -1,0 +1,28 @@
+This is a wdspec test.
+[FAIL] test_cookie_response_started
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[no domain]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[default domain]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[alt domain]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[custom path]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[http only]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[secure]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[expiry]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[max age]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[same site none]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[same site lax]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_cookie_attributes_before_request_sent[same site strict]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+[FAIL] test_no_cookie_before_request_sent
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot override only status or headers, both should be provided)
+Harness: the test ran to completion.

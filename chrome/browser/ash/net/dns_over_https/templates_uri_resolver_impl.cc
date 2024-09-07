@@ -39,6 +39,8 @@ constexpr char kDeviceAssetIdPlaceholder[] = "${DEVICE_ASSET_ID}";
 constexpr char kDeviceAnnotatedLocationPlaceholder[] =
     "${DEVICE_ANNOTATED_LOCATION}";
 constexpr char kDeviceIpPlaceholder[] = "${DEVICE_IP_ADDRESSES}";
+constexpr char kPlaceholderStartSymbol[] = "${";
+constexpr char kPlaceholderEndSymbol[] = "}";
 
 // Prefix values used to indicate the IP protocol of the IP addresses in the
 // effective DoH template URI.
@@ -48,6 +50,9 @@ constexpr char kIPv6Prefix[] = "0020";
 // Used as a replacement value for device identifiers when the user is
 // unaffiliated.
 constexpr char kDeviceNotManaged[] = "VALUE_NOT_AVAILABLE";
+constexpr char kIdentifierNotAvailable[] = "${VALUE_NOT_AVAILABLE}";
+constexpr char kUnknownPlaceholderMessage[] =
+    "Templates contain not replaced placeholder: ";
 
 // Part before "@" of the given |email| address.
 // "some_email@domain.com" => "some_email"
@@ -159,6 +164,76 @@ std::string GetIpReplacementValue(bool use_network_byte_order,
   return replacement;
 }
 
+// Returns first found placeholder in `templates` starting from position `pos`,
+// as option value. If no placeholders are found, returns empty optional.
+std::optional<std::string_view> GetNextPlaceholder(std::string_view templates,
+                                                   size_t pos) {
+  size_t placeholder_start = templates.find(kPlaceholderStartSymbol, pos);
+  if (placeholder_start == std::string::npos) {
+    return std::nullopt;
+  }
+
+  size_t placeholder_end =
+      templates.find(kPlaceholderEndSymbol, placeholder_start);
+  if (placeholder_end == std::string::npos) {
+    LOG(WARNING) << "Placeholders end symbol is missed in " << templates;
+    return std::nullopt;
+  }
+
+  return std::make_optional(templates.substr(
+      placeholder_start, placeholder_end - placeholder_start + 1));
+}
+
+// Checks if display templates `display_str` (with replaced identifiers) and
+// original templates `raw_str` contain placeholders with the same values. This
+// will indicate that those placeholders were not replaced. Replace those
+// placeholders with kIdentifierNotAvailable. Some placeholders like
+// "DEVICE_IP_ADDRESSES" can create 2 new placeholders in the display
+// template, so searching for every original placeholder instead of fetching
+// all of them and comparing one to one.
+void HighlightUnknownDisplayPlaceholders(std::string& display_str,
+                                         std::string_view raw_str) {
+  size_t search_start_pos = 0;
+  std::optional<std::string_view> maybe_placeholder =
+      GetNextPlaceholder(raw_str, search_start_pos);
+  while (maybe_placeholder.has_value()) {
+    std::string_view placeholder = maybe_placeholder.value();
+    size_t placeholder_pos_in_display = display_str.find(placeholder);
+    if (placeholder_pos_in_display != std::string::npos) {
+      LOG(WARNING) << kUnknownPlaceholderMessage << placeholder
+                   << ", value is not available";
+      base::ReplaceSubstringsAfterOffset(&display_str,
+                                         placeholder_pos_in_display,
+                                         placeholder, kIdentifierNotAvailable);
+    }
+
+    search_start_pos =
+        raw_str.find(kPlaceholderEndSymbol, search_start_pos + 1);
+    maybe_placeholder = GetNextPlaceholder(raw_str, search_start_pos);
+  }
+}
+
+// Looks into effective `templates` if they still contain placeholders which
+// were not replaced with data and strip them off. This step keeps compatibility
+// between new type of placeholders delivered by policy and older OS versions
+// which still have no definitions for such placeholders.
+void StripUnknownEffectivePlaceholders(std::string& templates) {
+  size_t search_start_pos = 0;
+
+  std::optional<std::string_view> maybe_placeholder =
+      GetNextPlaceholder(templates, search_start_pos);
+  while (maybe_placeholder.has_value()) {
+    std::string placeholder(maybe_placeholder.value());
+    LOG(WARNING) << kUnknownPlaceholderMessage << placeholder
+                 << ", it will be deleted";
+    search_start_pos =
+        templates.find(kPlaceholderStartSymbol, search_start_pos);
+    base::ReplaceSubstringsAfterOffset(&templates, search_start_pos,
+                                       placeholder, "");
+    maybe_placeholder = GetNextPlaceholder(templates, search_start_pos);
+  }
+}
+
 // Returns a copy of `template` where the identifier placeholders are replaced
 // with real user and device data.
 // If `hash_variable` is true, then the user and device identifiers are hashed
@@ -187,6 +262,7 @@ std::string ReplaceVariables(std::string templates,
   std::string user_email = user->GetAccountId().GetUserEmail();
   std::string user_email_domain = EmailDomain(user_email);
   std::string user_email_name = EmailName(user_email);
+  std::string original_templates = templates;
   base::ReplaceSubstringsAfterOffset(
       &templates, 0, kUserEmailPlaceholder,
       FormatVariable(user_email, salt, hash_variable));
@@ -233,6 +309,13 @@ std::string ReplaceVariables(std::string templates,
   base::ReplaceSubstringsAfterOffset(
       &templates, 0, kDeviceIpPlaceholder,
       GetIpReplacementValue(/*use_network_byte_order=*/hash_variable, *user));
+
+  bool is_display_mode = !hash_variable;
+  if (is_display_mode) {
+    HighlightUnknownDisplayPlaceholders(templates, original_templates);
+  } else {
+    StripUnknownEffectivePlaceholders(templates);
+  }
 
   return templates;
 }

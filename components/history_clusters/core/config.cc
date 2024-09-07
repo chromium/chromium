@@ -274,19 +274,6 @@ Config::Config() {
         base::FeatureList::IsEnabled(internal::kJourneysZeroStateFiltering);
   }
 
-  // The `kNtpChromeCartInHistoryClusterModule` child params.
-  {
-    use_ntp_specific_intracluster_ranking = GetFieldTrialParamByFeatureAsBool(
-        ntp_features::kNtpChromeCartInHistoryClusterModule,
-        "use_ntp_specific_intracluster_ranking",
-        use_ntp_specific_intracluster_ranking);
-
-    ntp_visit_duration_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
-        ntp_features::kNtpChromeCartInHistoryClusterModule,
-        "ntp_visit_duration_ranking_weight", ntp_visit_duration_ranking_weight);
-    DCHECK_GE(ntp_visit_duration_ranking_weight, 0.0f);
-  }
-
   // Lonely features without child params.
   {
     non_user_visible_debug =

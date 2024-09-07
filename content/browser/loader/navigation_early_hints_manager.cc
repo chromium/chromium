@@ -373,7 +373,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 NavigationEarlyHintsManager::NavigationEarlyHintsManager(
     BrowserContext& browser_context,
     StoragePartition& storage_partition,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     NavigationEarlyHintsManagerParams params)
     : browser_context_(browser_context),
       storage_partition_(storage_partition),

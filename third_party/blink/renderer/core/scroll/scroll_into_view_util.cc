@@ -457,10 +457,7 @@ mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
     V8ScrollLogicalPosition::Enum block_alignment,
     ScrollOrientation axis,
     const ComputedStyle& computed_style) {
-  WritingMode writing_mode = computed_style.GetWritingMode();
-  bool is_ltr = computed_style.IsLeftToRightDirection();
-
-  bool is_horizontal_writing_mode = IsHorizontalWritingMode(writing_mode);
+  bool is_horizontal_writing_mode = computed_style.IsHorizontalWritingMode();
   V8ScrollLogicalPosition::Enum alignment =
       ((axis == kHorizontalScroll && is_horizontal_writing_mode) ||
        (axis == kVerticalScroll && !is_horizontal_writing_mode))
@@ -474,71 +471,29 @@ mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
     return ScrollAlignment::ToEdgeIfNeeded();
   }
   if (alignment == V8ScrollLogicalPosition::Enum::kStart) {
+    PhysicalToLogical<const mojom::blink::ScrollAlignment& (*)()> to_logical(
+        computed_style.GetWritingDirection(), ScrollAlignment::TopAlways,
+        ScrollAlignment::RightAlways, ScrollAlignment::BottomAlways,
+        ScrollAlignment::LeftAlways);
     if (axis == kHorizontalScroll) {
-      switch (writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return is_ltr ? ScrollAlignment::LeftAlways()
-                        : ScrollAlignment::RightAlways();
-        case WritingMode::kVerticalRl:
-        case WritingMode::kSidewaysRl:
-          return ScrollAlignment::RightAlways();
-        case WritingMode::kVerticalLr:
-        case WritingMode::kSidewaysLr:
-          return ScrollAlignment::LeftAlways();
-        default:
-          NOTREACHED_IN_MIGRATION();
-          return ScrollAlignment::LeftAlways();
-      }
+      return is_horizontal_writing_mode ? (*to_logical.InlineStart())()
+                                        : (*to_logical.BlockStart())();
     } else {
-      switch (writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return ScrollAlignment::TopAlways();
-        case WritingMode::kVerticalRl:
-        case WritingMode::kSidewaysRl:
-        case WritingMode::kVerticalLr:
-          return is_ltr ? ScrollAlignment::TopAlways()
-                        : ScrollAlignment::BottomAlways();
-        case WritingMode::kSidewaysLr:
-          return is_ltr ? ScrollAlignment::BottomAlways()
-                        : ScrollAlignment::TopAlways();
-        default:
-          NOTREACHED_IN_MIGRATION();
-          return ScrollAlignment::TopAlways();
-      }
+      return is_horizontal_writing_mode ? (*to_logical.BlockStart())()
+                                        : (*to_logical.InlineStart())();
     }
   }
   if (alignment == V8ScrollLogicalPosition::Enum::kEnd) {
+    PhysicalToLogical<const mojom::blink::ScrollAlignment& (*)()> to_logical(
+        computed_style.GetWritingDirection(), ScrollAlignment::TopAlways,
+        ScrollAlignment::RightAlways, ScrollAlignment::BottomAlways,
+        ScrollAlignment::LeftAlways);
     if (axis == kHorizontalScroll) {
-      switch (writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return is_ltr ? ScrollAlignment::RightAlways()
-                        : ScrollAlignment::LeftAlways();
-        case WritingMode::kVerticalRl:
-        case WritingMode::kSidewaysRl:
-          return ScrollAlignment::LeftAlways();
-        case WritingMode::kVerticalLr:
-        case WritingMode::kSidewaysLr:
-          return ScrollAlignment::RightAlways();
-        default:
-          NOTREACHED_IN_MIGRATION();
-          return ScrollAlignment::RightAlways();
-      }
+      return is_horizontal_writing_mode ? (*to_logical.InlineEnd())()
+                                        : (*to_logical.BlockEnd())();
     } else {
-      switch (writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return ScrollAlignment::BottomAlways();
-        case WritingMode::kVerticalRl:
-        case WritingMode::kSidewaysRl:
-        case WritingMode::kVerticalLr:
-          return is_ltr ? ScrollAlignment::BottomAlways()
-                        : ScrollAlignment::TopAlways();
-        case WritingMode::kSidewaysLr:
-          return is_ltr ? ScrollAlignment::TopAlways()
-                        : ScrollAlignment::BottomAlways();
-        default:
-          NOTREACHED_IN_MIGRATION();
-          return ScrollAlignment::BottomAlways();
-      }
+      return is_horizontal_writing_mode ? (*to_logical.BlockEnd())()
+                                        : (*to_logical.InlineEnd())();
     }
   }
 

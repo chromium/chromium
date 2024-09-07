@@ -14,13 +14,18 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -30,13 +35,20 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace chrome {
 
 class BrowserCommandsTest : public InProcessBrowserTest {
  public:
   BrowserCommandsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    feature_list_.InitWithFeatures(
+        {
+            features::kTabOrganization,
+            toast_features::kToastFramework,
+            toast_features::kReadingListToast,
+        },
+        {});
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -371,4 +383,45 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   ConvertPopupToTabbedBrowser(popup_browser);
   EXPECT_EQ(false, browser_shutdown::HasShutdownStarted());
 }
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       OpenProductSpecifications_ShowNewTab) {
+  // Mock that the disclosure dialog has shown.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kV1));
+
+  int tab_count = browser()->tab_strip_model()->count();
+  chrome::OpenCommerceProductSpecificationsTab(
+      browser(), {GURL("foo.com"), GURL("bar.com")}, 0);
+
+  auto* dialog = commerce::ProductSpecificationsDisclosureDialog::
+      current_instance_for_testing();
+  ASSERT_FALSE(dialog);
+  // No new tab is created since the dialog will block creating new product
+  // specifications tab.
+  ASSERT_EQ(tab_count + 1, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       OpenProductSpecifications_ShowDialog) {
+  int tab_count = browser()->tab_strip_model()->count();
+  chrome::OpenCommerceProductSpecificationsTab(
+      browser(), {GURL("foo.com"), GURL("bar.com")}, 0);
+
+  auto* dialog = commerce::ProductSpecificationsDisclosureDialog::
+      current_instance_for_testing();
+  ASSERT_TRUE(dialog);
+  // No new tab is created.
+  ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, AddingToReadingListOpensToast) {
+  GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
 }  // namespace chrome

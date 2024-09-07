@@ -2,12 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {NoArgStringName} from './i18n.js';
 import {InternalMicInfo} from './microphone_manager.js';
 import {ModelLoader, ModelState} from './on_device_model/types.js';
 import {ReadonlySignal, Signal} from './reactive/signal.js';
 import {SodaSession} from './soda/types.js';
 
 export abstract class PlatformHandler {
+  /**
+   * Returns the formatted localized string by given `id` and `args`.
+   *
+   * This is the lower level function that is used to implement the `i18n`
+   * helper in core/i18n.ts, and shouldn't be directly used.
+   * The `i18n` helper provides better typing and should be used instead.
+   *
+   * This is declared as `static` so it can be directly use at module import
+   * time, and all implementations should ensure that it can be called at
+   * module import time.
+   */
+  static getStringF(_id: string, ..._args: Array<number|string>): string {
+    throw new Error('getStringF not implemented');
+  }
+
   /**
    * Initializes the platform handler.
    *
@@ -48,26 +64,14 @@ export abstract class PlatformHandler {
   abstract getMicrophoneInfo(deviceId: string): Promise<InternalMicInfo>;
 
   /**
-   * Returns the formatted localized string by given `id` and `args`.
-   *
-   * This is the lower level function that is used to implement the `i18n`
-   * helper in core/i18n.ts, and shouldn't be directly used.
-   * The `i18n` helper provides better typing and should be used instead.
-   */
-  abstract getStringF(id: string, ...args: Array<number|string>): string;
-
-  /**
    * Renders the UI needed on the dev page.
    */
   abstract renderDevUi(): RenderResult;
 
   /**
-   * Handles an uncaught error and returns the error UI to be shown.
-   *
-   * Returns null if the error is not handled specifically by the platform
-   * handler.
+   * Handles an uncaught error.
    */
-  abstract handleUncaughtError(error: unknown): RenderResult|null;
+  abstract handleUncaughtError(error: unknown): void;
 
   /**
    * Shows feedback dialog for AI with the given description pre-filled.
@@ -96,4 +100,35 @@ export abstract class PlatformHandler {
    * Gets/sets the quiet mode of the system.
    */
   abstract readonly quietMode: Signal<boolean>;
+
+  /**
+   * Whether speaker label can be used by current profile.
+   *
+   * In additional to this, SODA still needs to be supported and installed, and
+   * the language pack needs to support speaker label for speaker label to work.
+   *
+   * Note that in typical SWA case, this value is set and fixed on startup, and
+   * currently there's no case where this would change at runtime, but to
+   * support easier development we still use a signal here.
+   */
+  abstract readonly canUseSpeakerLabel: ReadonlySignal<boolean>;
+
+  /**
+   * Records a consent for speaker label.
+   *
+   * Note that there's a legal implication to have the logged strings same as
+   * what the user sees, so it should be passed down from close to where the UI
+   * is shown, and shouldn't be simply "hard-coded".
+   *
+   * @param consentGiven Whether the consent is given or not given.
+   * @param consentDescriptionNames The list of "string names" (as in the key of
+   *     the i18n object) in the consent dialog description.
+   * @param consentConfirmationName The "string name" of the consent dialog
+   *     confirm button that the user clicked.
+   */
+  abstract recordSpeakerLabelConsent(
+    consentGiven: boolean,
+    consentDescriptionNames: NoArgStringName[],
+    consentConfirmationName: NoArgStringName,
+  ): void;
 }

@@ -5,66 +5,59 @@
 package org.chromium.chrome.browser.bottom_sheet;
 
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
+import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** This class is responsible for rendering the simple notice sheet. */
 class SimpleNoticeSheetView implements BottomSheetContent {
-    private final BottomSheetController mBottomSheetController;
-    private Callback<Integer> mDismissHandler;
     private final RelativeLayout mContentView;
 
-    private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
-                @Override
-                public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                    super.onSheetClosed(reason);
-                    assert mDismissHandler != null;
-                    mDismissHandler.onResult(reason);
-                    mBottomSheetController.removeObserver(mBottomSheetObserver);
-                }
-
-                @Override
-                public void onSheetStateChanged(int newState, int reason) {
-                    super.onSheetStateChanged(newState, reason);
-                    if (newState != BottomSheetController.SheetState.HIDDEN) return;
-                    // This is a fail-safe for cases where onSheetClosed isn't triggered.
-                    mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
-                    mBottomSheetController.removeObserver(mBottomSheetObserver);
-                }
-            };
-
-    SimpleNoticeSheetView(Context context, BottomSheetController bottomSheetController) {
-        mBottomSheetController = bottomSheetController;
+    SimpleNoticeSheetView(Context context) {
         mContentView =
                 (RelativeLayout)
                         LayoutInflater.from(context).inflate(R.layout.simple_notice_sheet, null);
+        ImageView sheetHeaderImage = mContentView.findViewById(R.id.sheet_header_image);
+        sheetHeaderImage.setImageDrawable(
+                AppCompatResources.getDrawable(
+                        context,
+                        PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
     }
 
-    void setDismissHandler(Callback<Integer> dismissHandler) {
-        mDismissHandler = dismissHandler;
+    void setTitle(String title) {
+        TextView titleView = mContentView.findViewById(R.id.sheet_title);
+        titleView.setText(title);
     }
 
-    boolean setVisible(boolean isVisible) {
-        if (!isVisible) {
-            mBottomSheetController.hideContent(this, true);
-            return true;
-        }
-        mBottomSheetController.addObserver(mBottomSheetObserver);
-        if (!mBottomSheetController.requestShowContent(this, true)) {
-            mBottomSheetController.removeObserver(mBottomSheetObserver);
-            return false;
-        }
-        return true;
+    void setText(SpannableString text) {
+        TextViewWithClickableSpans textView = mContentView.findViewById(R.id.sheet_text);
+        textView.setText(text);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    void setButtonText(String text) {
+        Button button = mContentView.findViewById(R.id.confirmation_button);
+        button.setText(text);
+    }
+
+    void setButtonAction(Runnable runnable) {
+        Button button = mContentView.findViewById(R.id.confirmation_button);
+        button.setOnClickListener(
+                (unusedView) -> {
+                    runnable.run();
+                });
     }
 
     @Nullable
@@ -124,6 +117,11 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     @Override
     public float getHalfHeightRatio() {
         return HeightMode.DISABLED;
+    }
+
+    @Override
+    public float getFullHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
     }
 
     @Override

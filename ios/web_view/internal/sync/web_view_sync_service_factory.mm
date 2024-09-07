@@ -69,7 +69,6 @@ syncer::DataTypeController::TypeVector CreateControllers(
 
   controller_builder.SetAutofillWebDataService(
       web::GetUIThreadTaskRunner({}),
-      autofill_profile_web_data_service->GetDBTaskRunner(),
       autofill_profile_web_data_service,
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForAccount(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS));
@@ -105,9 +104,11 @@ syncer::DataTypeController::TypeVector CreateControllers(
   controller_builder.SetProductSpecificationsService(nullptr);
   controller_builder.SetSendTabToSelfSyncService(nullptr);
   controller_builder.SetSessionSyncService(nullptr);
+  controller_builder.SetSharingMessageBridge(nullptr);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   controller_builder.SetSupervisedUserSettingsService(nullptr);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  controller_builder.SetTemplateURLService(nullptr);
   controller_builder.SetUserEventService(nullptr);
 
   return controller_builder.Build(GetDisabledTypes(), sync_service,

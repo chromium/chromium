@@ -55,15 +55,15 @@ namespace content {
 namespace {
 // The time to live of a trace report is currently 14 days.
 const base::TimeDelta kTraceReportTimeToLive = base::Days(14);
-// The time to live of a trace content is currently 2 days.
-const base::TimeDelta kTraceContentTimeToLive = base::Days(2);
+// We limit the overall number of traces.
+const size_t kMaxTraceContent = 200;
 // We limit uploads of 1 trace per scenario over a period of 7 days. Since
 // traces live in the database for longer than 7 days, their TTL doesn't affect
 // this unless the database is manually cleared.
 const base::TimeDelta kMinTimeUntilNextUpload = base::Days(7);
 // We limit the overall number of traces per scenario saved to the database at
-// 200 per day.
-const size_t kMaxTracesPerScenario = 200;
+// 100 per day.
+const size_t kMaxTracesPerScenario = 100;
 const base::TimeDelta kMaxTracesPerScenarioDuration = base::Days(1);
 
 const char kBackgroundTracingConfig[] = "config";
@@ -271,6 +271,9 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
   }
   if (legacy_active_scenario_) {
     legacy_active_scenario_->AbortScenario();
+  }
+  for (auto& rule : trigger_rules_) {
+    rule->Uninstall();
   }
   BackgroundTracingManager::SetInstance(nullptr);
   NamedTriggerManager::SetInstance(nullptr);
@@ -558,11 +561,26 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
   return added_scenarios;
 }
 
-std::vector<std::pair<std::string, std::string>>
+std::vector<trace_report::mojom::ScenarioPtr>
+BackgroundTracingManagerImpl::GetAllFieldScenarios() const {
+  std::vector<trace_report::mojom::ScenarioPtr> result;
+  for (const auto& scenario : field_scenarios_) {
+    auto new_scenario = trace_report::mojom::Scenario::New();
+    new_scenario->hash = scenario->config_hash();
+    new_scenario->scenario_name = scenario->scenario_name();
+    result.push_back(std::move(new_scenario));
+  }
+  return result;
+}
+
+std::vector<trace_report::mojom::ScenarioPtr>
 BackgroundTracingManagerImpl::GetAllPresetScenarios() const {
-  std::vector<std::pair<std::string, std::string>> result;
+  std::vector<trace_report::mojom::ScenarioPtr> result;
   for (const auto& scenario : preset_scenarios_) {
-    result.emplace_back(scenario.first, scenario.second->scenario_name());
+    auto new_scenario = trace_report::mojom::Scenario::New();
+    new_scenario->hash = scenario.first;
+    new_scenario->scenario_name = scenario.second->scenario_name();
+    result.push_back(std::move(new_scenario));
   }
   return result;
 }
@@ -949,8 +967,6 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
       return;
     }
     BackgroundTracingManagerImpl::RecordMetric(Metrics::FINALIZATION_STARTED);
-    UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.FinalizingTraceSizeInKB2",
-                                serialized_trace.size() / 1024);
 
     BaseTraceReport base_report;
     base_report.uuid = uuid;
@@ -1085,8 +1101,7 @@ void BackgroundTracingManagerImpl::CleanDatabase() {
       base::BindOnce(
           [](TraceReportDatabase* trace_database) {
             // Trace payload is cleared on a more frequent basis.
-            trace_database->DeleteTraceContentOlderThan(
-                kTraceContentTimeToLive);
+            trace_database->DeleteOldTraceContent(kMaxTraceContent);
             // The reports entries are kept (without the payload) for longer to
             // track upload quotas.
             trace_database->DeleteTraceReportsOlderThan(kTraceReportTimeToLive);

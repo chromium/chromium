@@ -184,8 +184,7 @@ base::WritableSharedMemoryRegion BaseSharedMemoryService::CreateWritableRegion(
 #else
   // The shared memory service is not needed on other platforms, so this method
   // should never be called.
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 #endif
 }
 

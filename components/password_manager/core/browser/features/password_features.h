@@ -7,7 +7,6 @@
 
 // This file defines all password manager features used in the browser process.
 // Prefer adding new features here instead of "core/common/".
-#include <limits>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -62,8 +61,6 @@ BASE_DECLARE_FEATURE(kFetchGaiaHashOnSignIn);
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 
 #if BUILDFLAG(IS_IOS)
-// Enables filling for sign-in UFF on iOS.
-BASE_DECLARE_FEATURE(kIOSPasswordSignInUff);
 
 // Enable saving username in UFF on iOS.
 BASE_DECLARE_FEATURE(kIosDetectUsernameInUff);
@@ -160,6 +157,12 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 // Enables async implementation of OSCrypt inside LoginDatabase.
 BASE_DECLARE_FEATURE(kUseAsyncOsCryptInLoginDatabase);
 
+// Enables async implementation of OSCrypt inside LoginDatabase.
+BASE_DECLARE_FEATURE(kUseNewEncryptionMethod);
+
+// Enables re-encryption of all passwords. Done separately for each store.
+BASE_DECLARE_FEATURE(kEncryptAllPasswordsWithOSCryptAsync);
+
 // All features parameters in alphabetical order.
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
@@ -204,11 +207,6 @@ inline constexpr base::FeatureParam<PasswordGenerationVariation>
         &kPasswordGenerationExperiment, "password_generation_variation",
         PasswordGenerationVariation::kTrustedAdvice,
         &kPasswordGenerationExperimentVariationOption};
-
-inline constexpr base::FeatureParam<std::string>
-    kPasswordGenerationExperimentSurveyTriggerId{
-        &kPasswordGenerationExperiment,
-        "PasswordGenerationExperimentSurveyTriggedId", /*default_value=*/""};
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

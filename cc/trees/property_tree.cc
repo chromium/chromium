@@ -48,6 +48,9 @@ AnchorPositionScrollData::AnchorPositionScrollData(
 bool AnchorPositionScrollData::operator==(
     const AnchorPositionScrollData& other) const = default;
 
+bool StickyPositionNodeData::operator==(
+    const StickyPositionNodeData& other) const = default;
+
 template <typename T>
 PropertyTree<T>::PropertyTree(PropertyTrees* property_trees)
     : needs_update_(false), property_trees_(property_trees) {
@@ -1598,8 +1601,10 @@ void ScrollTree::OnScrollOffsetAnimated(ElementId id,
                scroll_offset.x(), "y", scroll_offset.y());
   ScrollNode* scroll_node = Node(scroll_tree_index);
   if (SetScrollOffset(id,
-                      ClampScrollOffsetToLimits(scroll_offset, *scroll_node)))
-    layer_tree_impl->DidUpdateScrollOffset(id);
+                      ClampScrollOffsetToLimits(scroll_offset, *scroll_node))) {
+    layer_tree_impl->DidUpdateScrollOffset(
+        id, /*pushed_from_main_or_pending_tree=*/false);
+  }
   layer_tree_impl->DidAnimateScrollOffset();
 }
 
@@ -1875,8 +1880,10 @@ void ScrollTree::PushScrollUpdatesFromMainThread(
     if (property_trees()->is_active())
       needs_scroll_update |= synced_scroll_offset->PushPendingToActive();
 
-    if (needs_scroll_update)
-      sync_tree->DidUpdateScrollOffset(id);
+    if (needs_scroll_update) {
+      sync_tree->DidUpdateScrollOffset(
+          id, /*pushed_from_main_or_pending_tree=*/true);
+    }
   }
 }
 
@@ -1894,8 +1901,10 @@ void ScrollTree::PushScrollUpdatesFromPendingTree(
   for (auto map_entry :
        pending_property_trees->scroll_tree().synced_scroll_offset_map_) {
     synced_scroll_offset_map_[map_entry.first] = map_entry.second;
-    if (map_entry.second->PushPendingToActive())
-      active_tree->DidUpdateScrollOffset(map_entry.first);
+    if (map_entry.second->PushPendingToActive()) {
+      active_tree->DidUpdateScrollOffset(
+          map_entry.first, /*pushed_from_main_or_pending_tree=*/true);
+    }
   }
 }
 
@@ -2015,8 +2024,11 @@ gfx::Vector2dF ScrollTree::ScrollBy(const ScrollNode& scroll_node,
   gfx::PointF old_offset = current_scroll_offset(scroll_node.element_id);
   gfx::PointF new_offset =
       ClampScrollOffsetToLimits(old_offset + adjusted_scroll, scroll_node);
-  if (SetScrollOffset(scroll_node.element_id, new_offset))
-    layer_tree_impl->DidUpdateScrollOffset(scroll_node.element_id);
+  if (SetScrollOffset(scroll_node.element_id, new_offset)) {
+    layer_tree_impl->DidUpdateScrollOffset(
+        scroll_node.element_id,
+        /*pushed_from_main_or_pending_tree=*/false);
+  }
 
   TRACE_EVENT_END("input", /* ScrollTree::ScrollBy */
                   "old_offset", old_offset, "new_offset", new_offset);
@@ -2065,6 +2077,10 @@ PropertyTreesCachedData::~PropertyTreesCachedData() = default;
 
 PropertyTreesChangeState::PropertyTreesChangeState() = default;
 PropertyTreesChangeState::~PropertyTreesChangeState() = default;
+PropertyTreesChangeState::PropertyTreesChangeState(PropertyTreesChangeState&&) =
+    default;
+PropertyTreesChangeState& PropertyTreesChangeState::operator=(
+    PropertyTreesChangeState&&) = default;
 
 PropertyTrees::PropertyTrees(const ProtectedSequenceSynchronizer& synchronizer)
     : synchronizer_(synchronizer),

@@ -18,16 +18,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::Return;
-
 namespace {
+
+using ::testing::Return;
 
 MATCHER_P(AccountEq, expected, "") {
   return expected.account_id == arg.account_id && expected.email == arg.email &&
          expected.gaia == arg.gaia;
 }
-
-}  // namespace
 
 class AutofillBubbleSignInPromoControllerTest : public ::testing::Test {
  public:
@@ -84,3 +82,5 @@ TEST_F(AutofillBubbleSignInPromoControllerTest, SignInIsCalled) {
   EXPECT_CALL(*delegate(), SignIn(AccountEq(account), form()));
   controller()->OnSignInToChromeClicked(account);
 }
+
+}  // namespace

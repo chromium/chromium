@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -214,6 +215,13 @@ void SerializeAuthFactor(const AuthFactor& factor,
       break;
     }
     case AuthFactorType::kPin: {
+      if (ash::features::IsAllowPinTimeoutSetupEnabled()) {
+        out_proto->mutable_common_metadata()->set_lockout_policy(
+            user_data_auth::LOCKOUT_POLICY_TIME_LIMITED);
+      } else {
+        out_proto->mutable_common_metadata()->set_lockout_policy(
+            user_data_auth::LOCKOUT_POLICY_ATTEMPT_LIMITED);
+      }
       user_data_auth::PinMetadata& pin_metadata_proto =
           *out_proto->mutable_pin_metadata();
       if (factor.GetPinMetadata().hash_info().has_value()) {

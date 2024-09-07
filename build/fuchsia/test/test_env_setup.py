@@ -1,3 +1,5 @@
+#!/usr/bin/env vpython3
+
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -73,3 +75,7 @@ def setup_env(mypid: int = 0) -> int:
     # pylint: disable=protected-access
     run_test._get_test_runner = get_test_runner
     return run_test.main()
+
+
+if __name__ == '__main__':
+    sys.exit(setup_env())

@@ -1009,8 +1009,7 @@ TEST(CrabbyStaticAVIFTests, invalidImages) {
 TEST(CrabbyStaticAVIFTests, GetAdobeGainmapInfoAndData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
@@ -1065,8 +1064,7 @@ TEST(CrabbyStaticAVIFTests, GetAdobeGainmapInfoAndData) {
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
@@ -1123,8 +1121,7 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndData) {
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
@@ -1179,8 +1176,7 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceSameICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   // The image has use_base_color_space set to false (i.e. use the alternate
@@ -1212,8 +1208,7 @@ void ExpectMatrixNear(const skcms_Matrix3x3& lhs,
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   // The image has use_base_color_space set to false (i.e. use the alternate
@@ -1243,8 +1238,7 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   // The image has use_base_color_space set to false (i.e. use the alternate
@@ -1272,7 +1266,7 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
 TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages},
+      /*enabled_features=*/{},
       /*disabled_features=*/{features::kAvifGainmapHdrImages});
 
   for (const std::string image :
@@ -1292,8 +1286,7 @@ TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {
 TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGainmapHdrImages,
-                            features::kAvifGainmapHdrImages},
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
   for (const std::string image :

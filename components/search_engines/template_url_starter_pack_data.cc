@@ -54,21 +54,21 @@ const StarterPackEngine tabs = {
     .type = SEARCH_ENGINE_STARTER_PACK_TABS,
 };
 
-const StarterPackEngine AskGoogle = {
+const StarterPackEngine Gemini = {
     .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_NAME,
     .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_KEYWORD,
     .favicon_url = nullptr,
     .search_url = "https://gemini.google.com/app?q={searchTerms}",
     .destination_url = "https://gemini.google.com",
-    .id = StarterPackID::kAskGoogle,
-    .type = SEARCH_ENGINE_STARTER_PACK_ASK_GOOGLE,
+    .id = StarterPackID::kGemini,
+    .type = SEARCH_ENGINE_STARTER_PACK_GEMINI,
 };
 
 const StarterPackEngine* engines[] = {
     &bookmarks,
     &history,
     &tabs,
-    &AskGoogle,
+    &Gemini,
 };
 
 int GetDataVersion() {

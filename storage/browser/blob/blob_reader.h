@@ -118,22 +118,28 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   Status SetReadRange(uint64_t position, uint64_t length);
 
   // Reads a portion of the data.
-  // * CalculateSize (and optionally SetReadRange) must be called beforehand.
-  // * bytes_read is populated only if Status::DONE is returned. Otherwise the
-  //   bytes read (or error code) is populated in the 'done' callback.
-  // * The done callback is only called if Status::IO_PENDING is returned.
-  // * This method can be called multiple times. A bytes_read value (either from
-  //   the callback for Status::IO_PENDING or the bytes_read value for
-  //   Status::DONE) of 0 means we're finished reading.
+  // * `CalculateSize()` (and optionally `SetReadRange()`) must be called
+  //   beforehand.
+  // * `bytes_read` is populated only if `Status::DONE` is returned. Otherwise
+  //   the bytes read (or error code) is populated in the `done` callback.
+  // * The `done` callback is only called if `Status::IO_PENDING` is returned.
+  // * This method can be called multiple times. A bytes read value (either from
+  //   the callback for `Status::IO_PENDING` or the `bytes_read` value for
+  //   `Status::DONE`) of 0 means we're finished reading.
+  // TODO (crbug.com/362658602): Use separate parameters for the error code and
+  // bytes read in `done`.
   Status Read(net::IOBuffer* buffer,
               size_t dest_size,
               int* bytes_read,
               net::CompletionOnceCallback done);
 
-  // Returns if this reader contains a single MojoDataItem.  If so,
-  // ReadSingleMojoDataItem can be called instead of multiple Reads as an
-  // optimized path.  This can only be called after CalculateSize.
+  // Returns true iff this reader contains a single MojoDataItem. When true,
+  // `ReadSingleMojoDataItem()` can be called instead of multiple `Read()`s as
+  // an optimized path. This can only be called after `CalculateSize()`.
   bool IsSingleMojoDataItem() const;
+
+  // Reads the data from the single MojoDataItem directly into `producer` and
+  // passes the `net::Error` from the operation to the `done` callback.
   void ReadSingleMojoDataItem(mojo::ScopedDataPipeProducerHandle producer,
                               net::CompletionOnceCallback done);
 
@@ -152,7 +158,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
     return remaining_bytes_;
   }
 
-  // Returns the net error code if there was an error. Defaults to net::OK.
+  // Returns the net error code if there was an error. Defaults to `net::OK`.
+  // Not set when `ReadSingleMojoDataItem()` is used.
+  // TODO (crbug.com/362658602): Make this an `std::optional` instead.
   int net_error() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return net_error_;

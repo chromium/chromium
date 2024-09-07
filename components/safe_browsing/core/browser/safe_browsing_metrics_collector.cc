@@ -252,7 +252,6 @@ void SafeBrowsingMetricsCollector::AddBypassEventToPref(
   EventType event;
   switch (threat_source) {
     case ThreatSource::LOCAL_PVER4:
-    case ThreatSource::REMOTE:
       event = EventType::DATABASE_INTERSTITIAL_BYPASS;
       break;
     case ThreatSource::CLIENT_SIDE_DETECTION:

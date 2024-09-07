@@ -66,6 +66,7 @@ import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -100,6 +101,7 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock SegmentationPlatformService mSegmentationPlatformService;
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private HomeModulesMediator mMediator;
+    @Mock private ModelList mModel;
 
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserver;
     @Captor private ArgumentCaptor<Callback<Profile>> mProfileObserver;
@@ -302,6 +304,36 @@ public class HomeModulesCoordinatorUnitTest {
         mCoordinator.destroy();
 
         verify(mMediator).recordMagicStackScroll(/* hasHomeModulesBeenScrolled= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+    })
+    public void testOnModuleChangedCallback() {
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ true);
+        Callback<Boolean> onHomeModulesShownCallback = Mockito.mock(Callback.class);
+        when(mProfileSupplier.hasValue()).thenReturn(true);
+        mCoordinator.setMediatorForTesting(mMediator);
+        mCoordinator.setModelForTesting(mModel);
+
+        Runnable onHomeModulesChangedCallback =
+                mCoordinator.createOnModuleChangedCallback(onHomeModulesShownCallback);
+        Mockito.clearInvocations(mRecyclerView);
+
+        when(mModel.size()).thenReturn(2);
+        onHomeModulesChangedCallback.run();
+        verify(mRecyclerView).invalidateItemDecorations();
+
+        when(mModel.size()).thenReturn(1);
+        onHomeModulesChangedCallback.run();
+        verify(onHomeModulesShownCallback).onResult(true);
+
+        when(mModel.size()).thenReturn(0);
+        onHomeModulesChangedCallback.run();
+        verify(onHomeModulesShownCallback).onResult(false);
     }
 
     private void setupAndVerifyTablets() {

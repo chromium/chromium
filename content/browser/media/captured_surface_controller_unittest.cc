@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/host_zoom_map_impl.h"
@@ -552,12 +553,13 @@ TEST_P(CapturedSurfaceControllerSetZoomTemporarinessTest,
 enum class CapturedSurfaceControlAPI {
   kSendWheel,
   kSetZoomLevel,
+  kRequestPermission,
 };
 
 class CapturedSurfaceControllerInterfaceTestBase
     : public CapturedSurfaceControllerTestBase {
  public:
-  CapturedSurfaceControllerInterfaceTestBase(
+  explicit CapturedSurfaceControllerInterfaceTestBase(
       CapturedSurfaceControlAPI tested_interface)
       : tested_interface_(tested_interface) {}
   ~CapturedSurfaceControllerInterfaceTestBase() override = default;
@@ -575,8 +577,12 @@ class CapturedSurfaceControllerInterfaceTestBase
             /*zoom_level=*/100,
             MakeCallbackExpectingResult(run_loop, expected_result));
         return;
+      case CapturedSurfaceControlAPI::kRequestPermission:
+        controller_->RequestPermission(
+            MakeCallbackExpectingResult(run_loop, expected_result));
+        return;
     }
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
 
  protected:
@@ -597,7 +603,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     CapturedSurfaceControllerInterfaceTest,
     ::testing::Values(CapturedSurfaceControlAPI::kSendWheel,
-                      CapturedSurfaceControlAPI::kSetZoomLevel));
+                      CapturedSurfaceControlAPI::kSetZoomLevel,
+                      CapturedSurfaceControlAPI::kRequestPermission));
 
 TEST_P(CapturedSurfaceControllerInterfaceTest, SuccessReportedIfPermitted) {
   base::RunLoop run_loop;

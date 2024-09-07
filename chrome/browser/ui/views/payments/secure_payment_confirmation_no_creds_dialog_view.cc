@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_no_creds_dialog_view.h"
 
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_ui_observer.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds_model.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -52,8 +54,8 @@ void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
   response_callback_ = std::move(response_callback);
   opt_out_callback_ = std::move(opt_out_callback);
 
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
 
   InitChildViews();
 
@@ -71,7 +73,9 @@ void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
 
   SetModalType(ui::mojom::ModalType::kChild);
 
-  constrained_window::ShowWebModalDialogViews(this, web_contents);
+  views::Widget* widget =
+      constrained_window::ShowWebModalDialogViews(this, web_contents);
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 }
 
 void SecurePaymentConfirmationNoCredsDialogView::HideDialog() {

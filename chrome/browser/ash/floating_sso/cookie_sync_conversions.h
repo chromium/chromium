@@ -5,8 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_
 #define CHROME_BROWSER_ASH_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
+
+namespace base {
+class Time;
+}
 
 namespace net {
 class CanonicalCookie;
@@ -17,6 +23,9 @@ class CookieSpecifics;
 }
 
 namespace ash::floating_sso {
+
+// Time format used in CookieSpecifics.
+int64_t ToMicrosSinceWindowsEpoch(const base::Time& time);
 
 // Returns nullptr if some members of `proto` can't be deserialized or
 // if the cookie saved in `proto` is not canonical.

@@ -98,6 +98,14 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   // considered indistinguishable.
   class NET_EXPORT GroupId {
    public:
+    // Returns the prefix for `privacy_mode` for logging.
+    static std::string_view GetPrivacyModeGroupIdPrefix(
+        PrivacyMode privacy_mode);
+
+    // Returns the prefix for `secure_dns_policy` for logging.
+    static std::string_view GetSecureDnsPolicyGroupIdPrefix(
+        SecureDnsPolicy secure_dns_policy);
+
     GroupId();
     GroupId(url::SchemeHostPort destination,
             PrivacyMode privacy_mode,

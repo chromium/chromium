@@ -426,6 +426,11 @@ XMLPUBFUN void
 					 xmlTextReaderErrorFunc *f,
 					 void **arg);
 
+XMLPUBFUN void
+	    xmlTextReaderSetResourceLoader(xmlTextReaderPtr reader,
+					   xmlResourceLoader loader,
+					   void *data);
+
 #endif /* LIBXML_READER_ENABLED */
 
 #ifdef __cplusplus

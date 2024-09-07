@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
+#include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -44,7 +45,7 @@ namespace policy {
 
 BASE_FEATURE(kPolicyFetchWithSha256,
              "PolicyFetchWithSha256",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -145,6 +146,8 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
       return Request::TEST;
     case PolicyFetchReason::kUserRequest:
       return Request::USER_REQUEST;
+    case PolicyFetchReason::kRetry:
+      return Request::RETRY;
   }
   NOTREACHED();
 }
@@ -202,6 +205,16 @@ TranslatePolicyValidationResultSeverity(
   }
   NOTREACHED_IN_MIGRATION();
   return issue::VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED;
+}
+
+em::PolicyValidationReportRequest_Action TranslateValidationReportAction(
+    ValidationAction action) {
+  switch (action) {
+    case kStore:
+      return em::PolicyValidationReportRequest_Action_STORE;
+    case kLoad:
+      return em::PolicyValidationReportRequest_Action_LOAD;
+  }
 }
 
 template <typename T>
@@ -439,22 +452,25 @@ void CloudPolicyClient::RegisterWithCertificate(
                      std::move(signing_service)));
 }
 
-void CloudPolicyClient::RegisterBrowserWithEnrollmentToken(
+void CloudPolicyClient::RegisterBrowserOrPolicyAgentWithEnrollmentToken(
     const std::string& token,
     const std::string& client_id,
     const ClientDataDelegate& client_data_delegate,
-    bool is_mandatory) {
+    bool is_mandatory,
+    DeviceManagementService::JobConfiguration::JobType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(service_);
   DCHECK(!token.empty());
   DCHECK(!client_id.empty());
   DCHECK(!is_registered());
+  DCHECK(type == DeviceManagementService::JobConfiguration::
+                     TYPE_BROWSER_REGISTRATION ||
+         type == DMServerJobConfiguration::JobConfiguration::
+                     TYPE_POLICY_AGENT_REGISTRATION);
 
   SetClientId(client_id);
 
-  auto params = DMServerJobConfiguration::CreateParams::WithClient(
-      DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION,
-      this);
+  auto params = DMServerJobConfiguration::CreateParams::WithClient(type, this);
   params.auth_data = DMAuth::FromEnrollmentToken(token);
   params.callback = base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
                                    weak_ptr_factory_.GetWeakPtr());
@@ -472,6 +488,26 @@ void CloudPolicyClient::RegisterBrowserWithEnrollmentToken(
   client_data_delegate.FillRegisterBrowserRequest(
       request, base::BindOnce(&CloudPolicyClient::CreateUniqueRequestJob,
                               base::Unretained(this), std::move(config)));
+}
+
+void CloudPolicyClient::RegisterBrowserWithEnrollmentToken(
+    const std::string& token,
+    const std::string& client_id,
+    const ClientDataDelegate& client_data_delegate,
+    bool is_mandatory) {
+  RegisterBrowserOrPolicyAgentWithEnrollmentToken(
+      token, client_id, client_data_delegate, is_mandatory,
+      DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION);
+}
+
+void CloudPolicyClient::RegisterPolicyAgentWithEnrollmentToken(
+    const std::string& token,
+    const std::string& client_id,
+    const ClientDataDelegate& client_data_delegate) {
+  RegisterBrowserOrPolicyAgentWithEnrollmentToken(
+      token, client_id, client_data_delegate, /*is_mandatory=*/true,
+      DeviceManagementService::JobConfiguration::
+          TYPE_POLICY_AGENT_REGISTRATION);
 }
 
 void CloudPolicyClient::RegisterDeviceWithEnrollmentToken(
@@ -731,6 +767,7 @@ void CloudPolicyClient::SetBrowserDeviceIdentifier(
 void CloudPolicyClient::UploadPolicyValidationReport(
     CloudPolicyValidatorBase::Status status,
     const std::vector<ValueValidationIssue>& value_validation_issues,
+    const ValidationAction action,
     const std::string& policy_type,
     const std::string& policy_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -749,6 +786,8 @@ void CloudPolicyClient::UploadPolicyValidationReport(
 
   policy_validation_report_request->set_policy_type(policy_type);
   policy_validation_report_request->set_policy_token(policy_token);
+  policy_validation_report_request->set_action(
+      TranslateValidationReportAction(action));
   policy_validation_report_request->set_validation_result_type(
       TranslatePolicyValidationResult(status));
 

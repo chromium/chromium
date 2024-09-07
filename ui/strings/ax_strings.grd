@@ -579,6 +579,12 @@ need to be translated for each locale.-->
         <message name="IDS_AX_ROLE_SECTION" desc="Accessibility role description for a section of a document, like the main body text, the table of contents, a header, or a footer">
           section
         </message>
+        <message name="IDS_AX_ROLE_SECTIONFOOTER" desc="Accessibility role description for the footer of a section of a document.">
+          section footer
+        </message>
+        <message name="IDS_AX_ROLE_SECTIONHEADER" desc="Accessibility role description for the header of a section of a document.">
+          section header
+        </message>
         <message name="IDS_AX_ROLE_SLIDER" desc="Accessibility role description for a slider">
           slider
         </message>
@@ -733,6 +739,9 @@ need to be translated for each locale.-->
           </message>
           <message name="IDS_AX_ARIA_REQUIRED_STATE_DESCRIPTION" desc="Accessibility state description for an element that is labeled as required.">
             Required
+          </message>
+          <message name="IDS_AX_STATE_LINK_VISITED" desc="Accessibility role description suffix for links that have been visited.">
+            visited
           </message>
         </if>
       </if>

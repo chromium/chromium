@@ -173,7 +173,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
     "//chrome/browser/ash/borealis:test_support",
     "//chrome/browser/ash/borealis/infra:unit_tests",

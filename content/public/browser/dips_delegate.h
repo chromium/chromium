@@ -5,10 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DIPS_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_DIPS_DELEGATE_H_
 
-#include <string>
-#include <vector>
-
-#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -23,15 +19,10 @@ class BrowserContext;
 // ContentBrowserClient::CreateDipsDelegate().
 class CONTENT_EXPORT DipsDelegate {
  public:
-  using EngagedSitesCallback =
-      base::OnceCallback<void(std::vector<std::string>)>;
-
   virtual ~DipsDelegate();
 
-  // On the first startup, GetEngagedSites() will be called and the DIPS
-  // Database will be prepopulated with the sites passed to `callback`.
-  virtual void GetEngagedSites(BrowserContext* browser_context,
-                               EngagedSitesCallback callback) = 0;
+  // DIPS will be enabled in browser contexts for which this returns true.
+  virtual bool ShouldEnableDips(BrowserContext* browser_context) = 0;
 };
 
 }  // namespace content

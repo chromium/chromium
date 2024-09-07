@@ -94,6 +94,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #endif
     case RequestType::kGeolocation:
       return RequestTypeForUma::PERMISSION_GEOLOCATION;
+    case RequestType::kHandTracking:
+      return RequestTypeForUma::PERMISSION_HAND_TRACKING;
     case RequestType::kIdleDetection:
       return RequestTypeForUma::PERMISSION_IDLE_DETECTION;
 #if !BUILDFLAG(IS_ANDROID)
@@ -147,6 +149,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS;
     case RequestType::kCapturedSurfaceControl:
       return RequestTypeForUma::CAPTURED_SURFACE_CONTROL;
+    case RequestType::kWebAppInstallation:
+      return RequestTypeForUma::PERMISSION_WEB_APP_INSTALLATION;
 #endif
     case RequestType::kIdentityProvider:
       return RequestTypeForUma::PERMISSION_IDENTITY_PROVIDER;
@@ -212,6 +216,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "VR";
     case RequestTypeForUma::PERMISSION_AR:
       return "AR";
+    case RequestTypeForUma::PERMISSION_HAND_TRACKING:
+      return "HandTracking";
     case RequestTypeForUma::PERMISSION_STORAGE_ACCESS:
       return "StorageAccess";
     case RequestTypeForUma::PERMISSION_TOP_LEVEL_STORAGE_ACCESS:
@@ -242,6 +248,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "PointerLock";
     case RequestTypeForUma::MULTIPLE_KEYBOARD_AND_POINTER_LOCK:
       return "KeyboardAndPointerLock";
+    case RequestTypeForUma::PERMISSION_WEB_APP_INSTALLATION:
+      return "WebAppInstallation";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -1358,6 +1366,10 @@ void PermissionUmaUtil::RecordPermissionAction(
       base::UmaHistogramEnumeration("Permissions.Action.AR", action,
                                     PermissionAction::NUM);
       break;
+    case ContentSettingsType::HAND_TRACKING:
+      base::UmaHistogramEnumeration("Permissions.Action.HandTracking", action,
+                                    PermissionAction::NUM);
+      break;
     case ContentSettingsType::STORAGE_ACCESS:
       base::UmaHistogramEnumeration("Permissions.Action.StorageAccess", action,
                                     PermissionAction::NUM);
@@ -1405,6 +1417,10 @@ void PermissionUmaUtil::RecordPermissionAction(
     case ContentSettingsType::KEYBOARD_LOCK:
       base::UmaHistogramEnumeration("Permissions.Action.KeyboardLock", action,
                                     PermissionAction::NUM);
+      break;
+    case ContentSettingsType::WEB_APP_INSTALLATION:
+      base::UmaHistogramEnumeration("Permissions.Action.WebAppInstallation",
+                                    action, PermissionAction::NUM);
       break;
     // The user is not prompted for these permissions, thus there is no
     // permission action recorded for them.
@@ -1651,7 +1667,7 @@ void PermissionUmaUtil::RecordPageInfoPermissionChange(
       base::UmaHistogramEnumeration(histogram_name,
                                     PermissionChangeAction::RESET_FROM_DENIED);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
     }
   } else if (setting_before == ContentSetting::CONTENT_SETTING_ALLOW) {
     if (setting_after == ContentSetting::CONTENT_SETTING_BLOCK) {

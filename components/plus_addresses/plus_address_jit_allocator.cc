@@ -6,11 +6,9 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "net/http/http_status_code.h"
@@ -50,11 +48,6 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
             PlusAddressRequestErrorType::kMaxRefreshesReached)));
         return;
       }
-      if (!base::FeatureList::IsEnabled(features::kPlusAddressRefresh)) {
-        std::move(callback).Run(base::unexpected(PlusAddressRequestError(
-            PlusAddressRequestErrorType::kRequestNotSupportedError)));
-        return;
-      }
       ++attempts_made;
       http_client_->ReservePlusAddress(
           origin, /*refresh=*/true,
@@ -64,6 +57,13 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
     }
   }
   NOTREACHED();
+}
+
+std::optional<PlusProfile>
+PlusAddressJitAllocator::AllocatePlusAddressSynchronously(
+    const url::Origin& origin,
+    AllocationMode mode) {
+  return std::nullopt;
 }
 
 bool PlusAddressJitAllocator::IsRefreshingSupported(
@@ -78,11 +78,11 @@ bool PlusAddressJitAllocator::IsRefreshingSupported(
       it->second >= kMaxPlusAddressRefreshesPerOrigin) {
     return false;
   }
-  return base::FeatureList::IsEnabled(features::kPlusAddressRefresh);
+  return true;
 }
 
 void PlusAddressJitAllocator::RemoveAllocatedPlusAddress(
-    std::string_view plus_address) {
+    const PlusAddress& plus_address) {
   // This is a no-op for the JIT allocator - if the plus address was created,
   // the backend will ensure that it does not show up again.
 }

@@ -7,12 +7,11 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry, isFakeEntry, isInteractiveVolume, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashRootType} from '../../common/js/entry_utils.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {State} from '../../state/state.js';
 import {getFileData} from '../../state/store.js';
-import {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import {isTreeItem} from '../../widgets/xf_tree_util.js';
 
 import type {CommandHandlerDeps} from './command_handler.js';
 import type {DirectoryModel} from './directory_model.js';
@@ -22,7 +21,6 @@ import type {CanExecuteEvent, Command, CommandEvent} from './ui/command.js';
 import {List} from './ui/list.js';
 import type {Menu} from './ui/menu.js';
 import type {MenuItem} from './ui/menu_item.js';
-import {TreeItem} from './ui/tree.js';
 
 /**
  * The IDs of elements that can trigger share action.
@@ -49,14 +47,6 @@ function isMenu(element: EventTarget|null): element is Menu {
 function isMenuItem(element: EventTarget|null): element is MenuItem {
   if (element && 'parentElement' in element &&
       isMenu(element.parentElement as EventTarget)) {
-    return true;
-  }
-  return false;
-}
-
-function isTreeItem(element: EventTarget|HTMLElement|undefined|
-                    null): element is XfTreeItem|TreeItem {
-  if (element instanceof XfTreeItem || element instanceof TreeItem) {
     return true;
   }
   return false;
@@ -99,7 +89,7 @@ export function getCommandEntries(
     fileManager: CommandHandlerDeps,
     element: EventTarget|null): Array<Entry|FilesAppEntry> {
   if (isTreeItem(element)) {
-    const entry = getTreeItemEntry(element as XfTreeItem | TreeItem);
+    const entry = getTreeItemEntry(element);
     if (entry) {
       return [entry];
     }
@@ -107,11 +97,7 @@ export function getCommandEntries(
 
   // DirectoryTree has the focused item.
   const focusedItem = getFocusedTreeItem(element);
-  if (focusedItem && 'entry' in focusedItem) {
-    return [focusedItem.entry!];
-  }
-
-  const entry = focusedItem && getTreeItemEntry(focusedItem);
+  const entry = getTreeItemEntry(focusedItem);
   if (entry) {
     return [entry];
   }
@@ -119,21 +105,12 @@ export function getCommandEntries(
   const htmlElement = element as HTMLElement;
   // The event target could still be a descendant of a legacy TreeItem element
   // (e.g. the eject button).
-  if (isNewDirectoryTreeEnabled()) {
-    // Handle eject button in the new directory tree.
-    if (htmlElement.classList.contains('root-eject')) {
-      const treeItem = htmlElement.closest('xf-tree-item');
-      const entry = treeItem && getTreeItemEntry(treeItem);
-      if (entry) {
-        return [entry];
-      }
-    }
-  } else {
-    if (fileManager.ui.directoryTree?.contains(htmlElement)) {
-      const treeItem = htmlElement.closest('.tree-item');
-      if (treeItem && 'entry' in treeItem) {
-        return [treeItem.entry as DirectoryEntry | FilesAppDirEntry];
-      }
+  // Handle eject button in the new directory tree.
+  if (htmlElement.classList.contains('root-eject')) {
+    const treeItem = htmlElement.closest('xf-tree-item');
+    const entry = treeItem && getTreeItemEntry(treeItem);
+    if (entry) {
+      return [entry];
     }
   }
 
@@ -178,14 +155,6 @@ export function getParentEntry(
   if (isTreeItem(parentItem) && getTreeItemEntry(parentItem)) {
     // DirectoryTree has the focused item.
     return getTreeItemEntry(parentItem);
-  }
-
-  const directoryTreeItem = element as TreeItem;
-  const directoryTreeParentItem = directoryTreeItem?.parentItem;
-  if (isTreeItem(directoryTreeParentItem) &&
-      getTreeItemEntry(directoryTreeParentItem)) {
-    // Legacy TreeItem has parentItem.
-    return getTreeItemEntry(directoryTreeParentItem);
   }
 
   if (element instanceof List) {

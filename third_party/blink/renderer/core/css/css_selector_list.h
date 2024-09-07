@@ -34,6 +34,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -90,6 +91,7 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
                                   CSSSelector* selector_array);
 
   CSSSelectorList* Copy() const;
+  static HeapVector<CSSSelector> Copy(const CSSSelector* selector_list);
 
   bool IsValid() const {
     return first_selector_[0].Match() != CSSSelector::kInvalidList;

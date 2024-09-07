@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/hdr_metadata_helper_win.h"
 
+#include "base/compiler_specific.h"
 #include "media/base/win/d3d11_mocks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -98,13 +94,14 @@ TEST_F(HDRMetadataHelperWinTest, CachesMetadataIfAvailable) {
   AddAdapter();
   DXGI_OUTPUT_DESC1 desc{};
   desc.RedPrimary[0] = 0.1;
-  desc.RedPrimary[1] = 0.2;
+  // SAFETY: required from Windows API.
+  UNSAFE_BUFFERS(desc.RedPrimary[1]) = 0.2;
   desc.GreenPrimary[0] = 0.3;
-  desc.GreenPrimary[1] = 0.4;
+  UNSAFE_BUFFERS(desc.GreenPrimary[1]) = 0.4;
   desc.BluePrimary[0] = 0.5;
-  desc.BluePrimary[1] = 0.6;
+  UNSAFE_BUFFERS(desc.BluePrimary[1]) = 0.6;
   desc.WhitePoint[0] = 0.7;
-  desc.WhitePoint[1] = 0.8;
+  UNSAFE_BUFFERS(desc.WhitePoint[1]) = 0.8;
   desc.MinLuminance = 0.9;
   desc.MaxLuminance = 1.0;
   desc.MaxFullFrameLuminance = 100;
@@ -125,20 +122,25 @@ TEST_F(HDRMetadataHelperWinTest, CachesMetadataIfAvailable) {
   static constexpr int kMinLuminanceFixedPoint = 10000;
   EXPECT_EQ(result->RedPrimary[0],
             static_cast<int>(desc.RedPrimary[0] * kPrimariesFixedPoint));
-  EXPECT_EQ(result->RedPrimary[1],
-            static_cast<int>(desc.RedPrimary[1] * kPrimariesFixedPoint));
+  // SAFETY: required from Windows API.
+  EXPECT_EQ(UNSAFE_BUFFERS(result->RedPrimary[1]),
+            static_cast<int>(UNSAFE_BUFFERS(desc.RedPrimary[1]) *
+                             kPrimariesFixedPoint));
   EXPECT_EQ(result->GreenPrimary[0],
             static_cast<int>(desc.GreenPrimary[0] * kPrimariesFixedPoint));
-  EXPECT_EQ(result->GreenPrimary[1],
-            static_cast<int>(desc.GreenPrimary[1] * kPrimariesFixedPoint));
+  EXPECT_EQ(UNSAFE_BUFFERS(result->GreenPrimary[1]),
+            static_cast<int>(UNSAFE_BUFFERS(desc.GreenPrimary[1]) *
+                             kPrimariesFixedPoint));
   EXPECT_EQ(result->BluePrimary[0],
             static_cast<int>(desc.BluePrimary[0] * kPrimariesFixedPoint));
-  EXPECT_EQ(result->BluePrimary[1],
-            static_cast<int>(desc.BluePrimary[1] * kPrimariesFixedPoint));
+  EXPECT_EQ(UNSAFE_BUFFERS(result->BluePrimary[1]),
+            static_cast<int>(UNSAFE_BUFFERS(desc.BluePrimary[1]) *
+                             kPrimariesFixedPoint));
   EXPECT_EQ(result->WhitePoint[0],
             static_cast<int>(desc.WhitePoint[0] * kPrimariesFixedPoint));
-  EXPECT_EQ(result->WhitePoint[1],
-            static_cast<int>(desc.WhitePoint[1] * kPrimariesFixedPoint));
+  EXPECT_EQ(UNSAFE_BUFFERS(result->WhitePoint[1]),
+            static_cast<int>(UNSAFE_BUFFERS(desc.WhitePoint[1]) *
+                             kPrimariesFixedPoint));
   EXPECT_EQ(result->MaxMasteringLuminance,
             static_cast<unsigned>(desc.MaxLuminance));
   EXPECT_EQ(result->MinMasteringLuminance,

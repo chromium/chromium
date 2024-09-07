@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -126,6 +127,7 @@ class TabCollectionStorageTest : public ::testing::Test {
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::map<std::string, std::string> storage_children_to_id_map_;
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 TEST_F(TabCollectionStorageTest, AddTabOperation) {

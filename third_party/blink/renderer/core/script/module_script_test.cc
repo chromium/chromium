@@ -53,7 +53,7 @@ class MockCachedMetadataSender : public CachedMetadataSender {
  public:
   MockCachedMetadataSender() = default;
 
-  MOCK_METHOD3(Send, void(CodeCacheHost*, const uint8_t*, size_t));
+  MOCK_METHOD2(Send, void(CodeCacheHost*, base::span<const uint8_t>));
   bool IsServedFromCacheStorage() override { return false; }
 };
 
@@ -191,7 +191,7 @@ TEST_F(ModuleScriptTest, V8CodeCache) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
 
       case 1:
@@ -201,7 +201,7 @@ TEST_F(ModuleScriptTest, V8CodeCache) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
 
       case 2:
@@ -246,7 +246,7 @@ TEST_F(ModuleScriptTest, V8CodeCache) {
 
   // As code cache is mismatched and rejected by V8, the CachedMetadata are
   // cleared and notified to Platform.
-  EXPECT_CALL(*sender_ptr, Send(_, _, _));
+  EXPECT_CALL(*sender_ptr, Send(_, _));
   EXPECT_CALL(checkpoint, Call(4));
 
   CreateClassicScript(LargeSourceText(), cache_handler)
@@ -302,13 +302,13 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
       case 1:
         EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
 
       case 3:
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
         EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
     }
 
@@ -342,7 +342,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
 
       case 1:
@@ -352,7 +352,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
 
       case 2:
@@ -362,7 +362,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
 
       case 3:
@@ -373,7 +373,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
 
       case 4:
@@ -383,7 +383,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _));
         break;
 
       case 5:

@@ -282,7 +282,8 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
             // TODO(crbug.com/41392053): support CT.
             std::make_unique<net::DoNothingCTVerifier>(),
             base::MakeRefCounted<net::DefaultCTPolicyEnforcer>(),
-            CreateSystemTrustStore(impl_name, root_store_type), {}));
+            CreateSystemTrustStore(impl_name, root_store_type), {},
+            std::nullopt));
   }
 
   if (impl_name == "pathbuilder") {

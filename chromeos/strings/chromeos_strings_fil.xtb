@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Available na ngayon ang mga eksklusibong asset sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1026212596705997935">Ginagamit ang shortcut para sa "<ph name="CONFLICT_ACCEL_NAME" />." Pumindot ng bagong shortcut. Para palitan ang kasalukuyang shortcut, pindutin ulit ang shortcut na ito.</translation>
+<translation id="1030856839388844477">I-reset ang paggamit ng data</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
 <translation id="1049663189809099096">pastel yellow</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Mahina ang signal</translation>
 <translation id="1300115153046603471">Default at <ph name="ATTACH" /> ang uri ng APN.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">I-convert</translation>
 <translation id="1304014921944666344">Petsa kung kailan ginawa</translation>
 <translation id="1308754910631152188">Nag-a-update (<ph name="PERCENTAGE_VALUE" />% na ang natapos)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> (na) minuto</translation>
@@ -74,8 +76,11 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pagkasyahin sa nasa-scan na bahagi</translation>
 <translation id="1343442362630695901">salt lake</translation>
+<translation id="1348657754632799065">Recording bar</translation>
 <translation id="1367951781824006909">Pumili ng isang file</translation>
 <translation id="1371650399987522809">Feedback para sa wallpaper na pinapagana ng Google AI</translation>
+<translation id="1374385338586507108">Bigyang-kahulugan</translation>
+<translation id="1383876407941801731">Hanapin</translation>
 <translation id="1387854245479784695">Isa itong pagsasama-sama ng lahat ng core</translation>
 <translation id="1393206549145430405">kastilyo</translation>
 <translation id="1394661041439318933">May <ph name="BATTERY_PERCENTAGE" />% baterya ang case ng device.</translation>
@@ -95,6 +100,7 @@
 <translation id="1449035143498573192">Buksan sa Google Search</translation>
 <translation id="1451536289672181509">Keyboard ang device.</translation>
 <translation id="1452939186874918380">mga payong</translation>
+<translation id="145402479967797468">Mga kontrol sa pag-playback</translation>
 <translation id="1459693405370120464">Lagay ng Panahon</translation>
 <translation id="1463084054301832672">cottage</translation>
 <translation id="1468664791493211953">Mga Alok</translation>
@@ -260,6 +266,7 @@
 <translation id="2212733584906323460">Name Resolution</translation>
 <translation id="2215920961700443347">Walang internet. Kumonekta sa internet at subukan ulit.</translation>
 <translation id="2217935453350629363">Kasalukuyang bilis</translation>
+<translation id="221994303562837085">Ihinto ang pag-record</translation>
 <translation id="2224337661447660594">Walang internet</translation>
 <translation id="222447520299472966">Kailangang pumili ng hindi bababa sa isang album sa Art gallery</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -267,6 +274,7 @@
 <translation id="2230624078793142213">Gumawa pa</translation>
 <translation id="2236746079896696523">Toggle ng backlight ng keyboard</translation>
 <translation id="2240366984605217732">Switch ng layout</translation>
+<translation id="2242381852034179222">Pinapamahalaan ng iyong mga administrator ang feature na ito</translation>
 <translation id="2244834438220057800">berde</translation>
 <translation id="225692081236532131">Status ng pag-activate</translation>
 <translation id="2267285889943769271">Magdagdag ng screenshot</translation>
@@ -310,6 +318,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
 <translation id="2505327257735685095">I-refresh ang kasalukuyang larawan sa wallpaper</translation>
+<translation id="2507491234071975894">Speaker</translation>
 <translation id="2512979179176933762">ipakita ang mga window</translation>
 <translation id="2513396635448525189">Larawan sa pag-log in</translation>
 <translation id="2521835766824839541">nakaraang track</translation>
@@ -320,6 +329,7 @@
 <translation id="2533048460510040082">Iminumungkahing content ng tulong</translation>
 <translation id="2536159006530886390">Hindi makakonekta sa internet.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> pa</translation>
+<translation id="2560876255701405320">Listahan ng mga recording ng audio</translation>
 <translation id="2561093647892030937">mga lemon</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
 <translation id="2575552334616524665">Puwede mo itong i-on sa Mga Setting o sa <ph name="THREE_DOTS_MENU_ICON" /> menu</translation>
@@ -351,6 +361,7 @@
 <translation id="2715723665057727940">ilog</translation>
 <translation id="2717139507051041123">I-enable ang dark color mode</translation>
 <translation id="2728460467788544679">I-clear ang lahat ng history ng pag-print</translation>
+<translation id="2731700343119398978">Mangyaring maghintay...</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Nakabahagi</translation>
 <translation id="2751739896257479635">EAP Phase 2 na pag-authenticate</translation>
@@ -365,6 +376,7 @@
 <translation id="2855718259207180827">lana</translation>
 <translation id="2859243502336719778">Mahalagang update</translation>
 <translation id="2860473693272905224">Maglagay ng isa pang pahina sa scanner</translation>
+<translation id="286265581261662583">Mag-right click o pindutin nang matagal para makakuha ng mga kahulugan, pagsasalin, o conversion ng unit</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2873483161362553159">Pag-navigate sa browser</translation>
 <translation id="2874939134665556319">Nakaraang track</translation>
@@ -405,6 +417,7 @@
 <translation id="3140130301071865159">niyebe</translation>
 <translation id="3146655726035122603">Eksklusibo sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Data sa mobile</translation>
+<translation id="3156511682997763015">I-forward nang 10 segundo</translation>
 <translation id="3156846309055100599">Sina-scan ang page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">May na-detect na captive portal</translation>
 <translation id="3160172848211257835">Ipadala ang <ph name="BEGIN_LINK1" />impormasyon ng system at app<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />mga sukatan<ph name="END_LINK2" /></translation>
@@ -434,6 +447,7 @@
 <translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
 <translation id="3305294846493618482">higit pa</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
+<translation id="3321030238473337787">Bilis ng pag-playback</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
 <translation id="3340978935015468852">mga setting</translation>
@@ -462,7 +476,6 @@
 <translation id="346423161771747987">Current</translation>
 <translation id="346539236881580388">Kunan ulit</translation>
 <translation id="3484914941826596830">Habang nag-a-update ang firmware, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posibleng tumagal nang ilang minuto ang update na ito at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
-<translation id="3485555238092220889">aksyon sa accessibility</translation>
 <translation id="3486220673238053218">kahulugan</translation>
 <translation id="3487866404496702283">Feedback para sa mahi na feature</translation>
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
@@ -511,6 +524,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> (na) review)</translation>
 <translation id="3748026146096797577">Hindi Nakakonekta</translation>
 <translation id="3749289110408117711">File name</translation>
+<translation id="3767737419527918477">Maghanap ng mga recording file</translation>
 <translation id="3771294271822695279">Mga Video File</translation>
 <translation id="3780740315729837296">Magtalaga ng keyboard key</translation>
 <translation id="3784455785234192852">I-lock</translation>
@@ -671,6 +685,7 @@
 <translation id="4562494484721939086">Walang serbisyo</translation>
 <translation id="4570558255126759859">I-download ang modelo ng Gemini para mag-summarize ng mga recording?</translation>
 <translation id="4573777384450697571">Nabigo - Nag-expire na ang Certificate</translation>
+<translation id="4575450106703099687">mga opsyon sa accessibility</translation>
 <translation id="458794348635939462">Hindi nalutas ang lahat ng host</translation>
 <translation id="4593212453765072419">Kinakailangan ang pagpapatunay ng proxy</translation>
 <translation id="4594021849294327751">Gumawa ng transcript</translation>
@@ -793,6 +808,7 @@
 <translation id="5223226274641517059">Ipapakita ang mga live transcript habang nagre-record ka. Puwede mo itong i-off sa anumang oras sa Mga Setting.</translation>
 <translation id="5226879510707344687">I-export ang transcript</translation>
 <translation id="5227902338748591677">Iskedyul ng madilim na tema</translation>
+<translation id="5229104491259541281">I-convert ang "<ph name="QUERY" />"</translation>
 <translation id="5229344016299762883">Lumabas sa fullscreen</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Na-set up ng administrator mong awtomatikong magsisimula ang "<ph name="APP_NAME" />" sa tuwing magla-log in ka.}=2{Na-set up ng administrator mong awtomatikong magsisimula ang "<ph name="APP_NAME" />" at 1 iba pang app sa tuwing magla-log in ka.}one{Na-set up ng administrator mong awtomatikong magsisimula ang "<ph name="APP_NAME" />" at # iba pang app sa tuwing magla-log in ka.}other{Na-set up ng administrator mong awtomatikong magsisimula ang "<ph name="APP_NAME" />" at # na iba pang app sa tuwing magla-log in ka.}}</translation>
@@ -883,7 +899,9 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">I-edit ang button para sa <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">I-update ang <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Na-reset ang paggamit ng data</translation>
 <translation id="574392208103952083">Katamtaman</translation>
+<translation id="5744175046705638478">Isalin ang "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">susunod na track</translation>
 <translation id="5760715441271661976">Status ng Portal</translation>
 <translation id="5763838252932650682">Nire-restart at ina-update ang <ph name="APP_NAME" /></translation>
@@ -892,6 +910,7 @@
 <translation id="57838592816432529">I-mute</translation>
 <translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Walang itinalagang shortcut</translation>
 <translation id="5826644637650799838">Tungkol sa sining</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
@@ -930,6 +949,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Huwag nang ipakita ulit</translation>
 <translation id="5975130252842127517">coral</translation>
+<translation id="5982621672636444458">Mga opsyon sa pag-uuri</translation>
 <translation id="5984145644188835034">Default na Wallpaper</translation>
 <translation id="5996832681196460718">silk</translation>
 <translation id="6017514345406065928">Berde</translation>
@@ -946,7 +966,6 @@
 <translation id="6058625436358447366">Para tapusin, ilagay ang iyong luma at bagong password</translation>
 <translation id="6061772781719867950">Mga hindi naisagawang kahilingang HTTP</translation>
 <translation id="6073292342939316679">babaan ang liwanag ng keyboard</translation>
-<translation id="6073451960410192870">Ihinto ang pag-record</translation>
 <translation id="6075872808778243331">(Android) Latency ng HTTP</translation>
 <translation id="6078323886959318429">Magdagdag ng shortcut</translation>
 <translation id="6091080061796993741">dilaw</translation>
@@ -986,6 +1005,7 @@
 <translation id="6275224645089671689">Pakanang arrow</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Bigyang-kahulugan ang "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">asul at lila</translation>
 <translation id="6284632978374966585">I-on ang madilim na tema</translation>
 <translation id="6285260286443238386">I-export ang recording</translation>
@@ -1104,6 +1124,7 @@
 <translation id="6798678288485555829">Pag-navigate sa text</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Available ang impormasyong nauugnay sa iyong pinili. Gamitin ang Pataas na arrow key para ma-access.</translation>
+<translation id="6831043979455480757">Isalin</translation>
 <translation id="6853312040151791195">Rate ng Pag-discharge</translation>
 <translation id="6862416241246624313">Isinumite ang feedback</translation>
 <translation id="6866732840889595464">daisy</translation>
@@ -1317,6 +1338,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Uri ng provider</translation>
 <translation id="7882501334836096755">Pampublikong key</translation>
+<translation id="7889966925761734854">Maghanap</translation>
 <translation id="78957024357676568">pakaliwa</translation>
 <translation id="7897043345768902965">lakaran</translation>
 <translation id="7902285181767404769">I-silent ang mga notification habang nagre-record</translation>
@@ -1354,6 +1376,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
 <translation id="8082644724189923105">zone ng keyboard</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
+<translation id="8088963492174775412">Pindutin para mag-record</translation>
 <translation id="8094062939584182041">Payagan ang Google na mag-email sa iyo tungkol sa isyung ito</translation>
 <translation id="8104083085214006426">Gumagamit ka ng bukas at hindi secure na network</translation>
 <translation id="811820734797650957">(Android) Puwedeng I-ping ang Gateway</translation>
@@ -1464,7 +1487,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="871560550817059752">Hindi na-print - Wala nang ink</translation>
 <translation id="8721554916373590179">Mga sample na prompt</translation>
 <translation id="8723108084122415655">Mas mataas sa limitasyon ng latency ang hindi default na network</translation>
-<translation id="8725066075913043281">Muling subukan</translation>
+<translation id="8725066075913043281">Subukan ulit</translation>
 <translation id="8726019395068607495">Huminto - Nakabukas ang door</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8739555075907731077">Naka-pause (<ph name="PERCENTAGE_VALUE" />% ang nakumpleto)</translation>
@@ -1551,6 +1574,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="9087578468327036362">Iulat ang query na ito</translation>
 <translation id="9088306295921699330">Kasalukuyang paggamit</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Higit pang impormasyon tungkol sa Petsa ng pag-reset</translation>
 <translation id="9100765901046053179">Mga advanced na setting</translation>
 <translation id="910415269708673980">I-refresh ang ticket para sa <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Sina-scan ang pahina <ph name="PAGE_NUMBER" /></translation>

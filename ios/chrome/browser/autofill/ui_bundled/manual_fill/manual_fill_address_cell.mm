@@ -4,14 +4,15 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_cell.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -36,6 +37,9 @@
 @end
 
 @implementation ManualFillAddressItem {
+  // The 0-based index at which the address is in the list of addresses to show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
 }
@@ -43,6 +47,7 @@
 - (instancetype)initWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithType:kItemTypeEnumZero];
@@ -50,6 +55,7 @@
     _contentInjector = contentInjector;
     _address = address;
     _menuActions = menuActions;
+    _cellIndex = cellIndex;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
     _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillAddressCell class];
@@ -63,10 +69,10 @@
   [cell setUpWithAddress:self.address
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
+                        cellIndex:_cellIndex
       cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel
            showAutofillFormButton:_showAutofillFormButton];
 }
-
 @end
 
 @interface ManualFillAddressCell ()
@@ -142,6 +148,9 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 }  // namespace
 
 @implementation ManualFillAddressCell {
+  // The 0-based index at which the address is in the list of addresses to show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the cell.
   BOOL _showAutofillFormButton;
 
@@ -183,8 +192,10 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 - (void)setUpWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton {
+  _cellIndex = cellIndex;
   _showAutofillFormButton = showAutofillFormButton;
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
@@ -721,6 +732,12 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 // Called when the "Autofill Form" button is tapped. Fills the current form with
 // the address' data.
 - (void)onAutofillFormButtonTapped {
+  base::UmaHistogramSparse(
+      "Autofill.UserAcceptedSuggestionAtIndex.Address.ManualFallback",
+      _cellIndex);
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_Profiles_SuggestionAccepted"));
+
   FormSuggestion* suggestion = [FormSuggestion
              suggestionWithValue:nil
                       minorValue:nil
@@ -733,7 +750,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
-  [self.contentInjector autofillFormWithSuggestion:suggestion];
+  [self.contentInjector autofillFormWithSuggestion:suggestion
+                                           atIndex:_cellIndex];
 }
 
 // Sets the title and accessbility label of the given `chipButton` using the

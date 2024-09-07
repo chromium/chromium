@@ -205,8 +205,8 @@ WebDatabaseTable::TypeKey KeywordTable::GetTypeKey() const {
 }
 
 bool KeywordTable::CreateTablesIfNecessary() {
-  return db_->DoesTableExist("keywords") ||
-         db_->Execute(
+  return db()->DoesTableExist("keywords") ||
+         db()->Execute(
              "CREATE TABLE keywords ("
              "id INTEGER PRIMARY KEY,"
              "short_name VARCHAR NOT NULL,"
@@ -274,7 +274,7 @@ bool KeywordTable::MigrateToVersion(int version,
 }
 
 bool KeywordTable::PerformOperations(const Operations& operations) {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   if (!transaction.Begin())
     return false;
 
@@ -303,7 +303,7 @@ bool KeywordTable::PerformOperations(const Operations& operations) {
 bool KeywordTable::GetKeywords(Keywords* keywords) {
   const std::string query = base::StrCat(
       {"SELECT ", GetKeywordColumns(), " FROM keywords ORDER BY id ASC"});
-  sql::Statement s(db_->GetUniqueStatement(query));
+  sql::Statement s(db()->GetUniqueStatement(query));
 
   std::set<TemplateURLID> bad_entries;
   while (s.Step()) {
@@ -320,53 +320,48 @@ bool KeywordTable::GetKeywords(Keywords* keywords) {
 }
 
 bool KeywordTable::SetDefaultSearchProviderID(int64_t id) {
-  return meta_table_->SetValue(kDefaultSearchProviderKey, id);
+  return meta_table()->SetValue(kDefaultSearchProviderKey, id);
 }
 
 int64_t KeywordTable::GetDefaultSearchProviderID() {
   int64_t value = kInvalidTemplateURLID;
-  meta_table_->GetValue(kDefaultSearchProviderKey, &value);
+  meta_table()->GetValue(kDefaultSearchProviderKey, &value);
   return value;
 }
 
 bool KeywordTable::SetBuiltinKeywordDataVersion(int version) {
-  return meta_table_->SetValue(kBuiltinKeywordDataVersion, version);
+  return meta_table()->SetValue(kBuiltinKeywordDataVersion, version);
 }
 
 int KeywordTable::GetBuiltinKeywordDataVersion() {
   int version = 0;
-  return meta_table_->GetValue(kBuiltinKeywordDataVersion, &version) ? version
-                                                                     : 0;
+  return meta_table()->GetValue(kBuiltinKeywordDataVersion, &version) ? version
+                                                                      : 0;
 }
 
-bool KeywordTable::SetBuiltinKeywordMilestone(int milestone) {
-  return meta_table_->SetValue(kBuiltinKeywordMilestone, milestone);
-}
-
-int KeywordTable::GetBuiltinKeywordMilestone() {
-  int milestone = 0;
-  return meta_table_->GetValue(kBuiltinKeywordMilestone, &milestone) ? milestone
-                                                                     : 0;
+bool KeywordTable::ClearBuiltinKeywordMilestone() {
+  return meta_table()->DeleteKey(kBuiltinKeywordMilestone);
 }
 
 bool KeywordTable::SetBuiltinKeywordCountry(int country_id) {
-  return meta_table_->SetValue(kBuiltinKeywordCountry, country_id);
+  return meta_table()->SetValue(kBuiltinKeywordCountry, country_id);
 }
 
 int KeywordTable::GetBuiltinKeywordCountry() {
   int country_id = 0;
-  return meta_table_->GetValue(kBuiltinKeywordCountry, &country_id) ? country_id
-                                                                    : 0;
+  return meta_table()->GetValue(kBuiltinKeywordCountry, &country_id)
+             ? country_id
+             : 0;
 }
 
 bool KeywordTable::SetStarterPackKeywordVersion(int version) {
-  return meta_table_->SetValue(kStarterPackKeywordVersion, version);
+  return meta_table()->SetValue(kStarterPackKeywordVersion, version);
 }
 
 int KeywordTable::GetStarterPackKeywordVersion() {
   int version = 0;
-  return meta_table_->GetValue(kStarterPackKeywordVersion, &version) ? version
-                                                                     : 0;
+  return meta_table()->GetValue(kStarterPackKeywordVersion, &version) ? version
+                                                                      : 0;
 }
 
 // static
@@ -375,13 +370,15 @@ std::string KeywordTable::GetKeywordColumns() {
 }
 
 bool KeywordTable::MigrateToVersion53AddNewTabURLColumn() {
-  return db_->Execute("ALTER TABLE keywords ADD COLUMN new_tab_url "
-                      "VARCHAR DEFAULT ''");
+  return db()->Execute(
+      "ALTER TABLE keywords ADD COLUMN new_tab_url "
+      "VARCHAR DEFAULT ''");
 }
 
 bool KeywordTable::MigrateToVersion59RemoveExtensionKeywords() {
-  return db_->Execute("DELETE FROM keywords "
-                      "WHERE url LIKE 'chrome-extension://%'");
+  return db()->Execute(
+      "DELETE FROM keywords "
+      "WHERE url LIKE 'chrome-extension://%'");
 }
 
 // SQLite does not support DROP COLUMN operation. So A new table is created
@@ -389,12 +386,12 @@ bool KeywordTable::MigrateToVersion59RemoveExtensionKeywords() {
 // of the old table is copied into it. After that, the old table is dropped and
 // the new table is renamed to it.
 bool KeywordTable::MigrateToVersion68RemoveShowInDefaultListColumn() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   const std::string query_str =
       base::StrCat({"INSERT INTO temp_keywords SELECT ",
                     ColumnsForVersion(68, false), " FROM keywords"});
   return transaction.Begin() &&
-         db_->Execute(
+         db()->Execute(
              "CREATE TABLE temp_keywords ("
              "id INTEGER PRIMARY KEY,"
              "short_name VARCHAR NOT NULL,"
@@ -420,14 +417,15 @@ bool KeywordTable::MigrateToVersion68RemoveShowInDefaultListColumn() {
              "instant_url_post_params VARCHAR,"
              "image_url_post_params VARCHAR,"
              "new_tab_url VARCHAR)") &&
-         db_->Execute(query_str) && db_->Execute("DROP TABLE keywords") &&
-         db_->Execute("ALTER TABLE temp_keywords RENAME TO keywords") &&
+         db()->Execute(query_str) && db()->Execute("DROP TABLE keywords") &&
+         db()->Execute("ALTER TABLE temp_keywords RENAME TO keywords") &&
          transaction.Commit();
 }
 
 bool KeywordTable::MigrateToVersion69AddLastVisitedColumn() {
-  return db_->Execute("ALTER TABLE keywords ADD COLUMN last_visited "
-                      "INTEGER DEFAULT 0");
+  return db()->Execute(
+      "ALTER TABLE keywords ADD COLUMN last_visited "
+      "INTEGER DEFAULT 0");
 }
 
 // SQLite does not support DROP COLUMN operation. So a new table is created
@@ -435,12 +433,12 @@ bool KeywordTable::MigrateToVersion69AddLastVisitedColumn() {
 // table is copied into it. After that, the old table is dropped and the new
 // table is renamed to it.
 bool KeywordTable::MigrateToVersion76RemoveInstantColumns() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   const std::string query_str =
       base::StrCat({"INSERT INTO temp_keywords SELECT ",
                     ColumnsForVersion(76, false), " FROM keywords"});
   return transaction.Begin() &&
-         db_->Execute(
+         db()->Execute(
              "CREATE TABLE temp_keywords ("
              "id INTEGER PRIMARY KEY,"
              "short_name VARCHAR NOT NULL,"
@@ -464,19 +462,19 @@ bool KeywordTable::MigrateToVersion76RemoveInstantColumns() {
              "image_url_post_params VARCHAR,"
              "new_tab_url VARCHAR,"
              "last_visited INTEGER DEFAULT 0)") &&
-         db_->Execute(query_str) && db_->Execute("DROP TABLE keywords") &&
-         db_->Execute("ALTER TABLE temp_keywords RENAME TO keywords") &&
+         db()->Execute(query_str) && db()->Execute("DROP TABLE keywords") &&
+         db()->Execute("ALTER TABLE temp_keywords RENAME TO keywords") &&
          transaction.Commit();
 }
 
 bool KeywordTable::MigrateToVersion77IncreaseTimePrecision() {
-  sql::Transaction transaction(db_);
+  sql::Transaction transaction(db());
   if (!transaction.Begin())
     return false;
 
   static constexpr char kQuery[] =
       "SELECT id, date_created, last_modified, last_visited FROM keywords";
-  sql::Statement s(db_->GetUniqueStatement(kQuery));
+  sql::Statement s(db()->GetUniqueStatement(kQuery));
   std::vector<std::tuple<TemplateURLID, Time, Time, Time>> updates;
   while (s.Step()) {
     updates.emplace_back(std::make_tuple(s.ColumnInt64(0), s.ColumnTime(1),
@@ -486,7 +484,7 @@ bool KeywordTable::MigrateToVersion77IncreaseTimePrecision() {
     return false;
 
   for (auto tuple : updates) {
-    sql::Statement update_statement(db_->GetCachedStatement(
+    sql::Statement update_statement(db()->GetCachedStatement(
         SQL_FROM_HERE,
         "UPDATE keywords SET date_created = ?, last_modified = ?, last_visited "
         "= ? WHERE id = ? "));
@@ -502,28 +500,28 @@ bool KeywordTable::MigrateToVersion77IncreaseTimePrecision() {
 }
 
 bool KeywordTable::MigrateToVersion82AddCreatedFromPlayApiColumn() {
-  return db_->Execute(
+  return db()->Execute(
       "ALTER TABLE keywords ADD COLUMN created_from_play_api INTEGER DEFAULT "
       "0");
 }
 
 bool KeywordTable::MigrateToVersion97AddIsActiveColumn() {
-  return db_->Execute(
+  return db()->Execute(
       "ALTER TABLE keywords ADD COLUMN is_active INTEGER DEFAULT 0");
 }
 
 bool KeywordTable::MigrateToVersion103AddStarterPackIdColumn() {
-  return db_->Execute(
+  return db()->Execute(
       "ALTER TABLE keywords ADD COLUMN starter_pack_id INTEGER DEFAULT 0");
 }
 
 bool KeywordTable::MigrateToVersion112AddEnforcedByPolicyColumn() {
-  return db_->Execute(
+  return db()->Execute(
       "ALTER TABLE keywords ADD COLUMN enforced_by_policy INTEGER DEFAULT 0");
 }
 
 bool KeywordTable::MigrateToVersion122AddSiteSearchPolicyColumns() {
-  return db_->Execute(
+  return db()->Execute(
       "ALTER TABLE keywords ADD COLUMN featured_by_policy INTEGER DEFAULT 0");
 }
 
@@ -587,7 +585,7 @@ bool KeywordTable::AddKeyword(const TemplateURLData& data) {
       {"INSERT INTO keywords (", GetKeywordColumns(),
        ") "
        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"});
-  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, query));
+  sql::Statement s(db()->GetCachedStatement(SQL_FROM_HERE, query));
   BindURLToStatement(data, &s, 0, 1);
 
   return s.Run();
@@ -595,7 +593,7 @@ bool KeywordTable::AddKeyword(const TemplateURLData& data) {
 
 bool KeywordTable::RemoveKeyword(TemplateURLID id) {
   DCHECK(id);
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(db()->GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM keywords WHERE id = ?"));
   s.BindInt64(0, id);
 
@@ -604,7 +602,7 @@ bool KeywordTable::RemoveKeyword(TemplateURLID id) {
 
 bool KeywordTable::UpdateKeyword(const TemplateURLData& data) {
   DCHECK(data.id);
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "UPDATE keywords SET short_name=?, keyword=?, favicon_url=?, url=?, "
       "safe_for_autoreplace=?, originating_url=?, date_created=?, "
@@ -625,7 +623,7 @@ bool KeywordTable::GetKeywordAsString(TemplateURLID id,
   const std::string query = base::StrCat(
       {"SELECT ", ColumnsForVersion(WebDatabase::kCurrentVersionNumber, true),
        " FROM ", table_name, " WHERE id=?"});
-  sql::Statement s(db_->GetUniqueStatement(query));
+  sql::Statement s(db()->GetUniqueStatement(query));
   s.BindInt64(0, id);
 
   if (!s.Step()) {

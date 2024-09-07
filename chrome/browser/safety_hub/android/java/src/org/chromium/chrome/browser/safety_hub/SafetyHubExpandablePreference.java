@@ -9,7 +9,9 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -40,6 +42,9 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
+        TextView title = (TextView) holder.findViewById(android.R.id.title);
+        assert title != null;
+
         ButtonCompat primaryButton = (ButtonCompat) holder.findViewById(R.id.primary_button);
         assert primaryButton != null;
 
@@ -47,6 +52,7 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
             primaryButton.setText(mPrimaryButtonText);
             primaryButton.setVisibility(View.VISIBLE);
             primaryButton.setOnClickListener(mPrimaryButtonClickListener);
+            primaryButton.setAccessibilityDelegate(createButtonAccessibilityDelegate(title));
         } else {
             primaryButton.setVisibility(View.GONE);
         }
@@ -57,6 +63,7 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
             secondaryButton.setText(mSecondaryButtonText);
             secondaryButton.setVisibility(View.VISIBLE);
             secondaryButton.setOnClickListener(mSecondaryButtonClickListener);
+            secondaryButton.setAccessibilityDelegate(createButtonAccessibilityDelegate(title));
         } else {
             secondaryButton.setVisibility(View.GONE);
         }
@@ -137,15 +144,33 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
 
     private void updatePreferenceContentDescription(View view) {
         // For accessibility, read out the whole title and whether the group is collapsed/expanded.
+        String collapseOrExpandedText =
+                getContext()
+                        .getResources()
+                        .getString(
+                                mExpanded
+                                        ? R.string.accessibility_expanded_group
+                                        : R.string.accessibility_collapsed_group);
+
         String description =
-                getTitle()
-                        + getContext()
-                                .getResources()
-                                .getString(
-                                        mExpanded
-                                                ? R.string.accessibility_expanded_group
-                                                : R.string.accessibility_collapsed_group);
+                getContext()
+                        .getResources()
+                        .getString(
+                                R.string.concat_two_strings_with_periods,
+                                getTitle(),
+                                collapseOrExpandedText);
+
         view.setContentDescription(description);
+    }
+
+    private AccessibilityDelegate createButtonAccessibilityDelegate(View labelView) {
+        return new AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.setLabeledBy(labelView);
+            }
+        };
     }
 
     private static Drawable createDrawable(Context context) {

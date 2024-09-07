@@ -32,9 +32,9 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -831,7 +831,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 - (void)enhancedSafeBrowsingInlinePromoTriggerCriteriaMet {
   if (!base::FeatureList::IsEnabled(
-          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature)) {
+          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature) ||
+      !_browserState) {
     return;
   }
   feature_engagement::Tracker* tracker =

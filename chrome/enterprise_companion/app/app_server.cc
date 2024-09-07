@@ -31,6 +31,7 @@
 
 #include <atlsecurity.h>
 
+#include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/scoped_handle.h"
 #endif
@@ -95,6 +96,15 @@ class AppServer : public App {
   void FirstTaskRun() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if BUILDFLAG(IS_WIN)
+    if (!com_initializer_.Succeeded()) {
+      VLOG(1) << "Failed to initialize COM";
+      Shutdown(EnterpriseCompanionStatus(
+          ApplicationError::kCOMInitializationFailed));
+      return;
+    }
+#endif
+
     lock_ = CreateScopedLock();
     if (!lock_) {
       Shutdown(EnterpriseCompanionStatus(ApplicationError::kCannotAcquireLock));
@@ -134,6 +144,10 @@ class AppServer : public App {
   base::Thread net_thread_{"Network"};
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  base::win::ScopedCOMInitializer com_initializer_{
+      base::win::ScopedCOMInitializer::kMTA};
+#endif
   base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider_;
   std::unique_ptr<ScopedLock> lock_;
   std::unique_ptr<mojom::EnterpriseCompanion> stub_;

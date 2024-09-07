@@ -85,7 +85,7 @@ class DiceResponseHandler : public KeyedService {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   using RegistrationTokenHelperFactory =
       base::RepeatingCallback<std::unique_ptr<RegistrationTokenHelper>(
-          const std::vector<uint8_t>& wrapped_binding_key_to_reuse)>;
+          RegistrationTokenHelper::KeyInitParam key_init_param)>;
 #else
   // A fake factory type that is always used to pass a null callback.
   using RegistrationTokenHelperFactory = base::RepeatingClosure;
@@ -204,6 +204,7 @@ class DiceResponseHandler : public KeyedService {
       const std::string& email,
       const std::string& authorization_code,
       bool no_authorization_code,
+      const std::string& supported_algorithms_for_token_binding,
       std::unique_ptr<ProcessDiceHeaderDelegate> delegate);
 
   // Process the Dice enable sync action.

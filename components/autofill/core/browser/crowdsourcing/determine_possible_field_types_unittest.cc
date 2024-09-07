@@ -95,22 +95,10 @@ struct TestAddressFillData {
 };
 
 TestAddressFillData GetElvisAddressFillData() {
-  return {
-      "Elvis",
-      "Aaron",
-      "Presley",
-      "3734 Elvis Presley Blvd.",
-      "Apt. 10",
-      "Memphis",
-      "Tennessee",
-      "38116",
-      "South Africa",
-      "ZA",
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
-          ? "2345678901"
-          : "12345678901",
-      "theking@gmail.com",
-      "RCA"};
+  return {"Elvis",        "Aaron",   "Presley",    "3734 Elvis Presley Blvd.",
+          "Apt. 10",      "Memphis", "Tennessee",  "38116",
+          "South Africa", "ZA",      "2345678901", "theking@gmail.com",
+          "RCA"};
 }
 
 AutofillProfile FillDataToAutofillProfile(const TestAddressFillData& data) {
@@ -138,22 +126,10 @@ class ProfileMatchingTypesTest
       public ::testing::WithParamInterface<ProfileMatchingTypesTestCase> {
  public:
   ProfileMatchingTypesTest() {
-    features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2,
-         features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableSupportForAddressOverflow,
-         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-         features::kAutofillEnableDependentLocalityParsing,
-         features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseBRAddressModel,
-         features::kAutofillUseCAAddressModel,
-         features::kAutofillUseFRAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel},
-        {});
+    features_.InitWithFeatures({features::kAutofillUseCAAddressModel,
+                                features::kAutofillUseFRAddressModel,
+                                features::kAutofillUseITAddressModel},
+                               {});
   }
 
  protected:

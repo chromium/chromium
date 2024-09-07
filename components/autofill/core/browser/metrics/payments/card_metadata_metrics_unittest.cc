@@ -17,12 +17,9 @@
 using ::base::Bucket;
 
 namespace autofill::autofill_metrics {
-
 namespace {
 
 constexpr char kCardGuid[] = "10000000-0000-0000-0000-000000000001";
-
-}  // namespace
 
 // Params:
 // 1. Whether card metadata is available.
@@ -1412,4 +1409,5 @@ TEST_P(CardBenefitFormEventMetricsTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+}  // namespace
 }  // namespace autofill::autofill_metrics

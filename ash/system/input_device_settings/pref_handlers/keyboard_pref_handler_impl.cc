@@ -92,9 +92,17 @@ bool IsAppleKeyboardDefaultModifierRemapping(ui::mojom::ModifierKey from,
           to == ui::mojom::ModifierKey::kMeta);
 }
 
+bool ShouldAddSixPackKeyProperties(const mojom::Keyboard& keyboard) {
+  return features::IsAltClickAndSixPackCustomizationEnabled() &&
+         !base::Contains(keyboard.modifier_keys,
+                         ui::mojom::ModifierKey::kFunction);
+}
+
 bool ShouldAddExtendedFkeyProperties(const mojom::Keyboard& keyboard) {
   return ::features::AreF11AndF12ShortcutsEnabled() &&
-         IsChromeOSKeyboard(keyboard);
+         IsChromeOSKeyboard(keyboard) &&
+         !base::Contains(keyboard.modifier_keys,
+                         ui::mojom::ModifierKey::kFunction);
 }
 
 const char* GetDefaultKeyboardPref(const mojom::Keyboard& keyboard) {
@@ -282,7 +290,7 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
 
   settings->modifier_remappings = GetModifierRemappings(prefs, keyboard);
 
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+  if (ShouldAddSixPackKeyProperties(keyboard)) {
     settings->six_pack_key_remappings = GetSixPackKeyRemappings(prefs);
   }
 
@@ -422,7 +430,7 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
         RetrieveModifierRemappings(keyboard, /*modifier_remappings_dict=*/{});
   }
 
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+  if (ShouldAddSixPackKeyProperties(keyboard)) {
     settings->six_pack_key_remappings =
         RetrieveSixPackRemappings(pref_service, settings_dict);
   }
@@ -543,7 +551,7 @@ base::Value::Dict ConvertSettingsToDict(
     }
   }
 
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+  if (ShouldAddSixPackKeyProperties(keyboard)) {
     base::Value::Dict six_pack_key_remappings;
     six_pack_key_remappings.Set(
         prefs::kSixPackKeyPageUp,
@@ -628,7 +636,7 @@ void UpdateKeyboardSettingsImpl(
     existing_settings_dict->Merge(std::move(settings_dict));
     existing_settings_dict->Set(prefs::kKeyboardSettingModifierRemappings,
                                 std::move(*modifier_remappings_dict));
-    if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    if (ShouldAddSixPackKeyProperties(keyboard)) {
       // 6-pack key remappings need to overwrite what was previously stored.
       auto six_pack_key_remappings_dict =
           settings_dict.Extract(prefs::kKeyboardSettingSixPackKeyRemappings);
@@ -845,7 +853,7 @@ void KeyboardPrefHandlerImpl::InitializeLoginScreenKeyboardSettings(
         local_state, account_id, keyboard_policies, *keyboard);
   }
 
-  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+  if (ShouldAddSixPackKeyProperties(*keyboard)) {
     keyboard->settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
   }
 }

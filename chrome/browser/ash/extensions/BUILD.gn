@@ -61,8 +61,6 @@ static_library("extensions") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/extensions/language_packs",
-    "//chrome/browser/ash/extensions/speech",
-    "//chrome/browser/ash/extensions/users_private",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/input_method",
@@ -70,9 +68,11 @@ static_library("extensions") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/url_handler",
+    "//chrome/browser/extensions/api/input_ime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos:app_icon_resources",
     "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/ash/media_client",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/web_applications",
     "//chrome/common",
@@ -94,9 +94,9 @@ static_library("extensions") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ash/extensions/users_private",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ui/ash/media_client",
   ]
 }
 
@@ -132,7 +132,6 @@ source_set("unit_tests") {
 
   deps = [
     ":extensions",
-    ":test_support",
     "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/ash/app_list/arc:test_support",
@@ -172,7 +171,6 @@ source_set("browser_tests") {
     "//ash",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/accessibility:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",

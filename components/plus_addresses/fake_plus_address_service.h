@@ -35,7 +35,8 @@ class FakePlusAddressService : public PlusAddressService {
 
   static constexpr char kFakeProfileId[] = "123";
   static constexpr char kFakePlusAddress[] = "plus+remote@plus.plus";
-  static constexpr char kFacet[] = "facet.bar";
+  static constexpr char16_t kFakePlusAddress16[] = u"plus+remote@plus.plus";
+  static constexpr char kFacet[] = "https://facet.bar";
 
   // PlusAddressService:
   bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
@@ -91,6 +92,12 @@ class FakePlusAddressService : public PlusAddressService {
     should_offer_creation_ = should_offer_creation;
   }
 
+  void set_should_return_no_affiliated_plus_profiles(
+      bool should_return_no_affiliated_plus_profiles) {
+    should_return_no_affiliated_plus_profiles_ =
+        should_return_no_affiliated_plus_profiles;
+  }
+
  private:
   PlusAddressRequestCallback on_confirmed_;
   testing::NiceMock<affiliations::MockAffiliationService>
@@ -102,6 +109,7 @@ class FakePlusAddressService : public PlusAddressService {
   bool should_fail_to_refresh_ = false;
   bool is_plus_address_filling_enabled_ = false;
   bool should_offer_creation_ = false;
+  bool should_return_no_affiliated_plus_profiles_ = false;
 };
 
 }  // namespace plus_addresses

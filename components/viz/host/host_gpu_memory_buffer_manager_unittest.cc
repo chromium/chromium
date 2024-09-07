@@ -16,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -40,18 +39,6 @@ namespace viz {
 namespace {
 
 constexpr int kHostGpuMemoryBufferManagerId = 1;
-
-bool MustSignalGmbConfigReadyForTest() {
-#if BUILDFLAG(IS_OZONE)
-  // Some Ozone platforms (Ozone/X11) require GPU process initialization to
-  // determine GMB support.
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .fetch_buffer_formats_for_gmb_on_gpu;
-#else
-  return false;
-#endif
-}
 
 class TestGpuService : public mojom::GpuService {
  public:
@@ -303,20 +290,9 @@ class TestGpuService : public mojom::GpuService {
 
 }  // namespace
 
-class HostGpuMemoryBufferManagerTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<
-          /*create_shm_gmbs_via_gpu_service=*/bool> {
+class HostGpuMemoryBufferManagerTest : public ::testing::Test {
  public:
-  HostGpuMemoryBufferManagerTest() {
-    if (create_shm_gmbs_via_gpu_service()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kCreateSharedMemoryGMBsViaGpuService);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kCreateSharedMemoryGMBsViaGpuService);
-    }
-  }
+  HostGpuMemoryBufferManagerTest() = default;
 
   HostGpuMemoryBufferManagerTest(const HostGpuMemoryBufferManagerTest&) =
       delete;
@@ -328,8 +304,6 @@ class HostGpuMemoryBufferManagerTest
       gpu_memory_buffer_manager_->Shutdown();
   }
 
-  bool create_shm_gmbs_via_gpu_service() { return GetParam(); }
-
   void SetUp() override {
     gpu_service_ = std::make_unique<TestGpuService>();
     auto gpu_service_provider = base::BindRepeating(
@@ -340,8 +314,6 @@ class HostGpuMemoryBufferManagerTest
         std::move(gpu_service_provider), kHostGpuMemoryBufferManagerId,
         std::move(gpu_memory_buffer_support),
         base::SingleThreadTaskRunner::GetCurrentDefault());
-    if (MustSignalGmbConfigReadyForTest())
-      gpu_memory_buffer_manager_->native_configurations_initialized_.Set();
   }
 
   // Not all platforms support native configurations (currently only Windows,
@@ -362,8 +334,6 @@ class HostGpuMemoryBufferManagerTest
     if (native_pixmap_supported)
       return true;
 
-    DCHECK(gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations()
-               .empty());
     return false;
   }
 
@@ -373,16 +343,14 @@ class HostGpuMemoryBufferManagerTest
     std::unique_ptr<gfx::GpuMemoryBuffer> buffer;
     base::RunLoop run_loop;
 
-    if (create_shm_gmbs_via_gpu_service()) {
-      // Ensure that when the TestGpuService receives the allocation request on
-      // the UI thread it acts on that request synchronously to unblock
-      // HostGpuMemoryBuffer, which will be blocked on `diff_thread` waiting for
-      // the response. Note that we cannot simply post a task on `diff_thread`
-      // to satisfy the request, as HostGpuMemoryBuffer does a busy-wait
-      // on the assumption that the work of allocating the GMB happens on a
-      // different thread.
-      gpu_service()->perform_next_allocation_synchronously();
-    }
+    // Ensure that when the TestGpuService receives the allocation request on
+    // the UI thread it acts on that request synchronously to unblock
+    // HostGpuMemoryBuffer, which will be blocked on `diff_thread` waiting for
+    // the response. Note that we cannot simply post a task on `diff_thread`
+    // to satisfy the request, as HostGpuMemoryBuffer does a busy-wait
+    // on the assumption that the work of allocating the GMB happens on a
+    // different thread.
+    gpu_service()->perform_next_allocation_synchronously();
 
     diff_thread.task_runner()->PostTask(
         FROM_HERE,
@@ -409,69 +377,15 @@ class HostGpuMemoryBufferManagerTest
  protected:
   std::unique_ptr<TestGpuService> gpu_service_;
   std::unique_ptr<HostGpuMemoryBufferManager> gpu_memory_buffer_manager_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies that requests for GMB creations with non-native-supported formats
-// are handled in the browser, and that either (a) no GMB is created if the
-// usages require a native GMB or (b) a shared-memory GMB is created otherwise.
-TEST_P(HostGpuMemoryBufferManagerTest,
-       RequestsForNonNativeGMBsHandledInBrowser) {
-  if (create_shm_gmbs_via_gpu_service()) {
-    // This test is not relevant when all GMB creation is done via the GPU
-    // service, as in that case HostGpuMemoryBufferManager neither does any
-    // checking of whether the passed-in usages require a native GMB nor does it
-    // create shared-memory GMBs of its own volition.
-    GTEST_SKIP();
-  }
-
-  const auto buffer_id = static_cast<gfx::GpuMemoryBufferId>(1);
-  // SCANOUT cannot be used if native gpu memory buffer is not supported.
-  struct {
-    gfx::BufferUsage usage;
-    gfx::BufferFormat format;
-    gfx::Size size;
-    bool expect_null_handle;
-  } configs[] = {
-      {gfx::BufferUsage::SCANOUT, gfx::BufferFormat::YVU_420, {10, 20}, true},
-      {gfx::BufferUsage::GPU_READ, gfx::BufferFormat::YVU_420, {64, 64}, false},
-  };
-  for (const auto& config : configs) {
-    gfx::GpuMemoryBufferHandle allocated_handle;
-    base::RunLoop runloop;
-    gpu_memory_buffer_manager()->AllocateGpuMemoryBuffer(
-        buffer_id, config.size, config.format, config.usage,
-        gpu::kNullSurfaceHandle,
-        base::BindOnce(
-            [](gfx::GpuMemoryBufferHandle* allocated_handle,
-               base::OnceClosure callback, gfx::GpuMemoryBufferHandle handle) {
-              *allocated_handle = std::move(handle);
-              std::move(callback).Run();
-            },
-            &allocated_handle, runloop.QuitClosure()));
-    // Since native gpu memory buffers are not supported, the mojom.GpuService
-    // should not receive any allocation requests.
-    EXPECT_EQ(0, gpu_service()->GetAllocationRequestsCount());
-    runloop.Run();
-    if (config.expect_null_handle) {
-      EXPECT_TRUE(allocated_handle.is_null());
-    } else {
-      EXPECT_FALSE(allocated_handle.is_null());
-      EXPECT_EQ(gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER,
-                allocated_handle.type);
-    }
-  }
-}
-
-TEST_P(HostGpuMemoryBufferManagerTest, GpuMemoryBufferDestroyed) {
+TEST_F(HostGpuMemoryBufferManagerTest, GpuMemoryBufferDestroyed) {
   auto buffer = AllocateShMemGpuMemoryBufferSync();
   EXPECT_TRUE(buffer);
   buffer.reset();
 }
 
-TEST_P(HostGpuMemoryBufferManagerTest,
+TEST_F(HostGpuMemoryBufferManagerTest,
        GpuMemoryBufferDestroyedOnDifferentThread) {
   auto buffer = AllocateShMemGpuMemoryBufferSync();
   EXPECT_TRUE(buffer);
@@ -484,7 +398,7 @@ TEST_P(HostGpuMemoryBufferManagerTest,
 
 // Tests that if an allocated buffer is received after the gpu service issuing
 // it has died, HGMBManager retries the allocation request properly.
-TEST_P(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
+TEST_F(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
   if (!IsNativePixmapConfigSupported())
     return;
 
@@ -534,7 +448,7 @@ TEST_P(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
 
 // Test that any pending CreateGpuMemoryBuffer() requests are cancelled, so
 // blocked threads stop waiting, on shutdown.
-TEST_P(HostGpuMemoryBufferManagerTest, CancelRequestsForShutdown) {
+TEST_F(HostGpuMemoryBufferManagerTest, CancelRequestsForShutdown) {
   base::Thread threads[2] = {base::Thread("Thread1"), base::Thread("Thread2")};
 
   for (auto& thread : threads) {
@@ -574,13 +488,5 @@ TEST_P(HostGpuMemoryBufferManagerTest, CancelRequestsForShutdown) {
                                                            loop.QuitClosure());
   loop.Run();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HostGpuMemoryBufferManagerTest,
-                         ::testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "CreateShmGMBsViaService"
-                                             : "CreateShmGMBsInBrowser";
-                         });
 
 }  // namespace viz

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -20,7 +21,6 @@ class Button;
 namespace ash {
 
 class IconButton;
-class PickerSearchResult;
 class PickerEmojiBarViewDelegate;
 class SystemShadow;
 
@@ -57,7 +57,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
   void ClearSearchResults();
 
   // Sets the results from `section` as the emoji bar's search results.
-  void SetSearchResults(std::vector<PickerSearchResult> results);
+  void SetSearchResults(std::vector<PickerEmojiResult> results);
 
   // Returns the number of items displayed in the emoji bar.
   size_t GetNumItems() const;

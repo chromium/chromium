@@ -17,12 +17,13 @@ public class PrivacySandboxDialogController {
     private static boolean sDisableAnimations;
     private static boolean sDisableEEANoticeForTesting;
 
-    public static boolean shouldShowPrivacySandboxDialog(Profile profile) {
+    public static boolean shouldShowPrivacySandboxDialog(Profile profile, int surfaceType) {
         assert profile != null;
         if (profile.isOffTheRecord()) {
             return false;
         }
-        @PromptType int promptType = new PrivacySandboxBridge(profile).getRequiredPromptType();
+        @PromptType
+        int promptType = new PrivacySandboxBridge(profile).getRequiredPromptType(surfaceType);
         if (promptType != PromptType.M1_CONSENT
                 && promptType != PromptType.M1_NOTICE_EEA
                 && promptType != PromptType.M1_NOTICE_ROW
@@ -33,13 +34,14 @@ public class PrivacySandboxDialogController {
     }
 
     /** Launches an appropriate dialog if necessary and returns whether that happened. */
-    public static boolean maybeLaunchPrivacySandboxDialog(Context context, Profile profile) {
+    public static boolean maybeLaunchPrivacySandboxDialog(
+            Context context, Profile profile, int surfaceType) {
         assert profile != null;
         if (profile.isOffTheRecord()) {
             return false;
         }
         PrivacySandboxBridge privacySandboxBridge = new PrivacySandboxBridge(profile);
-        @PromptType int promptType = privacySandboxBridge.getRequiredPromptType();
+        @PromptType int promptType = privacySandboxBridge.getRequiredPromptType(surfaceType);
         Dialog dialog = null;
         switch (promptType) {
             case PromptType.NONE:
@@ -47,20 +49,24 @@ public class PrivacySandboxDialogController {
             case PromptType.M1_CONSENT:
                 dialog =
                         new PrivacySandboxDialogConsentEEA(
-                                context, privacySandboxBridge, sDisableAnimations);
+                                context, privacySandboxBridge, sDisableAnimations, surfaceType);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_EEA:
-                showNoticeEEA(context, privacySandboxBridge);
+                showNoticeEEA(context, privacySandboxBridge, surfaceType);
                 return true;
             case PromptType.M1_NOTICE_ROW:
-                dialog = new PrivacySandboxDialogNoticeROW(context, privacySandboxBridge);
+                dialog =
+                        new PrivacySandboxDialogNoticeROW(
+                                context, privacySandboxBridge, surfaceType);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_RESTRICTED:
-                dialog = new PrivacySandboxDialogNoticeRestricted(context, privacySandboxBridge);
+                dialog =
+                        new PrivacySandboxDialogNoticeRestricted(
+                                context, privacySandboxBridge, surfaceType);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
@@ -72,10 +78,13 @@ public class PrivacySandboxDialogController {
     }
 
     /** Shows the NoticeEEA dialog. */
-    public static void showNoticeEEA(Context context, PrivacySandboxBridge privacySandboxBridge) {
+    public static void showNoticeEEA(
+            Context context,
+            PrivacySandboxBridge privacySandboxBridge,
+            @SurfaceType int surfaceType) {
         if (!sDisableEEANoticeForTesting) {
             Dialog dialog;
-            dialog = new PrivacySandboxDialogNoticeEEA(context, privacySandboxBridge);
+            dialog = new PrivacySandboxDialogNoticeEEA(context, privacySandboxBridge, surfaceType);
             dialog.show();
             sDialog = new WeakReference<>(dialog);
         }

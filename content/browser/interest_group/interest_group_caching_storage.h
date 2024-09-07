@@ -258,6 +258,10 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
       base::OnceCallback<void(std::vector<InterestGroupUpdateParameter>)>
           callback);
 
+  // Gets lockout for sending forDebuggingOnly reports.
+  void GetDebugReportLockout(
+      base::OnceCallback<void(std::optional<base::Time>)> callback);
+
   // Gets lockout and cooldown for sending forDebuggingOnly reports.
   void GetDebugReportLockoutAndCooldowns(
       base::flat_set<url::Origin> origins,

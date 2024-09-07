@@ -15,9 +15,10 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
@@ -163,7 +163,7 @@ AccountInfo ReadingListBrowserAgent::GetAccountInfoFromLastAddedURL(
           browser_->GetBrowserState());
   CoreAccountId account_id = reading_model->GetAccountWhereEntryIsSavedTo(url);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(
+      IdentityManagerFactory::GetForProfile(
           browser_->GetBrowserState()->GetOriginalChromeBrowserState());
   AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(account_id);

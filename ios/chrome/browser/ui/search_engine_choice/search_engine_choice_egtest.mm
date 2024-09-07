@@ -48,9 +48,6 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kSearchEngineChoiceCountry) + "=" +
       switches::kEeaListCountryOverride);
-  // Force the dialog to trigger also for existing users.
-  config.additional_args.push_back(std::string("--enable-features=") +
-                                   switches::kSearchEngineChoiceTrigger.name);
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   // Relaunches the app at each test to re-display the choice screen.

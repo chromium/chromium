@@ -173,6 +173,15 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   return texture;
 }
 
+GPUTexture* GPUTexture::Create(GPUDevice* device,
+                               const wgpu::TextureDescriptor* desc) {
+  DCHECK(device);
+  DCHECK(desc);
+
+  return MakeGarbageCollected<GPUTexture>(
+      device, device->GetHandle().CreateTexture(desc), String(desc->label));
+}
+
 // static
 GPUTexture* GPUTexture::CreateError(GPUDevice* device,
                                     const wgpu::TextureDescriptor* desc) {

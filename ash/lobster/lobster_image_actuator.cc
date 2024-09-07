@@ -5,21 +5,21 @@
 #include "ash/lobster/lobster_image_actuator.h"
 
 #include "base/base64.h"
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/text_input_client.h"
 #include "url/gurl.h"
 
 namespace ash {
 
-LobsterImageActuator::LobsterImageActuator() {}
-
-LobsterImageActuator::~LobsterImageActuator() = default;
-
-void LobsterImageActuator::InsertImageOrCopyToClipboard(
-    ui::TextInputClient* input_client,
-    const std::string& image_bytes) {
+void InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
+                                  const std::string& image_bytes) {
   if (!input_client) {
     LOG(ERROR) << "No valid input client found.";
   }
@@ -44,6 +44,24 @@ void LobsterImageActuator::InsertImageOrCopyToClipboard(
 
     // TODO:b: - Show a toast notification if needed.
   }
+}
+
+void WriteImageToPath(const base::FilePath& file_path,
+                      const std::string& image_bytes) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](const base::FilePath& file_path, std::string_view image_bytes) {
+            return base::WriteFile(file_path, image_bytes);
+          },
+          file_path, image_bytes),
+      base::BindOnce(
+          [](const base::FilePath& file_path, bool success) {
+            if (!success) {
+              LOG(ERROR) << "Fail to write image to path: " << file_path;
+            }
+          },
+          file_path));
 }
 
 }  // namespace ash

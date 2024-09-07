@@ -16,7 +16,7 @@ This is a testharness.js-based test.
 [FAIL] addTransceiver with invalid rid characters throws TypeError
   assert_throws_js: function "() => pc.addTransceiver('video', { sendEncodings: [{rid: "foo-bar"}] })" threw object "InvalidAccessError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': Invalid RID value provided." ("InvalidAccessError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 [FAIL] setParameters() with encoding.scaleResolutionDownBy field set to less than 1.0 should reject with RangeError
-  promise_rejects_js: function "function() { throw e }" threw object "InvalidStateError: getParameters() needs to be called before setParameters()." ("InvalidStateError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
+  promise_rejects_js: function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'setParameters' on 'RTCRtpSender': getParameters() needs to be called before setParameters()." ("InvalidStateError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
 [FAIL] setParameters() with missing encoding.scaleResolutionDownBy field should succeed, and set the value back to 1
   assert_equals: expected (number) 1 but got (undefined) undefined
 Harness: the test ran to completion.

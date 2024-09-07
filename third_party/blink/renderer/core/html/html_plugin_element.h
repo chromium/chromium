@@ -157,7 +157,9 @@ class CORE_EXPORT HTMLPlugInElement
 
   // Element overrides:
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-  bool SupportsFocus(UpdateBehavior) const final { return true; }
+  FocusableState SupportsFocus(UpdateBehavior) const final {
+    return FocusableState::kFocusable;
+  }
   bool IsFocusableStyle(UpdateBehavior update_behavior =
                             UpdateBehavior::kStyleAndLayout) const final;
   bool IsKeyboardFocusable(UpdateBehavior update_behavior =

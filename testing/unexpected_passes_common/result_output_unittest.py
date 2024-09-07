@@ -19,6 +19,8 @@ from unexpected_passes_common import unittest_utils as uu
 
 from blinkpy.w3c import buganizer
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 def CreateTextOutputPermutations(text: str, inputs: Iterable[str]) -> Set[str]:
   """Creates permutations of |text| filled with the contents of |inputs|.
@@ -856,6 +858,45 @@ class PostCommentsToOrphanedBugsUnittest(unittest.TestCase):
             break
         else:
           self.fail('Did not find expected log message')
+
+  def testGetIssueCommentsError(self):
+    """Tests behavior when GetIssueComments encounters an error."""
+    with mock.patch.object(self._buganizer_client,
+                           'GetIssueComments',
+                           side_effect=({
+                               'error': ':('
+                           }, [{
+                               'comment': 'Not matching'
+                           }])):
+      with self.assertLogs(level='ERROR') as log_manager:
+        result_output._PostCommentsToOrphanedBugs(
+            ['crbug.com/0', 'crbug.com/1'])
+        for message in log_manager.output:
+          if 'Failed to get comments from crbug.com/0: :(' in message:
+            break
+        else:
+          self.fail('Did not find expected log message')
+    self._buganizer_client.NewComment.assert_called_once_with(
+        'crbug.com/1', result_output.BUGANIZER_COMMENT)
+
+  def testGetIssueCommentsUnspecifiedError(self):
+    """Tests behavior when GetIssueComments encounters an unspecified error."""
+    with mock.patch.object(self._buganizer_client,
+                           'GetIssueComments',
+                           side_effect=({}, [{
+                               'comment': 'Not matching'
+                           }])):
+      with self.assertLogs(level='ERROR') as log_manager:
+        result_output._PostCommentsToOrphanedBugs(
+            ['crbug.com/0', 'crbug.com/1'])
+        for message in log_manager.output:
+          if ('Failed to get comments from crbug.com/0: error not provided'
+              in message):
+            break
+        else:
+          self.fail('Did not find expected log message')
+    self._buganizer_client.NewComment.assert_called_once_with(
+        'crbug.com/1', result_output.BUGANIZER_COMMENT)
 
 
 def _Dedent(s: str) -> str:

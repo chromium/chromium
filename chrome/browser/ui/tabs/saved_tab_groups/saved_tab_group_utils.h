@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/types.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/dialog_model.h"
@@ -29,6 +30,7 @@ class WebContents;
 namespace tab_groups {
 
 class SavedTabGroupTab;
+class TabGroupSyncService;
 
 class SavedTabGroupUtils {
  public:
@@ -41,6 +43,14 @@ class SavedTabGroupUtils {
   SavedTabGroupUtils() = delete;
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;
   SavedTabGroupUtils& operator=(const SavedTabGroupUtils&) = delete;
+
+  // TODO(crbug.com/350514491): Default to using the TabGroupSyncService when
+  // crbug.com/350514491 is complete.
+  // When IsTabGroupSyncServiceDesktopMigrationEnabled() is true use the
+  // TabGroupSyncService. Otherwise, use SavedTabGroupKeyedService::proxy. This
+  // function will only return nullptr when the services cannot be created, or
+  // the profile is non-regular (Ex: incognito or guest mode).
+  static TabGroupSyncService* GetServiceForProfile(Profile* profile);
 
   static void RemoveGroupFromTabstrip(
       const Browser* browser,
@@ -82,6 +92,10 @@ class SavedTabGroupUtils {
   static SavedTabGroupTab CreateSavedTabGroupTabFromWebContents(
       content::WebContents* contents,
       base::Uuid saved_tab_group_id);
+
+  // Creates a SavedTabGroup group for the provided local tab group.
+  static SavedTabGroup CreateSavedTabGroupFromLocalId(
+      const tab_groups::LocalTabGroupID& local_id);
 
   static content::NavigationHandle* OpenTabInBrowser(
       const GURL& url,
@@ -125,6 +139,9 @@ class SavedTabGroupUtils {
 
   // Returns true if new tab groups should be pinned.
   static bool ShouldAutoPinNewTabGroups(Profile* profile);
+
+  // Returns true if the sync setting is on for saved tab groups.
+  static bool AreSavedTabGroupsSyncedForProfile(Profile* profile);
 };
 
 }  // namespace tab_groups

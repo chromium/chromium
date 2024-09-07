@@ -50,6 +50,10 @@ BASE_DECLARE_FEATURE(kLauncherImageSearchOcr);
 // Applies a hard limit about how many images can be process per user session.
 BASE_DECLARE_FEATURE(kLauncherImageSearchIndexingLimit);
 
+// Enable debugging for launcher image search. Currently it's only used in
+// certain tast test and will introduce extra logs to help debug.
+BASE_DECLARE_FEATURE(kLauncherImageSearchDebug);
+
 BASE_DECLARE_FEATURE(kLauncherSystemInfoAnswerCards);
 
 // Enables file scan in launcher. This is used as a stopper if the file scan ran
@@ -66,6 +70,7 @@ bool IsLauncherImageSearchEnabled();
 bool IsLauncherImageSearchIcaEnabled();
 bool IsLauncherImageSearchOcrEnabled();
 bool IsLauncherImageSearchIndexingLimitEnabled();
+bool IsLauncherImageSearchDebugEnabled();
 bool IsLauncherFuzzyMatchAcrossProvidersEnabled();
 bool IsLauncherFuzzyMatchForOmniboxEnabled();
 bool IsLauncherSystemInfoAnswerCardsEnabled();

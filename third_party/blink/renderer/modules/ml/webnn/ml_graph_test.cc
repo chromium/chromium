@@ -22,12 +22,13 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
-#include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -38,7 +39,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
@@ -51,6 +51,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -60,12 +62,12 @@
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -81,7 +83,7 @@ namespace blink {
 
 namespace blink_mojom = webnn::mojom::blink;
 
-class FakeWebNNBuffer;
+class FakeWebNNTensor;
 
 namespace {
 
@@ -399,20 +401,20 @@ class WebNNContextHelper {
   WebNNContextHelper() = default;
   ~WebNNContextHelper() = default;
 
-  void ConnectWebNNBufferImpl(const blink::WebNNBufferToken& handle,
-                              std::unique_ptr<FakeWebNNBuffer> buffer) {
+  void ConnectWebNNTensorImpl(const blink::WebNNTensorToken& handle,
+                              std::unique_ptr<FakeWebNNTensor> buffer) {
     const auto it = buffer_impls_.find(handle);
     ASSERT_TRUE(it == buffer_impls_.end());
     buffer_impls_.try_emplace(handle, std::move(buffer));
   }
 
-  void DisconnectAndDestroyWebNNBufferImpl(
-      const blink::WebNNBufferToken& handle) {
+  void DisconnectAndDestroyWebNNTensorImpl(
+      const blink::WebNNTensorToken& handle) {
     buffer_impls_.erase(handle);
   }
 
  private:
-  std::map<blink::WebNNBufferToken, std::unique_ptr<FakeWebNNBuffer>>
+  std::map<blink::WebNNTensorToken, std::unique_ptr<FakeWebNNTensor>>
       buffer_impls_;
 
   mojo::UniqueAssociatedReceiverSet<blink_mojom::WebNNGraphBuilder> builders_;
@@ -443,35 +445,35 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
 
   // Just return for testing the validation of inputs and outputs.
   void Dispatch(
-      const HashMap<WTF::String, blink::WebNNBufferToken>& named_inputs,
-      const HashMap<WTF::String, blink::WebNNBufferToken>& named_outputs)
+      const HashMap<WTF::String, blink::WebNNTensorToken>& named_inputs,
+      const HashMap<WTF::String, blink::WebNNTensorToken>& named_outputs)
       override {}
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
 };
 
-class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
+class FakeWebNNTensor : public blink_mojom::WebNNTensor {
  public:
-  FakeWebNNBuffer(
+  FakeWebNNTensor(
       WebNNContextHelper& helper,
-      mojo::PendingAssociatedReceiver<blink_mojom::WebNNBuffer> receiver,
-      const blink::WebNNBufferToken& buffer_handle,
+      mojo::PendingAssociatedReceiver<blink_mojom::WebNNTensor> receiver,
+      const blink::WebNNTensorToken& buffer_handle,
       blink_mojom::BufferInfoPtr buffer_info)
       : helper_(helper),
         receiver_(this, std::move(receiver)),
         handle_(buffer_handle) {
     buffer_ = mojo_base::BigBuffer(buffer_info->descriptor.PackedByteLength());
     receiver_.set_disconnect_handler(WTF::BindOnce(
-        &FakeWebNNBuffer::OnConnectionError, WTF::Unretained(this)));
+        &FakeWebNNTensor::OnConnectionError, WTF::Unretained(this)));
   }
 
-  ~FakeWebNNBuffer() override = default;
+  ~FakeWebNNTensor() override = default;
 
-  FakeWebNNBuffer(const FakeWebNNBuffer&) = delete;
-  FakeWebNNBuffer(FakeWebNNBuffer&&) = delete;
+  FakeWebNNTensor(const FakeWebNNTensor&) = delete;
+  FakeWebNNTensor(FakeWebNNTensor&&) = delete;
 
-  const blink::WebNNBufferToken& handle() const { return handle_; }
+  const blink::WebNNTensorToken& handle() const { return handle_; }
 
  private:
   void ReadBuffer(ReadBufferCallback callback) override {
@@ -487,15 +489,15 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
   }
 
   void OnConnectionError() {
-    helper_->DisconnectAndDestroyWebNNBufferImpl(handle());
+    helper_->DisconnectAndDestroyWebNNTensorImpl(handle());
   }
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<WebNNContextHelper, DanglingUntriaged> helper_;
 
-  mojo::AssociatedReceiver<blink_mojom::WebNNBuffer> receiver_;
+  mojo::AssociatedReceiver<blink_mojom::WebNNTensor> receiver_;
 
-  const blink::WebNNBufferToken handle_;
+  const blink::WebNNTensorToken handle_;
 
   mojo_base::BigBuffer buffer_;
 };
@@ -545,11 +547,11 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
 
   void CreateBuffer(blink_mojom::BufferInfoPtr buffer_info,
                     CreateBufferCallback callback) override {
-    mojo::PendingAssociatedRemote<blink_mojom::WebNNBuffer> blink_remote;
+    mojo::PendingAssociatedRemote<blink_mojom::WebNNTensor> blink_remote;
     auto blink_receiver = blink_remote.InitWithNewEndpointAndPassReceiver();
-    blink::WebNNBufferToken buffer_handle;
-    context_helper_.ConnectWebNNBufferImpl(
-        buffer_handle, std::make_unique<FakeWebNNBuffer>(
+    blink::WebNNTensorToken buffer_handle;
+    context_helper_.ConnectWebNNTensorImpl(
+        buffer_handle, std::make_unique<FakeWebNNTensor>(
                            context_helper_, std::move(blink_receiver),
                            buffer_handle, std::move(buffer_info)));
 
@@ -596,15 +598,22 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         blink_remote.InitWithNewPipeAndPassReceiver());
 
     webnn::ContextProperties context_properties(
-        webnn::InputOperandLayout::kNchw,
+        webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kAny,
         {/*input=*/webnn::SupportedDataTypes::All(),
          /*constant=*/webnn::SupportedDataTypes::All(),
          /*arg_min_max_input=*/
          webnn::SupportedDataTypes::All(),
          /*arg_min_max_output=*/
          webnn::SupportedDataTypes::All(),
+         /*batch_normalization_input=*/webnn::SupportedDataTypes::All(),
+         /*cast_input=*/webnn::SupportedDataTypes::All(),
+         /*clamp_input=*/webnn::SupportedDataTypes::All(),
          /*concat_inputs=*/
          webnn::SupportedDataTypes::All(),
+         /*conv2d_input=*/webnn::SupportedDataTypes::All(),
+         /*conv_transpose2d_input=*/webnn::SupportedDataTypes::All(),
+         /*dequantize_linear_input=*/webnn::SupportedDataTypes::All(),
+         /*dequantize_linear_scale=*/webnn::SupportedDataTypes::All(),
          /*add_input=*/webnn::SupportedDataTypes::All(),
          /*sub_input=*/webnn::SupportedDataTypes::All(),
          /*mul_input=*/webnn::SupportedDataTypes::All(),
@@ -629,22 +638,61 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*log_input=*/webnn::SupportedDataTypes::All(),
          /*neg_input=*/webnn::SupportedDataTypes::All(),
          /*reciprocal_input=*/webnn::SupportedDataTypes::All(),
+         /*sign_input=*/webnn::SupportedDataTypes::All(),
          /*sin_input=*/webnn::SupportedDataTypes::All(),
          /*sqrt_input=*/webnn::SupportedDataTypes::All(),
          /*tan_input=*/webnn::SupportedDataTypes::All(),
          /*elu_input=*/webnn::SupportedDataTypes::All(),
+         /*expand_input=*/webnn::SupportedDataTypes::All(),
          /*gather_input=*/webnn::SupportedDataTypes::All(),
          /*gather_indices=*/
          webnn::SupportedDataTypes::All(),
+         /*gather_elements_input=*/webnn::SupportedDataTypes::All(),
+         /*gather_elements_indices=*/
+         webnn::SupportedDataTypes::All(),
          /*gelu_input=*/webnn::SupportedDataTypes::All(),
+         /*gemm_input=*/webnn::SupportedDataTypes::All(),
+         /*gru_input=*/webnn::SupportedDataTypes::All(),
+         /*gru_cell_input=*/webnn::SupportedDataTypes::All(),
+         /*hard_sigmoid_input=*/webnn::SupportedDataTypes::All(),
+         /*hard_swish_input=*/webnn::SupportedDataTypes::All(),
+         /*instance_normalization_input=*/webnn::SupportedDataTypes::All(),
+         /*layer_normalization_input=*/webnn::SupportedDataTypes::All(),
          /*leaky_relu_input=*/webnn::SupportedDataTypes::All(),
+         /*linear_input=*/webnn::SupportedDataTypes::All(),
+         /*lstm_input=*/webnn::SupportedDataTypes::All(),
+         /*lstm_cell_input=*/webnn::SupportedDataTypes::All(),
+         /*matmul_input=*/webnn::SupportedDataTypes::All(),
+         /*pad_input=*/webnn::SupportedDataTypes::All(),
+         /*average_pool2d_input=*/webnn::SupportedDataTypes::All(),
+         /*l2_pool2d_input=*/webnn::SupportedDataTypes::All(),
+         /*max_pool2d_input=*/webnn::SupportedDataTypes::All(),
+         /*prelu_input=*/webnn::SupportedDataTypes::All(),
+         /*quantize_linear_input=*/webnn::SupportedDataTypes::All(),
+         /*quantize_linear_zero_point=*/webnn::SupportedDataTypes::All(),
+         /*reduce_l1_input=*/webnn::SupportedDataTypes::All(),
+         /*reduce_l2_input=*/webnn::SupportedDataTypes::All(),
+         /*reduce_log_sum_input=*/webnn::SupportedDataTypes::All(),
+         /*reduce_log_sum_exp_input=*/webnn::SupportedDataTypes::All(),
+         /*reduce_max_input=*/webnn::SupportedDataTypes::All(),
+         /*reduce_mean_input=*/webnn::SupportedDataTypes::All(),
+         /*reduce_min_input=*/webnn::SupportedDataTypes::All(),
+         /*reduce_product_input=*/webnn::SupportedDataTypes::All(),
+         /*reduce_sum_input=*/webnn::SupportedDataTypes::All(),
+         /*reduce_sum_square_input=*/webnn::SupportedDataTypes::All(),
          /*relu_input=*/webnn::SupportedDataTypes::All(),
+         /*resample2d_input=*/webnn::SupportedDataTypes::All(),
+         /*reshape_input=*/webnn::SupportedDataTypes::All(),
          /*sigmoid_input=*/webnn::SupportedDataTypes::All(),
          /*slice_input=*/webnn::SupportedDataTypes::All(),
          /*softmax_input=*/webnn::SupportedDataTypes::All(),
          /*softplus_input=*/webnn::SupportedDataTypes::All(),
          /*softsign_input=*/webnn::SupportedDataTypes::All(),
          /*split_input=*/webnn::SupportedDataTypes::All(),
+         /*tanh_input=*/webnn::SupportedDataTypes::All(),
+         /*tile_input=*/webnn::SupportedDataTypes::All(),
+         /*transpose_input=*/webnn::SupportedDataTypes::All(),
+         /*triangular_input=*/webnn::SupportedDataTypes::All(),
          /*where_condition=*/
          webnn::SupportedDataTypes::All(),
          /*where_value=*/
@@ -731,12 +779,12 @@ MaybeShared<DOMArrayBufferView> CreateArrayBufferViewFromBytes(
                                    /*length=*/array_buffer->ByteLength()));
 }
 
-// Checks the contents of a MLBuffer.
+// Checks the contents of a MLTensor.
 // Returns false if unable to download or the buffer data did not match
 // expected.
-bool DownloadMLBufferAndCheck(V8TestingScope& scope,
+bool DownloadMLTensorAndCheck(V8TestingScope& scope,
                               MLContext* context,
-                              MLBuffer* src_buffer,
+                              MLTensor* src_buffer,
                               base::span<const uint8_t> expected_data) {
   auto* script_state = scope.GetScriptState();
   ScriptPromiseTester tester(
@@ -751,13 +799,15 @@ bool DownloadMLBufferAndCheck(V8TestingScope& scope,
   return IsBufferDataEqual(array_buffer, expected_data);
 }
 
-MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
+MLTensor* CreateMLTensorForOperand(V8TestingScope& scope,
                                    MLContext* ml_context,
                                    const MLOperand* operand) {
   auto array_buffer_view = CreateArrayBufferViewForOperand(operand);
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(operand->dataType());
   desc->setDimensions(operand->shape());
+  desc->setUsage(V8MLTensorUsage::Constant::kWriteTo |
+                 V8MLTensorUsage::Constant::kReadFrom);
 
   ScriptPromiseTester tester(
       scope.GetScriptState(),
@@ -766,7 +816,7 @@ MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
   tester.WaitUntilSettled();
   CHECK(tester.IsFulfilled());
 
-  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, tester.Value());
+  MLTensor* ml_buffer = V8ToObject<MLTensor>(&scope, tester.Value());
 
   ml_context->writeBuffer(
       scope.GetScriptState(), ml_buffer,
@@ -775,9 +825,9 @@ MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
   return ml_buffer;
 }
 
-Vector<uint8_t> GetMLBufferValues(V8TestingScope& scope,
+Vector<uint8_t> GetMLTensorValues(V8TestingScope& scope,
                                   MLContext* ml_context,
-                                  MLBuffer* ml_buffer) {
+                                  MLTensor* ml_buffer) {
   ScriptPromiseTester tester(
       scope.GetScriptState(),
       ml_context->readBuffer(scope.GetScriptState(), ml_buffer,
@@ -1254,7 +1304,7 @@ TEST_F(MLGraphTest, ComputeTest) {
   }
 }
 
-TEST_F(MLGraphTest, CreateWebNNBufferTest) {
+TEST_F(MLGraphTest, CreateWebNNTensorTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1266,7 +1316,7 @@ TEST_F(MLGraphTest, CreateWebNNBufferTest) {
 
   MLContext* ml_context = CreateContext(scope, options);
 
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
   desc->setDimensions({2, 2});
 
@@ -1278,17 +1328,17 @@ TEST_F(MLGraphTest, CreateWebNNBufferTest) {
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
-  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, buffer_tester.Value());
+  MLTensor* ml_buffer = V8ToObject<MLTensor>(&scope, buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
   EXPECT_EQ(ml_buffer->dataType(), desc->dataType());
   EXPECT_EQ(ml_buffer->shape(), desc->dimensions());
 }
 
-TEST_F(MLGraphTest, WriteWebNNBufferTest) {
+TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1303,9 +1353,11 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
   constexpr size_t kBufferSize = 4ull;
   const Vector<uint32_t> kBufferShape{2, 2};
 
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions(kBufferShape);
+  desc->setUsage(V8MLTensorUsage::Constant::kWriteTo |
+                 V8MLTensorUsage::Constant::kReadFrom);
 
   ScriptPromiseTester buffer_tester(
       script_state,
@@ -1315,17 +1367,16 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
-  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, buffer_tester.Value());
+  MLTensor* ml_buffer = V8ToObject<MLTensor>(&scope, buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
 
   const std::array<const uint8_t, kBufferSize> input_data = {0xAA, 0xAA, 0xAA,
                                                              0xAA};
-  DOMArrayBuffer* array_buffer =
-      DOMArrayBuffer::Create(input_data.data(), input_data.size());
+  DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(input_data);
   ASSERT_THAT(array_buffer, testing::NotNull());
 
   // Writing the full buffer.
@@ -1344,7 +1395,7 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   EXPECT_TRUE(
-      DownloadMLBufferAndCheck(scope, ml_context, ml_buffer, input_data));
+      DownloadMLTensorAndCheck(scope, ml_context, ml_buffer, input_data));
 
   // Writing to the remainder of the buffer from source offset.
   ml_context->writeBuffer(
@@ -1364,7 +1415,7 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
       /*src_element_offset=*/1, scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  EXPECT_TRUE(DownloadMLBufferAndCheck(
+  EXPECT_TRUE(DownloadMLTensorAndCheck(
       scope, ml_context, ml_buffer,
       std::array<const uint8_t, kBufferSize>{0xBB, 0xBB, 0xAA, 0xAA}));
 
@@ -1378,13 +1429,13 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  EXPECT_TRUE(DownloadMLBufferAndCheck(
+  EXPECT_TRUE(DownloadMLTensorAndCheck(
       scope, ml_context, ml_buffer,
       std::array<const uint8_t, kBufferSize>{0xCC, 0xBB, 0xAA, 0xAA}));
 }
 
-// Writing data from an array buffer to a destroyed MLBuffer should not crash.
-TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
+// Writing data from an array buffer to a destroyed MLTensor should not crash.
+TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1396,9 +1447,10 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
 
   MLContext* ml_context = CreateContext(scope, options);
 
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions({2, 2});
+  desc->setUsage(V8MLTensorUsage::Constant::kWriteTo);
 
   ScriptPromiseTester buffer_tester(
       script_state,
@@ -1408,10 +1460,10 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
-  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, buffer_tester.Value());
+  MLTensor* ml_buffer = V8ToObject<MLTensor>(&scope, buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
 
@@ -1425,8 +1477,8 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
       /*src_byte_offset=*/0, scope.GetExceptionState());
 }
 
-// Reading data from an array buffer to a destroyed MLBuffer should not crash.
-TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
+// Reading data from an array buffer to a destroyed MLTensor should not crash.
+TEST_F(MLGraphTest, ReadWebNNTensorThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1438,9 +1490,10 @@ TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
 
   MLContext* ml_context = CreateContext(scope, options);
 
-  auto* desc = MLBufferDescriptor::Create();
+  auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
   desc->setDimensions({2, 2});
+  desc->setUsage(V8MLTensorUsage::Constant::kReadFrom);
 
   ScriptPromiseTester create_buffer_tester(
       script_state,
@@ -1450,11 +1503,11 @@ TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
-  MLBuffer* ml_buffer =
-      V8ToObject<MLBuffer>(&scope, create_buffer_tester.Value());
+  MLTensor* ml_buffer =
+      V8ToObject<MLTensor>(&scope, create_buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
 
@@ -1494,21 +1547,21 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
       BuildGraph(scope, builder, {{"output", output_operand}});
   ASSERT_THAT(graph, testing::NotNull());
 
-  // Check if MLBuffer is supported.
-  MLBuffer* input_buffer =
-      CreateMLBufferForOperand(scope, ml_context, lhs_operand);
+  // Check if MLTensor is supported.
+  MLTensor* input_buffer =
+      CreateMLTensorForOperand(scope, ml_context, lhs_operand);
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
   }
 
   ASSERT_THAT(input_buffer, testing::NotNull());
 
   MLNamedBuffers inputs(
       {{"lhs", input_buffer},
-       {"rhs", CreateMLBufferForOperand(scope, ml_context, rhs_operand)}});
-  MLNamedBuffers outputs({{"output", CreateMLBufferForOperand(
+       {"rhs", CreateMLTensorForOperand(scope, ml_context, rhs_operand)}});
+  MLNamedBuffers outputs({{"output", CreateMLTensorForOperand(
                                          scope, ml_context, output_operand)}});
 
   {
@@ -1518,7 +1571,7 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
     EXPECT_EQ(scope.GetExceptionState().Code(),
               ToExceptionCode(DOMExceptionCode::kNoError));
     Vector<uint8_t> results =
-        GetMLBufferValues(scope, ml_context, outputs[0].second);
+        GetMLTensorValues(scope, ml_context, outputs[0].second);
     EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 0));
 
     // Dispatch again successfully.
@@ -1526,7 +1579,7 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
                          scope.GetExceptionState());
     EXPECT_EQ(scope.GetExceptionState().Code(),
               ToExceptionCode(DOMExceptionCode::kNoError));
-    results = GetMLBufferValues(scope, ml_context, outputs[0].second);
+    results = GetMLTensorValues(scope, ml_context, outputs[0].second);
     EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 0));
   }
 }

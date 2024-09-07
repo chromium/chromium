@@ -55,7 +55,7 @@ class VIZ_COMMON_EXPORT DrawQuad {
     kSurfaceContent = 8,
     kTextureContent = 9,
     kTiledContent = 10,
-    kYuvVideoContent = 11,
+    // kYuvVideoContent = 11,  // Removed. kTextureContent used instead.
     kVideoHole = 12,
     kMaxValue = kVideoHole
   };

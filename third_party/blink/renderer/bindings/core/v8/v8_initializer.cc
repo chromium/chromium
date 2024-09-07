@@ -266,20 +266,6 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   v8::Local<v8::Value> exception = data.GetValue();
-  if (V8PerIsolateData::From(isolate)->HasInstance(
-          DOMException::GetStaticWrapperTypeInfo(), exception)) {
-    // Try to get the stack & location from a wrapped DOMException object.
-    CHECK(exception->IsObject());
-    auto private_error = V8PrivateProperty::GetSymbol(
-        isolate, kPrivatePropertyDOMExceptionError);
-    v8::Local<v8::Value> error;
-    if (private_error.GetOrUndefined(exception.As<v8::Object>())
-            .ToLocal(&error) &&
-        !error->IsUndefined()) {
-      exception = error;
-    }
-  }
-
   String error_message;
   SanitizeScriptErrors sanitize_script_errors = SanitizeScriptErrors::kSanitize;
   std::unique_ptr<SourceLocation> location;
@@ -905,8 +891,9 @@ v8::Isolate* V8Initializer::InitializeMainThread() {
     add_histogram_sample_callback = AddHistogramSample;
   }
   v8::Isolate* isolate = V8PerIsolateData::Initialize(
-      scheduler->V8TaskRunner(), scheduler->V8LowPriorityTaskRunner(),
-      snapshot_mode, create_histogram_callback, add_histogram_sample_callback);
+      scheduler->V8TaskRunner(), scheduler->V8UserVisibleTaskRunner(),
+      scheduler->V8BestEffortTaskRunner(), snapshot_mode,
+      create_histogram_callback, add_histogram_sample_callback);
   scheduler->SetV8Isolate(isolate);
 
   // ThreadState::isolate_ needs to be set before setting the EmbedderHeapTracer

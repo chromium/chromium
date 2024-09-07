@@ -73,14 +73,15 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleSomeSettings) {
 TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
   ApplyPolicySettings({"camera", "os_settings", "browser_settings", "scanning",
                        "web_store", "canvas", "explore", "crosh", "terminal",
-                       "gallery", "print_jobs", "key_shortcuts"});
+                       "gallery", "print_jobs", "key_shortcuts", "recorder"});
 
   VerifyPrefList({SystemFeature::kCamera, SystemFeature::kOsSettings,
                   SystemFeature::kBrowserSettings, SystemFeature::kScanning,
                   SystemFeature::kWebStore, SystemFeature::kCanvas,
                   SystemFeature::kExplore, SystemFeature::kCrosh,
                   SystemFeature::kTerminal, SystemFeature::kGallery,
-                  SystemFeature::kPrintJobs, SystemFeature::kKeyShortcuts});
+                  SystemFeature::kPrintJobs, SystemFeature::kKeyShortcuts,
+                  SystemFeature::kRecorder});
 
   std::vector<base::Bucket> expected_histogram{
       base::Bucket(static_cast<int>(SystemFeature::kCamera), 1),
@@ -94,7 +95,8 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
       base::Bucket(static_cast<int>(SystemFeature::kTerminal), 1),
       base::Bucket(static_cast<int>(SystemFeature::kGallery), 1),
       base::Bucket(static_cast<int>(SystemFeature::kPrintJobs), 1),
-      base::Bucket(static_cast<int>(SystemFeature::kKeyShortcuts), 1)};
+      base::Bucket(static_cast<int>(SystemFeature::kKeyShortcuts), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kRecorder), 1)};
 
   EXPECT_EQ(
       histogram_tester_.GetAllSamples(kSystemFeaturesDisableListHistogram),

@@ -640,6 +640,24 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+
+  // Both components were successfully loaded on the initial attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
+
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -669,6 +687,24 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectElementValue("US", kDemoPreferencesCountrySelect);
 
   PopulateDemoPreferencesAndFinishSetup();
+
+  // Both components were successfully loaded on the initial attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
+
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -711,6 +747,24 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+
+  // Both components were successfully loaded on the initial attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
+
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -789,6 +843,19 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+
+  // The error occurred at the enrollment step. In the previous component
+  // loading step, both components were still successfully loaded on the initial
+  // attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -822,6 +889,19 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+
+  // The error occurred at the enrollment step. In the previous component
+  // loading step, both components were still successfully loaded on the initial
+  // attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppSuccessResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
@@ -971,6 +1051,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success. There should have been two counts because of two tries.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 2);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -1122,6 +1208,19 @@ IN_PROC_BROWSER_TEST_F(DemoSetupComponentLoadErrorTest,
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+
+  // DemoSetupComponentLoadErrorTest gives INSTALL_FAILURE to the demo mode app
+  // component. So there should be app failure and resources success. There is
+  // no second attempt.
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.ComponentInitialLoadingResult",
+      DemoSetupController::DemoSetupComponentLoadingResult::
+          kAppFailureResourcesSuccess,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "DemoMode.Setup.ComponentLoadingRetryResult", 0);
 }
 
 /**
@@ -1165,6 +1264,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupVariantCountryCodeRegionTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 /**
@@ -1203,6 +1308,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupVirtualSetRegionCodeTest,
   test::OobeJS().ExpectElementValue("N/A", kDemoPreferencesCountrySelect);
 
   PopulateDemoPreferencesAndFinishSetup();
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 /**
@@ -1241,6 +1352,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupRegionCodeNotExistTest,
   test::OobeJS().ExpectElementValue("N/A", kDemoPreferencesCountrySelect);
 
   PopulateDemoPreferencesAndFinishSetup();
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 /**
@@ -1300,6 +1417,12 @@ IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
+  // success.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 /**

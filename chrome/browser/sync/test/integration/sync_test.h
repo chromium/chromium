@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/fake_server.h"
@@ -34,11 +35,9 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
 #else
 #include "chrome/browser/extensions/install_verifier.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 // The E2E tests are designed to run against real backend servers. To identify

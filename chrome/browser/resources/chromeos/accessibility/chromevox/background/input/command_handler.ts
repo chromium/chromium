@@ -745,7 +745,7 @@ export class CommandHandler implements CommandHandlerInterface {
         // check.
         // TODO(b/314203187): Not null asserted, check that this is correct.
         if (!node &&
-            !AutoScrollHandler.instance.scrollToFindNodes(
+            !AutoScrollHandler.instance!.scrollToFindNodes(
                 bound, command, currentRange!, dir, () => {
                   this.onCommand(command);
                   this.onFinishCommand();
@@ -817,8 +817,9 @@ export class CommandHandler implements CommandHandlerInterface {
     }
 
     // TODO(accessibility): extract into function.
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (tryScrolling && currentRange &&
-        !AutoScrollHandler.instance.onCommandNavigation(
+        !AutoScrollHandler.instance!.onCommandNavigation(
             currentRange, dir, pred, unit, speechProps, rootPred, () => {
               this.onCommand(command);
               this.onFinishCommand();

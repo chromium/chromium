@@ -6,11 +6,16 @@ package org.chromium.components.autofill.payments;
 
 import android.text.TextUtils;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+
+import java.util.Collections;
+import java.util.List;
 
 @JNINamespace("autofill")
 /**
@@ -20,8 +25,14 @@ import org.jni_zero.JniType;
 public class AutofillSaveIbanUiInfo {
     private final String mAcceptText;
     private final String mCancelText;
-    // The obfuscated value of IBAN being saved, e.g. CH** **** **** **** *8009.
+    // Description is empty for local save.
+    private final String mDescriptionText;
+    // The obfuscated value of IBAN being saved, e.g. CH **8009.
     private final String mIbanLabel;
+    // This should be empty for local save.
+    private final List<LegalMessageLine> mLegalMessageLines;
+    // LogoIcon is 0 for local save.
+    private final @DrawableRes int mLogoIcon;
     private final String mTitleText;
 
     public String getAcceptText() {
@@ -32,8 +43,21 @@ public class AutofillSaveIbanUiInfo {
         return mCancelText;
     }
 
+    public String getDescriptionText() {
+        return mDescriptionText;
+    }
+
     public String getIbanLabel() {
         return mIbanLabel;
+    }
+
+    public List<LegalMessageLine> getLegalMessageLines() {
+        return mLegalMessageLines;
+    }
+
+    @DrawableRes
+    public int getLogoIcon() {
+        return mLogoIcon;
     }
 
     public String getTitleText() {
@@ -46,11 +70,20 @@ public class AutofillSaveIbanUiInfo {
     /* package */ AutofillSaveIbanUiInfo(
             @JniType("std::u16string") String acceptText,
             @JniType("std::u16string") String cancelText,
+            @JniType("std::u16string") String descriptionText,
             @JniType("std::u16string") String ibanLabel,
+            @Nullable List<LegalMessageLine> legalMessageLines,
+            @DrawableRes int logoIcon,
             @JniType("std::u16string") String titleText) {
         mAcceptText = acceptText;
         mCancelText = cancelText;
+        mDescriptionText = descriptionText;
         mIbanLabel = ibanLabel;
+        if (legalMessageLines == null) {
+            legalMessageLines = Collections.emptyList();
+        }
+        mLegalMessageLines = Collections.unmodifiableList(legalMessageLines);
+        mLogoIcon = logoIcon;
         mTitleText = titleText;
     }
 
@@ -59,7 +92,10 @@ public class AutofillSaveIbanUiInfo {
     public static class Builder {
         private String mAcceptText;
         private String mCancelText;
+        private String mDescriptionText;
         private String mIbanLabel;
+        private List<LegalMessageLine> mLegalMessageLines;
+        @DrawableRes private int mLogoIcon;
         private String mTitleText;
 
         public Builder withAcceptText(String acceptText) {
@@ -72,8 +108,23 @@ public class AutofillSaveIbanUiInfo {
             return this;
         }
 
+        public Builder withDescriptionText(String descriptionText) {
+            mDescriptionText = descriptionText;
+            return this;
+        }
+
         public Builder withIbanLabel(String ibanLabel) {
             mIbanLabel = ibanLabel;
+            return this;
+        }
+
+        public Builder withLegalMessageLines(List<LegalMessageLine> legalMessageLines) {
+            mLegalMessageLines = Collections.unmodifiableList(legalMessageLines);
+            return this;
+        }
+
+        public Builder withLogoIcon(@DrawableRes int logoIcon) {
+            mLogoIcon = logoIcon;
             return this;
         }
 
@@ -89,7 +140,14 @@ public class AutofillSaveIbanUiInfo {
             // below checks.
             assert mIbanLabel != null && !TextUtils.isEmpty(mIbanLabel)
                     : "IBAN value cannot be null or empty.";
-            return new AutofillSaveIbanUiInfo(mAcceptText, mCancelText, mIbanLabel, mTitleText);
+            return new AutofillSaveIbanUiInfo(
+                    mAcceptText,
+                    mCancelText,
+                    mDescriptionText,
+                    mIbanLabel,
+                    mLegalMessageLines,
+                    mLogoIcon,
+                    mTitleText);
         }
     }
 }

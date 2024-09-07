@@ -14,10 +14,15 @@ namespace ash {
 // The enums below are used in histograms, do not remove/renumber entries. If
 // you're adding to any of these enums, update the corresponding enum listing in
 // tools/metrics/histograms/metadata/ash/enums.xml:
-enum class AuthInputType { kPassword = 0, kPin = 1, kMaxValue = kPin };
+enum class AuthInputType {
+  kPassword = 0,
+  kPin = 1,
+  kFingerprint = 2,
+  kMaxValue = kFingerprint
+};
 
-using AuthFactorSet =
-    base::EnumSet<AuthInputType, AuthInputType::kPassword, AuthInputType::kPin>;
+using AuthFactorSet = base::
+    EnumSet<AuthInputType, AuthInputType::kPassword, AuthInputType::kMaxValue>;
 
 // The text width is the kActiveSessionAuthViewWidthDp -
 // 2 X 32 dp margin.

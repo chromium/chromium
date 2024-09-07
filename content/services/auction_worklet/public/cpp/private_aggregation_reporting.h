@@ -7,28 +7,26 @@
 
 #include <optional>
 #include <string>
-#include <string_view>
 
-#include "base/containers/fixed_flat_map.h"
+#include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 
 namespace auction_worklet {
 
-inline constexpr auto kReservedEventTypes =
-    base::MakeFixedFlatMap<std::string_view,
-                           auction_worklet::mojom::ReservedEventType>(
-        {{"reserved.always",
-          auction_worklet::mojom::ReservedEventType::kReservedAlways},
-         {"reserved.win",
-          auction_worklet::mojom::ReservedEventType::kReservedWin},
-         {"reserved.loss",
-          auction_worklet::mojom::ReservedEventType::kReservedLoss}});
-
 std::optional<auction_worklet::mojom::ReservedEventType> ParseReservedEventType(
-    const std::string& type);
+    const std::string& type,
+    bool additional_extensions_allowed);
 
-std::optional<auction_worklet::mojom::EventTypePtr>
-ParsePrivateAggregationEventType(const std::string& event_type_str);
+// Returns nullptr on unrecognized reserved name.
+auction_worklet::mojom::EventTypePtr ParsePrivateAggregationEventType(
+    const std::string& event_type_str,
+    bool additional_extensions_allowed);
+
+// Returns whether the request is valid or not, checking whether it uses
+// features enabled based on `additional_extensions_allowed`.
+CONTENT_EXPORT bool IsValidPrivateAggregationRequestForAdditionalExtensions(
+    const auction_worklet::mojom::PrivateAggregationRequest& request,
+    bool additional_extensions_allowed);
 
 }  // namespace auction_worklet
 

@@ -1,7 +1,6 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Generator that produces a definition file for typescript.
 
 Note: This is a work in progress, and generated definitions may need tweaking.
@@ -18,7 +17,6 @@ from code_util import Code
 from js_util import JsUtil
 from model import *
 from schema_util import *
-
 
 CHROMIUM_SRC = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -59,8 +57,7 @@ class _Generator(object):
     # If events are needed, add the import.
     if self._events_required:
       main_code.Substitute(
-          {"imports": "import {ChromeEvent} from './chrome_event.js';"}
-      )
+          {"imports": "import {ChromeEvent} from './chrome_event.js';"})
     else:
       main_code.Substitute({"imports": ""})
     main_code = self._ClangFormat(main_code)
@@ -111,10 +108,8 @@ class _Generator(object):
       type_name = self._ExtractType(prop.type_)
       # If the ref type has additional properties, do a namespace merge.
       prop_type: Type = prop.type_
-      if (
-          len(prop_type.properties) > 0
-          and prop_type.property_type == PropertyType.REF
-      ):
+      if (len(prop_type.properties) > 0
+          and prop_type.property_type == PropertyType.REF):
         type_name = self._AppendInterfaceForProperty(c, prop, type_name)
       c.Append(f"export const {prop.name}: {type_name};")
       c.Append()
@@ -143,9 +138,8 @@ class _Generator(object):
 
   # This appends an local only interface to allow for additional
   # properties on an already defined type.
-  def _AppendInterfaceForProperty(
-      self, c: Code, prop: Property, prop_type_name
-  ):
+  def _AppendInterfaceForProperty(self, c: Code, prop: Property,
+                                  prop_type_name):
     if prop.deprecated:
       return
     prop_type = prop.type_
@@ -177,16 +171,15 @@ class _Generator(object):
       # Type alias
       c.Append(f"export type {type.name} = {type.property_type.name};")
       c.Append()
-    elif (type.property_type is PropertyType.ARRAY or
-          type.property_type is PropertyType.CHOICES) :
+    elif (type.property_type is PropertyType.ARRAY
+          or type.property_type is PropertyType.CHOICES):
       ts_type = self._ExtractType(type)
       c.Append(f"export type {type.name} = {ts_type};")
       c.Append()
     else:
       # Adding this for things we may not have accounted for here.
       c.Append(
-          f"// TODO({os.getlogin()}) -- {type.name}: {type.property_type.name}"
-      )
+          f"// TODO({os.getlogin()}) -- {type.name}: {type.property_type.name}")
 
   def _AppendInterface(self, c: Code, interface: Type):
     c.Sblock(f"export interface {interface.name} {{")
@@ -231,8 +224,8 @@ class _Generator(object):
     ret_type = "void"
     if func.returns is not None:
       ret_type = self._ExtractType(func.returns)
-    elif (func.returns_async is not None and
-          func.returns_async.can_return_promise):
+    elif (func.returns_async is not None
+          and func.returns_async.can_return_promise):
       ret_type = f"Promise<{self._ExtractPromiseType(func.returns_async)}>"
     return ret_type
 
@@ -328,9 +321,8 @@ class _Generator(object):
 
     # When the return async isn't a promise, we append it as a return callback
     # at the end of the parameters.
-    use_callback = (
-        func.returns_async and not func.returns_async.can_return_promise
-    )
+    use_callback = (func.returns_async
+                    and not func.returns_async.can_return_promise)
     if use_callback:
       callback_params = self._ExtractParams(func.returns_async.params)
       if param_str:
@@ -378,24 +370,21 @@ class _Generator(object):
   def _ClangFormat(self, c: Code, level=0):
     # temp = tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".js")
     # f_name = temp.name
-    with tempfile.NamedTemporaryFile(
-        "w", encoding="utf-8", suffix=".js", delete=False
-    ) as f:
+    with tempfile.NamedTemporaryFile("w",
+                                     encoding="utf-8",
+                                     suffix=".js",
+                                     delete=False) as f:
       f.write(c.Render())
       f_name = f.name
     script_path = self._GetChromiumClangFormatScriptPath()
     style_path = self._GetChromiumClangFormatStylePath()
-    cmd = (
-        f'python3 {script_path} --fallback-style=none '
-        f'--style=file:{style_path} "{f_name}"'
-    )
-    p = subprocess.Popen(
-        cmd,
-        cwd=CHROMIUM_SRC,
-        encoding="utf-8",
-        shell=True,
-        stdout=subprocess.PIPE
-    )
+    cmd = (f'python3 {script_path} --fallback-style=none '
+           f'--style=file:{style_path} "{f_name}"')
+    p = subprocess.Popen(cmd,
+                         cwd=CHROMIUM_SRC,
+                         encoding="utf-8",
+                         shell=True,
+                         stdout=subprocess.PIPE)
     out = p.communicate()[0]
     out_code = Code()
     out_code.Append(out)

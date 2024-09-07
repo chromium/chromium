@@ -11,8 +11,6 @@
 
 class PrefService;
 
-namespace chrome {
-
 // Returns true if the given browser command is allowed in app mode.
 bool IsCommandAllowedInAppMode(int command_id, bool is_popup);
 
@@ -30,7 +28,5 @@ bool IsRunningInForcedAppModeForApp(const std::string& app_id);
 // Returns true when the given `origin` can access browser permissions available
 // to the web kiosk app.
 bool IsWebKioskOriginAllowed(const PrefService* prefs, const GURL& origin);
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_APP_MODE_APP_MODE_UTILS_H_

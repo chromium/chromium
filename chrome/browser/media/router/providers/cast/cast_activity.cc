@@ -33,7 +33,7 @@ void CastActivity::SetRouteIsConnecting(bool is_connecting) {
 mojom::RoutePresentationConnectionPtr CastActivity::AddClient(
     const CastMediaSource& source,
     const url::Origin& origin,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   const std::string& client_id = source.client_id();
   DCHECK(!base::Contains(connected_clients_, client_id));
   std::unique_ptr<CastSessionClient> client =

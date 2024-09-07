@@ -73,7 +73,7 @@ suite('PrinterSetupInfoTest', function() {
     assertTrue(isChildVisible(setupInfoElement, 'cr-button'));
     assertTrue(isChildVisible(setupInfoElement, '.message-heading'));
     assertTrue(isChildVisible(setupInfoElement, '.message-detail'));
-    assertTrue(isChildVisible(setupInfoElement, 'iron-icon'));
+    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
   });
 
   /** Verifies button text is localized. */
@@ -224,30 +224,30 @@ suite('PrinterSetupInfoTest', function() {
         PrinterSetupInfoInitiator.PREVIEW_AREA, /*startResizeObserver=*/ true);
 
     // Verify the illustration is showing initially.
-    assertTrue(isChildVisible(setupInfoElement, 'iron-icon'));
+    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
 
     // Reducing the width should hide the illustration.
     parentDiv.style.width = '249px';
     await waitAfterNextRender(parentDiv);
     await waitAfterNextRender(setupInfoElement);
-    assertFalse(isChildVisible(setupInfoElement, 'iron-icon'));
+    assertFalse(isChildVisible(setupInfoElement, 'cr-icon'));
 
     // Expanding the width should show the illustration.
     parentDiv.style.width = '1000px';
     await waitAfterNextRender(parentDiv);
     await waitAfterNextRender(setupInfoElement);
-    assertTrue(isChildVisible(setupInfoElement, 'iron-icon'));
+    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
 
     // Reducing the height should hide the illustration.
     parentDiv.style.height = '399px';
     await waitAfterNextRender(parentDiv);
     await waitAfterNextRender(setupInfoElement);
-    assertFalse(isChildVisible(setupInfoElement, 'iron-icon'));
+    assertFalse(isChildVisible(setupInfoElement, 'cr-icon'));
 
     // Expanding the height should show the illustration.
     parentDiv.style.height = '1000px';
     await waitAfterNextRender(parentDiv);
     await waitAfterNextRender(setupInfoElement);
-    assertTrue(isChildVisible(setupInfoElement, 'iron-icon'));
+    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
   });
 });

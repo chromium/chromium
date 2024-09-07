@@ -20,14 +20,12 @@
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "base/version_info/version_info.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -71,7 +69,6 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
       search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny) &&
       search_engines::IsEeaChoiceCountry(country_id);
-  const int milestone = version_info::GetMajorVersionNumberAsInt();
 
   bool update_builtin_keywords;
   if (search_engines::HasSearchEngineCountryListOverride()) {
@@ -102,18 +99,6 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
     // We started writing the pref while we were not checking the country
     // before. Once the feature flag is removed, we can clean up this pref.
     update_builtin_keywords = true;
-  } else if (!base::FeatureList::IsEnabled(
-                 switches::kSearchEnginesSortingCleanup) &&
-             should_keywords_use_extended_list &&
-             keywords_metadata.builtin_keyword_milestone != 0 &&
-             keywords_metadata.builtin_keyword_milestone < milestone) {
-    // The milestone changed and we need to recompute the list of visible search
-    // engines. This is needed only in the EEA.
-    // We skip cases where the milestone was not previously set to avoid
-    // unnecessary churn. We expect that by the time this might matter, the
-    // client will have this data populated when the search engine choice
-    // feature gets enabled.
-    update_builtin_keywords = true;
   } else {
     update_builtin_keywords = false;
   }
@@ -123,7 +108,6 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
   if (update_builtin_keywords) {
     merge_requirements.metadata.builtin_keyword_data_version =
         prepopulate_resource_keyword_version;
-    merge_requirements.metadata.builtin_keyword_milestone = milestone;
     merge_requirements.metadata.builtin_keyword_country = country_id;
     merge_requirements.should_keywords_use_extended_list =
         should_keywords_use_extended_list

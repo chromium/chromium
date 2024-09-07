@@ -48,6 +48,20 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                AutofillClient::PasswordFormClassification::Type,
                SuggestionType),
               (override));
+  MOCK_METHOD(void,
+              OnClickedRefreshInlineSuggestion,
+              (const url::Origin&,
+               base::span<const Suggestion>,
+               size_t,
+               base::OnceCallback<void(std::vector<Suggestion>,
+                                       AutofillSuggestionTriggerSource)>),
+              (override));
+  MOCK_METHOD(void,
+              OnShowedInlineSuggestion,
+              (const url::Origin&,
+               base::span<const Suggestion>,
+               UpdateSuggestionsCallback),
+              (override));
 };
 
 }  // namespace autofill

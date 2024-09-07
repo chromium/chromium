@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -55,7 +53,6 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -115,7 +112,7 @@ struct ExpectedMetricsState {
   bool sync_opt_in_started = false;
   bool sync_opt_in_completed = false;
   bool sync_settings_opened = false;
-  bool sign_out = false;
+  std::optional<signin_metrics::ProfileSignout> profile_signout;
   bool sync_turn_off = false;
 };
 
@@ -190,8 +187,8 @@ class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
 // callback for the next profile creation.
 class UnittestProfileManager : public FakeProfileManager {
  public:
-  using ProfileBuilderCallback = base::RepeatingCallback<
-      std::unique_ptr<TestingProfile>(const base::FilePath&, Delegate*)>;
+  using ProfileBuilderCallback = base::RepeatingCallback<std::unique_ptr<
+      TestingProfile>(const base::FilePath&, Delegate*, Profile::CreateMode)>;
 
   explicit UnittestProfileManager(
       const base::FilePath& user_data_dir,
@@ -206,8 +203,9 @@ class UnittestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
-    auto profile = profile_builder_callback_.Run(path, delegate);
+      Delegate* delegate,
+      Profile::CreateMode create_mode) override {
+    auto profile = profile_builder_callback_.Run(path, delegate, create_mode);
     if (next_profile_created_callback_) {
       std::move(next_profile_created_callback_).Run(profile.get());
     }
@@ -408,7 +406,7 @@ class TurnSyncOnHelperTest : public testing::Test {
                                 base::Unretained(this))));
     auto testing_profile = BuildTestingProfile(
         temp_user_data_dir.Append(FILE_PATH_LITERAL("profile")),
-        /*delegate=*/nullptr);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
     profile_ = testing_profile.get();
 
     // Makes sure the profile has profile storage entries.
@@ -422,7 +420,7 @@ class TurnSyncOnHelperTest : public testing::Test {
     // Lacros expects that the main profile always exists.
     auto main_profile = BuildTestingProfile(
         temp_user_data_dir.Append(FILE_PATH_LITERAL("Default")),
-        /*delegate=*/nullptr);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
     profile_manager()->RegisterTestingProfile(std::move(main_profile),
                                               /*add_to_storage=*/true);
 
@@ -511,12 +509,14 @@ class TurnSyncOnHelperTest : public testing::Test {
   // Builds a testing profile with the right setup for this test.
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Profile::Delegate* delegate) {
+      Profile::Delegate* delegate,
+      Profile::CreateMode create_mode) {
     TestingProfile::Builder profile_builder;
 
     AddTestingProfileFactories(profile_builder);
 
     profile_builder.SetDelegate(delegate);
+    profile_builder.SetCreateMode(create_mode);
     profile_builder.SetPath(path);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_builder.SetIsMainProfile(Profile::IsMainProfilePath(path));
@@ -687,10 +687,12 @@ class TurnSyncOnHelperTest : public testing::Test {
         BucketsAre(
             Bucket(kAccessPoint, expected.sync_settings_opened ? 1 : 0)));
 
-    EXPECT_THAT(histogram_tester_->GetAllSamples("Signin.SignOut.Completed"),
-                BucketsAre(Bucket(signin_metrics::ProfileSignout::
-                                      kCancelSyncConfirmationRemoveAccount,
-                                  expected.sign_out ? 1 : 0)));
+    if (expected.profile_signout) {
+      EXPECT_THAT(histogram_tester_->GetAllSamples("Signin.SignOut.Completed"),
+                  BucketsAre(Bucket(expected.profile_signout.value(), 1)));
+    } else {
+      histogram_tester_->ExpectTotalCount("Signin.SignOut.Completed", 0);
+    }
 
     EXPECT_THAT(
         histogram_tester_->GetAllSamples("Signin.SyncTurnOff.Completed"),
@@ -1099,7 +1101,8 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Tests that the sync disabled message is displayed and that the account is
@@ -1124,7 +1127,8 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Tests that the sync disabled message is displayed and that the account is
@@ -1220,7 +1224,8 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortWithoutShowingUIRemoveAccount) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Tests that the sync aborted before displaying the sync disabled message and
@@ -1349,7 +1354,8 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinue) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Merge data after the cross account dialog.
@@ -1430,7 +1436,11 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
       .sign_in_access_point =
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
 #else
-      .sign_in_access_point = kAccessPoint,
+      .sign_in_access_point =
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+              ? signin_metrics::AccessPoint::
+                    ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE
+              : kAccessPoint,
 #endif
       .sign_in_recorded = true,
       .sync_opt_in_started = true});
@@ -1517,7 +1527,11 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
       .sign_in_access_point =
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
 #else
-      .sign_in_access_point = kAccessPoint,
+      .sign_in_access_point =
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+              ? signin_metrics::AccessPoint::
+                    ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE
+              : kAccessPoint,
 #endif
       .sign_in_recorded = true,
       .sync_opt_in_started = true});
@@ -1617,19 +1631,22 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
       .sign_in_access_point =
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
 #else
-      .sign_in_access_point = kAccessPoint,
+      .sign_in_access_point =
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+              ? signin_metrics::AccessPoint::
+                    ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE
+              : kAccessPoint,
 #endif
       .sign_in_recorded = true,
-      .sync_opt_in_started = true});
+      .sync_opt_in_started = true,
+      .profile_signout =
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+              ? std::optional<signin_metrics::ProfileSignout>(
+                    signin_metrics::ProfileSignout::kMovePrimaryAccount)
+              : std::nullopt});
 }
 
-class TurnSyncOnHelperSearchEngineTest : public TurnSyncOnHelperTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
-};
-
-TEST_F(TurnSyncOnHelperSearchEngineTest, SearchEngineImportedToNewProfile) {
+TEST_F(TurnSyncOnHelperTest, SearchEngineImportedToNewProfile) {
   // Set expectations.
   expected_enterprise_confirmation_email_ = kEnterpriseEmail;
   expected_switched_to_new_profile_ = true;
@@ -1737,9 +1754,7 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
   CheckSyncAborted(/*kept_account=*/true);
   CheckDelegateCalls();
 
-  CheckSigninMetrics({.sign_in_recorded = true,
-                      .sync_opt_in_started = true,
-                      .sign_out = false});
+  CheckSigninMetrics({.sign_in_recorded = true, .sync_opt_in_started = true});
 }
 
 // Tests that the sync confirmation is shown and the user can abort.
@@ -1760,7 +1775,8 @@ TEST_F(TurnSyncOnHelperTest, UndoSync) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sign_out = true});
+                      .profile_signout = signin_metrics::ProfileSignout::
+                          kCancelSyncConfirmationRemoveAccount});
 }
 
 // Tests that the sync settings page is shown.

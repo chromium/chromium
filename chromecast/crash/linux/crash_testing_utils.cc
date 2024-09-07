@@ -77,9 +77,7 @@ int WriteLockFile(const std::string& path, const base::Value::List& contents) {
     lockfile += "\n";  // Add line seperatators
   }
 
-  return WriteFile(base::FilePath(path), lockfile.c_str(), lockfile.size()) >= 0
-             ? 0
-             : -1;
+  return WriteFile(base::FilePath(path), lockfile) ? 0 : -1;
 }
 
 bool WriteMetadataFile(const std::string& path,

@@ -271,7 +271,6 @@ class MEDIA_EXPORT AudioBuffer
               std::unique_ptr<ExternalMemory> external_memory);
 
   virtual ~AudioBuffer();
-  std::unique_ptr<ExternalMemory> AllocateMemory(size_t size);
 
   const SampleFormat sample_format_;
   const ChannelLayout channel_layout_;

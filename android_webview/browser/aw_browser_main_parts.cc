@@ -17,7 +17,6 @@
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/metrics/system_state_util.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
-#include "android_webview/browser/tracing/background_tracing_field_trial.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_resource.h"
@@ -338,7 +337,7 @@ int AwBrowserMainParts::PreMainMessageLoopRun() {
 
 void AwBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AwBrowserMainParts::PostCreateThreads() {
@@ -346,7 +345,7 @@ void AwBrowserMainParts::PostCreateThreads() {
   if (mode != heap_profiling::Mode::kNone)
     heap_profiling::Supervisor::GetInstance()->Start(base::NullCallback());
 
-  MaybeSetupSystemTracingFromFieldTrial();
+  tracing::SetupSystemTracingFromFieldTrial();
   tracing::SetupBackgroundTracingFromCommandLine();
   tracing::SetupPresetTracingFromFieldTrial();
   base::trace_event::EmitNamedTrigger(

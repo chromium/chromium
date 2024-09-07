@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/mock_callback.h"
+#include "base/unguessable_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -49,7 +50,8 @@ TEST_F(RTCEncodedUnderlyingSourceWrapperTest,
   auto* stream =
       ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
   source->CreateAudioUnderlyingSource(
-      WTF::CrossThreadBindOnce(disconnect_callback_.Get()));
+      WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+      base::UnguessableToken::Create());
   NonThrowableExceptionState exception_state;
   auto* reader =
       stream->GetDefaultReaderForTesting(script_state, exception_state);
@@ -84,7 +86,8 @@ TEST_F(RTCEncodedUnderlyingSourceWrapperTest, AudioCancelStream) {
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       v8_scope.GetScriptState(), source, 0);
   source->CreateAudioUnderlyingSource(
-      WTF::CrossThreadBindOnce(disconnect_callback_.Get()));
+      WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+      base::UnguessableToken::Create());
   EXPECT_CALL(disconnect_callback_, Run());
   NonThrowableExceptionState exception_state;
   stream->cancel(v8_scope.GetScriptState(), exception_state);
@@ -98,7 +101,8 @@ TEST_F(RTCEncodedUnderlyingSourceWrapperTest,
   auto* stream =
       ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
   source->CreateVideoUnderlyingSource(
-      WTF::CrossThreadBindOnce(disconnect_callback_.Get()));
+      WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+      base::UnguessableToken::Create());
   NonThrowableExceptionState exception_state;
   auto* reader =
       stream->GetDefaultReaderForTesting(script_state, exception_state);
@@ -132,7 +136,8 @@ TEST_F(RTCEncodedUnderlyingSourceWrapperTest, VideoCancelStream) {
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       v8_scope.GetScriptState(), source, 0);
   source->CreateVideoUnderlyingSource(
-      WTF::CrossThreadBindOnce(disconnect_callback_.Get()));
+      WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+      base::UnguessableToken::Create());
   EXPECT_CALL(disconnect_callback_, Run());
   NonThrowableExceptionState exception_state;
   stream->cancel(v8_scope.GetScriptState(), exception_state);

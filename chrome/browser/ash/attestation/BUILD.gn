@@ -165,7 +165,6 @@ source_set("test_with_shadow_variables") {
 
   deps = [
     ":attestation",
-    ":test_support",
     "//base",
     "//chrome/browser/ash/settings:test_support",
     "//chromeos/ash/components/attestation:test_support",

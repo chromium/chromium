@@ -19,6 +19,7 @@
 #include "media/audio/audio_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -232,14 +233,27 @@ void WebAppSystemMediaControlsManager::OnFocusLost(
     return;
   }
 
-  system_media_controls::SystemMediaControls* system_media_controls =
-      it->second->GetSystemMediaControls();
-  // Tell the OS that audio stopped and to hide the UI. These are the same
-  // cleanup steps taken by SMCNotifier when it receives audio stopped
-  // messages via MediaControllerObserver.
-  system_media_controls->SetPlaybackStatus(
-      system_media_controls::SystemMediaControls::PlaybackStatus::kStopped);
-  system_media_controls->ClearMetadata();
+  // Tell the OS that audio stopped and to hide the UI.
+
+  // For the browser, the SystemMediaControlsNotifier automatically follows the
+  // "active" media session. However, because all PWA media controls are
+  // associated with a specific media session, they don't receive the same
+  // metadata updates. (crbug/326411160 for more information why).
+  // Instead, `this` receives a FocusLost updates via AudioFocusObserver, and we
+  // must then do the OS UI cleanup ourselves.
+
+  // Because SystemMediaControlsNotifier keeps internal timers/logic to debounce
+  // metadata updates, we leverage the existing logic there by directly calling
+  // MediaSessionInfoChanged (a MediaControllerObserver function)
+  // with empty information to force the SMCNotifier to take the normal cleanup
+  // path to hide the OS UI and stop all running debounce timers. (Although
+  // `state` has a session_info field, we can't use that because it will have
+  // information. we need to pass an empty information so
+  // MediaSessionInfoChanged will think a track ended and take the cleanup
+  // route)
+  content::SystemMediaControlsNotifier* notifier = it->second->GetNotifier();
+  media_session::mojom::MediaSessionInfoPtr empty_info;
+  notifier->MediaSessionInfoChanged(std::move(empty_info));
 }
 
 void WebAppSystemMediaControlsManager::OnRequestIdReleased(

@@ -145,7 +145,7 @@ class ASH_EXPORT WindowTreeHostManager
   void OnHostResized(aura::WindowTreeHost* host) override;
 
   // display::ContentProtectionManager::Observer overrides:
-  void OnDisplaySecurityChanged(int64_t display_id, bool secure) override;
+  void OnDisplaySecurityMaybeChanged(int64_t display_id, bool secure) override;
 
   // display::DisplayManager::Delegate overrides:
   void CreateDisplay(const display::Display& display) override;

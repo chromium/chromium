@@ -63,9 +63,10 @@ PageLifecycleStateManager::~PageLifecycleStateManager() {
 }
 
 void PageLifecycleStateManager::SetIsFrozen(bool frozen) {
-  if (is_set_frozen_called_ == frozen)
+  if (frozen_explicitly_ == frozen) {
     return;
-  is_set_frozen_called_ = frozen;
+  }
+  frozen_explicitly_ = frozen;
 
   SendUpdatesToRendererIfNeeded(
       /*page_restore_params=*/nullptr, base::NullCallback());
@@ -77,6 +78,16 @@ void PageLifecycleStateManager::SetFrameTreeVisibility(
     return;
 
   frame_tree_visibility_ = visibility;
+
+  if (visibility == blink::mojom::PageVisibilityState::kVisible) {
+    // Unset `frozen_explicitly_` when the page is shown, to reflect that the
+    // Blink page scheduler unfreezes the page in that situation. This ensures
+    // that the page is frozen if SetIsFrozen(true) is called while the page is
+    // hidden in the future (SetIsFrozen(true) no-ops if `frozen_explicitly_` is
+    // true).
+    frozen_explicitly_ = false;
+  }
+
   SendUpdatesToRendererIfNeeded(
       /*page_restore_params=*/nullptr, base::NullCallback());
   // TODO(yuzus): When a page is frozen and made visible, the page should
@@ -197,7 +208,7 @@ blink::mojom::PageLifecycleStatePtr
 PageLifecycleStateManager::CalculatePageLifecycleState() {
   auto state = blink::mojom::PageLifecycleState::New();
   state->is_in_back_forward_cache = is_in_back_forward_cache_;
-  state->is_frozen = is_in_back_forward_cache_ ? true : is_set_frozen_called_;
+  state->is_frozen = is_in_back_forward_cache_ || frozen_explicitly_;
   state->pagehide_dispatch = pagehide_dispatch_;
   // If a page is stored in the back-forward cache, or we have already
   // dispatched/are dispatching pagehide for the page, it should be treated as

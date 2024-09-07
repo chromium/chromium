@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/gpu/GrContextOptions.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
 
 class GrDirectContext;
 

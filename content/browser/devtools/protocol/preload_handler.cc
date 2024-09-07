@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/devtools/devtools_preload_storage.h"
 #include "content/browser/devtools/protocol/preload.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_config.h"
@@ -271,8 +273,6 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchFailedInvalidRedirect;
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       return Preload::PrefetchStatusEnum::PrefetchFailedIneligibleRedirect;
-    case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
-      return Preload::PrefetchStatusEnum::PrefetchFailedPerPageLimitExceeded;
     case PrefetchStatus::
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return Preload::PrefetchStatusEnum::
@@ -449,6 +449,7 @@ void PreloadHandler::DidUpdatePrerenderStatus(
 Response PreloadHandler::Enable() {
   enabled_ = true;
   SendInitialPreloadEnabledState();
+  SendCurrentPreloadStatus();
   return Response::FallThrough();
 }
 
@@ -499,6 +500,50 @@ void PreloadHandler::SendInitialPreloadEnabledState() {
       config.ShouldHoldback(
           PreloadingType::kPrerender,
           content::content_preloading_predictor::kSpeculationRules));
+}
+
+void PreloadHandler::SendCurrentPreloadStatus() {
+  if (!host_) {
+    return;
+  }
+
+  std::vector<RenderFrameHostImpl*> documents_in_local_subtree;
+  RenderFrameHostImpl* root = host_;
+  host_->ForEachRenderFrameHostWithAction(
+      [&documents_in_local_subtree, root](
+          RenderFrameHostImpl* rfh) -> RenderFrameHost::FrameIterationAction {
+        if (rfh != root &&
+            RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(rfh)) {
+          return RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+        documents_in_local_subtree.push_back(rfh);
+        return RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  for (RenderFrameHostImpl* document : documents_in_local_subtree) {
+    auto* preload_storage =
+        DevToolsPreloadStorage::GetForCurrentDocument(document);
+    if (!preload_storage) {
+      continue;
+    }
+
+    const base::UnguessableToken initiator_devtools_navigation_token =
+        document->GetDevToolsNavigationToken().value();
+    const std::string initiating_frame_id =
+        document->GetDevToolsFrameToken().ToString();
+    for (const auto& [key, data] : preload_storage->prefetch_data_map()) {
+      DidUpdatePrefetchStatus(
+          initiator_devtools_navigation_token, initiating_frame_id,
+          /*prefetch_url=*/key, data.outcome, data.status, data.request_id);
+    }
+    for (const auto& [key, data] : preload_storage->prerender_data_map()) {
+      DidUpdatePrerenderStatus(
+          initiator_devtools_navigation_token, /*prerender_url=*/key.first,
+          /*target_hint=*/key.second, data.outcome, data.status,
+          data.disallowed_mojo_interface,
+          data.mismatched_headers.empty() ? nullptr : &data.mismatched_headers);
+    }
+  }
 }
 
 }  // namespace content::protocol

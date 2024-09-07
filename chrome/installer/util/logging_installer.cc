@@ -17,6 +17,7 @@
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -62,12 +63,12 @@ TruncateResult TruncateLogFileIfNeeded(const base::FilePath& log_file) {
       // Note that base::Move will attempt to replace existing files.
       if (base::Move(log_file, tmp_log)) {
         int64_t offset = log_size - kTruncatedInstallerLogFileSize;
-        std::string old_log_data(kTruncatedInstallerLogFileSize, 0);
-        int bytes_read = old_log_file.Read(offset, &old_log_data[0],
-                                           kTruncatedInstallerLogFileSize);
-        if (bytes_read > 0 &&
-            (bytes_read ==
-                 base::WriteFile(log_file, &old_log_data[0], bytes_read) ||
+        auto old_log_data =
+            base::HeapArray<uint8_t>::Uninit(kTruncatedInstallerLogFileSize);
+        std::optional<size_t> bytes_read =
+            old_log_file.Read(offset, old_log_data);
+        if (bytes_read.value_or(0) > 0 &&
+            (base::WriteFile(log_file, old_log_data.subspan(0, *bytes_read)) ||
              base::PathExists(log_file))) {
           result = LOGFILE_TRUNCATED;
         }
@@ -136,7 +137,7 @@ base::FilePath GetLogFilePath(const installer::InitialPreferences& prefs) {
   // fails.
   base::FilePath tmp_path;
   std::ignore = ::IsUserAnAdmin()
-                    ? base::GetSecureSystemTemp(&tmp_path)
+                    ? base::PathService::Get(base::DIR_SYSTEM_TEMP, &tmp_path)
                     : base::PathService::Get(base::DIR_TEMP, &tmp_path);
   return tmp_path.Append(kLogFilename);
 }

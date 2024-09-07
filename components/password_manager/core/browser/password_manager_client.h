@@ -37,6 +37,10 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/first_cct_page_load_passwords_ukm_recorder.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 class PrefService;
 
 namespace affiliations {
@@ -92,6 +96,9 @@ class WebAuthnCredManDelegate;
 namespace password_manager {
 
 class FieldInfoManager;
+#if BUILDFLAG(IS_ANDROID)
+class FirstCctPageLoadPasswordsUkmRecorder;
+#endif  // BUILDFLAG(IS_ANDROID)
 class PasswordFeatureManager;
 class PasswordFormManagerForUI;
 class PasswordManagerDriver;
@@ -458,6 +465,16 @@ class PasswordManagerClient {
   // does not support metrics recording.
   virtual PasswordManagerMetricsRecorder* GetMetricsRecorder() = 0;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a metrics recorder created specifically for the first CCT page
+  // load. This can return nullptr if the current tab is not a CCT, or if
+  // the user already navigated away from the first page.
+  // It records metrics on destruction, which happens on the first navigation
+  // away from the first loaded page. Callers should  not hold on to the
+  // pointer.
+  virtual FirstCctPageLoadPasswordsUkmRecorder*
+  GetFirstCctPageLoadUkmRecorder() = 0;
+#endif
   // Gets the PasswordRequirementsService associated with the client. It is
   // valid that this method returns a nullptr if the PasswordRequirementsService
   // has not been implemented for a specific platform or the context is an
@@ -518,6 +535,14 @@ class PasswordManagerClient {
 
   // Refreshes password manager settings stored in prefs.
   virtual void RefreshPasswordManagerSettingsIfNeeded() const;
+
+  // Display username/password options to the user in the "ambient" sign-in
+  // bubble, which can also display other credential types for sign-in.
+  // If the user selects a password from the bubble, `callback` is invoked with
+  // the selected `PasswordForm`.
+  virtual void ShowCredentialsInAmbientBubble(
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+      CredentialsCallback callback);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)

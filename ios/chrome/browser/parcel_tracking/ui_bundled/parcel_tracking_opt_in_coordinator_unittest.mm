@@ -11,9 +11,8 @@
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -23,12 +22,10 @@ class ParcelTrackingOptInCoordinatorTest : public PlatformTest {
   void SetUp() override {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    web_state_ = std::make_unique<web::FakeWebState>();
     NSArray<CustomTextCheckingResult*>* array = [[NSArray alloc] init];
     coordinator_ = [[ParcelTrackingOptInCoordinator alloc]
         initWithBaseViewController:[[UIViewController alloc] init]
                            browser:browser_.get()
-                          webState:web_state_.get()
                            parcels:array];
   }
 
@@ -36,7 +33,6 @@ class ParcelTrackingOptInCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<web::FakeWebState> web_state_;
   ParcelTrackingOptInCoordinator* coordinator_;
 };
 

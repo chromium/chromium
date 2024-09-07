@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
 #include "third_party/blink/renderer/modules/peerconnection/web_rtc_stats_report_callback_resolver.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
 
@@ -232,6 +234,18 @@ void RTCRtpReceiver::set_transport(RTCDtlsTransport* transport) {
   transport_ = transport;
 }
 
+String RTCRtpReceiver::TransceiverDirection() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // `transceiver_` is always initialized to a valid value.
+  return transceiver_->direction();
+}
+
+String RTCRtpReceiver::TransceiverCurrentDirection() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // `transceiver_` is always initialized to a valid value.
+  return transceiver_->currentDirection();
+}
+
 void RTCRtpReceiver::ContextDestroyed() {
   {
     base::AutoLock locker(audio_underlying_source_lock_);
@@ -258,6 +272,7 @@ void RTCRtpReceiver::Trace(Visitor* visitor) const {
   visitor->Trace(streams_);
   visitor->Trace(transceiver_);
   visitor->Trace(encoded_streams_);
+  visitor->Trace(transform_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -473,7 +488,8 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
     // Set up writable.
     audio_to_decoder_underlying_sink_ =
         MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
-            script_state, encoded_audio_transformer_);
+            script_state, encoded_audio_transformer_,
+            /*detach_frame_data_on_write=*/false);
 
     auto set_underlying_sink =
         WTF::CrossThreadBindOnce(&RTCRtpReceiver::SetAudioUnderlyingSink,
@@ -490,6 +506,44 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
 
   encoded_streams_->setWritable(writable_stream);
   return encoded_streams_;
+}
+
+void RTCRtpReceiver::setTransform(RTCRtpScriptTransform* transform,
+                                  ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (transform_ == transform) {
+    return;
+  }
+  if (!transform) {
+    transform_->Detach();
+    transform_ = nullptr;
+    return;
+  }
+  if (transform->IsAttached()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Transform is already in use");
+    return;
+  }
+  if (transform_) {
+    transform_->Detach();
+  }
+  transform_ = transform;
+  transform_->AttachToReceiver(this);
+
+  if (kind() == MediaKind::kAudio) {
+    transform_->CreateAudioUnderlyingSourceAndSink(
+        WTF::CrossThreadBindOnce(
+            &RTCRtpReceiver::UnregisterEncodedAudioStreamCallback,
+            WrapCrossThreadWeakPersistent(this)),
+        encoded_audio_transformer_);
+    return;
+  }
+  CHECK(kind() == MediaKind::kVideo);
+  transform_->CreateVideoUnderlyingSourceAndSink(
+      WTF::CrossThreadBindOnce(
+          &RTCRtpReceiver::UnregisterEncodedVideoStreamCallback,
+          WrapCrossThreadWeakPersistent(this)),
+      encoded_video_transformer_);
 }
 
 void RTCRtpReceiver::OnAudioFrameFromDepacketizer(
@@ -561,7 +615,7 @@ void RTCRtpReceiver::SetVideoUnderlyingSink(
 
 void RTCRtpReceiver::MaybeShortCircuitEncodedStreams() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!encoded_streams_) {
+  if (!encoded_streams_ && !transform_) {
     transform_shortcircuited_ = true;
     LogMessage("Starting short circuiting of transform");
     if (kind() == MediaKind::kVideo) {
@@ -625,7 +679,8 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(
     // Set up writable.
     video_to_decoder_underlying_sink_ =
         MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
-            script_state, encoded_video_transformer_);
+            script_state, encoded_video_transformer_,
+            /*detach_frame_data_on_write=*/false);
 
     auto set_underlying_sink =
         WTF::CrossThreadBindOnce(&RTCRtpReceiver::SetVideoUnderlyingSink,

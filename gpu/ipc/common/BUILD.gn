@@ -111,10 +111,6 @@ source_set("ipc_common_sources") {
     ]
   }
   if (is_android) {
-    sources += [
-      "gpu_memory_buffer_impl_android_hardware_buffer.cc",
-      "gpu_memory_buffer_impl_android_hardware_buffer.h",
-    ]
     visibility += [ "//media/gpu:gpu" ]
   }
 

@@ -37,6 +37,7 @@ static_library("lock_screen_apps") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/note_taking",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
@@ -60,7 +61,10 @@ static_library("lock_screen_apps") {
     "//url",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/note_taking",
+  ]
 }
 
 static_library("test_support") {
@@ -97,15 +101,16 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/note_taking",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/apps",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",
+    "//chromeos/dbus/power:power_manager_proto",
     "//components/account_id",
     "//components/crx_file",
     "//components/prefs",
@@ -129,8 +134,7 @@ source_set("browser_tests") {
     "//apps",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/note_taking",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/test:test_support",

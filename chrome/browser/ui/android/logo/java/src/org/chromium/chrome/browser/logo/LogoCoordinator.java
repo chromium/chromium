@@ -156,8 +156,11 @@ public class LogoCoordinator {
         return mMediator.isLogoVisible();
     }
 
-    /** @see LogoMediator#onTemplateURLServiceChanged */
+    /**
+     * @see LogoMediator#onTemplateURLServiceChanged
+     */
     public void onTemplateURLServiceChangedForTesting() {
+        mMediator.resetSearchEngineKeywordForTesting(); // IN-TEST
         mMediator.onTemplateURLServiceChanged();
     }
 

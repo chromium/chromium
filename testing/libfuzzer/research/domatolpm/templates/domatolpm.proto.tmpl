@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 syntax = "proto3";
-package testing.libfuzzer.research.domatolpm;
+package {{proto_ns}};
+
+{% for import in imports %}
+import "{{import}}";
+{% endfor %}
 
 {% for message in messages %}
 message {{message.name}} {
@@ -29,9 +33,3 @@ message lines {
     repeated line lines_v = 1;
 }
 {% endif %}
-
-message {{fuzzcase.name}} {
-  {% for field in fuzzcase.fields %}
-  {{field.type.name}} {{field.name}} = {{field.proto_id}};
-  {% endfor %}
-}

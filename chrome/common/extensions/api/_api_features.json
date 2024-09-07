@@ -215,6 +215,7 @@
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
+      "chrome://graduation/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
       "chrome://os-settings/*",
@@ -283,7 +284,8 @@
     ],
     "matches": [
       "chrome://camera-app/*",
-      "chrome://media-app/*"
+      "chrome://media-app/*",
+      "chrome://recorder-app/*"
     ]
   },
   {
@@ -415,6 +417,9 @@
   },
   "enterprise.reportingPrivate.getHotfixes": {
     "platforms": ["win"]
+  },
+  "enterprise.reportingPrivate.reportDataMaskingEvent": {
+    "feature_flag": "ApiEnterpriseReportingPrivateReportDataMaskingEvent"
   },
   "experimental.devtools.audits": {
     "nocompile": true,

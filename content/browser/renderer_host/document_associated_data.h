@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -49,14 +50,6 @@ class DocumentAssociatedData : public base::SupportsUserData {
   ~DocumentAssociatedData() override;
   DocumentAssociatedData(const DocumentAssociatedData&) = delete;
   DocumentAssociatedData& operator=(const DocumentAssociatedData&) = delete;
-
-  // Removes all services. We do that on the destructor of
-  // DocumentAssociatedData, but also before resetting
-  // `document_associated_data_` in RenderFrameHostImpl. This is because
-  // otherwise, when services in DocumentAssociatedData try to remove
-  // themselves from DocumentAssociatedData through the RenderFrameHostImpl
-  // optional, it will not be valid anymore.
-  void RemoveAllServices();
 
   // An opaque token that uniquely identifies the document currently
   // associated with this RenderFrameHost. Note that in the case of
@@ -147,9 +140,18 @@ class DocumentAssociatedData : public base::SupportsUserData {
   // Produces weak pointers to the hosting RenderFrameHostImpl. This is
   // invalidated whenever DocumentAssociatedData is destroyed, due to
   // RenderFrameHost deletion or cross-document navigation.
-  base::WeakPtrFactory<RenderFrameHostImpl>& weak_factory() {
-    return weak_factory_;
+  base::SafeRef<RenderFrameHostImpl> GetSafeRef() {
+    return weak_factory_.GetSafeRef();
   }
+
+  base::WeakPtr<RenderFrameHostImpl> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  void AddService(internal::DocumentServiceBase* service,
+                  base::PassKey<internal::DocumentServiceBase>);
+  void RemoveService(internal::DocumentServiceBase* service,
+                     base::PassKey<internal::DocumentServiceBase>);
 
  private:
   const blink::DocumentToken token_;

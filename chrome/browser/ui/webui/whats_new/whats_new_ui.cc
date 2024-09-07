@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 
 #include "base/feature_list.h"
@@ -32,19 +27,21 @@
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
 
-void CreateAndAddWhatsNewUIHtmlSource(Profile* profile) {
+void CreateAndAddWhatsNewUIHtmlSource(Profile* profile, bool enable_staging) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIWhatsNewHost);
 
   webui::SetupWebUIDataSource(
-      source, base::make_span(kWhatsNewResources, kWhatsNewResourcesSize),
+      source, base::span<const webui::ResourcePath>(kWhatsNewResources),
       IDR_WHATS_NEW_WHATS_NEW_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
@@ -52,14 +49,27 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("isWhatsNewV2", user_education::features::IsWhatsNewV2());
+  source->AddBoolean("isStaging", enable_staging);
 
   // Allow embedding of iframe from chrome.com
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      "child-src chrome://webui-test https://www.google.com/;");
+      enable_staging
+          ? "child-src chrome://webui-test https://www.google.com/ "
+            "https://chrome-staging.corp.google.com/;"
+          : "child-src chrome://webui-test https://www.google.com/;");
 }
 
 }  // namespace
+
+WhatsNewUIConfig::WhatsNewUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIWhatsNewHost) {}
+
+bool WhatsNewUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return whats_new::IsEnabled();
+}
 
 // static
 void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -74,7 +84,9 @@ WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
       page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)) {
-  CreateAndAddWhatsNewUIHtmlSource(profile_);
+  GURL url = web_ui->GetWebContents()->GetVisibleURL();
+  bool enable_staging = url.query_piece().compare("staging=true") == 0;
+  CreateAndAddWhatsNewUIHtmlSource(profile_, enable_staging);
 }
 
 // static

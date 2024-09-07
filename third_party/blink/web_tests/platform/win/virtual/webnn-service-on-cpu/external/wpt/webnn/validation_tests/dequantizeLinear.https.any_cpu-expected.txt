@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] [dequantizeLinear] Test scale's shape = [3, 2, 5] and zeroPoint's shape = [3, 2, 5] which is the same as input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'dequantizeLinear' on 'MLGraphBuilder': Unsupported data type int8 for argument input, must be one of []."
+[FAIL] [dequantizeLinear] Test scale's shape = [5] and zeroPoint's shape = [5] which is unidirectionally broadcastable to input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'dequantizeLinear' on 'MLGraphBuilder': Unsupported data type int8 for argument input, must be one of []."
+[FAIL] [dequantizeLinear] Test scale's shape = [] and zeroPoint's shape = [] which is unidirectionally broadcastable to input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'dequantizeLinear' on 'MLGraphBuilder': Unsupported data type uint8 for argument input, must be one of []."
+Harness: the test ran to completion.
+

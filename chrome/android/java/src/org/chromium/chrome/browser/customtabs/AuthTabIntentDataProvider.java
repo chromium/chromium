@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,11 +16,13 @@ import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 /**
  * A model class that parses the incoming intent for Auth Tab specific data.
@@ -33,6 +36,8 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     private final @NonNull Intent mIntent;
     private final @Nullable String mClientPackageName;
     private final @NonNull ColorProvider mColorProvider;
+    private final @NonNull Drawable mCloseButtonIcon;
+    private final @Nullable String mRedirectScheme;
 
     @Nullable private String mUrlToLoad;
 
@@ -54,6 +59,12 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
                 IntentUtils.safeGetStringExtra(
                         intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
         mColorProvider = new AuthTabColorProvider(context);
+        mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
+        // TODO(crbug.com/353586171): We should disallow http/https and other known schemes such as
+        // content://, file://, chrome:// etc. Can be handled using methods in UrlUtilities, but we
+        // might want to disallow more.
+        mRedirectScheme =
+                IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_REDIRECT_SCHEME);
     }
 
     @Override
@@ -89,6 +100,12 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         return mColorProvider;
     }
 
+    @Nullable
+    @Override
+    public Drawable getCloseButtonDrawable() {
+        return mCloseButtonIcon;
+    }
+
     @Override
     public int getTitleVisibilityState() {
         return CustomTabsIntent.SHOW_PAGE_TITLE;
@@ -118,5 +135,10 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     @Override
     public boolean isAuthTab() {
         return true;
+    }
+
+    @Override
+    public String getAuthRedirectScheme() {
+        return mRedirectScheme;
     }
 }

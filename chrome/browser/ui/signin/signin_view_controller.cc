@@ -49,6 +49,7 @@
 #include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
@@ -58,7 +59,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -714,31 +714,33 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     return;
   }
 
-  // Show the confirmation prompt if there is data pending upload.
-  bool should_show_confirmation_prompt = !unsynced_datatypes.empty();
+  bool needs_reauth =
+      !identity_manager->HasAccountWithRefreshToken(primary_account_id) ||
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id);
+  bool sign_out_immediately = unsynced_datatypes.empty() && needs_reauth;
+
   base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
       base::BindOnce(&HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
                      reauth_access_point, profile_signout_source,
                      token_signout_source);
 
-  if (should_show_confirmation_prompt) {
-    CHECK(!primary_account_id.empty());
-    bool needs_reauth =
-        !identity_manager->HasAccountWithRefreshToken(primary_account_id) ||
-        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            primary_account_id);
-    ChromeSignoutConfirmationPromptVariant prompt_variant =
+  if (sign_out_immediately) {
+    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
+    return;
+  }
+
+  ChromeSignoutConfirmationPromptVariant prompt_variant =
+      ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData;
+  if (!unsynced_datatypes.empty()) {
+    prompt_variant =
         needs_reauth ? ChromeSignoutConfirmationPromptVariant::
                            kUnsyncedDataWithReauthButton
                      : ChromeSignoutConfirmationPromptVariant::kUnsyncedData;
-
-    // Show confirmation prompt where the user can reauth or sign out.
-    ShowChromeSignoutConfirmationPrompt(*browser_, prompt_variant,
-                                        std::move(callback));
-  } else {
-    // Sign out immediately
-    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
   }
+  // Show confirmation prompt where the user can reauth or sign out.
+  ShowChromeSignoutConfirmationPrompt(*browser_, prompt_variant,
+                                      std::move(callback));
 }
 
 void SigninViewController::ShowChromeSigninDialogForExtensions(
@@ -799,7 +801,7 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
                            l10n_util::GetStringUTF16(IDS_CANCEL)))
       .SetDialogDestroyingCallback(std::move(on_complete));
 
-  constrained_window::ShowWebModal(dialog_builder.Build(), contents);
+  chrome::ShowTabModal(dialog_builder.Build(), contents);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

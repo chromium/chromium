@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/memory/singleton.h"
-#include "base/notreached.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/var_serialization_rules.h"
 
@@ -42,10 +41,7 @@ InterfaceProxy* Dispatcher::GetInterfaceProxy(ApiID id) {
     // Handle the first time for a given API by creating the proxy for it.
     InterfaceProxy::Factory factory =
         InterfaceList::GetInstance()->GetFactoryForID(id);
-    if (!factory) {
-      NOTREACHED_IN_MIGRATION();
-      return NULL;
-    }
+    CHECK(factory);
     proxy = factory(this);
     DCHECK(proxy);
     proxies_[id].reset(proxy);
@@ -69,10 +65,7 @@ bool Dispatcher::OnMessageReceived(const IPC::Message& msg) {
 
   InterfaceProxy* proxy = GetInterfaceProxy(
       static_cast<ApiID>(msg.routing_id()));
-  if (!proxy) {
-    NOTREACHED_IN_MIGRATION();
-    return true;
-  }
+  CHECK(proxy);
   return proxy->OnMessageReceived(msg);
 }
 

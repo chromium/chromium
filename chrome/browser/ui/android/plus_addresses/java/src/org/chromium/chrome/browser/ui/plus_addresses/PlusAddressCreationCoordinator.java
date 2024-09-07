@@ -12,7 +12,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.url.GURL;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator of the plus address creation UI. */
 public class PlusAddressCreationCoordinator {
@@ -25,37 +26,26 @@ public class PlusAddressCreationCoordinator {
             TabModel tabModel,
             TabModelSelector tabModelSelector,
             PlusAddressCreationViewBridge bridge,
-            String modalTitle,
-            String plusAddressDescription,
-            @Nullable String plusAddressNotice,
-            String proposedPlusAddressPlaceholder,
-            String plusAddressModalOkText,
-            @Nullable String plusAddressModalCancelText,
-            String errorReportInstruction,
-            boolean refreshSupported,
-            GURL learnMoreUrl,
-            GURL errorReportUrl) {
+            PlusAddressCreationNormalStateInfo info,
+            boolean refreshSupported) {
+        PropertyModel model = PlusAddressCreationProperties.createDefaultModel();
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        activity,
-                        modalTitle,
-                        plusAddressDescription,
-                        plusAddressNotice,
-                        proposedPlusAddressPlaceholder,
-                        plusAddressModalOkText,
-                        plusAddressModalCancelText,
-                        errorReportInstruction,
-                        learnMoreUrl,
-                        errorReportUrl,
-                        refreshSupported);
+                        activity, bottomSheetController, info, refreshSupported);
         mMediator =
                 new PlusAddressCreationMediator(
+                        model,
                         bottomSheetContent,
                         bottomSheetController,
                         layoutStateProvider,
                         tabModel,
                         tabModelSelector,
                         bridge);
+
+        PropertyModelChangeProcessor.create(
+                model,
+                bottomSheetContent,
+                PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
     }
 
     public void requestShowContent() {
@@ -66,8 +56,8 @@ public class PlusAddressCreationCoordinator {
         mMediator.updateProposedPlusAddress(plusAddress);
     }
 
-    public void showError() {
-        mMediator.showError();
+    public void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
+        mMediator.showError(errorStateInfo);
     }
 
     public void hideRefreshButton() {

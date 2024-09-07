@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 
@@ -26,8 +27,14 @@ ModelQualityLogEntry::~ModelQualityLogEntry() {
   if (!log_ai_data_request_) {
     return;
   }
-  auto feature = GetModelExecutionFeature(log_ai_data_request_->feature_case());
-  if (!feature || !uploader_ || !uploader_->CanUploadLogs(*feature)) {
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          log_ai_data_request_->feature_case());
+  if (!metadata) {
+    // The feature is not configured to use MQLS, don't upload anything.
+    return;
+  }
+  if (!uploader_ || !uploader_->CanUploadLogs(metadata)) {
     return;
   }
 

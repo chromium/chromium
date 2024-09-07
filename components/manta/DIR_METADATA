@@ -1,0 +1,6 @@
+monorail: {
+  component: "ChromeOS>Software>Consumer>Machine Intelligence>Manta"
+}
+buganizer_public: {
+  component_id: 1458592
+}

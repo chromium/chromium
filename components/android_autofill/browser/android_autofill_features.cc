@@ -21,9 +21,7 @@ namespace autofill::features {
 namespace {
 
 const base::Feature* kFeaturesExposedToJava[] = {
-    &kAndroidAutofillBottomSheetWorkaround,
-    &kAndroidAutofillPrefillRequestsForLoginForms,
-};
+    &kAndroidAutofillBottomSheetWorkaround};
 
 }  // namespace
 
@@ -35,29 +33,12 @@ BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
              "AndroidAutofillBottomSheetWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, we explicitly cancel the ongoing Android autofill session on new
-// document navigation by calling `AutofillManager.cancel()`, we clear the
-// request state in the java side as it works as an indicator to the current
-// session.
-BASE_FEATURE(kAndroidAutofillCancelSessionOnNavigation,
-             "AndroidAutofillCancelSessionOnNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, we stop relying on `known_success` in FormSubmitted signal to
 // decide whether to defer submission on not, and instead we directly inform the
 // provider of submission.
 BASE_FEATURE(kAndroidAutofillDirectFormSubmission,
              "AndroidAutofillDirectFormSubmission",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, prefill requests (i.e. calls to
-// `AutofillManager.notifyVirtualViewsReady`) are supported. Such prefill
-// requests are sent at most once per WebView session and are limited to forms
-// that are assumed to be login forms.
-// Future features may extend prefill requests to more form types.
-BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
-             "AndroidAutofillPrefillRequestsForLoginForms",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, offer prefill requests (i.e. calls to
 // `AutofillManager.notifyVirtualViewsReady`) to change

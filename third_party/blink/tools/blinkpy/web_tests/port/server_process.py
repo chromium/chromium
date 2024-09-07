@@ -399,7 +399,7 @@ class ServerProcess(object):
         if not self._proc:
             self._start()
 
-    def stop(self, timeout_secs=0.0, kill_tree=True):
+    def stop(self, timeout_secs=0.0, kill_tree=True, send_sigterm=False):
         if not self._proc:
             return (None, None)
 
@@ -415,6 +415,8 @@ class ServerProcess(object):
             except BrokenPipeError:
                 pass
             self._proc.stdin = None
+        if send_sigterm:
+            self._host.executive.terminate(self._proc.pid)
         killed = False
         if timeout_secs:
             deadline = now + timeout_secs

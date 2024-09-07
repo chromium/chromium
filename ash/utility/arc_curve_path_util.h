@@ -42,6 +42,12 @@ struct ASH_EXPORT ArcCurveCorner {
   float convex_radius;
 };
 
+// Returns the path of a bounding rectangle of `size` with all corners
+// rounded with `corner_radius`.
+// NOTE: Returns an empty SkPath if the given values are invalid.
+ASH_EXPORT SkPath GetArcCurveRectPath(const gfx::Size& size,
+                                      const size_t corner_radius);
+
 // Returns the path of a bounding rectangle of `size` with the specified
 // `arc_curve_corner`. The corners that are not `arc_curve_corner` are
 // rounded with `corner_radius` if any.

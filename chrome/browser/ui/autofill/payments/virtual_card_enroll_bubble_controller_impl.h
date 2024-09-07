@@ -52,7 +52,8 @@ class VirtualCardEnrollBubbleControllerImpl
 
   // Shows the confirmation bubble view after the virtual card enrollment
   // process has completed.
-  virtual void ShowConfirmationBubbleView(bool is_vcn_enrolled);
+  virtual void ShowConfirmationBubbleView(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result);
 
   // VirtualCardEnrollBubbleController:
   const VirtualCardEnrollUiModel& GetUiModel() const override;

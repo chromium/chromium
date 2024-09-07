@@ -165,7 +165,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
   onTouchDeviceDisconnected(): void {}
 
   // Note: When adding a new page, update the DiagnosticsPage enum located
-  // in chrome/browser/ui/webui/ash/diagnostics_dialog.h.
+  // in chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h.
   private async getNavPages(): Promise<SelectorItem[]> {
     const pages: SelectorItem[] = [
       this.$.navigationPanel.createSelectorItem(

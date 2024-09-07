@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
@@ -70,7 +71,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& /*available_size*/) const override;
   std::u16string GetWindowTitle() const override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
   bool Accept() override;
   bool Cancel() override;

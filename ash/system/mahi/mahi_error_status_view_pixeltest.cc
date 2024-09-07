@@ -81,7 +81,10 @@ class MahiErrorStatusViewPixelTestBase : public AshTestBase {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
     AshTestBase::SetUp();
 
     ON_CALL(mock_mahi_manager_, GetContentTitle)
@@ -161,7 +164,7 @@ TEST_P(MahiErrorStatusViewPixelTest, QuestionAnswerView) {
   LeftClickOn(send_button);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/2,
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/3,
       mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

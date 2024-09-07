@@ -50,6 +50,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/download_manager.h"
+#include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -60,6 +62,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
+#include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -67,6 +70,7 @@
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -78,6 +82,10 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/native_widget.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 void* kLensOverlayPreselectionWidgetIdentifier =
     &kLensOverlayPreselectionWidgetIdentifier;
@@ -155,6 +163,52 @@ bool AreSearchUrlsEquivalent(const GURL& a, const GURL& b) {
   // values.
   return a_search_params.params() == b_search_params.params();
 }
+
+// Given a BGR bitmap, converts into a RGB bitmap instead. Returns empty bitmap
+// if creation fails.
+SkBitmap CreateRgbBitmap(const SkBitmap& bgr_bitmap) {
+  // Convert bitmap from color type `kBGRA_8888_SkColorType` into a new Bitmap
+  // with color type `kRGBA_8888_SkColorType` which will allow the bitmap to
+  // render properly in the WebUI.
+  sk_sp<SkColorSpace> srgb_color_space =
+      bgr_bitmap.colorSpace()->makeSRGBGamma();
+  SkImageInfo rgb_info = bgr_bitmap.info()
+                             .makeColorType(kRGBA_8888_SkColorType)
+                             .makeColorSpace(SkColorSpace::MakeSRGB());
+  SkBitmap rgb_bitmap;
+  rgb_bitmap.setInfo(rgb_info);
+  rgb_bitmap.allocPixels(rgb_info);
+  if (rgb_bitmap.writePixels(bgr_bitmap.pixmap())) {
+    return rgb_bitmap;
+  }
+
+  // Bitmap creation failed.
+  return SkBitmap();
+}
+
+#if BUILDFLAG(ENABLE_PDF)
+// Returns the PDFHelper associated with the given web contents. Returns nullptr
+// if one does not exist.
+pdf::PDFDocumentHelper* MaybeGetPdfHelper(content::WebContents* contents) {
+  pdf::PDFDocumentHelper* pdf_helper = nullptr;
+  // Iterate through each of the render frame hosts, because the frame
+  // associated to a PDFDocumentHelper is not guaranteed to be a specific frame.
+  // For example, if kPdfOopif feature is enabled, the frame is the top frame.
+  // If kPdfOopif is disabled, it is a child frame.
+  contents->ForEachRenderFrameHost(
+      [&pdf_helper](content::RenderFrameHost* rfh) {
+        if (pdf_helper) {
+          return;
+        }
+        auto* possible_pdf_helper =
+            pdf::PDFDocumentHelper::GetForCurrentDocument(rfh);
+        if (possible_pdf_helper) {
+          pdf_helper = possible_pdf_helper;
+        }
+      });
+  return pdf_helper;
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 
@@ -432,9 +486,13 @@ void LensOverlayController::CloseUISync(
 // static
 LensOverlayController* LensOverlayController::GetController(
     content::WebUI* web_ui) {
-  return lens::LensOverlayControllerGlue::FromWebContents(
-             web_ui->GetWebContents())
-      ->controller();
+  // Overlay glue is set by the embedder and may not be set in all contexts
+  // (loading in a tab for e.g.).
+  // TODO(crbug.com/360724768): Clean this up once we improve how embedder WebUI
+  // context is handled.
+  content::WebContents* webui_contents = web_ui->GetWebContents();
+  auto* glue = lens::LensOverlayControllerGlue::FromWebContents(webui_contents);
+  return glue ? glue->controller() : nullptr;
 }
 
 // static
@@ -452,53 +510,25 @@ LensOverlayController::GetControllerFromWebViewWebContents(
   return glue ? glue->controller() : nullptr;
 }
 
+// static
+const std::u16string LensOverlayController::GetFilenameForURL(const GURL& url) {
+  if (!url.has_host() || url.HostIsIPAddress()) {
+    return u"screenshot.png";
+  }
+
+  return base::ASCIIToUTF16(base::StrCat({"screenshot_", url.host(), ".png"}));
+}
+
 void LensOverlayController::BindOverlay(
     mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensPage> page) {
   if (state_ != State::kStartingWebUI) {
     return;
   }
-  // Initialization data should always exist before binding.
-  CHECK(initialization_data_);
   receiver_.Bind(std::move(receiver));
   page_.Bind(std::move(page));
 
-  InitializeOverlayUI(*initialization_data_);
-  base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
-
-  // Show the preselection overlay now that the overlay is initialized and ready
-  // to be shown.
-  if (!pending_region_ && !lens::features::IsLensOverlaySearchBubbleEnabled()) {
-    ShowPreselectionBubble();
-  }
-
-  state_ = State::kOverlay;
-
-  // Only start the query flow again if we don't already have a full image
-  // response.
-  if (!initialization_data_->has_full_image_response()) {
-    int device_scale_factor =
-        tab_->GetContents()->GetRenderWidgetHostView()->GetDeviceScaleFactor();
-    float page_scale_factor =
-        zoom::ZoomController::FromWebContents(tab_->GetContents())
-            ->GetZoomPercent() /
-        100.0f;
-    // Use std::move because significant_region_boxes_ is only used in this
-    // call, which should only occur once in the lifetime of
-    // LensOverlayQueryController and thus of LensOverlayController.
-    lens_overlay_query_controller_->StartQueryFlow(
-        initialization_data_->current_screenshot_,
-        initialization_data_->page_url_, initialization_data_->page_title_,
-        std::move(initialization_data_->significant_region_boxes_),
-        device_scale_factor * page_scale_factor);
-  }
-  if (pending_region_) {
-    // If there is a pending region (i.e. for image right click)
-    // use INJECTED_IMAGE as the selection type.
-    DoLensRequest(std::move(pending_region_), lens::INJECTED_IMAGE,
-                  std::make_optional<SkBitmap>(pending_region_bitmap_));
-    pending_region_bitmap_.reset();
-  }
+  InitializeOverlay();
 }
 
 void LensOverlayController::BindSidePanel(
@@ -860,9 +890,89 @@ void LensOverlayController::IssueTranslateSelectionRequestForTesting(
                                  selection_start_index, selection_end_index);
 }
 
+void LensOverlayController::IssueTranslateFullPageRequestForTesting(
+    const std::string& source_language,
+    const std::string& target_language) {
+  IssueTranslateFullPageRequest(source_language, target_language);
+}
+
+void LensOverlayController::IssueTranslateFullPageRequest(
+    const std::string& source_language,
+    const std::string& target_language) {
+  // Remove the selection thumbnail, if it exists.
+  SetSearchboxThumbnail(std::string());
+  ClearRegionSelection();
+  lens_overlay_query_controller_->SendFullPageTranslateQuery(source_language,
+                                                             target_language);
+}
+
+void LensOverlayController::NotifyOverlayInitialized() {
+  // Now that the overlay is actually showing, it is safe to start doing a Lens
+  // request without showing the page reflowing.
+  if (pending_region_) {
+    // If there is a pending region (i.e. for image right click)
+    // use INJECTED_IMAGE as the selection type.
+    DoLensRequest(std::move(pending_region_), lens::INJECTED_IMAGE,
+                  std::make_optional<SkBitmap>(pending_region_bitmap_));
+    pending_region_bitmap_.reset();
+  }
+}
+
 void LensOverlayController::CopyText(const std::string& text) {
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteText(base::UTF8ToUTF16(text));
+}
+
+void LensOverlayController::CopyImage(lens::mojom::CenterRotatedBoxPtr region) {
+  SkBitmap cropped = lens::CropBitmapToRegion(
+      initialization_data_->current_screenshot_, std::move(region));
+  ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+  clipboard_writer.WriteImage(cropped);
+}
+
+void LensOverlayController::SaveAsImage(
+    lens::mojom::CenterRotatedBoxPtr region) {
+  SkBitmap cropped = lens::CropBitmapToRegion(
+      initialization_data_->current_screenshot_, std::move(region));
+  const GURL data_url = GURL(webui::GetBitmapDataUrl(cropped));
+  content::DownloadManager* download_manager =
+      tab_->GetBrowserWindowInterface()->GetProfile()->GetDownloadManager();
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("lens_overlay_save", R"(
+      semantics {
+        sender: "Lens Overlay"
+        description:
+          "The user may capture a selection of the current screenshot in the "
+          "Lens overlay via a button in the overlay. The resulting image is "
+          "saved from a data URL to the disk on the local client."
+        trigger: "User clicks 'Save as image' in the Lens Overlay after "
+           "activating the Lens Overlay and making a selection on the "
+           "screenshot."
+        data: "A capture of a portion of a screenshot of the current page."
+        destination: LOCAL
+        last_reviewed: "2024-08-23"
+        user_data {
+          type: WEB_CONTENT
+        }
+        internal {
+          contacts {
+            owners: "//chrome/browser/ui/lens/OWNERS"
+          }
+        }
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "No user-visible setting for this feature. Configured via Finch."
+        policy_exception_justification:
+          "This is not a network request."
+      })");
+  std::unique_ptr<download::DownloadUrlParameters> params =
+      content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+          overlay_web_view_->GetWebContents(), data_url, traffic_annotation);
+  params->set_suggested_name(
+      GetFilenameForURL(tab_->GetContents()->GetLastCommittedURL()));
+  download_manager->DownloadUrl(std::move(params));
 }
 
 void LensOverlayController::RecordUkmAndTaskCompletionForLensOverlayInteraction(
@@ -954,22 +1064,12 @@ LensOverlayController::OverlayInitializationData::OverlayInitializationData(
     SkBitmap rgb_screenshot,
     lens::PaletteId color_palette,
     std::optional<GURL> page_url,
-    std::optional<std::string> page_title,
-    std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-    std::vector<lens::mojom::OverlayObjectPtr> objects,
-    lens::mojom::TextPtr text,
-    const lens::proto::LensOverlayInteractionResponse& interaction_response,
-    lens::mojom::CenterRotatedBoxPtr selected_region)
+    std::optional<std::string> page_title)
     : current_screenshot_(screenshot),
       current_rgb_screenshot_(std::move(rgb_screenshot)),
       color_palette_(color_palette),
       page_url_(page_url),
-      page_title_(page_title),
-      significant_region_boxes_(std::move(significant_region_boxes)),
-      interaction_response_(interaction_response),
-      selected_region_(std::move(selected_region)),
-      text_(std::move(text)),
-      objects_(std::move(objects)) {}
+      page_title_(page_title) {}
 LensOverlayController::OverlayInitializationData::~OverlayInitializationData() =
     default;
 
@@ -1089,18 +1189,35 @@ void LensOverlayController::DidCaptureScreenshot(
     return;
   }
 
-  // Convert bitmap from color type `kBGRA_8888_SkColorType` into a new Bitmap
-  // with color type `kRGBA_8888_SkColorType` which will allow the bitmap to
-  // render properly in the WebUI.
-  sk_sp<SkColorSpace> srgb_color_space = bitmap.colorSpace()->makeSRGBGamma();
-  SkImageInfo rgb_info = bitmap.info()
-                             .makeColorType(kRGBA_8888_SkColorType)
-                             .makeColorSpace(SkColorSpace::MakeSRGB());
-  SkBitmap rgb_bitmap;
-  rgb_bitmap.setInfo(rgb_info);
-  rgb_bitmap.allocPixels(rgb_info);
-  if (!rgb_bitmap.writePixels(bitmap.pixmap())) {
-    // TODO(b/334185985): Handle case when channel swapping fails.
+  // The following two methods happen async to parallelize the two bottlenecks
+  // in our invocation flow.
+  CreateInitializationData(bitmap, all_bounds);
+  ShowOverlay();
+
+  for (Observer& observer : observers_) {
+    observer.OnLensOverlayDidShow();
+  }
+  state_ = State::kStartingWebUI;
+}
+
+void LensOverlayController::CreateInitializationData(
+    const SkBitmap& screenshot,
+    const std::vector<gfx::Rect>& all_bounds) {
+  // Create the new RGB bitmap async to prevent the main thread from blocking on
+  // the encoding.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&CreateRgbBitmap, screenshot),
+      base::BindOnce(&LensOverlayController::ContinueCreateInitializationData,
+                     weak_factory_.GetWeakPtr(), screenshot, all_bounds));
+}
+
+void LensOverlayController::ContinueCreateInitializationData(
+    const SkBitmap& screenshot,
+    const std::vector<gfx::Rect>& all_bounds,
+    SkBitmap rgb_screenshot) {
+  if (state_ != State::kStartingWebUI || rgb_screenshot.drawsNothing()) {
+    // TODO(b/334185985): Handle case when screenshot RGB encoding fails.
     CloseUISync(
         lens::LensOverlayDismissalSource::kErrorScreenshotEncodingFailed);
     return;
@@ -1114,7 +1231,7 @@ void LensOverlayController::DidCaptureScreenshot(
       colors.emplace_back(pair.first);
     }
     SkColor screenshot_color = lens::ExtractVibrantOrDominantColorFromImage(
-        bitmap, lens::features::DynamicThemeMinPopulationPct());
+        screenshot, lens::features::DynamicThemeMinPopulationPct());
     SkColor theme_color = lens::FindBestMatchedColorOrTransparent(
         colors, screenshot_color, lens::features::DynamicThemeMinChroma());
     if (theme_color != SK_ColorTRANSPARENT) {
@@ -1136,15 +1253,34 @@ void LensOverlayController::DidCaptureScreenshot(
   }
 
   initialization_data_ = std::make_unique<OverlayInitializationData>(
-      bitmap, std::move(rgb_bitmap), color_palette, page_url, page_title);
+      screenshot, std::move(rgb_screenshot), color_palette, page_url,
+      page_title);
+
   AddBoundingBoxesToInitializationData(all_bounds);
 
-  ShowOverlay();
-
-  for (Observer& observer : observers_) {
-    observer.OnLensOverlayDidShow();
+#if BUILDFLAG(ENABLE_PDF)
+  // Try and fetch the PDF bytes if enabled.
+  pdf::PDFDocumentHelper* pdf_helper =
+      lens::features::UsePdfsAsContext()
+          ? MaybeGetPdfHelper(active_web_contents)
+          : nullptr;
+  if (pdf_helper) {
+    // Fetch the PDF bytes then initialize the overlay.
+    pdf_helper->GetPdfBytes(
+        base::BindOnce(&LensOverlayController::OnPdfBytesReceived,
+                       weak_factory_.GetWeakPtr()));
+    return;
   }
-  state_ = State::kStartingWebUI;
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  // Initialize since there are no PDF bytes to wait on.
+  InitializeOverlay();
+}
+
+void LensOverlayController::OnPdfBytesReceived(
+    const std::vector<uint8_t>& bytes) {
+  initialization_data_->pdf_bytes_ = bytes;
+  InitializeOverlay();
 }
 
 void LensOverlayController::AddBoundingBoxesToInitializationData(
@@ -1310,20 +1446,6 @@ void LensOverlayController::CloseUIPart2(
         ->RemoveObserver(this);
   }
 
-  if (overlay_view_) {
-    // Remove and delete the overlay view and web view. Not doing so will result
-    // in dangling pointers when the browser closes. Note the trailing `T` on
-    // the method name -- this removes `overlay_view_` and returns a unique_ptr
-    // to it which we then discard.  Without the `T`, it returns nothing and
-    // frees nothing. Since technically the views are owned by
-    // contents_web_view, we need to release our reference using std::exchange
-    // to avoid a dangling pointer which throws an error when DCHECK is on.
-    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
-    contents_web_view->RemoveChildViewT(std::exchange(overlay_view_, nullptr));
-  }
-  overlay_web_view_ = nullptr;
-  overlay_view_ = nullptr;
-
   tab_contents_view_observer_.Reset();
   omnibox_tab_helper_observer_.Reset();
   find_tab_observer_.Reset();
@@ -1341,6 +1463,21 @@ void LensOverlayController::CloseUIPart2(
   selected_region_thumbnail_uri_.clear();
   pending_region_.reset();
   fullscreen_observation_.Reset();
+  lens_overlay_blur_layer_delegate_.reset();
+
+  if (overlay_view_) {
+    // Remove and delete the overlay view and web view. Not doing so will result
+    // in dangling pointers when the browser closes. Note the trailing `T` on
+    // the method name -- this removes `overlay_view_` and returns a unique_ptr
+    // to it which we then discard.  Without the `T`, it returns nothing and
+    // frees nothing. Since technically the views are owned by
+    // contents_web_view, we need to release our reference using std::exchange
+    // to avoid a dangling pointer which throws an error when DCHECK is on.
+    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
+    contents_web_view->RemoveChildViewT(std::exchange(overlay_view_, nullptr));
+  }
+  overlay_web_view_ = nullptr;
+  overlay_view_ = nullptr;
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
 
@@ -1351,6 +1488,56 @@ void LensOverlayController::CloseUIPart2(
   state_ = State::kOff;
 
   RecordEndOfSessionMetrics(dismissal_source);
+}
+
+void LensOverlayController::InitializeOverlay() {
+  // We can only continue once both the WebUI is bound and the initialization
+  // data is processed and ready. If either of those conditions aren't met, we
+  // exit early and wait for the other condition to call this method again.
+  if (!page_ || !initialization_data_) {
+    return;
+  }
+
+  InitializeOverlayUI(*initialization_data_);
+  base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
+
+  // Show the preselection overlay now that the overlay is initialized and ready
+  // to be shown.
+  if (!pending_region_ && !lens::features::IsLensOverlaySearchBubbleEnabled()) {
+    ShowPreselectionBubble();
+  }
+
+  state_ = State::kOverlay;
+
+  // Only start the query flow again if we don't already have a full image
+  // response.
+  if (!initialization_data_->has_full_image_response()) {
+    int device_scale_factor =
+        tab_->GetContents()->GetRenderWidgetHostView()->GetDeviceScaleFactor();
+    float page_scale_factor =
+        zoom::ZoomController::FromWebContents(tab_->GetContents())
+            ->GetZoomPercent() /
+        100.0f;
+    // Use std::move because significant_region_boxes_ is only used in this
+    // call, which should only occur once in the lifetime of
+    // LensOverlayQueryController and thus of LensOverlayController.
+    lens_overlay_query_controller_->StartQueryFlow(
+        initialization_data_->current_screenshot_,
+        initialization_data_->page_url_, initialization_data_->page_title_,
+        std::move(initialization_data_->significant_region_boxes_),
+        initialization_data_->pdf_bytes_,
+        device_scale_factor * page_scale_factor);
+  }
+  // TODO(b/352622136): We should not start the lens request until the overlay
+  // is open to prevent the side panel from opening while the overlay UI is
+  // rendering.
+  if (pending_region_) {
+    // If there is a pending region (i.e. for image right click)
+    // use INJECTED_IMAGE as the selection type.
+    DoLensRequest(std::move(pending_region_), lens::INJECTED_IMAGE,
+                  std::make_optional<SkBitmap>(pending_region_bitmap_));
+    pending_region_bitmap_.reset();
+  }
 }
 
 void LensOverlayController::InitializeOverlayUI(
@@ -1517,12 +1704,19 @@ void LensOverlayController::OnTextModified() {
   }
 }
 
-void LensOverlayController::OnThumbnailRemoved() {
+void LensOverlayController::ClearRegionSelection() {
   selected_region_thumbnail_uri_.clear();
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   initialization_data_->selected_region_.reset();
   initialization_data_->selected_region_bitmap_.reset();
   page_->ClearRegionSelection();
+}
+
+void LensOverlayController::OnThumbnailRemoved() {
+  // This is called by the searchbox after the thumbnail is
+  // removed from there, so no need to manually replace the
+  // searchbox thumbnail uri here.
+  ClearRegionSelection();
 }
 
 void LensOverlayController::OnSuggestionAccepted(
@@ -1716,9 +1910,38 @@ void LensOverlayController::ActivityRequestedByOverlay(
           WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
+void LensOverlayController::ActivityRequestedByEvent(int event_flags) {
+  // The tab is expected to be in the foreground.
+  if (!tab_->IsInForeground()) {
+    return;
+  }
+  tab_->GetBrowserWindowInterface()->OpenGURL(
+      GURL(lens::features::GetLensOverlayActivityURL()),
+      ui::DispositionFromEventFlags(event_flags,
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
+}
+
 void LensOverlayController::AddBackgroundBlur() {
   // We do not blur unless the overlay is currently active.
   if (state_ != State::kOverlay && state_ != State::kOverlayAndResults) {
+    return;
+  }
+
+  if (lens::features::GetLensOverlayUseCustomBlur()) {
+    overlay_view_->SetPaintToLayer();
+    ui::Layer* background_layer = overlay_view_->layer();
+    background_layer->SetFillsBoundsOpaquely(true);
+
+    content::RenderWidgetHostView* live_page_view = tab_->GetContents()
+                                                        ->GetPrimaryMainFrame()
+                                                        ->GetRenderViewHost()
+                                                        ->GetWidget()
+                                                        ->GetView();
+
+    // Create the blur delegate which will start blurring the background;
+    lens_overlay_blur_layer_delegate_ =
+        std::make_unique<lens::LensOverlayBlurLayerDelegate>(background_layer,
+                                                             live_page_view);
     return;
   }
 
@@ -1753,6 +1976,10 @@ void LensOverlayController::FeedbackRequestedByOverlay() {
       /*extra_diagnostics=*/std::string());
 }
 
+void LensOverlayController::FeedbackRequestedByEvent(int event_flags) {
+  FeedbackRequestedByOverlay();
+}
+
 void LensOverlayController::GetOverlayInvocationSource(
     GetOverlayInvocationSourceCallback callback) {
   std::move(callback).Run(GetInvocationSourceString());
@@ -1771,6 +1998,17 @@ void LensOverlayController::InfoRequestedByOverlay(
           click_modifiers->ctrl_key, click_modifiers->meta_key,
           click_modifiers->shift_key,
           WindowOpenDisposition::NEW_FOREGROUND_TAB));
+}
+
+void LensOverlayController::InfoRequestedByEvent(int event_flags) {
+  // The tab is expected to be in the foreground.
+  if (!tab_->IsInForeground()) {
+    return;
+  }
+  tab_->GetBrowserWindowInterface()->OpenGURL(
+      GURL(lens::features::GetLensOverlayHelpCenterURL()),
+      ui::DispositionFromEventFlags(event_flags,
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
 void LensOverlayController::IssueLensRegionRequest(

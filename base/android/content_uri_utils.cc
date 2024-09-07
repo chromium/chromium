@@ -9,7 +9,7 @@
 #include "base/files/file.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_jni/ContentUriUtils_jni.h"
+#include "base/content_uri_utils_jni/ContentUriUtils_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;

@@ -327,6 +327,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   // `is_showing_bubble_` was true on mouse press. Used to avoid immediately
   // re-triggering actions when mouse press was intended to dismiss their
   // ephemeral UI.
+  // TODO(b/361251892): Rename this to appropriately reflect bubbles that do not
+  // close on deactivate.
   bool is_showing_bubble_ = false;
   base::WeakPtrFactory<ActionItem> weak_ptr_factory_{this};
 };

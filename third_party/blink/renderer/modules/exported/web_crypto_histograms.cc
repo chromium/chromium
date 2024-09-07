@@ -140,7 +140,7 @@ void HistogramAlgorithmAndKey(ExecutionContext* context,
 }
 
 void HistogramDeriveBitsTruncation(ExecutionContext* context,
-                                   unsigned int length_bits,
+                                   std::optional<unsigned int> length_bits,
                                    WebCryptoWarningType status) {
   if (length_bits == 0) {
     UseCounter::Count(context, WebFeature::kSubtleCryptoDeriveBitsZeroLength);

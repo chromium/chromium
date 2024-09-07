@@ -77,6 +77,6 @@ found in the LICENSE file.
         android:layout_marginStart="16dp"
         android:layout_marginEnd="22dp"
         android:text="@string/ok"
-        style="@style/FilledButton.Flat" />
+        style="@style/FilledButton" />
 
 </LinearLayout>

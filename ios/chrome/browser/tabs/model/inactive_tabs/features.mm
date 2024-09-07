@@ -85,7 +85,7 @@ BASE_FEATURE(kInactiveTabButtonRefactoring,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsInactiveTabButtonRefactoringEnabled() {
-  if (!IsInactiveTabsEnabled()) {
+  if (!IsInactiveTabsAvailable()) {
     return false;
   }
   return base::FeatureList::IsEnabled(kInactiveTabButtonRefactoring);

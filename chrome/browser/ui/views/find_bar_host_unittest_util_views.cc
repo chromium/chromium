@@ -9,10 +9,6 @@
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "ui/base/ui_base_features.h"
 
-namespace chrome {
-
 void DisableFindBarAnimationsDuringTesting(bool disable) {
   FindBarHost::SetEnableAnimationsForTesting(!disable);
 }
-
-}  // namespace chrome

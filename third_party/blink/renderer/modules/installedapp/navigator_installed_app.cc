@@ -27,17 +27,12 @@ NavigatorInstalledApp::getInstalledRelatedApps(
     ExceptionState& exception_state) {
   // [SecureContext] from the IDL ensures this.
   DCHECK(ExecutionContext::From(script_state)->IsSecureContext());
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
 
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The object is no longer associated to a document.");
-    resolver->Reject(exception_state);
-    return promise;
+    return EmptyPromise();
   }
 
   if (!navigator.DomWindow()->GetFrame()->IsOutermostMainFrame()) {
@@ -45,10 +40,13 @@ NavigatorInstalledApp::getInstalledRelatedApps(
         DOMExceptionCode::kInvalidStateError,
         "getInstalledRelatedApps() is only supported in "
         "top-level browsing contexts.");
-    resolver->Reject(exception_state);
-    return promise;
+    return EmptyPromise();
   }
 
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   auto* app_controller = InstalledAppController::From(*navigator.DomWindow());
   app_controller->GetInstalledRelatedApps(
       std::make_unique<

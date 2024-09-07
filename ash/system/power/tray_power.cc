@@ -52,6 +52,8 @@ PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
 
   previous_battery_saver_state_ = PowerStatus::Get()->IsBatterySaverActive();
   PowerStatus::Get()->AddObserver(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
 }
 
 PowerTrayView::~PowerTrayView() {
@@ -72,8 +74,6 @@ gfx::Size PowerTrayView::CalculatePreferredSize(
 }
 
 void PowerTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // A valid role must be set prior to setting the name.
-  node_data->role = ax::mojom::Role::kImage;
   std::u16string accessible_name =
       PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true);
   if (!accessible_name.empty()) {

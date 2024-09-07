@@ -100,7 +100,7 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
   Microsoft::WRL::ComPtr<IRawElementProviderSimple>
   GetIRawElementProviderSimpleFromChildIndex(int child_index);
   Microsoft::WRL::ComPtr<IRawElementProviderSimple>
-  GetIRawElementProviderSimpleFromTree(const ui::AXTreeID tree_id,
+  GetIRawElementProviderSimpleFromTree(const AXTreeID tree_id,
                                        const AXNodeID node_id);
   Microsoft::WRL::ComPtr<IRawElementProviderFragment>
   GetRootIRawElementProviderFragment();

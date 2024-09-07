@@ -25,6 +25,7 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -309,15 +310,18 @@ class CheckBoxMenuItemView : public views::MenuItemView {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::MenuItemView::GetAccessibleNodeData(node_data);
-    node_data->SetCheckedState(
-        view_delegate_->IsCategoryEnabled(
-            static_cast<AppListSearchControlCategory>(GetCommand()))
-            ? ax::mojom::CheckedState::kTrue
-            : ax::mojom::CheckedState::kFalse);
     // The title of the menu is not focusable but included in the position
     // counting. Explicitly set the hierarchical level of the toggleable menu
     // items to exclude the title.
     node_data->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 1);
+  }
+
+  void UpdateAccessibleCheckedState() override {
+    bool category_enabled = view_delegate_->IsCategoryEnabled(
+        static_cast<AppListSearchControlCategory>(GetCommand()));
+    GetViewAccessibility().SetCheckedState(
+        category_enabled ? ax::mojom::CheckedState::kTrue
+                         : ax::mojom::CheckedState::kFalse);
   }
 
  private:
@@ -359,6 +363,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
     menu_item_view->SetIcon(model->GetIconAt(model_index));
     menu_item_view->GetViewAccessibility().SetName(
         model->GetAccessibleNameAt(model_index));
+    menu_item_view->UpdateAccessibleCheckedState();
 
     const ui::ElementIdentifier element_id =
         model->GetElementIdentifierAt(model_index);
@@ -408,6 +413,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
     // Toggle the checkbox icon.
     GetFilterMenuItemByCategory(category)->SetIcon(
         GetCheckboxImage(view_delegate_->IsCategoryEnabled(category)));
+    GetFilterMenuItemByCategory(category)->UpdateAccessibleCheckedState();
   }
 
   void ShowFilterMenu(SearchBoxView* search_box) {
@@ -550,6 +556,20 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   close_button->GetViewAccessibility().SetName(close_button_label);
   close_button->SetTooltipText(close_button_label);
 
+  CreateEndButtonContainer();
+
+  if (features::IsSunfishFeatureEnabled()) {
+    views::ImageButton* sunfish_button =
+        CreateSunfishButton(base::BindRepeating(
+            &SearchBoxView::SunfishButtonPressed, base::Unretained(this)));
+    sunfish_button->SetFlipCanvasOnPaintForRTLUI(false);
+    // TODO(http://b/361850292): Upload label for translation.
+    std::u16string sunfish_button_label(u"Select to search");
+    sunfish_button->GetViewAccessibility().SetName(sunfish_button_label);
+    sunfish_button->SetTooltipText(sunfish_button_label);
+    SetShowSunfishButton(true);
+  }
+
   views::ImageButton* assistant_button =
       CreateAssistantButton(base::BindRepeating(
           &SearchBoxView::AssistantButtonPressed, base::Unretained(this)));
@@ -561,6 +581,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   SetShowAssistantButton(search_box_model->show_assistant_button());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
+  UpdateAccessibleValue();
 }
 
 SearchBoxView::~SearchBoxView() {
@@ -694,6 +715,10 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
 
   current_query_ = query;
 
+  if (query_changed_callback_) {
+    query_changed_callback_.Run();
+  }
+
   // Any query changes will dismiss the Launcher search IPH.
   UpdateIphViewVisibility(false);
 
@@ -709,6 +734,10 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
   // - see http://crbug.com/979594).
   if (initiated_by_user || !trimmed_query.empty() || query_empty_changed)
     view_delegate_->StartSearch(query);
+}
+
+void SearchBoxView::SetQueryChangedCallback(QueryChangedCallback callback) {
+  query_changed_callback_ = std::move(callback);
 }
 
 void SearchBoxView::UpdatePlaceholderTextStyle() {
@@ -785,6 +814,12 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
                                      GetSearchBoxIconSize()));
+  if (features::IsSunfishFeatureEnabled()) {
+    sunfish_button()->SetImageModel(
+        views::ImageButton::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kSearchIcon, button_icon_color,
+                                       GetSearchBoxIconSize()));
+  }
   assistant_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
@@ -968,13 +1003,6 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
   evt->SetHandled();
 }
 
-void SearchBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (HasAutocompleteText()) {
-    node_data->SetValue(l10n_util::GetStringFUTF16(
-        IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE, search_box()->GetText()));
-  }
-}
-
 void SearchBoxView::UpdateBackground(AppListState target_state) {
   int corner_radius = GetSearchBoxBorderCornerRadiusForState(target_state);
   SetSearchBoxBackgroundCornerRadius(corner_radius);
@@ -1072,7 +1100,7 @@ void SearchBoxView::ProcessAutocomplete(
     // it back to the current query. This could happen due to the racing
     // between results update and user press key to select a result.
     // See crbug.com/1065454.
-    search_box()->SetText(current_query_);
+    SetText(current_query_);
   }
 
   // Current non-autocompleted text.
@@ -1218,6 +1246,11 @@ void SearchBoxView::AssistantButtonPressed() {
 
   // Activate the search box based on UX SPEC.
   SetSearchBoxActive(true, /*event_type=*/ui::EventType::kUnknown);
+}
+
+void SearchBoxView::SunfishButtonPressed() {
+  view_delegate_->DismissAppList();
+  CaptureModeController::Get()->StartSunfishSession();
 }
 
 void SearchBoxView::UpdateSearchIcon() {
@@ -1383,7 +1416,7 @@ void SearchBoxView::SetAutocompleteText(
   // Send an event to alert ChromeVox that an autocomplete has occurred.
   // The |kValueChanged| type lets ChromeVox know that it should scan
   // |node_data| for "Value".
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  UpdateAccessibleValue();
 
   MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
@@ -1402,8 +1435,13 @@ SearchBoxView::PlaceholderTextType SearchBoxView::SelectPlaceholderText()
 }
 
 void SearchBoxView::UpdateQuery(const std::u16string& new_query) {
-  search_box()->SetText(new_query);
+  SetText(new_query);
   ContentsChanged(search_box(), new_query);
+}
+
+void SearchBoxView::SetText(const std::u16string& text) {
+  search_box()->SetText(text);
+  UpdateAccessibleValue();
 }
 
 void SearchBoxView::EnterSearchResultSelection(const ui::KeyEvent& event) {
@@ -1522,7 +1560,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
         // Reset the selected result to the default result.
         result_selection_controller_->ResetSelection(
             nullptr, true /* default_selection */);
-        search_box()->SetText(std::u16string());
+        SetText(std::u16string());
         return true;
       }
     }
@@ -1790,6 +1828,15 @@ CategoryEnableStateMap SearchBoxView::GetSearchCategoryEnableState() {
                                       : SearchCategoryEnableState::kDisabled;
   }
   return category_to_state;
+}
+
+void SearchBoxView::UpdateAccessibleValue() {
+  if (!HasAutocompleteText()) {
+    GetViewAccessibility().RemoveValue();
+    return;
+  }
+  GetViewAccessibility().SetValue(l10n_util::GetStringFUTF16(
+      IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE, search_box()->GetText()));
 }
 
 BEGIN_METADATA(SearchBoxView)

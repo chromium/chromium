@@ -1,40 +1,39 @@
 <style include="cr-icons">
   :host {
-    /* Embedders should define --cr-realbox-min-width. */
-    --cr-realbox-shadow: 0 1px 6px 0 var(--color-realbox-shadow);
-    --cr-realbox-width: var(--cr-realbox-min-width);
-
-    --cr-realbox-border-radius: calc(0.5 * var(--cr-realbox-height));
-    --cr-realbox-icon-width: 26px;
-    --cr-realbox-inner-icon-margin: 8px;
-    --cr-realbox-voice-icon-offset: 16px;
-    --cr-realbox-voice-search-button-width: 0px;
-    border-radius: var(--cr-realbox-border-radius);
-    box-shadow: var(--cr-realbox-shadow);
+    /* Embedders should define --cr-searchbox-min-width. */
+    --cr-searchbox-width: var(--cr-searchbox-min-width);
+    --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
+    --cr-searchbox-icon-width: 26px;
+    --cr-searchbox-inner-icon-margin: 8px;
+    --cr-searchbox-voice-icon-offset: 16px;
+    --cr-searchbox-voice-search-button-width: 0px;
+    --cr-searchbox-match-padding-inline-start: 12px;
+    border-radius: var(--cr-searchbox-border-radius);
+    box-shadow: var(--cr-searchbox-shadow);
     font-size: 16px;
-    height: var(--cr-realbox-height);
-    width: var(--cr-realbox-width);
+    height: var(--cr-searchbox-height);
+    width: var(--cr-searchbox-width);
   }
 
   /* Side panel searchbox should not have a shadow when dropdown isn't visible */
-  :host([in-side-panel_]:not([dropdown-is-visible])) {
-    --cr-realbox-shadow: none;
+  :host([is-lens-searchbox_]:not([dropdown-is-visible])) {
+    --cr-searchbox-shadow: none;
   }
 
   :host([show-thumbnail]) {
-    --cr-realbox-thumbnail-icon-offset: 50px;
+    --cr-searchbox-thumbnail-icon-offset: 50px;
   }
 
-  :host([realbox-chrome-refresh-theming][dropdown-is-visible]) {
-    --cr-realbox-shadow: 0 0 12px 4px var(--color-realbox-shadow)
+  :host([searchbox-chrome-refresh-theming][dropdown-is-visible]) {
+    --cr-searchbox-shadow: 0 0 12px 4px var(--color-searchbox-shadow)
   }
 
-  :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) {
-    --cr-realbox-shadow: none;
+  :host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) {
+    --cr-searchbox-shadow: none;
   }
 
-  :host-context([realbox-width-behavior_='revert']):host([can-show-secondary-side]:not([dropdown-is-visible])) {
-    --cr-realbox-width: var(--cr-realbox-min-width);
+  :host-context([searchbox-width-behavior_='revert']):host([can-show-secondary-side]:not([dropdown-is-visible])) {
+    --cr-searchbox-width: var(--cr-searchbox-min-width);
   }
 
   /**
@@ -42,19 +41,19 @@
    * shown.
    */
   :host([can-show-secondary-side][has-secondary-side]) {
-    --cr-realbox-secondary-side-display: block;
+    --cr-searchbox-secondary-side-display: block;
   }
 
   :host([is-dark]) {
-    --cr-realbox-shadow: 0 2px 6px 0 var(--color-realbox-shadow);
+    --cr-searchbox-shadow: 0 2px 6px 0 var(--color-searchbox-shadow);
   }
 
-  :host([realbox-voice-search-enabled_]) {
-    --cr-realbox-voice-search-button-width: var(--cr-realbox-icon-width);
+  :host([searchbox-voice-search-enabled_]) {
+    --cr-searchbox-voice-search-button-width: var(--cr-searchbox-icon-width);
   }
 
-  :host([realbox-lens-search-enabled_]) {
-    --cr-realbox-voice-icon-offset: 53px;
+  :host([searchbox-lens-search-enabled_]) {
+    --cr-searchbox-voice-icon-offset: 53px;
   }
 
   @media (forced-colors: active) {
@@ -73,11 +72,11 @@
 
   :host([match-searchbox]:not([dropdown-is-visible]):hover) {
     border: 1px solid transparent;
-    box-shadow: var(--cr-realbox-shadow);
+    box-shadow: var(--cr-searchbox-shadow);
   }
 
   :host([match-searchbox]:not([is-dark]):not([dropdown-is-visible]):not(:hover)) {
-    border: 1px solid var(--color-realbox-border);
+    border: 1px solid var(--color-searchbox-border);
   }
 
   #inputWrapper {
@@ -86,29 +85,29 @@
   }
 
   input {
-    background-color: var(--color-realbox-background);
+    background-color: var(--color-searchbox-background);
     border: none;
-    border-radius: var(--cr-realbox-border-radius);
-    color: var(--color-realbox-foreground);
+    border-radius: var(--cr-searchbox-border-radius);
+    color: var(--color-searchbox-foreground);
     font-family: inherit;
     font-size: inherit;
     height: 100%;
     outline: none;
     /* Always include offset and margin padding, even if the voice search button
      * is not being shown. */
-    padding-inline-end: calc(var(--cr-realbox-voice-icon-offset) + var(--cr-realbox-voice-search-button-width) + var(--cr-realbox-inner-icon-margin));
-    padding-inline-start: calc(52px + var(--cr-realbox-thumbnail-icon-offset, 0px));
+    padding-inline-end: calc(var(--cr-searchbox-voice-icon-offset) + var(--cr-searchbox-voice-search-button-width) + var(--cr-searchbox-inner-icon-margin));
+    padding-inline-start: calc(52px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
     position: relative;
     width: 100%;
   }
 
   :host-context([is-back-arrow-visible]) input {
-    padding-inline-start: calc(22px + var(--cr-realbox-thumbnail-icon-offset, 0px));
+    padding-inline-start: calc(22px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
   }
 
-  :host([realbox-chrome-refresh-theming]) input::selection {
-    background-color: var(--color-realbox-selection-background);
-    color: var(--color-realbox-selection-foreground)
+  :host([searchbox-chrome-refresh-theming]) input::selection {
+    background-color: var(--color-searchbox-selection-background);
+    color: var(--color-searchbox-selection-foreground)
   }
 
   input::-webkit-search-decoration,
@@ -119,7 +118,7 @@
 
   /* Visually hide the cancel button but do not set display to none or
    * visibility to hidden as this causes issues with NVDA not reading out the
-   * full value of the realbox input as the user selects suggestion matches.
+   * full value of the searchbox input as the user selects suggestion matches.
    * See crbug.com/1312442 for more context. */
   input::-webkit-search-cancel-button {
     appearance: none;
@@ -127,7 +126,7 @@
   }
 
   input::placeholder {
-    color: var(--color-realbox-placeholder);
+    color: var(--color-searchbox-placeholder);
   }
 
   input:focus::placeholder {
@@ -140,34 +139,36 @@
 
   input:focus,
   :host([dropdown-is-visible]) input {
-    background-color: var(--color-realbox-results-background);
+    background-color: var(--color-searchbox-results-background);
+  }
+
+  /* Search bubble realbox input color shouldn't change when dropdown is
+   * visible. */
+  :host([is-lens-searchbox_][dropdown-is-visible]) input {
+    background-color: var(--color-bubble-searchbox-results-input-background, --color-searchbox-results-background);
   }
 
   /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
-  /* When input is focused and dropdown is not visible, switch realbox background
+  /* When input is focused and dropdown is not visible, switch searchbox background
    * to steady state color because side panel doesn't have box shadow. */
-  :host([in-side-panel_]:not([dropdown-is-visible])) input:focus {
-    background-color: #F1F3F4;
+  :host([is-lens-searchbox_]:not([dropdown-is-visible])) input:focus {
+    background-color: var(--color-searchbox-background);
   }
 
-  :host-context([dark-mode]):host([in-side-panel_]:not([dropdown-is-visible])) input:focus {
-    background-color: #303134;
+  :host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) input {
+    background-color: var(--color-searchbox-background);
   }
 
-  :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) input {
-    background-color: var(--color-realbox-background);
-  }
-
-  :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) input:hover,
+  :host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) input:hover,
   input:hover {
-    background-color: var(--color-realbox-background-hovered);
+    background-color: var(--color-searchbox-background-hovered);
   }
 
-  cr-realbox-icon {
+  cr-searchbox-icon {
     height: 100%;
-    left: var(--cr-realbox-icon-left-position);
+    left: var(--cr-searchbox-icon-left-position);
     position: absolute;
-    top: var(--cr-realbox-icon-top-position);
+    top: var(--cr-searchbox-icon-top-position);
     pointer-events: none;
   }
 
@@ -175,12 +176,12 @@
     display: none;
   }
 
-  :host-context([dir='rtl']) cr-realbox-icon {
+  :host-context([dir='rtl']) cr-searchbox-icon {
     left: unset;
     right: 12px;
   }
 
-  .realbox-icon-button {
+  .searchbox-icon-button {
     background-color: transparent;
     background-position: center;
     background-repeat: no-repeat;
@@ -194,99 +195,99 @@
     pointer-events: auto;
     position: absolute;
     right: 16px;
-    width: var(--cr-realbox-icon-width);
+    width: var(--cr-searchbox-icon-width);
   }
 
-  :host([realbox-chrome-refresh-theming]) .realbox-icon-button {
+  :host([searchbox-chrome-refresh-theming]) .searchbox-icon-button {
     position: static;
   }
 
   /* When voice/lens icons are monochrome, they are webkit mask images.
    * Webkit mask images hide borders so container rules are created to
    * show focus borders on these icons. */
-  .realbox-icon-button-container {
+  .searchbox-icon-button-container {
     border-radius: 2px;
     height: 100%;
     position: absolute;
     right: 16px;
-    top: var(--cr-realbox-icon-top-position);
+    top: var(--cr-searchbox-icon-top-position);
     z-index: 100;
   }
 
-  .realbox-icon-button-container.voice {
-    right: var(--cr-realbox-voice-icon-offset);
+  .searchbox-icon-button-container.voice {
+    right: var(--cr-searchbox-voice-icon-offset);
   }
 
-  :host-context(.focus-outline-visible) .realbox-icon-button-container:focus-within {
+  :host-context(.focus-outline-visible) .searchbox-icon-button-container:focus-within {
     box-shadow: var(--ntp-focus-shadow);
   }
 
 
-  :host(:not([realbox-chrome-refresh-theming])) #voiceSearchButton {
+  :host(:not([searchbox-chrome-refresh-theming])) #voiceSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
   }
 
-  :host(:not([realbox-chrome-refresh-theming])) #lensSearchButton {
+  :host(:not([searchbox-chrome-refresh-theming])) #lensSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
   }
 
-  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton,
-  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
+  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton,
+  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 21px 21px;
-    background-color: var(--color-realbox-lens-voice-icon-background);
+    background-color: var(--color-searchbox-lens-voice-icon-background);
   }
 
-  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton {
+  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton {
     -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
   }
 
-  :host([realbox-chrome-refresh-theming][color-source-is-baseline]) #voiceSearchButton {
+  :host([searchbox-chrome-refresh-theming][color-source-is-baseline]) #voiceSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
   }
 
-  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
+  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
     -webkit-mask-image: url(//resources/cr_components/searchbox/icons/camera.svg);
   }
 
-  :host([realbox-chrome-refresh-theming][color-source-is-baseline]) #lensSearchButton {
+  :host([searchbox-chrome-refresh-theming][color-source-is-baseline]) #lensSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
   }
 
-  :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
-    left: var(--cr-realbox-voice-icon-offset);
+  :host([searchbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
+    left: var(--cr-searchbox-voice-icon-offset);
     right: unset;
   }
 
-  :host([realbox-lens-search-enabled_]) #voiceSearchButton {
-    right: var(--cr-realbox-voice-icon-offset);
+  :host([searchbox-lens-search-enabled_]) #voiceSearchButton {
+    right: var(--cr-searchbox-voice-icon-offset);
   }
 
-  :host-context([dir='rtl']) .realbox-icon-button {
+  :host-context([dir='rtl']) .searchbox-icon-button {
     left: 16px;
     right: unset;
   }
 
-  :host-context([dir='rtl']) .realbox-icon-button-container {
+  :host-context([dir='rtl']) .searchbox-icon-button-container {
     left: 16px;
     right: unset;
   }
 
-  :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) .realbox-icon-button-container.voice {
-    left: var(--cr-realbox-voice-icon-offset);
+  :host([searchbox-lens-search-enabled_]):host-context([dir='rtl']) .searchbox-icon-button-container.voice {
+    left: var(--cr-searchbox-voice-icon-offset);
     right: unset;
   }
 
-  :host-context(.focus-outline-visible) .realbox-icon-button:focus {
+  :host-context(.focus-outline-visible) .searchbox-icon-button:focus {
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  :-webkit-any(input, cr-realbox-icon, .realbox-icon-button) {
+  :-webkit-any(input, cr-searchbox-icon, .searchbox-icon-button) {
     z-index: 100;
   }
 
-  cr-realbox-dropdown {
+  cr-searchbox-dropdown {
     left: 0;
     position: absolute;
     right: 0;
@@ -301,7 +302,7 @@
 
   #thumbnailContainer {
     align-content: center;
-    inset-block-start: var(--cr-realbox-icon-top-position);
+    inset-block-start: var(--cr-searchbox-icon-top-position);
     inset-inline-start: 48px;
     height: 100%;
     outline: none;
@@ -324,53 +325,55 @@
       on-keyup="onInputKeyup_" on-mousedown="onInputMouseDown_"
       on-paste="onInputPaste_">
   </input>
-  <cr-realbox-icon id="icon" match="[[selectedMatch_]]"
-      default-icon="[[realboxIcon_]]" in-searchbox>
-  </cr-realbox-icon>
+  <cr-searchbox-icon id="icon" match="[[selectedMatch_]]"
+      default-icon="[[searchboxIcon_]]" in-searchbox>
+  </cr-searchbox-icon>
   <template is="dom-if" if="[[showThumbnail]]">
     <div id="thumbnailContainer">
       <!--Tabindex is set to 1 so that the thumbnail is tabbed first,
         then the search box. -->
-      <cr-realbox-thumbnail id="thumbnail" thumbnail-url_="[[thumbnailUrl_]]"
+      <cr-searchbox-thumbnail id="thumbnail" thumbnail-url_="[[thumbnailUrl_]]"
           on-remove-thumbnail-click="onRemoveThumbnailClick_"
           role="button" aria-label="[[i18n('searchboxThumbnailLabel')]]"
           tabindex="1">
-      </cr-realbox-thumbnail>
+      </cr-searchbox-thumbnail>
     </div>
   </template>
-  <template is="dom-if" if="[[realboxChromeRefreshTheming]]">
-    <template is="dom-if" if="[[realboxVoiceSearchEnabled_]]">
-      <div class="realbox-icon-button-container voice">
-        <button id="voiceSearchButton" class="realbox-icon-button"
+  <template is="dom-if" if="[[searchboxChromeRefreshTheming]]">
+    <template is="dom-if" if="[[searchboxVoiceSearchEnabled_]]">
+      <div class="searchbox-icon-button-container voice">
+        <button id="voiceSearchButton" class="searchbox-icon-button"
             on-click="onVoiceSearchClick_"
             title="[[i18n('voiceSearchButtonLabel')]]">
         </button>
       </div>
     </template>
-    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
-      <div class="realbox-icon-button-container lens">
-          <button id="lensSearchButton" class="realbox-icon-button"
+    <template is="dom-if" if="[[searchboxLensSearchEnabled_]]">
+      <div class="searchbox-icon-button-container lens">
+          <button id="lensSearchButton" class="searchbox-icon-button"
               on-click="onLensSearchClick_"
               title="[[i18n('lensSearchButtonLabel')]]">
           </button>
       </div>
     </template>
   </template>
-  <template is="dom-if" if="[[!realboxChromeRefreshTheming]]">
-    <template is="dom-if" if="[[realboxVoiceSearchEnabled_]]">
-      <button id="voiceSearchButton" class="realbox-icon-button"
+  <template is="dom-if" if="[[!searchboxChromeRefreshTheming]]">
+    <template is="dom-if" if="[[searchboxVoiceSearchEnabled_]]">
+      <button id="voiceSearchButton" class="searchbox-icon-button"
           on-click="onVoiceSearchClick_"
           title="[[i18n('voiceSearchButtonLabel')]]">
       </button>
     </template>
-    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
-      <button id="lensSearchButton" class="realbox-icon-button"
+    <template is="dom-if" if="[[searchboxLensSearchEnabled_]]">
+      <button id="lensSearchButton" class="searchbox-icon-button"
           on-click="onLensSearchClick_"
           title="[[i18n('lensSearchButtonLabel')]]">
       </button>
     </template>
   </template>
-  <cr-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
+  <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
+      exportparts="dropdown-content"
+      role="listbox" result="[[result_]]"
       selected-match-index="{{selectedMatchIndex_}}"
       can-show-secondary-side="[[canShowSecondarySide]]"
       had-secondary-side="{{hadSecondarySide}}"
@@ -380,5 +383,5 @@
       on-match-click="onMatchClick_"
       hidden$="[[!dropdownIsVisible]]"
       show-thumbnail="[[showThumbnail]]">
-  </cr-realbox-dropdown>
+  </cr-searchbox-dropdown>
 </div>

@@ -26,7 +26,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
 
 class MockDelegate : public AddressBubbleControllerDelegate {
@@ -58,7 +57,6 @@ class MockDelegate : public AddressBubbleControllerDelegate {
   base::WeakPtrFactory<MockDelegate> weak_ptr_factory_{this};
 };
 
-}  // namespace
 
 class AddNewAddressBubbleControllerTest : public ::testing::Test {
  public:
@@ -114,8 +112,8 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoChrome) {
   EXPECT_CALL(
       delegate(),
       ShowEditor(
-          ::testing::Property(&AutofillProfile::source,
-                              AutofillProfile::Source::kLocalOrSyncable),
+          ::testing::Property(&AutofillProfile::record_type,
+                              AutofillProfile::RecordType::kLocalOrSyncable),
           l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_EDITOR_TITLE),
           std::u16string(),
           /*is_editing_existing_address=*/false));
@@ -145,8 +143,8 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoAccount) {
   EXPECT_CALL(
       delegate(),
       ShowEditor(
-          ::testing::Property(&AutofillProfile::source,
-                              AutofillProfile::Source::kAccount),
+          ::testing::Property(&AutofillProfile::record_type,
+                              AutofillProfile::RecordType::kAccount),
           l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_EDITOR_TITLE),
           l10n_util::GetStringFUTF16(
               IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE, email),
@@ -154,4 +152,5 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoAccount) {
   controller->OnAddButtonClicked();
 }
 
+}  // namespace
 }  // namespace autofill

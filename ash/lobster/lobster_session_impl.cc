@@ -4,6 +4,7 @@
 
 #include "ash/lobster/lobster_session_impl.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,7 +12,9 @@
 #include "ash/lobster/lobster_image_actuator.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/types/expected.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
 
@@ -30,21 +33,31 @@ ui::TextInputClient* GetFocusedTextInputClient() {
 
 }  // namespace
 
-LobsterSessionImpl::LobsterSessionImpl(std::unique_ptr<LobsterClient> client)
-    : client_(std::move(client)) {
+LobsterSessionImpl::LobsterSessionImpl(
+    std::unique_ptr<LobsterClient> client,
+    const LobsterCandidateStore& candidate_store)
+    : client_(std::move(client)), candidate_store_(candidate_store) {
   client_->SetActiveSession(this);
 }
+
+LobsterSessionImpl::LobsterSessionImpl(std::unique_ptr<LobsterClient> client)
+    : LobsterSessionImpl(std::move(client), LobsterCandidateStore()) {}
 
 LobsterSessionImpl::~LobsterSessionImpl() {
   client_->SetActiveSession(nullptr);
 }
 
 void LobsterSessionImpl::DownloadCandidate(int candidate_id,
+                                           const base::FilePath& file_path,
                                            StatusCallback status_callback) {
-  // TODO: b:348283703 - Add download logic here.
-  InflateCandidateAndPerformAction(candidate_id,
-                                   base::BindOnce([](const std::string&) {}),
-                                   std::move(status_callback));
+  InflateCandidateAndPerformAction(
+      candidate_id,
+      base::BindOnce(
+          [](const base::FilePath& file_path, const std::string& image_bytes) {
+            WriteImageToPath(file_path, image_bytes);
+          },
+          file_path),
+      std::move(status_callback));
 }
 
 void LobsterSessionImpl::RequestCandidates(const std::string& query,
@@ -60,19 +73,53 @@ void LobsterSessionImpl::CommitAsInsert(int candidate_id,
                                         StatusCallback status_callback) {
   InflateCandidateAndPerformAction(
       candidate_id, base::BindOnce([](const std::string& image_bytes) {
-        LobsterImageActuator image_actuator;
-        image_actuator.InsertImageOrCopyToClipboard(GetFocusedTextInputClient(),
-                                                    image_bytes);
+        InsertImageOrCopyToClipboard(GetFocusedTextInputClient(), image_bytes);
       }),
       std::move(status_callback));
 }
 
 void LobsterSessionImpl::CommitAsDownload(int candidate_id,
+                                          const base::FilePath& file_path,
                                           StatusCallback status_callback) {
-  // TODO: b:348283703 - Add commit as download logic here.
-  InflateCandidateAndPerformAction(candidate_id,
-                                   base::BindOnce([](const std::string&) {}),
-                                   std::move(status_callback));
+  InflateCandidateAndPerformAction(
+      candidate_id,
+      base::BindOnce(
+          [](const base::FilePath& file_path, const std::string& image_bytes) {
+            WriteImageToPath(file_path, image_bytes);
+          },
+          file_path),
+      std::move(status_callback));
+}
+
+void LobsterSessionImpl::PreviewFeedback(
+    int candidate_id,
+    LobsterPreviewFeedbackCallback callback) {
+  std::optional<LobsterImageCandidate> candidate =
+      candidate_store_.FindCandidateById(candidate_id);
+  if (!candidate.has_value()) {
+    std::move(callback).Run(base::unexpected("No candidate found."));
+    return;
+  }
+
+  // TODO: b/362403784 - add the proper version.
+  std::move(callback).Run(LobsterFeedbackPreview(
+      {{"model_version", "dummy_version"}, {"model_input", candidate->query}},
+      candidate->image_bytes));
+}
+
+bool LobsterSessionImpl::SubmitFeedback(int candidate_id,
+                                        const std::string& description) {
+  std::optional<LobsterImageCandidate> candidate =
+      candidate_store_.FindCandidateById(candidate_id);
+  if (!candidate.has_value()) {
+    return false;
+  }
+  // Submit feedback along with the preview image.
+  // TODO: b/362403784 - add the proper version.
+  return client_->SubmitFeedback(/*query=*/candidate->query,
+                                 /*model_version=*/"dummy_version",
+                                 /*description=*/description,
+                                 /*image_bytes=*/candidate->image_bytes);
 }
 
 void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,

@@ -262,7 +262,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       Vector<GridItemPlacementData>* grid_item_placement_data,
       Vector<LayoutUnit>* row_offset_adjustments,
       LayoutUnit* intrinsic_block_size,
-      LayoutUnit* consumed_grid_block_size);
+      LayoutUnit* offset_in_stitched_container);
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid (as provided by `oof_children`).

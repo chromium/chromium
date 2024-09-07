@@ -133,10 +133,19 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
             return make_report_body(DebugDataType::kSourceChannelCapacityLimit,
                                     base::Value(v.limit));
           },
+          [&](StoreSourceResult::ExceedsMaxScopesChannelCapacity v) {
+            return make_report_body(
+                DebugDataType::kSourceScopesChannelCapacityLimit,
+                base::Value(v.limit));
+          },
           [&](StoreSourceResult::ExceedsMaxTriggerStateCardinality v) {
             return make_report_body(
                 DebugDataType::kSourceTriggerStateCardinalityLimit,
                 GetLimit(v.limit));
+          },
+          [&](StoreSourceResult::ExceedsMaxEventStatesLimit v) {
+            return make_report_body(DebugDataType::kSourceMaxEventStatesLimit,
+                                    GetLimit(v.limit));
           },
       },
       result.result());

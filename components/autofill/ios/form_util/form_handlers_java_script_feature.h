@@ -27,9 +27,7 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   // Toggles tracking form related changes in the frame. Will allow batching an
   // added form activity and a removed form activity when `allowBatching` is
   // true.
-  void TrackFormMutations(web::WebFrame* frame,
-                          int mutation_tracking_delay,
-                          bool allowBatching);
+  void TrackFormMutations(web::WebFrame* frame, int mutation_tracking_delay);
 
   // Toggles tracking the source of the input events in the frame.
   void ToggleTrackingUserEditedFields(web::WebFrame* frame,

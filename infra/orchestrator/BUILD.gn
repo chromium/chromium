@@ -44,7 +44,7 @@ group("orchestrator_all") {
   }
 
   if (use_jacoco_coverage) {
-    data += [ "//third_party/jacoco/lib/jacococli.jar" ]
+    data += [ "//third_party/jacoco/cipd/lib/jacococli.jar" ]
     data_deps += [ "//third_party/jdk:java_data" ]
   }
 

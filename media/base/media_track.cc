@@ -6,19 +6,6 @@
 
 namespace media {
 
-MediaTrack::MediaTrack(Type type,
-                       bool enabled,
-                       StreamParser::TrackId bytestream_track_id,
-                       const Kind& kind,
-                       const Label& label,
-                       const Language& lang)
-    : type_(type),
-      enabled_(enabled),
-      bytestream_track_id_(bytestream_track_id),
-      kind_(kind),
-      label_(label),
-      language_(lang) {}
-
 MediaTrack::~MediaTrack() = default;
 
 const char* TrackTypeToStr(MediaTrack::Type type) {
@@ -30,5 +17,99 @@ const char* TrackTypeToStr(MediaTrack::Type type) {
   }
   NOTREACHED();
 }
+
+// static
+MediaTrack::Kind MediaTrack::VideoKindToString(MediaTrack::VideoKind kind) {
+  switch (kind) {
+    case MediaTrack::VideoKind::kAlternative:
+      return MediaTrack::Kind{"alternative"};
+    case MediaTrack::VideoKind::kCaptions:
+      return MediaTrack::Kind{"captions"};
+    case MediaTrack::VideoKind::kMain:
+      return MediaTrack::Kind{"main"};
+    case MediaTrack::VideoKind::kSign:
+      return MediaTrack::Kind{"sign"};
+    case MediaTrack::VideoKind::kSubtitles:
+      return MediaTrack::Kind{"subtitles"};
+    case MediaTrack::VideoKind::kCommentary:
+      return MediaTrack::Kind{"commentary"};
+    case MediaTrack::VideoKind::kNone:
+      return MediaTrack::Kind{""};
+  }
+}
+
+// static
+MediaTrack::Kind MediaTrack::AudioKindToString(MediaTrack::AudioKind kind) {
+  switch (kind) {
+    case MediaTrack::AudioKind::kAlternative:
+      return MediaTrack::Kind{"alternative"};
+    case MediaTrack::AudioKind::kDescriptions:
+      return MediaTrack::Kind{"descriptions"};
+    case MediaTrack::AudioKind::kMain:
+      return MediaTrack::Kind{"main"};
+    case MediaTrack::AudioKind::kMainDescriptions:
+      return MediaTrack::Kind{"main-desc"};
+    case MediaTrack::AudioKind::kTranslation:
+      return MediaTrack::Kind{"translation"};
+    case MediaTrack::AudioKind::kCommentary:
+      return MediaTrack::Kind{"commentary"};
+    case MediaTrack::AudioKind::kNone:
+      return MediaTrack::Kind{""};
+  }
+}
+
+// static
+MediaTrack MediaTrack::CreateVideoTrack(const std::string& id,
+                                        VideoKind kind,
+                                        const std::string& label,
+                                        const std::string& language,
+                                        bool enabled) {
+  return MediaTrack{MediaTrack::Type::kVideo,
+                    0,
+                    MediaTrack::Id{id},
+                    VideoKindToString(kind),
+                    Label{label},
+                    Language{language},
+                    enabled};
+}
+
+// static
+MediaTrack MediaTrack::CreateAudioTrack(const std::string& id,
+                                        AudioKind kind,
+                                        const std::string& label,
+                                        const std::string& language,
+                                        bool enabled) {
+  return MediaTrack{MediaTrack::Type::kAudio,
+                    0,
+                    MediaTrack::Id{id},
+                    AudioKindToString(kind),
+                    Label{label},
+                    Language{language},
+                    enabled};
+}
+
+MediaTrack::MediaTrack(MediaTrack::Type type,
+                       StreamParser::TrackId stream_id,
+                       const MediaTrack::Id& track_id,
+                       const MediaTrack::Kind& kind,
+                       const MediaTrack::Label& label,
+                       const MediaTrack::Language& language,
+                       bool enabled)
+    : type_(type),
+      enabled_(enabled),
+      stream_id_(stream_id),
+      track_id_(track_id),
+      kind_(kind),
+      label_(label),
+      language_(language) {}
+
+MediaTrack::MediaTrack(const MediaTrack& track)
+    : type_(track.type()),
+      enabled_(track.enabled()),
+      stream_id_(track.stream_id()),
+      track_id_(track.track_id()),
+      kind_(track.kind()),
+      label_(track.label()),
+      language_(track.language()) {}
 
 }  // namespace media

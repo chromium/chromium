@@ -39,8 +39,14 @@ namespace blink {
 
 class CORE_EXPORT EllipseShape final : public Shape {
  public:
-  EllipseShape(const gfx::PointF& center, float radius_x, float radius_y)
-      : center_(center), radius_x_(radius_x), radius_y_(radius_y) {
+  EllipseShape(const gfx::PointF& center,
+               float radius_x,
+               float radius_y,
+               WritingMode writing_mode = WritingMode::kHorizontalTb)
+      : center_(center),
+        radius_x_(radius_x),
+        radius_y_(radius_y),
+        writing_mode_(writing_mode) {
     DCHECK_GE(radius_x, 0);
     DCHECK_GE(radius_y, 0);
   }
@@ -52,9 +58,18 @@ class CORE_EXPORT EllipseShape final : public Shape {
   void BuildDisplayPaths(DisplayPaths&) const override;
 
  private:
+  // Returns a pair of the inline-axis radius and the block-axis radius.
+  // They contains the ShapeMargin() value.
+  std::pair<float, float> InlineAndBlockRadiiIncludingMargin() const;
+
+  // The center point in a logical coordinate.
   gfx::PointF center_;
+  // Horizontal radius.
   float radius_x_;
+  // Vertical radius.
   float radius_y_;
+
+  const WritingMode writing_mode_;
 };
 
 }  // namespace blink

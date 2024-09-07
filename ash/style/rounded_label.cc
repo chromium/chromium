@@ -46,10 +46,6 @@ gfx::Size RoundedLabel::CalculatePreferredSize(
                    preferred_height_);
 }
 
-int RoundedLabel::GetHeightForWidth(int width) const {
-  return preferred_height_;
-}
-
 void RoundedLabel::OnPaintBorder(gfx::Canvas* canvas) {
   views::HighlightBorder::PaintBorderToCanvas(
       canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(rounding_dp_),

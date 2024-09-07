@@ -10,16 +10,24 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_constants.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/common/extensions/sync_helper.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -31,9 +39,122 @@ using std::string;
 
 namespace {
 
+// TODO(crbug.com/356148174): Consider making {syncing pref, non-syncing pref} a
+// custom struct instead.
+constexpr auto kThemePrefsInMigration =
+    base::MakeFixedFlatMap<ThemePrefInMigration,
+                           std::array<std::string_view, 2>>({
+        {ThemePrefInMigration::kBrowserColorScheme,
+         {prefs::kBrowserColorSchemeDoNotUse,
+          prefs::kNonSyncingBrowserColorSchemeDoNotUse}},
+        {ThemePrefInMigration::kUserColor,
+         {prefs::kUserColorDoNotUse, prefs::kNonSyncingUserColorDoNotUse}},
+        {ThemePrefInMigration::kBrowserColorVariant,
+         {prefs::kBrowserColorVariantDoNotUse,
+          prefs::kNonSyncingBrowserColorVariantDoNotUse}},
+        {ThemePrefInMigration::kGrayscaleThemeEnabled,
+         {prefs::kGrayscaleThemeEnabledDoNotUse,
+          prefs::kNonSyncingGrayscaleThemeEnabledDoNotUse}},
+        {ThemePrefInMigration::kNtpCustomBackgroundDict,
+         {prefs::kNtpCustomBackgroundDictDoNotUse,
+          prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse}},
+    });
+
+static_assert(
+    kThemePrefsInMigration.size() ==
+        static_cast<size_t>(ThemePrefInMigration::kLastEntry) + 1,
+    "ThemePrefInMigration entry missing from kThemePrefsInMigration map.");
+
 bool IsTheme(const extensions::Extension* extension,
              content::BrowserContext* context) {
   return extension->is_theme();
+}
+
+bool HasNonDefaultBrowserColorScheme(
+    const sync_pb::ThemeSpecifics& theme_specifics) {
+  return theme_specifics.has_browser_color_scheme() &&
+         ProtoEnumToBrowserColorScheme(
+             theme_specifics.browser_color_scheme()) !=
+             ThemeService::BrowserColorScheme::kSystem;
+}
+
+base::Value::Dict SpecificsNtpBackgroundToDict(
+    const sync_pb::ThemeSpecifics::NtpCustomBackground& ntp_background) {
+  base::Value::Dict dict;
+  if (ntp_background.has_url()) {
+    dict.Set(kNtpCustomBackgroundURL, ntp_background.url());
+  }
+  if (ntp_background.has_attribution_line_1()) {
+    dict.Set(kNtpCustomBackgroundAttributionLine1,
+             ntp_background.attribution_line_1());
+  }
+  if (ntp_background.has_attribution_line_2()) {
+    dict.Set(kNtpCustomBackgroundAttributionLine2,
+             ntp_background.attribution_line_2());
+  }
+  if (ntp_background.has_attribution_action_url()) {
+    dict.Set(kNtpCustomBackgroundAttributionActionURL,
+             ntp_background.attribution_action_url());
+  }
+  if (ntp_background.has_collection_id()) {
+    dict.Set(kNtpCustomBackgroundCollectionId, ntp_background.collection_id());
+  }
+  if (ntp_background.has_resume_token()) {
+    dict.Set(kNtpCustomBackgroundResumeToken, ntp_background.resume_token());
+  }
+  if (ntp_background.has_refresh_timestamp_unix_epoch_seconds()) {
+    dict.Set(kNtpCustomBackgroundRefreshTimestamp,
+             static_cast<int>(
+                 ntp_background.refresh_timestamp_unix_epoch_seconds()));
+  }
+  if (ntp_background.has_main_color()) {
+    dict.Set(kNtpCustomBackgroundMainColor,
+             static_cast<int>(ntp_background.main_color()));
+  }
+  return dict;
+}
+
+sync_pb::ThemeSpecifics::NtpCustomBackground SpecificsNtpBackgroundFromDict(
+    const base::Value::Dict& dict) {
+  sync_pb::ThemeSpecifics::NtpCustomBackground ntp_background;
+  if (const std::string* value = dict.FindString(kNtpCustomBackgroundURL)) {
+    ntp_background.set_url(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundAttributionLine1)) {
+    ntp_background.set_attribution_line_1(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundAttributionLine2)) {
+    ntp_background.set_attribution_line_2(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundAttributionActionURL)) {
+    ntp_background.set_attribution_action_url(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundCollectionId)) {
+    ntp_background.set_collection_id(*value);
+  }
+  if (const std::string* value =
+          dict.FindString(kNtpCustomBackgroundResumeToken)) {
+    ntp_background.set_resume_token(*value);
+  }
+  if (std::optional<int> value =
+          dict.FindInt(kNtpCustomBackgroundRefreshTimestamp)) {
+    ntp_background.set_refresh_timestamp_unix_epoch_seconds(*value);
+  }
+  if (std::optional<int> value = dict.FindInt(kNtpCustomBackgroundMainColor)) {
+    ntp_background.set_main_color(*value);
+  }
+  return ntp_background;
+}
+
+bool AreSpecificsNtpBackgroundEquivalent(
+    const sync_pb::ThemeSpecifics::NtpCustomBackground& a,
+    const sync_pb::ThemeSpecifics::NtpCustomBackground& b) {
+  return a.url() == b.url() && a.collection_id() == b.collection_id() &&
+         a.main_color() == b.main_color();
 }
 
 }  // namespace
@@ -42,6 +163,30 @@ bool IsTheme(const extensions::Extension* extension,
 const char ThemeSyncableService::kSyncEntityClientTag[] = "current_theme";
 const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 
+std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref) {
+  return kThemePrefsInMigration.at(theme_pref)[static_cast<int>(
+      base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics))];
+}
+
+void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
+    // Clear migration flag to allow re-migration when the feature flag is
+    // re-enabled.
+    prefs->ClearPref(prefs::kSyncingThemePrefsMigratedToNonSyncing);
+    return;
+  }
+  if (prefs->GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing)) {
+    return;
+  }
+  for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
+    if (const base::Value* value = prefs->GetUserPrefValue(pref_names[0])) {
+      prefs->Set(pref_names[1], value->Clone());
+    }
+  }
+
+  prefs->SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
+}
+
 ThemeSyncableService::ThemeSyncableService(Profile* profile,
                                            ThemeService* theme_service)
     : profile_(profile),
@@ -49,6 +194,7 @@ ThemeSyncableService::ThemeSyncableService(Profile* profile,
       use_system_theme_by_default_(false) {
   DCHECK(theme_service_);
   theme_service_->AddObserver(this);
+  // TODO(crbug.com/356148174): Listen to NtpCustomBackgroundDict pref changes.
 }
 
 ThemeSyncableService::~ThemeSyncableService() {
@@ -58,8 +204,9 @@ ThemeSyncableService::~ThemeSyncableService() {
 void ThemeSyncableService::OnThemeChanged() {
   if (sync_processor_.get()) {
     sync_pb::ThemeSpecifics current_specifics;
-    if (!GetThemeSpecificsFromCurrentTheme(&current_specifics))
+    if (!GetThemeSpecificsFromCurrentTheme(&current_specifics)) {
       return;  // Current theme is unsyncable.
+    }
     ProcessNewTheme(syncer::SyncChange::ACTION_UPDATE, current_specifics);
     use_system_theme_by_default_ =
         current_specifics.use_system_theme_by_default();
@@ -220,7 +367,7 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
       sync_data.GetSpecifics().theme();
   use_system_theme_by_default_ = theme_specifics.use_system_theme_by_default();
   DVLOG(1) << "Set current theme from specifics: " << sync_data.ToString();
-  if (AreThemeSpecificsEqual(
+  if (AreThemeSpecificsEquivalent(
           current_specs, theme_specifics,
           theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
     DVLOG(1) << "Skip setting theme because specs are equal";
@@ -280,10 +427,58 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     return ThemeSyncState::kWaitingForExtensionInstallation;
   }
 
+  bool ntp_background_applied = false;
+  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
+    if (theme_specifics.has_ntp_background() && profile_->GetPrefs()) {
+      DVLOG(1) << "Applying custom NTP background";
+
+      if (base::Value::Dict dict =
+              SpecificsNtpBackgroundToDict(theme_specifics.ntp_background());
+          !dict.empty()) {
+        // TODO(crbug.com/356148174): Set via NtpCustomBackgroundService instead
+        // of setting the pref directly.
+        profile_->GetPrefs()->SetDict(
+            prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse, std::move(dict));
+        ntp_background_applied = true;
+      }
+      // No return since the NTP background exists along with the other themes.
+    }
+
+    if (theme_specifics.has_browser_color_scheme()) {
+      DVLOG(1) << "Applying browser color scheme";
+      theme_service_->SetBrowserColorScheme(ProtoEnumToBrowserColorScheme(
+          theme_specifics.browser_color_scheme()));
+      // No return, the browser color scheme can coexist with other
+      // (non-extension) themes.
+    }
+
+    if (theme_specifics.has_user_color_theme() &&
+        theme_specifics.user_color_theme().has_color() &&
+        theme_specifics.user_color_theme().has_browser_color_variant()) {
+      DVLOG(1) << "Applying user color";
+      theme_service_->SetUserColorAndBrowserColorVariant(
+          theme_specifics.user_color_theme().color(),
+          ProtoEnumToBrowserColorVariant(
+              theme_specifics.user_color_theme().browser_color_variant()));
+      return ThemeSyncState::kApplied;
+    }
+
+    if (theme_specifics.has_grayscale_theme_enabled()) {
+      DVLOG(1) << "Applying grayscale theme";
+      theme_service_->SetIsGrayscale(/*is_grayscale=*/true);
+      return ThemeSyncState::kApplied;
+    }
+  }
+
   if (theme_specifics.has_autogenerated_theme()) {
     DVLOG(1) << "Applying autogenerated theme";
     theme_service_->BuildAutogeneratedThemeFromColor(
         theme_specifics.autogenerated_theme().color());
+    return ThemeSyncState::kApplied;
+  }
+
+  // If a custom background was applied, don't reset to the default theme.
+  if (ntp_background_applied) {
     return ThemeSyncState::kApplied;
   }
 
@@ -300,12 +495,13 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
 
 bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
     sync_pb::ThemeSpecifics* theme_specifics) const {
+  const std::string theme_id = theme_service_->GetThemeID();
   const extensions::Extension* current_extension =
       theme_service_->UsingExtensionTheme() &&
               !theme_service_->UsingDefaultTheme()
           ? extensions::ExtensionRegistry::Get(profile_)
                 ->enabled_extensions()
-                .GetByID(theme_service_->GetThemeID())
+                .GetByID(theme_id)
           : nullptr;
   if (current_extension &&
       !extensions::sync_helper::IsSyncable(current_extension)) {
@@ -314,8 +510,9 @@ bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
   }
 
   // If theme was set through policy, it should be unsyncable.
-  if (theme_service_->UsingPolicyTheme())
+  if (theme_service_->UsingPolicyTheme()) {
     return false;
+  }
 
   theme_specifics->Clear();
   theme_specifics->set_use_custom_theme(false);
@@ -328,6 +525,35 @@ bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
     theme_specifics->set_custom_theme_id(current_extension->id());
     theme_specifics->set_custom_theme_update_url(
         extensions::ManifestURL::GetUpdateURL(current_extension).spec());
+  }
+
+  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
+    // Fetch ntp background dict from pref.
+    // TODO(crbug.com/356148174): Query NtpCustomBackgroundService instead.
+    if (PrefService* prefs = profile_->GetPrefs()) {
+      if (const base::Value* pref = prefs->GetUserPrefValue(
+              prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse)) {
+        *theme_specifics->mutable_ntp_background() =
+            SpecificsNtpBackgroundFromDict(pref->GetDict());
+      }
+    }
+
+    theme_specifics->set_browser_color_scheme(
+        BrowserColorSchemeToProtoEnum(theme_service_->GetBrowserColorScheme()));
+
+    if (theme_service_->GetIsGrayscale()) {
+      theme_specifics->mutable_grayscale_theme_enabled();
+    } else if (ThemeService::kUserColorThemeID == theme_id) {
+      if (const std::optional<SkColor> user_color =
+              theme_service_->GetUserColor()) {
+        sync_pb::ThemeSpecifics::UserColorTheme* user_color_theme =
+            theme_specifics->mutable_user_color_theme();
+        user_color_theme->set_color(*user_color);
+        user_color_theme->set_browser_color_variant(
+            BrowserColorVariantToProtoEnum(
+                theme_service_->GetBrowserColorVariant()));
+      }
+    }
   }
 
   if (theme_service_->UsingAutogeneratedTheme()) {
@@ -355,11 +581,12 @@ bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
     theme_specifics->set_use_system_theme_by_default(
         use_system_theme_by_default_);
   }
+
   return true;
 }
 
 /* static */
-bool ThemeSyncableService::AreThemeSpecificsEqual(
+bool ThemeSyncableService::AreThemeSpecificsEquivalent(
     const sync_pb::ThemeSpecifics& a,
     const sync_pb::ThemeSpecifics& b,
     bool is_system_theme_distinct_from_default_theme) {
@@ -367,34 +594,78 @@ bool ThemeSyncableService::AreThemeSpecificsEqual(
     return false;
   }
 
-  if (a.use_custom_theme()) {
+  if (a.use_custom_theme() || b.use_custom_theme()) {
     // We're using an extensions theme, so simply compare IDs since those
     // are guaranteed unique.
     return a.use_custom_theme() == b.use_custom_theme() &&
            a.custom_theme_id() == b.custom_theme_id();
-  } else if (a.has_autogenerated_theme()) {
+  }
+
+  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
+    // Since browser color scheme and ntp background can coexist with all other
+    // theme types, they're the first ones tested.
+
+    // Compare the two ntp background dicts as whole.
+    if ((a.has_ntp_background() || b.has_ntp_background()) &&
+        !AreSpecificsNtpBackgroundEquivalent(a.ntp_background(),
+                                             b.ntp_background())) {
+      return false;
+    }
+    if (ProtoEnumToBrowserColorScheme(a.browser_color_scheme()) !=
+        ProtoEnumToBrowserColorScheme(b.browser_color_scheme())) {
+      return false;
+    }
+    if (a.has_user_color_theme() || b.has_user_color_theme()) {
+      return a.has_user_color_theme() == b.has_user_color_theme() &&
+             a.user_color_theme().color() == b.user_color_theme().color() &&
+             ProtoEnumToBrowserColorVariant(
+                 a.user_color_theme().browser_color_variant()) ==
+                 ProtoEnumToBrowserColorVariant(
+                     b.user_color_theme().browser_color_variant());
+    }
+    if (a.has_grayscale_theme_enabled() || b.has_grayscale_theme_enabled()) {
+      return a.has_grayscale_theme_enabled() == b.has_grayscale_theme_enabled();
+    }
+  }
+
+  if (a.has_autogenerated_theme() || b.has_autogenerated_theme()) {
     return a.has_autogenerated_theme() == b.has_autogenerated_theme() &&
            a.autogenerated_theme().color() == b.autogenerated_theme().color();
-  } else if (is_system_theme_distinct_from_default_theme) {
+  }
+  if (is_system_theme_distinct_from_default_theme) {
     // We're not using a custom theme, but we care about system
     // vs. default.
     return a.use_system_theme_by_default() == b.use_system_theme_by_default();
-  } else {
-    // We're not using a custom theme, and we don't care about system
-    // vs. default.
-    return true;
   }
+  // We're not using a custom theme, and we don't care about system
+  // vs. default.
+  return true;
 }
 
 bool ThemeSyncableService::HasNonDefaultTheme(
     const sync_pb::ThemeSpecifics& theme_specifics) {
   return theme_specifics.use_custom_theme() ||
-         theme_specifics.has_autogenerated_theme();
+         theme_specifics.has_autogenerated_theme() ||
+         (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
+          (theme_specifics.has_user_color_theme() ||
+           theme_specifics.has_grayscale_theme_enabled() ||
+           HasNonDefaultBrowserColorScheme(theme_specifics) ||
+           theme_specifics.has_ntp_background()));
 }
 
 std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
     syncer::SyncChange::SyncChangeType change_type,
     const sync_pb::ThemeSpecifics& theme_specifics) {
+  // As part of the theme migration strategy, update the old syncing prefs with
+  // the new values.
+  if (PrefService* prefs = profile_->GetPrefs()) {
+    for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
+      if (const base::Value* value = prefs->GetUserPrefValue(pref_names[1])) {
+        prefs->Set(pref_names[0], value->Clone());
+      }
+    }
+  }
+
   syncer::SyncChangeList changes;
   sync_pb::EntitySpecifics entity_specifics;
   entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
@@ -405,7 +676,7 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
                                         entity_specifics));
 
   DVLOG(1) << "Update theme specifics from current theme: "
-      << changes.back().ToString();
+           << changes.back().ToString();
 
   return sync_processor_->ProcessSyncChanges(FROM_HERE, changes);
 }
@@ -414,6 +685,7 @@ void ThemeSyncableService::NotifyOnSyncStarted(ThemeSyncState startup_state) {
   // Keep the state for later calls to GetThemeSyncStartState().
   startup_state_ = startup_state;
 
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnThemeSyncStarted(startup_state);
+  }
 }

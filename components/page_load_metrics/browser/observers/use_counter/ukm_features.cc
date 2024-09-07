@@ -229,8 +229,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebCodecsAudioEncoder,
           WebFeature::kWebCodecsVideoFrameFromImage,
           WebFeature::kWebCodecsVideoFrameFromBuffer,
-          WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError,
-          WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
           WebFeature::kPrivateNetworkAccessPreflightWarning,
           WebFeature::kPrivateNetworkAccessPermissionPrompt,
           WebFeature::kWebBluetoothGetAvailability,
@@ -298,8 +296,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebGPUQueueSubmit,
           WebFeature::kWebGPUCanvasContextGetCurrentTexture,
           WebFeature::kLinkRelPreloadAsFont,
-          WebFeature::kURLPatternReliantOnImplicitURLComponentsInString,
-          WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL,
           WebFeature::kV8Window_GetScreenDetails_Method,
           WebFeature::kV8Window_ShowSaveFilePicker_Method,
           WebFeature::kChromeCSIUnknown,
@@ -408,6 +404,10 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kGamepadHapticActuatorType,
           WebFeature::kV8Navigator_JoinAdInterestGroup_Method,
           WebFeature::kFormValidationShowedMessage,
+          WebFeature::kPartitionedPopin_OpenAttempt,
+          WebFeature::kPartitionedPopin_Opened,
+          WebFeature::kV8Window_PopinContextTypesSupported_Method,
+          WebFeature::kV8Window_PopinContextType_Method,
       }));
   return *opt_in_features;
 }

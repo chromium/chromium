@@ -75,10 +75,11 @@ PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderFrameHost* frame)
       peer_pid_(frame->GetProcess()->GetProcess().Pid()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RegisterHost(this);
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->AddPowerSuspendObserver(this);
   // Ensure that the initial thermal state is known by the |tracker_|.
   base::PowerThermalObserver::DeviceThermalState initial_thermal_state =
-      base::PowerMonitor::AddPowerStateObserverAndReturnPowerThermalState(this);
+      power_monitor->AddPowerStateObserverAndReturnPowerThermalState(this);
 
   frame->GetRemoteInterfaces()->GetInterface(
       tracker_.BindNewPipeAndPassReceiver());
@@ -91,8 +92,9 @@ PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderFrameHost* frame)
 PeerConnectionTrackerHost::~PeerConnectionTrackerHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RemoveHost(this);
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
-  base::PowerMonitor::RemovePowerThermalObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->RemovePowerSuspendObserver(this);
+  power_monitor->RemovePowerThermalObserver(this);
 }
 
 void PeerConnectionTrackerHost::AddPeerConnection(

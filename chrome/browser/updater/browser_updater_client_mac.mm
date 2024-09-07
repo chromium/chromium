@@ -8,6 +8,7 @@
 
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/common/channel_info.h"
@@ -28,4 +29,10 @@ updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
   req.ap = chrome::GetChannelName(chrome::WithExtendedStable(true));
   req.existence_checker_path = bundle;
   return req;
+}
+
+bool BrowserUpdaterClient::AppMatches(
+    const updater::UpdateService::AppState& app) {
+  return base::EqualsCaseInsensitiveASCII(app.app_id, GetAppId()) &&
+         app.ecp == base::apple::OuterBundlePath();
 }

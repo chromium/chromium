@@ -884,6 +884,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       case ContentSettingsType::BLUETOOTH_SCANNING:
       case ContentSettingsType::CLIPBOARD_READ_WRITE:
       case ContentSettingsType::GEOLOCATION:
+      case ContentSettingsType::HAND_TRACKING:
       case ContentSettingsType::IDLE_DETECTION:
       case ContentSettingsType::MEDIASTREAM_CAMERA:
       case ContentSettingsType::MEDIASTREAM_MIC:

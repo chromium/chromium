@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.recent_tabs.ui.CrossDevicePaneView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        layout="@layout/empty_state_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ListView
+        android:id="@+id/cross_device_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</org.chromium.chrome.browser.recent_tabs.ui.CrossDevicePaneView>

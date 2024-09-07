@@ -41,7 +41,6 @@
 #include "url/gurl.h"
 
 namespace autofill {
-
 namespace {
 
 using ::autofill::mojom::SubmissionIndicatorEvent;
@@ -156,8 +155,6 @@ std::string CreateManualOverridePrediction(
 }
 #endif
 
-}  // namespace
-
 class AutofillCrowdsourcingEncoding : public testing::Test {
  public:
   AutofillCrowdsourcingEncoding() = default;
@@ -270,11 +267,11 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   upload.set_data_present("1442000308");
   upload.set_has_form_tag(true);
 
-  test::FillUploadField(upload.add_field(), 3763331450U, 3U);
-  test::FillUploadField(upload.add_field(), 3494530716U, 5U);
-  test::FillUploadField(upload.add_field(), 1029417091U, 9U);
-  test::FillUploadField(upload.add_field(), 466116101U, 14U);
-  test::FillUploadField(upload.add_field(), 2799270304U, 36U);
+  test::FillUploadField(upload.add_field_data(), 3763331450U, 3U);
+  test::FillUploadField(upload.add_field_data(), 3494530716U, 5U);
+  test::FillUploadField(upload.add_field_data(), 1029417091U, 9U);
+  test::FillUploadField(upload.add_field_data(), 466116101U, 14U);
+  test::FillUploadField(upload.add_field_data(), 2799270304U, 36U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   /*login_form_signature=*/"",
@@ -307,11 +304,11 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
 
   // Create an additional 2 fields (total of 7).
   for (int i = 0; i < 2; ++i) {
-    test::FillUploadField(upload.add_field(), 509334676U, 30U);
+    test::FillUploadField(upload.add_field_data(), 509334676U, 30U);
   }
   // Put the appropriate autofill type on the different address fields.
-  test::FillUploadField(upload.mutable_field(5), 509334676U, 31U);
-  test::FillUploadField(upload.mutable_field(6), 509334676U, 31U);
+  test::FillUploadField(upload.mutable_field_data(5), 509334676U, 31U);
+  test::FillUploadField(upload.mutable_field_data(6), 509334676U, 31U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   /*login_form_signature=*/"",
@@ -406,25 +403,25 @@ TEST_F(AutofillCrowdsourcingEncoding,
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
 
-  AutofillUploadContents::Field* upload_firstname_field = upload.add_field();
+  AutofillUploadContents::Field* upload_firstname_field = upload.add_field_data();
   test::FillUploadField(upload_firstname_field,
                         *form_structure->field(0)->GetFieldSignature(), 3U);
 
-  AutofillUploadContents::Field* upload_lastname_field = upload.add_field();
+  AutofillUploadContents::Field* upload_lastname_field = upload.add_field_data();
   test::FillUploadField(upload_lastname_field,
                         *form_structure->field(1)->GetFieldSignature(), 5U);
 
-  AutofillUploadContents::Field* upload_email_field = upload.add_field();
+  AutofillUploadContents::Field* upload_email_field = upload.add_field_data();
   test::FillUploadField(upload_email_field,
                         *form_structure->field(2)->GetFieldSignature(), 9U);
 
-  AutofillUploadContents::Field* upload_username_field = upload.add_field();
+  AutofillUploadContents::Field* upload_username_field = upload.add_field_data();
   test::FillUploadField(upload_username_field,
                         *form_structure->field(3)->GetFieldSignature(), 86U);
   upload_username_field->set_vote_type(
       AutofillUploadContents::Field::CREDENTIALS_REUSED);
 
-  AutofillUploadContents::Field* upload_password_field = upload.add_field();
+  AutofillUploadContents::Field* upload_password_field = upload.add_field_data();
   test::FillUploadField(upload_password_field,
                         *form_structure->field(4)->GetFieldSignature(), 76U);
   upload_password_field->set_generation_type(
@@ -508,13 +505,13 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
 
-  test::FillUploadField(upload.add_field(), 3763331450U, 3U);
-  upload.mutable_field(0)->set_properties_mask(FieldPropertiesFlags::kHadFocus);
-  test::FillUploadField(upload.add_field(), 3494530716U, 5U);
-  upload.mutable_field(1)->set_properties_mask(
+  test::FillUploadField(upload.add_field_data(), 3763331450U, 3U);
+  upload.mutable_field_data(0)->set_properties_mask(FieldPropertiesFlags::kHadFocus);
+  test::FillUploadField(upload.add_field_data(), 3494530716U, 5U);
+  upload.mutable_field_data(1)->set_properties_mask(
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped);
-  test::FillUploadField(upload.add_field(), 1029417091U, 9U);
-  upload.mutable_field(2)->set_properties_mask(
+  test::FillUploadField(upload.add_field_data(), 1029417091U, 9U);
+  upload.mutable_field_data(2)->set_properties_mask(
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
@@ -572,9 +569,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
 
-  test::FillUploadField(upload.add_field(), 3763331450U, 3U);
-  test::FillUploadField(upload.add_field(), 3494530716U, 5U);
-  test::FillUploadField(upload.add_field(), 1029417091U, 9U);
+  test::FillUploadField(upload.add_field_data(), 3763331450U, 3U);
+  test::FillUploadField(upload.add_field_data(), 3494530716U, 5U);
+  test::FillUploadField(upload.add_field_data(), 1029417091U, 9U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   /*login_form_signature=*/"",
@@ -628,9 +625,9 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
 
-  test::FillUploadField(upload.add_field(), 1318412689U, 3U);
-  test::FillUploadField(upload.add_field(), 1318412689U, 5U);
-  test::FillUploadField(upload.add_field(), 1318412689U, 9U);
+  test::FillUploadField(upload.add_field_data(), 1318412689U, 3U);
+  test::FillUploadField(upload.add_field_data(), 1318412689U, 5U);
+  test::FillUploadField(upload.add_field_data(), 1318412689U, 9U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   /*login_form_signature=*/"",
@@ -684,9 +681,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
 
-  test::FillUploadField(upload.add_field(), 3763331450U, 3U);
-  test::FillUploadField(upload.add_field(), 1318412689U, 5U);
-  test::FillUploadField(upload.add_field(), 1318412689U, 9U);
+  test::FillUploadField(upload.add_field_data(), 3763331450U, 3U);
+  test::FillUploadField(upload.add_field_data(), 1318412689U, 5U);
+  test::FillUploadField(upload.add_field_data(), 1318412689U, 9U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   /*login_form_signature=*/"",
@@ -758,10 +755,10 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
     upload.set_has_form_tag(true);
-    test::FillUploadField(upload.add_field(), 3340391946, 51);
-    test::FillUploadField(upload.add_field(), 1415886167, 52);
-    test::FillUploadField(upload.add_field(), 3155194603, 57);
-    test::FillUploadField(upload.add_field(), 917221285, 59);
+    test::FillUploadField(upload.add_field_data(), 3340391946, 51);
+    test::FillUploadField(upload.add_field_data(), 1415886167, 52);
+    test::FillUploadField(upload.add_field_data(), 3155194603, 57);
+    test::FillUploadField(upload.add_field_data(), 917221285, 59);
     return upload;
   }();
 
@@ -772,8 +769,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
     upload.set_form_signature(form.fields()[0].host_form_signature().value());
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
-    test::FillUploadField(upload.add_field(), 3340391946, 51);
-    test::FillUploadField(upload.add_field(), 3155194603, 57);
+    test::FillUploadField(upload.add_field_data(), 3340391946, 51);
+    test::FillUploadField(upload.add_field_data(), 3155194603, 57);
     return upload;
   }();
 
@@ -784,7 +781,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
     upload.set_form_signature(form.fields()[1].host_form_signature().value());
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
-    test::FillUploadField(upload.add_field(), 1415886167, 52);
+    test::FillUploadField(upload.add_field_data(), 1415886167, 52);
     return upload;
   }();
 
@@ -795,7 +792,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
     upload.set_form_signature(form.fields()[3].host_form_signature().value());
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
-    test::FillUploadField(upload.add_field(), 917221285, 59);
+    test::FillUploadField(upload.add_field_data(), 917221285, 59);
     return upload;
   }();
 
@@ -844,9 +841,9 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
       AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
   upload.set_has_form_tag(true);
 
-  test::FillUploadField(upload.add_field(), 1089846351U, 1U);
-  test::FillUploadField(upload.add_field(), 2404144663U, 1U);
-  test::FillUploadField(upload.add_field(), 420638584U, 1U);
+  test::FillUploadField(upload.add_field_data(), 1089846351U, 1U);
+  test::FillUploadField(upload.add_field_data(), 2404144663U, 1U);
+  test::FillUploadField(upload.add_field_data(), 420638584U, 1U);
 
   EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types,
                                   std::string(), true),
@@ -1072,10 +1069,10 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_XHR_SUCCEEDED);
 
-  test::FillUploadField(upload.add_field(), 420638584U, 9U);
-  test::FillUploadField(upload.add_field(), 1089846351U, 3U);
-  test::FillUploadField(upload.add_field(), 2404144663U, 5U);
-  test::FillUploadField(upload.add_field(), 509334676U, 30U);
+  test::FillUploadField(upload.add_field_data(), 420638584U, 9U);
+  test::FillUploadField(upload.add_field_data(), 1089846351U, 3U);
+  test::FillUploadField(upload.add_field_data(), 2404144663U, 5U);
+  test::FillUploadField(upload.add_field_data(), 509334676U, 30U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
@@ -1087,9 +1084,9 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
 
   // Modify the expected upload.
   // Add the NAME_FIRST prediction to the third field.
-  test::FillUploadField(upload.mutable_field(2), 2404144663U, 3U);
+  test::FillUploadField(upload.mutable_field_data(2), 2404144663U, 3U);
 
-  upload.mutable_field(2)->mutable_autofill_type()->SwapElements(0, 1);
+  upload.mutable_field_data(2)->mutable_autofill_type()->SwapElements(0, 1);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
@@ -1102,7 +1099,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
           possible_field_types[form_structure->field_count() - 1]);
 
   // Adjust the expected upload proto.
-  test::FillUploadField(upload.mutable_field(3), 509334676U, 31U);
+  test::FillUploadField(upload.mutable_field_data(3), 509334676U, 31U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
@@ -1117,7 +1114,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
           possible_field_types[form_structure->field_count() - 1]);
 
   // Adjust the expected upload proto.
-  upload.mutable_field(3)->set_autofill_type(1, 60);
+  upload.mutable_field_data(3)->set_autofill_type(1, 60);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
@@ -1245,7 +1242,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   EXPECT_EQ(upload.randomized_form_metadata().url().encoded_bits(),
             encoder.Encode(form_signature, FieldSignature(),
                            RandomizedEncoder::FORM_URL, full_url));
-  ASSERT_EQ(static_cast<size_t>(upload.field_size()),
+  ASSERT_EQ(static_cast<size_t>(upload.field_data_size()),
             std::size(kFieldMetadata));
 
   ASSERT_EQ(1, upload.randomized_form_metadata().button_title().size());
@@ -1259,8 +1256,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   EXPECT_EQ(ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE,
             upload.randomized_form_metadata().button_title()[0].type());
 
-  for (int i = 0; i < upload.field_size(); ++i) {
-    const auto& metadata = upload.field(i).randomized_field_metadata();
+  for (int i = 0; i < upload.field_data_size(); ++i) {
+    const auto& metadata = upload.field_data(i).randomized_field_metadata();
     const auto& field = *form_structure.field(i);
     const auto field_signature = field.GetFieldSignature();
     if (field.id_attribute().empty()) {
@@ -1396,9 +1393,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
       std::string() /* login_form_signature */, true /* observed_submission */);
   ASSERT_EQ(1u, uploads.size());
   EXPECT_EQ(form_structure.field(0)->single_username_vote_type(),
-            uploads.front().field(0).single_username_vote_type());
+            uploads.front().field_data(0).single_username_vote_type());
   EXPECT_TRUE(
-      uploads.front().field(0).is_most_recent_single_username_candidate());
+      uploads.front().field_data(0).is_most_recent_single_username_candidate());
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,
@@ -1523,17 +1520,17 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ASSERT_EQ(uploads.size(), 1UL);
   const AutofillUploadContents& upload = uploads[0];
 
-  ASSERT_EQ(upload.field_size(), 4);
+  ASSERT_EQ(upload.field_data_size(), 4);
   // Field 1.
-  EXPECT_FALSE(upload.field(0).has_initial_value_changed());
+  EXPECT_FALSE(upload.field_data(0).has_initial_value_changed());
   // Field 2.
-  EXPECT_TRUE(upload.field(1).has_initial_value_changed());
-  EXPECT_FALSE(upload.field(1).initial_value_changed());
+  EXPECT_TRUE(upload.field_data(1).has_initial_value_changed());
+  EXPECT_FALSE(upload.field_data(1).initial_value_changed());
   // Field 3.
-  EXPECT_TRUE(upload.field(2).has_initial_value_changed());
-  EXPECT_TRUE(upload.field(2).initial_value_changed());
+  EXPECT_TRUE(upload.field_data(2).has_initial_value_changed());
+  EXPECT_TRUE(upload.field_data(2).initial_value_changed());
   // Field 4.
-  EXPECT_FALSE(upload.field(3).has_initial_value_changed());
+  EXPECT_FALSE(upload.field_data(3).has_initial_value_changed());
 }
 
 // Tests that Autofill does not send votes for a field that was filled with
@@ -1549,7 +1546,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       /*login_form_signature=*/"", /*observed_submission=*/true);
   ASSERT_GE(uploads.size(), 1u);
   AutofillUploadContents upload = uploads[0];
-  EXPECT_EQ(upload.field_size(), 1);
+  EXPECT_EQ(upload.field_data_size(), 1);
 
   // Set the autofilled type of the field as something different from its
   // classified type, representing that the field was filled using this type as
@@ -1561,7 +1558,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
                                 /*observed_submission=*/true);
   ASSERT_GE(uploads.size(), 1u);
   upload = uploads[0];
-  EXPECT_EQ(upload.field_size(), 0);
+  EXPECT_EQ(upload.field_data_size(), 0);
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
@@ -3405,4 +3402,5 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_THAT(form.field(5)->experimental_server_predictions(), IsEmpty());
 }
 
+}  // namespace
 }  // namespace autofill

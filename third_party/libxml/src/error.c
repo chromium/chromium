@@ -409,6 +409,8 @@ xmlParserPrintFileContext(xmlParserInputPtr input) {
  *
  * This can result in a verbose multi-line report including additional
  * information from the parser context.
+ *
+ * Available since 2.13.0.
  */
 void
 xmlFormatError(const xmlError *err, xmlGenericErrorFunc channel, void *data)
@@ -662,7 +664,7 @@ xmlRaiseMemoryError(xmlStructuredErrorFunc schannel, xmlGenericErrorFunc channel
  * @channel: the old callback channel
  * @data: the callback data
  * @ctx: the parser context or NULL
- * @ctx: the parser context or NULL
+ * @node: the current node or NULL
  * @domain: the domain for the error
  * @code: the code for the error
  * @level: the xmlErrorLevel for the error

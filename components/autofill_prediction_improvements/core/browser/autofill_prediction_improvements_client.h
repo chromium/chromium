@@ -7,6 +7,8 @@
 
 #include "base/functional/callback_forward.h"
 
+class GURL;
+
 namespace optimization_guide::proto {
 class AXTreeUpdate;
 }
@@ -34,6 +36,9 @@ class AutofillPredictionImprovementsClient {
 
   // Returns the filling engine associated with the client's web contents.
   virtual AutofillPredictionImprovementsFillingEngine* GetFillingEngine() = 0;
+
+  // Returns the last committed URL of the primary main frame.
+  virtual const GURL& GetLastCommittedURL() = 0;
 };
 
 }  // namespace autofill_prediction_improvements

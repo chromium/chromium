@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/omnibox/browser/autocomplete_input.h"
+#import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -60,6 +61,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   NSUInteger _autocompleteTextLength;
   /// Tap gesture recognizer for this view.
   UITapGestureRecognizer* _tapGestureRecognizer;
+  /// Whether the pasteboard currently has strings.
+  BOOL _pasteboardHasStrings;
 }
 
 @dynamic delegate;
@@ -108,6 +111,14 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                                                 action:@selector(handleTap:)];
     _tapGestureRecognizer.delegate = self;
     [self addGestureRecognizer:_tapGestureRecognizer];
+
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(pasteboardDidChange:)
+               name:UIPasteboardChangedNotification
+             object:nil];
+
+    [self pasteboardDidChange:nil];
   }
   return self;
 }
@@ -438,6 +449,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return [super selectionRectsForRange:range];
 }
 
+- (BOOL)hasText {
+  // Returns YES when `allowsReturnKeyWithEmptyText` to enable the 'Go' key in
+  // the keyboard.
+  return self.allowsReturnKeyWithEmptyText || [super hasText];
+}
+
 #pragma mark - UITextInput
 
 - (void)beginFloatingCursorAtPoint:(CGPoint)point {
@@ -494,6 +511,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (void)handleTap:(UITapGestureRecognizer*)sender {
   if (self.isPreEditing) {
     [self exitPreEditState];
+    [super selectAll:self];
   }
   if (self.hasAutocompleteText) {
     [self acceptAutocompleteText];
@@ -554,8 +572,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
 
   // If there is pasteboard content, show paste.
-  if (UIPasteboard.generalPasteboard.hasStrings && action == @selector
-                                                       (paste:)) {
+  if (_pasteboardHasStrings && action == @selector(paste:)) {
     return YES;
   }
 
@@ -1020,6 +1037,18 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 /// Returns the background color for selected text.
 - (UIColor*)selectedTextBackgroundColor {
   return [self.tintColor colorWithAlphaComponent:0.2];
+}
+
+- (void)pasteboardDidChange:(NSNotification*)notification {
+  __weak __typeof(self) weakSelf = self;
+  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
+                       base::BindOnce(^(UIPasteboard* pasteboard) {
+                         [weakSelf pasteboardDidChangeCallback:pasteboard];
+                       }));
+}
+
+- (void)pasteboardDidChangeCallback:(UIPasteboard*)pasteboard {
+  _pasteboardHasStrings = pasteboard.hasStrings;
 }
 
 @end

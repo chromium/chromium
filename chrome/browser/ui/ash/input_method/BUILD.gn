@@ -1,0 +1,130 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("input_method") {
+  sources = [
+    "announcement_label.cc",
+    "announcement_label.h",
+    "announcement_view.cc",
+    "announcement_view.h",
+    "assistive_delegate.h",
+    "border_factory.cc",
+    "border_factory.h",
+    "candidate_view.cc",
+    "candidate_view.h",
+    "candidate_window_constants.h",
+    "candidate_window_view.cc",
+    "candidate_window_view.h",
+    "colors.cc",
+    "colors.h",
+    "completion_suggestion_label_view.cc",
+    "completion_suggestion_label_view.h",
+    "completion_suggestion_view.cc",
+    "completion_suggestion_view.h",
+    "grammar_suggestion_window.cc",
+    "grammar_suggestion_window.h",
+    "ime_controller_client_impl.cc",
+    "ime_controller_client_impl.h",
+    "indexed_suggestion_candidate_button.cc",
+    "indexed_suggestion_candidate_button.h",
+    "infolist_window.cc",
+    "infolist_window.h",
+    "input_method_menu_item.cc",
+    "input_method_menu_item.h",
+    "input_method_menu_manager.cc",
+    "input_method_menu_manager.h",
+    "suggestion_details.h",
+    "suggestion_window_view.cc",
+    "suggestion_window_view.h",
+    "undo_window.cc",
+    "undo_window.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/input_method",
+    "//chromeos/ash/services/ime/public/cpp:structs",
+    "//ui/accessibility:ax_base",
+    "//ui/base/ime:ime_types",
+    "//ui/base/ime/ash",
+    "//ui/chromeos/styles:cros_styles_views",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base:i18n",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//components/strings:components_strings",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/base/ime/ash",
+    "//ui/chromeos/strings",
+    "//ui/color:color_headers",
+    "//ui/display",
+    "//ui/display/types",
+    "//ui/gfx:color_utils",
+    "//ui/gfx/geometry",
+    "//ui/wm",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/input_method" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "announcement_view_unittest.cc",
+    "candidate_view_unittest.cc",
+    "candidate_window_view_unittest.cc",
+    "completion_suggestion_label_view_unittest.cc",
+    "completion_suggestion_view_unittest.cc",
+    "grammar_suggestion_window_unittest.cc",
+    "ime_controller_client_impl_unittest.cc",
+    "input_method_menu_item_unittest.cc",
+    "input_method_menu_manager_unittest.cc",
+    "mock_assistive_delegate.cc",
+    "mock_assistive_delegate.h",
+    "suggestion_window_view_unittest.cc",
+    "undo_window_unittest.cc",
+  ]
+
+  deps = [
+    ":input_method",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/input_method:test_support",
+    "//chrome/browser/ui/ash",
+    "//chrome/test:test_support",
+    "//chromeos/ash/services/ime/public/cpp:structs",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/accessibility:ax_base",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/aura",
+    "//ui/base:test_support",
+    "//ui/base/ime/ash",
+    "//ui/events:events_base",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

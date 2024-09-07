@@ -13,7 +13,7 @@ import {
   PropertyValues,
 } from 'chrome://resources/mwc/lit/index.js';
 
-import {i18n} from '../core/i18n.js';
+import {i18n, NoArgStringName} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
@@ -23,6 +23,10 @@ import {
   TranscriptionEnableState,
 } from '../core/state/settings.js';
 import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
+
+import {
+  DESCRIPTION_NAMES as SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
+} from './speaker-label-consent-dialog-content.js';
 
 /**
  * A dialog for showing the onboarding flow.
@@ -150,7 +154,7 @@ export class OnboardingDialog extends ReactiveLitElement {
     // is always cancelable by pressing ESC, and the onboarding flow should not
     // be cancelable.
     // See https://issues.chromium.org/issues/346597066.
-    return html`<div id="dialog" popover="manual">
+    return html`<div id="dialog" popover="manual" ?inert=${!this.open}>
       <div id="illust">
         <cra-image .name=${imageName}></cra-image>
       </div>
@@ -169,6 +173,12 @@ export class OnboardingDialog extends ReactiveLitElement {
     switch (this.step.value) {
       case 0: {
         const nextStep = () => {
+          if (this.platformHandler.sodaState.value.kind === 'unavailable') {
+            // SODA isn't available on this platform. Don't ask for enabling
+            // transcription or speaker label.
+            this.close();
+            return;
+          }
           this.step.value = 1;
         };
         return this.renderDialog(
@@ -187,6 +197,11 @@ export class OnboardingDialog extends ReactiveLitElement {
             s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
           });
           this.platformHandler.installSoda();
+          if (!this.platformHandler.canUseSpeakerLabel.value) {
+            // Speaker label isn't supported on this platform.
+            this.close();
+            return;
+          }
           this.step.value = 2;
         };
         const disableTranscription = () => {
@@ -203,12 +218,10 @@ export class OnboardingDialog extends ReactiveLitElement {
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionDeferButton}
               class="left"
-              button-style="secondary"
               @click=${this.close}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionCancelButton}
-              button-style="secondary"
               @click=${disableTranscription}
             ></cra-button>
             <cra-button
@@ -219,10 +232,19 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       case 2: {
+        const ALLOW_BUTTON_NAME: NoArgStringName =
+          'onboardingDialogSpeakerLabelAllowButton';
+        const DISALLOW_BUTTON_NAME: NoArgStringName =
+          'onboardingDialogSpeakerLabelDisallowButton';
         const disableSpeakerLabel = () => {
           settings.mutate((s) => {
             s.speakerLabelEnabled = SpeakerLabelEnableState.DISABLED_FIRST;
           });
+          this.platformHandler.recordSpeakerLabelConsent(
+            false,
+            SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
+            DISALLOW_BUTTON_NAME,
+          );
           this.close();
         };
 
@@ -230,6 +252,11 @@ export class OnboardingDialog extends ReactiveLitElement {
           settings.mutate((s) => {
             s.speakerLabelEnabled = SpeakerLabelEnableState.ENABLED;
           });
+          this.platformHandler.recordSpeakerLabelConsent(
+            true,
+            SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
+            ALLOW_BUTTON_NAME,
+          );
           this.close();
         };
 
@@ -242,16 +269,14 @@ export class OnboardingDialog extends ReactiveLitElement {
             <cra-button
               .label=${i18n.onboardingDialogSpeakerLabelDeferButton}
               class="left"
-              button-style="secondary"
               @click=${this.close}
             ></cra-button>
             <cra-button
-              .label=${i18n.onboardingDialogSpeakerLabelDisallowButton}
-              button-style="secondary"
+              .label=${i18n[DISALLOW_BUTTON_NAME]}
               @click=${disableSpeakerLabel}
             ></cra-button>
             <cra-button
-              .label=${i18n.onboardingDialogSpeakerLabelAllowButton}
+              .label=${i18n[ALLOW_BUTTON_NAME]}
               @click=${enableSpeakerLabel}
             ></cra-button>
           `,

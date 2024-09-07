@@ -94,7 +94,7 @@ bool AXTreeID::operator>=(const AXTreeID& rhs) const {
   return !(*this < rhs);
 }
 
-size_t AXTreeIDHash::operator()(const ui::AXTreeID& tree_id) const {
+size_t AXTreeIDHash::operator()(const AXTreeID& tree_id) const {
   DCHECK(tree_id.type() == ax::mojom::AXTreeIDType::kToken);
   return base::UnguessableTokenHash()(tree_id.token().value());
 }

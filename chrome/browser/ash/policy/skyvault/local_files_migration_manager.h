@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 
 namespace base {
 template <typename T>
@@ -130,6 +129,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // happens.
   CloudProvider cloud_provider_ = CloudProvider::kNotSpecified;
 
+  // The time at which the migration will start automatically.
+  base::Time migration_start_time_;
+
   // Context for which this instance is created.
   raw_ptr<content::BrowserContext> context_;
 
@@ -141,8 +143,6 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Timer for delaying the start of migration and showing dialogs.
   std::unique_ptr<base::WallClockTimer> scheduling_timer_;
-
-  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<LocalFilesMigrationManager> weak_factory_{this};
 };

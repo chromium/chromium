@@ -35,16 +35,8 @@ inline constexpr char kPeripheralNotificationGraphicsTabletsSeen[] =
 
 // Prefs which contain peripheral devices that have seen the enhanced
 // "Welcome Experience" notification.
-inline constexpr char kMiceWelcomeNotificationSeen[] =
-    "settings.mouse.welcome_experience_notification_seen";
-inline constexpr char kGraphicsTabletsWelcomeNotificationSeen[] =
-    "settings.graphics_tablet.welcome_experience_notification_seen";
-inline constexpr char kKeyboardsWelcomeNotificationSeen[] =
-    "settings.keyboard.welcome_experience_notification_seen";
-inline constexpr char kTouchpadsWelcomeNotificationSeen[] =
-    "settings.touchpad.welcome_experience_notification_seen";
-inline constexpr char kPointingSticksWelcomeNotificationSeen[] =
-    "settings.pointing_stick.welcome_experience_notification_seen";
+inline constexpr char kWelcomeExperienceNotificationSeen[] =
+    "settings.device.welcome_experience_notification_seen";
 
 // Prefs which contain login screen settings for connected external devices.
 inline constexpr char kKeyboardLoginScreenExternalSettingsPref[] =

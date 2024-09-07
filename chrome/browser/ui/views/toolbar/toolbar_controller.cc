@@ -687,7 +687,7 @@ void ToolbarController::ActionItemChanged(actions::ActionItem* action_item) {
   views::MenuItemView* menu_item =
       root_menu_item_->GetMenuItemByID(command_id.value());
 
-  if (!menu_item->icon_view()) {
+  if (!menu_item || !menu_item->icon_view()) {
     return;
   }
 

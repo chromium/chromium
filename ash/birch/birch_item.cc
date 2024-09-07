@@ -20,7 +20,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "base/i18n/time_formatting.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -933,11 +936,13 @@ std::u16string BirchSelfShareItem::GetSubtitle(
 BirchLostMediaItem::BirchLostMediaItem(
     const GURL& source_url,
     const std::u16string& media_title,
+    const std::optional<ui::ImageModel>& backup_icon,
     const SecondaryIconType& secondary_icon_type,
     base::RepeatingClosure activation_callback)
     : BirchItem(media_title, GetSubtitle(secondary_icon_type)),
       source_url_(source_url),
       media_title_(media_title),
+      backup_icon_(backup_icon),
       secondary_icon_type_(secondary_icon_type),
       activation_callback_(std::move(activation_callback)) {}
 
@@ -976,7 +981,8 @@ void BirchLostMediaItem::PerformAction() {
 }
 
 void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImage(source_url_, /*is_page_url=*/true, GetChromeBackupIcon(),
+  GetFaviconImage(source_url_, /*is_page_url=*/true,
+                  backup_icon_.value_or(GetChromeBackupIcon()),
                   secondary_icon_type_, std::move(callback));
 }
 
@@ -992,7 +998,9 @@ std::u16string BirchLostMediaItem::GetSubtitle(SecondaryIconType type) {
 
 BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
                                const std::u16string& coral_text)
-    : BirchItem(coral_title, coral_text) {}
+    : BirchItem(coral_title, coral_text) {
+  set_addon_label(u"Show");
+}
 
 BirchCoralItem::BirchCoralItem(BirchCoralItem&&) = default;
 
@@ -1009,17 +1017,34 @@ BirchItemType BirchCoralItem::GetType() const {
 }
 
 std::string BirchCoralItem::ToString() const {
-  std::stringstream ss;
-  ss << "coral_item: <METADATA>";
-  return ss.str();
+  auto root = base::Value::Dict().Set(
+      "Coral item",
+      base::Value::Dict().Set("Title", title()).Set("Subtitle", subtitle()));
+  return base::WriteJson(root).value_or(std::string());
 }
 
 void BirchCoralItem::PerformAction() {
-  // TODO(yulunwu) add actions
+  // TODO(yulunwu) restore all applicable items in group to active desk.
+  // Open all related tabs in the same window with the default window bounds.
+  // Open related app(s) in its last used window state.
 }
 
 void BirchCoralItem::LoadIcon(LoadIconCallback callback) const {
-  // TODO(yulunwu) load icons
+  // TODO(yulunwu) load icons for first four birch restore items.
+}
+
+void BirchCoralItem::PerformAddonAction() {
+  auto* overview_session = OverviewController::Get()->overview_session();
+  CHECK(overview_session);
+  overview_session->ToggleTabAppSelectionMenu();
+}
+
+BirchAddonType BirchCoralItem::GetAddonType() const {
+  return BirchAddonType::kButton;
+}
+
+std::u16string BirchCoralItem::GetAddonAccessibleName() const {
+  return u"Show";
 }
 
 ////////////////////////////////////////////////////////////////////////////////

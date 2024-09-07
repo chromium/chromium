@@ -18,7 +18,7 @@ RadioButtonGroup::RadioButtonGroup(int group_width)
     : OptionButtonGroup(group_width),
       icon_direction_(RadioButton::IconDirection::kLeading),
       icon_type_(RadioButton::IconType::kCircle) {
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kRadioGroup);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kRadioGroup);
 }
 
 RadioButtonGroup::RadioButtonGroup(int group_width,
@@ -35,7 +35,7 @@ RadioButtonGroup::RadioButtonGroup(int group_width,
                         image_label_spacing),
       icon_direction_(icon_direction),
       icon_type_(icon_type) {
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kRadioGroup);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kRadioGroup);
 }
 
 RadioButtonGroup::~RadioButtonGroup() = default;

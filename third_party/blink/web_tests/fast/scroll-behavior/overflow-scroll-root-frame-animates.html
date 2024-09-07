@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<title>Tests that overflow scrolls on the root element are animated.</title>
+
 <style>
 #content {
   width: 750px;
@@ -6,50 +11,23 @@
   background-color: blue;
 }
 </style>
-<script src="../../resources/js-test.js"></script>
-<script src="../../resources/run-after-layout-and-paint.js"></script>
+
 <div id="content"></div>
-<div id="console"></div>
+
 <script>
-
-jsTestIsAsync = true;
-
-var prevScrollY;
-var scrollStart;
-
-function runTest() {
-    internals.settings.setScrollAnimatorEnabled(true);
-
-    window.addEventListener("scroll", onWindowScroll);
-
-    runAfterLayoutAndPaint(function() {
-        eventSender.keyDown('End');
-    });
+if (!window.internals) {
+  assert_unreached("This test must be run in the test harness");
 }
+internals.settings.setScrollAnimatorEnabled(true);
 
-function onWindowScroll() {
-    if (typeof prevScrollY === 'undefined') {
-        shouldNotBe("window.scrollY",
-                    "document.body.scrollHeight - window.innerHeight");
-        shouldBeGreaterThan("window.scrollY", "0");
-        prevScrollY = window.scrollY;
-
-        if (window.scrollY === document.body.scrollHeight - window.innerHeight) {
-            // We wont get another scroll event. The failure was reported above
-            // but return early to prevent a timeout.
-            finishJSTest();
-        }
-    } else {
-        shouldBeGreaterThan("window.scrollY", "prevScrollY");
-        finishJSTest();
-    }
-}
-
-description("Tests that overflow scrolls on the root frame are animated.");
-
-if (window.eventSender)
-    runTest();
-else
-    debug("FAIL: This test requires window.eventSender.");
-
+promise_test(async () => {
+  await waitForCompositorCommit();
+  await waitForScrollReset(document.scrollingElement);
+  await Promise.all([
+    animatedScrollPromise(document),
+    keyboardScroll("End", document),
+  ]);
+  assert_true(
+      window.scrollY >= document.body.scrollHeight - window.innerHeight);
+}, "Tests that overflow scrolls on the root element are animated.");
 </script>

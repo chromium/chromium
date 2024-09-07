@@ -113,10 +113,6 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
     return tab === FreeformTab.RESULTS;
   }
 
-  private onRecentFreeformImageDelete_() {
-    // TODO(b/347328001): add the function implementation.
-  }
-
   private onShuffleClicked_(): void {
     logSamplePromptShuffleClicked();
     this.shuffleSamplePrompts_();

@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_mutator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
 
@@ -47,7 +48,7 @@ class WebState;
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:(std::unique_ptr<image_fetcher::ImageDataFetcher>)
                                 imageFetcher
-                   webState:(web::WebState*)webState
+                   webState:(base::WeakPtr<web::WebState>)webState
     pushNotificationService:(PushNotificationService*)pushNotificationService
     NS_DESIGNATED_INITIALIZER;
 

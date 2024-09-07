@@ -1148,10 +1148,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // identifier for the local device.
   std::string local_device_originator_cache_guid_;
 
-  // Whether segments data should include foreign history; Note that setting
-  // this to true doesn't guarantee segments data is synced, as feature
-  // `kSyncSegmentsData` may be enabled or disabled, or
-  // `kMaxNumNewTabPageDisplays` is reached.
+  // Whether segments data should include foreign history.
   bool can_add_foreign_visits_to_segments_ = false;
 };
 

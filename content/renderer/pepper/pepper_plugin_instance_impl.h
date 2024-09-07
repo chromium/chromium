@@ -478,7 +478,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
     void ReplayReceivedData(WebAssociatedURLLoaderClient* document_loader);
 
     // blink::WebAssociatedURLLoaderClient implementation.
-    void DidReceiveData(const char* data, int data_length) override;
+    void DidReceiveData(base::span<const char> data) override;
     void DidFinishLoading() override;
     void DidFail(const blink::WebURLError& error) override;
 

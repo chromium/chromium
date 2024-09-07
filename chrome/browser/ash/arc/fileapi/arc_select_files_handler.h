@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -40,15 +40,6 @@ inline constexpr char kScriptClickCancel[] =
 // %s should be replaced by the target directory name wrapped by double-quotes.
 inline constexpr char kScriptClickDirectory[] =
     "(function() {"
-    "  var dirs = document.querySelectorAll('#directory-tree .entry-name');"
-    "  Array.from(dirs).filter(a => a.innerText === %s)[0].click();"
-    "})();";
-
-// Same script as above but execute when FilesNewDirectoryTree flag is on.
-// TODO(b/285977941): Remove the old script once the old tree implementation is
-// removed.
-inline constexpr char kScriptClickDirectoryForNewTree[] =
-    "(function() {"
     "  var dirs = document.querySelectorAll('#directory-tree xf-tree-item');"
     "  Array.from(dirs).filter(a => a.getAttribute('label') === %s)[0].click();"
     "})();";
@@ -67,17 +58,6 @@ inline constexpr char kScriptClickFile[] =
 // Script for querying UI elements (directories and files) shown on the
 // selector.
 inline constexpr char kScriptGetElements[] =
-    "(function() {"
-    "  var dirs = document.querySelectorAll('#directory-tree .entry-name');"
-    "  var files = document.querySelectorAll('#file-list .file');"
-    "  return {dirNames: Array.from(dirs, a => a.innerText),"
-    "          fileNames: Array.from(files, a => a.getAttribute('file-name'))};"
-    "})();";
-
-// Same script as above but execute when FilesNewDirectoryTree flag is on.
-// TODO(b/285977941): Remove the old script once the old tree implementation is
-// removed.
-inline constexpr char kScriptGetElementsForNewTree[] =
     "(function() {"
     "  var dirs = document.querySelectorAll('#directory-tree xf-tree-item');"
     "  var files = document.querySelectorAll('#file-list .file');"

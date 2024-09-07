@@ -7,16 +7,6 @@
 
 #import "base/feature_list.h"
 
-// Whether to enable the early transition from the Lens UI to web page.
-BASE_DECLARE_FEATURE(kLensWebPageEarlyTransitionEnabled);
-
-// The feature parameter that indicates the loading progress threshold.
-extern const char kLoadingProgressThreshold[];
-
-// Loading progress threshold to transition from the Lens UI to web page. Value
-// should be between 0.0 and 1.0.
-double LensWebPageEarlyTransitionLoadingProgressThreshold();
-
 // Whether to enable the filters ablation mode.
 BASE_DECLARE_FEATURE(kLensFiltersAblationModeEnabled);
 

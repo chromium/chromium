@@ -33,6 +33,10 @@ from .reference import RefByIdFactory
 _IDL_TYPE_PASS_KEY = object()
 
 
+def IsArrayLike(idl_object):
+    return isinstance(idl_object, _ArrayLikeType)
+
+
 class IdlTypeFactory(object):
     """
     Creates a group of instances of IdlType, over which you can iterate later.
@@ -1233,6 +1237,10 @@ class PromiseType(IdlType):
 class UnionType(IdlType):
     """https://webidl.spec.whatwg.org/#idl-union"""
 
+    class Usage(object):
+        INPUT = 1
+        OUTPUT = 2
+
     def __init__(self,
                  member_types,
                  is_optional=False,
@@ -1249,6 +1257,7 @@ class UnionType(IdlType):
             pass_key=pass_key)
         self._member_types = tuple(member_types)
         self._union_definition_object = None
+        self._usage = 0
 
     def __eq__(self, other):
         """
@@ -1343,6 +1352,14 @@ class UnionType(IdlType):
         is not passed down to implementation. This can happen when all
         enum variants are coerced to a single type."""
         return "PassAsSpan" in self.effective_annotations
+
+    @property
+    def usage(self):
+        return self._usage
+
+    def add_usage(self, usage):
+        assert isinstance(usage, int)
+        self._usage = self._usage | usage
 
 
 class NullableType(IdlType):

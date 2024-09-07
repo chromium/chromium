@@ -19,4 +19,27 @@ enum class DriveFileDownloadStatus {
   kFailed,
 };
 
+// Enum values for the drive sorting order.
+enum class DriveItemsSortingOrder {
+  kAscending = 0,
+  kDescending,
+};
+
+// Enum values for the drive sorting type.
+enum class DriveItemsSortingType {
+  kName = 0,
+  kModificationTime,
+  kOpeningTime,
+};
+
+// Enum values for the Drive file picker filtering mode.
+enum class DriveFilePickerFilter {
+  kOnlyShowArchives,
+  kOnlyShowAudio,
+  kOnlyShowVideos,
+  kOnlyShowImages,
+  kOnlyShowPDFs,
+  kShowAllFiles,
+};
+
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSTANTS_H_

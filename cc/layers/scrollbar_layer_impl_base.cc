@@ -44,6 +44,23 @@ void ScrollbarLayerImplBase::PushPropertiesTo(LayerImpl* layer) {
   scrollbar_layer->SetScrollElementId(scroll_element_id());
 }
 
+DamageReasonSet ScrollbarLayerImplBase::GetDamageReasons() const {
+  DamageReasonSet reasons;
+  if (opacity_changed_for_fade_out_animation_) {
+    reasons.Put(DamageReason::kScrollbarFadeOutAnimation);
+  }
+  if (property_changed_for_other_reasons_ || !update_rect().IsEmpty()) {
+    reasons.Put(DamageReason::kUntracked);
+  }
+  return reasons;
+}
+
+void ScrollbarLayerImplBase::ResetChangeTracking() {
+  LayerImpl::ResetChangeTracking();
+  opacity_changed_for_fade_out_animation_ = false;
+  property_changed_for_other_reasons_ = false;
+}
+
 bool ScrollbarLayerImplBase::IsScrollbarLayer() const {
   return true;
 }
@@ -61,28 +78,9 @@ bool ScrollbarLayerImplBase::SetCurrentPos(float current_pos) {
   if (current_pos_ == current_pos)
     return false;
   current_pos_ = current_pos;
+  property_changed_for_other_reasons_ = true;
   NoteLayerPropertyChanged();
   return true;
-}
-
-float ScrollbarLayerImplBase::current_pos() const {
-  DCHECK(!layer_tree_impl()->ScrollbarGeometriesNeedUpdate());
-  return current_pos_;
-}
-
-float ScrollbarLayerImplBase::clip_layer_length() const {
-  DCHECK(!layer_tree_impl()->ScrollbarGeometriesNeedUpdate());
-  return clip_layer_length_;
-}
-
-float ScrollbarLayerImplBase::scroll_layer_length() const {
-  DCHECK(!layer_tree_impl()->ScrollbarGeometriesNeedUpdate());
-  return scroll_layer_length_;
-}
-
-float ScrollbarLayerImplBase::vertical_adjust() const {
-  DCHECK(!layer_tree_impl()->ScrollbarGeometriesNeedUpdate());
-  return vertical_adjust_;
 }
 
 bool ScrollbarLayerImplBase::CanScrollOrientation() const {
@@ -105,12 +103,6 @@ bool ScrollbarLayerImplBase::CanScrollOrientation() const {
       return false;
   }
 
-  // Ensure the clip_layer_length and scroll_layer_length values are up-to-date.
-  // TODO(pdr): Instead of using the clip and scroll layer lengths which require
-  // an update, refactor to use the scroll tree (ScrollTree::MaxScrollOffset
-  // as in LayerTreeHostImpl::TryScroll).
-  layer_tree_impl()->UpdateScrollbarGeometries();
-
   // Ensure clip_layer_length is smaller than scroll_layer_length, not including
   // small deltas due to floating point error.
   return !MathUtil::IsFloatNearlyTheSame(clip_layer_length(),
@@ -122,6 +114,7 @@ void ScrollbarLayerImplBase::SetVerticalAdjust(float vertical_adjust) {
   if (vertical_adjust_ == vertical_adjust)
     return;
   vertical_adjust_ = vertical_adjust;
+  property_changed_for_other_reasons_ = true;
   NoteLayerPropertyChanged();
 }
 
@@ -129,21 +122,31 @@ void ScrollbarLayerImplBase::SetClipLayerLength(float clip_layer_length) {
   if (clip_layer_length_ == clip_layer_length)
     return;
   clip_layer_length_ = clip_layer_length;
+  property_changed_for_other_reasons_ = true;
   NoteLayerPropertyChanged();
+  if (GetScrollbarAnimator() == LayerTreeSettings::AURA_OVERLAY) {
+    layer_tree_impl()->RequestShowScrollbars(scroll_element_id_);
+  }
 }
 
 void ScrollbarLayerImplBase::SetScrollLayerLength(float scroll_layer_length) {
   if (scroll_layer_length_ == scroll_layer_length)
     return;
   scroll_layer_length_ = scroll_layer_length;
+  property_changed_for_other_reasons_ = true;
   NoteLayerPropertyChanged();
-  return;
+  if (GetScrollbarAnimator() == LayerTreeSettings::AURA_OVERLAY &&
+      // We don't show fluent scrollbars when the contents change size.
+      !IsFluentOverlayScrollbarEnabled()) {
+    layer_tree_impl()->RequestShowScrollbars(scroll_element_id_);
+  }
 }
 
 void ScrollbarLayerImplBase::SetThumbThicknessScaleFactor(float factor) {
   if (thumb_thickness_scale_factor_ == factor)
     return;
   thumb_thickness_scale_factor_ = factor;
+  property_changed_for_other_reasons_ = true;
   NoteLayerPropertyChanged();
 }
 
@@ -267,7 +270,8 @@ gfx::Rect ScrollbarLayerImplBase::ComputeHitTestableThumbQuadRect() const {
 }
 
 void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
-    float opacity) {
+    float opacity,
+    bool fade_out_animation) {
   DCHECK(is_overlay_scrollbar());
   if (!layer_tree_impl())
     return;
@@ -276,14 +280,17 @@ void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
 
   EffectNode* node =
       property_trees->effect_tree_mutable().Node(effect_tree_index());
-  if (node->opacity == opacity)
+  if (node->opacity == opacity) {
     return;
+  }
 
   node->opacity = opacity;
   node->effect_changed = true;
   property_trees->set_changed(true);
   property_trees->effect_tree_mutable().set_needs_update(true);
   layer_tree_impl()->set_needs_update_draw_properties();
+  opacity_changed_for_fade_out_animation_ |= fade_out_animation;
+  property_changed_for_other_reasons_ |= !fade_out_animation;
 }
 
 LayerTreeSettings::ScrollbarAnimator
@@ -301,6 +308,7 @@ void ScrollbarLayerImplBase::SetHasFindInPageTickmarks(
     return;
   }
   has_find_in_page_tickmarks_ = has_find_in_page_tickmarks;
+  property_changed_for_other_reasons_ = true;
   NoteLayerPropertyChanged();
 }
 

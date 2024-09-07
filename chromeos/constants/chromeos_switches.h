@@ -26,6 +26,9 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kContainerAppPreinstallDebugKey[];
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kMahiRestrictionsOverride[];
+
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 std::optional<base::Time> GetContainerAppPreinstallActivationTimeThreshold();
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)

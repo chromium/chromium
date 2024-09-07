@@ -228,6 +228,11 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
       feature_processor_state.SetError(
           stats::FeatureProcessingError::kCustomInputError);
     }
+  } else if (custom_input.fill_policy() ==
+             proto::CustomInput::FILL_FROM_SHOPPING_SERVICE) {
+    feature_processor_state.SetError(
+        stats::FeatureProcessingError::kCustomInputError);
+    NOTREACHED_IN_MIGRATION() << "InputDelegate is not found";
   }
 
   return tensor_result;
@@ -343,4 +348,5 @@ bool CustomInputProcessor::AddRandom(const proto::CustomInput& custom_input,
   out_tensor.emplace_back(base::RandFloat());
   return true;
 }
+
 }  // namespace segmentation_platform::processing

@@ -48,11 +48,11 @@ struct ReadAloudCurrentGranularity {
   ReadAloudCurrentGranularity(const ReadAloudCurrentGranularity& other);
   ~ReadAloudCurrentGranularity();
 
-  // Adds a segment to the current granularity.
-  void AddSegment(ReadAloudTextSegment segment) {
-    segments[segment.id] = segment;
-    node_ids.push_back(segment.id);
-  }
+  // Adds a node containing text to the current granularity.
+  void AddText(ui::AXNodeID id,
+               int text_start,
+               int text_end,
+               const std::u16string& text);
 
   // All of the ReadAloudTextSegments in the current granularity.
   std::map<ui::AXNodeID, ReadAloudTextSegment> segments;
@@ -79,6 +79,11 @@ struct ReadAloudCurrentGranularity {
   // is stored separately for easier retrieval for non-sentence granularity
   // highlighting.
   std::u16string text;
+
+  // For a given start..end range within `text`, returns a list of nodes and
+  // offsets corresponding to that range.
+  std::vector<ReadAloudTextSegment> GetSegmentsForRange(int start_index,
+                                                        int end_index);
 };
 }  // namespace a11y
 

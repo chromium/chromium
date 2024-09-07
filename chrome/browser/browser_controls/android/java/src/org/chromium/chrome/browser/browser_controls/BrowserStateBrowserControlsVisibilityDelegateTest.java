@@ -107,10 +107,15 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         // Advance the clock to exceed the minimum show time.
         advanceTime(2 * MINIMUM_SHOW_DURATION_MS);
         assertEquals(BrowserControlsState.SHOWN, constraints());
-        // At this point, the controls have been shown long enough that the transient request will
-        // be a no-op.
         mDelegate.showControlsTransient();
+
+        // Controls should stil be shown since showControlsTransient was just called.
         mDelegate.releasePersistentShowingToken(token);
+        assertEquals(BrowserControlsState.SHOWN, constraints());
+        advanceTime((long) (0.5 * MINIMUM_SHOW_DURATION_MS));
+        assertEquals(BrowserControlsState.SHOWN, constraints());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertEquals(BrowserControlsState.BOTH, constraints());
 
         verify(mCallback, times(2)).onResult(Mockito.anyInt());
@@ -125,8 +130,6 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         // Advance the clock but not beyond the min show duration.
         advanceTime((long) (0.5 * MINIMUM_SHOW_DURATION_MS));
         assertEquals(BrowserControlsState.SHOWN, constraints());
-        // At this point, the controls have not been shown long enough, so the transient request
-        // will delay the ability to hide.
         mDelegate.showControlsTransient();
         mDelegate.releasePersistentShowingToken(token);
         assertEquals(BrowserControlsState.SHOWN, constraints());

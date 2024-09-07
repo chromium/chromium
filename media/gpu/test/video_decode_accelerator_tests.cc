@@ -45,6 +45,10 @@
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+#include "media/gpu/v4l2/v4l2_utils.h"
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+
 namespace media {
 namespace test {
 
@@ -141,12 +145,14 @@ class VideoDecoderTest : public ::testing::Test {
 
     // Increase the time out if
     // (1) video frames are output, or
-    // (2) on Intel GLK, where mapping is very slow.
+    // (2) on Intel GLK, where mapping is very slow, or
+    // (3) with V4L2 VISL driver where execution is very slow on ARM64 VM.
     if (g_env->GetFrameOutputMode() != FrameOutputMode::kNone ||
-        IsSlowMappingDevice()) {
+        IsSlowMappingDevice() || g_env->IsV4L2VirtualDriver()) {
       video_player->SetEventWaitTimeout(
           std::max(kDefaultEventWaitTimeout, g_env->Video()->Duration() * 10));
     }
+
     return video_player;
   }
 

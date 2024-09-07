@@ -6,7 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {SettingsAntiAbusePageElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingProvider, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -110,7 +110,7 @@ suite('SettingsAntiAbusePage', function() {
     const enforcedPrefs = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(ContentSettingsTypes.ANTI_ABUSE, {
           setting: ContentSetting.BLOCK,
-          source: ContentSettingProvider.EXTENSION,
+          source: DefaultSettingSource.EXTENSION,
         })],
         []);
     browserProxy.reset();

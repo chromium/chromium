@@ -2,23 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/metrics/metrics_log.h"
+
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/flags_ui/flags_ui_switches.h"
-#include "components/metrics/metrics_log.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/variations/hashing.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 namespace metrics {
 

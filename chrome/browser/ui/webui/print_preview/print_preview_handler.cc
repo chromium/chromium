@@ -984,7 +984,7 @@ void PrintPreviewHandler::SendInitialSettings(
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   initial_settings.Set(kIsInKioskAutoPrintMode,
                        cmdline->HasSwitch(switches::kKioskModePrinting));
-  initial_settings.Set(kIsInAppKioskMode, chrome::IsRunningInForcedAppMode());
+  initial_settings.Set(kIsInAppKioskMode, IsRunningInForcedAppMode());
   const std::string rules_str =
       prefs->GetString(prefs::kPrintPreviewDefaultDestinationSelectionRules);
   if (rules_str.empty()) {

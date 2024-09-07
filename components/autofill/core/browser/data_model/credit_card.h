@@ -49,13 +49,19 @@ class CreditCard : public AutofillDataModel {
     // something on the server).
     kLocalCard,
 
-    // A card from Wallet with masked information. Such cards will only have
-    // the last 4 digits of the card number, and require an extra download to
-    // convert to a kFullServerCard.
+    // A card from Wallet with masked information. Such cards only have the last
+    // 4 digits of the card number, and require an extra download to fetch the
+    // full number.
     kMaskedServerCard,
 
-    // A card from the Wallet server with full information store locally. This
-    // card is not locally editable.
+    // A cached form of kMaskedServerCard, with a full number. Historically
+    // these could be persisted in Chrome, however that is no longer possible.
+    // They exist only in an in-memory cache used for card filling, to avoid
+    // another authentication when re-filling a card on the same page.
+    //
+    // TODO(crbug.com/40939195): Consolidate kMaskedServerCard and
+    // kFullServerCard to a single RecordType, and have the cached/full-card
+    // status for a given CreditCard be tracked independently.
     kFullServerCard,
 
     // A card generated from a server card by the card issuer. This card is not
@@ -177,9 +183,10 @@ class CreditCard : public AutofillDataModel {
   bool IsDeletable() const;
 
   // FormGroup:
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& app_locale,
-                        FieldTypeSet* matching_types) const override;
+  void GetMatchingTypesWithProfileSources(
+      const std::u16string& text,
+      const std::string& app_locale,
+      FieldTypeSet* matching_types) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
@@ -467,6 +474,11 @@ class CreditCard : public AutofillDataModel {
   void clear_cvc() { cvc_.clear(); }
   void set_cvc(const std::u16string& cvc) { cvc_ = cvc; }
 
+  base::Time cvc_modification_date() const { return cvc_modification_date_; }
+  void set_cvc_modification_date(base::Time date) {
+    cvc_modification_date_ = date;
+  }
+
  private:
   friend class CreditCardTestApi;
 
@@ -594,6 +606,10 @@ class CreditCard : public AutofillDataModel {
 
   // The card verification code of the card. May be empty.
   std::u16string cvc_;
+
+  // CVCs can be updated independently of the card and track their modification
+  // date independently. The timestamp `is_null()` for cards without CVC.
+  base::Time cvc_modification_date_;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

@@ -1153,6 +1153,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'steps': {
                     'blink_web_tests': {},
                     'blink_wpt_tests': {},
+                    'chrome_wpt_tests': {},
                 },
             },
             'MOCK Linux Precise': {
@@ -1162,6 +1163,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'steps': {
                     'blink_web_tests': {},
                     'blink_wpt_tests': {},
+                    'chrome_wpt_tests': {},
                 },
             },
         })
@@ -1173,6 +1175,12 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'blink_wpt_tests': {
                 Build('MOCK Linux Precise'):
                 WebTestResults([], build=Build('MOCK Linux Precise')),
+            },
+            'chrome_wpt_tests': {
+                Build('MOCK Linux Precise'):
+                WebTestResults([], build=Build('MOCK Linux Precise')),
+                Build('MOCK Linux Trusty'):
+                WebTestResults([], build=Build('MOCK Linux Trusty')),
             },
         }
         incomplete_results = {
@@ -1191,19 +1199,26 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         merged_results = self.command.fill_in_missing_results(
             incomplete_results, complete_results)
 
-        web_test_results = merged_results['blink_web_tests']
-        self.assertEqual(len(web_test_results), 2, web_test_results)
-        self.assertEqual(web_test_results[Build('MOCK Linux Trusty')].build,
+        results_for_suite = merged_results['blink_web_tests']
+        self.assertEqual(len(results_for_suite), 2, results_for_suite)
+        self.assertEqual(results_for_suite[Build('MOCK Linux Trusty')].build,
                          Build('MOCK Linux Trusty'))
-        self.assertEqual(web_test_results[Build('MOCK Linux Precise')].build,
+        self.assertEqual(results_for_suite[Build('MOCK Linux Precise')].build,
                          Build('MOCK Linux Trusty'))
 
-        wpt_test_results = merged_results['blink_wpt_tests']
-        self.assertEqual(len(wpt_test_results), 2, wpt_test_results)
-        self.assertEqual(wpt_test_results[Build('MOCK Linux Trusty')].build,
+        results_for_suite = merged_results['blink_wpt_tests']
+        self.assertEqual(len(results_for_suite), 2, results_for_suite)
+        self.assertEqual(results_for_suite[Build('MOCK Linux Trusty')].build,
                          Build('MOCK Linux Precise'))
-        self.assertEqual(wpt_test_results[Build('MOCK Linux Precise')].build,
+        self.assertEqual(results_for_suite[Build('MOCK Linux Precise')].build,
                          Build('MOCK Linux Precise'))
+
+        results_for_suite = merged_results['chrome_wpt_tests']
+        self.assertEqual(len(results_for_suite), 2, results_for_suite)
+        self.assertEqual(results_for_suite[Build('MOCK Linux Precise')].build,
+                         Build('MOCK Linux Precise'))
+        self.assertEqual(results_for_suite[Build('MOCK Linux Trusty')].build,
+                         Build('MOCK Linux Trusty'))
 
     def test_explicit_builder_list(self):
         builders = ['MOCK Try Linux', 'MOCK Try Mac']

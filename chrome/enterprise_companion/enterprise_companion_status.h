@@ -32,10 +32,12 @@ enum class ApplicationError {
   kCannotAcquireLock,
   // An IPC connection could not be established.
   kMojoConnectionFailed,
-  // Installation failed.
+  // Installation or uninstallation failed.
   kInstallationFailed,
   // The IPC caller is not allowed to perform the requested action.
   kIpcCallerNotAllowed,
+  // Failed to initialize COM on Windows.
+  kCOMInitializationFailed,
 };
 
 // Represents an error which was deserialized from an external source (e.g.
@@ -118,10 +120,18 @@ class EnterpriseCompanionStatus {
   }
 
   static EnterpriseCompanionStatus FromMojomStatus(mojom::StatusPtr status) {
-    return status->code == 0 || status->space == 0
+    return status->space == 0
                ? Success()
                : EnterpriseCompanionStatus(StatusVariant(PersistedError(
                      status->space, status->code, status->description)));
+  }
+
+  static EnterpriseCompanionStatus FromProtoStatus(
+      const proto::Status& status) {
+    return status.space() == 0
+               ? Success()
+               : EnterpriseCompanionStatus(StatusVariant(PersistedError(
+                     status.space(), status.code(), "<missing description>")));
   }
 
   bool operator==(const EnterpriseCompanionStatus& other) const {

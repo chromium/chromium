@@ -35,8 +35,10 @@ source_set("model") {
     "//components/version_info",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/signin/model",
+    "//ios/web/public/thread",
 
     # TODO(crbug.com/325586862): This should depend on
     # //ios/chrome/browser/sync/model but doing so creates a circular
@@ -77,7 +79,7 @@ source_set("tab_helper") {
     "//components/translate/core/common",
     "//ios/chrome/browser/complex_tasks/model",
     "//ios/chrome/browser/sessions/model",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/translate/model",
     "//ios/web",
@@ -96,7 +98,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/keyed_service/core",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/web",
     "//ios/web/public/test/fakes",

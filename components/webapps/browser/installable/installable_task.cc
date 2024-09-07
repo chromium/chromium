@@ -13,7 +13,6 @@ namespace webapps {
 
 InstallableTask::InstallableTask(
     content::WebContents* web_contents,
-    content::ServiceWorkerContext* service_worker_context,
     base::WeakPtr<InstallableManager> installable_manager,
     const InstallableParams& params,
     InstallableCallback callback,
@@ -23,8 +22,7 @@ InstallableTask::InstallableTask(
       params_(params),
       callback_(std::move(callback)),
       page_data_(page_data) {
-  fetcher_ = std::make_unique<InstallableDataFetcher>(
-      web_contents, service_worker_context, page_data);
+  fetcher_ = std::make_unique<InstallableDataFetcher>(web_contents, page_data);
   evaluator_ = std::make_unique<InstallableEvaluator>(
       web_contents, page_data, params_.installable_criteria);
 }
@@ -117,16 +115,6 @@ void InstallableTask::IncrementStateAndWorkOnNextTask() {
         return;
       }
       break;
-    case kCheckServiceWorker:
-      if (params_.has_worker) {
-        fetcher_->CheckServiceWorker(
-            base::BindOnce(&InstallableTask::OnFetchedData,
-                           base::Unretained(this)),
-            base::BindOnce(&InstallableTask::OnWaitingForServiceWorker,
-                           base::Unretained(this)),
-            params_.wait_for_worker);
-        return;
-      }
   }
   IncrementStateAndWorkOnNextTask();
 }
@@ -136,15 +124,6 @@ void InstallableTask::OnFetchedData(InstallableStatusCode error) {
     errors_.push_back(error);
   }
   IncrementStateAndWorkOnNextTask();
-}
-
-void InstallableTask::OnWaitingForServiceWorker() {
-  // Set the param |wait_for_worker| to false so we only wait once per task.
-  params_.wait_for_worker = false;
-  // Reset to previous step so that it can resume from Checking SW.
-  state_ = kCheckServiceWorker - 1;
-
-  manager_->OnTaskPaused();
 }
 
 void InstallableTask::CheckEligibility() {

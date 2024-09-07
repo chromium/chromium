@@ -11,6 +11,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -76,7 +77,7 @@ class AuthenticatorRequestDialogView
   // views::DialogDelegateView:
   bool Accept() override;
   bool Cancel() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;
   std::u16string GetWindowTitle() const override;
 

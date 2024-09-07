@@ -4,8 +4,9 @@
 
 import {join} from 'chrome://resources/mwc/lit/index.js';
 
-import {usePlatformHandler} from './lit/context.js';
-import {forceCast, upcast} from './utils/type_utils.js';
+import {PlatformHandler} from '../platforms/index.js';
+
+import {forceCast} from './utils/type_utils.js';
 
 type I18nArgType = number|string;
 
@@ -17,7 +18,9 @@ function withArgs<Args extends I18nArgType[]>(): Args {
   return forceCast<Args>(null);
 }
 
-const noArgStrings = [
+const noArgStringNames = [
+  'backToMainButtonTooltip',
+  'closeDialogButtonTooltip',
   'exportDialogAudioFormatWebmOption',
   'exportDialogAudioHeader',
   'exportDialogCancelButton',
@@ -31,6 +34,14 @@ const noArgStrings = [
   'genAiErrorTitleSuggestionTrustAndSafetyLabel',
   'genAiExperimentBadge',
   'genAiLearnMoreLink',
+  'genaiNegativeFeedbackButtonTooltip',
+  'genaiPositiveFeedbackButtonTooltip',
+  'mainRecordingBarLandmarkAriaLabel',
+  'mainRecordingsListLandmarkAriaLabel',
+  'mainSearchLandmarkAriaLabel',
+  'mainStartRecordButtonTooltip',
+  'mainStartRecordNudge',
+  'micSelectionMenuButtonTooltip',
   'micSelectionMenuChromebookAudioOption',
   'onboardingDialogSpeakerLabelAllowButton',
   'onboardingDialogSpeakerLabelDeferButton',
@@ -50,10 +61,24 @@ const noArgStrings = [
   'onboardingDialogWelcomeDescription',
   'onboardingDialogWelcomeHeader',
   'onboardingDialogWelcomeNextButton',
+  'playbackBackwardButtonTooltip',
+  'playbackControlsLandmarkAriaLabel',
+  'playbackForwardButtonTooltip',
+  'playbackHideTranscriptButtonTooltip',
+  'playbackMenuButtonTooltip',
   'playbackMenuDeleteOption',
   'playbackMenuExportOption',
   'playbackMenuShowDetailOption',
+  'playbackMuteButtonTooltip',
+  'playbackPauseButtonTooltip',
+  'playbackPlayButtonTooltip',
+  'playbackSeekSliderAriaLabel',
+  'playbackShowTranscriptButtonTooltip',
+  'playbackSpeedButtonTooltip',
   'playbackSpeedNormalOption',
+  'playbackTranscriptLandmarkAriaLabel',
+  'playbackVolumeAriaLabel',
+  'recordDeleteButtonTooltip',
   'recordDeleteDialogCancelButton',
   'recordDeleteDialogCurrentHeader',
   'recordDeleteDialogDeleteButton',
@@ -69,18 +94,26 @@ const noArgStrings = [
   'recordInfoDialogHeader',
   'recordInfoDialogSizeLabel',
   'recordInfoDialogTitleLabel',
+  'recordMenuButtonTooltip',
   'recordMenuDeleteOption',
   'recordMenuToggleTranscriptionOption',
+  'recordMuteButtonTooltip',
+  'recordPauseButtonTooltip',
   'recordStopButton',
+  'recordTranscriptButtonTooltip',
   'recordTranscriptionEntryPointDescription',
   'recordTranscriptionEntryPointDisableButton',
   'recordTranscriptionEntryPointEnableButton',
   'recordTranscriptionEntryPointHeader',
   'recordTranscriptionOffDescription',
   'recordTranscriptionOffHeader',
+  'recordingItemOptionsButtonTooltip',
+  'recordingItemPlayButtonTooltip',
   'recordingListHeader',
   'recordingListNoMatchText',
   'recordingListSearchBoxPlaceholder',
+  'recordingListSearchButtonTooltip',
+  'recordingListSortButtonTooltip',
   'recordingListSortByDateOption',
   'recordingListSortByNameOption',
   'recordingListThisMonthHeader',
@@ -109,15 +142,17 @@ const noArgStrings = [
   'summaryDownloadModelHeader',
   'summaryHeader',
   'titleRenameTooltip',
+  'titleSuggestionButtonTooltip',
   'titleSuggestionHeader',
   'transcriptionAutoscrollButton',
   'transcriptionNoSpeechText',
+  'transcriptionSpeakerLabelPendingLabel',
   'transcriptionWaitingSpeechText',
 ] as const;
 
-type NoArgStrings = (typeof noArgStrings)[number];
+export type NoArgStringName = (typeof noArgStringNames)[number];
 
-const withArgsStrings = {
+const withArgsStringNames = {
   // This contains all the other strings that needs argument.
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
@@ -128,10 +163,20 @@ const withArgsStrings = {
   summaryDownloadingProgressDescription: withArgs<[number]>(),
   transcriptionSpeakerLabelLabel: withArgs<[string]>(),
 } satisfies Record<string, I18nArgType[]>;
-type WithArgsStrings = typeof withArgsStrings;
+type WithArgsStringNames = typeof withArgsStringNames;
 
-type I18nType = Record<NoArgStrings, string>&{
-  [k in keyof WithArgsStrings]: (...args: WithArgsStrings[k]) => string;
+function getI18nString(name: string): string {
+  return PlatformHandler.getStringF(name);
+}
+
+function createI18nStringFormatter(name: string) {
+  return (...args: I18nArgType[]) => {
+    return PlatformHandler.getStringF(name, ...args);
+  };
+}
+
+type I18nObjectType = Record<NoArgStringName, string>&{
+  [k in keyof WithArgsStringNames]: (...args: WithArgsStringNames[k]) => string;
 };
 
 /**
@@ -141,32 +186,15 @@ type I18nType = Record<NoArgStrings, string>&{
  *   i18n.foo  // For strings without arguments.
  *   i18n.bar('arg1', 2)  // For strings with arguments.
  */
-// TODO(pihsun): Have some initialize code to initialize i18n to a concrete
-// object instead of having it as a proxy. Since it use usePlatformHandler()
-// which are not available at module import time, we'll need to initialize it
-// separately similar to other context states.
-//
-// forceCast: The proxy wrapper changed the type of the target.
-export const i18n = forceCast<I18nType>(
-  new Proxy(
-    {},
-    {
-      get(_target, name) {
-        if (typeof name !== 'string') {
-          return;
-        }
-        if (upcast<readonly string[]>(noArgStrings).includes(name)) {
-          return usePlatformHandler().getStringF(name);
-        }
-        if (Object.hasOwn(withArgsStrings, name)) {
-          return (...args: I18nArgType[]) => {
-            return usePlatformHandler().getStringF(name, ...args);
-          };
-        }
-        return undefined;
-      },
-    },
-  ),
+// forceCast: TypeScript can't deduce type for Object.fromEntries correctly.
+export const i18n = forceCast<I18nObjectType>(
+  Object.fromEntries([
+    ...noArgStringNames.map((name) => [name, getI18nString(name)] as const),
+    ...Object.keys(withArgsStringNames)
+      .map(
+        (name) => [name, createI18nStringFormatter(name)] as const,
+      ),
+  ]),
 );
 
 /**

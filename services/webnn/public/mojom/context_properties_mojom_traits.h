@@ -23,6 +23,19 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
         return webnn::mojom::InputOperandLayout::kChannelsLast;
     };
   }
+
+  static webnn::mojom::Resample2DAxes resample_2d_axes(
+      const webnn::ContextProperties& context_properties) {
+    switch (context_properties.resample_2d_axes) {
+      case webnn::Resample2DAxes::kChannelsFirst:
+        return webnn::mojom::Resample2DAxes::kChannelsFirst;
+      case webnn::Resample2DAxes::kChannelsLast:
+        return webnn::mojom::Resample2DAxes::kChannelsLast;
+      case webnn::Resample2DAxes::kAny:
+        return webnn::mojom::Resample2DAxes::kAny;
+    };
+  }
+
   static webnn::DataTypeLimits data_type_limits(
       const webnn::ContextProperties& context_properties) {
     return context_properties.data_type_limits;
@@ -36,6 +49,17 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
         break;
       case webnn::mojom::InputOperandLayout::kChannelsLast:
         out->input_operand_layout = webnn::InputOperandLayout::kNhwc;
+        break;
+    }
+    switch (data.resample_2d_axes()) {
+      case webnn::mojom::Resample2DAxes::kAny:
+        out->resample_2d_axes = webnn::Resample2DAxes::kAny;
+        break;
+      case webnn::mojom::Resample2DAxes::kChannelsFirst:
+        out->resample_2d_axes = webnn::Resample2DAxes::kChannelsFirst;
+        break;
+      case webnn::mojom::Resample2DAxes::kChannelsLast:
+        out->resample_2d_axes = webnn::Resample2DAxes::kChannelsLast;
         break;
     }
     return data.ReadDataTypeLimits(&out->data_type_limits);

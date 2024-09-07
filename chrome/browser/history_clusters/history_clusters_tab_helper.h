@@ -66,6 +66,7 @@ class HistoryClustersTabHelper
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UkmPageLoadMetricsObserverTest,

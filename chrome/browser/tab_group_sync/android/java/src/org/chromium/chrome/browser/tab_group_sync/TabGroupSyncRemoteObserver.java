@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -126,6 +128,10 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
     @Override
     public void onTabGroupRemoved(String syncId, @TriggerSource int source) {}
+
+    @Override
+    public void onTabGroupLocalIdChanged(
+            String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {}
 
     private TabModel getTabModel() {
         return mTabGroupModelFilter.getTabModel();

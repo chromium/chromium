@@ -138,6 +138,7 @@ NSPoint AXElementWrapper::Position() const {
         }
       }
     }
+    return NSMakePoint(0, 0);
   }
 
   NOTREACHED_IN_MIGRATION()

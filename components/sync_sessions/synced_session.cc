@@ -152,11 +152,9 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
   tab->extension_app_id = sync_data.extension_app_id();
   tab->user_agent_override = sessions::SerializedUserAgentOverride();
   tab->timestamp = timestamp;
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    tab->last_active_time =
-        base::Time::UnixEpoch() +
-        base::Milliseconds(sync_data.last_active_time_unix_epoch_millis());
-  }
+  tab->last_active_time =
+      base::Time::UnixEpoch() +
+      base::Milliseconds(sync_data.last_active_time_unix_epoch_millis());
   tab->navigations.clear();
   tab->navigations.reserve(sync_data.navigation_size());
   for (int i = 0; i < sync_data.navigation_size(); ++i) {
@@ -176,10 +174,8 @@ sync_pb::SessionTab SessionTabToSyncData(
   sync_data.set_current_navigation_index(tab.current_navigation_index);
   sync_data.set_pinned(tab.pinned);
   sync_data.set_extension_app_id(tab.extension_app_id);
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    sync_data.set_last_active_time_unix_epoch_millis(
-        (tab.last_active_time - base::Time::UnixEpoch()).InMilliseconds());
-  }
+  sync_data.set_last_active_time_unix_epoch_millis(
+      (tab.last_active_time - base::Time::UnixEpoch()).InMilliseconds());
   for (const SerializedNavigationEntry& navigation : tab.navigations) {
     SessionNavigationToSyncData(navigation).Swap(sync_data.add_navigation());
   }
@@ -227,6 +223,14 @@ const std::string& SyncedSession::GetSessionName() const {
   return session_name_;
 }
 
+void SyncedSession::SetStartTime(base::Time start_time) {
+  start_time_ = start_time;
+}
+
+std::optional<base::Time> SyncedSession::GetStartTime() const {
+  return start_time_;
+}
+
 void SyncedSession::SetModifiedTime(const base::Time& modified_time) {
   modified_time_ = modified_time;
 }
@@ -251,6 +255,10 @@ sync_pb::SessionHeader SyncedSession::ToSessionHeaderProto() const {
   for (const auto& [window_id, window] : windows) {
     sync_pb::SessionWindow* w = header.add_window();
     w->CopyFrom(window->ToSessionWindowProto());
+  }
+  if (start_time_) {
+    header.set_session_start_time_unix_epoch_millis(
+        start_time_->InMillisecondsSinceUnixEpoch());
   }
   header.set_client_name(session_name_);
   header.set_device_type(device_type);

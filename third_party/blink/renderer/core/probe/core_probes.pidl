@@ -121,6 +121,7 @@ interface CoreProbes {
   void LoadEventFired([Keep] LocalFrame*);
   void FrameAttachedToParent([Keep] LocalFrame*, const std::optional<AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent([Keep] LocalFrame*, FrameDetachType);
+  void FrameSubtreeWillBeDetached(LocalFrame*, Frame*);
   void DidStartProvisionalLoad([Keep] LocalFrame*);
   void DidFailProvisionalLoad([Keep] LocalFrame*);
   void WillCommitLoad([Keep] LocalFrame*, DocumentLoader*);
@@ -216,4 +217,5 @@ interface CoreProbes {
   void DidRemoveSpeculationRuleSet(Document&, const SpeculationRuleSet& rule_set);
   void SpeculationCandidatesUpdated([Keep] Document&, const HeapVector<Member<SpeculationCandidate>>& candidates);
   void DidInitializeFrameWidget(LocalFrame* document);
+  void UpdateScrollableFlag([Keep] Node* node);
 }

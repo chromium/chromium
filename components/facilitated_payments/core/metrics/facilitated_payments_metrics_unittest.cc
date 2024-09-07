@@ -6,12 +6,53 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogPaymentCodeValidationResultAndLatency_ValidatorFailed) {
+  base::HistogramTester histogram_tester;
+
+  LogPaymentCodeValidationResultAndLatency(
+      /*result=*/base::unexpected("Data Decoder terminated unexpectedly"),
+      base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.ValidatorFailed.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogPaymentCodeValidationResultAndLatency_InvalidCode) {
+  base::HistogramTester histogram_tester;
+
+  LogPaymentCodeValidationResultAndLatency(/*result=*/false,
+                                           base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.InvalidCode.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogPaymentCodeValidationResultAndLatency_ValidCode) {
+  base::HistogramTester histogram_tester;
+
+  LogPaymentCodeValidationResultAndLatency(/*result=*/true,
+                                           base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.ValidCode.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
 
 TEST(FacilitatedPaymentsMetricsTest, LogIsAvailableResult) {
   base::HistogramTester histogram_tester;
@@ -24,6 +65,18 @@ TEST(FacilitatedPaymentsMetricsTest, LogIsAvailableResult) {
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.IsApiAvailable.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogLoadRiskDataResult) {
+  base::HistogramTester histogram_tester;
+
+  LogLoadRiskDataResultAndLatency(/*was_successful=*/true,
+                                  base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.LoadRiskData.Success.Latency",
       /*sample=*/10,
       /*expected_bucket_count=*/1);
 }

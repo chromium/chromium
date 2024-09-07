@@ -378,7 +378,8 @@ text-size-adjust: auto
 text-spacing-trim: normal
 text-transform: none
 text-underline-position: auto
-text-wrap: wrap
+text-wrap-mode: wrap
+text-wrap-style: auto
 timeline-scope: none
 top: auto
 touch-action: auto

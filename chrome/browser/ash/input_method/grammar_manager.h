@@ -14,8 +14,8 @@
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/text_utils.h"
-#include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/events/event.h"
 

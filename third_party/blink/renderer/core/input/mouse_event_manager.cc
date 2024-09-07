@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
@@ -126,7 +127,9 @@ enum class DragInitiator { kMouse, kTouch };
 
 MouseEventManager::MouseEventManager(LocalFrame& frame,
                                      ScrollManager& scroll_manager)
-    : frame_(frame), scroll_manager_(scroll_manager) {
+    : frame_(frame),
+      scroll_manager_(scroll_manager),
+      is_mouse_position_unknown_(true) {
   Clear();
 }
 
@@ -137,10 +140,6 @@ void MouseEventManager::Clear() {
   mouse_down_may_start_autoscroll_ = false;
   mouse_down_may_start_drag_ = false;
   captures_dragging_ = false;
-  is_mouse_position_unknown_ = true;
-  last_known_mouse_position_in_root_frame_ = PhysicalOffset();
-  last_known_mouse_position_ = gfx::PointF();
-  last_known_mouse_screen_position_ = gfx::PointF();
   mouse_pressed_ = false;
   click_count_ = 0;
   click_element_ = nullptr;
@@ -150,6 +149,11 @@ void MouseEventManager::Clear() {
   svg_pan_ = false;
   drag_start_pos_in_root_frame_ = PhysicalOffset();
   hover_state_dirty_ = false;
+
+  // We deliberately avoid clearing mouse position fields (last_known_mouse_*
+  // and is_mouse_position_unknown_) so that we can apply hover effects in the
+  // new document after a navigation.  See crbug.com/354649089.
+
   ResetDragSource();
   ClearDragDataTransfer();
 }
@@ -180,15 +184,6 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::Dispatch(
     EventTarget* related_target,
     const AtomicString& type,
     bool check_for_listener) {
-  if (target && type == event_type_names::kMouseover) {
-    HTMLImageElement* image_element =
-        DynamicTo<HTMLImageElement>(target->ToNode());
-    if (image_element && image_element->IsLCPElement()) {
-      PaintTiming& paint_timing =
-          PaintTiming::From(image_element->GetDocument());
-      paint_timing.SetLCPMouseoverDispatched();
-    }
-  }
   mouse_event_manager_->DispatchMouseEvent(target, type, *web_mouse_event_,
                                            nullptr, related_target,
                                            check_for_listener);
@@ -288,6 +283,14 @@ WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
     const AtomicString& event_type,
     const WebMouseEvent& web_mouse_event) {
   SetElementUnderMouse(target_element, web_mouse_event);
+
+  // Gesture tap should update last known mouse position just like mousemove.
+  // Otherwise, HandleGestureTap and RecomputeMouseHoverState will fight over
+  // SetElementUnderMouse with different ideas about where the mouse is. This
+  // creates flakiness in tests that send taps and listen to mouseout, like
+  // fast/events/touch/gesture/focus-selectionchange-on-tap.html.
+  SetLastKnownMousePosition(web_mouse_event);
+
   return DispatchMouseEvent(
       element_under_mouse_, event_type, web_mouse_event, nullptr, nullptr,
       false, web_mouse_event.id,
@@ -497,9 +500,9 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // If clicking on a frame scrollbar, do not mess up with content focus.
   if (auto* layout_view = frame_->ContentLayoutObject()) {
     if (hit_test_result.GetScrollbar() && frame_->ContentLayoutObject()) {
-      if (hit_test_result.GetScrollbar()->GetScrollableArea() ==
-          layout_view->GetScrollableArea())
+      if (hit_test_result.GetScrollbar()->GetLayoutBox() == layout_view) {
         return WebInputEventResult::kNotHandled;
+      }
     }
   }
 
@@ -520,13 +523,15 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   }
 
   for (; element; element = element->ParentOrShadowHostElement()) {
-    if (element->IsFocusable() && element->IsFocusedElementInDocument())
+    if (element->IsMouseFocusable() && element->IsFocusedElementInDocument()) {
       return WebInputEventResult::kNotHandled;
-    if (element->IsFocusable() || element->IsShadowHostWithDelegatesFocus()) {
+    }
+    if (element->IsMouseFocusable() ||
+        element->IsShadowHostWithDelegatesFocus()) {
       break;
     }
   }
-  DCHECK(!element || element->IsFocusable() ||
+  DCHECK(!element || element->IsMouseFocusable() ||
          element->IsShadowHostWithDelegatesFocus());
 
   // To fix <rdar://problem/4895428> Can't drag selected ToDo, we don't focus
@@ -538,12 +543,21 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // crbug.com/657237 for details.
   if (element &&
       frame_->Selection().ComputeVisibleSelectionInDOMTree().IsRange()) {
-    const EphemeralRange& range = frame_->Selection()
-                                      .ComputeVisibleSelectionInDOMTree()
-                                      .ToNormalizedEphemeralRange();
-    if (IsNodeFullyContained(range, *element) &&
-        element->IsDescendantOf(frame_->GetDocument()->FocusedElement()))
-      return WebInputEventResult::kNotHandled;
+    // Don't check for scroll controls pseudo elements, since they can't
+    // be in selection, until we support selecting their content.
+    // Just clear the selection, since it won't be cleared otherwise.
+    if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled() &&
+        element->IsScrollControlPseudoElement()) {
+      frame_->Selection().Clear();
+    } else {
+      const EphemeralRange& range = frame_->Selection()
+                                        .ComputeVisibleSelectionInDOMTree()
+                                        .ToNormalizedEphemeralRange();
+      if (IsNodeFullyContained(range, *element) &&
+          element->IsDescendantOf(frame_->GetDocument()->FocusedElement())) {
+        return WebInputEventResult::kNotHandled;
+      }
+    }
   }
 
   // Only change the focus when clicking scrollbars if it can transfered to a
@@ -558,7 +572,7 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // If focus shift is blocked, we eat the event. Note we should never
   // clear swallowEvent if the page already set it (e.g., by canceling
   // default behavior).
-  if (element && !element->IsFocusable() &&
+  if (element && !element->IsMouseFocusable() &&
       SlideFocusOnShadowHostIfNecessary(*element)) {
     return WebInputEventResult::kHandledSystem;
   }

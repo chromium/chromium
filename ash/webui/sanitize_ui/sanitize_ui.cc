@@ -12,15 +12,52 @@
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_sanitize_app_resources.h"
 #include "ash/webui/grit/ash_sanitize_app_resources_map.h"
+#include "ash/webui/sanitize_ui/sanitize_ui_delegate.h"
 #include "ash/webui/sanitize_ui/url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/resources/grit/webui_resources.h"
 
+namespace {
+
+// This function chooses which view should be shown based on the url. The done
+// page is only shown if the url query is set to "done".
+bool ShowDone(const GURL url) {
+  return url.has_query() && url.query() == "done";
+}
+
+}  // namespace
 namespace ash {
 
-SanitizeDialogUI::SanitizeDialogUI(content::WebUI* web_ui)
+class SanitizeSettingsResetter : public sanitize_ui::mojom::SettingsResetter {
+ public:
+  SanitizeSettingsResetter(std::unique_ptr<SanitizeUIDelegate> delegate) {
+    sanitize_ui_delegate_ = std::move(delegate);
+  }
+
+  void PerformSanitizeSettings() override {
+    if (sanitize_ui_delegate_) {
+      sanitize_ui_delegate_->PerformSanitizeSettings();
+    }
+  }
+
+  void BindInterface(
+      mojo::PendingReceiver<sanitize_ui::mojom::SettingsResetter> receiver) {
+    receiver_.reset();
+    receiver_.Bind(std::move(receiver));
+  }
+
+ private:
+  std::unique_ptr<SanitizeUIDelegate> sanitize_ui_delegate_;
+  mojo::Receiver<sanitize_ui::mojom::SettingsResetter> receiver_{this};
+};
+
+SanitizeDialogUI::SanitizeDialogUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<SanitizeUIDelegate> sanitize_ui_delegate)
     : ui::MojoWebDialogUI(web_ui) {
+  sanitize_settings_resetter_ = std::make_unique<SanitizeSettingsResetter>(
+      std::move(sanitize_ui_delegate));
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
@@ -84,6 +121,8 @@ SanitizeDialogUI::SanitizeDialogUI(content::WebUI* web_ui)
       {"sanitizeFeedback", IDS_SANITIZE_FEEDBACK},
       {"sanitizeCancel", IDS_SANITIZE_CANCEL}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddBoolean("showDone",
+                          ShowDone(web_ui->GetWebContents()->GetURL()));
 }
 
 SanitizeDialogUI::~SanitizeDialogUI() {}
@@ -92,6 +131,11 @@ void SanitizeDialogUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void SanitizeDialogUI::BindInterface(
+    mojo::PendingReceiver<sanitize_ui::mojom::SettingsResetter> receiver) {
+  sanitize_settings_resetter_->BindInterface(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SanitizeDialogUI)

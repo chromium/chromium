@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -51,7 +52,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -59,7 +60,7 @@
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -873,6 +874,12 @@ NSString* SerializedValue(const base::Value* value) {
   chrome_test_util::AddTypedURLToClient(GURL(base::SysNSStringToUTF8(URL)));
 }
 
++ (void)addHistoryServiceTypedURL:(NSString*)URL
+                   visitTimestamp:(base::Time)visitTimestamp {
+  chrome_test_util::AddTypedURLToClient(GURL(base::SysNSStringToUTF8(URL)),
+                                        visitTimestamp);
+}
+
 + (void)deleteHistoryServiceTypedURL:(NSString*)URL {
   chrome_test_util::DeleteTypedUrlFromClient(
       GURL(base::SysNSStringToUTF8(URL)));
@@ -1379,7 +1386,7 @@ NSString* SerializedValue(const base::Value* value) {
 #pragma mark - Unified Consent utilities
 
 + (void)setURLKeyedAnonymizedDataCollectionEnabled:(BOOL)enabled {
-  UnifiedConsentServiceFactory::GetForBrowserState(
+  UnifiedConsentServiceFactory::GetForProfile(
       chrome_test_util::GetOriginalBrowserState())
       ->SetUrlKeyedAnonymizedDataCollectionEnabled(enabled);
 }
@@ -1557,6 +1564,19 @@ int watchRunNumber = 0;
 + (bool)hasFirstRunSentinel {
   base::ScopedAllowBlockingForTesting allow_blocking;
   return HasFirstRunSentinel();
+}
+
++ (void)requestTipsNotification:(TipsNotificationType)type {
+  UNUserNotificationCenter* center =
+      UNUserNotificationCenter.currentNotificationCenter;
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kTipsNotificationId
+                    content:ContentForTipsNotificationType(
+                                TipsNotificationType::kLens)
+                    trigger:nil];
+
+  [center addNotificationRequest:request withCompletionHandler:nil];
 }
 
 @end

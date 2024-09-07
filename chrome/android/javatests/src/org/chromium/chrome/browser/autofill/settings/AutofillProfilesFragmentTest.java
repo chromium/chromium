@@ -36,7 +36,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -50,7 +49,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.autofill.Source;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -84,7 +83,7 @@ public class AutofillProfilesFragmentTest {
                     .build();
     private static final AutofillProfile sAccountProfile =
             AutofillProfile.builder()
-                    .setSource(Source.ACCOUNT)
+                    .setRecordType(RecordType.ACCOUNT)
                     .setFullName("Artik Doe")
                     .setCompanyName("Google")
                     .setStreetAddress("999 Fourth St")
@@ -255,7 +254,8 @@ public class AutofillProfilesFragmentTest {
     public void testDeleteLocalProfile() throws Exception {
         Context context = sSettingsActivityTestRule.getFragment().getContext();
         setUpMockSyncService(false, new HashSet());
-        testDeleteProfile(context.getString(R.string.autofill_delete_local_address_source_notice));
+        testDeleteProfile(
+                context.getString(R.string.autofill_delete_local_address_record_type_notice));
     }
 
     @Test
@@ -264,7 +264,8 @@ public class AutofillProfilesFragmentTest {
     public void testDeleteSyncableProfile() throws Exception {
         Context context = sSettingsActivityTestRule.getFragment().getContext();
         setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
-        testDeleteProfile(context.getString(R.string.autofill_delete_sync_address_source_notice));
+        testDeleteProfile(
+                context.getString(R.string.autofill_delete_sync_address_record_type_notice));
     }
 
     public void testDeleteProfile(String expectedConfirmationMessage) throws Exception {
@@ -339,7 +340,7 @@ public class AutofillProfilesFragmentTest {
         assertNotNull(confirmationDialog);
         TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
         String expectedMessage =
-                context.getString(R.string.autofill_delete_account_address_source_notice)
+                context.getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", email);
         assertEquals(expectedMessage, messageView.getText());
 
@@ -404,7 +405,7 @@ public class AutofillProfilesFragmentTest {
 
         mHelper.setProfile(
                 AutofillProfile.builder()
-                        .setSource(Source.ACCOUNT)
+                        .setRecordType(RecordType.ACCOUNT)
                         .setFullName("Account Updated #0")
                         .setCompanyName("Google")
                         .setStreetAddress("111 Fourth St")
@@ -433,7 +434,9 @@ public class AutofillProfilesFragmentTest {
         TextView footerMessage = editorDialog.findViewById(R.id.footer_message);
         assertEquals(View.VISIBLE, footerMessage.getVisibility());
         String expectedMessage =
-                context.getString(R.string.autofill_address_already_saved_in_account_source_notice)
+                context.getString(
+                                R.string
+                                        .autofill_address_already_saved_in_account_record_type_notice)
                         .replace("$1", email);
         assertEquals(expectedMessage, footerMessage.getText());
 
@@ -477,7 +480,7 @@ public class AutofillProfilesFragmentTest {
     public void testEditInvalidAccountProfile() throws Exception {
         mHelper.setProfile(
                 AutofillProfile.builder()
-                        .setSource(Source.ACCOUNT)
+                        .setRecordType(RecordType.ACCOUNT)
                         .setFullName("Account Updated #0")
                         .setCompanyName("Google")
                         .setStreetAddress("")
@@ -564,7 +567,6 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "crbug.com/353948361")
     public void testKeyboardShownOnDpadCenter() throws TimeoutException {
         AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
         AutofillProfileEditorPreference addProfile =

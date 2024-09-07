@@ -14,6 +14,8 @@ const char kNotificationsOptInPromptPriceTrackingEnabled[] =
     "IOS.Notifications.OptInPrompt.PriceTrackingEnabled";
 const char kNotificationsOptInPromptSafetyCheckEnabled[] =
     "IOS.Notifications.OptInPrompt.SafetyCheckEnabled";
+const char kNotificationsOptInPromptSendTabEnabled[] =
+    "IOS.Notifications.OptInPrompt.SendTabEnabled";
 const char kNotificationsOptInAlertPermissionDenied[] =
     "IOS.Notifications.OptInAlert.PermissionDenied";
 const char kNotificationsOptInAlertPermissionGranted[] =

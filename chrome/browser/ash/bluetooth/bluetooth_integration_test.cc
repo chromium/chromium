@@ -80,7 +80,6 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       WaitForState(kBluetoothPowerState, false),
 
       // Allow UI state to settle.
-      FlushEvents(),
 
       Log("Pressing bluetooth toggle button again"),
       PressButton(kBluetoothFeatureTileToggleElementId),
@@ -103,7 +102,6 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       OpenQuickSettings(),
 
       // Allow UI state to settle.
-      FlushEvents(),
 
       NavigateQuickSettingsToBluetoothPage(),
 
@@ -123,7 +121,6 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       WaitForState(kBluetoothPowerState, false),
 
       // Allow UI state to settle.
-      FlushEvents(),
 
       Log("Pressing bluetooth toggle button again"),
       PressButton(kBluetoothDetailedViewToggleElementId),

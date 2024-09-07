@@ -39,21 +39,15 @@ COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const char kForceSearchEngineChoiceScreen[];
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kSearchEngineChoiceGuestExperience);
+
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoiceTrigger);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoiceAttribution);
 #endif
-
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kSearchEnginesSortingCleanup);
-
-// Forces the search engine choice country to Belgium. Used for testing
-// purposes.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-extern const base::FeatureParam<bool>
-    kSearchEngineChoiceTriggerWithForceEeaCountry;
 
 // The string that's passed to
 // `switches::kSearchEngineChoiceTriggerRepromptParams` so that we don't
@@ -72,11 +66,6 @@ inline constexpr char kSearchEngineChoiceNoRepromptString[] = "NO_REPROMPT";
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const base::FeatureParam<std::string>
     kSearchEngineChoiceTriggerRepromptParams;
-
-// Whether the search engine choice screen should be suppressed when the
-// default search engine is not Google.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-extern const base::FeatureParam<bool> kSearchEngineChoiceTriggerSkipFor3p;
 
 #if BUILDFLAG(IS_IOS)
 // Maximum number of time the search engine choice screen can be skipped

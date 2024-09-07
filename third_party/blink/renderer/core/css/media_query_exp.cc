@@ -41,8 +41,6 @@
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -408,12 +406,10 @@ MediaQueryExp::MediaQueryExp(const String& media_feature,
     : media_feature_(media_feature), bounds_(bounds) {}
 
 MediaQueryExp MediaQueryExp::Create(const String& media_feature,
-                                    CSSParserTokenRange& range,
-                                    const CSSParserTokenOffsets& offsets,
+                                    CSSParserTokenStream& stream,
                                     const CSSParserContext& context) {
   String feature = AttemptStaticStringCreation(media_feature);
-  if (auto value =
-          MediaQueryExpValue::Consume(feature, range, offsets, context)) {
+  if (auto value = MediaQueryExpValue::Consume(feature, stream, context)) {
     return MediaQueryExp(feature, *value);
   }
   return Invalid();
@@ -421,22 +417,20 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
 
 std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     const String& media_feature,
-    CSSParserTokenRange& range,
-    const CSSParserTokenOffsets& offsets,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context) {
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
 
   if (CSSVariableParser::IsValidVariableName(media_feature)) {
-    base::span span = range.RemainingSpan();
-    StringView original_string =
-        offsets.StringForTokens(span.data(), span.data() + span.size());
-    CSSTokenizedValue tokenized_value{range, original_string};
-    CSSParserImpl::RemoveImportantAnnotationIfPresent(tokenized_value);
+    // Parse style queries for container queries, e.g. “style(--foo: bar)”.
+    // (These look like a declaration, but are really a test as part of
+    // a media query expression.) !important, if present, is stripped
+    // and ignored.
     if (const CSSValue* value =
-            CSSVariableParser::ParseDeclarationIncludingCSSWide(
-                tokenized_value, false, context)) {
-      while (!range.AtEnd()) {
-        range.Consume();
+            CSSVariableParser::ParseDeclarationIncludingCSSWide(stream, false,
+                                                                context)) {
+      while (!stream.AtEnd()) {
+        stream.Consume();
       }
       return MediaQueryExpValue(*value);
     }
@@ -448,21 +442,21 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
          "queries are currently the only case sensitive features";
 
   CSSPrimitiveValue* value = css_parsing_utils::ConsumeInteger(
-      range, context, -std::numeric_limits<double>::max() /* minimum_value */);
+      stream, context, -std::numeric_limits<double>::max() /* minimum_value */);
   if (!value && !FeatureExpectingInteger(media_feature, context)) {
     value = css_parsing_utils::ConsumeNumber(
-        range, context, CSSPrimitiveValue::ValueRange::kAll);
+        stream, context, CSSPrimitiveValue::ValueRange::kAll);
   }
   if (!value) {
     value = css_parsing_utils::ConsumeLength(
-        range, context, CSSPrimitiveValue::ValueRange::kAll);
+        stream, context, CSSPrimitiveValue::ValueRange::kAll);
   }
   if (!value) {
-    value = css_parsing_utils::ConsumeResolution(range, context);
+    value = css_parsing_utils::ConsumeResolution(stream, context);
   }
 
   if (!value) {
-    if (CSSIdentifierValue* ident = css_parsing_utils::ConsumeIdent(range)) {
+    if (CSSIdentifierValue* ident = css_parsing_utils::ConsumeIdent(stream)) {
       CSSValueID ident_id = ident->GetValueID();
       if (!FeatureWithValidIdent(media_feature, ident_id, context)) {
         return std::nullopt;
@@ -478,13 +472,13 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     if (value->IsNegative() == CSSPrimitiveValue::BoolStatus::kTrue) {
       return std::nullopt;
     }
-    if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
+    if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
       return MediaQueryExpValue(*value,
                                 *CSSNumericLiteralValue::Create(
                                     1, CSSPrimitiveValue::UnitType::kNumber));
     }
     CSSPrimitiveValue* denominator = css_parsing_utils::ConsumeNumber(
-        range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+        stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     if (!denominator) {
       return std::nullopt;
     }

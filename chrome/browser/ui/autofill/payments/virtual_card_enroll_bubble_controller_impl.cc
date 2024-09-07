@@ -25,6 +25,9 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
+namespace {
+using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+}
 
 VirtualCardEnrollBubbleControllerImpl::VirtualCardEnrollBubbleControllerImpl(
     content::WebContents* web_contents)
@@ -83,16 +86,19 @@ void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {
 }
 
 void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
-    bool is_vcn_enrolled) {
+    PaymentsRpcResult result) {
 #if BUILDFLAG(IS_ANDROID)
   if (autofill_vcn_enroll_bottom_sheet_bridge_) {
     autofill_vcn_enroll_bottom_sheet_bridge_->Hide();
   }
 #else  // !BUILDFLAG(IS_ANDROID)
   HideIconAndBubble();
+  if (result == PaymentsRpcResult::kClientSideTimeout) {
+    return;
+  }
   enrollment_status_ = EnrollmentStatus::kCompleted;
   confirmation_ui_params_ =
-      is_vcn_enrolled
+      result == PaymentsRpcResult::kSuccess
           ? SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
                 CreateForVirtualCardSuccess()
           : SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::

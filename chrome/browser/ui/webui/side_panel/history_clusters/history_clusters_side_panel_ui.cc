@@ -14,6 +14,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -28,6 +29,7 @@
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/strings/grit/components_strings.h"
@@ -67,6 +69,11 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
+  source->AddBoolean(
+      "enableHistoryEmbeddings",
+      history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile) &&
+          history_embeddings::kEnableSidePanel.Get());
+
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kSidePanelHistoryClustersResources,
@@ -79,6 +86,11 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
 HistoryClustersSidePanelUI::~HistoryClustersSidePanelUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HistoryClustersSidePanelUI)
+
+void HistoryClustersSidePanelUI::SetBrowserWindowInterface(
+    BrowserWindowInterface* browser_window_interface) {
+  browser_window_interface_ = browser_window_interface;
+}
 
 void HistoryClustersSidePanelUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
@@ -93,7 +105,7 @@ void HistoryClustersSidePanelUI::BindInterface(
   history_clusters_handler_ =
       std::make_unique<history_clusters::HistoryClustersHandler>(
           std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-          web_ui()->GetWebContents());
+          web_ui()->GetWebContents(), browser_window_interface_);
   history_clusters_handler_->SetSidePanelUIEmbedder(this->embedder());
 }
 
@@ -153,4 +165,14 @@ void HistoryClustersSidePanelUI::DidFinishNavigation(
 
   logger->set_navigation_id(navigation_handle->GetNavigationId());
   logger->set_initial_state(metrics_initial_state_);
+}
+
+void HistoryClustersSidePanelUI::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility != content::Visibility::VISIBLE) {
+    return;
+  }
+  history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+      web_ui()->GetWebContents()->GetPrimaryPage())
+      ->WasShown();
 }

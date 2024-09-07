@@ -10,6 +10,8 @@ import {RectUtil} from '/common/rect_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
+import {ScrollModeController} from './scroll_mode_controller.js';
+
 import AutomationNode = chrome.automation.AutomationNode;
 import RoleType = chrome.automation.RoleType;
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
@@ -61,6 +63,7 @@ export class MouseController {
   private landmarkWeights_: Map<string, number>;
   private paused_ = false;
 
+  private useGravity_ = false;
   // Vector fields to track how the cursor should be adjusted toward controls.
   private gravityField_: FloatingPoint2D[] = [];
   // Timer to refresh the gravity field.
@@ -70,6 +73,8 @@ export class MouseController {
   // Reference to the accessibility tree.
   private desktop_: AutomationNode|undefined;
 
+  private scrollModeController_: ScrollModeController;
+
   constructor() {
     this.onMouseMovedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_MOVED,
@@ -78,6 +83,8 @@ export class MouseController {
     this.onMouseDraggedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_DRAGGED,
         event => this.onMouseMovedOrDragged_(event));
+
+    this.scrollModeController_ = new ScrollModeController();
 
     this.calcSmoothKernel_();
     this.landmarkWeights_ = new Map();
@@ -96,10 +103,7 @@ export class MouseController {
     this.onMouseMovedHandler_.start();
     this.onMouseDraggedHandler_.setNodes(desktop);
     this.onMouseDraggedHandler_.start();
-
-    if (MouseController.USE_GRAVITY) {
-      this.desktop_ = desktop;
-    }
+    this.desktop_ = desktop;
   }
 
   async start(): Promise<void> {
@@ -127,11 +131,18 @@ export class MouseController {
       this.resetLocation();
     }
 
-    if (MouseController.USE_GRAVITY) {
-      this.resetGravity_();
-      this.refreshGravityInterval_ = setInterval(
-          () => this.refreshGravity_(), MouseController.GRAVITY_INTERVAL_MS);
-    }
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        chrome.accessibilityPrivate.AccessibilityFeature
+            .FACE_GAZE_GRAVITY_WELLS,
+        enabled => {
+          this.useGravity_ = enabled;
+          if (this.useGravity_) {
+            this.resetGravity_();
+            this.refreshGravityInterval_ = setInterval(
+                () => this.refreshGravity_(),
+                MouseController.GRAVITY_INTERVAL_MS);
+          }
+        });
 
     // Start the logic to move the mouse.
     this.mouseInterval_ = setInterval(
@@ -257,12 +268,17 @@ export class MouseController {
           this.screenBounds_.top),
     };
 
+    if (this.scrollModeController_.active()) {
+      this.scrollModeController_.scroll(this.mouseLocation_);
+      return;
+    }
+
     // Only update if it's been long enough since the last time the user
     // touched their physical mouse or trackpad.
     if (new Date().getTime() - this.lastMouseMovedTime_ >
         MouseController.IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS) {
       let mappedLocation = this.mouseLocation_;
-      if (MouseController.USE_GRAVITY) {
+      if (this.useGravity_) {
         // If gravity is enabled, adjust the cursor position.
         mappedLocation = this.mapPoint_(mappedLocation);
       }
@@ -301,7 +317,7 @@ export class MouseController {
    * Reset the Gravity field to zero vectors and remove cached nodes.
    */
   private resetGravity_(): void {
-    if (!MouseController.USE_GRAVITY || !this.screenBounds_) {
+    if (!this.useGravity_ || !this.screenBounds_) {
       return;
     }
     this.gravityField_ =
@@ -439,9 +455,11 @@ export class MouseController {
   }
 
   resetLocation(): void {
-    if (this.paused_ || !this.screenBounds_) {
+    if (this.paused_ || !this.screenBounds_ ||
+        this.scrollModeController_.active()) {
       return;
     }
+
     const x =
         Math.round(this.screenBounds_.width / 2) + this.screenBounds_.left;
     const y =
@@ -483,6 +501,10 @@ export class MouseController {
     // will modify the pause value.
     newPaused ? this.stop() : this.start();
     this.paused_ = newPaused;
+  }
+
+  toggleScrollMode(): void {
+    this.scrollModeController_.toggle(this.mouseLocation_, this.screenBounds_);
   }
 
   /** Listener for when the mouse position changes. */
@@ -650,7 +672,6 @@ export namespace MouseController {
   export const DEFAULT_USE_MOUSE_ACCELERATION = true;
   export const DEFAULT_BUFFER_SIZE = 6;
 
-  export const USE_GRAVITY = false;
   export const GRAVITY_INTERVAL_MS = 500;
   // How far the gravity reaches, relative to the size of the control.
   export const GRAVITY_SCALE = 4;

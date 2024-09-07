@@ -190,11 +190,6 @@ public class SequencedTaskRunnerTaskMigrationTest {
             mExecutor.execute(task);
         }
 
-        @Override
-        public boolean belongsToCurrentThread(long nativeTaskRunnerAndroid) {
-            return false;
-        }
-
         public boolean hasReceivedTasks() {
             return mReceivedTasksCount.get() > 0;
         }

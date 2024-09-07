@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -126,6 +127,9 @@ DesktopDragDropClientOzone::DesktopDragDropClientOzone(
 
 DesktopDragDropClientOzone::~DesktopDragDropClientOzone() {
   ResetDragDropTarget();
+  for (aura::client::DragDropClientObserver& observer : observers_) {
+    observer.OnDragDropClientDestroying();
+  }
 }
 
 DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
@@ -177,6 +181,8 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
   const bool drag_succeeded = drag_handler_->StartDrag(
       *data.get(), allowed_operations, source, cursor_client->GetCursor(),
       !source_window->HasCapture(),
+      base::BindOnce(&DesktopDragDropClientOzone::OnDragStarted,
+                     weak_factory_.GetWeakPtr()),
       base::BindOnce(&DesktopDragDropClientOzone::OnDragFinished,
                      weak_factory_.GetWeakPtr()),
       GetLocationDelegate());
@@ -187,6 +193,9 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
 
   if (!drag_succeeded) {
     selected_operation_ = DragOperation::kNone;
+    for (aura::client::DragDropClientObserver& observer : observers_) {
+      observer.OnDragCancelled();
+    }
   }
 
   if (cursor_client) {
@@ -221,12 +230,12 @@ bool DesktopDragDropClientOzone::IsDragDropInProgress() {
 
 void DesktopDragDropClientOzone::AddObserver(
     aura::client::DragDropClientObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  observers_.AddObserver(observer);
 }
 
 void DesktopDragDropClientOzone::RemoveObserver(
     aura::client::DragDropClientObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  observers_.RemoveObserver(observer);
 }
 
 void DesktopDragDropClientOzone::OnDragEnter(const gfx::PointF& location,
@@ -244,7 +253,12 @@ void DesktopDragDropClientOzone::OnDragDataAvailable(
     std::unique_ptr<ui::OSExchangeData> data) {
   DCHECK(data);
   data_to_drop_ = std::move(data);
-  UpdateTargetAndCreateDropEvent();
+  std::unique_ptr<ui::DropTargetEvent> event = UpdateTargetAndCreateDropEvent();
+  if (event) {
+    for (aura::client::DragDropClientObserver& observer : observers_) {
+      observer.OnDragUpdated(*event);
+    }
+  }
 }
 
 int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& location,
@@ -262,9 +276,14 @@ int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& location,
   // Ask the delegate what operation it would accept for the current data.
   int client_operation = ui::DragDropTypes::DRAG_NONE;
   auto event = UpdateTargetAndCreateDropEvent();
-  if (delegate_ && event) {
-    current_drag_update_info_ = delegate_->OnDragUpdated(*event);
-    client_operation = current_drag_update_info_.drag_operation;
+  if (event) {
+    for (aura::client::DragDropClientObserver& observer : observers_) {
+      observer.OnDragUpdated(*event);
+    }
+    if (delegate_) {
+      current_drag_update_info_ = delegate_->OnDragUpdated(*event);
+      client_operation = current_drag_update_info_.drag_operation;
+    }
   }
   return client_operation;
 }
@@ -286,6 +305,10 @@ void DesktopDragDropClientOzone::OnDragDrop(int modifiers) {
             data_to_drop_raw, current_drag_update_info_,
             base::BindOnce(&PerformDrop, std::move(drop_cb),
                            std::move(data_to_drop_), std::move(drag_cancel)));
+
+        for (aura::client::DragDropClientObserver& observer : observers_) {
+          observer.OnDragCompleted(*event);
+        }
       }
     }
   }
@@ -314,8 +337,17 @@ DesktopDragDropClientOzone::GetLocationDelegate() {
   return nullptr;
 }
 
+void DesktopDragDropClientOzone::OnDragStarted() {
+  for (aura::client::DragDropClientObserver& observer : observers_) {
+    observer.OnDragStarted();
+  }
+}
+
 void DesktopDragDropClientOzone::OnDragFinished(DragOperation operation) {
   selected_operation_ = operation;
+  for (aura::client::DragDropClientObserver& observer : observers_) {
+    observer.OnDropCompleted(operation);
+  }
 }
 
 std::unique_ptr<ui::DropTargetEvent>

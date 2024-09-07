@@ -3872,7 +3872,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
             webcontents2->GetPrimaryMainFrame()->GetProcess());
 }
 
-class DevToolsProcessPerSiteTest : public DevToolsTest {
+class DevToolsProcessPerSiteTest
+    : public DevToolsProcessPerSiteUpToMainFrameThresholdTest {
  public:
   DevToolsProcessPerSiteTest() = default;
 
@@ -4032,9 +4033,7 @@ bool hasQueryParam(WebContents* wc, std::string query_param) {
          wc->GetLastCommittedURL().query().find(query_param);
 }
 
-// TODO(crbug.com/348136212): Temporarily disable to land DevTools changes.
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       DISABLED_NotBeBlockedByFeatureFlag) {
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, NotBeBlockedByFeatureFlag) {
   SetupAccountCapabilities();
   OpenDevToolsWindow(kDebuggerTestPage, false);
   LoadLegacyFilesInFrontend(window_);
@@ -4047,19 +4046,21 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
     })();
   )"));
   ASSERT_TRUE(result.value.is_dict());
+  auto* configAidaAvailability =
+      result.value.GetDict().FindDict("aidaAvailability");
   auto* configConsoleInsights =
       result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
 #else
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("enabled").value());
 #endif
+  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
   CloseDevToolsWindow();
 }
 
-// TODO(crbug.com/348136212): Temporarily disable to land DevTools changes.
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       DISABLED_EnterprisePolicyEnabledByDefault) {
+                       EnterprisePolicyEnabledByDefault) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities();
   OpenDevToolsWindow(kDebuggerTestPage, false);
@@ -4073,29 +4074,26 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
     })();
   )"));
   ASSERT_TRUE(result.value.is_dict());
-  auto* configConsoleInsights =
-      result.value.GetDict().FindDict("devToolsConsoleInsights");
+  auto* configAidaAvailability =
+      result.value.GetDict().FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
   EXPECT_FALSE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("optIn").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("blockedByAge").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("blockedByGeo").value());
 #else
-  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("enabled").value());
   EXPECT_TRUE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByAge").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("optIn").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("blockedByAge").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("blockedByGeo").value());
 #endif
 
   CloseDevToolsWindow();
 }
 
-// TODO(crbug.com/348136212): Temporarily disable to land DevTools changes.
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, DISABLED_IsBlockedByGeo) {
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsBlockedByGeo) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("cn");
   SetupAccountCapabilities();
   OpenDevToolsWindow(kDebuggerTestPage, false);
@@ -4109,27 +4107,24 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, DISABLED_IsBlockedByGeo) {
     })();
   )"));
   ASSERT_TRUE(result.value.is_dict());
-  auto* configConsoleInsights =
-      result.value.GetDict().FindDict("devToolsConsoleInsights");
+  auto* configAidaAvailability =
+      result.value.GetDict().FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
   EXPECT_FALSE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("blockedByAge").value());
 #else
-  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("enabled").value());
   EXPECT_TRUE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByAge").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("blockedByAge").value());
 #endif
+  EXPECT_TRUE(configAidaAvailability->FindBool("blockedByGeo").value());
   CloseDevToolsWindow();
 }
 
-// TODO(crbug.com/348136212): Temporarily disable to land DevTools changes.
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       DISABLED_IsNotEnabledForMinors) {
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities(true);
   OpenDevToolsWindow(kDebuggerTestPage, false);
@@ -4143,28 +4138,26 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
     })();
   )"));
   ASSERT_TRUE(result.value.is_dict());
-  auto* configConsoleInsights =
-      result.value.GetDict().FindDict("devToolsConsoleInsights");
+  auto* configAidaAvailability =
+      result.value.GetDict().FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByAge").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
   EXPECT_FALSE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("blockedByGeo").value());
 #else
-  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByAge").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("enabled").value());
   EXPECT_TRUE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("blockedByGeo").value());
 #endif
+  EXPECT_TRUE(configAidaAvailability->FindBool("blockedByAge").value());
 
   CloseDevToolsWindow();
 }
 
-// TODO(crbug.com/348136212): Temporarily disable to land DevTools changes.
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       DISABLED_CanBeDisabledByEnterprisePolicy) {
+                       CanBeDisabledByEnterprisePolicy) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities();
   // Disable via enterprise policy.
@@ -4187,23 +4180,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
     })();
   )"));
   ASSERT_TRUE(result.value.is_dict());
-  auto* configConsoleInsights =
-      result.value.GetDict().FindDict("devToolsConsoleInsights");
+  auto* configAidaAvailability =
+      result.value.GetDict().FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
-  EXPECT_TRUE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
 #else
-  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
-  EXPECT_TRUE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("enabled").value());
 #endif
+  EXPECT_TRUE(
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
   CloseDevToolsWindow();
 }
 
-// TODO(crbug.com/348136212): Temporarily disable to land DevTools changes.
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       DISABLED_CanBeEnabledByEnterprisePolicy) {
+                       CanBeEnabledByEnterprisePolicy) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities();
   // Enable via enterprise policy.
@@ -4226,24 +4216,23 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
     })();
   )"));
   ASSERT_TRUE(result.value.is_dict());
-  auto* configConsoleInsights =
-      result.value.GetDict().FindDict("devToolsConsoleInsights");
+  auto* configAidaAvailability =
+      result.value.GetDict().FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
   EXPECT_FALSE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
 #else
-  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("enabled").value());
   EXPECT_TRUE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
 #endif
 
   CloseDevToolsWindow();
 }
 
-// TODO(crbug.com/348136212): Temporarily disable to land DevTools changes.
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       DISABLED_IsDisabledWhenPolicySetToOne) {
+                       IsDisabledWhenPolicySetToOne) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   policy::PolicyMap policies;
   policies.Set(
@@ -4264,17 +4253,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
     })();
   )"));
   ASSERT_TRUE(result.value.is_dict());
-  auto* configConsoleInsights =
-      result.value.GetDict().FindDict("devToolsConsoleInsights");
+  auto* configAidaAvailability =
+      result.value.GetDict().FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("disallowLogging").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("disallowLogging").value());
   EXPECT_FALSE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
 #else
-  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("enabled").value());
   EXPECT_TRUE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+      configAidaAvailability->FindBool("blockedByEnterprisePolicy").value());
 #endif
 
   CloseDevToolsWindow();

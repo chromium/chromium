@@ -41,16 +41,16 @@ using CreateSurfaceLayerBridgeCB =
         WebSurfaceLayerBridgeObserver*,
         cc::UpdateSubmissionStateCB)>;
 
+class MediaStreamAudioRenderer;
 class MediaStreamInternalFrameWrapper;
+class MediaStreamRendererFactory;
+class MediaStreamVideoRenderer;
 template <typename TimerFiredClass>
 class TaskRunnerTimer;
 class TimerBase;
 class WebLocalFrame;
 class WebMediaPlayerClient;
-class WebMediaStreamAudioRenderer;
 class WebMediaPlayerMSCompositor;
-class MediaStreamRendererFactory;
-class WebMediaStreamVideoRenderer;
 class WebString;
 class WebVideoFrameSubmitter;
 
@@ -62,7 +62,7 @@ class WebVideoFrameSubmitter;
 //
 // WebMediaPlayerMS works with multiple objects, the most important ones are:
 //
-// WebMediaStreamVideoRenderer
+// MediaStreamVideoRenderer
 //   provides video frames for rendering.
 //
 // WebMediaPlayerClient
@@ -74,7 +74,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
       public WebSurfaceLayerBridgeObserver {
  public:
   // Construct a WebMediaPlayerMS with reference to the client, and
-  // a MediaStreamClient which provides WebMediaStreamVideoRenderer.
+  // a MediaStreamClient which provides MediaStreamVideoRenderer.
   // |delegate| must not be null.
   WebMediaPlayerMS(
       WebLocalFrame* frame,
@@ -297,11 +297,11 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   class FrameDeliverer;
   std::unique_ptr<FrameDeliverer> frame_deliverer_;
 
-  scoped_refptr<WebMediaStreamVideoRenderer> video_frame_provider_;  // Weak
+  scoped_refptr<MediaStreamVideoRenderer> video_frame_provider_;  // Weak
 
   scoped_refptr<cc::VideoLayer> video_layer_;
 
-  scoped_refptr<WebMediaStreamAudioRenderer> audio_renderer_;  // Weak
+  scoped_refptr<MediaStreamAudioRenderer> audio_renderer_;  // Weak
   media::PaintCanvasVideoRenderer video_renderer_;
 
   // Indicated whether an outstanding VideoFrameCallback request needs to be

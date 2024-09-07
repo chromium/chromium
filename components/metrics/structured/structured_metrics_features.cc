@@ -62,6 +62,12 @@ constexpr base::FeatureParam<int> kEventBackupTimeSec{
     &kEventStorageManager, "event_backup_time_s", 3 * 60  // 3 minutes
 };
 
+constexpr base::FeatureParam<double> kMaxBufferSizeQuota{
+    &features::kStructuredMetrics, "max_buffer_size_quota", 0.0001};
+
+constexpr base::FeatureParam<double> kMaxDiskSizeQuota{
+    &features::kStructuredMetrics, "max_disk_size_quota", 0.001};
+
 int GetFileLimitPerScan() {
   return kLimitFilesPerScanParam.Get();
 }
@@ -92,6 +98,14 @@ base::TimeDelta GetExternalMetricsCollectionInterval() {
 
 base::TimeDelta GetBackupTimeDelta() {
   return base::Seconds(kEventBackupTimeSec.Get());
+}
+
+double GetMaxBufferSizeRatio() {
+  return kMaxBufferSizeQuota.Get();
+}
+
+double GetMaxDiskSizeRatio() {
+  return kMaxDiskSizeQuota.Get();
 }
 
 }  // namespace metrics::structured

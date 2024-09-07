@@ -40,6 +40,13 @@ class WebUIDataSource {
 
   // Creates a WebUIDataSource and adds it to the BrowserContext, which owns it.
   // Callers just get a raw pointer, which they don't own.
+  // `source_name` is the key for URL lookups, allowing the source to serve
+  // content for URLs that match the patterns:
+  //  - chrome://source_name/*
+  //  - chrome-untrusted://<host>/*
+  //    (source_name is of the form "chrome-untrusted://<host>")
+  //  - scheme://*
+  //    (source_name is of the form "scheme://")
   CONTENT_EXPORT static WebUIDataSource* CreateAndAdd(
       BrowserContext* browser_context,
       const std::string& source_name);

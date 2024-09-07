@@ -40,7 +40,8 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
 
 UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
     UIImage* snapshot,
-    LensConfiguration* config) {
+    LensConfiguration* config,
+    NSArray<UIAction*>* additionalMenuItems) {
   return [[TestLensOverlayController alloc] init];
 }
 

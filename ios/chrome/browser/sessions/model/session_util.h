@@ -5,14 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SESSIONS_MODEL_SESSION_UTIL_H_
 #define IOS_CHROME_BROWSER_SESSIONS_MODEL_SESSION_UTIL_H_
 
-#include <memory>
-#include <string>
-#include <vector>
+#import <memory>
+#import <string>
+#import <vector>
 
-#include "base/functional/callback.h"
+#import "base/functional/callback.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class Browser;
-class ChromeBrowserState;
 
 namespace sessions {
 class SerializedNavigationEntry;

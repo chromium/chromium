@@ -50,7 +50,7 @@ namespace flat_rule = url_pattern_index::flat;
 // url_pattern_index.fbs. Whenever an extension with an indexed ruleset format
 // version different from the one currently used by Chrome is loaded, the
 // extension ruleset will be reindexed.
-constexpr int kIndexedRulesetFormatVersion = 33;
+constexpr int kIndexedRulesetFormatVersion = 34;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
@@ -94,8 +94,9 @@ std::string GetVersionHeader() {
 // base::JoinString.
 std::string JoinString(base::span<const char* const> parts) {
   std::vector<std::string_view> parts_piece;
-  for (const char* part : parts)
+  for (const char* part : parts) {
     parts_piece.push_back(part);
+  }
   return base::JoinString(parts_piece, ", ");
 }
 
@@ -129,8 +130,9 @@ bool StripVersionHeaderAndParseVersion(std::string* ruleset_data) {
 }
 
 int GetChecksum(base::span<const uint8_t> data) {
-  if (g_override_checksum_for_test != kInvalidOverrideChecksumForTest)
+  if (g_override_checksum_for_test != kInvalidOverrideChecksumForTest) {
     return g_override_checksum_for_test;
+  }
 
   uint32_t hash = base::PersistentHash(data);
 
@@ -153,8 +155,9 @@ std::string GetIndexedRulesetData(base::span<const uint8_t> data) {
 bool PersistIndexedRuleset(const base::FilePath& path,
                            base::span<const uint8_t> data) {
   // Create the directory corresponding to |path| if it does not exist.
-  if (!base::CreateDirectory(path.DirName()))
+  if (!base::CreateDirectory(path.DirName())) {
     return false;
+  }
 
   // Unlike for dynamic rules, we don't use `ImportantFileWriter` here since it
   // can be quite slow (and this will be called for the extension's indexed
@@ -163,8 +166,9 @@ bool PersistIndexedRuleset(const base::FilePath& path,
   // and keep them in sync.
   base::File ruleset_file(
       path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  if (!ruleset_file.IsValid())
+  if (!ruleset_file.IsValid()) {
     return false;
+  }
 
   // Write the version header.
   if (!ruleset_file.WriteAtCurrentPosAndCheck(
@@ -341,10 +345,12 @@ flat::ActionType ConvertToFlatActionType(dnr_api::RuleActionType action_type) {
 
 std::string GetPublicRulesetID(const Extension& extension,
                                RulesetID ruleset_id) {
-  if (ruleset_id == kDynamicRulesetID)
+  if (ruleset_id == kDynamicRulesetID) {
     return dnr_api::DYNAMIC_RULESET_ID;
-  if (ruleset_id == kSessionRulesetID)
+  }
+  if (ruleset_id == kSessionRulesetID) {
     return dnr_api::SESSION_RULESET_ID;
+  }
 
   DCHECK_GE(ruleset_id, kMinValidStaticRulesetID);
   return DNRManifestData::GetRuleset(extension, ruleset_id).manifest_id;
@@ -469,14 +475,16 @@ ScopedRuleLimitOverride CreateScopedDisabledStaticRuleLimitOverrideForTesting(
 }
 
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {
-  if (!composite_matcher)
+  if (!composite_matcher) {
     return 0;
+  }
 
   size_t enabled_static_rule_count = 0;
   for (const std::unique_ptr<RulesetMatcher>& matcher :
        composite_matcher->matchers()) {
-    if (matcher->id() == kDynamicRulesetID)
+    if (matcher->id() == kDynamicRulesetID) {
       continue;
+    }
 
     enabled_static_rule_count += matcher->GetRulesCount();
   }
@@ -798,8 +806,9 @@ flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
 // request method.
 flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
                                           const std::string& method) {
-  if (!http_or_https)
+  if (!http_or_https) {
     return flat_rule::RequestMethod_NON_HTTP;
+  }
 
   using net::HttpRequestHeaders;
   static const base::NoDestructor<
@@ -860,8 +869,9 @@ flat_rule::RequestMethod GetRequestMethod(
 flat_rule::RequestMethod GetRequestMethod(
     bool http_or_https,
     dnr_api::RequestMethod request_method) {
-  if (!http_or_https)
+  if (!http_or_https) {
     return flat_rule::RequestMethod_NON_HTTP;
+  }
 
   return GetRequestMethod(request_method);
 }
@@ -892,6 +902,11 @@ bool IsResponseHeaderMatchingEnabled() {
   // added back such as channel restrictions.
   return base::FeatureList::IsEnabled(
       extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
+}
+
+bool IsHeaderSubstitutionEnabled() {
+  return base::FeatureList::IsEnabled(
+      extensions_features::kDeclarativeNetRequestHeaderSubstitution);
 }
 
 }  // namespace extensions::declarative_net_request

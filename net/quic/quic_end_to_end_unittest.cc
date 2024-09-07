@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -192,7 +193,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     GenerateBody(length);
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-        request_body_.data(), request_body_.length()));
+        base::as_byte_span(request_body_)));
     upload_data_stream_ = std::make_unique<ElementsUploadDataStream>(
         std::move(element_readers), 0);
     request_.method = "POST";

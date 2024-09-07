@@ -11,7 +11,6 @@
 #include "cc/cc_export.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"
-#include "cc/scheduler/redraw_reason.h"
 #include "cc/scheduler/scheduler_settings.h"
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -228,9 +227,8 @@ class CC_EXPORT SchedulerStateMachine {
   // changes in the impl tree has not been activated yet, then |needs_redraw()|
   // can return false. For checking any invalidations, check
   // |did_invalidate_layer_tree_frame_sink()|.
-  void SetNeedsRedraw(RedrawReason reason);
+  void SetNeedsRedraw();
   bool needs_redraw() const { return needs_redraw_; }
-  RedrawReasonSet GetRedrawReasons() const;
 
   // Indicates that the display tree needs an update, implying that the active
   // tree has changed in some meaningful way since the last update.
@@ -326,8 +324,7 @@ class CC_EXPORT SchedulerStateMachine {
   // painted until they are done.
   void NotifyPaintWorkletStateChange(PaintWorkletState state);
 
-  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
-                                    RedrawReason reason);
+  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation);
 
   bool has_pending_tree() const { return has_pending_tree_; }
   bool active_tree_needs_first_draw() const {
@@ -425,10 +422,6 @@ class CC_EXPORT SchedulerStateMachine {
   void DidDrawInternal(DrawResult draw_result);
 
   const SchedulerSettings settings_;
-
-  RedrawReasonSet impl_side_invalidation_reasons_;
-  RedrawReasonSet activate_reasons_;
-  RedrawReasonSet redraw_reasons_;
 
   LayerTreeFrameSinkState layer_tree_frame_sink_state_ =
       LayerTreeFrameSinkState::NONE;

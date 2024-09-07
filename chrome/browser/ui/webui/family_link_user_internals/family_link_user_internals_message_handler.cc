@@ -96,6 +96,23 @@ std::string FilteringBehaviorToString(
   return result;
 }
 
+std::string FilteringBehaviorDetailsToString(
+    supervised_user::FilteringBehaviorDetails details) {
+  switch (details.reason) {
+    case supervised_user::FilteringBehaviorReason::DEFAULT:
+      return "Default";
+    case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
+      if (details.classification_details.reason ==
+          safe_search_api::ClassificationDetails::Reason::kCachedResponse) {
+        return "AsyncChecker (Cached)";
+      }
+      return "AsyncChecker";
+    case supervised_user::FilteringBehaviorReason::MANUAL:
+      return "Manual";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 FamilyLinkUserInternalsMessageHandler::FamilyLinkUserInternalsMessageHandler() =
@@ -259,17 +276,18 @@ void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-void FamilyLinkUserInternalsMessageHandler::OnSiteListUpdated() {}
-
 void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
     const GURL& url,
     supervised_user::FilteringBehavior behavior,
-    supervised_user::FilteringBehaviorReason reason,
-    bool uncertain) {
+    supervised_user::FilteringBehaviorDetails details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Value::Dict result;
   result.Set("url", url.possibly_invalid_spec());
-  result.Set("result", FilteringBehaviorToString(behavior, uncertain));
-  result.Set("reason", FilteringBehaviorReasonToString(reason));
+  result.Set("result",
+             FilteringBehaviorToString(
+                 behavior, details.classification_details.reason ==
+                               safe_search_api::ClassificationDetails::Reason::
+                                   kFailedUseDefault));
+  result.Set("reason", FilteringBehaviorDetailsToString(details));
   FireWebUIListener("filtering-result-received", result);
 }

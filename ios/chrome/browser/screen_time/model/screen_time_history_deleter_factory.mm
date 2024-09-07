@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/screen_time/model/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_history_deleter.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
 ScreenTimeHistoryDeleter* ScreenTimeHistoryDeleterFactory::GetForBrowserState(

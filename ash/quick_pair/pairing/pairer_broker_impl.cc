@@ -287,6 +287,8 @@ void PairerBrokerImpl::StartBondingAttempt(scoped_refptr<Device> device) {
                          weak_pointer_factory_.GetWeakPtr()),
           base::BindOnce(&PairerBrokerImpl::OnAccountKeyFailure,
                          weak_pointer_factory_.GetWeakPtr()),
+          base::BindOnce(&PairerBrokerImpl::OnDisplayPasskey,
+                         weak_pointer_factory_.GetWeakPtr()),
           base::BindOnce(&PairerBrokerImpl::OnFastPairProcedureComplete,
                          weak_pointer_factory_.GetWeakPtr()));
 }
@@ -363,6 +365,15 @@ void PairerBrokerImpl::OnAccountKeyFailure(scoped_refptr<Device> device,
   }
 
   EraseHandshakeAndFromPairers(device);
+}
+
+void PairerBrokerImpl::OnDisplayPasskey(std::u16string device_name,
+                                        uint32_t passkey) {
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Device=" << device_name;
+
+  for (auto& observer : observers_) {
+    observer.OnDisplayPasskey(device_name, passkey);
+  }
 }
 
 void PairerBrokerImpl::OnFastPairProcedureComplete(

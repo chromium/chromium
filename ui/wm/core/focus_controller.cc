@@ -413,8 +413,31 @@ bool FocusController::SetActiveWindow(
 }
 
 void FocusController::StackActiveWindow() {
-  if (active_window_) {
-    StackTransientParentsBelowModalWindow(active_window_);
+  if (!active_window_) {
+    return;
+  }
+
+  StackTransientParentsBelowModalWindow(active_window_);
+
+  // |active_window_| must be stacked below its transient siblings and above its
+  // non-transient siblings. Restacking is only needed if that is not already
+  // true.
+  bool needs_restack = false;
+  bool has_found_window = false;
+  for (const auto child_window : active_window_->parent()->children()) {
+    if (child_window == active_window_) {
+      has_found_window = true;
+      continue;
+    }
+
+    if (has_found_window !=
+        HasTransientAncestor(child_window, active_window_)) {
+      needs_restack = true;
+      break;
+    }
+  }
+
+  if (needs_restack) {
     active_window_->parent()->StackChildAtTop(active_window_);
   }
 }

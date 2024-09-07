@@ -71,8 +71,8 @@ public class PlayerCoordinator implements Player {
                         delegate.getLayoutManager(),
                         this,
                         delegate.getUserEducationHelper());
-        mExpandedPlayer = new ExpandedPlayerCoordinator(contextForInflation, delegate, model);
         mMediator = new PlayerMediator(/* coordinator= */ this, delegate, model);
+        mExpandedPlayer = new ExpandedPlayerCoordinator(contextForInflation, delegate, model);
         mDelegate = delegate;
         mActivityLifecycleDispatcher = delegate.getActivityLifecycleDispatcher();
         if (mActivityLifecycleDispatcher != null) {

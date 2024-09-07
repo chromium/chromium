@@ -97,7 +97,7 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
         LoginState::LoggedInUserType::LOGGED_IN_USER_NONE);
     LoginState::Get()->SetLoggedInState(
         LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-        LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+        LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   }
 
   void RemoveCellular() {
@@ -119,7 +119,7 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   NetworkStateTestHelper network_state_test_helper_{
-      false /* use_default_devices_and_services */};
+      /*use_default_devices_and_services=*/false};
   std::unique_ptr<NetworkConfigurationHandler> network_config_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>
@@ -134,7 +134,7 @@ TEST_F(ESimPolicyLoginMetricsLoggerTest, LoginMetricsTest) {
       /*is_enterprise_managed=*/true);
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   histogram_tester_.ExpectTotalCount(
       ESimPolicyLoginMetricsLogger::kESimPolicyBlockNonManagedCellularHistogram,
       0);

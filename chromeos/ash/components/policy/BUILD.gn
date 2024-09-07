@@ -12,16 +12,22 @@ component("policy") {
 
   public = [
     "restriction_schedule/device_restriction_schedule_controller.h",
+    "weekly_time/checked_util.h",
     "weekly_time/time_utils.h",
     "weekly_time/weekly_time.h",
+    "weekly_time/weekly_time_checked.h",
     "weekly_time/weekly_time_interval.h",
+    "weekly_time/weekly_time_interval_checked.h",
   ]
 
   sources = [
     "restriction_schedule/device_restriction_schedule_controller.cc",
+    "weekly_time/checked_util.cc",
     "weekly_time/time_utils.cc",
     "weekly_time/weekly_time.cc",
+    "weekly_time/weekly_time_checked.cc",
     "weekly_time/weekly_time_interval.cc",
+    "weekly_time/weekly_time_interval_checked.cc",
   ]
 
   public_deps = [
@@ -38,20 +44,44 @@ component("policy") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  public = [ "weekly_time/test_support.h" ]
+
+  sources = [ "weekly_time/test_support.cc" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chromeos/ash/components/policy",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
+
+  sources = [
+    "restriction_schedule/device_restriction_schedule_controller_unittest.cc",
+    "weekly_time/checked_util_unittest.cc",
+    "weekly_time/time_utils_unittest.cc",
+    "weekly_time/weekly_time_checked_unittest.cc",
+    "weekly_time/weekly_time_interval_checked_unittest.cc",
+    "weekly_time/weekly_time_interval_unittest.cc",
+    "weekly_time/weekly_time_unittest.cc",
+  ]
+
   deps = [
     ":policy",
+    ":test_support",
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//chromeos/constants",
     "//components/policy/proto",
+    "//components/prefs:test_support",
     "//testing/gtest",
     "//third_party/icu",
-  ]
-  sources = [
-    "weekly_time/time_utils_unittest.cc",
-    "weekly_time/weekly_time_interval_unittest.cc",
-    "weekly_time/weekly_time_unittest.cc",
   ]
 }

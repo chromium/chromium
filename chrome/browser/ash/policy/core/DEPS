@@ -87,3 +87,10 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "browser_policy_connector_ash_unittest.cc": [
+    "+chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h",
+    "+chrome/browser/ui/ash/wallpaper",
+  ],
+}

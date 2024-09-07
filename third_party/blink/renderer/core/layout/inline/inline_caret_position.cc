@@ -455,7 +455,7 @@ InlineCaretPosition ComputeInlineCaretPosition(
   if (!mapping) {
     // TODO(yosin): We should find when we reach here[1].
     // [1] http://crbug.com/1100481
-    NOTREACHED_IN_MIGRATION() << context;
+    DUMP_WILL_BE_NOTREACHED() << context;
     return InlineCaretPosition();
   }
   const std::optional<unsigned> maybe_offset =
@@ -523,7 +523,7 @@ PositionWithAffinity InlineCaretPosition::ToPositionInDOMTreeWithAffinity()
         // TODO(yosin): We're not sure why |mapping| is |nullptr|. It seems
         // we are attempt to use destroyed/moved |FragmentItem|.
         // See http://crbug.com/1145514
-        NOTREACHED_IN_MIGRATION()
+        DUMP_WILL_BE_NOTREACHED()
             << cursor << " " << cursor.Current().GetLayoutObject();
         return PositionWithAffinity();
       }

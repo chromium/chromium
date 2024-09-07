@@ -543,8 +543,8 @@ bool WillFillCreditCardNumberOrCvc(
 
   // This runs O(N^2) in the worst case, but usually there aren't too many
   // credit card number or CVC fields in a form.
-  return base::ranges::any_of(autofill_fields,
-                              IsFillableCreditCardNumberOrCvcField);
+  return std::ranges::any_of(autofill_fields,
+                             IsFillableCreditCardNumberOrCvcField);
 }
 
 }  // namespace autofill

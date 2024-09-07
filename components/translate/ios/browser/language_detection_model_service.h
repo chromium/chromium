@@ -11,12 +11,12 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/translate/core/browser/translate_model_service.h"
 
 namespace translate {
 
 class LanguageDetectionModelContainer;
 class LanguageDetectionModel;
+class TranslateModelService;
 
 // A service that contains the LanguageDetectionModel and handles its loading.
 // This is a workaround for crbug/1324530 on iOS where it is mandatory to have
@@ -26,7 +26,7 @@ class LanguageDetectionModel;
 class LanguageDetectionModelService : public KeyedService {
  public:
   LanguageDetectionModelService(
-      TranslateModelService* opt_guide,
+      TranslateModelService* translate_model_service,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
   ~LanguageDetectionModelService() override;
 

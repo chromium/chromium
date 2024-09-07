@@ -30,13 +30,13 @@ rootWebArea name='Action verbs'
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle collapsed name='Summary' defaultActionVerb=press
 ++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='Summary' defaultActionVerb=clickAncestor
 ++++++++++++++inlineTextBox name='Summary'
 ++++++++genericContainer ignored
-++++++++++staticText ignored invisible name='Details'
+++++++++++staticText ignored invisible
 ++++++comboBoxSelect collapsed value='Pop-up button' defaultActionVerb=open haspopup=menu
-++++++++menuListPopup invisible
+++++++++menuListPopup invisible ispopup=auto
 ++++++++++menuListOption name='Pop-up button' defaultActionVerb=select selected=true
 ++++++genericContainer defaultActionVerb=click
 ++++++++staticText name='Div with click handler' defaultActionVerb=clickAncestor

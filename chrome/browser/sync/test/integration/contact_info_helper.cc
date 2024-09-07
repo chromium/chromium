@@ -21,7 +21,7 @@ AutofillProfile BuildTestAccountProfile() {
   AutofillProfile profile = autofill::test::GetFullProfile();
   // The CONTACT_INFO data type is only concerned with kAccount profiles.
   // kLocalOrSyncable profiles are handled by the AUTOFILL_PROFILE type.
-  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   return profile;
 }
 

@@ -1604,10 +1604,12 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kWebkitTextSecurity:
       return value_id == CSSValueID::kDisc || value_id == CSSValueID::kCircle ||
              value_id == CSSValueID::kSquare || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kTextWrap:
-      return value_id == CSSValueID::kWrap || value_id == CSSValueID::kNowrap ||
+    case CSSPropertyID::kTextWrapMode:
+      return value_id == CSSValueID::kWrap || value_id == CSSValueID::kNowrap;
+    case CSSPropertyID::kTextWrapStyle:
+      return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kBalance ||
-             value_id == CSSValueID::kPretty;
+             value_id == CSSValueID::kPretty || value_id == CSSValueID::kStable;
     case CSSPropertyID::kTransformBox:
       return value_id == CSSValueID::kContentBox ||
              value_id == CSSValueID::kBorderBox ||
@@ -1798,7 +1800,8 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitRubyPosition,
     CSSPropertyID::kWebkitTextCombine,
     CSSPropertyID::kWebkitTextSecurity,
-    CSSPropertyID::kTextWrap,
+    CSSPropertyID::kTextWrapMode,
+    CSSPropertyID::kTextWrapStyle,
     CSSPropertyID::kTransformBox,
     CSSPropertyID::kTransformStyle,
     CSSPropertyID::kWebkitUserDrag,

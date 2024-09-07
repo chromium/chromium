@@ -20,7 +20,6 @@ using blink::WebLocalFrame;
 using blink::WebVector;
 
 namespace autofill {
-
 namespace {
 
 // A builder to produce HTML code for a password form composed of the desired
@@ -121,8 +120,6 @@ class PasswordFormConversionUtilsTest : public content::RenderViewTest {
     *form = forms[0];
   }
 };
-
-}  // namespace
 
 TEST_F(PasswordFormConversionUtilsTest, IsGaiaReauthFormIgnored) {
   struct TestCase {
@@ -262,4 +259,5 @@ TEST_F(PasswordFormConversionUtilsTest, IsGaiaWithSkipSavePasswordForm) {
   }
 }
 
+}  // namespace
 }  // namespace autofill

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
@@ -36,7 +37,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       int initiator_process_id,
       base::WeakPtr<WebContents> initiator_web_contents,
       std::optional<blink::LocalFrameToken> initiator_frame_token,
-      int initiator_frame_tree_node_id,
+      FrameTreeNodeId initiator_frame_tree_node_id,
       ukm::SourceId initiator_ukm_id,
       ui::PageTransition transition_type,
       bool should_warm_up_compositor,
@@ -93,9 +94,8 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<blink::LocalFrameToken> initiator_frame_token;
 
-  // This is RenderFrameHost::kNoFrameTreeNodeId when prerendering is initiated
-  // by the browser.
-  int initiator_frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
+  // This is invalid when prerendering is initiated by the browser.
+  FrameTreeNodeId initiator_frame_tree_node_id;
 
   // This is ukm::kInvalidSourceId when prerendering is initiated by the
   // browser.

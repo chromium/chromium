@@ -9,7 +9,7 @@
     Exposed=(Window,Worker)
 ] interface PaymentInstruments {
     [CallWith=ScriptState, RaisesException, ImplementedAs=deleteInstrument, Measure] Promise<boolean> delete(DOMString instrumentKey);
-    [CallWith=ScriptState, RaisesException, Measure] Promise<any> get(DOMString instrumentKey);
+    [CallWith=ScriptState, RaisesException, Measure] Promise<PaymentInstrument> get(DOMString instrumentKey);
     [CallWith=ScriptState, RaisesException, Measure] Promise<sequence<DOMString>> keys();
     [CallWith=ScriptState, RaisesException, Measure] Promise<boolean> has(DOMString instrumentKey);
     [CallWith=ScriptState, RaisesException, Measure] Promise<undefined> set(DOMString instrumentKey, PaymentInstrument details);

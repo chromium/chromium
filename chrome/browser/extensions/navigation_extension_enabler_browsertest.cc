@@ -17,6 +17,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -176,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // Emulate a user gesture so that the current entry won't be skipped due to
   // the history manipulation intervention when we try to navigate back to it.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string(), base::NullCallback());
+      std::u16string(), base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 
   // Navigate subframe to an enabled extension URL.
   scoped_refptr<const Extension> extension =

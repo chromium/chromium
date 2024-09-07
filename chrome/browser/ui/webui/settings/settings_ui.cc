@@ -114,6 +114,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "crypto/crypto_buildflags.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
@@ -191,6 +192,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/webui/settings/mac_system_settings_handler.h"
+#endif
+
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
 #endif
 
 namespace settings {
@@ -330,12 +335,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         ->FetchPriceEmailPref();
   }
 
-  const bool is_search_engine_choice_settings_ui =
-      search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny);
-  html_source->AddBoolean("searchEngineChoiceSettingsUi",
-                          is_search_engine_choice_settings_ui);
-
   search_engines::SearchEngineChoiceService*
       search_engine_choice_dialog_service =
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
@@ -372,6 +371,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableCbdTimeframeRequired",
       base::FeatureList::IsEnabled(features::kCbdTimeframeRequired));
+
+  html_source->AddBoolean("enableHandTrackingContentSetting",
+#if BUILDFLAG(ENABLE_VR)
+                          device::features::IsHandTrackingEnabled());
+#else
+                          false);
+#endif
 
   html_source->AddBoolean("enableHashPrefixRealTimeLookups",
                           safe_browsing::hash_realtime_utils::
@@ -547,11 +553,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking));
 
-  html_source->AddBoolean(
-      "isPrivacySandboxPrivacyGuideAdTopicsEnabled",
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics));
-
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(
@@ -619,6 +620,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           optimization_guide_feature_visible[3]);
   html_source->AddBoolean("showHistorySearchControl",
                           optimization_guide_feature_visible[4]);
+
+  html_source->AddBoolean(
+      "enableAiSettingsPageRefresh",
+      base::FeatureList::IsEnabled(features::kAiSettingsPageRefresh));
 
   TryShowHatsSurveyWithTimeout();
 }

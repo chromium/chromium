@@ -265,6 +265,9 @@ class OmniboxClient {
   // Called when the omnibox popup is shown or hidden.
   virtual void OnPopupVisibilityChanged() {}
 
+  // Called when the thumbnail image has been removed.
+  virtual void OnThumbnailRemoved() {}
+
   // Even though IPH suggestions aren't selectable like normal matches, they can
   // have a 'learn more' or next-steps link. `OpenIphLink()` allows opening
   // these in a new tab.

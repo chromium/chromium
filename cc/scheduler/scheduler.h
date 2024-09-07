@@ -18,7 +18,6 @@
 #include "cc/metrics/submit_info.h"
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/draw_result.h"
-#include "cc/scheduler/redraw_reason.h"
 #include "cc/scheduler/scheduler_settings.h"
 #include "cc/scheduler/scheduler_state_machine.h"
 #include "cc/tiles/tile_priority.h"
@@ -162,7 +161,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // active).
   void SetNeedsOneBeginImplFrame();
 
-  void SetNeedsRedraw(RedrawReason reason);
+  void SetNeedsRedraw();
   void SetNeedsUpdateDisplayTree();
 
   void SetNeedsPrepareTiles();
@@ -177,9 +176,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // If |needs_first_draw_on_activation| is set to true, an impl-side pending
   // tree creates for this invalidation must be drawn at least once before a
   // new tree can be activated.
-  // |reason| will be applied to draw if this ends up being drawn.
-  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
-                                    RedrawReason reason);
+  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation);
 
   bool pending_tree_is_ready_for_activation() const {
     return state_machine_.pending_tree_is_ready_for_activation();
@@ -271,8 +268,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   }
 
   viz::BeginFrameAck CurrentBeginFrameAckForActiveTree() const;
-
-  RedrawReasonSet GetRedrawReasons() const;
 
   const viz::BeginFrameArgs& last_dispatched_begin_main_frame_args() const {
     return last_dispatched_begin_main_frame_args_;

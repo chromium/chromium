@@ -196,9 +196,10 @@ EditFinishView* EditFinishView::BuildView(
 EditFinishView::EditFinishView(
     DisplayOverlayController* display_overlay_controller)
     : display_overlay_controller_(display_overlay_controller) {
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kGroup,
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_LAYOUT_ACCTIONS_MENU),
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_LAYOUT_ACCTIONS_MENU));
+  GetViewAccessibility().SetDescription(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MENU_FOCUS));
 }
 

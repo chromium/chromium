@@ -22,7 +22,7 @@ namespace content {
 using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
 
 FrameTreeNode* GetFencedFrameRootNode(FrameTreeNode* node) {
-  int inner_node_id =
+  FrameTreeNodeId inner_node_id =
       node->current_frame_host()->inner_tree_main_frame_tree_node_id();
   return FrameTreeNode::GloballyFindByID(inner_node_id);
 }

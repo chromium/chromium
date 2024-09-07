@@ -29,7 +29,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
@@ -181,7 +180,7 @@ class XmlWrapper {
 @implementation ResponseParser
 
 - (instancetype)initWithAppId:(NSString*)appId {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _appId = appId;
   }
   return self;

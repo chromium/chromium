@@ -12,6 +12,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
+class Browser;
 @class CommandDispatcher;
 class PrefRegistrySimple;
 enum class TipsNotificationType;
@@ -25,9 +26,9 @@ class TipsNotificationClient : public PushNotificationClient {
   ~TipsNotificationClient() override;
 
   // Override PushNotificationClient::
-  void HandleNotificationInteraction(
+  bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
-  UIBackgroundFetchResult HandleNotificationReception(
+  std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
   void OnSceneActiveForegroundBrowserReady() override;
@@ -63,6 +64,9 @@ class TipsNotificationClient : public PushNotificationClient {
   // user has opted-in, etc).
   void MaybeRequestNotification(base::OnceClosure completion);
 
+  // Clears all pending requests for this client.
+  void ClearAllRequestedNotifications();
+
   // Request a notification of the given `type`.
   void RequestNotification(TipsNotificationType type,
                            base::OnceClosure completion);
@@ -93,14 +97,14 @@ class TipsNotificationClient : public PushNotificationClient {
   bool IsSceneLevelForegroundActive();
 
   // Helpers to handle notification interactions.
-  CommandDispatcher* Dispatcher();
-  void ShowUIForNotificationType(TipsNotificationType type);
-  void ShowDefaultBrowserPromo();
-  void ShowWhatsNew();
-  void ShowSignin();
-  void ShowSetUpListContinuation();
-  void ShowDocking();
-  void ShowOmniboxPosition();
+  void ShowUIForNotificationType(TipsNotificationType type, Browser* browser);
+  void ShowDefaultBrowserPromo(Browser* browser);
+  void ShowWhatsNew(Browser* browser);
+  void ShowSignin(Browser* browser);
+  void ShowSetUpListContinuation(Browser* browser);
+  void ShowDocking(Browser* browser);
+  void ShowOmniboxPosition(Browser* browser);
+  void ShowLensPromo(Browser* browser);
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);

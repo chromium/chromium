@@ -107,20 +107,26 @@ manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
   return manta::FeatureSupportStatus::kUnknown;
 }
 
-bool IsProfileManaged(Profile* profile) {
-  policy::ProfilePolicyConnector* profile_policy_connector =
-      profile->GetProfilePolicyConnector();
-
-  return (profile_policy_connector != nullptr &&
-          profile_policy_connector->IsManaged());
-}
-
 bool IsCountryAllowed(std::string_view country_code) {
-  constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>({
-      "au", "be", "ca", "ch", "cz", "de", "dk", "es", "fi",
-      "fr", "gb", "ie", "in", "it", "jp", "lu", "mx", "no",
-      "nz", "nl", "pl", "pt", "se", "us", "za",
-  });
+  constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>(
+      {"ae", "ag", "ai", "am", "ao", "aq", "ar", "as", "at", "au", "aw", "az",
+       "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo",
+       "bq", "br", "bs", "bt", "bw", "bz", "ca", "cc", "cd", "cf", "cg", "ch",
+       "ci", "ck", "cl", "cm", "co", "cr", "cv", "cw", "cx", "cy", "cz", "de",
+       "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et",
+       "fi", "fj", "fk", "fm", "fr", "ga", "gb", "gd", "ge", "gg", "gh", "gi",
+       "gm", "gn", "gq", "gr", "gs", "gt", "gu", "gw", "gy", "hm", "hn", "hr",
+       "ht", "hu", "id", "ie", "il", "im", "in", "io", "iq", "is", "it", "je",
+       "jm", "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kr", "kw", "ky",
+       "kz", "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly",
+       "ma", "mg", "mh", "ml", "mn", "mp", "mr", "ms", "mt", "mu", "mv", "mw",
+       "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np",
+       "nr", "nu", "nz", "om", "pa", "pe", "pg", "ph", "pk", "pl", "pm", "pn",
+       "pr", "ps", "pt", "pw", "py", "qa", "ro", "rw", "sa", "sb", "sc", "sd",
+       "se", "sg", "sh", "si", "sk", "sl", "sn", "so", "sr", "ss", "st", "sv",
+       "sz", "tc", "td", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tr",
+       "tt", "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg",
+       "vi", "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"});
 
   return kCountryAllowlist.contains(country_code);
 }
@@ -265,22 +271,12 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
     return false;
   }
 
-  // Always allow the feature on unmanaged users.
-  if (!IsProfileManaged(profile)) {
-    return true;
-  }
-
-  // For managed users, if the feature flag `OrcaControlledByPolicy `is set, let
-  // the feature enablement be driven by the policy.
-  if (base::FeatureList::IsEnabled(features::kOrcaControlledByPolicy)) {
-    return profile->GetPrefs()->IsManagedPreference(prefs::kManagedOrcaEnabled)
-               ? profile->GetPrefs()->GetBoolean(prefs::kManagedOrcaEnabled)
-               : false;
-  }
-
-  // If the Orca policy is not ready to launch on managed users, disallow the
-  // feature.
-  return false;
+  // Allow the feature traits to be visible (at the minimum in settings) in
+  // either one scenario: (1) The feature is not driven by any policy. (2) The
+  // feature is driven by a policy, and we allow the policy to take effect by
+  // the feature flag value.
+  return !profile->GetPrefs()->IsManagedPreference(prefs::kOrcaEnabled) ||
+         base::FeatureList::IsEnabled(features::kOrcaForManagedUsers);
 }
 
 bool IsSystemInEnglishLanguage() {
@@ -300,6 +296,8 @@ EditorSwitch::EditorSwitch(Observer* observer,
 
 EditorSwitch::~EditorSwitch() = default;
 
+// TODO: b:362381487 - Rename this method as now this method no longer includes
+// the check for policy value.
 bool EditorSwitch::IsAllowedForUse() const {
   if (base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood)) {
     return true;
@@ -318,6 +316,20 @@ bool EditorSwitch::IsAllowedForUse() const {
              ? IsAllowedForUseInDemoMode(context_->active_country_code())
              : IsAllowedForUseInNonDemoMode(profile_,
                                             context_->active_country_code());
+}
+
+bool EditorSwitch::IsFeedbackEnabled() const {
+  if (profile_ == nullptr) {
+    return false;
+  }
+
+  // If unmanaged, allow Feedback.
+  if (!profile_->GetPrefs()->IsManagedPreference(prefs::kOrcaFeedbackEnabled)) {
+    return true;
+  }
+
+  // If managed, check the enablement value.
+  return profile_->GetPrefs()->GetBoolean(prefs::kOrcaFeedbackEnabled);
 }
 
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
@@ -343,8 +355,9 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
           EditorBlockedReason::kBlockedByUnsupportedRegion);
     }
 
-    if (IsProfileManaged(profile_)) {
-      blocked_reasons.push_back(EditorBlockedReason::kBlockedByManagedStatus);
+    if (profile_->GetPrefs()->IsManagedPreference(prefs::kOrcaEnabled) &&
+        !profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled)) {
+      blocked_reasons.push_back(EditorBlockedReason::kBlockedByPolicy);
     }
 
     if (base::FeatureList::IsEnabled(

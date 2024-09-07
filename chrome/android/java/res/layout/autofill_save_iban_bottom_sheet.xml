@@ -34,17 +34,33 @@ found in the LICENSE file.
             android:paddingRight="@dimen/autofill_bottom_sheet_padding_horizontal"
             android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small">
 
+            <ImageView
+            android:id="@+id/autofill_save_iban_google_pay_icon"
+            android:importantForAccessibility="no"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/autofill_bottom_sheet_logo_height"
+            android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_medium"/>
+
             <!-- "Save IBAN to this device?" dialog title -->
             <TextView
-                android:id="@+id/autofill_local_save_iban_title_text"
+                android:id="@+id/autofill_save_iban_title_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/autofill_bottom_sheet_title_top_margin"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.Headline.Primary"/>
 
-            <RelativeLayout
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/autofill_save_iban_description_text"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:textAlignment="center" />
+
+            <LinearLayout
                 android:id="@+id/autofill_iban_chip"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/autofill_bottom_sheet_chip_top_margin"
@@ -60,17 +76,19 @@ found in the LICENSE file.
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:importantForAccessibility="no"
-                    android:layout_gravity="center" />
+                    android:layout_weight="0"
+                    android:gravity="center_vertical" />
 
-                <!-- IBAN label e.g., CH** **** **** **** *800 9-->
+                <!-- IBAN label e.g., CH ••8009-->
                 <TextView
                     android:id="@+id/autofill_save_iban_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.TextMedium.Primary"
                     android:layout_marginStart="@dimen/autofill_bottom_sheet_spacing_medium"
-                    android:layout_toEndOf="@id/autofill_save_iban_icon"/>
-            </RelativeLayout>
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"/>
+            </LinearLayout>
 
             <!-- Nickname -->
             <com.google.android.material.textfield.TextInputLayout
@@ -96,10 +114,18 @@ found in the LICENSE file.
                     android:hint="@string/autofill_save_iban_bottom_sheet_nickname_hint" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/autofill_save_iban_legal_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_medium"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+
             <!-- "Save" button -->
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/autofill_save_iban_confirm_button"
-                style="@style/FilledButton.Flat"
+                style="@style/FilledButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"

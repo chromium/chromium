@@ -20,6 +20,8 @@ struct COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdDevice {
   FwupdDevice& operator=(const FwupdDevice& other);
   ~FwupdDevice();
 
+  friend bool operator==(const FwupdDevice&, const FwupdDevice&) = default;
+
   std::string id;
   std::string device_name;
 };

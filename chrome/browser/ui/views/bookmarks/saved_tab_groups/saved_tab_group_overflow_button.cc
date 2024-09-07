@@ -38,11 +38,10 @@ namespace tab_groups {
 SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
     PressedCallback callback)
     : views::MenuButton(std::move(callback)) {
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kButton,
-      l10n_util::GetStringUTF16(IsTabGroupsSaveUIUpdateEnabled()
-                                    ? IDS_ACCNAME_TAB_GROUPS_EVERYTHING
-                                    : IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IsTabGroupsSaveUIUpdateEnabled() ? IDS_ACCNAME_TAB_GROUPS_EVERYTHING
+                                       : IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
   SetTooltipText(l10n_util::GetStringUTF16(
       IsTabGroupsSaveUIUpdateEnabled()
           ? IDS_TAB_GROUPS_EVERYTHING_BUTTON_TOOLTIP

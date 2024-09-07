@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/browser_accessibility_cocoa.h"
-#include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/hit_testing_browsertest.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "ui/accessibility/platform/browser_accessibility_cocoa.h"
+#include "ui/accessibility/platform/browser_accessibility_mac.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
 namespace content {

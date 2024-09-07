@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -54,13 +55,11 @@ TEST(MediaConditionParserTest, Basic) {
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SCOPED_TRACE(test_cases[i].input);
     StringView str(test_cases[i].input);
-    CSSTokenizer tokenizer(str);
-    const auto [tokens, offsets] = tokenizer.TokenizeToEOFWithOffsets();
+    CSSParserTokenStream stream(str);
     MediaQuerySet* media_condition_query_set =
-        MediaQueryParser::ParseMediaCondition(
-            CSSParserTokenRange(tokens),
-            CSSParserTokenOffsets(tokens, std::move(offsets), str), nullptr);
-    String query_text = media_condition_query_set->MediaText();
+        MediaQueryParser::ParseMediaCondition(stream, nullptr);
+    String query_text =
+        stream.AtEnd() ? media_condition_query_set->MediaText() : "not all";
     const char* expected_text =
         test_cases[i].output ? test_cases[i].output : test_cases[i].input;
     EXPECT_EQ(String(expected_text), query_text);

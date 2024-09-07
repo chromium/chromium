@@ -385,6 +385,7 @@ CreateSupervisedUserVerificationPage(content::WebContents* web_contents) {
   return std::make_unique<SupervisedUserVerificationPage>(
       web_contents, "first.last@gmail.com", kRequestUrl,
       SupervisedUserVerificationPage::VerificationPurpose::REAUTH_REQUIRED_SITE,
+      /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
@@ -400,6 +401,7 @@ CreateSupervisedUserVerificationPageForBlockedSite(
   return std::make_unique<SupervisedUserVerificationPage>(
       web_contents, "first.last@gmail.com", kRequestUrl,
       SupervisedUserVerificationPage::VerificationPurpose::BLOCKED_SITE,
+      /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
@@ -650,8 +652,6 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
       reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER;
     } else if (reason_string == "manual") {
       reason = supervised_user::FilteringBehaviorReason::MANUAL;
-    } else if (reason_string == "not_signed_in") {
-      reason = supervised_user::FilteringBehaviorReason::NOT_SIGNED_IN;
     }
   }
 

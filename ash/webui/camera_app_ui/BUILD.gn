@@ -193,9 +193,6 @@ generate_grd("build_grd") {
   }
 
   # JS Files.
-  foreach(js, no_compile_js_files) {
-    input_files += [ "js/$js" ]
-  }
   foreach(wasm, wasm_files) {
     input_files += [ "js/$wasm" ]
   }

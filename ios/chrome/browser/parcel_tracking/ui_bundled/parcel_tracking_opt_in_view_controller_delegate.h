@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PARCEL_TRACKING_UI_BUNDLED_PARCEL_TRACKING_OPT_IN_VIEW_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_PARCEL_TRACKING_UI_BUNDLED_PARCEL_TRACKING_OPT_IN_VIEW_CONTROLLER_DELEGATE_H_
 
+#import <Foundation/Foundation.h>
+
 // Delegate protocol for ParcelTrackingOptInViewController.
 @protocol ParcelTrackingOptInViewControllerDelegate <NSObject>
 

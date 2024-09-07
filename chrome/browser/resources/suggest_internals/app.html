@@ -44,35 +44,33 @@
   <div slot="body">
         <cr-button title="export requests to clipboard" on-click="onCopyClick_">
           Copy
-          <iron-icon icon="cr:insert-drive-file" slot="suffix-icon"></iron-icon>
+          <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
         </cr-button>
         <cr-button title="Download requests in JSON format." on-click="onDownloadClick_">
           Download
-          <iron-icon icon="cr:file-download" slot="suffix-icon"></iron-icon>
+          <cr-icon icon="cr:file-download" slot="suffix-icon"></cr-icon>
         </cr-button>
         <cr-button title="Import requests from clipboard." on-click="onPasteClick_">
           Paste
-          <iron-icon icon="cr:insert-drive-file" slot="suffix-icon"></iron-icon>
+          <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
         </cr-button>
         <div class="upload-container">
           <cr-button>
             Upload
-            <iron-icon icon="cr:insert-drive-file" slot="suffix-icon"></iron-icon>
+            <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
           </cr-button>
           <input placeholder="Upload previously downloaded requests to load them." on-change="onImportFile_" type="file" accept=".json">
         </div>
         <cr-button title="Clears the result list" on-click="onClearClick_">
           Clear
-          <iron-icon icon="cr:delete" slot="suffix-icon"></iron-icon>
+          <cr-icon icon="cr:delete" slot="suffix-icon"></cr-icon>
         </cr-button>
   </div>
 </cr-drawer>
-
 <div id="requests">
   <template is="dom-if" if="[[hardcodedRequest_]]">
     <suggest-request request="[[hardcodedRequest_]]"
         on-show-toast="onShowToast_"
-        on-open-view-response-dialog="onOpenViewResponseDialog_"
         on-open-hardcode-response-dialog="onOpenHardcodeResponseDialog_">
     </suggest-request>
   </template>
@@ -80,50 +78,10 @@
       filter="[[requestFilter_(filter_)]]">
     <suggest-request request="[[request]]"
         on-show-toast="onShowToast_"
-        on-open-view-request-dialog="onOpenViewRequestDialog_"
-        on-open-view-response-dialog="onOpenViewResponseDialog_"
         on-open-hardcode-response-dialog="onOpenHardcodeResponseDialog_">
     </suggest-request>
   </template>
 </div>
-<cr-dialog id="viewRequestDialog">
-  <div slot="header">
-    Copy the encoded proto value for this key from the request data, follow
-    the respective link, and click "Import from clipboard" to see its content.
-  </div>
-  <div slot="body">
-    <cr-link-row class="hr" external label="X-Client-Data"
-        button-aria-description=""
-        on-click="onClientDataLinkClick_">
-    </cr-link-row>
-  </div>
-  <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCloseDialogs_">
-      Close
-    </cr-button>
-  </div>
-</cr-dialog>
-<cr-dialog id="viewResponseDialog">
-  <div slot="header">
-    Copy the encoded proto value for these keys from the JSON response, follow
-    the respective link, and click "Import from clipboard" to see its content.
-  </div>
-  <div slot="body">
-    <cr-link-row class="hr" external label="google:groupsinfo"
-        button-aria-description=""
-        on-click="onGroupsInfoLinkClick_">
-    </cr-link-row>
-    <cr-link-row class="hr" external label="google:entityinfo"
-        button-aria-description=""
-        on-click="onEntityInfoLinkClick_">
-    </cr-link-row>
-  </div>
-  <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCloseDialogs_">
-      Close
-    </cr-button>
-  </div>
-</cr-dialog>
 <cr-dialog id="hardcodeResponseDialog">
   <div slot="header">
     Confirm to hardcode the following response for all Suggest requests.

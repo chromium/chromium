@@ -1,7 +1,7 @@
 Name: wayland
 URL: http://wayland.freedesktop.org/
-Version: 1.21.0
-CPEPrefix: cpe:/a:wayland:wayland:1.19.0
+Version: 1.23.0
+CPEPrefix: cpe:/a:wayland:wayland:1.20.91
 License: MIT
 License File: src/COPYING
 Security Critical: yes
@@ -12,8 +12,8 @@ Wayland is a protocol for a compositor to talk to its clients as well as a C
 library implementation of that protocol.
 
 Note: It appears that Wayland has been failing to register CPEs with
-nvd.nist.gov. Thus the last actual CPEPrefix is 1.19.0, even though the latest
-version is 1.21.0.
+nvd.nist.gov. Thus the last actual CPEPrefix is 1.20.91, even though the latest
+version is 1.23.0.
 
 Modifications:
 - Added wayland_scanner_wrapper.py to generate protocol code automatically.

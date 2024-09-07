@@ -733,6 +733,12 @@ def _PostCommentsToOrphanedBugs(orphaned_urls: List[str]) -> None:
   for url in orphaned_urls:
     try:
       comment_list = buganizer_client.GetIssueComments(url)
+      # GetIssueComments currently returns a dict if something goes wrong
+      # instead of raising an exception.
+      if isinstance(comment_list, dict):
+        logging.exception('Failed to get comments from %s: %s', url,
+                          comment_list.get('error', 'error not provided'))
+        continue
       existing_comments = [c['comment'] for c in comment_list]
       if BUGANIZER_COMMENT not in existing_comments:
         buganizer_client.NewComment(url, BUGANIZER_COMMENT)

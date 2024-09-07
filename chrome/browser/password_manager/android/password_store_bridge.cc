@@ -165,6 +165,11 @@ void PasswordStoreBridge::ClearAllPasswords(JNIEnv* env) {
   }
 }
 
+void PasswordStoreBridge::ClearAllPasswordsFromProfileStore(JNIEnv* env) {
+  profile_store_->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                             base::Time::Max());
+}
+
 void PasswordStoreBridge::Destroy(JNIEnv* env) {
   delete this;
 }

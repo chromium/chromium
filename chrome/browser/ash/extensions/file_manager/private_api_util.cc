@@ -739,15 +739,9 @@ void VolumeToVolumeMetadata(Profile* profile,
   }
 }
 
-base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
-                                   Profile* profile,
-                                   const GURL& url) {
-  DCHECK(render_frame_host);
-  DCHECK(profile);
-
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      util::GetFileSystemContextForRenderFrameHost(profile, render_frame_host);
-
+base::FilePath GetLocalPathFromURL(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const GURL& url) {
   const storage::FileSystemURL filesystem_url(
       file_system_context->CrackURLInFirstPartyContext(url));
   base::FilePath path;

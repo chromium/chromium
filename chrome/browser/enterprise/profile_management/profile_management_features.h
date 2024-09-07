@@ -20,11 +20,19 @@ BASE_DECLARE_FEATURE(kEnableProfileTokenManagement);
 // Controls whether OIDC-response profile management is enabled.
 BASE_DECLARE_FEATURE(kOidcAuthProfileManagement);
 
+// Controls whether OIDC profile enrollment can be started from navigation
+// response in addition to redirections.
+BASE_DECLARE_FEATURE(kOidcAuthResponseInterception);
+
 // Controls whether OIDC enrollment process can time out (and after how long).
 BASE_DECLARE_FEATURE(kOidcEnrollmentTimeout);
 
 // Controls whether the generic OIDC-response profile management is enabled.
 BASE_DECLARE_FEATURE(kEnableGenericOidcAuthProfileManagement);
+
+// Controls whether to add a list of hosts that are eligible for OIDC profile
+// enrollments.
+BASE_DECLARE_FEATURE(kOidcEnrollmentAuthSource);
 
 // Oidc authentication related feature params.
 extern const base::FeatureParam<std::string> kOidcAuthStubDmToken;
@@ -36,6 +44,10 @@ extern const base::FeatureParam<bool> kOidcAuthIsDasherBased;
 extern const base::FeatureParam<bool> kOidcAuthForceErrorUi;
 extern const base::FeatureParam<bool> kOidcAuthForceTimeoutUi;
 extern const base::FeatureParam<base::TimeDelta> kOidcEnrollRegistrationTimeout;
+
+// List of hosts to be added as eligible to `kOidcEnrollmentAuthSource`,
+// takes the form of a comma-separated string.
+extern const base::FeatureParam<std::string> kOidcAuthAdditionalHosts;
 
 }  // namespace profile_management::features
 

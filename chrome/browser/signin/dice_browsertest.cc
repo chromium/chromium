@@ -240,7 +240,8 @@ std::unique_ptr<HttpResponse> HandleSigninURL(
       http_response->AddCustomHeader(
           kDiceResponseHeader,
           base::StringPrintf(
-              "action=SIGNIN,authuser=1,id=%s,email=%s,authorization_code=%s",
+              "action=SIGNIN,authuser=1,id=%s,email=%s,authorization_code=%s,"
+              "eligible_for_token_binding=ES256 RS256",
               signin::GetTestGaiaIdForEmail(main_email).c_str(),
               main_email.c_str(), kAuthorizationCode));
     }
@@ -817,8 +818,10 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithBoundSessionCredentialsEnabled,
   SendRefreshTokenResponse();
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
-  // TODO(http://b/274463812): verify that the refresh token is bound once the
-  // binding status is propagated to `IdentityManager`.
+  EXPECT_FALSE(
+      GetIdentityManager()
+          ->GetWrappedBindingKeyOfRefreshTokenForAccount(GetMainAccountID())
+          .empty());
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 

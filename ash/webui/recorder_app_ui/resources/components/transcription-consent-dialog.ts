@@ -72,7 +72,9 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
       s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
     });
     this.platformHandler.installSoda();
-    this.speakerLabelConsentDialog.value?.show();
+    if (this.platformHandler.canUseSpeakerLabel.value) {
+      this.speakerLabelConsentDialog.value?.show();
+    }
     this.hide();
   }
 
@@ -92,12 +94,10 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
           <cra-button
             .label=${i18n.onboardingDialogTranscriptionDeferButton}
             class="left"
-            button-style="secondary"
             @click=${this.hide}
           ></cra-button>
           <cra-button
             .label=${i18n.onboardingDialogTranscriptionCancelButton}
-            button-style="secondary"
             @click=${this.disableTranscription}
           ></cra-button>
           <cra-button

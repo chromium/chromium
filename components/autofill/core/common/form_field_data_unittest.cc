@@ -11,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 void FillCommonFields(FormFieldData* data) {
@@ -224,8 +223,6 @@ void SerializeInVersion9Format(const FormFieldData& data,
   WriteVersion7Specific(data, pickle);
   WriteVersion8Specific(data, pickle);
 }
-
-}  // namespace
 
 TEST(FormFieldDataTest, SerializeAndDeserialize) {
   FormFieldData data;
@@ -472,4 +469,5 @@ TEST(FormFieldDataTest, SelectedOption) {
             (SelectOption{.value = u"value2", .text = u"text2"}));
 }
 
+}  // namespace
 }  // namespace autofill

@@ -52,6 +52,7 @@
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom-forward.h"
+#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -130,7 +131,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       std::optional<SkColor> page_base_background_color,
       const BrowsingContextGroupInfo& browsing_context_group_info,
-      const ColorProviderColorMaps* color_provider_colors);
+      const ColorProviderColorMaps* color_provider_colors,
+      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
 
   // All calls to Create() should be balanced with a call to Close(). This
   // synchronously destroys the WebViewImpl.
@@ -711,7 +713,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       std::optional<SkColor> page_base_background_color,
       const BrowsingContextGroupInfo& browsing_context_group_info,
-      const ColorProviderColorMaps* color_provider_colors);
+      const ColorProviderColorMaps* color_provider_colors,
+      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
   ~WebViewImpl() override;
 
   void ConfigureAutoResizeMode();

@@ -29,7 +29,7 @@
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/channel_layout.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -55,7 +55,7 @@ class WebRtcAudioRendererSource;
 // for connecting WebRtc MediaStream with the audio pipeline.
 class MODULES_EXPORT WebRtcAudioRenderer
     : public media::AudioRendererSink::RenderCallback,
-      public blink::WebMediaStreamAudioRenderer {
+      public MediaStreamAudioRenderer {
  public:
   // This is a little utility class that holds the configured state of an audio
   // stream.
@@ -127,8 +127,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // When Stop() is called or when the proxy goes out of scope, the proxy
   // will ensure that Pause() is called followed by a call to Stop(), which
   // is the usage pattern that WebRtcAudioRenderer requires.
-  scoped_refptr<blink::WebMediaStreamAudioRenderer>
-  CreateSharedAudioRendererProxy(
+  scoped_refptr<MediaStreamAudioRenderer> CreateSharedAudioRendererProxy(
       MediaStreamDescriptor* media_stream_descriptor);
 
   // Used to DCHECK on the expected state.
@@ -143,9 +142,9 @@ class MODULES_EXPORT WebRtcAudioRenderer
   bool CurrentThreadIsRenderingThread();
 
  private:
-  // blink::WebMediaStreamAudioRenderer implementation.  This is private since
+  // MediaStreamAudioRenderer implementation.  This is private since
   // we want callers to use proxy objects.
-  // TODO(tommi): Make the blink::WebMediaStreamAudioRenderer implementation a
+  // TODO(tommi): Make the MediaStreamAudioRenderer implementation a
   // pimpl?
   void Start() override;
   void Play() override;

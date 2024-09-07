@@ -35,34 +35,22 @@ void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
       (is_click || is_enter_or_space || is_left_or_up_arrow_key ||
        is_right_or_down_arrow_key);
   if (should_intercept) {
-    ScrollMarkerPseudoElement* scroll_marker = this;
     if (scroll_marker_group_) {
       if (is_right_or_down_arrow_key) {
-        scroll_marker = scroll_marker_group_->FindNextScrollMarker(
-            *scroll_marker_group_->Selected());
+        scroll_marker_group_->ActivateNextScrollMarker();
       } else if (is_left_or_up_arrow_key) {
-        scroll_marker = scroll_marker_group_->FindPreviousScrollMarker(
-            *scroll_marker_group_->Selected());
+        scroll_marker_group_->ActivatePrevScrollMarker();
+      } else if (is_click || is_enter_or_space) {
+        ScrollMarkerPseudoElement* scroll_marker = this;
+        scroll_marker_group_->SetSelected(*scroll_marker);
+        mojom::blink::ScrollIntoViewParamsPtr params =
+            scroll_into_view_util::CreateScrollIntoViewParams(
+                *scroll_marker->OriginatingElement()->GetComputedStyle());
+        scroll_marker->OriginatingElement()->ScrollIntoViewNoVisualUpdate(
+            std::move(params));
+        scroll_marker_group_->SetSelected(*this);
       }
-      scroll_marker_group_->SetSelected(*scroll_marker);
     }
-    if (is_right_or_down_arrow_key) {
-      GetDocument().SetFocusedElement(
-          scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
-                                     mojom::blink::FocusType::kNone,
-                                     /*capabilities=*/nullptr));
-    }
-    if (is_left_or_up_arrow_key) {
-      GetDocument().SetFocusedElement(
-          scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
-                                     mojom::blink::FocusType::kNone,
-                                     /*capabilities=*/nullptr));
-    }
-    mojom::blink::ScrollIntoViewParamsPtr params =
-        scroll_into_view_util::CreateScrollIntoViewParams(
-            *scroll_marker->OriginatingElement()->GetComputedStyle());
-    scroll_marker->OriginatingElement()->ScrollIntoViewNoVisualUpdate(
-        std::move(params));
     event.SetDefaultHandled();
   }
   PseudoElement::DefaultEventHandler(event);

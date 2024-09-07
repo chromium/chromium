@@ -9,8 +9,9 @@ function sendDoesntError(iteration = 0, done = undefined) {
   let ws = new WebSocket('ws://localhost:' + testWebSocketPort +
                          '/close-immediately');
 
-  if (!done)
+  if (!done) {
     done = chrome.test.callbackAdded();
+  }
 
   ws.onclose = event => {
     chrome.test.log('WebSocket ' + iteration + ' closed ' +

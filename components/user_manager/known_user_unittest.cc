@@ -571,10 +571,11 @@ TEST_F(KnownUserTest, CleanObsoletePrefs) {
 
 //
 // =============================================================================
-// Type-parametrized unittests for Set{String,Boolean,Integer,}Pref and
-// Get{String,Boolean,Integer,}Pref.
-// For every type (string, boolean, integer, raw base::Value) a PrefTypeInfo
-// struct is declared which is then referenced in the generic test code.
+// Type-parametrized unittests for Set{String,Boolean,Integer,Double,}Pref and
+// Get{String,Boolean,Integer,Double}Pref.
+// For every type (string, boolean, integer, double, raw base::Value) a
+// PrefTypeInfo struct is declared which is then referenced in the generic test
+// code.
 
 // Test type holder for known_user string prefs.
 struct PrefTypeInfoString {
@@ -607,6 +608,23 @@ struct PrefTypeInfoInteger {
   }
   static bool CheckPrefValueAsBaseValue(const base::Value& read_value) {
     return read_value.is_int() && read_value.GetInt() == 7;
+  }
+};
+
+// Test type holder for known_user double prefs.
+struct PrefTypeInfoDouble {
+  using PrefType = double;
+  using PrefTypeForReading = double;
+
+  static constexpr auto SetFunc = &KnownUser::SetDoublePref;
+  static constexpr auto GetFunc = &KnownUser::GetDoublePrefForTest;
+
+  static PrefType CreatePrefValue() { return 5.25; }
+  static bool CheckPrefValue(PrefTypeForReading read_value) {
+    return read_value == 5.25;
+  }
+  static bool CheckPrefValueAsBaseValue(const base::Value& read_value) {
+    return read_value.is_double() && read_value.GetDouble() == 5.25;
   }
 };
 
@@ -693,7 +711,7 @@ TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadExistingPref) {
   bool read_success =
       (known_user.*TypeParam::GetFunc)(kUser, kPrefName, &read_result);
   EXPECT_TRUE(read_success);
-  TypeParam::CheckPrefValue(read_result);
+  EXPECT_TRUE(TypeParam::CheckPrefValue(read_result));
 }
 
 TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadExistingPrefAsValue) {
@@ -710,7 +728,7 @@ TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadExistingPrefAsValue) {
   bool read_success = known_user.GetPrefForTest(kUser, kPrefName, &read_result);
   EXPECT_TRUE(read_success);
   ASSERT_TRUE(read_result);
-  TypeParam::CheckPrefValueAsBaseValue(*read_result);
+  EXPECT_TRUE(TypeParam::CheckPrefValueAsBaseValue(*read_result));
 }
 
 REGISTER_TYPED_TEST_SUITE_P(KnownUserWithPrefTypeTest,
@@ -725,6 +743,7 @@ REGISTER_TYPED_TEST_SUITE_P(KnownUserWithPrefTypeTest,
 // prepocessor would be confused on the comma.
 using AllTypeInfos = testing::Types<PrefTypeInfoString,
                                     PrefTypeInfoInteger,
+                                    PrefTypeInfoDouble,
                                     PrefTypeInfoBoolean,
                                     PrefTypeInfoValue>;
 

@@ -1,0 +1,3 @@
+specific_include_rules = {
+    "constants.cc": ["+ui/views"]
+}

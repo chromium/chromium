@@ -163,7 +163,7 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
                                    CallbackResult results_to_report) {
     EXPECT_CALL(*auth_zone, InitAuthorization(scope, testing::_))
         .WillOnce(
-            [&results_to_report](const std::string&, StatusCallback callback) {
+            [results_to_report](const std::string&, StatusCallback callback) {
               std::move(callback).Run(results_to_report.status,
                                       std::move(results_to_report.data));
             });
@@ -173,7 +173,7 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
                                      const GURL& redirect_url,
                                      CallbackResult results_to_report) {
     EXPECT_CALL(*auth_zone, FinishAuthorization(redirect_url, testing::_))
-        .WillOnce([&results_to_report](const GURL&, StatusCallback callback) {
+        .WillOnce([results_to_report](const GURL&, StatusCallback callback) {
           std::move(callback).Run(results_to_report.status,
                                   std::move(results_to_report.data));
         });
@@ -185,8 +185,8 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
                                         CallbackResult results_to_report) {
     EXPECT_CALL(*auth_zone,
                 GetEndpointAccessToken(ipp_endpoint, scope, testing::_))
-        .WillOnce([&results_to_report](const chromeos::Uri&, const std::string&,
-                                       StatusCallback callback) {
+        .WillOnce([results_to_report](const chromeos::Uri&, const std::string&,
+                                      StatusCallback callback) {
           std::move(callback).Run(results_to_report.status,
                                   std::move(results_to_report.data));
         });

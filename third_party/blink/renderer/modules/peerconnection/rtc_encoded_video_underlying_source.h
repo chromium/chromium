@@ -27,8 +27,12 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
   // RTCEncodedUnderlyingSourceWrapper.
   explicit RTCEncodedVideoUnderlyingSource(
       ScriptState*,
-      WTF::CrossThreadOnceClosure disconnect_callback =
-          WTF::CrossThreadOnceClosure(),
+      WTF::CrossThreadOnceClosure disconnect_callback);
+  explicit RTCEncodedVideoUnderlyingSource(
+      ScriptState*,
+      WTF::CrossThreadOnceClosure disconnect_callback,
+      bool enable_frame_restrictions,
+      base::UnguessableToken owner_id,
       ReadableStreamDefaultControllerWithScriptScope* controller_override =
           nullptr);
 
@@ -67,6 +71,9 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
   int dropped_frames_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Member<ReadableStreamDefaultControllerWithScriptScope> controller_override_;
+  const bool enable_frame_restrictions_;
+  const base::UnguessableToken owner_id_;
+  int64_t last_enqueued_frame_counter_ = 0;
 };
 
 }  // namespace blink

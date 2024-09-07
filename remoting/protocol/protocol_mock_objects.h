@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/proto/internal.pb.h"
 #include "remoting/proto/video.pb.h"
 #include "remoting/protocol/authenticator.h"
@@ -49,6 +50,10 @@ class MockAuthenticator : public Authenticator {
   MOCK_METHOD(CredentialsType, credentials_type, (), (const, override));
   MOCK_METHOD(const Authenticator&,
               implementing_authenticator,
+              (),
+              (const, override));
+  MOCK_METHOD(const SessionPolicies*,
+              GetSessionPolicies,
               (),
               (const, override));
   MOCK_CONST_METHOD0(state, Authenticator::State());
@@ -89,7 +94,10 @@ class MockConnectionToClientEventHandler
   ~MockConnectionToClientEventHandler() override;
 
   MOCK_METHOD0(OnConnectionAuthenticating, void());
-  MOCK_METHOD0(OnConnectionAuthenticated, void());
+  MOCK_METHOD(void,
+              OnConnectionAuthenticated,
+              (const SessionPolicies*),
+              (override));
   MOCK_METHOD0(CreateMediaStreams, void());
   MOCK_METHOD0(OnConnectionChannelsConnected, void());
   MOCK_METHOD1(OnConnectionClosed, void(ErrorCode error));

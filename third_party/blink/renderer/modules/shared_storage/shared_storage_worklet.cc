@@ -93,6 +93,12 @@ ScriptPromise<IDLUndefined> SharedStorageWorklet::addModule(
     const String& module_url,
     const WorkletOptions* options,
     ExceptionState& exception_state) {
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
+    return EmptyPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
@@ -113,13 +119,6 @@ void SharedStorageWorklet::AddModuleHelper(
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
-
-  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    resolver->Reject(exception_state);
-    return;
-  }
 
   // An opaque data origin is not allowed. Here we reject the case where the
   // context origin is opaque and used as the data origin. Below we will address

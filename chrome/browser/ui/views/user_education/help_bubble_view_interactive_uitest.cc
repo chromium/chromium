@@ -32,6 +32,7 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -64,7 +65,7 @@ class TestBubbleView : public views::BubbleDialogDelegateView {
  public:
   explicit TestBubbleView(views::View* anchor_view)
       : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_LEFT) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     SetPreferredSize(gfx::Size(100, 100));
     SetCanActivate(false);
     set_focus_traversable_from_anchor_view(false);
@@ -370,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, MAYBE_AnnotateMenu) {
       // There may be some shuffling and setting up on some platforms (looking
       // at you, Lacros) so make sure the menu is fully loaded before trying to
       // show the help bubble.
-      WaitForShow(AppMenuModel::kDownloadsMenuItem), FlushEvents(),
+      WaitForShow(AppMenuModel::kDownloadsMenuItem),
 
       // Show the help bubble attached to the menu.
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params)),
@@ -422,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
       // There may be some shuffling and setting up on some platforms (looking
       // at you, Lacros) so make sure the menu is fully loaded before trying to
       // show the help bubble.
-      WaitForShow(AppMenuModel::kDownloadsMenuItem), FlushEvents(),
+      WaitForShow(AppMenuModel::kDownloadsMenuItem),
 
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params1)),
       ShowHelpBubble(AppMenuModel::kMoreToolsMenuItem, std::move(params2)),
@@ -435,7 +436,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
       MoveMouseTo(HelpBubbleView::kDefaultButtonIdForTesting), ClickMouse(),
       WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
           .SetTransitionOnlyOnEvent(true),
-      FlushEvents(),
 
       // Close the remaining help bubble.
       CloseHelpBubble());
@@ -483,7 +483,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
                  view->GetWidget()->SetBounds(
                      gfx::Rect({50, 50}, view->GetWidget()->GetSize()));
                }),
-      FlushEvents(),
 
       // Create the test bubble that cannot be activated.
       WithView(ContentsWebView::kContentsWebViewElementId,
@@ -492,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
                      std::make_unique<TestBubbleView>(view));
                  widget->ShowInactive();
                }),
-      WaitForShow(kTestBubbleElementId), FlushEvents(),
+      WaitForShow(kTestBubbleElementId),
 
       // Show a help bubble attached to the bubble.
       ShowHelpBubble(kTestBubbleElementId, std::move(params)),

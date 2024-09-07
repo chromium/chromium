@@ -98,28 +98,10 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseLostMedia, true);
   registry->RegisterBooleanPref(prefs::kBirchUseWeather, true);
   registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
-  registry->RegisterBooleanPref(prefs::kBirchUseCoral,
-                                false); /*this is an opt-in feature*/
+  // TODO(yulunwu): Change this to false once there is a way to opt-in.
+  registry->RegisterBooleanPref(prefs::kBirchUseCoral, true);
   // NOTE: If you add a pref here, also update birch_browsertest.cc and
   // birch_model_unittest.cc which have code that disables all prefs.
-}
-
-template <typename T>
-void BirchModel::SetItems(DataTypeInfo<T>& data_info,
-                          const std::vector<T>& items,
-                          bool record_latency) {
-  if (data_info.fetch_in_progress) {
-    base::UmaHistogramCounts100(
-        "Ash.Birch.ResultsReturned." + data_info.metric_suffix, items.size());
-    if (record_latency) {
-      base::UmaHistogramTimes("Ash.Birch.Latency." + data_info.metric_suffix,
-                              GetNow() - data_info.fetch_start_time);
-    }
-    data_info.fetch_in_progress = false;
-  }
-  data_info.items = std::move(items);
-  data_info.is_fresh = true;
-  MaybeRespondToDataFetchRequest();
 }
 
 void BirchModel::SetCalendarItems(
@@ -224,10 +206,14 @@ void BirchModel::StartDataFetchIfNeeded(DataTypeInfo<T>& data_info,
     return;
   }
 
-  // If no fetch is currently in progress, avoid fetching data for this type
-  // when the pref was toggled but no items need to be shown.
   const bool model_fetch_in_progress = !pending_requests_.empty();
-  if (!model_fetch_in_progress) {
+  if (model_fetch_in_progress) {
+    // Clear update request if there is a data fetch.
+    data_info.update_request = std::nullopt;
+  } else if (!data_info.update_request) {
+    // If no data fetch or update request is currently in progress, avoid
+    // fetching data for this type when the pref was toggled but no items need
+    // to be shown.
     return;
   }
 
@@ -523,9 +509,10 @@ bool BirchModel::IsDataFresh() {
        self_share_data_.is_fresh && lost_media_data_.is_fresh &&
        release_notes_data_.is_fresh);
 
-  // Use the same logic for weather.
+  // Use the same logic for weather and coral.
   bool is_weather_fresh = !weather_provider_ || weather_data_.is_fresh;
-  return is_birch_client_fresh && is_weather_fresh;
+  bool is_coral_fresh = !coral_provider_ || coral_data_.is_fresh;
+  return is_birch_client_fresh && is_weather_fresh && is_coral_fresh;
 }
 
 void BirchModel::RemoveItem(BirchItem* item) {
@@ -543,6 +530,33 @@ void BirchModel::RemoveItem(BirchItem* item) {
     if (birch_client_) {
       birch_client_->RemoveFileItemFromLauncher(file_item->file_path());
     }
+  }
+}
+
+void BirchModel::SetLostMediaDataChangedCallback(
+    LostMediaDataChangedCallback callback) {
+  CHECK(birch_client_);
+
+  auto* lost_media_data_provider = birch_client_->GetLostMediaProvider();
+  if (lost_media_data_provider && !lost_media_data_changed_callback_) {
+    lost_media_data_changed_callback_ = std::move(callback);
+    lost_media_data_provider->SetDataProviderChangedCallback(
+        base::BindRepeating(&BirchModel::OnLostMediaDataProviderChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void BirchModel::ResetLostMediaDataChangedCallback() {
+  if (lost_media_data_changed_callback_) {
+    lost_media_data_changed_callback_.Reset();
+  }
+
+  if (!birch_client_) {
+    return;
+  }
+
+  if (auto* lost_media_data_provider = birch_client_->GetLostMediaProvider()) {
+    lost_media_data_provider->ResetDataProviderChangedCallback();
   }
 }
 
@@ -581,12 +595,43 @@ void BirchModel::OverrideWeatherProviderForTest(
   weather_provider_ = std::move(weather_provider);
 }
 
+BirchDataProvider* BirchModel::GetCoralProviderForTest() {
+  return coral_provider_.get();
+}
+
+void BirchModel::OverrideCoralProviderForTest(
+    std::unique_ptr<BirchDataProvider> coral_provider) {
+  CHECK(coral_provider_);
+  coral_provider_ = std::move(coral_provider);
+}
+
 void BirchModel::OverrideClockForTest(base::Clock* clock) {
   clock_override_ = clock;
 }
 
 void BirchModel::SetDataFetchCallbackForTest(base::OnceClosure callback) {
   data_fetch_callback_for_test_ = std::move(callback);
+}
+
+template <typename T>
+void BirchModel::SetItems(DataTypeInfo<T>& data_info,
+                          const std::vector<T>& items,
+                          bool record_latency) {
+  if (data_info.fetch_in_progress) {
+    base::UmaHistogramCounts100(
+        "Ash.Birch.ResultsReturned." + data_info.metric_suffix, items.size());
+    if (record_latency) {
+      base::UmaHistogramTimes("Ash.Birch.Latency." + data_info.metric_suffix,
+                              GetNow() - data_info.fetch_start_time);
+    }
+    data_info.fetch_in_progress = false;
+  }
+  data_info.items = std::move(items);
+  data_info.is_fresh = true;
+  MaybeRespondToDataFetchRequest();
+  if (data_info.update_request) {
+    std::move(data_info.update_request->callback).Run();
+  }
 }
 
 void BirchModel::HandleRequestTimeout(size_t request_id) {
@@ -598,6 +643,16 @@ void BirchModel::HandleRequestTimeout(size_t request_id) {
   base::OnceClosure callback = std::move(request->second.callback);
   pending_requests_.erase(request);
   std::move(callback).Run();
+}
+
+void BirchModel::HandleLostMediaUpdateRequest() {
+  if (lost_media_data_changed_callback_ && lost_media_data_.is_fresh) {
+    lost_media_data_changed_callback_.Run(
+        lost_media_data_.items.size()
+            ? std::make_unique<BirchLostMediaItem>(lost_media_data_.items[0])
+            : nullptr);
+  }
+  lost_media_data_.update_request = std::nullopt;
 }
 
 void BirchModel::MaybeRespondToDataFetchRequest() {
@@ -803,6 +858,25 @@ bool BirchModel::ShouldShowMostVisited() {
   }
   // Re-show for up to 2 minutes.
   return GetNow() - most_visited_last_shown_ < base::Minutes(2);
+}
+
+void BirchModel::OnLostMediaDataProviderChanged() {
+  CHECK(birch_client_);
+
+  if (lost_media_data_changed_callback_ &&
+      !lost_media_data_.fetch_in_progress) {
+    lost_media_data_.update_request.emplace();
+    lost_media_data_.update_request->callback = base::BindOnce(
+        &BirchModel::HandleLostMediaUpdateRequest, base::Unretained(this));
+    lost_media_data_.update_request->timer =
+        std::make_unique<base::OneShotTimer>();
+    lost_media_data_.update_request->timer->Start(
+        FROM_HERE, kDataFetchTimeoutInMs,
+        base::BindOnce(&BirchModel::HandleLostMediaUpdateRequest,
+                       base::Unretained(this)));
+    StartDataFetchIfNeeded(lost_media_data_,
+                           birch_client_->GetLostMediaProvider());
+  }
 }
 
 }  // namespace ash

@@ -17,8 +17,15 @@
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
+#if !BUILDFLAG(IS_IOS)
+namespace webauthn {
+class InternalAuthenticator;
+}
+#endif
+
 namespace autofill {
 
+class AutofillDriver;
 struct AutofillErrorDialogContext;
 class AutofillOfferData;
 class AutofillOfferManager;
@@ -47,6 +54,7 @@ enum class WebauthnDialogCallbackType;
 
 namespace payments {
 
+class MandatoryReauthManager;
 class PaymentsNetworkInterface;
 class PaymentsWindowManager;
 
@@ -92,6 +100,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
     // Request failed in retrieving virtual card information; don't try again.
     kVcnRetrievalPermanentFailure,
+
+    // Request took longer time to finish than the set client-side timeout.
+    kClientSideTimeout,
   };
 
   enum class SaveIbanOfferUserDecision {
@@ -185,6 +196,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kIgnored,
   };
 
+  // Used for explicitly requesting the user to enter/confirm cardholder name,
+  // expiration date month and year.
+  struct UserProvidedCardDetails {
+    std::u16string cardholder_name;
+    std::u16string expiration_date_month;
+    std::u16string expiration_date_year;
+  };
+
   // Callback to run if user presses the Save button in the migration dialog.
   // Will pass a vector of GUIDs of cards that the user selected to upload to
   // LocalCardMigrationManager.
@@ -227,10 +246,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // existing server card is offered. Sends whether the prompt was accepted,
   // declined, or ignored in `user_decision`, and additional
   // `user_provided_card_details` if applicable.
-  using UploadSaveCardPromptCallback =
-      base::OnceCallback<void(SaveCardOfferUserDecision user_decision,
-                              const AutofillClient::UserProvidedCardDetails&
-                                  user_provided_card_details)>;
+  using UploadSaveCardPromptCallback = base::OnceCallback<void(
+      SaveCardOfferUserDecision user_decision,
+      const UserProvidedCardDetails& user_provided_card_details)>;
 
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't
@@ -349,14 +367,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
       UploadSaveCardPromptCallback callback);
 
   // Shows upload result to users. Called after credit card upload is finished.
-  // `card_saved` indicates if the card is successfully saved.
+  // `result` holds the outcome for credit card upload.
   // `on_confirmation_closed_callback` should run after confirmation prompt is
   // closed.
   // TODO(crbug.com/40614280): This function is overridden in iOS codebase and
   // in the desktop codebase. If iOS is not using it to do anything, please keep
   // this function for desktop.
   virtual void CreditCardUploadCompleted(
-      bool card_saved,
+      PaymentsRpcResult result,
       std::optional<OnConfirmationClosedCallback>
           on_confirmation_closed_callback);
 
@@ -370,9 +388,8 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::OnceClosure decline_virtual_card_callback);
 
   // Called after virtual card enrollment is finished. Shows enrollment
-  // result to users. `is_vcn_enrolled` indicates if the card was successfully
-  // enrolled as a virtual card.
-  virtual void VirtualCardEnrollCompleted(bool is_vcn_enrolled);
+  // result to users. `result` holds the outcome of virtual card enrollment.
+  virtual void VirtualCardEnrollCompleted(PaymentsRpcResult result);
 
   // Called when the virtual card has been fetched successfully. Uses the
   // necessary information in `options` to show the manual fallback bubble.
@@ -543,6 +560,19 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // currently shown. Should be called only if the feature is supported by the
   // platform.
   virtual void HideTouchToFillPaymentMethod();
+
+#if !BUILDFLAG(IS_IOS)
+  // Creates the appropriate implementation of InternalAuthenticator. May be
+  // null for platforms that don't support this, in which case standard CVC
+  // authentication will be used instead.
+  virtual std::unique_ptr<webauthn::InternalAuthenticator>
+  CreateCreditCardInternalAuthenticator(AutofillDriver* driver);
+#endif
+
+  // Gets or creates a payments autofill mandatory re-auth manager. This will be
+  // used to handle payments mandatory re-auth related flows.
+  virtual payments::MandatoryReauthManager*
+  GetOrCreatePaymentsMandatoryReauthManager();
 };
 
 }  // namespace payments

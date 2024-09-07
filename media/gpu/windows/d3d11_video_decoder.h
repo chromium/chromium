@@ -70,8 +70,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb,
       GetD3DDeviceCB get_d3d_device_cb,
-      SupportedConfigs supported_configs,
-      bool system_hdr_enabled);
+      SupportedConfigs supported_configs);
 
   D3D11VideoDecoder(const D3D11VideoDecoder&) = delete;
   D3D11VideoDecoder& operator=(const D3D11VideoDecoder&) = delete;
@@ -128,8 +127,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
           get_helper_cb,
       GetD3DDeviceCB get_d3d_device_cb,
-      SupportedConfigs supported_configs,
-      bool system_hdr_enabled);
+      SupportedConfigs supported_configs);
 
   // Receive |buffer|, that is now unused by the client.
   void ReceivePictureBufferFromClient(scoped_refptr<D3D11PictureBuffer> buffer);
@@ -271,9 +269,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   SEQUENCE_CHECKER(sequence_checker_);
 
   SupportedConfigs supported_configs_;
-
-  // Should we assume that we're outputting to an HDR display?
-  bool system_hdr_enabled_ = false;
 
   // Should we use shared handles for WebGPU interop or if using Graphite.
   bool use_shared_handle_ = false;

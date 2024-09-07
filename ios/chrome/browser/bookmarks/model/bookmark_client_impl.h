@@ -5,16 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_CLIENT_IMPL_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_CLIENT_IMPL_H_
 
-#include <set>
-#include <string>
-#include <vector>
+#import <set>
+#import <string>
+#import <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/task/deferred_sequenced_task_runner.h"
-#include "components/power_bookmarks/core/bookmark_client_base.h"
+#import "base/memory/raw_ptr.h"
+#import "base/task/deferred_sequenced_task_runner.h"
+#import "components/power_bookmarks/core/bookmark_client_base.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class BookmarkUndoService;
-class ChromeBrowserState;
 class GURL;
 
 namespace bookmarks {

@@ -24,6 +24,8 @@
 #include "build/build_config.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "components/update_client/persisted_data.h"
+#include "components/update_client/update_client_errors.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/util/win_util.h"
@@ -135,6 +137,22 @@ int UpdaterState::StateReaderChromiumUpdater::GetUpdatePolicy() const {
   return UpdaterState::GetUpdatePolicy();
 }
 
+update_client::CategorizedError
+UpdaterState::StateReaderChromiumUpdater::GetLastUpdateCheckError() const {
+  return {
+      .category_ = static_cast<update_client::ErrorCategory>(
+          parsed_json_
+              .FindInt(update_client::kLastUpdateCheckErrorCategoryPreference)
+              .value_or(0)),
+      .code_ =
+          parsed_json_.FindInt(update_client::kLastUpdateCheckErrorPreference)
+              .value_or(0),
+      .extra_ =
+          parsed_json_
+              .FindInt(update_client::kLastUpdateCheckErrorExtraCode1Preference)
+              .value_or(0)};
+}
+
 UpdaterState::State UpdaterState::StateReader::Read(bool is_machine) const {
   State state;
   state.updater_name = GetUpdaterName();
@@ -147,6 +165,7 @@ UpdaterState::State UpdaterState::StateReader::Read(bool is_machine) const {
     CHECK((update_policy >= 0 && update_policy <= 3) || update_policy == -1);
     return update_policy;
   }();
+  state.last_update_check_error = GetLastUpdateCheckError();
   return state;
 }
 
@@ -198,6 +217,12 @@ UpdaterState::Attributes UpdaterState::Serialize() const {
         state_->is_autoupdate_check_enabled ? "1" : "0";
 
     attributes["updatepolicy"] = base::NumberToString(state_->update_policy);
+    attributes["lastupdatecheckerrorcode"] =
+        state_->last_update_check_error.code_;
+    attributes["lastupdatecheckerrorcat"] =
+        static_cast<int>(state_->last_update_check_error.category_);
+    attributes["lastupdatecheckextracode1"] =
+        state_->last_update_check_error.extra_;
   }
 
   return attributes;

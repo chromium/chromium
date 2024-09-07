@@ -20,8 +20,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/safe_ref.h"
+#include "base/memory/structured_shared_memory.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
@@ -165,6 +165,7 @@ class RenderWidgetHelper;
 class SiteInfo;
 class SiteInstance;
 class SiteInstanceImpl;
+enum class ProcessReusePolicy;
 struct ChildProcessTerminationInfo;
 struct GlobalRenderFrameHostId;
 
@@ -240,6 +241,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool GetIntersectsViewport() override;
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
+  bool AreV8OptimizationsDisabled() override;
   bool IsPdf() override;
   StoragePartitionImpl* GetStoragePartition() override;
   bool Shutdown(int exit_code) override;
@@ -934,6 +936,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
     // the default font manager.
     kSkiaFontManager = 1 << 3,
 #endif
+
+    // Indicates whether v8 optimizations are disabled in this renderer process.
+    kV8OptimizationsDisabled = 1 << 4,
   };
 
   // A RenderProcessHostImpl's IO thread implementation of the
@@ -1155,11 +1160,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Returns a RenderProcessHost that is rendering a URL corresponding to
   // |site_instance| in one of its frames, or that is expecting a navigation to
-  // that SiteInstance. `main_frame_threshold` is an optional parameter to
-  // limit the maximum number of main frames a RenderProcessHost can host.
+  // that SiteInstance. `process_reuse_policy` indicates the context so that
+  // appropriate thresholds can be applied.
   static RenderProcessHost* FindReusableProcessHostForSiteInstance(
       SiteInstanceImpl* site_instance,
-      std::optional<size_t> main_frame_threshold = std::nullopt);
+      ProcessReusePolicy process_reuse_policy);
 
   void NotifyRendererOfLockedStateUpdate();
 
@@ -1465,12 +1470,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
   mojo::Receiver<memory_instrumentation::mojom::CoordinatorConnector>
       coordinator_connector_receiver_{this};
 
-  // A shared memory version mapping of a std::atomic<TimeTicks> used to
-  // atomically communicate the last time the hosted renderer was foregrounded.
-  // This is preferable to IPC as it ensures the timing is visible immediately
-  // after recovering from a jank (e.g. important for metrics).
+  // A shared memory mapping of a std::atomic<TimeTicks> used to atomically
+  // communicate the last time the hosted renderer was foregrounded. This is
+  // preferable to IPC as it ensures the timing is visible immediately after
+  // recovering from a jank (e.g. important for metrics).
   // TODO(pmonette): Update this to support all process priority levels.
-  base::MappedReadOnlyRegion last_foreground_time_region_;
+  std::optional<base::AtomicSharedMemory<base::TimeTicks>>
+      last_foreground_time_region_;
 
   // Tracks active audio and video streams within the render process; used to
   // determine if if a process should be backgrounded.

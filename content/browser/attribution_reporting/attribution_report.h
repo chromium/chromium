@@ -208,6 +208,8 @@ class CONTENT_EXPORT AttributionReport {
 
   void set_report_time(base::Time report_time);
 
+  bool CanDebuggingBeEnabled() const;
+
  private:
   // The attribution info.
   AttributionInfo attribution_info_;

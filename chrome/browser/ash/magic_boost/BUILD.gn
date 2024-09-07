@@ -53,7 +53,6 @@ static_library("test_support") {
   deps = [
     ":magic_boost",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/input_method",
     "//testing/gmock",
   ]
@@ -74,7 +73,6 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/input_method",
     "//chromeos/components/magic_boost/public/cpp",
     "//components/sync_preferences:test_support",
     "//testing/gmock",
@@ -92,7 +90,6 @@ source_set("browser_tests") {
   sources = [ "magic_boost_browsertest.cc" ]
 
   deps = [
-    ":magic_boost",
     "//ash",
     "//ash/constants",
     "//base",
@@ -105,6 +102,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/mako",
     "//chrome/test:test_support",
     "//chromeos/components/magic_boost/public/cpp:cpp",
+    "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants",
     "//content/public/browser",
     "//content/test:test_support",

@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Count"
-    enum="IMETextInputClient" expires_after="2024-11-01">
+    enum="IMETextInputClient" expires_after="2025-02-16">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Actions.PK.EnabledByDefault"
-    enum="IMEAutocorrectActions" expires_after="2024-11-01">
+    enum="IMEAutocorrectActions" expires_after="2025-02-16">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted.EnabledByDefault"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2024-11-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2025-02-16">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1162,6 +1162,9 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated Copyeditor by trying to rewrite their
                  text with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
@@ -1201,6 +1204,9 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated Copyeditor by trying to rewrite their
                  text with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
@@ -1253,6 +1259,8 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated editor by trying to rewrite their text
                  with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated editor by trying to proofread their text"/>
     <variant name="Rephrase"
         summary="The user initiated editor by trying to rephrase their text"/>
     <variant name="Rewrite"
@@ -1290,6 +1298,9 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated Copyeditor by trying to rewrite their
                  text with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
@@ -1328,6 +1339,9 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated Copyeditor by trying to rewrite their
                  text with a freeform prompt"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
@@ -1374,6 +1388,9 @@ chromium-metrics-reviews@google.com.
         summary="The user is triggering from an invalid input"/>
     <variant name="NotAllowed"
         summary="The user is not allowed to use the feature"/>
+    <variant name="Proofread"
+        summary="The user initiated Copyeditor by trying to proofread their
+                 text"/>
     <variant name="Rephrase"
         summary="The user initiated Copyeditor by trying to rephrase their
                  text"/>
@@ -1928,7 +1945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.InsertionLatency" units="ms"
-    expires_after="2024-12-31">
+    expires_after="2025-03-02">
   <owner>greywang@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2295,7 +2312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.FirstRect" units="ms"
-    expires_after="2024-12-22">
+    expires_after="2025-02-23">
   <owner>kouhei@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

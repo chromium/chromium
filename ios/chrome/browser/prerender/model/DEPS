@@ -16,7 +16,7 @@ include_rules = [
 specific_include_rules = {
   # TODO(crbug.com/40820398): Remove this dependency.
   "^prerender_service_impl.mm": [
-    "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
+    "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_util.h",
   ],
 }
 

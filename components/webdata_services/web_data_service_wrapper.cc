@@ -111,7 +111,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
     const base::FilePath& context_path,
     const std::string& application_locale,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
-    const ShowErrorCallback& show_error_callback) {
+    const ShowErrorCallback& show_error_callback,
+    os_crypt_async::OSCryptAsync* os_crypt) {
   base::FilePath path = context_path.Append(kWebDataFilename);
   auto db_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -138,11 +139,11 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 #endif
   profile_database_->AddTable(
       std::make_unique<plus_addresses::PlusAddressTable>());
-  profile_database_->LoadDatabase();
+  profile_database_->LoadDatabase(os_crypt);
 
   profile_autofill_web_data_ =
-      base::MakeRefCounted<autofill::AutofillWebDataService>(
-          profile_database_, ui_task_runner, db_task_runner);
+      base::MakeRefCounted<autofill::AutofillWebDataService>(profile_database_,
+                                                             ui_task_runner);
   profile_autofill_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_AUTOFILL));
 
@@ -153,12 +154,12 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 
   plus_address_web_data_ =
       base::MakeRefCounted<plus_addresses::PlusAddressWebDataService>(
-          profile_database_, ui_task_runner, db_task_runner);
+          profile_database_, ui_task_runner);
   plus_address_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_PLUS_ADDRESS));
 
-  token_web_data_ = base::MakeRefCounted<TokenWebData>(
-      profile_database_, ui_task_runner, db_task_runner);
+  token_web_data_ =
+      base::MakeRefCounted<TokenWebData>(profile_database_, ui_task_runner);
   token_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_TOKEN));
 
@@ -198,17 +199,19 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   // On other (desktop) platforms, the account storage is in-memory.
   account_storage_path = base::FilePath(WebDatabase::kInMemoryPath);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Account database must run backend on same sequence as profile database. See
+  // comment in ChromeSyncClient::CreateDataTypeControllers.
   account_database_ = base::MakeRefCounted<WebDatabaseService>(
       account_storage_path, ui_task_runner, db_task_runner);
   account_database_->AddTable(
       std::make_unique<autofill::AutofillSyncMetadataTable>());
   account_database_->AddTable(
       std::make_unique<autofill::PaymentsAutofillTable>());
-  account_database_->LoadDatabase();
+  account_database_->LoadDatabase(os_crypt);
 
   account_autofill_web_data_ =
-      base::MakeRefCounted<autofill::AutofillWebDataService>(
-          account_database_, ui_task_runner, db_task_runner);
+      base::MakeRefCounted<autofill::AutofillWebDataService>(account_database_,
+                                                             ui_task_runner);
   account_autofill_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_ACCOUNT_AUTOFILL));
   account_autofill_web_data_->GetAutofillBackend(

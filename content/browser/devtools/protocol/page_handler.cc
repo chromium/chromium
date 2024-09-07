@@ -1353,11 +1353,19 @@ Response PageHandler::HandleJavaScriptDialog(bool accept,
 }
 
 Response PageHandler::BringToFront() {
-  ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
-  if (absl::holds_alternative<Response>(result))
-    return absl::get<Response>(result);
+  // Not using AssureTopLevelActiveFrame here because
+  // we allow bringing WebContents to front that might have ongoing
+  // lifecycle updates.
+  if (!host_) {
+    return Response::ServerError(kErrorNotAttached);
+  }
 
-  WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
+  if (host_->GetParentOrOuterDocument()) {
+    return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
+  }
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(host_));
   web_contents->Activate();
   web_contents->GetOutermostWebContents()->Focus();
   return Response::Success();
@@ -1914,6 +1922,8 @@ DisableForRenderFrameHostReasonToProtocol(
         case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentScreenReader;
+        case BackForwardCacheDisable::DisabledReasonId::kDiscarded:
+          return Page::BackForwardCacheNotRestoredReasonEnum::ContentDiscarded;
       }
     case BackForwardCache::DisabledSource::kEmbedder:
       switch (static_cast<back_forward_cache::DisabledReasonId>(reason.id)) {

@@ -23,7 +23,9 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
@@ -104,7 +106,7 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
   }
 
   void ShowBubble() {
-    CreditCard card = test::GetFullServerCard();
+    CreditCard card = test::GetVirtualCard();
     ShowBubble(&card, /*virtual_card_cvc=*/u"123");
   }
 
@@ -214,10 +216,14 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   std::u16string clipboard_text;
 
-  CreditCard card(CreditCard::RecordType::kFullServerCard, "c123");
+  CreditCard card;
   test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
+  card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
+  test_api(card).set_network_for_card(kMasterCard);
   ShowBubble(&card, u"345");
 
   // Verify the displayed text. We change the format of card number in the ui.
@@ -392,19 +398,19 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   GetBubbleViews()->OnFieldClicked(
       VirtualCardManualFallbackBubbleField::kCardNumber);
   EXPECT_EQ(clicked_button_tooltip, card_number_button->GetTooltipText());
-  EXPECT_EQ(u"4111 1111 1111 1111 " + clicked_button_tooltip,
+  EXPECT_EQ(u"5555 5555 5555 4444 " + clicked_button_tooltip,
             card_number_button->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(normal_button_tooltip, cardholder_name_button->GetTooltipText());
-  EXPECT_EQ(u"Full Carter " + normal_button_tooltip,
+  EXPECT_EQ(u"Lorem Ipsum " + normal_button_tooltip,
             cardholder_name_button->GetViewAccessibility().GetCachedName());
 
   GetBubbleViews()->OnFieldClicked(
       VirtualCardManualFallbackBubbleField::kCardholderName);
   EXPECT_EQ(normal_button_tooltip, card_number_button->GetTooltipText());
-  EXPECT_EQ(u"4111 1111 1111 1111 " + normal_button_tooltip,
+  EXPECT_EQ(u"5555 5555 5555 4444 " + normal_button_tooltip,
             card_number_button->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(clicked_button_tooltip, cardholder_name_button->GetTooltipText());
-  EXPECT_EQ(u"Full Carter " + clicked_button_tooltip,
+  EXPECT_EQ(u"Lorem Ipsum " + clicked_button_tooltip,
             cardholder_name_button->GetViewAccessibility().GetCachedName());
 }
 

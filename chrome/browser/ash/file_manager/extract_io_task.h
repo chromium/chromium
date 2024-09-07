@@ -10,6 +10,8 @@
 
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -57,6 +59,8 @@ class ExtractIOTask : public IOTask {
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
 
+  // Cancels ongoing unzips. Must be called on the same sequence as
+  // ExtractIntoNewDirectory and FinishedExtraction.
   void Cancel() override;
 
  private:
@@ -132,8 +136,9 @@ class ExtractIOTask : public IOTask {
   // Counter of the number of archives needing extraction.
   size_t extractCount_;
 
-  // Reference to the unpacker service instances.
-  std::map<base::FilePath, scoped_refptr<unzip::ZipFileUnpacker>> unpackers_;
+  // A closure that triggers a chain of cancellation callbacks, cancelling all
+  // ongoing unzipping operations.
+  base::OnceClosure cancellation_chain_ = base::DoNothing();
 
   // Scoped file access object required to open the zipped files when Data Leak
   // Prevention features are enabled.

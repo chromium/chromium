@@ -290,15 +290,15 @@ GetWinAccessibilityAPIUsageObserverList() {
 // Used to simplify calling StartFiringUIAEvents and EndFiringEvents
 WinAccessibilityAPIUsageScopedUIAEventsNotifier::
     WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
-  for (ui::WinAccessibilityAPIUsageObserver& observer :
-       ui::GetWinAccessibilityAPIUsageObserverList()) {
+  for (WinAccessibilityAPIUsageObserver& observer :
+       GetWinAccessibilityAPIUsageObserverList()) {
     observer.StartFiringUIAEvents();
   }
 }
 WinAccessibilityAPIUsageScopedUIAEventsNotifier::
     ~WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
-  for (ui::WinAccessibilityAPIUsageObserver& observer :
-       ui::GetWinAccessibilityAPIUsageObserverList()) {
+  for (WinAccessibilityAPIUsageObserver& observer :
+       GetWinAccessibilityAPIUsageObserverList()) {
     observer.EndFiringUIAEvents();
   }
 }
@@ -1011,11 +1011,6 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
               L"group"};
 
-    case ax::mojom::Role::kFooterAsNonLandmark:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
-      return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
-              L"group"};
-
     case ax::mojom::Role::kForm:
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
               L"form"};
@@ -1293,6 +1288,8 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"description"};
 
     case ax::mojom::Role::kSection:
+    case ax::mojom::Role::kSectionFooter:
+    case ax::mojom::Role::kSectionHeader:
     case ax::mojom::Role::kSectionWithoutName:
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
               L"group"};
@@ -1727,7 +1724,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accDefaultAction(VARIANT var_id,
   }
 
   std::wstring action_verb = base::UTF8ToWide(
-      ui::ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action)));
+      ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action)));
   if (action_verb.empty()) {
     *def_action = nullptr;
     return S_FALSE;
@@ -5070,25 +5067,27 @@ IFACEMETHODIMP AXPlatformNodeWin::Navigate(
 
 void AXPlatformNodeWin::GetRuntimeIdArray(
     AXPlatformNodeWin::RuntimeIdArray& runtime_id) {
-  int dom_id;
   runtime_id[0] = UiaAppendRuntimeId;
 
   // The combination of tree/frame id and Blink (DOM) id is unique and gives
   // nodes stable ids across layouts/tree movement. If there's a valid tree
   // id, use that, otherwise fall back to the globally unique id.
-  AXTreeID tree_id = GetDelegate()->GetTreeData().tree_id;
-  if (GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId, &dom_id) &&
-      tree_id != AXTreeIDUnknown()) {
-    AXActionHandlerRegistry::FrameID frame_id =
-        AXActionHandlerRegistry::GetInstance()->GetFrameID(tree_id);
-    runtime_id[1] = frame_id.first;
-    runtime_id[2] = frame_id.second;
-    runtime_id[3] = dom_id;
-  } else {
-    runtime_id[1] = 0;
-    runtime_id[2] = 0;
-    runtime_id[3] = GetUniqueId();
+  int dom_id = GetData().GetDOMNodeId();
+  if (dom_id) {
+    AXTreeID tree_id = GetDelegate()->GetTreeData().tree_id;
+    if (tree_id != AXTreeIDUnknown()) {
+      AXActionHandlerRegistry::FrameID frame_id =
+          AXActionHandlerRegistry::GetInstance()->GetFrameID(tree_id);
+      runtime_id[1] = frame_id.first;
+      runtime_id[2] = frame_id.second;
+      runtime_id[3] = dom_id;
+      return;
+    }
   }
+
+  runtime_id[1] = 0;
+  runtime_id[2] = 0;
+  runtime_id[3] = GetUniqueId();
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::GetRuntimeId(SAFEARRAY** runtime_id) {
@@ -6550,10 +6549,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kFeed:
       return ROLE_SYSTEM_GROUPING;
 
-    case ax::mojom::Role::kFooterAsNonLandmark:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
-      return ROLE_SYSTEM_GROUPING;
-
     case ax::mojom::Role::kForm:
       return ROLE_SYSTEM_GROUPING;
 
@@ -6756,6 +6751,8 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_STATICTEXT;
 
     case ax::mojom::Role::kSection:
+    case ax::mojom::Role::kSectionFooter:
+    case ax::mojom::Role::kSectionHeader:
     case ax::mojom::Role::kSectionWithoutName:
       return ROLE_SYSTEM_GROUPING;
 
@@ -7075,10 +7072,6 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
       break;
     case ax::mojom::Role::kFigcaption:
       ia2_role = IA2_ROLE_CAPTION;
-      break;
-    case ax::mojom::Role::kFooterAsNonLandmark:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
-      ia2_role = IA2_ROLE_SECTION;
       break;
     case ax::mojom::Role::kForm:
       ia2_role = IA2_ROLE_FORM;
@@ -7527,10 +7520,8 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kDetails:
       case ax::mojom::Role::kFigure:
       case ax::mojom::Role::kFooter:
-      case ax::mojom::Role::kFooterAsNonLandmark:
       case ax::mojom::Role::kGridCell:
       case ax::mojom::Role::kHeader:
-      case ax::mojom::Role::kHeaderAsNonLandmark:
       case ax::mojom::Role::kListBoxOption:
       case ax::mojom::Role::kListItem:
       // Treat the root of a MathML tree as content/control so that it is seen
@@ -7541,6 +7532,8 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kProgressIndicator:
       case ax::mojom::Role::kRow:
       case ax::mojom::Role::kSection:
+      case ax::mojom::Role::kSectionFooter:
+      case ax::mojom::Role::kSectionHeader:
       case ax::mojom::Role::kSplitter:
       case ax::mojom::Role::kStatus:
       case ax::mojom::Role::kTime:

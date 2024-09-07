@@ -84,6 +84,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillSection) {
   RunTest("settings/autofill_section_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillPredictionImprovementsSection) {
+  RunTest("settings/autofill_prediction_improvements_section_test.js",
+          "mocha.run()");
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(SettingsTest, AxAnnotationsSection) {
   RunTest("settings/ax_annotations_section_test.js", "mocha.run()");
@@ -154,8 +159,21 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, EditDictionaryPage) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, ExperimentalAdvancedPage) {
-  RunTest("settings/ai_page_test.js", "mocha.run()");
+class SettingsAiPageTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAiSettingsPageRefresh};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, ExperimentalAdvancedPage) {
+  RunTest("settings/ai_page_test.js",
+          "runMochaSuite('ExperimentalAdvancedPage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsAiPageTest,
+                       ExperimentalAdvancedPageRefreshDisabled) {
+  RunTest("settings/ai_page_test.js",
+          "runMochaSuite('ExperimentalAdvancedPageRefreshDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {
@@ -1311,6 +1329,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
           "runMochaSuite('SpellCheck OfficialBuild')");
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SettingsSiteDetailsTest : public SettingsBrowserTest {
  private:
@@ -1437,6 +1456,7 @@ IN_PROC_BROWSER_TEST_F(
           "AbusiveNotificationsEnabledUnusedSitePermissionsDisabled')");
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 using SettingsTranslatePageTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, TranslateSettings) {

@@ -18,6 +18,7 @@ source_set("public_sources") {
     "//net/*",
     "//third_party/*",
   ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("test_sources") {
@@ -31,4 +32,5 @@ source_set("test_sources") {
     "//url/",
   ]
   data_deps = [ "//chrome/updater/mac/client_lib/test_helpers" ]
+  frameworks = [ "Foundation.framework" ]
 }

@@ -6,6 +6,9 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -13,6 +16,8 @@
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/layout/flex_layout.h"
@@ -52,12 +57,15 @@ Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
 
 }  // namespace
 
-TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
-                                       TabStripModel* tab_strip_model,
-                                       bool before_tab_strip,
-                                       View* locked_expansion_view)
+TabSearchContainer::TabSearchContainer(
+    TabStripController* tab_strip_controller,
+    TabStripModel* tab_strip_model,
+    bool before_tab_strip,
+    View* locked_expansion_view,
+    tabs::TabDeclutterController* tab_declutter_controller)
     : AnimationDelegateViews(this),
       locked_expansion_view_(locked_expansion_view),
+      tab_declutter_controller_(tab_declutter_controller),
       tab_strip_model_(tab_strip_model) {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
@@ -90,8 +98,13 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
                               base::Unretained(this)),
           base::BindRepeating(&TabSearchContainer::OnOrganizeButtonDismissed,
                               base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
+          l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE),
+          l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE),
+          kTabOrganizationButtonElementId,
           GetFlatEdge(false, before_tab_strip)),
       index);
+
   tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                         views::LayoutAlignment::kCenter);
   const int space_between_buttons = 2;
@@ -105,6 +118,12 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
   tab_organization_button_->SetOpacity(0);
 
   browser_ = tab_strip_controller->GetBrowser();
+
+  // `tab_declutter_controller_` will be null for some profile types and if
+  // feature is not enabled.
+  if (tab_declutter_controller_) {
+    tab_declutter_observation_.Observe(tab_declutter_controller_);
+  }
 
   expansion_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
   opacity_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
@@ -225,6 +244,10 @@ void TabSearchContainer::ShowOpacityAnimation() {
 }
 
 void TabSearchContainer::ExecuteHideTabOrganization() {
+  // Stop the timer since the chip might be getting hidden on user actions like
+  // dismissal or click and not timeout.
+  hide_tab_organization_timer_.Stop();
+
   expansion_animation_.SetSlideDuration(
       GetAnimationDuration(kExpansionOutDuration));
   expansion_animation_.Hide();
@@ -288,6 +311,11 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
   } else {
     HideTabOrganization();
   }
+}
+
+void TabSearchContainer::OnTriggerDeclutterUIVisibility(bool should_show) {
+  // TODO(b/358382459): Implement logic to show and hide the tab declutter
+  // nudge.
 }
 
 BEGIN_METADATA(TabSearchContainer)

@@ -83,15 +83,6 @@ void TaskRunnerAndroid::PostDelayedTask(
       Milliseconds(delay));
 }
 
-bool TaskRunnerAndroid::BelongsToCurrentThread(JNIEnv* env) {
-  // TODO(crbug.com/40108370): Move BelongsToCurrentThread from TaskRunnerImpl
-  // to SequencedTaskRunnerImpl on the Java side too.
-  if (type_ == TaskRunnerType::BASE)
-    return false;
-  return static_cast<SequencedTaskRunner*>(task_runner_.get())
-      ->RunsTasksInCurrentSequence();
-}
-
 // static
 std::unique_ptr<TaskRunnerAndroid> TaskRunnerAndroid::Create(
     jint task_runner_type,

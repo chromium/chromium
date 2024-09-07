@@ -9,9 +9,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/command_line.h"
 #include "base/functional/callback_forward.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -24,32 +24,15 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
-void ConfigureFeatureState(base::test::ScopedFeatureList& scoped_feature_list,
-                           bool enable_feature) {
-  // Chosen due to being an EEA country, see
-  // `search_engines::IsEeaChoiceCountry()`.
-  const char kBelgiumCountryId[] = "BE";
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry, kBelgiumCountryId);
-
-  if (enable_feature) {
-    scoped_feature_list.InitAndEnableFeature(
-        switches::kSearchEngineChoiceTrigger);
-  } else {
-    scoped_feature_list.InitAndDisableFeature(
-        switches::kSearchEngineChoiceTrigger);
-  }
-}
-}  // namespace
-
 class TemplateUrlServiceAndroidUnitTest
-    : public LoadedTemplateURLServiceUnitTestBase,
-      public testing::WithParamInterface<bool> {
+    : public LoadedTemplateURLServiceUnitTestBase {
  public:
   void SetUp() override {
-    ConfigureFeatureState(feature_list_, IsSearchEngineChoiceEnabled());
+    // Chosen due to being an EEA country, see
+    // `search_engines::IsEeaChoiceCountry()`.
+    const char kBelgiumCountryId[] = "BE";
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry, kBelgiumCountryId);
 
     LoadedTemplateURLServiceUnitTestBase::SetUp();
 
@@ -58,8 +41,6 @@ class TemplateUrlServiceAndroidUnitTest
     template_url_service_android_ =
         std::make_unique<TemplateUrlServiceAndroid>(&template_url_service());
   }
-
-  bool IsSearchEngineChoiceEnabled() const { return GetParam(); }
 
   base::android::JavaParamRef<jstring> ToParamRef(
       base::android::ScopedJavaLocalRef<jstring> local_ref) {
@@ -83,14 +64,12 @@ class TemplateUrlServiceAndroidUnitTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   raw_ptr<JNIEnv> env_ = nullptr;
 
   std::unique_ptr<TemplateUrlServiceAndroid> template_url_service_android_;
 };
 
-TEST_P(TemplateUrlServiceAndroidUnitTest, SetPlayAPISearchEngine) {
+TEST_F(TemplateUrlServiceAndroidUnitTest, SetPlayAPISearchEngine) {
   base::HistogramTester histogram_tester;
   const std::u16string keyword = u"chromium";
 
@@ -127,27 +106,9 @@ TEST_P(TemplateUrlServiceAndroidUnitTest, SetPlayAPISearchEngine) {
   EXPECT_EQ(t_url->GetEngineType(SearchTermsData()),
             SearchEngineType::SEARCH_ENGINE_OTHER);
 
-  if (IsSearchEngineChoiceEnabled()) {
-    EXPECT_TRUE(pref_service().HasPrefPath(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
-    histogram_tester.ExpectUniqueSample(
-        search_engines::
-            kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-        SearchEngineType::SEARCH_ENGINE_OTHER, 1);
-  } else {
-    EXPECT_FALSE(pref_service().HasPrefPath(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
-    histogram_tester.ExpectTotalCount(
-        search_engines::
-            kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-        0);
-  }
+  EXPECT_TRUE(pref_service().HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  histogram_tester.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         TemplateUrlServiceAndroidUnitTest,
-                         ::testing::Bool(),
-                         [](const ::testing::TestParamInfo<bool>& info) {
-                           return info.param ? "SearchEngineChoiceEnabled"
-                                             : "SearchEngineChoiceDisabled";
-                         });

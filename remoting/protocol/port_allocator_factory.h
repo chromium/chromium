@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
@@ -16,6 +17,7 @@ class PortAllocator;
 
 namespace remoting::protocol {
 
+struct NetworkSettings;
 class SessionOptionsProvider;
 class TransportContext;
 
@@ -23,9 +25,19 @@ class TransportContext;
 // to allocate ICE candidates.
 class PortAllocatorFactory {
  public:
-  virtual ~PortAllocatorFactory() {}
+  using ApplyNetworkSettingsCallback =
+      base::OnceCallback<void(const NetworkSettings&)>;
+  struct CreatePortAllocatorResult {
+    CreatePortAllocatorResult();
+    CreatePortAllocatorResult(CreatePortAllocatorResult&&);
+    ~CreatePortAllocatorResult();
+    std::unique_ptr<cricket::PortAllocator> allocator;
+    ApplyNetworkSettingsCallback apply_network_settings;
+  };
 
-  virtual std::unique_ptr<cricket::PortAllocator> CreatePortAllocator(
+  virtual ~PortAllocatorFactory() = default;
+
+  virtual CreatePortAllocatorResult CreatePortAllocator(
       scoped_refptr<TransportContext> transport_context,
       base::WeakPtr<SessionOptionsProvider> session_options_provider) = 0;
 };

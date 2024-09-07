@@ -126,14 +126,14 @@ TEST_F(WebMStreamParserTest, VerifyMediaTrackMetadata) {
 
   const MediaTrack& video_track = *(media_tracks_->tracks()[0]);
   EXPECT_EQ(video_track.type(), MediaTrack::Type::kVideo);
-  EXPECT_EQ(video_track.bytestream_track_id(), 1);
+  EXPECT_EQ(video_track.stream_id(), 1);
   EXPECT_EQ(video_track.kind().value(), "main");
   EXPECT_EQ(video_track.label().value(), "");
   EXPECT_EQ(video_track.language().value(), "und");
 
   const MediaTrack& audio_track = *(media_tracks_->tracks()[1]);
   EXPECT_EQ(audio_track.type(), MediaTrack::Type::kAudio);
-  EXPECT_EQ(audio_track.bytestream_track_id(), 2);
+  EXPECT_EQ(audio_track.stream_id(), 2);
   EXPECT_EQ(audio_track.kind().value(), "main");
   EXPECT_EQ(audio_track.label().value(), "");
   EXPECT_EQ(audio_track.language().value(), "und");
@@ -185,7 +185,7 @@ TEST_F(WebMStreamParserTest, ColourElement) {
   EXPECT_EQ(video_track->type(), MediaTrack::Type::kVideo);
 
   const VideoDecoderConfig& video_config =
-      media_tracks_->getVideoConfig(video_track->bytestream_track_id());
+      media_tracks_->getVideoConfig(video_track->stream_id());
 
   VideoColorSpace expected_color_space(VideoColorSpace::PrimaryID::SMPTEST428_1,
                                        VideoColorSpace::TransferID::LOG,
@@ -225,7 +225,7 @@ TEST_F(WebMStreamParserTest, ColourElementWithUnspecifiedRange) {
   EXPECT_EQ(video_track->type(), MediaTrack::Type::kVideo);
 
   const VideoDecoderConfig& video_config =
-      media_tracks_->getVideoConfig(video_track->bytestream_track_id());
+      media_tracks_->getVideoConfig(video_track->stream_id());
 
   VideoColorSpace expected_color_space(VideoColorSpace::PrimaryID::SMPTEST428_1,
                                        VideoColorSpace::TransferID::LOG,

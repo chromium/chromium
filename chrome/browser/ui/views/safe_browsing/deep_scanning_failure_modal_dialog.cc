@@ -11,6 +11,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -40,10 +41,10 @@ DeepScanningFailureModalDialog::DeepScanningFailureModalDialog(
     : open_now_callback_(std::move(open_now_callback)) {
   SetModalType(ui::mojom::ModalType::kChild);
   SetTitle(IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_TITLE);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_ACCEPT_BUTTON));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_CANCEL_BUTTON));
   SetAcceptCallback(std::move(accept_callback));
@@ -76,8 +77,9 @@ DeepScanningFailureModalDialog::DeepScanningFailureModalDialog(
 DeepScanningFailureModalDialog::~DeepScanningFailureModalDialog() = default;
 
 bool DeepScanningFailureModalDialog::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  return (button == ui::DIALOG_BUTTON_OK || button == ui::DIALOG_BUTTON_CANCEL);
+    ui::mojom::DialogButton button) const {
+  return (button == ui::mojom::DialogButton::kOk ||
+          button == ui::mojom::DialogButton::kCancel);
 }
 
 bool DeepScanningFailureModalDialog::ShouldShowCloseButton() const {

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_SAVE_CARD_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_SAVE_CARD_DELEGATE_H_
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -32,13 +31,23 @@ class AutofillSaveCardDelegate {
         save_card_callback_);
   }
 
+  // Returns true if an additional fix flow is needed for the save card.
+  // The following are the fixes that are possible:
+  // - Name
+  // - Expiration date
+  bool requires_fix_flow() const {
+    return options_.should_request_name_from_user ||
+           options_.should_request_expiration_date_from_user;
+  }
+
   void OnUiShown();
   // `on_save_card_completed` will be triggered after the save card flow has
   // finished.
   virtual void OnUiAccepted(
       base::OnceClosure on_save_card_completed = base::NullCallback());
   void OnUiUpdatedAndAccepted(
-      AutofillClient::UserProvidedCardDetails user_provided_details);
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_details);
   virtual void OnUiCanceled();
   virtual void OnUiIgnored();
 
@@ -46,7 +55,8 @@ class AutofillSaveCardDelegate {
   // Called when all of the prerequisites for saving a card have been met.
   void OnFinishedGatheringConsent(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-      AutofillClient::UserProvidedCardDetails user_provided_details);
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_details);
 
  private:
   friend class AutofillSaveCardInfoBarDelegateMobileTest;
@@ -59,7 +69,8 @@ class AutofillSaveCardDelegate {
   // empty the current card values will be used.
   void RunSaveCardPromptCallback(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-      AutofillClient::UserProvidedCardDetails user_provided_details);
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_details);
 
   // TODO(crbug.com/40283111): Make GatherAdditionalConsentIfApplicable() a pure
   //                          virtual function.
@@ -68,7 +79,8 @@ class AutofillSaveCardDelegate {
   // automotive requires a pin/password to be set on the device and must
   // redirect to that flow before saving card information).
   virtual void GatherAdditionalConsentIfApplicable(
-      AutofillClient::UserProvidedCardDetails user_provided_details);
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_details);
 
   void LogInfoBarAction(AutofillMetrics::InfoBarMetric user_action);
 

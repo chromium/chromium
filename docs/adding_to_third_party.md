@@ -31,6 +31,8 @@ email to chrome-atls-discuss@google.com:
    * If the increase is significant (e.g., 20+ MB), can we consider limiting the
    files to be checked in?
 * Build time increase
+   * This refers to building `chrome` or test targets in the critical
+     development path.
    * If the increase is significant (e.g., 30+ seconds), can we consider making
    this an optional build target?
 * Binary size increase on Android ([official](https://www.chromium.org/developers/gn-build-configuration) builds)

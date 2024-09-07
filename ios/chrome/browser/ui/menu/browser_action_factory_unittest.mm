@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/sessions/model/test_session_service.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -122,11 +122,11 @@ TEST_F(BrowserActionFactoryTest, OpenInNewTabAction_URL) {
 
   UIAction* actionWithURL = [factory actionToOpenInNewTabWithURL:testURL
                                                       completion:nil];
-  EXPECT_TRUE([expectedTitle isEqualToString:actionWithURL.title]);
+  EXPECT_NSEQ(expectedTitle, actionWithURL.title);
   EXPECT_EQ(expectedImage, actionWithURL.image);
 
   UIAction* actionWithBlock = [factory actionToOpenInNewTabWithBlock:nil];
-  EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
+  EXPECT_NSEQ(expectedTitle, actionWithBlock.title);
   EXPECT_EQ(expectedImage, actionWithBlock.image);
 }
 
@@ -147,12 +147,12 @@ TEST_F(BrowserActionFactoryTest, OpenInNewIncognitoTabAction_URL) {
 
   UIAction* actionWithURL =
       [factory actionToOpenInNewIncognitoTabWithURL:testURL completion:nil];
-  EXPECT_TRUE([expectedTitle isEqualToString:actionWithURL.title]);
+  EXPECT_NSEQ(expectedTitle, actionWithURL.title);
   EXPECT_EQ(expectedImage, actionWithURL.image);
 
   UIAction* actionWithBlock =
       [factory actionToOpenInNewIncognitoTabWithBlock:nil];
-  EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
+  EXPECT_NSEQ(expectedTitle, actionWithBlock.title);
   EXPECT_EQ(expectedImage, actionWithBlock.image);
 }
 
@@ -175,7 +175,7 @@ TEST_F(BrowserActionFactoryTest, OpenInNewWindowAction) {
       [factory actionToOpenInNewWindowWithURL:testURL
                                activityOrigin:WindowActivityToolsOrigin];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 
   // Test user activity variant
@@ -184,7 +184,7 @@ TEST_F(BrowserActionFactoryTest, OpenInNewWindowAction) {
                                               WindowActivityToolsOrigin,
                                               testURL)];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -205,7 +205,7 @@ TEST_F(BrowserActionFactoryTest, OpenImageAction) {
                                           completion:^{
                                           }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -228,7 +228,7 @@ TEST_F(BrowserActionFactoryTest, OpenImageInNewTabAction) {
                                              completion:^{
                                              }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -244,7 +244,7 @@ TEST_F(BrowserActionFactoryTest, OpenNewTabAction) {
 
   UIAction* action = [factory actionToOpenNewTab];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(0U, action.attributes);
 
@@ -270,7 +270,7 @@ TEST_F(BrowserActionFactoryTest, OpenNewIncognitoTabAction) {
 
   UIAction* action = [factory actionToOpenNewIncognitoTab];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(0U, action.attributes);
 
@@ -296,7 +296,7 @@ TEST_F(BrowserActionFactoryTest, CloseCurrentTabAction) {
 
   UIAction* action = [factory actionToCloseCurrentTab];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
 }
@@ -314,7 +314,7 @@ TEST_F(BrowserActionFactoryTest, ShowQRScannerAction) {
 
   UIAction* action = [factory actionToShowQRScanner];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -331,7 +331,7 @@ TEST_F(BrowserActionFactoryTest, StartVoiceSearchAction) {
 
   UIAction* action = [factory actionToStartVoiceSearch];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -348,7 +348,7 @@ TEST_F(BrowserActionFactoryTest, StartNewSearchAction) {
 
   UIAction* action = [factory actionToStartNewSearch];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(0U, action.attributes);
 
@@ -374,7 +374,7 @@ TEST_F(BrowserActionFactoryTest, NewIncognitoSearchAction) {
 
   UIAction* action = [factory actionToStartNewIncognitoSearch];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(0U, action.attributes);
 
@@ -400,7 +400,7 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedImageAction) {
 
   UIAction* action = [factory actionToSearchCopiedImage];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -417,7 +417,7 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedURLAction) {
 
   UIAction* action = [factory actionToSearchCopiedURL];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -434,7 +434,7 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedTextAction) {
 
   UIAction* action = [factory actionToSearchCopiedText];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -464,6 +464,6 @@ TEST_F(BrowserActionFactoryTest, SaveImageInGooglePhotosAction) {
                                        webState:fakeWebState.get()
                                           block:nil];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }

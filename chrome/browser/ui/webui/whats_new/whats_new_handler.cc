@@ -128,13 +128,19 @@ void WhatsNewHandler::RecordModuleLinkClicked(
   base::UmaHistogramEnumeration(action_name, position);
 }
 
-void WhatsNewHandler::GetServerUrl(GetServerUrlCallback callback) {
+void WhatsNewHandler::RecordBrowserCommandExecuted() {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.BrowserCommandExecuted"));
+}
+
+void WhatsNewHandler::GetServerUrl(bool is_staging,
+                                   GetServerUrlCallback callback) {
   GURL result = GURL("");
   if (!whats_new::IsRemoteContentDisabled()) {
     if (user_education::features::IsWhatsNewV2()) {
-      result = whats_new::GetV2ServerURLForRender();
+      result = whats_new::GetV2ServerURLForRender(is_staging);
     } else {
-      result = whats_new::GetServerURL(true);
+      result = whats_new::GetServerURL(true, is_staging);
     }
   }
   std::move(callback).Run(result);
@@ -199,22 +205,19 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
     return;
   }
 
-  if (user_education::features::IsWhatsNewV2()) {
-    // V2 survey
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerWhatsNewV2, web_contents_,
-        features::kHappinessTrackingSurveysForDesktopWhatsNewV2Time.Get()
-            .InMilliseconds(),
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/{},
-        /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
-  } else if (IsHaTSActivated()) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerWhatsNew, web_contents_,
-        features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
-            .InMilliseconds(),
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/{},
-        /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
+  if (!IsHaTSActivated()) {
+    return;
   }
+
+  const auto* trigger_id = user_education::features::IsWhatsNewV2()
+                               ? kHatsSurveyTriggerWhatsNewAlternate
+                               : kHatsSurveyTriggerWhatsNew;
+
+  hats_service->LaunchDelayedSurveyForWebContents(
+      trigger_id, web_contents_,
+      features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
+          .InMilliseconds(),
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/{},
+      /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
 }

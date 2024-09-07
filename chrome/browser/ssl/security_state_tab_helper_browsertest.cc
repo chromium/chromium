@@ -1644,7 +1644,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest, InvalidPrerender) {
   // Ensure that the prerender has started.
   registry_observer.WaitForTrigger(prerender_url);
   auto prerender_id = prerender_helper_.GetHostForUrl(prerender_url);
-  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  EXPECT_TRUE(prerender_id);
   content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                      prerender_id);
 
@@ -1657,8 +1657,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest, InvalidPrerender) {
   // The prerender should be abandoned since the it commits an interstitial,
   // wait for the PrerenderHost to be destroyed.
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(content::RenderFrameHost::kNoFrameTreeNodeId,
-            prerender_helper_.GetHostForUrl(prerender_url));
+  EXPECT_TRUE(prerender_helper_.GetHostForUrl(prerender_url).is_null());
 
   // Navigate to prerender_url and expect cert error.
   prerender_helper_.NavigatePrimaryPage(prerender_url);
@@ -1696,7 +1695,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest,
       test_server->GetURL("/ssl/page_displays_insecure_content.html");
   prerender_helper_.AddPrerender(prerender_url);
   auto prerender_id = prerender_helper_.GetHostForUrl(prerender_url);
-  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  EXPECT_TRUE(prerender_id);
   content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                      prerender_id);
 

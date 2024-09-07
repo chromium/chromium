@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_helper.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
@@ -14,9 +16,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_network_or_issuer_information.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_network_or_issuer_information.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -37,9 +39,9 @@ WTF::Vector<uint8_t> CreateVector(const uint8_t* buffer,
 static V8UnionArrayBufferOrArrayBufferView* ArrayBufferOrView(
     const uint8_t* data,
     size_t size) {
-  DOMArrayBuffer* dom_array = DOMArrayBuffer::Create(data, size);
-  return MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-      std::move(dom_array));
+  DOMArrayBuffer* dom_array =
+      DOMArrayBuffer::Create(UNSAFE_TODO(base::span(data, size)));
+  return MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(dom_array);
 }
 
 static AuthenticationExtensionsPRFInputs* CreatePrfInputs(
@@ -164,9 +166,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyId) {
   HeapVector<Member<V8UnionArrayBufferOrArrayBufferView>> credentialIds;
   credentialIds.push_back(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-          DOMArrayBuffer::Create(
-              kSecurePaymentConfirmationCredentialId,
-              std::size(kSecurePaymentConfirmationCredentialId))));
+          DOMArrayBuffer::Create(kSecurePaymentConfirmationCredentialId)));
   const size_t num_elements = 0;
   const size_t byte_length = 0;
   credentialIds.push_back(

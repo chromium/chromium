@@ -9,9 +9,9 @@
 
 #import "components/sync/service/sync_service.h"
 #import "google_apis/gaia/google_service_auth_error.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 @class AccountErrorUIInfo;
-class ChromeBrowserState;
 @protocol SyncPresenter;
 
 namespace web {

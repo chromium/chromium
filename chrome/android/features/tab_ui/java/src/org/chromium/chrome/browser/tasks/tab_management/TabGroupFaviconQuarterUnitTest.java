@@ -38,7 +38,7 @@ import org.chromium.ui.base.TestActivity;
 /** Unit tests for {@link TabGroupRowView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupFaviconQuarterUnitTest {
-    private static final int TAB_COUNT = 123;
+    private static final int PLUS_COUNT = 123;
     private static final int PARENT_ID = 234;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -72,28 +72,28 @@ public class TabGroupFaviconQuarterUnitTest {
     public void testSetCorner() {
         ConstraintLayout.LayoutParams params;
 
-        mTabGroupFaviconQuarter.setCorner(Corner.TOP_LEFT, PARENT_ID);
+        mTabGroupFaviconQuarter.adjustPositionForCorner(Corner.TOP_LEFT, PARENT_ID);
         params = (ConstraintLayout.LayoutParams) mTabGroupFaviconQuarter.getLayoutParams();
         assertEquals(PARENT_ID, params.leftToLeft);
         assertEquals(PARENT_ID, params.topToTop);
         assertEquals(UNSET, params.rightToRight);
         assertEquals(UNSET, params.bottomToBottom);
 
-        mTabGroupFaviconQuarter.setCorner(Corner.TOP_RIGHT, PARENT_ID);
+        mTabGroupFaviconQuarter.adjustPositionForCorner(Corner.TOP_RIGHT, PARENT_ID);
         params = (ConstraintLayout.LayoutParams) mTabGroupFaviconQuarter.getLayoutParams();
         assertEquals(UNSET, params.leftToLeft);
         assertEquals(PARENT_ID, params.topToTop);
         assertEquals(PARENT_ID, params.rightToRight);
         assertEquals(UNSET, params.bottomToBottom);
 
-        mTabGroupFaviconQuarter.setCorner(Corner.BOTTOM_RIGHT, PARENT_ID);
+        mTabGroupFaviconQuarter.adjustPositionForCorner(Corner.BOTTOM_RIGHT, PARENT_ID);
         params = (ConstraintLayout.LayoutParams) mTabGroupFaviconQuarter.getLayoutParams();
         assertEquals(UNSET, params.leftToLeft);
         assertEquals(UNSET, params.topToTop);
         assertEquals(PARENT_ID, params.rightToRight);
         assertEquals(PARENT_ID, params.bottomToBottom);
 
-        mTabGroupFaviconQuarter.setCorner(Corner.BOTTOM_LEFT, PARENT_ID);
+        mTabGroupFaviconQuarter.adjustPositionForCorner(Corner.BOTTOM_LEFT, PARENT_ID);
         params = (ConstraintLayout.LayoutParams) mTabGroupFaviconQuarter.getLayoutParams();
         assertEquals(PARENT_ID, params.leftToLeft);
         assertEquals(UNSET, params.topToTop);
@@ -103,8 +103,8 @@ public class TabGroupFaviconQuarterUnitTest {
 
     @Test
     @SmallTest
-    public void testSetIconOrText_icon() {
-        mTabGroupFaviconQuarter.setIconOrText(mDrawable, 0);
+    public void testSetImage() {
+        mTabGroupFaviconQuarter.setImage(mDrawable);
         assertEquals(View.VISIBLE, mImageView.getVisibility());
         assertEquals(mDrawable, mImageView.getDrawable());
         assertEquals(View.INVISIBLE, mTextView.getVisibility());
@@ -116,8 +116,8 @@ public class TabGroupFaviconQuarterUnitTest {
 
     @Test
     @SmallTest
-    public void testSetIconOrText_text() {
-        mTabGroupFaviconQuarter.setIconOrText(null, TAB_COUNT);
+    public void testSetPlusCount() {
+        mTabGroupFaviconQuarter.setPlusCount(PLUS_COUNT);
         assertEquals(View.INVISIBLE, mImageView.getVisibility());
         assertEquals(null, mImageView.getDrawable());
         assertEquals(View.VISIBLE, mTextView.getVisibility());
@@ -129,21 +129,8 @@ public class TabGroupFaviconQuarterUnitTest {
 
     @Test
     @SmallTest
-    public void testSetIconOrText_both() {
-        mTabGroupFaviconQuarter.setIconOrText(mDrawable, TAB_COUNT);
-        assertEquals(View.VISIBLE, mImageView.getVisibility());
-        assertEquals(mDrawable, mImageView.getDrawable());
-        assertEquals(View.INVISIBLE, mTextView.getVisibility());
-        assertTrue(TextUtils.isEmpty(mTextView.getText()));
-        assertEquals(
-                mBackground.getColor().getDefaultColor(),
-                ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_0));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetIconOrText_neither() {
-        mTabGroupFaviconQuarter.setIconOrText(null, 0);
+    public void testClear() {
+        mTabGroupFaviconQuarter.clear();
         assertEquals(View.INVISIBLE, mImageView.getVisibility());
         assertEquals(null, mImageView.getDrawable());
         assertEquals(View.INVISIBLE, mTextView.getVisibility());

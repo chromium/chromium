@@ -3623,7 +3623,11 @@ void HWNDMessageHandler::SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
   // changed.
   if (old_size == bounds_in_pixels.size() && force_size_changed &&
       !background_fullscreen_hack_) {
+    auto ref = msg_handler_weak_factory_.GetWeakPtr();
     delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
+    if (!ref) {
+      return;
+    }
     ResetWindowRegion(false, true);
   }
 }

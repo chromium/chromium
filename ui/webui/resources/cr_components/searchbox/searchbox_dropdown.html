@@ -1,22 +1,18 @@
-<style include="cr-icons realbox-dropdown-shared-style">
+<style include="cr-icons searchbox-dropdown-shared-style">
   :host {
     user-select: none;
   }
 
   #content {
-    background-color: var(--color-realbox-results-background);
-    border-radius: calc(0.5 * var(--cr-realbox-height));
-    box-shadow: var(--cr-realbox-shadow);
+    background-color: var(--color-searchbox-results-background);
+    border-radius: calc(0.5 * var(--cr-searchbox-height));
+    box-shadow: var(--cr-searchbox-shadow);
     display: flex;
     gap: 16px;
     margin-bottom: 8px;
     overflow: hidden;
-    padding-bottom: 18px;
-    padding-top: var(--cr-realbox-height);
-  }
-
-  :host([expanded-state-layout-chrome-refresh]) #content {
     padding-bottom: 8px;
+    padding-top: var(--cr-searchbox-height);
   }
 
   @media (forced-colors: active) {
@@ -29,8 +25,8 @@
     display: contents;
   }
 
-  cr-realbox-match {
-    color: var(--color-realbox-results-foreground);
+  cr-searchbox-match {
+    color: var(--color-searchbox-results-foreground);
   }
 
   .header {
@@ -52,7 +48,7 @@
   }
 
   .header .text {
-    color: var(--color-realbox-results-foreground-dimmed);
+    color: var(--color-searchbox-results-foreground-dimmed);
     font-size: .875em;
     font-weight: 500;
     overflow: hidden;
@@ -67,16 +63,11 @@
 
   .header:focus-within:not(:focus) cr-icon-button {
       --cr-icon-button-fill-color:
-          var(--color-realbox-results-icon-selected);
-  }
-
-  :host(:not([chrome-refresh-hover-shape])) cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
-    background-color:
-        var(--color-realbox-results-background-hovered);
+          var(--color-searchbox-results-icon-selected);
   }
 
   @media (forced-colors: active) {
-    cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
+    cr-searchbox-match:-webkit-any(:hover, :focus-within, [selected]) {
       background-color: Highlight;
     }
   }
@@ -87,7 +78,7 @@
   }
 
   .secondary-side {
-    display: var(--cr-realbox-secondary-side-display, none);
+    display: var(--cr-searchbox-secondary-side-display, none);
     min-width: 0;
     padding-block-end: 8px;
     padding-inline-end: 16px;
@@ -108,7 +99,7 @@
     gap: 4px;
   }
 </style>
-<div id="content">
+<div id="content" part="dropdown-content">
   <template is="dom-repeat"
       items="[[sideTypes_(showSecondarySide_)]]"
       as="sideType">
@@ -132,11 +123,11 @@
           <template is="dom-repeat"
               items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
               as="match" on-dom-change="onResultRepaint_">
-            <cr-realbox-match tabindex="0" role="option" match="[[match]]"
+            <cr-searchbox-match tabindex="0" role="option" match="[[match]]"
                 match-index="[[matchIndex_(match)]]" side-type="[[sideType]]"
                 selected$="[[isSelected_(match, selectedMatchIndex)]]"
                 show-thumbnail="[[showThumbnail]]">
-            </cr-realbox-match>
+            </cr-searchbox-match>
           </template>
         </div>
       </template>

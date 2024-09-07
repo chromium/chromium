@@ -6,6 +6,7 @@
 #define COMPONENTS_SODA_SODA_INSTALLER_H_
 
 #include <set>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
@@ -95,14 +96,26 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   virtual void UninstallLanguage(const std::string& language,
                                  PrefService* global_prefs) = 0;
 
+  // Installs the SODA binary. `global_prefs` is passed as part of component
+  // registration for the non-chromeos implementation.
+  virtual void InstallSoda(PrefService* global_prefs) = 0;
+
   // Gets all installed and installable language codes supported by SODA
   // (in BCP-47 format).
   virtual std::vector<std::string> GetAvailableLanguages() const = 0;
+
+  // Get the name of language DLC for a certain locale. This is currently only
+  // being used in `SodaInstallerImplChromeOS`.
+  virtual std::string GetLanguageDlcNameForLocale(
+      const std::string& locale) const;
 
   // Returns whether or not SODA and the given language pack are installed on
   // this device. Will return a stale value until InstallSoda() and
   // InstallLanguage() have run and asynchronously returned an answer.
   bool IsSodaInstalled(LanguageCode language_code) const;
+
+  // Returns whether or not the SODA binary is installed.
+  bool IsSodaBinaryInstalled() const;
 
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
@@ -147,10 +160,6 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
 
   // Registers the preference tracking the installed SODA language packs.
   static void RegisterRegisteredLanguagePackPref(PrefRegistrySimple* registry);
-
-  // Installs the SODA binary. `global_prefs` is passed as part of component
-  // registration for the non-chromeos implementation.
-  virtual void InstallSoda(PrefService* global_prefs) = 0;
 
   // Uninstalls SODA and associated language model(s). On some platforms, disc
   // space may not be freed immediately.

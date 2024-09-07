@@ -49,8 +49,4 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   base::ScopedTempDir temp_user_data_dir_;
 };
 
-// When including either android_browser_test.h or in_process_browser_test.h
-// depending on the platform, use this type alias as the test base class.
-using PlatformBrowserTest = AndroidBrowserTest;
-
 #endif  // CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_

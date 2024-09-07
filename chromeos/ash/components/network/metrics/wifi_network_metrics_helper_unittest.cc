@@ -43,7 +43,7 @@ class WifiNetworkMetricsHelperTest : public testing::Test {
     LoginState::Get()->SetLoggedInState(
         logged_in ? LoginState::LoggedInState::LOGGED_IN_ACTIVE
                   : LoginState::LoggedInState::LOGGED_IN_NONE,
-        logged_in ? LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER
+        logged_in ? LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR
                   : LoginState::LoggedInUserType::LOGGED_IN_USER_NONE);
     base::RunLoop().RunUntilIdle();
   }

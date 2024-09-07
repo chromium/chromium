@@ -72,7 +72,7 @@ void TestUserPerformanceTuningManagerEnvironment::SetUp(
 #endif
   auto source = std::make_unique<FakePowerMonitorSource>();
   power_monitor_source_ = source.get();
-  base::PowerMonitor::Initialize(std::move(source));
+  base::PowerMonitor::GetInstance()->Initialize(std::move(source));
 
   if (!sampling_event_source) {
     auto test_sampling_event_source =
@@ -114,7 +114,7 @@ void TestUserPerformanceTuningManagerEnvironment::TearDown() {
   user_performance_tuning_manager_.reset();
   battery_saver_mode_manager_.reset();
   battery_sampler_.reset();
-  base::PowerMonitor::ShutdownForTesting();
+  base::PowerMonitor::GetInstance()->ShutdownForTesting();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (tear_down_power_manager_client_) {
     chromeos::PowerManagerClient::Shutdown();

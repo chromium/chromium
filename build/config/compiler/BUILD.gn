@@ -98,7 +98,7 @@ declare_args() {
   # nonsensical for said projects.
   clang_use_default_sample_profile =
       chrome_pgo_phase == 0 && build_with_chromium && is_official_build &&
-      (is_android || chromeos_is_browser_only)
+       chromeos_is_browser_only
 
   # This configuration is used to select a default profile in Chrome OS based on
   # the microarchitectures we are using. This is only used if
@@ -216,12 +216,15 @@ if (is_android) {
   declare_args() {
     chrome_orderfile_path = ""
 
-    # The default orderfile should not be used when generating a new PGO
-    # profile (chrome_pgo_phase == 1) to avoid affecting profiling.
-    if (defined(default_chrome_orderfile) && chrome_pgo_phase != 1) {
-      # Allow downstream tools to set orderfile path with
-      # another variable.
-      chrome_orderfile_path = default_chrome_orderfile
+    # The orderfile is trained on PGO builds (for arm64) and AFDO builds (for
+    # arm32), so apply them only in these cases.
+    if (defined(default_chrome_orderfile)) {
+      if (((current_cpu == "arm64" || current_cpu == "x64") &&
+           chrome_pgo_phase == 2) ||
+          ((current_cpu == "arm" || current_cpu == "x86") &&
+           clang_use_default_sample_profile)) {
+        chrome_orderfile_path = default_chrome_orderfile
+      }
     }
   }
 }
@@ -2099,6 +2102,11 @@ config("chromium_code") {
       cflags_objc += [ "-Wobjc-missing-property-synthesis" ]
       cflags_objcc += [ "-Wobjc-missing-property-synthesis" ]
     }
+
+    if (is_ios) {
+      cflags_objc += [ "-Widiomatic-parentheses" ]
+      cflags_objcc += [ "-Widiomatic-parentheses" ]
+    }
   }
 
   if (is_clang) {
@@ -2766,6 +2774,7 @@ config("win_pdbaltpath") {
 # Full symbols.
 config("symbols") {
   rustflags = []
+  configs = []
   if (is_win) {
     if (is_clang) {
       cflags = [
@@ -2788,7 +2797,7 @@ config("symbols") {
     }
 
     # All configs using /DEBUG should include this:
-    configs = [ ":win_pdbaltpath" ]
+    configs += [ ":win_pdbaltpath" ]
   } else {
     cflags = []
     if (is_mac && enable_dsyms) {
@@ -2882,13 +2891,24 @@ config("symbols") {
     }
   }
 
-  configs = []
-
   # Compress debug on 32-bit ARM to stay under 4GB file size limit.
   # https://b/243982712, https://crbug.com/1354616, https://crbug.com/334073642
   if (symbol_level == 2 && !use_debug_fission && !is_nacl && !is_win &&
       (current_cpu == "arm" || current_cpu == "x86")) {
     configs += [ "//build/config:compress_debug_sections" ]
+  }
+
+  if (is_clang && !is_nacl && is_win && !is_component_build) {
+    # Remove unreferenced methods to reduce type info in symbols.
+    # See: https://github.com/llvm/llvm-project/pull/87018.
+    # The downside with this flag is precisely that: Unreferenced methods get
+    # removed, so that methods only to be used from within a debugger become
+    # unavailable. Therefore, only do this for Windows, which seems to be the
+    # only platform that needs this, due to size limitations in PDF files.
+    # Additionally, this limitation is only likely to be hit in non-component
+    # builds, so only do it then.
+    # See crbug.com/338094922
+    cflags += [ "-gomit-unreferenced-methods" ]
   }
 
   if (is_clang && (!is_nacl || is_nacl_saigo)) {

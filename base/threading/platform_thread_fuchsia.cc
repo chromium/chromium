@@ -120,11 +120,6 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       SetThreadRole("chromium.base.threading.resource-efficient");
       break;
 
-    case ThreadType::kCompositing:
-      SetThreadRole("chromium.base.threading.compositing",
-                    kDisplaySchedulingPeriod, kDisplaySchedulingCapacity);
-      break;
-
     case ThreadType::kDisplayCritical:
       SetThreadRole("chromium.base.threading.display", kDisplaySchedulingPeriod,
                     kDisplaySchedulingCapacity);
@@ -149,7 +144,6 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
     case ThreadType::kUtility:
     case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
-    case ThreadType::kCompositing:
       return ThreadPriorityForTest::kNormal;
     case ThreadType::kDisplayCritical:
       return ThreadPriorityForTest::kDisplay;

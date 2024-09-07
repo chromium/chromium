@@ -17,26 +17,9 @@ enum AICapabilityAvailability {
 interface AI {
   [
     Measure,
-    CallWith=ScriptState,
-    RaisesException,
     RuntimeEnabled=AIPromptAPI
   ]
-  Promise<AICapabilityAvailability> canCreateTextSession();
-  [
-    Measure,
-    CallWith=ScriptState,
-    RaisesException,
-    RuntimeEnabled=AIPromptAPI
-  ]
-  Promise<AITextSession> createTextSession(
-    optional AITextSessionOptions options = {}
-  );
-  [
-    Measure,
-    CallWith=ScriptState,
-    RaisesException
-  ]
-  Promise<AITextModelInfo> textModelInfo();
+  readonly attribute AIAssistantFactory assistant;
   [
     Measure,
     RuntimeEnabled=AISummarizationAPI

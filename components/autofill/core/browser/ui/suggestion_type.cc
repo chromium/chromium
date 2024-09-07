@@ -90,8 +90,12 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kIbanEntry";
     case SuggestionType::kCreateNewPlusAddress:
       return "kCreateNewPlusAddress";
+    case SuggestionType::kCreateNewPlusAddressInline:
+      return "kCreateNeWPlusAddressInline";
     case SuggestionType::kFillExistingPlusAddress:
       return "kFillExistingPlusAddress";
+    case SuggestionType::kPlusAddressError:
+      return "kPlusAddressError";
     case SuggestionType::kMerchantPromoCodeEntry:
       return "kMerchantPromoCodeEntry";
     case SuggestionType::kSeePromoCodeDetails:
@@ -114,6 +118,14 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kDevtoolsTestAddressByCountry";
     case SuggestionType::kDevtoolsTestAddressEntry:
       return "kDevtoolsTestAddressEntry";
+    case SuggestionType::kRetrievePredictionImprovements:
+      return "kRetrievePredictionImprovements";
+    case SuggestionType::kPredictionImprovementsLoadingState:
+      return "kPredictionImprovementsLoadingState";
+    case SuggestionType::kFillPredictionImprovements:
+      return "kFillPredictionImprovements";
+    case SuggestionType::kPredictionImprovementsFeedback:
+      return "kPredictionImprovementsFeedback";
   }
   NOTREACHED();
 }

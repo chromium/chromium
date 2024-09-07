@@ -18,11 +18,13 @@ class CaptionBubbleContext;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(CaptionBubbleErrorType)
 enum CaptionBubbleErrorType {
   kGeneric = 0,
   kMediaFoundationRendererUnsupported = 1,
   kMaxValue = kMediaFoundationRendererUnsupported
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:CaptionBubbleErrorType)
 
 using OnErrorClickedCallback = base::RepeatingCallback<void()>;
 using OnDoNotShowAgainClickedCallback =

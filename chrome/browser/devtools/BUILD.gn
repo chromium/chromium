@@ -138,6 +138,7 @@ static_library("devtools") {
   ]
 
   if (!is_android) {
+    public_deps += [ "//chrome/browser/ui/tabs:tab_strip_model_observer" ]
     deps += [
       "//build:chromeos_buildflags",
       "//chrome:extra_resources",
@@ -150,9 +151,11 @@ static_library("devtools") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/web_applications",
       "//chrome/common",
+      "//components/flags_ui",
       "//components/guest_view/browser",
       "//components/infobars/content",
       "//components/infobars/core",
@@ -172,7 +175,7 @@ static_library("devtools") {
       "//components/viz/host",
       "//components/web_modal",
       "//components/zoom",
-      "//net/server:http_server",
+      "//net",
       "//skia",
       "//third_party/icu",
       "//third_party/leveldatabase",

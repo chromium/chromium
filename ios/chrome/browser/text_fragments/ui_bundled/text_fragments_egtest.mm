@@ -123,6 +123,11 @@ void ReshareToPasteboard(const GURL& expected) {
 }
 
 - (void)testOpenMenu {
+  // TODO(crbug.com/361562688): Fix and re-enable.
+  if (@available(iOS 18, *)) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iOS 18 simulators.");
+  }
+
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithFragment)];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
 
@@ -147,6 +152,11 @@ void ReshareToPasteboard(const GURL& expected) {
 }
 
 - (void)testCancel {
+  // TODO(crbug.com/361562688): Fix and re-enable.
+  if (@available(iOS 18, *)) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iOS 18 simulators.");
+  }
+
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithFragment)];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
 
@@ -162,6 +172,11 @@ void ReshareToPasteboard(const GURL& expected) {
 }
 
 - (void)testLearnMore {
+  // TODO(crbug.com/361562688): Fix and re-enable.
+  if (@available(iOS 18, *)) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iOS 18 simulators.");
+  }
+
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithFragment)];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
 
@@ -179,6 +194,11 @@ void ReshareToPasteboard(const GURL& expected) {
 }
 
 - (void)testReshare {
+  // TODO(crbug.com/361562688): Fix and re-enable.
+  if (@available(iOS 18, *)) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iOS 18 simulators.");
+  }
+
   // Clear the pasteboard
   UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
   [pasteboard setValue:@"" forPasteboardType:UIPasteboardNameGeneral];
@@ -222,6 +242,11 @@ void ReshareToPasteboard(const GURL& expected) {
 
 // Verify that navigating away from the page makes the menu go away.
 - (void)testMenuDismissesOnNavigation {
+  // TODO(crbug.com/361562688): Fix and re-enable.
+  if (@available(iOS 18, *)) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iOS 18 simulators.");
+  }
+
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithFragment)];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
 

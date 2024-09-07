@@ -93,6 +93,8 @@ void BirchChipLoaderView::AddAnimationToBuilder(
   }
 }
 
+void BirchChipLoaderView::Init(BirchItem* item) {}
+
 const BirchItem* BirchChipLoaderView::GetItem() const {
   return nullptr;
 }

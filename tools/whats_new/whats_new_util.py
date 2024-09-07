@@ -411,3 +411,4 @@ def RemoveAnimationAssetsForMilestone(milestone: str) -> None:
                                              in_app_images_serialized)
         file.seek(0)
         file.write(data)
+        file.truncate()

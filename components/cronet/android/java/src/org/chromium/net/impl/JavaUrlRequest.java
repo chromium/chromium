@@ -9,14 +9,12 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.TrafficStats;
 import android.os.Build;
-import android.os.Process;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.CronetException;
 import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.InlineExecutionProhibitedException;
@@ -1017,13 +1015,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     mReadCount,
                     mOutputStreamDataSink == null ? 0 : mOutputStreamDataSink.getReadCount(),
                     /* isBidiStream= */ false,
-                    mFinalUserCallbackThrew,
-                    Process.myUid(),
-                    /* networkInternalErrorCode */ 0,
-                    /* quicErrorCode */ 0,
-                    /* connectionCloseSource */ ConnectionCloseSource.UNKNOWN,
-                    /* failureReason */ CronetTrafficInfo.RequestFailureReason.UNKNOWN,
-                    /* socketReused */ false);
+                    mFinalUserCallbackThrew);
         }
 
         // Maybe report metrics. This method should only be called on Callback's executor thread and

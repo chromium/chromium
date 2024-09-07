@@ -13,6 +13,7 @@
 #include <mach/message.h>
 
 #include "base/apple/mach_logging.h"
+#include "base/mac/scoped_mach_msg_destroy.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #endif
@@ -30,6 +31,7 @@ mojo::PlatformChannelEndpoint ConnectToServer(
 
   mojo::PlatformChannel channel;
   mach_msg_base_t message{};
+  base::ScopedMachMsgDestroy scoped_message(&message.header);
   message.header.msgh_bits =
       MACH_MSGH_BITS(MACH_MSG_TYPE_MOVE_SEND, MACH_MSG_TYPE_MOVE_SEND);
   message.header.msgh_size = sizeof(message);
@@ -39,7 +41,9 @@ mojo::PlatformChannelEndpoint ConnectToServer(
       endpoint.TakePlatformHandle().ReleaseMachSendRight();
 
   kern_return_t kr = mach_msg_send(&message.header);
-  if (kr != KERN_SUCCESS) {
+  if (kr == KERN_SUCCESS) {
+    scoped_message.Disarm();
+  } else {
     MACH_VLOG(1, kr) << "mach_msg_send";
     return mojo::PlatformChannelEndpoint();
   }

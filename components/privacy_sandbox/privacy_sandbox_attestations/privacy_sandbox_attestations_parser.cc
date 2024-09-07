@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_parser.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 
 #include <string>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -42,6 +44,15 @@ void InsertAPI(
     case privacy_sandbox::SHARED_STORAGE: {
       allowed_api_set.Put(
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage);
+      return;
+    }
+    case privacy_sandbox::LOCAL_UNPARTITIONED_DATA_ACCESS: {
+      if (base::FeatureList::IsEnabled(
+              blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+        allowed_api_set.Put(
+            privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kLocalUnpartitionedDataAccess);
+      }
       return;
     }
     case privacy_sandbox::UNKNOWN: {

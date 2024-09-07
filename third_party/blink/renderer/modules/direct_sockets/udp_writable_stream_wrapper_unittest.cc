@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -153,7 +154,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
       script_state, ASSERT_NO_EXCEPTION);
 
-  auto* chunk = DOMArrayBuffer::Create("A", 1);
+  auto* chunk = DOMArrayBuffer::Create(base::byte_span_from_cstring("A"));
   auto* message = UDPMessage::Create();
   message->setData(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
@@ -184,7 +185,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
       script_state, ASSERT_NO_EXCEPTION);
 
-  auto* buffer = DOMArrayBuffer::Create("ABC", 3);
+  auto* buffer = DOMArrayBuffer::Create(base::byte_span_from_cstring("ABC"));
   auto* chunk = DOMUint8Array::Create(buffer, 0, 3);
 
   auto* message = UDPMessage::Create();
@@ -205,7 +206,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
               ::testing::ElementsAre('A', 'B', 'C'));
 }
 
-TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
+TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataFieldFails) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
@@ -232,11 +233,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
   ScriptPromiseTester tester(script_state, result);
   tester.WaitUntilSettled();
 
-  ASSERT_TRUE(tester.IsFulfilled());
-
-  // Nothing should have been written from the empty DOMArrayBuffer.
-  auto* fake_udp_socket = stream_creator->fake_udp_socket();
-  EXPECT_THAT(fake_udp_socket->GetReceivedData(), ::testing::ElementsAre());
+  ASSERT_TRUE(tester.IsRejected());
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
@@ -252,8 +249,8 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
       script_state, ASSERT_NO_EXCEPTION);
 
-  for (const auto* value : {"A", "B"}) {
-    auto* chunk = DOMArrayBuffer::Create(value, 1);
+  for (const std::string_view value : {"A", "B"}) {
+    auto* chunk = DOMArrayBuffer::Create(base::as_byte_span(value));
     auto* message = UDPMessage::Create();
     message->setData(
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
@@ -286,7 +283,7 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterClose) {
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
       script_state, ASSERT_NO_EXCEPTION);
 
-  auto* chunk = DOMArrayBuffer::Create("A", 1);
+  auto* chunk = DOMArrayBuffer::Create(base::byte_span_from_cstring("A"));
   auto* message = UDPMessage::Create();
   message->setData(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
@@ -338,7 +335,7 @@ TEST(UDPWritableStreamWrapperTest, WriteFailed) {
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
       script_state, ASSERT_NO_EXCEPTION);
 
-  auto* chunk = DOMArrayBuffer::Create("A", 1);
+  auto* chunk = DOMArrayBuffer::Create(base::byte_span_from_cstring("A"));
   auto* message = UDPMessage::Create();
   message->setData(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));

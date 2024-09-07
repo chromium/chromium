@@ -31,7 +31,8 @@ void AutofillSaveCardDelegateAndroid::SetDeviceLockBridgeForTesting(
 AutofillSaveCardDelegateAndroid::~AutofillSaveCardDelegateAndroid() = default;
 
 void AutofillSaveCardDelegateAndroid::GatherAdditionalConsentIfApplicable(
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details) {
   device_lock_bridge_->LaunchDeviceLockUiIfNeededBeforeRunningCallback(
       web_contents_->GetNativeView()->GetWindowAndroid(),
       base::BindOnce(&AutofillSaveCardDelegateAndroid::OnAfterDeviceLockUi,
@@ -39,7 +40,8 @@ void AutofillSaveCardDelegateAndroid::GatherAdditionalConsentIfApplicable(
 }
 
 void AutofillSaveCardDelegateAndroid::OnAfterDeviceLockUi(
-    AutofillClient::UserProvidedCardDetails user_provided_details,
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details,
     bool is_device_lock_requirement_met) {
   OnFinishedGatheringConsent(
       /*user_decision=*/is_device_lock_requirement_met
@@ -49,7 +51,7 @@ void AutofillSaveCardDelegateAndroid::OnAfterDeviceLockUi(
                 kIgnored,
       is_device_lock_requirement_met
           ? user_provided_details
-          : AutofillClient::UserProvidedCardDetails());
+          : payments::PaymentsAutofillClient::UserProvidedCardDetails());
 }
 
 }  // namespace autofill

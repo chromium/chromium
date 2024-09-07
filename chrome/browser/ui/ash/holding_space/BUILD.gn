@@ -43,7 +43,6 @@ static_library("holding_space") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/fileapi",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
@@ -55,6 +54,7 @@ static_library("holding_space") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/clipboard",
     "//chrome/browser/ui/ash/thumbnail_loader",
     "//chromeos/dbus/power",
     "//components/drive",
@@ -70,7 +70,6 @@ static_library("holding_space") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/login/session",
@@ -114,6 +113,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/chromeos",
+    "//ui/chromeos/styles:cros_styles_views_generator",
     "//ui/gfx",
   ]
 }
@@ -138,7 +138,6 @@ source_set("browser_tests") {
     "//ash/style",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/file_manager",
@@ -151,6 +150,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test/base/ash/util:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/dbus/power:power",
     "//content/test:test_support",
     "//ui/aura",
@@ -161,6 +161,7 @@ source_set("browser_tests") {
     "//ui/gfx:test_support",
     "//ui/views",
     "//ui/wm/public",
+    "//ui/wm/public:test_support",
   ]
 }
 
@@ -183,8 +184,8 @@ static_library("test_support") {
     "//ash/public/cpp/holding_space:test_support",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/extensions",

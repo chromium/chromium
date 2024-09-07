@@ -14,7 +14,6 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
-#include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
@@ -24,7 +23,6 @@
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_skeleton_loader_view.h"
 #include "ash/picker/views/picker_strings.h"
-#include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
@@ -57,6 +55,37 @@ constexpr int kNoResultsIllustrationAndDescriptionSpacing = 16;
 constexpr gfx::Size kNoResultsIllustrationSize(200, 100);
 
 constexpr int kMaxIndexForMetrics = 10;
+
+std::u16string GetAccessibleNameForSeeMoreButton(
+    PickerSectionType section_type) {
+  switch (section_type) {
+    case PickerSectionType::kLinks:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SEE_MORE_LINKS_BUTTON_ACCESSIBLE_NAME);
+    case PickerSectionType::kLocalFiles:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME);
+    case PickerSectionType::kDriveFiles:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SEE_MORE_DRIVE_FILES_BUTTON_ACCESSIBLE_NAME);
+    case PickerSectionType::kNone:
+    case PickerSectionType::kClipboard:
+    case PickerSectionType::kExamples:
+    case PickerSectionType::kEditorWrite:
+    case PickerSectionType::kEditorRewrite:
+      return u"";
+  }
+}
+
+PickerSectionView::LocalFileResultStyle ConvertLocalFileResultStyle(
+    PickerSearchResultsView::LocalFileResultStyle style) {
+  switch (style) {
+    case PickerSearchResultsView::LocalFileResultStyle::kList:
+      return PickerSectionView::LocalFileResultStyle::kList;
+    case PickerSearchResultsView::LocalFileResultStyle::kGrid:
+      return PickerSectionView::LocalFileResultStyle::kGrid;
+  }
+}
 
 }  // namespace
 
@@ -115,6 +144,11 @@ PickerSearchResultsView::PickerSearchResultsView(
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
 
+void PickerSearchResultsView::SetLocalFileResultStyle(
+    LocalFileResultStyle style) {
+  local_file_result_style_ = style;
+}
+
 views::View* PickerSearchResultsView::GetTopItem() {
   return section_list_view_->GetTopItem();
 }
@@ -152,14 +186,14 @@ views::View* PickerSearchResultsView::GetItemBelow(views::View* item) {
 }
 
 views::View* PickerSearchResultsView::GetItemLeftOf(views::View* item) {
-  if (!Contains(item) || !views::IsViewClass<PickerItemView>(item)) {
+  if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemLeftOf(item);
 }
 
 views::View* PickerSearchResultsView::GetItemRightOf(views::View* item) {
-  if (!Contains(item) || !views::IsViewClass<PickerItemView>(item)) {
+  if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemRightOf(item);
@@ -193,8 +227,7 @@ void PickerSearchResultsView::AppendSearchResults(
   if (section.has_more_results()) {
     section_view->AddTitleTrailingLink(
         l10n_util::GetStringUTF16(IDS_PICKER_SEE_MORE_BUTTON_TEXT),
-        l10n_util::GetStringFUTF16(IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME,
-                                   section_title),
+        GetAccessibleNameForSeeMoreButton(section.type()),
         base::BindRepeating(&PickerSearchResultsView::OnTrailingLinkClicked,
                             base::Unretained(this), section.type()));
   }
@@ -248,6 +281,7 @@ void PickerSearchResultsView::AddResultToSection(
   // takes this callback.
   PickerItemView* view = section_view->AddResult(
       result, preview_controller_,
+      ConvertLocalFileResultStyle(local_file_result_style_),
       base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
                           base::Unretained(this), result));
 

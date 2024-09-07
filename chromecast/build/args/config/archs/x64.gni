@@ -1,0 +1,2 @@
+# Args common to ALL x64 builds.
+target_cpu = "x64"

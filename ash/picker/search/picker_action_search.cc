@@ -23,7 +23,7 @@
 namespace ash {
 namespace {
 
-using CaseTransformType = PickerSearchResult::CaseTransformData::Type;
+using CaseTransformType = PickerCaseTransformResult::Type;
 
 constexpr auto kTransformMessageIds =
     std::to_array<std::pair<int, CaseTransformType>>({
@@ -54,7 +54,7 @@ std::vector<PickerSearchResult> PickerActionSearch(
   std::vector<PickerSearchResult> matches;
   for (const PickerCategory category : options.available_categories) {
     if (IsMatch(tokenized_query, GetLabelForPickerCategory(category))) {
-      matches.push_back(PickerSearchResult::Category(category));
+      matches.push_back(PickerCategoryResult(category));
     }
   }
 
@@ -63,14 +63,14 @@ std::vector<PickerSearchResult> PickerActionSearch(
                   options.caps_lock_state_to_search
                       ? IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL
                       : IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL))) {
-    matches.push_back(PickerSearchResult::CapsLock(
-        options.caps_lock_state_to_search, GetPickerShortcutForCapsLock()));
+    matches.push_back(PickerCapsLockResult(options.caps_lock_state_to_search,
+                                           GetPickerShortcutForCapsLock()));
   }
 
   if (options.search_case_transforms) {
     for (const auto& [message_id, type] : kTransformMessageIds) {
       if (IsMatch(tokenized_query, l10n_util::GetStringUTF16(message_id))) {
-        matches.push_back(PickerSearchResult::CaseTransform(type));
+        matches.push_back(PickerCaseTransformResult(type));
       }
     }
   }

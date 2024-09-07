@@ -182,6 +182,7 @@
 
 // Presents the view controller modally from the current base view controller.
 - (void)presentViewControllerFromBaseViewControllerAnimated:(BOOL)animated {
+  _viewController.modalPresentationStyle = UIModalPresentationFormSheet;
   _viewController.presentationController.delegate = self;
   [_modifiableBaseViewController presentViewController:_viewController
                                               animated:animated

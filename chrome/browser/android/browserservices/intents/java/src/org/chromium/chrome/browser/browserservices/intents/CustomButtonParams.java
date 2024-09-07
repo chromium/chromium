@@ -23,16 +23,24 @@ import java.lang.annotation.RetentionPolicy;
 public interface CustomButtonParams {
 
     /** Enum used to describe different types of buttons. */
-    @IntDef({ButtonType.OTHER, ButtonType.CCT_SHARE_BUTTON, ButtonType.EXTERNAL})
+    @IntDef({
+        ButtonType.OTHER,
+        ButtonType.CCT_SHARE_BUTTON,
+        ButtonType.CCT_OPEN_IN_BROWSER_BUTTON,
+        ButtonType.EXTERNAL
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonType {
         int OTHER = 0;
 
-        /** Share button created by Chrome. */
+        /** Share button, created by Chrome. */
         int CCT_SHARE_BUTTON = 1;
 
+        /** Open in Browser button, created by Chrome. */
+        int CCT_OPEN_IN_BROWSER_BUTTON = 2;
+
         /** Button from external embedding applications. */
-        int EXTERNAL = 2;
+        int EXTERNAL = 3;
     }
 
     /** Replaces the current icon and description with new ones. */

@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
+#include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/presenter.h"
@@ -282,17 +283,25 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::BufferFormat format,
     gfx::NativePixmapHandle handle) {
 #if defined(WAYLAND_GBM)
-  scoped_refptr<GbmPixmapWayland> pixmap =
-      base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
-
-  if (!pixmap->InitializeBufferFromHandle(widget, size, format,
-                                          std::move(handle))) {
-    return nullptr;
+  auto* gbm_device = buffer_manager_->GetGbmDevice();
+  if (gbm_device->CanCreateBufferForFormat(
+          GetFourCCFormatFromBufferFormat(format))) {
+    scoped_refptr<GbmPixmapWayland> pixmap =
+        base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
+    if (pixmap->InitializeBufferFromHandle(widget, size, format,
+                                           std::move(handle))) {
+      return pixmap;
+    }
+  } else {
+    scoped_refptr<gfx::NativePixmapDmaBuf> pixmap =
+        base::MakeRefCounted<gfx::NativePixmapDmaBuf>(size, format,
+                                                      std::move(handle));
+    if (pixmap->AreDmaBufFdsValid()) {
+      return pixmap;
+    }
   }
-  return pixmap;
-#else
+#endif  //  defined(WAYLAND_GBM)
   return nullptr;
-#endif
 }
 
 bool WaylandSurfaceFactory::SupportsNativePixmaps() const {

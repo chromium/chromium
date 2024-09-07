@@ -213,6 +213,17 @@ $ (shell) adb pull /data/anr/trace_01 /tmp/t1
 $ (shell) third_party/android_platform/development/scripts/stack --output-directory=out/Release /tmp/t1
 ```
 
+#### Instrumentation test process modes
+
+You may use `--webview-process-mode` argument to run tests only in the
+specified process mode. The valid switch values are `multiple` and `single`.
+When the argument is not set (default), both process modes execute. Note that
+the argument acts as an additional filter on top of the
+[`OnlyRunIn` test annotation](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/test/shell/src/org/chromium/android_webview/test/OnlyRunIn.java;drc=02c4c92d88aecbc14e715fd7fcac842d5dd814fe;l=25).
+
+Also note that in chromium CQ builders and all builders running tests on
+Android R and plus, `--webview-process-mode=multiple` is appended to the test
+command so that the instrumentation tests only run in multiple processes mode.
 
 ## External tests
 

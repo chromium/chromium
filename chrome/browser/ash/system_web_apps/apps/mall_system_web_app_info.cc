@@ -69,3 +69,7 @@ std::vector<std::string> MallSystemAppDelegate::GetAppIdsToUninstallAndReplace()
   // to ignore apps, the buggy behaviour is considered an acceptable tradeoff.
   return {web_app::kMallAppId};
 }
+
+bool MallSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}

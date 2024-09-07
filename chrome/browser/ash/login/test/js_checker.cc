@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,8 +101,9 @@ void JSChecker::ExecuteAsync(const std::string& expression) {
   CHECK(web_contents_);
   std::string new_script = expression + ";";
   web_contents_->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(new_script),
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          base::UTF8ToUTF16(new_script), base::NullCallback(),
+          content::ISOLATED_WORLD_ID_GLOBAL);
 }
 
 bool JSChecker::GetBool(const std::string& expression) {

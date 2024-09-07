@@ -36,17 +36,19 @@ static_library("fetcher") {
   sources = [
     "api_access_token_fetcher.cc",
     "api_access_token_fetcher.h",
+    "kids_management_api_fetcher.cc",
+    "kids_management_api_fetcher.h",
+    "parallel_fetch_manager.h",
     "proto_fetcher.cc",
     "proto_fetcher.h",
+    "proto_fetcher_status.cc",
+    "proto_fetcher_status.h",
   ]
   deps = [
     ":fetcher_config",
     "//base",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser/proto",
-
-    # TODO(b/293824572): Remove when all templated code is in headers.
-    "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
     "//google_apis",
     "//google_apis/common:request_util",
@@ -153,6 +155,8 @@ source_set("unit_tests") {
     "fetcher_config_unittest.cc",
     "kids_chrome_management_url_checker_client_unittest.cc",
     "list_family_members_service_unittest.cc",
+    "parallel_fetch_manager_unittest.cc",
+    "proto_fetcher_status_unittest.cc",
     "proto_fetcher_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
     "supervised_user_capabilities_unittest.cc",
@@ -184,9 +188,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/browser/proto",
-    "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
-    "//components/supervised_user/test_support",
     "//components/supervised_user/test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",

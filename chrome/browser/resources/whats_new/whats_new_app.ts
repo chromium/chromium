@@ -153,6 +153,8 @@ function handleBrowserCommand(messageData: BrowserCommand) {
   handler.canExecuteCommand(commandId).then(({canExecute}) => {
     if (canExecute) {
       handler.executeCommand(commandId, messageData.clickInfo);
+      const pageHandler = WhatsNewProxyImpl.getInstance().handler;
+      pageHandler.recordBrowserCommandExecuted();
     } else {
       console.warn('Received invalid command: ' + commandId);
     }
@@ -341,8 +343,9 @@ export class WhatsNewAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    WhatsNewProxyImpl.getInstance().handler.getServerUrl().then(
-        ({url}: {url: Url}) => this.handleUrlResult_(url.url));
+    WhatsNewProxyImpl.getInstance()
+        .handler.getServerUrl(loadTimeData.getBoolean('isStaging'))
+        .then(({url}: {url: Url}) => this.handleUrlResult_(url.url));
   }
 
   override disconnectedCallback() {

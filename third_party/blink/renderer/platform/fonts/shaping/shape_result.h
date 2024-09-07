@@ -77,7 +77,7 @@ struct ShapeResultCharacterData {
 
   ShapeResultCharacterData() = default;
 
-  void SetCachedData(float new_x_position,
+  void SetCachedData(LayoutUnit new_x_position,
                      bool new_is_cluster_base,
                      bool new_safe_to_break_before) {
     x_position = new_x_position;
@@ -85,7 +85,7 @@ struct ShapeResultCharacterData {
     safe_to_break_before = new_safe_to_break_before;
   }
 
-  float x_position = 0;
+  LayoutUnit x_position;
   // Set for the logical first character of a cluster.
   unsigned is_cluster_base : 1 = false;
   unsigned safe_to_break_before : 1 = false;
@@ -274,9 +274,9 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // Fast versions of OffsetForPosition and PositionForOffset that operates on
   // a cache (that needs to be pre-computed using EnsurePositionData) and that
   // does not take partial glyphs into account.
-  unsigned CachedOffsetForPosition(float x) const;
-  float CachedPositionForOffset(unsigned offset) const;
-  float CachedWidth(unsigned start_offset, unsigned end_offset) const;
+  unsigned CachedOffsetForPosition(LayoutUnit x) const;
+  LayoutUnit CachedPositionForOffset(unsigned offset) const;
+  LayoutUnit CachedWidth(unsigned start_offset, unsigned end_offset) const;
 
   // Returns the next or previous offsets respectively at which it is safe to
   // break without reshaping. Operates on a cache (that needs to be pre-computed
@@ -297,9 +297,9 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   ShapeResult* ApplySpacingToCopy(ShapeResultSpacing<TextRun>&,
                                   const TextRun&) const;
   // Add `expansion` space before the first glyph.
-  void ApplyLeadingExpansion(float expansion);
+  void ApplyLeadingExpansion(LayoutUnit expansion);
   // Add `expansion` space after the last glyph.
-  void ApplyTrailingExpansion(float expansion);
+  void ApplyTrailingExpansion(LayoutUnit expansion);
 
   // Adds spacing between ideograph character and non-ideograph character for
   // the property of text-autospace.

@@ -54,8 +54,7 @@ class PlusAddressWebDataService : public WebDataServiceBase {
 
   PlusAddressWebDataService(
       scoped_refptr<WebDatabaseService> wdbs,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> db_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   void AddObserver(Observer* o) { observers_.AddObserver(o); }
   void RemoveObserver(Observer* o) { observers_.RemoveObserver(o); }
@@ -99,7 +98,6 @@ class PlusAddressWebDataService : public WebDataServiceBase {
   void NotifyOnWebDataChangedBySync(std::vector<PlusAddressDataChange> changes);
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 
   // `scoped_refptr<>`, because the destruction order of
   // `PlusAddressWebDataService` and `db_task_runner_` is unclear.
@@ -110,14 +108,6 @@ class PlusAddressWebDataService : public WebDataServiceBase {
 
   base::WeakPtrFactory<PlusAddressWebDataService> weak_factory_{this};
 };
-
-// Returns true if `syncer::kSyncPlusAddress` is enabled. This only exists to
-// avoid a sync dependency in components/plus_addresses.
-bool IsSyncingPlusAddresses();
-
-// Returns the `syncer::kSyncPlusAddress` feature to be accessed from tests.
-// This only exists to avoid a sync dependency in components/plus_addresses.
-const base::Feature& GetSyncPlusAddressFeatureForTests();
 
 }  // namespace plus_addresses
 

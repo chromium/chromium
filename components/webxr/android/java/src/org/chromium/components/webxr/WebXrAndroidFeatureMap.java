@@ -14,8 +14,14 @@ public final class WebXrAndroidFeatureMap {
         return WebXrAndroidFeatureMapJni.get().isOpenXrEnabled();
     }
 
+    public static boolean isHandTrackingEnabled() {
+        return WebXrAndroidFeatureMapJni.get().isHandTrackingEnabled();
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isOpenXrEnabled();
+
+        boolean isHandTrackingEnabled();
     }
 }

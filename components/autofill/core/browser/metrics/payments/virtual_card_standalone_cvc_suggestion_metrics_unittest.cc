@@ -12,10 +12,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
-
 namespace {
+
 constexpr char kCardGuid[] = "10000000-0000-0000-0000-000000000001";
-}  // namespace
 
 class VirtualCardStandaloneCvcMetricsTest : public AutofillMetricsBaseTest,
                                             public testing::Test {
@@ -82,6 +81,10 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
               autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
                   kStandaloneCvcSuggestionShownOnce,
               1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
+      BucketsInclude(base::Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
+                     base::Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1)));
 
   // Simulate activating the autofill popup for the CVC field again.
   autofill_manager().OnAskForValuesToFillTest(
@@ -100,6 +103,11 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
               autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
                   kStandaloneCvcSuggestionShownOnce,
               1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
+      BucketsInclude(base::Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
+                     base::Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1)));
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.CreditCard", 0);
 }
 
 // Test CVC suggestion selected metrics are correctly logged.
@@ -126,6 +134,11 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
               autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
                   kStandaloneCvcSuggestionSelectedOnce,
               1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
+      BucketsInclude(
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED, 1),
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
 
   // Simulate selecting the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -145,6 +158,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
               autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
                   kStandaloneCvcSuggestionSelectedOnce,
               1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
+      BucketsInclude(
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED, 2),
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.CreditCard", 0);
 }
 
 // Test CVC suggestion filled metrics are correctly logged.
@@ -175,6 +194,11 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
               autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
                   kStandaloneCvcSuggestionFilledOnce,
               1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
+      BucketsInclude(
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, 1),
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, 1)));
 
   // Fill the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -197,6 +221,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
               autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
                   kStandaloneCvcSuggestionFilledOnce,
               1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
+      BucketsInclude(
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, 2),
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, 1)));
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.CreditCard", 0);
 }
 
 // Test will submit and submitted metrics are correctly logged.
@@ -228,6 +258,14 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
               autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
                   kStandaloneCvcSuggestionSubmittedOnce,
               1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
+      BucketsInclude(
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, 1)));
+  // Verify that not logging to normal credit card UMA.
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.CreditCard", 0);
 }
 
+}  // namespace
 }  // namespace autofill::autofill_metrics

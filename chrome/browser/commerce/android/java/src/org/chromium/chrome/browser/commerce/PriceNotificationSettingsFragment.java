@@ -16,6 +16,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -45,6 +47,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
     private TextMessagePreference mMobileNotificationsText;
     private ChromeSwitchPreference mEmailNotificationsSwitch;
     private NotificationManagerProxy mNotificationManagerProxy;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -53,7 +56,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.price_notification_preferences);
-        getActivity().setTitle(R.string.price_notifications_settings_detailed_page_title);
+        mPageTitle.set(getString(R.string.price_notifications_settings_detailed_page_title));
 
         mMobileNotificationsText =
                 (TextMessagePreference) findPreference(PREF_MOBILE_NOTIFICATIONS);
@@ -82,6 +85,11 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         } else {
             mEmailNotificationsSwitch.setVisible(false);
         }
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

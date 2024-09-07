@@ -222,8 +222,10 @@ void DateTimeFieldElement::SetDisabled() {
                           style_change_extra_data::g_disabled));
 }
 
-bool DateTimeFieldElement::SupportsFocus(UpdateBehavior) const {
-  return !IsDisabled() && !IsFieldOwnerDisabled();
+FocusableState DateTimeFieldElement::SupportsFocus(UpdateBehavior) const {
+  return (!IsDisabled() && !IsFieldOwnerDisabled())
+             ? FocusableState::kFocusable
+             : FocusableState::kNotFocusable;
 }
 
 void DateTimeFieldElement::UpdateVisibleValue(EventBehavior event_behavior) {

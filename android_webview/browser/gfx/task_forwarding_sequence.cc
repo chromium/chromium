@@ -68,7 +68,7 @@ void TaskForwardingSequence::ScheduleOrRetainTask(
 // Should not be called because tasks aren't reposted to wait for sync tokens,
 // or for yielding execution since ShouldYield() returns false.
 void TaskForwardingSequence::ContinueTask(base::OnceClosure task) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Method to wrap scheduled task with the order number processing required for
@@ -93,7 +93,7 @@ void TaskForwardingSequence::RunTask(
       TRACE_EVENT1("android_webview",
                    "TaskForwardingSequence::RunTask::WaitSyncToken",
                    "sequence_id", release_sequence_id.value());
-      gpu::Scheduler::ScopedAddWaitingPriority waiting(
+      gpu::Scheduler::ScopedSetSequencePriority waiting(
           scheduler, release_sequence_id, gpu::SchedulingPriority::kHigh);
       completion.Wait();
     }

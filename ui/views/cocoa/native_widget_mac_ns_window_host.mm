@@ -30,6 +30,7 @@
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/display/screen.h"
@@ -98,12 +99,11 @@ class BridgedNativeWidgetHostDummy
                                 bool full_keyboard_access_enabled) override {}
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override {}
-  void OnWindowParentChanged(uint64_t new_parent_id) override {}
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override {}
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override {
   }
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override {}
-  void DoDialogButtonAction(ui::DialogButton button) override {}
+  void DoDialogButtonAction(ui::mojom::DialogButton button) override {}
   void OnFocusWindowToolbar() override {}
   void SetRemoteAccessibilityTokens(
       const std::vector<uint8_t>& window_token,
@@ -154,7 +154,7 @@ class BridgedNativeWidgetHostDummy
     bool widget_is_modal = false;
     std::move(callback).Run(widget_is_modal);
   }
-  void GetDialogButtonInfo(ui::DialogButton button,
+  void GetDialogButtonInfo(ui::mojom::DialogButton button,
                            GetDialogButtonInfoCallback callback) override {
     bool exists = false;
     std::u16string label;
@@ -1354,32 +1354,6 @@ void NativeWidgetMacNSWindowHost::OnWindowStateRestorationDataChanged(
   }
 }
 
-void NativeWidgetMacNSWindowHost::OnWindowParentChanged(
-    uint64_t new_parent_id) {
-  NativeWidgetMacNSWindowHost* new_parent = GetFromId(new_parent_id);
-
-  if (new_parent == parent_) {
-    return;
-  }
-
-  if (parent_) {
-    auto found = base::ranges::find(parent_->children_, this);
-    CHECK(found != parent_->children_.end());
-    parent_->children_.erase(found);
-    parent_ = nullptr;
-  }
-
-  parent_ = new_parent;
-  if (parent_) {
-    parent_->children_.push_back(this);
-  }
-
-  if (Widget* widget = GetWidget()) {
-    widget->OnNativeWidgetParentChanged(
-        parent_ ? parent_->native_widget_mac()->GetNativeView() : nullptr);
-  }
-}
-
 void NativeWidgetMacNSWindowHost::OnImmersiveFullscreenToolbarRevealChanged(
     bool is_revealed) {
   if (immersive_mode_reveal_client_) {
@@ -1404,23 +1378,23 @@ void NativeWidgetMacNSWindowHost::OnAutohidingMenuBarHeightChanged(
 }
 
 void NativeWidgetMacNSWindowHost::DoDialogButtonAction(
-    ui::DialogButton button) {
+    ui::mojom::DialogButton button) {
   if (!root_view_) {
     return;
   }
   views::DialogDelegate* dialog =
       root_view_->GetWidget()->widget_delegate()->AsDialogDelegate();
   DCHECK(dialog);
-  if (button == ui::DIALOG_BUTTON_OK) {
+  if (button == ui::mojom::DialogButton::kOk) {
     dialog->AcceptDialog();
   } else {
-    DCHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
+    DCHECK_EQ(button, ui::mojom::DialogButton::kCancel);
     dialog->CancelDialog();
   }
 }
 
 bool NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
-    ui::DialogButton button,
+    ui::mojom::DialogButton button,
     bool* button_exists,
     std::u16string* button_label,
     bool* is_button_enabled,
@@ -1430,13 +1404,14 @@ bool NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
       root_view_
           ? root_view_->GetWidget()->widget_delegate()->AsDialogDelegate()
           : nullptr;
-  if (!dialog || !(dialog->buttons() & button)) {
+  if (!dialog || !(dialog->buttons() & static_cast<int>(button))) {
     return true;
   }
   *button_exists = true;
   *button_label = dialog->GetDialogButtonLabel(button);
   *is_button_enabled = dialog->IsDialogButtonEnabled(button);
-  *is_button_default = button == dialog->GetDefaultDialogButton();
+  *is_button_default =
+      static_cast<int>(button) == dialog->GetDefaultDialogButton();
   return true;
 }
 
@@ -1648,7 +1623,7 @@ void NativeWidgetMacNSWindowHost::GetWidgetIsModal(
 }
 
 void NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
-    ui::DialogButton button,
+    ui::mojom::DialogButton button,
     GetDialogButtonInfoCallback callback) {
   bool exists = false;
   std::u16string label;

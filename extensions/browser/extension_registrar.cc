@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -37,6 +38,24 @@
 using content::DevToolsAgentHost;
 
 namespace extensions {
+
+namespace {
+
+BASE_FEATURE(kExtensionUpdatesImmediatelyUnregisterWorker,
+             "ExtensionUpdatesImmediatelyUnregisterWorker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// TODO(crbug.com/346732739): Combine with
+// ServiceWorkerTaskQueue::IsWorkerUnregistrationSuccess() when the logic is the
+// same.
+// Worker unregistrations can fail in expected and unexpected ways, this
+// determines if the unregistration can be accepted as successful from the
+// extension's perspective.
+bool IsWorkerUnregistrationSuccess(blink::ServiceWorkerStatusCode status) {
+  return status == blink::ServiceWorkerStatusCode::kOk;
+}
+
+}  // namespace
 
 ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
                                        Delegate* delegate)
@@ -78,7 +97,7 @@ void ExtensionRegistrar::AddExtension(
       // but that's caused problems. There are apparently times when this
       // happens that we aren't accounting for. We should track those down and
       // fix them, but it can be tricky.
-      NOTREACHED_IN_MIGRATION()
+      DUMP_WILL_BE_NOTREACHED()
           << "Attempted to downgrade extension." << "\nID: " << extension->id()
           << "\nOld Version: " << old->version()
           << "\nNew Version: " << extension->version()
@@ -528,17 +547,26 @@ void ExtensionRegistrar::UnregisterServiceWorkerWithRootScope(
   // Even though the unregistration process for a service worker is
   // asynchronous, we begin the process before the new extension is added, so
   // the old worker will be unregistered before the new one is registered.
-  context->UnregisterServiceWorker(
-      new_extension->url(),
-      blink::StorageKey::CreateFirstParty(new_extension->origin()),
-      base::BindOnce(&ExtensionRegistrar::NotifyServiceWorkerUnregistered,
-                     weak_factory_.GetWeakPtr(), new_extension->id()));
+  if (base::FeatureList::IsEnabled(
+          kExtensionUpdatesImmediatelyUnregisterWorker)) {
+    context->UnregisterServiceWorkerImmediately(
+        new_extension->url(),
+        blink::StorageKey::CreateFirstParty(new_extension->origin()),
+        base::BindOnce(&ExtensionRegistrar::NotifyServiceWorkerUnregistered,
+                       weak_factory_.GetWeakPtr(), new_extension->id()));
+  } else {
+    context->UnregisterServiceWorker(
+        new_extension->url(),
+        blink::StorageKey::CreateFirstParty(new_extension->origin()),
+        base::BindOnce(&ExtensionRegistrar::NotifyServiceWorkerUnregistered,
+                       weak_factory_.GetWeakPtr(), new_extension->id()));
+  }
 }
 
 void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
     const ExtensionId& extension_id,
     blink::ServiceWorkerStatusCode status) {
-  bool success = status == blink::ServiceWorkerStatusCode::kOk;
+  bool success = IsWorkerUnregistrationSuccess(status);
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState2", success);
   base::UmaHistogramBoolean(

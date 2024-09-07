@@ -69,7 +69,9 @@ ts_modules = [
   "facegaze/gesture_handler.ts",
   "facegaze/metrics_utils.ts",
   "facegaze/mouse_controller.ts",
+  "facegaze/scroll_mode_controller.ts",
   "facegaze/weights.ts",
+  "facegaze/macros/mouse_scroll_macro.ts",
   "facegaze/macros/reset_cursor_macro.ts",
   "magnifier/magnifier.ts",
 ]
@@ -228,6 +230,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "facegaze/facegaze_test.js",
     "facegaze/facegaze_test_base.js",
     "facegaze/metrics_utils_test.js",
+    "facegaze/scroll_mode_controller_test.js",
     "magnifier/magnifier_test.js",
   ]
 
@@ -250,7 +253,9 @@ js2gtest("accessibility_common_extjs_tests") {
     "//ash",
     "//ash/keyboard/ui",
     "//base",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/system_web_apps",
     "//chrome/common",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

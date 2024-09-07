@@ -449,6 +449,18 @@
         </else>
       </if>
 
+      <!-- Privacy Sandbox Ads Notice -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java" translateable="false">
+        Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." translateable="false">
+        Learn more about how Google protects your data in our <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
+      </message>
+
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION" desc="Screenreader text for the 'Privacy Policy' link." translateable="false">
+        Learn more about how Google protects your data in our Privacy Policy.
+      </message>
+
       <!-- Privacy Guide -->
       <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_LABEL" desc="Text of the Tracking Protection label in the completion card of the 'Privacy Guide'." translateable="false">
         Tracking Protection
@@ -458,36 +470,35 @@
       </message>
 
       <!--Privacy Guide - Ad Topics-->
-      <!-- TODO(crbug.com/331970504): Make privacy guide ad topics strings translateable. -->
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide." translateable="false">
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide.">
         Review your ad topics setting
       </message>
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_TOGGLE_LABEL" desc="Text for the Ad topics toggle button on the Ad Topics card of the Privacy Guide." translateable="false" formatter_data="android_java">
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_TOGGLE_LABEL" desc="Text for the Ad topics toggle button on the Ad Topics card of the Privacy Guide." formatter_data="android_java">
         Ad topics
       </message>
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
         Ad topics older than 4 weeks are automatically deleted. Topics include things like Sports, Apparel, and more
       </message>
       <if expr="_google_chrome">
         <then>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
             Chrome notes topics of interest based on your recent browsing history
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
-            Sites you visit can ask Chrome for up to 3 topics to show you relevant ads while protecting your browsing history and identity
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Sites you visit can ask Chrome for topics to show you relevant ads while protecting your browsing history and identity
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
             You can see your ad topics in Chrome settings and block the ones you don't want shared with sites
           </message>
         </then>
         <else>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
             Chromium notes topics of interest based on your recent browsing history
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
-            Sites you visit can ask Chromium for up to 3 topics to show you relevant ads while protecting your browsing history and identity
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Sites you visit can ask Chromium for topics to show you relevant ads while protecting your browsing history and identity
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
             You can see your ad topics in Chromium settings and block the ones you don't want shared with sites
           </message>
         </else>

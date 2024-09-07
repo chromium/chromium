@@ -10,16 +10,19 @@
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "url/gurl.h"
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
-  GURL start_url = GURL(ash::kChromeBocaAppUntrustedIndexURL);
+  GURL start_url = GURL(ash::boca::kChromeBocaAppUntrustedIndexURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(ash::kChromeBocaAppUntrustedURL);
+  info->scope = GURL(ash::boca::kChromeBocaAppUntrustedURL);
   // TODO(aprilzhou): Convert the title to a localized string
   info->title = u"BOCA";
   web_app::CreateIconInfoForSystemWebApp(
@@ -40,13 +43,13 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
 // the delegate to tailor SWA UX.
 // TODO(b/352675698): Identify Boca consumer profile without feature flags.
 bool IsConsumerProfile(Profile* profile) {
-  return ash::features::IsBocaConsumerEnabled();
+  return ash::boca_util::IsConsumer();
 }
 
 BocaSystemAppDelegate::BocaSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::BOCA,
                                 "Boca",
-                                GURL(ash::kChromeBocaAppUntrustedURL),
+                                GURL(ash::boca::kChromeBocaAppUntrustedURL),
                                 profile) {}
 
 std::unique_ptr<web_app::WebAppInstallInfo>
@@ -70,6 +73,10 @@ bool BocaSystemAppDelegate::ShouldHaveTabStrip() const {
   return IsConsumerProfile(profile());
 }
 
+bool BocaSystemAppDelegate::ShouldHideNewTabButton() const {
+  return IsConsumerProfile(profile());
+}
+
 bool BocaSystemAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
   // Consumer SWA will also host 3P content, so we override app scope checks to
   // prevent navigation outside the app.
@@ -78,9 +85,24 @@ bool BocaSystemAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
 
 bool BocaSystemAppDelegate::ShouldPinTab(GURL url) const {
   return ShouldHaveTabStrip() &&
-         url == GURL(ash::kChromeBocaAppUntrustedIndexURL);
+         url == GURL(ash::boca::kChromeBocaAppUntrustedIndexURL);
 }
 
 bool BocaSystemAppDelegate::IsAppEnabled() const {
-  return ash::features::IsBocaEnabled();
+  return ash::boca_util::IsEnabled();
+}
+
+bool BocaSystemAppDelegate::HasCustomTabMenuModel() const {
+  return IsConsumerProfile(profile());
+}
+
+std::unique_ptr<ui::SimpleMenuModel> BocaSystemAppDelegate::GetTabMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate) const {
+  std::unique_ptr<ui::SimpleMenuModel> tab_menu =
+      std::make_unique<ui::SimpleMenuModel>(delegate);
+  tab_menu->AddItemWithStringId(TabStripModel::CommandReload,
+                                IDS_TAB_CXMENU_RELOAD);
+  tab_menu->AddItemWithStringId(TabStripModel::CommandGoBack,
+                                IDS_CONTENT_CONTEXT_BACK);
+  return tab_menu;
 }

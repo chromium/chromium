@@ -145,8 +145,8 @@ bool ShouldOfferVirtualCardEnrollment(
 bool HasSynthesizedTypes(
     const base::flat_map<FieldType, std::u16string>& observed_field_values,
     AddressCountryCode country_code) {
-  return base::ranges::any_of(observed_field_values, [country_code](
-                                                         const auto& entry) {
+  return std::ranges::any_of(observed_field_values, [country_code](
+                                                        const auto& entry) {
     return i18n_model_definition::IsSynthesizedType(entry.first, country_code);
   });
 }
@@ -320,8 +320,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
         submitted_form, &extracted_form_data.address_profile_import_candidates);
   }
 
-  if (profile_autofill_enabled && payment_methods_autofill_enabled &&
-      base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
+  if (profile_autofill_enabled && payment_methods_autofill_enabled) {
     auto origin = url::Origin::Create(submitted_form.source_url());
     FormSignature form_signature = submitted_form.form_signature();
     // If multiple complete address profiles were extracted, this most likely
@@ -511,7 +510,9 @@ FormDataImporter::GetAddressObservedFieldValues(
       continue;
     }
     // Don't import from ac=unrecognized fields.
-    if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+    if (field->ShouldSuppressSuggestionsAndFillingByDefault() &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillImportFromAutocompleteUnrecognized)) {
       continue;
     }
 
@@ -743,7 +744,8 @@ bool FormDataImporter::ProcessExtractedCreditCard(
   // didn't update the result that was filled into the form, re-auth opt-in flow
   // might be offered.
   if (auto* mandatory_reauth_manager =
-          client_->GetOrCreatePaymentsMandatoryReauthManager();
+          client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager();
       credit_card_import_type_ != CreditCardImportType::kNewCard &&
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
@@ -799,7 +801,8 @@ bool FormDataImporter::ProcessIbanImportCandidate(Iban& extracted_iban) {
   // If a flow where there was no interactive authentication was completed,
   // re-auth opt-in flow might be offered.
   if (auto* mandatory_reauth_manager =
-          client_->GetOrCreatePaymentsMandatoryReauthManager();
+          client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager();
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
           payment_method_type_if_non_interactive_authentication_flow_completed_)) {

@@ -74,7 +74,7 @@ public class AutocompleteMatch {
     private List<MatchClassification> mDescriptionClassifications;
     private SuggestionAnswer mAnswer;
     private @Nullable RichAnswerTemplate mAnswerTemplate;
-    private final AnswerType mAnswerType;
+    private AnswerType mAnswerType;
     private final String mFillIntoEdit;
     private GURL mUrl;
     private final GURL mImageUrl;
@@ -299,6 +299,11 @@ public class AutocompleteMatch {
     }
 
     @CalledByNative
+    private void setAnswerType(int answerType) {
+        mAnswerType = AnswerType.forNumber(answerType);
+    }
+
+    @CalledByNative
     private void setDescription(
             String description,
             int[] descriptionClassificationOffsets,
@@ -455,8 +460,9 @@ public class AutocompleteMatch {
 
         AutocompleteMatch suggestion = (AutocompleteMatch) obj;
         boolean answer_template_is_equal =
-                (mAnswerTemplate == null && suggestion.mAnswerTemplate == null)
-                        || mAnswerTemplate.equals(suggestion.mAnswerTemplate);
+                mAnswerTemplate != null && suggestion.mAnswerTemplate != null
+                        ? mAnswerTemplate.equals(suggestion.mAnswerTemplate)
+                        : mAnswerTemplate == null && suggestion.mAnswerTemplate == null;
         return mType == suggestion.mType
                 && mNativeMatch == suggestion.mNativeMatch
                 && ObjectsCompat.equals(mSubtypes, suggestion.mSubtypes)

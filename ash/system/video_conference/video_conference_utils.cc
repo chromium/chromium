@@ -32,6 +32,10 @@ std::string GetEffectHistogramNameBase(VcEffectId effect_id) {
       return "Ash.VideoConferenceTray.LiveCaption";
     case VcEffectId::kCameraFraming:
       return "Ash.VideoConferenceTray.CameraFraming";
+    case VcEffectId::kFaceRetouch:
+      return "Ash.VideoConferenceTray.FaceRetouch";
+    case VcEffectId::kStudioLook:
+      return "Ash.VideoConferenceTray.StudioLook";
   }
 }
 

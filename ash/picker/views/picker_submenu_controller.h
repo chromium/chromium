@@ -20,7 +20,7 @@ class Widget;
 
 namespace ash {
 
-class PickerItemView;
+class PickerListItemView;
 class PickerSubmenuView;
 
 class ASH_EXPORT PickerSubmenuController : public views::ViewObserver {
@@ -39,7 +39,7 @@ class ASH_EXPORT PickerSubmenuController : public views::ViewObserver {
   // If this submenu is already showing, then it is closed first before showing
   // the new items.
   void Show(views::View* anchor_view,
-            std::vector<std::unique_ptr<PickerItemView>> items);
+            std::vector<std::unique_ptr<PickerListItemView>> items);
 
   // Closes the submenu.
   void Close();

@@ -64,10 +64,10 @@ class MODULES_EXPORT CryptoKey final : public ScriptWrappable {
                              CryptoResult*) const;
 
   // On failure, these return false and complete the CryptoResult with an error.
-  static bool ParseFormat(const String&, WebCryptoKeyFormat&, CryptoResult*);
+  static bool ParseFormat(const String&, WebCryptoKeyFormat&, ExceptionState&);
   static bool ParseUsageMask(const Vector<String>&,
                              WebCryptoKeyUsageMask&,
-                             CryptoResult*);
+                             ExceptionState&);
 
  protected:
   const WebCryptoKey key_;

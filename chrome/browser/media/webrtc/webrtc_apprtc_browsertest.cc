@@ -42,6 +42,8 @@ const char kIsApprtcCallUpJavascript[] =
 //
 // This test will bring up a AppRTC instance on localhost and verify that the
 // call gets up when connecting to the same room from two tabs in a browser.
+//
+// TODO(b/246519185) - Py3 incompatible, decide if to keep test.
 class WebRtcApprtcBrowserTest : public WebRtcTestBase {
  public:
   WebRtcApprtcBrowserTest() {}

@@ -349,8 +349,7 @@ MojoResult MojoTrap::Arm(MojoTrapEvent* blocking_events,
     }
 
     if (result != IPCZ_RESULT_FAILED_PRECONDITION) {
-      NOTREACHED_IN_MIGRATION();
-      return result;
+      NOTREACHED();
     }
 
     // The ipcz trap failed to install, so this trigger's conditions are already

@@ -5,20 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
 class OptimizationGuideService;
 
-// Singleton that owns all OptimizationGuideService(s) and associates them
-// with ChromeBrowserState.
-class OptimizationGuideServiceFactory : public BrowserStateKeyedServiceFactory {
+// Singleton that owns all OptimizationGuideService objects and associates them
+// with Profiles.
+class OptimizationGuideServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static OptimizationGuideService* GetForBrowserState(
-      ChromeBrowserState* context);
+  static OptimizationGuideService* GetForProfile(ProfileIOS* profile);
   static OptimizationGuideServiceFactory* GetInstance();
 
   // Initializes the prediction model store.
@@ -33,21 +32,10 @@ class OptimizationGuideServiceFactory : public BrowserStateKeyedServiceFactory {
 
   OptimizationGuideServiceFactory();
   ~OptimizationGuideServiceFactory() override;
-  OptimizationGuideServiceFactory(const OptimizationGuideServiceFactory&) =
-      delete;
-  OptimizationGuideServiceFactory& operator=(
-      const OptimizationGuideServiceFactory&) = delete;
 
-  // TODO(crbug.com/40191282): Add handling for Incognito browsers. For now, the
-  // default behavior of a null service for incognito browsers is ok.
-  //
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsCreatedWithBrowserState() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_SERVICE_FACTORY_H_

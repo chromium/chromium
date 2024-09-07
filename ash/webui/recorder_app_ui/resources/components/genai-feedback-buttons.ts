@@ -8,6 +8,7 @@ import './cra/cra-icon-button.js';
 
 import {css, CSSResultGroup, html} from 'chrome://resources/mwc/lit/index.js';
 
+import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
@@ -91,6 +92,7 @@ export class GenaiFeedbackButtons extends ReactiveLitElement {
         size="small"
         .selected=${rating === UserRating.THUMB_UP}
         @click=${this.onThumbUpClick}
+        aria-label=${i18n.genaiPositiveFeedbackButtonTooltip}
       >
         <cra-icon name="thumb_up" slot="icon"></cra-icon>
         <cra-icon name="thumb_up_filled" slot="selectedIcon"></cra-icon>
@@ -100,6 +102,7 @@ export class GenaiFeedbackButtons extends ReactiveLitElement {
         size="small"
         .selected=${rating === UserRating.THUMB_DOWN}
         @click=${this.onThumbDownClick}
+        aria-label=${i18n.genaiNegativeFeedbackButtonTooltip}
       >
         <cra-icon name="thumb_down" slot="icon"></cra-icon>
         <cra-icon name="thumb_down_filled" slot="selectedIcon"></cra-icon>

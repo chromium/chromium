@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.ON_IS_SCROLLED_CHANGED;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -14,7 +16,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.util.Consumer;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -27,6 +29,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -48,7 +51,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.function.BiConsumer;
 
 /** Orchestrates the displaying of a list of interactable tab groups. */
 public class TabGroupListCoordinator {
@@ -70,6 +72,7 @@ public class TabGroupListCoordinator {
      * @param paneManager Used to switch to show detailed tab group UI.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
      * @param modalDialogManager Used to show confirmation dialogs.
+     * @param onIsScrolledChanged To be invoked whenever the scrolled state changes.
      */
     public TabGroupListCoordinator(
             Context context,
@@ -77,38 +80,34 @@ public class TabGroupListCoordinator {
             ProfileProvider profileProvider,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            Consumer<Boolean> onIsScrolledChanged) {
         ModelList modelList = new ModelList();
-        PropertyModel propertyModel = new PropertyModel(TabGroupListProperties.ALL_KEYS);
+        PropertyModel.Builder builder = new PropertyModel.Builder(TabGroupListProperties.ALL_KEYS);
+        builder.with(ON_IS_SCROLLED_CHANGED, onIsScrolledChanged);
+        PropertyModel propertyModel = builder.build();
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
                 new LayoutViewBuilder<>(R.layout.tab_group_row);
-        mSimpleRecyclerViewAdapter =
-                new SimpleRecyclerViewAdapter(modelList) {
-                    @Override
-                    public void onBindViewHolder(ViewHolder viewHolder, int position) {
-                        ((TabGroupRowView) viewHolder.itemView).resetOnBind();
-                        super.onBindViewHolder(viewHolder, position);
-                    }
-                };
+        mSimpleRecyclerViewAdapter = new SimpleRecyclerViewAdapter(modelList);
         mSimpleRecyclerViewAdapter.registerType(
                 RowType.TAB_GROUP, layoutBuilder, new TabGroupRowViewBinder());
 
         mView =
                 (TabGroupListView)
-                        LayoutInflater.from(context).inflate(R.layout.tab_group_list, null);
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.tab_group_list, /* root= */ null);
         PropertyModelChangeProcessor.create(propertyModel, mView, TabGroupListViewBinder::bind);
         mView.setRecyclerViewAdapter(mSimpleRecyclerViewAdapter);
 
         Profile profile = profileProvider.getOriginalProfile();
-        BiConsumer<GURL, Callback<Drawable>> faviconResolver =
-                buildFaviconResolver(context, profile);
+        FaviconResolver faviconResolver = buildFaviconResolver(context, profile);
         @Nullable TabGroupSyncService tabGroupSyncService = null;
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         }
         @Nullable DataSharingService dataSharingService = null;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
             dataSharingService = DataSharingServiceFactory.getForProfile(profile);
         }
         IdentityManager identityManager =
@@ -128,42 +127,56 @@ public class TabGroupListCoordinator {
                         paneManager,
                         tabGroupUiActionHandler,
                         actionConfirmationManager,
-                        syncService);
+                        syncService,
+                        modalDialogManager,
+                        context.getResources());
     }
 
     @VisibleForTesting
-    static BiConsumer<GURL, Callback<Drawable>> buildFaviconResolver(
-            Context context, Profile profile) {
+    static FaviconResolver buildFaviconResolver(Context context, Profile profile) {
+        TabListFaviconProvider fallbackProvider =
+                new TabListFaviconProvider(
+                        context, /* isTabStrip= */ false, R.dimen.default_favicon_corner_radius);
         return (GURL url, Callback<Drawable> callback) -> {
             if (UrlUtilities.isInternalScheme(url)) {
-                // Do not bother resizing, the view will use a fixed size. No resizing should allow
-                // caching/sharing of this drawable.
-                callback.onResult(AppCompatResources.getDrawable(context, R.drawable.chromelogo16));
+                callback.onResult(
+                        fallbackProvider
+                                .getRoundedChromeFavicon(/* isIncognito= */ false)
+                                .getDefaultDrawable());
             } else {
-                resolveForeignFavicon(context, profile, url, callback);
+                resolveForeignFavicon(context, profile, fallbackProvider, url, callback);
             }
         };
     }
 
     private static void resolveForeignFavicon(
-            Context context, Profile profile, GURL url, Callback<Drawable> callback) {
+            Context context,
+            Profile profile,
+            TabListFaviconProvider fallbackProvider,
+            GURL url,
+            Callback<Drawable> callback) {
         Resources resources = context.getResources();
         int faviconSizePixels = resources.getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
         FaviconImageCallback faviconImageCallback =
-                (Bitmap bitmap, GURL ignored) -> onForeignFavicon(context, callback, bitmap);
+                (Bitmap bitmap, GURL ignored) ->
+                        onForeignFavicon(context, fallbackProvider, callback, bitmap);
         new FaviconHelper()
                 .getForeignFaviconImageForURL(
                         profile, url, faviconSizePixels, faviconImageCallback);
     }
 
     private static void onForeignFavicon(
-            Context context, Callback<Drawable> callback, Bitmap bitmap) {
+            Context context,
+            TabListFaviconProvider fallbackProvider,
+            Callback<Drawable> callback,
+            Bitmap bitmap) {
         Resources resources = context.getResources();
         final Drawable drawable;
         if (bitmap == null) {
-            // Do not bother resizing, the view will use a fixed size. No resizing should allow
-            // caching/sharing of this drawable.
-            drawable = AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp);
+            drawable =
+                    fallbackProvider
+                            .getDefaultFavicon(/* isIncognito= */ false)
+                            .getDefaultDrawable();
         } else {
             int cornerRadiusPixels =
                     resources.getDimensionPixelSize(R.dimen.default_favicon_corner_radius);

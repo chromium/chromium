@@ -328,6 +328,11 @@ def roll_libxslt_linux(src_path, repo_path, fast):
         with WorkingDir(THIRD_PARTY_LIBXSLT_SRC):
             # Write the commit ID into the README.chromium file
             sed_in_place('../README.chromium',
+                         's/Revision: .*$/Revision: %s/' % commit)
+            # TODO(crbug.com/349529871): Use the version number instead of
+            # commit hash once it has been added upstream:
+            # https://gitlab.gnome.org/GNOME/libxslt/-/issues/117
+            sed_in_place('../README.chromium',
                          's/Version: .*$/Version: %s/' % commit)
             check_copying()
 

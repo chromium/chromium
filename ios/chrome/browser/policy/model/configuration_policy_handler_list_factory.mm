@@ -19,7 +19,7 @@
 #import "components/history/core/common/pref_names.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/metrics/metrics_pref_names.h"
-#import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/browser/boolean_disabling_policy_handler.h"
 #import "components/policy/core/browser/configuration_policy_handler.h"
@@ -30,7 +30,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "components/search_engines/default_search_policy_handler.h"
+#import "components/search_engines/enterprise/default_search_policy_handler.h"
 #import "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/service/sync_policy_handler.h"
@@ -149,7 +149,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kIosSaveToDriveDownloadManagerPolicySettings,
     base::Value::Type::INTEGER },
   { policy::key::kTabCompareSettings,
-    optimization_guide::model_execution::prefs::kTabCompareSettingsEnterprisePolicyAllowed,
+    optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 };
 // clang-format on

@@ -17,6 +17,7 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/containers/heap_array.h"
 #include "base/feature_list.h"
@@ -376,8 +377,9 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
           env, j_mime, static_cast<int>(config.codec_type), config.media_crypto,
           config.initial_expected_coded_size.width(),
           config.initial_expected_coded_size.height(), config.surface, j_csd0,
-          j_csd1, j_hdr_metadata, true /* allow_adaptive_playback */,
-          !!config.on_buffers_available_cb, j_decoder_name));
+          j_csd1, j_hdr_metadata, /*allowAdaptivePlayback=*/true,
+          /*useAsyncApi=*/!!config.on_buffers_available_cb,
+          /*useBlockModel=*/config.use_block_model, j_decoder_name));
   if (j_bridge.is_null())
     return nullptr;
 
@@ -617,6 +619,43 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBuffer(
       static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBuffer(
           env, j_bridge_, index, 0, data_size,
           presentation_time.InMicroseconds(), 0));
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
+}
+
+MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
+    int index,
+    base::span<const uint8_t> data,
+    base::TimeDelta presentation_time,
+    bool is_eos) {
+  DVLOG(3) << __func__ << " " << index << ": " << data.size();
+  if (data.size() >
+      base::checked_cast<size_t>(std::numeric_limits<int32_t>::max())) {
+    return {MediaCodecResult::Codes::kError, "Input block size is too large."};
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_result =
+      Java_MediaCodecBridge_obtainBlock(env, j_bridge_, data.size());
+  ScopedJavaLocalRef<jobject> j_block =
+      Java_ObtainBlockResult_block(env, j_result);
+  ScopedJavaLocalRef<jobject> j_buffer =
+      Java_ObtainBlockResult_buffer(env, j_result);
+  if (j_buffer.is_null()) {
+    Java_ObtainBlockResult_recycle(env, j_result);
+    return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
+  }
+
+  if (!data.empty()) {
+    base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
+        .copy_from_nonoverlapping(data);
+  }
+
+  MediaCodecStatus status =
+      static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBlock(
+          env, j_bridge_, index, j_block, 0, data.size(),
+          presentation_time.InMicroseconds(),
+          is_eos ? kBufferFlagEndOfStream : 0));
+  Java_ObtainBlockResult_recycle(env, j_result);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 

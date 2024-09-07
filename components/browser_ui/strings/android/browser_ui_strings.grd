@@ -199,7 +199,7 @@
       <message name="IDS_DELETE" desc="Label for a delete button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Delete
       </message>
-      <message name="IDS_DISMISS" desc="Label for a dismiss button. Used in multiple contexts. [CHAR_LIMIT=20]">
+      <message name="IDS_CHROME_DISMISS" desc="Label for a dismiss button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Dismiss
       </message>
       <message name="IDS_REMOVE" desc="Label for a button to remove an item (e.g. a bookmark) from a list. [CHAR_LIMIT=20]">
@@ -1137,6 +1137,32 @@
         {TILE_COUNT, plural,
          =1 {Hide continue with this tab card}
          other {Hide continue with these tabs card}}
+      </message>
+
+      <!-- Educational tip module strings -->
+      <message name="IDS_EDUCATIONAL_TIP_MODULE_TITLE" desc="Title of the educational tip module on NTP.">
+        Chrome Tips
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_MODULE_NAME" desc="The string that is shown in settings to customize whether the educational tip card should be enabled.">
+        Chrome tips
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_MODULE_CONTEXT_MENU_HIDE" desc="The string that is going to be part of the context menu item string to hide the educational tip card.">
+        Hide Chrome tips card
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_MODULE_BUTTON" desc="Name of the clickable button in the educational tip module on NTP.">
+        Show me how
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_TITLE" desc="Title of the default browser section in the educational tip module on NTP.">
+        Use Chrome by default
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser section in the educational tip module on NTP.">
+        You can use Chrome any time you tap links in messages, documents and other apps
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_TITLE" desc="Title of the tab group promo in the educational tip module on NTP.">
+        Tab groups keep things tidy
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_DESCRIPTION" desc="Description of the Tab group promo in the educational tip module on NTP.">
+        You can group related pages, and your groups save and update across all your devices
       </message>
 
       <message name="IDS_GO_TO_OS_SETTINGS" desc="When the user clicks on this text button, Chrome sends them to the device OS Settings. One use is the text button shown below the text 'Get alerts for price drops?', which takes the user to the Android notification settings. Another use is in the primary button of the dialog prompting the user to create a device lock, which takes the user to the Android security settings.">

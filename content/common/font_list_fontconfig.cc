@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -41,9 +43,8 @@ base::Value::List GetFontList_SlowBlocking() {
 
   // See https://www.freetype.org/freetype2/docs/reference/ft2-font_formats.html
   // for the list of possible formats.
-  const char* allowed_formats[] = { "TrueType", "CFF" };
-  for (size_t i = 0; i < std::size(allowed_formats); ++i) {
-    auto format_pattern = CreateFormatPattern(allowed_formats[i]);
+  for (const char* allowed_format : {"TrueType", "CFF"}) {
+    auto format_pattern = CreateFormatPattern(allowed_format);
     std::unique_ptr<FcFontSet, decltype(&FcFontSetDestroy)> fontset(
         FcFontList(nullptr, format_pattern.get(), object_set.get()),
         FcFontSetDestroy);

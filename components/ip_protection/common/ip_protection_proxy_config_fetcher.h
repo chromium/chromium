@@ -12,8 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "components/ip_protection/get_proxy_config.pb.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
+#include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -30,7 +31,7 @@ class IpProtectionProxyConfigFetcher {
  public:
   using GetProxyListCallback = base::OnceCallback<void(
       const std::optional<std::vector<::net::ProxyChain>>&,
-      const std::optional<network::GeoHint>&)>;
+      const std::optional<ip_protection::GeoHint>&)>;
 
   explicit IpProtectionProxyConfigFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -86,7 +87,7 @@ class IpProtectionProxyConfigFetcher {
 
   // Creates a GeoHint by converting the GeoHint from the
   // `GetProxyConfigResponse` to a `network::GeoHint`.
-  std::optional<network::GeoHint> GetGeoHintFromProxyConfigResponse(
+  std::optional<ip_protection::GeoHint> GetGeoHintFromProxyConfigResponse(
       ip_protection::GetProxyConfigResponse& response);
 
   std::unique_ptr<IpProtectionProxyConfigRetriever>

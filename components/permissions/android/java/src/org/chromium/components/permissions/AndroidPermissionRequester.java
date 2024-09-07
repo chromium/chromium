@@ -188,6 +188,10 @@ public class AndroidPermissionRequester {
                                         ContentSettingsType.MEDIASTREAM_CAMERA)) {
                                     deniedStringId =
                                             R.string.infobar_missing_camera_permission_text;
+                                } else if (deniedContentSettings.contains(
+                                        ContentSettingsType.HAND_TRACKING)) {
+                                    deniedStringId =
+                                            R.string.infobar_missing_hand_tracking_permission_text;
                                 } else if (deniedContentSettings.contains(ContentSettingsType.AR)) {
                                     deniedStringId =
                                             R.string.infobar_missing_ar_camera_permission_text;

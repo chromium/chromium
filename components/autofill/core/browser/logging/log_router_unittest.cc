@@ -13,7 +13,6 @@
 using testing::_;
 
 namespace autofill {
-
 namespace {
 
 const char kTestText[] = "abcd1234";
@@ -37,8 +36,6 @@ class MockLogManager : public StubLogManager {
 
   MOCK_METHOD(void, OnLogRouterAvailabilityChanged, (bool), (override));
 };
-
-}  // namespace
 
 class LogRouterTest : public testing::Test {
  protected:
@@ -143,4 +140,5 @@ TEST_F(LogRouterTest, RegisterManager_OneManagerTwoReceivers) {
   router.UnregisterManager(&manager_);
 }
 
+}  // namespace
 }  // namespace autofill

@@ -11,6 +11,8 @@
 
 namespace webauthn::user_actions {
 
+// TODO(crbug.com/358277466): Add actions for Windows Hello cases.
+
 // Emits what authenticators are visible to the user in the WebAuthn selection
 // dialog when there are multiple options are available. Targets only GPM,
 // iCloud Keychain and Windows Hello authenticators.
@@ -21,15 +23,49 @@ void RecordMultipleOptionsShown(
 // Emits what authenticator is displayed as the priority mechanism in the
 // priority WebAuthn credential selector dialog.
 void RecordPriorityOptionShown(
-    const std::vector<AuthenticatorRequestDialogModel::Mechanism>& mechanisms);
+    const AuthenticatorRequestDialogModel::Mechanism& mechanism);
+
+void RecordMechanismClick(
+    const AuthenticatorRequestDialogModel::Mechanism& mech);
 
 void RecordCancelClick();
 
+void RecordAcceptClick();
+
+void RecordTrustDialogShown(bool is_create);
+
+void RecordCreateGpmDialogShown();
+
+void RecordRecoveryShown(bool is_create);
+void RecordRecoveryCancelled();
+void RecordRecoverySucceeded();
+
 void RecordICloudShown(bool is_create);
-
 void RecordICloudCancelled();
-
 void RecordICloudSuccess();
+
+void RecordGpmTouchIdDialogShown(bool is_create);
+// TODO(crbug.com/358277466): Add user action for cancelling MacOS password
+// dialog.
+void RecordGpmPinSheetShown(bool is_credential_creation,
+                            bool is_pin_creation,
+                            bool is_arbitrary);
+void RecordGpmForgotPinClick();
+void RecordGpmPinOptionChangeClick();
+void RecordGpmLockedShown();
+void RecordGpmSuccess();
+void RecordGpmFailureShown();
+void RecordGpmWinUvShown(bool is_create);
+// TODO(crbug.com/358277466): Add user action for cancelling Windows Hello
+// dialog.
+
+void RecordChromeProfileAuthenticatorShown(bool is_create);
+void RecordChromeProfileCancelled();
+void RecordChromeProfileSuccess();
+
+void RecordWindowsHelloShown(bool is_create);
+void RecordWindowsHelloCancelled();
+void RecordWindowsHelloSuccess();
 
 }  // namespace webauthn::user_actions
 

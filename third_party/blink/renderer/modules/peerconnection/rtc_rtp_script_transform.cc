@@ -8,12 +8,15 @@
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "rtc_rtp_script_transform.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transformer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transform_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -24,6 +27,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -35,8 +40,8 @@ Event* CreateRTCTransformEvent(
     scoped_refptr<base::SequencedTaskRunner> transform_task_runner,
     ScriptState* script_state,
     CustomEventMessage data) {
-  auto* event =
-      MakeGarbageCollected<RTCTransformEvent>(script_state, std::move(data));
+  auto* event = MakeGarbageCollected<RTCTransformEvent>(
+      script_state, std::move(data), transform_task_runner, transform);
 
   PostCrossThreadTask(
       *transform_task_runner, FROM_HERE,
@@ -48,6 +53,10 @@ Event* CreateRTCTransformEvent(
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)
                              .get())));
   return event;
+}
+
+bool IsValidReceiverDirection(const String& direction) {
+  return (direction == "sendrecv" || direction == "recvonly");
 }
 
 }  // namespace
@@ -164,6 +173,65 @@ void RTCRtpScriptTransform::SetRtpTransformer(
     SetUpVideoRtpTransformer(std::move(disconnect_callback_source_),
                              std::move(encoded_video_transformer_));
   }
+}
+
+void RTCRtpScriptTransform::AttachToReceiver(RTCRtpReceiver* receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_attached_);
+  is_attached_ = true;
+  receiver_ = receiver;
+}
+
+void RTCRtpScriptTransform::Detach() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_attached_ = false;
+  receiver_ = nullptr;
+  encoded_video_transformer_ = nullptr;
+  encoded_audio_transformer_ = nullptr;
+  disconnect_callback_source_.Reset();
+  PostCrossThreadTask(
+      *rtp_transformer_task_runner_, FROM_HERE,
+      WTF::CrossThreadBindOnce(
+          &RTCRtpScriptTransformer::Clear,
+          MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_)));
+}
+
+RTCRtpScriptTransform::SendKeyFrameRequestResult
+RTCRtpScriptTransform::HandleSendKeyFrameRequestResults() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!rtp_transformer_) {
+    return SendKeyFrameRequestResult::kInvalidState;
+  }
+  if (!receiver_) {
+    return SendKeyFrameRequestResult::kNoReceiver;
+  }
+  if (receiver_->kind() == RTCRtpReceiver::MediaKind::kAudio) {
+    return SendKeyFrameRequestResult::kNoVideo;
+  }
+  if (!IsValidReceiverDirection(receiver_->TransceiverDirection()) ||
+      !IsValidReceiverDirection(receiver_->TransceiverCurrentDirection())) {
+    return SendKeyFrameRequestResult::kInvalidState;
+  }
+  if (receiver_->track()->readyState() == "ended") {
+    return SendKeyFrameRequestResult::kTrackEnded;
+  }
+  MediaStreamVideoSource* video_source = MediaStreamVideoSource::GetVideoSource(
+      receiver_->track()->Component()->Source());
+  video_source->RequestKeyFrame();
+  return SendKeyFrameRequestResult::kSuccess;
+}
+
+void RTCRtpScriptTransform::SendKeyFrameRequestToReceiver(
+    CrossThreadFunction<void(const SendKeyFrameRequestResult)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SendKeyFrameRequestResult result = HandleSendKeyFrameRequestResults();
+  PostCrossThreadTask(*rtp_transformer_task_runner_, FROM_HERE,
+                      WTF::CrossThreadBindOnce(std::move(callback), result));
+}
+
+void RTCRtpScriptTransform::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  visitor->Trace(receiver_);
 }
 
 }  // namespace blink

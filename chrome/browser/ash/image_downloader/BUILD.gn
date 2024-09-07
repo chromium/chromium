@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("image_downloader") {
+  sources = [
+    "image_downloader_impl.cc",
+    "image_downloader_impl.h",
+  ]
+
+  public_deps = [ "//ash/public/cpp" ]
+
+  deps = [
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/profiles:profile",
+    "//components/account_id",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base_shared_cpp_sources",
+    "//ui/gfx",
+  ]
+}

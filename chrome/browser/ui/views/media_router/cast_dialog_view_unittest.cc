@@ -34,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/scroll_view.h"
@@ -221,7 +222,8 @@ TEST_F(CastDialogViewTest, PopulateDialog) {
 
   EXPECT_TRUE(dialog_->ShouldShowCloseButton());
   EXPECT_EQ(model.dialog_header(), dialog_->GetWindowTitle());
-  EXPECT_EQ(ui::DIALOG_BUTTON_NONE, dialog_->buttons());
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kNone),
+            dialog_->buttons());
 }
 
 TEST_F(CastDialogViewTest, StartCasting) {

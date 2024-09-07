@@ -487,6 +487,8 @@ void ToolbarActionsModel::SetActionVisibility(const ActionId& action_id,
   // The |pinned_action_ids_| should be updated as a result of updating the
   // preference.
   DCHECK(pinned_action_ids_ == GetFilteredPinnedActionIds());
+
+  extension_action_api_->OnActionPinnedStateChanged(action_id, is_now_visible);
 }
 
 const extensions::Extension* ToolbarActionsModel::GetExtensionById(

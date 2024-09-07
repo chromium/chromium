@@ -67,7 +67,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   ~PrivacySandboxServiceImpl() override;
 
   // PrivacySandboxService:
-  PromptType GetRequiredPromptType() override;
+  PromptType GetRequiredPromptType(SurfaceType surface_type) override;
   void PromptActionOccurred(PromptAction action,
                             SurfaceType surface_type) override;
 #if !BUILDFLAG(IS_ANDROID)

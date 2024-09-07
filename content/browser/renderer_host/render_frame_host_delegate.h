@@ -726,9 +726,16 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Whether this window was initially opened as a new popup.
   virtual bool IsPopup() const;
 
-  // Whether this window was initially opened as a new partitioned popin.
-  // See: https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual bool IsPartitionedPopin() const;
+  // If this window was opened as a new partitioned popin this will be the
+  // frame of the opener. This will only have a value if `is_popup_` is true.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  virtual RenderFrameHostImpl* PartitionedPopinOpener() const;
+
+  // Each window can have at most one open partitioned popin, and this will be a
+  // pointer to it. If this is set `PartitionedPopinOpener` must return null as
+  // no popin can open a popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  virtual WebContents* OpenedPartitionedPopin() const;
 
  protected:
   virtual ~RenderFrameHostDelegate() = default;

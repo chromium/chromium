@@ -7,9 +7,10 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -18,7 +19,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -75,8 +75,8 @@ class ShortcutsMediatorTest : public PlatformTest {
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     mediator_.dispatcher = dispatcher_;
     mediator_.delegate = OCMProtocolMock(@protocol(ShortcutsMediatorDelegate));
-    mediator_.NTPMetricsDelegate =
-        OCMProtocolMock(@protocol(NewTabPageMetricsDelegate));
+    mediator_.NTPActionsDelegate =
+        OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
   }
 
  protected:
@@ -93,7 +93,7 @@ class ShortcutsMediatorTest : public PlatformTest {
 TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
   OCMExpect([dispatcher_ showReadingList]);
 
-  OCMExpect([mediator_.NTPMetricsDelegate shortcutTileOpened]);
+  OCMExpect([mediator_.NTPActionsDelegate shortcutTileOpened]);
   OCMExpect([mediator_.delegate
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
@@ -116,7 +116,7 @@ TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
 TEST_F(ShortcutsMediatorTest, TestOpenWhatsNew) {
   OCMExpect([dispatcher_ showWhatsNew]);
 
-  OCMExpect([mediator_.NTPMetricsDelegate shortcutTileOpened]);
+  OCMExpect([mediator_.NTPActionsDelegate shortcutTileOpened]);
   OCMExpect([mediator_.delegate
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 

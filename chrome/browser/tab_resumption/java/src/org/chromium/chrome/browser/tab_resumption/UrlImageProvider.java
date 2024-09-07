@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_resumption;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
@@ -122,12 +123,9 @@ public class UrlImageProvider {
 
     /** Asynchronously fetches a thumbnail image for a tab. */
     public void getTabThumbnail(
-            int tabId, Size thumbnailSize, Callback<Bitmap> tabThumbnailCallback) {
+            int tabId, Size thumbnailSize, Callback<Drawable> tabThumbnailCallback) {
         mThumbnailProvider.getTabThumbnailWithCallback(
-                tabId,
-                thumbnailSize,
-                /* finalCallback= */ tabThumbnailCallback,
-                /* isSelected= */ false);
+                tabId, thumbnailSize, /* isSelected= */ false, tabThumbnailCallback);
     }
 
     /** Returns whether this UrlImageProvider instance has been destroyed. */

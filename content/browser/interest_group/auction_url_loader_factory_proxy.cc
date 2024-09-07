@@ -36,6 +36,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -73,7 +74,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     const std::optional<GURL>& wasm_url,
     const std::optional<GURL>& trusted_signals_base_url,
     bool needs_cors_for_additional_bid,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : receiver_(this, std::move(pending_receiver)),
       get_frame_url_loader_factory_(std::move(get_frame_url_loader_factory)),
       get_trusted_url_loader_factory_(
@@ -140,8 +141,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
              accept_header == "application/wasm") {
     event_type = InterestGroupAuctionFetchType::kBidderWasm;
     is_request_allowed = true;
-  } else if (CouldBeTrustedSignalsUrl(url_request.url) &&
-             accept_header == "application/json") {
+  } else if (CouldBeTrustedSignalsUrl(url_request.url, accept_header)) {
     event_type = is_for_seller_
                      ? InterestGroupAuctionFetchType::kSellerTrustedSignals
                      : InterestGroupAuctionFetchType::kBidderTrustedSignals;
@@ -189,10 +189,11 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   // Create fresh request object, only keeping the URL field and Accept request
-  // header, to protect against compromised auction worklet processes setting
-  // values that should not have access to (e.g., sending credentialed
-  // requests). Only the URL and traffic annotation of the original request are
-  // used.
+  // header for GET requests, to protect against compromised auction worklet
+  // processes setting values that should not have access to (e.g., sending
+  // credentialed requests). Only the URL and traffic annotation of the original
+  // request are used.
+  // For POST requests, also move over request method, body and content-type.
   network::ResourceRequest new_request;
   new_request.url = url_request.url;
   new_request.web_bundle_token_params =
@@ -204,6 +205,17 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
   new_request.enable_load_timing = url_request.enable_load_timing;
+
+  if (url_request.method == net::HttpRequestHeaders::kPostMethod) {
+    new_request.method = std::move(url_request.method);
+    new_request.request_body = std::move(url_request.request_body);
+    std::optional<std::string> content_type =
+        url_request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
+    if (content_type.has_value()) {
+      new_request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                    std::move(content_type).value());
+    }
+  }
 
   if (event_type.has_value() && new_request.devtools_request_id.has_value() &&
       devtools_instrumentation::NeedInterestGroupAuctionEvents(
@@ -310,7 +322,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   bool network_instrumentation_enabled = false;
-  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (owner_frame_tree_node_id_) {
     FrameTreeNode* owner_frame_tree_node =
         FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
     new_request.throttling_profile_id =
@@ -342,7 +354,7 @@ void AuctionURLLoaderFactoryProxy::Clone(
 }
 
 AuctionNetworkEventsProxy::AuctionNetworkEventsProxy(
-    int owner_frame_tree_node_id)
+    FrameTreeNodeId owner_frame_tree_node_id)
     : owner_frame_tree_node_id_(owner_frame_tree_node_id) {}
 
 AuctionNetworkEventsProxy::~AuctionNetworkEventsProxy() = default;
@@ -377,8 +389,14 @@ void AuctionNetworkEventsProxy::OnNetworkRequestComplete(
 }
 
 bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
-    const GURL& url) const {
+    const GURL& url,
+    const std::string& accept_header) const {
   if (!trusted_signals_base_url_) {
+    return false;
+  }
+
+  if (accept_header != "application/json" &&
+      accept_header != "message/ad-auction-trusted-signals-response") {
     return false;
   }
 
@@ -402,16 +420,20 @@ bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
     return true;
   }
 
-  std::string full_prefix = base::StringPrintf(
-      "%s?hostname=%s&", trusted_signals_base_url_->spec().c_str(),
-      top_frame_origin_.host().c_str());
-  return base::StartsWith(url.spec(), full_prefix,
-                          base::CompareCase::SENSITIVE);
+  if (accept_header == "application/json") {
+    std::string full_prefix = base::StringPrintf(
+        "%s?hostname=%s&", trusted_signals_base_url_->spec().c_str(),
+        top_frame_origin_.host().c_str());
+    return base::StartsWith(url.spec(), full_prefix,
+                            base::CompareCase::SENSITIVE);
+  } else {
+    return url.spec() == trusted_signals_base_url_->spec();
+  }
 }
 
 mojo::PendingRemote<network::mojom::DevToolsObserver>
 AuctionURLLoaderFactoryProxy::CreateDevtoolsObserver() {
-  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (owner_frame_tree_node_id_) {
     FrameTreeNode* initiator_frame_tree_node =
         FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
 

@@ -74,27 +74,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 #pragma mark - BaseEarlGreyTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  // Enable Segmented Default Browser Promos.
-  config.features_enabled.push_back(kSegmentedDefaultBrowserPromo);
-  // Show the First Run UI at startup.
-  config.additional_args.push_back("-FirstRunForceEnabled");
-  config.additional_args.push_back("true");
-  // Relaunch app at each test to rewind the startup state.
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  if ([self isRunningTest:@selector(testDesktopUserPromoDisplayed)]) {
-    config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-    config.additional_args.push_back("Desktop");
-  }
-  if ([self isRunningTest:@selector(testAndroidSwitcherPromoDisplayed)]) {
-    config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-    config.additional_args.push_back("AndroidPhone");
-  }
-  return config;
-}
-
 + (void)setUpForTestCase {
   // Leave this empty so that the FRE shows during the first test.
 }
@@ -109,30 +88,31 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   [super tearDown];
 }
 
-#pragma mark - Tests
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  // Enable Segmented Default Browser promos and iPad tailored Default Browser
+  // promo strings.
+  config.features_enabled.push_back(kSegmentedDefaultBrowserPromo);
+  config.features_enabled.push_back(kDefaultBrowserPromoIPadExperimentalString);
+  // Show the First Run UI at startup.
+  config.additional_args.push_back("-FirstRunForceEnabled");
+  config.additional_args.push_back("true");
+  // Relaunch app at each test to rewind the startup state.
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-// Tests if the desktop user promo is correctly displayed.
-- (void)testDesktopUserPromoDisplayed {
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DesktopUserPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests if the android switcher promo is correctly displayed.
-- (void)testAndroidSwitcherPromoDisplayed {
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:AndroidSwitcherPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests if the default promo is correctly displayed.
-- (void)testDefaultPromoDisplayed {
-  [[EarlGrey selectElementWithMatcher:DefaultPromoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DefaultPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([self isRunningTest:@selector(testDesktopUserPromoDisplayed)]) {
+    config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+    config.additional_args.push_back("Desktop");
+  }
+  if ([self isRunningTest:@selector(testAndroidSwitcherPromoDisplayed)]) {
+    config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+    config.additional_args.push_back("AndroidPhone");
+  }
+  if ([self isRunningTest:@selector(DISABLED_testShopperPromoNotDisplayed)]) {
+    config.additional_args.push_back("-ForceExperienceForShopper");
+    config.additional_args.push_back("true");
+  }
+  return config;
 }
 
 #pragma mark - Helpers
@@ -182,6 +162,44 @@ id<GREYMatcher> DefaultPromoSubtitle() {
              usingSearchAction:searchAction
           onElementWithMatcher:scrollViewMatcher];
   [element performAction:grey_tap()];
+}
+
+#pragma mark - Tests
+
+// Tests if the desktop user promo is correctly displayed.
+- (void)testDesktopUserPromoDisplayed {
+  [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:DesktopUserPromoSubtitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests if the android switcher promo is correctly displayed.
+- (void)testAndroidSwitcherPromoDisplayed {
+  [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:AndroidSwitcherPromoSubtitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests if the default promo is correctly displayed.
+- (void)testDefaultPromoDisplayed {
+  [[EarlGrey selectElementWithMatcher:DefaultPromoTitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:DefaultPromoSubtitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the shopping user promo is not displayed when the Shopper
+// experience is forced through experimental settings. Shopper segmentation
+// information should not be available during first run.
+// TODO(crbug.com/360395573): Enable after modifying segmented default browser
+// utils to add this check.
+- (void)DISABLED_testShopperPromoNotDisplayed {
+  [[EarlGrey selectElementWithMatcher:DefaultPromoTitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:DefaultPromoSubtitle()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

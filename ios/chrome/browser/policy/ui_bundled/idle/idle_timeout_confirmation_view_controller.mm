@@ -28,7 +28,7 @@ constexpr CGFloat kCustomSpacingAfterImage = 1.0;
 - (instancetype)initWithIdleTimeoutTitleId:(int)titleId
                      idleTimeoutSubtitleId:(int)subtitleId
                       idleTimeoutThreshold:(int)threshold {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     self.titleString = l10n_util::GetNSString(titleId);
     self.subtitleString = base::SysUTF16ToNSString(
         l10n_util::GetPluralStringFUTF16(subtitleId, threshold));

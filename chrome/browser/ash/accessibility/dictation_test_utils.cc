@@ -123,8 +123,8 @@ DictationTestUtils::DictationTestUtils(
       editable_type_(editable_type) {
   automation_test_utils_ = std::make_unique<AutomationTestUtils>(
       extension_misc::kAccessibilityCommonExtensionId);
-  test_helper_ =
-      std::make_unique<SpeechRecognitionTestHelper>(speech_recognition_type);
+  test_helper_ = std::make_unique<SpeechRecognitionTestHelper>(
+      speech_recognition_type, media::mojom::RecognizerClientType::kDictation);
 }
 
 DictationTestUtils::~DictationTestUtils() {

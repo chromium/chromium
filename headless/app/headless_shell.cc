@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/base_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -106,7 +107,7 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   HeadlessBrowserContext::Builder context_builder =
       browser_->CreateBrowserContextBuilder();
 
-  // Create browser  context and set it as the default. The default browser
+  // Create browser context and set it as the default. The default browser
   // context is used by the Target.createTarget() DevTools command when no other
   // context is given.
   HeadlessBrowserContext* browser_context = context_builder.Build();
@@ -116,14 +117,18 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
                                     ->options()
                                     ->DevtoolsServerEnabled();
 
-  // If no explicit URL is present navigate to about:blank unless we're being
-  // driven by a debugger.
-  base::CommandLine::StringVector args =
-      base::CommandLine::ForCurrentProcess()->GetArgs();
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+  base::CommandLine::StringVector args = command_line.GetArgs();
+
+  // Remove empty arguments sometimes left there by scripts to prevent weird
+  // error messages.
   args.erase(
       std::remove(args.begin(), args.end(), base::CommandLine::StringType()),
       args.end());
 
+  // If no explicit URL is present assume about:blank unless we're being
+  // driven by a debugger.
   if (args.empty() && !devtools_enabled) {
     args.push_back(kAboutBlank);
   }
@@ -136,36 +141,34 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   HeadlessWebContents::Builder builder(
       browser_context->CreateWebContentsBuilder());
 
-  // If driven by a debugger just open the target page and
-  // leave expecting the debugger will do what they need.
-  if (devtools_enabled) {
-    HeadlessWebContents* web_contents =
-        builder.SetInitialURL(target_url).Build();
-    if (!web_contents) {
-      LOG(ERROR) << "Navigation to " << target_url << " failed.";
-      ShutdownSoon();
-    }
-    return;
-  }
-
-  // Otherwise instantiate headless shell command handler that will
-  // execute the commands against the target page.
+  // Check for headless commands and instantiate headless command handler
+  // that will execute the commands against the target page.
 #if defined(HEADLESS_ENABLE_COMMANDS)
-  GURL handler_url = HeadlessCommandHandler::GetHandlerUrl();
-  HeadlessWebContents* web_contents =
-      builder.SetInitialURL(handler_url).Build();
-  if (!web_contents) {
-    LOG(ERROR) << "Navigation to " << handler_url << " failed.";
-    ShutdownSoon();
+  if (HeadlessCommandHandler::HasHeadlessCommandSwitches(command_line)) {
+    GURL handler_url = HeadlessCommandHandler::GetHandlerUrl();
+    HeadlessWebContents* web_contents =
+        builder.SetInitialURL(handler_url).Build();
+    if (!web_contents) {
+      LOG(ERROR) << "Navigation to " << handler_url << " failed.";
+      ShutdownSoon();
+      return;
+    }
+
+    HeadlessCommandHandler::ProcessCommands(
+        HeadlessWebContentsImpl::From(web_contents)->web_contents(),
+        std::move(target_url),
+        base::BindOnce(&HeadlessShell::OnProcessCommandsDone,
+                       base::Unretained(this)));
     return;
   }
-
-  HeadlessCommandHandler::ProcessCommands(
-      HeadlessWebContentsImpl::From(web_contents)->web_contents(),
-      std::move(target_url),
-      base::BindOnce(&HeadlessShell::OnProcessCommandsDone,
-                     base::Unretained(this)));
 #endif
+
+  // Otherwise just open the target page.
+  HeadlessWebContents* web_contents = builder.SetInitialURL(target_url).Build();
+  if (!web_contents) {
+    LOG(ERROR) << "Navigation to " << target_url << " failed.";
+    ShutdownSoon();
+  }
 }
 
 #if defined(HEADLESS_ENABLE_COMMANDS)

@@ -34,7 +34,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gl/progress_reporter.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -116,6 +116,8 @@ class GPU_GLES2_EXPORT SharedContextState
   bool GrContextIsVulkan() const {
     return gr_context_type_ == GrContextType::kVulkan;
   }
+  bool IsGraphiteDawn() const;
+  bool IsGraphiteMetal() const;
   bool IsGraphiteDawnMetal() const;
   bool IsGraphiteDawnD3D() const;
   bool IsGraphiteDawnVulkan() const;
@@ -127,7 +129,8 @@ class GPU_GLES2_EXPORT SharedContextState
 
   void FlushAndSubmit(bool sync_to_cpu);
   void FlushWriteAccess(SkiaImageRepresentation::ScopedWriteAccess* access);
-  void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores);
+  void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
+                         bool need_graphite_submit);
 
   // Returns true if context state is using GL, either for Skia to run on
   // or if there is no skia context and context state exists for WebGL fallback
@@ -218,13 +221,12 @@ class GPU_GLES2_EXPORT SharedContextState
   gpu::MemoryTypeTracker* memory_type_tracker() {
     return &memory_type_tracker_;
   }
+#if BUILDFLAG(ENABLE_VULKAN) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN))
   ExternalSemaphorePool* external_semaphore_pool() {
-#if BUILDFLAG(ENABLE_VULKAN)
     return external_semaphore_pool_.get();
-#else
-    return nullptr;
-#endif
   }
+#endif
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -273,7 +275,7 @@ class GPU_GLES2_EXPORT SharedContextState
 
   void ScheduleSkiaCleanup();
 
-  int32_t GetMaxTextureSize() const;
+  int32_t GetMaxTextureSize();
 
 #if BUILDFLAG(IS_WIN)
   // Get the D3D11 device used for the compositing.
@@ -426,7 +428,8 @@ class GPU_GLES2_EXPORT SharedContextState
   base::Time last_gl_check_graphics_reset_status_;
   bool disable_check_reset_status_throttling_for_test_ = false;
 
-#if BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(ENABLE_VULKAN) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN))
   std::unique_ptr<ExternalSemaphorePool> external_semaphore_pool_;
 #endif
 
@@ -436,6 +439,8 @@ class GPU_GLES2_EXPORT SharedContextState
   // |gpu_main_graphite_recorder_|.
   scoped_refptr<raster::GraphiteCacheController>
       gpu_main_graphite_cache_controller_;
+
+  std::optional<int> max_texture_size_;
 
   base::WeakPtrFactory<SharedContextState> weak_ptr_factory_{this};
 };

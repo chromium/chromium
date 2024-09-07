@@ -1,4 +1,16 @@
 // META: script=resources/utils.js
+// META: script=resources/workaround-for-362676838.js
+// META: timeout=long
+
+promise_test(async () => {
+  const capabilities = await ai.summarizer.capabilities();
+  assert_true(capabilities.available == "readily");
+  assert_true(capabilities.supportsType("tl;dr") == "readily");
+  assert_true(capabilities.supportsFormat("plain-text") == "readily");
+  assert_true(capabilities.supportsLength("long") == "readily");
+  assert_true(capabilities.supportsInputLanguage("en") == "readily");
+  assert_true(capabilities.supportsInputLanguage("es") == "no");
+});
 
 promise_test(async () => {
   const summarizer = await ai.summarizer.create();
@@ -7,3 +19,24 @@ promise_test(async () => {
   assert_true(typeof response === "string");
   assert_true(response.length > 0);
 });
+
+promise_test(async () => {
+  const sharedContext = 'This is a shared context string';
+  const summarizer = await ai.summarizer.create({sharedContext: sharedContext});
+  assert_equals(summarizer.sharedContext, sharedContext);
+}, 'AISummarizer.sharedContext');
+
+promise_test(async () => {
+  const summarizer = await ai.summarizer.create({type: 'headline'});
+  assert_equals(summarizer.type, 'headline');
+}, 'AISummarizer.type');
+
+promise_test(async () => {
+  const summarizer = await ai.summarizer.create({format: 'markdown'});
+  assert_equals(summarizer.format, 'markdown');
+}, 'AISummarizer.format');
+
+promise_test(async () => {
+  const summarizer = await ai.summarizer.create({length: 'medium'});
+  assert_equals(summarizer.length, 'medium');
+}, 'AISummarizer.length');

@@ -817,14 +817,21 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
         return TypeClassification::kNonTrivialExternTemplate;
       }
 
-      // `base::raw_ptr` and `base::raw_ref` are non-trivial if the
-      // `use_backup_ref_ptr` flag is enabled, and trivial otherwise. Since
-      // there are many existing types using this that we don't wish to burden
-      // with defining custom ctors/dtors, and we'd rather not vary on
-      // triviality by build config, treat this as always trivial.
-      if (hasName(record_decl, "base", "raw_ptr") ||
-          (options_.raw_ref_template_as_trivial_member &&
-           hasName(record_decl, "base", "raw_ref"))) {
+      // raw_ptr and raw_ref is non-trivial as in some build configurations it
+      // does work to catch dangling pointers. Nonetheless we want them to be
+      // usable in the same ways as a native pointer and reference. At times
+      // span has to be used instead of raw_span for performance reasons, then
+      // we want the compiler to allow the same class structure and not force an
+      // out of line ctor.
+      if (hasName(record_decl, "base", "raw_ptr")) {
+        return TypeClassification::kTrivialTemplate;
+      }
+      if (options_.raw_ref_template_as_trivial_member &&
+          hasName(record_decl, "base", "raw_ref")) {
+        return TypeClassification::kTrivialTemplate;
+      }
+      if (options_.raw_span_template_as_trivial_member &&
+          hasName(record_decl, "base", "span")) {
         return TypeClassification::kTrivialTemplate;
       }
 

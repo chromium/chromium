@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Verify no PopinContextType is supported on an insecure page
+  window.popinContextTypesSupported is not a function
+Harness: the test ran to completion.
+

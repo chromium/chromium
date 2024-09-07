@@ -195,19 +195,22 @@ class BucketElement extends HTMLElement {
       this.getNode<HTMLInputElement>('.snapshots input.slider');
     this.seriesCurrentSnapshotIndex = idx;
     const snapshot = this.seriesData[this.seriesCurrentSnapshotIndex];
+    if (snapshot === undefined) {
+      return;
+    }
     slider.value = idx.toString();
     slider.max = (this.seriesData.length - 1).toString();
     this.getNode('.snapshots .current-snapshot')!.textContent =
         slider.value;
     this.getNode('.snapshots .total-snapshots')!.textContent = slider.max;
     this.getNode('.snapshots .snapshot-delta')!.textContent =
-        `+${snapshot?.deltaRecordingStartMs}ms`;
+        `+${snapshot.deltaRecordingStartMs}ms`;
 
-    for (const db of snapshot?.databases || []) {
+    for (const db of snapshot.databases || []) {
       const dbView = document.createElement('indexeddb-database');
       const dbElement = this.getNode('.database-view').appendChild(dbView) as
           IndexedDbDatabase;
-      dbElement.idbBucketId = this.idbBucketId;
+      dbElement.clients = snapshot.clients;
       dbElement.data = db;
     }
   }

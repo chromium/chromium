@@ -91,33 +91,6 @@ void CompareHandleType(const base::win::ScopedHandle& handle,
       base::EqualsCaseInsensitiveASCII(type_name.value(), expected_type));
 }
 
-void FindHandle(const ProcessHandleMap& handle_map,
-                const wchar_t* type_name,
-                const base::win::ScopedHandle& handle) {
-  ProcessHandleMap::const_iterator entry = handle_map.find(type_name);
-  ASSERT_NE(handle_map.end(), entry);
-  EXPECT_TRUE(base::Contains(entry->second, handle.get()));
-}
-
-void TestCurrentProcessHandles(std::optional<ProcessHandleMap> (*func)()) {
-  std::wstring random_name = GetRandomName();
-  ASSERT_FALSE(random_name.empty());
-  base::win::ScopedHandle event_handle(
-      ::CreateEvent(nullptr, FALSE, FALSE, random_name.c_str()));
-  ASSERT_TRUE(event_handle.is_valid());
-  std::wstring pipe_name = L"\\\\.\\pipe\\" + random_name;
-  base::win::ScopedHandle pipe_handle(::CreateNamedPipe(
-      pipe_name.c_str(), PIPE_ACCESS_DUPLEX, PIPE_TYPE_BYTE,
-      PIPE_UNLIMITED_INSTANCES, 0, 0, NMPWAIT_USE_DEFAULT_WAIT, nullptr));
-  ASSERT_TRUE(pipe_handle.is_valid());
-
-  std::optional<ProcessHandleMap> handle_map = func();
-  ASSERT_TRUE(handle_map);
-  EXPECT_LE(2U, handle_map->size());
-  FindHandle(*handle_map, L"Event", event_handle);
-  FindHandle(*handle_map, L"File", pipe_handle);
-}
-
 }  // namespace
 
 TEST(WinUtils, IsPipe) {
@@ -213,10 +186,6 @@ TEST(WinUtils, GetPathAndTypeFromHandle) {
   ASSERT_TRUE(pipe_handle.is_valid());
   CompareHandlePath(pipe_handle, L"\\Device\\NamedPipe\\" + random_name);
   CompareHandleType(pipe_handle, L"File");
-}
-
-TEST(WinUtils, GetCurrentProcessHandles) {
-  TestCurrentProcessHandles(GetCurrentProcessHandles);
 }
 
 TEST(WinUtils, ContainsNulCharacter) {

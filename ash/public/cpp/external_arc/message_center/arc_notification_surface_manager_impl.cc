@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_impl.h"
+#include "base/check.h"
 #include "components/exo/notification_surface.h"
 
 namespace ash {
@@ -32,6 +33,13 @@ void ArcNotificationSurfaceManagerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void ArcNotificationSurfaceManagerImpl::OnNotificationSurfaceAXTreeIdChanged(
+    ArcNotificationSurface* surface) {
+  for (auto& observer : observers_) {
+    observer.OnNotificationSurfaceAXTreeIdChanged(surface);
+  }
+}
+
 exo::NotificationSurface* ArcNotificationSurfaceManagerImpl::GetSurface(
     const std::string& notification_key) const {
   auto it = notification_surface_map_.find(notification_key);
@@ -48,9 +56,7 @@ void ArcNotificationSurfaceManagerImpl::AddSurface(
       std::pair<std::string, std::unique_ptr<ArcNotificationSurfaceImpl>>(
           surface->notification_key(),
           std::make_unique<ArcNotificationSurfaceImpl>(surface)));
-  if (!result.second) {
-    NOTREACHED();
-  }
+  CHECK(result.second);
 
   for (auto& observer : observers_)
     observer.OnNotificationSurfaceAdded(result.first->second.get());

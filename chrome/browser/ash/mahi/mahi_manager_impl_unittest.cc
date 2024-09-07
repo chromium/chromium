@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -51,8 +52,12 @@ class FakeMahiProvider : public manta::MahiProvider {
       : MahiProvider(std::move(test_url_loader_factory), identity_manager) {}
 
   void Summarize(const std::string& input,
+                 const std::string& title,
+                 const std::optional<std::string>& url,
                  manta::MantaGenericCallback callback) override {
     ++num_summarize_call_;
+    latest_title_ = title;
+    latest_url_ = url;
     std::move(callback).Run(base::Value::Dict().Set("outputData", kFakeSummary),
                             {manta::MantaStatusCode::kOk, "Status string ok"});
   }
@@ -60,8 +65,13 @@ class FakeMahiProvider : public manta::MahiProvider {
   // Counts the number of call to `Summarize()`
   int NumberOfSumarizeCall() { return num_summarize_call_; }
 
+  const std::string& latest_title() const { return latest_title_; }
+  const std::optional<std::string>& latest_url() const { return latest_url_; }
+
  private:
   int num_summarize_call_ = 0;
+  std::string latest_title_;
+  std::optional<std::string> latest_url_;
 };
 
 bool IsMahiNudgeShown() {
@@ -93,9 +103,13 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
 
   // NoSessionAshTestBase::
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
     NoSessionAshTestBase::SetUp();
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kMahiRestrictionsOverride);
+        chromeos::switches::kMahiRestrictionsOverride);
 
     magic_boost_state_ = std::make_unique<MagicBoostStateAsh>();
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
@@ -147,11 +161,14 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     mahi_manager_impl_->NotifyRefreshAvailability(available);
   }
 
-  void RequestSummary(bool incognito = false) {
+  // void RequestSummary(const std::string& url = "http://url1.com/abc#skip",
+  // bool incognito = false) {
+  void RequestSummary(bool incognito = false,
+                      const std::string& url = "http://url1.com/abc#skip") {
     // Sets the page that needed to get summary.
-    mahi_manager_impl_->SetCurrentFocusedPageInfo(CreatePageInfo(
-        /*url=*/"http://url1.com/abc#skip", /*title=*/u"Title of url1",
-        /*is_incognito=*/incognito));
+    mahi_manager_impl_->SetCurrentFocusedPageInfo(
+        CreatePageInfo(url, /*title=*/u"Title of url1",
+                       /*is_incognito=*/incognito));
     // Gets the summary of the page.
     mahi_manager_impl_->GetSummary(base::DoNothing());
   }
@@ -165,13 +182,45 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
   }
   std::unique_ptr<MagicBoostStateAsh> magic_boost_state_;
   std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
+  base::test::ScopedFeatureList feature_list_;
 
  private:
-  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<FakeMahiBrowserDelegateAsh> fake_mahi_browser_delegate_ash_;
 };
+
+// Title is included in the request proto.
+TEST_F(MahiManagerImplTest, SendingTitleOnly) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kMahi,
+                            chromeos::features::kFeatureManagementMahi},
+      /*disabled_features=*/{chromeos::features::kMahiSendingUrl});
+  RequestSummary();
+
+  EXPECT_EQ(GetMahiProvider()->latest_title(), "Title of url1");
+  EXPECT_FALSE(GetMahiProvider()->latest_url().has_value());
+}
+
+// Url, on the other hand, is controlled by kMahiSendingUrl.
+TEST_F(MahiManagerImplTest, SendingTitleAndUrl) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {chromeos::features::kMahi, chromeos::features::kMahiSendingUrl,
+       chromeos::features::kFeatureManagementMahi},
+      /*disabled_features=*/{});
+
+  RequestSummary();
+
+  EXPECT_TRUE(GetMahiProvider()->latest_url().has_value());
+  EXPECT_EQ(GetMahiProvider()->latest_url().value(),
+            "http://url1.com/abc#skip");
+
+  // The fake url we make up for media app pdf files is ignored.
+  RequestSummary(false, "file:///media-app/example.pdf");
+  EXPECT_FALSE(GetMahiProvider()->latest_url().has_value());
+}
 
 TEST_F(MahiManagerImplTest, CacheSavedForSummaryRequest) {
   // No cache yet.

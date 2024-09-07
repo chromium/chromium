@@ -15,6 +15,7 @@
 
 namespace gpu {
 class SharedImageInterface;
+class GpuChannelHost;
 }
 
 namespace media {
@@ -42,6 +43,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
 
   static gpu::GpuMemoryBufferManager* GetBufferManager();
   static void SetGpuBufferManager(gpu::GpuMemoryBufferManager* buffer_manager);
+
+  static void SetGpuChannelHost(
+      scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
+  static scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost();
 
   static gpu::SharedImageInterface* GetSharedImageInterface();
   static void SetSharedImageInterface(

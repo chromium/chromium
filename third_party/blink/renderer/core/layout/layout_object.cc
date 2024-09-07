@@ -108,6 +108,7 @@
 #include "third_party/blink/renderer/core/layout/list/layout_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_masonry.h"
 #include "third_party/blink/renderer/core/layout/mathml/layout_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
@@ -358,10 +359,6 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
   switch (style.Display()) {
     case EDisplay::kNone:
     case EDisplay::kContents:
-    // TODO(ethavar): Return the appropriate `LayoutMasonry` object once we
-    // introduce `MasonryLayoutAlgorithm`.
-    case EDisplay::kMasonry:
-    case EDisplay::kInlineMasonry:
       return nullptr;
     case EDisplay::kInline:
       return MakeGarbageCollected<LayoutInline>(element);
@@ -393,7 +390,9 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutTableCaption>(element);
     case EDisplay::kWebkitBox:
     case EDisplay::kWebkitInlineBox:
-      if (style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
+      if (!RuntimeEnabledFeatures::
+              CSSLineClampWebkitBoxBlockificationEnabled() &&
+          style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
         return MakeGarbageCollected<LayoutBlockFlow>(element);
       }
       UseCounter::Count(element->GetDocument(),
@@ -407,6 +406,10 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kInlineGrid:
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSGridLayout);
       return MakeGarbageCollected<LayoutGrid>(element);
+    case EDisplay::kMasonry:
+    case EDisplay::kInlineMasonry:
+      // TODO(ethavar): Add use counter for CSS Masonry.
+      return MakeGarbageCollected<LayoutMasonry>(element);
     case EDisplay::kMath:
     case EDisplay::kBlockMath:
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
@@ -1792,21 +1795,6 @@ LayoutObject* LayoutObject::ContainerForFixedPosition(
   });
 }
 
-LayoutObject* LayoutObject::ContainerForColumnSpanAll(
-    AncestorSkipInfo* skip_info) const {
-  NOT_DESTROYED();
-  LayoutObject* multicol_container = SpannerPlaceholder()->Container();
-  if (skip_info) {
-    // We jumped directly from the spanner to the multicol container. Need to
-    // check if we skipped |ancestor| or filter/reflection on the way.
-    for (LayoutObject* walker = Parent();
-         walker && walker != multicol_container; walker = walker->Parent()) {
-      skip_info->Update(*walker);
-    }
-  }
-  return multicol_container;
-}
-
 LayoutBlock* LayoutObject::ContainingBlockForAbsolutePosition(
     AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
@@ -2286,7 +2274,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
     return true;
 
   AncestorSkipInfo skip_info(ancestor);
-  PropertyTreeState container_properties = PropertyTreeState::Uninitialized();
+  PropertyTreeState container_properties(PropertyTreeState::kUninitialized);
   const LayoutObject* property_container = GetPropertyContainer(
       &skip_info, &container_properties, visual_rect_flags);
   if (!property_container)

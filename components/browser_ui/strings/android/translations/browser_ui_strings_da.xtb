@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1192844206376121885">Denne handling sletter alle data og cookies, der er gemt af <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Næste</translation>
+<translation id="1240190568154816272">Tips til Chrome</translation>
 <translation id="1242008676835033345">Indlejret på <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">Billederne på denne side er blevet optimeret af Google, så du sparer data.</translation>
@@ -39,6 +40,7 @@
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
 <translation id="1785415724048343560">Anbefales for at få den bedste oplevelse</translation>
+<translation id="1799920918471566157">Tips til Chrome</translation>
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Læg på</translation>
@@ -147,6 +149,7 @@
 <translation id="3448554387819310837">Når dette er slået til, kan websites anmode om at anvende dit kamera. Når dette er slået fra, kan websites ikke anvende dit kamera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{I morgen blokerer Chrome cookies igen}one{Chrome blokerer cookies igen om # dag}other{Chrome blokerer cookies igen om # dage}}</translation>
 <translation id="3521663503435878242">Websites på <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Tillad ikke, at websites registrerer dine hænder</translation>
 <translation id="3536227077203206203">Der er givet adgang denne gang</translation>
 <translation id="3538390592868664640">Bloker oprettelsen af 3D-kort over dine omgivelser eller registrering af kamerapositionen for websites</translation>
 <translation id="3544058026430919413">En virksomhed kan definere en gruppe af websites, der kan bruge cookies til at dele din aktivitet i gruppen. Dette er deaktiveret i inkognitotilstand.</translation>
@@ -157,6 +160,7 @@
 <translation id="3600792891314830896">Lyden slås fra for websites, der afspiller lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}one{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{Der er <ph name="RWS_MEMBERS_COUNT" /> websites i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="3697164069658504920">Når dette er slået til, kan websites anmode om tilladelse til at bruge USB-enheder. Når dette er slået fra, kan websites ikke anvende USB-enheder.</translation>
 <translation id="3707034683772193706">Et website, du besøger, kan gemme en lille mængde oplysninger i Chrome, primært for at tjekke, at du ikke er en bot</translation>
 <translation id="3721953990244350188">Afvis, og vis næste tilgængelige handling</translation>
@@ -218,6 +222,7 @@
 <translation id="4644713492825682049">Slet og gendan</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4676059169848868271">Aktivér desuden registrering af håndbevægelser i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge håndregistrering.</translation>
 <translation id="4751476147751820511">Bevægelses- eller lyssensorer</translation>
 <translation id="4755971844837804407">Når dette er slået til, kan websites vise dig en hvilken som helst annonce. Når dette er slået fra, kan websites ikke vise påtrængende eller vildledende annoncer.</translation>
 <translation id="4779083564647765204">Zoom</translation>
@@ -236,6 +241,7 @@
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
 <translation id="5007392906805964215">Gennemgå</translation>
+<translation id="5014182796621173645">Du besøgte websitet <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5048398596102334565">Tillad, at websites kan få adgang til bevægelsessensorer (anbefales)</translation>
 <translation id="5050380848339752099">Dette website skal til at dele oplysninger med en app uden for inkognitotilstand.</translation>
@@ -245,6 +251,7 @@
 <translation id="5091663350197390230">Når dette er slået til, kan websites anvende JavaScript. Når dette er slået fra, kan websites ikke anvende JavaScript.</translation>
 <translation id="5099358668261120049">Denne handling sletter alle data og cookies, som er gemt af <ph name="ORIGIN" /> eller de tilhørende apps på din startside.</translation>
 <translation id="5100237604440890931">Skjult – klik for at udvide.</translation>
+<translation id="5116239826668864748">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prisfald på dine åbne faner}one{Prisfald på dine åbne faner}other{Prisfald på dine åbne faner}}</translation>
 <translation id="5186036860380548585">Se valgmuligheden øverst på skærmen</translation>
@@ -276,6 +283,7 @@
 <translation id="5553374991681107062">Seneste</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> er blokeret</translation>
+<translation id="5632485077360054581">Vis mig hvordan</translation>
 <translation id="5649053991847567735">Automatiske downloads</translation>
 <translation id="5668404140385795438">Tilsidesæt en anmodning fra et website om at undgå at zoome ind</translation>
 <translation id="5677928146339483299">Blokeret</translation>
@@ -286,6 +294,7 @@
 <translation id="5706552988683188916">Denne handling sletter cookies og andre websitedata for <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Tredjepartscookies er blokeret i inkognitotilstand</translation>
 <translation id="5740126560802162366">Websites kan gemme data på din enhed</translation>
+<translation id="5750869797196646528">Registrering af håndbevægelser</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5844448279347999754">Når dette er slået til, kan websites anmode om tilladelse at se tekst og billeder, der er gemt i din udklipsholder. Når dette er slået fra, kan websites ikke se tekst eller billeder, der er gemt i din udklipsholder.</translation>
@@ -347,12 +356,15 @@
 <translation id="656065428026159829">Se mere</translation>
 <translation id="6561560012278703671">Få lydløse meddelelser (dette sørger for, at dine notifikationer ikke forstyrrer dig)</translation>
 <translation id="6593061639179217415">Standardwebsite</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}one{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}other{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> websites tilhørende <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="662080504995468778">Bliv her</translation>
 <translation id="6653342741369270081">Tryk på knappen Tilbage for at afslutte fuld skærm.</translation>
+<translation id="6683865262523156564">Dette website er i en gruppe, der kan se din aktivitet. Gruppen er defineret af <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>
+<translation id="6709432001666529933">Spørg, om websites må registrere dine hænder (anbefales)</translation>
 <translation id="6722828510648505498">Bloker loginmeddelelser fra identitetstjenester</translation>
 <translation id="6746124502594467657">Flyt ned</translation>
 <translation id="6749077623962119521">Vil du nulstille tilladelserne?</translation>
@@ -360,6 +372,7 @@
 <translation id="6787751205395685251">Vælg en mulighed for <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6818926723028410516">Vælg elementer</translation>
+<translation id="6838525730752203626">Brug Chrome som standard</translation>
 <translation id="6840760312327750441">Du kan gruppere faner ved at holde en fane nede. Træk den derefter oven på en anden fane.</translation>
 <translation id="6864395892908308021">Denne enhed kan ikke læse NFC</translation>
 <translation id="6870169401250095575">Skjul kortet Sikkerhedstjek</translation>
@@ -411,6 +424,7 @@
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7667547420449112975">Den vidunderlige troldmand fra Oz</translation>
 <translation id="7684642910516280563">Tillad ikke, at et website bruger tredjepartscookies</translation>
+<translation id="7688240020069572972">Skjul kort med Chrome-tips</translation>
 <translation id="7719367874908701697">Sidezoom</translation>
 <translation id="7759147511335618829">Styring/omprogrammering af MIDI</translation>
 <translation id="7781829728241885113">I går</translation>
@@ -476,6 +490,7 @@
 <translation id="8609465669617005112">Flyt op</translation>
 <translation id="8617611086246832542">Når dette er slået til, anvendes computervenlig visning af websites. Når dette er slået fra, anvendes mobilvenlig visning af websites.</translation>
 <translation id="8649036394979866943">Chrome begrænser de fleste websites fra at bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere din sporingsbeskyttelse<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Når dette er aktiveret, kan websites anmode om tilladelse til at registrere dine hænder. Når dette er deaktiveret, kan websites ikke registrere dine hænder.</translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8681886425883659911">Annoncer blokeres på websites, som er kendt for at vise påtrængende eller vildledende annoncer</translation>
 <translation id="868929229000858085">Søg blandt dine kontakter</translation>

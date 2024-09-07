@@ -47,7 +47,7 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
         <TextView
-            android:id="@+id/tile_info_text"
+            android:id="@+id/tile_post_info_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"

@@ -34,11 +34,6 @@ namespace ranges = base::ranges;
 
 namespace {
 
-// This flag enables or disables considering colors for word block separations.
-// TODO(crbug.com/289881423): Update once there is better consistency in color
-// or gray scale recognition or add an error tolerant comparison function.
-constexpr bool kColorSensitiveStyleBlocks = false;
-
 // A negative ID for ui::AXNodeID needs to start from -2 as using -1 for this
 // node id is still incorrectly treated as invalid.
 // TODO(crbug.com/40908646): fix code treating -1 as invalid for ui::AXNodeID.
@@ -78,33 +73,15 @@ void UpdateBoundingBoxIfRotated(chrome_screen_ai::Rect* bounding_box) {
 
 bool HaveIdenticalFormattingStyle(const chrome_screen_ai::WordBox& word_1,
                                   const chrome_screen_ai::WordBox& word_2) {
-  if (word_1.language() != word_2.language())
+  if (word_1.language() != word_2.language()) {
     return false;
+  }
   if (word_1.direction() != word_2.direction()) {
     return false;
   }
   if (word_1.content_type() != word_2.content_type()) {
     return false;
   }
-
-  if (!kColorSensitiveStyleBlocks) {
-    return true;
-  }
-
-  // The absence of reliable color information makes the two words have unequal
-  // style, because it could indicate vastly different colors between them.
-  if (word_1.estimate_color_success() != word_2.estimate_color_success()) {
-    return false;
-  }
-  if (word_1.estimate_color_success() && word_2.estimate_color_success()) {
-    if (word_1.foreground_rgb_value() != word_2.foreground_rgb_value()) {
-      return false;
-    }
-    if (word_1.background_rgb_value() != word_2.background_rgb_value()) {
-      return false;
-    }
-  }
-
   return true;
 }
 
@@ -314,26 +291,10 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
             ax::mojom::IntAttribute::kBackgroundColor)) {
       inline_text_box.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
                                       word_box.background_rgb_value());
-    } else {
-      if (kColorSensitiveStyleBlocks) {
-        DCHECK_EQ(inline_text_box.GetIntAttribute(
-                      ax::mojom::IntAttribute::kBackgroundColor),
-                  word_box.background_rgb_value())
-            << "A `WordBox` has a different background color than its "
-               "enclosing `LineBox`.";
-      }
     }
     if (!inline_text_box.HasIntAttribute(ax::mojom::IntAttribute::kColor)) {
       inline_text_box.AddIntAttribute(ax::mojom::IntAttribute::kColor,
                                       word_box.foreground_rgb_value());
-    } else {
-      if (kColorSensitiveStyleBlocks) {
-        DCHECK_EQ(
-            inline_text_box.GetIntAttribute(ax::mojom::IntAttribute::kColor),
-            word_box.foreground_rgb_value())
-            << "A `WordBox` has a different foreground color than its "
-               "enclosing `LineBox`.";
-      }
     }
   }
   SerializeDirection(word_box.direction(), inline_text_box);

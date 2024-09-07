@@ -1,0 +1,3 @@
+Tests isScrollable property for document using DOM.describeNode method.
+document.documentElement: isScrollable=true
+

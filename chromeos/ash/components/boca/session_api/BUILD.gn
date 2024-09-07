@@ -10,11 +10,18 @@ source_set("session_api") {
     "constants.h",
     "create_session_request.cc",
     "create_session_request.h",
+    "get_session_request.cc",
+    "get_session_request.h",
+    "session_client_impl.cc",
+    "session_client_impl.h",
+    "upload_token_request.cc",
+    "upload_token_request.h",
   ]
 
   deps = [
     "//base",
     "//chromeos/ash/components/boca/proto",
+    "//components/signin/public/identity_manager",
     "//google_apis",
     "//google_apis/common",
     "//net",
@@ -25,7 +32,11 @@ source_set("session_api") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "create_session_request_unittest.cc" ]
+  sources = [
+    "create_session_request_unittest.cc",
+    "get_session_request_unittest.cc",
+    "upload_token_request_unittest.cc",
+  ]
 
   deps = [
     ":session_api",

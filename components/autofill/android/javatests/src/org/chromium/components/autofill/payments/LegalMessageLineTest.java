@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -108,6 +109,38 @@ public class LegalMessageLineTest {
                                 "example", new Link(0, 1, "https://example.test"))));
     }
 
+    @Test
+    public void testLinkEqual() {
+        Link link1 = new Link(0, 1, "https://example.test");
+        Link link2 = new Link(0, 1, "https://example.test");
+
+        assertEquals(link1, link2);
+    }
+
+    @Test
+    public void testLinkNotEqual() {
+        Link link1 = new Link(0, 1, "https://example.test");
+        Link link2 = new Link(0, 1, "https://example.com");
+
+        assertNotEquals(link1, link2);
+    }
+
+    @Test
+    public void testLegalMessageLineEqual() {
+        LegalMessageLine line1 = new LegalMessageLine("This is a legal message.");
+        LegalMessageLine line2 = new LegalMessageLine("This is a legal message.");
+
+        assertEquals(line1, line2);
+    }
+
+    @Test
+    public void testLegalMessageLineNotEqual() {
+        LegalMessageLine line1 = new LegalMessageLine("This is a legal message.");
+        LegalMessageLine line2 = new LegalMessageLine("This is a different legal message.");
+
+        assertNotEquals(line1, line2);
+    }
+
     private static Matcher<Link> equalToLink(int start, int end, String url) {
         return new TypeSafeMatcher<Link>() {
             @Override
@@ -123,7 +156,7 @@ public class LegalMessageLineTest {
         };
     }
 
-    private static Matcher<LegalMessageLine> equalToLegalMessageLine(String text, Link link) {
+    static Matcher<LegalMessageLine> equalToLegalMessageLine(String text, Link link) {
         return new TypeSafeMatcher<LegalMessageLine>() {
             @Override
             protected boolean matchesSafely(LegalMessageLine line) {

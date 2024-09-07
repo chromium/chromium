@@ -15,11 +15,8 @@
 namespace safe_browsing {
 
 TestSafeBrowsingDatabaseManager::TestSafeBrowsingDatabaseManager(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : SafeBrowsingDatabaseManager(std::move(ui_task_runner),
-                                  std::move(io_task_runner)),
-      enabled_(false) {}
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : SafeBrowsingDatabaseManager(std::move(ui_task_runner)), enabled_(false) {}
 
 void TestSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   NOTIMPLEMENTED();
@@ -97,16 +94,16 @@ TestSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return safe_browsing::ThreatSource::UNKNOWN;
 }
 
-void TestSafeBrowsingDatabaseManager::StartOnSBThread(
+void TestSafeBrowsingDatabaseManager::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
-  SafeBrowsingDatabaseManager::StartOnSBThread(url_loader_factory, config);
+  SafeBrowsingDatabaseManager::StartOnUIThread(url_loader_factory, config);
   enabled_ = true;
 }
 
-void TestSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
+void TestSafeBrowsingDatabaseManager::StopOnUIThread(bool shutdown) {
   enabled_ = false;
-  SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
+  SafeBrowsingDatabaseManager::StopOnUIThread(shutdown);
 }
 
 bool TestSafeBrowsingDatabaseManager::IsDatabaseReady() const {

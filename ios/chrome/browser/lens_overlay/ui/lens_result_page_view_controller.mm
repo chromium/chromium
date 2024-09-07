@@ -7,7 +7,8 @@
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_omnibox_mutator.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_progress_bar.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
@@ -40,6 +41,11 @@ const CGFloat kOmniboxContainerMinimumHeight = 42;
 /// container.
 const CGFloat kWebContainerTopPadding = 8;
 
+/// Height of the progress bar.
+const CGFloat kProgressBarHeight = 2.0f;
+/// Value of a full progress bar.
+const CGFloat kProgressBarFull = 1.0f;
+
 }  // namespace
 
 @interface LensResultPageViewController ()
@@ -49,6 +55,13 @@ const CGFloat kWebContainerTopPadding = 8;
 
 /// Edit view contained in `_omniboxContainer`.
 @property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
+
+/// Whether the back button is available. The back button might be available but
+/// hidden when the omnibox is focused.
+@property(nonatomic, assign) BOOL canGoBack;
+
+/// Whether the omnibox is currently focused.
+@property(nonatomic, assign) BOOL omniboxFocused;
 
 @end
 
@@ -65,6 +78,8 @@ const CGFloat kWebContainerTopPadding = 8;
   UIButton* _omniboxPopupContainer;
   /// Button to focus the omnibox.
   UIButton* _omniboxTapTarget;
+  /// Loading progress bar.
+  LensOverlayProgressBar* _progressBar;
 }
 
 - (instancetype)init {
@@ -72,6 +87,13 @@ const CGFloat kWebContainerTopPadding = 8;
   if (self) {
     _webViewContainer = [[UIView alloc] init];
     _omniboxPopupContainer = [[UIButton alloc] init];
+
+    // Initialize `setEditView` dependencies as it can be called before
+    // `viewDidLoad`.
+    _omniboxContainer = [[UIView alloc] init];
+    _omniboxTapTarget = [[UIButton alloc] init];
+    _progressBar = [[LensOverlayProgressBar alloc] init];
+    [_omniboxContainer addSubview:_omniboxTapTarget];
   }
   return self;
 }
@@ -108,7 +130,6 @@ const CGFloat kWebContainerTopPadding = 8;
         forControlEvents:UIControlEventTouchUpInside];
 
   // Omnibox container.
-  _omniboxContainer = [[UIView alloc] init];
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _omniboxContainer.backgroundColor = [UIColor colorNamed:kGrey200Color];
   _omniboxContainer.layer.cornerRadius = 21;
@@ -117,13 +138,11 @@ const CGFloat kWebContainerTopPadding = 8;
                         forAxis:UILayoutConstraintAxisHorizontal];
 
   // Omnibox tap target.
-  _omniboxTapTarget = [[UIButton alloc] init];
   _omniboxTapTarget.translatesAutoresizingMaskIntoConstraints = NO;
   _omniboxTapTarget.backgroundColor = UIColor.clearColor;
   [_omniboxTapTarget addTarget:self
                         action:@selector(didTapOmniboxTapTarget:)
               forControlEvents:UIControlEventTouchUpInside];
-  [_omniboxContainer addSubview:_omniboxTapTarget];
   AddSameConstraints(_omniboxContainer, _omniboxTapTarget);
 
   // Cancel button.
@@ -161,6 +180,11 @@ const CGFloat kWebContainerTopPadding = 8;
   _horizontalStackView.distribution = UIStackViewDistributionFill;
   [self.view addSubview:_horizontalStackView];
 
+  // Progress bar.
+  _progressBar.translatesAutoresizingMaskIntoConstraints = NO;
+  _progressBar.hidden = YES;
+  [self.view addSubview:_progressBar];
+
   NSLayoutConstraint* omniboxLeadingConstraint =
       [_omniboxContainer.leadingAnchor
           constraintEqualToAnchor:self.view.leadingAnchor
@@ -184,6 +208,13 @@ const CGFloat kWebContainerTopPadding = 8;
                        constant:kWebContainerTopPadding],
     [_omniboxPopupContainer.topAnchor
         constraintEqualToAnchor:_horizontalStackView.bottomAnchor],
+    [_progressBar.topAnchor
+        constraintEqualToAnchor:_webViewContainer.topAnchor],
+    [_progressBar.leadingAnchor
+        constraintEqualToAnchor:_webViewContainer.leadingAnchor],
+    [_progressBar.trailingAnchor
+        constraintEqualToAnchor:_webViewContainer.trailingAnchor],
+    [_progressBar.heightAnchor constraintEqualToConstant:kProgressBarHeight],
   ]];
   AddSameConstraintsToSides(
       self.webViewContainer, self.view,
@@ -216,7 +247,7 @@ const CGFloat kWebContainerTopPadding = 8;
 }
 
 - (void)keyCommand_close {
-  [self.omniboxMutator defocusOmnibox];
+  [self.toolbarMutator defocusOmnibox];
 }
 
 #pragma mark - LensResultPageConsumer
@@ -244,6 +275,22 @@ const CGFloat kWebContainerTopPadding = 8;
   self.view.backgroundColor = backgroundColor;
 }
 
+- (void)setLoadingProgress:(float)progress {
+  [self updateProgressBarVisibilityForProgress:progress];
+  [_progressBar setProgress:progress animated:YES completion:nil];
+}
+
+- (void)updateProgressBarVisibilityForProgress:(float)progress {
+  BOOL isLoading = progress != kProgressBarFull;
+  BOOL shouldShowProgressBar = isLoading && _progressBar.hidden;
+  BOOL shouldHideProgressBar = !isLoading && !_progressBar.hidden;
+
+  if (shouldShowProgressBar) {
+    [_progressBar setHidden:NO animated:YES completion:nil];
+  } else if (shouldHideProgressBar) {
+    [_progressBar setHidden:YES animated:YES completion:nil];
+  }
+}
 #pragma mark - OmniboxPopupPresenterDelegate
 
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {
@@ -268,6 +315,9 @@ const CGFloat kWebContainerTopPadding = 8;
 #pragma mark - LensToolbarConsumer
 
 - (void)setOmniboxFocused:(BOOL)isFocused {
+  _omniboxFocused = isFocused;
+  [self updateBackButtonVisibility];
+
   // Visible when omnibox is focused.
   _cancelButton.hidden = !isFocused;
   _omniboxPopupContainer.hidden = !isFocused;
@@ -276,26 +326,35 @@ const CGFloat kWebContainerTopPadding = 8;
   _omniboxTapTarget.hidden = isFocused;
 }
 
+- (void)setCanGoBack:(BOOL)canGoBack {
+  _canGoBack = canGoBack;
+  [self updateBackButtonVisibility];
+}
+
 #pragma mark - Private
 
 /// Handles back button taps.
 - (void)didTapBackButton:(UIView*)button {
-  // TODO(crbug.com/347239663): Handle back button tap.
+  [self.toolbarMutator goBack];
 }
 
 /// Handles omnibox tap target taps.
 - (void)didTapOmniboxTapTarget:(UIView*)view {
-  [self.omniboxMutator focusOmnibox];
+  [self.toolbarMutator focusOmnibox];
 }
 
 /// Handles omnibox popup container taps, acting like a typing shield.
 - (void)didTapOmniboxPopupContainer:(UIView*)view {
-  [self.omniboxMutator defocusOmnibox];
+  [self.toolbarMutator defocusOmnibox];
 }
 
 /// Handles cancel button taps.
 - (void)didTapCancelButton:(UIView*)button {
-  [self.omniboxMutator defocusOmnibox];
+  [self.toolbarMutator defocusOmnibox];
+}
+
+- (void)updateBackButtonVisibility {
+  _backButton.hidden = self.omniboxFocused || !self.canGoBack;
 }
 
 @end

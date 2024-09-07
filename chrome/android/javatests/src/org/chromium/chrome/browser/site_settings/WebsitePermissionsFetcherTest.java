@@ -618,6 +618,13 @@ public class WebsitePermissionsFetcherTest {
                         SessionModel.DURABLE));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
+                        ContentSettingsType.HAND_TRACKING,
+                        ORIGIN,
+                        SITE_WILDCARD,
+                        /* isEmbargoed= */ false,
+                        SessionModel.DURABLE));
+        websitePreferenceBridge.addPermissionInfo(
+                new PermissionInfo(
                         ContentSettingsType.IDLE_DETECTION,
                         ORIGIN,
                         SITE_WILDCARD,
@@ -700,7 +707,7 @@ public class WebsitePermissionsFetcherTest {
         // Otherwise, just update count in the assert.
         // TODO(https://b/332704817): Add test for Tracking Protection content setting after Android
         // integration.
-        assertEquals(111, ContentSettingsType.MAX_VALUE);
+        assertEquals(113, ContentSettingsType.MAX_VALUE);
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.COOKIES,
@@ -872,6 +879,7 @@ public class WebsitePermissionsFetcherTest {
                             site.getPermissionInfo(ContentSettingsType.CLIPBOARD_READ_WRITE));
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.SENSORS));
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.VR));
+                    Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.HAND_TRACKING));
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.AR));
 
                     // Check content setting exception types.
@@ -1100,6 +1108,7 @@ public class WebsitePermissionsFetcherTest {
                                 ContentSettingsType.MEDIASTREAM_CAMERA,
                                 ContentSettingsType.CLIPBOARD_READ_WRITE,
                                 ContentSettingsType.GEOLOCATION,
+                                ContentSettingsType.HAND_TRACKING,
                                 ContentSettingsType.IDLE_DETECTION,
                                 ContentSettingsType.MEDIASTREAM_MIC,
                                 ContentSettingsType.NFC,

@@ -20,6 +20,7 @@
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -135,16 +136,16 @@ ScopedServiceWorkerClient CreateServiceWorkerClient(
     const GURL& document_url,
     const url::Origin& top_frame_origin,
     bool are_ancestors_secure = true,
-    int frame_tree_node_id = 1);
+    FrameTreeNodeId frame_tree_node_id = FrameTreeNodeId(1));
 ScopedServiceWorkerClient CreateServiceWorkerClient(
     ServiceWorkerContextCore* context,
     const GURL& document_url,
     bool are_ancestors_secure = true,
-    int frame_tree_node_id = 1);
+    FrameTreeNodeId frame_tree_node_id = FrameTreeNodeId());
 ScopedServiceWorkerClient CreateServiceWorkerClient(
     ServiceWorkerContextCore* context,
     bool are_ancestors_secure = true,
-    int frame_tree_node_id = 1);
+    FrameTreeNodeId frame_tree_node_id = FrameTreeNodeId());
 
 std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
     int process_id,

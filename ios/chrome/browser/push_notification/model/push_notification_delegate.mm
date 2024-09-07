@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/files/file_path.h"
 #import "base/metrics/histogram_functions.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
@@ -34,11 +36,14 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -59,6 +64,9 @@ constexpr int kTimeRangeHistogramBucketCount = 30;
 // the device.
 const char kLifecycleEventsHistogram[] = "IOS.PushNotification.LifecyleEvents";
 
+// Key for the PushNotificationClientId in the Send Tab notification payload.
+NSString* const kPushNotificationClientIdKey = @"push_notification_client_id";
+
 // This enum is used to represent a point along the push notification's
 // lifecycle.
 enum class PushNotificationLifecycleEvent {
@@ -72,22 +80,20 @@ enum class PushNotificationLifecycleEvent {
 // map of each user's preferences for each push notification enabled feature.
 GaiaIdToPushNotificationPreferenceMap*
 GaiaIdToPushNotificationPreferenceMapFromCache(
-    BrowserStateInfoCache* info_cache) {
-  size_t number_of_browser_states = info_cache->GetNumberOfBrowserStates();
+    ProfileAttributesStorageIOS* storage) {
+  const size_t number_of_profiles = storage->GetNumberOfProfiles();
   NSMutableDictionary* account_preference_map =
       [[NSMutableDictionary alloc] init];
 
-  for (size_t i = 0; i < number_of_browser_states; i++) {
-    NSString* gaia_id =
-        base::SysUTF8ToNSString(info_cache->GetGAIAIdOfBrowserStateAtIndex(i));
-    if (!gaia_id.length) {
+  for (size_t i = 0; i < number_of_profiles; i++) {
+    ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
+    if (attr.GetGaiaId().empty()) {
       continue;
     }
 
-    const std::string& name = info_cache->GetNameOfBrowserStateAtIndex(i);
     PrefService* pref_service = GetApplicationContext()
-                                    ->GetChromeBrowserStateManager()
-                                    ->GetBrowserStateByName(name)
+                                    ->GetProfileManager()
+                                    ->GetProfileWithName(attr.GetProfileName())
                                     ->GetPrefs();
 
     NSMutableDictionary<NSString*, NSNumber*>* preference_map =
@@ -100,7 +106,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           [NSNumber numberWithBool:pair.second.GetBool()];
     }
 
-    account_preference_map[gaia_id] = preference_map;
+    account_preference_map[base::SysUTF8ToNSString(attr.GetGaiaId())] =
+        preference_map;
   }
 
   return account_preference_map;
@@ -153,6 +160,13 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       notification.request.content.userInfo);
 
   if (completionHandler) {
+    // If the app is foregrounded, Send Tab push notifications should not be
+    // displayed.
+    if ([notification.request.content.userInfo[kPushNotificationClientIdKey]
+            intValue] == static_cast<int>(PushNotificationClientId::kSendTab) &&
+        [self isSceneLevelForegroundActive]) {
+      completionHandler(UNNotificationPresentationOptionNone);
+    }
     completionHandler(UNNotificationPresentationOptionBanner);
   }
   base::UmaHistogramEnumeration(kAppLaunchSource,
@@ -188,12 +202,12 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 
 - (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken
                           browserState:(ChromeBrowserState*)browserState {
-  BrowserStateInfoCache* infoCache = GetApplicationContext()
-                                         ->GetChromeBrowserStateManager()
-                                         ->GetBrowserStateInfoCache();
+  ProfileAttributesStorageIOS* storage = GetApplicationContext()
+                                             ->GetProfileManager()
+                                             ->GetProfileAttributesStorage();
 
   GaiaIdToPushNotificationPreferenceMap* accountPreferenceMap =
-      GaiaIdToPushNotificationPreferenceMapFromCache(infoCache);
+      GaiaIdToPushNotificationPreferenceMapFromCache(storage);
 
   // Return early if no accounts are signed into Chrome.
   if (!accountPreferenceMap.count) {
@@ -351,6 +365,25 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 - (BOOL)isContentNotificationAvailable:(ChromeBrowserState*)browserState {
   return IsContentNotificationEnabled(browserState) ||
          IsContentNotificationRegistered(browserState);
+}
+
+// Returns YES if there is a foreground active browser. Checks all profiles.
+- (BOOL)isSceneLevelForegroundActive {
+  std::vector<ChromeBrowserState*> loaded_profiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+
+  for (ChromeBrowserState* profile : loaded_profiles) {
+    std::set<Browser*> browsers =
+        BrowserListFactory::GetForBrowserState(profile)->BrowsersOfType(
+            BrowserList::BrowserType::kRegular);
+    for (Browser* browser : browsers) {
+      if (browser->GetSceneState().activationLevel ==
+          SceneActivationLevelForegroundActive) {
+        return YES;
+      }
+    }
+  }
+  return NO;
 }
 
 @end

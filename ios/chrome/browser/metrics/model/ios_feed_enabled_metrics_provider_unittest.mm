@@ -15,11 +15,10 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
@@ -115,9 +114,8 @@ class IOSFeedEnabledMetricsProviderTest
   // `config` (possibly disabling some preferences).
   void CreateBrowserState(const std::string& name,
                           const FeedMetricsConfig& param) {
-    ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
-            std::move(TestChromeBrowserState::Builder().SetName(name)));
+    ChromeBrowserState* browser_state = profile_manager_.AddProfileWithBuilder(
+        std::move(TestChromeBrowserState::Builder().SetName(name)));
 
     PrefService* prefs = browser_state->GetPrefs();
     return std::visit(
@@ -136,7 +134,7 @@ class IOSFeedEnabledMetricsProviderTest
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   base::HistogramTester histogram_tester_;
 };
 

@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -173,6 +172,17 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
     case WebStateListChange::Type::kGroupMove:
       break;
   }
+
+  web::WebState* web_state = status.new_active_web_state;
+  if (status.active_web_state_change() && web_state) {
+    const TabGroup* tab_group =
+        web_state_list->GetGroupOfWebStateAt(web_state_list->active_index());
+    if (tab_group) {
+      sync_service_->OnTabSelected(
+          tab_group->tab_group_id(),
+          web_state->GetUniqueIdentifier().identifier());
+    }
+  }
 }
 
 void TabGroupLocalUpdateObserver::WebStateListDestroyed(
@@ -294,9 +304,12 @@ void TabGroupLocalUpdateObserver::UpdateLocalWebStateInSyncedGroup(
     title = GetDefaultUrlAndTitle().second;
   }
 
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetURL(url);
+  tab_builder.SetTitle(title);
   sync_service_->UpdateTab(tab_info.tab_group->tab_group_id(),
-                           web_state->GetUniqueIdentifier().identifier(), title,
-                           url, std::nullopt);
+                           web_state->GetUniqueIdentifier().identifier(),
+                           std::move(tab_builder));
 }
 
 void TabGroupLocalUpdateObserver::AddLocalWebStateToSyncedGroup(

@@ -303,8 +303,9 @@ void TabHoverCardController::UpdateOrShowCard(
     TabSlotController::HoverCardUpdateType update_type) {
   // Close is asynchronous, so make sure that if we're closing we clear out all
   // of our data *now* rather than waiting for the deletion message.
-  if (hover_card_ && hover_card_->GetWidget()->IsClosed())
+  if (hover_card_ && hover_card_->GetWidget()->IsClosed()) {
     OnViewIsDeleting(hover_card_);
+  }
 
   // If a hover card is being updated because of a data change, the hover card
   // had better already be showing for the affected tab.
@@ -317,8 +318,9 @@ void TabHoverCardController::UpdateOrShowCard(
 
     // When a tab has been discarded, the thumbnail is moved to a new
     // ThumbnailTabHelper so it must be observed again.
-    if (tab->data().is_tab_discarded)
+    if (tab->data().is_tab_discarded) {
       MaybeStartThumbnailObservation(tab, /* is_initial_show */ false);
+    }
 
     slide_animator_->UpdateTargetBounds();
     return;

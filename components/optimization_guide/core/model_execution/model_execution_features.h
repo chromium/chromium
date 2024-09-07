@@ -47,6 +47,7 @@ BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
 // Features that control model adaptation.
 BASE_DECLARE_FEATURE(kModelAdaptationCompose);
 BASE_DECLARE_FEATURE(kModelAdaptationHistorySearch);
+BASE_DECLARE_FEATURE(kModelAdaptationSummarize);
 
 // Allow on-device model support for Test feature, to be used in tests.
 BASE_DECLARE_FEATURE(kOnDeviceModelTestFeature);

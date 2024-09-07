@@ -96,7 +96,7 @@ void AwFieldTrials::OnVariationsSetupComplete() {
   if (base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir)) {
     InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -236,6 +236,12 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // enabling site isolation. See crbug.com/356170748.
   aw_feature_overrides.DisableFeature(blink::features::kPaintHoldingForIframes);
 
+  // Since Default Nav Transition does not support WebView yet, disable the
+  // LocalSurfaceId increment flag. TODO(crbug.com/361600214): Re-enable for
+  // WebView when we start introducing this feature.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation);
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDebugBsa)) {
     // Feature parameters can only be set via a field trial.
     const char kTrialName[] = "StudyDebugBsa";
@@ -272,9 +278,4 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // TODO(crbug.com/41492947): See crrev.com/c/5744034 for details, but I was
   // unable to add this feature to fieldtrial_testing_config and pass all tests.
   aw_feature_overrides.EnableFeature(blink::features::kElementGetInnerHTML);
-
-  // TODO(crbug.com/356827071): Enable the feature for WebView.
-  // Disable PlzDedicatedWorker as a workaround for crbug.com/356827071.
-  // Otherwise, importScripts fails on WebView.
-  aw_feature_overrides.DisableFeature(blink::features::kPlzDedicatedWorker);
 }

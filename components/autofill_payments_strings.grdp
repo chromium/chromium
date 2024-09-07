@@ -328,9 +328,18 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for virtual card permanent error.">
     Virtual card not available
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card temporary error.">
-    Virtual card is not available right now, please try again later
-  </message>
+  <if expr="is_ios">
+      <then>
+          <message name="IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card temporary error.">
+            Virtual card is not available right now, please try again later.
+          </message>
+      </then>
+      <else>
+          <message name="IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card temporary error. Note that the translation should not have period.">
+            Virtual card is not available right now, please try again later
+          </message>
+      </else>
+  </if>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card permanent error.">
     Virtual card is not available right now, please contact your bank
   </message>
@@ -523,6 +532,12 @@
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE" desc="Message displayed after tapping a card, and the response from the bank indicates that no further verification is required.">
     Verified
+  </message>
+  <message name="IDS_AUTOFILL_3DS_FETCH_VCN_PROGRESS_DIALOG_LOADING_MESSAGE" desc="Message to be displayed after a VCN 3DS authentication has completed, and Chrome is attempting to retrieve the virtual card from the Payments server. If the authentication was successful, a confirmation message will display in the progress dialog and then the virtual card will be filled. If the authentication was not successful, an error message will be displayed.">
+    Verifying...
+  </message>
+  <message name="IDS_AUTOFILL_3DS_FETCH_VCN_PROGRESS_DIALOG_CONFIRMATION_MESSAGE" desc="Message to be displayed after a VCN 3DS authentication has successfully completed, and Chrome is going to fill the virtual card.">
+    Your card is verified
   </message>
   <message name="IDS_AUTOFILL_IBAN_UNMASK_ERROR_DIALOG_TITLE" desc="Title displayed when there is a server failure during the process of unmasking a server IBAN.">
     IBAN not filled in
@@ -883,7 +898,7 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CVC_LABEL_IOS" desc="Text shown above the virtual CVC field in the manual fallback bubble on IOS. The bubble below shows the CVC for the card available to fill the form. Clicking the bubble will populate the field with the CVC.">
       CVC:
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE" desc="Text to be displayed for a virtual card option in the credit card suggestion list when the virtual card is disabled(opted-out) by the merchant. This suggestion will be grayed-out and the user will not be able to preview or select this option." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE" desc="Text to be displayed for a virtual card option in the credit card suggestion list when the virtual card is disabled(opted-out) by the merchant. This suggestion will be grayed-out and the user will not be able to preview or select this option.">
       Merchant doesn't accept this virtual card
   </message>
   <message name="IDS_AUTOFILL_DISABLED_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble for disabled and grayed out virtual card suggestions on Chrome Desktop.">
@@ -950,7 +965,7 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_ENTER_CORRECT_CODE_LABEL" desc="This text is shown after an OTP is already sent, when the user enters an incorrect OTP code. It directs the user to enter the correct code that was sent to them.">
     Enter correct code
   </message>
-  <message name="IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_TITLE_VCN_3DS" desc="This text is shown as the title for the user consent dialog for VCN 3DS. If the user accepts the dialog, Chrome will open a pop-up and initiate the VCN 3DS flow.">
+  <message name="IDS_AUTOFILL_LOADING_AND_CONSENT_DIALOG_TITLE_VCN_3DS" desc="This text is shown as the title for the user consent dialog and progress dialog for VCN 3DS. If the user accepts the user consent dialog, Chrome will open a pop-up and initiate the VCN 3DS flow. The progress dialog notifies the user when a Payments server call is in progress.">
     Your bank wants to verify it's you
   </message>
   <message name="IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_DESCRIPTION_VCN_3DS" desc="This text is shown as the description for the user consent dialog for VCN 3DS. If the user accepts the dialog, Chrome will open a pop-up and initiate the VCN 3DS flow.">

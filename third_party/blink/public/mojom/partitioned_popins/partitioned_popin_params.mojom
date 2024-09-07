@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/site_for_cookies.mojom";
+import "url/mojom/origin.mojom";
+
+// When the renderer opens a view representing a Partitioned Popin, the
+// entire frame tree is partitioned as though it was an iframe in the opener.
+// Because of this, the renderer must have knowledge of the top_frame_origin
+// and site_for_cookies the opener would use for itself.
+// See https://explainers-by-googlers.github.io/partitioned-popins/
+struct PartitionedPopinParams {
+  url.mojom.Origin opener_top_frame_origin;
+  network.mojom.SiteForCookies opener_site_for_cookies;
+};

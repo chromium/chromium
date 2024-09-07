@@ -7,17 +7,17 @@ rootWebArea focusable htmlTag='#document'
 ++++++++++++staticText name='sit'
 ++++++++++++++inlineTextBox name='sit'
 ++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name=' dolor '
+++++++++++staticText ignored invisible
 ++++++++++genericContainer ignored invisible
 ++++++genericContainer focusable htmlTag='div' name=' consectetur adipiscing tempor '
 ++++++++staticText name='<newline>  consectetur<newline>  '
 ++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='adipiscing'
+++++++++++staticText ignored invisible
 ++++++++staticText name='<newline>  '
 ++++++++genericContainer ignored
 ++++++++++staticText name='<newline>    '
 ++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible name='tempor'
+++++++++++++staticText ignored invisible
 ++++++++++staticText name='<newline>  '
 ++++++++staticText name='<newline>'
 ++++++canvas focusable htmlTag='canvas' name=' sed do eiusmod tempor '

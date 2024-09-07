@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -64,7 +64,7 @@ std::unique_ptr<KeyedService> TabsSearchServiceFactory::BuildServiceInstanceFor(
   const bool is_off_the_record = browser_state->IsOffTheRecord();
   return std::make_unique<TabsSearchService>(
       is_off_the_record, BrowserListFactory::GetForBrowserState(browser_state),
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       SyncServiceFactory::GetForBrowserState(browser_state),
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state),
       SessionSyncServiceFactory::GetForBrowserState(browser_state),

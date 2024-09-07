@@ -169,16 +169,8 @@ class TabHoverCardInteractiveUiTest
 
 // Verify that the hover card is not visible when any key is pressed.
 // Because this test depends on Aura event handling, it is not performed on Mac.
-// TODO(crbug.com/41481726):  Enable once failing test is fixed.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_HoverCardHidesOnAnyKeyPressInSameWindow \
-  DISABLED_HoverCardHidesOnAnyKeyPressInSameWindow
-#else
-#define MAYBE_HoverCardHidesOnAnyKeyPressInSameWindow \
-  HoverCardHidesOnAnyKeyPressInSameWindow
-#endif
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
-                       MAYBE_HoverCardHidesOnAnyKeyPressInSameWindow) {
+                       HoverCardHidesOnAnyKeyPressInSameWindow) {
   RunTestSequence(InstrumentTab(kFirstTabContents, 0),
                   NavigateWebContents(kFirstTabContents,
                                       GURL(chrome::kChromeUINewTabURL)),
@@ -633,6 +625,30 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
             performance_row->footer_label()->GetText());
 }
 
+IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
+                       ActiveMemoryUsageHidesOnDiscard) {
+  const uint64_t bytes_used = 1;
+  TabResourceUsageTabHelper::FromWebContents(GetWebContentsAt(0))
+      ->SetMemoryUsageInBytes(bytes_used);
+
+  RunTestSequence(InstrumentTab(kFirstTabContents, 0),
+                  NavigateWebContents(kFirstTabContents, GetURL("a.com")),
+                  AddInstrumentedTab(kSecondTabContents, GetURL("b.com")),
+                  ForceTabDataRefreshMemoryMetrics(), TryDiscardTab(0),
+                  HoverTabAt(0),
+                  WaitForShow(FooterView::kHoverCardFooterElementId),
+                  CheckAlertRowLabel(u"Inactive tab", true),
+                  CheckView(
+                      TabHoverCardBubbleView::kHoverCardBubbleElementId,
+                      [=](TabHoverCardBubbleView* bubble) {
+                        return GetPrimaryPerformanceRowFromHoverCard(bubble)
+                            ->footer_label()
+                            ->GetText()
+                            .empty();
+                      },
+                      true));
+}
+
 // The discarded status in the hover card footer should disappear after a
 // discarded tab is reloaded
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
@@ -646,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       CheckHovercardIsClosed(),
       // Check that the discarded tab should update its contents to show discard
       // status
-      TryDiscardTab(0), FlushEvents(), HoverTabAt(0),
+      TryDiscardTab(0), HoverTabAt(0),
       WaitForShow(FooterView::kHoverCardFooterElementId),
       CheckAlertRowLabel(u"Inactive tab", true), UnhoverTab(),
       CheckHovercardIsClosed(),
@@ -671,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       InstrumentTab(kFirstTabContents, 0), UnhoverTab(), HoverTabAt(0),
       CheckHovercardIsOpen(),
       WaitForShow(FooterView::kHoverCardFooterElementId), UnhoverTab(),
-      CheckHovercardIsClosed(), FlushEvents(),
+      CheckHovercardIsClosed(),
       NavigateWebContents(kFirstTabContents, GetURL("a.com")), HoverTabAt(0),
       CheckHovercardIsOpen(),
       CheckView(

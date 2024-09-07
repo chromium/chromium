@@ -1,0 +1,8 @@
+Verifies that disabling cache in DevTools works when fetching scripts for audio worklets.
+First fetch to populate cache
+Second request (should be cached)
+Third request (cache disabled; should not be cached)
+Second request cached: true
+Third request cached: false
+OK
+

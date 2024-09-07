@@ -68,6 +68,7 @@ class SharedDictionaryAccessObserver;
 }  // namespace network
 
 namespace storage {
+struct BucketClientInfo;
 class SharedStorageManager;
 }
 
@@ -405,9 +406,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   // `window.indexedDB`).
   void BindIndexedDB(
       const storage::BucketLocator& bucket_locator,
+      const storage::BucketClientInfo& client_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
-      const base::UnguessableToken& client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
 
   // Called by each renderer process to bind its global DomStorage interface.
@@ -490,7 +491,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       std::unique_ptr<NavigationStateKeepAlive> handle);
 
   // Forward the call to `NetworkContext::RevokeNetworkForNonces` and save the
-  // nonces in StoragePartitionImpl. Clients should revoke network access for
+  // nonces in `StoragePartitionImpl`. Clients should revoke network access for
   // nonces using this function instead of calling
   // `NetworkContext::RevokeNetworkForNonces` directly. This is because this
   // function saves the nonces so that they can be restored in case of a
@@ -498,6 +499,17 @@ class CONTENT_EXPORT StoragePartitionImpl
   void RevokeNetworkForNoncesInNetworkContext(
       const std::vector<base::UnguessableToken>& nonces,
       network::mojom::NetworkContext::RevokeNetworkForNoncesCallback callback);
+
+  // Forward the call to `NetworkContext::ClearNonces` and remove the stored
+  // nonce values in `StoragePartitionImpl`. Clients should clear nonces using
+  // this function instead of calling `NetworkContext::ClearNonces` directly.
+  // This should only be called when the nonces saved by
+  // `RevokeNetworkForNoncesInNetworkContext` are no longer relevant.
+  // The nonces are cleared after a time delay, which will prevent races where
+  // network requests succeed while the fenced frame corresponding to the
+  // nonces is being destroyed.
+  void ClearNoncesInNetworkContextAfterDelay(
+      const std::vector<base::UnguessableToken>& nonces);
 
   // Get the NavigationStateKeepAlive associated with `frame_token`. See
   // `navigation_state_keep_alive_map_`.
@@ -508,6 +520,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   // should be called when the keep alive is destructed.
   void RemoveKeepAliveHandleFromMap(blink::LocalFrameToken frame_token,
                                     NavigationStateKeepAlive* keep_alive);
+
+  void SetClearNoncesInNetworkContextParamsForTesting(
+      const base::TimeDelta& delay,
+      base::RepeatingClosure callback);
 
   enum class ContextType {
     kRenderFrameHostContext,
@@ -696,6 +712,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   GlobalRenderFrameHostId GetRenderFrameHostIdFromNetworkContext();
 
   void DeleteStaleSessionOnlyCookiesAfterDelayCallback();
+
+  void ClearNoncesInNetworkContextAfterDelayCallback(
+      const std::vector<base::UnguessableToken>& nonces);
 
   // Raw pointer that should always be valid. The BrowserContext owns the
   // StoragePartitionImplMap which then owns StoragePartitionImpl. When the
@@ -896,6 +915,16 @@ class CONTENT_EXPORT StoragePartitionImpl
   // has initialized, otherwise we will bypass lazy loading and block.
   // See crbug.com/40285083 for more info.
   base::TimeDelta delete_stale_session_only_cookies_delay_{base::Minutes(1)};
+
+  // We need a delay when removing fenced frame nonces from here and from the
+  // network service, to avoid races where a fenced frame could regain network
+  // access during destruction. See the comment on
+  // `ClearNoncesInNetworkContextAfterDelay` for more info.
+  base::TimeDelta clear_nonces_in_network_context_delay_{base::Minutes(1)};
+  // Because removing the nonces after a delay is async, we need a callback to
+  // execute when the task completes in order to test it.
+  base::RepeatingClosure clear_nonces_in_network_context_callback_for_testing_ =
+      base::DoNothing();
 
   base::WeakPtrFactory<StoragePartitionImpl> weak_factory_{this};
 };

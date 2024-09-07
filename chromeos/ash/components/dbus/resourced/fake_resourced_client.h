@@ -32,9 +32,7 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
       uint32_t refresh_seconds,
       chromeos::DBusMethodCallback<GameMode> callback) override;
 
-  void SetMemoryMarginsBps(uint32_t critical,
-                           uint32_t moderate,
-                           SetMemoryMarginsBpsCallback callback) override;
+  void SetMemoryMargins(MemoryMargins margins) override;
 
   void ReportBrowserProcesses(Component component,
                               const std::vector<Process>& processes) override;
@@ -64,8 +62,11 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   int get_exit_game_mode_count() const { return exit_game_mode_count_; }
 
-  uint32_t get_critical_margin_bps() const { return critical_margin_bps_; }
   uint32_t get_moderate_margin_bps() const { return moderate_margin_bps_; }
+  uint32_t get_critical_margin_bps() const { return critical_margin_bps_; }
+  uint32_t get_critical_protected_margin_bps() const {
+    return critical_protected_margin_bps_;
+  }
 
   std::vector<int32_t> get_ash_background_pids() {
     return ash_background_pids_;
@@ -113,8 +114,9 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   int exit_game_mode_count_ = 0;
 
   uint64_t total_system_memory_kb_ = 1000 * 1000; /* 1 gb */
-  uint32_t critical_margin_bps_ = 520;
   uint32_t moderate_margin_bps_ = 4000;
+  uint32_t critical_margin_bps_ = 520;
+  uint32_t critical_protected_margin_bps_ = 520;
 
   std::vector<int32_t> ash_background_pids_;
   std::vector<int32_t> lacros_background_pids_;

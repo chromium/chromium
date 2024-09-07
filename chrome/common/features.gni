@@ -81,6 +81,7 @@ chrome_grit_defines = [
   "enable_openxr=$enable_openxr",
   "enable_printing=$enable_printing",
   "enable_extensions=$enable_extensions",
+  "enable_extensions_core=$enable_extensions_core",
   "enable_hangout_services_extension=$enable_hangout_services_extension",
   "enable_ink=$enable_ink",
   "enable_pdf_ink2=$enable_pdf_ink2",

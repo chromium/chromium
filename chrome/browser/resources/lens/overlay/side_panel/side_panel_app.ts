@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
+import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 import './side_panel_ghost_loader.js';
 
@@ -102,9 +103,9 @@ export class LensSidePanelAppElement extends PolymerElement {
   override ready() {
     super.ready();
 
-    this.shadowRoot!.querySelector<HTMLElement>('cr-realbox')
+    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
         ?.addEventListener('focusin', () => this.onSearchboxFocusIn_());
-    this.shadowRoot!.querySelector<HTMLElement>('cr-realbox')
+    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
         ?.addEventListener('focusout', () => this.onSearchboxFocusOut_());
   }
 
@@ -156,7 +157,7 @@ export class LensSidePanelAppElement extends PolymerElement {
     this.$.results.src = url.href;
     // Remove focus from the input when results are loaded. Does not have
     // any effect if input is not focused.
-    this.shadowRoot!.querySelector<HTMLElement>('cr-realbox')
+    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
         ?.shadowRoot!.querySelector<HTMLElement>('input')
         ?.blur();
   }

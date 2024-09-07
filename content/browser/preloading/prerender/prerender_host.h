@@ -100,14 +100,25 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   //
   // LINT.IfChange(WaitingForHeadersFinishedReason)
   enum class WaitingForHeadersFinishedReason {
-    kNoVarySearchHeaderReceived = 0,
+    // This is split into kNoVarySearchHeaderReceivedAndMatched,
+    // kNoVarySearchHeaderReceivedButNotMatched, and
+    // kNoVarySearchHeaderReceivedButDefaultValue.
+    // kNoVarySearchHeaderReceived = 0,
+
     kNoVarySearchHeaderNotReceived = 1,
     kNoVarySearchHeaderParseFailed = 2,
     kHostDestroyed = 3,
     kTimeoutElapsed = 4,
     kMaybeNavigationCancelled = 5,
 
-    kMaxValue = kMaybeNavigationCancelled,
+    // Success case. The No-Vary-Search header is received and matches
+    // navigation.
+    kNoVarySearchHeaderReceivedAndMatched = 6,
+
+    kNoVarySearchHeaderReceivedButNotMatched = 7,
+    kNoVarySearchHeaderReceivedButDefaultValue = 8,
+
+    kMaxValue = kNoVarySearchHeaderReceivedButDefaultValue,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderWaitingForHeadersFinishedReason)
 
@@ -165,7 +176,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   // Sets a callback to be called on PrerenderHost creation.
   static void SetHostCreationCallbackForTesting(
-      base::OnceCallback<void(int host_id)> callback);
+      base::OnceCallback<void(FrameTreeNodeId host_id)> callback);
 
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
@@ -189,7 +200,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   void DidStopLoading() override;
   bool IsHidden() override;
   FrameTree* LoadingTree() override;
-  int GetOuterDelegateFrameTreeNodeId() override;
+  FrameTreeNodeId GetOuterDelegateFrameTreeNodeId() override;
   RenderFrameHostImpl* GetProspectiveOuterDocument() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
   FrameTree* GetOwnedPictureInPictureFrameTree() override;
@@ -308,7 +319,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   std::optional<UrlMatchType> IsUrlMatch(const GURL& url) const;
 
   // Returns true if the given `url` might indicate the same destination to the
-  // initial_url based on `no_vary_search_expected`.
+  // initial_url based on `no_vary_search_expected`. Note that this returns
+  // false if the given `url` exactly matches the initial_url, or matches it
+  // with `attributes_.url_match_predicate` or the No-Vary-Search header that is
+  // already received. These cases should be checked by `IsUrlMatch()`.
   bool IsNoVarySearchHintUrlMatch(const GURL& url) const;
 
   // Called when the prerender pages asks the client to change the Accept Client
@@ -338,13 +352,13 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   bool IsBrowserInitiated() { return attributes_.IsBrowserInitiated(); }
 
-  int frame_tree_node_id() const { return frame_tree_node_id_; }
+  FrameTreeNodeId frame_tree_node_id() const { return frame_tree_node_id_; }
 
   base::WeakPtr<WebContents> initiator_web_contents() {
     return attributes_.initiator_web_contents;
   }
 
-  int initiator_frame_tree_node_id() const {
+  FrameTreeNodeId initiator_frame_tree_node_id() const {
     return attributes_.initiator_frame_tree_node_id;
   }
 
@@ -429,7 +443,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // The ID of the root node of the frame tree for the prerendered page `this`
   // is hosting. Since PrerenderHost has 1:1 correspondence with FrameTree,
   // this is also used for the ID of this PrerenderHost.
-  int frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  FrameTreeNodeId frame_tree_node_id_;
 
   std::optional<PrerenderFinalStatus> final_status_;
 

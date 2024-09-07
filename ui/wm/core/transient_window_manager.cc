@@ -174,9 +174,8 @@ void TransientWindowManager::RestackTransientDescendants() {
     if (child_window != window_ &&
         HasTransientAncestor(child_window, window_)) {
       TransientWindowManager* descendant_manager = GetOrCreate(child_window);
-      base::AutoReset<Window*> resetter(
-          &descendant_manager->stacking_target_,
-          window_);
+      base::AutoReset<raw_ptr<Window>> resetter(
+          &descendant_manager->stacking_target_, window_);
       parent->StackChildAbove(child_window, window_);
     }
   }

@@ -16,37 +16,36 @@ found in the LICENSE file.
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
 
-    <style name="FilledButton.Flat.Tonal">
+    <style name="FilledButton.Tonal">
       <item name="buttonColor">?attr/colorPrimaryContainer</item>
       <item name="buttonTextColor">@macro/default_text_color_on_accent1_container</item>
       <item name="verticalInset">@dimen/button_group_button_inset</item>
-      <item name="buttonRaised">false</item>
       <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick.Secondary</item>
       <item name="textAllCaps">false</item>
     </style>
 
-    <style name="FilledButton.Flat.Tonal.SingleButton">
+    <style name="FilledButton.Tonal.SingleButton">
         <item name="rippleCornerRadiusTopStart">@dimen/button_group_large_radius</item>
         <item name="rippleCornerRadiusTopEnd">@dimen/button_group_large_radius</item>
         <item name="rippleCornerRadiusBottomEnd">@dimen/button_group_large_radius</item>
         <item name="rippleCornerRadiusBottomStart">@dimen/button_group_large_radius</item>
     </style>
 
-    <style name="FilledButton.Flat.Tonal.TopButton">
+    <style name="FilledButton.Tonal.TopButton">
         <item name="rippleCornerRadiusTopStart">@dimen/button_group_large_radius</item>
         <item name="rippleCornerRadiusTopEnd">@dimen/button_group_large_radius</item>
         <item name="rippleCornerRadiusBottomEnd">@dimen/button_group_small_radius</item>
         <item name="rippleCornerRadiusBottomStart">@dimen/button_group_small_radius</item>
     </style>
 
-    <style name="FilledButton.Flat.Tonal.MiddleButton">
+    <style name="FilledButton.Tonal.MiddleButton">
         <item name="rippleCornerRadiusTopStart">@dimen/button_group_small_radius</item>
         <item name="rippleCornerRadiusTopEnd">@dimen/button_group_small_radius</item>
         <item name="rippleCornerRadiusBottomEnd">@dimen/button_group_small_radius</item>
         <item name="rippleCornerRadiusBottomStart">@dimen/button_group_small_radius</item>
     </style>
 
-    <style name="FilledButton.Flat.Tonal.BottomButton">
+    <style name="FilledButton.Tonal.BottomButton">
         <item name="rippleCornerRadiusTopStart">@dimen/button_group_small_radius</item>
         <item name="rippleCornerRadiusTopEnd">@dimen/button_group_small_radius</item>
         <item name="rippleCornerRadiusBottomEnd">@dimen/button_group_large_radius</item>
@@ -58,13 +57,13 @@ found in the LICENSE file.
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton" parent="ThemeOverlay.BrowserUI.ModalDialog">
-        <item name="buttonBarPositiveButtonStyle">@style/FilledButton.Flat</item>
+        <item name="buttonBarPositiveButtonStyle">@style/FilledButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/TextButton</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledNegativeButton" parent="ThemeOverlay.BrowserUI.ModalDialog">
         <item name="buttonBarPositiveButtonStyle">@style/TextButton</item>
-        <item name="buttonBarNegativeButtonStyle">@style/FilledButton.Flat</item>
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.Fullscreen" parent="ThemeOverlay.BrowserUI.Fullscreen">
@@ -74,7 +73,7 @@ found in the LICENSE file.
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton.Fullscreen" parent="ThemeOverlay.BrowserUI.Fullscreen">
-        <item name="buttonBarPositiveButtonStyle">@style/FilledButton.Flat</item>
+        <item name="buttonBarPositiveButtonStyle">@style/FilledButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/TextButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
@@ -82,7 +81,7 @@ found in the LICENSE file.
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledNegativeButton.Fullscreen" parent="ThemeOverlay.BrowserUI.Fullscreen">
         <item name="buttonBarPositiveButtonStyle">@style/TextButton</item>
-        <item name="buttonBarNegativeButtonStyle">@style/FilledButton.Flat</item>
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
@@ -118,7 +117,7 @@ found in the LICENSE file.
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton.DialogWhenLarge" parent="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge">
-        <item name="buttonBarPositiveButtonStyle">@style/FilledButton.Flat</item>
+        <item name="buttonBarPositiveButtonStyle">@style/FilledButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/TextButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
@@ -126,7 +125,7 @@ found in the LICENSE file.
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledNegativeButton.DialogWhenLarge" parent="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge">
         <item name="buttonBarPositiveButtonStyle">@style/TextButton</item>
-        <item name="buttonBarNegativeButtonStyle">@style/FilledButton.Flat</item>
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>

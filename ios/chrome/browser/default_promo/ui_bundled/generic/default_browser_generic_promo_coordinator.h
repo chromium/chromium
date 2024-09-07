@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_commands.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_mediator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol PromosManagerUIHandler;
@@ -23,6 +24,9 @@
 // The promos manager ui handler to alert for promo UI changes. Should only be
 // set if this coordinator was a promo presented by the PromosManager.
 @property(nonatomic, weak) id<PromosManagerUIHandler> promosUIHandler;
+
+// The mediator for the generic default browser promo.
+@property(nonatomic, strong) DefaultBrowserGenericPromoMediator* mediator;
 
 @end
 

@@ -26,8 +26,6 @@ namespace {
 
 const char kDiscountsUrlFromServer[] =
     "http://example.com/discounts_from_server";
-const char kDiscountsUrlToCheckInDb[] =
-    "http://example.com/discounts_to_check_in_db";
 const char kDiscountsUrlInDb[] = "http://example.com/discounts_db";
 const char kDiscountLanguageCode[] = "en-US";
 const char kDiscountDetail[] = "details";
@@ -42,7 +40,8 @@ const uint64_t kDiscountOfferId = 123456;
 const char kDeleteUrl1[] = "http://example.com/delete1";
 const char kDeleteUrl2[] = "http://example.com/delete2";
 
-commerce::DiscountsMap MockServerResults(commerce::DiscountClusterType type) {
+std::vector<commerce::DiscountInfo> MockServerResults(
+    commerce::DiscountClusterType type) {
   commerce::DiscountInfo info;
   info.cluster_type = type;
   info.id = kDiscountIdFromServer;
@@ -58,12 +57,7 @@ commerce::DiscountsMap MockServerResults(commerce::DiscountClusterType type) {
     info.offer_id = kDiscountOfferId;
   }
 
-  std::vector<commerce::DiscountInfo> infos;
-  infos.push_back(info);
-
-  commerce::DiscountsMap map;
-  map[GURL(kDiscountsUrlFromServer)] = infos;
-  return map;
+  return {info};
 }
 
 MATCHER(ExpectedServerProto, "") {
@@ -200,12 +194,13 @@ class MockProtoStorage
       (override));
   MOCK_METHOD(void, Destroy, (), (const, override));
 
-  void MockLoadAllResponse(bool succeeded,
+  void MockLoadOneResponse(bool succeeded,
                            bool discount1_expired,
                            bool discount2_expired) {
-    ON_CALL(*this, LoadAllEntries)
+    ON_CALL(*this, LoadOneEntry)
         .WillByDefault(
             [succeeded, discount1_expired, discount2_expired](
+                const std::string& key,
                 SessionProtoStorage<commerce::DiscountsContent>::LoadCallback
                     callback) {
               std::move(callback).Run(
@@ -235,24 +230,23 @@ class DiscountsStorageTest : public testing::Test {
   std::unique_ptr<DiscountsStorage> storage_;
 };
 
-TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoUrlsToCheck) {
+TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NotCheckingDB) {
   EXPECT_CALL(*proto_db_,
               InsertContent(kDiscountsUrlFromServer, ExpectedServerProto(), _));
-  EXPECT_CALL(*proto_db_, LoadAllEntries).Times(0);
+  EXPECT_CALL(*proto_db_, LoadOneEntry).Times(0);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>(),
+      GURL(kDiscountsUrlFromServer),
       MockServerResults(commerce::DiscountClusterType::kOfferLevel),
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-            auto discounts = map.find(GURL(kDiscountsUrlFromServer))->second;
-            ASSERT_EQ(1, (int)discounts.size());
-            ASSERT_EQ(kDiscountIdFromServer, discounts[0].id);
+          [](base::RunLoop* run_loop, const GURL& url,
+             const std::vector<DiscountInfo> results) {
+            ASSERT_EQ(1, (int)results.size());
+            ASSERT_EQ(kDiscountIdFromServer, results[0].id);
 
             run_loop->Quit();
           },
@@ -262,29 +256,22 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoUrlsToCheck) {
   histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 }
 
-TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_FailToLoad) {
-  proto_db_->MockLoadAllResponse(false, false, false);
+TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_DBFailToLoad) {
+  proto_db_->MockLoadOneResponse(false, false, false);
 
-  {
-    InSequence s;
-    EXPECT_CALL(*proto_db_, InsertContent(kDiscountsUrlFromServer,
-                                          ExpectedServerProto(), _));
-    EXPECT_CALL(*proto_db_, LoadAllEntries);
-  }
+  EXPECT_CALL(*proto_db_, LoadOneEntry);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>{kDiscountsUrlToCheckInDb, kDiscountsUrlInDb},
-      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
+      GURL(kDiscountsUrlFromServer), {},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-            auto discounts = map.find(GURL(kDiscountsUrlFromServer))->second;
-            ASSERT_EQ(1, (int)discounts.size());
-            ASSERT_EQ(kDiscountIdFromServer, discounts[0].id);
+          [](base::RunLoop* run_loop, const GURL& url,
+             const std::vector<DiscountInfo> results) {
+            ASSERT_EQ(kDiscountsUrlFromServer, url.spec());
+            ASSERT_EQ(0, (int)results.size());
 
             run_loop->Quit();
           },
@@ -294,64 +281,56 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_FailToLoad) {
   histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 }
 
-TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsUnexpired) {
-  proto_db_->MockLoadAllResponse(true, false, false);
+TEST_F(DiscountsStorageTest,
+       TestHandleServerDiscounts_CheckingDB_AllDiscountsUnexpired) {
+  proto_db_->MockLoadOneResponse(true, false, false);
 
-  {
-    InSequence s;
-    EXPECT_CALL(*proto_db_, InsertContent(kDiscountsUrlFromServer,
-                                          ExpectedServerProto(), _));
-    EXPECT_CALL(*proto_db_, LoadAllEntries);
-    EXPECT_CALL(*proto_db_, InsertContent).Times(0);
-  }
+  EXPECT_CALL(*proto_db_, LoadOneEntry);
+  EXPECT_CALL(*proto_db_, InsertContent).Times(0);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>{kDiscountsUrlToCheckInDb, kDiscountsUrlInDb},
-      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
+      GURL(kDiscountsUrlInDb), {},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(2, (int)map.size());
-            auto discounts = map.find(GURL(kDiscountsUrlInDb))->second;
-            ASSERT_EQ(2, (int)discounts.size());
+          [](base::RunLoop* run_loop, const GURL& url,
+             const std::vector<DiscountInfo> results) {
+            ASSERT_EQ(2, (int)results.size());
 
             ASSERT_EQ(DiscountClusterType::kOfferLevel,
-                      discounts[0].cluster_type);
-            ASSERT_EQ(kDiscountIdInDb1, discounts[0].id);
-            ASSERT_EQ(DiscountType::kFreeListingWithCode, discounts[0].type);
-            ASSERT_EQ(kDiscountLanguageCode, discounts[0].language_code);
-            ASSERT_EQ(kDiscountDetail, discounts[0].description_detail);
-            ASSERT_EQ(kDiscountTerms, discounts[0].terms_and_conditions);
-            ASSERT_EQ(kDiscountValueText, discounts[0].value_in_text);
-            ASSERT_EQ(kDiscountCode, discounts[0].discount_code);
-            ASSERT_EQ(true, discounts[0].is_merchant_wide);
-            ASSERT_EQ(kDiscountOfferId, discounts[0].offer_id);
+                      results[0].cluster_type);
+            ASSERT_EQ(kDiscountIdInDb1, results[0].id);
+            ASSERT_EQ(DiscountType::kFreeListingWithCode, results[0].type);
+            ASSERT_EQ(kDiscountLanguageCode, results[0].language_code);
+            ASSERT_EQ(kDiscountDetail, results[0].description_detail);
+            ASSERT_EQ(kDiscountTerms, results[0].terms_and_conditions);
+            ASSERT_EQ(kDiscountValueText, results[0].value_in_text);
+            ASSERT_EQ(kDiscountCode, results[0].discount_code);
+            ASSERT_EQ(true, results[0].is_merchant_wide);
+            ASSERT_EQ(kDiscountOfferId, results[0].offer_id);
 
-            ASSERT_EQ(kDiscountIdInDb2, discounts[1].id);
-            ASSERT_EQ(std::nullopt, discounts[1].terms_and_conditions);
-            ASSERT_EQ(false, discounts[1].is_merchant_wide);
+            ASSERT_EQ(kDiscountIdInDb2, results[1].id);
+            ASSERT_EQ(std::nullopt, results[1].terms_and_conditions);
+            ASSERT_EQ(false, results[1].is_merchant_wide);
 
             run_loop->Quit();
           },
           &run_loop));
   run_loop.Run();
 
-  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 2);
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 1);
   histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 1, 1);
-  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 3, 1);
 }
 
-TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsExpired) {
-  proto_db_->MockLoadAllResponse(true, true, true);
+TEST_F(DiscountsStorageTest,
+       TestHandleServerDiscounts_CheckingDB_AllDiscountsExpired) {
+  proto_db_->MockLoadOneResponse(true, true, true);
 
   {
     InSequence s;
-    EXPECT_CALL(*proto_db_, InsertContent(kDiscountsUrlFromServer,
-                                          ExpectedServerProto(), _));
-    EXPECT_CALL(*proto_db_, LoadAllEntries);
+    EXPECT_CALL(*proto_db_, LoadOneEntry);
     EXPECT_CALL(*proto_db_, DeleteOneEntry(kDiscountsUrlInDb, _));
   }
 
@@ -360,33 +339,29 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsExpired) {
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>{kDiscountsUrlToCheckInDb, kDiscountsUrlInDb},
-      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
+      GURL(kDiscountsUrlInDb), {},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-            auto discounts = map.find(GURL(kDiscountsUrlFromServer))->second;
-            ASSERT_EQ(1, (int)discounts.size());
-            ASSERT_EQ(kDiscountIdFromServer, discounts[0].id);
+          [](base::RunLoop* run_loop, const GURL& url,
+             const std::vector<DiscountInfo> results) {
+            ASSERT_EQ(kDiscountsUrlInDb, url.spec());
+            ASSERT_EQ(0, (int)results.size());
 
             run_loop->Quit();
           },
           &run_loop));
   run_loop.Run();
 
-  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 2);
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 1);
   histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 2, 1);
-  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 3, 1);
 }
 
-TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_PartDiscountsExpired) {
-  proto_db_->MockLoadAllResponse(true, false, true);
+TEST_F(DiscountsStorageTest,
+       TestHandleServerDiscounts_CheckingDB_PartDiscountsExpired) {
+  proto_db_->MockLoadOneResponse(true, false, true);
 
   {
     InSequence s;
-    EXPECT_CALL(*proto_db_, InsertContent(kDiscountsUrlFromServer,
-                                          ExpectedServerProto(), _));
-    EXPECT_CALL(*proto_db_, LoadAllEntries);
+    EXPECT_CALL(*proto_db_, LoadOneEntry);
     EXPECT_CALL(*proto_db_, InsertContent(kDiscountsUrlInDb, _, _));
   }
 
@@ -395,60 +370,56 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_PartDiscountsExpired) {
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>{kDiscountsUrlToCheckInDb, kDiscountsUrlInDb},
-      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
+      GURL(kDiscountsUrlInDb), {},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(2, (int)map.size());
-            auto discounts = map.find(GURL(kDiscountsUrlInDb))->second;
-            ASSERT_EQ(1, (int)discounts.size());
+          [](base::RunLoop* run_loop, const GURL& url,
+             const std::vector<DiscountInfo> results) {
+            ASSERT_EQ(1, (int)results.size());
 
             ASSERT_EQ(DiscountClusterType::kOfferLevel,
-                      discounts[0].cluster_type);
-            ASSERT_EQ(kDiscountIdInDb1, discounts[0].id);
-            ASSERT_EQ(DiscountType::kFreeListingWithCode, discounts[0].type);
-            ASSERT_EQ(kDiscountLanguageCode, discounts[0].language_code);
-            ASSERT_EQ(kDiscountDetail, discounts[0].description_detail);
-            ASSERT_EQ(kDiscountTerms, discounts[0].terms_and_conditions);
-            ASSERT_EQ(kDiscountValueText, discounts[0].value_in_text);
-            ASSERT_EQ(kDiscountCode, discounts[0].discount_code);
-            ASSERT_EQ(true, discounts[0].is_merchant_wide);
-            ASSERT_EQ(kDiscountOfferId, discounts[0].offer_id);
+                      results[0].cluster_type);
+            ASSERT_EQ(kDiscountIdInDb1, results[0].id);
+            ASSERT_EQ(DiscountType::kFreeListingWithCode, results[0].type);
+            ASSERT_EQ(kDiscountLanguageCode, results[0].language_code);
+            ASSERT_EQ(kDiscountDetail, results[0].description_detail);
+            ASSERT_EQ(kDiscountTerms, results[0].terms_and_conditions);
+            ASSERT_EQ(kDiscountValueText, results[0].value_in_text);
+            ASSERT_EQ(kDiscountCode, results[0].discount_code);
+            ASSERT_EQ(true, results[0].is_merchant_wide);
+            ASSERT_EQ(kDiscountOfferId, results[0].offer_id);
 
             run_loop->Quit();
           },
           &run_loop));
   run_loop.Run();
 
-  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 2);
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 1);
   histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 1, 1);
-  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 3, 1);
 }
 
 TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoDiscountsFound) {
-  proto_db_->MockLoadAllResponse(true, false, false);
+  proto_db_->MockLoadOneResponse(true, false, false);
 
-  {
-    InSequence s;
-    EXPECT_CALL(*proto_db_, InsertContent(kDiscountsUrlFromServer,
-                                          ExpectedServerProto(), _));
-    EXPECT_CALL(*proto_db_, LoadAllEntries);
-    EXPECT_CALL(*proto_db_, InsertContent).Times(0);
-  }
+  EXPECT_CALL(*proto_db_, LoadOneEntry)
+      .WillRepeatedly(
+          [](const std::string& key,
+             SessionProtoStorage<commerce::DiscountsContent>::LoadCallback
+                 callback) {
+            std::move(callback).Run(
+                /*succeeded=*/true, {});
+          });
+  ;
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>{kDiscountsUrlToCheckInDb},
-      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
+      GURL(kDiscountsUrlFromServer), {},
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-            auto discounts = map.find(GURL(kDiscountsUrlFromServer))->second;
-            ASSERT_EQ(1, (int)discounts.size());
-            ASSERT_EQ(kDiscountIdFromServer, discounts[0].id);
+          [](base::RunLoop* run_loop, const GURL& url,
+             const std::vector<DiscountInfo> results) {
+            ASSERT_EQ(0, (int)results.size());
 
             run_loop->Quit();
           },
@@ -457,68 +428,6 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoDiscountsFound) {
 
   histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 1);
   histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 3, 1);
-}
-
-TEST_F(DiscountsStorageTest,
-       TestHandleServerDiscounts_URLWithDiscountUTM_WithMatching) {
-  proto_db_->MockLoadAllResponse(true, false, false);
-  std::string url_with_utm(kDiscountsUrlInDb);
-  url_with_utm = url_with_utm +
-                 "?utm_source=chrome&utm_medium=app&utm_campaign=chrome-"
-                 "history-cluster-with-discount";
-
-  EXPECT_CALL(*proto_db_, InsertContent).Times(0);
-  EXPECT_CALL(*proto_db_, LoadAllEntries);
-
-  base::RunLoop run_loop;
-  storage_->HandleServerDiscounts(
-      std::vector<std::string>{url_with_utm}, {},
-      base::BindOnce(
-          [](base::RunLoop* run_loop, std::string url_with_utm,
-             const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-            auto discounts = map.find(GURL(url_with_utm))->second;
-            ASSERT_EQ(2, (int)discounts.size());
-            ASSERT_EQ(kDiscountIdInDb1, discounts[0].id);
-            ASSERT_EQ(kDiscountIdInDb2, discounts[1].id);
-            run_loop->Quit();
-          },
-          &run_loop, url_with_utm));
-  run_loop.Run();
-}
-
-TEST_F(DiscountsStorageTest,
-       TestHandleServerDiscounts_URLWithDiscountUTM_WithoutMatching) {
-  proto_db_->MockLoadAllResponse(true, false, false);
-  std::string url_with_wrong_utm(kDiscountsUrlInDb);
-  url_with_wrong_utm =
-      url_with_wrong_utm +
-      "?utm_source=test&utm_medium=app&utm_campaign=ramdom-campaign";
-  std::string wrong_url_with_utm(
-      "http://example.com/"
-      "discounts_wrong?utm_source=test&utm_medium=app&utm_campaign=ramdom-"
-      "campaign");
-
-  base::RunLoop run_loop[2];
-  storage_->HandleServerDiscounts(
-      std::vector<std::string>{url_with_wrong_utm}, {},
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(0, (int)map.size());
-            run_loop->Quit();
-          },
-          &run_loop[0]));
-  run_loop[0].Run();
-
-  storage_->HandleServerDiscounts(
-      std::vector<std::string>{wrong_url_with_utm}, {},
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(0, (int)map.size());
-            run_loop->Quit();
-          },
-          &run_loop[1]));
-  run_loop[1].Run();
 }
 
 TEST_F(DiscountsStorageTest,
@@ -531,14 +440,13 @@ TEST_F(DiscountsStorageTest,
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>(),
+      GURL(kDiscountsUrlFromServer),
       MockServerResults(commerce::DiscountClusterType::kPageLevel),
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-            auto discounts = map.find(GURL(kDiscountsUrlFromServer))->second;
-            ASSERT_EQ(1, (int)discounts.size());
-            ASSERT_EQ(kDiscountIdFromServer, discounts[0].id);
+          [](base::RunLoop* run_loop, const GURL& url,
+             const std::vector<DiscountInfo> results) {
+            ASSERT_EQ(1, (int)results.size());
+            ASSERT_EQ(kDiscountIdFromServer, results[0].id);
 
             run_loop->Quit();
           },
@@ -556,13 +464,12 @@ TEST_F(DiscountsStorageTest,
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>(),
+      GURL(kDiscountsUrlFromServer),
       MockServerResults(commerce::DiscountClusterType::kPageLevel),
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-            auto discounts = map.find(GURL(kDiscountsUrlFromServer))->second;
-            ASSERT_EQ(0, (int)discounts.size());
+          [](base::RunLoop* run_loop, const GURL& url,
+             const std::vector<DiscountInfo> results) {
+            ASSERT_EQ(0, (int)results.size());
 
             run_loop->Quit();
           },

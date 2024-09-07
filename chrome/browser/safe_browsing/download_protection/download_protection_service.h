@@ -281,7 +281,7 @@ class DownloadProtectionService {
   friend class DeepScanningRequest;
   friend class DownloadRequestMaker;
 
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
+  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceMockTimeTest,
                            TestDownloadRequestTimeout);
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            PPAPIDownloadRequest_InvalidResponse);

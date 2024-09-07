@@ -468,10 +468,8 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
   const ui::ColorId disabled_icon_color_id =
       is_pinned ? kColorExtensionMenuPinButtonIconDisabled
                 : kColorExtensionMenuIconDisabled;
-  SetButtonIconWithColor(
-      pin_button_,
-      is_pinned ? kKeepPinFilledChromeRefreshIcon : kKeepPinChromeRefreshIcon,
-      icon_color_id, disabled_icon_color_id);
+  SetButtonIconWithColor(pin_button_, is_pinned ? kKeepFilledIcon : kKeepIcon,
+                         icon_color_id, disabled_icon_color_id);
 }
 
 void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
@@ -487,10 +485,10 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
   // pinned in the toolbar. All other states should look, and behave, the same.
   context_menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      is_action_pinned ? ui::ImageModel::FromVectorIcon(
-                             kKeepPinChromeRefreshIcon,
-                             kColorExtensionMenuPinButtonIcon, icon_size)
-                       : three_dot_icon);
+      is_action_pinned
+          ? ui::ImageModel::FromVectorIcon(
+                kKeepIcon, kColorExtensionMenuPinButtonIcon, icon_size)
+          : three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
                                       three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,

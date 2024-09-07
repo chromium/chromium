@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/window_state.h"
@@ -51,6 +53,7 @@ class PipDoubleTapHandlerTest : public AshTestBase,
     auto window = AshTestBase::CreateAppWindow(
         bounds, chromeos::AppType::SYSTEM_APP, kShellWindowId_DeskContainerA,
         new TestWidgetDelegateAsh);
+    Shell::Get()->pip_controller()->SetPipWindow(window.get());
 
     auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
         NonClientFrameViewAsh::Get(window.get()));

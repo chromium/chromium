@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import base64
+from email.message import EmailMessage
 import os
 from typing import Any
 import unittest
@@ -92,7 +93,8 @@ mode type hash bar_tests.txt"""
     """Tests that getting a non-200 status code back results in a failure."""
 
     def SideEffect(_: Any) -> None:
-      raise urllib.error.HTTPError('url', 404, 'No exist :(', {}, None)
+      raise urllib.error.HTTPError('url', 404, 'No exist :(', EmailMessage(),
+                                   None)
 
     self._get_mock.side_effect = SideEffect
     with self.assertRaises(urllib.error.HTTPError):

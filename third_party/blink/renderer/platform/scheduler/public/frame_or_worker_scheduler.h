@@ -88,6 +88,7 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     }
 
     SchedulingPolicy GetPolicy() const;
+    SchedulingPolicy::Feature GetFeature() const;
 
     const FeatureAndJSLocationBlockingBFCache&
     GetFeatureAndJSLocationBlockingBFCache() const;

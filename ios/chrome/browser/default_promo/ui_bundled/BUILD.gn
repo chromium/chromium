@@ -85,7 +85,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",

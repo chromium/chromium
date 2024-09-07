@@ -7,6 +7,7 @@
 #import <optional>
 #import <utility>
 
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/singleton.h"
@@ -24,9 +25,11 @@
 #import "components/sync_device_info/device_info_sync_client.h"
 #import "components/sync_device_info/device_info_sync_service_impl.h"
 #import "components/sync_device_info/local_device_info_provider_impl.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
@@ -61,14 +64,20 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   // syncer::DeviceInfoSyncClient:
   sync_pb::SyncEnums_SendTabReceivingType GetSendTabToSelfReceivingType()
       const override {
-    // TODO(crbug.com/343495515): Check if push notifications are enabled on
-    // device.
-    return base::FeatureList::IsEnabled(
-               send_tab_to_self::kSendTabToSelfIOSPushNotifications)
-               ? sync_pb::
-                     SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION
-               : sync_pb::
-                     SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED;
+    std::string gaia_id =
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia;
+    bool send_tab_notifications_enabled = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kSendTab, gaia_id);
+    if (base::FeatureList::IsEnabled(
+            send_tab_to_self::kSendTabToSelfIOSPushNotifications) &&
+        send_tab_notifications_enabled) {
+      return sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION;
+    }
+    return sync_pb::
+        SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED;
   }
 
   // syncer::DeviceInfoSyncClient:
@@ -151,11 +160,8 @@ DeviceInfoSyncServiceFactory* DeviceInfoSyncServiceFactory::GetInstance() {
 void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
     std::vector<const syncer::DeviceInfoTracker*>* trackers) {
   DCHECK(trackers);
-  std::vector<ChromeBrowserState*> browser_state_list =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browser_state : browser_state_list) {
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     syncer::DeviceInfoSyncService* service =
         DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
     if (service != nullptr) {
@@ -188,7 +194,7 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
   syncer::SyncInvalidationsService* const sync_invalidations_service =
       SyncInvalidationsServiceFactory::GetForBrowserState(browser_state);
   signin::IdentityManager* const identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   auto device_info_sync_client = std::make_unique<DeviceInfoSyncClient>(
       browser_state->GetPrefs(), sync_invalidations_service, identity_manager);
   auto local_device_info_provider =

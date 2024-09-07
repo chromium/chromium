@@ -85,7 +85,13 @@ base::CommandLine::StringVector
 JsInProcessFuzzer::GetChromiumCommandLineArguments() {
   return {
       FILE_PATH_LITERAL("--js-flags='--jit-fuzzing --allow-natives-syntax "
-                        "--expose-gc --fuzzing --future --harmony'")};
+                        "--expose-gc --fuzzing --future --harmony'"),
+#if BUILDFLAG(IS_FUZZILLI)
+      // This was caused by some issues with disks filling up fast, because
+      // Fuzzilli restarts the binary very frequently.
+      FILE_PATH_LITERAL("--user-data-dir=/tmp/fuzzilli_tmp"),
+#endif
+  };
 }
 
 int JsInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {

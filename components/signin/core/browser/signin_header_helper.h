@@ -129,6 +129,9 @@ struct DiceResponseParams {
     // Whether Dice response contains the 'no_authorization_code' header value.
     // If true then LSO was unavailable for provision of auth code.
     bool no_authorization_code = false;
+    // If the account is eligible for token binding, this string is non-empty
+    // and contains a list of supported binding algorithms separated by space.
+    std::string supported_algorithms_for_token_binding;
   };
 
   // Parameters for the SIGNOUT action.

@@ -6,11 +6,11 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/browser_state/model/constants.h"
+#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
@@ -38,21 +38,9 @@ ChromeAccountManagerServiceFactory::~ChromeAccountManagerServiceFactory() =
 std::unique_ptr<KeyedService>
 ChromeAccountManagerServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  size_t profile_index = 0;
   ChromeBrowserState* chrome_browser_state =
       static_cast<ChromeBrowserState*>(context);
-  if (experimental_flags::DisplaySwitchProfile().has_value()) {
-    // When the multiple profile featuer is enabled, the default profile should
-    // list only non managed identities. And other profiles should list only
-    // managed identities.
-    // TODO(crbug.com/331783685): Need a better implementation to avoid using
-    // the profile name and a better mapping account<->profile mapping.
-    ChromeBrowserStateManager* manager =
-        GetApplicationContext()->GetChromeBrowserStateManager();
-    BrowserStateInfoCache* info_cache = manager->GetBrowserStateInfoCache();
-    std::string profile_name = chrome_browser_state->GetBrowserStateName();
-    profile_index = info_cache->GetIndexOfBrowserStateWithName(profile_name);
-  }
   return std::make_unique<ChromeAccountManagerService>(
-      GetApplicationContext()->GetLocalState(), profile_index);
+      GetApplicationContext()->GetLocalState(),
+      chrome_browser_state->GetProfileName());
 }

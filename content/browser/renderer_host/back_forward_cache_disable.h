@@ -43,6 +43,9 @@ class CONTENT_EXPORT BackForwardCacheDisable {
     // when the page is served from bfcache.
     kScreenReader = 13,
 
+    // Documents that are cleared for discard should not be BFCached.
+    kDiscarded = 14,
+
     // New reasons should be accompanied by a comment as to why BackForwardCache
     // cannot be used in this case and a link to a bug to fix that if it is
     // fixable.

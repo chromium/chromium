@@ -6,6 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -88,9 +89,10 @@ suite('UpdateContentSelection', () => {
     ],
   };
 
-  function setSelection(selection: Object, contentNodes: number[]) {
+  async function setSelection(selection: Object, contentNodes: number[]) {
     const selectedTree = Object.assign({selection: selection}, axTree);
     chrome.readingMode.setContentForTesting(selectedTree, contentNodes);
+    return microtasksFinished();
   }
 
   setup(() => {
@@ -110,7 +112,7 @@ suite('UpdateContentSelection', () => {
   test('forward selection inside distilled content', async () => {
     const expected = '<div><p>Hello</p><p>World</p><p>Friend!' +
         '<a>You\'ve Got a Friend in Me</a></p></div>';
-    setSelection(
+    await setSelection(
         {
           anchor_object_id: 5,
           focus_object_id: 7,
@@ -129,10 +131,10 @@ suite('UpdateContentSelection', () => {
     assertEquals(2, selection.focusOffset);
   });
 
-  test('selection completely outside distilled content', () => {
+  test('selection completely outside distilled content', async () => {
     const expected = '<div><p>World</p><p>Friend!' +
         '<a>You\'ve Got a Friend in Me</a></p></div>';
-    setSelection(
+    await setSelection(
         {
           anchor_object_id: 5,
           focus_object_id: 7,
@@ -151,10 +153,10 @@ suite('UpdateContentSelection', () => {
     assertEquals(2, selection.focusOffset);
   });
 
-  test('selection partially outside distilled content', () => {
+  test('selection partially outside distilled content', async () => {
     const expected = '<div><p>Hello</p><p>World</p><p>Friend!' +
         '<a>You\'ve Got a Friend in Me</a></p></div>';
-    setSelection(
+    await setSelection(
         {
           anchor_object_id: 3,
           focus_object_id: 7,
@@ -173,10 +175,10 @@ suite('UpdateContentSelection', () => {
     assertEquals(2, selection.focusOffset);
   });
 
-  test('backward selection inside distilled content', () => {
+  test('backward selection inside distilled content', async () => {
     const expected = '<div><p>Hello</p><p>World</p><p>Friend!' +
         '<a>You\'ve Got a Friend in Me</a></p></div>';
-    setSelection(
+    await setSelection(
         {
           anchor_object_id: 7,
           focus_object_id: 3,
@@ -195,8 +197,8 @@ suite('UpdateContentSelection', () => {
     assertEquals(2, selection.focusOffset);
   });
 
-  test('forward selection with inline text', () => {
-    setSelection(
+  test('forward selection with inline text', async () => {
+    await setSelection(
         {
           anchor_object_id: inlineId,
           focus_object_id: inlineId,
@@ -214,8 +216,8 @@ suite('UpdateContentSelection', () => {
     assertEquals(10, selection.focusOffset);
   });
 
-  test('backward selection with inline text', () => {
-    setSelection(
+  test('backward selection with inline text', async () => {
+    await setSelection(
         {
           anchor_object_id: inlineId,
           focus_object_id: inlineId,

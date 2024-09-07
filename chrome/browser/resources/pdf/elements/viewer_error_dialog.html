@@ -1,9 +1,0 @@
-<cr-dialog id="dialog" no-cancel show-on-attach>
-  <div slot="title">$i18n{errorDialogTitle}</div>
-  <div slot="body">$i18n{pageLoadFailed}</div>
-  <div slot="button-container" ?hidden="${!this.reloadFn}">
-    <cr-button class="action-button" @click="${this.onReload_}">
-      $i18n{pageReload}
-    </cr-button>
-  </div>
-</cr-dialog>

@@ -76,6 +76,8 @@ class FrameNodeImpl
   void SetIsAdFrame(bool is_ad_frame) override;
   void SetHadFormInteraction() override;
   void SetHadUserEdits() override;
+  void OnStartedUsingWebRTC() override;
+  void OnStoppedUsingWebRTC() override;
   void OnNonPersistentNotificationCreated() override;
   void OnFirstContentfulPaint(
       base::TimeDelta time_since_navigation_start) override;
@@ -99,6 +101,7 @@ class FrameNodeImpl
   bool IsAdFrame() const override;
   bool IsHoldingWebLock() const override;
   bool IsHoldingIndexedDBLock() const override;
+  bool UsesWebRTC() const override;
   bool HadUserActivation() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
@@ -126,7 +129,11 @@ class FrameNodeImpl
   NodeSetView<WorkerNodeImpl*> child_worker_nodes() const;
 
   // Setters are not thread safe.
-  void SetIsCurrent(bool is_current);
+  // Updates the IsCurrent() property on both `previous_frame_node` and
+  // `current_frame_node` and sends a single notification to FrameNodeObservers.
+  static void UpdateCurrentFrame(FrameNodeImpl* previous_frame_node,
+                                 FrameNodeImpl* current_frame_node,
+                                 GraphImpl* graph);
   void SetHadUserActivation();
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
@@ -140,7 +147,10 @@ class FrameNodeImpl
   void SetPrivateFootprintKbEstimate(uint64_t private_footprint_estimate);
 
   // Invoked when a navigation is committed in the frame.
-  void OnNavigationCommitted(GURL url, url::Origin origin, bool same_document);
+  void OnNavigationCommitted(GURL url,
+                             url::Origin origin,
+                             bool same_document,
+                             bool is_served_from_back_forward_cache);
 
   // Invoked by |worker_node| when it starts/stops being a child of this frame.
   void AddChildWorker(WorkerNodeImpl* worker_node);
@@ -224,6 +234,12 @@ class FrameNodeImpl
     ObservedProperty::
         NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnHadUserEditsChanged>
             had_user_edits{false};
+
+    // Whether the document uses WebRTC.
+    ObservedProperty::NotifiesOnlyOnChanges<
+        bool,
+        &FrameNodeObserver::OnFrameUsesWebRTCChanged>
+        uses_web_rtc{false};
   };
 
   // Invoked by subframes on joining/leaving the graph.
@@ -250,6 +266,10 @@ class FrameNodeImpl
   bool HasFrameNodeInAncestors(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInTree(FrameNodeImpl* frame_node) const;
+
+  // Sets the `is_current_` property. Returns true if its value changed as a
+  // result of this call.
+  bool SetIsCurrent(bool is_current);
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
@@ -321,9 +341,7 @@ class FrameNodeImpl
       &FrameNodeObserver::OnFrameIsHoldingIndexedDBLockChanged>
       is_holding_indexeddb_lock_{false};
 
-  ObservedProperty::
-      NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsCurrentChanged>
-          is_current_{false};
+  bool is_current_{false};
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.

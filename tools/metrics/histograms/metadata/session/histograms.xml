@@ -885,7 +885,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{HistorySyncState}" units="ms"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -924,7 +924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{MsbbState}" units="ms"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -958,7 +958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalNewDefaultSearchEngineCount" units="count"
-    expires_after="2024-11-27">
+    expires_after="2025-02-16">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -983,37 +983,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Session.WebState.CustomWebViewSerializedSize" units="KB"
-    expires_after="2024-10-08">
-  <owner>justincohen@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
-  <summary>
-    The size of the data used to persist each WKWebView's serialized session
-    history. It's recorded every time the WKWebView is serialized, which happens
-    on page loads, tab changes and app backgrounding.
-  </summary>
-</histogram>
-
 <histogram name="Session.WebStates.AllSerializedCertPolicyCachesSize"
-    units="KB" expires_after="2024-10-08">
+    units="KB" expires_after="2025-10-08">
   <owner>ajuma@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
     The size of all cert policy caches for all open tabs. Recorded when
     SessionServiceIOS encodes the data, which happens on page loads, tab changes
     and app backgrounding.
-  </summary>
-</histogram>
-
-<histogram name="Session.WebStates.ArchivedDataWithRootObjectTime" units="ms"
-    expires_after="2024-10-08">
-  <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    The time needed to convert iOS session webState data into something that can
-    be written to a file. It's recorded every time the file is written to
-    storage, which happens on page loads, tab changes and app backgrounding. The
-    time does not include the file writing.
   </summary>
 </histogram>
 
@@ -1121,17 +1098,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The size of a single cert policy cache for one tab. Recorded when
     CRWNavigationItemStorage encodes the data, which happens on page loads, tab
-    changes and app backgrounding.
-  </summary>
-</histogram>
-
-<histogram name="Session.WebStates.SerializedSize" units="KB"
-    expires_after="2024-10-08">
-  <owner>justincohen@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The size of the file used to persist iOS session history. It's recorded
-    every time the file is written to storage, which happens on page loads, tab
     changes and app backgrounding.
   </summary>
 </histogram>

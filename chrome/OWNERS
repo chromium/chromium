@@ -1,10 +1,17 @@
 # This OWNERS list is a last resort. Please prefer to use more specific OWNERS
 # where possible.
+# Anyone can apply to join //chrome/OWNERS. We expect:
+#  * Landed >300 CLs and reviewed >500 CLs spanning many directories in //chrome
+#  * Be an OWNER of at least 3 subdirectories of //chrome.
+# Please email current OWNERS.
 
 set noparent
 
 # Reviewers in JST (GMT+9)
 erikchen@chromium.org
+
+# Reviewers in GMT+0
+victorvianna@google.com
 
 # Reviewers in CET (GMT+1)
 alexilin@chromium.org

@@ -71,7 +71,7 @@ using PriceNotificationItems =
 // The service responsible for managing bookmarks.
 @property(nonatomic, readonly) bookmarks::BookmarkModel* bookmarkModel;
 // The current browser state's webstate.
-@property(nonatomic, assign) web::WebState* webState;
+@property(nonatomic, assign) base::WeakPtr<web::WebState> webState;
 // The product data for the product contained on the site the user is currently
 // viewing.
 @property(nonatomic, assign) std::optional<commerce::ProductInfo>
@@ -89,7 +89,7 @@ using PriceNotificationItems =
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
-                   webState:(web::WebState*)webState
+                   webState:(base::WeakPtr<web::WebState>)webState
     pushNotificationService:(PushNotificationService*)pushNotificationService {
   self = [super init];
   if (self) {
@@ -199,14 +199,16 @@ using PriceNotificationItems =
 }
 
 - (void)priceInsightsTrackItem:(PriceInsightsItem*)item
-          notificationsGranted:(BOOL)granted {
+          notificationsGranted:(BOOL)granted
+                showCompletion:(BOOL)showCompletion {
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
   [self trackForURL:item.productURL
                   title:item.title
       completionHandler:^(bool success) {
         [weakSelf onPriceInsightsTrackItem:item
                                    success:success
-                         permissionGranted:granted];
+                         permissionGranted:granted
+                            showCompletion:showCompletion];
       }];
 }
 
@@ -621,13 +623,14 @@ using PriceNotificationItems =
                                    promptShown:(BOOL)promptShown
                                          error:(NSError*)error {
   if (error) {
-    [self priceInsightsTrackItem:item notificationsGranted:false];
+    [self priceInsightsTrackItem:item
+            notificationsGranted:false
+                  showCompletion:true];
     return;
   }
 
   if (!promptShown && !granted) {
-    [self.priceInsightsConsumer
-        presentPushNotificationPermissionAlertForItem:item];
+    [self.priceInsightsConsumer presentPushNotificationPermissionAlert];
     return;
   }
 
@@ -636,20 +639,24 @@ using PriceNotificationItems =
         self.gaiaID, PushNotificationClientId::kCommerce, true);
   }
 
-  [self priceInsightsTrackItem:item notificationsGranted:granted];
+  [self priceInsightsTrackItem:item
+          notificationsGranted:granted
+                showCompletion:true];
 }
 
 // Callback invoked after requesting to track an item.
 - (void)onPriceInsightsTrackItem:(PriceInsightsItem*)item
                          success:(BOOL)success
-               permissionGranted:(BOOL)granted {
+               permissionGranted:(BOOL)granted
+                  showCompletion:(BOOL)showCompletion {
   if (!success) {
-    [self.priceInsightsConsumer
-        presentStartPriceTrackingErrorAlertForItem:item];
+    [self.priceInsightsConsumer presentStartPriceTrackingErrorAlert];
     return;
   }
 
-  [self.priceInsightsConsumer didStartPriceTrackingWithNotification:granted];
+  [self.priceInsightsConsumer
+      didStartPriceTrackingWithNotification:granted
+                             showCompletion:showCompletion];
 
   [self recordProductStatusFromSource:PriceNotificationTrackingSource::
                                           kPriceInsights
@@ -660,7 +667,7 @@ using PriceNotificationItems =
 - (void)onPriceInsightsStopTrackingItem:(PriceInsightsItem*)item
                                 success:(BOOL)success {
   if (!success) {
-    [self.priceInsightsConsumer presentStopPriceTrackingErrorAlertForItem:item];
+    [self.priceInsightsConsumer presentStopPriceTrackingErrorAlert];
     return;
   }
 

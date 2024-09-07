@@ -96,6 +96,12 @@ class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
       : SupervisedUserServiceTestBase(/*is_supervised=*/true) {}
 };
 
+// Tests that web approvals are enabled for supervised users.
+TEST_F(SupervisedUserServiceTest, ApprovalRequestsEnabled) {
+  ASSERT_TRUE(
+      service_->remote_web_approvals_manager().AreApprovalRequestsEnabled());
+}
+
 // Tests that restricting all site navigation is applied to supervised users.
 TEST_F(SupervisedUserServiceTest, UrlIsBlockedForUser) {
   // Set "only allow certain sites" filter.
@@ -281,6 +287,12 @@ class SupervisedUserServiceTestUnsupervised
   SupervisedUserServiceTestUnsupervised()
       : SupervisedUserServiceTestBase(/*is_supervised=*/false) {}
 };
+
+// Tests that web approvals are not enabled for unsupervised users.
+TEST_F(SupervisedUserServiceTestUnsupervised, ApprovalRequestsDisabled) {
+  ASSERT_FALSE(
+      service_->remote_web_approvals_manager().AreApprovalRequestsEnabled());
+}
 
 // Tests that supervision restrictions do not apply to unsupervised users.
 TEST_F(SupervisedUserServiceTestUnsupervised, UrlIsAllowedForUser) {

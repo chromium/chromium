@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
@@ -43,7 +43,7 @@ void ShowExtensionInstallBlockedDialog(
     dialog_builder.AddParagraph(ui::DialogModelLabel(custom_error_message));
   }
 
-  constrained_window::ShowWebModal(dialog_builder.Build(), web_contents);
+  chrome::ShowTabModal(dialog_builder.Build(), web_contents);
 }
 
 }  // namespace extensions

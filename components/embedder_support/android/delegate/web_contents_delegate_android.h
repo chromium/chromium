@@ -44,7 +44,8 @@ enum WebContentsDelegateLogLevel {
 // as required.
 class WebContentsDelegateAndroid : public content::WebContentsDelegate {
  public:
-  WebContentsDelegateAndroid(JNIEnv* env, jobject obj);
+  WebContentsDelegateAndroid(JNIEnv* env,
+                             const jni_zero::JavaRef<jobject>& obj);
   ~WebContentsDelegateAndroid() override;
 
   // Overridden from WebContentsDelegate:
@@ -128,6 +129,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   // empty bitmap if the capture fails) only if this returns true.
   bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback) override;
+  SkBitmap MaybeCopyContentAreaAsBitmapSync() override;
   void DidBackForwardTransitionAnimationChange() override;
   content::BackForwardTransitionAnimationManager::FallbackUXConfig
   GetBackForwardTransitionFallbackUXConfig() override;

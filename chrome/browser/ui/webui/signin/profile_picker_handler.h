@@ -131,11 +131,12 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnProfileCreationFinished(bool finished_successfully);
   void PushProfilesList();
   base::Value::List GetProfilesList();
-  // Adds a profile with `profile_path` to `profiles_order_`.
-  void AddProfileToList(const base::FilePath& profile_path);
-  // Removes a profile with `profile_path` from `profiles_order_`. Returns
-  // true if the profile was found and removed. Otherwise, returns false.
-  bool RemoveProfileFromList(const base::FilePath& profile_path);
+  // Adds a profile with `profile_path` to `profiles_order_` and notifies
+  // the JS listeners on ui updates.
+  void AddProfileToListAndPushUpdates(const base::FilePath& profile_path);
+  // Removes a profile with `profile_path` from `profiles_order_` and notifies
+  // the JS listeners on ui updates.
+  void RemoveProfileFromListAndPushUpdates(const base::FilePath& profile_path);
 
   // ProfileAttributesStorage::Observer:
   void OnProfileAdded(const base::FilePath& profile_path) override;
@@ -148,6 +149,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnProfileNameChanged(const base::FilePath& profile_path,
                             const std::u16string& old_profile_name) override;
   void OnProfileHostedDomainChanged(
+      const base::FilePath& profile_path) override;
+  void OnProfileSupervisedUserIdChanged(
       const base::FilePath& profile_path) override;
 
   // content::WebContentsObserver:
@@ -170,6 +173,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void DisplayForceSigninErrorDialog(const base::FilePath& profile_path,
                                      const std::string& email,
                                      ReauthUIError error);
+
+  // Updates if guest mode is available following a profile addition, removal,
+  // or changed supervision status.
+  void MaybeUpdateGuestMode();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // GaiaId as input string.

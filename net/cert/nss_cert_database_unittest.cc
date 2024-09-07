@@ -855,7 +855,7 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
-          /*instance_params=*/{}));
+          /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(x509_found_server_cert.get(), "127.0.0.1",
@@ -897,7 +897,7 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
-          /*instance_params=*/{}));
+          /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(x509_puny_cert.get(), "xn--wgv71a119e.com",
@@ -940,7 +940,7 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned_Trusted) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
-          /*instance_params=*/{}));
+          /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(x509_puny_cert.get(), "xn--wgv71a119e.com",
@@ -988,7 +988,7 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
-          /*instance_params=*/{}));
+          /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(x509_server_cert.get(), "127.0.0.1",
@@ -1035,7 +1035,7 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert_DistrustServer) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
-          /*instance_params=*/{}));
+          /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(x509_server_cert.get(), "127.0.0.1",
@@ -1098,7 +1098,7 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
-          /*instance_params=*/{}));
+          /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(x509_server_cert.get(), "www.example.com",
@@ -1168,7 +1168,7 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa2) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
-          /*instance_params=*/{}));
+          /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(x509_server_cert.get(), "www.example.com",
@@ -1236,7 +1236,7 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa3) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
-          /*instance_params=*/{}));
+          /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(x509_server_cert.get(), "www.example.com",
@@ -1304,7 +1304,7 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa4) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
-          /*instance_params=*/{}));
+          /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(x509_server_cert.get(), "www.example.com",

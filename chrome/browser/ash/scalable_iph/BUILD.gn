@@ -43,7 +43,6 @@ static_library("scalable_iph") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chromeos/ash/components/scalable_iph:buildflags",
@@ -95,10 +94,10 @@ static_library("test_support") {
     ":scalable_iph",
     "//ash/constants",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/ui",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/scalable_iph:constants",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/services/network_config:in_process_instance",
@@ -111,11 +110,14 @@ static_library("test_support") {
 
 source_set("browser_tests") {
   testonly = true
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
   sources = [
     "scalable_iph_browsertest.cc",
     "scalable_iph_e2e_browsertest.cc",
   ]
+
   deps = [
     ":scalable_iph",
     ":test_support",
@@ -127,7 +129,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/ui",

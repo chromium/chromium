@@ -47,8 +47,8 @@ namespace content {
 
 namespace {
 
-base::OnceCallback<void(int)>& GetHostCreationCallbackForTesting() {
-  static base::NoDestructor<base::OnceCallback<void(int)>>
+base::OnceCallback<void(FrameTreeNodeId)>& GetHostCreationCallbackForTesting() {
+  static base::NoDestructor<base::OnceCallback<void(FrameTreeNodeId)>>
       host_creation_callback_for_testing;
   return *host_creation_callback_for_testing;
 }
@@ -127,7 +127,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
 
 // static
 void PrerenderHost::SetHostCreationCallbackForTesting(
-    base::OnceCallback<void(int host_id)> callback) {
+    base::OnceCallback<void(FrameTreeNodeId host_id)> callback) {
   GetHostCreationCallbackForTesting() = std::move(callback);  // IN-TEST
 }
 
@@ -163,16 +163,14 @@ PrerenderHost::PrerenderHost(
     CHECK_EQ(attributes.initiator_process_id,
              ChildProcessHost::kInvalidUniqueID);
     CHECK_EQ(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
-    CHECK_EQ(attributes.initiator_frame_tree_node_id,
-             RenderFrameHost::kNoFrameTreeNodeId);
+    CHECK(attributes.initiator_frame_tree_node_id.is_null());
   } else {
     CHECK(attributes.initiator_origin.has_value());
     CHECK(attributes.initiator_frame_token.has_value());
     CHECK_NE(attributes.initiator_process_id,
              ChildProcessHost::kInvalidUniqueID);
     CHECK_NE(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
-    CHECK_NE(attributes.initiator_frame_tree_node_id,
-             RenderFrameHost::kNoFrameTreeNodeId);
+    CHECK(attributes.initiator_frame_tree_node_id);
   }
 
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kTriggeredButPending);
@@ -339,13 +337,13 @@ FrameTree* PrerenderHost::GetPictureInPictureOpenerFrameTree() {
   return nullptr;
 }
 
-int PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
+FrameTreeNodeId PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
   // A prerendered FrameTree is not "inner to" or "nested inside" another
   // FrameTree; it exists in parallel to the primary FrameTree of the current
   // WebContents. Therefore, it must not attempt to access the primary
   // FrameTree in the sense of an "outer delegate" relationship, so we return
   // the invalid ID here.
-  return FrameTreeNode::kFrameTreeNodeInvalidId;
+  return FrameTreeNodeId();
 }
 
 RenderFrameHostImpl* PrerenderHost::GetProspectiveOuterDocument() {
@@ -1253,6 +1251,10 @@ bool PrerenderHost::IsNoVarySearchHintUrlMatch(const GURL& url) const {
   // if we know for sure url is a match. This is a "potential"
   // match depending on the No-Vary-Search header that will be received.
   if (attributes_.url_match_predicate) {
+    return false;
+  }
+  // The same as above. We also don't care about the exact match.
+  if (GetInitialUrl() == url) {
     return false;
   }
 

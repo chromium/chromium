@@ -100,12 +100,23 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       shared_storage_writable_opted_in_(false),
       shared_storage_writable_eligible_(false),
       allow_stale_response_(false),
-      cache_mode_(mojom::blink::FetchCacheMode::kDefault),
       skip_service_worker_(false),
       download_to_cache_only_(false),
       site_for_cookies_set_(false),
       is_form_submission_(false),
       priority_incremental_(net::kDefaultPriorityIncremental),
+      is_ad_resource_(false),
+      upgrade_if_insecure_(false),
+      is_revalidating_(false),
+      is_automatic_upgrade_(false),
+      is_from_origin_dirty_style_sheet_(false),
+      is_fetch_like_api_(false),
+      is_fetch_later_api_(false),
+      is_favicon_(false),
+      prefetch_maybe_for_top_level_navigation_(false),
+      shared_dictionary_writer_enabled_(false),
+      requires_upgrade_for_loader_(false),
+      cache_mode_(mojom::blink::FetchCacheMode::kDefault),
       initial_priority_(ResourceLoadPriority::kUnresolved),
       priority_(ResourceLoadPriority::kUnresolved),
       intra_priority_value_(0),
@@ -246,6 +257,12 @@ const KURL& ResourceRequestHead::Url() const {
 }
 
 void ResourceRequestHead::SetUrl(const KURL& url) {
+  // Loading consists of a number of phases. After cache lookup the url should
+  // not change (otherwise checks would not be valid). This DCHECK verifies
+  // that.
+#if DCHECK_IS_ON()
+  DCHECK(is_set_url_allowed_);
+#endif
   url_ = url;
 }
 

@@ -19,6 +19,7 @@ static_library("crostini_installer") {
 
   deps = [
     ":mojo_bindings",
+    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources",
@@ -26,7 +27,7 @@ static_library("crostini_installer") {
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//chromeos/ash/components/dbus/spaced",
     "//components/strings:components_strings",

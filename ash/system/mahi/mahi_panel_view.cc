@@ -5,15 +5,21 @@
 #include "ash/system/mahi/mahi_panel_view.h"
 
 #include <climits>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/url_constants.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
@@ -21,12 +27,12 @@
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_content_source_button.h"
 #include "ash/system/mahi/mahi_error_status_view.h"
-#include "ash/system/mahi/mahi_panel_drag_controller.h"
 #include "ash/system/mahi/mahi_question_answer_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "ash/system/mahi/summary_outlines_section.h"
 #include "ash/utility/arc_curve_path_util.h"
+#include "ash/wm/system_panel_view.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
@@ -36,6 +42,7 @@
 #include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -60,6 +67,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -148,6 +156,16 @@ void InstallTextfieldFocusRing(views::View* question_textfield,
 }
 
 // FeedbackButton --------------------------------------------------------------
+
+// Check pref to see if we should show the feedback buttons in the panel.
+bool ShouldShowFeedbackButton() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  // PrefService might be null in tests. In that case the feedback buttons
+  // should be shown by default.
+  return prefs ? prefs->GetBoolean(prefs::kHmrFeedbackAllowed) : true;
+}
 
 // Types of feedback button.
 enum class FeedbackType {
@@ -399,11 +417,15 @@ class MahiScrollView : public views::ScrollView,
     SetDrawOverflowIndicator(false);
     auto scroll_bar = std::make_unique<RoundedScrollBar>(
         RoundedScrollBar::Orientation::kVertical);
-    // Prevent the scroll bar from overlapping with any rounded corners or
-    // extending into the cutout region.
-    scroll_bar->SetInsets(gfx::Insets::TLBR(kContentScrollViewCornerRadius, 0,
-                                            kCutoutHeight + kCutoutConvexRadius,
-                                            0));
+
+    if (ShouldShowFeedbackButton()) {
+      // Prevent the scroll bar from overlapping with any rounded corners or
+      // extending into the cutout region.
+      scroll_bar->SetInsets(
+          gfx::Insets::TLBR(kContentScrollViewCornerRadius, 0,
+                            kCutoutHeight + kCutoutConvexRadius, 0));
+    }
+
     scroll_bar->SetSnapBackOnDragOutside(false);
     SetVerticalScrollBar(std::move(scroll_bar));
   }
@@ -411,14 +433,19 @@ class MahiScrollView : public views::ScrollView,
  private:
   // views::ScrollView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    const SkPath clip_path = util::GetArcCurveRectPath(
-        GetContentsBounds().size(),
-        util::ArcCurveCorner(util::ArcCurveCorner::CornerLocation::kBottomRight,
-                             gfx::Size(kCutoutWidth + kCutoutConvexRadius,
-                                       kCutoutHeight + kCutoutConvexRadius),
-                             kCutoutConcaveRadius, kCutoutConvexRadius),
-        kContentScrollViewCornerRadius);
-
+    const auto content_size = GetContentsBounds().size();
+    SkPath clip_path =
+        ShouldShowFeedbackButton()
+            ? util::GetArcCurveRectPath(
+                  content_size,
+                  util::ArcCurveCorner(
+                      util::ArcCurveCorner::CornerLocation::kBottomRight,
+                      gfx::Size(kCutoutWidth + kCutoutConvexRadius,
+                                kCutoutHeight + kCutoutConvexRadius),
+                      kCutoutConcaveRadius, kCutoutConvexRadius),
+                  kContentScrollViewCornerRadius)
+            : util::GetArcCurveRectPath(content_size,
+                                        kContentScrollViewCornerRadius);
     SetClipPath(clip_path);
   }
 
@@ -441,6 +468,10 @@ class MahiScrollView : public views::ScrollView,
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override {
+    if (!ShouldShowFeedbackButton()) {
+      return views::ViewTargeterDelegate::DoesIntersectRect(target, rect);
+    }
+
     const gfx::Rect contents_bounds = GetContentsBounds();
     const gfx::Rect corner_cutout_region = gfx::Rect(
         contents_bounds.width() - kCutoutWidth,
@@ -492,6 +523,16 @@ class MahiScrollView : public views::ScrollView,
 
 BEGIN_METADATA(MahiScrollView)
 END_METADATA
+
+views::StyledLabel::RangeStyleInfo GetLinkTextStyle(
+    base::RepeatingClosure press_link_callback) {
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          std::move(press_link_callback));
+  link_style.override_color_id =
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant);
+  return link_style;
+}
 
 }  // namespace
 
@@ -574,6 +615,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
               // Add buttons for the user to give feedback on the content.
               views::Builder<views::BoxLayoutView>()
                   .CopyAddressTo(&feedback_buttons_container)
+                  .SetID(mahi_constants::ViewId::kFeedbackButtonsContainer)
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                   .SetInsideBorderInsets(gfx::Insets::TLBR(
                       0, 0, 0, kFeedbackButtonIconPaddingRight))
@@ -636,10 +678,14 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                   .CopyAddressTo(&error_status_view))
           .Build());
 
-  // Put feedback buttons container after the error status view in the focus
-  // list since the order of traversal should be scroll view -> error status
-  // view -> feedback buttons.
-  feedback_buttons_container->InsertAfterInFocusList(error_status_view);
+  if (ShouldShowFeedbackButton()) {
+    // Put feedback buttons container after the error status view in the focus
+    // list since the order of traversal should be scroll view -> error status
+    // view -> feedback buttons.
+    feedback_buttons_container->InsertAfterInFocusList(error_status_view);
+  } else {
+    feedback_buttons_container->SetVisible(false);
+  }
 
   // Add a row for processing user input that includes a textfield, send button
   // and a back to Q&A button when in the summary section.
@@ -707,24 +753,50 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   question_textfield_->RemoveHoverEffect();
   InstallTextfieldFocusRing(question_textfield_, send_button_);
 
-  main_container_->AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
-          .SetBetweenChildSpacing(kFooterSpacing)
-          .AddChildren(
-              views::Builder<views::Label>().SetText(
-                  l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_DISCLAIMER)),
-              views::Builder<views::Link>()
-                  .SetText(l10n_util::GetStringUTF16(
-                      IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT))
-                  .SetAccessibleName(l10n_util::GetStringUTF16(
-                      IDS_ASH_MAHI_LEARN_MORE_LINK_ACCESSIBLE_NAME))
-                  .SetCallback(base::BindRepeating(
-                      &MahiPanelView::OnLearnMoreLinkClicked,
-                      weak_ptr_factory_.GetWeakPtr()))
-                  .SetID(mahi_constants::ViewId::kLearnMoreLink))
-          .Build());
+  std::unique_ptr<views::View> footer_view;
+  if (ShouldShowFeedbackButton()) {
+    footer_view =
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+            .SetBetweenChildSpacing(kFooterSpacing)
+            .AddChildren(views::Builder<views::Label>()
+                             .SetID(mahi_constants::ViewId::kFooterLabel)
+                             .SetText(l10n_util::GetStringUTF16(
+                                 IDS_ASH_MAHI_PANEL_DISCLAIMER)),
+                         views::Builder<views::Link>()
+                             .SetText(l10n_util::GetStringUTF16(
+                                 IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT))
+                             .SetAccessibleName(l10n_util::GetStringUTF16(
+                                 IDS_ASH_MAHI_LEARN_MORE_LINK_ACCESSIBLE_NAME))
+                             .SetCallback(base::BindRepeating(
+                                 &MahiPanelView::OnLearnMoreLinkClicked,
+                                 weak_ptr_factory_.GetWeakPtr()))
+                             .SetID(mahi_constants::ViewId::kLearnMoreLink))
+            .Build();
+  } else {
+    // Use `views::StyledLabel` here instead so that the learn more link can be
+    // displayed in the same row as the multilined footer text.
+    std::vector<size_t> offsets;
+    const std::u16string link_text =
+        l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT);
+    const std::u16string footer_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_MAHI_PANEL_DISCLAIMER_FEEDBACK_DISABLED, {link_text}, &offsets);
+    footer_view =
+        views::Builder<views::StyledLabel>()
+            .SetID(mahi_constants::ViewId::kFooterLabel)
+            .SetText(footer_text)
+            .AddStyleRange(
+                gfx::Range(offsets.at(0), offsets.at(0) + link_text.length()),
+                GetLinkTextStyle(
+                    base::BindRepeating(&MahiPanelView::OnLearnMoreLinkClicked,
+                                        weak_ptr_factory_.GetWeakPtr())))
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
+            .SetAutoColorReadabilityEnabled(false)
+            .Build();
+  }
+
+  main_container_->AddChildView(std::move(footer_view));
 
   // Refresh contents after all child views are built.
   ui_controller_->RefreshContents();
@@ -735,14 +807,6 @@ MahiPanelView::~MahiPanelView() {
   // view has been shown.
   base::UmaHistogramLongTimes(mahi_constants::kMahiUserJourneyTimeHistogramName,
                               base::TimeTicks::Now() - open_time_);
-}
-
-void MahiPanelView::OnMouseEvent(ui::MouseEvent* event) {
-  HandleDragEventIfNeeded(event);
-}
-
-void MahiPanelView::OnGestureEvent(ui::GestureEvent* event) {
-  HandleDragEventIfNeeded(event);
 }
 
 void MahiPanelView::AnimatePopIn(const gfx::Rect& start_bounds) {
@@ -889,7 +953,7 @@ void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
 
 void MahiPanelView::OnLearnMoreLinkClicked() {
   NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(mahi_constants::kLearnMorePage),
+      GURL(chrome::kHelpMeReadWriteLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
   base::UmaHistogramEnumeration(mahi_constants::kMahiButtonClickHistogramName,
@@ -920,14 +984,6 @@ void MahiPanelView::OnSendButtonPressed() {
         mahi_constants::kMahiButtonClickHistogramName,
         mahi_constants::PanelButton::kAskQuestionSendButton);
   }
-}
-
-void MahiPanelView::HandleDragEventIfNeeded(ui::LocatedEvent* event) {
-  // Checks whether the event is part of a drag sequence and handles it if
-  // needed. Note that we only handle drag events for repositioning the panel
-  // here. Other drag behavior, e.g. for text selection, is handled by the
-  // panel's child views.
-  ui_controller_->drag_controller()->OnLocatedPanelEvent(event);
 }
 
 void MahiPanelView::OnThumbsUpButtonActive() {

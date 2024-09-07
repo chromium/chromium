@@ -28,14 +28,14 @@ TEST_F(ShoppingUserModelTest, ExecuteModelWithInput) {
 
   // When shopping related features count is less than or equal to 1,
   // the user shouldn't be considered a shopping user.
-  ExpectClassifierResults(/*input=*/{0, 0}, {kLegacyNegativeLabel});
-  ExpectClassifierResults(/*input=*/{1, 0}, {kLegacyNegativeLabel});
-  ExpectClassifierResults(/*input=*/{1, 1}, {kLegacyNegativeLabel});
+  ExpectClassifierResults(/*input=*/{0, 0, 0, 0}, {kLegacyNegativeLabel});
+  ExpectClassifierResults(/*input=*/{1, 0, 0, 0}, {kLegacyNegativeLabel});
+  ExpectClassifierResults(/*input=*/{1, 1, 0, 0}, {kLegacyNegativeLabel});
 
   // When shopping related features count is greater than or equal to 1,
   // the user should be considered shopping user.
-  ExpectClassifierResults(/*input=*/{1, 2}, {kShoppingUserUmaName});
-  ExpectClassifierResults(/*input=*/{2, 2}, {kShoppingUserUmaName});
+  ExpectClassifierResults(/*input=*/{1, 2, 0, 0}, {kShoppingUserUmaName});
+  ExpectClassifierResults(/*input=*/{2, 2, 1, 1}, {kShoppingUserUmaName});
 
   // Invalid input
   ExpectExecutionWithInput(/*inputs=*/{1, 1, 1, 1, 1}, /*expected_error=*/true,

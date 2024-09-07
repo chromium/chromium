@@ -16,6 +16,7 @@ android_library("file_provider_java") {
   ]
   deps = [
     "//base:base_java",
+    "//base:content_uri_utils_java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -73,12 +74,14 @@ android_library("java") {
     ":file_provider_java",
     ":java_resources",
     "//base:base_java",
+    "//base:content_uri_utils_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/pdf:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/modaldialog/android:java",

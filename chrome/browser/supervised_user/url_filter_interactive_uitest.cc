@@ -27,10 +27,15 @@ static constexpr std::string_view kPermissionRequestUrl =
 
 // All tests in this unit are subject to flakiness because they interact with a
 // system that can be externally modified during execution.
-class UrlFilterUiTest : public InteractiveFamilyLiveTest {
+// TODO(b/301587955): Fix placement of supervised_user/e2e test files and their
+// dependencies.
+class UrlFilterUiTest
+    : public InteractiveFamilyLiveTest,
+      public testing::WithParamInterface<FamilyLiveTest::RpcMode> {
  public:
   UrlFilterUiTest()
       : InteractiveFamilyLiveTest(
+            GetParam(),
             /*extra_enabled_hosts=*/{"example.com", "bestgore.com"}) {}
 
  protected:
@@ -128,7 +133,7 @@ class UrlFilterUiTest : public InteractiveFamilyLiveTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kSetSafeSitesStateObserverId);
@@ -137,18 +142,17 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kResetStateObserverId);
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Child activity is happening in this tab.
   int tab_index = 0;
   GURL all_audiences_site_url(GetRoutedUrl("https://example.com"));
 
   RunTestSequence(
-      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kResetStateObserverId, child(),
                           BrowserState::Reset()),
-      WaitForStateSeeding(kSetSafeSitesStateObserverId, head_of_household(),
-                          child(), BrowserState::EnableSafeSites()),
+      WaitForStateSeeding(kSetSafeSitesStateObserverId, child(),
+                          BrowserState::EnableSafeSites()),
 
       // Supervised user navigates to any page.
       InstrumentTab(kChildElementId, tab_index, child().browser()),
@@ -157,40 +161,38 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
                          PageWithMatchingTitle("Example Domain")),
       // Supervisor blocks that page and supervised user sees interstitial
       // blocked page screen.
-      WaitForStateSeeding(kDefineStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kDefineStateObserverId, child(),
                           BrowserState::BlockSite(all_audiences_site_url)),
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()));
 }
 
 // Sanity test, if it fails it means that resetting the test state is not
 // functioning properly.
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ClearFamilyLinkSettings) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer, kObserverId);
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Clear all existing filters.
-  RunTestSequence(WaitForStateSeeding(kObserverId, head_of_household(), child(),
-                                      BrowserState::Reset()));
+  RunTestSequence(
+      WaitForStateSeeding(kObserverId, child(), BrowserState::Reset()));
 }
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kDefineStateObserverId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kResetStateObserverId);
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Child activity is happening in this tab.
   int tab_index = 0;
   GURL mature_site_url(GetRoutedUrl("https://bestgore.com"));
 
   RunTestSequence(
-      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kResetStateObserverId, child(),
                           BrowserState::Reset()),
 
       // Supervised user navigates to inappropriate page and is blocked.
@@ -199,27 +201,26 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()),
 
       // Supervisor allows that page and supervised user consumes content.
-      WaitForStateSeeding(kDefineStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kDefineStateObserverId, child(),
                           BrowserState::AllowSite(mature_site_url)),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest,
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ParentAprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kResetStateObserverId);
 
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  TurnOnSync();
 
   // Child and parent activity is happening in these tabs.
   int child_tab_index = 0;
   int parent_tab_index = 0;
 
   RunTestSequence(
-      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+      WaitForStateSeeding(kResetStateObserverId, child(),
                           BrowserState::Reset()),
       // Supervised user navigates to inappropriate page and is blocked, and
       // makes approval request.
@@ -247,5 +248,15 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest,
       Log("Then child gets unblocked"),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    UrlFilterUiTest,
+    testing::Values(FamilyLiveTest::RpcMode::kProd,
+                    FamilyLiveTest::RpcMode::kTestImpersonation),
+    [](const testing::TestParamInfo<FamilyLiveTest::RpcMode>& info) {
+      return ToString(info.param);
+    });
+
 }  // namespace
 }  // namespace supervised_user

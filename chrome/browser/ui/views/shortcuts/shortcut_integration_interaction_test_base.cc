@@ -44,10 +44,7 @@ ShortcutIntegrationInteractionTestApi::ShowCreateShortcutDialog() {
       WaitForShow(
           CreateDesktopShortcutDelegate::kCreateShortcutDialogTitleFieldId),
       WaitForShow(
-          CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId),
-      // Need to flush events so we're not trying to close the dialog while
-      // showing it is still on the stack.
-      FlushEvents());
+          CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId));
 }
 
 ui::test::InteractiveTestApi::MultiStep

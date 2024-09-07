@@ -53,6 +53,7 @@ class PolicyDialogBase : public views::DialogDelegateView {
     // IDs related to file error dialog in a mixed error scenario.
     kDlpSectionId,
     kEnterpriseConnectorsUnknownScanResultSectionId,
+    kEnterpriseConnectorsScanFailedResultSectionId,
     kEnterpriseConnectorsSensitiveDataSectionId,
     kEnterpriseConnectorsMalwareSectionId,
     kEnterpriseConnectorsEncryptedFileSectionId,

@@ -18,147 +18,10 @@ source_set("chromeos") {
   sources = [
     "extensions/accessibility_service_private.cc",
     "extensions/accessibility_service_private.h",
-    "extensions/contact_center_insights/contact_center_insights_extension_manager.cc",
-    "extensions/contact_center_insights/contact_center_insights_extension_manager.h",
     "extensions/device_local_account_external_policy_loader.cc",
     "extensions/device_local_account_external_policy_loader.h",
-    "extensions/file_system_provider/service_worker_lifetime_manager.cc",
-    "extensions/file_system_provider/service_worker_lifetime_manager.h",
     "extensions/info_private_api.cc",
     "extensions/info_private_api.h",
-    "extensions/login_screen/login/cleanup/browser_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/browser_cleanup_handler.h",
-    "extensions/login_screen/login/cleanup/cleanup_handler.h",
-    "extensions/login_screen/login/cleanup/cleanup_manager.cc",
-    "extensions/login_screen/login/cleanup/cleanup_manager.h",
-    "extensions/login_screen/login/cleanup/extension_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/extension_cleanup_handler.h",
-    "extensions/login_screen/login/cleanup/web_app_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/web_app_cleanup_handler.h",
-    "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.cc",
-    "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.h",
-    "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.cc",
-    "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.h",
-    "extensions/login_screen/login/login_api.cc",
-    "extensions/login_screen/login/login_api.h",
-    "extensions/login_screen/login/login_api_prefs.cc",
-    "extensions/login_screen/login/login_api_prefs.h",
-    "extensions/login_screen/login_screen_storage/login_screen_storage_api.cc",
-    "extensions/login_screen/login_screen_storage/login_screen_storage_api.h",
-    "extensions/login_screen/login_state/login_state_api.cc",
-    "extensions/login_screen/login_state/login_state_api.h",
-    "extensions/login_screen/login_state/session_state_changed_event_dispatcher.cc",
-    "extensions/login_screen/login_state/session_state_changed_event_dispatcher.h",
-    "extensions/odfs_config_private/odfs_config_private_api.cc",
-    "extensions/odfs_config_private/odfs_config_private_api.h",
-    "extensions/system_log/system_log_api.cc",
-    "extensions/system_log/system_log_api.h",
-    "extensions/web_file_handlers/intent_util.cc",
-    "extensions/web_file_handlers/intent_util.h",
-    "policy/dlp/clipboard_bubble.cc",
-    "policy/dlp/clipboard_bubble.h",
-    "policy/dlp/data_transfer_dlp_controller.cc",
-    "policy/dlp/data_transfer_dlp_controller.h",
-    "policy/dlp/dialogs/dlp_warn_dialog.cc",
-    "policy/dlp/dialogs/dlp_warn_dialog.h",
-    "policy/dlp/dialogs/dlp_warn_notifier.cc",
-    "policy/dlp/dialogs/dlp_warn_notifier.h",
-    "policy/dlp/dialogs/policy_dialog_base.cc",
-    "policy/dlp/dialogs/policy_dialog_base.h",
-    "policy/dlp/dlp_clipboard_bubble_constants.h",
-    "policy/dlp/dlp_clipboard_notifier.cc",
-    "policy/dlp/dlp_clipboard_notifier.h",
-    "policy/dlp/dlp_confidential_contents.cc",
-    "policy/dlp/dlp_confidential_contents.h",
-    "policy/dlp/dlp_confidential_file.cc",
-    "policy/dlp/dlp_confidential_file.h",
-    "policy/dlp/dlp_content_manager.cc",
-    "policy/dlp/dlp_content_manager.h",
-    "policy/dlp/dlp_content_manager_observer.h",
-    "policy/dlp/dlp_content_observer.cc",
-    "policy/dlp/dlp_content_observer.h",
-    "policy/dlp/dlp_content_restriction_set.cc",
-    "policy/dlp/dlp_content_restriction_set.h",
-    "policy/dlp/dlp_content_tab_helper.cc",
-    "policy/dlp/dlp_content_tab_helper.h",
-    "policy/dlp/dlp_copy_or_move_hook_delegate.cc",
-    "policy/dlp/dlp_copy_or_move_hook_delegate.h",
-    "policy/dlp/dlp_data_transfer_notifier.cc",
-    "policy/dlp/dlp_data_transfer_notifier.h",
-    "policy/dlp/dlp_download_observer.cc",
-    "policy/dlp/dlp_download_observer.h",
-    "policy/dlp/dlp_download_observer_factory.cc",
-    "policy/dlp/dlp_download_observer_factory.h",
-    "policy/dlp/dlp_drag_drop_notifier.cc",
-    "policy/dlp/dlp_drag_drop_notifier.h",
-    "policy/dlp/dlp_file_access_copy_or_move_delegate_factory.cc",
-    "policy/dlp/dlp_file_access_copy_or_move_delegate_factory.h",
-    "policy/dlp/dlp_file_destination.cc",
-    "policy/dlp/dlp_file_destination.h",
-    "policy/dlp/dlp_files_controller.cc",
-    "policy/dlp/dlp_files_controller.h",
-    "policy/dlp/dlp_files_utils.cc",
-    "policy/dlp/dlp_files_utils.h",
-    "policy/dlp/dlp_notification_helper.cc",
-    "policy/dlp/dlp_notification_helper.h",
-    "policy/dlp/dlp_policy_constants.h",
-    "policy/dlp/dlp_rules_manager.cc",
-    "policy/dlp/dlp_rules_manager.h",
-    "policy/dlp/dlp_rules_manager_factory.cc",
-    "policy/dlp/dlp_rules_manager_factory.h",
-    "policy/dlp/dlp_rules_manager_impl.cc",
-    "policy/dlp/dlp_rules_manager_impl.h",
-    "policy/dlp/dlp_scoped_file_access_delegate.cc",
-    "policy/dlp/dlp_scoped_file_access_delegate.h",
-    "printing/print_preview/print_preview_ui_wrapper.cc",
-    "printing/print_preview/print_preview_ui_wrapper.h",
-    "printing/print_preview/print_preview_webcontents_manager.cc",
-    "printing/print_preview/print_preview_webcontents_manager.h",
-    "printing/print_preview/print_settings_converter.cc",
-    "printing/print_preview/print_settings_converter.h",
-    "printing/print_preview/print_view_manager_common.cc",
-    "printing/print_preview/print_view_manager_common.h",
-    "printing/print_preview/print_view_manager_cros.cc",
-    "printing/print_preview/print_view_manager_cros.h",
-    "printing/print_preview/print_view_manager_cros_base.cc",
-    "printing/print_preview/print_view_manager_cros_base.h",
-    "printing/print_preview/print_view_manager_cros_basic.cc",
-    "printing/print_preview/print_view_manager_cros_basic.h",
-    "printing/print_preview/printing_init_cros.cc",
-    "printing/print_preview/printing_init_cros.h",
-    "reporting/local_state_reporting_settings.cc",
-    "reporting/local_state_reporting_settings.h",
-    "reporting/metric_default_utils.cc",
-    "reporting/metric_default_utils.h",
-    "reporting/metric_reporting_manager_delegate_base.cc",
-    "reporting/metric_reporting_manager_delegate_base.h",
-    "reporting/metric_reporting_prefs.cc",
-    "reporting/metric_reporting_prefs.h",
-    "reporting/network/network_bandwidth_sampler.cc",
-    "reporting/network/network_bandwidth_sampler.h",
-    "reporting/usage_telemetry_periodic_collector_base.cc",
-    "reporting/usage_telemetry_periodic_collector_base.h",
-    "reporting/user_reporting_settings.cc",
-    "reporting/user_reporting_settings.h",
-    "reporting/websites/website_events_observer.cc",
-    "reporting/websites/website_events_observer.h",
-    "reporting/websites/website_metrics_retriever_interface.h",
-    "reporting/websites/website_usage_observer.cc",
-    "reporting/websites/website_usage_observer.h",
-    "reporting/websites/website_usage_telemetry_sampler.cc",
-    "reporting/websites/website_usage_telemetry_sampler.h",
-
-    # Extension API implementations.
-    "extensions/desk_api/desk_api_extension_manager.cc",
-    "extensions/desk_api/desk_api_extension_manager.h",
-    "extensions/echo_private/echo_private_api.cc",
-    "extensions/echo_private/echo_private_api.h",
-    "extensions/file_system_provider/file_system_provider_api.cc",
-    "extensions/file_system_provider/file_system_provider_api.h",
-    "extensions/file_system_provider/provider_function.cc",
-    "extensions/file_system_provider/provider_function.h",
-    "extensions/login_screen/login/errors.cc",
-    "extensions/login_screen/login/errors.h",
     "extensions/wallpaper_api.cc",
     "extensions/wallpaper_api.h",
   ]
@@ -166,6 +29,8 @@ source_set("chromeos") {
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service",
     "//chrome/browser/chromeos/enterprise/cloud_storage",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/reporting/websites",
     "//chrome/browser/extensions",
     "//chrome/browser/media/webrtc",
   ]
@@ -236,7 +101,10 @@ source_set("chromeos") {
     "//chrome/browser/chromeos/echo",
     "//chrome/browser/chromeos/enterprise",
     "//chrome/browser/chromeos/enterprise/cloud_storage",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/chromeos/full_restore",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/reporting/websites",
     "//chrome/browser/chromeos/smart_reader",
     "//chrome/browser/chromeos/tablet_mode",
     "//chrome/browser/chromeos/tast_support",
@@ -245,6 +113,7 @@ source_set("chromeos") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -312,32 +181,6 @@ source_set("chromeos") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [
-      "extensions/login_screen/login/cleanup/cleanup_manager_ash.cc",
-      "extensions/login_screen/login/cleanup/cleanup_manager_ash.h",
-      "extensions/login_screen/login/cleanup/clipboard_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/clipboard_cleanup_handler.h",
-      "extensions/login_screen/login/cleanup/files_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/files_cleanup_handler.h",
-      "extensions/login_screen/login/cleanup/lacros_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/lacros_cleanup_handler.h",
-      "extensions/login_screen/login/cleanup/pinned_apps_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/pinned_apps_cleanup_handler.h",
-      "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.h",
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler.cc",
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler.h",
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_factory.cc",
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_factory.h",
-      "extensions/login_screen/login/login_api_lock_handler.cc",
-      "extensions/login_screen/login/login_api_lock_handler.h",
-      "extensions/login_screen/login/shared_session_handler.cc",
-      "extensions/login_screen/login/shared_session_handler.h",
-      "reporting/websites/website_metrics_retriever_ash.cc",
-      "reporting/websites/website_metrics_retriever_ash.h",
-      "reporting/websites/website_usage_telemetry_periodic_collector_ash.cc",
-      "reporting/websites/website_usage_telemetry_periodic_collector_ash.h",
-    ]
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/arc",
@@ -350,7 +193,6 @@ source_set("chromeos") {
       "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/file_manager/virtual_tasks",
-      "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/file_system_provider",
       "//chrome/browser/ash/platform_keys",
       "//chrome/browser/ash/platform_keys/key_permissions",
@@ -375,7 +217,6 @@ source_set("chromeos") {
     ]
     public_deps += [
       "//ash/constants",
-      "//chrome/browser/ash/crosapi",
       "//components/services/app_service/public/cpp:instance_update",
     ]
     deps += [
@@ -421,6 +262,7 @@ source_set("chromeos") {
       "//chrome/browser/ash/system_web_apps/apps/help_app",
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ui/ash/network",
+      "//chrome/browser/ui/ash/session",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui/ash/cloud_upload",
@@ -439,112 +281,10 @@ source_set("chromeos") {
   }
 
   if (is_chromeos_lacros) {
-    sources += [
-      "extensions/login_screen/login/cleanup/cleanup_manager_lacros.cc",
-      "extensions/login_screen/login/cleanup/cleanup_manager_lacros.h",
-      "extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.cc",
-      "extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h",
-      "policy/dlp/dlp_browser_helper_lacros.cc",
-      "policy/dlp/dlp_browser_helper_lacros.h",
-      "policy/dlp/dlp_content_manager_lacros.cc",
-      "policy/dlp/dlp_content_manager_lacros.h",
-      "policy/dlp/dlp_files_controller_lacros.cc",
-      "policy/dlp/dlp_files_controller_lacros.h",
-      "reporting/device_reporting_settings_lacros.cc",
-      "reporting/device_reporting_settings_lacros.h",
-      "reporting/metric_reporting_manager_lacros.cc",
-      "reporting/metric_reporting_manager_lacros.h",
-      "reporting/metric_reporting_manager_lacros_factory.cc",
-      "reporting/metric_reporting_manager_lacros_factory.h",
-      "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.cc",
-      "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.h",
-      "reporting/websites/website_metrics_retriever_lacros.cc",
-      "reporting/websites/website_metrics_retriever_lacros.h",
-      "reporting/websites/website_usage_telemetry_periodic_collector_lacros.cc",
-      "reporting/websites/website_usage_telemetry_periodic_collector_lacros.h",
-    ]
-    public_deps += [
+    deps += [
       "//chromeos/lacros",
-      "//ui/aura",
-    ]
-    deps += [
       "//chromeos/startup",
-      "//ui/platform_window",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/chromeos/tablet_mode" ]
-  }
-
-  if (use_cups) {
-    sources += [
-      "printing/cups_wrapper.cc",
-      "printing/cups_wrapper.h",
-      "printing/cups_wrapper_impl.cc",
-      "printing/printer_error_codes.cc",
-      "printing/printer_error_codes.h",
-    ]
-    public_deps += [ "//printing/backend" ]
-    deps += [
-      "//chromeos/components/print_management/mojom",
-      "//printing:printing_base",
-    ]
-  }
-}
-
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "extensions/login_screen/login/cleanup/mock_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/mock_cleanup_handler.h",
-    "policy/dlp/dialogs/mock_dlp_warn_notifier.cc",
-    "policy/dlp/dialogs/mock_dlp_warn_notifier.h",
-    "policy/dlp/test/dlp_content_manager_test_helper.cc",
-    "policy/dlp/test/dlp_content_manager_test_helper.h",
-    "policy/dlp/test/dlp_files_test_base.cc",
-    "policy/dlp/test/dlp_files_test_base.h",
-    "policy/dlp/test/dlp_rules_manager_test_utils.cc",
-    "policy/dlp/test/dlp_rules_manager_test_utils.h",
-    "policy/dlp/test/mock_dlp_content_manager.cc",
-    "policy/dlp/test/mock_dlp_content_manager.h",
-    "policy/dlp/test/mock_dlp_content_observer.cc",
-    "policy/dlp/test/mock_dlp_content_observer.h",
-    "policy/dlp/test/mock_dlp_crosapi.cc",
-    "policy/dlp/test/mock_dlp_crosapi.h",
-    "policy/dlp/test/mock_dlp_rules_manager.cc",
-    "policy/dlp/test/mock_dlp_rules_manager.h",
-    "printing/print_preview/test/mock_print_preview_crosapi.cc",
-    "printing/print_preview/test/mock_print_preview_crosapi.h",
-    "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.cc",
-    "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.h",
-  ]
-
-  public_deps = [
-    ":chromeos",
-    "//base",
-    "//build:chromeos_buildflags",
-    "//chrome/test:test_support",
-    "//content/test:test_support",
-    "//crypto:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/views",
-    "//url",
-  ]
-
-  deps = [
-    "//chrome/browser/enterprise/data_controls",
-    "//chromeos/components/mahi/public/cpp:cpp",
-    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
-    "//components/reporting/client:test_support",
-  ]
-
-  if (is_chromeos_ash) {
-    public_deps += [
-      "//chrome/browser/ash",
-      "//chrome/browser/ash/app_mode:test_support",
-      "//chrome/browser/ash/login/users:test_support",
-    ]
-    deps += [ "//chrome/browser/ash/policy/dlp" ]
   }
 }
 
@@ -553,37 +293,6 @@ source_set("unit_tests") {
 
   sources = [
     "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
-    "extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
-    "extensions/desk_api/desk_api_extension_manager_unittest.cc",
-    "extensions/file_system_provider/service_worker_lifetime_manager_unittest.cc",
-    "extensions/login_screen/login/cleanup/cleanup_manager_unittest.cc",
-    "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
-    "extensions/login_screen/login_state/login_state_api_unittest.cc",
-    "extensions/odfs_config_private/odfs_config_private_api_unittest.cc",
-    "policy/dlp/data_transfer_dlp_controller_unittest.cc",
-    "policy/dlp/dlp_clipboard_notifier_unittest.cc",
-    "policy/dlp/dlp_confidential_contents_unittest.cc",
-    "policy/dlp/dlp_confidential_file_unittest.cc",
-    "policy/dlp/dlp_content_tab_helper_unittest.cc",
-    "policy/dlp/dlp_copy_or_move_hook_delegate_unittest.cc",
-    "policy/dlp/dlp_download_observer_unittest.cc",
-    "policy/dlp/dlp_drag_drop_notifier_unittest.cc",
-    "policy/dlp/dlp_file_access_copy_or_move_delegate_factory_unittest.cc",
-    "policy/dlp/dlp_file_destination_unittest.cc",
-    "policy/dlp/dlp_files_controller_unittest.cc",
-    "policy/dlp/dlp_files_utils_unittest.cc",
-    "policy/dlp/dlp_rules_manager_impl_unittest.cc",
-    "policy/dlp/dlp_scoped_file_access_delegate_unittest.cc",
-    "printing/print_preview/print_settings_converter_unittest.cc",
-    "printing/print_preview/print_view_manager_unittest.cc",
-    "reporting/local_state_reporting_settings_unittest.cc",
-    "reporting/metric_reporting_prefs_unittest.cc",
-    "reporting/network/network_bandwidth_sampler_unittest.cc",
-    "reporting/usage_telemetry_periodic_collector_base_unittest.cc",
-    "reporting/user_reporting_settings_unittest.cc",
-    "reporting/websites/website_events_observer_unittest.cc",
-    "reporting/websites/website_usage_observer_unittest.cc",
-    "reporting/websites/website_usage_telemetry_sampler_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -595,7 +304,6 @@ source_set("unit_tests") {
   deps = [
     ":chromeos",
     ":system_stack_sampled_metrics_status_proto",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
@@ -604,6 +312,9 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:test_support",
+    "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_request",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/enterprise/data_controls:test_support",
     "//chrome/browser/extensions",
@@ -639,7 +350,6 @@ source_set("unit_tests") {
     "//components/reporting/storage:test_support",
     "//components/reporting/util:status",
     "//components/reporting/util:test_callbacks_support",
-    "//components/sharing_message:unit_tests",
     "//components/sharing_message/proto",
     "//components/strings:components_strings",
     "//components/ukm",
@@ -667,40 +377,41 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/arc:unit_tests",
     "//chrome/browser/chromeos/container_app:unit_tests",
     "//chrome/browser/chromeos/drivefs:unit_tests",
+    "//chrome/browser/chromeos/extensions/contact_center_insights:unit_tests",
+    "//chrome/browser/chromeos/extensions/desk_api:unit_tests",
+    "//chrome/browser/chromeos/extensions/file_system_provider:unit_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_request:unit_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login_state:unit_tests",
+    "//chrome/browser/chromeos/extensions/odfs_config_private:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/mahi:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
+    "//chrome/browser/chromeos/policy/dlp:unit_tests",
+    "//chrome/browser/chromeos/printing/print_preview:unit_tests",
+    "//chrome/browser/chromeos/reporting:unit_tests",
+    "//chrome/browser/chromeos/reporting/network:unit_tests",
+    "//chrome/browser/chromeos/reporting/websites:unit_tests",
     "//chrome/browser/chromeos/tast_support:unit_tests",
     "//chrome/browser/chromeos/video_conference:unit_tests",
+
+    # Unit tests from elsewhere.
+    "//components/sharing_message:unit_tests",
   ]
 
   if (is_chromeos_ash) {
-    sources += [
-      "extensions/login_screen/login/cleanup/extension_cleanup_handler_unittest.cc",
-      "extensions/login_screen/login/cleanup/lacros_cleanup_handler_unittest.cc",
-      "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler_unittest.cc",
-      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_unittest.cc",
-      "extensions/login_screen/login/login_api_ash_unittest.cc",
-      "extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
-      "extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
-      "reporting/websites/website_metrics_retriever_ash_unittest.cc",
-      "reporting/websites/website_usage_telemetry_periodic_collector_ash_unittest.cc",
-    ]
-
     deps += [
       "//ash:test_support",
       "//ash/constants",
-      "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/login/ui:test_support",
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/printing:test_support",
+      "//chrome/browser/ash/printing/history",
       "//chrome/browser/ash/printing/history:test_support",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/system_web_apps/test_support:test_support",
-      "//chrome/browser/chromeos/tablet_mode:unit_tests",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/ui/ash/system_web_apps:system_web_apps",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -721,55 +432,44 @@ source_set("unit_tests") {
       "//extensions/common/api",
       "//mojo/public/cpp/bindings",
       "//ui/gfx/geometry",
+
+      # Unit tests from subdirectories.
+      "//chrome/browser/chromeos/extensions/login_screen/login:unit_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:unit_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_done:unit_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:unit_tests",
+      "//chrome/browser/chromeos/tablet_mode:unit_tests",
     ]
 
     if (use_cups) {
-      sources +=
-          [ "extensions/printing_metrics/printing_metrics_api_unittest.cc" ]
-      deps += [
-        "//chrome/browser/ash/printing/history:print_job_info_proto",
-        "//chrome/browser/chromeos/extensions/printing_metrics",
-        "//chrome/common/extensions/api",
-      ]
+      deps +=
+          [ "//chrome/browser/chromeos/extensions/printing_metrics:unit_tests" ]
     }
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "policy/dlp/dlp_files_controller_lacros_unittest.cc",
-      "reporting/device_reporting_settings_lacros_unittest.cc",
-      "reporting/metric_reporting_manager_lacros_factory_unittest.cc",
-      "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory_unittest.cc",
-      "reporting/metric_reporting_manager_lacros_unittest.cc",
-      "reporting/websites/website_metrics_retriever_lacros_unittest.cc",
-      "reporting/websites/website_usage_telemetry_periodic_collector_lacros_unittest.cc",
-    ]
-
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
-      "//components/reporting/metrics:metrics_data_collection",
-      "//components/reporting/metrics/fakes:test_support",
-      "//components/reporting/util:rate_limiter_interface",
-      "//components/reporting/util:rate_limiter_slide_window",
-    ]
   }
 }
 
 group("browser_tests") {
   testonly = true
 
-  deps = [
-    # Browser tests from subdirectories.
-    "//chrome/browser/chromeos/kcer:browser_tests",
-  ]
+  deps = [ "//chrome/browser/chromeos/extensions/system_log:browser_tests" ]
 
   if (is_chromeos_ash) {
     deps += [
-      # Browser tests from subdirectories.
       "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
+      "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
+      "//chrome/browser/chromeos/extensions/echo_private:browser_tests",
+      "//chrome/browser/chromeos/extensions/file_system_provider:browser_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login:browser_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:browser_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:browser_tests",
+      "//chrome/browser/chromeos/extensions/odfs_config_private:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
+      "//chrome/browser/chromeos/policy:browser_tests",
+      "//chrome/browser/chromeos/policy/dlp:browser_tests",
+      "//chrome/browser/chromeos/printing/print_preview:browser_tests",
+      "//chrome/browser/chromeos/reporting/network:browser_tests",
+      "//chrome/browser/chromeos/reporting/websites:browser_tests",
       "//chrome/browser/chromeos/smart_reader:browser_tests",
       "//chrome/browser/chromeos/video_conference:browser_tests",
     ]
@@ -781,11 +481,23 @@ if (is_chromeos_lacros) {
     testonly = true
 
     deps = [
-      # Browser tests from subdirectories.
-      "//chrome/browser/chromeos/kcer:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/extensions/contact_center_insights:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/extensions/odfs_config_private:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/network:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/policy/dlp:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/printing/print_preview:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/reporting/network:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/tablet_mode:lacros_chrome_browsertests",
     ]
+  }
+}
+
+if (!is_chromeos_device) {
+  group("interactive_ui_tests") {
+    testonly = true
+
+    deps = [ "//chrome/browser/chromeos/policy/dlp:interactive_ui_tests" ]
   }
 }
 

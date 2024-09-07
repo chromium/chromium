@@ -143,7 +143,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.CPUMonitorMemoryUse.{ResourceContextType}.{ResourceContextState}"
-    units="KB" expires_after="2024-12-24">
+    units="KB" expires_after="2025-02-23">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -179,7 +179,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpacePercent"
-    units="%" expires_after="2024-12-15">
+    units="%" expires_after="2025-02-16">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -303,17 +303,6 @@ each histogram.
   </token>
 </histogram>
 
-<histogram name="PerformanceManager.SiteDB.OnDiskSize" units="KB"
-    expires_after="2023-12-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The size of the Local Site Characteristics database on disk. Recorded at
-    startup when the database gets opened, if it already existed from a previous
-    run.
-  </summary>
-</histogram>
-
 <histogram name="PerformanceManager.SiteDB.ReadHasCompletedBeforeQuery"
     enum="Boolean" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
@@ -326,7 +315,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.WriteCompleted.{SiteDBWriteTrigger}"
-    enum="BooleanCompleted" expires_after="2024-12-24">
+    enum="BooleanCompleted" expires_after="2025-02-23">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -339,7 +328,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger}"
-    enum="BooleanAttempted" expires_after="2024-12-24">
+    enum="BooleanAttempted" expires_after="2025-02-23">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -352,7 +341,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToClose2"
-    units="seconds" expires_after="2024-12-15">
+    units="seconds" expires_after="2025-02-16">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -362,7 +351,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToRevisit2"
-    units="seconds" expires_after="2024-12-15">
+    units="seconds" expires_after="2025-02-16">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

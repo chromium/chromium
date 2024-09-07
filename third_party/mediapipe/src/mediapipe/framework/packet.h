@@ -239,7 +239,7 @@ class Packet {
   // object type is a vector of MessageLite data, returns an error otherwise.
   // Note: This function is meant to be used internally within the MediaPipe
   // framework only.
-  StatusOr<std::vector<const proto_ns::MessageLite*>>
+  absl::StatusOr<std::vector<const proto_ns::MessageLite*>>
   GetVectorOfProtoMessageLitePtrs() const;
 
   // Returns an error if the packet does not contain data of type T.
@@ -463,7 +463,7 @@ class HolderBase {
   // Returns a vector<MessageLite*> for the data in the holder, if the
   // underlying object is a vector of protocol buffer objects, otherwise,
   // returns an error.
-  virtual StatusOr<std::vector<const proto_ns::MessageLite*>>
+  virtual absl::StatusOr<std::vector<const proto_ns::MessageLite*>>
   GetVectorOfProtoMessageLite() const = 0;
 
   virtual bool HasForeignOwner() const { return false; }
@@ -493,7 +493,7 @@ struct is_proto_vector<std::vector<ItemT, Allocator>>
 // Helper function to create and return a vector of pointers to proto message
 // elements of the vector passed into the function.
 template <typename T>
-StatusOr<std::vector<const proto_ns::MessageLite*>>
+absl::StatusOr<std::vector<const proto_ns::MessageLite*>>
 ConvertToVectorOfProtoMessageLitePtrs(const T* data,
                                       /*is_proto_vector=*/std::false_type) {
   return absl::InvalidArgumentError(absl::StrCat(
@@ -502,7 +502,7 @@ ConvertToVectorOfProtoMessageLitePtrs(const T* data,
 }
 
 template <typename T>
-StatusOr<std::vector<const proto_ns::MessageLite*>>
+absl::StatusOr<std::vector<const proto_ns::MessageLite*>>
 ConvertToVectorOfProtoMessageLitePtrs(const T* data,
                                       /*is_proto_vector=*/std::true_type) {
   std::vector<const proto_ns::MessageLite*> result;
@@ -609,7 +609,7 @@ class Holder : public HolderBase, private HolderPayloadRegistrator<T> {
   // Returns a vector<MessageLite*> for the data in the holder, if the
   // underlying object is a vector of protocol buffer objects, otherwise,
   // returns an error.
-  StatusOr<std::vector<const proto_ns::MessageLite*>>
+  absl::StatusOr<std::vector<const proto_ns::MessageLite*>>
   GetVectorOfProtoMessageLite() const override {
     return ConvertToVectorOfProtoMessageLitePtrs(ptr_, is_proto_vector<T>());
   }
@@ -691,53 +691,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
 
 template <typename T>
 inline absl::StatusOr<std::unique_ptr<T>> Packet::Consume() {
-  // If type validation fails, returns error.
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
-  // Clients who use this function are responsible for ensuring that no
-  // other thread is doing anything with this Packet.
-  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
-    VLOG(2) << "Consuming the data of " << DebugString();
-    absl::StatusOr<std::unique_ptr<T>> release_result =
-        holder_->AsMutable<T>()->Release();
-    if (release_result.ok()) {
-      VLOG(2) << "Setting " << DebugString() << " to empty.";
-      holder_.reset();
-    }
-    return release_result;
-  }
-  // If packet isn't the sole owner of the holder, returns kFailedPrecondition
-  // error with message.
-  return absl::Status(absl::StatusCode::kFailedPrecondition,
-                      "Packet isn't the sole owner of the holder.");
+  return absl::InternalError("Consume isn't supported.");
 }
 
 template <typename T>
 inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
     bool* was_copied,
     typename std::enable_if<!std::is_array<T>::value>::type*) {
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
-  // If holder is the sole owner of the underlying data, consumes this packet.
-  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
-    VLOG(2) << "Consuming the data of " << DebugString();
-    absl::StatusOr<std::unique_ptr<T>> release_result =
-        holder_->AsMutable<T>()->Release();
-    if (release_result.ok()) {
-      VLOG(2) << "Setting " << DebugString() << " to empty.";
-      holder_.reset();
-    }
-    if (was_copied) {
-      *was_copied = false;
-    }
-    return release_result;
-  }
-  VLOG(2) << "Copying the data of " << DebugString();
-  std::unique_ptr<T> data_ptr = absl::make_unique<T>(Get<T>());
-  VLOG(2) << "Setting " << DebugString() << " to empty.";
-  holder_.reset();
-  if (was_copied) {
-    *was_copied = true;
-  }
-  return std::move(data_ptr);
+  return absl::InternalError("ConsumeOrCopy isn't supported.");
 }
 
 template <typename T>
@@ -745,35 +706,7 @@ inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
     bool* was_copied,
     typename std::enable_if<std::is_array<T>::value &&
                             std::extent<T>::value != 0>::type*) {
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
-  // If holder is the sole owner of the underlying data, consumes this packet.
-  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
-    VLOG(2) << "Consuming the data of " << DebugString();
-    absl::StatusOr<std::unique_ptr<T>> release_result =
-        holder_->AsMutable<T>()->Release();
-    if (release_result.ok()) {
-      VLOG(2) << "Setting " << DebugString() << " to empty.";
-      holder_.reset();
-    }
-    if (was_copied) {
-      *was_copied = false;
-    }
-    return release_result;
-  }
-  VLOG(2) << "Copying the data of " << DebugString();
-  const auto& original_array = Get<T>();
-  // Type T is bounded array type, such as int[N] and float[M].
-  // The new operator creates a new bounded array.
-  std::unique_ptr<T> data_ptr(reinterpret_cast<T*>(new T));
-  // Copies bounded array data into data_ptr.
-  std::copy(std::begin(original_array), std::end(original_array),
-            std::begin(*data_ptr));
-  VLOG(2) << "Setting " << DebugString() << " to empty.";
-  holder_.reset();
-  if (was_copied) {
-    *was_copied = true;
-  }
-  return std::move(data_ptr);
+  return absl::InternalError("ConsumeOrCopy isn't supported.");
 }
 
 template <typename T>

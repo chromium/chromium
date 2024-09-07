@@ -259,6 +259,7 @@ class TestHttpDelegate : public HttpStreamRequest::Delegate {
 
   void OnSwitchesToHttpStreamPool(
       HttpStreamKey stream_key,
+      const AlternativeServiceInfo& alternative_service_info,
       quic::ParsedQuicVersion quic_version) override {}
 
  private:

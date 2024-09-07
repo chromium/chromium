@@ -98,9 +98,8 @@ size_t MLOperand::ByteLength() const {
 }
 
 wtf_size_t MLOperand::Rank() const {
-  // TODO(crbug.com/325598628): Make this a static_cast if validation is added
-  // to check that the rank is less than the max uint32_t.
-  return base::checked_cast<wtf_size_t>(descriptor_.Rank());
+  static_assert(sizeof(descriptor_.Rank()) == sizeof(wtf_size_t));
+  return static_cast<wtf_size_t>(descriptor_.Rank());
 }
 
 Vector<uint32_t> MLOperand::shape() const {

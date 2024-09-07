@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/track/vtt/buffered_line_reader.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -168,32 +163,44 @@ TEST(BufferedLineReaderTest, LineEndingCRLF_EOS) {
 enum NewlineType { kCr, kLf, kCrLf };
 
 String LineBreakString(NewlineType type) {
-  static const char kBreakStrings[] = "\r\n";
-  return String(type == kLf ? kBreakStrings + 1 : kBreakStrings,
-                type == kCrLf ? 2u : 1u);
+  const char* line_break_sequence;
+  switch (type) {
+    case kCr:
+      line_break_sequence = "\r";
+      break;
+    case kLf:
+      line_break_sequence = "\n";
+      break;
+    case kCrLf:
+      line_break_sequence = "\r\n";
+      break;
+  }
+  return String(line_break_sequence);
 }
 
-String MakeTestData(const char** lines, const NewlineType* breaks, int count) {
+String MakeTestData(base::span<const char*> lines,
+                    base::span<const NewlineType> breaks) {
   StringBuilder builder;
-  for (int i = 0; i < count; ++i) {
+  for (size_t i = 0; i < lines.size(); ++i) {
     builder.Append(lines[i]);
     builder.Append(LineBreakString(breaks[i]));
   }
   return builder.ToString();
 }
 
-const wtf_size_t kBlockSizes[] = {64, 32, 16, 8,  4,  2,  1,  3,
-                                  5,  7,  9,  11, 13, 17, 19, 23};
+const auto kBlockSizes = std::to_array<wtf_size_t>(
+    {64, 32, 16, 8, 4, 2, 1, 3, 5, 7, 9, 11, 13, 17, 19, 23});
 
 TEST(BufferedLineReaderTest, BufferSizes) {
   test::TaskEnvironment task_environment;
-  const char* lines[] = {"aaaaaaaaaaaaaaaa", "bbbbbbbbbb", "ccccccccccccc", "",
-                         "dddddd",           "",           "eeeeeeeeee"};
+  auto lines = std::to_array<const char*>({"aaaaaaaaaaaaaaaa", "bbbbbbbbbb",
+                                           "ccccccccccccc", "", "dddddd", "",
+                                           "eeeeeeeeee"});
   const NewlineType kBreaks[] = {kLf, kLf, kLf, kLf, kLf, kLf, kLf};
   const size_t num_test_lines = std::size(lines);
   static_assert(num_test_lines == std::size(kBreaks),
                 "number of test lines and breaks should be the same");
-  String data = MakeTestData(lines, kBreaks, num_test_lines);
+  String data = MakeTestData(lines, kBreaks);
 
   for (size_t k = 0; k < std::size(kBlockSizes); ++k) {
     size_t line_count = 0;
@@ -214,14 +221,14 @@ TEST(BufferedLineReaderTest, BufferSizes) {
 
 TEST(BufferedLineReaderTest, BufferSizesMixedEndings) {
   test::TaskEnvironment task_environment;
-  const char* lines[] = {
-      "aaaaaaaaaaaaaaaa", "bbbbbbbbbb", "ccccccccccccc",      "",
-      "dddddd",           "eeeeeeeeee", "fffffffffffffffffff"};
+  auto lines = std::to_array<const char*>(
+      {"aaaaaaaaaaaaaaaa", "bbbbbbbbbb", "ccccccccccccc", "", "dddddd",
+       "eeeeeeeeee", "fffffffffffffffffff"});
   const NewlineType kBreaks[] = {kCr, kLf, kCrLf, kCr, kLf, kCrLf, kLf};
   const size_t num_test_lines = std::size(lines);
   static_assert(num_test_lines == std::size(kBreaks),
                 "number of test lines and breaks should be the same");
-  String data = MakeTestData(lines, kBreaks, num_test_lines);
+  String data = MakeTestData(lines, kBreaks);
 
   for (size_t k = 0; k < std::size(kBlockSizes); ++k) {
     size_t line_count = 0;

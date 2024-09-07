@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -235,6 +235,10 @@ using base::UserMetricsAction;
                 initWithWebStateList:self.browser->GetWebStateList()
       webContentAreaOverlayPresenter:overlayPresenter];
 
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
   // Create the overflow menu mediator first so the popup mediator isn't created
   // if not needed.
   self.toolsMenuOpenTime = [NSDate timeIntervalSinceReferenceDate];
@@ -302,9 +306,7 @@ using base::UserMetricsAction;
         ReadingListModelFactory::GetInstance()->GetForBrowserState(
             self.browser->GetBrowserState());
     mediator.browserStatePrefs = self.browser->GetBrowserState()->GetPrefs();
-    mediator.engagementTracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+    mediator.engagementTracker = tracker;
     mediator.webContentAreaOverlayPresenter = overlayPresenter;
     mediator.browserPolicyConnector =
         GetApplicationContext()->GetBrowserPolicyConnector();
@@ -325,7 +327,8 @@ using base::UserMetricsAction;
             self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
     mediator.tabBasedIPHBrowserAgent =
         TabBasedIPHBrowserAgent::FromBrowser(self.browser);
-
+    mediator.hasSettingsBlueDot =
+        [self.popupMenuHelpCoordinator hasBlueDotForOverflowMenu];
     self.contentBlockerMediator.consumer = mediator;
 
     NSInteger highlightDestination =
@@ -392,6 +395,14 @@ using base::UserMetricsAction;
                      [weakSelf.popupMenuHelpCoordinator
                          showIPHAfterOpenOfOverflowMenu:menu];
                    }];
+
+    // Log to FET overflow menu opened if opened with blue dot.
+    if ([self.popupMenuHelpCoordinator hasBlueDotForOverflowMenu] && tracker) {
+      tracker->NotifyEvent(
+          feature_engagement::events::kBlueDotPromoOverflowMenuOpened);
+      [self updateToolsMenuBlueDotVisibility];
+    }
+
     return;
   }
 
@@ -402,9 +413,7 @@ using base::UserMetricsAction;
                                     self.browser->GetBrowserState())
          browserPolicyConnector:GetApplicationContext()
                                     ->GetBrowserPolicyConnector()];
-  self.mediator.engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+  self.mediator.engagementTracker = tracker;
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.readingListBrowserAgent =
       ReadingListBrowserAgent::FromBrowser(self.browser);
@@ -566,6 +575,10 @@ using base::UserMetricsAction;
     // Re-anchor the popover if necessary, when the parent view's size changes.
     popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
   }
+}
+
+- (void)updateToolsMenuBlueDotVisibility {
+  [self.popupMenuHelpCoordinator updateBlueDotVisibility];
 }
 
 #pragma mark - OverflowMenuCustomizationCommands

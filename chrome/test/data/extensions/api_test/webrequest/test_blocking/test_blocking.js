@@ -1388,8 +1388,9 @@ const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
 function getFilteredTests(tests) {
-  if (!isServiceWorker)
+  if (!isServiceWorker) {
     return tests;
+  }
   return tests.filter(function(op) {
     return !nonServiceWorkerTests.includes(op);
   });

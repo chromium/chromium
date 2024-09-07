@@ -19,7 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
+#include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/bluetooth/bluetooth_power_state_observer.h"
 #include "chrome/test/base/ash/interactive/bluetooth/bluetooth_util.h"

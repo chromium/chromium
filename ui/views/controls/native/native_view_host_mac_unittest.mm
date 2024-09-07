@@ -152,9 +152,8 @@ TEST_F(NativeViewHostMacTest, CheckNativeViewReferenceOnAttach) {
 
   // Create a second widget.
   auto second_widget = std::make_unique<Widget>();
-  Widget::InitParams params =
-      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params.delegate = nullptr;
   second_widget->Init(std::move(params));
 
@@ -196,9 +195,8 @@ TEST_F(NativeViewHostMacTest, CheckNoNativeViewReferenceOnDestruct) {
 
   // Create a second widget.
   auto second_widget = std::make_unique<Widget>();
-  Widget::InitParams params =
-      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params.delegate = nullptr;
   second_widget->Init(std::move(params));
 

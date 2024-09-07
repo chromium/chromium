@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
-#include "components/safe_browsing/content/browser/url_checker_on_sb.h"
+#include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -132,7 +132,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
           web_contents_getter,
       UnsafeResource::RenderProcessId render_process_id,
       const UnsafeResource::RenderFrameToken& render_frame_token,
-      UnsafeResource::FrameTreeNodeId frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id,
       bool url_real_time_lookup_enabled,
       bool can_check_db,
@@ -151,7 +151,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    /*weak_web_state=*/nullptr,
                                    render_process_id,
                                    render_frame_token,
-                                   frame_tree_node_id,
+                                   frame_tree_node_id.value(),
                                    navigation_id,
                                    url_real_time_lookup_enabled,
                                    can_check_db,
@@ -262,7 +262,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
 
     throttle_ = BrowserURLLoaderThrottle::Create(
         std::move(url_checker_delegate_getter), mock_web_contents_getter_.Get(),
-        /*frame_tree_node_id=*/0, navigation_id,
+        content::FrameTreeNodeId(), navigation_id,
         url_real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr()
                                      : nullptr,
         /*hash_realtime_service=*/nullptr,
@@ -280,9 +280,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             net::HttpRequestHeaders(), /*load_flags=*/0,
             /*has_user_gesture=*/false, url_checker_delegate_,
             mock_web_contents_getter_.Get(), UnsafeResource::kNoRenderProcessId,
-            /*render_frame_token=*/std::nullopt,
-            UnsafeResource::kNoFrameTreeNodeId, navigation_id,
-            url_real_time_lookup_enabled,
+            /*render_frame_token=*/std::nullopt, content::FrameTreeNodeId(),
+            navigation_id, url_real_time_lookup_enabled,
             /*can_check_db=*/true,
             /*can_check_high_confidence_allowlist=*/true,
             /*url_lookup_service_metric_suffix=*/"",
@@ -303,8 +302,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
               /*has_user_gesture=*/false, url_checker_delegate_,
               mock_web_contents_getter_.Get(),
               UnsafeResource::kNoRenderProcessId,
-              /*render_frame_token=*/std::nullopt,
-              UnsafeResource::kNoFrameTreeNodeId,
+              /*render_frame_token=*/std::nullopt, content::FrameTreeNodeId(),
               /*navigation_id=*/0, url_real_time_lookup_enabled,
               /*can_check_db=*/true,
               /*can_check_high_confidence_allowlist=*/true,

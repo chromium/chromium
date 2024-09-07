@@ -4,21 +4,21 @@
 
 import 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 
-import type {RelatedWebsiteSet, RelatedWebsiteSetListItemElement} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
+import type {RelatedWebsiteSet, RelatedWebsiteSetsListItemElement} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {SAMPLE_RELATED_WEBSITE_SET, SAMPLE_RELATED_WEBSITE_SET_MANAGED_BY_ENTERPRISE} from './test_data.js';
 
 suite('ListItemTest', () => {
-  let item: RelatedWebsiteSetListItemElement;
+  let item: RelatedWebsiteSetsListItemElement;
   const sampleSet: RelatedWebsiteSet = SAMPLE_RELATED_WEBSITE_SET;
   const sampleManagedByEnterpriseSet: RelatedWebsiteSet =
       SAMPLE_RELATED_WEBSITE_SET_MANAGED_BY_ENTERPRISE;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    item = document.createElement('related-website-set-list-item');
+    item = document.createElement('related-website-sets-list-item');
     document.body.appendChild(item);
     item.primarySite = sampleSet.primarySite;
     item.memberSites = sampleSet.memberSites;

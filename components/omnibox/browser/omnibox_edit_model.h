@@ -46,7 +46,6 @@ class OmniboxEditModel {
           metrics::OmniboxEventProto::KeywordModeEntryMethod
               keyword_mode_entry_method,
           OmniboxFocusState focus_state,
-          OmniboxFocusSource focus_source,
           const AutocompleteInput& autocomplete_input);
     State(const State& other);
     ~State();
@@ -59,7 +58,6 @@ class OmniboxEditModel {
     metrics::OmniboxEventProto::KeywordModeEntryMethod
         keyword_mode_entry_method;
     OmniboxFocusState focus_state;
-    OmniboxFocusSource focus_source;
     const AutocompleteInput autocomplete_input;
   };
 
@@ -213,11 +211,6 @@ class OmniboxEditModel {
   // This is the same as when the Omnibox is visibly focused.
   bool is_caret_visible() const {
     return focus_state_ == OMNIBOX_FOCUS_VISIBLE;
-  }
-
-  OmniboxFocusSource focus_source() const { return focus_source_; }
-  void set_focus_source(OmniboxFocusSource focus_source) {
-    focus_source_ = focus_source;
   }
 
   // Accessors for keyword-related state (see comments on keyword_ and
@@ -617,11 +610,6 @@ class OmniboxEditModel {
   raw_ptr<OmniboxView> view_;
 
   OmniboxFocusState focus_state_ = OMNIBOX_FOCUS_NONE;
-
-  // Used to keep track whether the input currently in progress originated by
-  // focusing in the Omnibox, Fakebox or Search button. This will be INVALID if
-  // no input is in progress or the Omnibox is not focused.
-  OmniboxFocusSource focus_source_ = OmniboxFocusSource::INVALID;
 
   // Display-only text representing the current page. This could either:
   //  - The same as |url_for_editing_| if Steady State Elisions is OFF.

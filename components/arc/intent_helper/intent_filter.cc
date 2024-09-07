@@ -31,8 +31,9 @@ IntentFilter::IntentFilter(
       schemes_(std::move(schemes)),
       mime_types_(std::move(mime_types)) {
   // In order to register a path we need to have at least one authority.
-  if (!authorities_.empty())
+  if (!authorities_.empty()) {
     paths_ = std::move(paths);
+  }
 }
 
 IntentFilter::IntentFilter(
@@ -52,8 +53,9 @@ IntentFilter::IntentFilter(
       schemes_(std::move(schemes)),
       mime_types_(std::move(mime_types)) {
   // In order to register a path we need to have at least one authority.
-  if (!authorities_.empty())
+  if (!authorities_.empty()) {
     paths_ = std::move(paths);
+  }
 }
 
 IntentFilter::~IntentFilter() = default;

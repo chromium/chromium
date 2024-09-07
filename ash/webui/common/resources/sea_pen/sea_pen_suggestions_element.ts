@@ -17,12 +17,12 @@ import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_butt
 import {assert} from 'chrome://resources/js/assert.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {logSuggestionClicked, logSuggestionShuffleClicked} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
 import {SEA_PEN_SUGGESTIONS} from './sea_pen_untranslated_constants.js';
-import {isArrayEqual, shuffle} from './sea_pen_utils.js';
+import {isArrayEqual, isNonEmptyArray, shuffle} from './sea_pen_utils.js';
 
 const seaPenSuggestionSelectedEvent = 'sea-pen-suggestion-selected';
 
@@ -46,6 +46,7 @@ export interface SeaPenSuggestionsElement {
   $: {
     keys: IronA11yKeysElement,
     suggestionSelector: IronSelectorElement,
+    shuffle: CrButtonElement,
   };
 }
 
@@ -65,6 +66,11 @@ export class SeaPenSuggestionsElement extends PolymerElement {
         observer: 'onSuggestionsChanged_',
       },
 
+      // An array to store only the visible suggestions to select by filling the
+      // items in `suggestions_` to the `suggestionSelector` container until no
+      // space (width) left.
+      selectableSuggestions_: Array,
+
       hiddenSuggestions_: Object,
 
       /** The button currently highlighted by keyboard navigation. */
@@ -73,8 +79,16 @@ export class SeaPenSuggestionsElement extends PolymerElement {
   }
 
   private suggestions_: string[];
+  private selectableSuggestions_: string[];
   private hiddenSuggestions_: Set<string>;
   private ironSelectedSuggestion_: CrButtonElement;
+  private debouncer_: Debouncer;
+  private onResized_: () => void = () => {
+    this.debouncer_ =
+        Debouncer.debounce(this.debouncer_, timeOut.after(50), () => {
+          this.getSelectableSuggestions_();
+        });
+  };
 
   override ready() {
     super.ready();
@@ -86,6 +100,30 @@ export class SeaPenSuggestionsElement extends PolymerElement {
     this.hiddenSuggestions_ = new Set();
     this.suggestions_ = [...SEA_PEN_SUGGESTIONS];
     this.shuffleSuggestions_();
+    window.addEventListener('resize', this.onResized_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('resize', this.onResized_);
+  }
+
+  private getSelectableSuggestions_() {
+    if (!isNonEmptyArray(this.suggestions_)) {
+      return;
+    }
+    this.selectableSuggestions_ = this.suggestions_;
+    afterNextRender(this, () => {
+      const items = Array.from(
+          this.shadowRoot!.querySelectorAll<CrButtonElement>('.suggestion'));
+      const GAP = 10;  // 10px gap between suggestion chips.
+      let remainingWidth = this.$.suggestionSelector.clientWidth - GAP;
+      this.selectableSuggestions_ = this.suggestions_.filter((_, i) => {
+        const itemWidth = items[i].clientWidth + GAP;
+        remainingWidth -= itemWidth;
+        return remainingWidth >= 0;
+      });
+    });
   }
 
   private onClickSuggestion_(event: Event&{model: {index: number}}) {
@@ -93,11 +131,18 @@ export class SeaPenSuggestionsElement extends PolymerElement {
     const suggestion = target.textContent?.trim();
     assert(suggestion);
     this.dispatchEvent(new SeaPenSuggestionSelectedEvent(suggestion));
-    this.hiddenSuggestions_.add(suggestion);
-    this.splice('suggestions_', event.model.index, 1);
-    // Manually calls observer since splicing doesn't trigger it.
-    this.onSuggestionsChanged_();
     logSuggestionClicked();
+
+    // If there are fewer than 4 suggestions, shuffle them all instead of
+    // removing one.
+    if (SEA_PEN_SUGGESTIONS.length - this.hiddenSuggestions_.size < 4) {
+      this.shuffleSuggestions_();
+    } else {
+      this.hiddenSuggestions_.add(suggestion);
+      this.splice('suggestions_', event.model.index, 1);
+      // Manually calls observer since splicing doesn't trigger it.
+      this.onSuggestionsChanged_();
+    }
   }
 
   private onShuffleClicked_() {
@@ -125,6 +170,7 @@ export class SeaPenSuggestionsElement extends PolymerElement {
   }
 
   private onSuggestionsChanged_() {
+    this.getSelectableSuggestions_();
     requestAnimationFrame(() => {
       // The focused suggestion might be removed from the DOM once clicked. To
       // allow keyboard users to focus on the suggestions again, we add the

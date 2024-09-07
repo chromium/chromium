@@ -83,12 +83,34 @@ class ConsolidateKnownOverlappingTagsUnittest(unittest.TestCase):
     consolidated_tags = self.expectations._ConsolidateKnownOverlappingTags(tags)
     self.assertEqual(consolidated_tags, {'mac', 'amd', 'amd-0x6821', 'release'})
 
-  def testMacbookPro2019(self) -> None:
-    """Tests that Macbook Pro 2019 tags are properly consolidated."""
-    tags = frozenset(
-        ['mac', 'amd', 'amd-0x67ef', 'release', 'intel', 'intel-0x3e9b'])
+  def test15InchMacbookPro2019(self) -> None:
+    """Tests that 15" Macbook Pro 2019 tags are properly consolidated."""
+    tags = frozenset([
+        'mac', 'amd', 'amd-0x67ef', 'release', 'intel', 'intel-0x3e9b',
+        'intel-gen-9'
+    ])
     consolidated_tags = self.expectations._ConsolidateKnownOverlappingTags(tags)
     self.assertEqual(consolidated_tags, {'mac', 'amd', 'amd-0x67ef', 'release'})
+
+  def test16InchMacbookPro2019(self) -> None:
+    """Tests that 16" Macbook Pro 2019 tags are properly consolidated."""
+    tags = frozenset([
+        'mac', 'amd', 'amd-0x7340', 'release', 'intel', 'intel-0x3e9b',
+        'intel-gen-9'
+    ])
+    consolidated_tags = self.expectations._ConsolidateKnownOverlappingTags(tags)
+    self.assertEqual(consolidated_tags, {'mac', 'amd', 'amd-0x7340', 'release'})
+
+  def testSpecificMacVersion(self) -> None:
+    """Tests that specific Mac versions can be used for IDing dual GPUs."""
+    tags = frozenset([
+        'angle-metal', 'amd-0x67ef', 'sonoma', 'intel-gen-9', 'amd',
+        'passthrough'
+    ])
+    consolidated_tags = self.expectations._ConsolidateKnownOverlappingTags(tags)
+    self.assertEqual(
+        consolidated_tags,
+        {'angle-metal', 'amd-0x67ef', 'sonoma', 'amd', 'passthrough'})
 
 
 if __name__ == '__main__':

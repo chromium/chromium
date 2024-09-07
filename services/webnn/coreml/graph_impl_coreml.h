@@ -20,11 +20,13 @@
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::coreml {
 
+class BufferContent;
 class ContextImplCoreml;
 
 // GraphImplCoreml inherits from WebNNGraphImpl to represent a CoreML graph
@@ -124,8 +126,8 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
       mojom::WebNNGraph::ComputeCallback callback) override;
 
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
+      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
+      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)
       override;
 
  private:
@@ -133,6 +135,15 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
                              mojom::WebNNGraph::ComputeCallback callback,
                              id<MLFeatureProvider> output_features,
                              NSError* error);
+
+  void DoDispatch(
+      base::flat_map<std::string,
+                     scoped_refptr<QueueableResourceState<BufferContent>>>
+          named_input_buffer_states,
+      base::flat_map<std::string,
+                     scoped_refptr<QueueableResourceState<BufferContent>>>
+          named_output_buffer_states,
+      base::OnceClosure completion_closure);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

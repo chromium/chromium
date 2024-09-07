@@ -453,11 +453,17 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   void SetSoftwareMirroring(bool enabled) override;
   bool SoftwareMirroringEnabled() const override;
   bool IsSoftwareMirroringEnforced() const override;
+
+  // Sets the touch calibration data via `TouchDeviceManager`, mapping
+  // `touchdevice` to the given `display_id`. If `apply_spatial_calibration` is
+  // true, the bounds and valid screen space of the target touch device are also
+  // calibrated, otherwise this information is thrown out.
   void SetTouchCalibrationData(
       int64_t display_id,
       const TouchCalibrationData::CalibrationPointPairQuad& point_pair_quad,
       const gfx::Size& display_bounds,
-      const ui::TouchscreenDevice& touchdevice);
+      const ui::TouchscreenDevice& touchdevice,
+      bool apply_spatial_calibration);
   void ClearTouchCalibrationData(
       int64_t display_id,
       std::optional<ui::TouchscreenDevice> touchdevice);

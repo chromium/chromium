@@ -158,8 +158,8 @@ class CONTENT_EXPORT SiteInfo {
   explicit SiteInfo(BrowserContext* browser_context);
   // The SiteInfo constructor should take in all values needed for comparing two
   // SiteInfos, to help ensure all creation sites are updated accordingly when
-  // new values are added. The private function MakeTie() should be updated
-  // accordingly.
+  // new values are added. The private function MakeSecurityPrincipalKey()
+  // should be updated accordingly.
   SiteInfo(const GURL& site_url,
            const GURL& process_lock_url,
            bool requires_origin_keyed_process,
@@ -172,6 +172,7 @@ class CONTENT_EXPORT SiteInfo {
            bool is_guest,
            bool does_site_request_dedicated_process_for_coop,
            bool is_jit_disabled,
+           bool are_v8_optimizations_disabled,
            bool is_pdf,
            bool is_fenced,
            const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
@@ -279,6 +280,9 @@ class CONTENT_EXPORT SiteInfo {
   bool is_guest() const { return is_guest_; }
   bool is_error_page() const;
   bool is_jit_disabled() const { return is_jit_disabled_; }
+  bool are_v8_optimizations_disabled() const {
+    return are_v8_optimizations_disabled_;
+  }
   bool is_pdf() const { return is_pdf_; }
   bool is_fenced() const { return is_fenced_; }
 
@@ -479,6 +483,9 @@ class CONTENT_EXPORT SiteInfo {
 
   // Indicates that JIT is disabled for this SiteInfo.
   bool is_jit_disabled_ = false;
+
+  // Indicates that v8 optimizations are disabled for this SiteInfo.
+  bool are_v8_optimizations_disabled_ = false;
 
   // Indicates that this SiteInfo is for PDF content.
   bool is_pdf_ = false;

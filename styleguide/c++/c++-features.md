@@ -574,35 +574,6 @@ Overlaps with utilities in `base/strings/string_number_conversions.h`, which are
 easier to use correctly.
 ***
 
-### std::hardware_{con,de}structive_interference_size <sup>[banned]</sup>
-
-```c++
-struct SharedData {
-  ReadOnlyFrequentlyUsed data;
-  alignas(std::hardware_destructive_interference_size) std::atomic<size_t> counter;
-};
-```
-
-**Description:** The `std::hardware_destructive_interference_size` constant is
-useful to avoid false sharing (destructive interference) between variables that
-would otherwise occupy the same cacheline. In contrast,
-`std::hardware_constructive_interference_size` is helpful to promote true
-sharing (constructive interference), e.g. to support better locality for
-non-contended data.
-
-**Documentation:**
-[`std::hardware_destructive_interference_size`](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size),
-[`std::hardware_constructive_interference_size`](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size)
-
-**Notes:**
-*** promo
-Banned for now since these are
-[not supported yet](https://github.com/llvm/llvm-project/issues/60174). Allow
-once supported.
-
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/cwktrFxxUY4)
-***
-
 ### std::in_place{_type,_index}[_t] <sup>[banned]</sup>
 
 ```c++
@@ -1206,6 +1177,31 @@ avoiding the need to use the `erase(remove(...` paradigm.
 [Migration bug](https://crbug.com/1414639)
 ***
 
+### std::hardware_{con,de}structive_interference_size <sup>[allowed]</sup>
+
+```c++
+struct SharedData {
+  ReadOnlyFrequentlyUsed data;
+  alignas(std::hardware_destructive_interference_size) std::atomic<size_t> counter;
+};
+```
+
+**Description:** The `std::hardware_destructive_interference_size` constant is
+useful to avoid false sharing (destructive interference) between variables that
+would otherwise occupy the same cacheline. In contrast,
+`std::hardware_constructive_interference_size` is helpful to promote true
+sharing (constructive interference), e.g. to support better locality for
+non-contended data.
+
+**Documentation:**
+[`std::hardware_destructive_interference_size`](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size),
+[`std::hardware_constructive_interference_size`](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/cwktrFxxUY4)
+***
+
 ### std::is_[un]bounded_array <sup>[allowed]</sup>
 
 ```c++
@@ -1753,7 +1749,8 @@ Banned since workaround for lack of RTTI
 absl::bind_front
 ```
 
-**Description:** Binds the first N arguments of an invocable object and stores them by value.
+**Description:** Binds the first N arguments of an invocable object and stores
+them by value.
 
 **Documentation:**
 *   [bind_front.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/bind_front.h)
@@ -1857,6 +1854,23 @@ invocable type.
   to result in lifetime bugs.
 
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/JVN4E4IIYA0)
+***
+
+### Optional <sup>[banned]</sup>
+
+```c++
+absl::optional<int> Func(bool b) {
+  return b ? absl::make_optional(1) : abl::nullopt;
+}
+```
+
+**Description:** Early adaptation of C++17 `std::optional`.
+
+**Documentation:** [std::optional](https://en.cppreference.com/w/cpp/utility/optional)
+
+**Notes:**
+*** promo
+Superseded by `std::optional`. Use `std::optional` instead.
 ***
 
 ### Random <sup>[banned]</sup>

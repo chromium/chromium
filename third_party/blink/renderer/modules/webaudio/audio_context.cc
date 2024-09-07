@@ -446,7 +446,7 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
   // pulling on the graph again.
   {
     DeferredTaskHandler::GraphAutoLocker locker(this);
-    resume_resolvers_.push_back(resolver);
+    pending_promises_resolvers_.push_back(resolver);
   }
 
   return promise;
@@ -945,7 +945,8 @@ void AudioContext::ResolvePromisesForUnpause() {
   // Resolve any pending promises created by resume(). Only do this if we
   // haven't already started resolving these promises. This gets called very
   // often and it takes some time to resolve the promises in the main thread.
-  if (!is_resolving_resume_promises_ && resume_resolvers_.size() > 0) {
+  if (!is_resolving_resume_promises_ &&
+      pending_promises_resolvers_.size() > 0) {
     is_resolving_resume_promises_ = true;
     ScheduleMainThreadCleanup();
   }
@@ -1132,13 +1133,13 @@ void AudioContext::DevicesEnumerated(
         audio_input_capabilities) {
   Vector<WebMediaDeviceInfo> output_devices =
       enumeration[static_cast<wtf_size_t>(
-          mojom::blink::MediaDeviceType::kMediaAudioOuput)];
+          mojom::blink::MediaDeviceType::kMediaAudioOutput)];
 
   TRACE_EVENT1(
       "webaudio", "AudioContext::DevicesEnumerated", "DeviceEnumeration",
       audio_utilities::GetDeviceEnumerationForTracing(output_devices));
 
-  OnDevicesChanged(mojom::blink::MediaDeviceType::kMediaAudioOuput,
+  OnDevicesChanged(mojom::blink::MediaDeviceType::kMediaAudioOutput,
                    output_devices);
 
   // Start the first resolver in the queue once `output_device_ids_` is
@@ -1152,7 +1153,7 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
                                     const Vector<WebMediaDeviceInfo>& devices) {
   DCHECK(IsMainThread());
 
-  if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOuput) {
+  if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOutput) {
     output_device_ids_.clear();
     for (auto device : devices) {
       if (device.device_id == "default") {
@@ -1251,7 +1252,7 @@ void AudioContext::ResumeOnPrerenderActivation() {
 }
 
 void AudioContext::TransferAudioFrameStatsTo(
-    AudioContext::AudioFrameStats& receiver) {
+    AudioFrameStatsAccumulator& receiver) {
   DeferredTaskHandler::GraphAutoLocker locker(this);
   receiver.Absorb(audio_frame_stats_);
 }

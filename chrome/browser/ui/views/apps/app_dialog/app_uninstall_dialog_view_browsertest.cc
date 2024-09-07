@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -42,13 +43,19 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
  public:
-  AppDialogView* ActiveView() {
+  AppUninstallDialogView* ActiveView() {
     return AppUninstallDialogView::GetActiveViewForTesting();
+  }
+
+  std::optional<std::u16string> GetTitleText(
+      AppUninstallDialogView* uninstall_dialog_view) {
+    return uninstall_dialog_view->GetTitleTextForTesting();
   }
 
   void ShowUi(const std::string& name) override {
@@ -61,11 +68,12 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
     UninstallApp(app_id_);
 
     ASSERT_NE(nullptr, ActiveView());
-    EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+    EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                  static_cast<int>(ui::mojom::DialogButton::kCancel),
               ActiveView()->buttons());
     std::u16string title =
         u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
-    EXPECT_EQ(title, ActiveView()->GetWindowTitle());
+    EXPECT_EQ(title, GetTitleText(ActiveView()));
 
     if (name == "accept") {
       if (app_service_proxy->AppRegistryCache().GetAppType(app_id_) ==
@@ -273,11 +281,12 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
   EXPECT_FALSE(UninstallApp(app_id_));
 
   ASSERT_NE(nullptr, ActiveView());
-  EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel),
             ActiveView()->buttons());
   std::u16string title =
       u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
-  EXPECT_EQ(title, ActiveView()->GetWindowTitle());
+  EXPECT_EQ(title, GetTitleText(ActiveView()));
 
   // Cancelling the active dialog should not uninstall the web app.
   ActiveView()->CancelDialog();

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -18,8 +19,9 @@ namespace {
 
 // Appends "data" at the end of "container".
 void Append(std::vector<uint8_t>& container, NSData* data) {
-  const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data.bytes);
-  container.insert(container.end(), bytes, bytes + data.length);
+  base::span<const uint8_t> span = base::apple::NSDataToSpan(data);
+  // Use append_range when C++23 is available.
+  container.insert(container.end(), span.begin(), span.end());
 }
 
 // Returns the security domain secret by fetching it from the vault.

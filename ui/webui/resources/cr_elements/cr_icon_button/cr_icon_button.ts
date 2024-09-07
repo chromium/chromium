@@ -90,6 +90,12 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
         reflect: true,
       },
 
+      suppressRtlFlip: {
+        type: Boolean,
+        value: false,
+        reflect: true,
+      },
+
       multipleIcons_: {
         type: Boolean,
         reflect: true,

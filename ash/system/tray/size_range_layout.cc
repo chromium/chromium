@@ -62,14 +62,6 @@ gfx::Size SizeRangeLayout::CalculatePreferredSize(
   return preferred_size;
 }
 
-int SizeRangeLayout::GetHeightForWidth(int width) const {
-  const int height =
-      GetLayoutManager()->GetPreferredHeightForWidth(this, width);
-  gfx::Size size(0, height);
-  ClampSizeToRange(&size);
-  return size.height();
-}
-
 void SizeRangeLayout::ChildPreferredSizeChanged(View* child) {
   GetLayoutManager()->InvalidateLayout();
 }

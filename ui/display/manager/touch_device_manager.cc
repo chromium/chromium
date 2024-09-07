@@ -595,29 +595,45 @@ void TouchDeviceManager::AddTouchCalibrationData(
     const ui::TouchscreenDevice& device,
     int64_t display_id,
     const TouchCalibrationData& data) {
+  AddTouchCalibrationDataImpl(device, display_id, &data);
+}
+
+void TouchDeviceManager::AddTouchAssociation(
+    const ui::TouchscreenDevice& device,
+    int64_t display_id) {
+  AddTouchCalibrationDataImpl(device, display_id, /*data=*/nullptr);
+}
+
+void TouchDeviceManager::AddTouchCalibrationDataImpl(
+    const ui::TouchscreenDevice& device,
+    int64_t display_id,
+    const TouchCalibrationData* data) {
   const TouchDeviceIdentifier identifier =
       TouchDeviceIdentifier::FromDevice(device);
-  if (!base::Contains(touch_associations_, identifier))
-    touch_associations_.emplace(identifier, AssociationInfoMap());
 
   // Update the current touch association and associate the display identified
   // by |display_id| to the touch device identified by |identifier|.
   active_touch_associations_[identifier] = display_id;
 
-  auto it = touch_associations_.at(identifier).find(display_id);
-  if (it != touch_associations_.at(identifier).end()) {
-    // Update the timestamp and calibration data if information about the
-    // display identified by |display_id| already exists for the touch device
-    // identified by |identifier|.
-    it->second.calibration_data = data;
-    it->second.timestamp = base::Time::Now();
+  auto& association_info_map = touch_associations_[identifier];
+  auto it = association_info_map.find(display_id);
+  if (it != association_info_map.end()) {
+    if (data) {
+      // Update the timestamp and calibration data if information about the
+      // display identified by |display_id| already exists for the touch device
+      // identified by |identifier|.
+      it->second.calibration_data = *data;
+      it->second.timestamp = base::Time::Now();
+    }
   } else {
     // Add a new entry for the display identified by |display_id| in the map
     // of associations for the touch device identified by |identifier|.
     TouchAssociationInfo info;
     info.timestamp = base::Time::Now();
-    info.calibration_data = data;
-    touch_associations_.at(identifier).emplace(display_id, info);
+    if (data) {
+      info.calibration_data = *data;
+    }
+    association_info_map.emplace(display_id, info);
   }
 
   // Store the port association information, i.e. the touch device identified by

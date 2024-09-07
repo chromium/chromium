@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -25,6 +26,7 @@
 
 using testing::_;
 using testing::Eq;
+using testing::IsEmpty;
 using testing::StrEq;
 
 namespace ash {
@@ -238,6 +240,12 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
   EXPECT_THAT(record.session_type(), Eq(test_case.expected_session_type));
   ASSERT_TRUE(record.has_login_event());
   EXPECT_FALSE(record.login_event().has_failure());
+  if (test_case.expected_session_type ==
+      LoginLogoutSessionType::REGULAR_USER_SESSION) {
+    EXPECT_TRUE(record.has_unaffiliated_user());
+    EXPECT_TRUE(record.unaffiliated_user().has_user_id());
+    EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
+  }
 }
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
@@ -296,6 +304,12 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(), Eq(test_case.expected_session_type));
+  if (test_case.expected_session_type ==
+      LoginLogoutSessionType::REGULAR_USER_SESSION) {
+    EXPECT_TRUE(record.has_unaffiliated_user());
+    EXPECT_TRUE(record.unaffiliated_user().has_user_id());
+    EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
+  }
 }
 
 TEST_P(LoginLogoutReporterTest, ReportLoginLogoutDisabled) {
@@ -431,6 +445,9 @@ TEST_F(LoginFailureReporterTest, ReportUnaffiliatedLoginFailure_TpmError) {
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
+  EXPECT_TRUE(record.has_unaffiliated_user());
+  EXPECT_TRUE(record.unaffiliated_user().has_user_id());
+  EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
               Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
@@ -763,6 +780,9 @@ TEST_P(LoginFailureReporterTest,
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
+  EXPECT_TRUE(record.has_unaffiliated_user());
+  EXPECT_TRUE(record.unaffiliated_user().has_user_id());
+  EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
               Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));

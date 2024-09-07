@@ -30,7 +30,7 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
-import type {FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import type {FindShortcutListener} from 'chrome://resources/cr_elements/find_shortcut_manager.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import type {WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -146,9 +146,8 @@ const HistoryAppElementBase = mixinBehaviors(
                                   [IronScrollTargetBehavior],
                                   HelpBubbleMixin(FindShortcutMixin(
                                       WebUiListenerMixin(PolymerElement)))) as {
-  new (): PolymerElement & HelpBubbleMixinInterface &
-      FindShortcutMixinInterface & IronScrollTargetBehavior &
-      WebUiListenerMixinInterface,
+  new (): PolymerElement & HelpBubbleMixinInterface & FindShortcutListener &
+      IronScrollTargetBehavior & WebUiListenerMixinInterface,
 };
 
 export class HistoryAppElement extends HistoryAppElementBase {
@@ -734,10 +733,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     // page or tab has changed.
     setTimeout(() => {
       this.$.history.notifyResize();
-      const clusters = this.shadowRoot!.querySelector('history-clusters');
-      if (clusters) {
-        clusters.notifyResize();
-      }
     }, 0);
   }
 

@@ -11,7 +11,7 @@
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -50,7 +50,7 @@ IOSProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   return std::make_unique<IOSProfileSessionDurationsService>(
       sync_service, browser_state->GetPrefs(), identity_manager);
 }

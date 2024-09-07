@@ -19,7 +19,7 @@ DOMFloat32Array* transformationMatrixToDOMFloat32Array(
     const gfx::Transform& matrix) {
   float array[16];
   matrix.GetColMajorF(array);
-  return DOMFloat32Array::Create(array, 16);
+  return DOMFloat32Array::Create(array);
 }
 
 gfx::Transform DOMFloat32ArrayToTransform(DOMFloat32Array* m) {

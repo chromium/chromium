@@ -33,11 +33,10 @@ int GetAspectRatio(const gfx::Size& size) {
 std::unique_ptr<PickerImageItemView> CreateGifItem(
     const gfx::Size& gif_dimensions) {
   return std::make_unique<PickerImageItemView>(
-      base::DoNothing(),
       std::make_unique<PickerGifView>(
           /*frames_fetcher=*/base::DoNothing(),
-          /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions,
-          /*accessible_name=*/u""));
+          /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions),
+      u"gif", base::DoNothing());
 }
 
 TEST(PickerImageItemGridViewTest, OneGifItem) {
@@ -89,7 +88,8 @@ TEST(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
                                    ElementsAre(item2, item3, item4)))));
 }
 
-TEST(PickerImageItemGridViewTest, GifItemsAreResizedToSameWidth) {
+// TODO: b/357146181 - Re-enable once Gifs are used again.
+TEST(PickerImageItemGridViewTest, DISABLED_GifItemsAreResizedToSameWidth) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item1 =

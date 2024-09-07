@@ -52,8 +52,6 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
   void OnChromeFeatureFlagsInstanceReady(
       mojo::PendingRemote<mojom::ChromeFeatureFlagsInstance>
           chrome_feature_flags_remote) override;
-  void OnClipboardInstanceReady(
-      mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) override;
   void OnCompatibilityModeInstanceReady(
       mojo::PendingRemote<mojom::CompatibilityModeInstance>
           compatibility_mode_remote) override;

@@ -7,8 +7,16 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
+#include "ash/public/cpp/auth/active_session_fingerprint_client.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
+#include "chromeos/ash/components/osauth/public/request/auth_request.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/user_verifying_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,6 +25,8 @@
 #include "ui/aura/window.h"
 
 namespace {
+
+constexpr char kRpId[] = "example.com";
 
 using testing::_;
 
@@ -52,15 +62,78 @@ class MockWebAuthNDialogController : public ash::WebAuthNDialogController {
               (const, override));
 };
 
-TEST(UserVerifyingKeyUtilsCrosTest,
-     UserVerifyingKeyProvider_GeneratedKeyCanBeImported) {
-  MockWebAuthNDialogController dialog_controller;
+class MockActiveSessionAuthController
+    : public ash::ActiveSessionAuthController {
+ public:
+  MockActiveSessionAuthController() = default;
+
+  ~MockActiveSessionAuthController() override = default;
+
+  MOCK_METHOD(bool,
+              ShowAuthDialog,
+              (std::unique_ptr<ash::AuthRequest> auth_request),
+              (override));
+  MOCK_METHOD(bool, IsShown, (), (const override));
+  MOCK_METHOD(void,
+              SetFingerprintClient,
+              (ash::ActiveSessionFingerprintClient * fp_client),
+              (override));
+};
+
+class UserVerifyingKeyUtilsCrosTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  UserVerifyingKeyUtilsCrosTest() = default;
+  ~UserVerifyingKeyUtilsCrosTest() override = default;
+  UserVerifyingKeyUtilsCrosTest(const UserVerifyingKeyUtilsCrosTest&) = delete;
+  UserVerifyingKeyUtilsCrosTest& operator=(
+      const UserVerifyingKeyUtilsCrosTest&) = delete;
+
+  void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          ash::features::kWebAuthNAuthDialogMerge);
+      return;
+    }
+
+    feature_list_.InitAndDisableFeature(
+        ash::features::kWebAuthNAuthDialogMerge);
+  }
+
+  UserVerifyingKeyProviderConfigChromeos MakeKeyProviderConfig(
+      aura::Window* window) {
+    if (GetParam()) {
+      return UserVerifyingKeyProviderConfigChromeos{&dialog_controller_, window,
+                                                    kRpId};
+    }
+
+    return UserVerifyingKeyProviderConfigChromeos{&legacy_dialog_controller_,
+                                                  window, kRpId};
+  }
+
+  void AssertRequestContainsRpId(ash::AuthRequest* request) {
+    ASSERT_EQ(static_cast<ash::WebAuthNAuthRequest*>(request)->GetRpId(),
+              kRpId);
+  }
+
+ protected:
+  MockWebAuthNDialogController legacy_dialog_controller_;
+  MockActiveSessionAuthController dialog_controller_;
+  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(UnexportableKeyUtils,
+                         UserVerifyingKeyUtilsCrosTest,
+                         testing::Bool());
+
+TEST_P(UserVerifyingKeyUtilsCrosTest,
+       UserVerifyingKeyProvider_GeneratedKeyCanBeImported) {
   std::unique_ptr<aura::Window> window(
       aura::test::CreateTestWindowWithId(1, nullptr));
   std::unique_ptr<crypto::UserVerifyingKeyProvider> provider =
-      GetWebAuthnUserVerifyingKeyProvider(
-          UserVerifyingKeyProviderConfigChromeos{
-              .dialog_controller = &dialog_controller, .window = window.get()});
+      GetWebAuthnUserVerifyingKeyProvider(MakeKeyProviderConfig(window.get()));
   ASSERT_TRUE(provider);
   base::test::TestFuture<
       base::expected<std::unique_ptr<crypto::UserVerifyingSigningKey>,
@@ -81,23 +154,31 @@ TEST(UserVerifyingKeyUtilsCrosTest,
   EXPECT_EQ(signing_key.GetPublicKey(), imported_signing_key.GetPublicKey());
 }
 
-TEST(UserVerifyingKeyUtilsCrosTest,
-     UserVerifyingKeyProvider_SigningShowsInSessionAuthChallenge) {
-  MockWebAuthNDialogController dialog_controller;
+TEST_P(UserVerifyingKeyUtilsCrosTest,
+       UserVerifyingKeyProvider_SigningShowsInSessionAuthChallenge) {
   std::unique_ptr<aura::Window> window(
       aura::test::CreateTestWindowWithId(1, nullptr));
   std::unique_ptr<crypto::UserVerifyingKeyProvider> provider =
-      GetWebAuthnUserVerifyingKeyProvider(
-          UserVerifyingKeyProviderConfigChromeos{
-              .dialog_controller = &dialog_controller, .window = window.get()});
+      GetWebAuthnUserVerifyingKeyProvider(MakeKeyProviderConfig(window.get()));
   ASSERT_TRUE(provider);
 
   // Simulate successful in-session auth.
-  EXPECT_CALL(dialog_controller, ShowAuthenticationDialog(window.get(), "", _))
-      .WillOnce([](aura::Window*, const std::string&,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
+  if (GetParam()) {
+    EXPECT_CALL(dialog_controller_, ShowAuthDialog(_))
+        .WillOnce([this](std::unique_ptr<ash::AuthRequest> request) {
+          AssertRequestContainsRpId(request.get());
+          request->NotifyAuthSuccess(nullptr);
+          return true;
+        });
+  } else {
+    EXPECT_CALL(legacy_dialog_controller_,
+                ShowAuthenticationDialog(window.get(), kRpId, _))
+        .WillOnce([](aura::Window*, const std::string& rp_id,
+                     base::OnceCallback<void(bool)> callback) {
+          ASSERT_EQ(rp_id, kRpId);
+          std::move(callback).Run(true);
+        });
+  }
 
   base::test::TestFuture<
       base::expected<std::unique_ptr<crypto::UserVerifyingSigningKey>,
@@ -114,23 +195,31 @@ TEST(UserVerifyingKeyUtilsCrosTest,
   EXPECT_FALSE(signature_future.Get()->empty());
 }
 
-TEST(UserVerifyingKeyUtilsCrosTest,
-     UserVerifyingKeyProvider_SigningWithoutUvYieldsNullopt) {
-  MockWebAuthNDialogController dialog_controller;
+TEST_P(UserVerifyingKeyUtilsCrosTest,
+       UserVerifyingKeyProvider_SigningWithoutUvYieldsNullopt) {
   std::unique_ptr<aura::Window> window(
       aura::test::CreateTestWindowWithId(1, nullptr));
   std::unique_ptr<crypto::UserVerifyingKeyProvider> provider =
-      GetWebAuthnUserVerifyingKeyProvider(
-          UserVerifyingKeyProviderConfigChromeos{
-              .dialog_controller = &dialog_controller, .window = window.get()});
+      GetWebAuthnUserVerifyingKeyProvider(MakeKeyProviderConfig(window.get()));
   ASSERT_TRUE(provider);
 
   // Simulate failed in-session auth.
-  EXPECT_CALL(dialog_controller, ShowAuthenticationDialog(window.get(), "", _))
-      .WillOnce([](aura::Window*, const std::string&,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(false);
-      });
+  if (GetParam()) {
+    EXPECT_CALL(dialog_controller_, ShowAuthDialog(_))
+        .WillOnce([this](std::unique_ptr<ash::AuthRequest> request) -> bool {
+          AssertRequestContainsRpId(request.get());
+          request->NotifyAuthFailure();
+          return true;
+        });
+  } else {
+    EXPECT_CALL(legacy_dialog_controller_,
+                ShowAuthenticationDialog(window.get(), kRpId, _))
+        .WillOnce([](aura::Window*, const std::string& rp_id,
+                     base::OnceCallback<void(bool)> callback) {
+          ASSERT_EQ(rp_id, kRpId);
+          std::move(callback).Run(false);
+        });
+  }
 
   base::test::TestFuture<
       base::expected<std::unique_ptr<crypto::UserVerifyingSigningKey>,
@@ -147,14 +236,11 @@ TEST(UserVerifyingKeyUtilsCrosTest,
   EXPECT_FALSE(signature_future.Get().has_value());
 }
 
-TEST(UserVerifyingKeyUtilsCrosTest, UserVerifyingKeyProvider_DeleteIsANoOp) {
-  MockWebAuthNDialogController dialog_controller;
+TEST_P(UserVerifyingKeyUtilsCrosTest, UserVerifyingKeyProvider_DeleteIsANoOp) {
   std::unique_ptr<aura::Window> w1(
       aura::test::CreateTestWindowWithId(1, nullptr));
   std::unique_ptr<crypto::UserVerifyingKeyProvider> provider =
-      GetWebAuthnUserVerifyingKeyProvider(
-          UserVerifyingKeyProviderConfigChromeos{
-              .dialog_controller = &dialog_controller, .window = w1.get()});
+      GetWebAuthnUserVerifyingKeyProvider(MakeKeyProviderConfig(w1.get()));
   ASSERT_TRUE(provider);
   base::test::TestFuture<bool> future;
   provider->DeleteUserVerifyingKey("test key label", future.GetCallback());

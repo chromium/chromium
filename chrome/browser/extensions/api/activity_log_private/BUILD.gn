@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("activity_log_private") {
+  sources = [
+    "activity_log_private_api.cc",
+    "activity_log_private_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/extensions:extensions",
+    "//chrome/common/extensions/api:api",
+    "//components/prefs:prefs",
+    "//extensions/browser",
+  ]
+}

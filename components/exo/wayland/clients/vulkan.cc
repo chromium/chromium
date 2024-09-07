@@ -19,7 +19,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace exo {
 namespace wayland {

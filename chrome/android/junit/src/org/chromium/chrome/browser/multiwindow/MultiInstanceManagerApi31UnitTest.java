@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.app.ActivityManager.RecentTaskInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,6 +49,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -206,7 +209,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     private static class TestMultiInstanceManagerApi31 extends MultiInstanceManagerApi31 {
         // Running tasks containing Chrome activity ~ ActivityManager.getAppTasks()
-        private final Set<Integer> mAppTasks = new HashSet<>();
+        private final Set<Integer> mAppTaskIds = new HashSet<>();
 
         private Activity mAdjacentInstance;
 
@@ -270,18 +273,18 @@ public class MultiInstanceManagerApi31UnitTest {
 
         private void updateTasks(int instanceId, Activity activity) {
             if (instanceId == INVALID_INSTANCE_ID) {
-                mAppTasks.remove(activity.getTaskId());
+                mAppTaskIds.remove(activity.getTaskId());
                 ShadowApplicationStatus.removeRunningActivity(activity);
             } else {
-                mAppTasks.add(activity.getTaskId());
+                mAppTaskIds.add(activity.getTaskId());
             }
         }
 
         private void updateTasksWithoutDestroyingActivity(int instanceId, Activity activity) {
             if (instanceId == INVALID_INSTANCE_ID) {
-                mAppTasks.remove(activity.getTaskId());
+                mAppTaskIds.remove(activity.getTaskId());
             } else {
-                mAppTasks.add(activity.getTaskId());
+                mAppTaskIds.add(activity.getTaskId());
             }
         }
 
@@ -293,7 +296,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         @Override
         protected Set<Integer> getAllAppTaskIds(List<AppTask> allTasks) {
-            return mAppTasks;
+            return mAppTaskIds;
         }
 
         @Override
@@ -306,9 +309,6 @@ public class MultiInstanceManagerApi31UnitTest {
             }
             return super.getInstanceInfo();
         }
-
-        @Override
-        void bringTaskForeground(int taskId) {}
 
         @Override
         void setupIntentForReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {}
@@ -1265,5 +1265,80 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.cleanupSyncedTabGroupsIfLastInstance();
         // Verify this is not called a second time.
         verify(mTabGroupSyncService).getAllGroupIds();
+    }
+
+    @Test
+    @SmallTest
+    @Config(sdk = 30)
+    public void testOpenInstance_TaskHasRunningActivity() {
+        doTestOpenInstanceWithValidTask(/* isActivityAlive= */ true);
+    }
+
+    @Test
+    @SmallTest
+    @Config(sdk = 30)
+    public void testOpenInstance_TaskHasNoRunningActivity() {
+        doTestOpenInstanceWithValidTask(/* isActivityAlive= */ false);
+    }
+
+    private void doTestOpenInstanceWithValidTask(boolean isActivityAlive) {
+        // Setup mocks to ensure that MultiWindowUtils#createNewWindowIntent() runs as expected.
+        MultiWindowTestUtils.enableMultiInstance();
+        when(mTabbedActivityTask62.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+
+        // Create the MultiInstanceManager for current activity = |mTabbedActivityTask62| and setup
+        // another instance for |mTabbedActivityTask63|.
+        MultiInstanceManagerApi31 multiInstanceManager =
+                Mockito.spy(
+                        new TestMultiInstanceManagerApi31(
+                                mTabbedActivityTask62,
+                                mTabModelOrchestratorSupplier,
+                                mMultiWindowModeStateDispatcher,
+                                mActivityLifecycleDispatcher,
+                                mModalDialogManagerSupplier,
+                                mMenuOrKeyboardActionController,
+                                mDesktopWindowStateProviderSupplier));
+
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
+
+        // Setup AppTask's for both activities.
+        int taskId62 = mTabbedActivityTask62.getTaskId();
+        int taskId63 = mTabbedActivityTask63.getTaskId();
+        var appTask62 = mock(AppTask.class);
+        var appTaskInfo62 = mock(RecentTaskInfo.class);
+        appTaskInfo62.taskId = taskId62;
+        when(appTask62.getTaskInfo()).thenReturn(appTaskInfo62);
+        var appTask63 = mock(AppTask.class);
+        var appTaskInfo63 = mock(RecentTaskInfo.class);
+        appTaskInfo63.taskId = taskId63;
+        when(appTask63.getTaskInfo()).thenReturn(appTaskInfo63);
+        List<AppTask> appTasks = List.of(appTask62, appTask63);
+        when(mActivityManager.getAppTasks()).thenReturn(appTasks);
+
+        if (!isActivityAlive) {
+            // Force destruction of |mTabbedActivityTask63|.
+            destroyActivity(mTabbedActivityTask63);
+            ShadowApplicationStatus.removeRunningActivity(mTabbedActivityTask63);
+        }
+
+        // Try to restore the instance in task |taskId63|, from |mTabbedActivityTask62|.
+        multiInstanceManager.openInstance(1, taskId63);
+
+        if (isActivityAlive) {
+            // If |mTabbedActivityTask63| is alive, verify that its instance was restored in the
+            // existing task by bringing it to the foreground.
+            verify(mActivityManager).moveTaskToFront(taskId63, 0);
+            verify(mTabbedActivityTask62, never()).startActivity(any(), any());
+            verify(appTask63, never()).finishAndRemoveTask();
+        } else {
+            // If |mTabbedActivityTask63| is not alive, verify that |mTabbedActivityTask62| starts a
+            // new activity and finishes and removes the old task, and does not attempt to bring the
+            // old task to the foreground.
+            verify(mTabbedActivityTask62).startActivity(any(), any());
+            verify(appTask63).finishAndRemoveTask();
+            verify(mActivityManager, never()).moveTaskToFront(taskId63, 0);
+        }
     }
 }

@@ -730,6 +730,9 @@ Called by update_autofill_enums.py.-->
   <int value="10241"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Autofilled value
              accepted"/>
+  <int value="10368"
+      label="IMPROVED_PREDICTION: Not autofilled or autofilled value edited"/>
+  <int value="10369" label="IMPROVED_PREDICTION: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -950,6 +953,8 @@ Called by update_autofill_enums.py.-->
   <int value="2513" label="ADDRESS_HOME_APT_TYPE: accepted"/>
   <int value="2560" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: edited"/>
   <int value="2561" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: accepted"/>
+  <int value="2592" label="IMPROVED_PREDICTION: edited"/>
+  <int value="2593" label="IMPROVED_PREDICTION: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -1763,6 +1768,7 @@ Called by update_autofill_enums.py.-->
   <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
   <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
   <int value="161" label="SERVER_RESPONSE_PENDING"/>
+  <int value="162" label="IMPROVED_PREDICTION"/>
 </enum>
 
 <enum name="AutofillFillingMethodMetric">
@@ -1779,14 +1785,16 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Suggestions shown"/>
   <int value="2" label="Suggestions shown (once)"/>
   <int value="3" label="Local suggestion filled"/>
-  <int value="4" label="Server suggestion filled"/>
+  <int value="4" label="(Obsolete) Full server card suggestion filled"/>
   <int value="5" label="Masked server card suggestion filled"/>
   <int value="6" label="Local suggestion filled (once)"/>
-  <int value="7" label="Server suggestion filled (once)"/>
+  <int value="7" label="(Obsolete) Full server card suggestion filled (once)"/>
   <int value="8" label="Masked server card suggestion filled (once)"/>
   <int value="9" label="Submitted with no suggestion filled (once)"/>
   <int value="10" label="Submitted with local suggestion filled (once)"/>
-  <int value="11" label="Submitted with server suggestion filled (once)"/>
+  <int value="11"
+      label="(Obsolete) Submitted with full server card suggestion filled
+             (once)"/>
   <int value="12"
       label="Submitted with masked server card suggestion filled (once)"/>
   <int value="13"
@@ -1805,7 +1813,8 @@ Called by update_autofill_enums.py.-->
   <int value="16"
       label="About to be submitted with local suggestion filled (once)"/>
   <int value="17"
-      label="About to be submitted with server suggestion filled (once)"/>
+      label="(Obsolete) About to be submitted with full server card
+             suggestion filled (once)"/>
   <int value="18"
       label="About to be submitted with masked server card suggestion filled
              (once)"/>
@@ -1999,6 +2008,7 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Network error"/>
   <int value="4" label="Virtual card retriable failure"/>
   <int value="5" label="Virtual card non-retriable failure"/>
+  <int value="6" label="Client-side timeout"/>
 </enum>
 
 <enum name="AutofillInDevtoolsAvailableTestAddressesCountries">
@@ -3697,6 +3707,22 @@ Called by update_autofill_enums.py.-->
   <int value="966"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
              - Value agrees with both predictions"/>
+  <int value="973"
+      label="IMPROVED_PREDICTION - Predictions equal - Value agrees"/>
+  <int value="974"
+      label="IMPROVED_PREDICTION - Predictions equal - Value disagrees"/>
+  <int value="975"
+      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="976"
+      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="977"
+      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="978"
+      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
+             both predictions"/>
 </enum>
 
 <enum name="AutofillPreferenceSetter">
@@ -3971,6 +3997,8 @@ Called by update_autofill_enums.py.-->
              load"/>
   <int value="2561"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Empty on page load"/>
+  <int value="2592" label="IMPROVED_PREDICTION: Pre-filled on page load"/>
+  <int value="2593" label="IMPROVED_PREDICTION: Empty on page load"/>
 </enum>
 
 <enum name="AutofillPreFilledValueStatus">
@@ -4014,9 +4042,11 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="ProfileMigrationAndSilentUpdate"/>
 </enum>
 
-<enum name="AutofillProfileSource">
+<enum name="AutofillProfileRecordType">
   <int value="0" label="The profile is saved to local store."/>
   <int value="1" label="The profile is saved to account store."/>
+  <int value="2" label="The profile is saved to account store as HOME."/>
+  <int value="3" label="The profile is saved to account store as WORK."/>
 </enum>
 
 <enum name="AutofillProfileTokenQualityObservationType">
@@ -4817,10 +4847,6 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Suggestions popup shown (once)"/>
 </enum>
 
-<enum name="PasswordManagerPasswordLossPotentialReason">
-  <int value="0" label="The reason is unknown"/>
-</enum>
-
 <enum name="PaymentsWindowUserConsentDialogResult">
   <int value="0" label="The tab or browser was closed"/>
   <int value="1" label="The escape key was pressed, closing the dialog"/>
@@ -4970,6 +4996,13 @@ Called by update_autofill_enums.py.-->
   <int value="48" label="Mixed form message"/>
   <int value="49" label="Devtools test addresses"/>
   <int value="50" label="Devtools test address entry"/>
+  <int value="51" label="Devtools test address by country entry"/>
+  <int value="52" label="Create new plus address inline"/>
+  <int value="53" label="Retrieve prediction improvements"/>
+  <int value="54" label="Prediction improvements loading state"/>
+  <int value="55" label="Fill prediction improvements"/>
+  <int value="56" label="Prediction improvements feedback"/>
+  <int value="57" label="Plus address error"/>
 </enum>
 
 <enum name="TouchToFill.CreditCard.Outcome">

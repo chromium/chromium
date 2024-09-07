@@ -421,13 +421,12 @@ public class TabStateFileManager {
     }
 
     private static TabState readStateFlatBuffer(File file, boolean encrypted) throws IOException {
-        AtomicFile atomicFile = new AtomicFile(file);
         FileInputStream fileInputStream = null;
         CipherInputStream cipherInputStream = null;
         DataInputStream dataInputStream = null;
         try {
+            fileInputStream = new FileInputStream(file);
             FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(encrypted);
-            fileInputStream = atomicFile.openRead();
             if (encrypted) {
                 Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
                 if (cipher == null) {

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
@@ -115,7 +116,8 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
                                const std::string& ok_message) {
     ExtensionTestMessageListener listener(ok_message);
     background_main_frame_->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(js_command), base::NullCallback());
+        base::ASCIIToUTF16(js_command), base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
 

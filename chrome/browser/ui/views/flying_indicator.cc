@@ -9,6 +9,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -60,7 +61,7 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
 
   // Set the bubble properties.
   bubble_view->SetAccessibleWindowRole(ax::mojom::Role::kNone);
-  bubble_view->SetButtons(ui::DIALOG_BUTTON_NONE);
+  bubble_view->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   bubble_view->set_margins(gfx::Insets());
   bubble_view->SetCanActivate(false);
   bubble_view->set_focus_traversable_from_anchor_view(false);

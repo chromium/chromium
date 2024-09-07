@@ -46,4 +46,22 @@ TEST(FocusModeUtilTests, VerifySoundscapeSourceTitle) {
             "Focus sounds ᐧ Playlist Title");
 }
 
+// Verify we get the correct `GetNextProgressStep` based on the current
+// progress.
+TEST(FocusModeUtilTests, VerifyGetNextProgressStep) {
+  // Verify that when it starts, it just expecting the first step.
+  EXPECT_EQ(GetNextProgressStep(0.0), 1);
+
+  // Verify values slightly below, exactly at, and slightly above a threshold.
+  EXPECT_EQ(GetNextProgressStep(0.499999), 60);
+  EXPECT_EQ(GetNextProgressStep(0.5), 61);
+  EXPECT_EQ(GetNextProgressStep(0.5000001), 61);
+
+  // Test a progress value very close to max, which would expect the last step.
+  EXPECT_EQ(GetNextProgressStep(0.999), 120);
+
+  // Test that we clamp the step value to the last step.
+  EXPECT_EQ(GetNextProgressStep(1.0), 120);
+}
+
 }  // namespace ash::focus_mode_util

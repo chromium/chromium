@@ -39,6 +39,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -78,6 +79,16 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
   }
 
   return http2_settings;
+}
+
+bool OriginToForceQuicOnInternal(const QuicParams& quic_params,
+                                 const url::SchemeHostPort& destination) {
+  // TODO(crbug.com/40181080): Consider converting `origins_to_force_quic_on` to
+  // use url::SchemeHostPort.
+  return (
+      base::Contains(quic_params.origins_to_force_quic_on, HostPortPair()) ||
+      base::Contains(quic_params.origins_to_force_quic_on,
+                     HostPortPair::FromSchemeHostPort(destination)));
 }
 
 }  // unnamed namespace
@@ -345,6 +356,9 @@ void HttpNetworkSession::CloseAllConnections(int net_error,
                                                          net_log_reason_utf8);
   websocket_socket_pool_manager_->FlushSocketPoolsWithError(
       net_error, net_log_reason_utf8);
+  if (http_stream_pool_) {
+    http_stream_pool_->FlushWithError(net_error, net_log_reason_utf8);
+  }
   spdy_session_pool_.CloseCurrentSessions(static_cast<Error>(net_error));
   quic_session_pool_.CloseAllSessions(net_error, quic::QUIC_PEER_GOING_AWAY);
 }
@@ -364,6 +378,25 @@ bool HttpNetworkSession::IsQuicEnabled() const {
 
 void HttpNetworkSession::DisableQuic() {
   params_.enable_quic = false;
+}
+
+bool HttpNetworkSession::ShouldForceQuic(const url::SchemeHostPort& destination,
+                                         const ProxyInfo& proxy_info,
+                                         bool is_websocket) {
+  if (!IsQuicEnabled()) {
+    return false;
+  }
+  if (is_websocket) {
+    return false;
+  }
+  // If a proxy is being used, the last proxy in the chain must be QUIC if we
+  // are to use QUIC on top of it.
+  if (!proxy_info.is_direct() && !proxy_info.proxy_chain().Last().is_quic()) {
+    return false;
+  }
+  return OriginToForceQuicOnInternal(*context_.quic_context->params(),
+                                     destination) &&
+         GURL::SchemeIsCryptographic(destination.scheme());
 }
 
 void HttpNetworkSession::IgnoreCertificateErrorsForTesting() {

@@ -15,6 +15,9 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
@@ -77,7 +80,8 @@ std::vector<std::string> GetAggregatedSelectors(
 // static
 std::unique_ptr<LinkToTextMenuObserver> LinkToTextMenuObserver::Create(
     RenderViewContextMenuProxy* proxy,
-    content::GlobalRenderFrameHostId render_frame_host_id) {
+    content::GlobalRenderFrameHostId render_frame_host_id,
+    ToastController* toast_controller) {
   // WebContents can be null in tests.
   content::WebContents* web_contents = proxy->GetWebContents();
   if (web_contents && extensions::ProcessManager::Get(
@@ -88,14 +92,17 @@ std::unique_ptr<LinkToTextMenuObserver> LinkToTextMenuObserver::Create(
   }
 
   DCHECK(content::RenderFrameHost::FromID(render_frame_host_id));
-  return base::WrapUnique(
-      new LinkToTextMenuObserver(proxy, render_frame_host_id));
+  return base::WrapUnique(new LinkToTextMenuObserver(
+      proxy, render_frame_host_id, toast_controller));
 }
 
 LinkToTextMenuObserver::LinkToTextMenuObserver(
     RenderViewContextMenuProxy* proxy,
-    content::GlobalRenderFrameHostId render_frame_host_id)
-    : proxy_(proxy), render_frame_host_id_(render_frame_host_id) {}
+    content::GlobalRenderFrameHostId render_frame_host_id,
+    ToastController* toast_controller)
+    : proxy_(proxy),
+      toast_controller_(toast_controller),
+      render_frame_host_id_(render_frame_host_id) {}
 
 LinkToTextMenuObserver::~LinkToTextMenuObserver() = default;
 
@@ -265,6 +272,12 @@ void LinkToTextMenuObserver::ExecuteCopyLinkToText() {
   LogDesktopLinkGenerationCopiedLinkType(
       shared_highlighting::LinkGenerationCopiedLinkType::
           kCopiedFromNewGeneration);
+
+  if (toast_features::IsEnabled(toast_features::kLinkToHighlightCopiedToast) &&
+      toast_controller_) {
+    toast_controller_->MaybeShowToast(
+        ToastParams(ToastId::kLinkToHighlightCopied));
+  }
 
   // Log usage for Shared Highlighting promo.
   feature_engagement::TrackerFactory::GetForBrowserContext(

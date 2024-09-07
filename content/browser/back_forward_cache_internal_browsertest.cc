@@ -11,7 +11,6 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -46,6 +45,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 
 // This file contains back/forward-cache tests that test or use internal
 // features, e.g. cache-flushing, crashes, verifying proxies and other
@@ -741,11 +741,22 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PostMessageDelivered) {
             GetLocalStorage(rfh_b.get(), "postMessage_dispatched"));
 }
 
+class BackForwardCacheBrowserTestDisallowBroadcastChannel
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Disallow broadcastchannel to enter bfcache, because there is no
+    // other easy non-sticky feature for testing.
+    DisableFeature(blink::features::kBFCacheOpenBroadcastChannel);
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
 // Navigates from page A -> page B -> page C -> page B -> page C. Page B becomes
 // ineligible for bfcache in pagehide handler, so Page A stays in bfcache
 // without being evicted even after the navigation to Page C.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
+    BackForwardCacheBrowserTestDisallowBroadcastChannel,
     PagehideMakesPageIneligibleForBackForwardCacheAndNotCountedInCacheSize) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
@@ -1109,10 +1120,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // └───────┘                     └────────┘
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        SchedulerTrackedFeaturesUpdatedWhileStoring) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -1124,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // cached.
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     document.addEventListener('freeze', event => {
-      window.foo = new BroadcastChannel('foo');
+      navigator.xr.isSessionSupported('inline');
     });
   )"));
 
@@ -3825,10 +3836,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
 
   // 3) Set the callback for generated events, and expect that this is never
   // fired.
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       rfh_a->GetOrCreateBrowserAccessibilityManager();
   manager->SetGeneratedEventCallbackForTesting(
-      base::BindRepeating([](BrowserAccessibilityManager* manager,
+      base::BindRepeating([](ui::BrowserAccessibilityManager* manager,
                              ui::AXEventGenerator::Event event,
                              ui::AXNodeID event_target_id) { FAIL(); }));
   // Generate an event.
@@ -3847,7 +3858,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   // Reset the callback before restoring the page so that we will not fail when
   // events are generated.
   manager->SetGeneratedEventCallbackForTesting(
-      GeneratedEventCallbackForTesting());
+      ui::GeneratedEventCallbackForTesting());
 
   // 4) Navigate back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -3922,7 +3933,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Set the callback for location change.
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       rfh_a->GetOrCreateBrowserAccessibilityManager();
   // This callback will count the number of times location change happens.
   // Note that this callback runs even when the page is in back/forward cache.

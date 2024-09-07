@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chrome/test/base/testing_profile.h"
@@ -450,11 +449,6 @@ class LocalPrinterAshTest : public LocalPrinterAshTestBase {
 
   bool UseService() override { return false; }
   bool SupportFallback() override { return false; }
-
-  std::vector<base::test::FeatureRefAndParams> FeaturesToEnable() override {
-    return {base::test::FeatureRefAndParams(::features::kLocalPrinterObserving,
-                                            {})};
-  }
 };
 
 // Testing class to cover `LocalPrinterAsh` handling using either a

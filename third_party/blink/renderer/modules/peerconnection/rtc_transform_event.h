@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -18,8 +20,11 @@ class MODULES_EXPORT RTCTransformEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit RTCTransformEvent(ScriptState* script_state,
-                             CustomEventMessage data);
+  explicit RTCTransformEvent(
+      ScriptState* script_state,
+      CustomEventMessage data,
+      scoped_refptr<base::SequencedTaskRunner> transform_task_runner,
+      CrossThreadWeakHandle<RTCRtpScriptTransform> transform);
   ~RTCTransformEvent() override = default;
 
   RTCRtpScriptTransformer* transformer() const { return transformer_; }

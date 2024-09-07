@@ -56,7 +56,6 @@ using testing::AtMost;
 using testing::Eq;
 
 namespace autofill {
-
 namespace {
 
 // Utility method that tries to find a field in `form` whose `id_attribute`
@@ -138,8 +137,6 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   mojo::AssociatedReceiverSet<mojom::AutofillDriver> receivers_;
 };
-
-}  // namespace
 
 constexpr char kSigninFormHTML[] =
     "<FORM name = 'blah' action = 'http://www.random.com/'> "
@@ -1535,4 +1532,5 @@ TEST_F(PasswordGenerationAgentTest,
   EXPECT_FALSE(second_password_element.ShouldRevealPassword());
 }
 
+}  // namespace
 }  // namespace autofill

@@ -56,7 +56,7 @@ bool IsEphemeralProfile(Profile* profile) {
 }
 
 bool ShouldEnablePageContentAnnotations(Profile* profile) {
-  if (chrome::IsRunningInAppMode()) {
+  if (IsRunningInAppMode()) {
     // The annotations we provide cannot provide any benefit to users in kiosk
     // mode, so we can skip.
     return false;

@@ -150,7 +150,8 @@ static void JNI_PrivacySandboxBridge_SetFledgeJoiningAllowed(
 
 static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
+    const JavaParamRef<jobject>& j_profile,
+    jint surface_type) {
   // If the FRE is disabled, as it is in tests which must not be interrupted
   // with dialogs, do not attempt to show a dialog.
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
@@ -158,7 +159,8 @@ static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(
     return static_cast<int>(PrivacySandboxService::PromptType::kNone);
 
   return static_cast<int>(
-      GetPrivacySandboxService(j_profile)->GetRequiredPromptType());
+      GetPrivacySandboxService(j_profile)->GetRequiredPromptType(
+          static_cast<PrivacySandboxService::SurfaceType>(surface_type)));
 }
 
 static void JNI_PrivacySandboxBridge_PromptActionOccurred(

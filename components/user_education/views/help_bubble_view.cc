@@ -28,6 +28,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -120,6 +121,15 @@ class MdIPHBubbleButton : public views::MdTextButton {
     views::FocusRing::Get(this)->SetColorId(
         delegate_->GetHelpBubbleForegroundColorId());
 
+    ui::ColorId foreground_color =
+        is_default_button_
+            ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
+            : delegate_->GetHelpBubbleForegroundColorId();
+    SetEnabledTextColorIds(foreground_color);
+    // TODO(crbug.com/40709599): Temporary fix for Mac. Bubble shouldn't be in
+    // inactive style when the bubble loses focus.
+    SetTextColorId(ButtonState::STATE_DISABLED, foreground_color);
+
     // The default behavior in 2023 refresh is for MD buttons is to have the
     // alpha baked into the color, but we currently don't have that yet, so
     // switch back to using the old default alpha blending mode.
@@ -156,20 +166,6 @@ class MdIPHBubbleButton : public views::MdTextButton {
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
             background_color, stroke_color, GetCornerRadiusValue())));
-  }
-
-  void OnThemeChanged() override {
-    views::MdTextButton::OnThemeChanged();
-
-    const SkColor foreground_color = GetColorProvider()->GetColor(
-        is_default_button_
-            ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
-            : delegate_->GetHelpBubbleForegroundColorId());
-    SetEnabledTextColors(foreground_color);
-
-    // TODO(crbug.com/40709599): Temporary fix for Mac. Bubble shouldn't be in
-    // inactive style when the bubble loses focus.
-    SetTextColor(ButtonState::STATE_DISABLED, foreground_color);
   }
 
  private:
@@ -682,7 +678,7 @@ HelpBubbleView::HelpBubbleView(
   SetProperty(views::kElementIdentifierKey, kHelpBubbleElementIdForTesting);
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_close_on_deactivate(false);
   set_focus_traversable_from_anchor_view(false);
 

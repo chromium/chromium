@@ -213,14 +213,12 @@ void HostedAppBrowserController::OnTabInserted(content::WebContents* contents) {
 
   const Extension* extension = GetExtension();
   extensions::TabHelper::FromWebContents(contents)->SetExtensionApp(extension);
-  web_app::SetAppPrefsForWebContents(contents);
 }
 
 void HostedAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
 
   extensions::TabHelper::FromWebContents(contents)->SetExtensionApp(nullptr);
-  web_app::ClearAppPrefsForWebContents(contents);
 }
 
 void HostedAppBrowserController::LoadAppIcon(

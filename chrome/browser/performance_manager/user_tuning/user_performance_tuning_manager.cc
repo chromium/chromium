@@ -14,14 +14,15 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/performance_manager/metrics/page_resource_monitor.h"
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/metrics/page_resource_monitor.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -98,10 +99,19 @@ UserPerformanceTuningManager::PreDiscardResourceUsage::PreDiscardResourceUsage(
     : content::WebContentsUserData<PreDiscardResourceUsage>(*contents),
       memory_footprint_estimate_(memory_footprint_estimate),
       discard_reason_(discard_reason),
-      discard_liveticks_(base::LiveTicks::Now()) {}
+      discard_live_ticks_(base::LiveTicks::Now()) {}
 
 UserPerformanceTuningManager::PreDiscardResourceUsage::
     ~PreDiscardResourceUsage() = default;
+
+void UserPerformanceTuningManager::PreDiscardResourceUsage::UpdateDiscardInfo(
+    uint64_t memory_footprint_estimate_kb,
+    ::mojom::LifecycleUnitDiscardReason discard_reason,
+    base::LiveTicks discard_live_ticks) {
+  memory_footprint_estimate_ = memory_footprint_estimate_kb;
+  discard_reason_ = discard_reason;
+  discard_live_ticks_ = discard_live_ticks;
+}
 
 // static
 bool UserPerformanceTuningManager::HasInstance() {

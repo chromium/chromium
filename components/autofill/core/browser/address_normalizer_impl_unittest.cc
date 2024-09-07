@@ -81,6 +81,8 @@ class TestAddressNormalizer : public AddressNormalizerImpl {
 };
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class AddressNormalizerTest : public testing::Test {
  public:

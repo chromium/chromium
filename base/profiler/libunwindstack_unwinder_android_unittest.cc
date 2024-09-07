@@ -206,8 +206,6 @@ TEST(LibunwindstackUnwinderAndroidTest, JavaFunction) {
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
                                scenario.GetSetupFunctionAddressRange(),
                                scenario.GetOuterFunctionAddressRange()});
-  ExpectStackContainsNames(sample, {"org.chromium.base.profiler.TestSupport."
-                                    "callWithJavaFunction"});
 }
 
 // TODO(b/269239545): Delete or re-enable (and enable updatable maps) this test.

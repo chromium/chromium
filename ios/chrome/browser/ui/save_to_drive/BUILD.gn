@@ -102,7 +102,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/drive/model:test_support",
     "//ios/chrome/browser/drive/model:upload_task",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

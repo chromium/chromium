@@ -1212,7 +1212,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
 
   const bool apply_fixed_size = StyleRef().ApplyControlFixedSize(&element);
   const auto* select = DynamicTo<HTMLSelectElement>(element);
-  if (select && select->UsesMenuList() && !select->IsAppearanceBaseSelect())
+  if (select && select->UsesMenuList() && !select->IsAppearanceBaseButton())
       [[unlikely]] {
     return apply_fixed_size ? MenuListIntrinsicInlineSize(*select, *this)
                             : kIndefiniteSize;
@@ -1266,7 +1266,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
     return kIndefiniteSize;
   }
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (!select->IsAppearanceBaseSelect()) {
+    if (!select->IsAppearanceBaseButton()) {
       if (select->UsesMenuList()) {
         return MenuListIntrinsicBlockSize(*select, *this);
       }
@@ -2187,7 +2187,7 @@ ResourcePriority LayoutBox::ComputeResourcePriority() const {
   object_bounds.Move(LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms));
 
   // The object bounds might be empty right now, so intersects will fail since
-  // it doesn't deal with empty rects. Use LayoutRect::contains in that case.
+  // it doesn't deal with empty rects. Use PhysicalRect::Contains in that case.
   bool is_visible;
   if (!object_bounds.IsEmpty())
     is_visible = view_bounds.Intersects(object_bounds);

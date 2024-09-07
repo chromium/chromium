@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusTraversal) {
 #define MAYBE_FindFocusTest FindFocusTest
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FindFocusTest) {
-  chrome::DisableFindBarAnimationsDuringTesting(true);
+  DisableFindBarAnimationsDuringTesting(true);
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   const GURL url = embedded_test_server()->GetURL(kTypicalPage);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_frame.h"
 
 #include <stddef.h>
@@ -56,11 +51,14 @@ constexpr uint64_t kPayloadLengthWithEightByteExtendedLengthField = 127;
 inline void MaskWebSocketFramePayloadByBytes(
     const WebSocketMaskingKey& masking_key,
     size_t masking_key_offset,
-    char* const begin,
-    char* const end) {
-  for (char* masked = begin; masked != end; ++masked) {
-    *masked ^= masking_key.key[masking_key_offset++ %
-                               WebSocketFrameHeader::kMaskingKeyLength];
+    const base::span<uint8_t> payload) {
+  uint8_t* data = payload.data();
+  const size_t size = payload.size();
+  for (size_t i = 0; i < size; ++i) {
+    // SAFETY: Performance sensitive. `data` is within `payload` bounds.
+    UNSAFE_BUFFERS(data[i]) ^=
+        masking_key.key[masking_key_offset++ %
+                        WebSocketFrameHeader::kMaskingKeyLength];
   }
 }
 
@@ -184,12 +182,9 @@ WebSocketMaskingKey GenerateWebSocketMaskingKey() {
 
 void MaskWebSocketFramePayload(const WebSocketMaskingKey& masking_key,
                                uint64_t frame_offset,
-                               char* const data,
-                               int data_size) {
+                               base::span<uint8_t> data) {
   static constexpr size_t kMaskingKeyLength =
       WebSocketFrameHeader::kMaskingKeyLength;
-
-  DCHECK_GE(data_size, 0);
 
   // Most of the masking is done in chunks of sizeof(PackedMaskType), except for
   // the beginning and the end of the buffer which may be unaligned.
@@ -199,59 +194,51 @@ void MaskWebSocketFramePayload(const WebSocketMaskingKey& masking_key,
   static_assert((kPackedMaskKeySize >= kMaskingKeyLength &&
                  kPackedMaskKeySize % kMaskingKeyLength == 0),
                 "PackedMaskType size is not a multiple of mask length");
-  char* const end = data + data_size;
   // If the buffer is too small for the vectorised version to be useful, revert
   // to the byte-at-a-time implementation early.
-  if (data_size <= static_cast<int>(kPackedMaskKeySize * 2)) {
-    MaskWebSocketFramePayloadByBytes(
-        masking_key, frame_offset % kMaskingKeyLength, data, end);
+  if (data.size() <= kPackedMaskKeySize * 2) {
+    MaskWebSocketFramePayloadByBytes(masking_key,
+                                     frame_offset % kMaskingKeyLength, data);
     return;
   }
   const size_t data_modulus =
-      reinterpret_cast<size_t>(data) % kPackedMaskKeySize;
-  char* const aligned_begin =
-      data_modulus == 0 ? data : (data + kPackedMaskKeySize - data_modulus);
-  // Guaranteed by the above check for small data_size.
-  DCHECK(aligned_begin < end);
+      reinterpret_cast<size_t>(data.data()) % kPackedMaskKeySize;
+  auto [before_aligned, remaining] = data.split_at(
+      data_modulus == 0 ? 0 : (kPackedMaskKeySize - data_modulus));
+  auto [aligned, after_aligned] = remaining.split_at(
+      remaining.size() - remaining.size() % kPackedMaskKeySize);
   MaskWebSocketFramePayloadByBytes(
-      masking_key, frame_offset % kMaskingKeyLength, data, aligned_begin);
-  const size_t end_modulus = reinterpret_cast<size_t>(end) % kPackedMaskKeySize;
-  char* const aligned_end = end - end_modulus;
-  // Guaranteed by the above check for small data_size.
-  DCHECK(aligned_end > aligned_begin);
+      masking_key, frame_offset % kMaskingKeyLength, before_aligned);
+
   // Create a version of the mask which is rotated by the appropriate offset
   // for our alignment. The "trick" here is that 0 XORed with the mask will
   // give the value of the mask for the appropriate byte.
-  char realigned_mask[kMaskingKeyLength] = {};
+  std::array<uint8_t, kMaskingKeyLength> realigned_mask = {};
   MaskWebSocketFramePayloadByBytes(
-      masking_key,
-      (frame_offset + aligned_begin - data) % kMaskingKeyLength,
-      realigned_mask,
-      realigned_mask + kMaskingKeyLength);
+      masking_key, (frame_offset + before_aligned.size()) % kMaskingKeyLength,
+      base::as_writable_byte_span(realigned_mask));
 
-  for (size_t i = 0; i < kPackedMaskKeySize; i += kMaskingKeyLength) {
-    // memcpy() is allegedly blessed by the C++ standard for type-punning.
-    memcpy(reinterpret_cast<char*>(&packed_mask_key) + i,
-           realigned_mask,
-           kMaskingKeyLength);
+  base::span<uint8_t> packed_span = base::byte_span_from_ref(packed_mask_key);
+  while (!packed_span.empty()) {
+    packed_span.copy_prefix_from(realigned_mask);
+    packed_span = packed_span.subspan(realigned_mask.size());
   }
 
   // The main loop.
-  for (char* merged = aligned_begin; merged != aligned_end;
-       merged += kPackedMaskKeySize) {
+  while (!aligned.empty()) {
     // This is not quite standard-compliant C++. However, the standard-compliant
     // equivalent (using memcpy()) compiles to slower code using g++. In
     // practice, this will work for the compilers and architectures currently
     // supported by Chromium, and the tests are extremely unlikely to pass if a
     // future compiler/architecture breaks it.
-    *reinterpret_cast<PackedMaskType*>(merged) ^= packed_mask_key;
+    *reinterpret_cast<PackedMaskType*>(aligned.data()) ^= packed_mask_key;
+    aligned = aligned.subspan(kPackedMaskKeySize);
   }
 
   MaskWebSocketFramePayloadByBytes(
       masking_key,
-      (frame_offset + (aligned_end - data)) % kMaskingKeyLength,
-      aligned_end,
-      end);
+      (frame_offset + (data.size() - after_aligned.size())) % kMaskingKeyLength,
+      after_aligned);
 }
 
 }  // namespace net

@@ -16,10 +16,10 @@
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -40,8 +40,8 @@
 // Returns the given name of the last account that was signed in pre-restore.
 @property(readonly) NSString* userGivenName;
 
-// Local state is used to retrieve and/or clear the pre-restore identity.
-@property(nonatomic, assign) PrefService* localState;
+// Profile pref used to retrieve and/or clear the pre-restore identity.
+@property(nonatomic, assign) PrefService* prefService;
 
 @end
 
@@ -55,14 +55,14 @@
 #pragma mark - Initializers
 
 - (instancetype)initForBrowser:(Browser*)browser {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _browser = browser;
     _syncUserSettings =
-        SyncServiceFactory::GetForBrowserState(_browser->GetBrowserState())
+        SyncServiceFactory::GetForBrowserState(_browser->GetProfile())
             ->GetUserSettings();
-    _localState = GetApplicationContext()->GetLocalState();
-    _accountInfo = GetPreRestoreIdentity(_localState);
-    _historySyncEnabled = GetPreRestoreHistorySyncEnabled(_localState);
+    _prefService = browser->GetProfile()->GetPrefs();
+    _accountInfo = GetPreRestoreIdentity(_prefService);
+    _historySyncEnabled = GetPreRestoreHistorySyncEnabled(_prefService);
   }
   return self;
 }
@@ -93,7 +93,7 @@
 - (void)standardPromoAlertCancelAction {
   base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
                                 IOSPostRestoreSigninChoice::Dismiss);
-  ClearPreRestoreIdentity(_localState);
+  ClearPreRestoreIdentity(_prefService);
 }
 
 #pragma mark - StandardPromoAlertProvider
@@ -154,7 +154,7 @@
 
   base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
                                 IOSPostRestoreSigninChoice::Continue);
-  ClearPreRestoreIdentity(_localState);
+  ClearPreRestoreIdentity(_prefService);
 
   __weak __typeof(self) weakSelf = self;
   ShowSigninCommandCompletionCallback callback =

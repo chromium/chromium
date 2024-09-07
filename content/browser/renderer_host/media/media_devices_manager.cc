@@ -78,7 +78,7 @@ const char* DeviceTypeToString(MediaDeviceType device_type) {
       return "AUDIO_INPUT";
     case MediaDeviceType::kMediaVideoInput:
       return "VIDEO_INPUT";
-    case MediaDeviceType::kMediaAudioOuput:
+    case MediaDeviceType::kMediaAudioOutput:
       return "AUDIO_OUTPUT";
     default:
       NOTREACHED_IN_MIGRATION();
@@ -681,7 +681,7 @@ void MediaDevicesManager::OnDevicesChanged(
   switch (device_type) {
     case base::SystemMonitor::DEVTYPE_AUDIO:
       HandleDevicesChanged(MediaDeviceType::kMediaAudioInput);
-      HandleDevicesChanged(MediaDeviceType::kMediaAudioOuput);
+      HandleDevicesChanged(MediaDeviceType::kMediaAudioOutput);
       break;
     case base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE:
       HandleDevicesChanged(MediaDeviceType::kMediaVideoInput);
@@ -792,8 +792,8 @@ void MediaDevicesManager::OnPermissionsCheckDone(
       MediaDeviceType::kMediaVideoInput)] =
       requested_types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)];
   internal_requested_types[static_cast<size_t>(
-      MediaDeviceType::kMediaAudioOuput)] =
-      requested_types[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)];
+      MediaDeviceType::kMediaAudioOutput)] =
+      requested_types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)];
 
   EnumerateAndRankDevices(
       render_frame_host_id, internal_requested_types,
@@ -1004,7 +1004,7 @@ void MediaDevicesManager::DoEnumerateDevices(MediaDeviceType type) {
           base::BindOnce(&MediaDevicesManager::VideoInputDevicesEnumerated,
                          weak_factory_.GetWeakPtr()));
       break;
-    case MediaDeviceType::kMediaAudioOuput:
+    case MediaDeviceType::kMediaAudioOutput:
       EnumerateAudioDevices(false /* is_input */);
       break;
     default:
@@ -1015,7 +1015,7 @@ void MediaDevicesManager::DoEnumerateDevices(MediaDeviceType type) {
 void MediaDevicesManager::EnumerateAudioDevices(bool is_input) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   MediaDeviceType type = is_input ? MediaDeviceType::kMediaAudioInput
-                                  : MediaDeviceType::kMediaAudioOuput;
+                                  : MediaDeviceType::kMediaAudioOutput;
   if (use_fake_devices_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MediaDevicesManager::DevicesEnumerated,

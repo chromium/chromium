@@ -10,6 +10,7 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_io_thread.h"
 #include "build/buildflag.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/unittest_test_suite.h"
@@ -21,6 +22,9 @@
 #include "url/url_util.h"
 
 namespace {
+
+const char* const kNonWildcardDomainNonPortSchemes[] = {
+    extensions::kExtensionScheme};
 
 // Content client that exists only to register chrome-extension:// scheme with
 // the url module.
@@ -69,6 +73,9 @@ void ExtensionsTestSuite::Initialize() {
   {
     ExtensionsContentClient content_client;
     RegisterContentSchemes(&content_client);
+    ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
+        kNonWildcardDomainNonPortSchemes,
+        std::size(kNonWildcardDomainNonPortSchemes));
   }
   RegisterInProcessThreads();
 

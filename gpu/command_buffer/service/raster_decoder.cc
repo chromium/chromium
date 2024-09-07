@@ -84,11 +84,11 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
-#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -282,9 +282,18 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
   }
 
   void ApplyEndAccessState() {
-    for (auto& accessor : read_accessors_) {
-      accessor.second.scoped_read_access->ApplyBackendSurfaceEndState();
+    for (auto& [mailbox, access] : read_accessors_) {
+      access.scoped_read_access->ApplyBackendSurfaceEndState();
     }
+  }
+
+  bool NeedGraphiteContextSubmit() {
+    bool need_graphite_submit = false;
+    for (auto& [mailbox, access] : read_accessors_) {
+      need_graphite_submit |=
+          access.scoped_read_access->NeedGraphiteContextSubmit();
+    }
+    return need_graphite_submit;
   }
 
  private:
@@ -1179,8 +1188,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       !feature_info()->workarounds().etc1_power_of_two_only;
   caps.image_ycbcr_420v =
       feature_info()->feature_flags().chromium_image_ycbcr_420v;
-  caps.image_ycbcr_420v_disabled_for_video_frames =
-      gpu_preferences_.disable_biplanar_gpu_memory_buffers_for_video_frames;
   caps.image_ar30 = feature_info()->feature_flags().chromium_image_ar30;
   caps.image_ab30 = feature_info()->feature_flags().chromium_image_ab30;
   caps.image_ycbcr_p010 =
@@ -1216,9 +1223,20 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
     caps.texture_half_float_linear =
         gr_context()->colorTypeSupportedAsImage(kA16_float_SkColorType);
   } else if (graphite_context()) {
-    // TODO(b/281151641): Determine if there are checks to be made here.
-    caps.texture_norm16 = true;
+    caps.context_supports_distance_field_text = true;
     caps.texture_half_float_linear = true;
+#if BUILDFLAG(SKIA_USE_DAWN)
+    if (shared_context_state_->IsGraphiteDawn()) {
+      caps.texture_norm16 =
+          shared_context_state_->dawn_context_provider()->SupportsFeature(
+              wgpu::FeatureName::Unorm16TextureFormats);
+    }
+#endif
+#if BUILDFLAG(SKIA_USE_METAL)
+    if (shared_context_state_->IsGraphiteMetal()) {
+      caps.texture_norm16 = true;
+    }
+#endif
   } else {
     caps.texture_norm16 = feature_info()->feature_flags().ext_texture_norm16;
     caps.texture_half_float_linear =
@@ -1228,12 +1246,10 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   if (graphite_context()) {
     bool supports_multiplanar_rendering = false;
 #if BUILDFLAG(SKIA_USE_DAWN)
-    auto* dawn_context_provider =
-        shared_context_state_->dawn_context_provider();
-    if (dawn_context_provider &&
-        dawn_context_provider->SupportsFeature(
-            wgpu::FeatureName::MultiPlanarRenderTargets)) {
-      supports_multiplanar_rendering = true;
+    if (shared_context_state_->IsGraphiteDawn()) {
+      supports_multiplanar_rendering =
+          shared_context_state_->dawn_context_provider()->SupportsFeature(
+              wgpu::FeatureName::MultiPlanarRenderTargets);
     }
 #endif
     caps.supports_rgb_to_yuv_conversion = supports_multiplanar_rendering;
@@ -2106,7 +2122,9 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   }
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
-  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
+  shared_context_state_->SubmitIfNecessary(
+      std::move(end_semaphores),
+      dest_scoped_access->NeedGraphiteContextSubmit());
 
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(
@@ -2349,7 +2367,8 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
   }
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
-  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
+  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
+                                           /*need_graphite_submit=*/true);
 
   return written;
 }
@@ -2658,7 +2677,9 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
     // exiting.
     source_scoped_access->ApplyBackendSurfaceEndState();
-    shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
+    shared_context_state_->SubmitIfNecessary(
+        std::move(end_semaphores),
+        source_scoped_access->NeedGraphiteContextSubmit());
     return;
   }
 
@@ -3199,7 +3220,11 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
       // image layout transitions as necessary. Transitioning layout back to
       // desired need to be happening after.
       paint_op_shared_image_provider_->ApplyEndAccessState();
-      shared_context_state_->SubmitIfNecessary(std::move(end_semaphores_));
+      bool need_graphite_submit =
+          paint_op_shared_image_provider_->NeedGraphiteContextSubmit() ||
+          scoped_shared_image_write_->NeedGraphiteContextSubmit();
+      shared_context_state_->SubmitIfNecessary(std::move(end_semaphores_),
+                                               need_graphite_submit);
     } else {
       DCHECK(end_semaphores_.empty());
     }

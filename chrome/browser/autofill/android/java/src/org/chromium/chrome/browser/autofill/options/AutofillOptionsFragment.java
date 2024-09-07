@@ -11,6 +11,8 @@ import android.view.MenuItem;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -26,6 +28,9 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public static final String AUTOFILL_OPTIONS_REFERRER = "autofill-options-referrer";
     public static final String PREF_AUTOFILL_THIRD_PARTY_FILLING = "autofill_third_party_filling";
     public static final String PREF_THIRD_PARTY_TOGGLE_HINT = "third_party_toggle_hint";
+    public static final String PREF_THIRD_PARTY_TOGGLE_INCOGNITO_NOTE =
+            "third_party_toggle_incognito_note";
+
     private @AutofillOptionsReferrer int mReferrer;
 
     // Represents different referrers when navigating to the Autofill Options page.
@@ -50,6 +55,8 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         int COUNT = 2;
     }
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     /** This default constructor is required to instantiate the fragment. */
     public AutofillOptionsFragment() {}
 
@@ -66,11 +73,22 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         return hint;
     }
 
+    TextMessagePreference getIncognitoNote() {
+        TextMessagePreference note = findPreference(PREF_THIRD_PARTY_TOGGLE_INCOGNITO_NOTE);
+        assert note != null;
+        return note;
+    }
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.autofill_options_title);
+        mPageTitle.set(getString(R.string.autofill_options_title));
         setHasOptionsMenu(true);
         SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_options_preferences);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

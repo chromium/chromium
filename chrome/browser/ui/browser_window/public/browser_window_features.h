@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 
 class Browser;
@@ -13,10 +15,17 @@ class ChromeLabsCoordinator;
 class ReadAnythingCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
+class TabStripModel;
+class ToastController;
+class ToastService;
 
 namespace extensions {
 class Mv2DisabledDialogController;
 }  // namespace extensions
+
+namespace tabs {
+class TabDeclutterController;
+}  // namespace tabs
 
 namespace commerce {
 class ProductSpecificationsEntryPointController;
@@ -25,6 +34,10 @@ class ProductSpecificationsEntryPointController;
 namespace lens {
 class LensOverlayEntryPointController;
 }  // namespace lens
+
+namespace tab_groups {
+class SessionServiceTabGroupSyncObserver;
+}  // namespace tab_groups
 
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop. It can be subclassed by tests to perform
@@ -93,6 +106,22 @@ class BrowserWindowFeatures {
     return read_anything_coordinator_.get();
   }
 
+  tabs::TabDeclutterController* tab_declutter_controller() {
+    return tab_declutter_controller_.get();
+  }
+
+  TabStripModel* tab_strip_model() { return tab_strip_model_; }
+
+  // Returns a pointer to the ToastController for the browser window. This can
+  // return nullptr for non-normal browser windows because toasts are not
+  // supported for those cases.
+  ToastController* toast_controller();
+
+  // Returns a pointer to the ToastService for the browser window. This can
+  // return nullptr for non-normal browser windows because toasts are not
+  // supported for those cases.
+  ToastService* toast_service() { return toast_service_.get(); }
+
  protected:
   BrowserWindowFeatures();
 
@@ -115,9 +144,17 @@ class BrowserWindowFeatures {
   std::unique_ptr<extensions::Mv2DisabledDialogController>
       mv2_disabled_dialog_controller_;
 
+  std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
+
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
   std::unique_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
+
+  std::unique_ptr<tab_groups::SessionServiceTabGroupSyncObserver>
+      session_service_tab_group_sync_observer_;
+
+  raw_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<ToastService> toast_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

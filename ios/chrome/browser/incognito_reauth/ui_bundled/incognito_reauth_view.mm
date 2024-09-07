@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view_label.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -103,6 +104,17 @@ const CGFloat kVerticalContentPadding = 70.0f;
                                    constant:-2 * kButtonPaddingH],
     ]];
 
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+      __weak IncognitoReauthView* weakSelf = self;
+      [self registerForTraitChanges:traits
+                        withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                      UITraitCollection* previousCollection) {
+                          [weakSelf setNeedsLayout];
+                          [weakSelf layoutIfNeeded];
+                        }];
+    }
+
     [self setNeedsLayout];
     [self layoutIfNeeded];
   }
@@ -110,11 +122,17 @@ const CGFloat kVerticalContentPadding = 70.0f;
   return self;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   [self setNeedsLayout];
   [self layoutIfNeeded];
 }
+#endif
 
 // Creates _authenticateButton.
 // Returns a "decoration" pill-shaped view containing _authenticateButton.

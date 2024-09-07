@@ -24,4 +24,10 @@
 -org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testNavigationFromXHRCallbackAndShortTimeout
 
 # crbug.com/1513571
+-org.chromium.chrome.browser.webshare.WebShareTest.testWebShareApk
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareSeparator
+
+# crbug.com/1517111
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testCameraNotBlocked
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testMicBlocked
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testCameraBlocked

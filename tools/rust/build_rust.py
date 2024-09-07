@@ -73,6 +73,11 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
     # TODO(crbug.com/342026487): benign failure; remove when fixed.
     os.path.join('tests', 'codegen', 'vec-in-place.rs'),
+    # TODO(crbug.com/360916952): Benign, remove when fixed.
+    os.path.join('tests', 'assembly', 'x86_64-cmp.rs'),
+    os.path.join('tests', 'assembly', 'x86_64-cmp.rs#OPTIM'),
+    os.path.join('tests', 'codegen', 'integer-cmp.rs'),
+    os.path.join('tests', 'codegen', 'comparison-operators-2-tuple.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
@@ -110,13 +115,10 @@ RUST_SRC_GIT_COMMIT_INFO_FILE_PATH = os.path.join(RUST_SRC_DIR,
 RUST_TOOLCHAIN_LIB_DIR = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib')
 RUST_TOOLCHAIN_SRC_DIST_DIR = os.path.join(RUST_TOOLCHAIN_LIB_DIR, 'rustlib',
                                            'src', 'rust')
-RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR = os.path.join(RUST_TOOLCHAIN_SRC_DIST_DIR,
-                                                  'vendor')
 RUST_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'config.toml.template')
 RUST_CARGO_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'cargo-config.toml.template')
-RUST_SRC_VENDOR_DIR = os.path.join(RUST_SRC_DIR, 'vendor')
 
 RUST_HOST_LLVM_BUILD_DIR = os.path.join(CHROMIUM_DIR, 'third_party',
                                         'rust-toolchain-intermediate',
@@ -186,12 +188,19 @@ def AddOpenSSLToEnv():
     return ssl_dir
 
 
-def VerifyStage0JsonHash():
+def VerifyStage0JsonHash(stage0_json_url=None):
     hasher = hashlib.sha256()
-    with open(STAGE0_JSON_PATH, 'rb') as input:
-        hasher.update(input.read())
-    actual_hash = hasher.hexdigest()
+    if stage0_json_url:
+        print(stage0_json_url)
+        base64_text = urllib.request.urlopen(stage0_json_url).read().decode(
+            "utf-8")
+        stage0 = base64.b64decode(base64_text)
+        hasher.update(stage0)
+    else:
+        with open(STAGE0_JSON_PATH, 'rb') as input:
+            hasher.update(input.read())
 
+    actual_hash = hasher.hexdigest()
     if actual_hash == STAGE0_JSON_SHA256:
         return
 
@@ -244,8 +253,8 @@ def InstallBetaPackage(package_dir, install_dir):
     RunCommand([os.path.join(package_dir, 'install.sh')] + args)
 
 
-def CargoVendor(cargo_bin):
-    '''Runs `cargo vendor` to pull down dependencies.'''
+def VendorForStdlib(cargo_bin):
+    '''Runs `cargo vendor` to pull down standard library dependencies.'''
     os.chdir(RUST_SRC_DIR)
 
     vendor_env = os.environ
@@ -256,10 +265,8 @@ def CargoVendor(cargo_bin):
     vendor_env['RUSTC_BOOTSTRAP'] = '1'
 
     vendor_cmd = [
-        cargo_bin,
-        'vendor',
-        '--locked',
-        '--versioned-dirs',
+        cargo_bin, 'vendor', '--manifest-path', 'library/Cargo.toml',
+        '--locked', '--versioned-dirs', 'library/vendor'
     ]
     RunWithRetry(vendor_cmd, 'cargo vendor')
 
@@ -616,18 +623,7 @@ def GitApplyCherryPicks():
     # with `GitMoveSubmoduleBranch()`.
     #############################
 
-    # TODO: Remove once
-    # https://github.com/rust-lang/rust/pull/119185 has been merged.
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  '14947b410ad23a09251180af50486e247f70b465')
-
-    # TODO(crbug.com/350341587): Remove once
-    # https://github.com/rust-lang/rust/pull/127025 or a similar fix has been
-    # merged.
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  '56d589b5bea75d08d21d7d6efb34e8527aec7635')
-
-    # TODO(https://crbug.com/357125724): Remove once compiler_builtins is fixed
+    # TODO Remove once LLVM rolls past llvmorg-20-init-3909-ge61d6066e267
     RunCommand([
         'git',
         '-C',
@@ -636,8 +632,14 @@ def GitApplyCherryPicks():
         '--no-edit',
         '-m',
         '1',
-        '80d8270d8488957f62fbf0df7a19dfe596be92ac',
+        '8c7a7e346be4cdf13e77ab4acbfb5ade819a4e60',
     ])
+
+    # TODO(b/363219692): Remove once
+    # https://github.com/rust-lang/rust/pull/129894 or a similar fix has been
+    # merged.
+    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                  'f20103f9f3e35dad241dd81cd3ae9eb2dafb3f44')
 
     print('Finished applying cherry-picks.')
 
@@ -757,6 +759,15 @@ def main():
         checkout_revision = RUST_REVISION
 
     if not args.skip_checkout:
+        if args.verify_stage0_hash:
+            VerifyStage0JsonHash(
+                'https://chromium.googlesource.com/external/github.com/'
+                'rust-lang/rust/+/{}/src/stage0?format=TEXT'.format(
+                    checkout_revision))
+            # The above function exits and prints the actual hash if
+            # verification failed so we just quit here; if we reach this point,
+            # the hash is valid.
+            return 0
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
@@ -786,7 +797,7 @@ def main():
                 if l.strip('\n') != 'debug = 0':
                     f.write(l)
 
-        CargoVendor(cargo_bin)
+        VendorForStdlib(cargo_bin)
 
     # Gnrt needs the checkout to be up-to-date, workspace submodules to be
     # synced for cargo to work, and the cargo binary itself. All this is done,
@@ -843,9 +854,10 @@ def main():
 
     xpy.run('install', [])
 
-    # Copy additional vendored crates required for building stdlib.
-    print(f'Copying vendored dependencies to {RUST_TOOLCHAIN_OUT_DIR} ...')
-    shutil.copytree(RUST_SRC_VENDOR_DIR, RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR)
+    # The Rust stdlib deps are vendored to rust-src/library/vendor, and later
+    # the x.py install process copies all subdirs of rust-src/library to the
+    # toolchain package, so we do not need to explicitly copy the vendor dir.
+    # This is left as a note in case that behavior changes.
 
     with open(VERSION_SRC_PATH, 'w') as stamp:
         stamp.write(MakeVersionStamp(checkout_revision))

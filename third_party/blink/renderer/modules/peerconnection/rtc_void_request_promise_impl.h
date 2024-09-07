@@ -23,9 +23,7 @@ class RTCPeerConnection;
 class RTCVoidRequestPromiseImpl final : public RTCVoidRequest {
  public:
   RTCVoidRequestPromiseImpl(RTCPeerConnection*,
-                            ScriptPromiseResolver<IDLUndefined>*,
-                            const char* interface_name,
-                            const char* property_name);
+                            ScriptPromiseResolver<IDLUndefined>*);
   ~RTCVoidRequestPromiseImpl() override;
 
   // RTCVoidRequest
@@ -39,8 +37,6 @@ class RTCVoidRequestPromiseImpl final : public RTCVoidRequest {
 
   Member<RTCPeerConnection> requester_;
   Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
-  const char* interface_name_;
-  const char* property_name_;
 };
 
 }  // namespace blink

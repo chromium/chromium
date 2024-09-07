@@ -158,6 +158,9 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
 // to false shouldn't change the returned value.
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        ShouldExpire_True_WhenNoStickyInfobarAndNoUserGesture) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kAutofillStickyInfobarIos);
+
   nav_details_that_expire_.has_user_gesture = false;
 
   EXPECT_TRUE(delegate_->ShouldExpire(nav_details_that_expire_));
@@ -168,8 +171,6 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
 // to true should return true.
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        ShouldExpire_True_WhenStickyInfobarAndUserGesture) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAutofillStickyInfobarIos);
   nav_details_that_expire_.has_user_gesture = true;
   EXPECT_TRUE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
@@ -216,8 +217,6 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
 // to false should return false.
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        ShouldExpire_False_WhenStickyInfobar) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAutofillStickyInfobarIos);
   nav_details_that_expire_.has_user_gesture = false;
   EXPECT_FALSE(delegate_->ShouldExpire(nav_details_that_expire_));
 }

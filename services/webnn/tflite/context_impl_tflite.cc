@@ -8,9 +8,9 @@
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
-#include "services/webnn/tflite/buffer_impl_tflite.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/graph_impl_tflite.h"
+#include "services/webnn/tflite/tensor_impl_tflite.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
@@ -41,10 +41,10 @@ void ContextImplTflite::CreateGraphImpl(
 }
 
 void ContextImplTflite::CreateBufferImpl(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::BufferInfoPtr buffer_info,
     CreateBufferImplCallback callback) {
-  std::move(callback).Run(BufferImplTflite::Create(std::move(receiver), this,
+  std::move(callback).Run(TensorImplTflite::Create(std::move(receiver), this,
                                                    std::move(buffer_info)));
 }
 

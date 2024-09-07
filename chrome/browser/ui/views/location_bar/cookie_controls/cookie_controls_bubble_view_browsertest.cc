@@ -162,9 +162,7 @@ class TrackingProtectionBubbleViewBrowserTest
         net::EmbeddedTestServer::TYPE_HTTPS);
     // Enable FPP to display UB UX with ACT features
     feature_list_.InitWithFeatures(
-        {privacy_sandbox::kFingerprintingProtectionUserBypass,
-         privacy_sandbox::kFingerprintingProtectionSetting},
-        {});
+        {privacy_sandbox::kFingerprintingProtectionUserBypass}, {});
   }
 
   ContentSetting GetTrackingProtectionSetting() {
@@ -180,8 +178,6 @@ class TrackingProtectionBubbleViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionBubbleViewBrowserTest,
                        ToggleCreatesTrackingProtectionException) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kFingerprintingProtectionEnabled, true);
   ShowBubble();
   EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_BLOCK);
   SimulateTogglePress(false);

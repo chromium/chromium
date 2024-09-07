@@ -5,14 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_EDITOR_BOOKMARKS_EDITOR_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_EDITOR_BOOKMARKS_EDITOR_MEDIATOR_H_
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mutator.h"
-
 #import <Foundation/Foundation.h>
+
+#import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mutator.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class AuthenticationService;
 @protocol BookmarksEditorConsumer;
 @protocol BookmarksEditorMediatorDelegate;
-class ChromeBrowserState;
 class PrefService;
 @protocol SnackbarCommands;
 

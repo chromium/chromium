@@ -770,7 +770,8 @@ bool UserMediaRequest::IsSecureContextUse(String& error_message) {
             window, WebFeature::kMicrophoneDisabledByFeaturePolicyEstimate);
       }
     }
-    if (Video()) {
+    if (Video() &&
+        VideoMediaStreamType() != MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET) {
       if (!window->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kCamera,
               ReportOptions::kReportOnFailure)) {
@@ -889,8 +890,6 @@ void UserMediaRequest::Fail(Result error, const String& message) {
   switch (error) {
     case Result::PERMISSION_DENIED:
     case Result::PERMISSION_DISMISSED:
-    case Result::INVALID_STATE:
-    case Result::FAILED_DUE_TO_SHUTDOWN:
     case Result::KILL_SWITCH_ON:
     case Result::SYSTEM_PERMISSION_DENIED:
       exception_code = DOMExceptionCode::kNotAllowedError;
@@ -900,6 +899,8 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       exception_code = DOMExceptionCode::kNotFoundError;
       result_enum = UserMediaRequestResult::kNotFoundError;
       break;
+    case Result::INVALID_STATE:
+    case Result::FAILED_DUE_TO_SHUTDOWN:
     case Result::TAB_CAPTURE_FAILURE:
     case Result::SCREEN_CAPTURE_FAILURE:
     case Result::CAPTURE_FAILURE:

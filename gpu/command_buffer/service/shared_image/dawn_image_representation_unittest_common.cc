@@ -35,7 +35,7 @@ void CopyTexelToBuffer(const wgpu::CommandEncoder& encoder,
 
 wgpu::ShaderModule CreateShaderModule(const wgpu::Device& device,
                                       const char* source) {
-  wgpu::ShaderModuleWGSLDescriptor wgsl_desc;
+  wgpu::ShaderSourceWGSL wgsl_desc;
   wgsl_desc.code = source;
   wgpu::ShaderModuleDescriptor descriptor;
   descriptor.nextInChain = &wgsl_desc;

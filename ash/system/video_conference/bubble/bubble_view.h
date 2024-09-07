@@ -62,6 +62,8 @@ class ASH_EXPORT BubbleView : public TrayBubbleView {
   const raw_ref<const MediaApps> media_apps_;
 
   raw_ptr<views::View> set_camera_background_view_ = nullptr;
+
+  base::WeakPtrFactory<BubbleView> weak_factory_{this};
 };
 
 }  // namespace video_conference

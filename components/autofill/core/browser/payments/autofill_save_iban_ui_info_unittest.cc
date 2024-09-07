@@ -9,6 +9,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -36,13 +37,39 @@ TEST(AutofillSaveIbanUiInfo, CreateForLocalSaveSetsProperties) {
   auto ui_info = AutofillSaveIbanUiInfo::CreateForLocalSave(
       localIban.GetIdentifierStringForAutofillDisplay());
 
+  EXPECT_EQ(ui_info.logo_icon_id, 0);
   EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_label), u"CH **8009");
   EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
                                     IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_LOCAL));
+  EXPECT_EQ(ui_info.description_text, std::u16string());
   EXPECT_EQ(ui_info.accept_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT));
   EXPECT_EQ(ui_info.cancel_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_NO_THANKS));
+  EXPECT_THAT(ui_info.legal_message_lines, testing::ElementsAre());
+}
+
+TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
+  Iban serverIban(Iban::InstrumentId(1234567));
+  serverIban.set_prefix(u"FR");
+  serverIban.set_suffix(u"0189");
+
+  auto ui_info = AutofillSaveIbanUiInfo::CreateForUploadSave(
+      serverIban.GetIdentifierStringForAutofillDisplay(), LegalMessageLines());
+
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_GOOGLE_PAY);
+  EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_label), u"FR **0189");
+  EXPECT_EQ(
+      ui_info.title_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER));
+  EXPECT_EQ(
+      ui_info.description_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION));
+  EXPECT_EQ(ui_info.accept_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT));
+  EXPECT_EQ(ui_info.cancel_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_NO_THANKS));
+  EXPECT_THAT(ui_info.legal_message_lines, testing::ElementsAre());
 }
 
 }  // namespace autofill

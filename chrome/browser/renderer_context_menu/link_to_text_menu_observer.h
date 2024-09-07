@@ -14,6 +14,7 @@
 #include "url/gurl.h"
 
 class RenderViewContextMenuProxy;
+class ToastController;
 
 // A class that implements the menu item for copying selected text and a link
 // to the selected text to the user's clipboard.
@@ -21,7 +22,8 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
  public:
   static std::unique_ptr<LinkToTextMenuObserver> Create(
       RenderViewContextMenuProxy* proxy,
-      content::GlobalRenderFrameHostId render_frame_host_id);
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      ToastController* toast_controller);
 
   LinkToTextMenuObserver(const LinkToTextMenuObserver&) = delete;
   LinkToTextMenuObserver& operator=(const LinkToTextMenuObserver&) = delete;
@@ -40,9 +42,9 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
  private:
   friend class MockLinkToTextMenuObserver;
 
-  explicit LinkToTextMenuObserver(
-      RenderViewContextMenuProxy* proxy,
-      content::GlobalRenderFrameHostId render_frame_host_id);
+  LinkToTextMenuObserver(RenderViewContextMenuProxy* proxy,
+                         content::GlobalRenderFrameHostId render_frame_host_id,
+                         ToastController* toast_controller);
 
   // Requests link generation if needed.
   void RequestLinkGeneration();
@@ -91,6 +93,8 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
 
   mojo::Remote<blink::mojom::TextFragmentReceiver> remote_;
   raw_ptr<RenderViewContextMenuProxy> proxy_;
+  raw_ptr<ToastController> const toast_controller_;
+
   GURL url_;
   GURL raw_url_;
   content::GlobalRenderFrameHostId render_frame_host_id_;

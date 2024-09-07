@@ -110,9 +110,17 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   bool context_lost() { return context_lost_; }
   void set_context_lost(bool value) { context_lost_ = value; }
 
+  bool shared_bitmap_gpu_channel_lost() const {
+    return shared_bitmap_gpu_channel_lost_;
+  }
+  void set_shared_bitmap_gpu_channel_lost(bool value) {
+    shared_bitmap_gpu_channel_lost_ = value;
+  }
+
  private:
   bool is_displayed_ = false;
   bool context_lost_ = false;
+  bool shared_bitmap_gpu_channel_lost_ = false;
   unsigned frames_since_last_commit_ = 0;
   std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;

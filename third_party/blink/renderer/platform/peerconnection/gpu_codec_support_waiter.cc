@@ -36,11 +36,8 @@ std::optional<base::TimeDelta> GetCodecSupportWaitTimeoutMs() {
   if (!base::FeatureList::IsEnabled(features::kRTCGpuCodecSupportWaiter)) {
     return std::nullopt;
   }
-  int timeout_ms = base::GetFieldTrialParamByFeatureAsInt(
-      features::kRTCGpuCodecSupportWaiter,
-      features::kRTCGpuCodecSupportWaiterTimeoutParam.name,
-      features::kRTCGpuCodecSupportWaiterTimeoutParam.default_value);
-  return base::Milliseconds(timeout_ms);
+  return base::Milliseconds(
+      features::kRTCGpuCodecSupportWaiterTimeoutParam.Get());
 }
 
 void OnCodecSupportKnown(

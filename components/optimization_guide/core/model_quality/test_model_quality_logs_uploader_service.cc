@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace optimization_guide {
@@ -17,7 +18,7 @@ TestModelQualityLogsUploaderService::~TestModelQualityLogsUploaderService() =
     default;
 
 bool TestModelQualityLogsUploaderService::CanUploadLogs(
-    UserVisibleFeatureKey feature) {
+    const MqlsFeatureMetadata* metadata) {
   return true;
 }
 
@@ -28,7 +29,7 @@ void TestModelQualityLogsUploaderService::WaitForLogUpload(
 
 void TestModelQualityLogsUploaderService::UploadFinalizedLog(
     std::unique_ptr<proto::LogAiDataRequest> log,
-    UserVisibleFeatureKey feature) {
+    proto::LogAiDataRequest::FeatureCase feature) {
   uploaded_logs_.push_back(std::move(log));
 
   if (!on_log_uploaded_.is_null()) {

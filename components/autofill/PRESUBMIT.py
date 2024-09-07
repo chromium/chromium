@@ -10,7 +10,10 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
+import filecmp
+import os
 import re
+import subprocess
 
 def IsComponentsAutofillFile(f, name_suffix):
   # The exact path can change. Only check the containing folder.
@@ -24,9 +27,9 @@ def IsComponentsAutofillFileAffected(input_api, name_suffix):
   return AnyAffectedFileMatches(
       input_api, lambda f: IsComponentsAutofillFile(f, name_suffix))
 
-def CheckNoBaseTimeCalls(input_api, output_api):
-  """Checks that no files call base::Time::Now()."""
-  pattern = input_api.re.compile(r'(base::Time::Now)\(\)')
+def CheckNoAutofillClockTimeCalls(input_api, output_api):
+  """Checks that no files call AutofillClock::Now()."""
+  pattern = input_api.re.compile(r'(AutofillClock::Now)\(\)')
   files = []
   for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
     if (f.LocalPath().startswith('components/autofill/') and
@@ -36,11 +39,8 @@ def CheckNoBaseTimeCalls(input_api, output_api):
 
   if len(files):
     return [ output_api.PresubmitPromptWarning(
-        'Consider to not call base::Time::Now() directly but use ' +
-        'AutofillClock::Now(). This clock can be manipulated through ' +
-        'TestAutofillClock for testing purposes, and using AutofillClock and ' +
-        'throughout Autofill code makes sure Autofill tests refers to the '+
-        'same (potentially manipulated) clock.',
+        'Consider to not call AutofillClock::Now() but use ' +
+        'base::Time::Now(). AutofillClock will be deprecated and deleted soon.',
         files) ]
   return []
 
@@ -161,3 +161,38 @@ def CheckNoUsageOfUniqueRendererId(
       'Do not use (Form|Field)RendererId(*.UniqueRendererForm(Control)?Id()). '
       'Consider using form_util::Get(Form|Field)RendererId(*) instead.',
       warning_files)] if len(warning_files) else []
+
+# Checks that whenever the regex transpiler is modified, the golden test files
+# are updated to match the new output. This serves as a testing mechanism for
+# the transpiler.
+def CheckRegexTranspilerGoldenFiles(input_api, output_api):
+  if not IsComponentsAutofillFileAffected(input_api,
+                                          "transpile_regex_patterns.py"):
+    return []
+
+  relative_test_dir = input_api.os_path.join(
+    "components", "test", "data", "autofill", "regex-transpiler")
+  test_dir = input_api.os_path.join(
+    input_api.PresubmitLocalPath(), os.pardir, os.pardir, relative_test_dir)
+
+  # Transpiles `test_dir/file_name` into `output_file`.
+  def transpile(file_name, output_file):
+    transpiler = input_api.os_path.join(input_api.PresubmitLocalPath(),
+      "core", "browser", "form_parsing", "transpile_regex_patterns.py")
+    input_file = input_api.os_path.join(test_dir, file_name)
+    subprocess.run([input_api.python3_executable, transpiler,
+      "--input", input_file, "--output", output_file])
+
+  # Transpiles `test_name`.in and returns whether it matches `test_name`.out.
+  def run_test(test_name):
+    expected_output = input_api.os_path.join(test_dir, test_name + ".out")
+    with input_api.CreateTemporaryFile() as transpiled_output:
+      transpile(test_name + ".in", transpiled_output.name)
+      return filecmp.cmp(transpiled_output.name, expected_output, shallow=False)
+
+  tests = [name[:-3] for name in os.listdir(test_dir) if name.endswith(".in")]
+  if not all(run_test(test) for test in tests):
+    return [output_api.PresubmitError(
+      "Regex transpiler golden files don't match. "
+      "Regenerate the outputs at {}.".format(relative_test_dir))]
+  return []

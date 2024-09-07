@@ -488,15 +488,8 @@ int ReadFile(const FilePath& filename, char* data, int max_size) {
   return checked_cast<int>(result.value());
 }
 
-bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
-  int size = checked_cast<int>(data.size());
-  return WriteFile(filename, reinterpret_cast<const char*>(data.data()),
-                   size) == size;
-}
-
 bool WriteFile(const FilePath& filename, std::string_view data) {
-  int size = checked_cast<int>(data.size());
-  return WriteFile(filename, data.data(), size) == size;
+  return WriteFile(filename, as_bytes(make_span(data)));
 }
 
 FilePath GetUniquePath(const FilePath& path) {
@@ -504,7 +497,7 @@ FilePath GetUniquePath(const FilePath& path) {
 }
 
 FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
-                                       cstring_view suffix_format) {
+                                       std::string_view suffix_format) {
   DCHECK(!path.empty());
   DCHECK_EQ(base::ranges::count(suffix_format, '%'), 1);
   DCHECK(base::Contains(suffix_format, "%d"));
@@ -512,14 +505,12 @@ FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
   if (!PathExists(path)) {
     return path;
   }
-  std::string number;
   for (int count = 1; count <= kMaxUniqueFiles; ++count) {
-    StringAppendF(&number, suffix_format.c_str(), count);
-    FilePath candidate_path = path.InsertBeforeExtensionASCII(number);
+    FilePath candidate_path = path.InsertBeforeExtensionASCII(
+        StringPrintfNonConstexpr(suffix_format, count));
     if (!PathExists(candidate_path)) {
       return candidate_path;
     }
-    number.clear();
   }
   return FilePath();
 }

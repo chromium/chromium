@@ -15,7 +15,8 @@ from typing import List
 
 import monitors
 
-from common import register_common_args, register_device_args, \
+from common import has_ffx_isolate_dir, is_daemon_running, \
+                   register_common_args, register_device_args, \
                    register_log_args, resolve_packages
 from compatible_utils import running_unattended
 from ffx_integration import ScopedFfxConfig
@@ -23,7 +24,6 @@ from flash_device import register_update_args, update
 from isolate_daemon import IsolateDaemon
 from log_manager import LogManager, start_system_log
 from publish_package import publish_packages, register_package_args
-from modification_waiter import ModificationWaiter
 from run_blink_test import BlinkTestRunner
 from run_executable_test import create_executable_test_runner, \
                                 register_executable_test_args
@@ -38,6 +38,9 @@ from test_runner import TestRunner
 def _get_test_runner(runner_args: argparse.Namespace,
                      test_args: List[str]) -> TestRunner:
     """Initialize a suitable TestRunner class."""
+
+    if not runner_args.out_dir:
+        raise ValueError('--out-dir must be specified.')
 
     if runner_args.test_type == 'blink':
         return BlinkTestRunner(runner_args.out_dir, test_args,
@@ -84,50 +87,46 @@ def main():
     # Treat unrecognized arguments as test specific arguments.
     runner_args, test_args = parser.parse_known_args()
 
-    if not runner_args.out_dir:
-        raise ValueError('--out-dir must be specified.')
-
     if runner_args.target_id:
         runner_args.device = True
 
     with ExitStack() as stack:
         if runner_args.logs_dir:
-            # See http://crbug.com/343611361#comment5, the ffx daemon may still
-            # write logs after being shut down and causes the unnecessary test
-            # failures. So this AbstractContextManager would check the
-            # modification time of the output folder to ensure no writes
-            # happening before exiting.
-            # This may belong to IsolateDaemon, but let's keep it here to test
-            # its functionality and reliability.
-            stack.enter_context(ModificationWaiter(runner_args.logs_dir))
             # TODO(crbug.com/343242386): Find a way to upload metric output when
             # logs_dir is not defined.
             stack.push(lambda *_: monitors.dump(
                 os.path.join(runner_args.logs_dir, 'invocations')))
-        log_manager = LogManager(runner_args.logs_dir)
+        if runner_args.extra_path:
+            os.environ['PATH'] += os.pathsep + os.pathsep.join(
+                runner_args.extra_path)
         if running_unattended():
-            if runner_args.extra_path:
-                os.environ['PATH'] += os.pathsep + os.pathsep.join(
-                    runner_args.extra_path)
+            # Only restart the daemon if 1) daemon will be run in a new isolate
+            # dir, or 2) if there isn't a daemon running in the predefined
+            # isolate dir.
+            if not has_ffx_isolate_dir() or not is_daemon_running():
+                stack.enter_context(IsolateDaemon(runner_args.logs_dir))
 
-            extra_inits = [log_manager]
             if runner_args.everlasting:
                 # Setting the emu.instance_dir to match the named cache, so
                 # we can keep these files across multiple runs.
-                extra_inits.append(
+                # The configuration attaches to the daemon isolate-dir, so it
+                # needs to go after the IsolateDaemon.
+                # There isn't a point of enabling the feature on devbox, it
+                # won't use isolate-dir and the emu.instance_dir always goes to
+                # the HOME directory.
+                stack.enter_context(
                     ScopedFfxConfig(
                         'emu.instance_dir',
                         os.path.join(os.environ['HOME'],
                                      '.fuchsia_emulator/')))
-            stack.enter_context(IsolateDaemon(extra_inits))
-        else:
-            if runner_args.logs_dir:
-                logging.warning(
-                    'You are using a --logs-dir, ensure the ffx '
-                    'daemon is started with the logs.dir config '
-                    'updated. We won\'t restart the daemon randomly'
-                    ' anymore.')
-            stack.enter_context(log_manager)
+        elif runner_args.logs_dir:
+            # Never restart daemon if not in the unattended mode.
+            logging.warning('You are using a --logs-dir, ensure the ffx '
+                            'daemon is started with the logs.dir config '
+                            'updated. We won\'t restart the daemon randomly'
+                            ' anymore.')
+        log_manager = LogManager(runner_args.logs_dir)
+        stack.enter_context(log_manager)
 
         if runner_args.device:
             update(runner_args.system_image_dir, runner_args.os_check,
@@ -144,22 +143,21 @@ def main():
         test_runner = _get_test_runner(runner_args, test_args)
         package_deps = test_runner.package_deps
 
-        if not runner_args.repo:
-            # Create a directory that serves as a temporary repository.
-            runner_args.repo = stack.enter_context(
-                tempfile.TemporaryDirectory())
-
-        publish_packages(package_deps.values(), runner_args.repo,
-                         not runner_args.no_repo_init)
-
-        stack.enter_context(serve_repository(runner_args))
-
         # Start system logging, after all possible restarts of the ffx daemon
         # so that logging will not be interrupted.
         start_system_log(log_manager, False, package_deps.values(),
                          ('--since', 'now'), runner_args.target_id)
 
-        resolve_packages(package_deps.keys(), runner_args.target_id)
+        if package_deps:
+            if not runner_args.repo:
+                # Create a directory that serves as a temporary repository.
+                runner_args.repo = stack.enter_context(
+                    tempfile.TemporaryDirectory())
+            publish_packages(package_deps.values(), runner_args.repo,
+                             not runner_args.no_repo_init)
+            stack.enter_context(serve_repository(runner_args))
+            resolve_packages(package_deps.keys(), runner_args.target_id)
+
         return test_runner.run_test().returncode
 
 

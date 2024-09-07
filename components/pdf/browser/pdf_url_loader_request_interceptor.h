@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 
 namespace pdf {
@@ -17,11 +18,11 @@ class PdfURLLoaderRequestInterceptor final
     : public content::URLLoaderRequestInterceptor {
  public:
   static std::unique_ptr<content::URLLoaderRequestInterceptor>
-  MaybeCreateInterceptor(int frame_tree_node_id,
+  MaybeCreateInterceptor(content::FrameTreeNodeId frame_tree_node_id,
                          std::unique_ptr<PdfStreamDelegate> stream_delegate);
 
   PdfURLLoaderRequestInterceptor(
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       std::unique_ptr<PdfStreamDelegate> stream_delegate);
   PdfURLLoaderRequestInterceptor(const PdfURLLoaderRequestInterceptor&) =
       delete;
@@ -39,7 +40,7 @@ class PdfURLLoaderRequestInterceptor final
   RequestHandler CreateRequestHandler(
       const network::ResourceRequest& tentative_resource_request);
 
-  int frame_tree_node_id_;
+  content::FrameTreeNodeId frame_tree_node_id_;
   std::unique_ptr<PdfStreamDelegate> stream_delegate_;
 };
 

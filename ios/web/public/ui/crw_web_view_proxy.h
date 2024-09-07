@@ -66,10 +66,6 @@
 // Wrapper around the becomeFirstResponder method of the webview.
 - (BOOL)becomeFirstResponder;
 
-// Notifies the web view controller that the surface size has changed due to
-// multiwindow action or orientation change.
-- (void)surfaceSizeChanged;
-
 @end
 
 #endif  // IOS_WEB_PUBLIC_UI_CRW_WEB_VIEW_PROXY_H_

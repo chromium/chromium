@@ -13,13 +13,14 @@
 #import "components/network_time/network_time_tracker.h"
 #import "components/os_crypt/async/browser/test_utils.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
+#import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_api.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
@@ -32,7 +33,7 @@ TestingApplicationContext::TestingApplicationContext()
     : application_locale_("en-US"),
       application_country_("us"),
       local_state_(nullptr),
-      chrome_browser_state_manager_(nullptr),
+      profile_manager_(nullptr),
       was_last_shutdown_clean_(false),
       test_url_loader_factory_(
           std::make_unique<network::TestURLLoaderFactory>()),
@@ -76,10 +77,9 @@ void TestingApplicationContext::SetLastShutdownClean(bool clean) {
   was_last_shutdown_clean_ = clean;
 }
 
-void TestingApplicationContext::SetChromeBrowserStateManager(
-    ChromeBrowserStateManager* manager) {
+void TestingApplicationContext::SetProfileManager(ProfileManagerIOS* manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  chrome_browser_state_manager_ = manager;
+  profile_manager_ = manager;
 }
 
 void TestingApplicationContext::SetVariationsService(
@@ -93,12 +93,6 @@ void TestingApplicationContext::SetSystemIdentityManager(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!system_identity_manager_);
   system_identity_manager_ = std::move(system_identity_manager);
-}
-
-void TestingApplicationContext::SetUpgradeCenter(
-    UpgradeCenter* upgrade_center) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  upgrade_center_ = upgrade_center;
 }
 
 void TestingApplicationContext::SetIOSChromeIOThread(
@@ -156,17 +150,9 @@ const std::string& TestingApplicationContext::GetApplicationCountry() {
   return application_country_;
 }
 
-// TODO(crbug.com/358299872): After all usage has changed to
-// GetProfileManager(), remove this method.
-ChromeBrowserStateManager*
-TestingApplicationContext::GetChromeBrowserStateManager() {
+ProfileManagerIOS* TestingApplicationContext::GetProfileManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetProfileManager();
-}
-
-ChromeBrowserStateManager* TestingApplicationContext::GetProfileManager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return chrome_browser_state_manager_;
+  return profile_manager_;
 }
 
 metrics_services_manager::MetricsServicesManager*
@@ -285,8 +271,8 @@ SystemIdentityManager* TestingApplicationContext::GetSystemIdentityManager() {
 AccountProfileMapper* TestingApplicationContext::GetAccountProfileMapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!account_profile_mapper_) {
-    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-        GetSystemIdentityManager(), /*profile_count=*/1);
+    account_profile_mapper_ =
+        std::make_unique<AccountProfileMapper>(GetSystemIdentityManager());
   }
   return account_profile_mapper_.get();
 }
@@ -308,14 +294,21 @@ TestingApplicationContext::GetPushNotificationService() {
   return push_notification_service_.get();
 }
 
-UpgradeCenter* TestingApplicationContext::GetUpgradeCenter() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return upgrade_center_;
-}
-
 os_crypt_async::OSCryptAsync* TestingApplicationContext::GetOSCryptAsync() {
   if (!os_crypt_async_) {
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
   }
   return os_crypt_async_.get();
+}
+
+AdditionalFeaturesController*
+TestingApplicationContext::GetAdditionalFeaturesController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!additional_features_controller_) {
+    // TODO(crbug.com/355550974): Uncomment the following once the API is
+    // implemented.
+    /*additional_features_controller_ =
+        ios::provider::CreateAdditionalFeaturesController();*/
+  }
+  return additional_features_controller_.get();
 }

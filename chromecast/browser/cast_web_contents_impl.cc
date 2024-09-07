@@ -171,18 +171,6 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   CastWebContents::GetAll().push_back(this);
   content::WebContentsObserver::Observe(web_contents_);
 
-  // The URL rewrite rules manager must be initialized only for the root
-  // CastWebContents that is created with this public ctor. All the inner
-  // CastWebContents created in |InnerWebContentsCreated()| callback will use
-  // the private ctor with |parent| specified which allows sharing the same
-  // manager, so that the whole Cast session applies the same rules.
-  if (params_->enable_url_rewrite_rules) {
-    if (!parent_cast_web_contents_) {
-      url_rewrite_rules_manager_.emplace();
-    }
-    url_rewrite_rules_manager()->AddWebContents(web_contents_);
-  }
-
   if (params_->enabled_for_dev) {
     LOG(INFO) << "Enabling dev console for CastWebContentsImpl";
     remote_debugging_server_->EnableWebContentsForDebugging(web_contents_);
@@ -210,7 +198,7 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
 
   if (params_->enable_webui_bindings_permission) {
     web_contents_->GetPrimaryMainFrame()->AllowBindings(
-        content::BINDINGS_POLICY_WEB_UI | content::BINDINGS_POLICY_MOJO_WEB_UI);
+        content::kWebUIBindingsPolicySet);
   }
 }
 
@@ -245,15 +233,6 @@ PageState CastWebContentsImpl::page_state() const {
   return page_state_;
 }
 
-url_rewrite::UrlRequestRewriteRulesManager*
-CastWebContentsImpl::url_rewrite_rules_manager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (parent_cast_web_contents_) {
-    return parent_cast_web_contents_->url_rewrite_rules_manager();
-  }
-  return &*url_rewrite_rules_manager_;
-}
-
 const media_control::MediaBlocker* CastWebContentsImpl::media_blocker() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return media_blocker_.get();
@@ -266,14 +245,6 @@ void CastWebContentsImpl::AddRendererFeatures(base::Value::Dict features) {
 void CastWebContentsImpl::SetInterfacesForRenderer(
     mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) {
   remote_interfaces_.SetProvider(std::move(remote_interfaces));
-}
-
-void CastWebContentsImpl::SetUrlRewriteRules(
-    url_rewrite::mojom::UrlRequestRewriteRulesPtr rules) {
-  DCHECK(params_->enable_url_rewrite_rules);
-  if (!url_rewrite_rules_manager()->OnRulesUpdated(std::move(rules))) {
-    LOG(ERROR) << "URL rewrite rules update failed.";
-  }
 }
 
 void CastWebContentsImpl::LoadUrl(const GURL& url) {

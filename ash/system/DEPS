@@ -7,6 +7,7 @@ include_rules = [
   "+components/live_caption",
   "+components/prefs",
   "+grit/ui_chromeos_resources.h",
+  "+google_apis/common",
 ]
 
 specific_include_rules = {

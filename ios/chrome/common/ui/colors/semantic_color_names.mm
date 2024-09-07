@@ -28,7 +28,11 @@ NSString* const kTertiaryBackgroundColor = @"tertiary_background_color";
 NSString* const kUpdatedTertiaryBackgroundColor =
     @"updated_tertiary_background_color";
 NSString* const kTextPrimaryColor = @"text_primary_color";
+NSString* const kInvertedTextPrimaryColor = @"inverted_text_primary_color";
 NSString* const kTextSecondaryColor = @"text_secondary_color";
+NSString* const kTextLightTertiaryDarkPrimaryColor =
+    @"text_light_tertiary_dark_primary_color";
+NSString* const kInvertedTextSecondaryColor = @"inverted_text_secondary_color";
 NSString* const kTextTertiaryColor = @"text_tertiary_color";
 NSString* const kTextQuaternaryColor = @"text_quaternary_color";
 NSString* const kTextfieldBackgroundColor = @"textfield_background_color";

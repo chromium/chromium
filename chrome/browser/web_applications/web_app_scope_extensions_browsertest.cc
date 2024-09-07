@@ -58,7 +58,7 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
     std::vector<base::test::FeatureRefAndParams> enabled_features =
         apps::test::GetFeaturesToEnableLinkCapturingUX();
     enabled_features.emplace_back(
-        features::kDesktopPWAsLinkCapturingWithScopeExtensions,
+        features::kPwaNavigationCapturingWithScopeExtensions,
         base::FieldTrialParams());
 
     std::vector<base::test::FeatureRef> disabled_features;

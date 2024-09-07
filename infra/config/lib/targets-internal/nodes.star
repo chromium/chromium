@@ -61,6 +61,9 @@ _BUNDLE = _nodes_lib.create_unscoped_node_type("targets|bundle", allow_empty_id 
 # Modifications to make to a single test contained in a bundle
 _PER_TEST_MODIFICATION = _nodes_lib.create_scoped_node_type("targets|per-test-modification", _BUNDLE.kind)
 
+# A mixin to ignore when expanding tests.
+_REMOVE_MIXIN = _nodes_lib.create_link_node_type("targets|legacy-remove-mixin", _PER_TEST_MODIFICATION, _MIXIN)
+
 nodes = struct(
     BINARY = _BINARY,
     LABEL_MAPPING = _LABEL_MAPPING,
@@ -77,4 +80,5 @@ nodes = struct(
     TEST = _TEST,
     BUNDLE = _BUNDLE,
     PER_TEST_MODIFICATION = _PER_TEST_MODIFICATION,
+    REMOVE_MIXIN = _REMOVE_MIXIN,
 )

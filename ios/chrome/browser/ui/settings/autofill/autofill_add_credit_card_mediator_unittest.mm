@@ -14,6 +14,13 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
+using autofill::CreditCard;
+using testing::AllOf;
+using testing::Contains;
+using testing::Eq;
+using testing::Property;
+using testing::SizeIs;
+
 static NSString* const kTestCardName = @"TestName";
 static NSString* const kTestCardNumber = @"4111111111111111";
 static NSString* const kTestExpirationMonth = @"01";
@@ -59,7 +66,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
   // A credit card with invalid number shouldn't be saved so the number of
   // credit cards has to equal zero.
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
-              testing::SizeIs(0));
+              SizeIs(0));
 
   [add_credit_card_mediator_delegate_mock_ verify];
 }
@@ -83,7 +90,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
   //  A credit card with invalid expiration date shouldn't be saved so the
   //  number of credit cards has to equal zero.
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
-              testing::SizeIs(0));
+              SizeIs(0));
 
   [add_credit_card_mediator_delegate_mock_ verify];
 }
@@ -109,7 +116,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
   // A credit card with invalid expiration date shouldn't be saved so the number
   // of credit cards has to equal zero.
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
-              testing::SizeIs(0));
+              SizeIs(0));
 
   [add_credit_card_mediator_delegate_mock_ verify];
 }
@@ -133,7 +140,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
   // A credit card with invalid nickname shouldn't be saved so the number
   // of credit cards has to equal zero.
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
-              testing::SizeIs(0));
+              SizeIs(0));
 
   [add_credit_card_mediator_delegate_mock_ verify];
 }
@@ -157,7 +164,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
   // A valid credit card expected to be savd so the number of credit cards has
   // to equal one.
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
-              testing::SizeIs(1));
+              SizeIs(1));
 
   EXPECT_EQ(
       user_action_tester.GetActionCount("MobileAddCreditCard.CreditCardAdded"),
@@ -166,14 +173,15 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
   [add_credit_card_mediator_delegate_mock_ verify];
 }
 
-// Test saving duplicated credit card with the same card number.
-TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
+// Test saving duplicated local credit card with the same card number.
+TEST_F(AutofillAddCreditCardMediatorTest,
+       TestAlreadyExistsLocalCreditCardNumber) {
   // Add an existing local credit card.
-  autofill::CreditCard existing_credit_card = autofill::test::GetCreditCard();
+  CreditCard existing_credit_card = autofill::test::GetCreditCard();
   personal_data_manager_.payments_data_manager().AddCreditCard(
       existing_credit_card);
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
-              testing::SizeIs(1));
+              SizeIs(1));
 
   // As long as the card number is the same, the existing card will be updated.
   NSString* card_number =
@@ -202,8 +210,8 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
   // A duplicated credit card is expected to be updated (not saved) as a new
   // card so the number of credit cards has to remain equal to one.
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
-              testing::SizeIs(1));
-  autofill::CreditCard* credit_card =
+              SizeIs(1));
+  CreditCard* credit_card =
       personal_data_manager_.payments_data_manager().GetCreditCards()[0];
 
   EXPECT_EQ(credit_card->GetRawInfo(autofill::CREDIT_CARD_NUMBER),
@@ -220,6 +228,73 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
   [add_credit_card_mediator_delegate_mock_ verify];
 }
 
+// Test saving duplicated credit card with the same card number as an existing
+// server card.
+TEST_F(AutofillAddCreditCardMediatorTest,
+       TestAlreadyExistsServerCreditCardNumber) {
+  // Add an existing server credit card.
+  CreditCard server_credit_card = autofill::test::GetCreditCard();
+  server_credit_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
+
+  personal_data_manager_.payments_data_manager().AddCreditCard(
+      server_credit_card);
+  EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
+              SizeIs(1));
+
+  NSString* card_number = base::SysUTF16ToNSString(server_credit_card.number());
+
+  NSString* updated_card_name = @"Updated Card Holder";
+  NSString* updated_expiration_month =
+      base::SysUTF8ToNSString(autofill::test::NextMonth());
+  NSString* updated_expiration_year =
+      base::SysUTF8ToNSString(autofill::test::TenYearsFromNow());
+  NSString* updated_card_nickname = @"updatednickname";
+
+  // `creditCardMediatorDidFinish` expected to be called by
+  // `add_credit_card_mediator_` if the credit card has valid data.
+  OCMExpect([add_credit_card_mediator_delegate_mock_
+      creditCardMediatorDidFinish:[OCMArg any]]);
+
+  [add_credit_card_mediator_
+      addCreditCardViewController:nil
+      addCreditCardWithHolderName:updated_card_name
+                       cardNumber:card_number
+                  expirationMonth:updated_expiration_month
+                   expirationYear:updated_expiration_year
+                     cardNickname:updated_card_nickname];
+
+  // Server credit cards should not be updated. There should be a new credit
+  // card in storage.
+  ASSERT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
+              SizeIs(2));
+  // The existing server card should still be there.
+  EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
+              Contains(testing::Pointee(server_credit_card)));
+
+  auto get_card_name_full = [](const CreditCard* card) {
+    return card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL);
+  };
+
+  // A new local card should be saved.
+  EXPECT_THAT(
+      personal_data_manager_.payments_data_manager().GetCreditCards(),
+      Contains(AllOf(
+          Property(&CreditCard::record_type,
+                   Eq(CreditCard::RecordType::kLocalCard)),
+          Property(&CreditCard::number, Eq(server_credit_card.number())),
+          testing::ResultOf(get_card_name_full,
+                            Eq(base::SysNSStringToUTF16(updated_card_name))),
+          Property(&CreditCard::number, Eq(server_credit_card.number())),
+          Property(&CreditCard::Expiration2DigitMonthAsString,
+                   Eq(base::SysNSStringToUTF16(updated_expiration_month))),
+          Property(&CreditCard::Expiration4DigitYearAsString,
+                   Eq(base::SysNSStringToUTF16(updated_expiration_year))),
+          Property(&CreditCard::nickname,
+                   Eq(base::SysNSStringToUTF16(updated_card_nickname))))));
+
+  [add_credit_card_mediator_delegate_mock_ verify];
+}
+
 // Test that the metrics for saving a credit card are recorded.
 TEST_F(AutofillAddCreditCardMediatorTest, TestMetricsWhenSavingCreditCard) {
   base::HistogramTester histogram_tester;
@@ -229,8 +304,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestMetricsWhenSavingCreditCard) {
   // Required for adding the server card.
   personal_data_manager_.payments_data_manager().SetSyncingForTest(true);
   personal_data_manager_.payments_data_manager().AddServerCreditCardForTest(
-      std::make_unique<autofill::CreditCard>(
-          autofill::test::GetMaskedServerCard()));
+      std::make_unique<CreditCard>(autofill::test::GetMaskedServerCard()));
 
   int number_of_credit_cards =
       personal_data_manager_.payments_data_manager().GetCreditCards().size();
@@ -257,7 +331,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 
   // Ensure that there are no existing credit cards.
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
-              testing::SizeIs(0));
+              SizeIs(0));
 
   [add_credit_card_mediator_ addCreditCardViewController:nil
                              addCreditCardWithHolderName:kTestCardName

@@ -18,7 +18,7 @@
 #import "components/webdata_services/web_data_service_wrapper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -30,7 +30,8 @@ std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
   const base::FilePath& browser_state_path = context->GetStatePath();
   return std::make_unique<WebDataServiceWrapper>(
       browser_state_path, GetApplicationContext()->GetApplicationLocale(),
-      web::GetUIThreadTaskRunner({}), base::DoNothing());
+      web::GetUIThreadTaskRunner({}), base::DoNothing(),
+      GetApplicationContext()->GetOSCryptAsync());
 }
 
 }  // namespace

@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/util/process_version.gni")
+import("//chrome/process_version_rc_template.gni")
+import("//chrome/updater/branding.gni")
 import("//testing/test.gni")
 
 source_set("test_strings") {
@@ -46,6 +49,23 @@ source_set("test_executables") {
   ]
 }
 
+# `process_version_rc_template` invokes `process_version` with the default
+# template rc file which is at //chrome/app/chrome_version.rc.version.
+process_version_rc_template("version") {
+  _internal_name = "$updater_product_full_display_name"
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$updater_product_full_display_name\"",
+    "-e",
+    "INTERNAL_NAME=\"$updater_product_full_display_name\"",
+    "-e",
+    "ORIGINAL_FILENAME=\"updater_test_process.exe\"",
+    "-e",
+    "PRODUCT_SHORTNAME=\"$updater_product_full_name\"",
+  ]
+  output = "$target_gen_dir/updater_test_process.rc"
+}
+
 executable("updater_test_process") {
   testonly = true
 
@@ -54,6 +74,7 @@ executable("updater_test_process") {
   deps = [
     ":test_common",
     ":test_strings",
+    ":version",
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",

@@ -122,6 +122,7 @@ class DownloadsListTrackerTest : public testing::Test {
         .WillByDefault(ReturnRefOfCopy(GURL("https://example.test")));
     ON_CALL(*new_item, GetReferrerUrl())
         .WillByDefault(ReturnRefOfCopy(GURL("https://referrerexample.test")));
+    ON_CALL(*new_item, HasUserGesture()).WillByDefault(Return(true));
 
     content::DownloadItemUtils::AttachInfoForTesting(new_item, profile(),
                                                      nullptr);

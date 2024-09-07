@@ -173,7 +173,7 @@ class ExtensionContextMenuBrowserTest
     if (!FindCommandId(menu, id, &command_id))
       return false;
 
-    MenuModel* model = nullptr;
+    raw_ptr<MenuModel> model = nullptr;
     size_t index = 0;
     if (!menu->GetMenuModelAndItemIndex(command_id, &model, &index)) {
       return false;
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TopLevel) {
       TestRenderViewContextMenu::Create(GetWebContents(), url));
 
   size_t index = 0;
-  MenuModel* model = nullptr;
+  raw_ptr<MenuModel> model = nullptr;
 
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), &model,
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
 
   // The top-level item should be an "automagic parent" with the extension's
   // name.
-  MenuModel* model = nullptr;
+  raw_ptr<MenuModel> model = nullptr;
   size_t index = 0;
   std::u16string label;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
@@ -712,6 +712,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   MenuModel* submenu = model->GetSubmenuModelAt(index);
   ASSERT_TRUE(submenu);
   VerifyMenuForSeparatorsTest(*submenu);
+  // Depends on `menu` so must be cleared before it is destroyed below.
+  model = nullptr;
 
   // Now run our second test - navigate to test2.html which creates an explicit
   // parent node and populates that with the same items as in test1.

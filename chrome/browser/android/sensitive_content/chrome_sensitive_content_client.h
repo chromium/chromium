@@ -28,6 +28,8 @@ class ChromeSensitiveContentClient
 
   void SetContentSensitivity(bool content_is_sensitive) override;
 
+  std::string_view GetHistogramPrefix() override;
+
  private:
   SensitiveContentManager manager_;
 };

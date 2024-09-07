@@ -318,6 +318,10 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   change_processor()->Put(guid, std::move(entity_data),
                           batch->GetMetadataChangeList());
 
+  for (SendTabToSelfModelObserver& observer : observers_) {
+    observer.EntryAddedLocally(entry.get());
+  }
+
   const SendTabToSelfEntry* result =
       entries_.emplace(guid, std::move(entry)).first->second.get();
 

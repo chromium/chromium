@@ -6,6 +6,80 @@
 
 namespace manual_fill {
 
+// Passwords
+
+NSString* const kAccessoryPasswordAccessibilityIdentifier =
+    @"ManualFillAccessoryPasswordAccessibilityIdentifier";
+
+NSString* const kPasswordDoneButtonAccessibilityIdentifier =
+    @"ManualFillPasswordDoneButtonAccessibilityIdentifier";
+
+NSString* const kPasswordSearchBarAccessibilityIdentifier =
+    @"ManualFillPasswordSearchBarAccessibilityIdentifier";
+
+NSString* const kPasswordTableViewAccessibilityIdentifier =
+    @"ManualFillPasswordTableViewAccessibilityIdentifier";
+
+NSString* const kManagePasswordsAccessibilityIdentifier =
+    @"ManualFillManagePasswordsAccessibilityIdentifier";
+
+NSString* const kManageSettingsAccessibilityIdentifier =
+    @"ManualFillManageSettingsAccessibilityIdentifier";
+
+NSString* const kOtherPasswordsAccessibilityIdentifier =
+    @"ManualFillOtherPasswordsAccessibilityIdentifier";
+
+NSString* const kSuggestPasswordAccessibilityIdentifier =
+    @"ManualFillSuggestPasswordAccessibilityIdentifier";
+
+NSString* const kMaskedPasswordButtonText = @"••••••••";
+
+// Payments
+
+NSString* const kAccessoryAddressAccessibilityIdentifier =
+    @"ManualFillAccessoryAddressAccessibilityIdentifier";
+
+NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
+
+NSString* const kCardTableViewAccessibilityIdentifier =
+    @"ManualFillCardTableViewAccessibilityIdentifier";
+
+NSString* const kManagePaymentMethodsAccessibilityIdentifier =
+    @"ManualFillManagePaymentMethodsAccessibilityIdentifier";
+
+NSString* const kAddPaymentMethodAccessibilityIdentifier =
+    @"ManualFillAddPaymentMethodAccessibilityIdentifier";
+
+// Addresses
+
+NSString* const kAccessoryCreditCardAccessibilityIdentifier =
+    @"ManualFillAccessoryCreditCardAccessibilityIdentifier";
+
+NSString* const kAddressTableViewAccessibilityIdentifier =
+    @"ManualFillManualFillAddressTableViewAccessibilityIdentifier";
+
+NSString* const kManageAddressAccessibilityIdentifier =
+    @"ManualFillManageAddressAccessibilityIdentifier";
+
+// Plus Addresses
+
+NSString* const kManagePlusAddressAccessibilityIdentifier =
+    @"ManagePlusAddressAccessibilityIdentifier";
+
+NSString* const kCreatePlusAddressAccessibilityIdentifier =
+    @"CreatePlusAddressAccessibilityIdentifier";
+
+NSString* const kSelectPlusAddressAccessibilityIdentifier =
+    @"SelectPlusAddressAccessibilityIdentifier";
+
+NSString* const kPlusAddressDoneButtonAccessibilityIdentifier =
+    @"PlusAddressDoneButtonAccessibilityIdentifier";
+
+NSString* const kPlusAddressSearchBarAccessibilityIdentifier =
+    @"PlusAddressSearchBarAccessibilityIdentifier";
+
+// Miscellaneous
+
 NSString* const kExpandedManualFillViewID = @"ExpandedManualFillViewID";
 
 NSString* const kExpandedManualFillHeaderViewID =
@@ -23,7 +97,8 @@ NSString* const kExpandedManualFillAutofillFormButtonID =
 NSString* const kExpandedManualFillOverflowMenuID =
     @"ExpandedManualFillOverflowMenuID";
 
-NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
+NSString* const kAccessoryKeyboardAccessibilityIdentifier =
+    @"ManualFillAccessoryKeyboardAccessibilityIdentifier";
 
 }  // namespace manual_fill
 

@@ -29,4 +29,8 @@ BASE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn,
              "UndoMigrationOfSyncingUserToSignedIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kForceMigrateSyncingUserToSignedIn,
+             "ForceMigrateSyncingUserToSignedIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches

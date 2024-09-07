@@ -61,7 +61,6 @@ source_set("browser_tests") {
   sources = [ "managed_screensaver_browsertest.cc" ]
 
   deps = [
-    ":ambient",
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
@@ -77,6 +76,7 @@ source_set("browser_tests") {
     "//chrome/common",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/dbus/session_manager",
+    "//components/ownership",
     "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
     "//net:test_support",

@@ -18,6 +18,7 @@ class SharedURLLoaderFactory;
 namespace optimization_guide {
 
 class ModelExecutionFeaturesController;
+class MqlsFeatureMetadata;
 
 class ChromeModelQualityLogsUploaderService
     : public ModelQualityLogsUploaderService {
@@ -37,7 +38,7 @@ class ChromeModelQualityLogsUploaderService
 
   // Checks user consent, enterprise check for logging. Returns false if any one
   // of the check is not enabled.
-  bool CanUploadLogs(UserVisibleFeatureKey feature) override;
+  bool CanUploadLogs(const MqlsFeatureMetadata* metadata) override;
 
   // Populates the system profile proto and the client's dogfood status.
   void SetSystemMetadata(proto::LoggingMetadata* logging_metadata) override;

@@ -32,8 +32,6 @@ DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
            base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage))
               ? sync_point_manager_->CreateSyncPointOrderData()
               : nullptr) {
-  DCHECK(shared_bitmap_manager);
-
   memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
 }
 
@@ -224,7 +222,7 @@ void DisplayResourceProviderSoftware::WaitSyncToken(gpu::SyncToken sync_token) {
                          base::Unretained(&completion)))) {
     gpu::SequenceId release_sequence_id =
         sync_point_manager_->GetSyncTokenReleaseSequenceId(sync_token);
-    gpu::Scheduler::ScopedAddWaitingPriority waiting(
+    gpu::Scheduler::ScopedSetSequencePriority waiting(
         gpu_scheduler_, release_sequence_id, gpu::SchedulingPriority::kHigh);
 
     completion.Wait();

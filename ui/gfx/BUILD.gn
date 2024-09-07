@@ -898,6 +898,7 @@ test("gfx_unittests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//skia",
+    "//skia:rusty_png_feature_detection",
     "//skia:skcms",
     "//testing/gtest",
     "//third_party/icu:icuuc",

@@ -86,17 +86,12 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().setFledgeJoiningAllowed(mProfile, topFrameEtldPlus1, allowed);
     }
 
-    public @PromptType int getRequiredPromptType() {
-        return PrivacySandboxBridgeJni.get().getRequiredPromptType(mProfile);
+    public @PromptType int getRequiredPromptType(@SurfaceType int surfaceType) {
+        return PrivacySandboxBridgeJni.get().getRequiredPromptType(mProfile, surfaceType);
     }
 
     public void promptActionOccurred(@PromptAction int action, @SurfaceType int surfaceType) {
         PrivacySandboxBridgeJni.get().promptActionOccurred(mProfile, action, surfaceType);
-    }
-
-    // TODO(crbug.com/355238694): Remove this method and hardcoded SurfaceType value.
-    public void promptActionOccurred(@PromptAction int action) {
-        this.promptActionOccurred(action, SurfaceType.BR_APP);
     }
 
     public boolean isFirstPartySetsDataAccessEnabled() {
@@ -179,7 +174,7 @@ public class PrivacySandboxBridge {
 
         void setFledgeJoiningAllowed(Profile profile, String topFrameEtldPlus1, boolean allowed);
 
-        int getRequiredPromptType(Profile profile);
+        int getRequiredPromptType(Profile profile, int surfaceType);
 
         void promptActionOccurred(Profile profile, int action, int surfaceType);
 

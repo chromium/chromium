@@ -101,15 +101,12 @@ class SupervisedUserURLFilter {
 
   class Observer {
    public:
-    // Called whenever the allowlists are updated. This does *not* include
-    // SetManualHosts/SetManualURLs.
-    virtual void OnSiteListUpdated() = 0;
     // Called whenever a check started via
     // GetFilteringBehaviorForURLWithAsyncChecks completes.
-    virtual void OnURLChecked(const GURL& url,
-                              FilteringBehavior behavior,
-                              supervised_user::FilteringBehaviorReason reason,
-                              bool uncertain) {}
+    virtual void OnURLChecked(
+        const GURL& url,
+        FilteringBehavior behavior,
+        supervised_user::FilteringBehaviorDetails details) {}
   };
 
   SupervisedUserURLFilter(PrefService& user_prefs,
@@ -255,7 +252,7 @@ class SupervisedUserURLFilter {
   void CheckCallback(FilteringBehaviorCallback callback,
                      const GURL& url,
                      safe_search_api::Classification classification,
-                     bool uncertain) const;
+                     safe_search_api::ClassificationDetails details) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

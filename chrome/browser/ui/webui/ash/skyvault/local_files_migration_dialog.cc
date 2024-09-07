@@ -11,7 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -22,7 +23,7 @@ namespace policy::local_user_files {
 
 // static
 bool LocalFilesMigrationDialog::Show(CloudProvider cloud_provider,
-                                     base::TimeDelta migration_delay,
+                                     base::Time migration_start_time,
                                      base::OnceClosure migration_callback) {
   ash::SystemWebDialogDelegate* existing_dialog =
       SystemWebDialogDelegate::FindInstance(
@@ -34,7 +35,7 @@ bool LocalFilesMigrationDialog::Show(CloudProvider cloud_provider,
   }
   // This pointer is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
   LocalFilesMigrationDialog* dialog = new LocalFilesMigrationDialog(
-      cloud_provider, migration_delay, std::move(migration_callback));
+      cloud_provider, migration_start_time, std::move(migration_callback));
   dialog->ShowSystemDialog();
   return true;
 }
@@ -49,12 +50,12 @@ LocalFilesMigrationDialog* LocalFilesMigrationDialog::GetDialog() {
 
 LocalFilesMigrationDialog::LocalFilesMigrationDialog(
     CloudProvider cloud_provider,
-    base::TimeDelta migration_delay,
+    base::Time migration_start_time,
     base::OnceClosure migration_callback)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUILocalFilesMigrationURL),
                               /*title=*/std::u16string()),
       cloud_provider_(cloud_provider),
-      migration_delay_(migration_delay),
+      migration_start_time_(std::move(migration_start_time)),
       migration_callback_(std::move(migration_callback)) {
   // TODO(b/342340599): Set appropriate height when the text is finalized.
   set_dialog_size(gfx::Size(SystemWebDialogDelegate::kDialogWidth,
@@ -71,6 +72,13 @@ LocalFilesMigrationDialog::~LocalFilesMigrationDialog() = default;
 gfx::NativeWindow LocalFilesMigrationDialog::GetDialogWindowForTesting() const {
   CHECK_IS_TEST();
   return dialog_window();
+}
+
+void LocalFilesMigrationDialog::OnDialogShown(content::WebUI* webui) {
+  CHECK(migration_callback_);
+  SystemWebDialogDelegate::OnDialogShown(webui);
+  static_cast<LocalFilesMigrationUI*>(webui->GetController())
+      ->SetInitialDialogInfo(cloud_provider_, migration_start_time_);
 }
 
 bool LocalFilesMigrationDialog::ShouldShowCloseButton() const {

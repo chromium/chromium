@@ -1,0 +1,61 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect expanded focusable name='Currency for purchase' value='USD United States Dollar $' setSize=5 posInSet=3 haspopup=menu
+++++++++menuListPopup activedescendantId=menuListOption setSize=5 ispopup=auto
+++++++++++genericContainer ignored
+++++++++++++menuListOption focusable name='EUR Euro' setSize=5 posInSet=1 selected=false
+++++++++++++++genericContainer ignored
+++++++++++++++++image ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='EUR'
+++++++++++++++++++++++inlineTextBox name='EUR'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Euro'
+++++++++++++++++++++++inlineTextBox name='Euro'
+++++++++++++++++genericContainer ignored invisible
+++++++++++++menuListOption focusable name='GBP Great British Pound' setSize=5 posInSet=2 selected=false
+++++++++++++++genericContainer ignored
+++++++++++++++++image ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='GBP'
+++++++++++++++++++++++inlineTextBox name='GBP'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Great British Pound'
+++++++++++++++++++++++inlineTextBox name='Great British Pound'
+++++++++++++++++genericContainer ignored invisible
+++++++++++++menuListOption focusable name='USD United States Dollar' setSize=5 posInSet=3 selected=true
+++++++++++++++genericContainer ignored
+++++++++++++++++image ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='USD'
+++++++++++++++++++++++inlineTextBox name='USD'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='United States Dollar'
+++++++++++++++++++++++inlineTextBox name='United States Dollar'
+++++++++++++++++genericContainer ignored invisible
+++++++++++++menuListOption focusable name='JPY Japanese Yen' setSize=5 posInSet=4 selected=false
+++++++++++++++genericContainer ignored
+++++++++++++++++image ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='JPY'
+++++++++++++++++++++++inlineTextBox name='JPY'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Japanese Yen'
+++++++++++++++++++++++inlineTextBox name='Japanese Yen'
+++++++++++++++++genericContainer ignored invisible
+++++++++++++menuListOption focusable name='BTC Bitcoin' setSize=5 posInSet=5 selected=false
+++++++++++++++genericContainer ignored
+++++++++++++++++image ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='BTC'
+++++++++++++++++++++++inlineTextBox name='BTC'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Bitcoin'
+++++++++++++++++++++++inlineTextBox name='Bitcoin'
+++++++++++++++++genericContainer ignored invisible

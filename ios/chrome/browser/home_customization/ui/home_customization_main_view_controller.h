@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 
+@protocol HomeCustomizationDelegate;
 @protocol HomeCustomizationMutator;
 
 // The view controller representing the first page of the Home customization
@@ -18,6 +19,9 @@
 
 // Mutator for communicating with the HomeCustomizationMediator.
 @property(nonatomic, weak) id<HomeCustomizationMutator> mutator;
+
+// Delegate for communicating with the coordinator.
+@property(nonatomic, weak) id<HomeCustomizationDelegate> delegate;
 
 @end
 

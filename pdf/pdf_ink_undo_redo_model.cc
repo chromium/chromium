@@ -153,6 +153,7 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
       return result;
     }
   }
+  NOTREACHED();
 }
 
 PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
@@ -177,6 +178,7 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
       return GetEraseCommands(commands);
     }
   }
+  NOTREACHED();
 }
 
 // static

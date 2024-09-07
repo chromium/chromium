@@ -72,6 +72,16 @@ inline constexpr char kAutofillPaymentCvcStorage[] =
 // Boolean that is true when users can see the card benefits with the card.
 inline constexpr char kAutofillPaymentCardBenefits[] =
     "autofill.payment_card_benefits";
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Boolean that controls improved autofill filling predictions. When enabled,
+// the autofill functionality is enhanced with adopting user data to
+// the form being filled in, which is triggered by the user via an extra
+// autofill suggestion.
+inline constexpr char kAutofillPredictionImprovementsEnabled[] =
+    "autofill.prediction_improvements.enabled";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 // Boolean that is true if Autofill is enabled and allowed to save profile data.
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 inline constexpr char kAutofillProfileEnabled[] = "autofill.profile_enabled";

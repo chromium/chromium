@@ -87,7 +87,7 @@ class Arrow : public Button {
         ButtonController::NotifyAction::kOnPress);
 
     ConfigureComboboxButtonInkDrop(this);
-    GetViewAccessibility().SetProperties(ax::mojom::Role::kButton);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
     UpdateAccessibleDefaultActionVerb();
   }
   Arrow(const Arrow&) = delete;
@@ -396,7 +396,7 @@ EditableCombobox::EditableCombobox(
   }
 
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kComboBoxGrouping);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kComboBoxGrouping);
   GetViewAccessibility().SetValue(GetText());
 }
 

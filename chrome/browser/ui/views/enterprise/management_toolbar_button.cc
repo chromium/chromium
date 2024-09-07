@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -50,6 +51,7 @@ namespace {
 // Note that the non-touchable icon size is larger than the default to make the
 // management icon easier to read.
 constexpr int kIconSizeForNonTouchUi = 22;
+constexpr int kButtonMaxWidth = 180;
 
 bool CanShowManagementToolbarButton(Profile* profile) {
   const auto* pref_service = profile->GetPrefs();
@@ -119,6 +121,7 @@ ManagementToolbarButton::ManagementToolbarButton(BrowserView* browser_view,
   // We need to have the icon on the left and the (potential) management
   // label on the right.
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  SetLabelStyle(views::style::STYLE_BODY_4_MEDIUM);
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -130,6 +133,8 @@ ManagementToolbarButton::ManagementToolbarButton(BrowserView* browser_view,
       base::BindRepeating(&ManagementToolbarButton::UpdateManagementInfo,
                           base::Unretained(this)));
   SetVisible(false);
+  SetMaxSize(gfx::Size(kButtonMaxWidth, 0));
+  SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
   UpdateManagementInfo();
 }
 
@@ -205,9 +210,30 @@ bool ManagementToolbarButton::ShouldPaintBorder() const {
   return false;
 }
 
+std::optional<SkColor> ManagementToolbarButton::GetHighlightTextColor() const {
+  const auto* const color_provider = GetColorProvider();
+  CHECK(color_provider);
+  return color_provider->GetColor(kColorAvatarButtonHighlightNormalForeground);
+}
+
+std::optional<SkColor> ManagementToolbarButton::GetHighlightBorderColor()
+    const {
+  const auto* const color_provider = GetColorProvider();
+  CHECK(color_provider);
+  return color_provider->GetColor(kColorToolbarButtonBorder);
+}
+
 void ManagementToolbarButton::UpdateText() {
+  if (const auto* const color_provider = GetColorProvider();
+      color_provider && IsLabelPresentAndVisible()) {
+    SetHighlight(/*highlight_text=*/management_label_,
+                 /*highlight_color=*/color_provider->GetColor(
+                     ui::kColorSysTonalContainer));
+  } else {
+    SetHighlight(/*highlight_text=*/management_label_,
+                 /*highlight_color=*/std::nullopt);
+  }
   SetTooltipText(l10n_util::GetStringUTF16(IDS_MANAGED));
-  SetHighlight(/*text=*/management_label_, /*color=*/std::nullopt);
   UpdateLayoutInsets();
 
   // TODO(crbug.com/40689215): this is a hack because toolbar buttons don't
@@ -267,11 +293,13 @@ void ManagementToolbarButton::SetManagementLabel(
     const std::string& management_label) {
   management_label_ = base::UTF8ToUTF16(management_label);
   UpdateText();
+  UpdateIcon();
 }
 
 void ManagementToolbarButton::SetManagementIcon(
     const gfx::Image& management_icon) {
   management_icon_ = management_icon;
+  UpdateText();
   UpdateIcon();
 }
 

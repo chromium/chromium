@@ -22,6 +22,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -54,7 +55,8 @@ public class EdgeToEdgeControllerFactory {
             WindowAndroid windowAndroid,
             @NonNull ObservableSupplier<Tab> tabObservableSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            LayoutManager layoutManager) {
+            LayoutManager layoutManager,
+            FullscreenManager fullscreenManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         assert isSupportedConfiguration(activity);
         return new EdgeToEdgeControllerImpl(
@@ -63,7 +65,8 @@ public class EdgeToEdgeControllerFactory {
                 tabObservableSupplier,
                 null,
                 browserControlsStateProvider,
-                layoutManager);
+                layoutManager,
+                fullscreenManager);
     }
 
     /**
@@ -79,6 +82,7 @@ public class EdgeToEdgeControllerFactory {
      *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
+     * @param fullscreenManager The {@link FullscreenManager} for provide the fullscreen state.
      */
     public static Destroyable createBottomChin(
             View androidView,
@@ -86,7 +90,8 @@ public class EdgeToEdgeControllerFactory {
             LayoutManager layoutManager,
             EdgeToEdgeController edgeToEdgeController,
             NavigationBarColorProvider navigationBarColorProvider,
-            BottomControlsStacker bottomControlsStacker) {
+            BottomControlsStacker bottomControlsStacker,
+            FullscreenManager fullscreenManager) {
         assert isEdgeToEdgeBottomChinEnabled();
         return new EdgeToEdgeBottomChinCoordinator(
                 androidView,
@@ -94,7 +99,8 @@ public class EdgeToEdgeControllerFactory {
                 layoutManager,
                 edgeToEdgeController,
                 navigationBarColorProvider,
-                bottomControlsStacker);
+                bottomControlsStacker,
+                fullscreenManager);
     }
 
     /**

@@ -8,6 +8,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -64,7 +67,10 @@ using content::Referrer;
 namespace {
 
 constexpr SkColor kAppBackgroundColor = SK_ColorBLUE;
-constexpr char kAppPath[] = "/web_apps/no_service_worker.html";
+
+// The page shouldn't have a manifest so no updating will occur to override
+// our settings.
+constexpr char kAppPath[] = "/web_apps/no_manifest.html";
 
 }  // namespace
 namespace web_app {
@@ -95,7 +101,7 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase {
     content::WebContents* web_contents;
   };
 
-  App InstallAndLaunch() {
+  webapps::AppId Install() {
     Profile* profile = browser()->profile();
     GURL start_url = embedded_test_server()->GetURL(kAppPath);
 
@@ -106,8 +112,12 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase {
     web_app_info->background_color = kAppBackgroundColor;
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     web_app_info->display_override = {blink::mojom::DisplayMode::kTabbed};
-    webapps::AppId app_id =
-        test::InstallWebApp(profile, std::move(web_app_info));
+    return test::InstallWebApp(profile, std::move(web_app_info));
+  }
+
+  App InstallAndLaunch() {
+    Profile* profile = browser()->profile();
+    webapps::AppId app_id = Install();
 
     Browser* app_browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
     return App{app_id, app_browser,
@@ -252,7 +262,21 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
       ThemeServiceFactory::GetForProfile(browser()->profile());
   theme_service->UseDefaultTheme();
 
-  App app = InstallAndLaunch();
+  webapps::AppId app_id = Install();
+
+  // Trigger the launch but do not wait for the web contents to load.
+  content::WebContents* web_contents =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->BrowserAppLauncher()
+          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+              app_id, apps::LaunchContainer::kLaunchContainerWindow,
+              WindowOpenDisposition::CURRENT_TAB,
+              apps::LaunchSource::kFromTest));
+  ASSERT_TRUE(web_contents);
+  Browser* app_browser = chrome::FindBrowserWithTab(web_contents);
+  App app{app_id, app_browser,
+          BrowserView::GetBrowserViewForBrowser(app_browser), web_contents};
+
   EXPECT_EQ(registrar().GetAppBackgroundColor(app.id), kAppBackgroundColor);
 
   // Expect manifest background color prior to page loading.
@@ -1297,5 +1321,84 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PageTitle) {
   EXPECT_TRUE(base::StartsWith(browser_view->GetAccessibleTabLabel(1),
                                u"Favicon only"));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Browser tests that verify web-app tab strip behavior when locked (and not
+// locked) for OnTask. Only relevant for non-web browser scenarios.
+using WebAppTabStripForOnTaskBrowserTest = WebAppTabStripBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripForOnTaskBrowserTest,
+                       MiddleClickDoesNotCloseTabsWhenLockedForOnTask) {
+  // Set up app and lock the app for OnTask.
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  const webapps::AppId app_id = InstallTestWebApp(start_url);
+  Browser* const app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  app_browser->SetLockedForOnTask(true);
+
+  const TabStripModel* const tab_strip_model = app_browser->tab_strip_model();
+  ASSERT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+  ASSERT_EQ(tab_strip_model->count(), 1);
+  ASSERT_TRUE(tab_strip_model->IsTabPinned(0));
+
+  // Open another tab so we can test tab close behavior on both home and
+  // non-home tabs.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+  ASSERT_EQ(tab_strip_model->count(), 2);
+
+  // Verify home tab cannot be closed.
+  auto* const tab_strip =
+      BrowserView::GetBrowserViewForBrowser(app_browser)->tabstrip();
+  tab_strip->CloseTab(tab_strip->tab_at(0),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+
+  // Also verify the non-home tab cannot be closed.
+  tab_strip->CloseTab(tab_strip->tab_at(1),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  EXPECT_EQ(tab_strip_model->count(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripForOnTaskBrowserTest,
+                       MiddleClickCanCloseTabsWhenNotLockedForOnTask) {
+  // Set up app and do not lock the app for OnTask.
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  const webapps::AppId app_id = InstallTestWebApp(start_url);
+  Browser* const app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  app_browser->SetLockedForOnTask(false);
+
+  const TabStripModel* const tab_strip_model = app_browser->tab_strip_model();
+  ASSERT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+  ASSERT_EQ(tab_strip_model->count(), 1);
+  ASSERT_TRUE(tab_strip_model->IsTabPinned(0));
+
+  // Open another tab so we can test tab close behavior on both home and
+  // non-home tabs.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+  ASSERT_EQ(tab_strip_model->count(), 2);
+
+  // Verify home tab cannot be closed (default behavior on tabbed web apps).
+  auto* const tab_strip =
+      BrowserView::GetBrowserViewForBrowser(app_browser)->tabstrip();
+  tab_strip->CloseTab(tab_strip->tab_at(0),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+
+  // Verify the non-home tab can be closed.
+  tab_strip->CloseTab(tab_strip->tab_at(1),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  ASSERT_EQ(tab_strip_model->count(), 1);
+
+  // The home tab is the only tab open so it can be closed now.
+  tab_strip->CloseTab(tab_strip->tab_at(0),
+                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  EXPECT_EQ(tab_strip_model->count(), 0);
+}
+
+#endif
 
 }  // namespace web_app

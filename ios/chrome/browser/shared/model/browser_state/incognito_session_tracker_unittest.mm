@@ -8,8 +8,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -116,24 +116,22 @@ class IncognitoSessionTrackerTest : public PlatformTest {
 
   // Adds a new ChromeBrowserState with the given name.
   void AddBrowserStateWithName(const char* name) {
-    browser_state_manager_.AddBrowserStateWithBuilder(
+    profile_manager_.AddProfileWithBuilder(
         std::move(TestChromeBrowserState::Builder().SetName(name)));
   }
 
-  ChromeBrowserStateManager* browser_state_manager() {
-    return &browser_state_manager_;
-  }
+  ProfileManagerIOS* profile_manager() { return &profile_manager_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
 };
 
 // Tests that `HasIncognitoSessionTabs()` value changes when off-the-record
 // tabs are opened or closed after the object is created.
 TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
-  IncognitoSessionTracker tracker(browser_state_manager());
+  IncognitoSessionTracker tracker(profile_manager());
 
   // Install a callback that count how many times it is invoked and store the
   // last value it was invoked with.
@@ -147,7 +145,7 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
 
   // Install a regular Browser for kProfile1 ...
   ScopedBrowser scoped_browser_for_profile1(std::make_unique<TestBrowser>(
-      browser_state_manager()->GetBrowserStateByName(kProfile1)));
+      profile_manager()->GetProfileWithName(kProfile1)));
 
   // ... and insert a few tabs. Then check that HasIncognitoSessionTabs()
   // still returns false and the callbacks must not have been notified.
@@ -159,8 +157,8 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
 
   // Install a new off-the-record Browser for kProfile1 ...
   ScopedBrowser otr_scoped_browser_for_profile1(
-      std::make_unique<TestBrowser>(browser_state_manager()
-                                        ->GetBrowserStateByName(kProfile1)
+      std::make_unique<TestBrowser>(profile_manager()
+                                        ->GetProfileWithName(kProfile1)
                                         ->GetOffTheRecordChromeBrowserState()));
 
   // ... and HasIncognitoSessionTabs() should still return false and the
@@ -211,8 +209,8 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
 
   // Install a new off-the-record Browser for kProfile2 ...
   ScopedBrowser otr_scoped_browser_for_profile2(
-      std::make_unique<TestBrowser>(browser_state_manager()
-                                        ->GetBrowserStateByName(kProfile2)
+      std::make_unique<TestBrowser>(profile_manager()
+                                        ->GetProfileWithName(kProfile2)
                                         ->GetOffTheRecordChromeBrowserState()));
 
   // ... and create a few tabs and check that this change the value of
@@ -232,14 +230,14 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   {
     ScopedBrowser otr_scoped_browser_for_profile3_1(
         std::make_unique<TestBrowser>(
-            browser_state_manager()
-                ->GetBrowserStateByName(kProfile3)
+            profile_manager()
+                ->GetProfileWithName(kProfile3)
                 ->GetOffTheRecordChromeBrowserState()));
 
     ScopedBrowser otr_scoped_browser_for_profile3_2(
         std::make_unique<TestBrowser>(
-            browser_state_manager()
-                ->GetBrowserStateByName(kProfile3)
+            profile_manager()
+                ->GetProfileWithName(kProfile3)
                 ->GetOffTheRecordChromeBrowserState()));
 
     InsertNewTab(otr_scoped_browser_for_profile3_1.get());

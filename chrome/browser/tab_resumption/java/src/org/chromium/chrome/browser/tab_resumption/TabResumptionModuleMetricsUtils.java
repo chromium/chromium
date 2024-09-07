@@ -20,21 +20,25 @@ public class TabResumptionModuleMetricsUtils {
     // MagicStack.Clank.TabResumption.ClickInfo in enums.xml.
     @IntDef({
         ClickInfo.FOREIGN_SINGLE_FIRST,
-        ClickInfo.FOREIGN_FOREIGN_DOUBLE_FIRST,
-        ClickInfo.FOREIGN_FOREIGN_DOUBLE_SECOND,
         ClickInfo.LOCAL_SINGLE_FIRST,
-        ClickInfo.LOCAL_FOREIGN_DOUBLE_FIRST,
-        ClickInfo.LOCAL_FOREIGN_DOUBLE_SECOND,
+        ClickInfo.HISTORY_SINGLE_FIRST,
+        ClickInfo.FOREIGN_DOUBLE_ANY,
+        ClickInfo.LOCAL_DOUBLE_ANY,
+        ClickInfo.HISTORY_DOUBLE_ANY,
         ClickInfo.NUM_ENTRIES
     })
     @interface ClickInfo {
         int FOREIGN_SINGLE_FIRST = 0;
-        int FOREIGN_FOREIGN_DOUBLE_FIRST = 1;
-        int FOREIGN_FOREIGN_DOUBLE_SECOND = 2;
+        // int FOREIGN_FOREIGN_DOUBLE_FIRST = 1;
+        // int FOREIGN_FOREIGN_DOUBLE_SECOND = 2;
         int LOCAL_SINGLE_FIRST = 3;
-        int LOCAL_FOREIGN_DOUBLE_FIRST = 4;
-        int LOCAL_FOREIGN_DOUBLE_SECOND = 5;
-        int NUM_ENTRIES = 6;
+        // int LOCAL_FOREIGN_DOUBLE_FIRST = 4;
+        // int LOCAL_FOREIGN_DOUBLE_SECOND = 5;
+        int HISTORY_SINGLE_FIRST = 6;
+        int FOREIGN_DOUBLE_ANY = 7;
+        int LOCAL_DOUBLE_ANY = 8;
+        int HISTORY_DOUBLE_ANY = 9;
+        int NUM_ENTRIES = 10;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -66,6 +70,13 @@ public class TabResumptionModuleMetricsUtils {
         ModuleShowConfig.DOUBLE_TILE_FOREIGN_FOREIGN,
         ModuleShowConfig.SINGLE_TILE_LOCAL,
         ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN,
+        ModuleShowConfig.SINGLE_TILE_HISTORY,
+        ModuleShowConfig.DOUBLE_TILE_FOREIGN_HISTORY,
+        ModuleShowConfig.DOUBLE_TILE_LOCAL_LOCAL,
+        ModuleShowConfig.DOUBLE_TILE_HISTORY_HISTORY,
+        ModuleShowConfig.DOUBLE_TILE_LOCAL_HISTORY,
+        ModuleShowConfig.SINGLE_TILE_ANY,
+        ModuleShowConfig.DOUBLE_TILE_ANY,
         ModuleShowConfig.NUM_ENTRIES
     })
     @interface ModuleShowConfig {
@@ -73,7 +84,14 @@ public class TabResumptionModuleMetricsUtils {
         int DOUBLE_TILE_FOREIGN_FOREIGN = 1;
         int SINGLE_TILE_LOCAL = 2;
         int DOUBLE_TILE_LOCAL_FOREIGN = 3;
-        int NUM_ENTRIES = 4;
+        int DOUBLE_TILE_FOREIGN_HISTORY = 4;
+        int DOUBLE_TILE_LOCAL_LOCAL = 5;
+        int DOUBLE_TILE_LOCAL_HISTORY = 6;
+        int SINGLE_TILE_HISTORY = 7;
+        int DOUBLE_TILE_HISTORY_HISTORY = 8;
+        int SINGLE_TILE_ANY = 9;
+        int DOUBLE_TILE_ANY = 10;
+        int NUM_ENTRIES = 11;
     }
 
     static final String HISTOGRAM_CLICK_INFO = "MagicStack.Clank.TabResumption.ClickInfo";
@@ -96,31 +114,22 @@ public class TabResumptionModuleMetricsUtils {
             "MagicStack.Clank.TabResumption.TabRecency.Click";
 
     /** Maps specification of a clicked tile to a ClickInfo for logging. */
-    static @ClickInfo int computeClickInfo(@ModuleShowConfig int moduleShowConfig, int tileIndex) {
-        switch (moduleShowConfig) {
-            case ModuleShowConfig.SINGLE_TILE_FOREIGN:
-                assert tileIndex == 0;
-                return ClickInfo.FOREIGN_SINGLE_FIRST;
-
-            case ModuleShowConfig.DOUBLE_TILE_FOREIGN_FOREIGN:
-                assert tileIndex == 0 || tileIndex == 1;
-                return tileIndex == 0
-                        ? ClickInfo.FOREIGN_FOREIGN_DOUBLE_FIRST
-                        : ClickInfo.FOREIGN_FOREIGN_DOUBLE_SECOND;
-
-            case ModuleShowConfig.SINGLE_TILE_LOCAL:
-                assert tileIndex == 0;
-                return ClickInfo.LOCAL_SINGLE_FIRST;
-
-            case ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN:
-                assert tileIndex == 0 || tileIndex == 1;
-                return tileIndex == 0
-                        ? ClickInfo.LOCAL_FOREIGN_DOUBLE_FIRST
-                        : ClickInfo.LOCAL_FOREIGN_DOUBLE_SECOND;
+    static @ClickInfo int computeClickInfo(SuggestionEntry entry, int size) {
+        boolean isSingle = size == 1;
+        if (isSingle) {
+            if (entry.isLocalTab()) return ClickInfo.LOCAL_SINGLE_FIRST;
+            return entry.type == SuggestionEntryType.FOREIGN_TAB
+                    ? ClickInfo.FOREIGN_SINGLE_FIRST
+                    : ClickInfo.HISTORY_SINGLE_FIRST;
         }
 
-        assert false;
-        return ClickInfo.NUM_ENTRIES;
+        if (entry.isLocalTab()) {
+            return isSingle ? ClickInfo.LOCAL_SINGLE_FIRST : ClickInfo.LOCAL_DOUBLE_ANY;
+        } else if (entry.type == SuggestionEntryType.FOREIGN_TAB) {
+            return isSingle ? ClickInfo.FOREIGN_SINGLE_FIRST : ClickInfo.FOREIGN_DOUBLE_ANY;
+        } else {
+            return isSingle ? ClickInfo.HISTORY_SINGLE_FIRST : ClickInfo.HISTORY_DOUBLE_ANY;
+        }
     }
 
     /** Maps SuggestionBundle to a ModuleShowConfig value, or null if there are no suggestions. */
@@ -128,16 +137,48 @@ public class TabResumptionModuleMetricsUtils {
             @Nullable SuggestionBundle bundle) {
         if (bundle == null || bundle.entries.size() == 0) return null;
 
-        if (bundle.entries.size() == 1) {
-            return bundle.entries.get(0).isLocalTab()
-                    ? ModuleShowConfig.SINGLE_TILE_LOCAL
-                    : ModuleShowConfig.SINGLE_TILE_FOREIGN;
+        boolean isSingle = bundle.entries.size() == 1;
+        SuggestionEntry entry = bundle.entries.get(0);
+        if (isSingle) {
+            if (entry.isLocalTab()) {
+                return ModuleShowConfig.SINGLE_TILE_LOCAL;
+            } else if (entry.getNeedMatchLocalTab()) {
+                return ModuleShowConfig.SINGLE_TILE_ANY;
+            } else {
+                return entry.type == SuggestionEntryType.FOREIGN_TAB
+                        ? ModuleShowConfig.SINGLE_TILE_FOREIGN
+                        : ModuleShowConfig.SINGLE_TILE_HISTORY;
+            }
         }
 
-        // If Local Tab suggestion exists, it's always at index 0.
-        return bundle.entries.get(0).isLocalTab()
-                ? ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN
-                : ModuleShowConfig.DOUBLE_TILE_FOREIGN_FOREIGN;
+        SuggestionEntry entry1 = bundle.entries.get(1);
+        if (entry.getNeedMatchLocalTab() || entry1.getNeedMatchLocalTab()) {
+            return ModuleShowConfig.DOUBLE_TILE_ANY;
+        }
+
+        if (entry.isLocalTab()) {
+            if (entry1.isLocalTab()) {
+                return ModuleShowConfig.DOUBLE_TILE_LOCAL_LOCAL;
+            } else {
+                return entry1.type == SuggestionEntryType.FOREIGN_TAB
+                        ? ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN
+                        : ModuleShowConfig.DOUBLE_TILE_LOCAL_HISTORY;
+            }
+        } else if (entry.type == SuggestionEntryType.FOREIGN_TAB) {
+            if (entry1.isLocalTab()) {
+                return ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN;
+            }
+            return entry1.type == SuggestionEntryType.FOREIGN_TAB
+                    ? ModuleShowConfig.DOUBLE_TILE_FOREIGN_FOREIGN
+                    : ModuleShowConfig.DOUBLE_TILE_FOREIGN_HISTORY;
+        } else {
+            if (entry1.isLocalTab()) {
+                return ModuleShowConfig.DOUBLE_TILE_LOCAL_HISTORY;
+            }
+            return entry1.type == SuggestionEntryType.FOREIGN_TAB
+                    ? ModuleShowConfig.DOUBLE_TILE_FOREIGN_HISTORY
+                    : ModuleShowConfig.DOUBLE_TILE_HISTORY_HISTORY;
+        }
     }
 
     /** Records info (encoded tile count and index) on a clicked tile. */

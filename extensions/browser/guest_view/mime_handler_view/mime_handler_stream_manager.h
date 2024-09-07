@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
@@ -44,7 +45,7 @@ class MimeHandlerStreamManager : public KeyedService,
   // (PDF, etc).
   void AddStream(const std::string& stream_id,
                  std::unique_ptr<StreamContainer> stream,
-                 int frame_tree_node_id);
+                 content::FrameTreeNodeId frame_tree_node_id);
 
   std::unique_ptr<StreamContainer> ReleaseStream(const std::string& stream_id);
 

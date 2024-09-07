@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
+namespace {
 
 // TODO(crbug.com/40276862): Consolidate android/desktop controllers, and
 // presumably switch to the `PlatformBrowserTest` pattern.
@@ -193,4 +194,5 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
   EXPECT_FALSE(future.IsReady());
 }
 
+}  // namespace
 }  //  namespace plus_addresses

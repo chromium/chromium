@@ -85,6 +85,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -1855,6 +1856,42 @@ TEST_F(WindowCycleControllerTest, SimulateFlingInAltTab) {
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   EXPECT_TRUE(cycle_controller->IsCycling());
+}
+
+TEST_F(WindowCycleControllerTest, WindowCycleItemViewAccessibleProperties) {
+  std::unique_ptr<Window> window = CreateTestWindow();
+  std::unique_ptr<WindowCycleItemView> item_view =
+      std::make_unique<WindowCycleItemView>(window.get());
+
+  ui::AXNodeData data;
+  item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+  // Default title for test window.
+  ASSERT_EQ(window->GetTitle(), u"Window -1");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Window -1");
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Test when source window title is empty.
+  data = ui::AXNodeData();
+  item_view->source_window()->SetTitle(std::u16string());
+  item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF8(IDS_WM_WINDOW_CYCLER_UNTITLED_WINDOW));
+
+  // Test that accessible name is updated when source window title changes.
+  data = ui::AXNodeData();
+  item_view->source_window()->SetTitle(u"Some title");
+  item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Some title");
+
+  // Test that view is hidden to a11y when source window is destroyed.
+  item_view->OnWindowDestroying(window.get());
+  ASSERT_TRUE(item_view);
+  data = ui::AXNodeData();
+  item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
 }
 
 class ReverseGestureWindowCycleControllerTest

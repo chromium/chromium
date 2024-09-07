@@ -87,9 +87,11 @@ class AutofillPopupControllerImpl
       const override;
   void Hide(SuggestionHidingReason reason) override;
   void ViewDestroyed() override;
-  void Show(std::vector<Suggestion> suggestions,
+  void Show(UiSessionId ui_session_id,
+            std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
+  std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
@@ -104,7 +106,9 @@ class AutofillPopupControllerImpl
       AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void HideSubPopup() override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
-  void PerformButtonActionForSuggestion(int index) override;
+  void PerformButtonActionForSuggestion(
+      int index,
+      const SuggestionButtonAction& button_action) override;
   const std::vector<SuggestionFilterMatch>& GetSuggestionFilterMatches()
       const override;
   void SetFilter(std::optional<SuggestionFilter> filter) override;
@@ -169,8 +173,9 @@ class AutofillPopupControllerImpl
   // the first preferred when recalculating the popup position.
   void OnSuggestionsChanged(bool prefer_prev_arrow_side);
 
-  void UpdateFilteredSuggestions(bool notify_suggestions_changed);
+  void UpdateFilteredSuggestions();
 
+  UiSessionId ui_session_id_;
   base::WeakPtr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
   base::WeakPtr<AutofillPopupView> view_;

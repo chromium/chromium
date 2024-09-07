@@ -44,8 +44,9 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/cookie_config/cookie_store_util.h"
-#include "components/domain_reliability/features.h"
 #include "components/domain_reliability/monitor.h"
+#include "components/ip_protection/common/ip_protection_config_cache_impl.h"
+#include "components/ip_protection/common/ip_protection_config_getter_mojo_impl.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -104,10 +105,7 @@
 #include "services/network/http_auth_cache_copier.h"
 #include "services/network/http_server_properties_pref_delegate.h"
 #include "services/network/ignore_errors_cert_verifier.h"
-#include "services/network/ip_protection/ip_protection_config_cache_impl.h"
-#include "services/network/ip_protection/ip_protection_config_getter_mojo_impl.h"
 #include "services/network/ip_protection/ip_protection_proxy_delegate.h"
-#include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_service.h"
@@ -1901,8 +1899,10 @@ void NetworkContext::ResolveHost(
   // Dns request is disallowed if network access is disabled for the nonce.
   if (network_anonymization_key.GetNonce().has_value() &&
       !IsNetworkForNonceAndUrlAllowed(
-          network_anonymization_key.GetNonce().value(),
-          host->get_scheme_host_port().GetURL())) {
+          /*nonce=*/network_anonymization_key.GetNonce().value(),
+          /*url=*/host->is_host_port_pair()
+              ? GURL(host->get_host_port_pair().ToString())
+              : host->get_scheme_host_port().GetURL())) {
     mojo::Remote<mojom::ResolveHostClient> remote_response_client(
         std::move(response_client));
     remote_response_client->OnComplete(
@@ -2531,14 +2531,16 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // custom proxy configs, or IpProtection, using the proxy allowlist.
   // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
   // done, we should only create an IpProtectionProxyDelegate when
-  // `params_->ip_protection_config_getter` is set (to avoid creating proxy
-  // delegates for network contexts that don't participate in IP Protection, or
-  // for any network context when the IP Protection feature is disabled).
+  // `params_->ip_protection_config_getter` is set (to avoid creating
+  // proxynetwork_conte delegates for network contexts that don't participate in
+  // IP Protection, or for any network context when the IP Protection feature is
+  // disabled).
   auto* nspal = network_service_->masked_domain_list_manager();
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
-    auto ipp_config_cache = std::make_unique<IpProtectionConfigCacheImpl>(
-        std::make_unique<IpProtectionConfigGetterMojoImpl>(
-            std::move(params_->ip_protection_config_getter)));
+    auto ipp_config_cache =
+        std::make_unique<ip_protection::IpProtectionConfigCacheImpl>(
+            std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
+                std::move(params_->ip_protection_config_getter)));
     std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
         std::make_unique<IpProtectionProxyDelegate>(
             nspal, std::move(ipp_config_cache), params_->enable_ip_protection);
@@ -2836,12 +2838,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // trigger another URLRequest are not set to respect NetworkAnonymizationKeys,
   // the URLRequests that they create might not have a NAK, so only set the
   // corresponding value in the URLRequestContext to true at the URLRequest
-  // layer if all those features are set to respect NAK.
+  // layer if all those features are set to respect NAK. The Domain Reliability
+  // feature, which is partitioned by NIK instead of NAK, triggers creation of
+  // URLRequests as well, so also check `net::HttpCache::IsSplitCacheEnabled()`.
   if (require_network_anonymization_key_ &&
       net::NetworkAnonymizationKey::IsPartitioningEnabled() &&
-      base::FeatureList::IsEnabled(
-          domain_reliability::features::
-              kPartitionDomainReliabilityByNetworkIsolationKey)) {
+      net::HttpCache::IsSplitCacheEnabled()) {
     builder.set_require_network_anonymization_key(true);
   }
 
@@ -3254,12 +3256,24 @@ void NetworkContext::RevokeNetworkForNonces(
   }
 }
 
+void NetworkContext::ClearNonces(
+    const std::vector<base::UnguessableToken>& nonces) {
+  for (const auto& nonce : nonces) {
+    network_revocation_nonces_.erase(nonce);
+    network_revocation_exemptions_.erase(nonce);
+  }
+}
+
 void NetworkContext::ExemptUrlFromNetworkRevocationForNonce(
     const GURL& exempted_url,
     const base::UnguessableToken& nonce,
     ExemptUrlFromNetworkRevocationForNonceCallback callback) {
   GURL url_without_filename = exempted_url.GetWithoutFilename();
-  network_revocation_exemptions_[nonce].insert(url_without_filename);
+
+  if (url_without_filename.is_valid()) {
+    network_revocation_exemptions_[nonce].insert(url_without_filename);
+  }
+
   std::move(callback).Run();
 }
 

@@ -10,6 +10,7 @@
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -19,6 +20,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   static blink::BlinkFuzzerTestSupport test_support;
+  blink::test::TaskEnvironment task_environment;
 
   blink::CommaDelimitedHeaderSet set;
   base::TimeDelta delay;

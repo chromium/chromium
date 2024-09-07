@@ -44,16 +44,6 @@ FakeFwupdClient* g_fake_instance = nullptr;
 const char kCabFileExtension[] = ".cab";
 const int kSha256Length = 64;
 
-// "1" is the bitflag for an internal device. Defined here:
-// https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
-const uint64_t kInternalDeviceFlag = 1;
-// "100000000"(9th bit) is the bit release flag for a trusted report.
-// Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
-const uint64_t kTrustedReportsReleaseFlag = 1llu << 8;
-// "10000"(5th bit) is the fwupd feature flag to allow interactive requests.
-// Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
-const uint64_t kRequestsFeatureFlag = 1llu << 4;
-
 // Dict key for the IsInternal device flag.
 const char kIsInternalKey[] = "IsInternal";
 // Dict key for the HasTrustedReport release flag.
@@ -508,7 +498,9 @@ class FwupdClientImpl : public FwupdClient {
 
       std::optional<bool> is_internal = dict.FindBool(kIsInternalKey);
       const std::string* name = dict.FindString("Name");
-      if (is_internal.has_value() && is_internal.value()) {
+      // Ignore internal devices unless firmware updates for Flex are enabled.
+      if (is_internal.has_value() && is_internal.value() &&
+          !features::IsFlexFirmwareUpdateEnabled()) {
         if (name) {
           FIRMWARE_LOG(DEBUG) << "Ignoring internal device: " << *name;
         } else {

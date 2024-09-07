@@ -24,9 +24,10 @@ class FormGroup {
   // enters into the field, interpreted in the given |app_locale| if
   // appropriate. The field types can then be reported back to the server.  This
   // method is additive on |matching_types|.
-  virtual void GetMatchingTypes(const std::u16string& text,
-                                const std::string& app_locale,
-                                FieldTypeSet* matching_types) const;
+  virtual void GetMatchingTypesWithProfileSources(
+      const std::u16string& text,
+      const std::string& app_locale,
+      FieldTypeSet* matching_types) const;
 
   // Returns a set of server field types for which this FormGroup has non-empty
   // data. This method is additive on |non_empty_types|.

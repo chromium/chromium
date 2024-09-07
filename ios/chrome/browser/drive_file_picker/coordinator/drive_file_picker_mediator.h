@@ -5,13 +5,29 @@
 #ifndef IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_H_
 
+#import <memory>
+
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 
 @protocol DriveFilePickerMediatorDelegate;
+struct DriveListQuery;
+@protocol SystemIdentity;
+@protocol DriveFilePickerConsumer;
+@protocol DriveFilePickerCommands;
+
+namespace drive {
+class DriveService;
+}
 
 namespace web {
 class WebState;
 }
+
+namespace image_fetcher {
+class ImageDataFetcher;
+}
+
+class ChromeAccountManagerService;
 
 // Mediator of the Drive file picker.
 @interface DriveFilePickerMediator : NSObject <DriveFilePickerMutator>
@@ -19,13 +35,33 @@ class WebState;
 // A delegate to browse a given drive folder or search in drive.
 @property(nonatomic, weak) id<DriveFilePickerMediatorDelegate> delegate;
 
+@property(nonatomic, weak) id<DriveFilePickerConsumer> consumer;
+
+// Drive file picker handler.
+@property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
+
 // Initializes the mediator with a given `webState`.
-- (instancetype)initWithWebState:(web::WebState*)webState
+- (instancetype)
+         initWithWebState:(web::WebState*)webState
+                 identity:(id<SystemIdentity>)identity
+                    title:(NSString*)title
+                    query:(DriveListQuery)query
+                   filter:(DriveFilePickerFilter)filter
+      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+         sortingDirection:(DriveItemsSortingOrder)sortingDirection
+             driveService:(drive::DriveService*)driveService
+    accountManagerService:(ChromeAccountManagerService*)accountManagerService
+             imageFetcher:
+                 (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects from the model layer.
 - (void)disconnect;
+
+// Updates the root drive identity with the new `selectedIdentity`.
+- (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
 
 @end
 

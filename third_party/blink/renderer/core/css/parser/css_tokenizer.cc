@@ -9,7 +9,6 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
@@ -62,34 +61,6 @@ Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOF() {
   }
 }
 
-std::pair<Vector<CSSParserToken, 32>, Vector<wtf_size_t, 32>>
-CSSTokenizer::TokenizeToEOFWithOffsets() {
-  wtf_size_t estimated_tokens =
-      (input_.length() - Offset()) / kEstimatedCharactersPerToken;
-  Vector<CSSParserToken, 32> tokens;
-  tokens.ReserveInitialCapacity(estimated_tokens);
-  Vector<wtf_size_t, 32> offsets;
-  offsets.ReserveInitialCapacity(estimated_tokens + 1);
-
-  while (true) {
-    offsets.push_back(input_.Offset());
-    const CSSParserToken token =
-        NextToken</*SkipComments=*/true, /*StoreOffset=*/false>();
-    if (token.GetType() == kEOFToken) {
-      return {tokens, offsets};
-    } else {
-      tokens.push_back(token);
-    }
-  }
-}
-
-Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOFWithUnicodeRanges() {
-  unicode_ranges_allowed_ = true;
-  Vector<CSSParserToken, 32> tokens = TokenizeToEOF();
-  unicode_ranges_allowed_ = false;
-  return tokens;
-}
-
 StringView CSSTokenizer::StringRangeFrom(wtf_size_t start) const {
   return input_.RangeFrom(start);
 }
@@ -107,13 +78,7 @@ CSSParserToken CSSTokenizer::TokenizeSingleWithComments() {
   return NextToken</*SkipComments=*/false, /*StoreOffset=*/true>();
 }
 
-void CSSTokenizer::PersistStrings(CSSTokenizer& destination) {
-  for (String& s : string_pool_) {
-    destination.string_pool_.push_back(std::move(s));
-  }
-}
-
-wtf_size_t CSSTokenizer::TokenCount() {
+wtf_size_t CSSTokenizer::TokenCount() const {
   return token_count_;
 }
 

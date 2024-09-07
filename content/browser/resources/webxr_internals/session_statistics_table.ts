@@ -48,12 +48,28 @@ export class SessionStatisticsTable extends CustomElement {
 
     const fps = xrSessionStatistics.numFrames / durationInSeconds;
     const droppedFrames = xrSessionStatistics.droppedFrames / durationInSeconds;
-    const cellValues = [`${this.totalDuration}`, `${fps}`, `${droppedFrames}`];
+    const frameDataTime = this.getDisplayMillisecondsFromMicroSeconds(
+        xrSessionStatistics.frameDataTime.microseconds);
+    const animationFrameTime = this.getDisplayMillisecondsFromMicroSeconds(
+        xrSessionStatistics.pageAnimationFrameTime.microseconds);
+    const submitFrameTime = this.getDisplayMillisecondsFromMicroSeconds(
+        xrSessionStatistics.submitFrameTime.microseconds);
+    const cellValues = [
+      `${this.totalDuration}`,
+      `${fps}`,
+      `${droppedFrames}`,
+      `${frameDataTime}`,
+      `${animationFrameTime}`,
+      `${submitFrameTime}`,
+    ];
 
     this.textLines.push(cellValues.join(', '));
 
     const cellValuesString = `Duration:${this.totalDuration}ms, Frame Rate:${
-        fps}, Dropped Frames:${droppedFrames}`;
+        fps}, Dropped Frames:${droppedFrames}, Frame Data Time:${
+        frameDataTime}ms/frame, Animation Frame Time:${
+        animationFrameTime}ms/frame, Submit Frame Time:${
+        submitFrameTime}ms/frame`;
     this.addRow([cellValuesString]);
   }
 
@@ -77,6 +93,13 @@ export class SessionStatisticsTable extends CustomElement {
   addConsoleMessageRow(xrLogMessage: XrLogMessage) {
     const message = xrLogMessage.message;
     this.addRow([message]);
+  }
+
+  // Method to convert microseconds to milliseconds and round to 2 decimal
+  // places and return  it as a string
+  getDisplayMillisecondsFromMicroSeconds(time: bigint): string {
+    const timeInMilliseconds = Number(time) / 1000;
+    return timeInMilliseconds.toFixed(2);
   }
 }
 

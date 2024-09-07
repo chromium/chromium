@@ -50,6 +50,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -57,6 +58,7 @@ source_set("model") {
     "//ios/chrome/browser/sync/model",
     "//ios/components/webui:url_constants",
     "//ios/web",
+    "//ios/web/public",
     "//url",
   ]
 }

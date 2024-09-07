@@ -51,7 +51,8 @@
           "builder": "android-cronet-arm-dbg",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-arm-dbg/targets"
     }
   },
   "$build/reclient": {

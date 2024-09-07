@@ -76,6 +76,7 @@
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
+#include "chrome/browser/ash/login/screens/split_modifier_keyboard_info_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/theme_selection_screen.h"
@@ -354,6 +355,7 @@ class WizardController : public OobeUI::Observer {
   void ShowCategoriesSelectionScreen();
   void ShowPersonalizedRecomendAppsScreen();
   void ShowPerksDiscoveryScreen();
+  void ShowSplitModifierKeyboardInfoScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -473,6 +475,8 @@ class WizardController : public OobeUI::Observer {
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
   void OnDeviceDisabledChecked(bool device_disabled);
+  void OnSplitModifierKeyboardInfoScreenExit(
+      SplitModifierKeyboardInfoScreen::Result result);
 
   // Shows update screen and starts update process.
   void InitiateOOBEUpdate();

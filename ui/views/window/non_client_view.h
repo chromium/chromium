@@ -113,7 +113,6 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   virtual void SizeConstraintsChanged() {}
 
   // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
   void Layout(PassKey) override;
   Views GetChildrenInZOrder() override;
@@ -236,7 +235,6 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void Layout(PassKey) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
  protected:

@@ -563,7 +563,7 @@ String InputType::BadInputText() const {
 }
 
 String InputType::ValueNotEqualText(const Decimal& value) const {
-  NOTREACHED_IN_MIGRATION();
+  DUMP_WILL_BE_NOTREACHED();
   return String();
 }
 
@@ -1126,10 +1126,8 @@ void InputType::ApplyStep(const Decimal& current,
   // greater than valueBeforeStepping, or the method invoked was the stepUp()
   // method and value is less than valueBeforeStepping, then return.
   DCHECK(!current_was_invalid || current == 0);
-  if (!(RuntimeEnabledFeatures::InputStepCurrentValueValidationEnabled() &&
-        current_was_invalid) &&
-      ((count < 0 && current < new_value) ||
-       (count > 0 && current > new_value))) {
+  if (!current_was_invalid && ((count < 0 && current < new_value) ||
+                               (count > 0 && current > new_value))) {
     return;
   }
 

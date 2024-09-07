@@ -587,7 +587,7 @@ void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
     return;
   }
 
-  if (WebAppPrefGuardrails::GetForLinkCapturingIph(
+  if (WebAppPrefGuardrails::GetForNavigationCapturingIph(
           app_browser->profile()->GetPrefs())
           .IsBlockedByGuardrails(app_id)) {
     return;
@@ -843,7 +843,7 @@ void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(
     case user_education::FeaturePromoClosedReason::kAction:
       base::RecordAction(
           base::UserMetricsAction("LinkCapturingIPHAppBubbleAccepted"));
-      WebAppPrefGuardrails::GetForLinkCapturingIph(
+      WebAppPrefGuardrails::GetForNavigationCapturingIph(
           browser->profile()->GetPrefs())
           .RecordAccept(app_id);
       break;
@@ -851,7 +851,7 @@ void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(
     case user_education::FeaturePromoClosedReason::kCancel:
       base::RecordAction(
           base::UserMetricsAction("LinkCapturingIPHAppBubbleNotAccepted"));
-      WebAppPrefGuardrails::GetForLinkCapturingIph(
+      WebAppPrefGuardrails::GetForNavigationCapturingIph(
           browser->profile()->GetPrefs())
           .RecordDismiss(app_id, base::Time::Now());
       break;

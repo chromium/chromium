@@ -9,7 +9,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
@@ -47,9 +47,9 @@ AccountConsistencyServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<AccountConsistencyService>(
       chrome_browser_state,
-      ios::AccountReconcilorFactory::GetForBrowserState(chrome_browser_state),
+      ios::AccountReconcilorFactory::GetForProfile(chrome_browser_state),
       ios::CookieSettingsFactory::GetForBrowserState(chrome_browser_state),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
+      IdentityManagerFactory::GetForProfile(chrome_browser_state));
 }
 
 }  // namespace ios

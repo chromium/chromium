@@ -11,8 +11,7 @@ class ChromeDirectSocketsDelegate : public content::DirectSocketsDelegate {
  public:
   // content::DirectSocketsDelegate:
   bool IsAPIAccessAllowed(content::RenderFrameHost& rfh) override;
-  bool ValidateAddressAndPort(content::BrowserContext* browser_context,
-                              const GURL& lock_url,
+  bool ValidateAddressAndPort(content::RenderFrameHost& rfh,
                               const std::string& address,
                               uint16_t port,
                               ProtocolType protocol) override;

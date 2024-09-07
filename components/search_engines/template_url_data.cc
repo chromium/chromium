@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/regulatory_extension_type.h"
 
 namespace {
 
@@ -41,10 +42,6 @@ std::string GenerateGUID(int prepopulate_id, int starter_pack_id) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   return guid;
 }
-
-constexpr auto kKnownRegulatoryExtensionVariants =
-    base::MakeFixedFlatSet<std::string_view>(
-        {/* Non-regulated */ "default", "android_eea"});
 
 }  // namespace
 
@@ -137,14 +134,11 @@ TemplateURLData::TemplateURLData(
   }
 
   regulatory_extensions =
-      base::MakeFlatMap<std::string_view,
+      base::MakeFlatMap<RegulatoryExtensionType,
                         const TemplateURLData::RegulatoryExtension*>(
           reg_extensions, {},
           [](const TemplateURLData::RegulatoryExtension& a) {
-            auto variant = std::string_view(a.variant);
-            DCHECK(kKnownRegulatoryExtensionVariants.contains(variant))
-                << "Unrecognized extension variant detected: " << variant;
-            return std::make_pair(variant, &a);
+            return std::make_pair(a.variant, &a);
           });
   DCHECK_EQ(regulatory_extensions.size(), reg_extensions.size());
 }

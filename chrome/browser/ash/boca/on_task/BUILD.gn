@@ -16,14 +16,22 @@ static_library("on_task") {
     "on_task_system_web_app_manager_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
 
   deps = [
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/webui/boca_ui",
     "//base",
     "//chrome/browser/apps/app_service",
+
+    # Explicitly depend on boca to get around with circular dependency on
+    # //chrome/browser/apps/almanac_api_client:almanac_api_client
+    "//chrome/browser/ash/boca",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/chromeos",
@@ -37,6 +45,8 @@ static_library("on_task") {
     "//ui/base",
     "//ui/chromeos",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/boca" ]
 }
 
 source_set("unit_tests") {
@@ -58,5 +68,20 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash:test_support",
     "//chrome/test:test_support",
     "//content/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "on_task_system_web_app_manager_impl_browsertest.cc" ]
+
+  deps = [
+    ":on_task",
+    "//base/test:test_support",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
   ]
 }

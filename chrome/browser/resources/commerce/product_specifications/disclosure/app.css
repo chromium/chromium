@@ -7,11 +7,10 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
- /* TODO(b/349898403): Update the max-width of the element. */
 :host {
   display: flex;
   flex-direction: column;
-  min-width: 448px;
+  max-width: 470px;
 }
 
 #titleContainer {
@@ -44,7 +43,7 @@
     var(--color-product-specifications-disclosure-summary-background);
   border-radius: 8px;
   color: var(--color-product-specifications-disclosure-foreground);
-  margin: 16px 0 20px;
+  margin: 16px 0 10px;
   padding: 16px;
 }
 
@@ -75,6 +74,13 @@
   --iron-icon-height: var(--icon-size);
   --iron-icon-width: var(--icon-size);
   flex-shrink: 0;
+}
+
+#learnMoreLink {
+  color: var(--cr-link-color);
+  font-size: 12px;
+  line-height: 16px;
+  margin-bottom: 20px;
 }
 
 #actionsContainer {

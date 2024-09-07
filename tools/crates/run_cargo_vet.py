@@ -70,6 +70,13 @@ def main():
                    "`config.toml` changes. " \
                    "Check if `vet_config.toml.hbs` needs to be updated.")
 
+    if not success:
+        is_presubmit = '--locked' in unrecognized_args and \
+                       '--frozen' in unrecognized_args
+        if is_presubmit:
+            print("INFO: Chromium's `cargo vet` policy and presubmit " \
+                  "are described in `//docs/rust-unsafe.md`.")
+
     return 0 if success else 1
 
 

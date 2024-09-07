@@ -14,10 +14,10 @@
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 
 namespace gfx {
-class DelegatedInkMetadata;
 class DelegatedInkPoint;
 }  // namespace gfx
 
@@ -49,13 +49,22 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   virtual void FinalizePathForDraw() = 0;
   virtual gfx::Rect GetDamageRect() = 0;
 
+  // This function is called after Delegated Ink's points are submitted to be
+  // drawn on screen, and fires a histogram with the time between points' event
+  // creation and the points' draw submission to the OS.
+  void ReportPointsDrawn();
+
  protected:
-  // |points_| is not emptied each time after the points are drawn, because one
-  // point in |points_| could potentially be drawn in more than one delegated
-  // ink trail. However, if a point has a timestamp that is earlier than the
-  // timestamp on the metadata, then the point has already been drawn, and
-  // therefore should be removed from |points_| before drawing.
+  // `pointer_ids_` is not emptied each time after the points are drawn, because
+  // one point in `pointer_ids_` could potentially be drawn in more than one
+  // delegated ink trail. However, if a point has a timestamp that is earlier
+  // than the timestamp on the metadata, then the point has already been drawn,
+  // and therefore should be removed from `pointer_ids_` before drawing.
   std::vector<gfx::DelegatedInkPoint> FilterPoints();
+
+  // Empties `pointer_ids_` and resets the pointer_id_` if there is no
+  // `metadata_` when `FinalizePathForDraw()` gets called.
+  void ResetPoints();
 
   void PredictPoints(std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw);
   void ResetPrediction() override;
@@ -89,6 +98,15 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   std::unordered_map<int32_t, DelegatedInkTrailData> pointer_ids_;
 
   mojo::Receiver<gfx::mojom::DelegatedInkPointRenderer> receiver_{this};
+
+  // The timestamp in which a Delegated Ink point that matches the metadata was
+  // first painted.
+  std::optional<base::TimeTicks> metadata_paint_time_;
+
+  // `metadata_` gets deleted and re-set on every paint cycle. This variable
+  // persists the metadata value to avoid incorrect repetitions of histogram
+  // fires for the same metadata.
+  std::optional<gfx::DelegatedInkMetadata> previous_metadata_;
 };
 
 }  // namespace viz

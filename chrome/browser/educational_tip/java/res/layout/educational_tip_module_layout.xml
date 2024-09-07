@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.educational_tip.EducationalTipModuleView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/educational_tip_module_layout"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/home_module_height"
+    android:layout_marginTop="@dimen/single_tab_module_padding_top"
+    android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
+    android:layout_marginEnd="@dimen/single_tab_module_lateral_margin"
+    android:paddingStart="@dimen/single_tab_module_padding_bottom"
+    android:paddingEnd="@dimen/single_tab_module_padding_bottom"
+    android:paddingTop="@dimen/single_tab_module_padding_top"
+    android:paddingBottom="@dimen/educational_tip_module_padding_bottom"
+    android:background="@drawable/home_surface_ui_background"
+    android:foreground="@drawable/single_tab_card_ripple"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/educational_tip_module_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:singleLine="true"
+            android:text="@string/educational_tip_module_title"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/educational_tip_module_title_content_mediate_space"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:orientation="horizontal">
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/educational_tip_module_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+                android:id="@+id/educational_tip_module_content_image"
+                app:cornerRadiusBottomEnd="@dimen/single_tab_thumbnail_radius"
+                app:cornerRadiusBottomStart="@dimen/single_tab_thumbnail_radius"
+                app:cornerRadiusTopEnd="@dimen/single_tab_thumbnail_radius"
+                app:cornerRadiusTopStart="@dimen/single_tab_thumbnail_radius"
+                android:layout_height="@dimen/educational_tip_module_content_image_size"
+                android:layout_width="@dimen/educational_tip_module_content_image_size"
+                android:scaleType="centerCrop"
+                android:background="@drawable/educational_tip_module_content_image_background"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/educational_tip_module_content_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/educational_tip_module_content_info_padding_start"
+            android:baselineAligned="false"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/educational_tip_module_content_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="start|top"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
+                tools:ignore="NestedWeights" />
+
+            <TextView
+                android:id="@+id/educational_tip_module_content_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="start|top"
+                android:maxLines="2"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/educational_tip_module_content_button_mediate_space"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+    </LinearLayout>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/educational_tip_module_button"
+        style="@style/FilledButton"
+        android:layout_width="@dimen/educational_tip_module_button_width"
+        android:layout_height="@dimen/educational_tip_module_button_height"
+        android:paddingStart="@dimen/educational_tip_module_button_padding_start"
+        android:paddingEnd="@dimen/educational_tip_module_button_padding_start"
+        android:ellipsize="end"
+        android:layout_gravity="bottom|end"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.Button.Text.Filled"
+        android:text="@string/educational_tip_module_button" />
+</org.chromium.chrome.browser.educational_tip.EducationalTipModuleView>

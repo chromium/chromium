@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,7 +35,15 @@ screen_ai::mojom::VisualAnnotationPtr PdfProgressiveSearchifier::PerformOcr(
 
 void PdfProgressiveSearchifier::AddPage(const SkBitmap& bitmap,
                                         uint32_t index) {
-  progressive_searchifier_->AddPage(bitmap, index, PerformOcr(bitmap));
+  screen_ai::mojom::VisualAnnotationPtr annotation = PerformOcr(bitmap);
+  // Assuming that OCR always succeeds. If it fails, assume that either the
+  // searchifier process is no longer needed or the OCR service is down. Return
+  // early to avoid a crash (crbug.com/359962737).
+  if (!annotation) {
+    DLOG(ERROR) << "Failed to perform OCR on bitmap.";
+    return;
+  }
+  progressive_searchifier_->AddPage(bitmap, index, std::move(annotation));
 }
 
 void PdfProgressiveSearchifier::DeletePage(uint32_t index) {

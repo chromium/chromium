@@ -5,8 +5,9 @@
 /**
  * The facial gestures that are supported by FaceGaze. New values should also
  * be added to FacialGesturesToMediapipeGestures in
- * facegaze/gesture_detector.ts.
- * Please keep alphabetical.
+ * facegaze/gesture_detector.ts, FacialGesture definition in
+ * accessibility_private.json, and ConvertFacialGestureType in
+ * accessibility_extension_api_ash.cc. Please keep alphabetical.
  */
 export enum FacialGesture {
   BROW_INNER_UP = 'browInnerUp',

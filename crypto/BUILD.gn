@@ -35,8 +35,6 @@ component("crypto") {
     "hmac.h",
     "openssl_util.cc",
     "openssl_util.h",
-    "p224_spake.cc",
-    "p224_spake.h",
     "random.cc",
     "random.h",
     "rsa_private_key.cc",
@@ -173,7 +171,6 @@ test("crypto_unittests") {
     "ec_signature_creator_unittest.cc",
     "encryptor_unittest.cc",
     "hmac_unittest.cc",
-    "p224_spake_unittest.cc",
     "random_unittest.cc",
     "rsa_private_key_unittest.cc",
     "secure_hash_unittest.cc",
@@ -186,6 +183,10 @@ test("crypto_unittests") {
 
   if (is_win || is_mac) {
     sources += [ "unexportable_key_metrics_unittest.cc" ]
+  }
+
+  if (is_apple) {
+    sources += [ "mock_apple_keychain_unittest.cc" ]
   }
 
   if (is_mac) {
@@ -214,6 +215,10 @@ test("crypto_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_apple) {
+    deps += [ ":mock_apple_keychain" ]
+  }
 }
 
 static_library("test_support") {

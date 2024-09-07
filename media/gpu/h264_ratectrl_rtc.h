@@ -23,6 +23,11 @@ struct MEDIA_GPU_EXPORT H264FrameParamsRTC {
 // media::VideoRateControlWrapperInternal template class.
 class MEDIA_GPU_EXPORT H264RateCtrlRTC {
  public:
+  enum class FrameDropDecision {
+    kOk,    // Frame is encoded.
+    kDrop,  // Frame is dropped.
+  };
+
   ~H264RateCtrlRTC();
 
   H264RateCtrlRTC(const H264RateCtrlRTC& other) = delete;
@@ -41,8 +46,11 @@ class MEDIA_GPU_EXPORT H264RateCtrlRTC {
   // Loop filter level is not used. The method returns 0.
   int GetLoopfilterLevel() const;
 
-  // Compute QP for the next frame.
-  void ComputeQP(const H264FrameParamsRTC& frame_params);
+  // ComputeQP() returns kOk if the frame is to be encoded, and GetQP()
+  // returns a valid QP value.
+  // Otherwise it returns kDrop, GetQP() returns -1 and PostEncodeUpdate()
+  // must not be invoked.
+  FrameDropDecision ComputeQP(const H264FrameParamsRTC& frame_params);
 
   // Feedback to rate control with the size of current encoded frame.
   void PostEncodeUpdate(uint64_t encoded_frame_size,

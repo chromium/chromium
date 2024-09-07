@@ -17,6 +17,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
@@ -215,9 +217,9 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
   bool CanCreateOnDeviceSession(
       ModelBasedCapabilityKey feature,
-      raw_ptr<OnDeviceModelEligibilityReason> debug_reason) {
+      OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) {
     return GetOptimizationGuideKeyedService()->CanCreateOnDeviceSession(
-        feature, debug_reason);
+        feature, on_device_model_eligibility_reason);
   }
 
   void SetExpectedBearerAccessToken(
@@ -387,17 +389,19 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
                        CanCreateOnDeviceSessionExecutionDisabled) {
-  OnDeviceModelEligibilityReason debug_reason;
+  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
   EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &debug_reason));
-  EXPECT_EQ(debug_reason, OnDeviceModelEligibilityReason::kFeatureNotEnabled);
+                                        &on_device_model_eligibility_reason));
+  EXPECT_EQ(on_device_model_eligibility_reason,
+            OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionDisabledBrowserTest,
     CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        /*debug_reason=*/nullptr));
+  EXPECT_FALSE(
+      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
+                               /*on_device_model_eligibility_reason=*/nullptr));
 }
 
 class ModelExecutionEnabledOnDeviceDisabledBrowserTest
@@ -412,17 +416,19 @@ class ModelExecutionEnabledOnDeviceDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledOnDeviceDisabledBrowserTest,
                        CanCreateOnDeviceSessionOnDeviceDisabled) {
-  OnDeviceModelEligibilityReason debug_reason;
+  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
   EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &debug_reason));
-  EXPECT_EQ(debug_reason, OnDeviceModelEligibilityReason::kFeatureNotEnabled);
+                                        &on_device_model_eligibility_reason));
+  EXPECT_EQ(on_device_model_eligibility_reason,
+            OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledOnDeviceDisabledBrowserTest,
     CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        /*debug_reason=*/nullptr));
+  EXPECT_FALSE(
+      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
+                               /*on_device_model_eligibility_reason=*/nullptr));
 }
 
 class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
@@ -451,10 +457,12 @@ class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
   }
 
   bool ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey feature) {
+      proto::LogAiDataRequest::FeatureCase feature) {
+    const MqlsFeatureMetadata* metadata =
+        MqlsFeatureRegistry::GetInstance().GetFeature(feature);
     return GetOptGuideKeyedService()
         ->model_execution_features_controller_
-        ->ShouldFeatureBeCurrentlyAllowedForLogging(feature);
+        ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata);
   }
 };
 
@@ -609,17 +617,19 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        CanCreateOnDeviceSessionNoModelAvailable) {
-  OnDeviceModelEligibilityReason debug_reason;
+  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
   EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &debug_reason));
-  EXPECT_EQ(debug_reason, OnDeviceModelEligibilityReason::kModelNotAvailable);
+                                        &on_device_model_eligibility_reason));
+  EXPECT_EQ(on_device_model_eligibility_reason,
+            OnDeviceModelEligibilityReason::kModelNotAvailable);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledBrowserTest,
     CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        /*debug_reason=*/nullptr));
+  EXPECT_FALSE(
+      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
+                               /*on_device_model_eligibility_reason=*/nullptr));
 }
 
 class ModelExecutionInternalsPageBrowserTest
@@ -658,8 +668,9 @@ class ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin
     : public ModelExecutionEnabledBrowserTest {
  public:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::switches::kExplicitBrowserSigninUIOnDesktop);
+    scoped_feature_list_.InitWithFeatures(
+        {::switches::kExplicitBrowserSigninUIOnDesktop},
+        {features::internal::kTabOrganizationGraduated});
   }
 };
 
@@ -760,9 +771,8 @@ class ModelExecutionComposeLoggingDisabledTest
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
-         {features::kModelQualityLogging,
-          {{"model_execution_feature_compose", "false"}}}},
-        {});
+         {features::kModelQualityLogging, {}}},
+        {features::kComposeMqlsLogging});
   }
 
  private:
@@ -912,10 +922,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kTabOrganization));
+      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kCompose));
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
@@ -933,9 +943,9 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kCompose));
+      proto::LogAiDataRequest::FeatureCase::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kTabOrganization));
+      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
 
   // Enable via the enterprise policy.
   policies.Set(
@@ -953,10 +963,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kTabOrganization));
+      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kCompose));
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
@@ -1182,10 +1192,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kTabOrganization));
+      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kCompose));
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID)

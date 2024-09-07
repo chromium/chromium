@@ -174,7 +174,7 @@ int ContentPasswordManagerDriver::GetId() const {
 
 int ContentPasswordManagerDriver::GetFrameId() const {
   // Use the associated FrameTreeNode ID as the Frame ID.
-  return render_frame_host_->GetFrameTreeNodeId();
+  return render_frame_host_->GetFrameTreeNodeId().value();
 }
 
 void ContentPasswordManagerDriver::SetPasswordFillData(
@@ -243,6 +243,16 @@ void ContentPasswordManagerDriver::FillSuggestion(
   GetPasswordAutofillAgent()->FillPasswordSuggestion(username, password);
 }
 
+void ContentPasswordManagerDriver::FillSuggestionById(
+    autofill::FieldRendererId username_element_id,
+    autofill::FieldRendererId password_element_id,
+    const std::u16string& username,
+    const std::u16string& password) {
+  LogFilledFieldType();
+  GetPasswordAutofillAgent()->FillPasswordSuggestionById(
+      username_element_id, password_element_id, username, password);
+}
+
 void ContentPasswordManagerDriver::FillIntoFocusedField(
     bool is_password,
     const std::u16string& credential) {
@@ -276,6 +286,15 @@ void ContentPasswordManagerDriver::PreviewSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
   GetAutofillAgent()->PreviewPasswordSuggestion(username, password);
+}
+
+void ContentPasswordManagerDriver::PreviewSuggestionById(
+    autofill::FieldRendererId username_element_id,
+    autofill::FieldRendererId password_element_id,
+    const std::u16string& username,
+    const std::u16string& password) {
+  GetPasswordAutofillAgent()->PreviewPasswordSuggestionById(
+      username_element_id, password_element_id, username, password);
 }
 
 void ContentPasswordManagerDriver::PreviewGenerationSuggestion(
@@ -609,7 +628,7 @@ void ContentPasswordManagerDriver::LogFirstFillingResult(
 
 void ContentPasswordManagerDriver::LogFilledFieldType() {
   bool field_classified_as_target_filling_password =
-      GetPasswordManager()->GetPasswordFormCache()->HasPasswordForm(
+      GetPasswordManager()->GetPasswordFormCache()->GetPasswordForm(
           this, last_triggering_field_id_);
   base::UmaHistogramBoolean("Autofill.FilledFieldType.Password",
                             field_classified_as_target_filling_password);

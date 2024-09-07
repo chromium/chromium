@@ -42,6 +42,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "url/gurl.h"
 
@@ -274,9 +275,9 @@ void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
 
   // Dispatch the onInstalled event with reason "chrome_update".
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
-                     browser_context_, extension->id(), base::Version(), true));
+      FROM_HERE, base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
+                                static_cast<void*>(browser_context_),
+                                extension->id(), base::Version(), true));
 }
 
 void RuntimeAPI::OnExtensionUninstalled(
@@ -481,13 +482,15 @@ void RuntimeEventRouter::DispatchOnStartupEvent(
 
 // static
 void RuntimeEventRouter::DispatchOnInstalledEvent(
-    content::BrowserContext* context,
+    void* context_id,
     const ExtensionId& extension_id,
     const base::Version& old_version,
     bool chrome_updated) {
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(context)) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(context_id)) {
     return;
   }
+  content::BrowserContext* context =
+      reinterpret_cast<content::BrowserContext*>(context_id);
   ExtensionSystem* system = ExtensionSystem::Get(context);
   if (!system) {
     return;
@@ -638,8 +641,8 @@ void RuntimeAPI::OnExtensionInstalledAndLoaded(
     const base::Version& previous_version) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
-                                browser_context_, extension->id(),
-                                previous_version, false));
+                                static_cast<void*>(browser_context_),
+                                extension->id(), previous_version, false));
 }
 
 ExtensionFunction::ResponseAction RuntimeGetBackgroundPageFunction::Run() {
@@ -888,8 +891,14 @@ RuntimeGetContextsFunction::GetFrameContexts() {
       case mojom::ViewType::kBackgroundContents:
       case mojom::ViewType::kComponent:
       case mojom::ViewType::kExtensionBackgroundPage:
-        NOTREACHED_IN_MIGRATION();
+        DUMP_WILL_BE_NOTREACHED();
         break;
+
+      case mojom::ViewType::kDeveloperTools:
+        // TODO(crbug.com/356827776): This view type is not set for developer
+        // tools WebContents yet. This will be NOTREACHED() till we do that.
+        // We also need to add a new type in the runtime API for this.
+        NOTREACHED();
 
       case mojom::ViewType::kExtensionPopup:
         return api::runtime::ContextType::kPopup;

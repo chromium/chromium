@@ -9,6 +9,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -591,8 +592,9 @@ void Iban::set_value(const std::u16string& value) {
     return;
   }
   CHECK_NE(record_type_, Iban::kServerIban);
-  // Get rid of all separators in the value before storing.
+  // Get rid of all separators in the value and capitalize them before storing.
   value_ = RemoveIbanSeparators(value);
+  value_ = base::ToUpperASCII(value_);
   // The `IsValid()` call above ensures we have a valid IBAN length. We should
   // never set the `kPrefixLength` and `kSuffixLength` in a way where they can
   // be longer than the total length of the IBAN.
@@ -615,12 +617,14 @@ void Iban::set_nickname(const std::u16string& nickname) {
 
 void Iban::set_prefix(std::u16string prefix) {
   CHECK_NE(record_type_, Iban::kLocalIban);
-  prefix_ = std::move(prefix);
+  std::u16string capitalized_prefix = base::ToUpperASCII(prefix);
+  prefix_ = std::move(capitalized_prefix);
 }
 
 void Iban::set_suffix(std::u16string suffix) {
   CHECK_NE(record_type_, Iban::kLocalIban);
-  suffix_ = std::move(suffix);
+  std::u16string capitalized_suffix = base::ToUpperASCII(suffix);
+  suffix_ = std::move(capitalized_suffix);
 }
 
 bool Iban::IsValid() {

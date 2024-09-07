@@ -770,12 +770,14 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // not lock the new process either, so that it can be used for subsequent
   // navigations.
   RenderProcessHost* new_process = new_instance->GetProcess();
-  auto* policy = ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  EXPECT_TRUE(policy->CanAccessOrigin(
       new_process->GetID(),
-      url::Origin::Create(embedder_defined_unassigned_url())));
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(
-      new_process->GetID(), url::Origin::Create(regular_url())));
+      url::Origin::Create(embedder_defined_unassigned_url()),
+      ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
+  EXPECT_TRUE(policy->CanAccessOrigin(
+      new_process->GetID(), url::Origin::Create(regular_url()),
+      ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
 }
 
 // Check that when a navigation to a URL that doesn't require assigning a site

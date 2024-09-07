@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
@@ -50,7 +51,7 @@ LensPreselectionBubble::LensPreselectionBubble(views::View* anchor_view,
   SetShowCloseButton(false);
   SetCanActivate(false);
   set_focus_traversable_from_anchor_view(false);
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(48);
   SetProperty(views::kElementIdentifierKey, kLensPreselectionBubbleElementId);
   SetAccessibleWindowRole(ax::mojom::Role::kAlertDialog);
@@ -71,6 +72,7 @@ void LensPreselectionBubble::Init() {
           ? l10n_util::GetStringUTF16(
                 IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_MESSAGE)
           : l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
+  SetAccessibleTitle(toast_text);
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   label_ = AddChildView(std::make_unique<views::Label>(toast_text));
   label_->SetMultiLine(false);

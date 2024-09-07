@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/url_constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -103,10 +104,23 @@ void ExtensionBrowserWindowHelper::CleanUpTabsOnUnload(
   // Iterate backwards as we may remove items while iterating.
   for (int i = tab_strip_model->count() - 1; i >= 0; --i) {
     content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-    if (ShouldCloseTabOnExtensionUnload(extension, browser_, web_contents))
-      tab_strip_model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_NONE);
-    else
+    if (ShouldCloseTabOnExtensionUnload(extension, browser_, web_contents)) {
+      // Do not close the last tab if it belongs to the extension. Instead
+      // replace it with the default NTP.
+      if (tab_strip_model->count() == 1) {
+        const GURL new_tab_url(chrome::kChromeUINewTabURL);
+        // Replace the extension page with default NTP. This behavior is similar
+        // to how Chrome URL overrides (such as NTP overrides) are handled by
+        // ExtensionWebUI.
+        web_contents->GetController().LoadURL(new_tab_url, content::Referrer(),
+                                              ui::PAGE_TRANSITION_RELOAD,
+                                              std::string());
+      } else {
+        tab_strip_model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_NONE);
+      }
+    } else {
       UnmuteIfMutedByExtension(web_contents, extension->id());
+    }
   }
 }
 

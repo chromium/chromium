@@ -436,6 +436,13 @@ TEST_F(BluetoothUtilsTest, TestPairMetric) {
         failure_reason, 1);
   };
 
+  auto assert_filtered_user_error_histograms =
+      [&](device::ConnectionFailureReason failure_reason) {
+        histogram_tester.ExpectBucketCount(
+            "Bluetooth.ChromeOS.Pairing.Result.UserErrorsFiltered", 0,
+            total_count - 1);
+      };
+
   auto assert_filtered_failure_histograms =
       [&](device::ConnectionFailureReason error, size_t expected_count) {
         histogram_tester.ExpectBucketCount(
@@ -453,6 +460,14 @@ TEST_F(BluetoothUtilsTest, TestPairMetric) {
   assert_histograms(device::ConnectionFailureReason::kAuthFailed);
   assert_filtered_failure_histograms(
       device::ConnectionFailureReason::kAuthFailed, /*expected_count=*/1);
+
+  RecordPairingResult(device::ConnectionFailureReason::kNotFound,
+                      device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC,
+                      base::Seconds(2));
+  total_count++;
+  assert_histograms(device::ConnectionFailureReason::kNotFound);
+  assert_filtered_user_error_histograms(
+      device::ConnectionFailureReason::kNotFound);
 
   RecordPairingResult(device::ConnectionFailureReason::kAuthCanceled,
                       device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC,

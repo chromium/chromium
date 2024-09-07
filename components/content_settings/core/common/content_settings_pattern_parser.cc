@@ -257,8 +257,8 @@ GURL PatternParser::ToRepresentativeUrl(
 
   if (!parts.is_scheme_wildcard) {
     r.SetSchemeStr(parts.scheme);
-    default_port = base::NumberToString(
-        url::DefaultPortForScheme(parts.scheme.c_str(), parts.scheme.length()));
+    default_port =
+        base::NumberToString(url::DefaultPortForScheme(parts.scheme));
     r.SetPortStr(default_port);
   }
 

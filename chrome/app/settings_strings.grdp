@@ -673,6 +673,9 @@
   <message name="IDS_SETTINGS_IBAN_SAVED_TO_THIS_DEVICE_ONLY" desc="Shown in the payments section of settings. Descriptive text to inform the user that this IBAN (International Bank Account Number) will be saved to local device only.">
    This IBAN will be saved to this device only
   </message>
+  <message name="IDS_SETTINGS_IBAN_INVALID_VALIDATION_MESSAGE" desc="The text that informs the user that the IBAN (International Bank Account Number) they have entered is not valid.">
+    IBAN is invalid
+  </message>
   <message name="IDS_IBAN_NICKNAME" desc="Label for the field containing the nickname of the IBAN (International Bank Account Number) to be saved.">
     Nickname
   </message>
@@ -750,6 +753,27 @@
       =0 {No reused passwords}
       =1 {1 reused password}
       other {{NUM_REUSED} reused passwords}}
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE" desc="The title of the page in Settings that allows to manage the autofill improved predictions settings." translateable="false">
+    Autofill prediction improvements
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL" desc="The description of the main toggle that enables/disables improved autofill predictions." translateable="false">
+    Chrome can adapt to a form's format — for example, automatically filling your birthday as MM/DD/YYYY or DD/MM/YY. Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Chrome Autofill<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO" desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
+    Chrome asks if you want to use saved info to fill forms
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_ADAPTS"  desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
+    TODO: Describe how autofill adapts to user preferences
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_INFO_LOCAL"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
+    Your info is saved on your device and isn't shared with others
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
+    TODO: Describe how data is used
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER"  desc="User annotation entries header on the autofill prediction improvements settings page." translateable="false">
+    Saved information
   </message>
 
   <if expr="is_win or is_macosx">
@@ -1835,8 +1859,7 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_LABEL" desc="Text of the Privacy Sandbox label in the completion card of the 'Privacy Guide'.">
     Ad privacy
   </message>
-  <!-- TODO(crbug.com/331970504): Make privacy guide ad topics strings translateable. -->
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL_AD_TOPICS" desc="Text of the Privacy Sandbox sublabel in the completion card of the 'Privacy Guide' - This text is used when the ad topics card is added." translateable="false">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL_AD_TOPICS" desc="Text of the Privacy Sandbox sublabel in the completion card of the 'Privacy Guide' - This text is used when the ad topics card is added.">
     Manage your ad topics and other settings to limit what sites can learn about you to show you personalized ads
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_LABEL" desc="Text of the Web and App Activity label in the completion card of the 'Privacy Guide'.">
@@ -2507,14 +2530,6 @@
   <message name="IDS_SETTINGS_SEARCH" desc="Name of the settings page which displays search engine preferences.">
     Search engine
   </message>
-  <message name="IDS_SETTINGS_SEARCH_EXPLANATION" desc="Explanation for the search engine dropdown setting.">
-    Search engine used in the address bar.
-  </message>
-  <if expr="is_chromeos">
-    <message name="IDS_SETTINGS_SEARCH_EXPLANATION_PRIMARY_PROFILE" desc="Explanation for the search engine dropdown setting in the primary profile.">
-      Search engine used in the address bar and the launcher.
-    </message>
-  </if>
   <message name="IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL" desc="Accessibility label for a 'learn more' link which links to an article about setting a default search engine.">
     Learn more about default search engines
   </message>
@@ -2918,6 +2933,15 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_FULLSCREEN_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the automatic fullscreen content setting.">
     Not allowed to enter full screen automatically
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_DESCRIPTION" desc="Description of the hand tracking content setting.">
+    Sites usually track your hands and fingers to augment immersive experiences
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the hand tracking content setting.">
+    Allowed to track your hands
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the hand tracking content setting.">
+    Not allowed to track your hands
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_DESCRIPTION" desc="Description of the hid devices site setting.">
     Sites usually connect to HID devices for features that use uncommon keyboards, game controllers, and other devices
   </message>
@@ -3278,6 +3302,12 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_BLOCK" desc="The block label for the AR feature in site settings.">
     Do not allow sites to create a 3D map of your surroundings or track camera position
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_ASK" desc="The ask label for the hand tracking feature in site settings.">
+    Ask when a site wants to track your hands
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_BLOCK" desc="The block label for the hand tracking feature in site settings.">
+    Don't allow sites to track your hands
   </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DESCRIPTION" desc="An explanation of what third-party cookies are that appear beneath the page title: 'Third-party cookies'. * 'embed': A site you visit uses HTML to construct the page. HTML tags include references to images, like img src='filename.jpg', that are used to show an image. 'filename.jpg' can be a local file owned by the site you visit or a site can embed an external file with something like img src='www.third-party-site.com/images/filename.jpg'. This image is embedded into the site you visit and www.third-party-site.com can set a third-party cookie onto your device.">
     A site you visit can embed content from other sites, for example, images, ads, and text. Cookies set by these other sites are called third-party cookies.
@@ -4119,8 +4149,8 @@
   <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL" desc="Title of the page of the settings that enables history search.">
     History search, powered by AI
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search.">
-    Use everyday language to search your browsing history and find sites you visited.
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search." translateable="false">
+    Use everyday language to search your browsing history and find sites you visited. Only sites you visit after turning on this feature are shown in AI-powered history search results.
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_BULLET_ONE" desc="Bullet point in the 'When on' column of the description of the setting that enables history search.">
     You can search your browsing history based on general page content, not only page title and URL. This gives you improved results, whether you're searching browsing history in the address bar using @history or from the History page.
@@ -4128,8 +4158,8 @@
   <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_ONE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search.">
     When you search browsing history, your history search terms, page content of best matches, and generated model outputs are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search.">
-    As you browse sites, their page contents are saved in an encrypted form on your device.
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search."  translateable="false">
+    As you browse sites, their page contents are saved in an encrypted form on your device. This may affect Chrome's performance.
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL" desc="Label for the 'Learn more' link in the toggle for the setting that enables history search.">
     Learn more about history searches

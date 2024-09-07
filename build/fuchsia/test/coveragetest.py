@@ -22,7 +22,7 @@ COVERED_FILES = [
 TESTED_FILES = [
     'bundled_test_runner.py', 'common.py', 'ffx_emulator.py',
     'modification_waiter.py', 'monitors.py', 'serial_boot_device.py',
-    'test_server.py'
+    'test_env_setup.py', 'test_server.py'
 ]
 
 

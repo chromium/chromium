@@ -310,8 +310,8 @@ void ChromeRenderFrameObserver::DidCommitProvisionalLoad(
   view_count_key.Set(base::NumberToString(blink::WebView::GetWebViewCount()));
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (render_frame()->GetEnabledBindings() &
-      content::kWebUIBindingsPolicyMask) {
+  if (render_frame()->GetEnabledBindings().HasAny(
+          content::kWebUIBindingsPolicySet)) {
     for (const auto& script : webui_javascript_)
       render_frame()->ExecuteJavaScript(script);
     webui_javascript_.clear();

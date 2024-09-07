@@ -105,6 +105,86 @@ class MODULES_EXPORT BaseAudioContext
 
   void Trace(Visitor*) const override;
 
+  // EventTarget
+  const AtomicString& InterfaceName() const final;
+  ExecutionContext* GetExecutionContext() const final;
+
+  // ActiveScriptWrappable
+  bool HasPendingActivity() const override;
+
+  // ExecutionContextLifecycleStateObserver
+  void ContextLifecycleStateChanged(mojom::blink::FrameLifecycleState) override;
+  void ContextDestroyed() override;
+
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
+  // https://webaudio.github.io/web-audio-api/#BaseAudioContext
+  // Cannot be called from the audio thread.
+  AudioDestinationNode* destination() const;
+  float sampleRate() const { return destination_handler_->SampleRate(); }
+  double currentTime() const { return destination_handler_->CurrentTime(); }
+  AudioListener* listener() { return listener_.Get(); }
+  String state() const;
+  AudioWorklet* audioWorklet() const;
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)
+  AnalyserNode* createAnalyser(ExceptionState&);
+  BiquadFilterNode* createBiquadFilter(ExceptionState&);
+  AudioBuffer* createBuffer(uint32_t number_of_channels,
+                            uint32_t number_of_frames,
+                            float sample_rate,
+                            ExceptionState&);
+  AudioBufferSourceNode* createBufferSource(ExceptionState&);
+  ChannelMergerNode* createChannelMerger(ExceptionState&);
+  ChannelMergerNode* createChannelMerger(uint32_t number_of_inputs,
+                                         ExceptionState&);
+  ChannelSplitterNode* createChannelSplitter(ExceptionState&);
+  ChannelSplitterNode* createChannelSplitter(uint32_t number_of_outputs,
+                                             ExceptionState&);
+  ConstantSourceNode* createConstantSource(ExceptionState&);
+  ConvolverNode* createConvolver(ExceptionState&);
+  DelayNode* createDelay(ExceptionState&);
+  DelayNode* createDelay(double max_delay_time, ExceptionState&);
+  DynamicsCompressorNode* createDynamicsCompressor(ExceptionState&);
+  GainNode* createGain(ExceptionState&);
+  IIRFilterNode* createIIRFilter(Vector<double> feedforward_coef,
+                                 Vector<double> feedback_coef,
+                                 ExceptionState&);
+  OscillatorNode* createOscillator(ExceptionState&);
+  PannerNode* createPanner(ExceptionState&);
+  PeriodicWave* createPeriodicWave(const Vector<float>& real,
+                                   const Vector<float>& imag,
+                                   ExceptionState&);
+  PeriodicWave* createPeriodicWave(const Vector<float>& real,
+                                   const Vector<float>& imag,
+                                   const PeriodicWaveConstraints*,
+                                   ExceptionState&);
+  ScriptProcessorNode* createScriptProcessor(ExceptionState&);
+  ScriptProcessorNode* createScriptProcessor(uint32_t buffer_size,
+                                             ExceptionState&);
+  ScriptProcessorNode* createScriptProcessor(uint32_t buffer_size,
+                                             uint32_t number_of_input_channels,
+                                             ExceptionState&);
+  ScriptProcessorNode* createScriptProcessor(uint32_t buffer_size,
+                                             uint32_t number_of_input_channels,
+                                             uint32_t number_of_output_channels,
+                                             ExceptionState&);
+  StereoPannerNode* createStereoPanner(ExceptionState&);
+  WaveShaperNode* createWaveShaper(ExceptionState&);
+  ScriptPromise<AudioBuffer> decodeAudioData(ScriptState*,
+                                             DOMArrayBuffer* audio_data,
+                                             V8DecodeSuccessCallback*,
+                                             V8DecodeErrorCallback*,
+                                             ExceptionState&);
+  ScriptPromise<AudioBuffer> decodeAudioData(ScriptState*,
+                                             DOMArrayBuffer* audio_data,
+                                             ExceptionState&);
+  ScriptPromise<AudioBuffer> decodeAudioData(ScriptState*,
+                                             DOMArrayBuffer* audio_data,
+                                             V8DecodeSuccessCallback*,
+                                             ExceptionState&);
+
   // Is the destination node initialized and ready to handle audio?
   bool IsDestinationInitialized() const {
     AudioDestinationNode* dest = destination();
@@ -113,24 +193,12 @@ class MODULES_EXPORT BaseAudioContext
 
   void Dispose();
 
-  // ExecutionContextLifecycleStateObserver overrides:
-  void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
-  void ContextDestroyed() override;
-  bool HasPendingActivity() const override;
-
-  // Cannot be called from the audio thread.
-  AudioDestinationNode* destination() const;
 
   size_t CurrentSampleFrame() const {
     return destination_handler_->CurrentSampleFrame();
   }
 
-  double currentTime() const { return destination_handler_->CurrentTime(); }
-
-  float sampleRate() const { return destination_handler_->SampleRate(); }
-
-  String state() const;
-  AudioContextState ContextState() const { return context_state_; }
+  AudioContextState ContextState() const { return control_thread_state_; }
 
   // Warn user when creating a node on a closed context.  The node can't do
   // anything useful because the context is closed.
@@ -144,27 +212,6 @@ class MODULES_EXPORT BaseAudioContext
   // return false.
   virtual bool IsPullingAudioGraph() const = 0;
 
-  AudioBuffer* createBuffer(uint32_t number_of_channels,
-                            uint32_t number_of_frames,
-                            float sample_rate,
-                            ExceptionState&);
-
-  // Asynchronous audio file data decoding.
-  ScriptPromise<AudioBuffer> decodeAudioData(ScriptState*,
-                                             DOMArrayBuffer* audio_data,
-                                             V8DecodeSuccessCallback*,
-                                             V8DecodeErrorCallback*,
-                                             ExceptionState&);
-
-  ScriptPromise<AudioBuffer> decodeAudioData(ScriptState*,
-                                             DOMArrayBuffer* audio_data,
-                                             ExceptionState&);
-
-  ScriptPromise<AudioBuffer> decodeAudioData(ScriptState*,
-                                             DOMArrayBuffer* audio_data,
-                                             V8DecodeSuccessCallback*,
-                                             ExceptionState&);
-
   // Handles the promise and callbacks when `.decodeAudioData()` is finished
   // decoding.
   void HandleDecodeAudioData(AudioBuffer*,
@@ -173,53 +220,8 @@ class MODULES_EXPORT BaseAudioContext
                              V8DecodeErrorCallback*,
                              ExceptionContext);
 
-  AudioListener* listener() { return listener_.Get(); }
 
   virtual bool HasRealtimeConstraint() = 0;
-
-  // The AudioNode create methods are called on the main thread (from
-  // JavaScript).
-  AudioBufferSourceNode* createBufferSource(ExceptionState&);
-  ConstantSourceNode* createConstantSource(ExceptionState&);
-  GainNode* createGain(ExceptionState&);
-  BiquadFilterNode* createBiquadFilter(ExceptionState&);
-  WaveShaperNode* createWaveShaper(ExceptionState&);
-  DelayNode* createDelay(ExceptionState&);
-  DelayNode* createDelay(double max_delay_time, ExceptionState&);
-  PannerNode* createPanner(ExceptionState&);
-  ConvolverNode* createConvolver(ExceptionState&);
-  DynamicsCompressorNode* createDynamicsCompressor(ExceptionState&);
-  AnalyserNode* createAnalyser(ExceptionState&);
-  ScriptProcessorNode* createScriptProcessor(ExceptionState&);
-  ScriptProcessorNode* createScriptProcessor(uint32_t buffer_size,
-                                             ExceptionState&);
-  ScriptProcessorNode* createScriptProcessor(uint32_t buffer_size,
-                                             uint32_t number_of_input_channels,
-                                             ExceptionState&);
-  ScriptProcessorNode* createScriptProcessor(uint32_t buffer_size,
-                                             uint32_t number_of_input_channels,
-                                             uint32_t number_of_output_channels,
-                                             ExceptionState&);
-  StereoPannerNode* createStereoPanner(ExceptionState&);
-  ChannelSplitterNode* createChannelSplitter(ExceptionState&);
-  ChannelSplitterNode* createChannelSplitter(uint32_t number_of_outputs,
-                                             ExceptionState&);
-  ChannelMergerNode* createChannelMerger(ExceptionState&);
-  ChannelMergerNode* createChannelMerger(uint32_t number_of_inputs,
-                                         ExceptionState&);
-  OscillatorNode* createOscillator(ExceptionState&);
-  PeriodicWave* createPeriodicWave(const Vector<float>& real,
-                                   const Vector<float>& imag,
-                                   ExceptionState&);
-  PeriodicWave* createPeriodicWave(const Vector<float>& real,
-                                   const Vector<float>& imag,
-                                   const PeriodicWaveConstraints*,
-                                   ExceptionState&);
-
-  // IIRFilter
-  IIRFilterNode* createIIRFilter(Vector<double> feedforward_coef,
-                                 Vector<double> feedback_coef,
-                                 ExceptionState&);
 
   // When a source node has started processing and needs to be protected,
   // this method tells the context to protect the node.
@@ -284,12 +286,6 @@ class MODULES_EXPORT BaseAudioContext
   // Returns the maximum numuber of channels we can support.
   static uint32_t MaxNumberOfChannels() { return kMaxNumberOfChannels; }
 
-  // EventTarget
-  const AtomicString& InterfaceName() const final;
-  ExecutionContext* GetExecutionContext() const final;
-
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)
-
   virtual void StartRendering();
 
   void NotifyStateChange();
@@ -310,8 +306,6 @@ class MODULES_EXPORT BaseAudioContext
   // notify their associated AudioContext when start() is called.
   virtual void NotifySourceNodeStart() = 0;
 
-  // AudioWorklet IDL
-  AudioWorklet* audioWorklet() const;
 
   // Callback from AudioWorklet, invoked when the associated
   // AudioWorkletGlobalScope is created and the worklet operation is ready after
@@ -331,10 +325,6 @@ class MODULES_EXPORT BaseAudioContext
   // Returns -1 if the destination node is unavailable or any other condition
   // occurs preventing us from determining the count.
   int32_t CallbackBufferSize();
-
-  // InspectorHelperMixin
-  void ReportDidCreate() final;
-  void ReportWillBeDestroyed() final;
 
   // TODO(crbug.com/1055983): Remove this when the execution context validity
   // check is not required in the AudioNode factory methods. Returns false
@@ -357,14 +347,6 @@ class MODULES_EXPORT BaseAudioContext
   // they can be collected.
   void HandleStoppableSourceNodes();
 
-  Member<AudioDestinationNode> destination_node_;
-
-  // FIXME(dominicc): Move m_resumeResolvers to AudioContext, because only
-  // it creates these Promises.
-  // Vector of promises created by resume(). It takes time to handle them, so we
-  // collect all of the promises here until they can be resolved or rejected.
-  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>> resume_resolvers_;
-
   void RejectPendingDecodeAudioDataResolvers();
 
   // When the context goes away, reject any pending script promise resolvers.
@@ -382,6 +364,12 @@ class MODULES_EXPORT BaseAudioContext
   // etc. Actions that should happen, but can happen asynchronously to the
   // audio thread making rendering progress.
   void PerformCleanupOnMainThread();
+
+  // https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-pending-promises-slot
+  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
+      pending_promises_resolvers_;
+
+  Member<AudioDestinationNode> destination_node_;
 
   // True if we're in the process of resolving promises for resume().  Resolving
   // can take some time and the audio context process loop is very fast, so we
@@ -401,6 +389,9 @@ class MODULES_EXPORT BaseAudioContext
   // haven't finished playing.  Make sure to release them here.
   void ReleaseActiveSourceNodes();
 
+  // https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-control-thread-state-slot
+  AudioContextState control_thread_state_ = kSuspended;
+
   bool is_cleared_ = false;
 
   // Listener for the PannerNodes
@@ -413,9 +404,6 @@ class MODULES_EXPORT BaseAudioContext
 
   // Graph locking.
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
-
-  // The state of the BaseAudioContext.
-  AudioContextState context_state_ = kSuspended;
 
   AsyncAudioDecoder audio_decoder_;
 

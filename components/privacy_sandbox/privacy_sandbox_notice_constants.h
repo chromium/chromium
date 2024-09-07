@@ -21,10 +21,37 @@ inline constexpr char kTopicsConsentModalClankBrApp[] =
 inline constexpr char kTopicsConsentModalClankCCT[] =
     "TopicsConsentModalClankCCT";
 
+// EEA Notice names.
+inline constexpr char kProtectedAudienceMeasurementNoticeModal[] =
+    "ProtectedAudienceMeasurementNoticeModal";
+inline constexpr char kProtectedAudienceMeasurementNoticeModalClankBrApp[] =
+    "ProtectedAudienceMeasurementNoticeModalClankBrApp";
+inline constexpr char kProtectedAudienceMeasurementNoticeModalClankCCT[] =
+    "ProtectedAudienceMeasurementNoticeModalClankCCT";
+
+// ROW Notice names.
+inline constexpr char kThreeAdsAPIsNoticeModal[] = "ThreeAdsAPIsNoticeModal";
+inline constexpr char kThreeAdsAPIsNoticeModalClankBrApp[] =
+    "ThreeAdsAPIsNoticeModalClankBrApp";
+inline constexpr char kThreeAdsAPIsNoticeModalClankCCT[] =
+    "ThreeAdsAPIsNoticeModalClankCCT";
+
+// Restricted Notice names.
+inline constexpr char kMeasurementNoticeModal[] = "MeasurementNoticeModal";
+inline constexpr char kMeasurementNoticeModalClankBrApp[] =
+    "MeasurementNoticeModalClankBrApp";
+inline constexpr char kMeasurementNoticeModalClankCCT[] =
+    "MeasurementNoticeModalClankCCT";
+
 inline constexpr auto kPrivacySandboxNoticeNames =
-    base::MakeFixedFlatSet<std::string_view>({kTopicsConsentModal,
-                                              kTopicsConsentModalClankBrApp,
-                                              kTopicsConsentModalClankCCT});
+    base::MakeFixedFlatSet<std::string_view>(
+        {kTopicsConsentModal, kTopicsConsentModalClankBrApp,
+         kTopicsConsentModalClankCCT, kProtectedAudienceMeasurementNoticeModal,
+         kProtectedAudienceMeasurementNoticeModalClankBrApp,
+         kProtectedAudienceMeasurementNoticeModalClankCCT,
+         kThreeAdsAPIsNoticeModal, kThreeAdsAPIsNoticeModalClankBrApp,
+         kThreeAdsAPIsNoticeModalClankCCT, kMeasurementNoticeModal,
+         kMeasurementNoticeModalClankBrApp, kMeasurementNoticeModalClankCCT});
 
 }  // namespace privacy_sandbox
 

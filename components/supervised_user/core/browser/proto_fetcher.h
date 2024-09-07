@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
-#include "base/types/strong_alias.h"
 #include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -31,7 +30,7 @@
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto/permissions_common.pb.h"
-#include "components/supervised_user/core/browser/proto/test.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher_status.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
@@ -65,98 +64,6 @@ namespace supervised_user {
 //
 // The static configuration should be placed in the fetcher_config.h module.
 
-// Holds the status of the fetch. The callback's response will be set iff the
-// status is ok.
-class ProtoFetcherStatus {
- public:
-  using HttpStatusOrNetErrorType =
-      base::StrongAlias<class HttpStatusOrNetErrorTag, int>;
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(State)
-  enum State {
-    OK = 0,
-    GOOGLE_SERVICE_AUTH_ERROR = 1,
-    HTTP_STATUS_OR_NET_ERROR = 2,
-    INVALID_RESPONSE = 3,
-    DATA_ERROR = 4,  //  Not signalled by this fetcher itself, but might be used
-                     //  by consumers to indicate data problem.
-    kMaxValue = DATA_ERROR,  // keep last, required for metrics.
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserProtoFetcherStatus)
-
-  // Status might be used in base::expected context as possible error, since it
-  // contains two error-enabled attributes which are copyable / assignable.
-  ProtoFetcherStatus(const ProtoFetcherStatus&);
-  ProtoFetcherStatus& operator=(const ProtoFetcherStatus&);
-
-  ~ProtoFetcherStatus();
-  ProtoFetcherStatus() = delete;
-
-  // Convenience creators instead of exposing ProtoFetcherStatus(State state).
-  static ProtoFetcherStatus Ok();
-  static ProtoFetcherStatus GoogleServiceAuthError(
-      GoogleServiceAuthError
-          error);  // The copy follows the interface of
-                   // https://source.chromium.org/chromium/chromium/src/+/main:components/signin/public/identity_manager/primary_account_access_token_fetcher.h;l=241;drc=8ba1bad80dc22235693a0dd41fe55c0fd2dbdabd
-  static ProtoFetcherStatus HttpStatusOrNetError(
-      int value = 0);  // Either net::Error (negative numbers, 0 denotes
-                       // success) or HTTP status.
-  static ProtoFetcherStatus InvalidResponse();
-  static ProtoFetcherStatus DataError();
-
-  // ProtoFetcherStatus::IsOk iff google_service_auth_error_.state() ==
-  // NONE and state_ == NONE
-  bool IsOk() const;
-  // Indicates whether the status is not ok, but is worth retrying because it
-  // might go away.
-  bool IsTransientError() const;
-  // Indicates whether the status is not ok and there is no point in retrying.
-  bool IsPersistentError() const;
-
-  // Returns a message describing the status.
-  std::string ToString() const;
-
-  State state() const;
-  HttpStatusOrNetErrorType http_status_or_net_error() const;
-  const class GoogleServiceAuthError& google_service_auth_error() const;
-
- private:
-  // Disallows impossible states.
-  explicit ProtoFetcherStatus(State state);
-  explicit ProtoFetcherStatus(
-      HttpStatusOrNetErrorType http_status_or_net_error);
-  explicit ProtoFetcherStatus(
-      class GoogleServiceAuthError
-          google_service_auth_error);  // Implies State ==
-                                       // GOOGLE_SERVICE_AUTH_ERROR
-  ProtoFetcherStatus(State state,
-                     class GoogleServiceAuthError google_service_auth_error);
-
-  State state_;
-  HttpStatusOrNetErrorType http_status_or_net_error_{
-      0};  // Meaningful iff state_ == HTTP_STATUS_OR_NET_ERROR
-  class GoogleServiceAuthError google_service_auth_error_;
-};
-
-// A stopwatch with two functions:
-// * measure total elapsed time,
-// * measure lap time (with automatic resetting after each lap).
-// The stopwatch is created started.
-class Stopwatch {
- public:
-  // Time since start of last lap. Resets the lap timer.
-  base::TimeDelta Lap();
-  // Time since start of last lap.
-  base::TimeDelta Elapsed() const;
-
- private:
-  base::ElapsedTimer elapsed_timer_;
-  base::ElapsedTimer lap_timer_;
-};
-
 // Encapsulates metric functionalities.
 class Metrics {
  public:
@@ -165,8 +72,6 @@ class Metrics {
     kLatency,
     kHttpStatusOrNetError,
     kRetryCount,
-    kAccessTokenLatency,
-    kApiLatency,
     kAuthError,
   };
 
@@ -219,7 +124,7 @@ class Metrics {
   static std::string ToMetricEnumLabel(const ProtoFetcherStatus& status);
 
   std::string_view basename_;
-  Stopwatch stopwatch_;
+  base::ElapsedTimer elapsed_timer_;
 };
 
 // Metrics for retrying fetchers, which are aggregating individual
@@ -362,33 +267,6 @@ class TypedProtoFetcher : public AbstractProtoFetcher {
   Callback callback_;
 };
 
-// Overlay over ProtoFetcher that only cares about status of the response.
-// Every instance of Fetcher is disposable and should be
-// used only once.
-class StatusFetcher : public AbstractProtoFetcher {
- public:
-  using Callback = base::OnceCallback<void(const ProtoFetcherStatus&)>;
-
-  StatusFetcher() = delete;
-  StatusFetcher(
-      signin::IdentityManager& identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::string_view payload,
-      const FetcherConfig& fetcher_config,
-      const FetcherConfig::PathArgs& args,
-      std::optional<version_info::Channel> channel,
-      Callback callback);
-  ~StatusFetcher() override;
-
- protected:
-  void OnError(const ProtoFetcherStatus& status) override;
-  void OnResponse(std::unique_ptr<std::string> response_body) override;
-
- private:
-  void OnStatus(const ProtoFetcherStatus& status);
-  Callback callback_;
-};
-
 // Use instance of ProtoFetcher to create fetch process which is
 // unstarted yet.
 template <typename Response>
@@ -400,16 +278,29 @@ class ProtoFetcher {
   ProtoFetcher(
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const google::protobuf::MessageLite& request,
+      std::string_view serialized_request,
       const FetcherConfig& fetcher_config,
       const FetcherConfig::PathArgs& args = {},
       std::optional<version_info::Channel> channel = std::nullopt)
       : identity_manager_(identity_manager),
         url_loader_factory_(url_loader_factory),
-        payload_(request.SerializeAsString()),
+        payload_(serialized_request),
         config_(fetcher_config),
         args_(args),
         channel_(channel) {}
+  ProtoFetcher(
+      signin::IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const google::protobuf::MessageLite& request,
+      const FetcherConfig& fetcher_config,
+      const FetcherConfig::PathArgs& args = {},
+      std::optional<version_info::Channel> channel = std::nullopt)
+      : ProtoFetcher(identity_manager,
+                     url_loader_factory,
+                     request.SerializeAsString(),
+                     fetcher_config,
+                     args,
+                     channel) {}
   virtual ~ProtoFetcher() = default;
 
   // Kicks off the fetching process. The fetcher must not be started before
@@ -443,16 +334,17 @@ class ProtoFetcher {
   std::unique_ptr<TypedProtoFetcher<Response>> fetcher_;
 };
 
+namespace {
 // A subtype of DeferredProtoFetcher that will take retrying strategy as
 // specified in FetcherConfig::backoff_policy.
 //
 // The retries are only performed on transient errors (see ::ShouldRetry).
 template <typename Response>
-class RetryingFetcherImpl final : public ProtoFetcher<Response> {
+class RetryingFetcher final : public ProtoFetcher<Response> {
  public:
-  RetryingFetcherImpl() = delete;
+  RetryingFetcher() = delete;
 
-  RetryingFetcherImpl(
+  RetryingFetcher(
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const google::protobuf::MessageLite& request,
@@ -470,8 +362,8 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
         metrics_(OverallMetrics::FromConfig(fetcher_config)) {}
 
   // Not copyable.
-  RetryingFetcherImpl(const RetryingFetcherImpl&) = delete;
-  RetryingFetcherImpl& operator=(const RetryingFetcherImpl&) = delete;
+  RetryingFetcher(const RetryingFetcher&) = delete;
+  RetryingFetcher& operator=(const RetryingFetcher&) = delete;
 
   void Start(ProtoFetcher<Response>::Callback callback) override {
     callback_ = std::move(callback);
@@ -489,9 +381,8 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
  private:
   void Retry() {
     retry_count_++;
-    ProtoFetcher<Response>::Start(
-        base::BindOnce(&RetryingFetcherImpl<Response>::OnRetriedResponse,
-                       base::Unretained(this)));
+    ProtoFetcher<Response>::Start(base::BindOnce(
+        &RetryingFetcher<Response>::OnRetriedResponse, base::Unretained(this)));
   }
 
   bool ShouldRetry(const ProtoFetcherStatus& status) {
@@ -504,7 +395,7 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
       Stop();
       backoff_entry_.InformOfRequest(/*succeeded=*/false);
       timer_.Start(FROM_HERE, backoff_entry_.GetTimeUntilRelease(), this,
-                   &RetryingFetcherImpl<Response>::Retry);
+                   &RetryingFetcher<Response>::Retry);
       return;
     }
 
@@ -519,7 +410,7 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
   }
 
   // Client callback.
-  TypedProtoFetcher<Response>::Callback callback_;
+  ProtoFetcher<Response>::Callback callback_;
 
   // Retry controls.
   base::OneShotTimer timer_;
@@ -528,102 +419,7 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
 
   const std::optional<OverallMetrics> metrics_;
 };
-
-// Component for managing multiple fetches at once.
-//
-// After each fetch, the reference kept in internal map is cleared. This will
-// also happen when this manager is destroyed. In the latter case, callbacks
-// won't be executed (the pending requests will be canceled).
-template <typename Request, typename Response>
-class ParallelFetchManager {
- private:
-  // Deferred fetcher is required because it should be started after it is
-  // stored internally.
-  using Fetcher = ProtoFetcher<Response>;
-  using KeyType = base::IDMap<std::unique_ptr<Fetcher>>::KeyType;
-
- public:
-  // Provides fresh instances of a deferred fetcher for each fetch.
-  using FetcherFactory =
-      base::RepeatingCallback<std::unique_ptr<Fetcher>(const Request&)>;
-
-  ParallelFetchManager() = delete;
-  explicit ParallelFetchManager(FetcherFactory fetcher_factory)
-      : fetcher_factory_(fetcher_factory) {}
-  ParallelFetchManager(const ParallelFetchManager&) = delete;
-  ParallelFetchManager& operator=(const ParallelFetchManager&) = delete;
-  ~ParallelFetchManager() = default;
-
-  // Starts the fetch. Underlying fetcher is stored internally, and will be
-  // cleaned up after finish or when this manager is destroyed.
-  void Fetch(const Request& request, Fetcher::Callback callback) {
-    CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
-    KeyType key = requests_in_flight_.Add(MakeFetcher(request));
-    requests_in_flight_.Lookup(key)->Start(
-        std::move(callback).Then(base::BindOnce(
-            &ParallelFetchManager::Remove, weak_factory_.GetWeakPtr(), key)));
-  }
-
- private:
-  // Remove fetcher under key from requests_in_flight_.
-  void Remove(KeyType key) { requests_in_flight_.Remove(key); }
-
-  std::unique_ptr<Fetcher> MakeFetcher(const Request& request) const {
-    return fetcher_factory_.Run(request);
-  }
-
-  base::IDMap<std::unique_ptr<Fetcher>, KeyType> requests_in_flight_;
-  FetcherFactory fetcher_factory_;
-  base::WeakPtrFactory<ParallelFetchManager<Request, Response>> weak_factory_{
-      this};
-};
-
-namespace {
-
-using ClassifyUrlFetcher = ProtoFetcher<kidsmanagement::ClassifyUrlResponse>;
-using ListFamilyMembersFetcher =
-    ProtoFetcher<kidsmanagement::ListMembersResponse>;
-using PermissionRequestFetcher =
-    ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>;
 }  // namespace
-
-// Fetches list family members. The returned fetcher is already started.
-std::unique_ptr<ProtoFetcher<kidsmanagement::ListMembersResponse>>
-FetchListFamilyMembers(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    TypedProtoFetcher<kidsmanagement::ListMembersResponse>::Callback callback,
-    const FetcherConfig& config = kListFamilyMembersConfig);
-
-// Creates a disposable instance of an access token consumer that will classify
-// the URL for supervised user.
-std::unique_ptr<ProtoFetcher<kidsmanagement::ClassifyUrlResponse>>
-CreateClassifyURLFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kidsmanagement::ClassifyUrlRequest& request,
-    const FetcherConfig& config = kClassifyUrlConfig,
-    version_info::Channel channel = version_info::Channel::UNKNOWN);
-
-// Creates a disposable instance of an access token consumer that will create
-// a new permission request for a given url.
-// The fetcher does not need to use the `CreatePermissionRequestRequest`
-// message. The `request` input corresponds to a `PermissionRequest` message,
-// which is mapped to the body of the `CreatePermissionRequestRequest`
-// message by the http to gRPC mapping on the server side.
-// See go/rpc-create-permission-request.
-std::unique_ptr<ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>>
-CreatePermissionRequestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kidsmanagement::PermissionRequest& request,
-    const FetcherConfig& config = kCreatePermissionRequestConfig);
-
-std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(
-    signin::IdentityManager& identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const Request& request,
-    const FetcherConfig& fetcher_config);
 
 // Constructs a fetcher that needs to be launched with ::Start(). The fetcher
 // will be either one shot or retryable, depending on the
@@ -649,7 +445,7 @@ std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
          "requests without user credentials.";
 
   if (fetcher_config.backoff_policy.has_value()) {
-    return std::make_unique<RetryingFetcherImpl<Response>>(
+    return std::make_unique<RetryingFetcher<Response>>(
         identity_manager, url_loader_factory, request, fetcher_config, args,
         channel, *fetcher_config.backoff_policy);
   } else {

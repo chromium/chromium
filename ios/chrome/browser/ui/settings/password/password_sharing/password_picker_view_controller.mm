@@ -74,6 +74,7 @@ bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
   self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
       kPasswordPickerNextButtonID;
   self.view.accessibilityIdentifier = kPasswordPickerViewID;
+  self.clearsSelectionOnViewWillAppear = NO;
 
   [self loadModel];
 }
@@ -92,11 +93,13 @@ bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
-  // Select first row by default.
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-  [self.tableView selectRowAtIndexPath:indexPath
-                              animated:NO
-                        scrollPosition:UITableViewScrollPositionNone];
+  // Select first row if there is no selection.
+  if (!self.tableView.indexPathForSelectedRow) {
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    [self.tableView selectRowAtIndexPath:indexPath
+                                animated:NO
+                          scrollPosition:UITableViewScrollPositionNone];
+  }
 }
 
 #pragma mark - UITableViewDelegate

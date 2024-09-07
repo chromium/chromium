@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/break_list.h"
 
 #include <stddef.h>
@@ -192,20 +187,26 @@ TEST_F(BreakListTest, GetBreakAndRange) {
   breaks.ApplyValue(true, Range(1, 2));
   breaks.ApplyValue(true, Range(4, 6));
 
-  struct {
+  struct Case {
     size_t position;
     size_t break_index;
     Range range;
-  } cases[] = {
-      {0, 0, Range(0, 1)}, {1, 1, Range(1, 2)}, {2, 2, Range(2, 4)},
-      {3, 2, Range(2, 4)}, {4, 3, Range(4, 6)}, {5, 3, Range(4, 6)},
-      {6, 4, Range(6, 8)}, {7, 4, Range(6, 8)},
   };
+  const auto cases = std::to_array<Case>({
+      {0, 0, Range(0, 1)},
+      {1, 1, Range(1, 2)},
+      {2, 2, Range(2, 4)},
+      {3, 2, Range(2, 4)},
+      {4, 3, Range(4, 6)},
+      {5, 3, Range(4, 6)},
+      {6, 4, Range(6, 8)},
+      {7, 4, Range(6, 8)},
+  });
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    BreakList<bool>::const_iterator it = breaks.GetBreak(cases[i].position);
-    EXPECT_EQ(breaks.breaks()[cases[i].break_index], *it);
-    EXPECT_EQ(breaks.GetRange(it), cases[i].range);
+  for (const auto& c : cases) {
+    BreakList<bool>::const_iterator it = breaks.GetBreak(c.position);
+    EXPECT_EQ(breaks.breaks()[c.break_index], *it);
+    EXPECT_EQ(breaks.GetRange(it), c.range);
   }
 }
 

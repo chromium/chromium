@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
-#include "build/buildflag.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
@@ -404,13 +403,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.required_ip_address_space;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  static const std::string& created_location(
-      const network::ResourceRequest& request) {
-    return request.created_location;
-  }
-#endif
 
   static bool Read(network::mojom::URLRequestDataView data,
                    network::ResourceRequest* out);

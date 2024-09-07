@@ -298,7 +298,8 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
       opener_frame ? opener_frame->View() : nullptr,
       std::move(params->blink_page_broadcast), agent_group_scheduler(),
       params->session_storage_namespace_id, params->base_background_color,
-      params->browsing_context_group_info, &params->color_provider_colors);
+      params->browsing_context_group_info, &params->color_provider_colors,
+      std::move(params->partitioned_popin_params));
 
   bool local_main_frame = params->main_frame->is_local_params();
 

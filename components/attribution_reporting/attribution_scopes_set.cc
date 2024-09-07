@@ -10,18 +10,17 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
@@ -40,13 +39,10 @@ enum class AttributionScopesError {
   kScopeTooLong,
 };
 
-base::expected<AttributionScopesSet, AttributionScopesError>
-ScopesFromJSON(base::Value* v, size_t max_string_size, size_t max_set_size) {
-  if (!v) {
-    return AttributionScopesSet();
-  }
-
-  base::Value::List* list = v->GetIfList();
+base::expected<AttributionScopesSet, AttributionScopesError> ScopesFromJSON(
+    base::Value::List* list,
+    size_t max_string_size,
+    size_t max_set_size) {
   if (!list) {
     return base::unexpected(AttributionScopesError::kListWrongType);
   }
@@ -68,55 +64,69 @@ ScopesFromJSON(base::Value* v, size_t max_string_size, size_t max_set_size) {
   return AttributionScopesSet(std::move(attribution_scopes));
 }
 
+void Serialize(const base::flat_set<std::string>& scopes,
+               std::string_view key,
+               base::Value::Dict& dict) {
+  if (scopes.empty()) {
+    return;
+  }
+  auto list = base::Value::List::with_capacity(scopes.size());
+  for (const auto& scope : scopes) {
+    list.Append(scope);
+  }
+  dict.Set(key, std::move(list));
+}
+
 }  // namespace
 
 // static
 base::expected<AttributionScopesSet, SourceRegistrationError>
-AttributionScopesSet::FromJSON(
-    base::Value::Dict& reg,
-    std::optional<uint32_t> attribution_scope_limit) {
-  if (!base::FeatureList::IsEnabled(features::kAttributionScopes)) {
-    return AttributionScopesSet();
+AttributionScopesSet::FromJSON(base::Value::Dict& reg,
+                               uint32_t attribution_scope_limit) {
+  base::Value* scopes_value = reg.Find(kValues);
+  if (!scopes_value) {
+    return base::unexpected(
+        SourceRegistrationError::kAttributionScopesListInvalid);
   }
 
-  const size_t max_set_size =
-      attribution_scope_limit.has_value()
-          ? std::min(kMaxScopesPerSource,
-                     static_cast<size_t>(*attribution_scope_limit))
-          : 0;
-
-  ASSIGN_OR_RETURN(
-      AttributionScopesSet scopes_set,
-      ScopesFromJSON(reg.Find(kAttributionScopes),
-                     kMaxLengthPerAttributionScope, max_set_size)
-          .transform_error([&](AttributionScopesError error) {
-            switch (error) {
-              case AttributionScopesError::kListWrongType:
-                return SourceRegistrationError::kAttributionScopesInvalid;
-              case AttributionScopesError::kSetTooLong:
-                return attribution_scope_limit.has_value()
-                           ? SourceRegistrationError::kAttributionScopesInvalid
-                           : SourceRegistrationError::
-                                 kAttributionScopeLimitRequired;
-              case AttributionScopesError::kScopeWrongType:
-              case AttributionScopesError::kScopeTooLong:
-                return SourceRegistrationError::kAttributionScopesValueInvalid;
-            }
-          }));
-
-  if (attribution_scope_limit.has_value() && scopes_set.scopes().empty()) {
-    return base::unexpected(SourceRegistrationError::kAttributionScopesInvalid);
+  base::Value::List* scopes_list = scopes_value->GetIfList();
+  if (!scopes_list || scopes_list->empty()) {
+    return base::unexpected(
+        SourceRegistrationError::kAttributionScopesListInvalid);
   }
-  return scopes_set;
+
+  const size_t max_set_size = std::min(
+      kMaxScopesPerSource, static_cast<size_t>(attribution_scope_limit));
+
+  return ScopesFromJSON(scopes_list, kMaxLengthPerAttributionScope,
+                        max_set_size)
+      .transform_error([](AttributionScopesError error) {
+        switch (error) {
+          case AttributionScopesError::kListWrongType:
+          case AttributionScopesError::kSetTooLong:
+            return SourceRegistrationError::kAttributionScopesListInvalid;
+          case AttributionScopesError::kScopeWrongType:
+          case AttributionScopesError::kScopeTooLong:
+            return SourceRegistrationError::kAttributionScopesListValueInvalid;
+        }
+      });
 }
 
 // static
 base::expected<AttributionScopesSet, TriggerRegistrationError>
 AttributionScopesSet::FromJSON(base::Value::Dict& reg) {
-  if (!base::FeatureList::IsEnabled(features::kAttributionScopes)) {
+  base::Value* scopes_value = reg.Find(kAttributionScopes);
+  if (!scopes_value) {
     return AttributionScopesSet();
   }
-  return ScopesFromJSON(reg.Find(kAttributionScopes),
+
+  base::Value::List* scopes_list = scopes_value->GetIfList();
+  if (!scopes_list) {
+    return base::unexpected(
+        TriggerRegistrationError::kAttributionScopesInvalid);
+  }
+
+  return ScopesFromJSON(scopes_list,
                         /*max_string_size=*/std::numeric_limits<size_t>::max(),
                         /*max_set_size=*/std::numeric_limits<size_t>::max())
       .transform_error([](AttributionScopesError error) {
@@ -159,16 +169,44 @@ bool AttributionScopesSet::IsValidForSource(uint32_t scope_limit) const {
          });
 }
 
-void AttributionScopesSet::Serialize(base::Value::Dict& dict) const {
-  if (!base::FeatureList::IsEnabled(features::kAttributionScopes) ||
-      scopes_.empty()) {
-    return;
+void AttributionScopesSet::SerializeForSource(base::Value::Dict& dict) const {
+  Serialize(scopes_, kValues, dict);
+}
+
+void AttributionScopesSet::SerializeForTrigger(base::Value::Dict& dict) const {
+  Serialize(scopes_, kAttributionScopes, dict);
+}
+
+// Rather than retrieving the whole intersection and checking its size using
+// `std::set_intersection`, we iterate through and compare each element and
+// early exit when two matching elements are found.
+bool AttributionScopesSet::HasIntersection(
+    const AttributionScopesSet& other_scopes) const {
+  const auto& scopes_2 = other_scopes.scopes();
+  if (scopes_.empty() || scopes_2.empty()) {
+    return false;
   }
-  auto list = base::Value::List::with_capacity(scopes_.size());
-  for (const auto& scope : scopes_) {
-    list.Append(scope);
+
+  AttributionScopesSet::Scopes::const_iterator it_1 = scopes_.begin(),
+                                               it_1_end = scopes_.end();
+  AttributionScopesSet::Scopes::const_iterator it_2 = scopes_2.begin(),
+                                               it_2_end = scopes_2.end();
+
+  if (*it_1 > *scopes_2.rbegin() || *it_2 > *scopes_.rbegin()) {
+    return false;
   }
-  dict.Set(kAttributionScopes, std::move(list));
+
+  while (it_1 != it_1_end && it_2 != it_2_end) {
+    if (*it_1 == *it_2) {
+      return true;
+    }
+    if (*it_1 < *it_2) {
+      it_1++;
+    } else {
+      it_2++;
+    }
+  }
+  return false;
 }
 
 }  // namespace attribution_reporting

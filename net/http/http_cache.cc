@@ -10,6 +10,7 @@
 #include "net/http/http_cache.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -59,6 +60,7 @@
 #include "net/http/http_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_server_info.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
@@ -506,10 +508,6 @@ void HttpCache::OnExternalCacheHit(
     return;
   }
 
-  if (IsSplitCacheEnabled() && network_isolation_key.IsTransient()) {
-    return;
-  }
-
   HttpRequestInfo request_info;
   request_info.url = url;
   request_info.method = http_method;
@@ -517,9 +515,11 @@ void HttpCache::OnExternalCacheHit(
   request_info.network_anonymization_key =
       NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
           network_isolation_key);
-  // This method is only called for cache hits on resources, so mark this
-  // request as not being a subframe navigation.
+  // This method is only called for cache hits on subresources, so mark this
+  // request as not being a main frame or subframe navigation.
   request_info.is_subframe_document_resource = false;
+  request_info.is_main_frame_navigation = false;
+  request_info.initiator = std::nullopt;
   if (base::FeatureList::IsEnabled(features::kSplitCacheByIncludeCredentials)) {
     if (!used_credentials) {
       request_info.load_flags &= LOAD_DO_NOT_SAVE_COOKIES;
@@ -528,8 +528,11 @@ void HttpCache::OnExternalCacheHit(
     }
   }
 
-  std::string key = *GenerateCacheKeyForRequest(&request_info);
-  disk_cache_->OnExternalCacheHit(key);
+  std::optional<std::string> key = GenerateCacheKeyForRequest(&request_info);
+  if (!key) {
+    return;
+  }
+  disk_cache_->OnExternalCacheHit(*key);
 }
 
 int HttpCache::CreateTransaction(
@@ -609,13 +612,48 @@ std::string HttpCache::GetResourceURLFromHttpCacheKey(const std::string& key) {
 }
 
 // static
+bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo* request) {
+  if (IsSplitCacheEnabled()) {
+    if (request->network_isolation_key.IsTransient()) {
+      return false;
+    }
+    // If the initiator is opaque, it would serialize to 'null' if used, which
+    // would mean that navigations initiated from all opaque origins would share
+    // a cache partition. To avoid this, we won't cache navigations where the
+    // initiator is an opaque origin if the initiator would be used as part of
+    // the cache key.
+    if (request->initiator.has_value() && request->initiator->opaque()) {
+      switch (HttpCache::GetExperimentMode()) {
+        case HttpCache::ExperimentMode::kStandard:
+        case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
+          break;
+        case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
+          if (request->is_main_frame_navigation) {
+            return false;
+          }
+          break;
+        case HttpCache::ExperimentMode::kNavigationInitiator:
+          if (request->is_main_frame_navigation ||
+              request->is_subframe_document_resource) {
+            return false;
+          }
+          break;
+      }
+    }
+  }
+  return true;
+}
+
+// static
 // Generate a key that can be used inside the cache.
-std::optional<std::string> HttpCache::GenerateCacheKey(
+std::string HttpCache::GenerateCacheKey(
     const GURL& url,
     int load_flags,
     const NetworkIsolationKey& network_isolation_key,
     int64_t upload_data_identifier,
-    bool is_subframe_document_resource) {
+    bool is_subframe_document_resource,
+    bool is_mainframe_navigation,
+    std::optional<url::Origin> initiator) {
   // The first character of the key may vary depending on whether or not sending
   // credentials is permitted for this request. This only happens if the
   // SplitCacheByIncludeCredentials feature is enabled.
@@ -631,13 +669,60 @@ std::optional<std::string> HttpCache::GenerateCacheKey(
     // double-keyed (and makes it an invalid url so that it doesn't get
     // confused with a single-keyed entry). Separate the origin and url
     // with invalid whitespace character |kDoubleKeySeparator|.
-    if (network_isolation_key.IsTransient()) {
-      return std::nullopt;
+    CHECK(!network_isolation_key.IsTransient());
+
+    const ExperimentMode experiment_mode = HttpCache::GetExperimentMode();
+    std::string_view subframe_document_resource_prefix;
+    if (is_subframe_document_resource) {
+      switch (experiment_mode) {
+        case HttpCache::ExperimentMode::kStandard:
+        case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
+        case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
+          subframe_document_resource_prefix = kSubframeDocumentResourcePrefix;
+          break;
+        case HttpCache::ExperimentMode::kNavigationInitiator:
+          // No need to set `subframe_document_resource_prefix` if we are
+          // keying all cross-site navigations on initiator below.
+          break;
+      }
     }
-    std::string subframe_document_resource_prefix =
-        is_subframe_document_resource ? kSubframeDocumentResourcePrefix : "";
+
+    std::string navigation_experiment_prefix;
+    if (initiator.has_value() &&
+        (is_mainframe_navigation || is_subframe_document_resource)) {
+      const auto initiator_site = net::SchemefulSite(*initiator);
+      const bool is_initiator_cross_site =
+          initiator_site != net::SchemefulSite(url);
+
+      if (is_initiator_cross_site) {
+        switch (experiment_mode) {
+          case HttpCache::ExperimentMode::kStandard:
+            break;
+          case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
+            if (is_mainframe_navigation) {
+              navigation_experiment_prefix = "csnb_ ";
+            }
+            break;
+          case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
+            if (is_mainframe_navigation) {
+              CHECK(!initiator_site.opaque());
+              navigation_experiment_prefix =
+                  base::StrCat({"mfni_", initiator_site.Serialize(), " "});
+            }
+            break;
+          case HttpCache::ExperimentMode::kNavigationInitiator:
+            if (is_mainframe_navigation || is_subframe_document_resource) {
+              CHECK(!initiator_site.opaque());
+              navigation_experiment_prefix =
+                  base::StrCat({"ni_", initiator_site.Serialize(), " "});
+            }
+            break;
+        }
+      }
+    }
     isolation_key = base::StrCat(
         {kDoubleKeyPrefix, subframe_document_resource_prefix,
+         navigation_experiment_prefix,
          *network_isolation_key.ToCacheKeyString(), kDoubleKeySeparator});
   }
 
@@ -653,15 +738,48 @@ std::optional<std::string> HttpCache::GenerateCacheKey(
 }
 
 // static
+HttpCache::ExperimentMode HttpCache::GetExperimentMode() {
+  bool cross_site_main_frame_navigation_boolean_enabled =
+      base::FeatureList::IsEnabled(
+          net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean);
+  bool main_frame_navigation_initiator_enabled = base::FeatureList::IsEnabled(
+      net::features::kSplitCacheByMainFrameNavigationInitiator);
+  bool navigation_initiator_enabled = base::FeatureList::IsEnabled(
+      net::features::kSplitCacheByNavigationInitiator);
+
+  if (cross_site_main_frame_navigation_boolean_enabled) {
+    if (main_frame_navigation_initiator_enabled ||
+        navigation_initiator_enabled) {
+      return ExperimentMode::kStandard;
+    }
+    return ExperimentMode::kCrossSiteInitiatorBoolean;
+  } else if (main_frame_navigation_initiator_enabled) {
+    if (navigation_initiator_enabled) {
+      return ExperimentMode::kStandard;
+    }
+    return ExperimentMode::kMainFrameNavigationInitiator;
+  } else if (navigation_initiator_enabled) {
+    return ExperimentMode::kNavigationInitiator;
+  }
+  return ExperimentMode::kStandard;
+}
+
+// static
 std::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
     const HttpRequestInfo* request) {
   CHECK(request);
+
+  if (!CanGenerateCacheKeyForRequest(request)) {
+    return std::nullopt;
+  }
+
   const int64_t upload_data_identifier =
       request->upload_data_stream ? request->upload_data_stream->identifier()
                                   : int64_t(0);
   return GenerateCacheKey(
       request->url, request->load_flags, request->network_isolation_key,
-      upload_data_identifier, request->is_subframe_document_resource);
+      upload_data_identifier, request->is_subframe_document_resource,
+      request->is_main_frame_navigation, request->initiator);
 }
 
 // static
@@ -825,14 +943,13 @@ int HttpCache::AsyncDoomEntry(const std::string& key,
   return rv;
 }
 
-void HttpCache::DoomMainEntryForUrl(const GURL& url,
-                                    const NetworkIsolationKey& isolation_key,
-                                    bool is_subframe_document_resource) {
+void HttpCache::DoomMainEntryForUrl(
+    const GURL& url,
+    const NetworkIsolationKey& isolation_key,
+    bool is_subframe_document_resource,
+    bool is_main_frame_navigation,
+    const std::optional<url::Origin>& initiator) {
   if (!disk_cache_) {
-    return;
-  }
-
-  if (IsSplitCacheEnabled() && isolation_key.IsTransient()) {
     return;
   }
 
@@ -843,14 +960,20 @@ void HttpCache::DoomMainEntryForUrl(const GURL& url,
   temp_info.network_anonymization_key =
       NetworkAnonymizationKey::CreateFromNetworkIsolationKey(isolation_key);
   temp_info.is_subframe_document_resource = is_subframe_document_resource;
-  std::string key = *GenerateCacheKeyForRequest(&temp_info);
+  temp_info.is_main_frame_navigation = is_main_frame_navigation;
+  temp_info.initiator = initiator;
+
+  std::optional<std::string> key = GenerateCacheKeyForRequest(&temp_info);
+  if (!key) {
+    return;
+  }
 
   // Defer to DoomEntry if there is an active entry, otherwise call
   // AsyncDoomEntry without triggering a callback.
-  if (active_entries_.count(key)) {
-    DoomEntry(key, nullptr);
+  if (active_entries_.count(*key)) {
+    DoomEntry(*key, nullptr);
   } else {
-    AsyncDoomEntry(key, nullptr);
+    AsyncDoomEntry(*key, nullptr);
   }
 }
 

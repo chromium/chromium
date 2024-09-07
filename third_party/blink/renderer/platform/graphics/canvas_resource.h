@@ -118,16 +118,6 @@ class PLATFORM_EXPORT CanvasResource
   // the resource.
   virtual bool IsValid() const = 0;
 
-  // When a resource is returned by the display compositor, a sync token is
-  // provided to indicate when the compositor's commands using the resource are
-  // executed on the GPU thread.
-  // However in some cases we need to ensure that the commands using the
-  // resource have finished executing on the GPU itself. This API indicates
-  // whether this is required. The primary use-case for this is GMBs rendered to
-  // on the CPU but composited on the GPU. Its important for the GPU reads to be
-  // finished before updating the resource on the CPU.
-  virtual bool NeedsReadLockFences() const { return false; }
-
   // The bounds for this resource.
   virtual gfx::Size Size() const = 0;
 
@@ -263,6 +253,9 @@ class PLATFORM_EXPORT CanvasResource
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
  private:
+  // Returns true if the resource is rastered via the GPU.
+  virtual bool UsesAcceleratedRaster() const = 0;
+
   // Returns the sync token to indicate when all writes to the current resource
   // are finished on the GPU thread. Note that in some subclasses the token is
   // not guaranteed to be verified at the time of calling this method. Passing
@@ -294,7 +287,6 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool SupportsAcceleratedCompositing() const final { return false; }
   bool PrepareUnacceleratedTransferableResource(
       viz::TransferableResource* out_resource) final;
-  bool NeedsReadLockFences() const final { return false; }
   gfx::Size Size() const final;
   void TakeSkImage(sk_sp<SkImage> image) final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
@@ -308,6 +300,8 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       base::WeakPtr<CanvasResourceProvider>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
       cc::PaintFlags::FilterQuality);
+
+  bool UsesAcceleratedRaster() const final { return false; }
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken sync_token_;
@@ -342,12 +336,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   void TakeSkImage(sk_sp<SkImage> image) final { NOTREACHED_IN_MIGRATION(); }
   void NotifyResourceLost() final;
-  bool NeedsReadLockFences() const final {
-    // If the resource is not accelerated, it will be written to on the CPU. We
-    // need read lock fences to ensure that all reads on the GPU are done when
-    // the resource is returned by the display compositor.
-    return !is_accelerated_;
-  }
   void BeginReadAccess();
   void EndReadAccess();
   void BeginWriteAccess();
@@ -410,6 +398,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;
   bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
+  bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
   CanvasResourceSharedImage(const SkImageInfo&,
                             base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
@@ -482,7 +471,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
   bool SupportsAcceleratedCompositing() const override { return true; }
-  bool NeedsReadLockFences() const final { return false; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   gfx::Size Size() const final { return transferable_resource_.size; }
@@ -502,6 +490,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool IsOverlayCandidate() const final {
     return transferable_resource_.is_overlay_candidate;
   }
+  bool UsesAcceleratedRaster() const final { return true; }
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
@@ -539,7 +528,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
   bool SupportsAcceleratedCompositing() const override { return true; }
-  bool NeedsReadLockFences() const final { return false; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   gfx::Size Size() const final { return size_; }
@@ -562,6 +550,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
 
  private:
   bool IsOverlayCandidate() const final { return true; }
+  bool UsesAcceleratedRaster() const final { return true; }
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()

@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/url_pattern.h"
 
 namespace extensions {
 
@@ -29,24 +30,47 @@ SiteAccessRequestsHelper::SiteAccessRequestsHelper(
 
 SiteAccessRequestsHelper::~SiteAccessRequestsHelper() = default;
 
-void SiteAccessRequestsHelper::AddRequest(const Extension& extension) {
+void SiteAccessRequestsHelper::AddRequest(
+    const Extension& extension,
+    const std::optional<URLPattern>& filter) {
   // Extension must not have granted access to the current site.
   auto site_access = permissions_manager_->GetSiteAccess(
       extension, web_contents_->GetLastCommittedURL());
   CHECK(!site_access.has_site_access && !site_access.has_all_sites_access);
 
-  extensions_with_requests_.insert(extension.id());
+  extensions_with_requests_.insert({extension.id(), filter});
 }
 
-bool SiteAccessRequestsHelper::RemoveRequest(const ExtensionId& extension_id) {
-  if (!extensions_with_requests_.contains(extension_id)) {
+void SiteAccessRequestsHelper::UpdateRequest(
+    const Extension& extension,
+    const std::optional<URLPattern>& filter) {
+  // We can only update a request if there is an existent one.
+  CHECK(HasRequest(extension.id()));
+
+  // Extension must not have granted access to the current site.
+  auto site_access = permissions_manager_->GetSiteAccess(
+      extension, web_contents_->GetLastCommittedURL());
+  CHECK(!site_access.has_site_access && !site_access.has_all_sites_access);
+
+  extensions_with_requests_.at(extension.id()) = filter;
+}
+
+bool SiteAccessRequestsHelper::RemoveRequest(
+    const ExtensionId& extension_id,
+    const std::optional<URLPattern>& filter) {
+  auto requests_iter = extensions_with_requests_.find(extension_id);
+  if (requests_iter == extensions_with_requests_.end()) {
     return false;
   }
 
-  extensions_with_requests_.erase(extension_id);
-  // TODO(crbug.com/330588494): Remove request from dismissed set, if existent,
-  // once dismissed requests are moved to SiteAccessRequestsHelper.
-  return true;
+  // Remove request iff it matches the parameter when given. Otherwise, always
+  // remove the request.
+  if (!filter || requests_iter->second == filter) {
+    extensions_with_requests_.erase(extension_id);
+    return true;
+  }
+
+  return false;
 }
 
 bool SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
@@ -60,7 +84,7 @@ bool SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
     return false;
   }
 
-  return RemoveRequest(extension.id());
+  return RemoveRequest(extension.id(), /*filter=*/std::nullopt);
 }
 
 void SiteAccessRequestsHelper::UserDismissedRequest(
@@ -69,10 +93,26 @@ void SiteAccessRequestsHelper::UserDismissedRequest(
   extensions_with_requests_dismissed_.insert(extension_id);
 }
 
+bool SiteAccessRequestsHelper::HasRequest(
+    const ExtensionId& extension_id) const {
+  return extensions_with_requests_.contains(extension_id);
+}
+
 bool SiteAccessRequestsHelper::HasActiveRequest(
-    const ExtensionId& extension_id) {
-  return extensions_with_requests_.contains(extension_id) &&
-         !extensions_with_requests_dismissed_.contains(extension_id);
+    const ExtensionId& extension_id) const {
+  if (!extensions_with_requests_.contains(extension_id)) {
+    return false;
+  }
+
+  if (extensions_with_requests_dismissed_.contains(extension_id)) {
+    return false;
+  }
+
+  // Web contents must match the filter if provided, otherwise request is always
+  // active.
+  std::optional<URLPattern> filter = extensions_with_requests_.at(extension_id);
+  return !filter ||
+         filter.value().MatchesURL(web_contents_->GetLastCommittedURL());
 }
 
 bool SiteAccessRequestsHelper::HasRequests() {
@@ -83,7 +123,7 @@ void SiteAccessRequestsHelper::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  RemoveRequest(extension->id());
+  RemoveRequest(extension->id(), /*filter=*/std::nullopt);
 
   if (!HasRequests()) {
     permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);

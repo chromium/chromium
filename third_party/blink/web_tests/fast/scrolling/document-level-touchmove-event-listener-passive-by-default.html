@@ -4,7 +4,7 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/gesture-util.js"></script>
-<body onload=runTest()>
+<body>
 <div id="touchDiv">
 </div>
 </body>
@@ -15,28 +15,26 @@
 }
 </style>
 <script>
-var touch_div = document.getElementById("touchDiv");
-var rect = touch_div.getBoundingClientRect();
-var x = rect.left + rect.width / 2;
-var y = rect.top + rect.height / 2;
-var cancelable = true;
-var touch_move_arrived = false;
-document.addEventListener("touchmove", function (event) {
-    cancelable = event.cancelable;
-    touch_move_arrived = true;
-    event.preventDefault();
-});
 
 function injectInput() {
+  const touch_div = document.getElementById("touchDiv");
+  const rect = touch_div.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
   return smoothScroll(10, x, y, GestureSourceType.TOUCH_INPUT, "down");
 }
 
-function runTest() {
+window.onload = async () => {
   promise_test (async () => {
+    const touchMovePromise = waitForEvent(document, 'touchmove');
     await waitForCompositorCommit();
     await injectInput();
-    await waitFor(()=> { return touch_move_arrived; });
-    assert_false(cancelable);
-  }, "Touchmove events are non-cancelable since the event listener is treated as passive.");
-}
+    await touchMovePromise.then((event) => {
+      assert_false(event.cancelable);
+      event.preventDefault();
+    });
+  }, "Touchmove events are non-cancelable since the event listener is " +
+     "treated as passive.");
+};
+
 </script>

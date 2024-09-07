@@ -2084,17 +2084,6 @@ ViewAccessibility& View::GetViewAccessibility() const {
   return *view_accessibility_;
 }
 
-void View::SetAccessibilityProperties(
-    std::optional<ax::mojom::Role> role,
-    std::optional<std::u16string> name,
-    std::optional<std::u16string> description,
-    std::optional<std::u16string> role_description,
-    std::optional<ax::mojom::NameFrom> name_from,
-    std::optional<ax::mojom::DescriptionFrom> description_from) {
-  GetViewAccessibility().SetProperties(
-      role, name, description, role_description, name_from, description_from);
-}
-
 void View::SetAccessibleName(const std::u16string& name) {
   SetAccessibleName(name, GetViewAccessibility().GetCachedNameFrom());
 }
@@ -2625,9 +2614,6 @@ void View::OnBlur() {}
 void View::Focus() {
   OnFocus();
 
-  // TODO(crbug.com/40285437) - Get this working on Lacros as well.
-  UpdateTooltipForFocus();
-
   // TODO(pbos): Investigate if parts of this can run unconditionally.
   if (!suppress_default_focus_handling_) {
     // Clear the native focus. This ensures that no visible native view has the
@@ -2656,6 +2642,11 @@ void View::Focus() {
   } else {
     ScrollViewToVisible();
   }
+
+  // Update tooltip after scrolling view to place tooltip according to the new
+  // position.
+  // TODO(crbug.com/40285437) - Get this working on Lacros as well.
+  UpdateTooltipForFocus();
 
   for (ViewObserver& observer : observers_) {
     observer.OnViewFocused(this);
@@ -3082,13 +3073,6 @@ void View::DoRemoveChildView(View* view,
     }
   }
 
-  // Make sure the layers belonging to the subtree rooted at |view| get
-  // removed.
-  view->OrphanLayers();
-  if (widget) {
-    widget->LayerTreeChanged();
-  }
-
   // Need to notify the layout manager because one of the callbacks below might
   // want to know the view's new preferred size, minimum size, etc.
   if (HasLayoutManager()) {
@@ -3096,6 +3080,14 @@ void View::DoRemoveChildView(View* view,
   }
 
   view->PropagateRemoveNotifications(this, new_parent, is_removed_from_widget);
+
+  // Make sure the layers belonging to the subtree rooted at |view| get
+  // removed. Only do this after all the removal notifications have gone out.
+  view->OrphanLayers();
+  if (widget) {
+    widget->LayerTreeChanged();
+  }
+
   view->parent_ = nullptr;
 
   if (delete_removed_view && !view->owned_by_client_) {

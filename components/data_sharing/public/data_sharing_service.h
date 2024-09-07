@@ -13,6 +13,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -27,20 +28,6 @@ class DataSharingNetworkLoader;
 // The core class for managing data sharing.
 class DataSharingService : public KeyedService, public base::SupportsUserData {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    Observer() = default;
-    Observer(const Observer&) = delete;
-    Observer& operator=(const Observer&) = delete;
-    ~Observer() override = default;
-
-    virtual void OnGroupChanged(const GroupData& group_data) {}
-    // User either created a new group or has been invited to the existing one.
-    virtual void OnGroupAdded(const GroupData& group_data) {}
-    // Either group has been deleted or user has been removed from the group.
-    virtual void OnGroupRemoved(const GroupId& group_id) {}
-  };
-
   // GENERATED_JAVA_ENUM_PACKAGE: (
   //   org.chromium.components.data_sharing)
   enum class PeopleGroupActionFailure {
@@ -67,10 +54,77 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     kQueryMissingFailure = 3
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.data_sharing)
+  enum class SigninStatus {
+    kNotSignedIn = 0,
+    kSignedInPaused = 1,
+    kSignedIn = 2
+  };
+
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.data_sharing)
+  enum class SyncStatus {
+    kNotSyncing = 0,
+    kSyncWithoutTabGroup = 1,
+    kSyncEnabled = 2
+  };
+
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.data_sharing)
+  enum class CollaborationStatus {
+    // Users are not allowed to either join or create.
+    kDisabled = 0,
+    // The Chrome policy disables this feature, eg: enterprise policies.
+    kDisabledForPolicy = 1,
+    // Users are allowed to join only but have not joined a shared tab group
+    // yet.
+    kAllowedToJoin = 2,
+    // Users are allowed to join only and have already joined at least 1 shared
+    // tab group.
+    kEnabledJoinOnly = 3,
+    // Users are allowed to join and create shared tab groups.
+    kEnabledCreateAndJoin = 4
+  };
+
+  struct ServiceStatus {
+    SigninStatus signin_status;
+    SyncStatus sync_status;
+    CollaborationStatus collaboration_status;
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override = default;
+
+    virtual void OnGroupChanged(const GroupData& group_data) {}
+    // User either created a new group or has been invited to the existing one.
+    virtual void OnGroupAdded(const GroupData& group_data) {}
+    // Either group has been deleted or user has been removed from the group.
+    virtual void OnGroupRemoved(const GroupId& group_id) {}
+
+    // The update details of a service's collaboration status.
+    struct ServiceStatusUpdate {
+      ServiceStatus old_status;
+      ServiceStatus new_status;
+
+      // Add helper functions as needed here.
+    };
+
+    // The service status has been changed.
+    virtual void OnServiceStatusChanged(
+        const ServiceStatusUpdate& status_update) {}
+  };
+
   using GroupDataOrFailureOutcome =
       base::expected<GroupData, PeopleGroupActionFailure>;
   using GroupsDataSetOrFailureOutcome =
       base::expected<std::set<GroupData>, PeopleGroupActionFailure>;
+  using SharedDataPreviewOrFailureOutcome =
+      base::expected<SharedDataPreview, PeopleGroupActionFailure>;
   using ParseURLResult = base::expected<GroupToken, ParseURLStatus>;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -167,6 +221,19 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   virtual void EnsureGroupVisibility(
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) = 0;
+
+  // Gets a preview of the shared entities. The returned result may contain
+  // all types of shared entities for the group.
+  virtual void GetSharedEntitiesPreview(
+      const GroupToken& group_token,
+      base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
+          callback) = 0;
+
+  // Get the current DataSharingUIDelegate instance.
+  virtual DataSharingUIDelegate* GetUIDelegate() = 0;
+
+  // Get the current ServiceStatus.
+  virtual ServiceStatus GetServiceStatus() = 0;
 };
 
 }  // namespace data_sharing

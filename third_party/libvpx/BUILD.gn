@@ -155,7 +155,12 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     } else if (current_cpu == "x64") {
       sources = libvpx_srcs_x86_64_assembly
     }
-
+    inputs = [
+      "$platform_include_dir/vpx_config.asm",
+      "source/libvpx/third_party/x86inc/x86inc.asm",
+      "source/libvpx/vpx_dsp/x86/bitdepth_conversion_sse2.asm",
+      "source/libvpx/vpx_ports/x86_abi_support.asm",
+    ]
     defines = [ "CHROMIUM" ]
     if (is_android) {
       # On Android, define __ANDROID__ to use alternative standard library

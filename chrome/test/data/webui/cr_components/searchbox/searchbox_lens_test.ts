@@ -4,8 +4,8 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import type {RealboxElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {BrowserProxyImpl, MetricsReporterImpl, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import type {SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AutocompleteMatch} from 'chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
@@ -14,7 +14,7 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {TestRealboxBrowserProxy} from './test_searchbox_browser_proxy.js';
+import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 function createAutocompleteMatch(): AutocompleteMatch {
   return {
@@ -45,9 +45,9 @@ function createAutocompleteMatch(): AutocompleteMatch {
 }
 
 suite('Lens search', () => {
-  let realbox: RealboxElement;
+  let realbox: SearchboxElement;
 
-  let testProxy: TestRealboxBrowserProxy;
+  let testProxy: TestSearchboxBrowserProxy;
 
   const testMetricsReporterProxy = TestMock.fromClass(BrowserProxyImpl);
 
@@ -60,9 +60,9 @@ suite('Lens search', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      realboxLensSearch: true,
+      searchboxLensSearch: true,
       realboxMatchOmniboxTheme: true,
-      realboxSeparator: ' - ',
+      searchboxSeparator: ' - ',
     });
   });
 
@@ -70,8 +70,8 @@ suite('Lens search', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     // Set up Realbox's browser proxy.
-    testProxy = new TestRealboxBrowserProxy();
-    RealboxBrowserProxy.setInstance(testProxy);
+    testProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testProxy);
 
     // Set up MetricsReporter's browser proxy.
     testMetricsReporterProxy.reset();
@@ -82,14 +82,14 @@ suite('Lens search', () => {
     BrowserProxyImpl.setInstance(testMetricsReporterProxy);
     MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
 
-    realbox = document.createElement('cr-realbox');
+    realbox = document.createElement('cr-searchbox');
     document.body.appendChild(realbox);
   });
 
   test('Lens search button is present by default', async () => {
     // Arrange.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-realbox');
+    realbox = document.createElement('cr-searchbox');
     document.body.appendChild(realbox);
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -101,9 +101,9 @@ suite('Lens search', () => {
 
   test('Lens search button is not present when not enabled', async () => {
     // Arrange.
-    loadTimeData.overrideValues({realboxLensSearch: false});
+    loadTimeData.overrideValues({searchboxLensSearch: false});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-realbox');
+    realbox = document.createElement('cr-searchbox');
     document.body.appendChild(realbox);
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -113,13 +113,13 @@ suite('Lens search', () => {
     assertFalse(!!lensButton);
 
     // Restore
-    loadTimeData.overrideValues({realboxLensSearch: true});
+    loadTimeData.overrideValues({searchboxLensSearch: true});
   });
 
   test('clicking Lens search button hides matches', async () => {
     // Arrange.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-realbox');
+    realbox = document.createElement('cr-searchbox');
     document.body.appendChild(realbox);
 
     // Act.
@@ -148,7 +148,7 @@ suite('Lens search', () => {
   test('clicking Lens search button sends Lens search event', async () => {
     // Arrange.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-realbox');
+    realbox = document.createElement('cr-searchbox');
     document.body.appendChild(realbox);
     const whenOpenLensSearch = eventToPromise('open-lens-search', realbox);
     await testProxy.callbackRouterRemote.$.flushForTesting();

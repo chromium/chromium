@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -62,24 +63,29 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
     // the Views-styled one.
     bool custom_frame = true;
 
-    // A bitmask of buttons (from ui::DialogButton) that are present in this
-    // dialog.
-    int buttons = ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL;
+    // A bitmask of buttons (from ui::mojom::DialogButton) that are present in
+    // this dialog.
+    int buttons = static_cast<int>(ui::mojom::DialogButton::kOk) |
+                  static_cast<int>(ui::mojom::DialogButton::kCancel);
 
     // Text labels for the buttons on this dialog. Any button without a label
     // here will get the default text for its type from GetDialogButtonLabel.
     // Prefer to use this field (via SetButtonLabel) rather than override
     // GetDialogButtonLabel - see https://crbug.com/1011446
-    std::array<std::u16string, ui::DIALOG_BUTTON_LAST + 1> button_labels;
+    std::array<std::u16string,
+               static_cast<size_t>(ui::mojom::DialogButton::kCancel) + 1>
+        button_labels;
 
     // Styles of each button on this dialog. If empty a style will be derived.
-    std::array<std::optional<ui::ButtonStyle>, ui::DIALOG_BUTTON_LAST + 1>
+    std::array<std::optional<ui::ButtonStyle>,
+               static_cast<size_t>(ui::mojom::DialogButton::kCancel) + 1>
         button_styles;
 
-    // A bitmask of buttons (from ui::DialogButton) that are enabled in this
-    // dialog. It's legal for a button to be marked enabled that isn't present
-    // in |buttons| (see above).
-    int enabled_buttons = ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL;
+    // A bitmask of buttons (from ui::mojom::DialogButton) that are enabled in
+    // this dialog. It's legal for a button to be marked enabled that isn't
+    // present in |buttons| (see above).
+    int enabled_buttons = static_cast<int>(ui::mojom::DialogButton::kOk) |
+                          static_cast<int>(ui::mojom::DialogButton::kCancel);
   };
 
   DialogDelegate();
@@ -122,23 +128,23 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 
   // Returns the default dialog button. This should not be a mask as only
   // one button should ever be the default button.  Return
-  // ui::DIALOG_BUTTON_NONE if there is no default.  Default
-  // behavior is to return ui::DIALOG_BUTTON_OK or
-  // ui::DIALOG_BUTTON_CANCEL (in that order) if they are
-  // present, ui::DIALOG_BUTTON_NONE otherwise.
+  // ui::mojom::DialogButton::kNone if there is no default.  Default
+  // behavior is to return ui::mojom::DialogButton::kOk or
+  // ui::mojom::DialogButton::kCancel (in that order) if they are
+  // present, ui::mojom::DialogButton::kNone otherwise.
   int GetDefaultDialogButton() const;
 
   // Returns the label of the specified dialog button.
-  std::u16string GetDialogButtonLabel(ui::DialogButton button) const;
+  std::u16string GetDialogButtonLabel(ui::mojom::DialogButton button) const;
 
   // Returns the style of the specific dialog button.
-  ui::ButtonStyle GetDialogButtonStyle(ui::DialogButton button) const;
+  ui::ButtonStyle GetDialogButtonStyle(ui::mojom::DialogButton button) const;
 
   // Returns true if `button` should be the default button.
-  bool GetIsDefault(ui::DialogButton button) const;
+  bool GetIsDefault(ui::mojom::DialogButton button) const;
 
   // Returns whether the specified dialog button is enabled.
-  virtual bool IsDialogButtonEnabled(ui::DialogButton button) const;
+  virtual bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const;
 
   // Returns true if we should ignore key pressed event handling of `button`.
   virtual bool ShouldIgnoreButtonPressedEventHandling(
@@ -248,10 +254,11 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // necessary to call DialogModelChanged() yourself after calling them.
   void SetDefaultButton(int button);
   void SetButtons(int buttons);
-  void SetButtonLabel(ui::DialogButton button, std::u16string label);
-  void SetButtonStyle(ui::DialogButton button,
+  void SetButtonLabel(ui::mojom::DialogButton dialog_button,
+                      std::u16string label);
+  void SetButtonStyle(ui::mojom::DialogButton button,
                       std::optional<ui::ButtonStyle> style);
-  void SetButtonEnabled(ui::DialogButton button, bool enabled);
+  void SetButtonEnabled(ui::mojom::DialogButton dialog_button, bool enabled);
 
   // Called when the user presses the dialog's "OK" button or presses the dialog
   // accept accelerator, if there is one. The dialog is closed after the
@@ -465,8 +472,8 @@ VIEW_BUILDER_PROPERTY(bool, CenterTitle)
 #endif
 VIEW_BUILDER_PROPERTY(int, Buttons)
 VIEW_BUILDER_PROPERTY(int, DefaultButton)
-VIEW_BUILDER_METHOD(SetButtonLabel, ui::DialogButton, std::u16string)
-VIEW_BUILDER_METHOD(SetButtonEnabled, ui::DialogButton, bool)
+VIEW_BUILDER_METHOD(SetButtonLabel, ui::mojom::DialogButton, std::u16string)
+VIEW_BUILDER_METHOD(SetButtonEnabled, ui::mojom::DialogButton, bool)
 VIEW_BUILDER_METHOD(set_margins, gfx::Insets)
 VIEW_BUILDER_METHOD(set_use_round_corners, bool)
 VIEW_BUILDER_METHOD(set_corner_radius, int)

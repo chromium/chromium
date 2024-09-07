@@ -63,6 +63,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_field_trials.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/component_updater/registration.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -92,7 +93,6 @@
 #include "chrome/browser/sessions/chrome_serialized_navigation_driver.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/startup_data.h"
-#include "chrome/browser/tracing/background_tracing_field_trial.h"
 #include "chrome/browser/tracing/trace_event_system_stats_monitor.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
@@ -131,6 +131,7 @@
 #include "components/embedder_support/switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/google/core/common/google_util.h"
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/content/browser/geo_language_provider.h"
 #include "components/language/core/browser/language_usage_metrics.h"
@@ -200,7 +201,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_manager.h"
-#include "chrome/browser/component_updater/registration.h"
 
 #if BUILDFLAG(ENABLE_UPDATER)
 #include "chrome/browser/updater/scheduler.h"
@@ -725,11 +725,19 @@ void ChromeBrowserMainParts::SetupMetrics() {
 void ChromeBrowserMainParts::StartMetricsRecording() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::StartMetricsRecording");
 
-  // Register a synthetic field trial for the sampling profiler configuration
-  // that was already chosen.
+  // Register synthetic field trials for the sampling profiler configurations
+  // that were already chosen.
   std::string trial_name, group_name;
   if (ThreadProfilerConfiguration::Get()->GetSyntheticFieldTrial(&trial_name,
                                                                  &group_name)) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
+                                                              group_name);
+  }
+  auto* heap_profiler_controller =
+      heap_profiling::HeapProfilerController::GetInstance();
+  if (heap_profiler_controller &&
+      heap_profiler_controller->GetSyntheticFieldTrial(trial_name,
+                                                       group_name)) {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
                                                               group_name);
   }
@@ -1225,7 +1233,7 @@ void ChromeBrowserMainParts::PostCreateThreads() {
   ChromeProcessSingleton::GetInstance()->StartWatching();
 #endif
 
-  tracing::MaybeSetupSystemTracingFromFieldTrial();
+  tracing::SetupSystemTracingFromFieldTrial();
   tracing::SetupBackgroundTracingFromCommandLine();
   tracing::SetupPresetTracingFromFieldTrial();
   base::trace_event::EmitNamedTrigger(

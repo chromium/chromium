@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
@@ -103,11 +104,11 @@ void ProfileStatisticsAggregator::StartAggregator() {
       std::move(credential_store)));
 
   // Initiate autofill counting.
-  scoped_refptr<autofill::AutofillWebDataService> autofill_service =
-      WebDataServiceFactory::GetAutofillWebDataForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS);
   AddCounter(std::make_unique<browsing_data::AutofillCounter>(
-      autofill_service, /*sync_service=*/nullptr));
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile_),
+      WebDataServiceFactory::GetAutofillWebDataForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS),
+      /*sync_service=*/nullptr));
 }
 
 void ProfileStatisticsAggregator::OnCounterResult(

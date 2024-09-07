@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_web_state_list_observer.h"
 #import "ios/chrome/browser/sessions/model/web_state_list_serialization.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"

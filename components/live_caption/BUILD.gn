@@ -40,6 +40,8 @@ if (!is_android && !is_ios) {
         "views/caption_bubble_model.h",
       ]
 
+      public_deps = [ "//ui/base/mojom:ui_base_types" ]
+
       deps += [
         "//components/strings",
         "//components/vector_icons",

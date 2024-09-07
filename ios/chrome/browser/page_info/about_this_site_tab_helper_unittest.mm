@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -91,9 +91,7 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     browser_state_ = std::move(builder).Build();
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
-    optimization_guide_service_->DoFinalInit();
+        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
     web_state_.SetBrowserState(browser_state_.get());
 
     AboutThisSiteTabHelper::CreateForWebState(&web_state_,
@@ -111,8 +109,7 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
                 OptimizationGuideServiceFactory::GetInstance(),
                 OptimizationGuideServiceFactory::GetDefaultFactory()}});
     optimization_guide_service_otr_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state);
-    optimization_guide_service_otr_->DoFinalInit();
+        OptimizationGuideServiceFactory::GetForProfile(otr_browser_state);
     web_state_otr_.SetBrowserState(otr_browser_state);
 
     AboutThisSiteTabHelper::CreateForWebState(&web_state_otr_,

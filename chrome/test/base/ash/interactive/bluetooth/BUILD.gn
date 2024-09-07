@@ -12,6 +12,7 @@ source_set("interactive_ui_tests") {
   sources = [
     "pair_with_ui_interactive_uitest.cc",
     "rename_bluetooth_device_interactive_uitest.cc",
+    "warn_before_disconnecting_bluetooth_interactive_uitest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -23,7 +24,7 @@ source_set("interactive_ui_tests") {
     "//base/test:test_support",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/test:test_support",
     "//chrome/test/base/ash/interactive:test_support",
     "//chrome/test/base/ash/interactive/settings:test_support",
@@ -32,6 +33,7 @@ source_set("interactive_ui_tests") {
     "//device/bluetooth",
     "//ui/base",
     "//ui/base:test_support",
+    "//ui/events/devices:test_support",
     "//ui/views",
     "//ui/views/controls/webview",
   ]

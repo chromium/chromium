@@ -58,7 +58,7 @@ class ObservingAutofillClient : public autofill::ChromeAutofillClient {
   // Blocks the current thread until ShowAutofillSuggestions() is called.
   void WaitForAutofillPopup();
 
-  void ShowAutofillSuggestions(
+  SuggestionUiSessionId ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;
 

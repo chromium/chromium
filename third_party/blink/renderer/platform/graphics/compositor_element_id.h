@@ -10,6 +10,7 @@
 #include "cc/paint/element_id.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
 
@@ -84,5 +85,27 @@ CompositorElementIdNamespace PLATFORM_EXPORT
 DOMNodeId PLATFORM_EXPORT DOMNodeIdFromCompositorElementId(CompositorElementId);
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct PLATFORM_EXPORT HashTraits<blink::CompositorElementId>
+    : GenericHashTraits<blink::CompositorElementId> {
+  static unsigned GetHash(const blink::CompositorElementId& key) {
+    // We define a new hash here rather than using `cc::ElementIdHash` since the
+    // latter produces a `size_t` rather than the `unsigned` needed for
+    // `WTF::GenericHashTraits<T>::GetHash(const T&)`.
+    return HashInt(key.GetInternalValue());
+  }
+  static constexpr bool kEmptyValueIsZero = true;
+  static constexpr blink::CompositorElementId EmptyValue() {
+    return blink::CompositorElementId();
+  }
+  static constexpr blink::CompositorElementId DeletedValue() {
+    return cc::ElementId::DeletedValue();
+  }
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITOR_ELEMENT_ID_H_

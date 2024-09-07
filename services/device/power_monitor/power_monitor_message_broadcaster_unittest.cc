@@ -62,7 +62,9 @@ class PowerMonitorMessageBroadcasterTest : public DeviceServiceTestBase {
     power_monitor_source_.SetOnBatteryPower(on_battery_power);
   }
 
-  bool IsOnBatteryPower() { return power_monitor_source_.IsOnBatteryPower(); }
+  bool IsOnBatteryPower() const {
+    return power_monitor_source_.IsOnBatteryPower();
+  }
 
   void TearDown() override {
     DestroyDeviceService();

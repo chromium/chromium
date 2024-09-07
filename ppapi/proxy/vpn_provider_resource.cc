@@ -204,20 +204,17 @@ void VpnProviderResource::OnPluginMsgBindReply(
     params.TakeUnsafeSharedMemoryRegionAtIndex(0, &send_shm);
     params.TakeUnsafeSharedMemoryRegionAtIndex(1, &recv_shm);
     if (!send_shm.IsValid() || !recv_shm.IsValid()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     base::WritableSharedMemoryMapping send_mapping = send_shm.Map();
     base::WritableSharedMemoryMapping recv_mapping = recv_shm.Map();
     if (!send_mapping.IsValid() || !recv_mapping.IsValid()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     size_t buffer_size = queue_size * max_packet_size;
     if (send_shm.GetSize() < buffer_size || recv_shm.GetSize() < buffer_size) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     send_packet_buffer_ = std::make_unique<ppapi::VpnProviderSharedBuffer>(
         queue_size, max_packet_size, std::move(send_shm),

@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+
 #include <memory>
-#include "build/build_config.h"
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
-#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
@@ -206,29 +208,33 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
   void PlayVideo(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()
-        ->ExecuteJavaScriptWithUserGestureForTests(u"playVideo()",
-                                                   base::NullCallback());
+        ->ExecuteJavaScriptWithUserGestureForTests(
+            u"playVideo()", base::NullCallback(),
+            content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void PauseVideo(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"pauseVideo()", base::NullCallback());
+        u"pauseVideo()", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void OpenPipManually(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()
         ->ExecuteJavaScriptWithUserGestureForTests(
-            u"openPip({automatic: true})", base::NullCallback());
+            u"openPip()", base::NullCallback(),
+            content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void RegisterForAutopip(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"register()", base::NullCallback());
+        u"register()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void UnregisterForAutopip(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        u"unregister()", base::NullCallback());
+        u"unregister()", base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void AddOverlayToVideo(content::WebContents* web_contents,
@@ -237,8 +243,8 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         {"addOverlayToVideo(", should_occlude ? "true" : "false", ")"}));
 
     web_contents->GetPrimaryMainFrame()
-        ->ExecuteJavaScriptWithUserGestureForTests(script,
-                                                   base::NullCallback());
+        ->ExecuteJavaScriptWithUserGestureForTests(
+            script, base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   void ForceLifecycleUpdate(content::WebContents* web_contents) {
@@ -576,6 +582,34 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   SwitchToNewTabAndDontExpectAutopip();
 }
 
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureWithVideoPlaybackBrowserTest,
+    DoesNotDocumentAutopip_VideoSufficientlyVisibleInIframe) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentVideoVisibilityPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Move the video element into an iframe.
+  EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), R"(
+      const iframe = document.createElement("iframe");
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.position = "absolute";
+
+      document.body.appendChild(iframe);
+      iframe.contentDocument.body.appendChild(video);
+  )"));
+
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+
+  // There should not be a picture-in-picture window, since the video element is
+  // inside an iframe.
+  ForceLifecycleUpdate(web_contents);
+  SwitchToNewTabAndDontExpectAutopip();
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        OpensAndClosesVideoAutopip_VideoSufficientlyVisible) {
   // Load a page that registers for autopip and start video playback.
@@ -604,7 +638,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   // not visible.
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      u"makeOccludingOverlayInvisible()", base::NullCallback());
+      u"makeOccludingOverlayInvisible()", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 
   ForceLifecycleUpdate(web_contents);
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,

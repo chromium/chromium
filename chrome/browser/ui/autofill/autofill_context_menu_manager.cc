@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -44,6 +45,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -181,7 +183,7 @@ bool IsPasswordFormField(ContentPasswordManagerDriver& password_manager_driver,
       params.field_renderer_id);
   return password_manager_driver.GetPasswordManager()
       ->GetPasswordFormCache()
-      ->HasPasswordForm(&password_manager_driver, current_field_renderer_id);
+      ->GetPasswordForm(&password_manager_driver, current_field_renderer_id);
 }
 
 // Returns true if the user has autofillable passwords saved.
@@ -377,7 +379,12 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   // Do not show autofill context menu options for input fields that cannot be
   // filled by the driver. See crbug.com/1367547.
   if (autofill_driver && autofill_driver->CanShowAutofillUi()) {
-    add_prediction_improvements = ShouldAddPredictionImprovementsItem();
+    auto* web_contents = content::WebContents::FromRenderFrameHost(
+        autofill_driver->render_frame_host());
+    add_prediction_improvements = ShouldAddPredictionImprovementsItem(
+        autofill_driver->GetAutofillClient()
+            .GetAutofillPredictionImprovementsDelegate(),
+        web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
     add_plus_address_fallback =
         ShouldAddPlusAddressManualFallbackItem(*autofill_driver);
     add_address_fallback = ShouldAddAddressManualFallbackItem(*autofill_driver);
@@ -493,10 +500,10 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
              plus_addresses::features::kPlusAddressFallbackFromContextMenu);
 }
 
-bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem() {
-  // Only show the entry point if the corresponding feature is enabled.
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillPredictionImprovementsEnabled);
+bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem(
+    AutofillPredictionImprovementsDelegate* delegate,
+    const GURL& url) {
+  return delegate && delegate->ShouldProvidePredictionImprovements(url);
 }
 
 bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
@@ -518,7 +525,7 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
     // Show the context menu entry for address fields, which can be filled
     // with at least one of the user's profiles.
     CHECK(personal_data_manager_);
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             personal_data_manager_->address_data_manager().GetProfiles(),
             [field](const AutofillProfile* profile) {
               return profile->HasInfo(field->Type().GetStorableType());

@@ -12,15 +12,25 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/installer_posix.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
+#if defined(ADDRESS_SANITIZER)
+#include "base/base_paths.h"
+#include "base/path_service.h"
+#endif
+
 namespace enterprise_companion {
 
 namespace {
+
+#if defined(ADDRESS_SANITIZER)
+constexpr char kAsanDylibFilename[] = "libclang_rt.asan_osx_dynamic.dylib";
+#endif
 
 constexpr base::TimeDelta kKSAdminTimeout = base::Minutes(5);
 
@@ -79,6 +89,23 @@ bool Install() {
   if (!InstallToDir(*install_directory)) {
     return false;
   }
+
+#if defined(ADDRESS_SANITIZER)
+  base::FilePath dir_exe;
+  if (!base::PathService::Get(base::DIR_EXE, &dir_exe)) {
+    LOG(ERROR) << "Failed to get the current executable's directory.";
+    return false;
+  }
+
+  base::FilePath asan_dylib_path = dir_exe.AppendASCII(kAsanDylibFilename);
+  if (base::PathExists(asan_dylib_path) &&
+      !base::CopyFile(asan_dylib_path,
+                      install_directory->Append(asan_dylib_path.BaseName()))) {
+    LOG(ERROR) << "Failed to copy " << asan_dylib_path << " to "
+               << *install_directory;
+    return false;
+  }
+#endif
 
   if (!RegisterInstallation(*install_directory)) {
     if (base::PathExists(backup_exe)) {

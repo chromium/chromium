@@ -44,8 +44,8 @@ void ReadAloudAppModel::SetLanguageEnabled(const std::string& lang,
 }
 
 bool ReadAloudAppModel::IsHighlightOn() {
-  return highlight_granularity_ ==
-         static_cast<int>(read_anything::mojom::HighlightGranularity::kOn);
+  return highlight_granularity_ !=
+         static_cast<int>(read_anything::mojom::HighlightGranularity::kOff);
 }
 
 void ReadAloudAppModel::ResetGranularityIndex() {
@@ -361,19 +361,10 @@ void ReadAloudAppModel::AddTextToCurrentGranularity(
     int end_index,
     a11y::ReadAloudCurrentGranularity& current_granularity,
     bool is_docs) {
-  ReadAloudTextSegment segment;
-  segment.id = anchor_node->id();
-  segment.text_start = start_index;
-  segment.text_end = end_index;
-  current_granularity.AddSegment(segment);
-
-  int current_text_length = current_granularity.text.length();
-
-  current_granularity.text += a11y::GetTextContent(anchor_node, is_docs)
-                                  .substr(start_index, end_index - start_index);
-
-  current_granularity.index_map.insert(
-      {{current_text_length, current_granularity.text.length()}, segment.id});
+  current_granularity.AddText(
+      anchor_node->id(), start_index, end_index,
+      a11y::GetTextContent(anchor_node, is_docs)
+          .substr(start_index, end_index - start_index));
 }
 
 // Gets the next valid position from our current position within AXPosition
@@ -477,41 +468,6 @@ int ReadAloudAppModel::GetCurrentTextStartIndex(const ui::AXNodeID& node_id) {
   return segment.text_start;
 }
 
-int ReadAloudAppModel::GetHighlightStartIndex(const ui::AXNodeID& node_id,
-                                              int boundary_index) {
-  if (processed_granularities_on_current_page_.size() < 1) {
-    return -1;
-  }
-
-  a11y::ReadAloudCurrentGranularity current_granularity =
-      processed_granularities_on_current_page_[processed_granularity_index_];
-  if (!current_granularity.segments.count(node_id)) {
-    return -1;
-  }
-
-  std::map<std::pair<int, int>, ui::AXNodeID> index_map =
-      current_granularity.index_map;
-  for (const auto& [range, id] : index_map) {
-    if (id == node_id && range.first <= boundary_index &&
-        range.second > boundary_index) {
-      // First shift the word boundary index by the starting position within
-      // the current speech segment. Then shift this by the starting position
-      // within the current node.
-      // The first shift is necessary to handle multiple nodes within the
-      // same speech segment. e.g.
-      //   Node 1: This is a
-      //   Node 2: link.
-      // While the second shift is necessary to handle multiple speech segments
-      // within the same node. e.g.
-      //   Node 1: This is a sentence read at once. This is a second sentence
-      //           processed after the first sentence completes.
-      return (boundary_index - range.first) + GetCurrentTextStartIndex(node_id);
-    }
-  }
-
-  return -1;
-}
-
 int ReadAloudAppModel::GetCurrentTextEndIndex(const ui::AXNodeID& node_id) {
   if (processed_granularities_on_current_page_.size() < 1) {
     return -1;
@@ -557,6 +513,10 @@ bool ReadAloudAppModel::IsValidAXPosition(
     bool is_docs,
     const std::set<ui::AXNodeID>* current_nodes) const {
   ui::AXNode* anchor_node = GetAnchorNode(position);
+  if (!anchor_node) {
+    return false;
+  }
+
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
   bool is_text_node = a11y::IsTextForReadAnything(anchor_node, is_pdf, is_docs);
@@ -565,51 +525,31 @@ bool ReadAloudAppModel::IsValidAXPosition(
   return !was_previously_spoken && is_text_node && contains_node;
 }
 
-ui::AXNodeID ReadAloudAppModel::GetNodeIdForCurrentSegmentIndex(
-    int index) const {
-  // If the granularity index isn't valid, return an invalid id.
+std::vector<ReadAloudTextSegment>
+ReadAloudAppModel::GetHighlightForCurrentSegmentIndex(int index) const {
+  // If the granularity index isn't valid, return an empty array.
   if (processed_granularity_index_ >=
       processed_granularities_on_current_page_.size()) {
-    return ui::kInvalidAXNodeID;
+    return {};
   }
 
   a11y::ReadAloudCurrentGranularity current_granularity =
       processed_granularities_on_current_page_[processed_granularity_index_];
-  std::map<std::pair<int, int>, ui::AXNodeID> index_map =
-      current_granularity.index_map;
-  for (const auto& [range, id] : index_map) {
-    if (range.first <= index && range.second > index) {
-      // If the given index is within a range, return the associated node id.
-      return id;
-    }
+
+  // If the index is outside the current text, return an empty array.
+  if ((index < 0) || (index >= (int)current_granularity.text.length())) {
+    return {};
   }
 
-  // If the index isn't part of the current granularity's ranges, return an
-  // invalid id.
-  return ui::kInvalidAXNodeID;
-}
-
-int ReadAloudAppModel::GetNextWordHighlightLength(int start_index) {
-  // If the granularity index isn't valid, return 0.
-  if (processed_granularity_index_ >=
-          processed_granularities_on_current_page_.size() ||
-      start_index < 0) {
-    // 0 is returned to correspond to a 0-length or empty string.
-    return 0;
-  }
-
-  a11y::ReadAloudCurrentGranularity current_granularity =
-      processed_granularities_on_current_page_[processed_granularity_index_];
-  if (start_index > (int)current_granularity.text.length()) {
-    return 0;
-  }
   // Get the remaining text in the current granularity that occurs after the
   // starting index.
-  std::u16string current_text = current_granularity.text.substr(start_index);
+  std::u16string current_text = current_granularity.text.substr(index);
 
   // Get the word length of the next word following the index.
   int word_length = GetNextWord(current_text);
-  return word_length;
+  int end_index = index + word_length;
+
+  return current_granularity.GetSegmentsForRange(index, end_index);
 }
 
 void ReadAloudAppModel::IncrementMetric(const std::string& metric_name) {

@@ -136,6 +136,30 @@ namespace internal {
 // API.
 int ChromeCodeSignCloneCleanupMain(content::MainFunctionParams main_parameters);
 
+//
+// Checks if a file is open more than once, globally (across all processes on a
+// host), including the calling process.
+//
+// Usage of this check is fairly niche. It does not provide any information
+// about which process has a reference to an open file. For that see
+// `proc_listpidspath` (The linked header is from macOS 14.5).
+// https://github.com/apple-oss-distributions/xnu/blob/xnu-10063.121.3/libsyscall/wrappers/libproc/libproc.h
+//
+// This function simply checks if a file is exclusively opened. Performance
+// concerns may be a reason to use this function over `proc_listpidspath`, which
+// needs to loop over the process tree.
+//
+// Note: File descriptors that have been `dup`ed or inherited only count as
+// being opened once for this check’s purpose.
+//
+enum class FileOpenMoreThanOnce {
+  kNo = 0,
+  kYes = 1,
+  kError = 2,
+};
+FileOpenMoreThanOnce IsFileOpenMoreThanOnce(const base::FilePath& file_path);
+FileOpenMoreThanOnce IsFileOpenMoreThanOnce(int file_descriptor);
+
 }  // namespace internal
 
 }  // namespace code_sign_clone_manager

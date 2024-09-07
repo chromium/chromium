@@ -70,21 +70,21 @@ class UserPerformanceTuningManager {
                             ::mojom::LifecycleUnitDiscardReason discard_reason);
     ~PreDiscardResourceUsage() override;
 
+    void UpdateDiscardInfo(
+        uint64_t memory_footprint_estimate_kb,
+        ::mojom::LifecycleUnitDiscardReason discard_reason,
+        base::LiveTicks discard_live_ticks = base::LiveTicks::Now());
+
     // Returns the resource usage estimate in kilobytes.
     uint64_t memory_footprint_estimate_kb() const {
       return memory_footprint_estimate_;
-    }
-
-    void SetMemoryFootprintEstimateKbForTesting(
-        uint64_t memory_footprint_estimate) {
-      memory_footprint_estimate_ = memory_footprint_estimate;
     }
 
     ::mojom::LifecycleUnitDiscardReason discard_reason() const {
       return discard_reason_;
     }
 
-    base::LiveTicks discard_liveticks() const { return discard_liveticks_; }
+    base::LiveTicks discard_live_ticks() const { return discard_live_ticks_; }
 
    private:
     friend WebContentsUserData;
@@ -92,7 +92,7 @@ class UserPerformanceTuningManager {
 
     uint64_t memory_footprint_estimate_ = 0;
     ::mojom::LifecycleUnitDiscardReason discard_reason_;
-    base::LiveTicks discard_liveticks_;
+    base::LiveTicks discard_live_ticks_;
   };
 
   // Returns whether a UserPerformanceTuningManager was created and installed.

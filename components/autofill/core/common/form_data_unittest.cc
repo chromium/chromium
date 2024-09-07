@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 // This function serializes the form data into the pickle in version one format.
@@ -174,8 +173,6 @@ void FillInDummyFormData(FormData* data) {
   test_api(*data).Append(field_data);
 }
 
-}  // namespace
-
 TEST(FormDataTest, SerializeAndDeserialize) {
   FormData data;
   FillInDummyFormData(&data);
@@ -332,4 +329,5 @@ TEST(FormDataTest, SerializeIncorrectFormatAndDeserialize) {
   EXPECT_TRUE(actual.SameFormAs(empty));
 }
 
+}  // namespace
 }  // namespace autofill

@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -34,6 +35,7 @@
 #include "components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
 #include "components/viz/service/frame_sinks/video_detector.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/service/hit_test/hit_test_aggregator_delegate.h"
 #include "components/viz/service/hit_test/hit_test_manager.h"
 #include "components/viz/service/surfaces/surface_manager.h"
@@ -50,7 +52,6 @@
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
-#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
 namespace viz {
 
@@ -59,6 +60,7 @@ class CompositorFrameSinkSupport;
 class FrameSinkBundleImpl;
 class GmbVideoFramePoolContextProvider;
 class HintSessionFactory;
+class InputManager;
 class OutputSurfaceProvider;
 class SharedBitmapManager;
 class SharedImageInterfaceProvider;
@@ -89,6 +91,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     std::optional<uint32_t> activation_deadline_in_frames =
         kDefaultActivationDeadlineInFrames;
     raw_ptr<OutputSurfaceProvider> output_surface_provider = nullptr;
+    raw_ptr<GpuServiceImpl> gpu_service = nullptr;
     raw_ptr<GmbVideoFramePoolContextProvider> gmb_context_provider = nullptr;
     uint32_t restart_id = BeginFrameSource::kNotRestartableId;
     bool run_all_compositor_stages_before_draw = false;
@@ -122,6 +125,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     shared_image_interface_provider_ = provider;
   }
 
+  void SetInputManagerForTesting(std::unique_ptr<InputManager> input_manager);
+
   // Sets up a direction connection to |client| without using Mojo.
   void SetLocalClient(
       mojom::FrameSinkManagerClient* client,
@@ -144,7 +149,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       const std::optional<FrameSinkBundleId>& bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client)
+      input::mojom::RenderInputRouterConfigPtr render_input_router_config)
       override;
   void DestroyCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
@@ -240,6 +245,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   SharedBitmapManager* shared_bitmap_manager() {
     return shared_bitmap_manager_;
   }
+
+  virtual InputManager* GetInputManager();  // virtual for testing.
 
   void SubmitHitTestRegionList(
       const SurfaceId& surface_id,
@@ -344,6 +351,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     return copy_output_request_result_size_for_testing_;
   }
 
+  void RequestBeginFrameForGpuService(bool toggle);
+
  private:
   friend class FrameSinkManagerTest;
   friend class CompositorFrameSinkSupportTestBase;
@@ -423,12 +432,18 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Provides an output surface for CreateRootCompositorFrameSink().
   const raw_ptr<OutputSurfaceProvider> output_surface_provider_;
 
+  raw_ptr<GpuServiceImpl> gpu_service_ = nullptr;
+
   const raw_ptr<GmbVideoFramePoolContextProvider> gmb_context_provider_;
 
   SurfaceManager surface_manager_;
 
   // Must be created after and destroyed before |surface_manager_|.
   HitTestManager hit_test_manager_;
+
+  // InputManager is created only when `kInputOnViz` (Android-only) flag is
+  // enabled. This is a pointer for testing.
+  std::unique_ptr<InputManager> input_manager_;
 
   // Restart id to generate unique begin frames across process restarts.  Used
   // for creating a BeginFrameSource for RootCompositorFrameSink.
@@ -457,6 +472,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // that is implicitly using this frame sink must be reachable by the
   // parent in the dag.
   base::flat_map<BeginFrameSource*, FrameSinkId> registered_sources_;
+
+  // Store the BeginFrameSource of root compositor frame sink.
+  raw_ptr<BeginFrameSource> root_begin_frame_source_ = nullptr;
+  FrameSinkId root_frame_sink_id_;
 
   // Contains FrameSinkId hierarchy and BeginFrameSource mapping.
   base::flat_map<FrameSinkId, FrameSinkSourceMapping> frame_sink_source_map_;

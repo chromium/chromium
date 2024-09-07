@@ -510,7 +510,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                             <form action='a.html' name='formname'>
                                 <label>User Name:</label>
                                     <input type='text' id='text1' name='name' maxlength='30'
-                                        placeholder='placeholder@placeholder.com'
+                                        placeholder='Your name'
                                         autocomplete='name given-name'>
                                     <input type='checkbox' id='checkbox1' name='showpassword'>
                                     <select id='select1' name='month'>
@@ -559,7 +559,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         // Verify input text control filled correctly in ViewStructure.
         TestViewStructure child0 = viewStructure.getChild(0);
         assertEquals(View.AUTOFILL_TYPE_TEXT, child0.getAutofillType());
-        assertEquals("placeholder@placeholder.com", child0.getHint());
+        assertEquals("Your name", child0.getHint());
         assertEquals("name", child0.getAutofillHints()[0]);
         assertEquals("given-name", child0.getAutofillHints()[1]);
         assertFalse(child0.getDimensRect().isEmpty());
@@ -621,7 +621,7 @@ public class AwAutofillTest extends AwParameterizedTest {
 
         // Autofill form and verify filled values.
         SparseArray<AutofillValue> values = new SparseArray<AutofillValue>();
-        values.append(child0.getId(), AutofillValue.forText("example@example.com"));
+        values.append(child0.getId(), AutofillValue.forText("Juan"));
         values.append(child1.getId(), AutofillValue.forToggle(true));
         values.append(child2.getId(), AutofillValue.forList(1));
         values.append(child3.getId(), AutofillValue.forText("aaa"));
@@ -647,7 +647,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         // Verify form filled by Javascript
         String value0 =
                 executeJavaScriptAndWaitForResult("document.getElementById('text1').value;");
-        assertEquals("\"example@example.com\"", value0);
+        assertEquals("\"Juan\"", value0);
         String value1 =
                 executeJavaScriptAndWaitForResult("document.getElementById('checkbox1').value;");
         assertEquals("\"on\"", value1);
@@ -658,7 +658,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 executeJavaScriptAndWaitForResult("document.getElementById('textarea1').value;");
         assertEquals("\"aaa\"", value3);
         ArrayList<Pair<Integer, AutofillValue>> changedValues = getChangedValues();
-        assertEquals("example@example.com", changedValues.get(0).second.getTextValue());
+        assertEquals("Juan", changedValues.get(0).second.getTextValue());
         assertTrue(changedValues.get(1).second.getToggleValue());
         assertEquals(1, changedValues.get(2).second.getListValue());
     }

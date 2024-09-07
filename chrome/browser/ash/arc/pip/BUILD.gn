@@ -19,6 +19,7 @@ static_library("pip") {
   deps = [
     "//ash/components/arc",
     "//base",
+    "//chrome/browser/picture_in_picture",
     "//chromeos/ui/base",
     "//components/keyed_service/core",
     "//content/public/browser",

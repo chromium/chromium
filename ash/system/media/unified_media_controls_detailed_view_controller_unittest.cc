@@ -14,9 +14,6 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/memory/raw_ptr.h"
-#include "components/media_message_center/media_notification_view_impl.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::_;
 
@@ -76,7 +73,9 @@ TEST_F(UnifiedMediaControlsDetailedViewControllerTest,
   // call when creating the detailed view.
   EXPECT_CALL(*provider(), GetMediaNotificationListView(
                                _, /*should_clip_height=*/false, _, _));
-  system_tray_controller()->OnMediaControlsViewClicked();
+  system_tray_controller()->ShowMediaControlsDetailedView(
+      global_media_controls::GlobalMediaControlsEntryPoint::
+          kQuickSettingsMiniPlayer);
   EXPECT_NE(system_tray_controller()->detailed_view_controller(), nullptr);
 
   // Should notify provider when transition to main menu.

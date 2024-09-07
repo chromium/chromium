@@ -11,9 +11,9 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
-class ChromeBrowserState;
 class TabGroup;
 class WebStateList;
 

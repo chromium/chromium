@@ -84,10 +84,9 @@ export class SettingsAutofillSectionElement extends
       showAddressDialog_: Boolean,
       showAddressRemoveConfirmationDialog_: Boolean,
 
-      isPlusAddressAddressLevelSettingEnabled_: {
+      isPlusAddressEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('plusAddressEnabled') &&
-            loadTimeData.getBoolean('plusAddressSettingInAddressSection'),
+        value: () => loadTimeData.getBoolean('plusAddressEnabled'),
       },
     };
   }
@@ -249,8 +248,8 @@ export class SettingsAutofillSectionElement extends
   private isCloudOffVisible_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
-    if (address.metadata?.source ===
-        chrome.autofillPrivate.AddressSource.ACCOUNT) {
+    if (address.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT) {
       return false;
     }
 

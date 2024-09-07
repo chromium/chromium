@@ -2,7 +2,4 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-data_sharing_java_tests = [
-  "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManagerUnitTest.java",
-  "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabObserverUnitTest.java",
-]
+data_sharing_java_tests = [ "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManagerUnitTest.java" ]

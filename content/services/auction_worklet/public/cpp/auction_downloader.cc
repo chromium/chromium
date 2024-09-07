@@ -70,6 +70,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 const char kWebAssemblyMime[] = "application/wasm";
+const char kAdAuctionTrustedSignalsMime[] =
+    "message/ad-auction-trusted-signals-response";
 
 // If `url` is too long to reasonably use as part of an error message, returns a
 // truncated copy of it. Otherwise, returns the entire URL as a string.
@@ -89,6 +91,8 @@ std::string TruncateUrlIfNeededForError(const GURL& url) {
 // are allows in the response.
 std::string_view MimeTypeToString(AuctionDownloader::MimeType mime_type) {
   switch (mime_type) {
+    case AuctionDownloader::MimeType::kAdAuctionTrustedSignals:
+      return std::string_view(kAdAuctionTrustedSignalsMime);
     case AuctionDownloader::MimeType::kJavascript:
       return std::string_view("application/javascript");
     case AuctionDownloader::MimeType::kJson:
@@ -103,6 +107,8 @@ bool MimeTypeIsConsistent(
     AuctionDownloader::MimeType mime_type,
     const network::mojom::URLResponseHead& response_info) {
   switch (mime_type) {
+    case AuctionDownloader::MimeType::kAdAuctionTrustedSignals:
+      return response_info.mime_type == kAdAuctionTrustedSignalsMime;
     case AuctionDownloader::MimeType::kJavascript:
       // ResponseInfo's `mime_type` is always lowercase.
       return blink::IsSupportedJavascriptMimeType(response_info.mime_type);
@@ -181,6 +187,7 @@ AuctionDownloader::AuctionDownloader(
     DownloadMode download_mode,
     MimeType mime_type,
     std::optional<std::string> post_body,
+    std::optional<std::string> content_type,
     ResponseStartedCallback response_started_callback,
     AuctionDownloaderCallback auction_downloader_callback,
     std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
@@ -213,7 +220,11 @@ AuctionDownloader::AuctionDownloader(
       std::move(resource_request), kTrafficAnnotation);
 
   if (post_body.has_value()) {
-    simple_url_loader_->AttachStringForUpload(std::move(post_body.value()));
+    // Although content type header is not required in POST request, but we
+    // should have one.
+    CHECK(content_type.has_value());
+    simple_url_loader_->AttachStringForUpload(std::move(post_body).value(),
+                                              std::move(content_type).value());
   }
 
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
@@ -311,7 +322,8 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected MIME type.",
                  source_url_.spec().c_str()));
-  } else if ((mime_type_ != MimeType::kWebAssembly) &&
+  } else if ((mime_type_ != MimeType::kWebAssembly &&
+              mime_type_ != MimeType::kAdAuctionTrustedSignals) &&
              !IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
                                *body)) {
     std::move(auction_downloader_callback_)

@@ -20,6 +20,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
@@ -163,7 +164,7 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
                   {u"openPip({disallowReturnToOpener: ",
                    base::UTF8ToUTF16(disallow_return_to_opener_js_string),
                    u"})"}),
-              base::NullCallback());
+              base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
       enter_pip_observer.Wait();
     } else {
       ASSERT_EQ(true,

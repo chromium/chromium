@@ -48,7 +48,7 @@ class FamilyInfoLogSourceTest : public ::testing::Test {
         response.add_members(), kidsmanagement::CHILD, "user_child");
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
-        "mine/members?alt=proto",
+        "mine/members?alt=proto&allow_empty_family=true",
         response.SerializeAsString());
   }
 

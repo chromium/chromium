@@ -4831,6 +4831,34 @@ TEST_F(TextfieldTest, CursorVisibility) {
   EXPECT_TRUE(GetTextfieldTestApi().IsCursorVisible());
 }
 
+TEST_F(TextfieldTest, AccessibleValue) {
+  InitTextfield();
+  textfield_->SetText(u"password");
+
+  ui::AXNodeData node_data_regular;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data_regular);
+  EXPECT_EQ(ax::mojom::Role::kTextField, node_data_regular.role);
+  EXPECT_EQ(u"password", node_data_regular.GetString16Attribute(
+                             ax::mojom::StringAttribute::kValue));
+  EXPECT_FALSE(node_data_regular.HasState(ax::mojom::State::kProtected));
+
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  ui::AXNodeData node_data_protected;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data_protected);
+  EXPECT_EQ(ax::mojom::Role::kTextField, node_data_protected.role);
+  EXPECT_EQ(u"••••••••", node_data_protected.GetString16Attribute(
+                             ax::mojom::StringAttribute::kValue));
+  EXPECT_TRUE(node_data_protected.HasState(ax::mojom::State::kProtected));
+
+  textfield_->SetText(u"password");
+  node_data_protected = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data_protected);
+  EXPECT_EQ(u"••••••••", node_data_protected.GetString16Attribute(
+                             ax::mojom::StringAttribute::kValue));
+}
+
 // Tests that Textfield::FitToLocalBounds() sets the RenderText's display rect
 // to the view's bounds, taking the border into account.
 TEST_F(TextfieldTest, FitToLocalBounds) {
@@ -4924,7 +4952,7 @@ TEST_F(TextfieldTest, TextfieldBoundsChangeTest) {
 // automatically receive focus and the text cursor is not visible.
 TEST_F(TextfieldTest, TextfieldInitialization) {
   std::unique_ptr<Widget> widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   {
     View* container = widget->SetContentsView(std::make_unique<View>());
     TestTextfield* new_textfield =

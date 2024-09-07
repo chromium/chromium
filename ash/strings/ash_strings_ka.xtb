@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">კალენდარი</translation>
 <translation id="1153356358378277386">დაწყვილებული მოწყობილობები</translation>
 <translation id="1155734730463845512">ბატარეის ამჟამინდელი დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">გენერაციული ხელოვნური ინტელექტი ექსპერიმენტულია და კონტენტი შეიძლება არაზუსტი, შეცდომაში შემყვანი ან შეურაცხმყოფელი იყოს. პრობლემის შესახებ მოსახსენებლად დაუკავშირდით თქვენს ადმინისტრატორს. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ჩართული და გამოყენების პროცესში</translation>
 <translation id="1163437384438183174">ტელეფონის ცენტრის ამოშლა თაროდან</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -304,6 +305,8 @@
 <translation id="2049240716062114887">სამუშაო მაგიდის სახელი შეცვალა „<ph name="DESK_NAME" />“-ით</translation>
 <translation id="2050339315714019657">პორტრეტი</translation>
 <translation id="2064048859448024834">კამერის გადახედვა ჩართულია</translation>
+<translation id="2065098273523946419">ბმული მეტის გასაგებად. აქტივაციის შემთხვევაში მოხდება ბრაუზერში გადამისამართება</translation>
+<translation id="2067220651560163985">ტემპერატურის ჩვენება ცელსიუსით</translation>
 <translation id="2067602449040652523">კლავიატურის სიკაშკაშე</translation>
 <translation id="2075520525463668108">გადაირთოს <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> არის <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
@@ -393,6 +396,7 @@
 <translation id="2426051945783024481">კამერის კადრი ავტომატურად ექცევა ცენტრში</translation>
 <translation id="2427507373259914951">მარცხენა დაწკაპუნება</translation>
 <translation id="2429753432712299108">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ მოითხოვს ნებართვას დაწყვილებისთვის. დათანხმებამდე, დაადასტურეთ, რომ ეს კოდი მითითებულია მოწყობილობაში: <ph name="PASSKEY" /></translation>
+<translation id="2430444791038754658">დრო ამოიწურა. ყოჩაღ!</translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
 <translation id="2437771564543046790">ბატარეა იცლება. ბატარეის დამზოგი ჩართულია</translation>
 <translation id="243878895369688216">გუშინ გახსნილი</translation>
@@ -422,6 +426,7 @@
 <translation id="2509468283778169019">CAPS LOCK ჩართულია</translation>
 <translation id="2514415433888497495">შეწყდეს <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> არის <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2515962024736506925">მარტივი წვდომის ვარიანტების გახსნა</translation>
 <translation id="2516416533263263796">ფოკუსირების რეჟიმი ჩართულია, დარჩენილია 10 წუთი</translation>
 <translation id="2516637483312286228">თამაშის მართვის საშუალებების რედაქტირება</translation>
 <translation id="252054055865191167">მარკერის ხელსაწყო</translation>
@@ -453,7 +458,6 @@
 <translation id="2620900772667816510">Bluetooth-ის სუპერგარჩევადობა</translation>
 <translation id="2621713457727696555">დაცული</translation>
 <translation id="2624588537172718173">მოწყობილობის აუდიო და მიკროფონი</translation>
-<translation id="2632041654177296509"><ph name="CATEGORY_NAME" />-ვეს ჩვენება</translation>
 <translation id="263399434338050016">"ყველას არჩევა"</translation>
 <translation id="2644422758626431000">ფანჯრის ჩამაგრება მარცხნივ</translation>
 <translation id="2645380101799517405">მართვის საშუალებები</translation>
@@ -521,6 +525,7 @@
 <translation id="2872961005593481000">გამორთვა</translation>
 <translation id="2876338922445400217">ეკრანზე მასშტაბის გადიდება</translation>
 <translation id="2878884018241093801">ბოლოდროინდელი ერთეულები არ არის</translation>
+<translation id="2880541185262491188">PIN-კოდის შეყვანის ზედმეტად ბევრი მცდელობა დაფიქსირდა. მოითმინეთ <ph name="TIME_LEFT" /> და ხელახლა სცადეთ</translation>
 <translation id="2885950158625301909">შეიტყვეთ მეტი</translation>
 <translation id="2891209721153296020">„არჩევის გაუქმება“</translation>
 <translation id="2894949423239620203">კაბელმა შეიძლება გავლენა იქონიოს ეფექტურობაზე</translation>
@@ -658,6 +663,7 @@
 <translation id="3386978599540877378">სრულეკრანიანი ლუპა</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">გსურთ, ჩართოთ კარნახი?</translation>
+<translation id="3392702002175498061">დათვალიერების ისტორიის ყველა კონტენტის ჩვენება</translation>
 <translation id="3394432020929931914">, გაფართოებულია</translation>
 <translation id="3401474642070997151">შემოთავაზებების მოსარგებად მარჯვენა დაწკაპუნებით ან ხანგრძლივად დაჭერით აირჩიეთ შემოთავაზება</translation>
 <translation id="3405101454990027959">მიკროფონზე წვდომის ჩართვა</translation>
@@ -769,6 +775,7 @@
 <translation id="3706423975342040244">გართობა</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> და <ph name="UNAVAILABLE_DLC_TWO" /> მიუწვდომელია.</translation>
 <translation id="3708186454126126312">ადრე დაკავშირებული</translation>
+<translation id="3711282657843423160">ყველაფერი მზადაა. ასე განაგრძეთ!</translation>
 <translation id="3712143870407382523">არჩიეთ ფანჯარა ამ მხარისთვის</translation>
 <translation id="371370241367527062">წინა მიკროფონი</translation>
 <translation id="3713734891607377840">დასრულებისას გახსნა</translation>
@@ -808,6 +815,7 @@
 <translation id="385300504083504382">დასაწყისი</translation>
 <translation id="3859364108019690">აპების სტრიმინგი ვერ ხერხდება</translation>
 <translation id="3861651314799684201">ეკრანის სრულად ჩასაწერად დააჭირეთ Enter-ს</translation>
+<translation id="3870197372373144624">ცადეთ თქვენი მოწყობილობის გამორთვა.</translation>
 <translation id="3886872229787704059">დღეს გახსნილი</translation>
 <translation id="3891340733213178823">დააჭირეთ Ctrl+Shift+Q ორჯერ, რათა გამოხვიდეთ.</translation>
 <translation id="3893630138897523026">ChromeVox (ხმოვანი შეფასება)</translation>
@@ -876,6 +884,7 @@
 <translation id="4114315158543974537">Phone Hub-ის ჩართვა</translation>
 <translation id="4115378294792113321">მაგენტა</translation>
 <translation id="411881149140864134">სამუშაო მაგიდის გააქტიურება მარცხნივ</translation>
+<translation id="4119928251231465047">PIN-კოდის შეყვანის ზედმეტად ბევრი მცდელობა დაფიქსირდა</translation>
 <translation id="412298498316631026">ფანჯარა</translation>
 <translation id="4123259114412175274">თქვენი Chromebook განსაბლოკად დარწმუნდით, რომ თქვენი ტელეფონის Bluetooth ჩართულია</translation>
 <translation id="4125970834901680537">აპების სტრიმინგი ვერ მოხერხდება ტაბლეტის რეჟიმში. ცადეთ ხელახლა ლეპტოპის რეჟიმის გამოყენებით.</translation>
@@ -923,6 +932,7 @@
 <translation id="4264977415328155183">, ჩაკეცილია</translation>
 <translation id="4265259722091164182">სათაურის რეგისტრი</translation>
 <translation id="4269883910223712419">ამ მოწყობილობის ადმინისტრატორს შეუძლია:</translation>
+<translation id="4271841440229266861">ფაილების ყველა კონტენტის ჩვენება</translation>
 <translation id="4274537685965975248">კლავიატურის მალსახმობი „Ctrl + Alt + ქვემოთ მიმართული ისარი“ შეიცვალა. End კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + მარჯვნივ მიმართულ ისარს.</translation>
 <translation id="4275283744500212192">ფანჯრის განლაგების ვარიანტების გახსნა</translation>
 <translation id="4275663329226226506">მედია</translation>
@@ -950,6 +960,7 @@
 <translation id="4327147325944669226">თამაშის ჩაწერა</translation>
 <translation id="4333628967105022692">Lacros მხარდაუჭერელია, როცა სისტემაში შესულია რამდენიმე მომხმარებელი.</translation>
 <translation id="4338109981321384717">გამადიდებელი შუშა</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, დადუმებული</translation>
 <translation id="4351244548802238354">დიალოგის დახურვა</translation>
 <translation id="4356872429719185452">უსადენო ქსელის დეტალების ჩვენება. მიმდინარეობს უსადენო ქსელის ჩართვა.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ჩანაწერი</translation>
@@ -1041,6 +1052,7 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ჩართულია</translation>
+<translation id="4665182893355091947">ყველაფერი მზადაა. ყოჩაღ!</translation>
 <translation id="4666911709726371538">სხვა აპები</translation>
 <translation id="4667099493359681081">მიმდინარეობს „<ph name="FILENAME" />“-ის ჩამოტვირთვა</translation>
 <translation id="4672539464599646374">ბატარეის დამზოგი ჩართულია</translation>
@@ -1294,6 +1306,7 @@
 <translation id="5503884284981862082">Google ასისტენტის გახსნა/დახურვა</translation>
 <translation id="550391772491508736">ტრანსლირების გაგრძელება</translation>
 <translation id="5506975627792768506">ლუპის ჩართვა ან გამორთვა</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, შეყვანის კლავიშზე დაწკაპუნებით აუდიო დადუმდება.</translation>
 <translation id="5512042095225963688">წინა სიტყვის წაშლა</translation>
 <translation id="5519005148254860683">Google Tasks-ის გაფართოება</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -1517,7 +1530,6 @@
 <translation id="6185696379715117369">ერთი გვერდით ზემოთ</translation>
 <translation id="619335566042889110">სრულად დატენა ახლავე</translation>
 <translation id="6193431488227440296">Dev</translation>
-<translation id="6196214354688969799">სტუდიური გამოსახულება</translation>
 <translation id="6199775032047436064">მიმდინარე გვერდის ხელახლა ჩატვირთვა</translation>
 <translation id="6200515304866777730">მხარდაუჭერელია აპის მიერ</translation>
 <translation id="6210042900243040400">დააკავშირეთ <ph name="NAME" />, რომლებიც ადრე შენახული იყო <ph name="EMAIL" />-ში</translation>
@@ -1685,6 +1697,7 @@
 <translation id="6782919488259222803">მიმდინარე გვერდზე ძიება</translation>
 <translation id="6786750046913594791">საქაღალდის დახურვა</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
+<translation id="6792262051831399889">მიუწვდომელია</translation>
 <translation id="679368458793552943">მასშტაბის გადიდება, როცა ლუპა ჩართულია</translation>
 <translation id="6794287755901682422">ამ ერთეულს აქვს: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6797745268063125932">დარჩეს ჩართული</translation>
@@ -1762,6 +1775,7 @@
 <translation id="7064351585062927183">მომავალი <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">ეს ქსელი გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="7067196344162293536">ავტომატური შეტრიალება</translation>
+<translation id="7067569040620564762">დრო ამოიწურა. მზადაა!</translation>
 <translation id="7068360136237591149">ფაილების გახსნა</translation>
 <translation id="7076293881109082629">მიმდინარეობს სისტემაში შესვლა</translation>
 <translation id="7076878155205969899">ხმის დადუმება</translation>
@@ -1796,6 +1810,7 @@
 <translation id="7189412385142492784">რა მანძილია ვენერამდე</translation>
 <translation id="7198435252016571249">კამერა მიზიდულია ქვედა მარჯვენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>
 <translation id="7219573373513695352">დაკავშირებული მოწყობილობები არ არის</translation>
+<translation id="7226347284543965442">დრო ამოიწურა. ყოჩაღ!</translation>
 <translation id="7229029500464092426">მეხსიერებაა <ph name="AVAILABLE_MEMORY" /> | ჯამში <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">დარჩენილია ბატარეის <ph name="PERCENTAGE" />%. მიაერთეთ თქვენი მოწყობილობა ელკვების წყაროს.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. გასაახლებლად ეს Chromebook საჭიროებს გადატვირთვას. ამას შეიძლება 1 წუთამდე დრო დასჭირდეს.</translation>
@@ -1906,6 +1921,7 @@
 <translation id="7613620083300976559">თამაშის მართვის საშუალებების ჩართვა</translation>
 <translation id="761736749114493194">კამერის კადრირების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
+<translation id="7627303771480696593">დასვით კითხვა</translation>
 <translation id="7634648064048557203">კამერა მიზიდულია ქვედა მარჯვენა კუთხეში</translation>
 <translation id="7638572816805275740">ფანჯრის ანაბეჭდის გადაღება ან ეკრანის ჩაწერა</translation>
 <translation id="7642106959537987271">ფერთა ინვერსიის რეჟიმი</translation>
@@ -2101,6 +2117,7 @@
 <translation id="8239034820133090126">სამუშაო მაგიდის გააქტიურება მარჯვნივ</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, აპი</translation>
+<translation id="825129991941217170">Google Drive-ის ყველა კონტენტის ჩვენება</translation>
 <translation id="8257510091797044096">თქვენი მოწყობილობის დაყენება</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8262312463845990408">დაკვრის გადართვა</translation>
@@ -2115,7 +2132,6 @@
 <translation id="8315514906653279104">მიმდინარეობს ჩართვა...</translation>
 <translation id="8331351032546853669">ჩამოტვირთვა მოლოდინის რეჟიმშია</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
-<translation id="8340621004014372743">დასვით კითხვა.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">ცუდი შედეგი</translation>
 <translation id="8345019317483336363">არჩეულია ფანჯარა „<ph name="WINDOW_TITLE" />“</translation>
@@ -2256,6 +2272,7 @@
 <translation id="8841375032071747811">ღილაკი „უკან“</translation>
 <translation id="8843682306134542540">ბრუნვის ჩაკეტვის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="8845001906332463065">დახმარების მიღება</translation>
+<translation id="8847100217801213944">ტემპერატურის ჩვენება ფარენჰაიტით</translation>
 <translation id="8849001918648564819">დამალული</translation>
 <translation id="8853703225951107899">თქვენი PIN-კოდის ან პაროლის დადასტურება კვლავ ვერ მოხერხდა. გაითვალისწინეთ: თუ ახლახან შეცვალეთ პაროლი, გამოიყენეთ თქვენი ძველი პაროლი. ახალი პაროლი ძალაში შევა, როცა სისტემიდან გახვალთ.</translation>
 <translation id="8855885154700222542">სრულეკრანიან რეჟიმზე გადართვის კლავიში</translation>
@@ -2289,7 +2306,6 @@
 <translation id="8951539504029375108">თქვენს Chromebook-თან თავსებადია მხოლოდ დადასტურებული Thunderbolt მოწყობილობები</translation>
 <translation id="8956420987536947088">გახსენით ბოლო ფანჯრები და აპები</translation>
 <translation id="8959380109429710384">თქვენ დააჭირეთ სრულეკრანიანი ლუპის კლავიატურის მალსახმობს. გამოიყენეთ ctrl + alt + ისრები მოძრაობისა და მასშტაბის გადიდებისთვის.</translation>
-<translation id="896335827708646237">მარტივი წვდომის სწრაფი პარამეტრების გახსნა</translation>
 <translation id="8964525410783593407">1 სთ</translation>
 <translation id="8973885907461690937">მენიუს ხატულას ფოკუსში მოქცევა</translation>
 <translation id="8980862970816311842">აპის ხატულას საქაღალდეში/საქაღალდიდან გადატანა აპების ბადეში</translation>
@@ -2299,6 +2315,7 @@
 <translation id="899350903320462459">შეტყობინების ქმედების შესასრულებლად განბლოკეთ მოწყობილობა <ph name="LOGIN_ID" />-ის სახელით</translation>
 <translation id="8993733019280019776">ლაპარაკობთ? თქვენი მიკროფონი გამორთულია. აირჩიეთ მიკროფონი ჩასართავად.</translation>
 <translation id="9000771174482730261">მეხსიერების მართვა</translation>
+<translation id="9003374957546315126">Emoji-ები და სხვა</translation>
 <translation id="9005984960510803406">Crosh ფანჯრის გახსნა</translation>
 <translation id="9017320285115481645">შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის.</translation>
 <translation id="9024331582947483881">მთელ ეკრანზე</translation>
@@ -2307,6 +2324,7 @@
 <translation id="9030665205623277906">CPU-ს მოხმარების სნეპშოტი: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux ფაილები</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-ის პარამეტრების გახსნა</translation>
+<translation id="9050012935252397793">Bluetooth მიუწვდომელია</translation>
 <translation id="906458777597946297">ფანჯრის გაშლა</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
 <translation id="9070640332319875144">ასისტენტის პარამეტრები</translation>
@@ -2329,6 +2347,7 @@
 <translation id="9098969848082897657">ტელეფონის ჩაჩუმება</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ან <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ბოლო მოქმედების გაუქმება</translation>
+<translation id="9126642911267312373">Bluetooth მიუწვდომელია</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 წუთში}other{# წუთში}}</translation>
 <translation id="9129245940793250979">უკანა ღილაკი</translation>
 <translation id="9133335900048457298">დაცული კონტენტის ჩაწერა ვერ მოხერხდება</translation>

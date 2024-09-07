@@ -6,15 +6,17 @@
 
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 #import "ios/web/public/web_state.h"
 
+using PaymentsSuggestionBottomSheetExitReason::kCouldNotPresent;
 using PaymentsSuggestionBottomSheetExitReason::kDismissal;
 using PaymentsSuggestionBottomSheetExitReason::kShowPaymentDetails;
 using PaymentsSuggestionBottomSheetExitReason::kShowPaymentMethods;
@@ -95,6 +97,26 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
                                       completion:^{
                                         [weakSelf setInitialVoiceOverFocus];
                                       }];
+
+  // Dismiss right away if the presentation failed to avoid having a zombie
+  // coordinator. This is the best proxy we have to know whether the view
+  // controller for the bottom sheet could really be presented as the completion
+  // block is only called when presentation really happens, and we can't get any
+  // error message or signal. Based on what we could test, we know that
+  // presentingViewController is only set if the view controller can be
+  // presented, where it is left to nil if the presentation is rejected for
+  // various reasons (having another view controller already presented is one of
+  // them). One should not think they can know all the reasons why the
+  // presentation fails.
+  //
+  // Keep this line at the end of -start because the
+  // delegate will likely -stop the coordinator when closing suggestions, so the
+  // coordinator should be in the most up to date state where it can be safely
+  // stopped.
+  if (!self.viewController.presentingViewController) {
+    [self.mediator logExitReason:kCouldNotPresent];
+    [self.browserCoordinatorCommandsHandler dismissPaymentSuggestions];
+  }
 }
 
 - (void)stop {
@@ -140,14 +162,16 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   }
 }
 
-- (void)primaryButtonTapped:(CreditCardData*)creditCardData {
+- (void)primaryButtonTappedForCard:(CreditCardData*)creditCardData
+                           atIndex:(NSInteger)index {
   _dismissing = YES;
   [self.mediator logExitReason:kUsePaymentsSuggestion];
   __weak __typeof(self) weakSelf = self;
   [self.viewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           [weakSelf didSelectCreditCard:creditCardData];
+                           [weakSelf didSelectCreditCard:creditCardData
+                                                 atIndex:index];
                            [weakSelf.browserCoordinatorCommandsHandler
                                    dismissPaymentSuggestions];
                          }];
@@ -170,9 +194,10 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 
 #pragma mark - Private
 
-- (void)didSelectCreditCard:(CreditCardData*)creditCardData {
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData
+                    atIndex:(NSInteger)index {
   // Send a notification to fill the credit card related fields.
-  [self.mediator didSelectCreditCard:creditCardData];
+  [self.mediator didSelectCreditCard:creditCardData atIndex:index];
   [self.mediator disconnect];
 }
 

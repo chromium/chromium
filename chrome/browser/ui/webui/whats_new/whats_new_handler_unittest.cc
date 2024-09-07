@@ -98,7 +98,7 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
       .WillOnce(testing::Invoke(
           [&](GURL actual_url) { EXPECT_EQ(actual_url, expected_url); }));
 
-  handler_->GetServerUrl(callback.Get());
+  handler_->GetServerUrl(false, callback.Get());
   mock_page_.FlushForTesting();
 }
 
@@ -155,27 +155,6 @@ TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
       "UserEducation.WhatsNew.ModuleLinkClicked.AnotherFeature", 1);
 }
 
-TEST_F(WhatsNewHandlerTest, V2SurveyIsTriggered) {
-  // Avoid creating actual url with WhatsNewRegistry
-  whats_new::DisableRemoteContentForTests();
-
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {base::test::FeatureRefAndParams(
-           user_education::features::kWhatsNewVersion2, {}),
-       base::test::FeatureRefAndParams(
-           features::kHappinessTrackingSurveysForDesktopWhatsNewV2,
-           {{"whats-new-v2-time", "20s"}})},
-      {});
-
-  base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
-  EXPECT_CALL(callback, Run).Times(1);
-  EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurveyForWebContents).Times(1);
-
-  handler_->GetServerUrl(callback.Get());
-  mock_page_.FlushForTesting();
-}
-
 class WhatsNewHandlerTestWithCountry
     : public WhatsNewHandlerTest,
       public testing::WithParamInterface<absl::string_view> {
@@ -218,7 +197,43 @@ TEST_P(WhatsNewHandlerTestWithCountry, SurveyIsTriggeredInActiveCountries) {
         .Times(0);
   }
 
-  handler_->GetServerUrl(callback.Get());
+  handler_->GetServerUrl(false, callback.Get());
+  mock_page_.FlushForTesting();
+}
+
+TEST_P(WhatsNewHandlerTestWithCountry,
+       AlternateSurveyIsTriggeredInActiveCountries) {
+  // Avoid creating actual url with WhatsNewRegistry
+  whats_new::DisableRemoteContentForTests();
+
+  auto country = GetParam();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {base::test::FeatureRefAndParams(
+           user_education::features::kWhatsNewVersion2, {}),
+       base::test::FeatureRefAndParams(
+           features::kHappinessTrackingSurveysForDesktopWhatsNew,
+           {{"whats-new-time", "20s"}})},
+      {});
+
+  handler_->set_override_latest_country_for_testing(country);
+
+  // Set activation threshold to trigger for
+  local_state_.Get()->SetInteger(prefs::kWhatsNewHatsActivationThreshold, 0);
+  base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+
+  if (IsActiveCountry(country)) {
+    EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurveyForWebContents)
+        .Times(1);
+  } else {
+    // Any threshold value will fail when the country is not set or not
+    // active.
+    EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurveyForWebContents)
+        .Times(0);
+  }
+
+  handler_->GetServerUrl(false, callback.Get());
   mock_page_.FlushForTesting();
 }
 

@@ -32,7 +32,7 @@ bool DecodePath(std::string_view path, std::string* output) {
 }
 
 int DefaultPortForScheme(const std::string& scheme) {
-  return url::DefaultPortForScheme(scheme.data(), scheme.size());
+  return url::DefaultPortForScheme(scheme);
 }
 
 // NotMatching is the only negative member, the rest are different types of

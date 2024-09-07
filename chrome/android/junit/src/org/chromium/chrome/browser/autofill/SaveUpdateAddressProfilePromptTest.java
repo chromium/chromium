@@ -185,30 +185,30 @@ public class SaveUpdateAddressProfilePromptTest {
 
     @Test
     @SmallTest
-    public void dialogStrings_SourceNotice() {
+    public void dialogStrings_RecordTypeNotice() {
         createAndShowPrompt(false, true);
         View dialog = mPrompt.getDialogViewForTesting();
 
-        mPrompt.setSourceNotice(null);
+        mPrompt.setRecordTypeNotice(null);
         assertEquals(
                 View.GONE,
-                dialog.findViewById(R.id.autofill_address_profile_prompt_source_notice)
+                dialog.findViewById(R.id.autofill_address_profile_prompt_record_type_notice)
                         .getVisibility());
 
-        mPrompt.setSourceNotice("");
+        mPrompt.setRecordTypeNotice("");
         assertEquals(
                 View.GONE,
-                dialog.findViewById(R.id.autofill_address_profile_prompt_source_notice)
+                dialog.findViewById(R.id.autofill_address_profile_prompt_record_type_notice)
                         .getVisibility());
 
-        mPrompt.setSourceNotice("source notice");
+        mPrompt.setRecordTypeNotice("record type notice");
         assertEquals(
                 View.VISIBLE,
-                dialog.findViewById(R.id.autofill_address_profile_prompt_source_notice)
+                dialog.findViewById(R.id.autofill_address_profile_prompt_record_type_notice)
                         .getVisibility());
         validateTextView(
-                dialog.findViewById(R.id.autofill_address_profile_prompt_source_notice),
-                "source notice");
+                dialog.findViewById(R.id.autofill_address_profile_prompt_record_type_notice),
+                "record type notice");
     }
 
     @Test

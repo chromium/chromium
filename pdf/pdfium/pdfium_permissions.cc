@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace chrome_pdf {
@@ -51,6 +52,7 @@ bool PDFiumPermissions::HasPermission(DocumentPermission permission) const {
         // Check the same printing bit for all printing permissions.
         return HasPermissionBits(kPDFPermissionBit03PrintMask);
     }
+    NOTREACHED();
   } else {
     // Security handler revision 3+ have different rules for interpreting the
     // bits in `permission_bits_`.
@@ -65,6 +67,7 @@ bool PDFiumPermissions::HasPermission(DocumentPermission permission) const {
         return HasPermissionBits(kPDFPermissionBit03PrintMask |
                                  kPDFPermissionBit12PrintHighQualityMask);
     }
+    NOTREACHED();
   }
 }
 

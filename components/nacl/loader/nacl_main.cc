@@ -31,7 +31,7 @@ int NaClMain(content::MainFunctionParams parameters) {
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::IO);
   base::PlatformThread::SetName("CrNaClMain");
 
-  base::PowerMonitor::Initialize(MakePowerMonitorDeviceSource());
+  base::PowerMonitor::GetInstance()->Initialize(MakePowerMonitorDeviceSource());
   base::HighResolutionTimerManager hi_res_timer_manager;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

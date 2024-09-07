@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Ash.Growth.CampaignsComponent.DownloadDurationInOobe"
-    units="ms" expires_after="2024-12-24">
+    units="ms" expires_after="2025-02-23">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.CampaignsComponent.DownloadDurationSessionStart"
-    units="ms" expires_after="2024-12-24">
+    units="ms" expires_after="2025-02-23">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.CampaignsComponent.ParseDuration" units="ms"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.CampaignsManager.Error"
-    enum="CampaignsManagerError" expires_after="2024-12-24">
+    enum="CampaignsManagerError" expires_after="2025-02-23">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.CampaignsManager.GetCampaignBySlot"
-    enum="CampaignSlot" expires_after="2024-12-24">
+    enum="CampaignSlot" expires_after="2025-02-23">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.CampaignsManager.MatchDuration" units="ms"
-    expires_after="2024-12-24">
+    expires_after="2025-02-23">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>

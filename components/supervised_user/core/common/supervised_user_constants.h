@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -60,7 +59,7 @@ enum SupervisedUserSafetyFilterResult {
   FILTERING_BEHAVIOR_BLOCK_SAFESITES = 4,
   FILTERING_BEHAVIOR_BLOCK_MANUAL = 5,
   FILTERING_BEHAVIOR_BLOCK_DEFAULT = 6,
-  FILTERING_BEHAVIOR_ALLOW_ALLOWLIST = 7,
+  FILTERING_BEHAVIOR_ALLOW_ALLOWLIST = 7,  // deprecated
   FILTERING_BEHAVIOR_MAX = FILTERING_BEHAVIOR_ALLOW_ALLOWLIST
 };
 
@@ -116,11 +115,6 @@ extern const char* const kCustodianInfoPrefs[10];
 extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
 
 extern const char kSyncGoogleDashboardURL[];
-
-// URLs for RPCs in the KidsManagement service.
-GURL KidsManagementGetFamilyMembersURL();
-GURL KidsManagementPermissionRequestsURL();
-GURL KidsManagementClassifyURLRequestURL();
 
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];

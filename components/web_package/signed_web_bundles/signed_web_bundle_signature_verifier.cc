@@ -59,23 +59,10 @@ std::vector<uint8_t> CreateIntegrityBlockCbor(
 }
 
 base::expected<void, SignedWebBundleSignatureVerifier::Error>
-ValidateWebBundleId(
-    const std::string& web_bundle_id,
-    const std::vector<SignedWebBundleSignatureStackEntry>& signatures) {
-  std::vector<PublicKey> public_keys;
-  for (const auto& signature : signatures) {
-    absl::visit(
-        base::Overloaded{[&](const auto& signature_info) {
-                           public_keys.push_back(signature_info.public_key());
-                         },
-                         [](const SignedWebBundleSignatureInfoUnknown&) {
-                           // Unknown signatures are ignored during web bundle
-                           // id validation.
-                         }},
-        signature.signature_info());
-  }
+ValidateWebBundleId(const std::string& web_bundle_id,
+                    const SignedWebBundleSignatureStack& signatures) {
   return IdentityValidator::GetInstance()
-      ->ValidateWebBundleIdentity(web_bundle_id, public_keys)
+      ->ValidateWebBundleIdentity(web_bundle_id, signatures.public_keys())
       .transform_error([](const std::string& error) {
         return SignedWebBundleSignatureVerifier::Error::ForWebBundleIdError(
             error);
@@ -201,12 +188,12 @@ SignedWebBundleSignatureVerifier::VerifyWithHashForIntegrityBlock(
     SignedWebBundleIntegrityBlock integrity_block) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto& signatures = integrity_block.signature_stack().entries();
-  RETURN_IF_ERROR(
-      ValidateWebBundleId(integrity_block.web_bundle_id().id(), signatures));
+  const auto& signatures = integrity_block.signature_stack();
+  RETURN_IF_ERROR(ValidateWebBundleId(integrity_block.web_bundle_id().id(),
+                                      integrity_block.signature_stack()));
 
   std::vector<uint8_t> ib_cbor = CreateIntegrityBlockCbor(integrity_block);
-  for (const auto& signature_stack_entry : signatures) {
+  for (const auto& signature_stack_entry : signatures.entries()) {
     std::vector<uint8_t> payload_to_verify = CreateSignaturePayload({
         .unsigned_web_bundle_hash = unsigned_web_bundle_hash,
         .integrity_block_cbor = ib_cbor,

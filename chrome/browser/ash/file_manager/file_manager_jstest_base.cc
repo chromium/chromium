@@ -58,11 +58,10 @@ class TestWebUIProvider
     files_swa_source->AddResourcePaths(base::make_span(
         kFileManagerSwaResources, kFileManagerSwaResourcesSize));
 
-    ash::file_manager::AddFilesAppResources(
-        files_swa_source, kFileManagerResources, kFileManagerResourcesSize);
     ash::file_manager::AddFilesAppResources(files_swa_source,
-                                            kFileManagerGenResources,
-                                            kFileManagerGenResourcesSize);
+                                            kFileManagerResources);
+    ash::file_manager::AddFilesAppResources(files_swa_source,
+                                            kFileManagerGenResources);
 
     dict_ = GetFileManagerStrings();
     AddFileManagerFeatureStrings("en-US", Profile::FromWebUI(web_ui), &dict_);

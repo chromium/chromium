@@ -14,9 +14,11 @@
 @class LayoutGuideCenter;
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
+@protocol BadgeViewVisibilityDelegate;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 @protocol TextFieldViewContaining;
+@protocol ContextualPanelEntrypointVisibilityDelegate;
 
 @protocol LocationBarViewControllerDelegate<NSObject>
 
@@ -106,6 +108,10 @@
 // controller is initialized.
 - (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
 
+// Set the placeholder view to be displayed in case there is no badge view nor
+// contextual panel entrypoint.
+- (void)setPlaceholderView:(UIView*)placeholderView;
+
 // Switches between the two states of the location bar:
 // - editing state, with the textfield;
 // - non-editing state, with location icon and text.
@@ -134,6 +140,13 @@
 // around it when centered is passed as YES. Otherwise, resets it to the
 // "absolute" center.
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
+
+// Returns the contextual panel entrypoint visibility delegate.
+- (id<ContextualPanelEntrypointVisibilityDelegate>)
+    contextualEntrypointVisibilityDelegate;
+
+// Returns the badge view visibility delegate.
+- (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;
 
 @end
 

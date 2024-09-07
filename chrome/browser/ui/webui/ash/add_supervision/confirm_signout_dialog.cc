@@ -13,6 +13,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -32,11 +33,11 @@ const int kDialogBodyTextWidth = 250;
 
 ConfirmSignoutDialog::ConfirmSignoutDialog() {
   DialogDelegate::SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(
           IDS_ADD_SUPERVISION_EXIT_DIALOG_SIGNOUT_BUTTON_LABEL));
   DialogDelegate::SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(
           IDS_ADD_SUPERVISION_EXIT_DIALOG_CANCEL_BUTTON_LABEL));
   SetLayoutManager(std::make_unique<views::FillLayout>());

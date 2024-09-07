@@ -59,7 +59,8 @@ id<GREYMatcher> PopupBlocker() {
 
 // Tests that opening a link with target=_blank which then immediately closes
 // itself works.
-- (void)testLinkWithBlankTargetWithImmediateClose {
+// TODO(crbug.com/361752763): This test started to be flaky on 2024-08-07.
+- (void)FLAKY_testLinkWithBlankTargetWithImmediateClose {
   [ChromeEarlGrey tapWebStateElementWithID:
                       @"webScenarioWindowOpenBlankTargetWithImmediateClose"];
   [ChromeEarlGrey waitForMainTabCount:1];

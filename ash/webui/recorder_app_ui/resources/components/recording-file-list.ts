@@ -35,15 +35,17 @@ import {
   RecordingMetadataMap,
 } from '../core/recording_data_manager.js';
 import {RecordingSortType, settings} from '../core/state/settings.js';
-import {assertExhaustive} from '../core/utils/assert.js';
+import {assertExhaustive, assertExists} from '../core/utils/assert.js';
 import {
   getMonthLabel,
   getToday,
   getYesterday,
   isInThisMonth,
 } from '../core/utils/datetime.js';
+import {isObjectEmpty} from '../core/utils/utils.js';
 
 import {CraMenu} from './cra/cra-menu.js';
+import {RecordingFileListItem} from './recording-file-list-item.js';
 
 interface RecordingSearchResult {
   highlight: [number, number]|null;
@@ -66,6 +68,23 @@ type RenderRecordingItem = {
   searchHighlight: [number, number] | null,
   recording: RecordingMetadata,
 });
+
+interface InlinePlayingItemInfo {
+  /**
+   * The id of the current playing recording.
+   */
+  id: string;
+
+  /**
+   * Progress of the playback in range [0, 100].
+   */
+  progress: number;
+
+  /**
+   * Whether the playback is ongoing.
+   */
+  playing: boolean;
+}
 
 /**
  * A list of recording files.
@@ -133,9 +152,12 @@ export class RecordingFileList extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     recordingMetadataMap: {attribute: false},
+    inlinePlayingItem: {attribute: false},
   };
 
   recordingMetadataMap: RecordingMetadataMap = {};
+
+  inlinePlayingItem: InlinePlayingItemInfo|null = null;
 
   private readonly searchQuery = signal('');
 
@@ -144,6 +166,16 @@ export class RecordingFileList extends ReactiveLitElement {
   private readonly sortMenuOpened = signal(false);
 
   private readonly platformHandler = usePlatformHandler();
+
+  get firstRecordingForTest(): RecordingFileListItem {
+    return assertExists(
+      this.shadowRoot?.querySelector('recording-file-list-item'),
+    );
+  }
+
+  recordingFileCountForTest(): number {
+    return Object.keys(this.recordingMetadataMap).length;
+  }
 
   private onSortingTypeClick(newSortType: RecordingSortType) {
     settings.mutate((d) => {
@@ -197,17 +229,21 @@ export class RecordingFileList extends ReactiveLitElement {
 
     return html`<div id="header">
         <span>${i18n.recordingListHeader}</span>
-        <recording-search-box @query-changed=${onQueryChange}>
+        <recording-search-box
+          aria-label=${i18n.mainSearchLandmarkAriaLabel}
+          role="search"
+          @query-changed=${onQueryChange}
+        >
         </recording-search-box>
         <cra-icon-button
           id="sort-recording-button"
           buttonstyle="toggle"
           @click=${this.toggleSortMenu}
           .selected=${live(this.sortMenuOpened.value)}
+          aria-label=${i18n.recordingListSortButtonTooltip}
         >
           <cra-icon slot="icon" name="sort_by"></cra-icon>
           <cra-icon slot="selectedIcon" name="sort_by"></cra-icon>
-          <!-- TODO: b/336963138 - Add button tooltip -->
         </cra-icon-button>
       </div>
       ${this.renderSortMenu()}`;
@@ -349,14 +385,28 @@ export class RecordingFileList extends ReactiveLitElement {
         switch (item.kind) {
           case 'header':
             return html`<div class="section-heading">${item.label}</div>`;
-          case 'recording':
+          case 'recording': {
+            const {recording, searchHighlight} = item;
+            const [playing, progress] = (() => {
+              if (this.inlinePlayingItem === null ||
+                  this.inlinePlayingItem.id !== recording.id) {
+                return [false, null];
+              }
+              return [
+                this.inlinePlayingItem.playing,
+                this.inlinePlayingItem.progress,
+              ];
+            })();
             return html`
               <recording-file-list-item
-                .recording=${item.recording}
-                .searchHighlight=${item.searchHighlight}
+                .recording=${recording}
+                .searchHighlight=${searchHighlight}
+                .playing=${playing}
+                .playProgress=${progress}
               >
               </recording-file-list-item>
             `;
+          }
           default:
             assertExhaustive(item);
         }
@@ -365,7 +415,7 @@ export class RecordingFileList extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    if (Object.keys(this.recordingMetadataMap).length === 0) {
+    if (isObjectEmpty(this.recordingMetadataMap)) {
       return html`
         <div class="illustration-container">
           <cra-image
@@ -377,7 +427,13 @@ export class RecordingFileList extends ReactiveLitElement {
     }
     return [
       this.renderHeader(),
-      html`<div id="list">${this.renderRecordingList()}</div>`,
+      html`<div
+        id="list"
+        aria-label=${i18n.mainRecordingsListLandmarkAriaLabel}
+        role="main"
+      >
+        ${this.renderRecordingList()}
+      </div>`,
     ];
   }
 }

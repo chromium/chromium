@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -23,25 +24,16 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace web_app {
 
-void WebAppTabHelper::CreateForWebContents(content::WebContents* contents) {
-  DCHECK(contents);
-  if (!FromWebContents(contents)) {
-    contents->SetUserData(UserDataKey(),
-                          std::make_unique<WebAppTabHelper>(contents));
-  }
-}
-
 const webapps::AppId* WebAppTabHelper::GetAppId(
-    content::WebContents* web_contents) {
+    const content::WebContents* web_contents) {
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  if (!tab_helper) {
-    return nullptr;
-  }
-  return tab_helper->app_id_.has_value() ? &tab_helper->app_id_.value()
-                                         : nullptr;
+  return tab_helper && tab_helper->app_id_.has_value()
+             ? &tab_helper->app_id_.value()
+             : nullptr;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -74,17 +66,6 @@ WebAppTabHelper::GetAppIdForNotificationAttribution(
 }
 #endif
 
-WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
-    : content::WebContentsUserData<WebAppTabHelper>(*web_contents),
-      content::WebContentsObserver(web_contents),
-      provider_(WebAppProvider::GetForLocalAppsUnchecked(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-  DCHECK(provider_);
-  observation_.Observe(&provider_->install_manager());
-  SetAppId(
-      FindAppWithUrlInScope(web_contents->GetSiteInstance()->GetSiteURL()));
-}
-
 WebAppTabHelper::~WebAppTabHelper() = default;
 
 const base::UnguessableToken& WebAppTabHelper::GetAudioFocusGroupIdForTesting()
@@ -100,19 +81,39 @@ WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
   return *launch_queue_;
 }
 
-void WebAppTabHelper::SetAppId(std::optional<webapps::AppId> app_id) {
+void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
+                               bool is_in_app_window) {
   // Empty string should not be used to indicate "no app ID".
   DCHECK(!app_id || !app_id->empty());
-  DCHECK(!app_id || provider_->registrar_unsafe().IsInstalled(*app_id) ||
+
+  // If the app_id is changing, then it should exist in the database.
+  DCHECK(app_id_ == app_id || !app_id ||
+         provider_->registrar_unsafe().IsInstalled(*app_id) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
-  if (app_id_ == app_id) {
+  if (app_id_ == app_id && is_in_app_window == is_in_app_window_) {
     return;
   }
 
   std::optional<webapps::AppId> previous_app_id = std::move(app_id_);
   app_id_ = std::move(app_id);
 
-  OnAssociatedAppChanged(previous_app_id, app_id_);
+  is_in_app_window_ = is_in_app_window;
+  if (is_in_app_window) {
+    set_acting_as_app(true);
+  }
+
+  if (previous_app_id != app_id_) {
+    OnAssociatedAppChanged(previous_app_id, app_id_);
+  }
+  UpdateAudioFocusGroupId();
+}
+
+void WebAppTabHelper::SetAppId(std::optional<webapps::AppId> app_id) {
+  SetState(app_id, is_in_app_window());
+}
+
+void WebAppTabHelper::SetIsInAppWindow(bool is_in_app_window) {
+  SetState(app_id(), is_in_app_window);
 }
 
 void WebAppTabHelper::ReadyToCommitNavigation(
@@ -168,18 +169,27 @@ void WebAppTabHelper::DidCloneToNewWebContents(
   auto* new_tab_helper = FromWebContents(new_web_contents);
 
   // Clone common state:
-  new_tab_helper->SetAppId(app_id_);
+  new_tab_helper->SetState(app_id_, /*is_in_app_window=*/false);
+  new_tab_helper->set_acting_as_app(acting_as_app());
+  // Note: We don't clone is_in_app_window, as that need to only be set when
+  // the new web contents is added to an app window.
 }
 
-bool WebAppTabHelper::IsInAppWindow() const {
-  return provider_->ui_manager().IsInAppWindow(web_contents());
+WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
+    : content::WebContentsUserData<WebAppTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents),
+      provider_(WebAppProvider::GetForLocalAppsUnchecked(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+  observation_.Observe(&provider_->install_manager());
+  SetState(FindAppWithUrlInScope(web_contents->GetLastCommittedURL()),
+           /*is_in_app_window=*/false);
 }
 
 void WebAppTabHelper::OnWebAppInstalled(
     const webapps::AppId& installed_app_id) {
   // Check if current web_contents url is in scope for the newly installed app.
   std::optional<webapps::AppId> app_id =
-      FindAppWithUrlInScope(web_contents()->GetURL());
+      FindAppWithUrlInScope(web_contents()->GetLastCommittedURL());
   if (app_id == installed_app_id) {
     SetAppId(app_id);
   }
@@ -227,18 +237,26 @@ void WebAppTabHelper::OnAssociatedAppChanged(
     }
     // case 2: do nothing
   }
-
-  UpdateAudioFocusGroupId();
 }
 
 void WebAppTabHelper::UpdateAudioFocusGroupId() {
-  if (app_id_.has_value() && IsInAppWindow()) {
+  if (app_id_.has_value() && is_in_app_window_) {
     audio_focus_group_id_ =
         provider_->audio_focus_id_map().CreateOrGetIdForApp(app_id_.value());
   } else {
     audio_focus_group_id_ = base::UnguessableToken::Null();
   }
 
+  // There is no need to trigger creation of a MediaSession if we'd merely be
+  // resetting the audo focus group id as that is the default state. Skipping
+  // creating a MediaSession when not needed also helps with some (unit) tests
+  // where creating a MediaSession can trigger other subsystems in ways that
+  // the test might not be setup for (for example lack of a real io thread for
+  // the mdns service).
+  if (audio_focus_group_id_ == base::UnguessableToken::Null() &&
+      !content::MediaSession::GetIfExists(web_contents())) {
+    return;
+  }
   content::MediaSession::Get(web_contents())
       ->SetAudioFocusGroupId(audio_focus_group_id_);
 }

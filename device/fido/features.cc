@@ -49,11 +49,6 @@ BASE_FEATURE(kWebAuthnAndroidCredMan,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Added in M115. Remove in or after M118
-BASE_FEATURE(kWebAuthnHybridLinkWithoutNotifications,
-             "WebAuthenticationHybridLinkWithoutNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enabled in M118. Remove in or after M121.
 BASE_FEATURE(kWebAuthnICloudKeychainForGoogle,
              "WebAuthenticationICloudKeychainForGoogle",
@@ -79,10 +74,14 @@ BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive,
              "WebAuthenticationICloudKeychainForInactiveWithoutDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
+// Enabled in M130. Don't remove before kWebAuthnGpmPin is enabled!
 BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
              "WebAuthenticationEnclaveAuthenticator",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 // Not yet enabled by default.
 const base::FeatureParam<bool> kWebAuthnGpmPin{
@@ -106,16 +105,6 @@ BASE_FEATURE(kWebAuthnRelatedOrigin,
              "WebAuthenticationRelatedOrigin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled in M122. Remove in or after M125.
-BASE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds,
-             "AllowExtensionsToSetWebAuthnRpIds",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Default enabled in M123. Remove in or after M126.
-BASE_FEATURE(kWebAuthnPreferVirtualPlatformAuthenticator,
-             "WebAuthenticationPreferVirtualPlatformAuthenticator",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Deprecation flag.
 // Default disabled in M125. Remove in or after M128.
 BASE_FEATURE(kWebAuthnEnableAndroidCableAuthenticator,
@@ -133,9 +122,14 @@ BASE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround,
              "WebAuthenticationCredProtectWin10BugWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Default enabled in M126. Remove in or after M129.
+// Default enabled in M130. Remove in or after M133.
 BASE_FEATURE(kWebAuthnICloudRecoveryKey,
              "WebAuthenticationICloudRecoveryKey",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Default enabled in M130. Remove in or after M133.
+BASE_FEATURE(kWebAuthnRecoverFromICloudRecoveryKey,
+             "WebAuthenticationRecoverFromICloudRecoveryKey",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Not yet default enabled and not intended to be. Remove after M128 is Stable.

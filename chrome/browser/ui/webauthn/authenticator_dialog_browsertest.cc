@@ -10,17 +10,20 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/trusted_vault/features.h"
 #include "content/public/browser/render_frame_host.h"
@@ -61,6 +64,12 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   AuthenticatorDialogTest() = default;
   AuthenticatorDialogTest(const AuthenticatorDialogTest&) = delete;
   AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        "user@example.com", signin::ConsentLevel::kSync);
+  }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -200,18 +209,18 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       controller_->StartInlineBioEnrollment(base::DoNothing());
       timer_.Start(
           FROM_HERE, base::Seconds(2),
-          base::BindLambdaForTesting([&, weak_controller =
-                                             controller_->GetWeakPtr()] {
-            if (!weak_controller || weak_controller->model()->step() !=
-                                        AuthenticatorRequestDialogController::
-                                            Step::kInlineBioEnrollment) {
-              return;
-            }
-            weak_controller->OnSampleCollected(--bio_samples_remaining_);
-            if (bio_samples_remaining_ <= 0) {
-              timer_.Stop();
-            }
-          }));
+          base::BindLambdaForTesting(
+              [&, weak_controller = controller_->GetWeakPtr()] {
+                if (!weak_controller || weak_controller->model()->step() !=
+                                            AuthenticatorRequestDialogModel::
+                                                Step::kInlineBioEnrollment) {
+                  return;
+                }
+                weak_controller->OnSampleCollected(--bio_samples_remaining_);
+                if (bio_samples_remaining_ <= 0) {
+                  timer_.Stop();
+                }
+              }));
     } else if (name == "retry_uv") {
       controller_->OnRetryUserVerification(5);
     } else if (name == "retry_uv_two_tries_remaining") {
@@ -621,6 +630,12 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
         /*disabled_features=*/{});
   }
 
+  void SetUpOnMainThread() override {
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        "user@example.com", signin::ConsentLevel::kSync);
+  }
+
   // AuthenticatorDialogTest:
   void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
@@ -633,7 +648,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
                                         ->GetPrimaryMainFrame();
     model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(rfh);
     model_->relying_party_id = "example.com";
-    model_->account_name = "example@gmail.com";
     controller_ = std::make_unique<AuthenticatorRequestDialogController>(
         model_.get(), rfh);
     controller_->SetAccountPreselectedCallback(base::DoNothing());

@@ -186,7 +186,7 @@ public class NotificationSuspender {
         return origins;
     }
 
-    private void getActiveNotificationsForOrigins(
+    public void getActiveNotificationsForOrigins(
             List<Uri> origins, Callback<List<NotificationWrapper>> callback) {
         List<NotificationWrapper> notifications = new ArrayList<>();
 

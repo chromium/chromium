@@ -337,6 +337,14 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
         # Restricts horizontal class merging to apply only to classes that
         # share a .java file (nested classes). https://crbug.com/1363709
         '-Dcom.android.tools.r8.enableSameFilePolicy=1',
+        # Allow ServiceLoaderUtil.maybeCreate() to work with types that are
+        # -kept (e.g. due to containing JNI).
+        '-Dcom.android.tools.r8.allowServiceLoaderRewritingPinnedTypes=1',
+        # Allow R8 to inline kept methods by default.
+        # See: b/364267880#2
+        '-Dcom.android.tools.r8.allowCodeReplacement=false',
+        # Required to use "-keep,allowcodereplacement"
+        '-Dcom.android.tools.r8.allowTestProguardOptions=true',
     ]
     if options.sdk_extension_jars:
       # Enable API modelling for OS extensions. https://b/326252366
@@ -454,7 +462,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 def _OutputKeepRules(r8_path, input_paths, libraries, targets_re_string,
                      keep_rules_output):
 
-  cmd = build_utils.JavaCmd() + [
+  cmd = build_utils.JavaCmd(xmx='2G') + [
       '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
       '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
       '--keep-rules', '--output', keep_rules_output
@@ -472,7 +480,7 @@ def _OutputKeepRules(r8_path, input_paths, libraries, targets_re_string,
 
 
 def _CheckForMissingSymbols(options, dex_files, error_title):
-  cmd = build_utils.JavaCmd()
+  cmd = build_utils.JavaCmd(xmx='2G')
 
   if options.dump_inputs:
     cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']

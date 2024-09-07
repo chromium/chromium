@@ -32,6 +32,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -204,7 +205,7 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   RemoveAllChildViews();
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetShowIcon(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   GetBubbleFrameView()->SetFootnoteView(nullptr);
   SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_PASSWORD);
 
@@ -248,8 +249,8 @@ views::View* PasswordSaveUpdateView::GetInitiallyFocusedView() {
 }
 
 bool PasswordSaveUpdateView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  return button != ui::DIALOG_BUTTON_OK ||
+    ui::mojom::DialogButton button) const {
+  return button != ui::mojom::DialogButton::kOk ||
          controller_.pending_password().IsFederatedCredential() ||
          !controller_.pending_password().password_value.empty();
 }
@@ -283,7 +284,8 @@ void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
 }
 
 void PasswordSaveUpdateView::UpdateBubbleUIElements() {
-  SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
   std::u16string ok_button_text;
   if (controller_.IsAccountStorageOptInRequiredBeforeSave()) {
     ok_button_text = l10n_util::GetStringUTF16(
@@ -293,9 +295,9 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
         controller_.IsCurrentStateUpdate() ? IDS_PASSWORD_MANAGER_UPDATE_BUTTON
                                            : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
   }
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button_text);
+  SetButtonLabel(ui::mojom::DialogButton::kOk, ok_button_text);
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(
           is_update_bubble_ ? IDS_PASSWORD_MANAGER_CANCEL_BUTTON
                             : IDS_PASSWORD_MANAGER_BUBBLE_BLOCKLIST_BUTTON));
@@ -358,14 +360,14 @@ void PasswordSaveUpdateView::AnnounceBubbleChange() {
 void PasswordSaveUpdateView::OnContentChanged() {
   bool is_update_state_before = controller_.IsCurrentStateUpdate();
   bool is_ok_button_enabled_before =
-      IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK);
+      IsDialogButtonEnabled(ui::mojom::DialogButton::kOk);
   bool changes_synced_to_account_before =
       controller_.IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount();
   UpdateUsernameAndPasswordInModel();
   // Maybe the buttons should be updated.
   if (is_update_state_before != controller_.IsCurrentStateUpdate() ||
       is_ok_button_enabled_before !=
-          IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK)) {
+          IsDialogButtonEnabled(ui::mojom::DialogButton::kOk)) {
     UpdateBubbleUIElements();
     DialogModelChanged();
   } else if (changes_synced_to_account_before !=

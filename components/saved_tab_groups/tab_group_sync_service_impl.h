@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -73,9 +74,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
               std::optional<size_t> position) override;
   void UpdateTab(const LocalTabGroupID& group_id,
                  const LocalTabID& tab_id,
-                 const std::u16string& title,
-                 GURL url,
-                 std::optional<size_t> position) override;
+                 const SavedTabGroupTabBuilder& tab_builder) override;
   void RemoveTab(const LocalTabGroupID& group_id,
                  const LocalTabID& tab_id) override;
   void MoveTab(const LocalTabGroupID& group_id,
@@ -118,11 +117,16 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void AddObserver(TabGroupSyncService::Observer* observer) override;
   void RemoveObserver(TabGroupSyncService::Observer* observer) override;
 
+  // For testing only.
+  void SetIsInitializedForTesting(bool initialized) override;
+
  private:
   // KeyedService:
   void Shutdown() override;
 
   // SavedTabGroupModelObserver implementation.
+  void SavedTabGroupReorderedLocally() override;
+  void SavedTabGroupReorderedFromSync() override;
   void SavedTabGroupAddedFromSync(const base::Uuid& guid) override;
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
   void SavedTabGroupUpdatedFromSync(
@@ -151,6 +155,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void HandleTabGroupRemoved(
       std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,
       TriggerSource source);
+  void HandleTabGroupsReordered(TriggerSource source);
 
   // Read and write deleted local group IDs to disk. We add a local ID in
   // response to a group deletion event from sync. We clear that ID only when
@@ -175,40 +180,40 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                 LocalTabGroupID group_id,
                 const std::optional<LocalTabID>& tab_id = std::nullopt);
 
-  // Obsevers of the model.
-  base::ObserverList<TabGroupSyncService::Observer> observers_;
-
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
   // Sync bridges and data storage for both saved and shared tab group data.
-  TabGroupSyncBridgeMediator sync_bridge_mediator_;
+  std::unique_ptr<TabGroupSyncBridgeMediator> sync_bridge_mediator_;
 
   // The UI coordinator to apply changes between local tab groups and the
   // TabGroupSyncService.
   std::unique_ptr<TabGroupSyncCoordinator> coordinator_;
 
-  // The pref service for storing migration status.
-  raw_ptr<PrefService> pref_service_;
-
   // Helper class for logging metrics.
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
+
+  // The pref service for storing migration status.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Whether the initialization has been completed, i.e. all the groups and the
   // ID mappings have been loaded into memory.
   bool is_initialized_ = false;
 
-  // Keeps track of the ids of session restored tab groups that were once saved
-  // in order to link them together again once the SavedTabGroupModelLoaded is
-  // called. After the model is loaded, this variable is emptied to conserve
-  // memory.
-  std::vector<std::pair<base::Uuid, LocalTabGroupID>>
-      saved_guid_to_local_group_id_mapping_;
-
   // Groups with zero tabs are groups that still haven't received their tabs
   // from sync. UI can't handle these groups, hence the service needs to wait
   // before notifying the observers.
   std::set<base::Uuid> empty_groups_;
+
+  // Obsevers of the model.
+  base::ObserverList<TabGroupSyncService::Observer> observers_;
+
+  // Keeps track of API calls received before the service is initialized.
+  // Once the initialization is complete, these callbacks are run in the order
+  // they were received. External observers are notified of init completion only
+  // after this step. Currently used only for UpdateLocalTabGroupMapping()
+  // calls.
+  base::circular_deque<base::OnceClosure> pending_actions_;
 
   base::WeakPtrFactory<TabGroupSyncServiceImpl> weak_ptr_factory_{this};
 };

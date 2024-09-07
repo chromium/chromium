@@ -83,6 +83,10 @@ constexpr char kSaveAsTemplatePressedHistogramName[] =
     "Ash.DeskTemplate.SaveAsTemplatePressed";
 constexpr char kSaveForLaterPressedHistogramName[] =
     "Ash.DeskTemplate.SaveForLaterPressed";
+constexpr char kShowSavedDeskButtonsRevampDisabledHistogramName[] =
+    "Ash.DeskTemplate.ShowSavedDeskButtonsRevampDisabled";
+constexpr char kShowSavedDeskButtonsRevampEnabledHistogramName[] =
+    "Ash.DeskTemplate.ShowSavedDeskButtonsRevampEnabled";
 
 // Wrappers calls base::uma with correct histogram name.
 void RecordLoadSavedDeskLibraryHistogram();

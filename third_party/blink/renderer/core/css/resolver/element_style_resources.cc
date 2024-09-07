@@ -136,7 +136,6 @@ StyleImage* StyleImageLoader::Load(
         ResolveImageSet(*image_set_value, image_request_behavior, cross_origin);
     return image_set_value->CacheImage(
         style_image, device_scale_factor_,
-        PaintTiming::From(document_).IsLCPMouseoverDispatchedRecently(),
         style_image ? style_image->IsOriginClean() : true);
   }
 

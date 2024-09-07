@@ -156,8 +156,6 @@ source_set("common") {
     "input/synthetic_touchscreen_pinch_gesture.cc",
     "input/synthetic_touchscreen_pinch_gesture.h",
     "media/cdm_info.cc",
-    "mojo_core_library_support.cc",
-    "mojo_core_library_support.h",
     "navigation_gesture.h",
     "navigation_params_utils.h",
     "origin_util.cc",

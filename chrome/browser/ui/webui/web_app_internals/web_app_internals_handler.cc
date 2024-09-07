@@ -7,9 +7,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
+#include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,6 +20,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,12 +28,16 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -91,10 +99,50 @@ constexpr char kIsolatedWebAppUpdateManager[] = "IsolatedWebAppUpdateManager";
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kIsolatedWebAppPolicyManager[] = "IsolatedWebAppPolicyManager";
 #endif  // BUILDFLAG(IS_CHROMEOS)
+constexpr char kIwaKeyDistributionInfoProvider[] =
+    "IwaKeyDistributionInfoProvider";
 
 constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
     "chrome://flags/#record-web-app-debug-info";
+
+constexpr auto kUpdateManifestFetchAnnotation =
+    net::DefinePartialNetworkTrafficAnnotation(
+        "iwa_web_app_internals_update_manifest",
+        "iwa_update_manifest_fetcher",
+        R"(
+    semantics {
+      sender: "Web App Internals page"
+      description:
+        "Downloads the Update Manifest of an Isolated Web App. "
+        "The Update Manifest contains the list of the available versions of "
+        "the IWA and the URL to the Signed Web Bundles that correspond to each "
+        "version."
+      trigger:
+        "User clicks on the discover button in chrome://web-app-internals."
+    }
+    policy {
+      setting: "This feature cannot be disabled in settings."
+      policy_exception_justification: "Not implemented."
+    })");
+
+constexpr auto kDownloadWebBundleAnnotation =
+    net::DefinePartialNetworkTrafficAnnotation(
+        "iwa_web_app_internals_web_bundle",
+        "iwa_bundle_downloader",
+        R"(
+    semantics {
+      sender: "Web App Internals page"
+      description:
+        "Downloads a Signed Web Bundle of an Isolated Web App which contains "
+        "code and other resources of this app."
+      trigger:
+        "User accepts the installation dialog in chrome://web-app-internals."
+    }
+    policy {
+      setting: "This feature cannot be disabled in settings."
+      policy_exception_justification: "Not implemented."
+    })");
 
 template <typename T>
 std::string ConvertToString(const T& value) {
@@ -345,6 +393,12 @@ base::Value BuildIsolatedWebAppPolicyManagerJson(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+base::Value BuildIwaKeyDistributionInfoProviderJson() {
+  return base::Value(base::Value::Dict().Set(
+      kIwaKeyDistributionInfoProvider,
+      web_app::IwaKeyDistributionInfoProvider::GetInstance()->AsDebugValue()));
+}
+
 void BuildDirectoryState(base::FilePath file_or_folder,
                          base::Value::Dict* folder) {
   base::File::Info info;
@@ -416,10 +470,8 @@ class ObliterateStoragePartitionHelper
 void SendError(
     base::OnceCallback<void(mojom::InstallIsolatedWebAppResultPtr)> callback,
     const std::string& error_message) {
-  auto result = mojom::InstallIsolatedWebAppResult::New();
-  result->success = false;
-  result->error = error_message;
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(
+      mojom::InstallIsolatedWebAppResult::NewError(error_message));
 }
 
 }  // namespace
@@ -492,6 +544,7 @@ void WebAppInternalsHandler::BuildDebugInfo(
 #if BUILDFLAG(IS_CHROMEOS)
   root.Append(BuildIsolatedWebAppPolicyManagerJson(*provider));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  root.Append(BuildIwaKeyDistributionInfoProviderJson());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,
@@ -541,6 +594,64 @@ void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
       url, web_app::IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
       base::BindOnce(&WebAppInternalsHandler::OnInstallIsolatedWebAppInDevMode,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebAppInternalsHandler::ParseUpdateManifestFromUrl(
+    const GURL& update_manifest_url,
+    ParseUpdateManifestFromUrlCallback callback) {
+  if (!web_app::WebAppProvider::GetForWebApps(&profile_.get())) {
+    std::move(callback).Run(mojom::ParseUpdateManifestFromUrlResult::NewError(
+        "Couldn't get the WebAppProvider."));
+    return;
+  }
+
+  auto fetcher = std::make_unique<web_app::UpdateManifestFetcher>(
+      update_manifest_url, kUpdateManifestFetchAnnotation,
+      profile_->GetURLLoaderFactory());
+  auto* fetcher_ptr = fetcher.get();
+
+  base::OnceClosure fetcher_keep_alive =
+      base::DoNothingWithBoundArgs(std::move(fetcher));
+  fetcher_ptr->FetchUpdateManifest(
+      base::BindOnce(
+          [](const GURL& update_manifest_url,
+             base::expected<web_app::UpdateManifest,
+                            web_app::UpdateManifestFetcher::Error> result)
+              -> mojom::ParseUpdateManifestFromUrlResultPtr {
+            ASSIGN_OR_RETURN(
+                auto update_manifest, std::move(result), [](auto error) {
+                  return mojom::ParseUpdateManifestFromUrlResult::NewError(
+                      "Manifest fetch failed.");
+                });
+            auto update_manifest_ptr = mojom::UpdateManifest::New();
+            update_manifest_ptr->versions = base::ToVector(
+                update_manifest.versions(),
+                [](const web_app::UpdateManifest::VersionEntry& ve) {
+                  auto version_entry = mojom::VersionEntry::New();
+                  version_entry->version = ve.version().GetString();
+                  version_entry->web_bundle_url = ve.src();
+                  return version_entry;
+                });
+            return mojom::ParseUpdateManifestFromUrlResult::NewUpdateManifest(
+                std::move(update_manifest_ptr));
+          },
+          update_manifest_url)
+          .Then(std::move(callback))
+          .Then(std::move(fetcher_keep_alive)));
+}
+
+void WebAppInternalsHandler::InstallIsolatedWebAppFromBundleUrl(
+    mojom::InstallFromBundleUrlParamsPtr params,
+    InstallIsolatedWebAppFromBundleUrlCallback callback) {
+  if (!web_app::WebAppProvider::GetForWebApps(&profile_.get())) {
+    std::move(callback).Run(mojom::InstallIsolatedWebAppResult::NewError(
+        "WebAppProvider not supported for current profile."));
+    return;
+  }
+  web_app::ScopedTempWebBundleFile::Create(
+      base::BindOnce(&WebAppInternalsHandler::DownloadWebBundleToFile,
+                     weak_ptr_factory_.GetWeakPtr(), params->web_bundle_url,
+                     std::move(callback)));
 }
 
 void WebAppInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
@@ -627,14 +738,14 @@ void WebAppInternalsHandler::OnInstallIsolatedWebAppInDevMode(
     base::OnceCallback<void(mojom::InstallIsolatedWebAppResultPtr)> callback,
     web_app::IsolatedWebAppInstallationManager::
         MaybeInstallIsolatedWebAppCommandSuccess result) {
-  auto mojo_result = mojom::InstallIsolatedWebAppResult::New();
-  if (result.has_value()) {
-    mojo_result->success = true;
-  } else {
-    mojo_result->success = false;
-    mojo_result->error = result.error();
-  }
-  std::move(callback).Run(std::move(mojo_result));
+  std::move(callback).Run([&] {
+    if (result.has_value()) {
+      auto success = mojom::InstallIsolatedWebAppSuccess::New();
+      success->web_bundle_id = result->url_info.web_bundle_id().id();
+      return mojom::InstallIsolatedWebAppResult::NewSuccess(std::move(success));
+    }
+    return mojom::InstallIsolatedWebAppResult::NewError(result.error());
+  }());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -773,4 +884,62 @@ void WebAppInternalsHandler::ApplyDevModeUpdate(
         }
         return "Update failed: " + result.error();
       }).Then(std::move(callback)));
+}
+
+void WebAppInternalsHandler::RotateKey(
+    const std::string& web_bundle_id,
+    const std::optional<std::vector<uint8_t>>& public_key) {
+  web_app::IwaKeyDistributionInfoProvider::GetInstance()->RotateKeyForDevMode(
+      base::PassKey<WebAppInternalsHandler>(), web_bundle_id, public_key);
+}
+
+void WebAppInternalsHandler::DownloadWebBundleToFile(
+    const GURL& web_bundle_url,
+    InstallIsolatedWebAppFromBundleUrlCallback callback,
+    web_app::ScopedTempWebBundleFile file) {
+  if (!file) {
+    std::move(callback).Run(
+        mojom::InstallIsolatedWebAppResult::NewError("Couldn't create file."));
+    return;
+  }
+  auto path = file.path();
+
+  auto downloader = std::make_unique<web_app::IsolatedWebAppDownloader>(
+      profile_->GetURLLoaderFactory());
+  auto* downloader_ptr = downloader.get();
+  base::OnceClosure downloader_keep_alive =
+      base::DoNothingWithBoundArgs(std::move(downloader));
+
+  downloader_ptr->DownloadSignedWebBundle(
+      web_bundle_url, std::move(path), kDownloadWebBundleAnnotation,
+      base::BindOnce(&WebAppInternalsHandler::OnWebBundleDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(file))
+          .Then(std::move(downloader_keep_alive)));
+}
+
+void WebAppInternalsHandler::OnWebBundleDownloaded(
+    InstallIsolatedWebAppFromBundleUrlCallback callback,
+    web_app::ScopedTempWebBundleFile bundle,
+    int32_t result) {
+  if (result != net::OK) {
+    std::move(callback).Run(mojom::InstallIsolatedWebAppResult::NewError(
+        base::StrCat({"Network error while downloading bundle file: ",
+                      base::ToString(result)})));
+    return;
+  }
+
+  const base::ScopedTempFile* file = bundle.file();
+  base::OnceClosure bundle_keep_alive =
+      base::DoNothingWithBoundArgs(std::move(bundle));
+
+  web_app::WebAppProvider::GetForWebApps(&profile_.get())
+      ->isolated_web_app_installation_manager()
+      .InstallIsolatedWebAppFromDevModeBundle(
+          file,
+          web_app::IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+          base::BindOnce(
+              &WebAppInternalsHandler::OnInstallIsolatedWebAppInDevMode,
+              weak_ptr_factory_.GetWeakPtr(),
+              std::move(callback).Then(std::move(bundle_keep_alive))));
 }

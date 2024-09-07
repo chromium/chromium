@@ -821,6 +821,7 @@ Shell::~Shell() {
   // accessing invalid memory (see b/315127220).
   AccessibilityController::Get()->SetAccessibilityEventRewriter(nullptr);
   AccessibilityController::Get()->SetDisableTrackpadEventRewriter(nullptr);
+  AccessibilityController::Get()->SetFilterKeysEventRewriter(nullptr);
   event_rewriter_controller_.reset();
   keyboard_modifier_metrics_recorder_.reset();
   touchscreen_metrics_recorder_.reset();
@@ -837,6 +838,7 @@ Shell::~Shell() {
   // since the latters destructor triggers events that the former is listening
   // to but no longer cares about.
   keyboard_controller_->DestroyVirtualKeyboard();
+  picker_controller_.reset();
 
   // Depends on |tablet_mode_controller_|.
   window_restore_controller_.reset();
@@ -1816,8 +1818,7 @@ void Shell::Init(
     coral_controller_ = std::make_unique<CoralController>();
   }
 
-  if (features::IsPickerUpdateEnabled() &&
-      PickerController::IsFeatureKeyMatched()) {
+  if (features::IsPickerUpdateEnabled()) {
     picker_controller_ = std::make_unique<PickerController>();
   }
 

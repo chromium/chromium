@@ -132,7 +132,7 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
                                        CFDictionaryRef user_info) {
   std::string notification_str = base::SysCFStringRefToUTF8(notification);
 
-  auto formatter = ui::AXTreeFormatterMac();
+  auto formatter = AXTreeFormatterMac();
   formatter.SetPropertyFilters(property_filters_,
                                AXTreeFormatter::kFiltersDefaultSet);
 

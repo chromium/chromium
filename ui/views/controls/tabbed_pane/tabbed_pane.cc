@@ -593,8 +593,6 @@ void TabbedPane::SelectTab(TabbedPaneTab* new_selected_tab, bool animate) {
     tab_strip_->OnSelectedTabChanged(old_selected_tab, new_selected_tab,
                                      animate);
 
-    new_selected_tab->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                                               true);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
   }
   tab_strip_->SchedulePaint();

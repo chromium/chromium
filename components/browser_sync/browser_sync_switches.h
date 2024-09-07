@@ -45,6 +45,12 @@ BASE_DECLARE_FEATURE(kMigrateSyncingUserToSignedIn);
 // flag are migrated back into the syncing state.
 BASE_DECLARE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn);
 
+// If enabled in addition to `kMigrateSyncingUserToSignedIn`, then all users
+// with Sync-the-feature enabled are migrated, at browser startup, to the
+// signed-in non-syncing state. I.e. this bypasses the "eligibility"
+// requirements.
+BASE_DECLARE_FEATURE(kForceMigrateSyncingUserToSignedIn);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_BROWSER_SYNC_BROWSER_SYNC_SWITCHES_H_

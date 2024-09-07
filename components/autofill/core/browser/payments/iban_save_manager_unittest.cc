@@ -25,9 +25,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+namespace {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-namespace {
 
 constexpr char kLegalMessageLines[] =
     "{"
@@ -55,8 +55,6 @@ constexpr char kInvalidLegalMessageLines[] =
 
 constexpr char16_t kCapitalizedIbanRegex[] =
     u"^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}[A-Z0-9]{0,18}$";
-
-}  // namespace
 
 class IbanSaveManagerTest : public testing::Test {
  public:
@@ -1004,4 +1002,5 @@ TEST_F(
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+}  // namespace
 }  // namespace autofill

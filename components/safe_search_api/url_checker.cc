@@ -39,11 +39,8 @@ URLChecker::Check::Check(const GURL& url, CheckCallback callback) : url(url) {
 
 URLChecker::Check::~Check() = default;
 
-URLChecker::CheckResult::CheckResult(Classification classification,
-                                     bool uncertain)
-    : classification(classification),
-      uncertain(uncertain),
-      timestamp(base::TimeTicks::Now()) {}
+URLChecker::CheckResult::CheckResult(Classification classification)
+    : classification(classification), timestamp(base::TimeTicks::Now()) {}
 
 URLChecker::URLChecker(std::unique_ptr<URLCheckerClient> async_checker)
     : URLChecker(std::move(async_checker), kDefaultCacheSize) {}
@@ -83,8 +80,11 @@ bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
     if (age < cache_timeout_) {
       DVLOG(1) << "Cache hit! " << url.spec() << " is "
                << (result.classification == Classification::UNSAFE ? "NOT" : "")
-               << " safe; certain: " << !result.uncertain;
-      std::move(callback).Run(url, result.classification, result.uncertain);
+               << " safe";
+      std::move(callback).Run(
+          url, result.classification,
+          ClassificationDetails{
+              .reason = ClassificationDetails::Reason::kCachedResponse});
 
       base::UmaHistogramEnumeration(kCacheHitMetricKey,
                                     CacheAccessStatus::kHit);
@@ -120,11 +120,17 @@ void URLChecker::OnAsyncCheckComplete(CheckList::iterator it,
   checks_in_progress_.erase(it);
 
   if (!uncertain) {
-    cache_.Put(url, CheckResult(classification, uncertain));
+    cache_.Put(url, CheckResult(classification));
   }
 
   for (CheckCallback& callback : callbacks) {
-    std::move(callback).Run(url, classification, uncertain);
+    std::move(callback).Run(
+        url, classification,
+        ClassificationDetails{
+            .reason =
+                uncertain
+                    ? ClassificationDetails::Reason::kFailedUseDefault
+                    : ClassificationDetails::Reason::kFreshServerResponse});
   }
 }
 

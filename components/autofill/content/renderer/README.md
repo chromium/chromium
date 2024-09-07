@@ -66,8 +66,8 @@ association in the following ways:
 - It extends to contenteditables: we treat a contenteditable like a form with a
   single field.
 
-A [connected] form control element `t` is *owned* by a top-most form
-element `f` iff
+A form control element `t` is *owned* by a top-most form element `f` iff
+`t` is [connected] and
 
 - `t` is [associated] with `f` or a descendant of `f`, or
 - `t` is a [shadow-including] descendant of `f` and `t` and `f` are not in the
@@ -78,8 +78,9 @@ Note that allowing `t` to be [associated] with a descendant of `f` instead of
 nested forms within the same DOM tree. In that case, `t` may be associated with
 any form, but we want its *owning* form to always be a top-level form.
 
-A [connected] form control element `t` is *unowned* iff no top-most form
-element owns `t`. That is, to be explicit, `t` is unowned iff
+A form control element `t` is *unowned* iff `t` is [connected] and no top-most
+form element owns `t`. That is, to be explicit, `t` is unowned iff `t` is
+[connected] and
 
 - `t` is not [associated] with any form element or
 - `t` has no [shadow-including] form element ancestor in another [node tree].
@@ -88,7 +89,7 @@ We refer to the collection of unowned form controls as the *unowned form* and, i
 a slight abuse of terminology, say that the unowned form *owns* the unowned form
 controls. The unowned form is represented by the null `WebFormElement`.
 
-A [connected] [contenteditable] is *owned* by itself iff it is not a form
+A [contenteditable] is *owned* by itself iff it is [connected], not a form
 element, not a form control element, and its parent is not [editable].
 
 Ownership determines the relationship between `FormData` objects (representing a

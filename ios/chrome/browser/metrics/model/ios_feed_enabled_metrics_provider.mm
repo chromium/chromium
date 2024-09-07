@@ -9,8 +9,8 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -37,7 +37,7 @@ void IOSFeedEnabledMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // Log whether the Feed can be displayed for each loaded BrowserStates.
   for (ChromeBrowserState* browser_state :
-       GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates()) {
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     base::UmaHistogramBoolean(kFeedEnabledHistogram,
                               CanDisplayFeed(browser_state->GetPrefs()));
   }

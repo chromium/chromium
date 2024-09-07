@@ -8,7 +8,11 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
+
+class BatchUploadDelegate;
+class Browser;
 
 // Data types that integrates with the Batch Upload and can be displayed in the
 // dialog.
@@ -31,8 +35,13 @@ class BatchUploadController {
                      std::unique_ptr<BatchUploadDataProvider>> data_providers);
 
   // Attempts to show the Batch Upload dialog based on the data it currently
-  // has.
-  bool ShowDialog();
+  // has. `done_callback` is called whenever the dialog is closed. The boolean
+  // parameter of the callback indicates whether some data were requested to
+  // move to the account storage.
+  // `browser` must not be null, but may be null in some tests.
+  bool ShowDialog(BatchUploadDelegate& delegate,
+                  Browser* browser,
+                  base::OnceCallback<void(bool)> done_callback);
 
   ~BatchUploadController();
 
@@ -49,6 +58,7 @@ class BatchUploadController {
 
   base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
       data_providers_;
+  base::OnceCallback<void(bool)> done_callback_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_CONTROLLER_H_

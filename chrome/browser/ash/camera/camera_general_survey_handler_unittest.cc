@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "camera_general_survey_handler.h"
+#include "chrome/browser/ash/camera/camera_general_survey_handler.h"
+
 #include <memory>
 
 #include "base/containers/flat_set.h"

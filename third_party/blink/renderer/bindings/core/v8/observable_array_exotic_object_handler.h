@@ -570,8 +570,9 @@ class ObservableArrayExoticObjectHandler {
     if (!backing_list.set_algorithm_callback_)
       return true;
 
-    (backing_list.GetPlatformObject()->*backing_list.set_algorithm_callback_)(
-        script_state, backing_list, index, value, exception_state);
+    backing_list.set_algorithm_callback_(backing_list.GetPlatformObject(),
+                                         script_state, backing_list, index,
+                                         value, exception_state);
     return !exception_state.HadException();
   }
 
@@ -583,9 +584,9 @@ class ObservableArrayExoticObjectHandler {
     if (!backing_list.delete_algorithm_callback_)
       return true;
 
-    (backing_list.GetPlatformObject()
-         ->*backing_list.delete_algorithm_callback_)(script_state, backing_list,
-                                                     index, exception_state);
+    backing_list.delete_algorithm_callback_(backing_list.GetPlatformObject(),
+                                            script_state, backing_list, index,
+                                            exception_state);
     return !exception_state.HadException();
   }
 };

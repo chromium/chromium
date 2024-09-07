@@ -5,7 +5,6 @@
 #include "components/supervised_user/core/browser/child_account_service.h"
 
 #include <functional>
-#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -23,12 +22,10 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
-#include "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -42,18 +39,13 @@ using ::base::BindRepeating;
 
 ChildAccountService::ChildAccountService(
     PrefService& user_prefs,
-    SupervisedUserService& supervised_user_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::RepeatingCallback<std::unique_ptr<PermissionRequestCreator>()>
-        permission_creator_callback,
     base::OnceCallback<void(bool)> check_user_child_status_callback,
     ListFamilyMembersService& list_family_members_service)
     : identity_manager_(identity_manager),
       user_prefs_(user_prefs),
-      supervised_user_service_(supervised_user_service),
       url_loader_factory_(url_loader_factory),
-      permission_creator_callback_(std::move(permission_creator_callback)),
       check_user_child_status_callback_(
           std::move(check_user_child_status_callback)) {
   set_custodian_prefs_subscription_ =
@@ -67,7 +59,6 @@ ChildAccountService::ChildAccountService(
 ChildAccountService::~ChildAccountService() = default;
 
 void ChildAccountService::Init() {
-  supervised_user_service_->SetDelegate(this);
   identity_manager_->AddObserver(this);
 
   std::move(check_user_child_status_callback_)
@@ -87,8 +78,6 @@ void ChildAccountService::Init() {
 
 void ChildAccountService::Shutdown() {
   identity_manager_->RemoveObserver(this);
-  supervised_user_service_->SetDelegate(nullptr);
-  DCHECK(!active_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -124,25 +113,6 @@ ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() {
 base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
     const base::RepeatingCallback<void()>& callback) {
   return google_auth_state_observers_.Add(callback);
-}
-
-void ChildAccountService::SetActive(bool active) {
-  if (!supervised_user::IsSubjectToParentalControls(user_prefs_.get()) &&
-      !active_) {
-    return;
-  }
-  if (active_ == active) {
-    return;
-  }
-  active_ = active;
-  if (active_) {
-    CHECK(permission_creator_callback_);
-    std::unique_ptr<supervised_user::PermissionRequestCreator>
-        permission_creator = permission_creator_callback_.Run();
-    CHECK(permission_creator);
-    supervised_user_service_->remote_web_approvals_manager()
-        .AddApprovalRequestCreator(std::move(permission_creator));
-  }
 }
 
 void ChildAccountService::SetSupervisionStatusAndNotifyObservers(

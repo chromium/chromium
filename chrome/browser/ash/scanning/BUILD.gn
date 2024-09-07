@@ -56,7 +56,6 @@ static_library("scanning") {
     "//chrome/app:generated_resources_grit",
     "//chrome/app/vector_icons",
     "//chrome/browser:primitives",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/printing",
@@ -87,7 +86,6 @@ static_library("scanning") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/drive",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/printing",
   ]
 }
@@ -138,16 +136,15 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/app/vector_icons",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/scanning",
     "//chrome/browser/ash/scanning:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/holding_space:test_support",
+    "//chrome/browser/ui/ash/session:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/dlcservice",
@@ -184,7 +181,6 @@ if (is_chromeos_device) {
     ]
     deps = [
       "//base",
-      "//chrome/browser/ash",
       "//chrome/browser/ash/login/test:test_support",
       "//chrome/browser/ash/scanning",
       "//chrome/browser/ash/scanning:test_support",

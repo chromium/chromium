@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
@@ -152,6 +153,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Returns DM Token for the managed profile.
   virtual std::string GetProfileDMTokenString() const = 0;
+
+  // Returns the client metadata (browser, profile) information. May be
+  // nullptr if ClientMetadata is unavailable.
+  virtual std::unique_ptr<enterprise_connectors::ClientMetadata>
+  GetClientMetadata() const = 0;
 
   // KeyedService:
   // Called before the actual deletion of the object.

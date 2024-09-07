@@ -5,14 +5,15 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_controller.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/infobars/model/badge_state.h"
-#import "ios/chrome/browser/infobars/model/infobar_ios.h"
-#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
-#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button_factory.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
+#import "ios/chrome/browser/infobars/model/badge_state.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -98,6 +99,9 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
         badgeButtonForBadgeType:fullscreenBadgeItem.badgeType
                    usingInfoBar:nil];
   }
+
+  BOOL badgeHidden = !displayedBadgeItem && !fullscreenBadgeItem;
+  [self.visibilityDelegate setBadgeViewHidden:badgeHidden];
 }
 
 - (void)updateDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
@@ -135,6 +139,9 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
   } else {
     self.displayedBadge = nil;
   }
+
+  BOOL badgeHidden = !displayedBadgeItem && !fullscreenBadgeItem;
+  [self.visibilityDelegate setBadgeViewHidden:badgeHidden];
 }
 
 - (void)markDisplayedBadgeAsRead:(BOOL)read {

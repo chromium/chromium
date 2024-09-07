@@ -74,7 +74,6 @@
 #include "content/browser/utility_process_host.h"
 #include "content/child/field_trial.h"
 #include "content/common/content_constants_internal.h"
-#include "content/common/mojo_core_library_support.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/common/url_schemes.h"
 #include "content/gpu/in_process_gpu_thread.h"
@@ -105,7 +104,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
-#include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/first_party_sets/local_set_declaration.h"
@@ -338,7 +336,6 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
       // becomes a renderer process.
       switches::kForceDeviceScaleFactor,
       switches::kLoggingLevel,
-      switches::kMojoCoreLibraryPath,
       switches::kPpapiInProcess,
       switches::kRegisterPepperPlugins,
       switches::kV,
@@ -610,7 +607,7 @@ struct MainFunction {
 // Returns the exit code of the subprocess.
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
-int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
+NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
   static const MainFunction kMainFunctions[] = {
     {switches::kGpuProcess, GpuMain},
     {switches::kRendererProcess, RendererMain},
@@ -739,10 +736,10 @@ int RunBrowserProcessMain(MainFunctionParams main_function_params,
 // Returns the exit code for this process.
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
-int NO_STACK_PROTECTOR
-RunOtherNamedProcessTypeMain(const std::string& process_type,
-                             MainFunctionParams main_function_params,
-                             ContentMainDelegate* delegate) {
+NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
+    const std::string& process_type,
+    MainFunctionParams main_function_params,
+    ContentMainDelegate* delegate) {
 #if BUILDFLAG(IS_MAC)
   base::Process::SetCurrentTaskDefaultRole();
 #endif
@@ -1100,7 +1097,7 @@ void ContentMainRunnerImpl::ReInitializeParams(ContentMainParams new_params) {
 
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
-int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
+NO_STACK_PROTECTOR int ContentMainRunnerImpl::Run() {
   DCHECK(is_initialized_);
   DCHECK(content_main_params_);
   DCHECK(!is_shutdown_);
@@ -1132,18 +1129,6 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
       base::allocator::PartitionAllocSupport::Get()
           ->ReconfigureAfterFeatureListInit(process_type);
     }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    // If dynamic Mojo Core is being used, ensure that it's loaded very early in
-    // the child/zygote process, before any sandbox is initialized. The library
-    // is not fully initialized with IPC support until a ChildProcess is later
-    // constructed, as initialization spawns a background thread which would be
-    // unsafe here.
-    if (IsMojoCoreSharedLibraryEnabled()) {
-      CHECK_EQ(mojo::LoadCoreLibrary(GetMojoCoreSharedLibraryPath()),
-               MOJO_RESULT_OK);
-    }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
 
   MainFunctionParams main_params(command_line);
@@ -1263,7 +1248,8 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
     // PowerMonitor is needed in reduced mode. BrowserMainLoop will safely skip
     // initializing it again if it has already been initialized.
-    base::PowerMonitor::Initialize(MakePowerMonitorDeviceSource());
+    base::PowerMonitor::GetInstance()->Initialize(
+        MakePowerMonitorDeviceSource());
 
     // Ensure the visibility tracker is created on the main thread.
     ProcessVisibilityTracker::GetInstance();

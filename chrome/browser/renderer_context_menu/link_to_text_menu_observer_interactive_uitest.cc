@@ -12,6 +12,9 @@
 #include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -32,7 +35,8 @@ class MockLinkToTextMenuObserver : public LinkToTextMenuObserver {
  public:
   static std::unique_ptr<MockLinkToTextMenuObserver> Create(
       RenderViewContextMenuProxy* proxy,
-      content::GlobalRenderFrameHostId render_frame_host_id) {
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      ToastController* toast_controller) {
     // WebContents can be null in tests.
     content::WebContents* web_contents = proxy->GetWebContents();
     if (web_contents && extensions::ProcessManager::Get(
@@ -42,13 +46,14 @@ class MockLinkToTextMenuObserver : public LinkToTextMenuObserver {
       return nullptr;
     }
 
-    return base::WrapUnique(
-        new MockLinkToTextMenuObserver(proxy, render_frame_host_id));
+    return base::WrapUnique(new MockLinkToTextMenuObserver(
+        proxy, render_frame_host_id, toast_controller));
   }
   MockLinkToTextMenuObserver(
       RenderViewContextMenuProxy* proxy,
-      content::GlobalRenderFrameHostId render_frame_host_id)
-      : LinkToTextMenuObserver(proxy, render_frame_host_id) {}
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      ToastController* toast_controller)
+      : LinkToTextMenuObserver(proxy, render_frame_host_id, toast_controller) {}
 
   void SetGenerationResults(
       std::string selector,
@@ -83,7 +88,12 @@ namespace {
 
 class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
  public:
-  LinkToTextMenuObserverTest();
+  LinkToTextMenuObserverTest() {
+    scoped_features_.InitWithFeatures(
+        {toast_features::kLinkToHighlightCopiedToast,
+         toast_features::kToastFramework},
+        {});
+  }
 
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
@@ -108,8 +118,9 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
 
   void Reset(bool incognito) {
     menu_ = std::make_unique<MockRenderViewContextMenu>(incognito);
-    observer_ =
-        MockLinkToTextMenuObserver::Create(menu_.get(), getRenderFrameHostId());
+    observer_ = MockLinkToTextMenuObserver::Create(
+        menu_.get(), getRenderFrameHostId(),
+        browser()->GetFeatures().toast_controller());
     menu_->SetObserver(observer_.get());
   }
 
@@ -131,11 +142,11 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<MockLinkToTextMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
 };
 
-LinkToTextMenuObserverTest::LinkToTextMenuObserverTest() = default;
 LinkToTextMenuObserverTest::~LinkToTextMenuObserverTest() = default;
 
 class LinkToTextMenuObserverDataControlsTest
@@ -276,7 +287,9 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, HiddenForExtensions) {
   menu()->set_web_contents(web_contents);
 
   std::unique_ptr<MockLinkToTextMenuObserver> observer =
-      MockLinkToTextMenuObserver::Create(menu(), getRenderFrameHostId());
+      MockLinkToTextMenuObserver::Create(
+          menu(), getRenderFrameHostId(),
+          browser()->GetFeatures().toast_controller());
   EXPECT_EQ(nullptr, observer);
 }
 
@@ -669,4 +682,19 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
   EXPECT_EQ(u"Pasting this content here is blocked by your administrator.",
             text);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ShowsToastOnCopyingLink) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  params.opened_from_highlight = true;
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
